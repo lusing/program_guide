@@ -1,0 +1,110 @@
+V "GNAT Lib v16"
+M P W=b
+P SS ZX
+
+RN
+RV NO_FLOATING_POINT
+RV NO_IO
+RV NO_LOCAL_ALLOCATORS
+RV NO_SECONDARY_STACK
+RV NO_STANDARD_STORAGE_POOLS
+RV NO_DYNAMIC_SIZED_OBJECTS
+RV NO_IMPLEMENTATION_ASPECT_SPECIFICATIONS
+RV NO_IMPLEMENTATION_PRAGMAS
+
+U ch05_arrays%b		ch05_arrays.adb		e8345f04 NE OO SU
+W ada%s			ada.ads			ada.ali
+W ada.integer_text_io%s	a-inteio.ads		a-inteio.ali
+W ada.strings%s		a-string.ads		a-string.ali
+W ada.strings.bounded%s	a-strbou.adb		a-strbou.ali
+Z ada.strings.text_buffers%s  a-sttebu.adb	a-sttebu.ali
+W ada.text_io%s		a-textio.adb		a-textio.ali
+Z system.concat_2%s	s-conca2.adb		s-conca2.ali
+Z system.img_int%s	s-imgint.ads		s-imgint.ali
+Z system.secondary_stack%s  s-secsta.adb	s-secsta.ali
+
+D ada.ads		20260517213308 76789da1 ada%s
+D a-charac.ads		20260517213308 2d3ec45b ada.characters%s
+D a-chlat1.ads		20260517213308 e0d72e76 ada.characters.latin_1%s
+D a-except.ads		20260517213308 8699d7ff ada.exceptions%s
+D a-inteio.ads		20260517213308 f64b89a4 ada.integer_text_io%s
+D a-ioexce.ads		20260517213308 40018c65 ada.io_exceptions%s
+D a-stream.ads		20260517213308 cb01a8f8 ada.streams%s
+D a-string.ads		20260517213308 90ac6797 ada.strings%s
+D a-strbou.ads		20260517213308 d524f816 ada.strings.bounded%s
+D a-strbou.adb		20260517213308 4a759692 ada.strings.bounded%b
+D a-strmap.ads		20260517213308 f7e6ca10 ada.strings.maps%s
+D a-strsea.ads		20260517213308 18c3c634 ada.strings.search%s
+D a-strsup.ads		20260517213308 48a25448 ada.strings.superbounded%s
+D a-sttebu.ads		20260517213308 f1ad67a2 ada.strings.text_buffers%s
+D a-stuten.ads		20260517213308 c6ced0ae ada.strings.utf_encoding%s
+D a-tags.ads		20260517213308 2dbf449c ada.tags%s
+D a-textio.ads		20260517213308 34ef47de ada.text_io%s
+D a-tiinio.ads		20260517213308 76699c8f ada.text_io.integer_io%s
+D a-unccon.ads		20260517213308 0e9b276f ada.unchecked_conversion%s
+D ch05_arrays.adb	20260721042718 ffb46968 ch05_arrays%b
+D interfac.ads		20260517213308 9111f9c1 interfaces%s
+D i-cstrea.ads		20260517213308 ffd01b9d interfaces.c_streams%s
+D system.ads		20260517213308 898beeee system%s
+D s-conca2.ads		20260517213308 b5fb73f7 system.concat_2%s
+D s-crtl.ads		20260517213308 823b6536 system.crtl%s
+D s-exctab.ads		20260517213308 91bef6ef system.exception_table%s
+D s-ficobl.ads		20260517213308 dc5161d4 system.file_control_block%s
+D s-imagei.ads		20260517213308 11a376a2 system.image_i%s
+D s-imgint.ads		20260517213308 86836590 system.img_int%s
+D s-parame.ads		20260517213308 a1aeab5c system.parameters%s
+D s-putima.ads		20260517213308 1b989439 system.put_images%s
+D s-secsta.ads		20260517213308 578279f5 system.secondary_stack%s
+D s-soflin.ads		20260517213308 5d88fdea system.soft_links%s
+D s-stache.ads		20260517213308 0b81c1fe system.stack_checking%s
+D s-stalib.ads		20260517213308 1c9580f6 system.standard_library%s
+D s-stoele.ads		20260517213308 ccded4e8 system.storage_elements%s
+D s-traent.ads		20260517213308 c81cbf8c system.traceback_entries%s
+D s-unstyp.ads		20260517213308 fa2a7f59 system.unsigned_types%s
+D s-wchcon.ads		20260517213308 d9032363 system.wch_con%s
+G a e
+G c Z b b [ch05_arrays standard 8 11 none]
+X 1 ada.ads
+18K9*Ada 22e8 20|4r6 4r31 5r6 5r31 6r6 93r25
+X 5 a-inteio.ads
+18K13*Integer_Text_IO[18|46] 20|5w10 5r35
+X 8 a-string.ads
+16K13*Strings 35e16 20|6r10 93r29
+X 9 a-strbou.ads
+50K21*Bounded 3007e24 20|6w18 93r37
+57i7 Max{positive} 20|93r69
+60k12*Generic_Bounded_Length 3005e30 20|93r45
+78R12 Bounded_String<13|66R9> 20|95r11[93]
+87I15 Length_Range{natural}
+89V16 Length{87I15[20|93]} 20|99s47[93]
+98V16 To_Bounded_String{78R12[20|93]} 20|95s29[93] 97s16[93]
+130V16 To_String{string} 20|98s41[93]
+511V17 "&"{78R12[20|93]} 20|97s14[93]
+X 17 a-textio.ads
+58K13*Text_IO 785e16 20|4w10 4r35
+89I12*Field{integer}
+284U14*New_Line 20|12s4 36s4 50s4 64s10 71s4 90s4
+515U14*Put 20|22s7 25s29 60s10
+565U14*Put_Line 20|11s4 17s4 27s7 28s7 29s7 30s7 37s4 43s7 44s7 51s4 58s7
+. 72s4 78s7 79s7 80s7 81s7 84s7 91s4 98s7 99s7
+X 18 a-tiinio.ads
+85U14*Put 20|24s10[5|18] 62s13[5|18]
+87i7 Width{17|89I12} 20|24r21[5|18] 62r27[5|18]
+X 20 ch05_arrays.adb
+8U11*Ch05_Arrays 8b11 101l5 101t16
+19A12 Int_Array(integer)<integer> 20r11
+20a7 A{19A12} 23r16 24r15 25r17 28r48 29r48 30r49
+23i11 I{integer} 24r17 25r13
+39A12 Vector(float)<integer> 40r12 41r12
+40a7 V1{39A12} 43r50
+41a7 V2{39A12} 44r50
+53A12 Matrix(integer)<integer><integer> 54r11
+54a7 M{53A12} 59r16 61r19 62r18
+59i11 I{integer} 62r20
+61i14 J{integer} 62r23
+74a7 S1{string} 78r29 81r50 84r35
+75a7 S2{string} 79r29
+76a7 S3{string} 80r29
+93K15 BS[9|60] 94r11
+95r7 B{9|78R12[93]} 97m7 97r12 98r51 99r54
+
