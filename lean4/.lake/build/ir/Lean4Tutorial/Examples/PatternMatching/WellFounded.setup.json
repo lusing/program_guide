@@ -1,0 +1,7 @@
+{"plugins": [],
+ "package": "lean4-tutorial",
+ "options": {},
+ "name": "Lean4Tutorial.Examples.PatternMatching.WellFounded",
+ "isModule": false,
+ "importArts": {},
+ "dynlibs": []}

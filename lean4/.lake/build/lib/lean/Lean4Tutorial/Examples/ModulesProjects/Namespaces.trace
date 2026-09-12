@@ -1,0 +1,32 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["1e805143a1b6d884.olean"],
+  "m": false,
+  "i": "d24ac6837ab47195.ilean",
+  "c": "90efe7c5fa222e29.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=G:\\code\\guide\\lean4\\.lake\\build\\lib\\lean g:\\lean\\toolchains\\leanprover--lean4---v4.33.1\\bin\\lean.exe G:\\code\\guide\\lean4\\Lean4Tutorial\\Examples\\ModulesProjects\\Namespaces.lean -o G:\\code\\guide\\lean4\\.lake\\build\\lib\\lean\\Lean4Tutorial\\Examples\\ModulesProjects\\Namespaces.olean -i G:\\code\\guide\\lean4\\.lake\\build\\lib\\lean\\Lean4Tutorial\\Examples\\ModulesProjects\\Namespaces.ilean -c G:\\code\\guide\\lean4\\.lake\\build\\ir\\Lean4Tutorial\\Examples\\ModulesProjects\\Namespaces.c --setup G:\\code\\guide\\lean4\\.lake\\build\\ir\\Lean4Tutorial\\Examples\\ModulesProjects\\Namespaces.setup.json --json",
+   "level": "trace"}],
+ "inputs":
+ [["deps",
+   [["«lean4-tutorial»/Lean4Tutorial:extraDep",
+     [["@«lean4-tutorial»:extraDep", "00000000000006bb"]]],
+    ["imports", "00000000000006bb"]]],
+  ["libs",
+   [["import dynlibs", "00000000000006bb"],
+    ["package external libraries", "00000000000006bb"],
+    ["module dynlibs", "00000000000006bb"],
+    ["module plugins", "00000000000006bb"]]],
+  ["Lean 4.33.1, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6",
+   "0051240b7c23c453"],
+  ["G:\\code\\guide\\lean4\\Lean4Tutorial\\Examples\\ModulesProjects\\Namespaces.lean",
+   "706af41946ef0af6"],
+  ["options", "00000000000006bb"],
+  ["isModule: false", "feefd2a0d3a1847e"],
+  ["Module.name: Lean4Tutorial.Examples.ModulesProjects.Namespaces",
+   "5ec2e4f3191a08e9"],
+  ["Package.id?: (some lean4-tutorial)", "ff0406450144e43f"],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "56194a55b73d3e7c"}

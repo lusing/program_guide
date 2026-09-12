@@ -1,0 +1,2609 @@
+// Lean compiler output
+// Module: Lean4Tutorial.Examples.PatternMatching.MatchBasics
+// Imports: public import Init public meta import Init
+#include <lean/lean.h>
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wunused-label"
+#elif defined(__GNUC__) && !defined(__CLANG__)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#endif
+#ifdef __cplusplus
+extern "C" {
+#endif
+lean_object* lean_nat_add(lean_object*, lean_object*);
+lean_object* lean_nat_div(lean_object*, lean_object*);
+uint8_t lean_nat_dec_eq(lean_object*, lean_object*);
+lean_object* lean_nat_sub(lean_object*, lean_object*);
+uint8_t lean_nat_dec_lt(lean_object*, lean_object*);
+lean_object* lean_nat_mul(lean_object*, lean_object*);
+lean_object* lean_nat_to_int(lean_object*);
+lean_object* l_Repr_addAppParen(lean_object*, lean_object*);
+uint8_t lean_nat_dec_le(lean_object*, lean_object*);
+lean_object* l_Nat_reprFast(lean_object*);
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isZero(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isZero___boxed(lean_object*);
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_zero__true___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_zero__true___closed__0;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_zero__true;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_one__false___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_one__false___closed__0;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_one__false;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_five__false___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_five__false___closed__0;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_five__false;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred___boxed(lean_object*);
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__zero___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__zero___closed__0;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__zero;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__five___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__five___closed__0;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__five;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_my__not(uint8_t);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_my__not___boxed(lean_object*);
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__true___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__true___closed__0;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__true;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__false___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__false___closed__0;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__false;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_my__and(uint8_t, uint8_t);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_my__and___boxed(lean_object*, lean_object*);
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_and__tt;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_and__tf;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_and__ff;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__default___redArg(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__default___redArg___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__default(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__default___boxed(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_default__some;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_default__none;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__map___redArg(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__map(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___lam__0(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___lam__0___boxed(lean_object*);
+static const lean_closure_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_closure_object) + sizeof(void*)*0, .m_other = 0, .m_tag = 245}, .m_fun = (void*)lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___lam__0___boxed, .m_arity = 1, .m_num_fixed = 0, .m_objs = {} };
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___closed__0 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___closed__0_value;
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___closed__1_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*1 + 0, .m_other = 1, .m_tag = 1}, .m_objs = {((lean_object*)(((size_t)(5) << 1) | 1))}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___closed__1 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___closed__1_value;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___closed__2_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___closed__2;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__none___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__none___closed__0;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__none;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair___boxed(lean_object*);
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair__example___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 0}, .m_objs = {((lean_object*)(((size_t)(3) << 1) | 1)),((lean_object*)(((size_t)(4) << 1) | 1))}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair__example___closed__0 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair__example___closed__0_value;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair__example___closed__1_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair__example___closed__1;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair__example;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap___redArg(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap(lean_object*, lean_object*, lean_object*);
+static const lean_string_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = 0, .m_other = 0, .m_tag = 249}, .m_size = 6, .m_capacity = 6, .m_length = 5, .m_data = "hello"};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example___closed__0 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example___closed__0_value;
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example___closed__1_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 0}, .m_objs = {((lean_object*)(((size_t)(42) << 1) | 1)),((lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example___closed__0_value)}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example___closed__1 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example___closed__1_value;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example___closed__2_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example___closed__2;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple___boxed(lean_object*);
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 0}, .m_objs = {((lean_object*)(((size_t)(2) << 1) | 1)),((lean_object*)(((size_t)(3) << 1) | 1))}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example___closed__0 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example___closed__0_value;
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example___closed__1_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 0}, .m_objs = {((lean_object*)(((size_t)(1) << 1) | 1)),((lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example___closed__0_value)}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example___closed__1 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example___closed__1_value;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example___closed__2_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example___closed__2;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty___redArg(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty___redArg___boxed(lean_object*);
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty___boxed(lean_object*, lean_object*);
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__true___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__true___closed__0;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__true;
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 1}, .m_objs = {((lean_object*)(((size_t)(3) << 1) | 1)),((lean_object*)(((size_t)(0) << 1) | 1))}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__0 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__0_value;
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__1_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 1}, .m_objs = {((lean_object*)(((size_t)(2) << 1) | 1)),((lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__0_value)}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__1 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__1_value;
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__2_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 1}, .m_objs = {((lean_object*)(((size_t)(1) << 1) | 1)),((lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__1_value)}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__2 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__2_value;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__3_once = LEAN_ONCE_CELL_INITIALIZER;
+static uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__3;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head___redArg(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head___redArg___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head___boxed(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__cons;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__nil;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_tail___redArg(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_tail___redArg___boxed(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_tail(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_tail___boxed(lean_object*, lean_object*);
+LEAN_EXPORT const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_tail__example = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__1_value;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty_x27___redArg(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty_x27___redArg___boxed(lean_object*);
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty_x27(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty_x27___boxed(lean_object*, lean_object*);
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isFirstZero(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isFirstZero___boxed(lean_object*);
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 1}, .m_objs = {((lean_object*)(((size_t)(2) << 1) | 1)),((lean_object*)(((size_t)(0) << 1) | 1))}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__0 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__0_value;
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__1_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 1}, .m_objs = {((lean_object*)(((size_t)(1) << 1) | 1)),((lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__0_value)}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__1 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__1_value;
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__2_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 1}, .m_objs = {((lean_object*)(((size_t)(0) << 1) | 1)),((lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__1_value)}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__2 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__2_value;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__3_once = LEAN_ONCE_CELL_INITIALIZER;
+static uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__3;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__false___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__false___closed__0;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__false;
+static const lean_string_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = 0, .m_other = 0, .m_tag = 249}, .m_size = 14, .m_capacity = 14, .m_length = 13, .m_data = "both non-zero"};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___closed__0 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___closed__0_value;
+static const lean_string_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___closed__1_value = {.m_header = {.m_rc = 0, .m_cs_sz = 0, .m_other = 0, .m_tag = 249}, .m_size = 15, .m_capacity = 15, .m_length = 14, .m_data = "second is zero"};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___closed__1 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___closed__1_value;
+static const lean_string_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___closed__2_value = {.m_header = {.m_rc = 0, .m_cs_sz = 0, .m_other = 0, .m_tag = 249}, .m_size = 14, .m_capacity = 14, .m_length = 13, .m_data = "first is zero"};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___closed__2 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___closed__2_value;
+static const lean_string_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___closed__3_value = {.m_header = {.m_rc = 0, .m_cs_sz = 0, .m_other = 0, .m_tag = 249}, .m_size = 10, .m_capacity = 10, .m_length = 9, .m_data = "both zero"};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___closed__3 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___closed__3_value;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___boxed(lean_object*, lean_object*);
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp1___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp1___closed__0;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp1;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp2___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp2___closed__0;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp2;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp3___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp3___closed__0;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp3;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp4___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp4___closed__0;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp4;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor(uint8_t, uint8_t);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor___boxed(lean_object*, lean_object*);
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tf___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tf___closed__0;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tf;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tt___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tt___closed__0;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tt;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isSingleton___redArg(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isSingleton___redArg___boxed(lean_object*);
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isSingleton(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isSingleton___boxed(lean_object*, lean_object*);
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__true___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 1}, .m_objs = {((lean_object*)(((size_t)(5) << 1) | 1)),((lean_object*)(((size_t)(0) << 1) | 1))}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__true___closed__0 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__true___closed__0_value;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__true___closed__1_once = LEAN_ONCE_CELL_INITIALIZER;
+static uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__true___closed__1;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__true;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false1___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false1___closed__0;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false1;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false2___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false2___closed__0;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false2;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_hasTwoElements___redArg(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_hasTwoElements___redArg___boxed(lean_object*);
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_hasTwoElements(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_hasTwoElements___boxed(lean_object*, lean_object*);
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__true___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__true___closed__0;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__true;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__false___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__false___closed__0;
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__false;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_firstTwoSum(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_firstTwoSum___boxed(lean_object*);
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 1}, .m_objs = {((lean_object*)(((size_t)(4) << 1) | 1)),((lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__true___closed__0_value)}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two___closed__0 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two___closed__0_value;
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two___closed__1_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 1}, .m_objs = {((lean_object*)(((size_t)(3) << 1) | 1)),((lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two___closed__0_value)}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two___closed__1 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two___closed__1_value;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two___closed__2_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two___closed__2;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two;
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__one___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 1}, .m_objs = {((lean_object*)(((size_t)(7) << 1) | 1)),((lean_object*)(((size_t)(0) << 1) | 1))}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__one___closed__0 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__one___closed__0_value;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__one___closed__1_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__one___closed__1;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__one;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__zero___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__zero___closed__0;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__zero;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getOrZero(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getOrZero___boxed(lean_object*);
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__some___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*1 + 0, .m_other = 1, .m_tag = 1}, .m_objs = {((lean_object*)(((size_t)(42) << 1) | 1))}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__some___closed__0 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__some___closed__0_value;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__some___closed__1_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__some___closed__1;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__some;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__none___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__none___closed__0;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__none;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_headIfAny___redArg(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_headIfAny___redArg___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_headIfAny(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_headIfAny___boxed(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__if;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__else;
+static const lean_string_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = 0, .m_other = 0, .m_tag = 249}, .m_size = 5, .m_capacity = 5, .m_length = 4, .m_data = "zero"};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify___closed__0 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify___closed__0_value;
+static const lean_string_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify___closed__1_value = {.m_header = {.m_rc = 0, .m_cs_sz = 0, .m_other = 0, .m_tag = 249}, .m_size = 6, .m_capacity = 6, .m_length = 5, .m_data = "large"};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify___closed__1 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify___closed__1_value;
+static const lean_string_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify___closed__2_value = {.m_header = {.m_rc = 0, .m_cs_sz = 0, .m_other = 0, .m_tag = 249}, .m_size = 6, .m_capacity = 6, .m_length = 5, .m_data = "small"};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify___closed__2 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify___closed__2_value;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify___boxed(lean_object*);
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__zero___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__zero___closed__0;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__zero;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__small___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__small___closed__0;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__small;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__large___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__large___closed__0;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__large;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_safeHead___redArg(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_safeHead___redArg___boxed(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_safeHead(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_safeHead___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorIdx(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorIdx___boxed(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorElim___redArg(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorElim(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorElim___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_red_elim___redArg(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_red_elim(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_green_elim___redArg(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_green_elim(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_blue_elim___redArg(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_blue_elim(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_rgb_elim___redArg(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_rgb_elim(lean_object*, lean_object*, lean_object*, lean_object*);
+static const lean_string_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = 0, .m_other = 0, .m_tag = 249}, .m_size = 62, .m_capacity = 62, .m_length = 61, .m_data = "Lean4Tutorial.Examples.PatternMatching.MatchBasics.Color.blue"};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__0 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__0_value;
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__1_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*1 + 0, .m_other = 1, .m_tag = 3}, .m_objs = {((lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__0_value)}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__1 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__1_value;
+static const lean_string_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__2_value = {.m_header = {.m_rc = 0, .m_cs_sz = 0, .m_other = 0, .m_tag = 249}, .m_size = 63, .m_capacity = 63, .m_length = 62, .m_data = "Lean4Tutorial.Examples.PatternMatching.MatchBasics.Color.green"};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__2 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__2_value;
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__3_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*1 + 0, .m_other = 1, .m_tag = 3}, .m_objs = {((lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__2_value)}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__3 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__3_value;
+static const lean_string_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__4_value = {.m_header = {.m_rc = 0, .m_cs_sz = 0, .m_other = 0, .m_tag = 249}, .m_size = 61, .m_capacity = 61, .m_length = 60, .m_data = "Lean4Tutorial.Examples.PatternMatching.MatchBasics.Color.red"};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__4 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__4_value;
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__5_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*1 + 0, .m_other = 1, .m_tag = 3}, .m_objs = {((lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__4_value)}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__5 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__5_value;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__6_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__6;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__7_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__7;
+static const lean_string_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__8_value = {.m_header = {.m_rc = 0, .m_cs_sz = 0, .m_other = 0, .m_tag = 249}, .m_size = 61, .m_capacity = 61, .m_length = 60, .m_data = "Lean4Tutorial.Examples.PatternMatching.MatchBasics.Color.rgb"};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__8 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__8_value;
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__9_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*1 + 0, .m_other = 1, .m_tag = 3}, .m_objs = {((lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__8_value)}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__9 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__9_value;
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__10_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 5}, .m_objs = {((lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__9_value),((lean_object*)(((size_t)(1) << 1) | 1))}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__10 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__10_value;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___boxed(lean_object*, lean_object*);
+static const lean_closure_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_closure_object) + sizeof(void*)*0, .m_other = 0, .m_tag = 245}, .m_fun = (void*)lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___boxed, .m_arity = 2, .m_num_fixed = 0, .m_objs = {} };
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor___closed__0 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor___closed__0_value;
+LEAN_EXPORT const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor___closed__0_value;
+static const lean_string_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = 0, .m_other = 0, .m_tag = 249}, .m_size = 7, .m_capacity = 7, .m_length = 2, .m_data = "红色"};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___closed__0 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___closed__0_value;
+static const lean_string_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___closed__1_value = {.m_header = {.m_rc = 0, .m_cs_sz = 0, .m_other = 0, .m_tag = 249}, .m_size = 7, .m_capacity = 7, .m_length = 2, .m_data = "绿色"};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___closed__1 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___closed__1_value;
+static const lean_string_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___closed__2_value = {.m_header = {.m_rc = 0, .m_cs_sz = 0, .m_other = 0, .m_tag = 249}, .m_size = 7, .m_capacity = 7, .m_length = 2, .m_data = "蓝色"};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___closed__2 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___closed__2_value;
+static const lean_string_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___closed__3_value = {.m_header = {.m_rc = 0, .m_cs_sz = 0, .m_other = 0, .m_tag = 249}, .m_size = 13, .m_capacity = 13, .m_length = 6, .m_data = "自定义RGB"};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___closed__3 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___closed__3_value;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___boxed(lean_object*);
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__red___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__red___closed__0;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__red;
+static const lean_ctor_object lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__rgb___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*3 + 0, .m_other = 3, .m_tag = 3}, .m_objs = {((lean_object*)(((size_t)(100) << 1) | 1)),((lean_object*)(((size_t)(200) << 1) | 1)),((lean_object*)(((size_t)(50) << 1) | 1))}};
+static const lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__rgb___closed__0 = (const lean_object*)&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__rgb___closed__0_value;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__rgb___closed__1_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__rgb___closed__1;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__rgb;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_brightness(lean_object*);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_brightness___boxed(lean_object*);
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__red___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__red___closed__0;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__red;
+static lean_once_cell_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__rgb___closed__0_once = LEAN_ONCE_CELL_INITIALIZER;
+static lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__rgb___closed__0;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__rgb;
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_complete__match(uint8_t);
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_complete__match___boxed(lean_object*);
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isZero(lean_object* v_n_1_){
+_start:
+{
+lean_object* v_zero_2_; uint8_t v_isZero_3_; 
+v_zero_2_ = lean_unsigned_to_nat(0u);
+v_isZero_3_ = lean_nat_dec_eq(v_n_1_, v_zero_2_);
+return v_isZero_3_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isZero___boxed(lean_object* v_n_4_){
+_start:
+{
+uint8_t v_res_5_; lean_object* v_r_6_; 
+v_res_5_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isZero(v_n_4_);
+lean_dec(v_n_4_);
+v_r_6_ = lean_box(v_res_5_);
+return v_r_6_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_zero__true___closed__0(void){
+_start:
+{
+lean_object* v___x_7_; uint8_t v___x_8_; 
+v___x_7_ = lean_unsigned_to_nat(0u);
+v___x_8_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isZero(v___x_7_);
+return v___x_8_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_zero__true(void){
+_start:
+{
+uint8_t v___x_9_; 
+v___x_9_ = lean_uint8_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_zero__true___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_zero__true___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_zero__true___closed__0);
+return v___x_9_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_one__false___closed__0(void){
+_start:
+{
+lean_object* v___x_10_; uint8_t v___x_11_; 
+v___x_10_ = lean_unsigned_to_nat(1u);
+v___x_11_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isZero(v___x_10_);
+return v___x_11_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_one__false(void){
+_start:
+{
+uint8_t v___x_12_; 
+v___x_12_ = lean_uint8_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_one__false___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_one__false___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_one__false___closed__0);
+return v___x_12_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_five__false___closed__0(void){
+_start:
+{
+lean_object* v___x_13_; uint8_t v___x_14_; 
+v___x_13_ = lean_unsigned_to_nat(5u);
+v___x_14_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isZero(v___x_13_);
+return v___x_14_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_five__false(void){
+_start:
+{
+uint8_t v___x_15_; 
+v___x_15_ = lean_uint8_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_five__false___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_five__false___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_five__false___closed__0);
+return v___x_15_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred(lean_object* v_n_16_){
+_start:
+{
+lean_object* v_zero_17_; uint8_t v_isZero_18_; 
+v_zero_17_ = lean_unsigned_to_nat(0u);
+v_isZero_18_ = lean_nat_dec_eq(v_n_16_, v_zero_17_);
+if (v_isZero_18_ == 1)
+{
+return v_zero_17_;
+}
+else
+{
+lean_object* v_one_19_; lean_object* v_n_20_; 
+v_one_19_ = lean_unsigned_to_nat(1u);
+v_n_20_ = lean_nat_sub(v_n_16_, v_one_19_);
+return v_n_20_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred___boxed(lean_object* v_n_21_){
+_start:
+{
+lean_object* v_res_22_; 
+v_res_22_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred(v_n_21_);
+lean_dec(v_n_21_);
+return v_res_22_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__zero___closed__0(void){
+_start:
+{
+lean_object* v___x_23_; lean_object* v___x_24_; 
+v___x_23_ = lean_unsigned_to_nat(0u);
+v___x_24_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred(v___x_23_);
+return v___x_24_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__zero(void){
+_start:
+{
+lean_object* v___x_25_; 
+v___x_25_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__zero___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__zero___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__zero___closed__0);
+return v___x_25_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__five___closed__0(void){
+_start:
+{
+lean_object* v___x_26_; lean_object* v___x_27_; 
+v___x_26_ = lean_unsigned_to_nat(5u);
+v___x_27_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred(v___x_26_);
+return v___x_27_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__five(void){
+_start:
+{
+lean_object* v___x_28_; 
+v___x_28_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__five___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__five___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__five___closed__0);
+return v___x_28_;
+}
+}
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_my__not(uint8_t v_b_29_){
+_start:
+{
+if (v_b_29_ == 0)
+{
+uint8_t v___x_30_; 
+v___x_30_ = 1;
+return v___x_30_;
+}
+else
+{
+uint8_t v___x_31_; 
+v___x_31_ = 0;
+return v___x_31_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_my__not___boxed(lean_object* v_b_32_){
+_start:
+{
+uint8_t v_b_boxed_33_; uint8_t v_res_34_; lean_object* v_r_35_; 
+v_b_boxed_33_ = lean_unbox(v_b_32_);
+v_res_34_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_my__not(v_b_boxed_33_);
+v_r_35_ = lean_box(v_res_34_);
+return v_r_35_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__true___closed__0(void){
+_start:
+{
+uint8_t v___x_36_; uint8_t v___x_37_; 
+v___x_36_ = 1;
+v___x_37_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_my__not(v___x_36_);
+return v___x_37_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__true(void){
+_start:
+{
+uint8_t v___x_38_; 
+v___x_38_ = lean_uint8_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__true___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__true___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__true___closed__0);
+return v___x_38_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__false___closed__0(void){
+_start:
+{
+uint8_t v___x_39_; uint8_t v___x_40_; 
+v___x_39_ = 0;
+v___x_40_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_my__not(v___x_39_);
+return v___x_40_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__false(void){
+_start:
+{
+uint8_t v___x_41_; 
+v___x_41_ = lean_uint8_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__false___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__false___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__false___closed__0);
+return v___x_41_;
+}
+}
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_my__and(uint8_t v_a_42_, uint8_t v_b_43_){
+_start:
+{
+if (v_a_42_ == 0)
+{
+return v_a_42_;
+}
+else
+{
+return v_b_43_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_my__and___boxed(lean_object* v_a_44_, lean_object* v_b_45_){
+_start:
+{
+uint8_t v_a_boxed_46_; uint8_t v_b_boxed_47_; uint8_t v_res_48_; lean_object* v_r_49_; 
+v_a_boxed_46_ = lean_unbox(v_a_44_);
+v_b_boxed_47_ = lean_unbox(v_b_45_);
+v_res_48_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_my__and(v_a_boxed_46_, v_b_boxed_47_);
+v_r_49_ = lean_box(v_res_48_);
+return v_r_49_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_and__tt(void){
+_start:
+{
+uint8_t v___x_50_; 
+v___x_50_ = 1;
+return v___x_50_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_and__tf(void){
+_start:
+{
+uint8_t v___x_51_; 
+v___x_51_ = 0;
+return v___x_51_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_and__ff(void){
+_start:
+{
+uint8_t v___x_52_; 
+v___x_52_ = 0;
+return v___x_52_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__default___redArg(lean_object* v_default_53_, lean_object* v_opt_54_){
+_start:
+{
+if (lean_obj_tag(v_opt_54_) == 0)
+{
+lean_inc(v_default_53_);
+return v_default_53_;
+}
+else
+{
+lean_object* v_val_55_; 
+v_val_55_ = lean_ctor_get(v_opt_54_, 0);
+lean_inc(v_val_55_);
+return v_val_55_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__default___redArg___boxed(lean_object* v_default_56_, lean_object* v_opt_57_){
+_start:
+{
+lean_object* v_res_58_; 
+v_res_58_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__default___redArg(v_default_56_, v_opt_57_);
+lean_dec(v_opt_57_);
+lean_dec(v_default_56_);
+return v_res_58_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__default(lean_object* v_00_u03b1_59_, lean_object* v_default_60_, lean_object* v_opt_61_){
+_start:
+{
+if (lean_obj_tag(v_opt_61_) == 0)
+{
+lean_inc(v_default_60_);
+return v_default_60_;
+}
+else
+{
+lean_object* v_val_62_; 
+v_val_62_ = lean_ctor_get(v_opt_61_, 0);
+lean_inc(v_val_62_);
+return v_val_62_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__default___boxed(lean_object* v_00_u03b1_63_, lean_object* v_default_64_, lean_object* v_opt_65_){
+_start:
+{
+lean_object* v_res_66_; 
+v_res_66_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__default(v_00_u03b1_63_, v_default_64_, v_opt_65_);
+lean_dec(v_opt_65_);
+lean_dec(v_default_64_);
+return v_res_66_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_default__some(void){
+_start:
+{
+lean_object* v___x_67_; 
+v___x_67_ = lean_unsigned_to_nat(42u);
+return v___x_67_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_default__none(void){
+_start:
+{
+lean_object* v___x_68_; 
+v___x_68_ = lean_unsigned_to_nat(0u);
+return v___x_68_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__map___redArg(lean_object* v_f_69_, lean_object* v_opt_70_){
+_start:
+{
+if (lean_obj_tag(v_opt_70_) == 0)
+{
+lean_object* v___x_71_; 
+lean_dec(v_f_69_);
+v___x_71_ = lean_box(0);
+return v___x_71_;
+}
+else
+{
+lean_object* v_val_72_; lean_object* v___x_74_; uint8_t v_isShared_75_; uint8_t v_isSharedCheck_80_; 
+v_val_72_ = lean_ctor_get(v_opt_70_, 0);
+v_isSharedCheck_80_ = !lean_is_exclusive(v_opt_70_);
+if (v_isSharedCheck_80_ == 0)
+{
+v___x_74_ = v_opt_70_;
+v_isShared_75_ = v_isSharedCheck_80_;
+goto v_resetjp_73_;
+}
+else
+{
+lean_inc(v_val_72_);
+lean_dec(v_opt_70_);
+v___x_74_ = lean_box(0);
+v_isShared_75_ = v_isSharedCheck_80_;
+goto v_resetjp_73_;
+}
+v_resetjp_73_:
+{
+lean_object* v___x_76_; lean_object* v___x_78_; 
+v___x_76_ = lean_apply_1(v_f_69_, v_val_72_);
+if (v_isShared_75_ == 0)
+{
+lean_ctor_set(v___x_74_, 0, v___x_76_);
+v___x_78_ = v___x_74_;
+goto v_reusejp_77_;
+}
+else
+{
+lean_object* v_reuseFailAlloc_79_; 
+v_reuseFailAlloc_79_ = lean_alloc_ctor(1, 1, 0);
+lean_ctor_set(v_reuseFailAlloc_79_, 0, v___x_76_);
+v___x_78_ = v_reuseFailAlloc_79_;
+goto v_reusejp_77_;
+}
+v_reusejp_77_:
+{
+return v___x_78_;
+}
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__map(lean_object* v_00_u03b1_81_, lean_object* v_00_u03b2_82_, lean_object* v_f_83_, lean_object* v_opt_84_){
+_start:
+{
+lean_object* v___x_85_; 
+v___x_85_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__map___redArg(v_f_83_, v_opt_84_);
+return v___x_85_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___lam__0(lean_object* v_x_86_){
+_start:
+{
+lean_object* v___x_87_; lean_object* v___x_88_; 
+v___x_87_ = lean_unsigned_to_nat(2u);
+v___x_88_ = lean_nat_mul(v_x_86_, v___x_87_);
+return v___x_88_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___lam__0___boxed(lean_object* v_x_89_){
+_start:
+{
+lean_object* v_res_90_; 
+v_res_90_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___lam__0(v_x_89_);
+lean_dec(v_x_89_);
+return v_res_90_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___closed__2(void){
+_start:
+{
+lean_object* v___x_94_; lean_object* v___f_95_; lean_object* v___x_96_; 
+v___x_94_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___closed__1));
+v___f_95_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___closed__0));
+v___x_96_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__map___redArg(v___f_95_, v___x_94_);
+return v___x_96_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some(void){
+_start:
+{
+lean_object* v___x_97_; 
+v___x_97_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___closed__2, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___closed__2_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___closed__2);
+return v___x_97_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__none___closed__0(void){
+_start:
+{
+lean_object* v___x_98_; lean_object* v___f_99_; lean_object* v___x_100_; 
+v___x_98_ = lean_box(0);
+v___f_99_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some___closed__0));
+v___x_100_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_option__map___redArg(v___f_99_, v___x_98_);
+return v___x_100_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__none(void){
+_start:
+{
+lean_object* v___x_101_; 
+v___x_101_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__none___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__none___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__none___closed__0);
+return v___x_101_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair(lean_object* v_p_102_){
+_start:
+{
+lean_object* v_fst_103_; lean_object* v_snd_104_; lean_object* v___x_105_; 
+v_fst_103_ = lean_ctor_get(v_p_102_, 0);
+v_snd_104_ = lean_ctor_get(v_p_102_, 1);
+v___x_105_ = lean_nat_add(v_fst_103_, v_snd_104_);
+return v___x_105_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair___boxed(lean_object* v_p_106_){
+_start:
+{
+lean_object* v_res_107_; 
+v_res_107_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair(v_p_106_);
+lean_dec_ref(v_p_106_);
+return v_res_107_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair__example___closed__1(void){
+_start:
+{
+lean_object* v___x_111_; lean_object* v___x_112_; 
+v___x_111_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair__example___closed__0));
+v___x_112_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair(v___x_111_);
+return v___x_112_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair__example(void){
+_start:
+{
+lean_object* v___x_113_; 
+v___x_113_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair__example___closed__1, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair__example___closed__1_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair__example___closed__1);
+return v___x_113_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap___redArg(lean_object* v_p_114_){
+_start:
+{
+lean_object* v_fst_115_; lean_object* v_snd_116_; lean_object* v___x_118_; uint8_t v_isShared_119_; uint8_t v_isSharedCheck_123_; 
+v_fst_115_ = lean_ctor_get(v_p_114_, 0);
+v_snd_116_ = lean_ctor_get(v_p_114_, 1);
+v_isSharedCheck_123_ = !lean_is_exclusive(v_p_114_);
+if (v_isSharedCheck_123_ == 0)
+{
+v___x_118_ = v_p_114_;
+v_isShared_119_ = v_isSharedCheck_123_;
+goto v_resetjp_117_;
+}
+else
+{
+lean_inc(v_snd_116_);
+lean_inc(v_fst_115_);
+lean_dec(v_p_114_);
+v___x_118_ = lean_box(0);
+v_isShared_119_ = v_isSharedCheck_123_;
+goto v_resetjp_117_;
+}
+v_resetjp_117_:
+{
+lean_object* v___x_121_; 
+if (v_isShared_119_ == 0)
+{
+lean_ctor_set(v___x_118_, 1, v_fst_115_);
+lean_ctor_set(v___x_118_, 0, v_snd_116_);
+v___x_121_ = v___x_118_;
+goto v_reusejp_120_;
+}
+else
+{
+lean_object* v_reuseFailAlloc_122_; 
+v_reuseFailAlloc_122_ = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(v_reuseFailAlloc_122_, 0, v_snd_116_);
+lean_ctor_set(v_reuseFailAlloc_122_, 1, v_fst_115_);
+v___x_121_ = v_reuseFailAlloc_122_;
+goto v_reusejp_120_;
+}
+v_reusejp_120_:
+{
+return v___x_121_;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap(lean_object* v_00_u03b1_124_, lean_object* v_00_u03b2_125_, lean_object* v_p_126_){
+_start:
+{
+lean_object* v___x_127_; 
+v___x_127_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap___redArg(v_p_126_);
+return v___x_127_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example___closed__2(void){
+_start:
+{
+lean_object* v___x_132_; lean_object* v___x_133_; 
+v___x_132_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example___closed__1));
+v___x_133_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap___redArg(v___x_132_);
+return v___x_133_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example(void){
+_start:
+{
+lean_object* v___x_134_; 
+v___x_134_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example___closed__2, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example___closed__2_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example___closed__2);
+return v___x_134_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple(lean_object* v_t_135_){
+_start:
+{
+lean_object* v_snd_136_; lean_object* v_fst_137_; lean_object* v_fst_138_; lean_object* v_snd_139_; lean_object* v___x_140_; lean_object* v___x_141_; 
+v_snd_136_ = lean_ctor_get(v_t_135_, 1);
+v_fst_137_ = lean_ctor_get(v_t_135_, 0);
+v_fst_138_ = lean_ctor_get(v_snd_136_, 0);
+v_snd_139_ = lean_ctor_get(v_snd_136_, 1);
+v___x_140_ = lean_nat_add(v_fst_137_, v_fst_138_);
+v___x_141_ = lean_nat_add(v___x_140_, v_snd_139_);
+lean_dec(v___x_140_);
+return v___x_141_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple___boxed(lean_object* v_t_142_){
+_start:
+{
+lean_object* v_res_143_; 
+v_res_143_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple(v_t_142_);
+lean_dec_ref(v_t_142_);
+return v_res_143_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example___closed__2(void){
+_start:
+{
+lean_object* v___x_150_; lean_object* v___x_151_; 
+v___x_150_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example___closed__1));
+v___x_151_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple(v___x_150_);
+return v___x_151_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example(void){
+_start:
+{
+lean_object* v___x_152_; 
+v___x_152_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example___closed__2, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example___closed__2_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example___closed__2);
+return v___x_152_;
+}
+}
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty___redArg(lean_object* v_l_153_){
+_start:
+{
+if (lean_obj_tag(v_l_153_) == 0)
+{
+uint8_t v___x_154_; 
+v___x_154_ = 1;
+return v___x_154_;
+}
+else
+{
+uint8_t v___x_155_; 
+v___x_155_ = 0;
+return v___x_155_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty___redArg___boxed(lean_object* v_l_156_){
+_start:
+{
+uint8_t v_res_157_; lean_object* v_r_158_; 
+v_res_157_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty___redArg(v_l_156_);
+lean_dec(v_l_156_);
+v_r_158_ = lean_box(v_res_157_);
+return v_r_158_;
+}
+}
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty(lean_object* v_00_u03b1_159_, lean_object* v_l_160_){
+_start:
+{
+uint8_t v___x_161_; 
+v___x_161_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty___redArg(v_l_160_);
+return v___x_161_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty___boxed(lean_object* v_00_u03b1_162_, lean_object* v_l_163_){
+_start:
+{
+uint8_t v_res_164_; lean_object* v_r_165_; 
+v_res_164_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty(v_00_u03b1_162_, v_l_163_);
+lean_dec(v_l_163_);
+v_r_165_ = lean_box(v_res_164_);
+return v_r_165_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__true___closed__0(void){
+_start:
+{
+lean_object* v___x_166_; uint8_t v___x_167_; 
+v___x_166_ = lean_box(0);
+v___x_167_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty___redArg(v___x_166_);
+return v___x_167_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__true(void){
+_start:
+{
+uint8_t v___x_168_; 
+v___x_168_ = lean_uint8_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__true___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__true___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__true___closed__0);
+return v___x_168_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__3(void){
+_start:
+{
+lean_object* v___x_178_; uint8_t v___x_179_; 
+v___x_178_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__2));
+v___x_179_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty___redArg(v___x_178_);
+return v___x_179_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false(void){
+_start:
+{
+uint8_t v___x_180_; 
+v___x_180_ = lean_uint8_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__3, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__3_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__3);
+return v___x_180_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head___redArg(lean_object* v_l_181_, lean_object* v_default_182_){
+_start:
+{
+if (lean_obj_tag(v_l_181_) == 0)
+{
+lean_inc(v_default_182_);
+return v_default_182_;
+}
+else
+{
+lean_object* v_head_183_; 
+v_head_183_ = lean_ctor_get(v_l_181_, 0);
+lean_inc(v_head_183_);
+return v_head_183_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head___redArg___boxed(lean_object* v_l_184_, lean_object* v_default_185_){
+_start:
+{
+lean_object* v_res_186_; 
+v_res_186_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head___redArg(v_l_184_, v_default_185_);
+lean_dec(v_default_185_);
+lean_dec(v_l_184_);
+return v_res_186_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head(lean_object* v_00_u03b1_187_, lean_object* v_l_188_, lean_object* v_default_189_){
+_start:
+{
+if (lean_obj_tag(v_l_188_) == 0)
+{
+lean_inc(v_default_189_);
+return v_default_189_;
+}
+else
+{
+lean_object* v_head_190_; 
+v_head_190_ = lean_ctor_get(v_l_188_, 0);
+lean_inc(v_head_190_);
+return v_head_190_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head___boxed(lean_object* v_00_u03b1_191_, lean_object* v_l_192_, lean_object* v_default_193_){
+_start:
+{
+lean_object* v_res_194_; 
+v_res_194_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head(v_00_u03b1_191_, v_l_192_, v_default_193_);
+lean_dec(v_default_193_);
+lean_dec(v_l_192_);
+return v_res_194_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__cons(void){
+_start:
+{
+lean_object* v___x_195_; 
+v___x_195_ = lean_unsigned_to_nat(1u);
+return v___x_195_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__nil(void){
+_start:
+{
+lean_object* v___x_196_; 
+v___x_196_ = lean_unsigned_to_nat(0u);
+return v___x_196_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_tail___redArg(lean_object* v_l_197_){
+_start:
+{
+if (lean_obj_tag(v_l_197_) == 0)
+{
+return v_l_197_;
+}
+else
+{
+lean_object* v_tail_198_; 
+v_tail_198_ = lean_ctor_get(v_l_197_, 1);
+lean_inc(v_tail_198_);
+return v_tail_198_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_tail___redArg___boxed(lean_object* v_l_199_){
+_start:
+{
+lean_object* v_res_200_; 
+v_res_200_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_tail___redArg(v_l_199_);
+lean_dec(v_l_199_);
+return v_res_200_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_tail(lean_object* v_00_u03b1_201_, lean_object* v_l_202_){
+_start:
+{
+if (lean_obj_tag(v_l_202_) == 0)
+{
+return v_l_202_;
+}
+else
+{
+lean_object* v_tail_203_; 
+v_tail_203_ = lean_ctor_get(v_l_202_, 1);
+lean_inc(v_tail_203_);
+return v_tail_203_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_tail___boxed(lean_object* v_00_u03b1_204_, lean_object* v_l_205_){
+_start:
+{
+lean_object* v_res_206_; 
+v_res_206_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_tail(v_00_u03b1_204_, v_l_205_);
+lean_dec(v_l_205_);
+return v_res_206_;
+}
+}
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty_x27___redArg(lean_object* v_l_208_){
+_start:
+{
+if (lean_obj_tag(v_l_208_) == 0)
+{
+uint8_t v___x_209_; 
+v___x_209_ = 1;
+return v___x_209_;
+}
+else
+{
+uint8_t v___x_210_; 
+v___x_210_ = 0;
+return v___x_210_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty_x27___redArg___boxed(lean_object* v_l_211_){
+_start:
+{
+uint8_t v_res_212_; lean_object* v_r_213_; 
+v_res_212_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty_x27___redArg(v_l_211_);
+lean_dec(v_l_211_);
+v_r_213_ = lean_box(v_res_212_);
+return v_r_213_;
+}
+}
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty_x27(lean_object* v_00_u03b1_214_, lean_object* v_l_215_){
+_start:
+{
+uint8_t v___x_216_; 
+v___x_216_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty_x27___redArg(v_l_215_);
+return v___x_216_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty_x27___boxed(lean_object* v_00_u03b1_217_, lean_object* v_l_218_){
+_start:
+{
+uint8_t v_res_219_; lean_object* v_r_220_; 
+v_res_219_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isEmpty_x27(v_00_u03b1_217_, v_l_218_);
+lean_dec(v_l_218_);
+v_r_220_ = lean_box(v_res_219_);
+return v_r_220_;
+}
+}
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isFirstZero(lean_object* v_l_221_){
+_start:
+{
+if (lean_obj_tag(v_l_221_) == 0)
+{
+uint8_t v___x_222_; 
+v___x_222_ = 0;
+return v___x_222_;
+}
+else
+{
+lean_object* v_head_223_; lean_object* v___x_224_; uint8_t v___x_225_; 
+v_head_223_ = lean_ctor_get(v_l_221_, 0);
+v___x_224_ = lean_unsigned_to_nat(0u);
+v___x_225_ = lean_nat_dec_eq(v_head_223_, v___x_224_);
+return v___x_225_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isFirstZero___boxed(lean_object* v_l_226_){
+_start:
+{
+uint8_t v_res_227_; lean_object* v_r_228_; 
+v_res_227_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isFirstZero(v_l_226_);
+lean_dec(v_l_226_);
+v_r_228_ = lean_box(v_res_227_);
+return v_r_228_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__3(void){
+_start:
+{
+lean_object* v___x_238_; uint8_t v___x_239_; 
+v___x_238_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__2));
+v___x_239_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isFirstZero(v___x_238_);
+return v___x_239_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true(void){
+_start:
+{
+uint8_t v___x_240_; 
+v___x_240_ = lean_uint8_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__3, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__3_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__3);
+return v___x_240_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__false___closed__0(void){
+_start:
+{
+lean_object* v___x_241_; uint8_t v___x_242_; 
+v___x_241_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__2));
+v___x_242_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isFirstZero(v___x_241_);
+return v___x_242_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__false(void){
+_start:
+{
+uint8_t v___x_243_; 
+v___x_243_ = lean_uint8_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__false___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__false___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__false___closed__0);
+return v___x_243_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare(lean_object* v_x_248_, lean_object* v_y_249_){
+_start:
+{
+lean_object* v___x_250_; uint8_t v___x_251_; 
+v___x_250_ = lean_unsigned_to_nat(0u);
+v___x_251_ = lean_nat_dec_eq(v_x_248_, v___x_250_);
+if (v___x_251_ == 0)
+{
+uint8_t v___x_252_; 
+v___x_252_ = lean_nat_dec_eq(v_y_249_, v___x_250_);
+if (v___x_252_ == 0)
+{
+lean_object* v___x_253_; 
+v___x_253_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___closed__0));
+return v___x_253_;
+}
+else
+{
+lean_object* v___x_254_; 
+v___x_254_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___closed__1));
+return v___x_254_;
+}
+}
+else
+{
+uint8_t v___x_255_; 
+v___x_255_ = lean_nat_dec_eq(v_y_249_, v___x_250_);
+if (v___x_255_ == 0)
+{
+lean_object* v___x_256_; 
+v___x_256_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___closed__2));
+return v___x_256_;
+}
+else
+{
+lean_object* v___x_257_; 
+v___x_257_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___closed__3));
+return v___x_257_;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare___boxed(lean_object* v_x_258_, lean_object* v_y_259_){
+_start:
+{
+lean_object* v_res_260_; 
+v_res_260_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare(v_x_258_, v_y_259_);
+lean_dec(v_y_259_);
+lean_dec(v_x_258_);
+return v_res_260_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp1___closed__0(void){
+_start:
+{
+lean_object* v___x_261_; lean_object* v___x_262_; 
+v___x_261_ = lean_unsigned_to_nat(0u);
+v___x_262_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare(v___x_261_, v___x_261_);
+return v___x_262_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp1(void){
+_start:
+{
+lean_object* v___x_263_; 
+v___x_263_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp1___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp1___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp1___closed__0);
+return v___x_263_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp2___closed__0(void){
+_start:
+{
+lean_object* v___x_264_; lean_object* v___x_265_; lean_object* v___x_266_; 
+v___x_264_ = lean_unsigned_to_nat(5u);
+v___x_265_ = lean_unsigned_to_nat(0u);
+v___x_266_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare(v___x_265_, v___x_264_);
+return v___x_266_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp2(void){
+_start:
+{
+lean_object* v___x_267_; 
+v___x_267_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp2___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp2___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp2___closed__0);
+return v___x_267_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp3___closed__0(void){
+_start:
+{
+lean_object* v___x_268_; lean_object* v___x_269_; lean_object* v___x_270_; 
+v___x_268_ = lean_unsigned_to_nat(0u);
+v___x_269_ = lean_unsigned_to_nat(5u);
+v___x_270_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare(v___x_269_, v___x_268_);
+return v___x_270_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp3(void){
+_start:
+{
+lean_object* v___x_271_; 
+v___x_271_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp3___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp3___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp3___closed__0);
+return v___x_271_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp4___closed__0(void){
+_start:
+{
+lean_object* v___x_272_; lean_object* v___x_273_; lean_object* v___x_274_; 
+v___x_272_ = lean_unsigned_to_nat(3u);
+v___x_273_ = lean_unsigned_to_nat(5u);
+v___x_274_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_compare(v___x_273_, v___x_272_);
+return v___x_274_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp4(void){
+_start:
+{
+lean_object* v___x_275_; 
+v___x_275_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp4___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp4___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp4___closed__0);
+return v___x_275_;
+}
+}
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor(uint8_t v_a_276_, uint8_t v_b_277_){
+_start:
+{
+if (v_a_276_ == 0)
+{
+if (v_b_277_ == 1)
+{
+return v_b_277_;
+}
+else
+{
+return v_a_276_;
+}
+}
+else
+{
+if (v_b_277_ == 0)
+{
+return v_a_276_;
+}
+else
+{
+uint8_t v___x_278_; 
+v___x_278_ = 0;
+return v___x_278_;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor___boxed(lean_object* v_a_279_, lean_object* v_b_280_){
+_start:
+{
+uint8_t v_a_boxed_281_; uint8_t v_b_boxed_282_; uint8_t v_res_283_; lean_object* v_r_284_; 
+v_a_boxed_281_ = lean_unbox(v_a_279_);
+v_b_boxed_282_ = lean_unbox(v_b_280_);
+v_res_283_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor(v_a_boxed_281_, v_b_boxed_282_);
+v_r_284_ = lean_box(v_res_283_);
+return v_r_284_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tf___closed__0(void){
+_start:
+{
+uint8_t v___x_285_; uint8_t v___x_286_; uint8_t v___x_287_; 
+v___x_285_ = 0;
+v___x_286_ = 1;
+v___x_287_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor(v___x_286_, v___x_285_);
+return v___x_287_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tf(void){
+_start:
+{
+uint8_t v___x_288_; 
+v___x_288_ = lean_uint8_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tf___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tf___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tf___closed__0);
+return v___x_288_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tt___closed__0(void){
+_start:
+{
+uint8_t v___x_289_; uint8_t v___x_290_; 
+v___x_289_ = 1;
+v___x_290_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor(v___x_289_, v___x_289_);
+return v___x_290_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tt(void){
+_start:
+{
+uint8_t v___x_291_; 
+v___x_291_ = lean_uint8_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tt___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tt___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tt___closed__0);
+return v___x_291_;
+}
+}
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isSingleton___redArg(lean_object* v_l_292_){
+_start:
+{
+if (lean_obj_tag(v_l_292_) == 1)
+{
+lean_object* v_tail_293_; 
+v_tail_293_ = lean_ctor_get(v_l_292_, 1);
+if (lean_obj_tag(v_tail_293_) == 0)
+{
+uint8_t v___x_294_; 
+v___x_294_ = 1;
+return v___x_294_;
+}
+else
+{
+uint8_t v___x_295_; 
+v___x_295_ = 0;
+return v___x_295_;
+}
+}
+else
+{
+uint8_t v___x_296_; 
+v___x_296_ = 0;
+return v___x_296_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isSingleton___redArg___boxed(lean_object* v_l_297_){
+_start:
+{
+uint8_t v_res_298_; lean_object* v_r_299_; 
+v_res_298_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isSingleton___redArg(v_l_297_);
+lean_dec(v_l_297_);
+v_r_299_ = lean_box(v_res_298_);
+return v_r_299_;
+}
+}
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isSingleton(lean_object* v_00_u03b1_300_, lean_object* v_l_301_){
+_start:
+{
+uint8_t v___x_302_; 
+v___x_302_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isSingleton___redArg(v_l_301_);
+return v___x_302_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isSingleton___boxed(lean_object* v_00_u03b1_303_, lean_object* v_l_304_){
+_start:
+{
+uint8_t v_res_305_; lean_object* v_r_306_; 
+v_res_305_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isSingleton(v_00_u03b1_303_, v_l_304_);
+lean_dec(v_l_304_);
+v_r_306_ = lean_box(v_res_305_);
+return v_r_306_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__true___closed__1(void){
+_start:
+{
+lean_object* v___x_310_; uint8_t v___x_311_; 
+v___x_310_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__true___closed__0));
+v___x_311_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isSingleton___redArg(v___x_310_);
+return v___x_311_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__true(void){
+_start:
+{
+uint8_t v___x_312_; 
+v___x_312_ = lean_uint8_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__true___closed__1, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__true___closed__1_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__true___closed__1);
+return v___x_312_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false1___closed__0(void){
+_start:
+{
+lean_object* v___x_313_; uint8_t v___x_314_; 
+v___x_313_ = lean_box(0);
+v___x_314_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isSingleton___redArg(v___x_313_);
+return v___x_314_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false1(void){
+_start:
+{
+uint8_t v___x_315_; 
+v___x_315_ = lean_uint8_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false1___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false1___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false1___closed__0);
+return v___x_315_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false2___closed__0(void){
+_start:
+{
+lean_object* v___x_316_; uint8_t v___x_317_; 
+v___x_316_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__1));
+v___x_317_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_isSingleton___redArg(v___x_316_);
+return v___x_317_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false2(void){
+_start:
+{
+uint8_t v___x_318_; 
+v___x_318_ = lean_uint8_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false2___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false2___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false2___closed__0);
+return v___x_318_;
+}
+}
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_hasTwoElements___redArg(lean_object* v_l_319_){
+_start:
+{
+if (lean_obj_tag(v_l_319_) == 1)
+{
+lean_object* v_tail_320_; 
+v_tail_320_ = lean_ctor_get(v_l_319_, 1);
+if (lean_obj_tag(v_tail_320_) == 1)
+{
+lean_object* v_tail_321_; 
+v_tail_321_ = lean_ctor_get(v_tail_320_, 1);
+if (lean_obj_tag(v_tail_321_) == 0)
+{
+uint8_t v___x_322_; 
+v___x_322_ = 1;
+return v___x_322_;
+}
+else
+{
+uint8_t v___x_323_; 
+v___x_323_ = 0;
+return v___x_323_;
+}
+}
+else
+{
+uint8_t v___x_324_; 
+v___x_324_ = 0;
+return v___x_324_;
+}
+}
+else
+{
+uint8_t v___x_325_; 
+v___x_325_ = 0;
+return v___x_325_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_hasTwoElements___redArg___boxed(lean_object* v_l_326_){
+_start:
+{
+uint8_t v_res_327_; lean_object* v_r_328_; 
+v_res_327_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_hasTwoElements___redArg(v_l_326_);
+lean_dec(v_l_326_);
+v_r_328_ = lean_box(v_res_327_);
+return v_r_328_;
+}
+}
+LEAN_EXPORT uint8_t lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_hasTwoElements(lean_object* v_00_u03b1_329_, lean_object* v_l_330_){
+_start:
+{
+uint8_t v___x_331_; 
+v___x_331_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_hasTwoElements___redArg(v_l_330_);
+return v___x_331_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_hasTwoElements___boxed(lean_object* v_00_u03b1_332_, lean_object* v_l_333_){
+_start:
+{
+uint8_t v_res_334_; lean_object* v_r_335_; 
+v_res_334_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_hasTwoElements(v_00_u03b1_332_, v_l_333_);
+lean_dec(v_l_333_);
+v_r_335_ = lean_box(v_res_334_);
+return v_r_335_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__true___closed__0(void){
+_start:
+{
+lean_object* v___x_336_; uint8_t v___x_337_; 
+v___x_336_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true___closed__1));
+v___x_337_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_hasTwoElements___redArg(v___x_336_);
+return v___x_337_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__true(void){
+_start:
+{
+uint8_t v___x_338_; 
+v___x_338_ = lean_uint8_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__true___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__true___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__true___closed__0);
+return v___x_338_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__false___closed__0(void){
+_start:
+{
+lean_object* v___x_339_; uint8_t v___x_340_; 
+v___x_339_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false___closed__2));
+v___x_340_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_hasTwoElements___redArg(v___x_339_);
+return v___x_340_;
+}
+}
+static uint8_t _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__false(void){
+_start:
+{
+uint8_t v___x_341_; 
+v___x_341_ = lean_uint8_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__false___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__false___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__false___closed__0);
+return v___x_341_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_firstTwoSum(lean_object* v_l_342_){
+_start:
+{
+if (lean_obj_tag(v_l_342_) == 0)
+{
+lean_object* v___x_343_; 
+v___x_343_ = lean_unsigned_to_nat(0u);
+return v___x_343_;
+}
+else
+{
+lean_object* v_tail_344_; 
+v_tail_344_ = lean_ctor_get(v_l_342_, 1);
+if (lean_obj_tag(v_tail_344_) == 0)
+{
+lean_object* v_head_345_; 
+v_head_345_ = lean_ctor_get(v_l_342_, 0);
+lean_inc(v_head_345_);
+return v_head_345_;
+}
+else
+{
+lean_object* v_head_346_; lean_object* v_head_347_; lean_object* v___x_348_; 
+v_head_346_ = lean_ctor_get(v_l_342_, 0);
+v_head_347_ = lean_ctor_get(v_tail_344_, 0);
+v___x_348_ = lean_nat_add(v_head_346_, v_head_347_);
+return v___x_348_;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_firstTwoSum___boxed(lean_object* v_l_349_){
+_start:
+{
+lean_object* v_res_350_; 
+v_res_350_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_firstTwoSum(v_l_349_);
+lean_dec(v_l_349_);
+return v_res_350_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two___closed__2(void){
+_start:
+{
+lean_object* v___x_357_; lean_object* v___x_358_; 
+v___x_357_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two___closed__1));
+v___x_358_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_firstTwoSum(v___x_357_);
+return v___x_358_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two(void){
+_start:
+{
+lean_object* v___x_359_; 
+v___x_359_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two___closed__2, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two___closed__2_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two___closed__2);
+return v___x_359_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__one___closed__1(void){
+_start:
+{
+lean_object* v___x_363_; lean_object* v___x_364_; 
+v___x_363_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__one___closed__0));
+v___x_364_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_firstTwoSum(v___x_363_);
+return v___x_364_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__one(void){
+_start:
+{
+lean_object* v___x_365_; 
+v___x_365_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__one___closed__1, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__one___closed__1_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__one___closed__1);
+return v___x_365_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__zero___closed__0(void){
+_start:
+{
+lean_object* v___x_366_; lean_object* v___x_367_; 
+v___x_366_ = lean_box(0);
+v___x_367_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_firstTwoSum(v___x_366_);
+return v___x_367_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__zero(void){
+_start:
+{
+lean_object* v___x_368_; 
+v___x_368_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__zero___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__zero___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__zero___closed__0);
+return v___x_368_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getOrZero(lean_object* v_opt_369_){
+_start:
+{
+if (lean_obj_tag(v_opt_369_) == 1)
+{
+lean_object* v_val_370_; 
+v_val_370_ = lean_ctor_get(v_opt_369_, 0);
+lean_inc(v_val_370_);
+return v_val_370_;
+}
+else
+{
+lean_object* v___x_371_; 
+v___x_371_ = lean_unsigned_to_nat(0u);
+return v___x_371_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getOrZero___boxed(lean_object* v_opt_372_){
+_start:
+{
+lean_object* v_res_373_; 
+v_res_373_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getOrZero(v_opt_372_);
+lean_dec(v_opt_372_);
+return v_res_373_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__some___closed__1(void){
+_start:
+{
+lean_object* v___x_376_; lean_object* v___x_377_; 
+v___x_376_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__some___closed__0));
+v___x_377_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getOrZero(v___x_376_);
+return v___x_377_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__some(void){
+_start:
+{
+lean_object* v___x_378_; 
+v___x_378_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__some___closed__1, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__some___closed__1_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__some___closed__1);
+return v___x_378_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__none___closed__0(void){
+_start:
+{
+lean_object* v___x_379_; lean_object* v___x_380_; 
+v___x_379_ = lean_box(0);
+v___x_380_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getOrZero(v___x_379_);
+return v___x_380_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__none(void){
+_start:
+{
+lean_object* v___x_381_; 
+v___x_381_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__none___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__none___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__none___closed__0);
+return v___x_381_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_headIfAny___redArg(lean_object* v_l_382_, lean_object* v_default_383_){
+_start:
+{
+if (lean_obj_tag(v_l_382_) == 1)
+{
+lean_object* v_head_384_; 
+v_head_384_ = lean_ctor_get(v_l_382_, 0);
+lean_inc(v_head_384_);
+return v_head_384_;
+}
+else
+{
+lean_inc(v_default_383_);
+return v_default_383_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_headIfAny___redArg___boxed(lean_object* v_l_385_, lean_object* v_default_386_){
+_start:
+{
+lean_object* v_res_387_; 
+v_res_387_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_headIfAny___redArg(v_l_385_, v_default_386_);
+lean_dec(v_default_386_);
+lean_dec(v_l_385_);
+return v_res_387_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_headIfAny(lean_object* v_00_u03b1_388_, lean_object* v_l_389_, lean_object* v_default_390_){
+_start:
+{
+if (lean_obj_tag(v_l_389_) == 1)
+{
+lean_object* v_head_391_; 
+v_head_391_ = lean_ctor_get(v_l_389_, 0);
+lean_inc(v_head_391_);
+return v_head_391_;
+}
+else
+{
+lean_inc(v_default_390_);
+return v_default_390_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_headIfAny___boxed(lean_object* v_00_u03b1_392_, lean_object* v_l_393_, lean_object* v_default_394_){
+_start:
+{
+lean_object* v_res_395_; 
+v_res_395_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_headIfAny(v_00_u03b1_392_, v_l_393_, v_default_394_);
+lean_dec(v_default_394_);
+lean_dec(v_l_393_);
+return v_res_395_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__if(void){
+_start:
+{
+lean_object* v___x_396_; 
+v___x_396_ = lean_unsigned_to_nat(1u);
+return v___x_396_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__else(void){
+_start:
+{
+lean_object* v___x_397_; 
+v___x_397_ = lean_unsigned_to_nat(0u);
+return v___x_397_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify(lean_object* v_n_401_){
+_start:
+{
+lean_object* v_zero_402_; uint8_t v_isZero_403_; 
+v_zero_402_ = lean_unsigned_to_nat(0u);
+v_isZero_403_ = lean_nat_dec_eq(v_n_401_, v_zero_402_);
+if (v_isZero_403_ == 1)
+{
+lean_object* v___x_404_; 
+v___x_404_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify___closed__0));
+return v___x_404_;
+}
+else
+{
+lean_object* v_one_405_; lean_object* v_n_406_; lean_object* v___x_407_; uint8_t v___x_408_; 
+v_one_405_ = lean_unsigned_to_nat(1u);
+v_n_406_ = lean_nat_sub(v_n_401_, v_one_405_);
+v___x_407_ = lean_unsigned_to_nat(5u);
+v___x_408_ = lean_nat_dec_lt(v_n_406_, v___x_407_);
+lean_dec(v_n_406_);
+if (v___x_408_ == 0)
+{
+lean_object* v___x_409_; 
+v___x_409_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify___closed__1));
+return v___x_409_;
+}
+else
+{
+lean_object* v___x_410_; 
+v___x_410_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify___closed__2));
+return v___x_410_;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify___boxed(lean_object* v_n_411_){
+_start:
+{
+lean_object* v_res_412_; 
+v_res_412_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify(v_n_411_);
+lean_dec(v_n_411_);
+return v_res_412_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__zero___closed__0(void){
+_start:
+{
+lean_object* v___x_413_; lean_object* v___x_414_; 
+v___x_413_ = lean_unsigned_to_nat(0u);
+v___x_414_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify(v___x_413_);
+return v___x_414_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__zero(void){
+_start:
+{
+lean_object* v___x_415_; 
+v___x_415_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__zero___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__zero___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__zero___closed__0);
+return v___x_415_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__small___closed__0(void){
+_start:
+{
+lean_object* v___x_416_; lean_object* v___x_417_; 
+v___x_416_ = lean_unsigned_to_nat(3u);
+v___x_417_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify(v___x_416_);
+return v___x_417_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__small(void){
+_start:
+{
+lean_object* v___x_418_; 
+v___x_418_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__small___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__small___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__small___closed__0);
+return v___x_418_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__large___closed__0(void){
+_start:
+{
+lean_object* v___x_419_; lean_object* v___x_420_; 
+v___x_419_ = lean_unsigned_to_nat(10u);
+v___x_420_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_classify(v___x_419_);
+return v___x_420_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__large(void){
+_start:
+{
+lean_object* v___x_421_; 
+v___x_421_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__large___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__large___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__large___closed__0);
+return v___x_421_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_safeHead___redArg(lean_object* v_l_422_){
+_start:
+{
+if (lean_obj_tag(v_l_422_) == 0)
+{
+lean_object* v___x_423_; 
+v___x_423_ = lean_box(0);
+return v___x_423_;
+}
+else
+{
+lean_object* v_head_424_; lean_object* v___x_425_; 
+v_head_424_ = lean_ctor_get(v_l_422_, 0);
+lean_inc(v_head_424_);
+v___x_425_ = lean_alloc_ctor(1, 1, 0);
+lean_ctor_set(v___x_425_, 0, v_head_424_);
+return v___x_425_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_safeHead___redArg___boxed(lean_object* v_l_426_){
+_start:
+{
+lean_object* v_res_427_; 
+v_res_427_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_safeHead___redArg(v_l_426_);
+lean_dec(v_l_426_);
+return v_res_427_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_safeHead(lean_object* v_00_u03b1_428_, lean_object* v_l_429_){
+_start:
+{
+lean_object* v___x_430_; 
+v___x_430_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_safeHead___redArg(v_l_429_);
+return v___x_430_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_safeHead___boxed(lean_object* v_00_u03b1_431_, lean_object* v_l_432_){
+_start:
+{
+lean_object* v_res_433_; 
+v_res_433_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_safeHead(v_00_u03b1_431_, v_l_432_);
+lean_dec(v_l_432_);
+return v_res_433_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorIdx(lean_object* v_x_434_){
+_start:
+{
+switch(lean_obj_tag(v_x_434_))
+{
+case 0:
+{
+lean_object* v___x_435_; 
+v___x_435_ = lean_unsigned_to_nat(0u);
+return v___x_435_;
+}
+case 1:
+{
+lean_object* v___x_436_; 
+v___x_436_ = lean_unsigned_to_nat(1u);
+return v___x_436_;
+}
+case 2:
+{
+lean_object* v___x_437_; 
+v___x_437_ = lean_unsigned_to_nat(2u);
+return v___x_437_;
+}
+default: 
+{
+lean_object* v___x_438_; 
+v___x_438_ = lean_unsigned_to_nat(3u);
+return v___x_438_;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorIdx___boxed(lean_object* v_x_439_){
+_start:
+{
+lean_object* v_res_440_; 
+v_res_440_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorIdx(v_x_439_);
+lean_dec(v_x_439_);
+return v_res_440_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorElim___redArg(lean_object* v_t_441_, lean_object* v_k_442_){
+_start:
+{
+if (lean_obj_tag(v_t_441_) == 3)
+{
+lean_object* v_r_443_; lean_object* v_g_444_; lean_object* v_b_445_; lean_object* v___x_446_; 
+v_r_443_ = lean_ctor_get(v_t_441_, 0);
+lean_inc(v_r_443_);
+v_g_444_ = lean_ctor_get(v_t_441_, 1);
+lean_inc(v_g_444_);
+v_b_445_ = lean_ctor_get(v_t_441_, 2);
+lean_inc(v_b_445_);
+lean_dec_ref_known(v_t_441_, 3);
+v___x_446_ = lean_apply_3(v_k_442_, v_r_443_, v_g_444_, v_b_445_);
+return v___x_446_;
+}
+else
+{
+lean_dec(v_t_441_);
+return v_k_442_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorElim(lean_object* v_motive_447_, lean_object* v_ctorIdx_448_, lean_object* v_t_449_, lean_object* v_h_450_, lean_object* v_k_451_){
+_start:
+{
+lean_object* v___x_452_; 
+v___x_452_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorElim___redArg(v_t_449_, v_k_451_);
+return v___x_452_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorElim___boxed(lean_object* v_motive_453_, lean_object* v_ctorIdx_454_, lean_object* v_t_455_, lean_object* v_h_456_, lean_object* v_k_457_){
+_start:
+{
+lean_object* v_res_458_; 
+v_res_458_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorElim(v_motive_453_, v_ctorIdx_454_, v_t_455_, v_h_456_, v_k_457_);
+lean_dec(v_ctorIdx_454_);
+return v_res_458_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_red_elim___redArg(lean_object* v_t_459_, lean_object* v_red_460_){
+_start:
+{
+lean_object* v___x_461_; 
+v___x_461_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorElim___redArg(v_t_459_, v_red_460_);
+return v___x_461_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_red_elim(lean_object* v_motive_462_, lean_object* v_t_463_, lean_object* v_h_464_, lean_object* v_red_465_){
+_start:
+{
+lean_object* v___x_466_; 
+v___x_466_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorElim___redArg(v_t_463_, v_red_465_);
+return v___x_466_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_green_elim___redArg(lean_object* v_t_467_, lean_object* v_green_468_){
+_start:
+{
+lean_object* v___x_469_; 
+v___x_469_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorElim___redArg(v_t_467_, v_green_468_);
+return v___x_469_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_green_elim(lean_object* v_motive_470_, lean_object* v_t_471_, lean_object* v_h_472_, lean_object* v_green_473_){
+_start:
+{
+lean_object* v___x_474_; 
+v___x_474_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorElim___redArg(v_t_471_, v_green_473_);
+return v___x_474_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_blue_elim___redArg(lean_object* v_t_475_, lean_object* v_blue_476_){
+_start:
+{
+lean_object* v___x_477_; 
+v___x_477_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorElim___redArg(v_t_475_, v_blue_476_);
+return v___x_477_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_blue_elim(lean_object* v_motive_478_, lean_object* v_t_479_, lean_object* v_h_480_, lean_object* v_blue_481_){
+_start:
+{
+lean_object* v___x_482_; 
+v___x_482_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorElim___redArg(v_t_479_, v_blue_481_);
+return v___x_482_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_rgb_elim___redArg(lean_object* v_t_483_, lean_object* v_rgb_484_){
+_start:
+{
+lean_object* v___x_485_; 
+v___x_485_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorElim___redArg(v_t_483_, v_rgb_484_);
+return v___x_485_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_rgb_elim(lean_object* v_motive_486_, lean_object* v_t_487_, lean_object* v_h_488_, lean_object* v_rgb_489_){
+_start:
+{
+lean_object* v___x_490_; 
+v___x_490_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_Color_ctorElim___redArg(v_t_487_, v_rgb_489_);
+return v___x_490_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__6(void){
+_start:
+{
+lean_object* v___x_500_; lean_object* v___x_501_; 
+v___x_500_ = lean_unsigned_to_nat(2u);
+v___x_501_ = lean_nat_to_int(v___x_500_);
+return v___x_501_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__7(void){
+_start:
+{
+lean_object* v___x_502_; lean_object* v___x_503_; 
+v___x_502_ = lean_unsigned_to_nat(1u);
+v___x_503_ = lean_nat_to_int(v___x_502_);
+return v___x_503_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr(lean_object* v_x_510_, lean_object* v_prec_511_){
+_start:
+{
+lean_object* v___y_513_; lean_object* v___y_520_; lean_object* v___y_527_; 
+switch(lean_obj_tag(v_x_510_))
+{
+case 0:
+{
+lean_object* v___x_533_; uint8_t v___x_534_; 
+v___x_533_ = lean_unsigned_to_nat(1024u);
+v___x_534_ = lean_nat_dec_le(v___x_533_, v_prec_511_);
+if (v___x_534_ == 0)
+{
+lean_object* v___x_535_; 
+v___x_535_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__6, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__6_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__6);
+v___y_527_ = v___x_535_;
+goto v___jp_526_;
+}
+else
+{
+lean_object* v___x_536_; 
+v___x_536_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__7, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__7_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__7);
+v___y_527_ = v___x_536_;
+goto v___jp_526_;
+}
+}
+case 1:
+{
+lean_object* v___x_537_; uint8_t v___x_538_; 
+v___x_537_ = lean_unsigned_to_nat(1024u);
+v___x_538_ = lean_nat_dec_le(v___x_537_, v_prec_511_);
+if (v___x_538_ == 0)
+{
+lean_object* v___x_539_; 
+v___x_539_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__6, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__6_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__6);
+v___y_520_ = v___x_539_;
+goto v___jp_519_;
+}
+else
+{
+lean_object* v___x_540_; 
+v___x_540_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__7, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__7_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__7);
+v___y_520_ = v___x_540_;
+goto v___jp_519_;
+}
+}
+case 2:
+{
+lean_object* v___x_541_; uint8_t v___x_542_; 
+v___x_541_ = lean_unsigned_to_nat(1024u);
+v___x_542_ = lean_nat_dec_le(v___x_541_, v_prec_511_);
+if (v___x_542_ == 0)
+{
+lean_object* v___x_543_; 
+v___x_543_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__6, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__6_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__6);
+v___y_513_ = v___x_543_;
+goto v___jp_512_;
+}
+else
+{
+lean_object* v___x_544_; 
+v___x_544_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__7, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__7_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__7);
+v___y_513_ = v___x_544_;
+goto v___jp_512_;
+}
+}
+default: 
+{
+lean_object* v_r_545_; lean_object* v_g_546_; lean_object* v_b_547_; lean_object* v___y_549_; lean_object* v___x_567_; uint8_t v___x_568_; 
+v_r_545_ = lean_ctor_get(v_x_510_, 0);
+lean_inc(v_r_545_);
+v_g_546_ = lean_ctor_get(v_x_510_, 1);
+lean_inc(v_g_546_);
+v_b_547_ = lean_ctor_get(v_x_510_, 2);
+lean_inc(v_b_547_);
+lean_dec_ref_known(v_x_510_, 3);
+v___x_567_ = lean_unsigned_to_nat(1024u);
+v___x_568_ = lean_nat_dec_le(v___x_567_, v_prec_511_);
+if (v___x_568_ == 0)
+{
+lean_object* v___x_569_; 
+v___x_569_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__6, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__6_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__6);
+v___y_549_ = v___x_569_;
+goto v___jp_548_;
+}
+else
+{
+lean_object* v___x_570_; 
+v___x_570_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__7, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__7_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__7);
+v___y_549_ = v___x_570_;
+goto v___jp_548_;
+}
+v___jp_548_:
+{
+lean_object* v___x_550_; lean_object* v___x_551_; lean_object* v___x_552_; lean_object* v___x_553_; lean_object* v___x_554_; lean_object* v___x_555_; lean_object* v___x_556_; lean_object* v___x_557_; lean_object* v___x_558_; lean_object* v___x_559_; lean_object* v___x_560_; lean_object* v___x_561_; lean_object* v___x_562_; lean_object* v___x_563_; uint8_t v___x_564_; lean_object* v___x_565_; lean_object* v___x_566_; 
+v___x_550_ = lean_box(1);
+v___x_551_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__10));
+v___x_552_ = l_Nat_reprFast(v_r_545_);
+v___x_553_ = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(v___x_553_, 0, v___x_552_);
+v___x_554_ = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(v___x_554_, 0, v___x_551_);
+lean_ctor_set(v___x_554_, 1, v___x_553_);
+v___x_555_ = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(v___x_555_, 0, v___x_554_);
+lean_ctor_set(v___x_555_, 1, v___x_550_);
+v___x_556_ = l_Nat_reprFast(v_g_546_);
+v___x_557_ = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(v___x_557_, 0, v___x_556_);
+v___x_558_ = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(v___x_558_, 0, v___x_555_);
+lean_ctor_set(v___x_558_, 1, v___x_557_);
+v___x_559_ = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(v___x_559_, 0, v___x_558_);
+lean_ctor_set(v___x_559_, 1, v___x_550_);
+v___x_560_ = l_Nat_reprFast(v_b_547_);
+v___x_561_ = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(v___x_561_, 0, v___x_560_);
+v___x_562_ = lean_alloc_ctor(5, 2, 0);
+lean_ctor_set(v___x_562_, 0, v___x_559_);
+lean_ctor_set(v___x_562_, 1, v___x_561_);
+lean_inc(v___y_549_);
+v___x_563_ = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(v___x_563_, 0, v___y_549_);
+lean_ctor_set(v___x_563_, 1, v___x_562_);
+v___x_564_ = 0;
+v___x_565_ = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(v___x_565_, 0, v___x_563_);
+lean_ctor_set_uint8(v___x_565_, sizeof(void*)*1, v___x_564_);
+v___x_566_ = l_Repr_addAppParen(v___x_565_, v_prec_511_);
+return v___x_566_;
+}
+}
+}
+v___jp_512_:
+{
+lean_object* v___x_514_; lean_object* v___x_515_; uint8_t v___x_516_; lean_object* v___x_517_; lean_object* v___x_518_; 
+v___x_514_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__1));
+lean_inc(v___y_513_);
+v___x_515_ = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(v___x_515_, 0, v___y_513_);
+lean_ctor_set(v___x_515_, 1, v___x_514_);
+v___x_516_ = 0;
+v___x_517_ = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(v___x_517_, 0, v___x_515_);
+lean_ctor_set_uint8(v___x_517_, sizeof(void*)*1, v___x_516_);
+v___x_518_ = l_Repr_addAppParen(v___x_517_, v_prec_511_);
+return v___x_518_;
+}
+v___jp_519_:
+{
+lean_object* v___x_521_; lean_object* v___x_522_; uint8_t v___x_523_; lean_object* v___x_524_; lean_object* v___x_525_; 
+v___x_521_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__3));
+lean_inc(v___y_520_);
+v___x_522_ = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(v___x_522_, 0, v___y_520_);
+lean_ctor_set(v___x_522_, 1, v___x_521_);
+v___x_523_ = 0;
+v___x_524_ = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(v___x_524_, 0, v___x_522_);
+lean_ctor_set_uint8(v___x_524_, sizeof(void*)*1, v___x_523_);
+v___x_525_ = l_Repr_addAppParen(v___x_524_, v_prec_511_);
+return v___x_525_;
+}
+v___jp_526_:
+{
+lean_object* v___x_528_; lean_object* v___x_529_; uint8_t v___x_530_; lean_object* v___x_531_; lean_object* v___x_532_; 
+v___x_528_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___closed__5));
+lean_inc(v___y_527_);
+v___x_529_ = lean_alloc_ctor(4, 2, 0);
+lean_ctor_set(v___x_529_, 0, v___y_527_);
+lean_ctor_set(v___x_529_, 1, v___x_528_);
+v___x_530_ = 0;
+v___x_531_ = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(v___x_531_, 0, v___x_529_);
+lean_ctor_set_uint8(v___x_531_, sizeof(void*)*1, v___x_530_);
+v___x_532_ = l_Repr_addAppParen(v___x_531_, v_prec_511_);
+return v___x_532_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr___boxed(lean_object* v_x_571_, lean_object* v_prec_572_){
+_start:
+{
+lean_object* v_res_573_; 
+v_res_573_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_instReprColor_repr(v_x_571_, v_prec_572_);
+lean_dec(v_prec_572_);
+return v_res_573_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName(lean_object* v_c_580_){
+_start:
+{
+switch(lean_obj_tag(v_c_580_))
+{
+case 0:
+{
+lean_object* v___x_581_; 
+v___x_581_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___closed__0));
+return v___x_581_;
+}
+case 1:
+{
+lean_object* v___x_582_; 
+v___x_582_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___closed__1));
+return v___x_582_;
+}
+case 2:
+{
+lean_object* v___x_583_; 
+v___x_583_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___closed__2));
+return v___x_583_;
+}
+default: 
+{
+lean_object* v___x_584_; 
+v___x_584_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___closed__3));
+return v___x_584_;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName___boxed(lean_object* v_c_585_){
+_start:
+{
+lean_object* v_res_586_; 
+v_res_586_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName(v_c_585_);
+lean_dec(v_c_585_);
+return v_res_586_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__red___closed__0(void){
+_start:
+{
+lean_object* v___x_587_; lean_object* v___x_588_; 
+v___x_587_ = lean_box(0);
+v___x_588_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName(v___x_587_);
+return v___x_588_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__red(void){
+_start:
+{
+lean_object* v___x_589_; 
+v___x_589_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__red___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__red___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__red___closed__0);
+return v___x_589_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__rgb___closed__1(void){
+_start:
+{
+lean_object* v___x_594_; lean_object* v___x_595_; 
+v___x_594_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__rgb___closed__0));
+v___x_595_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_colorName(v___x_594_);
+return v___x_595_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__rgb(void){
+_start:
+{
+lean_object* v___x_596_; 
+v___x_596_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__rgb___closed__1, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__rgb___closed__1_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__rgb___closed__1);
+return v___x_596_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_brightness(lean_object* v_c_597_){
+_start:
+{
+switch(lean_obj_tag(v_c_597_))
+{
+case 0:
+{
+lean_object* v___x_598_; 
+v___x_598_ = lean_unsigned_to_nat(200u);
+return v___x_598_;
+}
+case 1:
+{
+lean_object* v___x_599_; 
+v___x_599_ = lean_unsigned_to_nat(180u);
+return v___x_599_;
+}
+case 2:
+{
+lean_object* v___x_600_; 
+v___x_600_ = lean_unsigned_to_nat(150u);
+return v___x_600_;
+}
+default: 
+{
+lean_object* v_r_601_; lean_object* v_g_602_; lean_object* v_b_603_; lean_object* v___x_604_; lean_object* v___x_605_; lean_object* v___x_606_; lean_object* v___x_607_; 
+v_r_601_ = lean_ctor_get(v_c_597_, 0);
+v_g_602_ = lean_ctor_get(v_c_597_, 1);
+v_b_603_ = lean_ctor_get(v_c_597_, 2);
+v___x_604_ = lean_nat_add(v_r_601_, v_g_602_);
+v___x_605_ = lean_nat_add(v___x_604_, v_b_603_);
+lean_dec(v___x_604_);
+v___x_606_ = lean_unsigned_to_nat(3u);
+v___x_607_ = lean_nat_div(v___x_605_, v___x_606_);
+lean_dec(v___x_605_);
+return v___x_607_;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_brightness___boxed(lean_object* v_c_608_){
+_start:
+{
+lean_object* v_res_609_; 
+v_res_609_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_brightness(v_c_608_);
+lean_dec(v_c_608_);
+return v_res_609_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__red___closed__0(void){
+_start:
+{
+lean_object* v___x_610_; lean_object* v___x_611_; 
+v___x_610_ = lean_box(0);
+v___x_611_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_brightness(v___x_610_);
+return v___x_611_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__red(void){
+_start:
+{
+lean_object* v___x_612_; 
+v___x_612_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__red___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__red___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__red___closed__0);
+return v___x_612_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__rgb___closed__0(void){
+_start:
+{
+lean_object* v___x_613_; lean_object* v___x_614_; 
+v___x_613_ = ((lean_object*)(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__rgb___closed__0));
+v___x_614_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_brightness(v___x_613_);
+return v___x_614_;
+}
+}
+static lean_object* _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__rgb(void){
+_start:
+{
+lean_object* v___x_615_; 
+v___x_615_ = lean_obj_once(&lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__rgb___closed__0, &lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__rgb___closed__0_once, _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__rgb___closed__0);
+return v___x_615_;
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_complete__match(uint8_t v_b_616_){
+_start:
+{
+if (v_b_616_ == 0)
+{
+lean_object* v___x_617_; 
+v___x_617_ = lean_unsigned_to_nat(0u);
+return v___x_617_;
+}
+else
+{
+lean_object* v___x_618_; 
+v___x_618_ = lean_unsigned_to_nat(1u);
+return v___x_618_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_complete__match___boxed(lean_object* v_b_619_){
+_start:
+{
+uint8_t v_b_boxed_620_; lean_object* v_res_621_; 
+v_b_boxed_620_ = lean_unbox(v_b_619_);
+v_res_621_ = lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_complete__match(v_b_boxed_620_);
+return v_res_621_;
+}
+}
+lean_object* initialize_Init(uint8_t builtin);
+lean_object* initialize_Init(uint8_t builtin);
+static bool _G_initialized = false;
+LEAN_EXPORT lean_object* initialize_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics(uint8_t builtin) {
+lean_object * res;
+if (_G_initialized) return lean_io_result_mk_ok(lean_box(0));
+_G_initialized = true;
+res = initialize_Init(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Init(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_zero__true = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_zero__true();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_one__false = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_one__false();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_five__false = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_five__false();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__zero = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__zero();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__zero);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__five = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__five();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_pred__five);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__true = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__true();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__false = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_not__false();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_and__tt = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_and__tt();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_and__tf = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_and__tf();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_and__ff = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_and__ff();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_default__some = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_default__some();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_default__some);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_default__none = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_default__none();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_default__none);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__some);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__none = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__none();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_map__none);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair__example = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair__example();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_add__pair__example);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_swap__example);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__triple__example);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__true = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__true();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_empty__false();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__cons = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__cons();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__cons);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__nil = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__nil();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__nil);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__true();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__false = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_first__zero__false();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp1 = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp1();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp1);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp2 = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp2();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp2);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp3 = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp3();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp3);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp4 = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp4();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_cmp4);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tf = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tf();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tt = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_xor__tt();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__true = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__true();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false1 = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false1();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false2 = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_singleton__false2();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__true = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__true();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__false = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_two__false();
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__two);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__one = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__one();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__one);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__zero = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__zero();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_sum__zero);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__some = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__some();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__some);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__none = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__none();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_getor__none);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__if = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__if();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__if);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__else = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__else();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_head__else);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__zero = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__zero();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__zero);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__small = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__small();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__small);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__large = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__large();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_class__large);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__red = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__red();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__red);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__rgb = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__rgb();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_name__rgb);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__red = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__red();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__red);
+lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__rgb = _init_lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__rgb();
+lean_mark_persistent(lp_lean4_x2dtutorial_Lean4Tutorial_Examples_PatternMatching_MatchBasics_bright__rgb);
+return lean_io_result_mk_ok(lean_box(0));
+}
+#ifdef __cplusplus
+}
+#endif

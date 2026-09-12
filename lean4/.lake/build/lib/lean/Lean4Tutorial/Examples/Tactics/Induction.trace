@@ -1,0 +1,55 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["b7fa1c3f47f9dc18.olean"],
+  "m": false,
+  "i": "6f154b3a8a65ce89.ilean",
+  "c": "353d7e5a80221f91.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=G:\\code\\guide\\lean4\\.lake\\build\\lib\\lean g:\\lean\\toolchains\\leanprover--lean4---v4.33.1\\bin\\lean.exe G:\\code\\guide\\lean4\\Lean4Tutorial\\Examples\\Tactics\\Induction.lean -o G:\\code\\guide\\lean4\\.lake\\build\\lib\\lean\\Lean4Tutorial\\Examples\\Tactics\\Induction.olean -i G:\\code\\guide\\lean4\\.lake\\build\\lib\\lean\\Lean4Tutorial\\Examples\\Tactics\\Induction.ilean -c G:\\code\\guide\\lean4\\.lake\\build\\ir\\Lean4Tutorial\\Examples\\Tactics\\Induction.c --setup G:\\code\\guide\\lean4\\.lake\\build\\ir\\Lean4Tutorial\\Examples\\Tactics\\Induction.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "Lean4Tutorial/Examples/Tactics/Induction.lean:40:10: This simp argument is unused:\n  ih\n\nHint: Omit it from the simp argument list.\n  [apply] simp\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "Lean4Tutorial/Examples/Tactics/Induction.lean:54:6: Try this:\n  [apply] exact Nat.succ_add n m",
+   "level": "info"},
+  {"message":
+   "Lean4Tutorial/Examples/Tactics/Induction.lean:56:6: Try this:\n  [apply] exact add_zero (m.add n).succ",
+   "level": "info"},
+  {"message":
+   "Lean4Tutorial/Examples/Tactics/Induction.lean:49:10: This simp argument is unused:\n  zero_add\n\nHint: Omit it from the simp argument list.\n  [apply] simp [add_zero]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "Lean4Tutorial/Examples/Tactics/Induction.lean:49:20: This simp argument is unused:\n  add_zero\n\nHint: Omit it from the simp argument list.\n  [apply] simp [zero_add]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "Lean4Tutorial/Examples/Tactics/Induction.lean:62:8: declaration uses `sorry`",
+   "level": "warning"},
+  {"message":
+   "Lean4Tutorial/Examples/Tactics/Induction.lean:80:24: This simp argument is unused:\n  ih\n\nHint: Omit it from the simp argument list.\n  [apply] simp [Nat.mul_succ, Nat.succ_add]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "Lean4Tutorial/Examples/Tactics/Induction.lean:111:8: declaration uses `sorry`",
+   "level": "warning"}],
+ "inputs":
+ [["deps",
+   [["«lean4-tutorial»/Lean4Tutorial:extraDep",
+     [["@«lean4-tutorial»:extraDep", "00000000000006bb"]]],
+    ["imports", "00000000000006bb"]]],
+  ["libs",
+   [["import dynlibs", "00000000000006bb"],
+    ["package external libraries", "00000000000006bb"],
+    ["module dynlibs", "00000000000006bb"],
+    ["module plugins", "00000000000006bb"]]],
+  ["Lean 4.33.1, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6",
+   "0051240b7c23c453"],
+  ["G:\\code\\guide\\lean4\\Lean4Tutorial\\Examples\\Tactics\\Induction.lean",
+   "57ad3d76a58e39c5"],
+  ["options", "00000000000006bb"],
+  ["isModule: false", "feefd2a0d3a1847e"],
+  ["Module.name: Lean4Tutorial.Examples.Tactics.Induction", "1eee12600df6721a"],
+  ["Package.id?: (some lean4-tutorial)", "ff0406450144e43f"],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "65450dcf018c4bb4"}

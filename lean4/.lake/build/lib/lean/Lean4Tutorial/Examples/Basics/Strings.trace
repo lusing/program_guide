@@ -1,0 +1,31 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["798e51c3f2cbc10f.olean"],
+  "m": false,
+  "i": "352f4da8d562b267.ilean",
+  "c": "f5b3baa5b48a1094.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=G:\\code\\guide\\lean4\\.lake\\build\\lib\\lean g:\\lean\\toolchains\\leanprover--lean4---v4.33.1\\bin\\lean.exe G:\\code\\guide\\lean4\\Lean4Tutorial\\Examples\\Basics\\Strings.lean -o G:\\code\\guide\\lean4\\.lake\\build\\lib\\lean\\Lean4Tutorial\\Examples\\Basics\\Strings.olean -i G:\\code\\guide\\lean4\\.lake\\build\\lib\\lean\\Lean4Tutorial\\Examples\\Basics\\Strings.ilean -c G:\\code\\guide\\lean4\\.lake\\build\\ir\\Lean4Tutorial\\Examples\\Basics\\Strings.c --setup G:\\code\\guide\\lean4\\.lake\\build\\ir\\Lean4Tutorial\\Examples\\Basics\\Strings.setup.json --json",
+   "level": "trace"}],
+ "inputs":
+ [["deps",
+   [["«lean4-tutorial»/Lean4Tutorial:extraDep",
+     [["@«lean4-tutorial»:extraDep", "00000000000006bb"]]],
+    ["imports", "00000000000006bb"]]],
+  ["libs",
+   [["import dynlibs", "00000000000006bb"],
+    ["package external libraries", "00000000000006bb"],
+    ["module dynlibs", "00000000000006bb"],
+    ["module plugins", "00000000000006bb"]]],
+  ["Lean 4.33.1, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6",
+   "0051240b7c23c453"],
+  ["G:\\code\\guide\\lean4\\Lean4Tutorial\\Examples\\Basics\\Strings.lean",
+   "1f6eb9649f0dd617"],
+  ["options", "00000000000006bb"],
+  ["isModule: false", "feefd2a0d3a1847e"],
+  ["Module.name: Lean4Tutorial.Examples.Basics.Strings", "0d438f4d96ec519a"],
+  ["Package.id?: (some lean4-tutorial)", "ff0406450144e43f"],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "c4fcb4b94fc14016"}

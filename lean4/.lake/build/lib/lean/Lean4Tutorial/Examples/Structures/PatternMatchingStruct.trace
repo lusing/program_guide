@@ -1,0 +1,38 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["7eec8727fec0dbc3.olean"],
+  "m": false,
+  "i": "35173edd2519f027.ilean",
+  "c": "29d26ce5db36518c.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=G:\\code\\guide\\lean4\\.lake\\build\\lib\\lean g:\\lean\\toolchains\\leanprover--lean4---v4.33.1\\bin\\lean.exe G:\\code\\guide\\lean4\\Lean4Tutorial\\Examples\\Structures\\PatternMatchingStruct.lean -o G:\\code\\guide\\lean4\\.lake\\build\\lib\\lean\\Lean4Tutorial\\Examples\\Structures\\PatternMatchingStruct.olean -i G:\\code\\guide\\lean4\\.lake\\build\\lib\\lean\\Lean4Tutorial\\Examples\\Structures\\PatternMatchingStruct.ilean -c G:\\code\\guide\\lean4\\.lake\\build\\ir\\Lean4Tutorial\\Examples\\Structures\\PatternMatchingStruct.c --setup G:\\code\\guide\\lean4\\.lake\\build\\ir\\Lean4Tutorial\\Examples\\Structures\\PatternMatchingStruct.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "Lean4Tutorial/Examples/Structures/PatternMatchingStruct.lean:251:8: declaration uses `sorry`",
+   "level": "warning"},
+  {"message":
+   "Lean4Tutorial/Examples/Structures/PatternMatchingStruct.lean:310:4: Variable name `p'` is not explicitly referenced.\n\nHint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:\n  [apply] _p'\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"}],
+ "inputs":
+ [["deps",
+   [["«lean4-tutorial»/Lean4Tutorial:extraDep",
+     [["@«lean4-tutorial»:extraDep", "00000000000006bb"]]],
+    ["imports", "00000000000006bb"]]],
+  ["libs",
+   [["import dynlibs", "00000000000006bb"],
+    ["package external libraries", "00000000000006bb"],
+    ["module dynlibs", "00000000000006bb"],
+    ["module plugins", "00000000000006bb"]]],
+  ["Lean 4.33.1, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6",
+   "0051240b7c23c453"],
+  ["G:\\code\\guide\\lean4\\Lean4Tutorial\\Examples\\Structures\\PatternMatchingStruct.lean",
+   "e7afb600793511b8"],
+  ["options", "00000000000006bb"],
+  ["isModule: false", "feefd2a0d3a1847e"],
+  ["Module.name: Lean4Tutorial.Examples.Structures.PatternMatchingStruct",
+   "bbe4dbe213c7ac96"],
+  ["Package.id?: (some lean4-tutorial)", "ff0406450144e43f"],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "69e27e07ac5bcd3b"}

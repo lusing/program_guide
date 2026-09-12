@@ -1,0 +1,7 @@
+{"plugins": [],
+ "package": "lean4-tutorial",
+ "options": {},
+ "name": "Lean4Tutorial.Examples.InductiveTypes.DependentTypes",
+ "isModule": false,
+ "importArts": {},
+ "dynlibs": []}

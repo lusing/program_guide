@@ -1,0 +1,7 @@
+{"plugins": [],
+ "package": "lean4-tutorial",
+ "options": {},
+ "name": "Lean4Tutorial.Examples.Structures.PatternMatchingStruct",
+ "isModule": false,
+ "importArts": {},
+ "dynlibs": []}

@@ -1,0 +1,38 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["decb90f8dac2d927.olean"],
+  "m": false,
+  "i": "51f4653fb8eee6ec.ilean",
+  "c": "914054d21fe5244c.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=G:\\code\\guide\\lean4\\.lake\\build\\lib\\lean g:\\lean\\toolchains\\leanprover--lean4---v4.33.1\\bin\\lean.exe G:\\code\\guide\\lean4\\Lean4Tutorial\\Examples\\Typeclasses\\OperatorOverloading.lean -o G:\\code\\guide\\lean4\\.lake\\build\\lib\\lean\\Lean4Tutorial\\Examples\\Typeclasses\\OperatorOverloading.olean -i G:\\code\\guide\\lean4\\.lake\\build\\lib\\lean\\Lean4Tutorial\\Examples\\Typeclasses\\OperatorOverloading.ilean -c G:\\code\\guide\\lean4\\.lake\\build\\ir\\Lean4Tutorial\\Examples\\Typeclasses\\OperatorOverloading.c --setup G:\\code\\guide\\lean4\\.lake\\build\\ir\\Lean4Tutorial\\Examples\\Typeclasses\\OperatorOverloading.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "Lean4Tutorial/Examples/Typeclasses/OperatorOverloading.lean:56:8: declaration uses `sorry`",
+   "level": "warning"},
+  {"message":
+   "Lean4Tutorial/Examples/Typeclasses/OperatorOverloading.lean:59:8: declaration uses `sorry`",
+   "level": "warning"}],
+ "inputs":
+ [["deps",
+   [["«lean4-tutorial»/Lean4Tutorial:extraDep",
+     [["@«lean4-tutorial»:extraDep", "00000000000006bb"]]],
+    ["imports", "00000000000006bb"]]],
+  ["libs",
+   [["import dynlibs", "00000000000006bb"],
+    ["package external libraries", "00000000000006bb"],
+    ["module dynlibs", "00000000000006bb"],
+    ["module plugins", "00000000000006bb"]]],
+  ["Lean 4.33.1, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6",
+   "0051240b7c23c453"],
+  ["G:\\code\\guide\\lean4\\Lean4Tutorial\\Examples\\Typeclasses\\OperatorOverloading.lean",
+   "f2bbd73e93f13773"],
+  ["options", "00000000000006bb"],
+  ["isModule: false", "feefd2a0d3a1847e"],
+  ["Module.name: Lean4Tutorial.Examples.Typeclasses.OperatorOverloading",
+   "3ee6809446e3be29"],
+  ["Package.id?: (some lean4-tutorial)", "ff0406450144e43f"],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "ea09f6232b1eaa54"}
