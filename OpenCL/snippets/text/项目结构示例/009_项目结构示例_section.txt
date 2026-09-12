@@ -1,0 +1,13 @@
+OpenCLProjects/
+├── CMakeLists.txt
+├── include/
+│   └── CL/
+│       ├── cl.h
+│       ├── cl_ext.h
+│       └── cl_platform.h
+├── src/
+│   ├── main.c
+│   └── utils.c
+└── lib/
+    └── x64/
+        └── OpenCL.lib

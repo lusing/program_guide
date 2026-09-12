@@ -1,0 +1,11 @@
+Platform (平台)
+├── Device 1 (设备1 - CPU/GPU)
+│   ├── Compute Unit 1 (计算单元1)
+│   │   ├── work-group 0 (工作组0)
+│   │   ├── work-group 1 (工作组1)
+│   │   └── ...
+│   └── Compute Unit 2 (计算单元2)
+│       ├── work-group 0 (工作组0)
+│       └── ...
+└── Device 2 (设备2)
+    └── ...

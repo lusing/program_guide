@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 3.10)
+project(OpenCLDemo)
+
+set(CMAKE_CXX_STANDARD 11)
+
+# 查找 OpenCL
+find_package(OpenCL REQUIRED)
+
+# 包含头文件目录
+include_directories(${OPENCL_INCLUDE_DIRS})
+
+# 添加可执行文件
+add_executable(opencl_demo src/main.c)
+
+# 链接 OpenCL 库
+target_link_libraries(opencl_demo ${OPENCL_LIBRARIES})
+
+# 设置库目录（如果需要）
+# link_directories("C:/Program Files (x86)/Intel/OpenCL SDK/lib/x64")
