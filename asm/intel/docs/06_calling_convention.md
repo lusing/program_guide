@@ -1,0 +1,148 @@
+# Windows x64 调用约定
+
+调用约定（Calling Convention）规定了函数之间如何传递参数、返回值以及如何使用寄存器和栈。Windows x64 使用统一的调用约定（Microsoft x64 ABI），与 Linux 的 System V AMD64 ABI 有显著区别。
+
+## 参数传递规则
+
+Windows x64 约定中，前 4 个参数通过寄存器传递，多余的参数通过栈传递：
+
+| 参数序号 | 整数/指针 | 浮点数 |
+|---------|----------|--------|
+| 第 1 个 | RCX | XMM0 |
+| 第 2 个 | RDX | XMM1 |
+| 第 3 个 | R8  | XMM2 |
+| 第 4 个 | R9  | XMM3 |
+| 第 5 个起 | 栈 | 栈 |
+
+> 当参数为**混合类型**时，整数/指针占用整数寄存器序列（RCX, RDX, R8, R9），浮点占用 XMM 寄存器序列（XMM0–XMM3），但**两个序列都按参数的位置序号索引，而非各自从 0 重新计数**。例如 `f(int a, double b, int c)` → a→RCX、b→XMM1、c→R8；即 b 是第 2 个参数就用 XMM**1**（而非 XMM0），c 是第 3 个参数就用 R8。第 5 个及以后的参数无论类型一律走栈。
+
+### 栈传递规则
+
+第 5 个及以后的参数按**从左到右**的顺序压入栈中（注意：这与 32 位 cdecl 的从右到左相反）：
+
+```nasm
+; 调用 f(a, b, c, d, e, f)  — 6个整数参数
+; a→RCX, b→RDX, c→R8, d→R9, e→[rsp+0x20], f→[rsp+0x28]
+mov  rcx, 1           ; 参数1
+mov  rdx, 2           ; 参数2
+mov  r8,  3           ; 参数3
+mov  r9,  4           ; 参数4
+mov  qword [rsp + 0x20], 5   ; 参数5
+mov  qword [rsp + 0x28], 6   ; 参数6
+call f
+```
+
+## 影子空间（Shadow Space）
+
+Windows x64 强制要求调用方在栈上预留 **32 字节（4 × 8）的影子空间**，位于参数 5 起的栈参数**之前**（低地址方向）。这 32 字节供被调用方保存 RCX/RDX/R8/R9（如果需要）。
+
+即使函数参数少于 4 个，影子空间也**必须分配**：
+
+```nasm
+sub  rsp, 32          ; 分配 32 字节影子空间（至少4参数的情况）
+mov  rcx, param1
+call some_function
+add  rsp, 32          ; 释放影子空间
+```
+
+## 栈对齐（16 字节）
+
+在执行 `CALL` 指令时，**RSP 必须是 16 字节对齐的**。`CALL` 会将 8 字节返回地址压栈，因此进入函数时 RSP 对 16 取模余 8（`RSP % 16 == 8`）。
+
+常见做法是分配 `32（影子空间）+ 8（对齐填充）= 40` 字节。因为 `main` 入口时 RSP % 16 == 8（CALL 压入的返回地址所致），`sub rsp, 40` 后 RSP 恢复到 16 字节对齐（40 % 16 == 8，8 - 8 == 0），从而保证内部 `call` 时对齐：
+
+```nasm
+main:
+    ; 入口: RSP % 16 == 8 (被 CRT CALL 压入返回地址)
+    sub  rsp, 40          ; 32影子 + 8对齐填充 → 此时 RSP % 16 == 0
+    ; ... 设置参数并调用 ...
+    mov  rcx, 1
+    call printf           ; CALL 前 RSP % 16 == 0，对齐正确
+    xor  ecx, ecx         ; 退出码 0
+    call ExitProcess      ; 退出进程（/entry:main 必须用 ExitProcess）
+```
+
+> **未对齐的栈会导致崩溃**：许多 C 运行时函数和 Windows API 内部使用 XMM 指令要求 16 字节对齐，RSP 不对齐会触发访问违例（Access Violation）。这是汇编初学者最常遇到的错误之一。
+
+## 返回值
+
+| 返回类型 | 寄存器 |
+|---------|--------|
+| 整数/指针（≤64位） | RAX |
+| 浮点数 | XMM0 |
+| 128 位（如 `__m128`） | RAX + RDX |
+
+函数正常返回后，RAX（或 XMM0）即为返回值。
+
+## Volatile vs Non-volatile 寄存器
+
+| 寄存器 | 类型 | 说明 |
+|--------|------|------|
+| RAX, RCX, RDX, R8–R11 | 易失（Volatile） | 调用后值可能被破坏，调用方需自行保存 |
+| RBX, RBP, RDI, RSI, R12–R15 | 非易失（Non-volatile） | 调用前后值保证不变，被调用方负责保存/恢复 |
+| XMM0–XMM5 | 易失 | 浮点参数/返回值 |
+| XMM6–XMM15 | 非易失 | 被调用方负责保存/恢复 |
+| RSP | 非易失 | 必须在函数返回前恢复至入口值（保持平衡） |
+
+> 被调用方使用非易失性寄存器前必须 `push` 保存，返回前 `pop` 恢复。
+
+## 函数调用完整示例
+
+下面是一个完整示例：调用 C 库函数 `printf` 打印格式化字符串，展示参数传递、影子空间与栈对齐：
+
+```nasm
+; calling.asm — 演示 Windows x64 调用约定
+extern printf
+extern ExitProcess
+
+section .data
+    fmt  db  'sum(%d, %d) = %d', 10, 0    ; 格式串
+
+section .text
+global main
+
+; int add(int a, int b) — 接收两个整数，返回和
+add_ints:
+    mov  eax, ecx          ; EAX = a (第1参数，32位)
+    add  eax, edx          ; EAX += b (第2参数)
+    ret                    ; 返回值在 EAX/RAX
+
+main:
+    sub  rsp, 40           ; 32影子 + 8对齐
+
+    ; 调用 add_ints(10, 20)
+    mov  ecx, 10           ; 参数1 → ECX
+    mov  edx, 20           ; 参数2 → EDX
+    call add_ints          ; 返回值在 EAX
+
+    ; 调用 printf("sum(%d, %d) = %d\n", 10, 20, result)
+    lea  rcx, [rel fmt]    ; 参数1: 格式串 → RCX
+    mov  edx, 10           ; 参数2: 10 → RDX
+    mov  r8d, 20           ; 参数3: 20 → R8D
+    mov  r9d, eax          ; 参数4: result → R9D
+    call printf
+
+    xor  ecx, ecx          ; 退出码 0
+    call ExitProcess       ; 退出进程（/entry:main 必须用 ExitProcess）
+```
+
+### 调用过程图解
+
+```
+调用 printf 前（已 sub rsp, 40）:
+
+高地址
+┌──────────────────┐
+│  返回地址 (main)  │  ← [rsp+40] (CALL压入)
+├──────────────────┤
+│  影子空间 32 字节  │  ← [rsp+0]  ~ [rsp+31]  (供printf保存RCX~R9)
+├──────────────────┤
+│   8 字节对齐填充   │  ← [rsp+32] ~ [rsp+39]
+└──────────────────┘
+低地址
+        ↑ RSP 指向此处，16字节对齐
+```
+
+---
+
+> 上一篇：[标志寄存器](05_flags.md) ｜ 下一篇：[栈和栈帧](07_stack_frames.md)
