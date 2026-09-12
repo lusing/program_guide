@@ -1,0 +1,8 @@
+src/
+├── main/
+│   ├── kotlin/
+│   │   └── Main.kt
+│   └── resources/
+│       └── index.html
+└── test/
+    └── kotlin/

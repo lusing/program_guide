@@ -1,0 +1,1 @@
+-Xdebug -Xrunjdwp:transport=dt_socket,server=true,suspend=y,address=5005

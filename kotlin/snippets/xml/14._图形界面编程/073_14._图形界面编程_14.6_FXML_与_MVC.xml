@@ -1,0 +1,32 @@
+<!-- MainView.fxml -->
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.MainViewController"
+            prefWidth="600" prefHeight="400">
+
+    <top>
+        <MenuBar>
+            <Menu text="File">
+                <MenuItem text="Exit" onAction="#handleExit"/>
+            </Menu>
+        </MenuBar>
+    </top>
+
+    <center>
+        <StackPane>
+            <Label text="Main Content"/>
+        </StackPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="BOTTOM_RIGHT" spacing="10">
+            <Button text="OK" onAction="#handleOk"/>
+            <Button text="Cancel" onAction="#handleCancel"/>
+        </HBox>
+    </bottom>
+</BorderPane>
