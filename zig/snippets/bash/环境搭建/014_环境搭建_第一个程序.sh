@@ -1,0 +1,1 @@
+zig run hello.zig

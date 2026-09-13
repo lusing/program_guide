@@ -1,0 +1,12 @@
+# Zig 类型格式化
+type format add -f hex uint8_t
+type format add -f hex uint16_t
+type format add -f hex uint32_t
+type format add -f hex uint64_t
+
+# 别名
+command alias bt full-backtrace
+command alias p expr
+command alias s step
+command alias n next
+command alias c continue
