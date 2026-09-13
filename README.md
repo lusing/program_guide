@@ -30,6 +30,7 @@
 - [kotlin](./kotlin) — Kotlin 教程与 JVM 示例，使用 Kotlin Compiler 验证
 - [lean4](./lean4) — Lean4/Mathlib4 教程与示例，使用 Lake + Lean 校验
 - [OpenCL](./OpenCL) — OpenCL Windows 教程，使用 Visual Studio + CUDA CL 头文件验证
+- [rust](./rust) — Rust 教程与示例，使用 rustc 编译并运行验证
 - [sbcl](./sbcl) — Common Lisp / SBCL 教程与示例，使用 SBCL compile-file 验证
 - [sdl2](./sdl2) — SDL2 C++ 教程与示例，使用 MSVC + SDL2 库编译验证
 - [swift](./swift) — Swift 教程与示例，使用 swiftc 编译验证
@@ -80,14 +81,15 @@
 10. [julia](./julia)
 11. [dart](./dart)
 12. [kotlin](./kotlin)
-13. [OpenCL](./OpenCL)
-14. [sdl2](./sdl2)
-15. [wpf](./wpf)
-16. [sbcl](./sbcl)
-17. [swift](./swift)
-18. [WinUI3](./WinUI3)
-19. [zig](./zig)
-20. [lean4](./lean4)
+13. [rust](./rust)
+14. [OpenCL](./OpenCL)
+15. [sdl2](./sdl2)
+16. [wpf](./wpf)
+17. [sbcl](./sbcl)
+18. [swift](./swift)
+19. [WinUI3](./WinUI3)
+20. [zig](./zig)
+21. [lean4](./lean4)
 
 ## 工具链说明
 
@@ -105,6 +107,7 @@
 - Erlang/OTP
 - FreeBASIC / FBIDE
 - Julia
+- Rust
 - SBCL
 - Swift
 - Kotlin Compiler
