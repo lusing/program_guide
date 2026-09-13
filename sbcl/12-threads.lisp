@@ -202,9 +202,10 @@
 (format t "~%=== 屏障 ===~%")
 
 ;; 屏障让多个线程在某个点同步
-(let ((barrier (sb-thread:make-barrier 3))
-      (results (make-array 3 :initial-element nil))
-      (lock (sb-thread:make-mutex)))
+(let ((results (make-array 3 :initial-element nil))
+      (lock (sb-thread:make-mutex))
+      (release (sb-thread:make-semaphore :count 0))
+      (arrived 0))
 
   (dotimes (i 3)
     (let ((id i))
@@ -215,7 +216,12 @@
          (sb-thread:with-mutex (lock)
            (setf (aref results id) (format nil "线程~A完成" id)))
          (format t "  线程 ~A 等待屏障~%" id)
-         (sb-thread:barrier barrier)
+         (sb-thread:with-mutex (lock)
+           (incf arrived)
+           (when (= arrived 3)
+             (dotimes (_ 3)
+               (sb-thread:signal-semaphore release))))
+         (sb-thread:wait-on-semaphore release)
          (format t "  线程 ~A 通过屏障，继续执行~%" id)))))
 
   (sleep 2)
@@ -278,7 +284,7 @@
 (format t "~%=== 原子操作 ===~%")
 
 ;; atomic-incf / atomic-decf — 原子递增/递减
-(defstruct atomic-counter (value 0 :type fixnum))
+(defstruct atomic-counter (value 0 :type (unsigned-byte 64)))
 
 (let ((counter (make-atomic-counter)))
   (let ((threads '()))
@@ -297,12 +303,11 @@
   (let ((threads '()))
     (dotimes (i 5)
       (push (sb-thread:make-thread
-             (let ((id i))
-               (lambda ()
-                 (loop
-                   (let ((old (car cell)))
-                     (when (sb-ext:cas (car cell) old (1+ old))
-                       (return)))))))
+             (lambda ()
+               (loop
+                 (let ((old (car cell)))
+                   (when (sb-ext:cas (car cell) old (1+ old))
+                     (return))))))
             threads))
     (dolist (thread threads)
       (sb-thread:join-thread thread))
@@ -402,7 +407,7 @@
   (lock (sb-thread:make-mutex))
   (ready (sb-thread:make-waitqueue)))
 
-(defun make-promise (fn)
+(defun spawn-promise (fn)
   (let ((p (make-promise)))
     (sb-thread:make-thread
      (lambda ()
@@ -420,8 +425,8 @@
     (promise-value p)))
 
 ;; 使用 promise
-(let ((p1 (make-promise (lambda () (sleep 0.5) (* 6 7))))
-      (p2 (make-promise (lambda () (sleep 0.3) (+ 1 2 3)))))
+(let ((p1 (spawn-promise (lambda () (sleep 0.5) (* 6 7))))
+      (p2 (spawn-promise (lambda () (sleep 0.3) (+ 1 2 3)))))
   (format t "promise 1: ~A~%" (promise-get p1))
   (format t "promise 2: ~A~%" (promise-get p2)))
 

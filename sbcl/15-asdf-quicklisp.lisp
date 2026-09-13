@@ -15,6 +15,7 @@
 ;;;; 运行方式：sbcl --script 15-asdf-quicklisp.lisp
 ;;;; ============================================================
 
+#.(progn (require :asdf) nil)
 
 ;;; ----------------------------------------------------------
 ;;; 1. ASDF 简介
@@ -110,7 +111,7 @@
   (format out "(in-package #:example-project)~%")
   (format out "~%")
   (format out "(defun greet (name)~%")
-  (format out "  (format nil \"你好，~A！\" name))~%"))
+  (format out "  (format nil \"你好，~~A！\" name))~%"))
 
 (with-open-file (out "src/main.lisp"
                      :direction :output
@@ -118,7 +119,7 @@
   (format out "(in-package #:example-project)~%")
   (format out "~%")
   (format out "(defun main ()~%")
-  (format out "  (format t \"~A~%\" (greet \"世界\")))~%"))
+  (format out "  (format t \"~~A~~%\" (greet \"世界\")))~%"))
 
 (format t "已创建示例源文件~%")
 

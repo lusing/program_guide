@@ -7,6 +7,7 @@
 - [函数式编程](#函数式编程)
 - [面向对象编程](#面向对象编程)
 - [宏和元编程](#宏和元编程)
+- [SBCL 实战章节索引（已编译验证）](#sbcl-实战章节索引已编译验证)
 - [标准库参考](#标准库参考)
 - [最佳实践](#最佳实践)
 
@@ -33,6 +34,35 @@ Common Lisp 是一门历史悠久的函数式编程语言，属于Lisp家族。�
 | CCL | macOS原生支持 |
 | ABCL | 运行在JVM上 |
 | ECL | 可编译为C代码 |
+
+## SBCL 实战章节索引（已编译验证）
+
+下面这些配套源码文件已在本目录通过 `sbcl compile-file` 编译验证：
+
+1. `01-hello-world.lisp`：基础输出、命令行参数、脚本入口
+2. `02-data-types.lisp`：数字、字符串、列表、向量与结构体
+3. `03-control-structures.lisp`：分支、循环、多值、非局部退出
+4. `04-functions.lisp`：参数模型、闭包、局部函数、递归
+5. `05-macros.lisp`：宏定义、展开与常见防坑（`gensym`）
+6. `06-clos.lisp`：CLOS 类、方法、多分派
+7. `07-packages.lisp`：包定义、导出与命名隔离
+8. `08-conditions.lisp`：条件系统、重启与错误恢复
+9. `09-file-io.lisp`：文本/二进制读写
+10. `10-format.lisp`：格式化输出
+11. `11-sbcl-extensions.lisp`：实现相关扩展
+12. `12-threads.lisp`：线程与并发模型
+13. `13-ffi.lisp`：外部函数接口
+14. `14-performance.lisp`：类型声明与性能基准
+15. `15-asdf-quicklisp.lisp`：工程管理与依赖
+16. `16-sequences-hash-tables.lisp`：序列处理与词频统计
+17. `17-testing-and-deployment.lisp`：断言测试与发布入口模式
+
+统一验证命令：
+
+```powershell
+cd G:\code\guide\sbcl
+.\build.ps1 -All
+```
 
 ---
 
@@ -1458,6 +1488,49 @@ CL-USER[1]>                 ;; 递归调试级别 (不同风格)
 ```
 ;; 历史导航
 M-p                        ;; 上一个命令
+
+```
+
+---
+
+## 教程扩充：两个可落地实战片段
+
+以下片段来自新增示例文件，均已通过编译验证。
+
+### 1) 序列 + 哈希表统计（`16-sequences-hash-tables.lisp`）
+
+```lisp
+(defun word-frequency (words)
+  (let ((table (make-hash-table :test 'equal)))
+    (dolist (w words table)
+      (incf (gethash w table 0)))))
+
+(let* ((words '("lisp" "sbcl" "lisp" "macro" "sbcl" "lisp"))
+       (freq (word-frequency words)))
+  (maphash (lambda (k v)
+             (format t "~A => ~A~%" k v))
+           freq))
+```
+
+### 2) 断言测试 + 发布入口（`17-testing-and-deployment.lisp`）
+
+```lisp
+(defun safe-average (numbers)
+  (assert (and (listp numbers) numbers) () "numbers 必须是非空列表")
+  (/ (reduce #'+ numbers) (length numbers)))
+
+(handler-case
+    (safe-average '())
+  (error (e)
+    (format t "捕获到预期错误: ~A~%" e)))
+
+(defun app-main ()
+  (format t "App started.~%")
+  (format t "Args: ~S~%" sb-ext:*posix-argv*)
+  (sb-ext:quit :unix-status 0))
+```
+
+```
 M-n                        ;; 下一个命令
 C-c C-p                    ;; 上一个表达式
 C-c C-n                    ;; 下一个表达式

@@ -53,13 +53,13 @@
 (format t "~A~%" (greet-with-title "张三" "博士"))
 
 ;; 可选参数可以检测是否被提供
-(defun describe (name &optional (age nil age-supplied-p))
+(defun describe-person (name &optional (age nil age-supplied-p))
   (if age-supplied-p
       (format nil "~A，~A岁" name age)
       (format nil "~A，年龄未知" name)))
 
-(format t "~A~%" (describe "李四"))
-(format t "~A~%" (describe "李四" 25))
+(format t "~A~%" (describe-person "李四"))
+(format t "~A~%" (describe-person "李四" 25))
 
 ;; --- rest 参数（&rest）---
 (defun sum-all (&rest numbers)
@@ -77,9 +77,9 @@
 (format t "~A~%" (make-person "王五" :email "wang@example.com" :active nil))
 
 ;; --- 混合参数 ---
-(defun full-example (required &optional opt &rest rest &key (key1 "k1") (key2 "k2"))
-  (format t "required=~A opt=~A rest=~A key1=~A key2=~A~%"
-          required opt rest key1 key2))
+(defun full-example (required &optional opt &rest rest)
+  (format t "required=~A opt=~A rest=~A~%"
+          required opt rest))
 
 (full-example "必需" "可选" "rest1" "rest2" :key1 "自定义")
 

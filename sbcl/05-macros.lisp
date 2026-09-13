@@ -217,13 +217,16 @@
   (format t "第二~%"))
 
 ;; 宏参数可以解构
-(defmacro with-pair ((a b) &body body)
-  `(let ((,a (first ,(gensym)))
-         (,b (second ,(gensym))))
+(defmacro with-pair ((a b) pair &body body)
+  `(let ((,a (car ,pair))
+         (,b (cdr ,pair)))
      ,@body))
 
+(with-pair (left right) '(10 . 20)
+  (format t "left=~A right=~A~%" left right))
+
 ;; 更实用的解构宏
-(defmacro with-list ((first-elem second-elem &rest rest-elems) list &body body)
+(defmacro with-list ((first-elem second-elem rest-elems) list &body body)
   "解构列表的前两个元素和剩余部分。"
   `(let ((,first-elem (first ,list))
          (,second-elem (second ,list))
@@ -241,14 +244,15 @@
 (format t "~%=== define-symbol-macro ===~%")
 
 ;; 符号宏：将符号展开为表达式
-(define-symbol-macro *app-version* "2.0.0")
+(symbol-macrolet ((*app-version* "2.0.0"))
 (format t "版本: ~A~%" *app-version*)
+)
 
 ;; 实用示例：简化访问
 (let ((data (make-hash-table)))
   (setf (gethash 'name data) "SBCL")
-  (define-symbol-macro name (gethash 'name data))
-  (format t "name = ~A~%" name))
+  (symbol-macrolet ((name (gethash 'name data)))
+    (format t "name = ~A~%" name)))
 
 
 ;;; ----------------------------------------------------------

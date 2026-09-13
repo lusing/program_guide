@@ -23,6 +23,7 @@
 - [dlang](./dlang) — D 语言教程与示例，使用 DMD 编译验证
 - [kotlin](./kotlin) — Kotlin 教程与 JVM 示例，使用 Kotlin Compiler 验证
 - [OpenCL](./OpenCL) — OpenCL Windows 教程，使用 Visual Studio + CUDA CL 头文件验证
+- [sbcl](./sbcl) — Common Lisp / SBCL 教程与示例，使用 SBCL compile-file 验证
 - [WinUI3](./WinUI3) — WinUI 3 C++/WinRT 教程与示例，使用 MSVC (vcvars64 + cl) 验证
 - [wpf](./wpf) — WPF 编程指南，使用 .NET SDK + WPF 运行时验证
 - [zig](./zig) — Zig 0.16 教程与示例，已完成 0.16 兼容修正与编译验证
@@ -34,7 +35,6 @@
 - [Ada](./Ada) — Ada 语言教程
 - [dotnet](./dotnet) — .NET 相关资料
 - [lean4](./lean4) — Lean 4 学习内容
-- [sbcl](./sbcl) — SBCL / Common Lisp 相关内容
 
 ## 统一约定
 
@@ -71,9 +71,10 @@
 6. [kotlin](./kotlin)
 7. [OpenCL](./OpenCL)
 8. [wpf](./wpf)
-9. [WinUI3](./WinUI3)
-10. [zig](./zig)
-11. 继续按专题扩展到 [dotnet](./dotnet)、[lean4](./lean4) 等目录
+9. [sbcl](./sbcl)
+10. [WinUI3](./WinUI3)
+11. [zig](./zig)
+12. 继续按专题扩展到 [dotnet](./dotnet)、[lean4](./lean4) 等目录
 
 ## 工具链说明
 
@@ -85,6 +86,7 @@
 - Coq (coqc)
 - Dart SDK
 - DMD
+- SBCL
 - Kotlin Compiler
 - CUDA OpenCL Headers
 - .NET SDK + WPF

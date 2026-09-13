@@ -239,7 +239,7 @@
 ;; 列出目录内容（SBCL 特有）
 (format t "当前目录文件:~%")
 (dolist (f (directory (merge-pathnames "*.lisp"
-                                       (uiop:getcwd))))
+                                       (truename "."))))
   (format t "  ~A~%" (file-namestring f)))
 
 ;; 创建一些测试文件
@@ -287,9 +287,13 @@
                 (min 50 (length (or (sb-ext:posix-getenv "PATH") "")))))
 
 ;; 临时文件
-(let ((tmp (sb-ext:mkstemp "sbcl-test-XXXXXX")))
-  (format t "临时文件: ~A~%" tmp)
-  (delete-file tmp))
+(let* ((tmp-name (format nil "sbcl-test-~D.tmp" (get-universal-time)))
+       (tmp-path (merge-pathnames tmp-name (truename "."))))
+  (with-open-file (out tmp-path :direction :output :if-exists :supersede)
+    (write-line "temporary data" out))
+  (format t "临时文件: ~A~%" tmp-path)
+  (when (probe-file tmp-path)
+    (delete-file tmp-path)))
 
 ;; 清理测试文件
 (dolist (f '("test-output.txt" "test-forms.lisp" "test-data.lisp"

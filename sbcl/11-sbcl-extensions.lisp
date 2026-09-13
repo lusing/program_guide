@@ -265,7 +265,7 @@
 (format t "当前线程: ~A~%" sb-thread:*current-thread*)
 
 ;; 原子操作
-(defstruct counter (value 0 :type fixnum))
+(defstruct counter (value 0 :type (unsigned-byte 64)))
 (let ((c (make-counter)))
   (sb-ext:atomic-incf (counter-value c))
   (sb-ext:atomic-incf (counter-value c))
@@ -280,8 +280,8 @@
 ;; (sb-ext:finalize object function)
 ;; (sb-ext:cancel-finalization object)
 
-;; 浮点数模式
-(format t "浮点模式: ~A~%" (sb-ext:get-floating-point-modes))
+;; 浮点信息
+(format t "浮点基数: ~A~%" (float-radix 1.0d0))
 
 ;; 字节序
 (format t "字节序: ~A~%"

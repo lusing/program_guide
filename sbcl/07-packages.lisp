@@ -140,7 +140,7 @@
 
 ;; import — 导入特定符号到当前包
 (import 'my-utils:string-join)
-(format t "import 后: ~A~%" (string-join '("imported" "works") " "))
+(format t "import 后: ~A~%" (my-utils:string-join '("imported" "works") " "))
 
 
 ;;; ----------------------------------------------------------

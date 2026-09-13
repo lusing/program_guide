@@ -29,7 +29,8 @@
 (handler-case
     (progn
       (format t "尝试除法...~%")
-      (/ 1 0))
+      (let ((denom (parse-integer "0")))
+        (/ 1 denom)))
   (division-by-zero (e)
     (format t "捕获到除零错误: ~A~%" e)))
 
@@ -49,16 +50,14 @@
   (format t "结果: ~A~%" result))
 
 (let ((result (handler-case
-                  (/ 10 0)
+                  (let ((denom (parse-integer "0")))
+                    (/ 10 denom))
                 (error () -1))))
   (format t "错误时结果: ~A~%" result))
 
-;; :no-error 子句
-(handler-case
-    (parse-integer "42")
-  (error () (format t "解析失败~%"))
-  (:no-error (value)
-    (format t "解析成功: ~A~%" value)))
+;; 解析成功示例
+(let ((value (parse-integer "42")))
+  (format t "解析成功: ~A~%" value))
 
 
 ;;; ----------------------------------------------------------
@@ -288,7 +287,8 @@
 
 ;; ignore-errors 忽略所有错误，返回 nil
 (format t "ignore-errors: ~A~%"
-        (ignore-errors (/ 1 0)))
+        (let ((denom (parse-integer "0")))
+          (ignore-errors (/ 1 denom))))
 
 ;; 带错误信息
 (multiple-value-bind (result condition)

@@ -31,6 +31,7 @@ Desktop.ini
 **/zig-out/
 **/.lake/build/
 **/.lake/packages/
+*.fasl
 
 # C/C++/MSVC artifacts
 *.obj
