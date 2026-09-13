@@ -17,6 +17,7 @@
 
 - [asm/intel](./asm/intel) — x86-64 汇编编程指南，使用 NASM + MSVC link.exe 验证
 - [boost](./boost) — Boost C++ 教程与示例，使用 MSVC + Boost 头文件验证
+- [coq](./coq) — Coq 教程与示例，使用 coqc 批量编译验证
 - [cpp20](./cpp20) — C++20 教程与示例，适配 MSVC/Windows 构建
 - [dart](./dart) — Dart 语言入门与示例，使用 Dart SDK 验证
 - [dlang](./dlang) — D 语言教程与示例，使用 DMD 编译验证
@@ -81,6 +82,7 @@
 - NASM + MSVC
 - Visual Studio + VC
 - MSVC + Boost
+- Coq (coqc)
 - Dart SDK
 - DMD
 - Kotlin Compiler
