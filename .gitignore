@@ -1,0 +1,53 @@
+# =========================
+# Guide-wide ignore rules
+# =========================
+
+# OS / editor
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*.tmp
+*.log
+
+.vscode/
+.vs/
+**/.idea/
+
+# Generic build output folders used across guides
+**/build/
+**/bin/
+**/obj/
+**/out/
+**/dist/
+**/target/
+
+# Language/tool specific caches
+**/.dart_tool/
+**/.packages
+**/pubspec.lock
+**/.zig-cache/
+**/zig-out/
+**/.lake/build/
+**/.lake/packages/
+
+# C/C++/MSVC artifacts
+*.obj
+*.o
+*.pdb
+*.ilk
+*.idb
+*.pch
+*.lib
+*.exp
+*.dll
+*.exe
+
+# .NET artifacts
+*.user
+*.rsuser
+*.suo
+*.cache
+*.deps.json
+*.runtimeconfig.json
