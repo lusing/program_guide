@@ -9,7 +9,7 @@
 - 把教程中的代码片段整理为独立示例目录
 - 保持各语言的构建/编译流程可复现
 - 通过本机编译器或 SDK 进行最小验证
-- 对于可运行示例统一保留 `README.md`、`build.ps1` 和 `examples/` 结构
+- 对于可运行示例统一保留 `README.md`、`build.ps1` 和示例源码目录（`examples/` 或 `cpp_examples/`）结构
 
 ## 已整理并验证的教程
 
@@ -19,8 +19,10 @@
 - [boost](./boost) — Boost C++ 教程与示例，使用 MSVC + Boost 头文件验证
 - [cpp20](./cpp20) — C++20 教程与示例，适配 MSVC/Windows 构建
 - [dart](./dart) — Dart 语言入门与示例，使用 Dart SDK 验证
+- [dlang](./dlang) — D 语言教程与示例，使用 DMD 编译验证
 - [kotlin](./kotlin) — Kotlin 教程与 JVM 示例，使用 Kotlin Compiler 验证
 - [OpenCL](./OpenCL) — OpenCL Windows 教程，使用 Visual Studio + CUDA CL 头文件验证
+- [WinUI3](./WinUI3) — WinUI 3 C++/WinRT 教程与示例，使用 MSVC (vcvars64 + cl) 验证
 - [wpf](./wpf) — WPF 编程指南，使用 .NET SDK + WPF 运行时验证
 - [zig](./zig) — Zig 0.16 教程与示例，已完成 0.16 兼容修正与编译验证
 
@@ -29,7 +31,6 @@
 这些目录已存在于 guide 根目录，但目前可能按原始文档状态保留，后续可进一步整理为同样的示例工程结构：
 
 - [Ada](./Ada) — Ada 语言教程
-- [WinUI3](./WinUI3) — WinUI 3 相关教程
 - [dotnet](./dotnet) — .NET 相关资料
 - [lean4](./lean4) — Lean 4 学习内容
 - [sbcl](./sbcl) — SBCL / Common Lisp 相关内容
@@ -43,9 +44,9 @@
 ├── README.md
 ├── build.ps1
 ├── <guide-file>.md
-├── examples/
-│   ├── 01_xxx/
-│   ├── 02_xxx/
+├── examples/ 或 cpp_examples/
+│   ├── 01_xxx
+│   ├── 02_xxx
 │   └── ...
 └── build/
 ```
@@ -54,7 +55,7 @@
 
 - `README.md`：目录级简介和使用说明
 - `build.ps1`：统一构建入口，可批量编译示例
-- `examples/`：独立示例文件或工程目录
+- `examples/` / `cpp_examples/`：独立示例文件或工程目录
 - `build/`：编译产物输出目录
 
 ## 建议的阅读顺序
@@ -63,12 +64,15 @@
 
 1. [asm/intel](./asm/intel)
 2. [cpp20](./cpp20)
-3. [dart](./dart)
-4. [kotlin](./kotlin)
-5. [OpenCL](./OpenCL)
-6. [wpf](./wpf)
-7. [zig](./zig)
-8. 继续按专题扩展到 [WinUI3](./WinUI3)、[dotnet](./dotnet) 等目录
+3. [boost](./boost)
+4. [dlang](./dlang)
+5. [dart](./dart)
+6. [kotlin](./kotlin)
+7. [OpenCL](./OpenCL)
+8. [wpf](./wpf)
+9. [WinUI3](./WinUI3)
+10. [zig](./zig)
+11. 继续按专题扩展到 [dotnet](./dotnet)、[lean4](./lean4) 等目录
 
 ## 工具链说明
 
@@ -76,7 +80,9 @@
 
 - NASM + MSVC
 - Visual Studio + VC
+- MSVC + Boost
 - Dart SDK
+- DMD
 - Kotlin Compiler
 - CUDA OpenCL Headers
 - .NET SDK + WPF

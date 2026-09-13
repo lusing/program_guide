@@ -1,7 +1,0 @@
-{"plugins": [],
- "package": "lean4-tutorial",
- "options": {},
- "name": "Lean4Tutorial.Examples.InductiveTypes.Enums",
- "isModule": false,
- "importArts": {},
- "dynlibs": []}

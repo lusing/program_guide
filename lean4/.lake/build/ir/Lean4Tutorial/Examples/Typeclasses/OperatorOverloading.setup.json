@@ -1,7 +1,0 @@
-{"plugins": [],
- "package": "lean4-tutorial",
- "options": {},
- "name": "Lean4Tutorial.Examples.Typeclasses.OperatorOverloading",
- "isModule": false,
- "importArts": {},
- "dynlibs": []}
