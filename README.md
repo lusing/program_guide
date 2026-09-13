@@ -21,6 +21,7 @@
 - [cpp20](./cpp20) — C++20 教程与示例，适配 MSVC/Windows 构建
 - [dart](./dart) — Dart 语言入门与示例，使用 Dart SDK 验证
 - [dlang](./dlang) — D 语言教程与示例，使用 DMD 编译验证
+- [dotnet](./dotnet) — .NET 教程与示例工程，使用 .NET SDK (`dotnet build`) 验证
 - [elixir](./elixir) — Elixir 教程与示例，使用 elixirc 编译验证
 - [erlang](./erlang) — Erlang/OTP 教程与示例，使用 erlc 编译验证
 - [kotlin](./kotlin) — Kotlin 教程与 JVM 示例，使用 Kotlin Compiler 验证
@@ -37,7 +38,6 @@
 这些目录已存在于 guide 根目录，但目前可能按原始文档状态保留，后续可进一步整理为同样的示例工程结构：
 
 - [Ada](./Ada) — Ada 语言教程
-- [dotnet](./dotnet) — .NET 相关资料
 - [lean4](./lean4) — Lean 4 学习内容
 
 ## 统一约定
@@ -71,18 +71,19 @@
 2. [cpp20](./cpp20)
 3. [boost](./boost)
 4. [dlang](./dlang)
-5. [elixir](./elixir)
-6. [erlang](./erlang)
-7. [dart](./dart)
-8. [kotlin](./kotlin)
-9. [OpenCL](./OpenCL)
-10. [sdl2](./sdl2)
-11. [wpf](./wpf)
-12. [sbcl](./sbcl)
-13. [swift](./swift)
-14. [WinUI3](./WinUI3)
-15. [zig](./zig)
-16. 继续按专题扩展到 [dotnet](./dotnet)、[lean4](./lean4) 等目录
+5. [dotnet](./dotnet)
+6. [elixir](./elixir)
+7. [erlang](./erlang)
+8. [dart](./dart)
+9. [kotlin](./kotlin)
+10. [OpenCL](./OpenCL)
+11. [sdl2](./sdl2)
+12. [wpf](./wpf)
+13. [sbcl](./sbcl)
+14. [swift](./swift)
+15. [WinUI3](./WinUI3)
+16. [zig](./zig)
+17. 继续按专题扩展到 [lean4](./lean4) 等目录
 
 ## 工具链说明
 
@@ -94,6 +95,7 @@
 - Coq (coqc)
 - Dart SDK
 - DMD
+- .NET SDK
 - Elixir
 - Erlang/OTP
 - SBCL
