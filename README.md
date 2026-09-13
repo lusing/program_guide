@@ -24,7 +24,9 @@
 - [dotnet](./dotnet) — .NET 教程与示例工程，使用 .NET SDK (`dotnet build`) 验证
 - [elixir](./elixir) — Elixir 教程与示例，使用 elixirc 编译验证
 - [erlang](./erlang) — Erlang/OTP 教程与示例，使用 erlc 编译验证
+- [freebasic](./freebasic) — FreeBASIC 教程与示例，使用 fbc 编译验证（含 FBIDE 使用说明）
 - [kotlin](./kotlin) — Kotlin 教程与 JVM 示例，使用 Kotlin Compiler 验证
+- [lean4](./lean4) — Lean4/Mathlib4 教程与示例，使用 Lake + Lean 校验
 - [OpenCL](./OpenCL) — OpenCL Windows 教程，使用 Visual Studio + CUDA CL 头文件验证
 - [sbcl](./sbcl) — Common Lisp / SBCL 教程与示例，使用 SBCL compile-file 验证
 - [sdl2](./sdl2) — SDL2 C++ 教程与示例，使用 MSVC + SDL2 库编译验证
@@ -38,7 +40,6 @@
 这些目录已存在于 guide 根目录，但目前可能按原始文档状态保留，后续可进一步整理为同样的示例工程结构：
 
 - [Ada](./Ada) — Ada 语言教程
-- [lean4](./lean4) — Lean 4 学习内容
 
 ## 统一约定
 
@@ -74,16 +75,17 @@
 5. [dotnet](./dotnet)
 6. [elixir](./elixir)
 7. [erlang](./erlang)
-8. [dart](./dart)
-9. [kotlin](./kotlin)
-10. [OpenCL](./OpenCL)
-11. [sdl2](./sdl2)
-12. [wpf](./wpf)
-13. [sbcl](./sbcl)
-14. [swift](./swift)
-15. [WinUI3](./WinUI3)
-16. [zig](./zig)
-17. 继续按专题扩展到 [lean4](./lean4) 等目录
+8. [freebasic](./freebasic)
+9. [dart](./dart)
+10. [kotlin](./kotlin)
+11. [OpenCL](./OpenCL)
+12. [sdl2](./sdl2)
+13. [wpf](./wpf)
+14. [sbcl](./sbcl)
+15. [swift](./swift)
+16. [WinUI3](./WinUI3)
+17. [zig](./zig)
+18. [lean4](./lean4)
 
 ## 工具链说明
 
@@ -98,6 +100,7 @@
 - .NET SDK
 - Elixir
 - Erlang/OTP
+- FreeBASIC / FBIDE
 - SBCL
 - Swift
 - Kotlin Compiler
