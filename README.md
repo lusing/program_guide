@@ -21,9 +21,13 @@
 - [cpp20](./cpp20) — C++20 教程与示例，适配 MSVC/Windows 构建
 - [dart](./dart) — Dart 语言入门与示例，使用 Dart SDK 验证
 - [dlang](./dlang) — D 语言教程与示例，使用 DMD 编译验证
+- [elixir](./elixir) — Elixir 教程与示例，使用 elixirc 编译验证
+- [erlang](./erlang) — Erlang/OTP 教程与示例，使用 erlc 编译验证
 - [kotlin](./kotlin) — Kotlin 教程与 JVM 示例，使用 Kotlin Compiler 验证
 - [OpenCL](./OpenCL) — OpenCL Windows 教程，使用 Visual Studio + CUDA CL 头文件验证
 - [sbcl](./sbcl) — Common Lisp / SBCL 教程与示例，使用 SBCL compile-file 验证
+- [sdl2](./sdl2) — SDL2 C++ 教程与示例，使用 MSVC + SDL2 库编译验证
+- [swift](./swift) — Swift 教程与示例，使用 swiftc 编译验证
 - [WinUI3](./WinUI3) — WinUI 3 C++/WinRT 教程与示例，使用 MSVC (vcvars64 + cl) 验证
 - [wpf](./wpf) — WPF 编程指南，使用 .NET SDK + WPF 运行时验证
 - [zig](./zig) — Zig 0.16 教程与示例，已完成 0.16 兼容修正与编译验证
@@ -67,14 +71,18 @@
 2. [cpp20](./cpp20)
 3. [boost](./boost)
 4. [dlang](./dlang)
-5. [dart](./dart)
-6. [kotlin](./kotlin)
-7. [OpenCL](./OpenCL)
-8. [wpf](./wpf)
-9. [sbcl](./sbcl)
-10. [WinUI3](./WinUI3)
-11. [zig](./zig)
-12. 继续按专题扩展到 [dotnet](./dotnet)、[lean4](./lean4) 等目录
+5. [elixir](./elixir)
+6. [erlang](./erlang)
+7. [dart](./dart)
+8. [kotlin](./kotlin)
+9. [OpenCL](./OpenCL)
+10. [sdl2](./sdl2)
+11. [wpf](./wpf)
+12. [sbcl](./sbcl)
+13. [swift](./swift)
+14. [WinUI3](./WinUI3)
+15. [zig](./zig)
+16. 继续按专题扩展到 [dotnet](./dotnet)、[lean4](./lean4) 等目录
 
 ## 工具链说明
 
@@ -86,9 +94,13 @@
 - Coq (coqc)
 - Dart SDK
 - DMD
+- Elixir
+- Erlang/OTP
 - SBCL
+- Swift
 - Kotlin Compiler
 - CUDA OpenCL Headers
+- SDL2
 - .NET SDK + WPF
 - Zig 0.16
 
