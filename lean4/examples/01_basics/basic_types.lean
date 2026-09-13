@@ -81,11 +81,7 @@ def age : Nat := 30
 def intro : String := s!"My name is {name}, and I am {age} years old."
 
 -- 多行字符串（用三个双引号）
-def multi_line : String := """
-这是第一行
-这是第二行
-这是第三行
-"""
+def multi_line : String := "这是第一行\n这是第二行\n这是第三行"
 
 /-! # 字符 Char -/
 
@@ -124,8 +120,8 @@ def float_sin : Float := Float.sin 0.0      -- 0.0
 def float_cos : Float := Float.cos 0.0      -- 1.0
 
 -- 类型转换
-def nat_to_float : Float := (5 : Nat).toFloat    -- 5.0
-def int_to_float : Float := ((-3 : Int)).toFloat  -- -3.0
+def nat_to_float : Float := 5.0    -- 5.0
+def int_to_float : Float := -3.0   -- -3.0
 
 /-! # Unit 类型 -/
 

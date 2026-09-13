@@ -43,7 +43,7 @@ def swapped : String × Nat := swap nat_string_pair   -- ("answer", 42)
 -- Lean 的类型推断非常强大，很多时候不需要显式写类型
 
 -- 自动推断参数类型
-def triple x := x + x + x
+def triple (x : Nat) := x + x + x
 -- #check triple   -- Nat → Nat（从 + 运算符推断）
 
 -- 自动推断返回类型
@@ -147,7 +147,7 @@ def origin : Point := (0, 0)
 def alice : Person := ("Alice", 30)
 
 -- 类型别名只是别名，与原始类型完全等价
-def same_type : Point = Nat × Nat := rfl
+def same_type : Point = (Nat × Nat) := rfl
 
 /-! # 多态数据结构示例 -/
 

@@ -78,9 +78,9 @@ def eight : Nat := addFive 3           -- 8
 def twelve : Nat := addFive 7          -- 12
 
 -- 另一个例子：字符串前缀
-def prefix (pre : String) (s : String) : String := pre ++ s
+def addPrefix (pre : String) (s : String) : String := pre ++ s
 
-def helloPrefix : String → String := prefix "Hello, "
+def helloPrefix : String → String := addPrefix "Hello, "
 
 def helloWorld : String := helloPrefix "World!"     -- "Hello, World!"
 def helloLean : String := helloPrefix "Lean 4!"     -- "Hello, Lean 4!"

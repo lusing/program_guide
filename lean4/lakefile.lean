@@ -3,14 +3,9 @@ open Lake DSL
 
 package «lean4-tutorial» where
   -- Lean 4 & Mathlib4 教程示例项目
-  version := "4.33.1"
 
--- 依赖本地 Mathlib4
--- 如需从网络获取，请改为：
--- require mathlib from git
---   "https://github.com/leanprover-community/mathlib4.git"
---   @ "v4.33.1"
-require mathlib from "H:/Lang/lean4/mathlib4-4.33.1"
+-- 使用本地 Mathlib4（已预构建仓库）
+require mathlib from "G:/github/lang/mathlib4"
 
 /-!
 # 示例库配置
@@ -41,8 +36,3 @@ require mathlib from "H:/Lang/lean4/mathlib4-4.33.1"
 lean_lib «Lean4Tutorial» where
   -- 所有示例代码的根模块
   roots := #[`Lean4Tutorial]
-
--- 示例可执行程序（用于运行测试）
-lean_exe «tutorial-runner» where
-  root := `Main
-  supportInterpreter := true
