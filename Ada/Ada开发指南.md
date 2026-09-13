@@ -4,6 +4,18 @@
 > 编译环境：`G:\scoop\apps\msys2\current\ucrt64\bin\`  
 > 测试日期：2026-07-21
 
+## 示例工程化结构（guide 统一标准）
+
+- 教程文档：`Ada开发指南.md`
+- 示例源码：`examples/`
+- 统一构建脚本：`build.ps1`
+- 全量验证命令：
+
+```powershell
+cd G:\code\guide\Ada
+.\build.ps1 -All
+```
+
 ---
 
 ## 目录

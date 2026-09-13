@@ -15,6 +15,7 @@
 
 这些目录已经按 “专门文件 + 示例目录 + 构建脚本” 的方式落地，并完成了编译验证：
 
+- [Ada](./Ada) — Ada 语言教程与示例，使用 MSYS2 UCRT64 的 GNAT (`gnatmake`) 验证
 - [asm/intel](./asm/intel) — x86-64 汇编编程指南，使用 NASM + MSVC link.exe 验证
 - [boost](./boost) — Boost C++ 教程与示例，使用 MSVC + Boost 头文件验证
 - [coq](./coq) — Coq 教程与示例，使用 coqc 批量编译验证
@@ -38,8 +39,6 @@
 ## 其他教程目录
 
 这些目录已存在于 guide 根目录，但目前可能按原始文档状态保留，后续可进一步整理为同样的示例工程结构：
-
-- [Ada](./Ada) — Ada 语言教程
 
 ## 统一约定
 
@@ -68,30 +67,32 @@
 
 如果按学习路径从基础到实践来读，可以按下面顺序：
 
-1. [asm/intel](./asm/intel)
-2. [cpp20](./cpp20)
-3. [boost](./boost)
-4. [dlang](./dlang)
-5. [dotnet](./dotnet)
-6. [elixir](./elixir)
-7. [erlang](./erlang)
-8. [freebasic](./freebasic)
-9. [dart](./dart)
-10. [kotlin](./kotlin)
-11. [OpenCL](./OpenCL)
-12. [sdl2](./sdl2)
-13. [wpf](./wpf)
-14. [sbcl](./sbcl)
-15. [swift](./swift)
-16. [WinUI3](./WinUI3)
-17. [zig](./zig)
-18. [lean4](./lean4)
+1. [Ada](./Ada)
+2. [asm/intel](./asm/intel)
+3. [cpp20](./cpp20)
+4. [boost](./boost)
+5. [dlang](./dlang)
+6. [dotnet](./dotnet)
+7. [elixir](./elixir)
+8. [erlang](./erlang)
+9. [freebasic](./freebasic)
+10. [dart](./dart)
+11. [kotlin](./kotlin)
+12. [OpenCL](./OpenCL)
+13. [sdl2](./sdl2)
+14. [wpf](./wpf)
+15. [sbcl](./sbcl)
+16. [swift](./swift)
+17. [WinUI3](./WinUI3)
+18. [zig](./zig)
+19. [lean4](./lean4)
 
 ## 工具链说明
 
 不同目录依赖不同工具链，常见包括：
 
 - NASM + MSVC
+- GNAT (MSYS2 UCRT64)
 - Visual Studio + VC
 - MSVC + Boost
 - Coq (coqc)
