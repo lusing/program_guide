@@ -1,0 +1,13 @@
+<Window x:Class="MvvmDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MVVM Demo" Height="240" Width="420">
+    <Grid Margin="20">
+        <StackPanel VerticalAlignment="Center">
+            <TextBlock Text="任务名称" FontWeight="Bold" Margin="0,0,0,8" />
+            <TextBox Text="{Binding TaskName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" />
+            <TextBlock Text="{Binding StatusMessage}" FontSize="18" Margin="0,0,0,12" />
+            <Button Content="添加任务" Command="{Binding AddTaskCommand}" Width="150" Height="36" />
+        </StackPanel>
+    </Grid>
+</Window>

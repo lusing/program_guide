@@ -1,0 +1,15 @@
+<Window x:Class="BindingDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Data Binding Demo" Height="260" Width="420">
+    <StackPanel Margin="20">
+        <TextBlock Text="名称" FontWeight="Bold" Margin="0,0,0,8" />
+        <TextBox x:Name="NameEntry" Text="Alice" Margin="0,0,0,12" />
+
+        <TextBlock Text="亮度" FontWeight="Bold" Margin="0,0,0,8" />
+        <Slider x:Name="ValueSlider" Minimum="0" Maximum="100" Value="60" Margin="0,0,0,12" />
+
+        <TextBlock Text="{Binding ElementName=NameEntry, Path=Text, StringFormat='Hello, {0}!'}" FontSize="20" Margin="0,0,0,8" />
+        <TextBlock Text="{Binding ElementName=ValueSlider, Path=Value}" FontSize="18" />
+    </StackPanel>
+</Window>

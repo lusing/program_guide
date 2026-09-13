@@ -1,0 +1,13 @@
+<Window x:Class="NavigationDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Navigation Demo" Height="300" Width="500">
+    <DockPanel Margin="12">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+            <Button Content="首页" Width="90" Margin="0,0,8,0" Click="Home_Click"/>
+            <Button Content="设置" Width="90" Click="Settings_Click"/>
+        </StackPanel>
+
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Visible"/>
+    </DockPanel>
+</Window>
