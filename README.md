@@ -1,0 +1,98 @@
+# Guide 导航索引
+
+这是 `G:\code\guide` 根目录下的教程与示例总览，统一收录各语言/技术栈的入门指南、可运行代码示例以及验证状态。
+
+## 目录说明
+
+本仓库包含多种技术栈的学习资料，目录按主题分组，核心目标是：
+
+- 把教程中的代码片段整理为独立示例目录
+- 保持各语言的构建/编译流程可复现
+- 通过本机编译器或 SDK 进行最小验证
+- 对于可运行示例统一保留 `README.md`、`build.ps1` 和 `examples/` 结构
+
+## 已整理并验证的教程
+
+这些目录已经按 “专门文件 + 示例目录 + 构建脚本” 的方式落地，并完成了编译验证：
+
+- [asm/intel](./asm/intel) — x86-64 汇编编程指南，使用 NASM + MSVC link.exe 验证
+- [cpp20](./cpp20) — C++20 教程与示例，适配 MSVC/Windows 构建
+- [dart](./dart) — Dart 语言入门与示例，使用 Dart SDK 验证
+- [kotlin](./kotlin) — Kotlin 教程与 JVM 示例，使用 Kotlin Compiler 验证
+- [OpenCL](./OpenCL) — OpenCL Windows 教程，使用 Visual Studio + CUDA CL 头文件验证
+- [wpf](./wpf) — WPF 编程指南，使用 .NET SDK + WPF 运行时验证
+- [zig](./zig) — Zig 0.16 教程与示例，已完成 0.16 兼容修正与编译验证
+
+## 其他教程目录
+
+这些目录已存在于 guide 根目录，但目前可能按原始文档状态保留，后续可进一步整理为同样的示例工程结构：
+
+- [Ada](./Ada) — Ada 语言教程
+- [WinUI3](./WinUI3) — WinUI 3 相关教程
+- [dotnet](./dotnet) — .NET 相关资料
+- [lean4](./lean4) — Lean 4 学习内容
+- [sbcl](./sbcl) — SBCL / Common Lisp 相关内容
+
+## 统一约定
+
+各教程目录尽量遵循以下结构：
+
+```text
+<topic>/
+├── README.md
+├── build.ps1
+├── <guide-file>.md
+├── examples/
+│   ├── 01_xxx/
+│   ├── 02_xxx/
+│   └── ...
+└── build/
+```
+
+其中：
+
+- `README.md`：目录级简介和使用说明
+- `build.ps1`：统一构建入口，可批量编译示例
+- `examples/`：独立示例文件或工程目录
+- `build/`：编译产物输出目录
+
+## 建议的阅读顺序
+
+如果按学习路径从基础到实践来读，可以按下面顺序：
+
+1. [asm/intel](./asm/intel)
+2. [cpp20](./cpp20)
+3. [dart](./dart)
+4. [kotlin](./kotlin)
+5. [OpenCL](./OpenCL)
+6. [wpf](./wpf)
+7. [zig](./zig)
+8. 继续按专题扩展到 [WinUI3](./WinUI3)、[dotnet](./dotnet) 等目录
+
+## 工具链说明
+
+不同目录依赖不同工具链，常见包括：
+
+- NASM + MSVC
+- Visual Studio + VC
+- Dart SDK
+- Kotlin Compiler
+- CUDA OpenCL Headers
+- .NET SDK + WPF
+- Zig 0.16
+
+## 维护原则
+
+- 以“可运行示例”为核心，而不是仅保存代码片段
+- 示例优先兼容当前安装的工具链版本
+- 对已知 API 变更做兼容修复并留下注释
+- 每次新增内容后，应执行最小构建验证
+
+---
+
+如果你想继续扩展该导航页，可以在这里继续加入：
+
+- 新教程新增后的状态说明
+- 每个目录的学习目标
+- 各教程之间的依赖关系
+- 一键构建脚本总入口
