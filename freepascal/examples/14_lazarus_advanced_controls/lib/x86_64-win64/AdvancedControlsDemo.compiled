@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="G:\scoop\apps\lazarus\current\fpc\3.2.2\bin\x86_64-win64\fpc.exe" Date="1556502373"/>
+  <Params Value="-MObjFPC -Scghi -O1 -g -gl -l -vewnhibq -FuG:\code\guide\freepascal\examples\14_lazarus_advanced_controls\ -FuG:\scoop\apps\lazarus\current\lcl\units\x86_64-win64\win32 -FuG:\scoop\apps\lazarus\current\lcl\units\x86_64-win64 -FuG:\scoop\apps\lazarus\current\components\freetype\lib\x86_64-win64 -FuG:\scoop\apps\lazarus\current\components\lazutils\lib\x86_64-win64 -FuG:\scoop\apps\lazarus\current\packager\units\x86_64-win64 -FEG:\code\guide\freepascal\examples\14_lazarus_advanced_controls\lib\x86_64-win64\ -oG:\code\guide\freepascal\examples\14_lazarus_advanced_controls\lib\x86_64-win64\AdvancedControlsDemo.exe -dLCL -dLCLwin32 AdvancedControlsDemo.lpr"/>
+</CONFIG>

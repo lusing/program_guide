@@ -79,12 +79,52 @@ if ($All) {
         Invoke-FreePascalExample -SourcePath $f.FullName
     }
 
+    $lazarusProjects = @(
+        (Join-Path $examplesDir "13_lazarus_gui\LazarusGuiDemo.lpi"),
+        (Join-Path $examplesDir "14_lazarus_advanced_controls\AdvancedControlsDemo.lpi"),
+        (Join-Path $examplesDir "15_lazarus_menus_dialogs\LazarusMenusDemo.lpi")
+    )
+
+    foreach ($lazarusProject in $lazarusProjects) {
+        if (Test-Path -LiteralPath $lazarusProject) {
+            $projectName = [System.IO.Path]::GetFileName($lazarusProject)
+            Write-Host "[Compile] $projectName" -ForegroundColor Cyan
+            & "G:\scoop\apps\lazarus\current\lazbuild.exe" $lazarusProject
+            if ($LASTEXITCODE -ne 0) {
+                throw "Lazarus GUI 项目编译失败: $lazarusProject"
+            }
+        }
+    }
+
     Write-Host "[Done] examples 目录全部验证通过。" -ForegroundColor Green
     exit 0
 }
 
 if ($File) {
     $sourcePath = Join-Path $examplesDir $File
+
+    if (Test-Path -LiteralPath $sourcePath -PathType Container) {
+        $guiMap = @{
+            "13_lazarus_gui" = (Join-Path $examplesDir "13_lazarus_gui\LazarusGuiDemo.lpi");
+            "14_lazarus_advanced_controls" = (Join-Path $examplesDir "14_lazarus_advanced_controls\AdvancedControlsDemo.lpi");
+            "15_lazarus_menus_dialogs" = (Join-Path $examplesDir "15_lazarus_menus_dialogs\LazarusMenusDemo.lpi")
+        }
+
+        if ($guiMap.ContainsKey($File)) {
+            $projectPath = $guiMap[$File]
+            $projectName = [System.IO.Path]::GetFileName($projectPath)
+            Write-Host "[Compile] $projectName" -ForegroundColor Cyan
+            & "G:\scoop\apps\lazarus\current\lazbuild.exe" $projectPath
+            if ($LASTEXITCODE -ne 0) {
+                throw "Lazarus GUI 项目编译失败: $projectPath"
+            }
+            Write-Host "[Done] 验证通过: $File" -ForegroundColor Green
+            exit 0
+        }
+
+        throw "目标不是单个示例文件: $sourcePath"
+    }
+
     if (-not (Test-Path -LiteralPath $sourcePath)) {
         throw "找不到示例文件: $sourcePath"
     }

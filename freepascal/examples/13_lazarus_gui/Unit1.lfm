@@ -1,0 +1,28 @@
+object MainForm: TMainForm
+  Left = 360
+  Height = 180
+  Top = 180
+  Width = 320
+  Caption = 'Lazarus GUI Demo'
+  ClientHeight = 180
+  ClientWidth = 320
+  LCLVersion = '4.8'
+  object BtnHello: TButton
+    Left = 96
+    Height = 32
+    Top = 48
+    Width = 128
+    Caption = 'Click Me'
+    OnClick = BtnHelloClick
+    TabOrder = 0
+  end
+  object LblMessage: TLabel
+    Left = 56
+    Height = 20
+    Top = 104
+    Width = 208
+    Alignment = taCenter
+    Caption = 'Ready'
+    ParentColor = False
+  end
+end

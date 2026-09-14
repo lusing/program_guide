@@ -21,7 +21,23 @@ freepascal/
 │   ├── 09_strings_sets.pas
 │   ├── 10_pointers.pas
 │   ├── 11_file_io.pas
-│   └── 12_classes.pas
+│   ├── 12_classes.pas
+│   ├── 13_lazarus_gui/
+│   │   ├── LazarusGuiDemo.lpr
+│   │   ├── LazarusGuiDemo.lpi
+│   │   ├── Unit1.pas
+│   │   └── Unit1.lfm
+│   ├── 14_lazarus_advanced_controls/
+│   │   ├── AdvancedControlsDemo.lpr
+│   │   ├── AdvancedControlsDemo.lpi
+│   │   ├── Unit1.pas
+│   │   └── Unit1.lfm
+│   └── 15_lazarus_menus_dialogs/
+│       ├── LazarusMenusDemo.lpr
+│       ├── LazarusMenusDemo.lpi
+│       ├── MainForm.pas
+│       ├── SecondForm.pas
+│       └── (可选的 .lfm 资源文件)
 └── build/
 ```
 
@@ -54,4 +70,4 @@ cd G:\code\guide\freepascal
 
 - Free Pascal 是经典 Pascal 语言的现代实现，适合学习结构化编程、过程式编程和面向对象编程。
 - 本目录的示例兼容 Windows 平台本地编译器，并以最小运行验证方式确认代码可执行。
-- 对于 Lazarus，通常适合用于 GUI 组件与 IDE 相关学习；本目录主要聚焦语言核心与可编译示例。
+- 对于 Lazarus，通常适合用于 GUI 组件与 IDE 相关学习；本目录除了命令行示例外，还加入了最小 GUI 例子和一个进阶控件演示，用于验证 Win32 LCL 项目可被 Lazarus 编译。
