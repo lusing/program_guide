@@ -38,6 +38,7 @@
 - [kotlin](./kotlin) — Kotlin 教程与 JVM 示例，使用 Kotlin Compiler 验证
 - [lean4](./lean4) — Lean4/Mathlib4 教程与示例，使用 Lake + Lean 校验
 - [mfc](./mfc) — MFC 桌面应用开发指南，使用 MSVC + MFC 库编译验证
+- [win32](./win32) — Win32 API 桌面编程指南，使用 MSVC + Win32 API 编译验证
 - [OpenCL](./OpenCL) — OpenCL Windows 教程，使用 Visual Studio + CUDA CL 头文件验证
 - [rust](./rust) — Rust 教程与示例，使用 rustc 编译并运行验证
 - [sbcl](./sbcl) — Common Lisp / SBCL 教程与示例，使用 SBCL compile-file 验证
@@ -95,15 +96,16 @@
 19. [dart](./dart)
 20. [kotlin](./kotlin)
 21. [mfc](./mfc)
-22. [rust](./rust)
-23. [OpenCL](./OpenCL)
-24. [sdl2](./sdl2)
-25. [wpf](./wpf)
-26. [sbcl](./sbcl)
-27. [swift](./swift)
-28. [WinUI3](./WinUI3)
-29. [zig](./zig)
-30. [lean4](./lean4)
+22. [win32](./win32)
+23. [rust](./rust)
+24. [OpenCL](./OpenCL)
+25. [sdl2](./sdl2)
+26. [wpf](./wpf)
+27. [sbcl](./sbcl)
+28. [swift](./swift)
+29. [WinUI3](./WinUI3)
+30. [zig](./zig)
+31. [lean4](./lean4)
 
 ## 工具链说明
 
@@ -134,6 +136,7 @@
 - Swift
 - Kotlin Compiler
 - MFC / Win32 桌面框架
+- Win32 API 原生桌面编程
 - CUDA OpenCL Headers
 - SDL2
 - .NET SDK + WPF
