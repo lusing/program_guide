@@ -1637,11 +1637,201 @@ printf("Available physical memory: %llu MB\n", mem.ullAvailPhys / (1024ULL * 102
 
 时极为常用。
 
-### 16.4 内存管理中的注意事项
+### 16.4 操作系统基础知识：页、地址空间、提交与保留
+
+理解 Win32 内存 API，必须站在操作系统的视角来看。Windows 中，进程并不是直接在物理内存上“随机分配”；它看到的是一个大规模的虚拟地址空间。
+
+#### 1）虚拟地址空间
+
+每个进程都有自己的虚拟地址空间。这个地址空间看起来像一整块连续地址区域，但它并不一定与物理内存一一对应。Windows 通过分页机制把虚拟地址映射到物理页帧上。
+
+因此：
+
+- 进程 A 的 0x00007FF... 并不等于进程 B 的同一个地址
+- 程序编写时看到的是“连续地址”，但物理上可能分散在不同页框
+- 该机制是现代操作系统安全与隔离的基础
+
+#### 2）页（Page）
+
+Windows 以页为单位管理内存。常见页大小是：
+
+- 4 KB（x86 / x64 的标准页大小）
+- 2 MB（大页，需特殊调用）
+
+虚拟内存分配常说“保留”和“提交”：
+
+- `MEM_RESERVE`：保留一段虚拟地址空间，但不实际分配页帧
+- `MEM_COMMIT`：真正分配物理页并承诺可使用
+
+这意味着程序可以先保留大空间，再按需提交，适合大数组、缓存、对象池等场景。
+
+#### 3）页保护（Page Protection）
+
+每一页还有权限：
+
+- `PAGE_READONLY`
+- `PAGE_READWRITE`
+- `PAGE_EXECUTE_READ`
+- `PAGE_NOACCESS`
+
+这些权限控制一个页面能否读、写、执行。安全机制和防止越界访问都依赖这种分页保护。
+
+#### 4）堆 vs 虚拟内存
+
+- `VirtualAlloc` 适合底层对象池、缓存、共享内存、系统组件
+- `new / malloc` 通常来自 C/C++ 运行时堆，底层往往又依赖进程堆
+- 程序堆是系统为进程提供的更高层抽象；它管理对象分配和释放
+
+因此，Win32 编程允许你在不同层次控制内存：从高层堆，到中层虚拟内存，再到底层页保护和映射。
+
+### 16.5 详细 API：`VirtualProtect`、`HeapAlloc`、`GlobalAlloc`、映射文件
+
+#### 1）`VirtualProtect`：改变页属性
+
+有时一个页面刚分配时是可读写的，但你可能想把它临时设为只读，或在执行缓存时设置可执行权限：
+
+```cpp
+void* p = VirtualAlloc(nullptr, 4096, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+DWORD oldProtect = 0;
+VirtualProtect(p, 4096, PAGE_READONLY, &oldProtect);
+```
+
+这个 API 在：
+
+- 运行时安全检测
+- 动态代码生成 / JIT
+- 内存写保护
+- 实现页面级保护策略
+
+时非常重要。
+
+#### 2）`HeapAlloc` / `HeapFree`：进程堆
+
+C/C++ 运行时的堆通常是进程堆的一层封装。Win32 也允许直接使用：
+
+```cpp
+HANDLE heap = GetProcessHeap();
+void* p = HeapAlloc(heap, HEAP_ZERO_MEMORY, 4096);
+if (p) {
+    strcpy_s((char*)p, 4096, "hello");
+    HeapFree(heap, 0, p);
+}
+```
+
+进程堆适合：
+
+- 需要大量对象分配的应用
+- 运行库实现
+- 数据结构容器
+- 长生命周期对象池
+
+#### 3）`GlobalAlloc` / `LocalAlloc`：旧式全局内存
+
+这些 API 是历史比较早的 Win32 内存接口：
+
+```cpp
+HGLOBAL hMem = GlobalAlloc(GMEM_FIXED, 1024);
+char* p = (char*)GlobalLock(hMem);
+strcpy_s(p, 1024, "global memory");
+GlobalUnlock(hMem);
+GlobalFree(hMem);
+```
+
+它们的含义：
+
+- `GlobalAlloc`：全局堆分配
+- `LocalAlloc`：局部堆分配
+- 这些接口如今通常只是兼容性支持；现代代码更倾向于 `new`、`malloc` 或堆 API
+
+#### 4）文件映射：`CreateFileMapping` / `MapViewOfFile`
+
+Win32 中非常强大的内存技巧是“内存映射文件”。它让文件内容像内存一样访问，而不是传统的 `ReadFile` / `WriteFile` 轮询：
+
+```cpp
+HANDLE hFile = CreateFileW(L"C:\\tmp\\memdemo.txt", GENERIC_READ | GENERIC_WRITE,
+    0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+HANDLE hMapping = CreateFileMappingW(hFile, nullptr, PAGE_READWRITE, 0, 4096, L"DemoMem");
+void* p = MapViewOfFile(hMapping, FILE_MAP_ALL_ACCESS, 0, 0, 4096);
+
+strcpy_s((char*)p, 4096, "Mapped file memory");
+UnmapViewOfFile(p);
+CloseHandle(hMapping);
+CloseHandle(hFile);
+```
+
+这类技术用于：
+
+- 大文件访问
+- 共享内存
+- IPC（进程间通信）
+- 高效缓存和数据共享
+
+它的本质是：让“文件”和“内存”之间建立映射关系，减少复制成本。
+
+#### 5）`GetProcessMemoryInfo`：查看进程真实内存占用
+
+如果要看某个进程的工作集（working set）、峰值内存等，可以用：
+
+```cpp
+PROCESS_MEMORY_COUNTERS pmc = {};
+pmc.cb = sizeof(pmc);
+if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
+    printf("WorkingSetSize: %llu KB\n", pmc.WorkingSetSize / 1024ULL);
+    printf("PeakWorkingSetSize: %llu KB\n", pmc.PeakWorkingSetSize / 1024ULL);
+}
+```
+
+这是系统诊断工具、监控程序、性能观察器的常见用法。它不是“系统总内存”，而是“当前进程的内存占用情况”。
+
+### 16.6 OS 视角：为什么要掌握这些 API
+
+从操作系统角度理解，Win32 内存 API 其实对应着三种不同层次：
+
+1. 用户态对象：堆、句柄、C/C++ 分配器
+2. 进程虚拟地址空间：VirtualAlloc、VirtualProtect
+3. 系统级物理资源：页面框架、分页、交换文件、共享映射
+
+这样看，Win32 内存管理就不再只是“申请一块内存”，而是：
+
+- 申请虚拟地址
+- 维护分页保护
+- 绑定到页表
+- 可能映射到物理内存或文件
+- 通过系统对象和进程空间安全隔离
+
+这恰恰是操作系统最核心的思想之一：把真实资源抽象成安全、受控、可管理的对象。Windows 程序员如果只用 `new` / `malloc`，只能看到最表层；但如果学会 `VirtualAlloc`、`VirtualProtect`、`CreateFileMapping`，就会真正理解操作系统是如何管理程序内存的。
+
+### 16.7 实战案例：内存管理深度示例
+
+本目录中的 `12_memory_deep_dive` 示例演示了更完整的内存管理组合：
+
+- `GlobalMemoryStatusEx`：查看系统总可用内存
+- `GetSystemInfo`：查看页面大小和 CPU 架构信息
+- `VirtualAlloc`：保留并提交一段虚拟内存
+- `VirtualProtect`：将一段内存设置为只读
+- `HeapAlloc`：使用进程堆进行对象分配
+- `GetProcessMemoryInfo`：查看当前进程工作集
+- `CreateFileMappingW` / `MapViewOfFile`：映射共享内存
+
+这不是一个“只会输出数字”的程序，它把 Windows 内存的几个核心层次串起来了：
+
+- 物理内存状态
+- 虚拟地址空间
+- 页保护
+- 进程堆
+- 文件映射
+
+这正是一个真正理解操作系统内存模型的关键步骤。
+
+### 16.8 内存管理中的注意事项
 
 在 Win32 程序里，内存管理不是“随便开个 buffer 就行”的事情，需要注意：
 
 - `VirtualAlloc` 申请的内存必须配套 `VirtualFree`
+- `HeapAlloc` 必须对应 `HeapFree`
+- `CreateFileMapping` / `MapViewOfFile` 需要成对使用，并在合适时 `UnmapViewOfFile`
+- 使用 `VirtualProtect` 时，要保留旧保护属性，避免破坏原有设置
 - 释放后，要避免悬空指针
 - 读写越界会导致访问违例
 - 处理大量内存时需注意 32 位/64 位地址差异

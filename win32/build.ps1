@@ -58,7 +58,7 @@ function Invoke-CompileExample {
     ) -join " "
 
     $cmd = @(
-        'call "{0}" >nul && cl /nologo /std:c++20 /EHsc /DUNICODE /D_UNICODE /utf-8 /c "{1}" /Fo"{2}" {3} && link /nologo /MACHINE:X64 /OUT:"{4}" /SUBSYSTEM:WINDOWS "{5}" user32.lib gdi32.lib kernel32.lib shell32.lib comctl32.lib'
+        'call "{0}" >nul && cl /nologo /std:c++20 /EHsc /DUNICODE /D_UNICODE /utf-8 /c "{1}" /Fo"{2}" {3} && link /nologo /MACHINE:X64 /OUT:"{4}" /SUBSYSTEM:WINDOWS "{5}" user32.lib gdi32.lib kernel32.lib shell32.lib comctl32.lib psapi.lib'
     ) -f $vcvars, $SourcePath, $objPath, $includeFlags, $exePath, $objPath
 
     Write-Host "[Compile] $([System.IO.Path]::GetFileName($SourcePath))" -ForegroundColor Cyan

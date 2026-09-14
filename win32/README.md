@@ -30,7 +30,9 @@ win32/
 │   │   └── main.cpp
 │   ├── 10_file_manager/
 │   │   └── main.cpp
-│   └── 11_thread_sync_demo/
+│   ├── 11_thread_sync_demo/
+│   │   └── main.cpp
+│   └── 12_memory_deep_dive/
 │       └── main.cpp
 ├── build/
 └── ...
@@ -74,6 +76,7 @@ cd G:\code\guide\win32
 - `09_memory_monitor`：使用 `GlobalMemoryStatusEx`、`VirtualAlloc` 和 `VirtualFree` 的内存状态与分配示例。
 - `10_file_manager`：演示 `CreateFileW`、`WriteFile`、`FindFirstFileW` 等文件管理 API 的实际用法。
 - `11_thread_sync_demo`：演示 `CreateThread`、`CRITICAL_SECTION`、事件对象和 `WaitForSingleObject` 的线程同步与 UI 消息回传模式。
+- `12_memory_deep_dive`：展示 `VirtualAlloc`、`VirtualProtect`、`HeapAlloc`、`GetProcessMemoryInfo` 和文件映射的底层内存管理实战示例。
 
 ## 说明
 
