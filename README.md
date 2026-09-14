@@ -31,6 +31,7 @@
 - [freepascal](./freepascal) — Free Pascal / Lazarus 教程与示例，使用 fpc 编译并运行验证
 - [fsharp](./fsharp) — F# 编程教程与示例，使用 .NET SDK (`dotnet build` / `dotnet run`) 验证
 - [flutter](./flutter) — Flutter / Dart 跨平台 UI 教程与示例，使用 Flutter 桌面编译验证
+- [forth](./forth) — Forth / GForth 教程与示例，使用 gforth 0.7.3 运行验证（含栈平衡与 stderr 检查）
 - [go](./go) — Go 语言教程与示例，使用 Go 编译器编译并运行验证
 - [godot](./godot) — Godot 4 / GDScript 教程与示例，使用 Godot headless 执行脚本验证
 - [julia](./julia) — Julia 教程与示例，使用 julia 运行验证
@@ -106,6 +107,7 @@
 29. [WinUI3](./WinUI3)
 30. [zig](./zig)
 31. [lean4](./lean4)
+32. [forth](./forth)
 
 ## 工具链说明
 
@@ -129,6 +131,7 @@
 - Flutter / Dart
 - Go
 - Godot 4 / GDScript
+- GForth 0.7.3（Forth / 栈式语言，macOS macports 安装）
 - Julia
 - Ren'Py
 - Rust
