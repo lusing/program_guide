@@ -10,8 +10,13 @@ Set-Location $projectRoot
 $vcvars = "G:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat"
 $examplesDir = Join-Path $projectRoot "examples"
 $buildDir = Join-Path $projectRoot "build"
-$msvcInclude = "G:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\include"
-$windowsSdkInclude = "C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0"
+
+$msvcVersion = (Get-ChildItem -Path 'G:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC' -Directory | Sort-Object Name -Descending | Select-Object -First 1).FullName
+$msvcInclude = Join-Path $msvcVersion 'include'
+
+$windowsSdkRoot = 'C:\Program Files (x86)\Windows Kits\10\Include'
+$windowsSdkVersion = (Get-ChildItem -Path $windowsSdkRoot -Directory | Sort-Object Name -Descending | Select-Object -First 1).Name
+$windowsSdkInclude = Join-Path $windowsSdkRoot $windowsSdkVersion
 $windowsSdkUmInclude = Join-Path $windowsSdkInclude "um"
 $windowsSdkSharedInclude = Join-Path $windowsSdkInclude "shared"
 $windowsSdkUcrtInclude = Join-Path $windowsSdkInclude "ucrt"

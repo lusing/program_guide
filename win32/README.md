@@ -16,7 +16,13 @@ win32/
 │   │   └── main.cpp
 │   ├── 03_controls/
 │   │   └── main.cpp
-│   └── 04_gdi_drawing/
+│   ├── 04_gdi_drawing/
+│   │   └── main.cpp
+│   ├── 05_mini_calculator/
+│   │   └── main.cpp
+│   ├── 06_text_editor/
+│   │   └── main.cpp
+│   └── 07_paint_app/
 │       └── main.cpp
 ├── build/
 └── ...
@@ -53,6 +59,9 @@ cd G:\code\guide\win32
 - `02_message_loop`：处理 `WM_LBUTTONDOWN`、`WM_MOUSEMOVE`、`WM_CHAR` 等消息示例。
 - `03_controls`：使用 `CreateWindowW` 创建按钮、编辑框和静态文本控件。
 - `04_gdi_drawing`：使用 GDI 在 `WM_PAINT` 中绘制矩形、圆形和文本。
+- `05_mini_calculator`：完整的简单计算器，展示窗口布局、按钮事件与计算逻辑。
+- `06_text_editor`：完整的文本编辑器，展示菜单、编辑框、打开/保存文件与文件 I/O。
+- `07_paint_app`：完整的绘图程序，展示鼠标拖拽、连续线条和 GDI 重绘。
 
 ## 说明
 
