@@ -947,6 +947,315 @@ void MainWindow::OnAddClicked(IInspectable const&, RoutedEventArgs const&)
 
 如果你把这套结构看懂了，后面再学复杂页面、导航、异步、MVVM 都会顺很多。
 
+### 2.5.9 一个最小完整结构：`MainWindow + Page + ViewModel`
+
+到这里为止，很多人还停留在“XAML 里写个控件，C++ 里写个函数”的层面，但真正的 WinUI 3 工程不是这样。真正的结构是：
+
+- `MainWindow`：应用窗口，负责承载页面和生命周期
+- `Page`：页面本身，负责布局和事件绑定
+- `ViewModel`：页面状态与业务动作的容器
+- `Model`：业务数据对象
+- `Service`：文件、网络、数据库等真实能力
+
+最小可理解的完整闭环，往往是下面这个样子：
+
+```text
+MainWindow
+  └── Page
+      ├── TextBox / Button / ListView
+      ├── Click 事件
+      └── ViewModel
+          ├── 新增任务
+          ├── 任务列表
+          └── 当前状态
+```
+
+#### 2.5.9.1 这个结构的真实含义
+
+`MainWindow` 不应该直接塞满所有 UI 和逻辑。它更像“壳”：
+
+- 创建窗口
+- 装载 `Page`
+- 处理应用生命周期
+- 把页面挂到窗口里
+
+而页面本身负责 UI 展示：
+
+- `TextBox` 输入新任务
+- `Button` 触发事件
+- `ListView` 展示任务集合
+
+真正的状态和业务逻辑由 `ViewModel` 保持：
+
+- 当前输入文本
+- 任务列表
+- 是否正在加载
+- 是否允许提交
+- 已完成数量等
+
+这样页面就不会变成“控件和状态混在一起的大泥团”。
+
+#### 2.5.9.2 最小代码结构：窗口 + 页面 + 视图模型
+
+先看目录结构：
+
+```text
+MyApp/
+├── App.xaml
+├── App.h
+├── App.cpp
+├── MainWindow.xaml
+├── MainWindow.h
+├── MainWindow.cpp
+├── Pages/
+│   └── TaskPage.xaml
+├── ViewModels/
+│   └── TaskViewModel.h
+└── Models/
+    └── TaskItem.h
+```
+
+这里的关系是：
+
+- `MainWindow` 负责承载页面
+- `TaskPage` 负责显示和交互
+- `TaskViewModel` 负责状态和动作
+
+#### 2.5.9.3 `MainWindow`：窗口壳
+
+```cpp
+#pragma once
+#include <winrt/Microsoft.UI.Xaml.h>
+#include <winrt/Microsoft.UI.Xaml.Controls.h>
+#include <winrt/Microsoft.UI.Xaml.Markup.h>
+
+namespace winrt::MyApp::implementation
+{
+    struct MainWindow : winrt::Microsoft::UI::Xaml::WindowT<MainWindow>
+    {
+        MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        void InitializeComponent();
+    };
+}
+```
+
+```cpp
+#include "MainWindow.h"
+#include "TaskPage.h"
+
+using namespace winrt;
+using namespace Microsoft::UI::Xaml;
+
+namespace winrt::MyApp::implementation
+{
+    void MainWindow::InitializeComponent()
+    {
+        auto page = winrt::make<winrt::MyApp::implementation::TaskPage>();
+        Content(page);
+    }
+}
+```
+
+这里的重点不是 `Content(page)` 看起来很简单，而是它说明了：
+
+- 窗口本身不负责业务逻辑
+- 它只是容器
+- 真正的页面对象被挂进去
+
+#### 2.5.9.4 `TaskPage`：页面负责 UI 与事件
+
+```cpp
+#pragma once
+#include <winrt/Microsoft.UI.Xaml.Controls.h>
+#include "TaskViewModel.h"
+
+namespace winrt::MyApp::implementation
+{
+    struct TaskPage : winrt::Microsoft::UI::Xaml::Controls::PageT<TaskPage>
+    {
+        TaskPage()
+        {
+            InitializeComponent();
+            view_model_ = winrt::make<winrt::MyApp::implementation::TaskViewModel>();
+        }
+
+        void OnAddClicked(IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& args);
+
+        winrt::Microsoft::UI::Xaml::Controls::TextBox TaskInput();
+        winrt::Microsoft::UI::Xaml::Controls::ListView TaskList();
+
+    private:
+        winrt::MyApp::implementation::TaskViewModel view_model_;
+    };
+}
+```
+
+```cpp
+#include "TaskPage.h"
+
+using namespace winrt;
+using namespace Microsoft::UI::Xaml;
+using namespace Microsoft::UI::Xaml::Controls;
+
+namespace winrt::MyApp::implementation
+{
+    void TaskPage::OnAddClicked(IInspectable const&, RoutedEventArgs const&)
+    {
+        auto title = TaskInput().Text();
+        if (title.empty()) {
+            return;
+        }
+
+        view_model_.AddTask(title);
+        TaskList().ItemsSource(view_model_.Tasks());
+        TaskInput().Text(L"");
+    }
+}
+```
+
+这一段代码里，最关键的结构不是“函数有多长”，而是：
+
+- 页面对象持有 `view_model_`
+- `TaskInput()` 负责拿到文本框内容
+- `OnAddClicked` 只是把用户动作转成“命令动作”
+- `AddTask` 由 `view_model_` 处理
+- `TaskList` 由 `ItemsSource` 刷新显示
+
+这就是真实的页面闭环：
+
+```text
+用户输入
+  ↓
+Button.Click
+  ↓
+TaskPage::OnAddClicked
+  ↓
+TaskViewModel::AddTask
+  ↓
+任务集合更新
+  ↓
+ListView 挂接到同一数据源
+  ↓
+界面刷新
+```
+
+#### 2.5.9.5 `TaskViewModel`：状态和业务动作的中心
+
+```cpp
+#pragma once
+#include <string>
+#include <vector>
+
+namespace winrt::MyApp::implementation
+{
+    struct TaskItem
+    {
+        winrt::hstring title;
+        bool done = false;
+    };
+
+    struct TaskViewModel
+    {
+        TaskViewModel()
+        {
+            tasks_.push_back(TaskItem{ L"Plan WinUI app", false });
+            tasks_.push_back(TaskItem{ L"Design page layout", false });
+            tasks_.push_back(TaskItem{ L"Review binding", true });
+        }
+
+        void AddTask(winrt::hstring title)
+        {
+            if (title.empty()) {
+                return;
+            }
+
+            tasks_.push_back(TaskItem{ title, false });
+        }
+
+        const std::vector<TaskItem>& Tasks() const
+        {
+            return tasks_;
+        }
+
+    private:
+        std::vector<TaskItem> tasks_;
+    };
+}
+```
+
+这里的重点是：
+
+- `TaskViewModel` 不是 UI 控件，不是 `Page` 的子对象，也不是 XAML 元素
+- 它只是一个普通 C++ / WinRT 兼容对象
+- 它持有页面真正的状态
+- 页面通过它来表达动作和数据变化
+
+#### 2.5.9.6 XAML 页面：声明界面，不负责业务细节
+
+```xml
+<Page
+    x:Class="MyApp.TaskPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MyApp">
+    <StackPanel Spacing="12" Padding="16">
+        <TextBlock Text="Task manager" FontSize="24" />
+
+        <TextBox x:Name="TaskInput" Header="New task" PlaceholderText="What do you want to do?" />
+        <Button x:Name="AddButton" Content="Add" Click="OnAddClicked" />
+
+        <ListView x:Name="TaskList" />
+    </StackPanel>
+</Page>
+```
+
+这里 `XAML` 的角色很明确：
+
+- 声明页面布局
+- 告诉系统控件的名字是什么：`TaskInput`, `AddButton`, `TaskList`
+- 把事件绑定到 `OnAddClicked`
+
+也就是说：
+
+- XAML 负责界面树
+- C++ 负责页面逻辑
+- ViewModel 负责状态
+- 事件把三者连接起来
+
+#### 2.5.9.7 为什么这个结构是最小真实结构
+
+最重要的不是“代码能不能运行”，而是：
+
+- `MainWindow` 是应用壳
+- `Page` 是 UI 承载层
+- `ViewModel` 是状态和行为中心
+- 事件负责把用户动作传到状态层
+- 数据源变化负责驱动 UI 刷新
+
+如果没有这种结构，页面很快会变成：
+
+- `Button` 点击事件里填一堆逻辑
+- 处理函数里直接操控多个控件
+- 状态散落在控件里
+- 逻辑和 UI 混在一起
+- 以后修改功能越来越痛苦
+
+而真实工程的做法，是把“状态”从“控件对象”里抽离出来，统一放到 `ViewModel` 中。这样页面变成：
+
+- 只负责显示和事件入口
+- 只负责把动作传给逻辑层
+- 数据变化后由绑定/数据源自动更新界面
+
+#### 2.5.9.8 一句话总结：这就是 WinUI 3 最重要的工程模型
+
+> `MainWindow` 承载应用，`Page` 负责 UI，`ViewModel` 负责状态和动作，事件把用户输入转换为状态变化，UI 再根据状态自动刷新。
+
+这就是 WinUI 3 从“控件作文”走向“应用工程”的关键。只要你把这一层结构理顺，后面的导航、异步、绑定、服务层和更复杂页面都不会再陌生。
+
 ---
 
 ## 2.6 `winrt::` 到底是什么：C++/WinRT 的核心入口
