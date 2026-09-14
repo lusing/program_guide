@@ -4022,6 +4022,188 @@ void demo_shared_vm()
 
 这也是为什么 WinUI 3 绝不是“只会写界面”的技术，而是系统编程 + UI 编程 + 运行时对象模型的综合能力。
 
+### 13.16 WinUI 3 应用访问文件：不是“桌面 UI 以外的事”，而是系统能力的一部分
+
+WinUI 3 的应用仍然需要访问文件系统。这一点不能被“现代 UI 框架”幻想消灭掉。真实桌面应用里，常见需求包括：
+
+- 读取配置文件
+- 保存日志
+- 处理用户文档
+- 加载本地 JSON / CSV / 数据文件
+- 扫描目录和生成内容索引
+- 把异步读取结果回流到界面
+
+这些操作都不是“UI 以外的反模式”，而是正常的桌面应用能力。
+
+#### 13.16.1 典型策略：后台线程读取文件，UI 线程更新界面
+
+```cpp
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <thread>
+#include <vector>
+
+struct FileTaskResult {
+    std::vector<std::string> lines;
+    std::string path;
+};
+
+FileTaskResult read_file_lines(const std::string& path)
+{
+    std::ifstream input(path);
+    FileTaskResult result;
+    result.path = path;
+
+    if (!input) {
+        return result;
+    }
+
+    std::string line;
+    while (std::getline(input, line)) {
+        result.lines.push_back(line);
+    }
+
+    return result;
+}
+
+int main()
+{
+    std::string path = "demo.txt";
+
+    auto future = std::async(std::launch::async, [path] {
+        return read_file_lines(path);
+    });
+
+    auto result = future.get();
+    std::cout << "File: " << result.path << "\n";
+    std::cout << "Lines: " << result.lines.size() << "\n";
+}
+```
+
+这里的重点不是这段代码是否“完全是 WinUI 3 代码”，而是：
+
+- 读取文件是系统能力
+- 它可以在后台线程发生
+- UI 线程只负责显示结果
+- 这和 WinUI 3 的 UI 模型是完全一致的
+
+#### 13.16.2 真实 WinUI 3 中常见的文件访问模式
+
+常见的 WinUI 3 文件工作流是：
+
+```text
+用户点击“打开文件”
+  ↓
+UI 线程启动异步文件操作
+  ↓
+后台线程/异步任务读取文件内容
+  ↓
+工作完成后，切回 UI 线程
+  ↓
+更新 TextBlock / ListView / 状态栏
+```
+
+例如：
+
+- `FileOpenPicker`：打开用户选择的文件
+- `StorageFile`：WinRT 文件对象
+- 异步 API：`OpenAsync()`、`ReadTextAsync()`、`WriteTextAsync()`
+- `co_await`：等待异步 I/O 完成
+
+这说明：
+
+- 文件访问不只是“底层 OS API 运用”，而是 WinUI 3 应用开发中的正常能力
+- 现代 UI 框架是在系统能力之上工作，而不是替代它
+
+#### 13.16.3 文件访问和内存管理的结合：读取数据后写回状态
+
+读取文件的过程最容易出问题的地方，不是“能不能 open 文件”，而是：
+
+- 字符串和缓冲区生命周期
+- 读取后是否留在后台线程
+- 是否在 UI 线程更新控件
+- 当前任务是否持有过期对象
+
+一个正确的结构是：
+
+```text
+Service::ReadFileAsync()
+  ↓
+返回 FileTaskResult
+  ↓
+ViewModel 处理结果
+  ↓
+页面绑定更新 UI
+```
+
+而不是：
+
+```text
+Page 直接读取文件
+  ↓
+Page 直接改控件
+  ↓
+内部状态和文件 I/O 混在一起
+```
+
+这就是工程化的文件访问。
+
+#### 13.16.4 文件访问不只是“读写”，还是“资源和状态管理”
+
+在 WinUI 3 应用中，读写文件常常伴随：
+
+- 配置文件保存
+- 日志记录
+- 自动保存草稿
+- 任务列表持久化
+- 图片和媒体资源加载
+
+这些都属于系统能够提供的标准应用能力。也就是说，WinUI 3 不会让你离开系统编程，而是让你按更现代的方式进行：
+
+- 读写文件是系统能力
+- 线程/异步是执行模型
+- ViewModel 是状态模型
+- Page 是 UI 层
+
+#### 13.16.5 一个最小真实的读取文件闭环
+
+```text
+用户点击“Load”
+  ↓
+UI 线程启动异步读取
+  ↓
+后台线程读取文件内容
+  ↓
+结果放进 TaskResult
+  ↓
+回到 UI 线程
+  ↓
+ViewModel 更新数据集
+  ↓
+ListView / TextBox 自动刷新
+```
+
+这说明：
+
+- 从文件到 UI 的数据流是串起来的
+- 真正的文件 I/O 不需要脱离 WinUI 3
+- WinUI 3 只是让它变成更清晰的一整套工程结构
+
+### 13.17 结论
+
+WinUI 3 的应用能力并不只是“页面和控件”，而是：
+
+- UI 交互
+- 线程并发
+- 进程管理
+- 内存对象生命周期
+- 文件读写
+- 任务队列和异步结果回流
+
+所有这些都属于传统操作系统编程与现代 UI 应用结合的真实工程模型。
+
 示例源码：
 - [16_os_integration](G:/code/guide/WinUI3/cpp_examples/16_os_integration/os_integration.cpp)
 
