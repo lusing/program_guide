@@ -28,6 +28,7 @@
 - [elixir](./elixir) — Elixir 教程与示例，使用 elixirc 编译验证
 - [erlang](./erlang) — Erlang/OTP 教程与示例，使用 erlc 编译验证
 - [freebasic](./freebasic) — FreeBASIC 教程与示例，使用 fbc 编译验证（含 FBIDE 使用说明）
+- [freepascal](./freepascal) — Free Pascal / Lazarus 教程与示例，使用 fpc 编译并运行验证
 - [julia](./julia) — Julia 教程与示例，使用 julia 运行验证
 - [kotlin](./kotlin) — Kotlin 教程与 JVM 示例，使用 Kotlin Compiler 验证
 - [lean4](./lean4) — Lean4/Mathlib4 教程与示例，使用 Lake + Lean 校验
@@ -78,18 +79,19 @@
 9. [elixir](./elixir)
 10. [erlang](./erlang)
 11. [freebasic](./freebasic)
-12. [julia](./julia)
-13. [dart](./dart)
-14. [kotlin](./kotlin)
-15. [rust](./rust)
-16. [OpenCL](./OpenCL)
-17. [sdl2](./sdl2)
-18. [wpf](./wpf)
-19. [sbcl](./sbcl)
-20. [swift](./swift)
-21. [WinUI3](./WinUI3)
-22. [zig](./zig)
-23. [lean4](./lean4)
+12. [freepascal](./freepascal)
+13. [julia](./julia)
+14. [dart](./dart)
+15. [kotlin](./kotlin)
+16. [rust](./rust)
+17. [OpenCL](./OpenCL)
+18. [sdl2](./sdl2)
+19. [wpf](./wpf)
+20. [sbcl](./sbcl)
+21. [swift](./swift)
+22. [WinUI3](./WinUI3)
+23. [zig](./zig)
+24. [lean4](./lean4)
 
 ## 工具链说明
 
@@ -108,6 +110,7 @@
 - Elixir
 - Erlang/OTP
 - FreeBASIC / FBIDE
+- Free Pascal / Lazarus
 - Julia
 - Rust
 - SBCL
