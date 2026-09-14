@@ -22,7 +22,13 @@ win32/
 │   │   └── main.cpp
 │   ├── 06_text_editor/
 │   │   └── main.cpp
-│   └── 07_paint_app/
+│   ├── 07_paint_app/
+│   │   └── main.cpp
+│   ├── 08_process_manager/
+│   │   └── main.cpp
+│   ├── 09_memory_monitor/
+│   │   └── main.cpp
+│   └── 10_file_manager/
 │       └── main.cpp
 ├── build/
 └── ...
@@ -62,6 +68,9 @@ cd G:\code\guide\win32
 - `05_mini_calculator`：完整的简单计算器，展示窗口布局、按钮事件与计算逻辑。
 - `06_text_editor`：完整的文本编辑器，展示菜单、编辑框、打开/保存文件与文件 I/O。
 - `07_paint_app`：完整的绘图程序，展示鼠标拖拽、连续线条和 GDI 重绘。
+- `08_process_manager`：基于 `CreateToolhelp32Snapshot` 和 `Process32First/Next` 的进程枚举示例。
+- `09_memory_monitor`：使用 `GlobalMemoryStatusEx`、`VirtualAlloc` 和 `VirtualFree` 的内存状态与分配示例。
+- `10_file_manager`：演示 `CreateFileW`、`WriteFile`、`FindFirstFileW` 等文件管理 API 的实际用法。
 
 ## 说明
 

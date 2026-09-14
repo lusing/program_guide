@@ -405,3 +405,290 @@ Win32 与 MFC 的关系可以概括为：
 - `07_paint_app`：完整的绘图程序
 
 这些示例都按本机 Visual Studio 工具链进行编译验证，并尽量保持与当前安装版本兼容。
+
+## 13. 进程管理：理解 Windows 任务模型
+
+Win32 API 不只是窗口编程，它也提供了强大的系统级管理能力，其中最重要的是进程管理。所谓“进程”，就是程序的执行实例；它拥有自己的地址空间、线程、句柄和资源。学习 Win32 API 时，理解进程模型非常关键，因为它决定了程序是如何被操作系统调度与管理的。
+
+### 13.1 进程的基本概念
+
+在 Windows 中，进程和线程是分开的：
+
+- 进程：一个程序运行时占用的资源集合。
+- 线程：进程内执行代码的最小单元。
+- 句柄：系统对象的标识符。
+- 进程 ID（PID）：系统内唯一标识一个进程。
+
+常见的进程 API 包括：
+
+- `CreateToolhelp32Snapshot`
+- `Process32FirstW`
+- `Process32NextW`
+- `OpenProcess`
+- `TerminateProcess`
+- `GetCurrentProcessId`
+- `GetCurrentProcess`
+
+### 13.2 进程枚举示例
+
+```cpp
+#include <windows.h>
+#include <tlhelp32.h>
+
+void ListProcesses() {
+    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnapshot == INVALID_HANDLE_VALUE) {
+        return;
+    }
+
+    PROCESSENTRY32W pe = { sizeof(pe) };
+    if (Process32FirstW(hSnapshot, &pe)) {
+        do {
+            wprintf(L"PID: %u, EXE: %ls\n", pe.th32ProcessID, pe.szExeFile);
+        } while (Process32NextW(hSnapshot, &pe));
+    }
+
+    CloseHandle(hSnapshot);
+}
+```
+
+这类函数允许你枚举系统中所有当前进程，并在程序中获取进程 ID 和名称。它常用于：
+
+- 任务管理器风格工具
+- 监控器与诊断程序
+- 进程筛查和自动化脚本
+- 反作弊或安全审计工具
+
+### 13.3 `OpenProcess` 与进程控制
+
+如果需要对另一个进程进行访问或控制，可以使用：
+
+```cpp
+HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+```
+
+常用权限包括：
+
+- `PROCESS_QUERY_INFORMATION`
+- `PROCESS_VM_READ`
+- `PROCESS_TERMINATE`
+- `PROCESS_CREATE_THREAD`
+
+注意：权限受安全描述符和用户权限影响，因此在真实系统中，进程访问必须遵守 Windows 安全模型。不要随意终止系统关键进程。
+
+### 13.4 进程管理的实战意义
+
+Windows 桌面程序往往不只是“画一个窗口”，而是在系统中管理资源和任务。进程管理能力用于：
+
+- 监控系统活动
+- 做启动器和监管器
+- 实现进程间通信协作
+- 构建高级系统工具
+
+这种能力是 Win32 API 中“系统编程”层面的关键基础。
+
+## 14. 内存管理：理解堆、虚拟内存和对象生命周期
+
+Win32 API 中，内存管理并不是简单的 `malloc` / `free`。在 Windows 上，程序的内存主要以“虚拟内存”和“堆”两种形式存在。理解这两者，才能认真理解 Windows 程序的资源模型。
+
+### 14.1 进程内存模型
+
+现代 Windows 程序的内存模型有三个层次：
+
+- 代码段：程序指令和静态代码
+- 数据段：全局变量、静态变量、常量
+- 堆 / 栈：动态内存与函数调用栈
+
+其中：
+
+- 栈：函数调用产生的局部变量和返回地址
+- 堆：动态分配的内存，如 `malloc`、`new`
+- 虚拟内存：系统给进程映射的地址空间
+
+### 14.2 `VirtualAlloc` / `VirtualFree`
+
+如果需要更底层地控制内存，Win32 提供了 `VirtualAlloc` 和 `VirtualFree`：
+
+```cpp
+void* p = VirtualAlloc(
+    nullptr,
+    1024 * 1024,
+    MEM_COMMIT | MEM_RESERVE,
+    PAGE_READWRITE);
+
+if (p) {
+    memset(p, 0xAA, 1024 * 1024);
+    VirtualFree(p, 0, MEM_RELEASE);
+}
+```
+
+这类 API 的优点是：
+
+- 可以申请大块连续虚拟地址空间
+- 能在更低层控制内存属性
+- 常用于系统组件、运行时引擎和内存扫描工具
+
+### 14.3 `GlobalMemoryStatusEx`
+
+想知道当前系统的可用物理和虚拟内存，可以使用：
+
+```cpp
+MEMORYSTATUSEX mem = { sizeof(mem) };
+GlobalMemoryStatusEx(&mem);
+
+printf("Total physical memory: %llu MB\n", mem.ullTotalPhys / (1024ULL * 1024ULL));
+printf("Available physical memory: %llu MB\n", mem.ullAvailPhys / (1024ULL * 1024ULL));
+```
+
+这在做：
+
+- 内存监控工具
+- 资源管理器
+- 诊断脚本
+- 自动化性能检测
+
+时极为常用。
+
+### 14.4 内存管理中的注意事项
+
+在 Win32 程序里，内存管理不是“随便开个 buffer 就行”的事情，需要注意：
+
+- `VirtualAlloc` 申请的内存必须配套 `VirtualFree`
+- 释放后，要避免悬空指针
+- 读写越界会导致访问违例
+- 处理大量内存时需注意 32 位/64 位地址差异
+
+这也是为什么底层 Win32 程序开发往往比托管语言更容易出现资源问题：它把资源所有权和生命周期交给开发者自己管理。
+
+## 15. 文件管理：文件、目录、读写和查找
+
+Win32 API 对文件系统提供了近乎底层的访问能力。与 C 标准库相比，它更贴近 Windows 文件系统语义，并支持：
+
+- 创建/打开文件
+- 读写二进制和文本文件
+- 遍历目录
+- 获取文件属性
+- 查找文件和子目录
+
+### 15.1 `CreateFileW` / `ReadFile` / `WriteFile`
+
+最基础的文件 API 三件套：
+
+```cpp
+HANDLE hFile = CreateFileW(
+    L"C:\\tmp\\demo.txt",
+    GENERIC_WRITE,
+    0,
+    nullptr,
+    CREATE_ALWAYS,
+    FILE_ATTRIBUTE_NORMAL,
+    nullptr);
+
+const char text[] = "Hello from Win32!\n";
+DWORD written = 0;
+WriteFile(hFile, text, (DWORD)strlen(text), &written, nullptr);
+CloseHandle(hFile);
+```
+
+这类 API 用于：
+
+- 日志文件写入
+- 配置文件保存
+- 资源导出
+- 二进制数据缓存
+
+### 15.2 目录枚举：`FindFirstFileW` / `FindNextFileW`
+
+Windows 中常见的目录扫描方式：
+
+```cpp
+WIN32_FIND_DATAW fd;
+HANDLE hFind = FindFirstFileW(L"C:\\*", &fd);
+if (hFind != INVALID_HANDLE_VALUE) {
+    do {
+        wprintf(L"%ls\n", fd.cFileName);
+    } while (FindNextFileW(hFind, &fd));
+    FindClose(hFind);
+}
+```
+
+这可以帮助你：
+
+- 扫描目录中的文件
+- 过滤目录和文件
+- 构建文件浏览器
+- 实现简单的资源管理器风格工具
+
+### 15.3 获取和设置文件属性
+
+Win32 还支持：
+
+- `GetFileAttributesW`
+- `SetFileAttributesW`
+- `GetFileSizeEx`
+- `SetFilePointerEx`
+- `MoveFileW`
+- `CopyFileW`
+- `DeleteFileW`
+
+这些 API 使得 Win32 文件管理既能完成“低层读写”，也能完成“目录与资源操作”。
+
+### 15.4 文件管理场景中的工程价值
+
+文件管理功能是桌面程序最常见、最关键的能力之一，它支撑：
+
+- 文本编辑器
+- 配置保存器
+- 资源打包工具
+- 日志记录器
+- 数据导入/导出程序
+
+一个真正的 Windows 图形应用，很少只是窗口和控件；通常一定要处理数据的持久化和文件管理。
+
+## 16. 进程、内存和文件管理协同：真实工程中的 Win32 程序
+
+真正实用的 Win32 程序通常不是“静态窗口”，而是同时处理以下几类能力：
+
+1. 进程管理：枚举、观察、控制任务
+2. 内存管理：监控、分配、释放、避免越界
+3. 文件管理：打开、读写、搜索、保存和重建数据
+4. 窗口与控件：形成用户界面
+5. GDI：显示状态和绘制信息
+
+这就说明：Win32 API 不只是“界面 API”，更是一整套系统编程工具箱。只要你掌握了这几个关键主题，就能从最基础的 Hello Window 逐渐走向真正的 Windows 工具程序。
+
+### 16.1 进一步推荐的学习顺序
+
+建议以后按下面顺序继续学习：
+
+- 进程枚举和 PID 管理
+- 句柄和资源生命周期管理
+- 线程编程（CreateThread / WaitForSingleObject）
+- 文件映射（CreateFileMapping / MapViewOfFile）
+- DLL 与模块加载
+- 事件、互斥量和同步对象
+- 控制台/GUI/系统服务程序的区别
+
+### 16.2 本目录新增的进阶示例
+
+本目录新增了三个更接近系统编程的例子：
+
+- `08_process_manager`：进程枚举和 PID 查询
+- `09_memory_monitor`：虚拟内存与物理内存状态查看
+- `10_file_manager`：文件创建、目录枚举和文件读写
+
+这三个示例是连接“基础窗口编程”和“更真实系统工具开发”的重要桥梁。
+
+## 17. 总结
+
+Win32 API 不是一个单独的“窗口库”，而是一整套 Windows 原生编程接口。它覆盖了：
+
+- 窗口与消息
+- 控件与事件
+- GDI 图形绘制
+- 菜单、对话框与资源
+- 进程管理
+- 内存管理
+- 文件管理
+
+如果你能把这些主题串起来，你就已经开始真正理解 Windows 程序的运行机制，而不仅仅是逐个函数调用。后续继续深入时，建议以“窗口 + 事件 + 资源 + 系统服务”的视角来阅读 Win32 API 文档，这样理解会更加稳定和实用。
