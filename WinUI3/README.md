@@ -212,33 +212,106 @@ XAML 的意义在于：
 
 ### 2.4 什么是 WinRT
 
-WinRT（Windows Runtime）是 Windows 的一套运行时对象模型。它的重点不是“一个控件库”，而是：
+WinRT（Windows Runtime）不是“一个很抽象的运行时概念”，它其实就是 Windows 平台向应用提供“对象接口”的统一方式。
 
-- 定义对象、接口、方法、属性如何在系统中暴露
-- 让不同编程语言都能访问 Windows 平台能力
-- 提供统一的对象模型和 ABI 兼容性
+它最核心的意义是：
 
-简单来说，WinRT 是 Windows 平台提供给应用程序的“对象运行时接口层”。
+- Windows 系统能力不再只暴露成 C 风格函数
+- 它们被封装成对象、接口、属性、方法、事件
+- 不同语言都能访问这些能力
+- 不同语言之间的调用方式可以一致
 
-它的特点是：
+如果你把 Win32 理解为“系统 API 的最底层 C 接口”，那 WinRT 就更像是：
 
-- 面向对象且跨语言
-- 不依赖单一语言
-- 可以被 C++、C#、Rust 等语言访问
-- 适合现代 Windows 应用架构
+- 把系统能力整理成更现代的对象模型
+- 让开发者按对象/接口的方法去调用系统能力
+- 并且把跨语言兼容、异步、对象生命周期这些问题标准化
 
-在 WinUI 3 中，C++/WinRT 是对 WinRT 的 C++ 投影（projection）。也就是说：
+#### 2.4.1 例子：不是直接写函数，而是调用对象
 
-- WinRT 定义了运行时对象规范
-- C++/WinRT 让 C++ 程序员可以更自然地使用它
+在 Win32 时代，你经常会看到类似这种思路：
+
+- `CreateWindow`
+- `RegisterClass`
+- `SendMessage`
+- `OpenFile`
+
+这些本质上是函数型 API。
+
+而 WinRT 更像：
+
+- 对象有属性：`Name`, `Size`, `IsEnabled`
+- 对象有方法：`Open()`, `Save()`, `Start()`
+- 对象有事件：`Click`, `SelectionChanged`, `Loaded`
+- 对象自身也有生命周期和接口契约
 
 例如：
+
+```cpp
+winrt::Windows::Storage::StorageFile file;
+```
+
+或者：
 
 ```cpp
 winrt::Windows::Foundation::IAsyncAction DoWorkAsync();
 ```
 
-这段代码并不是普通的裸 C++ 语法，而是在使用 WinRT 定义的对象和异步接口模型。
+这里的重点不是“看起来像 C++ 代码”，而是：
+
+- `StorageFile` 是一个对象
+- `DoWorkAsync` 是异步对象方法
+- 这些 API 在 runtime 层都有统一的调用协议
+
+#### 2.4.2 为什么要有 WinRT
+
+因为现代 Windows 应用不是简单的“调用几个函数”，而是：
+
+- 需要和系统资源打交道
+- 需要跨语言访问
+- 需要支持异步编程
+- 需要统一对象模型和 ABI 兼容性
+- 需要将接口、事件和对象做成标准化能力
+
+WinRT 就是为了满足这些需求而设计的。
+
+#### 2.4.3 为什么 C++/WinRT 是 WinUI 3 里最重要的桥接方式
+
+在 C++ 里，直接用 WinRT API 时，通常会看到 `winrt::` 这种命名空间和类型。它的作用是：
+
+- 把 WinRT 的对象模型映射成 C++ 可用的类型
+- 让 C++ 代码可以自然地创建对象、调用方法、处理异步
+- 让 WinUI 3 的 XAML 代码和底层平台能力连接起来
+
+例如：
+
+```cpp
+auto file = co_await winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(path);
+```
+
+它不是“C++ 语法特例”，而是对 WinRT 接口的正常调用方式。
+
+#### 2.4.4 WinRT 和 Win32 的关系
+
+最简单的理解是：
+
+- Win32：底层系统 API，偏函数和句柄，老式 C 方式
+- WinRT：更现代的对象和接口模型，跨语言、统一运行时
+
+WinUI 3 不是直接把所有 Win32 代码搬到 XAML 里，而是：
+
+- UI 层使用 XAML
+- 逻辑层使用 C++/WinRT
+- 平台能力来自 WinRT
+- 一切都在统一的对象/接口模型下工作
+
+这就是 WinUI 3 为什么能比老式 Windows UI 更现代。
+
+#### 2.4.5 一句话总结
+
+> WinRT 不是抽象概念，它就是 Windows 平台给应用提供的一套统一对象接口模型：对象、方法、属性、事件、异步能力都在里面，C++/C# 等语言都能按同一套规则访问 Windows 能力。
+
+---
 
 ### 2.5 什么是 Windows App SDK
 
