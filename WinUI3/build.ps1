@@ -15,7 +15,13 @@ $sources = @(
     (Join-Path $samplesRoot "05_resource_dictionary\resource_dictionary.cpp"),
     (Join-Path $samplesRoot "06_collection_binding\collection_binding.cpp"),
     (Join-Path $samplesRoot "07_dependency_injection\dependency_injection.cpp"),
-    (Join-Path $samplesRoot "08_lifecycle_events\lifecycle_events.cpp")
+    (Join-Path $samplesRoot "08_lifecycle_events\lifecycle_events.cpp"),
+    (Join-Path $samplesRoot "09_button_control\button_control.cpp"),
+    (Join-Path $samplesRoot "10_textbox_control\textbox_control.cpp"),
+    (Join-Path $samplesRoot "11_checkbox_radio_control\checkbox_radio_control.cpp"),
+    (Join-Path $samplesRoot "12_combobox_listview_control\combobox_listview_control.cpp"),
+    (Join-Path $samplesRoot "13_slider_toggle_control\slider_toggle_control.cpp"),
+    (Join-Path $samplesRoot "14_dialog_navigation_control\dialog_navigation_control.cpp")
 )
 
 Write-Host "========================================" -ForegroundColor Cyan
