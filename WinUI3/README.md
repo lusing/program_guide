@@ -4204,6 +4204,297 @@ WinUI 3 的应用能力并不只是“页面和控件”，而是：
 
 所有这些都属于传统操作系统编程与现代 UI 应用结合的真实工程模型。
 
+### 13.18 WinUI 3 应用访问注册表：系统配置与本地状态管理
+
+Windows 桌面应用经常需要保存一些“系统级配置”，这种配置可能包含：
+
+- 是否启动时打开上次窗口
+- 是否启用高级模式
+- 应用主题和语言偏好
+- 短期缓存或诊断开关
+
+这些信息，不一定要写进普通文本文件，也可能需要写进注册表。
+
+在 Win32 / Windows API 里，注册表访问通常使用：
+
+- `RegOpenKeyExW`
+- `RegCreateKeyExW`
+- `RegSetValueExW`
+- `RegQueryValueExW`
+- `RegCloseKey`
+
+例如：
+
+```cpp
+#include <windows.h>
+#include <iostream>
+#include <string>
+
+void write_registry_value()
+{
+    HKEY hKey = nullptr;
+    const wchar_t* subKey = L"Software\\WinUI3Guide\\Demo";
+
+    LONG status = RegCreateKeyExW(
+        HKEY_CURRENT_USER,
+        subKey,
+        0,
+        nullptr,
+        0,
+        KEY_WRITE,
+        nullptr,
+        &hKey,
+        nullptr);
+
+    if (status != ERROR_SUCCESS) {
+        std::wcout << L"CreateKey failed\n";
+        return;
+    }
+
+    const wchar_t value[] = L"WinUI3";
+    RegSetValueExW(hKey, L"AppName", 0, REG_SZ,
+        reinterpret_cast<const BYTE*>(value),
+        static_cast<DWORD>((wcslen(value) + 1) * sizeof(wchar_t)));
+
+    RegCloseKey(hKey);
+}
+```
+
+这个例子说明：
+
+- WinUI 3 并不是离开系统配置的，而是仍然会使用系统配置能力
+- 注册表是 Windows 应用里常见的“本地配置存储”方式
+- 配置访问最好放在 `Service` 层，而不是放进 `Page` 代码里
+
+#### 13.18.1 对注册表访问的工程理解
+
+真实应用里，注册表的常见用法是：
+
+- 仅保存较少的应用偏好
+- 读取启动配置
+- 更新用户首选项
+- 控制是否显示诊断信息
+
+但不建议把大量业务数据直接写进注册表，因为：
+
+- 它更适合“配置”而不是“数据集”
+- 数据规模不宜过大
+- 结构复杂时更适合 JSON / XML / SQLite
+
+所以注册表和 JSON / XML 的区别大致是：
+
+- 注册表：系统配置参数、用户偏好、开关型配置
+- JSON/XML：业务数据、文档配置、复杂结构化内容
+
+### 13.19 WinUI 3 应用读写 JSON 文件：结构化配置和数据载入
+
+JSON 是现代桌面应用的常见数据格式。WinUI 3 应用会经常碰到：
+
+- 用户配置文件：`appsettings.json`
+- 任务列表：`tasks.json`
+- 缓存内容：`cache.json`
+- 云同步后的本地数据：`sync.json`
+
+JSON 的优点是：
+
+- 结构化
+- 便于人类阅读
+- 易于跨语言处理
+- 适合配置和中小型数据交换
+
+#### 13.19.1 最小 JSON 例子
+
+```json
+{
+  "appName": "TaskApp",
+  "theme": "dark",
+  "language": "zh-CN",
+  "tasks": [
+    { "title": "Plan app", "done": false },
+    { "title": "Write tutorial", "done": true }
+  ]
+}
+```
+
+这类内容在桌面应用中非常常见。读取和写入时，通常是：
+
+- 读取 JSON 文件到内存对象
+- 更新 ViewModel
+- 显示在页面中
+- 用户修改后再写回文件
+
+#### 13.19.2 C++ 中读取 JSON 的常见思路
+
+C++ 里最常见的方式是：
+
+- 手写简单解析器（只处理小规模 JSON）
+- 使用第三方库（例如 nlohmann/json）
+- 在跨平台工程里使用现成的 JSON 解析库
+
+示例：
+
+```cpp
+#include <fstream>
+#include <iostream>
+#include <nlohmann/json.hpp>
+
+int main()
+{
+    std::ifstream input("settings.json");
+    if (!input) {
+        std::cout << "File not found\n";
+        return 0;
+    }
+
+    nlohmann::json j;
+    input >> j;
+
+    std::cout << j["appName"] << '\n';
+    std::cout << j["theme"] << '\n';
+}
+```
+
+这个例子说明：
+
+- JSON 文件不是“只用于网页”，它同样是桌面应用的重要存储格式
+- 读取 JSON 需要在后台线程中进行，避免阻塞 UI
+- 读取后的数据通过 `ViewModel` 自动刷新界面
+
+#### 13.19.3 JSON + WinUI 3 的工程结构
+
+真正工程化的结构是：
+
+```text
+Page
+  ↓
+ViewModel
+  ↓
+Service::LoadSettingsJsonAsync()
+  ↓
+JSON 文件解析
+  ↓
+状态更新
+  ↓
+UI 刷新
+```
+
+这意味着：
+
+- JSON 是业务数据格式
+- Service 负责解析和保存
+- ViewModel 负责页面状态
+- Page 只负责展示和交互
+
+### 13.20 WinUI 3 应用读写 XML 文件：结构化文档和配置重用
+
+XML 也经常用于桌面应用，例如：
+
+- 配置文件
+- 资源索引
+- 旧版项目配置
+- 本地缓存元数据
+- 导出和导入数据文件
+
+XML 的优点：
+
+- 结构化
+- 可扩展性强
+- 常见于平台和工具链配置
+- 适合生成/解析有层次结构的数据
+
+典型 XML：
+
+```xml
+<settings>
+  <theme>dark</theme>
+  <language>zh-CN</language>
+  <task>
+    <title>Plan app</title>
+    <done>false</done>
+  </task>
+</settings>
+```
+
+在 C++ 中处理 XML 通常有两种方式：
+
+- 手写简单标签解析器
+- 使用 XML 库（如 tinyxml2、pugixml）
+
+例如：
+
+```cpp
+#include <iostream>
+#include <pugixml.hpp>
+
+int main()
+{
+    pugi::xml_document doc;
+    if (!doc.load_file("settings.xml")) {
+        std::cout << "Failed to load XML\n";
+        return 0;
+    }
+
+    auto root = doc.child("settings");
+    std::cout << root.child("theme").text().as_string() << '\n';
+}
+```
+
+这说明：
+
+- XML 也是桌面应用中很常见的数据文件格式
+- 应用可以同时支持 JSON 和 XML，不是只有一种存储方式
+- 读取和解析仍然应该与 UI 分离，放到 Service 层
+
+### 13.21 真实工程里，注册表 / JSON / XML 是怎么协同的
+
+在真实桌面应用中，不会只用一种格式。通常是：
+
+- 注册表：保存应用偏好、启动参数、诊断开关
+- JSON：保存任务、配置、缓存、导出数据
+- XML：保存更结构化的文档、配置、旧数据格式、导入/导出模板
+
+一个典型的架构是：
+
+```text
+Page
+  ↓
+ViewModel
+  ↓
+Service
+  ├── LoadSettingsFromRegistry()
+  ├── LoadTasksFromJson()
+  ├── SaveTasksToJson()
+  ├── LoadConfigFromXml()
+  └── SaveConfigToXml()
+  ↓
+UI 刷新
+```
+
+这说明：
+
+- WinUI 3 绝不是“没有系统存储”，而是“把现代 UI 和传统配置能力组合起来”
+- 用户数据的读取和保存不应该扎进 XAML 事件里
+- 真正工程化的应用是“平台能力 + UI 结构 + 数据层”协同工作
+
+### 13.22 结论
+
+WinUI 3 的桌面应用本质上是：
+
+- UI 层：XAML / Page / ViewModel
+- 系统层：线程 / 进程 / 内存 / 注册表 / 文件系统
+- 数据层：JSON / XML / 配置 / 任务对象
+
+这样才能形成真正的“桌面应用工程闭环”：
+
+- 用户操作
+- UI 状态更新
+- 后台任务执行
+- 文件/配置/注册表读写
+- 数据回流
+- 页面再次刷新
+
+这才是一个完整 Windows 桌面程序的真实面貌。
+
 示例源码：
 - [16_os_integration](G:/code/guide/WinUI3/cpp_examples/16_os_integration/os_integration.cpp)
 
