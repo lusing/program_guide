@@ -527,176 +527,433 @@ struct TaskViewModel {
 
 ### 8.1 Button：动作触发器
 
-适用场景：
+Button 是最基础、最常用的 WinUI 3 控件之一。它的关键不是“能不能显示一个按钮”，而是：
 
-- 保存
-- 取消
-- 提交
-- 打开文件
-- 切换状态
+- 用户点击后，触发什么动作
+- 这个动作是直接写在代码里，还是走命令/VM
+- 是否需要禁用、等待、错误反馈
 
-示例：
+最典型的写法是：XAML 里声明按钮，事件回调里处理逻辑。
+
+```xml
+<StackPanel Spacing="12">
+    <TextBlock x:Name="StatusText" Text="Ready" />
+    <Button x:Name="SaveButton" Content="Save" Click="OnSaveClicked" />
+</StackPanel>
+```
+
+```cpp
+void MainWindow::OnSaveClicked(IInspectable const&, RoutedEventArgs const&)
+{
+    StatusText().Text(L"Saved");
+}
+```
+
+这是最基础的使用方式：
+
+- `Content` 决定按钮显示文字
+- `Click` 指定点击事件
+- 代码里更新状态文本，说明 UI 已经响应事件
+
+如果是更工程化的写法，通常不是直接在窗口代码里写业务逻辑，而是：
+
+- 按钮点击 → 命令执行
+- 命令修改 ViewModel
+- UI 通过绑定刷新
+
+例如：
 
 ```cpp
 void MainViewModel::save()
 {
-    status_ = "Saved";
+    status_ = L"Saved";
 }
 ```
+
+不要只记住控件名，最重要的是：按钮是“用户动作入口”，它背后通常要连接一个状态更新或者命令。
 
 示例源码：
 - [09_button_control](G:/code/guide/WinUI3/cpp_examples/09_button_control/button_control.cpp)
 
 ### 8.2 TextBox：文本输入与校验
 
-适用场景：
+TextBox 是输入控件，最常见的工作流程是：
 
-- 用户名、密码、搜索文本
-- 简单表单输入
-- 收集命令参数
+1. 用户输入内容
+2. 读取 `Text` 属性
+3. 进行校验
+4. 根据结果更新状态或禁用按钮
 
-核心跟踪：
+```xml
+<StackPanel Spacing="12">
+    <TextBox x:Name="NameBox" Header="Name" PlaceholderText="请输入用户名" />
+    <Button x:Name="SubmitButton" Content="Submit" IsEnabled="False" />
+</StackPanel>
+```
 
-- 输入值变化事件：`TextChanged`
-- 验证规则：长度、格式、必填
-- 反馈状态：红色提示、错误文本、禁用按钮
+```cpp
+void MainWindow::OnTextChanged(IInspectable const&, TextChangedEventArgs const&)
+{
+    auto value = NameBox().Text();
+    bool isValid = value.Length() > 2;
+    SubmitButton().IsEnabled(isValid);
+}
+```
+
+这里你要掌握几个核心点：
+
+- `Text` 是当前输入文本
+- `TextChanged` 是最常见的事件
+- `IsEnabled` 可以用来控制是否允许提交
+- “校验逻辑”通常不是直接写在控件上，而是由 ViewModel 或页面逻辑负责
+
+这类代码很容易写成“控件装配器”，但你应该这样思考：
+
+- 输入框负责收集数据
+- 页面/VM 负责判断是否合法
+- UI 负责展示提示和状态
+
+这才是工程正确姿势。
 
 示例源码：
 - [10_textbox_control](G:/code/guide/WinUI3/cpp_examples/10_textbox_control/textbox_control.cpp)
 
 ### 8.3 CheckBox 与 RadioButton：选择状态
 
-适用场景：
+这俩控件都属于“状态表达器”，意思是：
 
-- 勾选项
-- 勾选协议
-- 选择应用模式
-- 单选配置项
+- 它们本身不负责业务计算
+- 它们负责把用户选择的状态表现出来
+- 业务逻辑再根据这个状态做分支判断
 
-这类控件本质上是“状态表达器”：
+#### CheckBox
 
-- 选中/未选中
-- 单/多选
-- 不同分支逻辑
+```xml
+<CheckBox Content="Enable notifications" IsChecked="True" />
+```
+
+```cpp
+if (NotifyBox().IsChecked().Value()) {
+    // 开启通知逻辑
+}
+```
+
+#### RadioButton
+
+```xml
+<StackPanel>
+    <RadioButton Content="Light" GroupName="ThemeGroup" IsChecked="True" />
+    <RadioButton Content="Dark" GroupName="ThemeGroup" />
+    <RadioButton Content="System" GroupName="ThemeGroup" />
+</StackPanel>
+```
+
+这里的关键是：
+
+- `IsChecked` 表示当前状态
+- `GroupName` 决定它们属于同一组单选
+- `Checked` / `Unchecked` 事件可以用来反应状态变化
+
+真正生产环境中，通常不是直接判断某个控件是否勾选，而是：
+
+- 读取状态
+- 将状态写入 ViewModel
+- 根据状态改变对应配置
 
 示例源码：
 - [11_checkbox_radio_control](G:/code/guide/WinUI3/cpp_examples/11_checkbox_radio_control/checkbox_radio_control.cpp)
 
 ### 8.4 ComboBox：下拉选择
 
-适用场景：
+ComboBox 是“单选列表的输入控件”。和简单的 RadioButton 不同，它适合：
 
-- 主题选择
-- 角色选择
-- 区域选择
-- 图表维度切换
+- 项目很多
+- 需要节省界面空间
+- 需要由数据集合动态生成选项
 
-典型做法：
+最典型的用法：
 
-- `ItemsSource` 绑定数据集合
-- `SelectedIndex` / `SelectedItem` 标识当前选项
-- `SelectionChanged` 处理变化事件
+```xml
+<ComboBox x:Name="ThemeComboBox" Header="Theme">
+    <x:String>Light</x:String>
+    <x:String>Dark</x:String>
+    <x:String>System</x:String>
+</ComboBox>
+```
+
+```cpp
+void MainWindow::OnThemeChanged(IInspectable const&, SelectionChangedEventArgs const&)
+{
+    auto item = ThemeComboBox().SelectedItem().as<IPropertyValue>();
+    // 根据 item 处理主题切换
+}
+```
+
+更工程化的做法是：
+
+```xml
+<ComboBox ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
+          SelectedItem="{x:Bind ViewModel.SelectedItem, Mode=TwoWay}" />
+```
+
+这里要注意：
+
+- `ItemsSource` 负责提供数据源
+- `SelectedItem` 负责记录当前选中项
+- `SelectionChanged` 是事件入口，通常用来做响应逻辑
+
+ComboBox 的本质是：
+
+- 用户从列表里选一个值
+- 程序把这个值映射成某个配置或状态
 
 示例源码：
 - [12_combobox_listview_control](G:/code/guide/WinUI3/cpp_examples/12_combobox_listview_control/combobox_listview_control.cpp)
 
 ### 8.5 ListView：数据集合展示
 
-适用场景：
+ListView 是 WinUI 3 中最关键的展示控件之一。它展示的不是单个值，而是“集合”。
 
-- 列表展示
-- 任务列表
-- 用户列表
-- 文件清单
-- 日志窗口
+它的典型结构是：
 
-ListView 是 WinUI 3 中最关键的数据展示控件之一，因为它展示的是“集合”，而不是单个值。
+```xml
+<ListView x:Name="TaskListView" ItemsSource="{x:Bind ViewModel.Tasks}">
+    <ListView.ItemTemplate>
+        <DataTemplate x:DataType="local:TaskItem">
+            <TextBlock Text="{x:Bind Title}" />
+        </DataTemplate>
+    </ListView.ItemTemplate>
+</ListView>
+```
 
-关键知识：
+```cpp
+std::vector<TaskItem> tasks = {
+    { L"Review design", false },
+    { L"Write code", false },
+    { L"Test build", true }
+};
+```
 
-- `ItemsSource` 绑定集合
-- `ItemTemplate` 指定每项的可视化方式
-- `SelectionChanged` 处理选中项
-- `ObservableCollection` 常见于动态数据更新
+关键点：
+
+- `ItemsSource` 是数据源
+- `ItemTemplate` 定义每一项长什么样
+- `SelectionChanged` 让你知道用户选中了哪一项
+- ListView 适合任务列表、文件列表、通知列表、日志列表
+
+它和 ComboBox 的差别在于：
+
+- ComboBox 更适合“单选值”
+- ListView 更适合“展示很多项并允许选择、浏览和编辑”
+
+在工程中，ListView 一般和 ViewModel/集合一起使用，数据更新更稳定，UI 更容易维护。
 
 示例源码：
 - [12_combobox_listview_control](G:/code/guide/WinUI3/cpp_examples/12_combobox_listview_control/combobox_listview_control.cpp)
 
-### 8.6 ToggleSwitch / Slider / ProgressBar：交互反馈
+### 8.6 ToggleSwitch / Slider：状态和数值反馈
 
-适用场景：
+这两类控件不是用于“做复杂业务逻辑”，而是“表达状态”和“接受数值输入”。
 
-- 通知开关
-- 音量调节
-- 下载进度显示
-- 运行状态反馈
+#### ToggleSwitch
 
-这几类控件体现的是“动态状态”和“反馈机制”：
+```xml
+<ToggleSwitch Header="Notifications" IsOn="True" />
+```
 
-- ToggleSwitch 展示状态
-- Slider 表示值调整
-- ProgressBar 提醒任务执行进度
+```cpp
+bool enabled = NotificationsSwitch().IsOn();
+```
+
+它适合：
+
+- 开关控制
+- 实时开关状态
+- 功能启用/禁用
+
+#### Slider
+
+```xml
+<Slider Minimum="0" Maximum="100" Value="50" />
+```
+
+```cpp
+double value = VolumeSlider().Value();
+```
+
+它适合：
+
+- 音量
+- 亮度
+- 质量设置
+- 进度控制
+
+这类控件非常适合“模型驱动 UI”：状态在 ViewModel 里，控件只是展示并采集输入。
 
 示例源码：
 - [13_slider_toggle_control](G:/code/guide/WinUI3/cpp_examples/13_slider_toggle_control/slider_toggle_control.cpp)
 
-### 8.7 ContentDialog：对话框交互
+### 8.7 ContentDialog：临时交互窗口
 
-适用场景：
+ContentDialog 不是页面本身，而是“临时弹窗”。它适合：
 
 - 确认删除
-- 修改设置
-- 选择保存路径
-- 需要用户输入确认的操作
+- 保存修改
+- 输入一些必须确认的信息
+- 显示一次性提示
 
-它实际上是 WinUI 3 中的“临时交互窗口”，非常适合：
+```cpp
+ContentDialog dialog;
+dialog.Title(L"Delete item");
+dialog.Content(L"Do you want to delete this task?");
+dialog.PrimaryButtonText(L"Delete");
+dialog.SecondaryButtonText(L"Cancel");
 
-- 单次问题确认
-- 动态表单输入
-- 结果反馈
+auto result = dialog.ShowAsync();
+```
+
+你要特别注意：
+
+- 这是“临时交互”，不是整个页面
+- 适合单次确认，而不是复杂流程
+- 只是把用户决策收集到代码中，然后由页面逻辑处理结果
 
 示例源码：
 - [14_dialog_navigation_control](G:/code/guide/WinUI3/cpp_examples/14_dialog_navigation_control/dialog_navigation_control.cpp)
 
 ### 8.8 NavigationView：页面导航
 
-适用场景：
+NavigationView 让应用从“单页界面”升级成“多页面应用”。它并不是给某个小按钮用的，而是：
 
-- 设置程序
-- 多页面应用
-- 工具箱式应用
-- 主菜单型软件
+- 左菜单 / 侧边栏导航
+- 切换设置页、主页、分析页
+- 形成完整的应用结构
 
-NavigationView 让界面从“单页应用”扩展成“多页面应用”。这是 WinUI 3 很重要的一环。
+典型思路：
+
+```xml
+<NavigationView x:Name="RootNav" SelectionChanged="OnSelectionChanged">
+    <NavigationView.MenuItems>
+        <NavigationViewItem Content="Home" Tag="Home" />
+        <NavigationViewItem Content="Tasks" Tag="Tasks" />
+        <NavigationViewItem Content="Settings" Tag="Settings" />
+    </NavigationView.MenuItems>
+</NavigationView>
+```
+
+```cpp
+void MainWindow::OnSelectionChanged(IInspectable const&, NavigationViewSelectionChangedEventArgs const& args)
+{
+    auto selected = args.SelectedItemContainer().Tag();
+    // 根据 Tag 切换页面内容
+}
+```
+
+这里最关键的是：
+
+- 导航控件只是“入口”
+- 页面本身还是靠 `Frame`、页面对象或自定义状态切换来实现
+- App 架构中，导航不是万能的，关键还是页面状态和 ViewModel 分层
+
+这类控件本质上代表“应用结构”，不是单纯的 UI 装饰。
 
 示例源码：
 - [14_dialog_navigation_control](G:/code/guide/WinUI3/cpp_examples/14_dialog_navigation_control/dialog_navigation_control.cpp)
 
 ---
 
+### 8.9 你真正需要知道的不是“控件表”，而是“控件使用模式”
+
+最容易学偏的地方，是把控件当成孤立部件，而不是应用状态的一部分。正确的学习路径应该是：
+
+- 先看控件有什么用途
+- 再看它的最核心属性和事件
+- 再看它如何联动 ViewModel
+- 最后看一个真实页面怎么把它组织起来
+
+也就是说：
+
+- Button = 触发动作
+- TextBox = 收集输入
+- CheckBox / RadioButton = 表达选择
+- ComboBox = 选择枚举值
+- ListView = 展示集合
+- ToggleSwitch / Slider = 表达状态和数值
+- ContentDialog = 临时确认交互
+- NavigationView = 页面切换入口
+
+一旦你把这个“使用模式”理解清楚，后面再学更复杂的控件和架构，就不会再是死记控件名了。
+
+---
+
 ## 9. XAML 布局基础：Grid / StackPanel / Border / RelativePanel
 
-WinUI 3 的布局容器非常关键。常见布局容器：
+布局不是“把控件摆到页面上”这么简单。真正要理解的是：
 
-- `StackPanel`：按顺序叠放
-- `Grid`：表格布局，适合复杂界面
-- `Border`：装饰边框和容器
-- `RelativePanel`：相对定位布局
-- `Canvas`：绝对定位
+- 页面中有哪些区域
+- 这些区域分别怎么扩展和收缩
+- 哪些控件需要靠左、靠右、上下排列
+- 某个界面是列表型、表单型，还是工具栏型
 
-### 9.1 StackPanel
+如果布局写错，界面会很难维护，后面再加功能时也会非常痛苦。
+
+### 9.1 先看布局的目的
+
+在 WinUI 3 中，最常见的布局思路是：
+
+- `StackPanel`：顺序排布，适合单列或单行简单界面
+- `Grid`：最常用，适合表单、列表、工具栏、主内容区的组合布局
+- `Border`：给区域加边框、背景、间距或容器限制
+- `RelativePanel`：适合一些相对位置依赖的布局
+- `ScrollViewer`：内容超长时提供滚动
+
+也就是说：
+
+- 只需要垂直堆几个控件，用 `StackPanel`
+- 感觉像“表格”、需要分栏和分区，用 `Grid`
+- 想给一块区域加边框或容器背景，用 `Border`
+- 要做相对位置关系，用 `RelativePanel`
+
+### 9.2 StackPanel：最适合顺序排列
+
+适合：
+
+- 登录框
+- 表单字段
+- 工具栏按钮组
+- 一个列表头和几个按钮的串行排列
+
+示例：
 
 ```xml
 <StackPanel Orientation="Vertical" Spacing="12">
-    <TextBox Header="Name" />
-    <Button Content="Submit" />
+    <TextBlock Text="Create task" FontSize="24" />
+    <TextBox Header="Title" PlaceholderText="Enter task name" />
+    <TextBox Header="Description" PlaceholderText="Optional notes" />
+    <Button Content="Add task" HorizontalAlignment="Right" />
 </StackPanel>
 ```
 
-### 9.2 Grid
+这里的关键是：
+
+- 它会按顺序一行一行排下来
+- `Spacing` 控制每个子元素之间的距离
+- `HorizontalAlignment` 控制按钮是否靠右
+
+如果你只是要“一个表单从上到下排起来”，`StackPanel` 是最直接的选择。
+
+### 9.3 Grid：真正的主力布局
+
+`Grid` 是 WinUI 3 里最常用、最核心的布局容器。它就像一个二维表格：
+
+- 有行 `RowDefinition`
+- 有列 `ColumnDefinition`
+- 每个元素通过 `Grid.Row` / `Grid.Column` 放到指定位置
+
+#### 9.3.1 一个常见的任务列表布局
 
 ```xml
-<Grid>
+<Grid ColumnSpacing="12" RowSpacing="12">
     <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
         <RowDefinition Height="*" />
@@ -707,13 +964,177 @@ WinUI 3 的布局容器非常关键。常见布局容器：
         <ColumnDefinition Width="220" />
     </Grid.ColumnDefinitions>
 
-    <TextBlock Grid.Row="0" Grid.Column="0" Text="Title" />
-    <ListView Grid.Row="1" Grid.Column="0" />
-    <Button Grid.Row="1" Grid.Column="1" Content="Add" />
+    <TextBox Grid.Row="0" Grid.Column="0" Header="New task" PlaceholderText="Add a new task" />
+    <Button Grid.Row="0" Grid.Column="1" Content="Add" VerticalAlignment="Bottom" />
+
+    <ListView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
 </Grid>
 ```
 
-这类布局是 WinUI 3 中最常见的结构。
+这个界面说明了一个真实布局思路：
+
+- 第一行：输入框 + 添加按钮
+- 第二行：列表占满剩余空间
+- `Grid.ColumnSpan="2"` 让列表横跨两列
+
+这个布局很像一个任务管理器主界面。
+
+#### 9.3.2 Grid 的真实价值
+
+很多人看到 `Grid` 就觉得“很复杂”，其实它本身并不难，难的是你要知道什么时候该用它。
+
+它最适合下面这些场景：
+
+- 主页面布局：顶部工具栏 + 左侧菜单 + 右侧内容区
+- 表单布局：字段排列在 2 列/3 列中
+- 数据列表 + 按钮工具栏组合
+- 复杂页面中需要精确控制区域
+
+如果页面结构变复杂，`Grid` 往往是最稳定、最可维护的选择。
+
+### 9.4 Border：给一块区域加容器和边框
+
+`Border` 不是“布局器”的核心作用，它更像一个“容器包裹层”。常见用途：
+
+- 给某一块内容加边框
+- 给一段区域加背景色
+- 对内部内容做统一间距和外观控制
+
+示例：
+
+```xml
+<Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+        CornerRadius="8"
+        Padding="12"
+        BorderThickness="1"
+        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+    <StackPanel Spacing="8">
+        <TextBlock Text="Quick actions" FontWeight="SemiBold" />
+        <Button Content="Open" />
+        <Button Content="Save" />
+    </StackPanel>
+</Border>
+```
+
+它的关键作用是：
+
+- 让一块区域看起来像一个卡片
+- 让界面层次更清晰
+- 不必把所有样式都散落到每个控件上
+
+很多真实应用里，页面就是由多个 `Border` 包裹的区域拼起来的。
+
+### 9.5 RelativePanel：适合依赖位置的界面
+
+`RelativePanel` 适合：
+
+- 一个控件在左边，一个在右边
+- 一个控件在上方，另一个在下方
+- 某个按钮需要相对标题或图标定位
+
+例如：
+
+```xml
+<RelativePanel Width="400" Height="120">
+    <TextBlock x:Name="TitleText" Text="Settings" FontSize="32" />
+    <Button Content="Save" RelativePanel.RightOf="TitleText" RelativePanel.AlignBottomWith="TitleText" />
+</RelativePanel>
+```
+
+它的意义是：
+
+- 不强调表格，而强调“相对位置关系”
+- 适合较小区域的微布局
+- 但一旦页面复杂，通常还是 `Grid` 更可靠
+
+### 9.6 ScrollViewer：内容太多时的布局节点
+
+页面中经常会出现内容超出可视区域的情况，比如：
+
+- 设置项很多
+- 长列表
+- 多行日志
+- 表单很长
+
+这时就需要 `ScrollViewer`：
+
+```xml
+<ScrollViewer>
+    <StackPanel Spacing="12">
+        <TextBox Header="Name" />
+        <TextBox Header="Email" />
+        <TextBox Header="Address" />
+        <Button Content="Submit" />
+    </StackPanel>
+</ScrollViewer>
+```
+
+它解决的不是“布局复杂”，而是：“内容太多，窗口不够大，需要滚动展示”。
+
+### 9.7 一段真实的页面布局：任务管理主界面
+
+这才是最有用的理解方式。看下面一个页面结构：
+
+```xml
+<Grid>
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="220" />
+        <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <Border Grid.Column="0" Background="LightGray" Padding="12">
+        <StackPanel Spacing="8">
+            <TextBlock Text="Menu" FontSize="20" />
+            <Button Content="Tasks" />
+            <Button Content="Calendar" />
+            <Button Content="Settings" />
+        </StackPanel>
+    </Border>
+
+    <Grid Grid.Column="1" Padding="12" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="120" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Column="0" Header="Add task" PlaceholderText="What do you want to do?" />
+            <Button Grid.Column="1" Content="Add" VerticalAlignment="Bottom" />
+        </Grid>
+
+        <ListView Grid.Row="1" />
+    </Grid>
+</Grid>
+```
+
+这段代码的意义不是“它很炫”，而是：
+
+- 左边是菜单区域，右边是主内容
+- 输入区和按钮在同一行
+- 列表区占据剩余空间
+- `Grid` 控制了主要结构
+- `Border` 把菜单区包起来
+
+这才是你在真实应用里真正需要的布局能力。
+
+### 9.8 你要记住的不是容器名，而是布局思想
+
+最重要的不是背 `Grid` / `StackPanel` / `Border` 的定义，而是培养这种判断：
+
+- 这是一个垂直表单，用 `StackPanel`
+- 这是一个主页面结构，用 `Grid`
+- 这是一个带边框的区域，用 `Border`
+- 这是一个相对位置布局，用 `RelativePanel`
+- 这是长内容，需要滚动，用 `ScrollViewer`
+
+一旦你掌握了这种思路，后面写 WinUI 3 页面就不再是“代码堆积”，而是“布局设计”。
+
+---
 
 ---
 
