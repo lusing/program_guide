@@ -1140,43 +1140,289 @@ void MainWindow::OnSelectionChanged(IInspectable const&, NavigationViewSelection
 
 ## 10. 数据绑定和 ViewModel：真正的工程思路
 
-WinUI 3 实际上最重要的工程组合不是控件，而是：
+这一节是很多人真正卡住的地方：
 
-- 数据对象
-- ViewModel
-- 绑定
-- 命令
+- 你知道控件怎么写
+- 你知道页面怎么排版
+- 但你不知道“为什么 UI 会跟着数据变化”
 
-### 10.1 示例：任务列表数据模型
+这个关键点，就是数据绑定和 ViewModel。
+
+### 10.1 先说最核心的概念：绑定的目的
+
+绑定的本质不是“让一个字段看起来自动更新”，而是：
+
+- 视图层（UI）和数据层解耦
+- 界面不需要自己手动去改一堆控件状态
+- 数据变化后，UI 自动反映
+- 用户操作后，状态更新后，界面自动刷新
+
+如果没有绑定：
+
+- 每次状态变化都得显式改控件属性
+- 代码会散落到很多事件里
+- 业务状态和 UI 状态混在一起
+
+这就会导致程序很快变脏、难维护。
+
+### 10.2 什么是 ViewModel
+
+ViewModel（视图模型）是“给页面看的数据和状态容器”。
+
+它通常负责：
+
+- 持有页面状态
+- 计算当前显示内容
+- 连接用户动作和业务逻辑
+- 在数据变化后通知 UI 更新
+
+例如：
 
 ```cpp
 struct TaskItem {
     std::string title;
     bool is_done = false;
 };
-```
 
-```cpp
-struct TaskViewModel {
-    std::vector<TaskItem> items;
-    std::string filter_text;
+class TaskViewModel {
+public:
+    void AddTask(std::string title)
+    {
+        if (!title.empty()) {
+            tasks_.push_back(TaskItem{std::move(title), false});
+        }
+    }
+
+    const std::vector<TaskItem>& tasks() const
+    {
+        return tasks_;
+    }
+
+    std::size_t completed_count() const
+    {
+        std::size_t count = 0;
+        for (const auto& task : tasks_) {
+            if (task.is_done) {
+                ++count;
+            }
+        }
+        return count;
+    }
+
+private:
+    std::vector<TaskItem> tasks_;
 };
 ```
 
-UI 中，可以通过绑定到：
+这说明：
 
-- 任务总数
-- 当前已完成数
-- 列表展示项
-- 新任务文本输入框
+- `TaskItem` 是数据模型，只描述任务本身
+- `TaskViewModel` 是页面状态的核心，负责管理任务列表和计算状态
+- UI 不直接管理任务数据，而是绑定到这个 ViewModel
 
-做法是：
+### 10.3 绑定到底绑定什么
 
-- 数据模型是纯数据
-- ViewModel 对数据做计算、过滤和状态更新
-- 界面绑定到 ViewModel
+在 WinUI 3 中，最常见的绑定对象是：
 
-这样代码可维护性会大幅提升。
+- 一个字符串：显示当前状态文本
+- 一个集合：显示任务列表
+- 一个布尔值：决定按钮是否启用
+- 一个选中项：显示当前选中任务
+
+比如：
+
+```cpp
+class MainViewModel {
+public:
+    void SetMessage(std::wstring msg)
+    {
+        message_ = std::move(msg);
+    }
+
+    const std::wstring& message() const
+    {
+        return message_;
+    }
+
+private:
+    std::wstring message_ = L"Ready";
+};
+```
+
+`TextBlock` 可以绑定到这个 `message`：
+
+```xml
+<TextBlock Text="{x:Bind ViewModel.Message, Mode=OneWay}" />
+```
+
+这里的关键是：
+
+- `ViewModel.Message` 变了
+- UI 自动跟着变
+- 你不需要手动写 `TextBlock.Text = ...` 一大堆代码
+
+这就是绑定的价值。
+
+### 10.4 为什么需要区分 Model / ViewModel
+
+很多人会把数据和界面状态混在一起，这是错误的。真正的工程思路是：
+
+- Model：数据对象本身
+- ViewModel：为页面准备的数据、状态和动作
+
+例如：
+
+```cpp
+struct TaskItem {
+    std::string title;
+    bool done;
+};
+```
+
+这是“任务对象”，它只是描述一个任务。
+
+但页面不仅要显示任务，还要知道：
+
+- 当前输入框里写了什么
+- 当前是否正在加载
+- 当前筛选条件是什么
+- 当前已完成多少个
+- 当前是否允许提交
+
+这些状态都不是 `TaskItem` 自己拥有的，而是 `ViewModel` 负责。
+
+因此：
+
+- `Model` 负责“数据是什么”
+- `ViewModel` 负责“页面要怎么用这些数据”
+
+### 10.5 一个实际的数据流：从输入到列表更新
+
+这是最重要的工程例子：
+
+```text
+用户在 TextBox 输入："写 WinUI 教程"
+    ↓
+点击 Add 按钮
+    ↓
+按钮事件触发
+    ↓
+ViewModel.AddTask("写 WinUI 教程")
+    ↓
+任务加入 tasks_ 集合
+    ↓
+绑定到 ListView 的集合变了
+    ↓
+ListView 自动刷新显示新任务
+```
+
+这说明：
+
+- 不是控件自己维护数据
+- 不是按钮直接操纵列表
+- 而是 ViewModel 作为中间层
+
+这就是典型的 WinUI 3 工程结构，是真正“从零到工程”的核心。
+
+### 10.6 一个最典型的误区：把所有状态写在控件里
+
+下面这种写法是典型问题：
+
+```cpp
+void MainPage::OnAddClicked(IInspectable const&, RoutedEventArgs const&)
+{
+    auto title = TaskTextBox().Text();
+    if (!title.empty()) {
+        TaskList().Items().Append(title);
+    }
+}
+```
+
+这虽然能跑，但问题在于：
+
+- 状态分散在控件里
+- 列表和输入逻辑耦合严重
+- 页面越来越大，功能越来越多就很难维护
+- 没有统一“数据源”
+
+更合理的方式是：
+
+- 控件负责展示和输入
+- ViewModel 负责任务集合
+- 页面只负责连接命令和绑定
+
+### 10.7 命令：把用户动作和 ViewModel 连接起来
+
+数据绑定解决的是“数据怎么显示”，命令解决的是“用户怎么触发行为”。
+
+典型思路：
+
+```cpp
+class RelayCommand {
+public:
+    explicit RelayCommand(std::function<void()> execute)
+        : execute_(std::move(execute)) {}
+
+    void Execute() const
+    {
+        if (execute_) {
+            execute_();
+        }
+    }
+
+private:
+    std::function<void()> execute_;
+};
+```
+
+```cpp
+TaskViewModel vm;
+vm.set_add_command(RelayCommand([&]() {
+    vm.AddTask("New task");
+}));
+```
+
+这里的关键：
+
+- Button 点击不直接改 UI
+- 命令去调用 ViewModel 的方法
+- ViewModel 改数据
+- UI 通过绑定刷新
+
+这才是现代 UI 的工程化做法。
+
+### 10.8 绑定和 ViewModel 一起解决什么问题
+
+总结一句话：
+
+> 绑定让界面自动跟随数据变化，ViewModel 让数据和状态保持统一，而命令把用户动作连接到状态更新。
+
+这三者合在一起，就是现代 WinUI 3 工程的核心。
+
+如果没有它们，WinUI 3 程序很容易变成：
+
+- 事件多到爆炸
+- 状态散落在控件之间
+- 界面逻辑和业务逻辑混在一起
+- 修改一个功能要改很多地方
+
+### 10.9 真正要学的是“数据流”，不是“写一个 x:Bind 例子”
+
+很多教程把绑定讲成：
+
+- `Text="{x:Bind ViewModel.Name}"`
+- `ItemsSource="{x:Bind ViewModel.Tasks}"`
+
+这很表面。真正要理解的是：
+
+- 数据在哪里
+- 页面怎么跟随数据变化
+- 命令怎么改变数据
+- 视图怎么自动刷新
+
+这才是工程思维。
+
+---
 
 ---
 
