@@ -478,18 +478,27 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 ## 6. GDI 绘图基础
 
-GDI（Graphics Device Interface）是 Win32 中最关键的图形技术之一，用于在窗口上绘制：
+GDI（Graphics Device Interface）是 Win32 中最关键的图形技术之一，它不是“一个画图函数”，而是一个完整的窗口绘制系统。它负责在窗口、控件、打印设备和位图之上进行：
 
-- 文字
-- 线条
-- 矩形
-- 圆形
-- 位图
-- 自定义图像
+- 文字输出
+- 线条和图形绘制
+- 矩形、椭圆、圆角和多边形
+- 填充区域
+- 自定义控件绘制
+- 位图显示和图像处理
 
-### 6.1 `WM_PAINT` 与 `HDC`
+如果说 Win32 的窗口消息系统负责“程序怎么响应用户”，那么 GDI 负责“屏幕上到底画成什么样子”。这也是为什么 GDI 在桌面应用中如此重要：无论是图表、绘图板、状态仪表盘、控件皮肤，还是更复杂的界面渲染，背后都离不开 GDI。
 
-`HDC` 是设备上下文句柄，表示当前绘图上下文：
+### 6.1 GDI 的核心概念：设备上下文（HDC）
+
+`HDC`（Handle to Device Context）是 GDI 的核心对象，几乎所有绘图都要通过它完成。它代表当前绘图目标，可以是：
+
+- 一个窗口的客户区
+- 一个控件
+- 一个打印设备
+- 一个离屏位图缓冲区
+
+最典型的绘图代码是：
 
 ```cpp
 case WM_PAINT: {
@@ -498,42 +507,169 @@ case WM_PAINT: {
 
     Rectangle(hdc, 20, 20, 220, 180);
     Ellipse(hdc, 260, 20, 460, 180);
-
-    TextOut(hdc, 80, 210, L"Win32 GDI", 9);
+    TextOutW(hdc, 80, 210, L"Win32 GDI", 9);
 
     EndPaint(hwnd, &ps);
     return 0;
 }
 ```
 
-### 6.2 画笔与刷子
+这里重点不是函数名本身，而是这个思路：
 
-在 GDI 中常见对象包括：
+- 先拿到 `HDC`
+- 用它绘制图形和文本
+- 结束绘制，释放资源
 
-- `HPEN`：线条样式
-- `HBRUSH`：填充样式
-- `HFONT`：字体
+`WM_PAINT` 是 GDI 最重要的消息之一，因为它表示“窗口需要重绘”，而不是“直接随手画一下”。这也是 Win32 中非常关键的设计：重绘依赖消息机制，而不是直接在任意时刻随便画。
 
-示例：
+### 6.2 句柄对象：画笔、刷子、字体、位图
+
+GDI 的“画图工具”通常通过不同的对象来完成：
+
+- `HPEN`：画笔，用来绘制轮廓线条
+- `HBRUSH`：画刷，用来填充区域
+- `HFONT`：字体，用来绘制文字
+- `HBITMAP`：位图，用来加载和展示图片
+
+#### 6.2.1 画笔：线条样式
 
 ```cpp
 HDC hdc = GetDC(hwnd);
 HPEN pen = CreatePen(PS_SOLID, 3, RGB(255, 0, 0));
-HBRUSH brush = CreateSolidBrush(RGB(0, 128, 255));
-
 HPEN oldPen = (HPEN)SelectObject(hdc, pen);
-HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, brush);
 
-Rectangle(hdc, 50, 50, 200, 150);
+MoveToEx(hdc, 20, 20, nullptr);
+LineTo(hdc, 220, 220);
 
 SelectObject(hdc, oldPen);
-SelectObject(hdc, oldBrush);
 DeleteObject(pen);
+ReleaseDC(hwnd, hdc);
+```
+
+`CreatePen` 的常见参数包括：
+
+- `PS_SOLID`：实线
+- `PS_DASH`：虚线
+- `PS_DOT`：点线
+- `PS_NULL`：透明画笔
+
+#### 6.2.2 画刷：填充几何图形
+
+```cpp
+HDC hdc = GetDC(hwnd);
+HBRUSH brush = CreateSolidBrush(RGB(0, 128, 255));
+HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, brush);
+
+Rectangle(hdc, 50, 50, 220, 180);
+
+SelectObject(hdc, oldBrush);
 DeleteObject(brush);
 ReleaseDC(hwnd, hdc);
 ```
 
-### 6.3 一个真正的 GDI 例程：绘图板
+画刷通常用于：
+
+- 填充矩形
+- 背景和控件状态的显示
+- 自定义图标与图形块
+
+#### 6.2.3 字体：文字绘制
+
+```cpp
+HDC hdc = GetDC(hwnd);
+HFONT font = CreateFontW(
+    24, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
+    DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+    DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Arial");
+
+HFONT oldFont = (HFONT)SelectObject(hdc, font);
+TextOutW(hdc, 40, 40, L"Hello Win32", 11);
+SelectObject(hdc, oldFont);
+DeleteObject(font);
+ReleaseDC(hwnd, hdc);
+```
+
+字体在桌面程序中常见于：
+
+- 状态显示
+- 数据表格
+- 自定义控件标题
+- 图表和指标文本
+
+### 6.3 窗口重绘与无效区域：GDI 编程的关键原则
+
+GDI 的一个最核心的思想就是：不要在任何地方都直接“画”，而是在窗口需要重绘时重绘。Windows 通过 `InvalidateRect` 和 `WM_PAINT` 去管理绘制更新：
+
+```cpp
+InvalidateRect(hwnd, nullptr, TRUE);
+```
+
+这会让窗口区域失效，系统随后会发出 `WM_PAINT`，重绘回调负责真正输出图形。
+
+这会带来两个好处：
+
+- 资源管理清晰：界面内容在 `WM_PAINT` 中重建
+- 窗口尺寸变化、覆盖、最小化恢复时都能正确重绘
+
+因此，长期写 GDI 程序时，要养成这样一个习惯：
+
+- 业务状态更新时发出重绘请求
+- 真正的绘制放在 `WM_PAINT` 中
+- 不要在不必要的时候反复刷屏
+
+### 6.4 实战例程 1：经典图形绘制
+
+下面这个例子演示在窗口中画一个矩形、圆形和文本：
+
+```cpp
+#include <windows.h>
+
+LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    switch (msg) {
+    case WM_PAINT: {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hwnd, &ps);
+
+        RECT rc;
+        GetClientRect(hwnd, &rc);
+
+        HBRUSH brush = CreateSolidBrush(RGB(70, 130, 180));
+        HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, brush);
+        Rectangle(hdc, 30, 30, 220, 180);
+        SelectObject(hdc, oldBrush);
+        DeleteObject(brush);
+
+        HPEN pen = CreatePen(PS_SOLID, 3, RGB(255, 80, 80));
+        HPEN oldPen = (HPEN)SelectObject(hdc, pen);
+        Ellipse(hdc, 260, 30, 460, 180);
+        SelectObject(hdc, oldPen);
+        DeleteObject(pen);
+
+        SetTextColor(hdc, RGB(0, 0, 0));
+        SetBkMode(hdc, TRANSPARENT);
+        TextOutW(hdc, 80, 220, L"WIN32 GDI", 9);
+
+        EndPaint(hwnd, &ps);
+        return 0;
+    }
+
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+    }
+
+    return DefWindowProcW(hwnd, msg, wParam, lParam);
+}
+```
+
+这个例子展示了 GDI 程序的典型思路：
+
+- 先拿到绘图上下文
+- 使用画刷和画笔选择图形样式
+- 调用 `Rectangle`、`Ellipse`、`TextOutW` 等函数
+- 最后结束绘制
+
+### 6.5 实战例程 2：绘图板
 
 真正的 GDI 程序并不是“画个矩形就结束”，而是要处理：
 
@@ -602,21 +738,71 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 ```
 
-这个例子展示了 GDI 编程中最关键的几件事：
+这个例子展示了几件关键事情：
 
-- 事件驱动：鼠标消息决定绘制行为
+- 事件驱动：鼠标和窗口消息决定绘制行为
 - 动态状态：`lastPoint` 保持上一点位置
-- 设备上下文：`HDC` 负责图形输出
-- 重绘与状态管理：绘图不是一次性操作，而是连续更新
+- GDI 设备上下文：`HDC` 负责图形输出
+- 画线和更新：不是完整重绘，而是局部更新
 
-### 6.4 GDI 的工程经验
+### 6.6 实战例程 3：离屏绘制与双缓冲
+
+如果绘图复杂、刷新频繁，直接在窗口上绘制会产生闪烁和重绘抖动。这个时候就需要离屏缓冲：
+
+```cpp
+case WM_PAINT: {
+    PAINTSTRUCT ps;
+    HDC hdc = BeginPaint(hwnd, &ps);
+
+    RECT rc;
+    GetClientRect(hwnd, &rc);
+
+    HDC memDC = CreateCompatibleDC(hdc);
+    HBITMAP memBitmap = CreateCompatibleBitmap(hdc, rc.right, rc.bottom);
+    HBITMAP oldBitmap = (HBITMAP)SelectObject(memDC, memBitmap);
+
+    HBRUSH bg = CreateSolidBrush(RGB(240, 240, 240));
+    HBRUSH oldBrush = (HBRUSH)SelectObject(memDC, bg);
+    Rectangle(memDC, 0, 0, rc.right, rc.bottom);
+    SelectObject(memDC, oldBrush);
+    DeleteObject(bg);
+
+    HPEN pen = CreatePen(PS_SOLID, 5, RGB(50, 150, 255));
+    HPEN oldPen = (HPEN)SelectObject(memDC, pen);
+    Ellipse(memDC, 50, 50, 250, 200);
+    SelectObject(memDC, oldPen);
+    DeleteObject(pen);
+
+    BitBlt(hdc, 0, 0, rc.right, rc.bottom, memDC, 0, 0, SRCCOPY);
+
+    SelectObject(memDC, oldBitmap);
+    DeleteObject(memBitmap);
+    DeleteDC(memDC);
+
+    EndPaint(hwnd, &ps);
+    return 0;
+}
+```
+
+双缓冲的核心思想是：
+
+- 先在内存里画好图
+- 然后一次性拷贝到屏幕
+- 避免频繁闪烁
+
+这在图形界面、动画、复杂绘图和大量图表更新中非常重要。
+
+### 6.7 GDI 的工程经验
 
 GDI 编程最容易踩的坑通常在下面几个地方：
 
 1. 在 `WM_PAINT` 中只做绘制，不做业务逻辑。
-2. 需要及时释放 GDI 对象：`DeleteObject`、`ReleaseDC`。
-3. 动态绘制时，最好维护状态，不要每次都从头重算。
-4. 对复杂界面，最好把绘图逻辑拆成函数，而不是塞进窗口过程。
+2. 需要及时释放 GDI 对象：`DeleteObject`、`DeleteDC`、`ReleaseDC`。
+3. 复杂绘图要维护状态，例如鼠标位置、绘制参数、缓存内容。
+4. 对动画或高频重绘，最好使用双缓冲和局部更新。
+5. 资源释放要成对出现：创建了什么，就要释放什么。
+
+### 6.8 GDI 的典型应用场景
 
 GDI 通常用于：
 
@@ -624,21 +810,293 @@ GDI 通常用于：
 - 图表和仪表盘
 - 自定义控件
 - 2D 图形编辑器
+- 进度显示和状态动画
+- 数据可视化工具
 
-## 7. Win32 编程的典型框架
+### 6.9 GDI 学习的关键结论
 
-一个比较完整的原生 Win32 应用通常由以下部分组成：
+学习 GDI 的关键，不在于记住所有函数，而在于理解下面这套逻辑：
 
-1. `WinMain` 初始化和入口
-2. 窗口注册：`WNDCLASS`
-3. `CreateWindowEx` 创建窗口
-4. 消息循环：`GetMessage` / `DispatchMessage`
-5. `WndProc` 处理所有系统消息
-6. 控件事件与菜单命令处理
-7. 使用 GDI 进行绘图与界面渲染
-8. 资源管理和对象释放
+- `HDC` 是绘图入口
+- `WM_PAINT` 是绘制时机
+- `InvalidateRect` 触发重绘
+- `HPEN`、`HBRUSH`、`HFONT` 是绘图工具
+- `BitBlt`、`StretchBlt` 负责图像复制
+- 对复杂界面使用离屏缓冲和状态管理
 
-这是一种“底层而稳定”的桌面编程模型。
+理解了这些，再看任何一段 Win32 GDI 代码，都会比“只记函数名”的学习更容易掌握。
+
+## 7. Windows 桌面程序实战：从窗口到完整界面
+
+如果把前面几个章节看作“拆解 Win32 的各种能力”，那么这一章就是把它们真正串起来，形成一个完整、可运行的 Windows 桌面程序。一个真正的桌面程序，不是只有一个空白窗口，也不是只会画几个图形，而是：
+
+- 有窗口和主界面
+- 有菜单或工具栏作为入口
+- 有控件负责输入和显示
+- 有对话框负责临时交互
+- 有 GDI 负责绘制图形和状态
+- 有统一的消息分发机制把这些能力连接起来
+
+这就是 Windows 桌面应用最真实的工程结构。
+
+### 7.1 一条完整的开发链：从零到实战
+
+一个典型的 Win32 桌面程序开发链可以概括为：
+
+```text
+设计界面 -> 创建主窗口 -> 初始化菜单和工具栏 -> 创建控件 -> 处理 WM_COMMAND -> 使用 GDI 绘图 -> 弹出配置对话框 -> 更新界面 -> 退出程序
+```
+
+这条链路看起来很简单，但它正是所有 Windows 程序真正的工作方式：
+
+1. `WinMain` 启动程序
+2. 注册窗口类并创建主窗口
+3. 在窗口创建时初始化菜单、工具栏和控件
+4. 通过 `WM_COMMAND` 接收按钮、菜单和工具栏消息
+5. 通过 `WM_PAINT` 和 GDI 进行绘制
+6. 通过对话框获取用户配置
+7. 通过消息循环保持程序运行
+8. 程序结束时释放资源并退出
+
+这条链路的关键意义在于：
+
+- 菜单、工具栏、控件和对话框并不是互不相干的“零碎功能”
+- 它们都只是在不同阶段发出消息
+- `WndProc` 是统一的入口，负责分发和处理
+- 真正的业务逻辑由程序在一个地方整理，而不是散落在各处
+
+### 7.2 一个可直接照着写的主窗口骨架
+
+下面这段代码，就是一个最典型的 Windows 桌面程序骨架：
+
+```cpp
+#include <windows.h>
+
+constexpr int IDM_NEW = 101;
+constexpr int IDM_OPEN = 102;
+constexpr int IDM_SAVE = 103;
+constexpr int IDM_EXIT = 104;
+constexpr int IDB_OK = 2001;
+constexpr int ID_EDIT = 3001;
+
+LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    switch (msg) {
+    case WM_CREATE: {
+        // 1) 创建菜单
+        HMENU hMenu = CreateMenu();
+        HMENU hFile = CreatePopupMenu();
+        AppendMenuW(hFile, MF_STRING, IDM_NEW, L"新建");
+        AppendMenuW(hFile, MF_STRING, IDM_OPEN, L"打开");
+        AppendMenuW(hFile, MF_STRING, IDM_SAVE, L"保存");
+        AppendMenuW(hFile, MF_SEPARATOR, 0, nullptr);
+        AppendMenuW(hFile, MF_STRING, IDM_EXIT, L"退出");
+        AppendMenuW(hMenu, MF_POPUP | MF_STRING, (UINT_PTR)hFile, L"文件");
+        SetMenu(hwnd, hMenu);
+
+        // 2) 创建控件
+        CreateWindowExW(
+            0, L"STATIC", L"输入：",
+            WS_CHILD | WS_VISIBLE | SS_LEFT,
+            20, 20, 60, 24, hwnd, nullptr, ((LPCREATESTRUCTW)lParam)->hInstance, nullptr);
+
+        CreateWindowExW(
+            0, L"EDIT", L"",
+            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+            90, 20, 220, 24, hwnd, (HMENU)ID_EDIT, ((LPCREATESTRUCTW)lParam)->hInstance, nullptr);
+
+        CreateWindowExW(
+            0, L"BUTTON", L"确认",
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            330, 20, 80, 28, hwnd, (HMENU)IDB_OK, ((LPCREATESTRUCTW)lParam)->hInstance, nullptr);
+        return 0;
+    }
+
+    case WM_COMMAND:
+        // 3) 统一处理菜单和按钮消息
+        if (LOWORD(wParam) == IDB_OK && HIWORD(wParam) == BN_CLICKED) {
+            wchar_t text[128] = {};
+            SendMessageW(GetDlgItem(hwnd, ID_EDIT), WM_GETTEXT, 127, (LPARAM)text);
+            MessageBoxW(hwnd, text, L"输入内容", MB_OK);
+            return 0;
+        }
+
+        switch (LOWORD(wParam)) {
+        case IDM_NEW:
+            MessageBoxW(hwnd, L"执行新建", L"菜单命令", MB_OK);
+            return 0;
+        case IDM_OPEN:
+            MessageBoxW(hwnd, L"执行打开", L"菜单命令", MB_OK);
+            return 0;
+        case IDM_SAVE:
+            MessageBoxW(hwnd, L"执行保存", L"菜单命令", MB_OK);
+            return 0;
+        case IDM_EXIT:
+            DestroyWindow(hwnd);
+            return 0;
+        }
+        return 0;
+
+    case WM_PAINT: {
+        // 4) GDI 绘制状态区
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hwnd, &ps);
+
+        RECT rc;
+        GetClientRect(hwnd, &rc);
+        Rectangle(hdc, 20, 70, 420, 260);
+        TextOutW(hdc, 40, 90, L"桌面程序主窗口", 9);
+
+        EndPaint(hwnd, &ps);
+        return 0;
+    }
+
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+    }
+
+    return DefWindowProcW(hwnd, msg, wParam, lParam);
+}
+
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int) {
+    const wchar_t CLASS_NAME[] = L"DemoDesktopWindow";
+
+    WNDCLASSW wc = {};
+    wc.lpfnWndProc = WndProc;
+    wc.hInstance = hInstance;
+    wc.lpszClassName = CLASS_NAME;
+    wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+
+    RegisterClassW(&wc);
+
+    HWND hwnd = CreateWindowExW(
+        0, CLASS_NAME, L"Win32 桌面程序",
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT, 500, 360,
+        nullptr, nullptr, hInstance, nullptr);
+
+    ShowWindow(hwnd, SW_SHOWDEFAULT);
+    UpdateWindow(hwnd);
+
+    MSG msg = {};
+    while (GetMessageW(&msg, nullptr, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessageW(&msg);
+    }
+
+    return 0;
+}
+```
+
+这段代码代表了一个真正的桌面程序大脑结构：
+
+- `WM_CREATE` 负责初始化界面组件
+- `WM_COMMAND` 负责处理点击菜单和控件的事务
+- `WM_PAINT` 负责渲染界面内容
+- `WM_DESTROY` 负责平滑退出
+
+### 7.3 一个实用的开发序列：按真实工程方式学习
+
+你可以把 Win32 桌面程序的学习拆成以下完整链条：
+
+#### 1）窗口程序基础
+
+先写一个最小窗口程序，确保你理解：
+
+- `WinMain`
+- `WNDCLASS`
+- `CreateWindowEx`
+- 消息循环
+- `WndProc`
+
+这是整个桌面程序的根基。
+
+#### 2）菜单与工具栏
+
+接着加入菜单和工具栏，理解：
+
+- 命令 ID 的意义
+- `WM_COMMAND` 的统一入口
+- 动作如何从按钮/菜单触发
+
+#### 3）控件
+
+然后加入 `EDIT`、`BUTTON`、`LISTBOX`、`COMBOBOX` 等控件，理解：
+
+- 子控件也是窗口
+- 父窗口是事件中心
+- `SendMessageW` 负责读取和写入控件状态
+
+#### 4）对话框
+
+再用配置对话框处理临时交互，例如：
+
+- 登录信息
+- 文件配置
+- 参数设置
+- 确认窗口
+
+#### 5）GDI 绘图
+
+最后用 GDI 画图表、状态框、图形区域、绘图板，理解：
+
+- `WM_PAINT` 的时机
+- `HDC` 的用途
+- 图形重绘和双缓冲
+
+### 7.4 实战案例链：从“最小窗口”到“功能型桌面程序”
+
+如果想真正把这套东西学成工程经验，可以按以下顺序练习：
+
+#### 案例 1：单窗口 Hello 程序
+
+目标：理解 WinMain、消息循环和 WndProc
+
+#### 案例 2：带菜单的编辑器
+
+目标：理解菜单、命令 ID 和 `WM_COMMAND`
+
+#### 案例 3：带控件的配置面板
+
+目标：理解 `EDIT`、`BUTTON`、`COMBOBOX` 和事件分发
+
+#### 案例 4：带对话框的参数设置系统
+
+目标：理解 `DialogBox`、`WM_INITDIALOG`、`WM_COMMAND`
+
+#### 案例 5：绘图板或仪表盘
+
+目标：理解 `WM_PAINT`、`HDC`、`GDI`、状态更新和重绘
+
+#### 案例 6：完整桌面应用骨架
+
+目标：把菜单、控件、对话框和绘图整合成一体
+
+这个顺序非常适合从零学习，因为它和真实 Windows 程序的开发顺序基本一致：
+
+- 先建一个窗口
+- 再放功能入口
+- 再放交互控件
+- 再做特定功能
+- 最后做图形渲染
+
+### 7.5 实战结论
+
+真正的 Win32 学习，不能只停留在“我知道某个函数能干什么”，而应该逐步建立下面这套认知：
+
+- 窗口负责容器
+- 菜单和工具栏负责入口
+- 控件负责输入和显示
+- 对话框负责临时交互
+- GDI 负责绘制界面
+- `WM_*` 消息连接所有这些能力
+
+也就是说，Win32 桌面程序不是一堆零散 API，而是一个完整的事件驱动系统。
+
+只要你把这张图看清楚，后面的线程、进程、内存、文件和 DLL 就会更容易理解，因为它们都不是“单独的编程技巧”，而是对同一套 Windows 程序模型的扩展。
+
+## 8. 菜单与工具栏（Win32 方式）
 
 ## 8. 菜单与工具栏（Win32 方式）
 
