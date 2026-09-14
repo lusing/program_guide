@@ -21,7 +21,8 @@ $sources = @(
     (Join-Path $samplesRoot "11_checkbox_radio_control\checkbox_radio_control.cpp"),
     (Join-Path $samplesRoot "12_combobox_listview_control\combobox_listview_control.cpp"),
     (Join-Path $samplesRoot "13_slider_toggle_control\slider_toggle_control.cpp"),
-    (Join-Path $samplesRoot "14_dialog_navigation_control\dialog_navigation_control.cpp")
+    (Join-Path $samplesRoot "14_dialog_navigation_control\dialog_navigation_control.cpp"),
+    (Join-Path $samplesRoot "15_complete_task_app\task_app.cpp")
 )
 
 Write-Host "========================================" -ForegroundColor Cyan
