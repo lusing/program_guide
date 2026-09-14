@@ -23,6 +23,7 @@
 - [cpp20](./cpp20) — C++20 教程与示例，适配 MSVC/Windows 构建
 - [dart](./dart) — Dart 语言入门与示例，使用 Dart SDK 验证
 - [dlang](./dlang) — D 语言教程与示例，使用 DMD 编译验证
+- [emacs](./emacs) — Emacs Lisp 扩展开发教程与示例，使用 Emacs 31 byte-compile 验证
 - [dotnet](./dotnet) — .NET 教程与示例工程，使用 .NET SDK (`dotnet build`) 验证
 - [elixir](./elixir) — Elixir 教程与示例，使用 elixirc 编译验证
 - [erlang](./erlang) — Erlang/OTP 教程与示例，使用 erlc 编译验证
@@ -72,22 +73,23 @@
 4. [cpp20](./cpp20)
 5. [boost](./boost)
 6. [dlang](./dlang)
-7. [dotnet](./dotnet)
-8. [elixir](./elixir)
-9. [erlang](./erlang)
-10. [freebasic](./freebasic)
-11. [julia](./julia)
-12. [dart](./dart)
-13. [kotlin](./kotlin)
-14. [rust](./rust)
-15. [OpenCL](./OpenCL)
-16. [sdl2](./sdl2)
-17. [wpf](./wpf)
-18. [sbcl](./sbcl)
-19. [swift](./swift)
-20. [WinUI3](./WinUI3)
-21. [zig](./zig)
-22. [lean4](./lean4)
+7. [emacs](./emacs)
+8. [dotnet](./dotnet)
+9. [elixir](./elixir)
+10. [erlang](./erlang)
+11. [freebasic](./freebasic)
+12. [julia](./julia)
+13. [dart](./dart)
+14. [kotlin](./kotlin)
+15. [rust](./rust)
+16. [OpenCL](./OpenCL)
+17. [sdl2](./sdl2)
+18. [wpf](./wpf)
+19. [sbcl](./sbcl)
+20. [swift](./swift)
+21. [WinUI3](./WinUI3)
+22. [zig](./zig)
+23. [lean4](./lean4)
 
 ## 工具链说明
 
@@ -101,6 +103,7 @@
 - Coq (coqc)
 - Dart SDK
 - DMD
+- Emacs + Emacs Lisp (ELisp)
 - .NET SDK
 - Elixir
 - Erlang/OTP
