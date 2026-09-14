@@ -3399,6 +3399,174 @@ WinUI 3 的系统资源通常已经考虑了高对比度、高 DPI 环境和可�
 
 > Fluent Design 在 WinUI 3 中的本质，不是给界面换个颜色，而是把颜色、字体、间距、状态、层次和可访问性全部收敛到统一的资源与主题系统里，让页面、控件和应用整体都在同一套视觉语义下工作。
 
+### 13.13 应用架构：图标放在哪里，如何打包成 MSIX
+
+真实的 WinUI 3 应用不只是“一个页面里写几个控件”，它最终是一个完整的应用工程。工程结构要尽量清晰，才能让图标资源、页面结构、状态逻辑、系统能力和最终安装包保持一致。
+
+#### 13.13.1 图标文件放在哪里
+
+WinUI 3 的图标和启动图通常放在应用级资源目录中，例如：
+
+```text
+MyApp/
+  App.xaml
+  MainWindow.xaml
+  Pages/
+    HomePage.xaml
+  ViewModels/
+    HomeViewModel.h
+  Models/
+    TaskItem.h
+  Services/
+    FileService.h
+  Assets/
+    Square44x44Logo.png
+    Square150x150Logo.png
+    Wide310x150Logo.png
+    StoreLogo.png
+    SplashScreen.png
+  Package.appxmanifest
+```
+
+这里的关键点是：
+
+- `Assets/` 是应用资源目录，放图标、启动图、Logo 等文件
+- 图标不是页面资源，而是应用资源
+- 这些文件最终会被打入 MSIX 包中，因此必须放在项目中并由 manifest 引用
+
+如果你把图标写到某个页面目录里，虽然代码能编译，但打包时很容易丢失关联关系，运行起来就会出现图标不显示、启动图缺失的问题。
+
+#### 13.13.2 `Package.appxmanifest` 负责告诉系统“应用长什么样”
+
+在 WinUI 3 应用里，图标和启动画面的真正绑定，是在 `Package.appxmanifest` 中完成的。比较典型的一段是：
+
+```xml
+<uap:VisualElements
+    DisplayName="MyApp"
+    Square150x150Logo="Assets\Square150x150Logo.png"
+    Square44x44Logo="Assets\Square44x44Logo.png"
+    BackgroundColor="transparent"
+    Description="My WinUI 3 App"
+    AppListEntry="default" />
+```
+
+这里的含义是：
+
+- 应用名是什么
+- 启动图标是哪张图
+- 小图标是哪张图
+- 包中资源如何和安装界面关联
+
+如果 `Package.appxmanifest` 写错路径，或者 PNG 不在 `Assets` 中，最终安装包会出现图标缺失、应用列表显示异常等问题。
+
+#### 13.13.3 工程分层：Page / ViewModel / Model / Service
+
+真实应用的结构通常不是“所有代码都混在一个窗口里”，而是按职责分层：
+
+- `Page`：界面结构和控件布局
+- `ViewModel`：状态、命令、动作、数据流
+- `Model`：业务数据对象
+- `Service`：文件、注册表、JSON/XML、网络等系统能力
+
+典型结构：
+
+```text
+Pages/
+  HomePage.xaml
+ViewModels/
+  HomeViewModel.h
+Models/
+  TaskItem.h
+Services/
+  FileService.h
+```
+
+关系是：
+
+1. 用户点击页面按钮
+2. 页面事件触发到 `ViewModel`
+3. `ViewModel` 调用 `Service`
+4. `Service` 读写文件、配置、数据库或系统资源
+5. `ViewModel` 更新状态
+6. 页面绑定自动刷新 UI
+
+这才是“真实页面闭环”。
+
+#### 13.13.4 图标和应用工程的关系
+
+图标资源是应用级能力，不属于页面逻辑本身。但它和应用工程结构仍然紧密联系：
+
+- 图标属于应用程序资源，不属于某个页面
+- 图标本身是工程对象的一部分，需纳入版本控制
+- 数据和资源都应符合最终包的分发规则
+
+也就是说：
+
+> 图标不是随手放在项目里就算完事，而是应用打包流程的一部分。
+
+#### 13.13.5 如何生成 MSIX
+
+WinUI 3 最标准的交付方式是生成 MSIX 包。常见做法是：
+
+1. 在 Visual Studio 中创建一个 `Windows Application Packaging Project`
+2. 让它引用当前的 WinUI 3 主项目
+3. 选择 Release + x64（或目标架构）
+4. 配置签名、版本信息和应用显示名
+5. 生成解决方案
+6. 导出 `.msix` 或 `.msixbundle`
+
+生成后，输出通常位于类似：
+
+```text
+YourApp\AppPackages\MyApp_1.0.0.0_Test\MyApp_1.0.0.0_x64.msix
+```
+
+或：
+
+```text
+YourApp\bin\x64\Release\MyApp.msix
+```
+
+#### 13.13.6 MSIX 实际上是什么
+
+MSIX 不是单纯的可执行文件，而是一个完整的 Windows 应用安装包。它通常包含：
+
+- 应用可执行文件和依赖项
+- 图标和启动资源
+- manifest 元数据
+- 证书签名
+- 运行时依赖
+
+因此它是 WinUI 3 应用交付的“最终产品”，而不是开发期间的临时资源目录。
+
+#### 13.13.7 安装与发布
+
+本地安装：
+
+```powershell
+Add-AppxPackage -Path .\MyApp_1.0.0.0_x64.msix
+```
+
+卸载：
+
+```powershell
+Remove-AppxPackage -Package <PackageFullName>
+```
+
+对于真实项目来说，MSIX 还会牵涉到：
+
+- 证书签名
+- 更新策略
+- 版本管理
+- 发行通道
+- 侧载/企业分发
+
+这些都属于应用工程层面，而不只是 UI 层面的事。
+
+#### 13.13.8 一句话总结
+
+> WinUI 3 应用的核心工程结构不是“控件堆在一起”，而是“页面 + 状态 + 业务 + 系统能力 + 资源 + 打包”。图标放在 `Assets`，元数据写在 `Package.appxmanifest`，最终通过 MSIX 包交付，这样应用才是一个真正完整、可安装、可维护的 Windows 桌面程序。
+
 示例源码：
 - [05_resource_dictionary](G:/code/guide/WinUI3/cpp_examples/05_resource_dictionary/resource_dictionary.cpp)
 
