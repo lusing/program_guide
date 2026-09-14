@@ -419,21 +419,32 @@ Win32 API 不只是窗口编程，它也提供了强大的系统级管理能力�
 - 句柄：系统对象的标识符。
 - 进程 ID（PID）：系统内唯一标识一个进程。
 
-常见的进程 API 包括：
+一个进程至少包含：
 
-- `CreateToolhelp32Snapshot`
-- `Process32FirstW`
-- `Process32NextW`
-- `OpenProcess`
-- `TerminateProcess`
-- `GetCurrentProcessId`
-- `GetCurrentProcess`
+- 代码和数据的内存空间
+- 一个主线程
+- 资源句柄（文件句柄、窗口句柄、事件对象等）
+- 一个独立的安全上下文
 
-### 13.2 进程枚举示例
+常见的核心进程 API 包括：
+
+- `CreateProcessW`：启动新进程
+- `CreateToolhelp32Snapshot`：抓取系统进程快照
+- `Process32FirstW` / `Process32NextW`：枚举进程
+- `OpenProcess`：打开已有进程句柄
+- `GetCurrentProcessId`：获得当前进程 PID
+- `GetExitCodeProcess`：查询进程退出状态
+- `TerminateProcess`：强制结束进程
+- `WaitForSingleObject`：等待进程结束
+
+### 13.2 使用 `CreateToolhelp32Snapshot` 进行进程枚举
+
+这是最常见、最稳定的 Win32 进程枚举方式。它本质上是抓取一个“快照”，然后遍历系统中的进程记录。
 
 ```cpp
 #include <windows.h>
 #include <tlhelp32.h>
+#include <stdio.h>
 
 void ListProcesses() {
     HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
@@ -452,40 +463,217 @@ void ListProcesses() {
 }
 ```
 
-这类函数允许你枚举系统中所有当前进程，并在程序中获取进程 ID 和名称。它常用于：
+这里的关键点：
 
-- 任务管理器风格工具
-- 监控器与诊断程序
-- 进程筛查和自动化脚本
-- 反作弊或安全审计工具
+- `TH32CS_SNAPPROCESS` 表示枚举进程快照
+- `PROCESSENTRY32W` 中有 `th32ProcessID` 和 `szExeFile`
+- `Process32FirstW` / `Process32NextW` 遍历所有记录
 
-### 13.3 `OpenProcess` 与进程控制
+应用场景：
 
-如果需要对另一个进程进行访问或控制，可以使用：
+- 任务管理器式程序
+- 进程监控器
+- 杀毒/安全扫描器
+- 系统诊断工具
+
+### 13.3 使用 `CreateProcessW` 启动新进程
+
+如果你的程序想“启动另一个应用”，最常用的是 `CreateProcessW`。它不仅能启动程序，还能设置工作目录、环境变量、进程优先级和窗口显示方式。
 
 ```cpp
-HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+#include <windows.h>
+
+void StartNotepad() {
+    wchar_t cmd[] = L"notepad.exe";
+    STARTUPINFOW si = { sizeof(si) };
+    PROCESS_INFORMATION pi = {};
+
+    BOOL ok = CreateProcessW(
+        nullptr,
+        cmd,
+        nullptr,
+        nullptr,
+        FALSE,
+        0,
+        nullptr,
+        nullptr,
+        &si,
+        &pi);
+
+    if (!ok) {
+        return;
+    }
+
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+}
 ```
 
-常用权限包括：
+要点：
 
-- `PROCESS_QUERY_INFORMATION`
-- `PROCESS_VM_READ`
-- `PROCESS_TERMINATE`
-- `PROCESS_CREATE_THREAD`
+- 第一个参数是可执行文件路径；如果传 `nullptr`，系统会使用命令行字符串中指定的程序
+- 第二个参数是一份可修改的命令行缓冲区，通常需要可写
+- `STARTUPINFO` 控制子进程的窗口属性
+- `PROCESS_INFORMATION` 返回子进程的句柄和 Pid
 
-注意：权限受安全描述符和用户权限影响，因此在真实系统中，进程访问必须遵守 Windows 安全模型。不要随意终止系统关键进程。
+这是很多“启动器”“脚本执行器”“桌面工具管理器”都依赖的基本 API。
 
-### 13.4 进程管理的实战意义
+### 13.4 `OpenProcess` 与进程句柄
 
-Windows 桌面程序往往不只是“画一个窗口”，而是在系统中管理资源和任务。进程管理能力用于：
+如果程序已经知道某个 PID，但需要对该进程进行进一步管理，就需要打开句柄：
 
-- 监控系统活动
-- 做启动器和监管器
-- 实现进程间通信协作
-- 构建高级系统工具
+```cpp
+HANDLE hProcess = OpenProcess(
+    PROCESS_QUERY_INFORMATION | PROCESS_TERMINATE,
+    FALSE,
+    pid);
+```
 
-这种能力是 Win32 API 中“系统编程”层面的关键基础。
+常用权限选项：
+
+- `PROCESS_QUERY_LIMITED_INFORMATION`：查询基本状态
+- `PROCESS_TERMINATE`：允许结束进程
+- `PROCESS_VM_READ`：读取另一个进程内存
+- `PROCESS_VM_OPERATION`：操作另一个进程内存
+- `SYNCHRONIZE`：等待进程结束
+
+注意：
+
+- 这些权限由安全描述符控制，不能无条件访问所有进程
+- 终止系统关键进程非常危险，必须谨慎使用
+- 正常程序通常只需要读取当前进程或自己启动的子进程
+
+### 13.5 等待和退出状态：`WaitForSingleObject` / `GetExitCodeProcess`
+
+有时你启动了子进程后，需要等待它结束，或者检查退出码：
+
+```cpp
+DWORD waitResult = WaitForSingleObject(pi.hProcess, INFINITE);
+if (waitResult == WAIT_OBJECT_0) {
+    DWORD exitCode = 0;
+    if (GetExitCodeProcess(pi.hProcess, &exitCode)) {
+        wprintf(L"Process exited with code: %lu\n", exitCode);
+    }
+}
+```
+
+这些 API 很适合：
+
+- 执行外部命令并等待其结束
+- 构建包装器程序
+- 编译器/构建脚本托管工具
+- 自动化工具链控制器
+
+### 13.6 `TerminateProcess`：强制结束进程
+
+有时需要在程序中“杀掉”一个进程，例如：
+
+```cpp
+HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pid);
+if (hProcess) {
+    TerminateProcess(hProcess, 1);
+    CloseHandle(hProcess);
+}
+```
+
+它是强制退出，类似“硬关闭”，不会给进程机会清理自己。常用于：
+
+- 任务管理器式工具
+- 自动化测试清理
+- 批量脚本管理
+- 临时资源清理
+
+但它本质上是不优雅的停止方式，通常不建议用于正常业务逻辑；更好的做法是：
+
+- 发送窗口关闭消息
+- 让程序自行退出
+- 仅在必要时才调用 `TerminateProcess`
+
+### 13.7 进程 API 的典型使用路线
+
+一个典型的进程管理流程可以概括为：
+
+1. `CreateToolhelp32Snapshot` 取快照
+2. `Process32FirstW` / `Process32NextW` 遍历所有进程
+3. 用 `OpenProcess` 打开需要访问的目标进程
+4. 使用 `GetExitCodeProcess` / `WaitForSingleObject` 检查状态
+5. 在必要时用 `TerminateProcess` 结束它
+6. `CloseHandle` 及时释放句柄
+
+这套模式非常适合做：
+
+- 系统状态查看器
+- 资源管理器型工具
+- 进程清理工具
+- 自动化运行器
+
+### 13.8 实战案例：进程管理窗口
+
+本目录中的 `08_process_manager` 示例演示了更完整的进程管理流程：
+
+- 列出当前所有进程
+- 启动 `notepad.exe`
+- 选择某个 PID 并终止它
+
+核心代码流：
+
+```cpp
+HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+PROCESSENTRY32W pe = { sizeof(pe) };
+if (Process32FirstW(snapshot, &pe)) {
+    do {
+        wprintf(L"%lu - %ls\n", pe.th32ProcessID, pe.szExeFile);
+    } while (Process32NextW(snapshot, &pe));
+}
+CloseHandle(snapshot);
+```
+
+然后启动新进程：
+
+```cpp
+STARTUPINFOW si = { sizeof(si) };
+PROCESS_INFORMATION pi = {};
+CreateProcessW(nullptr, L"notepad.exe", nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi);
+CloseHandle(pi.hThread);
+CloseHandle(pi.hProcess);
+```
+
+最后通过选择 PID 终止：
+
+```cpp
+DWORD pid = 0;
+HANDLE process = OpenProcess(PROCESS_TERMINATE | SYNCHRONIZE, FALSE, pid);
+if (process) {
+    TerminateProcess(process, 1);
+    CloseHandle(process);
+}
+```
+
+这个示例的意义在于：它不是“单纯看一眼进程列表”，而是把 Win32 进程 API 真正组合成一个可操作的工具。
+
+### 13.9 进程管理中的注意事项
+
+做 Win32 进程编程时，尤其要注意：
+
+- 不要对系统进程执行任意终止
+- 句柄必须 `CloseHandle`
+- `CreateProcessW` 传入命令行时，要保证缓冲区可写
+- 处理错误时优先检查 `GetLastError()`
+- 进程访问权限取决于当前用户和安全策略
+
+### 13.10 总结
+
+Win32 API 的进程管理能力，是 Windows 系统编程的重要基础。它让程序从“只会画窗口”升级到“能管理系统任务”。
+
+如果你掌握了：
+
+- 列举进程
+- 启动进程
+- 监控退出状态
+- 终止进程
+- 处理句柄与权限
+
+你就已经真正触碰到 Windows 进程模型的核心。
 
 ## 14. 内存管理：理解堆、虚拟内存和对象生命周期
 
