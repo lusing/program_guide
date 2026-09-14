@@ -211,6 +211,15 @@ Win32 允许直接创建原生控件，比如：
 - `COMBOBOX`
 - `SCROLLBAR`
 
+这些控件本质上都是窗口，区别只是它们的窗口类不同，默认行为和消息通知方式也不同。对于桌面程序而言，控件是最典型的“用户输入与状态展示”工具：
+
+- `EDIT`：输入文本、编辑内容
+- `BUTTON`：触发动作
+- `STATIC`：显示文本或提示
+- `LISTBOX`：列出多个候选项，用户可选择
+- `COMBOBOX`：既能输入又能选择一项
+- `SCROLLBAR`：控制范围和位置
+
 ### 5.1 创建按钮和编辑框
 
 ```cpp
@@ -236,6 +245,236 @@ case WM_COMMAND:
     }
     return 0;
 ```
+
+### 5.3 主要控件的使用方式
+
+#### 5.3.1 `STATIC`：显示信息
+
+静态控件最常用于提示文本、状态信息、结果显示：
+
+```cpp
+HWND hLabel = CreateWindowEx(
+    0, L"STATIC", L"请输入名称：",
+    WS_CHILD | WS_VISIBLE | SS_LEFT,
+    20, 20, 180, 24, hwnd, nullptr, hInst, nullptr);
+```
+
+它通常只是显示内容，不负责用户输入。注意它的样式最好使用 `SS_LEFT`、`SS_CENTER`、`SS_NOTIFY` 等组合。
+
+#### 5.3.2 `EDIT`：文本输入
+
+编辑框可以用作单行输入或多行编辑：
+
+```cpp
+HWND hEdit = CreateWindowEx(
+    0, L"EDIT", L"默认文本",
+    WS_CHILD | WS_VISIBLE | WS_BORDER | ES_LEFT,
+    20, 60, 220, 24, hwnd, (HMENU)1002, hInst, nullptr);
+```
+
+读取内容时常用：
+
+```cpp
+wchar_t buffer[256] = {};
+SendMessageW(hEdit, WM_GETTEXT, 255, (LPARAM)buffer);
+```
+
+用于输入用户名、文件路径、搜索内容都非常常见。
+
+#### 5.3.3 `BUTTON`：点击动作
+
+按钮是最常见的交互控件：
+
+```cpp
+HWND hButton = CreateWindowEx(
+    0, L"BUTTON", L"确定",
+    WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+    260, 60, 90, 30, hwnd, (HMENU)1003, hInst, nullptr);
+```
+
+点击时，父窗口通过 `WM_COMMAND` 接收 `BN_CLICKED`：
+
+```cpp
+case WM_COMMAND:
+    if (LOWORD(wParam) == 1003 && HIWORD(wParam) == BN_CLICKED) {
+        MessageBoxW(hwnd, L"按钮被点击", L"事件", MB_OK);
+    }
+    return 0;
+```
+
+#### 5.3.4 `LISTBOX`：展示候选列表
+
+列表框适合显示一组选项，常用于选择城市、文件名、任务项等：
+
+```cpp
+HWND hList = CreateWindowEx(
+    0, L"LISTBOX", L"",
+    WS_CHILD | WS_VISIBLE | WS_BORDER | LBS_NOTIFY | WS_VSCROLL,
+    20, 110, 200, 120, hwnd, (HMENU)1004, hInst, nullptr);
+
+SendMessageW(hList, LB_ADDSTRING, 0, (LPARAM)L"C++");
+SendMessageW(hList, LB_ADDSTRING, 0, (LPARAM)L"Win32");
+SendMessageW(hList, LB_ADDSTRING, 0, (LPARAM)L"GDI");
+```
+
+用户选中某项后，父窗口通常收到：
+
+```cpp
+case WM_COMMAND:
+    if (LOWORD(wParam) == 1004 && HIWORD(wParam) == LBN_SELCHANGE) {
+        int index = (int)SendMessageW(hList, LB_GETCURSEL, 0, 0);
+        wchar_t buffer[64] = {};
+        SendMessageW(hList, LB_GETTEXT, index, (LPARAM)buffer);
+        MessageBoxW(hwnd, buffer, L"已选中", MB_OK);
+    }
+    return 0;
+```
+
+#### 5.3.5 `COMBOBOX`：下拉选择
+
+组合框可以作为“输入 + 选择”的统一控件：
+
+```cpp
+HWND hCombo = CreateWindowEx(
+    0, L"COMBOBOX", L"",
+    WS_CHILD | WS_VISIBLE | WS_BORDER | CBS_DROPDOWNLIST | CBS_HASSTRINGS,
+    250, 110, 180, 120, hwnd, (HMENU)1005, hInst, nullptr);
+
+SendMessageW(hCombo, CB_ADDSTRING, 0, (LPARAM)L"Windows 10");
+SendMessageW(hCombo, CB_ADDSTRING, 0, (LPARAM)L"Windows 11");
+SendMessageW(hCombo, CB_ADDSTRING, 0, (LPARAM)L"Windows Server");
+SendMessageW(hCombo, CB_SETCURSEL, 0, 0);
+```
+
+用户选择某项时可以通过 `CBN_SELCHANGE` 处理：
+
+```cpp
+case WM_COMMAND:
+    if (LOWORD(wParam) == 1005 && HIWORD(wParam) == CBN_SELCHANGE) {
+        int index = (int)SendMessageW(hCombo, CB_GETCURSEL, 0, 0);
+        wchar_t buffer[64] = {};
+        SendMessageW(hCombo, CB_GETLBTEXT, index, (LPARAM)buffer);
+        MessageBoxW(hwnd, buffer, L"选中项", MB_OK);
+    }
+    return 0;
+```
+
+#### 5.3.6 `SCROLLBAR`：调节范围
+
+滚动条适合控制数值范围，例如音量、滚动位置、进度调节：
+
+```cpp
+HWND hScroll = CreateWindowEx(
+    0, L"SCROLLBAR", L"",
+    WS_CHILD | WS_VISIBLE | SBS_HORZ,
+    20, 260, 220, 20, hwnd, (HMENU)1006, hInst, nullptr);
+
+SetScrollRange(hScroll, SB_CTL, 0, 100, TRUE);
+SetScrollPos(hScroll, SB_CTL, 50, TRUE);
+```
+
+消息处理：
+
+```cpp
+case WM_HSCROLL:
+    if ((HWND)lParam == hScroll) {
+        int pos = GetScrollPos(hScroll, SB_CTL);
+        // 根据滚动位置更新状态
+    }
+    return 0;
+```
+
+### 5.4 一个完整的“控件组合”例程
+
+下面是一个更实用的例子：主窗口里同时放置文本提示、输入框、按钮、下拉框和列表框，模拟一个“基础配置面板”。
+
+```cpp
+#include <windows.h>
+
+constexpr int IDC_NAME = 1001;
+constexpr int IDC_OK = 1002;
+constexpr int IDC_TYPE = 1003;
+constexpr int IDC_LIST = 1004;
+
+LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    switch (msg) {
+    case WM_CREATE: {
+        CreateWindowExW(
+            0, L"STATIC", L"用户名：",
+            WS_CHILD | WS_VISIBLE | SS_LEFT,
+            20, 20, 80, 24, hwnd, nullptr, ((LPCREATESTRUCTW)lParam)->hInstance, nullptr);
+
+        CreateWindowExW(
+            0, L"EDIT", L"",
+            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+            110, 20, 180, 24, hwnd, (HMENU)IDC_NAME, ((LPCREATESTRUCTW)lParam)->hInstance, nullptr);
+
+        CreateWindowExW(
+            0, L"BUTTON", L"确认",
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            310, 20, 80, 26, hwnd, (HMENU)IDC_OK, ((LPCREATESTRUCTW)lParam)->hInstance, nullptr);
+
+        CreateWindowExW(
+            0, L"COMBOBOX", L"",
+            WS_CHILD | WS_VISIBLE | WS_BORDER | CBS_DROPDOWNLIST | CBS_HASSTRINGS,
+            20, 70, 180, 120, hwnd, (HMENU)IDC_TYPE, ((LPCREATESTRUCTW)lParam)->hInstance, nullptr);
+
+        SendMessageW(GetDlgItem(hwnd, IDC_TYPE), CB_ADDSTRING, 0, (LPARAM)L"管理员");
+        SendMessageW(GetDlgItem(hwnd, IDC_TYPE), CB_ADDSTRING, 0, (LPARAM)L"普通用户");
+        SendMessageW(GetDlgItem(hwnd, IDC_TYPE), CB_SETCURSEL, 0, 0);
+
+        CreateWindowExW(
+            0, L"LISTBOX", L"",
+            WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | LBS_NOTIFY,
+            20, 120, 260, 150, hwnd, (HMENU)IDC_LIST, ((LPCREATESTRUCTW)lParam)->hInstance, nullptr);
+
+        SendMessageW(GetDlgItem(hwnd, IDC_LIST), LB_ADDSTRING, 0, (LPARAM)L"Windows");
+        SendMessageW(GetDlgItem(hwnd, IDC_LIST), LB_ADDSTRING, 0, (LPARAM)L"GDI");
+        SendMessageW(GetDlgItem(hwnd, IDC_LIST), LB_ADDSTRING, 0, (LPARAM)L"Win32");
+        return 0;
+    }
+
+    case WM_COMMAND:
+        if (LOWORD(wParam) == IDC_OK && HIWORD(wParam) == BN_CLICKED) {
+            wchar_t name[128] = {};
+            SendMessageW(GetDlgItem(hwnd, IDC_NAME), WM_GETTEXT, 127, (LPARAM)name);
+
+            int typeIndex = (int)SendMessageW(GetDlgItem(hwnd, IDC_TYPE), CB_GETCURSEL, 0, 0);
+            wchar_t type[64] = {};
+            SendMessageW(GetDlgItem(hwnd, IDC_TYPE), CB_GETLBTEXT, typeIndex, (LPARAM)type);
+
+            wchar_t msg[256];
+            swprintf_s(msg, L"用户名：%ls\n角色：%ls", name, type);
+            MessageBoxW(hwnd, msg, L"配置结果", MB_OK);
+        }
+        return 0;
+
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+    }
+    return DefWindowProcW(hwnd, msg, wParam, lParam);
+}
+```
+
+这个例子展示了 Win32 控件编程的典型思路：
+
+- 用 `CreateWindowExW` 在父窗口中创建控件
+- 给控件一个唯一的 ID，用于识别事件来源
+- 在 `WM_COMMAND` 中根据 `LOWORD(wParam)` 和 `HIWORD(wParam)` 判断哪个控件触发了事件
+- 通过 `SendMessageW` 读取控件内容或改变控件状态
+
+### 5.5 控件开发的工程经验
+
+在真实程序中，控件有几个非常重要的设计原则：
+
+1. 控件 ID 一定要唯一：否则就无法区分不同控件的消息。
+2. 父窗口负责统一处理消息：控件本身不负责整个应用逻辑。
+3. `WM_COMMAND` 是控件消息的主入口：按钮、列表框、组合框等都走这里。
+4. 控件和界面逻辑要尽量清晰分离：不要把所有代码塞进 `WndProc` 里。
+5. 对大规模界面，最好把控件初始化、数据绑定、事件处理拆成函数。
+
+学习 Win32 控件的关键，不在于“知道有哪些控件”，而在于“知道控件如何在现实程序里协作”。一旦你理解了控件、消息和事件的关系，之后的菜单、工具栏、对话框和更复杂界面就会容易得多。
 
 ## 6. GDI 绘图基础
 
@@ -294,6 +533,91 @@ DeleteObject(brush);
 ReleaseDC(hwnd, hdc);
 ```
 
+### 6.3 一个真正的 GDI 例程：绘图板
+
+真正的 GDI 程序并不是“画个矩形就结束”，而是要处理：
+
+- 鼠标按下开始绘制
+- 鼠标移动时延续绘制
+- 窗口重绘时恢复内容
+- 换线条颜色或刷子样式
+
+下面是一个最简版绘图板：
+
+```cpp
+#include <windows.h>
+
+struct DrawState {
+    bool drawing = false;
+    POINT lastPoint{};
+};
+
+DrawState g_state;
+
+LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    switch (msg) {
+    case WM_LBUTTONDOWN: {
+        g_state.drawing = true;
+        g_state.lastPoint.x = LOWORD(lParam);
+        g_state.lastPoint.y = HIWORD(lParam);
+        return 0;
+    }
+
+    case WM_LBUTTONUP:
+        g_state.drawing = false;
+        return 0;
+
+    case WM_MOUSEMOVE:
+        if (g_state.drawing) {
+            HDC hdc = GetDC(hwnd);
+            HPEN pen = CreatePen(PS_SOLID, 3, RGB(0, 120, 255));
+            HPEN oldPen = (HPEN)SelectObject(hdc, pen);
+
+            POINT pt;
+            pt.x = LOWORD(lParam);
+            pt.y = HIWORD(lParam);
+            MoveToEx(hdc, g_state.lastPoint.x, g_state.lastPoint.y, nullptr);
+            LineTo(hdc, pt.x, pt.y);
+
+            SelectObject(hdc, oldPen);
+            DeleteObject(pen);
+            ReleaseDC(hwnd, hdc);
+
+            g_state.lastPoint = pt;
+        }
+        return 0;
+
+    case WM_PAINT: {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hwnd, &ps);
+        EndPaint(hwnd, &ps);
+        return 0;
+    }
+
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+    }
+    return DefWindowProcW(hwnd, msg, wParam, lParam);
+}
+```
+
+这个例子展示了 GDI 编程中最关键的几件事：
+
+- 事件驱动：鼠标消息决定绘制行为
+- 动态状态：`lastPoint` 保持上一点位置
+- 设备上下文：`HDC` 负责图形输出
+- 重绘与状态管理：绘图不是一次性操作，而是连续更新
+
+### 6.4 GDI 的工程经验
+
+GDI 编程最容易踩的坑通常在下面几个地方：
+
+1. 在 `WM_PAINT` 中只做绘制，不做业务逻辑。
+2. 需要及时释放 GDI 对象：`DeleteObject`、`ReleaseDC`。
+3. 动态绘制时，最好维护状态，不要每次都从头重算。
+4. 对复杂界面，最好把绘图逻辑拆成函数，而不是塞进窗口过程。
+
 GDI 通常用于：
 
 - 绘图软件
@@ -324,20 +648,199 @@ Win32 中菜单和工具栏不是 MFC 的封装，而是更接近原生 Windows 
 - 工具栏通常是 `CreateWindowEx` 创建 `TOOLBARCLASSNAME`
 - 命令来自 `WM_COMMAND`
 
-菜单的典型设计：
+如果把窗口看作“容器”，那么菜单和工具栏就是“常用动作入口”；它们的关键不是视觉效果，而是命令分发机制。程序中的每个动作都需要一个唯一 ID，点击后由父窗口统一处理 `WM_COMMAND`，这样代码结构会更清晰，也更符合 Windows 应用设计习惯。
+
+### 8.1 菜单：从按钮到命令系统
+
+最经典的 Win32 菜单写法是：
 
 ```cpp
 HMENU hMenu = CreateMenu();
 HMENU hFile = CreatePopupMenu();
-AppendMenu(hFile, MF_STRING, 1001, L"新建");
-AppendMenu(hFile, MF_STRING, 1002, L"打开");
-AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT_PTR)hFile, L"文件");
+AppendMenuW(hFile, MF_STRING, 1001, L"新建");
+AppendMenuW(hFile, MF_STRING, 1002, L"打开");
+AppendMenuW(hFile, MF_SEPARATOR, 0, nullptr);
+AppendMenuW(hFile, MF_STRING, 1003, L"退出");
+AppendMenuW(hMenu, MF_STRING | MF_POPUP, (UINT_PTR)hFile, L"文件");
 SetMenu(hwnd, hMenu);
 ```
 
-在菜单、快捷键、工具栏等功能之间，最关键的是统一命令 ID，通过 `WM_COMMAND` 接收命令并执行相关逻辑。
+处理菜单消息：
 
-这是 Win32 程序中非常常见的设计方式。
+```cpp
+case WM_COMMAND:
+    if (LOWORD(wParam) == 1001) {
+        MessageBoxW(hwnd, L"执行 新建", L"菜单", MB_OK);
+    } else if (LOWORD(wParam) == 1002) {
+        MessageBoxW(hwnd, L"执行 打开", L"菜单", MB_OK);
+    } else if (LOWORD(wParam) == 1003) {
+        DestroyWindow(hwnd);
+    }
+    return 0;
+```
+
+其中最关键的思想是：
+
+- 命令 ID 是唯一标识
+- 菜单项触发后由父窗口统一处理
+- 菜单逻辑不需要绑定到具体控件，它只是一种“动作入口”
+
+### 8.2 菜单的实战案例：文件编辑器菜单
+
+一个文件编辑器菜单通常会包含：
+
+- `文件`：新建、打开、保存、退出
+- `编辑`：复制、粘贴、删除
+- `帮助`：关于
+
+典型代码：
+
+```cpp
+HMENU hMainMenu = CreateMenu();
+HMENU hFileMenu = CreatePopupMenu();
+AppendMenuW(hFileMenu, MF_STRING, 101, L"新建");
+AppendMenuW(hFileMenu, MF_STRING, 102, L"打开");
+AppendMenuW(hFileMenu, MF_STRING, 103, L"保存");
+AppendMenuW(hFileMenu, MF_SEPARATOR, 0, nullptr);
+AppendMenuW(hFileMenu, MF_STRING, 104, L"退出");
+AppendMenuW(hMainMenu, MF_POPUP | MF_STRING, (UINT_PTR)hFileMenu, L"文件");
+
+HMENU hEditMenu = CreatePopupMenu();
+AppendMenuW(hEditMenu, MF_STRING, 201, L"复制");
+AppendMenuW(hEditMenu, MF_STRING, 202, L"粘贴");
+AppendMenuW(hMainMenu, MF_POPUP | MF_STRING, (UINT_PTR)hEditMenu, L"编辑");
+
+SetMenu(hwnd, hMainMenu);
+```
+
+用户在菜单中选择操作时，主窗口仍然通过 `WM_COMMAND` 驱动整个应用行为，这和控件很相似，说明 Win32 的核心概念其实是统一的：窗口、菜单、控件都是消息源，父窗口是统一调度中心。
+
+### 8.3 工具栏：操作按钮的集合
+
+工具栏通常用于常用功能栏，例如：
+
+- 新建
+- 打开
+- 保存
+- 复制
+- 粘贴
+
+Win32 中工具栏通常是 `TOOLBARCLASSNAME` 的子窗口：
+
+```cpp
+HWND hToolbar = CreateWindowExW(
+    0,
+    TEXT("ToolbarWindow32"),
+    NULL,
+    WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | CCS_TOP,
+    0, 0, 300, 32,
+    hwnd,
+    (HMENU)2001,
+    ((LPCREATESTRUCTW)lParam)->hInstance,
+    NULL);
+```
+
+工具栏最重要的不是视觉结构，而是“命令 ID 对应动作”。例如：
+
+- ID 2001：新建
+- ID 2002：打开
+- ID 2003：保存
+
+点击工具栏按钮时仍会收到 `WM_COMMAND`，这使得工具栏和菜单统一成一种“命令入口”的设计：
+
+```cpp
+case WM_COMMAND:
+    if (LOWORD(wParam) == 2001) {
+        // 新建
+    } else if (LOWORD(wParam) == 2002) {
+        // 打开
+    }
+    return 0;
+```
+
+### 8.4 菜单 + 工具栏 + 事件处理的完整例程
+
+下面这个例子使用菜单和工具栏展示一个完整的应用入口：
+
+```cpp
+#include <windows.h>
+
+constexpr int IDM_NEW = 101;
+constexpr int IDM_OPEN = 102;
+constexpr int IDM_SAVE = 103;
+constexpr int IDM_EXIT = 104;
+constexpr int IDTB_NEW = 2001;
+constexpr int IDTB_OPEN = 2002;
+constexpr int IDTB_SAVE = 2003;
+
+LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    switch (msg) {
+    case WM_CREATE: {
+        HMENU hMainMenu = CreateMenu();
+        HMENU hFileMenu = CreatePopupMenu();
+        AppendMenuW(hFileMenu, MF_STRING, IDM_NEW, L"新建");
+        AppendMenuW(hFileMenu, MF_STRING, IDM_OPEN, L"打开");
+        AppendMenuW(hFileMenu, MF_STRING, IDM_SAVE, L"保存");
+        AppendMenuW(hFileMenu, MF_SEPARATOR, 0, nullptr);
+        AppendMenuW(hFileMenu, MF_STRING, IDM_EXIT, L"退出");
+        AppendMenuW(hMainMenu, MF_POPUP | MF_STRING, (UINT_PTR)hFileMenu, L"文件");
+        SetMenu(hwnd, hMainMenu);
+
+        HWND hToolbar = CreateWindowExW(
+            0, L"ToolbarWindow32", NULL,
+            WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | CCS_TOP,
+            0, 0, 260, 30,
+            hwnd, (HMENU)IDTB_NEW,
+            ((LPCREATESTRUCTW)lParam)->hInstance, NULL);
+
+        // 这里只展示命令入口，实际工程中可以通过 TB_ADDBUTTONS 增加按钮。
+        return 0;
+    }
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam)) {
+        case IDM_NEW:
+        case IDTB_NEW:
+            MessageBoxW(hwnd, L"新建文件", L"命令", MB_OK);
+            return 0;
+        case IDM_OPEN:
+        case IDTB_OPEN:
+            MessageBoxW(hwnd, L"打开文件", L"命令", MB_OK);
+            return 0;
+        case IDM_SAVE:
+        case IDTB_SAVE:
+            MessageBoxW(hwnd, L"保存文件", L"命令", MB_OK);
+            return 0;
+        case IDM_EXIT:
+            DestroyWindow(hwnd);
+            return 0;
+        }
+        return 0;
+
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+    }
+
+    return DefWindowProcW(hwnd, msg, wParam, lParam);
+}
+```
+
+这个例子最重要的点不是窗口看起来有多炫，而是：
+
+- 菜单和工具栏都只是命令入口
+- 真正的业务逻辑统一在 `WM_COMMAND` 中处理
+- 这样程序结构比散落在多个地方处理事件更清晰
+
+### 8.5 工程经验：菜单和工具栏如何设计更合理
+
+真实的 Win32 应用中，菜单和工具栏要尽量遵循下面原则：
+
+1. 统一命令 ID：菜单、工具栏、快捷键、上下文菜单都使用同一批 ID。
+2. 让 `WM_COMMAND` 成为统一入口：不要在多个地方重复写代码。
+3. 工具栏不要和业务逻辑耦合过深：它只是用户动作入口。
+4. 快捷键最好绑定到同样的命令 ID：保持行为一致。
+5. 对大型程序，把菜单和工具栏的初始化拆成函数，而不是一口气写进 `WM_CREATE`。
 
 ## 9. 对话框与资源
 
@@ -348,6 +851,15 @@ Win32 API 提供对话框支持，通常使用：
 - `WM_INITDIALOG` 消息
 - `WM_COMMAND` 处理按钮点击
 
+如果说控件是“随窗口出现”的动态组件，那么对话框就是“临时成型的交互窗口”，通常用于：
+
+- 选择文件
+- 输入设置
+- 确认操作
+- 显示小型参数配置面板
+
+### 9.1 简单的模态对话框
+
 典型流程：
 
 ```cpp
@@ -355,9 +867,15 @@ INT_PTR CALLBACK DialogProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
     case WM_INITDIALOG:
         return TRUE;
+
     case WM_COMMAND:
         if (LOWORD(wParam) == IDOK) {
             EndDialog(hwnd, IDOK);
+            return TRUE;
+        }
+        if (LOWORD(wParam) == IDCANCEL) {
+            EndDialog(hwnd, IDCANCEL);
+            return TRUE;
         }
         return TRUE;
     }
@@ -365,7 +883,126 @@ INT_PTR CALLBACK DialogProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 ```
 
-这是原生 Windows 对话框编程的基础步骤。
+启动方式：
+
+```cpp
+DialogBoxW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDD_DIALOG1), hwnd, DialogProc);
+```
+
+### 9.2 对话框中的控件使用方式
+
+对话框里也同样可以放 `EDIT`、`BUTTON`、`COMBOBOX` 等控件，只是它更像一个专门的“配置页面”：
+
+```cpp
+case WM_INITDIALOG: {
+    HWND hEdit = GetDlgItem(hwnd, IDC_EDIT1);
+    SetWindowTextW(hEdit, L"默认值");
+    return TRUE;
+}
+
+case WM_COMMAND:
+    if (LOWORD(wParam) == IDC_BUTTON1 && HIWORD(wParam) == BN_CLICKED) {
+        wchar_t text[128] = {};
+        GetDlgItemTextW(hwnd, IDC_EDIT1, text, 127);
+        MessageBoxW(hwnd, text, L"输入值", MB_OK);
+    }
+    return TRUE;
+```
+
+### 9.3 一个完整的配置对话框例程
+
+下面这个例子是一个用户设置对话框：它有两个输入框、一个下拉框和两个按钮：
+
+```cpp
+#include <windows.h>
+
+constexpr int IDC_NAME = 1001;
+constexpr int IDC_ROLE = 1002;
+constexpr int IDC_OK = 1003;
+constexpr int IDC_CANCEL = 1004;
+
+INT_PTR CALLBACK SettingsDialogProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    switch (msg) {
+    case WM_INITDIALOG: {
+        HWND hName = GetDlgItem(hwnd, IDC_NAME);
+        SetWindowTextW(hName, L"guest");
+
+        HWND hRole = GetDlgItem(hwnd, IDC_ROLE);
+        SendMessageW(hRole, CB_ADDSTRING, 0, (LPARAM)L"管理员");
+        SendMessageW(hRole, CB_ADDSTRING, 0, (LPARAM)L"普通用户");
+        SendMessageW(hRole, CB_SETCURSEL, 0, 0);
+        return TRUE;
+    }
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam)) {
+        case IDC_OK: {
+            wchar_t name[128] = {};
+            GetDlgItemTextW(hwnd, IDC_NAME, name, 127);
+
+            int idx = (int)SendMessageW(GetDlgItem(hwnd, IDC_ROLE), CB_GETCURSEL, 0, 0);
+            wchar_t role[64] = {};
+            SendMessageW(GetDlgItem(hwnd, IDC_ROLE), CB_GETLBTEXT, idx, (LPARAM)role);
+
+            wchar_t text[256];
+            swprintf_s(text, L"用户名：%ls\n角色：%ls", name, role);
+            MessageBoxW(hwnd, text, L"设置成功", MB_OK);
+            EndDialog(hwnd, IDOK);
+            return TRUE;
+        }
+        case IDC_CANCEL:
+            EndDialog(hwnd, IDCANCEL);
+            return TRUE;
+        }
+        return TRUE;
+    }
+    return FALSE;
+}
+```
+
+主窗口中调用：
+
+```cpp
+case WM_COMMAND:
+    if (LOWORD(wParam) == 5001 && HIWORD(wParam) == BN_CLICKED) {
+        DialogBoxW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDD_SETTINGS), hwnd, SettingsDialogProc);
+    }
+    return 0;
+```
+
+这里的设计很典型：
+
+- 主窗口负责“启动设置窗口”
+- 对话框负责“收集用户输入”
+- 用户点击确认之后，结果返回给主窗口或直接处理
+
+### 9.4 对话框与资源的工程意义
+
+对话框最适合处理这些问题：
+
+- 临时设置参数
+- 低频用户输入
+- 文件路径选择
+- 需要和用户确认的风险操作
+
+对话框不仅是 UI 形式，也是程序逻辑的一种分层：
+
+- 主窗口负责主流程
+- 对话框负责局部交互
+- 资源文件负责界面布局与结构
+
+这也是 Win32 程序工程化的一个重要思路：把不同层次的职责分开。
+
+## 10. Win32 和 MFC 的区别
+
+Win32 与 MFC 的关系可以概括为：
+
+- Win32：底层原生 API，控制粒度最细，学习成本较高
+- MFC：基于 Win32 做一层 C++ 封装，开发效率更高
+
+如果你想理解 Windows 桌面应用的本质，先学习 Win32 API 是最有效的路线。
+
+## 11. 完整应用例程：从“单窗口示例”走向“真实程序”
 
 ## 10. Win32 和 MFC 的区别
 
