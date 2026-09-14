@@ -30,6 +30,7 @@
 - [freebasic](./freebasic) — FreeBASIC 教程与示例，使用 fbc 编译验证（含 FBIDE 使用说明）
 - [freepascal](./freepascal) — Free Pascal / Lazarus 教程与示例，使用 fpc 编译并运行验证
 - [fsharp](./fsharp) — F# 编程教程与示例，使用 .NET SDK (`dotnet build` / `dotnet run`) 验证
+- [flutter](./flutter) — Flutter / Dart 跨平台 UI 教程与示例，使用 Flutter 桌面编译验证
 - [godot](./godot) — Godot 4 / GDScript 教程与示例，使用 Godot headless 执行脚本验证
 - [julia](./julia) — Julia 教程与示例，使用 julia 运行验证
 - [renpy](./renpy) — Ren'Py 视觉小说与叙事游戏教程，使用 Ren'Py `compile` 验证
@@ -84,20 +85,21 @@
 11. [freebasic](./freebasic)
 12. [freepascal](./freepascal)
 13. [fsharp](./fsharp)
-14. [godot](./godot)
-15. [julia](./julia)
-16. [renpy](./renpy)
-17. [dart](./dart)
-18. [kotlin](./kotlin)
-19. [rust](./rust)
-20. [OpenCL](./OpenCL)
-21. [sdl2](./sdl2)
-22. [wpf](./wpf)
-23. [sbcl](./sbcl)
-24. [swift](./swift)
-25. [WinUI3](./WinUI3)
-26. [zig](./zig)
-27. [lean4](./lean4)
+14. [flutter](./flutter)
+15. [godot](./godot)
+16. [julia](./julia)
+17. [renpy](./renpy)
+18. [dart](./dart)
+19. [kotlin](./kotlin)
+20. [rust](./rust)
+21. [OpenCL](./OpenCL)
+22. [sdl2](./sdl2)
+23. [wpf](./wpf)
+24. [sbcl](./sbcl)
+25. [swift](./swift)
+26. [WinUI3](./WinUI3)
+27. [zig](./zig)
+28. [lean4](./lean4)
 
 ## 工具链说明
 
@@ -118,6 +120,7 @@
 - FreeBASIC / FBIDE
 - Free Pascal / Lazarus
 - F# (.NET SDK)
+- Flutter / Dart
 - Godot 4 / GDScript
 - Julia
 - Ren'Py
