@@ -27,17 +27,17 @@ $sources = @(
 )
 
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host " WinUI3 C++ 示例编译验证" -ForegroundColor Cyan
+Write-Host " WinUI3 C++ sample compile validation" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 
 if (-not (Test-Path $vcVars)) {
-    throw "未找到 vcvars64.bat: $vcVars"
+    throw "vcvars64.bat not found: $vcVars"
 }
 
 if ($Clean) {
     if (Test-Path $outRoot) {
         Remove-Item -Recurse -Force $outRoot
-        Write-Host "已清理: $outRoot" -ForegroundColor Yellow
+        Write-Host "Cleaned: $outRoot" -ForegroundColor Yellow
     }
     return
 }
@@ -46,7 +46,7 @@ New-Item -ItemType Directory -Path $outRoot -Force | Out-Null
 
 foreach ($source in $sources) {
     if (-not (Test-Path $source)) {
-        throw "未找到源码文件: $source"
+        throw "Source file not found: $source"
     }
 
     $name = [System.IO.Path]::GetFileNameWithoutExtension($source)
@@ -60,4 +60,4 @@ foreach ($source in $sources) {
     }
 }
 
-Write-Host "`n所有 WinUI3 C++ 示例已通过编译验证。" -ForegroundColor Green
+Write-Host "`nAll WinUI3 C++ samples passed compile validation." -ForegroundColor Green

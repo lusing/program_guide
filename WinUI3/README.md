@@ -3109,18 +3109,295 @@ UI 自动更新
 
 ## 13. 资源与主题：Fluent Design
 
-WinUI 3 的主题系统非常重要，常用机制：
+很多人把 WinUI 3 主题系统看成“给按钮换一下颜色、把背景设成深色”，这太浅了。真正的主题系统是：
 
-- 资源字典：统一颜色和风格
-- 主题切换：浅色 / 深色 / 跟随系统
-- 样式复用：通用按钮样式、标题样式
-- 资源访问：`Application::Current().Resources()`
+- 让界面在浅色/深色/高对比度模式下都保持一致
+- 把颜色、字体、边框、间距这些设计维度收敛成统一资源
+- 让控件和页面可以复用一致的视觉语义，而不是每个控件自己硬编码样式
+- 让应用在不同平台和系统主题下表现得像“同一套设计语言”
 
-典型思路：
+这就是 Fluent Design 的核心意义：不是视觉修饰，而是“设计系统”。
 
-- 统一颜色和字体
-- 让不同页面保持一致视觉风格
-- 方便切换深浅主题
+### 13.1 什么是 Fluent Design
+
+Fluent Design 是 Microsoft 提出的现代设计语言，强调：
+
+- 轻/深/透明/层次感
+- 动画和反馈
+- 统一的交互语义
+- 使用材料、深度、光照、动作等视觉语言来表达界面层次
+- 让 UI 不只是“能用”，而是“有清晰的结构和体验感”
+
+在 WinUI 3 中，它并不只是一个概念，而是被落到资源系统、主题资源、控件样式、图标、间距和颜色这些实际机制里。
+
+### 13.2 主题系统不是“换一套颜色”，而是“换一套视觉语义”
+
+如果你在页面里每个按钮都写死：
+
+```xml
+<Button Background="Red" Foreground="White" />
+```
+
+那么一旦你想切换成深色主题或者改成品牌色，就必须改很多地方，维护成本很高。
+
+更合理的方式是：
+
+- 把颜色定义成资源键
+- 把控件样式引用到资源键
+- 主题切换时只改资源值，不改控件结构
+
+例如：
+
+```xml
+<Application.Resources>
+    <ResourceDictionary>
+        <SolidColorBrush x:Key="BrandBrush" Color="#0063B1" />
+        <SolidColorBrush x:Key="PageBackgroundBrush" Color="{ThemeResource SystemControlBackgroundBaseLowBrush}" />
+    </ResourceDictionary>
+</Application.Resources>
+```
+
+控件中再使用：
+
+```xml
+<Button Background="{ThemeResource BrandBrush}" />
+```
+
+这里的关键是：
+
+- 颜色不再是散落在每个控件上的魔法值
+- 资源是“设计 token”
+- 主题切换只需要换对应资源的定义，而不是重写控件代码
+
+### 13.3 `ThemeResource` 与资源字典
+
+WinUI 3 里最关键的主题机制是资源字典和 `ThemeResource`。
+
+`ThemeResource` 允许某个资源在不同主题下自动切换，例如：
+
+```xml
+<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <TextBlock Foreground="{ThemeResource TextFillColorPrimaryBrush}" />
+</Grid>
+```
+
+它表示：
+
+- 当前是浅色主题还是深色主题
+- 资源选择器会自动找到对应的颜色值
+- 用户不需要手工写一堆 `if` 判断
+
+也就是说：
+
+- 颜色不是静态值，而是“主题驱动的资源”
+- 资源字典定义了“该主题下的值”
+- 控件只依赖资源名称，不依赖硬编码颜色
+
+这就是 WinUI 3 主题系统最典型的工程思路。
+
+### 13.4 资源字典：统一风格与设计令牌
+
+一个真实项目通常不是只有一个 `App.xaml`，而是分成多个资源字典：
+
+```text
+App.xaml
+Styles.xaml
+Themes\Light.xaml
+Themes\Dark.xaml
+Controls\ButtonStyles.xaml
+```
+
+典型结构：
+
+```xml
+<Application.Resources>
+    <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+            <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+            <ResourceDictionary Source="ms-appx:///Styles.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+</Application.Resources>
+```
+
+这意味着：
+
+- 一套全局基础资源
+- 一套页面/控件专用样式
+- 主题文件独立维护
+- 代码只负责逻辑，样式和主题由资源字典管理
+
+这正是 Fluent Design 在工程上落地的方式：
+
+- 视觉设计统一
+- 资源可复用
+- 主题切换更加稳定
+- 控件风格不散落在每个文件里
+
+### 13.5 主题切换：浅色 / 深色 / 跟随系统
+
+WinUI 3 应用通常支持三种模式：
+
+1. 浅色模式
+2. 深色模式
+3. 跟随系统
+
+对应的代码思路一般是：
+
+```cpp
+using namespace winrt::Microsoft::UI::Xaml;
+
+auto app = Application::Current();
+app.RequestedTheme(ElementTheme::Dark);
+```
+
+或者：
+
+```cpp
+app.RequestedTheme(ElementTheme::Light);
+```
+
+或者按系统决定：
+
+```cpp
+app.RequestedTheme(ElementTheme::Default);
+```
+
+这表示：
+
+- 应用的“主题状态”是一个系统配置，而不是一个页面局部变量
+- 控件会根据当前 `RequestedTheme` 自动选用对应资源
+- 页面和控件不需要每个地方写一遍样式判断
+
+这比“手工改每个控件的 Foreground/Background”强太多了，因为它把视觉变化变成系统级资源切换，而不是散落的配置。
+
+### 13.6 Fluent Design 并不只是颜色选择器
+
+很多教程一讲 Fluent Design 就讲“深色模式、浅色模式、按钮颜色、圆角”，这只是表层。真正的 Fluent 设计更关注：
+
+- 层次感：卡片、面板、分组区域
+- 语义：成功、告警、危险、信息
+- 动画：按下、悬停、切换、进入
+- 可访问性：对比度、焦点、状态反馈
+- 一致性：按钮、输入框、导航项在不同页面中保持同一语言
+
+比如：
+
+- 错误状态要用明显的危险色，但不能随便摆放
+- 成功状态要有语义而不是机械颜色
+- 选中态和悬停态应该有清晰的视觉反馈
+- 输入框和按钮风格要统一，不要页面间各自为政
+
+这就是 Fluent 的设计层次：不是“颜色本身”，而是“颜色如何表达语义与层次”。
+
+### 13.7 高对比度与可访问性：主题系统也解决可访问问题
+
+主题系统不是纯粹审美内容，它和可访问性关联非常强：
+
+- 深色模式下文本对比度是否足够
+- 焦点状态是否清晰
+- 错误消息是否容易识别
+- 图标和文本是否在低亮度环境下仍然可读
+
+WinUI 3 的系统资源通常已经考虑了高对比度、高 DPI 环境和可访问性这一层。这样做的好处是：
+
+- 设计规范变成统一资源
+- 开发者无需手工“盲改颜色”
+- 主题系统天然支持更广泛的使用场景
+
+### 13.8 一个真实的资源分层：全局 -> 页面 -> 控件
+
+真实应用中，资源往往分成三层：
+
+1. 全局资源：颜色、字体、间距、层次统一规范
+2. 页面资源：某个页面特有的卡片、标题、表单区域样式
+3. 控件样式：按钮、文本框、列表、导航栏等复用样式
+
+例如：
+
+```xml
+<Page.Resources>
+    <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#F3F3F3" />
+    <Style x:Key="CardStyle" TargetType="Border">
+        <Setter Property="Background" Value="{ThemeResource PanelBackgroundBrush}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="12" />
+    </Style>
+</Page.Resources>
+```
+
+这意味着：
+
+- 页面基础结构保持统一
+- 某个页面的区块可以复用同一套卡片样式
+- 颜色和大小变化时，只改资源，不改页面结构
+
+这才是 Fluent Design 的工程价值。
+
+### 13.9 资源 + 主题 + 状态：一个卡片样例
+
+真实 WinUI 3 页面中，通常一个区域不是纯文本和按钮，而是这些元素组合：
+
+```xml
+<Border Style="{StaticResource CardStyle}">
+    <StackPanel Spacing="8">
+        <TextBlock Text="Project overview" FontSize="20" FontWeight="SemiBold" />
+        <TextBlock Text="Current status: healthy" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+        <Button Content="Open details" />
+    </StackPanel>
+</Border>
+```
+
+这里的关键是：
+
+- 卡片来自样式资源
+- 文字颜色来自主题资源
+- 间距和圆角统一
+- 控件风格不需要每个页面手写
+
+这种方法才像“真实 UI 工程”，而不是“几十个页面里散落着一大堆颜色和属性”。
+
+### 13.10 主题资源与数据绑定并不是两个东西
+
+很多人会把“主题”和“绑定”分开理解，其实它们是相互协作的：
+
+```xml
+<TextBlock Text="{x:Bind ViewModel.Title, Mode=OneWay}" />
+```
+
+而文本的颜色与强调效果仍然来自资源：
+
+```xml
+<TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+```
+
+这说明：
+
+- 数据绑定负责“内容是什么”
+- 主题资源负责“视觉风格如何表达”
+- 两者同时存在，界面才完整
+
+### 13.11 资源系统的真正价值：维护成本下降，视觉一致性上升
+
+如果没有主题和资源系统，一个 WinUI 3 应用很快会变成：
+
+- 每个页面自己设置一套颜色、字体、间距
+- 深色模式时要改一堆地方
+- 主题切换时页面元素很容易不一致
+- 新增控件时又要靠经验硬编码样式
+
+而 Fluent Design 资源系统的价值在于：
+
+- 设计语言被固化为资源
+- 控件不需要重复定义样式
+- 设计切换不需要重写页面
+- 主题变化对页面影响最小
+
+这就是它为什么不是“装饰层”，而是工程层。
+
+### 13.12 一句话总结
+
+> Fluent Design 在 WinUI 3 中的本质，不是给界面换个颜色，而是把颜色、字体、间距、状态、层次和可访问性全部收敛到统一的资源与主题系统里，让页面、控件和应用整体都在同一套视觉语义下工作。
 
 示例源码：
 - [05_resource_dictionary](G:/code/guide/WinUI3/cpp_examples/05_resource_dictionary/resource_dictionary.cpp)
