@@ -16,6 +16,7 @@
 这些目录已经按 “专门文件 + 示例目录 + 构建脚本” 的方式落地，并完成了编译验证：
 
 - [Ada](./Ada) — Ada 语言教程与示例，使用 MSYS2 UCRT64 的 GNAT (`gnatmake`) 验证
+- [android](./android) — Android 应用开发教程（Kotlin），含 Jetpack Compose 与 JNI 示例，使用 Kotlin/Gradle/NDK 验证
 - [asm/intel](./asm/intel) — x86-64 汇编编程指南，使用 NASM + MSVC link.exe 验证
 - [boost](./boost) — Boost C++ 教程与示例，使用 MSVC + Boost 头文件验证
 - [coq](./coq) — Coq 教程与示例，使用 coqc 批量编译验证
@@ -70,26 +71,27 @@
 如果按学习路径从基础到实践来读，可以按下面顺序：
 
 1. [Ada](./Ada)
-2. [asm/intel](./asm/intel)
-3. [cpp20](./cpp20)
-4. [boost](./boost)
-5. [dlang](./dlang)
-6. [dotnet](./dotnet)
-7. [elixir](./elixir)
-8. [erlang](./erlang)
-9. [freebasic](./freebasic)
-10. [julia](./julia)
-11. [dart](./dart)
-12. [kotlin](./kotlin)
-13. [rust](./rust)
-14. [OpenCL](./OpenCL)
-15. [sdl2](./sdl2)
-16. [wpf](./wpf)
-17. [sbcl](./sbcl)
-18. [swift](./swift)
-19. [WinUI3](./WinUI3)
-20. [zig](./zig)
-21. [lean4](./lean4)
+2. [android](./android)
+3. [asm/intel](./asm/intel)
+4. [cpp20](./cpp20)
+5. [boost](./boost)
+6. [dlang](./dlang)
+7. [dotnet](./dotnet)
+8. [elixir](./elixir)
+9. [erlang](./erlang)
+10. [freebasic](./freebasic)
+11. [julia](./julia)
+12. [dart](./dart)
+13. [kotlin](./kotlin)
+14. [rust](./rust)
+15. [OpenCL](./OpenCL)
+16. [sdl2](./sdl2)
+17. [wpf](./wpf)
+18. [sbcl](./sbcl)
+19. [swift](./swift)
+20. [WinUI3](./WinUI3)
+21. [zig](./zig)
+22. [lean4](./lean4)
 
 ## 工具链说明
 
@@ -97,6 +99,7 @@
 
 - NASM + MSVC
 - GNAT (MSYS2 UCRT64)
+- Android SDK + Kotlin + Gradle + NDK
 - Visual Studio + VC
 - MSVC + Boost
 - Coq (coqc)
