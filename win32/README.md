@@ -28,7 +28,9 @@ win32/
 │   │   └── main.cpp
 │   ├── 09_memory_monitor/
 │   │   └── main.cpp
-│   └── 10_file_manager/
+│   ├── 10_file_manager/
+│   │   └── main.cpp
+│   └── 11_thread_sync_demo/
 │       └── main.cpp
 ├── build/
 └── ...
@@ -71,6 +73,7 @@ cd G:\code\guide\win32
 - `08_process_manager`：基于 `CreateToolhelp32Snapshot` 和 `Process32First/Next` 的进程枚举示例。
 - `09_memory_monitor`：使用 `GlobalMemoryStatusEx`、`VirtualAlloc` 和 `VirtualFree` 的内存状态与分配示例。
 - `10_file_manager`：演示 `CreateFileW`、`WriteFile`、`FindFirstFileW` 等文件管理 API 的实际用法。
+- `11_thread_sync_demo`：演示 `CreateThread`、`CRITICAL_SECTION`、事件对象和 `WaitForSingleObject` 的线程同步与 UI 消息回传模式。
 
 ## 说明
 

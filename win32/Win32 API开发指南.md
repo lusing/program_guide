@@ -406,11 +406,911 @@ Win32 与 MFC 的关系可以概括为：
 
 这些示例都按本机 Visual Studio 工具链进行编译验证，并尽量保持与当前安装版本兼容。
 
-## 13. 进程管理：理解 Windows 任务模型
+## 12. Win32 API 的完整地图：大类、能力和版本差异
+
+如果把 Win32 API 看成一套完整的 Windows 系统编程工具箱，它并不是只有“窗口”一个单位，而是由很多功能模块组合而成。理解这些大类，能帮助你真正把 Win32 学习从“函数拼接”提升到“系统模型理解”。
+
+### 12.1 Win32 API 的主要大类
+
+Win32 可以大致分为下面几个层次：
+
+#### 1）基础系统 API
+
+这是最底层的核心模块，负责与操作系统本身交互：
+
+- 进程与线程：`CreateProcessW`、`CreateThread`、`OpenProcess`
+- 句柄管理：`CreateFileW`、`CreateEventW`、`CreateMutexW`
+- 内存管理：`VirtualAlloc`、`VirtualFree`、`GlobalAlloc`
+- 资源与错误处理：`GetLastError`、`CloseHandle`
+- 事件和同步：`WaitForSingleObject`、`CreateMutex`、`CreateEvent`
+
+这部分是 Win32 的“系统编程”基础，像进程管理、线程同步、文件管理都属于这里。
+
+#### 2）窗口与消息 API
+
+这是 Win32 最为人熟知的部分，负责创建和管理窗口：
+
+- 窗口注册：`RegisterClassW` / `WNDCLASS`
+- 创建窗口：`CreateWindowExW`
+- 消息循环：`GetMessageW` / `DispatchMessageW`
+- 窗口过程：`WndProc`
+- 子窗口和控件：按钮、编辑框、列表框、静态文本等
+
+这一类 API 是 Windows GUI 程序的核心；无论是 Win32 原生程序、MFC 还是很多 GUI 框架，最后都依赖这里的底层机制。
+
+#### 3）图形设备接口（GDI）
+
+GDI 是 Win32 中负责绘图的模块：
+
+- `BeginPaint` / `EndPaint`
+- `TextOutW` / `DrawTextW`
+- `Rectangle` / `Ellipse` / `LineTo`
+- `CreatePen` / `CreateBrush`
+- `SelectObject` / `DeleteObject`
+
+GDI 用于：
+
+- 绘制窗口内容
+- 自定义控件
+- 图表和绘图工具
+- 二维图形渲染
+
+#### 4）控件和对话框 API
+
+Win32 允许直接创建原生控件，也支持对话框：
+
+- `CreateWindowExW` 创建按钮、编辑框、列表框等
+- `WM_COMMAND` 处理控件消息
+- `DialogBoxParam` / `CreateDialogParam` 创建对话框
+- `SendMessageW` / `PostMessageW` 发送消息
+
+这是桌面 UI 开发的最基础结构之一。
+
+#### 5）文件系统与 I/O API
+
+用于文件和目录操作：
+
+- `CreateFileW` / `ReadFile` / `WriteFile`
+- `FindFirstFileW` / `FindNextFileW`
+- `GetFileAttributesW` / `SetFileAttributesW`
+- `MoveFileW` / `CopyFileW` / `DeleteFileW`
+
+这部分常见于：
+
+- 文本编辑器
+- 配置保存器
+- 日志和资源管理工具
+- 文件浏览器类程序
+
+#### 6）注册表和系统配置 API
+
+Windows 提供了注册表与系统配置访问：
+
+- `RegOpenKeyExW`
+- `RegQueryValueExW`
+- `RegSetValueExW`
+- `RegCreateKeyExW`
+
+常用于：
+
+- 程序配置存储
+- 启动项
+- 运行时参数
+- 系统策略与安装配置
+
+#### 7）资源与菜单 API
+
+- `LoadMenuW` / `CreateMenu` / `AppendMenuW`
+- `LoadIconW` / `LoadBitmapW`
+- `LoadStringW`
+- `DialogBoxParam` 资源对话框
+
+用于：
+
+- 菜单系统
+- 图片资源
+- 图标和字符串资源
+- 资源型桌面应用
+
+#### 8）Shell 与高级桌面 API
+
+这是更高层面的 Windows 集成能力：
+
+- `ShellExecuteW`
+- `SHBrowseForFolder`
+- `SHFileOperation`
+- 任务栏、快捷方式、文件关联等
+
+这些 API 往往让程序与桌面环境更自然地集成。
+
+### 12.2 Win32 实际上并不是一个单独“版本”，而是一套跨版本的 Windows API 体系
+
+Win32 API 的设计非常长寿，它经历过多次 Windows 版本迭代，但底层理念基本保持一致。
+
+#### 1）Win32 早期阶段（Win95 / Win98 / NT 3.x）
+
+- 32 位编程模型基本成型
+- ANSI 字符集与 Unicode 早期并存
+- 依赖 `WNDCLASS`、消息循环和窗口过程
+- 资源和对话框经常通过资源脚本配置
+
+这一阶段的程序风格更偏底层，是后续 Win32 程序的源头。
+
+#### 2）Windows NT / 2000 / XP 时代
+
+- 统一了 NT 家族与桌面应用编程模型
+- 对 Unicode 支持增强
+- 事件、线程、同步和高级系统 API 得到广泛使用
+- 资源管理、文件和注册表更加成熟
+
+这是很多经典 Win32 桌面程序的主要时代。
+
+#### 3）Vista / 7 / 8 / 10 / 11 时代
+
+- DPI 感知（DPI awareness）开始成为重要课题
+- UAC 和安全模型更严格
+- 新增大量 Shell、媒体和高级桌面能力
+- 更重视用户体验和无障碍性
+
+这时期的程序需要考虑：
+
+- DPI 缩放
+- 用户权限
+- 高分辨率屏幕适配
+- 新版控件和 UI 规范
+
+#### 4）64 位 Windows
+
+Win32 在 64 位系统上并没有消失，而是演化成 64 位可执行程序：
+
+- `DWORD_PTR`、`SIZE_T`、`UINT_PTR` 等类型更常见
+- 指针宽度从 32 位升级到 64 位
+- 许多 API 需要使用 `LONG_PTR` / `UINT_PTR` 来避免截断
+- 64 位程序更关注内存布局与指针正确性
+
+例如：
+
+```cpp
+UINT_PTR id = 1001;
+HMENU hMenu = reinterpret_cast<HMENU>(static_cast<UINT_PTR>(id));
+```
+
+这是 Win32 中非常典型的 32/64 位兼容问题。
+
+### 12.3 ANSI 与 Unicode：Win32 最重要的版本兼容问题之一
+
+在 Win32 早期很多 API 有两套版本：
+
+- ANSI 版本：以 `A` 结尾，如 `CreateWindowA`
+- Unicode 版本：以 `W` 结尾，如 `CreateWindowW`
+
+现代 Windows 中，通常用宏统一：
+
+```cpp
+#ifdef UNICODE
+#define CreateWindow CreateWindowW
+#else
+#define CreateWindow CreateWindowA
+#endif
+```
+
+因此，现代 Win32 程序通常写：
+
+- `CreateWindowW`
+- `TextOutW`
+- `MessageBoxW`
+- `CreateFileW`
+
+原因是 Unicode 更适合国际化、中文路径、非 ASCII 字符处理。
+
+### 12.4 Win32 与 MFC、.NET、WPF 的关系
+
+这是很多初学者容易混淆的概念：
+
+- Win32：最底层的系统 API
+- MFC：C++ 封装层，建立在 Win32 之上
+- .NET / WPF：托管环境，最终仍然可能依赖 Windows 窗口系统
+- WinUI：现代 Windows UI 体系，但也涉及 Win32 兼容层
+
+可以把它们理解为：
+
+- Win32 是“底层土壤”
+- MFC 是“C++ 封装”
+- WPF 是“托管 UI 框架”
+- WinUI 是“现代 Windows UI 语言层”
+
+因此，学习 Win32 从本质上是理解 Windows 应用的真实架构，而不是看表面框架。
+
+### 12.5 需要特别注意的兼容性点
+
+#### 1）句柄类型是 64 位兼容的
+
+Windows 中的句柄往往是指针大小的类型，例如 `HANDLE`、`HWND`、`HMENU`。在 64 位系统中，不能直接按 32 位整数强转。
+
+#### 2）字符串必须注意宽字符
+
+尤其是中文路径、文件名和窗口标题，最好使用 `wchar_t` + `W` 系列 API。
+
+#### 3）资源释放必须成对出现
+
+例如：
+
+- `CreateFileW` 后要 `CloseHandle`
+- `VirtualAlloc` 后要 `VirtualFree`
+- `CreatePen` / `CreateBrush` 后要 `DeleteObject`
+- `CreateProcessW` 后要 `CloseHandle(pi.hThread)` / `CloseHandle(pi.hProcess)`
+
+#### 4）错误处理要看 `GetLastError()`
+
+很多底层 Win32 API 失败时，不一定抛异常，而是返回 `FALSE`/`NULL`，此时必须看 `GetLastError()`。
+
+### 12.6 典型学习路线：从“底层到应用”理解 Win32
+
+推荐的学习顺序是：
+
+1. WinMain + WNDCLASS + CreateWindow + 消息循环
+2. `WM_*` 消息与 `WndProc` 结构
+3. 控件与 `WM_COMMAND`
+4. GDI 与绘图
+5. 文件 I/O 与目录枚举
+6. 内存与句柄管理
+7. 进程与线程管理
+8. 资源、注册表和 Shell 集成
+
+这样你会从“完成一个窗口”逐步走到“能写一个真正的 Windows 桌面工具”。
+
+### 12.7 总结
+
+Win32 API 不是一个单一函数库，它是整个 Windows 桌面开发的底层基座。关键的大类包括：
+
+- 基础系统 API
+- 窗口与消息系统
+- GDI 图形系统
+- 控件和对话框
+- 文件系统
+- 进程/线程/同步
+- 资源和 Shell 集成
+- 注册表与系统配置
+
+而它的不同版本差异，最关键的是：
+
+- ANSI vs Unicode
+- 32 位 vs 64 位
+- 安全模型与权限变化
+- DPI 和高分辨率适配
+- 组件和 API 逐步扩充
+
+掌握这些，你就不只是会调用几个 API，而是已经理解了 Windows 程序的整体机制。
+
+## 13. Win32 线程 API 与同步机制
+
+线程是 Win32 程序中非常关键的概念。它决定了一个进程内能否同时执行多段任务，并在多任务环境中协调资源访问。对于桌面应用、后台处理、网络服务和工具软件来说，线程与同步是永远绕不开的核心主题。
+
+### 13.1 线程与进程的区别
+
+前面已经学习了进程，它表示“一个正在运行的程序实例”，而线程则表示：
+
+- 进程内部执行代码的最小单元
+- 共享同一块进程地址空间
+- 可能并发运行多个逻辑流
+- 共享文件、内存和对象句柄
+
+一个进程至少有一个线程，通常叫做主线程。Win32 程序很多时候都是：
+
+- 主线程处理窗口消息
+- 子线程处理后台工作
+- 互斥量、事件和临界区负责协调协调
+
+### 13.2 `CreateThread`：创建线程
+
+创建线程最常用的 API 是 `CreateThread`：
+
+```cpp
+#include <windows.h>
+#include <stdio.h>
+
+DWORD WINAPI WorkerThread(LPVOID param) {
+    int* value = (int*)param;
+    for (int i = 0; i < 5; ++i) {
+        printf("Thread running: %d\n", (*value)++);
+        Sleep(100);
+    }
+    return 0;
+}
+
+int main() {
+    int counter = 0;
+    HANDLE hThread = CreateThread(
+        nullptr,
+        0,
+        WorkerThread,
+        &counter,
+        0,
+        nullptr);
+
+    if (hThread) {
+        WaitForSingleObject(hThread, INFINITE);
+        CloseHandle(hThread);
+    }
+    return 0;
+}
+```
+
+这里的关键参数：
+
+- `LPTHREAD_START_ROUTINE` 线程入口函数
+- `LPVOID` 参数，传入任意上下文数据
+- `DWORD` 返回值，线程退出时可被读取
+- `WaitForSingleObject` 用于等待线程结束
+
+### 13.3 线程的结束与等待
+
+线程有三种常见方式结束：
+
+1. 线程函数返回
+2. 调用 `ExitThread`
+3. 由其他线程调用 `TerminateThread`（不推荐）
+
+通常推荐使用：
+
+```cpp
+DWORD exitCode = 0;
+GetExitCodeThread(hThread, &exitCode);
+WaitForSingleObject(hThread, INFINITE);
+```
+
+这是因为线程正常结束往往比强制结束更清晰，也更符合 Win32 的资源管理习惯。
+
+### 13.4 线程同步的核心问题
+
+线程同步的本质是：避免多个线程同时访问共享资源导致竞态条件、脏读、错误状态等问题。
+
+典型问题包括：
+
+- 两个线程同时写同一个变量
+- 一个线程读数据时另一个线程正在改
+- GUI 线程和后台线程同时修改控件状态
+- 资源释放发生在另一个线程使用对象时
+
+### 13.5 `CRITICAL_SECTION`：轻量级同步工具
+
+`CRITICAL_SECTION` 是最常见的线程同步原语之一，适合同一进程内的线程共享资源：
+
+```cpp
+#include <windows.h>
+#include <stdio.h>
+
+CRITICAL_SECTION g_cs;
+int g_counter = 0;
+
+DWORD WINAPI Worker(LPVOID) {
+    EnterCriticalSection(&g_cs);
+    ++g_counter;
+    printf("counter = %d\n", g_counter);
+    LeaveCriticalSection(&g_cs);
+    return 0;
+}
+
+int main() {
+    InitializeCriticalSection(&g_cs);
+
+    HANDLE h1 = CreateThread(nullptr, 0, Worker, nullptr, 0, nullptr);
+    HANDLE h2 = CreateThread(nullptr, 0, Worker, nullptr, 0, nullptr);
+
+    WaitForSingleObject(h1, INFINITE);
+    WaitForSingleObject(h2, INFINITE);
+
+    DeleteCriticalSection(&g_cs);
+    CloseHandle(h1);
+    CloseHandle(h2);
+    return 0;
+}
+```
+
+`CRITICAL_SECTION` 的优点：
+
+- 适合同一进程内的线程同步
+- 比互斥量更轻量
+- 执行效率高
+
+注意：
+
+- 只能用于同一进程中的线程
+- 不能跨进程使用
+- 若进入后忘记离开，可能造成死锁
+
+### 13.6 `Mutex`：跨线程/跨进程互斥对象
+
+如果两个线程来自不同进程，或者你需要整个系统级同步，可以使用 `CreateMutexW`：
+
+```cpp
+HANDLE hMutex = CreateMutexW(nullptr, FALSE, L"GlobalDemoMutex");
+if (hMutex == nullptr) {
+    return 1;
+}
+
+WaitForSingleObject(hMutex, INFINITE);
+// 访问共享资源
+ReleaseMutex(hMutex);
+CloseHandle(hMutex);
+```
+
+Mutex 和 CriticalSection 的区别：
+
+- `CRITICAL_SECTION`：仅限同一进程内
+- `Mutex`：可跨进程同步
+- `Mutex`：具备命名特性，适合系统范围资源共享
+
+### 13.7 `Event`：用于通知和等待
+
+`Event` 适合“一个线程通知另一个线程某事已发生”的场景：
+
+```cpp
+HANDLE hEvent = CreateEventW(nullptr, FALSE, FALSE, L"DemoEvent");
+
+DWORD WINAPI Worker(LPVOID) {
+    WaitForSingleObject(hEvent, INFINITE);
+    printf("Event signaled!\n");
+    return 0;
+}
+
+SetEvent(hEvent);
+```
+
+`Event` 常用于：
+
+- 线程启动通知
+- 任务完成通知
+- 生产者/消费者模型
+- 后台线程与前台线程协调
+
+特点：
+
+- 自动复位（`FALSE`）或手动复位（`TRUE`）
+- 可以作为信号量一样通知同步状态
+
+### 13.8 `Semaphore`：控制并发数量
+
+Win32 里还有 `CreateSemaphoreW`，常用于：
+
+- 限制同时访问资源的线程数量
+- 任务队列中限制并发处理数
+- 生产者/消费者缓冲池控制
+
+```cpp
+HANDLE hSem = CreateSemaphoreW(nullptr, 3, 3, L"DemoSem");
+WaitForSingleObject(hSem, INFINITE);
+// access limited resource
+ReleaseSemaphore(hSem, 1, nullptr);
+```
+
+它与互斥量的主要区别：
+
+- 互斥量：只允许一个线程进入
+- 信号量：允许多个线程在某个计数范围内进入
+
+### 13.9 `WaitForSingleObject` 与 `WaitForMultipleObjects`
+
+这是 Win32 中最常用的等待 API：
+
+```cpp
+DWORD result = WaitForSingleObject(hThread, 1000);
+if (result == WAIT_TIMEOUT) {
+    // timed out
+}
+```
+
+如果需要等待多个对象：
+
+```cpp
+HANDLE handles[] = { hThread1, hThread2, hEvent };
+DWORD result = WaitForMultipleObjects(3, handles, FALSE, INFINITE);
+```
+
+用途：
+
+- 等待多个线程结束
+- 等待事件或信号
+- 实现任务协调和超时控制
+
+### 13.10 线程同步的典型模式
+
+#### 1）生产者/消费者
+
+- 生产线程将数据写入队列
+- 消费线程从队列读取数据
+- 通过事件或信号量协调速度差异
+
+#### 2）后台任务与 UI 线程
+
+- 后台线程做大量计算
+- UI 线程负责界面更新
+- 通过消息或事件进行通讯
+
+#### 3）共享资源保护
+
+- 多个线程访问同一块缓存
+- 用 `CRITICAL_SECTION` 或 `Mutex` 包住临界区
+
+### 13.11 死锁与竞态条件
+
+线程同步最难的一点是避免两个典型错误：
+
+#### 1）死锁
+
+例如：
+
+- 线程 A 等待 Mutex1
+- 线程 B 等待 Mutex2
+- 两个线程分别持有对方需要的锁
+
+这就造成了互相等待。
+
+#### 2）竞态条件
+
+例如：
+
+```cpp
+int count = 0;
+// 线程 1: count++
+// 线程 2: count++
+```
+
+这在很多平台上可能导致丢失更新问题。线程安全的关键是：
+
+- 对共享变量使用同步原语
+- 尽量减少共享状态
+- 让修改逻辑保持原子性
+
+### 13.12 Win32 线程 API 的工程意义
+
+Win32 线程 API 不只是“让程序有多线程”，而是让程序能够：
+
+- 并行处理计算任务
+- 避免界面卡死
+- 处理后台 I/O
+- 管理多个并发资源
+- 实现服务型、调度型、监控型工具
+
+如果没有线程和同步，很多真实程序都很难做到高效和稳定。
+
+### 13.13 线程与回调消息的结合
+
+在 GUI 程序中，后台线程通常不直接修改 UI 控件，因为这会带来跨线程访问问题。正确做法是：
+
+- 后台线程计算数据
+- 总结结果
+- 通过 `PostMessageW` 或事件通知主线程
+- 主线程更新界面控件
+
+这是 Win32 GUI 程序中非常成熟的设计模式。
+
+### 13.14 总结
+
+Win32 线程 API 与同步机制的核心要点可以概括为：
+
+- `CreateThread` 创建线程
+- `WaitForSingleObject` / `WaitForMultipleObjects` 等待对象
+- `CRITICAL_SECTION` 适用于同进程共享资源
+- `Mutex` 适用于跨进程同步
+- `Event` 适用于通知与信号
+- `Semaphore` 适用于并发数量限制
+- 线程安全的根本要求是正确使用同步对象并避免死锁/竞态
+
+线程是 Win32 程序的高级能力，它是从“会画窗口”走向“能写真实工具程序”的关键一步。
+
+### 13.15 实战演示：线程同步与 UI 消息回传
+
+一个现实中的 Win32 程序，通常不会让后台线程直接改写控件文本；这是因为窗口和控件属于 UI 线程，跨线程访问常常导致不可预期的行为。更稳妥的方式是：
+
+- 后台线程做计算或 I/O
+- 使用 `CRITICAL_SECTION` 保护共享计数器
+- 用 `PostMessageW` 向主窗口发送状态更新
+- 主窗口根据消息更新静态文本和按钮状态
+
+对应的示例目录是：
+
+```text
+win32/examples/11_thread_sync_demo/
+└── main.cpp
+```
+
+它演示了以下关键点：
+
+```cpp
+CRITICAL_SECTION g_cs;
+LONG g_counter = 0;
+HANDLE g_doneEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr);
+
+DWORD WINAPI WorkerThread(LPVOID param) {
+    for (int i = 0; i < 5; ++i) {
+        EnterCriticalSection(&g_cs);
+        ++g_counter;
+        LeaveCriticalSection(&g_cs);
+
+        PostMessageW(hwnd, WM_APP_THREAD_UPDATE, 0, (LPARAM)L"tick");
+        Sleep(250);
+    }
+
+    SetEvent(g_doneEvent);
+    return 0;
+}
+```
+
+这里的设计思想很重要：
+
+1. 共享变量要受临界区保护，避免多个线程同时写入同一内存。
+2. 跨线程更新窗口时，优先使用 `PostMessageW` 或 `SendMessageW`，不要直接在工作线程里操作控件。
+3. `Event` 很适合表示“后台任务已完成”这种状态。调用 `WaitForSingleObject` 可以让其他线程安全地等待任务完成。
+
+这类线程模型是 Win32 GUI 工程中最常见的模式之一，几乎所有后台计算、文件扫描、网络请求回调和命令执行器都会采用类似思路。
+
+## 14. Win32 DLL 与模块加载
+
+DLL（Dynamic Link Library，动态链接库）是 Windows 平台上最重要的模块化机制之一。它允许程序把功能拆成多个独立模块，并在运行时按需加载。理解 DLL，不只是理解“库文件”，而是理解 Windows 应用的模块组织方式。
+
+### 14.1 DLL 是什么
+
+DLL 本质上是一种共享代码和资源的可执行模块。它与 EXE 程序的主要区别是：
+
+- EXE 是可执行程序入口，通常有 `WinMain` 或 `main`
+- DLL 不是独立程序，不直接运行
+- DLL 被其他程序加载之后提供函数、资源和共享能力
+- 多个进程可以共享同一个 DLL 的内存映像（前提是系统支持共享页）
+
+典型用途：
+
+- 提供通用函数库
+- 封装系统功能模块
+- 分离业务逻辑和界面逻辑
+- 给插件式架构提供扩展能力
+
+### 14.2 DLL 的典型生命周期
+
+一个 DLL 在 Windows 中常见的加载与卸载流程是：
+
+1. 进程调用 `LoadLibraryW` / `LoadLibraryExW`
+2. 系统在内存中定位并映射 DLL
+3. DLL 初始化代码执行（`DllMain`）
+4. 进程调用导出函数
+5. 程序调用 `FreeLibrary` 卸载 DLL
+
+这就是 Windows 程序的模块加载模型的基础。
+
+### 14.3 `LoadLibraryW` / `LoadLibraryExW`
+
+最常见的 DLL 加载函数：
+
+```cpp
+#include <windows.h>
+
+int main() {
+    HMODULE hMod = LoadLibraryW(L"user32.dll");
+    if (hMod != nullptr) {
+        // DLL 已成功加载
+        FreeLibrary(hMod);
+    }
+    return 0;
+}
+```
+
+`LoadLibraryExW` 可以提供更多参数，例如：
+
+- `LOAD_LIBRARY_SEARCH_*` 这样的搜索策略
+- 远程加载控制（如果支持）
+- 显式指定加载行为
+
+常见用途：
+
+- 延迟加载依赖模块
+- 插件系统
+- 运行时可扩展能力
+- 动态调用系统功能
+
+### 14.4 `GetProcAddress`：获取导出函数地址
+
+加载 DLL 后，程序常常需要获取某个函数指针：
+
+```cpp
+#include <windows.h>
+#include <stdio.h>
+
+typedef void (WINAPI *MessageBoxFunc)(HWND, LPCWSTR, LPCWSTR, UINT);
+
+int main() {
+    HMODULE hUser32 = LoadLibraryW(L"user32.dll");
+    if (hUser32 == nullptr) {
+        return 1;
+    }
+
+    FARPROC proc = GetProcAddress(hUser32, "MessageBoxW");
+    if (proc != nullptr) {
+        MessageBoxFunc pfn = (MessageBoxFunc)proc;
+        pfn(nullptr, L"Hello", L"DLL", MB_OK);
+    }
+
+    FreeLibrary(hUser32);
+    return 0;
+}
+```
+
+这里的关键：
+
+- `GetProcAddress` 返回导出函数地址
+- 必须知道函数名和调用约定
+- 这属于显式链接（explicit linking）
+
+显式链接常用于：
+
+- 插件架构
+- 运行时功能选择
+- 特定系统 API 的动态调用
+- 降低启动依赖
+
+### 14.5 `DLLMain`：模块初始化与清理
+
+DLL 中最关键的入口函数是 `DllMain`：
+
+```cpp
+#include <windows.h>
+
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
+    switch (fdwReason) {
+    case DLL_PROCESS_ATTACH:
+        // 进程加载 DLL 时执行
+        break;
+    case DLL_PROCESS_DETACH:
+        // 进程卸载 DLL 时执行
+        break;
+    case DLL_THREAD_ATTACH:
+        // 线程创建时执行
+        break;
+    case DLL_THREAD_DETACH:
+        // 线程退出时执行
+        break;
+    }
+    return TRUE;
+}
+```
+
+`DllMain` 里要非常小心：
+
+- 不要做复杂的初始化工作
+- 不要调用可能触发加载其他 DLL 的代码
+- 不要在这里执行耗时操作
+- 不要在初始化期间做大量日志或 UI 操作
+
+这是因为 DLL 在加载过程中处于非常脆弱的状态。Windows 的模块加载机制要求它尽量轻量。
+
+### 14.6 导出和导入：DLL 的接口设计
+
+一个 DLL 通常对外提供导出函数，常用方法是：
+
+- `__declspec(dllexport)`
+- .def 文件中声明导出符号
+
+例如：
+
+```cpp
+extern "C" __declspec(dllexport) int Add(int a, int b) {
+    return a + b;
+}
+```
+
+调用方通过：
+
+```cpp
+HMODULE hMod = LoadLibraryW(L"demo.dll");
+using AddFunc = int(*)(int, int);
+AddFunc add = (AddFunc)GetProcAddress(hMod, "Add");
+```
+
+设计 DLL 接口时要注意：
+
+- 明确导出函数名和签名
+- 尽量避免依赖复杂 C++ 名称修饰
+- 如果 C++ 编译器参与，最好用 `extern "C"`
+- 对二进制兼容性做长期规划
+
+### 14.7 DLL 搜索路径与模块解析
+
+Windows 在加载 DLL 时会按一定顺序搜索文件：
+
+- 应用程序目录
+- 当前工作目录
+- 系统目录
+- Windows 目录
+- PATH 环境变量
+
+这意味着：
+
+- 如果你把 DLL 放在错误位置，`LoadLibraryW` 可能失败
+- 依赖管理和路径处理非常重要
+- 依赖缺失通常表现为 `ERROR_MOD_NOT_FOUND`
+
+处理方式：
+
+- 把 DLL 放在适当目录
+- 使用 `SetDllDirectoryW` 进行自定义搜索路径
+- 使用显式路径 `LoadLibraryW(L"C:\\path\\to\\lib.dll")`
+
+### 14.8 运行时模块加载的实际价值
+
+DLL 的意义远远不止“共享库”。它使 Windows 程序具备：
+
+- 模块化开发
+- 插件机制
+- 按需加载功能
+- 缩小 EXE 体积
+- 运行时扩展能力
+
+大量真实程序都依赖 DLL：
+
+- 系统组件
+- 图形驱动
+- 语言运行时
+- 插件式编辑器
+- 扩展工具和脚本环境
+
+### 14.9 DLL 与 PE 文件格式关系
+
+DLL 本质上是 PE（Portable Executable）文件格式的一种。PE 文件包括：
+
+- DOS 头
+- NT 头
+- 节区表
+- 导入表
+- 导出表
+- 重定位表
+
+只要理解了 PE 结构，你就能理解：
+
+- 为什么 DLL 能被加载
+- 为什么符号表会影响导出
+- 为什么依赖库需要被解析
+- 为什么库版本和路径很关键
+
+这也是从 Win32 入门走向更底层 Windows 机制的重要一步。
+
+### 14.10 DLL 与进程/线程的结合
+
+DLL 往往和进程、线程密切关系：
+
+- 一个 DLL 可以被多个进程同时加载
+- 每个线程都可能进入 `DllMain`
+- 线程和进程加载时的初始化逻辑不一样
+- 资源初始化、锁和同步需要特别小心
+
+例如：
+
+- 一个插件 DLL 在多个进程中安装时需要考虑线程安全
+- 全局变量可能在进程内共享
+- 线程本地存储（TLS）可用于线程特有状态
+
+### 14.11 常见的 DLL 设计注意事项
+
+- 不要使用 DLL 作为“文件更随便放进去就行”的方案
+- 不要假设所有加载都成功
+- 对 `GetProcAddress` 返回值必须检查
+- 如果 DLL 依赖别的 DLL，要保证依赖链完整
+- 在卸载时避免出现引用计数错误
+
+### 14.12 总结
+
+Win32 DLL 与模块加载机制是 Windows 编程中非常核心的一部分。它让程序从一个单体 EXE 变成可以被模块化、扩展和复用的架构。掌握 DLL 后，你就已经开始理解：
+
+- 模块如何被 Windows 加载
+- 程序如何调用别的组件
+- 导出函数与导入表如何连接
+- 为什么 `LoadLibraryW`、`GetProcAddress`、`FreeLibrary` 是底层程序设计的基础
+
+如果你已经熟悉窗口编程、线程和同步，再继续学习 DLL，会让你对 Windows 应用的真实结构理解更完整。
+
+## 15. 进程管理：理解 Windows 任务模型
 
 Win32 API 不只是窗口编程，它也提供了强大的系统级管理能力，其中最重要的是进程管理。所谓“进程”，就是程序的执行实例；它拥有自己的地址空间、线程、句柄和资源。学习 Win32 API 时，理解进程模型非常关键，因为它决定了程序是如何被操作系统调度与管理的。
 
-### 13.1 进程的基本概念
+### 15.1 进程的基本概念
 
 在 Windows 中，进程和线程是分开的：
 
@@ -437,7 +1337,7 @@ Win32 API 不只是窗口编程，它也提供了强大的系统级管理能力�
 - `TerminateProcess`：强制结束进程
 - `WaitForSingleObject`：等待进程结束
 
-### 13.2 使用 `CreateToolhelp32Snapshot` 进行进程枚举
+### 15.2 使用 `CreateToolhelp32Snapshot` 进行进程枚举
 
 这是最常见、最稳定的 Win32 进程枚举方式。它本质上是抓取一个“快照”，然后遍历系统中的进程记录。
 
@@ -476,7 +1376,7 @@ void ListProcesses() {
 - 杀毒/安全扫描器
 - 系统诊断工具
 
-### 13.3 使用 `CreateProcessW` 启动新进程
+### 15.3 使用 `CreateProcessW` 启动新进程
 
 如果你的程序想“启动另一个应用”，最常用的是 `CreateProcessW`。它不仅能启动程序，还能设置工作目录、环境变量、进程优先级和窗口显示方式。
 
@@ -518,7 +1418,7 @@ void StartNotepad() {
 
 这是很多“启动器”“脚本执行器”“桌面工具管理器”都依赖的基本 API。
 
-### 13.4 `OpenProcess` 与进程句柄
+### 15.4 `OpenProcess` 与进程句柄
 
 如果程序已经知道某个 PID，但需要对该进程进行进一步管理，就需要打开句柄：
 
@@ -543,7 +1443,7 @@ HANDLE hProcess = OpenProcess(
 - 终止系统关键进程非常危险，必须谨慎使用
 - 正常程序通常只需要读取当前进程或自己启动的子进程
 
-### 13.5 等待和退出状态：`WaitForSingleObject` / `GetExitCodeProcess`
+### 15.5 等待和退出状态：`WaitForSingleObject` / `GetExitCodeProcess`
 
 有时你启动了子进程后，需要等待它结束，或者检查退出码：
 
@@ -564,7 +1464,7 @@ if (waitResult == WAIT_OBJECT_0) {
 - 编译器/构建脚本托管工具
 - 自动化工具链控制器
 
-### 13.6 `TerminateProcess`：强制结束进程
+### 15.6 `TerminateProcess`：强制结束进程
 
 有时需要在程序中“杀掉”一个进程，例如：
 
@@ -589,7 +1489,7 @@ if (hProcess) {
 - 让程序自行退出
 - 仅在必要时才调用 `TerminateProcess`
 
-### 13.7 进程 API 的典型使用路线
+### 15.7 进程 API 的典型使用路线
 
 一个典型的进程管理流程可以概括为：
 
@@ -607,7 +1507,7 @@ if (hProcess) {
 - 进程清理工具
 - 自动化运行器
 
-### 13.8 实战案例：进程管理窗口
+### 15.8 实战案例：进程管理窗口
 
 本目录中的 `08_process_manager` 示例演示了更完整的进程管理流程：
 
@@ -651,7 +1551,7 @@ if (process) {
 
 这个示例的意义在于：它不是“单纯看一眼进程列表”，而是把 Win32 进程 API 真正组合成一个可操作的工具。
 
-### 13.9 进程管理中的注意事项
+### 15.9 进程管理中的注意事项
 
 做 Win32 进程编程时，尤其要注意：
 
@@ -661,7 +1561,7 @@ if (process) {
 - 处理错误时优先检查 `GetLastError()`
 - 进程访问权限取决于当前用户和安全策略
 
-### 13.10 总结
+### 15.10 总结
 
 Win32 API 的进程管理能力，是 Windows 系统编程的重要基础。它让程序从“只会画窗口”升级到“能管理系统任务”。
 
@@ -675,11 +1575,11 @@ Win32 API 的进程管理能力，是 Windows 系统编程的重要基础。它�
 
 你就已经真正触碰到 Windows 进程模型的核心。
 
-## 14. 内存管理：理解堆、虚拟内存和对象生命周期
+## 16. 内存管理：理解堆、虚拟内存和对象生命周期
 
 Win32 API 中，内存管理并不是简单的 `malloc` / `free`。在 Windows 上，程序的内存主要以“虚拟内存”和“堆”两种形式存在。理解这两者，才能认真理解 Windows 程序的资源模型。
 
-### 14.1 进程内存模型
+### 16.1 进程内存模型
 
 现代 Windows 程序的内存模型有三个层次：
 
@@ -693,7 +1593,7 @@ Win32 API 中，内存管理并不是简单的 `malloc` / `free`。在 Windows �
 - 堆：动态分配的内存，如 `malloc`、`new`
 - 虚拟内存：系统给进程映射的地址空间
 
-### 14.2 `VirtualAlloc` / `VirtualFree`
+### 16.2 `VirtualAlloc` / `VirtualFree`
 
 如果需要更底层地控制内存，Win32 提供了 `VirtualAlloc` 和 `VirtualFree`：
 
@@ -716,7 +1616,7 @@ if (p) {
 - 能在更低层控制内存属性
 - 常用于系统组件、运行时引擎和内存扫描工具
 
-### 14.3 `GlobalMemoryStatusEx`
+### 16.3 `GlobalMemoryStatusEx`
 
 想知道当前系统的可用物理和虚拟内存，可以使用：
 
@@ -737,7 +1637,7 @@ printf("Available physical memory: %llu MB\n", mem.ullAvailPhys / (1024ULL * 102
 
 时极为常用。
 
-### 14.4 内存管理中的注意事项
+### 16.4 内存管理中的注意事项
 
 在 Win32 程序里，内存管理不是“随便开个 buffer 就行”的事情，需要注意：
 
