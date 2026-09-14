@@ -37,6 +37,7 @@
 - [renpy](./renpy) — Ren'Py 视觉小说与叙事游戏教程，使用 Ren'Py `compile` 验证
 - [kotlin](./kotlin) — Kotlin 教程与 JVM 示例，使用 Kotlin Compiler 验证
 - [lean4](./lean4) — Lean4/Mathlib4 教程与示例，使用 Lake + Lean 校验
+- [mfc](./mfc) — MFC 桌面应用开发指南，使用 MSVC + MFC 库编译验证
 - [OpenCL](./OpenCL) — OpenCL Windows 教程，使用 Visual Studio + CUDA CL 头文件验证
 - [rust](./rust) — Rust 教程与示例，使用 rustc 编译并运行验证
 - [sbcl](./sbcl) — Common Lisp / SBCL 教程与示例，使用 SBCL compile-file 验证
@@ -93,15 +94,16 @@
 18. [renpy](./renpy)
 19. [dart](./dart)
 20. [kotlin](./kotlin)
-21. [rust](./rust)
-22. [OpenCL](./OpenCL)
-23. [sdl2](./sdl2)
-24. [wpf](./wpf)
-25. [sbcl](./sbcl)
-26. [swift](./swift)
-27. [WinUI3](./WinUI3)
-28. [zig](./zig)
-29. [lean4](./lean4)
+21. [mfc](./mfc)
+22. [rust](./rust)
+23. [OpenCL](./OpenCL)
+24. [sdl2](./sdl2)
+25. [wpf](./wpf)
+26. [sbcl](./sbcl)
+27. [swift](./swift)
+28. [WinUI3](./WinUI3)
+29. [zig](./zig)
+30. [lean4](./lean4)
 
 ## 工具链说明
 
@@ -131,6 +133,7 @@
 - SBCL
 - Swift
 - Kotlin Compiler
+- MFC / Win32 桌面框架
 - CUDA OpenCL Headers
 - SDL2
 - .NET SDK + WPF

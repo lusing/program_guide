@@ -1,16 +1,21 @@
 #include <afxwin.h>
-#include <iostream>
 
-int main() {
-    CString title = _T("MFC Hello");
-    CPoint origin(10, 20);
+class CMainWindow : public CFrameWnd {
+public:
+    CMainWindow() {
+        Create(NULL, _T("MFC Hello"), WS_OVERLAPPEDWINDOW,
+               CRect(100, 100, 540, 360));
+    }
+};
 
-    std::wcout << L"Title: " << static_cast<const wchar_t*>(title) << L"\n";
-    std::cout << "Origin: (" << origin.x << ", " << origin.y << ")\n";
+class CMyApp : public CWinApp {
+public:
+    BOOL InitInstance() override {
+        m_pMainWnd = new CMainWindow();
+        m_pMainWnd->ShowWindow(SW_SHOW);
+        m_pMainWnd->UpdateWindow();
+        return TRUE;
+    }
+};
 
-    CWinApp app;
-    app.m_pszHelpFilePath = _T("mfc_help.chm");
-
-    std::cout << "MFC headers and libraries are available.\n";
-    return 0;
-}
+CMyApp theApp;

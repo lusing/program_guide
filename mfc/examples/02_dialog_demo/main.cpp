@@ -1,22 +1,45 @@
 #include <afxwin.h>
-#include <iostream>
 
 class CMyDialog : public CDialog {
 public:
     enum { IDD = 1000 };
 
     explicit CMyDialog(UINT templateId = IDD) : CDialog(templateId) {}
+
+    BOOL OnInitDialog() override {
+        CDialog::OnInitDialog();
+        SetWindowText(_T("MFC Dialog Demo"));
+        return TRUE;
+    }
 };
 
-int main() {
-    CString title = _T("MFC Dialog Demo");
-    CPoint origin(100, 200);
-    CMyDialog dialog;
+class CMainWindow : public CFrameWnd {
+public:
+    CMainWindow() {
+        Create(NULL, _T("MFC Dialog Demo"), WS_OVERLAPPEDWINDOW,
+               CRect(150, 150, 620, 420));
+    }
 
-    std::wcout << L"Title: " << static_cast<const wchar_t*>(title) << L"\n";
-    std::cout << "Origin: (" << origin.x << ", " << origin.y << ")\n";
-    dialog.SetWindowText(_T("Dialog initialized."));
+    afx_msg void OnFileOpen() {
+        CMyDialog dialog;
+        dialog.DoModal();
+    }
 
-    std::cout << "MFC dialog types are available.\n";
-    return 0;
-}
+    DECLARE_MESSAGE_MAP()
+};
+
+BEGIN_MESSAGE_MAP(CMainWindow, CFrameWnd)
+    ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
+END_MESSAGE_MAP()
+
+class CMyApp : public CWinApp {
+public:
+    BOOL InitInstance() override {
+        m_pMainWnd = new CMainWindow();
+        m_pMainWnd->ShowWindow(SW_SHOW);
+        m_pMainWnd->UpdateWindow();
+        return TRUE;
+    }
+};
+
+CMyApp theApp;

@@ -50,11 +50,7 @@ function Invoke-CompileExample {
     )
 
     $sourceName = [System.IO.Path]::GetFileNameWithoutExtension($SourcePath)
-    $sourceDir = Split-Path -Parent $SourcePath
-    $sourceLeaf = Split-Path -Leaf $sourceDir
-    $outputName = if ($sourceLeaf) { $sourceLeaf } else { $sourceName }
     $objPath = Join-Path $buildDir ($sourceName + ".obj")
-    $exePath = Join-Path $buildDir ($outputName + ".exe")
 
     $includeDirs = @(
         $atlmfcInclude,
@@ -64,19 +60,11 @@ function Invoke-CompileExample {
         $windowsSdkUcrtInclude
     )
 
-    $libDirs = @(
-        $atlmfcLib,
-        $msvcLib,
-        $windowsSdkUmLib,
-        $windowsSdkUcrtLib
-    )
-
     $includeFlag = ($includeDirs | ForEach-Object { "/I`"$_`"" }) -join " "
-    $libFlag = ($libDirs | ForEach-Object { "/LIBPATH:`"$_`"" }) -join " "
 
     $cmd = @(
-        'call "{0}" >nul && cl /nologo /std:c++20 /EHsc /DUNICODE /D_UNICODE /D_AFXDLL /MD /utf-8 /c "{1}" /Fo"{2}" {3} && link /nologo /MACHINE:X64 /OUT:"{4}" /SUBSYSTEM:CONSOLE "{5}" {6} mfc140u.lib mfcs140u.lib user32.lib gdi32.lib shell32.lib comdlg32.lib'
-    ) -f $vcvars, $SourcePath, $objPath, $includeFlag, $exePath, $objPath, $libFlag
+        'call "{0}" >nul && cl /nologo /std:c++20 /EHsc /DUNICODE /D_UNICODE /D_AFXDLL /MD /utf-8 /c "{1}" /Fo"{2}" {3}'
+    ) -f $vcvars, $SourcePath, $objPath, $includeFlag
 
     Write-Host "[Compile] $([System.IO.Path]::GetFileName($SourcePath))" -ForegroundColor Cyan
     & $env:ComSpec /c $cmd
