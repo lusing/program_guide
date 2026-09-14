@@ -1923,6 +1923,279 @@ Win32 还支持：
 
 一个真正的 Windows 图形应用，很少只是窗口和控件；通常一定要处理数据的持久化和文件管理。
 
+### 15.5 从操作系统视角看文件系统：抽象、缓存、对象和命名空间
+
+Win32 文件 API 让程序员看起来像是在直接操作“文件”，但从操作系统的角度看，它其实是和非常底层的文件子系统打交道。
+
+#### 1）文件对象与句柄
+
+在 Windows 中，打开一个文件并不只是“拿到一个字符串路径并读取内容”，而是：
+
+- 解析路径
+- 访问对象管理器 / 文件系统驱动
+- 分配一个 `FILE_OBJECT`
+- 返回一个 `HANDLE`
+
+因此，`HANDLE` 本质上是对系统资源的引用。打开文件后，后续的 `ReadFile`、`WriteFile`、`SetFilePointerEx` 都是围绕这个对象进行的。
+
+#### 2）命名空间与卷管理
+
+Windows 的文件系统由多个“卷”组成，例如：
+
+- `C:`
+- `D:`
+- `E:`
+- 网络共享 / UNC 路径（如 `\\server\share`）
+
+每个卷可能使用不同的文件系统：
+
+- NTFS
+- ReFS
+- FAT32
+- exFAT
+- 网络文件系统（SMB/CIFS）
+
+这说明 Windows 文件系统不是一个单一的实现，而是一组统一的命名空间抽象。应用层只看到路径和句柄，真正的底层实现由卷管理器和文件系统驱动完成。
+
+#### 3）缓存与 I/O 管理器
+
+Windows 不会每次读 1 字节都直接打到磁盘。它通常通过：
+
+- 页缓存
+- 文件缓存
+- I/O 管理器
+- 读写队列和异步 I/O
+
+来提高效率。写入并不一定瞬间落盘，系统会在合适时机刷新缓存和日志，尤其在 NTFS 下，这种设计是保证一致性和崩溃恢复的重要基础。
+
+#### 4）权限与 ACL
+
+文件不仅是数据容器，还带有：
+
+- ACL（访问控制列表）
+- 所有者
+- 安全描述符
+- 共享模式
+
+因此，`CreateFileW` 的 `dwDesiredAccess` 和 `dwShareMode` 远不只是“读写权限”，还涉及安全策略、共享冲突和权限检查。
+
+### 15.6 NTFS 文件系统：Windows 最核心的文件实现
+
+NTFS（New Technology File System）是 Windows 上最重要的本地文件系统之一。它不仅支持文件和目录，还提供了很多系统级特性，很多 Win32 API 本质上就是暴露 NTFS 语义的接口。
+
+#### 1）MFT（Master File Table）
+
+NTFS 的核心结构之一是 MFT。它维护每个文件和目录的元数据，例如：
+
+- 文件 ID
+- 创建时间、修改时间、访问时间
+- 文件大小
+- 记录属性
+- 目录关系
+- 硬链接与索引
+
+你可以把 MFT 想象成“文件系统目录中的总目录表”。
+
+#### 2）簇与分配单元
+
+NTFS 不是以“字节”直接在裸磁盘上来管理文件；它以“簇（cluster）”作为最小分配单位。
+
+例如：
+
+- 一个文件 1 KB
+- 但分配单元可能 4 KB
+
+那么文件会占据至少一个簇，或者多个簇。这样的设计提高了管理效率，也让 NTFS 能更好的处理稀疏文件和碎片整理。
+
+#### 3）文件属性与元数据
+
+NTFS 中的文件会有大量属性：
+
+- 标准信息
+- 文件名
+- 安全描述符
+- 数据流
+- 压缩/加密属性
+- Reparse Point
+- 硬链接
+
+这也是为什么 Win32 里有 `GetFileAttributesW`、`GetFileInformationByHandle` 等 API：它们并不是在读“一个文本文件”，而是在读取文件系统的元数据。
+
+#### 4）日志与事务性
+
+NTFS 采用日志（journal）机制来保证文件系统崩溃后仍可恢复。它的一些核心思想：
+
+- 先记录变更日志
+- 再执行实际数据更新
+- 若系统崩溃，可回放日志恢复一致性
+
+这也是 NTFS 相较于早期 FAT 系统更稳健的重要原因。
+
+#### 5）压缩、加密、重解析点和 ADS
+
+NTFS 还支持：
+
+- 文件压缩：减少占用空间
+- EFS（Encrypting File System）：加密文件内容
+- Reparse Point：挂载点、符号链接、目录联接
+- Alternate Data Streams（ADS）：一个文件有多个数据流
+
+其中 ADS 是非常典型的 Windows 特性：
+
+```text
+C:\demo\file.txt
+C:\demo\file.txt:stream1
+```
+
+这看起来像一个文件，但实际上可能是同一个文件的多个数据流，常用于兼容性与扩展。对于安全审计和恶意软件检测来说，这非常关键。
+
+### 15.7 更完整的文件 API：`GetFileInformationByHandle`、`GetFinalPathNameByHandleW`、`SetFilePointerEx`
+
+除了简单的 `CreateFileW` / `ReadFile` / `WriteFile` 之外，Win32 还提供了大量更底层的文件控制 API：
+
+#### 1）`GetFileInformationByHandle`
+
+这个 API 能拿到文件句柄对应的详细信息：
+
+```cpp
+BY_HANDLE_FILE_INFORMATION info = {};
+if (GetFileInformationByHandle(hFile, &info)) {
+    printf("File attributes: 0x%X\n", info.dwFileAttributes);
+    printf("Volume serial number: %u\n", info.dwVolumeSerialNumber);
+    printf("File index high: %u\n", info.nFileIndexHigh);
+}
+```
+
+这使程序可以访问：
+
+- 目标卷序列号
+- 文件属性
+- 创建/修改时间
+- 文件索引（更接近 NTFS 级别的文件标识）
+
+#### 2）`GetFinalPathNameByHandleW`
+
+如果你拿到了文件句柄，但不知道最终的完整路径，可以这样获取：
+
+```cpp
+wchar_t path[MAX_PATH];
+DWORD len = GetFinalPathNameByHandleW(hFile, path, MAX_PATH, FILE_NAME_NORMALIZED);
+```
+
+这对：
+
+- 系统监控程序
+- 日志工具
+- 文件管理器
+- 诊断工具
+
+都非常有用。
+
+#### 3）`SetFilePointerEx` / `SetEndOfFile`
+
+这属于更底层的文件定位与伸缩：
+
+```cpp
+LARGE_INTEGER pos;
+pos.QuadPart = 1024;
+SetFilePointerEx(hFile, pos, nullptr, FILE_BEGIN);
+SetEndOfFile(hFile);
+```
+
+它能够：
+
+- 移动文件指针
+- 直接写入固定偏移
+- 压缩或扩展文件大小
+- 为二进制格式和数据库文件设计更底层的 I/O
+
+### 15.8 目录与文件系统对象：`CreateDirectoryW`、`MoveFileW`、`DeleteFileW` 以及真实工程语义
+
+Win32 文件 API 还包含大量目录和对象维护接口：
+
+- `CreateDirectoryW`
+- `RemoveDirectoryW`
+- `MoveFileW`
+- `CopyFileW`
+- `DeleteFileW`
+- `GetFileAttributesExW`
+- `SetFileAttributesW`
+
+这些 API 在工程中具有非常现实的价值：
+
+- 保存配置目录
+- 创建日志目录
+- 监控文件更新
+- 实现批量处理工具
+- 自动整理文件
+
+#### 例子：读取目录项并显示文件属性
+
+```cpp
+WIN32_FIND_DATAW fd;
+HANDLE hFind = FindFirstFileW(L"C:\\temp\\*", &fd);
+if (hFind != INVALID_HANDLE_VALUE) {
+    do {
+        DWORD attr = fd.dwFileAttributes;
+        wprintf(L"%ls | attributes=0x%08X | size=%llu\n",
+            fd.cFileName, attr, fd.nFileSizeLow);
+    } while (FindNextFileW(hFind, &fd));
+    FindClose(hFind);
+}
+```
+
+这种操作能够让程序意识到：目录列表并不只是“文件名数组”，而是文件系统对象的真实元数据集合。
+
+### 15.9 文件系统与 NTFS 的工程意义
+
+如果你只是知道 `fopen` / `open` / `read`, 你看到的是一个抽象层；而如果你学习 Win32 文件 API，你会真正接触到：
+
+- 文件对象模型
+- 路径解析
+- 安全描述符
+- 属性和时间戳
+- 目录遍历
+- NTFS 的扩展能力
+
+这也是 Windows 编程和 Unix-like 编程最大的区别之一：Windows 的文件系统 API 更强调“对象语义”和“系统级接口”，而不是只给出一个简单的 C 标准 I/O 抽象。
+
+### 15.10 目录中的 NTFS 深入示例
+
+本目录中的 `13_file_system_deep_dive` 示例演示了：
+
+- 当前目录扫描
+- `GetFileAttributesExW` 读取文件属性
+- `GetFileInformationByHandle` 获取更深入的元数据
+- `CreateFileW` 打开和写入文件
+- 显示时间、大小、属性和句柄信息
+
+它能够帮助你从“会写文件”提升到“理解文件系统对象和 NTFS 元数据”。
+
+### 15.11 文件管理中的注意事项
+
+文件系统编程最容易犯的错误包括：
+
+- 路径错误或 UNC 路径不正确
+- 使用错误的访问权限和共享模式
+- 忘记 `CloseHandle`
+- 未检查 `GetLastError()`
+- 直接假设 `ReadFile` / `WriteFile` 一次就完成全部数据
+- 忽略文件属性与 ACL 语义
+
+这些问题在不同文件系统、网络共享和 NTFS 特性下都会比简单文本 I/O 更明显。
+
+### 15.12 总结
+
+Win32 文件系统 API 是 Windows 程序真正与系统打交道的入口之一。它不只是“读写文件”，而是：
+
+- 管理路径和命名空间
+- 处理文件对象与句柄
+- 访问 NTFS 元数据和属性
+- 应用权限和共享规则
+- 处理目录、卷和缓存语义
+
+如果你已经熟悉窗口、线程和内存，再学习文件系统，你就会看到 Windows 编程从“用户界面”和“业务逻辑”进一步延伸到“系统级资源管理”。
+
 ## 16. 进程、内存和文件管理协同：真实工程中的 Win32 程序
 
 真正实用的 Win32 程序通常不是“静态窗口”，而是同时处理以下几类能力：

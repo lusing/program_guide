@@ -32,7 +32,9 @@ win32/
 │   │   └── main.cpp
 │   ├── 11_thread_sync_demo/
 │   │   └── main.cpp
-│   └── 12_memory_deep_dive/
+│   ├── 12_memory_deep_dive/
+│   │   └── main.cpp
+│   └── 13_file_system_deep_dive/
 │       └── main.cpp
 ├── build/
 └── ...
@@ -77,6 +79,7 @@ cd G:\code\guide\win32
 - `10_file_manager`：演示 `CreateFileW`、`WriteFile`、`FindFirstFileW` 等文件管理 API 的实际用法。
 - `11_thread_sync_demo`：演示 `CreateThread`、`CRITICAL_SECTION`、事件对象和 `WaitForSingleObject` 的线程同步与 UI 消息回传模式。
 - `12_memory_deep_dive`：展示 `VirtualAlloc`、`VirtualProtect`、`HeapAlloc`、`GetProcessMemoryInfo` 和文件映射的底层内存管理实战示例。
+- `13_file_system_deep_dive`：展示 `CreateFileW`、`GetFileInformationByHandle`、`GetFileAttributesExW`、目录枚举与 NTFS 文件属性的底层文件系统案例。
 
 ## 说明
 
