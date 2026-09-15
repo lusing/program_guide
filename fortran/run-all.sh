@@ -155,7 +155,21 @@ build_and_run() {
     local bin="build/$base.$channel"
     mkdir -p "$moddir"
 
-    local flags=(-std=f2018 -pedantic -O2 -J "$moddir")
+    # .f 是固定格式的老代码；.f90 才是现代自由格式。老代码不开 -pedantic：
+    # 老特性本来就是标准的「已删/已过时」集合，用现代标准去挑毛病没意义。
+    # -std 的选择还要看编译器：gfortran 用 -std=legacy 压掉「已删特性」警告；
+    # flang 23 不认 -std=legacy（只接受 -std=f2018），它不加 -std 时本来就
+    # 接受固定格式 —— 这本身就是一个跨编译器差异。
+    local flags
+    case "$src" in
+        *.f)
+            flags=(-O2 -J "$moddir")
+            [ "$channel" = gfortran ] && flags+=(-std=legacy)
+            ;;
+        *)
+            flags=(-std=f2018 -pedantic -O2 -J "$moddir")
+            ;;
+    esac
     # 用到 OpenMP 的示例自动补 -fopenmp
     if grep -qF '!$omp' "$src"; then
         flags+=(-fopenmp)
@@ -175,9 +189,10 @@ build_and_run() {
     return $?
 }
 
-for f in examples/[0-9]*.f90; do
+for f in examples/[0-9]*.f90 examples/[0-9]*.f; do
     [ -e "$f" ] || continue
-    base=$(basename "$f" .f90)
+    base=$(basename "$f")
+    base=${base%.*}
     num=${base%%-*}
 
     if [ ${#SELECT[@]} -gt 0 ]; then

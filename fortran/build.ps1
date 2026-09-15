@@ -226,12 +226,22 @@ function Invoke-Example {
     # 用到 OpenMP 的示例自动补 -fopenmp
     $srcText = Read-TextFile $FileInfo.FullName
     $needOpenMP = $srcText.Contains('!$omp')
-    $commonFlags = @("-std=f2018", "-pedantic", "-O2")
-    if ($needOpenMP) { $commonFlags += "-fopenmp" }
-
+    # .f 是固定格式的老代码；.f90 才是现代自由格式。老代码不开 -pedantic：
+    # 老特性本来就是标准的「已删/已过时」集合，用现代标准去挑毛病没意义。
+    # -std 的选择还要看编译器：gfortran 用 -std=legacy 压掉「已删特性」警告；
+    # flang 23 不认 -std=legacy（只接受 -std=f2018），它不加 -std 时本来就
+    # 接受固定格式 —— 这本身就是一个跨编译器差异。
     foreach ($channel in @("flang", "gfortran")) {
         $cc = if ($channel -eq "flang") { $flang } else { $gfortran }
         if (-not $cc) { continue }
+
+        if ($FileInfo.Extension -eq ".f") {
+            $commonFlags = @("-O2")
+            if ($channel -eq "gfortran") { $commonFlags += "-std=legacy" }
+        } else {
+            $commonFlags = @("-std=f2018", "-pedantic", "-O2")
+        }
+        if ($needOpenMP) { $commonFlags += "-fopenmp" }
 
         $modDir   = Join-Path $buildDir "mod/$channel"
         $bin      = Join-Path $buildDir "$base.$channel"
@@ -319,9 +329,13 @@ if ($File) {
 }
 
 if ($All) {
-    $files = Get-ChildItem -LiteralPath $examplesDir -Filter "*.f90" | Sort-Object Name
+    # *.f* 一把抓（.f 与 .f90），再按扩展名精确过滤——避免 *.f 的 8.3 短文件名
+    # 匹配怪癖把 .f90 也捞进来
+    $files = Get-ChildItem -LiteralPath $examplesDir -Filter "*.f*" |
+                 Where-Object { $_.Extension -in ".f", ".f90" } |
+                 Sort-Object Name
     if ($files.Count -eq 0) {
-        throw "examples 目录下没有 .f90 示例文件。"
+        throw "examples 目录下没有 .f90 / .f 示例文件。"
     }
 
     $pass = 0

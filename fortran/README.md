@@ -1,8 +1,8 @@
 # Fortran 教程与示例
 
-现代 Fortran（Fortran 2018）入门到进阶，配套 22 个可运行示例。**每个示例都在两个编译器上分别编译运行**：LLVM flang 23（主通道）与 GNU Fortran 15（对照通道）。
+现代 Fortran（Fortran 2018）入门到进阶，配套 24 个可运行示例：22 个现代 `.f90`，外加 2 个 FORTRAN 77 风格的固定格式 `.f`（70、71，让初学者对老 Fortran 有个手感）。**每个示例都在两个编译器上分别编译运行**：LLVM flang 23（主通道）与 GNU Fortran 15（对照通道）。
 
-这里讲的不是 FORTRAN 77。`do concurrent`、`submodule`、`iso_c_binding`、类型绑定过程、`select type`、OpenMP 都在示例里实打实地跑了一遍。
+这里讲的不是 FORTRAN 77 —— 但会把 FORTRAN 77 长什么样也演示一遍。`do concurrent`、`submodule`、`iso_c_binding`、类型绑定过程、`select type`、OpenMP 都在示例里实打实地跑了一遍。
 
 ## 目录结构
 
@@ -34,7 +34,9 @@ fortran/
     ├── 19-c-interop.f90          C 互操作（iso_c_binding）
     ├── 20-parallel.f90           并行计算（OpenMP + do concurrent）
     ├── 21-errors-testing.f90     错误处理与单元测试
-    └── 22-project.f90            综合实战：一个 CSV 数据分析小工具
+    ├── 22-project.f90            综合实战：一个 CSV 数据分析小工具
+    ├── 70-fixed-form.f           老格式：固定格式版面、算术 IF、计算 GOTO
+    └── 71-legacy-features.f      老特性：隐式类型、COMMON、EQUIVALENCE（附现代对照）
 ```
 
 ## 工具链
@@ -76,15 +78,18 @@ gfortran-mp-15 --version  # GNU Fortran (MacPorts gcc15 15.2.0_0+stdlib_flag) 15
 
 | 通道 | 命令 | 说明 |
 |---|---|---|
-| flang | `flang-mp-23 -std=f2018 -pedantic -O2 -J build/mod/flang FILE -o OUT` | 主通道 |
-| gfortran | `gfortran-mp-15 -std=f2018 -pedantic -O2 -J build/mod/gfortran FILE -o OUT` | 对照通道 |
+| flang | `flang-mp-23 -std=f2018 -pedantic -O2 -J build/mod/flang FILE -o OUT` | 主通道（`.f90`） |
+| gfortran | `gfortran-mp-15 -std=f2018 -pedantic -O2 -J build/mod/gfortran FILE -o OUT` | 对照通道（`.f90`） |
+| 老格式 `.f` | gfortran 侧改 `-std=legacy`；flang 侧去掉 `-std` 与 `-pedantic` | 70、71 两个示例，脚本按后缀自动切换 |
 | 一致性比对 | `cmp` | 两个编译器的 stdout 应当逐字节相同 |
+
+老格式示例不跑 `-pedantic`：老特性本来就是标准里的「已删/已过时」集合，用现代标准挑它的毛病没有意义。顺带一提，flang 23 不认 `-std=legacy`（只接受 `-std=f2018`），不加 `-std` 时本来就接受固定格式 —— 这本身就是一个跨编译器差异。
 
 PowerShell：
 
 ```powershell
 cd /Users/xulun/code/programming/fortran        # Windows: cd G:\code\guide\fortran
-pwsh ./build.ps1 -All                 # 跑全部（22 个 × 2 通道）
+pwsh ./build.ps1 -All                 # 跑全部（24 个 × 2 通道）
 pwsh ./build.ps1 -File 12-derived-types.f90
 pwsh ./build.ps1 -All -Verbose        # 附带打印每个示例的运行输出
 pwsh ./build.ps1 -Clean               # 清理 build 目录
@@ -157,6 +162,8 @@ cd /Users/xulun/code/programming/fortran
 | 20 | 并行计算 | `!$omp` 指令、reduction/atomic/critical/private、`schedule`、sections、计时与加速比、竞态、`do concurrent` |
 | 21 | 错误处理与单元测试 | 手写 `unittest` 断言框架、被测模块、`iostat`/`stat`/`err=`/`inquire`、子进程 `error stop` 退出码 |
 | 22 | 综合实战 | CSV 读入/写出/解析（含缺失值）、描述统计、Top-N 排名、最小二乘回归、对齐报表、写回校验 |
+| 70 | 老格式：固定格式 | `.f` 版面规则（标号区/续行列/C 注释）、`DO 100 ... CONTINUE`、算术 `IF`、计算 `GOTO`、`FORMAT` 语句 |
+| 71 | 老特性 | 隐式类型规则、`COMMON` 块、`EQUIVALENCE` 位型查看、无 `intent` 的过程调用；注释里逐条给现代对照写法 |
 
 ## flang 23 与 gfortran 15 的差异清单
 
@@ -216,6 +223,6 @@ cd /Users/xulun/code/programming/fortran
 ## 当前状态
 
 - **macOS x86_64**（flang 23.1.0 / GNU Fortran 15.2.0）：22 示例 × 2 通道 = **44 项全部通过**，0 项意外输出差异。
-- **Windows 11**（flang 23.1.1 / GNU Fortran 16.2.0，2026-09 校验）：修复示例 21 的平台分支 + 脚本自动补链 compiler-rt builtins 后，**44 项全部通过**；输出差异仅剩上表列出的 7 项已知差异（其中 3 项只在 Windows 出现，根因见「Windows 已知问题」W2/W3）。
+- **Windows 11**（flang 23.1.1 / GNU Fortran 16.2.0，2026-09 校验）：24 示例 × 2 通道（含新增的 70/71 固定格式老示例）= **48 项全部通过**，0 项意外输出差异；仅剩上表列出的已知差异（其中 3 项只在 Windows 出现，根因见「Windows 已知问题」W2/W3）。
 
 `build.ps1` 与 `run-all.sh` 在两个平台上均实测，结果一致。
