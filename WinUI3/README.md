@@ -14,7 +14,7 @@
 
 | 篇 | 内容 | 回答的问题 |
 |---|------|-----------|
-| [01 概念总览](docs/01-tech-stack.md) | 分层架构、各组件职责、历史脉络、打包/非打包 | WinRT / WinUI 3 / XAML / Windows App SDK 各是什么、谁负责什么 |
+| [01 概念总览](docs/01-tech-stack.md) | 分层架构、各组件职责、Win32→WinForms→WPF→UWP→WinUI 3 各代技术的问题与演化、打包/非打包 | WinRT / WinUI 3 / XAML / Windows App SDK 各是什么、谁负责什么、为什么会有这么多代 |
 | [02 WinRT 机制](docs/02-winrt.md) | IUnknown/IInspectable、.winmd 元数据、语言投影、hstring/event/异步/错误模型 | `winrt::` 代码底下发生了什么 |
 | [03 XAML 机制](docs/03-xaml.md) | 标记编译、x:Class/x:Name、依赖属性、x:Bind vs Binding、资源查找、DataTemplate | XAML 怎么变成运行中的对象树 |
 
