@@ -8,6 +8,12 @@ param(
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $projectRoot
 
+# Windows 下把控制台/重定向输出统一成 UTF-8，避免中文摘要乱码；
+# macOS / Linux 本来就是 UTF-8，等价无操作。
+if (($PSVersionTable.PSVersion.Major -ge 6 -and $IsWindows) -or $env:OS) {
+    try { [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new() } catch { }
+}
+
 # ---------------------------------------------------------------
 # 工具链定位：环境变量优先，其次 macports 路径，最后退回 PATH
 #   SWIPL / GPROLOG / GPLC
@@ -166,7 +172,12 @@ function Invoke-Example {
     if ($haveSwipl) {
         $log = Join-Path $buildDir "$base.swi.log"
         $err = Join-Path $buildDir "$base.swi.err"
-        $r = Invoke-PrologProc -Exe $swipl -Args @("-q", "-f", $FileInfo.FullName, "-g", "main", "-t", "halt") `
+        # -Dencoding=utf8：Windows 上 swipl 默认按 ANSI 代码页解码源文件，UTF-8 中文
+        #   示例会报 "Illegal multibyte Sequence"；set_stream 再保证重定向的
+        #   stdout/stderr 也按 UTF-8 输出。macOS/Linux 上两者等价无操作，
+        #   因此不必区分平台，保持单一代码路径。
+        $swiGoal = "set_stream(user_output,encoding(utf8)),set_stream(user_error,encoding(utf8)),main"
+        $r = Invoke-PrologProc -Exe $swipl -Args @("-Dencoding=utf8", "-q", "-f", $FileInfo.FullName, "-g", $swiGoal, "-t", "halt") `
                                -OutFile $log -ErrFile $err
         if (-not (Test-Result -Tag "swipl   $base" -LogPath $log -ErrPath $err -ExitCode $r.ExitCode -Marker $marker -TimedOut:$r.TimedOut)) { $allOk = $false }
     }

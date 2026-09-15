@@ -91,9 +91,20 @@ count_lines_to(S, Acc, N) :-
         count_lines_to(S, Acc1, N)
     ).
 
+% 跨平台临时文件路径：POSIX 用 /tmp；Windows 没有通用的 /tmp，用 %TEMP%
+:- if((current_prolog_flag(dialect, swi), current_prolog_flag(windows, true))).
+demo_tmp_file(F) :-
+    (   getenv('TEMP', T), T \== ''
+    ->  atom_concat(T, '/prolog-16-demo.txt', F)
+    ;   F = 'prolog-16-demo.txt'
+    ).
+:- else.
+demo_tmp_file('/tmp/prolog-16-demo.txt').
+:- endif.
+
 demo_cleanup :-
     format("---- 资源清理 ----~n", []),
-    Tmp = '/tmp/prolog-16-demo.txt',
+    demo_tmp_file(Tmp),
     open(Tmp, write, S),
     write(S, 'a'), nl(S), write(S, 'b'), nl(S),
     close(S),

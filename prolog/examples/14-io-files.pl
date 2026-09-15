@@ -4,12 +4,23 @@
 %  运行（SWI）: swipl -q -f examples/14-io-files.pl -g main -t halt
 %  运行（GNU）: gprolog --consult-file examples/14-io-files.pl --entry-goal main
 %
-%  本例在 /tmp 下建一个临时文件跑读写，SWI 下跑完会被删掉。
+%  本例建一个临时文件跑读写（POSIX 在 /tmp，Windows 在 %TEMP%），SWI 下跑完会被删掉。
 % ============================================================
 
 :- set_prolog_flag(double_quotes, codes).
 
+% 跨平台临时文件路径：POSIX 用 /tmp；Windows 没有通用的 /tmp
+% （'/tmp/x' 会被解析成 <当前盘>:\tmp\x，该目录通常不存在），
+% 所以 Windows 下用 %TEMP%，取不到 TEMP 就退回当前工作目录。
+:- if((current_prolog_flag(dialect, swi), current_prolog_flag(windows, true))).
+tmp_file(F) :-
+    (   getenv('TEMP', T), T \== ''
+    ->  atom_concat(T, '/prolog-14-io-demo.tmp', F)
+    ;   F = 'prolog-14-io-demo.tmp'
+    ).
+:- else.
 tmp_file('/tmp/prolog-14-io-demo.tmp').
+:- endif.
 
 % ------------------------------------------------------------
 %  一、写文件：open / write / close 三件套

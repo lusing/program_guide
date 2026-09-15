@@ -42,6 +42,14 @@ prolog/
 | `gplc` | `/opt/local/bin/gplc` | 随 GNU Prolog | 编译成无依赖的本地可执行文件 |
 | `pwsh` | `/opt/local/bin/pwsh` | PowerShell 7.6.5 | 跑 `build.ps1`（不在默认 PATH 里） |
 
+> **Windows 说明**：上表路径是 macOS（MacPorts）环境。Windows 下
+> `scoop install swipl` 装 SWI-Prolog 即可（本仓库在 10.0.2 x64-win64 上验证
+> 通过）；GNU Prolog **没有官方 Windows 构建**，gprolog / gplc 两条通道不适用，
+> 脚本会自动跳过。swipl 通道需要 `-Dencoding=utf8` 加
+> `set_stream(user_output, encoding(utf8))` 规避 ANSI 代码页问题（否则 UTF-8
+> 中文示例会报 `Illegal multibyte Sequence`），`build.ps1` / `run-all.sh`
+> 均已内置，无需感知。
+
 验证安装：
 
 ```bash
@@ -69,7 +77,7 @@ pwsh ./build.ps1 -All -Verbose        # 附带打印 SWI 输出
 pwsh ./build.ps1 -Clean               # 清理 build 目录
 ```
 
-macOS / Linux（等价的 shell 脚本）：
+macOS / Linux / Windows Git Bash（等价的 shell 脚本）：
 
 ```bash
 cd /Users/xulun/code/programming/prolog
@@ -116,6 +124,9 @@ cd /Users/xulun/code/programming/prolog
 
 ## 当前状态
 
-20 个示例 × 3 条通道 = **60 项全部通过**（SWI-Prolog 10.0.2 / GNU Prolog 1.5.0 / macOS darwin）。
+- **macOS**（darwin）：20 个示例 × 3 条通道 = **60 项全部通过**（SWI-Prolog 10.0.2 / GNU Prolog 1.5.0）。
+- **Windows 11**：swipl 通道 **20/20 通过**（SWI-Prolog 10.0.2 x64-win64，scoop 安装）。gprolog / gplc 两条通道不适用（GNU Prolog 无官方 Windows 版），脚本自动跳过。`build.ps1`（pwsh 7）与 `run-all.sh`（Git Bash）两种入口均实测，结果一致。
+
+Windows 适配点：swipl 通道加 `-Dencoding=utf8` + `set_stream(user_output, encoding(utf8))` 规避 ANSI 代码页（详见指南第 2 章）；示例 14、16 的 `/tmp` 临时文件在 Windows 下条件编译改走 `%TEMP%`。
 
 `build.ps1` 与 `run-all.sh` 均已在本机实测，两种入口结果一致。

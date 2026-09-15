@@ -83,7 +83,11 @@ for f in examples/[0-9]*.pl; do
     # ---- 通道 1：SWI-Prolog ----
     if [ -n "$SWIPL" ]; then
         log="build/$base.swi.log"
-        "$SWIPL" -q -f "$f" -g main -t halt </dev/null >"$log" 2>"build/$base.swi.err"
+        # -Dencoding=utf8 + set_stream：Windows 上 swipl 默认按 ANSI 代码页读源文件、
+        # 写重定向流，UTF-8 中文示例会报 Illegal multibyte Sequence；
+        # macOS/Linux 上等价无操作，保持单一代码路径。
+        SWI_GOAL='set_stream(user_output,encoding(utf8)),set_stream(user_error,encoding(utf8)),main'
+        "$SWIPL" -Dencoding=utf8 -q -f "$f" -g "$SWI_GOAL" -t halt </dev/null >"$log" 2>"build/$base.swi.err"
         rc=$?
         check "swipl    $base" "$marker" "$log" "build/$base.swi.err" "$rc" "$log"
     fi

@@ -49,6 +49,11 @@ X = ann.
 | `gprolog` | `/opt/local/bin/gprolog` | GNU Prolog 1.5.0 | 体量小，自带 FD 约束求解器 |
 | `gplc` | `/opt/local/bin/gplc` | 随 GNU Prolog | 编成无依赖的本地可执行文件 |
 
+> **Windows 说明**：上表路径是 macOS（MacPorts）环境。Windows 下用
+> `scoop install swipl` 装 SWI-Prolog 即可（本仓库在 10.0.2 x64-win64 上验证通过）；
+> **GNU Prolog 没有官方 Windows 构建**，`gprolog` / `gplc` 两条通道在 Windows
+> 上不可用，`build.ps1` / `run-all.sh` 会自动跳过缺失的工具，无需改动。
+
 ### 三条运行通道
 
 **通道 1：SWI 解释执行**
@@ -61,6 +66,20 @@ swipl -q -f examples/01-hello-facts.pl -g main -t halt
 - `-f FILE`：加载文件（不用 `-f` 会去读 `~/.swiplrc`）
 - `-g main`：加载完后执行 `main/0`
 - `-t halt`：结束时执行 `halt`（哪怕 `main` 失败了也保证退出）
+
+**Windows 下直接跑上面的命令会满屏 `Illegal multibyte Sequence`**：Windows 版
+swipl 默认按 ANSI 代码页（中文系统是 GBK）解码源文件、写重定向流，而本仓库
+示例是 UTF-8（含中文）。手动运行要补两处（`build.ps1` / `run-all.sh` 已内置）：
+
+```bash
+swipl -Dencoding=utf8 -q -f examples/01-hello-facts.pl -g "set_stream(user_output,encoding(utf8)),main" -t halt
+```
+
+- `-Dencoding=utf8`：在加载源文件前设好 encoding 标志，修复**源文件解码**
+- `set_stream(user_output, encoding(utf8))`：`user_output` 启动时就按本地编码
+  打开了，`-D` 管不到它，要在 `-g` 里显式改，否则**重定向输出**仍是 GBK
+
+macOS / Linux 的 locale 本来就是 UTF-8，这两处等价无操作，加不加都一样。
 
 **通道 2：GNU 解释执行**
 
@@ -1129,6 +1148,12 @@ close(S).
 
 `open(File, Mode, Stream)` 的 Mode 是 `read` / `write` / `append`。**写完必须 `close`**，否则缓冲没落盘。
 
+Windows 下还有个坑：**没有通用的 `/tmp`**。`'/tmp/x.txt'` 会被解析成
+`<当前盘>:\tmp\x.txt`，该目录通常不存在，`open/3` 直接抛
+`existence_error(source_sink, ...)`。跨平台写法见示例 14：用
+`:- if(current_prolog_flag(windows, true))` 条件编译，Windows 分支改用
+`%TEMP%`（SWI 下 `getenv('TEMP', T)` 可取到）。
+
 ### 读文件
 
 读固定长度：
@@ -2100,6 +2125,8 @@ gprolog --consult-file examples/04-arithmetic.pl --entry-goal main
 # 编成本地可执行文件
 { echo ':- initialization(main).'; cat examples/04-arithmetic.pl; } > build/e.pl
 cd build && gplc e.pl -o e && ./e
+# Windows：gprolog / gplc 命令不适用（无官方 Windows 版）；
+# swipl 命令要加 -Dencoding=utf8 和 set_stream 前缀，见第 2 章（脚本已内置）
 ```
 
 ```powershell
