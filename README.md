@@ -17,7 +17,7 @@
 
 - [Ada](./Ada) — Ada 语言教程与示例，使用 MSYS2 UCRT64 的 GNAT (`gnatmake`) 验证
 - [android](./android) — Android 应用开发教程（Kotlin），含 Jetpack Compose 与 JNI 示例，使用 Kotlin/Gradle/NDK 验证
-- [asm/intel](./asm/intel) — x86-64 汇编编程指南，使用 NASM + MSVC link.exe 验证
+- [asm/intel](./asm/intel) — x86-64 汇编编程指南，双平台验证：Windows 用 NASM + MSVC link.exe，macOS 用 NASM `-f macho64` + clang/ld（56 个 macOS 示例全部实际编译运行通过）
 - [boost](./boost) — Boost C++ 教程与示例，使用 MSVC + Boost 头文件验证
 - [coq](./coq) — Coq 教程与示例，使用 coqc 批量编译验证
 - [cpp20](./cpp20) — C++20 教程与示例，适配 MSVC/Windows 构建
@@ -115,7 +115,8 @@
 
 不同目录依赖不同工具链，常见包括：
 
-- NASM + MSVC
+- NASM + MSVC（x86-64 汇编，Windows / win64 COFF）
+- NASM + clang + ld（x86-64 汇编，macOS / macho64 Mach-O，含 Accelerate.framework）
 - GNAT (MSYS2 UCRT64)
 - Android SDK + Kotlin + Gradle + NDK
 - Visual Studio + VC

@@ -2,6 +2,10 @@
 
 汇编程序由于贴近硬件，错误往往难以直接定位。本章介绍常用的调试工具与方法，帮助你高效排查问题。
 
+- **Windows**：x64dbg（图形界面，适合入门）、WinDbg（内核与崩溃分析）
+- **macOS**：lldb（随 Xcode Command Line Tools 提供）
+- 两平台通用的排查清单见 [常见错误排查](#常见错误排查)，其中第 7–10 条是 macOS 特有的坑。
+
 ## x64dbg 使用简介
 
 [x64dbg](https://x64dbg.com/) 是一款开源的 Windows 64 位用户态调试器，界面直观，适合汇编初学者。
@@ -68,19 +72,81 @@ windbg -p 1234
 
 > 示例：`bp program!main` 在 main 函数处下断点，然后 `g` 运行，命中后用 `t` 单步，`r` 查看寄存器变化。
 
+## lldb（macOS）
+
+macOS 上汇编调试用 `lldb`（LLVM 调试器），随 Xcode Command Line Tools 一起提供，路径 `/usr/bin/lldb`。
+
+### 启动
+
+```bash
+# 汇编时带 DWARF 调试信息
+nasm -I lib -f macho64 -g examples-macos/05_control_flow/cmov.asm -o build/cmov.o
+clang -arch x86_64 -g build/cmov.o -o build/cmov
+
+# 非交互式：跑一遍，崩溃了直接看回溯
+lldb -b -o "run" -o "bt" -o "quit" ./build/cmov
+
+# 交互式
+lldb ./build/cmov
+```
+
+### 常用命令
+
+| 命令 | 作用 | Windows 对应 |
+|------|------|-------------|
+| `run` / `r` | 运行 | `g` |
+| `bt` | 打印调用栈 | `k` |
+| `register read rip rsp rbp rax rbx` | 看指定寄存器 | `r rax` |
+| `register read --all` | 看全部寄存器 | `r` |
+| `x/8gx $rsp` | 以 8 字节十六进制看栈顶 8 项 | `dq rsp L8` |
+| `memory read --format x --size 8 --count 4 $rsp` | 同上（lldb 原生命令式） | `d` |
+| `si` | 单步进入（step instruction） | `t` |
+| `ni` | 单步越过（next instruction） | `p` |
+| `c` | 继续 | `g` |
+| `disassemble` | 反汇编当前函数 | `u` |
+| `b _main` | 按符号下断点 | `bp program!main` |
+| `b *0x100001234` | 按地址下断点 | `bp 0x...` |
+| `p $rax` | 打印寄存器 | `r rax` |
+| `register write rax 42` | 修改寄存器 | `r rax=42` |
+| `quit` / `q` | 退出 | `q` |
+
+### 崩溃诊断的典型套路
+
+```
+(lldb) run
+Process 12345 stopped
+* thread #1, stop reason = EXC_BAD_ACCESS (code=1, address=0x900065050)
+    frame #0: 0x00007ff81523d730 libvDSP.dylib`...
+(lldb) bt
+(lldb) register read rip rsp rbp rax rbx r12 r13
+```
+
+根据 `frame #0` 的位置可以快速缩小范围：
+
+| `frame #0` 落在 | 基本可以断定 |
+|----------------|-------------|
+| `dyld` / `_dyld_start` | 破坏了被调用者保存寄存器（`rbx`/`r12`–`r15`），`_main` 返回后 dyld 用到坏值 |
+| `_platform_strlen` / `_strlen` / `_vfprintf` | `printf` 的参数与格式串字段错位，某个数字被当成指针 |
+| 某个 `andps` / `movaps` / `maxps` 指令上 | SSE 的内存操作数没做 16 字节对齐 |
+| `libsystem_malloc` / `free` | 写越界把堆元数据踩坏了 |
+
 ## NASM 调试信息（-g）
 
-默认情况下 NASM 不生成调试信息，调试器中只能看到机器码与地址。添加 `-g` 参数可生成 CodeView 格式调试信息，让调试器显示源码行号与符号：
+默认情况下 NASM 不生成调试信息，调试器中只能看到机器码与地址。添加 `-g` 参数可生成调试信息，让调试器显示源码行号与符号：
 
 ```powershell
-# 汇编时生成调试信息
+# Windows：CodeView 8（CV8）格式
 nasm -f win64 -g example.asm -o example.obj
-
-# 链接时也生成调试信息（PDB 文件）
 link /subsystem:console /entry:main /debug example.obj msvcrt.lib legacy_stdio_definitions.lib kernel32.lib
 ```
 
-> NASM 的 `-g` 配合 `-F` 可指定调试格式。win64 目标默认使用 CV8（CodeView 8）。生成的 PDB 文件可被 x64dbg 和 WinDbg 加载，关联源代码行。
+```bash
+# macOS：DWARF 格式
+nasm -I lib -f macho64 -g example.asm -o example.o
+clang -arch x86_64 -g example.o -o example
+```
+
+> NASM 的 `-g` 配合 `-F` 可指定调试格式：win64 目标默认 CV8（生成 PDB，可被 x64dbg / WinDbg 加载），macho64 目标默认 DWARF（直接内嵌在 `.o` 里，lldb 原生读取，不需要额外文件）。
 
 ## 常见错误排查
 
@@ -163,6 +229,77 @@ mov dword [rbx], 0     ; 4 字节
 mov qword [rbx], 0     ; 8 字节
 ```
 
+### 7. 段错误 139，崩溃点在 dyld 里（macOS 特有）
+
+**现象**：程序从 `_main` 正常走到 `ret` 之后才崩，退出码 139（SIGSEGV），`lldb` 的 `bt` 显示 `frame #0` 在 `dyld` 里，形如：
+
+```
+dyld`dyld4::start(...) + 465: movq 0x8(%rbx), %rax
+EXC_BAD_ACCESS (code=1, address=0x...)
+```
+
+**原因**：破坏了**被调用者保存寄存器**（`rbx`、`r12`–`r15`）。Windows 版用 `/entry:main` 把 `main` 当进程入口，里面直接 `call ExitProcess`，所以破坏了也看不出来；macOS 的 `_main` 是被 libSystem call 进来的，`ret` 之后 dyld 会继续用它，于是立刻崩。
+
+**修法**：进函数先备份到栈帧，退场前还原。
+
+```asm
+_main:
+    push rbp
+    mov rbp, rsp
+    sub rsp, 32
+    mov [rbp-8],  rbx          ; 备份
+    mov [rbp-16], r12
+    ...
+    mov rbx, [rbp-8]           ; 还原
+    mov r12, [rbp-16]
+    xor eax, eax
+    leave
+    ret
+```
+
+### 8. 输出一个莫名其妙的巨大数字（macOS 特有）
+
+**现象**：本来算好的值，打印出来是个离谱的大数。
+
+**原因**：`printf` 的**返回值**（打印字符数）就放在 `eax` 里，把 `rax` 冲掉了。紧接着再用 `rax` 就会用到垃圾。
+
+```asm
+    mov rax, 0x123456789ABCDEF0
+    bswap rax
+    call _printf               ; ← eax 变成「打印了几个字符」
+    bswap rax                  ; ← 转的是垃圾
+```
+
+**修法**：要么把值放 `rbx`/`r12`–`r15`（记得备份还原），要么用之前重新装一遍。
+
+### 9. `EXC_BAD_ACCESS` 且栈里有 `_platform_strlen`（macOS 特有）
+
+**现象**：`lldb` 显示崩溃在 `_platform_strlen` 里，访问地址是个很小的数（例如 `0x60`）。
+
+**原因**：`printf` 的**格式串字段顺序与参数寄存器顺序不匹配**。格式串里的 `%s` 拿到的是本该给 `%lld` 的那个数字，libc 就把它当指针去解引用了。
+
+**修法**：严格按 `rdi`（格式串）、`rsi`、`rdx`、`rcx`、`r8`、`r9` 的顺序逐字段对照。SysV 里浮点和整数各自编号，不要按 Windows 的「位置序号」习惯去想。
+
+### 10. `andps` / `movaps` 上崩溃
+
+**现象**：崩溃点落在这类 SSE 指令上。
+
+**原因**：`MOVAPS`、`ANDPS`、`ORPS`、`XORPS`、`MAXPS`…… 这些指令的**内存操作数必须 16 字节对齐**，否则 `#GP`。
+
+**修法**：
+
+- 常量前面写 `align 16`；
+- 「错位加载」（例如用偏移 4 字节的地址做有限差分）一律用 `movups`，不能用 `movaps`；
+- 注意 `align` 只对紧随其后的那一个标号/数据生效：
+
+```asm
+section .data
+    align 16
+    v_one    dd 1.0, 1.0, 1.0, 1.0      ; 16 字节对齐
+    align 16                            ; 每块都要单独写
+    v_mask   dd 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF
+```
+
 ---
 
-> 上一篇：[栈和栈帧](07_stack_frames.md) ｜ 返回 [首页](../README.md)
+> 上一篇：[栈和栈帧](07_stack_frames.md) ｜ 返回 [首页](../README.md) ｜ 延伸：[macOS 平台移植指南](10_macos_porting.md)

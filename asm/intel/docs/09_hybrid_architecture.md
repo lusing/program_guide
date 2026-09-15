@@ -61,7 +61,7 @@ test ebx, 0x10000    ; bit 16 = AVX-512F
 
 Intel Thread Director 是混合架构的硬件线程调度机制。它通过监控每个核心的负载与能力，向操作系统提供调度建议。操作系统通过 HFI（Hardware Feedback Interface）读取这些信息，做出调度决策。
 
-对应用层而言，线程在 P核还是 E核上运行由操作系统决定，程序无法直接控制。但可通过 `SetThreadAffinityMask` 等 Windows API 间接影响调度偏好。
+对应用层而言，线程在 P核还是 E核上运行由操作系统决定，程序无法直接控制。但可通过 `SetThreadAffinityMask` 等 Windows API 间接影响调度偏好。macOS 上对应的行为由内核调度器与 QoS（`pthread_set_qos_class_self_np`、Grand Central Dispatch 的队列优先级）表达，汇编层面能做的仍然是同样的 `CPUID` 页 `0x1A` 探测。
 
 ## 编程建议
 
@@ -70,6 +70,29 @@ Intel Thread Director 是混合架构的硬件线程调度机制。它通过监�
 3. **AVX-512 谨慎使用**——E核可能不支持 AVX-512，若使用需做运行时降级（fallback 到 AVX2 或 SSE）。
 4. **核心类型可在运行中变化**——线程被调度到另一类型核心后，之前的检测结果可能不再适用；对关键路径可定期重新检测。
 
+## 两个平台上的可运行示例
+
+这两件事都在 `08_system_misc/cpuid_hybrid.asm` 里演示了，两个平台各有一份：
+
+| | 汇编 | 链接 |
+|---|------|------|
+| Windows | `nasm -f win64 examples/08_system_misc/cpuid_hybrid.asm -o cpuid_hybrid.obj` | `link ... cpuid_hybrid.obj` |
+| macOS | `nasm -I lib -f macho64 examples-macos/08_system_misc/cpuid_hybrid.asm -o cpuid_hybrid.o` | `clang -arch x86_64 cpuid_hybrid.o -o cpuid_hybrid` |
+
+探测逻辑两平台完全一致，唯一要改的是「CPUID 会踩 `EBX`，而 `EBX` 是被调用者保存寄存器」——Windows 版把原值存到 `.data`，macOS 版存到栈帧的 `[rbp-8]`，取完所有 CPUID 后都必须还原。
+
+在本机（Ivy Bridge，i7-3520M）上的实际输出：
+
+```
+CPUID 最大页号： 0xD
+支持混合架构（大小核）： NO
+当前核心类型： 未知 / 未报告
+AVX2： NO
+AVX-512： NO
+```
+
+这正好是一份「正确的能力探测」长什么样：不是猜，而是问，然后如实降级。
+
 ---
 
-> 上一篇：[调试方法](08_debugging.md) ｜ 返回 [首页](../README.md)
+> 上一篇：[调试方法](08_debugging.md) ｜ 返回 [首页](../README.md) ｜ 延伸：[macOS 平台移植指南](10_macos_porting.md)

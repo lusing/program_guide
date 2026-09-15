@@ -1,6 +1,10 @@
 # 环境配置
 
-本指南基于 Windows 平台，使用 **NASM** 汇编器与 **MSVC link.exe** 链接器组成工具链。本章介绍两者的安装配置及编译链接流程。
+本指南同时覆盖 **Windows** 和 **macOS**：Windows 用 **NASM** + **MSVC link.exe**，macOS 用 **NASM** + **clang/ld**。本章介绍两套工具链的安装配置及编译链接流程。
+
+- Windows 部分：从「NASM 安装和使用」到「编译链接流程详解」
+- macOS 部分：见 [macOS 环境配置](#macos-环境配置)
+- 跨平台差异的完整讨论：见 [macOS 平台移植指南](10_macos_porting.md)
 
 ## NASM 安装和使用
 
@@ -139,19 +143,136 @@ link /subsystem:console /entry:main hello.obj msvcrt.lib legacy_stdio_definition
 # 输出: Hello, x86-64!
 ```
 
+## macOS 环境配置
+
+### 安装 NASM
+
+```bash
+# Homebrew
+brew install nasm
+
+# 或者 MacPorts
+sudo port install nasm        # 装到 /opt/local/bin/nasm
+
+# 验证
+nasm -v
+# 预期输出: NASM version 3.02 (or newer) compiled on ...
+```
+
+### 链接器与调试器
+
+macOS 不需要单独装链接器：`clang`、`ld`、`lldb` 都随 **Xcode Command Line Tools** 提供。
+
+```bash
+xcode-select --install        # 若尚未安装
+
+# 验证
+clang --version               # Apple clang version 14.x
+ld -v                         # @(#)PROGRAM:ld  PROJECT:ld64-820.1
+lldb --version
+xcrun --show-sdk-path         # /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+```
+
+### 和目标格式
+
+```bash
+nasm -f macho64 example.asm -o example.o
+```
+
+| 参数 | 说明 |
+|------|------|
+| `-f macho64` | 输出 64 位 Mach-O 目标文件（`.o`）——这是与 Windows 最核心的差别 |
+| `-I <dir>` | 追加 `%include` 的搜索路径（本项目用它找到 `lib/mac_io.inc`） |
+| `-g` | 生成 DWARF 调试信息，供 `lldb` 使用 |
+| `-l <file>` | 生成列表文件 |
+| `-d <name>=<value>` | 定义宏 |
+
+### 链接
+
+**推荐用 `clang` 驱动**，它会自动补上 `-lSystem` 和 SDK 的搜索路径：
+
+```bash
+clang -arch x86_64 example.o -o example
+./example
+```
+
+如果需要额外的框架（例如第 11 类的 Accelerate）：
+
+```bash
+clang -arch x86_64 example.o -o example -framework Accelerate
+```
+
+**也可以直接用 `ld`**，但必须自己指定 `-lSystem`：
+
+```bash
+SDK="$(xcrun --show-sdk-path)"
+ld -arch x86_64 -macosx_version_min 11.0 -e _main example.o -o example \
+   -lSystem -syslibroot "$SDK" -L"$SDK/usr/lib"
+```
+
+> **为什么纯系统调用程序也要 `-lSystem`？** macOS 的可执行文件必须是动态链接的。哪怕一个 libc 函数都不调，链接器仍需要 libSystem 来写入动态加载信息，否则报
+> `ld: dynamic executables or dylibs must link with libSystem.dylib`。
+
+### 和 Windows 版的三处写法差异
+
+```asm
+; 1) 符号带下划线，入口叫 _main
+    global _main
+    extern _printf
+
+; 2) 参数寄存器：rdi rsi rdx rcx r8 r9（不是 rcx rdx r8 r9）
+    lea rdi, [fmt]
+    mov esi, 42
+    xor eax, eax
+    call _printf
+
+; 3) 收场用 leave / ret（不是 call ExitProcess）
+    xor eax, eax
+    leave
+    ret
+```
+
+### 项目自带的 macOS 构建脚本
+
+```bash
+./build-mac.sh -All                              # 构建并运行全部
+./build-mac.sh -Category 01_data_movement        # 指定类别
+./build-mac.sh -File 01_data_movement/lea.asm    # 单个文件
+./build-mac.sh -BuildOnly -All                   # 只构建不运行
+./build-mac.sh -Clean                            # 清理 build/mac
+```
+
+脚本会自动判断链接方式：源文件里有 `extern _` 就用 `clang` 驱动，否则用 `ld` 直连。示例里写一行 `; LINK: -framework Accelerate` 就能给链接器追加参数。
+
+### 辅助库 lib/mac_io.inc
+
+macOS 版示例的输出代码可以复用一组现成例程，避免每个例子都手写 `_printf` 传参：
+
+```asm
+; 在文件末尾（顶层）写一行
+%include "mac_io.inc"
+
+; 可用：m_nl、m_puts、m_putchar、m_putint、m_putuint、m_putbool、
+;       m_puthex、m_putd、m_putg、m_putf、m_putflags、m_putsep
+```
+
+汇编时要带上 `-I lib`。它是可选依赖，不用也完全没问题。
+
 ## 常用命令速查
 
-| 操作 | 命令 |
-|------|------|
-| 汇编 | `nasm -f win64 example.asm -o example.obj` |
-| 带调试信息汇编 | `nasm -f win64 -g example.asm -o example.obj` |
-| 生成列表文件 | `nasm -f win64 -l example.lst example.asm` |
-| 链接 | `link /subsystem:console /entry:main example.obj msvcrt.lib legacy_stdio_definitions.lib kernel32.lib` |
-| 带调试信息链接 | `link /subsystem:console /entry:main /debug example.obj msvcrt.lib legacy_stdio_definitions.lib kernel32.lib` |
-| 构建全部示例 | `.\build.ps1 -All` |
-| 构建单个类别 | `.\build.ps1 -Category 01_data_movement` |
-| 清理构建产物 | `.\build.ps1 -Clean` |
+| 操作 | Windows | macOS |
+|------|---------|-------|
+| 汇编 | `nasm -f win64 example.asm -o example.obj` | `nasm -I lib -f macho64 example.asm -o example.o` |
+| 带调试信息汇编 | `nasm -f win64 -g example.asm -o example.obj` | `nasm -f macho64 -g example.asm -o example.o` |
+| 生成列表文件 | `nasm -f win64 -l example.lst example.asm` | `nasm -f macho64 -l example.lst example.asm` |
+| 链接 | `link /subsystem:console /entry:main example.obj msvcrt.lib legacy_stdio_definitions.lib kernel32.lib` | `clang -arch x86_64 example.o -o example` |
+| 带调试信息链接 | 加 `/debug` | 加 `-g` |
+| 带框架链接 | — | `clang -arch x86_64 example.o -o example -framework Accelerate` |
+| 构建全部示例 | `.\build.ps1 -All` | `./build-mac.sh -All` |
+| 构建单个类别 | `.\build.ps1 -Category 01_data_movement` | `./build-mac.sh -Category 01_data_movement` |
+| 清理构建产物 | `.\build.ps1 -Clean` | `./build-mac.sh -Clean` |
+| 调试 | `x64dbg example.exe` | `lldb ./build/mac/example` |
 
 ---
 
-> 上一篇：[x86-64 汇编简介](01_introduction.md) ｜ 下一篇：[寄存器详解](03_registers.md)
+> 上一篇：[x86-64 汇编简介](01_introduction.md) ｜ 下一篇：[寄存器详解](03_registers.md) ｜ 延伸：[macOS 平台移植指南](10_macos_porting.md)

@@ -101,7 +101,7 @@ lea rax, [rel msg]      ; 获取 msg 的运行时地址（推荐写法）
 mov rax, [rel counter]  ; 读取全局变量 counter 的值
 ```
 
-> NASM 中使用 `rel` 关键字显式声明 RIP 相对寻址。在 win64 格式下，直接写 `[msg]` 通常也会自动生成 RIP 相对寻址，但显式写 `[rel msg]` 更清晰。
+> NASM 中使用 `rel` 关键字显式声明 RIP 相对寻址。`-f win64` 和 `-f macho64` 下直接写 `[msg]` 通常也会自动生成 RIP 相对寻址，但显式写 `[rel msg]` 更清晰，也是**跨平台双份构建时最省心的写法**——两个格式都不会给你惊喜或惊吓。
 
 ## 寻址模式速查表
 
