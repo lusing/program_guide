@@ -126,7 +126,7 @@ void TaskItem::RaisePropertyChanged(winrt::hstring const& propertyName)
 这套样板是 C++/WinRT MVVM 的基石，值得逐行理解：
 
 - **setter 里比较 + 触发**：值没变不发通知，避免无意义的界面刷新
-- `winrt::event<D>` 负责处理器列表的线程安全存储，`add`/`remove` 对应 ABI 的事件方法（见 [02 篇](./02-winrt.md) 2.5.3）
+- `winrt::event<D>` 负责处理器列表的线程安全存储，`add`/`remove` 对应 ABI 的事件方法（见 [02 篇](./02-winrt.md) 2.6.3）
 - `PropertyChangedEventArgs` 携带属性名，绑定引擎按名字找到要刷新的 `x:Bind` 目标
 - 必须在 **IDL 里声明**：绑定要跨 WinRT 边界调用属性，普通 C++ struct 的成员绑定引擎看不见
 
@@ -378,7 +378,7 @@ LoadConfigAsync()
 }
 ```
 
-错误用协程内 `try/catch`（投影层把 `HRESULT` 变成 `hresult_error`，见 [02 篇](./02-winrt.md) 2.8）：
+错误用协程内 `try/catch`（投影层把 `HRESULT` 变成 `hresult_error`，见 [02 篇](./02-winrt.md) 2.9）：
 
 ```cpp
 winrt::Windows::Foundation::IAsyncAction RefreshAsync()

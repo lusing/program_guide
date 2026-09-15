@@ -54,7 +54,7 @@
 已经熟悉某个领域的读者可以跳读：
 
 - 会 WPF/UWP → 先读 [02 WinRT 机制](docs/02-winrt.md) 和 [03 XAML 机制](docs/03-xaml.md) 3.6（`x:Bind` 与 WPF 的 `{Binding}` 差异很大），再按需查目录
-- 会 Win32/C++ → [04 第一个真实应用](docs/04-first-app.md) 起步，重点体会 IDL 和投影（[02 篇](docs/02-winrt.md) 2.4）
+- 会 Win32/C++ → [04 第一个真实应用](docs/04-first-app.md) 起步，重点体会 IDL 和投影（[02 篇](docs/02-winrt.md) 2.5）
 - 只想快速上手 → [04](docs/04-first-app.md) → [06](docs/06-controls.md) → [08](docs/08-binding-mvvm.md)，出问题再回概念篇
 
 ## 环境要求

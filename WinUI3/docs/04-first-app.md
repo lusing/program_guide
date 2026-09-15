@@ -27,7 +27,7 @@ MyApp/
 .idl ──MIDL──→ .winmd ──cppwinrt──→ *.g.h（模板基类、访问器骨架）
 ```
 
-这就是 [02 篇](./02-winrt.md) 2.4 节讲的元数据/投影流程发生在你自己工程里的样子。
+这就是 [02 篇](./02-winrt.md) 2.5 节讲的元数据/投影流程发生在你自己工程里的样子。
 
 ## 4.2 入口：wWinMain 与 Application::Start
 
@@ -56,7 +56,7 @@ int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int showCommand)
 
 - `init_apartment()`：WinRT 对象模型建立在 COM 上，线程必须先加入 apartment；UI 线程加入的是单线程 apartment（STA）
 - `Application::Start`：启动 XAML 框架，进入消息循环，直到应用退出才返回——**没有你自己写的 `while (GetMessage(...))`，消息循环在框架里**
-- lambda 里 `winrt::make<App>()`：通过激活工厂创建 App 对象，对应 [02 篇](./02-winrt.md) 2.6 节的激活机制
+- lambda 里 `winrt::make<App>()`：通过激活工厂创建 App 对象，对应 [02 篇](./02-winrt.md) 2.7 节的激活机制
 
 ## 4.3 App：应用对象与 OnLaunched
 
@@ -207,7 +207,7 @@ void OnClick(IInspectable const& sender, RoutedEventArgs const& args)
 
 这不是神秘参数，而是 WinRT 事件模型的标准签名：
 
-- `sender`：事件发起者的引用，统一类型是 `IInspectable`（所有 WinRT 对象的根接口，见 [02 篇](./02-winrt.md) 2.2 节）。需要具体类型时 `sender.as<Button>()` 转换（内部是 QueryInterface）
+- `sender`：事件发起者的引用，统一类型是 `IInspectable`（所有 WinRT 对象的根接口，见 [02 篇](./02-winrt.md) 2.3 节）。需要具体类型时 `sender.as<Button>()` 转换（内部是 QueryInterface）
 - `args`：事件参数对象，携带这次事件的上下文（`RoutedEventArgs` 是基类，具体事件有具体参数类型，如 `SelectionChangedEventArgs`）
 
 与 Win32 的对应：`sender` 取代了 `HWND`，`args` 取代了 `wParam/lParam`——消息模型升级成了对象模型。

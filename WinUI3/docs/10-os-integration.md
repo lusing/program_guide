@@ -169,7 +169,7 @@ winrt::Windows::System::Launcher::LaunchUriAsync(
 
 WinUI 3 / C++/WinRT 的内存模型是两条规则的组合：
 
-1. **WinRT 对象**：引用计数（[02 篇](./02-winrt.md) 2.2）。投影类型本身是智能指针——拷贝即 AddRef，析构即 Release。你基本不需要手动管理，但要理解计数的存在
+1. **WinRT 对象**：引用计数（[02 篇](./02-winrt.md) 2.3）。投影类型本身是智能指针——拷贝即 AddRef，析构即 Release。你基本不需要手动管理，但要理解计数的存在
 2. **普通 C++ 资源**：RAII。`std::unique_ptr` 独占、`std::shared_ptr` 共享、容器/字符串自管理
 
 工程上真正要花心思的是**所有权设计**：
