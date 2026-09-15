@@ -28,7 +28,7 @@
 - [elixir](./elixir) — Elixir 教程与示例，使用 elixirc 编译验证
 - [erlang](./erlang) — Erlang/OTP 教程与示例，使用 erlc 编译验证
 - [freebasic](./freebasic) — FreeBASIC 教程与示例，使用 fbc 编译验证（含 FBIDE 使用说明）
-- [freepascal](./freepascal) — Free Pascal / Lazarus 教程与示例，使用 fpc 编译并运行验证
+- [freepascal](./freepascal) — Free Pascal / Lazarus 教程与示例，使用 fpc 编译并运行验证（Windows scoop + macOS MacPorts fpc 3.2.2 / Lazarus 4.8 双平台，12 个命令行示例 × objfpc/delphi 双模式 + 3 个 Lazarus 工程 lazbuild 构建全部通过）
 - [fsharp](./fsharp) — F# 编程教程与示例，使用 .NET SDK (`dotnet build` / `dotnet run`) 验证
 - [flutter](./flutter) — Flutter / Dart 跨平台 UI 教程与示例，使用 Flutter 桌面编译验证
 - [forth](./forth) — Forth / GForth 教程与示例，使用 gforth 0.7.3 运行验证（含栈平衡与 stderr 检查）
@@ -135,7 +135,7 @@
 - Elixir
 - Erlang/OTP
 - FreeBASIC / FBIDE
-- Free Pascal / Lazarus
+- Free Pascal 3.2.2 (fpc) + Lazarus 4.8 (lazbuild)（Pascal / Object Pascal，Windows scoop + macOS macports 安装，objfpc / delphi 双语言模式对照）
 - F# (.NET SDK)
 - Flutter / Dart
 - Go

@@ -16,19 +16,25 @@ Pascal 是一种强调清晰结构和强类型语法的语言，最早由 Niklau
 
 ## 2. 编译与运行模型
 
-Free Pascal 使用最常见的编译流程：
+Free Pascal 使用最常见的编译流程。Windows 上（scoop 安装）：
 
 ```powershell
 G:\scoop\apps\freepascal\current\bin\i386-win32\fpc.exe -MObjFPC -Sc hello.pas
-```
-
-编译后，会生成可执行文件。通常可以直接运行：
-
-```powershell
 .\hello.exe
 ```
 
-本仓库中的 `build.ps1` 会自动完成这一过程，并对每个示例执行最小运行验证。
+macOS / Linux 上编译器直接在 PATH 里（macOS 可用 `sudo port install fpc lazarus`）：
+
+```bash
+fpc -MObjFPC -Sc hello.pas
+./hello
+```
+
+两个平台的差异只有两点：**编译器路径**，以及**可执行文件后缀**（Windows 是 `hello.exe`，
+macOS/Linux 是 `hello`，无扩展名）。编译参数和源码本身完全一致。
+
+本仓库的 `build.ps1`（PowerShell）与 `run-all.sh`（shell）是等价的双入口，都会自动探测
+工具链、按平台决定产物后缀，并对每个示例执行最小运行验证。
 
 ## 3. 基础语法：程序结构
 
@@ -518,7 +524,9 @@ else
 
 ## 16. 本目录示例清单
 
-本目录中的示例文件都已保存到 `examples/` 下，并经过本地 Free Pascal 编译器及 Lazarus GUI 项目构建验证。`15_lazarus_menus_dialogs/` 是当前的多窗口 / 菜单 / 对话框进阶展示项目，涵盖了真实桌面应用常见交互模式。
+本目录中的示例文件都已保存到 `examples/` 下，并在两套工具链上完成「编译 + 运行 / 构建」验证：
+Windows（scoop 版 fpc + Lazarus）与 macOS（MacPorts 版 fpc 3.2.2 + Lazarus 4.8，cocoa 控件集）。
+`15_lazarus_menus_dialogs/` 是当前的多窗口 / 菜单 / 对话框进阶展示项目，涵盖了真实桌面应用常见交互模式。
 
 - `01_hello.pas`：Hello World
 - `02_variables.pas`：变量声明与赋值
@@ -534,25 +542,60 @@ else
 - `12_classes.pas`：类与对象
 - `13_lazarus_gui/`：最小 Lazarus GUI 项目，演示 `TForm`、`TButton` 和事件处理
 - `14_lazarus_advanced_controls/`：高级控件演示，涵盖 `TEdit`、`TListBox`、`TComboBox`、`TCheckBox`、`TRadioGroup` 和 `TMemo`
+- `15_lazarus_menus_dialogs/`：多窗体进阶演示，涵盖 `TMainMenu` 菜单、`ShowModal` 模态子窗口、`TOpenDialog` 文件对话框与 `ShowMessage` 提示
 
-## 16. 本地验证方式
+## 17. 本地验证方式
 
-在当前环境中，编译器位于：
+Windows（scoop 安装）：
 
 ```text
 G:\scoop\apps\freepascal\current\bin\i386-win32\fpc.exe
+G:\scoop\apps\lazarus\current\lazbuild.exe
 ```
-
-可直接执行：
 
 ```powershell
 cd G:\code\guide\freepascal
 .\build.ps1 -All
 ```
 
-本仓库统一采用“编译 + 运行”的方式验证示例，确保每个例子都是真实可执行的。对于 `13_lazarus_gui/` 和 `14_lazarus_advanced_controls/`，则使用 `lazbuild` 进行 GUI 项目编译验证，确认 LCL 窗体工程可以被本地 Lazarus 正常构建。
+macOS（MacPorts 安装，已验证 fpc 3.2.2 + Lazarus 4.8）：
 
-## 17. 使用 Lazarus 的建议
+```text
+/opt/local/bin/fpc
+/opt/local/bin/lazbuild
+```
+
+```bash
+cd /path/to/programming/freepascal
+./run-all.sh              # 全部示例 + 3 个 Lazarus 工程
+./run-all.sh 03 09        # 只跑指定编号
+./run-all.sh -v 08        # 附带完整输出
+./run-all.sh --gui        # 只构建 Lazarus 工程
+./run-all.sh --clean      # 清理 build 目录
+
+# 等价入口（自动探测工具链，产物后缀按平台决定）
+pwsh -File ./build.ps1 -All
+```
+
+两个入口都会优先读环境变量 `FPC` / `LAZBUILD`，其次在 PATH 上找 `fpc` / `lazbuild`，
+最后回落到上面列出的常见安装路径，所以换机器、换包管理器都不必改脚本。
+
+本仓库统一采用“编译 + 运行”的方式验证示例，确保每个例子都是真实可执行的。判定标准四条：
+退出码为 0、stderr 为空、stdout 里没有多余控制字符、输出里有结束标记。3 个 Lazarus 工程
+（`13_lazarus_gui/`、`14_lazarus_advanced_controls/`、`15_lazarus_menus_dialogs/`）用 `lazbuild`
+做编译验证，确认 LCL 窗体工程能被本地 Lazarus 正常构建。
+
+两条实测事实值得记住：
+
+- 每个示例都在 `-MObjFPC` 与 `-MDelphi` 两种语言模式下各跑一遍，两边输出逐字节一致。
+  对照通道**不能**选 FPC 默认模式（`-MFPC`）：`11_file_io.pas` 找不到 `AssignFile`、
+  `12_classes.pas` 连 `class` 都不认，这两种对象/单元扩展只在 objfpc 与 delphi 模式下可用。
+- `lazbuild` 不指定控件集时会按宿主平台自动选择（Windows → win32，macOS → cocoa，Linux → gtk2），
+  因此工程不需要为某个平台固定配置。产物目录 `examples/*/lib/<CPU>-<OS>/`（如 `x86_64-win64`、
+  `x86_64-darwin`）只是编译中间产物，每次只生成当前平台那一个；历史的 win64 产物已从仓库清除，
+  根 `.gitignore` 用 `freepascal/examples/*/lib/` 连同 `*.ppu`、`*.compiled` 一起忽略。
+
+## 18. 使用 Lazarus 的建议
 
 Lazarus 是 Free Pascal 的 IDE，适合开发 GUI 应用和面向组件的桌面程序：
 

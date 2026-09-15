@@ -45,6 +45,15 @@ Desktop.ini
 *.dll
 *.exe
 
+# Free Pascal / Lazarus artifacts
+# .ppu 是 FPC 单元产物，.compiled 是 Lazarus 记录的构建元数据。
+# lazbuild 还按「目标CPU-目标OS」把单元写进每个工程自己的 lib/ 目录
+# （x86_64-win64 / x86_64-darwin / aarch64-darwin …），目录名随平台变，故整目录忽略。
+# 不能写成 **/lib/：flutter、dart、asm 这些目录下的 lib/ 是源码。
+*.ppu
+*.compiled
+freepascal/examples/*/lib/
+
 # .NET artifacts
 *.user
 *.rsuser
