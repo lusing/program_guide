@@ -32,6 +32,7 @@
 - [fsharp](./fsharp) — F# 编程教程与示例，使用 .NET SDK (`dotnet build` / `dotnet run`) 验证
 - [flutter](./flutter) — Flutter / Dart 跨平台 UI 教程与示例，使用 Flutter 桌面编译验证
 - [forth](./forth) — Forth / GForth 教程与示例，使用 gforth 0.7.3 运行验证（含栈平衡与 stderr 检查）
+- [fortran](./fortran) — 现代 Fortran（F2018）教程与示例，使用 LLVM flang 23.1.0 + GNU Fortran 15.2.0 双编译器验证（22 个示例 × 2 通道全部通过）
 - [go](./go) — Go 语言教程与示例，使用 Go 编译器编译并运行验证
 - [godot](./godot) — Godot 4 / GDScript 教程与示例，使用 Godot headless 执行脚本验证
 - [julia](./julia) — Julia 教程与示例，使用 julia 运行验证
@@ -110,6 +111,7 @@
 31. [lean4](./lean4)
 32. [forth](./forth)
 33. [prolog](./prolog)
+34. [fortran](./fortran)
 
 ## 工具链说明
 
@@ -135,6 +137,7 @@
 - Go
 - Godot 4 / GDScript
 - GForth 0.7.3（Forth / 栈式语言，macOS macports 安装）
+- flang 23.1.0（LLVM）+ GNU Fortran 15.2.0（现代 Fortran F2018，macOS macports 安装，双编译器对照）
 - Julia
 - SWI-Prolog 10.0.2 + GNU Prolog 1.5.0 / gplc（逻辑编程，macOS macports 安装）
 - Ren'Py
