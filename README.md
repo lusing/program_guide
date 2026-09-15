@@ -35,6 +35,7 @@
 - [go](./go) — Go 语言教程与示例，使用 Go 编译器编译并运行验证
 - [godot](./godot) — Godot 4 / GDScript 教程与示例，使用 Godot headless 执行脚本验证
 - [julia](./julia) — Julia 教程与示例，使用 julia 运行验证
+- [prolog](./prolog) — Prolog 逻辑编程教程与示例，使用 SWI-Prolog 10.0.2 + GNU Prolog 1.5.0 双引擎验证（含 gplc 编译通道）
 - [renpy](./renpy) — Ren'Py 视觉小说与叙事游戏教程，使用 Ren'Py `compile` 验证
 - [kotlin](./kotlin) — Kotlin 教程与 JVM 示例，使用 Kotlin Compiler 验证
 - [lean4](./lean4) — Lean4/Mathlib4 教程与示例，使用 Lake + Lean 校验
@@ -108,6 +109,7 @@
 30. [zig](./zig)
 31. [lean4](./lean4)
 32. [forth](./forth)
+33. [prolog](./prolog)
 
 ## 工具链说明
 
@@ -133,6 +135,7 @@
 - Godot 4 / GDScript
 - GForth 0.7.3（Forth / 栈式语言，macOS macports 安装）
 - Julia
+- SWI-Prolog 10.0.2 + GNU Prolog 1.5.0 / gplc（逻辑编程，macOS macports 安装）
 - Ren'Py
 - Rust
 - SBCL
