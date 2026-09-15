@@ -19,8 +19,9 @@
 #
 # 自动加分项：
 #   * 源码里出现 !$omp 的示例自动加 -fopenmp（不需要手工维护清单）
-#   * flang / gfortran 的输出会逐字节比对；17-random（随机数发生器不同）
-#     与 20-parallel（含墙钟计时）按设计跳过比对
+#   * Windows 上自动给 flang 补链接 compiler-rt builtins（存在才加）
+#   * flang / gfortran 的输出会逐字节比对；已知差异（见 diff_reason）
+#     只打印原因、不计入告警
 # ============================================================
 
 set -u
@@ -58,6 +59,14 @@ resolve_tool() {
 FLANG=$(resolve_tool "${FLANG:-}"  flang-mp-23 /opt/local/bin/flang-mp-23 flang flang-new)
 GFORTRAN=$(resolve_tool "${GFORTRAN:-}" gfortran-mp-15 /opt/local/bin/gfortran-mp-15 gfortran)
 
+# Windows 上 LLVM 版 flang 的运行时库引用了 128 位转换例程（__floattidf 等），
+# 链接时必须补上 compiler-rt builtins。这个文件只在 Windows 的 LLVM 发行版里
+# 存在，macOS/Linux 探测不到就自动跳过。
+FLANG_RT_LIB=""
+if [ -n "$FLANG" ]; then
+    FLANG_RT_LIB=$(ls "$(dirname "$FLANG")/../lib/clang/"*/lib/windows/clang_rt.builtins-x86_64.lib 2>/dev/null | head -1)
+fi
+
 [ -n "$FLANG" ]    || echo "未找到 flang（可设 FLANG=/path/to/flang）"
 [ -n "$GFORTRAN" ] || echo "未找到 gfortran（可设 GFORTRAN=/path/to/gfortran）"
 if [ -z "$FLANG" ] && [ -z "$GFORTRAN" ]; then exit 1; fi
@@ -70,12 +79,15 @@ echo
 # 打印原因即可，不计入告警；其余示例若输出不同则视为需要人工确认。
 diff_reason() {
     case "$1" in
-        02-kinds)        echo "flang 23 无四倍精度（real128 = -1），gfortran 有" ;;
-        08-formatted-io) echo "namelist 写出的排版由编译器决定" ;;
-        15-algorithms)   echo "洗牌用了 random_number，两个发生器不同" ;;
-        17-random)       echo "随机数发生器与种子长度都不同" ;;
-        20-parallel)     echo "含墙钟计时，线程调度也不保证一致" ;;
-        *)               echo "" ;;
+        02-kinds)          echo "flang 23 无四倍精度（real128 = -1），gfortran 有" ;;
+        08-formatted-io)   echo "namelist 写出的排版由编译器决定" ;;
+        09-files)          echo "flang 的 Windows 运行时 inquire(size=) 恒为 -1 且 close(status='delete') 失效" ;;
+        15-algorithms)     echo "洗牌用了 random_number，两个发生器不同" ;;
+        16-numeric)        echo "Richardson 外推的末位浮点差异（FMA 收缩与否随编译器/平台不同）" ;;
+        17-random)         echo "随机数发生器与种子长度都不同" ;;
+        20-parallel)       echo "含墙钟计时，线程调度也不保证一致" ;;
+        21-errors-testing) echo "flang 的 Windows 运行时 inquire(size=) 恒为 -1" ;;
+        *)                 echo "" ;;
     esac
 }
 
@@ -148,6 +160,10 @@ build_and_run() {
     if grep -qF '!$omp' "$src"; then
         flags+=(-fopenmp)
     fi
+    # Windows 上 LLVM 版 flang 需要补链接 compiler-rt builtins（见脚本头部的说明）
+    if [ "$channel" = flang ] && [ -n "$FLANG_RT_LIB" ]; then
+        flags+=("$FLANG_RT_LIB")
+    fi
 
     if ! "$cc" "${flags[@]}" "$src" -o "$bin" >"build/$base.$channel.build" 2>&1; then
         : >"build/$base.$channel.out"
@@ -192,15 +208,19 @@ for f in examples/[0-9]*.f90; do
     # ---- 附加检查：两个编译器的输出应当逐字节一致 ----
     if [ -n "$FLANG" ] && [ -n "$GFORTRAN" ] \
        && [ -s "build/$base.flang.out" ] && [ -s "build/$base.gfortran.out" ]; then
-        reason=$(diff_reason "$base")
-        if [ -n "$reason" ]; then
-            printf "  [diff] 已知差异：%s\n" "$reason"
-        elif cmp -s "build/$base.flang.out" "build/$base.gfortran.out"; then
+        # 先比输出：一致就是 [same]，不一致再看是不是已知差异。
+        # 已知差异的条目在 macOS 上往往是一致的，所以先 cmp 才不会误报。
+        if cmp -s "build/$base.flang.out" "build/$base.gfortran.out"; then
             printf "  [same] 两编译器输出逐字节一致\n"
         else
-            DIFFWARN=$((DIFFWARN + 1))
-            printf "  [DIFF] 两编译器输出不一致（意外差异，见 build/$base.*.out）\n"
-            diff "build/$base.flang.out" "build/$base.gfortran.out" | head -10 | sed 's/^/        /'
+            reason=$(diff_reason "$base")
+            if [ -n "$reason" ]; then
+                printf "  [diff] 已知差异：%s\n" "$reason"
+            else
+                DIFFWARN=$((DIFFWARN + 1))
+                printf "  [DIFF] 两编译器输出不一致（意外差异，见 build/$base.*.out）\n"
+                diff "build/$base.flang.out" "build/$base.gfortran.out" | head -10 | sed 's/^/        /'
+            fi
         fi
     fi
 done

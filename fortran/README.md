@@ -39,11 +39,29 @@ fortran/
 
 ## 工具链
 
+### macOS（MacPorts）
+
 | 工具 | 路径 | 版本 | 定位 |
 |---|---|---|---|
 | `flang-mp-23` | `/opt/local/bin/flang-mp-23` | flang 23.1.0（LLVM 23） | 主通道。Apple 平台上是唯一跟得上新标准的原生编译器 |
 | `gfortran-mp-15` | `/opt/local/bin/gfortran-mp-15` | GNU Fortran 15.2.0 | 对照通道。生态成熟，`omp_lib`、`real128` 这些 flang 没有的东西靠它补位 |
 | `pwsh` | `/opt/local/bin/pwsh` | PowerShell 7.6.5 | 跑 `build.ps1`（不在默认 PATH 里） |
+
+### Windows
+
+| 工具 | 路径 | 版本 | 定位 |
+|---|---|---|---|
+| flang | `G:\scoop\apps\llvm\current\bin\flang.exe` | flang 23.1.1（LLVM 23，MSVC ABI） | 主通道。注意 MSYS2 的 flang 是 22.1.8，**别用它**：`c_long` 报 64 位（LLP64 下应为 32），`execute_command_line` 基本不可用 |
+| gfortran | `G:\scoop\apps\msys2\current\ucrt64\bin\gfortran.exe` | GNU Fortran 16.2.0 | 对照通道（MSYS2 UCRT64） |
+| `pwsh` | `G:\Program Files\PowerShell\7\pwsh.exe` | PowerShell 7 | 跑 `build.ps1` |
+
+Windows 上跑脚本前要保证编译器的 DLL 目录在 PATH 里（gfortran 的 `cc1` 依赖 `ucrt64\bin` 下的 DLL，缺了会全部「编译失败」）：
+
+```bash
+export PATH="/g/scoop/apps/llvm/current/bin:/g/scoop/apps/msys2/current/ucrt64/bin:$PATH"
+export FLANG="/g/scoop/apps/llvm/current/bin/flang.exe"
+export GFORTRAN="/g/scoop/apps/msys2/current/ucrt64/bin/gfortran.exe"
+```
 
 验证安装：
 
@@ -65,7 +83,7 @@ gfortran-mp-15 --version  # GNU Fortran (MacPorts gcc15 15.2.0_0+stdlib_flag) 15
 PowerShell：
 
 ```powershell
-cd /Users/xulun/code/programming/fortran
+cd /Users/xulun/code/programming/fortran        # Windows: cd G:\code\guide\fortran
 pwsh ./build.ps1 -All                 # 跑全部（22 个 × 2 通道）
 pwsh ./build.ps1 -File 12-derived-types.f90
 pwsh ./build.ps1 -All -Verbose        # 附带打印每个示例的运行输出
@@ -102,11 +120,14 @@ cd /Users/xulun/code/programming/fortran
 |---|---|
 | `02-kinds` | flang 23 没有四倍精度（`real128 = -1`），gfortran 有 |
 | `08-formatted-io` | namelist 写出的排版由编译器决定 |
+| `09-files` | **仅 Windows**：flang 的 Windows 运行时 `inquire(size=)` 恒为 -1，`close(status='delete')` 失效（见下文「Windows 已知问题」） |
 | `15-algorithms` | 洗牌用了 `random_number`，两个发生器不同 |
+| `16-numeric` | **仅 Windows**：Richardson 外推的末位浮点差异（FMA 收缩与否随编译器/平台不同） |
 | `17-random` | 随机数发生器与种子长度都不同（flang 的 `random_seed` 长度是 1，gfortran 是 8） |
 | `20-parallel` | 含墙钟计时，线程调度也不保证一致 |
+| `21-errors-testing` | **仅 Windows**：flang 的 Windows 运行时 `inquire(size=)` 恒为 -1 |
 
-其余示例若出现输出差异，脚本会报 `[DIFF]` 并附 `diff` 片段 —— 那才是需要人工确认的东西。
+其余示例若出现输出差异，脚本会报 `[DIFF]` 并附 `diff` 片段 —— 那才是需要人工确认的东西。比对逻辑是**先逐字节比，不一致才查已知差异清单**，所以 macOS 上这些条目照常报 `[same]`，不会误报。
 
 失败时 `build.ps1` / `run-all.sh` 返回退出码 1，可以直接拿去做回归。
 
@@ -159,6 +180,22 @@ cd /Users/xulun/code/programming/fortran
 
 第 4 条最要命：`use omp_lib` 在 flang 上直接编译不过。示例 20 的解法是自己写一个 `module omprt`，用 `bind(c, name='omp_get_wtime')` 这类接口把 OpenMP 运行时函数声明一遍 —— 这也顺便说明了 `bind(c)` 是怎么用的。
 
+## Windows 已知问题
+
+这些是 2026-09 在 Windows 11 + MSYS2 UCRT64（gfortran 16.2.0）+ scoop LLVM（flang 23.1.1）上实测撞出来的，全部有最小复现：
+
+| # | 问题 | 影响 | 处置 |
+|---|---|---|---|
+| W1 | LLVM 版 flang 链接时报 `__floattidf`/`__fixdfti` 未定义 —— flang-rt 的 findloc 代码引用了 128 位转换例程，MSVC ABI 下没人提供 | 任何用到 findloc 的程序（示例 06） | 脚本自动探测并补链 `lib\clang\*\lib\windows\clang_rt.builtins-x86_64.lib`；手动编译时把它追加到命令行末尾即可 |
+| W2 | flang 的 Windows 运行时 `inquire(file=..., size=)` 恒返回 -1（22 和 23 都有） | 示例 09、21 的字节数输出 | 平台差异，无法在源码层绕过，脚本按已知差异处理 |
+| W3 | flang 的 Windows 运行时 `close(status='delete')` **静默失败**：文件残留，删后 `inquire(exist=)` 仍报 T（22 和 23 都有） | 示例 09 的删除演示 | 同上。教学上顺带说明了「delete 失败不报错」也是一种 iostat 盲区 |
+| W4 | `execute_command_line` 的重定向语法随 shell 不同：POSIX 是 `>/dev/null`，cmd.exe 只认 `>nul`，且路径要加引号 | 示例 21（已修复：按 `OS` 环境变量分支） | 源码已按平台分支 |
+| W5 | flang 22（MSYS2 版）`execute_command_line` 报 `Invalid command`，基本不可用；且 `c_long` 报 64 位（Windows 是 LLP64，应为 32） | 示例 19、21 | 别用 MSYS2 的 flang，主通道用 LLVM 23 |
+| W6 | Windows 上顺序格式化文件写 `\r\n`，字节数与 macOS 的 `\n` 不同 | 依赖字节数的输出（示例 21 的注释文字已改成平台无关） | 无需处理 |
+| W7 | 跑 gfortran 前必须把 `ucrt64\bin` 加进 PATH，否则 `cc1` 缺 DLL 全部「编译失败」 | 脚本使用者 | 见「工具链 · Windows」的环境变量设置 |
+
+另外两处脚本层面的说明：`build.ps1` 与 `run-all.sh` 在 Windows 上都验证过可用（`Start-Process` 能解析无扩展名的二进制名，自动落到 `.exe`）；pwsh 控制台代码页不是 UTF-8 时输出会乱码，`.out` 文件本身是 UTF-8、不受影响。
+
 ## Fortran 本身容易踩的坑
 
 跟编译器无关、纯粹是语言层面的坑，值得先看一眼（详见《Fortran编程指南》第 23 章）：
@@ -178,6 +215,7 @@ cd /Users/xulun/code/programming/fortran
 
 ## 当前状态
 
-22 个示例 × 2 条通道 = **44 项全部通过**，0 项意外输出差异（flang 23.1.0 / GNU Fortran 15.2.0 / macOS x86_64）。
+- **macOS x86_64**（flang 23.1.0 / GNU Fortran 15.2.0）：22 示例 × 2 通道 = **44 项全部通过**，0 项意外输出差异。
+- **Windows 11**（flang 23.1.1 / GNU Fortran 16.2.0，2026-09 校验）：修复示例 21 的平台分支 + 脚本自动补链 compiler-rt builtins 后，**44 项全部通过**；输出差异仅剩上表列出的 7 项已知差异（其中 3 项只在 Windows 出现，根因见「Windows 已知问题」W2/W3）。
 
-`build.ps1`（22/22）与 `run-all.sh`（44/44）均已在本机实测，两种入口结果一致。
+`build.ps1` 与 `run-all.sh` 在两个平台上均实测，结果一致。

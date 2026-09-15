@@ -263,6 +263,7 @@ program errors_and_testing
   character(len=1024) :: self, cmd
   character(len=256) :: msg, line
   character(len=64) :: fname, childmsg
+  character(len=32) :: osname
   integer :: ios, u, st, nfail, i
   integer(int32), allocatable :: big(:)
   logical :: ex
@@ -309,7 +310,8 @@ program errors_and_testing
   ! ---- 4) inquire：先问再开，避免异常路径 ----
   inquire (file=trim(fname), exist=ex, size=fsize)
   write (*, '(a,l1)') '4) inquire 报告文件存在？ ', ex
-  write (*, '(a,i0,a)') '   文件字节数 = ', fsize, '（3 行 × 6 字节：每行 5 字符 + 换行）'
+  write (*, '(a,i0,a)') '   文件字节数 = ', fsize, &
+    '（beta 只有 4 个字符；字节数还随平台换行符 LF/CRLF 不同）'
   inquire (file='/no/such/dir/definitely_missing.txt', exist=ex)
   write (*, '(a,l1)') '   不存在的文件 exist = ', ex
 
@@ -339,11 +341,19 @@ program errors_and_testing
 
   ! ---- 7) error stop 的退出码：用子进程验证，主进程不受影响 ----
   write (*, '(a)') '7) error stop 与退出码（用子进程演示）'
-  ! 关键细节：子进程的输出若直接继承 stdout，会和父进程的输出交错，
+  ! 关键细节 1：子进程的输出若直接继承 stdout，会和父进程的输出交错，
   ! 顺序不确定。所以把子进程两个流都丢弃，让它把「遗言」写进文件。
+  ! 关键细节 2：丢弃输出用的重定向语法随 shell 不同——POSIX 是 /dev/null，
+  ! Windows 的 cmd.exe 是 nul。用环境变量 OS（Windows 上恒为 Windows_NT）区分。
+  ! 关键细节 3：可执行文件路径要加引号，Windows 的路径常带空格。
   call get_command_argument(0, self)
   if (command_argument_count() == 0) then
-    cmd = trim(self)//' as-child >/dev/null 2>&1'
+    call get_environment_variable('OS', osname)
+    if (index(osname, 'Windows') > 0) then
+      cmd = '"'//trim(self)//'" as-child >nul 2>&1'
+    else
+      cmd = '"'//trim(self)//'" as-child >/dev/null 2>&1'
+    end if
     call execute_command_line(cmd, exitstat=st)
     write (*, '(a,i0)') '   子进程 error stop 3 后，父进程拿到的 exitstat = ', st
     open (newunit=u, file=trim(childmsg), status='old', action='read', iostat=ios)

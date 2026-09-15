@@ -39,6 +39,17 @@ function Resolve-Tool {
 $flang    = Resolve-Tool "FLANG"    @("/opt/local/bin/flang-mp-23", "flang", "flang-new")
 $gfortran = Resolve-Tool "GFORTRAN" @("/opt/local/bin/gfortran-mp-15", "gfortran")
 
+# Windows 上 LLVM 版 flang 的运行时库引用了 128 位转换例程（__floattidf 等），
+# 链接时必须补上 compiler-rt builtins。这个文件只在 Windows 的 LLVM 发行版里
+# 存在，macOS/Linux 探测不到就自动跳过。
+$flangRtLib = ""
+if ($flang) {
+    $flangDir = Split-Path -Parent $flang
+    $hit = Get-ChildItem -Path (Join-Path $flangDir "..\lib\clang\*\lib\windows\clang_rt.builtins-x86_64.lib") `
+                        -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($hit) { $flangRtLib = $hit.FullName }
+}
+
 $examplesDir = Join-Path $projectRoot "examples"
 $buildDir    = Join-Path $projectRoot "build"
 
@@ -77,9 +88,12 @@ function Get-DiffReason {
     switch ($Base) {
         "02-kinds"         { return "flang 23 无四倍精度（real128 = -1），gfortran 有" }
         "08-formatted-io"  { return "namelist 写出的排版由编译器决定" }
+        "09-files"         { return "flang 的 Windows 运行时 inquire(size=) 恒为 -1 且 close(status='delete') 失效" }
         "15-algorithms"    { return "洗牌用了 random_number，两个发生器不同" }
+        "16-numeric"       { return "Richardson 外推的末位浮点差异（FMA 收缩与否随编译器/平台不同）" }
         "17-random"        { return "随机数发生器与种子长度都不同" }
         "20-parallel"      { return "含墙钟计时，线程调度也不保证一致" }
+        "21-errors-testing" { return "flang 的 Windows 运行时 inquire(size=) 恒为 -1" }
         default            { return "" }
     }
 }
@@ -232,6 +246,8 @@ function Invoke-Example {
         }
 
         $compileArgs = $commonFlags + @("-J", $modDir, $FileInfo.FullName, "-o", $bin)
+        # Windows 上 LLVM 版 flang 需要补链接 compiler-rt builtins
+        if ($channel -eq "flang" -and $flangRtLib) { $compileArgs += $flangRtLib }
         $c = Invoke-Proc -Exe $cc -Args $compileArgs -OutFile $bldLog -ErrFile $bldErr `
                          -WorkDir $projectRoot -TimeoutMs 120000
 
@@ -266,20 +282,24 @@ function Invoke-Example {
     }
 
     # ---- 输出一致性比对 ----
+    # 先比输出：一致就是 [same]，不一致再看是不是已知差异。
+    # 已知差异的条目在 macOS 上往往是一致的，所以先比对才不会误报。
     $fOut = Join-Path $buildDir "$base.flang.out"
     $gOut = Join-Path $buildDir "$base.gfortran.out"
     if ($flang -and $gfortran -and (Test-Path -LiteralPath $fOut) -and (Test-Path -LiteralPath $gOut)) {
         $fText = Read-TextFile $fOut
         $gText = Read-TextFile $gOut
         if ($fText -ne "" -and $gText -ne "") {
-            $reason = Get-DiffReason $base
-            if ($reason -ne "") {
-                Write-Host ("  [diff] 已知差异：{0}" -f $reason) -ForegroundColor DarkYellow
-            } elseif ($fText -ceq $gText) {
+            if ($fText -ceq $gText) {
                 Write-Host "  [same] 两编译器输出逐字节一致" -ForegroundColor DarkGray
             } else {
-                Write-Host "  [DIFF] 两编译器输出不一致（意外差异，见 build/$base.*.out）" -ForegroundColor Red
-                $allOk = $false
+                $reason = Get-DiffReason $base
+                if ($reason -ne "") {
+                    Write-Host ("  [diff] 已知差异：{0}" -f $reason) -ForegroundColor DarkYellow
+                } else {
+                    Write-Host "  [DIFF] 两编译器输出不一致（意外差异，见 build/$base.*.out）" -ForegroundColor Red
+                    $allOk = $false
+                }
             }
         }
     }
