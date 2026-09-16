@@ -1,6 +1,6 @@
 # F# 教程重写实施计划
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 把 `fsharp/` 从"单文件浅讲 + 8 个玩具示例"重写为 20 章自学教程（docs/ 分章 + 19 个示例目录 21 个工程 + 实战收尾章），全部工程可 `build.ps1 -All` 编译、运行、测试通过。
 
@@ -88,13 +88,13 @@
 **Interfaces:**
 - Produces: 示例目录最终命名 `02_hello`…`20_todo`（Task 2–14 按新名引用）；`19_gui/{winforms,wpf}` 嵌套双工程结构。
 
-- [ ] **Step 1: 清扫旧构建产物**（均被 gitignore，直接删）
+- [x] **Step 1: 清扫旧构建产物**（均被 gitignore，直接删）
 
 ```bash
 cd /g/code/guide/fsharp && find examples -type d \( -name bin -o -name obj \) -prune -exec rm -rf {} + && rm -rf build
 ```
 
-- [ ] **Step 2: 按映射表重命名**
+- [x] **Step 2: 按映射表重命名**
 
 ```bash
 cd /g/code/guide/fsharp/examples
@@ -117,7 +117,7 @@ git mv 08_wpf 19_gui/wpf
 git mv 19_gui/wpf/08_wpf.fsproj 19_gui/wpf/19_gui_wpf.fsproj
 ```
 
-- [ ] **Step 3: 验证**
+- [x] **Step 3: 验证**
 
 ```bash
 cd /g/code/guide/fsharp && ls examples && git status --short | head -25
@@ -125,7 +125,7 @@ cd /g/code/guide/fsharp && ls examples && git status --short | head -25
 
 预期：examples 下为 8 个新目录名（02/03/04/06/09/13 + 19_gui/{winforms,wpf}），旧名消失；`git status` 全部为 R（renamed）条目。
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd /g/code/guide/fsharp && git add -A examples && git commit -m "chore(fsharp): 示例目录重编号对齐章号（02–20 嵌套结构）
@@ -143,7 +143,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: `-All` 递归枚举 `examples/**/*.fsproj`（Task 9 的嵌套工程依赖）；每工程 obj 为 `build/obj/<fsproj 基名>/`；行为分级——控制台工程编译后运行 exe、GUI 工程（fsproj 含 `net10.0-windows`）仅构建、测试工程（含 `Microsoft.NET.Test.Sdk`）跑 `dotnet test`、`Todo` 工程以演示参数序列运行。
 
-- [ ] **Step 1: 用下面全文覆盖 build.ps1**（保持无 BOM）
+- [x] **Step 1: 用下面全文覆盖 build.ps1**（保持无 BOM）
 
 ```powershell
 param(
@@ -292,7 +292,7 @@ Write-Host "  .\build.ps1 -Clean                清理 build 目录"
 
 （注意 `$args_` 命名：`$args` 是 PowerShell 自动变量，不可占用。）
 
-- [ ] **Step 2: 全量验证**（此刻仍是旧代码，用于验证脚本本身）
+- [x] **Step 2: 全量验证**（此刻仍是旧代码，用于验证脚本本身）
 
 ```bash
 cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Clean && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All && ls build/obj
@@ -300,7 +300,7 @@ cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -Exec
 
 预期：8 个工程全部 `[Build]` 通过；控制台工程有 `[Run]` 输出；两个 GUI 工程 `[BuildOnly]`；结尾 `[Done]`。`build/obj/` 下出现按 fsproj 基名命名的子目录。
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 cd /g/code/guide/fsharp && git add build.ps1 && git commit -m "feat(fsharp): build.ps1 重写——递归发现 fsproj、按工程拆分 obj、运行/测试分级
@@ -321,7 +321,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Consumes: Task 1 的目录命名、Task 2 的 build.ps1（`-Project` 验证）。
 - Produces: 第 02/03/04 章引用的全部代码段落（小节 2.1–2.5、3.1–3.8、4.1–4.7）。
 
-- [ ] **Step 1: 重写 examples/02_hello/Program.fs**（fsproj 不动）
+- [x] **Step 1: 重写 examples/02_hello/Program.fs**（fsproj 不动）
 
 ```fsharp
 // ═══ 2.1 最小的 F# 程序：值与函数 ═══
@@ -355,7 +355,7 @@ let main _ =
     0
 ```
 
-- [ ] **Step 2: 重写 examples/03_values/Program.fs**
+- [x] **Step 2: 重写 examples/03_values/Program.fs**
 
 ```fsharp
 [<EntryPoint>]
@@ -412,7 +412,7 @@ let main _ =
     0
 ```
 
-- [ ] **Step 3: 重写 examples/04_functions/Program.fs**
+- [x] **Step 3: 重写 examples/04_functions/Program.fs**
 
 ```fsharp
 [<EntryPoint>]
@@ -463,7 +463,7 @@ let main _ =
     0
 ```
 
-- [ ] **Step 4: 验证三个工程**
+- [x] **Step 4: 验证三个工程**
 
 ```bash
 cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 02_hello && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 03_values && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 04_functions
@@ -471,7 +471,7 @@ cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -Exec
 
 预期：三工程各 `[Build]`+`[Run]` 通过并输出完整运行结果（02: Hello…；03: 类型演示；04: 管道结果 140 等），无编译错误。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /g/code/guide/fsharp && git add examples/02_hello examples/03_values examples/04_functions && git commit -m "feat(fsharp): 示例 02_hello/03_values/04_functions 重写为章节配套程序
@@ -490,9 +490,9 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 05/06 章引用代码；活动模式 `(|Even|Odd|)`、`(|DivisibleBy|_|)`、`(|IntParse|_|)`、列表模式 `describe`、fold 家族演示段。
 
-- [ ] **Step 1: 新建 examples/05_patterns/05_patterns.fsproj**（控制台模板照抄，文件名 05_patterns.fsproj）
+- [x] **Step 1: 新建 examples/05_patterns/05_patterns.fsproj**（控制台模板照抄，文件名 05_patterns.fsproj）
 
-- [ ] **Step 2: 写 examples/05_patterns/Program.fs**
+- [x] **Step 2: 写 examples/05_patterns/Program.fs**
 
 ```fsharp
 open System
@@ -585,7 +585,7 @@ let main _ =
     0
 ```
 
-- [ ] **Step 3: 重写 examples/06_collections/Program.fs**
+- [x] **Step 3: 重写 examples/06_collections/Program.fs**
 
 ```fsharp
 [<EntryPoint>]
@@ -644,7 +644,7 @@ let main _ =
     0
 ```
 
-- [ ] **Step 4: 验证**
+- [x] **Step 4: 验证**
 
 ```bash
 cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 05_patterns && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 06_collections
@@ -652,7 +652,7 @@ cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -Exec
 
 预期：两工程 `[Build]`+`[Run]` 通过。若 `w[0]`/`arr[0]` 索引报错（索引语法差异），统一改为 `w.[0]`、`arr.[0]`。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /g/code/guide/fsharp && git add examples/05_patterns examples/06_collections && git commit -m "feat(fsharp): 示例 05_patterns 新建、06_collections 重写
@@ -672,9 +672,9 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 07/08/09 章引用代码；`safeDivide`（option）、`parseInt`/`classifyAge`（Result 链）、record with/相等性/匿名记录演示段。
 
-- [ ] **Step 1: 新建 07_option 工程**（fsproj 模板，名 07_option.fsproj）
+- [x] **Step 1: 新建 07_option 工程**（fsproj 模板，名 07_option.fsproj）
 
-- [ ] **Step 2: 写 examples/07_option/Program.fs**
+- [x] **Step 2: 写 examples/07_option/Program.fs**
 
 ```fsharp
 open System
@@ -732,9 +732,9 @@ let main _ =
     0
 ```
 
-- [ ] **Step 3: 新建 08_result 工程**（fsproj 模板，名 08_result.fsproj）
+- [x] **Step 3: 新建 08_result 工程**（fsproj 模板，名 08_result.fsproj）
 
-- [ ] **Step 4: 写 examples/08_result/Program.fs**
+- [x] **Step 4: 写 examples/08_result/Program.fs**
 
 ```fsharp
 open System
@@ -813,7 +813,7 @@ let main _ =
     0
 ```
 
-- [ ] **Step 5: 重写 examples/09_records/Program.fs**
+- [x] **Step 5: 重写 examples/09_records/Program.fs**
 
 ```fsharp
 open System
@@ -874,7 +874,7 @@ let main _ =
     0
 ```
 
-- [ ] **Step 6: 验证**
+- [x] **Step 6: 验证**
 
 ```bash
 cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 07_option && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 08_result && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 09_records
@@ -882,7 +882,7 @@ cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -Exec
 
 预期：三工程 `[Build]`+`[Run]` 通过。注意 08_result 里 `type ParseError` 避免直接叫 `Error`（与 Result 的 Error case 撞名）——这是刻意的教学点。
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd /g/code/guide/fsharp && git add examples/07_option examples/08_result examples/09_records && git commit -m "feat(fsharp): 示例 07_option/08_result 新建、09_records 重写
@@ -902,7 +902,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 10/11/12 章引用代码；递归 DU（`Expr`/`Json`）、单 case DU（`OrderId`/`Email`）、对象表达式 `ILogger`、SRTP `area2D`、度量单位演示段。
 
-- [ ] **Step 1: 新建 10_unions 工程 + Program.fs**
+- [x] **Step 1: 新建 10_unions 工程 + Program.fs**
 
 ```fsharp
 // ═══ 10.1 简单 DU：形状 ═══
@@ -992,7 +992,7 @@ let main _ =
     0
 ```
 
-- [ ] **Step 2: 新建 11_oop 工程 + Program.fs**
+- [x] **Step 2: 新建 11_oop 工程 + Program.fs**
 
 ```fsharp
 open System
@@ -1067,7 +1067,7 @@ let main _ =
     0
 ```
 
-- [ ] **Step 3: 新建 12_generics 工程 + Program.fs**
+- [x] **Step 3: 新建 12_generics 工程 + Program.fs**
 
 ```fsharp
 open System
@@ -1130,7 +1130,7 @@ let main _ =
     0
 ```
 
-- [ ] **Step 4: 验证**
+- [x] **Step 4: 验证**
 
 ```bash
 cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 10_unions && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 11_oop && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 12_generics
@@ -1138,7 +1138,7 @@ cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -Exec
 
 预期：三工程 `[Build]`+`[Run]` 通过（表达式树 `(2.0 + x) * 3.0 = 18.0`、speed ≈ 10.44、bmi ≈ 23.7）。SRTP 若报约束错误，给 `square`/`twiceSum` 补显式约束 `when ^T : (static member ( * ) : ^T * ^T -> ^T)` 风格声明。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /g/code/guide/fsharp && git add examples/10_unions examples/11_oop examples/12_generics && git commit -m "feat(fsharp): 示例 10_unions/11_oop/12_generics 新建
@@ -1158,7 +1158,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 13/14/15 章引用代码；`Async.Parallel` 计时段、`task {}` 段、`TraceBuilder`/`MaybeBuilder`/`ResultBuilder`、文件 IO 与 STJ 序列化段。
 
-- [ ] **Step 1: 重写 examples/13_async/Program.fs**
+- [x] **Step 1: 重写 examples/13_async/Program.fs**
 
 ```fsharp
 open System
@@ -1242,7 +1242,7 @@ let main _ =
     0
 ```
 
-- [ ] **Step 2: 新建 14_computations 工程 + Program.fs**
+- [x] **Step 2: 新建 14_computations 工程 + Program.fs**
 
 ```fsharp
 open System
@@ -1346,7 +1346,7 @@ let main _ =
 
 （注意 `inRange` 失败分支返回 `Error ...`、成功分支返回 `Ok()`——`do!` 对 `Result<unit, _>` 的工作方式。）
 
-- [ ] **Step 3: 新建 15_files_json 工程 + Program.fs**
+- [x] **Step 3: 新建 15_files_json 工程 + Program.fs**
 
 ```fsharp
 open System
@@ -1422,7 +1422,7 @@ let main _ =
 
 **注意**：15 章运行时若 `Deserialize<Book list>` 或 option 序列化报 `NotSupportedException`，说明运行时未带 F# 支持：改用显式 `JsonSerializerOptions` 并添加讲解自定义 `JsonConverter` 的兜底段落（两种写法都先以实际运行输出为准，再写文档）。
 
-- [ ] **Step 4: 验证**
+- [x] **Step 4: 验证**
 
 ```bash
 cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 13_async && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 14_computations && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 15_files_json
@@ -1430,7 +1430,7 @@ cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -Exec
 
 预期：三工程通过。13_async 耗时约 200+300+100+100+300(取消)≈1s 输出各段；14 输出 trace 的 Bind/Return 顺序；15 输出 JSON 缩进文本与往返结果。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /g/code/guide/fsharp && git add examples/13_async examples/14_computations examples/15_files_json && git commit -m "feat(fsharp): 示例 13_async 重写、14_computations/15_files_json 新建
@@ -1450,7 +1450,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 16/17/18 章引用代码；自测型 Minimal API、xUnit 测试集、C# 互操作演示段。
 
-- [ ] **Step 1: 新建 16_webapi/fsproj**（用 **Sdk.Web**，非控制台模板）：
+- [x] **Step 1: 新建 16_webapi/fsproj**（用 **Sdk.Web**，非控制台模板）：
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
@@ -1464,7 +1464,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 </Project>
 ```
 
-- [ ] **Step 2: 写 examples/16_webapi/Program.fs**（自测型：启动→请求→退出，不挂起）
+- [x] **Step 2: 写 examples/16_webapi/Program.fs**（自测型：启动→请求→退出，不挂起）
 
 ```fsharp
 module Program
@@ -1543,7 +1543,7 @@ let main _ =
 
 （教学程序里用 `GetAwaiter().GetResult()` 阻塞等待是可接受的简化；生产代码用 `app.RunAsync()`。）
 
-- [ ] **Step 3: 新建 17_testing/fsproj + Tests.fs**（fsproj：xUnit 三件套，无 OutputType）
+- [x] **Step 3: 新建 17_testing/fsproj + Tests.fs**（fsproj：xUnit 三件套，无 OutputType）
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -1619,7 +1619,7 @@ type FizzBuzz () =
         Assert.Equal(expected, classify n)
 ```
 
-- [ ] **Step 4: 新建 18_interop 工程 + Program.fs**（控制台模板）
+- [x] **Step 4: 新建 18_interop 工程 + Program.fs**（控制台模板）
 
 ```fsharp
 open System
@@ -1684,7 +1684,7 @@ let main _ =
 
 （`query` 需要文件顶部 `open Microsoft.FSharp.Linq`；若编译器提示找不到 `query`，加上该 open；若仍失败则把 18.8 段改为 `System.Linq.Enumerable` 方法链演示并同步调整文档。）
 
-- [ ] **Step 5: 验证**
+- [x] **Step 5: 验证**
 
 ```bash
 cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 16_webapi && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 17_testing && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 18_interop
@@ -1692,7 +1692,7 @@ cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -Exec
 
 预期：16_webapi `[Build]`+`[Run]` 打印四个端点自测结果后退出（不挂起）；17_testing `[Build]` 后 `[Test]` 显示全部测试通过；18_interop 各段输出正常。16 若 MapPost 的 F# lambda 重载决议失败，给 lambda 显式标注返回 `:> IResult`（与 GET/DELETE 一致）。
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd /g/code/guide/fsharp && git add examples/16_webapi examples/17_testing examples/18_interop && git commit -m "feat(fsharp): 示例 16_webapi/17_testing/18_interop 新建
@@ -1713,9 +1713,9 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Consumes: Task 2 的 `Todo` 特判运行逻辑（`reset/add/show/done/remove` 参数序列）与测试工程识别。
 - Produces: `Todo.parse : string[] -> Result<Command, string>`、`Todo.apply : Command -> Todo list -> Result<Todo list * string, string>`（测试直接调用）。
 
-- [ ] **Step 1: 给两个 GUI Program.fs 的分节注释对齐第 19 章小节**（19.1 WinForms：窗体与控件 / 19.2 事件处理 / 19.3 WPF：内容模型与面板 / 19.4 WPF 事件；只加 `// ═══ N.M xxx ═══` 注释行，不改代码逻辑）
+- [x] **Step 1: 给两个 GUI Program.fs 的分节注释对齐第 19 章小节**（19.1 WinForms：窗体与控件 / 19.2 事件处理 / 19.3 WPF：内容模型与面板 / 19.4 WPF 事件；只加 `// ═══ N.M xxx ═══` 注释行，不改代码逻辑）
 
-- [ ] **Step 2: 写 examples/20_todo/src/Todo.fsproj**
+- [x] **Step 2: 写 examples/20_todo/src/Todo.fsproj**
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -1732,7 +1732,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 </Project>
 ```
 
-- [ ] **Step 3: 写 examples/20_todo/src/Todo.fs**（领域 + 解析 + 存储 + 核心逻辑）
+- [x] **Step 3: 写 examples/20_todo/src/Todo.fs**（领域 + 解析 + 存储 + 核心逻辑）
 
 ```fsharp
 module Todo
@@ -1820,7 +1820,7 @@ let apply (cmd: Command) (todos: Todo list) : Result<Todo list * string, string>
             Ok(next, $"已删除 #{id}")
 ```
 
-- [ ] **Step 4: 写 examples/20_todo/src/Program.fs**（薄壳：只做 IO 与退出码）
+- [x] **Step 4: 写 examples/20_todo/src/Program.fs**（薄壳：只做 IO 与退出码）
 
 ```fsharp
 module Program
@@ -1848,7 +1848,7 @@ let main argv =
             0
 ```
 
-- [ ] **Step 5: 写 examples/20_todo/tests/Todo.Tests.fsproj**
+- [x] **Step 5: 写 examples/20_todo/tests/Todo.Tests.fsproj**
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -1873,7 +1873,7 @@ let main argv =
 </Project>
 ```
 
-- [ ] **Step 6: 写 examples/20_todo/tests/Tests.fs**
+- [x] **Step 6: 写 examples/20_todo/tests/Tests.fs**
 
 ```fsharp
 module Todo.Tests
@@ -1943,7 +1943,7 @@ type Apply 测试 () =
         | Error e -> failwith e
 ```
 
-- [ ] **Step 7: 验证**
+- [x] **Step 7: 验证**
 
 ```bash
 cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 19_gui && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Project 20_todo
@@ -1951,7 +1951,7 @@ cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -Exec
 
 预期：19_gui 两个工程 `[Build]`+`[BuildOnly]`；20_todo 的 Todo `[Build]`+8 条 `[Run]` 序列（reset→add→add→show→done→show→remove→show）、Todo.Tests `[Build]`+`[Test]` 全绿。
 
-- [ ] **Step 8: 全量中期验证**（至此 21 个工程齐了；测试工程直接 dotnet test，不经过脚本的重定向构建）
+- [x] **Step 8: 全量中期验证**（至此 21 个工程齐了；测试工程直接 dotnet test，不经过脚本的重定向构建）
 
 ```bash
 cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All
@@ -1959,7 +1959,7 @@ cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -Exec
 
 预期：21 个 `[Build]`；16 个控制台 `[Run]`；2 个 `[BuildOnly]`；2 个 `[Test]`；`[Done]`。
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 cd /g/code/guide/fsharp && git add examples/19_gui examples/20_todo && git commit -m "feat(fsharp): 19_gui 分节注释对齐、20_todo 实战项目（src/tests 双工程）
@@ -1981,7 +1981,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Consumes: Task 3 的三份 Program.fs（片段逐字摘录，按 `// ═══ N.M` 小节号对应）。
 - Produces: `docs/` 目录与 01–04 章；后续章节沿用其行文结构。
 
-- [ ] **Step 1: 写 01-overview.md**（约 150 行）：
+- [x] **Step 1: 写 01-overview.md**（约 150 行）：
   1. `# 01 · F# 全景：函数式优先的 .NET 语言`
   2. F# 是什么：函数式优先 + 多范式（函数式/命令式/OOP 都是一等公民）；引用示例 02_hello 的 2.1 段（4 行）作为"第一印象"
   3. F# 与 .NET/C# 关系：编译到同一 IL、共享 BCL、FSharp.Core、可混编一解决方案
@@ -1993,7 +1993,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   9. 20 章学习路线图（按阶段分组的章节表）
   10. `## 坑位清单`：文件顺序、`Program.fs` 应最后、缩进敏感（4 空格）、无隐式 open
 
-- [ ] **Step 2: 写 02-hello.md**（约 120 行）：
+- [x] **Step 2: 写 02-hello.md**（约 120 行）：
   1. `# 02 · 第一个程序：值、输出与 REPL` + 示例引用行
   2. 问题先行：为什么 F# 程序这么短——一切皆表达式、顶层 `let`、隐式 main（`[<EntryPoint>]` 是显式形式，两行对比）
   3. let 绑定与函数（引用 2.1 段）；`printfn` 格式符表（%s/%d/%f/%.2f/%M/%b/%c/%A/%O，各自适用）
@@ -2002,7 +2002,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. REPL 工作流：`dotnet fsi` 逐行粘贴示例；展示一次会话（`> let x = 42;;` → `val x: int = 42` 风格）、`#quit;;`；fsx 脚本执行 `dotnet fsi xx.fsx`
   7. `## 坑位清单`：printfn 格式符与实参类型不匹配=编译错误、%A 适合调试不适合生产格式化、缩进即语法、`;;` 只在 fsi 需要
 
-- [ ] **Step 3: 写 03-values.md**（约 160 行）：
+- [x] **Step 3: 写 03-values.md**（约 160 行）：
   1. `# 03 · 值与不可变性：默认不可变的世界`
   2. 基本类型表（int/int64/float/decimal/char/string/bool + 字面量后缀 L/m/f + 适用场景行）
   3. 类型推断机制：何时需要显式注解（引用 3.2 段，含被注释的编译错误行）；**没有隐式数值转换**（F# 立场与 C# 对比表：显式 `float x` / `int32` 转换函数表）
@@ -2013,7 +2013,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. 数值边界（3.8 段）；溢出默认不检查（`Checked` 模块一句话）
   9. `## 坑位清单`：`float` 是 double（float32 才是单精度）、mutable 闭包捕获、`=` 是比较不是赋值（`<-` 才是）、unit 不能丢（无返回值函数调用要 `|> ignore`）
 
-- [ ] **Step 4: 写 04-functions.md**（约 170 行）：
+- [x] **Step 4: 写 04-functions.md**（约 170 行）：
   1. `# 04 · 函数：柯里化、管道与组合`
   2. 柯里化本质：`add a b` 的真实签名 `int -> int -> int` 是"取一个 int 返回函数"（引用 4.1）；部分应用（`add5`）
   3. 管道 `|>`（引用 4.2）：数据流可读性；`||>`（二元组）与 `|> ignore` 变体表
@@ -2023,7 +2023,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. 互递归 `and`（4.7）
   8. `## 坑位清单`：部分应用优先级（`add 5 6` 是应用不是柯里化）、`>>` 方向记错、忘 `rec`、闭包里捕获可变值的陷阱、curried 函数直接喂 C# API 要元组化（连第 18 章）
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/fsharp && wc -l docs/0*.md
@@ -2044,7 +2044,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Files:**
 - Create: `docs/05-patterns.md`、`docs/06-collections.md`、`docs/07-option.md`、`docs/08-result.md`
 
-- [ ] **Step 1: 写 05-patterns.md**（约 200 行）：
+- [x] **Step 1: 写 05-patterns.md**（约 200 行）：
   1. `# 05 · 模式匹配：分支的完全体`
   2. match 是表达式（有返回值）vs C# switch（引用 5.1 段）；完备性检查：缺分支=编译错误（删分支演示）
   3. 模式族谱表：常量/变量/or `|`/when/元组/列表/cons/记录/类型测试，各配一行示例
@@ -2055,7 +2055,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. 选型表：if/elif vs match vs 活动模式
   9. `## 坑位清单`：变量模式遮蔽同名、`_` 过早兜底导致后续分支不可达告警、活动模式里抛异常的传播、`| x ->` 忘了 x 未用会有提示（用 `_`）
 
-- [ ] **Step 2: 写 06-collections.md**（约 180 行）：
+- [x] **Step 2: 写 06-collections.md**（约 180 行）：
   1. `# 06 · 集合：List、Array 与 Seq`
   2. 三者对比表（不可变链表/可变数组/惰性枚举：内存模型、索引、典型场景、何时选谁）
   3. 构造：字面量、范围 `[1..8]`、comprehension、`seq {}`（引用 6.1 段）
@@ -2066,7 +2066,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. 与 LINQ（6.8 段）：F# 管道风格为主、Enumerable/query 兜底（连第 18 章 query 语法）
   9. `## 坑位清单`：`List.append` 是 O(n)、seq 多次枚举重复副作用、`[1..n]` 两端闭合、管道里 List vs Seq 混用错配
 
-- [ ] **Step 3: 写 07-option.md**（约 150 行）：
+- [x] **Step 3: 写 07-option.md**（约 150 行）：
   1. `# 07 · Option：与 null 划清界限`
   2. 问题先行：null 引用是"十亿美元错误"；F# 默认类型不可为 null → 缺失值显式建模为 `option`
   3. Some/None 构造、match 消耗（7.1 段）；`%A` 打印形态
@@ -2075,7 +2075,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. 与 C# 交互：ofObj/toObj/ofNullable/toNullable（7.6 段）；`voption` 一句话
   7. `## 坑位清单`：`Some None` 嵌套、defaultValue 掩盖逻辑错误、option 直接当 bool 用要 `Option.isSome`、模式里忘 None 分支（编译器会提醒——这正是价值）
 
-- [ ] **Step 4: 写 08-result.md**（约 170 行）：
+- [x] **Step 4: 写 08-result.md**（约 170 行）：
   1. `# 08 · Result 与异常：失败处理的两个世界`
   2. 失败二分法：可预期的失败（Result）vs 不可预期（异常）；对比表（显式性/短路/性能/可组合性）
   3. Result 双轨模型（8.1 段）；错误也建模成 DU（8.3 段的 `ParseError`——注意别叫 `Error` 的原因）
@@ -2085,7 +2085,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. 分层策略（8.7 段）：边界异常、内部 Result——第 20 章实战采用
   8. `## 坑位清单`：`Error` 撞名（错误 DU 别叫 Error）、Result 的 Error 类型不统一难组合、`with ex` 太宽吞掉所有异常、bind/map 混用类型错
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/fsharp && wc -l docs/0[5-8]*.md && git add docs && git commit -m "docs(fsharp): 第 05–08 章 模式匹配、集合、Option、Result
@@ -2100,7 +2100,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Files:**
 - Create: `docs/09-records.md`、`docs/10-unions.md`、`docs/11-oop.md`、`docs/12-generics.md`
 
-- [ ] **Step 1: 写 09-records.md**（约 160 行）：
+- [x] **Step 1: 写 09-records.md**（约 160 行）：
   1. `# 09 · 记录类型：数据的默认形状`
   2. 问题先行：C# 手写 class 的样板（构造/属性/Equals/ToString）vs F# record 一行搞定——生成物对照表
   3. 定义、构造、字段访问、成员方法（9.1 段）
@@ -2111,7 +2111,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. record + 集合管道（9.8 段）；record 与模式匹配联动回指第 05 章
   9. `## 坑位清单`：with 是浅拷贝（嵌套可变字段共享）、record 相等要求所有字段类型支持相等、匿名 record 与命名 record 不能直接互换、struct record 装箱
 
-- [ ] **Step 2: 写 10-unions.md**（约 190 行）：
+- [x] **Step 2: 写 10-unions.md**（约 190 行）：
   1. `# 10 · 判别联合：用类型表达"或"`
   2. 问题先行：`shapeKind: int + width + height + radius` 的非法状态地狱 vs DU 让非法状态不可表示
   3. 简单 DU + match（10.1 段）；带名字段 vs 匿名字段
@@ -2121,7 +2121,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. DU 无处不在：option/Result 都是 DU（回指第 07/08 章）；领域建模建议
   8. `## 坑位清单`：大小写（Circle 是构造器 circle 不是）、分支遗漏编译器兜底、enum 装箱与 DU 的差别、DU 序列化要额外支持（连第 15 章）
 
-- [ ] **Step 3: 写 11-oop.md**（约 160 行）：
+- [x] **Step 3: 写 11-oop.md**（约 160 行）：
   1. `# 11 · 面向对象在 F#：何时回到类`
   2. 问题先行：函数式优先，但三类场景仍要 OOP——框架互作（GUI/ASP.NET）、有状态组件、层次多态
   3. 接口定义与**对象表达式**（11.1 段）：`{ new ILogger with ... }` 免定义小类——F# 对"匿名实现"的回答；对比 C# 要先建类
@@ -2131,7 +2131,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. 类 vs record vs 函数 选型表
   8. `## 坑位清单`：构造参数自动成为字段吗（不会，除非用作成员）、接口显式实现不能直接点出、`override` 拼错编译错、可变状态默认私有（正确）
 
-- [ ] **Step 4: 写 12-generics.md**（约 170 行）：
+- [x] **Step 4: 写 12-generics.md**（约 170 行）：
   1. `# 12 · 泛型、SRTP 与度量单位`
   2. 自动泛化（12.1 段）：F# 函数默认尽力泛化；`'a` 读法
   3. 显式约束（12.2 段）：`comparison`/`equality`/`struct`/`class`/`new()`/`unmanaged` 约束表
@@ -2140,7 +2140,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. **度量单位**（12.4 段全文引用）：`[<Measure>]`、`75.0<kg>`、单位参与类型检查（kg+m 编译错）、组合单位 `kg/m^2`、`float` 剥离、场景（科学计算/金融）
   7. `## 坑位清单`：SRTP 函数不能作为一等值传递、单位不一致编译错（正是价值）、`float x` 会把 `float<kg>` 变 `float`、inline 函数滥用编译膨胀
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/fsharp && wc -l docs/09* docs/10* docs/11* docs/12* && git add docs && git commit -m "docs(fsharp): 第 09–12 章 记录、判别联合、OOP、泛型与度量单位
@@ -2155,7 +2155,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Files:**
 - Create: `docs/13-async.md`、`docs/14-computations.md`、`docs/15-files-json.md`、`docs/16-webapi.md`
 
-- [ ] **Step 1: 写 13-async.md**（约 170 行）：
+- [x] **Step 1: 写 13-async.md**（约 170 行）：
   1. `# 13 · 异步：async 与 task 两个世界`
   2. 问题先行：I/O 等待浪费 CPU；F# 两套异步设施的历史（async CE 是 F# 原创，task CE 是 F# 6 对 .NET Task 的直连）
   3. async 语法：`let!`/`do!`/`return`/`return!` 关键字表；**定义不执行**（13.1 段），`Async.RunSynchronously` 触发
@@ -2166,7 +2166,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. 取消（13.6 段）：CancellationTokenSource、OperationCanceledException
   9. `## 坑位清单`：忘 RunSynchronously（程序结束啥都没发生）、`Async.Sleep` vs `Task.Delay` 混用要桥接、task 里 `let!` 已解包 Task、闭包捕获循环变量
 
-- [ ] **Step 2: 写 14-computations.md**（约 200 行）：
+- [x] **Step 2: 写 14-computations.md**（约 200 行）：
   1. `# 14 · 计算表达式：把语法糖做成语言`
   2. 问题先行：连续 `Result.bind`/`Option.bind` 的嵌套噪音（用第 08 章 classifyAge 的 bind 链改写成 CE 前后对比）
   3. **trace builder 逐行拆解**（14.2 段）：`let! a = Some 1` 脱糖为 `trace.Bind(Some 1, fun a -> ...)`——引用实际打印的 Bind/Return 顺序
@@ -2176,7 +2176,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. 何时自定义 CE vs 高阶函数：三行内用函数，重复绑定链用 CE
   8. `## 坑位清单`：builder 缺 Zero 的编译错误场景、CE 内副作用执行时机（惰性）、Delay 忘记调 f 返回 thunk、过度抽象的 CE 难调试
 
-- [ ] **Step 3: 写 15-files-json.md**（约 160 行）：
+- [x] **Step 3: 写 15-files-json.md**（约 160 行）：
   1. `# 15 · 文件与 JSON：数据进出`
   2. 文本 IO API 表（15.1 段）：ReadAllText/WriteAllText/ReadAllLines/AppendAllText（一次读 vs 流式 File.ReadLines）
   3. Path 工具（15.2 段）：Combine/GetTempPath；跨平台路径提示
@@ -2185,7 +2185,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. 若执行时发现原生支持异常 → 兜底段落：自定义 JsonConverter 示例（OptionConverter）
   7. `## 坑位清单`：默认编码（显式 UTF-8）、路径分隔符硬编码、反序列化 null、大小写敏感默认开启
 
-- [ ] **Step 4: 写 16-webapi.md**（约 160 行）：
+- [x] **Step 4: 写 16-webapi.md**（约 160 行）：
   1. `# 16 · Web API：F# 写服务端`
   2. 为什么 Minimal API 与 F# 气质相合（端点即函数）；fsproj 用 Sdk.Web 的差别
   3. 端点定义（16.1 段）：MapGet/MapPost/MapDelete；F# lambda 到委托的转换；`:> IResult` 上转型保重载决议
@@ -2196,7 +2196,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. 生态一句话：Giraffe/Saturn（更 F# 风格的路由 DSL）
   9. `## 坑位清单`：lambda 重载歧义、默认端口占用、Kestrel 控制台退出未 StopAsync 的挂起、F# 模块里 mutable 存储的线程安全警示
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/fsharp && wc -l docs/13* docs/14* docs/15* docs/16* && git add docs && git commit -m "docs(fsharp): 第 13–16 章 异步、计算表达式、文件 JSON、Web API
@@ -2211,7 +2211,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Files:**
 - Create: `docs/17-testing.md`、`docs/18-interop.md`、`docs/19-gui.md`、`docs/20-todo.md`
 
-- [ ] **Step 1: 写 17-testing.md**（约 140 行）：
+- [x] **Step 1: 写 17-testing.md**（约 140 行）：
   1. `# 17 · 测试：xUnit 与纯函数架构`
   2. 工程：`dotnet new xunit -lang F#`；包三件套职责表（Test.Sdk=运行器接入、xunit=框架、runner.visualstudio=IDE 集成）
   3. `[<Fact>]` 与 `[<Theory>]`+`[<InlineData>]`（17.2/17.3 段引用）；F# 测试风格：`type 测试类 ()` 里 let 绑定方法、双反引号中文命名
@@ -2221,7 +2221,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. FsCheck 属性测试一句话展望
   8. `## 坑位清单`：测试必须在 type 里（顶层 let 不被识别）、浮点相等重载、中文测试名在某些 CI 的编码问题
 
-- [ ] **Step 2: 写 18-interop.md**（约 170 行）：
+- [x] **Step 2: 写 18-interop.md**（约 170 行）：
   1. `# 18 · .NET 互操作：两个语言一个运行时`
   2. 日常互作（18.1 段）：StringBuilder/String.Join/String.Format；F# string 就是 System.String
   3. null 边界（18.2 段）：Option.ofObj/toObj 惯用法；F# 9 nullness 特性简述（引用类型空值注解在 F# 侧的感知增强——以编译器实际行为为准，示例只演示 Option 包装这条稳妥路径）
@@ -2233,7 +2233,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   9. 暴露 F# 给 C#：curried 函数要元组化、record 的 C# 视图、`[<CompiledName>]` 一句话
   10. `## 坑位清单`：curried 函数在 C# 侧难看、byref/span 限制多、null 从边界漏进来、事件忘退订
 
-- [ ] **Step 3: 写 19-gui.md**（约 150 行）：
+- [x] **Step 3: 写 19-gui.md**（约 150 行）：
   1. `# 19 · 桌面 GUI：WinForms 与 WPF`
   2. fsproj 配置对比表：UseWindowsForms / UseWPF、net10.0-windows、WinExe；`[<STAThread>]` 必要性
   3. WinForms（19.1–19.2 段引用 winforms/Program.fs）：控件树、Location 布局、`Click.Add` 事件（连第 18 章）
@@ -2242,7 +2242,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. build.ps1 为何对 GUI 只构建不运行
   7. `## 坑位清单`：忘 STAThread、UseWindowsForms 忘开报类型不存在、WPF Add 忘 ignore 警告、net10.0-windows 不跨桌面 Linux
 
-- [ ] **Step 4: 写 20-todo.md**（约 190 行）：
+- [x] **Step 4: 写 20-todo.md**（约 190 行）：
   1. `# 20 · 实战：待办管理器 CLI`
   2. 需求与命令表：add/done/remove/show/reset + 退出码约定（0 成功 1 失败）
   3. 工程结构（src/tests 双工程 + ProjectReference）；为何分两工程（可测试性）
@@ -2257,7 +2257,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   12. 全书回顾映射表：第 04 章管道→Program、第 05 章 match→parse、第 08 章 Result→parse/apply、第 09/10 章 record/DU→建模、第 15 章 JSON→save/load、第 17 章 xUnit→tests
   13. `## 坑位清单`：argv 的引号由 shell 处理、TEMP 文件多机冲突、apply 里做 IO 会毁掉可测性、ExitCode 忘返回
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/fsharp && wc -l docs/17* docs/18* docs/19* docs/20* && ls docs | wc -l && git add docs && git commit -m "docs(fsharp): 第 17–20 章 测试、互操作、GUI、实战待办管理器
@@ -2276,14 +2276,14 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Create: `CHEATSheet.md`
 - Delete: `F#编程指南.md`
 
-- [ ] **Step 1: 重写 README.md**（结构对齐 `G:\code\guide\dotnet\README.md`，内容如下骨架，20 行索引表逐行填）：
+- [x] **Step 1: 重写 README.md**（结构对齐 `G:\code\guide\dotnet\README.md`，内容如下骨架，20 行索引表逐行填）：
   1. 标题 `# F# 编程指南` + 一段定位（面向**会编程、初学 F#** 的读者；函数式优先；主线 .NET 10 / F# 10；每章"读讲解 → 跑示例 → 改代码再跑"）
   2. 目录结构代码块（README/docs/examples/build.ps1/CHEATSheet）
   3. 章节索引表：20 行 `| [NN 标题](docs/NN-xxx.md) | 一句话主题 | examples/NN_name |`（标题从各章首行抄）
   4. 构建工具链：dotnet 路径；编译验证命令块（-All / -Project / -Clean，注明 pwsh 7）
   5. 单跑示例：`cd examples/06_collections && dotnet run`
 
-- [ ] **Step 2: 新建 CHEATSheet.md**（约 70 行速查，分节）：
+- [x] **Step 2: 新建 CHEATSheet.md**（约 70 行速查，分节）：
   1. 语法速查：let/mutable/函数/match/function/for/try with（各一行）
   2. printfn 格式符表（%s %d %f %.2f %M %b %c %A）
   3. 集合模块速查：List/Array/Seq 的 map/filter/fold/sum/collect/groupBy/sortBy/tryFind/initInfinite
@@ -2293,7 +2293,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. dotnet CLI：new console -lang F# / new xunit -lang F# / run / fsi / test
   8. fsproj 要点：Compile 顺序、UseWindowsForms/UseWPF、Sdk.Web
 
-- [ ] **Step 3: 删除旧文件并验证**
+- [x] **Step 3: 删除旧文件并验证**
 
 ```bash
 cd /g/code/guide/fsharp && git rm "F#编程指南.md" && grep -rn "编程指南" README.md CHEATSheet.md docs/ || true
@@ -2301,7 +2301,7 @@ cd /g/code/guide/fsharp && git rm "F#编程指南.md" && grep -rn "编程指南"
 
 预期：删除成功；其余文件不再引用旧文件名（README 历史提及清除）。
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd /g/code/guide/fsharp && git add -A && git commit -m "docs(fsharp): 重写 README、新增 CHEATSheet、删除旧单文件指南
@@ -2316,7 +2316,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Files:**
 - Verify: 全部示例、docs、README、CHEATSheet
 
-- [ ] **Step 1: 干净全量验证**
+- [x] **Step 1: 干净全量验证**
 
 ```bash
 cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Clean && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All
@@ -2324,7 +2324,7 @@ cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -Exec
 
 预期核对清单：`[Build]` 共 19 次（02–18 十七个 + 19_gui 两个 + Todo）；`[Test]` 两次（17_testing、Todo.Tests，测试工程不输出 [Build] 而由 dotnet test 自行构建）；`[Run]` 十六次（02–16、18）；`[BuildOnly]` 两次；`[Test]` 两次全绿；Todo 八步序列输出正确；结尾 `[Done]`。
 
-- [ ] **Step 2: 文档完整性**
+- [x] **Step 2: 文档完整性**
 
 ```bash
 cd /g/code/guide/fsharp && ls docs/*.md | wc -l && wc -l docs/*.md CHEATSheet.md README.md && grep -c "examples/" README.md
@@ -2332,9 +2332,9 @@ cd /g/code/guide/fsharp && ls docs/*.md | wc -l && wc -l docs/*.md CHEATSheet.md
 
 预期：docs 20 个文件；每章 100–220 行；README 索引表 20 行且文件都存在（逐个点开抽查 3 个链接路径）。
 
-- [ ] **Step 3: 代码-文档一致性抽查**：抽第 05/08/20 章各 2 个代码片段，与 examples 对应 Program.fs 逐字对照（分节号一致）。
+- [x] **Step 3: 代码-文档一致性抽查**：抽第 05/08/20 章各 2 个代码片段，与 examples 对应 Program.fs 逐字对照（分节号一致）。
 
-- [ ] **Step 4: REPL 抽查**
+- [x] **Step 4: REPL 抽查**
 
 ```bash
 cd /g/code/guide/fsharp && printf 'let x = 42\nprintfn "x=%%d" x\n#quit;;\n' | "/g/scoop/apps/dotnet-sdk/current/dotnet.exe" fsi --quiet
@@ -2342,7 +2342,7 @@ cd /g/code/guide/fsharp && printf 'let x = 42\nprintfn "x=%%d" x\n#quit;;\n' | "
 
 预期输出 `x=42`（验证第 02 章的 REPL 会话可复现）。
 
-- [ ] **Step 5: 勾选计划复选框并最终提交**
+- [x] **Step 5: 勾选计划复选框并最终提交**
 
 ```bash
 cd /g/code/guide && git status --short && git add docs/superpowers/plans/2026-09-16-fsharp-tutorial-rewrite.md && git commit -m "docs: 勾选 fsharp 教程实施计划全部 16 个任务完成
