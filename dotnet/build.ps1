@@ -37,6 +37,14 @@ if ($projects.Count -eq 0) {
 
 New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
 
+# 清扫 examples 下游离的 obj/bin（读者直接 dotnet run 会在示例目录生成默认产物，
+# 与本脚本的集中 obj 路径冲突，导致 CS0579 重复特性错误）
+$strayDirs = Get-ChildItem -LiteralPath $examplesDir -Recurse -Directory -Include obj, bin |
+    Where-Object { $_.FullName -notlike "$buildDir*" }
+foreach ($stray in $strayDirs) {
+    Remove-Item -LiteralPath $stray.FullName -Recurse -Force
+}
+
 function Invoke-BuildProject {
     param(
         [Parameter(Mandatory = $true)][string]$ProjectDir
