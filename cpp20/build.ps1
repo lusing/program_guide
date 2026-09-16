@@ -55,7 +55,8 @@ function Invoke-Example {
     Write-Host "===== $name =====" -ForegroundColor Magenta
 
     # 编译 ①：模块接口（.ixx → .obj + .ifc）
-    $linkArgs = @()
+    $refArgs = @()     # /reference name=ifc：import 方编译时需要
+    $moduleObjs = @()  # 模块目标文件：链接时需要
     $ixxFiles = @(Get-ChildItem -LiteralPath $DirPath -Filter "*.ixx" | Sort-Object Name)
     foreach ($m in $ixxFiles) {
         $module = $m.BaseName
@@ -64,16 +65,24 @@ function Invoke-Example {
         Write-Host "[Module] $($m.Name)" -ForegroundColor Cyan
         Invoke-Cl @($commonFlags, "/interface", "/c", "/Fo`"$obj`"", "/ifcOutput`"$ifc`"", "`"$($m.FullName)`"")
         # /reference 必须空格分隔："/reference name=file"（冒号形式会触发 C5213 被当作分区）
-        $linkArgs += "/reference"
-        $linkArgs += "$module=`"$ifc`""
-        $linkArgs += "`"$obj`""
+        $refArgs += "/reference"
+        $refArgs += "$module=`"$ifc`""
+        $moduleObjs += "`"$obj`""
     }
 
-    # 编译 ②：main.cpp（链接模块 obj）
+    # 编译 ②：目录内全部 .cpp（多文件示例逐个编译，支持模块 import）
     Write-Host "[Compile] $name" -ForegroundColor Cyan
-    $obj = Join-Path $buildDir ($name + ".obj")
+    $objs = @()
+    $cppFiles = @(Get-ChildItem -LiteralPath $DirPath -Filter "*.cpp" | Sort-Object Name)
+    foreach ($c in $cppFiles) {
+        $obj = Join-Path $buildDir ($name + "_" + $c.BaseName + ".obj")
+        Invoke-Cl (@($commonFlags, "/c", "/Fo`"$obj`"", "`"$($c.FullName)`"") + $refArgs)
+        $objs += "`"$obj`""
+    }
+
+    # 编译 ③：链接（.cpp 的 obj + 模块的 obj）
     $exe = Join-Path $buildDir ($name + ".exe")
-    Invoke-Cl (@($commonFlags, "/Fo`"$obj`"", "/Fe`"$exe`"", "`"$mainCpp`"") + $linkArgs)
+    Invoke-Cl (@($commonFlags, "/Fe`"$exe`"") + $objs + $moduleObjs)
 
     # 运行：退出码 0 即通过（示例内置 assert 自检）
     Write-Host "[Run] $name" -ForegroundColor Cyan
