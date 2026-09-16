@@ -5,6 +5,8 @@ open System.Windows.Forms
 [<EntryPoint>]
 [<STAThread>]
 let main _ =
+
+    // ═══ 19.1 窗体与控件 ═══
     let form = new Form(Text = "F# WinForms Demo", Width = 420, Height = 260)
     form.StartPosition <- FormStartPosition.CenterScreen
 
@@ -13,6 +15,7 @@ let main _ =
     let button = new Button(Text = "点击", Location = Point(24, 100), Width = 120)
     let result = new Label(Text = "等待点击...", ForeColor = Color.DarkBlue, Location = Point(24, 150), Width = 300)
 
+    // ═══ 19.2 事件处理：Click.Add ═══
     button.Click.Add(fun _ ->
         let message = if String.IsNullOrWhiteSpace input.Text then "输入为空" else sprintf "你好，%s" input.Text
         result.Text <- message)

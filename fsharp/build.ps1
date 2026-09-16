@@ -51,14 +51,9 @@ function Invoke-Project {
     $isGui = $raw -match 'net10\.0-windows'
     $isTest = $raw -match 'Microsoft\.NET\.Test\.Sdk'
 
-    Write-Host "[Build] $name" -ForegroundColor Cyan
-    & $dotnet build $Fsproj.FullName --nologo -v minimal -c Release `
-        "-p:BaseOutputPath=$buildDir\bin\" `
-        "-p:BaseIntermediateOutputPath=$buildDir\obj\$name\"
-    if ($LASTEXITCODE -ne 0) {
-        throw "编译失败: $($Fsproj.FullName)"
-    }
-
+    # 测试工程不经重定向构建：BaseIntermediateOutputPath 等全局属性会传播到
+    # ProjectReference 引用的工程，两边 restore 会互相覆盖 assets 文件；
+    # 直接 dotnet test（自建默认 obj/bin，下次脚本运行时被清扫回收）
     if ($isTest) {
         Write-Host "[Test] $name" -ForegroundColor Magenta
         & $dotnet test $Fsproj.FullName --nologo -v minimal
@@ -66,6 +61,14 @@ function Invoke-Project {
             throw "测试未通过: $name"
         }
         return
+    }
+
+    Write-Host "[Build] $name" -ForegroundColor Cyan
+    & $dotnet build $Fsproj.FullName --nologo -v minimal -c Release `
+        "-p:BaseOutputPath=$buildDir\bin\" `
+        "-p:BaseIntermediateOutputPath=$buildDir\obj\$name\"
+    if ($LASTEXITCODE -ne 0) {
+        throw "编译失败: $($Fsproj.FullName)"
     }
 
     if ($isGui) {
