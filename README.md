@@ -52,7 +52,7 @@
 - [sdl2](./sdl2) — SDL2 C++ 教程与示例，使用 MSVC + SDL2 库编译验证
 - [swift](./swift) — Swift 教程与示例，使用 swiftc 编译验证
 - [wpf](./wpf) — WPF 编程指南，使用 .NET SDK + WPF 运行时验证
-- [zig](./zig) — Zig 0.16 教程与示例，已完成 0.16 兼容修正与编译验证
+- [zig](./zig) — Zig 0.16 教程（24 章对齐 cpp20 标准：分配器/comptime/构建系统/交叉编译特色细讲，全部示例三层验证）
 
 ## 统一约定
 
