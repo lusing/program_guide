@@ -84,7 +84,18 @@ build.ps1 识别测试工程（fsproj 含 `Microsoft.NET.Test.Sdk`）自动 `dot
 
 一步之外还有属性测试（FsCheck：随机生成输入找反例），思路一句话：**"对所有输入成立"比"对三个例子成立"强**——入门后再学。
 
-## 17.7 坑位清单
+## 17.7 跑单个测试与过滤
+
+日常循环里全量跑太慢，`--filter` 按名字挑：
+
+```bash
+dotnet test --filter "FullyQualifiedName~FizzBuzz"     # 只跑 FizzBuzz 类
+dotnet test --filter "FullyQualifiedName~解析"          # 中文名也能过滤
+```
+
+VS/Rider 里测试名旁边的运行按钮走的同一条路。失败输出会带 ``类名.方法名``——双反引号命名的回报就在这里。
+
+## 17.8 坑位清单
 
 - **测试必须在 type 里**：顶层 `[<Fact>] let` 不会被发现——"测试消失"的第一嫌疑。
 - **类型名不能带空格**：`type Parse 测试 ()` 两个词编不过；用 `type 解析测试 ()`（示例 20 章实测踩过）。

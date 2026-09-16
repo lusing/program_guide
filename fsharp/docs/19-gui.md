@@ -84,7 +84,23 @@ let _ = app.Run(window)
 
 两个示例里 `Click.Add` 的 lambda 就是"事件处理器"：读输入 → 算新文本 → 写回控件。函数式的推广是把中间那步做成**纯函数**（输入 record → 输出 record），事件处理器只做 IO 中转——这正是 MVU/Elmish 架构（F# 社区流行）的骨架，复杂 UI 的正解。
 
-## 19.6 坑位清单
+## 19.6 选型：WinForms 还是 WPF
+
+| | WinForms | WPF |
+|---|---|---|
+| 上手 | 快（拖控件即所见） | 需懂布局/绑定模型 |
+| 表达力 | 像素级简单 UI | 样式、模板、动画、复杂绑定 |
+| 数据驱动 | 手写同步 | MVVM/绑定天然支持 |
+| F# 手感 | 代码建 UI 顺畅 | 纯代码可行，XAML 麻烦 |
+
+一句话：内部小工具用 WinForms 半天出活；面向用户的正式产品上 WPF（或跨平台的 Avalonia）。两个示例都在，跑一下（手动，脚本不弹窗）：
+
+```bash
+dotnet run --project examples/19_gui/winforms
+dotnet run --project examples/19_gui/wpf
+```
+
+## 19.7 坑位清单
 
 - **忘 `[<STAThread>]`**：运行时才炸，报错还不在明显位置——模板先写上。
 - **忘 `-windows` 后缀 / UseWPF**：编译错误"类型未定义"，先查 fsproj 再查代码。
