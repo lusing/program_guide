@@ -19,7 +19,7 @@ if (-not (Test-Path -LiteralPath $examplesDir)) {
     throw "找不到 examples 目录: $examplesDir"
 }
 
-$projects = Get-ChildItem -LiteralPath $examplesDir -Directory | Sort-Object Name
+$projects = Get-ChildItem -LiteralPath $examplesDir -Recurse -Filter "*.csproj" | Sort-Object FullName
 
 if ($Clean) {
     if (Test-Path -LiteralPath $buildDir) {
@@ -51,7 +51,7 @@ function Invoke-BuildProject {
     Write-Host "[Build] $projName" -ForegroundColor Cyan
     & $dotnet build $csproj.FullName --nologo -v minimal `
         "-p:BaseOutputPath=$buildDir\bin\" `
-        "-p:BaseIntermediateOutputPath=$buildDir\obj\"
+        "-p:BaseIntermediateOutputPath=$buildDir\obj\$($csproj.BaseName)\"
 
     if ($LASTEXITCODE -ne 0) {
         throw "编译失败: $($csproj.FullName)"
@@ -60,7 +60,7 @@ function Invoke-BuildProject {
 
 if ($All) {
     foreach ($entry in $projects) {
-        Invoke-BuildProject -ProjectDir $entry.FullName
+        Invoke-BuildProject -ProjectDir (Split-Path -Parent $entry.FullName)
     }
     Write-Host "[Done] examples 目录全部编译通过。" -ForegroundColor Green
     exit 0
@@ -71,13 +71,20 @@ if ($Project) {
     if (-not (Test-Path -LiteralPath $projectDir)) {
         throw "找不到示例工程: $projectDir"
     }
-    Invoke-BuildProject -ProjectDir $projectDir
+    $csprojs = Get-ChildItem -LiteralPath $projectDir -Recurse -Filter "*.csproj" | Sort-Object FullName
+    if ($csprojs.Count -eq 0) {
+        throw "示例工程缺少 csproj: $projectDir"
+    }
+    foreach ($p in $csprojs) {
+        Invoke-BuildProject -ProjectDir $p.DirectoryName
+    }
     Write-Host "[Done] 编译通过: $Project" -ForegroundColor Green
     exit 0
 }
 
 Write-Host "用法:" -ForegroundColor Yellow
 Write-Host "  .\build.ps1 -All                  编译 examples 下全部示例工程"
-Write-Host "  .\build.ps1 -Project <name>       编译单个示例工程（例如 03_linq_basics）"
+Write-Host "  .\build.ps1 -Project <name>       编译单个示例工程（例如 09_linq）"
+Write-Host "  .\build.ps1 -Project 19_portable  嵌套多工程目录会构建其下全部 csproj"
 Write-Host "  .\build.ps1 -Clean                清理 build 目录"
 
