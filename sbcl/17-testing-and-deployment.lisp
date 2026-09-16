@@ -1,5 +1,14 @@
 ;;;; ============================================================
 ;;;; 17-testing-and-deployment.lisp — 测试与发布基础
+;;;;
+;;;; 本例程演示：
+;;;;   1. assert 做轻量测试
+;;;;   2. handler-case 捕获预期失败
+;;;;   3. 入口函数模式（配合 save-lisp-and-die 生成可执行文件）
+;;;;
+;;;; 运行方式：
+;;;;   sbcl --noinform --non-interactive --no-userinit \
+;;;;        --load 17-testing-and-deployment.lisp
 ;;;; ============================================================
 
 (format t "~%=== 测试与发布基础 ===~%")
@@ -26,6 +35,7 @@
   (sb-ext:quit :unix-status 0))
 
 (format t "~%提示：可在 REPL 中执行如下表达式构建可执行映像：~%")
-(format t "(sb-ext:save-lisp-and-die \"myapp.exe\" :toplevel #'app-main :executable t)~%")
+(format t "(sb-ext:save-lisp-and-die \"myapp\" :toplevel #'app-main :executable t)~%")
+(format t "注：Windows 上产物习惯写 myapp.exe，macOS/Linux 上是无扩展名的 myapp。~%")
 
-(format t "~%=== 例程 17 执行完毕 ===~%")
+(format t "~%==== 17 结束 ====~%")

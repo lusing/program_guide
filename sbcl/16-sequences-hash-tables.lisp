@@ -1,5 +1,14 @@
 ;;;; ============================================================
 ;;;; 16-sequences-hash-tables.lisp — 序列与哈希表实战
+;;;;
+;;;; 本例程演示：
+;;;;   1. 序列的筛选与映射（remove-if-not / mapcar / reduce）
+;;;;   2. 哈希表的建立与遍历（make-hash-table / maphash）
+;;;;   3. 词频统计的完整小例子
+;;;;
+;;;; 运行方式：
+;;;;   sbcl --noinform --non-interactive --no-userinit \
+;;;;        --load 16-sequences-hash-tables.lisp
 ;;;; ============================================================
 
 (format t "~%=== 序列与哈希表 ===~%")
@@ -29,4 +38,4 @@
              (format t "~A => ~A~%" k v))
            freq))
 
-(format t "~%=== 例程 16 执行完毕 ===~%")
+(format t "~%==== 16 结束 ====~%")

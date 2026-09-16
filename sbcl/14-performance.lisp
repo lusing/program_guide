@@ -12,7 +12,12 @@
 ;;;;   7. 常见性能陷阱
 ;;;;   8. 基准测试
 ;;;;
-;;;; 运行方式：sbcl --script 14-performance.lisp
+;;;; 运行方式（推荐 --load）：
+;;;;   sbcl --noinform --non-interactive --no-userinit --load 14-performance.lisp
+;;;;
+;;;; 注：用 --script 也能跑完，但本例里的 sb-profile:report 会往 stderr
+;;;;     打一行 "measuring PROFILE overhead..done"，会撞上本目录
+;;;;     「stderr 必须为空」的判定；详见文件里第 4 节的注释。
 ;;;; ============================================================
 
 
@@ -154,13 +159,18 @@
 
 ;; sb-profile — SBCL 内置的性能分析器
 ;; 使用步骤：
-;;   1. (require :sb-profile)
-;;   2. (sb-profile:profile fn1 fn2 ...)
-;;   3. 运行代码
-;;   4. (sb-profile:report)
-;;   5. (sb-profile:unprofile)
-
-(require :sb-profile)
+;;   1. (sb-profile:profile fn1 fn2 ...)
+;;   2. 运行代码
+;;   3. (sb-profile:report)
+;;   4. (sb-profile:unprofile)
+;;
+;; 坑：网上常见的「先 (require :sb-profile)」在本版 SBCL 上是错的。
+;; SB-PROFILE 已经在**核心里**（CL-USER 默认就用着它），并没有同名的
+;; contrib 模块可 require，写了会直接失败并终止：
+;;   Don't know how to REQUIRE :SB-PROFILE.
+;; 直接调用即可。（对比：SB-SPROF 确实是 contrib 模块，必须 require。）
+;; 另外因为 CL-USER 用了 SB-PROFILE，`report` / `reset` 这类名字
+;; 不能拿来给自己的函数命名，否则报包锁冲突。
 
 (defun profile-target-1 (n)
   (loop for i from 1 to n sum i))
@@ -171,6 +181,14 @@
 (defun profile-target-3 (n)
   (reduce #'+ (loop for i from 1 to n collect i)))
 
+;; 一个观察记录（不是坑，说明清楚免得误会）：
+;; sb-profile:report 在生成报告前会自测一次剖析开销，打印
+;;   measuring PROFILE overhead..done
+;; 这一行**绕过 Lisp 的 stdout/stderr 流**直接写控制终端：
+;;   --load 模式下重定向抓不到它（stdout.txt / stderr.txt 里都没有，但终端上看得见）
+;;   --script 模式下它落到 stderr，会让「stderr 必须为空」的判定失败
+;; 实测把 *trace-output* 或 *error-output* 绑成广播流都压不掉它，
+;; 所以本目录统一按 --load 方式运行（见 run-all.sh / build.ps1）。
 (sb-profile:profile profile-target-1 profile-target-2 profile-target-3)
 
 (profile-target-1 100000)
@@ -182,8 +200,11 @@
 (sb-profile:unprofile)
 
 ;; sb-sprof — 统计采样分析器（更准确）
+;; 它**是** contrib 模块，所以这里必须 require，且它没有 prof/profile 函数：
+;; 真正可用的是 START-PROFILING / STOP-PROFILING / REPORT / RESET
+;; 以及宏 WITH-PROFILING（:report 取 :flat 或 :graph）。
 ;; (require :sb-sprof)
-;; (sb-sprof:with-profiling (:max-samples 1000)
+;; (sb-sprof:with-profiling (:max-samples 1000 :report :flat)
 ;;   (your-code-here))
 
 
@@ -401,4 +422,4 @@
 (benchmark "loop collect square"
            (lambda () (loop for i from 1 to 100000 collect (* i i))))
 
-(format t "~%=== 例程 14 执行完毕 ===~%")
+(format t "~%==== 14 结束 ====~%")

@@ -7,9 +7,10 @@
 - [函数式编程](#函数式编程)
 - [面向对象编程](#面向对象编程)
 - [宏和元编程](#宏和元编程)
-- [SBCL 实战章节索引（已编译验证）](#sbcl-实战章节索引已编译验证)
+- [SBCL 实战章节索引（已运行验证）](#sbcl-实战章节索引已运行验证)
 - [标准库参考](#标准库参考)
 - [最佳实践](#最佳实践)
+- [macOS 实测修正与坑清单（2026-09，SBCL 2.6.7）](#macos-实测修正与坑清单2026-09sbcl-267)
 
 ---
 
@@ -35,9 +36,16 @@ Common Lisp 是一门历史悠久的函数式编程语言，属于Lisp家族。�
 | ABCL | 运行在JVM上 |
 | ECL | 可编译为C代码 |
 
-## SBCL 实战章节索引（已编译验证）
+## SBCL 实战章节索引（已运行验证）
 
-下面这些配套源码文件已在本目录通过 `sbcl compile-file` 编译验证：
+下面这些配套源码文件已在本目录**实际运行**验证（不是只编译）：
+
+```bash
+./run-all.sh                  # macOS / Linux
+pwsh ./build.ps1 -All         # PowerShell，三平台通用
+```
+
+判定四条：退出码 0 + stderr 为空 + stdout 无多余控制字符 + 有结束标记 `==== NN 结束 ====`。
 
 1. `01-hello-world.lisp`：基础输出、命令行参数、脚本入口
 2. `02-data-types.lisp`：数字、字符串、列表、向量与结构体
@@ -50,7 +58,7 @@ Common Lisp 是一门历史悠久的函数式编程语言，属于Lisp家族。�
 9. `09-file-io.lisp`：文本/二进制读写
 10. `10-format.lisp`：格式化输出
 11. `11-sbcl-extensions.lisp`：实现相关扩展
-12. `12-threads.lisp`：线程与并发模型
+12. `12-threads.lisp`：线程、互斥锁、条件变量、信号量、屏障、原子操作、线程池（含线程安全打印）
 13. `13-ffi.lisp`：外部函数接口
 14. `14-performance.lisp`：类型声明与性能基准
 15. `15-asdf-quicklisp.lisp`：工程管理与依赖
@@ -60,9 +68,16 @@ Common Lisp 是一门历史悠久的函数式编程语言，属于Lisp家族。�
 统一验证命令：
 
 ```powershell
-cd G:\code\guide\sbcl
-.\build.ps1 -All
+cd sbcl
+pwsh ./build.ps1 -All
 ```
+
+```bash
+cd sbcl
+./run-all.sh
+```
+
+两个入口的判定逻辑一致，实测均为 `通过 17   失败 0`（macOS + SBCL 2.6.7）。
 
 ---
 
@@ -618,8 +633,10 @@ SBCL (Steel Bank Common Lisp) 是 Common Lisp 的高性能实现，具有：
 
 ```lisp
 ; 检查 SBCL 版本
-(sb-ext:implementation-type)
-(sb-ext:implementation-version)
+; 注意：SB-EXT 里**没有** implementation-type / implementation-version
+; （那是 CMUCL 时代的接口），用 CL 标准函数即可：
+(lisp-implementation-type)      ; => "SBCL"
+(lisp-implementation-version)   ; => "2.6.7"
 
 ; 检查特性
 *features*
@@ -641,26 +658,44 @@ SBCL (Steel Bank Common Lisp) 是 Common Lisp 的高性能实现，具有：
 
 ; 信号量
 (defparameter *semaphore* (sb-thread:make-semaphore :count 5))
-(sb-thread:signal-semaphore (*semaphore*))
-(sb-thread:wait-on-semaphore (*semaphore*))
+(sb-thread:signal-semaphore *semaphore*)       ; 传变量本身，不要写成 (*semaphore*)
+(sb-thread:wait-on-semaphore *semaphore*)
 
 ; 条件变量
-(defparameter *condition* (sb-thread:make-condition-variable))
+; 注意：SBCL 里没有 make-condition-variable，它叫 make-waitqueue
+(defparameter *waitqueue* (sb-thread:make-waitqueue))
 (sb-thread:with-mutex (*mutex*)
-  (sb-thread:condition-wait (*condition*) (*mutex*)))
-(sb-thread:condition-notify (*condition*))
+  (sb-thread:condition-wait *waitqueue* *mutex*))
+(sb-thread:condition-notify *waitqueue*)
 
 ; parallel-map 示例
+; ⚠ 两个坑：
+;   ① 必须 join。原片段靠 "结果非空就算完" 判断，主线程根本没等，
+;      函数返回时数组可能还只填了一部分。
+;   ② 多线程用 (setf (nth i results) ...) 并发写**同一个列表**不是安全做法
+;      （列表的槽位是 cons 单元，写的过程可能被别的线程看到半成品）。
+;      改写成定长数组，每个线程只写自己那个下标。
 (defun pmap (fn list)
-  (let ((results (make-list (length list))))
+  (let* ((n (length list))
+         (results (make-array n :initial-element nil))
+         (threads '()))
     (loop for item in list
           for i from 0
-          do (sb-thread:make-thread
-               (lambda (index value)
-                 (setf (nth index results) (funcall fn value)))
-               :args (list i item)))
-    (loop for i below (length results) thereis (nth i results))
-    results))
+          do (push (sb-thread:make-thread
+                    (let ((index i) (value item))
+                      (lambda () (setf (aref results index) (funcall fn value)))))
+                   threads))
+    (dolist (th threads) (sb-thread:join-thread th))
+    (coerce results 'list)))
+
+; 多线程打印必须自己加锁。一次 FORMAT 会被拆成多次写，别的线程能插进来，
+; 甚至把一个多字节汉字拆成两半 → stdout 里出现**非法 UTF-8**。
+; 所有输出（含主线程）都走 say，并且要 finish-output。
+(defvar *print-lock* (sb-thread:make-mutex :name "print-lock"))
+(defun say (fmt &rest args)
+  (sb-thread:with-mutex (*print-lock*)
+    (apply #'format t fmt args)
+    (finish-output)))
 ```
 
 ### 3. 系统交互 (SBCL 扩展)
@@ -670,15 +705,21 @@ SBCL (Steel Bank Common Lisp) 是 Common Lisp 的高性能实现，具有：
 (sb-ext:run-program "/bin/ls" '("-l" "/tmp")
                     :output t
                     :error :output)
+; 注意：program 若给裸名字（如 "ls"）必须补 :search t，
+; 否则 SBCL 直接 execvp，报 Couldn't execute "ls": No such file or directory。
+; 另外 :output 不接受 :string，要拿字符串结果请用 :stream 自己 read-line
+; （或直接用 UIOP 的 uiop:run-program … :output :string）。
 
 ; 环境变量
+; ⚠ SB-POSIX 是 contrib 模块，必须先 require，否则包根本不存在，
+;   这一整段连读都读不进去（reader error: Package SB-POSIX does not exist）。
+(require :sb-posix)
 (sb-posix:getenv "HOME")
 (sb-posix:setenv "MY_VAR" "value" 1)
 (sb-posix:unsetenv "MY_VAR")
 
-; 文件描述符
-(sb-ext:enable-obsolete-feedback)
-(sb-ext:disable-obsolete-feedback)
+; 不 require 也能用的等价写法（POSIX-GETENV 在核心里）：
+(sb-ext:posix-getenv "HOME")
 ```
 
 ### 4. 网络编程 (SBCL + Sockets)
@@ -733,7 +774,13 @@ SBCL (Steel Bank Common Lisp) 是 Common Lisp 的高性能实现，具有：
 
 ```lisp
 ; 使用 SB-POSIX 进行系统调用
-(sb-posix:mkdir "/tmp/test" 8.rwxrwxrwx)
+; ⚠ 记得先 (require :sb-posix)
+(require :sb-posix)
+
+; mkdir 的第二个参数是**整数** mode，写成 #o755 八进制。
+; 别写 8.rwxrwxrwx —— 那不是合法数字字面量，读入后只是一个名叫
+; 8.RWXRWXRWX 的符号，传进去必然报类型错。
+(sb-posix:mkdir "/tmp/test" #o755)
 (sb-posix:chdir "/tmp")
 (sb-posix:getcwd)
 
@@ -743,7 +790,8 @@ SBCL (Steel Bank Common Lisp) 是 Common Lisp 的高性能实现，具有：
 (sb-posix:kill (sb-posix:getpid) sb-posix:SIGTERM)
 
 ; 文件操作
-(sb-posix:access "/etc/passwd" sb-posix:r_ok)
+; 常量名字带连字符：r-ok / w-ok / x-ok / f-ok，不是 r_ok
+(sb-posix:access "/etc/passwd" sb-posix:r-ok)
 (sb-posix:stat "/etc/passwd")
 (sb-posix:lstat "/etc/passwd")
 
@@ -769,9 +817,13 @@ SBCL (Steel Bank Common Lisp) 是 Common Lisp 的高性能实现，具有：
 (get-internal-run-time)      ; 进程运行时间
 (get-internal-time-rate)     ; 时间单位频率
 
-; 详细的 CPU 时间
-(sb-ext:cpu-time-run)
-(sb-ext:cpu-time-used)
+; 时间与 CPU 占用
+; 注意：sb-ext 里没有 cpu-time-run / cpu-time-used，别照抄
+(get-internal-run-time)             ; CL 标准：进程自身运行时间
+(get-internal-real-time)            ; CL 标准：墙钟时间
+internal-time-units-per-second      ; CL 标准：上面两个的单位（本机 1000000）
+sb-ext:*gc-run-time*                ; SBCL：GC 累计占用
+(sb-ext:get-time-of-day)            ; SBCL：Unix 时间戳
 
 ; 性能分析
 (sb-profile:profile)
@@ -802,14 +854,14 @@ SBCL (Steel Bank Common Lisp) 是 Common Lisp 的高性能实现，具有：
                (/ total ,iterations 1000.0)))))
 
 ; GC 统计
+; 注意：gc-message 是 CMUCL 时代的接口，SBCL 里没有这个函数
 (sb-ext:gc :full t)
-(sb-ext:gc-message nil)  ; 关闭 GC 消息
-(sb-ext:gc-message t)   ; 显示 GC 消息
+(sb-ext:get-bytes-consed)             ; 至今累计分配的字节数
+(sb-ext:bytes-consed-between-gcs)     ; 触发 GC 的阈值
 
-; 内存使用
-(sb-ext:describe-room :heap)
-(sb-ext:describe-room :code)
-(sb-ext:describe-room : Other)
+; 内存使用：SBCL 里没有 describe-room，直接用 CL 的 room
+(room)    ; 完整报告
+(room t)  ; 只报关键项
 ```
 
 ### 7. 编译器优化与声明
@@ -874,9 +926,12 @@ SBCL (Steel Bank Common Lisp) 是 Common Lisp 的高性能实现，具有：
   (loop for i below (length vec)
         do (setf (aref vec i) (float i 1.0d0))))
 
-; 状态输出
-(sb-ext:enable-obsolete-feedback)
-(sb-ext:disable-obsolete-feedback)
+; 编译器状态
+; 注意：enable-obsolete-feedback / disable-obsolete-feedback
+; 在本版 SBCL 上**根本不存在**（实测 find-symbol 为 nil），不要照抄。
+; 想看编译过程的信息，用 CL 标准变量：
+(setf *compile-verbose* t)
+(setf *compile-print* t)
 ```
 
 ### 9. 调试与诊断
@@ -899,14 +954,21 @@ SBCL (Steel Bank Common Lisp) 是 Common Lisp 的高性能实现，具有：
 (sb-debug:disable-debugger)
 
 ; 堆栈检查
-(sb-di:find-frame-location (sb-di:current-frame))
+; 注意：SB-DI 是 SBCL 的**内部**接口，不保证跨版本稳定。
+; find-frame-location / current-frame 都不存在，可用的是这些：
+(sb-di:top-frame)
+(sb-di:frame-number (sb-di:top-frame))
+(sb-di:frame-up (sb-di:top-frame))
 
-; 性能剖析
-(sb-sprof:prof)
-(sb-sprof:report)
+; 性能剖析（sb-sprof 是 contrib 模块，必须先 require）
+; 没有 prof / profile / visualize 这些名字，正确的是：
+(require :sb-sprof)
+(sb-sprof:start-profiling)
+;; ...运行要分析的代码...
+(sb-sprof:stop-profiling)
+(sb-sprof:report)                 ; 缺省 :flat，也可 (sb-sprof:report :type :graph)
 (sb-sprof:reset)
-(sb-sprof:sample-interval)
-(sb-sprof:visualize)
+sb-sprof:*sample-interval*        ; 采样间隔是**变量**，不是函数
 ```
 
 ### 10. SBCL 最佳实践
@@ -932,10 +994,10 @@ SBCL (Steel Bank Common Lisp) 是 Common Lisp 的高性能实现，具有：
   (aref vec 0))
 
 ; 4. 使用 sb-alien 进行 C 交互
+; 注意：没有 coerce-to-alien 这个宏。要拿 C 函数指针用 extern-alien，
+; 再用 alien-funcall 调用：
 (sb-alien:alien-funcall
-  (sb-alien:coerce-to-alien function
-    (lambda (x) (sb-alien:cast x sb-alien:int)))
-  42)
+  (sb-alien:extern-alien "getpid" (function sb-alien:int)))
 
 ; 5. 使用 sb-bsd-sockets 进行网络操作
 ; 见前面的网络编程部分
@@ -944,11 +1006,10 @@ SBCL (Steel Bank Common Lisp) 是 Common Lisp 的高性能实现，具有：
 ; 见前面的系统交互部分
 
 ; 7. 编译时优化
-(sb-ext:compile-file
-  "my-program.lisp"
-  :speed 3
-  :safety 0
-  :debug 0)
+; compile-file 是 CL 标准函数（sb-ext:compile-file 只是它的别名），
+; 它**没有** :speed / :safety / :debug 参数——优化级别得用 declaim 声明：
+(declaim (optimize (speed 3) (safety 0) (debug 0)))
+(compile-file "my-program.lisp")
 
 ; 8. 运行时优化
 (declaim (optimize (speed 3) (safety 0) (debug 0)))
@@ -1351,13 +1412,13 @@ C-c C-m                     ;; 当前表达式宏展开
 #### 性能分析
 
 ```lisp
-;; SBCL 性能分析
-(sb-ext:enable-obsolete-feedback)
-(sb-sprof:start-profiler)
+;; SBCL 性能分析（sb-sprof 是 contrib 模块）
+(require :sb-sprof)
+(sb-sprof:start-profiling)      ; 不是 start-profiler
 ;; 运行代码
+(sb-sprof:stop-profiling)
 (sb-sprof:report)
 (sb-sprof:reset)
-(sb-sprof:visualize)
 
 ;; 内置 profiler
 C-c C-d p                   ;; 启动性能分析
@@ -1369,8 +1430,10 @@ C-c C-d r                   ;; 报告性能
 ```
 ;; 使用 sb-cover 进行代码覆盖
 (require :sb-cover)
-(sb-cover:report)
-(sb-cover:reset)
+;; 收集覆盖率要在**编译期**声明（sb-cover 的用法与别的 profiler 不同）
+(declaim (optimize sb-cover:store-coverage-data))
+(sb-cover:report "/path/to/coverage-dir/")
+(sb-cover:reset-coverage)       ; 是 reset-coverage，不是 reset
 ```
 
 ---
@@ -1969,6 +2032,270 @@ Common Lisp 和 Emacs Lisp 都属于 Lisp 家族，但它们是**不同的语言
 (sb-ext:run-program -> call-process
 (sb-posix:getenv -> getenv
 ```
+
+---
+
+## macOS 实测修正与坑清单（2026-09，SBCL 2.6.7）
+
+本章的内容**全部来自实机运行**，不是转述文档。核查方式：把正文里出现的每一个
+`sb-*:符号` 抽出来写成一个探针程序逐个 `find-symbol`，谁不存在就是文档写错了；
+示例则逐个真跑，按「退出码 0 + stderr 为空 + stdout 无控制字符 + 结束标记」四条判定。
+
+### 0. 最重要的一条：编译通过 ≠ 能跑
+
+原验证脚本只做 `compile-file`。实测：17 个示例里有 **8 个一跑就崩**，
+而 `compile-file` 对**全部 17 个**都返回成功——因为崩的地方
+（`format` 指令、`rename-file`、`run-program`、重定义 CL 函数）都发生在**运行期**。
+所以本目录现在一律**真跑**，并用结束标记兜住「中途崩了但退出码仍是 0」的情况。
+
+### 1. 平台专有写法（Windows 上能跑，macOS 必挂）
+
+| 现象 | 原因 | 修法 |
+|---|---|---|
+| `Couldn't execute "cmd"` | 硬编码 `cmd /c`，POSIX 没有 `cmd` | `#+win32` / `#-win32` 分发到 `/bin/sh -c` |
+| `USERPROFILE` / `OS` 取到 NIL | 这两个是 Windows 专有变量名 | 改用 `HOME` / `SHELL` |
+| `The alien function "strupr" is undefined` | `strupr` 是 MSVC 专有函数，libSystem 没有，**也不是标准 C** | 换 `toupper` / `strcasecmp` |
+| `save-lisp-and-die "x.exe"` | 只有 Windows 才加 `.exe` | macOS/Linux 上产物无扩展名 |
+
+### 2. 版本专有（与操作系统无关）
+
+- **`(require :sb-profile)` 会失败。** `SB-PROFILE` 已经在**核心里**，没有同名 contrib
+  模块可 require，写了直接报 `Don't know how to REQUIRE :SB-PROFILE.` 并终止文件。
+  直接调用 `sb-profile:profile/report/unprofile/reset` 即可。
+  **对比**：`SB-SPROF` / `SB-POSIX` / `SB-COVER` / `SB-BSD-SOCKETS` 确实是 contrib，必须 require。
+- **contrib 包在 require 之前「包不存在」。** `(sb-posix:getenv "HOME")` 写在
+  `(require :sb-posix)` 之前，报的是 **reader error**（`Package SB-POSIX does not exist.`）——
+  因为 Lisp 是**先读入整个 form 再求值**，包必须在读的时候就已经存在。
+  同理，用 `sbcl --eval '(progn (require :sb-posix) (sb-posix:...))'` 这样一行写也是不行的。
+
+### 3. 语言与实现层面的坑（跨平台通病）
+
+#### 3.1 `defgeneric` 不能占用 CL 已有的名字
+
+```lisp
+(defgeneric describe (obj))   ; ✗ DESCRIBE 已经是 CL 的普通函数
+;; => DESCRIBE already names an ordinary function or a macro.
+```
+
+`DEFGENERIC` 要求该名字尚不是普通函数或宏。这个错在 `--non-interactive` 下**直接终止整个文件**，
+不是警告。自定义泛型请起别的名字（`describe-thing` 之类）。
+
+顺带一个更隐蔽的：**`CL-USER` 默认 `use-package` 了 `SB-EXT` / `SB-ALIEN` / `SB-DEBUG` /
+`SB-GRAY` / `SB-PROFILE`**，所以 `report`、`reset`、`profile` 这些名字
+既不能 `defun`，也不能当 `flet`/`labels`/`let` 的局部名，否则报包锁冲突：
+
+```text
+Lock on package SB-PROFILE violated when binding RESET as a local function
+```
+
+#### 3.2 `rename-file` 的第二个参数是「目标路径的默认值」
+
+```lisp
+(rename-file "test-dir/file2.txt" "test-dir/renamed.txt")   ; ✗
+;; 实际去 rename 到 test-dir/test-dir/renamed.txt（相对目录被再拼一次）→ 报错
+```
+
+第二个参数若是**相对目录**，会与源文件所在目录再合并一次。只给纯文件名（`"renamed.txt"`）
+反而没问题，因为它没有目录部分。稳妥写法是把目录先绝对化：
+
+```lisp
+(rename-file "test-dir/file2.txt"
+             (merge-pathnames "renamed.txt" (truename "test-dir/")))
+```
+
+#### 3.3 `format`：`~-10D` 不是左对齐，`~|` 不是表格竖线
+
+```lisp
+(format t "~-10D" 42)
+;; => error in FORMAT: The value of mincol is -10, should be a non-negative integer
+```
+
+`mincol` 必须是非负整数。**`~A` 与 `~D` 的补空格方向正好相反**（实测）：
+
+| 写法 | 结果 |
+|---|---|
+| `~10D` | `"        42"`（左补空格，右对齐） |
+| `~10A` | `"42        "`（右补空格，**左对齐**） |
+| `~10@A` | `"        42"` |
+
+而 `~|` 是 CL 的**换页指令**（Tilde Vertical-Bar: Page），输出的是换页字符 `#\Page`（0x0C）。
+拿它当列分隔符，stdout 里就会混进控制字符。排对齐的列用宽度参数 `~20A` 就行。
+
+#### 3.4 整文件读成字符串：`file-length` 是**字节数**
+
+```lisp
+(with-open-file (in "test.txt")
+  (let ((s (make-string (file-length in))))   ; ✗ file-length 给的是字节数
+    (read-sequence s in)
+    s))
+```
+
+`make-string` 要的是**字符数**。文件里有中文（UTF-8 一个汉字 3 字节）时字符串会分配过大，
+而 `make-string` 不给 `:initial-element` 时初值由实现自定，**SBCL 用 `#\Nul` 填**——
+多出来的位置全成了 NUL 字符，一打印就把原始 0 字节漏进 stdout。
+退出码、stderr、结束标记全都正常，肉眼翻不出来（本目录 09 号示例就这样漏了 42 个 NUL）。
+正确做法是接住 `read-sequence` 的返回值再截断：
+
+```lisp
+(let* ((s (make-string (file-length in)))
+       (n (read-sequence s in)))     ; n = 第一个未被覆盖的下标
+  (subseq s 0 n))
+```
+
+#### 3.5 `grab-mutex` 不可重入，试探性加锁不是返回 NIL
+
+```lisp
+(sb-thread:grab-mutex lock)
+(sb-thread:grab-mutex lock :waitp nil)
+;; => Recursive lock attempt #<SB-THREAD:MUTEX owner: ... main thread ...>
+```
+
+同一个线程再次加锁是**报错**（并终止文件），不是返回 NIL。
+要判断持有情况用 `sb-thread:holding-mutex-p` / `sb-thread:mutex-owner`。
+
+#### 3.6 `warn` 写的是 stderr
+
+`warn` 的输出走 `*error-output*`，不是 `*standard-output*`。
+演示脚本想让警告和别的输出落在一起，就临时绑一下：
+
+```lisp
+(let ((*error-output* *standard-output*))
+  (warn "这条会打到 stdout"))
+```
+
+### 4. `sbcl` 命令行的坑
+
+- **`--script` 与 `--non-interactive` 不能连用。**
+  `sbcl --non-interactive --script x.lisp` 不会执行 `x.lisp`——`--script` 之后的参数
+  会被当成**运行时参数**，结果是只打一行 banner、退出码 0，看起来"跑过了"其实啥也没干。
+  本目录统一用 `--noinform --non-interactive --no-userinit --load <file>`。
+- **`run-program` 给裸程序名要加 `:search t`**，否则直接 `execvp`，
+  报 `Couldn't execute "echo": No such file or directory`；给绝对路径则不需要。
+- **`run-program` 的 `:output` 不接受 `:string`**（报 `invalid option: :STRING`）。
+  想拿字符串结果用 `:stream` 自己读，或用 UIOP 的 `uiop:run-program ... :output :string`。
+
+- **`--load` 与 `--script` 的输出去向可能不同，别以为两者等价。** 实测同一个
+  `14-performance.lisp`：`sb-profile:report` 打的那行 `measuring PROFILE overhead..done`
+  在 `--load` 下**绕过 stdout/stderr 直接写控制终端**（重定向抓不到），
+  在 `--script` 下却**落到 stderr**。把 `*trace-output*` / `*error-output*`
+  绑成广播流都压不掉它（已实测）。本目录因此统一按 `--load` 跑，
+  写验证脚本时也别默认两种调用模式行为一致。
+
+### 5. 本次修正的正文断言一览
+
+以下名字在本版 SBCL 上**不存在**，正文已就地改掉：
+
+| 原文写的 | 实际情况 | 正确写法 |
+|---|---|---|
+| `sb-ext:implementation-type/version` | 不存在（CMUCL 时代接口） | `lisp-implementation-type/version`（CL 标准） |
+| `sb-thread:make-condition-variable` | 不存在 | `sb-thread:make-waitqueue` |
+| `sb-ext:cpu-time-run` / `cpu-time-used` | 不存在 | `get-internal-run-time` / `sb-ext:*gc-run-time*` / `sb-ext:get-time-of-day` |
+| `sb-ext:gc-message` | 不存在 | `(room)`、`sb-ext:get-bytes-consed` |
+| `sb-ext:describe-room` | 不存在 | `(room)` / `(room t)`（CL 标准） |
+| `sb-ext:enable/disable-obsolete-feedback` | 不存在 | 用 `*compile-verbose*` / `*compile-print*` |
+| `sb-di:find-frame-location` / `current-frame` | 不存在（且 sb-di 是内部接口） | `sb-di:top-frame` / `frame-up` / `frame-number` |
+| `sb-sprof:prof` / `start-profiler` | 不存在 | `sb-sprof:start-profiling` / `stop-profiling` |
+| `sb-sprof:sample-interval`（当函数用） | 是**变量** | `sb-sprof:*sample-interval*` |
+| `sb-sprof:visualize` | 不存在 | `(sb-sprof:report :type :graph)` |
+| `sb-alien:coerce-to-alien` | 不存在 | `sb-alien:extern-alien` + `alien-funcall` |
+| `sb-cover:reset` | 不存在 | `sb-cover:reset-coverage` |
+| `sb-posix:r_ok` | 名字带连字符 | `sb-posix:r-ok`（`w-ok` / `x-ok` / `f-ok` 同理） |
+| `(sb-posix:mkdir "/tmp/x" 8.rwxrwxrwx)` | `8.rwxrwxrwx` 不是数字字面量，读入后只是个符号 | `#o755` |
+| `(sb-ext:compile-file "x" :speed 3 ...)` | `compile-file` 没有这些参数 | `(declaim (optimize ...))` + `(compile-file "x")` |
+
+其余 50 处 `sb-*:符号` 引用经探针逐个核对**全部成立**（`find-symbol` + `fboundp`）。
+
+### 6. 并发与验证脚本的坑（本轮新增）
+
+#### 6.1 多线程直接 `format` 会产出**非法 UTF-8**
+
+一次 `format` 不是原子操作，它按格式指令拆成**多次写**：
+
+```lisp
+;; 线程 A 和 B 同时执行这一句
+(format t "  任务 ~A 在线程 ~A 执行~%" id name)
+;; 实际可能写出：
+;;   任务   任务 2 在线程 在线程 pool-worker-0 执行pool-worker-1 执行
+```
+
+更麻烦的是多字节字符：SBCL 往 fd-stream 写汉字时会分块，两个线程各写走一半，
+stdout 里就出现**非法 UTF-8 序列**。后果不只是"难看"——UTF-8 locale 下
+toybox 的 `tr` 碰到非法序列会报 `tr: Illegal byte sequence` 并**截断输入**，
+后面的判定全部落空（详见 6.3）。
+
+正确做法：一把全局打印锁 + `finish-output`，所有输出（**包括主线程**，否则主线程
+仍可能与 worker 的 `say` 穿插）都走它：
+
+```lisp
+(defvar *print-lock* (sb-thread:make-mutex :name "print-lock"))
+
+(defun say (fmt &rest args)
+  (sb-thread:with-mutex (*print-lock*)
+    (apply #'format t fmt args)
+    (finish-output)))     ; 只加锁不 flush 还不够：共享缓冲区仍可能被并发 flush 撕开
+```
+
+锁序不会死锁的前提是：`say` 里只持有打印锁、不再去拿别的锁。
+所以其它锁 → 打印锁 的顺序是单向的，可以放心在持锁时打印。
+
+另外，**别把线程对象直接 `~A` 出去**。`#<THREAD tid=4099 "worker-1" waiting on:
+#<MUTEX "print-lock" ...>>` 里的 `tid` 每次运行都不同，线程此刻阻塞在哪个锁上也随时在变，
+输出就不可重复了。要展示对象就取稳定的部分，比如 `(type-of thread)`。
+
+#### 6.2 线程池：`shutdown` 不能只看标志位就退出
+
+原版 worker 的循环是"看到 `shutdown` 就 `return`"。这样一旦 `shutdown` 置位，
+**队列里还没跑的任务会被直接丢掉**（原代码靠 `(sleep 1)` 赌它们跑完了，慢机器上会少跑）。
+正确写法是先取任务、取不到才退出：
+
+```lisp
+(loop
+  (let ((task nil))
+    (sb-thread:with-mutex ((thread-pool-lock pool))
+      (loop while (and (null (thread-pool-task-queue pool))
+                       (not (thread-pool-shutdown pool)))
+            do (sb-thread:condition-wait (thread-pool-not-empty pool)
+                                         (thread-pool-lock pool)))
+      (setf task (pop (thread-pool-task-queue pool))))   ; 可能是 NIL
+    (if task (funcall task) (return))))                  ; 没任务才退出
+```
+
+这样 `shutdown` 里直接 `join` 每个 worker 就够，**不需要 sleep**，
+"提交 10 个 = 执行 10 个"也变成了确定的事实。
+
+#### 6.3 判定脚本自己的 locale 坑（会**误报**，最难查）
+
+用 `tr -d '\000'` 剔 NUL 再匹配结束标记时，`LC_ALL=C` **不能省**：
+
+```bash
+# 有 bug 的写法
+text=$(tr -d '\000' < "$out")
+# 正确写法
+text=$(LC_ALL=C tr -d '\000' < "$out")
+```
+
+UTF-8 locale 下 `tr` 会做多字节校验，遇到非法 UTF-8 就报
+`tr: Illegal byte sequence` 并**在那里截断输入**；结束标记若在截断点之后就查不到，
+判定脚本会报"缺少结束标记"，于是同一个示例在不同入口下结论相反
+（PowerShell 的 `UTF8.GetString(...).Contains(...)` 不受影响，它把非法字节变成替换字符）。
+
+**教训**：判定脚本的健壮性和示例本身一样重要。用非 ASCII 模式做匹配、
+用会做编码校验的工具处理待验证的输出时，先假定输入是"任意字节"。
+`fortran/` 尤其要注意——触发格式重现时落盘的就是原始整数字节。
+
+#### 6.4 括号总数平衡 ≠ 嵌套正确
+
+改示例时漏一个 `)`、又在别处多一个 `)`，两处会互相抵消：数括号、看总数都正常，
+但嵌套位置已经错了，表现为 `Error while parsing arguments to DEFMACRO PUSH:
+too few elements in (...)` 这种莫名其妙的错。静态兜底：
+
+```bash
+sbcl --noinform --non-interactive --no-userinit \
+  --eval '(compile-file "12-threads.lisp" :output-file "/tmp/c.fasl" :print nil :verbose nil)'
+```
+
+`compile-file` 会做宏展开，这类结构错位当场就报出来（而且信息比真跑时集中）。
+注意它**不能替代真跑**——见本章第 0 节。
 
 ---
 

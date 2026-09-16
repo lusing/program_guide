@@ -72,12 +72,20 @@
 (format t "所有行: ~A~%" (read-file-lines "test-output.txt"))
 
 ;; 读取整个文件为字符串
+;;
+;; 坑（很隐蔽，值得单独记）：不要拿 (file-length in) 当「字符数」。
+;; 它返回的是**字节数**，而 make-string 要的是**字符数**。
+;; 文件里只要有中文（UTF-8 一个汉字 3 字节），字符串就会分配过大；
+;; 而 make-string 不给 :initial-element 时初值由实现自定，
+;; SBCL 用 #\Nul 填——多出来的位置全成了 NUL 字符，
+;; 一打印就把原始 0 字节漏进 stdout（退出码、stderr 全都正常，肉眼翻不出来）。
+;; 正确做法：接住 read-sequence 的返回值（第一个未被覆盖的下标）再截断。
 (defun read-file-string (filename)
   "读取整个文件内容为一个字符串。"
   (with-open-file (in filename)
-    (let ((content (make-string (file-length in))))
-      (read-sequence content in)
-      content)))
+    (let* ((content (make-string (file-length in)))
+           (filled (read-sequence content in)))
+      (subseq content 0 filled))))
 
 (format t "文件内容:~%~A~%" (read-file-string "test-output.txt"))
 
@@ -262,7 +270,15 @@
   (format t "  ~A~%" f))
 
 ;; 重命名文件
-(rename-file "test-dir/file2.txt" "test-dir/renamed.txt")
+;;
+;; 坑：RENAME-FILE 的第二个参数不是「目标路径」，而是「目标路径的默认值」。
+;; 若给它一个**带相对目录**的路径 "test-dir/renamed.txt"，
+;; 相对目录会与源文件所在目录**再拼接一次**，变成
+;;   test-dir/test-dir/renamed.txt  → 目录不存在 → 报 couldn't rename
+;; 正确做法是把新名字与**绝对**目录合并（merge-pathnames 用的是 truename）；
+;; 只给纯文件名 "renamed.txt" 也可以，此时会隐含沿用源文件所在目录。
+(rename-file "test-dir/file2.txt"
+             (merge-pathnames "renamed.txt" (truename "test-dir/")))
 (format t "重命名后:~%")
 (dolist (f (directory "test-dir/*.*"))
   (format t "  ~A~%" f))
@@ -275,7 +291,8 @@
 (format t "~%=== SBCL 特有 ===~%")
 
 ;; 获取当前工作目录
-(format t "当前目录: ~A~%" (sb-ext:posix-getenv "PWD"))
+;; PWD 是 shell 注入的环境变量，某些方式启动 SBCL 时可能没有，所以要兜底
+(format t "当前目录(PWD): ~A~%" (or (sb-ext:posix-getenv "PWD") "(环境变量 PWD 未设置)"))
 (format t "当前目录(truename): ~A~%" (truename "."))
 
 ;; 运行外部程序
@@ -302,4 +319,4 @@
     (delete-file f)
     (format t "清理: ~A~%" f)))
 
-(format t "~%=== 例程 09 执行完毕 ===~%")
+(format t "~%==== 09 结束 ====~%")

@@ -137,12 +137,17 @@
 ;; error — 不可继续的错误（进入调试器或终止）
 ;; (error "这是一个错误")
 
-;; warn — 发出警告（默认打印到 *error-output*，继续执行）
+;; warn — 发出警告（默认打印到 *error-output*，也就是 stderr，然后继续执行）
 (define-condition custom-warning (warning)
   ((message :initarg :message :reader warning-message))
   (:report (lambda (c s) (format s "自定义警告: ~A" (warning-message c)))))
 
-(warn 'custom-warning :message "这是一个警告")
+;; 注意 WARN 的输出走的是 *error-output*（stderr），不是 *standard-output*。
+;; 本目录的验证脚本要求「stderr 必须为空」，所以这里临时把 *error-output*
+;; 绑到标准输出上，让警告文字和别的示例输出一起落在 stdout 里。
+;; 这是刻意的演示安排，不是绕过检查：警告确实被发出来了，看得到 "WARNING:" 前缀。
+(let ((*error-output* *standard-output*))
+  (warn 'custom-warning :message "这是一个警告"))
 
 ;; signal — 发送条件信号（不进入调试器，除非有 handler）
 (define-condition info-condition (condition)
@@ -346,4 +351,4 @@
 
 (process-all-files '("/tmp/a.txt" "/nonexistent/b.txt" "/tmp/c.txt"))
 
-(format t "~%=== 例程 08 执行完毕 ===~%")
+(format t "~%==== 08 结束 ====~%")

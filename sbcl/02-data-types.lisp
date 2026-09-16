@@ -274,4 +274,4 @@
 (format t "coerce to list: ~A~%" (coerce "abc" 'list))
 (format t "coerce to string: ~A~%" (coerce '(#\a #\b #\c) 'string))
 
-(format t "~%=== 例程 02 执行完毕 ===~%")
+(format t "~%==== 02 结束 ====~%")

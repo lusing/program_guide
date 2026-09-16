@@ -90,18 +90,31 @@
 ;;   :input    — 输入源
 ;;   :wait     — 是否等待完成
 ;;   :search   — 是否在 PATH 中搜索
+;;
+;; 两点跨平台提醒：
+;;   1. POSIX 上**没有 cmd**，要执行一行 shell 命令请用 /bin/sh -c；
+;;      Windows 上才是 cmd /c。这里用特性条件 #+win32 / #-win32 分发。
+;;   2. program 给**裸名字**时必须加 :search t，否则 SBCL 直接调 execvp，
+;;      报 Couldn't execute "echo": No such file or directory。
+;;      给绝对路径（/bin/sh）则不需要 :search。
+(defun shell-command (command)
+  "把一行 shell 命令包装成 (程序 参数列表)，按平台自动选择解释器。"
+  #+win32 (list "cmd" (list "/c" command))
+  #-win32 (list "/bin/sh" (list "-c" command)))
 
-;; 简单调用（Windows 环境）
-(let ((process (sb-ext:run-program "cmd" '("/c" "echo Hello from SBCL")
-                                   :output :stream
-                                   :wait t)))
+;; 简单调用（:output t 表示子进程直接写当前标准输出）
+(let* ((cmd (shell-command "echo Hello from SBCL"))
+       (process (sb-ext:run-program (first cmd) (second cmd)
+                                    :output t
+                                    :wait t)))
   (when process
     (format t "退出码: ~A~%" (sb-ext:process-exit-code process))))
 
-;; 捕获输出
-(let* ((process (sb-ext:run-program "cmd" '("/c" "echo captured output")
-                                     :output :stream
-                                     :wait nil))
+;; 捕获输出（:output :stream 拿到一个流，自己读）
+(let* ((cmd (shell-command "echo captured output"))
+       (process (sb-ext:run-program (first cmd) (second cmd)
+                                    :output :stream
+                                    :wait nil))
        (stream (sb-ext:process-output process)))
   (when stream
     (loop for line = (read-line stream nil :eof)
@@ -110,9 +123,12 @@
     (sb-ext:process-wait process)
     (format t "退出码: ~A~%" (sb-ext:process-exit-code process))))
 
-;; 异步执行
-(let ((process (sb-ext:run-program "cmd" '("/c" "timeout /t 1 >nul && echo done")
-                                    :wait nil)))
+;; 异步执行（「睡 1 秒」的写法两个平台不同）
+#+win32 (defparameter *sleep-1s* "timeout /t 1 >nul")
+#-win32 (defparameter *sleep-1s* "sleep 1")
+
+(let* ((cmd (shell-command *sleep-1s*))
+       (process (sb-ext:run-program (first cmd) (second cmd) :wait nil)))
   (format t "进程已启动，PID: ~A~%" (sb-ext:process-pid process))
   (format t "进程存活: ~A~%" (sb-ext:process-alive-p process))
   (sb-ext:process-wait process)
@@ -126,8 +142,12 @@
 (format t "~%=== 环境变量 ===~%")
 
 ;; 获取环境变量
-(format t "USERPROFILE: ~A~%" (sb-ext:posix-getenv "USERPROFILE"))
-(format t "OS: ~A~%" (sb-ext:posix-getenv "OS"))
+;; USERPROFILE / OS 是 Windows 专有的变量名，在 macOS/Linux 上取到的是 NIL。
+;; 跨平台请用 HOME / SHELL / PATH 这类通用变量。
+(format t "HOME: ~A~%" (sb-ext:posix-getenv "HOME"))
+(format t "SHELL: ~A~%" (sb-ext:posix-getenv "SHELL"))
+(format t "USERPROFILE: ~A~%（Windows 专有）~%" (sb-ext:posix-getenv "USERPROFILE"))
+(format t "OS: ~A~%（Windows 专有）~%" (sb-ext:posix-getenv "OS"))
 
 ;; 命令行参数
 (format t "命令行参数: ~A~%" sb-ext:*posix-argv*)
@@ -293,4 +313,4 @@
 (dolist (f (subseq *features* 0 (min 15 (length *features*))))
   (format t "  ~A~%" f))
 
-(format t "~%=== 例程 11 执行完毕 ===~%")
+(format t "~%==== 11 结束 ====~%")

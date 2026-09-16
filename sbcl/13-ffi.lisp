@@ -114,11 +114,11 @@
 
 (format t "time(0) = ~A~%" (c-time 0))
 
-;; getenv — 获取环境变量
+;; getenv — 获取环境变量（环境变量名按平台不同，取到 NIL 是正常的）
 (sb-alien:define-alien-routine ("getenv" c-getenv) sb-alien:c-string
   (name sb-alien:c-string))
 
-(format t "getenv(\"OS\") = ~A~%" (c-getenv "OS"))
+(format t "getenv(\"HOME\") = ~A~%" (c-getenv "HOME"))
 
 ;; 数学函数
 #+win32
@@ -291,10 +291,24 @@
 (format t "strcmp(\"abc\", \"abd\") = ~A~%" (c-strcmp "abc" "abd"))
 (format t "strcmp(\"abd\", \"abc\") = ~A~%" (c-strcmp "abd" "abc"))
 
-(sb-alien:define-alien-routine ("strupr" c-strupr) sb-alien:c-string
-  (str sb-alien:c-string))
+;; strupr 是 MSVC/Windows 的专有函数，libSystem（macOS）/glibc 里都没有，
+;; 直接用会得到 Unhandled UNDEFINED-ALIEN-FUNCTION-ERROR: "strupr"。
+;; 注意：它不是标准 C 的一部分，就算在 Windows 上也建议改用 toupper。
+;; 这里换成两边都有的 toupper。
+(sb-alien:define-alien-routine ("toupper" c-toupper) sb-alien:int
+  (c sb-alien:int))
 
-(format t "strupr(\"hello\") = ~A~%" (c-strupr (copy-seq "hello")))
+(format t "toupper(#\\a) = ~A~%"
+        (code-char (c-toupper (char-code #\a))))
+(format t "toupper(#\\A) = ~A~%"
+        (code-char (c-toupper (char-code #\A))))
+
+;; strcasecmp 也是 POSIX 标准里就有的（libSystem / glibc 均有）
+(sb-alien:define-alien-routine ("strcasecmp" c-strcasecmp) sb-alien:int
+  (s1 sb-alien:c-string)
+  (s2 sb-alien:c-string))
+
+(format t "strcasecmp(\"ABC\", \"abc\") = ~A~%" (c-strcasecmp "ABC" "abc"))
 
 
 ;;; ----------------------------------------------------------
@@ -339,4 +353,4 @@
 (format t "CFFI 示例见注释~%")
 (format t "推荐使用 CFFI 而非 sb-alien，因为 CFFI 可移植~%")
 
-(format t "~%=== 例程 13 执行完毕 ===~%")
+(format t "~%==== 13 结束 ====~%")

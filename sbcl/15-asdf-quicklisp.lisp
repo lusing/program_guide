@@ -368,4 +368,4 @@ Web 开发：
   trivial-backtrace — 回溯
 ")
 
-(format t "~%=== 例程 15 执行完毕 ===~%")
+(format t "~%==== 15 结束 ====~%")

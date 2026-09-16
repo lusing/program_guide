@@ -285,4 +285,4 @@
 
 (format t "编译时计算结果: ~A~%" (compile-time-calc))
 
-(format t "~%=== 例程 05 执行完毕 ===~%")
+(format t "~%==== 05 结束 ====~%")

@@ -70,25 +70,32 @@
 (format t "~%=== 泛型函数与方法 ===~%")
 
 ;; defgeneric 定义泛型函数接口
-(defgeneric describe (obj)
+;;
+;; 注意：名字**不能**叫 describe。
+;; DESCRIBE 已经是 CL 标准包里的普通函数，而 DEFGENERIC 要求
+;; 「该名字尚不是普通函数或宏」，否则报
+;;   DESCRIBE already names an ordinary function or a macro.
+;; 而且这个错在 --non-interactive 下直接终止整个文件，不是警告。
+;; 自定义泛型请用不带 CL 前缀含义的名字，例如这里的 describe-thing。
+(defgeneric describe-thing (obj)
   (:documentation "描述对象"))
 
 ;; defmethod 为特定类型实现方法
-(defmethod describe ((p person))
+(defmethod describe-thing ((p person))
   (format nil "~A，~A岁" (person-name p) (person-age p)))
 
 (let ((p (make-instance 'person :name "王五" :age 28)))
-  (format t "~A~%" (describe p)))
+  (format t "~A~%" (describe-thing p)))
 
 ;; 为内置类型定义方法
-(defmethod describe ((s string))
+(defmethod describe-thing ((s string))
   (format nil "字符串，长度 ~A" (length s)))
 
-(defmethod describe ((n integer))
+(defmethod describe-thing ((n integer))
   (format nil "整数 ~A" n))
 
-(format t "~A~%" (describe "hello"))
-(format t "~A~%" (describe 42))
+(format t "~A~%" (describe-thing "hello"))
+(format t "~A~%" (describe-thing 42))
 
 
 ;;; ----------------------------------------------------------
@@ -110,13 +117,13 @@
   (:documentation "经理类"))
 
 ;; 子类方法覆盖
-(defmethod describe ((e employee))
+(defmethod describe-thing ((e employee))
   (format nil "~A（~A的员工，职位：~A）"
           (call-next-method)  ; 调用父类方法
           (employee-company e)
           (employee-position e)))
 
-(defmethod describe ((m manager))
+(defmethod describe-thing ((m manager))
   (format nil "~A，管理 ~A 人团队"
           (call-next-method)
           (manager-team-size m)))
@@ -128,8 +135,8 @@
                           :name "钱七" :age 40
                           :company "ABC科技" :position "技术总监"
                           :team-size 15)))
-  (format t "~A~%" (describe emp))
-  (format t "~A~%" (describe mgr)))
+  (format t "~A~%" (describe-thing emp))
+  (format t "~A~%" (describe-thing mgr)))
 
 ;; 类级别槽（所有实例共享）
 (defclass counter ()
@@ -305,4 +312,4 @@
     (render s))
   (format t "总面积: ~A~%" (reduce #'+ (mapcar #'area shapes))))
 
-(format t "~%=== 例程 06 执行完毕 ===~%")
+(format t "~%==== 06 结束 ====~%")

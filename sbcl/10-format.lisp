@@ -68,8 +68,13 @@
 ;; 十进制
 (format t "十进制: ~D~%" 255)
 (format t "带逗号: ~:D~%" 1234567890)    ; 每3位加逗号
-(format t "宽度10: ~10D~%" 42)           ; 右对齐，宽度10
-(format t "宽度10左对齐: ~-10D|~%" 42)   ; 左对齐
+(format t "宽度10: ~10D~%" 42)           ; 右对齐（左侧补空格）
+;; 坑：~-10D 不是「左对齐」的写法，mincol 必须是非负整数，
+;; SBCL 会直接报 "The value of mincol is -10, should be a non-negative integer"。
+;; 想要数字左对齐（右侧补空格），用 ~A —— ~A 与 ~D 的补空格方向正好相反：
+;;   ~10D  → "        42"（左补空格）
+;;   ~10A  → "42        "（右补空格）
+(format t "宽度10左对齐: ~10A|~%" 42)
 (format t "补零: ~10,'0D~%" 42)          ; 用0填充
 
 ;; 二进制
@@ -192,12 +197,17 @@
 ;; ~<...~:> 配合 pprint-logical-block 使用
 
 ;; 多行格式化
+;;
+;; 坑：~| 不是「表格竖线」，它是 CL 的换页指令（Tilde Vertical-Bar: Page），
+;; 实际输出的是换页字符 #\Page（0x0C）。拿它当列分隔符，
+;; stdout 里就会混进控制字符（本目录的验证脚本会因为「含控制字符」判失败）。
+;; 要在文本里排对齐的列，用宽度参数 ~20A 即可（~A 右补空格）。
 (format t "~%表格:~%")
 (format t "~A~%" (make-string 40 :initial-element #\-))
-(format t "~|~20A~|~20A~|~%" "姓名" "年龄")
+(format t "~20A~20A~%" "姓名" "年龄")
 (format t "~A~%" (make-string 40 :initial-element #\-))
-(format t "~|~20A~|~20A~|~%" "张三" "30")
-(format t "~|~20A~|~20A~|~%" "李四" "25")
+(format t "~20A~20A~%" "张三" "30")
+(format t "~20A~20A~%" "李四" "25")
 (format t "~A~%" (make-string 40 :initial-element #\-))
 
 
@@ -309,4 +319,4 @@
 (let ((str (format nil "结果是: ~,2F" 3.14159)))
   (format t "format nil 返回: ~A~%" str))
 
-(format t "~%=== 例程 10 执行完毕 ===~%")
+(format t "~%==== 10 结束 ====~%")

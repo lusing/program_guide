@@ -85,10 +85,11 @@
 ;;;;
 ;;;; SBCL 可以将当前 Lisp 映像保存为可执行文件：
 ;;;;
-;;;;   (sb-ext:save-lisp-and-die "hello.exe"
+;;;;   (sb-ext:save-lisp-and-die "hello-app"
 ;;;;                             :toplevel #'main
 ;;;;                             :executable t)
 ;;;;
+;;;; 产物名在 Windows 上习惯写 hello-app.exe，macOS/Linux 上无扩展名。
 ;;;; 完整示例（取消注释后，在 REPL 中 load 本文件即可生成）：
 
 ;; (defun main ()
@@ -117,4 +118,4 @@
 ;; sb-ext:quit 退出 SBCL，可指定返回码
 ;; (sb-ext:quit :unix-status 0)
 
-(format t "~%=== 例程 01 执行完毕 ===~%")
+(format t "~%==== 01 结束 ====~%")

@@ -283,4 +283,4 @@
 ;; describe 查看函数信息
 (describe 'documented-function)
 
-(format t "~%=== 例程 04 执行完毕 ===~%")
+(format t "~%==== 04 结束 ====~%")

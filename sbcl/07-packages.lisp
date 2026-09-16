@@ -264,4 +264,4 @@
         (mapcar #'package-name
                 (package-use-list (find-package :my-project.handlers))))
 
-(format t "~%=== 例程 07 执行完毕 ===~%")
+(format t "~%==== 07 结束 ====~%")
