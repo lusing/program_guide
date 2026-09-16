@@ -1,0 +1,11 @@
+.{
+    .name = .build16, // 包名必须是合法标识符（不能以数字开头）
+    .version = "0.1.0",
+    .fingerprint = 0x7941b290a7f6b461,
+    .minimum_zig_version = "0.16.0",
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
