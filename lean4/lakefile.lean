@@ -30,9 +30,12 @@ require mathlib from "G:/github/lang/mathlib4"
 - 14_mathlib_combinatorics → MathlibCombinatorics
 - 15_mathlib_measure_probability → MathlibMeasureProbability
 - 16_advanced_tactics     → AdvancedTactics
+- 17_workflow             → Workflow
 -/
 
 @[default_target]
 lean_lib «Lean4Tutorial» where
   -- 所有示例代码的根模块
   roots := #[`Lean4Tutorial]
+  -- 递归构建全部子模块（lake build 覆盖所有章节示例）
+  globs := #[.submodules `Lean4Tutorial]

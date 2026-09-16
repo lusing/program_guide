@@ -196,19 +196,16 @@ def bool_to_string : String := toString true         -- "true"
 
 /-! # 多行字符串 -/
 
--- 使用三个双引号创建多行字符串
-def poem : String := """
-床前明月光，
-疑是地上霜。
-举头望明月，
-低头思故乡。
-"""
+-- Lean 4 没有三引号语法，多行字符串用 \n 转义与拼接构造
+def poem : String :=
+  "床前明月光，\n" ++
+  "疑是地上霜。\n" ++
+  "举头望明月，\n" ++
+  "低头思故乡。"
 
--- 多行字符串保留原始格式（包括换行和缩进）
-def code_example : String := """
-def hello :=
-  IO.println "Hello, World!"
-"""
+-- String.intercalate 用分隔符把行列表拼成多行字符串
+def code_example : String := String.intercalate "\n"
+  ["def hello :=", "  IO.println \"Hello, World!\""]
 
 /-! # 字符串分割 -/
 

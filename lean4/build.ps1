@@ -1,4 +1,4 @@
-param(
+﻿param(
     [switch]$All,
     [string]$File,
     [switch]$Clean,
@@ -53,17 +53,55 @@ if ($All) {
         }
     }
 
-    $scanDir = if ($LegacyAll) { $examplesDir } else { $validatedDir }
-    $files = Get-ChildItem -LiteralPath $scanDir -Filter "*.lean" -Recurse -File | Sort-Object FullName
-    if (-not $WithMathlib -and -not $LegacyAll) {
-        $files = $files | Where-Object { $_.Name -notmatch '^(09|10)_mathlib_' }
+    if ($LegacyAll) {
+        # 全量扫描（含历史遗留文件，可能较慢且有失效文件）
+        $files = Get-ChildItem -LiteralPath $examplesDir -Filter "*.lean" -Recurse -File | Sort-Object FullName
+    } else {
+        # 默认验证集 = 00_verified + 教程章节同步文件（与 lean4-mathlib4-tutorial.md 对应）
+        $chapterFiles = @(
+            "01_basics\basics.lean",
+            "02_inductive_types\universes.lean",
+            "02_inductive_types\inductive_types.lean",
+            "03_pattern_matching\pattern_matching.lean",
+            "04_typeclasses\typeclasses.lean",
+            "05_propositions\propositions.lean",
+            "06_tactics\tactics.lean",
+            "07_structures\structures.lean",
+            "08_modules_projects\modules.lean",
+            "09_mathlib_algebra\algebra.lean",
+            "10_mathlib_number_theory\number_theory.lean",
+            "11_mathlib_analysis\analysis.lean",
+            "12_mathlib_topology\topology.lean",
+            "13_mathlib_linear_algebra\linear_algebra.lean",
+            "14_mathlib_combinatorics\combinatorics.lean",
+            "15_mathlib_measure_probability\measure_probability.lean",
+            "16_advanced_tactics\advanced_tactics.lean",
+            "17_workflow\workflow.lean"
+        )
+        $files = @(Get-ChildItem -LiteralPath $validatedDir -Filter "*.lean" -Recurse -File | Sort-Object FullName)
+        if (-not $WithMathlib) {
+            # 不含 Mathlib 时：00_verified 跳过 mathlib 文件，章节文件只保留纯 Lean 部分（第 2-10 章）
+            $files = @($files | Where-Object { $_.Name -notmatch '^(09|10)_mathlib_' })
+            $chapterFiles = $chapterFiles[0..8]
+        }
+        foreach ($c in $chapterFiles) {
+            $p = Join-Path $examplesDir $c
+            if (Test-Path -LiteralPath $p) {
+                $files += Get-Item -LiteralPath $p
+            } else {
+                throw "章节示例文件缺失: $c"
+            }
+        }
     }
     if ($files.Count -eq 0) {
         throw "未找到可校验的 .lean 示例文件。"
     }
 
     foreach ($f in $files) {
-        $rel = [System.IO.Path]::GetRelativePath($projectRoot, $f.FullName)
+        $rel = $f.FullName
+        if ($rel.StartsWith($projectRoot, [StringComparison]::OrdinalIgnoreCase)) {
+            $rel = $rel.Substring($projectRoot.Length).TrimStart('\', '/')
+        }
         Write-Host "[Check] $rel" -ForegroundColor Cyan
         & $lake env lean $f.FullName
         if ($LASTEXITCODE -ne 0) {
@@ -100,9 +138,9 @@ if ($File) {
 }
 
 Write-Host "用法:" -ForegroundColor Yellow
-Write-Host "  .\build.ps1 -All                校验 examples\\00_verified 下全部 .lean 示例"
-Write-Host "  .\build.ps1 -All -WithMathlib   校验包含 Mathlib 的示例（需依赖已就绪）"
-Write-Host "  .\build.ps1 -All -LegacyAll     校验 examples 下全部历史 + 新示例（可能较慢）"
+Write-Host "  .\build.ps1 -All                校验 00_verified + 教程章节示例（纯 Lean 部分）"
+Write-Host "  .\build.ps1 -All -WithMathlib   含 Mathlib 的章节示例也一并校验（需依赖已就绪）"
+Write-Host "  .\build.ps1 -All -LegacyAll     扫描 examples 下全部文件（含历史遗留，可能失败）"
 Write-Host "  .\build.ps1 -File <path.lean>   校验单个示例（相对 examples）"
 Write-Host "  .\build.ps1 -Clean              清理 lake 构建产物"
 Write-Host "  .\build.ps1 -All -UpdateDeps    先更新依赖再校验"
