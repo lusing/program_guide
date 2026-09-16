@@ -34,6 +34,13 @@ let smallest list = list |> List.reduce (fun a b -> if a < b then a else b)
 | `new()` | 有无参构造 |
 | `unmanaged` | 非托管（互操作场景） |
 
+约束也支持**多个接口联用**与**类型继承**（`'T when 'T :> IComparable and 'T : equality`）。看约束最快的办法：把函数写完，悬停 IDE 或 `dotnet fsi` 里粘进去，`val` 行会印出编译器补全的完整签名——通常比你手写的更宽松。
+
+```fsharp
+// fsi 里查看 smallest 的实际签名：
+// val smallest: list: 'a list -> 'a when 'a : comparison
+```
+
 ## 12.4 SRTP：^T 与编译期特化
 
 普通泛型 `'T` 是**运行时擦除**的；SRTP 用 `^T`（脱字符），在**每个调用点按实际类型特化**（配合 `inline`），于是可以要求"支持乘法的类型"这种 C# 泛型做不到的事：
