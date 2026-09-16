@@ -1,0 +1,8 @@
+name: cart_demo
+description: 19 章测试示例：购物车计价
+version: 1.0.0
+environment:
+  sdk: ^3.13.0
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.26.0
