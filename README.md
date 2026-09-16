@@ -24,7 +24,7 @@
 - [cpp20](./cpp20) — C++20 教程与示例，适配 MSVC/Windows 构建
 - [dart](./dart) — Dart 语言入门与示例，使用 Dart SDK 验证
 - [dlang](./dlang) — D 语言教程与示例，使用 DMD 编译验证
-- [emacs](./emacs) — Emacs Lisp 扩展开发教程与示例，使用 Emacs 31 byte-compile 验证
+- [emacs](./emacs) — Emacs Lisp 扩展开发教程与示例，使用 Emacs 31.1 `--batch` 验证（26 个示例，双入口 `run-all.sh` / `build.ps1`，四条判定标准：编译零警告 + 运行 stderr 为空 + 无多余控制字符 + 结束标记）
 - [dotnet](./dotnet) — .NET 教程与示例工程，使用 .NET SDK (`dotnet build`) 验证
 - [elixir](./elixir) — Elixir 教程与示例，使用 elixirc 编译验证
 - [erlang](./erlang) — Erlang/OTP 教程与示例，使用 erlc 编译验证
@@ -47,7 +47,7 @@
 - [win32](./win32) — Win32 API 桌面编程指南，使用 MSVC + Win32 API 编译验证
 - [OpenCL](./OpenCL) — OpenCL Windows 教程，使用 Visual Studio + CUDA CL 头文件验证
 - [rust](./rust) — Rust 教程与示例，使用 rustc 编译并运行验证
-- [sbcl](./sbcl) — Common Lisp / SBCL 教程与示例，使用 SBCL compile-file 验证
+- [sbcl](./sbcl) — Common Lisp / SBCL 教程与示例，运行全部示例验证（macOS + SBCL 2.6.7，17 个示例，双入口 `run-all.sh` / `build.ps1`，四条判定：退出码 0 + stderr 为空 + 无多余控制字符 + 结束标记）
 - [sdl2](./sdl2) — SDL2 C++ 教程与示例，使用 MSVC + SDL2 库编译验证
 - [swift](./swift) — Swift 教程与示例，使用 swiftc 编译验证
 - [WinUI3](./WinUI3) — WinUI 3 C++/WinRT 教程与示例，使用 MSVC (vcvars64 + cl) 验证
@@ -131,7 +131,7 @@
 - Coq (coqc)
 - Dart SDK
 - DMD
-- Emacs + Emacs Lisp (ELisp)
+- GNU Emacs 31.1 + Emacs Lisp (ELisp)（扩展开发，`emacs -Q --batch` 非交互验证；`run-all.sh` 与 `build.ps1` 双入口）
 - .NET SDK
 - Elixir
 - Erlang/OTP
@@ -149,7 +149,7 @@
 - SWI-Prolog 10.0.2 + GNU Prolog 1.5.0 / gplc（逻辑编程，macOS macports 安装）
 - Ren'Py
 - Rust
-- SBCL
+- SBCL 2.6.7（Common Lisp；macOS macports 安装 `/opt/local/bin/sbcl`，Windows scoop 安装；sbcl 目录示例有意绑定 SBCL 扩展，为**单实现通道**）
 - Swift
 - Kotlin Compiler
 - MFC / Win32 桌面框架
