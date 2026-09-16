@@ -1,68 +1,75 @@
-# MFC 开发指南示例集
+# MFC 开发指南
 
-本目录按 `guide` 统一标准整理了 MFC（Microsoft Foundation Classes）教程中的可编译示例，并使用本机 Visual Studio VC 工具链进行验证。
+一套从零开始的 MFC（Microsoft Foundation Classes）实用教程：13 章正文 + 12 个可编译运行的示例 + 1 个实战项目。所有示例在本机 Visual Studio / MSVC 工具链上编译、链接并运行验证。
+
+## 快速开始
+
+```powershell
+cd G:\code\guide\mfc
+.\build.ps1 -All                # 构建全部示例（含资源编译与链接）
+.\build.ps1 -File 03_resources  # 构建单个示例
+.\build.ps1 -Clean              # 清理 build 目录
+```
+
+产物在 `build\<示例名>.exe`，可直接双击运行。
 
 ## 目录结构
 
 ```text
 mfc/
-├── README.md
-├── MFC开发指南.md
-├── build.ps1
-├── examples/
-│   ├── 01_hello_mfc/
-│   │   └── main.cpp
-│   ├── 02_dialog_demo/
-│   │   └── main.cpp
-│   ├── 03_controls_demo/
-│   │   └── main.cpp
-│   ├── 04_docview_demo/
-│   │   └── main.cpp
-│   ├── 05_menu_toolbar_demo/
-│   │   └── main.cpp
-│   └── 06_graphics_demo/
-│       └── main.cpp
-├── build/
-└── ...
+├── README.md            # 本文件
+├── build.ps1            # 一键构建脚本（cl + rc + link）
+├── docs/                # 教程正文（按章组织）
+│   ├── 01-overview.md          # MFC 概述与开发环境
+│   ├── 02-app-lifecycle.md     # 应用骨架与消息循环
+│   ├── 03-message-map.md       # 消息映射机制
+│   ├── 04-resources.md         # 资源文件入门
+│   ├── 05-frames.md            # 窗口与框架类
+│   ├── 06-dialogs.md           # 对话框：模态、非模态与 DDX
+│   ├── 07-controls.md          # 常用控件深入
+│   ├── 08-common-dialogs.md    # 通用对话框与文件 IO
+│   ├── 09-toolbars.md          # 工具栏与状态栏
+│   ├── 10-docview.md           # Doc/View 架构
+│   ├── 11-gdi.md               # GDI 绘图与双缓冲
+│   ├── 12-threads.md           # 多线程与后台任务
+│   └── 13-notepad-plus.md      # 实战项目：记事本+
+└── examples/            # 每章示例（可独立编译运行）
+    ├── 01_hello_mfc/           # 最小 MFC 程序骨架
+    ├── 02_message_map/         # 三类消息与消息映射
+    ├── 03_resources/           # .rc 资源：菜单/加速键/字符串表
+    ├── 04_frame_layout/        # 窗口创建与 OnSize 自适应布局
+    ├── 05_dialog/              # 模态 + 非模态对话框与 DDX
+    ├── 06_controls/            # CListCtrl 报表/排序/右键菜单
+    ├── 07_common_dialogs/      # CFileDialog/CColorDialog + 文件编码
+    ├── 08_toolbar_statusbar/   # 工具栏/状态栏/命令 UI 更新
+    ├── 09_docview/             # SDI Doc/View 全流程
+    ├── 10_gdi/                 # GDI 画板 + 双缓冲
+    ├── 11_threads/             # worker 线程 + 进度回传 + 取消
+    └── 12_notepad_plus/        # 实战项目：记事本+（多模块）
 ```
+
+## 学习路线
+
+- **入门（01–05）**：跑起来 → 消息怎么流转 → 界面元素从哪来 → 窗口怎么布局
+- **进阶（06–09）**：对话框与 DDX → 控件（重点 CListCtrl）→ 文件与编码 → 菜单/工具栏/状态栏
+- **专题（10–12）**：Doc/View 架构 → GDI 绘图与双缓冲 → 多线程
+- **实战（13）**：记事本+，把全部知识串成一个完整应用
+
+建议方式：每章先跑对应的示例 exe 玩一遍，再读正文，最后读示例源码。
 
 ## 工具链
 
-- Visual Studio VC：`G:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat`
-- MFC 库：`G:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\atlmfc\lib\x64`
-- Windows SDK：`C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0`
+| 组件 | 版本 / 路径 |
+|---|---|
+| Visual Studio | 18 Community |
+| MSVC | 14.51.36231 |
+| Windows SDK | 10.0.26100.0 |
+| MFC | 动态链接（`_AFXDLL`，随 VS 安装的 mfc140u.dll） |
 
-## 编译与验证
-
-```powershell
-cd G:\code\guide\mfc
-.\build.ps1 -All
-```
-
-单个示例：
-
-```powershell
-.\build.ps1 -File 03_controls_demo\main.cpp
-```
-
-清理：
-
-```powershell
-.\build.ps1 -Clean
-```
-
-## 示例说明
-
-- `01_hello_mfc`：MFC 最小窗口骨架，展示 `CWinApp` + `CFrameWnd` 的典型结构。
-- `02_dialog_demo`：对话框、消息处理和窗口初始化基础。
-- `03_controls_demo`：演示主要控件的创建和布局，包括 `CButton`、`CEdit`、`CComboBox`、`CListBox`、`CSliderCtrl` 与 `CProgressCtrl`。
-- `04_docview_demo`：展示 `CDocument` / `CView` / `CFrameWnd` / `CWinApp` 的完整架构思路，以及 `Serialize()` 与 `OnDraw()` 的职责分工。
-- `05_menu_toolbar_demo`：演示菜单、命令处理和工具栏的创建方式，以及命令消息映射。
-- `06_graphics_demo`：展示 GDI 绘图基础，包括 `CPaintDC`、矩形、圆形、字体和颜色填充。
+`build.ps1` 的构建流程：`cl` 编译各 `.cpp` → `rc` 编译 `.rc`（UTF-8，`/c65001`）→ `cl` 链接（`/ENTRY:wWinMainCRTStartup`，Unicode MFC 的入口要求）。
 
 ## 说明
 
-- MFC 是微软提供的 C++ 窗体开发框架，适合 Windows 桌面应用开发。
-- 本目录采用本机 MSVC / MFC 工具链进行编译验证，确保示例在当前 Windows 环境中能正确通过语法和类型检查。
-- 由于 MFC 是典型的桌面 GUI 框架，本文档以编译验证为主；在无桌面会话的环境中不直接运行窗口程序，但保证代码能被本机编译器成功编译。
-- 目前的示例重点放在“核心框架 + 主流控件 + 菜单/工具栏 + 对话框 + 图形绘制 + Doc/View 设计”几部分，以便形成系统的 MFC 学习路径。
+- 所有示例均已实际编译、链接通过；01、03、09、13 还做过启动运行验证
+- 示例刻意不用 VS 向导生成的工程文件，保持"每个文件都看得懂"——但资源组织、ID 惯例与真实 VS 工程一致
+- 中文环境无特殊要求；.rc 与源码均为 UTF-8（源码 `/utf-8`，资源 `/c65001`）

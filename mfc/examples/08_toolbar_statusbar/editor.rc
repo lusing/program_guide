@@ -1,0 +1,19 @@
+#pragma code_page(65001)
+
+#include "resource.h"
+#include "afxres.h"
+
+IDR_MAIN_MENU MENU
+BEGIN
+    POPUP "文件(&F)"
+    BEGIN
+        MENUITEM "打开(&O)...",  IDM_FILE_OPEN
+        MENUITEM "保存(&S)...",  IDM_FILE_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "退出(&X)",     IDM_FILE_EXIT
+    END
+    POPUP "格式(&T)"
+    BEGIN
+        MENUITEM "文字颜色(&C)...", IDM_FMT_COLOR
+    END
+END

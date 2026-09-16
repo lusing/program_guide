@@ -1,0 +1,33 @@
+// Doc/View 模板资源。IDR_MAINFRAME 的字符串表有一套严格的字段格式，
+// CSingleDocTemplate 靠它解析标题、文件过滤器和扩展名（见 docs 第 10 章）。
+#pragma code_page(65001)
+
+#include "resource.h"
+#include "afxres.h"
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "文件(&F)"
+    BEGIN
+        MENUITEM "新建(&N)\tCtrl+N",    ID_FILE_NEW
+        MENUITEM "打开(&O)...\tCtrl+O", ID_FILE_OPEN
+        MENUITEM "保存(&S)\tCtrl+S",    ID_FILE_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "退出(&X)",            ID_APP_EXIT
+    END
+END
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "N", ID_FILE_NEW,  VIRTKEY, CONTROL
+    "O", ID_FILE_OPEN, VIRTKEY, CONTROL
+    "S", ID_FILE_SAVE, VIRTKEY, CONTROL
+END
+
+// Doc 模板的标题字符串必须放在 STRINGTABLE 里。字段顺序（\n 分隔）：
+//   1主窗口标题  2文档名  3新建默认名  4过滤器名  5过滤器
+//   6默认扩展名  7注册表类型ID  8注册表类型名  9新文件过滤器名
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME "MFC 笔记\n笔记\n笔记\n文本文件 (*.txt)|*.txt|所有文件 (*.*)|*.*||\n.note\nNote.Document\n笔记文档\n笔记"
+END

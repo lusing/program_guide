@@ -1,0 +1,43 @@
+// 资源脚本：菜单、加速键、字符串表都定义在这里。
+// rc.exe 用 code page 65001（UTF-8）解析本文件，中文字符串可直接书写。
+#pragma code_page(65001)
+
+#include "resource.h"
+#include "afxres.h"
+
+// 主菜单。&后面的字母是 Alt 快捷键，\t 后面是加速键提示文本。
+IDR_MAIN_MENU MENU
+BEGIN
+    POPUP "文件(&F)"
+    BEGIN
+        MENUITEM "新建(&N)\tCtrl+N",    IDM_FILE_NEW
+        MENUITEM "打开(&O)...\tCtrl+O", IDM_FILE_OPEN
+        MENUITEM "保存(&S)\tCtrl+S",    IDM_FILE_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "退出(&X)",            IDM_FILE_EXIT
+    END
+    POPUP "编辑(&E)"
+    BEGIN
+        MENUITEM "撤销(&U)\tCtrl+Z",    IDM_EDIT_UNDO
+    END
+    POPUP "帮助(&H)"
+    BEGIN
+        MENUITEM "关于(&A)...",         IDM_HELP_ABOUT
+    END
+END
+
+// 加速键表：把 Ctrl+N 这类组合键翻译成菜单命令 ID。
+IDR_MAIN_ACCEL ACCELERATORS
+BEGIN
+    "N", IDM_FILE_NEW,  VIRTKEY, CONTROL
+    "O", IDM_FILE_OPEN, VIRTKEY, CONTROL
+    "S", IDM_FILE_SAVE, VIRTKEY, CONTROL
+    "Z", IDM_EDIT_UNDO, VIRTKEY, CONTROL
+END
+
+// 字符串表：界面文案集中管理，方便以后做本地化。
+STRINGTABLE
+BEGIN
+    IDS_APP_TITLE "MFC 资源示例"
+    IDS_GREETING  "这段文字来自字符串表资源（IDS_GREETING）。菜单由 .rc 资源创建，加速键已生效，试试 Ctrl+N。"
+END

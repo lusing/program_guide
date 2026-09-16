@@ -1,0 +1,43 @@
+// 对话框资源模板。坐标单位是“对话框单位”（DLU）：
+// 1 横向 DLU = 平均字符宽度的 1/4，1 纵向 DLU = 字符高度的 1/8，
+// 因此用 VS 的对话框编辑器拖出来的布局在不同 DPI 下比例正确。
+#pragma code_page(65001)
+
+#include "resource.h"
+#include "afxres.h"
+
+IDR_MAIN_MENU MENU
+BEGIN
+    POPUP "对话框(&D)"
+    BEGIN
+        MENUITEM "登录(&L)...",        IDM_DLG_LOGIN
+        MENUITEM "信息窗口(&I)",       IDM_DLG_INFO
+    END
+END
+
+// 模态登录对话框：DS_MODALFRAME 表示模态边框，DEFPUSHBUTTON 是默认按钮
+IDD_LOGIN DIALOGEX 0, 0, 210, 96
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "登录"
+FONT 9, "微软雅黑"
+BEGIN
+    LTEXT           "用户名：", IDC_STATIC, 8, 11, 40, 10
+    EDITTEXT        IDC_USER, 52, 8, 150, 14, ES_AUTOHSCROLL
+    LTEXT           "密码：", IDC_STATIC, 8, 29, 40, 10
+    EDITTEXT        IDC_PASS, 52, 26, 150, 14, ES_PASSWORD
+    CONTROL         "记住用户名", IDC_REMEMBER, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 52, 46, 70, 10
+    DEFPUSHBUTTON   "确定", IDOK, 90, 76, 50, 14
+    PUSHBUTTON      "取消", IDCANCEL, 152, 76, 50, 14
+END
+
+// 非模态信息窗口：普通边框，可以和主窗口自由切换
+IDD_INFO DIALOGEX 0, 0, 180, 60
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "运行信息"
+FONT 9, "微软雅黑"
+BEGIN
+    LTEXT           "已运行秒数：", IDC_STATIC, 10, 10, 60, 10
+    LTEXT           "0", IDC_UPTIME, 74, 10, 90, 10
+    LTEXT           "本窗口是非模态对话框，可继续操作主窗口。", IDC_STATIC, 10, 32, 160, 10
+END

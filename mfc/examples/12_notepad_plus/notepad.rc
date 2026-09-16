@@ -1,0 +1,89 @@
+// 12_notepad_plus 的资源脚本：菜单、加速键、三个对话框、工具栏位图。
+#pragma code_page(65001)
+
+#include "resource.h"
+#include "afxres.h"
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "文件(&F)"
+    BEGIN
+        MENUITEM "新建(&N)\tCtrl+N",    IDM_FILE_NEW
+        MENUITEM "打开(&O)...\tCtrl+O", IDM_FILE_OPEN
+        MENUITEM "保存(&S)...\tCtrl+S", IDM_FILE_SAVE
+        POPUP "最近打开(&R)"
+        BEGIN
+            MENUITEM "(空)", IDM_MRU_1
+            MENUITEM "",    IDM_MRU_2
+            MENUITEM "",    IDM_MRU_3
+            MENUITEM "",    IDM_MRU_4
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "退出(&X)",            IDM_FILE_EXIT
+    END
+    POPUP "编辑(&E)"
+    BEGIN
+        MENUITEM "撤销(&U)\tCtrl+Z",    IDM_EDIT_UNDO
+        MENUITEM SEPARATOR
+        MENUITEM "剪切(&T)\tCtrl+X",    IDM_EDIT_CUT
+        MENUITEM "复制(&C)\tCtrl+C",    IDM_EDIT_COPY
+        MENUITEM "粘贴(&P)\tCtrl+V",    IDM_EDIT_PASTE
+    END
+    POPUP "工具(&T)"
+    BEGIN
+        MENUITEM "统计面板(&S)",        IDM_TOOLS_STATS
+        MENUITEM "设置(&O)...",         IDM_TOOLS_SETTINGS
+    END
+    POPUP "帮助(&H)"
+    BEGIN
+        MENUITEM "关于(&A)...",         IDM_HELP_ABOUT
+    END
+END
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "N", IDM_FILE_NEW,  VIRTKEY, CONTROL
+    "O", IDM_FILE_OPEN, VIRTKEY, CONTROL
+    "S", IDM_FILE_SAVE, VIRTKEY, CONTROL
+    "Z", IDM_EDIT_UNDO, VIRTKEY, CONTROL
+    "X", IDM_EDIT_CUT,  VIRTKEY, CONTROL
+    "C", IDM_EDIT_COPY, VIRTKEY, CONTROL
+    "V", IDM_EDIT_PASTE, VIRTKEY, CONTROL
+END
+
+// 工具栏位图：3 格 16x15（新建/打开/保存），程序运行时加载
+IDR_TOOLBAR_BMP BITMAP "toolbar.bmp"
+
+IDD_SETTINGS DIALOGEX 0, 0, 190, 78
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "设置"
+FONT 9, "微软雅黑"
+BEGIN
+    LTEXT           "Tab 宽度：", IDC_STATIC, 10, 11, 48, 10
+    EDITTEXT        IDC_TAB_SIZE, 62, 8, 40, 14, ES_NUMBER
+    CONTROL         "自动换行", IDC_WRAP, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 10, 30, 70, 10
+    DEFPUSHBUTTON   "确定", IDOK, 70, 58, 50, 14
+    PUSHBUTTON      "取消", IDCANCEL, 130, 58, 50, 14
+END
+
+IDD_STATS DIALOGEX 0, 0, 160, 140
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "统计面板"
+FONT 9, "微软雅黑"
+BEGIN
+    CONTROL         "", IDC_STATS_LIST, "SysListView32",
+                    LVS_REPORT | LVS_SHOWSELALWAYS | WS_CHILD | WS_VISIBLE |
+                    WS_BORDER | WS_TABSTOP, 8, 8, 144, 96
+    DEFPUSHBUTTON   "重新统计", IDC_STATS_REFRESH, 42, 116, 76, 16
+END
+
+IDD_ABOUT DIALOGEX 0, 0, 180, 62
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "关于"
+FONT 9, "微软雅黑"
+BEGIN
+    LTEXT           "记事本+ (MFC 教程实战项目)", IDC_STATIC, 12, 8, 156, 10
+    LTEXT           "SDI 框架 + DDX 设置 + 后台统计线程", IDC_STATIC, 12, 22, 156, 10
+    DEFPUSHBUTTON   "确定", IDOK, 65, 42, 50, 14
+END
