@@ -1,4 +1,11 @@
 const std = @import("std");
+const builtin = @import("builtin");
+
+comptime {
+    if (builtin.cpu.arch != .x86_64) {
+        @compileError("This example requires x86_64 architecture with SSE2 support");
+    }
+}
 
 const Complex = struct {
     re: f64,

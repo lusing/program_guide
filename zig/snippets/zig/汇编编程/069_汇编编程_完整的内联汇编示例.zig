@@ -1,4 +1,11 @@
 const std = @import("std");
+const builtin = @import("builtin");
+
+comptime {
+    if (builtin.cpu.arch != .x86_64) {
+        @compileError("This example requires x86_64 architecture");
+    }
+}
 
 // 字符串长度计算（类似 strlen）
 fn strlen(s: [*]const u8) usize {

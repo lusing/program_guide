@@ -1,4 +1,11 @@
 const std = @import("std");
+const builtin = @import("builtin");
+
+comptime {
+    if (builtin.cpu.arch != .x86_64) {
+        @compileError("This example requires x86_64 architecture");
+    }
+}
 
 // 使用 rdtsc 指令获取时间戳计数器
 pub fn rdtsc() u64 {

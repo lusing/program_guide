@@ -1,15 +1,12 @@
 const std = @import("std");
+const builtin = @import("builtin");
 
 pub fn main() void {
-    var x: i32 = 42;
+    const x: i32 = 42;
 
-    // 使用汇编设置断点
-    asm volatile (
-        "int3"  // x86_64 断点指令
-        :
-        : [x] "r" (x)
-        :
-    );
+    // 跨平台断点：推荐使用 @breakpoint()
+    // 等效于 x86_64 的 int3、ARM64 的 brk #1
+    @breakpoint();
 
     std.debug.print("x = {}\n", .{x});
 }

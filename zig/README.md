@@ -6,14 +6,17 @@
 
 - `snippets/`：教程中的全部代码块
 - `examples/`：可在当前 Zig 工具链下编译验证的示例（当前 5 个）
-- `build.ps1`：统一编译验证入口
+- `build.ps1`：Windows 统一编译验证入口（PowerShell）
+- `build.sh`：macOS/Linux 统一编译验证入口（Bash）
 - `build/`：编译产物输出目录
 
-当前 Zig 编译器位于：
+当前 Zig 编译器路径需根据平台自行配置：
 
-```text
-G:\scoop\apps\zig\0.16.0\zig.exe
-```
+| 平台 | 安装方式 | 默认路径示例 |
+|------|---------|-------------|
+| Windows | `choco install zig` 或 `scoop install zig` | `G:\scoop\apps\zig\0.16.0\zig.exe` |
+| macOS | `brew install zig` | `/opt/homebrew/bin/zig`（Apple Silicon）或 `/usr/local/bin/zig`（Intel）|
+| Linux | 下载 [官方包](https://ziglang.org/download/) | `/usr/local/bin/zig` |
 
 欢迎学习 Zig 编程语言！本教程将帮助你从零开始掌握 Zig。
 
@@ -1113,15 +1116,11 @@ pub fn main() !void {
 const std = @import("std");
 
 pub fn main() void {
-    var x: i32 = 42;
+    const x: i32 = 42;
 
-    // 使用汇编设置断点
-    asm volatile (
-        "int3"  // x86_64 断点指令
-        :
-        : [x] "r" (x)
-        :
-    );
+    // 跨平台断点：推荐使用 @breakpoint()
+    // 等效于 x86_64 的 int3、ARM64 的 brk #1
+    @breakpoint();
 
     std.debug.print("x = {}\n", .{x});
 }
@@ -1383,11 +1382,11 @@ pub fn main() void {
 ```zig
 const std = @import("std");
 
-extern "libc" fn printf(format: [*:0]const u8, ...) c_int;
+extern "c" fn printf(format: [*:0]const u8, ...) c_int;
 
 pub fn main() !void {
     const msg = "Hello from Zig!\n";
-    printf("{}", msg);
+    printf("%s", msg.ptr);
 }
 ```
 
@@ -1425,8 +1424,17 @@ pub fn main() void {
 
 #### x86_64 汇编示例
 
+> **注意**：以下代码仅适用于 x86_64 架构。在编译时应使用 `@import("builtin").cpu.arch` 进行架构检查。
+
 ```zig
 const std = @import("std");
+const builtin = @import("builtin");
+
+comptime {
+    if (builtin.cpu.arch != .x86_64) {
+        @compileError("This example requires x86_64 architecture");
+    }
+}
 
 // 使用 rdtsc 指令获取时间戳计数器
 pub fn rdtsc() u64 {
@@ -1471,8 +1479,17 @@ pub fn cpuid() void {
 
 #### ARM64 (aarch64) 汇编示例
 
+> **注意**：以下代码仅适用于 aarch64 (ARM64) 架构，如 Apple Silicon (M1/M2)。在 x86_64 上编译会触发 `@compileError`。
+
 ```zig
 const std = @import("std");
+const builtin = @import("builtin");
+
+comptime {
+    if (builtin.cpu.arch != .aarch64) {
+        @compileError("This example requires aarch64 (ARM64) architecture");
+    }
+}
 
 pub fn get_tpidr() u64 {
     var value: u64 = undefined;
@@ -2384,10 +2401,18 @@ pub fn main() !void {
 
 ```zig
 const std = @import("std");
+const builtin = @import("builtin");
 
 pub fn main() !void {
-    // 获取进程 ID
-    const pid = std.os.linux.getpid();
+    const allocator = std.heap.page_allocator;
+
+    // 获取进程 ID（跨平台）
+    const pid = switch (builtin.os.tag) {
+        .linux => std.os.linux.getpid(),
+        .macos, .ios, .watchos, .tvos => std.c.getpid(),
+        .windows => std.os.windows.kernel32.GetCurrentProcessId(),
+        else => @compileError("Unsupported platform for getpid"),
+    };
     std.debug.print("PID: {}\n", .{pid});
 
     // 获取环境变量

@@ -1,4 +1,11 @@
 const std = @import("std");
+const builtin = @import("builtin");
+
+comptime {
+    if (builtin.cpu.arch != .aarch64) {
+        @compileError("This example requires aarch64 (ARM64) architecture");
+    }
+}
 
 pub fn get_tpidr() u64 {
     var value: u64 = undefined;
