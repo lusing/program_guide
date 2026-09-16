@@ -89,6 +89,8 @@ dotnet fsi script.fsx                  # 脚本
 ## fsproj 要点
 
 - `<Compile Include>` 顺序 = 编译顺序（入口文件最后）。
-- GUI：`net10.0-windows` + `UseWindowsForms`/`UseWPF` + `WinExe`。
+- GUI：`net10.0-windows` + `UseWindowsForms`/`UseWPF` + `WinExe`；macOS/Linux 上只能构建：
+  `dotnet build -p:EnableWindowsTargeting=true`。
 - Web：`Sdk="Microsoft.NET.Sdk.Web"`。
 - 测试三件套：`Microsoft.NET.Test.Sdk` / `xunit` / `xunit.runner.visualstudio`。
+- 多 SDK 机器：靠根目录 `global.json` 选版本（`"version": "10.0.100", "rollForward": "latestFeature"`）。

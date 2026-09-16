@@ -45,7 +45,7 @@ F# 不是"隔离的语言"，而是"同一平台上的另一种思维方式"。
 
 ## 1.4 工具链：dotnet CLI 一种就够
 
-本教程只用 .NET SDK 自带的 CLI（安装路径：`G:\scoop\apps\dotnet-sdk\current\dotnet.exe`，实际使用时在 PATH 里的 `dotnet` 即是它）：
+本教程只用 .NET SDK 自带的 CLI。脚本会自动找 `dotnet`，查找顺序是：显式参数 `-Dotnet <路径>` / `DOTNET=<路径>` → `DOTNET_ROOT` → 常见安装位置（Windows 的 scoop/Program Files、macOS 的 `/opt/local/bin`、Homebrew 的 `/opt/homebrew/bin`）→ PATH 里的 `dotnet`。平时直接用 PATH 里的即可：
 
 ```bash
 dotnet new console -lang F# -o hello     # 新建 F# 控制台工程
@@ -87,14 +87,30 @@ GUI 工程另有开关（第 19 章）：`UseWindowsForms` / `UseWPF` + `net10.0
 
 ## 1.7 本目录的构建脚本
 
+**Windows（PowerShell 7）**：
+
 ```powershell
-cd G:\code\guide\fsharp
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All                  # 全部示例：构建+运行+测试
-pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 06_collections   # 单个示例目录
-pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean                 # 清理 build 目录
+cd D:\code\guide\fsharp          # 换成你自己的路径
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All                       # 全部示例：构建+运行+测试
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 06_collections    # 单个示例目录
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean                     # 清理 build 目录
 ```
 
-行为分级：控制台示例编译后实际运行；GUI 工程只构建；测试工程直接 `dotnet test`。脚本含中文且无 BOM，**必须用 PowerShell 7（pwsh）运行**，Windows PowerShell 5.1 会按 ANSI 误读。
+**macOS / Linux（bash）**：
+
+```bash
+cd ~/code/guide/fsharp           # 换成你自己的路径
+./run-all.sh                     # 全部示例：构建+运行+测试
+./run-all.sh 06_collections      # 单个示例目录
+./run-all.sh --clean             # 清理 build 目录
+```
+
+两个入口等价：控制台示例编译后实际运行；GUI 工程只构建；测试工程直接 `dotnet test`。
+判定标准是**退出码为 0 且 stderr 为空**；运行输出留档在 `build/log/<工程名>.out`。
+
+ps1 脚本含中文且无 BOM，**必须用 PowerShell 7（pwsh）运行**，Windows PowerShell 5.1 会按 ANSI 误读。
+
+根目录的 `global.json` 把 SDK 钉在 `10.0.*`（`rollForward: latestFeature`）：机器上同时装了 .NET 11 preview 之类的更高版本时，`dotnet` 默认会挑最新的，钉住可以避免"教程跑在没验证过的 SDK 上"。
 
 单跑一个示例的日常学法：
 
@@ -110,7 +126,7 @@ dotnet run
 | SDK | .NET 10（`dotnet --info` 确认） |
 | 语言 | F# 10（`dotnet fsi` 启动横幅可见） |
 | 目标框架 | `net10.0`（GUI 章为 `net10.0-windows`） |
-| 平台 | Windows / macOS / Linux 全支持（GUI 章除外） |
+| 平台 | Windows / macOS / Linux 全支持（GUI 章**只能构建**，运行仍限 Windows） |
 | 编辑器 | VS、VS Code（Ionide/fscodec）、Rider 均可 |
 
 ## 1.9 学习路线图
@@ -131,3 +147,5 @@ dotnet run
 - **缩进即语法**：F# 用 4 空格缩进划分块，缩进错了不是风格问题，是编译错误。
 - **无隐式 open**：`Split` 不会自动可见，`String` 的方法要么 `open System`，要么写全名。
 - **pwsh 7**：跑 build.ps1 别用 Windows PowerShell 5.1（编码问题）。
+- **SDK 版本**：机器上装了多个 SDK 时，`dotnet` 默认挑版本最高的那个。要跑教程主线就靠根目录 `global.json` 钉住 10.0（`rollForward: latestFeature` 会自动选 10.0 里最新的 feature band）。
+- **示例与脚本的 obj/bin 冲突**：在示例目录直接 `dotnet run` 会就地生成 `obj/`、`bin/`，之后再跑总脚本会撞上"重复生成特性"之类的错。总脚本开跑前会自动清扫这些游离目录，所以不用手动管。

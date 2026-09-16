@@ -9,7 +9,10 @@ fsharp/
 ├── README.md               本文件
 ├── docs/                   20 章教程（01 → 20 顺序阅读）
 ├── examples/               19 个示例目录、21 个工程（章号 = 示例号）
-├── build.ps1               统一构建脚本（须 PowerShell 7 / pwsh 运行）
+├── build.ps1               Windows 构建脚本（PowerShell 7 / pwsh）
+├── run-all.sh              macOS / Linux 构建脚本（与上者等价）
+├── global.json             把 SDK 钉在 .NET 10（10.0.*）
+├── build/                  构建产物与运行日志（脚本生成，不入库）
 └── CHEATSheet.md           语法速查
 ```
 
@@ -40,20 +43,34 @@ fsharp/
 
 ## 构建工具链
 
-- .NET SDK：`G:\scoop\apps\dotnet-sdk\current\dotnet.exe`（详见[第 01 章](docs/01-overview.md)）
-- 构建脚本须 **pwsh 7** 运行（含中文无 BOM，Windows PowerShell 5.1 会误读）
+- **.NET 10 SDK**：根目录 `global.json` 把版本钉在 `10.0.*`（`rollForward: latestFeature`）。
+  机器上装了更高的 SDK（比如 .NET 11 preview）时，`dotnet` 默认会挑最高的那个——钉住可以避免教程跑在没验证过的 SDK 上。
+- **dotnet 的查找顺序**：显式 `-Dotnet <路径>` / `DOTNET=<路径>` → `DOTNET_ROOT` → 常见安装位置
+  （Windows 的 scoop / Program Files，macOS 的 `/opt/local/bin`、Homebrew 的 `/opt/homebrew/bin`）→ PATH 里的 `dotnet`。
+  两个入口都自动探测，一般不用管。
 
 ## 编译验证
 
-```powershell
-cd G:\code\guide\fsharp
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All                  # 全部示例：构建+运行+测试
-pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 06_collections   # 单个示例目录
-pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 20_todo      # 嵌套目录构建其下全部工程
-pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean                # 清理 build 目录
+**macOS / Linux**：
+
+```bash
+cd ~/code/guide/fsharp
+./run-all.sh                     # 全部示例：构建+运行+测试
+./run-all.sh 06_collections      # 单个示例目录
+./run-all.sh --clean             # 清理 build 目录
 ```
 
-行为分级：控制台示例编译后实际运行；GUI 工程只构建；测试工程自动 `dotnet test`。
+**Windows（PowerShell 7）**：
+
+```powershell
+cd D:\code\guide\fsharp
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All                     # 全部示例：构建+运行+测试
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 06_collections  # 单个示例目录
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean                   # 清理 build 目录
+```
+
+两个入口等价，判定标准一致：**退出码 0 且 stderr 为空**。运行输出留档在 `build/log/<工程名>.out`。
+行为分级：控制台示例编译后实际运行；GUI 工程只构建（macOS/Linux 上会自动加 `EnableWindowsTargeting`）；测试工程自动 `dotnet test`。
 
 单跑某个示例（第 02 章起的标准学法）：
 
@@ -61,3 +78,16 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean                # 清理 buil
 cd examples/06_collections
 dotnet run
 ```
+
+## macOS / Linux 兼容性现状
+
+本文档在 macOS（Apple 芯片、.NET SDK 10.0.400）上实测过：
+
+| 范围 | 结果 |
+|---|---|
+| 21 个工程中的 19 个（02–18、20 含测试） | 构建 + 运行全通过，输出与 Windows 一致 |
+| 第 19 章 GUI（winforms / wpf） | 只能**构建**（`-p:EnableWindowsTargeting=true`），产物限 Windows 运行 |
+
+示例本身没有平台相关代码：临时目录走 `Path.GetTempPath()`、路径拼接走 `Path.Combine`、
+Web 自测用随机端口（`:0`）。唯一"每次可能不同"的是第 15 章打印的临时目录绝对路径
+和第 13 章的耗时数字——它们是环境值，不是失败。
