@@ -33,6 +33,9 @@ Desktop.ini
 **/.lake/packages/
 *.fasl
 
+# Zig Windows binary artifact
+**/$outExe
+
 # C/C++/MSVC artifacts
 *.obj
 *.o
