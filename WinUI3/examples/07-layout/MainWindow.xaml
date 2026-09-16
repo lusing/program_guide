@@ -1,0 +1,39 @@
+<Window
+    x:Class="LayoutApp.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 07 篇：Grid 行列 + Star/Auto 尺寸 + ScrollViewer 兜底 -->
+    <Grid x:Name="rootPanel" Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock x:Name="StatusText" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                   Text="Ready" FontSize="18" />
+
+        <!-- 主内容区：ScrollViewer 让内容超出时能滚，而不是被裁掉 -->
+        <ScrollViewer Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="ContentStack" Spacing="8">
+                <Rectangle Height="80" Fill="#FF69B4" />
+                <Rectangle Height="80" Fill="#FFA500" />
+                <Rectangle Height="80" Fill="#32CD32" />
+                <Rectangle Height="80" Fill="#1E90FF" />
+                <Rectangle Height="80" Fill="#9370DB" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- 侧栏：固定列宽，验证 Star 比例 2:1 -->
+        <Border Grid.Row="1" Grid.Column="1" Background="#FFDDDDDD" Margin="8,0,0,0">
+            <TextBlock Text="side" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Border>
+
+        <Button Grid.Row="2" Grid.Column="0" Content="Report layout size" Click="OnReportSize" />
+    </Grid>
+</Window>

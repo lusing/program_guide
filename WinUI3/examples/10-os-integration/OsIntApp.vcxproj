@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup Label="Globals">
+    <CppWinRTOptimized>true</CppWinRTOptimized>
+    <ProjectGuid>{10a1b2c3-4d5e-4f60-8a9b-0c1d2e3f4a10}</ProjectGuid>
+    <RootNamespace>OsIntApp</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>17.0</MinimumVisualStudioVersion>
+    <AppContainerApplication>false</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <!-- The legacy packages.config asset resolver (Microsoft.NuGet.targets) cannot read a
+         PackageReference restore for a UAP project; NuGet's own generated props/targets
+         already wire every package in, so turn the old resolver off. -->
+    <ResolveNuGetPackages>false</ResolveNuGetPackages>
+    <WindowsTargetPlatformVersion Condition="'$(WindowsTargetPlatformVersion)' == ''">10.0.26100.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
+    <UseWinUI>true</UseWinUI>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <!-- None = unpackaged so the sample builds and runs from the command line;
+         pass -p:WindowsPackageType=MSIX with a Package.appxmanifest to package. -->
+    <WindowsPackageType Condition="'$(WindowsPackageType)' == ''">None</WindowsPackageType>
+    <EnableMsixTooling>true</EnableMsixTooling>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
+            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
+            Label="LocalAppDataPlatform" />
+  </ImportGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <!-- Sources are UTF-8 without BOM; without this MSVC reads them as cp936
+           on a Chinese SKU and emits C4819. -->
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <Midl>
+      <MergedFromFileName>$(MSBuildProjectName).idl.h</MergedFromFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="App.xaml.h" />
+    <ClInclude Include="MainWindow.xaml.h" />
+    <ClInclude Include="ToolService.h" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="App.xaml.cpp" />
+    <ClCompile Include="MainWindow.xaml.cpp" />
+    <ClCompile Include="ToolService.cpp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Midl Include="App.idl" />
+    <Midl Include="MainWindow.idl" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml" />
+    <Page Include="MainWindow.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />
+    <PackageReference Include="Microsoft.Windows.CppWinRT" Version="2.0.250303.1" />
+  </ItemGroup>
+
+  <!-- MarkupCompilePass2 writes each page's InitializeComponent/Connect definitions into
+       <Page>.xaml.g.hpp, but reports them in no output item, and the page sources have
+       already been compiled by then. Hand them to the toolchain's own XamlGenerated
+       iteration, which CompileXamlGeneratedFiles runs between pass 2 and Link.
+       ApplicationDefinition is skipped on purpose: its .g.hpp defines wWinMain. -->
+  <Target Name="CompileXamlPageImplementationFiles" AfterTargets="MarkupCompilePass2">
+    <ItemGroup>
+      <ClCompile Include="@(Page->'$(XamlGeneratedOutputPath)%(Filename).xaml.g.hpp')">
+        <CompilerIteration>XamlGenerated</CompilerIteration>
+        <!-- The Windows App SDK stamps its /D list onto ClCompile items before the main
+             compile; inherit it so this TU matches the precompiled header (else C4651). -->
+        <PreprocessorDefinitions>@(ClCompile->WithMetadataValue('Filename', 'App.xaml')->'%(PreprocessorDefinitions)')</PreprocessorDefinitions>
+      </ClCompile>
+    </ItemGroup>
+  </Target>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+
+</Project>

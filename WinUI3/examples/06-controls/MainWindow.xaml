@@ -1,0 +1,39 @@
+<Window
+    x:Class="ControlsApp.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 根元素必须有名字：ContentDialog 的 XamlRoot 只能从内容树根取（docs/06 6.7） -->
+    <Grid x:Name="rootPanel" Margin="24">
+        <StackPanel Spacing="12">
+            <TextBlock x:Name="StatusText" Text="Ready" FontSize="18" />
+
+            <!-- 6.4 ComboBox：SelectedItem 是装箱对象，需 unbox_value 解包 -->
+            <ComboBox x:Name="ThemeBox" Header="Theme" SelectionChanged="OnThemeChanged">
+                <x:String>Light</x:String>
+                <x:String>Dark</x:String>
+                <x:String>System</x:String>
+            </ComboBox>
+
+            <!-- 6.3 CheckBox：IsChecked 是 IReference<bool> 三态 -->
+            <CheckBox x:Name="NotifyBox" Content="Enable notifications" IsChecked="True"
+                      Checked="OnNotifyToggled" Unchecked="OnNotifyToggled" />
+
+            <!-- 6.3 RadioButton：GroupName 内互斥 -->
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <RadioButton Content="Light" GroupName="Theme" IsChecked="True" Checked="OnThemeRadioChecked" />
+                <RadioButton Content="Dark" GroupName="Theme" Checked="OnThemeRadioChecked" />
+                <RadioButton Content="System" GroupName="Theme" Checked="OnThemeRadioChecked" />
+            </StackPanel>
+
+            <!-- 6.6 ToggleSwitch / Slider：普通 bool / double，无三态问题 -->
+            <ToggleSwitch x:Name="AutoSaveSwitch" Header="Auto save" IsOn="True"
+                          Toggled="OnAutoSaveToggled" />
+            <Slider x:Name="VolumeSlider" Header="Volume" Minimum="0" Maximum="100" Value="50"
+                    ValueChanged="OnVolumeChanged" />
+
+            <!-- 6.7 ContentDialog：XamlRoot 从 rootPanel 取 -->
+            <Button Content="Show dialog" Click="OnShowDialogClicked" />
+        </StackPanel>
+    </Grid>
+</Window>
