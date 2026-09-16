@@ -105,8 +105,11 @@ has_ctrl() {
 }
 
 # 在输出里找结束标记。先剔掉控制字符再匹配，免得二进制内容干扰 grep。
+# LC_ALL=C 不能省：UTF-8 locale 下 toybox 的 tr 会做多字节校验，碰到非法
+# UTF-8 就报 "tr: Illegal byte sequence" 并**截断输入** —— 结束标记若在
+# 截断点之后就查不到，会误报「缺少结束标记」。LC_ALL=C 退化成按字节处理。
 marker_present() {
-    tr -d '\000' < "$1" 2>/dev/null | grep -qF "$2"
+    LC_ALL=C tr -d '\000' < "$1" 2>/dev/null | LC_ALL=C grep -qF "$2"
 }
 
 # 用法：check <标签> <期望结束标记> <输出文件> <stderr文件> <退出码> <编译日志>
@@ -140,7 +143,7 @@ check() {
     fi
 
     if [ "$VERBOSE" -eq 1 ]; then
-        tr -d '\000' < "$out" | sed 's/^/        /'
+        LC_ALL=C tr -d '\000' < "$out" | sed 's/^/        /'
     fi
 }
 

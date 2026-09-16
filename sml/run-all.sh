@@ -100,8 +100,11 @@ has_ctrl() {
 }
 
 # 找结束标记。先删 NUL 再匹配，免得二进制内容干扰 grep。
+# LC_ALL=C 不能省：UTF-8 locale 下 toybox 的 tr 会做多字节校验，碰到非法
+# UTF-8 就报 "tr: Illegal byte sequence" 并**截断输入** —— 结束标记若在
+# 截断点之后就查不到，会误报「缺少结束标记」。LC_ALL=C 退化成按字节处理。
 marker_present() {
-    tr -d '\000' < "$1" 2>/dev/null | grep -qF "$2"
+    LC_ALL=C tr -d '\000' < "$1" 2>/dev/null | LC_ALL=C grep -qF "$2"
 }
 
 # stdout 里是否出现编译器诊断
@@ -109,7 +112,7 @@ marker_present() {
 #   MLton 与 SML/NJ（不带静音堆时）用 Error: / Warning:
 # 注意：本教程的示例自己不会打印含有这些字样的文本，所以可以放心用。
 has_diag() {
-    tr -d '\000' < "$1" 2>/dev/null \
+    LC_ALL=C tr -d '\000' < "$1" 2>/dev/null \
         | grep -qE 'Error:|error:|Warning:|warning:|Static Errors|unhandled exception|Exception- |Matches are not exhaustive'
 }
 
