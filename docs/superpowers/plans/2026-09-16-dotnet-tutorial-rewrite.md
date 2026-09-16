@@ -32,10 +32,10 @@
   - 跨章引用格式：`第 12 章`（不带文件名）。章节内引用的示例代码片段必须与 `examples/` 实际代码**逐字一致**（省略处标 `// …`）。
   - 每章 100–200 行；中文行文；示例代码讲解的附加片段注释用中文。
   - 风格范本（每章动笔前先读）：`G:\code\guide\wpf\docs\06-binding.md`。
-- **build.ps1 编码坑（来自项目记忆）**：build.ps1 含中文且当前带 UTF-8 BOM；Edit/Write 工具会剥掉 BOM，Windows PowerShell 5.1 下无 BOM 中文脚本会乱码。**每次编辑 build.ps1 后必须恢复 BOM**：`cd /g/code/guide/dotnet && printf '\xef\xbb\xbf' | cat - build.ps1 > build.ps1.tmp && mv build.ps1.tmp build.ps1`（先确认原文件确实有 BOM：`head -c 3 build.ps1 | od -An -tx1` 应输出 `ef bb bf`）。
+- **build.ps1 编码坑（执行时实测确认）**：build.ps1 含中文且**无 BOM**（`head -c 3` = `70 61 72`），Windows PowerShell 5.1 按 ANSI 读取会解析错误。**必须用 pwsh 7 运行**（本机 `/g/Program Files/PowerShell/7/pwsh`，7.6.6）。编辑 build.ps1 时保持无 BOM 原状即可。
 - 构建验证命令（本计划所有"验证构建"步骤统一用）：
   ```bash
-  cd /g/code/guide/dotnet && powershell -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All
+  cd /g/code/guide/dotnet && pwsh -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All
   ```
   预期：每个工程输出 `[Build] <name>`，结尾 `[Done] examples 目录全部编译通过。`
 - 运行单个示例验证：`cd /g/code/guide/dotnet && "G:/scoop/apps/dotnet-sdk/current/dotnet.exe" run --project examples/<name>`。
@@ -79,7 +79,7 @@
 **Interfaces:**
 - Produces: 19 个示例目录最终命名 `02_hello`…`20_modern`（中间无 01）；后续所有章节任务按新名引用。
 
-- [ ] **Step 1: 两阶段重命名（避免目标名撞车）**
+- [x] **Step 1: 两阶段重命名（避免目标名撞车）**
 
 ```bash
 cd /g/code/guide/dotnet
@@ -95,21 +95,21 @@ for k in "${!M[@]}"; do git mv "examples/$k" "examples/_tmp_${M[$k]}"; done
 for k in "${!M[@]}"; do git mv "examples/_tmp_${M[$k]}" "examples/${M[$k]}"; done
 ```
 
-- [ ] **Step 2: 验证目录集合正确**
+- [x] **Step 2: 验证目录集合正确**
 
 ```bash
 ls examples/ | sort
 ```
 预期：`02_hello 03_types 04_records_pattern 05_generics_extensions 06_generics_extensions 07_file_json 08_async_await 08_collections 09_linq 09_parallel_tasks 10_span_memory 10_nullable? …`——**注意**：此刻新旧混杂（如 `08_async_await` 与 `08_collections` 并存、`04_records_pattern`/`05_generics_extensions` 等旧名仍在），这是正常的：Task 3/4 才创建 04_oop、07_delegates、10_nullable。核对要点：15 个 `_tmp_` 已全部消失、15 个新名全部存在。
 
-- [ ] **Step 3: 验证全量构建仍绿**
+- [x] **Step 3: 验证全量构建仍绿**
 
 ```bash
 cd /g/code/guide/dotnet && powershell -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All
 ```
 预期：`[Done] examples 目录全部编译通过。`（build.ps1 动态枚举目录，重命名不影响；`-Project` 单工程模式此时传入新目录名即可用）
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd /g/code/guide/dotnet && git add -A examples && git commit -m "refactor(dotnet): 示例目录按 20 章结构重编号
@@ -127,14 +127,14 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: `-All` 递归枚举 `examples/**/*.csproj`（Task 4 的 19_portable 嵌套工程依赖此能力）；每个工程的 obj 目录为 `build/obj/<工程名>/`。
 
-- [ ] **Step 1: 记录当前编码状态**
+- [x] **Step 1: 记录当前编码状态**（实测无 BOM——改用 pwsh 7 运行，见 Global Constraints 修正）
 
 ```bash
 cd /g/code/guide/dotnet && head -c 3 build.ps1 | od -An -tx1
 ```
 预期输出 `ef bb bf`（有 BOM）。若无 BOM 则后续恢复 BOM 步骤跳过（保持原样）。
 
-- [ ] **Step 2: 应用两处修改**
+- [x] **Step 2: 应用两处修改**
 
 修改点 1——工程发现（替换 `$projects = Get-ChildItem ...` 一行与其后 `if ($projects.Count -eq 0)` 校验）：
 ```powershell
@@ -184,21 +184,21 @@ if ($Project) {
 Write-Host "  .\build.ps1 -Project 19_portable     嵌套多工程目录会构建其下全部 csproj"
 ```
 
-- [ ] **Step 3: 恢复 BOM（若 Step 1 显示有 BOM）**
+- [x] **Step 3: 恢复 BOM（若 Step 1 显示有 BOM）**（不适用：原文件无 BOM）
 
 ```bash
 cd /g/code/guide/dotnet && printf '\xef\xbb\xbf' | cat - build.ps1 > build.ps1.tmp && mv build.ps1.tmp build.ps1 && head -c 3 build.ps1 | od -An -tx1
 ```
 预期输出 `ef bb bf` 且只出现一次（若原本就无 BOM，跳过本步）。
 
-- [ ] **Step 4: Clean → All 全量验证**
+- [x] **Step 4: Clean → All 全量验证**
 
 ```bash
 cd /g/code/guide/dotnet && powershell -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Clean && powershell -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All && ls build/obj | head -20
 ```
 预期：全部编译通过；`build/obj/` 下出现按工程名命名的子目录（HelloConsole、TypesControl…）。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /g/code/guide/dotnet && git add build.ps1 && git commit -m "feat(dotnet): build.ps1 递归发现 csproj 并按工程拆分 obj 目录
@@ -218,7 +218,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 三个可编译运行的控制台工程；Task 7/8/9 的章节逐段引用下述代码。
 
-- [ ] **Step 1: 写 04_oop**（csproj 用全局模板，文件名 `Oop.csproj`）
+- [x] **Step 1: 写 04_oop**（csproj 用全局模板，文件名 `Oop.csproj`）
 
 `examples/04_oop/Program.cs`：
 ```csharp
@@ -294,7 +294,7 @@ static class Counter                       // 静态类：不能实例化，只�
 }
 ```
 
-- [ ] **Step 2: 写 07_delegates**
+- [x] **Step 2: 写 07_delegates**
 
 `examples/07_delegates/Program.cs`：
 ```csharp
@@ -353,7 +353,7 @@ class Cart(string id)
 }
 ```
 
-- [ ] **Step 3: 写 10_nullable**
+- [x] **Step 3: 写 10_nullable**
 
 `examples/10_nullable/Program.cs`：
 ```csharp
@@ -387,7 +387,7 @@ static string? Shout(string? input) => input?.ToUpperInvariant();
 record User(string Name, string? Email);
 ```
 
-- [ ] **Step 4: 三个工程构建 + 运行验证（含中文输出不乱码）**
+- [x] **Step 4: 三个工程构建 + 运行验证（含中文输出不乱码）**
 
 ```bash
 cd /g/code/guide/dotnet && powershell -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All
@@ -397,7 +397,7 @@ cd /g/code/guide/dotnet && powershell -NoProfile -ExecutionPolicy Bypass -File b
 ```
 预期：全部编译通过；运行输出中文正常显示（无 `??`/乱码——若有，说明 .cs 文件编码被写成 GBK/ANSI，用 UTF-8 重写）。10_nullable 的输出应含 `[通知] cart-001 价格已更新`…（07_delegates 的输出）等预期文案。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /g/code/guide/dotnet && git add examples/04_oop examples/07_delegates examples/10_nullable && git commit -m "feat(dotnet): 新增 oop/delegates/nullable 三个教学示例
@@ -417,7 +417,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Consumes: Task 2 的递归 csproj 发现。
 - Produces: `PortableLib.Greeting` 静态类（`Runtime`/`BuildFilePath`/`Format` 成员）+ 消费它的 net10.0 控制台；Task 13 的 19 章逐段引用。
 
-- [ ] **Step 1: 写 PortableLib**
+- [x] **Step 1: 写 PortableLib**
 
 `examples/19_portable/PortableLib/PortableLib.csproj`：
 ```xml
@@ -468,7 +468,7 @@ public static class Greeting
 }
 ```
 
-- [ ] **Step 2: 写 PortableApp**
+- [x] **Step 2: 写 PortableApp**
 
 `examples/19_portable/PortableApp/PortableApp.csproj`：
 ```xml
@@ -494,7 +494,7 @@ Console.WriteLine(Greeting.BuildFilePath("data", "notes.txt")); // Windows 上�
 Console.Write(Greeting.Format("portable"));
 ```
 
-- [ ] **Step 3: 构建并运行验证**
+- [x] **Step 3: 构建并运行验证**（暴露并修复 CS0579：dotnet run 的游离 obj 与集中 obj 冲突，build.ps1 增加清扫逻辑）
 
 ```bash
 cd /g/code/guide/dotnet && powershell -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All
@@ -502,7 +502,7 @@ cd /g/code/guide/dotnet && powershell -NoProfile -ExecutionPolicy Bypass -File b
 ```
 预期：PortableLib（两个 TargetFramework 各编一次）与 PortableApp 都编译通过；运行输出三行，含 `.NET (Core) 5+` 与 `hello, portable`。
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd /g/code/guide/dotnet && git add examples/19_portable && git commit -m "feat(dotnet): 19_portable 多目标可移植示例（netstandard2.0 库 + net10.0 应用）
@@ -520,7 +520,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 教程入口章；后续章节以"第 01 章说过"引用其支持矩阵/工具链；README（Task 14）链接本章。
 
-- [ ] **Step 1: 写文件**，结构（约 150 行）：
+- [x] **Step 1: 写文件**，结构（约 150 行）：
   1. `# 01 · .NET 全景：平台、运行时与工具链`（无 `> 对应示例` 行；开头一段说明本教程读者定位：会编程、初学 C#/.NET）
   2. `## 1. .NET 是什么`：C#（语言）与 .NET（平台）的关系；编译到 IL → CLR JIT 执行；BCL 概念。一张小图（文本框图）：`C# 源码 → Roslyn → IL → CLR(JIT) → 机器码`
   3. `## 2. 家族史一页纸`：.NET Framework（2002，仅 Windows）→ .NET Core（跨平台重写）→ .NET 5+ 统一命名（跳过"Core 4.0"避免与 4.x 混淆）→ 本文写作时的 .NET 10 LTS；Mono 一段（历史角色，详见第 19 章）
@@ -530,9 +530,9 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. `## 6. 本教程怎么用`：20 章路线表（两列：章号+主题、对应示例目录）；`build.ps1 -All / -Project / -Clean` 三个命令；建议每章"读讲解 → 跑示例 → 改代码再跑"
   8. `## 7. 坑位清单`：SDK 版本不匹配（`NETSDK1045`）、powershell 执行策略、公司内网 NuGet 源
 
-- [ ] **Step 2: 验证**：文件 100–200 行；`grep -c '^## ' docs/01-overview.md` 在 6–8 之间；文中 `examples/02_hello` 引用的 csproj 字段与实际文件一致（`cat examples/02_hello/HelloConsole.csproj` 对照）。
+- [x] **Step 2: 验证**：文件 100–200 行；`grep -c '^## ' docs/01-overview.md` 在 6–8 之间；文中 `examples/02_hello` 引用的 csproj 字段与实际文件一致（`cat examples/02_hello/HelloConsole.csproj` 对照）。
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 cd /g/code/guide/dotnet && git add docs/01-overview.md && git commit -m "docs(dotnet): 第 01 章平台全景
@@ -548,7 +548,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Create: `docs/02-hello.md`（示例 `examples/02_hello`，代码 11 行：顶层语句 + 插值 + 原始字符串 JSON）
 - Create: `docs/03-types.md`（示例 `examples/03_types`，代码 17 行：switch 表达式 + foreach 累加）
 
-- [ ] **Step 1: 写 02-hello.md**（约 110 行）：
+- [x] **Step 1: 写 02-hello.md**（约 110 行）：
   1. `# 02 · 第一个程序：从 Main 到顶层语句` + `> 对应示例：examples/02_hello`
   2. 先讲问题：为什么 C# 11 起可以整个 Program 只有几行——编译器在背后生成 `Main`；给出等价的经典写法对比（`class Program { static void Main() {...} }`）
   3. 插值字符串 `$"Hello, {name}!"`；格式项 `${expr:F2}`/对齐示例片段
@@ -556,7 +556,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   5. 逐行讲解示例全文（11 行全引用）
   6. `## 坑位清单`：顶层语句只能一个文件有；`$` 与 `@` 顺序（`$@""` vs `@$""` 等价、`$"""` 内插 `{}`）；分号可省与不可省
 
-- [ ] **Step 2: 写 03-types.md**（约 180 行）：
+- [x] **Step 2: 写 03-types.md**（约 180 行）：
   1. `# 03 · 类型与控制流：C# 的地面规则` + `> 对应示例：examples/03_types`
   2. 基本类型表：`int/long/double/decimal/bool/char/string`（含典型字面量与场景，`decimal` 钱款、`double` 科学计算）
   3. `var`：编译期推断、只能局部变量、可读性取舍
@@ -568,9 +568,9 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   9. `> 跨平台提示`：`char` 是 UTF-16 code unit；读写文件显式 `Encoding.UTF8`（详见第 12 章）
   10. `## 坑位清单`：整数溢出默认不抛异常、`/` 整型截断、`==` 与字符串（引用第 05 章值语义）、`decimal` 后缀 `m`
 
-- [ ] **Step 3: 验证**：两文件各 100–200 行；引用片段与 `examples/02_hello/Program.cs`、`examples/03_types/Program.cs` 逐字对照。
+- [x] **Step 3: 验证**：两文件各 100–200 行；引用片段与 `examples/02_hello/Program.cs`、`examples/03_types/Program.cs` 逐字对照。
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd /g/code/guide/dotnet && git add docs/02-hello.md docs/03-types.md && git commit -m "docs(dotnet): 第 02/03 章 hello 与类型控制流
@@ -587,7 +587,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Create: `docs/05-records.md`（示例 `examples/05_records`，12 行：record + 属性模式 + 解构）
 - Create: `docs/06-generics.md`（示例 `examples/06_generics`，15 行：`Sum<T> where T : INumber<T>` + 扩展调用）
 
-- [ ] **Step 1: 写 04-oop.md**（约 200 行）：
+- [x] **Step 1: 写 04-oop.md**（约 200 行）：
   1. `# 04 · 面向对象：类、继承、接口与多态`
   2. 问题先行：多态解决"新增形状不改调用方"——引用示例 `List<Shape>` 遍历段
   3. 类与成员：字段 vs 属性、自动属性、只读 `{ get; }`、主构造函数（C# 12）与 `base(...)` 链
@@ -597,7 +597,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. `static class Counter` 段：静态成员、静态类
   8. `## 坑位清单`：隐藏 new 方法 vs override、构造链忘 base、struct 可变性的坑、主构造函数参数捕获为字段时机
 
-- [ ] **Step 2: 写 05-records.md**（约 160 行）：
+- [x] **Step 2: 写 05-records.md**（约 160 行）：
   1. `# 05 · record 与模式匹配：数据优先的类型`
   2. 问题先行：示例一行 `record User(string Name, int Age)` 生成了什么（构造/属性/Equals/GetHashCode/ToString/Deconstruct）与手写 class 等价物的对比表
   3. 值语义 vs 引用语义：两个相同 `new User("alice", 22)` 判等的演示片段
@@ -606,7 +606,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. `record class` vs `record struct` 一段
   7. `## 坑位清单`：record 里放可变集合、继承 record 的相等性陷阱、`with` 是浅拷贝
 
-- [ ] **Step 3: 写 06-generics.md`（约 140 行）：
+- [x] **Step 3: 写 06-generics.md`（约 140 行）：
   1. `# 06 · 泛型与扩展方法：写一次，处处安全`
   2. 问题先行：没有泛型的世界（object 装箱 + 强转）演示片段
   3. 引用示例 `Sum<T>` 全文：`where T : INumber<T>` 约束、`T.Zero`、静态抽象接口成员（泛型数学）；约束种类表（`class/struct/new()/接口/unmanaged/notnull`）
@@ -614,9 +614,9 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   5. 扩展方法：`"dotnet".Reverse()` 为什么能点出来——`this` 参数 + 静态类；引用示例最后两行；自定义扩展方法预告（第 08 章的 `PopIfMatch`）
   6. `## 坑位清单`：协变逆变滥用、扩展方法"发现不了"（缺 using）、泛型 + 运算符在 C# 10 前不可写
 
-- [ ] **Step 4: 验证**：三文件行数 100–200；片段与 `examples/04_oop`、`examples/05_records`、`examples/06_generics` 逐字对照（05/06 是旧 04/05 的代码原样迁移，未改动）。
+- [x] **Step 4: 验证**：三文件行数 100–200；片段与 `examples/04_oop`、`examples/05_records`、`examples/06_generics` 逐字对照（05/06 是旧 04/05 的代码原样迁移，未改动）。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /g/code/guide/dotnet && git add docs/04-oop.md docs/05-records.md docs/06-generics.md && git commit -m "docs(dotnet): 第 04/05/06 章 OOP、record、泛型
@@ -633,7 +633,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Create: `docs/08-collections.md`（示例 `examples/08_collections`，61 行：List/Dictionary 操作 + 自定义扩展方法）
 - Create: `docs/09-linq.md`（示例 `examples/09_linq`，22 行：匿名类型 + Where/OrderBy/ThenBy/Select/GroupBy）
 
-- [ ] **Step 1: 写 07-delegates.md**（约 170 行）：
+- [x] **Step 1: 写 07-delegates.md**（约 170 行）：
   1. `# 07 · 委托、lambda 与事件：把方法当值传`
   2. 问题先行：回调/策略需要"方法的类型"；`delegate` 关键字一句带过，主力是内置 `Func<>`/`Action<>`（变长类型参数表）
   3. lambda 语法（引用示例 add/print）；语句体 vs 表达式体
@@ -642,7 +642,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. `Filter<T>` 段收尾：你已经手写了 `Where`——下一章 LINQ 就是把这个模式产品化
   7. `## 坑位清单`：忘退订事件 → 泄漏、多播委托返回值只留最后一个、闭包修改捕获变量、`?.Invoke` 与线程安全一句
 
-- [ ] **Step 2: 写 08-collections.md**（约 150 行）：
+- [x] **Step 2: 写 08-collections.md**（约 150 行）：
   1. `# 08 · 集合：List、Dictionary 与 IEnumerable`
   2. 选型表：`List/Dictionary/HashSet/Queue/Stack`（用途/查找复杂度）
   3. List：引用示例 fruits 段（Add/Insert/Remove/FindIndex）
@@ -651,7 +651,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. 自定义扩展方法：引用示例 `PopIfMatch` 段（`this List<T>` + `Predicate<T>`，呼应第 06/07 章）
   7. `## 坑位清单`：遍历时修改集合、结构体字典键可变、List.Contains 是 O(n) 误当 HashSet
 
-- [ ] **Step 3: 写 09-linq.md**（约 170 行）：
+- [x] **Step 3: 写 09-linq.md**（约 170 行）：
   1. `# 09 · LINQ：集合查询的一等语法`
   2. 问题先行：手写 foreach 过滤排序（第 08 章 `namesLongerThan3` 的影子）vs 一条方法链
   3. 引用示例 `09_linq` 全文逐段：匿名类型 `new {}`、`Where/OrderByDescending/ThenBy/Select/ToList`、`GroupBy` 与 `g.Key`/`g.Select`
@@ -660,9 +660,9 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. **延迟执行**：`IEnumerable` 不 ToList 就每次重新算；多次枚举陷阱片段（同一 query 两次 Count 触发两轮计算）；`ToList/ToArray` 固化
   7. `## 坑位清单`：多次枚举、在 LINQ 里做副作用、`IEnumerable` 泄露到接口签名（暴露实现）、GroupBy 后乱序
 
-- [ ] **Step 4: 验证**：行数 100–200；片段逐字对照三个示例源码。
+- [x] **Step 4: 验证**：行数 100–200；片段逐字对照三个示例源码。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /g/code/guide/dotnet && git add docs/07-delegates.md docs/08-collections.md docs/09-linq.md && git commit -m "docs(dotnet): 第 07/08/09 章 委托、集合、LINQ
@@ -678,7 +678,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Create: `docs/10-nullable.md`（示例 `examples/10_nullable`，Task 3 代码）
 - Create: `docs/11-errors.md`（示例 `examples/11_errors`，23 行：元组返回 TryParse 风格 + try/catch）
 
-- [ ] **Step 1: 写 10-nullable.md**（约 150 行）：
+- [x] **Step 1: 写 10-nullable.md**（约 150 行）：
   1. `# 10 · 可空引用类型：编译器替你盯 null`
   2. 问题先行：`NullReferenceException` 占新手异常大头；NRT 是**编译期警告流分析**，不是运行时检查——这句要加粗
   3. `string` vs `string?` 语义承诺；引用示例 title/subtitle 段；CS8602 警告注释行讲解
@@ -688,7 +688,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. csproj `<Nullable>enable</Nullable>` 开关与遗留代码 `#nullable disable` 注解
   8. `## 坑位清单`：`!` 滥用、`??` 抛新异常掩盖来源、可空注解只对引用类型是"提示"、反序列化结果未判空（连第 12 章）
 
-- [ ] **Step 2: 写 11-errors.md**（约 150 行）：
+- [x] **Step 2: 写 11-errors.md**（约 150 行）：
   1. `# 11 · 错误处理：异常、TryParse 与 Result`
   2. 异常模型：调用栈展开、`Exception` 层次小图；`try/catch/finally` 基本形（引用示例 catch 段）
   3. catch 顺序与具体化；异常过滤器 `when` 补充片段；`throw;` vs `throw ex;`（栈迹保留）
@@ -696,9 +696,9 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   5. Result 模式：简易 `record Result<T>(bool Ok, T? Value, string? Error)` 补充片段；何时用异常（真正的异常路径）vs Result（可预期失败）决策表
   6. `## 坑位清单`：`catch (Exception)` 吞掉一切、空 catch 块、finally 里 return、异常做流程控制的性能
 
-- [ ] **Step 3: 验证**：行数、片段对照同前。
+- [x] **Step 3: 验证**：行数、片段对照同前。
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd /g/code/guide/dotnet && git add docs/10-nullable.md docs/11-errors.md && git commit -m "docs(dotnet): 第 10/11 章 可空引用类型与错误处理
@@ -714,7 +714,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Create: `docs/12-files-json.md`（示例 `examples/12_files_json`，13 行：Path.Combine + 序列化/反序列化 record）
 - Create: `docs/13-async.md`（示例 `examples/13_async`，25 行：WhenAll + IAsyncEnumerable）
 
-- [ ] **Step 1: 写 12-files-json.md**（约 150 行）：
+- [x] **Step 1: 写 12-files-json.md**（约 150 行）：
   1. `# 12 · 文件与 JSON：最常用的 IO 两件套`
   2. File 静态便利方法表（`ReadAllText/WriteAllText/AppendAllText/Exists/Delete`）与大文件 → Stream 一句话预告
   3. `Path.Combine/GetTempPath/GetFileName`；引用示例 path 段
@@ -723,7 +723,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. `Deserialize<T>` 返回 `T?`（连第 10 章）；`JsonSerializerOptions` 复用（性能）
   7. `## 坑位清单`：无 Encoding 参数在非英文 Windows 上乱码、临时文件不清理、反序列化字段名不匹配静默得 null
 
-- [ ] **Step 2: 写 13-async.md**（约 180 行）：
+- [x] **Step 2: 写 13-async.md**（约 180 行）：
   1. `# 13 · async/await：异步编程的日常形态`
   2. 问题先行：IO 等待时线程空转浪费；`Task` = "正在进行的工作的凭据"；await = "等它完成，期间线程去干别的"（一句直觉，不展开状态机细节）
   3. 方法标记传染性：`async Task<int>`（引用示例 `WorkAsync`）；返回值即 Task
@@ -732,7 +732,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. 取消配合一句：`CancellationToken` 穿透（预告第 14 章）
   7. `## 坑位清单`：**`async void`**（只有事件处理器可用）、`.Result/.Wait()` 死锁、忘 await 静默丢异常、循环里逐个 await 该用 WhenAll、async 方法里 `ConfigureAwait` 在库代码的意义
 
-- [ ] **Step 3: 验证 + Commit**
+- [x] **Step 3: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/dotnet && git add docs/12-files-json.md docs/13-async.md && git commit -m "docs(dotnet): 第 12/13 章 文件 JSON 与异步
@@ -748,7 +748,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Create: `docs/14-parallel.md`（示例 `examples/14_parallel`，16 行：Parallel.ForEach + ConcurrentDictionary + Interlocked）
 - Create: `docs/15-span.md`（示例 `examples/15_span`，21 行：Span 切 CSV + stackalloc）
 
-- [ ] **Step 1: 写 14-parallel.md**（约 150 行）：
+- [x] **Step 1: 写 14-parallel.md**（约 150 行）：
   1. `# 14 · 并行：数据并行与共享状态`
   2. 并发 vs 并行（第 13 章异步是并发等待 IO，本章是吃满 CPU）
   3. `Parallel.ForEach`：引用示例段；与 PLINQ `AsParallel()` 一句对照
@@ -756,7 +756,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   5. `ConcurrentDictionary`：引用示例 dict 段；`dict[n] = sq` 并发安全写入；与加锁 `lock` 对比表；`ConcurrentQueue/Bag` 一句
   6. `## 坑位清单`：闭包捕获循环变量在并行下的旧坑（C# 5+ foreach 安全，for 仍要局部拷贝）、并行度不是越大越快、Parallel.ForEach 里抛异常聚合 `AggregateException`、异步 lambda 进 Parallel 重载
 
-- [ ] **Step 2: 写 15-span.md**（约 160 行）：
+- [x] **Step 2: 写 15-span.md**（约 160 行）：
   1. `# 15 · Span 与 Memory：少分配的高性能之道`
   2. 问题先行：`text.Split(',')` 每字段都分配新 string + 数组；分配 → GC 压力 → 停顿
   3. `ReadOnlySpan<char>` + 切片 `span[start..i]`：引用示例 CSV 解析段全文逐行；`int.Parse(ReadOnlySpan<char>)` 无分配重载
@@ -766,7 +766,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. 何时用：先用 LINQ 写对，剖析（`dotnet-counters`/BenchmarkDotNet 一句）证明热点再换 Span
   8. `## 坑位清单`：Span 指向的数组被改、stackalloc 大小失控、在 async 方法里用 Span 编译错、为快而难维护
 
-- [ ] **Step 3: 验证 + Commit**
+- [x] **Step 3: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/dotnet && git add docs/14-parallel.md docs/15-span.md && git commit -m "docs(dotnet): 第 14/15 章 并行与 Span
@@ -783,7 +783,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Create: `docs/17-efcore.md`（示例 `examples/17_efcore`，40 行：InMemory DbContext CRUD）
 - Create: `docs/18-testing.md`（示例 `examples/18_testing`，93 行：AssertEx 自检 + Calculator/FakeLogger）
 
-- [ ] **Step 1: 写 16-webapi.md**（约 170 行）：
+- [x] **Step 1: 写 16-webapi.md**（约 170 行）：
   1. `# 16 · ASP.NET Core Minimal API：几十行起一个服务`
   2. 模型：Kestrel 宿主 + 中间件管道一段直觉；`WebApplication.CreateBuilder/Build`
   3. 路由：`MapGet/MapPost/MapDelete`；路由参数 `{id:int}` 约束；引用示例各端点段
@@ -793,7 +793,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. 运行与验证：`--run` 设计说明（示例默认只编译不监听端口，方便 CI；传 `--run` 启动）+ `curl` 三个实测命令与预期响应
   8. `## 坑位清单`：路由顺序（具体在前通配在后）、返回匿名对象 vs record、忘记 `app.Run()`、端口占用
 
-- [ ] **Step 2: 写 17-efcore.md`（约 150 行）：
+- [x] **Step 2: 写 17-efcore.md`（约 150 行）：
   1. `# 17 · EF Core：用 C# 对象对抗 SQL 样板`
   2. ORM 直觉：LINQ → SQL 翻译（连第 09 章）；`DbContext` = 工作单元、`DbSet<T>` = 仓库
   3. 引用示例实体段（`User` 带 `Id/Name/Email`，`string.Empty` 初始化连第 10 章非空警告）；DbContext + `OnConfiguring` 段
@@ -802,7 +802,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. `EnsureCreated` vs Migrations 一段（`dotnet ef migrations add` 命令示例）
   7. `## 坑位清单`：忘 `SaveChanges`、查询已被跟踪实体改了属性误提交、N+1 查询与 `Include`、InMemory 测试通过 ≠ SQL 行为
 
-- [ ] **Step 3: 写 18-testing.md**（约 160 行）：
+- [x] **Step 3: 写 18-testing.md**（约 160 行）：
   1. `# 18 · 测试：从第一个断言到可测设计`
   2. 本示例的形态说明：xUnit 风格自检控制台（`AssertEx` + `Main` 顺序执行）——为了进 build.ps1 统一构建；真项目 `dotnet new xunit` 起步，`[Fact]/[Theory]` 对照片段
   3. AAA：Arrange/Act/Assert，引用示例 `Add/Divide` 断言段
@@ -811,7 +811,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. 异步测试：`AddAsync` 段（await 后断言）
   7. `## 坑位清单`：断言里写逻辑、测试互相依赖共享状态、测实现而非行为、`Math.Abs(x-y)<eps` 浮点比较（示例已示范）
 
-- [ ] **Step 4: 验证 + Commit**
+- [x] **Step 4: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/dotnet && git add docs/16-webapi.md docs/17-efcore.md docs/18-testing.md && git commit -m "docs(dotnet): 第 16/17/18 章 Web API、EF Core 与测试
@@ -827,7 +827,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Create: `docs/19-portable.md`（示例 `examples/19_portable`，Task 4 代码）
 - Create: `docs/20-modern-csharp.md`（示例 `examples/20_modern`，68 行：数字分隔符/partial/泛型数学/StringBuilder/await foreach）
 
-- [ ] **Step 1: 写 19-portable.md**（约 200 行，事实用"已核实的平台事实"表，含来源链接）：
+- [x] **Step 1: 写 19-portable.md**（约 200 行，事实用"已核实的平台事实"表，含来源链接）：
   1. `# 19 · 跨平台与可移植性：从 Windows 8.1 到 macOS/Linux`
   2. `## 1. 支持矩阵与残酷现实`：矩阵表（.NET 10 = Win10 1607+ / macOS / Linux；Win 8.1 → 现代 .NET 无被支持版本，.NET 6 已 EOL 2024-11-12；.NET Framework 4.8 支持 8.1 但仅 Windows；Mono 维护模式）；明确结论：**Win 8.1 上没有"现代 .NET"正解**，选择是 ①遗留系统继续 Framework 4.8 / Mono 维护 ②推动升级 OS
   3. `## 2. netstandard2.0：可移植库的通用语`：谁消费它（Framework 4.6.1+/Mono/Unity/现代 .NET）；引用示例 PortableLib.csproj 的 `TargetFrameworks` 多目标行
@@ -839,14 +839,14 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   9. `## 8. 示例走读`：19_portable 结构（两个工程）、运行输出、动手改：把 PortableApp 改 TargetFramework 为 net8.0 编译观察
   10. `## 坑位清单`：在 netstandard 库里用了仅现代 .NET 的 API（编译即报）、条件编译区太宽难维护、忘记多目标restore、Linux 大小写
 
-- [ ] **Step 2: 写 20-modern-csharp.md**（约 150 行）：
+- [x] **Step 2: 写 20-modern-csharp.md**（约 150 行）：
   1. `# 20 · 现代 C# 纵览：从 C# 9 到 13+`
   2. 版本时间线表（C# 9 record/init/模式增强 → 10 全局 using/文件范围命名空间 → 11 raw string/required/列表模式 → 12 主构造函数/collection expressions/别名任何类型 → 13 params 集合/lock 对象/转义三元反引号——每行"一句它替你省了什么"）；教程各章已讲特性标"第 NN 章"
   3. 走读示例 `20_modern`：数字分隔符与二进制字面量（`1_000_000`/`0b1010_1010`）；partial 类与 partial void 演进（编译器缝合、无实现时调用整体消失）；`AddNumbers<T>` 泛型数学（呼应第 06 章）；`StringBuilder` 循环拼接（呼应第 03 章不可变）；`await foreach`（呼应第 13 章）；Span `IndexOf + 切片`（呼应第 15 章）
   4. 怎么跟进新版本：Roslyn 版本跟 SDK 走；`LangVersion` 只开语法不开运行时库支持（连第 19 章）
   5. `## 坑位清单`：新语法 ≠ 新运行时可用（运行时库/attribute 缺失）、团队最低 SDK 版本、过度追求新糖
 
-- [ ] **Step 3: 验证 + Commit**
+- [x] **Step 3: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/dotnet && git add docs/19-portable.md docs/20-modern-csharp.md && git commit -m "docs(dotnet): 第 19/20 章 跨平台可移植性与现代 C# 纵览
@@ -863,25 +863,25 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Modify: `G:\code\guide\dotnet\CHEATSheet.md`
 - Delete: `DOTNET编程指南.md`、`SAMPLES_MIGRATION_MAP.md`、`samples/`（整个目录）
 
-- [ ] **Step 1: 重写 README.md**（约 70 行）：目录树（docs/ 20 章 + examples/ 19 工程 + build.ps1 + CHEATSheet.md + advanced/）；20 章索引表（每行：`NN. [标题](docs/NN-xxx.md)` + 对应示例目录）；构建命令三则（-All/-Project/-Clean）；`advanced/` 一句话说明（预留扩展阅读）。开头一段说明教程定位（会编程、初学 C#/.NET，主线 .NET 10）。
+- [x] **Step 1: 重写 README.md**（约 70 行）：目录树（docs/ 20 章 + examples/ 19 工程 + build.ps1 + CHEATSheet.md + advanced/）；20 章索引表（每行：`NN. [标题](docs/NN-xxx.md)` + 对应示例目录）；构建命令三则（-All/-Project/-Clean）；`advanced/` 一句话说明（预留扩展阅读）。开头一段说明教程定位（会编程、初学 C#/.NET，主线 .NET 10）。
 
-- [ ] **Step 2: 更新 CHEATSheet.md**：保留现有 checklist 骨架，把"环境设置/项目创建"区指向 `docs/01-overview.md`；新增"章节速查"区：20 章一行链接；新增"高频坑位速查"区：从各章坑位清单摘 8–10 条一句话条目（每条附章节链接）。
+- [x] **Step 2: 更新 CHEATSheet.md**：保留现有 checklist 骨架，把"环境设置/项目创建"区指向 `docs/01-overview.md`；新增"章节速查"区：20 章一行链接；新增"高频坑位速查"区：从各章坑位清单摘 8–10 条一句话条目（每条附章节链接）。
 
-- [ ] **Step 3: 删除旧文件**
+- [x] **Step 3: 删除旧文件**
 
 ```bash
 cd /g/code/guide/dotnet && git rm -r --cached DOTNET编程指南.md SAMPLES_MIGRATION_MAP.md samples/ 2>/dev/null; git rm -f DOTNET编程指南.md SAMPLES_MIGRATION_MAP.md && git rm -rf samples/
 ```
 （若部分文件未跟踪则直接 `rm -rf` 后 `git add -A`。）
 
-- [ ] **Step 4: 残留引用检查**
+- [x] **Step 4: 残留引用检查**
 
 ```bash
 cd /g/code/guide/dotnet && grep -rn "DOTNET编程指南\|_mapped\|samples/" --include="*.md" --include="*.ps1" . | grep -v "^\./build/"
 ```
 预期：无输出（或仅 build/ 产物目录）。有输出则逐条修复。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /g/code/guide/dotnet && git add -A && git commit -m "docs(dotnet): 重写 README、更新速查表、删除旧指南与 samples 目录
@@ -896,14 +896,14 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Files:**
 - 无新文件；本任务只验证与修复。
 
-- [ ] **Step 1: 干净构建**
+- [x] **Step 1: 干净构建**
 
 ```bash
 cd /g/code/guide/dotnet && powershell -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Clean && powershell -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All
 ```
 预期：19 个工程（18 个根级 + 19_portable 下 2 个）全部编译通过。
 
-- [ ] **Step 2: 运行抽查**（覆盖新增示例与中文字符路径）：
+- [x] **Step 2: 运行抽查**（覆盖新增示例与中文字符路径）：
 
 ```bash
 cd /g/code/guide/dotnet
@@ -915,7 +915,7 @@ cd /g/code/guide/dotnet
 ```
 预期：各程序按设计输出、中文不乱码；12_files_json 正常读写临时文件后打印 `1:alice`。
 
-- [ ] **Step 3: 文档完整性**
+- [x] **Step 3: 文档完整性**
 
 ```bash
 cd /g/code/guide/dotnet
@@ -925,7 +925,7 @@ grep -rhn "examples/" docs/ -o | grep -oE "examples/[0-9a-z_/]+" | sort -u
 ```
 最后一条输出的每个路径逐一 `test -d` / `test -f` 核对存在。
 
-- [ ] **Step 4: 收尾**
+- [x] **Step 4: 收尾**
 
 ```bash
 cd /g/code/guide/dotnet && git status --short && git log --oneline -15
