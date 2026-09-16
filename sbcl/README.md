@@ -8,7 +8,8 @@
 ```text
 sbcl/
 ├── README.md                       本文件
-├── common-lisp-guide.md            教程正文
+├── common-lisp-guide.md            教程正文（18 章 + 2 附录）
+├── verify-guide.py                 核查指南里 `; =>` 断言的脚本
 ├── build.ps1                       PowerShell 入口（Windows / macOS / Linux）
 ├── run-all.sh                      shell 入口（macOS / Linux）
 ├── 01-hello-world.lisp             示例：NN-主题.lisp
@@ -92,6 +93,12 @@ warning 并把 `WARNING:` 打到 stdout，那是它的演示内容；若照搬 s
   「每次运行都可能不同的行」清单（各线程打印的先后顺序、无锁计数的值、信号量观测到的峰值、
   哪个 worker 抢到哪个任务）；除此之外的内容都是确定的。
 - `09-file-io.lisp` 会打印当前目录的绝对路径，天然随机器变化，同样不做输出比对。
+- **两个入口不要并行跑**：`run-all.sh` 与 `build.ps1` 都把产物写到同一个 `build/<示例名>/`
+  目录（`stdout.txt` / `stderr.txt`）。同时开两份会互相覆盖，表现为**stdout 被写一半、
+  结束标记丢失**，于是误报「缺少结束标记」。
+  实测：两轮全量并行跑时第二轮失败 3 个（`11-sbcl-extensions` / `12-threads` /
+  `14-performance` —— 恰好是输出量较大的那几个），串行跑则稳定 17/17。
+  这不是示例的问题，是**共用产物目录**导致的。写自动化脚本时请串行调用。
 
 ## 本次 macOS 兼容性核查结论
 
@@ -173,9 +180,68 @@ tr: Illegal byte sequence
 也就是说旧的「已验证」结论是空验证——**编译通过 ≠ 能跑**。
 现在的两个入口都真跑，并用结束标记兜住「中途崩溃但退出码仍是 0」的情况。
 
-## 各章索引
+## 教程正文与各章索引
 
-教程正文是 [common-lisp-guide.md](./common-lisp-guide.md)，配套可运行示例：
+教程正文是 [common-lisp-guide.md](./common-lisp-guide.md)：**18 章 + 2 个附录**，
+面向「能看懂 S 表达式，但没写过 Lisp」的读者。每章都讲清「为什么」而不只是罗列 API，
+并给出可复现的命令与真实输出。
+
+| 章 | 主题 | 配套示例 |
+|---|---|---|
+| 0 | 环境、两种运行方式与四个判定标准 | — |
+| 1 | 求值模型：Lisp 怎么读你的代码 | `01-hello-world.lisp` |
+| 2 | 数字：整数不溢出、有理数精确、浮点**默认单精度** | `02-data-types.lisp` |
+| 3 | 字符、字符串、符号 | `02-data-types.lisp` |
+| 4 | 列表与 cons 结构、五种相等 | `02-data-types.lisp` |
+| 5 | 变量与作用域（词法 vs 动态） | `04-functions.lisp` |
+| 6 | 函数、参数模型、多值、尾调用实测 | `04-functions.lisp` |
+| 7 | 控制流与迭代（含 `loop` 全姿势） | `03-control-structures.lisp` |
+| 8 | 序列与高阶函数 | `16-sequences-hash-tables.lisp` |
+| 9 | 哈希表与结构体 | `16-sequences-hash-tables.lisp` |
+| 10 | 条件系统与重启（CL 最独特的部分） | `08-conditions.lisp` |
+| 11 | CLOS：类、方法、多分派、方法组合 | `06-clos.lisp` |
+| 12 | 包与命名隔离 | `07-packages.lisp` |
+| 13 | 宏与元编程（含变量捕获与 `gensym`） | `05-macros.lisp` |
+| 14 | `format` 格式化输出 | `10-format.lisp` |
+| 15 | 文件与流 I/O | `09-file-io.lisp` |
+| 16 | SBCL 专用：线程、FFI、优化、部署 | `11` / `12` / `13` / `14` / `17` |
+| 17 | 工程化：ASDF、测试与工具链 | `15-asdf-quicklisp.lisp` |
+| 附录 A | 常见坑速查（症状 → 原因 → 解法，8 张表） | — |
+| 附录 B | 报错信息对照表（20 条 SBCL 报错原文） | — |
+
+## 指南断言核查脚本（`verify-guide.py`）
+
+指南开头声明「每一段带 `; =>` 的结果都是在 SBCL 上实际跑出来的」。这句话是**可核查**的：
+
+```bash
+python3 verify-guide.py                  # 默认核查 ./common-lisp-guide.md
+SBCL=/path/to/sbcl python3 verify-guide.py
+```
+
+它把指南里每个 ` ```lisp ` 块还原成 `.lisp` 文件、把断言行改写成检查，
+再按顺序 `--load`（所以前面块里的 `defvar` / `defun` / `defpackage` 对后面可见），
+最后逐条比对打印结果。
+
+实测（macOS + SBCL 2.6.7）：
+
+```text
+blocks : 共 271 个 lisp 代码块，其中 269 个有可执行内容；断言行 522 条
+==== blocks 269, claims 521, mismatch 0, broken 18 ====
+```
+
+- **`mismatch 0`** 是所有**数值类**断言逐条对上了；对象地址、`gensym` 编号、
+  哈希表遍历顺序、线程调度顺序这几类必然随运行而变，脚本里做了归一化
+  （`#<TRACED {1202A6C183}>` → `#<TRACED {…}>`、`#:G264` → `#:G`），指南里也都显式标注了。
+- **`broken 18`** 不是错误：那 18 个块是**故意演示报错**的（`ecase` 没匹配上、
+  包锁冲突、`format` 参数不够……）、或者是从完整项目里摘出来的**片段**
+  （`.asd` 文件内容、`my-function` 之类的占位符），本来就不该独立跑通。
+
+顺带记一条踩到的坑：**`*print-pretty*` 关掉会让 `'x` 变成 `(QUOTE X)`**
+（SBCL 只在 pretty 打开时才用引号缩写）。核查脚本因此保持 pretty 默认 `T`、
+只放宽 `*print-right-margin*` —— 否则一个值会因为打印设置不同而前后不一致，
+把「打印设置差异」误判成「指南写错了」。这一条也写进了指南 14.6 节。
+
+## 各示例主题
 
 | 示例 | 主题 |
 |---|---|
@@ -232,6 +298,16 @@ tr: Illegal byte sequence
 - 稳定性：`run-all.sh` 全量连跑 5 轮 + `build.ps1 -All` 1 轮，均为 17/17；
   并发示例 `12-threads.lisp` 单独再压 25 轮，全部通过（此前它偶发失败的原因见 D 节，
   已定位并修掉，不是线程竞态）
-- 教程正文中已实测确认错误的 API 断言已就地修正，并新增「macOS 实测修正」一章
+- 教程正文已重写为 18 章 + 2 附录（此前是 2335 行的 API 罗列版，含**编造的 API**
+  `make-sequence-indicator`、未加载就使用的 `alexandria:iota`、非法的 `~-10D`、
+  把换页指令 `~|` 当表格竖线等一批跑不通的片段 —— 全部已删改）。
+  现在文中 521 条 `; =>` 断言由 `verify-guide.py` 逐条回跑，mismatch 0
 - Windows 侧：`build.ps1` 已去掉硬编码的 `G:\` 路径并改为跨平台查找 SBCL，
   但**本机没有 Windows 环境，未实测**；`#+win32` 分支的代码路径同样未实测
+
+## 已知的目录结构偏差（待处理）
+
+本仓库其他教程目录都把可运行示例放在 `<topic>/examples/`（见根 `README.md` 的统一约定），
+**`sbcl/` 是唯一例外** —— 17 个示例直接放在 `sbcl/` 根下。教程正文按实际布局写
+（「本目录的 17 个 `.lisp` 文件」），若要统一，需同时改 `run-all.sh`、`build.ps1`、
+本 README 的结构图和指南里的路径引用。
