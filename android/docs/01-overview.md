@@ -51,7 +51,7 @@ Android 官方架构图自底向上五层。对应用开发者，越往上越要
 |---|---|---|
 | Linux 内核 | 进程/内存/驱动/电源管理，厂商按硬件定制 | 几乎不直接接触 |
 | HAL（Hardware Abstraction Layer，硬件抽象层） | 给上层统一硬件接口：相机、音频、传感器 | 不接触 |
-| 原生库 + ART | C/C++ 库（SQLite、OpenGL ES、媒体编解码）与 Android 运行时 | 第 14 章 JNI 会碰 |
+| 原生库 + ART | C/C++ 库（SQLite、OpenGL ES、媒体编解码）与 Android 运行时 | 第 15 章 JNI 会碰 |
 | Java/Kotlin Framework API | Activity Manager、Window Manager、View 体系、包管理、通知……数千个类的官方 API | **主要工作面** |
 | 应用层 | 你写的 APK 与系统预装应用 | 你的代码 |
 
@@ -97,7 +97,7 @@ myapp.apk
 ├── classes.dex             # dex 字节码，ART 的输入（类太多时会有 classes2.dex…）
 ├── res/                    # 编译后的资源：布局、图片、字符串
 ├── resources.arsc          # 资源索引表
-├── lib/<abi>/*.so          # 原生库（若有，详见第 14 章 [JNI 与 NDK](14-jni-ndk.md)）
+├── lib/<abi>/*.so          # 原生库（若有，详见第 15 章 [JNI 与 NDK](15-jni-ndk.md)）
 └── META-INF/               # 签名信息
 ```
 
@@ -176,15 +176,15 @@ myapp.apk
 |---|---|---|
 | 声明式界面 | WPF XAML | Compose 函数（第 12 章） |
 | 状态驱动的界面更新 | WPF 数据绑定 | Compose 状态与重组（第 12 章） |
-| MVVM 架构 | WPF ViewModel + INPC | ViewModel + StateFlow（第 13 章） |
+| MVVM 架构 | WPF ViewModel + INPC | ViewModel + StateFlow（第 14 章） |
 | UI 线程纪律 | Dispatcher | 主线程 + 协程（第 08 章） |
 | 页面导航 | WPF 导航窗口 | Intent 与返回栈（第 06 章） |
 | 列表的虚拟化 | ItemsControl | RecyclerView 与 Adapter（第 07 章） |
-| C/C++ 互操作 | MFC/Win32 本身就是 C++ | JNI 与 NDK（第 14 章） |
+| C/C++ 互操作 | MFC/Win32 本身就是 C++ | JNI 与 NDK（第 15 章） |
 
 最大的分野只有一条：桌面线里进程是你的，Android 线里进程是系统的。所有表格里看似平行的概念，落到代码里都带着这个前提的印记。
 
-## 8. 本教程结构：15 章地图
+## 8. 本教程结构：16 章地图
 
 | 章 | 文件 | 标题 | 一句话 |
 |---|---|---|---|
@@ -200,9 +200,10 @@ myapp.apk
 | 10 | `10-system-components.md` | BroadcastReceiver、Service 与通知 | 无界面组件与系统级交互 |
 | 11 | `11-permissions-content.md` | 运行时权限、ContentResolver 与硬件服务 | 敏感资源的中介模式 |
 | 12 | `12-compose-basics.md` | Jetpack Compose 基础 | 声明式 UI 的心智模型 |
-| 13 | `13-compose-architecture.md` | Compose 工程化架构 | 状态、导航与 ViewModel 分层 |
-| 14 | `14-jni-ndk.md` | JNI 与 NDK | Kotlin 与 C/C++ 的边界 |
-| 15 | `15-memopad.md` | 实战项目：MemoPad 便签应用 | 15 章知识串成一个完整应用 |
+| 13 | `13-compose-ui.md` | Compose 组件与交互 | 组件、Scaffold、副作用与动画 |
+| 14 | `14-compose-architecture.md` | Compose 工程化架构 | 状态、导航与 ViewModel 分层 |
+| 15 | `15-jni-ndk.md` | JNI 与 NDK | Kotlin 与 C/C++ 的边界 |
+| 16 | `16-memopad.md` | 实战项目：MemoPad 便签应用 | 全书知识串成一个完整应用 |
 
 学习路线分四段：**地基**（01–03，平台与语言）→ **平台核心**（04–11，传统 View 体系与系统能力，占全书一半）→ **现代 UI**（12–13，Compose）→ **原生与实战**（14–15）。建议按序走，第 05 章开始的每个示例都值得动手改。
 
@@ -212,7 +213,7 @@ myapp.apk
 
 1. **`examples/` 下的单文件示例**（`01_hello_activity.kt` 等）：用 kotlinc 挂上 `android.jar` 做**静态编译验证**——确认 API 名称、参数、类型的用法真实无误
 2. **`compose_examples/` Gradle 工程**：跑 `gradle :app:compileDebugKotlin` 验证完整工程配置与 Compose 代码可编译
-3. **JNI 部分**：NDK + CMake 交叉编译验证 C++ 侧（详见第 14 章）
+3. **JNI 部分**：NDK + CMake 交叉编译验证 C++ 侧（详见第 15 章）
 
 教学定位一句话：**API 与语法可信，运行需要真机**。所有正文里的 API 用法都通过了编译对账，不是凭记忆手写；但"编译通过"不等于"运行通过"——Android 程序的运行需要真实设备或模拟器，本教程不内置模拟器搭建流程。为什么只靠编译就能对账 API？答案是 `android.jar` 的特殊本质，这是第 02 章的主角。
 

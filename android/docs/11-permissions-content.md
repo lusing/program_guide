@@ -265,7 +265,7 @@ override fun onDestroy() {
 - 为"拒绝后"设计：权限被拒不是错误路径，是正常分支——拍照没有相机权限就切系统相机应用（第 06 章隐式 Intent），定位被拒就手选城市
 - 读写系统数据（通讯录、媒体库）用 `ContentResolver` + 官方 Contract 类，别琢磨文件路径直读——Scoped Storage 之下后者既不可行也不体面
 - 硬件服务四步诀"取服务、拿源、注册、注销"背下来，位置与传感器如此，指南针、计步器也如此
-- 第 15 章的 MemoPad 不涉及权限与硬件，但通知权限链路（第 10 章）与本章第 2 节的流程会在你自己的扩展需求里天天见面
+- 第 16 章的 MemoPad 不涉及权限与硬件，但通知权限链路（第 10 章）与本章第 2 节的流程会在你自己的扩展需求里天天见面
 
 ---
 上一章：[10 BroadcastReceiver、Service 与通知](10-system-components.md) ｜ 下一章：[12 Jetpack Compose 基础](12-compose-basics.md)

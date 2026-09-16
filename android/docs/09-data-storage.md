@@ -12,7 +12,7 @@
 | 内部存储 `filesDir` | 任意 | 无（裸字节，格式自己定） | 日志、导出文件、大块文本 |
 | 外部存储 | 大 | 无 | 媒体、下载内容（API 29 起 Scoped Storage 限制，见第 6 节） |
 | SQLite | 大 | 有（SQL 表、索引、查询） | 列表数据、要按条件查的业务数据 |
-| Room | 大 | 有 | SQLite 的官方 ORM 封装，工程首选，详见[第 13 章](13-compose-architecture.md) |
+| Room | 大 | 有 | SQLite 的官方 ORM 封装，工程首选，详见[第 14 章](14-compose-architecture.md) |
 | DataStore | 小 | 半结构化（键值 / 协议缓冲） | SharedPreferences 的现代替代：协程异步、Flow 响应式、写事务保证 |
 
 观点先行：
@@ -234,7 +234,7 @@ db.query("topics", null, "name = ?", arrayOf(keyword), null, null, null)
 
 **SP 存大对象**：把整页 JSON、Bitmap 的 Base64 塞进 SP。SP 是启动时全量加载进内存的单体 XML——首屏变慢、写入放大、`ClassCastException` 风险三连。大对象去 `filesDir` 或数据库；设置项保持"小而扁平"。
 
-**`onUpgrade` 忘了迁移丢数据**：示例里的 `DROP TABLE` + 重建在真机上等于"升级版本 = 清空数据"。正确写法是按 `oldVersion` 分支逐级 `ALTER TABLE`；更省心的办法是把建表/迁移交给 Room（[第 13 章](13-compose-architecture.md)），编译期校验 schema。
+**`onUpgrade` 忘了迁移丢数据**：示例里的 `DROP TABLE` + 重建在真机上等于"升级版本 = 清空数据"。正确写法是按 `oldVersion` 分支逐级 `ALTER TABLE`；更省心的办法是把建表/迁移交给 Room（[第 14 章](14-compose-architecture.md)），编译期校验 schema。
 
 **Cursor 泄漏**：`query` 返回的 `Cursor` 忘了 `close()`。偶发 `IllegalStateException: attempt to re-open an already-closed object` 或游标数量超限崩溃，且日志离案发现场很远。一律 `cursor.use { ... }`，让 Kotlin 替你关。
 
@@ -246,7 +246,7 @@ db.query("topics", null, "name = ?", arrayOf(keyword), null, null, null)
 - `SQLiteOpenHelper` 按单例持有（配合 `applicationContext`），全应用共用一个连接池；示例里 `db.close()` 是演示用，频繁开关库反而低效
 - 任何带用户输入的查询都用 `selection` + `selectionArgs` 占位符，把"拼 SQL"从肌肉记忆里删掉
 - 数据库版本号只升不降；`onUpgrade` 写成 `if (oldVersion < 2) { ... }` 的阶梯，保证跳版本升级也能走通
-- 第 15 章的 MemoPad 存便签选的就是 `filesDir` + JSON 文件——数据量小、不需要按条件查询，文件方案代码量最少；等需求长出"搜索/排序/分页"，再迁去 SQLite/Room 不迟
+- 第 16 章的 MemoPad 存便签选的就是 `filesDir` + JSON 文件——数据量小、不需要按条件查询，文件方案代码量最少；等需求长出"搜索/排序/分页"，再迁去 SQLite/Room 不迟
 
 ---
 上一章：[08 线程、Handler 与网络请求](08-threads-network.md) ｜ 下一章：[10 BroadcastReceiver、Service 与通知](10-system-components.md)

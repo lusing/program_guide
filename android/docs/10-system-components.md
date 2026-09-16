@@ -246,7 +246,7 @@ builder
 
 - 广播接收方一律成对写 `registerReceiver` / `unregisterReceiver`，注册放 `onStart`、注销放 `onStop` 比放 `onCreate` / `onDestroy` 更省泄漏面
 - 新工程动态注册自定义广播时直接带上 `RECEIVER_NOT_EXPORTED`，顺手杜绝 targetSdk 34 的 `SecurityException`
-- 默认不写 Service：一次性重活给 WorkManager（[第 13 章](13-compose-architecture.md)），仅"用户正盯着"的执行（导航、播放）才用前台服务
+- 默认不写 Service：一次性重活给 WorkManager（[第 14 章](14-compose-architecture.md)），仅"用户正盯着"的执行（导航、播放）才用前台服务
 - 通知渠道按"用户会想分开静音的粒度"划分，宁可细不可粗；id 用常量收口
 - 通知 id 收进常量表：进度类通知复用固定 id 做原地更新，新事件用新 id，避免抽屉被刷屏
 

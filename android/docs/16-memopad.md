@@ -1,4 +1,4 @@
-# 15 · 实战项目：MemoPad 便签应用
+# 16 · 实战项目：MemoPad 便签应用
 
 > 对应示例：`compose_examples/app/src/main/java/guide/android/compose/samples/MemoPadSample.kt`
 
@@ -9,11 +9,11 @@
 | 功能 | 用到的知识 | 来自哪章 |
 |---|---|---|
 | 便签列表（按修改时间倒序） | `LazyColumn` + `items(key=)` | 第 12 章 |
-| 新建 / 编辑便签 | `Navigation Compose` 路由与参数 | 第 13 章 |
-| 删除便签 | `StateFlow` 状态更新 | 第 13 章 |
+| 新建 / 编辑便签 | `Navigation Compose` 路由与参数 | 第 14 章 |
+| 删除便签 | `StateFlow` 状态更新 | 第 14 章 |
 | 退出重开数据还在 | JSON 文件持久化到 `filesDir` | 第 09 章 |
-| 后台备份 | `WorkManager` + `CoroutineWorker` | 第 13 章 |
-| 状态在屏幕旋转后不丢 | `ViewModel` + `AndroidViewModel` | 第 13 章、第 04 章 |
+| 后台备份 | `WorkManager` + `CoroutineWorker` | 第 14 章 |
+| 状态在屏幕旋转后不丢 | `ViewModel` + `AndroidViewModel` | 第 14 章、第 04 章 |
 
 整个项目是**一个约 330 行的 Kotlin 文件**，零新增依赖——用的全是 `compose_examples` 工程里已经有的库（Compose、Navigation、Lifecycle、WorkManager）加 SDK 自带的 `org.json`。这是刻意的：实战项目的意义在于架构组装，而不是堆依赖。
 
@@ -37,7 +37,7 @@
 └─────────────────────────────────────────────┘
 ```
 
-三条纪律，对应第 13 章讲过的单向数据流（UDF）：
+三条纪律，对应第 14 章讲过的单向数据流（UDF）：
 
 1. **Composable 不持有业务状态**：列表数据从 `vm.memos` 订阅，编辑框的临时输入才用 `remember`
 2. **Composable 不做 IO**：所有文件读写都发生在 ViewModel 的 `Dispatchers.IO` 里
@@ -84,7 +84,7 @@ private suspend fun readMemos(): List<Memo> = withContext(Dispatchers.IO) {
 
 写回是全量覆盖（整个列表重新序列化）。便签场景几十条数据，全量写完全够用；换成上万条就该换 SQLite/Room 的增量更新了——选型逻辑见第 09 章的存储对比表。
 
-**为什么不用 Room？** 第 13 章说过：本工程没有配置 KSP 和 `room-compiler`，Room 只能定义三件套不能实例化。教学工程保持"零注解处理器"有很多好处（构建快、依赖少、代码全可读），JSON 文件方案让持久层只有 40 行可审查的代码。升级路径在最后一节。
+**为什么不用 Room？** 第 14 章说过：本工程没有配置 KSP 和 `room-compiler`，Room 只能定义三件套不能实例化。教学工程保持"零注解处理器"有很多好处（构建快、依赖少、代码全可读），JSON 文件方案让持久层只有 40 行可审查的代码。升级路径在最后一节。
 
 ## 4. 状态层：MemoPadViewModel
 
@@ -107,7 +107,7 @@ class MemoPadViewModel(app: Application) : AndroidViewModel(app) {
 
 - **`AndroidViewModel` 而不是 `ViewModel`**：需要 `Application` 才能拿到 `filesDir`（Application 是全应用单例，不会泄漏）
 - **`_memos` 私有可变 / `memos` 公开只读**：UI 层只能订阅不能改，状态的唯一入口是 `save()`/`delete()` 这两个意图函数——单向数据流的字面实现
-- **`viewModelScope`**：协程作用域跟随 ViewModel 生命周期，ViewModel 清理时自动取消，不会泄漏（第 08 章、第 13 章）
+- **`viewModelScope`**：协程作用域跟随 ViewModel 生命周期，ViewModel 清理时自动取消，不会泄漏（第 08 章、第 14 章）
 - **`init` 里异步加载**：构造函数不能挂起，磁盘读取放 `launch`，加载完成前 UI 显示空列表
 
 保存逻辑是"更新内存态 → 落盘"两步：
@@ -175,7 +175,7 @@ Scaffold(floatingActionButton = {
 }
 ```
 
-- `collectAsStateWithLifecycle()`：让订阅跟随生命周期，退到后台就停止收集（第 13 章）
+- `collectAsStateWithLifecycle()`：让订阅跟随生命周期，退到后台就停止收集（第 14 章）
 - `items(memos, key = { it.id })`：给 item 一个稳定 key，删除中间一条时 Compose 能复用其余节点而不是全部重建——和第 07 章 ViewHolder 复用是同一个问题意识，只是这里一行参数搞定
 - `contentPadding = innerPadding`：吃掉 Scaffold 留白，列表滚到底也不会被 FAB 挡住
 
@@ -211,7 +211,7 @@ WorkManager.getInstance(context)
     .enqueue(OneTimeWorkRequestBuilder<MemoBackupWorker>().build())
 ```
 
-点击"备份"按钮，工作被交给系统调度：即使进程被杀，约束满足后任务仍会补执行——这是第 10 章 Service 做不到的**保证执行**语义（第 13 章选型表）。把 `OneTimeWorkRequestBuilder` 换成 `PeriodicWorkRequestBuilder<MemoBackupWorker>(6, TimeUnit.HOURS)` 就是每六小时自动备份，其余代码一行不改。
+点击"备份"按钮，工作被交给系统调度：即使进程被杀，约束满足后任务仍会补执行——这是第 10 章 Service 做不到的**保证执行**语义（第 14 章选型表）。把 `OneTimeWorkRequestBuilder` 换成 `PeriodicWorkRequestBuilder<MemoBackupWorker>(6, TimeUnit.HOURS)` 就是每六小时自动备份，其余代码一行不改。
 
 ## 8. 把它跑起来
 
@@ -246,11 +246,11 @@ pwsh -File .\build.ps1 -Compose
 
 ## 10. 实战建议
 
-- **先跑通再升级**：这个项目的每一层都能单独替换——把 `readMemos/writeMemos` 换成 Room DAO（第 13 章三件套 + KSP 接入步骤），UI 与 ViewModel 一行不改，这就是分层的回报
-- **Repository 抽接口**：`MemoPadViewModel` 直接持有文件读写，下一步是把数据层抽成 `MemoRepository` 接口 + JSON 实现，测试时注入内存实现（第 13 章依赖注入的思想）
+- **先跑通再升级**：这个项目的每一层都能单独替换——把 `readMemos/writeMemos` 换成 Room DAO（第 14 章三件套 + KSP 接入步骤），UI 与 ViewModel 一行不改，这就是分层的回报
+- **Repository 抽接口**：`MemoPadViewModel` 直接持有文件读写，下一步是把数据层抽成 `MemoRepository` 接口 + JSON 实现，测试时注入内存实现（第 14 章依赖注入的思想）
 - **值得做的练习**：标题搜索框（`derivedStateOf` 过滤列表）、滑动删除（`SwipeToDismissBox`）、便签置顶（`sortByDescending` 加权重）、深色主题跟随系统（`isSystemInDarkTheme()`）
 - **发布前清单**：`minSdk 24` 覆盖 98%+ 设备可保持；图标与 `label` 在 manifest 里替换；备份规则 `android:allowBackup`；若上架 Play，WorkManager 的周期任务最小间隔 15 分钟
 - 把第 09 章的 SharedPreferences（记住"上次打开的便签"）、第 10 章的通知（定时提醒）逐个加进来，每加一个功能回读对应章节——这本教程的闭环就完成了
 
 ---
-上一章：[14 JNI 与 NDK](14-jni-ndk.md) ｜ 本教程完，回到[目录](../README.md)
+上一章：[15 JNI 与 NDK](15-jni-ndk.md) ｜ 本教程完，回到[目录](../README.md)

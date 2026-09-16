@@ -14,6 +14,7 @@ Desktop.ini
 .vscode/
 .vs/
 **/.idea/
+.claude/
 
 # Generic build output folders used across guides
 **/build/
@@ -64,3 +65,8 @@ freepascal/examples/*/lib/
 *.cache
 *.deps.json
 *.runtimeconfig.json
+
+# Gradle / Android 工程缓存（.gradle 是 Gradle 守护进程内部状态，
+# local.properties 含本机 SDK 路径——都不该进仓库）
+**/.gradle/
+**/local.properties

@@ -1,6 +1,6 @@
 # Android 应用开发教程
 
-一套从零开始的 Android 实用教程：15 章正文 + 21 条 Kotlin API 示例 + 10 条 Jetpack Compose 示例 + JNI/NDK 示例 + 1 个实战项目 MemoPad。全部代码在本机工具链上编译验证（kotlinc + android.jar 静态编译、Gradle Compose 工程编译、NDK CMake 交叉编译），教程正文见 `docs/`。
+一套从零开始的 Android 实用教程：16 章正文 + 21 条 Kotlin API 示例 + 23 条 Jetpack Compose 示例 + JNI/NDK 示例 + 1 个实战项目 MemoPad。全部代码在本机工具链上编译验证（kotlinc + android.jar 静态编译、Gradle Compose 工程编译、NDK CMake 交叉编译），教程正文见 `docs/`。
 
 ## 快速开始
 
@@ -35,9 +35,10 @@ android/
 │   ├── 10-system-components.md   # BroadcastReceiver、Service 与通知
 │   ├── 11-permissions-content.md # 运行时权限、ContentResolver 与硬件服务
 │   ├── 12-compose-basics.md      # Jetpack Compose 基础
-│   ├── 13-compose-architecture.md # Compose 工程化架构
-│   ├── 14-jni-ndk.md             # JNI 与 NDK
-│   └── 15-memopad.md             # 实战项目：MemoPad 便签应用
+│   ├── 13-compose-ui.md          # Compose 组件与交互
+│   ├── 14-compose-architecture.md # Compose 工程化架构
+│   ├── 15-jni-ndk.md             # JNI 与 NDK
+│   └── 16-memopad.md             # 实战项目：MemoPad 便签应用
 ├── examples/                     # 21 条 Kotlin API 示例（kotlinc + android.jar 编译验证）
 │   ├── 01_hello_activity.kt      # ... 每章文档开头标注对应示例
 │   └── 21_jni_bridge.kt
@@ -58,7 +59,7 @@ android/
 | Gradle | `G:\scoop\apps\gradle\current\bin\gradle.bat` |
 | JDK | `G:\scoop\apps\openjdk\current`（Java 17） |
 | Compose 工程 | AGP 8.7.3、Kotlin 2.0.21、compileSdk 35、minSdk 24 |
-| 核心依赖 | Compose ui 1.7.8、material3 1.3.1、navigation-compose 2.8.5、lifecycle 2.8.7、room 2.6.1、work-runtime-ktx 2.10.0 |
+| 核心依赖 | Compose ui 1.7.8、material3 1.3.1、material-icons-core 1.7.8、navigation-compose 2.8.5、lifecycle 2.8.7、room 2.6.1、work-runtime-ktx 2.10.0 |
 
 验证体系分三层：`examples/` 用 `kotlinc -classpath android.jar` 做静态编译验证（API 调用与语法可信）；`compose_examples/` 用 Gradle 编译验证（含 KSP 之前的注解库）；JNI 用 NDK CMake 交叉编译出 `libguide_native.so`。运行示例需真实设备或模拟器，不在本仓库验证范围内。
 
@@ -67,11 +68,11 @@ android/
 1. **01~03**：平台架构、工程与工具链、Kotlin 子集——先弄清"APK 是什么、Gradle 在干嘛"
 2. **04~08**：Activity 生命周期、View 体系、Intent、列表、线程与网络——传统 Android 的骨架
 3. **09~11**：存储、四组件里的 Service/Broadcast/通知、权限与硬件——系统能力
-4. **12~13**：Compose 与工程化架构（ViewModel/StateFlow/Navigation/Room/WorkManager）——现代 Android 的主线
-5. **14~15**：JNI/NDK 与实战项目 MemoPad，把全书知识串进一个可扩展的应用
+4. **12~14**：Compose 三部曲——基础心智模型、组件与交互（Scaffold/动画/副作用）、工程化架构（ViewModel/StateFlow/Navigation/Room/WorkManager），现代 Android 的主线
+5. **15~16**：JNI/NDK 与实战项目 MemoPad，把全书知识串进一个可扩展的应用
 
-传统 View 体系（04~08）与 Compose（12~13）是两套并存的 UI 范式：新项目从 Compose 开始，但读懂存量代码仍需 View 体系——这也是教程两者都讲的原因。
+传统 View 体系（04~08）与 Compose（12~14）是两套并存的 UI 范式：新项目从 Compose 开始，但读懂存量代码仍需 View 体系——这也是教程两者都讲的原因。
 
 ## 实战项目：MemoPad 便签
 
-`compose_examples/.../samples/MemoPadSample.kt` 是一个约 330 行的完整应用：Compose 列表/编辑双屏、Navigation 路由、ViewModel + StateFlow 单向数据流、JSON 文件持久化、WorkManager 后台备份，零新增依赖。详见 [docs/15-memopad.md](docs/15-memopad.md)。
+`compose_examples/.../samples/MemoPadSample.kt` 是一个约 330 行的完整应用：Compose 列表/编辑双屏、Navigation 路由、ViewModel + StateFlow 单向数据流、JSON 文件持久化、WorkManager 后台备份，零新增依赖。详见 [docs/16-memopad.md](docs/16-memopad.md)。

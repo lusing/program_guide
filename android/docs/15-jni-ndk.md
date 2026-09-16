@@ -1,4 +1,4 @@
-# 14 · JNI 与 NDK
+# 15 · JNI 与 NDK
 
 > 对应示例：`examples/21_jni_bridge.kt`、`compose_examples/app/src/main/cpp/native-lib.cpp`
 
@@ -214,7 +214,7 @@ fun JniStatusSample() {
 
 - **`remember { ... }` 是关键**：首次组合时调用一次 native 并缓存；后续重组直接复用。去掉 `remember`，每次重组都会跨一次 JNI 边界——这里虽然便宜，习惯不能养成
 - 库的加载时机也在这条链上：首次访问 `GuideNativeBridge` 触发 object 的 `init`（即 `loadLibrary`），恰好发生在首次组合执行 `remember` lambda 那一刻；加载一次后，后续调用直接走已解析的符号
-- 边界在 UI 层的姿态：JNI 结果就是普通 `String`，Compose 不关心它从哪来。重的 native 调用应放进 ViewModel 或协程后台（[第 13 章](13-compose-architecture.md)的分工），回到 UI 的永远是现成的状态
+- 边界在 UI 层的姿态：JNI 结果就是普通 `String`，Compose 不关心它从哪来。重的 native 调用应放进 ViewModel 或协程后台（[第 14 章](14-compose-architecture.md)的分工），回到 UI 的永远是现成的状态
 
 顺带一个运行期自查：如果这个示例在设备上闪退并报 `UnsatisfiedLinkError`，先查两件事——APK 里有没有该设备 ABI 的 `libguide_native.so`，以及 `loadLibrary` 名字与 `add_library` 的 target 是否一致（第 8 节的完整排查）。
 
@@ -244,7 +244,7 @@ fun JniStatusSample() {
 - 引第三方 native 库时，优先找官方预编译的 AAR（内含各 ABI 的 `.so`），自己维护源码交叉编译是最后手段
 - 构建验证用 `.\build.ps1 -Jni`（纯 native 编译）与 `.\build.ps1 -Compose`（整工程含 JNI 打包链），见[第 02 章](02-project-toolchain.md)
 - 模拟器（x86_64）与真机（arm64-v8a）各装一次，`JniStatusSample` 十秒钟就能确认 ABI 覆盖与链路通断
-- 第 15 章实战项目是纯 Kotlin，不需要 JNI——本章的定位是"看得懂现有 native 集成、接得上真实项目"，不是"天天写"
+- 第 16 章实战项目是纯 Kotlin，不需要 JNI——本章的定位是"看得懂现有 native 集成、接得上真实项目"，不是"天天写"
 
 ---
-上一章：[13 Compose 工程化架构](13-compose-architecture.md) ｜ 下一章：[15 实战项目：MemoPad 便签应用](15-memopad.md)
+上一章：[14 Compose 工程化架构](14-compose-architecture.md) ｜ 下一章：[16 实战项目：MemoPad 便签应用](16-memopad.md)

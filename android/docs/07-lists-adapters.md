@@ -239,7 +239,7 @@ LazyColumn {
 }
 ```
 
-没有 Adapter、没有 ViewHolder、没有 notify——Compose 的组合与重组机制天然按需构建可见项，"复用"下沉为框架内部的实现细节。想给条目稳定身份（避免增删时状态错位），加个 key 即可：`items(data, key = { it })`。但请留意思想上的血缘：`LazyColumn` 的"lazy（惰性组合）"与 RecyclerView 的"recycle（回收复用）"解决的是同一个问题——**数据无限，视图有限**。传统体系里你手写的每一处复用技巧，都在帮你理解声明式方案为什么这样设计（详见[第 12 章](12-compose-basics.md)）。
+没有 Adapter、没有 ViewHolder、没有 notify——Compose 的组合与重组机制天然按需构建可见项，"复用"下沉为框架内部的实现细节。想给条目稳定身份（避免增删时状态错位），加个 key 即可：`items(data, key = { it })`。但请留意思想上的血缘：`LazyColumn` 的"lazy（惰性组合）"与 RecyclerView 的"recycle（回收复用）"解决的是同一个问题——**数据无限，视图有限**。传统体系里你手写的每一处复用技巧，都在帮你理解声明式方案为什么这样设计（详见[第 12 章](12-compose-basics.md)；key 的语义、增删动画与横向列表在[第 13 章](13-compose-ui.md)展开）。
 
 ## 8. 常见坑
 

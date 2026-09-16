@@ -1,4 +1,4 @@
-# 13 · Compose 工程化架构
+# 14 · Compose 工程化架构
 
 > 对应示例：`compose_examples/app/src/main/java/guide/android/compose/samples/AdvancedSamples.kt`
 
@@ -79,9 +79,81 @@ Composable ◀──────────────────────
 
 三条纪律：状态向下、事件向上、ViewModel 不知道 UI 存在。最后一条是白送的：`CounterViewModel` 不依赖任何 Compose 类型，可以直接写 JVM 单元测试。
 
-ViewModel 同时是挂起工作的自然宿主：`viewModel.viewModelScope` 里的协程（[第 08 章](08-threads-network.md)）活到 ViewModel 被清除为止，旋转打断不了它——这正是第 1 节"异步结果无处投递"的解法。本示例的 `increment()` 是纯同步看不到 scope；真实项目里的形态是 `viewModelScope.launch { ... }` 包住请求，结果写回 `StateFlow`。
+ViewModel 同时是挂起工作的自然宿主：`viewModel.viewModelScope` 里的协程（[第 08 章](08-threads-network.md)）活到 ViewModel 被清除为止，旋转打断不了它——这正是第 1 节"异步结果无处投递"的解法。本示例的 `increment()` 是纯同步看不到 scope；真实项目里 `viewModelScope.launch { ... }` 包住请求、结果写回状态流——结果具体怎么建模，正是下一节的主题。
 
-## 3. Navigation Compose：应用内路由
+## 3. UiState：把屏幕状态建模成一个密封类
+
+第 2 节的状态是单个 `Int`，这掩盖了真实屏幕的复杂性：数据可能还在加载、可能加载成功、可能加载失败。直觉写法是三个布尔（`isLoading` / `isError` / ...），但布尔们可以**同时为真**——"加载中且已失败"这种不可能状态在类型上没有被排除，只能靠码品自律，迟早失守。Kotlin 的密封类型（[第 03 章](03-kotlin-for-android.md)）给出根治方案：屏幕任一时刻只处于**一种**状态，那就把它建成一个类型。
+
+`AdvancedSamples.kt` 的三段式（进阶5）。先建模状态：
+
+```kotlin
+/** 屏幕状态建模为一个密封类：任一时刻只可能是三态之一，编译器保证分支穷尽 */
+sealed interface UiState<out T> {
+    data object Loading : UiState<Nothing>
+    data class Success<T>(val data: T) : UiState<T>
+    data class Error(val message: String) : UiState<Nothing>
+}
+```
+
+- **互斥由类型保证**：`state` 是 `UiState` 就不可能"既 Loading 又 Success"——不可能状态不是被禁止了，是被**表达不出来**了
+- **`<out T>` 泛型**：`UiState<List<Note>>`、`UiState<User>` 随便复用；`Loading`/`Error` 没有 T 也装得进任何 `UiState<T>`（协变，细节[第 03 章](03-kotlin-for-android.md)）
+- **`data object` / `data class`**：无参状态用 `object` 全局一份，带数据的状态是值对象，`==` 比较内容
+
+数据源与 ViewModel：
+
+```kotlin
+/** 假数据源：delay 模拟网络延迟，随机失败演示 Error 态（教学工程不引入真实网络） */
+class FakeNoteRepository {
+    suspend fun loadNotes(): List<String> {
+        delay(1500)
+        if (Random.nextInt(10) < 3) error("模拟网络失败")
+        return listOf("便签 A", "便签 B", "便签 C")
+    }
+}
+
+class NoteListViewModel(
+    private val repository: FakeNoteRepository = FakeNoteRepository()
+) : ViewModel() {
+    private val _state = MutableStateFlow<UiState<List<String>>>(UiState.Loading)
+    val state: StateFlow<UiState<List<String>>> = _state.asStateFlow()
+
+    init {
+        load()
+    }
+
+    fun load() {
+        viewModelScope.launch {
+            _state.value = UiState.Loading
+            runCatching { repository.loadNotes() }
+                .onSuccess { notes -> _state.value = UiState.Success(notes) }
+                .onFailure { e -> _state.value = UiState.Error(e.message ?: "未知错误") }
+        }
+    }
+}
+```
+
+三件事：
+
+- **Repository 经构造函数注入**（带默认值便于直接用）：ViewModel 不自己造数据源——测试时塞一个"立即成功/立即失败"的假实现，三态渲染逻辑不碰网络就能验证。这是分层的第一块砖，[第 16 章](16-memopad.md)的 MemoPad 会再遇到它
+- **`runCatching { }`**：把异常收进 `Result`，`onSuccess`/`onFailure` 各写各的，比 try/catch 少一层缩进；失败映射成 `Error(message)` 而不是让协程崩掉
+- **每次 `load()` 先回 `Loading`**：重试时 UI 自动回到转圈分支，不需要单独的 `isRefreshing` 布尔
+
+UI 侧的渲染就是穷尽分支（示例里三个分支分别是转圈、列表、错误 + 重试按钮）：
+
+```kotlin
+when (val s = state) {
+    is UiState.Loading -> { /* CircularProgressIndicator + "加载中…" */ }
+    is UiState.Success -> { /* s.data.forEach { Text("· $it") } */ }
+    is UiState.Error -> { /* Text(s.message, color = 红) + OutlinedButton("重试") { vm.load() } */ }
+}
+```
+
+`when` 摆在 `state` 的收口处，密封类的威力在编译期兑现：**漏写任何一个分支，编译直接报错**；将来加第四态（比如"空数据 `Empty`"），所有渲染点被编译器逐个揪出来补分支。对比布尔组合方案——漏判一个 `if (isError)` 只会在测试甚至线上暴露。这是"派生值现算"（第 12 章第 5 节）在屏幕维度的对应物：状态不是散落的标志位，是一台状态机。
+
+诚实标注边界：不是每块界面都值得上密封类——数据**必然**可得的本地状态（如 MemoPad 的便签列表）用 `StateFlow<List<Memo>>` 就够（[第 16 章](16-memopad.md)即如此）；UiState 的用武之地是"异步加载、可能失败"的屏幕，也就是绝大多数联网页面。
+
+## 4. Navigation Compose：应用内路由
 
 `AdvancedNavigationSample`（依赖 `androidx.navigation:navigation-compose:2.8.5`）：
 
@@ -120,7 +192,7 @@ fun AdvancedNavigationSample() {
 - **`rememberNavController()`**：路由栈的控制器，唯一有状态的东西
 - **`NavHost` + `composable(route)`**：声明路由表。`startDestination = "home"` 指定起点；每个 `composable("...")` 的 lambda 就是该页面
 - **导航参数**：路由模板 `"detail/{id}"`，`navArgument("id") { type = NavType.StringType }` 声明类型，页面里 `entry.arguments?.getString("id")` 取值
-- **跳转即压栈**：`navController.navigate("detail/42")` 把 `"detail/42"` 压入内部栈；`navController.popBackStack()` 弹栈返回，系统返回键默认走同一条路
+- **跳转即压栈**：`navController.navigate("detail/42")` 把 `"detail/42"` 压入内部栈；`navController.popBackStack()` 弹栈返回，系统返回键默认走同一条路。快速连点会压入两个相同页面——底部导航这类"切标签"场景给 `navigate` 加 `navOptions { launchSingleTop = true }` 复用栈顶，避免重复页
 
 与[第 06 章](06-intents-navigation.md) Intent 的对照——两者是互补，不是替代：
 
@@ -134,7 +206,7 @@ fun AdvancedNavigationSample() {
 
 新工程的主流形态是单 Activity + NavHost 承载全部页面；一旦要跨出应用边界（打开浏览器、分享、拨号），仍然回到 Intent。
 
-## 4. Room：三件套与本工程的真实状态
+## 5. Room：三件套与本工程的真实状态
 
 `AdvancedSamples.kt` 定义了 Room 的标准三件套（依赖 `androidx.room:room-runtime` / `room-ktx` 2.6.1）：
 
@@ -193,9 +265,9 @@ val db = Room.databaseBuilder(context, GuideRoomDatabase::class.java, "guide.db"
 db.noteDao().observeAll()      // Flow<List<NoteEntity>>，接第 2 节的收集链
 ```
 
-[第 15 章](15-memopad.md)实战项目选择用 JSON 文件做持久层，就是为了绕开这个额外依赖——架构思想（DAO 接口 + 响应式流）不变，落地物换成文件读写。
+[第 16 章](16-memopad.md)实战项目选择用 JSON 文件做持久层，就是为了绕开这个额外依赖——架构思想（DAO 接口 + 响应式流）不变，落地物换成文件读写。
 
-## 5. WorkManager：可保证执行的后台任务
+## 6. WorkManager：可保证执行的后台任务
 
 `AdvancedSamples.kt` 的最后一块（依赖 `androidx.work:work-runtime-ktx:2.10.0`）：
 
@@ -238,22 +310,25 @@ WorkManager 的卖点是**保证执行**：任务入库后，进程被杀、甚�
 | 用户可感知 | 否 | 是（常驻通知） | 否 |
 | 适用 | 可推迟的后台工作：同步、上传、清理 | 播放、导航等前台长任务 | 页面内异步加载 |
 
-## 6. 常见坑
+## 7. 常见坑
 
 **在 Composable 里 new ViewModel**：`val vm = CounterViewModel()`——编译通过，但每次重组都可能造出新实例，状态随机归零，"活过旋转"更无从谈起。必须用 `viewModel()` 获取（工程大了再换 hiltViewModel 等注入方案）。
 
 **StateFlow 不 collectAsState 直接读 `.value`**：`Text("${vm.count.value}")` 能编译、能显示初值，然后永远不动——`.value` 是一次性读取，不构成订阅。要 UI 跟着变，必须 `collectAsStateWithLifecycle()`（至少 `collectAsState()`）拿到 Compose 状态再读。
 
+**把一次性事件塞进 UiState**：想弹个"已保存"提示，给密封类加个 `ShowToast(message)` 分支——事件是会"过期"的（弹过就该消失），状态是"持续成立"的；混在一起会出现"旋转后旧提示又弹一遍"。一次性事件走 `Channel`（VM 端 `send`，UI 端 `receiveAsFlow().collect` 消费后即失）或 Snackbar 的排队语义（[第 13 章](13-compose-ui.md)第 2 节），别让它进状态机。
+
 **WorkManager 当 Service 用**：拿 WorkManager 跑音乐播放、实时定位——它是"可延迟的保证执行"，任务可能被系统推迟十几分钟，进程也会被回收重启。用户可感知的常驻任务走[第 10 章](10-system-components.md)的前台 Service；页面内异步用协程；WorkManager 只管"迟早要做、中断会续"的那类。
 
-## 7. 实战建议
+## 8. 实战建议
 
 - 每屏一个 ViewModel；状态用 `StateFlow` 暴露（私有 `MutableStateFlow` 写），事件方法语义化——`increment()` 而不是 `setCount(n)`
+- 异步屏幕状态用 `UiState` 密封类建模（第 3 节），本地必然可得的数据用裸 `StateFlow<List<T>>` 就够——按需上强度
 - Room 数据库全局一份（单例），DAO 经构造函数进 ViewModel，不要在 Composable 里建库
 - 路由字符串提常量或扩展属性，`"detail/{id}"` 这类模板散落各处必然拼写漂移
-- Room 三件套随时可写，但要跑起来先接 KSP（第 4 节步骤）；不想接就学第 15 章用文件持久层
+- Room 三件套随时可写，但要跑起来先接 KSP（第 5 节步骤）；不想接就学第 16 章用文件持久层
 - 架构不是层数越多越好：单屏小工具一个 ViewModel 足够，别提前引入 Repository/UseCase 层
-- 改完跑 `.\build.ps1 -Compose` 验证编译；[第 15 章](15-memopad.md)会把本章的 ViewModel + StateFlow + Navigation 全部串成完整应用
+- 改完跑 `.\build.ps1 -Compose` 验证编译；[第 16 章](16-memopad.md)会把本章的 ViewModel + StateFlow + Navigation 全部串成完整应用
 
 ---
-上一章：[12 Jetpack Compose 基础](12-compose-basics.md) ｜ 下一章：[14 JNI 与 NDK](14-jni-ndk.md)
+上一章：[13 Compose 组件与交互](13-compose-ui.md) ｜ 下一章：[15 JNI 与 NDK](15-jni-ndk.md)

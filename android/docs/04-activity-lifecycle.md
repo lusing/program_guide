@@ -208,7 +208,7 @@ override fun onRestoreInstanceState(savedInstanceState: Bundle) {
 - Bundle 经 Binder 跨进程传输，别塞大对象（事务缓冲区约 1MB 且全局共享），大文件直接写磁盘（[第 09 章](09-data-storage.md)）
 - manifest 里 `android:configChanges="orientation"` 可以声明"旋转我自己处理"从而跳过重建——不推荐，等于把一堆状态同步的脏活从系统接回自己手上
 
-现代补充：架构组件 ViewModel 在旋转重建时跨过生死保留数据，比手动搬 Bundle 省心，Compose 工程里配合 StateFlow 使用——见[第 13 章](13-compose-architecture.md)。
+现代补充：架构组件 ViewModel 在旋转重建时跨过生死保留数据，比手动搬 Bundle 省心，Compose 工程里配合 StateFlow 使用——见[第 14 章](14-compose-architecture.md)。
 
 ## 6. Activity 谱系：ComponentActivity 与 AppCompatActivity
 

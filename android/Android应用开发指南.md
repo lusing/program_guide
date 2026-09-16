@@ -17,18 +17,19 @@
 | 09 | [本地数据持久化](docs/09-data-storage.md) | SharedPreferences、内部存储、SQLiteOpenHelper | `examples/07 08 09` |
 | 10 | [BroadcastReceiver、Service 与通知](docs/10-system-components.md) | 广播收发、Service 起停、NotificationChannel | `examples/10 11 12` |
 | 11 | [运行时权限、ContentResolver 与硬件服务](docs/11-permissions-content.md) | 危险权限流程、跨应用数据、位置与传感器 | `examples/13 14 17 18` |
-| 12 | [Jetpack Compose 基础](docs/12-compose-basics.md) | 声明式 UI、remember/重组、Modifier、LazyColumn | ComposeSamples.kt |
-| 13 | [Compose 工程化架构](docs/13-compose-architecture.md) | ViewModel+StateFlow、Navigation、Room、WorkManager | AdvancedSamples.kt |
-| 14 | [JNI 与 NDK](docs/14-jni-ndk.md) | external fun、C++ 侧符号规则、CMake 交叉编译 | `examples/21` + cpp/ |
-| 15 | [实战项目：MemoPad 便签应用](docs/15-memopad.md) | 单向数据流三层架构组装完整应用 | MemoPadSample.kt |
+| 12 | [Jetpack Compose 基础](docs/12-compose-basics.md) | 声明式 UI、remember/重组、Modifier、布局三件套、LazyColumn | ComposeSamples.kt |
+| 13 | [Compose 组件与交互](docs/13-compose-ui.md) | 组件速查、Scaffold、对话框、列表进阶、副作用、动画 | UiSamples.kt |
+| 14 | [Compose 工程化架构](docs/14-compose-architecture.md) | ViewModel+StateFlow、UiState、Navigation、Room、WorkManager | AdvancedSamples.kt |
+| 15 | [JNI 与 NDK](docs/15-jni-ndk.md) | external fun、C++ 侧符号规则、CMake 交叉编译 | `examples/21` + cpp/ |
+| 16 | [实战项目：MemoPad 便签应用](docs/16-memopad.md) | 单向数据流三层架构组装完整应用 | MemoPadSample.kt |
 
 ## 学习路线
 
 - **入门（01~04）**：先建平台与工程的心智模型，再进 Activity 生命周期——Android 一切行为的底层逻辑
 - **传统 UI 与并发（05~08）**：View 体系 + Intent + 列表 + 主线程铁律；读懂存量代码的基础
 - **系统能力（09~11）**：存储选型、四组件、权限与硬件
-- **现代主线（12~13）**：Compose 与工程化架构，新项目的起点
-- **纵深与收束（14~15）**：JNI 打通原生层，MemoPad 把全书串成一个应用
+- **现代主线（12~14）**：Compose 三部曲（基础 → 组件与交互 → 架构），新项目的起点
+- **纵深与收束（15~16）**：JNI 打通原生层，MemoPad 把全书串成一个应用
 
 ## 编译验证
 
