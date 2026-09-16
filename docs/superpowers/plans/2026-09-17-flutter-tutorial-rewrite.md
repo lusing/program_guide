@@ -80,7 +80,7 @@
 **Interfaces:**
 - Produces: 干净的 `examples/` 空目录（Task 3 起逐章创建）；根仅剩 README/build.ps1 待重写。
 
-- [ ] **Step 1: 删除旧文件与工程**
+- [x] **Step 1: 删除旧文件与工程**
 
 ```bash
 cd /g/code/guide/flutter
@@ -94,7 +94,7 @@ ls
 
 预期：git status 全部为 D；目录仅剩 README.md、build.ps1、空 examples/。
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add -A && git commit -m "chore(flutter): 删除旧指南与旧示例工程
@@ -112,7 +112,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: `-All` 全量流程（Task 16 终验依赖）：逐工程 pub get → analyze → test，抽查工程追加 `build windows --debug`；`-Project <name>` 单工程全流程（含构建）；`-Clean` 各工程 `flutter clean` + 清根 build/。
 
-- [ ] **Step 1: 写 build.ps1 全文**（保持无 BOM）
+- [x] **Step 1: 写 build.ps1 全文**（保持无 BOM）
 
 ```powershell
 param(
@@ -218,7 +218,7 @@ Write-Host '  .\build.ps1 -Project 06_material 单工程全流程（含 windows 
 Write-Host '  .\build.ps1 -Clean               各工程 flutter clean + 清理根 build'
 ```
 
-- [ ] **Step 2: 烟测脚本**
+- [x] **Step 2: 烟测脚本**
 
 ```bash
 cd /g/code/guide/flutter && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1
@@ -226,7 +226,7 @@ cd /g/code/guide/flutter && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -Exe
 
 预期：无参数时打印用法（examples 为空目录，-All 会 throw 属预期，Task 3 起消失）；`-Clean` 输出"[Clean]"正常退出。
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add build.ps1 && git commit -m "feat(flutter): 新 build.ps1 分级验证（analyze+test 全量、构建抽查）
@@ -244,7 +244,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 02/03/04 章引用代码；02_hello 为 01 章引用对象与 windows 构建抽查对象。
 
-- [ ] **Step 1: 创建三个工程**（create 命令模板，改目录名与包名各跑三次）
+- [x] **Step 1: 创建三个工程**（create 命令模板，改目录名与包名各跑三次）
 
 ```bash
 cd /g/code/guide/flutter/examples
@@ -253,7 +253,7 @@ cd /g/code/guide/flutter/examples
 "G:/scoop/apps/flutter/current/bin/flutter.bat" create --project-name layout_single_app --platforms=windows 04_layout_single
 ```
 
-- [ ] **Step 2: 覆写 examples/02_hello/lib/main.dart**
+- [x] **Step 2: 覆写 examples/02_hello/lib/main.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -305,7 +305,7 @@ class HelloPage extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 3: 覆写 examples/02_hello/test/widget_test.dart**
+- [x] **Step 3: 覆写 examples/02_hello/test/widget_test.dart**
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -321,7 +321,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 4: 覆写 examples/03_widgets/lib/main.dart**
+- [x] **Step 4: 覆写 examples/03_widgets/lib/main.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -387,7 +387,7 @@ class SkillList extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 5: 覆写 examples/03_widgets/test/widget_test.dart**
+- [x] **Step 5: 覆写 examples/03_widgets/test/widget_test.dart**
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -404,7 +404,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 6: 覆写 examples/04_layout_single/lib/main.dart**
+- [x] **Step 6: 覆写 examples/04_layout_single/lib/main.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -486,7 +486,7 @@ class AlignDemo extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 7: 覆写 examples/04_layout_single/test/widget_test.dart**
+- [x] **Step 7: 覆写 examples/04_layout_single/test/widget_test.dart**
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -502,7 +502,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 8: 验证 + 核对跟踪清单 + Commit**
+- [x] **Step 8: 验证 + 核对跟踪清单 + Commit**
 
 ```bash
 cd /g/code/guide/flutter
@@ -535,7 +535,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 05/06/07 章引用代码。
 
-- [ ] **Step 1: 创建三个工程**
+- [x] **Step 1: 创建三个工程**
 
 ```bash
 cd /g/code/guide/flutter/examples
@@ -544,7 +544,7 @@ cd /g/code/guide/flutter/examples
 "G:/scoop/apps/flutter/current/bin/flutter.bat" create --project-name interaction_app --platforms=windows 07_interaction
 ```
 
-- [ ] **Step 2: 覆写 examples/05_layout_multi/lib/main.dart**
+- [x] **Step 2: 覆写 examples/05_layout_multi/lib/main.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -642,7 +642,7 @@ class StackDemo extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 3: 覆写 examples/05_layout_multi/test/widget_test.dart**
+- [x] **Step 3: 覆写 examples/05_layout_multi/test/widget_test.dart**
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -658,7 +658,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 4: 覆写 examples/06_material/lib/main.dart**
+- [x] **Step 4: 覆写 examples/06_material/lib/main.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -747,7 +747,7 @@ class HomeBody extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 5: 覆写 examples/06_material/test/widget_test.dart**
+- [x] **Step 5: 覆写 examples/06_material/test/widget_test.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -779,7 +779,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 6: 覆写 examples/07_interaction/lib/main.dart**
+- [x] **Step 6: 覆写 examples/07_interaction/lib/main.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -882,7 +882,7 @@ class _InteractionPageState extends State<InteractionPage> {
 }
 ```
 
-- [ ] **Step 7: 覆写 examples/07_interaction/test/widget_test.dart**
+- [x] **Step 7: 覆写 examples/07_interaction/test/widget_test.dart**
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -924,7 +924,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 8: 验证 + Commit**
+- [x] **Step 8: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/flutter/examples/05_layout_multi && "G:/scoop/apps/flutter/current/bin/flutter.bat" test
@@ -947,7 +947,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 08/09/10 章引用代码。
 
-- [ ] **Step 1: 创建三个工程**
+- [x] **Step 1: 创建三个工程**
 
 ```bash
 cd /g/code/guide/flutter/examples
@@ -956,7 +956,7 @@ cd /g/code/guide/flutter/examples
 "G:/scoop/apps/flutter/current/bin/flutter.bat" create --project-name navigation_app --platforms=windows 10_navigation
 ```
 
-- [ ] **Step 2: 覆写 examples/08_stateful/lib/main.dart**
+- [x] **Step 2: 覆写 examples/08_stateful/lib/main.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -1040,7 +1040,7 @@ class _CounterPageState extends State<CounterPage> {
 }
 ```
 
-- [ ] **Step 3: 覆写 examples/08_stateful/test/widget_test.dart**
+- [x] **Step 3: 覆写 examples/08_stateful/test/widget_test.dart**
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -1067,7 +1067,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 4: 覆写 examples/09_state_sharing/lib/main.dart**
+- [x] **Step 4: 覆写 examples/09_state_sharing/lib/main.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -1153,7 +1153,7 @@ class CartViewer extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 5: 覆写 examples/09_state_sharing/test/widget_test.dart**
+- [x] **Step 5: 覆写 examples/09_state_sharing/test/widget_test.dart**
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -1170,7 +1170,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 6: 覆写 examples/10_navigation/lib/main.dart**
+- [x] **Step 6: 覆写 examples/10_navigation/lib/main.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -1283,7 +1283,7 @@ class AboutPage extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 7: 覆写 examples/10_navigation/test/widget_test.dart**
+- [x] **Step 7: 覆写 examples/10_navigation/test/widget_test.dart**
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -1309,7 +1309,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 8: 验证 + Commit**
+- [x] **Step 8: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/flutter/examples/08_stateful && "G:/scoop/apps/flutter/current/bin/flutter.bat" test
@@ -1332,7 +1332,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 11/12/13 章引用代码；13 章 `Note.fromJson` 与页面注入 `Future<List<Note>> Function()` fetcher（测试注入假实现）。
 
-- [ ] **Step 1: 创建三个工程**
+- [x] **Step 1: 创建三个工程**
 
 ```bash
 cd /g/code/guide/flutter/examples
@@ -1341,7 +1341,7 @@ cd /g/code/guide/flutter/examples
 "G:/scoop/apps/flutter/current/bin/flutter.bat" create --project-name http_json_app --platforms=windows 13_http_json
 ```
 
-- [ ] **Step 2: 覆写 examples/11_forms/lib/main.dart**
+- [x] **Step 2: 覆写 examples/11_forms/lib/main.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -1428,7 +1428,7 @@ class _SignupPageState extends State<SignupPage> {
 }
 ```
 
-- [ ] **Step 3: 覆写 examples/11_forms/test/widget_test.dart**
+- [x] **Step 3: 覆写 examples/11_forms/test/widget_test.dart**
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -1455,7 +1455,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 4: 覆写 examples/12_lists/lib/main.dart**
+- [x] **Step 4: 覆写 examples/12_lists/lib/main.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -1519,7 +1519,7 @@ class ListsPage extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 5: 覆写 examples/12_lists/test/widget_test.dart**
+- [x] **Step 5: 覆写 examples/12_lists/test/widget_test.dart**
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -1551,7 +1551,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 6: 覆写 examples/13_http_json/lib/main.dart**
+- [x] **Step 6: 覆写 examples/13_http_json/lib/main.dart**
 
 ```dart
 import 'dart:async';
@@ -1665,7 +1665,7 @@ class _NewsPageState extends State<NewsPage> {
 }
 ```
 
-- [ ] **Step 7: 覆写 examples/13_http_json/test/widget_test.dart**
+- [x] **Step 7: 覆写 examples/13_http_json/test/widget_test.dart**
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -1701,7 +1701,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 8: pubspec 加 http 依赖 + 验证 + Commit**
+- [x] **Step 8: pubspec 加 http 依赖 + 验证 + Commit**
 
 `examples/13_http_json/pubspec.yaml` 的 dependencies 段加（保持 create 生成的其余内容不动）：
 
@@ -1733,7 +1733,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 14/15/16 章引用代码。14 章页面收可注入的 `Future`/`Stream`（测试确定性）。
 
-- [ ] **Step 1: 创建三个工程**
+- [x] **Step 1: 创建三个工程**
 
 ```bash
 cd /g/code/guide/flutter/examples
@@ -1742,7 +1742,7 @@ cd /g/code/guide/flutter/examples
 "G:/scoop/apps/flutter/current/bin/flutter.bat" create --project-name theme_app --platforms=windows 16_theme
 ```
 
-- [ ] **Step 2: 覆写 examples/14_async_ui/lib/main.dart**
+- [x] **Step 2: 覆写 examples/14_async_ui/lib/main.dart**
 
 ```dart
 import 'dart:async';
@@ -1831,7 +1831,7 @@ class _AsyncUiPageState extends State<AsyncUiPage> {
 }
 ```
 
-- [ ] **Step 3: 覆写 examples/14_async_ui/test/widget_test.dart**
+- [x] **Step 3: 覆写 examples/14_async_ui/test/widget_test.dart**
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -1861,7 +1861,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 4: 覆写 examples/15_animation/lib/main.dart**
+- [x] **Step 4: 覆写 examples/15_animation/lib/main.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -1986,7 +1986,7 @@ class HeroPage extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 5: 覆写 examples/15_animation/test/widget_test.dart**
+- [x] **Step 5: 覆写 examples/15_animation/test/widget_test.dart**
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -2020,7 +2020,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 6: 覆写 examples/16_theme/lib/main.dart**
+- [x] **Step 6: 覆写 examples/16_theme/lib/main.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -2116,7 +2116,7 @@ class ThemePage extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 7: 覆写 examples/16_theme/test/widget_test.dart**
+- [x] **Step 7: 覆写 examples/16_theme/test/widget_test.dart**
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -2144,7 +2144,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 8: 验证 + Commit**
+- [x] **Step 8: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/flutter/examples/14_async_ui && "G:/scoop/apps/flutter/current/bin/flutter.bat" test
@@ -2167,7 +2167,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 17/18/19 章引用代码；17 章文件往返放普通 `test()`、prefs 用 mock；19 章工程本身就是"被测示例"（lib 纯逻辑 + 双层测试）。
 
-- [ ] **Step 1: 创建三个工程**
+- [x] **Step 1: 创建三个工程**
 
 ```bash
 cd /g/code/guide/flutter/examples
@@ -2176,7 +2176,7 @@ cd /g/code/guide/flutter/examples
 "G:/scoop/apps/flutter/current/bin/flutter.bat" create --project-name testing_app --platforms=windows 19_testing
 ```
 
-- [ ] **Step 2: 覆写 examples/17_persist/lib/main.dart**
+- [x] **Step 2: 覆写 examples/17_persist/lib/main.dart**
 
 ```dart
 import 'dart:convert';
@@ -2312,7 +2312,7 @@ class _PersistPageState extends State<PersistPage> {
 }
 ```
 
-- [ ] **Step 3: 覆写 examples/17_persist/test/widget_test.dart**
+- [x] **Step 3: 覆写 examples/17_persist/test/widget_test.dart**
 
 ```dart
 import 'dart:io';
@@ -2350,7 +2350,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 4: 覆写 examples/18_desktop/lib/main.dart**
+- [x] **Step 4: 覆写 examples/18_desktop/lib/main.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -2432,7 +2432,7 @@ class _DesktopPageState extends State<DesktopPage> {
 }
 ```
 
-- [ ] **Step 5: 覆写 examples/18_desktop/test/widget_test.dart**
+- [x] **Step 5: 覆写 examples/18_desktop/test/widget_test.dart**
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -2456,7 +2456,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 6: 覆写 examples/19_testing 的 lib 与双层测试**
+- [x] **Step 6: 覆写 examples/19_testing 的 lib 与双层测试**
 
 `lib/counter.dart`：
 
@@ -2570,7 +2570,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 7: pubspec 加 shared_preferences（17）+ 验证 + Commit**
+- [x] **Step 7: pubspec 加 shared_preferences（17）+ 验证 + Commit**
 
 `examples/17_persist/pubspec.yaml` dependencies 加：
 
@@ -2602,14 +2602,14 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 20 章引用代码；`NotesStorage` 抽象（测试注入内存实现）；Note 模型（fromJson/toJson/copyWith）。
 
-- [ ] **Step 1: 创建工程**
+- [x] **Step 1: 创建工程**
 
 ```bash
 cd /g/code/guide/flutter/examples
 "G:/scoop/apps/flutter/current/bin/flutter.bat" create --project-name notes_app --platforms=windows 20_notes
 ```
 
-- [ ] **Step 2: 写 lib/note.dart**
+- [x] **Step 2: 写 lib/note.dart**
 
 ```dart
 /// 一条笔记：纯数据模型（模板见 Dart 教程·第 18/20 章）。
@@ -2651,7 +2651,7 @@ class Note {
 }
 ```
 
-- [ ] **Step 3: 写 lib/storage.dart**
+- [x] **Step 3: 写 lib/storage.dart**
 
 ```dart
 import 'dart:convert';
@@ -2688,7 +2688,7 @@ class FileNotesStorage implements NotesStorage {
 }
 ```
 
-- [ ] **Step 4: 写 lib/main.dart**
+- [x] **Step 4: 写 lib/main.dart**
 
 ```dart
 import 'dart:io';
@@ -2863,7 +2863,7 @@ class _NotesHomePageState extends State<NotesHomePage> {
 }
 ```
 
-- [ ] **Step 5: 写 lib/edit_page.dart**
+- [x] **Step 5: 写 lib/edit_page.dart**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -2935,7 +2935,7 @@ class _EditPageState extends State<EditPage> {
 }
 ```
 
-- [ ] **Step 6: 写 test/notes_test.dart**
+- [x] **Step 6: 写 test/notes_test.dart**
 
 ```dart
 import 'dart:io';
@@ -3028,7 +3028,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 7: 验证（含 windows 构建）+ Commit**
+- [x] **Step 7: 验证（含 windows 构建）+ Commit**
 
 ```bash
 cd /g/code/guide/flutter
@@ -3054,7 +3054,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Consumes: Task 3 的三个工程（片段按 `// ═══ N.M` 摘录）。
 - Produces: docs/ 目录与首批四章；后续章节沿用行文结构。
 
-- [ ] **Step 1: 写 01-overview.md**（约 150 行）：
+- [x] **Step 1: 写 01-overview.md**（约 150 行）：
   1. `# 01 · Flutter 全景：一套代码，多端一致`
   2. Flutter 是什么：Google UI 框架、自绘引擎（不映射原生控件）；与"WebView 套壳/原生桥接"路线对比表
   3. 三层架构表：Framework（Dart，Widget 层）/Engine（C++，Skia/Impeller 渲染、Dart VM）/Embedder（各平台宿主）；"为什么 Windows 上能跑"
@@ -3066,7 +3066,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   9. 20 章路线图（入门 02–07 / 状态与数据 08–14 / 打磨与交付 15–20）
   10. `## 坑位清单`：热重载改不了 main() 入口需热重启、flutter clean 后首次构建慢、生成物（ephemeral/build）别提交、Windows 构建需 VS 组件
 
-- [ ] **Step 2: 写 02-hello.md**（约 130 行）：
+- [x] **Step 2: 写 02-hello.md**（约 130 行）：
   1. `# 02 · 第一个应用：从 create 到热重载`
   2. flutter create 命令与产物（引用工程结构）；`--project-name` 与目录名分离的坑（包名不能数字开头）
   3. runApp 与 widget 树挂载（引用 2.1）；`main() => runApp(...)` 的形状
@@ -3076,7 +3076,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. flutter run -d windows 与退出；widget 测试初见（工程自带 test 怎么跑）（连第 19 章）
   8. `## 坑位清单`：const 漏写引发的无谓重建、Text 默认不可选（桌面注意，连 18 章）、运行设备列表 `flutter devices`、中文乱码与编码
 
-- [ ] **Step 3: 写 03-widgets.md**（约 160 行）：
+- [x] **Step 3: 写 03-widgets.md**（约 160 行）：
   1. `# 03 · Widget：不可变的配置树`
   2. 问题先行：为什么改 UI 不"改"而是"重建"——Widget 是**不可变配置**（对比 DOM 可变节点）；组合优于继承（对比 WinForms 控件继承体系）
   3. StatelessWidget 与 build（引用 3.1）：build 什么时候被调、纯函数性（同输入同 UI）
@@ -3086,7 +3086,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. Widget/Element/RenderObject 三树一瞥：配置树 vs 实例树 vs 布局树——为什么 setState 只重建子树（不展开原理，给心智模型）
   8. `## 坑位清单`：build 里做重活/发请求（应放 initState/事件）、在 build 里创建 TextEditingController（应放 State 字段）、忘 dispose 控制器、直接 new 对象当 child（应 const）
 
-- [ ] **Step 4: 写 04-layout-single.md**（约 150 行）：
+- [x] **Step 4: 写 04-layout-single.md**（约 150 行）：
   1. `# 04 · 布局 I：容器与装饰`
   2. Flutter 布局心智模型：约束传递（父给约束、子报尺寸）——一句话版 + "想深入看官方 Understanding constraints"指引
   3. Padding/EdgeInsets（引用 4.1）：all/symmetric/only/fromLTRB；SizedBox 撑空隙/固定尺寸；为什么有 Padding 组件而不是 padding 属性（一切皆 Widget）
@@ -3095,7 +3095,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. 尺寸语义速查：double.infinity/MainAxisSize.max 一览
   7. `## 坑位清单`：Container 无约束时 width: infinity 会怎样、把 SizedBox 当"div"无脑套、阴影被父级裁剪（ClipRect）、EdgeInsets.only 拼四个方向的写法
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/flutter && wc -l docs/*.md
@@ -3119,7 +3119,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Create: `docs/07-interaction.md`（示例 `examples/07_interaction/`）
 - Create: `docs/08-stateful.md`（示例 `examples/08_stateful/`）
 
-- [ ] **Step 1: 写 05-layout-multi.md**（约 160 行）：
+- [x] **Step 1: 写 05-layout-multi.md**（约 160 行）：
   1. `# 05 · 布局 II：线性、弹性与层叠`
   2. Row/Column（引用 5.1）：同构（verticalDirection/textDirection）；主轴/交叉轴概念图（文字版）
   3. MainAxisAlignment 五种值表（引用 5.1）+ crossAxisAlignment（默认 center；stretch 的效果）
@@ -3128,7 +3128,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. 布局选型表：单子用上一章容器；横向 Row、纵向 Column、悬浮角标 Stack、可滚动 ListView（预告 12 章）
   7. `## 坑位清单`：RenderFlex overflow 的三种解法（Expanded/可滚动/缩字）、mainAxisSize.min 在无限父约束下的行为、Stack 第一个孩子决定尺寸、Positioned 必须直接父级是 Stack
 
-- [ ] **Step 2: 写 06-material.md**（约 170 行）：
+- [x] **Step 2: 写 06-material.md**（约 170 行）：
   1. `# 06 · Material 组件库：搭积木的说明书`
   2. Material Design 与 Flutter 的关系：组件库只是 widget（ Cupertino 另一套一句话）
   3. Scaffold 六插槽表（引用 6.1）：appBar/body/floatingActionButton/drawer/bottomNavigationBar/endDrawer——各一句话与常用组件
@@ -3138,7 +3138,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. 按钮家族表：FilledButton/OutlinedButton/TextButton/IconButton/FloatingActionButton——层级递减的使用场景
   8. `## 坑位清单`：ListTile 里塞长文本不换行（isThreeLine/expanded）、Drawer 里第一个可滚动子项必须是 ListView（防顶部 unsafe area）、NavigationBar 与 BottomNavigationBar（M2 旧版）混淆、Card 默认 margin
 
-- [ ] **Step 3: 写 07-interaction.md**（约 150 行）：
+- [x] **Step 3: 写 07-interaction.md**（约 150 行）：
   1. `# 07 · 交互与对话框：点击、轻提示、确认`
   2. InkWell vs GestureDetector（引用 7.1/7.2）：水波纹材质反馈 vs 原始手势；onTap/onDoubleTap/onLongPress 手势速查表
   3. 回调即交互：onPressed 传函数（连 [Dart 教程·第 05 章](../dart/docs/05-functions.md) 匿名函数/箭头）
@@ -3147,7 +3147,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. 模态 BottomSheet（引用 7.5）：showModalBottomSheet；与 Dialog 的选用
   7. `## 坑位清单`：async 回调里用 context 前忘 context.mounted（lint 会拦）、SnackBar 在 Scaffold 外调用报错、Dialog 不关就 push 新页面（栈混乱）、onPressed: null 与 onPressed: () {} 的区别（禁用 vs 空操作）
 
-- [ ] **Step 4: 写 08-stateful.md**（约 180 行）：
+- [x] **Step 4: 写 08-stateful.md**（约 180 行）：
   1. `# 08 · 有状态 Widget：setState 与生命周期`
   2. 问题先行：03 章说 Widget 不可变——那数据变了怎么办？答案：StatefulWidget 拆成"配置（不可变）+ State（可变，长期存活）"
   3. 声明骨架（引用 8.1）：createState/State 类；为什么 State 是 public 而状态字段建议私有（_count）
@@ -3157,7 +3157,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. 重建范围与性能：setState 重建整个 State 的 build；小部件拆分 State 限制重建范围（连 09 章）
   8. `## 坑位清单`：build 里 setState（死循环）、initState 里同步调 ScaffoldMessenger/Navigator（时机过早）、dispose 后用 controller、State 字段能不变就 final（只把真正会变的设为可变）
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/flutter && wc -l docs/05*.md docs/06*.md docs/07*.md docs/08*.md
@@ -3181,7 +3181,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Create: `docs/11-forms.md`（示例 `examples/11_forms/`）
 - Create: `docs/12-lists.md`（示例 `examples/12_lists/`）
 
-- [ ] **Step 1: 写 09-state-sharing.md**（约 170 行）：
+- [x] **Step 1: 写 09-state-sharing.md**（约 170 行）：
   1. `# 09 · 状态提升与共享：数据放哪`
   2. 问题先行：两个兄弟组件要读同一份数据——状态放公共祖先（提升），还是放进"全局"？两个世界都要懂
   3. 状态提升（引用 9.1）：回调上抛 + 数据下放；CartPage 的 adder/viewer 例；单数据流方向（Flutter 界的 Flux 气质）
@@ -3190,7 +3190,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. **生态选型表**：原生（本教程）→ provider（官方风格封装）→ Riverpod（编译期安全）→ Bloc（流式大项目）；建议"先原生后生态，知道痛点再上工具"
   7. `## 坑位清单`：notifyListeners 忘了调用（界面不动）、InheritedWidget 每次 notify 重建整棵子树（粒度控制）、把可变对象直接塞 const 构造、setState 提升后又全树重建（该上 InheritedNotifier）
 
-- [ ] **Step 2: 写 10-navigation.md**（约 150 行）：
+- [x] **Step 2: 写 10-navigation.md**（约 150 行）：
   1. `# 10 · 导航与路由：页面的栈`
   2. 心智模型：Navigator 是**栈**不是"页面注册表"；push/pop 即进栈出栈
   3. push 与 MaterialPageRoute（引用 10.1）：builder 惰性建页；**push 返回 Future**——await 拿返回值（连 [Dart 教程·第 15 章](../dart/docs/15-async.md)）
@@ -3200,7 +3200,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. 桌面特有：路由动画在桌面默认也是 Material 过渡；Alt+Left 返回行为一句话
   8. `## 坑位清单`：async gap 后用 context（mounted 检查，示例代码有）、push 后 pop 两次（栈失衡）、routes 表 '/' 必须存在、嵌套 Navigator（标签页各持独立栈）一瞥
 
-- [ ] **Step 3: 写 11-forms.md**（约 150 行）：
+- [x] **Step 3: 写 11-forms.md**（约 150 行）：
   1. `# 11 · 表单：校验与提交`
   2. Form/GlobalKey<FormState>（引用 11.1）：Form 是"校验域"，钥匙调 validate()/save()/reset()
   3. TextFormField（引用 11.2）：validator 返回错误文案或 null；obscureText/keyboardType/autofocus 参数表
@@ -3209,7 +3209,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. 桌面差异：输入即触发校验的时机（autovalidateMode）、Tab 顺序默认按树序
   7. `## 坑位清单`：validate() 前忘挂 GlobalKey（ currentState! 崩）、validator 忘 return null（永远报错）、controller 与 onSaved 混用取值（一套就好）、dispose 漏掉 controller
 
-- [ ] **Step 4: 写 12-lists.md**（约 160 行）：
+- [x] **Step 4: 写 12-lists.md**（约 160 行）：
   1. `# 12 · 列表与滚动：从十条到十万条`
   2. 问题先行：Column 装一千条会怎样（全量构建+溢出）——ListView 懒构建按需建
   3. ListView 四形态表：children（少量）/builder（大量）/separated（分隔线）/custom（完全定制）
@@ -3219,7 +3219,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. 控制滚动：ScrollController（jumpTo/animateTo）；滚到顶按钮小例（连 18 章 Scrollbar）
   8. `## 坑位清单`：ListView 嵌 ListView（内层必须 shrinkWrap/固定高，或该用 CustomScrollView）、itemBuilder 里闭包捕获索引错位、分隔线计入 itemCount 的坑（separated 不用）、没给 itemCount（无限列表）
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/flutter && wc -l docs/09*.md docs/10*.md docs/11*.md docs/12*.md
@@ -3243,7 +3243,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Create: `docs/15-animation.md`（示例 `examples/15_animation/`）
 - Create: `docs/16-theme.md`（示例 `examples/16_theme/`）
 
-- [ ] **Step 1: 写 13-http-json.md**（约 170 行）：
+- [x] **Step 1: 写 13-http-json.md**（约 170 行）：
   1. `# 13 · 网络与 JSON：数据从远方来`
   2. Dart 异步底座回顾：Future/await（链 [Dart 教程·第 15 章](../dart/docs/15-async.md)）
   3. http 包（引用 13.1）：`http.get(Uri)`；为什么用它而不是裸 HttpClient（API 友好；两者关系）；pubspec 添加依赖
@@ -3254,7 +3254,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. 错误处理：状态码检查/超时一句带过；测试断言失败态
   9. `## 坑位清单`：build 里发请求（每次重建都发）、jsonDecode 结果裸用（连 Dart 18 章坑位）、忘了 Content-Type（自建 server 演示可见）、真实 app 的 API key 别写死在代码里
 
-- [ ] **Step 2: 写 14-async-ui.md**（约 160 行）：
+- [x] **Step 2: 写 14-async-ui.md**（约 160 行）：
   1. `# 14 · 异步 UI：把 Future 画出来`
   2. 问题先行：Future 还没完成时界面显示什么？FutureBuilder 把"三态渲染"模板化
   3. FutureBuilder（引用 14.1）：connectionState 分支表（none/waiting/done）；done 里再分 data/error；示例用 switch 表达式（连 [Dart 教程·第 13 章](../dart/docs/13-records-patterns.md)）
@@ -3264,7 +3264,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   7. 手写 vs Builder：为什么不用 setState+Future.then 手搓（模板代码量对比）
   8. `## 坑位清单`：future 参数每次 build 换新实例、StreamBuilder 的 stream 同理、snapshot.data 在 waiting 期是 null（! 崩）、失败后无重试入口（加刷新按钮的模式）
 
-- [ ] **Step 3: 写 15-animation.md**（约 160 行）：
+- [x] **Step 3: 写 15-animation.md**（约 160 行）：
   1. `# 15 · 动画：隐式、Hero 与显式`
   2. 动画三档表：隐式（AnimatedXxx）/转场共享（Hero）/显式（Controller）——复杂度与控制力递增
   3. 隐式动画（引用 15.1）：改属性即动；duration/curve；AnimatedContainer/AnimatedOpacity/AnimatedSwitcher 三常客
@@ -3273,7 +3273,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. 桌面动画口味：桌面用户对动画更"耐短"——duration 建议表
   7. `## 坑位清单`：Controller 忘 dispose、vsync 忘 with（编译错）、repeat() 让 pumpAndSettle 永不结束（测试场景）、AnimatedXxx 的属性没变就不动（值相同不触发）
 
-- [ ] **Step 4: 写 16-theme.md**（约 160 行）：
+- [x] **Step 4: 写 16-theme.md**（约 160 行）：
   1. `# 16 · 主题与响应式：一处定义，处处生效`
   2. ThemeData 与 ColorScheme.fromSeed（引用 16.1）：种子色生成整套色板；light/dark 两套 + themeMode 三态
   3. 主题切换（引用 16.2）：themeMode 状态在根 State；SegmentedButton（M3 分段选择）
@@ -3282,7 +3282,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. 响应式（引用 16.4）：LayoutBuilder 拿约束换布局；500px 断点示例；MediaQuery（屏幕尺寸/安全区）对比表；桌面窗口可任意拖宽——响应式是桌面刚需
   7. `## 坑位清单`：写死 Colors.black 在深色模式翻车、Theme.of 在 builder 外缓存（重建不更新）、断点用屏幕宽而非约束宽（嵌套场景错）、SegmentedButton selected 是 Set
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/flutter && wc -l docs/13*.md docs/14*.md docs/15*.md docs/16*.md
@@ -3306,7 +3306,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Create: `docs/19-testing.md`（示例 `examples/19_testing/`）
 - Create: `docs/20-notes.md`（示例 `examples/20_notes/`）
 
-- [ ] **Step 1: 写 17-persist.md**（约 150 行）：
+- [x] **Step 1: 写 17-persist.md**（约 150 行）：
   1. `# 17 · 数据持久化：记住用户的世界`
   2. 三档选型表：键值（shared_preferences）/文件（dart:io JSON）/数据库（sqflite 生态一句话）
   3. shared_preferences（引用 17.2）：getInstance/setInt/getInt；异步性；Windows 下的存储位置一句话（注册表/文件由插件管）；**setMockInitialValues** 测试法
@@ -3315,7 +3315,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   6. 真实 IO 与 widget 测试：普通 test() 做 IO 往返、widget 测试用注入/mock——两层测试策略（示例 test 文件即范本）
   7. `## 坑位清单`：prefs 的 await 忘写（读到旧值）、文件路径依赖 cwd、initState 同步读 prefs 拿不到（异步加载后 setState）、大量结构化数据硬塞 prefs
 
-- [ ] **Step 2: 写 18-desktop.md**（约 160 行）：
+- [x] **Step 2: 写 18-desktop.md**（约 160 行）：
   1. `# 18 · 桌面专题：Windows 的一等公民`
   2. 桌面与移动的差异表：窗口可拉伸（响应式刚需）、鼠标（右键/滚轮/悬停）、键盘直达、无触屏手势
   3. 构建与发布（引用 build 命令）：`flutter build windows --debug/--release`；产物路径与 exe；--release 体积/启动对比；打包（zip/msix 一句话）
@@ -3326,7 +3326,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. 鼠标交互：Listener/ MouseRegion 一节（悬停/右键 SecondaryTap）
   9. `## 坑位清单`：debug 与 release 行为差异（断言/性能）、exe 缺 dll（产物整目录拷贝）、ScrollView 无滚动条、触屏组件习惯用在桌面（间距/命中区域过小）
 
-- [ ] **Step 3: 写 19-testing.md**（约 160 行）：
+- [x] **Step 3: 写 19-testing.md**（约 160 行）：
   1. `# 19 · Widget 测试：自动化的界面验证`
   2. 分层表：纯逻辑单元测试（dart test）vs widget 测试（flutter_test）vs 集成测试（integration_test 一句话）——成本/速度/覆盖递增
   3. 纯逻辑层（引用 19 工程 counter_test.dart）：与 [Dart 教程·第 19 章](../dart/docs/19-testing.md) 同一套（package:test 与 flutter_test 兼容）；负例 throwsStateError
@@ -3337,7 +3337,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. 跑法：flutter test / --plain-name / --coverage；本教程 build.ps1 -All 的全量验证即此
   9. `## 坑位清单`：真实网络/文件进 widget 测试（应注入/mock）、pumpAndSettle 配 repeat 动画死等、find.text 找到多个（N 个同文案）、异步 setState 后忘 pump
 
-- [ ] **Step 4: 写 20-notes.md**（约 200 行，实战章）：
+- [x] **Step 4: 写 20-notes.md**（约 200 行，实战章）：
   1. `# 20 · 实战：记事本`
   2. 成品演示：功能走查（列表/新建/编辑/删除/主题）+ `flutter run -d windows` 演示序列
   3. 工程结构讲解：lib 多文件分层（main/note/storage/edit_page）；"入口薄、模型纯、存储抽象、页面组页"
@@ -3350,7 +3350,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   10. 扩展方向：搜索过滤、markdown 渲染、系统托盘（生态）、自动保存防抖、多窗口（等官方）
   11. `## 坑位清单`：DateTime 直接 jsonEncode 不报错但存成 String 要手转、saved 后忘记 save 回存储（内存与盘不一致）、push 回来 mounted 检查、空标题笔记的展示兜底（（无标题））
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/flutter && wc -l docs/17*.md docs/18*.md docs/19*.md docs/20*.md && ls docs | wc -l
@@ -3372,7 +3372,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Create: `README.md`（重写）
 - Create: `CHEATSheet.md`
 
-- [ ] **Step 1: 重写 README.md**（约 70 行，对齐 dart 教程 README 格式）：
+- [x] **Step 1: 重写 README.md**（约 70 行，对齐 dart 教程 README 格式）：
   1. 标题 `# Flutter 开发指南`；定位段：面向**会编程、已具备 Dart 基础**的读者；Dart 语言请先读 [Dart 教程](../dart/README.md)（本教程只讲框架层）；主线 Flutter 3.47、Windows 桌面
   2. 目录结构代码块（README/docs/examples/build.ps1/CHEATSheet.md 各一行注释）
   3. **章节索引表**（20 行三列：章主题链接 | 主题 | 示例目录）
@@ -3380,7 +3380,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   5. 编译验证命令块（-All/-Project/-Clean + 行为分级一句话：analyze+test 全量、02_hello 与 20_notes 额外 windows 构建）
   6. 单跑某个示例：`cd examples/06_material && flutter run -d windows`（标准学法：跑起来改一改热重载）
 
-- [ ] **Step 2: 写 CHEATSheet.md**（约 200 行）：
+- [x] **Step 2: 写 CHEATSheet.md**（约 200 行）：
   1. `# Flutter 速查表`（开头注明配教程使用、按章号引用）
   2. 命令速查：create/run/analyze/test/build/pub/clean + 热重载键位
   3. 工程结构：create 产物一表 + pubspec 骨架
@@ -3395,7 +3395,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   12. 持久化：prefs 三行、文件三行
   13. 测试：testWidgets 骨架、finders 表、pump vs pumpAndSettle
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add README.md CHEATSheet.md && git commit -m "docs(flutter): 重写 README、新增 CHEATSheet
@@ -3410,7 +3410,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Files:**
 - 无新文件（发现问题回修后重跑）
 
-- [ ] **Step 1: 全量验证**
+- [x] **Step 1: 全量验证**
 
 ```bash
 cd /g/code/guide/flutter && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All 2>&1 | tail -30
@@ -3418,7 +3418,7 @@ cd /g/code/guide/flutter && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -Exe
 
 预期（逐项核对）：19 个工程各 `[PubGet][Analyze][Test]` 全过（analyze 零告警、测试 +N 全绿）；02_hello 与 20_notes 额外 `[BuildWin]` 成功（`✓ Built …`）；末行 `[Done]`。首跑约 10–15 分钟。
 
-- [ ] **Step 2: 一致性与卫生检查**
+- [x] **Step 2: 一致性与卫生检查**
 
 ```bash
 cd /g/code/guide/flutter && ls docs | wc -l && ls examples | wc -l && wc -l docs/*.md | tail -1
@@ -3428,7 +3428,7 @@ grep -c "docs/" README.md && grep -rn "../dart/docs/" docs | wc -l
 
 预期：docs 20 个、examples 19 个、docs 总行数 2900–3900；生成物零跟踪；README 含 20 个 docs/ 链接；docs 对 Dart 教程的交叉引用 ≥ 10 处。抽查三章代码片段与 examples 逐字一致（2.1/11.3/20.5）。
 
-- [ ] **Step 3: 清理与收尾**
+- [x] **Step 3: 清理与收尾**
 
 ```bash
 cd /g/code/guide/flutter && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Clean && git status --short
@@ -3436,10 +3436,27 @@ cd /g/code/guide/flutter && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -Exe
 
 预期：`git status` 干净（build/.dart_tool/ephemeral 全被忽略）。若有未提交变更，补提交。
 
-- [ ] **Step 4: Commit（如有收尾变更）**
+- [x] **Step 4: Commit（如有收尾变更）**
 
 ```bash
 git add -A && git commit -m "chore(flutter): 教程终验收尾
 
 Co-Authored-By: Claude Code <noreply@anthropic.com>" || echo "无收尾变更，跳过"
 ```
+
+## 执行勘误（2026-09-17 实施时对计划的修正）
+
+| 位置 | 偏差 | 原因 |
+|---|---|---|
+| Task 3 三工程测试 | 补 `import 'package:flutter/material.dart';` | 测试引用 FloatingActionButton/Card/Icons/Key |
+| Task 3 示例 03 | `const ListView(...)` → `ListView(children: const [...])`；类名 `WidgetsApp` → `WidgetsDemoApp` | ListView 构造非常量；与 Flutter 内置 WidgetsApp 撞名 |
+| Task 4 示例 07 | 双击测试末尾补 `pump(100ms)`；测试去 material import | 双击识别器 40ms 收尾定时器触发 "Timer is still pending"；unused_import |
+| Task 5 示例 09 | CartScope 去 const（Cart() 非常量）、child 改 super 参数 | ChangeNotifier 无 const 构造 |
+| Task 6 示例 12 | 列表从 12 个水果改为 40 条编号条目；滚动测试改 `dragUntilVisible(ListView)`；`(_, __)`→`(_, _)` | 12 条全被 cacheExtent 建出来（懒构建断言不成立）；scrollUntilVisible 的 scrollable 定位失败；unnecessary_underscores |
+| Task 7 示例 14 | setState 回调改块体（箭头返回 Future 被拒）；`Future.error` 加 `..ignore()`；tick 测试改手动逐格 pump | setState 纪律；测试 zone 判"未处理异步错误"；pumpAndSettle 在无帧调度的 tick 间提前返回 |
+| Task 7 示例 15 | AnimatedContainer 外包 Center | ListView 紧约束顶满 width（04 章 Align 放松约束的实战例） |
+| Task 8 示例 17 | pubspec 手工合并 shared_preferences 时全文重写 | 保持模板其余段 |
+| Task 9 20_notes 测试 | InMemoryStorage.load 返回 `[...seed]` 拷贝 | 返回 const 原表导致页面 insert 抛 unmodifiable |
+| Task 10–14 docs | 若干章行数 65–100 行（低于 100–200 目标） | 内容按大纲完整覆盖、以密度优先；抽查片段与示例逐字一致 |
+
+全部偏差不改变章节结构、小节编号与教学语义。
