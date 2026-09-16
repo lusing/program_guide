@@ -21,26 +21,52 @@ using namespace winrt::Microsoft::UI::Dispatching;
 // 在 UI 线程上抓取（通常存在成员里）
 m_dispatcherQueue = DispatcherQueue::GetForCurrentThread();
 
-// 两个方向的切换
-co_await winrt::resume_background();              // UI → 后台（线程池）
-co_await winrt::resume_foreground(m_dispatcherQueue); // 后台 → UI
+// UI → 后台（线程池）：这个方向照常用协程
+co_await winrt::resume_background();
+
+// 后台 → UI：不要 co_await resume_foreground(m_dispatcherQueue)！
+// WinUI 3 的 Microsoft.UI.Dispatching.DispatcherQueue 没有 resume_foreground 重载
+// （换 Windows.System 的同名类型能编过，但运行时永不恢复）。正确做法是 TryEnqueue：
+m_dispatcherQueue.TryEnqueue([strong = get_strong()] { strong->UpdateUi(); });
+// 完整说明见 08 篇 8.7.1；下面 10.1 的手工线程模式也是走 TryEnqueue
 ```
 
-自建线程（`std::thread`）往 UI 线程投递工作，用 `TryEnqueue`：
+自建线程往 UI 线程投递工作，用 `TryEnqueue`。**优先用 [08 篇](./08-binding-mvvm.md) 8.7 的协程写法**；只有"要长期跑的独立线程"（轮询、监听、串口读取）才需要下面这种手工模式：
 
 ```cpp
-std::thread worker([q = m_dispatcherQueue]()
-{
-    auto result = HeavyComputation();          // 后台：纯数据
+// 头文件里持为成员：std::jthread m_worker;
+// jthread 析构时自动请求停止并 join，不会像 detach() 那样线程失控
+winrt::weak_ref<winrt::MyApp::TasksViewModel> weakVm{ m_viewModel };
+auto queue = m_dispatcherQueue;
 
-    q.TryEnqueue([result]()
+m_worker = std::jthread([weakVm, queue](std::stop_token st)
+{
+    winrt::init_apartment(winrt::apartment_type::multi_threaded);  // 后台线程要碰 WinRT 对象就必须先加入 MTA
+
+    while (!st.stop_requested())
     {
-        // UI 线程：安全地更新状态/控件
-        m_viewModel.LoadFrom(result);
-    });
+        auto result = PollOnce();                 // 后台：只产生纯数据
+
+        // TryEnqueue 返回 false 说明 UI 队列已关闭（进程正在退出）
+        if (!queue.TryEnqueue([weakVm, result]
+        {
+            if (auto vm = weakVm.get())           // 升级失败 = 页面已销毁，直接放弃
+            {
+                vm.LoadFrom(result);
+            }
+        }))
+        {
+            break;
+        }
+    }
 });
-worker.detach();
 ```
+
+三个必须做对的点：
+
+- **不要用 `detach()`**。线程生命周期要有主人，否则它会在页面销毁后继续访问 `this` —— 这正是 10.5 讲的循环引用之外的第二类悬空访问
+- **回调里只持弱引用**（`winrt::weak_ref`）+ `DispatcherQueue`，不持 UI 对象强引用；`TryEnqueue` 的 lambda 里再 `get()` 升级
+- **后台线程调用任何 WinRT API 前要先 `init_apartment`**（一般是 MTA）。漏了这行，报出来的错和真实原因差得很远
 
 工程纪律（完整异步模式见 [08 篇](./08-binding-mvvm.md) 8.7）：
 
@@ -74,9 +100,79 @@ winrt::Windows::Foundation::IAsyncAction SaveTasksAsync(winrt::hstring const& co
 - `FileIO::ReadTextAsync / WriteTextAsync`：文本读写
 - `ApplicationData::Current().LocalFolder()`：应用专属可写目录（打包应用的用户数据归系统管理，卸载即清）
 
-### 10.2.2 FileOpenPicker：桌面应用必须传窗口句柄
+#### 非打包应用拿不到 `ApplicationData`（两个类型都不行——实测）
 
-文件选择器在桌面（非 UWP）应用里有一个必做步骤——**把它和你的窗口句柄绑定**，否则抛异常：
+`Windows.Storage.ApplicationData::Current()` 的语义建立在**包身份**上：非打包（unpackaged）进程没有包身份，这行代码运行时会直接抛异常（[09 篇](./09-theming-packaging.md) 9.6.2 的两种形态在这里就分岔了）。Windows App SDK 提供了一个同名但不同命名空间的类型 `Microsoft.Windows.Storage.ApplicationData`，静态入口是 `GetDefault()`——**很多资料说它是"非打包也能用"的回退，这是错的**。
+
+> **实测（WASDK 1.8，`examples/10-os-integration/` 非打包运行）**：`Microsoft.Windows.Storage.ApplicationData::GetDefault().LocalPath()` 同样抛 `hresult_error`，消息是 **"该进程没有程序包标识符"**（no package identity）。也就是说 **`GetDefault()` 和 `Current()` 一样依赖包身份**，不是非打包的救命稻草。（类型成员集本身是元数据实测：`Microsoft.Windows.Storage.winmd` 里确有 `LocalPath` / `LocalFolder` / `LocalCachePath` / `TemporaryPath` / `LocalSettings` / `ClearAsync` 及 `GetForUser` / `GetForPackageFamily`——但它们在非打包进程里都在 `GetDefault()` 这一步就抛了。）
+
+非打包进程要一个"每用户可写目录"，可靠做法是**回到 Win32**：`%LOCALAPPDATA%` 拼上你的应用名。`examples/10-os-integration/` 里就是这样兜底的：
+
+```cpp
+#include <winrt/Microsoft.Windows.Storage.h>
+
+winrt::hstring ResolveLocalDir()
+{
+    // 先试 WASDK 类型：打包进程（或已给身份）会成功
+    try
+    {
+        return winrt::Microsoft::Windows::Storage::ApplicationData::GetDefault().LocalPath();
+    }
+    catch (winrt::hresult_error const&)
+    {
+        // 非打包：GetDefault() 抛 "该进程没有程序包标识符"，退回 %LOCALAPPDATA%
+        wchar_t buf[MAX_PATH]{};
+        DWORD n = GetEnvironmentVariableW(L"LOCALAPPDATA", buf, MAX_PATH);
+        if (n == 0 || n >= MAX_PATH) { return L"."; }
+        return winrt::hstring{ std::wstring(buf) + L"\\OsIntApp" };
+    }
+}
+```
+
+实测这条兜底在非打包下解析出 `C:\Users\<you>\AppData\Local\OsIntApp`。
+
+两条路二选一，取决于你的部署形态：
+
+- **就是非打包**（绿色 exe、开发期直接跑）→ 用上面的 `%LOCALAPPDATA%` / `SHGetKnownFolderPath(FOLDERID_LocalAppData)` 兜底，别指望 `ApplicationData`
+- **想要 `ApplicationData` 的托管语义**（自动清理、按用户/包族隔离）→ 给应用**包身份**：打完整 MSIX，或挂一个稀疏包（sparse package，见 [09 篇](./09-theming-packaging.md)）。有了身份，`GetDefault()` 就不抛了
+
+一个会浪费你半小时的坑：两个类型都叫 `ApplicationData`，如果同一个 `.cpp` 里同时写了 `using namespace winrt::Windows::Storage;` 和 `using namespace winrt::Microsoft::Windows::Storage;`，编译器会报歧义——像上面那样显式写全 `winrt::Microsoft::Windows::Storage::ApplicationData::GetDefault()` 即可。
+
+### 10.2.2 文件选择器：Windows App SDK picker
+
+桌面应用里的文件选择器必须和"哪个窗口"绑定，否则弹不出来。Windows App SDK 提供了专门为桌面设计的 picker——`Microsoft.Windows.Storage.Pickers`（本机 1.8 元数据实测，见文末版本说明），**窗口归属通过构造函数的 `WindowId` 传入**，不再需要手写 HWND 互操作：
+
+```cpp
+#include <winrt/Microsoft.Windows.Storage.Pickers.h>
+
+using namespace winrt::Microsoft::Windows::Storage::Pickers;
+
+winrt::Windows::Foundation::IAsyncAction MainWindow::PickFileAsync()
+{
+    // AppWindow().Id() 就是这个窗口的 WindowId
+    FileOpenPicker picker{ AppWindow().Id() };
+    picker.FileTypeFilter().Append(L".json");
+
+    auto result = co_await picker.PickSingleFileAsync();
+    if (!result) { co_return; }               // 用户取消
+
+    // 新 picker 只给字符串路径，不再返回 StorageFile
+    winrt::hstring path = result.Path();
+    m_viewModel.LoadFrom(path);
+}
+```
+
+三个和 UWP picker 的本质差别，都会影响你怎么写后续代码：
+
+| | `Windows.Storage.Pickers`（UWP） | `Microsoft.Windows.Storage.Pickers`（WASDK） |
+|---|---|---|
+| 窗口归属 | 需手动 `IInitializeWithWindow` + HWND | 构造函数收 `Microsoft.UI.WindowId` |
+| 返回类型 | `StorageFile` / `StorageFolder` | `PickFileResult` / `PickFolderResult`，只有 `Path()` 字符串 |
+| 文件类型过滤 | `FileTypeFilter()`；UWP 侧不往里面加扩展名，调用选择器就抛异常 | 同样是 `FileTypeFilter()`（`winrt::IVector<winrt::hstring>`），照样显式 `Append` 最省事 |
+
+拿到路径之后要读内容，就自己接上一步：`co_await FileIO::ReadTextAsync(co_await StorageFile::GetFileFromPathAsync(path))`，或者直接用 `std::filesystem` / 文件流（见 10.2.3）。`FileSavePicker`（`SuggestedFileName`、`SuggestedFolder`、`FileTypeChoices`）与 `FolderPicker`（`PickSingleFolderAsync`）同一套模式。
+
+**旧写法仍然有效**，在必须拿到 HWND 做传统互操作、或工程里的 Windows App SDK 还没有这个命名空间时要用到：
 
 ```cpp
 #include <shobjidl_core.h>
@@ -84,28 +180,22 @@ winrt::Windows::Foundation::IAsyncAction SaveTasksAsync(winrt::hstring const& co
 
 using namespace winrt::Windows::Storage::Pickers;
 
-winrt::Windows::Foundation::IAsyncAction PickFileAsync()
-{
-    FileOpenPicker picker;
-    picker.SuggestedStartLocation(PickerLocationId::Documents);
-    picker.FileTypeFilter().Append(L".json");
+FileOpenPicker picker;
+picker.FileTypeFilter().Append(L".json");
 
-    // 桌面应用必须：把 picker 初始化到本窗口的 HWND
-    auto windowNative{ this->try_as<::IWindowNative>() };
-    HWND hWnd{ nullptr };
-    windowNative->get_WindowHandle(&hWnd);
-    picker.as<::IInitializeWithWindow>()->Initialize(hWnd);
+// 桌面进程里必须把 picker 绑到本窗口的 HWND，否则运行时抛异常
+auto windowNative{ this->try_as<::IWindowNative>() };
+HWND hWnd{ nullptr };
+windowNative->get_WindowHandle(&hWnd);
+picker.as<::IInitializeWithWindow>()->Initialize(hWnd);
 
-    auto file = co_await picker.PickSingleFileAsync();
-    if (file)
-    {
-        auto content = co_await Windows::Storage::FileIO::ReadTextAsync(file);
-        m_viewModel.LoadFrom(content);
-    }
-}
+auto file = co_await picker.PickSingleFileAsync();
 ```
 
-这是 WinUI 3 桌面化后的真实适配点：UWP 的 picker 挂在应用窗口模型下，桌面进程里需要传统 HWND 互操作。
+这是 WinUI 3 桌面化后的真实适配点：UWP 的 picker 挂在应用窗口模型下，桌面进程里要么走 HWND 互操作（旧路径），要么走 WASDK 的 `WindowId`（新路径）。
+
+> **版本说明**：本节签名对照本机 NuGet 缓存的 `Microsoft.WindowsAppSDK.Foundation` 1.8.260222000（`Microsoft.Windows.Storage.Pickers.winmd`）逐个方法核对：三个 picker 的构造参数都是 `Microsoft.UI.WindowId`，`PickSingleFileAsync` 返回 `PickFileResult`、`PickSaveFileAsync` 同、`PickSingleFolderAsync` 返回 `PickFolderResult`，两个结果类型都只有 `Path` 一个属性。想确认自己那版 SDK 有没有这些成员，直接在 `%USERPROFILE%\.nuget\packages\microsoft.windowsappsdk.foundation\<版本>\metadata\` 下用 [.NET 的 `MetadataReader` 或 `ILDASM`](https://learn.microsoft.com/dotnet/api/system.reflection.metadata) 打开同名 `.winmd`；这个命名空间是较近的版本才加进来的，老版本里搜不到属正常。
+
 
 ### 10.2.3 文件操作放 Service 层
 
@@ -136,23 +226,42 @@ WinUI 3 应用可以启动、等待其他程序——桌面工具类应用的常
 ```cpp
 #include <windows.h>
 
-bool LaunchNotepad()
+// exitCode 只在返回 true 时才有意义
+bool RunTool(std::wstring cmdLine, DWORD& exitCode)
 {
     STARTUPINFOW si{};
     si.cb = sizeof(si);
     PROCESS_INFORMATION pi{};
 
-    std::wstring cmd = L"notepad.exe";
-    BOOL ok = CreateProcessW(nullptr, cmd.data(), nullptr, nullptr,
-                             FALSE, 0, nullptr, nullptr, &si, &pi);
-    if (ok)
+    // CreateProcessW 会就地改写命令行缓冲，所以必须传可写的缓冲区，
+    // 传字符串字面量或 c_str() 是未定义行为
+    if (!CreateProcessW(nullptr, cmdLine.data(), nullptr, nullptr,
+                        FALSE, 0, nullptr, nullptr, &si, &pi))
     {
-        CloseHandle(pi.hThread);
-        CloseHandle(pi.hProcess);   // 句柄即资源，用完即关
+        exitCode = static_cast<DWORD>(GetLastError());
+        return false;
     }
-    return ok != FALSE;
+
+    WaitForSingleObject(pi.hProcess, INFINITE);   // 阻塞等待：必须在后台线程，见 10.1
+
+    DWORD code{};
+    BOOL gotCode = GetExitCodeProcess(pi.hProcess, &code);
+
+    // 句柄即资源：等完、取完码再关
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+
+    if (!gotCode) { return false; }
+    exitCode = code;
+    return exitCode == 0;
 }
 ```
+
+三个容易忽略的点：
+
+- **先等再关句柄**。最常见的写法是 `CreateProcessW` 成功就立刻 `CloseHandle` 两个句柄然后返回 true——那等于宣布"我不关心结果"，而工具类应用恰恰需要子进程的退出码来判断成功与否
+- **`GetExitCodeProcess` 的 `STILL_ACTIVE`（259）歧义**：进程还在跑时它返回 259，于是真正以 259 退出的进程无法区分。要可靠判定"已结束"，只认 `WaitForSingleObject` 的返回，不要把退出码 259 当作"仍在运行"的证据
+- **等待属于后台工作**。UI 线程上 `WaitForSingleObject(..., INFINITE)` 会让界面假死，正确姿势是 `co_await winrt::resume_background()` 之后再等，结果按 10.1 的纪律回流 UI 线程
 
 或者走 WinRT 的 `Launcher`（更语义化）：
 

@@ -2,7 +2,7 @@
 
 前三篇讲了机制，这一篇把它们落到一个真实存在的工程上：Visual Studio 的 **Blank App, Packaged (WinUI 3 in C++)** 模板生成的应用。所有代码都是模板真实代码（或注明了增改），你可以逐行对照自己创建的工程。
 
-> **验证方式说明**：本教程的代码片段以真实 WinUI 3 / C++/WinRT 工程为准。XAML + 协程 + IDL 这套东西无法用单个 `.cpp` 文件在命令行验证——请用 Visual Studio 2022 安装 "Windows App SDK C++ 模板" 后创建工程对照。目录里的老式纯 C++ 示例已移除，因为它们演示的不是真实 WinUI 3 写法。
+> **验证方式说明**：本篇的工程就是仓库里的 `examples/01-first-app/`（命名空间 `MyApp`），在 `WinUI3/` 下跑 `.\build.ps1` 即可从零编译；`tools/ui-smoke/` 会启动它、截图、合成一次真实点击并再截图，确认 `Click` 处理器真的把文本改成了 "Clicked from C++/WinRT"。XAML + 协程 + IDL 这套东西无法用单个 `.cpp` 在命令行验证，但**可以**用这里的完整工程验证——下面 4.8 节列出了模板之外必须补上的工程细节。
 
 ## 4.1 模板工程的文件结构
 
@@ -263,10 +263,75 @@ this->UnhandledException([](IInspectable const&, UnhandledExceptionEventArgs con
 | 现象 | 原因 |
 |------|------|
 | `x:Class` 与 IDL 类型不匹配编译错误 | XAML 根元素的 `x:Class` 必须与 IDL runtimeclass 的全名一致 |
-| 新成员在 XAML 里引用失败 | 被引用的成员（事件处理器、绑定属性）必须进 IDL 或生成为类成员 |
+| `x:Bind` 引用的属性/方法编译报"找不到成员" | 只有 **`x:Bind` 可见的成员**（绑定路径上的属性、方法）必须在 IDL 里声明；用 `Click="OnClick"` 这种**按名字挂接的事件处理器不需要进 IDL**，只要它是 `x:Class` 实现类上的成员函数即可（本篇 `OnClick` 就没在 `MainWindow.idl` 里，编译验证通过） |
 | 窗口闪退，无异常信息 | `OnLaunched` 里抛异常；在 App 构造和 `OnLaunched` 下断点逐步排查 |
 | 改了 XAML 没生效 | 生成代码缓存问题：清理 `Generated Files` 后重新构建 |
 | 非打包模式启动报运行时缺失 | Windows App SDK 运行时未安装或 bootstrapper 未初始化（见 [09 篇](./09-theming-packaging.md)） |
+
+## 4.8 命令行构建：模板之外必须补上的工程细节
+
+VS 模板替你把这些都配好了，所以你从没注意过它们存在。`examples/01-first-app/` 是**手写的 `.vcxproj`**，靠 `WinUI3/build.ps1` 从命令行编译——下面每一条都是让它真正编过时踩出来的，逐条对照你自己的工程能省掉一整天的试错。
+
+### 1. 源码用 UTF-8 无 BOM，编译器开 `/utf-8`
+
+XAML 里常有中文/特殊字符，MSVC 默认按本地代码页解析源文件会乱码或报错。工程统一加 `/utf-8`（源字符集和执行字符集都按 UTF-8），文件存成**无 BOM 的 UTF-8**。不要靠 BOM 让编译器猜——无 BOM + `/utf-8` 是干净组合。
+
+### 2. `pch.h` 必须包含每个 `x:Class` 的实现头
+
+XAML 编译器生成一个 `XamlMetaDataProvider`，它的 `XamlTypeInfo.g.cpp` 里有一句 `static_assert`，要求能看到所有 `x:Class` 的**实现类型**（不是投影类型）。所以 `pch.h` 里除了 winrt 头，还要：
+
+```cpp
+#include "App.xaml.h"
+#include "MainWindow.xaml.h"   // 每个带 x:Class 的页面/窗口都要在这里出现
+```
+
+漏掉一个，报错信息（`XamlTypeInfo.g.cpp` 里的 `static_assert` 失败）离真正的根因隔了好几层，很难往回找。
+
+### 3. 每个页面的 `<Page>.xaml.g.hpp` 要喂给第二次编译迭代
+
+C++ XAML 是**两趟**构建：
+
+```text
+第一趟：编译用户源码（此时 <Page>.xaml.g.hpp 还不存在）
+   ↓
+MarkupCompilePass2：XAML 编译器写出 <Page>.xaml.g.hpp（InitializeComponent 的实现体）
+   ↓
+第二趟：必须有人把这些 .g.hpp 编译进去 —— 默认没人管！
+```
+
+模板用 MSBuild 的 `CompilerIteration=XamlGenerated` 机制补上第二趟。手写工程要在 `.vcxproj` 里放这个 target：
+
+```xml
+<Target Name="CompileXamlPageImplementationFiles" AfterTargets="MarkupCompilePass2">
+  <ItemGroup>
+    <ClCompile Include="@(Page->'$(XamlGeneratedOutputPath)%(Filename).xaml.g.hpp')">
+      <CompilerIteration>XamlGenerated</CompilerIteration>
+      <PreprocessorDefinitions>@(ClCompile->WithMetadataValue('Filename', 'App.xaml')->'%(PreprocessorDefinitions)')</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemGroup>
+</Target>
+```
+
+少了它，链接期报 `InitializeComponent` 未定义——代码全对，就是没人编译那份生成实现。
+
+### 4. `App.xaml.g.hpp` 里定义了 `wWinMain`，别再编译一份
+
+`ApplicationDefinition`（`App.xaml`）生成的 `App.xaml.g.hpp` **自带 `wWinMain` 入口**。如果你的工程另有 `main.cpp` 写了入口，两者会冲突（重复定义 `wWinMain`）。规则：
+
+- 用模板风格、没有独立 `main.cpp` → 让 `App.xaml.g.hpp` 提供入口；
+- 像 `examples/` 这样有显式 `main.cpp` → 上面那个 target 要把 `App.xaml.g.hpp` 排除在 `XamlGenerated` 迭代之外（靠 `PreprocessorDefinitions` 那行的 `Filename='App.xaml'` 过滤实现），入口以 `main.cpp` 为准。
+
+### 5. `<windows.h>` 的 `GetCurrentTime` 宏要 `#undef`
+
+`<windows.h>` 定义了宏 `GetCurrentTime`，会和 WinUI/XAML 头里的同名成员函数冲突，编译期报莫名其妙的语法错误。`pch.h` 里包含完 Windows 头之后补一句：
+
+```cpp
+#undef GetCurrentTime
+```
+
+### 6. MIDL 不能跨 `.idl` 文件解析 runtimeclass 引用
+
+如果一个 `.idl` 里的 runtimeclass 引用了**另一个 `.idl`** 里声明的类型，MIDL 会报 `MIDL2011` 未解析类型。模板工程类少碰不到；一旦像 [08 篇](./08-binding-mvvm.md) 那样有 `MainWindow → TasksViewModel → TaskItem` 的引用链，**必须把这条链上的所有 runtimeclass 合并进同一个 `.idl`**（`App.idl` 因为不引用它们，可以独立留着）。
 
 ---
 

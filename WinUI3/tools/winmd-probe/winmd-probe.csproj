@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- System.Reflection.Metadata ships in the base class library, so a net8.0
+         target runs on any 8+ runtime; no Windows SDK or NuGet restore needed. -->
+    <TargetFramework>net8.0</TargetFramework>
+    <!-- Machines with only a newer runtime installed still run the net8.0 build. -->
+    <RollForward>LatestMajor</RollForward>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <AssemblyName>winmd-probe</AssemblyName>
+    <RootNamespace>WinMdProbe</RootNamespace>
+  </PropertyGroup>
+
+</Project>

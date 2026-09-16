@@ -202,9 +202,14 @@ WinUI 3 有两种数据绑定，区别是本质性的：
 <!-- 绑定到 MainWindow/Page 类的 ViewModel() 属性 -->
 <TextBlock Text="{x:Bind ViewModel.Status, Mode=OneWay}" />
 
-<!-- 绑定到页面自己的成员函数（函数绑定，可直接当事件处理器） -->
-<Button Click="{x:Bind ViewModel.AddTaskCommand.Execute}" />
+<!-- 函数绑定到事件：被绑方法的签名必须与事件委托一致 -->
+<Button Click="{x:Bind ViewModel.AddTask}" />
+
+<!-- 命令对象走 Command 属性（参数是 IInspectable），不要绑到事件上 -->
+<Button Content="Add" Command="{x:Bind ViewModel.AddTaskCommand}" />
 ```
+
+函数绑定的约束：**方法签名要和事件委托逐参数对得上**。`Click` 的委托是 `TypedEventHandler<IInspectable, RoutedEventArgs>`，所以被绑方法必须收这两个参数（或不带参数——投影层允许省略尾部参数）；`ICommand.Execute(object)` 只有一个参数，绑到 `Click` 上会直接编译失败。
 
 `Mode` 是必须主动想清楚的事：
 
@@ -266,16 +271,20 @@ XAML 定义的是**逻辑树**（元素嵌套关系），渲染时框架会展�
 列表控件的每一项长什么样，由 `DataTemplate` 描述。用 `x:Bind` 时必须声明项类型：
 
 ```xml
-<ListView ItemsSource="{x:Bind ViewModel.Tasks, Mode=OneWay}">
-    <ListView.ItemTemplate>
-        <DataTemplate x:DataType="local:TaskItem">
-            <TextBlock Text="{x:Bind Title, Mode=OneWay}" />
-        </DataTemplate>
-    </ListView.ItemTemplate>
-</ListView>
+<Page ... xmlns:vm="using:MyApp">
+    <ListView ItemsSource="{x:Bind ViewModel.Tasks, Mode=OneWay}">
+        <ListView.ItemTemplate>
+            <DataTemplate x:DataType="vm:TaskItem">
+                <TextBlock Text="{x:Bind Title, Mode=OneWay}" />
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>
+</Page>
 ```
 
-`x:DataType` 告诉编译器每一项的类型，于是模板内的 `x:Bind` 也变成编译期检查、生成直接调用的代码。`local:TaskItem` 必须是 IDL 里声明的 runtimeclass（比如实现 `INotifyPropertyChanged` 的数据对象），不能是普通 `struct`——因为绑定要跨 WinRT 边界调用它的属性。
+`x:DataType` 告诉编译器每一项的类型，于是模板内的 `x:Bind` 也变成编译期检查、生成直接调用的代码。`vm:TaskItem` 必须是 IDL 里声明的 runtimeclass（比如实现 `INotifyPropertyChanged` 的数据对象），不能是普通 `struct`——因为绑定要跨 WinRT 边界调用它的属性。
+
+前缀名（`vm` / `local` / 任意）随你起，但它映射的必须是 **runtimeclass 的命名空间**，也就是 IDL 里 `namespace MyApp { ... }` 那个名字——和 `.idl` 文件放在哪个目录（`Models/`、`ViewModels/`）无关。本教程统一用 `xmlns:vm="using:MyApp"`。
 
 ---
 

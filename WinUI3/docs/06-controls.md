@@ -2,6 +2,8 @@
 
 控件本身不难，难的是两个问题：**这个控件在工程里扮演什么角色**，以及**哪些 API 细节是坑**。本篇按角色分类过一遍主力控件，代码均为真实 C++/WinRT 写法。
 
+> **哪些要进 IDL？** 本篇的 C++ 成员函数（`OnSaveClicked`、`OnThemeChanged`、`OnNotifyToggled` 等）都是**按名字挂接的事件处理器**（XAML 里写 `Click="OnSaveClicked"`、`SelectionChanged="OnThemeChanged"`）——这类处理器**不需要进 `.idl`**，只要它是 `x:Class` 实现类上的成员函数，XAML 就引用得到。真正**必须进 IDL** 的是 `x:Bind` 路径上的成员（如 6.4 的 `ViewModel.Themes`/`SelectedTheme`、6.5 的 `ViewModel.Tasks`、6.6 的 `ViewModel.AutoSave`）。规则详见 [04 篇](./04-first-app.md) 4.7；`examples/06-controls/` 编译验证过：下面所有事件处理器都没写进 IDL 照样编过、跑通。为省篇幅，示例只给 XAML + `.cpp`。
+
 学习主线不是背控件表，而是记住这个角色表：
 
 | 角色 | 控件 |
@@ -50,7 +52,8 @@ void MainWindow::OnSaveClicked(IInspectable const&, RoutedEventArgs const&)
 
 ```xml
 <StackPanel Spacing="12">
-    <TextBox x:Name="NameBox" Header="Name" PlaceholderText="请输入用户名" />
+    <TextBox x:Name="NameBox" Header="Name" PlaceholderText="Enter user name"
+             TextChanged="OnNameChanged" />
     <Button x:Name="SubmitButton" Content="Submit" IsEnabled="False" />
 </StackPanel>
 ```
@@ -192,8 +195,9 @@ winrt::Windows::Foundation::IAsyncAction MainWindow::ConfirmDeleteAsync()
     dialog.CloseButtonText(L"Cancel");
     dialog.DefaultButton(ContentDialogButton::Primary);
 
-    // WinUI 3 必须设置 XamlRoot，否则抛异常！
-    dialog.XamlRoot(this->XamlRoot());
+    // WinUI 3 必须设置 XamlRoot，否则 ShowAsync 运行时抛异常！
+    // Window 本身没有 XamlRoot 成员，只能从内容树的根元素取。
+    dialog.XamlRoot(rootPanel().XamlRoot());
 
     auto result = co_await dialog.ShowAsync();
     if (result == ContentDialogResult::Primary)
@@ -203,7 +207,20 @@ winrt::Windows::Foundation::IAsyncAction MainWindow::ConfirmDeleteAsync()
 }
 ```
 
-**WinUI 3 特有的坑**：UWP 时代直接 `ShowAsync()` 就行；WinUI 3 里弹层挂在弹层根（不隶属声明位置的树，见 [03 篇](./03-xaml.md) 3.8），必须把 `XamlRoot` 指到当前界面，否则运行时抛 "XamlRoot has not been set"。
+根元素要有名字才取得到（`MainWindow.xaml`）：
+
+```xml
+<Window x:Class="MyApp.MainWindow" ...>
+    <Grid x:Name="rootPanel">
+        <!-- 页面内容 -->
+    </Grid>
+</Window>
+```
+
+**WinUI 3 特有的坑**：UWP 时代直接 `ShowAsync()` 就行；WinUI 3 里弹层挂在弹层根（不隶属声明位置的树，见 [03 篇](./03-xaml.md) 3.8），必须显式指定 `XamlRoot`，否则运行时抛 "XamlRoot has not been set"。取法分两种：
+
+- **在 Page 里**：`dialog.XamlRoot(this->XamlRoot())`——`Page` 是 `FrameworkElement`，本身就有 `XamlRoot`
+- **在 Window 里**：只能取内容树根元素的 `XamlRoot`（`Window` 上没有这个成员，写成 `this->XamlRoot()` 直接编译不过）
 
 其他要点：
 

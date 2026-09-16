@@ -1,0 +1,23 @@
+# WinUI 3 example build output.
+# The repo-root .gitignore already drops bin/ obj/ *.exe *.dll *.obj *.pdb; MSVC and the
+# XAML markup compiler additionally write these, which those patterns do not cover.
+
+# Platform intermediate + self-contained unpacked deploy (x64/Debug/<Project>/).
+examples/**/x64/
+examples/**/Win32/
+examples/**/ARM64/
+
+# NuGet restore for the vcxproj (PackageReference).
+examples/**/obj/
+
+# Markup-compiler output: *.g.h/.g.hpp, *.xbf, XamlTypeInfo.g.cpp, module.g.cpp, ...
+examples/**/Generated Files/
+
+# The markup compiler injects these into the project directory on first build; they are
+# byte-identical to the copies under Generated Files/ and are never hand-edited.
+examples/**/XamlMetaDataProvider.idl
+examples/**/XamlMetaDataProvider.cpp
+examples/**/XamlMetaDataProvider.h
+
+# ui-smoke screenshot evidence; regenerated on every run.
+.smoke/

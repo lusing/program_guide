@@ -1,0 +1,9 @@
+// MainWindow.idl -- see docs/04-first-app.md 4.4
+namespace MyApp
+{
+    [default_interface]
+    runtimeclass MainWindow : Microsoft.UI.Xaml.Window
+    {
+        MainWindow();
+    }
+}

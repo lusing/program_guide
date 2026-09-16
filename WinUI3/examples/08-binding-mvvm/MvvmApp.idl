@@ -1,0 +1,42 @@
+// MvvmApp.idl -- the model / viewmodel / window runtimeclasses live in ONE idl file.
+//
+// MIDL resolves a runtimeclass reference only against types declared in the same
+// compilation unit: MainWindow.ViewModel -> TasksViewModel and
+// TasksViewModel.Tasks -> TaskItem are cross-references, so splitting them into
+// per-class .idl files (as the chapter sketches) fails with MIDL2011 "unresolved type
+// declaration". App.idl stays separate because nothing references it.
+//
+// See docs/08-binding-mvvm.md 8.2-8.4 for the per-class declarations merged here.
+namespace MvvmApp
+{
+    runtimeclass TaskItem : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        TaskItem(String title);
+        String Title;
+        Boolean Done;
+    }
+
+    [default_interface]
+    runtimeclass TasksViewModel : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        TasksViewModel();
+
+        String Status;
+        String Query;
+        Windows.Foundation.Collections.IObservableVector<MvvmApp.TaskItem> Tasks { get; };
+
+        void AddFromInput();
+        void DeleteSelected(MvvmApp.TaskItem item);
+        void LoadFrom(Windows.Foundation.Collections.IVector<String> titles);
+    }
+
+    // Only members the XAML binding compiler must see through the winmd go here
+    // (ViewModel, for x:Bind). Event handlers wired by name in XAML do not.
+    [default_interface]
+    runtimeclass MainWindow : Microsoft.UI.Xaml.Window
+    {
+        MainWindow();
+
+        MvvmApp.TasksViewModel ViewModel { get; };
+    }
+}
