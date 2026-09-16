@@ -74,13 +74,16 @@ let ``范围校验两端都检查`` () =
 
 第 08 章 parse/apply 全是纯函数——**不碰文件、不碰网络、不藏状态**，所以测试不用 mock：传数组进、比 Result 出。这份架构不是为测试妥协，而是 F# 建模的自然结果。对照：`Todo.load`/`save`（IO）被隔离在边缘两三个函数里，核心 `apply` 100% 可测（第 20 章的测试分布就是这个形状）。
 
-## 17.6 build.ps1 集成
+## 17.6 构建脚本集成
 
-build.ps1 识别测试工程（fsproj 含 `Microsoft.NET.Test.Sdk`）自动 `dotnet test`——17_testing 全绿输出：
+两个入口（`build.ps1` / `run-all.sh`）都会识别测试工程（fsproj 含 `Microsoft.NET.Test.Sdk`）自动 `dotnet test`——17_testing 全绿输出：
 
 ```
-已通过! - 失败: 0，通过: 9，已跳过: 0，总计: 9
+已通过! - 失败:     0，通过:     9，已跳过:     0，总计:     9    # 中文语言环境
+Passed!  - Failed:     0, Passed:     9, Skipped:     0, Total:     9    # 英文语言环境
 ```
+
+这行是 xUnit 的汇总，**文案随系统语言变**，所以两个平台看到的措辞不同、数字一致——看 `Failed: 0` / `失败: 0` 就行，别把文案当断言。
 
 一步之外还有属性测试（FsCheck：随机生成输入找反例），思路一句话：**"对所有输入成立"比"对三个例子成立"强**——入门后再学。
 

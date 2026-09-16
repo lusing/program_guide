@@ -14,7 +14,24 @@ F# 做桌面工具完全可行：.NET 的两大 UI 栈（WinForms 拖控件、WP
 | 框架 | `net10.0-windows` | `net10.0-windows` |
 | 输出 | `WinExe`（无控制台窗） | `WinExe` |
 
-`net10.0-windows` 的 `-windows` 后缀是桌面 API 的钥匙，忘写直接报类型不存在。GUI 工程只在 Windows 桌面跑——build.ps1 对它们**只构建不运行**（弹窗口没法自动化验证），两个示例都实际编译通过。
+`net10.0-windows` 的 `-windows` 后缀是桌面 API 的钥匙，忘写直接报类型不存在。GUI 工程只在 Windows 桌面跑——构建脚本对它们**只构建不运行**（弹窗口没法自动化验证），两个示例都实际编译通过。
+
+### 19.2.1 在 macOS / Linux 上构建
+
+`net10.0-windows` 工程在非 Windows 上默认直接报错：
+
+```text
+error NETSDK1100: To build a project targeting Windows on this operating system,
+set the EnableWindowsTargeting property to true.
+```
+
+加一个属性就能构建（只是**构建**，产物依旧只能在 Windows 上跑）：
+
+```bash
+dotnet build examples/19_gui/winforms -c Release -p:EnableWindowsTargeting=true
+```
+
+`build.ps1` / `run-all.sh` 在检测到 `netX.0-windows` 时会自动带上这个开关，所以总脚本在 macOS/Linux 上也能验证这一章的代码是能编译的；手工单跑时要自己加。
 
 ## 19.3 WinForms：控件树 + Location 布局
 
@@ -93,12 +110,14 @@ let _ = app.Run(window)
 | 数据驱动 | 手写同步 | MVVM/绑定天然支持 |
 | F# 手感 | 代码建 UI 顺畅 | 纯代码可行，XAML 麻烦 |
 
-一句话：内部小工具用 WinForms 半天出活；面向用户的正式产品上 WPF（或跨平台的 Avalonia）。两个示例都在，跑一下（手动，脚本不弹窗）：
+一句话：内部小工具用 WinForms 半天出活；面向用户的正式产品上 WPF（或跨平台的 Avalonia）。两个示例都在，**只在 Windows 上**手动跑（脚本不弹窗）：
 
 ```bash
 dotnet run --project examples/19_gui/winforms
 dotnet run --project examples/19_gui/wpf
 ```
+
+macOS / Linux 上这两条会失败（`net10.0-windows` 产物无法在本机运行），只能构建不能跑。
 
 ## 19.7 坑位清单
 
@@ -106,4 +125,5 @@ dotnet run --project examples/19_gui/wpf
 - **忘 `-windows` 后缀 / UseWPF**：编译错误"类型未定义"，先查 fsproj 再查代码。
 - **WPF `Children.Add` 忘 ignore**：返回值警告，加 `|> ignore`。
 - **`EnableVisualStyles` 时机**：WinForms 要在 `Application.Run` 前调，否则控件朴素难看。
-- **跨平台**：这两栈只在 Windows；要跨平台桌面看 Avalonia（生态推荐，超出本书范围）。
+- **跨平台**：这两栈只在 Windows 运行；要跨平台桌面看 Avalonia（生态推荐，超出本书范围）。
+- **NETSDK1100**：macOS/Linux 上构建报这个错，是缺 `EnableWindowsTargeting`（见 19.2.1），不是代码问题。

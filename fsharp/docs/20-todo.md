@@ -15,7 +15,7 @@
 | `todo reset` | 清空状态 | 0 |
 | 解析/操作失败 | 打印原因 + 用法 | 1 |
 
-状态持久化到 `%TEMP%\fsharp-todo.json`。先看效果（build.ps1 的演示序列，实测输出）：
+状态持久化到临时目录下的 `fsharp-todo.json`（`Path.GetTempPath()`：Windows 是 `%TEMP%`，macOS 是 `$TMPDIR`，Linux 是 `/tmp`）。先看效果（构建脚本的演示序列，实测输出，两个入口跑出来一致）：
 
 ```
 $ todo add learn F#

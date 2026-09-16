@@ -39,6 +39,8 @@ printfn "追加后 %d 行" (File.ReadAllLines(txt).Length)   // 4
 let target = Path.Combine(dir, "sub", "deep.txt")
 printfn "Combine 生成跨平台路径：%s" target
 // Windows: F:\temp\fsharp-guide\sub\deep.txt
+// macOS:   /var/folders/xx/.../T/fsharp-guide/sub/deep.txt
+// Linux:   /tmp/fsharp-guide/sub/deep.txt
 ```
 
 `Combine` 按当前系统拼分隔符；`GetTempPath` 拿临时目录（示例统一写这里，避免污染仓库）。跨平台三注意：路径分隔符别硬编码 `\`、行尾 LF/CRLF 用文本 API 自动处理、编码显式 UTF-8。
