@@ -1,1 +1,7 @@
 include: package:lints/recommended.yaml
+
+# 示例文件以章号前缀命名（02_hello.dart），数字开头不符合 file_names 规则；
+# 这是本教程"章号 = 示例号"约定的刻意选择，故关闭该规则（嵌套包不受影响）
+linter:
+  rules:
+    file_names: false
