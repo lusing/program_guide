@@ -88,7 +88,7 @@
 **Interfaces:**
 - Produces: `-All` 全量流程（Task 9/17 终验依赖）：逐目录示例 编译（零告警目标）→ 运行 exe → 退出码 0 即过；`-Example <name>` 单示例全流程；`-Clean` 清根 build/。模块特判：目录含 `*.ixx` → 先 `/interface /c` 编成 `build/<示例名>_<模块名>.obj` + `/ifcOutput` 指定 .ifc，再编译 main.cpp 时带 `/reference:<模块名>=<ifc>` 并链接 .obj。
 
-- [ ] **Step 1: 重写 build.ps1 全文**（保持无 BOM、UTF-8）
+- [x] **Step 1: 重写 build.ps1 全文**（保持无 BOM、UTF-8）
 
 ```powershell
 param(
@@ -202,7 +202,7 @@ Write-Host "  .\build.ps1 -Example 06_compound 单示例编译+运行"
 Write-Host "  .\build.ps1 -Clean               清理 build 目录"
 ```
 
-- [ ] **Step 2: 烟测脚本**
+- [x] **Step 2: 烟测脚本**
 
 ```bash
 cd /g/code/guide/cpp20
@@ -213,7 +213,7 @@ cd /g/code/guide/cpp20
 预期：无参数打印用法；`-Clean` 打印"[Clean]"后退出 0。（examples 下暂无目录，`-All`
 会 throw 属预期，Task 2 起消失。）
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add build.ps1 && git commit -m "feat(cpp20): 新 build.ps1 目录式三层验证（编译零告警+运行+模块特判）
@@ -233,7 +233,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 02/03/04 章引用代码（docs 按小节注释号摘录）；02_hello 为 01 章引用对象。
 
-- [ ] **Step 1: 写 examples/02_hello/main.cpp**
+- [x] **Step 1: 写 examples/02_hello/main.cpp**
 
 ```cpp
 #include <iostream>
@@ -258,7 +258,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 2: 写 examples/03_types/main.cpp**
+- [x] **Step 2: 写 examples/03_types/main.cpp**
 
 ```cpp
 #include <cstdint>
@@ -311,7 +311,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 3: 写 examples/04_control/main.cpp**
+- [x] **Step 3: 写 examples/04_control/main.cpp**
 
 ```cpp
 #include <cassert>
@@ -389,7 +389,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 4: 验证 + Commit**
+- [x] **Step 4: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/cpp20
@@ -420,7 +420,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 05/06/07 章引用代码。
 
-- [ ] **Step 1: 写 examples/05_functions/main.cpp**
+- [x] **Step 1: 写 examples/05_functions/main.cpp**
 
 ```cpp
 #include <print>
@@ -484,7 +484,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 2: 写 examples/06_compound/main.cpp**
+- [x] **Step 2: 写 examples/06_compound/main.cpp**
 
 ```cpp
 #include <array>
@@ -553,7 +553,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 3: 写 examples/07_errors/main.cpp**
+- [x] **Step 3: 写 examples/07_errors/main.cpp**
 
 ```cpp
 #include <cassert>
@@ -646,7 +646,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 4: 验证 + Commit**
+- [x] **Step 4: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/cpp20
@@ -676,7 +676,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 08/09/10 章引用代码。
 
-- [ ] **Step 1: 写 examples/08_classes/main.cpp**
+- [x] **Step 1: 写 examples/08_classes/main.cpp**
 
 ```cpp
 #include <cmath>
@@ -777,7 +777,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 2: 写 examples/09_smartptr/main.cpp**
+- [x] **Step 2: 写 examples/09_smartptr/main.cpp**
 
 ```cpp
 #include <memory>
@@ -838,7 +838,7 @@ int main() {
 }  // backlog 析构 → 逐个释放 Task
 ```
 
-- [ ] **Step 3: 写 examples/10_containers/main.cpp**
+- [x] **Step 3: 写 examples/10_containers/main.cpp**
 
 ```cpp
 #include <flat_map>
@@ -910,7 +910,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 4: 验证 + Commit**
+- [x] **Step 4: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/cpp20
@@ -941,7 +941,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 11/12/13 章引用代码。
 
-- [ ] **Step 1: 写 examples/11_algorithms/main.cpp**
+- [x] **Step 1: 写 examples/11_algorithms/main.cpp**
 
 ```cpp
 #include <algorithm>
@@ -1012,7 +1012,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 2: 写 examples/12_ranges/main.cpp**
+- [x] **Step 2: 写 examples/12_ranges/main.cpp**
 
 ```cpp
 #include <algorithm>
@@ -1079,7 +1079,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 3: 写 examples/13_templates/main.cpp**
+- [x] **Step 3: 写 examples/13_templates/main.cpp**
 
 ```cpp
 #include <array>
@@ -1153,7 +1153,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 4: 验证 + Commit**
+- [x] **Step 4: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/cpp20
@@ -1184,7 +1184,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 14/15/16 章引用代码。
 
-- [ ] **Step 1: 写 examples/14_concepts/main.cpp**
+- [x] **Step 1: 写 examples/14_concepts/main.cpp**
 
 ```cpp
 #include <concepts>
@@ -1258,7 +1258,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 2: 写 examples/15_moves/main.cpp**
+- [x] **Step 2: 写 examples/15_moves/main.cpp**
 
 ```cpp
 #include <print>
@@ -1331,7 +1331,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 3: 写 examples/16_inheritance/main.cpp**
+- [x] **Step 3: 写 examples/16_inheritance/main.cpp**
 
 ```cpp
 #include <memory>
@@ -1427,7 +1427,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 4: 验证 + Commit**
+- [x] **Step 4: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/cpp20
@@ -1458,7 +1458,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 17/18/19 章引用代码；18 章文档的模块编译命令以本示例为准。
 
-- [ ] **Step 1: 写 examples/17_compiletime/main.cpp**
+- [x] **Step 1: 写 examples/17_compiletime/main.cpp**
 
 ```cpp
 #include <array>
@@ -1532,7 +1532,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 2: 写 examples/18_modules/math.ixx**
+- [x] **Step 2: 写 examples/18_modules/math.ixx**
 
 ```cpp
 export module math;
@@ -1550,7 +1550,7 @@ export int sub(int a, int b) {
 export constexpr double pi = 3.14159265358979323846;
 ```
 
-- [ ] **Step 3: 写 examples/18_modules/main.cpp**
+- [x] **Step 3: 写 examples/18_modules/main.cpp**
 
 ```cpp
 // 18 编译单元与模块：import 代替 #include
@@ -1570,7 +1570,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 4: 写 examples/19_threads/main.cpp**
+- [x] **Step 4: 写 examples/19_threads/main.cpp**
 
 ```cpp
 #include <cassert>
@@ -1674,7 +1674,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 5: 验证（18 为首次模块链路实测）+ Commit**
+- [x] **Step 5: 验证（18 为首次模块链路实测）+ Commit**
 
 ```bash
 cd /g/code/guide/cpp20
@@ -1711,7 +1711,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 20/21/22 章引用代码；21 章 Generator<T> 手写实现供 docs 逐行讲解。
 
-- [ ] **Step 1: 写 examples/20_atomic/main.cpp**
+- [x] **Step 1: 写 examples/20_atomic/main.cpp**
 
 ```cpp
 #include <algorithm>
@@ -1809,7 +1809,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 2: 写 examples/21_coroutines/main.cpp**
+- [x] **Step 2: 写 examples/21_coroutines/main.cpp**
 
 ```cpp
 #include <coroutine>
@@ -1915,7 +1915,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 3: 写 examples/22_textfiles/main.cpp**
+- [x] **Step 3: 写 examples/22_textfiles/main.cpp**
 
 ```cpp
 #include <algorithm>
@@ -1980,7 +1980,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 4: 验证 + Commit**
+- [x] **Step 4: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/cpp20
@@ -2011,7 +2011,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: 第 23/24 章引用代码；`search_text`/`search_file`/`print_match` 为 24 章多文件分解教学素材。
 
-- [ ] **Step 1: 写 examples/23_tooling/main.cpp**
+- [x] **Step 1: 写 examples/23_tooling/main.cpp**
 
 ```cpp
 // 23 测试与调试：assert 自造单测、stacktrace
@@ -2080,7 +2080,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 2: 写 examples/24_minigrep/search.h**
+- [x] **Step 2: 写 examples/24_minigrep/search.h**
 
 ```cpp
 #pragma once
@@ -2113,7 +2113,7 @@ std::vector<Match> search_file(const std::filesystem::path& file,
                                bool ignore_case);
 ```
 
-- [ ] **Step 3: 写 examples/24_minigrep/search.cpp**
+- [x] **Step 3: 写 examples/24_minigrep/search.cpp**
 
 ```cpp
 #include "search.h"
@@ -2189,7 +2189,7 @@ std::vector<Match> search_file(const std::filesystem::path& file,
 }
 ```
 
-- [ ] **Step 4: 写 examples/24_minigrep/output.h 与 output.cpp**
+- [x] **Step 4: 写 examples/24_minigrep/output.h 与 output.cpp**
 
 `output.h`：
 
@@ -2239,7 +2239,7 @@ void print_match(const std::filesystem::path& file,
 }
 ```
 
-- [ ] **Step 5: 写 examples/24_minigrep/main.cpp**
+- [x] **Step 5: 写 examples/24_minigrep/main.cpp**
 
 ```cpp
 // 24 实战：迷你 grep —— 参数解析、目录递归、多线程搜索、高亮输出
@@ -2361,7 +2361,7 @@ int main(int argc, char** argv) {
 }
 ```
 
-- [ ] **Step 6: 验证（全量）+ Commit**
+- [x] **Step 6: 验证（全量）+ Commit**
 
 ```bash
 cd /g/code/guide/cpp20
@@ -2401,7 +2401,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Consumes: Task 2 的三个示例（按 `// ═══ N.M` 摘录）。
 - Produces: docs/ 目录与首批四章；旧 README 第 1–2 章（核心语言特性 1.1/1.5、标准库 2.2）素材吸收。
 
-- [ ] **Step 1: 写 01-overview.md**（约 200 行）：
+- [x] **Step 1: 写 01-overview.md**（约 200 行）：
   1. `# 01 · C++ 全景：一门不断进化的语言`
   2. C++ 是什么：编译型、零开销抽象、系统级；"你不懂的每一步都由你负责"的心智准备
   3. 编译模型心智模型：源文件 → 预处理 → 编译 → 目标文件 → 链接 → exe（图/表）；
@@ -2418,7 +2418,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   10. `## 坑位清单`：只学老式 C++（裸 new/printf/char*）、拿 C++11 前资料入门、
       忽略编译器版本（写了 C++23 却用旧标准编译）、Windows 直跑乱码没设 chcp
 
-- [ ] **Step 2: 写 02-hello.md**（约 170 行）：
+- [x] **Step 2: 写 02-hello.md**（约 170 行）：
   1. `# 02 · 第一个程序：从源码到 exe`
   2. 最小 main（引用 2.1）：签名、返回值约定（return 0 可省略但教程显式写）
   3. `std::print`/`std::println`（引用 2.2，C++23）：`{}` 占位符、`{:03}`/`{:.2f}`/`{:*^24}`
@@ -2431,7 +2431,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. `## 坑位清单`：忘 `;`、中文引号/全角符号混入源码、cout 混用 print 时缓冲不同步
      （endl 刷新）、双击 exe 闪退（命令行里跑）
 
-- [ ] **Step 3: 写 03-types.md**（约 200 行）：
+- [x] **Step 3: 写 03-types.md**（约 200 行）：
   1. `# 03 · 类型与变量：把数据放进盒子里`
   2. 基本类型表（引用 3.1）：int/double/char/bool + sizeof；字节数平台相关性；
      固定宽度 `std::int32_t/int64_t`；`1'000'000` 分隔符与 `LL` 后缀
@@ -2445,7 +2445,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. `## 坑位清单`：整数溢出（int 乘大数）、`0.5f` 与 `0.5` 精度差、有符号/无符号比较、
      未初始化变量读值是 UB、`char` 是否有符号看平台
 
-- [ ] **Step 4: 写 04-control.md**（约 180 行）：
+- [x] **Step 4: 写 04-control.md**（约 180 行）：
   1. `# 04 · 表达式与控制流：让程序有分支`
   2. if 与初始化语句（引用 4.1）：变量作用域限定在 if/else 内——**变量用在哪就声明在哪**
   3. switch（引用 4.2）：case 穿透必须显式 `[[fallthrough]]`；break 忘写的经典 bug；
@@ -2458,7 +2458,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. `## 坑位清单`：switch 穿透漏 break、range-for 里对 vector 做 push_back（迭代器失效，
      第 10 章展开）、`unsigned` 倒序循环 `i >= 0` 永真、浮点数用 `==` 比较
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/cpp20 && wc -l docs/*.md
@@ -2485,7 +2485,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Consumes: Task 3/4 的四个示例；旧 README 1.5/1.7/1.8/3.1/2.1 素材。
 
-- [ ] **Step 1: 写 05-functions.md**（约 200 行）：
+- [x] **Step 1: 写 05-functions.md**（约 200 行）：
   1. `# 05 · 函数：程序的乐高积木`
   2. 三种传参（引用 5.1–5.3）：值/引用/const 引用对比表（能不能改、拷不拷贝、适用场景）；
      **默认姿势：小类型按值、大对象 const 引用、要改就引用**
@@ -2498,7 +2498,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. `## 坑位清单`：返回局部变量的引用/指针（悬垂）、默认参数写在头文件、重载歧义
      （`f(int)` vs `f(double)` 传字面量）、lambda 捕获引用后局部变量死亡（第 11 章伏笔）
 
-- [ ] **Step 2: 写 06-compound.md**（约 220 行）：
+- [x] **Step 2: 写 06-compound.md**（约 220 行）：
   1. `# 06 · 复合类型：struct、枚举与字符串`
   2. struct（引用 6.1）：聚合多个值；指定初始化器 (C++20，吸收旧 1.5)——字段按声明顺序、
      可省略；与 class 的区别一句话（第 08 章）
@@ -2515,7 +2515,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   9. `## 坑位清单`：string_view/span 悬垂（指向已销毁对象）、指定初始化器乱序编译错、
      enum class 忘 cast 直接 cout、struct 大值按值传参（用 const 引用）
 
-- [ ] **Step 3: 写 07-errors.md**（约 220 行）：
+- [x] **Step 3: 写 07-errors.md**（约 220 行）：
   1. `# 07 · 错误处理：异常、optional 与 expected`
   2. 三种错误模型选型表（先给结论）：**预期内的失败 → expected/optional；真正的意外 →
      异常；程序员 bug → assert**（吸收旧 5.2 的 C++23 素材并重组织）
@@ -2531,7 +2531,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. `## 坑位清单`：catch 按值捕获切对象、optional 直接 value() 没检查（抛 bad_access）、
      异常当流程控制（性能与可读性）、构造函数里抛异常（RAII 反而安全——第 08 章回扣）
 
-- [ ] **Step 4: 写 08-classes.md**（约 250 行）：
+- [x] **Step 4: 写 08-classes.md**（约 250 行）：
   1. `# 08 · 类与 RAII：C++ 资源管理的灵魂`
   2. 从 struct 到 class（引用 8.1）：封装动机；public/private；成员函数；
      构造函数与成员初始化列表
@@ -2548,7 +2548,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   10. `## 坑位清单`：忘虚析构（第 16 章伏笔）、构造函数里调虚函数（还没到子类）、
       成员初始化顺序按声明不按列表顺序、返回成员引用被外部改
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/cpp20 && wc -l docs/05*.md docs/06*.md docs/07*.md docs/08*.md
@@ -2575,7 +2575,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Consumes: Task 4/5 的四个示例；旧 README 3.4/4.1–4.4/2.4/2.8 素材。
 
-- [ ] **Step 1: 写 09-smartptr.md**（约 240 行，吸收旧"智能指针深度指南"压缩重讲）：
+- [x] **Step 1: 写 09-smartptr.md**（约 240 行，吸收旧"智能指针深度指南"压缩重讲）：
   1. `# 09 · 动态内存与智能指针：所有权说话`
   2. 为什么还要 new/delete：堆的生命周期独立于作用域；裸指针的三大坑（泄漏/悬垂/双删）
   3. 所有权心智模型：**每个资源只有一个 owner**——这是现代 C++ 内存管理的第一原则
@@ -2593,7 +2593,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   10. `## 坑位清单`：两个 shared_ptr 从同一裸指针构造（双计数）、循环引用、
       shared_ptr 按值传参拷贝计数（移动或 const 引用）、get() 裸指针存起来（悬垂）
 
-- [ ] **Step 2: 写 10-containers.md**（约 230 行）：
+- [x] **Step 2: 写 10-containers.md**（约 230 行）：
   1. `# 10 · 容器与迭代器：数据住哪`
   2. 容器选型表（全章总纲）：vector（默认）/deque/list/map/set/unordered_map/set/
      flat_map (C++23)——查找/插入复杂度与内存连续性三列
@@ -2610,7 +2610,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   10. `## 坑位清单`：遍历中 push_back/erase（迭代器失效——收集再改或 erase_if）、
       `[]` 误插入、map 的 [] 需要 value 默认可构造、 unordered_map 无序却依赖顺序
 
-- [ ] **Step 3: 写 11-algorithms.md**（约 200 行）：
+- [x] **Step 3: 写 11-algorithms.md**（约 200 行）：
   1. `# 11 · 算法与 lambda：STL 的武器库`
   2. 心智模型：**算法 + 谓词 = 声明式循环**；手写循环 vs 算法对比（吸收 dotnet 09 章风格）
   3. sort（引用 11.1）：默认升序；lambda 比较器（字符串按长度）；`std::greater`
@@ -2625,7 +2625,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   9. `## 坑位清单`：find_if 没检查就解引用（空容器）、accumulate 用 0 累加 double
      （截断）、lambda 引用捕获局部变量后异步使用（悬垂）、谓词带状态改变遍历
 
-- [ ] **Step 4: 写 12-ranges.md**（约 220 行，吸收旧 2.4 并大幅扩展）：
+- [x] **Step 4: 写 12-ranges.md**（约 220 行，吸收旧 2.4 并大幅扩展）：
   1. `# 12 · Ranges：惰性流水线思维`
   2. 问题先行：算法嵌套（sort(find_if(...))) 的读法灾难 → 管道 `|` 从左到右
   3. 管道三件套（引用 12.1）：filter/transform/`ranges::to` (C++23)；
@@ -2640,7 +2640,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. `## 坑位清单`：视图悬垂（管道引用了临时 vector）、无限视图忘了 take、
      视图存下来想二次使用（被动过）、filter 后再改容器（底层迭代器失效）
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/cpp20 && wc -l docs/09*.md docs/10*.md docs/11*.md docs/12*.md
@@ -2667,7 +2667,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Consumes: Task 5/6 的四个示例；旧 README 1.2/3.3/4.5 素材。
 
-- [ ] **Step 1: 写 13-templates.md**（约 200 行，吸收旧 3.3 入门部分）：
+- [x] **Step 1: 写 13-templates.md**（约 200 行，吸收旧 3.3 入门部分）：
   1. `# 13 · 模板基础：把类型当参数`
   2. 动机：为 int 和 double 写两遍 max？→ 函数模板（引用 13.1）；模板不是代码是
      "代码生成器"（实例化发生在编译期）
@@ -2683,7 +2683,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
       `Stack<int>` 与 `Stack<double>` 是两个毫无关系的类型、声明依赖 template 关键字
       （一句话带过 `.template`）
 
-- [ ] **Step 2: 写 14-concepts.md**（约 200 行，吸收旧 1.2 大幅扩展）：
+- [x] **Step 2: 写 14-concepts.md**（约 200 行，吸收旧 1.2 大幅扩展）：
   1. `# 14 · 概念：给模板参数立规矩`
   2. 痛点先行（回扣第 13 章末尾的报错墙）：约束写进类型系统，错误从"模板内部深处"
      提前到"调用点"
@@ -2700,7 +2700,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. `## 坑位清单`：概念约束的是"能做什么"不是"是什么"（鸭子类型直觉）、
       重载约束有包含关系时选更严格的、auto 参数 + 概念的组合位置写错
 
-- [ ] **Step 3: 写 15-moves.md**（约 230 行，吸收旧 4.5 性能部分）：
+- [x] **Step 3: 写 15-moves.md**（约 230 行，吸收旧 4.5 性能部分）：
   1. `# 15 · 移动语义：别拷贝，搬走它`
   2. 值类别心智模型：lvalue（有名字、可取地址）vs rvalue（临时、将死）；
      一张"表达式左右"速查表——**记住直觉：能放左边的是 lvalue**
@@ -2716,7 +2716,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   9. `## 坑位清单`：move 后继续用源对象（未定状态）、`return std::move(local)`、
       成员该 move 却拷贝（在成员初始化列表用 std::move）、转发引用重载吞掉精确匹配
 
-- [ ] **Step 4: 写 16-inheritance.md**（约 220 行）：
+- [x] **Step 4: 写 16-inheritance.md**（约 220 行）：
   1. `# 16 · 继承与多态：同一接口，多种实现`
   2. 基类与纯虚函数（引用 16.1）：抽象类定契约；override 显式覆写（拼错即编译错）
   3. **虚析构**（示例 16.1 注释）：为什么必须——unique_ptr<Shape> 删 Dog 时没虚析构
@@ -2731,7 +2731,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   9. `## 坑位清单`：忘虚析构、基类构造中调虚函数、公开继承却重写非虚函数（隐藏）、
       通过基类引用调赋值（切片）、深层继承链（>2 层 reconsider）
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/cpp20 && wc -l docs/13*.md docs/14*.md docs/15*.md docs/16*.md
@@ -2758,7 +2758,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Consumes: Task 7/8 的四个示例；旧 README 1.3/1.4/1.6/6.1–6.3/6.5 素材。
 
-- [ ] **Step 1: 写 17-compiletime.md**（约 200 行，吸收旧 1.6 深入部分）：
+- [x] **Step 1: 写 17-compiletime.md**（约 200 行，吸收旧 1.6 深入部分）：
   1. `# 17 · 编译期编程：让计算发生在编译时`
   2. constexpr 函数（引用 17.1）：同一份代码两个世界；constexpr 变量强制编译期求值
   3. static_assert（引用 17.1）：编译期断言当单测；与运行时 assert 的分工表
@@ -2772,7 +2772,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. `## 坑位清单`：constexpr 函数偷偷依赖全局可变状态（不成立）、if constexpr 写在
       非模板里没意义、fold 空参数包（`+` 无单位元）、编译时间爆炸
 
-- [ ] **Step 2: 写 18-modules.md**（约 220 行，吸收旧 1.4 并做真模块——旧示例造假问题
+- [x] **Step 2: 写 18-modules.md**（约 220 行，吸收旧 1.4 并做真模块——旧示例造假问题
   在此修正）：
   1. `# 18 · 编译单元与模块：#include 的接班人`
   2. 翻译单元与 ODR（先补地基）：一个 .cpp = 一个翻译单元；ODR（名字只能定义一次）；
@@ -2791,7 +2791,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
       导致 /reference 对不上、混用 include 与 import 的过渡期写法、全局模块片段
       `module;` 一句话
 
-- [ ] **Step 3: 写 19-threads.md**（约 240 行，吸收旧 6.1/6.2 压缩重讲）：
+- [x] **Step 3: 写 19-threads.md**（约 240 行，吸收旧 6.1/6.2 压缩重讲）：
   1. `# 19 · 并发 I：线程与锁`
   2. 心智模型：并发 = 同时做多件事；并行 = 同时做多件事的多核版；数据竞争定义
      （两个线程同时读写同一位置、至少一个是写 = UB）
@@ -2807,7 +2807,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   8. `## 坑位清单`：忘 join（jthread 免了）、锁里调未知代码（回调再拿锁→死锁）、
       条件变量忘谓词、按引用捕获捕获局部变量给线程（悬垂）、detach 的滥用
 
-- [ ] **Step 4: 写 20-atomic.md**（约 230 行，吸收旧 6.3/6.5 压缩重讲）：
+- [x] **Step 4: 写 20-atomic.md**（约 230 行，吸收旧 6.3/6.5 压缩重讲）：
   1. `# 20 · 并发 II：原子操作与同步原语`
   2. atomic（引用 20.1）：fetch_add；**relaxed 只保证原子性不保证顺序**——计数器够用；
      对比第 19 章 mutex 版（什么时候 mutex 什么时候 atomic 选型表）
@@ -2822,7 +2822,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   9. `## 坑位清单`：atomic 上调复合操作仍要 CAS 循环（compare_exchange_weak 骨架）、
       parallel 算法里加锁（并行白干）、内存序乱用、忙等（该用条件变量/信号量）
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/cpp20 && wc -l docs/17*.md docs/18*.md docs/19*.md docs/20*.md
@@ -2849,7 +2849,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Interfaces:**
 - Consumes: Task 8/9 的四个示例；旧 README 1.3/2.2 深入/2.7/5.2/6.4/6.6/6.7/第 7 章素材。
 
-- [ ] **Step 1: 写 21-coroutines.md**（约 230 行，吸收旧 1.3/6.4/6.7）：
+- [x] **Step 1: 写 21-coroutines.md**（约 230 行，吸收旧 1.3/6.4/6.7）：
   1. `# 21 · 协程：可暂停的函数`
   2. 心智模型：普通函数一进一出；协程能**暂停（yield）后恢复**——栈帧搬到了堆上
   3. 两个关键词先学：co_yield（交出一个值并暂停）、co_await（等待可等待物）——
@@ -2866,7 +2866,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   9. `## 坑位清单`：Generator 忘 destroy（内存泄漏）、协程里捕获引用参数（帧还在引用没了）、
       手写 promise 忘 noexcept 的 final_suspend（编译错）、把协程当回调存起来重复 resume
 
-- [ ] **Step 2: 写 22-textfiles.md**（约 240 行，吸收旧 2.2 深入/2.7/5.2 文本部分）：
+- [x] **Step 2: 写 22-textfiles.md**（约 240 行，吸收旧 2.2 深入/2.7/5.2 文本部分）：
   1. `# 22 · 文本与文件：格式化、正则与文件系统`
   2. format 深入（引用 22.1）：对齐/填充/精度/类型（x/b/百分比）速查表；
      format vs print；format_to（进字符串/缓冲）；**中文宽度按码点计，对齐不完美**
@@ -2890,7 +2890,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   9. `## 坑位清单`：regex 每次循环重构造（编译开销）、路径拼接手写 `/` 与反斜杠混用、
       遍历时修改目录、ofstream 析构前读文件（未 flush）、relative path 依赖 cwd
 
-- [ ] **Step 3: 写 23-tooling.md**（约 230 行，吸收旧第 7 章调试指南压缩重讲）：
+- [x] **Step 3: 写 23-tooling.md**（约 230 行，吸收旧第 7 章调试指南压缩重讲）：
   1. `# 23 · 测试、调试与工具生态`
   2. 自造单测框架（引用 23.1–23.2）：TestCase + assert 的十行框架走读；
      slugify 被测函数的"纯函数可测性"设计观；**真实项目用 GoogleTest/Catch2/doctest**
@@ -2908,7 +2908,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
   9. `## 坑位清单`：测试依赖执行顺序、断言里调函数（副作用）、调试 Release 版对不上、
       只测 happy path、CMake 里忘设 C++ 标准（默认 C++14 编译不过 C++20 代码）
 
-- [ ] **Step 4: 写 24-minigrep.md**（约 260 行，实战章）：
+- [x] **Step 4: 写 24-minigrep.md**（约 260 行，实战章）：
   1. `# 24 · 实战：迷你 grep`
   2. 成品演示：`minigrep <dir> <pattern> [-i] [-t N]`；手工运行示例
      （`./build/24_minigrep.exe examples/24_minigrep warning -i`）与预期输出
@@ -2932,7 +2932,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
        二进制文件当文本搜（乱码输出——真 grep 有 -I）、线程数超过文件数白开、
        输出未加锁交错、退出码与脚本集成不严肃
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/cpp20 && wc -l docs/21*.md docs/22*.md docs/23*.md docs/24*.md && ls docs | wc -l
@@ -2959,7 +2959,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 - Consumes: docs/ 24 章与 examples/ 23 个目录（索引表引用它们）。
 - Produces: 最终目录形态：README/docs/examples/build.ps1/CHEATSheet.md。
 
-- [ ] **Step 1: 删除旧文件**
+- [x] **Step 1: 删除旧文件**
 
 ```bash
 cd /g/code/guide/cpp20
@@ -2972,7 +2972,7 @@ git status --short | head -8
 ls examples | head -5   # 只剩 NN_name 目录
 ```
 
-- [ ] **Step 2: 重写 README.md**（约 60 行，对齐 dotnet README 格式）：
+- [x] **Step 2: 重写 README.md**（约 60 行，对齐 dotnet README 格式）：
   1. `# C++ 编程指南（C++20/23）`；定位段：面向**会编程、初学 C++** 的读者；主线
      C++23（兼容讲 20），MSVC /std:c++latest 验证；每章"读讲解 → 跑示例 → 改代码再跑"
   2. 目录结构代码块（README/docs/examples/build.ps1/CHEATSheet.md 各一行注释）
@@ -2982,7 +2982,7 @@ ls examples | head -5   # 只剩 NN_name 目录
   6. 单跑某个示例：`cd examples/12_ranges && cl ... main.cpp`（标准学法：改了再跑）
   7. 相关教程链接：win32/mfc/wpf（GUI 方向）、boost（库方向）、dotnet C# 对照
 
-- [ ] **Step 3: 写 CHEATSheet.md**（约 220 行）：
+- [x] **Step 3: 写 CHEATSheet.md**（约 220 行）：
   1. `# C++20/23 速查表`（开头注明配教程使用、按章号引用）
   2. 编译命令：build.ps1 三式 + 手工 cl 全参数 + 模块两步 + chcp
   3. 程序骨架：main + print 三行模板
@@ -2996,14 +2996,14 @@ ls examples | head -5   # 只剩 NN_name 目录
      常用（22）/单测骨架（23）
   5. 坑位索引：每章坑位清单的标题级汇总（一行一坑，标章号）
 
-- [ ] **Step 4: 微调根 README.md**
+- [x] **Step 4: 微调根 README.md**
 
 `G:\code\guide\README.md` 中（先 grep 定位再改）：
 - 第 24 行 `- [cpp20](./cpp20) — C++20 教程与示例，适配 MSVC/Windows 构建` 改为
   `- [cpp20](./cpp20) — C++ 从零到 C++20/23 教程（24 章 + 迷你 grep 实战，MSVC 主线）`
 - 第 87 行附近的 `4. [cpp20](./cpp20)` 保持链接不变，若行文含"教程与示例"字样同步微调。
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 ```bash
 cd /g/code/guide/cpp20
@@ -3027,7 +3027,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 **Files:**
 - 无新文件（发现问题回修后重跑）
 
-- [ ] **Step 1: 全量验证**
+- [x] **Step 1: 全量验证**
 
 ```bash
 cd /g/code/guide/cpp20 && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All 2>&1 | tail -25
@@ -3037,7 +3037,7 @@ cd /g/code/guide/cpp20 && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -Execu
 零 warning，运行输出含各自"自检通过"；末行 `[Done] 全部 23 个示例编译+运行通过。`。
 全程约 1–3 分钟。
 
-- [ ] **Step 2: 一致性与卫生检查**
+- [x] **Step 2: 一致性与卫生检查**
 
 ```bash
 cd /g/code/guide/cpp20
@@ -3050,7 +3050,7 @@ grep -c "docs/" README.md               # 预期 24（索引表链接）
 预期：docs 24 个、examples 23 个、docs 总行数 4500–6000；README 含 24 个链接；
 抽查三章代码片段与 examples 逐字一致（3.4/15.4/24.3）。
 
-- [ ] **Step 3: 清理与收尾**
+- [x] **Step 3: 清理与收尾**
 
 ```bash
 cd /g/code/guide/cpp20 && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Clean && git status --short
@@ -3058,7 +3058,7 @@ cd /g/code/guide/cpp20 && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -Execu
 
 预期：`git status` 干净（build/ 已清且不入库）。若有未提交变更，补提交。
 
-- [ ] **Step 4: Commit（如有收尾变更）**
+- [x] **Step 4: Commit（如有收尾变更）**
 
 ```bash
 git add -A && git commit -m "chore(cpp20): 教程终验收尾
@@ -3066,7 +3066,7 @@ git add -A && git commit -m "chore(cpp20): 教程终验收尾
 Co-Authored-By: Claude Code <noreply@anthropic.com>" || echo "无收尾变更，跳过"
 ```
 
-- [ ] **Step 5: 勾选计划与勘误归档**
+- [x] **Step 5: 勾选计划与勘误归档**
 
 把本文件中所有 `- [ ]` 勾选为 `- [x]`；实施期间如有偏差（API 不符、编译失败后调整），
 在文末追加 `## 执行勘误（YYYY-MM-DD 实施时对计划的修正）` 表格记录（参照 flutter 计划
@@ -3078,3 +3078,19 @@ git commit -m "docs: 勾选 cpp20 教程实施计划全部任务并记录执行�
 
 Co-Authored-By: Claude Code <noreply@anthropic.com>"
 ```
+
+## 执行勘误（2026-09-17 实施时对计划的修正）
+
+| 位置 | 偏差 | 原因 |
+|---|---|---|
+| Task 1/7 build.ps1 | `/reference:name=file` 改为空格分隔 `/reference name=file`，并补 `/ifcOutput` | 冒号连写形式触发 C5213（被解析为命名分区），模块无法解析（C2230）；同目录手工两步验证通过后反推正确语法 |
+| Task 5 示例 12_ranges | 惰性小节改为"手动 break vs ranges::to 对照" | 实测 MSVC 的 `ranges::to` 构造容器前先估尺寸，把非 sized 的 filter 抽干（取 2 个访问 5 个）——计划预期的"取 2 访问 2"仅手动消费成立；反而成为更好的教学素材 |
+| Task 6 示例 14_concepts | 约束重载三个 kind 的形参统一为 `const T&` | 计划中受约束版本按值 `T` 与兜底 `const T&` 形参形式不一致，包含排序不生效，C2668 调用二义 |
+| Task 6 示例 15_moves | `push_back(Tracer{"临时"})` 注释改为"一次移动落位"；统计为拷贝 1/移动 3（计划预期 2） | 纯右值经 `push_back(T&&)` 形参落位实际发生一次移动（guaranteed elision 只覆盖同类型 prvalue 直接初始化，隔着 && 形参即 move）；实测输出为准 |
+| Task 8 示例 20_atomic | 补 `#include <cassert>` | 计划遗漏（用 assert 未含头文件） |
+| Task 8 示例 22_textfiles | 浮点 `{:.1%}` 改为 `×100 + {:.1f}%` | MSVC 编译期格式检查（C7595）拒绝浮点百分号带精度——标准合法但实现未跟上；文档 22.1 已记为实测坑 |
+| Task 9 build.ps1 | 编译②泛化为"目录内全部 .cpp 逐个编译（/c）+ 显式链接" | 计划只编 main.cpp，24_minigrep 的 search/output 链接失败（LNK2019）；泛化后 18_modules（模块）与 02_hello（单文件）回归通过 |
+| Task 10–15 docs | 各章 91–175 行（低于 150–250 目标） | 章节按大纲完整覆盖（小节、表格、坑位俱全），以密度优先；01–04 曾扩写一轮（补输出块/sizeof 节）；24 章合计 2846 行 |
+| Task 16 清理旧文件 | `git -c core.quotepath=false ls-files` 后再 `git rm` | git 默认对中文路径八进制转义并加引号，`git rm` 收到转义串报 pathspec 不匹配 |
+
+全部偏差不改变章节结构、小节编号与教学语义；三处（ranges::to 抽干、`{:.1%}` 编译期报错、`/reference` 语法）已作为"工具链实测坑"写进正文成为教学内容。
