@@ -199,14 +199,8 @@ function Invoke-Project {
     $isGui = $raw -match 'net10\.0-windows'
     $isTest = $raw -match 'Microsoft\.NET\.Test\.Sdk'
 
-    Write-Host "[Build] $name" -ForegroundColor Cyan
-    & $dotnet build $Fsproj.FullName --nologo -v minimal `
-        "-p:BaseOutputPath=$buildDir\bin\" `
-        "-p:BaseIntermediateOutputPath=$buildDir\obj\$name\"
-    if ($LASTEXITCODE -ne 0) {
-        throw "编译失败: $($Fsproj.FullName)"
-    }
-
+    # 测试工程不经重定向构建：全局 obj 属性会传播到 ProjectReference 工程并互相覆盖 assets；
+    # 直接 dotnet test（自建默认 obj/bin，下次脚本运行时被清扫回收）
     if ($isTest) {
         Write-Host "[Test] $name" -ForegroundColor Magenta
         & $dotnet test $Fsproj.FullName --nologo -v minimal
@@ -214,6 +208,14 @@ function Invoke-Project {
             throw "测试未通过: $name"
         }
         return
+    }
+
+    Write-Host "[Build] $name" -ForegroundColor Cyan
+    & $dotnet build $Fsproj.FullName --nologo -v minimal -c Release `
+        "-p:BaseOutputPath=$buildDir\bin\" `
+        "-p:BaseIntermediateOutputPath=$buildDir\obj\$name\"
+    if ($LASTEXITCODE -ne 0) {
+        throw "编译失败: $($Fsproj.FullName)"
     }
 
     if ($isGui) {
@@ -704,7 +706,7 @@ let main _ =
     // ═══ 7.3 Option.map / bind 串联 ═══
     printfn "map×2 = %A" (Some 5 |> Option.map (fun x -> x * 2))
     let reciprocal s =
-        parseInt s |> Option.bind (fun n -> safeDivide 1 n)
+        parseInt s |> Option.bind (fun n -> safeDivide 100 n)
     printfn "reciprocal \"4\" = %A" (reciprocal "4")
     printfn "reciprocal \"0\" = %A" (reciprocal "0")
     printfn "reciprocal \"x\" = %A" (reciprocal "x")
@@ -722,7 +724,8 @@ let main _ =
     printfn "Map.tryFind Carol = %A" (Map.tryFind "Carol" ages)
 
     // ═══ 7.6 与 null / Nullable 的边界转换 ═══
-    let csharpResult: string = Unchecked.defaultof<string>   // 模拟 C# 返回 null
+    // C# 风格 API（如 Array.Find 找不到时）返回 null；用 `| null` 注解显式接住可空值
+    let csharpResult: string | null = System.Array.Find([||], fun (s: string) -> true)
     printfn "Option.ofObj null = %A" (Option.ofObj csharpResult)
     printfn "Option.ofNullable 5 = %A" (Option.ofNullable (Nullable 5))
     printfn "Option.toNullable None = %A" (Option.toNullable None)
@@ -770,7 +773,7 @@ let main _ =
     printfn "map = %A" (Ok 5 |> Result.map (fun x -> x * 2))
     printfn "map 不碰 Error = %A" (Error "e" |> Result.map (fun x -> x * 2))
     printfn "bind = %A" (Ok "20" |> Result.bind parseInt)
-    printfn "mapError = %A" (Error(NotANumber "x") |> Result.mapError sprintf "%A")
+    printfn "mapError = %A" (Error(NotANumber "x") |> Result.mapError (sprintf "%A"))
 
     // ═══ 8.3 校验链实战 ═══
     [ "30"; "abc"; "200"; "" ]
@@ -1040,7 +1043,7 @@ let main _ =
     let prefixLogger prefix =
         { new ILogger with
             member _.Log msg = printfn "[%s] %s" prefix msg }
-    prefixLogger "db".Log "带参数的对象表达式"
+    (prefixLogger "db").Log "带参数的对象表达式"
 
     // ═══ 11.2 多态 ═══
     let animals: Animal list = [ Dog("旺财", "柴犬"); Dog("来福", "边牧") ]
@@ -1185,7 +1188,11 @@ let main _ =
     let sw = Diagnostics.Stopwatch.StartNew()
     let squares =
         [ 1 .. 3 ]
-        |> List.map (fun i -> async { do! Async.Sleep 300; return i * i })
+        |> List.map (fun i ->
+            async {
+                do! Async.Sleep 300
+                return i * i
+            })
         |> Async.Parallel
         |> Async.RunSynchronously
     sw.Stop()
@@ -1218,17 +1225,19 @@ let main _ =
     |> Async.RunSynchronously
 
     // ═══ 13.6 取消令牌 ═══
+    // 取消异常由运行器（RunSynchronously）抛出，try/with 要包住运行调用本身
     let cts = new Threading.CancellationTokenSource()
     cts.CancelAfter(100)
     let work =
         async {
-            try
-                do! Async.Sleep 3000
-                return Some "完成"
-            with :? OperationCanceledException ->
-                return None
+            do! Async.Sleep 3000
+            return "完成"
         }
-    let outcome = Async.RunSynchronously(work, cancellationToken = cts.Token)
+    let outcome =
+        try
+            Async.RunSynchronously(work, cancellationToken = cts.Token) |> Some
+        with :? OperationCanceledException ->
+            None
     printfn "取消演示 outcome = %A" outcome
     0
 ```
@@ -1242,7 +1251,9 @@ open System
 type TraceBuilder() =
     member _.Bind(x, f) =
         printfn "Bind: %A" x
-        f x
+        match x with
+        | Some v -> f v
+        | None -> None
     member _.Return x =
         printfn "Return: %A" x
         Some x
@@ -1340,6 +1351,7 @@ let main _ =
 ```fsharp
 open System
 open System.IO
+open System.Text.Encodings.Web
 open System.Text.Json
 
 // ═══ 15.3 CSV 解析目标：record ═══
@@ -1391,9 +1403,13 @@ let main _ =
     let books =
         [ { Title = "F# 实战"; Author = "张三"; Year = 2024; Tags = [ "fsharp"; ".net" ] }
           { Title = "函数式入门"; Author = "李四"; Year = 2022; Tags = [] } ]
-    let json = JsonSerializer.Serialize(books, JsonSerializerOptions(WriteIndented = true))
+    let options = JsonSerializerOptions(WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping)
+    let json = JsonSerializer.Serialize(books, options)
     printfn "%s" json
-    let back = JsonSerializer.Deserialize<Book list>(json)
+    let back =
+        JsonSerializer.Deserialize<Book list>(json)
+        |> Option.ofObj                    // Deserialize 声明返回可空，接回 option（连第 07 章）
+        |> Option.defaultValue []
     printfn "往返书名 = %A" (back |> List.map (fun b -> b.Title))
 
     // ═══ 15.5 option 字段的 JSON 形态（.NET 9+ 原生支持）═══
@@ -1465,29 +1481,29 @@ type Todo = { Id: int; Title: string; Done: bool }
 
 let todosStore = ResizeArray<Todo>()
 
-// ═══ 16.1 定义全部端点 ═══
+// ═══ 16.1 定义全部端点（F# 惯用法：显式 Func<...> 委托，避免多重载决议歧义）═══
 let buildApp () =
     let builder = WebApplication.CreateBuilder()
     let app = builder.Build()
 
-    app.MapGet("/", fun () -> "F# Minimal API 自测") |> ignore
+    app.MapGet("/", Func<string>(fun () -> "F# Minimal API 自测")) |> ignore
 
-    app.MapGet("/todos", fun () ->
+    app.MapGet("/todos", Func<IResult>(fun () ->
         if todosStore.Count = 0 then
-            Results.NotFound("还没有待办") :> IResult
+            Results.NotFound("还没有待办")
         else
-            Results.Ok(todosStore.ToArray()) :> IResult) |> ignore
+            Results.Ok(todosStore.ToArray()))) |> ignore
 
-    app.MapPost("/todos", fun (todo: Todo) ->
+    app.MapPost("/todos", Func<Todo, IResult>(fun todo ->
         todosStore.Add todo
-        Results.Created($"/todos/{todo.Id}", todo) :> IResult) |> ignore
+        Results.Created($"/todos/{todo.Id}", todo))) |> ignore
 
-    app.MapDelete("/todos/{id:int}", fun (id: int) ->
+    app.MapDelete("/todos/{id:int}", Func<int, IResult>(fun id ->
         let removed = todosStore.RemoveAll(fun t -> t.Id = id)
         if removed > 0 then
-            Results.NoContent() :> IResult
+            Results.NoContent()
         else
-            Results.NotFound($"没有 id={id} 的待办") :> IResult) |> ignore
+            Results.NotFound($"没有 id={id} 的待办"))) |> ignore
 
     app
 
@@ -1610,6 +1626,9 @@ open System
 open System.Text
 open System.Threading.Tasks
 
+// ═══ 18.4 byref 参数只能放顶层函数/方法上 ═══
+let bump (v: byref<int>) = v <- v + 1
+
 [<EntryPoint>]
 let main _ =
 
@@ -1620,7 +1639,8 @@ let main _ =
     printfn "join=%s format=%s" (String.Join(", ", [ "a"; "b"; "c" ]) ) (String.Format("{0:D4}", 42))
 
     // ═══ 18.2 null 边界：用 option 包装 C# 的 null ═══
-    let csharpResult: string = Unchecked.defaultof<string>   // 模拟 C# 返回 null
+    // C# 风格 API（如 Array.Find 找不到时）返回 null；用 `| null` 注解显式接住可空值
+    let csharpResult: string | null = System.Array.Find([||], fun (s: string) -> true)
     match Option.ofObj csharpResult with
     | Some s -> printfn "有值 %s" s
     | None -> printfn "C# 返回了 null → Option.ofObj 安全包装"
@@ -1630,7 +1650,6 @@ let main _ =
 
     // ═══ 18.4 byref：向函数传可变引用 ═══
     let mutable x = 10
-    let bump (v: byref<int>) = v <- v + 1
     bump &x
     printfn "byref 后 x = %d" x
 
@@ -1932,7 +1951,7 @@ cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -Exec
 
 预期：19_gui 两个工程 `[Build]`+`[BuildOnly]`；20_todo 的 Todo `[Build]`+8 条 `[Run]` 序列（reset→add→add→show→done→show→remove→show）、Todo.Tests `[Build]`+`[Test]` 全绿。
 
-- [ ] **Step 8: 全量中期验证**（至此 21 个工程齐了）
+- [ ] **Step 8: 全量中期验证**（至此 21 个工程齐了；测试工程直接 dotnet test，不经过脚本的重定向构建）
 
 ```bash
 cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All
@@ -2303,7 +2322,7 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>"
 cd /g/code/guide/fsharp && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Clean && "/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All
 ```
 
-预期核对清单：`[Build]` 共 21 次（02–18 十七个 + 19_gui 两个 + Todo/Todo.Tests）；`[Run]` 十六次（02–16、18）；`[BuildOnly]` 两次；`[Test]` 两次全绿；Todo 八步序列输出正确；结尾 `[Done]`。
+预期核对清单：`[Build]` 共 19 次（02–18 十七个 + 19_gui 两个 + Todo）；`[Test]` 两次（17_testing、Todo.Tests，测试工程不输出 [Build] 而由 dotnet test 自行构建）；`[Run]` 十六次（02–16、18）；`[BuildOnly]` 两次；`[Test]` 两次全绿；Todo 八步序列输出正确；结尾 `[Done]`。
 
 - [ ] **Step 2: 文档完整性**
 
