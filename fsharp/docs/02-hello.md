@@ -82,7 +82,7 @@ val add: a: int -> b: int -> int
 val it: int = 20
 ```
 
-REPL 用 `;;` 结束多行输入，`val` 行是编译器"说"出的类型。改完代码立刻看到类型与结果，这是 F# 学习曲线最快的一段。也可以把代码存成 `demo.fsx` 用 `dotnet fsi demo.fsx` 整体执行。`#quit;;` 退出。
+REPL 用 `;;` 结束多行输入，`val` 行是编译器"说"出的类型。改完代码立刻看到类型与结果，这是 F# 学习曲线最快的一段。也可以把代码存成 `demo.fsx` 用 `dotnet fsi demo.fsx` 整体执行。`#quit;;` 退出；`#r "nuget: 包名"` 可在会话内临时引包。
 
 示例程序结尾那行提示正是这个工作流：
 
