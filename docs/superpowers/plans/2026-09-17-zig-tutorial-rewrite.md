@@ -46,7 +46,7 @@
 **Interfaces:**
 - Produces: 后续所有任务的验证入口 `-All` / `-Example NN_topic` / `-Clean`；产物统一进 `zig/build/`。
 
-- [ ] **Step 1: 写 zig/build.ps1（UTF-8 无 BOM）**
+- [x] **Step 1: 写 zig/build.ps1（UTF-8 无 BOM）**
 
 ```powershell
 param(
@@ -164,12 +164,12 @@ Write-Host "  .\build.ps1 -Example 12_collections   验证单个示例"
 Write-Host "  .\build.ps1 -Clean               清理 build 目录"
 ```
 
-- [ ] **Step 2: 验证无 BOM + 语法**
+- [x] **Step 2: 验证无 BOM + 语法**
 
 Run: `xxd G:/code/guide/zig/build.ps1 | head -1`（首字节不得是 `efbb`）
 Run: `pwsh -NoProfile -Command "G:/code/guide/zig/build.ps1"`（此时 examples/ 还是旧结构，打印用法即算通过）
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 cd G:/code/guide && git add zig/build.ps1
@@ -188,7 +188,7 @@ git commit -m "build(zig): 重写 build.ps1——目录式示例三层验证 + �
 **Interfaces:**
 - Produces: 第 02/03/04 章引用代码（正文按 `═══` 小节号摘录）；02_hello 为 01 章引用对象。
 
-- [ ] **Step 1: 写 zig/examples/02_hello/main.zig**
+- [x] **Step 1: 写 zig/examples/02_hello/main.zig**
 
 ```zig
 //! 02 第一个程序：std.debug.print、stdout Writer、Init 入口、test 自检
@@ -222,7 +222,7 @@ test "打印不是测试重点，先验证格式化语义" {
 }
 ```
 
-- [ ] **Step 2: 写 zig/examples/03_types/main.zig**
+- [x] **Step 2: 写 zig/examples/03_types/main.zig**
 
 ```zig
 //! 03 基础类型：任意位宽整数、溢出运算符、comptime 整数、转型家族
@@ -287,7 +287,7 @@ test "溢出与转型语义" {
 }
 ```
 
-- [ ] **Step 3: 写 zig/examples/04_control/main.zig**
+- [x] **Step 3: 写 zig/examples/04_control/main.zig**
 
 ```zig
 //! 04 控制流：if/while/for 的表达式语义、label、switch 穷尽与捕获
@@ -386,7 +386,7 @@ test "控制流语义" {
 }
 ```
 
-- [ ] **Step 4: 验证三个示例**
+- [x] **Step 4: 验证三个示例**
 
 Run:
 ```bash
@@ -394,7 +394,7 @@ cd G:/code/guide/zig && pwsh -NoProfile -File build.ps1 -Example 02_hello && pws
 ```
 Expected: 三个示例 `[Done] ... 验证通过`；若 0.16 API 有出入（如 `{d:0>3}` 格式串），实测修正并记录勘误。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd G:/code/guide && git add zig/examples/02_hello zig/examples/03_types zig/examples/04_control
@@ -412,7 +412,7 @@ git commit -m "feat(zig): 示例 02_hello/03_types/04_control——打印、类�
 **Interfaces:**
 - Produces: 第 05/06/07 章引用代码。
 
-- [ ] **Step 1: 写 zig/examples/05_functions/main.zig**
+- [x] **Step 1: 写 zig/examples/05_functions/main.zig**
 
 ```zig
 //! 05 函数：defer、anytype、comptime 参数、没有重载怎么办
@@ -492,7 +492,7 @@ test "函数语义" {
 }
 ```
 
-- [ ] **Step 2: 写 zig/examples/06_slices/main.zig**
+- [x] **Step 2: 写 zig/examples/06_slices/main.zig**
 
 ```zig
 //! 06 数组、切片与字符串：长度进类型、胖指针、哨兵
@@ -554,7 +554,7 @@ test "数组切片语义" {
 }
 ```
 
-- [ ] **Step 3: 写 zig/examples/07_structs/main.zig**
+- [x] **Step 3: 写 zig/examples/07_structs/main.zig**
 
 ```zig
 //! 07 结构体：字段、方法、命名空间、匿名结构与元组
@@ -632,7 +632,7 @@ test "结构体语义" {
 }
 ```
 
-- [ ] **Step 4: 验证 + Commit**
+- [x] **Step 4: 验证 + Commit**
 
 Run:
 ```bash
@@ -657,7 +657,7 @@ git commit -m "feat(zig): 示例 05_functions/06_slices/07_structs——defer、
 **Interfaces:**
 - Produces: 第 08/09/10 章引用代码。
 
-- [ ] **Step 1: 写 zig/examples/08_enums/main.zig**
+- [x] **Step 1: 写 zig/examples/08_enums/main.zig**
 
 ```zig
 //! 08 枚举与联合：enum、tagged union、packed struct
@@ -754,7 +754,7 @@ test "枚举与联合" {
 }
 ```
 
-- [ ] **Step 2: 写 zig/examples/09_errors1/main.zig**
+- [x] **Step 2: 写 zig/examples/09_errors1/main.zig**
 
 ```zig
 //! 09 可选类型与错误处理 I：?T、error set、!T、try/catch
@@ -841,7 +841,7 @@ test "可选与错误" {
 }
 ```
 
-- [ ] **Step 3: 写 zig/examples/10_errors2/main.zig**
+- [x] **Step 3: 写 zig/examples/10_errors2/main.zig**
 
 ```zig
 //! 10 错误处理 II：errdefer、?!T、panic、安全模式
@@ -968,7 +968,7 @@ test "errdefer 与组合错误" {
 
 **注意**：`std.testing.FailingAllocator` 在 0.16 的形态未实测（可能是 `std.testing.FailingAllocator.init(alloc, 0)`），Step 4 验证时若编译不过，改为：手动构造一个 `fail alloc` 或删掉该断言并把 `made` 回滚验证改用 `buildList` 失败路径（记入勘误）。
 
-- [ ] **Step 4: 验证 + Commit**
+- [x] **Step 4: 验证 + Commit**
 
 Run:
 ```bash
@@ -992,7 +992,7 @@ git commit -m "feat(zig): 示例 08_enums/09_errors1/10_errors2——枚举联�
 **Interfaces:**
 - Produces: 第 11/12 章引用代码；后续章节沿用 `DebugAllocator(.{}){}`/`ArenaAllocator` 模式。
 
-- [ ] **Step 1: 写 zig/examples/11_allocators/main.zig**
+- [x] **Step 1: 写 zig/examples/11_allocators/main.zig**
 
 ```zig
 //! 11 分配器：显式传递的内存策略（Zig 核心特色）
@@ -1093,7 +1093,7 @@ test "分配器语义" {
 }
 ```
 
-- [ ] **Step 2: 写 zig/examples/12_collections/main.zig**
+- [x] **Step 2: 写 zig/examples/12_collections/main.zig**
 
 ```zig
 //! 12 集合类型：ArrayList（unmanaged）、HashMap、排序
@@ -1189,7 +1189,7 @@ test "集合操作" {
 
 **注意**：`std.BoundedArray(u8, 4){}` 初始化形态与 `bounded.slice()`/`append` 签名未实测（0.16 可能要求 `.{ .buffer = undefined, .len = 0 }` 或提供 `.empty`），Step 3 验证时修正；不行就换 `std.ArrayList` + 预分配对比（记入勘误）。
 
-- [ ] **Step 3: 验证 + Commit**
+- [x] **Step 3: 验证 + Commit**
 
 Run:
 ```bash
@@ -1213,7 +1213,7 @@ git commit -m "feat(zig): 示例 11_allocators/12_collections——分配器家�
 **Interfaces:**
 - Produces: 第 13/14 章引用代码。
 
-- [ ] **Step 1: 写 zig/examples/13_comptime/main.zig**
+- [x] **Step 1: 写 zig/examples/13_comptime/main.zig**
 
 ```zig
 //! 13 comptime I：编译期求值——同一份代码的两个世界
@@ -1280,7 +1280,7 @@ test "comptime 与运行期同源" {
 }
 ```
 
-- [ ] **Step 2: 写 zig/examples/14_generics/main.zig**
+- [x] **Step 2: 写 zig/examples/14_generics/main.zig**
 
 ```zig
 //! 14 comptime II 泛型：type 参数、@typeInfo 反射、编译期代码生成
@@ -1394,7 +1394,7 @@ test "泛型与反射" {
 }
 ```
 
-- [ ] **Step 3: 验证 + Commit**
+- [x] **Step 3: 验证 + Commit**
 
 Run:
 ```bash
@@ -1421,7 +1421,7 @@ git commit -m "feat(zig): 示例 13_comptime/14_generics——编译期求值、
 **Interfaces:**
 - Produces: 第 15/16 章引用代码；16_build 是首个 build.zig 工程（build.ps1 走 `zig build test/run` 分支）。
 
-- [ ] **Step 1: 先跑 `zig init` 拿官方 0.16 模板（校准 build.zig / zon 形态）**
+- [x] **Step 1: 先跑 `zig init` 拿官方 0.16 模板（校准 build.zig / zon 形态）**
 
 Run:
 ```bash
@@ -1430,7 +1430,7 @@ cd /tmp/zigprobe && rm -rf init16 && mkdir init16 && cd init16 && G:/scoop/apps/
 Expected: 生成 `build.zig`、`build.zig.zon`、`src/main.zig`、`src/root.zig`。
 检查：`addExecutable`/`addTest` 的参数形态（`root_module` 还是 `root_source_file`）、zon 的 `name`（枚举字面量？）与 `fingerprint` 字段。**16_build 的 build.zig/zon 以此模板为基线改写**，与本计划草案的偏差以模板为准（记入勘误）。
 
-- [ ] **Step 2: 写 zig/examples/15_testing/main.zig**
+- [x] **Step 2: 写 zig/examples/15_testing/main.zig**
 
 ```zig
 //! 15 测试：test 块、std.testing 断言、testing.allocator 泄漏检测
@@ -1497,7 +1497,7 @@ test {
 }
 ```
 
-- [ ] **Step 3: 写 zig/examples/15_testing/util.zig**
+- [x] **Step 3: 写 zig/examples/15_testing/util.zig**
 
 ```zig
 //! 15 测试：模块也带自己的测试
@@ -1521,7 +1521,7 @@ test "sluggify 行为" {
 }
 ```
 
-- [ ] **Step 4: 写 16_build 工程四个文件（以 Step 1 模板为基线）**
+- [x] **Step 4: 写 16_build 工程四个文件（以 Step 1 模板为基线）**
 
 `zig/examples/16_build/build.zig`（草案，以 `zig init` 实测模板为准）：
 
@@ -1621,7 +1621,7 @@ test "hello 拼接" {
 }
 ```
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 Run:
 ```bash
@@ -1648,7 +1648,7 @@ git commit -m "feat(zig): 示例 15_testing/16_build——测试框架、build.z
 **Interfaces:**
 - Produces: 第 17/18 章引用代码；17 走 `-lc` 分支；18 走交叉编译分支。
 
-- [ ] **Step 0: 修 build.ps1 的 wasm 构建（freestanding 无入口须 --no-entry）**
+- [x] **Step 0: 修 build.ps1 的 wasm 构建（freestanding 无入口须 --no-entry）**
 
 把 Task 1 里 `Test-CrossExample` 的 wasm 一行改为：
 
@@ -1657,7 +1657,7 @@ git commit -m "feat(zig): 示例 15_testing/16_build——测试框架、build.z
         "-femit-bin=$(Join-Path $buildDir "$name`.wasm")")
 ```
 
-- [ ] **Step 1: 写 zig/examples/17_cinterop/main.zig**
+- [x] **Step 1: 写 zig/examples/17_cinterop/main.zig**
 
 ```zig
 //! 17 C 互操作：extern 声明、@cImport、export 导出（构建需 -lc）
@@ -1701,7 +1701,7 @@ test "C ABI 与 cImport 可用（须 zig test -lc）" {
 
 **注意**：`c"..."` 字符串字面量语法在 0.16 若已移除（probe：报错即知），改用 `const fmt_c = "…%d\n";` 传 `fmt_c.ptr`（`[*:0]const u8` 从哨兵数组自动退化）。`%d` 与 `@as(c_int, ...)`：c.strlen 返回 usize，printf `%d` 直传在 Windows 上可能告警，故显式转 c_int。
 
-- [ ] **Step 2: 写 zig/examples/18_cross/main.zig**
+- [x] **Step 2: 写 zig/examples/18_cross/main.zig**
 
 ```zig
 //! 18 交叉编译：同一份源码，多个目标（build.ps1 交叉验证 aarch64-linux 与 wasm）
@@ -1738,7 +1738,7 @@ const arch_code_ok = switch (builtin.cpu.arch) {
 
 **注意**：测试块在 native 上跑（`zig test`），交叉产物只验证编译不运行——这个差异本身就是 18 章的教学点，正文展开。
 
-- [ ] **Step 3: 写 zig/examples/18_cross/wasm_lib.zig**
+- [x] **Step 3: 写 zig/examples/18_cross/wasm_lib.zig**
 
 ```zig
 //! 18 交叉编译：wasm32-freestanding 模块（无 OS：没有 main，只有导出）
@@ -1762,7 +1762,7 @@ export fn fib(n: u32) u32 {
 }
 ```
 
-- [ ] **Step 4: 写 zig/examples/18_cross/hello.c**
+- [x] **Step 4: 写 zig/examples/18_cross/hello.c**
 
 ```c
 /* 18 交叉编译：这份 C 由 zig cc 编译（build.ps1 实测 zig cc hello.c） */
@@ -1774,7 +1774,7 @@ int main(void) {
 }
 ```
 
-- [ ] **Step 5: 验证 + Commit**
+- [x] **Step 5: 验证 + Commit**
 
 Run:
 ```bash
@@ -1799,7 +1799,7 @@ git commit -m "feat(zig): 示例 17_cinterop/18_cross——C 互操作、交叉�
 **Interfaces:**
 - Produces: 第 19/20/21 章引用代码。
 
-- [ ] **Step 0: API 探针（一次探清 20 章全部未定项）**
+- [x] **Step 0: API 探针（一次探清 20 章全部未定项）**
 
 Run:
 ```bash
@@ -1815,7 +1815,7 @@ grep -n "pub fn startMany\|pub fn start\b" $Z/Thread.zig | head -5
 ```
 按结果修正 Task 9/10 的草案代码（偏差记入勘误）。
 
-- [ ] **Step 1: 写 zig/examples/19_threads/main.zig**
+- [x] **Step 1: 写 zig/examples/19_threads/main.zig**
 
 ```zig
 //! 19 并发：Thread、Mutex、atomic.Value、Condition、WaitGroup
@@ -1970,7 +1970,7 @@ test "无锁与有锁都算对" {
 }
 ```
 
-- [ ] **Step 2: 写 zig/examples/20_files/main.zig（先按 Step 0 探针结果修正 API）**
+- [x] **Step 2: 写 zig/examples/20_files/main.zig（先按 Step 0 探针结果修正 API）**
 
 ```zig
 //! 20 文件与 IO：std.fs、读写、目录遍历、std.json
@@ -2060,7 +2060,7 @@ test "读写与 JSON 回环" {
 
 **注意**：`Dir.writeFile`/`readFileAlloc`/`File.writer`/`Io.Writer.fixed`/`json.Stringify.value` 均以 Step 0 探针为准（0.16 可能给这些 API 加了 `io` 参数或改名），偏差改代码 + 记勘误。
 
-- [ ] **Step 3: 写 zig/examples/21_asm/main.zig**
+- [x] **Step 3: 写 zig/examples/21_asm/main.zig**
 
 ```zig
 //! 21 内联汇编与底层：asm 语法、约束、volatile、extern struct
@@ -2125,7 +2125,7 @@ test "汇编与位模式" {
 
 **注意**：0.14+ 具名操作数模板占位是 `{[r]}`（不是旧 `%[r]`）；`asm` 多行用 `\\`。若 MSVC 目标下内联汇编报错（backend 差异），试 `-target x86_64-windows-gnu` 或 `-mcpu` 相关参数（记入勘误并正文说明）。
 
-- [ ] **Step 4: 验证 + Commit**
+- [x] **Step 4: 验证 + Commit**
 
 Run:
 ```bash
@@ -2153,7 +2153,7 @@ git commit -m "feat(zig): 示例 19_threads/20_files/21_asm——并发、文件
 **Interfaces:**
 - Produces: 第 22/23/24 章引用代码；`search.searchLines` / `search.printHighlighted` 是 24 章测试的核心被测接口（签名见 Step 4）。
 
-- [ ] **Step 1: 写 zig/examples/22_process/main.zig（API 按 Task 9 Step 0 探针修正）**
+- [x] **Step 1: 写 zig/examples/22_process/main.zig（API 按 Task 9 Step 0 探针修正）**
 
 ```zig
 //! 22 进程与系统编程：argv、环境变量、子进程、路径、时间
@@ -2212,7 +2212,7 @@ test "路径与时间" {
 
 **注意**：`init.minimal.args.iterator(mem)`、`Child.run(.{...})`、`std.Thread.sleep` 均以探针为准（0.16 可能是 `Iterator.initAllocator` 形态、`Child.run` 可能要 io 参数）；测试里 `x\\y.txt` 分隔符断言在非 Windows 会反——本教程以 Windows 为准，正文说明。
 
-- [ ] **Step 2: 写 zig/examples/23_debug/main.zig**
+- [x] **Step 2: 写 zig/examples/23_debug/main.zig**
 
 ```zig
 //! 23 调试与工具链：assert、panic 开关、计时、@breakpoint、环境变量联动
@@ -2257,7 +2257,7 @@ test "risky 正常路径" {
 }
 ```
 
-- [ ] **Step 3: 写 24_minigrep 的 build.zig / build.zig.zon**
+- [x] **Step 3: 写 24_minigrep 的 build.zig / build.zig.zon**
 
 `build.zig`（以 Task 7 Step 1 的 `zig init` 模板为基线，name 换 `minigrep`，run 步骤透传 args）：
 
@@ -2313,7 +2313,7 @@ pub fn build(b: *std.Build) void {
 }
 ```
 
-- [ ] **Step 4: 写 zig/examples/24_minigrep/src/search.zig**
+- [x] **Step 4: 写 zig/examples/24_minigrep/src/search.zig**
 
 ```zig
 //! 24 实战：搜索核心（纯逻辑，好测试）
@@ -2372,7 +2372,7 @@ test "printHighlighted 含 ANSI 转义" {
 }
 ```
 
-- [ ] **Step 5: 写 zig/examples/24_minigrep/src/main.zig**
+- [x] **Step 5: 写 zig/examples/24_minigrep/src/main.zig**
 
 ```zig
 //! 24 实战迷你 grep：minigrep <模式> [目录]（递归 + 多线程 + 高亮）
@@ -2484,7 +2484,7 @@ test "端到端：搜索核心 + 临时目录" {
 
 **注意**：`args_it.next()` 的错误联合形态以探针为准（可能要 `try` 或返回 `?`）；`zig build run` 无 args 时打印用法并正常退出（exit 0）满足验证。
 
-- [ ] **Step 6: 验证 + Commit**
+- [x] **Step 6: 验证 + Commit**
 
 Run:
 ```bash
@@ -2511,7 +2511,7 @@ git commit -m "feat(zig): 示例 22_process/23_debug/24_minigrep——进程、�
 - Consumes: Task 2 的三个示例（正文按 `═══` 小节号摘录）。
 - Produces: 教程前 4 章；后续章节延续同一格式（`# N · 标题`、`> 对应示例`、`N.M` 小节、末尾"坑位清单"）。
 
-- [ ] **Step 1: 写 01-overview.md（约 180 行，唯一无示例章）**
+- [x] **Step 1: 写 01-overview.md（约 180 行，唯一无示例章）**
 
 结构（吸收旧 README 的对比表/版本管理，压缩重写）：
 - `# 01 · 全景：Zig 是什么，为什么值得学`
@@ -2523,7 +2523,7 @@ git commit -m "feat(zig): 示例 22_process/23_debug/24_minigrep——进程、�
 - 1.6 本教程怎么学：环境（0.16.0 + pwsh）、每章"读讲解→跑示例→改代码再跑"、三层验证含义、与 cpp20 教程结构对照表
 - 1.7 坑位清单：① 版本坑——网上教程多为 0.13/0.14 语法，`ArrayList.init(alloc)` 等直接抄必编译错；② Windows 控制台中文乱码先 `chcp 65001`；③ zig 命令行参数与文件之间用 `--` 分隔（`zig run x.zig -- args`）
 
-- [ ] **Step 2: 写 02-hello.md（约 200 行）**
+- [x] **Step 2: 写 02-hello.md（约 200 行）**
 
 - `# 02 · 第一个程序`（`> 对应示例：examples/02_hello/`）
 - 2.1 std.debug.print：为什么新手先用它（stderr 立即落地、无缓冲、线程安全），格式串速览表（`{d}/{s}/{}/{x}/{b}/{d:.2}/{d:0>3}`）
@@ -2534,7 +2534,7 @@ git commit -m "feat(zig): 示例 22_process/23_debug/24_minigrep——进程、�
 - 2.6 `zig fmt`：格式即规范（build.ps1 用 --check 把关）
 - 2.7 坑位清单：① 忘 flush；② print 格式符用错（`{}` 对数字可用但对切片/结构体会打印类型展开，字符串必须 `{s}`）；③ 中文源文件须 UTF-8（无 BOM）；④ `zig run` 后传参数要 `--`；⑤ Windows 的 exe 旁会生成 .pdb，别提交进 git
 
-- [ ] **Step 3: 写 03-types.md（约 220 行）**
+- [x] **Step 3: 写 03-types.md（约 220 行）**
 
 - `# 03 · 类型与变量`（`> 对应示例：examples/03_types/`）
 - 3.1 const 优先（示例 3.1）；未使用的 var 是编译错（对比 C 的 warning）
@@ -2546,7 +2546,7 @@ git commit -m "feat(zig): 示例 22_process/23_debug/24_minigrep——进程、�
 - 3.7 @bitCast 字节序一瞥（示例 3.7 的字节序输出按实测贴）
 - 3.8 坑位清单：① `+` 溢出 Debug 必 panic，要环绕写 `+%`；② @intCast 越界 panic（它是检查不是魔术）；③ 字面量参与位运算的类型推导陷阱；④ 浮点相等比较别用 `==`（整数思维）；⑤ u1..u7 赋 8 直接编译错（值域检查）
 
-- [ ] **Step 4: 写 04-control.md（约 220 行）**
+- [x] **Step 4: 写 04-control.md（约 220 行）**
 
 - `# 04 · 控制流`（`> 对应示例：examples/04_control/`）
 - 4.1 if 是表达式（示例 4.1）；没有三元运算符
@@ -2558,7 +2558,7 @@ git commit -m "feat(zig): 示例 22_process/23_debug/24_minigrep——进程、�
 - 4.7 labeled switch（示例 4.7）：`continue :sw .next` 状态机写法（0.14+）
 - 4.8 坑位清单：① switch 忘 else（非穷尽类型）编译错；② 范围写法是 `4...9` 三个点（切片是两点，新手常混）；③ for 循环里修改集合长度（应索引遍历）；④ label 冒号语法 `break :label value` 中间有空格
 
-- [ ] **Step 5: 一致性自检 + Commit**
+- [x] **Step 5: 一致性自检 + Commit**
 
 Run: `ls zig/docs/` 应有 4 个文件；`grep -c "坑位清单" zig/docs/0[1-4]*.md` 每文件 ≥1；正文引用的示例小节号与 `grep "═══" zig/examples/0[2-4]_*/main.zig` 对齐。
 
@@ -2574,23 +2574,23 @@ git commit -m "docs(zig): 第 01–04 章——全景、第一个程序、类型
 **Files:**
 - Create: `zig/docs/05-functions.md`、`06-slices.md`、`07-structs.md`、`08-enums.md`
 
-- [ ] **Step 1: 写 05-functions.md（约 200 行）**
+- [x] **Step 1: 写 05-functions.md（约 200 行）**
 
 小节：5.1 基本形态与显式类型；5.2 defer（LIFO、块级、与错误路径关系——**本教程把 defer 提前到函数章讲**，内存章/错误章复用）；5.3 comptime 参数（泛型预告）；5.4 anytype 与 @TypeOf（print 原理）；5.5 嵌套函数不能捕获；5.6 没有重载：三种替代（comptime T、anytype、参数结构体，示例 5.7）；坑位：① 无默认参数→参数结构体；② 无重载同名冲突直接编译错；③ defer 在 return 表达式求值后执行；④ 递归函数需要显式返回类型（不能靠推导）。
 
-- [ ] **Step 2: 写 06-slices.md（约 240 行，概念密度高）**
+- [x] **Step 2: 写 06-slices.md（约 240 行，概念密度高）**
 
 小节：6.1 数组是值（赋值拷贝、len 进类型）；6.2 切片 = 胖指针（ptr+len 图示 ASCII）；边界检查与安全模式；6.3 字符串真相（`*const [N:0]u8` → `[]const u8`，UTF-8 只是字节，`{s}` 打印）；6.4 哨兵 `[:0]`（cz[cz.len] 为 0；与 C 互操作的地基）；6.5 指针三兄弟表（`*T`/`[*]T`/`[*:0]T` + `?*T` 可选指针零开销一瞥）；6.6 const 与可变切片（`[]const u8` 视角）；坑位：① 字符串 len 是字节数不是字符数；② 切片指向栈数组逃逸后悬空；③ `arr` 与 `&arr` 在函数传参时的类型差异；④ 修改字面量（`*const`）编译错；⑤ for 遍历切片是拷贝值（要改用 `|*v|` 或索引）。
 
-- [ ] **Step 3: 写 07-structs.md（约 200 行）**
+- [x] **Step 3: 写 07-structs.md（约 200 行）**
 
 小节：7.1 字段与默认值（必须全初始化，缺省字段可省）；7.2 方法与 self（值/指针两种，自动取址 `p.translate(...)` 语法糖）；7.3 类型即命名空间（关联常量/静态函数/关联变量）；7.4 匿名 struct 与 `.{}` 字面量真身；7.5 元组（匿名字段、.len 编译期）；7.6 文件即 struct（@import 的模块观）；7.7 init/deinit 惯例（与 C++ 构造/析构对照：**Zig 没有构造函数**，初始化就是普通函数）；坑位：① 部分初始化漏字段编译错；② self 值传递后修改无效；③ 元组不能运行期索引；④ struct 字段默认值不能引用其他字段。
 
-- [ ] **Step 4: 写 08-enums.md（约 200 行）**
+- [x] **Step 4: 写 08-enums.md（约 200 行）**
 
 小节：8.1 enum 基础与方法、@tagName/@intFromEnum/@enumFromInt；8.2 enum(u8) 与非穷尽 `_`（C 互操作场景）；8.3 tagged union：union(enum)（图示 tag+payload 内存布局）；8.4 switch 捕获 `|val|`（读错激活字段 = 安全模式 panic，错误用法演示）；8.5 packed struct（位域对照 C bitfield、@bitCast 整体取位）；8.6 与 C++ variant/optional 的对照表；坑位：① 非穷尽枚举漏 else；② packed struct 字段顺序影响位布局（写 C 头文件对照时按声明顺序）；③ union 未初始化读取是 UB→Debug 下也能抓；④ enum 值必须唯一/可表达。
 
-- [ ] **Step 5: 一致性自检 + Commit**
+- [x] **Step 5: 一致性自检 + Commit**
 
 ```bash
 cd G:/code/guide && git add zig/docs
@@ -2604,23 +2604,23 @@ git commit -m "docs(zig): 第 05–08 章——函数、切片、结构体、枚
 **Files:**
 - Create: `zig/docs/09-optionals-errors.md`、`10-errors-advanced.md`、`11-allocators.md`、`12-collections.md`
 
-- [ ] **Step 1: 写 09-optionals-errors.md（约 220 行）**
+- [x] **Step 1: 写 09-optionals-errors.md（约 220 行）**
 
 小节：9.1 ?T 与 null（类型安全）；9.2 解包三件套 if/orelse/.?；9.3 error set（编译期集合、@errorName）；9.4 !T 与显式/推断集合（`fn f() !T` vs `fn f() E!T` 怎么选）；9.5 try 语法糖；9.6 catch 值/块/|err|；9.7 if-else 捕获错误联合；9.8 错误集合并集 `||`；对照表：?T vs !T vs C 返回码 vs C++ optional/expected；坑位：① .? 遇 null 直接 panic（只用于"逻辑上不可能"）；② catch 吞错误不打印是坏味道；③ 错误集合膨胀（推断集合跨函数传染，库边界写显式集合）；④ `?*T` 与 `*?T` 是两个东西。
 
-- [ ] **Step 2: 写 10-errors-advanced.md（约 220 行）**
+- [x] **Step 2: 写 10-errors-advanced.md（约 220 行）**
 
 小节：10.1 errdefer（回滚演示，与 defer 对照表：成功/失败路径各自跑什么）；10.2 分配-初始化模式（create→errdefer destroy→初始化，本教程最重要的惯用法之一）；10.3 ?!T 解包顺序（orelse 先剥 null，catch 后剥 error）；10.4 错误返回跟踪（贴实测 Debug 输出，说明只有 Debug/ReleaseSafe 有、零成本设计）；10.5 panic/@panic/unreachable 语义（程序员的错 vs 可恢复错误）；10.6 安全模式表（Debug/ReleaseSafe/ReleaseFast/ReleaseSmall × 检查项矩阵）+ @setRuntimeSafety；10.7 坑位清单：① errdefer 写在 try 之后（回滚不到已失败的分配）；② defer/errdefer 同函数混用顺序；③ unreachable 在 Debug 也是 UB 崩溃（它不是 assert）；④ panic 消息拼接要编译期字符串。
 
-- [ ] **Step 3: 写 11-allocators.md（⭐ 约 260 行，特色重点不压缩）**
+- [x] **Step 3: 写 11-allocators.md（⭐ 约 260 行，特色重点不压缩）**
 
 小节：11.1 分配器哲学（对比 C malloc 全局堆/C++ new 隐藏分配/Rust 全局分配器——Zig 把"用什么策略"变成参数；无分配器全局状态的收益：测试注入、嵌入式、热路径可控）；11.2 Allocator 接口解剖（alloc/free/dupe/create/destroy/resize 表格；slice vs 单项）；11.3 六个分配器选型表+逐个细讲：page（底层、粒度）、DebugAllocator（泄漏检测输出贴实测、`.{}` 配置项 thread_safe）、Arena（适用：解析/请求生命周期；**arena 里不要单 free**）、FixedBuffer（reset 复用、OOM 行为）、smp_allocator（默认多线程）、testing.allocator 预告；11.4 传参惯例（第一参数 allocator；库函数永不自带分配器）；11.5 所有权约定（返回切片谁 free、toOwnedSlice 转移、文档注释写明）；11.6 调试实践（DebugAllocator 收尾 .leak 时 stderr 贴实测输出）；11.7 坑位：① 跨分配器 free；② arena.free 单个对象是 no-op 但语义坑；③ 忘 deinit（DebugAllocator 会报）；④ 大对象误用 page_allocator 碎片；⑤ c_allocator 需 -lc。
 
-- [ ] **Step 4: 写 12-collections.md（⭐ 约 240 行）**
+- [x] **Step 4: 写 12-collections.md（⭐ 约 240 行）**
 
 小节：12.1 ArrayList 全 API（unmanaged 形态讲解：**0.13→0.14 变化史一小段**，为什么去 managed——减小体积/显式分配器；append/insert/pop/orderedRemove/swapRemove 对比表：保序 vs O(1)）；12.2 容量机制（ensureTotalCapacity、增长策略、toOwnedSlice 所有权转移）；12.3 AutoHashMap/StringHashMap（getOrPut 惯例、count/contains/remove/fetchRemove）；12.4 迭代与删除（迭代中删除的坑、fetchRemove 返回 Optional 结构）；12.5 排序（std.mem.sort 与比较函数、ctx 参数用途——按字段排序示例）；12.6 选型表：数组/ArrayList/BoundedArray/HashMap 族/ArrayHashMap（保序需求）；坑位：① items 与容量混淆；② 迭代器持有期间 put 触发 rehash 悬空；③ StringHashMap 键生命周期（hash 后改字节查不到）；④ swapRemove 不保序。
 
-- [ ] **Step 5: 一致性自检 + Commit**
+- [x] **Step 5: 一致性自检 + Commit**
 
 ```bash
 cd G:/code/guide && git add zig/docs
@@ -2634,23 +2634,23 @@ git commit -m "docs(zig): 第 09–12 章——错误处理两章、分配器、
 **Files:**
 - Create: `zig/docs/13-comptime.md`、`14-generics.md`、`15-testing.md`、`16-build.md`
 
-- [ ] **Step 1: 写 13-comptime.md（⭐ 约 260 行）**
+- [x] **Step 1: 写 13-comptime.md（⭐ 约 260 行）**
 
 小节：13.1 一份代码两个世界（fibonacci 两用；对照 cpp20 第 17 章 constexpr——**语言级 comptime 比可选的 constexpr 更根本**）；13.2 comptime 参数（与 runtime 参数的本质区别：类型/普通值两类）；13.3 comptime 块与 comptime var（示例 13.3/13.4）；@setEvalBranchQuota（为什么有配额：防编译期死循环）；13.4 inline for/while（展开语义、何时用：需要"每轮不同类型"时；普通循环别加 inline）；13.5 编译期断言（comptime { @compileError }、std.debug.assert 在 comptime 的用法）；13.6 comptime 函数能做什么的限制表（不能 IO/不能读运行期全局；可以：循环/分支/递归/分配？——分配不行，说明）；13.7 @compileLog 调试技巧；13.8 坑位：① 分支配额不足编译错；② comptime 递归无界；③ 把运行期值传进 comptime 参数直接编译错（这是特性不是 bug）；④ inline for 序列必须编译期已知。
 
-- [ ] **Step 2: 写 14-generics.md（⭐ 约 260 行）**
+- [x] **Step 2: 写 14-generics.md（⭐ 约 260 行）**
 
 小节：14.1 类型构造器 `fn F(comptime T: type) type`（Zig 泛型 = 返回 struct 的函数；对照 C++ 模板：实例化是函数调用，报错信息更直白）；14.2 泛型容器实战（Stack(T) 全文，@This() 讲解）；14.3 anytype 与鸭子类型（对照 C++ 模板 duck typing/concepts：Zig 用 comptime 反射做"concepts"）；14.4 @typeInfo 全景表（.@"struct"/.enum/.union/.@"fn"/.int 各字段）；14.5 @field 读写与序列化模式（serde 雏形示例）；14.6 编译期代码生成（printAny；inline for 遍历 fields 生成分支）；14.7 惯用法：Stack/Queue/HashMap 都是 std 里 `fn(T) type` 的实例；14.8 坑位：① anytype 参数报错在调用处（错误信息读法）；② @typeInfo 返回联合要 switch；③ 泛型代码膨胀（每种实例化一份）；④ 反射只在 comptime（运行期没有反射，别找）。
 
-- [ ] **Step 3: 写 15-testing.md（⭐ 约 240 行）**
+- [x] **Step 3: 写 15-testing.md（⭐ 约 240 行）**
 
 小节：15.1 test 块与 zig test（对照 C++ 各测试框架：**零依赖内建**）；15.2 断言族速查表（expect/expectEqual/expectEqualStrings/expectEqualSlices/expectError/expectNull，expectEqual 的类型参数陷阱）；15.3 testing.allocator（泄漏即失败——**把 11 章 DebugAllocator 的能力接进测试**，贴实测泄漏报错输出）；15.4 多文件测试（`test { _ = @import("util.zig"); }` 引用语义、zig build test 汇总）；15.5 过滤与调试（`zig test --test-filter`? 以实测为准、`-lc` 传链接参数）；15.6 doc 注释与 ///（文档习惯；zig doc 一瞥）；15.7 tmpDir 临时目录测试；15.8 坑位：① expectEqual 两参数类型必须严格一致（comptime_int vs u8 报错）；② 忘引用子模块测试没跑还以为过了；③ 测试里的 defer 才清理（expect 失败也走 defer）；④ panic 型测试用 expectError 不是 @panic。
 
-- [ ] **Step 4: 写 16-build.md（⭐ 约 260 行）**
+- [x] **Step 4: 写 16-build.md（⭐ 约 260 行）**
 
 小节：16.1 为什么构建脚本用 Zig 写（对照 CMake DSL：全功能语言+comptime+可调试）；16.2 工程解剖（build.zig/build.zig.zon/src 三件套，zig init 模板逐行讲）；16.3 step 体系（install/run/test 三个默认 step 的依赖图、b.step 自定义）；16.4 module 与多文件（root_module、@import 相对路径 vs 命名模块、创建第二个模块的完整写法）；16.5 命令行约定（`zig build run/test`、`--` 透传 args、-Doptimize/-Dtarget 标准选项）；16.6 build.zig.zon 与包管理（.name/.version/.fingerprint/.paths 字段表；`zig fetch --save=<name>=<url+hash>` 拉依赖、本地 `.{ .path = "..." }` 依赖写法、依赖在 build.zig 里 b.dependency 接线——用本地路径演示完整流程）；16.7 缓存与 zig-out（.zig-cache 增量、不要提交）；16.8 坑位：① 改 build.zig 后缓存不刷新时 `zig build --cacheless`?（实测为准）② run 透传参数忘 `--`；③ zon fingerprint 缺失报错；④ 依赖默认只编译不链接（要 addModule/import）。
 
-- [ ] **Step 5: 一致性自检 + Commit**
+- [x] **Step 5: 一致性自检 + Commit**
 
 ```bash
 cd G:/code/guide && git add zig/docs
@@ -2664,23 +2664,23 @@ git commit -m "docs(zig): 第 13–16 章——comptime、泛型、测试、构�
 **Files:**
 - Create: `zig/docs/17-c-interop.md`、`18-cross.md`、`19-threads.md`、`20-files-io.md`
 
-- [ ] **Step 1: 写 17-c-interop.md（⭐ 约 240 行）**
+- [x] **Step 1: 写 17-c-interop.md（⭐ 约 240 行）**
 
 小节：17.1 extern fn 手写声明（c_int 等映射表、变参函数）；17.2 @cImport 实战（**必须 -lc**；c 命名空间、常见错误 "libc headers not available"）；17.3 export fn（C ABI 导出、调用约定表 c/inline；`zig build-lib` 产 .dll/.a 一瞥）；17.4 extern struct（布局保证、与 packed struct 对照、对齐 align）；17.5 c"..." 字符串与 `[*:0]const u8`（0.16 实测状态，c 字面量若已移除以勘误为准）；17.6 std.mem.span 双向桥；17.7 translate-c 工作流（`zig translate-c header.h > bindings.zig`、什么时候用它替代 @cImport：需要看代码/裁剪/预生成）；17.8 链接 C 源码（build-exe 混编、build.zig 里 addCSourceFile 写法示例段落）；17.9 坑位：① -lc 忘加；② Windows 上 printf 缓冲与退出码；③ C 头里的宏不是函数（@cImport 后是常量）；④ 结构体对齐差异（extern struct 必须）。
 
-- [ ] **Step 2: 写 18-cross.md（⭐ 约 240 行）**
+- [x] **Step 2: 写 18-cross.md（⭐ 约 240 行）**
 
 小节：18.1 -target 三段式语法与 `zig targets` 查询；18.2 实战交叉编译（build.ps1 实际执行的命令逐条解释：aarch64-linux 产物用 qemu/wsl 验证的一段话）；18.3 为什么零配置（内置各 libc 源码、交叉是第一公民——对比 C 交叉工具链地狱）；18.4 wasm32-freestanding（--no-entry、export fn、无 OS 无 std 高层设施；产物给 wasmtime/node 的示例命令）；18.5 wasm32-wasi（有 OS 抽象、能 std.debug.print，一段命令演示，本地无 wasmtime 则只讲编译）；18.6 zig cc / zig c++（hello.c 实测命令、当 drop-in 编译器、交叉编 C `-target`、与 clang 的关系）；18.7 musl 静态链接（`-target x86_64-linux-musl` 一段话 + 命令）；18.8 坑位：① freestanding 没有 main/std 大部分；② Windows GNU vs MSVC ABI 二选一（默认原生）；③ 交叉产物在本机不能跑（验证=编译过）；④ -target 拼错架构名时 `zig targets` 对照。
 
-- [ ] **Step 3: 写 19-threads.md（约 220 行）**
+- [x] **Step 3: 写 19-threads.md（约 220 行）**
 
 小节：19.1 spawn/join/detach（spawn 配置项 .stack_size）；19.2 Mutex（去掉锁的实验：正文演示输出错乱/丢计数）；19.3 atomic.Value（方法表 fetchAdd/fetchSub/compareExchange/load/store；内存序三档 monotonic/acq_rel/seq_cst 实用建议表：计数用 monotonic、发布数据用 acq_rel、拿不准 seq_cst）；19.4 Condition + 有界队列（经典双条件模板全文精讲：while 不是 if 的原因——虚假唤醒）；19.5 WaitGroup（startMany/finish/wait）；19.6 线程与分配器（DebugAllocator(.{.thread_safe=true})? 实测配置项、smp_allocator）；19.7 async 的历史（一段话：已移除，Io 接口是未来方向，链接 20 章）；19.8 坑位：① detach 后用句柄；② 忘 join 主线程先退；③ Condition.wait 不在 while 里；④ 持锁做耗时 IO。
 
-- [ ] **Step 4: 写 20-files-io.md（约 240 行）**
+- [x] **Step 4: 写 20-files-io.md（约 240 行）**
 
 小节：20.1 std.fs 心智模型（cwd()/绝对路径/Dir；对照 C++ filesystem）；20.2 写：Dir.writeFile 一行式 + createFile+writer 分解式（trunc/append 选项表）；20.3 读：readFileAlloc（上限参数的意义）；20.4 0.16 新 Writer/Reader（**Io 接口为什么重构**：缓冲所有权归调用者、io 参数可接异步后端；本教程只教同步用法 File.writer(io,&buf)+flush）；20.5 目录（makePath/openDir(.iterate)/iterate entry.kind、deleteTree）；20.6 statFile 与元数据；20.7 路径（path.join/basename/dirname/resolve、跨平台分隔符）；20.8 std.json（Stringify.value + parseFromSlice/Parsed(T).deinit 生命周期、动态 Value 一小段）；20.9 坑位：① 忘 flush；② readFileAlloc 上限传太小；③ 迭代目录时删条目；④ json 字符串借用 Parsed 内存（deinit 后悬空）；⑤ Windows 路径大小写与 WTF-8。
 
-- [ ] **Step 5: 一致性自检 + Commit**
+- [x] **Step 5: 一致性自检 + Commit**
 
 ```bash
 cd G:/code/guide && git add zig/docs
@@ -2694,23 +2694,23 @@ git commit -m "docs(zig): 第 17–20 章——C 互操作、交叉编译、并�
 **Files:**
 - Create: `zig/docs/21-asm.md`、`22-process.md`、`23-debugging.md`、`24-minigrep.md`
 
-- [ ] **Step 1: 写 21-asm.md（约 200 行）**
+- [x] **Step 1: 写 21-asm.md（约 200 行）**
 
 小节：21.1 asm 语法解剖（模板串/输出/输入/破坏四段、`\\` 多行、具名操作数 `{[r]}`——**0.14 从 %[r] 改形**的历史一段）；21.2 约束速查（"r"/"+r"/"=r"/固定寄存器 "{eax}"）；21.3 volatile 何时要（有副作用的指令）；21.4 AT&T 语法提醒（Zig x86 默认 AT&T：`add $5, {[r]}` 读法）；21.5 实战 rdtsc 计时；21.6 comptime 架构守卫（@compileError 模式、builtin.cpu.arch switch）；21.7 extern struct/@bitCast/packed（C ABI 工具箱）；21.8 坑位：① 忘列 clobber 破坏寄存器；② 无 volatile 被优化掉；③ 用 Intel 语法写模板串；④ MSVC 目标差异（实测为准）。
 
-- [ ] **Step 2: 写 22-process.md（约 200 行）**
+- [x] **Step 2: 写 22-process.md（约 200 行）**
 
 小节：22.1 argv 跨平台真相（Windows 原生 UTF-16 → Init.minimal.args；Iterator 抹平；对照 0.13 的 argsAlloc）；22.2 环境变量（environ_map、getEnvMap 旧 API 对比）；22.3 子进程 Child.run（argv/env/cwd 选项表、拿 stdout/stderr/term）；22.4 更细控制（spawn + pipe 一瞥）；22.5 currentPath 与路径处理串联；22.6 时间（timestamp/nanoTimestamp/Thread.sleep/timer 模式）；22.7 退出码语义（main 返回 error → 非零）；22.8 坑位：① Windows 上 argv[0] 编码差异；② Child.run 的 argv 是字符串切片不是 shell 命令（要 shell 用 cmd /c）；③ nanoTimestamp 单调性不保证跨平台；④ 环境变量名大小写（Windows 不敏感）。
 
-- [ ] **Step 3: 写 23-debugging.md（约 200 行）**
+- [x] **Step 3: 写 23-debugging.md（约 200 行）**
 
 小节：23.1 三层排错观：编译错（comptime）→ panic（运行期断言）→ 错误跟踪（error 传播）；23.2 panic 栈跟踪（贴实测输出；触发方式 ZIG_PANIC=1）；23.3 错误返回跟踪（贴实测输出 ZIG_ERT=1；与 panic 栈的区别）；23.4 assert/@panic/unreachable/@breakpoint 分工表；23.5 LLDB 实战（编译默认带调试信息；`zig build-exe -g`? 实测说明；break/print/bt 命令表——沿用旧 README 的命令表修正版）；23.6 std.debug.print 的线程安全与 stdout 混排注意；23.7 微基准与 Release 对比（示例 23.2 数据 + 优化等级表）；23.8 工具链收尾（zig fmt/ast-check/doc/targets/fetch 速查表）；23.9 坑位：① ReleaseFast 下 assert 消失踪之bug；② 栈跟踪行号不准时 `--strip=false`?（实测）；③ @breakpoint 无调试器直接崩；④ 环境变量开关法的好处（构建不变行为变）。
 
-- [ ] **Step 4: 写 24-minigrep.md（约 240 行，实战收官）**
+- [x] **Step 4: 写 24-minigrep.md（约 240 行，实战收官）**
 
 小节：24.0 需求与效果演示（贴真实高亮输出）；24.1 工程结构（build.zig/zon/src 分层：search 纯逻辑 + main 编排——**可测试性设计**）；24.2 search.zig 精讲（splitScalar 行迭代、indexOf、Match 借用语义、printHighlighted 的 ANSI 转义）；24.3 递归目录遍历（walkDir 递归、entry.kind 分派、错误容忍策略）；24.4 多线程模型（原子游标抢任务 vs 队列分发；WaitGroup 收工；Mutex 只护合并——设计取舍讨论）；24.5 main 编排（argv 解析、arena 统一回收——**11 章哲学的实战应用**、缓冲输出）；24.6 测试（searchLines 单测 + tmpDir 端到端；测试与实现同步演进）；24.7 扩展练习（正则? 大小写不敏感 -i、并行读文件、彩色开关）；24.8 坑位：① 二进制文件误当文本搜（可以加魔数检查——练习）；② Windows 控制台 ANSI 支持需 Win10+（VT 开关，一段说明）；③ 高亮输出进管道时建议关颜色（isTty 判断，实测 API）；④ 文件读取上限防超大文件。
 
-- [ ] **Step 5: 一致性自检 + Commit**
+- [x] **Step 5: 一致性自检 + Commit**
 
 ```bash
 cd G:/code/guide && git add zig/docs
@@ -2729,18 +2729,18 @@ git commit -m "docs(zig): 第 21–24 章——汇编、进程、调试、实战
 **Interfaces:**
 - Consumes: 全部 24 章 docs 与 23 个示例（README 索引表与之对应）。
 
-- [ ] **Step 1: 删旧文件（git rm）**
+- [x] **Step 1: 删旧文件（git rm）**
 
 ```bash
 cd G:/code/guide && git -c core.quotepath=false rm -r -q zig/examples zig/snippets zig/build.sh zig/README.md
 ```
 （中文文件名须 `core.quotepath=false`——cpp20 时的教训；删除后 `git status` 应只剩新增。）
 
-- [ ] **Step 2: 写 zig/README.md（对齐 cpp20 README 结构，约 70 行）**
+- [x] **Step 2: 写 zig/README.md（对齐 cpp20 README 结构，约 70 行）**
 
 内容：标题 `# Zig 编程指南（0.16）`；一段定位（会编程、初学 Zig；0.16 现代写法为主线；每章"读讲解→跑示例→改代码再跑"，三层验证全过）；目录结构树（README/docs/examples/build.ps1/CHEATSheet）；24 章索引表（章/主题/示例三列，特色章加 ⭐）；构建工具链（zig 0.16.0 路径、构建模式说明）；验证命令块（-All / -Example / -Clean，pwsh 7 说明）；与其他教程互链（cpp20/rust/dlang 对照一句话）。
 
-- [ ] **Step 3: 写 zig/CHEATSheet.md（约 200 行）**
+- [x] **Step 3: 写 zig/CHEATSheet.md（约 200 行）**
 
 分区（速查 + 坑位索引双职能）：
 1. 命令速查：run/build-exe/build-lib/test/build/fmt/cc/translate-c/fetch/targets（一行一命令）
@@ -2752,7 +2752,7 @@ cd G:/code/guide && git -c core.quotepath=false rm -r -q zig/examples zig/snippe
 7. comptime 卡（参数/块/inline/@typeInfo）
 8. 0.16 迁移坑位索引：ArrayList unmanaged、Io.File、Init 入口、@cImport -lc、args UTF-16、Writer flush——每条一行 + 对应章号
 
-- [ ] **Step 4: .gitignore 检查**
+- [x] **Step 4: .gitignore 检查**
 
 Run: `grep -nE "zig-out|\.zig-cache|zig/build" G:/code/guide/.gitignore`
 若无则追加：
@@ -2762,7 +2762,7 @@ zig-out/
 zig/build/
 ```
 
-- [ ] **Step 5: 根 README 核查 + Commit**
+- [x] **Step 5: 根 README 核查 + Commit**
 
 Run: `grep -n "zig" G:/code/guide/README.md`——有 zig 条目则按新结构微调描述；无则跳过。
 
@@ -2779,14 +2779,14 @@ git commit -m "docs(zig): 重写 README、新增 CHEATSheet、清理旧示例与
 - Modify: 本计划文件（勾选 + 执行勘误）
 - Create: `G:\xulun\.claude\projects\G--code-guide\memory\zig-tutorial-build.md` + 更新 `MEMORY.md`
 
-- [ ] **Step 1: 全量验证**
+- [x] **Step 1: 全量验证**
 
 ```bash
 cd G:/code/guide/zig && pwsh -NoProfile -File build.ps1 -All
 ```
 Expected: 23 个示例全部三层验证通过（16/24 工程分支、17 -lc、18 交叉编译分支），末尾 `[Done] 全部示例三层验证通过。`。任何失败：修复后重跑（不放过）。
 
-- [ ] **Step 2: 结构一致性检查**
+- [x] **Step 2: 结构一致性检查**
 
 ```bash
 cd G:/code/guide/zig
@@ -2798,11 +2798,11 @@ grep -c "═══" examples/*/main.zig examples/*/src/*.zig | awk -F: '$2==0'  
 ```
 README 章节索引表逐行与 `ls docs/` 比对。
 
-- [ ] **Step 3: 勾选计划 + 填执行勘误**
+- [x] **Step 3: 勾选计划 + 填执行勘误**
 
 把本文件所有 `- [ ]` 改 `- [x]`；在文末"执行勘误"区记录实施中实际发生的 API 偏差与修法（cpp20 流程）。
 
-- [ ] **Step 4: 写记忆并提交**
+- [x] **Step 4: 写记忆并提交**
 
 `memory/zig-tutorial-build.md` 要点：24 章结构（章号=示例号）、0.16 实测坑（Init 入口、Io.File、ArrayList unmanaged、@cImport -lc、Windows args UTF-16、Writer flush、asm `{[r]}` 语法、build.zig 模板要点）、build.ps1 特判分支、CHEATSheet 位置。更新 `MEMORY.md` 索引一行。
 
@@ -2815,4 +2815,36 @@ git commit -m "docs: 勾选 zig 教程实施计划全部任务并记录执行勘
 
 ## 执行勘误
 
-（执行中回填：实际发生的 API 偏差、命令差异、修正后的写法——每条注明来源任务号。暂无。）
+实施（2026-09-17）中实际发生的偏差与修正，均已同步进示例代码与章节正文：
+
+**语言/标准库 API（来源：各示例编译实测）**
+
+1. `@floatFrom` 不存在 → 正名 `@floatFromInt`（Task 2 / 03 章）。
+2. `@truncate` 只接受无符号整数，i32 输入要先 `@intCast`（Task 2 / 03 章）。
+3. **comptime 已知的越界 `@intCast` 是编译错**（不是运行期 panic）——教学点写入 03.6（Task 2）。
+4. 0.16 格式化：数组/切片不能用 `{d}`，须 `{any}`（Task 2 起全程适用）。
+5. **Zig 不允许函数体内声明 `fn`**——5.5 节改讲"匿名 struct 命名空间"惯用法（Task 3 / 05 章）。
+6. 有符号除法 `/` 禁用，须 `@divTrunc/@divFloor/@divExact`（Task 3 / 05 章坑位）。
+7. `?!T` 不可解析——可选-错误联合必须写显式集合 `?E!T`；`catch` 不能直接作用于它，先 `orelse`（Task 4 / 10.3）。
+8. 非穷尽枚举的未知值调 `@tagName` 是编译错（Task 4 / 08 章坑位）。
+9. `tokenizeSequence` 是整段匹配；字符集分隔用 `tokenizeAny`（Task 5 / 11 章）。
+10. `ArrayList.pop()` 返回 `?T`；`std.BoundedArray` 已从 0.16 移除——12.6 改"数组+计数"（Task 5 / 12 章）。
+11. 容器级 const 里 `comptime` 关键字 redundant 报错；顶层 const 天然编译期（Task 6 / 13.3）。
+12. `inline for` 不支持索引捕获（Task 6 / 13.5）。
+13. `std.testing.expectNull` 已移除，用 `expect(opt == null)`（Task 7 / 15 章）。
+14. zon 包名必须是合法标识符（`@"16_build"` 也不行）；fingerprint 与包名绑定，写 `0x0` 后按编译器提示值替换（Task 7/10 / 16 章）。
+15. `c"..."` C 字符串字面量已移除——普通字面量即 0 结尾直接传（Task 8 / 17 章）。
+16. `--no-entry` 旗子已移除——freestanding wasm 用 `zig build-lib`（Task 8 / 18 章）。
+17. **`std.fs.File/Dir` 并入 `std.Io`**：`Io.Dir.cwd()`，writeFile/readFileAlloc/createFile/openDir/statFile/deleteFile/deleteTree/close/iterate().next() 全部带 io 参数；`makePath` 改名 `createDirPath`；Windows 下 `openDir` 不开 `.iterate = true` 迭代时 AccessDenied（Task 9 / 20 章）。
+18. `std.Thread.Mutex/Condition` 移入 `std.Io`：`.init` 命名常量初始化、lock/unlock/wait/signal 带 io；`WaitGroup` 已移除（join 即同步点）；`Thread.sleep` 没了（Task 9 / 19 章）。
+19. `std.time` 只剩常量：计时用 `std.Io.Timestamp.now(io, .awake/.real)`（Clock 枚举是 real/awake/boot，没有 monotonic）；sleep 是 `(std.Io.Clock.Duration{ .raw = Io.Duration.fromMilliseconds(n), .clock = .awake }).sleep(io)`——`Io.Duration` 上没有 sleep（Task 10 / 22 章）。
+20. argv：`std.process.Args.Iterator.initAllocator(init.minimal.args, alloc)` + `deinit` + `skip`；Windows 原生 args 是 UTF-16（Task 10 / 22 章）。
+21. 子进程：`std.process.run(gpa, io, .{ .argv })`（`Child.run(.{})` 旧形态失效）（Task 10 / 22 章）。
+22. 内联汇编模板占位是 `%[名]`（AT&T），`{[名]}` 是不存在的旧提案语法（Task 9 / 21 章）。
+
+**流程教训（Task 17）**
+
+23. `git rm -r zig/examples` 会把**同路径下已提交的新示例一并删除**——清理旧文件须逐个列出旧路径或先移动；误删后 `git checkout HEAD~1 -- <path>` 恢复，且 checkout 写盘是 CRLF、`zig fmt` 归一为 LF 后 `--check` 才过。
+24. bash 循环里 `case "|$d" in *"$keep"*)` 方向写反（应判 d 在 keep 集合中）会把保留集删光——恢复靠 git 历史，教训是破坏性循环先 echo 演练。
+
+**验证结论**：`build.ps1 -All` 23 个示例三层验证全过（fmt + test + 运行 exit 0；16/24 走 zig build 工程；17 加 -lc；18 含 aarch64-linux/wasm 交叉编译与 zig cc）。
