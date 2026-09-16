@@ -20,6 +20,7 @@
 - [asm/intel](./asm/intel) — x86-64 汇编编程指南，双平台验证：Windows 用 NASM + MSVC link.exe，macOS 用 NASM `-f macho64` + clang/ld（56 个 macOS 示例全部实际编译运行通过）
 - [boost](./boost) — Boost C++ 教程与示例，使用 MSVC + Boost 头文件验证
 - [coq](./coq) — Coq 教程与示例，使用 coqc 批量编译验证
+- [clojure](./clojure) — Clojure 教程与示例，使用 Clojure CLI（`clojure` 1.12.6.1673 / Clojure 1.12.6）运行验证（20 个示例全部通过，覆盖函数式编程 / 惰性序列 / 宏 / 多方法 / 记录与协议 / 并发与 STM / Java 互操作 / clojure.spec / Transducer / 综合实战）
 - [cpp20](./cpp20) — C++20 教程与示例，适配 MSVC/Windows 构建
 - [dart](./dart) — Dart 语言入门与示例，使用 Dart SDK 验证
 - [dlang](./dlang) — D 语言教程与示例，使用 DMD 编译验证

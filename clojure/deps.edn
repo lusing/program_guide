@@ -1,0 +1,3 @@
+;; deps.edn - Clojure CLI 项目描述
+;; 仅依赖 Clojure 标准库，无需额外依赖
+{}
