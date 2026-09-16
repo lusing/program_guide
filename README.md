@@ -27,7 +27,7 @@
 - [emacs](./emacs) — Emacs Lisp 扩展开发教程与示例，使用 Emacs 31.1 `--batch` 验证（26 个示例，双入口 `run-all.sh` / `build.ps1`，四条判定标准：编译零警告 + 运行 stderr 为空 + 无多余控制字符 + 结束标记）
 - [dotnet](./dotnet) — .NET 教程与示例工程，使用 .NET SDK (`dotnet build`) 验证
 - [elixir](./elixir) — Elixir 教程与示例，使用 elixirc 编译验证
-- [erlang](./erlang) — Erlang/OTP 教程与示例，使用 erlc 编译验证
+- [erlang](./erlang) — Erlang/OTP 教程与示例，使用 erlc 编译验证（Erlang/OTP 29 / erts 17.0.3，28 个示例 × 2 通道全部通过；双入口 `run-all.sh` / `build.ps1`，四条判定标准 + 两通道输出逐字节一致；30 章指南正文约 4300 行）
 - [freebasic](./freebasic) — FreeBASIC 教程与示例，使用 fbc 编译验证（含 FBIDE 使用说明）
 - [freepascal](./freepascal) — Free Pascal / Lazarus 教程与示例，使用 fpc 编译并运行验证（Windows scoop + macOS MacPorts fpc 3.2.2 / Lazarus 4.8 双平台，12 个命令行示例 × objfpc/delphi 双模式 + 3 个 Lazarus 工程 lazbuild 构建全部通过）
 - [fsharp](./fsharp) — F# 编程教程与示例，使用 .NET SDK (`dotnet build` / `dotnet run`) 验证
@@ -134,7 +134,7 @@
 - GNU Emacs 31.1 + Emacs Lisp (ELisp)（扩展开发，`emacs -Q --batch` 非交互验证；`run-all.sh` 与 `build.ps1` 双入口）
 - .NET SDK
 - Elixir
-- Erlang/OTP
+- Erlang/OTP 29 / erts 17.0.3（erlc -Werror -Wall，警告即错误）
 - FreeBASIC / FBIDE
 - Free Pascal 3.2.2 (fpc) + Lazarus 4.8 (lazbuild)（Pascal / Object Pascal，Windows scoop + macOS macports 安装，objfpc / delphi 双语言模式对照）
 - F# (.NET SDK)
