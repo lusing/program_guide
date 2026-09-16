@@ -1,0 +1,78 @@
+<Window x:Class="NotepadPlus.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding Title}" Height="600" Width="860"
+        WindowStartupLocation="CenterScreen">
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Control" Key="N" Command="{Binding NewDocumentCommand}"/>
+        <KeyBinding Modifiers="Control" Key="O" Command="{Binding OpenFileCommand}"/>
+        <KeyBinding Modifiers="Control" Key="S" Command="{Binding SaveCommand}"/>
+        <KeyBinding Modifiers="Control" Key="F" Command="{Binding FindCommand}"/>
+    </Window.InputBindings>
+
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="文件(_F)">
+                <MenuItem Header="新建(_N)" Command="{Binding NewDocumentCommand}"
+                          InputGestureText="Ctrl+N"/>
+                <MenuItem Header="打开(_O)..." Command="{Binding OpenFileCommand}"
+                          InputGestureText="Ctrl+O"/>
+                <MenuItem Header="保存(_S)" Command="{Binding SaveCommand}"
+                          InputGestureText="Ctrl+S"/>
+                <MenuItem Header="另存为(_A)..." Command="{Binding SaveAsCommand}"/>
+                <Separator/>
+                <MenuItem Header="最近打开(_R)" ItemsSource="{Binding RecentFiles}">
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Header" Value="{Binding}"/>
+                            <Setter Property="Command"
+                                    Value="{Binding DataContext.OpenRecentCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                            <Setter Property="CommandParameter" Value="{Binding}"/>
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="退出(_X)" Click="Exit_Click"/>
+            </MenuItem>
+            <MenuItem Header="编辑(_E)">
+                <MenuItem Header="查找/替换(_F)..." Command="{Binding FindCommand}"
+                          InputGestureText="Ctrl+F"/>
+            </MenuItem>
+            <MenuItem Header="格式(_O)">
+                <MenuItem Header="自动换行(_W)" IsCheckable="True"
+                          IsChecked="{Binding IsWordWrap}"/>
+            </MenuItem>
+        </Menu>
+
+        <StatusBar DockPanel.Dock="Bottom">
+            <TextBlock Text="{Binding StatusMessage}"/>
+            <Separator/>
+            <TextBlock Text="{Binding CaretInfo}"/>
+            <Separator/>
+            <TextBlock Text="{Binding CharCount, StringFormat={}{0} 字符}"/>
+            <Separator/>
+            <TextBlock Text="{Binding EncodingName}"/>
+        </StatusBar>
+
+        <TextBox x:Name="Editor"
+                 Text="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
+                 AcceptsReturn="True"
+                 AcceptsTab="True"
+                 VerticalScrollBarVisibility="Auto"
+                 HorizontalScrollBarVisibility="Auto"
+                 FontFamily="Consolas" FontSize="14"
+                 TextChanged="Editor_TextChanged"
+                 SelectionChanged="Editor_SelectionChanged">
+            <TextBox.Style>
+                <Style TargetType="TextBox">
+                    <Setter Property="TextWrapping" Value="NoWrap"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsWordWrap}" Value="True">
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+    </DockPanel>
+</Window>

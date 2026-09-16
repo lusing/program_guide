@@ -1,0 +1,23 @@
+<Window x:Class="NotepadPlus.Views.FindReplaceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="查找 / 替换" Height="250" Width="440"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        ShowInTaskbar="False">
+    <StackPanel Margin="16">
+        <TextBlock Text="查找内容：" Margin="0,0,0,4"/>
+        <TextBox x:Name="FindBox" Height="28" Margin="0,0,0,12"/>
+
+        <TextBlock Text="替换为：" Margin="0,0,0,4"/>
+        <TextBox x:Name="ReplaceBox" Height="28" Margin="0,0,0,12"/>
+
+        <CheckBox x:Name="MatchCaseBox" Content="区分大小写" Margin="0,0,0,12"/>
+
+        <StackPanel Orientation="Horizontal">
+            <Button Content="查找下一个" Width="100" Height="32" Margin="0,0,8,0" Click="FindNext_Click"/>
+            <Button Content="替换" Width="80" Height="32" Margin="0,0,8,0" Click="Replace_Click"/>
+            <Button Content="全部替换" Width="80" Height="32" Margin="0,0,8,0" Click="ReplaceAll_Click"/>
+            <Button Content="关闭" Width="80" Height="32" Click="Close_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

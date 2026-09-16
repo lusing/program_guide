@@ -1,63 +1,64 @@
-# WPF 编程指南示例集
+# WPF 编程指南
 
-本目录按类似 `asm/intel` 的方式整理了 WPF 教程中的可编译示例，并使用已安装的 .NET SDK 进行验证。
+一套从零开始的 WPF 实用教程：12 章正文 + 10 个可编译运行的示例 + 1 个实战项目。所有示例在本机 .NET 10 SDK 上编译验证，实战项目做了启动冒烟测试。
+
+## 快速开始
+
+```powershell
+cd G:\code\guide\wpf
+.\build.ps1        # 构建全部示例（dotnet build，含还原依赖）
+```
+
+产物在 `examples\<示例名>\bin\Debug\net10.0-windows\` 下，对应的 exe 可直接运行。
 
 ## 目录结构
 
 ```text
 wpf/
-├── README.md
-├── build.ps1
-├── WPF编程指南.md
-├── examples/
-│   ├── 01_hello_wpf/
-│   ├── 02_binding/
-│   ├── 03_mvvm/
-│   ├── 04_layout/
-│   ├── 05_styles/
-│   ├── 06_commands/
-│   ├── 07_async_progress/
-│   ├── 08_file_dialogs/
-│   └── 09_navigation/
-└── build/
+├── README.md            # 本文件
+├── build.ps1            # 一键构建脚本（dotnet build）
+├── docs/                # 教程正文（按章组织）
+│   ├── 01-overview.md          # WPF 概述与架构
+│   ├── 02-app-lifecycle.md     # 应用骨架与生命周期
+│   ├── 03-xaml.md              # XAML 语言
+│   ├── 04-layout.md            # 布局系统
+│   ├── 05-controls.md          # 核心控件与路由事件
+│   ├── 06-binding.md           # 数据绑定
+│   ├── 07-mvvm-commands.md     # MVVM 与命令
+│   ├── 08-styles.md            # 样式、触发器与模板
+│   ├── 09-async.md             # 异步与后台任务
+│   ├── 10-dialogs-files.md     # 对话框与文件 IO
+│   ├── 11-navigation.md        # 窗口与页面导航
+│   └── 12-notepad-plus.md      # 实战项目：WPF 记事本+
+└── examples/            # 每章示例（可独立编译运行）
+    ├── 01_hello_wpf/           # 最小 WPF 应用骨架
+    ├── 02_binding/             # ElementName 绑定与控件联动
+    ├── 03_mvvm/                # INotifyPropertyChanged + ICommand
+    ├── 04_layout/              # Grid/StackPanel/DockPanel 组合
+    ├── 05_styles/              # Style/Trigger/ControlTemplate
+    ├── 06_commands/            # CanExecute 与按钮置灰闭环
+    ├── 07_async_progress/      # async/await + 进度绑定
+    ├── 08_file_dialogs/        # OpenFileDialog/SaveFileDialog
+    ├── 09_navigation/          # Frame + Page 页面导航
+    └── 10_notepad_plus/        # 实战项目：WPF 记事本+（MVVM 多模块）
 ```
 
 ## 工具链
 
-- .NET SDK: `G:\scoop\apps\dotnet-sdk\current\dotnet.exe`
-- WPF 运行时: .NET Windows Desktop
-- 编译方式: `dotnet build`
+- .NET SDK: `G:\scoop\apps\dotnet-sdk\current\dotnet.exe`（.NET 10，含 Windows Desktop）
+- 目标框架: `net10.0-windows`，`UseWPF=true`
+- 编译方式: `dotnet build`（不需要 Visual Studio）
 
-## 快速构建
+## 学习路线
 
-```powershell
-cd G:\code\guide\wpf
-.\build.ps1
-```
+按章顺序走，核心三连是 04 布局 → 06 绑定 → 07 MVVM：
 
-## 示例说明
+1. **01~03**：WPF 是什么、程序骨架、XAML 语法——把对象树和分部类机制想清楚
+2. **04~05**：布局协商（Measure/Arrange）与控件内容模型——界面的"形"
+3. **06~07**：数据绑定与 MVVM——界面的"魂"，全书重点
+4. **08~11**：样式模板、异步、对话框、导航——工程化必备件
+5. **12**：实战项目"记事本+"，把全部知识串进一个 MVVM 应用
 
-- `01_hello_wpf`：最小 WPF 应用程序骨架，展示 `Window`、`Button` 和事件处理。
-- `02_binding`：演示 `TextBox`、`Slider` 与数据绑定。
-- `03_mvvm`：展示 `INotifyPropertyChanged`、命令和 MVVM 风格代码分离。
-- `04_layout`：展示 `Grid`、`StackPanel`、`DockPanel` 等布局容器组合方式。
-- `05_styles`：演示基于 `Style`、`Trigger` 和资源字典的统一界面风格。
-- `06_commands`：展示 `ICommand` 与 `RelayCommand` 的绑定与执行流程。
-- `07_async_progress`：演示 `async/await`、`IProgress<T>` 和长任务状态更新。
-- `08_file_dialogs`：演示 `OpenFileDialog`、`SaveFileDialog` 和文件路径处理。
-- `09_navigation`：展示 `Frame` + `Page` 的页面导航与窗口切换。
+## 实战项目：WPF 记事本+
 
-这些示例都经过 `dotnet build` 编译验证，确保与当前安装的 .NET 10/Windows Desktop 工具链兼容。
-
-## 教程扩展说明
-
-本目录不仅保留了基础入门代码，还增加了以下实战主题：
-
-- 布局与控件组合：适合学习 WPF 里 `Grid`、`StackPanel`、`DockPanel` 的组合方式。
-- 样式与资源：适合学习统一主题、颜色、触发器和模板。
-- 命令系统：适合学习 UI 事件与业务逻辑解耦。
-- 异步与进度：适合学习后台任务、状态同步和用户体验优化。
-- 对话框与文件操作：适合学习常见桌面应用交互。
-- 页面导航：适合学习多页面应用的结构组织。
-
-这些示例可以直接作为独立教学案例，配合 [WPF编程指南.md](./WPF编程指南.md) 中对应章节阅读。
+`10_notepad_plus` 是一个完整的 MVVM 文本编辑器：编码识别（BOM/UTF-8/GB18030）、异步文件读写、脏标记与退出确认、最近文件列表（JSON 持久化）、非模态查找替换、命令驱动的菜单与快捷键。详见 [docs/12-notepad-plus.md](docs/12-notepad-plus.md)。

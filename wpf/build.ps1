@@ -1,4 +1,4 @@
-param(
+﻿param(
     [switch]$Clean
 )
 
@@ -13,7 +13,8 @@ $projects = @(
     (Join-Path $projectRoot "examples\06_commands\CommandDemo.csproj"),
     (Join-Path $projectRoot "examples\07_async_progress\AsyncProgressDemo.csproj"),
     (Join-Path $projectRoot "examples\08_file_dialogs\FileDialogDemo.csproj"),
-    (Join-Path $projectRoot "examples\09_navigation\NavigationDemo.csproj")
+    (Join-Path $projectRoot "examples\09_navigation\NavigationDemo.csproj"),
+    (Join-Path $projectRoot "examples\10_notepad_plus\NotepadPlus.csproj")
 )
 
 Write-Host "========================================" -ForegroundColor Cyan
