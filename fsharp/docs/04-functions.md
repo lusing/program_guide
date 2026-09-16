@@ -46,7 +46,12 @@ let squareThenNegate = square >> negate    // 先 square 再 negate，产生新�
 printfn "(square >> negate) 5 = %d" (squareThenNegate 5)
 ```
 
-`f >> g` 产出"先 f 后 g"的新函数，**不需要提到输入值**——这是它和管道的本质区别：管道喂值，组合造函数。反向组合 `<<`（先右后左）偶尔在手写"内嵌表达式"时好用。
+`f >> g` 产出"先 f 后 g"的新函数，**不需要提到输入值**——这是它和管道的本质区别：管道喂值，组合造函数。反向组合 `<<`（先右后左）偶尔在手写"内嵌表达式"时好用：
+
+```fsharp
+let round (x: float) = System.Math.Round x
+let percent = round << fun x -> x * 100.0    // 先 ×100 再取整（重载方法要先绑定成函数）
+```
 
 ## 4.5 高阶函数
 

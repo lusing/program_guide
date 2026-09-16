@@ -42,6 +42,8 @@ printfn "任意值 %A" [ 1; 2; 3 ]            // %A 万能打印（列表/记录
 
 printfn 的杀手锏：**格式符与实参类型不匹配是编译错误**，不是运行时崩。
 
+同族函数速记：`printf`（不换行）、`printfn`（换行）、`sprintf`（返回字符串，第 05 章的 `describe` 用到）、`eprintfn`（打到 stderr）。
+
 ## 2.3 字符串插值：$"" 与 printfn 的取舍
 
 ```fsharp
