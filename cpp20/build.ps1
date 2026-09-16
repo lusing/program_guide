@@ -63,7 +63,9 @@ function Invoke-Example {
         $ifc = [System.IO.Path]::ChangeExtension($obj, ".ifc")
         Write-Host "[Module] $($m.Name)" -ForegroundColor Cyan
         Invoke-Cl @($commonFlags, "/interface", "/c", "/Fo`"$obj`"", "/ifcOutput`"$ifc`"", "`"$($m.FullName)`"")
-        $linkArgs += "/reference:$module=`"$ifc`""
+        # /reference 必须空格分隔："/reference name=file"（冒号形式会触发 C5213 被当作分区）
+        $linkArgs += "/reference"
+        $linkArgs += "$module=`"$ifc`""
         $linkArgs += "`"$obj`""
     }
 
