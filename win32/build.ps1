@@ -1,4 +1,4 @@
-param(
+﻿param(
     [switch]$All,
     [string]$File,
     [switch]$Clean
@@ -46,9 +46,18 @@ function Invoke-CompileExample {
         [Parameter(Mandatory = $true)][string]$SourcePath
     )
 
-    $sourceName = [System.IO.Path]::GetFileNameWithoutExtension($SourcePath)
+    # 输出按示例目录命名（所有示例源文件都叫 main.cpp，用文件名会互相覆盖）
+    $sourceName = Split-Path -Leaf (Split-Path -Parent $SourcePath)
     $objPath = Join-Path $buildDir ($sourceName + ".obj")
     $exePath = Join-Path $buildDir ($sourceName + ".exe")
+
+    # 定义 wmain 的示例为控制台程序，用 CONSOLE 子系统；其余为 GUI（wWinMain）
+    $sourceContent = Get-Content -LiteralPath $SourcePath -Raw
+    if ($sourceContent -match 'int\s+wmain\s*\(') {
+        $subsystem = "CONSOLE"
+    } else {
+        $subsystem = "WINDOWS"
+    }
 
     $includeFlags = @(
         "/I`"$msvcInclude`"",
@@ -58,8 +67,8 @@ function Invoke-CompileExample {
     ) -join " "
 
     $cmd = @(
-        'call "{0}" >nul && cl /nologo /std:c++20 /EHsc /DUNICODE /D_UNICODE /utf-8 /c "{1}" /Fo"{2}" {3} && link /nologo /MACHINE:X64 /OUT:"{4}" /SUBSYSTEM:WINDOWS "{5}" user32.lib gdi32.lib kernel32.lib shell32.lib comctl32.lib psapi.lib'
-    ) -f $vcvars, $SourcePath, $objPath, $includeFlags, $exePath, $objPath
+        'call "{0}" >nul && cl /nologo /std:c++20 /EHsc /DUNICODE /D_UNICODE /D_WIN32_WINNT=0x0A00 /utf-8 /c "{1}" /Fo"{2}" {3} && link /nologo /MACHINE:X64 /OUT:"{4}" /SUBSYSTEM:{6} "{5}" user32.lib gdi32.lib kernel32.lib shell32.lib comctl32.lib psapi.lib comdlg32.lib dwmapi.lib'
+    ) -f $vcvars, $SourcePath, $objPath, $includeFlags, $exePath, $objPath, $subsystem
 
     Write-Host "[Compile] $([System.IO.Path]::GetFileName($SourcePath))" -ForegroundColor Cyan
     & $env:ComSpec /c $cmd

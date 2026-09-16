@@ -32,12 +32,15 @@ void CreateDemoFile() {
 
     BY_HANDLE_FILE_INFORMATION info = {};
     if (GetFileInformationByHandle(hFile, &info)) {
+        ULARGE_INTEGER fileSize;                 // ★ 大小要拼 High/Low 两个 32 位字段
+        fileSize.LowPart = info.nFileSizeLow;
+        fileSize.HighPart = info.nFileSizeHigh;
         wchar_t infoText[512];
         swprintf_s(infoText,
             L"Created file: %ls | attrs=0x%08X | size=%llu bytes",
             filePath,
             info.dwFileAttributes,
-            static_cast<unsigned long long>(info.nFileSizeLow));
+            static_cast<unsigned long long>(fileSize.QuadPart));
         // The file is intentionally kept small in this demo; metadata is still collected above.
     }
 
@@ -68,12 +71,20 @@ void ScanFiles(HWND listBox) {
     }
 
     do {
+        if (fd.cFileName[0] == L'.') {           // 跳过 "." 与 ".."
+            continue;
+        }
+
+        ULARGE_INTEGER fileSize;                 // ★ nFileSizeHigh/Low 拼成 64 位
+        fileSize.LowPart = fd.nFileSizeLow;
+        fileSize.HighPart = fd.nFileSizeHigh;
+
         wchar_t line[512];
         swprintf_s(line,
             L"%ls | attrs=0x%08X | size=%llu | dir=%s",
             fd.cFileName,
             fd.dwFileAttributes,
-            static_cast<unsigned long long>(fd.nFileSizeLow),
+            static_cast<unsigned long long>(fileSize.QuadPart),
             ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) ? L"yes" : L"no");
         AppendLine(listBox, line);
     } while (FindNextFileW(hFind, &fd));

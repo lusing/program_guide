@@ -33,7 +33,8 @@ DWORD WINAPI WorkerThread(LPVOID param) {
     }
 
     SetEvent(state->doneEvent);
-    state->started = false;
+    // 注意：不在这里改 state->started——它只由 UI 线程读写，避免跨线程竞态；
+    // UI 线程在"Wait for completion"里 join 线程后才复位它。
     return 0;
 }
 
@@ -84,7 +85,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         const int id = LOWORD(wParam);
 
         if (id == IDC_START) {
-            if (state->started || state->threadHandle != nullptr) {
+            if (state->started) {   // started 只由 UI 线程读写，无需加锁
                 MessageBoxW(hwnd, L"Worker is already running.", L"Win32 Thread Demo", MB_OK | MB_ICONINFORMATION);
                 return 0;
             }
@@ -104,13 +105,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         }
 
         if (id == IDC_STOP) {
+            bool completed = false;
             if (state->threadHandle != nullptr) {
-                WaitForSingleObject(state->threadHandle, INFINITE);
+                WaitForSingleObject(state->threadHandle, INFINITE);   // join：等线程真正结束
                 CloseHandle(state->threadHandle);
                 state->threadHandle = nullptr;
+                completed = true;
             }
+            state->started = false;   // UI 线程内复位，之后再点 Start 可以重新运行
 
-            if (WaitForSingleObject(state->doneEvent, 0) == WAIT_OBJECT_0) {
+            if (completed && WaitForSingleObject(state->doneEvent, 0) == WAIT_OBJECT_0) {
                 SetWindowTextW(GetDlgItem(hwnd, IDC_STATUS), L"Worker completed successfully");
             } else {
                 SetWindowTextW(GetDlgItem(hwnd, IDC_STATUS), L"Worker waiting or not started");
