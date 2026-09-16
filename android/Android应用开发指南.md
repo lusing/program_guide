@@ -1,143 +1,46 @@
-# Android 应用开发指南（Kotlin + Jetpack Compose + JNI，含进阶篇）
+# Android 应用开发指南（导读）
 
-本教程按 `guide` 统一标准组织：**Markdown 文档 + 独立示例 + build 脚本 + 可编译验证**。  
-默认语言：**Kotlin**。并包含基础篇与进阶篇，覆盖多条 **Jetpack Compose** 示例与 **JNI** 示例。
+本指南按 `guide` 统一标准组织：**分章教程正文（`docs/`）+ 独立示例 + build 脚本 + 可编译验证**。主语言 Kotlin，UI 覆盖传统 View 体系与 Jetpack Compose 双范式，含 JNI/NDK 与实战项目。
 
-## 目录
+## 章节地图
 
-1. [环境准备](#环境准备)
-2. [Kotlin 版 Android API 基础示例（21 条）](#kotlin-版-android-api-基础示例21-条)
-3. [Jetpack Compose 基础示例（6 条）](#jetpack-compose-基础示例6-条)
-4. [Jetpack Compose 进阶示例（4 条）](#jetpack-compose-进阶示例4-条)
-5. [JNI 示例](#jni-示例)
-6. [统一编译验证](#统一编译验证)
+| 章 | 标题 | 一句话 | 对应示例 |
+|---|---|---|---|
+| 01 | [Android 平台概述与架构](docs/01-overview.md) | 从 Linux 内核到 APK，四组件与双 UI 体系的位置 | 无（概念章） |
+| 02 | [工程结构与构建工具链](docs/02-project-toolchain.md) | SDK 目录、android.jar 本质、Gradle 工程解剖、build.ps1 | `examples/01` |
+| 03 | [Kotlin for Android 必需子集](docs/03-kotlin-for-android.md) | null 安全、data class、Lambda/SAM、协程最小集 | `examples/01` |
+| 04 | [Activity 与应用生命周期](docs/04-activity-lifecycle.md) | onCreate、回退栈、进程回收与 savedInstanceState | `examples/01` |
+| 05 | [传统 View 体系：布局、控件与事件](docs/05-views-events.md) | 代码/XML 双方式建 UI、事件、Toast、属性动画 | `examples/02 03 19` |
+| 06 | [Intent 与页面导航](docs/06-intents-navigation.md) | 显式/隐式 Intent、extras、回传数据 | `examples/04 20` |
+| 07 | [列表与 Adapter 模式](docs/07-lists-adapters.md) | ListView/BaseAdapter/ViewHolder 到 RecyclerView | `examples/05` |
+| 08 | [线程、Handler 与网络请求](docs/08-threads-network.md) | 主线程模型、Looper/Handler、网络与 JSON、协程 | `examples/06 15 16` |
+| 09 | [本地数据持久化](docs/09-data-storage.md) | SharedPreferences、内部存储、SQLiteOpenHelper | `examples/07 08 09` |
+| 10 | [BroadcastReceiver、Service 与通知](docs/10-system-components.md) | 广播收发、Service 起停、NotificationChannel | `examples/10 11 12` |
+| 11 | [运行时权限、ContentResolver 与硬件服务](docs/11-permissions-content.md) | 危险权限流程、跨应用数据、位置与传感器 | `examples/13 14 17 18` |
+| 12 | [Jetpack Compose 基础](docs/12-compose-basics.md) | 声明式 UI、remember/重组、Modifier、LazyColumn | ComposeSamples.kt |
+| 13 | [Compose 工程化架构](docs/13-compose-architecture.md) | ViewModel+StateFlow、Navigation、Room、WorkManager | AdvancedSamples.kt |
+| 14 | [JNI 与 NDK](docs/14-jni-ndk.md) | external fun、C++ 侧符号规则、CMake 交叉编译 | `examples/21` + cpp/ |
+| 15 | [实战项目：MemoPad 便签应用](docs/15-memopad.md) | 单向数据流三层架构组装完整应用 | MemoPadSample.kt |
 
----
+## 学习路线
 
-## 环境准备
+- **入门（01~04）**：先建平台与工程的心智模型，再进 Activity 生命周期——Android 一切行为的底层逻辑
+- **传统 UI 与并发（05~08）**：View 体系 + Intent + 列表 + 主线程铁律；读懂存量代码的基础
+- **系统能力（09~11）**：存储选型、四组件、权限与硬件
+- **现代主线（12~13）**：Compose 与工程化架构，新项目的起点
+- **纵深与收束（14~15）**：JNI 打通原生层，MemoPad 把全书串成一个应用
 
-- Android SDK：`G:\android`
-- Kotlin 编译器：`G:\scoop\apps\kotlin\current\bin\kotlinc.bat`
-- Gradle：`G:\scoop\apps\gradle\current\bin\gradle.bat`
-- JDK：`G:\scoop\apps\openjdk\current`
-- 教程目录：`G:\code\guide\android`
-
-可选检查：
-
-```powershell
-G:\scoop\apps\kotlin\current\bin\kotlinc.bat -version
-G:\scoop\apps\gradle\current\bin\gradle.bat -v
-G:\scoop\apps\openjdk\current\bin\java.exe -version
-```
-
----
-
-## Kotlin 版 Android API 基础示例（21 条）
-
-目录：`examples/`
-
-1. `01_hello_activity.kt`：Hello Activity
-2. `02_layout_views.kt`：布局与控件
-3. `03_button_toast.kt`：点击事件与 Toast
-4. `04_intent_navigation.kt`：Intent 页面跳转
-5. `05_listview_adapter.kt`：ListView/Adapter
-6. `06_handler_looper.kt`：主线程消息机制
-7. `07_shared_preferences.kt`：轻量键值存储
-8. `08_internal_storage.kt`：内部文件读写
-9. `09_sqlite_helper.kt`：SQLiteOpenHelper
-10. `10_broadcast_receiver.kt`：广播收发
-11. `11_service_basics.kt`：Service 基础
-12. `12_notifications.kt`：通知 API
-13. `13_runtime_permission.kt`：运行时权限
-14. `14_content_resolver.kt`：ContentResolver
-15. `15_json_parse.kt`：JSON 解析
-16. `16_network_thread.kt`：网络线程
-17. `17_location_manager.kt`：位置服务
-18. `18_sensor_manager.kt`：传感器
-19. `19_property_animation.kt`：属性动画
-20. `20_activity_result_style.kt`：Activity Result 传统模式
-21. `21_jni_bridge.kt`：JNI Kotlin 声明与动态库加载
-
-这些示例通过 `kotlinc + android.jar` 执行静态编译验证，确保 API 调用与 Kotlin 语法可用。
-
----
-
-## Jetpack Compose 基础示例（6 条）
-
-Compose 工程目录：`compose_examples/app/src/main/java/guide/android/compose/samples/ComposeSamples.kt`
-
-包含以下 6 条示例（一个 Activity 中集中展示）：
-
-1. `ComposeCounterSample`：状态计数器（`remember`/`mutableIntStateOf`）
-2. `ComposeLazyListSample`：`LazyColumn` 列表
-3. `ComposeThemeToggleSample`：`Switch` 主题切换
-4. `ComposeFormValidationSample`：输入校验与状态反馈
-5. `ComposeCardListSample`：卡片列表组合
-6. `JniStatusSample`：Compose 调 JNI 结果显示
-
-Compose 主入口：
-
-- `compose_examples/app/src/main/java/guide/android/compose/MainActivity.kt`
-
----
-
-## Jetpack Compose 进阶示例（4 条）
-
-进阶源码：`compose_examples/app/src/main/java/guide/android/compose/samples/AdvancedSamples.kt`
-
-1. `AdvancedViewModelStateFlowSample`：`ViewModel + StateFlow + collectAsStateWithLifecycle`
-2. `AdvancedNavigationSample`：`Navigation Compose` 基本路由与参数传递
-3. `AdvancedRoomArchitectureSample`：`Room` 的 `Entity + DAO + Database` 架构定义
-4. `AdvancedWorkManagerSample`：`WorkManager` 一次性后台任务调度
-
-这 4 条示例与基础 Compose 示例共同参与 Gradle Kotlin 编译验证，保证教程代码可持续维护。
-
----
-
-## JNI 示例
-
-JNI Kotlin 声明：
-
-- `compose_examples/app/src/main/java/guide/android/compose/jni/GuideNativeBridge.kt`
-
-JNI C++ 实现：
-
-- `compose_examples/app/src/main/cpp/native-lib.cpp`
-- `compose_examples/app/src/main/cpp/CMakeLists.txt`
-
-该示例通过 `externalNativeBuild + CMake` 编译 `guide_native`，并在 Kotlin 侧通过 `external fun stringFromJNI()` 调用。
-
----
-
-## 统一编译验证
-
-全量（Kotlin API + Compose + JNI）：
+## 编译验证
 
 ```powershell
 cd G:\code\guide\android
-.\build.ps1 -All
+pwsh -File .\build.ps1 -All        # 21 条 Kotlin 示例 + Compose 工程 + JNI
+pwsh -File .\build.ps1 -Compose    # 仅 Gradle Compose 工程
+pwsh -File .\build.ps1 -Jni        # 仅 NDK/CMake
 ```
 
-仅验证 Kotlin API 示例：
+三层验证：`examples/`（kotlinc + android.jar 静态编译）、`compose_examples/`（Gradle `:app:compileDebugKotlin`）、JNI（NDK 交叉编译 `libguide_native.so`）。工具链与依赖版本详见 [README.md](README.md)。
 
-```powershell
-.\build.ps1 -File 12_notifications.kt
-```
+## 相关教程
 
-仅验证 Compose：
-
-```powershell
-.\build.ps1 -Compose
-```
-
-仅验证 JNI：
-
-```powershell
-.\build.ps1 -Jni
-```
-
-清理：
-
-```powershell
-.\build.ps1 -Clean
-```
+本仓库兄弟教程：[Kotlin 语言指南](../kotlin/KOTLIN_GUIDE.md)（第 03 章的深入入口）、[Win32](../win32/README.md)、[MFC](../mfc/README.md)、[WPF](../wpf/README.md)（Windows 桌面谱系对照）。
