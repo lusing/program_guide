@@ -75,7 +75,7 @@ function Test-CrossExample {
     Invoke-Native $exe
     Invoke-Zig $Dir @("build-exe", "main.zig", "-target", "aarch64-linux",
         "-femit-bin=$(Join-Path $buildDir "$name`_aarch64-linux")")
-    Invoke-Zig $Dir @("build-exe", "wasm_lib.zig", "-target", "wasm32-freestanding", "--no-entry",
+    Invoke-Zig $Dir @("build-lib", "wasm_lib.zig", "-target", "wasm32-freestanding",
         "-femit-bin=$(Join-Path $buildDir "$name`.wasm")")
     Invoke-Zig $Dir @("cc", "hello.c", "-o", (Join-Path $buildDir "$name`_hello_c.exe"))
     Invoke-Native (Join-Path $buildDir "$name`_hello_c.exe")
