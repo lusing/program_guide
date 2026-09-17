@@ -1,144 +1,77 @@
-# Erlang/OTP 教程
+# Erlang/OTP 编程指南（29）
 
-按本仓库统一的 `guide` 结构组织的 Erlang/OTP 教程：**一份内容充实的指南正文 + 28 个
-独立可运行的示例 + 两个等价的验证入口**。
+给"会编程、初学 Erlang/OTP"的读者：从变量不可变、没有循环的语言地基，到进程/监督树/应用三件套，再到一个带 worker 池的 mini-grep。**读讲解 → 跑示例 → 改代码再跑**。
 
-验证环境：Erlang/OTP 29（erts 17.0.3），macOS（MacPorts `/opt/local/bin/erl`）。
+> ⚠️ 所有代码在 Erlang/OTP 29（erts 17.0.6）windows/amd64 实测；全部示例四层验证通过（erlc `-Wall -Werror` 零警告 → EUnit → 运行四条判定 → `+S 1:1` 单调度器双通道逐字节一致）。各章"坑位清单"收录了 90+ 条实测坑中与本章相关的部分。
 
 ## 目录结构
 
 ```text
 erlang/
-├── README.md                  本文件
-├── Erlang-OTP编程指南.md       教程正文（约 4300 行，30 章）
-├── build.ps1                  PowerShell 入口（Windows / macOS / Linux）
-├── run-all.sh                 shell 入口（macOS / Linux / WSL）
-├── examples/
-│   ├── 01-hello.erl           NN-topic.erl：两位编号 + 主题
-│   ├── ...
-│   ├── 28-debugging-ops.erl
-│   └── kvapp/                 第 23、28 章用的最小 OTP application
-│       ├── kvapp.app
-│       ├── kvapp_app.erl
-│       ├── kvapp_sup.erl
-│       └── kvapp_store.erl
-└── build/                     编译与运行产物（不入库）
-    ├── ebin/                  所有 .beam
-    └── <示例名>/
-        ├── stdout.txt  stderr.txt       通道 A（默认调度器）
-        └── stdout.s1.txt stderr.s1.txt  通道 B（+S 1:1）
+├── README.md            本文件
+├── CHEATSheet.md        速查表（12 部分：命令/语法/坑位索引）
+├── build.ps1            四层验证入口（pwsh 7）
+├── docs/                01–24 章（01 概述，24 实战）
+├── examples/            NN_topic/ 与章号对应（02–24 共 23 个）
+│   ├── 02_hello/        每个示例：主模块 + *_tests.erl（EUnit）
+│   ├── 17_application/  kvapp 四件套（.app + app/sup/store + 驱动）
+│   ├── 21_testing/      含 ct21_SUITE.erl（示例里实跑 Common Test）
+│   └── 24_minigrep/     OTP 工程 + corpus/ 语料
+└── build/               编译与运行产物（不入库）
 ```
 
-## 工具链
+## 章节索引
 
-| 工具 | 说明 |
-| --- | --- |
-| `erl` | 虚拟机 + REPL。非交互跑示例：`erl -noshell -pa build/ebin -run '01-hello' main -s init stop` |
-| `erlc` | 编译器。本仓库用 `erlc -Werror -Wall`（**警告即错误**） |
+| 章 | 主题 | 示例 |
+|---|---|---|
+| [01 概述](docs/01-overview.md) | 历史与工具链 | — |
+| [02 第一个程序](docs/02-hello.md) | 模块、erl/erlc、格式串 | 02_hello |
+| [03 数值与基本类型](docs/03-types.md) | 任意精度整数、原子、项序 | 03_types |
+| [04 模式匹配与卫语句](docs/04-patterns.md) | 匹配即分派、guard 白名单 | 04_patterns |
+| [05 递归与尾调用](docs/05-recursion.md) | 尾递归省 970 倍内存 | 05_recursion |
+| [06 列表](docs/06-lists.md) | lists 模块与代价 | 06_lists |
+| [07 fun 与推导式](docs/07-funs.md) | 一等函数、惰性序列 | 07_funs |
+| [08 二进制与位语法](docs/08-binaries.md) | 变长报文解析 | 08_binaries |
+| [09 字符串与 Unicode](docs/09-strings.md) | 三个"长度"、头号编码坑 | 09_strings |
+| [10 映射与记录](docs/10-maps.md) | `=>` vs `:=`、迭代顺序随机 | 10_maps |
+| [11 容器与配置结构](docs/11-collections.md) | proplists/sets/queue/array | 11_collections |
+| [12 异常与错误哲学](docs/12-errors.md) | 三类异常、maybe、let it crash | 12_errors |
+| [13 进程与消息](docs/13-processes.md) | 邮箱、ref 协议、pmap | 13_processes |
+| [14 链接与监控](docs/14-links.md) | trap_exit、DOWN 形状 | 14_links |
+| [15 gen_server ⭐](docs/15-gen-server.md) | 回调契约、先干活后回 | 15_gen_server |
+| [16 supervisor ⭐](docs/16-supervisor.md) | 三种策略、重启强度 | 16_supervisor |
+| [17 application ⭐](docs/17-application.md) | kvapp、env 快照、关闭顺序 | 17_application（工程） |
+| [18 ETS](docs/18-ets.md) | 四种表、match spec、heir | 18_ets |
+| [19 文件 I/O](docs/19-files.md) | 编码陷阱、二进制协议、序列化 | 19_files |
+| [20 时间与定时器](docs/20-time.md) | 单调钟、timer 模块真相 | 20_time |
+| [21 测试](docs/21-testing.md) | EUnit 断言/fixture、Common Test | 21_testing（含 CT suite） |
+| [22 日志](docs/22-logger.md) | 四道关、过载保护 | 22_logger |
+| [23 工具链](docs/23-tooling.md) | typespec/dialyzer、sys、热加载 | 23_tooling |
+| [24 实战 mini-grep ⭐](docs/24-minigrep.md) | 监督树 + worker 池 | 24_minigrep（工程） |
 
-两个入口都会自动探测工具链；也可以显式指定：
+## 构建工具链
 
-```bash
-ERL=/opt/local/bin/erl ERLC=/opt/local/bin/erlc ./run-all.sh
+- Erlang/OTP 29：scoop 的 `G:\scoop\apps\erlang\current\bin\`（erl/erlc/dialyzer/typer/ct_run 齐全；无 rebar3——教程只用标准库）
+- pwsh 7（build.ps1 有中文输出，Windows PowerShell 5 读不了无 BOM 脚本）
+- 编译统一 `+debug_info -Werror -Wall`（debug_info 是 dialyzer 的料，23 章实测 erlc 默认不带）
+
+## 验证命令
+
+```powershell
+cd erlang
+pwsh ./build.ps1 -All                 # 23 个示例 × 四层验证（约 2 分钟）
+pwsh ./build.ps1 -Example 15_gen_server
+pwsh ./build.ps1 -Clean
 ```
 
-## 怎么跑
+四层：① 编译零警告 → ② `eunit:test('NN_topic_tests')` → ③ 运行四条判定（退出码 0 / stderr 空 / 无控制字符 / 有 `==== NN 结束 ====` 标记——Erlang 进程崩了退出码仍可能是 0，标记是铁证）→ ④ 同一 BEAM 用 `+S 1:1` 重跑，stdout 与通道 A **逐字节一致**（抓 map 迭代顺序、pid、环境数字）。单章学法：
 
-```bash
-./run-all.sh                 # shell 版（macOS / Linux / WSL）
-pwsh ./build.ps1 -All        # PowerShell 版（Windows / macOS / Linux）
+```powershell
+cd examples/15_gen_server
+erl -noshell -pa ../../build/15_gen_server -run '15_gen_server' main -s init stop
+erl -noshell -pa ../../build/15_gen_server -eval "eunit:test('15_gen_server_tests', [verbose]), halt()."
 ```
 
-| 需求 | shell 版 | PowerShell 版 |
-| --- | --- | --- |
-| 跑全部 | `./run-all.sh` | `pwsh ./build.ps1 -All` |
-| 附带打印每个示例的输出 | `./run-all.sh -v` | `pwsh ./build.ps1 -All -ShowOutput` |
-| 只跑指定编号 | `./run-all.sh 01 13` | `pwsh ./build.ps1 01 13` |
-| 只跑指定文件 | （用编号） | `pwsh ./build.ps1 -Example 24-ets.erl` |
-| 清理 build | `./run-all.sh --clean` | `pwsh ./build.ps1 -Clean` |
-| 改超时上限 | `TIMEOUT_SECS=8 ./run-all.sh` | `pwsh ./build.ps1 -All -TimeoutSec 8` |
+## 相关教程
 
-> **两个入口不要并行跑**：它们共用 `build/<示例名>/` 下的输出文件，
-> 并行会互相覆盖 → 输出只写一半、结束标记丢失 → 误报成"示例 bug"。
-
-单个文件自己编译运行：
-
-```bash
-erlc -Wall -Werror -o build/ebin examples/01-hello.erl
-erl -noshell -pa build/ebin -run '01-hello' main -s init stop
-```
-
-## 判定标准（四条，缺一不可）
-
-1. **退出码为 0**
-2. **stderr 为空**
-3. **stdout 里除 TAB/LF/CR 外没有 0..31 的控制字符**
-4. **stdout 里有结束标记 `==== NN 结束 ====`**
-
-第 4 条最关键：Erlang 里 `main/0` 崩了、而没人 link 它时，`erl` 的退出码**仍可能是 0**。
-只有结束标记能证明"这个示例真的从头跑到尾"。
-
-### 为什么是"两个通道"而不是"多实现比对"
-
-仓库里 fortran / sml 那几个目录的惯例是每份示例在**两套实现**上跑。Erlang 这里做不到 ——
-本机只有一套实现（OTP 29 / erts 17.0.3）。所以改成**同一份 BEAM、两种运行时配置**：
-
-| 通道 | 参数 | 含义 |
-| --- | --- | --- |
-| A | （默认） | 多调度器 |
-| B | `+S 1:1` | 单调度器 |
-
-两通道输出必须**逐字节一致**。这条约束抓的是"输出依赖调度/环境"的东西：
-map 迭代顺序（原子哈希随机种子）、ETS set 顺序、打了 pid / ref / 时间戳、
-以及内存字节数和 `port_limit` 这类随环境变的数字。
-
-最后这一类无法"修好"，只能**改断言形式**：把"打具体数字"改成打布尔断言
-（"每个都 > 0"、"递减"、"三者之和 ≤ 总内存"）。第 26.6、28.4 节就是这么处理的。
-
-### 反向验证
-
-判定标准本身也可能有 bug —— 一个永远返回 OK 的判定函数比没有判定更危险。
-所以改完判定逻辑要造几个"故意违规"的示例，确认它真报 FAIL。做过的场景：
-缺结束标记 / stderr 非空 / stdout 含控制字符 / `halt(3)` / 永不结束（超时）/
-编译失败 / 两通道不一致 —— 两个入口都真的报了 FAIL。
-
-## 各章索引
-
-| 编号 | 主题 | 编号 | 主题 |
-| --- | --- | --- | --- |
-| 01 | 模块、函数与 Hello World | 15 | 错误处理哲学 |
-| 02 | 数值与算术 | 16 | proplists 与配置 |
-| 03 | 原子、字符串与 Unicode | 17 | 集合容器 |
-| 04 | 模式匹配 | 18 | 进程 |
-| 05 | 卫语句（guard） | 19 | 消息传递 |
-| 06 | 递归与尾调用 | 20 | 链接与监控 |
-| 07 | 列表 | 21 | gen_server |
-| 08 | 推导式 | 22 | supervisor |
-| 09 | 二进制与位语法 | 23 | application |
-| 10 | 映射（map） | 24 | ETS |
-| 11 | 记录（record） | 25 | 文件 I/O 与二进制序列化 |
-| 12 | 函数与 fun | 26 | 定时器、时间与系统限制 |
-| 13 | 控制流与异常 | 27 | 日志（logger）与可观测性 |
-| 14 | 高阶函数 | 28 | 调试、热加载与运维 |
-
-指南正文另有：**第 0 章**（环境与工具链）、**第 29 章**（构建与验证）、
-**第 30 章**（坑总表，80+ 条实测踩过的坑）、以及**常用命令速查**附录。
-
-## 目录里的三条约定
-
-1. **文档里每条输出都能溯源**。指南里的「实测输出」块全部来自
-   `build/<章>/stdout.txt`。复核办法：`./run-all.sh 25` 然后
-   `cat build/25-binary-files/stdout.txt`。已做过一次全量抽查，
-   文档中所有输出行都能在对应产物里找到出处。
-2. **不能凭记忆写语言结论**。凡是"应该如此"的地方都实测过 —— 第 30 章坑总表里
-   一大半是被实测推翻的直觉（浮点溢出是 badarith 不是 inf、
-   `timer` 模块 OTP 27+ 不一定走 `timer_server`、`write_concurrency` 在单调度器下会被静默降级……）。
-3. **新增示例要满足四条判定 + 两通道一致**，并且文件头要写准确的编译/运行命令、
-   最后一行要打 `==== NN 结束 ====`。
-
-## 当前状态
-
-- 28 个示例全部编译通过（`-Werror -Wall`，零警告）并实跑通过；
-- 两个入口各 56 项（28 示例 × 2 通道）全部通过：**通过 56　失败 0　不可重复 0**；
-- 两个入口产生的 112 个产物文件（28 示例 × 2 通道 × stdout/stderr）**逐字节一致**：
-  一致 112　不一致 0。
+同一标准的兄弟教程：[../cpp20](../cpp20)、[../zig](../zig)、[../go](../go)；本目录 [CHEATSheet.md](CHEATSheet.md)。
