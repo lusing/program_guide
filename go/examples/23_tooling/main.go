@@ -109,6 +109,12 @@ func main() {
 	must(err)
 	st2, err := os.Stat(tracePath)
 	must(err)
-	fmt.Println("cpu profile:", filepath.Base(profPath), st1.Size(), "字节 → go tool pprof 24_tooling.exe <文件>")
+	// pprof 命令里的二进制名带不带 .exe 由平台决定（只有 Windows 有后缀）。
+	// macOS/Linux 上写 23_tooling.exe 是错的命令，Windows 上反过来——所以现算。
+	binName := "23_tooling"
+	if runtime.GOOS == "windows" {
+		binName += ".exe"
+	}
+	fmt.Println("cpu profile:", filepath.Base(profPath), st1.Size(), "字节 → go tool pprof", binName, "<文件>")
 	fmt.Println("trace:      ", filepath.Base(tracePath), st2.Size(), "字节 → go tool trace <文件>")
 }

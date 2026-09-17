@@ -39,6 +39,8 @@ Parse 失败给的错误信息**精确到哪个字符不对**——比 C 的 str
 ```go
 // Windows 必坑：LoadLocation 需要时区数据库——标准做法是嵌入 tzdata
 import _ "time/tzdata"                       // +450KB，换来到处能跑
+// macOS/Linux 有系统 tzdata（/usr/share/zoneinfo），这行是冗余的——
+// 但留着无害，换到 Windows 上照样能跑，跨平台代码一般都带上。
 
 tokyo, err := time.LoadLocation("Asia/Tokyo")
 utc := time.Date(2026, 9, 17, 0, 0, 0, 0, time.UTC)

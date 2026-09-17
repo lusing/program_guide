@@ -79,7 +79,7 @@ go test -race ./...
 go run -race main.go
 ```
 
-基于 happens-before 的动态检测，撞见竞争当场报栈（两个 goroutine 各自的访问现场）。本仓库 build.ps1 对 16/17/18 三个示例都用 `-race` 跑测试——**并发代码不跑 race 检测等于没测**。代价是 2-10 倍慢和需要 cgo（Windows 上要有 gcc）。
+基于 happens-before 的动态检测，撞见竞争当场报栈（两个 goroutine 各自的访问现场）。本仓库两个入口（build.ps1 / run-all.sh）对 16/17/18 三个示例都用 `-race` 跑测试——**并发代码不跑 race 检测等于没测**。代价是 2-10 倍慢和需要 cgo：Windows 上要有 gcc，macOS 用自带的 clang（`xcode-select --install` 装命令行工具即可）。`go env CGO_ENABLED` 为 `0` 时两个入口会自动降级成不带 `-race` 跑并提示。
 
 ## 16.4 sync.Once：并发安全的"就一次"
 

@@ -5,12 +5,21 @@
 ## 23.1 交叉编译：一行命令，全平台
 
 ```powershell
+# Windows / PowerShell：环境变量是 $env: 前缀，且要单独语句设
 $env:GOOS="linux";   $env:GOARCH="amd64"; go build -o app-linux .
 $env:GOOS="darwin";  $env:GOARCH="arm64"; go build -o app-mac .
 $env:GOOS=""; $env:GOARCH=""                      # 用完清掉
 ```
 
-Go 编译器**原生跨平台**（对比 Zig 的 `-target` 同款能力）：Windows 上编 Linux 二进制不用工具链、不用容器。纯 Go 代码零障碍；牵扯 cgo（race 检测、某些数据库驱动）才需要目标平台的 C 编译器。
+```bash
+# macOS / Linux：环境变量写在命令前面就行，只作用于这一条命令，不留残留
+GOOS=linux  GOARCH=amd64 go build -o app-linux .
+GOOS=darwin GOARCH=arm64 go build -o app-mac .
+```
+
+Go 编译器**原生跨平台**（对比 Zig 的 `-target` 同款能力）：本机编 Linux 二进制不用工具链、不用容器。纯 Go 代码零障碍；牵扯 cgo（race 检测、某些数据库驱动）才需要目标平台的 C 编译器。
+
+本仓库 `run-all.sh` 末尾会按 `windows/amd64`、`linux/amd64`、`darwin/arm64` 各编一遍全仓库，交叉编译不过就报失败——这能抓出"只在某一平台编译得过"的问题（误用 syscall 常量、构建标签写错等）。
 
 常用组合：`linux/amd64`（服务器）、`linux/arm64`（ARM 云/树莓派）、`darwin/arm64`（Apple Silicon）、`windows/amd64`。`go tool dist list` 看全表。
 
@@ -28,7 +37,7 @@ go build -ldflags "-s -w -X main.buildNote=v1.2.0" -o app.exe .
 # -X 往 string 变量里塞版本号——CI 打 tag 的标准动作
 ```
 
-示例 23 有 `version_windows.go` / `version_other.go` 一对文件演示构建标签的"平台分支"；`buildNote` 演示 -X 注入。
+示例 23 有 `version_windows.go` / `version_other.go` 一对文件演示构建标签的"平台分支"；`buildNote` 演示 -X 注入。（下文命令里的 `app.exe` 是 Windows 写法，macOS/Linux 上去掉 `.exe`。示例 23 打印的 pprof 命令会按 `runtime.GOOS` 现算后缀，两个平台都对。）
 
 ## 23.3 构建信息：从二进制里读出身
 

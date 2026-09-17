@@ -46,7 +46,9 @@ go tool pprof / trace         # 性能画像（23 章）
 
 对比 C++（编译器 + CMake + vcpkg + clang-format + clang-tidy 五件套）和 Zig（zig 一个但生态小）：Go 的工具链是**官方一体**的，装好 Go 就什么都有了。
 
-本机安装：scoop 的 `G:\scoop\apps\go\current\bin\go.exe`（教程所有命令用它；PATH 里有直接 `go` 也行）。
+本机安装：Windows 用 scoop 的 `G:\scoop\apps\go\current\bin\go.exe`；macOS 用 MacPorts 的
+`/opt/local/bin/go`（官方包则是 `/usr/local/go/bin/go`）。两个验证入口都会自己找 `go`，
+PATH 里有就直接 `go` 也行；找不到时用 `GOBIN`（PowerShell 入口）或 `GO=...`（shell 入口）指定。
 
 ## 1.4 一个程序长什么样
 

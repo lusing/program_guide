@@ -6,15 +6,18 @@
 
 ```powershell
 go run .                        # 编译+运行（`.` 是包目录，不是 main.go）
-go build -o out.exe .           # 产可执行
+go build -o out.exe .           # 产可执行（macOS/Linux 不带 .exe）
 go test [-v] [-race] [-bench .] [-cover] .
 go vet . / gofmt -l .           # 静态检查 / 格式检查（-l 输出空 = 合格）
 go mod init|tidy|why            # 模块管理（14）
 go doc fmt.Println              # 命令行文档
 go tool pprof|trace <file>      # 性能画像（23）
-$env:GOOS="linux"; go build .   # 交叉编译（用完清掉！）
+$env:GOOS="linux"; go build .   # 交叉编译（PowerShell；用完清掉！）
+GOOS=linux go build .           # 交叉编译（bash；只作用于这一条命令）
 go build -ldflags "-s -w -X main.ver=1.0" .
 ```
+
+`-race` 需要 cgo：Windows 装 gcc，macOS 用自带 clang。`go env CGO_ENABLED` 看是否可用。
 
 ## 2. 声明与类型（03）
 
@@ -219,7 +222,7 @@ mu.Lock(); defer mu.Unlock()
 ```go
 t.Format("2006-01-02 15:04:05")     // 布局 = 参考时间长相
 time.Parse(layout, s)
-_ = "time/tzdata"                   // Windows 必带（19.3）
+_ = "time/tzdata"                   // Windows 必带；macOS/Linux 冗余但无害（19.3）
 d := 3 * time.Second                // Duration 永远带单位
 os.ReadFile / os.WriteFile
 sc := bufio.NewScanner(f); sc.Buffer(nil, 4<<20)  // 长行必调
@@ -236,7 +239,7 @@ jsonv2.Marshal / jsontext.NewEncoder(w, jsontext.WithIndent("  "))  // 1.27
 | 坑 | 解法 |
 |---|---|
 | Scanner 报 token too long | 64KiB 默认上限——sc.Buffer 放大（20.3） |
-| LoadLocation 报错（Windows） | `import _ "time/tzdata"`（19.3） |
+| LoadLocation 报错（Windows） | `import _ "time/tzdata"`；macOS/Linux 有系统 tzdata（19.3） |
 | any 解码数字变 float64 | json.Number 或结构体目标（21.2） |
 | nil 切片序列化成 null | 初始化 `[]T{}`（21.7） |
 | DefaultClient 无超时 | 自建 Client{Timeout}（22.4） |

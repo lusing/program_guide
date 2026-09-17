@@ -2,7 +2,7 @@
 
 面向**会编程（C/C++ 背景最佳）、初学 Go** 的读者：从零教到现代 Go——`wg.Go`、`range` 整数、迭代器（`iter.Seq`）从对应章节就是默认姿势，老写法（`err == io.EOF`、`interface{}`、`for i := 0; i < b.N; i++`）只在坑位清单里教"认得"。**Go 特色全部独立成章细讲**：接口（09）、泛型（11）、迭代器（13）、测试（15）、并发三连（16–18）、HTTP（22）。每章"读讲解 → 跑示例 → 改代码再跑"，全部示例四层验证通过（gofmt + vet + test + 运行 exit 0；并发三章加 `-race`）。
 
-> ⚠️ 网上教程版本混杂（1.20 前的写法与现在差异不小）。本教程所有代码在 **go1.27.1 windows/amd64** 实测，每章坑位清单收录版本差异（含 1.27 的 `synctest.Test` 新签名、`json/v2` 默认可用等）。
+> ⚠️ 网上教程版本混杂（1.20 前的写法与现在差异不小）。本教程所有代码在 **go1.27.1 windows/amd64** 与 **darwin/amd64** 双平台实测（两个入口都会跑交叉编译检查，见下），每章坑位清单收录版本差异（含 1.27 的 `synctest.Test` 新签名、`json/v2` 默认可用等）。
 
 ## 目录结构
 
@@ -12,6 +12,7 @@ go/
 ├── docs/           24 章教程（01 → 24 顺序阅读）
 ├── examples/       23 个示例目录（章号 = 目录号；14/24 为自带 go.mod 的多包工程）
 ├── build.ps1       统一验证脚本（须 PowerShell 7 / pwsh 运行）
+├── run-all.sh      等价的 shell 入口（macOS/Linux 用；额外做交叉编译检查）
 └── CHEATSheet.md   语法速查 + 坑位索引
 ```
 
@@ -46,11 +47,23 @@ go/
 
 ## 构建工具链
 
-- Go **1.27.1**：`G:\scoop\apps\go\current\bin\go.exe`（scoop 安装；版本不符先看 01 章的版本时间线）。
-- `-race` 竞态检测依赖 cgo——本机有 gcc（15.2.0），build.ps1 对 16/17/18 三个并发示例自动启用。
-- 中文控制台乱码先 `chcp 65001`（build.ps1 已代设 UTF-8）。
+两个平台都要求 **Go 1.27+**（版本不符先看 01 章的版本时间线）。两个入口都会自己找 `go`，
+找不到就报清楚的错误；`gofmt` 一律从 `go env GOROOT` 里取，避免和 `go` 版本不同步。
+
+| | Windows | macOS |
+|---|---|---|
+| go 位置 | `G:\scoop\apps\go\current\bin\go.exe`（scoop） | `/opt/local/bin/go`（MacPorts，本机 1.27.1）或 `/usr/local/go/bin/go` |
+| 手动指定 | `GOBIN` 环境变量 | `GO=/path/to/go ./run-all.sh` 或 `GOBIN` |
+| `-race` 前提 | cgo + gcc（15.2.0） | cgo + clang（Xcode 命令行工具，自带） |
+| 控制台中文 | `chcp 65001`（build.ps1 已代设 UTF-8） | 终端默认 UTF-8，不用管 |
+
+`-race` 竞态检测依赖 cgo，两个入口都对 16/17/18 三个并发示例自动启用；
+**cgo 不可用时自动降级为不带 `-race` 并在结尾提示**，不会让整轮失败。
+想确认本机 cgo 是否可用：`go env CGO_ENABLED`（`1` 即可用）。
 
 ## 验证命令
+
+PowerShell 入口（Windows 主用，macOS 装了 pwsh 也能跑）：
 
 ```powershell
 cd G:\code\guide\go
@@ -59,12 +72,35 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 12_collections   # 单个�
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean               # 清理 build 目录
 ```
 
+shell 入口（macOS/Linux）：
+
+```bash
+cd go
+./run-all.sh              # 全部 23 个示例 + 交叉编译检查
+./run-all.sh 12 23        # 只跑 12_collections、23_tooling
+./run-all.sh -v           # 附带每个示例的完整输出
+./run-all.sh --no-cross   # 跳过末尾的交叉编译检查
+```
+
+判定标准（两个入口一致）：退出码 0 + stderr 为空 + stdout 非空 + 输出无控制字符 + gofmt 无待格式化文件。
+`22_http` 会往 stderr 打中间件日志（Go 的 `log` 包默认写 stderr，是示例故意演示的），已在脚本里登记为已知豁免。
+**交叉编译检查**（`run-all.sh` 末尾）额外把全部代码按 `windows/amd64`、`linux/amd64`、`darwin/arm64`
+各编一遍——能抓出「只在某一平台编译得过」的问题（误用 syscall 常量、构建标签写错等）。
+
+> 两个入口共用 `build/` 下的产物文件，**不要并行跑**，否则输出互相覆盖会误报失败。
+
 单跑某个示例（每章标准学法）——改代码后重跑：
 
 ```powershell
 cd go/examples/12_collections
 G:/scoop/apps/go/current/bin/go.exe run .      # 改完立刻看效果
 G:/scoop/apps/go/current/bin/go.exe test .     # 跑本章测试
+```
+
+```bash
+cd go/examples/12_collections
+go run .     # 改完立刻看效果
+go test .    # 跑本章测试
 ```
 
 ## 相关教程
