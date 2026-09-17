@@ -36,8 +36,11 @@ int main() {
 
     // ═══ 10.4 unordered_map：哈希表，O(1) 平均 ═══
     std::unordered_map<std::string, int> votes;
-    for (const std::string& w : {"cpp", "rust", "cpp", "go", "cpp", "rust"}) {
-        ++votes[w];  // 不存在则从 0 起
+    // 花括号里是一串字面量，推导出来是 const char*；**别写成 const std::string&**：
+    // 那会为每个元素构造一个临时 string 再绑引用（GCC 的 -Wrange-loop-construct
+    // 会直接点出来），既没省下拷贝，又埋了个悬垂隐患。
+    for (const char* w : {"cpp", "rust", "cpp", "go", "cpp", "rust"}) {
+        ++votes[w];  // 不存在则从 0 起（const char* 在这里转成 string 键）
     }
     std::println("cpp 得 {} 票", votes["cpp"]);  // 3
 

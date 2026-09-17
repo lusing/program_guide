@@ -2,11 +2,19 @@
 #include <array>
 #include <filesystem>
 #include <fstream>
-#include <mdspan>
 #include <print>
 #include <regex>
 #include <string>
 #include <vector>
+
+// <mdspan> 同样是 C++23 的新头文件，各家进度不一：libc++ 23 有，
+// GCC 15.2 的 libstdc++ 还没有。用 __has_include 探测，缺了就跳过 22.4。
+#if defined(__has_include)
+#  if __has_include(<mdspan>)
+#    include <mdspan>
+#    define CPP_GUIDE_HAS_MDSPAN 1
+#  endif
+#endif
 
 namespace fs = std::filesystem;
 
@@ -49,6 +57,7 @@ int main() {
     std::println("清理了 {} 个条目", fs::remove_all(dir));
 
     // ═══ 22.4 mdspan 一瞥 (C++23)：多维视图 ═══
+#if defined(CPP_GUIDE_HAS_MDSPAN)
     std::array<int, 6> data{1, 2, 3, 4, 5, 6};
     std::mdspan grid{data.data(), 2, 3};  // 2 行 3 列（访问用 grid[r, c]）
     for (std::size_t r = 0; r < grid.extent(0); ++r) {
@@ -57,5 +66,8 @@ int main() {
         }
         std::println("");
     }
+#else
+    std::println("mdspan: 本机标准库没有 <mdspan>，跳过 22.4");
+#endif
     std::println("自检通过");
 }

@@ -86,10 +86,15 @@ G:\...\include\print(21): note: 参见 "std" 的声明
 每章的学法固定三步：**读讲解 → 跑示例 → 改代码再跑**。第三步最值钱——把示例改坏、看它怎么报错，是建立"报错长相"直觉的最快路径。比如把 `02_hello` 里 `"阿 C"` 的引号改成中文引号再编译，你就永远记得全角符号的报错长什么样。
 
 ```bash
-cd /g/code/guide/cpp20
-"/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All       # 全部 23 个示例
-"/g/Program Files/PowerShell/7/pwsh" -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Example 12_ranges   # 单个示例
+cd cpp20                                    # 换成你自己的检出位置
+pwsh -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All      # 全部 23 个示例（Windows）
+./run-all.sh                                                      # 同上（macOS / Linux）
+pwsh -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Example 12_ranges   # 单个示例
+./run-all.sh 12                                                   # 同上，按编号
 ```
+
+（Windows 上若 `pwsh` 不在 PATH，用它的绝对路径调用，例如
+`"/g/Program Files/PowerShell/7/pwsh"`；macOS / Linux 上 MacPorts 装的在 `/opt/local/bin/pwsh`。）
 
 build.ps1 做三层验证：**编译（/W4 零告警）→ 运行（退出码 0）→ 示例内置 assert 自检**。示例不满足这三层就进不了仓库——你在文档里看到的每段代码都是真编译真跑过的。每章示例的预期输出写在该章末尾的"运行输出"注释或文中，跑出来对不上就说明你改过了什么。
 

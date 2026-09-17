@@ -76,10 +76,26 @@ CMake 生成器跨平台（Windows 出 VS 工程/sln，Linux 出 make/ninja）�
 |---|---|---|
 | 语言标准 | `/std:c++latest`（还有 c++20 等档位） | `-std=c++23` |
 | 源码编码 | `/utf-8`（否则按 GBK/ANSI 猜） | 默认 UTF-8 |
-| 模块接口 | `.ixx` + `/interface` | `.cppm` + `-fmodules-ts`/`-std=c++20` |
+| 模块接口 | `.ixx` + `/interface` | clang：`-x c++-module --precompile` 出 `.pcm`；GCC：`-fmodules-ts` 出 `gcm.cache/` |
 | 一致性 | `/permissive-` 建议显式 | 默认严格 |
 
 **以本机实测为准、查 cppreference 矩阵**（第 01 章的忠告在生态层同样成立）。
+
+macOS 上用这份 CMakeLists 要再加三行 —— 否则 CMake 会挑到系统自带的 Apple clang 14，
+连 `CMAKE_CXX_STANDARD 23` 都满足不了；而换用 MacPorts 的 clang-23 之后，那三个开关又必须补上
+（原因见 [README 的兼容性一节](../README.md)）。实测可用的最小版本（2026-09-17）：
+
+```cmake
+set(CMAKE_CXX_COMPILER /opt/local/bin/clang++-mp-23)   # 必须显式指，否则用的是 Apple clang
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_compile_options(-Wall -Wextra -D_LIBCPP_DISABLE_AVAILABILITY -fexperimental-library)
+add_link_options(
+  -L/opt/local/libexec/llvm-23/lib/libc++    -Wl,-rpath,/opt/local/libexec/llvm-23/lib/libc++
+  -L/opt/local/libexec/llvm-23/lib/libunwind -Wl,-rpath,/opt/local/libexec/llvm-23/lib/libunwind)
+```
+
+（`-L` 指到自带 libc++ 之后不用再写 `-lc++`，链接器会挑那里的那份。）
 
 ## 23.6 坑位清单
 

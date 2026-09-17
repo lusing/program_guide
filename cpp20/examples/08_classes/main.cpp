@@ -85,7 +85,10 @@ int main() {
         }  // s2 先析构
     }  // s1 后析构
 
-    // 静态成员计数
+    // 静态成员计数。
+    // 这一行是**故意的**：三个实参的求值顺序标准未规定，MSVC/GCC 从右往左
+    // （打出 3 2 1），clang 从左往右（打出 1 2 3）。想看确定的顺序就拆成
+    // 三条语句 —— 见 docs/08-classes.md 坑位清单第 4 条
     std::println("Counter: {} {} {}", Counter::next(), Counter::next(), Counter::next());
 
     // deducing this：显式对象形参

@@ -54,7 +54,11 @@ int main() {
     ints.push(1);
     ints.push(2);
     ints.push(3);
-    std::println("size = {}，弹出 {}", ints.size(), ints.pop());
+    // 同样别把 ints.size() 和 ints.pop() 写进同一个函数调用的实参里：
+    // 先求哪一个标准没规定，弹出后再问大小就会得到 size = 2。
+    const std::size_t before = ints.size();
+    const int popped = ints.pop();
+    std::println("size = {}，弹出 {}", before, popped);
 
     Stack<std::string> words;  // 同一套代码，第二种类型
     words.push("模板");

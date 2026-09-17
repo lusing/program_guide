@@ -52,5 +52,11 @@ int main() {
     backlog.push_back(make_task("收尾"));
     backlog.push_back(make_task("复盘"));
     std::println("待办 {} 项", backlog.size());
+    // 注意：容器析构时**元素按什么顺序销毁，标准没有规定** ——
+    // libc++ 逆序、libstdc++ 正序、MSVC 又是一种，等着作用域结束就会看到三种输出。
+    // 要让顺序确定，就自己按后进先出弹空它：
+    while (!backlog.empty()) {
+        backlog.pop_back();  // pop_back 销毁的"最后一个元素"是确定的
+    }
     std::println("自检通过");
-}  // backlog 析构 → 逐个释放 Task
+}  // t2（调研）在此析构 —— 它比前面几个都晚，因为活到了 main 结束

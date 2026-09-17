@@ -22,6 +22,10 @@ examples/24_minigrep\main.cpp:54:  "another WARNING here\n"
 共 6 处命中
 ```
 
+（以上是 Windows 上的样子：可执行文件带 `.exe`，`std::filesystem` 打出来的路径分隔符是 `\`。
+macOS / Linux 上写成 `./build/24_minigrep examples/24_minigrep warning -i`，分隔符显示为 `/`，
+**命中数与行号完全一致** —— 两个入口都验过。）
+
 这是全教程的收官项目：递归遍历（第 22 章）、多线程（第 19–20 章）、多文件工程组织（第 18 章）、自检（第 23 章）全部落进一个 200 行的真实工具。**无参数运行时它跑内置自检**——这就是 build.ps1 能把它纳入三层验证的原因。
 
 ## 24.2 多文件组织：接口先行

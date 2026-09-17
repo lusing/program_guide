@@ -105,6 +105,17 @@ C++17 起，STL 算法带**执行策略**参数（`<execution>`）：`std::execu
 
 `par_unseq`（向量化的无序执行）认识名词即可。这是"不写线程代码的并行"——把并行决策交给库，是并发的最高性价比形态。
 
+**但"交给库"意味着结果不由你定。** `par` 的语义是"**允许**并行"，不是"保证并行"——标准允许实现直接串行跑完（只要语义对）。macOS 上实测就是这样（2026-09-17）：
+
+| 实现 | `par` 的表现 |
+|---|---|
+| 系统自带 Apple clang 14（libc++ 14000） | `<execution>` 里**根本没有 `par`**（`no member named 'execution' in namespace 'std'`） |
+| MacPorts `clang++-mp-23` + `-fexperimental-library` | 能编能跑，但**退化成串行** —— 该 libc++ 选的后端是 `_LIBCPP_PSTL_BACKEND_STD_THREAD`，而 libc++ 的 `backends/std_thread.h` 是**桩实现**（头文件自己写着 "for testing purposes only"），其 `__for_each` 只在当前线程跑完 |
+
+测法是**在并行算法体里数线程 id**（`std::this_thread::get_id()` 记进加锁的 `std::set`，最后看有几个不同 id）：`for_each(par)`/`transform(par)`/`sort(par)`/`reduce(par)`/`reduce(par_unseq)` 五条、400 万元素，全部只有 **1 个线程**（`hardware_concurrency = 4`）。
+
+所以：**要真并行就自己开线程**（本章 20.1–20.3 就是），`par` 当"可以一行改写的语义糖"来用；换平台前实测一把再决定要不要依赖它。示例 20.4 只断言 `par_sum == 1000000`，不依赖线程数——两条编译通道输出逐字节一致，正是因为这里没赌实现行为。
+
 ## 20.6 坑位清单
 
 1. **复合操作误用 atomic**：`if (a.load() == 0) a.store(1);` 两步之间存在窗口——"检查再设置"要用 `compare_exchange_weak`（CAS 循环骨架：`int expected = 0; while (!a.compare_exchange_weak(expected, 1)) {}`）。

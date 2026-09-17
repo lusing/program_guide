@@ -3,10 +3,21 @@
 #include <cctype>
 #include <functional>
 #include <print>
-#include <stacktrace>
 #include <string>
 #include <string_view>
 #include <vector>
+
+// <stacktrace> 是 C++23 的新头文件，实现进度差别很大：
+// 本机实测 libc++ 23 根本没有这个头文件，libstdc++ 15 有头文件但没实现
+// （std::stacktrace 未声明）。所以先探测头文件、再看特性宏，两边都过才用 23.3。
+#if defined(__has_include)
+#  if __has_include(<stacktrace>)
+#    include <stacktrace>
+#  endif
+#endif
+#if defined(__cpp_lib_stacktrace)
+#  define CPP_GUIDE_HAS_STACKTRACE 1
+#endif
 
 // ═══ 23.1 被测对象：一个纯函数 ═══
 std::string slugify(std::string_view text) {
@@ -48,9 +59,14 @@ int run_tests() {
 // ═══ 23.3 stacktrace：看出错时"从哪来" (C++23) ═══
 int deep_c(int depth) {
     if (depth == 0) {
+#if defined(CPP_GUIDE_HAS_STACKTRACE)
         auto st = std::stacktrace::current();
         std::println("调用栈帧数 = {}（≥3 才合理）", st.size());
         std::println("  第 1 帧大概长这样：{}", std::to_string(st[0]));
+#else
+        std::println("stacktrace: 本机标准库没有 <stacktrace>，跳过 23.3"
+                     "（自造单测部分不受影响）");
+#endif
         return 42;
     }
     return deep_c(depth - 1);

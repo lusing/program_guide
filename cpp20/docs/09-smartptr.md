@@ -92,10 +92,15 @@ std::vector<std::unique_ptr<Task>> backlog;
 backlog.push_back(make_task("收尾"));
 backlog.push_back(make_task("复盘"));
 std::println("待办 {} 项", backlog.size());
-}  // backlog 析构 → 逐个释放 Task
+while (!backlog.empty()) {
+    backlog.pop_back();  // 顺序确定：后进先出
+}
+}  // 剩下的局部对象在此析构
 ```
 
 `vector<unique_ptr<T>>` 是"一堆动态对象"的标准姿势：容器是所有者，元素随容器消亡。跑一下示例看析构输出顺序——它同时也是**多态容器**的地基（`vector<unique_ptr<Shape>>`，第 16 章见）。
+
+> **为什么这里显式 `pop_back` 而不等容器析构**：容器析构时**元素按什么顺序销毁，标准没有规定**——实测 libc++ 逆序（`复盘` 先走）、libstdc++ 正序（`收尾` 先走），MSVC 又是另一种。教学示例的输出应当人人可复现，所以自己弹空；真实代码里若顺序重要（比如要按依赖关系释放），同样要显式控制，别指望容器。
 
 ## 9.7 性能与迁移
 

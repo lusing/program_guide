@@ -83,8 +83,10 @@ iostream 也能输出：int 42，double 3.14
 
 build.ps1 一键搞定，但第一次必须手工走一遍，理解它替你做了什么：
 
+**Windows（MSVC）**
+
 ```bash
-cd /g/code/guide/cpp20/examples/02_hello
+cd cpp20/examples/02_hello                 # 换成你自己的检出位置
 # 进入 VS 编译环境（设置 PATH/INCLUDE/LIB），然后编译
 cat > /tmp/cc.bat << 'EOF'
 @echo off
@@ -94,7 +96,35 @@ EOF
 cmd //c "$(cygpath -w /tmp/cc.bat)" && ./demo.exe
 ```
 
-三步：`vcvars64.bat` 把编译器请进命令行（不设这个，`cl` 就是"不是内部或外部命令"）；`cl … main.cpp` 一步完成编译+链接出 `demo.exe`（单文件时没有显式链接阶段的感觉，第 18 章拆开看）；运行。
+**macOS / Linux（clang，2026-09-17 实测）**
+
+```bash
+cd cpp20/examples/02_hello
+CXX=/opt/local/bin/clang++-mp-23
+RES=$($CXX -print-resource-dir)                 # → /opt/local/libexec/llvm-23/lib/clang/23
+ROOT=${RES%/lib/clang/*}                        # → /opt/local/libexec/llvm-23
+$CXX -std=c++23 -Wall -Wextra -O2 \
+     -D_LIBCPP_DISABLE_AVAILABILITY -fexperimental-library \
+     -L$ROOT/lib/libc++ -Wl,-rpath,$ROOT/lib/libc++ \
+     -L$ROOT/lib/libunwind -Wl,-rpath,$ROOT/lib/libunwind \
+     main.cpp -o demo && ./demo
+```
+
+macOS 上必须带那三个开关（本例用不到第三个，但它一缺，第 20 章的并行算法就编不过），
+缺了会这样 —— 每条都是实测报错：
+
+| 缺哪条 | 报错 |
+|---|---|
+| 全不带 | `error: 'to_chars' is unavailable: introduced in macOS 13.3`（在 libc++ 头文件里，`<print>` 内部就用它） |
+| 只缺 `-L/-rpath` | `ld: library not found for -lc++experimental`（缺 `-D` 时则是链接期 `to_chars` 未定义） |
+| 缺 `-fexperimental-library` | `error: no member named 'par' in namespace 'std::execution'`（示例 20 的并行算法） |
+
+**这正是推荐用 `./run-all.sh` 的原因**：它已经把三个开关准备好了，手工敲容易漏。三个开关各自的
+用途见 [README 的「macOS / Linux 上的兼容性」](../README.md)。GCC 的话把 `CXX` 换成
+`g++-mp-15` 并把三行开关删掉、加 `-pthread` 即可（libstdc++ 侧没有这些问题）。
+
+三步：`vcvars64.bat` 把编译器请进命令行（不设这个，`cl` 就是"不是内部或外部命令"）；`cl … main.cpp` 一步完成编译+链接出 `demo.exe`（单文件时没有显式链接阶段的感觉，第 18 章拆开看）；运行。macOS / Linux 侧的对应关系是「不用 vcvars（MacPorts 装在 `/opt/local/bin`，本来就在 PATH 里）+ 一条 `clang++` 命令 + `./demo`」，产物叫 `demo` 而不是 `demo.exe`。
+
 
 正常输出长这样：
 

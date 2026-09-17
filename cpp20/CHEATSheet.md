@@ -5,7 +5,7 @@
 ## 编译命令（01）
 
 ```bash
-# build.ps1（pwsh 7）
+# Windows：build.ps1（pwsh 7）
 pwsh -ExecutionPolicy Bypass -File build.ps1 -All / -Example 06_compound / -Clean
 
 # 手工（先 vcvars64.bat）
@@ -16,6 +16,33 @@ chcp 65001   # 直接跑 exe 时防中文乱码
 cl /std:c++latest /interface /c /ifcOutput build\m.ifc math.ixx
 cl /std:c++latest /reference math=build\m.ifc main.cpp build\m.obj
 ```
+
+```bash
+# macOS / Linux：两条通道（clang++ 23 主 + g++ 15 对照），与上面等价
+./run-all.sh              # / -v 看完整输出 / ./run-all.sh 18 22 按编号
+
+# 手工编译单文件：那三个开关是 macOS 上能不能编过的分水岭（见 README 兼容性一节）
+#   -L/-Wl,-rpath/-lc++ 属于"链接期"参数，放在命令行末尾即可
+#   下面用短名 clang++-mp-23（MacPorts 装在 /opt/local/bin）；不在 PATH 里就写 /opt/local/bin/clang++-mp-23
+clang++-mp-23 -std=c++23 -Wall -Wextra -O2 \
+  -D_LIBCPP_DISABLE_AVAILABILITY -fexperimental-library \
+  main.cpp -o demo \
+  -L/opt/local/libexec/llvm-23/lib/libc++ -Wl,-rpath,/opt/local/libexec/llvm-23/lib/libc++ -lc++ \
+  -L/opt/local/libexec/llvm-23/lib/libunwind -Wl,-rpath,/opt/local/libexec/llvm-23/lib/libunwind
+
+# 模块三步（18）：clang 用 --precompile 出 .pcm；gcc 用 -fmodules-ts（产物落 ./gcm.cache）
+CF="-std=c++23 -Wall -Wextra -O2 -D_LIBCPP_DISABLE_AVAILABILITY -fexperimental-library"
+LD="-L/opt/local/libexec/llvm-23/lib/libc++ -Wl,-rpath,/opt/local/libexec/llvm-23/lib/libc++ -lc++"
+LD="$LD -L/opt/local/libexec/llvm-23/lib/libunwind -Wl,-rpath,/opt/local/libexec/llvm-23/lib/libunwind"
+clang++-mp-23 $CF -x c++-module math.ixx --precompile -o math.pcm
+clang++-mp-23 $CF -fmodule-file=math=math.pcm -c main.cpp -o main.o
+clang++-mp-23 $CF $LD math.pcm main.o -o demo    # 只有这一步才需要 $LD
+```
+
+> 编译期步骤**不要**带 `-L/-lc++/-rpath`：clang 会报 5 条
+> `unused-command-line-argument` 告警（本教程要求零告警，两个入口也是这么分的参数）。
+> 另外 `$CF` / `$LD` 这种「靠空格分词」的写法**只在 bash 下成立**；macOS 默认 shell 是 zsh，
+> 那里要写成 `${=CF}`，或者干脆写成脚本并以 `#!/bin/bash` 开头。
 
 ## 程序骨架（02）
 
@@ -200,6 +227,9 @@ hits.fetch_add(1, std::memory_order_relaxed);        // 计数专用（其余场
 std::latch go{1};      go.count_down();  go.wait();  // 一次性发令枪
 std::barrier sync{4};  sync.arrive_and_wait();        // 可复用集合点
 std::for_each(std::execution::par, v.begin(), v.end(), f);  // 并行算法（谓词须线程安全）
+// 注意：par 只保证"允许并行"，不保证真并行。macOS 实测：libc++ 的后端是桩实现，
+// 五条 par 算法在 400 万元素上都只跑 1 个线程；Apple 自带 libc++ 连 par 都没有。
+// 要真并行就自己开 std::thread（见 docs/20-atomic.md 20.5）。
 ```
 
 ## 协程（21）
@@ -234,7 +264,7 @@ for (auto& t : tests) { t.run(); std::println("[PASS] {}", t.name); }
 // 真实项目：GoogleTest / Catch2 / doctest
 ```
 
-## 坑位索引（高频 Top10）
+## 坑位索引（高频）
 
 1. 全角标点混入源码（02）
 2. `int bad{3.14}` 反过来：`= 3.14` 静默截断——用 `{}`（03）
@@ -246,3 +276,11 @@ for (auto& t : tests) { t.run(); std::println("[PASS] {}", t.name); }
 8. lambda 引用捕获悬垂（11）
 9. 锁里调未知代码 / 条件变量裸 wait（19）
 10. 循环里反复构造 regex（22）
+
+**跨编译器校验补录**（2026-09-17 双工具链实测，前两条是"标准没规定"、后两条是"各家进度不一"）：
+
+11. **实参求值顺序未指定**：`println("{} {} {}", next(), next(), next())` 在 GCC/MSVC 上打 `3 2 1`、clang 上打 `1 2 3`（08 示例故意演示）；`println("{}", v.size(), v.pop())` 同理（13）。带副作用的实参一律拆成多条语句。
+12. **容器元素的析构顺序未规定**：`vector<unique_ptr<T>>` 析构时，libc++ 逆序销毁、libstdc++ 正序（09）。顺序重要就自己 `pop_back` 弹空。
+13. **C++23 头文件各家进度不一**：`<generator>`/`<stacktrace>` libc++ 23 还没有，`<mdspan>` libstdc++ 15 还没有（21/22/23）。跨平台代码用 `__has_include` + 特性宏探测，别硬 `#include`。
+14. **`-Wall -Wextra` 不是"更严的 MSVC `/W4`"**：clang 的 `-Wunused-but-set-parameter`（05）、GCC 的 `-Wrange-loop-construct`（10）在 MSVC 上都不报——只在一个编译器上"零告警"不等于零告警。
+15. **`std::execution::par` 可能只是"允许并行"而没有真并行**：macOS 上 libc++ 的后端是桩实现（`par` 五条算法 400 万元素实测各只 1 个线程，`hardware_concurrency = 4`），Apple 自带 libc++ 干脆没有 `par`（20）。要真并行自己开 `std::thread`；别用运行时长/加速比来断言并行度，要数线程 id。

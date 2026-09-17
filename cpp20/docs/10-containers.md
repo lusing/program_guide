@@ -57,13 +57,15 @@ std::set<int> uniq{5, 3, 3, 1, 5, 9};
 // 遍历输出：1 3 5 9——去重 + 排序一步到位
 
 std::unordered_map<std::string, int> votes;
-for (const std::string& w : {"cpp", "rust", "cpp", "go", "cpp", "rust"}) {
+for (const char* w : {"cpp", "rust", "cpp", "go", "cpp", "rust"}) {
     ++votes[w];  // 不存在则从 0 起
 }
 std::println("cpp 得 {} 票", votes["cpp"]);  // 3
 ```
 
 **set**：扔进去自动去重+排序，"这个词出现过吗"（`contains`）和"TopN 排序"的标配。**unordered_map**：计数器模式的绝配——`++m[key]` 一行完成"没有就建、有就加"。
+
+> 循环变量这里写 `const char*` 而不是 `const std::string&`：花括号里是一串字符串字面量，推导出来是 `const char*`，绑 `const std::string&` 会**为每个元素构造一个临时 string** 再绑引用——既没省下拷贝，又埋了悬垂隐患，GCC 的 `-Wrange-loop-construct` 会当场点出来。
 
 map vs unordered_map 怎么选：**要按序遍历/范围查询（输出排行榜、找 [a,c] 区间的键）→ map**；纯点查且量大 → unordered_map。unordered 的遍历顺序不可依赖（哈希决定），跨运行甚至可能变。
 
