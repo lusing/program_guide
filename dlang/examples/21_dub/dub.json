@@ -1,0 +1,11 @@
+{
+    "name": "dguide_dub",
+    "version": "1.0.0",
+    "description": "21 章：DUB 工程结构与多模块示例",
+    "authors": ["guide"],
+    "copyright": "CC-BY-SA",
+    "license": "MIT",
+    "targetType": "executable",
+    "targetPath": "bin",
+    "dflags": ["-w"]
+}

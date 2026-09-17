@@ -1,0 +1,7 @@
+D is a language for the pragmatic programmer.
+Better C performance with modern ergonomics.
+Compile-time function evaluation makes D special.
+Ranges and algorithms compose like Unix pipes.
+The D community is small but dedicated.
+grep will find the letter D in many lines here.
+Zero is not D but D contains adventure.

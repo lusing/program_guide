@@ -70,3 +70,7 @@ freepascal/examples/*/lib/
 # local.properties 含本机 SDK 路径——都不该进仓库）
 **/.gradle/
 **/local.properties
+
+# D 语言 DUB 构建缓存（dub.json 工程目录下的本地产物）
+**/.dub/
+*.lst

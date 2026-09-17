@@ -1,0 +1,10 @@
+{
+    "name": "minigrep",
+    "version": "1.0.0",
+    "description": "24 章实战：递归 + 并行 + 高亮的迷你 grep",
+    "authors": ["guide"],
+    "license": "MIT",
+    "targetType": "executable",
+    "targetPath": "bin",
+    "dflags": ["-w"]
+}
