@@ -1,0 +1,10 @@
+# This file is machine-generated - editing it directly is not advised
+
+julia_version = "1.13.0"
+manifest_format = "2.1"
+project_hash = "eb1425b4d495f97b70340a735fc932cc4ed969af"
+
+[[deps.MiniGrep]]
+path = "../MiniGrep"
+uuid = "3f8a2b1c-4d5e-4f60-8a9b-7c6d5e4f3a2b"
+version = "0.1.0"

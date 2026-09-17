@@ -1,0 +1,6 @@
+name = "MathTools"
+uuid = "8f5c1a2b-3d4e-5f60-7a8b-9c0d1e2f3a4b"
+version = "0.1.0"
+
+[compat]
+julia = "1.10"
