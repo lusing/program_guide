@@ -43,6 +43,7 @@
 - [renpy](./renpy) — Ren'Py 视觉小说与叙事游戏教程，使用 Ren'Py `compile` 验证
 - [kotlin](./kotlin) — Kotlin 教程与 JVM 示例，使用 Kotlin Compiler 验证
 - [lean4](./lean4) — Lean4/Mathlib4 教程与示例，使用 Lake + Lean 校验
+- [macosdev](./macosdev) — macOS 应用开发教程（Xcode / Swift / Objective-C / Cocoa / AppKit，20 章 + 20 个示例），使用 Xcode 26 SDK + Command Line Tools 双工具链验证（20 个示例 × 2 通道全部通过，双通道输出逐字节一致；示例全部纯命令行编译，含 Objective-C 语言与混编、XIB/nib 编译与 outlet 连线、Cocoa Bindings、打包签名；六条判定标准 + 反向验证，详见 [macosdev/README.md](./macosdev/README.md) 的「验证状态」节）
 - [mfc](./mfc) — MFC 桌面应用开发指南，使用 MSVC + MFC 库编译验证
 - [win32](./win32) — Win32 API 桌面编程指南，使用 MSVC + Win32 API 编译验证
 - [WinUI3](./WinUI3) — WinUI 3 C++/WinRT 教程（10 篇 + README），使用 MSVC + Windows App SDK 1.8 编译验证：`examples/` 下 5 个工程（first-app / controls / layout / binding-mvvm / os-integration）经 `build.ps1` 全部编过，再用 `tools/ui-smoke/` 启动 + 合成点击 + 前后截图做运行时验证；`tools/winmd-probe/` 做元数据级签名核对。三条通道逼出的修正（WinUI 3 上 `resume_foreground` 失效须改 `DispatcherQueue::TryEnqueue`、非打包 `ApplicationData::GetDefault()` 抛"该进程没有程序包标识符"、ViewModel IDL 须声明 `INotifyPropertyChanged`、事件处理器不必进 IDL、跨 `.idl` 引用触发 `MIDL2011` 须合并等）已写回正文，详见 [WinUI3/README.md](./WinUI3/README.md) 的「验证状态」节
@@ -102,21 +103,22 @@
 19. [dart](./dart)
 20. [kotlin](./kotlin)
 21. [mfc](./mfc)
-22. [win32](./win32)
-23. [rust](./rust)
-24. [OpenCL](./OpenCL)
-25. [sdl2](./sdl2)
-26. [wpf](./wpf)
-27. [sbcl](./sbcl)
-28. [swift](./swift)
-29. [WinUI3](./WinUI3)
-30. [zig](./zig)
-31. [lean4](./lean4)
-32. [forth](./forth)
-33. [prolog](./prolog)
-34. [fortran](./fortran)
-35. [sml](./sml)
-36. [ocaml](./ocaml)
+22. [macosdev](./macosdev)
+23. [win32](./win32)
+24. [rust](./rust)
+25. [OpenCL](./OpenCL)
+26. [sdl2](./sdl2)
+27. [wpf](./wpf)
+28. [sbcl](./sbcl)
+29. [swift](./swift)
+30. [WinUI3](./WinUI3)
+31. [zig](./zig)
+32. [lean4](./lean4)
+33. [forth](./forth)
+34. [prolog](./prolog)
+35. [fortran](./fortran)
+36. [sml](./sml)
+37. [ocaml](./ocaml)
 
 ## 工具链说明
 
@@ -154,6 +156,7 @@
 - Swift
 - Kotlin Compiler
 - MFC / Win32 桌面框架
+- Xcode 26 SDK + Command Line Tools（macOS 应用开发 / Swift + Objective-C + AppKit + XIB，macports 装 `pwsh`；`ibtool` / `actool` 只在装了 Xcode.app 的机器上存在）
 - Win32 API 原生桌面编程
 - CUDA OpenCL Headers
 - SDL2
