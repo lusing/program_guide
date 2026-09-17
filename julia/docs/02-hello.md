@@ -20,7 +20,7 @@ REPL 对中文/Unicode 友好；数学符号用 LaTeX 缩写 + Tab 输入：`\pi
 ```powershell
 julia --startup-file=no main.jl Julia 1.13    # 跑脚本，参数进 ARGS
 julia --startup-file=no -e 'println("hi")'    # 一行代码
-julia --startup-file=no -t 4 main.jl          # 4 线程（21 章）
+julia --startup-file=no -t 4 main.jl          # 4 线程（20 章）
 julia --project=myenv main.jl                 # 激活环境（17 章）
 ```
 

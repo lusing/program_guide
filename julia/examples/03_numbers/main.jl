@@ -61,6 +61,56 @@ println("promote(1, 2.0) = ", promote(1, 2.0), "；trunc(Int, 3.99) = ", trunc(I
 @assert string(255, base = 16) == "ff"
 println("gcd(12,18)=$(gcd(12, 18))  isqrt(10)=$(isqrt(10))  clamp(15,0,10)=$(clamp(15, 0, 10))")
 
+# ═══ 03.7 数值稳定性：抵消、求和顺序、补偿求和、稳定求根
+# 灾难性抵消：x→0 时 (1-cos x)/x² → 1/2，但 cos x ≈ 1 把有效位吃光
+bad_cancellation(x) = (1 - cos(x)) / x^2
+stable_cancellation(x) = 2 * sin(x / 2)^2 / x^2     # 等价恒等式：无相近数相减
+@assert stable_cancellation(1e-8) ≈ 0.5             # 稳定式正确
+@assert bad_cancellation(1e-8) == 0.0               # 朴素式直接得 0：cos(1e-8) 舍入成 1.0，差值全丢
+println("(1-cos x)/x² @ x=1e-8：朴素 = ", bad_cancellation(1e-8), "，稳定 = ", stable_cancellation(1e-8))
+
+# ulp（最后位单位）直觉：1e16 处相邻可表示数间隔 2——加 1 被吞、加 2 活下来
+@assert (1e16 + 1) - 1e16 == 0.0                    # 1 不及半个 ulp：加了个寂寞
+@assert (1e16 + 2) - 1e16 == 2.0                    # 2 恰好一个 ulp：精确保留
+
+# Kahan 补偿求和：一堆小数加大数时把"丢失的低位"记回来
+function kahan_sum(v)
+    s = c = 0.0
+    for x in v
+        y = x - c
+        t = s + y
+        c = (t - s) - y
+        s = t
+    end
+    s
+end
+vals = [1e16; ones(10_000)]                         # 一个大数 + 一万个小数
+naive_sum(v) = (s = 0.0; for x in v; s += x; end; s)
+exact = big(1e16) + big(10_000)                     # BigInt 当精确参考答案
+target = Float64(exact)
+@assert kahan_sum(vals) == target                   # Kahan 逐位恢复
+@assert abs(naive_sum(vals) - target) > 9_000       # 顺序累加：小数几乎全丢
+@assert abs(sum(vals) - target) < 1_000             # 内置 sum（pairwise/SIMD 归约）：好两个数量级
+println("求和对比：naive 差 ", round(abs(naive_sum(vals) - target)),
+        "，内置 sum 差 ", round(abs(sum(vals) - target)),
+        "，Kahan 差 0（目标增量 10000）")
+# 注意：内置 sum 的舍入取决于编译旗标——实测 --check-bounds=yes 下归约路径不同，
+# 差值 626 vs 默认 38。要跨机器逐位复现：固定旗标，或用 Kahan/BigFloat 拿参考值再比较
+
+# 一元二次的稳定求根：避免 b ± √Δ 的抵消；另一根走韦达定理
+function stable_quad(a, b, c)
+    Δ = b^2 - 4a * c
+    Δ < 0 && error("复根")
+    s = b >= 0 ? 1.0 : -1.0                         # 别用 sign(b)：sign(0) == 0，b=0 时 q=0 → c/q=Inf！
+    q = -0.5 * (b + s * sqrt(Δ))                    # 同号相加，绝不抵消
+    (q / a, c / q)                                  # 两根 = q/a 与 c/q（积 = c/a）
+end
+r1, r2 = stable_quad(1.0, -1e8, 1.0)                # 真根：1e8 与 1e-8
+@assert abs(r1 - 1e8) < 1e-7 && abs(r2 - 1e-8) < 1e-12 && r1 * r2 ≈ 1.0
+naive_small = (-(-1e8) - sqrt(1e16 - 4)) / 2        # 朴素小根：相近数相减
+@assert abs(naive_small - 1e-8) > 1e-12             # 丢有效位
+println("二次方程 x²-1e8x+1 的小根：稳定式 = ", r2, "，朴素式 = ", naive_small)
+
 # ═══ 自检汇总
 @assert 1 // 3 + 1 // 6 + 1 // 2 == 1
 println("==== 03 结束 ====")

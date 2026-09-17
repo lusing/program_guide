@@ -104,5 +104,5 @@ end
 1. **`sort` 不吃 do 块**：`sort(v) do a,b ... end` 报 MethodError——用 `by=`/`lt=`（5.7、11 章）。
 2. **空集合 `sum`/`reduce` 抛 ArgumentError**：变长参数、可能为空的折叠都要 `init`（5.3）。
 3. **关键字参数必须带名调用**：`charge(100, 0.2)` 试图按位置传 `tax` → MethodError——分号之后不可按位置（5.3）。
-4. **`->` 才是函数，`=>` 是 Pair**：`() => 1` 构造的是 Pair 不是匿名函数（13 章实测过）。
+4. **`->` 才是函数，`=>` 是 Pair**：`() => 1` 构造的是 Pair 不是匿名函数（22 章实测过）。
 5. **`@assert` 不认 `≈ atol=`**：`@test x ≈ y atol=1e-12` 合法，但 `@assert` 里同写法解析成别的——断言近似用 `isapprox(x, y; atol=...)`（17 章实测）。

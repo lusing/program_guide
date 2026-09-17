@@ -35,4 +35,14 @@ include("main.jl")
         @test round(Int, 2.5) == 2                # ties to even：2.5 → 2、3.5 → 4
         @test parse(Int, "-7") == -7
     end
+    @testset "数值稳定性" begin
+        @test abs(bad_cancellation(1e-6) - 0.5) > 1e-6    # 朴素式在 1e-6 已丢掉一半有效位
+        @test stable_cancellation(1e-6) ≈ 0.5
+        @test kahan_sum([1e16; ones(5)]) == Float64(big(1e16) + 5)
+        @test naive_sum([1e16; ones(5)]) != Float64(big(1e16) + 5)
+        q1, q2 = stable_quad(1.0, 1e8, 1.0)               # b 为正：根是 -1e8 与 -1e-8
+        @test abs(q1 + 1e8) < 1e-7 && q1 * q2 ≈ 1.0
+        @test stable_quad(2.0, 0.0, -8.0) == (-2.0, 2.0)  # b=0 分支（sign(0)==0 的坑已绕开）
+        @test_throws ErrorException stable_quad(1.0, 0.0, 1.0)
+    end
 end

@@ -26,7 +26,7 @@ $runArgsMap = @{
     "02_hello" = @("Julia", "1.13")
 }
 $extraFlagsMap = @{
-    "21_threads" = @("-t", "4")
+    "20_concurrency" = @("-t", "4")
 }
 
 function Invoke-JuliaScript {

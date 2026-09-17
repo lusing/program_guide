@@ -109,7 +109,7 @@ dot([1, 2], [3, 4]) == 11
 Matrix{Float64}(I, 2, 2)     # 单位阵（I 是 UniformScaling）
 ```
 
-`A \ b`（左除）是 Julia 的招牌——比 `inv(A) * b` 快且稳，永远用它解方程。
+`A \ b`（左除）是 Julia 的招牌——比 `inv(A) * b` 快且稳，永远用它解方程。分解族复用（lu/qr/cholesky）、最小二乘、SVD/条件数与稀疏矩阵见 **13 章**。
 
 ## 9.7 坑位清单
 

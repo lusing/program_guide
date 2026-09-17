@@ -18,7 +18,7 @@ julia --code-coverage=user     # 行覆盖
 julia --heap-size-hint=2G      # 内存上限提示 GC
 ```
 
-## 2. 数值（03）
+## 2. 数值与数值稳定（03）
 
 ```julia
 typemax(Int64) + 1            # 环绕不抛错
@@ -31,6 +31,8 @@ mod(-7, 2) == 1               # 与除数同号
 (1 + 2im) * (1 - 2im) == 5 + 0im
 trunc(Int, 3.99) == 3         # Int(3.99) 抛 InexactError！
 round(Int, 2.5) == 2          # ties to even
+2 * sin(x/2)^2 / x^2          # 稳定版 (1-cos x)/x²（抵消是原罪）
+expm1(x) / log1p(x)           # eˣ-1 / ln(1+x) 的防抵消内置
 ```
 
 | 坑 | 解法 |
@@ -38,6 +40,8 @@ round(Int, 2.5) == 2          # ties to even
 | `Int(3.99)` InexactError | 用 trunc/floor/ceil/round（03.5） |
 | `typemax(Float64) == Inf` | 最大有限值 `floatmax`（03.2） |
 | `//` 当注释 | 注释只有 `#`（03.1） |
+| `sign(0) == 0` | 稳定求根手写 `b >= 0 ? 1.0 : -1.0`（03.7） |
+| sum 舍入随旗标变 | 逐位复现固定旗标或 Kahan（03.7 实测 38↔626） |
 
 ## 3. 控制流与作用域（04）
 
@@ -124,14 +128,16 @@ match(r"(\w+)@(\w+)", s).captures
 | `"a" + "b"` | 拼接是 `*`（12.2） |
 | 多字节下标 StringIndexError | 用迭代，别用字节下标猜（12.1） |
 
-## 8. 异常（13）
+## 8. 异常与调试（22）
 
 ```julia
 throw(ArgumentError("...")) / error("...")
 try ... catch e ... finally ... end
 e isa Target || rethrow()
 stacktrace(Base.current_exceptions()[end][2])   # 抛错点栈（1.13）
-DomainError/InexactError/BoundsError/MethodError/KeyError/DivideError
+DomainError/InexactError/BoundsError/MethodError/KeyError/DivideError/PosDefException
+Base.@locals / @show x                          # 现场三件
+using Profile; @profile f(); Profile.print()    # 采样剖析
 ```
 
 ## 9. 元编程（14）
@@ -173,22 +179,49 @@ MyPkg = { path = "../MyPkg" }   # 路径依赖写进 Project.toml（用 / 不用
 Random.seed!(42)               # 可复现
 ```
 
-## 12. 并发（20/21）
+## 12. 并发与并行（20）
 
 ```julia
-t = @async work()             # 协作任务（单线程）
+t = @async work()             # 协作任务（单线程，IO 并发）
 fetch(t)                      # 取结果（失败抛 TaskFailedException，原始在 .task.exception）
 ch = Channel{Int}(4)          # 缓冲通道
 put!(ch, x) / take!(ch) / close(ch)
 for x in Channel(producer)    # 生产者通道可直接迭代
-Threads.@threads for ...      # 需 -t N
+Threads.@threads for ...      # 计算并行（需 -t N）
 Threads.@spawn f(x)           # 任务级并行（数组推导里加括号！）
 Threads.Atomic{Int}(0) / atomic_add!
 lock(ReentrantLock()) do ... end   # Base.lock 的 do 形式
-分块聚合 > 锁 > 原子           # 性能排序
+分块聚合 > 锁 > 原子           # 竞争修复性能排序
 ```
 
-## 13. C 互操作（22）
+## 13. 线性代数与稀疏（13）
+
+```julia
+F = lu(A); F \ b1; F \ b2     # 分解复用：O(n³) 一次、O(n²) 多次
+cholesky(SPD).L; qr(A); svd(A)      # Cholesky 非正定抛 PosDefException
+eigen(A).values / .vectors    # 对称矩阵正交对角化
+A \ b                         # 矩形 = 最小二乘（别手写 A'A\b——条件数平方）
+cond(A) / rank(A)             # 病态度 / 秩
+using SparseArrays
+S = sparse(I, J, V, m, n)     # COO 三元组构造（CSC 存储）
+sprand(m, n, p); nnz(S); S \ rhs      # 稀疏求解（SuiteSparse）
+BLAS.get_num_threads() / set_num_threads(k)   # 独立于 -t！
+```
+
+## 14. 随机与统计（21）
+
+```julia
+rng = Xoshiro(42)             # 独立子流；库代码传 rng 别碰全局 seed!
+rand(rng, 2, 3) / randn(rng, n) / rand!(rng, v) / shuffle(rng, v)
+2 .+ rand(rng, 3)             # 区间采样 = a + (b-a)·U（rand(2.0..3.0) 不存在！）
+mean/var/std/median/quantile(data)      # var 默认 n-1 修正
+cor(x, y) / cov(x, y)
+mean(M; dims = 1)             # 按维统计
+# 蒙特卡洛：误差 ∝ 1/√N；CLT：样本均值 std = σ/√n
+# 坑：循环里新建同种子 rng = 同一批样本——rng 提到循环外
+```
+
+## 15. C 互操作（23）
 
 ```julia
 ccall((:strlen, "msvcrt"), Csize_t, (Cstring,), "hello")
@@ -198,13 +231,11 @@ unsafe_load(p, 1)   # 1 起下标；unsafe_wrap(Array, p, n)
 Cint/Cdouble/Csize_t/Ptr{T}/Cstring                     # 映射表
 ```
 
-## 14. 调试（23）
+## 16. 调试补充
 
 ```julia
-stacktrace(Base.current_exceptions()[end][2])   # 1.13 抛错点栈（catch_stacktrace 已删）
-sprint(showerror, e)  /  @show x  /  Base.@locals
-using Profile; @profile f(); Profile.fetch()
-using InteractiveUtils  # @code_warntype 脚本模式必须显式！
+using InteractiveUtils  # @code_warntype 脚本模式必须显式！（16 章）
+sprint(showerror, e)   # 异常 → 字符串
 ```
 
 生态：BenchmarkTools(@btime)、JET、Debugger、Infiltrator、Cthulhu、Aqua、Documenter、Revise。

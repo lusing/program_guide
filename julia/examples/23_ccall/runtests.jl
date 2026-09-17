@@ -2,7 +2,7 @@
 using Test
 include("main.jl")
 
-@testset "22_ccall" begin
+@testset "23_ccall" begin
     @testset "基础调用" begin
         x = -2.5                                    # @ccall 的 name::T 传的是变量值
         @test ccall((:strlen, "msvcrt"), Csize_t, (Cstring,), "abc") == 3

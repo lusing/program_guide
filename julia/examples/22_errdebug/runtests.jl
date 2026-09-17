@@ -1,13 +1,12 @@
-# 13 示例测试：异常语义
+# 22 示例测试：异常与调试语义
 using Test
 include("main.jl")
 
-@testset "13_errors" begin
+@testset "22_errdebug" begin
     @testset "内建异常" begin
-        @test throws_error(() -> UInt8(300)) === InexactError
-        @test throws_error(() -> sqrt(-1)) === DomainError
-        @test throws_error(() -> "a" * 1) === MethodError
-        @test throws_error(() -> 1 // 0) === nothing       # 有理数：分母 0 直接报错？不——1//0 是合法的 Inf
+        @test throws_type(() -> UInt8(300)) === InexactError
+        @test throws_type(() -> sqrt(-1)) === DomainError
+        @test throws_type(() -> "a" * 1) === MethodError
     end
     @testset "try/catch/finally" begin
         @test safe_div(-6, 2) == -3
@@ -29,8 +28,19 @@ include("main.jl")
         @test_throws Orders.InvalidSku Orders.place_order!(st, "ZZ", 1)
         @test sprint(showerror, Orders.InsufficientStock("B2", 9, 1)) == "库存不足：B2 要 9 有 1"
     end
-    @testset "nothing 语义" begin
+    @testset "栈跟踪" begin
+        @test length(frames) >= 2
+        @test occursin("inner", join((string(f.func) for f in frames), " "))
+        deep() = error("x")
+        fs = try; deep(); catch; stacktrace(Base.current_exceptions()[end][2]); end
+        @test any(f -> f.func === :deep, fs)
+        err = try; throw(KeyError(:k)); catch e; e; end
+        @test occursin("k", sprint(showerror, err))
+    end
+    @testset "即时工具与 nothing 语义" begin
+        @test where_am_i(2) == (true, 4)
         @test find_first_negative([0, 0]) === nothing
         @test find_first_negative([-1]) == 1
+        @test (@allocated probe_me(v1)) == 0
     end
 end

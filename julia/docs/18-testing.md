@@ -69,7 +69,7 @@ end
 
 ## 18.6 覆盖率与 CI 一瞥
 
-- 行覆盖：`julia --code-coverage=user runtests.jl`（23 章）→ `.cov` 文件与源码同行；
+- 行覆盖：`julia --code-coverage=user runtests.jl`（22 章）→ `.cov` 文件与源码同行；
 - CI：GitHub Actions 装 `julia-actions/julia-runtest`；文档 doctest 用 Documenter.jl。
 
 ## 18.7 坑位清单
