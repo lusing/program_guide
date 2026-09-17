@@ -27,7 +27,6 @@ $runArgsMap = @{
 }
 $extraFlagsMap = @{
     "21_threads" = @("-t", "4")
-    "24_minigrep" = @("-t", "4")
 }
 
 function Invoke-JuliaScript {
@@ -99,7 +98,7 @@ function Test-One {
     param([string]$Dir)
     switch (Split-Path -Leaf $Dir) {
         "17_pkgenv" { Test-PkgExample $Dir }
-        "24_minigrep" { Test-PkgExample $Dir }
+        "24_miniode" { Test-PkgExample $Dir }
         default { Test-PlainExample $Dir }
     }
 }

@@ -61,7 +61,7 @@ touch(path)                                  # 空文件/改时间戳
 isdir / isfile / ispath                      # 三连判定
 readdir(outdir)                              # 文件名数组
 readdir(outdir; join = true)                 # 直接给完整路径
-for (root, dirs, files) in walkdir(outdir)   # 递归三元组（24 章主打）
+for (root, dirs, files) in walkdir(outdir)   # 递归三元组
     for f in files
         push!(allfiles, joinpath(root, f))
     end
@@ -88,7 +88,7 @@ homedir() / tempdir() / pwd()
 print("无换行"); print("继续")
 println("——println 顺带刷缓冲")     # 行缓冲（TTY）或块缓冲（管道）
 flush(stdout)                        # 长任务进度显式刷新
-stderr 重定向日志、readline() 读 stdin（交互 CLI 见 24 章）
+stderr 重定向日志、readline() 读 stdin（交互程序用）
 ```
 
 管道下 Julia 输出是块缓冲——本教程示例末行打印"==== NN 结束 ===="再退出，保证进程结束时缓冲全部落盘（build.ps1 靠它验证输出完整）。

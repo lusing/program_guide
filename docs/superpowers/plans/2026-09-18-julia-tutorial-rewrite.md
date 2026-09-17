@@ -34,6 +34,14 @@
 
 ## 执行勘误（实施中实测发现，已写进对应章正文与坑位）
 
+0. **24 章改版（用户反馈）**：初版 24 章为"迷你 grep"（与 cpp20/zig 对齐）；交付后用户指出——
+   grep 展示的是通用系统语言能力，Julia 作为数学/科学计算语言应有特色压轴。已重做：
+   `24_minigrep` → **`24_miniode`（迷你 ODE 求解器）**——问题-算法-解三件套（SciML 同款架构）、
+   Euler/RK4/RKF45 嵌入式自适应步长、泛型状态（标量/向量同一份代码）、收敛阶（2×/16×）与
+   单摆能量守恒（1e-10 vs Euler 的 6e-2）作性质测试、洛伦兹混沌的确定性断言。新增实测坑：
+   `t0 .+ (0:n) .* h` 是惰性 StepRangeLen 不可 setindex!（须 collect）；混沌系统只能断言性质
+   不能断言轨迹逼近；浮点末端须显式收口 `t[end] = tf`。
+
 1. **`catch_stacktrace` 已移除，且 catch 里 `stacktrace(backtrace())` 只给"捕获点"**——抛错点栈要
    `stacktrace(Base.current_exceptions()[end][2])`（13/23 章；老资料普遍写错，1.13 实测确认）。
 2. **`@assert` 不认 `≈ atol=` 语法**（@test 才认）——断言近似用 `isapprox(x, y; atol=...)`（17 章实测）。

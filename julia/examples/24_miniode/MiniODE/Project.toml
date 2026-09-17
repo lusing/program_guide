@@ -1,0 +1,9 @@
+name = "MiniODE"
+uuid = "5b4c3d2e-1f20-4a7b-8c3d-9e0f1a2b3c4d"
+version = "0.1.0"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+
+[compat]
+julia = "1.10"

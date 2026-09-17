@@ -1,5 +1,0 @@
-[deps]
-MiniGrep = "3f8a2b1c-4d5e-4f60-8a9b-7c6d5e4f3a2b"
-
-[sources]
-MiniGrep = {path = "../MiniGrep"}

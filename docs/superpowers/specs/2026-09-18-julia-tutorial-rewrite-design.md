@@ -14,8 +14,11 @@ Pkg 环境系统）讲不出深度。
 
 **目标**：重写为 24 章独立文档（每章 150–250 行，特色章不压缩）、章号 = 示例目录号
 （02–24 共 23 个示例）；定位"会编程（C++/Python 背景最佳）、初学 Julia，从零教到 1.13 现代写法"；
-全部示例在 Julia 1.13.0 实测多层验证通过；第 24 章实战迷你 grep（包工程：递归 + 多线程 +
-高亮 + 测试）。
+全部示例在 Julia 1.13.0 实测多层验证通过；第 24 章实战项目为**迷你 ODE 求解器**（包工程：
+问题-算法-解三件套 + 自适应步长 + 收敛阶/能量守恒测试）。
+> 改版记录（2026-09-18）：24 章原计划"迷你 grep"（与 cpp20/zig 对齐）；初版完成后按用户反馈
+> 改为 ODE 求解器——grep 展示的是通用系统语言能力，Julia 的招牌是科学计算，压轴应对齐
+> SciML 生态的"问题-算法-解"架构（多重派发 × 泛型状态 × 数值性质测试的集大成）。
 
 **非目标**：
 - 不做 1.9→1.13 迁移指南（坑位清单点到即止）
@@ -31,7 +34,7 @@ Pkg 环境系统）讲不出深度。
 |---|---|
 | 章节规模 | 24 章完整版（对齐 cpp20/zig，24 = 实战迷你 grep） |
 | 读者定位 | 会编程（C++/Python 背景最佳）、初学 Julia，1.13 现代写法为主线 |
-| 实战项目 | 第 24 章迷你 grep（包工程：目录递归 + 多线程 + ANSI 高亮 + 测试） |
+| 实战项目 | 第 24 章迷你 ODE 求解器（包工程：问题-算法-解三件套 + RKF45 自适应 + 收敛阶测试；初版 grep 按用户反馈改版） |
 | 工具链 | `G:\scoop\apps\julia\current\bin\julia.exe`（1.13.0，scoop 安装；depot 在 `C:\Users\lusin\.julia`） |
 | 示例形态 | 每章一个目录 `examples/NN_topic/`（含 `main.jl` + `runtests.jl`；17/24 为包工程），章号=目录号 |
 | 验证策略 | 三层：脚本运行层（`--check-bounds=yes` exit 0 + 结束标记）→ 测试层（runtests.jl @testset exit 0）→ 特判层（17/24 Pkg 工程、21 `-t 4`、22 ccall 回调实测） |
@@ -85,7 +88,7 @@ Pkg 环境系统）讲不出深度。
 | 21 | `21-threads.md` | 多线程：-t 与线程池、@threads 三种调度、@spawn、数据竞争与修复（锁/原子/分块聚合）、顶层作用域坑 | `21_threads`（`-t 4`） |
 | 22 | `22-ccall.md` | C 互操作：ccall/@ccall、类型映射表、Cstring/指针、跨平台库名、@cfunction 回调、数组零拷贝 | `22_ccall` |
 | 23 | `23-debugging.md` | 调试与工具：读 1.13 错误栈（Suggestion/Hint）、@time/@allocated、--track-allocation、Profiler stdlib、生态一瞥（Debugger/Infiltrator/JET/Documenter） | `23_debug` |
-| 24 | `24-minigrep.md` | 实战：迷你 grep（包工程 MiniGrep + CLI：递归 + 多线程 + ANSI 高亮 + 测试） | `24_minigrep`（工程） |
+| 24 | `24-miniode.md` | 实战：迷你 ODE 求解器（包工程 MiniODE：问题-算法-解三件套、Euler/RK4/RKF45 自适应、收敛阶与能量守恒测试、SciML 同款架构） | `24_miniode`（工程） |
 
 吸收旧内容：旧指南的安装/REPL 说明压缩进 01/02；分派/数组章节按新结构重组；
 示例代码全部重写（旧的只跑不改错、无断言）。

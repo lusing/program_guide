@@ -117,7 +117,7 @@ isbitstype(Unit)
 ## 8.8 坑位清单
 
 1. **内部构造器写掉默认构造**：定义了 `function Email(...)` 后 `Email(addr)` 只有你写的这一条路——便捷构造放外部（8.5）。
-2. **可变 struct 的 `==` 是身份**：`Counter(1) == Counter(1)` 为 false（默认 == 落到 ===）；要值语义自己定义 `==`（24 章的 Hit 实测踩过）。
+2. **可变 struct 的 `==` 是身份**：`Counter(1) == Counter(1)` 为 false（默认 == 落到 ===）；要值语义自己定义 `==`（24 章的 ODESolution 实测踩过）。
 3. **无类型注解字段 = Any 字段**：`struct S; x; end` 的 x 是 `Any`——构造快但每次访问动态派发（16 章性能灾难清单）。
 4. **@kwdef 写全限定 `Base.@kwdef`**：裸 `@kwdef` 在非 Main 模块里可能解析不到（老版本坑；1.13 已可裸用，但包代码里全限定更稳）。
 5. **不可变 struct 含可变字段**：`struct T; v::Vector{Int}; end` 的 T 不可变，但 `t.v[1]=9` 合法——"不可变"锁的是字段绑定不是深层内容；此时 `===` 只比字段引用。
