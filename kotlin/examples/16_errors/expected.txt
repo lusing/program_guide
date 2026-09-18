@@ -1,0 +1,28 @@
+== 16.2 try 是表达式 ==
+parse: a=42, b=null
+parseLen("abc") = 3
+== 16.3 自定义异常 ==
+get("a") = 1
+捕获 NotFound: 找不到: zzz
+== 16.4 require / check / error ==
+kot
+require: n 不能为负（参数校验）: -1
+check: 串太短（状态校验）
+== 16.5 runCatching 与 Result 链 ==
+成功: getOrNull=42, isFailure=false
+失败: getOrElse={-1}
+map: 84, recoverCatching: 0
+fold 成功分支: 42
+fold 失败分支: For input string: "x"
+mapCatching 链: 800
+== 16.6 Result 版领域函数 ==
+成功: 1
+失败: 找不到: zz
+== 16.7 Nothing：永不返回的类型 ==
+throw 也是表达式: fallback=0
+Nothing 参与 elvis: first=1
+== 16.8 use：自动关闭（try-with-resources）==
+读出字符数: 7
+== 16.9 策略选型 ==
+  编程错误/调用方 bug → require/throw 快速失败 | 可预期的业务失败 → Result/sealed 返回值
+  混合用法：内部 throw，边界 runCatching 转 Result——26 行的 Store1/Store2 是两种风格

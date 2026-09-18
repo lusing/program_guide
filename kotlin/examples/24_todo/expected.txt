@@ -1,0 +1,47 @@
+== 24.2 场景：增 → 列 → 勾 → 删 → 误用 ==
+$ ktodo add 读完 Kotlin 指南第 24 章
+  已添加 #1 读完 Kotlin 指南第 24 章
+$ ktodo add 给示例写测试
+  已添加 #2 给示例写测试
+$ ktodo add 提交 git
+  已添加 #3 提交 git
+$ ktodo list
+  [ ] #1 读完 Kotlin 指南第 24 章
+  [ ] #2 给示例写测试
+  [ ] #3 提交 git
+  共 3 项，未完成 3 项
+$ ktodo done 2
+  完成 #2
+$ ktodo list
+  [ ] #1 读完 Kotlin 指南第 24 章
+  [x] #2 给示例写测试
+  [ ] #3 提交 git
+  共 3 项，未完成 2 项
+$ ktodo rm 3
+  已删除 #3
+$ ktodo done 99
+  没有 #99 这个任务
+  (exit 1)
+$ ktodo frobnicate
+  未知命令 'frobnicate'
+  (exit 2)
+$ ktodo add
+  add 需要标题: ktodo add <标题>
+  (exit 2)
+== 24.3 持久化文件内容 ==
+  build\demo\tasks.json →
+  [{"id":1,"title":"读完 Kotlin 指南第 24 章","done":false},{"id":2,"title":"给示例写测试","done":true}]
+== 24.4 help ==
+$ ktodo help
+  用法: ktodo <命令> [参数]
+    add <标题>     新增任务
+    list           列出全部
+    done <id>      勾选完成
+    rm <id>        删除任务
+    clear          清空全部
+    help           本帮助
+== 24.5 收尾：清空 ==
+$ ktodo clear
+  已清空
+$ ktodo list
+  共 0 项，未完成 0 项

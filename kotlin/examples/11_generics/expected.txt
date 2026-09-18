@@ -1,0 +1,26 @@
+== 11.2 泛型类与泛型函数 ==
+Box(42)
+Box(文本)
+maxOf3(1,5,3) = 5, maxOf3('b','a','c') = c
+== 11.3 型变：Java 数组协变之坑 vs Kotlin List ==
+协变读取: [喵, 汪]
+Producer<Animal>.produce().sound() = 喵
+逆变消费后 last = 喵
+== 11.4 星投影：类型实参未知时仍能安全使用 ==
+List<*> 大小 = 3（能读出 Any?）
+第一个元素 = 1
+printSize: 共 3 个元素
+== 11.5 约束与 where ==
+longerOf("abc", "xy") = abc   // String 同时满足两个约束
+longerOf("ab", "xyz") = xyz
+Repo.all() = [1, 2, 3], map翻倍 = [2, 4, 6]
+== 11.6 reified：把泛型实参带进运行时 ==
+mixed.pick<Int>() = [1, 2]
+mixed.pick<String>() = [a, b]
+42.isA<Int>() = true, "x".isA<Int>() = false
+== 11.7 类型擦除：泛型只活在编译期 ==
+li::class == ls::class → true   // 运行时都是同一个 ArrayList
+li::class.java.name = java.util.Collections$SingletonList   // .java 是通往 JVM Class 的逃生舱
+静态类型时检查恒真（警告），先转 Any 再查星投影: true
+== 11.8 与其他语言对照 ==
+Kotlin: 声明处型变（out/in）+ reified；Java: 使用处通配符 ? extends；C#：out/in；Rust：所有泛型单态化

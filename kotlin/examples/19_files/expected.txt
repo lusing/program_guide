@@ -1,0 +1,35 @@
+== 19.2 写与读 ==
+readText():
+  第一行：kotlin
+  第二行：文件
+  第三行：追加
+exists=true, 大小=56B, 绝对路径=19_files/build/demo/hello.txt
+== 19.3 useLines 流式处理 ==
+words.txt 词数 = 9
+== 19.4 CSV 往返（naive 版：不处理引号转义）==
+name|age / 张三|30 / 李四|41
+== 19.5 目录树 walk ==
+   [D]
+  3.txt (2B)
+  a [D]
+  a\1.txt (2B)
+  a\b [D]
+  a\b\2.txt (9B)
+== 19.6 拷贝与删除 ==
+复制后存在 3-copy.txt: true
+删除后: false
+== 19.7 java.time（不可变、线程安全，别再用 Date/Calendar）==
+formatDate: 2026年09月18日
+today + 45 天 = 2026-11-02
+Period(today→年末).days = 13（分量，不是 104！）
+ChronoUnit.DAYS 总天数 = 104
+时长 9354 秒 = 2时35分54秒
+本月每天（前 5 个）: 2026-09-01, 2026-09-02, 2026-09-03, 2026-09-04, 2026-09-05
+== 19.8 Regex ==
+toSnakeCase(HTTPServer) = http_server
+toSnakeCase(myKotlinVar2) = my_kotlin_var2
+  LogLine(ts=09:15:00, level=INFO, msg=服务启动)
+  （不匹配）
+  LogLine(ts=09:15:03, level=WARN, msg=磁盘 85%)
+== 19.9 极简 JSON 编码器 ==
+{"id": 1, "title": "写 Kotlin 教程", "done": false, "tags": ["docs", "wip"], "note": "带\"引号\"与\n换行", "due": null}

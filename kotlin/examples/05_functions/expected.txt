@@ -1,0 +1,23 @@
+== 5.2 默认参数与具名参数 ==
+http://api.example.com:8080 (timeout=3000ms)
+https://api.example.com:443 (timeout=3000ms)
+http://db.example.com:5432 (timeout=10000ms)
+http://cdn.example.com:8080 (timeout=500ms)
+== 5.3 vararg 与展开 ==
+sum(1,2,3) = 6
+sum() = 0
+sum(*nums) = 65
+nums 是数组，直接传要写 sum(*nums)
+== 5.4 中缀调用 ==
+2 pow 10 = 1024
+等价写法 = 1024
+== 5.5 尾递归 ==
+20! = 2432902008176640000
+fib(90) = 2880067194370816120
+== 5.6 局部函数 ==
+合法表单: []
+问题清单: [姓名 无效: 为空, 邮箱 无效: 缺少 @, 年龄 无效: 超出范围]
+== 5.7 泛型函数预览 ==
+maxOf3(3, 9, 7) = 9
+maxOf3('a','z','m') = z
+maxOf3("kotlin","zig","rust") = zig

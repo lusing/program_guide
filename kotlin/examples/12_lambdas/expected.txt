@@ -1,0 +1,33 @@
+== 12.2 lambda 基本形 ==
+square(5) = 25, cube(3) = 27
+sum2(3, 4) = 7
+== 12.3 it：单参数 lambda 的隐式名 ==
+isEven(4) = true
+== 12.4 把函数当值传递 ==
+operate(6, 3, { a, b -> a * b }) = 18
+operate(6, 3) { a, b -> a - b } = 3   // 尾随 lambda
+operate(6, 3, ::maxOf) = 6
+函数也能进集合: 2, 9
+multiplier(3)(7) = 21        // 返回的函数带着自己的 k
+== 12.5 闭包：lambda 捕获外部变量 ==
+10
+20
+30
+calls 被闭包改到 = 3
+== 12.6 带接收者的 lambda：T.() -> R ==
+[平方] 100
+[长度] 6（this=kotlin）
+== 12.7 作用域函数五件套 ==
+let: Ada 得分 90
+run: bonus = 180
+with: 修改后 Ada=95
+apply: 配置中 name=Bob
+apply 产物: Player(name=Bob, score=50)
+also: 创建了 Carol
+also 产物: Player(name=Carol, score=60)
+== 12.8 inline 与非局部返回 ==
+firstOrNull { >2 } = 3            // forEach/firstOrNull 都是 inline
+firstNegative = -7
+== 12.9 自己写高阶函数 ==
+myFilter(1..10, 偶数) = [2, 4, 6, 8, 10]
+myFilter(名字长度>3) = [carol]

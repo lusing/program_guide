@@ -1,0 +1,40 @@
+== 22.2 惰性求值：List vs Sequence ==
+  [集合] 开始
+  [集合] map 1
+  [集合] map 2
+  [集合] map 3
+  [集合] map 4
+  [集合] map 5
+  [集合] filter 10
+  [集合] filter 20
+  [集合] filter 30
+  [集合] filter 40
+  [集合] filter 50
+急切结果: [30, 40]
+  [序列] 开始
+  [序列] map 1
+  [序列] filter 10
+  [序列] map 2
+  [序列] filter 20
+  [序列] map 3
+  [序列] filter 30
+  [序列] map 4
+  [序列] filter 40
+惰性结果: [30, 40]
+→ 序列算到第 4 个元素就把 take(2) 攒够提前收工；集合把 5 个全算完才开始过滤
+== 22.3 组合与柯里化 ==
+compose(uppercase, trim)("  hi ") = HI
+curry3(add3)(1)(2)(3) = 6
+partial2(加法, 10)(5) = 15
+== 22.4 Either：不用异常的错误传播 ==
+  pipeline("70") = 票: 半价 ¥50
+  pipeline("15") = 失败: 未成年: 15
+  pipeline("x") = 失败: 'x' 不是数字
+== 22.5 纯函数：依赖注入时间 ==
+  t=1000 创建, ttl=5000: 过期=false
+  前进 6000 后: 过期=true   ← 测试无需真等 6 秒
+== 22.6 不可变数据的『修改』 ==
+  prod = Config2(host=api.x.io, port=443, debug=false)
+  debug = Config2(host=api.x.io, port=8443, debug=true)（copy 产出新值，原值不动）
+== 22.7 递归与尾调用 ==
+  sumTo(100000) = 705082704（tailrec 编译成循环，不爆栈）

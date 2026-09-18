@@ -1,0 +1,23 @@
+== 13.2 扩展函数 ==
+"Ada Lovelace Byron".initials() = A.L.B.
+"  Kotlin 编程 指南 ".toSlug() = 'kotlin-编程-指南'
+3.timesRepeat("哈") = 哈哈哈
+== 13.3 扩展属性 ==
+"hey!".shoutLen = 5
+listOf(1,2,3).secondOrNullExt = 2
+listOf(1).secondOrNullExt = null
+== 13.4 可空接收者 ==
+null.orDash() = —
+"有值".orDash() = 有值
+== 13.5 泛型扩展 ==
+interspersed = a · b · c
+== 13.6 伴生对象扩展 ==
+ofYuan(3) → 300 分；ofCents(250) → 250 分
+== 13.7 成员优先于扩展 ==
+成员渲染: t
+== 13.8 静态解析：扩展不分发 ==
+a.who() = Dog2        // 虚方法：运行时类型 Dog2
+a.tag() = [A]        // 扩展：编译期类型 Animal2 决定 [A]
+== 13.9 标准库本身就是扩展大展 ==
+"42".toIntOrNull() = 42  ← String 的扩展
+listOf(1,2).map{it+1} = [2, 3]  ← Iterable 的扩展

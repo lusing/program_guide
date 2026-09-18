@@ -1,0 +1,20 @@
+== 6.2 主构造与属性 ==
+Rect(3,4): area=12.0, isSquare=false
+Rect(5,5): area=25.0, isSquare=true
+== 6.3 init 块与参数校验 ==
+Price: value=100, currency=USD, discount=1.0, final=0.0
+Price(-1) 拒绝: 价格不能为负: -1
+== 6.4 次构造函数 ==
+Employee(张三 @ 未分配)
+Employee(李四 @ 研发)
+== 6.5 data class 三件套 ==
+a == b（值相等）: true  —— data class 按值比较；普通 class 按引用比较
+a.toString(): Point(x=1, y=2)
+a.hashCode() == b.hashCode(): true
+a.copy(y=99): Point(x=1, y=99)（原对象不动: Point(x=1, y=2)）
+解构: x=1, y=2
+moveBy(10,20): Point(x=11, y=22)
+== 6.6 运算符重载 ==
+Vec2(1,2) + Vec2(10,20)*2 = Vec2(x=21.0, y=42.0)
+-v = Vec2(x=-21.0, y=-42.0)
+v[0]=21.0, v[1]=42.0

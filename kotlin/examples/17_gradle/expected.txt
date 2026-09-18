@@ -1,0 +1,5 @@
+== kt-gradle-demo-lib v1.0.0 ==
+Hello, Gradle!
+Hello, Kotlin!
+词频: kotlinx3, gradlex2, buildx1
+来自 2 位调用者

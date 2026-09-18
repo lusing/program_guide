@@ -1,0 +1,29 @@
+== 4.2 类型即空安全 ==
+s.length = 3, t = null
+== 4.3 安全调用 ?. 与 Elvis ?: ==
+张三
+匿名
+匿名
+u1.email?.length = 7
+host = ex.io
+== 4.4 let：对非空值执行一段逻辑 ==
+if 判空后智能转换: Z@EX.IO
+let 版（非空才进来）: Z@EX.IO
+== 4.5 !! 操作符：断言非空，错了就 NPE ==
+u2.name?.length = null
+u2.name!! 抛出 NPE —— !! 只用于你比编译器更懂的时刻
+== 4.6 安全转换 as? ==
+lengthIfText("kotlin") = 6
+lengthIfText(42) = null
+== 4.7 可空与集合 ==
+原始解析结果: [18, null, null, 33]
+过滤掉 null: [18, 33]
+map 值里的 null: {a=1, b=null}, b = null
+== 4.8 takeIf / takeUnless ==
+未成年(12)
+成年(30)
+年龄缺失
+takeIf: 4→4, 3→null
+== 4.9 lateinit：非空但要晚点才初始化 ==
+初始化前 ready = false
+初始化后 ready = true, endpoint = https://api.example.com

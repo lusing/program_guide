@@ -1,0 +1,22 @@
+== 9.2 object 单例 ==
+Registry: {a=2, b=1}（probes=3）
+== 9.3 companion object ==
+User2(张三), User2(李四), 共创建 2 个（MAX_LEN=12）
+== 9.4 类委托 by ==
+box.size = 5, box[2] = 3          // List 接口全部转发
+box.countWhere{偶数} = 2    // 自己加的新能力
+== 9.5 lazy ==
+第一次读 heavyConfig:
+  [lazy] heavyConfig 只算这一次！
+  host=localhost
+第二次读 heavyConfig:
+  port=8080（没有再打印 [lazy] 日志——已缓存）
+== 9.6 observable / vetoable ==
+  [observable] 20.0 ℃ → 25.5 ℃
+  [observable] 25.5 ℃ → 30.0 ℃
+safeRange 最终 = 45.0（999 被否决）
+== 9.7 自定义委托 ==
+title 初始 = '默认标题'（读值时 trim）
+title 赋值后 = '新标题'
+== 9.8 Map 委托 ==
+db.local:5432 debug=true

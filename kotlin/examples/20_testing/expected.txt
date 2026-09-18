@@ -1,0 +1,23 @@
+== 20.2 断言画廊 ==
+  assertEquals / assertTrue / assertContains / assertNull 全家——见 test/Tests.kt
+  assertFailsWith: 分数越界: 101
+== 20.3 表驱动 ==
+  fizzbuzz(1) = 1 ✓
+  fizzbuzz(3) = Fizz ✓
+  fizzbuzz(5) = Buzz ✓
+  fizzbuzz(15) = FizzBuzz ✓
+  fizzbuzz(98) = 98 ✓
+== 20.4 边界值 ==
+  grade(0) = D ✓
+  grade(59) = D ✓
+  grade(60) = C ✓
+  grade(79) = C ✓
+  grade(80) = B ✓
+  grade(89) = B ✓
+  grade(90) = A ✓
+  grade(100) = A ✓
+== 20.5 固定种子的『随机』 ==
+  Random(42) 的 5 次掷骰: [6, 1, 6, 3, 2]（每次运行都一样——可复现测试）
+== 20.6 行为验证：用假实现观察副作用 ==
+  all() = [Task2(id=1, title=写教程, done=true), Task2(id=2, title=改示例, done=false)]
+  complete(99) = false ✓

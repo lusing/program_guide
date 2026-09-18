@@ -1,0 +1,18 @@
+== 18.2 Kotlin 调 Java ==
+Lib.nick("kt") = [kt]
+firstNonEmpty("", "备用") = 备用
+firstNonEmpty("", null) = null（类型系统知道它可能为 null）
+Lib.runOp(5) { it * 10 } = 50
+Lib.base = 42
+Lib.getBase2() = 20   ← 静态 get/set 不合成属性
+== 18.3 Java 调 Kotlin（Caller.demo）==
+Java→Kotlin MathKit.square(7) = 49
+Java→Kotlin MathKit.scale(5) = 10
+Java→Kotlin MathKit.scale(5, 10) = 50
+Java→Kotlin Meter.value = 9
+Java→Kotlin Meter.show("cm") = 9cm
+Java→Kotlin StrKit.shout("hey") = HEY!
+Java→Kotlin safeLen(null) = 0
+Java 捕获 Kotlin 异常: 负数: -1
+Kotlin→Java Lib.runOp(6, x -> x * 3) = 18
+Lib.base=7, Lib.base2=11

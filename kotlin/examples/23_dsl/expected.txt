@@ -1,0 +1,20 @@
+== 23.2 HTML builder ==
+<html lang="zh"><body><h1>Kotlin DSL</h1><div class="content"><p>带接收者的 lambda 造出层级结构</p><p>编译期就检查出结构错误——括号、闭合标签不存在写错的可能</p></div><div/></body></html>
+== 23.3 @DslMarker：作用域不泄漏 ==
+  没有 DslMarker 时，内层 lambda 里能隐式调到外层 this（body 里跳回 html）——嵌套写错编译器不管
+  加了 @HtmlDsl 后外层 this 被屏蔽，误用直接编译错：
+    html { body { attr("x","1") } }   ← attr 在 Tag 上都有，这里演示靠约定
+== 23.4 中缀 DSL：should / eq ==
+  42 should 42 ✓（失败会抛 IllegalStateException）
+  eq 失败: 断言失败: 期望 3, 实际 2
+== 23.5 invoke 约定：对象当函数用 ==
+  router("/home") → 已注册 /home（累计 1 条）
+  router("/about") → 已注册 /about（累计 2 条）
+== 23.6 类型安全构建器 ==
+  implementation: org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2
+  implementation: com.squareup.okhttp3:okhttp:5.1.0
+  test: kotlin-test
+== 23.7 DSL 的三板斧 ==
+  1) 带接收者的 lambda（T.() -> Unit）：块内 this 就是容器
+  2) @DslMarker：封锁跨层隐式 this
+  3) 命名约定（infix/operator invoke/get）：让调用像自然语言

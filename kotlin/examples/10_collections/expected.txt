@@ -1,0 +1,48 @@
+== 10.2 只读与可变双轨 ==
+listOf=[1, 2, 3], mutableListOf=[1, 2, 3]
+只读引用能看到底层变化: view=[1, 2, 3, 4]（所以只读 ≠ 不可变）
+快照 toList 不受影响: frozen=[1, 2, 3, 4]
+== 10.3 创建函数全家 ==
+listOf(1,2,3) = [1, 2, 3]
+mutableListOf = [a]
+emptyList<Int>() = []
+List(3) { it * it } = [0, 1, 4]      // 工厂：按下标构造
+MutableList(3) { 0 } = [0, 0, 0]
+buildList { add(1); add(2) } = [1, 2]   // 构建期可变，产物只读
+mapOf("a" to 1) = {a=1}
+setOf(1, 2, 2, 3) = [1, 2, 3]          // 去重
+(1..5).toList() = [1, 2, 3, 4, 5]
+== 10.4 map / filter / 链式管道 ==
+偶数的平方: [4, 16, 36, 64, 100]
+第一个 >7 的元素: 8
+没有匹配时用 firstOrNull: null
+count/sum/avg/max: count=10, sum=55, avg=5.5, max=10
+take/drop: take(3)=[1, 2, 3], drop(7)=[8, 9, 10]
+distinct: [1, 2, 3]
+== 10.5 分组与关联 ==
+词频 Top3: the×3, brown×1, dog×1
+按成绩分组: P: [张三, 王五], F: [李四, 赵六]
+indexByName: [Alice, Bob, Carol, Dave]
+北京的成年人: Alice(30)、Carol(25)
+== 10.6 flatMap / zip / chunked / windowed ==
+全员爱好去重: [编程, 读书, 跑步]
+zipSums([1,2,3],[10,20,30]) = [11, 22, 33]
+chunked(2) = [[0, 1], [2, 3], [4, 5]]
+windowed(2) = [[1, 2], [2, 3], [3, 4]]
+zipWithNext = (1,2), (2,3), (3,4)
+== 10.7 fold / reduce / scan ==
+求和 reduce: 10
+fold(10): 20
+runningFold: [0, 1, 3, 6, 10]    // 前缀和
+== 10.8 Map 操作 ==
+getOrPut: 3，再取还是同一个值: 3
+mapValues: {a=10, b=20, c=30}
+filterKeys: {a=1, c=3}
+x=1 y=2 
+== 10.9 Set 运算 ==
+a ∪ b = [1, 2, 3, 4]（或 a.union(b)）
+a ∩ b = [3]
+a − b = [1, 2]
+== 10.10 排序：sorted 新列表 vs sort 原地 ==
+src=[3, 1, 2], copy=[1, 2, 3]
+按年龄降序: Dave, Alice, Carol, Bob

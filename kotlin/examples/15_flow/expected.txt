@@ -1,0 +1,28 @@
+== 15.2 Channel ==
+  send 1
+  recv 1
+  recv 2
+  send 2
+  send 3
+  recv 3
+  trySend: Value(kotlin.Unit), Value(Failed); tryReceive: Value(7) / Value(Failed)
+== 15.3 Flow：冷流证据 ==
+第一次 collect:
+  [flow] 上游开始执行
+  收到 1
+  收到 2
+第二次 collect（上游代码重新跑了一遍）:
+  [flow] 上游开始执行
+  收到 1
+== 15.4 操作符管道 ==
+  20!
+  30!
+  三十!
+== 15.5 异常与完成 ==
+  catch 后: [1, 2, -1]
+  onCompletion: [值1, 值2, 捕:坏在第 3 个, 完成(cause=null)]
+== 15.6 SharedFlow 多播 ==
+  A收到: A1, A2 | B收到: B1, B2
+== 15.7 竞态与 Mutex ==
+  无锁（单线程模拟切换）: c = 100   ← 200 次自增丢了 100 次，更新被覆盖
+  Mutex 保护后: c = 200
