@@ -1,0 +1,6 @@
+# Rust 教程根 workspace：一个 target 共享全部 21 个普通示例，
+# 加快增量编译。17_cargo / 24_minigrep 是独立工程（自带 [workspace]），单独验证。
+[workspace]
+resolver = "3"
+members = ["examples/*"]
+exclude = ["examples/17_cargo", "examples/24_minigrep"]

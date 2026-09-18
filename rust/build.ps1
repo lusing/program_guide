@@ -1,100 +1,87 @@
 param(
     [switch]$All,
-    [string]$File,
+    [string]$Example,   # 示例目录名，如 12_traits
     [switch]$Clean
 )
 
+$ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $projectRoot
 
-$rustc = "G:\scoop\apps\rust\current\bin\rustc.exe"
-$examplesDir = Join-Path $projectRoot "examples"
-$buildDir = Join-Path $projectRoot "build"
-
-if (-not (Test-Path -LiteralPath $rustc)) {
-    throw "未找到 rustc.exe，请检查 Rust 安装路径。"
+# ---- 工具链定位：scoop 安装的 Rust，回退到 PATH ----
+$cargoDir = "G:\scoop\apps\rust\current\bin"
+if (-not (Test-Path -LiteralPath (Join-Path $cargoDir "cargo.exe"))) {
+    $cmd = Get-Command cargo -ErrorAction SilentlyContinue
+    if ($cmd) { $cargoDir = Split-Path $cmd.Source }
+    else { throw "未找到 cargo，请确认 Rust 安装（期望 $cargoDir）" }
 }
+$env:PATH = "$cargoDir;$env:PATH"
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+
+$buildTargets = Join-Path $projectRoot "target"
+$examplesDir = Join-Path $projectRoot "examples"
+# 自带 [workspace] 的独立工程（根 Cargo.toml 的 exclude），单独进入验证
+$standalone = @("17_cargo", "24_minigrep")
 
 if ($Clean) {
-    if (Test-Path -LiteralPath $buildDir) {
-        Remove-Item -LiteralPath $buildDir -Recurse -Force
-        Write-Host "[Clean] 已清理 build 目录。" -ForegroundColor Yellow
-    } else {
-        Write-Host "[Clean] build 目录不存在，无需清理。" -ForegroundColor Yellow
+    foreach ($t in @($buildTargets) + ($standalone | ForEach-Object { Join-Path $examplesDir "$_\target" })) {
+        if (Test-Path -LiteralPath $t) { Remove-Item -LiteralPath $t -Recurse -Force }
     }
+    Write-Host "[Clean] 已清理全部 target 目录。" -ForegroundColor Yellow
     exit 0
 }
 
-if (-not (Test-Path -LiteralPath $examplesDir)) {
-    throw "找不到 examples 目录: $examplesDir"
+# ---- 四层验证：fmt --check → clippy(-D warnings) → test → run(exit 0) ----
+function Test-Example {
+    param([string]$Dir)
+    $name = Split-Path -Leaf $Dir
+    Write-Host "`n[Example] $name" -ForegroundColor Cyan
+    Push-Location $Dir
+    try {
+        & cargo fmt --check 2>&1 | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw "cargo fmt --check 未通过: $name（先在该目录跑 cargo fmt）" }
+
+        & cargo clippy --quiet --all-targets -- -D warnings
+        if ($LASTEXITCODE -ne 0) { throw "clippy 未通过: $name" }
+
+        & cargo test --quiet
+        if ($LASTEXITCODE -ne 0) { throw "cargo test 未通过: $name" }
+
+        & cargo run --quiet
+        if ($LASTEXITCODE -ne 0) { throw "cargo run 退出码 ${LASTEXITCODE}: $name" }
+    }
+    finally { Pop-Location }
+    Write-Host "[OK] $name 四层验证通过" -ForegroundColor Green
 }
 
-New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
+function Test-One {
+    param([string]$Name)
+    $dir = Join-Path $examplesDir $Name
+    if (-not (Test-Path -LiteralPath $dir)) { throw "找不到示例目录: $dir" }
+    Test-Example $dir
+}
 
-function Invoke-RustExample {
-    param(
-        [Parameter(Mandatory = $true)][string]$SourcePath
-    )
-
-    $name = [System.IO.Path]::GetFileNameWithoutExtension($SourcePath)
-    $displayName = [System.IO.Path]::GetFileName($SourcePath)
-    $outputExe = Join-Path $buildDir ($name + ".exe")
-
-    Write-Host "[Build] $displayName" -ForegroundColor Cyan
-    & $rustc "--edition=2021" $SourcePath "-o" $outputExe
-    if ($LASTEXITCODE -ne 0) {
-        throw "编译失败: $SourcePath"
-    }
-
-    Write-Host "[Run] $displayName" -ForegroundColor DarkCyan
-    & $outputExe
-    if ($LASTEXITCODE -ne 0) {
-        throw "运行失败: $SourcePath"
-    }
-
-    if ($name -eq "19_tests_style") {
-        $testExe = Join-Path $buildDir ($name + "_tests.exe")
-        Write-Host "[TestBuild] $displayName" -ForegroundColor Magenta
-        & $rustc "--edition=2021" "--test" $SourcePath "-o" $testExe
-        if ($LASTEXITCODE -ne 0) {
-            throw "测试编译失败: $SourcePath"
-        }
-
-        Write-Host "[TestRun] $displayName" -ForegroundColor DarkMagenta
-        & $testExe "--nocapture"
-        if ($LASTEXITCODE -ne 0) {
-            throw "测试运行失败: $SourcePath"
-        }
-    }
+if ($Example) {
+    Test-One $Example
+    Write-Host "`n[Done] $Example 验证通过。" -ForegroundColor Green
+    exit 0
 }
 
 if ($All) {
-    $files = Get-ChildItem -LiteralPath $examplesDir -Filter "*.rs" | Sort-Object Name
-    if ($files.Count -eq 0) {
-        throw "examples 目录下没有 .rs 示例文件。"
-    }
+    # 根 workspace 先做一次全量 fmt/clippy 兜底（增量，很快）
+    & cargo fmt --check 2>&1 | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "根 workspace fmt 未通过（在 rust/ 跑 cargo fmt）" }
 
-    foreach ($f in $files) {
-        Invoke-RustExample -SourcePath $f.FullName
-    }
+    Get-ChildItem -LiteralPath $examplesDir -Directory |
+        Where-Object { $_.Name -match '^\d\d' } |
+        Sort-Object Name |
+        ForEach-Object { Test-Example $_.FullName }
 
-    Write-Host "[Done] examples 目录全部验证通过。" -ForegroundColor Green
-    exit 0
-}
-
-if ($File) {
-    $sourcePath = Join-Path $examplesDir $File
-    if (-not (Test-Path -LiteralPath $sourcePath)) {
-        throw "找不到示例文件: $sourcePath"
-    }
-
-    Invoke-RustExample -SourcePath $sourcePath
-    Write-Host "[Done] 验证通过: $File" -ForegroundColor Green
+    Write-Host "`n[Done] 全部 23 个示例四层验证通过（fmt + clippy + test + run）。" -ForegroundColor Green
     exit 0
 }
 
 Write-Host "用法:" -ForegroundColor Yellow
-Write-Host "  .\build.ps1 -All           编译并运行 examples 下全部示例"
-Write-Host "  .\build.ps1 -File <name>   编译并运行单个示例（如 01_hello.rs）"
-Write-Host "  .\build.ps1 -Clean         清理 build 目录"
-
+Write-Host "  .\build.ps1 -All               验证 examples 下全部 23 个示例"
+Write-Host "  .\build.ps1 -Example 12_traits 验证单个示例"
+Write-Host "  .\build.ps1 -Clean             清理全部 target 目录"

@@ -1,0 +1,14 @@
+# 17 · 多 crate workspace 工程：路径依赖、feature 门控、workspace 级配置
+# 这是独立 workspace（不隶属 rust/ 根 workspace，见根 Cargo.toml 的 exclude）。
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+# workspace 级依赖声明：成员用 `workspace = true` 继承，版本一处改
+[workspace.dependencies]
+geometry = { path = "crates/geometry" }
+
+# 发布配置示例：cargo build --release 时生效
+[profile.release]
+lto = true          # 链接期优化（跨 crate 内联）
+codegen-units = 1   # 单编译单元（更慢的编译，更好的优化）

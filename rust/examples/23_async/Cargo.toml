@@ -1,0 +1,14 @@
+[package]
+name = "async_demo"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tokio = { version = "1", features = [
+    "rt",            # 运行时核心
+    "rt-multi-thread", # 多线程调度器
+    "macros",        # #[tokio::main] / #[tokio::test] / select!
+    "time",          # sleep / timeout
+    "sync",          # 异步版 mpsc / Mutex / oneshot
+    "fs",            # 异步文件 IO
+] }

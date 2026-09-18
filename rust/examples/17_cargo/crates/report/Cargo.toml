@@ -1,0 +1,8 @@
+[package]
+name = "report"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# workspace = true 继承根声明的路径与版本；features 按需追加
+geometry = { workspace = true, features = ["advanced"] }
