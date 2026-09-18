@@ -131,7 +131,22 @@ Err 时运行时打印 Debug 并以非零码退出——**小工具的黄金写�
 error（出了什么错，给人读）→ source（根因链）→ backtrace（RUST_BACKTRACE=1）
 ```
 
-`anyhow` 的 `{:?}` 打印会整链展开 + backtrace。调试期记得 `set RUST_BACKTRACE=1`（PowerShell：`$env:RUST_BACKTRACE="1"`）。
+`anyhow` 的 `{:?}` 打印会整链展开 + backtrace。调试期记得开 `RUST_BACKTRACE=1`——三个 shell 写法不一样：
+
+```bash
+# macOS / Linux
+RUST_BACKTRACE=1 cargo run
+```
+
+```powershell
+# Windows PowerShell
+$env:RUST_BACKTRACE="1"; cargo run
+```
+
+```bat
+:: Windows cmd
+set RUST_BACKTRACE=1 && cargo run
+```
 
 ## 10.8 坑位清单
 

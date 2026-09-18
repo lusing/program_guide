@@ -48,7 +48,7 @@
 - [win32](./win32) — Win32 API 桌面编程指南，使用 MSVC + Win32 API 编译验证
 - [WinUI3](./WinUI3) — WinUI 3 C++/WinRT 教程（10 篇 + README），使用 MSVC + Windows App SDK 1.8 编译验证：`examples/` 下 5 个工程（first-app / controls / layout / binding-mvvm / os-integration）经 `build.ps1` 全部编过，再用 `tools/ui-smoke/` 启动 + 合成点击 + 前后截图做运行时验证；`tools/winmd-probe/` 做元数据级签名核对。三条通道逼出的修正（WinUI 3 上 `resume_foreground` 失效须改 `DispatcherQueue::TryEnqueue`、非打包 `ApplicationData::GetDefault()` 抛"该进程没有程序包标识符"、ViewModel IDL 须声明 `INotifyPropertyChanged`、事件处理器不必进 IDL、跨 `.idl` 引用触发 `MIDL2011` 须合并等）已写回正文，详见 [WinUI3/README.md](./WinUI3/README.md) 的「验证状态」节
 - [OpenCL](./OpenCL) — OpenCL Windows 教程，使用 Visual Studio + CUDA CL 头文件验证
-- [rust](./rust) — Rust 教程与示例，使用 rustc 编译并运行验证
+- [rust](./rust) — Rust 教程与示例（24 章 + 23 个 cargo 工程），四层验证：fmt + clippy `-D warnings` + test + run；macOS 12.7 上用 MacPorts rustc **1.98.1** 实测 23/23 通过（Windows scoop 同版本亦通过），双入口 `run-all.sh` / `build.ps1` 判定一致；详见 [rust/README.md](./rust/README.md) 的「macOS 上的兼容性」节
 - [sbcl](./sbcl) — Common Lisp / SBCL 教程与示例，运行全部示例验证（macOS + SBCL 2.6.7，17 个示例，双入口 `run-all.sh` / `build.ps1`，四条判定：退出码 0 + stderr 为空 + 无多余控制字符 + 结束标记）；教程正文 18 章 + 2 附录，文中 521 条 `; =>` 断言由 `verify-guide.py` 逐条回跑校验（mismatch 0）
 - [sdl2](./sdl2) — SDL2 C++ 教程与示例，使用 MSVC + SDL2 库编译验证
 - [swift](./swift) — Swift 教程与示例，使用 swiftc 编译验证
@@ -151,7 +151,7 @@
 - Julia 1.13.0（macOS 实测通道：MacPorts `/opt/local/bin/julia`；Windows 可 scoop/juliaup；两个验证入口都自动探测，不硬编码路径）
 - SWI-Prolog 10.0.2 + GNU Prolog 1.5.0 / gplc（逻辑编程，macOS macports 安装）
 - Ren'Py
-- Rust
+- Rust 1.98.1 / cargo 1.98.0（edition 2024；macOS 实测通道：MacPorts `/opt/local/bin/cargo`；Windows 可 scoop/rustup；两个验证入口都自动探测，不硬编码路径）
 - SBCL 2.6.7（Common Lisp；macOS macports 安装 `/opt/local/bin/sbcl`，Windows scoop 安装；sbcl 目录示例有意绑定 SBCL 扩展，为**单实现通道**）
 - Swift
 - Kotlin Compiler

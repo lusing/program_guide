@@ -115,12 +115,28 @@ pub fn collect_files(
 
 // ============================ 运行 ============================
 
-const RED: &str = "\x1b[1;31m";
-const BOLD: &str = "\x1b[1m";
-const RESET: &str = "\x1b[0m";
+// ANSI 转义序列。只在「stdout 是终端」且用户没设 NO_COLOR 时才插进输出 ——
+// 重定向到文件 / 管道时不能吐转义，否则下游（日志、CI、验证脚本）拿到的是
+// 一堆 \x1b[..m 噪声。本仓库的验证判定「stdout 无多余控制字符」正是抓这个。
+const RED_ESC: &str = "\x1b[1;31m";
+const BOLD_ESC: &str = "\x1b[1m";
+const RESET_ESC: &str = "\x1b[0m";
+
+/// (red, bold, reset)；关色时三个都是空串，打印代码不必分两套分支
+type Palette = (&'static str, &'static str, &'static str);
+
+fn palette() -> Palette {
+    use std::io::IsTerminal;
+    let on = env::var_os("NO_COLOR").is_none() && std::io::stdout().is_terminal();
+    if on {
+        (RED_ESC, BOLD_ESC, RESET_ESC)
+    } else {
+        ("", "", "")
+    }
+}
 
 /// 把行中命中的部分标红（按字节区间切，命中串本身按字符对齐处理）
-fn highlight(line: &str, query: &str, ignore_case: bool) -> String {
+fn highlight(line: &str, query: &str, ignore_case: bool, (red, bold, reset): Palette) -> String {
     let (hay, needle) = if ignore_case {
         (line.to_lowercase(), query.to_lowercase())
     } else {
@@ -131,7 +147,7 @@ fn highlight(line: &str, query: &str, ignore_case: bool) -> String {
             // 字节边界安全切片：contains 命中保证边界完整
             let byte_end = byte_start + needle.len();
             format!(
-                "{BOLD}{}{RESET}{RED}{}{RESET}{BOLD}{}{RESET}",
+                "{bold}{}{reset}{red}{}{reset}{bold}{}{reset}",
                 &line[..byte_start],
                 &line[byte_start..byte_end],
                 &line[byte_end..]
@@ -143,6 +159,8 @@ fn highlight(line: &str, query: &str, ignore_case: bool) -> String {
 
 /// 主流程：读文件 → 搜文件 → 高亮打印。错误全部 ? 上抛。
 pub fn run(config: &Config) -> Result<usize, Box<dyn Error>> {
+    let pal = palette();
+    let (red, bold, reset) = pal;
     let mut files = Vec::new();
     for p in &config.paths {
         collect_files(p, config.recursive, &mut files)?;
@@ -157,22 +175,22 @@ pub fn run(config: &Config) -> Result<usize, Box<dyn Error>> {
         };
         for m in &matches {
             println!(
-                "{}:{RED}{}{RESET}:{}",
+                "{}:{red}{}{reset}:{}",
                 file.display(),
                 m.line_no,
-                highlight(&m.line, &config.query, config.ignore_case)
+                highlight(&m.line, &config.query, config.ignore_case, pal)
             );
         }
         if !matches.is_empty() {
             println!(
-                "{BOLD}-- {}：{} 处命中{RESET}",
+                "{bold}-- {}：{} 处命中{reset}",
                 file.display(),
                 matches.len()
             );
         }
         total += matches.len();
     }
-    println!("{BOLD}共 {total} 处命中（{} 个文件）", files.len());
+    println!("{bold}共 {total} 处命中（{} 个文件）{reset}", files.len());
     Ok(total)
 }
 
@@ -252,6 +270,15 @@ mod tests {
 
     #[test]
     fn highlight_keeps_line_intact() {
-        assert!(highlight("abc", "b", false).contains("b"));
+        assert!(highlight("abc", "b", false, palette()).contains("b"));
+    }
+
+    #[test]
+    fn no_color_means_no_escape() {
+        // 关色（非终端 / 设了 NO_COLOR）时不该留任何 ANSI 转义 ——
+        // 重定向到文件、管道、CI 日志里都不该出现 \x1b[..m
+        let plain = highlight("abc", "b", false, ("", "", ""));
+        assert_eq!(plain, "abc");
+        assert!(!plain.contains('\x1b'));
     }
 }

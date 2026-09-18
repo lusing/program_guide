@@ -33,7 +33,7 @@ fn main() {
 
 | 命令 | 作用 | 产物/位置 |
 |---|---|---|
-| `cargo run` | 增量编译 + 运行 | `target/debug/hello.exe` |
+| `cargo run` | 增量编译 + 运行 | `target/debug/hello.exe`（macOS / Linux 上是 `target/debug/hello`，**没有后缀**） |
 | `cargo build` | 只编译 | 同上；`--release` 进 `target/release/` |
 | `cargo test` | 编译并跑测试 | 测试二进制在 `target/debug/deps/` |
 | `cargo check` | 只查类型不产码 | 最快的"语法检查"，IDE 内部就用它 |
@@ -84,10 +84,18 @@ stderr 的好处：`cargo run > out.txt` 时日志不污染 out.txt（`2>` 单�
 
 ## 2.4 跑起来
 
-```powershell
-cd G:\code\guide\rust\examples\02_hello
+```bash
+# macOS / Linux
+cd <仓库>/rust/examples/02_hello
 cargo run     # 观察各种占位符输出
 cargo test    # 两个断言测试：format! 的行为写进了测试
+```
+
+```powershell
+# Windows（PowerShell）
+cd G:\code\guide\rust\examples\02_hello
+cargo run
+cargo test
 ```
 
 改动实验（本章标准学法）：

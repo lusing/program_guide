@@ -56,12 +56,35 @@ Rust 的三根支柱：
 | `rust-analyzer` | LSP（VS Code/RustRover 内核） | 补全、内联类型、重构 |
 | `rustup` | 工具链版本管理器 | Windows 上也可能用 scoop 装的独立版 |
 
-本机安装位置（scoop）：`G:\scoop\apps\rust\current\bin\`（rustc 1.98.1 + cargo 1.98.1 + clippy + rustfmt 全套）。
+### 本机安装位置（三平台）
+
+| 平台 | 典型安装方式 | 位置 | 验证 |
+|---|---|---|---|
+| Windows | scoop 独立版 | `G:\scoop\apps\rust\current\bin\` | `rustc --version` |
+| Windows | rustup（官方默认） | `%USERPROFILE%\.cargo\bin\` | 同上 |
+| macOS | MacPorts | `/opt/local/bin/`（`cargo`/`rustc`/`cargo-clippy`/`rustfmt` 全套） | 同上 |
+| macOS / Linux | rustup（官方默认） | `~/.cargo/bin/` | 同上 |
+
+本教程按 **rustc 1.98.1 / cargo 1.98.0** 实测（三平台同一版本）：
+macOS 上是 MacPorts 装的 `x86_64-apple-darwin`，Windows 上是 scoop 装的独立版，
+两边 `cargo fmt --check` + `clippy -D warnings` + `test` + `run` 四层结论完全一致。
+
+```bash
+# macOS / Linux
+rustc --version && cargo --version && cargo clippy --version && cargo fmt --version
+```
 
 ```powershell
-G:\scoop\apps\rust\current\bin\rustc.exe --version
-G:\scoop\apps\rust\current\bin\cargo.exe  --version
+# Windows（PowerShell）
+rustc --version; cargo --version; cargo clippy --version; cargo fmt --version
 ```
+
+> macOS 注意：MacPorts 的 rustc 自带 std rlib 是为 macOS 12.0 编的，而 ld 默认
+> `-mmacosx-version-min=10.12`，于是每次链接测试二进制都会刷一屏
+> `was built for newer macOS version (12.0) than being linked (10.12)`。
+> 本教程在 `rust/.cargo/config.toml` 里把 `MACOSX_DEPLOYMENT_TARGET` 抬到 12.0 抵消它
+> （实测 stderr 从 8 行降到 0 行）。`cargo clippy` 用的是 check 语义、不链接，所以照不出这条。
+> 换机器后如果告警里的版本变了，同步改那个值即可。
 
 ## 1.5 cargo 五分钟上手（02 章展开）
 
@@ -88,10 +111,18 @@ cargo clippy             # lint
 
 每章学法（与 zig/go 教程一致）：**读讲解 → 跑示例 → 改代码再跑**。
 
-```powershell
-cd G:\code\guide\rust\examples\05_borrowing
+```bash
+# macOS / Linux
+cd <仓库>/rust/examples/05_borrowing
 cargo run       # 看输出
 cargo test      # 跑断言（改坏代码，看哪条测试红）
+```
+
+```powershell
+# Windows（PowerShell）
+cd G:\code\guide\rust\examples\05_borrowing
+cargo run
+cargo test
 ```
 
 ## 1.7 心法：编译器是盟友，不是敌人
@@ -105,9 +136,10 @@ cargo test      # 跑断言（改坏代码，看哪条测试红）
 
 1. **Rust 不像看起来那么接近 C++**：运算符重载、拷贝语义、引用都换了内核（move 默认、`Copy` 需显式、`&` 受借用规则约束）。
 2. **网上的 edition 旧语法**：`extern` 块、`#[no_mangle]`、`static mut` 用法在 2024 全变了（见 1.3 表）。
-3. **中文路径/编码**：源文件一律 UTF-8（无 BOM）；PowerShell 控制台中文乱码先 `chcp 65001`（build.ps1 已代设）。
-4. **`cargo run` 慢**：首次要编译依赖，之后增量秒级。别用"编译慢"判断语言快慢。
+3. **中文路径/编码**：源文件一律 UTF-8（无 BOM）；Windows PowerShell 控制台中文乱码先 `chcp 65001`（build.ps1 已代设）。macOS / Linux 终端默认 UTF-8，一般不必管。
+4. **`cargo run` 慢**：首次要编译依赖（20 章 serde、23 章 tokio 还得联网下 crate），之后增量秒级。别用"编译慢"判断语言快慢。
 5. **直接搜到的代码常缺上下文**：crate 版本、feature 开关没写全就编译不过——先看该 crate 文档的"Getting started"。
+6. **macOS 上的链接告警刷屏**：见 1.4 的提示框，根因是 std rlib 与 ld 默认部署目标不一致，不是你的代码有问题。
 
 ---
 
