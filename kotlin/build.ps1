@@ -196,12 +196,116 @@ function Test-GradleExample {
     Write-Host "[OK] $name" -ForegroundColor Green
 }
 
+function Test-MultiplatformExample {
+    # 25_multiplatform：common（expect 声明）+ 各目标 actual，编到 4 个目标：
+    #   js / wasm-js / wasm-wasi / native——每目标：编译(-Werror) → 运行 exit 0 → expected-<目标>.txt 快照。
+    # 三条实测防御（详见 docs/25-multiplatform.md 坑位清单）：
+    #   1. web 链接步（-Xir-produce-js + -Xinclude）exit code=1 但产物正确（zip-fs dispose 的 NPE 假阳性）→ 按产物判定，不按退出码
+    #   2. "advanced option ... obsolete form" 警告是 2.4.20 web CLI 参数序列化假警报（= 写法也报）→ 白名单放行
+    #   3. konanc 不自建输出目录（先 New-Item）；必须 JDK 21——JDK ≥ 24 时 konanc.bat 引号解析直接崩
+    param([string]$Dir)
+    $name = Split-Path -Leaf $Dir
+    Write-Host "`n[Example] $name" -ForegroundColor Cyan
+
+    $node = (Get-Command node -ErrorAction SilentlyContinue).Source
+    if (-not $node) { throw "未找到 node（js/wasm 目标的运行宿主）" }
+    $knHome = "G:\scoop\apps\kotlin-native\current"
+    if (-not (Test-Path -LiteralPath (Join-Path $knHome "bin\konanc.bat"))) {
+        $c = Get-Command konanc.bat -ErrorAction SilentlyContinue
+        if (-not $c) { throw "未找到 konanc.bat（期望 $knHome）" }
+        $knHome = Split-Path (Split-Path $c.Source -Parent) -Parent
+    }
+
+    $kotlincJs   = Join-Path $kotlinHome "bin\kotlinc-js.bat"
+    $kotlincWasm = Join-Path $kotlinHome "bin\kotlinc-wasm.bat"
+    $konanc      = Join-Path $knHome "bin\konanc.bat"
+    $commonArg   = "-Xcommon-sources=src/Common.kt"
+    $noise       = "advanced option value is passed in an obsolete form"
+
+    # web 编译器（kotlinc-js / kotlinc-wasm）统一封装：真警告即失败，产物缺失即失败
+    function Invoke-WebCompile {
+        param([string]$Compiler, [string[]]$CmdArgs, [string[]]$Artifacts, [switch]$StrictExit)
+        $out = & $Compiler @CmdArgs 2>&1 | ForEach-Object { "$_" }
+        $real = @($out | Where-Object { $_ -match "warning:" -and $_ -notmatch $noise })
+        if ($real.Count -gt 0) { $real | Write-Host; throw "编译警告（非白名单）" }
+        if ($StrictExit -and $LASTEXITCODE -ne 0) { $out | Write-Host; throw "编译失败（exit $LASTEXITCODE）" }
+        foreach ($a in $Artifacts) {
+            if (-not (Test-Path -LiteralPath $a)) { $out | Select-Object -First 12 | Write-Host; throw "缺少编译产物：$a" }
+        }
+    }
+
+    # 运行捕获：退出码必须 0；wasi 经 node 内置 WASI 会打实验性警告——比对前滤掉
+    function Invoke-RunCapture {
+        param([string]$Exe, [string[]]$ExeArgs = @(), [string[]]$Filter = @())
+        $out = & $Exe @ExeArgs 2>&1 | ForEach-Object { "$_" }
+        if ($LASTEXITCODE -ne 0) { $out | Write-Host; throw "$Exe 运行失败（exit $LASTEXITCODE）" }
+        $kept = $out | Where-Object { $line = "$_"; -not ($Filter | Where-Object { $line -match $_ }) }
+        return ($kept -join "`n")
+    }
+
+    Push-Location $Dir
+    try {
+    $targets = @(
+        @{ id = 'js';      golden = 'expected-js.txt' },
+        @{ id = 'wasmjs';  golden = 'expected-wasmjs.txt' },
+        @{ id = 'wasi';    golden = 'expected-wasi.txt' },
+        @{ id = 'native';  golden = 'expected-native.txt' }
+    )
+    foreach ($t in $targets) {
+        $id = $t.id
+        $outDir = Join-Path $Dir "build\$id"
+        if (Test-Path -LiteralPath $outDir) { Remove-Item -LiteralPath $outDir -Recurse -Force }
+        New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+
+        if ($id -eq 'native') {
+            # Native：konanc 一次出 .exe（expect/actual 由 -Xmulti-platform + -Xcommon-sources 放行）
+            & $konanc '-Werror' '-Xmulti-platform' '-Xseparate-kmp-compilation' $commonArg '-o' "build\$id\probe" 'src/Common.kt' "native/Native.kt" 2>&1 | ForEach-Object { "$_" } | Where-Object { $_ -notmatch $noise } | Write-Host
+            if ($LASTEXITCODE -ne 0) { throw "konanc 编译失败（exit $LASTEXITCODE）" }
+            $exe = Join-Path $outDir "probe.exe"
+            if (-not (Test-Path -LiteralPath $exe)) { throw "缺少编译产物：$exe" }
+            $out = Invoke-RunCapture -Exe $exe
+        } else {
+            # web 目标：stdlib klib + 目标专属源
+            $map = @{ js = 'kotlin-stdlib-js.klib'; wasmjs = 'kotlin-stdlib-wasm-js.klib'; wasi = 'kotlin-stdlib-wasm-wasi.klib' }
+            $compiler = if ($id -eq 'js') { $kotlincJs } else { $kotlincWasm }
+            $klib = Join-Path $libDir $map[$id]
+            $srcFile = if ($id -eq 'js') { 'js/Js.kt' } elseif ($id -eq 'wasmjs') { 'wasmjs/WasmJs.kt' } else { 'wasi/WasmWasi.kt' }
+            $wasmTarget = if ($id -eq 'wasmjs') { @('-Xwasm-target=wasm-js') } elseif ($id -eq 'wasi') { @('-Xwasm-target=wasm-wasi') } else { @() }
+            $base = @('-Werror', '-libraries', $klib, '-Xmulti-platform', '-Xseparate-kmp-compilation', $commonArg) + $wasmTarget +
+                    @('-Xir-module-name=probe', '-ir-output-name=probe', "-ir-output-dir=build/$id", 'src/Common.kt', $srcFile)
+            # 第一步：klib（此步退出码可信）
+            Invoke-WebCompile -Compiler $compiler -CmdArgs $base -Artifacts @((Join-Path $outDir 'probe.klib')) -StrictExit
+            # 第二步：链接成程序——退出码 1 是 dispose 假阳性，只认产物
+            $klibAbs = (Join-Path $outDir 'probe.klib').Replace('\', '/')
+            $artifacts = if ($id -eq 'js') { @((Join-Path $outDir 'probe.js')) } else { @((Join-Path $outDir 'probe.mjs'), (Join-Path $outDir 'probe.wasm')) }
+            Invoke-WebCompile -Compiler $compiler -CmdArgs ($base + @('-Xir-produce-js', "-Xinclude=$klibAbs")) -Artifacts $artifacts
+            $runner = if ($id -eq 'js') { (Join-Path $outDir 'probe.js') } else { (Join-Path $outDir 'probe.mjs') }
+            $filter = if ($id -eq 'wasi') { @('ExperimentalWarning', 'trace-warnings') } else { @() }
+            $out = Invoke-RunCapture -Exe $node -ExeArgs @($runner) -Filter $filter
+        }
+        Write-Host "  [$id] 运行 exit 0"
+        $golden = Join-Path $Dir $t.golden
+        if ($Update) {
+            $out | Set-Content -LiteralPath $golden -Encoding utf8
+            Write-Host "  [L4] 已刷新 $($t.golden)（$((($out -split "`n").Count)) 行）"
+        } else {
+            if (-not (Test-Path -LiteralPath $golden)) { throw "缺少 $($t.golden)（先 -Update 生成并人工核对）" }
+            Compare-Golden -Expected $golden -Actual $out
+            Write-Host "  [L4] $($t.golden) 快照一致"
+        }
+    }
+    Write-Host "[OK] $name" -ForegroundColor Green
+    }
+    finally { Pop-Location }
+}
+
 function Test-One {
     param([string]$Name)
     $dir = Join-Path $examplesDir $Name
     if (-not (Test-Path -LiteralPath $dir)) { throw "找不到示例目录: $dir" }
     if ($Name -eq '17_gradle') { Test-GradleExample $dir }
     elseif ($Name -eq '18_javainterop') { Test-JavaInteropExample $dir }
+    elseif ($Name -eq '25_multiplatform') { Test-MultiplatformExample $dir }
     else { Test-StdExample $dir }
 }
 
@@ -216,12 +320,12 @@ if ($All) {
         Where-Object { $_.Name -match '^\d\d' } |
         Sort-Object Name |
         ForEach-Object { Test-One $_.Name }
-    Write-Host "`n[Done] 全部 23 个示例四层验证通过（编译 -Werror / 测试 / 运行 / 快照）。" -ForegroundColor Green
+    Write-Host "`n[Done] 全部 24 个示例四层验证通过（编译 -Werror / 测试 / 运行 / 快照）。" -ForegroundColor Green
     exit 0
 }
 
 Write-Host "用法:" -ForegroundColor Yellow
-Write-Host "  .\build.ps1 -All                     验证 examples 下全部 23 个示例"
+Write-Host "  .\build.ps1 -All                     验证 examples 下全部 24 个示例"
 Write-Host "  .\build.ps1 -Example 12_lambdas      验证单个示例"
 Write-Host "  .\build.ps1 -Example 12_lambdas -Update  用实际输出刷新 expected.txt"
 Write-Host "  .\build.ps1 -Clean                   清理全部 build/.gradle 目录"

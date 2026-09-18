@@ -1,0 +1,9 @@
+== Kotlin Multiplatform Probe ==
+platform : wasm-js (WasmGC)
+kotlin   : 2.4.20
+matMul   : 27,30,33|61,68,75|95,106,117
+wordFreq : the:3 brown:1 dog:1 end:1
+fib 90   : 2880067194370816120
+fnv1a    : 3289427
+probe    : ok (host-dependent, redacted)
+self-check: OK

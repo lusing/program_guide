@@ -1,6 +1,6 @@
 # Kotlin 编程指南（2.4.20 / JVM）
 
-面向**会编程（Java/C++/Rust/Go 背景最佳）、初学 Kotlin** 的读者：从零教到现代 Kotlin——**K2 编译器**（2.4.20）、空安全、密封类型与穷尽 when、委托、型变 + reified、作用域函数、扩展、结构化并发协程 + Flow、与 Java 互操作、类型安全 DSL。每章"读讲解 → 跑示例 → 改代码再跑"，全部 23 个示例**四层验证**通过（kotlinc `-Werror` 编译 → kotlin.test 测试 → 运行 exit 0 → expected.txt 快照比对）。
+面向**会编程（Java/C++/Rust/Go 背景最佳）、初学 Kotlin** 的读者：从零教到现代 Kotlin——**K2 编译器**（2.4.20）、空安全、密封类型与穷尽 when、委托、型变 + reified、作用域函数、扩展、结构化并发协程 + Flow、与 Java 互操作、类型安全 DSL，最后进阶**多平台**（同一份代码编到 JS / Wasm / Native，25 章）。每章"读讲解 → 跑示例 → 改代码再跑"，全部 24 个示例**四层验证**通过（kotlinc `-Werror` 编译 → kotlin.test 测试 → 运行 exit 0 → expected.txt 快照比对）。
 
 > ⚠️ 版本敏感：本机 PATH 上的 `java` 是 8，本教程 build.ps1 自动切换 `JAVA_HOME → JDK 21`；1.x 时代教程的部分写法在 K2 下行为不同。所有代码在 **kotlinc-jvm 2.4.20 + oraclejdk-lts 21** 实测。
 
@@ -9,12 +9,13 @@
 ```text
 kotlin/
 ├── README.md        本文件
-├── docs/            24 章教程（01 → 24 顺序阅读）
-├── examples/        23 个示例（章号 = 目录号）
+├── docs/            25 章教程（01 → 24 顺序阅读；25 为多平台进阶专题）
+├── examples/        24 个示例（章号 = 目录号）
 │   ├── …            21 个 kotlinc 直编示例（src/ + test/ + expected.txt）
 │   ├── 17_gradle/   Gradle 多模块工程（lib+app，JUnit5，fat jar——独立构建）
 │   ├── 18_javainterop/  Java/Kotlin 混编（javac→kotlinc 两遍法）
-│   └── 24_todo/     实战项目（手写 JSON 解析器 + 文件存储 + CLI）
+│   ├── 24_todo/     实战项目（手写 JSON 解析器 + 文件存储 + CLI）
+│   └── 25_multiplatform/  多平台四目标（js/wasm-js/wasm-wasi/native，四份快照）
 ├── build.ps1        统一验证脚本（四层：编译 -Werror / 测试 / 运行 / 快照）
 └── CHEATSheet.md    语法速查 + 坑位索引
 ```
@@ -47,11 +48,14 @@ kotlin/
 | [22 函数式](docs/22-functional.md) | Sequence 惰性、组合、Either、注入时钟 | `22_functional` |
 | [23 ⭐类型安全 DSL](docs/23-dsl.md) | HTML builder、@DslMarker、infix/invoke | `23_dsl` |
 | [24 ⭐实战：ktodo](docs/24-todo.md) | 手写 JSON、文件存储、CLI、退出码 | `24_todo` |
+| [25 ⭐多平台：JS/Native/Wasm](docs/25-multiplatform.md) | 四目标编译、expect/actual、cinterop、KMP | `25_multiplatform`（四目标） |
 
 ## 构建工具链
 
-- Kotlin **2.4.20**（scoop）：`G:\scoop\apps\kotlin\current\`——kotlinc-jvm + kotlin-test/kotlinx-coroutines/kotlin-reflect jar 全套。
-- JDK **21**（oraclejdk-lts，scoop）：编译产物与 Gradle 运行环境；PATH 上的 java 8 不可用。
+- Kotlin **2.4.20**（scoop）：`G:\scoop\apps\kotlin\current\`——kotlinc-jvm + kotlinc-js/kotlinc-wasm + kotlin-test/kotlinx-coroutines/kotlin-reflect jar + 各目标 stdlib klib 全套。
+- Kotlin/Native **2.4.20**（scoop）：`G:\scoop\apps\kotlin-native\current\`（konanc；首跑自动从 JetBrains CDN 下载 LLVM 21 约 275MB 到 `~/.konan`）。
+- JDK **21**（oraclejdk-lts，scoop）：编译产物与 Gradle/konanc 运行环境；PATH 上的 java 8 不可用，**konanc 在 JDK ≥ 24 会崩**（bat 引号 bug）。
+- node **26**：25 章 js/wasm 目标的运行宿主（WasmGC 原生支持）。
 - Gradle **9.7.1**：仅 17 章示例使用（首次构建联网拉插件，约 4 分钟）。
 - 控制台中文乱码先 `chcp 65001`；build.ps1 已统一 UTF-8。
 
@@ -59,7 +63,7 @@ kotlin/
 
 ```powershell
 cd G:\code\guide\kotlin
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All                 # 全部 23 个：四层验证
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All                 # 全部 24 个：四层验证
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 12_lambdas  # 单个示例
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 12_lambdas -Update   # 改代码后刷新快照（人工核对再提交）
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean               # 清理全部 build/.gradle
@@ -76,7 +80,7 @@ java -Dstdout.encoding=UTF-8 -cp "build\classes;…\lib\kotlin-stdlib.jar;…\li
 java -Dstdout.encoding=UTF-8 -cp "…" MainKt
 ```
 
-四层验证含义：**L1** kotlinc `-Werror` 零警告编译；**L2** kotlin.test 断言全过（exit 0）；**L3** MainKt 运行 exit 0；**L4** stdout 与 `expected.txt` 逐行一致（快照回归）。17 章的四层是 Gradle build（含 JUnit5）+ fat jar 运行 + 快照。
+四层验证含义：**L1** kotlinc `-Werror` 零警告编译；**L2** kotlin.test 断言全过（exit 0）；**L3** MainKt 运行 exit 0；**L4** stdout 与 `expected.txt` 逐行一致（快照回归）。17 章的四层是 Gradle build（含 JUnit5）+ fat jar 运行 + 快照；25 章的四层是四目标（js/wasm-js/wasm-wasi/native）各：`-Werror` 编译 → 运行 exit 0（断言内嵌 main，非 JVM 目标无 test runner）→ 四份 `expected-<目标>.txt` 快照。
 
 ## 相关教程
 

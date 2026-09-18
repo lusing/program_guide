@@ -54,7 +54,7 @@ Kotlin 是一门**运行在 JVM 上的静态类型语言**，也可以编译到 
 - **Native**：编译成原生二进制（LLVM），无 JVM 依赖。
 - **Wasm**：WebAssembly（2.x 新增，试验推进中）。
 
-多平台共享**同一套语言与公共 stdlib**，平台差异封装在 expect/actual 机制里。本教程专注 JVM——它是 90% 的现实场景。
+多平台共享**同一套语言与公共 stdlib**，平台差异封装在 expect/actual 机制里。本教程主线在 JVM（90% 的现实场景），第 [25 章](25-multiplatform.md)进阶专题会把同一份代码真编到 JS / Wasm / Native 四个目标实测。
 
 ## 1.6 本教程的学法
 

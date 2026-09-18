@@ -156,6 +156,22 @@ operator fun invoke(...); router("/a")     // 可调用对象 → 23
 infix fun T.should(t: T); 1 should 1       // 中缀 DSL → 23
 ```
 
+## 多平台（JS / Native / Wasm）
+
+```kotlin
+expect fun platformName(): String          // common 声明 → 25
+actual fun platformName() = "js (node)"    // 平台实现（签名严格匹配） → 25
+private external val process: dynamic      // Kotlin/JS 调 JS → 25
+@OptIn(ExperimentalForeignApi::class)      // cinterop 全家要 opt-in → 25
+platform.posix.getenv("PATH")?.toKString() // Native 调 C → 25
+```
+
+```powershell
+# CLI 三件套放行 expect/actual（web 编译器同样适用，-Xmulti-platform 是隐藏 flag）
+-Xmulti-platform -Xseparate-kmp-compilation "-Xcommon-sources=src/Common.kt"
+kotlinc-js  …; kotlinc-wasm -Xwasm-target=wasm-wasi …; konanc …   # 四目标心法一致
+```
+
 ## 坑位索引（实战翻车 TOP）
 
 | 症状 | 原因 | 章 |
@@ -174,3 +190,7 @@ infix fun T.should(t: T); 1 should 1       // 中缀 DSL → 23
 | Period.days 数值"不对" | 它是分量；总天数用 ChronoUnit | 19 |
 | 原始字符串 `"""…$"""` 编译错 | 行尾 $ 被当模板 | 19 |
 | 快照测试偶发红 | 线程名/绝对路径/残留文件进输出 | 20/21/24 |
+| konanc 报"此时不应有 =ALL-UNNAMED" | JDK ≥ 24 的 bat 引号 bug，钉 JDK 21 | 25 |
+| web 链接步 exit 1 但产物正常 | zip-fs dispose NPE 假阳性，看产物不看退出码 | 25 |
+| expect 报"only in multiplatform" | CLI 要三件套 flag（见上） | 25 |
+| hello world 编出来 700KB+ | web CLI 无 DCE，全量 stdlib 打包 | 25 |
