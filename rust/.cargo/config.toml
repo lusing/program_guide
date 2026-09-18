@@ -1,0 +1,16 @@
+# Cargo 配置（跨平台）
+#
+# 仅有一条 macOS 专用项：抬部署目标，消除链接期告警。
+#
+# 现象：MacPorts 的 rustc 自带 std rlib 是为 macOS 12.0 编的，而本机 ld 默认
+#       -mmacosx-version-min=10.12，于是每次链接测试二进制都刷一屏
+#       "was built for newer macOS version (12.0) than being linked (10.12)"。
+#       cargo clippy 用的是 check 语义（不链接），所以照不出来，只有 test/run 会刷。
+# 修法：把部署目标抬到与 std rlib 一致的 12.0 —— rustc 读 MACOSX_DEPLOYMENT_TARGET。
+#       实测：cargo test 的 stderr 从 8 行降到 0 行。
+# 注意：force = false —— 你自己设过这个环境变量就以你的为准（比如钉到 11.0）。
+#       Windows / Linux 上这一项被忽略，不影响。
+# 若换机器后 std rlib 的目标版本更高（看告警里的 "built for newer macOS version (X.Y)"），
+# 把下面的值同步改掉即可。
+[env]
+MACOSX_DEPLOYMENT_TARGET = { value = "12.0", force = false }

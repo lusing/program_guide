@@ -15,7 +15,16 @@ minigrep [-i] [-r] <关键词> <文件或目录>...
 退出码：0 有命中 / 1 无命中或错误 / 2 用法错误（grep 传统）
 ```
 
+```bash
+# macOS / Linux
+cd <仓库>/rust/examples/24_minigrep
+cargo run                            # 无参数 → 自包含演示模式（exit 0）
+cargo run -- Rust src                # 真实搜索
+cargo run -- -i -r "fn main" ../24_minigrep/src   # 递归 + 忽略大小写
+```
+
 ```powershell
+# Windows（PowerShell）
 cd G:\code\guide\rust\examples\24_minigrep
 cargo run                            # 无参数 → 自包含演示模式（exit 0）
 cargo run -- Rust src                # 真实搜索
@@ -126,6 +135,19 @@ pub fn collect_files(root: &Path, recursive: bool, out: &mut Vec<PathBuf>)
 ```
 
 高亮：ANSI 转义序列（`\x1b[1;31m` 红色加粗）包住命中片段——按**字节区间**切（`find` 返回字节偏移），命中串本身保证边界合法（06 章 UTF-8 切片规则）。
+
+**但只在 stdout 是终端时才上色**（`std::io::IsTerminal`），并且尊重 `NO_COLOR` 环境变量：
+
+```rust
+fn palette() -> (&'static str, &'static str, &'static str) {
+    let on = env::var_os("NO_COLOR").is_none() && std::io::stdout().is_terminal();
+    if on { (RED_ESC, BOLD_ESC, RESET_ESC) } else { ("", "", "") }
+}
+```
+
+理由：**`cargo run > out.txt` 或管道到 `less`/CI 日志时，ANSI 转义是纯噪声**——
+下游拿到一串 `\x1b[1;31m`，还可能被判定成"输出含控制字符"。Windows 上更明显：
+旧控制台不支持 VT 时这些转义会原样印成乱码。判据是 `stdout` 而不是"是不是 Windows"。
 
 ## 24.6 run：主流程 = 错误处理编排
 

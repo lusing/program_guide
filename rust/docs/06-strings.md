@@ -115,7 +115,7 @@ String::from_utf8_lossy(&bytes)            // 非法字节替换为 U+FFFD
 5. **`chars().nth(n)` 是 O(n)**：随机访问字符没有 O(1) 方案（UTF-8 本性），热点路径改成顺序迭代。
 6. **HashMap 键是 String 后别再改**：键 move 进表就别惦记；要改先 remove 再插。
 7. **clippy 的 `useless_vec` 会追到字符串**：定长数据（`[T; N]`）别用 `vec![]` 起手。
-8. **Windows 控制台输出中文**：代码正确也可能显示方块——`chcp 65001` 之后再判断代码对错（本教程脚本已代设）。
+8. **Windows 控制台输出中文**：代码正确也可能显示方块——`chcp 65001` 之后再判断代码对错（本教程脚本已代设）。macOS / Linux 终端默认 UTF-8，不会遇到这个；若真出现方块，先查 `locale` 是不是 `*.UTF-8`。
 
 ---
 
