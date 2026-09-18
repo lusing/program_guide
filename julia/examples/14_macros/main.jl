@@ -80,6 +80,12 @@ expanded = macroexpand(Main, :(@twice 5))
 @assert eval(expanded) == 10 && occursin("+", string(expanded))
 
 # ═══ 14.6 世界年龄（world age）：方法定义后，"正在运行的旧代码"看不见它
+# 这一节整段都是「运行中定义新方法、再访问那个新 binding」，Julia 1.12+ 会因此
+# 往 stderr 打一条 world-age 警告：
+#   WARNING: Detected access to binding `Main.new_fn` in a world prior to its definition world.
+# 警告本身就是这里要演示的现象，不是代码缺陷 —— 所以用 redirect_stderr(devnull)
+# 把这两次调用圈起来，好让「stderr 为空（零告警）」这条判定对其它示例仍然严格。
+# 真实项目里要改的是代码（用 invokelatest，或别在运行中定义方法），不是靠重定向遮掩。
 function try_call_new()
     @eval new_fn() = 99          # 运行中定义新方法
     new_fn()                     # 直接调用——错误！当前函数编于"旧世界"，看不见 new_fn
@@ -88,12 +94,17 @@ function call_via_invokelatest()
     @eval new_fn2() = 99
     Base.invokelatest(new_fn2)   # invokelatest 跳到最新世界
 end
-@assert call_via_invokelatest() == 99
-world_error = try
-    try_call_new()
-    false
-catch e
-    e isa MethodError
+world_ok = redirect_stderr(devnull) do
+    call_via_invokelatest()
+end
+@assert world_ok == 99
+world_error = redirect_stderr(devnull) do
+    try
+        try_call_new()
+        false
+    catch e
+        e isa MethodError
+    end
 end
 @assert world_error               # 旧世界调用新方法 → MethodError（世界年龄坑）
 

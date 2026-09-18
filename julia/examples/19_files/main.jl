@@ -74,7 +74,10 @@ p = joinpath("G:", "code", "guide", "main.jl")   # 跨平台拼接（别手拼�
 @assert basename(p) == "main.jl" && dirname(p) == joinpath("G:", "code", "guide")
 @assert splitext("data.tar.gz") == ("data.tar", ".gz")   # 只切最后一个扩展名
 @assert abspath("x.jl") == joinpath(pwd(), "x.jl")
-@assert isabspath("G:\\x") && !isabspath("x/y")
+# 绝对路径的「长相」是平台相关的：Windows 认盘符（"G:\\x"），Unix 认开头斜杠（"/x"）。
+# 断言里别写死某一侧的写法 —— 换个平台就假失败。
+abs_example = Sys.iswindows() ? "G:\\x" : "/x"
+@assert isabspath(abs_example) && !isabspath("x/y")
 @assert occursin("Users", homedir()) || occursin("home", homedir()) || isdir(homedir())
 
 # ═══ 19.7 stdout 是流：flush 与缓冲

@@ -175,10 +175,17 @@ end
 
 ## 24.7 运行与验证
 
-```powershell
-pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 24_miniode   # instantiate + 运行 + 测试
+```bash
+./run-all.sh 24                                            # 运行 + 测试（shell 入口）
 julia --project=examples/24_miniode/env examples/24_miniode/main.jl lorenz
 ```
+
+```powershell
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 24_miniode   # 等价入口
+```
+
+`env/Manifest.toml` 已随仓库入库，所以入口**不会**去跑 `Pkg.instantiate()`（见 17 章的 registry 坑）；
+只有 Manifest 缺失时才需要还原环境。
 
 ## 24.8 坑位清单
 

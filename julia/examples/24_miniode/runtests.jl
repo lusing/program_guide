@@ -1,4 +1,4 @@
-# 24 示例测试：收敛阶 / 自适应 / 泛型状态 / 端到端（--project=env 由 build.ps1 传入）
+# 24 示例测试：收敛阶 / 自适应 / 泛型状态 / 端到端（--project=env 由两个入口传入）
 using Test
 include("main.jl")
 

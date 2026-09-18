@@ -1,5 +1,5 @@
 # 20 并发与并行：Task/@async、Channel 流水线、线程池、@threads/@spawn、竞争三板斧
-# 运行：julia --startup-file=no -t 4 main.jl（build.ps1 自动加 -t 4）
+# 运行：julia --startup-file=no -t 4 main.jl（两个入口自动加 -t 4）
 # 心法：IO 并发用 @async + Channel（协作调度）；计算并行用 @threads/@spawn（真并行）
 
 using Random                                # shuffle 在 Random 里（Base 不导出）

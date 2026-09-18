@@ -84,7 +84,7 @@ function sum_inbounds(xs)
 end
 ```
 
-`@inbounds` 关闭边界检查（你自己保证不越界）、`@simd` 允许编译器重排浮点归约（改变舍入次序！）。**结果正确性必须另行验证**（本教程 build.ps1 带 `--check-bounds=yes` 强制恢复检查——就算写了 @inbounds 也有安全网验证一遍）。
+`@inbounds` 关闭边界检查（你自己保证不越界）、`@simd` 允许编译器重排浮点归约（改变舍入次序！）。**结果正确性必须另行验证**（本教程两个入口都带 `--check-bounds=yes` 强制恢复检查——就算写了 @inbounds 也有安全网验证一遍）。
 
 ## 16.6 视图 vs 拷贝
 

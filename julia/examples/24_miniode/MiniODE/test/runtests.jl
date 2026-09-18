@@ -1,4 +1,4 @@
-# MiniODE 包自身的测试（Pkg.test 入口；build.ps1 跑的是上级 runtests.jl）
+# MiniODE 包自身的测试（Pkg.test 入口；两个入口跑的是上级 runtests.jl）
 using Test
 using MiniODE
 

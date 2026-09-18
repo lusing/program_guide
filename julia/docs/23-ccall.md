@@ -20,29 +20,35 @@
 ## 23.2 ccall：三件套
 
 ```julia
-ccall((:strlen, "msvcrt"), Csize_t, (Cstring,), "hello")   # (符号, 库名), 返回类型, 参数类型元组, 实参
-ccall((:fabs, "msvcrt"), Cdouble, (Cdouble,), -3.5)         # 3.5
+ccall((:strlen, CLIB), Csize_t, (Cstring,), "hello")   # (符号, 库名), 返回类型, 参数类型元组, 实参
+ccall((:fabs, CLIB), Cdouble, (Cdouble,), -3.5)         # 3.5
 ```
 
-库按名字加载（Windows 的 msvcrt/ucrtbase、Linux 的 libm/libc）——**跨平台库名分支**：
+库按名字加载，**库名是平台相关的**：Windows 是 msvcrt/ucrtbase、Linux 是 libm/libc、macOS 是 libSystem
+（macOS 上 `libm`、`libc` 都只是 libSystem 的别名）。硬编码 `"msvcrt"` 在 macOS/Linux 上直接
+`could not load library "msvcrt"` ——**跨平台库名分支**：
 
 ```julia
-libm = Sys.iswindows() ? "msvcrt" : "libm"
-ccall((:floor, libm), Cdouble, (Cdouble,), 2.7)    # 2.0
+const CLIB = Sys.iswindows() ? "msvcrt" : (Sys.isapple() ? "libSystem" : "libm")
+ccall((:floor, CLIB), Cdouble, (Cdouble,), 2.7)    # 2.0
 ```
+
+`const` 不能省：`ccall` 的库名表达式必须在编译期可解析，**局部变量会报
+"cannot reference local variables"**——顶层 `const` 或全局变量才可以。
 
 ## 23.3 @ccall：内联 C 原型（1.5+）
 
 ```julia
-@ccall "msvcrt".strlen(("hello"::Cstring))::Csize_t    # 参数名::类型，返回 ::类型
-@ccall "msvcrt".atoi(("42"::Cstring))::Cint            # 42
+@ccall CLIB.strlen(("hello"::Cstring))::Csize_t    # 参数名::类型，返回 ::类型
+@ccall CLIB.atoi(("42"::Cstring))::Cint            # 42
 ```
 
-三条实测规则：
+四条实测规则：
 
 1. **宏吞整条表达式**：`@assert (@ccall ...) == 5` 必须给 @ccall 加括号，否则 `== 5` 被当签名一部分报 "needs a return type"；
 2. **`name::T` 传的是变量值**：变量必须已定义；字面量写 `("hello"::Cstring)`；
-3. 返回类型注解 `::T` 缺一不可。
+3. 返回类型注解 `::T` 缺一不可；
+4. 库名位置可以是常量（`CLIB.strlen(...)`）——**局部变量不行**（同 23.2）。
 
 ## 23.4 Windows API：x64 无需 stdcall
 
@@ -64,7 +70,7 @@ end
 
 function qsort_ints(v::Vector{Cint})
     cfunc = @cfunction(int_comparator, Cint, (Ptr{Cvoid}, Ptr{Cvoid}))   # (函数, 返回类型, 参数类型)
-    ccall((:qsort, "msvcrt"), Cvoid,
+    ccall((:qsort, CLIB), Cvoid,
           (Ptr{Cvoid}, Csize_t, Csize_t, Ptr{Cvoid}),
           v, length(v), sizeof(Cint), cfunc)
     v
@@ -83,7 +89,7 @@ unsafe_load(pv, 2)          # 20——注意 1 起下标（C 指针上的 Julia 
 unsafe_store!(pv, 99, 3)    # 写指针即写数组（同一内存）
 
 # C 侧 malloc 的内存包装成 Julia 数组（零拷贝；生命周期契约人工保证）
-p = ccall((:malloc, "msvcrt"), Ptr{Cint}, (Csize_t,), 3 * sizeof(Cint))
+p = ccall((:malloc, CLIB), Ptr{Cint}, (Csize_t,), 3 * sizeof(Cint))
 unsafe_store!(p, 7, 1); unsafe_store!(p, 8, 2); unsafe_store!(p, 9, 3)
 wrapped = unsafe_wrap(Array, p, 3)      # [7, 8, 9]
 ```
@@ -104,3 +110,4 @@ wrapped = unsafe_wrap(Array, p, 3)      # [7, 8, 9]
 3. **`unsafe_load` 是 1 起下标**：C 的 `ptr[0]` 在 Julia 是 `unsafe_load(p, 1)`（23.6）。
 4. **unsafe_wrap 的生命周期**：包装的 C 内存 GC 不管——谁 malloc 谁 free，或 `finalizer` 兜底（23.6）。
 5. **回调必须保活**：`@cfunction` 结果在 C 侧使用期间，Julia 侧要有引用（局部变量即可），否则回调被回收（23.5）。
+6. **库名别 hardcoded**：写死 `"msvcrt"` 的代码在 macOS 上报 `could not load library "msvcrt"`；`libm`/`libc`/`libSystem` 三个名字在 macOS 上都指向 libSystem（实测：五个符号 strlen/atoi/fabs/abs/malloc 全部可用），Windows 上只有 msvcrt。统一走 `const CLIB = ...`（23.2）。

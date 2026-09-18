@@ -1,6 +1,6 @@
 # 24 实战：迷你 ODE 求解器——包工程（MiniODE 包 + 演示 CLI）
 # 结构：MiniODE/（src + test）+ env/（环境）+ 本入口
-# 运行（build.ps1 自动 --project=env；空参数跑全部演示）：
+# 运行（两个入口自动加 --project=env；env/Manifest.toml 已入库，直接跑即可）：
 #   julia --project=env main.jl               # 三个演示：decay / pendulum / lorenz
 #   julia --project=env main.jl lorenz        # 只跑某一个
 # 求解器为纯数值串行内核——多线程旗标不影响结果（不同于 21 章的并行搜索）

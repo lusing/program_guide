@@ -1,4 +1,4 @@
-# 17 示例测试：在 env 环境中验证本地包（--project=env 由 build.ps1 传入）
+# 17 示例测试：在 env 环境中验证本地包（--project=env 由两个入口传入）
 using Test
 include("main.jl")
 

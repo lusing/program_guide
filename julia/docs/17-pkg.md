@@ -76,13 +76,17 @@ LOAD_PATH                  # ["@", "@v#.#", "@stdlib"]
 
 `[sources]` / `Pkg.develop(path=...)` 的包**源码就地可改**：改 `MathTools/src/MathTools.jl` 重启会话即生效（配合 Revise.jl 免重启）——本教程示例把它当作"迷你包开发"全流程。与 `add` 的区别：add 解析版本并安装副本，dev/路径直连源码。
 
-## 17.6 实操：本示例的验证流（build.ps1 特判层）
+## 17.6 实操：本示例的验证流（两个入口的特判层）
 
 ```powershell
-julia --project=env -e 'using Pkg; Pkg.instantiate(); Pkg.status()'   # 还原环境
+JULIA_PKG_OFFLINE=true julia --project=env -e 'using Pkg; Pkg.instantiate(); Pkg.status()'   # 还原环境（只在 Manifest 缺失时需要）
 julia --project=env main.jl                                           # 在环境中运行
 julia --project=env runtests.jl                                       # 在环境中测试
 ```
+
+`instantiate` 幂等：已有 Manifest 就精确还原，没有就解析生成。本教程把 `env/Manifest.toml` 一并入库，
+所以**常规验证流根本不用 instantiate**（两个入口只在 Manifest 缺失时才调它）——这既省时间，
+也绕开了 macOS 上「解压 registry 慢到像死锁」那个坑（见 17.8 第 7 条）。
 
 `instantiate` 幂等：已有 Manifest 就精确还原，没有就解析生成。离线可行性：**路径依赖 + 标准库**完全离线（实测）；registry 只在解析新包时触网。
 
@@ -98,3 +102,8 @@ julia --project=env runtests.jl                                       # 在环�
 4. **环境 ≠ 目录全家桶**：`--project` 认的是含 Project.toml 的目录；跑错目录 = 静默用上默认环境——先 `Pkg.status()` 确认在哪。
 5. **`add` 写的是"当前活动环境"**：忘 activate 就 add，包进了 `@v1.13` 全局环境——先看提示行的环境名。
 6. **改了本地包源码还报老行为**：预编译缓存没失效——改完 `Pkg.precompile()` 或用 Revise.jl。
+7. **首跑 `Pkg.instantiate()` 卡住十几分钟**：Pkg 要读/解压 General registry
+   （7.5MB → 240MB、约 4 万个小文件），在没有可用 registry 的 depot 上，这一步慢得像死锁（macOS 实测）。
+   只依赖路径包 + stdlib 的工程**根本不需要 instantiate**：`env/Manifest.toml` 已入库，
+   `julia --project=env main.jl` 直接就能跑——两个入口都已改成「Manifest 缺失才 instantiate」。
+   手工 `instantiate` 时设 `JULIA_PKG_OFFLINE=true` 能省掉联网动作，但省不掉 registry 解压。

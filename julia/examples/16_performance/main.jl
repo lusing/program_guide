@@ -62,7 +62,7 @@ function sum_inbounds(xs)
 end
 xs = rand(100_000)
 @assert isapprox(sum_inbounds(xs), sum(xs); rtol = 1e-10)   # 结果必须仍对！
-# build.ps1 的运行层带 --check-bounds=yes：@inbounds 也被强制恢复检查——安全网验证
+# 两个入口的运行层都带 --check-bounds=yes：@inbounds 也被强制恢复检查——安全网验证
 
 # ═══ 16.6 视图 vs 拷贝：切片大数组时省一大笔
 big = rand(1000, 1000)

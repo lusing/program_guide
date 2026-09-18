@@ -5,9 +5,9 @@ include("main.jl")
 @testset "23_ccall" begin
     @testset "基础调用" begin
         x = -2.5                                    # @ccall 的 name::T 传的是变量值
-        @test ccall((:strlen, "msvcrt"), Csize_t, (Cstring,), "abc") == 3
-        @test ccall((:abs, "msvcrt"), Cint, (Cint,), -7) == 7
-        @test (@ccall "msvcrt".fabs(x::Cdouble)::Cdouble) == 2.5
+        @test ccall((:strlen, CLIB), Csize_t, (Cstring,), "abc") == 3
+        @test ccall((:abs, CLIB), Cint, (Cint,), -7) == 7
+        @test (@ccall CLIB.fabs(x::Cdouble)::Cdouble) == 2.5
         @test_throws ErrorException @ccall "不存在的库".nope(("x"::Cstring))::Cint
     end
     @testset "回调排序" begin

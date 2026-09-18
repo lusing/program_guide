@@ -133,4 +133,8 @@ myzero(Int) == 0 && myzero(String) == "无零值"
 2. **宏多参用空格不用逗号**：`@setvar y, 7` 传的是元组 `(y,7)` → 方法数不匹配（14.5 实测）。
 3. **`macroexpand` 结果别 `==` 比较**：含卫生标记——用 eval 验语义、occursin 验形状（14.5 实测）。
 4. **世界年龄**：`@eval` 定义的新方法在"旧世界"调用 MethodError——`Base.invokelatest` 桥接；重复同定义不建新世界（14.6 实测）。
+   **1.12+ 还会额外往 stderr 打一条 world-age 警告**（`Detected access to binding ... in a world prior to its definition world`）。
+   示例里这两次调用用 `redirect_stderr(devnull)` 圈住——因为"警告"正是本节要演示的现象，
+   而验证脚本要求 stderr 为空；真实项目要改代码（用 invokelatest / 别在运行中定义方法），不是靠重定向遮盖。
+   另外这条警告**不受 `--depwarn=no` 控制**（实测：加了照样打），别指望用编译开关关掉它。
 5. **宏在编译期展开，拿不到运行期值**：`@twice(n)` 拼的是表达式不是 n 的值——需要运行期信息用函数/闭包，不是宏。

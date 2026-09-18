@@ -12,25 +12,31 @@
 # T*         Ptr{T}
 
 # ═══ 23.2 ccall 三件套：函数名（库名, 符号）、返回类型、参数类型元组
-libm = Sys.iswindows() ? "msvcrt" : "libm"     # 跨平台库名：Windows 用 msvcrt（系统自带）
-n = ccall((:strlen, "msvcrt"), Csize_t, (Cstring,), "hello")
+# 库名是平台相关的，硬编码 "msvcrt" 在非 Windows 上直接
+# could not load library "msvcrt" —— 一律走下面这个常量。
+#   Windows: msvcrt（系统自带 CRT）
+#   Linux  : libm / libc
+#   macOS  : libSystem（libm、libc 都只是它的别名，写 "libm" 也能解析）
+const CLIB = Sys.iswindows() ? "msvcrt" : (Sys.isapple() ? "libSystem" : "libm")
+n = ccall((:strlen, CLIB), Csize_t, (Cstring,), "hello")
 @assert n == 5
-@assert ccall((:fabs, libm), Cdouble, (Cdouble,), -3.5) == 3.5
-@assert ccall((:floor, libm), Cdouble, (Cdouble,), 2.7) == 2.0
+@assert ccall((:fabs, CLIB), Cdouble, (Cdouble,), -3.5) == 3.5
+@assert ccall((:floor, CLIB), Cdouble, (Cdouble,), 2.7) == 2.0
 
 # ═══ 23.3 @ccall 宏：把签名写成"内联 C 原型"（1.5+，可读性更好）
 # 注意 1：宏会吞掉整条比较表达式——外层断言必须先给 @ccall 加括号
 # 注意 2：形如 name::Cstring 的参数是"传变量值"——变量必须已定义，字面量则加括号写 ("..."::Cstring)
-@assert (@ccall "msvcrt".strlen(("hello"::Cstring))::Csize_t) == 5
-@assert (@ccall "msvcrt".atoi(("42"::Cstring))::Cint) == 42
-n2 = @ccall "msvcrt".strlen("Julia 中文"::Cstring)::Csize_t   # UTF-8 字节数！
+# 注意 3：库名可以是常量（const 全局）——局部变量不行（ccall 要求编译期可解析）
+@assert (@ccall CLIB.strlen(("hello"::Cstring))::Csize_t) == 5
+@assert (@ccall CLIB.atoi(("42"::Cstring))::Cint) == 42
+n2 = @ccall CLIB.strlen("Julia 中文"::Cstring)::Csize_t   # UTF-8 字节数！
 @assert n2 == sizeof("Julia 中文")
 # 传参时类型注解 + 返回类型注解缺一不可
 
 # ═══ 23.4 字符串与内存：Cstring 是"借用"不是拷贝——别把指针留下来
 s = "临时字符串"
 p = Base.unsafe_convert(Cstring, s)           # 指向 Julia 字符串内部字节
-@assert ccall((:strlen, "msvcrt"), Csize_t, (Cstring,), p) == sizeof(s)
+@assert ccall((:strlen, CLIB), Csize_t, (Cstring,), p) == sizeof(s)
 # 危险常识：C 侧返回的 char* 若指向 malloc 内存，须按 C 侧约定 free；
 # Julia 字符串是 UTF-8、不可变——C 侧不得写入（写入 = 未定义行为）
 
@@ -50,7 +56,7 @@ int_comparator(p1::Ptr{Cvoid}, p2::Ptr{Cvoid})::Cint = begin
 end
 function qsort_ints(v::Vector{Cint})
     cfunc = @cfunction(int_comparator, Cint, (Ptr{Cvoid}, Ptr{Cvoid}))
-    ccall((:qsort, "msvcrt"), Cvoid,
+    ccall((:qsort, CLIB), Cvoid,
           (Ptr{Cvoid}, Csize_t, Csize_t, Ptr{Cvoid}),
           v, length(v), sizeof(Cint), cfunc)
     v
@@ -60,7 +66,7 @@ sorted2 = qsort_ints(Cint[5, 3, 9, 1, 7])
 
 # ═══ 23.7 指针与数组：unsafe_load / unsafe_store! / unsafe_wrap（危险但高效）
 function Libc_malloc_ints()                   # C 侧 malloc 一块并填 7,8,9
-    p = ccall((:malloc, "msvcrt"), Ptr{Cint}, (Csize_t,), 3 * sizeof(Cint))
+    p = ccall((:malloc, CLIB), Ptr{Cint}, (Csize_t,), 3 * sizeof(Cint))
     for i in 1:3
         unsafe_store!(p, i + 6, i)
     end

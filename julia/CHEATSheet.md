@@ -12,11 +12,14 @@ julia -t 4                   # 4 线程（默认 1！）
 julia -t 4,1                 # 默认池 4 + 交互池 1
 julia --project=env          # 激活环境
 julia --startup-file=no      # 干净启动（教程默认）
-julia --check-bounds=yes     # 强制边界检查（build.ps1 验证层）
+julia --check-bounds=yes     # 强制边界检查（两个入口的验证层都带）
 julia --track-allocation=user  # 逐行分配统计
 julia --code-coverage=user     # 行覆盖
 julia --heap-size-hint=2G      # 内存上限提示 GC
+JULIA_PKG_OFFLINE=true julia --project=env -e 'using Pkg; Pkg.instantiate()'   # 离线还原环境（17 章）
 ```
+
+验证入口（等价两份）：`./run-all.sh [编号...]`（shell）、`pwsh ./build.ps1 -All`（PowerShell）。
 
 ## 2. 数值与数值稳定（03）
 
@@ -224,8 +227,9 @@ mean(M; dims = 1)             # 按维统计
 ## 15. C 互操作（23）
 
 ```julia
-ccall((:strlen, "msvcrt"), Csize_t, (Cstring,), "hello")
-@ccall "msvcrt".strlen(("hello"::Cstring))::Csize_t   # 断言里加括号！
+const CLIB = Sys.iswindows() ? "msvcrt" : (Sys.isapple() ? "libSystem" : "libm")
+ccall((:strlen, CLIB), Csize_t, (Cstring,), "hello")
+@ccall CLIB.strlen(("hello"::Cstring))::Csize_t   # 断言里加括号！
 @cfunction(f, Cint, (Ptr{Cvoid}, Ptr{Cvoid}))          # 回调
 unsafe_load(p, 1)   # 1 起下标；unsafe_wrap(Array, p, n)
 Cint/Cdouble/Csize_t/Ptr{T}/Cstring                     # 映射表
@@ -239,3 +243,20 @@ sprint(showerror, e)   # 异常 → 字符串
 ```
 
 生态：BenchmarkTools(@btime)、JET、Debugger、Infiltrator、Cthulhu、Aqua、Documenter、Revise。
+
+## 17. 跨平台（macOS / Linux ↔ Windows）
+
+```julia
+Sys.iswindows() / Sys.isapple() / Sys.isunix() / Sys.WORD_SIZE
+const CLIB = Sys.iswindows() ? "msvcrt" : (Sys.isapple() ? "libSystem" : "libm")   # 23 章
+isabspath(Sys.iswindows() ? "G:\\x" : "/x")   # 绝对路径的写法也是平台相关的（19 章）
+redirect_stderr(devnull) do ... end           # 圈住「故意触发」的诊断，保住零告警判定（14 章）
+```
+
+- **C 库名**：Windows `msvcrt` / Linux `libm`、`libc` / macOS `libSystem`（`libm`、`libc` 是它的别名）。
+  写死在代码里的 `"msvcrt"` 到 macOS 上直接 `could not load library`。
+- **Pkg 工程**：`env/Manifest.toml` 入库后 `julia --project=env main.jl` 就能跑，**不必** `Pkg.instantiate()`
+  —— 强行 instantiate 会去解压 General registry（7.5MB → 240MB、约 4 万个小文件），慢得像死锁。
+- **挂起别猜**：macOS 上 `sample <julia pid> 2 -file out.txt` 采一次调用栈，一眼看出卡在哪一帧。
+- 受限环境（`~/.julia` 不许删文件）会让 `Pkg.status()` 无限挂起：把 depot 指到可写目录
+  （`JULIA_DEPOT_PATH=/tmp/julia-depot:`）。

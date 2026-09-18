@@ -75,12 +75,15 @@ rm(dir; recursive = true, force = true)      # 删目录（测试沙箱清理）
 joinpath("G:", "code", "guide", "main.jl")   # 跨平台拼接（别手拼字符串）
 basename(p) / dirname(p)
 splitext("data.tar.gz")      # ("data.tar", ".gz")——只切最后一个扩展名
-abspath("x.jl") / isabspath("G:\\x")
+abspath("x.jl")
+isabspath(Sys.iswindows() ? "G:\\x" : "/x")   # 绝对路径的「长相」按平台取例子
 relpath(target, base)        # 相对路径（walkdir 断言好用）
 homedir() / tempdir() / pwd()
 ```
 
-注意分隔符：Windows 上输出含 `\`——**断言路径用 `joinpath` 构造期望值**，别硬编码 `/` 或 `\`。
+分隔符与绝对路径**两个维度**都别硬编码：Windows 上输出含 `\`（**断言路径用 `joinpath` 构造期望值**）；
+而绝对路径的写法更狠——Windows 认盘符（`"G:\\x"`），Unix 认开头斜杠（`"/x"`），
+写死某一侧在另一侧必然假失败（本教程 19.6 就踩过：`isabspath("G:\\x")` 在 macOS 上直接 AssertionError）。
 
 ## 19.7 stdout/stderr 与缓冲
 
@@ -91,7 +94,7 @@ flush(stdout)                        # 长任务进度显式刷新
 stderr 重定向日志、readline() 读 stdin（交互程序用）
 ```
 
-管道下 Julia 输出是块缓冲——本教程示例末行打印"==== NN 结束 ===="再退出，保证进程结束时缓冲全部落盘（build.ps1 靠它验证输出完整）。
+管道下 Julia 输出是块缓冲——本教程示例末行打印"==== NN 结束 ===="再退出，保证进程结束时缓冲全部落盘（两个入口靠它验证输出完整）。
 
 ## 19.8 坑位清单
 
@@ -99,5 +102,6 @@ stderr 重定向日志、readline() 读 stdin（交互程序用）
 2. **顶层 do 块里给全局累加**：soft scope 又来了（04 章）——让 do 块**返回**结果再赋值：`n = open(p) do io; ...; end`（19.2 实测修法）。
 3. **println 不加换行符时追加会接行**：`print(io, "无换行")` 后另开句柄 println，两段在同一条"行"里——行是换行符定义的（19 章示例实测）。
 4. **Serialization 不跨版本**：换 Julia 大版本反序列化可能失败——交换格式用 CSV/JSON（19.4）。
-5. **Windows 路径断言**：`joinpath`/`relpath` 产 `\`——期望值同样用 joinpath 构造（19.6）。
+5. **路径断言有两个平台维度**：① 分隔符（`joinpath`/`relpath` 产 `\`）——期望值同样用 `joinpath` 构造；
+   ② 绝对路径的写法（Windows `"G:\\x"`、Unix `"/x"`）——按 `Sys.iswindows()` 取例子，别写死（19.6）。
 6. **文件写完不 flush/close 就读**：do 块保证 close；手写 `io = open(...)` 别忘 close——异常路径漏关是老 bug 高发区。

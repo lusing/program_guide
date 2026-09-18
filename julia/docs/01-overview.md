@@ -56,20 +56,22 @@ Julia 采用 `1.x` 持续演进（1.0 是 2018 年的稳定基线，此后无破
 | `julia -e 'code'` | 一行代码 | 全程 |
 | `julia --project=dir` | 激活环境（Pkg） | 17/24 章 |
 | `julia -t 4` | 启 4 线程（默认 1！） | 20 章 |
-| `julia --check-bounds=yes` | 强制越界检查（安全网） | build.ps1 |
+| `julia --check-bounds=yes` | 强制越界检查（安全网） | 两个入口 |
 | `julia --track-allocation=user` | 按行统计分配 | 23 章 |
 | `julia --code-coverage=user` | 行覆盖 | 23 章 |
 | `julia --heap-size-hint=2G` | 内存超限强制 GC | 23 章 |
 | pkg> 模式（`]` 进入） | add/instantiate/status/test | 17 章 |
 
-安装：官网下载或包管理器（Windows 可 scoop：`scoop install julia`；macOS：`brew install julia`；多版本管理用 juliaup）。验证：`julia --version` → `julia version 1.13.0`。
+安装：官网下载或包管理器（Windows 可 scoop：`scoop install julia`；macOS：`brew install julia`，或用 MacPorts 的 `port install julia`（本教程 macOS 实测通道为 `/opt/local/bin/julia`）；多版本管理用 juliaup）。验证：`julia --version` → `julia version 1.13.0`。
+
+两个验证入口都不硬编码 Julia 路径：按 `-Julia` 参数 → 环境变量 `JULIA` → PATH 的 `julia` → 常见安装位置（scoop/juliaup/MacPorts/Homebrew）依次探测。
 
 ## 1.5 本教程怎么学
 
 - **读者定位**：会编程（C++/Python 背景最佳），从零学 Julia。不教编程本身。
 - **主线是 1.13 现代写法**：`@main` 入口、`[sources]` 路径依赖、线程池并行从第一天就是默认姿势，旧写法只在坑位清单里教"认得"。
 - **每章节奏**：读讲解 → 跑示例 → 改代码再跑。示例全在 `examples/NN_topic/`，章号 = 目录号，每目录含 `main.jl`（演示 + @assert 自检）与 `runtests.jl`（Test 断言套件）。
-- **三层验证**：`build.ps1` 对每个示例执行 运行层（`--check-bounds=yes` 跑 main.jl → exit 0 + 结束标记）→ 测试层（runtests.jl @testset → exit 0）→ 特判层（17/24 走 Pkg 工程、21/24 加 `-t 4`）——全部通过才收工，你手上的代码是可信的。
+- **三层验证**：两个等价入口（`./run-all.sh` / `pwsh ./build.ps1 -All`）对每个示例执行 运行层（`--check-bounds=yes` 跑 main.jl → exit 0 + 结束标记）→ 测试层（runtests.jl @testset → exit 0）→ 特判层（17/24 走 Pkg 工程、20 加 `-t 4`）——全部通过才收工，你手上的代码是可信的。
 - 与本仓库其他教程对照：[cpp20](../cpp20/README.md)、[zig](../zig/README.md)（同为编译型主线）、[python 类脚本对照]（[dart](../dart/README.md)）。
 
 ## 1.6 坑位清单

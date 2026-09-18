@@ -41,7 +41,7 @@ m[1, :]            # [1, 2, 3]——行取出是一维 Vector
 m[:, 1]            # [1, 4]
 ```
 
-越界抛 `BoundsError`（本教程 build.ps1 强制 `--check-bounds=yes` 验证）。
+越界抛 `BoundsError`（本教程两个入口都强制 `--check-bounds=yes` 验证）。
 
 ## 9.3 列主序：遍历顺序决定快慢
 

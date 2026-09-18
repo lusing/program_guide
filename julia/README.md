@@ -11,7 +11,8 @@ julia/
 ├── README.md       本文件
 ├── docs/           24 章教程（01 → 24 顺序阅读）
 ├── examples/       23 个示例目录（章号 = 目录号；17/24 为 Pkg 包工程，24 为迷你 ODE 求解器）
-├── build.ps1       统一验证脚本（须 PowerShell 7 / pwsh 运行）
+├── build.ps1       PowerShell 入口（双入口之一，须 PowerShell 7 / pwsh）
+├── run-all.sh      shell 入口（双入口之一，判定与 build.ps1 逐条一致）
 └── CHEATSheet.md   语法速查 + 1.13 坑位索引
 ```
 
@@ -46,20 +47,30 @@ julia/
 
 ## 构建工具链
 
-- Julia **1.13.0**：`G:\scoop\apps\julia\current\bin\julia.exe`（scoop 安装；版本不符先看 01 章的版本坑）。
+- Julia **1.13.0**：两个入口都**自动定位**，不硬编码路径 —— `-Julia` 参数 / 环境变量 `JULIA` → PATH 上的 `julia` → 常见安装位置（Windows: juliaup、`%LOCALAPPDATA%`；macOS: `/opt/local/bin`（MacPorts）、`/opt/homebrew/bin`、juliaup；Linux: `/usr/local/bin`）。本机 macOS 实测用 MacPorts 的 `/opt/local/bin/julia`（1.13.0）。
 - 每示例含 `main.jl`（演示 + @assert 自检）与 `runtests.jl`（Test 断言套件）；17/24 为 Pkg 工程（env/ + 本地包）。
-- 中文控制台乱码先 `chcp 65001`（build.ps1 已设 UTF-8）。
+- **Pkg 一律离线**（两个入口都设 `JULIA_PKG_OFFLINE=true`），而且 Pkg 工程**默认不调 `Pkg.instantiate()`**
+  —— `env/Manifest.toml` 已随仓库入库、依赖只有路径包和标准库，直接跑就行（见下文兼容性第 3 条）。
+- Windows 中文控制台乱码先 `chcp 65001`（build.ps1 已设 UTF-8 输出编码）。
 
 ## 验证命令
 
+```bash
+cd julia
+./run-all.sh              # shell 入口：全部 23 个示例（运行层 + 测试层）
+./run-all.sh -v           # 附带每个示例的完整输出
+./run-all.sh 13 23        # 只跑指定编号（或目录名，如 09_arrays）
+```
+
 ```powershell
-cd G:\code\guide\julia
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All                 # 全部 23 个示例：运行层+测试层
+cd julia
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All                 # PowerShell 入口，等价
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 09_arrays   # 单个示例
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean               # 清理 build 目录
 ```
 
-三层验证：**运行层**（`--check-bounds=yes` 跑 main.jl → exit 0 + `==== NN 结束 ====` 标记）→ **测试层**（runtests.jl 的 @testset → exit 0）→ **特判层**（17/24 走 Pkg 工程流程，20 加 `-t 4`）。
+三层验证：**运行层**（`--check-bounds=yes` 跑 main.jl → exit 0 + `==== NN 结束 ====` 标记）→ **测试层**（runtests.jl 的 @testset → exit 0）→ **特判层**（17/24 在 `env/` 环境下跑，20 加 `-t 4`）。
+两个入口共用同一套**六条判定标准**（见下），结果必须一致。
 
 单跑某个示例（每章标准学法）——改代码后重跑：
 
@@ -67,6 +78,69 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean               # 清理 build
 cd julia/examples/09_arrays
 julia --startup-file=no main.jl          # 改完立刻看效果
 ```
+
+## 判定标准（六条，两个入口共用）
+
+| # | 条件 | 为什么需要 |
+|---|---|---|
+| 1 | 退出码为 0 | 基础 |
+| 2 | stderr 为空 | Julia 的警告/异常都走 stderr → 这一条等价于「零告警」 |
+| 3 | stdout 非空 | 只判退出码会漏掉「进程根本没执行到业务代码」的假阳性 |
+| 4 | stdout 无多余控制字符（TAB/LF/CR 除外） | 打印了原始内存字节的示例能退 0、有标记，肉眼却看不出来 |
+| 5 | stdout 有 `==== NN 结束 ====` | 保证程序没在中途悄悄失败 |
+| 6 | stdout 无 Julia 诊断字样（WARNING/ERROR/MethodError…） | 兜住绕开 stderr 的第三方输出 |
+
+第 6 条有个连带约束：**示例自己打印的文案里不能出现这些字样**，否则会被自己的验证脚本判失败。
+
+## macOS / Linux 上的兼容性（2026-09-18 实测于 macOS 12.7 + Julia 1.13.0）
+
+教程原本按 Windows 写的，搬到 macOS 上有三个真问题，都已修掉：
+
+1. **`ccall` 的库名写死 `"msvcrt"`** → macOS 上 `could not load library "msvcrt"`（23 章整章跑不起来）。
+   现统一为 `const CLIB = Sys.iswindows() ? "msvcrt" : (Sys.isapple() ? "libSystem" : "libm")`。
+   实测：macOS 上 `libSystem` / `libm` / `libc` 三个名字都能解析，`strlen/atoi/fabs/abs/malloc/qsort` 全部可用
+   （macOS 的 libm、libc 都只是 libSystem 的别名）。`ccall` 的库名**必须是顶层常量**，
+   局部变量会报 `cannot reference local variables`。
+2. **`isabspath("G:\\x")` 式断言**（19 章）→ macOS 上直接 `AssertionError: isabspath("G:\\x")`（退出码 1）。
+   绝对路径的「长相」是平台相关的：Windows 认盘符、Unix 认开头斜杠。示例改为
+   `isabspath(Sys.iswindows() ? "G:\\x" : "/x")`。**分隔符和绝对路径是两个维度**，只把分隔符用 `joinpath`
+   包起来还不够。
+3. **`Pkg.instantiate()` 卡死十几分钟**（17/24 两个 Pkg 工程）。
+   卡点不是网络：Pkg 要读/解压 General registry（7.5MB → 240MB、约 4 万个小文件）——
+   在没有可用 registry 的 depot 上，这一步在本机慢到像死锁（实测十几分钟不返回，进程仍在跑）。
+   解法（已落到两个入口）：**入口不再主动 instantiate**。`env/Manifest.toml` 随仓库入库、依赖只有
+   `[sources]` 路径包和 stdlib，`julia --project=env main.jl` 直接就能跑（实测 3 秒）；
+   只有 Manifest 真缺了（首次从零解析）才调 `Pkg.instantiate()`，那时入口带 `JULIA_PKG_OFFLINE=true`。
+   手工执行 `Pkg.instantiate()` 时也要留意这一点。
+
+另外 14 章的世界年龄演示会**故意**触发一条 `Detected access to binding ... in a world prior to its
+definition world` 警告（Julia 1.12+ 行为，不受 `--depwarn=no` 控制）：示例用 `redirect_stderr(devnull)`
+把那次调用圈起来，好让「stderr 为空」这条判定对其它示例仍然严格。
+
+**受限环境（非教程缺陷，但会让人误判）**：如果 `~/.julia` 所在目录**不允许删除文件**
+（只读挂载、受限沙箱），那么 `Pkg.status()` / `Pkg.instantiate()` 会**无限挂起** ——
+它写 `logs/manifest_usage.toml` 的动作是「先删旧文件再改名」（`atomic_toml_write`），
+删除被拒时不是报错而是卡住，症状和上面的 registry 坑一模一样。把 depot 指到可写目录即可：
+
+```bash
+JULIA_DEPOT_PATH=/tmp/julia-depot: ./run-all.sh      # 末尾的冒号保留默认系统 depot
+```
+
+**定位这类"挂起"的通用手法**（比猜快得多）：`sample <julia pid> 2 -file out.txt` 采一次调用栈，
+看主线程卡在哪一帧 —— 本次就是靠它把「registry 解压慢」和「`rm` 被拒」两个不同原因区分开的。
+
+其余部分（路径/线程/浮点/编码）跨平台一致：示例一律用 `joinpath`、`mktempdir`，
+不硬编码分隔符；20 章的 `-t 4` 由入口自动加，本机 4 核默认池也是 4。
+
+## 当前状态（2026-09-18）
+
+- **23 个示例 × 2 层（运行 / 测试）在两个入口下全绿**：`./run-all.sh` → `通过 46   失败 0`；
+  `pwsh ./build.ps1 -All` → 同上（均在 macOS 12.7 + Julia 1.13.0 实跑）。
+- **判定标准反向验证过**：故意造 6 个违规样例（退出码非 0 / stderr 非空 / stdout 为空 /
+  混控制字符 / 缺结束标记 / stdout 含诊断字样），逐条确认能报出对应理由且脚本退出码 1；
+  另加 1 个合法样例作对照组，确认「全绿」不是永远返回通过。
+- 本仓库的验证环境对 `~/.julia` 的删除有限制，故实跑时带了
+  `JULIA_DEPOT_PATH=/tmp/julia-depot:`（原因见上文）；普通终端环境不需要。
 
 ## 相关教程
 

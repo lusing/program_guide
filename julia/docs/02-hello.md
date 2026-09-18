@@ -24,7 +24,7 @@ julia --startup-file=no -t 4 main.jl          # 4 线程（20 章）
 julia --project=myenv main.jl                 # 激活环境（17 章）
 ```
 
-本教程统一 `--startup-file=no --history-file=no` 起脚本（干净、可复现）；build.ps1 验证时另加 `--check-bounds=yes`（强制边界检查，23 章细讲）。
+本教程统一 `--startup-file=no --history-file=no` 起脚本（干净、可复现）；两个入口验证时另加 `--check-bounds=yes`（强制边界检查，23 章细讲）。
 
 ## 2.3 三种输出：println / print / show
 
@@ -79,14 +79,19 @@ greet(name::AbstractString) = "你好，$(name)！"
 
 ## 2.7 示例怎么跑
 
-```powershell
+```bash
 cd julia
-pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 02_hello    # 三层验证
+./run-all.sh 02                                                  # 三层验证（shell 入口）
 julia --startup-file=no examples/02_hello/main.jl Julia 1.13     # 手跑（注意会触发 @main）
 julia --startup-file=no examples/02_hello/runtests.jl            # 测试层
 ```
 
-改动示例后重跑：`build.ps1 -Example 02_hello` 是标准学法——运行层看输出与结束标记（`==== 02 结束 ====`），测试层看 @testset 全绿。
+```powershell
+cd julia
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 02_hello   # 等价入口（Windows 上更顺手）
+```
+
+改动示例后重跑：`./run-all.sh 02`（或 `build.ps1 -Example 02_hello`）是标准学法——运行层看输出与结束标记（`==== 02 结束 ====`），测试层看 @testset 全绿。
 
 ## 2.8 坑位清单
 
@@ -94,4 +99,4 @@ julia --startup-file=no examples/02_hello/runtests.jl            # 测试层
 2. **`@main` 的错误形式**：`Base.@main function main(args)` 静默变成"立即调用"——用 `function @main(args)`（2.5）。
 3. **字符串拼接是 `*` 不是 `+`**：`"a" + "b"` 抛 MethodError（12 章有提示信息原文）。
 4. **脚本里 `@code_typed` 等" REPL 自动物"不存在**：InteractiveUtils 只在 REPL 自动加载，脚本要 `using InteractiveUtils`（16 章实测坑）。
-5. **结束标记约定**：本教程示例末行打印 `==== NN 结束 ====`，build.ps1 靠它确认输出完整——改示例别删这行。
+5. **结束标记约定**：本教程示例末行打印 `==== NN 结束 ====`，两个入口靠它确认输出完整——改示例别删这行。

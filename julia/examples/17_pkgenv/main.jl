@@ -1,7 +1,9 @@
 # 17 包与环境 ⭐：以本目录 env/（环境）+ MathTools/（本地包）为例
-# 运行（build.ps1 自动）：
-#   julia --project=env -e 'using Pkg; Pkg.instantiate()'   # 离线解析并预编译
-#   julia --project=env main.jl                              # 在环境中运行
+# 运行（两个入口自动加 --project=env）：
+#   julia --project=env main.jl       # env/Manifest.toml 已随仓库入库，直接跑即可
+#   julia --project=env runtests.jl
+# 只有 Manifest 缺失（首次从零解析）时才需要 Pkg.instantiate()：
+#   julia --project=env -e 'using Pkg; Pkg.instantiate()'
 # 注意：Project.toml 里的路径一律写正斜杠 /（反斜杠是非法 TOML 转义）
 
 # ═══ 17.1 当前活动环境：--project=env 激活了谁

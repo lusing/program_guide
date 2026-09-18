@@ -1,6 +1,6 @@
 # 20 · 并发与并行
 
-> 对应示例：`examples/20_concurrency/`（build.ps1 以 `-t 4` 运行）
+> 对应示例：`examples/20_concurrency/`（两个入口以 `-t 4` 运行）
 >
 > Task 是协作式调度的"轻量线程"，`Threads` 是真并行——一章讲全：**IO 并发用 @async + Channel；计算并行用 @threads/@spawn**。
 
