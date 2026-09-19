@@ -35,5 +35,40 @@ let package = Package(
             name: "Ch05FunctionsTests",
             dependencies: ["Ch05Functions"],
             path: "examples/05_functions/Tests/05_functionsTests"),
+        .executableTarget(
+            name: "Ch06Optionals",
+            path: "examples/06_optionals/Sources/06_optionals"),
+        .testTarget(
+            name: "Ch06OptionalsTests",
+            dependencies: ["Ch06Optionals"],
+            path: "examples/06_optionals/Tests/06_optionalsTests"),
+        .executableTarget(
+            name: "Ch07StructsClasses",
+            path: "examples/07_structs_classes/Sources/07_structs_classes"),
+        .testTarget(
+            name: "Ch07StructsClassesTests",
+            dependencies: ["Ch07StructsClasses"],
+            path: "examples/07_structs_classes/Tests/07_structs_classesTests"),
+        .executableTarget(
+            name: "Ch08Enums",
+            path: "examples/08_enums/Sources/08_enums"),
+        .testTarget(
+            name: "Ch08EnumsTests",
+            dependencies: ["Ch08Enums"],
+            path: "examples/08_enums/Tests/08_enumsTests"),
+        .executableTarget(
+            name: "Ch09Protocols",
+            path: "examples/09_protocols/Sources/09_protocols"),
+        .testTarget(
+            name: "Ch09ProtocolsTests",
+            dependencies: ["Ch09Protocols"],
+            path: "examples/09_protocols/Tests/09_protocolsTests"),
+        .executableTarget(
+            name: "Ch10Generics",
+            path: "examples/10_generics/Sources/10_generics"),
+        .testTarget(
+            name: "Ch10GenericsTests",
+            dependencies: ["Ch10Generics"],
+            path: "examples/10_generics/Tests/10_genericsTests"),
     ]
 )

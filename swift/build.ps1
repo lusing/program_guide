@@ -47,6 +47,11 @@ $targetMap = @{
     "03_basics" = "Ch03Basics"
     "04_control" = "Ch04Control"
     "05_functions" = "Ch05Functions"
+    "06_optionals" = "Ch06Optionals"
+    "07_structs_classes" = "Ch07StructsClasses"
+    "08_enums" = "Ch08Enums"
+    "09_protocols" = "Ch09Protocols"
+    "10_generics" = "Ch10Generics"
 }
 
 # 独立包示例（嵌套 Package.swift，不在根包）
