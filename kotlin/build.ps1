@@ -156,12 +156,14 @@ function Compare-Golden {
     param([string]$Expected, [string]$ActualPath)
     $want = Get-NormalizedText -Path $Expected
     $got  = Get-NormalizedText -Path $ActualPath
-    if ($want -ne $got) {
+    # 必须用 -cne（区分大小写）：PowerShell 的 -ne 大小写不敏感，
+    # 只差大小写的输出会被判成"一致"——反向验证就是这么抓到它的
+    if ($want -cne $got) {
         $w = $want -split "`n"; $g = $got -split "`n"
         for ($i = 0; $i -lt [Math]::Max($w.Count, $g.Count); $i++) {
             $a = if ($i -lt $w.Count) { $w[$i] } else { '<缺少>' }
             $b = if ($i -lt $g.Count) { $g[$i] } else { '<缺少>' }
-            if ($a -ne $b) { Write-Host "  第 $($i+1) 行不一致:`n    期望: $a`n    实际: $b" -ForegroundColor Red; break }
+            if ($a -cne $b) { Write-Host "  第 $($i+1) 行不一致:`n    期望: $a`n    实际: $b" -ForegroundColor Red; break }
         }
         return $false
     }
@@ -202,9 +204,10 @@ function Invoke-Capture {
     & $Exe @ExeArgs > $OutFile 2> $ErrFile
     if ($LASTEXITCODE -ne 0) { Get-Content -LiteralPath $ErrFile | Select-Object -First 20 | Write-Host; return 1 }
     # node 跑 wasm-wasi 会往 stderr 打 ExperimentalWarning —— 宿主噪声，白名单滤掉（与 run-all.sh 一致）
+    # 注意：清空文件要用 Clear-Content —— Set-Content -Value '' 会写进一个换行符，长度就不是 0 了
     if ($Filter -and (Get-Item -LiteralPath $ErrFile).Length -gt 0) {
         $kept = @(Get-Content -LiteralPath $ErrFile | Where-Object { $_ -notmatch $Filter })
-        if ($kept.Count -eq 0) { Write-Host "    （已滤除宿主噪声：$Filter）"; Set-Content -LiteralPath $ErrFile -Value '' }
+        if ($kept.Count -eq 0) { Write-Host "    （已滤除宿主噪声：$Filter）"; Clear-Content -LiteralPath $ErrFile }
     }
     if ((Get-Item -LiteralPath $ErrFile).Length -gt 0) {
         Write-Host "    stderr 非空:"; Get-Content -LiteralPath $ErrFile | Select-Object -First 20 | Write-Host; return 2
@@ -225,6 +228,15 @@ function Write-Skip { param([string]$Name, [string]$Why)
     $script:Skip++; $script:SkippedNames += "$Name（$Why）"
     Write-Host "[SKIP] $Name —— $Why" -ForegroundColor Yellow
 }
+function Test-Fresh {
+    # 产物新鲜度：存在 **且** 比本轮的时间戳新。
+    # 只判"存在"不够：产物目录动辄 50+ 文件，删除可能被环境策略静默拦下，
+    # 旧产物残留会让这条判定变成假阳性（编译其实失败了，却拿上一轮的产物去跑）。
+    param([string]$Path, [datetime]$Stamp)
+    if (-not (Test-Path -LiteralPath $Path)) { return $false }
+    return ((Get-Item -LiteralPath $Path).LastWriteTime -gt $Stamp)
+}
+
 function Get-RunReason { param([int]$Code)
     switch ($Code) { 1 { '退出码非 0' } 2 { 'stderr 非空' } 3 { 'stdout 为空' } 4 { 'stdout 含控制字符' } default { "rc=$Code" } }
 }
@@ -382,10 +394,15 @@ function Test-MultiplatformExample {
         )) {
             $id = $t.id
             $outDir = Join-Path $Dir "build/$id"
-            if (Test-Path -LiteralPath $outDir) { Remove-Item -LiteralPath $outDir -Recurse -Force }
             New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+            # 同理只删本次要重新生成的产物，避免"旧产物残留 → 产物存在判定假阳性"
+            foreach ($f in @('probe.klib', 'probe.js', 'probe.mjs', 'probe.wasm', 'probe.kexe', 'probe.exe')) {
+                $p = Join-Path $outDir $f
+                if (Test-Path -LiteralPath $p) { Remove-Item -LiteralPath $p -Force }
+            }
             $logFile = Join-Path $Dir "build/$id.log"
             $outFile = Join-Path $outDir 'stdout.txt'; $errFile = Join-Path $outDir 'stderr.txt'
+            $stamp = Get-Date      # 产物新鲜度基准：下面判定"产物必须是本轮生成的"
 
             if ($id -eq 'native') {
                 if (-not $konanc) { Write-Skip "$name/$id" '本机无 konanc（Kotlin/Native 未安装）'; continue }
@@ -396,8 +413,8 @@ function Test-MultiplatformExample {
                     Write-Fail "$name/$id" 'konanc 编译失败'; $subfail = $true; continue
                 }
                 $exe = Join-Path $outDir 'probe.kexe'
-                if (-not (Test-Path -LiteralPath $exe)) { $exe = Join-Path $outDir 'probe.exe' }
-                if (-not (Test-Path -LiteralPath $exe)) { Write-Fail "$name/$id" '缺少产物 probe.kexe'; $subfail = $true; continue }
+                if (-not (Test-Fresh -Path $exe -Stamp $stamp)) { $exe = Join-Path $outDir 'probe.exe' }
+                if (-not (Test-Fresh -Path $exe -Stamp $stamp)) { Write-Fail "$name/$id" '缺少产物 probe.kexe'; $subfail = $true; continue }
                 $rc = Invoke-Capture -Exe $exe -OutFile $outFile -ErrFile $errFile
             } else {
                 switch ($id) {
@@ -410,7 +427,7 @@ function Test-MultiplatformExample {
                         @('-Xir-module-name=probe', '-ir-output-name=probe', "-ir-output-dir=build/$id", 'src/Common.kt', $srcFile)
                 # 第一步：klib（此步退出码可信）
                 & $compiler @base > $logFile 2>&1
-                if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath (Join-Path $outDir 'probe.klib'))) {
+                if ($LASTEXITCODE -ne 0 -or -not (Test-Fresh -Path (Join-Path $outDir 'probe.klib') -Stamp $stamp)) {
                     Get-Content -LiteralPath $logFile | Select-Object -Last 20 | Write-Host
                     Write-Fail "$name/$id" 'klib 编译失败'; $subfail = $true; continue
                 }
@@ -420,7 +437,7 @@ function Test-MultiplatformExample {
                 $klibArg = "-Xinclude=build/$id/probe.klib"
                 & $compiler (@($base) + @('-Xir-produce-js', $klibArg)) > $logFile 2>&1
                 $runner = if ($id -eq 'js') { Join-Path $outDir 'probe.js' } else { Join-Path $outDir 'probe.mjs' }
-                if (-not (Test-Path -LiteralPath $runner)) {
+                if (-not (Test-Fresh -Path $runner -Stamp $stamp)) {
                     Get-Content -LiteralPath $logFile | Select-Object -Last 20 | Write-Host
                     Write-Fail "$name/$id" "缺少产物 $(Split-Path -Leaf $runner)"; $subfail = $true; continue
                 }

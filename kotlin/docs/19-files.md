@@ -46,6 +46,14 @@ File(root).walkTopDown()                 // 深度优先遍历（Sequence<File>�
 
 `walkTopDown()/walkBottomUp()` 是**惰性遍历**——能接 `filter/map/take`，删目录前先"列出要删的"检查一遍是安全习惯。
 
+⚠️ **跨平台坑：`File.path` 的分隔符随平台变。** 构造时写 `File("build/demo")` 没问题（Windows 一样吃 `/`），但**一旦把 `path` 打印出来、写进快照或断言，就绑死在作者这台机器上了**：Windows 给 `a\1.txt`，macOS/Linux 给 `a/1.txt`，同一份 `expected.txt` 不可能两边都成立。要输出/比对路径就先归一：
+
+```kotlin
+val rel = file.relativeTo(root).path.replace(File.separatorChar, '/')   // 或 Kotlin 的 invariantSeparatorsPath
+```
+
+本示例 19.5 的目录树（`treeListing`）和 24 章的存储文件路径都按这条改过——否则 Windows 上写着 `build\demo\tasks.json` 的快照，换到 macOS 跑就一片红。
+
 ## 19.4 java.time：别再碰 Date/Calendar
 
 ```kotlin
