@@ -228,8 +228,8 @@ end.
   断言像素）、`docs/23-threads.md`（⭐TThread/Synchronize vs Queue——selftest 用 CheckSynchronize 泵）
 - Create: `examples/21_lists_trees/`（ListView vsReport 排序 + TreeView）、`22_paint/`、`23_threads/`
 
-- [ ] 示例 + `-Gui`/`-All` 全绿（线程示例确定性：固定任务量断言结果汇总）
-- [ ] 正文 3 章 + 提交 `docs(freepascal): 21–23 章——列表树视图/Canvas 绘图双缓冲/多线程 + 三示例验证，GUI 篇收官`
+- [x] 示例 + `-Gui`/`-All` 全绿（线程示例确定性：固定任务量断言结果汇总）
+- [x] 正文 3 章 + 提交 `docs(freepascal): 21–23 章——列表树视图/Canvas 绘图双缓冲/多线程 + 三示例验证，GUI 篇收官`
 
 ### Task 9: 24 章——实战记事本+
 
@@ -302,6 +302,11 @@ end.
     在 LCL 不保真（就近自动关联）。
 20. **ModalResult 实测值**：mrOk=1/mrCancel=2/mrYes=6/mrNo=7/mrClose=8；
     Action.OnUpdate 可无头驱动状态同步。
+21. **TreeView Items[] 是 DFS 序**（21 章实测）：不是插入顺序——挂数据必须用 AddChild
+    返回值，按索引回填会挂错节点（实测 AV）；ListBox 程序化 Selected[i] 不联动 ItemIndex。
+22. **绘图验证的色盲陷阱**（22 章实测）：clBlack=$00000000，黑墨对黑底判据失明——
+    合成验证底色用洋红。GUI 线程章：CheckSynchronize 无头泵实锤（100 次回调）；
+    非 TPersistent 后代类不能进 TForm 默认（published）段。
 3. **Git Bash 传参给 fpc/lazbuild**：`cygpath -m` 转路径 + `MSYS2_ARG_CONV_EXCL='*'` 关闭 MSYS 自动
    转换（`-FEG:/...` 内嵌 `/code/...` 会被转成 `G:\Program Files\Git\code\...`）；`grep -P` 与
    LC_ALL 冲突报错致控制字符判定静默失效，改 `od -An -v -tx1` 方案（run-all.sh 注释）。
