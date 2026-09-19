@@ -21,6 +21,7 @@
 - [boost](./boost) — Boost C++ 教程与示例，使用 MSVC + Boost 头文件验证
 - [coq](./coq) — Coq 教程与示例，使用 coqc 批量编译验证
 - [clojure](./clojure) — Clojure 教程与示例，使用 Clojure CLI（`clojure` 1.12.6.1673 / Clojure 1.12.6）运行验证（20 个示例全部通过，覆盖函数式编程 / 惰性序列 / 宏 / 多方法 / 记录与协议 / 并发与 STM / Java 互操作 / clojure.spec / Transducer / 综合实战）
+- [cobol](./cobol) — GNU COBOL 教程与示例（20 章对齐 freepascal/freebasic 标准：固定格式列位 / PIC 数据模型 / PERFORM / 表与 SEARCH / 子程序与 C 互操作 / 三类文件 / 状态码异常 / SCREEN 终端界面 / 控制break 报表 / 测试方法论 / 库存管理实战），使用 GnuCOBOL 3.2.0（macOS MacPorts + clang 后端）双通道验证（check `-Wall -std=default` / release `-O2`，六条判定 + 两通道输出逐字节一致），18 个示例（02–19）全部通过，双入口 `run-all.sh` / `build.ps1`，CHEATSheet 收录 106 条实测坑位，详见 [cobol/README.md](./cobol/README.md)
 - [cpp20](./cpp20) — C++ 从零到 C++20/23 教程（24 章 + 迷你 grep 实战）；Windows 走 MSVC 主线，macOS/Linux 用 clang++ 23（自带 libc++）+ g++ 15 双工具链对照，23 个示例 × 2 通道全部通过，双入口 `run-all.sh` / `build.ps1`，六条判定（退出码 0 + stderr 空 + 编译零告警 + 输出非空 + 无控制字符 + 结束标记），详见 [cpp20/README.md](./cpp20/README.md) 的「macOS / Linux 上的兼容性」
 - [dart](./dart) — Dart 语言入门与示例，使用 Dart SDK 验证
 - [dlang](./dlang) — D 语言教程与示例，使用 DMD 编译验证
@@ -121,6 +122,7 @@
 36. [fortran](./fortran)
 37. [sml](./sml)
 38. [ocaml](./ocaml)
+39. [cobol](./cobol)
 
 ## 工具链说明
 
@@ -134,6 +136,7 @@
 - clang 23.1.0 + clang 自带 libc++ / GCC 15.2.0 + libstdc++（现代 C++20/23，macOS macports 安装 `clang++-mp-23` / `g++-mp-15`；Windows 侧走 MSVC cl）
 - MSVC + Boost
 - Coq (coqc)
+- GnuCOBOL 3.2.0 / cobc（COBOL；macOS macports 安装 `/opt/local/bin/cobc`，clang 后端 COBOL→C→原生；Linux/Windows 用发行版包或官方构建；固定格式源码 UTF-8，含中文行须 ≤72 字节）
 - Dart SDK
 - DMD
 - GNU Emacs 31.1 + Emacs Lisp (ELisp)（扩展开发，`emacs -Q --batch` 非交互验证；`run-all.sh` 与 `build.ps1` 双入口）
