@@ -1537,7 +1537,725 @@ Compute (myodd 7).             (* = true *)
 
 ---
 
+## 第 11 章 证明状态与 tactic 机理
+
+对应示例：`examples/11_proof_state.v`
+
+前 10 章写的都是「普通程序」。从本章起，证明成为主角。好消息是：你不需要学什么新语言——证明只是换一种方式与同一个类型系统对话。
+
+### 11.1 证明状态：一间只有一块黑板的小教室
+
+`Proof.` 之后、`Qed.` 之前，Coq 维护着一个**证明状态**（proof state）：
+
+```text
+n : nat                    <- 上下文（context）：已知的假设
+IH : n + 0 = n                就是「有这些证据」
+============================  <- 分隔线
+S n + 0 = S n              <- 目标（goal）：还要证的东西
+```
+
+理解证明就理解了这幅图：
+
+- **上下文**是黑板上半部分——已经收下的变量和假设；
+- **目标**是黑板下半部分——当前欠的债；
+- **策略**（tactic）是擦黑板的动作：每条策略要么把目标化简，要么把目标拆成几个小目标，要么从上下文里取东西用；
+- 目标全部消失，`Qed.` 就能封印；还剩目标就 `Qed.`，报 `Attempt to save an incomplete proof`。
+
+这个模型叫**目标导向证明**（goal-directed proof）。你在写的不是「证明的最终形态」，而是「制造证明的过程脚本」——`Qed.` 时脚本被编译成一个证明项（第 3 章的 eq_refl 就是它的产物），交内核复查。
+
+### 11.2 逐句看一个证明的状态演变
+
+以全书最重要的定理为例（示例 11 的注释里有完整快照）：
+
+```coq
+Theorem plus_n_O : forall n : nat, n + 0 = n.
+Proof.
+  intros n.
+  induction n as [| n IH].
+  - reflexivity.
+  - simpl.
+    rewrite IH.
+    reflexivity.
+Qed.
+```
+
+逐句解读：
+
+**`intros n.`**——把 `forall` 的变量收进上下文。forall 是「给你任意 n」（第 14 章会看到它就是函数类型），intros 就是收下这份「任意」：
+
+```text
+n : nat
+============================
+n + 0 = n
+```
+
+**`induction n as [| n IH].`**——在 n 上归纳。按 nat 的两个构造子，目标裂成两个：
+
+```text
+目标 1（基例）：
+============================
+0 + 0 = 0
+
+目标 2（步例）：
+n : nat
+IH : n + 0 = n        <- 归纳假设（induction hypothesis）
+============================
+S n + 0 = S n
+```
+
+`as [| n IH]` 的方括号按构造子排列：第一个 `|` 前是 O 的（无参数，空）；后面是 S 的两个参数——拆出的前驱叫 `n`，白送的「前驱定理」叫 `IH`。
+
+**`- reflexivity.`**——子弹 `-` 点名处理第一个目标。`0 + 0` 按定义算出 `0`，两边一样，关闭。
+
+**`- simpl.`**——处理第二个目标，先把 `S n + 0` 按 `Nat.add` 的定义展开一步（回忆：加法在第一个参数上递归，`S n + m = S (n + m)`）：
+
+```text
+S (n + 0) = S n
+```
+
+**`rewrite IH.`**——用 IH 把目标里的 `n + 0` 替换成 `n`：
+
+```text
+S n = S n
+```
+
+**`reflexivity.`**——关闭最后一个目标。黑板干净，`Qed.` 封印。
+
+整个过程一句话总结：**归纳 = 让 Coq 按数据形状把定理拆成有限个小目标，基例靠计算，步例靠归纳假设**。
+
+### 11.3 子弹：多目标的纪律
+
+目标多于一个时，用**子弹**（bullets）逐个点名：第一层 `-`，第二层 `+`，第三层 `*`：
+
+```coq
+- (* 目标 1 *)
+  + (* 目标 1.1 *)
+  + (* 目标 1.2 *)
+- (* 目标 2 *)
+```
+
+规则简单粗暴：**开了子弹就必须用完**——每个目标都要被处理到，否则 `Qed.` 报错。这是「证明没有偷偷漏情况」的第一道保险（第二道是穷尽性检查，第 7 章）。三层嵌套已经接近可读性极限，再深就该用 `assert` 先抽引理（第 18 章）。
+
+不用子弹行不行？行——策略按顺序作用于「当前第一个目标」也能证完。但那样读证明的人（包括三个月后的你）无法确认哪些策略服务哪个目标。**本教程一律用子弹。**
+
+### 11.4 apply 与 exact：调用现成的定理
+
+已证过的定理是可复用的资产。两种用法：
+
+```coq
+Check Nat.add_0_r.            (* forall n : nat, n + 0 = n —— 库里早就有 *)
+
+Example apply_demo : forall n : nat, n + 0 = n.
+Proof.
+  intros n.
+  apply Nat.add_0_r.
+Qed.
+
+Example exact_demo : forall n : nat, n + 0 = n.
+Proof.
+  intros n.
+  exact (Nat.add_0_r n).
+Qed.
+```
+
+- **`apply 定理`**：把目标与定理**结论**对齐，自动补全参数，然后把定理的**前提**变成新目标——「用这条定理就能解决目标，前提你来还」。目标 `n + 0 = n` 正是 `Nat.add_0_r` 的结论（代入 ?n := n），无前提，一步关闭；
+- **`exact 项`**：不做任何推理，把你给的项原样交出，类型必须与目标一字不差。`exact (Nat.add_0_r n)` 交的就是「把 n 代入后的那条定理」。
+
+日常写法：apply 为主（省心），exact 用于「我知道答案就是它」的收尾。`apply` 是本章五虎将（intros / simpl / rewrite / reflexivity + apply）里唯一「反方向」工作的：它从结论倒推前提，这正是目标导向证明的引擎。
+
+### 11.5 策略是可组合的元语言
+
+一个提醒：tactic 不是 Coq 的核心语言，而是**操纵证明状态的元语言**。证据：同一个定理可以有无限多种脚本（多打一枪 `simpl`、换个方向 rewrite、先 destruct 再……），但 `Qed.` 后得到的证明项只有一个（`Print` 看看）。脚本的好坏只影响你的时间和可读性，不影响定理的可靠性——**可靠性由内核对最终证明项的检查保证**。
+
+这也解释了为什么策略可以有副作用很重的自动化（第 18 章的 auto）：哪怕自动化生成了错误的中间步骤，内核也会在 Qed 时拒绝。分层信任，处处皆然。
+
+### 11.6 实战节奏建议
+
+初学者最有效的练习循环（CoqIDE / VSCoq 里）：
+
+1. 写下 `Theorem ... ` + `Proof.`，看目标；
+2. 每打一条策略，**看状态怎么变**——尤其是上下文多了什么、目标变成什么；
+3. 卡住时依次自问：目标能不能 `simpl`？上下文里有没有能 `rewrite` 的？目标是不是某定理的结论（`apply`）？要不要分情况（`destruct`）/ 归纳（`induction`）？
+4. 用 `Show.` 重看当前状态，`Search` 找形状匹配的定理。
+
+把示例 11 在 CoqIDE 里逐步执行一遍，对照注释里的状态快照——这是本章唯一布置的「作业」。
+
+### 11.7 本章坑位清单（实测）
+
+1. **`Qed.` 时才报「没证完」**：错误定位在 Qed，病因在前面；养成子弹+`Show.` 的习惯；
+2. **子弹层级混用**：同一层必须用同一符号（全 `-` 或全 `+`），混用报错；
+3. **`induction` 前 `intros` 掉要归纳的变量**：先 `intros n` 再 `induction n` 没问题，但 `intros` 把依赖 n 的假设也收进来后，归纳时那些假设**不会被一般化**（进阶话题，第 20 章撞到再讲，先记住：要归纳的变量尽量最后 intros）；
+4. **`apply` 方向不匹配**：目标是 `n = n + 0` 而定理结论是 `n + 0 = n` 时 apply 失败——先 `symmetry.` 转身（第 13 章）；
+5. **策略名打错**：`simplfy`、`rewrtie`——报 `No such tactic`，拼写检查。
+
+---
+
+## 第 12 章 归纳证明
+
+对应示例：`examples/12_induction.v`
+
+### 12.1 为什么「显然」不够
+
+`n + 0 = n`——「加法单位元，显然」。但在 Coq 里，`+` 是一个在第一个参数上递归的函数：`0 + m` 一步化简到 `m`（左边是 O，直接返回右边），而 `n + 0` 呢？左边是变量，`Nat.add` 的定义动不了它。**「显然」依赖的是数学知识，不是符号计算**——所以必须归纳。这恰是 Coq 的教学价值：它逼你把每个「显然」背后的原理（归纳）真正用出来。
+
+### 12.2 归纳证明的通用剧本
+
+第 11 章已经走过一遍，这里给出可背诵的模板：
+
+```coq
+Theorem T : forall n : nat, P n.
+Proof.
+  intros n. induction n as [| n IH].
+  - reflexivity.                    (* 基例：算出来 *)
+  - simpl. rewrite IH. reflexivity. (* 步例：展开、用 IH、收尾 *)
+Qed.
+```
+
+三步：**分裂（induction）、算基例（reflexivity）、用假设（rewrite + reflexivity）**。适用面极广——nat、list、btree、任何归纳类型都行，因为 `induction` 幕后用的正是声明类型时自动生成的归纳原理（第 9 章的 `day_ind`、`btree_ind`）。
+
+### 12.3 例 2：交换律——真实的工作量
+
+```coq
+Theorem plus_comm : forall n m : nat, n + m = m + n.
+Proof.
+  intros n m. induction n as [| n IH].
+  - simpl. rewrite plus_n_O. reflexivity.
+  - simpl. rewrite IH. rewrite plus_n_Sm. reflexivity.
+Qed.
+```
+
+两个新情况，极具代表性：
+
+**基例不是纯计算**：化简后是 `m = m + 0`——右边又是那个「动不了的 n + 0」！需要引理帮忙。这里 `rewrite plus_n_O` 用的是**本章自己证的定理**（方向 `n + 0 = n`），把 `m + 0` 替换成 `m`。
+
+> 坑（实测）：标准库也有个 `plus_n_O`，但方向是 `n = n + 0`（反的！）。同名定理、方向不同，`rewrite` 的行为天差地别——**rewrite 之前先 `Check` 一下方向**是省时间的习惯。另外让「要找的一侧」是复合模式（`n + 0`）而不是裸变量，匹配才唯一（第 13 章展开）。
+
+**步例需要「挪动 S」的引理**：`rewrite IH` 后目标是 `S (m + n) = m + S n`，两边各差一个 S 的位置。`plus_n_Sm : S (n + m) = n + S m` 正好搬运 S。
+
+工作流建议：这些「搬运算子」的小引理**先 Search 再自证**（`Search (S _ + _)`、`Search (_ + S _)`），库里多半有；确实没有再手证，手证时它们往往又是一个普通归纳。
+
+### 12.4 例 3：自定义函数的定律
+
+对自己写的函数，同样套路：
+
+```coq
+Fixpoint double (n : nat) : nat :=
+  match n with
+  | O => O
+  | S k => S (S (double k))
+  end.
+
+Theorem double_plus : forall n : nat, double n = n + n.
+Proof.
+  induction n as [| n IH].
+  - reflexivity.
+  - simpl. rewrite IH. rewrite <- plus_n_Sm. reflexivity.
+Qed.
+```
+
+注意 `rewrite <- plus_n_Sm` 的**反向**使用：`plus_n_Sm` 把 `S (n + m)` 变成 `n + S m`，而这里需要把 `n + S n` 变回 `S (n + n)`——方向反着用。**rewrite 的方向感是本阶段最重要的肌肉记忆**，判断法：看你想消掉的模式在哪一侧。
+
+### 12.5 例 4：列表上归纳——方法完全相同
+
+```coq
+Fixpoint my_append {A : Type} (xs ys : list A) : list A :=
+  match xs with
+  | [] => ys
+  | h :: tl => h :: my_append tl ys
+  end.
+
+Theorem my_app_nil_r : forall (A : Type) (xs : list A),
+  my_append xs [] = xs.
+Proof.
+  intros A xs. induction xs as [| x tl IH].
+  - reflexivity.                    (* 空表拼空表 = 空表 *)
+  - simpl. rewrite IH. reflexivity. (* 头保住，尾交给 IH *)
+Qed.
+```
+
+和 nat 的归纳**零差别**：裂成 `[]` / `::` 两个情形，基例计算，步例用 IH。为什么 `my_append [] ys = ys` 这个「左单位元」不用证（`reflexivity` 就收）而「右单位元」要归纳？因为定义在**第一个参数**上 match——左边是 `[]` 一步化简，右边是变量动不了。**「证明的难度分布由定义的形状决定」**，这是写可证代码的第一直觉。
+
+### 12.6 归纳的适用边界
+
+| 想证的东西 | 用什么 |
+|---|---|
+| 具体数值断言 `3 + 4 = 7` | `reflexivity`（纯计算） |
+| 对所有 n 的性质，函数按结构递归 | `induction`（本章） |
+| 有限种情况（bool、枚举） | `destruct`（第 13 章，无 IH 的轻量归纳） |
+| 「存在性/任意性」陈述 | 谓词逻辑工具（第 15 章） |
+
+### 12.7 本章坑位清单（实测）
+
+1. **同名定理方向相反**：本章 `plus_n_O`（n + 0 = n）与标准库 `plus_n_O`（n = n + 0）同姓不同向——rewrite 前 `Check`；
+2. **归纳前把假设 intros 太多**：依赖被归纳变量的假设收进上下文后不参与一般化，步例的 IH 变弱甚至证不动（第 20 章有实例与解法 `revert`）；**口诀：要归纳的变量最后 intros**；
+3. **忘记 `simpl` 直接 rewrite**：目标还是 `S n + 0` 的形状而 IH 谈的是 `n + 0`，rewrite 匹配不上——先 simpl 把形状展开；
+4. **基例目标里残留变量**：`0 + m = m + 0` 的 m + 0 消不掉——Search 搬运算子方向的引理（`plus_n_O` / `Nat.add_0_r`）；
+5. **induction 的 as 模式漏写**：默认给步例的假设起名 `IHn`——名字能用，但 `as [| n IH]` 显式命名后 rewrite 才顺手。
+
+---
+
+## 第 13 章 重写、化简与分情况讨论
+
+对应示例：`examples/13_rewrite.v`
+
+前两章的证明只用了五种策略。本章补齐日常证明的另外几件兵器：`destruct`、`symmetry`/`transitivity`、`discriminate`/`injection`，并把 `rewrite` 的方向问题讲透。
+
+### 13.1 rewrite 的方向与「哪侧好匹配」
+
+`rewrite H` 把 H **左边**的模式替换成右边；`rewrite <- H` 反向。方向的选择标准：
+
+> **让「你要找的那个模式」处在复合模式（有结构）的一侧。**
+
+标准库给了绝佳的对照样本：
+
+```coq
+Check Nat.add_0_r.   (* forall n, n + 0 = n —— 左侧复合：找 n + 0 *)
+Check plus_n_O.      (* forall n, n = n + 0 —— 左侧裸变量！ *)
+```
+
+- `rewrite Nat.add_0_r`（正向）：在目标里**找 `?x + 0`**、替换为 `?x`——匹配唯一，行为完全可预期；
+- `rewrite plus_n_O`（正向）：要在目标里「找裸变量 ?x」——几乎任何子项都匹配得上，行为微妙（可能原地不动，也可能把每个 n 都膨胀成 n + 0，实测两种都遇到过）；
+- `rewrite <- plus_n_O`（反向）：找的模式来自右侧 `?x + 0`——又是复合模式，干净。
+
+实测案例（示例 13）：想把假设 `H : n + 0 = m` 里的 `n + 0` 消掉，写 `rewrite plus_n_O in H` 无声无息什么都没发生；换 `rewrite Nat.add_0_r in H` 或 `rewrite <- plus_n_O in H` 立刻成功。
+
+```coq
+Theorem rw_in : forall n m : nat, n + 0 = m -> n = m.
+Proof.
+  intros n m H.
+  rewrite Nat.add_0_r in H.   (* 假设里的 n + 0 换成 n *)
+  exact H.                    (* H : n = m，正好是目标 *)
+Qed.
+```
+
+### 13.2 simpl：只算不猜
+
+`simpl` 把目标里的函数应用按定义展开（第 11 章已见）。两个要点：
+
+1. **它只做符号计算**：`0 + n` 能化（定义如此），`n + 0` 不能（定义在第一个参数递归）——证明的工作量分布由此决定（第 12.5 节）；
+2. **它可以作用于假设**：`simpl in H` 把假设里的可计算部分也展开——第 15 章 `simpl in H` 后接 `discriminate` 是高频连招。
+
+`simpl` 打多了无害（最多费点算力），打少了 rewrite 匹配不上模式。卡住时先 simpl 一下是零成本的尝试。
+
+### 13.3 destruct：分情况讨论
+
+不需要归纳假设时，用 `destruct`——「把变量按构造子裂开，每种情况一个目标」：
+
+```coq
+Theorem negb_involutive : forall b : bool, negb (negb b) = b.
+Proof.
+  intros b. destruct b.
+  - reflexivity.   (* b := true *)
+  - reflexivity.   (* b := false *)
+Qed.
+```
+
+`destruct n`（nat）则裂成 `0` 与 `S k`。**destruct 与 induction 的关系**：induction = destruct + 自动附赠归纳假设 IH。枚举两三种情况够用 destruct；结论需要「对更小的同类值成立」就必须 induction。
+
+destruct 也能作用于**假设**（假设是 `P \/ Q` 时裂出两个分支，第 14 章）——这与「对变量 destruct」是同一个动作：把一个项按它的构造子拆开。
+
+### 13.4 symmetry 与 transitivity：等式的姿态
+
+```coq
+Theorem sym_ex : forall n m : nat, n = m -> m = n.
+Proof.
+  intros n m H. symmetry. exact H.
+Qed.
+
+Example chain_ex : 2 + 2 = 4.
+Proof.
+  transitivity (3 + 1).
+  - reflexivity.
+  - reflexivity.
+Qed.
+```
+
+- **`symmetry`** 把目标 `a = b` 翻转成 `b = a`——手里证据方向与目标相反时的标准动作（apply 反向定理前常先转身）；
+- **`transitivity t`** 把目标 `a = c` 裂成 `a = t` 与 `t = c`——需要中转站时用。日常频率不高，但 `<=` 类目标的「夹逼」证明全靠它。
+
+### 13.5 discriminate 与 injection：构造子的纪律落到实处
+
+第 9 章说过构造子「单射、不相交」。对应的策略：
+
+**`discriminate H`**——H 两边是**不同构造子**（如 `0 = 1`、`[] = x :: xs`）时，H 是矛盾，用它关闭**任何**目标：
+
+```coq
+Theorem zero_neq_one : 0 <> 1.
+Proof.
+  intros H.            (* <> 展开为 0 = 1 -> False *)
+  discriminate H.
+Qed.
+
+Theorem nil_neq_cons : forall (A : Type) (x : A) (xs : list A),
+  [] <> x :: xs.
+Proof.
+  intros A x xs H. discriminate H.
+Qed.
+```
+
+**`injection H`**——H 两边是**同一构造子**（如 `S n = S m`）时，提取「参数相等」的新假设：
+
+```coq
+Theorem inj_ex : forall n m : nat, S n = S m -> n = m.
+Proof.
+  intros n m H.
+  injection H as H2.   (* 从 S n = S m 里抽出 n = m *)
+  exact H2.
+Qed.
+```
+
+两者合起来就是「构造子纪律」的可操作版本。经典应用是证**不可能的等式**（如 `S n <> n`）与从等式解构数据——第 15 章证 `evenb 1 = true -> even 1` 时，`simpl in H. discriminate H.` 一击毙命。
+
+### 13.6 本章策略速查表
+
+| 策略 | 作用对象 | 干什么 |
+|---|---|---|
+| `intros` | 目标的 forall/-> | 收变量/假设进上下文（可带解构模式） |
+| `simpl`（`in H`） | 目标或假设 | 按定义展开计算 |
+| `rewrite H`（`<-`/`in H`） | 目标或假设 | 按等式替换（注意方向，见 13.1） |
+| `reflexivity` | 目标 | 两边可化简为同值即关闭 |
+| `destruct x`（`as 模式`） | 变量或假设 | 按构造子分情况（无 IH） |
+| `induction x` | 变量 | 分情况 + 赠送 IH |
+| `apply 定理` | 目标 | 按结论对齐，前提变新目标 |
+| `exact 项` | 目标 | 直接交出证明项 |
+| `symmetry` | 目标 | 翻转等式 |
+| `transitivity t` | 目标 | 拆两段等式 |
+| `discriminate H` | 假设 | 不同构造子的等式 = 矛盾，关任何目标 |
+| `injection H as H2` | 假设 | 同构造子等式 → 参数等式 |
+
+这张表覆盖了 80% 的日常证明。第 18 章再补自动化与控制流。
+
+### 13.7 本章坑位清单（实测）
+
+1. **rewrite 裸变量方向**：定理一侧是裸变量时正向 rewrite 行为不稳定（可能没动作、可能膨胀）——用复合模式那侧，或反向（13.1 的实测案例）；
+2. **`rewrite ... in H` 忘了 `in H`**：改了目标没改假设，还以为定理是错的——看清楚上下文里哪边需要变；
+3. **discriminate 拿错东西**：`discriminate H` 要求 H 恰好是「不同构造子相等」；H 形如 `S n = S m` 时该用 injection；
+4. **injection 之后忘 intro**：`injection H.` 不带 `as` 会把 `n = m` 放进目标（变成待 intro 的形式）——用 `injection H as H2` 直接收为假设更顺手；
+5. **对 Prop 用 destruct**：`destruct` 只拆归纳类型；`~P` 是定义不是构造子，intro 模式进不去（第 14 章的实测坑）。
+
+---
+
+## 第 14 章 命题逻辑
+
+对应示例：`examples/14_logic.v`
+
+### 14.1 Prop 世界的数据结构
+
+第 4 章埋的线现在收：`Prop` 住着命题。命题本身也是**归纳类型**，有自己的构造子：
+
+| 写法 | 真身 | 构造子 | 证明它的策略 | 使用它的策略 |
+|---|---|---|---|---|
+| `P /\ Q`（且） | `and P Q` | `conj : P -> Q -> P /\ Q` | `split` | `destruct` |
+| `P \/ Q`（或） | `or P Q` | `or_introl` / `or_intror` | `left` / `right` | `destruct` |
+| `P -> Q`（蕴含） | 函数类型 | （就是函数） | `intros` | `apply` |
+| `~ P`（非） | `not P := P -> False` | （就是函数） | `intros` | `apply` |
+| `P <-> Q`（当且仅当） | `(P -> Q) /\ (Q -> P)` | （是合取） | `split` 后各证 | `destruct` |
+| `True` | 单构造子 `I` | `I : True` | `exact I` | 无用武之地 |
+| `False` | **无构造子** | （不存在） | （证不了） | `destruct`（爆炸） |
+
+这张表是本章全部内容的压缩版。注意每个「证明它的策略」恰好是 Curry–Howard 的体现：**造值用构造子，拆值用 match（destruct），函数靠 apply**——Prop 世界与数据世界共用同一套规则，没有新东西。
+
+### 14.2 合取：split 与 destruct
+
+```coq
+Theorem and_comm : forall P Q : Prop, P /\ Q -> Q /\ P.
+Proof.
+  intros P Q H.
+  destruct H as [HP HQ].   (* 拆开「且」的假设：两个证据 *)
+  split.                   (* 拆开「且」的目标：两个子目标 *)
+  - exact HQ.
+  - exact HP.
+Qed.
+```
+
+读法与第 6 章的元组完全同构：`/\` 就像 `*`（积类型），`split` 造对偶，`destruct as [HP HQ]` 拆对偶。三层子弹的完整体验（`and_assoc`，交换结合顺序的接线练习）：
+
+```coq
+Theorem and_assoc : forall P Q R : Prop,
+  (P /\ Q) /\ R <-> P /\ (Q /\ R).
+Proof.
+  intros P Q R. split.
+  - intros [[HP HQ] HR]. split.
+    + exact HP.
+    + split.
+      * exact HQ.
+      * exact HR.
+  - intros [HP [HQ HR]]. split.
+    + split.
+      * exact HP.
+      * exact HQ.
+    + exact HR.
+Qed.
+```
+
+`intros [[HP HQ] HR]` 的嵌套模式一次拆到底（与 `let (a, (b, c)) := ...` 同款语法）。逻辑证明写多了你会发现：**一半的逻辑证明其实是「拆线再接线」的手工活**，模式匹配的熟练度直接决定速度。
+
+### 14.3 析取：left / right 与带 | 的 destruct
+
+```coq
+Theorem or_comm : forall P Q : Prop, P \/ Q -> Q \/ P.
+Proof.
+  intros P Q H.
+  destruct H as [HP | HQ].   (* 或：两个分支，走哪支拿哪支的证据 *)
+  - right. exact HP.
+  - left. exact HQ.
+Qed.
+```
+
+- 目标是 `P \/ Q` 时，`left`/`right` **选择**你要证哪边（对应构造子 or_introl/or_intror）——注意这两个词与子弹毫无关系；
+- 假设是 `P \/ Q` 时，`destruct as [HP | HQ]` 裂成两个分支——**竖线 | 就是「或」**，在 as 模式里含义完全一致（对比合取的 `[HP HQ]` 空格并排）。
+
+析取像第 9 章的变体（sum 类型 `A + B` 的 Prop 版）——同构关系贯穿始终。
+
+### 14.4 蕴含与否定：它们就是函数
+
+**蕴含**在第 1 章就剧透过，现在正式编译它——注意这个证明**一个策略都不用**，直接写出函数：
+
+```coq
+Definition modus_ponens (P Q : Prop) (hpq : P -> Q) (hp : P) : Q :=
+  hpq hp.
+```
+
+「P 蕴含 Q」的证明是函数；「肯定前件」（拿 P 的证明喂给它）就是函数应用。策略风格同一件事：
+
+```coq
+Theorem modus_ponens' (P Q : Prop) : (P -> Q) -> P -> Q.
+Proof.
+  intros hpq hp.    (* 蕴含的前提就是函数参数，intros 收下 *)
+  apply hpq.        (* 目标 Q，hpq 造得出，前提 P 变新目标 *)
+  exact hp.
+Qed.
+```
+
+**否定**没有新东西——`Print not.` 揭底：
+
+```coq
+Print not.
+(* not A := A -> False *)
+```
+
+`~P` 是「P 推出假」的缩写。所以证 `~P` 就是 `intros`（收下 P 的证明再构造 False）；用 `~P` 的证据就是 `apply`（把 P 喂给它，得到 False）。经典一例（P 与「非 P」不同时成立）：
+
+```coq
+Theorem not_and_true : forall P : Prop, ~ (P /\ ~ P).
+Proof.
+  intros P [HP HnP].
+  (* 注意：~ P 不再往下解构——~ 是定义不是构造子，
+     intro 模式进不去，直接收下当函数用（实测坑） *)
+  apply HnP.        (* 目标 ~P 即 P -> False：喂个 P 进去 *)
+  exact HP.
+Qed.
+```
+
+### 14.5 True、False 与爆炸原理
+
+- `True` 有唯一证明 `I`，随叫随到（`exact I`）——所以它当「免费赠品」出现在合取里（`P /\ True <-> P`）；
+- `False` **没有构造子**——所以永远证不出它，但**假设里有它时什么都能证**：
+
+```coq
+Theorem from_false : forall P : Prop, False -> P.
+Proof.
+  intros P H. destruct H.   (* False 零构造子，destruct 无分支可走，
+                               直接关闭任意目标 *)
+Qed.
+```
+
+这就是**爆炸原理**（ex falso quodlibet）：从矛盾出发，一切皆可证。它与第 13 章的 `discriminate` 一脉相承——discriminate 本质是「发现矛盾假设 → 引爆」。`~P` 定义成 `P -> False` 的设计因此完全自洽：「非 P」=「P 能引爆整个系统」。
+
+### 14.6 <->：一次 split，两个方向
+
+`P <-> Q` 展开是 `(P -> Q) /\ (Q -> P)`——所以策略组合固定：`split` 后各证一个蕴含。示例 14 的 `and_true_iff`：
+
+```coq
+Theorem and_true_iff : forall P : Prop, P /\ True <-> P.
+Proof.
+  intros P. split.
+  - intros [HP _]. exact HP.   (* _ 丢弃不需要的 I *)
+  - intros HP. split.
+    + exact HP.
+    + exact I.
+Qed.
+```
+
+写 iff 证明的节奏感：**先 split，两个方向各自独立作战**。命名习惯上方向叫「→ 方向」「← 方向」（或 forward/backward），与 `rewrite` 的方向用语一致。
+
+### 14.7 经典逻辑 vs 构造逻辑（一段重要的题外话）
+
+Coq 的逻辑是**构造逻辑**（intuitionistic）：证明 `P \/ Q` 必须给出**到底哪一边**——没有「排中律」`forall P, P \/ ~ P`（不添加公理的话）。这不是缺陷而是立场：
+
+- 构造性证明**携带信息**：`P \/ ~P` 的构造性证明就是「判断 P 真假的算法」——对任意命题这种算法不存在；
+- 需要经典推理时可以 `Require Import Classical`，引入排中律公理——代价是证明里多了公理依赖（`Print Assumptions` 会显示，第 23 章）。
+
+初学阶段（也是本教程全程）**只用构造逻辑**，不碰 Classical。判断自己是否在「越界」的信号：想证 `~ ~ P -> P` 或 `P \/ ~ P`——这两个都是经典逻辑标志，构造逻辑里证不出。
+
+### 14.8 本章坑位清单（实测）
+
+1. **对 `~P` 用 intro 解构模式**：`intros [HP [HnP]]` 在 `~(P /\ ~P)` 上报 `Expects a disjunctive pattern with 0 branches`——`~` 是定义（函数），不是构造子，模式进不去；先 `intros P [HP HnP]` 拆到 `~P` 为止；
+2. **left/right 与子弹混淆**：它们是「选构造子」，不是目标管理——嵌套时该用子弹还是用子弹；
+3. **_iff 忘了 split**：直接对 `P <-> Q` 的目标 apply 单方向引理会失败——先 split；
+4. **把 False 当成可证目标硬证**：证 `False` 只能靠上下文矛盾（destruct 假设 / discriminate）；
+5. **试图证排中律**：构造逻辑里不可能；需要经典逻辑用 Classical 库并接受公理依赖。
+
+---
+
+## 第 15 章 谓词逻辑与 reflect
+
+对应示例：`examples/15_predicates.v`
+
+### 15.1 归纳谓词：命题也能带参数
+
+`Inductive` 造的类型可以住在 `Prop` 里，且**结论可以依赖参数**——这叫归纳谓词：
+
+```coq
+Inductive even : nat -> Prop :=
+  | even_O : even 0
+  | even_SS : forall n : nat, even n -> even (S (S n)).
+```
+
+读法：「是偶数」由两条规则定义：0 是偶数；n 是偶数则 n+2 是偶数。**没有其他途径**——一个数是偶数，当且仅当它能被这两条规则有限次推导出来。
+
+造证据像搭积木：
+
+```coq
+Example even_4 : even 4.
+Proof.
+  apply even_SS. apply even_SS. apply even_O.
+Qed.
+```
+
+与 bool 的根本区别（第 4 章的伏笔正式揭晓）：
+
+| | `evenb n`（bool） | `even n`（Prop） |
+|---|---|---|
+| 本质 | 程序，跑起来算 true/false | 命题，靠规则推导 |
+| 用途 | 写代码时分支 | 陈述与证明数学性质 |
+| 表达力 | 有限（具体值） | 无穷（forall/exists 随意组合） |
+| 代价 | 不能直接用于推理 | 不能直接拿来计算 |
+
+两套并存不是冗余——**分别服务「算」与「证」**，本章末尾的 reflect 把它们焊在一起。
+
+### 15.2 证「函数保性质」：归纳谓词遇上归纳证明
+
+```coq
+Theorem even_double : forall n : nat, even (double n).
+Proof.
+  induction n as [| n IH].
+  - apply even_O.
+  - simpl. apply even_SS. exact IH.
+Qed.
+```
+
+对 n 归纳（第 12 章套路），步例里 `apply even_SS` 把目标 `even (S (S (double n)))` 退回 `even (double n)`——apply 对**带参数的构造子**照样工作：目标与构造子结论对齐，剩余参数自动补全，前提 `even n` 变新目标。
+
+### 15.3 对证据本身做归纳
+
+真正的新武器：`induction` 可以作用在**证明**上：
+
+```coq
+Theorem even_evenb : forall n : nat, even n -> evenb n = true.
+Proof.
+  intros n H.
+  induction H as [| n' Hev IH].
+  - reflexivity.              (* evenb 0 = true *)
+  - simpl. exact IH.          (* evenb (S (S n')) 化简就是 evenb n' *)
+Qed.
+```
+
+`induction H`（H : even n 的证据）按 even 的两条规则分裂：基例对应 `even_O`；步例的 as 模式 `[| n' Hev IH]` 收下构造子的三样东西——参数 n'、子证据 Hev、归纳假设 IH（「even n' ⇒ 结论」）。**对规则的归纳**正是数学里「对推导结构归纳」的直译。
+
+（此处的 `evenb` 是本章自定义的两步 bool 函数；标准库的 `Nat.even` 用取模实现，`simpl` 行为不直观，教学上自造的更清楚。）
+
+### 15.4 存在量词 exists
+
+```coq
+Theorem even_exists_double : forall n : nat,
+  even n -> exists k : nat, n = double k.
+Proof.
+  intros n H.
+  induction H as [| n' Hev IH].
+  - exists 0. reflexivity.
+  - destruct IH as [k Hk].
+    exists (S k). simpl. rewrite <- Hk. reflexivity.
+Qed.
+```
+
+- **证 exists**：`exists 证人.`——把目标降级为「该证人满足性质」。选证人是你的活（这里选 S k）；
+- **用 exists**：`destruct ... as [k Hk]`——拆出证人与性质。
+
+Curry–Howard 视角：`forall` 是「任给 x 交付 P x」的函数（依赖函数类型），`exists` 是「证人与证明的打包」（依赖对偶 `{k : nat & n = double k}` 的 Prop 版）。两个量词都是**依赖类型**的日常形态——你已经用依赖类型编程半小时了。
+
+### 15.5 强化命题：两步归纳（全书第一个「技巧」）
+
+反向定理 `evenb_even : evenb n = true -> even n` 藏着经典陷阱。朴素做法 `induction n` 拿到的 IH 只谈**直接前驱** n'，而 `evenb (S (S n)) = evenb n` 谈的是**隔一代**的前驱——IH 够不着，证不动。
+
+标准解法是本章标题级的内容——**把命题加强成两倍，再归纳**：
+
+```coq
+Lemma two_step : forall P : nat -> Prop,
+  P 0 -> P 1 ->
+  (forall n : nat, P n -> P (S (S n))) ->
+  forall n : nat, P n.
+Proof.
+  intros P H0 H1 HSS.
+  assert (Hboth : forall n : nat, P n /\ P (S n)).
+  { induction n as [| n [IH1 IH2]].
+    - split.
+      + exact H0.
+      + exact H1.
+    - split.
+      + exact IH2.
+      + apply HSS. exact IH1. }
+  intros n. destruct (Hboth n) as [Hn _]. exact Hn.
+Qed.
+
+Theorem evenb_even : forall n : nat, evenb n = true -> even n.
+Proof.
+  apply (two_step (fun n => evenb n = true -> even n)).
+  - intros _. apply even_O.
+  - intros H. simpl in H. discriminate H.   (* evenb 1 = false，矛盾 *)
+  - intros n IH H. simpl in H. apply even_SS. apply IH. exact H.
+Qed.
+```
+
+值得逐行品味：`P n /\ P (S n)`（「相邻两个都成立」）比 `P n`（「单个成立」）**更强**，但更强反而好证——归纳步从 `P (S n)` 和 `P n` 两块积木里拿料（IH2 当燃料，IH1 喂给 HSS）。这个模式叫**归纳强化**（strengthening the induction hypothesis），是归纳证明最重要的心法：**证不动时，别死磕——把命题改强**。第 20 章的 `rev` 定理会再次用到这个思想。
+
+### 15.6 reflect：bool 与 Prop 的官方桥梁
+
+两套世界需要频繁互通。标准库的方案是归纳类型 `reflect`：
+
+```coq
+Theorem evenb_reflect : forall n : nat, reflect (even n) (evenb n).
+Proof.
+  intros n.
+  destruct (evenb n) eqn:E.          (* 按 evenb n 的值分情况，记住 E *)
+  - apply ReflectT. apply evenb_even. exact E.
+  - apply ReflectF.
+    intros Hev.
+    rewrite (even_evenb n Hev) in E. (* 两个世界的知识对流 *)
+    discriminate E.
+Qed.
+```
+
+`reflect P b` 打包了两个方向：`ReflectT`（b = true 且 P 成立）与 `ReflectF`（b = false 且 P 不成立）。有了它：
+
+- **算出来再说**：运行期用 `evenb` 分支（高效），需要推理时用 reflect 定理换轨到 `even`；
+- **一处封装，处处受益**：标准库对常用判定给的是 **iff 形态**的桥（实测：`Nat.eqb_eq : (n =? m) = true <-> n = m`、`Nat.leb_le : (n <=? m) = true <-> n <= m`，需 `Arith`）——reflect 是更结构化的同款思想，把「是/否」与「成立/不成立」各装一盒。
+
+`destruct (evenb n) eqn:E` 的 `eqn:E` 是重要小技巧：分情况的同时**记住**等式 `evenb n = true/false`——之后 `rewrite ... in E` 让两个世界的证据对流，最后 `discriminate E` 引爆矛盾。这一套组合拳（destruct eqn / rewrite in / discriminate）是谓词证明的高频三连。
+
+### 15.7 本章坑位清单（实测）
+
+1. **归纳谓词的构造子不是函数**：`even_SS` 不能 `Compute`——它是逻辑规则不是程序；想要可计算版另写 bool 函数 + reflect 桥；
+2. **朴素归纳证两步递归性质**：IH 只谈直接前驱，`evenb (S (S n))` 够不着——用 15.5 的强化技巧（`P n /\ P (S n)`）；
+3. **`destruct (evenb n) eqn:E` 忘写 eqn:E**：分支里没有 `evenb n = ...` 的记录，后续想 rewrite 无从下手；
+4. **exists 的证人选错**：`exists 0.` 之后目标降级为具体等式，选错证人只能 Abort 重来（没有「换证人」的策略，实际上可以 `clear` 后重来，但重新 exists 更直接）；
+5. **标准库 `Nat.even` 的 simpl 不直观**（按取模实现）：教学与自造谓词配套时，bool 版也自造（本章 `evenb`），别混用。
+
+---
+
 <!-- BATCH1-CONTINUES -->
+
+
 
 
 
