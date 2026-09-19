@@ -2889,7 +2889,568 @@ Qed.
 
 ---
 
-<!-- BATCH1-CONTINUES -->
+## 第 21 章 插入排序与正确性证明
+
+对应示例：`examples/21_sorting.v`
+
+### 21.1 目标：不只会写，还要证对
+
+前 20 章的定理都是「数学性质」。本章证一个**算法正确**——插入排序。先把「排序正确」说清楚，它必须是两件事的合取：
+
+1. **有序**：输出列表从头到尾不减；
+2. **是重排**：输出的元素恰好是输入的元素（不多不少不重复消失）。
+
+只满足第一条的垃圾函数有的是（`fun _ => []` 有序但丢了所有元素），只满足第二条的也不少（`id` 保持元素但可能无序）。**正确 = 两条都要**——把「正确」拆成可判定的子性质，本身就是形式化的第一课。
+
+### 21.2 算法
+
+```coq
+Fixpoint insert (x : nat) (l : list nat) : list nat :=
+  match l with
+  | [] => [x]
+  | y :: ys => if Nat.leb x y then x :: y :: ys else y :: insert x ys
+  end.
+
+Fixpoint sort (l : list nat) : list nat :=
+  match l with
+  | [] => []
+  | x :: xs => insert x (sort xs)
+  end.
+
+Compute (sort [3; 1; 4; 1; 5; 9; 2; 6]).   (* = [1;1;2;3;4;5;6;9] *)
+```
+
+`insert` 把 x 插进**已经有序**的列表（`Nat.leb x y` 用了第 16 章的 destruct eqn 老朋友），`sort` 经典的「排序尾部 + 插入头部」。两个 Fixpoint 都通过终止检查（递归在 `ys`/`xs` 上）。能跑，但「跑了几组样例都对」与「正确」之间的鸿沟，正是本章要填的。
+
+### 21.3 自造「有序」谓词
+
+标准库有 `Sorted`，但为了看清机制，我们**自己定义**有序——「每个元素 ≤ 它右边的全部元素」：
+
+```coq
+Fixpoint le_all (x : nat) (l : list nat) : Prop :=
+  match l with
+  | [] => True
+  | y :: tl => x <= y /\ le_all x tl
+  end.
+
+Fixpoint sorted (l : list nat) : Prop :=
+  match l with
+  | [] => True
+  | x :: tl => le_all x tl /\ sorted tl
+  end.
+```
+
+两个 Fixpoint 住在 `Prop` 里——**定义命题与定义函数用同一门语言**（对比第 15 章的 `even`）。`le_all x l`（x 全场压制 l）是辅助命题，`sorted` 主谓词。这种「每个元素压住后面所有」的定义比「相邻两两有序」啰嗦一点，但证明时不用额外引理（相邻版本要另证「局部有序 ⇒ 全局有序」）。
+
+### 21.4 正确性之一：插入保序
+
+主定理 `insert_sorted : sorted l -> sorted (insert x l)` 需要两个小引理铺垫——它们是本章真正的教学内容（**先证工具引理**的工程习惯）：
+
+```coq
+(* 引理 1：<= 的传递性穿透 le_all *)
+Lemma le_all_le : forall (x y : nat) (l : list nat),
+  x <= y -> le_all y l -> le_all x l.
+Proof.
+  intros x y l Hxy H. induction l as [| z zs IH].
+  - simpl. exact I.
+  - simpl in *. destruct H as [Hyz Hrest]. split.
+    + apply (Nat.le_trans x y z Hxy Hyz).
+    + apply IH. exact Hrest.
+Qed.
+
+(* 引理 2：更大的元素插进来，不破坏 y 的全场压制 *)
+Lemma le_all_insert_lt : forall (x y : nat) (l : list nat),
+  y < x -> le_all y l -> le_all y (insert x l).
+```
+
+（两条引理的完整脚本见示例 21。）引理 2 值得盯着看：`insert x l` 的**头**要么是 x（x 更小先落座）要么是 l 的头——两种情况 y 都压得住，这就是它需要按 `Nat.leb x z` 与列表形状分情况的原因。有了两把工具，主定理是干净的三段式：
+
+```coq
+Theorem insert_sorted : forall (x : nat) (l : list nat),
+  sorted l -> sorted (insert x l).
+Proof.
+  intros x l H. induction l as [| y ys IH].
+  - simpl in *. simpl. split. exact I. exact I.
+  - simpl in *. destruct H as [Hle Hsorted]. simpl.
+    destruct (Nat.leb x y) eqn:E.
+    + apply Nat.leb_le in E. split.
+      * split. exact E. apply le_all_le with y. exact E. exact Hle.
+      * split. exact Hle. exact Hsorted.
+    + apply Nat.leb_gt in E. split.
+      * apply le_all_insert_lt. exact E. exact Hle.
+      * apply IH. exact Hsorted.
+Qed.
+```
+
+值得点名的三个动作：**`apply 引理 with 中转参数`**（`le_all_le with y` 显式指定中间变量，避免推断歧义）；**`Nat.leb_le` / `Nat.leb_gt`**（把 bool 的比较结果翻译成 Prop 世界的事实——第 15 章两座桥的实战应用）；**`destruct (Nat.leb x y) eqn:E`**（第 16 章的 filter 老朋友，第三次出场）。
+
+### 21.5 正确性之二：插入是重排
+
+「重排」用标准库的 `Permutation`（来自 `Sorting.Permutation`）——它自带装配零件：
+
+```coq
+Theorem insert_perm : forall (x : nat) (l : list nat),
+  Permutation (x :: l) (insert x l).
+Proof.
+  intros x l. induction l as [| y ys IH].
+  - simpl. apply Permutation_refl.
+  - simpl. destruct (Nat.leb x y) eqn:E.
+    + apply Permutation_refl.
+    + apply Permutation_trans with (y :: x :: ys).
+      * apply perm_swap.        (* x::y::ys ~ y::x::ys *)
+      * apply perm_skip. exact IH.   (* 头保持，尾部 ~ *)
+Qed.
+```
+
+`perm_skip`（头不动尾换）、`perm_swap`（相邻交换）、`Permutation_trans`（传递拼装）是重排世界的乐高。`apply ... with (y :: x :: ys)` 又一次指定中转站——`Permutation_trans with` 的用法与 `le_all_le with` 同款。
+
+### 21.6 合成：sort 的双重正确性
+
+两条腿都备好，`sort` 的正确性几乎是免费的：
+
+```coq
+Theorem sort_sorted : forall l : list nat, sorted (sort l).
+Proof.
+  induction l as [| x xs IH].
+  - simpl. exact I.
+  - simpl. apply insert_sorted. exact IH.
+Qed.
+
+Theorem sort_perm : forall l : list nat, Permutation l (sort l).
+Proof.
+  induction l as [| x xs IH].
+  - apply Permutation_refl.
+  - simpl. apply Permutation_trans with (x :: sort xs).
+    + apply perm_skip. exact IH.
+    + apply insert_perm.
+Qed.
+
+Theorem sort_correct : forall l : list nat,
+  sorted (sort l) /\ Permutation l (sort l).
+Proof.
+  intros l. split.
+  - apply sort_sorted.
+  - apply sort_perm.
+Qed.
+```
+
+`sort_correct` 盖章：**对任意长度的任意 nat 列表，插入排序产出有序的输入重排**。这就是「验证算法」的全过程——比你见过的任何测试套件都强，且只有约 80 行。复杂算法（归并、快排）的证明结构完全相同，只是引理更厚——那是「工作量」的差异，不是「方法论」的差异。
+
+### 21.7 本章坑位清单（实测）
+
+1. **`apply ... with` 漏参数**：`apply le_all_le.` 会被中间变量 y 卡住（无法唯一确定）——`with y` 显式给；
+2. **bool 比较直接当命题用**：`x <=? y` 是 bool，`if` 里能用；证明时要先 `apply Nat.leb_le in E` 过桥（第 15 章的 reflect 思想落地）；
+3. **`Permutation` 的零件名**：`perm_skip`/`perm_swap` 小写开头（不是 `Permutation_skip`）——`Search Permutation` 现查；
+4. **自定义谓词忘了 `simpl`**：`sorted (x :: ys)` 是 Fixpoint 应用，split 前通常已被 simpl 展开；卡住时先 `simpl in *`；
+5. **想对 `sort l` 归纳证明有序**：归纳发生在**输入列表 l** 上，`sort` 的展开交给 simpl——归纳对象永远是「数据的结构」，不是「函数的结果」。
+
+---
+
+## 第 22 章 数值专题：nat、N 与 Z
+
+对应示例：`examples/22_numbers.v`
+
+### 22.1 nat 的成本模型：数学家的数 vs 工程师的数
+
+全书用 nat 是**为了证明**——形状只有 O 和 S，归纳原理简单。但第 4 章那个实测坑（`Compute (Nat.pow 2 100)` 内存耗尽）背后是一元表示的成本模型：
+
+| | nat | N / Z |
+|---|---|---|
+| 表示 | 一元（S 链） | 二进制（positive） |
+| 3 是什么 | `S (S (S O))` | `11%positive` 两位 |
+| 2^64 需要 | 1.8×10¹⁹ 个构造子 | 64 位 |
+| 加法 | O(n) 步逐层 S | O(log n) 位运算 |
+| 与证明的关系 | 归纳原理直接、全书主战场 | 引理丰富但定义复杂 |
+
+实测对比（示例 22）：`Nat.pow 2 16`（65536 个 S）还能瞬间算完并打印；`Z.pow 2 64`、`Z.pow 2 100` 输出完整十进制也是瞬间。
+
+```coq
+Print Z.
+(* Inductive Z : Set :=
+     Z0 : Z | Zpos : positive -> Z | Zneg : positive -> Z *)
+```
+
+`positive` 是一颗二进制树；`Z0`/`Zpos`/`Zneg` 三构造子——还记得第 5 章 `if 1%Z` 被拒绝吗？就是因为 Z 有**三个**构造子，不满足 if 的「恰好两个」要求，伏笔在此闭环。
+
+### 22.2 选型决策表
+
+| 需求 | 用什么 |
+|---|---|
+| 写定义、做归纳证明 | **nat**（形状简单，全书默认） |
+| 有符号算术、大数计算 | **Z** |
+| 明确无符号的二进制 | **N** |
+| 程序逻辑里做分支 | bool（`=?` `<=?`）+ reflect 桥 |
+| 性能关键的已验证代码 | Coq 里证明，Extraction 抽取成 OCaml 后跑（第 24 章） |
+
+互通的桥：`Z.of_nat` / `Z.to_nat` / `N.of_nat` / `N.to_nat`。注意转换本身有成本（一元 ↔ 二进制是表示形状的整体改写），**在边界一次转换、内部统一数系**是工程习惯。
+
+### 22.3 lia：算术证明的自动化
+
+前 21 章证过 `n + 0 = n`、`plus_comm`——纯算术的体力活。标准库的 `lia`（linear integer arithmetic，来自 `Lia`）把这类活自动包了：
+
+```coq
+From Coq Require Import ZArith Lia.
+
+Theorem nat_lia : forall n m : nat, n <= m -> n + 0 <= m.
+Proof.
+  intros n m H. lia.
+Qed.
+
+Theorem z_lia : forall a b : Z, (a <= b)%Z -> (a - b <= 0)%Z.
+Proof.
+  intros a b H. lia.
+Qed.
+```
+
+`lia` 处理**线性**目标：加减、常数、比较的任意组合（nat 与 Z 都吃）。非线性的（含未知数相乘，如 `n * n >= 0`）它管不了——那种回到手证或 `nia`（更慢的非线性版）。使用心法：**归纳结构是本质的目标手证，纯算术变形的尾声交 lia**。注意 Z 上的比较要 `%Z` 作用域——裸写 `(a <= b)` 会被解析成 nat 的 `<=`，报「expected nat got Z」（实测，又一条作用域坑）。
+
+### 22.4 本章坑位清单（实测）
+
+1. **`Compute` 大 nat 指数**：`Nat.pow 2 100` 直接 OOM——大数用 `Z.pow`；「装得下」与「算得动」是两回事（第 4 章老坑的算术版）；
+2. **Z 上的运算符裸写**：`(a <= b)%Z` 才是 Z 的比较，裸写按 nat 解析报类型错——`Open Scope Z_scope`（模块内）或 `%Z`（局部）二选一；
+3. **`lia` 不认非线性**：目标里出现未知数相乘就放弃——先手证非线性骨架，线性收尾再喂给它；
+4. **`Z.to_nat` 的隐藏成本**：2^16 瞬间变回 65536 个 S——转换是表示重写，大数转换本身可能爆炸。
+
+---
+
+## 第 23 章 测试与断言风格
+
+对应示例：`examples/23_testing.v`
+
+### 23.1 Example 即测试
+
+Coq 里不需要测试框架——`Example` + `reflexivity` 就是断言，`coqc` 就是测试运行器：
+
+```coq
+Definition inc (n : nat) : nat := S n.
+
+Example test_inc_1 : inc 0 = 1.
+Proof. reflexivity. Qed.
+
+Example test_inc_41 : inc 41 = 42.
+Proof. reflexivity. Qed.
+```
+
+改坏 `inc` 的任何一行，`build.ps1 -All` 当场全红。回归测试的全部要素（断言、运行、失败定位）都在，只是「跑测试」变成了「编译检查」。本教程每个示例文件从第 1 章起就在用这套——你已经在 TDD 了。
+
+### 23.2 负向断言
+
+「不该发生的」也要钉住：
+
+```coq
+Example test_inc_neg : inc 0 <> 2.
+Proof. discriminate. Qed.
+
+Fail Check (inc true).     (* 类型误用，如期失败 *)
+```
+
+`<>`（不等于）配 `discriminate`（第 13 章）锁具体值；`Fail`（第 3 章）锁「这行不该编译过」。两类负向断言把 API 的边界写成可执行文档。
+
+### 23.3 从测试升级为定理
+
+测试思维与证明思维的分界线是 **forall**。工作流（示例 23 的完整示范）：
+
+```coq
+(* 第一步：具体样例找感觉 *)
+Example test_all_even_1 : all_even [2; 4; 6] = true.
+Proof. reflexivity. Qed.
+
+(* 第二步：把想要的性质一般化 *)
+Theorem all_even_app : forall l1 l2 : list nat,
+  all_even l1 = true -> all_even l2 = true
+  -> all_even (l1 ++ l2) = true.
+Proof.
+  intros l1. induction l1 as [| x tl IH]; intros l2 H1 H2.
+  - exact H2.
+  - simpl in H1.
+    apply andb_true_iff in H1.   (* && = true 拆两个 = true *)
+    destruct H1 as [Ex Et].
+    simpl. rewrite Ex. simpl.
+    apply IH; assumption.
+Qed.
+```
+
+具体值是测试（跑有限个），量化命题是证明（覆盖无穷个），Example 是通往 Theorem 的脚手架。`apply IH; assumption.` 的分号用法（第 18 章）在这里顺手续掉两个前提。`andb_true_iff` 是 bool 世界的拆桥工具——第 14 章 `destruct` 拆 `/\` 的 bool 版。
+
+### 23.4 公理审查：Print Assumptions
+
+测试证明「行为对」，`Print Assumptions` 审查「出身清白」（第 3 章埋的线）：
+
+```coq
+Theorem honest : 2 + 2 = 4.
+Proof. reflexivity. Qed.
+Print Assumptions honest.
+(* Closed under the global context —— 干净 *)
+
+Axiom bogus : forall n : nat, n = 0.
+Theorem poisoned : 3 = 0.
+Proof. apply bogus. Qed.
+Print Assumptions poisoned.
+(* Axioms:
+   bogus : forall n : nat, n = 0 —— 出身有问题！ *)
+```
+
+一条 `Admitted`、一个手滑的 `Axiom`，都会在这里现形（实测输出如上）。**工程化纪律**：CI 里对每个公开定理跑 `Print Assumptions`，只许 `Closed under the global context`——「无公理依赖」是可验证代码的最低出厂标准。
+
+### 23.5 什么时候测试、什么时候证明
+
+| 场景 | 手段 |
+|---|---|
+| 具体行为快照（回归锚点） | Example + reflexivity |
+| API 误用应被拒绝 | Fail Check / Fail Definition |
+| 不变式对一切输入成立 | Theorem + induction |
+| 纯算术性质 | lia（第 22 章） |
+| 发布检查 | Print Assumptions 全绿 |
+
+成本直觉：Example 十秒写完零维护；Theorem 十分钟起步但永久免疫。**原型期堆 Example，接口稳定后把关键性质升格为 Theorem**——两层的配比就是工程判断。
+
+### 23.6 本章坑位清单（实测）
+
+1. **`Fail Example 名 : 假命题. Proof. reflexivity. Qed.`**：Fail 只包一句——陈述句本身合法（成功），下一个 reflexivity 才失败且不在 Fail 保护内，文件直接编译失败。负向断言的正确写法是 `Example 名 : x <> y. Proof. discriminate. Qed.`（实测对照）；
+2. **`<>` 目标忘了它是否定**：`x <> y` 即 `x = y -> False`——`discriminate`/`intros H` 后引爆即可，别试图「直接证」；
+3. **Print Assumptions 输出 Axioms 却继续提交**：审查输出要进 CI，人工看一眼的日子久了会疲劳；
+4. **测试 bool 函数忘了负例**：只测 `= true` 的样例测不出「永远返回 true」的假实现——`all_even [2;3] = false` 这类负例与正例同等重要。
+
+---
+
+## 第 24 章 综合实战：表达式解释器与优化器
+
+对应示例：`examples/24_project.v`
+
+### 24.1 项目目标
+
+收官项目把全书的工具连成一条完整的生产线：
+
+1. **定义语言**：带变量的算术表达式（第 19 章的 aexp）；
+2. **解释器**：状态下的求值（结构递归）；
+3. **两个优化 pass**：吃掉 `0 + e`、常量折叠；
+4. **组合证明**：流水线整体保语义——两个 pass 的正确性**免费合成**；
+5. **抽取**：验证过的优化器导出成 OCaml，在真实世界运行。
+
+这条线就是「验证编译器」的微缩景观：CompCert 的每个优化 pass 都配一条「语义保持」定理，pass 之间的组合因为各自正确而自动正确。你要写的全部代码不到 150 行。
+
+### 24.2 语言与解释器
+
+与第 19 章相同，直接复用：
+
+```coq
+Inductive aexp : Type :=
+  | AConst (n : nat) | AVar (x : string)
+  | APlus (a1 a2 : aexp) | AMinus (a1 a2 : aexp) | AMult (a1 a2 : aexp).
+
+Definition state := string -> nat.
+
+Fixpoint aeval (a : aexp) (st : state) : nat :=
+  match a with
+  | AConst n => n
+  | AVar x => st x
+  | APlus a1 a2 => aeval a1 st + aeval a2 st
+  | AMinus a1 a2 => aeval a1 st - aeval a2 st
+  | AMult a1 a2 => aeval a1 st * aeval a2 st
+  end.
+
+Example run1 : aeval (APlus (AVar "x") (AMult (AConst 2) (AConst 3)))
+                    (fun _ => 10) = 16.
+Proof. reflexivity. Qed.
+```
+
+### 24.3 pass 1：吃掉 0 + e
+
+第 19 章的 `optimize0` 原样搬来（smart constructor 设计、正确性两步证法——忘了的话翻回去，这里是复用不是新知识）：
+
+```coq
+Theorem optimize0_correct : forall (a : aexp) (st : state),
+  aeval (optimize0 a) st = aeval a st.
+```
+
+### 24.4 pass 2：常量折叠
+
+新 pass：两个操作数都折成常量时，直接算掉：
+
+```coq
+Fixpoint const_fold (a : aexp) : aexp :=
+  match a with
+  | APlus e1 e2 =>
+      match const_fold e1, const_fold e2 with
+      | AConst n1, AConst n2 => AConst (n1 + n2)
+      | e1', e2' => APlus e1' e2'
+      end
+  | AMinus e1 e2 =>
+      match const_fold e1, const_fold e2 with
+      | AConst n1, AConst n2 => AConst (n1 - n2)
+      | e1', e2' => AMinus e1' e2'
+      end
+  | AMult e1 e2 =>
+      match const_fold e1, const_fold e2 with
+      | AConst n1, AConst n2 => AConst (n1 * n2)
+      | e1', e2' => AMult e1' e2'
+      end
+  | AConst n => AConst n
+  | AVar x => AVar x
+  end.
+
+Compute (const_fold (APlus (AConst 2) (AMult (AConst 3) (AConst 4)))).
+(* = AConst 14 —— 整棵子树折成一个数 *)
+```
+
+双 scrutinee 的嵌套 match（第 7 章）在这里正合适。正确性证明有一个新看点——**rewrite 的方向反过来用 IH**：
+
+```coq
+Theorem const_fold_correct : forall (a : aexp) (st : state),
+  aeval (const_fold a) st = aeval a st.
+Proof.
+  intros a st. induction a; simpl.
+  - reflexivity.
+  - reflexivity.
+  - rewrite <- IHa1. rewrite <- IHa2.
+    destruct (const_fold a1) eqn:E1; destruct (const_fold a2) eqn:E2;
+      reflexivity.
+  - (* AMinus：同款 *) ...
+  - (* AMult：同款 *) ...
+Qed.
+```
+
+APlus 分支的目标里，`const_fold a1` 藏在 match 的 scrutinee 位置——`rewrite IHa1`（正向）找不到 `aeval (const_fold a1) st` 这个模式；**先 `rewrite <- IHa1`** 把右边的 `aeval a1 st` 替换成 `aeval (const_fold a1) st`，两边就都谈 `const_fold` 的结果了。随后 `destruct (const_fold a1) eqn:E1; destruct (const_fold a2) eqn:E2` 十二种组合全部 `reflexivity`（分号把 reflexivity 批量发给每个目标）。「IH 用反向」是嵌套 match 场景的标准解法，与第 13 章的方向学完全自洽。
+
+### 24.5 流水线：正确性免费合成
+
+```coq
+Definition pipeline (a : aexp) : aexp := const_fold (optimize0 a).
+
+Theorem pipeline_correct : forall (a : aexp) (st : state),
+  aeval (pipeline a) st = aeval a st.
+Proof.
+  intros a st.
+  unfold pipeline.
+  rewrite const_fold_correct.
+  rewrite optimize0_correct.
+  reflexivity.
+Qed.
+```
+
+读一遍：`unfold` 展开 pipeline 定义（第 19 章的 unfold），两个 pass 的正确性定理接力 rewrite，三行收工。**这就是组合的正确性**——每个环节单独验证，串联后的保证自动成立，不需要对整条流水线重新归纳。CompCert 由几十个 pass 组成而依然可维护，靠的正是这个性质。
+
+```coq
+Example pipeline_demo :
+  pipeline (APlus (AConst 0) (AMult (AConst 3) (AConst 4))) = AConst 12.
+Proof. reflexivity. Qed.
+```
+
+`0` 被吃、常量被折，一次到位——且 `pipeline_correct` 担保**任何**表达式经过流水线语义不变。
+
+### 24.6 抽取：从证明世界到运行世界
+
+最后一步，把验证过的优化器变成可执行代码：
+
+```coq
+From Coq Require Import Extraction.
+
+Recursive Extraction pipeline.
+```
+
+`Recursive Extraction` 把 pipeline（及其依赖的 aeval、aexp……）翻译成 OCaml 源码打印出来——类型、函数、递归全部直译（nat 仍是 `O | S of nat`，要高效可在 Z 上重做计算核心或让抽取走 `Extract Inductive nat => int` 一类的映射，超出本书范围）。工作流闭环：
+
+```text
+Coq：定义 + 定理                    OCaml：编译运行
+     |        \                        ^
+     |         \—— Recursive Extraction ——+
+     +—— 证明正确性（留在 Coq，不需要运行时携带）
+```
+
+证明是开发期的脚手架，运行期零开销——**「经过验证的程序」不需要随身带着证明**。这个模型叫「验证后抽取」，是 Coq 走向工业界的主干道（CompCert 的 C 编译器本体、Fiat Crypto 的密码算法，都以这种方式交付）。
+
+> 坑（实测）：`Recursive Extraction` 裸写报 `illegal begin of vernac`——必须先 `From Coq Require Import Extraction.`。
+
+### 24.7 本章坑位清单（实测）
+
+1. **`Recursive Extraction` 需要 Require**：先 `From Coq Require Import Extraction`，否则报非法命令（24.6 的坑）；
+2. **const_fold 证明里 IH 用正向**：`rewrite IHa1` 在嵌套 match 场景找不到模式——`rewrite <- IHa1` 先把两边对齐（24.4 的完整分析）；
+3. **流水线证明忘了 unfold**：`pipeline a` 不展开，rewrite 的模式藏在定义后面够不着；
+4. **抽取产物里 nat 仍是一元**：性能敏感的抽取目标要规划数系（Z 核心 + 映射），别默认抽取完就是快的；
+5. **想给语言加 if/while**：语法加个构造子容易，求值器加分支也容易——但 while 需要**终止性度量**或改用燃料（第 10 章 10.4），这是 Software Foundations《PLF》卷的入口，本书到此为止。
+
+---
+
+## 第 25 章 坑清单与最佳实践
+
+### 25.1 全书坑位总清单
+
+二十五章攒下的坑，按「第一天就会踩」到「写项目才会踩」排序。每条都经过 8.20.1 实测，括号内是原始章节。
+
+**入门第一周（环境与语法）：**
+
+1. 句子忘句点 `.`，coqtop 一动不动「等你把话说完」（2）；
+2. `8 / 2`、`5 mod 2`、`=?`、`<=?`、`<?`、`^` 都要 `Require Import Arith`；`&&` `||` 要 `Open Scope bool_scope`；`[1;2]` 要 `Import ListNotations`——记号按作用域懒加载，裸环境只有 `+ - *` 和 `andb/orb/negb`（2/5/8）；
+3. `Fail` 的失败原因只在 coqtop/CoqIDE 显示，coqc 批处理静默（2/3）；
+4. 证明中途忘 `Qed`/`Abort` 就开新定义，报错位置莫名其妙——`Show.` 确认状态（2/3）；
+5. `Qed` 时才报 `Attempt to save an incomplete proof`——病因在前面，子弹用全（3/11）。
+
+**类型与表达式：**
+
+6. `3` 是 `S (S (S O))` 不是机器整数；`Compute (Nat.pow 2 100)` 直接 OOM——「装得下 ≠ 算得动」（4/22）；
+7. `Compute (3 = 3)` 不报错，打印 `= 3 = 3 : Prop`——求值不回答命题真假（4）；
+8. **if 接受任何两构造子类型**：`if 1 then 2 else 3` 合法且 = 3（O 走 then、S 走 else）——别信「条件必须 bool」的直觉（5）；
+9. `1 - 2 = 0`（截断减法）、`5 / 0 = 0`（除零静默）——nat 算术两大暗坑（5）；
+10. 一元负号 `- 1` 在 nat 上不存在；负数去 `%Z`，且 Z 的比较运算要 `%Z` 限定（5/22）；
+11. `A * B`/`A + B` 与算术同形不同义——`Locate` 查作用域（4/5）；
+12. 参数化 Record 的投影带显式类型参数（`first _ t1` 或 `Arguments first {A}`）；字段名全局唯一不能重名（6）。
+
+**模式匹配与递归：**
+
+13. 漏分支是错（`Non exhaustive`），冗余分支也是错（`Pattern ... is redundant`，8.20 是硬错误）（7）；
+14. 没有 or 模式（`| A | B => ...` 写不了）；模式变量会遮蔽外层（7）；
+15. 递归函数写成 `Definition`——报「引用未找到」，真因是名字没注册（9/10）；
+16. 守卫检查会**展开定义**：`S k => f (k - 1)` 实测放行；但 `f (n - 1)`/`f n`（参数本身）被拒——分支里递归用模式变量（10）。
+
+**证明：**
+
+17. **rewrite 的方向学**：让要找的模式处在复合模式一侧；裸变量一侧正向 rewrite 行为不稳（实测两种怪象都遇过）（12/13）；
+18. 同名定理方向可能相反（本书 plus_n_O 与标准库 plus_n_O 同姓不同向）——rewrite 前 `Check`（12）；
+19. `plus_comm` 在 8.20 已移除，现名 `Nat.add_comm`；`Permutation` 零件是 `perm_skip`/`perm_swap` 小写——抄旧资料先 Check（18/21）；
+20. `~` 是定义不是构造子，intro 解构模式进不去——拆到 `~P` 为止收下当函数用（14）；
+21. 构造逻辑里证不出排中律与双否消去——需要经典逻辑就 `Classical`，并接受公理依赖（14）；
+22. 两步递归的性质朴素归纳证不动——强化命题（`P n /\ P (S n)` 或一般化累加器）；**intros 顺序锁死 IH** 是最常见的翻车原因：要归纳的变量最后收（12/15/17/20）；
+23. `destruct (p x)` 后 filter 的 `if` 会复活——`eqn:E` 记住结果、`rewrite E` 补刀（16/21）；
+24. `contradiction` 不认 `0 = 1`（报 No such contradiction）——数字矛盾用 `discriminate`（18）；
+25. `Fail Example 名 : 假命题.` 包不住整段证明——负向断言写 `x <> y` + `discriminate`（23）。
+
+**工程化：**
+
+26. `Admitted`/`Axiom` 混进正式代码——`Print Assumptions` 审查，只许 `Closed under the global context`（3/23）；
+27. `Recursive Extraction` 要先 `Require Import Extraction`，裸写报非法命令（24）；
+28. 封印模块（`Module M : SIG`）看不到表示——对实现做计算用未封印原模块（18）。
+
+### 25.2 最佳实践十条
+
+1. **先 Check 再 rewrite**：方向、类型、存在性，一秒钟避免十分钟困惑；
+2. **子弹用全，prove 的每个目标都点名**：可读性就是正确性的一半；
+3. **要归纳的变量最后 intros**，其余维度保持任意——IH 的强度就是证明的燃料；
+4. **卡住先 Search**：描述想要的结论形状，让库回答；确无再手证；
+5. **纯算术的尾巴交 lia**，归纳结构自己掌握——自动化的边界要心里有数；
+6. **Smart constructor 隔离判断**：嵌套模式塞进 Fixpoint 会让证明爆炸（19 的正反面）；
+7. **定义为可证性而设计**：证明难得离谱时，先怀疑定义不够结构化；
+8. **Example 是脚手架，Theorem 是资产**：原型期堆前者，接口稳定后升格后者；
+9. **模块+签名交付 ADT**，接口连同正确性定理一起封印（18 的 STACK_SIG）；
+10. **每个 pass 一条正确性定理**，组合的正确性免费合成（24 的 pipeline）。
+
+### 25.3 下一步去哪里
+
+- **Software Foundations**（softwarefoundations.cis.upenn.edu）：逻辑（Logic）、程序语言（PLF）、验证（VF）三卷，本书第 19/24 章的直接源头，习题质量全领域第一；
+- **Mathematical Components / MathComp**：另一套证明风格（SSReflect 小步战术），适合大量数学推理；
+- **Rocq 9 的迁移**：`From Coq Require ...` → `From Stdlib Require ...`（或开兼容），趁早在新旧资料间建立翻译意识；
+- **真项目**：给第 24 章的语言加布尔与 if（易）、加 let 绑定（易）、加函数调用（中）、加 while（难——燃料或度量）、写个解析器从字符串构造 aexp（与验证正交的纯工程）。
+
+### 25.4 结语
+
+25 章前你面对的是「证明助手」这个词；现在你手里有：一门能定义数据、写函数、组织模块的语言，一套把命题变成类型、把推理变成程序的世界观，和一条从 Example 到 Theorem、从函数到流水线、从证明到抽取的完整生产线。
+
+最重要的练习只有一种：**打开 Coq，写下你想证的东西，然后动手**。它会顶嘴，会拒绝，会把你的每个「显然」逼成原理——这正是它四十年来存在的意义。
+
+---
+
+（全书完 · 25 章 · 示例 24 个 · 全部经 coqc 8.20.1 编译验证）
+
+
 
 
 
