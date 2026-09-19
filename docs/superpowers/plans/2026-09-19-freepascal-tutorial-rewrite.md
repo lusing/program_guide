@@ -142,14 +142,14 @@ end.
 - Modify: 根 `.gitignore`（若无 `freepascal/examples/*/selftest.log` 规则则补）
 - Create: `examples/02_hello/02_hello.pas`（冒烟，正式内容 Task 2 完善）
 
-- [ ] Step 1: `git rm` 旧指南/示例（脚本先不删，Task 1 末统一替换）；从
+- [x] Step 1: `git rm` 旧指南/示例（脚本先不删，Task 1 末统一替换）；从
   `git show HEAD:freepascal/build.ps1` 取 Resolve-Tool/四条判定/Invoke-Tool 骨架复用
-- [ ] Step 2: 写新 `build.ps1`（双通道 + GUI selftest 段，参数与目录约定见 Global Constraints）
-- [ ] Step 3: 写 `run-all.sh` 等价入口
-- [ ] Step 4: 写 02_hello.pas 冒烟示例（WriteLn 中文 + Assert + 结束标记）
-- [ ] Step 5: `pwsh -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Example 02_hello`
+- [x] Step 2: 写新 `build.ps1`（双通道 + GUI selftest 段，参数与目录约定见 Global Constraints）
+- [x] Step 3: 写 `run-all.sh` 等价入口
+- [x] Step 4: 写 02_hello.pas 冒烟示例（WriteLn 中文 + Assert + 结束标记）
+- [x] Step 5: `pwsh -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Example 02_hello`
   → 双通道 [OK] + [same]；`./run-all.sh 02` 同验
-- [ ] Step 6: `git rm Free Pascal编程指南.md` + 旧 examples，与新骨架/冒烟示例同批提交
+- [x] Step 6: `git rm Free Pascal编程指南.md` + 旧 examples，与新骨架/冒烟示例同批提交
   `docs(freepascal): 重写基建——删旧指南与示例，新 build.ps1/run-all.sh 双通道验证骨架 + 02 冒烟`
 
 ### Task 2: 批次 A——语言篇 02–05（4 章 4 示例）
@@ -259,4 +259,10 @@ end.
 
 ## 执行勘误（实施中实测发现，随时追加）
 
-（暂无——发现即记：① 对应章坑位清单 ② spec §4 ③ 此处）
+1. **编译器版本内建符号是 `%FPCVERSION%`**——`%FPVERSION%` 不存在且不报错（展开为空）；冒烟断言在
+   check 通道触发、release 通道静默通过，顺带证实**断言只随 -Sa 编进代码**（docs/02 章）。
+2. **工具链解析固定路径优先于 PATH**：scoop 的 fpc shim 是 i386-win32，PATH 优先会静默编出 32 位 exe
+   （build.ps1/run-all.sh 均已改为 env→固定路径→PATH；docs/01 章）。
+3. **Git Bash 传参给 fpc/lazbuild**：`cygpath -m` 转路径 + `MSYS2_ARG_CONV_EXCL='*'` 关闭 MSYS 自动
+   转换（`-FEG:/...` 内嵌 `/code/...` 会被转成 `G:\Program Files\Git\code\...`）；`grep -P` 与
+   LC_ALL 冲突报错致控制字符判定静默失效，改 `od -An -v -tx1` 方案（run-all.sh 注释）。

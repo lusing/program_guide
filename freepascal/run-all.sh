@@ -1,257 +1,271 @@
 #!/usr/bin/env bash
-# ============================================================
-# run-all.sh —— 用两种语言模式跑遍所有 Free Pascal 示例（shell 版，等价于 build.ps1）
-#
-#   ./run-all.sh            只打印每条通道的通过/失败摘要
+# FreePascal/Lazarus 教程验证入口（Git Bash），与 build.ps1 等价：
+#   CLI 示例双通道（check: -Cr -Co -Ci -Sa -B / release: -O2）× 四条判定 + SHA256 对比
+#   GUI 示例 lazbuild + --selftest 日志四条判定
+# 用法：
+#   ./run-all.sh            全部示例
+#   ./run-all.sh 02 08      只跑指定编号/名称
+#   ./run-all.sh --gui      只跑 GUI 工程
 #   ./run-all.sh -v         附带每个示例的完整输出
-#   ./run-all.sh 03 07      只跑指定编号
-#   ./run-all.sh --gui      只构建 examples/ 下的 3 个 Lazarus 工程
-#   ./run-all.sh --clean    清理 build 目录
-#
-# 两个通道（区别只在语言模式，编译器是同一个）：
-#   1. objfpc  —— Free Pascal 的扩展对象模式，教程与 build.ps1 用的就是它
-#   2. delphi  —— Delphi 兼容模式，作为对照通道
-#   3 个 GUI 工程走 lazbuild（macOS 上默认 cocoa 控件集）。
-#
-# 判定标准（与 build.ps1 一致）：
-#   退出码 0 + stderr 为空 + 输出里没有多余控制字符 + 输出里有 "==== NN 结束 ===="
-#   最后一条目前对每个示例降级：本目录的 12 个示例还没有打印结束标记，
-#   没有标记时改判「stdout 非空」并单独计数提示；示例补上标记后会自动改回严格匹配。
-#
-# 顺带记录一个跨模式事实：11_file_io 与 12_classes 在 FPC 默认模式（-MFPC）下
-# 编译不过（AssignFile / class 都找不到），objfpc 与 delphi 两种模式才能通过。
-# 所以对照通道选 delphi 而不是默认的 fpc。
-# ============================================================
-
+#   ./run-all.sh --clean    清理产物
 set -u
-cd "$(dirname "$0")"
 
+cd "$(dirname "$0")"
+ROOT=$(pwd)
+EXAMPLES=$ROOT/examples
+BUILD=$ROOT/build
+
+on_windows() { [ -n "${OSTYPE:-}" ] && [[ "$OSTYPE" == msys* || "$OSTYPE" == cygwin* ]]; }
+
+# 控制台切 65001：FPC 文本输出跟随活动控制台代码页（build.ps1 同款纪律）
+if on_windows && command -v chcp.com >/dev/null 2>&1; then
+    chcp.com 65001 >/dev/null 2>&1 || true
+fi
+
+resolve_tool() { # $1=env名 $2=命令名 其余=固定路径；固定路径优先于 PATH（scoop 的 fpc shim 是 i386）
+    local envname=$1 cmd=$2 p
+    local fromenv
+    fromenv=$(printenv "$envname" 2>/dev/null || true)
+    [ -n "$fromenv" ] && [ -e "$fromenv" ] && { echo "$fromenv"; return; }
+    shift 2
+    for p in "$@"; do [ -e "$p" ] && { echo "$p"; return; }; done
+    command -v "$cmd" >/dev/null 2>&1 && { command -v "$cmd"; return; }
+    echo ''
+}
+
+# 原生 Windows 工具（fpc/lazbuild）需要 Windows 路径；Git Bash 下用 cygpath -m 转成 G:/... 形式
+topath() {
+    if on_windows && command -v cygpath >/dev/null 2>&1; then cygpath -m "$1"; else echo "$1"; fi
+}
+
+FPC=$(resolve_tool FPC fpc \
+    'G:\scoop\apps\lazarus\current\fpc\3.2.2\bin\x86_64-win64\fpc.exe' \
+    'G:/scoop/apps/lazarus/current/fpc/3.2.2/bin/x86_64-win64/fpc.exe' \
+    '/usr/bin/fpc' '/usr/local/bin/fpc' '/opt/local/bin/fpc')
+LAZBUILD=$(resolve_tool LAZBUILD lazbuild \
+    'G:\scoop\apps\lazarus\current\lazbuild.exe' \
+    'G:/scoop/apps/lazarus/current/lazbuild.exe' \
+    '/usr/bin/lazbuild' '/usr/local/bin/lazbuild' '/opt/local/bin/lazbuild')
+
+EXEEXT=''
+on_windows && EXEEXT='.exe'
+
+PASS=0; FAIL=0; DIFFWARN=0; FAILED=""
 VERBOSE=0
-GUI_ONLY=0
-CLEAN=0
-SELECT=()
+
+die() { echo "错误：$*" >&2; exit 2; }
+
+# 控制字符检测（TAB/LF/CR 之外的 0x00-0x1F）。
+# 不用 grep -P：Git Bash 下与 LC_ALL 组合会报 locale 错并以非零退出，判定被静默跳过。
+has_ctrl() { od -An -v -tx1 "$1" | tr ' ' '\n' | grep -qE '^(00|01|02|03|04|05|06|07|08|0b|0c|0e|0f|1[0-9a-f])$'; }
+
+[ -n "$FPC" ] || die "未找到 fpc（可设 FPC=/path/to/fpc）"
+[ -d "$EXAMPLES" ] || die "找不到 examples 目录"
+
+# 四条判定：$1=tag $2=out $3=err $4=marker
+check4() {
+    local tag=$1 out=$2 err=$3 marker=$4 why=""
+    [ -s "$err" ] && why="stderr 非空"
+    if [ -s "$out" ]; then
+        if has_ctrl "$out"; then
+            [ -n "$why" ] && why="$why；"
+            why="${why}输出含控制字符"
+        fi
+        grep -qF "$marker" "$out" || why="${why:+$why；}缺结束标记 $marker"
+    else
+        why="${why:+$why；}stdout 为空"
+    fi
+    if [ -n "$why" ]; then
+        FAIL=$((FAIL+1)); FAILED="$FAILED
+  - $tag（$why）"
+        echo "  [FAIL] $tag —— $why" >&2
+        [ -s "$err" ] && head -5 "$err" | sed 's/^/        stderr: /' >&2
+    else
+        PASS=$((PASS+1))
+        echo '  [OK] '"$tag"
+        [ "$VERBOSE" = 1 ] && sed 's/^/      | /' "$out"
+    fi
+}
+
+run_cli() { # $1=示例目录
+    local dir=$1 name num marker src channel flags out exe rc
+    name=$(basename "$dir")
+    num=${name%%[-_]*}
+    marker="==== $num 结束 ===="
+    src=$dir/$name.pas
+    [ -f "$src" ] || { die "$src 不存在"; }
+
+    for channel in check release; do
+        case $channel in
+            check)   flags='-MObjFPC -Cr -Co -Ci -Sa -B' ;;
+            release) flags='-MObjFPC -O2' ;;
+        esac
+        local outdir=$BUILD/$channel
+        mkdir -p "$outdir"
+        exe=$outdir/$name$EXEEXT
+        rm -f "$exe"
+        echo "[Compile] $channel $name"
+        # MSYS2_ARG_CONV_EXCL='*'：关闭 Git Bash 对参数的 POSIX→Windows 自动转换——
+        # 路径已由 topath 转好；放任它转会把 -FEG:/... 内嵌的 /code/... 转成
+        # G:\Program Files\Git\code\...（实测坑）
+        # shellcheck disable=SC2086
+        MSYS2_ARG_CONV_EXCL='*' "$FPC" $flags "-FE$(topath "$outdir")" "-FU$(topath "$outdir")" \
+            "-Fu$(topath "$dir")" "-o$(topath "$exe")" "$(topath "$src")" \
+            >"$outdir/$name.build.log" 2>"$outdir/$name.build.err"
+        rc=$?
+        if [ $rc -ne 0 ] || [ ! -f "$exe" ]; then
+            echo "编译失败（exit $rc），见 $outdir/$name.build.log" >&2
+            tail -8 "$outdir/$name.build.log" | sed 's/^/        /' >&2
+            FAIL=$((FAIL+1)); FAILED="$FAILED
+  - $channel $name（编译失败）"
+            continue
+        fi
+        echo "[Run] $channel $name"
+        ( cd "$outdir" && "./$name$EXEEXT" >"$outdir/$name.out" 2>"$outdir/$name.err" )
+        check4 "$channel $name" "$outdir/$name.out" "$outdir/$name.err" "$marker"
+    done
+
+    local a=$BUILD/check/$name.out b=$BUILD/release/$name.out
+    if [ -s "$a" ] && [ -s "$b" ]; then
+        if cmp -s "$a" "$b"; then
+            echo '  [same] 双通道输出逐字节一致'
+        else
+            DIFFWARN=$((DIFFWARN+1))
+            echo "  [DIFF] 双通道输出不一致（见 build/{check,release}/$name.out）"
+            diff "$a" "$b" | head -10 | sed 's/^/        /'
+        fi
+    fi
+}
+
+run_gui() { # $1=示例目录
+    local dir=$1 name num marker lpi exe selflog rc
+    name=$(basename "$dir")
+    num=${name%%[-_]*}
+    marker="==== $num selftest OK ===="
+    lpi=$(ls "$dir"/*.lpi 2>/dev/null | head -1)
+    [ -n "$lpi" ] || { die "$dir 里没有 .lpi"; }
+    if [ -z "$LAZBUILD" ]; then
+        echo '  [SKIP] lazbuild 未安装（可设 LAZBUILD=/path/to/lazbuild）'
+        return
+    fi
+
+    mkdir -p "$BUILD"
+    echo "[lazbuild] $name"
+    MSYS2_ARG_CONV_EXCL='*' "$LAZBUILD" "$(topath "$lpi")" \
+        >"$BUILD/$name.build.log" 2>"$BUILD/$name.build.err"
+    rc=$?
+    exe=$(ls "$dir"/lib/*/"$name$EXEEXT" 2>/dev/null | head -1)
+    if [ $rc -ne 0 ] || [ -z "$exe" ]; then
+        echo "  [FAIL] lazbuild $name（exit $rc）" >&2
+        tail -8 "$BUILD/$name.build.log" | sed 's/^/        /' >&2
+        FAIL=$((FAIL+1)); FAILED="$FAILED
+  - lazbuild $name"
+        return
+    fi
+    echo "  [OK] lazbuild $name"
+    PASS=$((PASS+1))
+
+    echo "[selftest] $name"
+    rm -f "$dir/selftest.log"
+    ( cd "$dir" && "./lib/"*"/$name$EXEEXT" --selftest \
+        >"$BUILD/$name.selftest.out" 2>"$BUILD/$name.selftest.err" )
+    rc=$?
+    # 四条判定的对象是 selftest.log；退出码并入判定
+    local why=""
+    [ $rc -ne 0 ] && why="退出码 $rc"
+    if [ -s "$dir/selftest.log" ]; then
+        if has_ctrl "$dir/selftest.log"; then
+            [ -n "$why" ] && why="$why；"
+            why="${why}日志含控制字符"
+        fi
+        grep -qF "$marker" "$dir/selftest.log" || why="${why:+$why；}缺标记 $marker"
+    else
+        why="${why:+$why；}selftest.log 为空或缺失"
+    fi
+    [ -s "$BUILD/$name.selftest.err" ] && why="${why:+$why；}stderr 非空"
+    if [ -n "$why" ]; then
+        FAIL=$((FAIL+1)); FAILED="$FAILED
+  - selftest $name（$why）"
+        echo "  [FAIL] selftest $name —— $why" >&2
+    else
+        PASS=$((PASS+1))
+        echo '  [OK] selftest '"$name"
+        [ "$VERBOSE" = 1 ] && sed 's/^/      | /' "$dir/selftest.log"
+    fi
+}
+
+is_cli() { [ -f "$1/$(basename "$1").pas" ]; }
+is_gui() { ls "$1"/*.lpi >/dev/null 2>&1; }
+
+run_dir() {
+    if is_cli "$1"; then
+        echo "==== $(basename "$1") ===="
+        run_cli "$1"
+    elif is_gui "$1"; then
+        run_gui "$1"
+    else
+        die "$(basename "$1") 既非 CLI 也非 GUI 示例"
+    fi
+}
+
+find_dir() { # $1=编号或名称
+    local want=$1 d
+    [ -d "$EXAMPLES/$want" ] && { echo "$EXAMPLES/$want"; return; }
+    for d in "$EXAMPLES"/*/; do
+        d=${d%/}
+        case "$(basename "$d")" in
+            "$want"|"$want"_*|"$want"-*) echo "$d"; return ;;
+        esac
+    done
+    return 1
+}
+
+summary() {
+    echo
+    echo "通过 $PASS   失败 $FAIL   输出差异 $DIFFWARN"
+    if [ "$FAIL" -eq 0 ]; then
+        echo '[Done] 全部验证通过。'
+        [ "$DIFFWARN" -gt 0 ] && echo "（有 $DIFFWARN 项双通道输出不同，请人工确认）"
+        exit 0
+    fi
+    echo "失败项：$FAILED" >&2
+    exit 1
+}
+
+ARGS=()
+MODE=all
 for arg in "$@"; do
-    case "$arg" in
-        -v|--verbose) VERBOSE=1 ;;
-        --gui)        GUI_ONLY=1 ;;
-        --clean)      CLEAN=1 ;;
-        *)            SELECT+=("$arg") ;;
+    case $arg in
+        --clean)
+            rm -rf "$BUILD"
+            for d in "$EXAMPLES"/*/; do
+                rm -f "${d}selftest.log"; rm -rf "${d}lib"
+            done
+            echo '[Clean] 已清理 build/、examples/*/selftest.log、examples/*/lib/'
+            exit 0 ;;
+        --gui) MODE=gui ;;
+        -v)    VERBOSE=1 ;;
+        *)     MODE=pick; ARGS+=("$arg") ;;
     esac
 done
 
-# ------------------------------------------------------------
-# 工具链定位：环境变量 FPC / LAZBUILD 优先，其次 PATH 上的通用名字，
-#             最后退回 macOS(MacPorts / Homebrew) 与 Windows(scoop) 的常见路径
-# ------------------------------------------------------------
-resolve_tool() {
-    local envval="$1"; shift
-    local c
-    if [ -n "${envval}" ]; then
-        printf '%s' "$envval"
-        return
-    fi
-    for c in "$@"; do
-        if command -v "$c" >/dev/null 2>&1; then
-            command -v "$c"
-            return
-        fi
-    done
-    for c in "$@"; do
-        case "$c" in
-            */*) [ -x "$c" ] && printf '%s' "$c" && return ;;
-        esac
-    done
-    printf ''
-}
-
-FPC=$(resolve_tool "${FPC:-}" fpc /opt/local/bin/fpc /usr/local/bin/fpc \
-      '/c/scoop/apps/freepascal/current/bin/fpc.exe' \
-      '/c/scoop/apps/freepascal/current/bin/i386-win32/fpc.exe')
-LAZBUILD=$(resolve_tool "${LAZBUILD:-}" lazbuild /opt/local/bin/lazbuild /usr/local/bin/lazbuild \
-           '/c/scoop/apps/lazarus/current/lazbuild.exe')
-
-[ -n "$FPC" ] || { echo "未找到 fpc（可设 FPC=/path/to/fpc）"; exit 1; }
-
-if [ "$CLEAN" -eq 1 ]; then
-    rm -rf build
-    echo "[Clean] 已清理 build 目录。"
-    exit 0
-fi
-
-# 控件集不显式指定：lazbuild 会按宿主平台取默认值（Windows → win32，macOS → cocoa，
-# Linux → gtk2）。写死 --widgetset 反而会在没装那个控件集的机器上编不过，也和 build.ps1 不一致。
-LAZ_WS=''
-
-echo "fpc      : $FPC ($("$FPC" -iV 2>/dev/null))"
-echo "lazbuild : ${LAZBUILD:-<缺失>}"
+echo "工具链：fpc=$FPC"
+echo "       lazbuild=${LAZBUILD:-<未找到>}"
 echo
 
-# 已知的跨模式输出差异及其原因（目前两种模式输出逐字节一致，表留空）。
-diff_reason() {
-    echo ""
-}
-
-mkdir -p build
-PASS=0
-FAIL=0
-DIFFWARN=0
-NOMARKER=0
-FAILED_LIST=()
-
-# 输出里是否混进了「不该出现」的控制字符（制表符、换行、回车除外）。
-has_ctrl() {
-    [ "$(LC_ALL=C tr -d '\11\12\15' < "$1" 2>/dev/null \
-         | LC_ALL=C tr -dc '\0-\10\13-\14\16-\37' | wc -c | tr -d ' ')" != "0" ]
-}
-
-# 在输出里找结束标记。先剔掉控制字符再匹配，免得二进制内容干扰 grep。
-# LC_ALL=C 不能省：UTF-8 locale 下 toybox 的 tr 会做多字节校验，碰到非法
-# UTF-8 就报 "tr: Illegal byte sequence" 并**截断输入** —— 结束标记若在
-# 截断点之后就查不到，会误报「缺少结束标记」。LC_ALL=C 退化成按字节处理。
-marker_present() {
-    LC_ALL=C tr -d '\000' < "$1" 2>/dev/null | LC_ALL=C grep -qF "$2"
-}
-
-# 用法：check <标签> <期望结束标记> <输出文件> <stderr文件> <退出码> <编译日志>
-check() {
-    local tag="$1" marker="$2" out="$3" err="$4" rc="$5" log="$6"
-    local ok=1 why=()
-
-    if [ "$rc" -ne 0 ]; then ok=0; why+=("退出码 $rc"); fi
-    if [ -s "$err" ];   then ok=0; why+=("stderr 非空"); fi
-    if has_ctrl "$out";  then ok=0; why+=("输出含控制字符"); fi
-    if marker_present "$out" "$marker"; then
-        :
-    elif [ -s "$out" ]; then
-        NOMARKER=$((NOMARKER + 1))
-    else
-        ok=0; why+=("stdout 为空")
-    fi
-
-    if [ "$ok" -eq 1 ]; then
-        PASS=$((PASS + 1))
-        printf "  [%s] %s\n" "OK" "$tag"
-    else
-        FAIL=$((FAIL + 1))
-        FAILED_LIST+=("$tag")
-        printf "  [%s] %s —— %s\n" "FAIL" "$tag" "$(printf '%s；' "${why[@]}")"
-        if [ -s "$err" ]; then sed 's/^/        stderr: /' "$err" | head -5; fi
-        if [ -s "$log" ]; then
-            echo "        编译输出："
-            tail -8 "$log" | sed 's/^/        /'
-        fi
-    fi
-
-    if [ "$VERBOSE" -eq 1 ]; then
-        LC_ALL=C tr -d '\000' < "$out" | sed 's/^/        /'
-    fi
-}
-
-# 编译并运行一个示例：build_and_run <通道名> <语言模式参数> <源文件> <basename>
-# 产物全部收进 build/<通道>：fpc 的 -o/-FE/-FU 一律给绝对路径，
-# 否则相对路径会按「源文件所在目录」解析，把 .o 和可执行文件落进 examples/。
-build_and_run() {
-    local channel="$1" mode="$2" src="$3" base="$4"
-    local outdir="$PWD/build/$channel"
-    mkdir -p "$outdir"
-
-    if ! "$FPC" "$mode" -Sc -O2 \
-            "-FE$outdir" "-FU$outdir" "-o$outdir/$base" \
-            "$src" >"$outdir/$base.build.log" 2>&1; then
-        : >"$outdir/$base.out"
-        echo "编译失败，见 build/$channel/$base.build.log" >"$outdir/$base.err"
-        return 1
-    fi
-    # 11_file_io 有相对路径读写，统一在 build/<通道> 下运行
-    ( cd "$outdir" && "./$base" >"$base.out" 2>"$base.err" )
-    return $?
-}
-
-# ------------------------------------------------------------
-# 通道 1 / 2：命令行示例
-# ------------------------------------------------------------
-if [ "$GUI_ONLY" -eq 0 ]; then
-    for f in examples/[0-9]*.pas; do
-        [ -e "$f" ] || continue
-        base=$(basename "$f"); base=${base%.pas}
-        num=${base%%[-_]*}
-
-        if [ ${#SELECT[@]} -gt 0 ]; then
-            hit=0
-            for s in "${SELECT[@]}"; do [ "$s" = "$num" ] && hit=1; done
-            [ "$hit" -eq 1 ] || continue
-        fi
-
-        marker="==== $num 结束 ===="
-        echo "==== $base ===="
-
-        build_and_run objfpc -MObjFPC "$f" "$base"; rc=$?
-        check "objfpc $base" "$marker" \
-              "build/objfpc/$base.out" "build/objfpc/$base.err" "$rc" "build/objfpc/$base.build.log"
-
-        build_and_run delphi -MDelphi "$f" "$base"; rc=$?
-        check "delphi $base" "$marker" \
-              "build/delphi/$base.out" "build/delphi/$base.err" "$rc" "build/delphi/$base.build.log"
-
-        # ---- 附加检查：两种语言模式的输出应当逐字节一致 ----
-        if [ -s "build/objfpc/$base.out" ] && [ -s "build/delphi/$base.out" ]; then
-            if cmp -s "build/objfpc/$base.out" "build/delphi/$base.out"; then
-                printf "  [same] 两模式输出逐字节一致\n"
-            else
-                reason=$(diff_reason "$base")
-                if [ -n "$reason" ]; then
-                    printf "  [diff] 已知差异：%s\n" "$reason"
-                else
-                    DIFFWARN=$((DIFFWARN + 1))
-                    printf "  [DIFF] 两模式输出不一致（意外差异，见 build/*/$base.out）\n"
-                    diff "build/objfpc/$base.out" "build/delphi/$base.out" | head -10 | sed 's/^/        /'
-                fi
-            fi
-        fi
+if [ "$MODE" = gui ]; then
+    for d in "$EXAMPLES"/*/; do is_gui "${d%/}" && run_gui "${d%/}"; done
+    summary
+elif [ "$MODE" = pick ]; then
+    for a in "${ARGS[@]}"; do
+        d=$(find_dir "$a") || die "找不到示例: $a"
+        run_dir "$d"
     done
-fi
-
-# ------------------------------------------------------------
-# 通道 3：Lazarus GUI 工程（只验证能被编译）
-# ------------------------------------------------------------
-GUI_TOTAL=0
-if [ "$GUI_ONLY" -eq 1 ] || [ ${#SELECT[@]} -eq 0 ]; then
-for proj in 13_lazarus_gui/LazarusGuiDemo.lpi \
-            14_lazarus_advanced_controls/AdvancedControlsDemo.lpi \
-            15_lazarus_menus_dialogs/LazarusMenusDemo.lpi; do
-    [ -e "examples/$proj" ] || continue
-    GUI_TOTAL=$((GUI_TOTAL + 1))
-    name=$(basename "$proj")
-    [ "$GUI_ONLY" -eq 1 ] && echo "==== $name ===="
-
-    if [ -z "$LAZBUILD" ]; then
-        FAIL=$((FAIL + 1)); FAILED_LIST+=("lazbuild $name")
-        echo "  [SKIP] lazbuild 未安装（可设 LAZBUILD=/path/to/lazbuild）"
-        continue
-    fi
-    if $LAZBUILD $LAZ_WS "examples/$proj" >"build/$name.build.log" 2>&1; then
-        PASS=$((PASS + 1))
-        printf "  [OK]   lazbuild %s\n" "$name"
-    else
-        FAIL=$((FAIL + 1)); FAILED_LIST+=("lazbuild $name")
-        printf "  [FAIL] lazbuild %s\n" "$name"
-        tail -8 "build/$name.build.log" | sed 's/^/        /'
-    fi
-done
-fi
-
-echo
-echo "通过 $PASS   失败 $FAIL   输出差异 $DIFFWARN"
-if [ "$NOMARKER" -gt 0 ]; then
-    echo "提示：$NOMARKER 项没有结束标记，按「stdout 非空」降级判定（示例补上 ==== NN 结束 ==== 后自动收紧）"
-fi
-if [ "$FAIL" -eq 0 ]; then
-    echo "全部通过（命令行示例 × 两模式 + Lazarus 工程 × ${GUI_TOTAL}）"
-    [ "$DIFFWARN" -eq 0 ] && exit 0
-    echo "（有 $DIFFWARN 项跨模式输出不同，请人工确认是否可接受）"
-    exit 0
+    summary
 else
-    echo "失败项："
-    for t in "${FAILED_LIST[@]}"; do echo "  - $t"; done
-    exit 1
+    for d in "$EXAMPLES"/*/; do
+        d=${d%/}
+        case "$(basename "$d")" in [0-9]*) run_dir "$d" ;; esac
+    done
+    summary
 fi

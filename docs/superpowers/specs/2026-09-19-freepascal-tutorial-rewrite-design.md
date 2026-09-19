@@ -59,6 +59,7 @@ Object Pascal + Lazarus，从零教到能写完整 GUI 应用"；主线 **FPC 3.
 | GUI selftest | **可行**：`Application.Initialize` 后 `TForm.Create(nil)` 不 Show 也能建控件、读 Caption/ControlCount、写日志 `Halt(0)` exit 0；日志为 UTF-8 字节（LCL 内部即 UTF-8，与 `{$codepage utf8}` 纪律衔接） |
 | 探针顺手坑 | ① with 块内 `Close` 解析到 System 的文件过程而非窗体方法；② `mrClose` 在 Controls 单元；③ LCL 工程 `Interfaces` 必须最先 uses（ctheads 除外） |
 | scoop 布局 | 独立 `freepascal` 包只有 i386-win32 目标；Lazarus 包自带完整 x86_64 FPC——统一用后者 |
+| 基建实测（Task 1） | ① 编译器版本内建符号是 **`%FPCVERSION%`**（`%FPVERSION%` 不存在且不报错，展开为空）；② **断言只随 `-Sa`/`{$C+}` 编译进代码**——release 通道不检查（错误的断言在 -O2 下静默通过，双通道都跑的理由）；③ 工具链解析须**固定路径优先于 PATH**：scoop 的 fpc shim 是 i386，会静默编出 32 位 exe；④ Git Bash 调 fpc/lazbuild 须 `MSYS2_ARG_CONV_EXCL='*'` + `cygpath -m`，否则 `-FEG:/...` 内嵌 `/code/...` 被转成 `G:\Program Files\Git\code\...`；⑤ Git Bash 的 `grep -P` 与 LC_ALL 冲突报 locale 错并以非零退出——控制字符检测改用 `od -tx1` 方案；⑥ pwsh 脚本自身中文输出须显式 `[Console]::OutputEncoding=UTF8` |
 
 其余坑位（UTF8String 转换族、open array、set 实现、TThread/CheckSynchronize、.lfm 手写格式等）实施中边写边实测累积。
 

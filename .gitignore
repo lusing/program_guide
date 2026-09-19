@@ -57,6 +57,8 @@ Desktop.ini
 *.ppu
 *.compiled
 freepascal/examples/*/lib/
+# selftest 运行时产物（GUI 示例的 --selftest 日志）
+freepascal/examples/*/selftest.log
 
 # .NET artifacts
 *.user
