@@ -194,8 +194,8 @@ end.
 - Create: `examples/12_oop1/`、`13_oop2/`、`14_generics/`（14 用 Generics.Collections——
   fpc 3.2.2 单元路径实测确认，必要时 -Fu 补 rtl-generics 路径）
 
-- [ ] 示例 + 双通道全绿；CLI 全量 `-All`（02–14 共 13 示例）终验
-- [ ] 正文 3 章 + 提交 `docs(freepascal): 12–14 章——OOP 封装/继承多态与接口/泛型容器 + 三示例验证，语言篇收官`
+- [x] 示例 + 双通道全绿；CLI 全量 `-All`（02–14 共 13 示例）终验
+- [x] 正文 3 章 + 提交 `docs(freepascal): 12–14 章——OOP 封装/继承多态与接口/泛型容器 + 三示例验证，语言篇收官`
 
 ### Task 6: 批次 E——GUI 篇 15–17（3 章 3 示例，.lpi/.lfm 定稿）
 
@@ -284,6 +284,11 @@ end.
 12. **常量除零是编译期错误**（1 div 常量0 直接拒编），运行期 EDivByZero 需变量除数。
 13. **uses 是段级的**：实现段用 Format 未引 SysUtils 报 Identifier not found；
     {$DEFINE} 放 const 段报 "identifier expected but BEGIN found"。
+14. **泛型三坑**（14 章）：objfpc 泛型处处 specialize（var 里内联 TList<Integer> 报
+   语法错）；3.2.2 无独立泛型函数（3.3+ 才有）；TDictionary<string,..> 中文键 Add 后
+    TryGetValue 查不到（默认比较器码页敏感）——键类型用 UTF8String 全通。
+15. **类引用构造按基类签名解析**（AClass.Create(AName) 走 TShape.Create 而非子类
+    Create(W,H)）——除非构造器声明 virtual（LCL TComponent 流机制根源）。
 3. **Git Bash 传参给 fpc/lazbuild**：`cygpath -m` 转路径 + `MSYS2_ARG_CONV_EXCL='*'` 关闭 MSYS 自动
    转换（`-FEG:/...` 内嵌 `/code/...` 会被转成 `G:\Program Files\Git\code\...`）；`grep -P` 与
    LC_ALL 冲突报错致控制字符判定静默失效，改 `od -An -v -tx1` 方案（run-all.sh 注释）。
