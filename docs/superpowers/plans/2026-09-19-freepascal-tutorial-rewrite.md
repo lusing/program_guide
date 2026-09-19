@@ -239,8 +239,8 @@ end.
   功能清单见 spec §5 第 24 行：多标签/编码保存/查找替换/修改跟踪/状态栏/字体只读换行 INI/About/
   --selftest 临时文件开-改-存-比对）
 
-- [ ] 示例：完整实现 + `-Example 24_notepad_plus` 全绿；正常分支人工启动冒烟（截图不需要，确认能开窗即可）
-- [ ] 正文 24 章 + 提交 `docs(freepascal): 24 章——实战记事本+（多标签/编码/查找替换/selftest 全功能自检）+ 工程验证通过`
+- [x] 示例：完整实现 + `-Example 24_notepad_plus` 全绿；正常分支人工启动冒烟（截图不需要，确认能开窗即可）
+- [x] 正文 24 章 + 提交 `docs(freepascal): 24 章——实战记事本+（多标签/编码/查找替换/selftest 全功能自检）+ 工程验证通过`
 
 ### Task 10: 收官——01 章/CHEATSheet/README/根 README/记忆/终验
 
@@ -307,6 +307,9 @@ end.
 22. **绘图验证的色盲陷阱**（22 章实测）：clBlack=$00000000，黑墨对黑底判据失明——
     合成验证底色用洋红。GUI 线程章：CheckSynchronize 无头泵实锤（100 次回调）；
     非 TPersistent 后代类不能进 TForm 默认（published）段。
+23. **收官工程坑**（24 章实测）：Memo.Lines.Add 与 Text:= 都不触发 OnChange（TEdit 才
+    触发）——程序化修改显式 MarkDirty；TTabSheet 无 Data 属性；行列换算必须从左往右扫；
+    property 引用的字段须先声明；Length('中文')=字符 vs 文件读回=字节在收官再响一次。
 3. **Git Bash 传参给 fpc/lazbuild**：`cygpath -m` 转路径 + `MSYS2_ARG_CONV_EXCL='*'` 关闭 MSYS 自动
    转换（`-FEG:/...` 内嵌 `/code/...` 会被转成 `G:\Program Files\Git\code\...`）；`grep -P` 与
    LC_ALL 冲突报错致控制字符判定静默失效，改 `od -An -v -tx1` 方案（run-all.sh 注释）。
