@@ -95,6 +95,7 @@ New-Item -ItemType Directory -Force -Path $tmpDir    | Out-Null
 # ---------------------------------------------------------------
 $chapterConfig = @{
     # '16_coroutines' = @{ libs = @() }   —— 示例：无额外依赖的章不用列
+    '13'  = @{ libs = @('Shell32.lib') }                              # nowide: CommandLineToArgvW
     '17'  = @{ libs = @('dbghelp.lib') }                              # stacktrace
     '25'  = @{ libs = @('OpenCL.lib'); libpaths = @($cudaLib);
                includes = @($cudaInc) }                               # compute
