@@ -2,7 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 >
-> **状态：未开始**
+> **状态：已完成**（2026-09-20 同日实施完毕；终验 pwsh -All 与 ./run-all.sh 双入口 23 示例全绿，
+> 24 章 + 23 示例 + CHEATSheet + 记忆交付）
 
 **Goal:** 将 `swift/` 重写为对齐 cpp20/rust/go/zig 标准的 24 章教程（docs/ 分章 +
 章号=示例目录号 + 递进讲解 + 坑位清单 + swift-format/build/test/run 四层验证 + 迷你 grep 实战收官）。
@@ -121,17 +122,17 @@ import Testing
 - Rewrite: `swift/README.md`（过渡版：目录结构 + 工具链 + 验证命令，章节索引留待收官）
 - Modify: 根 `.gitignore`（补 `swift/.build/`）
 
-- [ ] Step 1: `git rm` 旧指南与旧示例、删旧 build/；确认 `git status` 无遗漏
-- [ ] Step 2: 写根 `Package.swift`（Global Constraints 模板，仅 Ch02Hello 组）
-- [ ] Step 3: 写 `build.ps1`（pwsh 7：环境配方三件套 + UTF-8 + 参数
+- [x] Step 1: `git rm` 旧指南与旧示例、删旧 build/；确认 `git status` 无遗漏
+- [x] Step 2: 写根 `Package.swift`（Global Constraints 模板，仅 Ch02Hello 组）
+- [x] Step 3: 写 `build.ps1`（pwsh 7：环境配方三件套 + UTF-8 + 参数
   `-All/-Example NN_name/-Clean` + 四层验证函数 + 独立包分支——Task 7 前仅普通分支）
-- [ ] Step 4: 写 `run-all.sh`（Git Bash 等价入口：export SDKROOT/PATH（MSYS 路径形态）+
+- [x] Step 4: 写 `run-all.sh`（Git Bash 等价入口：export SDKROOT/PATH（MSYS 路径形态）+
   同四层；`./run-all.sh [NN_name]`）
-- [ ] Step 5: 写 02_hello 冒烟（main.swift + HelloTests.swift，含中文输出 + precondition +
+- [x] Step 5: 写 02_hello 冒烟（main.swift + HelloTests.swift，含中文输出 + precondition +
   `==== 02 结束 ====`）
-- [ ] Step 6: 双入口验证：`pwsh -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Example 02_hello`
+- [x] Step 6: 双入口验证：`pwsh -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Example 02_hello`
   四层全绿；`./run-all.sh 02_hello` 同验
-- [ ] Step 7: 同批提交
+- [x] Step 7: 同批提交
   `docs(swift): 重写基建——删旧指南与示例，根 Package.swift + build.ps1/run-all.sh 四层验证骨架 + 02 冒烟`
 
 ### Task 2: 批次 1——语言篇 02–05（4 章 4 示例）
@@ -147,12 +148,12 @@ import Testing
 - Consumes: Task 1 的四层验证入口（`build.ps1 -Example` / `run-all.sh`）
 - Produces: 后续章节沿用的示例骨架惯例与 `add` 等教学函数仅限本章，无跨章代码依赖
 
-- [ ] 示例先行：4 个示例按 spec §5 主题实现（03 打印尺寸表 + 溢出 `&+` + 转换断言；
+- [x] 示例先行：4 个示例按 spec §5 主题实现（03 打印尺寸表 + 溢出 `&+` + 转换断言；
   04 覆盖 guard/switch 穷尽与模式匹配/for-in Range/labeled break；05 覆盖标签/`_`/默认值/
   inout/变参/重载/递归）
-- [ ] 每示例 `-Example NN_name` 四层绿，再 `-All` 全绿
-- [ ] 正文随后：4 章按示例分节（`# ═══ N.M` 对应），坑位清单收实测坑
-- [ ] 提交 `docs(swift): 02–05 章——第一个程序/基础类型/控制流/函数 + 四示例四层验证通过`
+- [x] 每示例 `-Example NN_name` 四层绿，再 `-All` 全绿
+- [x] 正文随后：4 章按示例分节（`# ═══ N.M` 对应），坑位清单收实测坑
+- [x] 提交 `docs(swift): 02–05 章——第一个程序/基础类型/控制流/函数 + 四示例四层验证通过`
 
 ### Task 3: 批次 2——语言篇 06–10（5 章 5 示例）
 
@@ -163,11 +164,11 @@ import Testing
   `10_generics/`
 - Modify: 根 `Package.swift`（追加五组目标）
 
-- [ ] 示例先行（06 if let/guard let/可选链/`??`/map-flatMap；07 值 vs 引用语义对照 +
+- [x] 示例先行（06 if let/guard let/可选链/`??`/map-flatMap；07 值 vs 引用语义对照 +
   属性观察者 + mutating + deinit 计数；08 关联值/indirect 表达式树/模式匹配；09 extension
   默认实现 + some/any 差异 + Equatable/CustomStringConvertible；10 泛型栈 + where + 关联类型）
-- [ ] `-Example` 逐个四层绿 + `-All` 回归
-- [ ] 正文 5 章 + 提交 `docs(swift): 06–10 章——可选/结构体类/枚举/协议/泛型 + 五示例验证通过`
+- [x] `-Example` 逐个四层绿 + `-All` 回归
+- [x] 正文 5 章 + 提交 `docs(swift): 06–10 章——可选/结构体类/枚举/协议/泛型 + 五示例验证通过`
 
 ### Task 4: 批次 3——语言篇 11–15（5 章 5 示例，语言篇收官）
 
@@ -178,11 +179,11 @@ import Testing
   `15_extensions/`
 - Modify: 根 `Package.swift`（追加五组目标）
 
-- [ ] 示例先行（11 捕获语义实测 + 尾随闭包 + map/filter/reduce 组合；12 自定义错误枚举 +
+- [x] 示例先行（11 捕获语义实测 + 尾随闭包 + map/filter/reduce 组合；12 自定义错误枚举 +
   do-catch + Result + typed throws；13 三大容器 + 切片 Index 坑 + 排序；14 é 家族 +
   Index 遍历 + Regex 字面量实测；15 subscript + 泛型约束 extension + retroactive 坑）
-- [ ] `-Example` 逐个四层绿 + `-All` 回归（02–15 共 14 示例）
-- [ ] 正文 5 章 + 提交 `docs(swift): 11–15 章——闭包/错误处理/集合/字符串/扩展下标 + 五示例验证，语言篇收官`
+- [x] `-Example` 逐个四层绿 + `-All` 回归（02–15 共 14 示例）
+- [x] 正文 5 章 + 提交 `docs(swift): 11–15 章——闭包/错误处理/集合/字符串/扩展下标 + 五示例验证，语言篇收官`
 
 ### Task 5: 批次 4——内存并发与 IO 16–20（5 章 5 示例）
 
@@ -192,12 +193,12 @@ import Testing
 - Create: `examples/16_arc/`、`17_concurrency/`、`18_actors/`、`19_files/`、`20_codable/`
 - Modify: 根 `Package.swift`（追加五组目标）
 
-- [ ] 示例先行（16 强引用循环实测 deinit 不跑 + weak/unowned 修复 + 捕获列表；17 async let +
+- [x] 示例先行（16 强引用循环实测 deinit 不跑 + weak/unowned 修复 + 捕获列表；17 async let +
   TaskGroup 固定任务集汇总断言 + 取消协作；18 actor 计数器竞态对照（非 actor 类 vs actor）+
   Sendable 检查实测；19 FileManager 临时目录读写 + URL/Data（跑后清理）；20 Codable 自定义
   CodingKey + JSONEncoder 日期/键策略 + 往返断言）
-- [ ] `-Example` 逐个四层绿 + `-All` 回归
-- [ ] 正文 5 章 + 提交 `docs(swift): 16–20 章——ARC/并发/actor/文件IO/Codable + 五示例验证通过`
+- [x] `-Example` 逐个四层绿 + `-All` 回归
+- [x] 正文 5 章 + 提交 `docs(swift): 16–20 章——ARC/并发/actor/文件IO/Codable + 五示例验证通过`
 
 ### Task 6: 批次 5a——测试与工程 21–23（3 章 3 示例，含首个嵌套独立包）
 
@@ -211,11 +212,11 @@ import Testing
 - Modify: 根 `Package.swift`（追加 Ch21Testing、Ch23Tooling 两组；22_spm 不进根包——
   验证根包 build 不受嵌套 Package.swift 干扰）
 
-- [ ] 示例先行（21 用 suite + 参数化覆盖纯函数；22 子包 `swift build`/`swift run` 独立绿；
+- [x] 示例先行（21 用 suite + 参数化覆盖纯函数；22 子包 `swift build`/`swift run` 独立绿；
   23 `extern`/DllImport 实测调 `system()` 或 Win32 `GetTickCountW` 类 API——以 6.3.3 实测可编为准）
-- [ ] 22_spm 走独立包验证路径（build.ps1 分支）；21/23 走普通四层
-- [ ] `-All` 全绿（根包 21 示例 + 独立包 1 个）
-- [ ] 正文 3 章 + 提交 `docs(swift): 21–23 章——swift-testing/SPM 深入/工具与互操作 + 三示例验证（22 为嵌套独立包）`
+- [x] 22_spm 走独立包验证路径（build.ps1 分支）；21/23 走普通四层
+- [x] `-All` 全绿（根包 21 示例 + 独立包 1 个）
+- [x] 正文 3 章 + 提交 `docs(swift): 21–23 章——swift-testing/SPM 深入/工具与互操作 + 三示例验证（22 为嵌套独立包）`
 
 ### Task 7: 批次 5b——24 章实战迷你 grep（独立工程）
 
@@ -231,12 +232,12 @@ import Testing
 - Consumes: 17/18 章并发 API、19 章 FileManager、20 章 Codable、21 章 swift-testing
 - Produces: 独立可分发教学工程（minigrep 用法：`minigrep <pattern> [path] [--json]`）
 
-- [ ] 先写核心库与测试（MinigrepCore：pattern 编译/行匹配/报告聚合纯函数），`swift test` 绿
-- [ ] 再写 CLI 入口（并发遍历 + ANSI + --json），准备 TestFixtures 固定样例
-- [ ] 独立包全流程绿：`swift build` → `swift test` → 对 TestFixtures 跑 `swift run minigrep
+- [x] 先写核心库与测试（MinigrepCore：pattern 编译/行匹配/报告聚合纯函数），`swift test` 绿
+- [x] 再写 CLI 入口（并发遍历 + ANSI + --json），准备 TestFixtures 固定样例
+- [x] 独立包全流程绿：`swift build` → `swift test` → 对 TestFixtures 跑 `swift run minigrep
   "lorem" TestFixtures`（exit 0 + 命中行 + `--json` 可解析）；无匹配 exit 1 路径也验一次
-- [ ] build.ps1 `-Example 24_minigrep` 独立包分支绿 + `-All` 终验
-- [ ] 正文 24 章 + 提交 `docs(swift): 24 章——实战迷你 grep（并发/高亮/JSON 报告/测试全覆盖）+ 独立工程验证通过`
+- [x] build.ps1 `-Example 24_minigrep` 独立包分支绿 + `-All` 终验
+- [x] 正文 24 章 + 提交 `docs(swift): 24 章——实战迷你 grep（并发/高亮/JSON 报告/测试全覆盖）+ 独立工程验证通过`
 
 ### Task 8: 收官——01 章/CHEATSheet/README/根 README/记忆/终验
 
@@ -251,10 +252,10 @@ import Testing
 - Create: 记忆 `G:\xulun\.claude\projects\G--code-guide\memory\swift-tutorial-build.md` +
   更新 MEMORY.md 索引
 
-- [ ] `pwsh build.ps1 -All` 全绿（根包 21 示例 + 独立包 2 个）；`./run-all.sh` 同验
-- [ ] 24 章导航链逐章抽查（上一章/下一章链接有效、01/24 端点正确）
-- [ ] 提交 `docs(swift): 收官——01 全景 + CHEATSheet + README，23 示例四层终验全绿`
-- [ ] 写记忆文件（结构 + 全部实测坑位索引），勾掉本计划状态行
+- [x] `pwsh build.ps1 -All` 全绿（根包 21 示例 + 独立包 2 个）；`./run-all.sh` 同验
+- [x] 24 章导航链逐章抽查（上一章/下一章链接有效、01/24 端点正确）
+- [x] 提交 `docs(swift): 收官——01 全景 + CHEATSheet + README，23 示例四层终验全绿`
+- [x] 写记忆文件（结构 + 全部实测坑位索引），勾掉本计划状态行
 
 ## 执行勘误（实施中实测发现，随时追加）
 
