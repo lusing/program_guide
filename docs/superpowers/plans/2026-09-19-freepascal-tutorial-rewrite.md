@@ -158,11 +158,11 @@ end.
 - Create: `docs/02-hello.md`（编码纪律三变体故事展开）、`docs/03-types.md`、`docs/04-control.md`、`docs/05-procedures.md`
 - Create: `examples/02_hello/`（完善）、`03_types/`、`04_control/`、`05_procedures/`
 
-- [ ] 示例先行：按 spec §5 主题清单实现 4 个 CLI 示例（03 打印全尺寸表并 Assert 关键值；04 覆盖
+- [x] 示例先行：按 spec §5 主题清单实现 4 个 CLI 示例（03 打印全尺寸表并 Assert 关键值；04 覆盖
   div/mod/case/三循环/for-in/短路；05 覆盖 const/var/out/默认参数/开放数组/重载/递归）
-- [ ] 每示例 `-Example NN_topic` 过双通道，再 `-All` 全绿
-- [ ] 正文随后：4 章按示例分节（`# ═══ N.M` 对应），坑位清单收实测坑
-- [ ] 提交 `docs(freepascal): 02–05 章——第一个程序/类型/控制流/过程 + 四示例双通道验证通过`
+- [x] 每示例 `-Example NN_topic` 过双通道，再 `-All` 全绿
+- [x] 正文随后：4 章按示例分节（`# ═══ N.M` 对应），坑位清单收实测坑
+- [x] 提交 `docs(freepascal): 02–05 章——第一个程序/类型/控制流/过程 + 四示例双通道验证通过`
 
 ### Task 3: 批次 B——语言篇 06–08（3 章 3 示例）
 
@@ -263,6 +263,15 @@ end.
    check 通道触发、release 通道静默通过，顺带证实**断言只随 -Sa 编进代码**（docs/02 章）。
 2. **工具链解析固定路径优先于 PATH**：scoop 的 fpc shim 是 i386-win32，PATH 优先会静默编出 32 位 exe
    （build.ps1/run-all.sh 均已改为 env→固定路径→PATH；docs/01 章）。
+4. **UTF-8 字面量的"重定型"二象性（07 章核心素材）**：`s := '中文'; Length(s) = 6`（字节），
+   但 `Length('中文') = 2`（字符）、`for ch in 'ab中文'` 迭代 4 次（变量 8 次）——同一字面量在
+   无类型上下文被重新定型；无类型字符串常量同坑（03 实测）。机理批次 B 探明后写进 07 章。
+5. **枚举成员命名遮蔽内建**：`TLevel = (Low = 1, ...)` 使全程序 `Low(..)/High(..)` 报
+   `")" expected but "(" found`，报错位置远离肇事点（03 实测，正文 03 §5 收录）。
+6. **编译期内建符号**：`%FPCTARGETOS%` 展开为驼峰 `Win64`、`%FPCTARGETCPU%` 为 `x86_64`
+   （与 `fpc -iTO` 打印的小写 win64 大小写不同）。
+7. **常量折叠消除舍入差**：`c := 1.0/3.0; s := 1.0/3.0` 两个常量表达式折成同一常量，
+   Single/Double 截断演示必须用变量做运行期除法（03 §3 收录）。
 3. **Git Bash 传参给 fpc/lazbuild**：`cygpath -m` 转路径 + `MSYS2_ARG_CONV_EXCL='*'` 关闭 MSYS 自动
    转换（`-FEG:/...` 内嵌 `/code/...` 会被转成 `G:\Program Files\Git\code\...`）；`grep -P` 与
    LC_ALL 冲突报错致控制字符判定静默失效，改 `od -An -v -tx1` 方案（run-all.sh 注释）。
