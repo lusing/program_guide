@@ -27,7 +27,9 @@ fun main() {
     run("add")                 // exit 2
 
     println("== 24.3 持久化文件内容 ==")
-    println("  ${file.path} →")
+    // 跨平台：File("build/demo/tasks.json").path 在 Windows 上会被规范成 'build\demo\tasks.json'，
+    // 而 expected.txt 只有一份 → 打印前把分隔符归一成 '/'
+    println("  ${file.path.replace(File.separatorChar, '/')} →")
     file.readLines().forEach { println("  $it") }
 
     println("== 24.4 help ==")

@@ -26,7 +26,9 @@ fun treeListing(root: File): List<String> =
     root.walkTopDown()
         .sortedBy { it.path }
         .map {
-            val rel = it.path.removePrefix(root.path).removePrefix("\\")
+            // 跨平台：File.path 在 Windows 上是 'a\1.txt'、在 macOS/Linux 上是 'a/1.txt'，
+            // 而 expected.txt 只有一份 → 统一归一成 '/'（Kotlin 里 '/' 两种平台都能当分隔符用）。
+            val rel = it.relativeTo(root).path.replace(File.separatorChar, '/')
             val kind = if (it.isDirectory) "[D]" else "(${it.length()}B)"
             "$rel $kind"
         }
