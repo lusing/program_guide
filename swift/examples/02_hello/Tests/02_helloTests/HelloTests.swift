@@ -1,5 +1,6 @@
-// 02_hello 的 swift-testing 冒烟测试（正文 Task 2 完善）
+// 02_hello 的 swift-testing 测试
 import Testing
+
 @testable import Ch02Hello
 
 @Test func add两个整数() {
@@ -12,4 +13,11 @@ import Testing
     let message = greet("世界")
     #expect(message == "你好，世界！")
     #expect(message.contains("世界"))
+}
+
+@Test func farewell是多行字符串() {
+    let text = farewell("世界")
+    #expect(text.hasPrefix("再见，世界。"))
+    #expect(text.hasSuffix("欢迎回来。"))
+    #expect(text.contains("\n"))
 }

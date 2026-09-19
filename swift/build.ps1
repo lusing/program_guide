@@ -44,6 +44,9 @@ if ($Clean) {
 # 章号 → 目标名映射（新增示例章时在此登记）
 $targetMap = @{
     "02_hello" = "Ch02Hello"
+    "03_basics" = "Ch03Basics"
+    "04_control" = "Ch04Control"
+    "05_functions" = "Ch05Functions"
 }
 
 # 独立包示例（嵌套 Package.swift，不在根包）
@@ -53,8 +56,12 @@ function Invoke-Swift {
     param([string[]]$ArgList, [string]$WorkingDir = $projectRoot)
     Push-Location $WorkingDir
     try {
-        & $swiftExe @ArgList 2>&1 | ForEach-Object { "$_" }
-        if ($LASTEXITCODE -ne 0) { throw "命令失败: swift $($ArgList -join ' ') (cwd=$WorkingDir)" }
+        $lines = & $swiftExe @ArgList 2>&1 | ForEach-Object { "$_" }
+        if ($LASTEXITCODE -ne 0) {
+            $lines | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+            throw "命令失败: swift $($ArgList -join ' ') (cwd=$WorkingDir)"
+        }
+        return $lines
     } finally { Pop-Location }
 }
 

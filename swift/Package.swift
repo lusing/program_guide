@@ -14,5 +14,26 @@ let package = Package(
             name: "Ch02HelloTests",
             dependencies: ["Ch02Hello"],
             path: "examples/02_hello/Tests/02_helloTests"),
+        .executableTarget(
+            name: "Ch03Basics",
+            path: "examples/03_basics/Sources/03_basics"),
+        .testTarget(
+            name: "Ch03BasicsTests",
+            dependencies: ["Ch03Basics"],
+            path: "examples/03_basics/Tests/03_basicsTests"),
+        .executableTarget(
+            name: "Ch04Control",
+            path: "examples/04_control/Sources/04_control"),
+        .testTarget(
+            name: "Ch04ControlTests",
+            dependencies: ["Ch04Control"],
+            path: "examples/04_control/Tests/04_controlTests"),
+        .executableTarget(
+            name: "Ch05Functions",
+            path: "examples/05_functions/Sources/05_functions"),
+        .testTarget(
+            name: "Ch05FunctionsTests",
+            dependencies: ["Ch05Functions"],
+            path: "examples/05_functions/Tests/05_functionsTests"),
     ]
 )

@@ -19,6 +19,9 @@ cd "$(dirname "$0")"
 # 章号 → 目标名映射（新增示例章时在此登记；与 build.ps1 保持一致）
 declare -A TARGET_MAP=(
     [02_hello]=Ch02Hello
+    [03_basics]=Ch03Basics
+    [04_control]=Ch04Control
+    [05_functions]=Ch05Functions
 )
 STANDALONE="22_spm 24_minigrep"
 
