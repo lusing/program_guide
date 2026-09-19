@@ -276,7 +276,10 @@ function Test-Result {
 function Invoke-Sample {
     param(
         [Parameter(Mandatory = $true)][System.IO.FileInfo]$Source,
-        [Parameter(Mandatory = $true)][string]$ChapterNum
+        [Parameter(Mandatory = $true)][string]$ChapterNum,
+        # 两阶段模式：先全章编译（含 plugin DLL），再统一运行——
+        # 宿主例程加载同章 DLL 时不会扑空（dll.cpp × plugin_*.dll 的依赖序）
+        [switch]$SkipRun
     )
 
     $base   = $Source.BaseName
@@ -379,7 +382,7 @@ function Invoke-Sample {
     }
 
     # plugin_* 只编译不运行：宿主例程负责加载并自检
-    if ($isDll) {
+    if ($isDll -or $SkipRun) {
         Write-Host ("  [OK]   {0} （DLL 已产出）" -f $tag) -ForegroundColor Green
         $script:passCount++
         return $true
@@ -441,9 +444,21 @@ if ($dirs.Count -gt 0) {
     foreach ($d in $dirs) {
         $chNum = ($d.Name -split '_')[0]
         Write-Host "==== $($d.Name) ====" -ForegroundColor Cyan
-        foreach ($f in @(Get-ChildItem -LiteralPath $d.FullName -Filter '*.cpp' | Sort-Object Name)) {
-            if (-not (Invoke-Sample -Source $f -ChapterNum $chNum)) { $failedList += "$($d.Name)/$($f.Name)" }
+        # 阶段 1：全章编译（含 plugin DLL），失败即记
+        $allFiles = @(Get-ChildItem -LiteralPath $d.FullName -Filter '*.cpp' | Sort-Object Name)
+        foreach ($f in $allFiles) {
+            if (-not (Invoke-Sample -Source $f -ChapterNum $chNum -SkipRun)) {
+                $failedList += "$($d.Name)/$($f.Name)"
+            }
         }
+        # 阶段 2：统一运行（此时同章 DLL 已就位）
+        foreach ($f in $allFiles) {
+            if ($f.BaseName -like 'plugin_*') { continue }
+            if (-not (Invoke-Sample -Source $f -ChapterNum $chNum)) {
+                $failedList += "$($d.Name)/$($f.Name)"
+            }
+        }
+        $failedList = @($failedList | Select-Object -Unique)
     }
 
     Write-Host "--------------------------------" -ForegroundColor DarkGray
