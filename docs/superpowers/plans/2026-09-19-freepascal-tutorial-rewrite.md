@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 >
-> **状态：实施中**
+> **状态：已完成**（2026-09-19 同日实施完毕；终验 46/46 双入口全绿，23 示例 + 24 章 + CHEATSheet 交付）
 
 **Goal:** 将 `freepascal/` 重写为对齐 cpp20/zig/julia/freebasic 标准的 24 章教程（docs/ 分章 +
 章号=示例目录号 + 递进讲解 + 坑位清单 + CLI 双通道/GUI selftest 多层验证 + 记事本+ 实战收官）。
@@ -252,10 +252,10 @@ end.
 - Create: 记忆 `G:\xulun\.claude\projects\G--code-guide\memory\freepascal-tutorial-build.md` +
   更新 MEMORY.md 索引
 
-- [ ] `pwsh build.ps1 -All`（CLI 13 双通道 + GUI 10 selftest）全绿；`./run-all.sh` 同验
-- [ ] 24 章导航链逐章抽查（上一章/下一章链接有效）
-- [ ] 提交 `docs(freepascal): 收官——01 全景 + CHEATSheet + README，23 示例多层终验全绿`
-- [ ] 写记忆文件（结构 + 全部实测坑位索引）
+- [x] `pwsh build.ps1 -All`（CLI 13 双通道 + GUI 10 selftest）全绿；`./run-all.sh` 同验
+- [x] 24 章导航链逐章抽查（上一章/下一章链接有效）
+- [x] 提交 `docs(freepascal): 收官——01 全景 + CHEATSheet + README，23 示例多层终验全绿`
+- [x] 写记忆文件（结构 + 全部实测坑位索引）
 
 ## 执行勘误（实施中实测发现，随时追加）
 

@@ -29,7 +29,7 @@
 - [elixir](./elixir) — Elixir 教程与示例，使用 elixirc 编译验证
 - [erlang](./erlang) — Erlang/OTP 教程与示例，使用 erlc 编译验证（Erlang/OTP 29 / erts 17.0.3，28 个示例 × 2 通道全部通过；双入口 `run-all.sh` / `build.ps1`，四条判定标准 + 两通道输出逐字节一致；30 章指南正文约 4300 行）
 - [freebasic](./freebasic) — FreeBASIC 教程与示例（24 章对齐 dlang/go 标准：GFX 内置图形、多线程、C 互操作、-lang qb 方言各独立成章），使用 fbc 1.10.1（win64）双层验证（`-g -exx` 断言+边界检查 / 发布形态 × 四条判定：退出码 0、stderr 空、stdout 非空、含 [OK] 标记），23 个示例全部通过（22 章含 `-lang qb` 第三通道；24 章贪吃蛇确定性回放逐字节一致）
-- [freepascal](./freepascal) — Free Pascal / Lazarus 教程与示例，使用 fpc 编译并运行验证（Windows scoop + macOS MacPorts fpc 3.2.2 / Lazarus 4.8 双平台，12 个命令行示例 × objfpc/delphi 双模式 + 3 个 Lazarus 工程 lazbuild 构建全部通过）
+- [freepascal](./freepascal) — FreePascal/Lazarus 开发指南（24 章对齐 cpp20/freebasic 标准：语言 13 章 ⭐含字符串编码深水区 + LCL GUI 9 章 ⭐控件两章 + 实战记事本+），FPC 3.2.2 x86_64-win64（Lazarus 4.8 自带）多层验证（CLI 检查/发布双通道 × 四条判定 + 输出逐字节比对；GUI lazbuild + `--selftest` 无头日志断言 × 60s 超时），23 个示例全部通过，CHEATSheet 收录 46 条实测坑位
 - [fsharp](./fsharp) — F# 编程教程与示例，使用 .NET SDK (`dotnet build` / `dotnet run`) 验证
 - [flutter](./flutter) — Flutter / Dart 跨平台 UI 教程与示例，使用 Flutter 桌面编译验证
 - [forth](./forth) — Forth / GForth 教程与示例，使用 gforth 0.7.3 运行验证（含栈平衡与 stderr 检查）
