@@ -29,6 +29,16 @@ func expect(_ condition: Bool, _ description: String) {
 
 func round1(_ v: CGFloat) -> CGFloat { (v * 10).rounded() / 10 }
 
+// 椭圆是用四段三次贝塞尔曲线逼近的，bounds 由「拍平曲线」算出来，
+// 原点会带上 1e-16 量级的浮点噪声（宽高倒是精确的）。
+// 这跟 elementCount 一样不是 API 契约的一部分 —— 只能按 epsilon 断言，
+// 不能写 ==（在新 SDK 上原点不再是精确的 0，会误判 FAIL）。
+func nearlyEqual(_ a: CGFloat, _ b: CGFloat, _ eps: CGFloat = 1e-9) -> Bool { abs(a - b) < eps }
+func nearlySameRect(_ a: NSRect, _ b: NSRect) -> Bool {
+    nearlyEqual(a.origin.x, b.origin.x) && nearlyEqual(a.origin.y, b.origin.y) &&
+    nearlyEqual(a.size.width, b.size.width) && nearlyEqual(a.size.height, b.size.height)
+}
+
 // MARK: - 1) NSRect 的几何函数
 
 print("== NSRect 运算 ==")
@@ -78,7 +88,10 @@ expect(rectPath.contains(NSPoint(x: 30, y: 15)), "中心点在路径内")
 expect(rectPath.contains(NSPoint(x: 100, y: 100)) == false, "外面的点不在路径内")
 
 let oval = NSBezierPath(ovalIn: NSRect(x: 0, y: 0, width: 40, height: 40))
-expect(oval.bounds == NSRect(x: 0, y: 0, width: 40, height: 40), "椭圆的 bounds 是外接矩形")
+// 不打印 oval.bounds 的原始值：椭圆是四段三次贝塞尔逼近的，bounds 原点带 1e-16
+// 量级噪声（甚至出现 -0.0），直接打印会随环境抖动、也会让双通道逐字节比对失败。
+// 这里只断言「性质」——bounds ≈ 外接矩形，按 epsilon 比。
+expect(nearlySameRect(oval.bounds, NSRect(x: 0, y: 0, width: 40, height: 40)), "椭圆的 bounds 是外接矩形（按 epsilon 比，原点有浮点噪声）")
 expect(oval.contains(NSPoint(x: 20, y: 20)), "圆心在椭圆内")
 expect(oval.contains(NSPoint(x: 2, y: 2)) == false, "角上的点在椭圆外")
 

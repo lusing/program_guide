@@ -20,14 +20,14 @@ import Foundation
 // ---------- 1) 编译期就知道的事 ----------
 print("== 编译期事实 ==")
 
-// #if swift / #if compiler：Swift 版本。本机两套工具链都是 Swift 5.7.2
+// #if swift / #if compiler：Swift 版本。本机两套工具链都是 Swift 6.0.3
 #if swift(>=5.7)
 print("swift 版本 >= 5.7 : true")
 #else
 print("swift 版本 >= 5.7 : false")
 #endif
 
-// canImport：某个模块在当前 SDK 里存在吗（本机 SDK 是 macOS 13.1）
+// canImport：某个模块在当前 SDK 里存在吗（本机 SDK 是 macOS 15.2）
 #if canImport(AppKit)
 print("canImport(AppKit) : true")
 #else
@@ -46,20 +46,25 @@ print("simulator         : false")
 // ---------- 2) 部署目标 vs SDK 版本 ----------
 print("")
 print("== 部署目标（编译进二进制的一条元数据）==")
-// 本机 SDK 是 13.1，但系统是 12.7：如果不写死 -target macos12.0，
-// 用到 macOS 13 才有的 API 也能编译过，运行到那一步才崩 —— 这是本机最容易踩的坑。
-let want13 = OperatingSystemVersion(majorVersion: 13, minorVersion: 0, patchVersion: 0)
-let want12 = OperatingSystemVersion(majorVersion: 12, minorVersion: 0, patchVersion: 0)
-print("系统 >= 12.0 : \(ProcessInfo.processInfo.isOperatingSystemAtLeast(want12))")
-print("系统 >= 13.0 : \(ProcessInfo.processInfo.isOperatingSystemAtLeast(want13))")
+// 本机是 macOS 14.8.9、SDK 是 15.2，但部署目标钉在 macos12.0：
+// 这样误用了 12.0 之后才有的 API 会在**编译期**被拦下，而不是运行到那一步才崩。
+// 下面两个检查判的是「**实际运行在哪个系统上**」（14.8.9），跟部署目标无关：
+//   >= 14.0 → true（本机就是 14.8.9）
+//   >= 15.0 → false（本机还不到 15）
+// 一真一假，正好说明它判的是运行时系统版本，不是编译进去的部署目标。
+let want14 = OperatingSystemVersion(majorVersion: 14, minorVersion: 0, patchVersion: 0)
+let want15 = OperatingSystemVersion(majorVersion: 15, minorVersion: 0, patchVersion: 0)
+print("系统 >= 14.0 : \(ProcessInfo.processInfo.isOperatingSystemAtLeast(want14))")
+print("系统 >= 15.0 : \(ProcessInfo.processInfo.isOperatingSystemAtLeast(want15))")
 
-// #available 是运行期判定。注意：它判的是「运行在哪台机器上」，
-// 跟 -target / SDK 版本完全无关，两者要成对使用。
+// #available 同样是**运行期**判定，判的是「实际跑在哪个系统上」，
+// 跟 -target / SDK 版本完全无关。部署目标只决定「编译器允不允许你不加守卫就用新 API」，
+// 以及「#available 的 else 分支要不要保留」；真正走哪条分支由运行时系统版本决定。
 var reachedGuardedBranch = false
-if #available(macOS 13.0, *) {
+if #available(macOS 15.0, *) {
     reachedGuardedBranch = true
 }
-print("走进 macOS 13 分支 : \(reachedGuardedBranch)")
+print("走进 macOS 15 分支 : \(reachedGuardedBranch)")
 
 // ---------- 3) Bundle：命令行程序也有 main bundle ----------
 print("")

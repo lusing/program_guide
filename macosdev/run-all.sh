@@ -15,7 +15,7 @@
 #   6) stdout 有结束标记 "==== NN 结束 ===="
 #
 # 外加两条约束：
-#   - 两套工具链（Command Line Tools / Xcode 14.2）编译出的产物，stdout 逐字节一致
+#   - 两套工具链（Command Line Tools / Xcode 16.2）编译出的产物，stdout 逐字节一致
 #   - XIB 与源码的一致性由 tools/check_xib.py 静态检查（编译之前跑）
 #
 # 为什么没有「stdout 不得含诊断字样」那条：Swift/Clang 的诊断一律走 stderr，
@@ -29,8 +29,9 @@ BUILD="$TOP/build"
 TOOLS="$TOP/tools"
 
 HOST_ARCH="$(uname -m)"
-# 本机 macOS 12.7.6，SDK 却是 13.1：不钉住部署目标的话，
-# 误用了 macOS 13 才有的 API 也能编译过，运行到那一步才崩。
+# 本机 macOS 14.8.9，SDK 是 15.2：不钉住部署目标的话，
+# 误用了 macOS 13/14/15 才有的 API 也能编译过，运行到老系统上才崩。
+# 钉在 12.0（比本机低）让「误用新 API」在编译期就暴露；示例都兼容到 12.0。
 DEPLOY_TARGET="$HOST_ARCH-apple-macos12.0"
 
 CLT_SDK="/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"

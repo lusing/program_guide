@@ -7,6 +7,11 @@ Swift 的 `String` / `Data` / `Array` 是**值类型**，`NSString` / `NSData` /
 `NSArray` 是**引用类型**。两者可以自由桥接，但桥接处有一堆「看起来一样其实不一样」的地方。
 本章把这些地方列清楚。
 
+> 本章只讲 **Foundation 类型的 Swift/OC 桥接**。纯 Swift 语言基础
+> （可选类型、值语义、协议扩展、泛型、错误处理……）在仓库的
+> [`swift/`](../../swift/Swift编程指南.md) 教程里单独成篇，这里不重复，
+> 只在桥接确实相关时点到。
+
 ## 1) String ↔ NSString
 
 ```swift
@@ -231,7 +236,54 @@ iOS 9 / macOS 10.11 之后**不再需要**在 `deinit` 里移除基于 selector 
 `NotificationCenter` 是**同步**的：post 的时候，所有观察者的回调在当前线程、
 在 post 返回之前就跑完了。别在通知回调里做重活。
 
-## 8) 坑清单
+## 8) 可空性桥接：NS_ASSUME_NONNULL → Swift Optional
+
+这是把第 04 章的 OC 头和 Swift 连起来的关键一环。OC 的指针**默认可空**，
+Swift 无法从中看出「到底会不会是 nil」，于是把所有 OC 指针都当成
+**隐式解包可选** `T!`——用起来像非可选，但真给了 nil 就崩。
+
+`NS_ASSUME_NONNULL_BEGIN/END` 就是来消除这种模糊的：
+
+```objc
+NS_ASSUME_NONNULL_BEGIN
+@interface Person : NSObject
+@property (nonatomic, copy) NSString *name;              // → Swift: String（非可选）
+- (instancetype)initWithName:(NSString *)name;           // → Swift: String
+- (nullable NSString *)nickname;                          // → Swift: String?
+@end
+NS_ASSUME_NONNULL_END
+```
+
+对应到 Swift 端看到的签名：
+
+| OC 声明 | Swift 看到的类型 |
+| --- | --- |
+| 区域内裸指针 `NSString *` | `String`（非可选，nonnull） |
+| `nullable NSString *` | `String?`（可选） |
+| 区域外的裸指针 | `String!`（隐式解包，最危险） |
+| `- (BOOL)doX:(NSError **)error` | `throws`（见下） |
+
+**两条桥接规则值得单独记：**
+
+1. **`NSError **` → `throws`。** 第 04 章 `Person` 的
+   `- (BOOL)renameTo:(NSString *)newName error:(NSError **)error`，
+   在 Swift 里直接变成
+   `try person.rename(to: "x")`——返回的 `BOOL` 被吃掉，
+   `NO` + 填 error 翻译成抛异常，`YES` 翻译成正常返回。
+   这就是「OC 约定」被 Swift 自动美化的典型。
+
+2. **Foundation 类型会自动桥接成 Swift 值类型**：
+   `NSString→String`、`NSNumber→Int/Double/Bool`、`NSArray→Array`、
+   `NSDictionary→Dictionary`、`NSData→Data`。所以 Swift 端拿到的是值语义副本，
+   改它不影响 OC 侧那个对象。
+
+> **坑**：给 OC 头补 `NS_ASSUME_NONNULL` 后，Swift 端原本能编译的
+> `someOptional` 传参可能突然报错「非可选不能传 nil」——这其实是**好事**，
+> 它把运行时的隐式解包崩溃提前成了编译错误。反过来，OC 侧忘了标
+> `nullable`、又真返回了 nil，Swift 端会当成非可选直接用，**当场崩**。
+> 所以：**新写的 OC 头一律包 `NS_ASSUME_NONNULL`，可空的显式标 `nullable`。**
+
+## 9) 坑清单
 
 | 现象 | 原因 |
 | --- | --- |

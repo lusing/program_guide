@@ -10,20 +10,23 @@ Xcode 很好用，但它把三件事藏起来了：编译器怎么被调起来�
 四个字，而真正的成因在下面两层。
 
 **本章的目标是：不用 Xcode 打开任何工程，只靠终端就把一个 AppKit 程序编出来、跑起来。**
-后面 17 章全部建立在这个能力上 —— 本教程的 18 个示例没有一个用 Xcode 工程，
+后面 19 章全部建立在这个能力上 —— 本教程的 20 个示例没有一个用 Xcode 工程，
 全是脚本编译的，所以你可以随时复现。
 
 ## 本机事实（这些数据是从机器上实测来的）
 
 | 项目 | 值 |
 | --- | --- |
-| macOS | 12.7.x（Darwin 21） |
-| Xcode | 26.0（`/Applications/Xcode.app`） |
-| Xcode 工具链 | `.../Toolchains/XcodeDefault.xctoolchain` |
-| Xcode SDK | `.../Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk` |
-| Command Line Tools | `/Library/Developer/CommandLineTools` |
-| CLT SDK | `/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk` |
+| macOS | 14.8.9（Darwin 23.6.0） |
 | 架构 | x86_64 |
+| Xcode | 16.2（Build 16C5032a，`/Applications/Xcode.app`） |
+| Xcode 工具链 | `.../Toolchains/XcodeDefault.xctoolchain` |
+| Xcode SDK | `.../Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk`（macOS 15.2） |
+| Command Line Tools | `/Library/Developer/CommandLineTools` |
+| CLT SDK | `/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk`（macOS 15.2） |
+| Swift | 6.0.3（swiftlang-6.0.3.1.10）—— 两套工具链同版本 |
+| Apple clang | 16.0.0（clang-1600.0.26.6） |
+| 部署目标 | `x86_64-apple-macos12.0`（**刻意钉得比本机低**，见下） |
 
 也就是说**本机有两套可用的 Swift**：
 
@@ -32,7 +35,7 @@ Xcode 很好用，但它把三件事藏起来了：编译器怎么被调起来�
 /Applications/Xcode.app/.../usr/bin/swiftc               # Xcode.app 里那套
 ```
 
-这两套版本号可能不一样。本教程的验证脚本**两条通道都跑一遍，再逐字节比对输出** ——
+这两套版本号可能不一样（本机恰好都是 6.0.3）。本教程的验证脚本**两条通道都跑一遍，再逐字节比对输出** ——
 这一步不是强迫症，它抓到过的真实问题包括「SDK 版本不同导致某个 API 的默认值不同」。
 
 ## xcrun：永远不要硬编码路径
@@ -140,14 +143,31 @@ simulator         : false
 
 ```
 == 部署目标（编译进二进制的一条元数据）==
-系统 >= 12.0 : true
-系统 >= 13.0 : false
-走进 macOS 13 分支 : false
+系统 >= 14.0 : true
+系统 >= 15.0 : false
+走进 macOS 15 分支 : false
 ```
 
-`-target` 里的 `macos12.0` 就是部署目标。`#available(macOS 13.0, *)` 在本机
-（部署目标 12.0 的二进制）判定为 false —— 注意它判断的是**部署目标**，
-不是「当前系统实际版本」。所以想让新 API 在支持的机器上生效，部署目标要设对。
+`-target` 里的 `macos12.0` 就是**部署目标**：它是一条**编译进二进制**的元数据，
+声明「这个程序最低要跑在 macOS 12.0 上」。它的作用在**编译期**——
+如果你不加 `#available` 守卫就用了一个 macOS 13 才有的 API，编译器会**直接报错**，
+而不是等到运行时才崩。本教程把部署目标刻意钉在比本机（14.8.9）低的 12.0，
+就是为了让「误用新 API」在编译期暴露出来。
+
+**但要分清两件事**（这是最容易搞混的一点）：
+
+- **部署目标**（`-target ...macos12.0`）：编译期契约，决定编译器放不放行新 API。
+- **`#available` / `isOperatingSystemAtLeast`**：**运行期**判定，判的是
+  「**此刻实际跑在哪个系统版本上**」，跟部署目标、跟 SDK 版本都**无关**。
+
+所以上面 `系统 >= 14.0` 是 true、`系统 >= 15.0` 是 false，判的是本机实际系统
+（14.8.9），**不是**部署目标 12.0。`if #available(macOS 15.0, *)` 同理：
+本机还不到 15，所以走 else 分支。部署目标只影响「编译器要不要保留 else 分支」
+（部署目标 ≥ 15 时编译器知道 else 永远走不到，会优化掉并允许你省略守卫），
+真正运行时走哪条，永远由**实际系统版本**决定。
+
+> 一句话：**部署目标管编译，`#available` 管运行。** 两者要成对设置——
+> 部署目标定低（支持老系统），新 API 一律用 `#available` 守卫。
 
 ## Bundle 与进程信息
 
@@ -192,7 +212,7 @@ argc == 2 : true              // 脚本传了 --selftest
 1. 要么显式钉住 `locale = Locale(identifier: "en_US_POSIX")`；
 2. 要么**只断言性质**（非空、能解析回来），绝不打印原文。
 
-本教程 18 个示例能「双工具链输出逐字节一致」，靠的就是这条纪律。
+本教程 20 个示例能「双工具链输出逐字节一致」，靠的就是这条纪律。
 
 ## 判定标准（本教程全部示例共用）
 
@@ -229,7 +249,7 @@ Xcode 工程项目文件（`.xcodeproj`/`.pbxproj`）本质就是这些参数的
 
 ```bash
 cd macosdev
-./run-all.sh               # 跑全部 18 个示例（双通道）
+./run-all.sh               # 跑全部 20 个示例（双通道）
 ./run-all.sh 01 02         # 只跑 01、02
 /opt/local/bin/pwsh ./build.ps1 -All
 ```

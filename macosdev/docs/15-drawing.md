@@ -63,8 +63,9 @@ hand.lineCapStyle  = .butt
 实测：
 
 ```
-  矩形路径 bounds = (0.0, 0.0, 60.0, 30.0), 元素数 = 6
+  矩形路径 bounds = (0.0, 0.0, 60.0, 30.0), 元素数 = 5
   ok   矩形路径至少有 4 个元素（起笔 + 转角 + 收笔）
+  ok   椭圆的 bounds 是外接矩形（按 epsilon 比，原点有浮点噪声）
   手绘路径 元素数 = 5, bounds = (0.0, 0.0, 10.0, 10.0)
   ok   线宽可以设置
   ok   连接样式可设置
@@ -72,8 +73,15 @@ hand.lineCapStyle  = .butt
 ```
 
 > **坑**：`elementCount` **不是 API 契约的一部分**。
-> 矩形路径在某些版本上是 6（收笔被拆成 lineto + closepath），
-> 别拿具体数字做断言。
+> 矩形路径在本机（macOS 14 / SDK 15.2）是 5，某些版本上是 6
+> （收笔被拆成 lineto + closepath），别拿具体数字做断言。
+>
+> **坑**：`NSBezierPath(ovalIn:)` 的 `bounds` **不能写 `==` 精确比较**。
+> 椭圆是用四段三次贝塞尔曲线逼近的，`bounds` 由「拍平曲线」算出来，
+> 原点会带上 `1e-16` 量级的浮点噪声（本机实测 `origin.x ≈ -4.1e-16`，
+> 甚至四舍五入后出现 `-0.0`），宽高倒是精确的。老 SDK 上原点恰好是 `0`，
+> 新 SDK 上就不是了 —— 必须按 epsilon 断言（示例里的 `nearlySameRect`）。
+> 这也是「只断言性质、不断言环境相关的精确数字」这条纪律的又一个例子。
 >
 > **坑**：`.roundLineJoinStyle` / `.buttLineCapStyle` 是 **Swift 4.2 之前**的旧名，
 > 现在是 `.round` / `.butt`。照抄老代码会编译告警。
@@ -113,7 +121,7 @@ color.cgColor
 实测：
 
 ```
-  systemRed(sRGB) r=1.0 g=0.3 b=0.2 a=1.0
+  systemRed(sRGB) r=1.0 g=0.2 b=0.2 a=1.0
   ok   红色的红分量高
   ok   默认不透明
   ok   withAlphaComponent 返回一个新颜色
