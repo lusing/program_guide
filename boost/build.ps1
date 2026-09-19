@@ -96,6 +96,22 @@ New-Item -ItemType Directory -Force -Path $tmpDir    | Out-Null
 $chapterConfig = @{
     # '16_coroutines' = @{ libs = @() }   —— 示例：无额外依赖的章不用列
     '13'  = @{ libs = @('Shell32.lib') }                              # nowide: CommandLineToArgvW
+    # cobalt.cpp 特事特办：scoop 没带 boost_cobalt 预编译库，把它 7 个
+    # 源文件直接编进例程；且必须去掉 BOOST_ALL_DYN_LINK（cobalt 头的
+    # dllimport 声明会与静态编入的符号打架，C4273）
+    '16'  = @{ file_overrides = @{
+                   'cobalt.cpp' = @{
+                       no_dyn     = $true
+                       defines    = @('BOOST_ALL_NO_LIB')   # 关自动链接（静态名也找不到）
+                       libs       = @('ws2_32.lib')
+                       extra_srcs = @(
+                           "$boostRoot\libs\cobalt\src\channel.cpp",
+                           "$boostRoot\libs\cobalt\src\detail\exception.cpp",
+                           "$boostRoot\libs\cobalt\src\detail\util.cpp",
+                           "$boostRoot\libs\cobalt\src\error.cpp",
+                           "$boostRoot\libs\cobalt\src\main.cpp",
+                           "$boostRoot\libs\cobalt\src\this_thread.cpp",
+                           "$boostRoot\libs\cobalt\src\thread.cpp") } } }
     '17'  = @{ libs = @('dbghelp.lib') }                              # stacktrace
     '25'  = @{ libs = @('OpenCL.lib'); libpaths = @($cudaLib);
                includes = @($cudaInc) }                               # compute
@@ -274,24 +290,78 @@ function Invoke-Sample {
     $bldErr  = Join-Path $buildDir "$base.builderr"
     $tag     = $Source.Directory.Name + "/" + $Source.Name
 
-    # 章节附加配置
+    # 章节附加配置（+ 文件级覆盖：同名文件的特殊依赖走 file_overrides）
     $extraLibs    = @()
     $extraLibPaths = @()
     $extraIncludes = @()
     $extraDefines = @()
+    $extraSrcs    = @()
+    $noDyn        = $false
     if ($chapterConfig.ContainsKey($ChapterNum)) {
         $cfg = $chapterConfig[$ChapterNum]
-        if ($cfg.libs)     { $extraLibs     = @($cfg.libs) }
-        if ($cfg.libpaths) { $extraLibPaths = @($cfg.libpaths) }
-        if ($cfg.includes) { $extraIncludes = @($cfg.includes) }
-        if ($cfg.defines)  { $extraDefines  = @($cfg.defines) }
+        if ($cfg.libs)       { $extraLibs     = @($cfg.libs) }
+        if ($cfg.libpaths)   { $extraLibPaths = @($cfg.libpaths) }
+        if ($cfg.includes)   { $extraIncludes = @($cfg.includes) }
+        if ($cfg.defines)    { $extraDefines  = @($cfg.defines) }
+        if ($cfg.extra_srcs) { $extraSrcs     = @($cfg.extra_srcs) }
+        if ($cfg.file_overrides -and $cfg.file_overrides.ContainsKey($Source.Name)) {
+            $fo = $cfg.file_overrides[$Source.Name]
+            if ($fo.libs)       { $extraLibs     = @($fo.libs) }
+            if ($fo.libpaths)   { $extraLibPaths = @($fo.libpaths) }
+            if ($fo.includes)   { $extraIncludes = @($fo.includes) }
+            if ($fo.defines)    { $extraDefines  = @($fo.defines) }
+            if ($fo.extra_srcs) { $extraSrcs     = @($fo.extra_srcs) }
+            if ($fo.no_dyn)     { $noDyn         = $true }
+        }
     }
 
     $clArgs = @($commonArgs)
+    if ($noDyn) {
+        # 按 "/D 值" 成对移除，只删值会把后面的 /D 参数错位（LNK1181）
+        $filtered = @()
+        for ($i = 0; $i -lt $clArgs.Count; $i++) {
+            if ($clArgs[$i] -eq '/D' -and ($i + 1) -lt $clArgs.Count -and
+                $clArgs[$i + 1] -eq 'BOOST_ALL_DYN_LINK') { $i++; continue }
+            $filtered += $clArgs[$i]
+        }
+        $clArgs = $filtered
+    }
     foreach ($d in $extraDefines)  { $clArgs += @('/D', $d) }
     foreach ($i in $extraIncludes) { $clArgs += @('/I', "`"$i`"") }
     if ($isDll) { $clArgs += '/LD' }
-    $clArgs += @("/Fo`"$objPath`"", "`"$($Source.FullName)`"", "/Fe`"$($isDll ? $dllPath : $exePath)`"", '/link', "`"/LIBPATH:$boostLib`"")
+
+    # 缺席预编译库的源文件（如 cobalt）：先单独编译成 .obj——
+    # 用 /w 静音（库自身的告警不该由例程的零告警标准背锅），
+    # 再与例程的目标文件链接。目录结尾用正斜杠防引号转义（D8003）
+    $libObjs = @()
+    if ($extraSrcs.Count -gt 0) {
+        $objDir = "$($buildDir -replace '\\', '/')/"
+        $preArgs = @('/nologo', '/std:c++latest', '/EHsc', '/MD', '/utf-8',
+                     '/permissive-', '/Zc:__cplusplus', '/w', '/c', "/Fo`"$objDir`"",
+                     '/external:I', "`"$boostRoot`"", '/external:W0')
+        for ($i = 0; $i -lt $clArgs.Count; $i++) {
+            if (($clArgs[$i] -eq '/D' -or $clArgs[$i] -eq '/I' -or $clArgs[$i] -eq '/external:I') -and
+                ($i + 1) -lt $clArgs.Count) {
+                $preArgs += @($clArgs[$i], $clArgs[$i + 1]); $i++
+            }
+        }
+        foreach ($s in $extraSrcs) {
+            $preArgs += "`"$s`""
+            $libObjs += Join-Path $buildDir ([System.IO.Path]::GetFileNameWithoutExtension($s) + '.obj')
+        }
+        $r2 = Invoke-Batch -CommandLine ('call "{0}" >nul 2>nul && cl {1}' -f $vcvars, ($preArgs -join ' ')) `
+                           -OutFile $bldLog -ErrFile $bldErr
+        if ($r2.ExitCode -ne 0) {
+            [System.IO.File]::WriteAllText($errPath, "库源码编译失败`n" + (Read-TextFile $bldLog))
+            Write-Host ("  [FAIL] {0} —— 库源码编译失败" -f $tag) -ForegroundColor Red
+            $script:failCount++
+            return $false
+        }
+    }
+
+    $clArgs += @("/Fo`"$objPath`"", "`"$($Source.FullName)`"")
+    $clArgs += $libObjs
+    $clArgs += @("/Fe`"$($isDll ? $dllPath : $exePath)`"", '/link', "`"/LIBPATH:$boostLib`"")
     foreach ($lp in $extraLibPaths) { $clArgs += "`"/LIBPATH:$lp`"" }
     $clArgs += $extraLibs
 
