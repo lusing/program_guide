@@ -63,7 +63,8 @@ function Invoke-RunJudged {
     Write-Host "    [$Label] OK" -ForegroundColor Green
 }
 
-# 常规示例：双层验证（-exx 断言+边界检查 → 发布形态）
+# 常规示例：双层验证（-g -exx 断言+边界检查 → 发布形态）
+# 注意：1.10.1 实测 Assert/AssertWarn 由 -g 激活（老文档说 -e/-exx，已过时）
 # 源集 = 目录下全部 .bas（排序后第一个为主模块），legacy_qb.bas 除外（属 22 章 qb 通道）
 function Test-PlainExample {
     param([string]$Dir)
@@ -73,9 +74,9 @@ function Test-PlainExample {
         Where-Object { $_.Name -ne "legacy_qb.bas" } |
         Sort-Object Name | ForEach-Object { $_.FullName }
     if ($sources.Count -eq 0) { throw "示例目录没有 .bas：$Dir" }
-    foreach ($layer in @("-exx", "")) {
+    foreach ($layer in @("-g -exx", "")) {
         $flags = @("-w", "all")
-        if ($layer -ne "") { $flags += $layer }
+        if ($layer -ne "") { $flags += $layer.Split(" ") }
         $exe = Join-Path $buildDir "$name.exe"
         Invoke-Fbc -ArgList ($flags + $sources + @("-x", $exe)) -Label "$name $layer"
         Invoke-RunJudged -ExePath $exe -WorkDir $Dir -Label "$name $layer"

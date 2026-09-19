@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # FreeBASIC 教程统一验证（Git Bash 入口，与 build.ps1 判定等价）：
-#   每示例双层（-exx / 发布形态）× 四条判定（退出码 0 / stderr 空 / stdout 非空 / 含 [OK]）
+#   每示例双层（-g -exx 断言+边界检查 / 发布形态）× 四条判定（退出码 0 / stderr 空 / stdout 非空 / 含 [OK]）
+#   注意：1.10.1 实测 Assert 由 -g 激活（老文档说 -e/-exx，已过时）
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -35,7 +36,7 @@ compile_run() {  # $1=dir  层循环内复用
         srcs+=("$f")
     done
     [ "${#srcs[@]}" -gt 0 ] || fail "$dir 下没有 .bas"
-    for layer in "-exx" ""; do
+    for layer in "-g -exx" ""; do
         flags=(-w all)
         [ -n "$layer" ] && flags+=("$layer")
         exe="$(pwd)/build/${name}.exe"

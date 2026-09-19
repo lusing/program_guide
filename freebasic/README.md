@@ -1,6 +1,6 @@
 # FreeBASIC 编程指南（fbc 1.10.1）
 
-面向**会编程（C/QBASIC 背景皆可）、初学 FreeBASIC** 的读者：以现代 **`-lang fb` 方言**为主线，从零教到能写出带图形、多线程、直调 Win32 API 的完整程序。**FB 特色全部独立成章细讲**：内置 GFX 图形库（18）、多线程（19）、C 互操作（20）、三方言模式与 QB 迁移（22）。每章"读讲解 → 跑示例 → 改代码再跑"，全部示例在本机**双层验证**通过（`-exx` 断言+边界检查通道 + 发布形态通道，各加四条判定）。
+面向**会编程（C/QBASIC 背景皆可）、初学 FreeBASIC** 的读者：以现代 **`-lang fb` 方言**为主线，从零教到能写出带图形、多线程、直调 Win32 API 的完整程序。**FB 特色全部独立成章细讲**：内置 GFX 图形库（18）、多线程（19）、C 互操作（20）、三方言模式与 QB 迁移（22）。每章"读讲解 → 跑示例 → 改代码再跑"，全部示例在本机**双层验证**通过（`-g -exx` 通道：断言+边界+空指针检查；发布形态通道；各加四条判定）。
 
 > ⚠️ 网上 FreeBASIC 教程多为 0.2x 时代（2008 前后）或 QB 教程直接改写：OOP 语法（2004 年 0.90 才引入 `Extends`/`Virtual`）、`Open` 返回值式错误检查、win64 下的类型尺寸都与老说法不同。本教程所有代码在 **fbc 1.10.1（win64 standalone，Windows 11 x64）** 实测，每章末"坑位清单"收录版本差异——包括 BOM 导致的 GBK 转码大坑、`Integer` 在 win64 是 8 字节等 20 余条。
 
@@ -24,7 +24,7 @@ freebasic/
 | [02 第一个程序](docs/02-hello.md) | fbc 命令行、Print、编码纪律（无 BOM） | `02_hello` |
 | [03 类型与变量](docs/03-types.md) | ⭐win64 尺寸表（Integer=8）、Var、Const、Cast | `03_types` |
 | [04 运算符与控制流](docs/04-control.md) | AndAlso/OrElse、Select Case、Iif 陷阱 | `04_control` |
-| [05 过程](docs/05-procedures.md) | Sub/Function、⭐ByRef 默认、Optional、递归 | `05_procedures` |
+| [05 过程](docs/05-procedures.md) | Sub/Function、⭐默认传参按类型分、Optional | `05_procedures` |
 | [06 数组](docs/06-arrays.md) | Dim/Redim Preserve、多维、参数传递 | `06_arrays` |
 | [07 字符串](docs/07-strings.md) | ⭐String/ZString/WString、编码坑、手写 Split | `07_strings` |
 | [08 用户定义类型](docs/08-udt.md) | Type/Union/Enum/With、Type 初始化器 | `08_udt` |
@@ -68,7 +68,7 @@ G:/scoop/apps/freebasic/current/fbc.exe -w all -exx 18_gfx.bas -x 18_gfx.exe   #
 ./18_gfx.exe
 ```
 
-判定标准（每个示例 × 每层）：退出码 0、stderr 为空、stdout 非空、含 `[OK]` 结束标记。22 章示例额外通过 `-lang qb` 第三通道。
+判定标准（每个示例 × 每层）：退出码 0、stderr 为空、stdout 非空、含 `[OK]` 结束标记。22 章示例额外通过 `-lang qb` 第三通道。注意：**1.10.1 实测 `Assert` 由 `-g` 激活**（老文档说 `-e/-exx`，已过时），所以断言层用 `-g -exx`。
 
 ## 相关教程
 
