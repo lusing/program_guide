@@ -1,0 +1,4 @@
+resolver: lts-24.59
+compiler: ghc-9.12.1
+system-ghc: true
+install-ghc: false
