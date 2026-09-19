@@ -43,6 +43,7 @@
 - [renpy](./renpy) — Ren'Py 视觉小说与叙事游戏教程，使用 Ren'Py `compile` 验证
 - [kotlin](./kotlin) — Kotlin 2.4 教程（24 章对齐 cpp20/zig/go/rust 标准：空安全/密封与穷尽 when/委托/型变 reified/作用域函数/扩展/协程+Flow/Java 互操作/DSL 细讲，23 个示例四层验证 kotlinc -Werror + kotlin.test + 运行 + 输出快照；17 为 Gradle 多模块工程（JUnit5 + fat jar），18 为 Java/Kotlin 混编两遍法，24 为迷你待办 CLI（手写 JSON 解析器 + 文件存储 + 退出码约定））
 - [lean4](./lean4) — Lean4/Mathlib4 教程与示例，使用 Lake + Lean 校验
+- [iosdev](./iosdev) — iOS 应用开发教程（Xcode / Swift / Objective-C / SwiftUI / UIKit，20 章 + 20 个示例），使用 Xcode 16.2（Swift 6.0.3）+ iOS 18.2 SDK 在 iPhone 模拟器里验证（20 个示例 × debug/release 两配置全部通过，两配置 stdout 逐字节一致；示例全部纯命令行编译成 headless 自测，`simctl spawn` 跑，含 ObjC 语言与混编、SwiftUI 主线（状态/布局/列表/绘图动画）、UIKit 补充（Auto Layout/列表复用/手势响应链）、网络并发、持久化、权限通知、打包签名上架；`tools/check_docs.py` 做文档快照漂移检查，详见 [iosdev/README.md](./iosdev/README.md) 的「验证状态」节）
 - [macosdev](./macosdev) — macOS 应用开发教程（Xcode / Swift / Objective-C / Cocoa / AppKit，20 章 + 20 个示例），使用 Xcode 16.2（Swift 6.0.3）SDK + Command Line Tools 双工具链验证（20 个示例 × 2 通道全部通过，双通道输出逐字节一致；示例全部纯命令行编译，含 Objective-C 语言与混编、XIB/nib 编译与 outlet 连线、Cocoa Bindings、打包签名；六条判定标准 + 反向验证，详见 [macosdev/README.md](./macosdev/README.md) 的「验证状态」节）
 - [mfc](./mfc) — MFC 桌面应用开发指南，使用 MSVC + MFC 库编译验证
 - [win32](./win32) — Win32 API 桌面编程指南，使用 MSVC + Win32 API 编译验证
@@ -103,22 +104,23 @@
 19. [dart](./dart)
 20. [kotlin](./kotlin)
 21. [mfc](./mfc)
-22. [macosdev](./macosdev)
-23. [win32](./win32)
-24. [rust](./rust)
-25. [OpenCL](./OpenCL)
-26. [sdl2](./sdl2)
-27. [wpf](./wpf)
-28. [sbcl](./sbcl)
-29. [swift](./swift)
-30. [WinUI3](./WinUI3)
-31. [zig](./zig)
-32. [lean4](./lean4)
-33. [forth](./forth)
-34. [prolog](./prolog)
-35. [fortran](./fortran)
-36. [sml](./sml)
-37. [ocaml](./ocaml)
+22. [iosdev](./iosdev)
+23. [macosdev](./macosdev)
+24. [win32](./win32)
+25. [rust](./rust)
+26. [OpenCL](./OpenCL)
+27. [sdl2](./sdl2)
+28. [wpf](./wpf)
+29. [sbcl](./sbcl)
+30. [swift](./swift)
+31. [WinUI3](./WinUI3)
+32. [zig](./zig)
+33. [lean4](./lean4)
+34. [forth](./forth)
+35. [prolog](./prolog)
+36. [fortran](./fortran)
+37. [sml](./sml)
+38. [ocaml](./ocaml)
 
 ## 工具链说明
 
@@ -157,6 +159,7 @@
 - Kotlin Compiler
 - MFC / Win32 桌面框架
 - Xcode 16.2（Swift 6.0.3）SDK + Command Line Tools（macOS 应用开发 / Swift + Objective-C + AppKit + XIB，macports 装 `pwsh`；`ibtool` / `actool` 只在装了 Xcode.app 的机器上存在）
+- Xcode 16.2（Swift 6.0.3）+ iOS 18.2 SDK + iPhone 模拟器（iOS 应用开发 / SwiftUI + UIKit + Swift + Objective-C；iOS SDK 只随 Xcode 提供，故单工具链，用 debug/release 两配置逐字节比对代替双通道；`xcrun simctl spawn` 跑 headless 自测）
 - Win32 API 原生桌面编程
 - CUDA OpenCL Headers
 - SDL2
