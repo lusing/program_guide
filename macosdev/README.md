@@ -1,9 +1,9 @@
 # macOS 应用开发教程（Xcode / Swift / Objective-C / Cocoa）
 
-用**本机 Xcode 26 + Swift + Command Line Tools** 讲 macOS 原生应用开发：
+用**本机 Xcode 16.2（Swift 6.0.3）+ Command Line Tools** 讲 macOS 原生应用开发：
 AppKit、Objective-C、XIB/nib、Cocoa Bindings、打包签名。
 
-20 章正文放在 [`docs/`](./docs)，每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例。
+20 章正文放在 [`docs/`](./docs)（目录页见 [`macOS开发指南.md`](./macOS开发指南.md)），每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例。
 全部示例都不打开 Xcode —— 只用 `swiftc` / `clang` / `ibtool` 在终端里编出来跑，
 因为这样你才知道 Xcode 到底替你做了什么。
 
@@ -28,12 +28,14 @@ cd macosdev
 
 | 项目 | 值 |
 | --- | --- |
-| macOS | 12.7.x（Darwin 21，x86_64） |
-| Xcode | 26.0（`/Applications/Xcode.app`） |
-| Xcode SDK | `.../Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk` |
+| macOS | 14.8.9（Darwin 23.6.0，x86_64） |
+| Xcode | 16.2（Build 16C5032a，`/Applications/Xcode.app`） |
+| Swift | 6.0.3（两套工具链同版本） |
+| Apple clang | 16.0.0（clang-1600.0.26.6） |
+| Xcode SDK | `.../Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk`（macOS 15.2） |
 | Command Line Tools | `/Library/Developer/CommandLineTools` |
-| CLT SDK | `/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk` |
-| 部署目标 | `x86_64-apple-macos12.0` |
+| CLT SDK | `/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk`（macOS 15.2） |
+| 部署目标 | `x86_64-apple-macos12.0`（刻意钉得比本机低，让误用新 API 在编译期暴露） |
 
 **本机有两套可用的 Swift**（`/usr/bin/swiftc` 与 Xcode.app 里那套），
 验证脚本**两条都跑**并逐字节比对输出。
@@ -46,6 +48,7 @@ cd macosdev
 ```
 macosdev/
 ├── README.md                 本文件
+├── macOS开发指南.md           教程目录页（指向 docs/ 各章）
 ├── run-all.sh                shell 入口
 ├── build.ps1                 PowerShell 入口（等价）
 ├── docs/                     20 章正文
@@ -145,7 +148,10 @@ macosdev/
 | --- | --- | --- |
 | `ibtool` 很慢（30 秒 ~ 3 分钟） | 它要加载 Interface Builder 的 Cocoa 插件 | 脚本给 180 秒超时，别以为卡死 |
 | `rowHeight` 默认值 24（旧版 macOS 是 17） | 没有写死的标准值 | 只断言「> 0」 |
-| `NSBezierPath.elementCount` 是 6 | 不是 API 契约的一部分 | 只断言「>= 4」 |
+| `NSBezierPath.elementCount` 本机是 5（某些版本是 6） | 不是 API 契约的一部分 | 只断言「>= 4」 |
+| `NSBezierPath(ovalIn:).bounds` 原点带 `1e-16` 噪声（甚至 `-0.0`） | 椭圆用四段三次贝塞尔逼近，bounds 由拍平曲线算出 | 不能写 `==`，按 epsilon 断言（`nearlySameRect`） |
+| `systemRed` 转 sRGB 后绿分量是 0.2（旧系统是 0.3） | 系统调色板随 macOS 版本微调 | 只断言「红分量高、绿 < 红」，不写死具体值 |
+| 文本限宽后的具体宽度随系统字体版本漂移（本机 39.8，旧系统 26.5） | 换行点由字体度量决定 | 只断言「不超过限制」，不写死数字 |
 | `en_US_POSIX` 下 `.decimal` 无千位分隔符 | 输出是 `12345.678` 不是 `12,345.678` | 不照抄书本，往返断言 |
 | `NSBitmapImageRep.setColor(_:atX:y:)` 写不进去 | deviceRGB 位图上的已知问题 | 直接写 `bitmapData` |
 | `NSApp` 在 `NSApplication.shared` 之前是 nil | `NSApplication!` 隐式解包 | 每个示例第一句建 shared |

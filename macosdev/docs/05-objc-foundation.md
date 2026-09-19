@@ -83,7 +83,56 @@ typedef struct { NSUInteger location; NSUInteger length; } NSRange;
   ok   NSMutableString 就地改
 ```
 
-## 3) NSNumber / NSValue / NSNull
+## 3) stringWithFormat: 与格式说明符（本章最容易踩的坑）
+
+示例里几乎每一行打印都长这样：
+
+```objc
+line([NSString stringWithFormat:@"  plain      length=%lu", (unsigned long)plain.length]);
+line([NSString stringWithFormat:@"  UTC = %04ld-%02ld ...", (long)c.year, (long)c.month]);
+```
+
+为什么明明是 `NSUInteger`，却要写 `(unsigned long)` 再用 `%lu`？因为
+**`stringWithFormat:` 底层就是 C 的 `printf` 家族**，它靠格式说明符去
+「按位解释」可变参数，**编译器不会帮你做类型检查**——写错了不报错，
+只是打印出垃圾值，甚至在 64 位上错位。
+
+对照表（把「OC 类型 → 该用的说明符 → 该做的强转」记牢）：
+
+| OC 类型 | 说明符 | 必须做的强转 |
+| --- | --- | --- |
+| 任何对象（`NSString`/`NSNumber`/`NSArray`…） | `%@` | 无——会调用对象的 `description` |
+| `NSInteger` | `%ld` | `(long)` |
+| `NSUInteger`（含 `.length`、`.count`） | `%lu` | `(unsigned long)` |
+| `int` / `BOOL`（提升为 int） | `%d` | 无 |
+| `double` / `CGFloat` | `%f`（`%.2f` 控位） | 无 |
+| C 字符串 `char *` | `%s` | 无——**不能**用 `%@` |
+| 指针 | `%p` | 无 |
+
+关键三点：
+
+1. **`NSInteger` 不是 `int`。** 在 64 位上它是 `long`（8 字节），
+   用 `%d`（4 字节）读它，参数栈会错位，后面的值全乱。
+   所以统一写 `%ld` + `(long)`，跨 32/64 位都对。这也是示例里
+   `c.year`（`NSInteger`）一律 `(long)` 的原因。
+
+2. **`.length` / `.count` 是 `NSUInteger`**，用 `%lu` + `(unsigned long)`。
+   写成 `%d` 是初学者最常见的错误，且**不报警**。
+
+3. **对象一律 `%@`，`char *` 一律 `%s`**，两者不能混。
+   示例里的 `printf("  %s %s\n", ... , [desc UTF8String])` 走的是纯 C 的
+   `%s`，因为 `UTF8String` 返回的是 `const char *`；而
+   `stringWithFormat:` 里嵌字符串对象就得用 `%@`。
+
+> **坑**：`%@` 要求对象能响应 `description`。传一个已经释放的野指针，
+> `%@` 会直接崩在 `description` 上，报错信息往往指向别处，很难查。
+> 自定义类想让 `%@` 打印出有用的东西，就重写 `- (NSString *)description`
+> （第 04 章的 `Person` 就是这么做的）。
+
+顺带一提，`%@` + `description` 就是 OC 的「toString」机制：
+`NSLog(@"%@", obj)`、字符串插值、调试打印，最终都走它。
+
+## 4) NSNumber / NSValue / NSNull
 
 ```objc
 NSNumber *n1 = @42;      NSNumber *n2 = @42.0;
@@ -107,7 +156,7 @@ NSArray *withHole = @[@"a", [NSNull null], @"c"];
 
 `[NSNull null]` 是**单例**，可以直接 `==` 比指针。
 
-## 4) NSArray / NSMutableArray
+## 5) NSArray / NSMutableArray
 
 ```objc
 NSArray<NSString *> *langs = @[@"Swift", @"Objective-C", @"C"];
@@ -129,6 +178,37 @@ NSArray *sorted = [langs sortedArrayUsingSelector:@selector(compare:)];
 NSArray *custom = [langs sortedArrayUsingComparator:^NSComparisonResult(id a, id b) { ... }];
 ```
 
+> `sortedArrayUsingSelector:` 返回**新的不可变数组**，原数组不动。
+> 想就地排序得用 `NSMutableArray` 的 `sortUsingComparator:`（没有 "ed"）。
+> 这类「不可变版返回新对象 / 可变版就地改」的命名对称，贯穿整个 Foundation。
+
+**三种遍历方式**，示例里都用到了：
+
+```objc
+// 1) for-in（最常用，顺序 = 下标顺序）
+for (NSString *s in langs) { ... }
+
+// 2) 下标（要 index 时）
+for (NSUInteger i = 0; i < langs.count; i++) { NSString *s = langs[i]; }
+
+// 3) block 版（能拿到 index，还能中途 stop）
+[langs enumerateObjectsUsingBlock:^(NSString *s, NSUInteger idx, BOOL *stop) {
+    if (...) { *stop = YES; }   // 置 YES 提前结束，相当于 break
+}];
+```
+
+> **坑**：**边遍历边改**同一个 `NSMutableArray`（在 for-in 里 `removeObject:`）
+> 会抛 `NSGenericException`（"mutated while being enumerated"）。
+> 要删元素，用 `removeObjectsInArray:` 收集后统一删，或倒序按下标删。
+
+**可变数组的增删**（示例实测）：
+
+```objc
+NSMutableArray *m = [langs mutableCopy];   // 从不可变拷一份可变的
+[m addObject:@"C++"];                       // 尾部追加
+[m removeObjectAtIndex:0];                  // 按下标删（越界会抛异常）
+```
+
 实测：
 
 ```
@@ -139,7 +219,7 @@ NSArray *custom = [langs sortedArrayUsingComparator:^NSComparisonResult(id a, id
   ok   isEqual: 对数组同样是逐元素比较
 ```
 
-## 5) NSDictionary / NSSet
+## 6) NSDictionary / NSSet
 
 ```objc
 NSDictionary *dict = @{@"k": @"v"};
@@ -149,6 +229,25 @@ dict[@"nope"];        // nil，不是异常
 - **字典的 key 会被 `copy`**（所以要能响应 `NSCopying`）。用可变对象当 key 是灾难。
 - `NSDictionary` 无序 —— 遍历顺序未定义。
 - `NSSet` 自动去重，查找是哈希（比数组快）；`NSCountedSet` 记录出现次数。
+
+> **坑（本教程反复出现的一条规则）**：`allKeys` / for-in 遍历字典的
+> **顺序未定义**，依赖它输出就会每次都不一样。想要稳定的打印，
+> **必须自己排序**——示例正是先
+> `[ages.allKeys sortedArrayUsingSelector:@selector(compare:)]`
+> 再拼字符串，所以 `ages = Ada=36 Alan=41 Grace=45` 是有序的。
+
+**可变字典**：`obj[key] = value` 既能改也能加，`removeObjectForKey:`
+对不存在的 key **静默无副作用**（不报错）：
+
+```objc
+NSMutableDictionary *s = [@{@"theme": @"dark"} mutableCopy];
+s[@"theme"] = @"light";     // 已存在的 key → 改值
+s[@"autoSave"] = @YES;      // 新 key → 新增
+[s removeObjectForKey:@"notThere"];   // 不存在 → 什么都不发生
+```
+
+> 想「key 不存在才设」用 `setObject:forKey:` 也一样会覆盖；
+> 真正的判空写法是 `if (s[key] == nil) { s[key] = ...; }`。
 
 实测：
 
@@ -162,7 +261,7 @@ dict[@"nope"];        // nil，不是异常
   ok   NSCountedSet 记录出现次数
 ```
 
-## 6) NSData
+## 7) NSData
 
 ```objc
 NSData *data = [@"Cocoa" dataUsingEncoding:NSUTF8StringEncoding];
@@ -183,9 +282,20 @@ NSString *back = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncodi
   ok   NSMutableData 追加字节
 ```
 
-## 7) NSDate / NSCalendar
+## 8) NSDate / NSCalendar
 
-**`NSDate` 就是一个时间戳**（2001-01-01 起的秒数，不是 1970）。
+**`NSDate` 就是一个时间点**（不含时区、不含日历）。它内部以
+「**参考日期** 2001-01-01 00:00:00 UTC 起的秒数」存储，但你几乎不会直接碰它——
+常用的是两个 1970 纪元（Unix epoch）的 API，示例正是这么造的时间点：
+
+```objc
+NSDate *epoch = [NSDate dateWithTimeIntervalSince1970:1700000000];
+epoch.timeIntervalSince1970;   // 1700000000
+```
+
+> 别被两个纪元绕晕：`timeIntervalSinceReferenceDate` 是 2001 起，
+> `timeIntervalSince1970` 是 1970 起，差 978307200 秒。日常一律用 1970 那对，
+> 跟 Unix/JSON 的时间戳互通。
 
 要拿「年月日」必须过 `NSCalendar` + `NSTimeZone`：
 
@@ -207,11 +317,21 @@ NSDateComponents *c = [cal components:NSCalendarUnitYear|NSCalendarUnitMonth|...
   ok   东八区已经跨到 15 号
 ```
 
-> **坑**：`NSDateFormatter` 非常慢（创建一次要几毫秒）。
-> 高频格式化要**复用**一个实例。而且它默认跟系统 locale 走，
-> 写测试时要显式钉住 `locale`。
+> **坑**：`NSDateFormatter` 默认跟**系统 locale** 走。用户在 12 小时制地区，
+> 你写出去的就是 `下午10:00` 之类，再读回来解析不了。**凡是「机器读写」的
+> 固定格式，都要钉死 `en_US_POSIX`**（它保证数字、分隔符不随地区变）：
+>
+> ```objc
+> NSDateFormatter *fmt = [NSDateFormatter new];
+> fmt.locale   = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+> fmt.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+> fmt.dateFormat = @"yyyy-MM-dd HH:mm";
+> ```
+>
+> 只有「给用户看」的日期才用系统 locale（`dateStyle`/`timeStyle`）。
+> 另外 `NSDateFormatter` **创建很慢**（几毫秒级），高频格式化要复用实例。
 
-## 8) NSJSONSerialization
+## 9) NSJSONSerialization
 
 ```objc
 NSData *json = [NSJSONSerialization dataWithJSONObject:dict
@@ -232,21 +352,47 @@ NSData *json = [NSJSONSerialization dataWithJSONObject:dict
 - 解析回来的数字**全是 `NSNumber`**，具体是 int 还是 double 由实现决定 ——
   不要依赖 `objCType`。
 
-## 9) 坑清单
+**解析（round-trip）**：`JSONObjectWithData:options:error:` 返回 `id`，
+真实类型要靠 `isKindOfClass:` 判断后再用：
+
+```objc
+NSError *err = nil;
+id parsed = [NSJSONSerialization JSONObjectWithData:json options:0 error:&err];
+if ([parsed isKindOfClass:[NSDictionary class]]) {
+    NSDictionary *d = parsed;
+    d[@"name"];              // NSString
+    [d[@"version"] intValue]; // NSNumber → 取标量
+}
+```
+
+> **坑**：JSON **没有** Date、没有 int/double 之分、没有「有序对象」。
+> 日期只能编成字符串或时间戳数字自己约定；解析出来一律是
+> `NSString` / `NSNumber` / `NSArray` / `NSDictionary` / `NSNull` 五种。
+> 解析失败返回 `nil` 并填 `error`，**一定要判 nil**。
+
+## 10) 坑清单
 
 | 现象 | 原因 |
 | --- | --- |
 | 中文字符串长度不对 | `length` 是 UTF-16 码元数，不是字符数 |
 | 两个「看起来一样」的字符串不相等 | Unicode 组合/分解写法不同，先规范化 |
 | `range.location == -1` 判断失败 | `NSNotFound` 是 `NSUIntegerMax`，不是 -1 |
+| `%d` 打印 `.count`/`.length` 出乱码 | 它们是 `NSUInteger`，要 `%lu` + `(unsigned long)` |
+| `%d` 打印 `NSInteger` 后参数全错位 | 64 位上它是 `long`，要 `%ld` + `(long)` |
+| `%@` 打印 C 字符串（或反之）崩溃 | 对象用 `%@`，`char *` 用 `%s`，不能混 |
 | `@42` 和 `@42.0` 相等 | NSNumber 按数值比较；看类型用 `objCType` |
 | JSON 输出每次 key 顺序都不一样 | 没加 `NSJSONWritingSortedKeys` |
 | 日期差一天/差 8 小时 | `NSCalendar` 没指定 `timeZone` |
+| 日期字符串写出去读不回来 | `NSDateFormatter` 没钉 `en_US_POSIX` |
 | 数组越界崩溃 | OC 数组下标越界抛 `NSRangeException`（不是返回 nil） |
+| for-in 里删元素崩溃 | 遍历中修改集合抛 `NSGenericException` |
 
 ## 小结
 
 - `NSString.length` 是 UTF-16 码元数；比较前先规范化；遍历用 `enumerateSubstringsInRange`。
+- `stringWithFormat:` 就是 `printf`：对象 `%@`、`NSInteger` 用 `%ld`+`(long)`、
+  `NSUInteger`（`.length`/`.count`）用 `%lu`+`(unsigned long)`、`char *` 用 `%s`。编译器不查错。
 - `NSNotFound` ≠ -1。
 - `NSNumber` 比数值，`NSNull` 是单例空位。
-- 日期一定要指定 calendar + timeZone；JSON 一定要加 sortedKeys。
+- 不可变版返回新对象、可变版就地改（`sortedArray…` vs `sortUsing…`）；遍历中别改集合。
+- 日期一定要指定 calendar + timeZone；`NSDateFormatter` 钉 `en_US_POSIX`；JSON 一定要加 sortedKeys。
