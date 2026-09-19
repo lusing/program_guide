@@ -43,7 +43,7 @@ freebasic/
 | [21 命令行程序](docs/21-cli.md) | Command/ArgV、Environ、Dir、自制 getopt | `21_cli` |
 | [22 ⭐方言模式](docs/22-dialects.md) | -lang fb/fblite/qb 对照、Gosub、QB 代码迁移 | `22_langs`（含 qb 通道） |
 | [23 工具链与测试](docs/23-tooling.md) | -exx/-w all、-pp、自制测试框架、编译选项 | `23_tooling` |
-| [24 实战：贪吃蛇](docs/24-snake.md) | GFX + 线程输入 + 确定性回放 + 最高分文件 | `24_snake`（工程） |
+| [24 实战：贪吃蛇](docs/24-snake.md) | GFX 双缓冲、确定性演示 AI、--play 交互、最高分文件 | `24_snake`（工程） |
 
 ## 构建工具链
 
