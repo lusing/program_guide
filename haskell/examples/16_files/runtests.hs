@@ -39,7 +39,7 @@ main = do
         c1 <- readStrict demo
         s1 <- runSuite "读写追加" $
             [ expectEq "行数" (countLines c1) 4
-            , expectEq "末行" (last (lines c1)) "cc"
+            , expectEq "末行" (foldl (\_ x -> x) "" (lines c1)) "cc"
             , expectEq "中文完好" (lines c1 !! 2) "中文行"
             , expectEq "countLines 空" (countLines "") 0
             ]

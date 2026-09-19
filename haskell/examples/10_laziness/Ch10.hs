@@ -16,7 +16,8 @@ nats :: [Int]
 nats = 0 : map (+ 1) nats        -- take 5 nats = [0,1,2,3,4]，逐个按需展开
 
 fibsZ :: [Integer]
-fibsZ = 0 : 1 : zipWith (+) fibsZ (tail fibsZ)   -- 自引用 + zipWith：每个 thunk 复用前两个
+fibsZ = 0 : 1 : zipWith (+) fibsZ (drop 1 fibsZ)
+    -- 自引用 + zipWith：每个 thunk 复用前两个（tail 是部分函数，9.12 起默认警告——用 drop 1）
 
 fibIndex :: Int -> Integer
 fibIndex n = fibsZ !! n          -- 索引取值：只算前 n 项

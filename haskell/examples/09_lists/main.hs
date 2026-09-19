@@ -41,7 +41,7 @@ main = do
     check "fibs 第 10" (fibs !! 10) 55
     check "fibs !! 90" (fibs !! 90) 2880067194370816120
     check "勾股 (3,4,5)" ((3, 4, 5) `elem` pythagTriples 20) True
-    check "素数第 10" (last (firstPrimes 10)) 29
+    check "素数递增" (maximum (firstPrimes 10)) 29    -- 升序序列，maximum = 第 10 个
     check "点积" (dot [1, 2, 3] [4, 5, 6]) 32.0
     check "zipWith 截断" (zipWith (+) [1, 2, 3] [10]) [11]
 

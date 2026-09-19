@@ -33,7 +33,7 @@ main = do
         , expectEq "缺省零" (getCount freq "nothing") 0
         , expectEq "bump" (bump "be" freq M.! "be") 3
         , expectEq "键有序" (M.keys freq) ["be", "not", "or", "to"]
-        , expectEq "topCounts 首" (head (topCounts freq)) ("be", 2)
+        , expectEq "topCounts 首" (case topCounts freq of (c:_) -> c; [] -> ("", 0)) ("be", 2)
         , expectEq "合并" (mergeCounts (buildCounts ["a"]) (buildCounts ["a", "b"]))
                      (M.fromList [("a", 2), ("b", 1)])
         ]

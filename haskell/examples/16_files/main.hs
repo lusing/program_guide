@@ -62,7 +62,7 @@ main = do
 
         -- ═══ 16.7 自检
         check "追加三行" (countLines c1) 3
-        check "追加末行" (last (lines c1)) "第三行"
+        check "追加末行" (foldl (\_ x -> x) "" (lines c1)) "第三行"   -- 全函数版 last
         check "严格版大写" c3 "HELLO STRICT WORLD"
         check "遍历三个文件" (length files) 3
         check "遍历有序（DFS+字典序）"

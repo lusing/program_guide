@@ -52,9 +52,9 @@ validateAll m = mapM check m           -- 全部为正才 Just
   where
     check v = if v > 0 then Just v else Nothing
 
--- ═══ 11.5 元组族
+-- ═══ 11.5 元组族（部分函数 head/last 用全函数替代——9.12 起它们默认触发 -Wx-partial 警告）
 firstLast :: [a] -> (Maybe a, Maybe a)
 firstLast xs = (headMaybe, lastMaybe)
   where
     headMaybe = case xs of [] -> Nothing; (x:_) -> Just x
-    lastMaybe = case xs of [] -> Nothing; _ -> Just (last xs)
+    lastMaybe = foldl (\_ x -> Just x) Nothing xs    -- 全函数版 last（foldr 版会拿到首元素）

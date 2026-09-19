@@ -46,7 +46,7 @@ main = do
         [ expectEq "勾股小边界" (pythagTriples 5) [(3, 4, 5)]
         , expectEq "勾股数 (6,8,10) 在列" (length (pythagTriples 13)) 3
         , expectEq "素数" (firstPrimes 6) [2, 3, 5, 7, 11, 13]
-        , expectEq "素数边界" (last (firstPrimes 10)) 29
+        , expectEq "素数边界" (maximum (firstPrimes 10)) 29
         ]
     s4 <- runSuite "zip 族"
         [ expectEq "点积" (dot [1, 2, 3] [4, 5, 6]) 32.0

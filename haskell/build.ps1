@@ -185,6 +185,15 @@ function Invoke-GhcMain {
             Select-Object -First 12 | ForEach-Object { Write-Host "        $_" }
         return $false
     }
+    # 编译警告也走 stderr——GHC 9.12 默认开 -Wx-partial 等警告，示例必须零警告
+    $cerr = Get-Text (Join-Path $buildDir "$name.$ExeName.c.err")
+    if ($cerr.Trim().Length -gt 0) {
+        $script:Fail++
+        $script:FailedList += "$Tag $name 编译告警"
+        Write-Host "  [FAIL] $Tag $name 编译告警（stderr 非空）：" -ForegroundColor Red
+        $cerr -split "`n" | Select-Object -First 10 | ForEach-Object { Write-Host "        $_" }
+        return $false
+    }
     return $exe
 }
 
