@@ -140,5 +140,19 @@ let package = Package(
             name: "Ch20CodableTests",
             dependencies: ["Ch20Codable"],
             path: "examples/20_codable/Tests/20_codableTests"),
+        .executableTarget(
+            name: "Ch21Testing",
+            path: "examples/21_testing/Sources/21_testing"),
+        .testTarget(
+            name: "Ch21TestingTests",
+            dependencies: ["Ch21Testing"],
+            path: "examples/21_testing/Tests/21_testingTests"),
+        .executableTarget(
+            name: "Ch23Tooling",
+            path: "examples/23_tooling/Sources/23_tooling"),
+        .testTarget(
+            name: "Ch23ToolingTests",
+            dependencies: ["Ch23Tooling"],
+            path: "examples/23_tooling/Tests/23_toolingTests"),
     ]
 )

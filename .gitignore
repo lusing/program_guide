@@ -78,4 +78,4 @@ freepascal/examples/*/selftest.log
 *.lst
 
 # Swift Package Manager build output (root package + nested packages)
-swift/.build/
+swift/**/.build/

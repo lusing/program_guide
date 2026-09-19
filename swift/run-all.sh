@@ -37,6 +37,8 @@ declare -A TARGET_MAP=(
     [18_actors]=Ch18Actors
     [19_files]=Ch19Files
     [20_codable]=Ch20Codable
+    [21_testing]=Ch21Testing
+    [23_tooling]=Ch23Tooling
 )
 STANDALONE="22_spm 24_minigrep"
 
@@ -74,7 +76,15 @@ verify_standalone() { # 参数 = 示例目录名（嵌套独立包）
     if [ -d "examples/$name/Tests" ]; then
         (cd "examples/$name" && run_swift test)
     fi
-    echo "  [OK] $name 独立包构建/测试通过"
+    case "$name" in
+        22_spm)
+            local out marker="==== 22 结束 ===="
+            out="$(cd "examples/$name" && run_swift run spmdemo 3 4)"
+            echo "$out" | grep -Fq "$marker" || { echo "输出缺少结束标记：$marker" >&2; exit 1; }
+            echo "$out" | tail -3
+            ;;
+    esac
+    echo "  [OK] $name 独立包验证通过"
 }
 
 verify_one() {

@@ -62,10 +62,17 @@ $targetMap = @{
     "18_actors" = "Ch18Actors"
     "19_files" = "Ch19Files"
     "20_codable" = "Ch20Codable"
+    "21_testing" = "Ch21Testing"
+    "23_tooling" = "Ch23Tooling"
 }
 
 # 独立包示例（嵌套 Package.swift，不在根包）
 $standalone = @("22_spm", "24_minigrep")
+
+# 独立包的运行规格（目标名 + 参数 + 结束标记章号）
+$standaloneRuns = @{
+    "22_spm" = @{ target = "spmdemo"; args = @("3", "4"); marker = "22" }
+}
 
 function Invoke-Swift {
     param([string[]]$ArgList, [string]$WorkingDir = $projectRoot)
@@ -112,7 +119,7 @@ function Test-PlainExample {
     Write-Host "  $marker" -ForegroundColor Green
 }
 
-# 独立包示例：cd 子目录 build → test → run（24 有测试，22 无）
+# 独立包示例：cd 子目录 build → test → run（有测试目录才跑 test；有运行规格才 run）
 function Test-StandaloneExample {
     param([string]$Name)
     $dir = Join-Path $examplesDir $Name
@@ -121,8 +128,24 @@ function Test-StandaloneExample {
     if (Test-Path -LiteralPath (Join-Path $dir "Tests")) {
         Invoke-Swift @("test") $dir
     }
-    # 运行验证由各独立包自己的约定执行（24 章 minigrep 对 TestFixtures 跑）
-    Write-Host "  [OK] $Name 独立包构建/测试通过" -ForegroundColor Green
+    if ($standaloneRuns[$Name]) {
+        $spec = $standaloneRuns[$Name]
+        Write-Host "  [run] swift run $($spec.target) $($spec.args -join ' ')" -ForegroundColor DarkCyan
+        Push-Location $dir
+        try {
+            $output = & $swiftExe run $spec.target @($spec.args) 2>&1 | ForEach-Object { "$_" }
+            if ($LASTEXITCODE -ne 0) {
+                $output | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+                throw "运行失败(退出码 $LASTEXITCODE)：$($spec.target)"
+            }
+        } finally { Pop-Location }
+        $text = $output -join "`n"
+        $marker = "==== $($spec.marker) 结束 ===="
+        if ($text -notmatch [regex]::Escape($marker)) { throw "输出缺少结束标记：$marker" }
+        Write-Host "  $marker" -ForegroundColor Green
+    } else {
+        Write-Host "  [OK] $Name 独立包构建/测试通过" -ForegroundColor Green
+    }
 }
 
 function Test-One {
