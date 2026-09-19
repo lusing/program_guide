@@ -69,7 +69,7 @@ pwsh ./build.ps1 -Clean        # 清理 build/
 |---|---|---|
 | 19 | 字符串工具 | algorithm、tokenizer、lexical_cast、convert、locale |
 | 20 | 解析器族谱 | spirit、xpressive、parser |
-| 21 | 容器（上） | container、circular_buffer、pool、assign |
+| 21 | 容器（上） | container（flat_map/small_vector/static_vector/stable_vector/devector）、circular_buffer、pool、assign |
 | 22 | 容器（下） | multi_index、bimap、ptr_container、intrusive、heap、icl、poly_collection、flyweight、dynamic_bitset、bloom、multi_array |
 | 23 | 图与几何 | graph、property_map、geometry、polygon |
 | 24 | 数值计算 | math、multiprecision、rational、units、qvm、crc、safe_numerics、numeric/conversion |
