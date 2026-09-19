@@ -1,0 +1,89 @@
+# 17 · 并行子句：PAR、SEMA 信号量、竞态与确定性 ★ #
+# Algol 68 内建并行：PAR (子句1, 子句2, ...) 让多个子句并发执行，在 PAR 结束处「汇合」。 #
+# 同步用 SEMA（信号量）：UP 释放一个许可，DOWN 获取一个许可（无许可则阻塞）。 #
+BEGIN
+  INT fails := 0;
+  PROC assert = (BOOL cond, STRING msg) VOID:
+    IF NOT cond THEN put(stand error, ("FAIL: ", msg, new line)); fails +:= 1 FI;
+
+  # ═══ 17.1 PAR 基本形：多个子句并发，结束处汇合 ═══ #
+  # 语法是 PAR (u1, u2, ...) —— 一个「并列子句」当 PAR 的操作数。 #
+  # 坑：不是 PAR BEGIN ... AND ... OD/END；a68g 只认 PAR ( ... ) 这种并列形式。 #
+  INT a := 0, b := 0, c := 0;
+  PAR (a := 10, b := 20, c := 30);            # 三个子句并发，PAR 返回时都已完成 #
+  print(("PAR 汇合后：a=", whole(a, 0), " b=", whole(b, 0), " c=", whole(c, 0), new line));
+  assert(a = 10 AND b = 20 AND c = 30, "PAR 汇合后各子句结果都可见");
+
+  # ═══ 17.2 并行「独立计算」：各写各的变量，汇合后再打印（保证确定性）═══ #
+  # 纪律：并行子句里【不要 print】——输出会交错，导致每次运行字节不同。 #
+  #       正确做法：并行只算、写【互不相交】的变量，PAR 之后再统一 print。 #
+  INT s1 := 0, s2 := 0;
+  PAR (
+    BEGIN FOR i TO 1000 DO s1 +:= i OD END,        # 子句1：1+2+...+1000 #
+    BEGIN FOR i TO 1000 DO s2 +:= 2 * i OD END     # 子句2：2+4+...+2000 #
+  );
+  print(("并行独立求和：s1=", whole(s1, 0), " s2=", whole(s2, 0), new line));
+  assert(s1 = 500500, "1..1000 之和");
+  assert(s2 = 1001000, "2..2000 偶数和");
+
+  # ═══ 17.3 并行处理「行」的不同切片：下标不相交 → 无需加锁 ═══ #
+  [1:8] INT data;
+  FOR i TO 8 DO data(i) := i * i OD;
+  [1:8] INT out;
+  PAR (
+    BEGIN FOR i TO 4 DO out(i) := data(i) * 10 OD END,     # 前半 [1:4] #
+    BEGIN FOR i FROM 5 TO 8 DO out(i) := data(i) * 10 OD END  # 后半 [5:8] #
+  );
+  INT checksum := 0;
+  FOR i TO 8 DO checksum +:= out(i) OD;
+  print(("并行切片处理 checksum=", whole(checksum, 0), new line));
+  # data = 1,4,9,16,25,36,49,64；×10 求和 = (1+4+9+16+25+36+49+64)*10 = 204*10 #
+  assert(checksum = 2040, "切片各写各的下标，结果确定");
+
+  # ═══ 17.4 SEMA 信号量：保护「共享变量」的并发修改 ═══ #
+  # 声明并初始化：SEMA mtx := LEVEL n;（n 是初始许可数，通常 1 = 互斥锁）。 #
+  #   坑：SEMA s; 不初始化 → 运行期 "use an uninitialised STRUCT(REF INT)"。 #
+  #        也不能 SEMA s := 0（INT 不能强转成 SEMA）。必须用 LEVEL。 #
+  # DOWN mtx 获取许可（无则阻塞）；UP mtx 释放许可。 #
+  SEMA mtx := LEVEL 1;
+  INT shared := 0;
+  PROC bump = (INT times) VOID:
+    BEGIN
+      INT k := 0;
+      WHILE k < times DO
+        k +:= 1;
+        DOWN mtx;                             # 进入临界区 #
+        shared +:= 1;                         # 共享变量自增 #
+        UP mtx                                # 离开临界区 #
+      OD
+    END;
+  PAR (bump(2000), bump(2000), bump(2000), bump(2000));   # 4 个子句各加 2000 次 #
+  print(("SEMA 保护的共享计数器 shared=", whole(shared, 0), new line));
+  assert(shared = 8000, "4×2000，加锁后结果精确");
+
+  # ═══ 17.5 SEMA 做「握手」：一个子句等另一个发信号 ═══ #
+  SEMA ready := LEVEL 0;                      # 初始 0 许可：DOWN 会阻塞直到有人 UP #
+  INT produced := 0;
+  PAR (
+    BEGIN produced := 42; UP ready END,       # 生产者：算完发信号 #
+    BEGIN DOWN ready;                         # 消费者：等信号 #
+          print(("  消费者拿到 produced=", whole(produced, 0), new line)) END
+  );
+  # 注意：上面消费者在并行子句里 print 是【安全】的——因为 DOWN ready 保证它 #
+  #       只在生产者 UP 之后运行，且此刻只有一个子句在输出，不会交错。 #
+  assert(produced = 42, "握手后消费者看到生产者的结果");
+
+  # ═══ 17.6 ★ 竞态 pitfall：无锁改共享变量是「未定义行为」═══ #
+  # 反面教材（本示例【不执行】它，只讲清后果）： #
+  #   INT shared := 0; #
+  #   PROC unsafe = (INT n) VOID: FOR k TO n DO shared +:= 1 OD; #
+  #   PAR (unsafe(20000), unsafe(20000), unsafe(20000), unsafe(20000)); #
+  # shared +:= 1 不是原子的（读-改-写三步），并发下会丢更新，结果 < 80000。 #
+  # 阴险之处：它【可能】恰好跑出正确的 80000（取决于调度/平台），让你误以为没问题， #
+  #   换台机器或换个优化级别就出错。凡并发写同一变量，一律用 SEMA 保护。 #
+  print(("竞态教训：无锁并发改共享变量结果不可靠，必须用 SEMA 保护", new line));
+
+  print(("==== 17 结束 ====", new line));
+  IF fails > 0 THEN print(("自检失败 ", fails, " 项", new line))
+  ELSE print(("自检全部通过", new line)) FI
+END

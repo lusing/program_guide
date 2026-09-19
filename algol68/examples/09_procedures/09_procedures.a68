@@ -1,0 +1,69 @@
+# 09 · 过程（PROC）：参数、多值返回、递归、PROC 作参数、REF 出参 #
+BEGIN
+  INT fails := 0;
+  PROC assert = (BOOL cond, STRING msg) VOID:
+    IF NOT cond THEN put(stand error, ("FAIL: ", msg, new line)); fails +:= 1 FI;
+
+  # ═══ 9.1 基本过程：PROC 名 = (参数模) 结果模: 过程体 ═══ #
+  PROC sq = (INT x) INT: x * x;
+  print(("sq(6) = ", whole(sq(6), 0), new line));
+  assert(sq(6) = 36, "6 的平方");
+
+  # ═══ 9.2 多值返回：用 STRUCT 打包（Algol 68 没有元组返回，用结构） ═══ #
+  PROC divmod = (INT a, b) STRUCT(INT q, r): (a OVER b, a MOD b);
+  print(("divmod(17,5) = q ", whole(q OF divmod(17, 5), 0),
+         "  r ", whole(r OF divmod(17, 5), 0), new line));
+  assert(q OF divmod(17, 5) = 3 AND r OF divmod(17, 5) = 2, "商 3 余 2");
+
+  # ═══ 9.3 递归：过程体里调用自己 ═══ #
+  # 坑：别把过程命名为 fact——prelude 已有 PROC(INT)REAL fact，遮蔽它触发 notice。 #
+  PROC factorial = (INT n) INT: IF n <= 1 THEN 1 ELSE n * factorial(n - 1) FI;
+  PROC fib  = (INT n) INT: IF n < 2 THEN n ELSE fib(n - 1) + fib(n - 2) FI;
+  print(("factorial(6) = ", whole(factorial(6), 0), "   fib(10) = ", whole(fib(10), 0), new line));
+  assert(factorial(6) = 720, "6! = 720");
+  assert(fib(10) = 55, "fib(10) = 55");
+
+  # ═══ 9.4 过程作参数（高阶）：形参写成 PROC(参数模)结果模 ═══ #
+  PROC apply = (PROC(INT) INT f, INT x) INT: f(x);
+  print(("apply(sq, 5) = ", whole(apply(sq, 5), 0), new line));
+  assert(apply(sq, 5) = 25, "把 sq 当值传进 apply");
+
+  # 把过程映射到数组每个元素 #
+  PROC map_row = (PROC(INT) INT f, [] INT xs) [] INT:
+    ( [LWB xs : UPB xs] INT out;
+      FOR k FROM LWB xs TO UPB xs DO out[k] := f(xs[k]) OD;
+      out );
+  [1:4] INT nums := (1, 2, 3, 4);
+  [] INT squared = map_row(sq, nums);     # 坑：持有多行用 = 声明，:= 会报 actual bounds expected #
+  print(("map sq over [1,2,3,4] = ", squared[1], " ", squared[2], " ",
+         squared[3], " ", squared[4], new line));
+  assert(squared[3] = 9, "第三个元素平方为 9");
+
+  # ═══ 9.5 VOID 过程（只做副作用）与无参过程（单元） ═══ #
+  PROC greet = (STRING name) VOID: print(("  hello, ", name, "!", new line));
+  greet("world");
+  PROC answer = INT: 42;                 # 无参：调用时不写括号 #
+  print(("answer = ", whole(answer, 0), new line));
+  assert(answer = 42, "无参过程像常量一样用");
+
+  # ═══ 9.6 REF 出参：过程内改动调用方的变量 ═══ #
+  # 默认参数按值传递（拷贝）；要在过程里改实参，形参写 REF 模。 #
+  PROC inc = (REF INT r) VOID: r +:= 1;
+  PROC swap = (REF INT a, b) VOID: (INT t := a; a := b; b := t);
+  INT c := 10; inc(c);
+  print(("inc 后 c = ", whole(c, 0), new line));
+  assert(c = 11, "REF 参数就地 +1");
+  INT p := 1, qq := 2; swap(p, qq);
+  print(("swap 后 p=", whole(p, 0), " q=", whole(qq, 0), new line));
+  assert(p = 2 AND qq = 1, "REF 交换生效");
+
+  # ═══ 9.7 坑：返回「捕获了栈上局部量」的过程会触发作用域违例（见 13 章） ═══ #
+  # 实测 PROC twice = (PROC(INT)INT f) PROC(INT)INT: (INT x)INT: f(f(x)); #
+  # 调用 twice(sq)(3) 直接 runtime error: PROC value exported out of its scope。 #
+  # 要返回闭包，必须把捕获的量放到 HEAP 上——第 13 章详解。 #
+  print(("提示：返回捕获栈局部量的过程会作用域违例，需 HEAP 捕获（13 章）", new line));
+
+  print(("==== 09 结束 ====", new line));
+  IF fails > 0 THEN print(("自检失败 ", fails, " 项", new line))
+  ELSE print(("自检全部通过", new line)) FI
+END

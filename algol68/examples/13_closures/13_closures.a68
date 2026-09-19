@@ -1,0 +1,78 @@
+# 13 · 闭包与作用域规则：一等函数、捕获、导出的边界 ★ #
+# Algol 68 的 PROC 是一等值，可赋给变量、当参数、当结果。但「闭包捕获局部量再导出」 #
+# 受严格的作用域规则限制——本章用实测把这条规则钉死，并给出可用的惯用法。 #
+BEGIN
+  INT fails := 0;
+  PROC assert = (BOOL cond, STRING msg) VOID:
+    IF NOT cond THEN put(stand error, ("FAIL: ", msg, new line)); fails +:= 1 FI;
+
+  # ═══ 13.1 PROC 是一等值：可存进变量、当参数传递 ═══ #
+  PROC (INT) INT sq = (INT x) INT: x * x;
+  PROC (INT) INT cb = (INT x) INT: x * x * x;
+  PROC twice = (PROC(INT)INT f, INT x) INT: f(f(x));   # 高阶：接受 PROC 当参数 #
+  print(("sq(5)=", whole(sq(5), 0), "  cb(3)=", whole(cb(3), 0), new line));
+  print(("twice(sq,3)=sq(sq(3))=sq(9)=", whole(twice(sq, 3), 0), new line));
+  assert(sq(5) = 25 AND cb(3) = 27, "基本 PROC 值");
+  assert(twice(sq, 3) = 81, "PROC 当参数：sq 套 sq");
+
+  # PROC 存进「数组」也行（一等的直接体现） #
+  [1:2] PROC(INT)INT ops := (sq, cb);
+  print(("ops(1)(4)=", whole(ops(1)(4), 0), "  ops(2)(2)=", whole(ops(2)(2), 0), new line));
+  assert(ops(1)(4) = 16 AND ops(2)(2) = 8, "PROC 数组");
+
+  # ═══ 13.2 捕获「全局量」的闭包：可自由导出（作用域够宽）═══ #
+  # 关键：被捕获的名字必须活得比 PROC 值久。全局/外层 HEAP 名字满足这一点。 #
+  # 最稳的「导出闭包」：捕获一个 HEAP 全局盒（而不是捕获形参/局部量，见 13.3）。 #
+  HEAP INT bias := 7;
+  PROC mk biased = PROC(INT)INT: (INT x) INT: x + bias;   # 捕获全局 HEAP 盒 bias #
+  PROC (INT) INT plus7 := mk biased;
+  print(("plus7(10)=10+bias=", whole(plus7(10), 0), new line));
+  assert(plus7(10) = 17, "导出捕获全局 HEAP 的闭包");
+  bias := 20;                               # 改全局盒，闭包随之看到新值（真·捕获） #
+  print(("bias 改成 20 后 plus7(10)=", whole(plus7(10), 0), "（闭包看见新值）", new line));
+  assert(plus7(10) = 30, "闭包捕获的是引用不是快照");
+
+  # ═══ 13.3 作用域规则 ★：捕获「局部量/形参」再导出 = 运行期错误 ═══ #
+  # 实测：PROC adder=(INT k)PROC(INT)INT: (INT x)INT: x+k;  然后 adder(5) 赋给变量 #
+  #   → warning: potential scope violation from PROC(INT)INT routine-text #
+  #   → runtime error: PROC(INT)INT value is exported out of its scope #
+  # 原因：形参 k 绑定在 adder 调用的栈帧上，帧一销毁，闭包里的 k 就悬空了。 #
+  #       Algol 68 的作用域规则要求「routine-text 只能带出寿命不短于它自身的对象」。 #
+  # 这不是 bug，而是语言在替你把「悬垂闭包」挡在运行期。教训见 13.4 的惯用法。 #
+  print(("作用域规则：捕获局部/形参并导出 → 运行期 'exported out of its scope'", new line));
+  print(("（本示例故意不触发该错误，以免中断；错误形态见 docs/13）", new line));
+
+  # ═══ 13.4 惯用法：有状态生成器用「显式 REF 传状态」，别靠闭包捕获局部 ═══ #
+  # 计数器的状态由调用方持有（HEAP 盒），生成器过程接收 REF INT 就地改。 #
+  PROC next = (REF INT c) INT: (c +:= 1; c);
+  REF INT ctr = HEAP INT := 0;              # 调用方拥有状态，两个计数器互不干扰 #
+  REF INT ctr2 = HEAP INT := 0;
+  INT a1 := next(ctr), a2 := next(ctr), a3 := next(ctr);
+  INT b1 := next(ctr2);
+  print(("ctr: ", whole(a1, 0), " ", whole(a2, 0), " ", whole(a3, 0),
+        "   ctr2: ", whole(b1, 0), "（各自独立）", new line));
+  assert(a1 = 1 AND a2 = 2 AND a3 = 3, "显式 REF 状态：递增计数器");
+  assert(b1 = 1, "两个计数器状态独立");
+
+  # 同理可做「累加器」：状态是 REF INT，过程往里加（返回 VOID，调用即语句） #
+  PROC acc = (REF INT s, INT v) VOID: s +:= v;
+  REF INT sum = HEAP INT := 0;
+  acc(sum, 5); acc(sum, 3); acc(sum, 2);
+  print(("累加 5+3+2 → sum=", whole(sum, 0), new line));
+  assert(sum = 10, "REF 累加器");
+
+  # ═══ 13.5 「柯里化」在 a68g 里的可行形态：靠全局/HEAP 盒，不靠捕获形参 ═══ #
+  # 经典柯里化 add(3)(4) 需要内层闭包捕获外层形参——受作用域规则限制。 #
+  # 可行写法：把外层的 k 存进一个 HEAP 盒，内层闭包捕获那个「够宽」的盒。 #
+  HEAP INT k box := 0;
+  PROC set k = (INT k) VOID: k box := k;
+  PROC (INT) INT add curried = (INT x) INT: x + k box;
+  set k(3); INT r1 := add curried(4);        # 相当于 add(3)(4)=7 #
+  set k(10); INT r2 := add curried(4);       # add(10)(4)=14 #
+  print(("curried add(3)(4)=", whole(r1, 0), "  add(10)(4)=", whole(r2, 0), new line));
+  assert(r1 = 7 AND r2 = 14, "用 HEAP 盒实现可导出的柯里化");
+
+  print(("==== 13 结束 ====", new line));
+  IF fails > 0 THEN print(("自检失败 ", fails, " 项", new line))
+  ELSE print(("自检全部通过", new line)) FI
+END

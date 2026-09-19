@@ -1,0 +1,132 @@
+# 18 · 测试方法论：断言纪律、测试夹具、边界用例、双通道验证 ★ #
+# 本章把前 16 章零散用的「assert + fails 计数」正式提炼成一套可复用的测试方法， #
+# 并对比 a68g 内建的 ASSERT（fail-fast）与自定义断言（收集全部失败）两种风格。 #
+BEGIN
+  # ═══════════════ 被测「库」：几个纯函数 ═══════════════ #
+  PROC gcd = (INT a, b) INT:                     # 欧几里得，处理 0 与负数 #
+    BEGIN
+      INT x := ABS a, y := ABS b;
+      WHILE y /= 0 DO INT t := x MOD y; x := y; y := t OD;
+      x
+    END;
+
+  PROC clamp = (INT x, lo, hi) INT:              # 夹到 [lo,hi] #
+    IF x < lo THEN lo ELIF x > hi THEN hi ELSE x FI;
+
+  PROC factorial = (INT n) INT:                  # n!，n<0 视为非法返回 -1 #
+    IF n < 0 THEN -1
+    ELSE
+      BEGIN INT r := 1; FOR k FROM 2 TO n DO r *:= k OD; r END
+    FI;
+
+  PROC is palindrome = (STRING s) BOOL:          # 回文判断（按字节） #
+    BEGIN
+      INT n := UPB s - LWB s + 1;
+      BOOL ok := TRUE;
+      INT i := 0;
+      WHILE ok AND i < n OVER 2 DO
+        i +:= 1;
+        ok := s(LWB s + i - 1) = s(UPB s - i + 1)
+      OD;
+      ok
+    END;
+
+  PROC grade = (INT score) STRING:               # 分数 → 等级串（返回 STRING 的纯函数） #
+    IF score < 0 OR score > 100 THEN "无效"
+    ELIF score >= 90 THEN "优"
+    ELIF score >= 60 THEN "及格"
+    ELSE "不及格"
+    FI;
+
+  # ═══════════════ 测试夹具：自定义断言（收集全部失败）═══════════════ #
+  # 风格 A：自定义 assert —— 失败不中止，把 FAIL 写进 stand error 并计数， #
+  #         跑完打印「通过/失败」汇总。优点：一次看到所有失败；缺点：不会非零退出。 #
+  #         （a68g 没有可移植的「设退出码」设施，故失败信号靠 stderr——CI 判 stderr 空。） #
+  INT fails := 0, checks := 0;
+  PROC assert = (BOOL cond, STRING msg) VOID:
+    BEGIN
+      checks +:= 1;
+      IF NOT cond THEN put(stand error, ("FAIL: ", msg, new line)); fails +:= 1 FI
+    END;
+  # 针对「相等」的专用断言：失败时把期望/实际都打出来，定位更快。 #
+  PROC assert eq int = (INT got, want, STRING msg) VOID:
+    BEGIN
+      checks +:= 1;
+      IF got /= want THEN
+        put(stand error, ("FAIL: ", msg, " 期望=", whole(want, 0),
+                          " 实际=", whole(got, 0), new line));
+        fails +:= 1
+      FI
+    END;
+  PROC assert eq str = (STRING got, want, STRING msg) VOID:
+    BEGIN
+      checks +:= 1;
+      IF got /= want THEN
+        put(stand error, ("FAIL: ", msg, " 期望=<", want, "> 实际=<", got, ">", new line));
+        fails +:= 1
+      FI
+    END;
+
+  # ═══════════════ 测试用例：正常路径 + 边界 + 异常输入 ═══════════════ #
+  print(("--- gcd ---", new line));
+  assert eq int(gcd(12, 18), 6, "gcd(12,18)");
+  assert eq int(gcd(7, 13), 1, "互质 gcd=1");
+  assert eq int(gcd(0, 5), 5, "边界：gcd(0,5)=5");      # 0 的边界 #
+  assert eq int(gcd(5, 0), 5, "边界：gcd(5,0)=5");
+  assert eq int(gcd(0, 0), 0, "边界：gcd(0,0)=0");
+  assert eq int(gcd(-12, 18), 6, "负数取绝对值");        # 异常输入 #
+
+  print(("--- clamp ---", new line));
+  assert eq int(clamp(5, 1, 10), 5, "区间内不变");
+  assert eq int(clamp(-3, 1, 10), 1, "低于下界夹到 lo");
+  assert eq int(clamp(99, 1, 10), 10, "高于上界夹到 hi");
+  assert eq int(clamp(1, 1, 10), 1, "边界：恰等于 lo");  # <= vs < 的边界 #
+  assert eq int(clamp(10, 1, 10), 10, "边界：恰等于 hi");
+
+  print(("--- factorial ---", new line));
+  assert eq int(factorial(0), 1, "0! = 1");             # 经典边界 #
+  assert eq int(factorial(1), 1, "1! = 1");
+  assert eq int(factorial(5), 120, "5! = 120");
+  assert eq int(factorial(10), 3628800, "10! = 3628800");
+  assert eq int(factorial(-1), -1, "负数非法 → 哨兵 -1"); # 异常输入 #
+
+  print(("--- is palindrome ---", new line));
+  assert(is palindrome("abcba"), "abcba 是回文");
+  assert(is palindrome("a"), "单字符是回文");            # 边界：长度 1 #
+  assert(is palindrome(""), "空串视为回文");             # 边界：长度 0 #
+  assert(NOT is palindrome("abc"), "abc 不是回文");
+  assert(is palindrome("abba"), "偶数长度回文");         # 边界：偶数长 #
+
+  print(("--- grade（返回 STRING，用 assert eq str）---", new line));
+  assert eq str(grade(95), "优", "95 → 优");
+  assert eq str(grade(90), "优", "边界：90 → 优");        # >= 90 的边界 #
+  assert eq str(grade(89), "及格", "边界：89 → 及格");
+  assert eq str(grade(60), "及格", "边界：60 → 及格");    # >= 60 的边界 #
+  assert eq str(grade(59), "不及格", "边界：59 → 不及格");
+  assert eq str(grade(101), "无效", "异常输入：101 → 无效");
+  assert eq str(grade(-1), "无效", "异常输入：-1 → 无效");
+
+  # ═══════════════ 风格 B：内建 ASSERT（fail-fast 不变量）═══════════════ #
+  # ASSERT (条件) 是 Algol 68 内建：条件为假 → 运行期错误 "false assertion"，退出码 1。 #
+  #   · 默认开启；--noassertions 可关（关后 ASSERT 被跳过）。 #
+  #   · 适合「绝不应被违反」的不变量：一旦违反立即中止，而不是带着错继续跑。 #
+  #   · 缺点：第一个失败就停，看不到后续；要「收集全部失败」用风格 A。 #
+  # 两者可混用：ASSERT 守硬不变量，自定义 assert 做测试断言。 #
+  ASSERT (gcd(12, 18) = 6);                              # 硬不变量，假则 exit 1 #
+  ASSERT (factorial(5) = 120);
+  print(("内建 ASSERT 不变量校验通过（若失败会以退出码 1 中止）", new line));
+
+  # ═══════════════ 汇总 ═══════════════ #
+  print(("共 ", whole(checks, 0), " 项自定义断言，失败 ", whole(fails, 0), " 项", new line));
+
+  # ═══════════════ 双通道验证哲学（脚本层，非本程序）═══════════════ #
+  # run-all.sh 对每个示例跑两条通道： #
+  #   check   = a68g --warnings --notices（解释器，全运行时检查 + 告警 + notice） #
+  #   release = a68g -O2（编译到 C 后端，优化，真实出货形态） #
+  # 四条判定：退出码 0 / stderr 空 / stdout 无控制字符 / 含结束标记； #
+  # 外加两通道 stdout【逐字节一致】——解释器与编译后端语义必须吻合， #
+  #   任何依赖优化/未定义行为的代码都会在这里现形。 #
+  print(("==== 18 结束 ====", new line));
+  IF fails > 0 THEN print(("自检失败 ", fails, " 项", new line))
+  ELSE print(("自检全部通过", new line)) FI
+END

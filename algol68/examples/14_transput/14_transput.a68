@@ -1,0 +1,97 @@
+# 14 · 输入输出（transput）：文件读写、通道、逻辑文件尾 ★ #
+# Algol 68 把 I/O 统称 transput。核心对象：FILE（文件）+ CHANNEL（通道）。 #
+# 三个标准通道：stand in（stdin）/ stand out（stdout）/ stand error（stderr）。 #
+BEGIN
+  INT fails := 0;
+  PROC assert = (BOOL cond, STRING msg) VOID:
+    IF NOT cond THEN put(stand error, ("FAIL: ", msg, new line)); fails +:= 1 FI;
+
+  # 数据文件写在当前工作目录（验证脚本在 build/ 里跑，故落在 build/，--clean 会清掉）。 #
+  STRING fname := "14_data.txt";
+
+  # ═══ 14.1 写文件：establish + put + close ═══ #
+  # 惯用法：establish(FILE, 名字, stand out channel) 一步「建文件并关联名字」。 #
+  # 坑：create(f, stand out channel) + associate(f, name) 在 a68g 3.13.3 实测 #
+  #     返回 rc=0 却【不生成文件】——写文件请直接用 establish。 #
+  FILE outf;
+  INT rc := establish(outf, fname, stand out channel);
+  assert(rc = 0, "establish 返回 0 表示成功");
+  # put 接受一个「格式化项」的行列（row-display），混合字符串/数字/换行。 #
+  # fixed(x, 宽, 小数位)：宽度不足会打出 **（读不回！），给足宽度。 #
+  put(outf, ("alpha", new line,
+             "beta", new line,
+             whole(42, 0), new line,
+             fixed(3.5, 6, 2), new line));
+  close(outf);                        # 必须 close，否则缓冲可能不落盘 #
+  print(("已写入 ", fname, "（4 行）", new line));
+
+  # ═══ 14.2 逐行读回：open + get + 逻辑文件尾 ═══ #
+  FILE in1;
+  INT ro := open(in1, fname, stand in channel);
+  assert(ro = 0, "open 返回 0 表示成功");
+  # 关键惯用法：用 on logical file end 装一个「到尾」处理器，把标志置真。 #
+  #   处理器返回 TRUE = 「事件已处理，别抛异常」；随后 get 正常返回，循环据标志退出。 #
+  #   坑：处理器写成 BOOL: TRUE 但循环用 DO...OD（无条件）→ 到尾后仍反复读 → 死循环！ #
+  #       正解：WHILE NOT 标志 DO ... OD，并在处理器里 (标志 := TRUE; TRUE)。 #
+  BOOL at end := FALSE;
+  on logical file end(in1, (REF FILE dummy) BOOL: (at end := TRUE; TRUE));
+  INT nlines := 0;
+  STRING line := " " * 80;            # 读 STRING 前要预分配定长缓冲（get 不扩容） #
+  WHILE NOT at end DO
+    get(in1, (line, new line));       # 读到换行为止，填进 line（右补空格） #
+    IF NOT at end THEN
+      nlines +:= 1;
+      print(("  行", whole(nlines, 0), ": <", line, ">", new line))
+    FI
+  OD;
+  close(in1);
+  print(("读到行数 = ", whole(nlines, 0), new line));
+  assert(nlines = 4, "文件应有 4 行");
+
+  # ═══ 14.3 按「类型」读回：get 能直接把数字解析进 INT/REAL ═══ #
+  FILE inf2;
+  INT ro2 := open(inf2, fname, stand in channel);
+  STRING w1 := " " * 20, w2 := " " * 20;
+  INT num := 0; REAL frac := 0.0;
+  # 一次 get 读多项：STRING 读到分隔（这里用 new line 对齐写时的布局），INT/REAL 自动解析 #
+  get(inf2, (w1, new line, w2, new line, num, new line, frac, new line));
+  close(inf2);
+  print(("w1=<", w1, "> w2=<", w2, "> num=", whole(num, 0),
+        " frac=", fixed(frac, 6, 2), new line));
+  assert(num = 42, "第三行读回整数 42");
+  assert(ABS(frac - 3.5) < 0.001, "第四行读回实数 3.5");
+  # ro2 也断言一下，避免「未用」告警并验证打开成功 #
+  assert(ro2 = 0, "第二次 open 成功");
+
+  # ═══ 14.4 标准通道：stand out / stand error ═══ #
+  # print(...) 等价于 put(stand out, (...))；写 stderr 用 put(stand error, ...)。 #
+  put(stand out, ("这句走 stdout", new line));
+  # 断言失败信息走 stand error（本例故意不触发，仅演示 API）： #
+  #   put(stand error, ("FAIL: ...", new line)); #
+  print(("提示：print=put(stand out)；错误信息用 put(stand error)", new line));
+
+  # ═══ 14.5 追加写：append（不覆盖原内容）═══ #
+  # establish/create 会【清空】同名文件；要追加用 append。 #
+  FILE apf;
+  INT rap := append(apf, fname, stand out channel);
+  assert(rap = 0, "append 打开成功");
+  put(apf, ("gamma", new line));
+  close(apf);
+  # 再数一次行数，应从 4 变 5 #
+  FILE chk; INT roc := open(chk, fname, stand in channel);
+  BOOL end2 := FALSE;
+  on logical file end(chk, (REF FILE dummy) BOOL: (end2 := TRUE; TRUE));
+  INT n2 := 0; STRING l2 := " " * 80;
+  WHILE NOT end2 DO
+    get(chk, (l2, new line));
+    IF NOT end2 THEN n2 +:= 1 FI
+  OD;
+  close(chk);
+  print(("追加后行数 = ", whole(n2, 0), new line));
+  assert(n2 = 5, "append 后应为 5 行");
+  assert(roc = 0, "校验用 open 成功");
+
+  print(("==== 14 结束 ====", new line));
+  IF fails > 0 THEN print(("自检失败 ", fails, " 项", new line))
+  ELSE print(("自检全部通过", new line)) FI
+END

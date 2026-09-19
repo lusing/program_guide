@@ -16,6 +16,7 @@
 这些目录已经按 “专门文件 + 示例目录 + 构建脚本” 的方式落地，并完成了编译验证：
 
 - [Ada](./Ada) — Ada 语言教程与示例，使用 MSYS2 UCRT64 的 GNAT (`gnatmake`) 验证
+- [algol68](./algol68) — Algol 68 教程与示例（20 章对齐 cobol 标准：上戳写法 / 模式 mode 系统 / 一切皆表达式 / 自定义运算符与优先级 / 过程与闭包（含作用域规则）/ 行·结构·联合·引用 / transput 文件 / FORMAT 格式化 / 事件式异常 / 内建并行 PAR·SEMA / 测试方法论 / 库存管理实战），使用 Algol 68 Genie 3.13.3（macOS MacPorts + clang 后端，解释器+C 后端二合一）双通道验证（check `--warnings --notices` / release `-O2`，四条判定 + 两通道输出逐字节一致），18 个示例（02–19）全部通过，双入口 `run-all.sh` / `build.ps1`，CHEATSheet 收录约 130 条实测坑位，详见 [algol68/README.md](./algol68/README.md)
 - [android](./android) — Android 应用开发教程（Kotlin），含 Jetpack Compose 与 JNI 示例，使用 Kotlin/Gradle/NDK 验证
 - [asm/intel](./asm/intel) — x86-64 汇编编程指南，双平台验证：Windows 用 NASM + MSVC link.exe，macOS 用 NASM `-f macho64` + clang/ld（56 个 macOS 示例全部实际编译运行通过）
 - [boost](./boost) — Boost C++ 教程与示例，使用 MSVC + Boost 头文件验证
@@ -123,6 +124,7 @@
 37. [sml](./sml)
 38. [ocaml](./ocaml)
 39. [cobol](./cobol)
+40. [algol68](./algol68)
 
 ## 工具链说明
 
@@ -137,6 +139,7 @@
 - MSVC + Boost
 - Coq (coqc)
 - GnuCOBOL 3.2.0 / cobc（COBOL；macOS macports 安装 `/opt/local/bin/cobc`，clang 后端 COBOL→C→原生；Linux/Windows 用发行版包或官方构建；固定格式源码 UTF-8，含中文行须 ≤72 字节）
+- Algol 68 Genie 3.13.3 / a68g（Algol 68；macOS macports 安装 `/opt/local/bin/a68g`，解释器 + clang 后端 a68g→C→原生二合一；Linux/Windows 用发行版包或官网 algol68genie.nl 构建；上戳写法源码 UTF-8，关键字全大写，扩展名 `.a68`；macOS `-O2` 链接缺 `-syslibroot`，脚本用 `ld` 垫片修复）
 - Dart SDK
 - DMD
 - GNU Emacs 31.1 + Emacs Lisp (ELisp)（扩展开发，`emacs -Q --batch` 非交互验证；`run-all.sh` 与 `build.ps1` 双入口）

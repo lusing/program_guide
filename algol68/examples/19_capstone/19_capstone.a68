@@ -1,0 +1,209 @@
+# 19 · 综合实战：库存管理系统 ★ #
+# 收官之作：把前 18 章的零件组装成一个会动的程序。 #
+#   数据模型(MODE/STRUCT, ch11) + 数组(ch10) + 过程(ch09) + 格式化报表(ch15) #
+#   + 文件 transput(ch14) + 事件处理(ch16) + 断言纪律(ch18)。 #
+# 需求：建档 → 过账 → 控制break 报表 → 低库存预警，全程用断言钉死正确性。 #
+BEGIN
+  # ═══════════════ 断言夹具（ch18 的纪律）═══════════════ #
+  INT fails := 0, checks := 0;
+  PROC assert = (BOOL cond, STRING msg) VOID:
+    BEGIN
+      checks +:= 1;
+      IF NOT cond THEN put(stand error, ("FAIL: ", msg, new line)); fails +:= 1 FI
+    END;
+  PROC assert eq = (INT got, want, STRING msg) VOID:
+    BEGIN
+      checks +:= 1;
+      IF got /= want THEN
+        put(stand error, ("FAIL: ", msg, " 期望=", whole(want, 0),
+                          " 实际=", whole(got, 0), new line));
+        fails +:= 1
+      FI
+    END;
+
+  # ═══════════════ 无符号 / 定点金额格式化（ch15 的补充）═══════════════ #
+  # whole/fixed 总会带一个符号位（whole(42,6)="   +42"）。报表不想要满屏 "+"， #
+  # 所以这里把「钱」存成 INT「分」（等价 COBOL 的 PIC 9(5)V99 定点小数）， #
+  # 再手写无符号格式化——既精确（纯整数算术）又好看。 #
+  PROC digits = (INT v) STRING:                       # v >= 0 的十进制串 #
+    IF v = 0 THEN "0"
+    ELSE
+      BEGIN STRING d := ""; INT n := v;
+        WHILE n > 0 DO d := REPR (n MOD 10 + ABS "0") + d; n := n OVER 10 OD;
+        d
+      END
+    FI;
+  PROC padl = (STRING body, INT w) STRING:            # 左侧补空格到 w 列 #
+    BEGIN STRING p := "";
+      WHILE UPB p + UPB body < w DO p +:= " " OD;
+      p + body
+    END;
+  PROC ustr = (INT v, INT w) STRING:                  # 右对齐整数，负号保留、正号省略 #
+    padl((IF v < 0 THEN "-" ELSE "" FI) + digits(ABS v), w);
+  PROC money = (INT cents, INT w) STRING:             # 分 → "x.yy"，右对齐 #
+    BEGIN INT a := ABS cents;
+      padl((IF cents < 0 THEN "-" ELSE "" FI) + digits(a OVER 100) + "." +
+           (IF a MOD 100 < 10 THEN "0" ELSE "" FI) + digits(a MOD 100), w)
+    END;
+
+  # ═══════════════ 数据模型（ch11 结构）═══════════════ #
+  # price 用 INT「分」：避免浮点累加误差，也让总估值断言是精确整数比较。 #
+  MODE ITEM = STRUCT(
+    INT    sku,      # 主键：商品编号 #
+    STRING name,     # 名称 #
+    STRING cat,      # 类别（控制break 报表的 break 字段） #
+    INT    price,    # 单价（分） #
+    INT    qty,      # 库存量（带符号：允许超卖为负） #
+    INT    min       # 安全库存线 #
+  );
+  MODE TX  = STRUCT(INT sku, INT delta);   # 一笔出入库交易 #
+
+  # ═══════════════ 1. 建档：5 个商品 ═══════════════ #
+  [1:5] ITEM inv := (
+    ITEM(1001, "机械键盘", "外设", 29900, 50, 10),
+    ITEM(1002, "无线鼠标", "外设",  9900,  8, 10),
+    ITEM(2001, "SSD-1TB",  "存储", 59900, 30,  5),
+    ITEM(2002, "U盘-64G",  "存储",  4900,  3, 20),
+    ITEM(3001, "显示器27", "显示",129900, 12,  4)
+  );
+  INT n items := UPB inv - LWB inv + 1;
+  print(("== 1. 建档：", ustr(n items, 0), " 个商品入库 ==", new line));
+  assert eq(n items, 5, "建档 5 个商品");
+
+  # 主键唯一性校验（相当于关系表的 PK 约束）： #
+  BEGIN
+    BOOL uniq := TRUE;
+    FOR i FROM LWB inv TO UPB inv WHILE uniq DO
+      FOR j FROM i + 1 TO UPB inv WHILE uniq DO
+        IF sku OF inv(i) = sku OF inv(j) THEN uniq := FALSE FI
+      OD
+    OD;
+    assert(uniq, "SKU 主键唯一")
+  END;
+
+  # ═══════════════ 2. 过账：5 笔交易（含 1 笔无效 SKU）═══════════════ #
+  # find sku 返回下标，找不到返回 0（相当于 COBOL 的 INVALID KEY 分支）。 #
+  PROC find sku = (INT s) INT:
+    BEGIN INT r := 0;
+      FOR i FROM LWB inv TO UPB inv WHILE r = 0 DO
+        IF sku OF inv(i) = s THEN r := i FI
+      OD;
+      r
+    END;
+
+  [1:5] TX txs := (
+    TX(1001, -60),    # 出库 60：50 → -10，故意超卖成负数 #
+    TX(2001, +15),    # 入库 15：30 → 45 #
+    TX(1002,  -5),    # 出库  5： 8 →  3 #
+    TX(3001,  -3),    # 出库  3：12 →  9 #
+    TX(9999,  +7)     # 不存在的 SKU：应被拒绝 #
+  );
+  print(("== 2. 过账：", ustr(UPB txs - LWB txs + 1, 0), " 笔交易 ==", new line));
+  INT applied := 0, rejected := 0;
+  FOR t FROM LWB txs TO UPB txs DO
+    INT i := find sku(sku OF txs(t));
+    IF i = 0 THEN
+      rejected +:= 1;
+      print(("  拒绝：SKU ", ustr(sku OF txs(t), 0), " 不存在", new line))
+    ELSE
+      qty OF inv(i) +:= delta OF txs(t);    # 可为负，真实反映超卖 #
+      applied +:= 1;
+      print(("  过账：SKU ", ustr(sku OF txs(t), 0), " Δ=", ustr(delta OF txs(t), 0),
+             " → 现存量=", ustr(qty OF inv(i), 0), new line))
+    FI
+  OD;
+  assert eq(applied,  4, "4 笔交易命中商品");
+  assert eq(rejected, 1, "1 笔无效 SKU 被拒");
+  # 超卖的负库存必须真实存在（ch05 的教训：别让无符号/夹取吞掉负数）： #
+  assert eq(qty OF inv(find sku(1001)), -10, "SKU1001 超卖为 -10");
+
+  # ═══════════════ 3. 控制break 报表（ch15 格式 + 文件 ch14）═══════════════ #
+  # 先按类别排序（稳定冒泡，保证同类相邻 → 才能做控制break）。 #
+  FOR i FROM UPB inv - 1 BY -1 TO LWB inv DO
+    FOR j FROM LWB inv TO i DO
+      IF cat OF inv(j) > cat OF inv(j + 1) THEN
+        ITEM tmp := inv(j); inv(j) := inv(j + 1); inv(j + 1) := tmp
+      FI
+    OD
+  OD;
+  # 排序后主键在各类内仍唯一、类别已聚拢： #
+  assert(cat OF inv(1) <= cat OF inv(2), "排序后类别非降序");
+
+  # 报表生成器：参数化到任意 FILE —— 同一份逻辑既写屏幕又写文件（ch09 过程复用）。 #
+  # 返回写到文件的数据行数（表头+明细+小计+总计），供读回断言； #
+  # 并把总估值（分）写进 HEAP 之外的 total cents 盒子供外部断言。 #
+  INT total cents := 0;        # report to 会写入（须在过程定义前声明：作用域规则） #
+  PROC report to = (REF FILE f) INT:
+    BEGIN
+      INT lines := 0;
+      PROC emit = (STRING s) VOID: (put(f, (s, new line)); lines +:= 1);
+      emit("类别      SKU    名称            单价        数量        估值");
+      STRING cur cat := ""; INT cat val := 0, grand := 0;
+      FOR i FROM LWB inv TO UPB inv DO
+        STRING c := cat OF inv(i);
+        IF c /= cur cat THEN                       # 控制break：类别变了，先结算上一类 #
+          IF cur cat /= "" THEN emit("  " + cur cat + " 小计" + money(cat val, 24)) FI;
+          cur cat := c; cat val := 0
+        FI;
+        INT val := price OF inv(i) * qty OF inv(i);   # 估值 = 单价(分) × 数量 #
+        cat val +:= val; grand +:= val;
+        emit(padl(c, 8) + ustr(sku OF inv(i), 8) + padl(name OF inv(i), 12) +
+             money(price OF inv(i), 12) + ustr(qty OF inv(i), 10) + money(val, 14))
+      OD;
+      IF cur cat /= "" THEN emit("  " + cur cat + " 小计" + money(cat val, 24)) FI;
+      emit("总估值" + money(grand, 30));
+      total cents := grand;                          # 副作用：供外部断言 #
+      lines                                          # 过程的值 = 行数 #
+    END;
+
+  print(("== 3. 控制break 估值报表 ==", new line));
+  INT screen lines := report to(stand out);
+  # 期望总估值（分）： #
+  #   外设 1001: 29900*(-10) = -299000 ; 1002: 9900*3 = 29700   → 小计 -269300 #
+  #   存储 2001: 59900*45    = 2695500 ; 2002: 4900*3 = 14700   → 小计 2710200 #
+  #   显示 3001: 129900*9    = 1169100                          → 小计 1169100 #
+  #   总计 = -269300 + 2710200 + 1169100 = 3610000 分 = 36100.00 元 #
+  assert eq(total cents, 3610000, "总估值 = 3610000 分");
+  assert eq(screen lines, 10, "报表 10 行（1 表头+5 明细+3 小计+1 总计）");
+
+  # ═══════════════ 4. 报表落盘 + 读回核对（ch14 transput + ch16 事件）═══════════════ #
+  STRING fname := "19_report.txt";
+  FILE outf; INT rc := establish(outf, fname, stand out channel);
+  assert(rc = 0, "establish 报表文件成功");
+  INT file lines := report to(outf);              # 同一逻辑写到文件 #
+  close(outf);
+  assert eq(file lines, screen lines, "文件行数与屏幕一致");
+
+  # 读回：用逻辑文件结束事件 routine 安全地逐行计数（ch16 的事件处理）。 #
+  FILE in1; INT ro := open(in1, fname, stand in channel);
+  assert(ro = 0, "open 报表文件成功");
+  BOOL at end := FALSE;
+  on logical file end(in1, (REF FILE dummy) BOOL: (at end := TRUE; TRUE));
+  INT nl := 0; STRING buf := " " * 120;
+  WHILE NOT at end DO
+    get(in1, (buf, new line));
+    IF NOT at end THEN nl +:= 1 FI
+  OD;
+  close(in1);
+  print(("== 4. 报表已落盘 ", fname, "，读回 ", ustr(nl, 0), " 行 ==", new line));
+  assert eq(nl, file lines, "读回行数与写入一致");
+
+  # ═══════════════ 5. 低库存预警（qty < min，含负库存）═══════════════ #
+  print(("== 5. 低库存预警 ==", new line));
+  INT low := 0;
+  FOR i FROM LWB inv TO UPB inv DO
+    IF qty OF inv(i) < min OF inv(i) THEN
+      low +:= 1;
+      print(("  预警：", name OF inv(i), "（SKU ", ustr(sku OF inv(i), 0),
+             "）现存 ", ustr(qty OF inv(i), 0), " < 安全线 ", ustr(min OF inv(i), 0), new line))
+    FI
+  OD;
+  # 1001(-10<10) 1002(3<10) 2002(3<20) 命中；2001(45>=5) 3001(9>=4) 不命中 → 3 种 #
+  assert eq(low, 3, "3 种商品低于安全线");
+
+  # ═══════════════ 收官 ═══════════════ #
+  print(("共 ", whole(checks, 0), " 项断言，失败 ", whole(fails, 0), " 项", new line));
+  print(("==== 19 结束 ====", new line));
+  IF fails > 0 THEN print(("自检失败 ", fails, " 项", new line))
+  ELSE print(("自检全部通过", new line)) FI
+END

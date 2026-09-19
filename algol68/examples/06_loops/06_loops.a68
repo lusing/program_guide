@@ -1,0 +1,72 @@
+# 06 · 循环：FOR 各形态、WHILE、循环即单元、无 break（用守卫退出） #
+BEGIN
+  INT fails := 0;
+  PROC assert = (BOOL cond, STRING msg) VOID:
+    IF NOT cond THEN put(stand error, ("FAIL: ", msg, new line)); fails +:= 1 FI;
+
+  # ═══ 6.1 FOR k TO n：从 1 数到 n（控制变量 k 是只读的，不能改它） ═══ #
+  print(("FOR k TO 5: "));
+  FOR k TO 5 DO print((whole(k, 0), " ")) OD;
+  print((new line));
+
+  # ═══ 6.2 FOR k FROM a TO b：指定起点 ═══ #
+  print(("FROM 3 TO 6: "));
+  FOR k FROM 3 TO 6 DO print((whole(k, 0), " ")) OD;
+  print((new line));
+
+  # ═══ 6.3 FOR k FROM a BY s TO b：指定步长（s 为正） ═══ #
+  print(("FROM 2 BY 3 TO 11: "));
+  FOR k FROM 2 BY 3 TO 11 DO print((whole(k, 0), " ")) OD;
+  print((new line));
+
+  # ═══ 6.4 倒序：FOR k FROM a DOWNTO b（默认步长 1）★ ═══ #
+  # 坑：配 BY 时步长要写【正数】，方向由 DOWNTO 决定。 #
+  #     实测 FROM 10 BY -2 DOWNTO 4 迭代 0 次（负步长 + DOWNTO 直接不跑）。 #
+  print(("FROM 10 DOWNTO 4: "));
+  FOR k FROM 10 DOWNTO 4 DO print((whole(k, 0), " ")) OD;
+  print((new line));
+  print(("FROM 10 BY 2 DOWNTO 4: "));
+  FOR k FROM 10 BY 2 DOWNTO 4 DO print((whole(k, 0), " ")) OD;
+  print((new line));
+
+  # ═══ 6.5 WHILE 循环 ═══ #
+  INT n := 1;
+  print(("WHILE n<8 加倍: "));
+  WHILE n < 8 DO print((whole(n, 0), " ")); n *:= 2 OD;
+  print((new line));
+  assert(n = 8, "1*2 直到 >=8，停在 8");
+
+  # ═══ 6.6 累加：FOR 循环体里改外层变量 ═══ #
+  INT total := 0;
+  FOR k TO 100 DO total +:= k OD;
+  print(("1+2+...+100 = ", whole(total, 0), new line));
+  assert(total = 5050, "高斯求和");
+
+  # ═══ 6.7 嵌套循环：九九乘法表的一角 ═══ #
+  print(("乘法表 1..3:", new line));
+  FOR i TO 3 DO
+    FOR j TO 3 DO print((whole(i * j, 3), " ")) OD;
+    print((new line))
+  OD;
+
+  # ═══ 6.8 Algol 68 没有 break/continue —— 用「守卫 + 标志」或 WHILE 条件退出 ═══ #
+  # 找第一个能被 7 整除且 >20 的数：用 WHILE 把退出条件写进循环头。 #
+  INT cand := 1; BOOL found := FALSE;
+  WHILE NOT found DO
+    IF cand > 20 AND cand MOD 7 = 0 THEN found := TRUE
+    ELSE cand +:= 1 FI
+  OD;
+  print(("第一个 >20 且被 7 整除的数 = ", whole(cand, 0), new line));
+  assert(cand = 21, "21 是答案");
+
+  # ═══ 6.9 循环是「单元」：FOR...OD 整体产出一个值（通常 VOID） ═══ #
+  # 可以把循环塞进表达式位置；但更常见的是让它产出累计结果。 #
+  INT squares := 0;
+  squares := 0; FOR k TO 5 DO squares +:= k * k OD;
+  print(("1^2+...+5^2 = ", whole(squares, 0), new line));
+  assert(squares = 55, "平方和 55");
+
+  print(("==== 06 结束 ====", new line));
+  IF fails > 0 THEN print(("自检失败 ", fails, " 项", new line))
+  ELSE print(("自检全部通过", new line)) FI
+END

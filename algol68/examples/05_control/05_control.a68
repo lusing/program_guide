@@ -1,0 +1,67 @@
+# 05 · 布尔、比较与控制流：IF/ELIF/ELSE/FI、CASE/IN/OUT/ESAC、逻辑运算符 #
+BEGIN
+  INT fails := 0;
+  PROC assert = (BOOL cond, STRING msg) VOID:
+    IF NOT cond THEN put(stand error, ("FAIL: ", msg, new line)); fails +:= 1 FI;
+
+  # ═══ 5.1 IF/ELIF/ELSE/FI：封闭子句，关键字成对（IF...FI 回文） ═══ #
+  PROC classify = (INT x) STRING:
+    IF   x > 10 THEN "big"
+    ELIF x > 3  THEN "mid"
+    ELIF x > 0  THEN "small"
+    ELSE             "non-positive"
+    FI;
+  print(("classify(15) = ", classify(15), new line));
+  print(("classify(5)  = ", classify(5), new line));
+  print(("classify(1)  = ", classify(1), new line));
+  print(("classify(-2) = ", classify(-2), new line));
+  assert(classify(5) = "mid", "5 落在 ELIF x>3");
+  assert(classify(-2) = "non-positive", "-2 落 ELSE");
+
+  # ═══ 5.2 IF 是「单元」，能产出值，可直接赋给变量 ═══ #
+  INT n := 7;
+  STRING parity := IF ODD n THEN "odd" ELSE "even" FI;
+  print(("parity of 7 = ", parity, new line));
+
+  # ═══ 5.3 CASE/IN/OUT/ESAC：按 INT 选分支，各分支用逗号分隔 ═══ #
+  # 坑：CASE 的 IN 分支按「第几个」匹配整数值，不是 switch 的字面量标签！ #
+  #     CASE x IN A, B, C OUT D ESAC —— x=1 选 A，x=2 选 B，x=3 选 C，其余选 D。 #
+  PROC name_of = (INT k) STRING:
+    CASE k IN
+      "one",                    # k = 1 #
+      "two",                    # k = 2 #
+      "three"                   # k = 3 #
+    OUT "many"                  # 其余 #
+    ESAC;
+  print(("name_of(2) = ", name_of(2), new line));
+  print(("name_of(9) = ", name_of(9), new line));
+  assert(name_of(2) = "two", "CASE 第 2 分支");
+  assert(name_of(9) = "many", "CASE OUT 兜底");
+
+  # ═══ 5.4 比较运算符：= /= < <= > >= ═══ #
+  print(("5 = 5 : ", (5 = 5), new line));
+  print(("5 /= 4: ", (5 /= 4), new line));     # /= 是「不等于」，不是 != #
+  print(("3 <= 3: ", (3 <= 3), new line));
+  assert((5 /= 4), "/= 表示不等");
+  assert(NOT (5 = 4), "5 不等于 4");
+
+  # ═══ 5.5 逻辑运算符 AND / OR / NOT ═══ #
+  BOOL t := TRUE, f := FALSE;
+  print(("t AND f = ", (t AND f), new line));
+  print(("t OR  f = ", (t OR f), new line));
+  print(("NOT f   = ", (NOT f), new line));
+  # 坑：AND/OR 是普通运算符，Algol 68 标准不保证短路求值。 #
+  #     别依赖「左边假就不算右边」——要防错就用嵌套 IF。 #
+  assert((t AND f) = FALSE, "AND");
+  assert((t OR f) = TRUE, "OR");
+
+  # ═══ 5.6 用嵌套 IF 替代短路，安全地避免除零/越界 ═══ #
+  INT denom := 0;
+  INT result := IF denom /= 0 THEN 100 OVER denom ELSE -1 FI;
+  print(("guarded 100/0 = ", whole(result, 0), "  (-1 表示被守卫拦下)", new line));
+  assert(result = -1, "守卫避免了除零");
+
+  print(("==== 05 结束 ====", new line));
+  IF fails > 0 THEN print(("自检失败 ", fails, " 项", new line))
+  ELSE print(("自检全部通过", new line)) FI
+END
