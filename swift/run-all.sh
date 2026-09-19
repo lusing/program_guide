@@ -58,14 +58,20 @@ verify_plain() { # 参数 = 示例目录名
     echo "  [2/4] swift build --target $target"
     run_swift build --target "$target"
     echo "  [3/4] swift test --filter ${target}Tests"
-    if ! run_swift test --filter "${target}Tests" | tee /dev/stderr | grep -Eq "Test run with [1-9][0-9]* test"; then
+    # 捕获后判定+回显关键行（tee /dev/stderr 会与 Windows CRLF 的 \r 叠写日志——实测坑）
+    local test_out summary
+    test_out="$(run_swift test --filter "${target}Tests" 2>&1)"
+    if ! grep -Eq "Test run with [1-9][0-9]* test" <<<"$test_out"; then
+        echo "$test_out" >&2
         echo "测试层未跑到任何用例（filter=${target}Tests 不匹配？）" >&2; exit 1
     fi
+    summary="$(grep -E "Test run with" <<<"$test_out" | tail -1 | tr -d '\r')"
+    echo "  $summary"
     echo "  [4/4] swift run $target（exit 0 + 结束标记）"
     local out
-    out="$(run_swift run "$target")"
+    out="$(run_swift run "$target" 2>/dev/null)"
     echo "$out" | grep -Fq "$marker" || { echo "输出缺少结束标记：$marker" >&2; exit 1; }
-    echo "$out" | tail -1
+    echo "$out" | grep -F "$marker"
 }
 
 verify_standalone() { # 参数 = 示例目录名（嵌套独立包）
