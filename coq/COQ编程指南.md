@@ -848,5 +848,696 @@ nat 与 Z 怎么选，第 22 章给决策表。现阶段记住一句话：**写�
 
 ---
 
+## 第 6 章 元组与记录
+
+对应示例：`examples/06_tuples_records.v`
+
+### 6.1 积类型 A * B：把两个值捆成一个
+
+有了「或」（变体/构造子），还要有「且」——把两个类型的值**同时**放在一起。这就是积类型：
+
+```coq
+Check (3, true).              (* (3, true) : nat * bool *)
+Definition p : nat * bool := (3, true).
+```
+
+`nat * bool` 读作「一个 nat **和**一个 bool」。它只有一个构造方式：写一对 `(a, b)`。拆开用两个投影函数：
+
+```coq
+Compute (fst p).              (* = 3 : nat —— 第一个分量 *)
+Compute (snd p).              (* = true : bool —— 第二个分量 *)
+```
+
+两个提醒：
+
+1. 这里的 `*` 是 **type_scope 里的积类型记号**，与乘法无关（`Locate "*"` 会列出所有解释）。数学上「A 和 B 的所有组合」正是笛卡尔积，记号由此得名；
+2. `fst`/`snd` 只拆**最外层**。嵌套元组 `(nat * nat) * bool` 要连用：`fst (fst q)`。连续投影很快变得难读——这正是下一节 `let` 解构和 Record 存在的理由。
+
+### 6.2 let 解构：给分量起名字
+
+```coq
+Compute (let (x, y) := p in if y then x else 0).   (* = 3 *)
+```
+
+`let (x, y) := p in ...` 把 p 拆成 x 和 y 再用——一次解构任意深度，比 `fst (fst ...)` 可读得多。嵌套照写：`let (a, (b, c)) := q in a + b + c`。
+
+它和第 7 章的 match 一脉相承（`let (x, y) := e in body` 本质是 `match e with (x, y) => body end`），差别只是积类型**只有一个构造子**，无需多分支。
+
+### 6.3 Record：带字段名的积类型
+
+当元组超过两三元、或分量语义重要时，用 Record：
+
+```coq
+Record Point : Type := {
+  px : nat;
+  py : nat
+}.
+```
+
+读法：定义类型 `Point`，它有 `px`、`py` 两个 **nat 类型的字段**。构造用 `{| 字段 := 值; ... |}`：
+
+```coq
+Definition origin : Point := {| px := 0; py := 0 |}.
+Definition p1 : Point := {| px := 2; py := 5 |}.
+```
+
+字段名同时就是**投影函数**：
+
+```coq
+Compute (px p1).              (* = 2 *)
+Compute (py p1).              (* = 5 *)
+```
+
+改「某个字段」没有原地修改（Coq 数据不可变）——造一个新值：
+
+```coq
+Definition move_x (p : Point) (dx : nat) : Point :=
+  {| px := px p + dx; py := py p |}.
+
+Example move_ex : move_x p1 3 = {| px := 5; py := 5 |}.
+Proof. reflexivity. Qed.
+```
+
+### 6.4 Record 的真身：单构造子归纳类型
+
+用 Print 揭底（实测）：
+
+```coq
+Print Point.
+(* Inductive Point : Type := Build_Point : nat -> nat -> Point *)
+```
+
+Record 完全不是新机制——它就是一个**只有一个构造子**（自动命名 `Build_Point`）的 Inductive，字段名是给投影函数起的别名。所以第 9 章的一切（归纳原理、构造子纪律）对 Record 照样适用。反过来，理解了这一点，「参数化 Record」也不神秘：
+
+```coq
+Record Trio (A : Type) : Type := {
+  first : A;
+  second : A;
+  third : A
+}.
+
+Definition t1 : Trio nat := {| first := 1; second := 2; third := 3 |}.
+Definition t2 : Trio bool := {| first := true; second := false; third := true |}.
+```
+
+一个实测坑：参数化 Record 的投影自带**显式类型参数**——裸写 `first t1` 会报错说 `t1` 应当是 `Type`（Coq 想让你先给 A）。两种解法：
+
+```coq
+Compute (first _ t1).         (* 下划线：让推断补 *)
+Arguments first {A}.          (* 或把 A 设为隐式，一劳永逸 *)
+Compute (first t1).           (* = 1 *)
+```
+
+### 6.5 元组还是 Record？
+
+| 场景 | 选择 |
+|---|---|
+| 匿名小组合、当场拆掉 | 元组：`(nat * bool)`、函数返回「(结果, 是否成功)」 |
+| 多于 2–3 个分量 | Record（位置记忆负担太大） |
+| 分量会增删、要可读 | Record（按名访问，增删字段不破坏使用点） |
+| 中间层 AST 节点 | 常直接多参数构造子（第 19 章） |
+
+### 6.6 本章坑位清单（实测）
+
+1. **`fst`/`snd` 只拆最外层**：嵌套要 `fst (fst q)` 连用，改用 `let (a, (b, c)) := ...`；
+2. **字段名全局唯一**：两个 Record 不能有同名字段，第二个直接报 `fx already exists`——字段是全局命名空间里的投影函数，命名要带前缀意识（`px`/`py` 而不是裸 `x`/`y`）；
+3. **参数化 Record 投影带显式类型参数**：`first t1` 报错，要 `first _ t1` 或 `Arguments first {A}`；
+4. **`A * B` 的 `*` 不是乘法**：作用域决定含义（第 5 章 5.1 节）。
+
+---
+
+## 第 7 章 模式匹配
+
+对应示例：`examples/07_patterns.v`
+
+### 7.1 match：按形状分支
+
+第 5 章说过 if 是「两构造子 match 的糖」。现在看正版：
+
+```coq
+Definition is_zero (n : nat) : bool :=
+  match n with
+  | O => true
+  | S _ => false      (* S 后面的分量用通配符 _ 忽略 *)
+  end.
+```
+
+读法：拿 n 的**形状**和每个分支的模式比对，用第一个匹配的分支。`O` 是构造子模式（零）；`S _` 是「S 套着任何东西」——下划线是通配符，绑定但不使用。
+
+match 是 Coq 数据处理的**唯一**分支原语（if、let 解构都是它的糖衣）。它同时做三件事：
+
+1. **测试**：值是哪个构造子造的？
+2. **拆解**：把构造子的参数绑定到模式变量；
+3. **保证穷尽**：编译器检查所有构造子都有分支。
+
+第 3 条是 Coq 相对 C/Java switch 的本质优势：**你新加一个构造子，所有漏掉它的 match 当场编译失败**——重构的安全网。
+
+### 7.2 模式词汇表
+
+```coq
+Definition classify (n : nat) : nat :=
+  match n with
+  | 0 => 0             (* 字面量 0 —— 就是 O *)
+  | 1 => 1             (* 字面量 1 —— 就是 S O *)
+  | 2 => 2
+  | S (S (S _)) => 3   (* 嵌套模式：≥ 3 *)
+  end.
+```
+
+| 模式 | 写法 | 作用 |
+|---|---|---|
+| 构造子 | `O`、`S k`、`Some x` | 匹配该构造子并拆参数 |
+| 变量 | `k`、`x` | 匹配任意值并绑定（可使用） |
+| 通配符 | `_` | 匹配任意值、不绑定 |
+| 字面量 | `0`、`1`、`2` | 构造子的数字记号（nat 专用糖） |
+| 元组 | `(a, b)` | 拆积类型 |
+| 嵌套 | `S (S (S _))`、`_ :: y :: _` | 一次拆多层 |
+| 多 scrutinee | `match a, b with \| true, true => ...` | 同时匹配多个值 |
+
+两个细节：
+
+- **字面量模式能到多深？** `2` 可以（S (S O)），但只能用于「小数字」——它就是记号展开，写 `| 5 => ...` 完全合法，Coq 会展开成 `S (S (S (S (S O))))`；
+- **or 模式（`| A \| B => ...`）在 Coq 核心语法里不存在**（OCaml/Haskell 有）。想合并分支只能重复写或用通配符放宽——这是从那两门语言过来的一个真实不便。
+
+### 7.3 嵌套与多 scrutinee
+
+列表的「第二个元素」用嵌套模式一步到位：
+
+```coq
+Definition second (xs : list nat) : option nat :=
+  match xs with
+  | _ :: y :: _ => Some y    (* 至少两个元素，取第二个 *)
+  | _ => None
+  end.
+```
+
+一次匹配两个值（bool 的「与」）：
+
+```coq
+Definition both (b1 b2 : bool) : bool :=
+  match b1, b2 with
+  | true, true => true
+  | _, _ => false
+  end.
+```
+
+元组解构在 match 里最自然：
+
+```coq
+Definition add3 (p : nat * (nat * nat)) : nat :=
+  match p with
+  | (a, (b, c)) => a + b + c
+  end.
+```
+
+### 7.4 穷尽性：漏分支 = 编译错误（实测）
+
+```coq
+Fail Definition missing (b : bool) : nat :=
+  match b with
+  | true => 1
+  end.
+(* Non exhaustive pattern-matching: no clause found for pattern "false" *)
+```
+
+错误信息直接**点名缺哪个构造子**。反过来说：只要编译通过，就没有「忘了处理某种情况」这类 bug——这一保证贯穿全书，是 Coq 值得忍受「啰嗦」的头号回报。
+
+### 7.5 冗余分支：也是编译错误（实测，8.20）
+
+写多了同样不行：
+
+```coq
+Fail Definition redundant (b : bool) : nat :=
+  match b with
+  | true => 1
+  | false => 2
+  | _ => 3       (* 前两支已覆盖全部 —— 这支永不可达 *)
+  end.
+(* Pattern "_" is redundant in this clause. *)
+```
+
+死分支是错误不是警告。好处：读代码时**每个分支都可信**，不存在「其实永远走不到」的暗桩；代价：合并分支时得留心顺序（先具体后宽泛，通配符只能垫底）。
+
+### 7.6 match 是表达式
+
+match 有值、有类型，可以出现在任何表达式位置：
+
+```coq
+Compute (match 3 with 0 => 0 | S _ => 1 end).   (* = 1 *)
+```
+
+没有「语句版 match」，不存在 break/fallthrough（C 的 switch 两大事故源在类型层面根除）。所有分支必须返回**同一类型**——`| true => 1 | false => "x"` 会报类型不匹配，把「分支结果类型不一致」从运行时隐患变成编译期错误。
+
+### 7.7 模式变量与遮蔽
+
+分支里绑定的变量**遮蔽**（shadow）外层同名变量：
+
+```coq
+Definition f (n : nat) : nat :=
+  match n with
+  | S n => n      (* 这个 n 是 S 拆出来的分量，不是外层参数 *)
+  | O => 0
+  end.
+```
+
+合法但可读性差，本教程不这么写。命名习惯：模式变量用新名字（`k`、`tl`、`rest`），与外层区分。
+
+### 7.8 本章坑位清单（实测）
+
+1. **漏分支**：`Non exhaustive pattern-matching`——错误信息会指出缺的构造子，补上即可；
+2. **冗余分支**：`Pattern "..." is redundant in this clause`——8.20 里是错误不是警告；分支从具体到宽泛排，`_` 垫底；
+3. **没有 or 模式**：`| x | y => ...` 写不了，与 OCaml/Haskell 不同；
+4. **模式变量遮蔽外层**：合法但易错，改用新名字；
+5. **分支类型不一致**：所有分支必须同类型，混搭是编译错误（这通常是好事）。
+
+---
+
+## 第 8 章 列表
+
+对应示例：`examples/08_lists.v`
+
+### 8.1 list 的真身：和 nat 同一个设计
+
+```coq
+Print list.
+(* Inductive list (A : Type) : Type :=
+     nil : list A | cons : A -> list A -> list A. *)
+```
+
+`list A` 是**参数化归纳类型**：装什么由 A 决定；它恰好两个构造子——`nil`（空表）和 `cons`（头接尾）。和 nat 的 `O`/`S` 一一对应：nat 是「一维的链」，list 是「每个结点还带一个 A 值的链」。这个同构不是巧合——凡「归纳」结构（链、树）都长这样，第 12 章的归纳证明对它们一视同仁。
+
+书写用记号（**必须** `Import ListNotations`，见坑 1）：
+
+```coq
+Check (1 :: 2 :: nil).        (* [1; 2] : list nat *)
+```
+
+`[1; 2; 3]` 是 `cons 1 (cons 2 (cons 3 nil))` 的糖。打印时 Coq 也用记号显示。
+
+### 8.2 标准库常用操作
+
+全部实测：
+
+| 操作 | 例子 | 结果 |
+|---|---|---|
+| 长度 | `length [1;2;3]` | `3` |
+| 拼接 | `[1;2] ++ [3;4]` | `[1;2;3;4]` |
+| 反转 | `rev [1;2;3]` | `[3;2;1]` |
+| 拍平 | `concat [[1;2];[3]]` | `[1;2;3]` |
+| 区间 | `seq 0 5` | `[0;1;2;3;4]` |
+| 映射 | `map (fun n => n*2) [1;2;3]` | `[2;4;6]` |
+| 过滤 | `filter (fun n => Nat.eqb (n mod 2) 0) [1;2;3;4]` | `[2;4]` |
+| 取第 n 个 | `nth 1 [10;20;30] 0` | `20` |
+| 求和 | `fold_right Nat.add 0 [1;2;3;4]` | `10` |
+
+`nth` 的第三个参数是**越界默认值**：
+
+```coq
+Compute (nth 5 [10; 20; 30] 0).   (* = 0 —— 越界，静默返回默认值 *)
+```
+
+不崩溃，但也不报警——和 `5 / 0 = 0` 一个家族的坑（第 5 章）。要「显式失败」的语义，用返回 option 的版本（`nth_error`，第 17 章）。
+
+### 8.3 自己写一遍：结构递归
+
+理解列表操作最好的方式是亲手写。长度与拼接：
+
+```coq
+Fixpoint my_length {A : Type} (xs : list A) : nat :=
+  match xs with
+  | [] => 0
+  | _ :: tl => S (my_length tl)      (* 一层剥掉一个头，长度加一 *)
+  end.
+
+Fixpoint my_append {A : Type} (xs ys : list A) : list A :=
+  match xs with
+  | [] => ys                         (* 空表拼任何表 = 那个表 *)
+  | h :: tl => h :: my_append tl ys  (* 头保住，尾继续拼 *)
+  end.
+
+Example my_append_ex : my_append [1; 2] [3; 4] = [1; 2; 3; 4].
+Proof. reflexivity. Qed.
+```
+
+注意两个函数的共同形状：**match 第一个参数、在 `tl`（严格子项）上递归、nil 给基础情形**——这就是第 10 章讲的「结构递归」，也是第 12 章归纳证明能对它们工作的原因。`{A : Type}` 隐式参数让它们天然多态（`my_length [true]` 照样工作）。
+
+`safe_head` 展示了「拿不到值就明说」的建模：
+
+```coq
+Definition safe_head {A : Type} (xs : list A) : option A :=
+  match xs with
+  | [] => None
+  | h :: _ => Some h
+  end.
+```
+
+为什么不用 `nth xs 0 默认值`？因为**默认值会撒谎**（空表和「头恰好是默认值」无法区分）。option 是第 17 章的主题。
+
+### 8.4 fold：方向与参数顺序（两个大坑，实测）
+
+折叠（fold/reduce）是列表操作的「归一化」：一切「遍历列表攒一个结果」都能写成 fold。标准库给了两个方向：
+
+```coq
+(* fold_right f 初值 列表：从右往左叠 *)
+Compute (fold_right Nat.add 0 [1; 2; 3; 4]).   (* = 10 *)
+(* 展开形状：f 1 (f 2 (f 3 (f 4 初值))) *)
+
+(* fold_left f 列表 初值：从左往右叠 —— 注意列表在前！ *)
+Compute (fold_left Nat.add [1; 2; 3; 4] 0).    (* = 10 *)
+(* 展开形状：f (f (f (f 初值 1) 2) 3) 4 *)
+```
+
+**坑一（参数顺序）**：`fold_right f a0 l` 是「f、初值、列表」，`fold_left f l a0` 是「f、**列表**、初值」——两个 fold 参数顺序不同！把初值放错位置不会报类型错误（fold_left 会把你的初值当列表折叠、把列表当初值返回），只会得到悄悄错误的结果（实测：`fold_left (fun acc x => x :: acc) [] [1;2;3]` 返回 `[1;2;3]`——它折叠的是空表）。
+
+**坑二（方向差异）**：叠法不可交换时，两个 fold 结果不同。用一个「把元素 cons 到结果前」的叠法显形：
+
+```coq
+Compute (fold_right (fun x acc => x :: acc) [] [1; 2; 3]).
+                                      (* = [1;2;3] *)
+Compute (fold_left (fun acc x => x :: acc) [1; 2; 3] []).
+                                      (* = [3;2;1] —— 恰好是 rev！ *)
+```
+
+注意两个 lambda 的参数顺序也不同（fold_right 是 `元素 续果`，fold_left 是 `积累 元素`）——方向、参数序两套差异要一起记。加法这种交换叠法无所谓；cons、减法、字符串拼接都必须选对方向。
+
+### 8.5 证明预告
+
+列表是第一个「值得证明」的结构。三个经典定律，第 20 章全部证一遍：
+
+```coq
+(* app_nil_r  : forall xs, xs ++ [] = xs          （看似显然，需归纳） *)
+(* app_assoc  : forall xs ys zs, xs ++ ys ++ zs = (xs ++ ys) ++ zs *)
+(* length_app : forall xs ys, length (xs ++ ys) = length xs + length ys *)
+```
+
+「显然」在 Coq 里必须变成归纳——而这正是训练的起点。
+
+### 8.6 本章坑位清单（实测）
+
+1. **`[1; 2]` 记号默认不存在**：必须 `From Coq Require Import List.` + `Import ListNotations.`，否则 `[` 直接语法错误。新手第一大坑；
+2. **fold_left/fold_right 参数顺序不同**：`fold_left f l a0` vs `fold_right f a0 l`——初值位置互换，放错**不报错**只给错结果；
+3. **`nth` 越界静默返回默认值**：默认值会掩盖「列表太短」的事实；要显式失败用 `nth_error`（option 版）；
+4. **`++` 是右结合**：`[1] ++ [2] ++ [3]` = `[1] ++ ([2] ++ [3])`——对拼接无感（结合律成立），但换成别的右结合运算时要意识到求值形状；
+5. **`::` 只能头插单个元素**：拼整表用 `++`；`x :: [1;2]` 合法而 `xs :: [1;2]`（xs 是表）类型错误。
+
+---
+
+## 第 9 章 归纳类型：自定义数据
+
+对应示例：`examples/09_inductive.v`
+
+### 9.1 Inductive：Coq 的「结构声明」
+
+前面八章用的 nat、bool、list、option 全是 `Inductive` 声明的。现在自己写。语法骨架：
+
+```coq
+Inductive 类型名 : Type :=
+| 构造子1 : 参数 -> ... -> 类型名
+| 构造子2 : ...
+.
+```
+
+每个构造子描述一种「造值的方式」。**类型的全部值 = 从构造子有限次组合能造出的一切**——这句话是归纳类型的语义，也是「归纳」二字的意思。
+
+### 9.2 第一个：枚举
+
+```coq
+Inductive day : Type :=
+  | monday    : day
+  | tuesday   : day
+  | wednesday : day
+  | thursday  : day
+  | friday    : day
+  | saturday  : day
+  | sunday    : day.
+
+Definition next_workday (d : day) : day :=
+  match d with
+  | monday    => tuesday
+  | tuesday   => wednesday
+  | wednesday => thursday
+  | thursday  => friday
+  | friday    => monday
+  | saturday  => monday
+  | sunday    => monday
+  end.
+
+Example test_next :
+  next_workday (next_workday saturday) = tuesday.
+Proof. reflexivity. Qed.
+```
+
+七个构造子、零参数——枚举类型。对它的 match 必须覆盖七天（穷尽性），漏一天编译失败。类型安全到此为止已经超出多数语言：**非法日期（如 `fridayt`）根本无法书写**。
+
+### 9.3 重新发明 bool 与 nat
+
+构造子可以**带参数**，参数类型可以是正在定义的类型自己——递归由此而来：
+
+```coq
+Inductive mybool : Type :=
+  | mytrue  : mybool
+  | myfalse : mybool.
+
+Inductive mynat : Type :=
+  | mzero  : mynat
+  | msucc  : mynat -> mynat.    (* 吃自己的值 —— 递归！ *)
+```
+
+`mybool` 就是 bool，`mynat` 就是 nat——标准库的 nat 不是黑魔法，是你二十行内能自己写出的东西。在 mynat 上定义函数与在 nat 上完全同构：
+
+```coq
+Fixpoint mydouble (n : mynat) : mynat :=
+  match n with
+  | mzero => mzero
+  | msucc k => msucc (msucc (mydouble k))
+  end.
+
+Example mydouble_two : mydouble (msucc (msucc mzero))
+                     = msucc (msucc (msucc (msucc mzero))).
+Proof. reflexivity. Qed.
+```
+
+（注意 `Fixpoint` 不是 `Definition`——递归函数必须用前者，见第 10 章。）
+
+### 9.4 类型参数：多态二叉树
+
+```coq
+Inductive btree (A : Type) : Type :=
+  | leaf : btree A
+  | node : btree A -> A -> btree A -> btree A.
+```
+
+`A` 是**类型参数**（list 的 `A` 同款）：整个声明对任意 A 成立。构造子默认**显式**携带 A——`node nat leaf 1 leaf` 很啰嗦，习惯上声明完立刻隐式化：
+
+```coq
+Arguments leaf {A}.
+Arguments node {A} l a r.
+
+Definition t1 : btree nat := node (node leaf 1 leaf) 2 (node leaf 3 leaf).
+Check (node leaf true leaf).      (* : btree bool —— 换个类型照常工作 *)
+```
+
+树上写函数，与链表同一套方法——match 递归构造子、子项上递归：
+
+```coq
+Fixpoint mirror {A : Type} (t : btree A) : btree A :=
+  match t with
+  | leaf => leaf
+  | node l a r => node (mirror r) a (mirror l)
+  end.
+
+Example mirror_ex : mirror t1 = node (node leaf 3 leaf) 2 (node leaf 1 leaf).
+Proof. reflexivity. Qed.
+```
+
+`mirror (mirror t) = t` 这类定律第 20 章的习题里会证。
+
+### 9.5 自动生成的归纳原理
+
+每个 Inductive 声明后，Coq 自动生成一个「归纳原理」——对该类型做归纳证明的许可证：
+
+```coq
+Check day_ind.
+(* forall P : day -> Prop,
+   P monday -> P tuesday -> ... -> P sunday ->
+   forall d : day, P d *)
+```
+
+读法：要证「P 对每个 day 成立」，只需对七个构造子各证一次 P——枚举的「归纳」就是穷举。
+
+```coq
+Check btree_ind.
+(* forall (A : Type) (P : btree A -> Prop),
+   P leaf ->
+   (forall b, P b -> forall a, forall b0, P b0 -> P (node b a b0)) ->
+   forall b, P b *)
+```
+
+树的版本正是数学归纳法的结构推广：**证叶子 + （假设左右子树成立 ⇒ 证节点）⇒ 证一切树**。第 12 章 `induction` 策略幕后调用的就是这些自动生成的原理。现在只需记住：**声明即免费获得归纳原理**，这是 Inductive 与普通「struct/class」的本质区别。
+
+### 9.6 构造子的三大纪律
+
+1. **单射**：`S x = S y` 则 `x = y`（`node l a r = node l' a' r'` 则三分量各相等）；
+2. **不相交**：`monday ≠ tuesday`、`O ≠ S k`、`nil ≠ cons ...`——不同构造子造的值永不相等；
+3. **可判别**：任给一个值，它的构造子是哪个**可判定**——match 与 discriminate 由此成立。
+
+第三条的威力预览——从「不同构造子相等」这个**矛盾前提**推出**任何结论**：
+
+```coq
+Example day_absurd : monday = tuesday -> 1 = 2.
+Proof.
+  intros H.
+  discriminate H.
+Qed.
+```
+
+`discriminate` 发现 H 的两边是不同构造子，逻辑系统内爆炸，任何目标随即成立（爆炸原理）。第 13 章正式讲。
+
+### 9.7 本章坑位清单（实测）
+
+1. **构造子的类型参数默认显式**：不写 `Arguments leaf {A}.` 就得写 `leaf nat`——自定义完立刻隐式化是习惯动作；
+2. **递归函数写成 `Definition`**：报「mydouble 未在环境中找到」之类的引用错误——真正原因是 `Definition` 不允许递归，名字根本没注册；用 `Fixpoint`；
+3. **构造子名全局唯一**：与字段名一样（第 6 章坑 2），`leaf` 定义过一次后第二个类型不能再用；
+4. **声明末尾的句点**：`Inductive ... .` 的句点在最后一个构造子之后，漏了整段报语法错。
+
+---
+
+## 第 10 章 递归函数：Fixpoint 与终止性
+
+对应示例：`examples/10_fixpoint.v`
+
+### 10.1 Fixpoint：会检查终止的递归
+
+Coq 里递归函数用 `Fixpoint` 声明：
+
+```coq
+Fixpoint sum_to (n : nat) : nat :=
+  match n with
+  | O => 0
+  | S k => S k + sum_to k      (* k 是 S k 的直接子项 —— 合法 *)
+  end.
+
+Compute (sum_to 4).            (* = 10：4+3+2+1 *)
+```
+
+与 `Definition` 的唯一区别：`Fixpoint` 要求**递归调用发生在「结构更小」的子项上**，并由守卫检查器（guard condition）逐个验证。为什么这么严格？因为 Coq 的函数不仅是代码，还是**逻辑对象**——若允许不终止的递归，就能构造出假命题的证明，整个系统的一致性崩塌（这门课不展开，记住结论）。代价是某些「显然会停」的写法（如按 `n - 1` 递减的循环）会被拒，收益是**每个能编译的函数必然全函数**——数学上无懈可击。
+
+### 10.2 {struct n}：告诉 Coq 在哪个参数上递归
+
+多参数函数，Coq 自动猜递减参数，猜不中时手动指定：
+
+```coq
+Fixpoint power (base : nat) (exp : nat) : nat :=
+  match exp with
+  | O => 1
+  | S e => base * power base e
+  end.
+
+Print power.
+(* 打印里能看到 {struct exp} —— Coq 记录了「在 exp 上结构递归」 *)
+```
+
+需要手动写的形态：`Fixpoint f (a : nat) (b : nat) {struct b} : ...`。
+
+### 10.3 守卫检查的真实边界（实测）
+
+教科书的说法是「递归必须在子项上」。实测 8.20.1，边界比这微妙：
+
+```coq
+(* 竟然能通过！ *)
+Fixpoint bad_sum (n : nat) : nat :=
+  match n with
+  | O => 0
+  | S k => bad_sum (k - 1) + 1
+  end.
+
+Compute (bad_sum 3).   (* = 2 —— 注意不是 3：k=0 时 0-1 截断为 0 *)
+```
+
+为什么 `k - 1` 能过？**守卫检查器会「看穿」定义**：`k - 1` 是 `Nat.sub k 1`，把它展开后每个分支要么是常量要么是 k 的子项——「展开后全是子项」就算过关。同理 `Nat.pred k`、甚至 `Nat.pred (Nat.pred k)` 都能过（实测）。这也解释了它为什么真的终止。
+
+但在**参数本身**上递归，无论怎么包都过不了：
+
+```coq
+Fail Fixpoint bad2 (n : nat) : nat :=
+  match n with
+  | O => 0
+  | S k => bad2 (n - 1)
+  end.
+(* Recursive call to bad2 has principal argument equal to
+   "n - 1" instead of "k". *)
+
+Fail Fixpoint bad_loop (n : nat) : nat :=
+  match n with
+  | O => 0
+  | S k => bad_loop n
+  end.
+```
+
+报错把「主参数应该是什么」说得明明白白（`instead of "k"`）。**实用心法：在分支里递归就用模式变量（k、tl），别用外层参数（n、xs）**——按这条写，守卫检查几乎不会找麻烦。
+
+### 10.4 真正需要「非结构递归」时怎么办
+
+写快排、归并这种「递归一半再一半」的算法，`n / 2` 不是子项，直写会被拒。三条出路：
+
+1. **换形状**：很多算法有结构递归的等价版本（在 `(l, r) = split xs` 的分量上递归——split 拆出的两个表是 xs 的「逻辑子项」，配合 `program fixpoint`/`Function` 可行但繁琐）；
+2. **燃料（fuel）**：多传一个 nat 参数当「剩余步数」，结构递归在燃料上——证明时处理燃料传递的繁琐；
+3. **良基递归**（`well-founded`）：用 `Program Fixpoint` 或 `Function` 声明「按度量递减」，Coq 生成额外子证明。
+
+第 21 章的插入排序不需要这些（它在表尾/表头结构上递归）；良基递归超出本书范围，知道名词和适用场景即可。
+
+### 10.5 累加器写法
+
+尾递归形态的遍历，把「已处理部分」作为参数携带：
+
+```coq
+Fixpoint rev_acc {A : Type} (acc : list A) (xs : list A) : list A :=
+  match xs with
+  | [] => acc
+  | h :: tl => rev_acc (h :: acc) tl    (* 递归在 tl 上 —— 合法 *)
+  end.
+
+Definition fast_rev {A : Type} (xs : list A) : list A :=
+  rev_acc [] xs.
+
+Compute (fast_rev [1; 2; 3]).   (* = [3;2;1] *)
+```
+
+注意递减依然靠 `tl`（结构子项）——累加器**不改变**终止性的判定方式，只改变「结果怎么攒」。`fast_rev xs = rev xs` 的证明（和「rev (rev xs) = xs」）在第 20 章。
+
+### 10.6 互递归：with
+
+两个函数互相调用，用 `with` 连接声明：
+
+```coq
+Fixpoint myeven (n : nat) : bool :=
+  match n with
+  | O => true
+  | S k => myodd k
+  end
+with myodd (n : nat) : bool :=
+  match n with
+  | O => false
+  | S k => myeven k
+  end.
+
+Compute (myeven 10).           (* = true *)
+Compute (myodd 7).             (* = true *)
+```
+
+守卫检查跨 `with` 全体进行。第 15 章会把这个 bool 版与 Prop 版的偶数对照。
+
+### 10.7 本章坑位清单（实测）
+
+1. **`n - 1` 型递归**：直觉以为必被拒，实测 8.20.1 **能过**（检查器展开 `Nat.sub` 后视为子项）；但 `n - 1`（n 是参数本身）被拒——分支里递归用模式变量，别用外层参数；
+2. **递归函数误用 `Definition`**：报「引用未找到」，真实原因是名字没注册；
+3. **多参数猜错递减参数**：报 `Cannot guess decreasing argument of fix`——加 `{struct 参数名}`；
+4. **`Fixpoint` 一行版忘句点**：`end.` 属于 match，`Fixpoint` 整体还要一个句点收尾——嵌套句点数清楚；
+5. **指望尾递归优化**：Coq 不做 TCO，累加器写法是「逻辑上一次递归」，不是性能优化（性能要靠第 22 章的数系与抽取）。
+
+---
+
 <!-- BATCH1-CONTINUES -->
+
+
 
