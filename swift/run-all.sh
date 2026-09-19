@@ -83,6 +83,12 @@ verify_standalone() { # 参数 = 示例目录名（嵌套独立包）
             echo "$out" | grep -Fq "$marker" || { echo "输出缺少结束标记：$marker" >&2; exit 1; }
             echo "$out" | tail -3
             ;;
+        24_minigrep)
+            local out marker="==== 24 结束 ===="
+            out="$(cd "examples/$name" && run_swift run minigrep lorem TestFixtures)"
+            echo "$out" | grep -Fq "$marker" || { echo "输出缺少结束标记：$marker" >&2; exit 1; }
+            echo "$out" | grep -E "处命中|====" | tail -2
+            ;;
     esac
     echo "  [OK] $name 独立包验证通过"
 }

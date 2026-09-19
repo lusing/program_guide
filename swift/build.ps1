@@ -72,6 +72,7 @@ $standalone = @("22_spm", "24_minigrep")
 # 独立包的运行规格（目标名 + 参数 + 结束标记章号）
 $standaloneRuns = @{
     "22_spm" = @{ target = "spmdemo"; args = @("3", "4"); marker = "22" }
+    "24_minigrep" = @{ target = "minigrep"; args = @("lorem", "TestFixtures"); marker = "24" }
 }
 
 function Invoke-Swift {

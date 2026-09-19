@@ -36,7 +36,8 @@ import Testing
 @Test func 子目录创建() throws {
     let dir = makeScratchDir().appendingPathComponent("级1", isDirectory: true)
         .appendingPathComponent("级2", isDirectory: true)
-    defer { try? FileManager.default.removeItem(at: makeScratchDir()) }
+    // 用例并行执行：只清理自己创建的子目录——删共享的 scratch 根会殃及并行用例
+    defer { try? FileManager.default.removeItem(at: dir.deletingLastPathComponent()) }
     try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
     #expect(FileManager.default.fileExists(atPath: dir.path))
 }
