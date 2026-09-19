@@ -76,3 +76,6 @@ freepascal/examples/*/selftest.log
 # D 语言 DUB 构建缓存（dub.json 工程目录下的本地产物）
 **/.dub/
 *.lst
+
+# Swift Package Manager build output (root package + nested packages)
+swift/.build/
