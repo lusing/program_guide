@@ -1,6 +1,7 @@
 # Coq 教程示例集
 
-本目录按 `guide` 统一结构组织 Coq 教程与可验证示例。
+本目录按 `guide` 统一结构组织 Coq 教程与可验证示例。教程正文见
+[COQ编程指南.md](./COQ编程指南.md)（25 章；扩充中，当前完成第 1–5 章）。
 
 ## 目录结构
 
@@ -10,20 +11,16 @@ coq/
 ├── COQ编程指南.md
 ├── build.ps1
 └── examples/
-    ├── 01_basics.v
-    ├── 02_induction.v
-    ├── 03_lists.v
-    ├── 04_bool_nat.v
-    ├── 05_records.v
-    ├── 06_option.v
-    ├── 07_higher_order.v
-    ├── 08_logic.v
-    └── 09_modules.v
+    ├── 01_intro.v
+    ├── 02_toolchain.v
+    ├── 03_first_proof.v
+    ├── 04_types.v
+    └── 05_expressions.v
 ```
 
 ## 工具链
 
-- Coq: `G:\scoop\apps\coq\current`
+- Coq: `G:\scoop\apps\coq\current`（8.20.1）
 - 编译器: `G:\scoop\apps\coq\current\bin\coqc.exe`
 
 ## 编译验证
@@ -36,7 +33,7 @@ cd G:\code\guide\coq
 单文件：
 
 ```powershell
-.\build.ps1 -File 03_lists.v
+.\build.ps1 -File 03_first_proof.v
 ```
 
 清理：
@@ -44,4 +41,3 @@ cd G:\code\guide\coq
 ```powershell
 .\build.ps1 -Clean
 ```
-

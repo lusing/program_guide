@@ -1,238 +1,852 @@
-# Coq 编程指南（Windows）
+# Coq 编程指南
 
-本教程配套示例均在 [examples/](./examples/) 下，并可用 `coqc` 批量编译验证。
+一本从零到能用的 Coq 教程，25 章。每一章的代码都对应 `examples/` 下一个可以直接用 `coqc` 编译验证的 `.v` 文件——在这本教程里，**所有代码段都经过编译器实际检验**，包括那些「故意写错」的段落（它们用 `Fail` 包裹，编译器会确认它们确实如预期地失败）。
+
+## Coq 是什么
+
+Coq 是一个**证明助手**（proof assistant）：你用它定义数学对象、编写程序、陈述定理，然后**和它一起**把证明构造出来。它最与众不同的地方在于：证明不是写在纸上等人审阅，而是作为一个「项」交给 Coq 的内核做类型检查——**内核说这个证明合法，它就真的合法**，没有「看起来对」「应该没错」的余地。
+
+这件事的价值已经被反复验证：经过 Coq 证明的 C 编译器 CompCert、四色定理的完整证明、有限单群分类中 255 页的 Feit–Thompson 定理证明，都是人类手工永远无法以这种置信度完成的工程。反过来说，写这些证明又确实是在「编程」——证明脚本就是程序，有变量、有分支、有复用、有调试。
+
+所以这本教程叫「编程指南」而不叫「定理证明指南」：Coq 的日常使用 80% 是普通函数式编程（定义类型、写递归函数、组织模块），只有 20% 是证明——但那 20% 会反过来要求你把前 80% 写得**结构清晰**，因为归纳证明只对「按结构递归」的函数友好。学 Coq 会让你成为一名更好的函数式程序员。
+
+三个先入为主的澄清，帮你在第一章就摆正期待：
+
+1. **Coq 不是自动定理证明器**。它不会替你想证明思路，它只负责**检查**你给出的每一步。策略（tactic）能自动化的部分有限——就像编译器不会替你设计算法一样。
+2. **Coq 的运行模型不适合写「带副作用的程序」**。没有 print、没有 mutable 全局变量、没有网络。数据与计算是纯粹的；要落地成真实程序，用 Extraction 抽取成 OCaml/Haskell 再运行（第 24 章会实践）。
+3. **Coq 在 2024 年更名为 Rocq**。8.20 是最后一批以 "Coq" 命名的版本（本教程实测基于 8.20.1），之后是 Rocq 9.0+。搜资料时两个名字都要认得；Rocq 9 里标准库的名字也从 `Coq.*` 改成了 `Stdlib.*`，本教程的 `From Coq Require Import ...` 在 8.20 下实测有效。
 
 ## 目录
 
-1. [环境准备](#环境准备)
-2. [基础语法与计算](#基础语法与计算)
-3. [归纳定义与归纳证明](#归纳定义与归纳证明)
-4. [列表与递归函数](#列表与递归函数)
-5. [布尔与自然数](#布尔与自然数)
-6. [Record 记录类型](#record-记录类型)
-7. [Option 安全建模](#option-安全建模)
-8. [高阶函数](#高阶函数)
-9. [命题逻辑证明](#命题逻辑证明)
-10. [模块化组织](#模块化组织)
-11. [统一编译验证](#统一编译验证)
+- [第 1 章 认识 Coq](#第-1-章-认识-coq)
+- [第 2 章 工具链与运行方式](#第-2-章-工具链与运行方式)
+- [第 3 章 第一个证明](#第-3-章-第一个证明)
+- [第 4 章 类型系统](#第-4-章-类型系统)
+- [第 5 章 表达式与运算符](#第-5-章-表达式与运算符)
+- [第 6 章 元组与记录](#第-6-章-元组与记录)
+- [第 7 章 模式匹配](#第-7-章-模式匹配)
+- [第 8 章 列表](#第-8-章-列表)
+- [第 9 章 归纳类型：自定义数据](#第-9-章-归纳类型自定义数据)
+- [第 10 章 递归函数：Fixpoint 与终止性](#第-10-章-递归函数fixpoint-与终止性)
+- [第 11 章 证明状态与 tactic 机理](#第-11-章-证明状态与-tactic-机理)
+- [第 12 章 归纳证明](#第-12-章-归纳证明)
+- [第 13 章 重写、化简与分情况讨论](#第-13-章-重写化简与分情况讨论)
+- [第 14 章 命题逻辑](#第-14-章-命题逻辑)
+- [第 15 章 谓词逻辑与 reflect](#第-15-章-谓词逻辑与-reflect)
+- [第 16 章 高阶函数及其证明](#第-16-章-高阶函数及其证明)
+- [第 17 章 Option：安全建模](#第-17-章-option安全建模)
+- [第 18 章 策略武器库与模块](#第-18-章-策略武器库与模块)
+- [第 19 章 表达式求值器：AST 入门](#第-19-章-表达式求值器ast-入门)
+- [第 20 章 列表定律证明实战](#第-20-章-列表定律证明实战)
+- [第 21 章 插入排序与正确性证明](#第-21-章-插入排序与正确性证明)
+- [第 22 章 数值专题：nat、N 与 Z](#第-22-章-数值专题natn-与-z)
+- [第 23 章 测试与断言风格](#第-23-章-测试与断言风格)
+- [第 24 章 综合实战：表达式解释器与优化器](#第-24-章-综合实战表达式解释器与优化器)
+- [第 25 章 坑清单与最佳实践](#第-25-章-坑清单与最佳实践)
 
----
-
-## 环境准备
-
-- Coq 安装目录：`G:\scoop\apps\coq\current`
-- 编译器：`G:\scoop\apps\coq\current\bin\coqc.exe`
-
-检查版本：
+对应示例在 `examples/` 目录下，文件名前缀为两位编号。运行方式（在 `coq/` 目录下）：
 
 ```powershell
-G:\scoop\apps\coq\current\bin\coqc.exe --version
+.\build.ps1 -All                 # 编译全部示例
+.\build.ps1 -File 03_first_proof.v   # 编译单个示例
+.\build.ps1 -Clean               # 清理 build 目录
 ```
 
 ---
 
-## 基础语法与计算
+## 第 1 章 认识 Coq
 
-源码：`examples/01_basics.v`
+### 1.1 证明助手是什么：一台「检查证明的机器」
+
+先做一个思想实验。你在 C 语言里写了一个排序函数，怎么确认它是对的？跑一百万个随机测试？测试只能证明「没有找到反例」，不能证明「不存在反例」。数学上的办法是给出一个证明——但纸上的证明依赖**人**来审查，而人会累、会疏漏、会看走眼。
+
+证明助手把「审查」这一环交给机器。在 Coq 里：
+
+- 你**定义**数学对象和程序（本章就会看到：自然数、加法、列表都是「定义」出来的，不是内建的）；
+- 你**陈述**想证明的命题（比如「对任意自然数 n，n + 0 = n」）；
+- 你用一种叫**策略**（tactic）的命令语言，一步步把证明构造出来；
+- Coq 的**内核**——一个刻意做得极小、因此可以被独立审计的程序——检查你构造的每一步是否逻辑上无懈可击。检查通过，定理封存；任何一步不成立，当场拒绝。
+
+这个「极小内核检查一切」的设计哲学叫 de Bruijn 判据。它的含义很实际：你在构造证明时用的辅助工具（策略、自动化）**允许有 bug**——哪怕策略给你生成了错误的中间步骤，内核也会拒绝，你最多浪费时间，不会「证明」出假定理。这与「编译器有 bug 但 CPU 只认机器码」的分层信任是同构的。
+
+一句话总结：**普通编程是「说服编译器你的程序类型正确」，Coq 编程是「说服内核你的命题逻辑成立」**。前者检查的是形状，后者检查的是实质。
+
+### 1.2 Curry–Howard 对应：命题即类型，证明即程序
+
+Coq 一切魔力的地基是一个漂亮的观察：**逻辑与类型是同一件事**。这就是 Curry–Howard 对应，理解它只需要下面这张表：
+
+| 逻辑世界 | 类型世界 |
+|---|---|
+| 命题 P | 类型 P |
+| P 成立（有证明） | 类型 P 有居民（能造出一个值） |
+| 蕴含 P → Q | 函数类型 P -> Q |
+| 「P 蕴含 Q」的证明 | 一个把 P 的证明变换成 Q 的证明的**函数** |
+| 合取 P ∧ Q | 对偶类型 P \* Q |
+| 析取 P ∨ Q | 变体类型 P + Q |
+| 真 ⊤ / 假 ⊥ | 单元类型 unit / 空类型 Empty_set |
+| 全称量词 ∀x:A, P x | 依赖函数类型 forall x : A, P x |
+
+拿本教程第一个真正的证明（第 3 章）做例子：
 
 ```coq
-From Coq Require Import Arith.
-From Coq Require Import Bool.
-
-Definition square (n : nat) : nat := n * n.
-
-Example plus_1_2 : 1 + 2 = 3.
-Proof. reflexivity. Qed.
-
 Example square_3 : square 3 = 9.
 Proof. reflexivity. Qed.
 ```
 
-要点：
-- `Definition` 定义可计算对象
-- `Example` + `Proof ... Qed` 表达可验证断言
+`square 3 = 9` 这个等式本身是一个**类型**（类型为 `Prop`，即「命题」）；证明它，就是**造出一个该类型的值**。`reflexivity` 造出来的值叫 `eq_refl`——「自反性」的见证。用 `Print square_3.` 亲眼看看（实测输出）：
 
----
-
-## 归纳定义与归纳证明
-
-源码：`examples/02_induction.v`
-
-```coq
-Fixpoint sum_to (n : nat) : nat :=
-  match n with
-  | 0 => 0
-  | S k => n + sum_to k
-  end.
-
-Theorem plus_n_O : forall n, n + 0 = n.
-Proof.
-  induction n as [|n IH].
-  - reflexivity.
-  - simpl. rewrite IH. reflexivity.
-Qed.
+```text
+square_3 = eq_refl : square 3 = 9
 ```
 
-要点：
-- `Fixpoint` 表达递归定义
-- `induction` 是证明自然数性质的核心策略
+**证明真的是一个项**。它有类型（就是那个命题），有值（eq_refl），能被打印、被存储、被别的证明引用。所谓「证明助手」，就是帮你造这种特殊值的编程环境。
 
----
-
-## 列表与递归函数
-
-源码：`examples/03_lists.v`
+而「蕴含即函数」也不抽象：
 
 ```coq
-From Coq Require Import List.
-Import ListNotations.
-
-Fixpoint my_length {A : Type} (xs : list A) : nat :=
-  match xs with
-  | [] => 0
-  | _ :: tl => S (my_length tl)
-  end.
+Definition modus_ponens (P Q : Prop) (hpq : P -> Q) (hp : P) : Q :=
+  hpq hp.
 ```
 
-要点：
-- `Import ListNotations` 启用 `[]`、`::`、`[a;b;c]` 语法
-- 参数 `{A : Type}` 表示隐式类型参数
+读一遍：`hpq` 是「P 蕴含 Q」的证明——按上表它就是一个 `P -> Q` 的函数；`hp` 是 P 的证明——一个 P 类型的值；那么 `hpq hp` 就把 P 的证明变换成了 Q 的证明。**逻辑推理就是函数应用**。这五行在 Coq 里完全合法（第 14 章会真正编译它）。
 
----
+### 1.3 出身、战绩与改名风波
 
-## 布尔与自然数
+Coq 起源于 1984 年法国 INRIA 的一个项目，由 Gérard Huet 与 Thierry Coquand 主导（"Coq" 正是致敬 Coquand 与 Huet 的首字母），其理论内核是 Coquand–Huet 的构造演算（Calculus of Constructions），后来 Christine Paulin-Mohring 等人加入归纳类型，形成今天的 CIC（Calculus of Inductive Constructions）。它属于「依赖类型」家族——类型可以依赖值（`n = 0` 就是一个依赖着 `n` 的类型），这是它表达力的来源。
 
-源码：`examples/04_bool_nat.v`
+几件用它完成、常被引用的大事，帮你建立「能干什么」的直觉：
+
+| 成果 | 年份 | 内容 |
+|---|---|---|
+| CompCert | ~2006 起 | 一个 C 编译器，其**编译过程本身**被证明语义保持——工业级验证编译器 |
+| 四色定理 | 2005 | Gonthier 与 Werner 把 1976 年那个依赖计算机的证明完整形式化 |
+| Feit–Thompson 定理 | 2012 | 255 页群论证明由 Gonthier 领衔团队形式化，约 4 万行 |
+| Fiat Crypto | 2010s | 自动生成经过验证的椭圆曲线密码算法实现 |
+
+2024 年，社区投票决定将项目更名为 **Rocq**。原因说来话短：原名在英语里有不雅的俚语含义，给学术推广添了不少尴尬。版本脉络是：**8.20.x 是最后一批叫 Coq 的版本，之后是 Rocq 9.0**。对初学者的影响有两个：
+
+1. 搜索资料时，"Coq" 与 "Rocq" 指同一个东西，新旧教程混着看即可；
+2. 标准库的命名空间从 `Coq.*` 改成了 `Stdlib.*`——本教程基于 8.20.1，写法是 `From Coq Require Import List.`；在 Rocq 9 上要么换成 `From Stdlib Require ...`，要么开启兼容开关。
+
+### 1.4 Coq 能做什么、不擅长什么
+
+**适合**：
+
+- 写「必须对」的代码：编译器优化 pass、密码学算法、并发协议、航天控制逻辑——凡是 bug 代价高昂的地方；
+- 形式化数学：把定义、定理、证明全部写下来，消灭「留作练习」和「易证」；
+- 学习并彻底吃透离散数学、逻辑、数据结构——Coq 不会让你「似懂非懂地通过」；
+- 做依赖类型、类型论方向的科研。
+
+**不擅长**（诚实清单）：
+
+- 快速出活的原型脚本：没有随手 print 调试、没有丰富的包生态；
+- 字符串/文本处理：能做但笨重（第 24 章会体会到）；
+- 浮点密集型计算：默认数系是为证明设计的；
+- 「自动证明」：自动化程度有限，证明思路始终是你的活。
+
+一个常见的学习路线对照：先学 Coq 再学别的函数式语言会很顺（Haskell/OCaml 都是它的「降级简化版」）；反过来，有一点 Haskell/OCaml 底子再学 Coq，入门会快很多。零函数式基础也完全可以从本教程开始——前 10 章就是一本函数式编程入门。
+
+### 1.5 与 Lean 4 / Agda / Isabelle 的对比
+
+证明助手里最常被一起提到的四个：
+
+| | Coq/Rocq | Lean 4 | Agda | Isabelle/HOL |
+|---|---|---|---|---|
+| 理论基础 | CIC，依赖类型 | 依赖类型 + 经典数学库 | MLTT，依赖类型 | HOL（高阶逻辑，非依赖） |
+| 证明风格 | tactic 为主 | tactic + 项混合 | 交互式项构造为主 | tactic + 强自动化 |
+| 标准数学库 | 中等 | mathlib 极大且活跃 | 中等 | AFP 庞大 |
+| 代码抽取 | OCaml/Haskell/Scheme | 无官方（C 生成实验性） | 有 | 可生成代码 |
+| 生态气质 | 老牌、计算机科学向 | 新锐、数学向、社区增长最快 | 学院派 | 德系、自动化强 |
+| 代表应用 | CompCert、四色定理 | Fermat 大定理形式化（进行中） | 类型论科研 | seL4 微内核验证 |
+
+选 Coq 的理由：教学资源最系统（Software Foundations 是全领域最好的入门材料之一，本教程多处借鉴其编排）、计算机科学方向的积累最深、工具链成熟稳定。选别的理由：追求数学前沿去 Lean，追求极致自动化去 Isabelle。它们之间的核心技能——「把性质说清楚，把证明按结构做出来」——完全互通。
+
+### 1.6 怎么读这本教程
+
+- **动手至上**。每章先把 `examples/` 里对应文件跑一遍，再回头读讲解。Coq 的「证明状态」是动态的，纸上读战术如隔靴搔痒。
+- 前 10 章可以当函数式编程书读，证明内容很少；第 11 章开始证明成为主角。
+- 每章末尾的**坑位清单**都是实测（在 8.20.1 上真实翻车过才写进去），值得在做题/写代码前扫一眼。
+- 卡住时回到第 2 章的「向 Coq 提问」四件套（`Print` / `About` / `Locate` / `Search`）——Coq 的答案永远比搜索引擎准。
+- 本教程刻意**不引入任何外部库**（不用 stdpp、不用 MathComp），一切用标准库最朴素的部分，让你清楚每个定义的来龙去脉。
+
+### 1.7 示例 01：Check / Compute / 证明
+
+对应示例：`examples/01_intro.v`。它演示与 Coq 对话的三种基本句子：
 
 ```coq
-Definition is_zero (n : nat) : bool :=
-  match n with
-  | 0 => true
-  | _ => false
-  end.
+Check 0.                    (* 0 : nat —— 问类型 *)
+Compute (6 * 7).            (* = 42 : nat —— 求值 *)
 
-Theorem is_zero_S : forall n, is_zero (S n) = false.
-Proof.
-  intros n.
-  reflexivity.
-Qed.
+Example plus_2_2 : 2 + 2 = 4.
+Proof. reflexivity. Qed.    (* 断言 + 证明 *)
 ```
 
-要点：
-- `match` 是结构化分支
-- `intros` 将前提引入上下文
-
----
-
-## Record 记录类型
-
-源码：`examples/05_records.v`
-
-```coq
-Record Point : Type := {
-  px : nat;
-  py : nat
-}.
-```
-
-要点：
-- `Record` 可用于数据建模
-- 字段函数（如 `px`）可直接投影
-
----
-
-## Option 安全建模
-
-源码：`examples/06_option.v`
-
-```coq
-Definition head_nat (xs : list nat) : option nat :=
-  match xs with
-  | [] => None
-  | h :: _ => Some h
-  end.
-```
-
-要点：
-- `option` 避免“空值异常”风格错误
-- `None/Some` 明确表达是否有结果
-
----
-
-## 高阶函数
-
-源码：`examples/07_higher_order.v`
-
-```coq
-Definition inc_all (xs : list nat) : list nat :=
-  map (fun n => S n) xs.
-
-Definition sum_all (xs : list nat) : nat :=
-  fold_right Nat.add 0 xs.
-```
-
-要点：
-- `map` 做逐项变换
-- `fold_right` 做归约聚合
-
----
-
-## 命题逻辑证明
-
-源码：`examples/08_logic.v`
-
-```coq
-Theorem and_comm : forall P Q : Prop, P /\ Q -> Q /\ P.
-Proof.
-  intros P Q H.
-  destruct H as [HP HQ].
-  split.
-  - exact HQ.
-  - exact HP.
-Qed.
-```
-
-要点：
-- `destruct` 拆分合取前提
-- `split` 构造合取目标
-
----
-
-## 模块化组织
-
-源码：`examples/09_modules.v`
-
-```coq
-Module NatStack.
-Definition stack := list nat.
-Definition empty : stack := [].
-Definition push (x : nat) (s : stack) : stack := x :: s.
-End NatStack.
-```
-
-要点：
-- `Module ... End` 管理命名空间
-- 适合按主题组织定理与定义
-
----
-
-## 统一编译验证
-
-在 `G:\code\guide\coq` 下执行：
+编译它：
 
 ```powershell
-.\build.ps1 -All
+.\build.ps1 -File 01_intro.v
 ```
 
-编译单文件：
+输出里值得注意的三个细节（实测）：
+
+1. `Check (S (S (S O))).` 打印的是 `3 : nat`——你手写的「后继链」会被数字记号自动美化显示；
+2. `Compute` 的结果带有类型标注（`= 42 : nat`），提醒你 Coq 里**值与类型永远成对出现**；
+3. `Check (fun A (a : A) => a).` 打印 `forall A : Type, A -> A`——一个匿名函数就有多态类型，这是后面所有「多态」内容的种子。
+
+### 1.8 小结
+
+- 证明助手 = 定义 + 陈述 + 构造证明 + 内核检查；信任基础是极小的内核；
+- Curry–Howard：命题=类型、证明=程序（值）、蕴含=函数、量词=依赖类型；
+- Coq 1984 年生于 INRIA，2024 年更名 Rocq；8.20 是最后的 Coq 命名版本；
+- 它不自动找证明、不适合带副作用的脚本编程；
+- 学习心法：动手、按结构思考、向 Coq 本人提问。
+
+---
+
+## 第 2 章 工具链与运行方式
+
+对应示例：`examples/02_toolchain.v`
+
+### 2.1 安装与验证
+
+本教程的实测环境：
+
+- Windows 11，Coq 8.20.1（scoop 安装，位于 `G:\scoop\apps\coq\current`）
+- 这套安装自带 `coqc`（批处理编译器）、`coqtop`（交互式顶层）、`coqide`（图形界面）、`coqchk`（独立检查器）等工具
+
+获取 Coq 的几条路：
+
+| 方式 | 说明 |
+|---|---|
+| 官方安装器 / zip | 从 rocq-prover.org 或 GitHub Releases 下载，含 CoqIDE |
+| Windows 下 scoop | `scoop install coq`，本教程环境即此 |
+| opam（跨平台） | `opam install coq.8.20.1`，版本管理最灵活 |
+| WSL / Linux 包管理器 | apt/dnf 版本可能偏旧，注意核对 |
+
+验证安装：
 
 ```powershell
-.\build.ps1 -File 09_modules.v
+G:\scoop\apps\coq\current\bin\coqc.exe --version
+(* The Coq Proof Assistant, version 8.20.1
+   compiled with OCaml 4.14.2 *)
 ```
 
-清理：
+### 2.2 coqtop：交互式问答
+
+证明的构造是交互式的，所以 Coq 的「主战场」是顶层解释器。启动：
 
 ```powershell
-.\build.ps1 -Clean
+G:\scoop\apps\coq\current\bin\coqtop.exe
 ```
+
+```text
+Welcome to Coq 8.20.1
+Coq <
+```
+
+三条使用纪律：
+
+1. **每个句子以句点 `.` 结尾**。没有句点，Coq 就一直等你把话说完——新手最常以为「卡死了」，其实只是在等句号；
+2. 提示符 `Coq <` 表示当前**没有**打开的证明；一旦你开始一个 `Theorem`，提示符变成待证明状态，用 `Show.` 随时重看当前目标；
+3. `Quit.` 退出（或 Ctrl-D）。
+
+一段典型会话（可直接照抄体验）：
+
+```text
+Coq < Check (fun n => n + 1).
+fun n : nat => n + 1
+     : nat -> nat
+
+Coq < Compute (2 + 2).
+     = 4
+     : nat
+
+Coq < Example e : 2 + 2 = 4.
+
+Coq < Proof. reflexivity. Qed.
+
+Coq < Quit.
+```
+
+在证明中途，`Show.` 显示当前目标；`Abort.` 放弃当前证明；`Restart.` 从头再来。这些是交互调试的四件常备工具。
+
+### 2.3 coqc：批处理编译
+
+`coqc file.v` 把整个文件一口气编译检查，产出 `file.vo`（编译产物，供其他文件 `Require` 引用）：
+
+```powershell
+G:\scoop\apps\coq\current\bin\coqc.exe examples\02_toolchain.v
+```
+
+本仓库的 `build.ps1` 做了三件贴心事：把 `examples/*.v` 复制到 `build/examples/` 并加 `ex_` 前缀（**源码目录永远干净**，`.vo` 等产物不会污染 git）、逐个调用 `coqc -q`、任何失败立刻中断报错。日常用它：
+
+```powershell
+.\build.ps1 -All                    # 全部示例
+.\build.ps1 -File 02_toolchain.v    # 单个
+.\build.ps1 -Clean                  # 清理产物
+```
+
+`-q` 表示跳过用户 rcfile（保证本教程结果可复现）。
+
+一个重要的实测差异：**`Fail` 命令的提示语只在交互模式显示**。`Fail` 用来断言「接下来的命令应当失败」——coqtop 里它会友好地打出失败原因；coqc 批处理下静默通过。所以本教程示例里用 `Fail` 演示的错误信息，请到 coqtop 里复现着看。
+
+### 2.4 CoqIDE 与 VS Code（VSCoq）
+
+交互式写证明，纯命令行的体验是裸奔。两个图形选项：
+
+- **CoqIDE**：安装包自带（`coqide.exe`），零配置开箱即用。快捷键 F10（下一句）/ F11（回退）逐步执行证明，右侧面板实时显示证明状态——**强烈建议初学者前几章用它**，「目标如何随策略变化」必须亲眼看过才能内化；
+- **VS Code + VSCoq 扩展**：现代编辑体验，同样的逐步求值能力。已在用 VS Code 的读者选这条。
+
+它们与 coqtop 本质相同：把句子一句句喂给 Coq 内核，把证明状态画给你看。工具随喜好，内核只有一个。
+
+### 2.5 学会向 Coq 提问：Print / About / Locate / Search
+
+Coq 最被低估的能力：**它比文档更懂自己**。四个问询命令是贯穿全书的主角，示例 `02_toolchain.v` 逐一演示了它们（编译该文件，输出就是下面的内容）。
+
+**`Print`——「这个东西是怎么定义的？」**
+
+```coq
+Print nat.
+```
+
+```text
+Inductive nat : Set :=  O : nat | S : nat -> nat.
+```
+
+一句话看清 nat 的真身：一个只有两个构造子的归纳类型。再比如 `Print Nat.add.` 会显示加法是一个在第一个参数上递归的 `fix`——「加法是递归定义出来的」这件事，Print 直接展示给你。
+
+**`About`——「这个符号的档案是什么？」**
+
+```coq
+About eq.
+```
+
+```text
+eq : forall {A : Type}, A -> A -> Prop
+```
+
+类型、隐式参数、所在模块，一次看全。任何「这个函数到底吃什么参数」的疑问都先问 About。
+
+**`Locate`——「这个记号绑定到哪里？」**
+
+```coq
+Locate "+".
+```
+
+```text
+Notation "{ A } + { B }" := (sumbool A B) : type_scope
+Notation "A + { B }" := (sumor A B) : type_scope
+Notation "x + y" := (Nat.add x y) : nat_scope
+Notation "x + y" := (sum x y) : type_scope
+```
+
+同一个 `+`，在不同**作用域**（scope）里是不同的东西：nat 里是加法，类型层面是和类型。这解释了 Coq 里大量「符号重载」现象——记号按作用域解释，规则清晰但需要你有这个意识。
+
+**`Search`——「库里有没有长得像这样的定理？」**
+
+```coq
+Search (_ + 0).
+```
+
+```text
+plus_n_O: forall n : nat, n = n + 0
+```
+
+按**形状**搜索全部已知定理——下划线是通配符。写证明卡住时，先描述一下「我想要的结论长什么样」，让 Search 找。配合关键字过滤（`Search (_ <= _) "le_n_S".`）更好用。
+
+这四个命令的意义再强调一次：**Coq 是一个可查询的形式系统，而不是一个黑盒**。养成「先问再搜」的习惯，是脱离初学者的分水岭。
+
+### 2.6 .v 文件的组织习惯
+
+本教程示例统一遵循的模板：
+
+```coq
+(* 标题注释：本章主题、要点 *)
+
+From Coq Require Import Arith.   (* 需要的库，统一从 Coq 命名空间引入 *)
+
+Module Ex02Toolchain.            (* 整章包进一个 Module，
+                                    避免与其他章节重名冲突 *)
+
+(* ... 正文 ... *)
+
+End Ex02Toolchain.
+```
+
+几个要点：
+
+- `From Coq Require Import X.` 的意思是「从 Coq 这个命名空间（8.20 的标准库）加载模块 X 并 `Import` 其内容」。`Require` 加载，`Import` 打开其中的名字与记号——两步是独立的，`From` 用来消除歧义；
+- 注释是 `(* ... *)`，可嵌套——这一点与 C 系语言不同，`(* a (* b *) c *)` 完全合法；
+- 本教程实测：**UTF-8（无 BOM）的中文注释可直接通过 coqc**，因此示例注释全用中文；
+- `Module ... End` 是命名空间：第 18 章会展开讲模块系统（含签名与封装）。
+
+### 2.7 本章坑位清单（实测）
+
+1. **忘写句点 `.`**：coqtop 一动不动地「等你把话说完」，看起来像卡死；
+2. **`Fail` 的提示语在 coqc 下不打印**：想看失败原因去 coqtop；
+3. **`8 / 2` 直接报错 `Unknown interpretation for notation "_ / _"`**：nat 的 `/` 记号不在默认作用域里，必须先 `From Coq Require Import Arith`（或写全 `Nat.div 8 2`）。乘加 `* +` 是默认有的，除法模运算不是——为什么？因为 `+` `*` 由 `Init` 阶段加载，而 `/` `mod` 的记号绑定在 Arith 库里。同一家族的还有 `=?` `<=?` `<?` `^`（也要 Arith）和 `&&` `||`（要 `Open Scope bool_scope`）——初学者第一周必踩；
+4. **在证明中途退出**：忘记 `Qed.`/`Abort.` 就开始下一个定义，报错位置莫名其妙——先 `Show.` 确认自己是不是还在证明模式里；
+5. **Rocq 9 与 8.20 的库路径不同**：`From Coq Require ...` vs `From Stdlib Require ...`，抄新资料时注意版本。
+
+---
+
+## 第 3 章 第一个证明
+
+对应示例：`examples/03_first_proof.v`
+
+### 3.1 三种句子：命令、策略与项
+
+打开一个 `.v` 文件，你会看到三种成分。分清它们，Coq 的报错才有读法：
+
+| 成分 | 例子 | 什么时候起作用 |
+|---|---|---|
+| **vernacular（命令）** | `Definition` `Example` `Print` `Check` `Require` `Qed` | 管理环境：声明、查询、加载 |
+| **tactic（策略）** | `reflexivity` `intros` `simpl` `rewrite` `destruct` | 只在证明模式里，改造证明状态 |
+| **term（项）** | `3` `S O` `fun n => n` `Nat.add 2 3` | 数据与证明的本体，类型检查的对象 |
+
+一个文件就是一串命令；命令里嵌着项；`Proof.` 到 `Qed.` 之间是策略的地盘。第 11 章会精确解释策略如何工作，本章只需要「证明 = 用策略造项」这个直觉。
+
+### 3.2 Definition：定义一个可计算对象
+
+```coq
+Definition square (n : nat) : nat := n * n.
+```
+
+读法：`Definition 名字 (参数 : 类型) : 返回类型 := 体.`。它是纯函数式的「let」——给 `fun n => n * n` 这个项起了个名字。三件套问询都能作用于它（实测输出）：
+
+```coq
+Check (square 3).   (* square 3 : nat *)
+Compute (square 3). (* = 9 : nat *)
+Print square.       (* square = fun n : nat => n * n
+                        : nat -> nat *)
+```
+
+注意 `Print` 显示的是「编译器眼中的定义」——参数、类型、函数体，原样展开。定义没有魔法，`square 3` 就是 `3 * 3`，`Compute` 老老实实把它算出来。
+
+### 3.3 Example / Proof / reflexivity / Qed 逐行解剖
+
+现在进入正题。四行一个完整的证明：
+
+```coq
+Example square_3 : square 3 = 9.
+Proof. reflexivity. Qed.
+```
+
+逐行拆解：
+
+**第一行 `Example square_3 : square 3 = 9.`**
+声明一个对象 `square_3`，其类型是命题 `square 3 = 9`。此刻它还没有「值」（证明）——就像你宣布「我要定义一个返回 bool 的函数」但还没写函数体。屏幕上（交互模式下）出现的证明状态是：
+
+```text
+1 subgoal
+
+  ============================
+  square 3 = 9
+```
+
+横线下面是**目标**（goal）：需要构造出 `square 3 = 9` 这个类型的一个居民。
+
+**第二行 `Proof.`**
+正式进入证明模式。它本身不做事，是个仪式性开关（默认开启，写出来是为了可读性）。
+
+**第三行 `reflexivity.`**
+策略登场。它检查：等式两边能否**化简到同一个值**？`square 3` 化简得 `9`，右边本来就是 `9`——两边相同，于是它构造出证明项 `eq_refl`（「自反性」的见证：`x = x` 型等式的通用证明）。目标消失，证明状态归零。
+
+**第四行 `Qed.`**
+封印。把从 `Proof.` 以来的策略脚本编译成一个证明项，交**内核**重新独立做一次类型检查（策略层即使有 bug 也骗不过这一步），通过后把 `square_3 : square 3 = 9` 存入环境。从此 `square_3` 是一个可引用的定理。
+
+这套「陈述 → 开目标 → 打策略 → 封印」的节奏贯穿全书。初学时把四行**分开写、逐行执行**（CoqIDE 里按 F10），亲眼看目标怎么出现、怎么消失——这是建立证明直觉最快的方式。
+
+### 3.4 证明是一个项：Print 它
+
+Curry–Howard 不是口号，可以验证：
+
+```coq
+Print square_3.
+```
+
+```text
+square_3 = eq_refl : square 3 = 9
+```
+
+`square_3` 的「值」是 `eq_refl`——一个由 `=` 类型的唯一构造子构成的项。就像 `list` 的值由 `nil`/`cons` 构成，**等式的值由 `eq_refl` 构成**。以后学到 `rewrite` 会看到：使用定理就是把它的证明项当作数据去变换。
+
+### 3.5 失败长什么样：Fail 与 Abort
+
+证明失败是日常。把断言写错：
+
+```coq
+Example broken : 2 + 2 = 5.
+Proof.
+  Fail reflexivity.
+  (* The command has indeed failed with message:
+     Unable to unify "5" with "4". *)
+Abort.
+```
+
+两个新命令：
+
+- **`Fail`**：断言「下一个命令应当失败」。失败了，`Fail` 成功；没失败，`Fail` 反而报错 `The command has not failed!`。它是**把错误变成可编译文档**的机制——本教程大量用它把坑写进示例。注意（实测）：失败提示语只在 coqtop / CoqIDE 里显示，coqc 批处理下静默；
+- **`Abort.`**：放弃当前证明，环境回到陈述之前。证明做不下去时用它脱身，别把烂尾的 `Theorem` 留在文件里。
+
+类型错误同样可以被 `Fail` 预言（示例 03 里就有）：
+
+```coq
+Fail Check (0 : bool).
+(* The term "0" has type "nat" while it is expected to have
+   type "bool". *)
+```
+
+Coq 的报错信息值得逐字读：**谁**（the term "0"）、**是什么**（has type "nat"）、**哪里不匹配**（expected "bool"）。它几乎总在说真话——第 25 章的坑清单里，一半条目的排查方法就是「把错误信息完整读完」。
+
+### 3.6 Theorem 家族与命名习惯
+
+以下关键字**语法地位完全相同**，都是「声明一个命题类型的对象」：
+
+| 关键字 | 语义习惯 |
+|---|---|
+| `Theorem` | 比较重要的结果 |
+| `Lemma` | 服务于主定理的中间结果 |
+| `Corollary` | 由主定理直接派生 |
+| `Proposition` | 中等重要性的陈述 |
+| `Fact` / `Remark` | 顺手记下的小结论 |
+| `Example` | 通常是算一算就能验证的具体断言 |
+
+新手纠结「该用哪个」纯属浪费感情——随便挑，团队一致即可。本教程的习惯：具体计算断言用 `Example`，一般性结论用 `Theorem`。
+
+### 3.7 Admitted：技术债开关
+
+有一个危险的逃生门必须现在讲清楚：
+
+```coq
+Theorem i_promise : forall n : nat, n + 0 = n.
+Proof. Admitted.   (* 假装证完了！ *)
+```
+
+`Admitted.` 把定理**作为公理**收下——之后所有依赖它的证明都建立在空中楼阁上。它是开发过程中「先跳过这段，后面再补」的合法手段，但**任何提交/发布的代码里都不该有它**。检查工具（第 23 章）：`Print Assumptions 定理名.` 会列出该定理依赖的全部公理——输出 `Closed under the global context` 才是干净证明。
+
+### 3.8 本章坑位清单（实测）
+
+1. **句子忘句点 / 多句点**：`Proof. reflexivity. Qed.` 一行三句，句点属于「句子」不属于「行」；
+2. **`Fail` 在 coqc 下不打印失败原因**（见 3.5）；
+3. **`Qed` 时才发现没证完**：还剩目标就 `Qed.`，报错 `Attempt to save an incomplete proof`——错误行号在 `Qed` 处，但真正的问题在前面；养成 `Show.` 的习惯；
+4. **陈述里函数名拼错**：`square3` vs `square_3`，报的是 `The reference square3 was not found`，查拼写；
+5. **`Admitted` 留进正式代码**：`Print Assumptions` 一查便知，CI 里应当禁；
+6. **想当然写 `8 / 2`**：不加 `Require Import Arith` 就是记号未定义错误（第 2 章坑 3，本章示例文件头也注明了）。
+
+---
+
+## 第 4 章 类型系统
+
+对应示例：`examples/04_types.v`
+
+### 4.1 nat 的真身：一条 S 链
+
+Coq 里没有内建的「机器整数」。自然数是**定义出来的**：
+
+```coq
+Print nat.
+```
+
+```text
+Inductive nat : Set :=  O : nat | S : nat -> nat.
+```
+
+翻译成人话：`nat` 类型有两个构造子（constructor）——
+
+- `O : nat`——零；
+- `S : nat -> nat`——后继（successor），「加一」。
+
+于是每个自然数都是一条链：`1 = S O`，`2 = S (S O)`，`3 = S (S (S O))`……运行 `Compute (S (S (S O))).` 得 `= 3 : nat`——打印时 Coq 自动把链折叠成数字给你看（实测）。
+
+这个设计初看低效（确实低效，第 22 章解决），换来两样无价的东西：
+
+1. **归纳原理**：「对 O 成立、对 S k 也成立（假设对 k 成立），则对所有自然数成立」——第 12 章的归纳证明直接建立在 nat 的形状上；
+2. **类型上无溢出**：数要多大有多大，`Check (2 ^ 100).` 合法（`^` 记号需 `Arith`，实测）。
+
+但马上泼一盆冷水（实测坑）：**「类型装得下」不等于「算得动」**。一元表示下 `Compute (Nat.pow 2 100).` 会直接**内存耗尽**——2¹⁰⁰ 约需 10³⁰ 个 `S` 构造子，宇宙里的原子都不够存。「无溢出」是逻辑层面的性质；工程层面的大数计算请用二进制的 `N`/`Z`（第 22 章）。
+
+把类型理解为「值的集合 + 形状规则」，nat 是最好的第一课：集合是所有 S 链，形状规则是「只能是 O 或 S 套另一个 nat」。
+
+### 4.2 常用内置类型速览
+
+| 类型 | 构造子 | 例子 |
+|---|---|---|
+| `nat` | `O`、`S` | `0`、`3`、`S (S O)` |
+| `bool` | `true`、`false` | `negb true` |
+| `list A` | `nil`（`[]`）、`cons`（`::`） | `[1; 2; 3]` |
+| `option A` | `None`、`Some` | `Some 5` |
+| `A * B` | 唯一的二元组构造子 | `(3, true)` |
+| `sum A B`（`A + B`） | `inl`、`inr` | `inl 3` |
+| `unit` | `tt` | `tt` |
+| `Empty_set` | 无 | 不存在值 |
+
+三个观察：
+
+- **`A * B` 与 `A + B` 的记号容易和乘法加法搞混**——它们在 `type_scope` 作用域里是「积类型/和类型」（对偶与变体），在 `nat_scope` 里才是算术。`Locate "*"` 可以看到全部绑定（实测时你会发现 `*` 的解释比 `+` 还多）；
+- **`list`/`option` 都是「参数化类型」**：装什么类型的东西由 `A` 决定，这叫多态（4.5 节）；
+- **`Empty_set` 没有构造子**——造不出任何值。按 Curry–Howard，它对应「假命题」：`Empty_set -> A` 类型的函数能从「假」推出任何东西（第 14 章用它定义否定）。
+
+### 4.3 万物皆有类型，类型也有类型
+
+Coq 是「三层都有一致结构」的系统：值有类型，类型也有类型（称为 **sort**），sort 之上还有层级：
+
+```coq
+Check 3.       (* 3 : nat *)
+Check nat.     (* nat : Set *)
+Check bool.    (* bool : Set *)
+Check Set.     (* Set : Type *)
+Check Type.    (* Type : Type —— 打印时隐藏层级编号 *)
+```
+
+三个 sort 的分工，初学阶段记这个版本就够：
+
+| Sort | 住着谁 | 例子 |
+|---|---|---|
+| `Set` | 数据类型 | `nat`、`bool`、`list nat` |
+| `Prop` | 命题 | `3 = 3`、`forall n, n + 0 = n` |
+| `Type` | 上面两者共同的「父类」 | `Set : Type`、`Prop : Type`，以及 `list` 这样的类型构造子 |
+
+日常说「类型」时通常指 `Set`/`Type` 层的居民；说「命题」指 `Prop` 层的居民。**Prop 里的东西不可计算**——`3 = 3` 不能 `Compute`，它只能被证明或证伪；这与接下来这条对照着记。
+
+### 4.4 Prop 与 bool 的第一次照面
+
+新手最困惑的一对：`3 = 3`（Prop）与 `Nat.eqb 3 3`（bool）有什么区别？
+
+```coq
+Check (3 = 3).       (* 3 = 3 : Prop *)
+Check (Nat.eqb 3 3). (* Nat.eqb 3 3 : bool *)
+Compute (Nat.eqb 3 3).  (* = true : bool *)
+Compute (3 = 3).        (* = 3 = 3 : Prop —— 不报错！见下 *)
+```
+
+- **bool 是数据**：`true`/`false` 两个值，程序可以对它 match、if、计算——**运行时**用来做分支；
+- **Prop 是命题**：`3 = 3` 是一个断言，回答它要靠**构造证明**，而不是「算」。
+
+有个容易想当然的地方（实测）：`Compute (3 = 3).` 并不报错——它打印 `= 3 = 3 : Prop`。Compute 只是把命题这个项**规范化后原样还给你**，它不回答「成立与否」；`3 = 3` 也不是 `true`。命题的真假是证明的事，求值帮不上忙。
+
+「都是相等性，为什么要两套？」——因为它们回答不同的问题：`Nat.eqb 3 3` 问「程序算出来是不是 true」（可计算但只对具体值有意义）；`3 = 3` 及其推广 `forall n, n + 0 = n` 表达数学断言（覆盖无穷多情况，无法靠计算穷尽）。两座桥（`Nat.eqb_eq`：bool 等于 true 当且仅当命题成立）在第 15 章的 reflect 主题下正式讲。
+
+### 4.5 类型推断：标注可省则省
+
+Coq 的类型推断能力与 OCaml 同源（都源自 Hindley–Milner 传统，Coq 加了依赖类型的扩展），绝大多数标注可以省：
+
+```coq
+Definition fortytwo := 42.
+Check fortytwo.        (* fortytwo : nat —— 推断出来的 *)
+
+Definition double (n : nat) : nat := 2 * n.
+Definition double' n := 2 * n.
+Check double'.         (* double' : nat -> nat —— 参数类型也能推 *)
+```
+
+但**省标注不等于不检查**：
+
+```coq
+Fail Check (double true).
+(* The term "true" has type "bool" while it is expected
+   to have type "nat". *)
+```
+
+什么时候该写标注？本教程的习惯：**公开定义写全**（`Definition f (n : nat) : nat := ...`）——类型即文档且防推断意外；**内部辅助小函数**可省。教学代码一律写全。
+
+### 4.6 多态与隐式参数
+
+「对任何类型 A 都成立」的函数，把 A 作为参数：
+
+```coq
+Definition id {A : Type} (a : A) : A := a.
+```
+
+花括号 `{A : Type}` 表示**隐式参数**：调用时不用写，由其他参数推断：
+
+```coq
+Check (id 10).       (* id 10 : nat —— A 被推断为 nat *)
+Check (id true).     (* id true : bool —— A 被推断为 bool *)
+Check (@id nat 10).  (* @id nat 10 : nat —— @ 关掉隐式，手动给全 *)
+```
+
+`@` 是个重要前缀：「接下来的参数全部显式给」。两个使用场景：
+
+1. 想显式指定隐式参数（推断结果不合意时）；
+2. 引用多态常量本身——`Check id.` 只会看到 `id : forall A : Type, A -> A`，而 `Check (@id nat).` 能谈到「nat 版本的 id」。
+
+标准库的空表与拼表也这样用：
+
+```coq
+Check (@nil nat).        (* @nil nat : list nat —— 空表要说明装什么 *)
+Check (cons true nil).   (* (true :: nil)%list : list bool *)
+```
+
+注意打印时 Coq 自动换用 `::` 记号显示。`list` 的 `A` 是隐式的，所以 `[1; 2]` 不需要写 `list nat [1; 2]`——糖衣之下，一切仍是显式的类型检查（第 8 章展开列表）。
+
+### 4.7 构造子的纪律
+
+每个构造子只接受**自己类型声明的参数**，一点不含糊：
+
+```coq
+Fail Check (S true).
+(* The term "true" has type "bool" while it is expected
+   to have type "nat". *)
+```
+
+`S` 只吃 nat。跨类型转换不存在「隐式提升」——整数转浮点、char 转 int 这类 C 的日常，在 Coq 里都必须显式发生。这在证明语境是刚需：**隐式转换是逻辑漏洞的温床**（`0.999... == 1` 型的意外），Coq 从类型层根除了它们。
+
+### 4.8 本章坑位清单（实测）
+
+1. **以为 `3` 是机器整数**：它是 `S (S (S O))`；性能敏感场景第 22 章换 `N`/`Z`；
+2. **以为 `Compute (Nat.pow 2 100)` 只是慢**：实测直接 **内存耗尽**——一元表示撑不起大数，`Check` 装得下≠`Compute` 算得动；
+3. **以为 `Compute (3 = 3)` 会报错**：实测打印 `= 3 = 3 : Prop`——求值只做规范化，不回答命题真假；
+4. **隐式参数想显式给却忘了 `@`**：`Check (id nat 10).` 会把 nat 当成 A 的值——必须 `@id nat 10`（实测如期失败）；
+5. **`A * B` / `A + B` 与算术混淆**：作用域决定含义，怀疑时 `Locate "+"`；
+6. **以为类型标注是「建议」**：写错照样编译失败，标注参与检查，不是注释。
+
+---
+
+## 第 5 章 表达式与运算符
+
+对应示例：`examples/05_expressions.v`
+
+### 5.1 记号是语法糖：从 + 到 Nat.add
+
+Coq 里几乎所有中缀运算符都是**记号**（notation）——漂亮的表面语法，底下是普通函数应用：
+
+```coq
+Locate "+".
+(* Notation "x + y" := (Nat.add x y) : nat_scope  <-- 默认生效 *)
+Compute (Nat.add 2 3).   (* = 5 : nat *)
+Compute (2 + 3).         (* = 5 : nat —— 与上一行完全等价 *)
+```
+
+这不是知识炫技，而是**排错技能**：当 `+` 的行为诡异时（比如作用域不对），把它还原成 `Nat.add` 再看，问题立刻显形。记号按**作用域**解释，同一个符号在不同作用域是不同的函数——这是 Coq 与 C 系语言「运算符重载」的本质区别：绑定是**全局声明式**的，且随时可查（`Locate`）。
+
+### 5.2 nat 算术全家福与两大坑
+
+先给表（全部实测）：
+
+| 运算 | 写法 | 例子与结果 |
+|---|---|---|
+| 加 | `x + y` | `2 + 3 = 5` |
+| 减 | `x - y` | **`1 - 2 = 0`**（截断！） |
+| 乘 | `x * y` | `6 * 7 = 42` |
+| 除 | `x / y` | `7 / 2 = 3`；**`5 / 0 = 0`**；需 `Arith` |
+| 模 | `x mod y` | `5 mod 2 = 1`；`0 mod 5 = 0`；需 `Arith` |
+| 最大/最小 | `Nat.max` / `Nat.min` | `Nat.max 3 7 = 7` |
+| 幂 | `Nat.pow` | `Nat.pow 2 10 = 1024` |
+
+nat 是自然数——**没有负数**。于是两个从 C/Python 带来的直觉当场翻车：
+
+**坑一：截断减法。**
+
+```coq
+Compute (1 - 2).   (* = 0 : nat —— 不是 -1！ *)
+```
+
+减到 0 就停。若你的算法依赖负中间结果（比如有向差值），要么换 `Z`（见 5.6），要么先 `Nat.max` 钳住方向。更要命的是证明：`n - n = 0` 对，但 `n - m + m = n` **不对**（m > n 时翻车），依赖算术直觉前先想想截断。
+
+**坑二：除以 0 不崩溃，规定为 0。**
+
+```coq
+Compute (5 / 0).   (* = 0 : nat —— 不是异常，是定义 *)
+```
+
+`x / 0 = 0` 是标准库的规定。它保证了除法**全函数**（任何输入都有输出，证明好做），代价是「除零错误」在 Coq 里**静默**发生——把错误吞进值里。工程上警惕：从 C 移植的算法若隐含「除零必崩」的假设，在 Coq 里不会崩，只会悄悄算错。
+
+还有一个语法层面的坑（实测）：`- 1` 这样的**一元负号在 nat 上不存在**——`Fail Check (- 1).` 如期失败（记号未绑定）。要负数，下一节的 Z 在等你。
+
+### 5.3 比较：eqb / leb / ltb
+
+nat 的比较函数返回 **bool**（可计算的数据）：
+
+| 函数 | 记号 | 语义 |
+|---|---|---|
+| `Nat.eqb a b` | `a =? b` | 相等？ |
+| `Nat.leb a b` | `a <=? b` | a ≤ b？ |
+| `Nat.ltb a b` | `a <? b` | a < b？ |
+
+```coq
+From Coq Require Import Arith.   (* 三个记号都要它（实测） *)
+
+Compute (Nat.eqb 3 3).   (* = true *)
+Compute (Nat.leb 3 7).   (* = true *)
+Compute (Nat.ltb 7 3).   (* = false *)
+```
+
+记号 `=?` `<=?` `<?` 的后缀 `?` 是精心设计：**提醒你返回的是 bool（可能为假的问题）而非 Prop（已被证明的断言）**。两套体系在 4.4 节见过面，第 15 章正式架桥。
+
+用比较函数拼一个有意义的定义：
+
+```coq
+Definition abs_diff (a b : nat) : nat :=
+  if Nat.leb a b then b - a else a - b.
+```
+
+这是典型的 Coq 小函数模式：**用 `leb` + `if` 做分支**。第 13 章会证明它的性质（比如 `abs_diff a b = abs_diff b a`），到时候你会体会到「函数按结构写，证明才好做」。
+
+### 5.4 bool 运算
+
+三个基础函数，名字直白：
+
+```coq
+Compute (andb true false).   (* = false —— 与，记号 && *)
+Compute (orb true false).    (* = true  —— 或，记号 || *)
+Compute (negb true).         (* = false —— 非 *)
+```
+
+与 C 不同的是：**没有隐式真值**——`if 1 then ...` 这种写法在多数语言里要么合法（C 的非零即真）要么报错（Java），在 Coq 里的真实行为出乎意料，是下一节的头号坑。
+
+顺带一个实测坑：`&&` `||` 记号**默认不可用**（报 `Unknown interpretation for notation "_ && _"`）——它们绑定在 `bool_scope` 里，而这个作用域默认没开。要么 `Open Scope bool_scope.`，要么老老实实写 `andb`/`orb`（本教程示例用后者）。这和 `/` `mod` `=?` `^` 需要 `Arith` 是同一类问题：**记号是按作用域懒加载的，裸环境只有最基础的一套**。
+
+### 5.5 if 的真身（本章大坑，实测）
+
+教科书会告诉你「Coq 的 if 条件必须是 bool」。**实测不是**：
+
+```coq
+Compute (if 1 then 2 else 3).   (* = 3 : nat —— 编译通过！走了 else！ *)
+Compute (if 0 then 2 else 3).   (* = 2 : nat —— 走了 then *)
+```
+
+`1` 是 nat，怎么就能 if 了？因为 **Coq 的 if 是两分支 match 的语法糖**：条件可以是**任何恰好有两个构造子的归纳类型**——第一个构造子走 then，第二个走 else。`nat` 恰好只有 `O` 和 `S` 两个构造子，于是 `if n` 就是 `match n with O => then分支 | S _ => else分支 end`：**0 当「假」、非零当「真」**——不小心复刻了 C 的语义！
+
+bool 只是「两构造子俱乐部」里最常用的成员（`true` 第一个、`false` 第二个，所以行为「正常」）；另一个常客是 `sumbool`（`left`/`right`，第 14 章登场）。构造子数量不是两个就真的不行——`Z` 有三个：
+
+```coq
+Fail Compute (if 1%Z then 2 else 3).   (* 如期失败 *)
+```
+
+实用结论有三条：
+
+1. **别写 `if n then ...`（条件是 nat）**——合法但可读性陷阱，明确用 `Nat.eqb n 0` 表达意图；
+2. 看到别人代码里条件不是 bool 不要惊讶，先 `Print` 一下条件类型数数构造子；
+3. 反过来，你自己定义的两构造子类型（第 9 章会定义一堆）天然支持 if——这是设计 API 的小甜头。
+
+### 5.6 Z 速览：%Z 作用域
+
+要负数、要机器风格的整数运算，用 `Z`（无界二进制有符号整数，第 22 章详解）：
+
+```coq
+From Coq Require Import ZArith.
+
+Compute (2 - 5)%Z.     (* = -3 : Z *)
+Compute (- 3)%Z.       (* = -3 : Z —— 一元负号在 Z 上才有 *)
+Compute (Z.pow 2 10).  (* = 1024 : Z *)
+Compute (2 - 5).       (* = 0 : nat —— 括号外默认仍是 nat *)
+```
+
+`%Z` 是**作用域限定符**：只在这对括号里，把数字和运算符解释成 Z 的。这是 Coq 处理「一个记号多种解释」的标准姿势——比全局 `Open Scope Z_scope.` 更可控（全局开作用域会让整个文件后面的 `2 + 3` 都变成 Z 加法，新手极易踩）。建议：**教学与小段代码用 `%Z` 局部限定；确实整段都是 Z 运算时再 Open Scope，并且 Open 在哪个 Module 里就只在哪个里生效**。
+
+nat 与 Z 怎么选，第 22 章给决策表。现阶段记住一句话：**写证明用 nat（形状简单，归纳友好），做计算用 Z（二进制，快）**。
+
+### 5.7 本章坑位清单（实测）
+
+1. **`1 - 2 = 0`（截断减法）**：nat 无负数；依赖负中间结果的算法换 Z 或重排计算；
+2. **`5 / 0 = 0`（除零静默）**：不崩溃、悄悄定义成 0，移植算法时警惕隐含假设；
+3. **一堆记号默认不存在**：`/`、`mod`、`=?`、`<=?`、`<?`、`^` 都需要先 `Require Import Arith`；`&&`、`||` 需要 `Open Scope bool_scope`——裸环境只有 `+ - *` 和 `andb/orb/negb`（全部实测）；
+4. **`if 1 then 2 else 3` 合法且 = 3**：if 是两构造子 match 的糖，nat 的 O/S 恰好符合——别被「条件必须 bool」的直觉骗了（5.5 节）；
+5. **一元负号 `- 1` 在 nat 上不存在**：解析失败；负数去 `%Z`；
+6. **`=?` `<=?` 是 bool 运算，`=` `<=` 是 Prop 关系**：混用会得到「类型不匹配」错误，看到 `?` 想到「可计算提问」。
+
+---
+
+<!-- BATCH1-CONTINUES -->
 
