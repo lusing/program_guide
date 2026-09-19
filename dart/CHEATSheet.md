@@ -203,7 +203,7 @@ group('主题', () {
 dart run file.dart              # JIT 运行
 dart analyze                    # 静态检查（本教程标准：零告警）
 dart format .                   # 官方格式化
-dart compile exe file.dart -o out.exe   # AOT
+dart compile exe file.dart -o out       # AOT（Windows 下产物为 out.exe）
 dart pub get / add <pkg>        # 依赖
 dart test [--plain-name "…"]    # 测试
 dart create -t console name     # 脚手架

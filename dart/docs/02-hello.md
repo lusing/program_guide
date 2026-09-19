@@ -52,27 +52,28 @@ void main(List<String> args) {
 
 同一个文件，两种跑法，对应第 01 章的编译模型表：
 
-```powershell
+```bash
 # 开发：JIT，改完即跑，无需构建步骤
 dart run examples/02_hello.dart
 
 # 发布：AOT，编译成单文件原生可执行文件
-dart compile exe examples/02_hello.dart -o build/02_hello.exe
+dart compile exe examples/02_hello.dart -o build/02_hello          # macOS/Linux
+dart compile exe examples/02_hello.dart -o build/02_hello.exe      # Windows
 ```
 
 | | `dart run` | `dart compile exe` |
 |---|---|---|
 | 启动 | 略慢（JIT 预热） | 毫秒级 |
-| 产物 | 无 | 单文件 exe，可拷给没装 Dart 的机器 |
+| 产物 | 无 | 单文件原生可执行文件（macOS: Mach-O / Linux: ELF / Windows: .exe），可拷给没装 Dart 的同平台机器 |
 | 迭代 | 秒级 | 每次改动都要重新编译 |
 
-开发期全用前者；本教程的 build.ps1 在验证时额外把本示例 AOT 编译一次，证明发布链路可用。
+开发期全用前者；本教程的构建脚本（`build.sh` / `build.ps1`）在验证时额外把本示例 AOT 编译一次，证明发布链路可用。
 
 ## 2.5 工具三件套
 
 写完第一个程序，把日常工具带上：
 
-```powershell
+```bash
 dart analyze     # 静态检查：错误、警告、风格建议（IDE 底层就是它）
 dart format .    # 按官方风格格式化整个目录
 dart create -t console my_tool   # 脚手架：新建一个 console 工程
@@ -94,4 +95,4 @@ dart create -t console my_tool   # 脚手架：新建一个 console 工程
 - **`print` 走 stdout**：错误信息应该用 `stderr.writeln`（第 20 章实战会用到），两者在管道重定向时是分开的流。
 - **插值花括号忘了写**：`'$user.name'` 解析成 `$user` + 文本 `.name`，要 `'${user.name}'`；凡是取成员/调用方法，一律 `${}`。
 - **退出码不是 `return` 出来的**：`main` 返回 `void`；要设置进程退出码用 `exit(64)`（dart:io），第 20 章 有完整示范。
-- **Windows 控制台中文乱码**：那是终端编码问题（chcp 65001 可解），不是 Dart 把字打错了。
+- **Windows 控制台中文乱码（仅 Windows）**：那是终端编码问题（`chcp 65001` 可解），不是 Dart 把字打错了。macOS/Linux 终端默认 UTF-8，无此问题。

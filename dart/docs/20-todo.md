@@ -4,7 +4,7 @@
 
 ## 20.1 成品与目标
 
-本章把 19 章的知识拼成一件完整的产品：一个命令行待办管理器。先看它跑起来的样子（`build.ps1 -Project 20_todo` 的演示序列实跑输出）：
+本章把 19 章的知识拼成一件完整的产品：一个命令行待办管理器。先看它跑起来的样子（`./build.sh --project 20_todo` 或 `build.ps1 -Project 20_todo` 的演示序列实跑输出）：
 
 ```text
 $ dart run bin/todo.dart -f build/todo-demo.json add 买牛奶

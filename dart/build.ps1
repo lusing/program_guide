@@ -12,7 +12,7 @@ Set-Location $projectRoot
 # 示例输出含中文：统一 UTF-8，避免默认编码乱码
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-# Dart 可执行文件：优先 current，回退扫描版本目录
+# Dart 可执行文件：优先 scoop 安装路径，回退 PATH 中的 dart
 $dartExe = "G:\scoop\apps\dart\current\bin\dart.exe"
 if (-not (Test-Path -LiteralPath $dartExe)) {
     $candidates = Get-ChildItem -LiteralPath "G:\scoop\apps\dart" -Directory -ErrorAction SilentlyContinue |
@@ -22,7 +22,12 @@ if (-not (Test-Path -LiteralPath $dartExe)) {
     if ($candidates) {
         $dartExe = @($candidates)[0]
     } else {
-        throw "未找到 Dart 可执行文件，请检查 G:\scoop\apps\dart 安装。"
+        $pathDart = Get-Command dart -ErrorAction SilentlyContinue
+        if ($pathDart) {
+            $dartExe = $pathDart.Source
+        } else {
+            throw "未找到 Dart 可执行文件，请确认 dart 在 PATH 中或检查 G:\scoop\apps\dart 安装。"
+        }
     }
 }
 
@@ -143,7 +148,8 @@ if ($All) {
     }
 
     New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
-    Invoke-Dart 'AOT' @('compile', 'exe', 'examples/02_hello.dart', '-o', 'build/02_hello.exe')
+    $aotOut = if ($IsWindows -or $env:OS -eq 'Windows_NT') { 'build/02_hello.exe' } else { 'build/02_hello' }
+    Invoke-Dart 'AOT' @('compile', 'exe', 'examples/02_hello.dart', '-o', $aotOut)
 
     foreach ($name in $nestedPackages) {
         Invoke-Nested $name

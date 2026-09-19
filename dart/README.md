@@ -10,7 +10,8 @@ dart/
 ├── docs/                   20 章教程（01 → 20 顺序阅读）
 ├── examples/               17 个单文件示例 + 19_testing/、20_todo/ 两个完整工程
 ├── test/                   根包行为验证测试（12 例）
-├── build.ps1               统一构建脚本（须 PowerShell 7 / pwsh 运行）
+├── build.sh                统一构建脚本（macOS / Linux）
+├── build.ps1               统一构建脚本（Windows，须 pwsh 7）
 ├── pubspec.yaml            根包（dev: lints, test）
 └── CHEATSheet.md           语法速查
 ```
@@ -42,17 +43,29 @@ dart/
 
 ## 构建工具链
 
-- Dart SDK：`G:\scoop\apps\dart\current\bin\dart.exe`（3.13.4，详见[第 01 章](docs/01-overview.md)）
-- 构建脚本须 **pwsh 7** 运行（含中文无 BOM，Windows PowerShell 5.1 会误读）
+- Dart SDK：运行 `which dart`（macOS/Linux）或 `where dart`（Windows）确认路径（需 3.13+，详见[第 01 章](docs/01-overview.md)）
+- macOS / Linux 用 `./build.sh`；Windows 用 `pwsh build.ps1`（须 pwsh 7，脚本含中文无 BOM，Windows PowerShell 5.1 会误读）
 
 ## 编译验证
 
+macOS / Linux：
+
+```bash
+./build.sh --all                             # 全量：analyze + 运行全部示例 + AOT + 测试
+./build.sh --file 06_collections.dart        # 运行单个示例
+./build.sh --project 20_todo                 # 验证嵌套工程（含测试与演示序列）
+./build.sh --test                            # 根包 analyze + test
+./build.sh --clean                           # 清理 build 与 .dart_tool
+```
+
+Windows（须 pwsh 7）：
+
 ```powershell
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All                    # 全量：analyze + 运行全部示例 + AOT + 测试
-pwsh -ExecutionPolicy Bypass -File build.ps1 -File 06_collections.dart   # 运行单个示例
-pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 20_todo        # 验证嵌套工程（含测试与演示序列）
-pwsh -ExecutionPolicy Bypass -File build.ps1 -Test                   # 根包 analyze + test
-pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean                  # 清理 build 与 .dart_tool
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All
+pwsh -ExecutionPolicy Bypass -File build.ps1 -File 06_collections.dart
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 20_todo
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Test
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean
 ```
 
 行为分级：02–18 章单文件示例实际运行；02_hello 额外 AOT 编译验证；19/20 章完整工程跑 `dart test`，20 章再以演示序列运行（add/list/done/remove）。

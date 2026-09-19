@@ -71,17 +71,26 @@ dev_dependencies:     # 只在开发/测试期需要的依赖（如 test、lints
 每章的学法固定三步：**读讲解 → 跑示例 → 改代码再跑**。
 
 ```bash
-cd G:\code\guide\dart
+cd /path/to/dart          # 进入本教程根目录（Windows: cd G:\code\guide\dart）
 dart run examples/03_variables.dart    # 单跑某个示例
 ```
 
-全量验证用构建脚本（**须 PowerShell 7 / pwsh 运行**，脚本含中文且无 BOM，Windows PowerShell 5.1 会误读）：
+全量验证用构建脚本（macOS/Linux 用 `build.sh`，Windows 用 `build.ps1`，后者须 pwsh 7——脚本含中文无 BOM，Windows PowerShell 5.1 会误读）：
+
+```bash
+./build.sh --all                             # 全量：analyze + 运行 + AOT + 测试
+./build.sh --file 06_collections.dart        # 单示例
+./build.sh --project 20_todo                 # 嵌套工程（含测试）
+./build.sh --test                            # 根包 analyze + test
+```
+
+Windows 等效命令：
 
 ```powershell
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All                  # 全量：analyze + 运行 + AOT + 测试
-pwsh -ExecutionPolicy Bypass -File build.ps1 -File 06_collections.dart   # 单示例
-pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 20_todo      # 嵌套工程（含测试）
-pwsh -ExecutionPolicy Bypass -File build.ps1 -Test                 # 根包 analyze + test
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All
+pwsh -ExecutionPolicy Bypass -File build.ps1 -File 06_collections.dart
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 20_todo
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Test
 ```
 
 行为分级：02–18 章的单文件示例实际运行；02_hello 额外 AOT 编译验证；19/20 章的完整工程跑 `dart test`，20 章再以演示序列运行。
@@ -97,7 +106,7 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -Test                 # 根包 anal
 
 ## 坑位清单
 
-- **PowerShell 5.1 乱码**：本仓库脚本与示例输出都含中文，一律 pwsh 7；旧版 PowerShell 按 ANSI 读无 BOM 文件会把中文读烂。
+- **PowerShell 5.1 乱码（仅 Windows）**：本仓库脚本与示例输出都含中文，Windows 上一律用 pwsh 7；旧版 PowerShell 按 ANSI 读无 BOM 文件会把中文读烂。macOS/Linux 终端默认 UTF-8，无此问题。
 - **`dart run` 首次较慢**：会先做依赖解析与 JIT 预热，不是卡死；AOT 后的程序没有这个延迟。
 - **别用 `dart file.dart` 直接跑带 package 依赖的文件**：依赖解析需要 `dart run` 的工程上下文（本教程 02–18 章示例零依赖，两种方式等价，但习惯统一用 `dart run`）。
 - **`dart analyze` 比 IDE 更严**：本教程标准是零告警，命令行以它为准。

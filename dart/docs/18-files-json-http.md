@@ -107,6 +107,6 @@ dart:io 自带 HTTP 服务器与客户端，一个"自测型"示例收尾——*
 
 - **裸用 jsonDecode 结果**：`decoded['a']['b']` 全程 dynamic，拼错字段名运行时才炸——尽快 `as` 进具体类型（18.4 模板）。
 - **相对路径依赖 cwd**：`File('data.json')` 的相对基准是**运行目录**不是源码目录；跨机器用绝对路径或启动参数传（第 20 章的 `-f` 设计）。
-- **HttpServer 不 close**：进程挂着不退出；本教程 build 脚本跑示例时就会当场暴露。
+- **HttpServer 不 close**：进程挂着不退出；本教程构建脚本跑示例时就会当场暴露。
 - **忘设 Content-Type**：客户端拿到的就是纯文本；JSON 接口必设 `ContentType.json`。
-- **Windows 路径**：拼接用 `/` 在 Windows 的 dart:io 也能工作，但展示给用户时留意 `Platform.pathSeparator`。
+- **路径分隔符**：Dart 的 `dart:io` 在三个平台都认 `/`，拼接路径统一用 `/` 即可（或 `package:path` 的 `p.join`）。仅 Windows 上展示给用户时留意 `Platform.pathSeparator` 是 `\`。
