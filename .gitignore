@@ -79,3 +79,6 @@ freepascal/examples/*/selftest.log
 
 # Swift Package Manager build output (root package + nested packages)
 swift/**/.build/
+
+# Haskell 16 章示例运行沙盒（运行时自建自删，异常中断可能残留）
+haskell/examples/16_files/scratch16/
