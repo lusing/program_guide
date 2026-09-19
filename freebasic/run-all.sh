@@ -38,7 +38,10 @@ compile_run() {  # $1=dir  层循环内复用
     [ "${#srcs[@]}" -gt 0 ] || fail "$dir 下没有 .bas"
     for layer in "-g -exx" ""; do
         flags=(-w all)
-        [ -n "$layer" ] && flags+=("$layer")
+        if [ -n "$layer" ]; then
+            read -ra extra <<< "$layer"     # "-g -exx" 拆成两个参数
+            flags+=("${extra[@]}")
+        fi
         exe="$(pwd)/build/${name}.exe"
         "$FBC" "${flags[@]}" "${srcs[@]}" -x "$exe" 2>build/fbc_diag.txt || { cat build/fbc_diag.txt >&2; fail "$name $layer 编译失败"; }
         [ -s build/fbc_diag.txt ] && { cat build/fbc_diag.txt >&2; fail "$name $layer 编译有诊断输出"; }
