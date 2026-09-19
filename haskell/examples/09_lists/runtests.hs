@@ -44,7 +44,7 @@ main = do
         ]
     s3 <- runSuite "推导与筛"
         [ expectEq "勾股小边界" (pythagTriples 5) [(3, 4, 5)]
-        , expectEq "勾股去重" (length (pythagTriples 13)) 2
+        , expectEq "勾股数 (6,8,10) 在列" (length (pythagTriples 13)) 3
         , expectEq "素数" (firstPrimes 6) [2, 3, 5, 7, 11, 13]
         , expectEq "素数边界" (last (firstPrimes 10)) 29
         ]
