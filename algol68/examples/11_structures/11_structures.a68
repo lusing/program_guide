@@ -1,0 +1,79 @@
+# 11 · 结构（STRUCT）与联合（UNION）：选择符 OF、嵌套、合规分派 #
+BEGIN
+  INT fails := 0;
+  PROC assert = (BOOL cond, STRING msg) VOID:
+    IF NOT cond THEN put(stand error, ("FAIL: ", msg, new line)); fails +:= 1 FI;
+
+  # ═══ 11.1 MODE STRUCT：把几个字段打包成一个新模 ═══ #
+  MODE POINT = STRUCT(INT x, y);          # 同模字段可合并写 INT x, y #
+  POINT p := (3, 4);
+  print(("p = (", whole(x OF p, 0), ",", whole(y OF p, 0), ")", new line));
+  assert(x OF p = 3 AND y OF p = 4, "结构初值");
+
+  # ═══ 11.2 选择符 OF 取字段；可被赋值（就地改） ═══ #
+  x OF p := 10;
+  print(("改 x OF p := 10 后，x = ", whole(x OF p, 0), new line));
+  assert(x OF p = 10, "字段可改");
+
+  # ═══ 11.3 混合字段类型 ═══ #
+  MODE PERSON = STRUCT(STRING name, INT age, REAL height);
+  PERSON me := ("Ada", 36, 1.70);
+  print(("name=", name OF me, "  age=", whole(age OF me, 0),
+         "  height=", fixed(height OF me, 0, 2), new line));
+  assert(age OF me = 36, "整数字段");
+
+  # ═══ 11.4 嵌套结构：OF 可以连写 ═══ #
+  MODE RECT = STRUCT(POINT tl, br);
+  RECT r := ((0, 0), (5, 8));
+  print(("rect 右下角 = (", whole(x OF br OF r, 0), ",", whole(y OF br OF r, 0), ")", new line));
+  assert(y OF br OF r = 8, "嵌套选择");
+  # 面积 #
+  INT area := (x OF br OF r - x OF tl OF r) * (y OF br OF r - y OF tl OF r);
+  print(("面积 = ", whole(area, 0), new line));
+  assert(area = 40, "5*8=40");
+
+  # ═══ 11.5 结构数组 ═══ #
+  [1:3] POINT poly := ((0, 0), (4, 0), (0, 3));
+  print(("第三个顶点 y = ", whole(y OF poly[3], 0), new line));
+  assert(x OF poly[2] = 4, "结构数组取字段");
+
+  # ═══ 11.6 给结构定义运算符，让它像值类型一样用 ═══ #
+  # 坑：裸写 (1,2) 会被当成 COMPLEX（a68g 有复数模），不是 POINT。 #
+  #     要先声明成 POINT 变量，运算符才知道给哪个模重载。 #
+  OP + = (POINT a, b) POINT: (x OF a + x OF b, y OF a + y OF b);
+  POINT p1 := (1, 2), p2 := (3, 4);
+  POINT sum := p1 + p2;
+  print(("(1,2)+(3,4) = (", whole(x OF sum, 0), ",", whole(y OF sum, 0), ")", new line));
+  assert(x OF sum = 4 AND y OF sum = 6, "结构加法");
+
+  # ═══ 11.7 MODE UNION：一个值可以是若干模之一（受约束的动态类型） ═══ #
+  MODE NUM = UNION(INT, REAL, STRING);
+  PROC describe = (NUM u) VOID:
+    CASE u IN                            # 合规分派：按当前实际模选分支 #
+      (INT    i):  print(("  这是整数 ", whole(i, 0), new line)),
+      (REAL   rr): print(("  这是实数 ", fixed(rr, 0, 2), new line)),
+      (STRING ss): print(("  这是字符串 [", ss, "]", new line))
+    ESAC;
+  print(("UNION 分派：", new line));
+  describe(42);
+  describe(3.5);
+  describe("hi");
+
+  # ═══ 11.8 UNION 也能被断言：取出当前分支的值 ═══ #
+  PROC as_int = (NUM u) INT:
+    CASE u IN
+      (INT i): i,
+      (REAL rr): ENTIER rr,
+      (STRING ss): 0
+    ESAC;
+  assert(as_int(42) = 42, "INT 分支取值");
+  assert(as_int(3.9) = 3, "REAL 分支截断");
+
+  # 坑：a68g 没有独立的「IS」布尔合规测试（u IS (INT) 语法错）； #
+  #     判断联合当前是哪个模，就用 CASE ... IN ... ESAC 分派。 #
+  print(("提示：判断 UNION 实际模用 CASE 分派，无独立 IS 布尔测试", new line));
+
+  print(("==== 11 结束 ====", new line));
+  IF fails > 0 THEN print(("自检失败 ", fails, " 项", new line))
+  ELSE print(("自检全部通过", new line)) FI
+END

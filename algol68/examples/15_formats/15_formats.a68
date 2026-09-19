@@ -1,0 +1,89 @@
+# 15 · 格式化输出：FORMAT、printf/putf、格式图形 ★ #
+# 第 14 章用 print/put 做「简单输出」；本章讲 Algol 68 的强项——FORMAT 格式化。 #
+# 核心：$...$ 之间是「格式文本」，由「图形（picture）」+「字面量」+「分隔符」组成。 #
+BEGIN
+  INT fails := 0;
+  PROC assert = (BOOL cond, STRING msg) VOID:
+    IF NOT cond THEN put(stand error, ("FAIL: ", msg, new line)); fails +:= 1 FI;
+
+  # ═══ 15.1 print/put 是「简单输出」；printf/putf 才吃 FORMAT ═══ #
+  # print(x)  ≡ put(stand out, x)      —— 直接吐值的字符表示 #
+  # printf(z) ≡ putf(stand out, z)     —— z 是 (FORMAT, 值...) 的行列 #
+  # 关键调用形：printf(($格式$, 值1, 值2, ...))  —— 整个是一个「并列子句」当单一实参 #
+  print(("简单输出：", whole(42, 0), " ", fixed(3.5, 4, 2), new line));
+  printf(($"格式化：整数=" 3d , " 实数=" zz.zz l$, 42, 3.5));
+
+  # ═══ 15.2 整数图形：Nd（N 位零填充）、-Nd/+Nd（带符号）、z（零抑制）═══ #
+  printf(($"3d  -> [" 3d "]" l$, 7));            # 007（补足 3 位） #
+  printf(($"5d  -> [" 5d "]" l$, 42));           # 00042 #
+  printf(($"+5d -> [" +5d "]" l$, 42));           # +00042（强制显号） #
+  printf(($"-5d -> [" -5d , "] / [" -5d , "]" l$, 42, -42));  # 负才显号：00042 / -0042 #
+  printf(($"zzzz-> [" zzzz "]" l$, 42));          # 零抑制：前导零变空格 → "  42" #
+
+  # ═══ 15.3 实数图形：g（通用）、zz.zzz（定点）、d.ddde sdd（科学计数）═══ #
+  printf(($"g(0)   -> [" g(0) "]" l$, 2.5));               # 通用，0=默认精度 #
+  printf(($"zz.zzz -> [" zz.zzz "]" l$, 3.14159));         # 定点 3 位小数 #
+  printf(($"d.ddde sdd -> [" d.ddde sdd "]" l$, 2718.28)); # 科学计数 2.718e+3 #
+
+  # ═══ 15.4 字符串图形：Na（定宽 N，字符串须恰好 N 字符）★ ═══ #
+  # 坑：Na 要求被输出的字符串【长度正好 N】，多一位少一位都运行期报错。 #
+  #     一般字符串输出直接用 print/put（自动处理变长），FORMAT 的 a 只适合定宽列。 #
+  STRING code := "ABC";
+  printf(($"3a -> [" 3a "]" l$, code));          # code 恰好 3 字符 → OK #
+  printf(($"字面量 4a -> [" 4a "]" l$, "wxyz"));  # 字面量恰好 4 → OK #
+
+  # ═══ 15.5 ★★ 最重要的坑：多个图形之间要用「逗号分隔符」，否则整数图形错绑 ★★ ═══ #
+  # 实测：$"a=" 3d " b=" 3d l$ 配 (999,888) → 打出 "a=000 b=999" 再 "a=000 b=888"！ #
+  #   即「只有最后一个整数图形绑到值，前面的全得 0，且格式按值个数重复」。 #
+  # 正解：图形之间加【逗号符号 ,】（它是分隔符，本身不输出任何字符）： #
+  printf(($"正确：a=" 3d , " b=" 3d l$, 999, 888));   # a=999 b=888 ✓ #
+  printf(($"三列：" 2d , 3d , 4d l$, 1, 22, 333));    # 01 022 0333 ✓ #
+  # 记忆点：REAL 图形（g/f）多个并列时不加逗号也能绑对，但【整数 d 图形必须加逗号】。 #
+  #         统一纪律：格式文本里相邻图形一律用 , 分隔，最稳。 #
+
+  # ═══ 15.6 FORMAT 可声明成命名常量，反复套用（报表利器）═══ #
+  # Na 要求字符串恰好 N 字符，故名称字段统一补齐到 8 字符。 #
+  # 各图形间用逗号分隔符（,）——整数图形相邻时这是硬纪律（见 15.5）。 #
+  FORMAT row fmt := $"|" -4d , "|" 8a , "|" zz.zzz , "|" l$;
+  printf((row fmt, 1, "widget  ", 9.5));
+  printf((row fmt, 2, "gizmo   ", 12.25));
+  printf((row fmt, -3, "doohic  ", 0.125));
+
+  # ═══ 15.7 用 FORMAT 写文件：putf(FILE, (格式, 值...)) ═══ #
+  STRING fname := "15_report.txt";
+  FILE outf;
+  INT rc := establish(outf, fname, stand out channel);
+  assert(rc = 0, "establish 成功");
+  put(outf, ("== 库存报表 ==", new line));         # 表头用简单输出即可 #
+  FORMAT line fmt := $2d , " " 8a , " " zz.zz l$;  # 数据行用格式 #
+  putf(outf, (line fmt, 1, "widget  ", 9.50));
+  putf(outf, (line fmt, 2, "gizmo   ", 12.25));
+  close(outf);
+
+  # 读回并逐行核对 #
+  FILE in1;
+  INT ro := open(in1, fname, stand in channel);
+  assert(ro = 0, "open 成功");
+  BOOL at end := FALSE;
+  on logical file end(in1, (REF FILE dummy) BOOL: (at end := TRUE; TRUE));
+  INT nl := 0; STRING buf := " " * 80;
+  WHILE NOT at end DO
+    get(in1, (buf, new line));
+    IF NOT at end THEN nl +:= 1; print(("  ", buf, new line)) FI
+  OD;
+  close(in1);
+  print(("报表行数 = ", whole(nl, 0), new line));
+  assert(nl = 3, "报表应有 3 行（1 表头 + 2 数据）");
+
+  # ═══ 15.8 断言：把关键格式结果钉死（用 whole/fixed 生成串再比对）═══ #
+  # 实测坑：whole/fixed 都会带【符号】且用空格（不是 0）补齐到指定宽度： #
+  #   fixed(3.14159, 6, 3) = "+3.142"（6 宽，3 位小数，四舍五入，前导 +） #
+  #   whole(42, 5)         = "  +42" （5 宽，右对齐，前导 +，空格填充） #
+  # 想要零填充/无符号，用 FORMAT 的 Nd / z 图形（见 15.2），别指望 whole。 #
+  assert(fixed(3.14159, 6, 3) = "+3.142", "fixed 定点：带符号、四舍五入到 3 位");
+  assert(whole(42, 5) = "  +42", "whole 定宽：带符号、空格右对齐");
+
+  print(("==== 15 结束 ====", new line));
+  IF fails > 0 THEN print(("自检失败 ", fails, " 项", new line))
+  ELSE print(("自检全部通过", new line)) FI
+END

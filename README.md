@@ -16,6 +16,7 @@
 这些目录已经按 “专门文件 + 示例目录 + 构建脚本” 的方式落地，并完成了编译验证：
 
 - [Ada](./Ada) — Ada 语言教程与示例，使用 MSYS2 UCRT64 的 GNAT (`gnatmake`) 验证
+- [algol68](./algol68) — Algol 68 教程与示例（20 章对齐 cobol 标准：上戳写法 / 模式 mode 系统 / 一切皆表达式 / 自定义运算符与优先级 / 过程与闭包（含作用域规则）/ 行·结构·联合·引用 / transput 文件 / FORMAT 格式化 / 事件式异常 / 内建并行 PAR·SEMA / 测试方法论 / 库存管理实战），使用 Algol 68 Genie 3.13.3（macOS MacPorts + clang 后端，解释器+C 后端二合一）双通道验证（check `--warnings --notices` / release `-O2`，四条判定 + 两通道输出逐字节一致），18 个示例（02–19）全部通过，双入口 `run-all.sh` / `build.ps1`，CHEATSheet 收录约 130 条实测坑位，详见 [algol68/README.md](./algol68/README.md)
 - [android](./android) — Android 应用开发教程（Kotlin），含 Jetpack Compose 与 JNI 示例，使用 Kotlin/Gradle/NDK 验证
 - [asm/intel](./asm/intel) — x86-64 汇编编程指南，双平台验证：Windows 用 NASM + MSVC link.exe，macOS 用 NASM `-f macho64` + clang/ld（56 个 macOS 示例全部实际编译运行通过）
 - [boost](./boost) — Boost C++ 教程与示例，使用 MSVC + Boost 头文件验证
@@ -43,7 +44,7 @@
 - [haskell](./haskell) — Haskell 教程（GHC 9.12.1，24 章对齐 julia/swift 标准：模式匹配/ADT/类型类/惰性求值/函子-应用-单子/单子变换器/parsec/TH/STM 特色细讲，主线纯 boot 库离线可验证；23 个示例两层验证 编译+运行+测试 六条判定，20/24 为 stack 工程（清华镜像 + compiler 覆盖实测链路），24 为 MiniLang 迷你解释器——词法/语法/求值三层管线 + 递归绑定打结 + 词法作用域闭包；CHEATSheet 收录 32 条实测坑位（GBK 编码/runghc 41s/-Wx-partial/惰性句柄锁/优先级表序/坏 strip shim）
 - [prolog](./prolog) — Prolog 逻辑编程教程与示例，使用 SWI-Prolog 10.0.2 + GNU Prolog 1.5.0 双引擎验证（含 gplc 编译通道）
 - [renpy](./renpy) — Ren'Py 视觉小说与叙事游戏教程，使用 Ren'Py `compile` 验证
-- [kotlin](./kotlin) — Kotlin 2.4 教程（24 章对齐 cpp20/zig/go/rust 标准：空安全/密封与穷尽 when/委托/型变 reified/作用域函数/扩展/协程+Flow/Java 互操作/DSL 细讲，23 个示例四层验证 kotlinc -Werror + kotlin.test + 运行 + 输出快照；17 为 Gradle 多模块工程（JUnit5 + fat jar），18 为 Java/Kotlin 混编两遍法，24 为迷你待办 CLI（手写 JSON 解析器 + 文件存储 + 退出码约定））
+- [kotlin](./kotlin) — Kotlin 2.4 教程（24 章对齐 cpp20/zig/go/rust 标准：空安全/密封与穷尽 when/委托/型变 reified/作用域函数/扩展/协程+Flow/Java 互操作/DSL 细讲，24 个示例四层验证 kotlinc -Werror + kotlin.test + 运行 + 输出快照；17 为 Gradle 多模块工程（JUnit5 + fat jar），18 为 Java/Kotlin 混编两遍法，24 为迷你待办 CLI（手写 JSON 解析器 + 文件存储 + 退出码约定），25 为多平台四目标（js/wasm-js/wasm-wasi/native；native 需 konanc，macOS 无包时跳过）。macOS 与 Windows 双平台实测，classpath 分隔符与产物后缀差异已由脚本吸收）
 - [lean4](./lean4) — Lean4/Mathlib4 教程与示例，使用 Lake + Lean 校验
 - [iosdev](./iosdev) — iOS 应用开发教程（Xcode / Swift / Objective-C / SwiftUI / UIKit，20 章 + 20 个示例），使用 Xcode 16.2（Swift 6.0.3）+ iOS 18.2 SDK 在 iPhone 模拟器里验证（20 个示例 × debug/release 两配置全部通过，两配置 stdout 逐字节一致；示例全部纯命令行编译成 headless 自测，`simctl spawn` 跑，含 ObjC 语言与混编、SwiftUI 主线（状态/布局/列表/绘图动画）、UIKit 补充（Auto Layout/列表复用/手势响应链）、网络并发、持久化、权限通知、打包签名上架；`tools/check_docs.py` 做文档快照漂移检查，详见 [iosdev/README.md](./iosdev/README.md) 的「验证状态」节）
 - [macosdev](./macosdev) — macOS 应用开发教程（Xcode / Swift / Objective-C / Cocoa / AppKit，20 章 + 20 个示例），使用 Xcode 16.2（Swift 6.0.3）SDK + Command Line Tools 双工具链验证（20 个示例 × 2 通道全部通过，双通道输出逐字节一致；示例全部纯命令行编译，含 Objective-C 语言与混编、XIB/nib 编译与 outlet 连线、Cocoa Bindings、打包签名；六条判定标准 + 反向验证，详见 [macosdev/README.md](./macosdev/README.md) 的「验证状态」节）
@@ -125,6 +126,7 @@
 38. [ocaml](./ocaml)
 39. [cobol](./cobol)
 40. [haskell](./haskell)
+41. [algol68](./algol68)
 
 ## 工具链说明
 
@@ -139,6 +141,7 @@
 - MSVC + Boost
 - Coq (coqc)
 - GnuCOBOL 3.2.0 / cobc（COBOL；macOS macports 安装 `/opt/local/bin/cobc`，clang 后端 COBOL→C→原生；Linux/Windows 用发行版包或官方构建；固定格式源码 UTF-8，含中文行须 ≤72 字节）
+- Algol 68 Genie 3.13.3 / a68g（Algol 68；macOS macports 安装 `/opt/local/bin/a68g`，解释器 + clang 后端 a68g→C→原生二合一；Linux/Windows 用发行版包或官网 algol68genie.nl 构建；上戳写法源码 UTF-8，关键字全大写，扩展名 `.a68`；macOS `-O2` 链接缺 `-syslibroot`，脚本用 `ld` 垫片修复）
 - Dart SDK
 - DMD
 - GNU Emacs 31.1 + Emacs Lisp (ELisp)（扩展开发，`emacs -Q --batch` 非交互验证；`run-all.sh` 与 `build.ps1` 双入口）
@@ -161,7 +164,7 @@
 - Rust 1.98.1 / cargo 1.98.0（edition 2024；macOS 实测通道：MacPorts `/opt/local/bin/cargo`；Windows 可 scoop/rustup；两个验证入口都自动探测，不硬编码路径）
 - SBCL 2.6.7（Common Lisp；macOS macports 安装 `/opt/local/bin/sbcl`，Windows scoop 安装；sbcl 目录示例有意绑定 SBCL 扩展，为**单实现通道**）
 - Swift
-- Kotlin Compiler
+- Kotlin Compiler 2.4.20（macOS：MacPorts `/opt/local/share/java/kotlin`；Windows：scoop。两个验证入口 `run-all.sh` / `build.ps1` 自动探测 JDK 21；Kotlin/Native（konanc）macOS 上无包，25 章 native 目标自动跳过）
 - MFC / Win32 桌面框架
 - Xcode 16.2（Swift 6.0.3）SDK + Command Line Tools（macOS 应用开发 / Swift + Objective-C + AppKit + XIB，macports 装 `pwsh`；`ibtool` / `actool` 只在装了 Xcode.app 的机器上存在）
 - Xcode 16.2（Swift 6.0.3）+ iOS 18.2 SDK + iPhone 模拟器（iOS 应用开发 / SwiftUI + UIKit + Swift + Objective-C；iOS SDK 只随 Xcode 提供，故单工具链，用 debug/release 两配置逐字节比对代替双通道；`xcrun simctl spawn` 跑 headless 自测）

@@ -34,12 +34,12 @@ Kotlin 源码 → K2 前端 │
 
 \* 同一示例（含全部断言）的 hello-world 级产物。Web 目标的体积大头是**全量 stdlib**——CLI 编译没有死代码消除（DCE），Gradle 的 JS/Wasm 构建才会裁剪，25.3 详述。
 
-**工具链清单**（build.ps1 自动定位）：
+**工具链清单**（两个入口脚本自动定位：环境变量 → 平台常见位置 → PATH）：
 
-- `G:\scoop\apps\kotlin\current\bin\`：kotlinc-js / kotlinc-wasm（与 kotlinc-jvm 同装）
-- `G:\scoop\apps\kotlin-native\current\bin\konanc.bat`：独立安装的 Native 编译器
-- `lib\kotlin-stdlib-js.klib`、`kotlin-stdlib-wasm-js.klib`、`kotlin-stdlib-wasm-wasi.klib`：各目标的 stdlib（klib 格式，25.2 讲）
-- node 26（JS 运行 + WasmGC 原生支持 + WASI 实验支持）
+- kotlinc-js / kotlinc-wasm：与 kotlinc-jvm 同装。Windows `G:\scoop\apps\kotlin\current\bin\`；macOS `/opt/local/share/java/kotlin/bin/`（无 `.bat` 后缀）
+- konanc：独立安装的 Native 编译器。Windows `G:\scoop\apps\kotlin-native\current\bin\konanc.bat`；**macOS 本机没有**（MacPorts 无此包）→ 脚本把 native 目标计为 `[SKIP]`，**本章 native 分支未在 macOS 实测**
+- `lib/kotlin-stdlib-js.klib`、`kotlin-stdlib-wasm-js.klib`、`kotlin-stdlib-wasm-wasi.klib`：各目标的 stdlib（klib 格式，25.2 讲）
+- node：JS 运行 + WasmGC 原生支持 + WASI 实验支持（Windows 本机 26，macOS 本机 22，都够用）
 
 ## 25.2 Kotlin/Native：编出独立二进制
 
@@ -47,27 +47,30 @@ Kotlin 源码 → K2 前端 │
 
 Native 不产字节码，走 **LLVM** 直接生成机器码。命令行编译器是 `konanc`：
 
-```powershell
-# 先编 common（expect 声明，无 actual）——三个 flag 缺一不可，25.5 详解
-konanc -Xmulti-platform -Xseparate-kmp-compilation "-Xcommon-sources=src/Common.kt" `
+```bash
+# macOS / Linux（PowerShell 用 ` 换行，shell 用 \）
+konanc -Xmulti-platform -Xseparate-kmp-compilation -Xcommon-sources=src/Common.kt \
        -o build/native/probe  src/Common.kt native/Native.kt
-# 产物：build/native/probe.exe（Windows 后缀自动加）
+# 产物：Windows 上自动加 .exe（probe.exe），macOS/Linux 上是 probe.kexe
 ```
 
-三条实测注意（build.ps1 已防御）：
+四条实测注意（两个入口脚本都已防御）：
 
-1. **必须 JDK 21**：`run_konan.bat` 在 JDK ≥ 24 下因 `--enable-native-access=ALL-UNNAMED` 的引号解析直接崩（cmd 报"此时不应有 =ALL-UNNAMED"）。build.ps1 全局钉死 `JAVA_HOME → oraclejdk-lts 21`。
-2. **首次编译自动下载 LLVM**：konanc 首跑会从 JetBrains CDN 拉 `llvm-21-x86_64-windows-essentials`（约 275 MB）到 `~/.konan/dependencies/`——只要 CDN 通，一次到位。
+1. **必须 JDK 21**：Windows 的 `run_konan.bat` 在 JDK ≥ 24 下因 `--enable-native-access=ALL-UNNAMED` 的引号解析直接崩（cmd 报"此时不应有 =ALL-UNNAMED"）。脚本全局钉 JDK 21（macOS 走 `/usr/libexec/java_home -v 21`）。
+2. **首次编译自动下载 LLVM**：konanc 首跑会从 JetBrains CDN 拉 `llvm-21-*-essentials`（约 275 MB）到 `~/.konan/dependencies/`——只要 CDN 通，一次到位。
 3. **输出目录要先建**：konanc 不自建 `-o` 的父目录，目录不存在时链接阶段才报 `cannot open output file`。
+4. **macOS 上没有 konanc**：MacPorts 只有 `kotlin`（JVM/JS/Wasm），没有 `kotlin-native`。脚本探测不到就跳过 native 目标（`[SKIP]` 而非失败），本章 native 分支的**实测记录目前只来自 Windows**。
 
 ### 25.2.2 产物形态：exe 与 klib
 
 Native 有两种产物（`-produce` 参数选择，默认 program）：
 
-- **program**：`probe.exe`——静态链接 Kotlin 运行时的独立二进制，目标机器**不需要任何 VM**。启动是进程级的（毫秒内），没有 JVM 预热。
+- **program**：`probe.exe` / `probe.kexe`——静态链接 Kotlin 运行时的独立二进制，目标机器**不需要任何 VM**。启动是进程级的（毫秒内），没有 JVM 预热。（后缀随宿主：Windows `.exe`，macOS/Linux `.kexe`，两个入口脚本都按后缀探测。）
 - **library**：`probe.klib`——Kotlin 的库格式（一个 zip：IR + 元数据 + 各目标 bitcode），供其他 Kotlin/Native 编译消费，是 KMP 生态的流通货币。stdlib 本身就是 klib（`lib/kotlin-stdlib-*.klib`）。
 
-默认目标是宿主平台（`mingw_x64`）。交叉编译到 Linux/macOS/arm 需 `-target linux_x64` 等——但**链接需要目标平台的 sysroot**，纯 Windows 宿主交叉编 Linux 二进制要额外准备工具链，教学环境直接编宿主目标。
+默认目标是宿主平台（Windows 上是 `mingw_x64`，macOS 上是 `macosx_x64`，Linux 上是 `linux_x64`）。交叉编译到其他目标需 `-target linux_x64` 等——但**链接需要目标平台的 sysroot**，纯 Windows 宿主交叉编 Linux 二进制要额外准备工具链，教学环境直接编宿主目标。
+
+> 正因为宿主三元组会变，**示例的 `platformName()` 只返回目标族 `"native (kotlin-native)"`**，把三元组信息留给 `platformProbe()`（不进快照）。旧版写死 `"native (mingw_x64)"` 在 macOS 上就是一句假话，而且快照在两个平台上不可能同时成立。
 
 ### 25.2.3 与 C 互操作：platform.posix 一瞥
 
@@ -79,8 +82,11 @@ import kotlinx.cinterop.toKString
 import platform.posix.getenv
 
 @OptIn(ExperimentalForeignApi::class)          // C 互操作 API 全家桶都是实验性——必须显式 opt-in
-actual fun platformProbe(): String =
-    "user=${getenv("USERNAME")?.toKString() ?: "absent"}"
+actual fun platformProbe(): String {
+    // Windows 上是 USERNAME，Unix 上是 USER —— 两个都问，换平台才不会拿到 "absent"
+    val user = getenv("USER")?.toKString() ?: getenv("USERNAME")?.toKString() ?: "absent"
+    return "kotlin-native user=$user"
+}
 ```
 
 三个细节：
@@ -102,25 +108,27 @@ actual fun platformProbe(): String =
 
 kotlinc-js 的 K2 命令行把"编译"和"链接"拆成两步——这是与 kotlinc-jvm 最大的使用差异：
 
-```powershell
-$klib = "G:\scoop\apps\kotlin\current\lib\kotlin-stdlib-js.klib"
+```bash
+# macOS / Linux（Windows 把 $klib 换成 G:\scoop\apps\kotlin\current\lib\kotlin-stdlib-js.klib）
+klib=/opt/local/share/java/kotlin/lib/kotlin-stdlib-js.klib
 # 第一步：编译成 klib（IR 的 zip 包）
-kotlinc-js -libraries $klib -Xmulti-platform -Xseparate-kmp-compilation `
-    "-Xcommon-sources=src/Common.kt" -Xir-module-name=probe `
+kotlinc-js -libraries $klib -Xmulti-platform -Xseparate-kmp-compilation \
+    -Xcommon-sources=src/Common.kt -Xir-module-name=probe \
     -ir-output-name=probe -ir-output-dir=build/js  src/Common.kt js/Js.kt
 # 第二步：链接成可执行 JS（-Xinclude 指向上一步的 klib，必须绝对路径）
-kotlinc-js -libraries $klib -Xmulti-platform -Xseparate-kmp-compilation `
-    "-Xcommon-sources=src/Common.kt" -Xir-produce-js `
-    "-Xinclude=G:/abs/path/build/js/probe.klib" -Xir-module-name=probe `
+kotlinc-js -libraries $klib -Xmulti-platform -Xseparate-kmp-compilation \
+    -Xcommon-sources=src/Common.kt -Xir-produce-js \
+    -Xinclude=/abs/path/build/js/probe.klib -Xir-module-name=probe \
     -ir-output-name=probe -ir-output-dir=build/js  src/Common.kt js/Js.kt
 node build/js/probe.js
 ```
 
-三条实测坑（都有点离谱，但都能绕）：
+四条实测坑（都有点离谱，但都能绕）：
 
-1. **第二步 exit code = 1 但产物正确**：链接完成后 zip 文件系统 dispose 阶段抛 `NoSuchFileException`（它把刚生成的 klib 删了又想去关它）——**假阳性**。判定成功要看产物存在 + node 跑得动，不能看退出码。
+1. **第二步 exit code = 1 但产物正确**：链接完成后 zip 文件系统 dispose 阶段抛 `NoSuchFileException`（它把刚生成的 klib 删了又想去关它）——**假阳性**。判定成功要看产物存在 + node 跑得动，不能看退出码。（Windows、macOS 上都复现。）
 2. **"obsolete form" 警告是假警报**：明明用 `-Xir-module-name=probe` 的 `=` 写法，仍警告让你改用 `=` 写法。白名单放行，别追。
 3. **`-Xinclude` 要绝对路径**且斜杠方向无所谓，但相对路径直接 `No module found`。
+4. **别 `rm -rf` 产物目录再判定"产物存在"**：一个目标 50+ 文件，批量删除可能被环境策略静默拦下（不报错也没删），旧产物残留会让这条判定变成假阳性。脚本改成只删本次要重新生成的那几个产物文件。
 
 ### 25.3.2 产物与 DCE
 
@@ -163,13 +171,14 @@ kotlinc-wasm 用 `-Xwasm-target` 选宿主模型，**同一段代码、不同的
 | 产物 | .wasm + .mjs + js-builtins.mjs + import-object.mjs | .wasm + .mjs（更薄） |
 | 本机运行 | `node probe.mjs` | `node probe.mjs`（node:wasi 实验模块，打 ExperimentalWarning） |
 
-```powershell
-$klib = "G:\scoop\apps\kotlin\current\lib\kotlin-stdlib-wasm-wasi.klib"
-kotlinc-wasm -libraries $klib -Xwasm-target=wasm-wasi -Xmulti-platform `
-    -Xseparate-kmp-compilation "-Xcommon-sources=src/Common.kt" `
-    -Xir-module-name=probe -ir-output-name=probe -ir-output-dir=build/wasi `
+```bash
+# macOS / Linux（Windows：G:\scoop\apps\kotlin\current\lib\kotlin-stdlib-wasm-wasi.klib）
+klib=/opt/local/share/java/kotlin/lib/kotlin-stdlib-wasm-wasi.klib
+kotlinc-wasm -libraries $klib -Xwasm-target=wasm-wasi -Xmulti-platform \
+    -Xseparate-kmp-compilation -Xcommon-sources=src/Common.kt \
+    -Xir-module-name=probe -ir-output-name=probe -ir-output-dir=build/wasi \
     src/Common.kt wasi/WasmWasi.kt          # 第一步 klib
-kotlinc-wasm ... -Xir-produce-js "-Xinclude=<绝对路径>/build/wasi/probe.klib" ...   # 第二步链接
+kotlinc-wasm ... -Xir-produce-js -Xinclude=<绝对路径>/build/wasi/probe.klib ...   # 第二步链接
 node build/wasi/probe.mjs                    # WASI 宿主是 node 内置模块（实验警告无害）
 ```
 
@@ -190,8 +199,8 @@ KMP 的核心机制就一对修饰符：
 expect fun platformName(): String
 
 // 各平台 actual——签名必须严格匹配（返回类型/参数/reified 都不能差）
-actual fun platformName(): String = "js (node)"          // js/Js.kt
-actual fun platformName(): String = "native (mingw_x64)" // native/Native.kt
+actual fun platformName(): String = "js (node)"             // js/Js.kt
+actual fun platformName(): String = "native (kotlin-native)" // native/Native.kt（只报目标族，见下）
 ```
 
 规则要点：
@@ -200,6 +209,7 @@ actual fun platformName(): String = "native (mingw_x64)" // native/Native.kt
 2. 签名不匹配是硬错误（包括默认参数值、可空性）；
 3. expect/actual 不限于函数：类、属性、对象、 typealias、注解都可以（类在 2.x 仍是 Beta，会打警告）；
 4. **同一模块里 expect 配 actual 是错误**（"declared in the same module"）——所以 common 和平台代码必须分属不同"编译单元"。
+5. **actual 的返回值别写宿主相关的东西**（Windows-only 的常量、环境变量名、`File.separator` 拼出来的路径……）：快照只有一份，写进去就变成"只在作者这台机器上成立"。宿主三元组这类信息交给不进快照的 probe。
 
 ### 25.5.2 CLI 放行三件套（本章最大的实测发现）
 

@@ -1,0 +1,87 @@
+# 16 · 异常与事件处理：on value error、可恢复 vs 不可捕获 ★ #
+# Algol 68 没有 try/catch。它的错误模型分两类： #
+#   ① 事件（event）——多为 transput 相关，可装「事件处理器」捕获并恢复； #
+#   ② 运行期错误（runtime error）——如除零、越界，【不可捕获】，直接 abend（退出码 1）。 #
+BEGIN
+  INT fails := 0;
+  PROC assert = (BOOL cond, STRING msg) VOID:
+    IF NOT cond THEN put(stand error, ("FAIL: ", msg, new line)); fails +:= 1 FI;
+
+  # ═══ 16.1 造一个「脏数据」文件：第二行是非法整数 ═══ #
+  STRING fname := "16_dirty.txt";
+  FILE outf;
+  INT rc := establish(outf, fname, stand out channel);
+  assert(rc = 0, "establish 成功");
+  put(outf, ("42", new line, "abc", new line, "7", new line));
+  close(outf);
+
+  # ═══ 16.2 装事件处理器：on value error / on logical file end ═══ #
+  # 处理器签名 PROC(REF FILE) BOOL；返回 TRUE = 「我已处理，请恢复继续」， #
+  #   返回 FALSE = 走默认动作（通常是中止）。这就是 a68g 的「可恢复异常」。 #
+  # 注意：处理器是【按 FILE 安装】的——只对那个文件的事件生效。 #
+  FILE in1;
+  INT ro := open(in1, fname, stand in channel);
+  assert(ro = 0, "open 成功");
+
+  INT verrors := 0, at end hits := 0;
+  BOOL at end := FALSE;
+  on value error(in1, (REF FILE dummy) BOOL: (verrors +:= 1; TRUE));   # 捕获非法数值 #
+  # 一个 file-end 处理器同时「置停循环标志」并「计数」；返回 TRUE 表示已处理。 #
+  on logical file end(in1, (REF FILE dummy) BOOL: (at end := TRUE; at end hits +:= 1; TRUE));
+
+  # ═══ 16.3 逐行读：遇到 "abc" 触发 value error，处理器返回 TRUE → 跳过继续 ═══ #
+  INT nread := 0, sum := 0, val := 0;
+  WHILE NOT at end DO
+    INT before := val;
+    get(in1, (val, new line));
+    IF NOT at end THEN
+      nread +:= 1;
+      # 若本行是非法值，value error 触发后 val 不变（仍等于 before）——据此识别脏行 #
+      IF val = before AND nread > 1 THEN
+        print(("  第", whole(nread, 0), " 行是脏数据（value error 已捕获，跳过）", new line))
+      ELSE
+        sum +:= val;
+        print(("  读到 ", whole(val, 0), new line))
+      FI
+    FI
+  OD;
+  close(in1);
+  print(("成功读取 ", whole(nread, 0), " 行，值错误 ", whole(verrors, 0),
+        " 次，有效值之和 = ", whole(sum, 0), new line));
+  assert(verrors = 1, "恰好捕获 1 次 value error（abc 那行）");
+  assert(sum = 49, "有效值 42+7=49（abc 被跳过）");
+  assert(at end hits >= 1, "logical file end 至少触发一次");
+
+  # ═══ 16.4 还有哪些事件处理器（均按 FILE 安装，签名同上）═══ #
+  #   on value error      —— 读到的字面量与目标类型不符（本例已用） #
+  #   on logical file end —— 读到逻辑文件尾（第 14 章已用） #
+  #   on physical file end—— 读到物理文件尾 #
+  #   on transput error   —— 其它 transput 失败的兜底 #
+  # 记忆点：事件处理器让 transput 错误【可恢复】；返回 TRUE 即「 swallow 掉继续」。 #
+  print(("事件处理器：on value error / on logical file end / on transput error 等", new line));
+
+  # ═══ 16.5 ★ 不可捕获的运行期错误：只能「防御式编程」═══ #
+  # 以下错误在 a68g 里【没有】事件处理器可装，一旦发生直接 abend（退出码 1）： #
+  #   · 整数除零：1 OVER 0 → "INT division by zero, numerical argument out of domain" #
+  #   · 数组越界：a(5) 而 a 是 [1:3] → "index out of bounds" #
+  #   · 整数溢出：超过 max int → "integer overflow"（第 4 章实测） #
+  # 本示例【故意不触发】它们（否则整个程序中止）；唯一对策是【先检查再运算】。 #
+  PROC safe div = (INT a, b) INT:                # 防御式：除数为 0 时返回哨兵 #
+    IF b = 0 THEN -999999 ELSE a OVER b FI;
+  print(("safe div(10,3)=", whole(safe div(10, 3), 0),
+        "  safe div(10,0)=", whole(safe div(10, 0), 0), "（哨兵）", new line));
+  assert(safe div(10, 3) = 3, "正常整除");
+  assert(safe div(10, 0) = -999999, "除零被防御式检查挡下，返回哨兵");
+
+  PROC safe at = ([] INT xs, INT i) INT:         # 防御式：越界返回哨兵 #
+    IF i < LWB xs OR i > UPB xs THEN -999999 ELSE xs(i) FI;
+  [1:3] INT arr := (10, 20, 30);
+  print(("safe at(arr,2)=", whole(safe at(arr, 2), 0),
+        "  safe at(arr,9)=", whole(safe at(arr, 9), 0), "（哨兵）", new line));
+  assert(safe at(arr, 2) = 20, "正常下标");
+  assert(safe at(arr, 9) = -999999, "越界被防御式检查挡下");
+
+  print(("==== 16 结束 ====", new line));
+  IF fails > 0 THEN print(("自检失败 ", fails, " 项", new line))
+  ELSE print(("自检全部通过", new line)) FI
+END

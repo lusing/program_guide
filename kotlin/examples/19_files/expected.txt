@@ -12,9 +12,9 @@ name|age / 张三|30 / 李四|41
    [D]
   3.txt (2B)
   a [D]
-  a\1.txt (2B)
-  a\b [D]
-  a\b\2.txt (9B)
+  a/1.txt (2B)
+  a/b [D]
+  a/b/2.txt (9B)
 == 19.6 拷贝与删除 ==
 复制后存在 3-copy.txt: true
 删除后: false

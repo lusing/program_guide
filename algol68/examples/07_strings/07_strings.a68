@@ -1,0 +1,79 @@
+# 07 · 字符串与字符：STRING 即 FLEX[1:0]CHAR、切片、拼接、字符转换 #
+BEGIN
+  INT fails := 0;
+  PROC assert = (BOOL cond, STRING msg) VOID:
+    IF NOT cond THEN put(stand error, ("FAIL: ", msg, new line)); fails +:= 1 FI;
+
+  # ═══ 7.1 STRING 的本质：一段 [1:n]CHAR；UPB 取字节数 ═══ #
+  STRING s := "Hello, Algol";
+  print(("s = [", s, "]", new line));
+  print(("LWB s = ", whole(LWB s, 0), "   UPB s = ", whole(UPB s, 0), new line));
+  assert(UPB s = 12, "12 个字符");
+
+  # ═══ 7.2 切片 s[i:j]（闭区间，1 基）；单字符 s[i] ═══ #
+  print(("s[1:5]  = [", s[1:5], "]", new line));
+  print(("s[8:12] = [", s[8:12], "]", new line));
+  print(("s[1]    = ", s[1], new line));
+  assert(s[1:5] = "Hello", "前 5 字符");
+  assert(s[8:12] = "Algol", "后 5 字符");
+
+  # ═══ 7.3 拼接用 +（不是 ++ 或 CONCAT） ═══ #
+  STRING joined := s[1:5] + " World";
+  print(("joined = [", joined, "]", new line));
+  assert(joined = "Hello World", "切片再拼接");
+
+  # ═══ 7.4 逐字符遍历：FOR k TO UPB s ═══ #
+  print(("逐字符: "));
+  FOR k TO UPB s DO print((s[k])) OD;
+  print((new line));
+
+  # ═══ 7.5 字符串比较：= /= < <= > >=，按字典序逐字符 ═══ #
+  print((("apple" < "banana"), " ", ("zebra" > "apple"), new line));
+  assert(("apple" < "banana"), "字典序比较");
+
+  # ═══ 7.6 字符与码位互转：ABS 取码位，REPR 造字符 ═══ #
+  CHAR c := "H";
+  print(("ABS H = ", whole(ABS c, 0), "   REPR 72 = ", REPR 72, new line));
+  # 大写转小写：码位 +32（仅对 ASCII 字母） #
+  PROC to_lower = (CHAR ch) CHAR:
+    IF ch >= "A" AND ch <= "Z" THEN REPR(ABS ch + 32) ELSE ch FI;
+  print(("lower(HELLO) = "));
+  FOR k TO 5 DO print((to_lower("HELLO"[k]))) OD;
+  print((new line));
+  assert(to_lower("A") = "a", "A→a");
+  assert(to_lower("1") = "1", "非字母原样");
+
+  # ═══ 7.7 坑：字符串字面量没有反斜杠转义！要嵌引号就把它写两遍 ═══ #
+  # 实测：写 "a\tb" 里的反斜杠是 unworthy character，直接扫描错误。 #
+  #       换行用常量 new line；制表符没有 tab 常量，用 REPR 9。 #
+  STRING q := "say ""hi"" now";
+  print(("q = [", q, "]", new line));
+  assert(q = "say " + REPR 34 + "hi" + REPR 34 + " now", "双引号表示一个引号");
+
+  # ═══ 7.8 从字符行造字符串：STRING([n]CHAR) ═══ #
+  [1:5] CHAR buf;
+  FOR k TO 5 DO buf[k] := REPR(ABS "a" + k - 1) OD;
+  STRING word := STRING(buf);
+  print(("buf = ", buf, "   word = [", word, "]", new line));
+  assert(word = "abcde", "字符行转字符串");
+
+  # ═══ 7.9 没有内建「查子串」，自己写一个 ═══ #
+  PROC index_of = (STRING hay, needle) INT:    # 找不到返回 0 #
+    ( INT h := UPB hay, nd := UPB needle;
+      IF nd = 0 OR nd > h THEN 0
+      ELSE
+        INT pos := 0;
+        FOR i TO h - nd + 1 WHILE pos = 0 DO
+          IF hay[i : i + nd - 1] = needle THEN pos := i FI
+        OD;
+        pos
+      FI );
+  print(("index_of(s, ""Algol"") = ", whole(index_of(s, "Algol"), 0), new line));
+  print(("index_of(s, ""xyz"")   = ", whole(index_of(s, "xyz"), 0), new line));
+  assert(index_of(s, "Algol") = 8, "Algol 从第 8 位起");
+  assert(index_of(s, "xyz") = 0, "找不到返回 0");
+
+  print(("==== 07 结束 ====", new line));
+  IF fails > 0 THEN print(("自检失败 ", fails, " 项", new line))
+  ELSE print(("自检全部通过", new line)) FI
+END

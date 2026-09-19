@@ -1,0 +1,69 @@
+# 04 · 数值与运算：INT/REAL/LONG、运算符、取整、MOD/OVER 语义、溢出 #
+BEGIN
+  INT fails := 0;
+  PROC assert = (BOOL cond, STRING msg) VOID:
+    IF NOT cond THEN put(stand error, ("FAIL: ", msg, new line)); fails +:= 1 FI;
+
+  # ═══ 4.1 三种数值模：INT / REAL / LONG（LONG REAL 高精度） ═══ #
+  INT  a := 7, b := 2;
+  REAL q := a / b;                 # / 是实数除法，INT 自动升 REAL #
+  LONG REAL lq := 1.0 / 3.0;
+  print(("7 / 2      = ", fixed(q, 0, 4), new line));
+  print(("1.0/3.0    = ", fixed(lq, 0, 12), "  (LONG REAL)", new line));
+  print(("max int    = ", whole(max int, 0), new line));
+
+  # ═══ 4.2 算术运算符全表 ═══ #
+  print(("a + b = ", whole(a + b, 0), "   a - b = ", whole(a - b, 0),
+         "   a * b = ", whole(a * b, 0), new line));
+  print(("a OVER b = ", whole(a OVER b, 0), "  (整数商，向零截断)", new line));
+  print(("a MOD b  = ", whole(a MOD b, 0), "  (余数)", new line));
+  print(("2 ** 10  = ", whole(2 ** 10, 0), "  (幂)", new line));
+  print(("ABS(-8)  = ", whole(ABS(-8), 0), "  (绝对值，一元)", new line));
+  print(("-a       = ", whole(-a, 0), "  (取负，一元减)", new line));
+
+  # ═══ 4.3 取整：ENTIER 向下取整(floor)，ROUND 四舍五入 ═══ #
+  # 坑：ENTIER 不是「向零截断」！ENTIER(-3.7) = -4（往下），不是 -3。 #
+  print(("ENTIER(3.9)  = ", whole(ENTIER(3.9), 0), new line));
+  print(("ENTIER(-3.7) = ", whole(ENTIER(-3.7), 0), "  (向下取整，非向零)", new line));
+  print(("ROUND(3.5)   = ", whole(ROUND(3.5), 0), new line));
+  print(("ROUND(-3.5)  = ", whole(ROUND(-3.5), 0), new line));
+  assert(ENTIER(-3.7) = -4, "ENTIER 向下取整");
+  assert(ROUND(3.5) = 4, "ROUND 四舍五入");
+
+  # ═══ 4.4 OVER 与 MOD 的语义不一致（实测坑）★ ═══ #
+  # OVER 向零截断：-7 OVER 2 = -3；但 MOD 返回「非负余数」：-7 MOD 2 = 1。 #
+  # 二者不满足 a = (a OVER b)*b + (a MOD b)：(-3)*2 + 1 = -5 ≠ -7。 #
+  # 要自洽的「商 + 余」，请自己用 floor 算：商 = ENTIER(a/b)，余 = a - 商*b。 #
+  print(("-7 OVER 2 = ", whole(-7 OVER 2, 0), "   -7 MOD 2 = ", whole(-7 MOD 2, 0), new line));
+  INT flq := ENTIER(-7.0 / 2.0);          # floor 商 = -4 #
+  INT flr := -7 - flq * 2;                # 自洽余数 = 1 #
+  print(("floor 商 = ", whole(flq, 0), "  自洽余 = ", whole(flr, 0),
+         "  验证 flq*2+flr = ", whole(flq * 2 + flr, 0), new line));
+  assert(flq * 2 + flr = -7, "floor 商余自洽");
+
+  # ═══ 4.5 关系与数学函数 ═══ #
+  print(("sqrt(16) = ", fixed(sqrt(16.0), 0, 2), new line));
+  print(("exp(1)   = ", fixed(exp(1.0), 0, 5), new line));
+  print(("ln(e)    = ", fixed(ln(exp(1.0)), 0, 5), new line));
+  print(("sin(0)   = ", fixed(sin(0.0), 0, 3), "  cos(0) = ", fixed(cos(0.0), 0, 3), new line));
+  print(("SIGN(-4) = ", whole(SIGN(-4), 0), "  ODD(3) = ", ODD(3), new line));
+  assert(sqrt(16.0) = 4.0, "sqrt(16)=4");
+  assert(ABS(sin(0.0)) < 1.0e-12, "sin(0)≈0");
+
+  # ═══ 4.6 溢出是「运行时错误」，不是静默截断（与 COBOL 相反）★ ═══ #
+  # 实测：max int + 1 直接 abort —— 「INT value overflow, result too large」。 #
+  # 好处是不会悄悄算错；坏处是生产代码要先判界。这里只做边界断言，不真的触发。 #
+  assert(max int = 2147483647, "a68g 的 INT 是 32 位");
+  assert(max int - 1 < max int, "接近上界仍单调");
+  print(("提示：INT 溢出在 a68g 里会运行时报错并退出，而非静默回绕", new line));
+
+  # ═══ 4.7 增量赋值运算符 +:= -:= *:=（坑：INT 没有 /:=，因 INT/INT 升 REAL） ═══ #
+  INT acc := 0;
+  acc +:= 10; acc -:= 3; acc *:= 2;
+  print(("acc 经 +10 -3 *2 = ", whole(acc, 0), new line));
+  assert(acc = 14, "(0+10-3)*2 = 14");
+
+  print(("==== 04 结束 ====", new line));
+  IF fails > 0 THEN print(("自检失败 ", fails, " 项", new line))
+  ELSE print(("自检全部通过", new line)) FI
+END

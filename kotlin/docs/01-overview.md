@@ -36,16 +36,19 @@ Kotlin 是一门**运行在 JVM 上的静态类型语言**，也可以编译到 
 
 ## 1.4 版本与工具链（本教程实测环境）
 
-| 组件 | 版本 | 位置（本机） |
-|---|---|---|
-| Kotlin 编译器 | **2.4.20**（K2） | `G:\scoop\apps\kotlin\current\bin\kotlinc-jvm.bat` |
-| JDK（运行） | oraclejdk-lts **21** | `G:\scoop\apps\oraclejdk-lts\current` |
-| Gradle | 9.7.1（17 章用） | `G:\scoop\apps\gradle\current` |
-| 附带库 | kotlin-test、kotlinx-coroutines-core-jvm、kotlin-reflect | `…\kotlin\current\lib\` |
+| 组件 | 版本 | Windows（scoop） | macOS（MacPorts） |
+|---|---|---|---|
+| Kotlin 编译器 | **2.4.20**（K2） | `G:\scoop\apps\kotlin\current\bin\kotlinc-jvm.bat` | `/opt/local/share/java/kotlin/bin/kotlinc-jvm` |
+| JDK（运行） | **21**（LTS） | `G:\scoop\apps\oraclejdk-lts\current` | `/usr/libexec/java_home -v 21` → `/opt/local/.../jdk-21-macports.jdk` |
+| Gradle | 9.7.1（17 章用） | `G:\scoop\apps\gradle\current` | `/opt/local/bin/gradle` |
+| Kotlin/Native（25 章） | 2.4.20 | `G:\scoop\apps\kotlin-native\current\bin\konanc.bat` | **本机未安装** → native 目标 `[SKIP]`（未实测） |
+| 附带库 | kotlin-test、kotlinx-coroutines-core-jvm、kotlin-reflect | `…\kotlin\current\lib\` | `/opt/local/share/java/kotlin/lib/` |
 
 ⚠️ 网上教程版本混杂：1.x 时代的写法绝大多数仍然成立，但 K2 编译器（2.0+）报错信息全新、部分历史 API 被移除。本教程所有代码在 **kotlinc 2.4.20** 实测。
 
-**重要**：本机 PATH 上的 `java` 是 **Java 8**，直接用它跑 Kotlin 2.x 编译产物会出各种诡异问题——本教程的 `build.ps1` 会自动把 `JAVA_HOME` 指向 JDK 21。你复现命令时也要注意。
+**重要**：别信 PATH 上的 `java`。Windows 本机 PATH 上是 **Java 8**，macOS 本机 PATH 上是 **Java 26**（装了 21/25/26 三套）——用错版本跑 Kotlin 2.x 产物会出各种诡异问题，而且 **konanc 在 JDK ≥ 24 会因为引号解析直接崩**。两个入口脚本都自己钉 JDK 21（`$JAVA_HOME` → `/usr/libexec/java_home -v 21` → PATH），你手敲命令时也要先 `export JAVA_HOME=...`。
+
+> 跨平台差异一览（脚本已吸收，读代码时会遇到）：classpath 分隔符 Windows `;` / Unix `:`；编译器脚本 `.bat` 有无；原生产物 `probe.exe` vs `probe.kexe`；`File.path` 的分隔符 `\` vs `/`（19、24 章的快照为此做了归一化）。
 
 ## 1.5 编译到哪儿：Kotlin 的四个目标
 
@@ -60,10 +63,16 @@ Kotlin 是一门**运行在 JVM 上的静态类型语言**，也可以编译到 
 
 每章三步：**读讲解 → 跑示例 → 改代码再跑**。
 
+```bash
+cd kotlin
+./run-all.sh                      # macOS / Linux：全部示例，四层验证
+./run-all.sh 04_nullsafety        # 单跑第 4 章示例
+```
+
 ```powershell
-cd G:\code\guide\kotlin
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All              # 全部 23 个示例：四层验证
-pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 04_nullsafety   # 单跑第 4 章示例
+cd kotlin
+pwsh ./build.ps1 -All             # Windows（也能在 macOS 上跑）：全部示例
+pwsh ./build.ps1 04_nullsafety    # 单跑第 4 章示例
 ```
 
 "四层验证"指：**编译（-Werror，警告即错误）→ 单元测试（kotlin.test）→ 运行（exit 0）→ 输出快照（与 expected.txt 逐行比对）**。改坏任何一层都会红——这也是你练习时的反馈环：故意把某行改错，跑 `-Example`，看它怎么报错。

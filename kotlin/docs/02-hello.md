@@ -17,21 +17,23 @@ fun main() {
 
 ## 2.2 用 kotlinc 手工编译一次（理解 Gradle 之前先懂底层）
 
-```powershell
+```bash
 # 编译成自带运行库的独立 jar（慢，~10s，教学用）
 kotlinc-jvm hello.kt -include-runtime -d hello.jar
 java -jar hello.jar
 
 # 快的方式：只编出 .class，用 kotlin-stdlib 做 classpath
 kotlinc-jvm -Werror -d out hello.kt
-java -cp "out;G:\scoop\apps\kotlin\current\lib\kotlin-stdlib.jar" HelloKt
+# classpath 分隔符：Windows ';' / macOS、Linux ':'
+java -cp "out:/opt/local/share/java/kotlin/lib/kotlin-stdlib.jar" HelloKt     # macOS
+java -cp "out;G:\scoop\apps\kotlin\current\lib\kotlin-stdlib.jar" HelloKt     # Windows
 ```
 
 要点：
 
 1. `hello.kt` 里的顶层 `main` 编译到 **`HelloKt`** 类（文件名 + Kt 后缀）——`java` 直跑时要写这个类名，不是 `hello`。
 2. `-include-runtime` 把 stdlib 塞进 jar，产物 ~5MB、可独立运行；不带它就得自己挂 classpath。
-3. 本教程 build.ps1 用的是方式二（快），并给 java 统一加了 `-Dstdout.encoding=UTF-8`（Windows 控制台中文的关键，JDK 19+ 才有这个开关）。
+3. 两个入口脚本（run-all.sh / build.ps1）用的是方式二（快），并给 java 统一加了 `-Dstdout.encoding=UTF-8`（Windows 控制台中文的关键，JDK 19+ 才有这个开关；macOS/Linux 上 JDK 18+ 默认就是 UTF-8，加上无害）。
 
 ## 2.3 字符串模板：`$` 的两种形态
 

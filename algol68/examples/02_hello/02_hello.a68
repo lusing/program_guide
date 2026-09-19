@@ -1,0 +1,46 @@
+# 02 · 第一个程序：BEGIN/END 封闭子句、print 与格式化、断言习惯 #
+#     （把失败写进 stand error）、结束标记。正文见 docs/02-hello.md #
+# 注意：Algol 68 注释会嵌套，每条注释必须用井号开、井号闭，成对出现。 #
+# 注释里不能再出现井号，否则会再嵌套一层导致后续中文落到代码位被拒。 #
+BEGIN
+  # ── 断言习惯：失败写进标准错误（stderr），验证脚本据此判 FAIL ── #
+  INT fails := 0;
+  PROC assert = (BOOL cond, STRING msg) VOID:
+    IF NOT cond THEN put(stand error, ("FAIL: ", msg, new line)); fails +:= 1 FI;
+
+  # ═══ 2.1 print：把一个「行列」（collateral clause）里的值逐个送到标准输出 ═══ #
+  print(("你好，Algol 68 Genie！", new line));
+
+  # ═══ 2.2 一切都是「单元」并产出一个值；:= 声明并赋初值 ═══ #
+  INT sum := 1 + 2;
+  print(("1 + 2 = ", sum, new line));    # 坑：print 一个裸 INT 会打成右对齐带符号宽格式 #
+
+  # whole(n, w)：把 INT 格式化成右对齐、宽 w 的十进制串（w=0 表示最短） #
+  print(("1 + 2 = ", whole(sum, 0), new line));
+
+  # ═══ 2.3 声明多种基本模（mode） ═══ #
+  REAL  ratio := 3.14159;      # 坑：别叫 pi——pi 是 prelude 常量，遮蔽它会触发 notice #
+  BOOL  ok := TRUE;
+  CHAR  letter := "A";
+  STRING name := "世界";
+
+  # fixed(x, before, after)：定点格式化，after 位小数 #
+  print(("pi ≈ ", fixed(ratio, 0, 4), new line));
+  print(("ok = ", ok, "  letter = ", letter, new line));
+  print(("[", name, "]", new line));     # STRING 原样输出，UTF-8 透传 #
+
+  # ═══ 2.4 断言：把关键性质钉死（失败 → stderr → 脚本判 FAIL） ═══ #
+  assert(sum = 3, "和应为 3");
+  # 坑：a68g 3.13.3 没有对 STRING 可用的 LENG；用 UPB-LWB+1 取长度（按字节，世界=6） #
+  assert(UPB name - LWB name + 1 = 6, "世界 UTF-8 占 6 字节");
+
+  # ═══ 2.5 结束标记：证明跑到了最后一行而非中途崩溃 ═══ #
+  print(("==== 02 结束 ====", new line));
+
+  # a68g 无「以整数退出码结束」的标准设施；本教程统一用 stderr 是否为空判成败， #
+  # 退出码 0 仅表示「无运行时错误」。fails 在此仅作人类可读的汇总。 #
+  IF fails > 0
+  THEN print(("自检失败 ", fails, " 项（详见 stderr）", new line))
+  ELSE print(("自检全部通过", new line))
+  FI
+END

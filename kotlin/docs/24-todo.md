@@ -142,6 +142,8 @@ fun run(vararg args: String) {
 
 场景脚本：增 ×3 → list → done → list → rm → 三个误用（done 99 / 未知命令 / add 空参）→ 展示落盘的 JSON 文件原文 → help → clear。golden（expected.txt）47 行，把这个脚本的全部输出钉死。
 
+⚠️ 演示里要打印存储路径时**先归一分隔符**再打印（`file.path.replace(File.separatorChar, '/')`）。`File("build/demo/tasks.json")` 构造时两种平台都吃 `/`，但 `.path` 在 Windows 上会被规范成 `build\demo\tasks.json`——直接打进快照，macOS 上就对不上（19.3 有完整说明）。
+
 ## 24.8 测试矩阵
 
 | 组 | 覆盖 | 关键断言 |

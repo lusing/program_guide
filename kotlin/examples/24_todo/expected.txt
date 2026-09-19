@@ -29,7 +29,7 @@ $ ktodo add
   add 需要标题: ktodo add <标题>
   (exit 2)
 == 24.3 持久化文件内容 ==
-  build\demo\tasks.json →
+  build/demo/tasks.json →
   [{"id":1,"title":"读完 Kotlin 指南第 24 章","done":false},{"id":2,"title":"给示例写测试","done":true}]
 == 24.4 help ==
 $ ktodo help

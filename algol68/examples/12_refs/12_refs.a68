@@ -1,0 +1,74 @@
+# 12 · 引用与堆：LOC/HEAP、REF 别名、身份 IS/ISNT、链表、自动 GC #
+BEGIN
+  INT fails := 0;
+  PROC assert = (BOOL cond, STRING msg) VOID:
+    IF NOT cond THEN put(stand error, ("FAIL: ", msg, new line)); fails +:= 1 FI;
+
+  # ═══ 12.1 LOC：在当前栈帧上开一个可变量；HEAP：在堆上开（可被引用带出） ═══ #
+  LOC INT li; li := 5;
+  print(("LOC INT li = ", whole(li, 0), new line));
+  HEAP INT h := 7;                          # h 是堆上的 INT 盒，h:=v 改盒里的值 #
+  h := 8;
+  print(("HEAP INT h（改成 8）= ", whole(h, 0), new line));
+  assert(h = 8, "HEAP 盒可就地改值");
+
+  # ═══ 12.2 REF 是「别名/引用」：指向同一个盒子 ═══ #
+  REF INT alias := h;                       # alias 和 h 指向同一处 #
+  print(("alias（指向 h）= ", whole(alias, 0), new line));
+  alias +:= 2;                              # 通过别名就地 +2，改的是同一个盒子 #
+  print(("alias +:= 2 后，h = ", whole(h, 0), "  (共享)", new line));
+  assert(h = 10, "别名与本体共享同一存储");
+
+  # ═══ 12.3 坑：对 REF 型变量用 := 是「重新绑定」，不是改盒里的值 ★ ═══ #
+  # 实测 REF INT r := h; r := 99; → error: INT cannot be coerced to REF INT。 #
+  # 因为 r 的模是 REF INT，:= 期望右边也是个 REF INT（把 r 指向别处）。 #
+  # 要「改盒里的值」用 +:= 之类的解引用赋值，或干脆把变量声明成 HEAP INT / LOC INT。 #
+  REF INT r := h;
+  r := HEAP INT := 99;                      # 重新绑定：r 现在指向一个新盒子 #
+  print(("r 重绑到新盒 = ", whole(r, 0), "，而原 h 仍 = ", whole(h, 0), new line));
+  assert(r = 99 AND h = 10, "重绑不影响原盒");
+
+  # ═══ 12.4 「同一个对象」怎么判：靠共享改动，别指望 IS 在普通 REF 变量间可靠 ★ ═══ #
+  # 实测坑：x1、x2 都指向同一堆盒（改 x2 会动 x1），但 x1 IS x2 竟返回 FALSE。 #
+  #   a68g 3.13.3 里 IS 在两个 := 绑定的 REF 变量之间行为出人意料。 #
+  #   IS/ISNT 唯一可靠的用法是和「带模的 NIL 常量」比较（见 12.5 链表）。 #
+  REF INT x1 := HEAP INT := 1;
+  REF INT x2 := x1;                         # x2 与 x1 指向同一个盒子 #
+  x2 +:= 10;                                # 通过 x2 改 #
+  print(("x2 +:= 10 后 x1 = ", whole(x1, 0), "  (变 11 说明二者共享同一对象)", new line));
+  assert(x1 = 11, "共享改动证明是同一对象");
+  print(("注意：x1 IS x2 实测 = ", (x1 IS x2), "（不可靠，勿依赖）", new line));
+
+  # ═══ 12.5 链表：REF NODE 串起来，用 HEAP 造节点 ═══ #
+  MODE NODE = STRUCT(INT val, REF NODE next);
+  # 坑：裸写 IS NIL / ISNT NIL 在 a68g 3.13.3 里判断不可靠（实测恒非 NIL）！ #
+  #     要声明一个「带模的 NIL 常量」来比较：REF NODE nil_node = NIL; #
+  REF NODE nil_node = NIL;
+  REF NODE n1 := HEAP NODE := (1, nil_node);
+  REF NODE n2 := HEAP NODE := (2, n1);
+  REF NODE n3 := HEAP NODE := (3, n2);
+  val OF n1 := 100;                         # 通过引用改结构字段 #
+
+  INT total := 0, cnt := 0;
+  REF NODE cur := n3;
+  WHILE cur ISNT nil_node DO                # 用 typed NIL 遍历 #
+    total +:= val OF cur;
+    cnt +:= 1;
+    cur := next OF cur
+  OD;
+  print(("链表节点数 = ", whole(cnt, 0), "  值之和 = ", whole(total, 0), new line));
+  assert(cnt = 3 AND total = 105, "100+2+3=105，遍历 3 个节点");
+  assert((cur IS nil_node), "走到尾部 cur 为 NIL");
+
+  # ═══ 12.6 垃圾回收是自动的：HEAP 上不再被引用的对象由 a68g 回收 ═══ #
+  # 没有 free/delete；让所有指向它的 REF 走出作用域或重绑即可。 #
+  BEGIN
+    REF NODE tmp := HEAP NODE := (999, nil_node);
+    print(("临时节点 val = ", whole(val OF tmp, 0), "（出块后即可被 GC）", new line))
+  END;
+  print(("提示：a68g 自动 GC，无需手动释放堆对象", new line));
+
+  print(("==== 12 结束 ====", new line));
+  IF fails > 0 THEN print(("自检失败 ", fails, " 项", new line))
+  ELSE print(("自检全部通过", new line)) FI
+END
