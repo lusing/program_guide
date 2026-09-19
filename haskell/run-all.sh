@@ -88,7 +88,9 @@ test_one() {
         (cd "$dir" && stack test) >"$out" 2>"$err" || rc=$?
         check_output "test     $name (stack test)" "$out" "$err" "$rc" "$marker" relaxed
         out="$BUILD/$name.run.out"; err="$BUILD/$name.run.err"; rc=0
+        [ "$name" = "24_capstone" ] && RUN_ARGS="demo"
         (cd "$dir" && stack exec "$exe_name" ${RUN_ARGS:-}) >"$out" 2>"$err" || rc=$?
+        RUN_ARGS="" 
         check_output "run      $name (stack exec)" "$out" "$err" "$rc" "$marker" relaxed
         return
     fi

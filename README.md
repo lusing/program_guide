@@ -40,6 +40,7 @@
 - [go](./go) — Go 1.27 教程（24 章对齐 cpp20/zig 标准：接口/泛型/迭代器/测试/并发三连细讲，全部示例四层验证 gofmt+vet+test+运行，并发章加 -race）
 - [godot](./godot) — Godot 4 / GDScript 教程与示例，使用 Godot headless 执行脚本验证
 - [julia](./julia) — Julia 1.13 教程（24 章对齐 cpp20/zig 标准：多重派发/类型系统/广播/元编程/性能/Pkg 环境细讲，23 个示例三层验证运行+测试+工程，24 为迷你 ODE 求解器包工程——问题-算法-解三件套 + 自适应步长 + 收敛阶测试）
+- [haskell](./haskell) — Haskell 教程（GHC 9.12.1，24 章对齐 julia/swift 标准：模式匹配/ADT/类型类/惰性求值/函子-应用-单子/单子变换器/parsec/TH/STM 特色细讲，主线纯 boot 库离线可验证；23 个示例两层验证 编译+运行+测试 六条判定，20/24 为 stack 工程（清华镜像 + compiler 覆盖实测链路），24 为 MiniLang 迷你解释器——词法/语法/求值三层管线 + 递归绑定打结 + 词法作用域闭包；CHEATSheet 收录 32 条实测坑位（GBK 编码/runghc 41s/-Wx-partial/惰性句柄锁/优先级表序/坏 strip shim）
 - [prolog](./prolog) — Prolog 逻辑编程教程与示例，使用 SWI-Prolog 10.0.2 + GNU Prolog 1.5.0 双引擎验证（含 gplc 编译通道）
 - [renpy](./renpy) — Ren'Py 视觉小说与叙事游戏教程，使用 Ren'Py `compile` 验证
 - [kotlin](./kotlin) — Kotlin 2.4 教程（24 章对齐 cpp20/zig/go/rust 标准：空安全/密封与穷尽 when/委托/型变 reified/作用域函数/扩展/协程+Flow/Java 互操作/DSL 细讲，23 个示例四层验证 kotlinc -Werror + kotlin.test + 运行 + 输出快照；17 为 Gradle 多模块工程（JUnit5 + fat jar），18 为 Java/Kotlin 混编两遍法，24 为迷你待办 CLI（手写 JSON 解析器 + 文件存储 + 退出码约定））
@@ -123,6 +124,7 @@
 37. [sml](./sml)
 38. [ocaml](./ocaml)
 39. [cobol](./cobol)
+40. [haskell](./haskell)
 
 ## 工具链说明
 
