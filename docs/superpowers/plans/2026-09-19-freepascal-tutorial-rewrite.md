@@ -218,8 +218,8 @@ end.
   （菜单+工具栏+ActionList 三绑定+状态栏）、`20_dialogs/`（Open/Save/Font/Color 对话框 +
   MessageDlg 家族；selftest 用代码路径模拟——对话框不 Show，只验 API 状态）
 
-- [ ] 示例 + `-Gui`/`-All` 全绿（对话框 selftest 只验属性设置/过滤器构造等无 UI 依赖路径）
-- [ ] 正文 3 章 + 提交 `docs(freepascal): 18–20 章——布局与高 DPI/菜单工具栏 Action/对话框 + 三示例验证`
+- [x] 示例 + `-Gui`/`-All` 全绿（对话框 selftest 只验属性设置/过滤器构造等无 UI 依赖路径）
+- [x] 正文 3 章 + 提交 `docs(freepascal): 18–20 章——布局与高 DPI/菜单工具栏 Action/对话框 + 三示例验证`
 
 ### Task 8: 批次 G——GUI 篇 21–23（3 章 3 示例，含 ⭐canvas/⭐threads）
 
@@ -297,6 +297,11 @@ end.
     程序赋值都触发事件；ComboBox.ItemIndex 不触发 OnChange。
 18. **lazbuild 手写 .lpi/.lfm 全通**：lfm 流加载中文 Caption、事件按方法名绑定、
     像素级 selftest（Canvas.Pixels 断言）皆可无头验证。
+19. **菜单三坑**（19 章实测）：窗体字段别叫 Menu（TForm.Menu 撞名）；MenuItem.Add
+    只收 TMenuItem（挂 Action 须包一层）；with 块里 Self 仍指窗体。Splitter.ResizeControl
+    在 LCL 不保真（就近自动关联）。
+20. **ModalResult 实测值**：mrOk=1/mrCancel=2/mrYes=6/mrNo=7/mrClose=8；
+    Action.OnUpdate 可无头驱动状态同步。
 3. **Git Bash 传参给 fpc/lazbuild**：`cygpath -m` 转路径 + `MSYS2_ARG_CONV_EXCL='*'` 关闭 MSYS 自动
    转换（`-FEG:/...` 内嵌 `/code/...` 会被转成 `G:\Program Files\Git\code\...`）；`grep -P` 与
    LC_ALL 冲突报错致控制字符判定静默失效，改 `od -An -v -tx1` 方案（run-all.sh 注释）。
