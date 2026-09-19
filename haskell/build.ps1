@@ -174,8 +174,8 @@ function Invoke-GhcMain {
     # -v0 关掉 GHC 自己的进度输出；-O0 编译快（验证不测性能，19 章正文另讲 -O2）
     $args = @("-v0", "-O0", "--make", "-i$Dir", "-outputdir", $objDir, $src, "-o", $exe) + $ExtraFlags
     $rc = Invoke-Proc -FileName $ghcExe -ArgList $args `
-                      -OutPath (Join-Path $buildDir "$name.$ExeName.c.err.out") `
-                      -ErrPath (Join-Path $buildDir "$name.$ExeName.c.err") -Quiet
+                      -OutPath (Join-Path $buildDir "$name.$ExeName.c.out") `
+                      -ErrPath (Join-Path $buildDir "$name.$ExeName.c.err")
     if ($rc -ne 0) {
         $script:Fail++
         $script:FailedList += "$Tag $name 编译"
