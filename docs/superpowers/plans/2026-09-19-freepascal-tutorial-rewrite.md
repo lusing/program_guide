@@ -205,10 +205,10 @@ end.
   `16_controls/`（输入/按钮/选择/容器矩阵 + 事件日志）、`17_more_controls/`（TrackBar/SpinEdit/
   ProgressBar/DateTimePicker/StringGrid 单元格/TabControl/TFrame）
 
-- [ ] 示例先行：GUI 模板（Global Constraints）逐个实现，`-Example NN` 走 lazbuild + selftest；
+- [x] 示例先行：GUI 模板（Global Constraints）逐个实现，`-Example NN` 走 lazbuild + selftest；
   涉及 .lfm 的（15 章教语法）用文本 .lfm 实测 lazbuild 自动编译
-- [ ] `-Gui` 全绿 + CLI `-All` 回归
-- [ ] 正文 3 章 + 提交 `docs(freepascal): 15–17 章——Lazarus 入门三件套/基础控件事件/更多控件（表格与 TFrame）+ 三 GUI 示例 selftest 验证`
+- [x] `-Gui` 全绿 + CLI `-All` 回归
+- [x] 正文 3 章 + 提交 `docs(freepascal): 15–17 章——Lazarus 入门三件套/基础控件事件/更多控件（表格与 TFrame）+ 三 GUI 示例 selftest 验证`
 
 ### Task 7: 批次 F——GUI 篇 18–20（3 章 3 示例）
 
@@ -289,6 +289,14 @@ end.
     TryGetValue 查不到（默认比较器码页敏感）——键类型用 UTF8String 全通。
 15. **类引用构造按基类签名解析**（AClass.Create(AName) 走 TShape.Create 而非子类
     Create(W,H)）——除非构造器声明 virtual（LCL TComponent 流机制根源）。
+16. **GUI 无头验证三坑**（15–17 章实测）：① GUI 程序未捕获异常弹 LCL 消息框——无头
+    环境挂死（build.ps1/run-all.sh 已加 60s 超时击杀 + selftest 必须 try-except 自捕获）；
+    ② TFrame 没有 CreateNew，Create 必须找到同名 lfm 资源（Resource not found）；
+    ③ TDateTimePicker 在独立包 datetimectrls（本章用 lcl 的 TCalendar）。
+17. **事件触发矩阵**（16 章实测）：Edit.Text/CheckBox.Checked/RadioGroup.ItemIndex
+    程序赋值都触发事件；ComboBox.ItemIndex 不触发 OnChange。
+18. **lazbuild 手写 .lpi/.lfm 全通**：lfm 流加载中文 Caption、事件按方法名绑定、
+    像素级 selftest（Canvas.Pixels 断言）皆可无头验证。
 3. **Git Bash 传参给 fpc/lazbuild**：`cygpath -m` 转路径 + `MSYS2_ARG_CONV_EXCL='*'` 关闭 MSYS 自动
    转换（`-FEG:/...` 内嵌 `/code/...` 会被转成 `G:\Program Files\Git\code\...`）；`grep -P` 与
    LC_ALL 冲突报错致控制字符判定静默失效，改 `od -An -v -tx1` 方案（run-all.sh 注释）。

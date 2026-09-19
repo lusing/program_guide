@@ -285,8 +285,15 @@ function Invoke-GuiExample {
     $errFile = Join-Path $buildDir ($name + '.selftest.err')
 
     Write-Host "[selftest] $name" -ForegroundColor DarkCyan
-    $runRc = Invoke-Tool -FilePath $exePath.FullName -Arguments @('--selftest') `
-        -StdoutFile $outFile -StderrFile $errFile -WorkingDirectory $Dir
+    # 60 秒超时：GUI 程序未捕获异常会弹 LCL 消息框，无头环境 = 永久挂死——必须带击杀
+    $p = Start-Process -FilePath $exePath.FullName -ArgumentList @('--selftest') `
+        -NoNewWindow -PassThru `
+        -RedirectStandardOutput $outFile -RedirectStandardError $errFile -WorkingDirectory $Dir
+    if (-not $p.WaitForExit(60000)) {
+        $p.Kill()
+        Write-Host '  [FAIL] selftest 超时（60s）——多半是未捕获异常弹了 LCL 对话框' -ForegroundColor Red
+    }
+    $runRc = if ($null -eq $p.ExitCode) { 1 } else { $p.ExitCode }
     Show-Result -Tag "selftest $name" -ExitCode $runRc -OutFile $selfLog -ErrFile $errFile `
         -BuildLog $outFile -Marker $marker
 }

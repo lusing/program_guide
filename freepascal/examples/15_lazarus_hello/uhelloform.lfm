@@ -1,0 +1,27 @@
+object MainForm: TMainForm
+  Left = 360
+  Height = 200
+  Top = 180
+  Width = 360
+  Caption = '15 · Lazarus 入门'
+  ClientHeight = 200
+  ClientWidth = 360
+  object LblMessage: TLabel
+    Left = 60
+    Height = 20
+    Top = 140
+    Width = 240
+    Alignment = taCenter
+    Caption = '就绪——点下面的按钮'
+    ParentColor = False
+  end
+  object BtnHello: TButton
+    Left = 110
+    Height = 36
+    Top = 60
+    Width = 140
+    Caption = '问好'
+    OnClick = BtnHelloClick
+    TabOrder = 0
+  end
+end
