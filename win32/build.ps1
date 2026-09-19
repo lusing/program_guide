@@ -67,7 +67,7 @@ function Invoke-CompileExample {
     ) -join " "
 
     $cmd = @(
-        'call "{0}" >nul && cl /nologo /std:c++20 /EHsc /DUNICODE /D_UNICODE /D_WIN32_WINNT=0x0A00 /utf-8 /c "{1}" /Fo"{2}" {3} && link /nologo /MACHINE:X64 /OUT:"{4}" /SUBSYSTEM:{6} "{5}" user32.lib gdi32.lib kernel32.lib shell32.lib comctl32.lib psapi.lib comdlg32.lib dwmapi.lib'
+        'call "{0}" >nul && cl /nologo /std:c++20 /EHsc /DUNICODE /D_UNICODE /D_WIN32_WINNT=0x0A00 /utf-8 /c "{1}" /Fo"{2}" {3} && link /nologo /MACHINE:X64 /OUT:"{4}" /SUBSYSTEM:{6} "{5}" user32.lib gdi32.lib kernel32.lib shell32.lib comctl32.lib psapi.lib comdlg32.lib dwmapi.lib ole32.lib oleaut32.lib uuid.lib advapi32.lib d2d1.lib dwrite.lib'
     ) -f $vcvars, $SourcePath, $objPath, $includeFlags, $exePath, $objPath, $subsystem
 
     Write-Host "[Compile] $([System.IO.Path]::GetFileName($SourcePath))" -ForegroundColor Cyan
@@ -78,11 +78,22 @@ function Invoke-CompileExample {
 }
 
 if ($All) {
-    $files = Get-ChildItem -LiteralPath $examplesDir -Recurse -Filter "*.cpp" | Sort-Object FullName
-    foreach ($f in $files) {
-        Invoke-CompileExample -SourcePath $f.FullName
+    # 按示例目录遍历：目录自带 build.ps1（多目标工程）则委托，否则编译单 main.cpp
+    $dirs = Get-ChildItem -LiteralPath $examplesDir -Directory | Sort-Object Name
+    foreach ($d in $dirs) {
+        $child = Join-Path $d.FullName "build.ps1"
+        $main  = Join-Path $d.FullName "main.cpp"
+        if (Test-Path -LiteralPath $child) {
+            Write-Host "[Delegate] $($d.Name)" -ForegroundColor Magenta
+            & $child
+            if ($LASTEXITCODE -ne 0) { throw "委托构建失败: $($d.Name)" }
+        } elseif (Test-Path -LiteralPath $main) {
+            Invoke-CompileExample -SourcePath $main
+        } else {
+            throw "示例目录既无 build.ps1 也无 main.cpp: $($d.Name)"
+        }
     }
-    Write-Host "[Done] examples 目录全部编译通过。" -ForegroundColor Green
+    Write-Host "[Done] examples 目录全部构建通过。" -ForegroundColor Green
     exit 0
 }
 
@@ -91,7 +102,15 @@ if ($File) {
     if (-not (Test-Path -LiteralPath $sourcePath)) {
         throw "找不到示例文件: $sourcePath"
     }
-    Invoke-CompileExample -SourcePath $sourcePath
+    $dir = Split-Path -Parent $sourcePath
+    $child = Join-Path $dir "build.ps1"
+    if (Test-Path -LiteralPath $child) {
+        Write-Host "[Delegate] $($dir)" -ForegroundColor Magenta
+        & $child
+        if ($LASTEXITCODE -ne 0) { throw "委托构建失败: $child" }
+    } else {
+        Invoke-CompileExample -SourcePath $sourcePath
+    }
     Write-Host "[Done] 编译通过: $File" -ForegroundColor Green
     exit 0
 }
