@@ -1,0 +1,23 @@
+cabal-version:      2.4
+name:               stackenv
+version:            0.1.0.0
+build-type:         Simple
+
+library
+    exposed-modules:  StackEnv
+    hs-source-dirs:   src
+    build-depends:    base
+    default-language: Haskell2010
+
+executable stackenv
+    main-is:          Main.hs
+    hs-source-dirs:   app
+    build-depends:    base, stackenv
+    default-language: Haskell2010
+
+test-suite stackenv-test
+    type:             exitcode-stdio-1.0
+    main-is:          Spec.hs
+    hs-source-dirs:   test
+    build-depends:    base, stackenv
+    default-language: Haskell2010
