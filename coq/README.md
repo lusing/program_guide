@@ -1,7 +1,7 @@
 # Coq 教程示例集
 
 本目录按 `guide` 统一结构组织 Coq 教程与可验证示例。教程正文见
-[COQ编程指南.md](./COQ编程指南.md)（25 章；扩充中，当前完成第 1–15 章）。
+[COQ编程指南.md](./COQ编程指南.md)（25 章；扩充中，当前完成第 1–20 章）。
 
 ## 目录结构
 
@@ -25,7 +25,12 @@ coq/
     ├── 12_induction.v
     ├── 13_rewrite.v
     ├── 14_logic.v
-    └── 15_predicates.v
+    ├── 15_predicates.v
+    ├── 16_higher_order.v
+    ├── 17_option.v
+    ├── 18_tactics_modules.v
+    ├── 19_ast.v
+    └── 20_list_laws.v
 ```
 
 ## 工具链

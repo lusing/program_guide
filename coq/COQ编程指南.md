@@ -2253,7 +2253,645 @@ Qed.
 
 ---
 
+## 第 16 章 高阶函数及其证明
+
+对应示例：`examples/16_higher_order.v`
+
+### 16.1 函数是一等值
+
+前几章已经反复出现「函数当参数传」（map、filter、fold），现在正式立牌坊：**函数是值**——可以存进变量、当参数传、当结果返回、放进数据结构。以函数为参数/结果的函数叫**高阶函数**。
+
+```coq
+Definition apply_twice {A : Type} (f : A -> A) (x : A) : A :=
+  f (f x).
+
+Compute (apply_twice (fun n => n * 2) 5).   (* = 20 *)
+```
+
+高阶函数是复用的基本单位：`map` 一个定义覆盖「对每种数据各做一件事」的无限需求。而**组合**是高阶函数的代数：
+
+```coq
+Definition compose {A B C : Type} (f : B -> C) (g : A -> B) : A -> C :=
+  fun x => f (g x).
+```
+
+「先 g 后 f」打包成一个新函数——数学记号 f∘g 的可执行版。
+
+### 16.2 高阶函数的定律
+
+高阶函数不止能跑，还能**证**。三条经典定律（示例 16 全部证毕）：
+
+```coq
+(* 融合律：两次 map 可合一次 *)
+map_compose : map (compose f g) xs = map f (map g xs)
+
+(* 长度保持：map 不丢不重 *)
+map_length  : length (map f xs) = length xs
+
+(* 幂等律：筛过的再筛不变 *)
+filter_idem : filter p (filter p xs) = filter p xs
+```
+
+以融合律为例看证明——你期待的新东西一件都没有：
+
+```coq
+Theorem map_compose : forall (A B C : Type)
+                                 (f : B -> C) (g : A -> B) (xs : list A),
+  map (compose f g) xs = map f (map g xs).
+Proof.
+  intros A B C f g xs. induction xs as [| x tl IH].
+  - reflexivity.
+  - simpl. rewrite IH. reflexivity.
+Qed.
+```
+
+对 xs 归纳、基例计算、步例用 IH——与第 12 章证 `n + 0 = n` 的剧本**一字不差**。「函数当参数」完全不改变证明形状，因为归纳发生在列表的结构上，而函数对结构一无所知。这是本章的核心信息：**数据决定证明，函数只是数据上的乘客**。
+
+### 16.3 destruct eqn：对付 filter 的标准姿势
+
+`filter_idem` 的证明藏着一个值得单说的技术：
+
+```coq
+Theorem filter_idem : forall (A : Type) (p : A -> bool) (xs : list A),
+  filter p (filter p xs) = filter p xs.
+Proof.
+  intros A p xs. induction xs as [| x tl IH].
+  - reflexivity.
+  - simpl. destruct (p x) eqn:E.
+    + simpl. rewrite E. rewrite IH. reflexivity.
+    + exact IH.
+Qed.
+```
+
+麻烦在于 `filter` 的定义里有 `if p x`：`simpl` 展开后 `p x` 卡在判断里（p 是变量，算不出）。`destruct (p x) eqn:E` 按它的值分情况——但注意**展开内层 filter 时 `if p x` 会再次出现**（第一次 destruct 替换的是当时可见的那处），所以再 `simpl` 暴露新的 `if` 后，要用 `E : p x = true` 来 `rewrite E` 消掉它。这套「**destruct eqn → simpl → rewrite E**」的连环是所有涉及 bool 判断的函数（filter、find、partition……）证明的通用解法，第 21 章排序证明会再次依赖它。
+
+### 16.4 用 fold 造一切
+
+`fold_right`（第 8 章）的威力值得再强调——它是一切「遍历攒结果」的归一形式：
+
+```coq
+Theorem fold_cons : forall (A : Type) (xs : list A),
+  fold_right (fun x acc => x :: acc) [] xs = xs.
+Proof.
+  intros A xs. induction xs as [| x tl IH].
+  - reflexivity.
+  - simpl. rewrite IH. reflexivity.
+Qed.
+```
+
+把 `cons` 本身当叠法，fold 就退化成恒等；换 `Nat.add` 是求和，换 `orb` 是存在判断，换 `(fun x acc => if p x then x :: acc else acc)` 是手写 filter。**理解一个 fold，等于理解一族函数**——这是函数式编程的复利。
+
+### 16.5 本章坑位清单（实测）
+
+1. **filter 展开后 `if` 复活**：`destruct (p x)` 一次不够，`eqn:E` + `rewrite E` 才能收干净（16.3 的完整演示）；
+2. **对「函数相等」想当然**：`fun x => x + 0` 与 `fun x => x` 在 Coq 里**不能互推为相等**（函数外延性不是内建公理）——但两条**定律**（对任意输入结果相同）照证不误，本教程始终证定律；
+3. **compose 的参数顺序**：`compose f g` 是先 g 后 f（与数学 f∘g 一致），写成「先 f 后 g」会证出反向定律，名字起清楚很重要。
+
+---
+
+## 第 17 章 Option：安全建模
+
+对应示例：`examples/17_option.v`
+
+### 17.1 用类型消灭一类错误
+
+「查无此值」是程序错误的经典来源：空列表取头、字典查不存在的键、除以零。主流语言的方案——返回 NULL（C）、抛异常（Java）、返回 undefined（JS）——共同问题：**调用方可以装作不会失败**，类型系统不设防。
+
+Coq 的方案是把「可能没有」编码进类型：
+
+```coq
+Inductive option (A : Type) : Type :=
+  | Some : A -> option A
+  | None : option A.
+```
+
+`option nat` 的每个值要么是 `Some n`（有货），要么是 `None`（没货）——**想拿到里面的 nat，必须 match，必须处理 None 分支**（穷尽性检查强制）。错误从「运行时意外」变成「编译期必须回答的问题」。对比第 8 章的 `nth`（越界静默给默认值——错误被吞），option 版干净得多：
+
+```coq
+Fixpoint nth_option {A : Type} (n : nat) (xs : list A) : option A :=
+  match n, xs with
+  | O, x :: _ => Some x
+  | S k, _ :: tl => nth_option k tl
+  | _, _ => None
+  end.
+
+Compute (nth_option 5 [10; 20; 30]).   (* = None —— 越界明说 *)
+```
+
+这个 match 的 `,` 双 scrutinee 语法第 7 章见过；`_, _` 兜底组合「越界」与「列表太短」两种失败。
+
+### 17.2 option 上的三个基本操作
+
+拿到 option 后的三种典型处理，全部是普通函数：
+
+```coq
+Definition option_map {A B : Type} (f : A -> B) (o : option A) : option B :=
+  match o with
+  | Some x => Some (f x)
+  | None => None
+  end.
+
+Definition default {A : Type} (d : A) (o : option A) : A :=
+  match o with
+  | Some x => x
+  | None => d
+  end.
+
+Definition bind {A B : Type} (o : option A) (f : A -> option B) : option B :=
+  match o with
+  | Some x => f x
+  | None => None
+  end.
+```
+
+- **`option_map`**：对有货的做变换，没货的原样传播失败——「成功的路径上加工」；
+- **`default`**：显式兜底——「我现在必须要一个值，取不到就用这个」，把第 8 章 `nth` 隐式做的事变成明说；
+- **`bind`**：串联可能失败的计算——上一步有货就喂给下一步，没货整个链条直接 None（这就是 monad 的 `bind`，不用记名词，记住行为）。
+
+### 17.3 链式：安全除法流水线
+
+实战看效果——「取列表前两个元素相除」，任何一步失败整体就 None：
+
+```coq
+Definition safe_div (a b : nat) : option nat :=
+  if Nat.eqb b 0 then None else Some (a / b).
+
+Definition div_heads (xs : list nat) : option nat :=
+  bind (nth_option 0 xs) (fun a =>
+    bind (nth_option 1 xs) (fun b => safe_div a b)).
+
+Compute (div_heads [10; 2]).    (* = Some 5 *)
+Compute (div_heads [10]).       (* = None —— 第二个元素不存在 *)
+Compute (div_heads [10; 0]).    (* = None —— 除零 *)
+```
+
+对照命令式写法（取头、判空、取次、判空、判除零……），bind 版把「失败传播」的样板全部收进一个组合子，业务逻辑一行陈述。这正是 Rust 的 `?`、Swift 的可选链、Haskell 的 Maybe monad 同款思想——**Coq 里它只是个普通函数**。
+
+### 17.4 option 的定律
+
+option 同样有可证的定律（示例 17）：
+
+```coq
+Theorem option_map_id : forall (A : Type) (o : option A),
+  option_map (fun x => x) o = o.
+Proof.
+  intros A o. destruct o.
+  - reflexivity.
+  - reflexivity.
+Qed.
+```
+
+对 o 分情况（Some/None）——**不需要归纳**（option 不是递归类型，没有「更小的 option」）。这提示一条选择法则：数据是一层还是多层，决定 destruct 还是 induction。
+
+更有营养的是 `nth_option` 与 `map` 的交换律（对第 n 个取值，先后做 map 结果一样）：
+
+```coq
+Theorem nth_option_map : forall (A B : Type) (f : A -> B)
+                                   (n : nat) (xs : list A),
+  option_map f (nth_option n xs) = nth_option n (map f xs).
+Proof.
+  intros A B f n. induction n as [| n IH]; intros xs.
+  - destruct xs as [| x tl].
+    + reflexivity.
+    + reflexivity.
+  - destruct xs as [| x tl].
+    + reflexivity.
+    + simpl. apply IH.
+Qed.
+```
+
+注意结构：**对 n 归纳、对 xs 分情况**——两个维度各司其职。以及一个重要的细节：`intros xs` 放在 `induction n` **之后**——归纳时 xs 留在目标里保持任意，于是 IH 是「对**所有** xs 成立」，步例里才能 `apply IH` 用在 tail 上。这正是第 12 章坑 2 的正面示范：**要归纳的变量先动，其余维度后收**。
+
+### 17.5 什么时候用 option
+
+| 场景 | 用法 |
+|---|---|
+| 查找类（head/nth/lookup） | 返回 option，失败显式 |
+| 可能失败的计算（除法、解析） | option + bind 串联 |
+| 调用方有合理默认值 | 在**调用处** `default`，不要在 API 里吞错 |
+| 失败需要携带原因 | 变体类型 `Inductive result := Ok : A -> result \| Err : string -> result`（第 24 章用到类似手法） |
+
+原则一句话：**让失败在类型里可见，在最近的地方处理**。
+
+### 17.6 本章坑位清单（实测）
+
+1. **`default` 放错层**：在库函数内部 default 会把「调用方该知道的失败」吞掉——兜底永远放在使用现场；
+2. **忘记 bind 的短路语义**：链条里任何 None 都让整体 None——调试时从最前端的 None 查起；
+3. **对 option 归纳**：option 无递归结构，`induction o` 没有意义（构造子的参数不是 option）——destruct 就够；
+4. **`nth_option` 证明里 intros 顺序**：先 `intros xs` 再 `induction n` 会把 IH 锁死在具体 xs 上（第 12 章坑 2 的变体，17.4 有完整对照）。
+
+---
+
+## 第 18 章 策略武器库与模块
+
+对应示例：`examples/18_tactics_modules.v`
+
+### 18.1 自动化第一档：auto
+
+前 17 章的证明全靠手工。`auto` 是自动化的入口——一个带提示库的深度优先搜索：
+
+```coq
+Theorem auto_ex : forall P Q : Prop, P -> (P -> Q) -> Q.
+Proof. auto. Qed.
+```
+
+`auto` 能拼出：上下文假设的组合、`reflexivity` 可关闭的等式、简单构造子应用（split/left/…）。它**不能**做归纳、不能重写库里你没用 `Hint` 注册的定理。使用心法：
+
+- 目标「一眼显然」（假设的直接组合、定义展开即相等）→ 先 `auto` 试试；
+- `auto` 失败不损失什么——马上回到手工；
+- 想给 auto 加弹药：`Hint Resolve 定理名.` 把定理挂进提示库（本教程不展开，知道有这回事即可）。
+
+更激进的 `eauto`（会自己造存在证人）、`firstorder`（一阶逻辑专用）是后续的自学方向——先把手工程序练熟，才知道自动化在替你做什么。
+
+### 18.2 assert：证明的分段
+
+证明超过半屏就该拆。`assert (H : 陈述)` 造一个「局部引理」：花括号里现场证明它，之后 H 当普通假设用：
+
+```coq
+Theorem plus_rearrange : forall n m p q : nat,
+  (n + m) + (p + q) = (m + n) + (p + q).
+Proof.
+  intros n m p q.
+  assert (H : n + m = m + n).
+  { apply Nat.add_comm. }
+  (* 注意（实测坑）：老教材里的 plus_comm 在 8.20 已不存在，
+     现名 Nat.add_comm——抄旧书先 Check 名字 *)
+  rewrite H. reflexivity.
+Qed.
+```
+
+assert 是**证明的模块化**：大定理拆成「引理链」，每段独立可读。与「提前把引理证成 Theorem」相比，assert 的引理是局部的——只在这个证明里可见，不污染命名空间。经验法则：会被多处复用的上升为 Theorem，单点使用的 assert 就地解决。
+
+### 18.3 控制流组合：分号、try、嵌套
+
+三个组合子让策略脚本紧凑：
+
+```coq
+(* ;  分号：让一条策略作用于当前全部目标 *)
+Example semi_ex : forall b : bool, orb b true = true.
+Proof.
+  intros b. destruct b; reflexivity.
+Qed.
+```
+
+`destruct b; reflexivity.` 读作「分情况后，每个情况各自 reflexivity」——两种情况一行收。展开写要两个子弹七行，等价但啰嗦。
+
+```coq
+(* try：失败就当无事发生 *)
+intros n. simpl. try reflexivity.
+```
+
+`try reflexivity` 在证不了的目标上静默跳过——常与 `;` 连用：`destruct b; try reflexivity.` 留下证不动的情况继续手工。这两个组合子是「批量处理 + 例外管理」的策略语言版。
+
+### 18.4 模块：命名空间
+
+第 2 章示例就开始用 `Module ... End` 包装，现在正式讲。模块把一组定义（类型、函数、定理）打包进独立命名空间：
+
+```coq
+Module Stack.
+  Definition t := list nat.
+  Definition empty : t := [].
+  Definition push (x : nat) (s : t) : t := x :: s.
+  Definition pop (s : t) : option (nat * t) :=
+    match s with
+    | [] => None
+    | h :: tl => Some (h, tl)
+    end.
+  Theorem pop_push : forall (x : nat) (s : t),
+    pop (push x s) = Some (x, s).
+  Proof. intros x s. reflexivity. Qed.
+End Stack.
+
+Compute (Stack.pop (Stack.push 5 Stack.empty)).   (* Some (5, []) *)
+```
+
+外部以 `Stack.pop` 点名访问；模块内互相直呼其名。定义与「关于定义的定理」同居一室——**接口和它的正确性证明在同一个命名空间里交付**，这是 Coq 工程化与普通语言最不同的气质。
+
+### 18.5 模块签名：接口与封装
+
+`Module Type` 声明**签名**（signature）——一组名字与类型的规定，`Parameter` 表示「签名不关心你怎么实现」，`Axiom` 表示「实现必须交付这条正确性证明」：
+
+```coq
+Module Type STACK_SIG.
+  Parameter t : Type.                    (* 只说「有个类型」 *)
+  Parameter empty : t.
+  Parameter push : nat -> t -> t.
+  Parameter pop : t -> option (nat * t).
+  Axiom pop_push : forall (x : nat) (s : t),
+    pop (push x s) = Some (x, s).        (* 行为承诺 *)
+End STACK_SIG.
+
+Module SealedStack : STACK_SIG := Stack.
+```
+
+`Module SealedStack : STACK_SIG := Stack.` 用签名**封印**了实现。效果（实测）：
+
+```coq
+Print SealedStack.t.
+(* SealedStack.t : Type —— 看不到 list nat 了 *)
+
+Fail Check (SealedStack.push 5 [1; 2]).
+(* 签名外不知道 t = list nat，裸列表偷渡不进来 *)
+```
+
+表示细节被彻底隐藏，外部只能走接口——这就是**抽象数据类型（ADT）**，而且是带正确性证明的：接口上的 `Axiom pop_push` 由 `Stack` 内的 `Theorem pop_push` 实现满足（封印时 Coq 检查过签名匹配）。换实现（比如改用函数表示的队列）只要仍满足签名，所有使用方无感——**签名是模块间的类型系统**。
+
+### 18.6 本章坑位清单（实测）
+
+1. **`plus_comm` 已不存在**：8.20 移除了旧别名，现名 `Nat.add_comm`；老教材（包括 Software Foundations 旧版）抄代码先 Check；
+2. **`contradiction` 不认 `0 = 1`**：报 `No such contradiction`——它只找「上下文里的 False / 构造子直接冲突」，数字不同要 `discriminate`（实测）；
+3. **auto 空转**：对需要归纳的目标 auto 无能为力（它不会 induction）——显然要归纳就别等 auto；
+4. **`;` 把错误信息搞乱**：`destruct b; try rewrite H; try reflexivity.` 一长串组合，哪步失败难定位——调试时展开成分步，绿了再合并；
+5. **封印后的模块看不到表示**：`SealedStack.t` 只是抽象 Type，想对实现做计算/证明得用未封印的原模块——封装与便利的取舍。
+
+---
+
+## 第 19 章 表达式求值器：AST 入门
+
+对应示例：`examples/19_ast.v`
+
+### 19.1 用归纳类型定义一门小语言
+
+本章把前 18 章的全部工具组装成一件真正的作品：一个算术表达式的**求值器**，配上一个**优化器**，再证优化器**不改变程序含义**。先定义语法——一个归纳类型，每个构造子是一种语法形态：
+
+```coq
+Inductive aexp : Type :=
+  | AConst (n : nat)          (* 字面量 *)
+  | AVar (x : string)         (* 变量 *)
+  | APlus (a1 a2 : aexp)      (* a1 + a2 *)
+  | AMinus (a1 a2 : aexp)     (* a1 - a2 *)
+  | AMult (a1 a2 : aexp).     (* a1 * a2 *)
+```
+
+表达式 `2 + x * 3` 在 Coq 里就是这个**语法树**（AST，abstract syntax tree）：
+
+```coq
+APlus (AConst 2) (AMult (AVar "x") (AConst 3))
+```
+
+几个值得停下来体会的点：
+
+- **语法即数据**：别的语言里「表达式」是编译器内部的黑盒，在 Coq 里它是个再普通不过的归纳类型——能 `Check`、能 `Compute`、能 match、能对它归纳证明；
+- **没有语法糖**：AST 是抽象语法，括号、优先级这些具体写法的烦恼不存在（代价是手写 AST 略啰嗦，真做语言要配解析器——超出本书范围）；
+- **构造子带参数标注**：`APlus (a1 a2 : aexp)` 是第 9 章 `node (l a r)` 的同款写法（参数直接写在构造子里），比老式「冒号在后面」紧凑。
+
+### 19.2 状态与求值器
+
+变量需要环境。最直接的表达：**状态 = 从变量名到值的函数**：
+
+```coq
+Definition state := string -> nat.
+```
+
+「函数当数据用」又一次出现——一个具体的状态就是一个具体的查表函数：
+
+```coq
+Definition st1 : state := fun x =>
+  if String.eqb x "x" then 5 else 0.
+```
+
+求值器是对 AST 的结构递归——每种语法形态一个分支：
+
+```coq
+Fixpoint aeval (a : aexp) (st : state) : nat :=
+  match a with
+  | AConst n => n
+  | AVar x => st x
+  | APlus a1 a2 => aeval a1 st + aeval a2 st
+  | AMinus a1 a2 => aeval a1 st - aeval a2 st
+  | AMult a1 a2 => aeval a1 st * aeval a2 st
+  end.
+
+Example eval_ex1 : aeval (APlus (AVar "x") (AConst 1)) st1 = 6.
+Proof. reflexivity. Qed.
+```
+
+`Fixpoint` 的终止性检查照常通过（递归都在子表达式上）。注意减法用的是 nat 的截断减（第 5 章的坑在这门小语言里复现——`x - y` 当 y > x 时得 0；做练习时留意）。
+
+### 19.3 优化器：smart constructor 的设计
+
+目标优化：`0 + e` 化简为 `e`。直接写会掉进一个坑——把判断塞进 `optimize` 的 APlus 分支：
+
+```coq
+(* 反面教材（伪码）：
+Fixpoint optimize (a : aexp) :=
+  match a with
+  ...
+  | APlus (AConst 0) e2 => optimize e2      (* 嵌套模式 *)
+  | APlus e1 e2 => APlus (optimize e1) (optimize e2)
+  ...
+```
+
+问题在证明：对 `a1` 归纳到 APlus 分支时，`optimize (APlus a1 a2)` 里 a1 是变量，嵌套模式 `AConst 0` 的 match 卡住化简不了，得再对 a1 穷举五种构造子——证明变成二十多行的模式体操。
+
+工程解法是把「加法的构建」独立成 **smart constructor**：
+
+```coq
+Definition optimize_plus (e1 e2 : aexp) : aexp :=
+  match e1 with
+  | AConst 0 => e2
+  | _ => APlus e1 e2
+  end.
+
+Fixpoint optimize (a : aexp) : aexp :=
+  match a with
+  | AConst n => AConst n
+  | AVar x => AVar x
+  | APlus e1 e2 => optimize_plus (optimize e1) (optimize e2)
+  | AMinus e1 e2 => AMinus (optimize e1) (optimize e2)
+  | AMult e1 e2 => AMult (optimize e1) (optimize e2)
+  end.
+```
+
+效果（实测）：
+
+```coq
+Compute (optimize (APlus (AConst 0) (AVar "y"))).
+(* = AVar "y" —— 0 + y 被吃掉 *)
+
+Compute (optimize (APlus (APlus (AConst 0) (AVar "x")) (AConst 0))).
+(* = APlus (AVar "x") (AConst 0)
+   里层的 0 + x 被吃；x + 0 保留——优化器只认 0 在左，
+   「e + 0 → e」的折叠留给第 24 章实战 *)
+```
+
+### 19.4 正确性证明：两步走
+
+**定理**（优化器不改变语义）：
+
+```coq
+Theorem optimize_correct : forall (a : aexp) (st : state),
+  aeval (optimize a) st = aeval a st.
+```
+
+分两步证。**第一步**，smart constructor 自己的正确性——注意它对**任意** u v 成立，与 optimize 无关，所以证明是独立的：
+
+```coq
+Lemma optimize_plus_correct : forall (u v : aexp) (st : state),
+  aeval (optimize_plus u v) st = aeval u st + aeval v st.
+Proof.
+  intros u v st.
+  unfold optimize_plus.        (* 展开定义，露出 match u *)
+  destruct u; simpl; try reflexivity.
+  destruct n; reflexivity.     (* AConst n 的 n 还要分 0 / S *)
+Qed.
+```
+
+`unfold`（把定义展开成定义体）是新面孔但不必紧张：它就是「把名字换成定义」的 rewrite。`destruct u` 五种构造子里四种直接 reflexivity（两边形状相同），唯独 `AConst n` 里 n 未知，再分 `0` / `S k` 两步收掉。
+
+**第二步**，主定理对 a 归纳，APlus 分支引用小引理：
+
+```coq
+Theorem optimize_correct : forall (a : aexp) (st : state),
+  aeval (optimize a) st = aeval a st.
+Proof.
+  intros a st. induction a; simpl.
+  - reflexivity.
+  - reflexivity.
+  - rewrite optimize_plus_correct. rewrite IHa1, IHa2. reflexivity.
+  - rewrite IHa1, IHa2. reflexivity.
+  - rewrite IHa1, IHa2. reflexivity.
+Qed.
+```
+
+读 APlus 分支：目标左边是 `aeval (optimize_plus (optimize a1) (optimize a2)) st`——`optimize_plus_correct` 把这一层剥成 `aeval (optimize a1) st + aeval (optimize a2) st`，两个归纳假设再各自把 `optimize` 剥掉，两边归一。**五个分支、三个 rewrite，一个「优化器正确」的定理到手。**
+
+这个 40 行的闭环值得敬畏：它就是 CompCert（验证编译器）、Verified SCC（验证垃圾回收）这类工业成果的**最小完整样本**——定义语言、写变换、证保持语义。规模差万倍，结构完全同构。
+
+### 19.5 设计即证明友好
+
+回头看，本章最大的心得不在证明里，而在**设计**里：把嵌套模式拆成 smart constructor，让「何时优化」的判断集中在一个小函数，主函数保持纯结构递归——于是主定理保持「标准归纳剧本」，特殊情况的复杂度被隔离进一个独立小引理。**为可证性而设计**（design for verifiability）是 Coq 工程师的核心技能：当你发现证明难得离谱，多半是定义可以改得更「结构化」。
+
+### 19.6 本章坑位清单（实测）
+
+1. **嵌套模式直接进 Fixpoint 导致证明爆炸**：19.3 的反面教材——用 smart constructor 隔离判断；
+2. **`AConst n` 分支忘分 n**：`optimize_plus` 的 match 对 n 卡住，`destruct n` 补刀才收；
+3. **nat 截断减法混进语言语义**：`AMinus` 沿用 nat 减法，负中间结果是 0——想语义正确可换 `Z` 结果类型或加 precondition（进阶）；
+4. **String.eqb 的状态函数**：`st1` 用 `String.eqb x "x"` 判断——别用 `=`（那是 Prop，if 需要 bool，第 4 章的老朋友）；
+5. **`rewrite IHa1, IHa2` 逗号**：`rewrite A, B` 是 `rewrite A. rewrite B.` 的缩写——顺序执行，B 失败整个失败，分开排查更容易。
+
+---
+
+## 第 20 章 列表定律证明实战
+
+对应示例：`examples/20_list_laws.v`
+
+### 20.1 本章任务
+
+列表是函数式编程的「数组」，它的定律就是日常重构的理论基础。六条（示例 20 全部证毕）：
+
+| # | 定律 | 日常意义 |
+|---|---|---|
+| 1 | `xs ++ [] = xs`（右单位元） | 拼空表不变 |
+| 2 | `xs ++ ys ++ zs = (xs ++ ys) ++ zs`（结合律） | 括号随便挪 |
+| 3 | `length (xs ++ ys) = length xs + length ys` | 长度可加 |
+| 4 | `map g (map f xs) = map (fun x => g (f x)) xs`（融合律） | 两遍合一遍 |
+| 5 | `rev (xs ++ ys) = rev ys ++ rev xs` | 反转分配且换序 |
+| 6 | `rev (rev xs) = xs`（对合） | 翻两次还原 |
+
+通用剧本（第 16 章已总结）：`induction xs as [| x tl IH]` → 基例 `reflexivity` → 步例 `simpl. rewrite IH. reflexivity.`。六条里四条是这个剧本的填空，两条有新戏——正好讲两个新课题。
+
+### 20.2 课题一：定律互相引用（1、5、6）
+
+**定律 1（右单位元）**是第 12 章 `my_app_nil_r` 的标准库版（用 `++` 记号）。留意与「左单位元」的对比：`[] ++ ys = ys` 是 `reflexivity` 一行（`++` 在左参数上递归，左边是 `[]` 直接化简），右边版本却要完整归纳——**定义的形状决定证明的价格**（第 12.5 节的法则再次兑现）。
+
+**定律 5（反转分配）**开始引用前面的定律：
+
+```coq
+Theorem rev_app_distr : forall (A : Type) (xs ys : list A),
+  rev (xs ++ ys) = rev ys ++ rev xs.
+Proof.
+  intros A xs ys. induction xs as [| x tl IH].
+  - simpl. rewrite app_nil_r. reflexivity.
+  - simpl. rewrite IH. rewrite <- app_assoc. reflexivity.
+Qed.
+```
+
+两个新情况：**基例**化简后是 `rev ys ++ [] = rev ys`——又是那个「动不了的右单位元」，把刚证的定律 1 当引理用（`rewrite app_nil_r`）；**步例**要把 `(rev ys ++ rev tl) ++ [x]` 与 `rev ys ++ (rev tl ++ [x])` 对齐——`rewrite <- app_assoc` 反向用结合律挪括号。**定理开始互相组装成网**：定律 1 服务定律 5，定律 5 服务定律 6：
+
+```coq
+Theorem rev_involutive : forall (A : Type) (xs : list A),
+  rev (rev xs) = xs.
+Proof.
+  intros A xs. induction xs as [| x tl IH].
+  - reflexivity.
+  - simpl. rewrite rev_app_distr. rewrite IH. simpl. reflexivity.
+Qed.
+```
+
+「翻两次等于不翻」——口头上一秒钟，机器面前需要定律 5 + 归纳 + 化简三件套。这就是证明工程的手感：**没有孤立的定理，只有定理网**。
+
+### 20.3 课题二：归纳假设不够用怎么办
+
+一个值得亲手的失败（推荐在 CoqIDE 里试）：证**累加器版反转**（第 10 章 `fast_rev`）与标准 `rev` 的一致性。naive 剧本直接上：
+
+```coq
+(* 想证：rev_acc [] xs = rev xs *)
+Proof.
+  intros A xs. induction xs as [| x tl IH].
+  - reflexivity.                  (* 两侧都空，过了 *)
+  - simpl. rewrite IH.            (* 卡死！ *)
+```
+
+步例化简后是 `rev_acc (x :: []) tl = rev tl ++ [x]`——**累加器不再是 []**，而 IH 只谈 `rev_acc [] tl`，假设够不着。这正是第 15 章 two_step 的同款困境，同款解法——**一般化：把命题改成对任意累加器成立**（注意 intros 顺序的细节）：
+
+```coq
+Lemma rev_acc_correct : forall (A : Type) (xs acc : list A),
+  rev_acc acc xs = rev xs ++ acc.
+```
+
+**加强后的命题反而好证**：IH 变成「对任意 acc」，步例的累加器 `x :: acc` 也是它的实例。而 `rev_acc [] xs = rev xs` 作为推论一击而得。这一招（**generalize the accumulator**）与第 15 章（strengthen with conjunction）是同一个思想的两件衣服：**归纳假设是白送的燃料，命题写得越「一般」，燃料越足**。
+
+### 20.4 一个证明细节的工具箱
+
+本章六条定律的证明里，三个高频动作值得点名：
+
+1. **借定律**：基例/步例化简出的「标准形状」（`xs ++ []`、括号位置）直接 rewrite 前面证好的定律，别再手证一遍；
+2. **调方向**：`rewrite <- app_assoc` 挪括号——先想清楚要消的模式在哪侧（第 13.1 节的方向学）；
+3. **看形状选归纳变量**：定律 3、4 对 xs 归纳剧本即过；涉及两个列表的定律（如 `length (xs ++ ys) = ...`）也只对第一个归纳——因为 `++` 在它上面递归。
+
+### 20.5 rev_acc_correct 完整证明（实测）
+
+失败与成功的差别只在**一个 intros 的顺序**（失败版的报错与本节脚本都经过实测）：
+
+```coq
+Lemma rev_acc_correct : forall (A : Type) (xs acc : list A),
+  rev_acc acc xs = rev xs ++ acc.
+Proof.
+  intros A xs.            (* 关键：只收 A 和 xs —— acc 留在目标里！
+                             若先 intros acc 再 induction，IH 就被
+                             锁死在固定 acc 上，步例 rewrite IH 直接
+                             报 Found no subterm matching *)
+  induction xs as [| x tl IH]; intros acc.
+  - reflexivity.
+  - simpl. rewrite IH. rewrite <- app_assoc. simpl. reflexivity.
+Qed.
+```
+
+步例目标：`rev_acc (x :: acc) tl = (rev tl ++ [x]) ++ acc`。`rewrite IH`（IH : **forall acc**, rev_acc acc tl = rev tl ++ acc）把左边换成 `rev tl ++ x :: acc`；`rewrite <- app_assoc` 把右边括号外挪变成 `rev tl ++ [x] ++ acc`；`simpl` 把 `[x] ++ acc` 化成 `x :: acc`，两边相同。推论随之而来：
+
+```coq
+Theorem fast_rev_correct : forall (A : Type) (xs : list A),
+  rev_acc [] xs = rev xs.
+Proof.
+  intros A xs. rewrite rev_acc_correct. rewrite app_nil_r. reflexivity.
+Qed.
+```
+
+**没有那步「一般化」，这一切无从谈起**——本教程第二次、也是最后一次强调这个心法。
+
+### 20.6 本章坑位清单（实测）
+
+1. **累加器命题没一般化**：`rev_acc [] xs` 直接归纳 IH 够不着，改成 `forall acc, rev_acc acc xs = rev xs ++ acc`（20.3 的完整案例）；
+2. **`rev (x :: tl) ++ acc` 化简时机**：stdlib `rev` 定义为 `rev (x::l) = rev l ++ [x]`，simpl 展开后形状才可见——步例先 simpl 再 rewrite 的顺序不能乱；
+3. **rewrite 定律时同名混淆**：自己证的 `app_nil_r` 与 stdlib 的 `List.app_nil_r` 同名——自己的在后会遮蔽库版（本教程自证的版本足够用，两版陈述一致，实测无冲突）；
+4. **想对 ys 归纳**：定律 3 对 `ys` 归纳会把化简引向 `length xs` 的死胡同——归纳变量跟着**递归定义的参数**走（`++` 递归在第一个参数）。
+
+---
+
 <!-- BATCH1-CONTINUES -->
+
+
 
 
 
