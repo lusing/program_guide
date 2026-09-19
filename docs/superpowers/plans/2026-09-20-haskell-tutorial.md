@@ -1,5 +1,7 @@
 # Haskell 教程实施计划（2026-09-20）
 
+> **状态：已完成**（同日实施；全量终验 46/46 全绿——23 示例 × 两层 + 20/24 stack 分支）
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 从零新建 `haskell/` 教程——24 章分章 + 章号=示例目录号 + 递进讲解 + 坑位清单 + 两层验证 +
@@ -78,11 +80,11 @@ runSuite group cases = do
 - GHC 诊断字样判定：`Warning|error:|Error|Exception`。
 - 编码：`[Console]::OutputEncoding = UTF8`；读输出文件按 UTF-8（源端 hSetEncoding 保证）。
 
-- [ ] Step 1: 写 `haskell/build.ps1`（上述结构）
-- [ ] Step 2: 写 `haskell/run-all.sh`（等价判定：exit 0 / stderr 空 / stdout 非空 / 结束标记 / 无诊断字样）
-- [ ] Step 3: 建目录骨架 `haskell/{docs,examples}`；02_hello 写通首例（见 Task 2 规格）后
+- [x] Step 1: 写 `haskell/build.ps1`（上述结构）
+- [x] Step 2: 写 `haskell/run-all.sh`（等价判定：exit 0 / stderr 空 / stdout 非空 / 结束标记 / 无诊断字样）
+- [x] Step 3: 建目录骨架 `haskell/{docs,examples}`；02_hello 写通首例（见 Task 2 规格）后
   `pwsh ./build.ps1 -Example 02_hello` 全绿，模板定型
-- [ ] Step 4: Commit `feat(haskell): build.ps1/run-all.sh 验证骨架与 02 示例模板`
+- [x] Step 4: Commit `feat(haskell): build.ps1/run-all.sh 验证骨架与 02 示例模板`
 
 ### Task 2: 批次 A——02_hello / 03_numbers / 04_control / 05_functions
 
@@ -100,9 +102,9 @@ read 部分函数坑（用 readMaybe?——Text.Read 是 boot ✓）；字面量
 `(-1)` 陷阱：`(- 3)` 非法）；flip；匿名函数；eta 缩约；自定义中缀运算子（`+++` 优先级）；点自由重构示例。
 每例 8–12 个 `# ═══ N.M` 分节；断言 10+ 条。
 
-- [ ] Step 1: 四目录 main.hs + runtests.hs 全部写完
-- [ ] Step 2: `pwsh ./build.ps1 -Example 02_hello`（及 03/04/05）逐个全绿；`-All` 跑通当前 4 例
-- [ ] Step 3: Commit `feat(haskell): 批次 A——02 hello/03 numbers/04 control/05 functions`
+- [x] Step 1: 四目录 main.hs + runtests.hs 全部写完
+- [x] Step 2: `pwsh ./build.ps1 -Example 02_hello`（及 03/04/05）逐个全绿；`-All` 跑通当前 4 例
+- [x] Step 3: Commit `feat(haskell): 批次 A——02 hello/03 numbers/04 control/05 functions`
 
 ### Task 3: 批次 B——06_patterns / 07_adt / 08_typeclasses
 
@@ -117,9 +119,9 @@ Tree + insert/size/height/showTree；严格字段 `!` 一瞥（对照 10 章）�
 orphan instance 规则与规避；Kind 一瞥（`*`→`Type`、Functor 是 `Type -> Type`）；instance 头不能是
 类型同义词等小坑。
 
-- [ ] Step 1: 三目录写完（⭐ 章 main.hs 12–16 分节，断言 15+）
-- [ ] Step 2: build.ps1 逐例全绿
-- [ ] Step 3: Commit `feat(haskell): 批次 B——06 patterns/07 adt/08 typeclasses`
+- [x] Step 1: 三目录写完（⭐ 章 main.hs 12–16 分节，断言 15+）
+- [x] Step 2: build.ps1 逐例全绿
+- [x] Step 3: Commit `feat(haskell): 批次 B——06 patterns/07 adt/08 typeclasses`
 
 ### Task 4: 批次 C——09_lists / 10_laziness / 11_containers
 
@@ -135,9 +137,9 @@ bang patterns（`-XBangPatterns`）；**空间泄漏复现**：foldl (+) 0 大�
 Map.Strict 一句）；Data.Set（成员/交并差）；Data.IntMap 一句；元组族（fst/snd/swap）；Foldable 概念
 （mapM_/toList 对 Map/Set 通用）；Traversable（mapM/sequenceA 一瞥）。
 
-- [ ] Step 1: 三目录写完
-- [ ] Step 2: build.ps1 逐例全绿（10 章泄漏演示注意运行时长 <5s）
-- [ ] Step 3: Commit `feat(haskell): 批次 C——09 lists/10 laziness/11 containers`
+- [x] Step 1: 三目录写完
+- [x] Step 2: build.ps1 逐例全绿（10 章泄漏演示注意运行时长 <5s）
+- [x] Step 3: Commit `feat(haskell): 批次 C——09 lists/10 laziness/11 containers`
 
 ### Task 5: 批次 D——12_strings / 13_fam / 14_mtl
 
@@ -156,9 +158,9 @@ ReaderT；lift）；mtl 风格（MonadState/MonadError 类型类约束函数：`
 `next :: Word64 -> (Double, Word64)`、种子确定性断言、State 化 `random :: State Word64 Double`、
 蒙特卡洛 π 一瞥）；Writer 一瞥（tell + DList 思想，性能注记）。
 
-- [ ] Step 1: 三目录写完（⭐ 章 12–16 分节）
-- [ ] Step 2: build.ps1 逐例全绿
-- [ ] Step 3: Commit `feat(haskell): 批次 D——12 strings/13 fam/14 mtl`
+- [x] Step 1: 三目录写完（⭐ 章 12–16 分节）
+- [x] Step 2: build.ps1 逐例全绿
+- [x] Step 3: Commit `feat(haskell): 批次 D——12 strings/13 fam/14 mtl`
 
 ### Task 6: 批次 E——15_parsec / 16_files / 17_errors
 
@@ -178,9 +180,9 @@ IOException 捕获（读不存在文件）；throw vs throwIO（纯 throw 惰性
 evaluate 强制；bracket/finally/onException（资源三段式）；自定义异常类型（Exception 实例 +
 displayException）；纯代码里的 error/undefined 定位（只该在"不可能分支"）。
 
-- [ ] Step 1: 三目录写完
-- [ ] Step 2: build.ps1 逐例全绿（16 章操作限 build/ 下临时目录，自清理）
-- [ ] Step 3: Commit `feat(haskell): 批次 E——15 parsec/16 files/17 errors`
+- [x] Step 1: 三目录写完
+- [x] Step 2: build.ps1 逐例全绿（16 章操作限 build/ 下临时目录，自清理）
+- [x] Step 3: Commit `feat(haskell): 批次 E——15 parsec/16 files/17 errors`
 
 ### Task 7: 批次 F——18_th / 19_performance / 21_testing
 
@@ -201,9 +203,9 @@ mini-QuickCheck**：Generate 类型类（Bool/Int/Double/[a]）、withSeed（14 
 性质（排序幂等/最大值上界/字符串往返 pack-unpack）；HUnit/tasty/QuickCheck 生态对照表；与 20 章
 stack test 的衔接埋点。
 
-- [ ] Step 1: 三目录写完
-- [ ] Step 2: build.ps1 逐例全绿
-- [ ] Step 3: Commit `feat(haskell): 批次 F——18 th/19 performance/21 testing`
+- [x] Step 1: 三目录写完
+- [x] Step 2: build.ps1 逐例全绿
+- [x] Step 3: Commit `feat(haskell): 批次 F——18 th/19 performance/21 testing`
 
 ### Task 8: 批次 G——20_stackenv（stack 工程）/ 22_concurrency / 23_ffi
 
@@ -227,9 +229,9 @@ msvcrt ✓）；C 类型映射表（CInt/CDouble/CSize/CString）；withCString/
 选 msvcrt qsort 或自建 C 可调目标；若 Windows 实测繁琐则正文以 wrapper 原理 + 最小例为准，坑位记录）；
 ByteString useAsCString 透传。
 
-- [ ] Step 1: 三目录写完（20/22 特判先手工跑通：stack build/test/run；-threaded 编译）
-- [ ] Step 2: build.ps1 逐例全绿（22 的竞争断言写"非原子可能丢/原子必不丢"两分支）
-- [ ] Step 3: Commit `feat(haskell): 批次 G——20 stack 工程/22 concurrency/23 ffi`
+- [x] Step 1: 三目录写完（20/22 特判先手工跑通：stack build/test/run；-threaded 编译）
+- [x] Step 2: build.ps1 逐例全绿（22 的竞争断言写"非原子可能丢/原子必不丢"两分支）
+- [x] Step 3: Commit `feat(haskell): 批次 G——20 stack 工程/22 concurrency/23 ffi`
 
 ### Task 9: 批次 H——24_capstone（MiniLang 迷你解释器，stack 工程）
 
@@ -249,10 +251,10 @@ hSetEncoding + hFlush stdout 无缓冲坑）。
 递归 fib/高阶/错误路径类型）、性质层（21 章 mini-QuickCheck 复用：随机表达式生成→求值不崩溃即
 Either 有值）。stack test exit 0。
 
-- [ ] Step 1: 六源文件 + cabal + Main.hs 写完，`stack build` 过
-- [ ] Step 2: `stack test` 全绿；`stack run` 文件模式/REPL 管道模式手工验证
-- [ ] Step 3: build.ps1 -Example 24_capstone 全绿
-- [ ] Step 4: Commit `feat(haskell): 24 压轴——MiniLang 迷你解释器 stack 工程`
+- [x] Step 1: 六源文件 + cabal + Main.hs 写完，`stack build` 过
+- [x] Step 2: `stack test` 全绿；`stack run` 文件模式/REPL 管道模式手工验证
+- [x] Step 3: build.ps1 -Example 24_capstone 全绿
+- [x] Step 4: Commit `feat(haskell): 24 压轴——MiniLang 迷你解释器 stack 工程`
 
 ### Task 10: docs/ 24 章正文
 
@@ -267,11 +269,11 @@ stackage）；本机工具链实测速览（含镜像配置指引指向 20 章�
 **24-capstone:** 管线架构图（文字版）、三件套逐文件讲解、REPL 演示实录、扩展练习列表（浮点/列表
 类型/模式匹配语法糖/尾调用优化）。
 
-- [ ] Step 1: 01 + 02–05 章（批次 A 对应）
-- [ ] Step 2: 06–08 / 09–11 / 12–14 章（批次 B/C/D 对应）
-- [ ] Step 3: 15–17 / 18–21 / 22–23 章
-- [ ] Step 4: 24 章；通读交叉引用（章节互指/速查表指向）
-- [ ] Step 5: Commit `docs(haskell): 24 章正文`
+- [x] Step 1: 01 + 02–05 章（批次 A 对应）
+- [x] Step 2: 06–08 / 09–11 / 12–14 章（批次 B/C/D 对应）
+- [x] Step 3: 15–17 / 18–21 / 22–23 章
+- [x] Step 4: 24 章；通读交叉引用（章节互指/速查表指向）
+- [x] Step 5: Commit `docs(haskell): 24 章正文`
 
 ### Task 11: 收官——CHEATSheet / README / 根 README / 全量终验 / 记忆
 
@@ -283,9 +285,9 @@ stackage）；本机工具链实测速览（含镜像配置指引指向 20 章�
 - Create 记忆: `G:\xulun\.claude\projects\G--code-guide\memory\haskell-tutorial-build.md` + 更新
   `MEMORY.md` 索引
 
-- [ ] Step 1: CHEATSheet + README + 根 README
-- [ ] Step 2: `pwsh ./build.ps1 -All` 全量终验（23 目录 × 2 层全绿）+ `bash run-all.sh` 抽查
-- [ ] Step 3: 记忆文件写入；全部提交 `docs(haskell): 收官——CHEATSheet/README/全量终验`
+- [x] Step 1: CHEATSheet + README + 根 README
+- [x] Step 2: `pwsh ./build.ps1 -All` 全量终验（23 目录 × 2 层全绿）+ `bash run-all.sh` 抽查
+- [x] Step 3: 记忆文件写入；全部提交 `docs(haskell): 收官——CHEATSheet/README/全量终验`
 
 ## Self-Review 结论
 
