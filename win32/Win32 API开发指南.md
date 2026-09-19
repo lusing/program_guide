@@ -68,4 +68,39 @@
 
 ## 示例代码
 
-`examples/` 下每个目录对应一个可编译工程，全部经本机 MSVC 编译验证（见 [README](README.md)）。示例对照表以 README 为准。
+`examples/` 下每个目录对应一个可编译工程，全部经本机 MSVC 编译验证（32 个示例，构建说明见 [README](README.md)）：
+
+| # | 示例 | 章 | 一句话 |
+|---|------|----|----|
+| 01 | `01_hello_window` | 02 | 最小窗口骨架 |
+| 02 | `02_message_loop` | 04 | 鼠标/键盘消息观测器 |
+| 03 | `03_controls` | 05 | 基础控件三件套 |
+| 04 | `04_gdi_drawing` | 09 | GDI 基础绘制 |
+| 05 | `05_mini_calculator` | 11 | 状态机计算器 |
+| 06 | `06_text_editor` | 10/11 | RichEdit 编辑器 + 文件 I/O |
+| 07 | `07_paint_app` | 09/11 | 会重绘的绘图板 |
+| 08 | `08_process_manager` | 13 | 进程枚举/启动/终止 |
+| 09 | `09_memory_monitor` | 15 | 内存状态观测 |
+| 10 | `10_file_manager` | 16 | 文件创建与目录枚举 |
+| 11 | `11_thread_sync_demo` | 14 | 工作线程 + PostMessage 回传 |
+| 12 | `12_memory_deep_dive` | 15 | 虚拟内存/页保护/堆/映射 |
+| 13 | `13_file_system_deep_dive` | 16 | 元数据与 NTFS 细节 |
+| 14 | `14_srwlock_demo` | 14 | SRWLock + 条件变量 |
+| 15 | `15_dpi_modern_window` | 09 | DPI V2 + Win11 圆角 |
+| 16 | `16_error_handling` | 03 | 错误处理四件套 |
+| 17 | `17_listview_treeview` | 06 | ListView + TreeView |
+| 18 | `18_common_controls` | 07 | 通用控件五件套 |
+| 19 | `19_custom_draw` | 08 | 自绘/Custom Draw/子类化 |
+| 20 | `20_encoding_convert` | 12 | 编码互转 + StrSafe |
+| 21 | `21_security_descriptors` | 17 | 令牌/DACL 读写 |
+| 22 | `22_sysinfo_timers` | 18 | 系统信息与定时器 |
+| 23 | `23_dll_math` | 19 | DLL + 隐式链接 |
+| 24 | `24_dll_plugin` | 20 | 插件宿主 |
+| 25 | `25_registry_tool` | 21 | 注册表全流程 |
+| 26 | `26_com_file_dialog` | 23 | COM 文件对话框 |
+| 27 | `27_com_server` | 24 | 手写 COM 服务器 |
+| 28 | `28_direct2d_hello` | 25 | D2D + DirectWrite |
+| 29 | `29_winrt_modern` | 26 | C++/WinRT + 协程 |
+| 30 | `30_windows_service` | 27 | 服务 + 事件日志 |
+| 31 | `31_shell_tray` | 28 | 托盘程序 |
+| 32 | `32_clipboard_dnd` | 29 | 剪贴板 + 拖放 |
