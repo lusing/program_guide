@@ -32,6 +32,11 @@ declare -A TARGET_MAP=(
     [13_collections]=Ch13Collections
     [14_strings]=Ch14Strings
     [15_extensions]=Ch15Extensions
+    [16_arc]=Ch16Arc
+    [17_concurrency]=Ch17Concurrency
+    [18_actors]=Ch18Actors
+    [19_files]=Ch19Files
+    [20_codable]=Ch20Codable
 )
 STANDALONE="22_spm 24_minigrep"
 

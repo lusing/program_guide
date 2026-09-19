@@ -57,6 +57,11 @@ $targetMap = @{
     "13_collections" = "Ch13Collections"
     "14_strings" = "Ch14Strings"
     "15_extensions" = "Ch15Extensions"
+    "16_arc" = "Ch16Arc"
+    "17_concurrency" = "Ch17Concurrency"
+    "18_actors" = "Ch18Actors"
+    "19_files" = "Ch19Files"
+    "20_codable" = "Ch20Codable"
 }
 
 # 独立包示例（嵌套 Package.swift，不在根包）

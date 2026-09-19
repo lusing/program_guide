@@ -105,5 +105,40 @@ let package = Package(
             name: "Ch15ExtensionsTests",
             dependencies: ["Ch15Extensions"],
             path: "examples/15_extensions/Tests/15_extensionsTests"),
+        .executableTarget(
+            name: "Ch16Arc",
+            path: "examples/16_arc/Sources/16_arc"),
+        .testTarget(
+            name: "Ch16ArcTests",
+            dependencies: ["Ch16Arc"],
+            path: "examples/16_arc/Tests/16_arcTests"),
+        .executableTarget(
+            name: "Ch17Concurrency",
+            path: "examples/17_concurrency/Sources/17_concurrency"),
+        .testTarget(
+            name: "Ch17ConcurrencyTests",
+            dependencies: ["Ch17Concurrency"],
+            path: "examples/17_concurrency/Tests/17_concurrencyTests"),
+        .executableTarget(
+            name: "Ch18Actors",
+            path: "examples/18_actors/Sources/18_actors"),
+        .testTarget(
+            name: "Ch18ActorsTests",
+            dependencies: ["Ch18Actors"],
+            path: "examples/18_actors/Tests/18_actorsTests"),
+        .executableTarget(
+            name: "Ch19Files",
+            path: "examples/19_files/Sources/19_files"),
+        .testTarget(
+            name: "Ch19FilesTests",
+            dependencies: ["Ch19Files"],
+            path: "examples/19_files/Tests/19_filesTests"),
+        .executableTarget(
+            name: "Ch20Codable",
+            path: "examples/20_codable/Sources/20_codable"),
+        .testTarget(
+            name: "Ch20CodableTests",
+            dependencies: ["Ch20Codable"],
+            path: "examples/20_codable/Tests/20_codableTests"),
     ]
 )
