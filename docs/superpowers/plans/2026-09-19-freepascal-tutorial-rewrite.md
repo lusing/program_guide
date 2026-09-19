@@ -184,8 +184,8 @@ end.
   循环引用解法）、`10_exceptions/`、`11_files/`（TextFile/typed file/TFileStream/TIniFile/
   固定时刻 FormatDateTime/RandSeed=42）
 
-- [ ] 示例 + 双通道全绿（09 用 build.ps1 显式传多文件或 fpc 编 main 自动拉单元——实测定稿并记录）
-- [ ] 正文 3 章 + 提交 `docs(freepascal): 09–11 章——单元工程（多文件）/异常资源/文件序列化 + 三示例验证通过`
+- [x] 示例 + 双通道全绿（09 用 build.ps1 显式传多文件或 fpc 编 main 自动拉单元——实测定稿并记录）
+- [x] 正文 3 章 + 提交 `docs(freepascal): 09–11 章——单元工程（多文件）/异常资源/文件序列化 + 三示例验证通过`
 
 ### Task 5: 批次 D——语言篇 12–14（3 章 3 示例，语言篇收官）
 
@@ -278,6 +278,12 @@ end.
    range check error。
 10. **record 方法需 {$modeswitch advancedrecords}**，缺失时报语法错且位置离根因远；class
    不能重载运算符，record 才能。
+11. **文件 IO 码页**：TextFile 默认按系统码页标记——UTF-8 中文读回与字面量比较必败；
+    AssignFile 后立即 SetTextCodePage(f,65001) 一次管全程。TIniFile（Windows ANSI API）
+    中文节/键按 GBK 落盘且标记错位时键查不到、节重复——节/键一律 ASCII。
+12. **常量除零是编译期错误**（1 div 常量0 直接拒编），运行期 EDivByZero 需变量除数。
+13. **uses 是段级的**：实现段用 Format 未引 SysUtils 报 Identifier not found；
+    {$DEFINE} 放 const 段报 "identifier expected but BEGIN found"。
 3. **Git Bash 传参给 fpc/lazbuild**：`cygpath -m` 转路径 + `MSYS2_ARG_CONV_EXCL='*'` 关闭 MSYS 自动
    转换（`-FEG:/...` 内嵌 `/code/...` 会被转成 `G:\Program Files\Git\code\...`）；`grep -P` 与
    LC_ALL 冲突报错致控制字符判定静默失效，改 `od -An -v -tx1` 方案（run-all.sh 注释）。
