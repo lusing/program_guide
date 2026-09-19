@@ -171,10 +171,10 @@ end.
 - Create: `examples/06_arrays/`、`07_strings/`、`08_records/`（含 DLL 调用 + heaptrc 小节演示——
   heaptrc 只写文档不进通道）
 
-- [ ] 示例：06 动态数组/set 运算；07 AnsiString/UTF8String/转换族/Format；08 record 方法与运算符/
+- [x] 示例：06 动态数组/set 运算；07 AnsiString/UTF8String/转换族/Format；08 record 方法与运算符/
   指针/New-Dispose/GetMem/POINTERMATH/过程类型回调/`external 'msvcrt'` printf 实测
-- [ ] 双通道全绿（含 -All 回归批次 A）
-- [ ] 正文 3 章 + 提交 `docs(freepascal): 06–08 章——数组集合/字符串编码/记录指针（含 DLL 调用与 heaptrc）+ 三示例验证通过`
+- [x] 双通道全绿（含 -All 回归批次 A）
+- [x] 正文 3 章 + 提交 `docs(freepascal): 06–08 章——数组集合/字符串编码/记录指针（含 DLL 调用与 heaptrc）+ 三示例验证通过`
 
 ### Task 4: 批次 C——语言篇 09–11（3 章 3 示例，09 多文件）
 
@@ -272,6 +272,12 @@ end.
    （与 `fpc -iTO` 打印的小写 win64 大小写不同）。
 7. **常量折叠消除舍入差**：`c := 1.0/3.0; s := 1.0/3.0` 两个常量表达式折成同一常量，
    Single/Double 截断演示必须用变量做运行期除法（03 §3 收录）。
+8. **字符串三坐标系统**（07 章核心实测）：UTF-8 标记串上 Length 按字节、Pos 按字符
+   （RTL 特例）、Copy 按字节；字面量重定型机理经重载探针证实=无类型上下文按 UnicodeString。
+9. **集合尺寸按 32 位粒度**：set of 0..15 实测 4 字节（不是 2）；Include 常量越界是编译期
+   range check error。
+10. **record 方法需 {$modeswitch advancedrecords}**，缺失时报语法错且位置离根因远；class
+   不能重载运算符，record 才能。
 3. **Git Bash 传参给 fpc/lazbuild**：`cygpath -m` 转路径 + `MSYS2_ARG_CONV_EXCL='*'` 关闭 MSYS 自动
    转换（`-FEG:/...` 内嵌 `/code/...` 会被转成 `G:\Program Files\Git\code\...`）；`grep -P` 与
    LC_ALL 冲突报错致控制字符判定静默失效，改 `od -An -v -tx1` 方案（run-all.sh 注释）。
