@@ -70,5 +70,40 @@ let package = Package(
             name: "Ch10GenericsTests",
             dependencies: ["Ch10Generics"],
             path: "examples/10_generics/Tests/10_genericsTests"),
+        .executableTarget(
+            name: "Ch11Closures",
+            path: "examples/11_closures/Sources/11_closures"),
+        .testTarget(
+            name: "Ch11ClosuresTests",
+            dependencies: ["Ch11Closures"],
+            path: "examples/11_closures/Tests/11_closuresTests"),
+        .executableTarget(
+            name: "Ch12Errors",
+            path: "examples/12_errors/Sources/12_errors"),
+        .testTarget(
+            name: "Ch12ErrorsTests",
+            dependencies: ["Ch12Errors"],
+            path: "examples/12_errors/Tests/12_errorsTests"),
+        .executableTarget(
+            name: "Ch13Collections",
+            path: "examples/13_collections/Sources/13_collections"),
+        .testTarget(
+            name: "Ch13CollectionsTests",
+            dependencies: ["Ch13Collections"],
+            path: "examples/13_collections/Tests/13_collectionsTests"),
+        .executableTarget(
+            name: "Ch14Strings",
+            path: "examples/14_strings/Sources/14_strings"),
+        .testTarget(
+            name: "Ch14StringsTests",
+            dependencies: ["Ch14Strings"],
+            path: "examples/14_strings/Tests/14_stringsTests"),
+        .executableTarget(
+            name: "Ch15Extensions",
+            path: "examples/15_extensions/Sources/15_extensions"),
+        .testTarget(
+            name: "Ch15ExtensionsTests",
+            dependencies: ["Ch15Extensions"],
+            path: "examples/15_extensions/Tests/15_extensionsTests"),
     ]
 )

@@ -27,6 +27,11 @@ declare -A TARGET_MAP=(
     [08_enums]=Ch08Enums
     [09_protocols]=Ch09Protocols
     [10_generics]=Ch10Generics
+    [11_closures]=Ch11Closures
+    [12_errors]=Ch12Errors
+    [13_collections]=Ch13Collections
+    [14_strings]=Ch14Strings
+    [15_extensions]=Ch15Extensions
 )
 STANDALONE="22_spm 24_minigrep"
 
