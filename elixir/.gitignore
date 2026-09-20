@@ -1,0 +1,9 @@
+# 验证产物（run-all.sh / build.ps1 生成）
+/build/
+
+# 各示例 mix 工程的构建产物（MIX_BUILD_ROOT 已指向 build/，这两条兜底）
+examples/*/_build/
+examples/*/deps/
+
+# macOS / 编辑器
+.DS_Store
