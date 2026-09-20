@@ -73,15 +73,25 @@ OCaml 的核心特点可以概括为以下几点：
 ocaml examples/01_basics.ml          # 解释执行
 ocamlc -w -24 examples/01_basics.ml -o 01_basics && ./01_basics   # 字节码编译
 ocamlopt -w -24 examples/01_basics.ml -o 01_basics && ./01_basics # 原生编译
+ocamlc -w -24 -I +unix unix.cma -o 15_algorithms examples/15_algorithms.ml  # 用到 Unix 时
 ```
 
+用到 `Unix` 模块的示例（15/18/21/22/25）**必须显式写 `-I +unix`**：
+OCaml 5 起不写会吐 `Alert ocaml_deprecated_auto_include`（属告警）。
+
 Windows（MSYS2 UCRT64）下的等价命令与专属坑见第 2 章的
-「2.8 在 Windows 上使用 OCaml（MSYS2 实战）」。推荐统一用
-`build.ps1` 做编译与验证（跨平台，见各章说明）：
+「2.8 在 Windows 上使用 OCaml（MSYS2 实战）」；macOS 的实测坑见
+第 31.9 节。推荐统一用两个等价入口做编译与验证（跨平台）：
 
 ```powershell
 pwsh ./build.ps1 -All            # 编译并运行全部示例（字节码）
-pwsh ./build.ps1 -All -Native    # 同时做原生编译与运行
+pwsh ./build.ps1 -All -Native    # 追加原生通道
+pwsh ./build.ps1 -All -Interp    # 追加顶层解释器通道
+```
+
+```bash
+./run-all.sh                     # shell 入口，等价（字节码 + 原生）
+./run-all.sh --interp            # 追加顶层解释器通道
 ```
 
 ---
@@ -8622,7 +8632,32 @@ print_endline "done"
 - 临时目录：`Filename.get_temp_dir_name ()` 取的是 `TMP` 而
   不是 `TEMP`（两者可能不同，检查残留时两个都要看）。
 
-### 31.9 最佳实践
+### 31.9 macOS 平台的坑（MacPorts + OCaml 5.5.0，2026-09-20 实测）
+
+- **工具链不在 `/usr/bin`**：MacPorts 装在 `/opt/local/bin/ocamlc`
+  （Homebrew 是 `/opt/homebrew/bin`），`ocamlc -where` 给出
+  `/opt/local/lib/ocaml`。脚本按「环境变量 → PATH → 常见目录」三级探测。
+- **`Unix` 模块必须显式 `-I +unix`**（不写也能编过，但会吐
+  `Alert ocaml_deprecated_auto_include`，那是**告警**）：
+
+  ```bash
+  ocamlc -w -24 -I +unix unix.cma  -o build/15_algorithms     examples/15_algorithms.ml
+  ocamlopt -w -24 -I +unix unix.cmxa -o build/15_algorithms_opt examples/15_algorithms.ml
+  ```
+
+  写 `-I "$(ocamlc -where)/unix"` 效果相同。
+- **`ocamlopt` 开箱可用**，不需要 Windows 上那套 `flexdll`；代价是原生
+  编译比字节码慢一个量级（全量 26 个示例 byte+native 约 3 分钟）。
+- **中间产物会掉在源文件旁边**：`ocamlc x.ml` 把 `x.cmi` / `x.cmo`
+  写在 `x.ml` 同一个目录里，直接编译 `examples/*.ml` 会污染源码目录。
+  本教程的两个入口都先把源码复制一份到 `build/` 再编译，产物留在 `build/`。
+- **「零告警」这条在 macOS 上真会咬人**。本机 5.5.0 实测报出两类：
+  `Warning 26 [unused-var]`（`let x = ... in` 定义了却没人用）和
+  `Warning 23 [useless-record-with]`（`{ r with ... }` 把字段列全了，
+  `with` 是多余的）。教学代码里「定义完看都不看一眼」的写法最容易踩前者——
+  要么把它打印出来（教程里更合适），要么写成 `let _ = ...`。
+
+### 31.10 最佳实践
 
 **实践 1：优先使用不可变数据**
 
@@ -8686,7 +8721,7 @@ let find key map =
 
 **一个好的类型设计胜过 100 个单元测试。** 类型系统在编译时为你保证所有可能的值都是合法的，而测试只能覆盖有限的情况。
 
-### 31.10 本章小结
+### 31.11 本章小结
 
 语法层的坑：
 - 整数和浮点数运算符不同，不能混用

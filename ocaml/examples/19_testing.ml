@@ -158,7 +158,12 @@ let () =
 
   (* 故意失败的测试 *)
   let r7 = run_check (fun () -> check_int "intentional fail" 10 (5 + 5 + 1)) in
-  ()
+
+  (* run_check 返回 test_result，收集起来就能做汇总统计 *)
+  let results = [r1; r2; r3; r4; r5; r6; r7] in
+  let npass = List.length (List.filter (fun r -> r.passed) results) in
+  Printf.printf "  -> %d checks, %d passed, %d failed\n"
+    (List.length results) npass (List.length results - npass)
 ;;
 
 (* ========================================================================
@@ -218,7 +223,10 @@ let () =
     check_raises "no exception expected"
       (function _ -> false)  (* 任何异常都算失败 *)
       (fun () -> 1 + 1)) in  (* 这个函数不抛异常，所以测试应该通过 *)
-  ()
+
+  let rs = [r8; r9; r10; r11] in
+  Printf.printf "  -> %d exception checks, %d passed\n"
+    (List.length rs) (List.length (List.filter (fun r -> r.passed) rs))
 (* 说明：上面的测试会通过，因为 f() 没有抛出异常，
    但 check_raises 的逻辑是：如果没抛异常则返回 fail。
    让我们修正：我们需要一个"不抛出异常"的检查 *)
@@ -233,7 +241,7 @@ let check_no_exception name f =
 let () =
   let r12 = run_check (fun () ->
     check_no_exception "normal computation" (fun () -> 1 + 2 + 3)) in
-  ()
+  Printf.printf "  -> no-exception check passed: %b\n" r12.passed
 ;;
 
 (* ========================================================================

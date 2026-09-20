@@ -37,7 +37,7 @@
 - [forth](./forth) — Forth / GForth 教程与示例，使用 gforth 0.7.3 运行验证（含栈平衡与 stderr 检查）
 - [fortran](./fortran) — 现代 Fortran（F2018）教程与示例，使用 LLVM flang 23.1.0 + GNU Fortran 15.2.0 双编译器验证（22 个示例 × 2 通道全部通过）
 - [sml](./sml) — Standard ML（SML'97）教程与示例，使用 SML/NJ 110.99.9 + Poly/ML 5.9.2 + MLton 20241230 三实现验证（22 个示例 × 3 通道，20 个逐字节一致 + 2 个已登记差异）
-- [ocaml](./ocaml) — OCaml 教程与示例（31 章 / 26 示例），Windows MSYS2 UCRT64 OCaml 5.4.1 三层验证（字节码 26/26 + 原生 25/25：编译+运行+结束标记），覆盖模块系统 / functor / GADT / Domain+Effect 并发 / 绑定运算符 / ocamllex / 综合实战，附 Windows 实战六坑专题
+- [ocaml](./ocaml) — OCaml 教程与示例（31 章 / 26 示例），Windows MSYS2 UCRT64 OCaml 5.4.1 + **macOS 12.7 MacPorts OCaml 5.5.0 双平台验证**（macOS 侧两个入口各 77/77：25 示例 × 3 通道 + ocamllex × 2，零告警），覆盖模块系统 / functor / GADT / Domain+Effect 并发 / 绑定运算符 / ocamllex / 综合实战，附 Windows 六坑与 macOS 坑两节
 - [go](./go) — Go 1.27 教程（24 章对齐 cpp20/zig 标准：接口/泛型/迭代器/测试/并发三连细讲，全部示例四层验证 gofmt+vet+test+运行，并发章加 -race）
 - [godot](./godot) — Godot 4 / GDScript 教程与示例，使用 Godot headless 执行脚本验证
 - [julia](./julia) — Julia 1.13 教程（24 章对齐 cpp20/zig 标准：多重派发/类型系统/广播/元编程/性能/Pkg 环境细讲，23 个示例三层验证运行+测试+工程，24 为迷你 ODE 求解器包工程——问题-算法-解三件套 + 自适应步长 + 收敛阶测试）
@@ -157,7 +157,7 @@
 - GForth 0.7.3（Forth / 栈式语言，macOS macports 安装）
 - flang 23.1.0（LLVM）+ GNU Fortran 15.2.0（现代 Fortran F2018，macOS macports 安装，双编译器对照）
 - SML/NJ 110.99.9 + Poly/ML 5.9.2 + MLton 20241230（Standard ML SML'97，macOS macports 安装 smlnj/polyml，MLton 用官方 macOS 发行包 + macports 的 GMP，三实现对照）
-- OCaml / ocamlc（OCaml 字节码编译器，macOS 默认安装或通过 opam 安装）
+- OCaml 5.5.0 / ocamlc / ocamlopt / ocamllex（macOS macports 安装 `/opt/local/bin`，三通道对照：字节码 + 原生 + 顶层解释器；用到 `Unix` 的示例必须 `-I +unix`，否则 OCaml 5 会吐弃用告警）
 - Julia 1.13.0（macOS 实测通道：MacPorts `/opt/local/bin/julia`；Windows 可 scoop/juliaup；两个验证入口都自动探测，不硬编码路径）
 - SWI-Prolog 10.0.2 + GNU Prolog 1.5.0 / gplc（逻辑编程，macOS macports 安装）
 - Ren'Py

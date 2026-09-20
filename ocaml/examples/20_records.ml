@@ -51,10 +51,17 @@ let () =
   print_point "p2" p2;
   print_point "p3 (p1 with y=5.0)" p3;;
 
-(* 也可以同时修改多个字段 *)
+(* 也可以同时修改多个字段。
+   坑：如果 with 里列出的字段正好覆盖了记录的全部字段，编译器会报
+   Warning 23 [useless-record-with]——此时 with 是多余的，直接写完整记录更清楚。
+   所以「一次改多个字段」要拿字段数多于修改数的记录来演示。 *)
+type point3 = { px : float; py : float; pz : float }
+
 let () =
-  let p4 = { p1 with x = 10.0; y = 20.0 } in
-  print_point "p4 (p1 with x=10, y=20)" p4;;
+  let q1 = { px = 1.0; py = 2.0; pz = 3.0 } in
+  let q2 = { q1 with px = 10.0; py = 20.0 } in   (* 3 个字段里改 2 个，with 有意义 *)
+  Printf.printf "q2 (q1 with px=10, py=20): (%.2f, %.2f, %.2f)\n"
+    q2.px q2.py q2.pz;;
 
 (* 模式匹配解构记录 *)
 let distance p1 p2 =
@@ -113,11 +120,10 @@ print_labeled string_of_float float_labeled;;
 
 (* 记录的函数式更新：修改嵌套记录 *)
 let move_rect dx dy rect =
+  (* point 只有 x/y 两个字段，若把两个都写进 with 会触发 Warning 23
+     [useless-record-with]；这里直接写完整记录即可。 *)
   { rect with
-    top_left = { rect.top_left with
-      x = rect.top_left.x +. dx;
-      y = rect.top_left.y +. dy
-    }
+    top_left = { x = rect.top_left.x +. dx; y = rect.top_left.y +. dy }
   }
 
 let () =
