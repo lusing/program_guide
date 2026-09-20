@@ -2,7 +2,9 @@
 program oop2_demo;
 { 13 · OOP II：继承、virtual/override、多态、is/as、类引用、类方法、接口。
   正文见 docs/13-oop2.md。 }
-uses SysUtils, Classes;
+uses
+  {$IFDEF UNIX}cwstring,{$ENDIF}   // ★ Unix：必须是 uses 第一个——否则 WriteLn 中文字面量全变 ?（见 02 章 2.3）
+  SysUtils, Classes;
 
 type
   // ═══ 13.1/13.2 继承与虚方法

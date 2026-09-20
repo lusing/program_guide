@@ -102,6 +102,8 @@ v := ini.ReadInteger('window', 'width', 0);      // 第 4 参 = 缺省值
 - **坑（实测）**：Windows 上 TIniFile 走 ANSI INI API，中文节/键/值按系统码页落盘（GBK）；
   读写两侧码页标记错位时键都查不到（文件里同一节重复出现）。**惯例：节/键名一律
   ASCII**；值需要中文时改用 `TStringList`（SaveToFile 支持 UTF-8 编码参数）。
+  （macOS 实测：不走 Win32 API，落盘是 UTF-8，同一份代码两边都过——但别反过来依赖它，
+  "节/键一律 ASCII"这条纪律在任何平台都成立。）
 - `ini.UpdateFile` 可强制立即落盘；`ReadSections/ReadKeys` 遍历。
 
 ## 6. 目录与文件操作速查
@@ -111,13 +113,18 @@ FileExists('demo.txt');  DirectoryExists('subdir');
 CreateDir('subdir');     ForceDirectories('a\b\c');   // 多级一次建
 DeleteFile('demo.txt');  RenameFile('a.txt', 'b.txt');
 
-ExtractFileName('G:\code\demo.txt');   // 'demo.txt'
+ExtractFileName('G:\code\demo.txt');   // 'demo.txt'   ← macOS 上同样成立，见下
 ExtractFilePath('G:\code\demo.txt');   // 'G:\code\'
 ExtractFileExt('data.bin');            // '.bin'
 IncludeTrailingPathDelimiter('G:\x');  // 'G:\x\'
 ```
 
 全在 SysUtils。找文件（`FindFirst/FindNext`）示例没展开，需要时查 CHEATSheet。
+
+- 实测：`Extract*` 三件套在 Unix 上也**认反斜杠**（darwin 实测返回 `demo.txt` 与
+  `G:\code\`），所以上面两条断言两个平台都过。但别把这条推广到别的函数——
+  `DirectorySeparator` 在 Unix 是 `/`、`PathSep` 是 `:`（Windows 是 `\` 与 `;`），
+  拼路径一律用 `IncludeTrailingPathDelimiter`。
 
 ## 7. 时间与随机：确定性输出的两条纪律
 
@@ -157,7 +164,9 @@ pwsh -File build.ps1 -Example 11_files
 5. typed file 的 `Seek/FileSize` 以**记录**为单位不是字节；字段必须定长
    （string 进不了记录）。
 6. FormatDateTime 的分钟占位是 **nn**（mm 是月份）。
-7. 示例/测试不调 `Randomize`，固定 `RandSeed`；不打印 `Now`——可复现输出是一切自动
+7. `dddd` 打出来的星期名**跟 locale 走**（实测：Windows 中文环境打"星期六"、
+   macOS 打 `Saturday`）——别对它做断言；`yyyy-mm-dd` 这类数字格式才是平台无关的。
+8. 示例/测试不调 `Randomize`，固定 `RandSeed`；不打印 `Now`——可复现输出是一切自动
    验证的前提。
 
 ---

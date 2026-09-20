@@ -2,7 +2,9 @@
 program generics_demo;
 { 14 · 泛型与容器：generic/specialize、约束、Generics.Collections 三件套、
   与 Classes.TList/TFPGList 对照。正文见 docs/14-generics.md。 }
-uses SysUtils, Classes, Contnrs, FGL, Generics.Collections;
+uses
+  {$IFDEF UNIX}cwstring,{$ENDIF}   // ★ Unix：必须是 uses 第一个——否则 WriteLn 中文字面量全变 ?（见 02 章 2.3）
+  SysUtils, Classes, Contnrs, FGL, Generics.Collections;
 
 type
   // ═══ 14.1 自定义泛型：generic 声明 + specialize 实例化（objfpc 语法）

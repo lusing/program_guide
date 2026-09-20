@@ -2,7 +2,9 @@
 program procedures_demo;
 { 05 · 过程与函数：参数修饰 const/var/out/constref、默认参数、开放数组、重载、嵌套、递归。
   正文见 docs/05-procedures.md。 }
-uses SysUtils;
+uses
+  {$IFDEF UNIX}cwstring,{$ENDIF}   // ★ Unix：必须是 uses 第一个——否则 WriteLn 中文字面量全变 ?（见 02 章 2.3）
+  SysUtils;
 
 // ═══ 5.1 procedure 与 function：Result 变量 vs 函数名赋值
 function Add(a, b: Integer): Integer;

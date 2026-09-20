@@ -68,13 +68,14 @@ WriteLn('整数：', 42, '  实数：', 3.5:0:2, '  布尔：', True);
 
 ## 5. 编码纪律（本教程最重要的三件套）
 
-**Windows 中文环境 + 中文注释/输出，必须遵守三条**，缺一不可：
+**Windows 中文环境 + 中文注释/输出，必须遵守前三条**（第 4 条只在 Unix 上生效），缺一不可：
 
 | # | 规则 | 原因（实测） |
 |---|---|---|
 | 1 | 源码存 **UTF-8 无 BOM** | BOM 会被某些老工具链当乱码；无 BOM 是本仓库统一纪律 |
 | 2 | 程序头加 **`{$codepage utf8}`** | 告诉 FPC 源码是 UTF-8——否则中文字面量按系统码页（GBK）标记 |
 | 3 | 运行前 **`chcp 65001`** | FPC 3.2.2 的 `WriteLn` 跟随**活动控制台代码页**做输出转换（重定向也一样） |
+| 4 | **Unix/macOS：`uses` 的第一个单元放 `cwstring`** | 不引它 `DefaultSystemCodePage` 是 0（CP_ACP），中文字面量会被逐字节转成 `?`——见 5.1 节 |
 
 为什么第 2 条能救命？看实测矩阵（'中文测试' 6 个汉字、12 个 UTF-8 字节）：
 
@@ -88,6 +89,41 @@ WriteLn('整数：', 42, '  实数：', 3.5:0:2, '  布尔：', True);
 目标控制台代码页自动转换，**在哪种控制台都显示正确**，管道里抓到的字节也一致。
 本教程 `build.ps1`/`run-all.sh` 都先 `chcp 65001` 再跑，就是为了让输出字节可判定。
 
+### 5.1 Unix/macOS 上的第四件套：`cwstring`
+
+Windows 靠 `chcp 65001` 把"活动控制台代码页"设成 UTF-8；Unix 上没有这个开关，
+FPC 改由 `cwstring` 单元在初始化时把 `DefaultSystemCodePage` 设成 65001
+（RTL 源码 `rtl/objpas/fpwidestring.pp`：`DefaultSystemCodePage:=GetSystemCodepage;`，
+而 `GetSystemCodepage` 在 darwin/linux 上默认就返回 `CP_UTF8`）。**少了它**：
+
+```text
+不引 cwstring（macOS 12.7 / FPC 3.2.2 实测）    引 cwstring（同环境实测）
+DefaultSystemCodePage = 0                        DefaultSystemCodePage = 65001
+GetTextCodePage(Output) = 0                      GetTextCodePage(Output) = 65001
+WriteLn('你好')  ->  ??                          WriteLn('你好')  ->  你好
+```
+
+三条要点：
+
+1. **`cwstring` 必须是 `uses` 的第一个单元**——它装的是 widestring 管理器，
+   初始化晚于其它单元就轮不到它定码页。
+2. **改 `LANG`/`LC_ALL` 没用**（实测 `en_US.UTF-8`、`zh_CN.UTF-8`、不设，三种都照样变 `?`）——
+   别指望运行环境救你，只能在源码里引单元。
+3. **只有字面量中招**：`WriteLn` 直接吃字面量时，字面量被定型成 `UnicodeString`
+   （二进制里存的是 UTF-16，见第 7 章"字面量重定型"），写出时要按 `TextRec(Output).CodePage`
+   转一次；而 `string` 变量是带 65001 标记的 `AnsiString`，码页相同就直接写字节、不转换。
+   **"变量正常、字面量变 ?"这种一半对一半的怪象，正是本坑的指纹**——
+   所以第 4 条躲不掉，也不能靠"都先赋给变量"绕过。
+
+```pascal
+uses
+  {$IFDEF UNIX}cwstring,{$ENDIF}   // ★ Unix：必须是 uses 第一个
+  SysUtils;
+```
+
+> LCL（GUI）工程不用加：`Interfaces` 单元自己就把码页设好了（第 15 章示例在
+> macOS/cocoa 下无头 selftest 的中文日志正常）。
+
 还有一条更隐蔽的（第 7 章展开，这里先记现象）：
 
 > 同一个中文字面量，**赋给 string 变量后 `Length` 按字节算（'中文' = 6）**；
@@ -100,14 +136,15 @@ WriteLn('整数：', 42, '  实数：', 3.5:0:2, '  布尔：', True);
 
 ```pascal
 WriteLn('FPC 版本：', {$I %FPCVERSION%});        // 3.2.2
-WriteLn('目标平台：', {$I %FPCTARGETCPU%}, '-', {$I %FPCTARGETOS%});  // x86_64-Win64
+WriteLn('目标平台：', {$I %FPCTARGETCPU%}, '-', {$I %FPCTARGETOS%});  // x86_64-Win64 / x86_64-Darwin
 ```
 
 常用符号：`%FPCVERSION%`、`%FPCTARGETOS%`、`%FPCTARGETCPU%`、`%DATE%`、`%LINENUM%`。
 
 > 坑（实测）：编译器版本符号是 **`%FPCVERSION%`**——写成 `%FPVERSION%` 不报错、展开为空，
 > 静默产出错误逻辑。平台串是驼峰 `Win64`（`fpc -iTO` 命令行打印的却是小写 `win64`，
-> 两种大小写并存，写断言时以实际展开值为准）。
+> 两种大小写并存，写断言时以实际展开值为准）。它是编译期常量，**跨平台只能断言"属于
+> 实测过的平台集合"**——写成 `= 'Win64'` 到 macOS 上必挂（本章示例因此改成集合断言）。
 
 ## 7. 示例与验证
 

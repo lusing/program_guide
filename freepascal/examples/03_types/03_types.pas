@@ -2,7 +2,9 @@
 program types_demo;
 { 03 · 类型与变量：整型尺寸表、实型与精度、布尔家族、枚举与子界、类型转换。
   正文见 docs/03-types.md。 }
-uses SysUtils;
+uses
+  {$IFDEF UNIX}cwstring,{$ENDIF}   // ★ Unix：必须是 uses 第一个——否则 WriteLn 中文字面量全变 ?（见 02 章 2.3）
+  SysUtils;
 
 type
   // ═══ 3.4 枚举：默认从 0 编号，可用 = 显式指定序数
@@ -46,8 +48,12 @@ var
 begin
   WriteLn('Single  ', SizeOf(Single), ' 字节，约 7 位有效数字');
   WriteLn('Double  ', SizeOf(Double), ' 字节，约 15 位有效数字');
-  WriteLn('Extended ', SizeOf(Extended), ' 字节（win64 上 Extended = Double，Delphi 32 位是 10 字节）');
-  Assert(SizeOf(Extended) = SizeOf(Double), 'win64 实测：Extended 精简为 Double');
+  WriteLn('Extended ', SizeOf(Extended), ' 字节');
+  // 坑（实测）：Extended 的宽度由**平台 ABI** 决定，不是语言规定的——
+  //   win64          = 8  （x87 80 位被精简成 Double，与 Delphi 32 位的 10 字节不同）
+  //   x86_64-darwin  = 10 （真 80 位扩展精度）
+  // 所以跨平台只能断言"不窄于 Double"，不能断言"等于 Double"。
+  Assert(SizeOf(Extended) >= SizeOf(Double), 'Extended 不窄于 Double（具体宽度随平台 ABI 变）');
 
   a := 0.1; b := 0.2;
   WriteLn('0.1 + 0.2 = ', a + b);              // 0.30000000000000004 之类

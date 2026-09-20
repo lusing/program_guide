@@ -2,7 +2,9 @@
 program arrays_demo;
 { 06 · 数组与集合：静态/动态数组、SetLength、引用共享语义、多维、集合运算。
   正文见 docs/06-arrays.md。 }
-uses SysUtils;
+uses
+  {$IFDEF UNIX}cwstring,{$ENDIF}   // ★ Unix：必须是 uses 第一个——否则 WriteLn 中文字面量全变 ?（见 02 章 2.3）
+  SysUtils;
 
 type
   TWeek = array[1..7] of string;          // 静态数组：下标范围自己定，不必从 0 开始

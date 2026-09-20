@@ -6,6 +6,9 @@ program threads_demo;
   全部断言跑主线程，等待用 WaitFor——确定性可验。 }
 
 uses
+  {$IFDEF UNIX}cthreads,{$ENDIF}   // ★ Unix 必须显式挂线程驱动，且是 uses 第一个：
+                                   //   漏了它 Windows 上照样跑，Unix 上变运行期
+                                   //   Runtime error 232 "no thread support compiled in"
   Interfaces, Forms, Controls, StdCtrls, ComCtrls, ExtCtrls,
   Classes, SysUtils, SyncObjs;
 

@@ -39,11 +39,11 @@ end;
 
 ## 3. 实型：Single、Double、Extended
 
-| 类型 | 字节（win64） | 有效数字 | 备注 |
-|---|---|---|---|
-| Single | 4 | ~7 位 | |
-| Double | 8 | ~15 位 | 默认选择 |
-| **Extended** | **8** | ~15 位 | **win64 上 Extended 就是 Double**（x86 Delphi 32 位是 10 字节 80 位扩展精度） |
+| 类型 | 字节（win64） | 字节（x86_64-darwin） | 有效数字 | 备注 |
+|---|---|---|---|---|
+| Single | 4 | 4 | ~7 位 | |
+| Double | 8 | 8 | ~15 位 | 默认选择 |
+| **Extended** | **8** | **10** | ~15 / ~19 位 | **宽度随平台 ABI 变**：win64 上就是 Double；x86_64-darwin 是真 80 位扩展精度；x86 Delphi 32 位也是 10 字节 |
 
 ```pascal
 a := 0.1; b := 0.2;
@@ -170,8 +170,9 @@ pwsh -File build.ps1 -Example 03_types
    错误位置离肇事处极远。
 2. 常量表达式 `1.0/3.0` 被编译器折叠，Single/Double 的"截断损耗"不会发生——演示舍入
    必须用变量做运算。
-3. `Extended` 在 win64 是 8 字节（=Double），x86 32 位 Delphi 资料里的"10 字节 80 位"
-   说法在此平台不成立。
+3. `Extended` 的宽度**随平台 ABI 变**（实测：win64 = 8 字节即 Double；x86_64-darwin =
+   10 字节真 80 位）——断言只能写 `SizeOf(Extended) >= SizeOf(Double)`，写"等于 Double"
+   到 macOS 上必挂。
 4. `Round` 是银行家舍入（0.5 取偶），不是四舍五入。
 5. 无类型字符串常量/字面量进表达式被重新定型，`Length` 按字符算——要字节语义先入
    `string` 变量或类型化常量。

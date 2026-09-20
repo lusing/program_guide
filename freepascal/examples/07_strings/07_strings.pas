@@ -2,7 +2,9 @@
 program strings_demo;
 { 07 · 字符串与编码（⭐特色章）：四代字符串、引用计数、码页标记、字面量重定型、
   Pos/Copy 语义差异、UTF-8 安全例程、Format、PChar。正文见 docs/07-strings.md。 }
-uses SysUtils;
+uses
+  {$IFDEF UNIX}cwstring,{$ENDIF}   // ★ Unix：必须是 uses 第一个——否则 WriteLn 中文字面量全变 ?（见 02 章 2.3）
+  SysUtils;
 
 type
   TShort = String[8];                      // ShortString：最长 8 字节，栈上定长

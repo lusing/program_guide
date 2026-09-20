@@ -2,7 +2,9 @@
 program oop1_demo;
 { 12 · OOP I：类与封装——class 声明、Create/Free、property、访问级别、
   同单元无隐私坑、Self、TObject。正文见 docs/12-oop1.md。 }
-uses SysUtils;
+uses
+  {$IFDEF UNIX}cwstring,{$ENDIF}   // ★ Unix：必须是 uses 第一个——否则 WriteLn 中文字面量全变 ?（见 02 章 2.3）
+  SysUtils;
 
 type
   // ═══ 12.1 最小的类：字段 + 方法 + 构造

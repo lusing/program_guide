@@ -10,8 +10,10 @@ GUI 篇 9 章吃下 LCL（控件两章 + 布局/菜单/对话框/列表/绘图/�
 
 > ⚠️ 网上 FreePascal 教程多停留在 Delphi 7 或 Lazarus 1.x 时代：`and then` 运算符
 > （objfpc 没有）、无码页的 string 语义（FPC 3.x 全变）、`Extended` 10 字节（win64 是 8）
-> 等说法皆过时。本教程所有代码在 **FPC 3.2.2 x86_64-win64 + Lazarus 4.8（win32 控件集）**
-> 实测，每章末"坑位清单"收录版本差异——CHEATSheet 汇总 **46 条实测坑位**。
+> 等说法皆过时。本教程所有代码在**两个平台**上实测通过：
+> **FPC 3.2.2 x86_64-win64 + Lazarus 4.8（win32 控件集）** 与
+> **macOS 12.7 x86_64-darwin（MacPorts）FPC 3.2.2 + Lazarus 4.8（cocoa 控件集）**。
+> 每章末"坑位清单"收录版本与平台差异——CHEATSheet 汇总 **55 条实测坑位**。
 
 ## 目录结构
 
@@ -22,7 +24,7 @@ freepascal/
 ├── examples/       23 个示例目录（章号 = 目录号；15–24 为 Lazarus GUI 工程）
 ├── build.ps1       统一验证脚本（pwsh 7 运行）
 ├── run-all.sh      等价的 Git Bash 验证入口
-└── CHEATSheet.md   语法速查 + 46 条实测坑位索引
+└── CHEATSheet.md   语法速查 + 55 条实测坑位索引（含 macOS 新增条目）
 ```
 
 ## 章节索引
@@ -56,13 +58,45 @@ freepascal/
 
 ## 构建工具链
 
-- **FPC 3.2.2**（主线 = Lazarus 自带 x86_64-win64）：
+脚本按 **环境变量 FPC/LAZBUILD → 固定路径 → PATH** 顺序探测，两个平台各自认一套。
+
+### Windows（主线）
+
+- **FPC 3.2.2**（= Lazarus 自带 x86_64-win64）：
   `G:\scoop\apps\lazarus\current\fpc\3.2.2\bin\x86_64-win64\fpc.exe`
 - **Lazarus 4.8 / lazbuild**：`G:\scoop\apps\lazarus\current\lazbuild.exe`（LCL，win32 控件集）
 - 源码一律 **UTF-8 无 BOM + `{$codepage utf8}`**；脚本运行前自动 `chcp 65001`
   （WriteLn 跟随控制台码页，见 02 章实测矩阵）。
-- 脚本按 **环境变量 FPC/LAZBUILD → 固定路径 → PATH** 顺序探测（scoop 独立 freepascal
-  包只有 i386 目标，PATH 优先会静默编出 32 位——实测坑）。
+- 探测顺序里固定路径排在 PATH 前：scoop 的独立 freepascal 包只有 i386 目标，
+  PATH 优先会静默编出 32 位（实测坑）。
+
+### macOS（MacPorts，x86_64-darwin 实测）
+
+| 工具 | 路径 | 说明 |
+|---|---|---|
+| `fpc` | `/opt/local/bin/fpc`（3.2.2，Darwin for x86_64） | 与 Windows 同版本 |
+| `lazbuild` | `/opt/local/bin/lazbuild`（Lazarus 4.8） | LCL 控件集 = **cocoa**：`/opt/local/share/lazarus/lcl/units/x86_64-darwin/` 下只预编译了 cocoa 与 nogui |
+| `gtimeout` | `/opt/local/bin/gtimeout` | GUI selftest 的 60 秒超时（coreutils）；没有也能跑，脚本自动退化为后台进程 + 看门狗 |
+
+- Unix 侧源码头多一条纪律：**`uses` 的第一个单元放 `cwstring`**。不引它
+  `DefaultSystemCodePage` 就是 0（CP_ACP），`WriteLn` 的中文字面量会被逐字节转成 `?`
+  ——这是 macOS 上最隐蔽的一个坑，详见 02 章 5.1 节。
+- 改 `LANG`/`LC_ALL` 对它**无效**（实测三种取值都照样变 `?`），只能改源码。
+- lazbuild 首次构建会把 LCL 编进 `~/.lazarus/lib/`（系统 Lazarus 目录不可写）。
+  首个 GUI 工程约 5 分钟，之后增量；产物是 `lib/x86_64-darwin/<工程名>` + 同名 `.app` 包。
+
+### 平台差异速查（实测）
+
+| 项 | win64 | x86_64-darwin |
+|---|---|---|
+| `SizeOf(Extended)` | 8（= Double） | **10**（真 80 位） |
+| `DefaultSystemCodePage` | 由 `chcp` 决定（65001 就 UTF-8） | 0，除非 `uses cwstring`（→ 65001） |
+| `DirectorySeparator` / `PathSep` | `\` / `;` | `/` / `:` |
+| `LineEnding` 长度 | 2 | 1 |
+| `external` 的 C 库名 | `msvcrt` | `c` |
+| `FormatDateTime('dddd')` | 中文星期 | `Saturday`（随 locale） |
+| LCL 控件集 | win32 | cocoa |
+| GUI 产物 | `lib/x86_64-win64/*.exe` | `lib/x86_64-darwin/*` + `*.app` |
 
 ## 验证命令
 
@@ -75,20 +109,32 @@ pwsh -File build.ps1 -Clean            # 清理 build/ 与产物
 ```
 
 ```bash
-./run-all.sh            # Git Bash 等价入口（02 / --gui / -v / --clean）
+# macOS / Linux 等价入口（两个入口判定完全一致，全量约 20–40 分钟，编译耗时抖动大）
+cd /Users/xulun/code/programming/freepascal
+./run-all.sh                       # 全部 23 示例
+./run-all.sh 02 07 --gui           # 指定示例/只跑 GUI
+./run-all.sh -v                    # 附带每个示例的完整输出
+./run-all.sh --clean               # 清理 build/、selftest.log、lib/
 ```
 
-**判定标准**：CLI 每通道四条（exit 0 / stderr 空 / 无控制字符 / 含 `==== NN 结束 ====`
-标记）+ 双通道输出 SHA256 一致；GUI 每工程四条（lazbuild exit 0 + exe 存在 +
-`--selftest` exit 0 + 日志含 `==== NN selftest OK ====`），selftest 运行带 60 秒超时
-（GUI 未捕获异常会弹 LCL 框，无头环境挂死——实测坑，双保险）。
+**判定标准**：CLI 每通道五条（退出码 0 / stderr 空 / stdout 非空且无多余控制字符 /
+含 `==== NN 结束 ====` 标记）+ 双通道输出逐字节一致；GUI 每工程四条
+（lazbuild exit 0 + exe 存在 + `--selftest` exit 0 + 日志含 `==== NN selftest OK ====`）。
+
+- **selftest 两个入口都带 60 秒超时击杀**（GUI 未捕获异常会弹 LCL 框，无头环境 = 永久
+  挂死）。shell 侧优先用 `gtimeout`，没有就退化成"后台进程 + sleep 看门狗"。
+- 判定函数里凡处理"待验证输出"的 `tr`/`grep` 都带 `LC_ALL=C`。
+- **原因字符串一律用数组收集，不做拼接**：`why="${why:+$why；}..."` 里的 `$why` 紧跟
+  全角分号时，bash 5.3 会把分号的首字节也吞进变量名（报 `why?: unbound variable`），
+  而且**只在该分支真被展开时才炸**——平时全绿，一旦有示例真失败就整轮中止。
+  这个坑在 Windows 的 Git Bash 上同样存在，只是没被触发过。
 
 ## 学习路线
 
 - **语言篇（02–14）**：顺序读；07（字符串编码）是 FPC 特有深水区，值得两遍。
 - **GUI 篇（15–23）**：15 是地基；16/17 控件两章是用户点名加强的重点。
 - **实战（24）**：跟着源码读，`selftest` 的 29 条断言就是功能清单。
-- **速查**：[CHEATSheet.md](CHEATSheet.md)（语法 + 46 条坑位）。
+- **速查**：[CHEATSheet.md](CHEATSheet.md)（语法 + 55 条坑位，含 4 条 macOS 新增）。
 
 ## 相关教程
 

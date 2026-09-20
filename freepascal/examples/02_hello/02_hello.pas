@@ -2,7 +2,9 @@
 program hello_world;
 { 02 · 第一个程序：program 结构、Write/WriteLn、编码纪律、编译期内建符号。
   正文见 docs/02-hello.md；本示例按 ═══ 2.M 分节与正文小节对应。 }
-uses SysUtils;
+uses
+  {$IFDEF UNIX}cwstring,{$ENDIF}   // ★ Unix：必须是 uses 第一个——否则 WriteLn 中文字面量全变 ?（见 02 章 2.3）
+  SysUtils;
 
 var
   s: string;
@@ -34,8 +36,12 @@ begin
   WriteLn('FPC 版本：', {$I %FPCVERSION%});
   WriteLn('目标平台：', {$I %FPCTARGETCPU%}, '-', {$I %FPCTARGETOS%});
   Assert({$I %FPCVERSION%} = '3.2.2', '本教程主线为 FPC 3.2.2');
-  // 坑（实测）：内建符号展开的是驼峰平台串（Win64，与 fpc -iTO 打印的 win64 大小写不同）
-  Assert({$I %FPCTARGETOS%} = 'Win64', '示例按 Windows x64 主线验证');
+  // 坑（实测）：内建符号展开的是驼峰平台串（Win64 / Darwin / Linux），与
+  // fpc -iTO 打印的 win64 / darwin / linux 大小写不同。它是编译期常量，
+  // 跨平台**不能**断言固定值——只能断言"属于实测过的平台集合"。
+  // （2026-09 macOS 实测：这里拿到 'Darwin' 而 fpc -iTO 打印 darwin。）
+  Assert(({$I %FPCTARGETOS%} = 'Win64') or ({$I %FPCTARGETOS%} = 'Darwin'),
+         '本示例在 Win64 与 Darwin 两个平台上实测过');
 
   // ═══ 2.5 自检与结束标记
   Assert(7 div 2 + 7 mod 2 = 4);

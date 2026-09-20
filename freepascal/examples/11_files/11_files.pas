@@ -3,7 +3,9 @@ program files_demo;
 { 11 · 文件与序列化：TextFile 全家、{$I-}+IOResult、typed file、TFileStream、
   TIniFile、目录操作、固定时刻时间与确定性随机。正文见 docs/11-files.md。
   文件产物写在运行目录（build/check|release），不进版本库。 }
-uses SysUtils, Classes, IniFiles;
+uses
+  {$IFDEF UNIX}cwstring,{$ENDIF}   // ★ Unix：必须是 uses 第一个——否则 WriteLn 中文字面量全变 ?（见 02 章 2.3）
+  SysUtils, Classes, IniFiles;
 
 type
   // ═══ 11.3 typed file 的定长记录（packed 保证与磁盘布局一致）
@@ -153,6 +155,9 @@ begin
     CreateDir('subdir');
   Assert(DirectoryExists('subdir'));
   Assert(ExtractFileExt('data.bin') = '.bin');
+  // 实测：Extract* 三件套在 Unix 上也认反斜杠（darwin 实测返回 demo.txt / G:\code\），
+  // 所以这两条断言两个平台都过。但别把这条推广到别的函数——DirectorySeparator
+  // 在 Unix 上是 '/'，PathSep 是 ':'（Windows 是 '\' 与 ';'），拼路径一律用 IncludeTrailingPathDelimiter。
   Assert(ExtractFileName('G:\code\demo.txt') = 'demo.txt');
   Assert(ExtractFilePath('G:\code\demo.txt') = 'G:\code\');
   Assert(FileExists('demo.txt'));

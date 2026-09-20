@@ -133,6 +133,20 @@ Total=0 而非 500500——**取消是被"请求"的，线程自己决定何时�
 GUI 版进度条闭环、selftest 用 CheckSynchronize 无头验证（全量 500500/100 次回调；
 Terminate 早期退出）。
 
+> ⚠️ **Unix/macOS 必须显式挂线程驱动**（Windows 上不需要，所以很容易漏）：
+>
+> ```pascal
+> uses
+>   {$IFDEF UNIX}cthreads,{$ENDIF}   // ★ 必须是 uses 第一个
+>   Interfaces, Forms, ...;
+> ```
+>
+> 漏了它编译链接全过，**一运行就**
+> `Runtime error 232 … This binary has no thread support compiled in.`
+> （macOS 实测）。Lazarus 向导生成的 `{IFDEF UseCThreads}` 守卫默认**不生效**——
+> 它要 `-dUseCThreads` 才会展开；用到 `TThread`/`SyncObjs` 的工程直接写无条件
+> `{IFDEF UNIX}cthreads{$ENDIF}` 更省心。
+
 ```powershell
 pwsh -File build.ps1 -Example 23_threads
 ```
@@ -147,6 +161,8 @@ pwsh -File build.ps1 -Example 23_threads
 6. 窗体字段放非 TPersistent 后代类（如 TThread 子类）报 "Only classes compiled in $M+
    mode can be published"——挪到 public 段（TForm 默认段是 published）。
 7. Enter/Leave 必须 try-finally——异常路径忘解锁就全队死等。
+8. Unix 上漏 `cthreads`：**编译链接全过、运行时才崩** `Runtime error 232`
+   ("no thread support compiled in")——Windows 不需要它，所以这条最容易漏。
 
 ---
 上一章：[22 绘图与自绘](22-canvas.md) ｜ 下一章：[24 实战：记事本+](24-notepad.md) ｜ 返回：[README](../README.md)

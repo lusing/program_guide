@@ -2,7 +2,9 @@
 program exceptions_demo;
 { 10 · 异常与资源保护：try/except/finally、类型化捕获、raise/re-raise、
   Exception 家族、自定义异常、Assert。正文见 docs/10-exceptions.md。 }
-uses SysUtils, Classes;
+uses
+  {$IFDEF UNIX}cwstring,{$ENDIF}   // ★ Unix：必须是 uses 第一个——否则 WriteLn 中文字面量全变 ?（见 02 章 2.3）
+  SysUtils, Classes;
 
 type
   // ═══ 10.5 自定义异常：继承 Exception，名字以 E 开头是惯例

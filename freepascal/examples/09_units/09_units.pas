@@ -4,7 +4,9 @@ program units_demo;
   多文件编译、条件编译。正文见 docs/09-units.md。
   本示例是三文件工程：09_units.pas + ugeometry.pas + ureport.pas
   （fpc 编主程序自动拉单元，脚本 -Fu 本目录）。 }
-uses SysUtils, ugeometry, ureport;
+uses
+  {$IFDEF UNIX}cwstring,{$ENDIF}   // ★ Unix：必须是 uses 第一个——否则 WriteLn 中文字面量全变 ?（见 02 章 2.3）
+  SysUtils, ugeometry, ureport;
 
 var
   a, b: TPoint;

@@ -265,9 +265,14 @@ function Invoke-GuiExample {
     $rc = Invoke-Tool -FilePath $lazbuild -Arguments @($lpi) `
         -StdoutFile $buildLog -StderrFile $errFile -WorkingDirectory $projectRoot
 
-    # exe 落在工程自己的 lib/<CPU>-<OS>/ 下
-    $exePath = Get-ChildItem -LiteralPath (Join-Path $Dir 'lib') -Recurse -Filter ($name + $exeExt) `
-        -ErrorAction SilentlyContinue | Select-Object -First 1
+    # exe 落在工程自己的 lib/<CPU>-<OS>/ 下（x86_64-win64 / x86_64-darwin / aarch64-darwin …）。
+    # 只查一层：macOS 上同一工程还会产出 <name>.app 包，包内也有一份同名可执行文件，
+    # 用 -Recurse 会把两份一起捞回来、取哪一个随文件系统返回顺序变——
+    # 必须与 run-all.sh 的 `ls "$dir"/lib/*/"$name$EXEEXT"` 取到同一个文件。
+    $exePath = Get-ChildItem -LiteralPath (Join-Path $Dir 'lib') -Directory -ErrorAction SilentlyContinue |
+        ForEach-Object { Join-Path $_.FullName ($name + $exeExt) } |
+        Where-Object { Test-Path -LiteralPath $_ -PathType Leaf } |
+        Select-Object -First 1
     if (($rc -ne 0) -or (-not $exePath)) {
         $script:fail += 1; $script:failedList += "lazbuild $name"
         Write-Host "  [FAIL] lazbuild $name（exit $rc）" -ForegroundColor Red
@@ -285,15 +290,31 @@ function Invoke-GuiExample {
     $errFile = Join-Path $buildDir ($name + '.selftest.err')
 
     Write-Host "[selftest] $name" -ForegroundColor DarkCyan
-    # 60 秒超时：GUI 程序未捕获异常会弹 LCL 消息框，无头环境 = 永久挂死——必须带击杀
-    $p = Start-Process -FilePath $exePath.FullName -ArgumentList @('--selftest') `
-        -NoNewWindow -PassThru `
-        -RedirectStandardOutput $outFile -RedirectStandardError $errFile -WorkingDirectory $Dir
-    if (-not $p.WaitForExit(60000)) {
-        $p.Kill()
+    # 60 秒超时：GUI 程序未捕获异常会弹 LCL 消息框，无头环境 = 永久挂死——必须带击杀。
+    # 不用 Start-Process：它拼命令行会拆坏引号，且 -RedirectStandardOutput 会吞掉空行；
+    # 改用 .NET ProcessStartInfo + ArgumentList（参数逐个传，不经过命令行拼接），
+    # WorkingDirectory 显式设成示例目录（selftest.log 写在那里）。
+    $psi = [System.Diagnostics.ProcessStartInfo]::new()
+    $psi.FileName = $exePath
+    $psi.ArgumentList.Add('--selftest')
+    $psi.WorkingDirectory = $Dir
+    $psi.UseShellExecute = $false
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $proc = [System.Diagnostics.Process]::new()
+    $proc.StartInfo = $psi
+    [void]$proc.Start()
+    $outTask = $proc.StandardOutput.ReadToEndAsync()
+    $errTask = $proc.StandardError.ReadToEndAsync()
+    if (-not $proc.WaitForExit(60000)) {
+        $proc.Kill()
         Write-Host '  [FAIL] selftest 超时（60s）——多半是未捕获异常弹了 LCL 对话框' -ForegroundColor Red
     }
-    $runRc = if ($null -eq $p.ExitCode) { 1 } else { $p.ExitCode }
+    $stdoutText = $outTask.GetAwaiter().GetResult()
+    $stderrText = $errTask.GetAwaiter().GetResult()
+    $runRc = if ($null -eq $proc.ExitCode) { 1 } else { $proc.ExitCode }
+    Set-Content -LiteralPath $outFile -Value $stdoutText -NoNewline
+    Set-Content -LiteralPath $errFile  -Value $stderrText  -NoNewline
     Show-Result -Tag "selftest $name" -ExitCode $runRc -OutFile $selfLog -ErrFile $errFile `
         -BuildLog $outFile -Marker $marker
 }

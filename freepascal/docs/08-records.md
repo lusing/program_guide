@@ -174,10 +174,17 @@ BubbleSort(a, @Asc);                  // objfpc 模式传函数地址必须带 @
 
 ```pascal
 // varargs：cdecl 变参函数的声明方式——调用时直接跟参数，不打包数组
-function printf(fmt: PAnsiChar): Integer; cdecl; varargs; external 'msvcrt';
+// 坑（实测）：库名是平台相关的——Windows 是 msvcrt，Unix 是 libc（macOS 写 'c' 即可，
+// libSystem 提供别名）。库名要是编译期字面量，不能用变量，所以只能 IFDEF 分叉两条声明。
+function printf(fmt: PAnsiChar): Integer; cdecl; varargs;
+  {$IFDEF WINDOWS}external 'msvcrt';{$ELSE}external 'c';{$ENDIF}
 
-printf('printf from msvcrt.dll: %d + %d = %d' + #10, 1, 2, 3);   // 实测直通 C 运行库
+Flush(Output);                                   // 先冲掉 Pascal 自己的缓冲，输出才可复现
+printf('printf from C runtime: %d + %d = %d' + #10, 1, 2, 3);   // 实测直通 C 运行库
 ```
+
+> 坑（实测）：`printf` 走 C 自己的 stdout 缓冲，和 Pascal 的 `Output` 是**两套缓冲**——
+> 不先 `Flush(Output)`，两边在退出时各刷一次，谁先谁后不定，双通道输出比对就会随机失败。
 
 三件套：
 
@@ -194,7 +201,7 @@ Windows API 的调用（`external 'user32'` 等）同套路，32 位/64 位符�
 ## 10. 示例与验证
 
 本章示例 `examples/08_records`：record 语义/packed/variant record/运算符、指针全家、
-POINTERMATH、回调排序、msvcrt 直调。
+POINTERMATH、回调排序、C 运行库直调（Windows: msvcrt / Unix: libc）。
 
 ```powershell
 pwsh -File build.ps1 -Example 08_records

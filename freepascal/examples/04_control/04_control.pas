@@ -2,7 +2,9 @@
 program control_demo;
 { 04 · 运算符与控制流：/ 与 div、if/case、三种循环、for-in、循环控制语句、短路布尔。
   正文见 docs/04-control.md。 }
-uses SysUtils;
+uses
+  {$IFDEF UNIX}cwstring,{$ENDIF}   // ★ Unix：必须是 uses 第一个——否则 WriteLn 中文字面量全变 ?（见 02 章 2.3）
+  SysUtils;
 
 type
   TSuit = (Club, Diamond, Heart, Spade);

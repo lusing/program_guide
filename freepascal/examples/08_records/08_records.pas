@@ -2,7 +2,9 @@
 program records_demo;
 { 08 · 记录与指针：record 高级特性、packed 布局、指针三件套、指针算术、
   过程类型回调、external 调 DLL、内存纪律与 heaptrc。正文见 docs/08-records.md。 }
-uses SysUtils;
+uses
+  {$IFDEF UNIX}cwstring,{$ENDIF}   // ★ Unix：必须是 uses 第一个——否则 WriteLn 中文字面量全变 ?（见 02 章 2.3）
+  SysUtils;
 
 type
   TPoint2D = record
@@ -182,13 +184,20 @@ begin
   WriteLn;
 end;
 
-// ═══ 8.9 调 DLL：external + cdecl/stdcall + varargs
+// ═══ 8.9 调 C 运行库：external + cdecl/stdcall + varargs
 // varargs：cdecl 变参函数的声明方式——调用时直接跟参数，不打包数组
-function printf(fmt: PAnsiChar): Integer; cdecl; varargs; external 'msvcrt';
+// 坑（实测）：external 的库名是平台相关的——Windows 是 msvcrt，Unix 是 libc
+// （macOS 上写 'c' 即可，libSystem 提供别名）。库名必须是编译期字面量，
+// 不能用变量，所以只能 {$IFDEF} 分叉两条声明。
+function printf(fmt: PAnsiChar): Integer; cdecl; varargs;
+  {$IFDEF WINDOWS}external 'msvcrt';{$ELSE}external 'c';{$ENDIF}
 
 procedure ShowExternalCall;
 begin
-  printf('printf from msvcrt.dll: %d + %d = %d' + #10, 1, 2, 3);
+  // printf 走 C 自己的 stdout 缓冲，与 Pascal 的 Output 是两套缓冲——
+  // 先 Flush 保证它一定排在 WriteLn 之后，输出才可复现（双通道比对的前提）。
+  Flush(Output);
+  printf('printf from C runtime: %d + %d = %d' + #10, 1, 2, 3);
   WriteLn('external 声明直调 C 运行库成功（cdecl + varargs）');
 end;
 

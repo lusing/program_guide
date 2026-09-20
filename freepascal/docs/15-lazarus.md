@@ -8,7 +8,8 @@
 - **LCL**（Lazarus Component Library）是 VCL 的开源复刻：`TForm/TButton/TMemo` 这些类的
   API 与 Delphi VCL 高度同源——学 LCL ≈ 半学 VCL，三十年 Delphi 书籍大体可用。
 - 跨平台机制：LCL 把控件操作转发给各平台的**控件集（widgetset）**——win32/gtk2/qt5/cocoa。
-  你写的代码一份，控件集按平台编译进去（.lpi 不指定时按宿主默认：Windows→win32）。
+  你写的代码一份，控件集按平台编译进去（.lpi 不指定时按宿主默认：Windows→win32，
+  macOS→cocoa）。本教程 .lpi 一律不写死控件集，两个平台各取默认。
 - IDE 本身就是 LCL 写的（自举）——能拖控件写 Delphi 风格程序的东西，本身就是它写的。
 
 与语言篇的关系：前 14 章的所有东西（类/事件是方法指针/引用计数/泛型）在 GUI 世界
@@ -50,9 +51,9 @@ XML 格式，手写最小版完全可行（本教程全部 GUI 工程都是手�
 ```pascal
 uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
-  cthreads,                       // Linux 多线程 LCL 才需要（Windows 不用）
+  cthreads,                       // Unix（Linux/macOS）多线程才需要（Windows 不用）
   {$ENDIF}{$ENDIF}
-  Interfaces,                    // ⚠️ 必须是 LCL 单元之首（ctheads 除外）
+  Interfaces,                    // ⚠️ 必须是 LCL 单元之首（cthreads 除外）
   Forms, Classes, SysUtils,
   uhelloform { MainForm };
 
@@ -117,11 +118,19 @@ Lazarus IDE 的用法（装好就能用，本教程主线是命令行，IDE 当"
 IDE 之外，工程用一行命令构建（CI/脚本场景的主力）：
 
 ```powershell
-lazbuild 15_lazarus_hello.lpi          # 产出 lib/x86_64-win64/15_lazarus_hello.exe
+lazbuild 15_lazarus_hello.lpi          # Windows: lib/x86_64-win64/15_lazarus_hello.exe
+                                       # macOS  : lib/x86_64-darwin/15_lazarus_hello（+ 同名 .app 包）
 ```
 
 - **lazbuild 只认 .lpi**（直接喂 .lpr 报 File not found——实测坑）。
 - 产物与 .o 一起落在 `lib/<CPU>-<OS>/`（.lpi 里 UnitOutputDirectory 控制）。
+- **macOS 上产物是两份**：`lib/x86_64-darwin/<名>` 这个裸可执行文件，外加同目录的
+  `<名>.app` 包（包里还有一份同名可执行文件）。脚本定位 exe 只查 `lib/*/` 一层，
+  用 `-Recurse` 会把两份一起捞回来，取哪个随文件系统返回顺序变——两个入口必须
+  用同一套定位规则（`build.ps1` 与 `run-all.sh` 现在都是"只查一层"）。
+- **macOS 首次 lazbuild 会编 LCL 本身**：系统的 `/opt/local/share/lazarus` 通常不可写，
+  lazbuild 自动改写到 `~/.lazarus/lib/`（日志里能看到 `Fallback output directory`）。
+  第一个工程约 5 分钟，之后增量就快了——CI 里别被这个耗时吓到。
 - 本教程 `build.ps1 -Gui` 对 15–24 每个工程执行：lazbuild → 跑 `exe --selftest` →
   校验日志。**GUI 程序的自动化验证就这么简单**：窗体不 Show 也能创建、流加载、
   调事件方法（本章示例的 selftest 分支逐行演示）。
@@ -161,7 +170,8 @@ end;
 ## 7. 坑位清单（实测）
 
 1. `Interfaces` 必须是 uses 里第一个 LCL 单元（ctheads 除外）。
-2. lazbuild 只认 .lpi；exe 落 `lib/<CPU>-<OS>/`，别在工程根目录找。
+2. lazbuild 只认 .lpi；exe 落 `lib/<CPU>-<OS>/`，别在工程根目录找（macOS 还会多一个
+   `.app` 包，脚本要只查一层才不会捞错）。
 3. 窗体字段必须放默认可见性（=published）才能被 lfm 流填充；放 private 里字段就是 nil。
 4. .lfm 的 OnClick 方法名拼错 = 运行时"方法不存在"类错误，不是编译期。
 5. GUI 程序未捕获异常弹 LCL 对话框——selftest/后台逻辑必须 try-except 自捕获。

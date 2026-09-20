@@ -17,11 +17,20 @@
 
 运行环境补第三件：**`chcp 65001`**（WriteLn 跟随活动控制台码页转码，重定向也一样）。
 
-## 2. 类型速查（win64 x86_64 实测）
+Unix/macOS 补第四件：**`uses` 第一个单元放 `cwstring`**（否则 `DefaultSystemCodePage=0`，
+中文字面量全变 `?`；改 `LANG`/`LC_ALL` 无效）：
+
+```pascal
+uses
+  {$IFDEF UNIX}cwstring,{$ENDIF}   // ★ 必须是 uses 第一个
+  SysUtils;
+```
+
+## 2. 类型速查（win64 / x86_64-darwin 实测）
 
 ```text
 Integer=4(恒定)  Int64/QWord=8  NativeInt/PtrInt=8  Pointer=8
-Single=4  Double=8  Extended=8(=Double! Delphi32 是 10)
+Single=4  Double=8  Extended=8(win64, =Double!) / 10(darwin, 真80位)
 Boolean=1  Char=1  String=8(指针)  ShortString=256  Variant=24
 enum=4  子界按值域(0..9→1字节)  set of 0..15=4字节(32位粒度)
 ```
@@ -93,6 +102,9 @@ lazbuild project.lpi                    # GUI 工程（只认 .lpi）
 **编码（02/07/11/24 章）**
 1. 无 `{$codepage utf8}`：字面量按 GBK 标记 → UTF8String 转换双重编码；裸字节直通
    仅在 GBK 控制台"碰巧"正常。
+   1b. **Unix 不引 `cwstring`**：`DefaultSystemCodePage=0`，`WriteLn` 的中文字面量被逐
+   字节转成 `?`（**只中招字面量**，赋过值的 `string` 变量正常——半对半的怪象是本坑指纹）；
+   `LANG`/`LC_ALL` 改不动它，只能在 `uses` 第一个位置引单元。LCL 工程不用加。
 2. `Length('中文')`=2（字面量在无类型上下文按 UnicodeString）/ `Length(s)`=6（变量按
    字节）——for-in 同裂（4 次 vs 8 次）。**要字节先入 string 变量**。
 3. 同串三坐标：Length 字节 / Pos 字符（UTF-8 特例）/ Copy 字节。
@@ -117,6 +129,10 @@ lazbuild project.lpi                    # GUI 工程（只认 .lpi）
 17. record 方法需 `{$modeswitch advancedrecords}`；class 不能重载运算符。
 18. `{$POINTERMATH ON}` 后 `p+n` 按**元素宽度**。
 19. objfpc 传函数地址必须 `@`；cdecl/stdcall 用错=玄学崩溃；`varargs` 调用直接罗列参数。
+   19b. `external` 的库名是平台相关的：Windows `msvcrt` / Unix `c`——库名必须是编译期
+   字面量，只能 `{$IFDEF}` 分叉两条声明，不能写成变量。
+   19c. C 的 `printf` 与 Pascal 的 `Output` 是两套缓冲：不先 `Flush(Output)`，
+   两边退出时各刷一次，顺序不定 → 双通道输出比对随机失败。
 20. `-gh` 报告走 stderr（零泄漏也打）。
 
 **单元/工程（09 章）**
@@ -152,6 +168,20 @@ lazbuild project.lpi                    # GUI 工程（只认 .lpi）
 **工具链（01 章/脚本）**
 42. scoop 独立 freepascal 包只有 i386——解析顺序错=静默 32 位 exe。
 43. `-FE/-FU/-o` 相对路径按**源文件目录**解析——给绝对路径。
-44. `%FPVERSION%` 不存在（正确 `%FPCVERSION%`）；平台串驼峰 `Win64`。
+44. `%FPVERSION%` 不存在（正确 `%FPCVERSION%`）；平台串驼峰 `Win64`/`Darwin`
+   （`fpc -iTO` 打印的是小写）——跨平台断言只能写"属于实测集合"。
 45. Git Bash 传参：`cygpath -m` + `MSYS2_ARG_CONV_EXCL='*'`。
 46. 断言仅 `-Sa` 生效——错误的断言在 -O2 下静默通过（双通道验证的理由）。
+47. macOS：`SizeOf(Extended)=10`（win64 是 8）——断言宽度会挂，只能写 `>= SizeOf(Double)`。
+48. macOS：`Extract*` 三件套照样认反斜杠（实测返回 `demo.txt`），但
+   `DirectorySeparator='/'`、`PathSep=':'`、`Length(LineEnding)=1`。
+49. macOS：LCL 控件集是 **cocoa**（系统只预编译了 cocoa 与 nogui）；lazbuild 首次会
+   把 LCL 编进 `~/.lazarus/lib/`；产物是 `lib/x86_64-darwin/<名>` + `<名>.app`——
+   定位 exe 只查 `lib/*/` 一层，否则会捞到 `.app` 包里的另一份同名可执行文件。
+50. macOS：`FormatDateTime('dddd')` 打 `Saturday`（随 locale），别断言。
+   50b. **Unix 漏 `cthreads`**：编译链接全过，运行才 `Runtime error 232
+   "no thread support compiled in"`——用了 `TThread`/`SyncObjs` 的工程必须在 uses
+   第一行写 `{$IFDEF UNIX}cthreads,{$ENDIF}`（向导的 `{IFDEF UseCThreads}` 默认不展开）。
+51. **验证脚本自己**：`why="${why:+$why；}..."` 这种拼接在 bash 5.3 下会把全角分号的
+   首字节吞进变量名（`why?: unbound variable`），且只在失败分支真被展开时才炸——
+   原因一律用数组收集。
