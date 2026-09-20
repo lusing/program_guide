@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# macOS/Linux 构建入口（Clojure CLI + deps.edn）。
+# Windows 侧请用 build.ps1（Leiningen + project.clj），两边依赖声明一致。
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)"
@@ -68,7 +70,27 @@ run_example() {
     fi
 }
 
-if [[ "${1:-}" == "--all" ]]; then
+if [[ "${1:-}" == "--lab" ]]; then
+    # lein-lab 全链路：test -> run -> uberjar -> java -jar（需要 lein）
+    LAB_DIR="$PROJECT_ROOT/lein-lab"
+    LAB_JAR="$LAB_DIR/target/lein-lab-1.0.0-standalone.jar"
+    echo "[Lab] lein test"
+    (cd "$LAB_DIR" && lein test) 2>&1 | tee "$BUILD_DIR/lab-test.log"
+    echo "[Lab] lein run"
+    (cd "$LAB_DIR" && lein run) 2>&1 | tee "$BUILD_DIR/lab-run.log"
+    echo "[Lab] lein uberjar"
+    (cd "$LAB_DIR" && lein uberjar) 2>&1 | tee "$BUILD_DIR/lab-uberjar.log"
+    echo "[Lab] java -jar"
+    JAVA_BIN="${JAVA_CMD:-java}"
+    "$JAVA_BIN" -jar "$LAB_JAR" 2>&1 | tee "$BUILD_DIR/lab-jar.log"
+    if grep -q "==== LAB jieshu ====" "$BUILD_DIR/lab-jar.log"; then
+        echo "[OK] lein-lab"
+        exit 0
+    else
+        echo "[FAIL] lein-lab"
+        exit 1
+    fi
+elif [[ "${1:-}" == "--all" ]]; then
     failed=0
     for f in "${CLOJURE_FILES[@]}"; do
         if ! run_example "$f"; then
@@ -77,6 +99,7 @@ if [[ "${1:-}" == "--all" ]]; then
     done
     if [[ $failed -eq 0 ]]; then
         echo "[Done] 全部 ${#CLOJURE_FILES[@]} 个 Clojure 示例运行通过。"
+        echo "(提示: ./build.sh --lab 可继续验证 lein-lab 工程)"
     else
         echo "[Done] ${#CLOJURE_FILES[@]} 个示例中 $failed 个失败。"
         exit 1
@@ -98,6 +121,7 @@ else
     echo "用法:"
     echo "  $0 --all              运行 examples 下全部 Clojure 示例"
     echo "  $0 --file <name.clj>  运行单个示例"
+    echo "  $0 --lab              lein-lab 全链路（test/run/uberjar/java -jar）"
     echo "  $0 --clean            清理 build 目录"
     exit 0
 fi

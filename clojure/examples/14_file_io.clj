@@ -33,7 +33,9 @@
 
 (section 1 "slurp / spit")
 
-(def tmp-dir "/tmp/clojure-tutorial")
+;; 临时目录放在项目内 build/tmp 下，跨平台（Windows 没有 /tmp）。
+;; 另一个选择是 (System/getProperty "java.io.tmpdir")（操作系统临时目录）。
+(def tmp-dir (str (System/getProperty "user.dir") "/build/tmp/clojure-tutorial"))
 (.mkdirs (File. tmp-dir))
 
 (def text-file (str tmp-dir "/test.txt"))

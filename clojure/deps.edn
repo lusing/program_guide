@@ -1,3 +1,8 @@
-;; deps.edn - Clojure CLI 项目描述
-;; 仅依赖 Clojure 标准库，无需额外依赖
-{}
+;; deps.edn - Clojure CLI 项目描述（macOS/Linux 侧）
+;; 与 project.clj（Leiningen，Windows 侧）声明同一组依赖，两边等效。
+;; core.async 用于第 24 章示例；ring 用于第 25 章 Ring 实战。
+{:deps {org.clojure/clojure {:mvn/version "1.12.6"}
+        org.clojure/core.async {:mvn/version "1.9.865"}
+        ring/ring-core {:mvn/version "1.15.5"}
+        ring/ring-jetty-adapter {:mvn/version "1.15.5"}}
+ :paths ["examples"]}

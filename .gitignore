@@ -92,3 +92,9 @@ haskell/examples/16_files/scratch16/
 *.cmx
 *.cmt
 *.cmti
+
+# Clojure 构建缓存（clojure CLI 的 .cpcache、REPL 端口文件；target/ 已被通用规则覆盖）
+**/.cpcache/
+**/.nrepl-port
+**/.lein-repl-history
+**/.lein-failures

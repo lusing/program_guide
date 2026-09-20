@@ -1,6 +1,6 @@
 # Clojure 编程指南
 
-一本从零到能用的 Clojure 教程，25 章。每一章的代码都可以在 Clojure CLI（`clojure` 1.12.6）上直接运行。
+一本从零到能用的 Clojure 教程，28 章。每一章的代码都可以直接运行——macOS/Linux 用 Clojure CLI（`clojure` 1.12.6）+ `build.sh`，Windows 用 Leiningen 2.13 + OpenJDK 26 + `build.ps1`，两边依赖声明（`deps.edn` / `project.clj`）完全一致。
 
 ## Clojure 是什么
 
@@ -32,7 +32,7 @@ Clojure 的核心设计哲学可以概括为以下几点：
 
 与 Common Lisp 相比，Clojure 的数据字面量语法更丰富——向量用 `[]`、映射用 `{}`、集合用 `#{}`，不再需要 `list` 或 `vector` 函数调用来创建这些结构。Clojure 的不可变持久化数据结构是 Common Lisp 没有的核心特性，这让函数式风格在实践中更加自然。
 
-与 Scheme 相比，Clojure 放弃了 Lisp-1（单一命名空间）的设计，采用了 Lisp-2（函数与变量分离命名空间）的变体，但这在 Clojure 中表现为 Var 系统和 `def`/`defn` 的语义，而非 Common Lisp 式的 `#'` 和 `function`。
+与 Scheme 相比，Clojure 同样是 Lisp-1（函数与变量共用一个命名空间，函数就是普通的值），但引入了 Var 系统：`def` 定义的是 Var 而非直接绑定值，这让重新定义、动态作用域 Var（`^:dynamic`）成为可能。与 Common Lisp（Lisp-2，函数与变量分属两个命名空间）相比，Clojure 里 `first-class` 函数的传递不需要 `#'` 取函数对象。
 
 ## 目录
 
@@ -56,11 +56,14 @@ Clojure 的核心设计哲学可以概括为以下几点：
 - [第 18 章 测试](#第-18-章-测试)
 - [第 19 章 clojure.spec](#第-19-章-clojurespec)
 - [第 20 章 Transducer](#第-20-章-transducer)
-- 第 21 章 经典算法
-- 第 22 章 综合实战
-- 第 23 章 性能与优化
-- 第 24 章 Web 开发概览
-- 第 25 章 生态与工具
+- [第 21 章 经典算法](#第-21-章-经典算法)
+- [第 22 章 综合实战：成绩分析管线](#第-22-章-综合实战成绩分析管线)
+- [第 23 章 性能与优化](#第-23-章-性能与优化)
+- [第 24 章 core.async](#第-24-章-coreasync)
+- [第 25 章 Web 开发实战：Ring](#第-25-章-web-开发实战ring)
+- [第 26 章 Leiningen 项目实战](#第-26-章-leiningen-项目实战)
+- [第 27 章 生态与工具](#第-27-章-生态与工具)
+- [第 28 章 综合实战：MiniLisp 解释器](#第-28-章-综合实战minilisp-解释器)
 
 ---
 
@@ -123,7 +126,23 @@ nil
  :paths ["src"]}
 ```
 
-本教程的 `deps.edn` 只使用标准库，不引入额外依赖。
+本教程的 `deps.edn` 除 Clojure 本体外，只为第 24 章（core.async）和第 25 章（Ring）引入两个额外依赖。
+
+### Leiningen：另一个主流工具链
+
+Leiningen 是社区最早的构建工具，用 `project.clj` 描述工程，职责与 Clojure CLI 等价：
+
+| | Clojure CLI | Leiningen |
+|---|---|---|
+| 配置文件 | `deps.edn`（EDN 数据） | `project.clj`（Clojure 代码） |
+| 运行脚本 | `clojure -M script.clj` | `lein run -m 命名空间` |
+| 跑测试 | `clojure -M:test` | `lein test` |
+| 打包 | 需额外工具（如 depstar） | `lein uberjar`（内置） |
+| REPL | `clojure` | `lein repl` |
+
+本教程双轨并行：macOS/Linux 走 Clojure CLI（`build.sh`），Windows 走 Leiningen（`build.ps1`），两边依赖声明一致。Leiningen 的工程化用法见[第 26 章](#第-26-章-leiningen-项目实战)。
+
+> Windows 实测注意：Leiningen 2.13 的启动器会给 JVM 传 `--enable-native-access=ALL-UNNAMED`，PATH 里的 Java 8/11 不认识会直接崩；`lein.bat` 只认 `JAVA_CMD` 环境变量（不认 `JAVA_HOME`），需要设成 JDK 16+ 的完整路径。
 
 ---
 
@@ -843,7 +862,7 @@ Transducer 的优势：
 
 ---
 
-## 第 22 章 综合实战
+## 第 22 章 综合实战：成绩分析管线
 
 （对应示例：`20_project.clj`）
 
@@ -855,78 +874,309 @@ Transducer 的优势：
 
 ## 第 23 章 性能与优化
 
-### 类型提示
+（对应示例：`21_performance.clj`）
 
-Clojure 默认使用动态类型，但可以通过类型提示提升性能：
+Clojure 默认"够快"，但热点路径值得优化。本章的每个结论都在示例里实测过（数字为 OpenJDK 26 上的一次实测，看相对倍数）。
+
+### 先测量：time 宏与 JIT 预热
+
+JVM 先用 C1 编译（编译快、优化浅），热点再升级 C2。基准前必须预热，否则测的是解释器：
 
 ```clojure
-(defn fast-add [^long a ^long b] (+ a b))
+(dotimes [_ 3] (bench-sum 100000))   ;; 预热
+(time (bench-sum 1000000))           ;; "Elapsed time: 4.3 msecs"
 ```
 
-### 瞬态数据结构
+### 反射 vs 类型提示（实测 537 倍）
 
-`transient` 将不可变集合转为可变瞬态，操作完成后用 `persistent!` 转回不可变：
+Clojure 是动态语言，`(.length s)` 编译期常常不知道 `s` 的类型，只能运行时反射。打开警告后每处反射都会现形：
 
 ```clojure
-(let [t (transient {})]
-  (assoc! t :a 1)
-  (assoc! t :b 2)
-  (persistent! t))
+(set! *warn-on-reflection* true)
+
+(defn len-reflect [s] (.length s))            ;; Reflection warning ...
+(defn len-hint ^long [^String s] (.length s)) ;; 直接 invokevirtual
 ```
 
-### 数组访问
+实测（200 万次调用）：反射版 **2281ms**，提示版 **4.3ms**。生产项目应在 `project.clj` 的 dev profile 里全局打开 `*warn-on-reflection*`。
 
-Java 数组访问比 Clojure 集合快，适合性能关键路径：
+### 原始类型数学
+
+参数默认装箱为 `Long` 对象；`^long` 提示 + `unchecked-inc`/`unchecked-add` 让循环完全不装箱。实测百万次求和：装箱版 33ms，原始版 6ms。注意 `unchecked-*` 会静默溢出，只用于确知不会溢出的热循环。
 
 ```clojure
-(def arr (int-array [1 2 3 4 5]))
-(aget arr 0)
-(aset arr 0 99)
+(defn sum-primitive [^long n]
+  (loop [i 0 acc 0]
+    (if (= i n) acc
+        (recur (unchecked-inc i) (unchecked-add acc i)))))
 ```
 
-### 性能基准
+### 瞬态集合
 
-使用 `time` 宏进行简单基准测试：
+大批量构建集合时，`conj!`/`assoc!` 在 transient 上原地写，完成后 `persistent!` 转回。实测百万元素构向量：23.8ms → 12.4ms，结果完全一致：
 
 ```clojure
-(time (dotimes [_ 100000] (+ 1 1)))
+(persistent! (reduce conj! (transient []) (range 1000000)))
+```
+
+### Java 数组（实测 26 倍）
+
+热循环里退回原始数组：`int-array` + `areduce`（编译宏，生成原始循环）。实测百万元素求和：`reduce +` 向量 221ms，`areduce` 数组 8.3ms：
+
+```clojure
+(defn sum-array ^long [^ints a]
+  (areduce a i ret (long 0) (unchecked-add ret (aget a i))))
+```
+
+注意：`areduce`/`amap` 直接吃 def 出来的 var 拿不到类型会触发反射，先绑定到 `^ints` 局部。
+
+### memoize（实测 546 倍）
+
+纯函数加缓存，第二次调用 93ms → 0.17ms。适合"参数域小、计算重"的场景；参数域大时缓存本身成为内存负担。
+
+### 字符串拼接
+
+`(str acc x)` 循环是 O(n²)（8000 次已经能测出差距）；正确姿势是 `StringBuilder` 或 `clojure.string/join` / `(apply str coll)`。
+
+---
+
+## 第 24 章 core.async
+
+（对应示例：`22_core_async.clj`；依赖 `org.clojure/core.async` 1.9.x）
+
+core.async 把 Go 语言的 CSP 并发模型带到 JVM：**用 channel 在独立执行体之间传值，而不是用锁共享内存**。
+
+### channel 与阻塞读写
+
+```clojure
+(chan)      ;; 无缓冲：写阻塞直到有人读
+(chan 3)    ;; 缓冲 3 个
+(>!! c 42)  ;; 阻塞写（!! 后缀 = 阻塞）
+(<!! c)     ;; 阻塞读
+```
+
+无缓冲 channel 在同一线程里先写后读会死锁——写和读必须在不同执行体上。
+
+### go 块与停车（parking）
+
+`go` 把 body 编译成状态机，`<!`/`>!` 是**停车**而非阻塞线程：等待时线程被释放去跑别的 go 块。一个线程可以承载几万个 go 块。`go` 返回装着结果的 channel：
+
+```clojure
+(<!! (go (+ 6 7)))          ;; => 13
+(let [c (chan)]
+  (go (>! c (* 6 7)))       ;; 另一个执行体里写
+  (<!! c))                  ;; => 42
+```
+
+### close! 的语义
+
+关闭后读**立即返回 nil**（先排空缓冲），**写返回 false**。`nil` 因此成为标准的"流结束"信号：
+
+```clojure
+(close! c)
+(<!! c)      ;; => nil（不阻塞、不抛错）
+(>!! c :x)   ;; => false
+```
+
+### go-loop 工作池
+
+channel 天然就是线程安全的任务队列。N 个 worker 循环取任务，`close!` 是停机信号：
+
+```clojure
+(let [jobs (chan 10) results (chan 10)]
+  (dotimes [_ 4]
+    (go-loop []
+      (when-some [job (<! jobs)]      ;; 关闭后 <! 返回 nil，worker 退出
+        (>! results (* job job))
+        (recur))))
+  (doseq [job (range 1 11)] (>!! jobs job))
+  (close! jobs)
+  (sort (repeatedly 10 #(<!! results))))
+;; => (1 4 9 16 25 36 49 64 81 100)
+```
+
+### alts!! 多路选择与 timeout
+
+`alts!!`（go 里用 `alts!`）同时等多个 channel，返回 `[值 端口]`。`timeout` 是一次性 channel，配合起来就是"限期等待"：
+
+```clojure
+(let [never (chan)
+      t (timeout 80)
+      [v port] (alts!! [never t])]  ;; 80ms 内 never 不会有数据
+  (nil? v))                          ;; => true
+```
+
+### go 与 thread 怎么选
+
+| | `go` | `thread` |
+|---|---|---|
+| 等待方式 | 停车（不占线程） | 阻塞线程 |
+| 适合 | 协调逻辑、channel 编排 | 真正的阻塞 IO / CPU 密集计算 |
+
+`thread` 返回 channel，用法类似 `future`：`(<!! (thread (do-work)))`。
+
+### pipeline：transducer 会师 channel
+
+`(pipeline n out xf in)` 从 `in` 读、过 transducer、写 `out`——第 20 章的 `(map inc)` 原封不动地用在了流上：
+
+```clojure
+(let [in (chan 10) out (chan 10)]
+  (a/pipeline 4 out (map inc) in)
+  (thread (doseq [x (range 5)] (>!! in x)) (close! in))
+  (sort (take 5 (repeatedly #(<!! out)))))  ;; => (1 2 3 4 5)
+```
+
+### 缓冲策略
+
+| 缓冲 | 满了之后 | 场景 |
+|---|---|---|
+| `(chan n)` | 写阻塞（背压） | 生产消费速率要匹配 |
+| `(dropping-buffer n)` | 丢**新**元素 | 传感器采样 |
+| `(sliding-buffer n)` | 丢**旧**元素 | 行情、日志尾部 |
+
+```clojure
+(let [c (chan (sliding-buffer 2))]
+  (doseq [x [1 2 3 4 5]] (>!! c x))
+  [(<!! c) (<!! c)])            ;; => [4 5] 只留最新两个
 ```
 
 ---
 
-## 第 24 章 Web 开发概览
+## 第 25 章 Web 开发实战：Ring
 
-Clojure 的 Web 生态以 Ring 为基础，Ring 是一个类似 WSGI 的 HTTP 抽象层。
+（对应示例：`23_ring_web.clj`；依赖 `ring/ring-core` + `ring/ring-jetty-adapter` 1.15.x）
 
-| 库 | 定位 |
-|------|------|
-| Ring | HTTP 请求/响应抽象 |
-| Compojure | 路由库（经典） |
-| Reitit | 高性能路由（现代） |
-| Pedestal | 全栈 Web 框架 |
-| Luminus | 微框架（整合多个库） |
-| Hiccup | HTML 生成 |
-| Selmer | 模板引擎 |
+Clojure 的 Web 生态全部建立在 Ring 上——一个类似 Python WSGI 的 HTTP 抽象层。
 
-前端方面，ClojureScript + shadow-clms + re-frame 是主流的 Clojure 全栈方案。
+### Ring 模型：一切都是 map
+
+handler 是一个普通函数：吃 request map、吐 response map。没有基类、没有注解、没有框架魔法：
+
+```clojure
+(defn handler [request]
+  {:status 200
+   :headers {"Content-Type" "text/plain"}
+   :body "Hello, Ring!"})
+```
+
+request 里有什么：`:request-method`（`:get`/`:post`）、`:uri`、`:query-string`、`:headers`、`:body`（InputStream）。
+
+### 路由就是 cond
+
+Ring 本身不带路由，`method + uri` 只是两个 map 键：
+
+```clojure
+(defn app [request]
+  (let [{:keys [request-method uri query-params]} request]
+    (cond
+      (and (= request-method :get) (= uri "/hello"))
+      (-> (response (str "Hello, " (get query-params "name" "World") "!"))
+          (content-type "text/plain"))
+      :else (not-found "No route"))))
+```
+
+Compojure、Reitit 等路由库替换的只是这段 `cond`，下面的中间件、handler、服务器全部不变。
+
+### 中间件：handler 的高阶函数
+
+```clojure
+(defn wrap-counter [handler]
+  (fn [request]
+    (swap! request-count inc)
+    (-> (handler request)
+        (assoc-in [:headers "X-Request-Count"] (str @request-count)))))
+
+(def app+ (-> app wrap-params wrap-counter))   ;; 自内向外包裹
+```
+
+标准库的 `wrap-params` 把 `:query-string` 解析成 `:query-params`。**注意坑**：POST 不带 `Content-Type` 时 HttpURLConnection 默认按 `application/x-www-form-urlencoded` 发送，`wrap-params` 会把 body 解析掉——示例里显式设 `text/plain` 保住原始 body。
+
+### 不起服务器也能测
+
+直接函数调用 handler 就是一个完整的"HTTP 测试"——这是 Ring 架构最大的红利：
+
+```clojure
+(:status (app+ {:request-method :get :uri "/hello" :query-string "name=Middleware"}))
+;; => 200
+```
+
+### 真服务器 + 真请求
+
+`run-jetty` 把 handler 挂到嵌入式 Jetty 12 上（`:join? false` 让主线程继续跑），示例里用 JDK 自带的 `HttpURLConnection` 发真实请求验证了 GET/POST/JSON/404/中间件头全链路：
+
+```clojure
+(def server (run-jetty app+ {:port 18899 :join? false}))
+;; ... 请求验证 ...
+(.stop server)
+```
+
+Jetty 12 只带 SLF4J API 没带实现，启动时的几行 "No SLF4J providers" 警告无害；生产加 logback 依赖即可。
 
 ---
 
-## 第 25 章 生态与工具
+## 第 26 章 Leiningen 项目实战
+
+（对应工程：`lein-lab/`；验证链 `lein test` → `lein run` → `lein uberjar` → `java -jar`）
+
+本章用一个小而完整的工程演示 Leiningen 的标准工作流。`lein-lab` 是个 mini 文本统计工具：两个源码命名空间 + 一个测试命名空间。
+
+### 工程布局：命名空间 ↔ 路径的映射规则
+
+```text
+lein-lab/
+├── project.clj                    工程描述（依赖、入口、profile）
+├── src/lein_lab/core.clj          命名空间 lein-lab.core
+├── src/lein_lab/text.clj          命名空间 lein-lab.text
+└── test/lein_lab/core_test.clj    命名空间 lein-lab.core-test
+```
+
+规则：命名空间的 `-` 对应文件名的 `_`，`.` 对应目录分隔。`(require 'lein-lab.text)` 会在 classpath 的 `lein_lab/text.clj` 找文件。
+
+### project.clj
+
+```clojure
+(defproject lein-lab "1.0.0"
+  :description "Leiningen 工作流实验：源码布局 / 测试 / profile / uberjar"
+  :dependencies [[org.clojure/clojure "1.12.6"]]
+  :main lein-lab.core                       ;; lein run / java -jar 的入口
+  :profiles {:dev     {:global-vars {*warn-on-reflection* true}}
+             :uberjar {:aot :all}}           ;; 打包前全量 AOT 编译
+  :target-path "target")
+```
+
+### 四步验证链（build.ps1 -Lab 全自动跑）
+
+```bash
+lein test        # 跑 test/ 下所有 *-test 命名空间 → 6 tests, 15 assertions
+lein run         # 调用 lein-lab.core/-main，支持 -- 分隔传参
+lein uberjar     # AOT 编译 + 打包含全部依赖的 standalone jar
+java -jar target/lein-lab-1.0.0-standalone.jar arg1 arg2   # 只要有 JVM 就能跑
+```
+
+`:gen-class` + `:aot :all` 让 `lein-lab.core` 编译出真正的 Java 类，jar 的 `Main-Class` 落在它上面——这就是 Clojure 程序"编译成 exe 思路"的 JVM 版本（再进一步是 GraalVM native-image）。
+
+### profile
+
+`:profiles` 里的配置只在对应场景叠加：`:dev` 在 `lein test`/`lein repl` 时生效，`:uberjar` 只在打包时生效。`lein with-profile +dev run` 显式叠加。典型用法：dev 打开反射警告、uberjar 开 AOT、生产 profile 换日志实现。
+
+---
+
+## 第 27 章 生态与工具
 
 ### 构建工具
 
 | 工具 | 定位 |
 |------|------|
-| Clojure CLI | 官方工具链，`deps.edn` 配置 |
-| Leiningen | 社区主流，`project.clj` 配置 |
-| shadow-cljs | ClojureScript 构建 |
+| Clojure CLI | 官方工具链，`deps.edn` 配置，轻量组合式 |
+| Leiningen | 社区元老，`project.clj` 配置，内置 uberjar/test 全流程 |
+| shadow-cljs | ClojureScript 构建（接 npm 生态） |
+| tools.build | 官方构建库（CI 里用程序描述构建） |
 
 ### 编辑器
 
 | 编辑器 | 插件 |
 |--------|------|
-| Emacs | CIDER（最成熟的开发体验） |
+| Emacs | CIDER（最成熟的 REPL 驱动体验） |
 | VS Code | Calva |
 | IntelliJ | Cursive |
 | Vim | vim-fireplace / conjure |
@@ -935,17 +1185,78 @@ Clojure 的 Web 生态以 Ring 为基础，Ring 是一个类似 WSGI 的 HTTP �
 
 | 库 | 用途 |
 |------|------|
-| `core.async` | CSP 并发模型 |
+| `core.async` | CSP 并发模型（第 24 章） |
 | `core.match` | 模式匹配 |
-| `core.logic` | 逻辑编程 |
-| `test.check` | 属性测试 |
-| `spec.alpha` | 数据验证与规范 |
+| `core.logic` | 逻辑编程（miniKanren 移植） |
+| `test.check` | 属性测试（QuickCheck 风格） |
+| `spec.alpha` | 数据验证与规范（第 19 章） |
+| Ring / Reitit | Web 抽象层 / 高性能路由（第 25 章） |
+| next.jdbc | 数据库访问 |
+| http-kit / aleph | 高并发 HTTP 服务器与客户端 |
+
+### ClojureScript
+
+Clojure 编译到 JavaScript 的方言，同一门语言写前端：不可变数据结构 + React（re-frame/reagent）是主流组合，shadow-cljs 负责与 npm 生态互通。代码层面与本章 Clojure 几乎一致，差异集中在宿主互操作（`js/...`）与异步宏。
+
+---
+
+## 第 28 章 综合实战：MiniLisp 解释器
+
+（对应示例：`24_minilisp.clj`；33 个断言全过）
+
+压轴实战：用约 200 行 Clojure 实现一门 Scheme 风格的小语言。这是"元循环"练习——Lisp 的代码就是数据，所以用 Lisp 解释 Lisp 出奇地短。也是全书知识的总装：高阶函数、解构、 recur、atom、`case`、异常、宏式脱糖全用上了。
+
+### 阶段一：tokenize + parse —— 代码即数据的现场证明
+
+```clojure
+(defn tokenize [s]
+  (->> (str/replace s #"(?m);[^\n]*" "")          ;; 剥注释
+       (re-seq #"-?\d+|[()]|\"[^\"]*\"|[^\s()]+") ;; 整数/括号/字符串/符号
+       vec))
+
+(parse-string "(+ 1 (* 2 3))")   ;; => ((+ 1 (* 2 3)))  ← 普通 Clojure 数据！
+```
+
+解析结果就是嵌套的 Clojure list/symbol/long——没有 AST 类，没有访问者模式。
+
+### 阶段二：环境链 = 词法作用域
+
+环境是 `{:vars {符号 值} :parent 父环境}` 的 atom 链。查变量沿链上溯（`env-lookup`），`let`/函数调用创建子环境，`def` 写到根。闭包就是一个捕获了定义环境的普通 map：
+
+```clojure
+{:op 'closure :params params :body body :env env}
+```
+
+### 阶段三：求值器 + 尾调用优化
+
+`case` 分发 special forms（`quote`/`if`/`def`/`fn`/`let`/`do`/`and`/`or`），其余全是函数应用。关键技巧：求值器主体是 `(loop [form env] ...)`，**尾位置的表达式用 `recur` 继续循环**——于是 MiniLisp 免费获得了它自己语法里根本没有的尾调用优化：
+
+```clojure
+(def loop-down (fn (n) (if (= n 0) (quote done) (loop-down (- n 1)))))
+(loop-down 1000000)      ;; => done，百万层递归不爆栈（实测约 1 秒）
+```
+
+`and`/`or` 用"脱糖"实现——`(and a b c)` 求值时改写成 `(if a (and b c) a)` 再递归，这就是宏的本质。
+
+### 实测彩蛋：Symbol 是可调用的
+
+开发中真实踩到的坑：把内置表写成 `{'* '* ...}`（值也加了 quote），于是 `*` 查到的是**符号**而不是函数。Clojure 的 Symbol 实现了 IFn——`('* 2 3)` 等价 `(get 2 * 3)` 返回默认值 3——于是 `(fact 10)` 算出 1 而不是 3628800，全程无异常。这类"静默出错"只能靠测试断言抓住。
+
+### 运行效果
+
+```clojure
+(def fact (fn (n) (if (<= n 1) 1 (* n (fact (- n 1))))))
+(fact 25)     ;; => 15511210043330985984000000（*' 自动升 BigInteger）
+(def mymap (fn (f xs) (if (null? xs) (quote ())
+                        (cons (f (car xs)) (mymap f (cdr xs))))))
+(mymap (fn (x) (* x x)) (list 1 2 3 4 5))   ;; => (1 4 9 16 25)
+```
 
 ---
 
 ## 实战章节索引（已验证）
 
-下面这些配套源码文件已在本目录通过 `clojure -M` 运行验证：
+下面这些配套源码已全部通过运行验证——24 个示例脚本 + 1 个 Leiningen 工程（25 个验证单元全绿）：
 
 1. `01_hello.clj`：Hello World、基本输出、def/defn、运算
 2. `02_data_types.clj`：数字、比值、字符串、字符、关键字、布尔、nil
@@ -959,19 +1270,31 @@ Clojure 的 Web 生态以 Ring 为基础，Ring 是一个类似 WSGI 的 HTTP �
 10. `10_multimethods.clj`：defmulti/defmethod、derive/isa?
 11. `11_records_protocols.clj`：defrecord/defprotocol/reify
 12. `12_concurrency.clj`：atom/ref/agent/future、STM、pmap
-13. `13_java_interop.clj`：Java 方法/字段、doto/proxy、异常
-14. `14_file_io.clj`：slurp/spit/with-open/edn
+13. `13_java_interop.clj`：Java 方法/字段、doto/proxy、异常（已修 /tmp 跨平台问题）
+14. `14_file_io.clj`：slurp/spit/with-open/edn（临时目录已移入 build/tmp）
 15. `15_namespaces.clj`：ns/require/:as、clojure.walk/pprint
 16. `16_testing.clj`：deftest/is/are/testing、异常测试
 17. `17_spec.clj`：s/def/s/valid?/s/conform、s/fdef
 18. `18_transducers.clj`：comp/transduce/into、自定义 transducer
 19. `19_algorithms.clj`：快速排序、归并排序、二分查找、斐波那契、筛法
 20. `20_project.clj`：综合实战——成绩数据分析管线
+21. `21_performance.clj`：类型提示（实测 537 倍）、瞬态、原始数组、memoize
+22. `22_core_async.clj`：channel/go/go-loop 工作池/alts!!/pipeline/缓冲策略
+23. `23_ring_web.clj`：Ring 模型/手写路由/中间件/嵌入式 Jetty 真实 HTTP 验证
+24. `24_minilisp.clj`：MiniLisp 解释器（tokenizer/parser/env/TCO，33 断言）
+25. `lein-lab/`：Leiningen 工程（test → run → uberjar → java -jar 全链路）
 
 统一验证命令：
 
 ```bash
-cd /Users/xulun/code/programming/clojure
+# Windows（Leiningen 2.13 + JDK 16+，见 build.ps1 头部说明）
+cd G:\code\guide\clojure
+pwsh build.ps1 -All          # 24 示例 + lein-lab 全链路
+pwsh build.ps1 -File 24      # 单跑一个示例
+pwsh build.ps1 -Lab          # 只跑 lein-lab
+
+# macOS / Linux（Clojure CLI）
+cd /path/to/guide/clojure
 ./build.sh --all
 ```
 

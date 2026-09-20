@@ -77,7 +77,9 @@
 
 (section 3 "Chain Calls (..)")
 
-(def f (File. "/tmp/test.txt"))
+;; 用跨平台的临时目录（java.io.tmpdir 在 Windows/macOS/Linux 都有值）
+(def f (File. (str (System/getProperty "java.io.tmpdir")
+                  File/separator "test.txt")))
 (say "(.. f (getName)):" (.. f (getName)))
 (say "(.. f (getAbsolutePath)):" (.. f (getAbsolutePath)))
 (say "(.. f (getParent)):" (.. f (getParent)))
@@ -125,7 +127,7 @@
 (say "Formatted date:" (.format fmt date))
 
 ;; 文件操作
-(def dir (File. "/tmp"))
+(def dir (File. (System/getProperty "java.io.tmpdir")))
 (say "Dir exists?:" (.exists dir))
 (say "Is dir?:" (.isDirectory dir))
 (say "Is file?:" (.isFile dir))
