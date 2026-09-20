@@ -21,7 +21,7 @@
 (* 辅助输出函数：打印分隔线和标题 *)
 let section n title =
   Printf.printf "\n---- %d) %s ----\n" n title;
-  print_endline (String.make 50 '-')
+  print_endline (String.make 50 '-');;
 
 (* ========================================================================
    1) print_endline / print_string
@@ -57,13 +57,13 @@ print_char 'A';;
 print_newline ();;
 
 print_string "Bool: ";;
-print_bool true;;
+print_string (string_of_bool true);;
 print_newline ();;
 
 (* 使用 print_endline 打印列表元素 *)
 let print_list_strings label lst =
   print_endline label;
-  List.iter (fun s -> print_endline ("  - " ^ s)) lst
+  List.iter (fun s -> print_endline ("  - " ^ s)) lst;;
 
 print_list_strings "Fruits:" ["apple"; "banana"; "cherry"];;
 
@@ -118,7 +118,7 @@ let students = [
   ("Diana", 22, 78.6, 'C');
 ] in
 List.iter (fun (name, age, score, grade) ->
-  Printf.printf "%-15s %5d %7.1f %9c\n" name age score grade
+  Printf.printf "%-15s %5d %7.1f %9s\n" name age score (String.make 1 grade)
 ) students;;
 
 (* Printf.sprintf : 格式化到字符串 *)
@@ -152,7 +152,7 @@ section 3 "Reading from standard input";;
 
 (* 使用 Scanf 模块从字符串解析输入 *)
 let input_str = "42\n3.14\nhello world\n" in
-Scanf.sscanf input_str "%d\n%f\n%s\n" (fun i f s ->
+Scanf.sscanf input_str "%d\n%f\n%s@\n" (fun i f s ->
   Printf.printf "Parsed from string:\n";
   Printf.printf "  Integer: %d\n" i;
   Printf.printf "  Float:   %f\n" f;
@@ -172,12 +172,13 @@ let read_lines_from_string s =
   done;
   List.rev !lines
 
-let test_input = "first line\nsecond line\nthird line\n" in
-let lines = read_lines_from_string test_input in
-Printf.printf "Lines from string (%d lines):\n" (List.length lines);
-List.iteri (fun i line ->
-  Printf.printf "  %d: %s\n" (i + 1) line
-) lines;;
+let () =
+  let test_input = "first line\nsecond line\nthird line\n" in
+  let lines = read_lines_from_string test_input in
+  Printf.printf "Lines from string (%d lines):\n" (List.length lines);
+  List.iteri (fun i line ->
+    Printf.printf "  %d: %s\n" (i + 1) line
+  ) lines;;
 
 (* Scanf 更复杂的解析 *)
 let data = "Alice:30:95.5\nBob:21:87.3\nCharlie:19:92.0\n" in
@@ -238,9 +239,10 @@ let read_file filename =
     close_in ic;
     Buffer.contents buf
 
-let content = read_file demo_file in
-Printf.printf "File contents (%d bytes):\n" (String.length content);
-print_string content;;
+let () =
+  let content = read_file demo_file in
+  Printf.printf "File contents (%d bytes):\n" (String.length content);
+  print_string content;;
 
 (* 读取文件字符数统计 *)
 let count_chars filename =
@@ -256,8 +258,9 @@ let count_chars filename =
     close_in ic;
     !count
 
-let char_count = count_chars demo_file in
-Printf.printf "Character count: %d\n" char_count;;
+let () =
+  let char_count = count_chars demo_file in
+  Printf.printf "Character count: %d\n" char_count;;
 
 (* 单词数统计 *)
 let count_words filename =
@@ -276,8 +279,9 @@ let count_words filename =
   if !in_word then incr words;
   !words
 
-let word_count = count_words demo_file in
-Printf.printf "Word count: %d\n" word_count;;
+let () =
+  let word_count = count_words demo_file in
+  Printf.printf "Word count: %d\n" word_count;;
 
 (* ========================================================================
    5) 逐行读取
@@ -296,7 +300,7 @@ let process_lines filename f =
       f line
     done
   with End_of_file ->
-    close_in ic
+    close_in ic;;
 
 print_endline "Line-by-line processing:";
 let line_num = ref 0 in
@@ -312,8 +316,9 @@ let read_lines filename =
   process_lines filename (fun line -> lines := line :: !lines);
   List.rev !lines
 
-let lines_list = read_lines demo_file in
-Printf.printf "Total lines: %d\n" (List.length lines_list);;
+let () =
+  let lines_list = read_lines demo_file in
+  Printf.printf "Total lines: %d\n" (List.length lines_list);;
 
 (* 带行号的读取 *)
 let read_lines_numbered filename =
@@ -325,10 +330,11 @@ let read_lines_numbered filename =
   );
   List.rev !lines
 
-let numbered = read_lines_numbered demo_file in
-List.iter (fun (n, line) ->
-  if n = 3 then Printf.printf "Line 3: \"%s\"\n" line
-) numbered;;
+let () =
+  let numbered = read_lines_numbered demo_file in
+  List.iter (fun (n, line) ->
+    if n = 3 then Printf.printf "Line 3: \"%s\"\n" line
+  ) numbered;;
 
 (* ========================================================================
    6) 追加写入
@@ -342,7 +348,7 @@ section 6 "Appending to files";;
 let append_file filename content =
   let oc = open_out_gen [Open_append; Open_creat; Open_text] 0o666 filename in
   output_string oc content;
-  close_out oc
+  close_out oc;;
 
 (* 先打印原始内容 *)
 Printf.printf "Before append:\n%s" (read_file demo_file);;
@@ -359,7 +365,7 @@ Printf.printf "After append:\n%s" (read_file demo_file);;
 let overwrite_file filename content =
   let oc = open_out filename in
   output_string oc content;
-  close_out oc
+  close_out oc;;
 
 overwrite_file demo_file "Hello, World!\nThis is a demo file.\nLine 3\nLine 4\nThe end.\n";;
 
@@ -407,40 +413,42 @@ let list_dir dir =
   Array.sort compare entries;
   entries
 
-let tmp_entries = list_dir (Filename.get_temp_dir_name ()) in
-Printf.printf "Entries in temp dir (first 10 of %d):\n" (Array.length tmp_entries);
-let count = ref 0 in
-Array.iter (fun name ->
-  if !count < 10 then begin
-    let full_path = Filename.concat (Filename.get_temp_dir_name ()) name in
-    let kind = if Sys.is_directory full_path then "[DIR]" else "[FILE]" in
-    Printf.printf "  %s %s\n" kind name;
-    incr count
-  end
-) tmp_entries;;
+let () =
+  let tmp_entries = list_dir (Filename.get_temp_dir_name ()) in
+  Printf.printf "Entries in temp dir (first 10 of %d):\n" (Array.length tmp_entries);
+  let count = ref 0 in
+  Array.iter (fun name ->
+    if !count < 10 then begin
+      let full_path = Filename.concat (Filename.get_temp_dir_name ()) name in
+      let kind = if Sys.is_directory full_path then "[DIR]" else "[FILE]" in
+      Printf.printf "  %s %s\n" kind name;
+      incr count
+    end
+  ) tmp_entries;;
 
 (* 创建和删除子目录 *)
-let test_dir = Filename.concat tmp_dir "ocaml_test_dir" in
-if not (Sys.file_exists test_dir) then
-  Unix.mkdir test_dir 0o755;
-Printf.printf "Created test directory: %s\n" test_dir;
-Printf.printf "Is directory: %b\n" (Sys.is_directory test_dir);;
+let () =
+  let test_dir = Filename.concat tmp_dir "ocaml_test_dir" in
+  if not (Sys.file_exists test_dir) then
+    Unix.mkdir test_dir 0o755;
+  Printf.printf "Created test directory: %s\n" test_dir;
+  Printf.printf "Is directory: %b\n" (Sys.is_directory test_dir);
 
-(* 在子目录中创建文件 *)
-let test_file1 = Filename.concat test_dir "file1.txt" in
-let test_file2 = Filename.concat test_dir "file2.txt" in
-overwrite_file test_file1 "Content of file 1\n";
-overwrite_file test_file2 "Content of file 2\n";;
+  (* 在子目录中创建文件 *)
+  let test_file1 = Filename.concat test_dir "file1.txt" in
+  let test_file2 = Filename.concat test_dir "file2.txt" in
+  overwrite_file test_file1 "Content of file 1\n";
+  overwrite_file test_file2 "Content of file 2\n";
 
-let test_entries = list_dir test_dir in
-Printf.printf "Entries in test dir: [%s]\n"
-  (String.concat ", " (Array.to_list test_entries));;
+  let test_entries = list_dir test_dir in
+  Printf.printf "Entries in test dir: [%s]\n"
+    (String.concat ", " (Array.to_list test_entries));
 
-(* 清理测试文件和目录 *)
-Sys.remove test_file1;
-Sys.remove test_file2;
-Unix.rmdir test_dir;
-Printf.printf "Cleaned up test directory: %s (exists: %b)\n" test_dir (Sys.file_exists test_dir);;
+  (* 清理测试文件和目录 *)
+  Sys.remove test_file1;
+  Sys.remove test_file2;
+  Unix.rmdir test_dir;
+  Printf.printf "Cleaned up test directory: %s (exists: %b)\n" test_dir (Sys.file_exists test_dir);;
 
 (* ========================================================================
    8) 环境变量
@@ -456,7 +464,7 @@ section 8 "Environment variables";;
 let print_env var =
   match Sys.getenv_opt var with
   | Some value -> Printf.printf "  %s = %s\n" var value
-  | None -> Printf.printf "  %s = (not set)\n" var
+  | None -> Printf.printf "  %s = (not set)\n" var;;
 
 print_endline "Common environment variables:";
 print_env "HOME";;

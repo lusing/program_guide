@@ -37,7 +37,7 @@
 - [forth](./forth) — Forth / GForth 教程与示例，使用 gforth 0.7.3 运行验证（含栈平衡与 stderr 检查）
 - [fortran](./fortran) — 现代 Fortran（F2018）教程与示例，使用 LLVM flang 23.1.0 + GNU Fortran 15.2.0 双编译器验证（22 个示例 × 2 通道全部通过）
 - [sml](./sml) — Standard ML（SML'97）教程与示例，使用 SML/NJ 110.99.9 + Poly/ML 5.9.2 + MLton 20241230 三实现验证（22 个示例 × 3 通道，20 个逐字节一致 + 2 个已登记差异）
-- [ocaml](./ocaml) — OCaml 教程与示例，使用 ocamlc 字节码编译器验证（22 个示例，25 章教程，覆盖模块系统 / functor / 可变状态 / 算法 / 解析 / 综合实战）
+- [ocaml](./ocaml) — OCaml 教程与示例（31 章 / 26 示例），Windows MSYS2 UCRT64 OCaml 5.4.1 三层验证（字节码 26/26 + 原生 25/25：编译+运行+结束标记），覆盖模块系统 / functor / GADT / Domain+Effect 并发 / 绑定运算符 / ocamllex / 综合实战，附 Windows 实战六坑专题
 - [go](./go) — Go 1.27 教程（24 章对齐 cpp20/zig 标准：接口/泛型/迭代器/测试/并发三连细讲，全部示例四层验证 gofmt+vet+test+运行，并发章加 -race）
 - [godot](./godot) — Godot 4 / GDScript 教程与示例，使用 Godot headless 执行脚本验证
 - [julia](./julia) — Julia 1.13 教程（24 章对齐 cpp20/zig 标准：多重派发/类型系统/广播/元编程/性能/Pkg 环境细讲，23 个示例三层验证运行+测试+工程，24 为迷你 ODE 求解器包工程——问题-算法-解三件套 + 自适应步长 + 收敛阶测试）

@@ -1,6 +1,6 @@
 # OCaml 编程指南
 
-一本从零到能用的 OCaml 教程，25 章。每一章的代码都可以在 OCaml 顶层解释器（ocaml）和字节码编译器（ocamlc）上直接运行。
+一本从零到能用的 OCaml 教程，31 章、26 个可运行示例。每一章的代码都可以在 OCaml 顶层解释器（ocaml）、字节码编译器（ocamlc）与原生编译器（ocamlopt）上直接运行；全书在 macOS 与 Windows（MSYS2 UCRT64，OCaml 5.4.1）双平台全量验证通过。
 
 ## OCaml 是什么
 
@@ -57,16 +57,31 @@ OCaml 的核心特点可以概括为以下几点：
 - 第 21 章 解析：词法分析与递归下降
 - 第 22 章 输入输出与文件
 - 第 23 章 测试与断言
-- 第 24 章 综合实战：成绩 CSV 分析与报告
-- 第 25 章 坑清单与最佳实践
+- 第 24 章 记录、对象与类
+- 第 25 章 流与序列
+- 第 26 章 综合实战：成绩 CSV 分析与报告
+- 第 27 章 错误处理：option / result 与绑定运算符
+- 第 28 章 GADT：广义代数数据类型
+- 第 29 章 OCaml 5 并发：Domain 与 Effect
+- 第 30 章 ocamllex：词法分析器生成器
+- 第 31 章 坑清单与最佳实践
 
-对应示例在 `examples/` 目录下，文件名前缀为两位编号。运行方式：
+对应示例在 `examples/` 目录下，文件名前缀为两位编号（第 30 章
+对应 `examples/26_ocamllex/` 子目录）。运行方式（macOS / Linux）：
 
 ```bash
-cd /Users/xulun/code/programming/ocaml
 ocaml examples/01_basics.ml          # 解释执行
-ocamlc examples/01_basics.ml -o 01_basics && ./01_basics   # 字节码编译
-ocamlopt examples/01_basics.ml -o 01_basics && ./01_basics # 原生编译
+ocamlc -w -24 examples/01_basics.ml -o 01_basics && ./01_basics   # 字节码编译
+ocamlopt -w -24 examples/01_basics.ml -o 01_basics && ./01_basics # 原生编译
+```
+
+Windows（MSYS2 UCRT64）下的等价命令与专属坑见第 2 章的
+「2.8 在 Windows 上使用 OCaml（MSYS2 实战）」。推荐统一用
+`build.ps1` 做编译与验证（跨平台，见各章说明）：
+
+```powershell
+pwsh ./build.ps1 -All            # 编译并运行全部示例（字节码）
+pwsh ./build.ps1 -All -Native    # 同时做原生编译与运行
 ```
 
 ---
@@ -311,6 +326,115 @@ dune exec ./bin/main.exe
 ```
 
 本书的示例都是单文件的，直接用 `ocaml` / `ocamlc` / `ocamlopt` 运行即可。但在实际项目中，你几乎一定会用到 `dune`。
+
+### 2.8 在 Windows 上使用 OCaml（MSYS2 实战）
+
+> 本节是本教程 2026 年在 Windows 11 + MSYS2 UCRT64
+> （OCaml 5.4.1）上全量验证 26 个示例后总结的实战经验，
+> 每一条坑都实际踩过、修过、复核过。
+
+#### 安装
+
+MSYS2 的 UCRT64 环境是目前 Windows 上最省心的原生 OCaml 发行渠道：
+
+```bash
+# 在 MSYS2 UCRT64 shell 里（或用 pacman 直接调）：
+pacman -S mingw-w64-ucrt-x86_64-ocaml mingw-w64-ucrt-x86_64-flexdll
+```
+
+工具链位于 `<msys2根目录>\ucrt64\bin`（如 `C:\msys64\ucrt64\bin`；
+经 scoop 安装的 MSYS2 在 `<scoop>\apps\msys2\current\ucrt64\bin`）。
+
+#### 坑 1：从原生 shell 调用必须设 OCAMLLIB
+
+在 MSYS2 自己的 shell 里一切正常；但从 PowerShell / CMD 直接调用
+`ucrt64\bin` 里的编译器，会在**编译期**就报：
+
+```
+File "command line", line 1:
+Error: Unbound module Stdlib
+```
+
+原因：MSYS2 版 OCaml 的编译器把标准库位置编译成了 MSYS 根的
+POSIX 路径（`ocamlc -where` 打印 `/ucrt64/lib/ocaml`），原生
+Windows 进程解析不了。解决办法——把 `OCAMLLIB` 指到真实位置：
+
+```powershell
+$ucrt = "C:\msys64\ucrt64"          # 换成你的 MSYS2 根
+$env:Path      = "$ucrt\bin;$env:Path"
+$env:OCAMLLIB  = "$ucrt\lib\ocaml"
+```
+
+本教程的 `build.ps1` 会自动发现编译器并推导 `OCAMLLIB`，免去手工设置。
+
+#### 坑 2：ocamlopt 需要 flexlink，而 ocaml 包可能不带它
+
+`ocamlopt`（原生编译）链接阶段调用 Windows 专用的 `flexlink`
+（flexdll 工具）。实测 `mingw-w64-ucrt-x86_64-ocaml 5.4.1-2`
+没有把它作为硬依赖装好，症状是：
+
+```
+'flexlink' is not recognized as an internal or external command
+File "caml_startup", line 1:
+Error: Error during linking (exit code 1)
+```
+
+装上 `mingw-w64-ucrt-x86_64-flexdll` 包即可。
+
+#### 坑 3：字节码产物的命名与运行
+
+- `ocamlc -o build/01_basics` 在 Windows 上生成的是**没有 `.exe`
+  后缀的 PE 文件**。PowerShell 的 `& .\build\01_basics` 会拒绝执行
+  （“无法在管道中间运行文档”），要么显式写 `-o xxx.exe`，
+  要么用 `Start-Process`（CreateProcess 不在乎后缀）。
+- 字节码可执行文件运行时要在 PATH 上找到 `ocamlrun`
+  （否则报 `Cannot exec ocamlrun`）——PATH 前缀要保持挂着。
+- 链接了 `unix` 等库的字节码程序运行时还要靠 `OCAMLLIB` 找到
+  `stublibs` 里的 DLL（如 `dllunixbyt.dll`），否则直接
+  `Fatal error` 退出。
+
+#### 坑 4：数字开头的文件名不是合法模块名
+
+`01_basics.ml` 会触发警告 24（bad-module-name）。对单文件示例
+无伤大雅，本教程统一用 `-w -24` 静音。真正要注意的是**多文件
+项目**：`ocamlc a.ml b.ml` 会把 `a.ml` 当作模块 `A` 链接，
+文件名必须能映射到合法模块名（大写字母开头）——第 30 章的
+ocamllex 示例因此把 `.mll` 放在 `26_ocamllex/` 子目录里、
+用合法的 `ocamllex_expr.mll` 命名。
+
+#### 坑 5：Unix 模块要手工链接
+
+用到 `Unix.gettimeofday` / `Unix.stat` / `Unix.mkdir` 的文件，
+裸 `ocamlc` 会报 `Unbound module Unix`（这在 macOS 上同样成立）。
+需要显式链接：
+
+```powershell
+ocamlc -w -24 -I "$env:OCAMLLIB\unix" unix.cma -o build/15_algorithms.exe examples/15_algorithms.ml
+ocamlopt -w -24 -I "$env:OCAMLLIB\unix" unix.cmxa -o build/15_algorithms_opt.exe examples/15_algorithms.ml
+```
+
+本教程 15/18/21/22/25 号示例用到 unix，`build.ps1` 已内置依赖表。
+
+#### 坑 6：标准库的版本差异（5.4 实测）
+
+- `Stream` 模块不在标准库发行里（`Unbound module Stream`，
+  没有 stream.cma），教程示例用 Seq 实现了兼容层，见第 25 章。
+- `Domain.cpu_count` 不存在，用 `Domain.recommended_domain_count`。
+- `print_bool` 不存在（用 `print_string (string_of_bool b)`）。
+- `Seq.nth`、`Seq.sort` 不存在。
+- Printf 的 `%c` 不支持宽度修饰（`%9c` 是编译错）；
+  Scanf 的 `'\n'` 是字面匹配而非“跳过任意空白”，`%s` 遇空白即停，
+  想读到行尾用 `%s@\n`。
+
+#### 一键验证
+
+本教程所有示例在 Windows 上用一条命令完成“编译 + 运行 +
+结束标记核对”：
+
+```powershell
+pwsh ./build.ps1 -All            # 26/26 全绿（字节码）
+pwsh ./build.ps1 -All -Native    # 追加原生通道，51/51 全绿
+```
 
 ---
 
@@ -4208,6 +4332,13 @@ let show_it (type a) (module S : SHOW with type t = a) (x : a) =
 let _ = show_it (module IntShow) 42   (* "42" *)
 ```
 
+> **实测坑**：package type（`module ... : SIG with type ...` 里的
+> 类型方程部分）**不支持参数化类型方程**——`(module S : SET with
+> type 'a t = 'a S.t)` 直接语法错（"invalid package type:
+> parametrized types are not supported"）。想要“元素类型可约束的
+> 首类模块”，把元素类型拆成独立的 `elt`（标准库 Set/Map 的设计），
+> 再用简单的 `with type elt = a` 方程——示例 12 第 7 节就是这么改的。
+
 一等模块让你可以在运行时动态选择模块实现。比如你可以写一个函数，根据配置返回不同的模块实现：
 
 ```ocaml
@@ -6360,11 +6491,845 @@ TDD 在函数式语言中特别自然，因为：
 
 ---
 
-## 第 24 章 综合实战：成绩 CSV 分析与报告
+## 第 24 章 记录、对象与类
+
+对应示例：`examples/20_records.ml`
+
+第 6 章讲过记录基础，第 18 章讲过可变状态。这一章把两条线接起来：先回顾记录的高级用法——参数位置解构、嵌套更新、参数化记录、函数字段，然后进入 OCaml 的对象系统：`object` 字面量、`class` 类、`inherit` 继承、结构子类型 `:>`。24.9 的「实测坑」是本教程在 `20_records.ml` 里真实修过的类型错误，值得细读。
+
+### 24.1 记录高级用法回顾
+
+```ocaml
+type point = { x : float; y : float }
+
+let p3 = { p1 with y = 5.0 }             (* 函数式更新，p1 不变 *)
+let p4 = { p1 with x = 10.0; y = 20.0 }  (* 同时改多个字段 *)
+```
+
+一个实测细节：`p4` 把 `point` 的全部字段都列了出来，OCaml 5.x 会给 `Warning 23 [useless-record-with]`——都全量覆盖了，不如直接写 `{ x = 10.0; y = 20.0 }`。示例文件里有两处触发此警告（`p4` 和下面 `move_rect` 的内层更新），编译时能看到。
+
+模式匹配可以直接在参数位置解构记录，比 `let ... in` 逐个拆干净：
+
+```ocaml
+let distance2 { x = x1; y = y1 } { x = x2; y = y2 } =
+  sqrt ((x2 -. x1) ** 2. +. (y2 -. y1) ** 2.)
+```
+
+嵌套记录的函数式更新要层层 `with`：
+
+```ocaml
+type rectangle = { top_left : point; width : float; height : float }
+
+let move_rect dx dy rect =
+  { rect with
+    top_left = { rect.top_left with
+      x = rect.top_left.x +. dx;
+      y = rect.top_left.y +. dy
+    }
+  }
+```
+
+记录类型可以带类型参数（参数化记录），一个类型多种用途：
+
+```ocaml
+type 'a labeled = {
+  label : string;
+  value : 'a;
+}
+
+let int_labeled = { label = "count"; value = 42 }
+let str_labeled = { label = "name";  value = "Alice" }
+```
+
+这和第 4 章的值限制是一体两面：`{ value = 42 }` 是不可泛化的值，`int_labeled` 被钉死在 `int labeled`；只有函数（如示例的 `print_labeled`）能保持多态。
+
+### 24.2 可变记录：封装状态的经典手法
+
+字段加 `mutable` 就能用 `<-` 赋值。这是 OCaml 里「有状态的数据」最常用的形态——比 `ref` 清晰（多字段一个绑定搞定），比对象轻量：
+
+```ocaml
+type counter = {
+  mutable count : int;
+  mutable step : int;
+}
+
+let make_counter ?(step = 1) start = { count = start; step }
+
+let next c =
+  let current = c.count in
+  c.count <- c.count + c.step;
+  current
+```
+
+更典型的例子是玩家状态：不可变字段与可变字段混搭：
+
+```ocaml
+type player = {
+  name : string;                          (* 不可变 *)
+  mutable hp : int;                       (* 可变：生命值 *)
+  mutable level : int; mutable exp : int; (* 可变：等级、经验 *)
+  mutable inventory : string list;
+}
+
+let take_damage player amount =
+  player.hp <- max 0 (player.hp - amount);
+  player.hp = 0  (* 返回是否死亡 *)
+```
+
+示例里的 `gain_exp` 是这类代码的范式：先累加经验、比较阈值，够了一步扣减并升级——状态变化集中在一处，外部看到的仍然是普通记录值。
+
+### 24.3 函数字段：让记录模拟对象
+
+记录的字段可以是函数。把一组操作打包进记录，就得到「接口 + 闭包状态」的迷你对象，不需要任何对象语法：
+
+```ocaml
+type 'a stack_ops = {
+  push : 'a -> unit;
+  pop : unit -> 'a;
+  is_empty : unit -> bool;
+  size : unit -> int;
+  to_list : unit -> 'a list;
+}
+
+let make_stack () =
+  let data = ref [] in
+  {
+    push = (fun x -> data := x :: !data);
+    pop = (fun () ->
+      match !data with
+      | [] -> failwith "Stack.pop: empty"
+      | h :: t -> data := t; h);
+    is_empty = (fun () -> !data = []);
+    size = (fun () -> List.length !data);
+    to_list = (fun () -> List.rev !data);
+  }
+```
+
+（示例的接口还有 `peek : unit -> 'a`，实现与 `pop` 同构，这里略去。）
+
+私有状态（`data`）被闭包捕获，外部只能通过六个函数字段访问——这就是封装。
+
+更有说服力的是「一个接口、多种实现」。示例定义了 `('k, 'v) dict_ops`（字段为 `get`/`set`/`mem`/`remove`/`size`/`keys`），然后给了两个实现——基于关联表的 `make_alist_dict`：
+
+```ocaml
+let make_alist_dict () =
+  let data = ref [] in
+  {
+    get = (fun k -> List.assoc k !data);
+    set = (fun k v -> data := (k, v) :: List.remove_assoc k !data);
+    mem = (fun k -> List.mem_assoc k !data);
+    remove = (fun k -> data := List.remove_assoc k !data);
+    size = (fun () -> List.length !data);
+    keys = (fun () -> List.map fst !data);
+  }
+```
+
+`make_hashtbl_dict` 结构完全相同，只是六个字段换成 `Hashtbl.find/replace/mem/remove/length/fold`。示例用同一个 `test_dict` 先后测试两种实现——它们类型一致，可随意替换。这正是第 15 章 functor 所解决问题的轻量版：接口小、只有一个类型参数时，函数字段记录通常比 functor 顺手。
+
+### 24.4 对象字面量：object ... end
+
+OCaml 有完整的对象系统。`object ... end` 直接创建对象值：`val`/`val mutable` 声明实例变量，`method` 声明方法，调用用 `#`：
+
+```ocaml
+let point_obj = object
+  val mutable x = 0.0
+  val mutable y = 0.0
+
+  method get_x = x
+  method get_y = y
+
+  method move dx dy = x <- x +. dx; y <- y +. dy
+
+  method distance_to other =
+    let dx = x -. other#get_x in
+    let dy = y -. other#get_y in
+    sqrt (dx *. dx +. dy *. dy)
+
+  method to_string = Printf.sprintf "(%.2f, %.2f)" x y
+end
+```
+
+使用：`point_obj#move 3.0 4.0`、`point_obj#get_x`。注意实例变量赋值用 `<-`（与可变记录字段相同），方法调用用 `#`（不是 `.`）。
+
+两个细节：
+
+1. **实例变量与方法可以重名**。24.6 的 `rectangle_class` 里 `val width = w` 加 `method width = width`——方法体里的 `width` 指实例变量，对外暴露的是方法。
+2. **`initializer`** 在对象构造完成时执行一次；外层函数的参数就是「构造参数」——每次调用产生一个新对象，各自独立：
+
+```ocaml
+let p2_obj = object
+  val mutable x = 0.0
+  val mutable y = 0.0
+  method get_x = x
+  method get_y = y
+  initializer x <- 10.0; y <- 5.0
+end
+```
+
+示例的 `bank_account` 是「函数即构造参数」的完整版：`let bank_account initial = object ... end`，`deposit`/`withdraw` 方法维护 `balance` 和 `transactions`（多态变体流水），每调用一次得到一个独立账户，`statement` 方法拼对账单。需要 `self`（方法里调自己的其他方法）时写 `object (self)`，24.6 的 `rectangle_class` 会用到。
+
+### 24.5 对象类型与开放类型 `< ... ; .. >`
+
+对象类型由「它有哪些方法」决定，与它是谁、从哪个类来无关（结构类型）。`point_obj` 的推断类型是：
+
+```ocaml
+< get_x : float; get_y : float;
+  move : float -> float -> unit;
+  distance_to : < get_x : float; get_y : float; .. > -> float;
+  to_string : string >
+```
+
+注意 `distance_to` 的参数类型：`< get_x : float; get_y : float; .. >`。末尾的 `..` 是**开放类型**（row 变量），意思是「至少有 `get_x` 和 `get_y`，别的随便」。所以示例里 `point_obj#distance_to p2_obj` 成立——`p2_obj` 只有 `get_x`/`get_y` 两个方法，类型与 `point_obj` 并不相同，但结构上满足要求。这正是对象版的「鸭子类型」，而且由类型检查器静态验证。对单个函数参数，开放类型自动生效；24.8 会看到列表场景下为什么还需要显式 `:>`。
+
+### 24.6 class：对象的模板
+
+`object ... end` 每次写一遍太重复。`class` 把对象提炼成模板，`new` 实例化——类参数替代了「外层函数当构造参数」的技巧：
+
+```ocaml
+class point_class init_x init_y = object
+  val mutable x = init_x
+  val mutable y = init_y
+  method get_x = x
+  method get_y = y
+  method move dx dy = x <- x +. dx; y <- y +. dy
+  method to_string = Printf.sprintf "(%.2f, %.2f)" x y
+end
+
+let pt1 = new point_class 1.0 2.0
+let pt2 = new point_class 4.0 6.0
+```
+
+`pt1#move 2.0 3.0` 之后 `pt2` 不受影响——每个实例有自己的实例变量。类参数还支持可选参数，注意可选参数后要跟一个 `()` 占位，否则无法确定取参何时结束（用法：`new counter_class ~init:100 ~step_val:10 ()`）：
+
+```ocaml
+class counter_class ?(init = 0) ?(step_val = 1) () = object
+  val mutable count = init
+  val mutable step = step_val
+
+  method next =
+    let current = count in
+    count <- count + step;
+    current
+
+  method reset = count <- 0
+  method get_count = count
+end
+```
+
+类体里还可以 `new` 别的类做组合。矩形类内部持有一个点对象，把移动委托出去：
+
+```ocaml
+class rectangle_class x y w h = object (self)
+  val top_left = new point_class x y
+  val width = w
+  val height = h
+
+  method width = width          (* 实例变量与方法重名 *)
+  method area = width *. height
+
+  method move dx dy = top_left#move dx dy
+
+  method contains : 'a. (< get_x : float; get_y : float; .. > as 'a) -> bool =
+    fun pt ->
+      let px = pt#get_x and py = pt#get_y in
+      let tx = top_left#get_x and ty = top_left#get_y in
+      px >= tx && px <= tx +. width &&
+      py <= ty && py >= ty -. height
+
+  method to_string =
+    Printf.sprintf "Rect[top-left=%s, w=%.2f, h=%.2f, area=%.2f]"
+      top_left#to_string width height self#area
+end
+```
+
+`contains` 的方法标注先跳过，24.9 专门讲它为什么必须写成长这样。`to_string` 里的 `self#area` 则是 `object (self)` 的用途：类体里调自己的方法。
+
+### 24.7 继承：inherit 与 super
+
+`inherit` 让一个类获得另一个类的全部实例变量与方法：
+
+```ocaml
+class shape name = object (self)
+  val name = name
+  method name = name
+  method area = 0.0  (* 子类会覆盖 *)
+  method describe = Printf.sprintf "Shape '%s', area: %.2f" name self#area
+end
+
+class circle name radius = object (self)
+  inherit shape name as super
+  val radius = radius
+  method area = 3.1415926535 *. radius *. radius
+  method describe =
+    Printf.sprintf "Circle '%s', radius: %.2f, area: %.2f" name radius self#area
+end
+```
+
+要点：
+
+1. **方法覆盖即重定义**。子类里重新写 `method area = ...` 就覆盖了父类版本，不需要任何关键字。
+2. **`inherit ... as super` 给父类起别名**。`self#m` 是动态派发——按对象实际类型调用最终覆盖版；`super#m` 是静态派发——明确调父类版本。`movable_point` 两者配合实现动画步进（`rectangle_shape`、两层继承的 `square` 与此同构，完整代码见示例）：
+
+```ocaml
+class movable_point x y = object
+  inherit point_class x y as super
+
+  val mutable speed_x = 0.0
+  val mutable speed_y = 0.0
+
+  method set_speed sx sy = speed_x <- sx; speed_y <- sy
+
+  method tick dt =
+    super#move (speed_x *. dt) (speed_y *. dt)
+end
+```
+
+最后补一个示例里没用到的语法：**虚方法**。`class virtual` 定义不能实例化的抽象类，`method virtual` 声明必须被子类实现的方法：
+
+```ocaml
+class virtual shape_base = object
+  method virtual area : float
+end
+
+class real_shape name = object
+  inherit shape_base
+  method area = 3.0
+end
+```
+
+`new shape_base` 直接报错；虚方法的类型必须显式标注——原因见下一节。
+
+### 24.8 结构子类型与 `:>`
+
+OCaml 的子类型是**结构性的**：不看血缘，只看方法集合。任何有 `area` 方法的对象都能传给下面这个函数，无论它继承自谁、甚至是不是类的实例：
+
+```ocaml
+let print_area obj =
+  Printf.printf "  Area: %.2f\n" obj#area
+```
+
+`print_area s1`（circle）、`print_area s2`（rectangle_shape）、`print_area s3`（shape）全部成立——参数类型被推断为 `< area : float; .. >`，开放类型自动匹配，这就是行多态。
+
+但列表是另一回事：列表所有元素必须类型**完全相同**，行多态帮不上忙。`circle` 的对象和 `rectangle_shape` 的对象互不为子类型，直接混装会报类型错误。这时用强制转换 `:>` 把它们弱化到公共类型：
+
+```ocaml
+let shapes : shape list = [
+  (s1 :> shape);   (* circle           -> shape *)
+  (s2 :> shape);   (* rectangle_shape  -> shape *)
+  (s3 :> shape);
+]
+
+List.iter (fun s -> Printf.printf "  %s\n" s#describe) shapes
+```
+
+两条规则记牢：
+
+- `:>` 的方向是「子到父」，只能丢方法、不能加方法；丢弃的方法在目标类型里不可见（本例丢掉了子类特有的 `radius`、`describe` 覆盖版等，列表里只剩 `shape` 的方法）。
+- 目标必须是**闭合**的对象类型（如 `shape`，没有 `..`）。转成开放类型 `< area : float; .. >` 不允许——那是行多态该干的活，不需要转换。
+
+### 24.9 实测坑：class 方法里的开放对象类型
+
+这是 `20_records.ml` 开发时真实踩过、在 OCaml 5.4.1 下实测复现的编译错误。
+
+**踩坑过程**。`rectangle_class` 的 `contains` 方法想接受「任何有 `get_x`/`get_y` 的对象」，最自然的写法是不加标注，让类型推断自己推出开放类型：
+
+```ocaml
+(* 错误写法 *)
+method contains pt =
+  let px = pt#get_x and py = pt#get_y in
+  let tx = top_left#get_x and ty = top_left#get_y in
+  px >= tx && px <= tx +. width &&
+  py <= ty && py >= ty -. height
+```
+
+编译失败（原样照录，中间字段以 `...` 略）：
+
+```text
+Error: Some type variables are unbound in this type:
+         class rectangle_class :
+           float -> float -> float -> float ->
+           object
+             ...
+             method contains : < get_x : float; get_y : float; .. > -> bool
+           end
+       The method contains has type
+         (< get_x : float; get_y : float; .. > as 'a) -> bool
+       where 'a is unbound
+```
+
+**原理**。错误信息最后两行是关键：推断出的方法类型是 `(< get_x : float; get_y : float; .. > as 'a) -> bool`，其中 `'a` 就是开放类型里那个 `..`（row 变量）的内部名字——一个未绑定的类型变量。
+
+为什么普通 `let` 不报错、`method` 就报错？两者的泛化规则不同：
+
+- **值绑定会自动泛化**。`let contains pt = ...` 满足值限制（是函数），类型检查器自动把 `'a` 全称量化成 `'a. (< ... ; .. > as 'a) -> bool`，开放类型合法。
+- **class 定义不做这种隐式泛化**。类体作为整体定型，类类型里出现的方法类型必须闭合；多态方法必须由程序员显式写出全称量化的标注，否则其中的类型变量一律算 unbound。这个设计是为了避免类类型推断的歧义——类会被继承、被实例化多次，隐式泛化会让一个笔误扩散到所有子类。
+
+**修法**。给方法加显式多态标注，把 row 变量用 `as 'a` 命名后交给 `'a.` 量化：
+
+```ocaml
+(* 正确写法（示例 20_records.ml 第 540 行起） *)
+method contains : 'a. (< get_x : float; get_y : float; .. > as 'a) -> bool =
+  fun pt ->
+    let px = pt#get_x and py = pt#get_y in
+    let tx = top_left#get_x and ty = top_left#get_y in
+    px >= tx && px <= tx +. width &&
+    py <= ty && py >= ty -. height
+```
+
+逐块拆开：
+
+- `'a. (...)` —— 显式全称量化：「对所有可能的 `'a`」。这就是普通 `let` 自动帮你做的那一步。
+- `< get_x : float; get_y : float; .. > as 'a` —— `as 'a` 把整个开放对象类型（含 `..`）绑定到名字 `'a`，使它可以被量化。没有 `as 'a`，`..` 仍是匿名变量，照样 unbound。
+- 方法体要写成 `fun pt -> ...` —— 标注给出了方法的完整类型，等号右边就是该类型的值，参数由 `fun` 引入。
+
+**同一错误的另一副面孔**。实测发现：把 `point_class` 里的 `move` 和 `to_string` 删掉（即没有任何 `+.`/`%.2f` 把 `init_x`/`init_y` 钉死为 `float`），class 本身就会报同一个 `Some type variables are unbound`（`The method get_x has type 'a where 'a is unbound`）——类参数保持完全多态，类类型里就出现未绑定变量。修法要么在用法里钉死类型（示例正是靠 `move` 里的 `+.` 把 `x` 定为 `float`），要么给类参数加标注（`class point_class (init_x : float) ...`）。**经验法则：写 class 时多写显式类型标注**——对象系统不像 `let` 那样替你泛化，标注是它要求的正常写法，不是画蛇添足。
+
+### 24.10 对象、记录、模块：怎么选
+
+OCaml 里表达「数据 + 操作」至少有三条路，选型建议：
+
+| 场景 | 推荐 | 理由 |
+|------|------|------|
+| 纯数据，字段固定 | 记录 | 模式匹配、`with` 更新，类型推断最省事 |
+| 有状态的小对象（计数器、缓存） | 可变记录 | 比 `ref` 清晰，比对象轻量（24.2） |
+| 接口 + 多实现，状态简单 | 函数字段记录 | 一个 `make_xxx` 函数搞定（24.3） |
+| 接口 + 多实现，类型抽象要求高 | 模块 + functor | 第 14-16 章的工具，能隐藏类型 |
+| 深层继承、开放递归（`self`）、运行时异构集合 | class / object | 只有对象系统提供这些 |
+
+实践中的倾向：OCaml 社区用对象很少，标准库里几乎没有（`Oo` 模块只是运行时支持），主要使用者是 lablgtk（GTK 绑定）、OCamlGraph 这类把对象模型映射过来的库。原因不难体会——对象让推断变弱（24.9 的标注负担）、方法调用比直接函数调用慢，而记录 + 模块能覆盖绝大多数需求。对象真正不可替代的是开放递归（子类覆盖方法后，父类里经 `self` 调用的也是新版本）和 24.8 的异构集合。判断标准：需要「多种运行时可互换的实现且要在集合里混装」时用对象；否则优先记录和模块。
+
+### 24.11 本章小结
+
+- 记录高级用法：参数位置解构、嵌套 `with` 层层更新、`'a` 参数化记录（与值限制一体两面）
+- 可变记录是封装状态的首选：`mutable` 字段 + `<-` 赋值，不可变与可变字段可混搭
+- 函数字段让记录模拟对象：闭包捕获私有状态，「一个接口、多种实现」的轻量方案
+- `object ... end`：`val`/`val mutable` 状态、`method` 行为、`#` 调用、`initializer`、`object (self)`
+- 对象类型是结构性的；开放类型 `< ... ; .. >` 是静态检查的鸭子类型，函数参数自动行多态
+- `class` + `new`：类参数、可选参数（后跟 `()`）、`new` 组合；`inherit ... as super` 继承并覆盖方法，`self#` 动态派发、`super#` 静态派发；`class virtual`/`method virtual` 定义抽象
+- 结构子类型 `:>` 只能把对象弱化到闭合类型，用于异构列表；日常参数匹配交给行多态
+- 实测坑：class 方法里用开放对象类型报 `Some type variables are unbound`——class 不做隐式泛化，必须显式写 `'a. (< ... ; .. > as 'a) -> ...` 多态方法标注；类参数完全多态时同样触发
+- 选型顺序：记录 → 函数字段记录 / 模块 → 对象；对象留给开放递归和运行时异构集合
+
+---
+
+## 第 25 章 流与序列
+
+对应示例：`examples/21_streams_seq.ml`
+
+### 25.1 列表够用吗：惰性求值与 Seq 的形态
+
+第 8 章的列表有一个前提：所有元素在列表存在的那一刻就已经算好。`List.init 1_000_000 f` 会立刻分配一百万个节点，哪怕你最后只看前 10 个；「从 2 开始的所有自然数」这种无限数据，列表根本写不出来。
+
+标准库的答案是 `Seq`（序列）：一个**按需产出**元素的惰性结构。概念上它的类型就是：
+
+```ocaml
+(* 概念上，'a Seq.t 等价于： *)
+type 'a node = Nil | Cons of 'a * 'a t
+and 'a t = unit -> 'a node
+```
+
+序列是一个函数：调用它（`s ()`），告诉你下一个元素是什么、剩下的序列是什么；不调用，就什么都不发生。元素只有在被消费时才计算。先看示例文件里 `print_seq` 的核心 `take`：
+
+```ocaml
+let rec take i s acc =
+  if i <= 0 then List.rev acc
+  else match s () with
+    | Seq.Nil -> List.rev acc
+    | Seq.Cons (x, rest) -> take (i - 1) rest (x :: acc)
+```
+
+关键在 `match s () with`：序列要先「调用」才得到 `Nil` 或 `Cons (x, rest)`，取够 3 个就停，剩下的 `rest` 原封不动——对无限序列也安全。示例把它包成 `print_seq label n seq`，末尾还用了一句 `Seq.is_empty (Seq.drop n seq)` 判断要不要补「...」：`drop` 是惰性的不消费，`is_empty` 只踩一步。
+
+最基本的构造函数：
+
+```ocaml
+let s1 = List.to_seq [1; 2; 3; 4; 5]   (* 从列表创建序列 *)
+let empty_seq = Seq.empty              (* 空序列 *)
+let single = Seq.return 42             (* 单元素序列 *)
+let s2 = Seq.cons 0 s1                 (* 序列前添加元素：0;1;2;3;4;5 *)
+```
+
+取头部没有 `Seq.hd`——这不是遗漏：序列的本质是 `unit -> node`，「取头部」就是调用一次函数加一个模式匹配（上面 `take` 里已经写过这个动作），不值得再包一层。
+
+### 25.2 序列的生成：unfold 与它的同伴们
+
+最通用的生成器是 `Seq.unfold`。它是一台状态机：给你初始状态，每步返回 `Some (产出元素, 新状态)`，返回 `None` 序列结束：
+
+```ocaml
+let count_up start =
+  Seq.unfold (fun n -> Some (n, n + 1)) start
+```
+
+`count_up 1` 产出 1, 2, 3, ...。示例里的 Collatz（冰雹）序列就是靠 `None` 落地的：`Seq.unfold (fun n -> if n = 1 then None else Some (n, 下一步))`，走到 1 自然终止。
+
+三个现成的生成器：
+
+```ocaml
+(* Seq.init : 按索引生成有限序列 *)
+let s4 = Seq.init 10 (fun i -> i * i)      (* 0, 1, 4, 9, ..., 81 *)
+
+(* Seq.ints : 无限自然数序列，本章所有管道的数据源头 *)
+let nums = Seq.ints 0                      (* 0, 1, 2, 3, ... *)
+
+(* Seq.forever : 反复调用函数生成无限序列 *)
+let counter = ref 0
+let counted = Seq.forever (fun () -> incr counter; !counter)
+```
+
+### 25.3 转换与组合：惰性管道的积木
+
+序列上的变换函数与列表同名同义，但有一个本质区别：它们**不立即计算**，只把函数包进新序列，等消费时才逐个应用。
+
+```ocaml
+let nums = Seq.ints 0
+let doubled = Seq.map (fun x -> x * 2) nums
+let evens = Seq.filter (fun x -> x mod 2 = 0) nums
+let first5 = Seq.take 5 nums      (* 前 5 个 *)
+let from5 = Seq.drop 5 nums       (* 跳过前 5 个 *)
+```
+
+`doubled` 定义好的那一刻，一个乘法都没做。直到消费者出现：
+
+```ocaml
+let sum_first_10 = Seq.fold_left (+) 0 (Seq.take 10 nums)
+```
+
+`fold_left`、`iter`、`for_all`、`find` 这类是**消费者**——驱动序列真正前进；`map`、`filter`、`take` 是**变换者**——只负责组合。区分这两类，是写管道代码的基本功。
+
+再看几个组合积木（摘自示例）：
+
+```ocaml
+(* append : 首尾连接 *)
+let s_appended = Seq.append (Seq.init 3 (fun i -> i)) (Seq.init 3 (fun i -> i + 10))
+
+(* flat_map : 每个元素展开成一个子序列；产出 (1,1) (1,2) (1,3) (2,1) (2,2) (2,3) *)
+let pairs = Seq.flat_map (fun x ->
+  Seq.map (fun y -> (x, y)) (Seq.take 3 (Seq.ints 1))
+) (Seq.take 2 (Seq.ints 1))
+
+(* zip : 两个序列压缩成元组序列，以短的一侧为准 *)
+let zipped = Seq.zip (Seq.ints 1) (List.to_seq [ 'a'; 'b'; 'c'; 'd'; 'e' ])
+```
+
+序列与列表、数组的互转是日常操作（对无限序列只能朝「序列」的方向转，反方向会停不下来）：
+
+```ocaml
+let lst = List.of_seq (Seq.take 5 (Seq.ints 1))    (* [1; 2; 3; 4; 5] *)
+let arr = Array.of_seq (Seq.take 5 (Seq.ints 10))  (* [|10; 11; 12; 13; 14|] *)
+```
+
+### 25.4 无限序列：斐波那契与素数筛
+
+惰性最漂亮的应用是无限序列。斐波那契——注意定义里那个不起眼的 `()`：
+
+```ocaml
+let fibonacci =
+  let rec fib a b () = Seq.Cons (a, fib b (a + b)) in
+  fib 0 1
+```
+
+`fib a b` 返回的是**函数**（下一状态的序列），不是立刻递归展开。`Cons` 的第二个分量本来要的就是 `'a t`（即 `unit -> node`），`fib b (a + b)` 这个部分应用正好是它——递归被推迟到下一次调用。把这个 `()` 写丢（写成 `let rec fib a b = Seq.Cons (...)`）就成了无限递归，栈立刻爆掉。
+
+素数的惰性筛法，结构同款：
+
+```ocaml
+let primes =
+  let rec sieve s () =
+    match s () with
+    | Seq.Nil -> Seq.Nil
+    | Seq.Cons (p, rest) ->
+        Seq.Cons (p, sieve (Seq.filter (fun n -> n mod p <> 0) rest))
+  in
+  sieve (Seq.ints 2)
+```
+
+每取出一个素数 `p`，就把 `rest` 中所有 `p` 的倍数滤掉，剩下的序列递归地继续筛——滤掉「所有 2 的倍数」这件事，永远只对真正被取到的元素发生，这正是惰性的形状。示例文件里的 2 的幂、三角数、阶乘全是同一个模式。
+
+一条纪律必须刻在脑子里：**无限序列只能被「取有限部分」地消费**。`Seq.take`、`Seq.find`、手写的 `match s ()` 都安全；`Seq.length`、`List.of_seq`、不带界的 `fold_left` 会一路走到天荒地老——程序不是错了，是不会停。
+
+### 25.5 Stream 流：单步推进的消费模型
+
+`Stream` 是 OCaml 的另一套流式数据结构，比 `Seq` 老得多，传统上是手写解析器的配套（ocamllex 时代的产物）。它和 `Seq` 的关键区别在消费方式：
+
+- `Seq` 是纯函数式的：消费是调用一个函数，消费完序列还在；
+- `Stream` 是**带游标的可变对象**：`next` 取出下一个元素并把游标推进一步，`peek` 只看不取，`junk` 只丢不取，消费过的地方回不去了。
+
+单步推进 + 预读，恰好是手写解析器的形状。示例文件里兼容层的核心如下：
+
+```ocaml
+module Stream = struct
+  type 'a t = { mutable data : 'a Seq.t }
+
+  let of_seq s = { data = s }
+  let of_list lst = of_seq (List.to_seq lst)
+  let of_string s = of_seq (String.to_seq s)
+
+  (* 原版 empty 在非空时抛 Stream.Failure；示例按 bool 谓词用，这里返回 bool *)
+  let empty t = (t.data () = Seq.Nil)
+
+  exception Failure
+
+  let next t =
+    match t.data () with
+    | Seq.Cons (x, rest) -> t.data <- rest; x
+    | Seq.Nil -> raise Failure
+
+  let peek t =
+    match t.data () with
+    | Seq.Cons (x, _) -> Some x
+    | Seq.Nil -> None
+
+  let junk t =
+    match t.data () with
+    | Seq.Cons (_, rest) -> t.data <- rest
+    | Seq.Nil -> ()
+end
+```
+
+（示例的完整版还有 `from`——按「索引 -> 元素 option」构造流，内部就是一个计数 `ref` 加 `Seq.unfold`——以及 `iter`，共 40 余行。为什么平白多出一个 `module Stream`？见 25.9 坑 1：OCaml 5.x 发行里已没有 Stream 模块，示例为了让传统写法原样跑通，用 Seq 补了一个。）
+
+消费一个流，看游标怎么走：
+
+```ocaml
+let stream1 = Stream.of_list [10; 20; 30; 40; 50];;
+Printf.printf "Stream next: %d\n" (Stream.next stream1);;              (* 10，游标到 20 *)
+Printf.printf "Stream next: %d\n" (Stream.next stream1);;              (* 20，游标到 30 *)
+Printf.printf "Stream peek: %d\n" (Option.get (Stream.peek stream1));; (* 30，游标不动 *)
+Printf.printf "Stream next: %d\n" (Stream.next stream1);;              (* 30 *)
+Printf.printf "Stream empty? %b\n" (Stream.empty stream1)              (* false，还剩 40;50 *)
+```
+
+`peek` + `junk` 的组合在解析里最常见——先偷看下一个字符决定怎么办，再决定吃不吃它。示例里的整数解析器就是这个套路（简化版，完整版还带 `when` 守卫处理前导负号）：
+
+```ocaml
+let parse_int_stream s =
+  let chars = Stream.of_string s in
+  let buf = Buffer.create 16 in
+  let rec parse () =
+    match Stream.peek chars with
+    | Some ('0'..'9' as c) ->
+        Stream.junk chars;
+        Buffer.add_char buf c;
+        parse ()
+    | _ ->
+        if Buffer.length buf = 0 then failwith "parse_int: no digits"
+        else int_of_string (Buffer.contents buf)
+  in
+  parse ()
+```
+
+`"99abc"` 解析出 99 后停在 `'a'` 前面——调用方可以继续消费剩下的流。这正是第 21 章递归下降解析器里字符级的处理方式。Seq 和 Stream 互转，最省事的路是列表中转：
+
+```ocaml
+let prime_stream =
+  primes |> Seq.take 10 |> List.of_seq |> Stream.of_list
+```
+
+### 25.6 Seq 与 List：转换与性能的取舍
+
+同一件事，两种写法。序列版（惰性，无中间结构）：
+
+```ocaml
+let seq_pipeline n =
+  let s = Seq.ints 0 in
+  let s1 = Seq.map (fun x -> x * 2) s in
+  let s2 = Seq.filter (fun x -> x mod 3 = 0) s1 in
+  let s3 = Seq.map (fun x -> x * x) s2 in
+  let s4 = Seq.take 10 s3 in
+  Seq.fold_left (+) 0 s4
+```
+
+列表版（每一步都完整物化一个新列表；示例为兼容旧版手写了 `init` 和 `take`，`List.take` / `List.drop` 自 OCaml 5.2 起已在标准库，5.4.1 实测可用，这里直接用）：
+
+```ocaml
+let list_pipeline_full n =
+  let lst = List.init n (fun i -> i) in
+  let mapped = List.map (fun x -> x * 2) lst in
+  let filtered = List.filter (fun x -> x mod 3 = 0) mapped in
+  let doubled = List.map (fun x -> x * x) filtered in
+  List.fold_left (+) 0 (List.take 10 doubled)
+```
+
+两版结果相同，但内存画像完全不同：列表版构造了长度约为 n、n、n/3、n/3 的四个列表（示例里 n = 1_000_000），序列版从头到尾只有常数个节点在飞行。示例的计时输出差距悬殊——这并不奇怪：序列版只算到产出 10 个元素为止，列表版老老实实处理了全部一百万个。
+
+内存与遍历特征，一表带走：
+
+- List：所有元素同时驻留内存；Seq：遍历时一次只算一个，还装得下无限数据
+- `List.length` 是 O(1)；`Seq.length` 是 O(n)（还得能终止）
+- List 遍历多少次结果都一样；Seq 每次遍历**重新计算**
+
+最后一条值得亲眼看看。示例用带副作用的序列做了实验：
+
+```ocaml
+let side_effect_counter = ref 0 in
+let seq_with_side_effect =
+  Seq.init 5 (fun i -> incr side_effect_counter; i * 10) in
+
+side_effect_counter := 0;
+let _ = Seq.find (fun _ -> true) (Seq.drop 2 seq_with_side_effect) in
+Printf.printf "After Seq.nth 2: counter = %d\n" !side_effect_counter;
+
+side_effect_counter := 0;
+let _ = Seq.find (fun _ -> true) (Seq.drop 2 seq_with_side_effect) in
+Printf.printf "After second Seq.nth 2: counter = %d (recomputed!)\n" !side_effect_counter
+```
+
+第一次取下标 2，只计算了 3 个元素（换成 `List.of_seq` 则 5 个全算完）——这就是惰性省下的钱。但第二次取同样的下标，前 3 个元素**被重新计算了**。惰性不等于记忆化（memoization）：`Seq` 只推迟计算，不缓存结果。
+
+### 25.7 一次性（ephemeral）语义
+
+「每次遍历都重算」意味着序列有两种截然不同的处境。
+
+**纯函数式的序列**（`Seq.ints`、`Seq.map` 组合出来的）安全可重放：重算浪费一点 CPU，结果不变——上面的实验就是这种。
+
+**建立在水性（ephemeral）来源上的序列是一次性的**。典型如文件逐行读出的序列：每读一行，文件指针前进一行；再遍历一次，得到空序列。25.5 的 `Stream` 兼容层也是——`next` 把游标推进去之后，数据就消费掉了，`t.data` 已指向尾部。
+
+由此得到三条工程守则：拿不准来源是否可重放，就当它是一次性的；需要遍历多次（排序、分组、多次查询），先 `List.of_seq` / `Array.of_seq` 物化一次；序列从函数参数传进来时，文档里写清楚「消费后失效」，或者干脆在 API 里收 list、出 seq。
+
+一次性不是缺陷，而是流式处理的本意：数据流过去就流过去了，谁也不欠谁一份拷贝。
+
+### 25.8 管道式数据处理实战
+
+序列与 `|>` 运算符是天作之合：数据从左边流进来，经过一串变换者，最后落进一个消费者。示例后段的管道，一条比一条像真实代码。
+
+**管道 1：数字加工**——map、filter、take、fold 一气呵成：
+
+```ocaml
+let result1 =
+  Seq.ints 1
+  |> Seq.map (fun x -> x * x)           (* 平方 *)
+  |> Seq.filter (fun x -> x mod 2 = 0)  (* 只保留偶数 *)
+  |> Seq.take 10                        (* 取前 10 个 *)
+  |> Seq.fold_left (+) 0                (* 求和 *)
+```
+
+它算出「前 10 个偶平方数之和」而不必知道第 10 个偶平方数是第几个自然数——无限源头，有限出口。
+
+**管道 2：素数管道**——filter 的谓词本身又是一台序列机器（试除到平方根）：
+
+```ocaml
+let prime_pipeline n =
+  Seq.ints 2
+  |> Seq.filter (fun p ->
+    Seq.ints 2
+    |> Seq.take_while (fun d -> d * d <= p)
+    |> Seq.for_all (fun d -> p mod d <> 0))
+  |> Seq.take n
+  |> List.of_seq
+```
+
+`take_while (fun d -> d * d <= p)` 保证每个 `p` 只试除到根号为止——惰性在这里同时承担了正确性与效率。
+
+**管道 3：数据统计**——filter 后 fold 出四元组统计量（示例文件里 `data` 是 8 条学生记录，这里取前 4 条示意）：
+
+```ocaml
+type record = { name : string; age : int; score : float }
+
+let data = [
+  { name = "Alice"; age = 20; score = 95.5 };
+  { name = "Bob"; age = 21; score = 87.3 };
+  { name = "Charlie"; age = 19; score = 92.0 };
+]
+
+let stats =
+  List.to_seq data
+  |> Seq.filter (fun r -> r.score >= 80.0)
+  |> Seq.map (fun r -> r.score)
+  |> Seq.fold_left
+       (fun (count, sum, min_s, max_s) s ->
+         (count + 1, sum +. s, min min_s s, max max_s s))
+       (0, 0.0, max_float, neg_infinity)
+```
+
+**管道 4：分组聚合**——fold 进 `Map`，再从 `Map` 流出来算均值：
+
+```ocaml
+module IntMap = Map.Make(Int)
+
+let group_by_age records =
+  List.to_seq records
+  |> Seq.fold_left (fun map r ->
+    let current = try IntMap.find r.age map with Not_found -> (0, 0.0) in
+    let count, sum = current in
+    IntMap.add r.age (count + 1, sum +. r.score) map
+  ) IntMap.empty
+  |> IntMap.to_seq
+  |> Seq.map (fun (age, (count, sum)) ->
+       (age, count, sum /. float_of_int count))
+  |> List.of_seq
+```
+
+注意 `IntMap.to_seq` 的输出按 key 升序——`Map` 是有序平衡树，分组结果天然带排序，`List.sort` 都省了。这条管道也是「序列作粘合剂」的示范：List 进、Map 中转、Seq 贯穿、List 出，每个容器只用它最擅长的一面。
+
+### 25.9 实测坑（OCaml 5.4.1，MSYS2 UCRT64 发行实测）
+
+**坑 1：`Unbound module Stream`——Stream 模块已不随标准库发行**
+
+在 OCaml 5.4.1（MSYS2 UCRT64 发行）下，任何 `Stream.of_list ...` 都过不了编译：
+
+```text
+Error: Unbound module Stream
+```
+
+原因：`Stream` 在 OCaml 4.14 被标记 deprecated，5.0 起从发行中移出、转入独立的 `camlp-streams` 包。实测确认本工具链的标准库目录里既没有 `stream.cmi` 也没有 `stream.cma`——连 `-I` 手动指路都无从指起。
+
+三条出路：
+
+1. **新代码一律用 `Seq`**（本教程的立场，也是官方建议）；
+2. 旧项目必须保留 Stream/Genlex 的，`opam install camlp-streams`，dune 里加 `(libraries camlp-streams)`；
+3. 教学需要跑通传统 Stream 代码的，像示例文件 `21_streams_seq.ml` 那样，用 Seq 加一个 `mutable` 记录自己实现兼容层（40 余行，见 25.5），`of_list` / `of_string` / `from` / `next` / `peek` / `junk` / `empty` / `iter` 全齐。
+
+**坑 2：`Seq.nth` 和 `Seq.sort` 不存在**
+
+直觉以为该有的两个函数，读本地 `seq.mli`（553 行接口）权威确认：都没有。这不是疏漏，而是设计使然：惰性结构上的「随机取第 n 个」和「全量排序」都注定要线性走到位，标准库不提供一步到位的假象，让你显式地做。
+
+取第 n 个元素，惯用 `Seq.drop` 加一次强制求值：
+
+```ocaml
+(* drop n 本身还是惰性的，Seq.find 强制它走到位 *)
+let nth_opt n s = Seq.find (fun _ -> true) (Seq.drop n s)
+
+let nth n s =
+  match Seq.drop n s () with
+  | Seq.Cons (x, _) -> x
+  | Seq.Nil -> raise Not_found
+```
+
+第二种写法更直接：`Seq.drop n s` 是序列（函数），调用一次得到 `node`，匹配 `Cons` 即得元素，越界抛 `Not_found`，语义对齐 `List.nth`。
+
+排序则老老实实经列表中转：
+
+```ocaml
+let sort cmp s = s |> List.of_seq |> List.sort cmp |> List.to_seq
+```
+
+反正排序必须看到全部元素，物化成列表不冤枉。
+
+**附带两个小坑**：
+
+- `Seq.find` 的返回类型是 `'a option`，与 `List.find`（直接返回元素、找不到抛 `Not_found`）不同，用 `Option.get` 或模式匹配收尾；
+- 对无限序列调用 `Seq.length`、`List.of_seq`、无界的 `Seq.fold_left` 不会报错——只会永远不返回，程序挂死时先想想源头是不是无限的。
+
+### 25.10 本章小结
+
+- `Seq.t` 本质是 `unit -> Nil | Cons (元素, 剩余)` 的函数：不调用不计算，这就是惰性
+- 生成：`Seq.unfold`（状态机，`None` 终止）、`Seq.init`、`Seq.forever`、`Seq.ints`
+- 变换者（`map` / `filter` / `take` / `append` / `flat_map` / `zip`）只组合不计算；消费者（`fold_left` / `iter` / `for_all` / `find`）驱动管道前进
+- 无限序列靠 `take` / `take_while` / `find` 取有限部分；`Seq.length`、`List.of_seq` 是禁手；手写时 `let rec f a b () = Cons (...)` 里的 `()` 是推迟递归的关键，漏掉即爆栈
+- `Stream` 是单步推进的可变游标流：`next` 消费、`peek` 预读、`junk` 丢弃，解析器的传统工具；OCaml 5.x 发行已移除，用 `camlp-streams` 包或直接改用 `Seq`
+- Seq 与 List 的取舍：大数据量、单遍处理、无限源头用 Seq（免中间分配）；小数据、多次访问、需要 O(1) 的 `List.length` 用 List
+- 惰性 ≠ 记忆化：序列每次遍历都重算；水性来源（文件、Stream 游标）上的序列是一次性的，复用前先物化
+- `Seq.nth` / `Seq.sort` 不存在：前者 `Seq.find (fun _ -> true) (Seq.drop n s)` 或直接匹配 node，后者经 `List.of_seq` / `List.sort` 中转
+
+---
+
+---
+
+## 第 26 章 综合实战：成绩 CSV 分析与报告
 
 对应示例：`examples/22_project.ml`
 
-### 24.1 项目需求分析
+### 26.1 项目需求分析
 
 我们来做一个完整的小项目：读取学生成绩 CSV 文件，做统计分析，生成报告写回文件。
 
@@ -6386,7 +7351,7 @@ TDD 在函数式语言中特别自然，因为：
 7. 校验：写回后再读回来，确认数据一致
 8. 清理临时文件
 
-### 24.2 CSV 格式介绍
+### 26.2 CSV 格式介绍
 
 CSV（Comma-Separated Values）是最简单的表格数据格式之一：
 - 每行是一条记录
@@ -6406,7 +7371,7 @@ Charlie,S0003,90.0,,95.0
 
 完整的 CSV 格式还有很多细节（引号转义、换行处理等），但为了保持代码简洁，我们实现一个简化版：假设字段不包含逗号和引号。
 
-### 24.3 数据类型定义
+### 26.3 数据类型定义
 
 首先定义数据类型：
 
@@ -6442,7 +7407,7 @@ let subject_name = function
 
 用变体类型表示科目，而不是用字符串，这样类型系统可以帮我们检查是否漏掉了某些科目。
 
-### 24.4 CSV 生成器
+### 26.4 CSV 生成器
 
 为了测试，我们先写一个 CSV 生成器，生成带缺失值的随机成绩数据。
 
@@ -6478,7 +7443,7 @@ let generate_csv filename n =
   close_out oc
 ```
 
-### 24.5 CSV 解析器
+### 26.5 CSV 解析器
 
 接下来是 CSV 解析器。先实现一个简单的按逗号分割的函数：
 
@@ -6545,7 +7510,7 @@ let parse_csv filename =
 4. 遇到格式不对的行，打印警告并跳过
 5. 读到文件末尾时结束，返回所有学生记录
 
-### 24.6 缺失值处理策略
+### 26.6 缺失值处理策略
 
 真实世界的数据经常有缺失。处理缺失值的常见策略：
 
@@ -6571,7 +7536,7 @@ let valid_scores students subject =
 
 `List.filter_map` 是 `filter` + `map` 的组合——它把列表中返回 `Some x` 的元素的 `x` 收集起来，返回 `None` 的被过滤掉。
 
-### 24.7 逐科统计：平均分、最高分、最低分、标准差
+### 26.7 逐科统计：平均分、最高分、最低分、标准差
 
 现在来计算每科的统计量。
 
@@ -6608,7 +7573,7 @@ let compute_stats students subject =
 
 注意这里用的是**总体标准差**（除以 n），而不是样本标准差（除以 n-1）。因为我们把这批学生当作总体来看待。
 
-### 24.8 Top-N 排名与并列规则
+### 26.8 Top-N 排名与并列规则
 
 接下来计算每科的 Top-N 排名。
 
@@ -6656,7 +7621,7 @@ let top_n students subject n =
 
 比如分数 [100, 95, 95, 90] 的排名是 [1, 2, 2, 4]——两个第 2 名，然后直接跳到第 4 名。
 
-### 24.9 两科成绩相关性：最小二乘线性拟合
+### 26.9 两科成绩相关性：最小二乘线性拟合
 
 两科成绩有没有相关性？比如数学好的人物理也好吗？
 
@@ -6726,7 +7691,7 @@ R²（决定系数）衡量拟合的好坏：
 - R² = 0：拟合还不如直接取平均值
 - R² 越接近 1，说明两科成绩的线性相关性越强
 
-### 24.10 报告生成与写回
+### 26.10 报告生成与写回
 
 现在把所有统计结果整理成报告，写入 CSV 文件。
 
@@ -6768,7 +7733,7 @@ let write_report filename students =
   close_out oc
 ```
 
-### 24.11 结果校验：写回后再读回来对比
+### 26.11 结果校验：写回后再读回来对比
 
 为了确保我们的 CSV 生成和解析是正确的，做一个简单的校验：
 1. 生成一个 CSV 文件
@@ -6793,7 +7758,7 @@ let validate_csv original_scores filename =
 
 在生产环境中，这种「读写一致性检查」是一种简单但有效的测试手段。
 
-### 24.12 临时文件清理
+### 26.12 临时文件清理
 
 测试过程中生成的临时文件，用完后应该清理掉。
 
@@ -6807,7 +7772,7 @@ let cleanup_temp_files filenames =
 
 `Sys.remove` 删除文件。用 `try...with` 包裹，防止删除失败导致程序崩溃——清理失败不是致命错误。
 
-### 24.13 完整主程序
+### 26.13 完整主程序
 
 把所有部分串起来：
 
@@ -6841,7 +7806,7 @@ let () =
   Printf.printf "\nDone!\n"
 ```
 
-### 24.14 运行说明
+### 26.14 运行说明
 
 运行方式：
 
@@ -6856,7 +7821,7 @@ ocaml examples/22_project.ml
 
 你可以用文本编辑器打开 `report.txt` 查看详细的统计结果。
 
-### 24.15 扩展练习
+### 26.15 扩展练习
 
 如果你想进一步练习，可以考虑这些扩展：
 
@@ -6868,7 +7833,7 @@ ocaml examples/22_project.ml
 6. **导出为 JSON**：把统计结果导出为 JSON 格式
 7. **命令行参数**：用 `Sys.argv` 让用户指定输入文件和输出文件
 
-### 24.16 本章小结
+### 26.16 本章小结
 
 - 完整的项目需要：数据类型定义、解析、计算、输出、校验、清理
 - CSV 格式简单但细节多，生产环境建议用成熟的 CSV 库
@@ -6882,9 +7847,407 @@ ocaml examples/22_project.ml
 
 ---
 
-## 第 25 章 坑清单与最佳实践
+## 第 27 章 错误处理：option / result 与绑定运算符
 
-### 25.1 语法层的坑
+对应示例：`examples/23_error_handling.ml`
+
+### 27.1 三种失败通道
+
+OCaml 处理失败有三个层次：异常（不可见、易忘）、`option`
+（失败无细节）、`result`（失败带原因、类型逼你处理）。第 12 章
+讲过异常；本章讲后两者以及把它们写顺的语法——绑定运算符。
+
+```ocaml
+let safe_div a b = if b = 0 then None else Some (a / b)
+
+let parse_int s =
+  match int_of_string_opt s with
+  | Some n -> Ok n
+  | None -> Error (Printf.sprintf "not an int: %S" s)
+```
+
+### 27.2 嵌套 match 的痛苦与组合子
+
+三层可能失败的操作套起来，手写 match 是三层缩进；用
+`Option.bind` / `Option.map`（或 `Result.bind` / `Result.map`）
+可以拉平一层。`Stdlib` 里两者都齐全，还有
+`Result.product`（两个独立计算任一失败即失败）、
+`Result.map_error`（只改错误信息）、
+`Option.to_result ~none:...`（给 None 补上原因）。
+
+### 27.3 绑定运算符的真相：let\* 是算子值，要自己接线
+
+OCaml 4.08 引入了 `let*` / `and*` / `let+` / `and+` 绑定运算符，
+让失败链可以“直着写”：
+
+```ocaml
+let word_len_times2 s =
+  let open Option_syntax in
+  let* parts = safe_head (String.split_on_char ' ' s) in
+  let* n = int_of_string_opt parts in
+  Some (n * 2)
+```
+
+**关键事实（很多人第一反应都错）**：`let*` 不是“脱糖后去查找
+名为 `bind` 的函数”，而是脱糖为一个**字面名为 `( let* )` 的算子值**：
+
+```ocaml
+let* x = e in body    ≡    ( let* ) e (fun x -> body)
+```
+
+`Stdlib.Option` / `Stdlib.Result` 只提供了 `bind` / `map` /
+`product` 函数，**并没有定义这些算子**——所以直接
+`let open Result in let* ...` 会报：
+
+```
+Error: Unbound value ( let* )
+```
+
+想用绑定运算符，必须自己接线（算子名遵循普通作用域规则，
+可以定义在顶层，也可以收进模块再 open）：
+
+```ocaml
+module Result_syntax = struct
+  let ( let* ) = Result.bind
+  let ( and* ) = Result.product
+  let ( let+ ) r f = match r with Ok x -> Ok (f x) | Error e -> Error e
+end
+```
+
+两个实测细节：
+
+1. **`( let+ )` 的参数序是“值在前、函数在后”**，恰好与
+   `Option.map` / `Result.map`（函数在前）相反，不能直接把
+   `map` 赋给 `( let+ )`。
+2. `Stdlib.Option` 连 `product` 都没有，`and*` 也要自己写。
+
+### 27.4 and\* 的语义由实现说了算：fail-fast vs 累积
+
+`and*` 脱糖到 `( and* )`——同一个写法，换个实现就是换种语义：
+
+- `Result.product`：任一失败即失败（fail-fast）；
+- 自制 `Validation` 模块：把两边错误列表 `@` 拼起来，**所有
+  错误一起报**——表单校验最想要的形态。
+
+示例 23 的第 6 节完整实现了 60 行不到的 `Validation`，
+同一个 `validate_user`，错误全量列出：
+
+```
+all bad  : Error [name is empty; age too large (max 150); email missing '@']
+```
+
+### 27.5 选型法则
+
+- 异常：编程错误、真正异常的路径（不出现在类型里）；
+- option：失败没什么可说的（查找、除零、解析）；
+- result：失败要带原因、调用方必须处理。
+
+`try ... with Sys_error msg -> Error msg` 是把异常世界接进
+result 世界的标准桥。
+
+### 27.6 本章小结
+
+- `let*`/`and*`/`let+` 是算子值，Stdlib 不自带，需自己接线；
+- 接线时注意 `( let+ )` 值在前的参数序；
+- `and*` 语义看实现：product 是 fail-fast，自制 Validation 可累积；
+- 负数字面量作实参要加括号：`f "bob" (-1) "x"`。
+
+---
+
+## 第 28 章 GADT：广义代数数据类型
+
+对应示例：`examples/24_gadts.ml`
+
+### 28.1 让构造子决定类型参数
+
+普通变体：所有构造子造出同一个 `t`。GADT：每个构造子
+**声明自己造出什么类型**：
+
+```ocaml
+type _ value_kind =
+  | KInt : int value_kind
+  | KBool : bool value_kind
+  | KString : string value_kind
+```
+
+于是能写出“一个函数、按构造子返回不同类型”的代码——
+这在普通变体上不可能：
+
+```ocaml
+let default (type a) (k : a value_kind) : a =
+  match k with
+  | KInt -> 0
+  | KBool -> false
+  | KString -> ""
+(* default KInt : int，default KBool : bool *)
+```
+
+### 28.2 类型安全的动态值（存在类型）
+
+把值连同类型标签打包，取回时只有标签对得上才拿得到——
+模式匹配的**类型细化**保证了安全：
+
+```ocaml
+type cell = Cell : 'a * 'a value_kind -> cell
+
+let cell_to_int (c : cell) : int option =
+  match c with
+  | Cell (n, KInt) -> Some n      (* 这里 n 自动是 int *)
+  | _ -> None
+```
+
+**实测坑（OCaml 5.4.1）**：存在类型的 GADT 模式匹配必须给
+函数补**显式参数/返回类型标注**（如上面的 `(c : cell) : int option`），
+否则报 `This instance of int is ambiguous: it would escape the
+scope of its equation`。原则：凡是有存在类型参与的 match，
+把边界类型写清楚。
+
+### 28.3 招牌应用：well-typed by construction 的表达式 AST
+
+```ocaml
+type _ expr =
+  | Const : int -> int expr
+  | BoolConst : bool -> bool expr
+  | Add : int expr * int expr -> int expr
+  | Lt : int expr * int expr -> bool expr
+  | If : bool expr * 'a expr * 'a expr -> 'a expr
+
+let rec eval : type a. a expr -> a = function
+  | Const n -> n
+  | BoolConst b -> b
+  | Add (x, y) -> eval x + eval y
+  | Lt (x, y) -> eval x < eval y
+  | If (c, t, e) -> if eval c then eval t else eval e
+```
+
+`Add (BoolConst true, Const 1)` 直接编译错误；`If` 的两个分支
+类型不同也直接编译错误。求值器的类型是 `'a expr -> 'a`：
+“这个 AST 求出来是什么类型”在构造时就定了，求值器不需要
+任何运行期类型检查。
+
+两个语法细节：
+
+- 递归函数要写 `type a.`（显式全量多态标注），否则递归调用
+  无法在不同类型实例上泛化；
+- match 臂里的 GADT 类型标注要加括号：`| (Get : a Effect.t) -> ...`
+  ——不带括号的 `| Get : a Effect.t ->` 在 5.4.1 是**语法错**
+  （第 29 章效应匹配同此）。
+
+### 28.4 类型相等见证
+
+```ocaml
+type (_, _) eq = Eq : ('a, 'a) eq
+let cast : type a b. (a, b) eq -> a -> b = fun Eq x -> x
+```
+
+`Eq` 只能造出 `('a, 'a) eq`——拿到 `(a, b) eq` 就等于拿到
+`a = b` 的证明，`cast` 里匹配 `Eq` 时编译器把 a、b 统一，转换
+自然安全。`(int, string) eq` 的值无法构造，假证明被编译器挡死。
+
+### 28.5 多态递归需要显式标注
+
+```ocaml
+type 'a nest = NNil | NCons of 'a * ('a * 'a) nest
+
+let rec depth : 'a. 'a nest -> int = function
+  | NNil -> 0
+  | NCons (_, t) -> 1 + depth t
+```
+
+每往下一层元素类型都变成 `('a * 'a)`，普通推断会失败；
+`'a. 'a nest -> int`（注意带点的形式）告诉编译器“对所有类型
+实例都成立”。GADT 上的 `eval` 用 `type a.` 同理。
+
+### 28.6 什么时候用 GADT
+
+用：构造子蕴含类型信息（typed AST/DSL）、类型索引族、
+安全转换。代价：类型推断变弱（标注变多）、穷尽性检查变弱、
+学习曲线陡——先穷尽普通变体的可能性。
+
+### 28.7 本章小结
+
+- GADT = 构造子声明返回什么类型参数；
+- 存在类型参与 match 时必须显式标注边界类型，否则 escape 报错；
+- `type a.` / `'a.` 显式标注是多态递归的开关；
+- match 臂的 GADT 标注要括号。
+
+---
+
+## 第 29 章 OCaml 5 并发：Domain 与 Effect
+
+对应示例：`examples/25_domains_effects.ml`
+
+OCaml 5 的两大新基元：**Domain**（真正的并行执行单元）与
+**Effect**（可恢复的效应处理器）。字节码和原生码都支持。
+
+### 29.1 Domain：spawn 与 join
+
+```ocaml
+let d = Domain.spawn (fun () -> 42) in
+Domain.join d    (* 等待并取回结果；异常也会传到 join 处 *)
+```
+
+机器核数用 `Domain.recommended_domain_count ()`
+（**实测坑**：5.4.1 没有 `Domain.cpu_count`）。
+
+### 29.2 共享状态：Atomic 与 Mutex
+
+- 普通 `ref` 跨 domain 并发更新会**丢更新**（读-改-写不原子）；
+- `Atomic`（如 `Atomic.fetch_and_add`）适合单字计数——
+  **只支持 int**；int64 计数要么换 int（OCaml 的 int 是 63 位），
+  要么上锁；
+- `Mutex.lock / unlock` 保护复合操作（先读后写、多字段一致）。
+
+示例 25 用“分块 + Atomic 累加”做并行数组求和，与串行结果
+逐位一致，可作模板。
+
+### 29.3 Effect：声明、perform、处理
+
+效应是“可恢复的异常”——往内置可扩展变体 `Effect.t` 里加构造子：
+
+```ocaml
+type _ Effect.t += Xchg : int -> int Effect.t
+
+let comp1 () = Effect.perform (Xchg 0) + Effect.perform (Xchg 1)
+```
+
+OCaml 5.3+ 给深处理器（deep handler）提供了直接语法糖
+（`effect` 是关键字，`k` 是被挂起的计算——delimited continuation）：
+
+```ocaml
+let demo () =
+  let open Effect.Deep in
+  try comp1 () with
+  | effect (Xchg n), k -> continue k (n + 1)   (* = 3 *)
+```
+
+同一个 `comp1`，换处理器就是换语义（`continue k (-n)` 即取相反数）。
+未被处理的效应在 perform 处以 `Effect.Unhandled` 异常爆出。
+状态效应 Get/Set、以及官方手册的“控制反转”（把 `iter` 推模式
+生产者变成 `Seq` 拉模式序列的 `invert`）都是几行处理器的功夫，
+见示例第 6、7 节。
+
+**实测坑（5.4.1）两连**：
+
+1. 用记录式 `Effect.Deep.match_with` 时，`effc` 必须补显式返回
+   类型标注（`((a, 'b) continuation -> 'b) option`），否则效应
+   构造子的类型细化报 escape/ambiguous 错——`try ... with effect`
+   语法糖则完全免标注，优先用糖；
+2. 无参效应（如 `Get : int Effect.t`）的处理器里，被操作的值
+   （如状态 `cell`）要显式标注（`let cell : int ref = ...`），
+   否则同样 escape 报错。续延变量 `k` 在 effect 模式里**不允许
+   标注**（"Invalid continuation pattern: only variables and _
+   are allowed"）。
+
+### 29.4 一次性续延纪律
+
+OCaml 的续延是**一次性的**（linear）：每个捕获的 `k` 必须恰好
+被 `continue` / `discontinue` 一次。恢复第二次当场抛
+`Effect.Continuation_already_resumed`（示例第 8 节有受控复现）；
+一次也不恢复则泄漏 fiber 内存与其持有的资源。
+
+推论：**多解回溯不能靠“把 k 恢复两次”实现**——要么重跑计算
+枚举答案，要么用建在这些基元上的搜索库。这也是 OCaml 选择
+一次性续延的原因：便宜（无需拷栈帧）、不破坏套接字/文件描述符
+等线性资源的纪律。
+
+### 29.5 生态坐标
+
+`Domain` + `Effect` 是基元层；实际写异步 IO 用 Eio（5.x 官方
+推荐的 direct-style 并发库）或 Lwt/Async（monadic 风格）。
+效应手册章节仍标注 experimental，API 可能微调。
+
+### 29.6 本章小结
+
+- Domain 是并行，Atomic/Mutex 护共享，fetch_and_add 只吃 int；
+- 效应 = 可恢复异常；深处理器有 try-with-effect 语法糖；
+- 记录式 match_with 要给 effc 补返回类型标注；
+- 续延一次性：恰好 continue/discontinue 一次。
+
+---
+
+## 第 30 章 ocamllex：词法分析器生成器
+
+对应示例：`examples/26_ocamllex/`（`ocamllex_expr.mll` + `main.ml`）
+
+### 30.1 从手写到生成
+
+第 21 章手写了词法器：一个字符一个字符地啃、一个状态一个
+状态地维护。`ocamllex` 把正则部分自动化：你写“正则 → 动作”
+的规则表，它生成一个快得多的表驱动词法器（本例 22 状态、
+473 转移）。
+
+### 30.2 .mll 文件的结构
+
+```ocaml
+{ (* header：原样拷进生成的 .ml *) }
+let digit = ['0'-'9']        (* 命名正则片段 *)
+rule token = parse
+  | [' ' '\t' '\r']+      { token lexbuf }            (* 跳过 *)
+  | '\n'                  { Lexing.new_line lexbuf; token lexbuf }
+  | digit+ '.' digit* (('e'|'E') ('+'|'-')? digit+)? as lx
+                          { FLOAT (float_of_string lx) }
+  | digit+ as lx          { INT (int_of_string lx) }
+  | ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_']* as lx
+                          { match lx with
+                            | "let" -> LET | _ -> ID lx }
+  | '+' { PLUS }
+  | eof { EOF }
+  | _ as c { error lexbuf (Printf.sprintf "unexpected %C" c) }
+```
+
+要点：
+
+- `lexbuf` 是隐式参数，动作里调 `token lexbuf` 驱动下一轮；
+- **最长匹配胜出**（maximal munch），同长才看声明顺序——
+  所以 `3.14` 不会被整数规则截断；
+- 换行动作里调 `Lexing.new_line`，`lex_curr_p.pos_lnum` 行号才准；
+- `Lexing.from_string` / `from_channel` 造 lexbuf。
+
+### 30.3 构建链与模块名陷阱
+
+```bash
+ocamllex ocamllex_expr.mll        # 生成 ocamllex_expr.ml
+ocamlc -w -24 ocamllex_expr.ml main.ml -o 26_ocamllex.exe
+```
+
+**实测坑**：生成的模块名取自 `.mll` 文件名。本教程示例统一
+`NN_名称.ml` 命名，而 `26_ocamllex.mll` 会生成非法模块名
+（数字开头，引用它直接语法错）——所以 ocamllex 示例放在
+`examples/26_ocamllex/` 子目录，用合法名 `ocamllex_expr.mll`，
+`build.ps1` 内置了这条两段式构建链。
+
+### 30.4 站在生成的词法器上写解析器
+
+生成的 `token` 函数配上“一格 lookahead”（缓存 peek），
+第 21 章的递归下降文法原样可用。示例 26 实现了带
+`let` 绑定、`if-then-else`、四则/取余/幂（右结合）、
+一元负号的表达式求值器，词法错误带行列定位：
+
+```
+lex error: line 2, col 5: unexpected character '$'
+```
+
+### 30.5 何时用 ocamllex
+
+规则多、要行号定位、要性能时值得；几十行的玩具语言手写
+词法器（第 21 章式）更直观。解析器生成器方面，社区标准是
+menhir（`ocamlyacc` 的现代后继），本教程不展开。
+
+### 30.6 本章小结
+
+- .mll = header + 规则表；最长匹配；`Lexing.new_line` 记行号；
+- 模块名来自文件名，避开数字开头；
+- ocamllex 之后接手写递归下降是最实用的组合。
+
+---
+
+## 第 31 章 坑清单与最佳实践
+
+本章按层次收集本教程全程（包括 2026 年 Windows 全量复验）
+踩过的坑。前面各章的“实测坑”在这里汇总成速查表。
+
+### 31.1 语法层的坑
 
 **坑 1：int 和 float 运算符不同**
 
@@ -6957,7 +8320,7 @@ f x y        (* 这才是两个参数 *)
 
 OCaml 的函数调用语法就是空格分隔参数，没有括号也没有逗号。
 
-### 25.2 类型系统的坑
+### 31.2 类型系统的坑
 
 **坑 6：值限制（Value Restriction）**
 
@@ -7032,7 +8395,7 @@ let x = Color.Red
 let y = TrafficLight.Red
 ```
 
-### 25.3 模块系统的坑
+### 31.3 模块系统的坑
 
 **坑 10：透明约束会暴露内部类型**
 
@@ -7101,7 +8464,7 @@ module S2 = Set.Make(struct type t = string let compare = compare end)
 - 模块之间是「使用」关系时，用普通的模块调用（`M.f x`）
 - 不要为了少写几个前缀就 `include` 一个大模块
 
-### 25.4 可变状态的坑
+### 31.4 可变状态的坑
 
 **坑 13：= 和 == 的区别**
 
@@ -7142,7 +8505,7 @@ r1 == r2    (* true 还是 false？ *)
 
 使用第三方库的哈希表时，一定要看清楚它的相等语义。
 
-### 25.5 I/O 的坑
+### 31.5 I/O 的坑
 
 **坑 16：input_line 保留换行符吗？**
 
@@ -7180,7 +8543,86 @@ print_endline "done"
 
 解决方法：用 `Fun.protect ~finally` 或 `with_file` 模式（见第 22 章），确保无论正常返回还是抛出异常，文件都会被关闭。
 
-### 25.6 最佳实践
+### 31.6 顶层结构与短语终结的坑（本教程实测重灾区）
+
+本教程 12–22 号示例初版全部编译失败，病根就是这一节的内容——
+这些坑**与平台无关**，macOS 上同样编译不过：
+
+- **顶层不允许 `let ... in`**。`let x = e in ...` 是表达式，
+  只能出现在函数体/`let () = ...` 块内部。顶层的语句链要包一层
+  `let () = ...`。
+- **定义后面紧跟“裸调用”必须补 `;;`**。反例：
+
+  ```ocaml
+  let section n title =
+    Printf.printf "\n---- %d) %s ----\n" n title;
+    print_endline (String.make 50 '-')     (* <- 少了 ;; *)
+  (* 注释 *)
+  section 1 "..."                          (* 被吞进应用链！ *)
+  ```
+
+  症状极具迷惑性：报错不在病灶处，而是 `The function
+  print_endline has type string -> unit`（应用了过多参数）、
+  `CamlinternalFormatBasics.End_of_format`（printf 吞了后面的
+  原子）或某个孤儿的 `;;` 语法错。看到这三类错，优先往回找
+  缺 `;;` 的定义。
+- **定义后跟定义（`let`/`type`/`module`/`exception`）不需要 `;;`**：
+  解析器能自行分辨。反过来，`;` 结尾的裸语句后面也不能直接跟
+  新定义（要么 `;;`，要么并入同一个 `let () =` 块）。
+- **跨块引用**：`let a = ... in ...;;` 里的 `a` 不进入后续短语
+  的作用域。裸语句要用前面的变量，就合并进同一个 `let () =`。
+- **用异常跳出多重循环**：`try` 必须包住整个 `while`，写在循环
+  **后面**的 `(try () with Exit -> ())` 永远接不住（本教程
+  优快排里真实修过的一个潜在运行时崩溃）。
+
+### 31.7 绑定运算符、GADT 与 Effect 的坑（5.4.1 实测）
+
+- `let*` / `and*` / `let+` 是**算子值**，Stdlib 没有自带，
+  `let open Result in let* ...` 直接 `Unbound value ( let* )`——
+  要自己接线（第 27 章）。
+- `( let+ )` 参数序是值在前；`Option.map` / `Result.map` 是函数
+  在前，不能直接赋给它。
+- 负数字面量作实参加括号：`validate_user "bob" (-1) "x"`，
+  否则 `-1` 按二元减号解析成部分应用。
+- match 臂里的 GADT 类型标注**必须带括号**：
+  `| (Get : a Effect.t) -> ...`；不带括号是语法错。
+- 存在类型（GADT 打包值、效应构造子）参与的 match，函数边界
+  要显式标注类型，否则 `int is ambiguous: it would escape the
+  scope of its equation`。
+- 记录式 `Effect.Deep.match_with` 的 `effc` 要补返回类型标注
+  （`((a, 'b) continuation -> 'b) option`）；effect 模式里的续延
+  变量 `k` 不允许标注。
+- 一次性续延：同一个 `k` 恢复两次抛
+  `Effect.Continuation_already_resumed`；多解回溯不能靠 resume
+  两次。
+- 首类模块的 package type 不支持参数化类型方程：
+  `(module S : SET with type 'a t = 'a S.t)` 非法；把元素类型拆成
+  独立的 `elt` 再 `with type elt = ...`（第 14 章示例 12 的修法）。
+- class 方法里用开放对象类型 `< ...; .. >` 报 unbound type
+  variables：值绑定会自动泛化而 class 不会，要写显式多态方法
+  `method m : 'a. (< ...; .. > as 'a) -> ...`（第 24 章）。
+- `Domain.cpu_count` 不存在（用 `recommended_domain_count`）；
+  `Atomic.fetch_and_add` 只支持 int。
+- `Stream` 模块不在 5.4 标准库发行里；`Seq.nth` / `Seq.sort` /
+  `print_bool` 不存在（速查见第 2.8 节）。
+
+### 31.8 Windows 平台的坑（MSYS2 UCRT64 实测）
+
+详见第 2.8 节，速查：
+
+- 从原生 shell 调用编译器要设 `OCAMLLIB`（否则
+  `Unbound module Stdlib`）；
+- `ocamlopt` 需要单独安装 `flexdll` 包（`flexlink` 不在 ocaml
+  包的依赖里）；
+- `ocamlc -o x` 生成**无后缀 PE**，PowerShell `&` 不肯执行——
+  显式 `.exe`；字节码运行还要 PATH 上有 `ocamlrun`、链接了
+  unix 的还要 `OCAMLLIB` 找 stublibs 的 DLL；
+- `Unix` 模块要手工 `-I ... unix.cma` 链接（macOS 同样）；
+- 数字开头文件名触发 Warning 24；多文件项目的模块名必须合法；
+- 临时目录：`Filename.get_temp_dir_name ()` 取的是 `TMP` 而
+  不是 `TEMP`（两者可能不同，检查残留时两个都要看）。
+
+### 31.9 最佳实践
 
 **实践 1：优先使用不可变数据**
 
@@ -7244,7 +8686,7 @@ let find key map =
 
 **一个好的类型设计胜过 100 个单元测试。** 类型系统在编译时为你保证所有可能的值都是合法的，而测试只能覆盖有限的情况。
 
-### 25.7 本章小结
+### 31.10 本章小结
 
 语法层的坑：
 - 整数和浮点数运算符不同，不能混用
@@ -7273,9 +8715,26 @@ I/O 的坑：
 - 输出是缓冲的，必要时手动 flush
 - 用 `Fun.protect` 防止文件描述符泄漏
 
+顶层结构的坑：
+- 顶层不允许 `let ... in`，语句链包 `let () =`
+- 定义后跟裸调用必须补 `;;`；三类怪错先怀疑它
+- 用异常跳多重循环，try 要包住整个循环
+
+绑定运算符/GADT/Effect 的坑：
+- `let*` 是算子值，要自己接线；`( let+ )` 值在前
+- GADT 标注带括号；存在类型参与时边界要标全
+- effect 模式的 k 不可标注；续延一次性
+- 5.4 无 `Domain.cpu_count` / `print_bool` / `Stream` 模块
+
+Windows 的坑（MSYS2）：
+- 原生 shell 要设 `OCAMLLIB`
+- 原生编译要装 flexdll
+- 产物加 `.exe` 后缀；字节码运行依赖 ocamlrun 在 PATH
+
 最佳实践：
 - 优先使用不可变数据
 - 用模式匹配代替 if
 - 用 option/result 代替异常
 - 用抽象类型保护不变量
 - 让类型系统帮你写对代码
+- 失败链用绑定运算符直着写，语义随 `( and* )` 实现选

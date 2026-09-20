@@ -19,7 +19,7 @@
 (* 辅助输出函数：打印分隔线和标题 *)
 let section n title =
   Printf.printf "\n---- %d) %s ----\n" n title;
-  print_endline (String.make 50 '-')
+  print_endline (String.make 50 '-');;
 
 (* ========================================================================
    1) 定义 token 类型
@@ -56,7 +56,7 @@ let string_of_token = function
 
 let print_tokens tokens =
   Printf.printf "  Tokens: [%s]\n"
-    (String.concat ", " (List.map string_of_token tokens))
+    (String.concat ", " (List.map string_of_token tokens));;
 
 print_endline "Token type defined: NUM, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, EOF";;
 print_endline "Tokens represent the atomic units of a language.";;
@@ -134,7 +134,7 @@ let test_lex input =
     let tokens = lex input in
     print_tokens tokens
   with Failure msg ->
-    Printf.printf "  Error: %s\n" msg
+    Printf.printf "  Error: %s\n" msg;;
 
 test_lex "3 + 4";;
 test_lex "12.5 * (3 - 7) / 2";;
@@ -236,7 +236,7 @@ let test_eval input =
     let result = evaluate input in
     Printf.printf "  %s = %.4f\n" input result
   with Failure msg ->
-    Printf.printf "  %s -> Error: %s\n" input msg
+    Printf.printf "  %s -> Error: %s\n" input msg;;
 
 test_eval "3 + 4";;
 test_eval "10 - 3";;
@@ -333,7 +333,7 @@ let safe_evaluate input =
     Printf.printf "  %s = %.4f\n" input value
   with
   | Parse_error (msg, pos) -> report_error input msg pos
-  | Failure msg -> Printf.printf "  Error: %s\n" msg
+  | Failure msg -> Printf.printf "  Error: %s\n" msg;;
 
 print_endline "Testing error handling:";
 safe_evaluate "3 + 4";;
@@ -411,23 +411,24 @@ Quick brown fox, lazy dog.
 Over and over, the fox jumps.
 ";;
 
-print_endline "Word frequency analysis:";
-let freq = word_frequency sample_text in
-print_frequencies freq;;
+let () =
+  print_endline "Word frequency analysis:";
+  let freq = word_frequency sample_text in
+  print_frequencies freq;
 
-(* 更多统计 *)
-let total_words = Hashtbl.fold (fun _ c acc -> acc + c) freq 0 in
-let unique_words = Hashtbl.length freq in
-Printf.printf "\n  Total words: %d\n" total_words;
-Printf.printf "  Unique words: %d\n" unique_words;
+  (* 更多统计 *)
+  let total_words = Hashtbl.fold (fun _ c acc -> acc + c) freq 0 in
+  let unique_words = Hashtbl.length freq in
+  Printf.printf "\n  Total words: %d\n" total_words;
+  Printf.printf "  Unique words: %d\n" unique_words;
 
-(* 查找最常见的单词 *)
-let most_common freq =
-  Hashtbl.fold (fun w c (mw, mc) ->
-    if c > mc then (w, c) else (mw, mc)
-  ) freq ("", 0) in
-let top_word, top_count = most_common freq in
-Printf.printf "  Most common: \"%s\" (%d times)\n" top_word top_count;;
+  (* 查找最常见的单词 *)
+  let most_common freq =
+    Hashtbl.fold (fun w c (mw, mc) ->
+      if c > mc then (w, c) else (mw, mc)
+    ) freq ("", 0) in
+  let top_word, top_count = most_common freq in
+  Printf.printf "  Most common: \"%s\" (%d times)\n" top_word top_count;;
 
 (* ========================================================================
    6) 回文检测
@@ -483,7 +484,7 @@ let is_palindrome s =
 (* 测试回文检测 *)
 let test_palindrome s =
   let result = is_palindrome s in
-  Printf.printf "  \"%s\" -> %b\n" s result
+  Printf.printf "  \"%s\" -> %b\n" s result;;
 
 print_endline "Palindrome tests:";
 test_palindrome "level";;
@@ -528,12 +529,12 @@ let longest_palindromic_substring s =
         end
       end
     done;
-    String.sub clean !best_start (!best_end - !best_start + 1)
+    String.sub clean !best_start (!best_end - !best_start + 1);;
 
-print_endline "\nLongest palindromic substring:";
+print_endline "\nLongest palindromic substring:";;
 let test_lps s =
   let lps = longest_palindromic_substring s in
-  Printf.printf "  \"%s\" -> \"%s\" (length %d)\n" s lps (String.length lps)
+  Printf.printf "  \"%s\" -> \"%s\" (length %d)\n" s lps (String.length lps);;
 
 test_lps "babad";;
 test_lps "cbbd";;

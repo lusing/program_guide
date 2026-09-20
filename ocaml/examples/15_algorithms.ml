@@ -20,12 +20,12 @@
 (* 辅助输出函数：打印分隔线和标题 *)
 let section n title =
   Printf.printf "\n---- %d) %s ----\n" n title;
-  print_endline (String.make 50 '-')
+  print_endline (String.make 50 '-');;
 
 (* 辅助函数：打印 int list *)
 let print_list label lst =
   Printf.printf "%s: [%s]\n" label
-    (String.concat "; " (List.map string_of_int lst))
+    (String.concat "; " (List.map string_of_int lst));;
 
 (* ========================================================================
    1) 插入排序
@@ -78,10 +78,11 @@ let insertion_sort_array arr =
   done;
   arr;;
 
-let arr1 = [| 5; 2; 8; 1; 9; 3 |] in
-let sorted_arr = insertion_sort_array arr1 in
-Printf.printf "Array insertion sort: [|%s|]\n"
-  (String.concat "; " (List.map string_of_int (Array.to_list sorted_arr)));;
+let () =
+  let arr1 = [| 5; 2; 8; 1; 9; 3 |] in
+  let sorted_arr = insertion_sort_array arr1 in
+  Printf.printf "Array insertion sort: [|%s|]\n"
+    (String.concat "; " (List.map string_of_int (Array.to_list sorted_arr)));;
 
 (* ========================================================================
    2) 归并排序
@@ -167,10 +168,11 @@ let merge_sort_array arr =
   sort 0 (n - 1);
   arr;;
 
-let arr2 = [| 38; 27; 43; 3; 9; 82; 10 |] in
-let sorted_arr2 = merge_sort_array arr2 in
-Printf.printf "Array merge sort: [|%s|]\n"
-  (String.concat "; " (List.map string_of_int (Array.to_list sorted_arr2)));;
+let () =
+  let arr2 = [| 38; 27; 43; 3; 9; 82; 10 |] in
+  let sorted_arr2 = merge_sort_array arr2 in
+  Printf.printf "Array merge sort: [|%s|]\n"
+    (String.concat "; " (List.map string_of_int (Array.to_list sorted_arr2)));;
 
 (* ========================================================================
    3) 快速排序
@@ -227,10 +229,11 @@ let quick_sort_array arr =
   sort 0 (n - 1);
   arr;;
 
-let arr3 = [| 10; 7; 8; 9; 1; 5; 3; 6; 2; 4 |] in
-let sorted_arr3 = quick_sort_array arr3 in
-Printf.printf "Array quick sort: [|%s|]\n"
-  (String.concat "; " (List.map string_of_int (Array.to_list sorted_arr3)));;
+let () =
+  let arr3 = [| 10; 7; 8; 9; 1; 5; 3; 6; 2; 4 |] in
+  let sorted_arr3 = quick_sort_array arr3 in
+  Printf.printf "Array quick sort: [|%s|]\n"
+    (String.concat "; " (List.map string_of_int (Array.to_list sorted_arr3)));;
 
 (* 三数取中优化：选左中右的中位数作为 pivot，减少最坏情况概率 *)
 let quick_sort_optimized arr =
@@ -253,14 +256,17 @@ let quick_sort_optimized arr =
       let pivot = median_of_three left mid right in
       let i = ref left in
       let j = ref (right - 1) in
-      while true do
-        incr i;
-        while arr.(!i) < pivot do incr i done;
-        decr j;
-        while arr.(!j) > pivot do decr j done;
-        if !i < !j then swap !i !j else raise Exit
-      done;
-      (try () with Exit -> ());
+      (* 用异常跳出多重内层循环：try 必须包住整个 while，
+         写在循环后面是接不住的（那是一个永远不执行的表达式） *)
+      (try
+        while true do
+          incr i;
+          while arr.(!i) < pivot do incr i done;
+          decr j;
+          while arr.(!j) > pivot do decr j done;
+          if !i < !j then swap !i !j else raise Exit
+        done
+      with Exit -> ());
       swap !i (right - 1);
       sort left (!i - 1);
       sort (!i + 1) right
@@ -270,10 +276,11 @@ let quick_sort_optimized arr =
   if n > 0 then sort 0 (n - 1);
   arr;;
 
-let arr4 = [| 10; 7; 8; 9; 1; 5; 3; 6; 2; 4; 15; 12; 11; 14; 13 |] in
-let sorted_arr4 = quick_sort_optimized arr4 in
-Printf.printf "Optimized quick sort: [|%s|]\n"
-  (String.concat "; " (List.map string_of_int (Array.to_list sorted_arr4)));;
+let () =
+  let arr4 = [| 10; 7; 8; 9; 1; 5; 3; 6; 2; 4; 15; 12; 11; 14; 13 |] in
+  let sorted_arr4 = quick_sort_optimized arr4 in
+  Printf.printf "Optimized quick sort: [|%s|]\n"
+    (String.concat "; " (List.map string_of_int (Array.to_list sorted_arr4)));;
 
 (* ========================================================================
    4) 二分查找
@@ -315,20 +322,21 @@ let binary_search_iter arr target =
   !found
 
 (* 测试 *)
-let sorted_arr5 = [| 1; 3; 5; 7; 9; 11; 13; 15; 17; 19; 21 |] in
-Printf.printf "Sorted array: [|%s|]\n"
-  (String.concat "; " (List.map string_of_int (Array.to_list sorted_arr5)));
-let test_binary target =
-  match binary_search_iter sorted_arr5 target with
-  | Some idx -> Printf.printf "  Found %d at index %d\n" target idx
-  | None -> Printf.printf "  %d not found\n" target
-in
-test_binary 7;
-test_binary 21;
-test_binary 1;
-test_binary 10;
-test_binary 0;
-test_binary 25;;
+let () =
+  let sorted_arr5 = [| 1; 3; 5; 7; 9; 11; 13; 15; 17; 19; 21 |] in
+  Printf.printf "Sorted array: [|%s|]\n"
+    (String.concat "; " (List.map string_of_int (Array.to_list sorted_arr5)));
+  let test_binary target =
+    match binary_search_iter sorted_arr5 target with
+    | Some idx -> Printf.printf "  Found %d at index %d\n" target idx
+    | None -> Printf.printf "  %d not found\n" target
+  in
+  test_binary 7;
+  test_binary 21;
+  test_binary 1;
+  test_binary 10;
+  test_binary 0;
+  test_binary 25;;
 
 (* 二分查找的变体：查找第一个出现的位置 *)
 let binary_search_first arr target =
@@ -347,15 +355,16 @@ let binary_search_first arr target =
   done;
   !result
 
-let arr_with_dups = [| 1; 2; 2; 2; 3; 4; 4; 5; 6; 6; 6; 7 |] in
-Printf.printf "Array with duplicates: [|%s|]\n"
-  (String.concat "; " (List.map string_of_int (Array.to_list arr_with_dups)));
-(match binary_search_first arr_with_dups 2 with
- | Some idx -> Printf.printf "  First occurrence of 2 at index %d\n" idx
- | None -> ());
-(match binary_search_first arr_with_dups 6 with
- | Some idx -> Printf.printf "  First occurrence of 6 at index %d\n" idx
- | None -> ());;
+let () =
+  let arr_with_dups = [| 1; 2; 2; 2; 3; 4; 4; 5; 6; 6; 6; 7 |] in
+  Printf.printf "Array with duplicates: [|%s|]\n"
+    (String.concat "; " (List.map string_of_int (Array.to_list arr_with_dups)));
+  (match binary_search_first arr_with_dups 2 with
+   | Some idx -> Printf.printf "  First occurrence of 2 at index %d\n" idx
+   | None -> ());
+  (match binary_search_first arr_with_dups 6 with
+   | Some idx -> Printf.printf "  First occurrence of 6 at index %d\n" idx
+   | None -> ());;
 
 (* ========================================================================
    5) 埃拉托斯特尼筛法
@@ -396,12 +405,14 @@ let sieve n =
     Array.of_list !primes
   end
 
-let primes_100 = sieve 100 in
-Printf.printf "Primes up to 100 (%d primes):\n" (Array.length primes_100);
-print_endline ("  [" ^ String.concat ", " (List.map string_of_int (Array.to_list primes_100)) ^ "]");;
+let () =
+  let primes_100 = sieve 100 in
+  Printf.printf "Primes up to 100 (%d primes):\n" (Array.length primes_100);
+  print_endline ("  [" ^ String.concat ", " (List.map string_of_int (Array.to_list primes_100)) ^ "]");;
 
-let primes_1000 = sieve 1000 in
-Printf.printf "Primes up to 1000: %d primes\n" (Array.length primes_1000);;
+let () =
+  let primes_1000 = sieve 1000 in
+  Printf.printf "Primes up to 1000: %d primes\n" (Array.length primes_1000);;
 
 (* 利用筛法判断素数 *)
 let is_prime_sieve n =
@@ -471,11 +482,12 @@ test_gcd (-24) 36;;
 let gcd_list = List.fold_left gcd 0
 let lcm_list = List.fold_left lcm 1
 
-let nums = [12; 18; 24; 30] in
-Printf.printf "gcd of [%s] = %d\n"
-  (String.concat "; " (List.map string_of_int nums)) (gcd_list nums);
-Printf.printf "lcm of [%s] = %d\n"
-  (String.concat "; " (List.map string_of_int nums)) (lcm_list nums);;
+let () =
+  let nums = [12; 18; 24; 30] in
+  Printf.printf "gcd of [%s] = %d\n"
+    (String.concat "; " (List.map string_of_int nums)) (gcd_list nums);
+  Printf.printf "lcm of [%s] = %d\n"
+    (String.concat "; " (List.map string_of_int nums)) (lcm_list nums);;
 
 (* ========================================================================
    7) 记忆化斐波那契
@@ -573,20 +585,20 @@ test_fib 40;
 test_fib 50;;
 
 (* 展示记忆化的速度优势：计算多个 fib 值时缓存复用 *)
-print_endline "\nMemoization benefit (cached values reused):";
-let start = Unix.gettimeofday () in
-for i = 0 to 30 do
-  ignore (memo_fib i)
-done;
-let elapsed = Unix.gettimeofday () -. start in
-Printf.printf "  Compute fib(0..30) with memo: %.6f seconds\n" elapsed;
-
-let start2 = Unix.gettimeofday () in
-for i = 0 to 30 do
-  ignore (memo_fib i)  (* 第二次调用直接从缓存取 *)
-done;
-let elapsed2 = Unix.gettimeofday () -. start2 in
-Printf.printf "  Second call (all cached):     %.6f seconds\n" elapsed2;;
+print_endline "\nMemoization benefit (cached values reused):";;
+let () =
+  let start = Unix.gettimeofday () in
+  for i = 0 to 30 do
+    ignore (memo_fib i)
+  done;
+  let elapsed = Unix.gettimeofday () -. start in
+  Printf.printf "  Compute fib(0..30) with memo: %.6f seconds\n" elapsed;
+  let start2 = Unix.gettimeofday () in
+  for i = 0 to 30 do
+    ignore (memo_fib i)  (* 第二次调用直接从缓存取 *)
+  done;
+  let elapsed2 = Unix.gettimeofday () -. start2 in
+  Printf.printf "  Second call (all cached):     %.6f seconds\n" elapsed2;;
 
 (* ========================================================================
    结束标记

@@ -85,3 +85,10 @@ haskell/examples/16_files/scratch16/
 
 # Haskell stack 构建产物（Julia 的 Manifest 入库、stack 的 .stack-work 不入库）
 **/.stack-work/
+
+# OCaml 编译产物（ocamlc/ocamlopt 放在源文件旁；build/ 已被通用规则覆盖）
+*.cmi
+*.cmo
+*.cmx
+*.cmt
+*.cmti

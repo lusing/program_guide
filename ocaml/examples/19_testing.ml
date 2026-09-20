@@ -19,7 +19,7 @@
 (* 辅助输出函数：打印分隔线和标题 *)
 let section n title =
   Printf.printf "\n---- %d) %s ----\n" n title;
-  print_endline (String.make 50 '-')
+  print_endline (String.make 50 '-');;
 
 (* ========================================================================
    1) 简单断言函数
@@ -145,18 +145,21 @@ let run_check check_fn =
   result
 
 (* 测试各种 check 函数 *)
-print_endline "Running checks:";
+let () =
+  print_endline "Running checks:";
 
-let r1 = run_check (fun () -> check_int "addition" 5 (2 + 3)) in
-let r2 = run_check (fun () -> check_int "list length" 3 (List.length [1;2;3])) in
-let r3 = run_check (fun () -> check_float "float division" 0.333333 (1.0 /. 3.0)) in
-let r4 = run_check (fun () -> check_bool "list empty" false (List.is_empty [1])) in
-let r5 = run_check (fun () ->
-  check_list "map double" (=) string_of_int [2;4;6] (List.map (( * ) 2) [1;2;3])) in
-let r6 = run_check (fun () -> check_string "concat" "hello world" ("hello" ^ " world")) in
+  let r1 = run_check (fun () -> check_int "addition" 5 (2 + 3)) in
+  let r2 = run_check (fun () -> check_int "list length" 3 (List.length [1;2;3])) in
+  let r3 = run_check (fun () -> check_float "float division" 0.333333 (1.0 /. 3.0)) in
+  let r4 = run_check (fun () -> check_bool "list empty" false (List.is_empty [1])) in
+  let r5 = run_check (fun () ->
+    check_list "map double" (=) string_of_int [2;4;6] (List.map (( * ) 2) [1;2;3])) in
+  let r6 = run_check (fun () -> check_string "concat" "hello world" ("hello" ^ " world")) in
 
-(* 故意失败的测试 *)
-let r7 = run_check (fun () -> check_int "intentional fail" 10 (5 + 5 + 1)) in
+  (* 故意失败的测试 *)
+  let r7 = run_check (fun () -> check_int "intentional fail" 10 (5 + 5 + 1)) in
+  ()
+;;
 
 (* ========================================================================
    3) 异常断言（检查是否抛出预期异常）
@@ -196,24 +199,26 @@ let check_division_by_zero name f =
     f
 
 (* 测试异常断言 *)
-print_endline "Testing exception assertions:";
+let () =
+  print_endline "Testing exception assertions:";
 
-let r8 = run_check (fun () ->
-  check_division_by_zero "div by zero" (fun () -> 1 / 0)) in
+  let r8 = run_check (fun () ->
+    check_division_by_zero "div by zero" (fun () -> 1 / 0)) in
 
-let r9 = run_check (fun () ->
-  check_not_found "List.assoc not found"
-    (fun () -> List.assoc "z" [("a", 1); ("b", 2)])) in
+  let r9 = run_check (fun () ->
+    check_not_found "List.assoc not found"
+      (fun () -> List.assoc "z" [("a", 1); ("b", 2)])) in
 
-let r10 = run_check (fun () ->
-  check_failure "failwith message" "something went wrong"
-    (fun () -> failwith "something went wrong")) in
+  let r10 = run_check (fun () ->
+    check_failure "failwith message" "something went wrong"
+      (fun () -> failwith "something went wrong")) in
 
-(* 测试不应该抛出异常的情况 *)
-let r11 = run_check (fun () ->
-  check_raises "no exception expected"
-    (function _ -> false)  (* 任何异常都算失败 *)
-    (fun () -> 1 + 1)) in  (* 这个函数不抛异常，所以测试应该通过 *)
+  (* 测试不应该抛出异常的情况 *)
+  let r11 = run_check (fun () ->
+    check_raises "no exception expected"
+      (function _ -> false)  (* 任何异常都算失败 *)
+      (fun () -> 1 + 1)) in  (* 这个函数不抛异常，所以测试应该通过 *)
+  ()
 (* 说明：上面的测试会通过，因为 f() 没有抛出异常，
    但 check_raises 的逻辑是：如果没抛异常则返回 fail。
    让我们修正：我们需要一个"不抛出异常"的检查 *)
@@ -225,8 +230,11 @@ let check_no_exception name f =
   with exn ->
     fail name (Printf.sprintf "unexpected exception: %s" (Printexc.to_string exn))
 
-let r12 = run_check (fun () ->
-  check_no_exception "normal computation" (fun () -> 1 + 2 + 3)) in
+let () =
+  let r12 = run_check (fun () ->
+    check_no_exception "normal computation" (fun () -> 1 + 2 + 3)) in
+  ()
+;;
 
 (* ========================================================================
    4) 测试框架雏形
@@ -385,9 +393,8 @@ let prop_sort_permutation lst =
     match l1 with
     | [] -> l2 = []
     | h :: t ->
+        (* 从 l2 中移除一个 h；找不到说明不是排列 *)
         try
-          let l2' = List.tl (List.filter ((<>) h) l2) in
-          (* 更准确的方法：移除一个 h *)
           let rec remove_one x = function
             | [] -> raise Not_found
             | h :: t -> if h = x then t else h :: remove_one x t

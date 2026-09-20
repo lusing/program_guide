@@ -21,7 +21,7 @@
 (* 辅助输出函数：打印分隔线和标题 *)
 let section n title =
   Printf.printf "\n---- %d) %s ----\n" n title;
-  print_endline (String.make 50 '-')
+  print_endline (String.make 50 '-');;
 
 (* ========================================================================
    1) CSV 生成
@@ -99,7 +99,7 @@ let tmp_dir = Filename.get_temp_dir_name ()
 let csv_file = Filename.concat tmp_dir "student_scores.csv"
 
 let scores_data = generate_scores 30
-let () = write_csv csv_file scores_data
+let () = write_csv csv_file scores_data;;
 Printf.printf "Generated CSV file: %s\n" csv_file;
 Printf.printf "Number of students: %d\n" (Array.length scores_data);;
 
@@ -116,7 +116,7 @@ let preview_csv filename n =
   with End_of_file ->
     close_in ic
 
-let () = preview_csv csv_file 6
+let () = preview_csv csv_file 6;;
 
 (* ========================================================================
    2) CSV 解析与读取
@@ -195,7 +195,7 @@ let parse_csv filename =
     raise exn
 
 (* 解析 CSV 文件 *)
-let headers, parsed_scores = parse_csv csv_file
+let headers, parsed_scores = parse_csv csv_file;;
 Printf.printf "Parsed CSV successfully\n";
 Printf.printf "Headers: [%s]\n" (String.concat ", " headers);
 Printf.printf "Records: %d\n" (Array.length parsed_scores);;
@@ -209,7 +209,7 @@ let print_student s =
   Printf.printf "  %s (%s): math=%s chinese=%s english=%s physics=%s chemistry=%s\n"
     s.name s.id
     (opt_str s.math) (opt_str s.chinese) (opt_str s.english)
-    (opt_str s.physics) (opt_str s.chemistry)
+    (opt_str s.physics) (opt_str s.chemistry);;
 
 print_endline "First 3 records:";
 for i = 0 to min 2 (Array.length parsed_scores - 1) do
@@ -256,13 +256,14 @@ let count_missing scores =
     (name, !missing, float_of_int !missing /. float_of_int total *. 100.0)
   ) subjects
 
-let missing_stats = count_missing parsed_scores in
-print_endline "Missing value statistics:";
-Printf.printf "  %-12s %8s %10s\n" "Subject" "Missing" "Rate";
-Printf.printf "  %s\n" (String.make 32 '-');
-List.iter (fun (name, missing, rate) ->
-  Printf.printf "  %-12s %8d %9.1f%%\n" name missing rate
-) missing_stats;;
+let () =
+  let missing_stats = count_missing parsed_scores in
+  print_endline "Missing value statistics:";
+  Printf.printf "  %-12s %8s %10s\n" "Subject" "Missing" "Rate";
+  Printf.printf "  %s\n" (String.make 32 '-');
+  List.iter (fun (name, missing, rate) ->
+    Printf.printf "  %-12s %8d %9.1f%%\n" name missing rate
+  ) missing_stats;;
 
 (* 统计至少有一科缺失的学生数 *)
 let count_students_with_missing scores =
@@ -274,10 +275,11 @@ let count_students_with_missing scores =
   ) scores;
   !count
 
-let missing_students = count_students_with_missing parsed_scores in
-Printf.printf "\nStudents with at least one missing score: %d / %d (%.1f%%)\n"
-  missing_students (Array.length parsed_scores)
-  (float_of_int missing_students /. float_of_int (Array.length parsed_scores) *. 100.0);;
+let missing_students = count_students_with_missing parsed_scores
+let () =
+  Printf.printf "\nStudents with at least one missing score: %d / %d (%.1f%%)\n"
+    missing_students (Array.length parsed_scores)
+    (float_of_int missing_students /. float_of_int (Array.length parsed_scores) *. 100.0);;
 
 (* 方法一：删除含缺失值的记录 *)
 let drop_missing scores =
@@ -290,10 +292,11 @@ let drop_missing scores =
   ) scores;
   Array.of_list (List.rev !result)
 
-let clean_scores = drop_missing parsed_scores in
-Printf.printf "\nAfter dropping missing: %d students (removed %d)\n"
-  (Array.length clean_scores)
-  (Array.length parsed_scores - Array.length clean_scores);;
+let () =
+  let clean_scores = drop_missing parsed_scores in
+  Printf.printf "\nAfter dropping missing: %d students (removed %d)\n"
+    (Array.length clean_scores)
+    (Array.length parsed_scores - Array.length clean_scores);;
 
 (* 方法二：用均值填充缺失值 *)
 let compute_mean scores getter =
@@ -319,16 +322,17 @@ let fill_with_mean scores =
     }
   ) scores
 
-let filled_scores = fill_with_mean parsed_scores in
-Printf.printf "After mean imputation: %d students (all complete)\n"
-  (Array.length filled_scores);;
+let filled_scores = fill_with_mean parsed_scores
+let () =
+  Printf.printf "After mean imputation: %d students (all complete)\n"
+    (Array.length filled_scores);;
 
 (* 验证：填充后没有缺失值 *)
 let all_complete scores =
   Array.for_all (fun s ->
     s.math <> None && s.chinese <> None && s.english <> None &&
     s.physics <> None && s.chemistry <> None
-  ) scores
+  ) scores;;
 Printf.printf "All complete after fill? %b\n" (all_complete filled_scores);;
 
 (* ========================================================================
@@ -372,15 +376,16 @@ let subject_stats scores =
     (name, List.length vals, mean, max_v, min_v, std)
   ) subjects
 
-let stats = subject_stats filled_scores in
-Printf.printf "Per-subject statistics (n=%d):\n" (Array.length filled_scores);
-Printf.printf "  %-12s %5s %8s %8s %8s %8s\n"
-  "Subject" "N" "Mean" "Max" "Min" "Std";
-Printf.printf "  %s\n" (String.make 55 '-');
-List.iter (fun (name, n, mean, max_v, min_v, std) ->
-  Printf.printf "  %-12s %5d %8.2f %8.2f %8.2f %8.2f\n"
-    name n mean max_v min_v std
-) stats;;
+let () =
+  let stats = subject_stats filled_scores in
+  Printf.printf "Per-subject statistics (n=%d):\n" (Array.length filled_scores);
+  Printf.printf "  %-12s %5s %8s %8s %8s %8s\n"
+    "Subject" "N" "Mean" "Max" "Min" "Std";
+  Printf.printf "  %s\n" (String.make 55 '-');
+  List.iter (fun (name, n, mean, max_v, min_v, std) ->
+    Printf.printf "  %-12s %5d %8.2f %8.2f %8.2f %8.2f\n"
+      name n mean max_v min_v std
+  ) stats;;
 
 (* 计算每个学生的总分（使用填充后的数据） *)
 let compute_total s =
@@ -396,10 +401,11 @@ let total_stats =
   let total_list = Array.to_list totals in
   compute_stats total_list
 
-let total_mean, total_max, total_min, total_std = total_stats in
-Printf.printf "\nTotal score statistics:\n";
-Printf.printf "  Mean: %.2f, Max: %.2f, Min: %.2f, Std: %.2f\n"
-  total_mean total_max total_min total_std;;
+let total_mean, total_max, total_min, total_std = total_stats
+let () =
+  Printf.printf "\nTotal score statistics:\n";
+  Printf.printf "  Mean: %.2f, Max: %.2f, Min: %.2f, Std: %.2f\n"
+    total_mean total_max total_min total_std;;
 
 (* ========================================================================
    5) Top-N 排名
@@ -415,14 +421,15 @@ let sort_by_total scores =
   Array.sort (fun (_, t1) (_, t2) -> compare t2 t1) with_totals;
   with_totals
 
-let sorted_by_total = sort_by_total filled_scores in
-Printf.printf "Top 10 students by total score:\n";
-Printf.printf "  %-4s %-15s %8s %8s\n" "Rank" "Name" "ID" "Total";
-Printf.printf "  %s\n" (String.make 38 '-');
-for i = 0 to min 9 (Array.length sorted_by_total - 1) do
-  let s, total = sorted_by_total.(i) in
-  Printf.printf "  %-4d %-15s %8s %8.1f\n" (i + 1) s.name s.id total
-done;;
+let sorted_by_total = sort_by_total filled_scores
+let () =
+  Printf.printf "Top 10 students by total score:\n";
+  Printf.printf "  %-4s %-15s %8s %8s\n" "Rank" "Name" "ID" "Total";
+  Printf.printf "  %s\n" (String.make 38 '-');
+  for i = 0 to min 9 (Array.length sorted_by_total - 1) do
+    let s, total = sorted_by_total.(i) in
+    Printf.printf "  %-4d %-15s %8s %8.1f\n" (i + 1) s.name s.id total
+  done;;
 
 (* 按单科排名 *)
 let top_n_by_subject scores n getter =
@@ -445,12 +452,13 @@ let print_top_n title top_n =
     Printf.printf "    %-4d %-15s %8.1f\n" (i + 1) s.name score
   done
 
-let top_math = top_n_by_subject filled_scores 5 (fun s -> s.math) in
-let top_physics = top_n_by_subject filled_scores 5 (fun s -> s.physics) in
+let () =
+  let top_math = top_n_by_subject filled_scores 5 (fun s -> s.math) in
+  let top_physics = top_n_by_subject filled_scores 5 (fun s -> s.physics) in
 
-print_endline "Top 5 by subject:";
-print_top_n "Math" top_math;
-print_top_n "Physics" top_physics;;
+  print_endline "Top 5 by subject:";
+  print_top_n "Math" top_math;
+  print_top_n "Physics" top_physics;;
 
 (* 排名变化分析：比较总分排名和数学排名的差异 *)
 let math_rank =
@@ -463,7 +471,7 @@ let total_rank =
   let arr = sort_by_total filled_scores in
   let rank_tbl = Hashtbl.create 50 in
   Array.iteri (fun i (s, _) -> Hashtbl.add rank_tbl s.id (i + 1)) arr;
-  rank_tbl
+  rank_tbl;;
 
 print_endline "\nRank comparison (Top 10 total vs math rank):";
 Printf.printf "  %-4s %-15s %8s %8s %8s\n"
@@ -532,36 +540,39 @@ let extract_pair_scores scores getter_x getter_y =
 
 (* 分析数学和物理的相关性 *)
 let math_physics_points = extract_pair_scores filled_scores
-  (fun s -> s.math) (fun s -> s.physics) in
-let a, b, r = linear_regression math_physics_points in
-Printf.printf "Math vs Physics correlation:\n";
-Printf.printf "  Data points: %d\n" (List.length math_physics_points);
-Printf.printf "  Regression: physics = %.4f * math + %.4f\n" a b;
-Printf.printf "  Correlation coefficient (r): %.4f\n" r;
-let strength =
-  if abs_float r >= 0.9 then "very strong"
-  else if abs_float r >= 0.7 then "strong"
-  else if abs_float r >= 0.5 then "moderate"
-  else if abs_float r >= 0.3 then "weak"
-  else "very weak or no" in
-Printf.printf "  Strength: %s %s correlation\n"
-    strength (if r >= 0.0 then "positive" else "negative");;
+  (fun s -> s.math) (fun s -> s.physics)
+let a, b, r = linear_regression math_physics_points
+let () =
+  Printf.printf "Math vs Physics correlation:\n";
+  Printf.printf "  Data points: %d\n" (List.length math_physics_points);
+  Printf.printf "  Regression: physics = %.4f * math + %.4f\n" a b;
+  Printf.printf "  Correlation coefficient (r): %.4f\n" r;
+  let strength =
+    if abs_float r >= 0.9 then "very strong"
+    else if abs_float r >= 0.7 then "strong"
+    else if abs_float r >= 0.5 then "moderate"
+    else if abs_float r >= 0.3 then "weak"
+    else "very weak or no" in
+  Printf.printf "  Strength: %s %s correlation\n"
+      strength (if r >= 0.0 then "positive" else "negative");;
 
 (* 分析语文和英语的相关性 *)
-let chinese_english_points = extract_pair_scores filled_scores
-  (fun s -> s.chinese) (fun s -> s.english) in
-let a2, b2, r2 = linear_regression chinese_english_points in
-Printf.printf "\nChinese vs English correlation:\n";
-Printf.printf "  Data points: %d\n" (List.length chinese_english_points);
-Printf.printf "  Regression: english = %.4f * chinese + %.4f\n" a2 b2;
-Printf.printf "  Correlation coefficient (r): %.4f\n" r2;;
+let () =
+  let chinese_english_points = extract_pair_scores filled_scores
+    (fun s -> s.chinese) (fun s -> s.english) in
+  let a2, b2, r2 = linear_regression chinese_english_points in
+  Printf.printf "\nChinese vs English correlation:\n";
+  Printf.printf "  Data points: %d\n" (List.length chinese_english_points);
+  Printf.printf "  Regression: english = %.4f * chinese + %.4f\n" a2 b2;
+  Printf.printf "  Correlation coefficient (r): %.4f\n" r2;;
 
 (* 预测：给定数学成绩，预测物理成绩 *)
-let predict_physics math_score = a *. math_score +. b in
-Printf.printf "\nPrediction examples:\n";
-Printf.printf "  Math=70.0 -> Predicted Physics: %.2f\n" (predict_physics 70.0);
-Printf.printf "  Math=80.0 -> Predicted Physics: %.2f\n" (predict_physics 80.0);
-Printf.printf "  Math=90.0 -> Predicted Physics: %.2f\n" (predict_physics 90.0);;
+let () =
+  let predict_physics math_score = a *. math_score +. b in
+  Printf.printf "\nPrediction examples:\n";
+  Printf.printf "  Math=70.0 -> Predicted Physics: %.2f\n" (predict_physics 70.0);
+  Printf.printf "  Math=80.0 -> Predicted Physics: %.2f\n" (predict_physics 80.0);
+  Printf.printf "  Math=90.0 -> Predicted Physics: %.2f\n" (predict_physics 90.0);;
 
 (* ========================================================================
    7) 报告写回与校验
@@ -623,7 +634,7 @@ let write_report filename scores =
 
   close_out oc
 
-let () = write_report report_file filled_scores
+let () = write_report report_file filled_scores;;
 Printf.printf "Report written to: %s\n" report_file;;
 
 (* 读取报告并显示 *)
@@ -640,14 +651,16 @@ let read_and_display_report filename =
   close_in ic;
   Buffer.contents content
 
-let report_content = read_and_display_report report_file in
-print_endline "Report content:";
-print_endline (String.make 50 '-');
-print_string report_content;
-print_endline (String.make 50 '-');;
+let () =
+  let report_content = read_and_display_report report_file in
+  print_endline "Report content:";
+  print_endline (String.make 50 '-');
+  print_string report_content;
+  print_endline (String.make 50 '-');;
 
 (* 校验：重新计算并与报告中的值比较 *)
 let verify_report scores =
+  let filename = report_file in  (* 简化写法 *)
   let stats = subject_stats scores in
   let math_stat = List.find (fun (n, _, _, _, _, _) -> n = "math") stats in
   let (_, _, math_mean, _, _, _) = math_stat in
@@ -665,7 +678,6 @@ let verify_report scores =
   Printf.printf "  Regression MSE (math->physics): %.4f\n" mse;
   Printf.printf "  Report file size: %d bytes\n"
     (Unix.stat filename).Unix.st_size
-  where filename = report_file  (* 简化写法 *)
 
 let _ =
   let stats = subject_stats filled_scores in
@@ -707,8 +719,9 @@ let list_temp_files pattern =
   ) entries;
   List.rev !matching
 
-let csv_files_before = list_temp_files "student_scores" in
-Printf.printf "CSV files in temp dir before cleanup: %d\n" (List.length csv_files_before);;
+let () =
+  let csv_files_before = list_temp_files "student_scores" in
+  Printf.printf "CSV files in temp dir before cleanup: %d\n" (List.length csv_files_before);;
 
 (* 清理函数 *)
 let cleanup_file path =
@@ -719,7 +732,7 @@ let cleanup_file path =
   end else begin
     Printf.printf "  Not found: %s\n" path;
     false
-  end
+  end;;
 
 print_endline "Cleaning up temporary files:";
 let csv_removed = cleanup_file csv_file in

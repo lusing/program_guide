@@ -19,7 +19,7 @@
 (* 辅助输出函数：打印分隔线和标题 *)
 let section n title =
   Printf.printf "\n---- %d) %s ----\n" n title;
-  print_endline (String.make 50 '-')
+  print_endline (String.make 50 '-');;
 
 (* ========================================================================
    1) functor 基本概念：从模块到模块的函数
@@ -501,15 +501,16 @@ module Pair = MakeSetPair(struct
   let to_string s = s
 end);;
 
-let sa = Pair.SetA.(empty |> add "a" |> add "b") in
-let sb = Pair.SetB.(empty |> add "b" |> add "c") in
-Printf.printf "SetA size: %d, SetB size: %d\n"
-  (Pair.SetA.size sa) (Pair.SetB.size sb);;
-(* 两者有相同的 elem 类型，可以互相操作 *)
-let common = List.filter
-  (fun x -> Pair.SetB.mem x sb)
-  (Pair.SetA.elements sa) in
-Printf.printf "Common elements: [%s]\n" (String.concat ", " common);;
+let () =
+  let sa = Pair.SetA.(empty |> add "a" |> add "b") in
+  let sb = Pair.SetB.(empty |> add "b" |> add "c") in
+  Printf.printf "SetA size: %d, SetB size: %d\n"
+    (Pair.SetA.size sa) (Pair.SetB.size sb);
+  (* 两者有相同的 elem 类型，可以互相操作 *)
+  let common = List.filter
+    (fun x -> Pair.SetB.mem x sb)
+    (Pair.SetA.elements sa) in
+  Printf.printf "Common elements: [%s]\n" (String.concat ", " common);;
 
 (* ========================================================================
    结束标记

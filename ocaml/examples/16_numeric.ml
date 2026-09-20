@@ -20,7 +20,7 @@
 (* 辅助输出函数：打印分隔线和标题 *)
 let section n title =
   Printf.printf "\n---- %d) %s ----\n" n title;
-  print_endline (String.make 50 '-')
+  print_endline (String.make 50 '-');;
 
 (* ========================================================================
    1) 二分法求根
@@ -51,23 +51,26 @@ let bisection f a b tol =
     loop a b
 
 (* 测试：求 x^2 - 2 = 0 的根（即 sqrt(2)） *)
-let f1 x = x *. x -. 2.0 in
-let root1 = bisection f1 1.0 2.0 1e-10 in
-Printf.printf "Root of x^2 - 2 = 0 (sqrt 2): %.12f\n" root1;
-Printf.printf "  Actual sqrt(2):          %.12f\n" (sqrt 2.0);
-Printf.printf "  Error:                   %.12e\n" (abs_float (root1 -. sqrt 2.0));;
+let f1 x = x *. x -. 2.0
+let () =
+  let root1 = bisection f1 1.0 2.0 1e-10 in
+  Printf.printf "Root of x^2 - 2 = 0 (sqrt 2): %.12f\n" root1;
+  Printf.printf "  Actual sqrt(2):          %.12f\n" (sqrt 2.0);
+  Printf.printf "  Error:                   %.12e\n" (abs_float (root1 -. sqrt 2.0));;
 
 (* 测试：求 cos(x) - x = 0 的根（Dottie number） *)
-let f2 x = cos x -. x in
-let root2 = bisection f2 0.0 1.0 1e-10 in
-Printf.printf "Root of cos(x) - x = 0:    %.12f\n" root2;
-Printf.printf "  f(root) = %.12e\n" (f2 root2);;
+let () =
+  let f2 x = cos x -. x in
+  let root2 = bisection f2 0.0 1.0 1e-10 in
+  Printf.printf "Root of cos(x) - x = 0:    %.12f\n" root2;
+  Printf.printf "  f(root) = %.12e\n" (f2 root2);;
 
 (* 测试：求 x^3 - x - 2 = 0 的根 *)
-let f3 x = x *. x *. x -. x -. 2.0 in
-let root3 = bisection f3 1.0 2.0 1e-10 in
-Printf.printf "Root of x^3 - x - 2 = 0:   %.12f\n" root3;
-Printf.printf "  f(root) = %.12e\n" (f3 root3);;
+let () =
+  let f3 x = x *. x *. x -. x -. 2.0 in
+  let root3 = bisection f3 1.0 2.0 1e-10 in
+  Printf.printf "Root of x^3 - x - 2 = 0:   %.12f\n" root3;
+  Printf.printf "  f(root) = %.12e\n" (f3 root3);;
 
 (* 迭代次数统计版本 *)
 let bisection_counted f a b tol =
@@ -85,8 +88,9 @@ let bisection_counted f a b tol =
     in
     loop a b 1
 
-let root, iterations = bisection_counted f1 1.0 2.0 1e-12 in
-Printf.printf "Bisection for sqrt(2): %d iterations, root = %.12f\n" iterations root;;
+let () =
+  let root, iterations = bisection_counted f1 1.0 2.0 1e-12 in
+  Printf.printf "Bisection for sqrt(2): %d iterations, root = %.12f\n" iterations root;;
 
 (* ========================================================================
    2) 牛顿法求根
@@ -119,19 +123,21 @@ let newton_method f f' x0 tol max_iter =
   loop x0 0
 
 (* 测试：求 sqrt(2)，f(x) = x^2 - 2, f'(x) = 2x *)
-let f x = x *. x -. 2.0 in
-let f' x = 2.0 *. x in
-let root_newton = newton_method f f' 1.0 1e-12 50 in
-Printf.printf "Newton method for sqrt(2): %.15f\n" root_newton;
-Printf.printf "  Actual sqrt(2):          %.15f\n" (sqrt 2.0);
-Printf.printf "  Error:                   %.15e\n" (abs_float (root_newton -. sqrt 2.0));;
+let f x = x *. x -. 2.0
+let f' x = 2.0 *. x
+let () =
+  let root_newton = newton_method f f' 1.0 1e-12 50 in
+  Printf.printf "Newton method for sqrt(2): %.15f\n" root_newton;
+  Printf.printf "  Actual sqrt(2):          %.15f\n" (sqrt 2.0);
+  Printf.printf "  Error:                   %.15e\n" (abs_float (root_newton -. sqrt 2.0));;
 
 (* 测试：求 e^x - x - 2 = 0 的根 *)
-let f_exp x = exp x -. x -. 2.0 in
-let f_exp' x = exp x -. 1.0 in
-let root_exp = newton_method f_exp f_exp' 1.0 1e-12 50 in
-Printf.printf "Root of e^x - x - 2 = 0:   %.12f\n" root_exp;
-Printf.printf "  f(root) = %.12e\n" (f_exp root_exp);;
+let () =
+  let f_exp x = exp x -. x -. 2.0 in
+  let f_exp' x = exp x -. 1.0 in
+  let root_exp = newton_method f_exp f_exp' 1.0 1e-12 50 in
+  Printf.printf "Root of e^x - x - 2 = 0:   %.12f\n" root_exp;
+  Printf.printf "  f(root) = %.12e\n" (f_exp root_exp);;
 
 (* 带迭代次数的版本 *)
 let newton_counted f f' x0 tol max_iter =
@@ -149,8 +155,9 @@ let newton_counted f f' x0 tol max_iter =
   in
   loop x0 0
 
-let r, iters = newton_counted f f' 100.0 1e-12 50 in
-Printf.printf "Newton from x0=100: %d iterations, root = %.12f\n" iters r;;
+let () =
+  let r, iters = newton_counted f f' 100.0 1e-12 50 in
+  Printf.printf "Newton from x0=100: %d iterations, root = %.12f\n" iters r;;
 
 (* 割线法（Secant Method）：不需要导数，用差商近似 *)
 let secant_method f x0 x1 tol max_iter =
@@ -166,8 +173,9 @@ let secant_method f x0 x1 tol max_iter =
   in
   loop x0 x1 0
 
-let root_secant = secant_method f 1.0 2.0 1e-12 50 in
-Printf.printf "Secant method for sqrt(2): %.12f\n" root_secant;;
+let () =
+  let root_secant = secant_method f 1.0 2.0 1e-12 50 in
+  Printf.printf "Secant method for sqrt(2): %.12f\n" root_secant;;
 
 (* ========================================================================
    3) 梯形积分
@@ -191,27 +199,31 @@ let trapezoidal f a b n =
   h *. !sum
 
 (* 测试：∫ x^2 dx 从 0 到 1，精确值 = 1/3 *)
-let f_x2 x = x *. x in
-let integral1 = trapezoidal f_x2 0.0 1.0 10 in
-Printf.printf "Integral of x^2 from 0 to 1 (n=10):  %.10f\n" integral1;
-Printf.printf "  Exact value: 1/3 = %.10f\n" (1.0 /. 3.0);
-Printf.printf "  Error: %.10e\n" (abs_float (integral1 -. 1.0 /. 3.0));;
+let f_x2 x = x *. x
+let () =
+  let integral1 = trapezoidal f_x2 0.0 1.0 10 in
+  Printf.printf "Integral of x^2 from 0 to 1 (n=10):  %.10f\n" integral1;
+  Printf.printf "  Exact value: 1/3 = %.10f\n" (1.0 /. 3.0);
+  Printf.printf "  Error: %.10e\n" (abs_float (integral1 -. 1.0 /. 3.0));;
 
-let integral1_1000 = trapezoidal f_x2 0.0 1.0 1000 in
-Printf.printf "Integral of x^2 from 0 to 1 (n=1000): %.10f\n" integral1_1000;
-Printf.printf "  Error: %.10e\n" (abs_float (integral1_1000 -. 1.0 /. 3.0));;
+let () =
+  let integral1_1000 = trapezoidal f_x2 0.0 1.0 1000 in
+  Printf.printf "Integral of x^2 from 0 to 1 (n=1000): %.10f\n" integral1_1000;
+  Printf.printf "  Error: %.10e\n" (abs_float (integral1_1000 -. 1.0 /. 3.0));;
 
 (* 测试：∫ sin(x) dx 从 0 到 pi，精确值 = 2 *)
-let integral2 = trapezoidal sin 0.0 3.14159265358979 100 in
-Printf.printf "Integral of sin(x) from 0 to pi (n=100): %.10f\n" integral2;
-Printf.printf "  Exact value: 2.0\n";
-Printf.printf "  Error: %.10e\n" (abs_float (integral2 -. 2.0));;
+let () =
+  let integral2 = trapezoidal sin 0.0 3.14159265358979 100 in
+  Printf.printf "Integral of sin(x) from 0 to pi (n=100): %.10f\n" integral2;
+  Printf.printf "  Exact value: 2.0\n";
+  Printf.printf "  Error: %.10e\n" (abs_float (integral2 -. 2.0));;
 
 (* 测试：∫ e^x dx 从 0 到 1，精确值 = e - 1 *)
-let integral3 = trapezoidal exp 0.0 1.0 100 in
-Printf.printf "Integral of e^x from 0 to 1 (n=100): %.10f\n" integral3;
-Printf.printf "  Exact value: e - 1 = %.10f\n" (exp 1.0 -. 1.0);
-Printf.printf "  Error: %.10e\n" (abs_float (integral3 -. (exp 1.0 -. 1.0)));;
+let () =
+  let integral3 = trapezoidal exp 0.0 1.0 100 in
+  Printf.printf "Integral of e^x from 0 to 1 (n=100): %.10f\n" integral3;
+  Printf.printf "  Exact value: e - 1 = %.10f\n" (exp 1.0 -. 1.0);
+  Printf.printf "  Error: %.10e\n" (abs_float (integral3 -. (exp 1.0 -. 1.0)));;
 
 (* 自适应梯形法：递归细分区间直到误差足够小 *)
 let rec adaptive_trapezoidal f a b fa fb tol whole =
@@ -232,9 +244,10 @@ let adaptive_trap f a b tol =
   let whole = (b -. a) *. (fa +. fb) /. 2.0 in
   adaptive_trapezoidal f a b fa fb tol whole
 
-let integral_adaptive = adaptive_trap f_x2 0.0 1.0 1e-10 in
-Printf.printf "Adaptive trapezoidal (tol=1e-10): %.12f\n" integral_adaptive;
-Printf.printf "  Error: %.12e\n" (abs_float (integral_adaptive -. 1.0 /. 3.0));;
+let () =
+  let integral_adaptive = adaptive_trap f_x2 0.0 1.0 1e-10 in
+  Printf.printf "Adaptive trapezoidal (tol=1e-10): %.12f\n" integral_adaptive;
+  Printf.printf "  Error: %.12e\n" (abs_float (integral_adaptive -. 1.0 /. 3.0));;
 
 (* ========================================================================
    4) 辛普森积分
@@ -261,27 +274,31 @@ let simpson f a b n =
     h /. 3.0 *. !sum
 
 (* 测试：∫ x^2 dx 从 0 到 1 *)
-let simp1 = simpson f_x2 0.0 1.0 10 in
-Printf.printf "Simpson x^2 from 0 to 1 (n=10):  %.12f\n" simp1;
-Printf.printf "  Error: %.12e\n" (abs_float (simp1 -. 1.0 /. 3.0));;
+let () =
+  let simp1 = simpson f_x2 0.0 1.0 10 in
+  Printf.printf "Simpson x^2 from 0 to 1 (n=10):  %.12f\n" simp1;
+  Printf.printf "  Error: %.12e\n" (abs_float (simp1 -. 1.0 /. 3.0));;
 
 (* 对于二次函数，辛普森法则是精确的（n=2 就够了） *)
-let simp2 = simpson f_x2 0.0 1.0 2 in
-Printf.printf "Simpson x^2 from 0 to 1 (n=2):   %.12f\n" simp2;
-Printf.printf "  Error: %.12e\n" (abs_float (simp2 -. 1.0 /. 3.0));;
+let () =
+  let simp2 = simpson f_x2 0.0 1.0 2 in
+  Printf.printf "Simpson x^2 from 0 to 1 (n=2):   %.12f\n" simp2;
+  Printf.printf "  Error: %.12e\n" (abs_float (simp2 -. 1.0 /. 3.0));;
 
 (* 测试：∫ sin(x) dx 从 0 到 pi *)
-let pi = 4.0 *. atan 1.0 in
-let simp3 = simpson sin 0.0 pi 10 in
-Printf.printf "Simpson sin(x) from 0 to pi (n=10): %.12f\n" simp3;
-Printf.printf "  Exact: 2.0, Error: %.12e\n" (abs_float (simp3 -. 2.0));;
+let pi = 4.0 *. atan 1.0
+let () =
+  let simp3 = simpson sin 0.0 pi 10 in
+  Printf.printf "Simpson sin(x) from 0 to pi (n=10): %.12f\n" simp3;
+  Printf.printf "  Exact: 2.0, Error: %.12e\n" (abs_float (simp3 -. 2.0));;
 
 (* 测试：∫ 1/(1+x^2) dx 从 0 到 1，精确值 = pi/4 *)
-let f_atan x = 1.0 /. (1.0 +. x *. x) in
-let simp4 = simpson f_atan 0.0 1.0 100 in
-Printf.printf "Simpson 1/(1+x^2) from 0 to 1 (n=100): %.12f\n" simp4;
-Printf.printf "  Exact: pi/4 = %.12f\n" (pi /. 4.0);
-Printf.printf "  Error: %.12e\n" (abs_float (simp4 -. pi /. 4.0));;
+let f_atan x = 1.0 /. (1.0 +. x *. x)
+let () =
+  let simp4 = simpson f_atan 0.0 1.0 100 in
+  Printf.printf "Simpson 1/(1+x^2) from 0 to 1 (n=100): %.12f\n" simp4;
+  Printf.printf "  Exact: pi/4 = %.12f\n" (pi /. 4.0);
+  Printf.printf "  Error: %.12e\n" (abs_float (simp4 -. pi /. 4.0));;
 
 (* 自适应辛普森法 *)
 let rec adaptive_simpson f a b fa fb fmid tol whole =
@@ -308,9 +325,10 @@ let adaptive_simp f a b tol =
   let whole = (b -. a) /. 6.0 *. (fa +. 4.0 *. fmid +. fb) in
   adaptive_simpson f a b fa fb fmid tol whole
 
-let asimp = adaptive_simp f_atan 0.0 1.0 1e-12 in
-Printf.printf "Adaptive Simpson (tol=1e-12): %.15f\n" asimp;
-Printf.printf "  Error: %.15e\n" (abs_float (asimp -. pi /. 4.0));;
+let () =
+  let asimp = adaptive_simp f_atan 0.0 1.0 1e-12 in
+  Printf.printf "Adaptive Simpson (tol=1e-12): %.15f\n" asimp;
+  Printf.printf "  Error: %.15e\n" (abs_float (asimp -. pi /. 4.0));;
 
 (* ========================================================================
    5) 克拉默法则解线性方程组
@@ -343,11 +361,12 @@ let solve_2x2 a1 b1 c1 a2 b2 c2 =
    x - y = 1
    解：x = 2, y = 1
 *)
-let x1, y1 = solve_2x2 2.0 1.0 5.0 1.0 (-1.0) 1.0 in
-Printf.printf "2x2 system:\n";
-Printf.printf "  2x + y = 5\n";
-Printf.printf "  x - y = 1\n";
-Printf.printf "  Solution: x = %.2f, y = %.2f\n" x1 y1;;
+let () =
+  let x1, y1 = solve_2x2 2.0 1.0 5.0 1.0 (-1.0) 1.0 in
+  Printf.printf "2x2 system:\n";
+  Printf.printf "  2x + y = 5\n";
+  Printf.printf "  x - y = 1\n";
+  Printf.printf "  Solution: x = %.2f, y = %.2f\n" x1 y1;;
 
 (* 3x3 行列式（按第一行展开） *)
 let det3 m =
@@ -381,19 +400,20 @@ let solve_3x3 a b =
    x - y + 2z = 5
    解：x = 1, y = 2, z = 3
 *)
-let a3 = [|
-  [| 1.0; 1.0; 1.0 |];
-  [| 2.0; 1.0; -1.0 |];
-  [| 1.0; -1.0; 2.0 |]
-|] in
-let b3 = [| 6.0; 1.0; 5.0 |] in
-let sol = solve_3x3 a3 b3 in
-Printf.printf "\n3x3 system:\n";
-Printf.printf "  x + y + z = 6\n";
-Printf.printf "  2x + y - z = 1\n";
-Printf.printf "  x - y + 2z = 5\n";
-Printf.printf "  Solution: x = %.2f, y = %.2f, z = %.2f\n"
-  sol.(0) sol.(1) sol.(2);;
+let () =
+  let a3 = [|
+    [| 1.0; 1.0; 1.0 |];
+    [| 2.0; 1.0; -1.0 |];
+    [| 1.0; -1.0; 2.0 |]
+  |] in
+  let b3 = [| 6.0; 1.0; 5.0 |] in
+  let sol = solve_3x3 a3 b3 in
+  Printf.printf "\n3x3 system:\n";
+  Printf.printf "  x + y + z = 6\n";
+  Printf.printf "  2x + y - z = 1\n";
+  Printf.printf "  x - y + 2z = 5\n";
+  Printf.printf "  Solution: x = %.2f, y = %.2f, z = %.2f\n"
+    sol.(0) sol.(1) sol.(2);;
 
 (* ========================================================================
    6) 拉格朗日插值
@@ -426,31 +446,33 @@ let lagrange_interpolate xs ys x =
   !result
 
 (* 测试：用 sin(x) 的几个点做插值 *)
-let xs = [| 0.0; 0.5; 1.0; 1.5; 2.0 |] in
-let ys = Array.map sin xs in
-print_endline "Lagrange interpolation of sin(x):";
-Printf.printf "  Data points:\n";
-Array.iteri (fun i x -> Printf.printf "    x=%.1f, sin(x)=%.6f\n" x ys.(i)) xs;
-print_endline "  Interpolated values:";
-let test_points = [| 0.25; 0.75; 1.25; 1.75 |] in
-Array.iter (fun x ->
-  let approx = lagrange_interpolate xs ys x in
-  let exact = sin x in
-  Printf.printf "    x=%.2f: approx=%.6f, exact=%.6f, error=%.2e\n"
-    x approx exact (abs_float (approx -. exact))
-) test_points;;
+let () =
+  let xs = [| 0.0; 0.5; 1.0; 1.5; 2.0 |] in
+  let ys = Array.map sin xs in
+  print_endline "Lagrange interpolation of sin(x):";
+  Printf.printf "  Data points:\n";
+  Array.iteri (fun i x -> Printf.printf "    x=%.1f, sin(x)=%.6f\n" x ys.(i)) xs;
+  print_endline "  Interpolated values:";
+  let test_points = [| 0.25; 0.75; 1.25; 1.75 |] in
+  Array.iter (fun x ->
+    let approx = lagrange_interpolate xs ys x in
+    let exact = sin x in
+    Printf.printf "    x=%.2f: approx=%.6f, exact=%.6f, error=%.2e\n"
+      x approx exact (abs_float (approx -. exact))
+  ) test_points;;
 
 (* 测试：用二次函数的三个点，插值应该精确还原 *)
-print_endline "\nLagrange interpolation of x^2 (should be exact for degree 2):";
-let xs_quad = [| 0.0; 1.0; 2.0 |] in
-let ys_quad = [| 0.0; 1.0; 4.0 |] in
-let test_x = [| 0.5; 1.5; (-0.5); 3.0 |] in
-Array.iter (fun x ->
-  let approx = lagrange_interpolate xs_quad ys_quad x in
-  let exact = x *. x in
-  Printf.printf "  x=%.1f: approx=%.4f, exact=%.4f, error=%.2e\n"
-    x approx exact (abs_float (approx -. exact))
-) test_x;;
+let () =
+  print_endline "\nLagrange interpolation of x^2 (should be exact for degree 2):";
+  let xs_quad = [| 0.0; 1.0; 2.0 |] in
+  let ys_quad = [| 0.0; 1.0; 4.0 |] in
+  let test_x = [| 0.5; 1.5; (-0.5); 3.0 |] in
+  Array.iter (fun x ->
+    let approx = lagrange_interpolate xs_quad ys_quad x in
+    let exact = x *. x in
+    Printf.printf "  x=%.1f: approx=%.4f, exact=%.4f, error=%.2e\n"
+      x approx exact (abs_float (approx -. exact))
+  ) test_x;;
 
 (* ========================================================================
    7) 浮点数注意事项
@@ -461,9 +483,9 @@ Array.iter (fun x ->
 section 7 "Floating Point Caveats";;
 
 (* 1) 不要用 = 比较浮点数是否相等 *)
-print_endline "1) Equality comparison is unreliable:";
-let a = 0.1 +. 0.2 in
-let b = 0.3 in
+print_endline "1) Equality comparison is unreliable:";;
+let a = 0.1 +. 0.2;;
+let b = 0.3;;
 Printf.printf "   0.1 + 0.2 = %.20f\n" a;
 Printf.printf "   0.3       = %.20f\n" b;
 Printf.printf "   (0.1 + 0.2) = 0.3 ? %b\n" (a = b);;
@@ -475,10 +497,11 @@ let approx_equal ?(eps = 1e-10) x y =
 Printf.printf "   approx_equal (0.1+0.2) 0.3: %b\n" (approx_equal a b);;
 
 (* 2) 浮点数的精度：大约 15-17 位有效数字 *)
-print_endline "\n2) Floating point precision (~15-17 significant digits):";
-let big = 1e16 in
-Printf.printf "   1e16 + 1 = %.0f\n" (big +. 1.0);
-Printf.printf "   (1e16 + 1) - 1e16 = %.0f\n" ((big +. 1.0) -. big);;
+let () =
+  print_endline "\n2) Floating point precision (~15-17 significant digits):";
+  let big = 1e16 in
+  Printf.printf "   1e16 + 1 = %.0f\n" (big +. 1.0);
+  Printf.printf "   (1e16 + 1) - 1e16 = %.0f\n" ((big +. 1.0) -. big);;
 
 (* 3) 特殊值：nan, infinity, neg_infinity *)
 print_endline "\n3) Special values:";
@@ -489,24 +512,25 @@ Printf.printf "   nan = nan ? %b\n" (nan = nan);  (* nan 不等于任何东西�
 Printf.printf "   is_nan nan = %b\n" (classify_float nan = FP_nan);;
 
 (* 4) 求和的精度问题：大数加小数可能丢失精度 *)
-print_endline "\n4) Summation precision (large + small):";
-let sum_large_first =
-  let s = ref 1e10 in
-  for _ = 1 to 1000 do
-    s := !s +. 0.1
-  done;
-  !s -. 1e10
-in
-let sum_small_first =
-  let s = ref 0.0 in
-  for _ = 1 to 1000 do
-    s := !s +. 0.1
-  done;
-  !s
-in
-Printf.printf "   Sum 0.1*1000, large first: %.10f\n" sum_large_first;
-Printf.printf "   Sum 0.1*1000, small first: %.10f\n" sum_small_first;
-Printf.printf "   Exact: 100.0\n";;
+let () =
+  print_endline "\n4) Summation precision (large + small):";
+  let sum_large_first =
+    let s = ref 1e10 in
+    for _ = 1 to 1000 do
+      s := !s +. 0.1
+    done;
+    !s -. 1e10
+  in
+  let sum_small_first =
+    let s = ref 0.0 in
+    for _ = 1 to 1000 do
+      s := !s +. 0.1
+    done;
+    !s
+  in
+  Printf.printf "   Sum 0.1*1000, large first: %.10f\n" sum_large_first;
+  Printf.printf "   Sum 0.1*1000, small first: %.10f\n" sum_small_first;
+  Printf.printf "   Exact: 100.0\n";;
 
 (* 5) Kahan 求和算法：减少求和误差 *)
 let kahan_sum arr =
@@ -522,14 +546,15 @@ let kahan_sum arr =
 ;;
 
 (* 构造一个有精度问题的数组 *)
-let test_arr = Array.init 100000 (fun _ -> 0.1) in
-let naive_sum = Array.fold_left (+.) 0.0 test_arr in
-let k_sum = kahan_sum test_arr in
-let exact = 10000.0 in
-Printf.printf "\n   Naive sum of 0.1*100000: %.10f (error: %.2e)\n"
-  naive_sum (abs_float (naive_sum -. exact));
-Printf.printf "   Kahan sum of 0.1*100000: %.10f (error: %.2e)\n"
-  k_sum (abs_float (k_sum -. exact));;
+let () =
+  let test_arr = Array.init 100000 (fun _ -> 0.1) in
+  let naive_sum = Array.fold_left (+.) 0.0 test_arr in
+  let k_sum = kahan_sum test_arr in
+  let exact = 10000.0 in
+  Printf.printf "\n   Naive sum of 0.1*100000: %.10f (error: %.2e)\n"
+    naive_sum (abs_float (naive_sum -. exact));
+  Printf.printf "   Kahan sum of 0.1*100000: %.10f (error: %.2e)\n"
+    k_sum (abs_float (k_sum -. exact));;
 
 (* 6) 浮点数的范围 *)
 print_endline "\n6) Float range:";

@@ -20,7 +20,7 @@
 (* 辅助输出函数：打印分隔线和标题 *)
 let section n title =
   Printf.printf "\n---- %d) %s ----\n" n title;
-  print_endline (String.make 50 '-')
+  print_endline (String.make 50 '-');;
 
 (* ========================================================================
    1) ref 引用：! 取值, := 赋值
@@ -116,12 +116,13 @@ let next c =
   c.count <- c.count + c.step;
   current;;
 
-let c = make_counter 0 2 in
-Printf.printf "Counter next: %d\n" (next c);
-Printf.printf "Counter next: %d\n" (next c);
-Printf.printf "Counter next: %d\n" (next c);
-c.step <- 5;;
-Printf.printf "Step changed to 5, next: %d\n" (next c);;
+let () =
+  let c = make_counter 0 2 in
+  Printf.printf "Counter next: %d\n" (next c);
+  Printf.printf "Counter next: %d\n" (next c);
+  Printf.printf "Counter next: %d\n" (next c);
+  c.step <- 5;
+  Printf.printf "Step changed to 5, next: %d\n" (next c);;
 
 (* ========================================================================
    3) Array 数组
@@ -310,41 +311,43 @@ Printf.printf "bprintf result: %s\n" (Buffer.contents buf3);;
 section 6 "Physical equality (==) vs structural equality (=)";;
 
 (* 对于不可变值，通常相等 *)
-let x = [1; 2; 3] in
-let y = [1; 2; 3] in
-Printf.printf "List x = y (structural): %b\n" (x = y);
-Printf.printf "List x == y (physical): %b\n" (x == y);;
+let () =
+  let x = [1; 2; 3] in
+  let y = [1; 2; 3] in
+  Printf.printf "List x = y (structural): %b\n" (x = y);
+  Printf.printf "List x == y (physical): %b\n" (x == y);;
 
 (* 对于 ref - 两个独立创建但值相同的 ref *)
-let r1 = ref 42 in
-let r2 = ref 42 in
-let r3 = r1 in  (* r3 和 r1 指向同一个引用 *)
-Printf.printf "ref 42 = ref 42 (structural): %b\n" (r1 = r2);
-Printf.printf "ref 42 == ref 42 (physical): %b\n" (r1 == r2);
-Printf.printf "r1 == r3 (same reference): %b\n" (r1 == r3);;
-
-(* 修改 r1 不会影响 r2，但会影响 r3 *)
-r1 := 100;;
-Printf.printf "After r1 := 100:\n";
-Printf.printf "  r1 = %d, r2 = %d, r3 = %d\n" !r1 !r2 !r3;
-Printf.printf "  r1 = r2 (structural): %b\n" (r1 = r2);
-Printf.printf "  r1 == r3 (physical): %b\n" (r1 == r3);;
-
-(* 数组的物理相等 vs 结构相等 *)
-let a1 = [| 1; 2; 3 |] in
-let a2 = [| 1; 2; 3 |] in
-let a3 = a1 in
-Printf.printf "Array structural equality: %b\n" (a1 = a2);
-Printf.printf "Array physical equality: %b\n" (a1 == a2);
-Printf.printf "Array same reference: %b\n" (a1 == a3);;
+let () =
+  let r1 = ref 42 in
+  let r2 = ref 42 in
+  let r3 = r1 in  (* r3 和 r1 指向同一个引用 *)
+  Printf.printf "ref 42 = ref 42 (structural): %b\n" (r1 = r2);
+  Printf.printf "ref 42 == ref 42 (physical): %b\n" (r1 == r2);
+  Printf.printf "r1 == r3 (same reference): %b\n" (r1 == r3);
+  (* 修改 r1 不会影响 r2，但会影响 r3 *)
+  r1 := 100;
+  Printf.printf "After r1 := 100:\n";
+  Printf.printf "  r1 = %d, r2 = %d, r3 = %d\n" !r1 !r2 !r3;
+  Printf.printf "  r1 = r2 (structural): %b\n" (r1 = r2);
+  Printf.printf "  r1 == r3 (physical): %b\n" (r1 == r3);;
 
 (* 物理相等的用途：检测是否是同一个可变对象 *)
 let is_same_array a b =
   if a == b then "Same array (same memory)"
   else if a = b then "Different arrays, same contents"
   else "Different arrays, different contents";;
-Printf.printf "a1 vs a2: %s\n" (is_same_array a1 a2);
-Printf.printf "a1 vs a3: %s\n" (is_same_array a1 a3);;
+
+(* 数组的物理相等 vs 结构相等 *)
+let () =
+  let a1 = [| 1; 2; 3 |] in
+  let a2 = [| 1; 2; 3 |] in
+  let a3 = a1 in
+  Printf.printf "Array structural equality: %b\n" (a1 = a2);
+  Printf.printf "Array physical equality: %b\n" (a1 == a2);
+  Printf.printf "Array same reference: %b\n" (a1 == a3);
+  Printf.printf "a1 vs a2: %s\n" (is_same_array a1 a2);
+  Printf.printf "a1 vs a3: %s\n" (is_same_array a1 a3);;
 
 (* ========================================================================
    7) 闭包封装可变状态
@@ -396,19 +399,20 @@ let make_bank_account initial_balance =
     method transactions = get_transactions ()
   end;;
 
-let account = make_bank_account 1000.0 in
-Printf.printf "Initial balance: %.2f\n" account#balance;
-account#deposit 500.0;
-Printf.printf "After deposit 500: %.2f\n" account#balance;
-let success = account#withdraw 200.0 in
-Printf.printf "Withdraw 200 success: %b, balance: %.2f\n" success account#balance;
-let success2 = account#withdraw 2000.0 in
-Printf.printf "Withdraw 2000 success: %b, balance: %.2f\n" success2 account#balance;
-print_endline "Transactions:";
-List.iter (function
-  | `Deposit amt -> Printf.printf "  Deposit: %.2f\n" amt
-  | `Withdraw amt -> Printf.printf "  Withdraw: %.2f\n" amt
-) account#transactions;;
+let () =
+  let account = make_bank_account 1000.0 in
+  Printf.printf "Initial balance: %.2f\n" account#balance;
+  account#deposit 500.0;
+  Printf.printf "After deposit 500: %.2f\n" account#balance;
+  let success = account#withdraw 200.0 in
+  Printf.printf "Withdraw 200 success: %b, balance: %.2f\n" success account#balance;
+  let success2 = account#withdraw 2000.0 in
+  Printf.printf "Withdraw 2000 success: %b, balance: %.2f\n" success2 account#balance;
+  print_endline "Transactions:";
+  List.iter (function
+    | `Deposit amt -> Printf.printf "  Deposit: %.2f\n" amt
+    | `Withdraw amt -> Printf.printf "  Withdraw: %.2f\n" amt
+  ) account#transactions;;
 
 (* 记忆化（memoization）：用闭包 + Hashtbl 缓存计算结果 *)
 let memoize f =
@@ -423,10 +427,20 @@ let memoize f =
 let rec fib n =
   if n <= 1 then n else fib (n - 1) + fib (n - 2);;
 
-let memo_fib = memoize (fun n ->
-  let rec fib' n = if n <= 1 then n else memo_fib (n - 1) + memo_fib (n - 2)
-  in fib' n
-);;
+(* 注意：不能写成 let memo_fib = memoize fib 让递归调用穿过缓存——
+   那 memo_fib 在自己的定义里引用自己，let 无法递归；
+   递归调用也会绕过缓存。正确做法是把缓存放进递归函数内部： *)
+let memo_fib =
+  let cache = Hashtbl.create 16 in
+  let rec fib n =
+    match Hashtbl.find_opt cache n with
+    | Some v -> v
+    | None ->
+        let r = if n <= 1 then n else fib (n - 1) + fib (n - 2) in
+        Hashtbl.replace cache n r;
+        r
+  in
+  fib;;
 Printf.printf "memo_fib 10 = %d\n" (memo_fib 10);
 Printf.printf "memo_fib 20 = %d\n" (memo_fib 20);
 Printf.printf "memo_fib 30 = %d\n" (memo_fib 30);;

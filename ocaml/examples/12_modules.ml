@@ -9,7 +9,7 @@
      4. open 与局部 open
      5. include
      6. 子模块
-     7. 一个签名两套实现
+     7. 一个签名两套实现 + 首类模块（elt/t 分离签名）
 
    运行方式：
      ocaml 12_modules.ml
@@ -20,7 +20,7 @@
 (* 辅助输出函数：打印分隔线和标题 *)
 let section n title =
   Printf.printf "\n---- %d) %s ----\n" n title;
-  print_endline (String.make 50 '-')
+  print_endline (String.make 50 '-');;
 
 (* ========================================================================
    1) module 定义结构
@@ -49,8 +49,9 @@ let s = Stack.empty
   |> Stack.push 2
   |> Stack.push 3;;
 Printf.printf "Stack size: %d\n" (Stack.size s);;
-let top, rest = Stack.pop s in
-Printf.printf "Top element: %d, rest size: %d\n" top (Stack.size rest);;
+let () =
+  let top, rest = Stack.pop s in
+  Printf.printf "Top element: %d, rest size: %d\n" top (Stack.size rest);;
 
 (* ========================================================================
    2) module type 定义签名
@@ -96,8 +97,9 @@ let abs_s = AbstractStack.empty
   |> AbstractStack.push "hello"
   |> AbstractStack.push "world";;
 Printf.printf "AbstractStack size: %d\n" (AbstractStack.size abs_s);;
-let top, _ = AbstractStack.pop abs_s in
-Printf.printf "AbstractStack top: %s\n" top;;
+let () =
+  let top, _ = AbstractStack.pop abs_s in
+  Printf.printf "AbstractStack top: %s\n" top;;
 
 (* 注意：AbstractStack.t 是抽象的，下面这行如果取消注释会报错 *)
 (* let _ : string list = abs_s *)  (* 错误：类型不匹配 *)
@@ -124,9 +126,10 @@ Printf.printf "Local open result (list len): %d\n" (demo_local_open_1 [1; 2; 3; 
 (* 局部 open 方式二：Module.( ... ) *)
 let demo_local_open_2 lst =
   List.(map (fun x -> x + 1) lst |> rev);;
-let result = demo_local_open_2 [1; 2; 3] in
-Printf.printf "Local open M.(...) result: [%s]\n"
-  (String.concat "; " (List.map string_of_int result));;
+let () =
+  let result = demo_local_open_2 [1; 2; 3] in
+  Printf.printf "Local open M.(...) result: [%s]\n"
+    (String.concat "; " (List.map string_of_int result));;
 
 (* 也可以只 open 特定的几个名字 *)
 let demo_open_only () =
@@ -161,16 +164,17 @@ module IntSetExtended = struct
   let cardinal s = List.length (elements s)
 end;;
 
-let set1 = IntSetExtended.of_list [3; 1; 4; 1; 5; 9] in
-let set2 = IntSetExtended.of_list [2; 7; 1; 8; 2; 8] in
-Printf.printf "Set1 elements: [%s]\n"
-  (String.concat ", " (List.map string_of_int (IntSetExtended.elements set1)));
-Printf.printf "Set1 cardinal: %d\n" (IntSetExtended.cardinal set1);
-Printf.printf "Union cardinal: %d\n"
-  (IntSetExtended.cardinal (IntSetExtended.union set1 set2));
-Printf.printf "Inter elements: [%s]\n"
-  (String.concat ", " (List.map string_of_int
-    (IntSetExtended.elements (IntSetExtended.inter set1 set2))));;
+let () =
+  let set1 = IntSetExtended.of_list [3; 1; 4; 1; 5; 9] in
+  let set2 = IntSetExtended.of_list [2; 7; 1; 8; 2; 8] in
+  Printf.printf "Set1 elements: [%s]\n"
+    (String.concat ", " (List.map string_of_int (IntSetExtended.elements set1)));
+  Printf.printf "Set1 cardinal: %d\n" (IntSetExtended.cardinal set1);
+  Printf.printf "Union cardinal: %d\n"
+    (IntSetExtended.cardinal (IntSetExtended.union set1 set2));
+  Printf.printf "Inter elements: [%s]\n"
+    (String.concat ", " (List.map string_of_int
+      (IntSetExtended.elements (IntSetExtended.inter set1 set2))));;
 
 (* ========================================================================
    6) 子模块
@@ -228,20 +232,27 @@ Printf.printf "Stats.variance [1;2;3;4;5] = %.2f\n" Math.Stats.(variance [1;2;3;
 *)
 section 7 "One signature, two implementations";;
 
-(* 定义一个集合的签名 *)
+(* 定义一个集合的签名。
+   这里把元素类型（elt）与集合类型（t）拆成两个抽象类型，
+   这是标准库 Set / Map 的设计方式（如 Map.Make 的参数签名）。
+   上一版签名写成 type 'a t，配合首类模块时 package type 无法表达
+   'a t = 'a S.t（参数化类型方程不允许），拆成 elt/t 后用
+   with type elt = ... 即可精确约束元素类型。 *)
 module type SET = sig
-  type 'a t
-  val empty : 'a t
-  val mem : 'a -> 'a t -> bool
-  val add : 'a -> 'a t -> 'a t
-  val remove : 'a -> 'a t -> 'a t
-  val elements : 'a t -> 'a list
-  val size : 'a t -> int
+  type elt                          (* 元素类型 *)
+  type t                            (* 集合类型（对外抽象） *)
+  val empty : t
+  val mem : elt -> t -> bool
+  val add : elt -> t -> t
+  val remove : elt -> t -> t
+  val elements : t -> elt list
+  val size : t -> int
 end;;
 
 (* 实现一：基于列表的集合（简单但效率低） *)
-module ListSet : SET = struct
-  type 'a t = 'a list
+module ListSet : SET with type elt = int = struct
+  type elt = int
+  type t = elt list
   let empty = []
   let mem = List.mem
   let add x s = if mem x s then s else x :: s
@@ -251,8 +262,9 @@ module ListSet : SET = struct
 end;;
 
 (* 实现二：基于有序树的集合（更高效） *)
-module TreeSet : SET = struct
-  type 'a t = Empty | Node of 'a t * 'a * 'a t
+module TreeSet : SET with type elt = int = struct
+  type elt = int
+  type t = Empty | Node of t * elt * t
 
   let empty = Empty
 
@@ -303,8 +315,11 @@ module TreeSet : SET = struct
     | Node (left, _, right) -> 1 + size left + size right
 end;;
 
-(* 测试 ListSet *)
-let test_set (type a) (module S : SET with type 'a t = 'a S.t) name =
+(* 首类模块（first-class module）：把模块当作值传给函数。
+   (module S : SET with type elt = int) 把 ListSet/TreeSet 打包成
+   首类值，函数体内通过 let open S 使用它们——同一套测试代码
+   跑两套实现。 *)
+let test_set (module S : SET with type elt = int) name =
   let open S in
   let s = empty
     |> add 3

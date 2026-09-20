@@ -19,7 +19,7 @@
 (* 辅助输出函数：打印分隔线和标题 *)
 let section n title =
   Printf.printf "\n---- %d) %s ----\n" n title;
-  print_endline (String.make 50 '-')
+  print_endline (String.make 50 '-');;
 
 (* 辅助函数：打印序列的前 n 个元素 *)
 let print_seq label n seq =
@@ -32,7 +32,7 @@ let print_seq label n seq =
   let items = take n seq [] in
   Printf.printf "%s (first %d): [%s%s]\n" label n
     (String.concat "; " (List.map string_of_int items))
-    (if Seq.is_empty (Seq.drop n seq) then "" else "; ...")
+    (if Seq.is_empty (Seq.drop n seq) then "" else "; ...");;
 
 (* ========================================================================
    1) Seq 序列（惰性序列）
@@ -47,19 +47,19 @@ let print_seq label n seq =
 section 1 "Seq (lazy sequences)";;
 
 (* 从列表创建序列 *)
-let s1 = List.to_seq [1; 2; 3; 4; 5]
+let s1 = List.to_seq [1; 2; 3; 4; 5];;
 print_seq "From list" 10 s1;;
 
 (* 空序列 *)
-let empty_seq = Seq.empty
+let empty_seq = Seq.empty;;
 Printf.printf "Empty seq is_empty: %b\n" (Seq.is_empty empty_seq);;
 
 (* 单元素序列 *)
-let single = Seq.return 42
+let single = Seq.return 42;;
 print_seq "Single element" 5 single;;
 
 (* cons : 在序列前添加元素 *)
-let s2 = Seq.cons 0 s1
+let s2 = Seq.cons 0 s1;;
 print_seq "Cons 0 to list seq" 10 s2;;
 
 (* 访问序列的头部 *)
@@ -71,11 +71,11 @@ print_seq "Cons 0 to list seq" 10 s2;;
 let count_up start =
   Seq.unfold (fun n -> Some (n, n + 1)) start
 
-let s3 = count_up 1
+let s3 = count_up 1;;
 print_seq "Unfold count from 1" 10 s3;;
 
 (* Seq.init : 按索引生成序列 *)
-let s4 = Seq.init 10 (fun i -> i * i)
+let s4 = Seq.init 10 (fun i -> i * i);;
 print_seq "Seq.init 10 (i*i)" 15 s4;;
 
 (* Seq.forever : 重复调用函数生成无限序列 *)
@@ -102,19 +102,19 @@ section 2 "Sequence generation and transformation";;
 
 (* map *)
 let nums = Seq.ints 0  (* 0, 1, 2, 3, ... *)
-let doubled = Seq.map (fun x -> x * 2) nums
+let doubled = Seq.map (fun x -> x * 2) nums;;
 print_seq "ints 0" 10 nums;;
 print_seq "map (*2)" 10 doubled;;
 
 (* filter *)
 let evens = Seq.filter (fun x -> x mod 2 = 0) nums
-let odds = Seq.filter (fun x -> x mod 2 <> 0) nums
+let odds = Seq.filter (fun x -> x mod 2 <> 0) nums;;
 print_seq "evens (filter)" 10 evens;;
 print_seq "odds (filter)" 10 odds;;
 
 (* take / drop *)
 let first5 = Seq.take 5 nums
-let from5 = Seq.drop 5 nums
+let from5 = Seq.drop 5 nums;;
 print_seq "take 5" 10 first5;;
 print_seq "drop 5 (first 5 shown)" 5 from5;;
 
@@ -125,7 +125,7 @@ Printf.printf "Sum of first 10 ints: %d\n" sum_first_10;;
 (* append *)
 let s_a = Seq.init 3 (fun i -> i)  (* 0, 1, 2 *)
 let s_b = Seq.init 3 (fun i -> i + 10)  (* 10, 11, 12 *)
-let s_appended = Seq.append s_a s_b
+let s_appended = Seq.append s_a s_b;;
 print_seq "s_a" 10 s_a;
 print_seq "s_b" 10 s_b;
 print_seq "append" 10 s_appended;;
@@ -133,7 +133,7 @@ print_seq "append" 10 s_appended;;
 (* flat_map : 每个元素展开为一个序列 *)
 let pairs = Seq.flat_map (fun x ->
   Seq.map (fun y -> (x, y)) (Seq.take 3 (Seq.ints 1))
-) (Seq.take 2 (Seq.ints 1))
+) (Seq.take 2 (Seq.ints 1));;
 (* 生成: (1,1) (1,2) (1,3) (2,1) (2,2) (2,3) *)
 print_endline "flat_map pairs (first 6):";
 Seq.iteri (fun i (a, b) ->
@@ -142,7 +142,7 @@ Seq.iteri (fun i (a, b) ->
 
 (* zip : 将两个序列压缩为元组序列 *)
 let letters = Seq.init 5 (fun i -> Char.chr (Char.code 'a' + i))
-let zipped = Seq.zip (Seq.ints 1) letters
+let zipped = Seq.zip (Seq.ints 1) letters;;
 print_endline "zip (int, char):";
 Seq.iteri (fun i (n, c) ->
   if i < 5 then Printf.printf "  (%d, %c)\n" n c
@@ -165,13 +165,13 @@ Printf.printf "to_array: [|%s|]\n"
 section 3 "Infinite sequences";;
 
 (* 自然数序列（使用 Seq.ints） *)
-let naturals = Seq.ints 0
+let naturals = Seq.ints 0;;
 print_seq "Naturals" 10 naturals;;
 
 (* 斐波那契序列 *)
 let fibonacci =
   let rec fib a b () = Seq.Cons (a, fib b (a + b)) in
-  fib 0 1
+  fib 0 1;;
 print_seq "Fibonacci" 15 fibonacci;;
 
 (* 素数序列（埃拉托斯特尼筛法的惰性版本） *)
@@ -182,13 +182,13 @@ let primes =
     | Seq.Cons (p, rest) ->
         Seq.Cons (p, sieve (Seq.filter (fun n -> n mod p <> 0) rest))
   in
-  sieve (Seq.ints 2)
+  sieve (Seq.ints 2);;
 print_seq "Primes" 15 primes;;
 
 (* 幂序列：2^0, 2^1, 2^2, ... *)
 let powers_of_two =
   let rec pow n () = Seq.Cons (n, pow (n * 2)) in
-  pow 1
+  pow 1;;
 print_seq "Powers of 2" 12 powers_of_two;;
 
 (* 三角数序列：1, 1+2=3, 1+2+3=6, ... *)
@@ -197,7 +197,7 @@ let triangular =
     let new_sum = sum + n in
     Seq.Cons (new_sum, tri (n + 1) new_sum)
   in
-  tri 1 0
+  tri 1 0;;
 print_seq "Triangular numbers" 10 triangular;;
 
 (* 阶乘序列 *)
@@ -206,7 +206,7 @@ let factorials =
     let new_f = f * n in
     Seq.Cons (new_f, fact (n + 1) new_f)
   in
-  fact 1 1
+  fact 1 1;;
 print_seq "Factorials" 10 factorials;;
 
 (* 使用 unfold 实现 Collatz 序列（冰雹猜想）
@@ -223,7 +223,7 @@ let test_collatz n =
   let len = Seq.length seq in
   let items = List.of_seq seq in
   Printf.printf "  Collatz(%d): [%s] (length: %d)\n" n
-    (String.concat " -> " (List.map string_of_int items)) len
+    (String.concat " -> " (List.map string_of_int items)) len;;
 
 print_endline "Collatz sequences:";
 test_collatz 6;;
@@ -246,13 +246,64 @@ test_collatz 1;;
 *)
 section 4 "Stream (traditional streams)";;
 
+(* ------------------------------------------------------------------
+   说明：OCaml 5.x 已不再随标准库发行 Stream 模块（本工具链中没有
+   stream.cma，直接使用会报 Unbound module Stream）。
+   这里用 stdlib 的 Seq + mutable record 等价实现一个最小 Stream，
+   覆盖本文件用到的 of_list / of_string / from / next / peek / junk /
+   empty / iter，使下方示例代码保持原样。
+   ------------------------------------------------------------------ *)
+module Stream = struct
+  type 'a t = { mutable data : 'a Seq.t }
+
+  let of_seq s = { data = s }
+
+  let of_list lst = of_seq (List.to_seq lst)
+
+  let of_string s = of_seq (String.to_seq s)
+
+  (* 原版 Stream.empty 返回 unit 并在非空时抛 Stream.Failure；
+     本文件按 bool 谓词的方式使用，这里直接返回 bool *)
+  let empty t = (t.data () = Seq.Nil)
+
+  exception Failure
+
+  let next t =
+    match t.data () with
+    | Seq.Cons (x, rest) -> t.data <- rest; x
+    | Seq.Nil -> raise Failure
+
+  let peek t =
+    match t.data () with
+    | Seq.Cons (x, _) -> Some x
+    | Seq.Nil -> None
+
+  let junk t =
+    match t.data () with
+    | Seq.Cons (_, rest) -> t.data <- rest
+    | Seq.Nil -> ()
+
+  let iter f t = Seq.iter f t.data
+
+  (* 原版 from : (int -> 'a option) -> 'a t，参数为已产出的元素个数 *)
+  let from f =
+    let index = ref 0 in
+    of_seq
+      (Seq.unfold
+         (fun () ->
+            match f !index with
+            | Some x -> incr index; Some (x, ())
+            | None -> None)
+         ())
+end
+
 (* 从列表创建流 *)
-let stream1 = Stream.of_list [10; 20; 30; 40; 50]
+let stream1 = Stream.of_list [10; 20; 30; 40; 50];;
 
 (* 逐个消费 *)
 Printf.printf "Stream next: %d\n" (Stream.next stream1);;
 Printf.printf "Stream next: %d\n" (Stream.next stream1);;
-Printf.printf "Stream peek: %d\n" (Stream.peek stream1);;
+Printf.printf "Stream peek: %d\n" (Option.get (Stream.peek stream1));;
 Printf.printf "Stream next: %d\n" (Stream.next stream1);;
 Printf.printf "Stream empty? %b\n" (Stream.empty stream1);;
 
@@ -262,14 +313,14 @@ let stream2 = Stream.from (fun _ ->
   incr counter;
   if !counter > 5 then None
   else Some (!counter * !counter)
-)
+) in
 
 print_endline "Stream.from (squares):";
 Stream.iter (fun x -> Printf.printf "  %d\n" x) stream2;;
 
 (* Stream 用于解析（模拟） *)
 let char_stream_of_string s =
-  Stream.of_string s
+  Stream.of_string s;;
 
 let stream3 = char_stream_of_string "hello" in
 Printf.printf "Char stream first: %c\n" (Stream.next stream3);
@@ -293,7 +344,7 @@ let parse_int_stream s =
         if Buffer.length buf = 0 then failwith "parse_int: no digits"
         else int_of_string (Buffer.contents buf)
   in
-  parse ()
+  parse ();;
 
 Printf.printf "parse_int_stream \"42\": %d\n" (parse_int_stream "42");;
 Printf.printf "parse_int_stream \"-123\": %d\n" (parse_int_stream "-123");;
@@ -307,7 +358,7 @@ let stream_of_seq seq =
     | Seq.Cons (x, rest) ->
         Obj.set_field (Obj.repr seq) 0 (Obj.repr rest);  (* 不推荐这样用 *)
         Some x
-  )
+  );;
 
 (* 更简单的方式：先转列表再转 Stream *)
 let seq_of_first_10_primes = Seq.take 10 primes in
@@ -360,7 +411,7 @@ let time_it label f =
   let result = f () in
   let elapsed = Unix.gettimeofday () -. start in
   Printf.printf "  %s: result = %d, time = %.6f seconds\n" label result elapsed;
-  result
+  result;;
 
 print_endline "Performance comparison (large data):";
 let n = 1000000 in
@@ -382,9 +433,9 @@ let list_pipeline_full n =
     | _, h :: t -> h :: take (n - 1) t
   in
   let taken = take 10 doubled in
-  List.fold_left (+) 0 taken
+  List.fold_left (+) 0 taken in
 
-let _ = time_it "List pipeline" (fun () -> list_pipeline_full n);;
+ignore (time_it "List pipeline" (fun () -> list_pipeline_full n));;
 
 (* 说明：序列的优势在于不需要分配中间数据结构，
    尤其是在大数量级下，可以节省大量内存。
@@ -408,7 +459,7 @@ let seq_with_side_effect =
   ) in
 
 side_effect_counter := 0;
-let _ = Seq.nth seq_with_side_effect 2 in
+let _ = Seq.find (fun _ -> true) (Seq.drop 2 seq_with_side_effect) in
 Printf.printf "\nAfter Seq.nth 2: counter = %d (computed up to index 2)\n"
   !side_effect_counter;
 
@@ -418,7 +469,7 @@ Printf.printf "After List.of_seq: counter = %d (computed all)\n"
   !side_effect_counter;
 
 side_effect_counter := 0;
-let _ = Seq.nth seq_with_side_effect 2 in
+let _ = Seq.find (fun _ -> true) (Seq.drop 2 seq_with_side_effect) in
 Printf.printf "After second Seq.nth 2: counter = %d (recomputed!)\n"
   !side_effect_counter;;
 
@@ -455,14 +506,14 @@ let words =
     ) w)
   |> Seq.filter (fun w -> String.length w > 3)
   |> Seq.map String.capitalize_ascii
-  |> Seq.sort String.compare
   |> List.of_seq
+  |> List.sort String.compare
 in
 Printf.printf "  Words >3 chars, capitalized, sorted: [%s]\n"
   (String.concat ", " words);;
 
 (* 示例 3：生成并筛选素数的管道 *)
-print_endline "\nPipeline 3: prime number processing";
+print_endline "\nPipeline 3: prime number processing";;
 let prime_pipeline n =
   Seq.ints 2
   |> Seq.filter (fun p ->
@@ -471,14 +522,14 @@ let prime_pipeline n =
     |> Seq.for_all (fun d -> p mod d <> 0)
   )
   |> Seq.take n
-  |> List.of_seq
+  |> List.of_seq;;
 
 let first_15_primes = prime_pipeline 15 in
 Printf.printf "  First 15 primes: [%s]\n"
   (String.concat ", " (List.map string_of_int first_15_primes));;
 
 (* 示例 4：数据统计管道 *)
-print_endline "\nPipeline 4: data statistics";
+print_endline "\nPipeline 4: data statistics";;
 type record = { name : string; age : int; score : float }
 
 let data = [
@@ -499,7 +550,7 @@ let stats =
   |> Seq.fold_left
        (fun (count, sum, min_s, max_s) s ->
          (count + 1, sum +. s, min min_s s, max max_s s))
-       (0, 0.0, max_float, neg_infinity)
+       (0, 0.0, max_float, neg_infinity);;
 
 let count, sum, min_s, max_s = stats in
 let avg = sum /. float_of_int count in
@@ -509,7 +560,7 @@ Printf.printf "  Min score: %.2f\n" min_s;
 Printf.printf "  Max score: %.2f\n" max_s;;
 
 (* 示例 5：分组聚合管道 *)
-print_endline "\nPipeline 5: group by age";
+print_endline "\nPipeline 5: group by age";;
 module IntMap = Map.Make(Int)
 
 let group_by_age records =
@@ -522,7 +573,7 @@ let group_by_age records =
   |> IntMap.to_seq
   |> Seq.map (fun (age, (count, sum)) ->
        (age, count, sum /. float_of_int count))
-  |> List.of_seq
+  |> List.of_seq;;
 
 let age_groups = group_by_age data in
 Printf.printf "  %-5s %-8s %-10s\n" "Age" "Count" "Avg Score";

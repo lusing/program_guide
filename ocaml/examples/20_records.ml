@@ -19,7 +19,7 @@
 (* 辅助输出函数：打印分隔线和标题 *)
 let section n title =
   Printf.printf "\n---- %d) %s ----\n" n title;
-  print_endline (String.make 50 '-')
+  print_endline (String.make 50 '-');;
 
 (* ========================================================================
    1) 记录的高级用法
@@ -45,14 +45,16 @@ let print_point label p =
   Printf.printf "%s: (%.2f, %.2f)\n" label p.x p.y
 
 (* 记录的字段复制：使用 with 语法创建新记录 *)
-let p3 = { p1 with y = 5.0 } in  (* 复制 p1，但 y 字段改为 5.0 *)
-print_point "p1" p1;
-print_point "p2" p2;
-print_point "p3 (p1 with y=5.0)" p3;;
+let () =
+  let p3 = { p1 with y = 5.0 } in  (* 复制 p1，但 y 字段改为 5.0 *)
+  print_point "p1" p1;
+  print_point "p2" p2;
+  print_point "p3 (p1 with y=5.0)" p3;;
 
 (* 也可以同时修改多个字段 *)
-let p4 = { p1 with x = 10.0; y = 20.0 } in
-print_point "p4 (p1 with x=10, y=20)" p4;;
+let () =
+  let p4 = { p1 with x = 10.0; y = 20.0 } in
+  print_point "p4 (p1 with x=10, y=20)" p4;;
 
 (* 模式匹配解构记录 *)
 let distance p1 p2 =
@@ -60,12 +62,13 @@ let distance p1 p2 =
   let { x = x2; y = y2 } = p2 in
   sqrt ((x2 -. x1) ** 2. +. (y2 -. y1) ** 2.)
 
-let d = distance p1 p2 in
-Printf.printf "Distance between p1 and p2: %.4f\n" d;;
+let () =
+  let d = distance p1 p2 in
+  Printf.printf "Distance between p1 and p2: %.4f\n" d;;
 
 (* 更简洁的模式匹配：直接在参数中解构 *)
 let distance2 { x = x1; y = y1 } { x = x2; y = y2 } =
-  sqrt ((x2 -. x1) ** 2. +. (y2 -. y1) ** 2.)
+  sqrt ((x2 -. x1) ** 2. +. (y2 -. y1) ** 2.);;
 
 Printf.printf "Distance (v2): %.4f\n" (distance2 p1 p2);;
 
@@ -85,7 +88,7 @@ let r = {
 let area_of_rect r = r.width *. r.height
 
 let bottom_right r =
-  { x = r.top_left.x +. r.width; y = r.top_left.y -. r.height }
+  { x = r.top_left.x +. r.width; y = r.top_left.y -. r.height };;
 
 Printf.printf "Rectangle area: %.2f\n" (area_of_rect r);;
 print_point "Bottom right" (bottom_right r);;
@@ -101,7 +104,7 @@ let str_labeled = { label = "name"; value = "Alice" }
 let float_labeled = { label = "pi"; value = 3.14159 }
 
 let print_labeled to_str l =
-  Printf.printf "  [%s] %s\n" l.label (to_str l.value)
+  Printf.printf "  [%s] %s\n" l.label (to_str l.value);;
 
 print_endline "Polymorphic labeled records:";
 print_labeled string_of_int int_labeled;
@@ -117,9 +120,10 @@ let move_rect dx dy rect =
     }
   }
 
-let r' = move_rect 2.0 (-1.0) r in
-Printf.printf "After move (2.0, -1.0):\n";
-print_point "  top_left" r'.top_left;;
+let () =
+  let r' = move_rect 2.0 (-1.0) r in
+  Printf.printf "After move (2.0, -1.0):\n";
+  print_point "  top_left" r'.top_left;;
 
 (* ========================================================================
    2) 可变记录
@@ -150,15 +154,16 @@ let set_step c s =
   c.step <- s
 
 (* 使用可变记录 *)
-let c = make_counter 0 in
-Printf.printf "Counter next: %d\n" (next c);
-Printf.printf "Counter next: %d\n" (next c);
-Printf.printf "Counter next: %d\n" (next c);
-set_step c 5;
-Printf.printf "After set_step 5, next: %d\n" (next c);
-Printf.printf "Next: %d\n" (next c);
-reset c;
-Printf.printf "After reset, next: %d\n" (next c);;
+let () =
+  let c = make_counter 0 in
+  Printf.printf "Counter next: %d\n" (next c);
+  Printf.printf "Counter next: %d\n" (next c);
+  Printf.printf "Counter next: %d\n" (next c);
+  set_step c 5;
+  Printf.printf "After set_step 5, next: %d\n" (next c);
+  Printf.printf "Next: %d\n" (next c);
+  reset c;
+  Printf.printf "After reset, next: %d\n" (next c);;
 
 (* 更复杂的可变记录：玩家状态 *)
 type player = {
@@ -201,24 +206,25 @@ let print_player player =
   Printf.printf "    EXP: %d/%d\n" player.exp (player.level * 100);
   Printf.printf "    Inventory: [%s]\n" (String.concat ", " player.inventory)
 
-let hero = create_player "Hero" in
-print_endline "Player stats:";
-print_player hero;
+let () =
+  let hero = create_player "Hero" in
+  print_endline "Player stats:";
+  print_player hero;
 
-gain_exp hero 50;
-gain_exp hero 60;  (* 应该升级 *)
-add_item hero "sword";
-add_item hero "shield";
-add_item hero "potion";
-ignore (take_damage hero 30);
+  gain_exp hero 50;
+  gain_exp hero 60;  (* 应该升级 *)
+  add_item hero "sword";
+  add_item hero "shield";
+  add_item hero "potion";
+  ignore (take_damage hero 30);
 
-print_endline "After adventures:";
-print_player hero;
+  print_endline "After adventures:";
+  print_player hero;
 
-heal hero 15;
-gain_exp hero 200;  (* 应该再次升级 *)
-print_endline "After more exp and healing:";
-print_player hero;;
+  heal hero 15;
+  gain_exp hero 200;  (* 应该再次升级 *)
+  print_endline "After more exp and healing:";
+  print_player hero;;
 
 (* ========================================================================
    3) 函数字段
@@ -257,17 +263,18 @@ let make_stack () =
     to_list = (fun () -> List.rev !data);
   }
 
-let stack = make_stack () in
-print_endline "Stack with function fields:";
-stack.push 10;
-stack.push 20;
-stack.push 30;
-Printf.printf "  Size: %d\n" (stack.size ());
-Printf.printf "  Peek: %d\n" (stack.peek ());
-Printf.printf "  Pop: %d\n" (stack.pop ());
-Printf.printf "  Size after pop: %d\n" (stack.size ());
-Printf.printf "  Elements: [%s]\n"
-  (String.concat "; " (List.map string_of_int (stack.to_list ())));;
+let () =
+  let stack = make_stack () in
+  print_endline "Stack with function fields:";
+  stack.push 10;
+  stack.push 20;
+  stack.push 30;
+  Printf.printf "  Size: %d\n" (stack.size ());
+  Printf.printf "  Peek: %d\n" (stack.peek ());
+  Printf.printf "  Pop: %d\n" (stack.pop ());
+  Printf.printf "  Size after pop: %d\n" (stack.size ());
+  Printf.printf "  Elements: [%s]\n"
+    (String.concat "; " (List.map string_of_int (stack.to_list ())));;
 
 (* 更复杂的例子：字典接口，多种实现 *)
 type ('k, 'v) dict_ops = {
@@ -316,7 +323,7 @@ let test_dict name dict =
   dict.set "b" 20;
   Printf.printf "    After set b=20, get 'b': %d\n" (dict.get "b");
   dict.remove "a";
-  Printf.printf "    After remove 'a', size: %d\n" (dict.size ())
+  Printf.printf "    After remove 'a', size: %d\n" (dict.size ());;
 
 test_dict "alist" (make_alist_dict ());;
 test_dict "hashtbl" (make_hashtbl_dict ());;
@@ -355,23 +362,24 @@ let point_obj = object
 
   method to_string =
     Printf.sprintf "(%.2f, %.2f)" x y
-end
+end;;
 
 Printf.printf "Point object: %s\n" point_obj#to_string;
 point_obj#move 3.0 4.0;
 Printf.printf "After move (3, 4): %s\n" point_obj#to_string;
 Printf.printf "x = %.2f, y = %.2f\n" point_obj#get_x point_obj#get_y;;
 
-let p2_obj = object
-  val mutable x = 0.0
-  val mutable y = 0.0
-  method get_x = x
-  method get_y = y
-  initializer x <- 10.0; y <- 5.0
-end in
-Printf.printf "p2: (%.2f, %.2f)\n" p2_obj#get_x p2_obj#get_y;
-Printf.printf "Distance between point and p2: %.4f\n"
-  (point_obj#distance_to p2_obj);;
+let () =
+  let p2_obj = object
+    val mutable x = 0.0
+    val mutable y = 0.0
+    method get_x = x
+    method get_y = y
+    initializer x <- 10.0; y <- 5.0
+  end in
+  Printf.printf "p2: (%.2f, %.2f)\n" p2_obj#get_x p2_obj#get_y;
+  Printf.printf "Distance between point and p2: %.4f\n"
+    (point_obj#distance_to p2_obj);;
 
 (* 计数器对象 *)
 let counter_obj = object (self)
@@ -393,7 +401,7 @@ let counter_obj = object (self)
 
   method print =
     Printf.printf "Counter: count=%d, step=%d\n" count step
-end
+end;;
 
 print_endline "Counter object:";
 counter_obj#print;
@@ -438,13 +446,14 @@ let bank_account initial = object (self)
            (List.rev transactions)))
 end
 
-let acc = bank_account 1000.0 in
-Printf.printf "Initial balance: $%.2f\n" acc#balance;
-acc#deposit 500.0;
-ignore (acc#withdraw 200.0);
-ignore (acc#withdraw 2000.0);  (* 会失败 *)
-acc#deposit 100.0;
-print_endline acc#statement;;
+let () =
+  let acc = bank_account 1000.0 in
+  Printf.printf "Initial balance: $%.2f\n" acc#balance;
+  acc#deposit 500.0;
+  ignore (acc#withdraw 200.0);
+  ignore (acc#withdraw 2000.0);  (* 会失败 *)
+  acc#deposit 100.0;
+  print_endline acc#statement;;
 
 (* ========================================================================
    5) 类（class）简介
@@ -477,13 +486,14 @@ class point_class init_x init_y = object
 end
 
 (* 创建多个点对象（类的实例） *)
-let pt1 = new point_class 1.0 2.0 in
-let pt2 = new point_class 4.0 6.0 in
-Printf.printf "pt1 = %s\n" pt1#to_string;
-Printf.printf "pt2 = %s\n" pt2#to_string;
-pt1#move 2.0 3.0;
-Printf.printf "pt1 after move = %s\n" pt1#to_string;
-Printf.printf "pt2 unchanged = %s\n" pt2#to_string;;
+let () =
+  let pt1 = new point_class 1.0 2.0 in
+  let pt2 = new point_class 4.0 6.0 in
+  Printf.printf "pt1 = %s\n" pt1#to_string;
+  Printf.printf "pt2 = %s\n" pt2#to_string;
+  pt1#move 2.0 3.0;
+  Printf.printf "pt1 after move = %s\n" pt1#to_string;
+  Printf.printf "pt2 unchanged = %s\n" pt2#to_string;;
 
 (* 计数器类 *)
 class counter_class ?(init = 0) ?(step_val = 1) () = object
@@ -502,14 +512,15 @@ class counter_class ?(init = 0) ?(step_val = 1) () = object
   method get_count = count
 end
 
-let c1 = new counter_class ~init:0 ~step_val:1 () in
-let c2 = new counter_class ~init:100 ~step_val:10 () in
-Printf.printf "c1 next: %d\n" c1#next;
-Printf.printf "c1 next: %d\n" c1#next;
-Printf.printf "c2 next: %d\n" c2#next;
-Printf.printf "c2 next: %d\n" c2#next;
-Printf.printf "c1 count: %d\n" c1#get_count;
-Printf.printf "c2 count: %d\n" c2#get_count;;
+let () =
+  let c1 = new counter_class ~init:0 ~step_val:1 () in
+  let c2 = new counter_class ~init:100 ~step_val:10 () in
+  Printf.printf "c1 next: %d\n" c1#next;
+  Printf.printf "c1 next: %d\n" c1#next;
+  Printf.printf "c2 next: %d\n" c2#next;
+  Printf.printf "c2 next: %d\n" c2#next;
+  Printf.printf "c1 count: %d\n" c1#get_count;
+  Printf.printf "c2 count: %d\n" c2#get_count;;
 
 (* 矩形类：包含点对象 *)
 class rectangle_class x y w h = object (self)
@@ -526,23 +537,25 @@ class rectangle_class x y w h = object (self)
   method move dx dy =
     top_left#move dx dy
 
-  method contains pt =
-    let px = pt#get_x and py = pt#get_y in
-    let tx = top_left#get_x and ty = top_left#get_y in
-    px >= tx && px <= tx +. width &&
-    py <= ty && py >= ty -. height
+  method contains : 'a. (< get_x : float; get_y : float; .. > as 'a) -> bool =
+    fun pt ->
+      let px = pt#get_x and py = pt#get_y in
+      let tx = top_left#get_x and ty = top_left#get_y in
+      px >= tx && px <= tx +. width &&
+      py <= ty && py >= ty -. height
 
   method to_string =
     Printf.sprintf "Rect[top-left=%s, w=%.2f, h=%.2f, area=%.2f]"
       top_left#to_string width height self#area
 end
 
-let rect = new rectangle_class 1.0 5.0 4.0 3.0 in
-Printf.printf "Rectangle: %s\n" rect#to_string;
-let inside = new point_class 2.0 4.0 in
-let outside = new point_class 0.0 0.0 in
-Printf.printf "Contains %s? %b\n" inside#to_string (rect#contains inside);
-Printf.printf "Contains %s? %b\n" outside#to_string (rect#contains outside);;
+let () =
+  let rect = new rectangle_class 1.0 5.0 4.0 3.0 in
+  Printf.printf "Rectangle: %s\n" rect#to_string;
+  let inside = new point_class 2.0 4.0 in
+  let outside = new point_class 0.0 0.0 in
+  Printf.printf "Contains %s? %b\n" inside#to_string (rect#contains inside);
+  Printf.printf "Contains %s? %b\n" outside#to_string (rect#contains outside);;
 
 (* ========================================================================
    6) 结构继承
@@ -601,36 +614,37 @@ class rectangle_shape name w h = object (self)
 end
 
 (* 创建不同形状的对象 *)
-let s1 = new circle "circle1" 5.0 in
-let s2 = new rectangle_shape "rect1" 4.0 3.0 in
-let s3 = new shape "unknown" in
+let () =
+  let s1 = new circle "circle1" 5.0 in
+  let s2 = new rectangle_shape "rect1" 4.0 3.0 in
+  let s3 = new shape "unknown" in
 
-print_endline "Shape descriptions:";
-print_endline ("  " ^ s1#describe);
-print_endline ("  " ^ s2#describe);
-print_endline ("  " ^ s3#describe);;
+  print_endline "Shape descriptions:";
+  print_endline ("  " ^ s1#describe);
+  print_endline ("  " ^ s2#describe);
+  print_endline ("  " ^ s3#describe);
 
 (* 结构子类型：任何有 area 方法的对象都可以用下面的函数 *)
-let print_area obj =
-  Printf.printf "  Area: %.2f\n" obj#area
+  let print_area obj =
+    Printf.printf "  Area: %.2f\n" obj#area in
 
-print_endline "Using structural typing (print_area function):";
-print_area s1;
-print_area s2;
-print_area s3;;
+  print_endline "Using structural typing (print_area function):";
+  print_area s1;
+  print_area s2;
+  print_area s3;
 
 (* 多态列表：由于结构子类型，不同形状可以放在同一个列表里
    只要它们的公共类型一致 *)
-let shapes : shape list = [
-  (s1 :> shape);
-  (s2 :> shape);
-  (s3 :> shape);
-]
+  let shapes : shape list = [
+    (s1 :> shape);
+    (s2 :> shape);
+    (s3 :> shape);
+  ] in
 
-print_endline "Polymorphic shapes list:";
-List.iter (fun s ->
-  Printf.printf "  %s\n" s#describe
-) shapes;;
+  print_endline "Polymorphic shapes list:";
+  List.iter (fun s ->
+    Printf.printf "  %s\n" s#describe
+  ) shapes;;
 
 (* 更复杂的继承：正方形是矩形的一种 *)
 class square name side = object
@@ -643,10 +657,11 @@ class square name side = object
       name side super#area
 end
 
-let sq = new square "sq1" 5.0 in
-print_endline ("  " ^ sq#describe);
-Printf.printf "  Square side: %.2f, width: %.2f, height: %.2f\n"
-  sq#side sq#width sq#height;;
+let () =
+  let sq = new square "sq1" 5.0 in
+  print_endline ("  " ^ sq#describe);
+  Printf.printf "  Square side: %.2f, width: %.2f, height: %.2f\n"
+    sq#side sq#width sq#height;;
 
 (* 更多的继承层次：可动画的点 *)
 class movable_point x y = object
@@ -665,13 +680,14 @@ class movable_point x y = object
   method speed = (speed_x, speed_y)
 end
 
-let mp = new movable_point 0.0 0.0 in
-mp#set_speed 2.0 3.0;
-Printf.printf "Movable point start: %s\n" mp#to_string;
-mp#tick 1.0;
-Printf.printf "After tick(1.0): %s\n" mp#to_string;
-mp#tick 2.0;
-Printf.printf "After tick(2.0): %s\n" mp#to_string;;
+let () =
+  let mp = new movable_point 0.0 0.0 in
+  mp#set_speed 2.0 3.0;
+  Printf.printf "Movable point start: %s\n" mp#to_string;
+  mp#tick 1.0;
+  Printf.printf "After tick(1.0): %s\n" mp#to_string;
+  mp#tick 2.0;
+  Printf.printf "After tick(2.0): %s\n" mp#to_string;;
 
 (* ========================================================================
    结束标记
