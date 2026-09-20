@@ -77,11 +77,15 @@ function Get-LlvmConfig {
 }
 
 # 供后续章节使用：编译并链接一个依赖 LLVM 库的 C++ 程序（共享链接 libLLVM-22.dll）
+# 组件列表取实测有效的全集；--link-shared 下它们都映射到同一个 -lLLVM-22
 function Build-LlvmCpp {
     param([string]$Src, [string]$OutExe)
-    $cxxflags = Get-LlvmConfig @('--cxxflags')
-    $linkflags = Get-LlvmConfig @('--ldflags', '--link-shared', '--libs', 'core', 'support', 'executionengine', 'orcjit', 'irreader', 'analysis', 'passes', 'codegen', 'target', 'native', 'nativeasmparser', 'nativeasmprinter', 'transformutils')
-    & $gxx $cxxflags.Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries) $Src -o $OutExe $linkflags.Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries)
+    $rm = [System.StringSplitOptions]::RemoveEmptyEntries
+    $cxxflags = (Get-LlvmConfig @('--cxxflags')).Split(' ', $rm)
+    $linkflags = (Get-LlvmConfig @('--ldflags', '--link-shared', '--libs',
+        'core', 'support', 'executionengine', 'orcjit', 'irreader',
+        'asmparser', 'analysis', 'passes', 'transformutils')).Split(' ', $rm)
+    & $gxx $cxxflags $Src -o $OutExe $linkflags
     if ($LASTEXITCODE -ne 0) { throw "g++ 编译失败: $Src" }
 }
 
@@ -159,6 +163,87 @@ function Test-OptPipelineExample {
     }
 }
 
+# ---------- Pass 插件类（06/07）----------
+function Build-LlvmPlugin {
+    param([string]$Src, [string]$OutDll, [string[]]$Components)
+    $rm = [System.StringSplitOptions]::RemoveEmptyEntries
+    $cxx = (Get-LlvmConfig @('--cxxflags')).Split(' ', $rm)
+    $lnk = (Get-LlvmConfig (@('--ldflags', '--link-shared', '--libs') + $Components)).Split(' ', $rm)
+    & $gxx -shared $cxx $Src -o $OutDll $lnk
+    if ($LASTEXITCODE -ne 0) { throw "g++ 插件编译失败: $Src" }
+}
+
+# 06：插件构建 → opt 加载点名执行（stderr 出报告）→ 产物仍可运行
+function Test-HelloPassExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (pass 插件)" -ForegroundColor Cyan
+    $out = Get-BuildOut (Split-Path -Leaf $Dir)
+    Build-LlvmPlugin "$Dir\HelloPass.cpp" "$out\HelloPass.dll" @('core')
+    $text = Invoke-Run 'opt(hello-pass)' $opt @("-load-pass-plugin=$out\HelloPass.dll", '-passes=hello-pass', "$Dir\test.ll", '-S', '-o', "$out\after.ll") $null
+    if ($text -notmatch 'hello-pass: square') { throw "hello-pass 未打印 square 报告`n$text" }
+    Invoke-Run 'lli(after.ll)' $lli @("$out\after.ll") '==== 06 ok ====' | Out-Null
+}
+
+# 07：分析插件三种触发（点名 / -O2 EP 自动 / -O1 不触发）
+function Test-PassAnalysisExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (自定义 Analysis + EP)" -ForegroundColor Cyan
+    $out = Get-BuildOut (Split-Path -Leaf $Dir)
+    Build-LlvmPlugin "$Dir\InstStats.cpp" "$out\InstStats.dll" @('core', 'analysis')
+    $text = Invoke-Run 'opt(inst-stats,mem-stats)' $opt @("-load-pass-plugin=$out\InstStats.dll", '-passes=inst-stats,mem-stats', "$Dir\test.ll", '-disable-output') $null
+    if ($text -notmatch 'mem-stats: sum_to load=3 store=4 alloca=2') { throw "点名模式输出不符`n$text" }
+    $text2 = Invoke-Run 'opt(-O2 EP)' $opt @("-load-pass-plugin=$out\InstStats.dll", '-O2', "$Dir\test.ll", '-S', '-o', "$out\after.O2.ll") $null
+    if ($text2 -notmatch 'mem-stats: sum_to load=0') { throw "EP 未在 -O2 触发（优化后应归零）`n$text2" }
+    $text3 = Invoke-Run 'opt(-O1 对照)' $opt @("-load-pass-plugin=$out\InstStats.dll", '-O1', "$Dir\test.ll", '-S', '-o', "$out\after.O1.ll") $null
+    if ($text3 -match 'mem-stats:') { throw "-O1 不应触发 EP`n$text3" }
+    Invoke-Run 'lli(after.O2)' $lli @("$out\after.O2.ll") '==== 07 ok ====' | Out-Null
+}
+
+# ---------- C++ 工具类（08/09/11）----------
+function Test-IrBuilderExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (IRBuilder 生成 IR)" -ForegroundColor Cyan
+    $out = Get-BuildOut (Split-Path -Leaf $Dir)
+    Build-LlvmCpp "$Dir\gen_fib.cpp" "$out\gen_fib.exe"
+    Invoke-Run 'gen_fib' "$out\gen_fib.exe" @("$out\fib.ll") $null | Out-Null
+    Invoke-Run 'lli(fib.ll)' $lli @("$out\fib.ll") '==== 08 ok ====' | Out-Null
+}
+
+function Test-ValueModelExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (Value/Use + RAUW)" -ForegroundColor Cyan
+    $out = Get-BuildOut (Split-Path -Leaf $Dir)
+    Build-LlvmCpp "$Dir\walker.cpp" "$out\walker.exe"
+    $text = Invoke-Run 'walker' "$out\walker.exe" @("$Dir\walk.ll", "$out\after.ll") $null
+    if ($text -notmatch 'binary:mul x1') { throw "直方图输出不符（悬垂 StringRef 又回来了？）`n$text" }
+    if ($text -notmatch 'after RAUW: uses of @square = 0') { throw "RAUW 后仍有使用`n$text" }
+    Invoke-Run 'lli(after.ll)' $lli @("$out\after.ll") '==== 09 ok ====' | Out-Null
+}
+
+function Test-JitExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (ORC JIT)" -ForegroundColor Cyan
+    $out = Get-BuildOut (Split-Path -Leaf $Dir)
+    Build-LlvmCpp "$Dir\jit_demo.cpp" "$out\jit_demo.exe"
+    Invoke-Run 'jit_demo' "$out\jit_demo.exe" @() '==== 11 ok ====' | Out-Null
+}
+
+# ---------- 代码生成类（10）----------
+function Test-CodeGenExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (llc 本机+交叉)" -ForegroundColor Cyan
+    $out = Get-BuildOut (Split-Path -Leaf $Dir)
+    Invoke-Tool 'llc .s' $llc @("$Dir\demo.ll", '-o', "$out\demo.s")
+    Invoke-Tool 'llc .o' $llc @("$Dir\demo.ll", '-filetype=obj', '-o', "$out\demo.o")
+    Invoke-Tool 'clang link' $clang @("$out\demo.o", '-o', "$out\demo.exe")
+    Invoke-Run 'demo.exe' "$out\demo.exe" @() '==== 10 ok ====' | Out-Null
+    Invoke-Tool 'llc aarch64' $llc @('--mtriple=aarch64-linux-gnu', "$Dir\demo.ll", '-o', "$out\demo.aarch64.s")
+    $s = Get-Content "$out\demo.s" -Raw
+    if ($s -notmatch 'imul') { throw "本机汇编未见 imul" }
+    $cross = Get-Content "$out\demo.aarch64.s" -Raw
+    if ($cross -notmatch '\bmul\b') { throw "aarch64 汇编未见 mul" }
+}
+
 function Test-One {
     param([string]$Dir)
     switch (Split-Path -Leaf $Dir) {
@@ -167,6 +252,12 @@ function Test-One {
         '03_ir_types'       { Test-IrTypesExample $Dir }
         '04_ssa_phi'        { Test-SsaPhiExample $Dir }
         '05_opt_pipeline'   { Test-OptPipelineExample $Dir }
+        '06_hello_pass'     { Test-HelloPassExample $Dir }
+        '07_pass_analysis'  { Test-PassAnalysisExample $Dir }
+        '08_irbuilder'      { Test-IrBuilderExample $Dir }
+        '09_value_model'    { Test-ValueModelExample $Dir }
+        '10_codegen'        { Test-CodeGenExample $Dir }
+        '11_orc_jit'        { Test-JitExample $Dir }
         default { throw "未登记的示例目录: $(Split-Path -Leaf $Dir)（请在 build.ps1 Test-One 里补分派）" }
     }
 }
