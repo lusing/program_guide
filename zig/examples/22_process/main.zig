@@ -1,6 +1,7 @@
 //! 22 进程与系统编程：argv、环境变量、子进程、路径、时间
 //! 0.16 变化：args 迭代要 initAllocator；子进程是 process.run(gpa, io, ...)；时间在 io 上
 const std = @import("std");
+const builtin = @import("builtin");
 
 pub fn main(init: std.process.Init) !void {
     const io = init.io;
@@ -25,9 +26,12 @@ pub fn main(init: std.process.Init) !void {
     std.debug.print("PATH 长度：{d}\n", .{path_len});
 
     // ═══ 22.3 子进程：跑命令收输出（run = spawn + 管道 + wait 的合体）
-    const res = try std.process.run(mem, io, .{
-        .argv = &.{ "cmd", "/c", "echo", "hello from child" },
-    });
+    // argv 不经 shell：echo 这类内建命令要套 shell——Windows 用 cmd /c，POSIX 用 sh -c
+    const child_argv: []const []const u8 = switch (builtin.os.tag) {
+        .windows => &.{ "cmd", "/c", "echo", "hello from child" },
+        else => &.{ "sh", "-c", "echo hello from child" },
+    };
+    const res = try std.process.run(mem, io, .{ .argv = child_argv });
     std.debug.print("子进程 stdout：{s}", .{res.stdout});
 
     // ═══ 22.4 当前目录
@@ -52,7 +56,7 @@ test "路径与时间" {
     const a = std.testing.allocator;
     const j = try std.fs.path.join(a, &.{ "x", "y.txt" });
     defer a.free(j);
-    try std.testing.expectEqualStrings("x\\y.txt", j); // Windows 分隔符（正文说明平台差异）
+    try std.testing.expectEqualStrings("x" ++ std.fs.path.sep_str ++ "y.txt", j); // 平台分隔符：Windows \，POSIX /
     try std.testing.expectEqualStrings("y.txt", std.fs.path.basename(j));
     const io = std.testing.io;
     const t0 = std.Io.Timestamp.now(io, .awake);

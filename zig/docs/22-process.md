@@ -31,15 +31,18 @@ if (init.environ_map.get("USERNAME") orelse init.environ_map.get("USER")) |user|
 ## 22.3 子进程：process.run
 
 ```zig
-const res = try std.process.run(mem, io, .{
-    .argv = &.{ "cmd", "/c", "echo", "hello from child" },
-});
+// argv 不经 shell：echo 这类内建命令要套 shell——按平台分支（builtin.os.tag）
+const child_argv: []const []const u8 = switch (builtin.os.tag) {
+    .windows => &.{ "cmd", "/c", "echo", "hello from child" },
+    else     => &.{ "sh", "-c", "echo hello from child" },   // macOS/Linux
+};
+const res = try std.process.run(mem, io, .{ .argv = child_argv });
 std.debug.print("子进程 stdout：{s}", .{res.stdout});
 // res.term    结束方式（退出码/信号）
 // res.stderr  错误输出（也收进来了）
 ```
 
-0.16 的 `run(gpa, io, options)` 是"跑完收输出"的一步式——**argv 是字符串切片数组，不是 shell 命令行**（要管道/通配符自己拼 `cmd /c`）。选项还有 `cwd`、`environ_map`、`timeout`。要流式交互（往子进程 stdin 写、边跑边读 stdout）用 `std.process.spawn(io, options)` 拿 `*Child` 手动管（kill/wait 也带 io）。
+0.16 的 `run(gpa, io, options)` 是"跑完收输出"的一步式——**argv 是字符串切片数组，不是 shell 命令行**（要管道/通配符/内建命令得自己套 shell：Windows 用 `cmd /c`，POSIX 用 `sh -c`，按 `builtin.os.tag` 分支，示例已跨平台）。选项还有 `cwd`、`environ_map`、`timeout`。要流式交互（往子进程 stdin 写、边跑边读 stdout）用 `std.process.spawn(io, options)` 拿 `*Child` 手动管（kill/wait 也带 io）。
 
 ## 22.4 当前目录与路径
 

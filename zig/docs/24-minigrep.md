@@ -163,6 +163,6 @@ test "端到端：临时目录搜索" {                   // tmpDir 落盘 → �
 1. **Windows 旧终端不吃 ANSI**：Win10 1511+ 默认支持 VT 序列；老环境乱码——练习 3 的 isTty 判断顺便解决。
 2. **`zig build run` 无参数打印用法并 exit 0**：这是设计（验证脚本友好）——真 grep 没参数该退非零，练习：区分"用法错误"与"无命中"。
 3. **borrowed Match 的生命周期**：searchLines 的结果借用入参 text——main 里先 dupe 再存（Worker.searchFile 已做），否则 text free 后悬空。
-4. **递归遍历的路径分隔符**：`path.join` 平台自适应——输出里 Windows 是 `\`，断言路径的测试要写 `\`（22 章坑位同款）。
+4. **递归遍历的路径分隔符**：`path.join` 平台自适应——输出里 Windows 是 `\`、POSIX 是 `/`。断言路径的测试别写死 `\`，用 `"x" ++ std.fs.path.sep_str ++ "y.txt"` 拼平台常量（22 章示例即此跨平台写法）。
 
 ---
