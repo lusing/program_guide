@@ -54,8 +54,9 @@
             smaller (filter #(< % pivot) rest)
             equal (filter #(= % pivot) rest)
             larger (filter #(> % pivot) rest)]
+        ;; pivot 本身要并回 equal 段：equal 只包含 rest 里的重复项
         (concat (quicksort-3way smaller)
-                equal
+                (cons pivot equal)
                 (quicksort-3way larger))))))
 
 (say "3-way Quicksort [3 1 2 3 1 2 3 3]:"
