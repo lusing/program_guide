@@ -277,5 +277,5 @@ end
 
 教程正文到此结束。接下来是两个导航性文件：
 
-- 速查与坑位索引：[CHEATSheet](CHEATSheet.md)
-- 分章总览与运行方法：[README](README.md)
+- 速查与坑位索引：[CHEATSheet](../CHEATSheet.md)
+- 分章总览与运行方法：[README](../README.md)
