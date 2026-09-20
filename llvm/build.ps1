@@ -361,6 +361,34 @@ function Test-CodeGenExample {
     if ($cross -notmatch '\bmul\b') { throw "aarch64 汇编未见 mul" }
 }
 
+# ---------- 工程化与收官（21-24）----------
+function Test-FileCheckExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (FileCheck 回归)" -ForegroundColor Cyan
+    $out = Get-BuildOut (Split-Path -Leaf $Dir)
+    # 复用 20 章构建的 minilang 产 IR（同一 codegen）
+    $ml20 = Join-Path $buildDir "20_minilang_native\minilang.exe"
+    if (-not (Test-Path $ml20)) { throw "先构建 20 章的 minilang（-All 顺序保证）" }
+    Invoke-Run 'minilang ir' $ml20 @('--ir', "$Dir\fib.mini", "$out\fib.ll") $null | Out-Null
+    Invoke-Tool 'FileCheck(raw)' $FileCheck @("$Dir\checks\fib-raw.checks", '--input-file', "$out\fib.ll")
+    Invoke-Tool 'opt -O2' $opt @('-O2', "$out\fib.ll", '-S', '-o', "$out\fib.O2.ll")
+    Invoke-Tool 'FileCheck(opt)' $FileCheck @("$Dir\checks\fib-opt.checks", '--input-file', "$out\fib.O2.ll")
+    Write-Host "  FileCheck 两套断言通过"
+}
+
+function Test-ScriptExample {
+    param([string]$Dir, [string]$Marker)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (脚本)" -ForegroundColor Cyan
+    Invoke-Run 'run.ps1' "pwsh" @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "$Dir\run.ps1") $Marker | Out-Null
+}
+
+function Test-MinilangFullExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (v1.0 回归)" -ForegroundColor Cyan
+    Build-Minilang $Dir @('codegen', 'target', 'native', 'mc') | Out-Null
+    Invoke-Run 'regr.ps1' "pwsh" @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "$Dir\regr.ps1") '==== 24 ok ====' | Out-Null
+}
+
 function Test-One {
     param([string]$Dir)
     switch (Split-Path -Leaf $Dir) {
@@ -384,6 +412,10 @@ function Test-One {
         '18_minilang_cf'    { Test-MinilangCfExample $Dir }
         '19_minilang_pass'  { Test-MinilangPassExample $Dir }
         '20_minilang_native'{ Test-MinilangNativeExample $Dir }
+        '21_filecheck'      { Test-FileCheckExample $Dir }
+        '22_clang_tools'    { Test-ScriptExample $Dir '==== 22 ok ====' }
+        '23_source_tour'    { Test-ScriptExample $Dir '==== 23 ok ====' }
+        '24_minilang_full'  { Test-MinilangFullExample $Dir }
         default { throw "未登记的示例目录: $(Split-Path -Leaf $Dir)（请在 build.ps1 Test-One 里补分派）" }
     }
 }

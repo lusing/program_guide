@@ -1,0 +1,6 @@
+# 本目录的 .clang-format：clang-format --style=file 会自动找到它
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 100
+AllowShortFunctionsOnASingleLine: None
+PointerAlignment: Right

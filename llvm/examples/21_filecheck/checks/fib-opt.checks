@@ -1,0 +1,8 @@
+; -O2 后 IR 的回归断言
+; 用法：FileCheck checks\fib-opt.checks --input-file fib.O2.ll
+CHECK: define double @fib
+CHECK-NOT: alloca
+CHECK: phi double
+; instcombine 的经典改写：fsub %n, 1.0 → fadd %n, -1.0
+CHECK: fadd double %n, -1.000000e+00
+CHECK: tail call double @fib

@@ -38,6 +38,7 @@
 - [fortran](./fortran) — 现代 Fortran（F2018）教程与示例，使用 LLVM flang 23.1.0 + GNU Fortran 15.2.0 双编译器验证（22 个示例 × 2 通道全部通过）
 - [sml](./sml) — Standard ML（SML'97）教程与示例，使用 SML/NJ 110.99.9 + Poly/ML 5.9.2 + MLton 20241230 三实现验证（22 个示例 × 3 通道，20 个逐字节一致 + 2 个已登记差异）
 - [ocaml](./ocaml) — OCaml 教程与示例（31 章 / 26 示例），Windows MSYS2 UCRT64 OCaml 5.4.1 三层验证（字节码 26/26 + 原生 25/25：编译+运行+结束标记），覆盖模块系统 / functor / GADT / Domain+Effect 并发 / 绑定运算符 / ocamllex / 综合实战，附 Windows 实战六坑专题
+- [llvm](./llvm) — LLVM 应用开发教程（24 章 / 24 示例），Windows MSYS2 UCRT64 **LLVM 22.1.8 完整版**主线实测（scoop clang 23 为精简版无 opt/lli/开发库——只能当前端工具集），覆盖手写 IR / 类型系统与 GEP / SSA 与 phi / 优化管线 / 新 PM pass 插件 / IRBuilder / Value 对象模型 / llc 交叉 / ORC LLJIT JIT / MiniLang 九章连载（前端→IR→JIT→可变变量→自定义运算符→优化层→短路逻辑→统计 pass→原生 .exe，压轴曼德博 ASCII + 四路径一致性回归）/ FileCheck 测试 / clang 工具链 / llvm-project 源码导览；`build.ps1 -All` 24/24 全绿（每步退出码 + 输出标记 + FileCheck/一致性断言），CHEATSheet 收录 23 条实测坑位（PassPlugin 搬家 / ConstantExpr 删除 / CloneFunction 双重插入死循环 / 跨 Context 类型错乱 / dllexport / PowerShell 吞 `--` 等）
 - [go](./go) — Go 1.27 教程（24 章对齐 cpp20/zig 标准：接口/泛型/迭代器/测试/并发三连细讲，全部示例四层验证 gofmt+vet+test+运行，并发章加 -race）
 - [godot](./godot) — Godot 4 / GDScript 教程与示例，使用 Godot headless 执行脚本验证
 - [julia](./julia) — Julia 1.13 教程（24 章对齐 cpp20/zig 标准：多重派发/类型系统/广播/元编程/性能/Pkg 环境细讲，23 个示例三层验证运行+测试+工程，24 为迷你 ODE 求解器包工程——问题-算法-解三件套 + 自适应步长 + 收敛阶测试）
@@ -127,6 +128,7 @@
 39. [cobol](./cobol)
 40. [haskell](./haskell)
 41. [algol68](./algol68)
+42. [llvm](./llvm)
 
 ## 工具链说明
 
@@ -158,6 +160,7 @@
 - flang 23.1.0（LLVM）+ GNU Fortran 15.2.0（现代 Fortran F2018，macOS macports 安装，双编译器对照）
 - SML/NJ 110.99.9 + Poly/ML 5.9.2 + MLton 20241230（Standard ML SML'97，macOS macports 安装 smlnj/polyml，MLton 用官方 macOS 发行包 + macports 的 GMP，三实现对照）
 - OCaml / ocamlc（OCaml 字节码编译器，macOS 默认安装或通过 opam 安装）
+- LLVM 22.1.8 完整版（MSYS2 UCRT64：opt/lli/llc/llvm-config/FileCheck + g++ 16.2 + libLLVM 开发库，scoop msys2 + `pacman -S mingw-w64-ucrt-x86_64-llvm{,-tools,-libs}`；注意 scoop 的 llvm 23 是精简 clang 工具集，做不了 IR 实操；llvm-project 源码参考 `G:\github\lang\llvm-project`）
 - Julia 1.13.0（macOS 实测通道：MacPorts `/opt/local/bin/julia`；Windows 可 scoop/juliaup；两个验证入口都自动探测，不硬编码路径）
 - SWI-Prolog 10.0.2 + GNU Prolog 1.5.0 / gplc（逻辑编程，macOS macports 安装）
 - Ren'Py

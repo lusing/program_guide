@@ -1,0 +1,8 @@
+; 原始 IR（minilang --ir 直出）的回归断言
+; 注意：CHECK 按文件顺序匹配，断言顺序要跟着 IR 布局走
+; 用法：FileCheck checks\fib-raw.checks --input-file fib.ll
+CHECK: define double @fib(double %n)
+CHECK: alloca double
+CHECK: fsub double
+CHECK: phi double
+CHECK: define i32 @main()

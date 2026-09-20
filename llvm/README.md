@@ -41,14 +41,14 @@ llvm/
 | [20 ⭐⭐原生编译](docs/20-minilang-native.md) | .o 生成、lld/clang 链接出 .exe | `20_minilang_native` |
 | [21 测试](docs/21-filecheck.md) | FileCheck 语法、回归测试组织 | `21_filecheck` |
 | [22 clang 工具链](docs/22-clang-tools.md) | ast-dump、clang-format/tidy/clangd | `22_clang_tools` |
-| [23 LLVM 源码导览](docs/23-source-tour.md) | 源码树地图、v10↔v22 差异表 | `23_source_tour` |
+| [23 LLVM 源码导览](docs/23-source-tour.md) | monorepo 地图、新旧版本对照表 | `23_source_tour` |
 | [24 ⭐⭐MiniLang v1.0](docs/24-minilang-full.md) | CLI 三模式、外部函数、回归+全书坑清单 | `24_minilang_full` |
 
 ## 构建工具链
 
 - **MSYS2 UCRT64 LLVM 22.1.8**（`G:\scoop\apps\msys2\current\ucrt64`，scoop msys2 + pacman 包）：opt/lli/llc/llvm-config/FileCheck + g++ 16.2 + 完整 libLLVM——**主线工具链**，所有示例验证基于它。
 - scoop LLVM 23.1.1：仅第 22 章（clang 前端工具），ABI 与主线不互通。
-- 源码参考 `G:\github\lang\llvm`（v10 时代）：仅第 23 章阅读用。
+- 源码参考 `G:\github\lang\llvm-project`（monorepo 主干，≥24 时代）：第 23 章导览用。
 - 中文控制台乱码先 `chcp 65001`（build.ps1 已代设 UTF-8）。
 
 ## 验证命令

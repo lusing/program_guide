@@ -1,0 +1,26 @@
+# MiniLang v1.0 压轴演出：曼德博集合 ASCII 图
+# 用到：var/赋值、while 嵌套、短路 &&、if/else 表达式链、putch
+# run:  minilang run mandel.mini
+
+def unary- (v) 0 - v
+
+# 每行末尾换行；每点由逃逸速度选字符：# + . 空格
+var y = -1.2 in
+  (while y < 1.2 do
+    (var x = -2.05 in
+      (while x < 1.0 do
+        (var xi = 0, yi = 0, n = 0 in
+          (while n < 60 && (xi * xi + yi * yi) < 4.0 do
+            (var t = xi * xi - yi * yi + x in
+              ((yi = 2 * xi * yi + y) * 0 +
+               (xi = t)) * 0 +
+              (n = n + 1)))
+          * 0 +
+          (if n < 4 then putch(35)
+           else if n < 10 then putch(43)
+           else if n < 30 then putch(46)
+           else putch(32)))
+        * 0 +
+        (x = x + 0.05)))
+    * 0 +
+    (putch(10) * 0 + (y = y + 0.1)))

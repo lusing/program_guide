@@ -61,7 +61,7 @@
 |---|---|---|---|
 | MSYS2 UCRT64 的 LLVM | 22.1.8 | **完整版**：opt/llc/lli/llvm-as/dis/FileCheck/llvm-config + libLLVM 静态库/动态库 + 全部 C++ 头文件 | **主线**，所有实操 |
 | scoop 的 LLVM | 23.1.1 | **精简版**：只有 clang/clang++/clang-cl/lld/lldb/clangd/clang-tidy 等前端工具，**没有 opt/lli/llvm-config，也没有开发库和头文件** | 第 22 章 clang 工具链专题 |
-| `G:\github\lang\llvm` 源码 | 10.0 时代（2020 年的 master） | 源码树 | 第 23 章源码导览的阅读材料（带版本差异警告） |
+| `G:\github\lang\llvm-project` 源码 | monorepo 主干（≥24 时代检出） | 完整源码树（llvm/clang/lld/lldb/mlir 同仓） | 第 23 章源码导览的阅读材料（带新旧版本差异对照表） |
 
 > **实测坑（重要）**：scoop 装的 `llvm` 包是官方 Windows 发行版的精简形态——`bin` 里没有 `opt.exe`、`lli.exe`、`llc.exe`、`llvm-config.exe`，`lib` 里没有 `lib\cmake\llvm` 开发配置，`include` 里没有完整的 `llvm/IR/*.h`。**它只能当 clang 前端工具集用，做不了 IR 实验和库开发**。本教程主线必须用 MSYS2 UCRT64 里的完整 LLVM。网上说"装好 LLVM 就有 opt"的教程，在 Windows+scoop 组合下不成立。
 >
@@ -237,7 +237,7 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 02_first_ir   # 单章
 ## 1.7 本章小结
 
 - LLVM = IR + 围绕 IR 的加工机器；前端各自造，中后端全家共享。
-- 本机三套资源：**MSYS2 UCRT64 LLVM 22 是主线**（完整版），scoop LLVM 23 是前端工具精简版（第 22 章用），`G:\github\lang\llvm` 源码是 v10 时代的阅读参考（第 23 章用，注意版本差异）。
+- 本机三套资源：**MSYS2 UCRT64 LLVM 22 是主线**（完整版），scoop LLVM 23 是前端工具精简版（第 22 章用），`G:\github\lang\llvm-project` 源码是现代 monorepo 检出（第 23 章导览，附新旧版本差异对照表）。
 - `clang -S -emit-llvm` 看翻译，`lli` 秒验，`opt` 加工，`llc` 出机器码。
 - 三套 ABI 不互通；IR 文本可跨版本。
 
