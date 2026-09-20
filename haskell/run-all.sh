@@ -22,6 +22,22 @@ mkdir -p "$BUILD"
 GHC_BIN="${GHC:-ghc}"
 command -v "$GHC_BIN" >/dev/null 2>&1 || { echo "未找到 ghc（设 GHC 环境变量）"; exit 1; }
 
+# ---- UTF-8 locale 兜底 ----
+# macOS/Linux：LANG/LC_* 全空时 GHC 文件句柄退化为 ASCII 编码，写中文会抛
+# "cannot encode character" 异常。示例已尽量显式 hSetEncoding utf8（不依赖 locale），
+# 此处再兜一层：仅在完全未设时给 UTF-8，不覆盖用户显式的 LANG=C 等选择。
+if [ -z "${LC_ALL:-}" ] && [ -z "${LC_CTYPE:-}" ] && [ -z "${LANG:-}" ]; then
+    export LANG=en_US.UTF-8
+fi
+
+# ---- stack 工程旗标 ----
+# stack.yaml 钉了具体 GHC 版本（Windows 实测机为 9.12.1），换机/换系统版本不匹配会
+# 报 "No compiler found"。用系统 GHC 版本命令行覆盖，让 20/24 在任意机器都能构建。
+STACK_FLAGS=()
+if command -v stack >/dev/null 2>&1; then
+    STACK_FLAGS=(--system-ghc "--compiler=ghc-$("$GHC_BIN" --numeric-version)")
+fi
+
 PASS=0
 FAIL=0
 FAILED=""
@@ -35,7 +51,7 @@ has_ctrl() {
 check_output() { # $1=标签 $2=out文件 $3=err文件 $4=退出码 $5=标记 [$6=relaxed]
     local tag="$1" outf="$2" errf="$3" rc="$4" marker="$5" relaxed="${6:-}"
     local why=""
-    [ "$rc" -ne 0 ] && why="退出码 $rc；"
+    [ "$rc" -ne 0 ] && why="退出码 ${rc}；"
     if [ "$relaxed" != "relaxed" ] && [ -s "$errf" ]; then why="${why}stderr 非空；"
     fi
     [ -s "$outf" ] || why="${why}stdout 为空；"
@@ -79,17 +95,17 @@ test_one() {
         local exe_name=stackenv
         [ "$name" = "24_capstone" ] && exe_name=minilang
         local out="$BUILD/$name.build.out" err="$BUILD/$name.build.err" rc=0
-        (cd "$dir" && stack build) >"$out" 2>"$err" || rc=$?
+        (cd "$dir" && stack build "${STACK_FLAGS[@]}") >"$out" 2>"$err" || rc=$?
         if [ "$rc" -ne 0 ]; then
             echo "  [FAIL] build   $name"; FAIL=$((FAIL + 1)); FAILED="$FAILED\n  - $name stack build"
             head -12 "$err" | sed 's/^/        /'; return
         fi
         out="$BUILD/$name.test.out"; err="$BUILD/$name.test.err"; rc=0
-        (cd "$dir" && stack test) >"$out" 2>"$err" || rc=$?
+        (cd "$dir" && stack test "${STACK_FLAGS[@]}") >"$out" 2>"$err" || rc=$?
         check_output "test     $name (stack test)" "$out" "$err" "$rc" "$marker" relaxed
         out="$BUILD/$name.run.out"; err="$BUILD/$name.run.err"; rc=0
         [ "$name" = "24_capstone" ] && RUN_ARGS="demo"
-        (cd "$dir" && stack exec "$exe_name" ${RUN_ARGS:-}) >"$out" 2>"$err" || rc=$?
+        (cd "$dir" && stack exec "${STACK_FLAGS[@]}" "$exe_name" -- ${RUN_ARGS:-}) >"$out" 2>"$err" || rc=$?
         RUN_ARGS="" 
         check_output "run      $name (stack exec)" "$out" "$err" "$rc" "$marker" relaxed
         return

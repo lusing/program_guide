@@ -1,6 +1,9 @@
 # stack.yaml —— 本章工程最小配置（正文逐键讲解）
 # 坑（实测）：lts-24.59 自带 GHC 9.10.3，与本机 9.12.1 不匹配——
 # 用 compiler 键覆盖 + system-ghc 直接用系统编译器，不让 stack 另下 GHC
+# 换机/换系统（如 macOS 装的是 9.14.1）时，compiler 钉的版本要跟着改，或直接命令行覆盖：
+#   stack build --system-ghc --compiler=ghc-$(ghc --numeric-version)
+# run-all.sh 已自动用系统 GHC 版本覆盖，无需手改本文件
 resolver: lts-24.59
 compiler: ghc-9.12.1
 system-ghc: true

@@ -52,7 +52,7 @@ main = do
     sleepFor 0.05
     t1 <- getMonotonicTime
     bl <- byteLen (BC.pack "haskell")
-    s4 <- runSuite "kernel32 与 ByteString"
+    s4 <- runSuite "sleep 与 ByteString"
         [ expectTrue "Sleep 达时" (t1 - t0 >= 0.045)
         , expectTrue "Sleep 不挂" (t1 - t0 <= 2.0)
         , expectEq "字节长度" bl 7

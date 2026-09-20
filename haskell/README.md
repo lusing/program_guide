@@ -1,9 +1,10 @@
-# Haskell 教程（GHC 9.12.1）
+# Haskell 教程（GHC 9.12.1 / 9.14.1）
 
 纯函数式 · 强静态类型 · 惰性求值——从零教到能写解释器的程度。
 定位：**会编程（C++/Python 背景最佳）、初学 Haskell**；所有示例在 Windows 11 + GHC 9.12.1
-（scoop）+ stack 3.11.1（清华镜像）实测通过。主线只用 GHC 自带 boot 库（mtl/parsec/text/
-stm/containers…），离线可验证。
+（scoop）+ stack 3.11.1（清华镜像），以及 macOS 14 + GHC 9.14.1（MacPorts）+ stack 3.11.1
+实测通过。主线只用 GHC 自带 boot 库（mtl/parsec/text/stm/containers…），离线可验证。
+FFI 章（23）用 CPP 分平台：Windows 直链 msvcrt/kernel32，macOS/Linux 用 libc + nanosleep。
 
 ## 目录结构
 
@@ -46,24 +47,30 @@ haskell/
 | 20 | Stack 工程与生态（镜像链路实测） | ⭐ |
 | 21 | 测试（自制框架 + mini-QuickCheck） | |
 | 22 | 并发与 STM | ⭐ |
-| 23 | FFI：调 msvcrt/kernel32 | |
+| 23 | FFI：调 C（Win msvcrt/kernel32 · macOS/Linux libc+nanosleep） | |
 | 24 | 实战：MiniLang 迷你解释器 | ⭐ |
 
 ## 工具链（本机实测）
 
-| 项 | 值 |
-|---|---|
-| GHC | 9.12.1 @ G:\scoop\apps\haskell\current |
-| stack | 3.11.1 + 清华 TUNA 镜像（stackage 域被墙，配置见 20 章） |
-| 编码 | 示例开头一律 `hSetEncoding stdout/stderr utf8`（Windows 默认 GBK） |
-| 依赖 | 主线纯 boot 库；hackage 生态只作介绍 |
+| 项 | Windows | macOS |
+|---|---|---|
+| GHC | 9.12.1 @ `G:\scoop\apps\haskell\current` | 9.14.1 @ MacPorts（`/opt/local/bin`） |
+| stack | 3.11.1 + 清华 TUNA 镜像（stackage 域被墙，见 20 章） | 3.11.1（`--system-ghc --compiler` 覆盖版本钉） |
+| 编码 | 示例开头 `hSetEncoding stdout/stderr utf8`（控制台默认 GBK） | 同左；另需 UTF-8 locale，否则写中文文件抛异常 |
+| 依赖 | 主线纯 boot 库；hackage 生态只作介绍 | 同左 |
+
+> **macOS 编码坑**：`LANG/LC_*` 全空时 GHC 文件句柄退化为 ASCII，`writeFile "初始化"`（17 章）
+> 会抛 `cannot encode character`。正常终端默认 UTF-8 无碍；`run-all.sh` 已在未设 locale 时兜底
+> `LANG=en_US.UTF-8`。**stack 版本钉**：`stack.yaml` 钉 `ghc-9.12.1`，换机版本不符会报
+> `No compiler found`；`run-all.sh` 用系统 GHC 版本命令行覆盖，直接 `stack build` 时需自加
+> `--system-ghc --compiler=ghc-$(ghc --numeric-version)`。
 
 ## 验证
 
 ```bash
-pwsh ./build.ps1 -All                 # 全量：23 示例 × 运行层+测试层
+pwsh ./build.ps1 -All                 # Windows 全量：23 示例 × 运行层+测试层
 pwsh ./build.ps1 -Example 15_parsec   # 单个示例
-bash run-all.sh                       # bash 入口
+bash run-all.sh                       # bash 入口（macOS/Linux；自动兜底 locale + stack 版本）
 ```
 
 判定六条：编译 0 / 运行 0 / stderr 空 / stdout 非空无控制字符 / 结束标记 / 无 GHC 诊断字样。

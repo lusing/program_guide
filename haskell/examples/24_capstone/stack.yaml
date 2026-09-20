@@ -1,3 +1,5 @@
+# compiler 钉的版本须匹配系统 GHC；换机（如 macOS 9.14.1）改这里或命令行覆盖：
+#   stack build --system-ghc --compiler=ghc-$(ghc --numeric-version)（run-all.sh 已自动覆盖）
 resolver: lts-24.59
 compiler: ghc-9.12.1
 system-ghc: true

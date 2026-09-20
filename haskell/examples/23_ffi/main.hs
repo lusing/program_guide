@@ -1,4 +1,4 @@
--- 23 FFI：foreign import ccall、Ptr 编组、wrapper 回调、kernel32 计时
+-- 23 FFI：foreign import ccall、Ptr 编组、wrapper 回调、C sleep 计时
 -- 运行：ghc -v0 --make main.hs -o 23.exe && ./23.exe
 module Main (main) where
 
@@ -28,11 +28,11 @@ main = do
     sorted <- hsSortInts [5, 3, 9, 1, 7, 3]
     putStrLn ("qsort [5,3,9,1,7,3] = " ++ show sorted)
 
-    -- ═══ 23.3 kernel32 Sleep：毫秒计时验证
+    -- ═══ 23.3 C sleep：毫秒计时验证（Windows=kernel32 Sleep / macOS·Linux=nanosleep）
     t0 <- getMonotonicTime
     sleepFor 0.1
     t1 <- getMonotonicTime
-    putStrLn ("kernel32 Sleep 0.1s 实测 ≈ " ++ show (t1 - t0) ++ "s")
+    putStrLn ("C sleep 0.1s 实测 ≈ " ++ show (t1 - t0) ++ "s")
 
     -- ═══ 23.4 ByteString 零拷贝借出
     let bs = TE.encodeUtf8 (T.pack "hello ffi")

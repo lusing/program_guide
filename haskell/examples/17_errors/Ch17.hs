@@ -7,6 +7,7 @@ module Ch17
 
 import Control.Exception (Exception, bracket, throw, throwIO, try)
 import System.Directory (doesFileExist, removeFile)
+import System.IO (IOMode (WriteMode), hClose, hPutStr, hSetEncoding, openFile, utf8)
 
 -- ═══ 17.1 纯错误：ADT + Either（可测试、全量值语义）
 data AppError = NotAnInt String | OutOfRange Int
@@ -43,9 +44,16 @@ runBracketDemo :: IO (String, Bool)
 runBracketDemo = do
     let p = "bracket_demo.tmp"
     r <- try (bracket
-                (writeFile p "初始化")          -- 申请：建资源
+                (writeUtf8 p "初始化")          -- 申请：建资源
                 (\_ -> removeFile p)            -- 释放：异常路径也会执行
                 (\_ -> throwIO (Boom "中途失败")))  -- 使用：这里故意失败
             :: IO (Either Boom ())
     gone <- not <$> doesFileExist p
     pure (either (const "中途失败已捕获") (const "不该成功") r, gone)
+
+-- 写文件显式 UTF-8 句柄（16 章铁律）：裸 writeFile 走 locale 编码——Windows=GBK、
+-- macOS 无 LANG 时=ASCII，中文会抛 "cannot encode character"。显式 utf8 三平台一致。
+writeUtf8 :: FilePath -> String -> IO ()
+writeUtf8 p s = bracket (openFile p WriteMode) hClose $ \h -> do
+    hSetEncoding h utf8
+    hPutStr h s

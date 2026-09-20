@@ -1,4 +1,4 @@
-# Haskell 速查表（GHC 9.12.1 实测版）
+# Haskell 速查表（GHC 9.12.1 Win / 9.14.1 macOS 实测版）
 
 ## 运行与工具
 
@@ -49,14 +49,14 @@ either (const 0) id (parseAge s)                    -- 左右分流
 maybe def f m   either l r e   fromMaybe def   mapM_   traverse
 ```
 
-## Windows/工具链实测坑位索引（按章）
+## Windows/macOS 工具链实测坑位索引（按章）
 
 | # | 坑 | 章 |
 |---|---|---|
 | 1 | stdout 默认 GBK；`GHC_CHARENC=UTF-8` 无效；`hSetEncoding stdout utf8` 唯一可靠 | 02 |
 | 2 | `show`/`print` 转义非 ASCII（`"\20013\25991"`） | 02 |
 | 3 | 未捕获异常消息按代码页输出（绕过 hSetEncoding） | 02/17 |
-| 4 | `runghc` 恒 ~41s（GHCi 链接器）；验证走编译 | 01/02 |
+| 4 | `runghc` 恒 ~41s（Win，GHCi 链接器老毛病；macOS 快但仍走编译验证） | 01/02 |
 | 5 | `Int` 21! 溢出；`/` 需 Fractional；divMod vs quotRem 负数分家 | 03 |
 | 6 | **GHC 9.12 默认 -Wx-partial 警告**：head/last/tail/init（!! 除外）→ 全函数替代 | 06 等 |
 | 7 | Ord 派生序 = 构造子声明序 | 07 |
@@ -69,7 +69,7 @@ maybe def f m   either l r e   fromMaybe def   mapM_   traverse
 | 14 | Text.Parsec 不转出口 Expr 模块（buildExpressionParser 单独导） | 15/24 |
 | 15 | **buildExpressionParser 表序先紧后松**（写反 else 吞语句） | 15/24 |
 | 16 | 符号匹配须 try（`<=` 吃 `<` 不回退） | 15/24 |
-| 17 | **writeFile 默认 GBK**——写文件显式 UTF-8 句柄 | 16 |
+| 17 | **writeFile 默认 GBK（Win）/ ASCII（macOS 无 locale）**——写文件显式 UTF-8 句柄或设 `LANG` | 16/17 |
 | 18 | 惰性读句柄锁文件到 GC（写/删 permission denied；Linux 则静默清空） | 16 |
 | 19 | 文本模式写 `\r\n`、二进制读看得见——归一化 | 16 |
 | 20 | listDirectory 顺序不定——sort 后断言 | 16 |
@@ -83,7 +83,7 @@ maybe def f m   either l r e   fromMaybe def   mapM_   traverse
 | 28 | 随机断言只断性质/收敛带（种子硬编码可复现） | 14/21 |
 | 29 | 竞争演示：错误写法断 ≤n、正确写法断 ==n | 22 |
 | 30 | threadDelay 是微秒 | 22 |
-| 31 | FFI 类型精确按 C 宽度（DWORD=CUInt，不是 Word） | 23 |
+| 31 | FFI 跨平台：Win 直链 msvcrt/kernel32；macOS/Linux libc 符号无库名段 + nanosleep（POSIX 无毫秒 sleep） | 23 |
 | 32 | mtl 2.3 不转出口 throwE → throwError；transformers 隐藏包须显式依赖 | 24 |
 
 ## 验证命令
