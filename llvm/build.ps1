@@ -228,6 +228,123 @@ function Test-JitExample {
     Invoke-Run 'jit_demo' "$out\jit_demo.exe" @() '==== 11 ok ====' | Out-Null
 }
 
+# ---------- MiniLang 渐进系列（12-20）----------
+# 每章一份独立完整的 minilang.cpp（前章代码 + 本章增量），测试文件各异
+$MinilangLibs = @('core', 'support', 'orcjit', 'executionengine', 'passes', 'analysis')
+
+function Build-Minilang {
+    param([string]$Dir, [string[]]$ExtraLibs = @())
+    $out = Get-BuildOut (Split-Path -Leaf $Dir)
+    $rm = [System.StringSplitOptions]::RemoveEmptyEntries
+    $cxx = (Get-LlvmConfig @('--cxxflags')).Split(' ', $rm)
+    $lnk = (Get-LlvmConfig (@('--ldflags', '--link-shared', '--libs') + $MinilangLibs + $ExtraLibs)).Split(' ', $rm)
+    & $gxx $cxx "$Dir\minilang.cpp" -o "$out\minilang.exe" $lnk
+    if ($LASTEXITCODE -ne 0) { throw "minilang 编译失败: $Dir" }
+    return "$out\minilang.exe"
+}
+
+function Test-MinilangFrontExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (前端: 词法+解析+AST)" -ForegroundColor Cyan
+    $out = Get-BuildOut (Split-Path -Leaf $Dir)
+    & $gxx -std=c++17 "$Dir\minilang.cpp" -o "$out\minilang.exe"
+    if ($LASTEXITCODE -ne 0) { throw "minilang(v0.1) 编译失败" }
+    $text = Invoke-Run 'minilang --ast' "$out\minilang.exe" @('--ast', "$Dir\test.mini") '==== 12 ok ===='
+    if ($text -notmatch '\(binary - \(binary \+ 1 \(binary \* 2 3\)\) \(binary / 4 2\)\)') { throw "优先级解析结果不符`n$text" }
+}
+
+function Test-MinilangIrExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (AST→IR + lli 执行)" -ForegroundColor Cyan
+    $out = Get-BuildOut (Split-Path -Leaf $Dir)
+    $exe = Build-Minilang $Dir
+    Invoke-Run 'minilang --ir' $exe @('--ir', "$Dir\test.mini", "$out\test.ll") '==== 13 ok ====' | Out-Null
+    $text = Invoke-Run 'lli(test.ll)' $lli @("$out\test.ll") $null
+    foreach ($expected in @('55\.0+', '5050\.0+', '7\.0+', '10\.0+', '25\.0+', '0\.0+')) {
+        if ($text -notmatch $expected) { throw "lli 输出缺少预期值 $expected`n$text" }
+    }
+}
+
+function Test-MinilangFuncsExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (JIT + 增量重定义)" -ForegroundColor Cyan
+    $exe = Build-Minilang $Dir
+    $t1 = Invoke-Run 'jit(test)' $exe @('--jit', "$Dir\test.mini") '==== 14 ok ===='
+    if ($t1 -notmatch '6\.765000e\+03') { throw "fib(20) 结果不符`n$t1" }
+    $t2 = Invoke-Run 'jit(redefine)' $exe @('--jit', "$Dir\redefine.mini") '==== 14 ok ===='
+    if ($t2 -notmatch '2\.000000e\+01' -or $t2 -notmatch '4\.000000e\+01') { throw "重定义结果不符`n$t2" }
+}
+
+function Test-MinilangVarsExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (var/赋值/alloca)" -ForegroundColor Cyan
+    $exe = Build-Minilang $Dir
+    $t = Invoke-Run 'jit(vars)' $exe @('--jit', "$Dir\test.mini") '==== 15 ok ===='
+    if ($t -notmatch '8\.320400e\+05') { throw "fibi(30) 结果不符`n$t" }
+    # alloca→phi 还原的量化验证
+    $out = Get-BuildOut (Split-Path -Leaf $Dir)
+    Invoke-Run 'minilang --ir' $exe @('--ir', "$Dir\test.mini", "$out\test.ll") $null | Out-Null
+    Invoke-Tool 'opt mem2reg' $opt @('-passes=mem2reg', "$out\test.ll", '-S', '-o', "$out\test.mem2reg.ll")
+    $raw = (Select-String -Path "$out\test.ll" -Pattern 'alloca').Count
+    $phi = (Select-String -Path "$out\test.mem2reg.ll" -Pattern '\bphi\b').Count
+    if ($raw -lt 5 -or $phi -lt 3) { throw "mem2reg 前后对比异常：alloca=$raw phi=$phi" }
+}
+
+function Test-MinilangOpsExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (自定义运算符)" -ForegroundColor Cyan
+    $exe = Build-Minilang $Dir
+    $t = Invoke-Run 'jit(ops)' $exe @('--jit', "$Dir\test.mini") '==== 16 ok ===='
+    foreach ($expected in @('7\.200000e\+02', '7\.000000e\+00', '6\.000000e\+00', '-2\.400000e\+01', '5\.500000e\+01')) {
+        if ($t -notmatch $expected) { throw "运算符结果不符（缺 $expected）`n$t" }
+    }
+}
+
+function Test-MinilangOptExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (优化层)" -ForegroundColor Cyan
+    $exe = Build-Minilang $Dir
+    $t1 = Invoke-Run 'jit(-O2)' $exe @('--jit', "$Dir\test.mini") '==== 17 ok ===='
+    $t2 = Invoke-Run 'jit0(无优化)' $exe @('--jit0', "$Dir\test.mini") '==== 17 ok ===='
+    if ($t1 -notmatch '6\.765000e\+03' -or $t2 -notmatch '6\.765000e\+03') { throw "两模式结果应一致`n$t1`n$t2" }
+    # 折叠演示：自产 IR 过 -O2 后出现内联痕迹（.i 后缀块）
+    $out = Get-BuildOut (Split-Path -Leaf $Dir)
+    Invoke-Run 'minilang --ir' $exe @('--ir', "$Dir\foldcheck.mini", "$out\foldcheck.ll") $null | Out-Null
+    Invoke-Tool 'opt -O2' $opt @('-O2', "$out\foldcheck.ll", '-S', '-o', "$out\foldcheck.O2.ll")
+    $o2 = Get-Content "$out\foldcheck.O2.ll" -Raw
+    if ($o2 -notmatch '\.i:') { throw "-O2 输出无内联痕迹（.i 块）" }
+}
+
+function Test-MinilangCfExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (while/短路)" -ForegroundColor Cyan
+    $exe = Build-Minilang $Dir
+    $t = Invoke-Run 'jit(cf)' $exe @('--jit', "$Dir\test.mini") '==== 18 ok ===='
+    if ($t -notmatch '1\.024000e\+03') { throw "power(2,10) 结果不符`n$t" }
+    if ($t -notmatch '=> 0\.000000e\+00\r?\n=> 1') { throw "短路序输出不符`n$t" }
+}
+
+function Test-MinilangPassExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (进程内统计 pass)" -ForegroundColor Cyan
+    $exe = Build-Minilang $Dir
+    $t = Invoke-Run 'minilang --stats' $exe @('--stats', "$Dir\test.mini") '==== 19 ok ===='
+    if ($t -notmatch 'sum_to bb=\d+ insts=\d+ alloca=\d+') { throw "stats 输出不符`n$t" }
+    if ($t -notmatch 'ml-stats: sum_to bb=\d+ insts=\d+ alloca=0 load=0 store=0') { throw "mem2reg 后未清零`n$t" }
+}
+
+function Test-MinilangNativeExample {
+    param([string]$Dir)
+    Write-Host "`n[Example] $(Split-Path -Leaf $Dir) (.o → 原生 exe)" -ForegroundColor Cyan
+    $out = Get-BuildOut (Split-Path -Leaf $Dir)
+    $exe = Build-Minilang $Dir @('codegen', 'target', 'native', 'mc')
+    Invoke-Run 'minilang --obj' $exe @('--obj', "$Dir\test.mini", "$out\test.o") '==== 20 ok ====' | Out-Null
+    Invoke-Tool 'clang link' $clang @("$out\test.o", '-o', "$out\test.exe")
+    $t = Invoke-Run 'test.exe' "$out\test.exe" @() $null
+    foreach ($expected in @('610\.0+', '125250\.0+', '-55\.0+')) {
+        if ($t -notmatch $expected) { throw "exe 输出缺少 $expected`n$t" }
+    }
+}
 # ---------- 代码生成类（10）----------
 function Test-CodeGenExample {
     param([string]$Dir)
@@ -258,6 +375,15 @@ function Test-One {
         '09_value_model'    { Test-ValueModelExample $Dir }
         '10_codegen'        { Test-CodeGenExample $Dir }
         '11_orc_jit'        { Test-JitExample $Dir }
+        '12_minilang_front' { Test-MinilangFrontExample $Dir }
+        '13_minilang_ir'    { Test-MinilangIrExample $Dir }
+        '14_minilang_funcs' { Test-MinilangFuncsExample $Dir }
+        '15_minilang_vars'  { Test-MinilangVarsExample $Dir }
+        '16_minilang_ops'   { Test-MinilangOpsExample $Dir }
+        '17_minilang_opt'   { Test-MinilangOptExample $Dir }
+        '18_minilang_cf'    { Test-MinilangCfExample $Dir }
+        '19_minilang_pass'  { Test-MinilangPassExample $Dir }
+        '20_minilang_native'{ Test-MinilangNativeExample $Dir }
         default { throw "未登记的示例目录: $(Split-Path -Leaf $Dir)（请在 build.ps1 Test-One 里补分派）" }
     }
 }

@@ -1,0 +1,12 @@
+# 第 19 章测试输入：统计 pass 的观察对象
+# before/after mem2reg 的对比看 alloca/load/store 列的清零
+
+def fib(n) if n < 2 then n else fib(n - 1) + fib(n - 2)
+
+def sum_to(n) var acc = 0 in (for i = 1, n, 1 in acc = acc + i) * 0 + acc
+
+def unary- (v) 0 - v
+
+print(fib(10))
+
+print(-sum_to(100))

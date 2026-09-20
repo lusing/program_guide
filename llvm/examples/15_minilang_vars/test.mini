@@ -1,0 +1,21 @@
+# 第 15 章测试输入：可变变量 + 迭代式算法（不再被迫递归）
+
+# 迭代累加：var 引入栈槽，for 里用赋值累积
+def sum_to(n) var acc = 0 in (for i = 1, n, 1 in acc = acc + i) * 0 + acc
+
+# 迭代 fib（变量交换）
+def fibi(n)
+  var a = 0, b = 1, t = 0 in
+    (for i = 1, n, 1 in (t = a + b) * 0 + (a = b) * 0 + (b = t)) * 0 + a
+
+# 遮蔽：内层 var x 压住外层
+var x = 1 in var x = x + 1 in x
+
+# 参数可变
+def bump(p) (p = p + 1) * 0 + p
+
+print(sum_to(100))
+
+print(fibi(30))
+
+print(bump(41))

@@ -1,0 +1,14 @@
+# 第 20 章测试输入：编成真正的 .exe
+# minilang --obj test.mini test.o && clang test.o -o test.exe && ./test.exe
+
+def fib(n) if n < 2 then n else fib(n - 1) + fib(n - 2)
+
+def sum_to(n) var acc = 0 in (for i = 1, n, 1 in acc = acc + i) * 0 + acc
+
+def unary- (v) 0 - v
+
+print(fib(15))
+
+print(sum_to(500))
+
+print(-fib(10))

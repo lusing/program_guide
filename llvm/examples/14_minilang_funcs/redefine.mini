@@ -1,0 +1,10 @@
+# 第 14 章：重定义——ResourceTracker 撤销旧定义
+# 预期：先 20.000000，后 40.000000
+
+def twice(x) x + x
+
+print(twice(10))
+
+def twice(x) x * 4
+
+print(twice(10))

@@ -1,0 +1,22 @@
+# 第 12 章测试输入：覆盖全部语法形态
+
+# 注释行会被词法器整行吞掉
+
+extern print(x)
+
+def fib(n) if n < 2 then n else fib(n - 1) + fib(n - 2)
+
+def sum_to(n)
+  for i = 1, n, 1 in
+    # for 体内先算不出——这里是表达式占位
+    i
+
+1 + 2 * 3 - 4 / 2
+
+fib(10)
+
+(1 + 2) * 3
+
+if 1 < 2 then 10 else 20
+
+for i = 1, 5 in i * i

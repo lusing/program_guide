@@ -1,0 +1,20 @@
+# 第 13 章测试输入：print 是内置函数（降级为 printf）
+
+extern sin(x)
+
+def fib(n) if n < 2 then n else fib(n - 1) + fib(n - 2)
+
+# v0.2 还没有可变变量——累加只能递归（第 15 章的 var 会解决这一点）
+def sum_to(n) if n < 1 then 0 else n + sum_to(n - 1)
+
+print(fib(10))
+
+print(sum_to(100))
+
+print((1 + 2) * 3 - 4 / 2)
+
+print(if 1 < 2 then 10 else 20)
+
+print(for i = 1, 5, 0.5 in i * i)
+
+print(sin(0))

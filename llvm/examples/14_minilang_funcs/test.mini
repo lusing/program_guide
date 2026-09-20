@@ -1,0 +1,16 @@
+# 第 14 章测试输入：JIT 逐项执行 + 增量定义
+# def/extern 逐个进 JIT；顶层表达式即编即调，值回显为 => 行
+
+extern sin(x)
+
+def fib(n) if n < 2 then n else fib(n - 1) + fib(n - 2)
+
+def sum_to(n) if n < 1 then 0 else n + sum_to(n - 1)
+
+print(fib(10))
+
+fib(20)
+
+sum_to(100)
+
+print(sin(0))

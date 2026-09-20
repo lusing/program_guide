@@ -1,0 +1,25 @@
+# 第 16 章测试输入：用户自定义运算符
+
+# 一元 ! = 阶乘（递归调用自己这个运算符）
+def unary! (x) if x < 1 then 1 else x * !(x - 1)
+
+# 一元负号也要"装出来"——MiniLang 连内置 - 都没有，一切都是库
+def unary- (v) 0 - v
+
+# 二元 | = 取大，优先级 5（比 + 还松，所以 1+2|3+4 = 3|7 = 7）
+def binary| 5 (l r) if l < r then r else l
+
+# 二元 ~ = 取小，优先级 60（比 * 还紧）
+def binary~ 60 (l r) if l < r then l else r
+
+def fib(n) if n < 2 then n else fib(n - 1) + fib(n - 2)
+
+print(!(6))
+
+print(1 + 2 | 3 + 4)
+
+print(4 ~ 3 * 2)
+
+print(-!(4))
+
+print(fib(10))
