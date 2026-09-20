@@ -74,6 +74,7 @@ let demo_char () =
   print_string "c_z = '"; print_char c_z; print_string "' (ASCII ";
   print_int (Char.code c_z); print_string ")\n";
   print_string "Char.chr 65 = '"; print_char (Char.chr 65); print_string "'\n";
+  print_string "Char.code '\\n' = "; print_int (Char.code c_newline); print_newline ();
   say "char is 8-bit; use string for Unicode text."
 
 (* ---- 5) 基础类型：string ---- *)
@@ -102,6 +103,7 @@ let demo_unit () =
   say "";
   say "=== Section 6: unit type ===";
   let u = () in
+  say ("u = () -> " ^ string_of_bool (u = ()));
   say "unit has exactly one value: ()";
   say "Functions with side effects (like print) return unit.";
   (* 忽略一个值的方式：用 _ 或 ignore *)
@@ -125,6 +127,7 @@ let demo_type_alias () =
   let (p : point) = (1.5, 2.5) in
   say ("name: " ^ n);
   print_string "age: "; print_int a; print_newline ();
+  Printf.printf "point: (%g, %g)\n" (fst p) (snd p);
   say "point is a (float * float) tuple alias";
   say "Type aliases are transparent - name and string are the same type."
 
@@ -140,6 +143,7 @@ let demo_inference () =
   let y = 3.14 in         (* float *)
   let f a b = a + b in    (* int -> int -> int *)
   let g x = x ^ "!" in    (* string -> string *)
+  Printf.printf "x = %d, y = %g\n" x y;
   print_string "f 3 4 = "; print_int (f 3 4); print_newline ();
   say ("g \"hello\" = " ^ g "hello");
   say "Types are inferred automatically - no annotations needed."

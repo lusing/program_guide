@@ -2,7 +2,8 @@ param(
     [switch]$All,
     [string]$File,
     [switch]$Clean,
-    [switch]$Native,   # 额外用 ocamlopt 做原生编译并运行
+    [switch]$Native,   # 追加 ocamlopt 原生通道
+    [switch]$Interp,   # 追加顶层解释器通道（ocaml X.ml）
     [switch]$NoRun     # 只编译不运行
 )
 
@@ -11,31 +12,39 @@ Set-Location $projectRoot
 
 $examplesDir = Join-Path $projectRoot "examples"
 $buildDir = Join-Path $projectRoot "build"
+$lexExampleDir = Join-Path $examplesDir "26_ocamllex"
+
+# 跨平台判定：$IsWindows 是只读自动变量，且 PowerShell 变量名不区分大小写，
+# 给它赋值会直接报错，所以只读一次并落到自己的变量上。
+$onWindows = if (Test-Path Variable:\IsWindows) { [bool]$IsWindows } else { $env:OS -eq 'Windows_NT' }
 
 # ----------------------------------------------------------------------
-# 工具链发现：Windows（MSYS2 UCRT64/MINGW64、scoop 的 msys2）+ macOS/Linux
+# 工具链发现：环境变量 → PATH → 常见安装目录
 # ----------------------------------------------------------------------
-function Find-Ocamlc {
-    # 1) PATH 里直接能找到
-    $cmd = Get-Command ocamlc -ErrorAction SilentlyContinue
+function Find-OcamlTool {
+    param([Parameter(Mandatory = $true)][string]$Name)
+
+    $envVar = Get-Content "Env:$Name" -ErrorAction SilentlyContinue
+    if ($envVar -and (Test-Path -LiteralPath $envVar)) { return $envVar }
+
+    $cmd = Get-Command $Name -ErrorAction SilentlyContinue
     if ($cmd) { return $cmd.Source }
 
-    # 2) 常见安装位置（Windows 的 MSYS2 系；macOS/Linux 的 brew/macports/系统）
     $candidates = @()
-    if ($IsWindows) {
+    if ($onWindows) {
         $candidates = @(
-            "C:\msys64\ucrt64\bin\ocamlc.exe",
-            "C:\msys64\mingw64\bin\ocamlc.exe",
-            "D:\msys64\ucrt64\bin\ocamlc.exe",
-            "$env:USERPROFILE\scoop\apps\msys2\current\ucrt64\bin\ocamlc.exe",
-            "G:\scoop\apps\msys2\current\ucrt64\bin\ocamlc.exe"
+            "C:\msys64\ucrt64\bin\$Name.exe",
+            "C:\msys64\mingw64\bin\$Name.exe",
+            "D:\msys64\ucrt64\bin\$Name.exe",
+            "$env:USERPROFILE\scoop\apps\msys2\current\ucrt64\bin\$Name.exe",
+            "G:\scoop\apps\msys2\current\ucrt64\bin\$Name.exe"
         )
     } else {
         $candidates = @(
-            "/usr/local/bin/ocamlc",
-            "/opt/homebrew/bin/ocamlc",
-            "/opt/local/bin/ocamlc",
-            "/usr/bin/ocamlc"
+            "/opt/local/bin/$Name",
+            "/opt/homebrew/bin/$Name",
+            "/usr/local/bin/$Name",
+            "/usr/bin/$Name"
         )
     }
     foreach ($c in $candidates) {
@@ -44,44 +53,117 @@ function Find-Ocamlc {
     return $null
 }
 
-$ocamlc = Find-Ocamlc
+$ocamlc = Find-OcamlTool "ocamlc"
 if (-not $ocamlc) {
-    throw "未找到 ocamlc。请把 OCaml 的 bin 目录加入 PATH，或在 build.ps1 的 Find-Ocamlc 候选列表里补上你的安装路径。"
+    throw "未找到 ocamlc。请把 OCaml 的 bin 目录加入 PATH，或设置环境变量 OCAMLC。"
 }
 $toolDir = Split-Path -Parent $ocamlc
 
+function Resolve-Sibling {
+    param([string]$Name)
+    $found = Find-OcamlTool $Name
+    if ($found) { return $found }
+    $cand = Join-Path $toolDir $Name
+    if (Test-Path -LiteralPath $cand) { return $cand }
+    return $null
+}
+$ocamlopt = Resolve-Sibling "ocamlopt"
+$ocamlBin = Resolve-Sibling "ocaml"
+$ocamllexBin = Resolve-Sibling "ocamllex"
+
 # Windows（MSYS2/MinGW 版 OCaml）从原生 shell 调用时不会自己定位标准库，
 # 症状是 ocaml/ocamlc 报 "Error: Unbound module Stdlib"。
-# 优先用 ocamlc -where；MSYS2 版的 -where 打印 MSYS 根的 POSIX 路径
-# （如 /ucrt64/lib/ocaml），原生 Windows 下不存在，此时从编译器位置推导。
 if (-not $env:OCAMLLIB) {
     $ocamlWhere = (& $ocamlc -where 2>$null) -join ""
     if ($ocamlWhere -and (Test-Path -LiteralPath $ocamlWhere)) {
         $env:OCAMLLIB = $ocamlWhere
-    } elseif ($IsWindows) {
+    } elseif ($onWindows) {
         $derived = Join-Path (Split-Path -Parent (Split-Path -Parent $ocamlc)) "lib\ocaml"
         if (Test-Path -LiteralPath $derived) { $env:OCAMLLIB = $derived }
     }
 }
 # 字节码可执行文件运行时依赖 ocamlrun，必须让它在 PATH 里
-if ($IsWindows -and (($env:Path -split ';') -notcontains $toolDir)) {
+if ($onWindows -and (($env:Path -split ';') -notcontains $toolDir)) {
     $env:Path = "$toolDir;$env:Path"
 }
 
-# 依赖表：用到 Unix 模块的示例需要链接 unix
+# 用到 Unix 模块的示例需要显式 -I +unix（OCaml 5 起不写会吐
+# Alert ocaml_deprecated_auto_include，那是告警，会被「编译日志为空」判失败）
 $unixExamples = @("15_algorithms", "18_io", "21_streams_seq", "22_project", "25_domains_effects")
-$stdlibDir = $env:OCAMLLIB
-$unixDir = if ($stdlibDir) { Join-Path $stdlibDir "unix" } else { $null }
 
-# ocamllex 示例：examples/26_ocamllex/ 下的 ocamllex_expr.mll + main.ml
-# （.mll 生成的模块名来自文件名，不能用数字开头，所以放子目录用合法名）
-$lexExampleDir = Join-Path $examplesDir "26_ocamllex"
+function Test-NeedsUnix {
+    param([string]$BaseName)
+    return ($unixExamples -contains $BaseName)
+}
 
-# 输出文件名：Windows 上 PowerShell 的 & 不肯执行无后缀 PE，统一加 .exe
-$exeSuffix = if ($IsWindows) { ".exe" } else { "" }
+# ----------------------------------------------------------------------
+# 判定辅助：控制字符按字节判（绕开 PowerShell 正则里的转义坑）
+# ----------------------------------------------------------------------
+function Test-HasControlChar {
+    param([Parameter(Mandatory = $true)][string]$Path)
+    foreach ($b in [System.IO.File]::ReadAllBytes($Path)) {
+        if ($b -lt 32 -and $b -ne 9 -and $b -ne 10 -and $b -ne 13) { return $true }
+    }
+    return $false
+}
 
-Write-Host "[Info] 编译器:       $ocamlc" -ForegroundColor Gray
-Write-Host "[Info] OCAMLLIB:    $env:OCAMLLIB" -ForegroundColor Gray
+function Test-HasMarker {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string]$Marker
+    )
+    # 按字节读再按 UTF-8 解码：非法字节变成替换字符，不会像 tr 那样中途截断
+    $text = [System.Text.Encoding]::UTF8.GetString([System.IO.File]::ReadAllBytes($Path))
+    return $text.Contains($Marker)
+}
+
+function Test-FileEmpty {
+    param([Parameter(Mandatory = $true)][string]$Path)
+    return ((Get-Item -LiteralPath $Path).Length -eq 0)
+}
+
+# ----------------------------------------------------------------------
+# 六条判定。返回值只有 $true/$false，明细全部走 Write-Host
+# ----------------------------------------------------------------------
+function Invoke-Check {
+    param(
+        [Parameter(Mandatory = $true)][string]$Tag,
+        [Parameter(Mandatory = $true)][string]$Marker,
+        [Parameter(Mandatory = $true)][string]$OutFile,
+        [Parameter(Mandatory = $true)][string]$ErrFile,
+        [Parameter(Mandatory = $true)][int]$ExitCode,
+        [string]$LogFile = "",     # 为空 = 本通道没有编译阶段（解释器）
+        [switch]$CompileOnly       # -NoRun：只判编译两条
+    )
+
+    $why = @()
+    if ($ExitCode -ne 0) { $why += "退出码 $ExitCode" }
+    if ($LogFile -and -not (Test-FileEmpty $LogFile)) { $why += "编译有告警（日志非空）" }
+    if (-not $CompileOnly) {
+        if (-not (Test-FileEmpty $ErrFile)) { $why += "stderr 非空" }
+        if (Test-FileEmpty $OutFile) { $why += "stdout 为空" }
+        if (Test-HasControlChar $OutFile) { $why += "stdout 含控制字符" }
+        if (-not (Test-HasMarker $OutFile $Marker)) { $why += "缺结束标记 [$Marker]" }
+    }
+
+    if ($why.Count -eq 0) {
+        Write-Host ("  [OK] " + $Tag) -ForegroundColor Green
+        return $true
+    }
+
+    Write-Host ("  [FAIL] " + $Tag + " —— " + ($why -join "；")) -ForegroundColor Red
+    if ($LogFile -and -not (Test-FileEmpty $LogFile)) {
+        Get-Content -LiteralPath $LogFile -TotalCount 8 | ForEach-Object { Write-Host ("        compile: " + $_) }
+    }
+    if (-not (Test-FileEmpty $ErrFile)) {
+        Get-Content -LiteralPath $ErrFile -TotalCount 5 | ForEach-Object { Write-Host ("        stderr: " + $_) }
+    }
+    if (-not (Test-HasMarker $OutFile $Marker)) {
+        Write-Host "        stdout 末尾 5 行："
+        Get-Content -LiteralPath $OutFile -Tail 5 | ForEach-Object { Write-Host ("        " + $_) }
+    }
+    return $false
+}
 
 if ($Clean) {
     if (Test-Path -LiteralPath $buildDir) {
@@ -93,209 +175,223 @@ if ($Clean) {
     exit 0
 }
 
-if (-not (Test-Path -LiteralPath $examplesDir)) {
-    throw "找不到 examples 目录: $examplesDir"
-}
-
+if (-not (Test-Path -LiteralPath $examplesDir)) { throw "找不到 examples 目录: $examplesDir" }
 New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
 
-# 编译并运行单个示例。返回 $true/$false，并输出判定明细。
+Write-Host "[Info] ocamlc:   $ocamlc" -ForegroundColor Gray
+Write-Host "[Info] ocamlopt: $ocamlopt" -ForegroundColor Gray
+Write-Host "[Info] OCAMLLIB: $env:OCAMLLIB" -ForegroundColor Gray
+
+# ----------------------------------------------------------------------
+# 单示例单通道。先把源码复制一份到 build/ 再编译：
+# ocamlc/ocamlopt 把 .cmi/.cmo/.cmx/.o 放在**源文件旁边**，
+# 直接编译 examples/NN.ml 会在源码目录里掉一堆中间产物。
+# ----------------------------------------------------------------------
 function Invoke-BuildExample {
     param(
         [Parameter(Mandatory = $true)][string]$SourcePath,
-        [switch]$Native
+        [Parameter(Mandatory = $true)][ValidateSet("byte", "native", "interp")][string]$Channel
     )
 
     $baseName = [System.IO.Path]::GetFileNameWithoutExtension($SourcePath)
-    $fileName = [System.IO.Path]::GetFileName($SourcePath)
     $num = ($baseName -split '_')[0]
-    # 原生编译产物加 _opt 后缀，避免覆盖同名字节码可执行文件
-    $outName = if ($Native) { $baseName + "_opt" + $exeSuffix } else { $baseName + $exeSuffix }
-    $outputPath = Join-Path $buildDir $outName
+    $marker = "==== $num jieshu ===="
+    $tag = "$Channel $baseName"
 
-    # 选择编译器：默认 ocamlc 字节码；-Native 时用同目录的 ocamlopt
-    $compiler = $ocamlc
-    if ($Native) {
-        $optCandidate = Join-Path $toolDir ((Split-Path -Leaf $ocamlc) -replace 'ocamlc', 'ocamlopt')
-        if (Test-Path -LiteralPath $optCandidate) {
-            $compiler = $optCandidate
-        } else {
-            $cmdOpt = Get-Command ocamlopt -ErrorAction SilentlyContinue
-            if ($cmdOpt) { $compiler = $cmdOpt.Source }
-            else {
-                Write-Host "[FAIL]    ${fileName}: 找不到 ocamlopt（原生编译需要；MSYS2 下确认已安装 ocaml 包与 flexdll）" -ForegroundColor Red
-                return $false
-            }
-        }
-    }
+    $logFile = Join-Path $buildDir "$baseName.$Channel.compile"
+    $outFile = Join-Path $buildDir "$baseName.$Channel.out"
+    $errFile = Join-Path $buildDir "$baseName.$Channel.err"
+    foreach ($f in @($logFile, $outFile, $errFile)) { New-Item -ItemType File -Force -Path $f | Out-Null }
 
-    # 链接参数：用到 Unix 模块的示例加 -I <unixdir> unix.cma/unix.cmxa
-    $linkArgs = @()
-    if ($unixExamples -contains $baseName) {
-        $libExt = if ($Native) { "unix.cmxa" } else { "unix.cma" }
-        $libPath = Join-Path $unixDir $libExt
-        if (-not (Test-Path -LiteralPath $libPath)) {
-            Write-Host "[FAIL]    ${fileName}: 需要 unix 库但找不到 $libPath" -ForegroundColor Red
+    $needsUnix = Test-NeedsUnix $baseName
+
+    # ---- 顶层解释器通道：不编译，直接解释执行 ----
+    if ($Channel -eq "interp") {
+        if (-not $ocamlBin) {
+            Write-Host "  [FAIL] $tag —— 找不到 ocaml（顶层解释器）" -ForegroundColor Red
             return $false
         }
-        $linkArgs = @("-I", $unixDir, $libExt)
+        $iargs = @("-w", "-24")
+        if ($needsUnix) { $iargs += @("-I", "+unix", "unix.cma") }
+        $iargs += $SourcePath
+        Push-Location $buildDir
+        & $ocamlBin @iargs >$outFile 2>$errFile
+        $rc = $LASTEXITCODE
+        Pop-Location
+        return (Invoke-Check -Tag $tag -Marker $marker -OutFile $outFile -ErrFile $errFile -ExitCode $rc)
     }
 
-    Write-Host "[Compile] $fileName$(if ($Native) { ' (native)' })" -ForegroundColor Cyan
-    & $compiler -w -24 @linkArgs -o $outputPath $SourcePath
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "[FAIL]    ${fileName}: 编译失败" -ForegroundColor Red
+    $compiler = if ($Channel -eq "native") { $ocamlopt } else { $ocamlc }
+    if (-not $compiler) {
+        $want = if ($Channel -eq "native") { "ocamlopt" } else { "ocamlc" }
+        Write-Host "  [FAIL] $tag —— 找不到 $want" -ForegroundColor Red
         return $false
     }
-    # ocamlc/ocamlopt 把 .cmi/.cmo/.cmx/.o 放在源文件旁边，链接完即清扫
-    Remove-Item (Join-Path $examplesDir ($baseName + ".cm*")) -ErrorAction SilentlyContinue
-    Remove-Item (Join-Path $examplesDir ($baseName + ".o")) -ErrorAction SilentlyContinue
+    $outName = if ($Channel -eq "native") { "${baseName}_opt" } else { $baseName }
 
-    if ($NoRun) {
-        Write-Host "[OK]      $fileName -> build/$(Split-Path -Leaf $outputPath)" -ForegroundColor Green
-        return $true
+    Copy-Item -LiteralPath $SourcePath -Destination (Join-Path $buildDir "$baseName.ml") -Force
+    $cargs = @("-w", "-24")
+    if ($needsUnix) {
+        $cargs += @("-I", "+unix", $(if ($Channel -eq "native") { "unix.cmxa" } else { "unix.cma" }))
+    }
+    $cargs += @("-o", $outName, "$baseName.ml")
+
+    Write-Host "[Compile] $baseName ($Channel)" -ForegroundColor Cyan
+    Push-Location $buildDir
+    & $compiler @cargs >$logFile 2>&1
+    $compileRc = $LASTEXITCODE
+    Pop-Location
+
+    if ($compileRc -ne 0 -or $NoRun) {
+        $co = if ($NoRun) { @{ CompileOnly = $true } } else { @{} }
+        return (Invoke-Check -Tag $tag -Marker $marker -OutFile $outFile -ErrFile $errFile `
+                             -ExitCode $compileRc -LogFile $logFile @co)
     }
 
-    $out = & $outputPath 2>&1
-    $runExit = $LASTEXITCODE
-    if ($runExit -ne 0) {
-        Write-Host "[FAIL]    ${fileName}: 运行退出码 $runExit" -ForegroundColor Red
-        $out | Select-Object -Last 5 | ForEach-Object { Write-Host "          $_" -ForegroundColor DarkGray }
-        return $false
-    }
-    $marker = $out | Select-String -SimpleMatch "==== $num jieshu ====" -Quiet
-    if (-not $marker) {
-        Write-Host "[FAIL]    ${fileName}: 未找到结束标记 '==== $num jieshu ===='" -ForegroundColor Red
-        $out | Select-Object -Last 5 | ForEach-Object { Write-Host "          $_" -ForegroundColor DarkGray }
-        return $false
-    }
+    Push-Location $buildDir
+    if ($onWindows) { & ".\$outName.exe" >$outFile 2>$errFile } else { & "./$outName" >$outFile 2>$errFile }
+    $rc = $LASTEXITCODE
+    Pop-Location
 
-    Write-Host "[OK]      $fileName -> build/$(Split-Path -Leaf $outputPath) (run + marker)" -ForegroundColor Green
-    return $true
+    return (Invoke-Check -Tag $tag -Marker $marker -OutFile $outFile -ErrFile $errFile `
+                         -ExitCode $rc -LogFile $logFile)
 }
 
-# ocamllex 两段式构建：先用 ocamllex 生成 .ml，再与 main.ml 一起编译链接
+# ocamllex 两段式：先生成 .ml，再与 main.ml 一起编译（byte + native）
 function Invoke-BuildLexExample {
-    $outName = "26_ocamllex$exeSuffix"
-    $outputPath = Join-Path $buildDir $outName
-    $mll = Join-Path $lexExampleDir "ocamllex_expr.mll"
-    $mainMl = Join-Path $lexExampleDir "main.ml"
+    param([Parameter(Mandatory = $true)][ValidateSet("byte", "native")][string]$Channel)
+
+    $baseName = "26_ocamllex"
+    $marker = "==== 26 jieshu ===="
+    $tag = "$Channel $baseName"
+
     $genMl = Join-Path $buildDir "ocamllex_expr.ml"
+    $mainMl = Join-Path $buildDir "ocamllex_main.ml"
+    Copy-Item -LiteralPath (Join-Path $lexExampleDir "main.ml") -Destination $mainMl -Force
 
-    Write-Host "[Compile] ocamllex_expr.mll + main.ml" -ForegroundColor Cyan
-    $ocamllexBin = Join-Path $toolDir $(if ($IsWindows) { "ocamllex.exe" } else { "ocamllex" })
-    & $ocamllexBin -o $genMl $mll 2>&1 | Write-Host
+    $genLog = Join-Path $buildDir "$baseName.lex.generate"
+    New-Item -ItemType File -Force -Path $genLog | Out-Null
+    if (-not $ocamllexBin) {
+        Write-Host "  [FAIL] $tag —— 找不到 ocamllex" -ForegroundColor Red
+        return $false
+    }
+    & $ocamllexBin -q -o $genMl (Join-Path $lexExampleDir "ocamllex_expr.mll") >$genLog 2>&1
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "[FAIL]    ocamllex 生成失败" -ForegroundColor Red
+        Write-Host "  [FAIL] $tag —— ocamllex 退出码 $LASTEXITCODE" -ForegroundColor Red
+        Get-Content -LiteralPath $genLog -TotalCount 5 | ForEach-Object { Write-Host ("        " + $_) }
         return $false
-    }
-    & $ocamlc -w -24 -I $buildDir -o $outputPath $genMl $mainMl
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "[FAIL]    26_ocamllex 编译失败" -ForegroundColor Red
-        return $false
-    }
-    # 清扫编译中间产物（ocamlc 把 .cmi/.cmo 放在源文件旁边）
-    Remove-Item (Join-Path $lexExampleDir "main.cm*") -ErrorAction SilentlyContinue
-    Remove-Item (Join-Path $buildDir "ocamllex_expr.cm*") -ErrorAction SilentlyContinue
-
-    if ($NoRun) {
-        Write-Host "[OK]      26_ocamllex -> build/$outName" -ForegroundColor Green
-        return $true
     }
 
-    $out = & $outputPath 2>&1
-    $runExit = $LASTEXITCODE
-    if ($runExit -ne 0) {
-        Write-Host "[FAIL]    26_ocamllex: 运行退出码 $runExit" -ForegroundColor Red
-        $out | Select-Object -Last 5 | ForEach-Object { Write-Host "          $_" -ForegroundColor DarkGray }
+    $compiler = if ($Channel -eq "native") { $ocamlopt } else { $ocamlc }
+    if (-not $compiler) {
+        $want = if ($Channel -eq "native") { "ocamlopt" } else { "ocamlc" }
+        Write-Host "  [FAIL] $tag —— 找不到 $want" -ForegroundColor Red
         return $false
     }
-    $marker = $out | Select-String -SimpleMatch "==== 26 jieshu ====" -Quiet
-    if (-not $marker) {
-        Write-Host "[FAIL]    26_ocamllex: 未找到结束标记" -ForegroundColor Red
-        return $false
+    $outName = if ($Channel -eq "native") { "${baseName}_opt" } else { $baseName }
+
+    $logFile = Join-Path $buildDir "$baseName.$Channel.compile"
+    $outFile = Join-Path $buildDir "$baseName.$Channel.out"
+    $errFile = Join-Path $buildDir "$baseName.$Channel.err"
+    foreach ($f in @($logFile, $outFile, $errFile)) { New-Item -ItemType File -Force -Path $f | Out-Null }
+
+    $lib = if ($Channel -eq "native") { "unix.cmxa" } else { "unix.cma" }
+    Write-Host "[Compile] $baseName ($Channel)" -ForegroundColor Cyan
+    Push-Location $buildDir
+    & $compiler -w -24 -I +unix $lib -o $outName "ocamllex_expr.ml" "ocamllex_main.ml" >$logFile 2>&1
+    $compileRc = $LASTEXITCODE
+    Pop-Location
+
+    if ($compileRc -ne 0 -or $NoRun) {
+        $co = if ($NoRun) { @{ CompileOnly = $true } } else { @{} }
+        return (Invoke-Check -Tag $tag -Marker $marker -OutFile $outFile -ErrFile $errFile `
+                             -ExitCode $compileRc -LogFile $logFile @co)
     }
-    Write-Host "[OK]      26_ocamllex -> build/$outName (run + marker)" -ForegroundColor Green
-    return $true
+
+    Push-Location $buildDir
+    if ($onWindows) { & ".\$outName.exe" >$outFile 2>$errFile } else { & "./$outName" >$outFile 2>$errFile }
+    $rc = $LASTEXITCODE
+    Pop-Location
+
+    return (Invoke-Check -Tag $tag -Marker $marker -OutFile $outFile -ErrFile $errFile `
+                         -ExitCode $rc -LogFile $logFile)
+}
+
+# ----------------------------------------------------------------------
+# 主流程
+# ----------------------------------------------------------------------
+$script:passCount = 0
+$script:failCount = 0
+$script:failedList = @()
+
+function Add-Result {
+    param([bool]$Ok, [string]$Tag)
+    if ($Ok) { $script:passCount++ } else { $script:failCount++; $script:failedList += $Tag }
 }
 
 if ($All) {
     $files = Get-ChildItem -LiteralPath $examplesDir -Filter "*.ml" | Sort-Object Name
-    if ($files.Count -eq 0) {
-        throw "examples 目录下没有 .ml 示例文件。"
-    }
-
-    $pass = 0
-    $fail = 0
-    $failedFiles = @()
+    if ($files.Count -eq 0) { throw "examples 目录下没有 .ml 示例文件。" }
 
     foreach ($f in $files) {
-        $ok = Invoke-BuildExample -SourcePath $f.FullName
-        if ($ok) { $pass++ } else { $fail++; $failedFiles += $f.Name }
-        if ($Native) {
-            $okN = Invoke-BuildExample -SourcePath $f.FullName -Native
-            if ($okN) { $pass++ } else { $fail++; $failedFiles += "$($f.Name) [native]" }
-        }
+        Write-Host "==== $($f.Name) ===="
+        Add-Result (Invoke-BuildExample -SourcePath $f.FullName -Channel byte) "byte $($f.Name)"
+        if ($Native) { Add-Result (Invoke-BuildExample -SourcePath $f.FullName -Channel native) "native $($f.Name)" }
+        if ($Interp) { Add-Result (Invoke-BuildExample -SourcePath $f.FullName -Channel interp) "interp $($f.Name)" }
     }
 
-    # ocamllex 组合示例
     if (Test-Path -LiteralPath $lexExampleDir) {
-        $ok = Invoke-BuildLexExample
-        if ($ok) { $pass++ } else { $fail++; $failedFiles += "26_ocamllex" }
+        Write-Host "==== 26_ocamllex ===="
+        Add-Result (Invoke-BuildLexExample -Channel byte) "byte 26_ocamllex"
+        if ($Native) { Add-Result (Invoke-BuildLexExample -Channel native) "native 26_ocamllex" }
     }
 
-    $totalEntries = $files.Count + $(if (Test-Path -LiteralPath $lexExampleDir) { 1 } else { 0 })
     Write-Host ""
-    Write-Host "[Done] 总计 $totalEntries 个条目$(if ($Native) { ' x2 (byte+native)' }): 通过 $pass，失败 $fail。" -ForegroundColor $(if ($fail -eq 0) { "Green" } else { "Red" })
-
-    if ($failedFiles.Count -gt 0) {
-        Write-Host "失败文件: $($failedFiles -join ', ')" -ForegroundColor Red
+    $color = if ($script:failCount -eq 0) { "Green" } else { "Red" }
+    Write-Host "[Done] 通过 $($script:passCount)，失败 $($script:failCount)。" -ForegroundColor $color
+    if ($script:failedList.Count -gt 0) {
+        Write-Host "失败项: $($script:failedList -join ', ')" -ForegroundColor Red
         exit 1
     }
     exit 0
 }
 
 if ($File) {
-    # ocamllex 组合示例单独处理（没有顶层 26_*.ml）
     if ($File -match '^26$|^26_ocamllex$') {
-        $ok = Invoke-BuildLexExample
+        $ok = Invoke-BuildLexExample -Channel byte
+        if ($Native) { $ok = (Invoke-BuildLexExample -Channel native) -and $ok }
         if (-not $ok) { exit 1 }
         Write-Host "[Done] 编译并验证通过: 26_ocamllex" -ForegroundColor Green
         exit 0
     }
 
-    # 支持只写编号，自动补全前缀和后缀
     if ($File -match '^\d+$') {
         $padded = $File.PadLeft(2, '0')
-        $matches = Get-ChildItem -LiteralPath $examplesDir -Filter "${padded}_*.ml" | Sort-Object Name
-        if ($matches.Count -eq 0) {
-            throw "找不到编号为 $File 的示例文件。"
-        }
-        $sourcePath = $matches[0].FullName
+        $m = Get-ChildItem -LiteralPath $examplesDir -Filter "${padded}_*.ml" | Sort-Object Name
+        if ($m.Count -eq 0) { throw "找不到编号为 $File 的示例文件。" }
+        $sourcePath = $m[0].FullName
     } else {
-        if (-not $File.EndsWith('.ml')) {
-            $File = $File + '.ml'
-        }
+        if (-not $File.EndsWith('.ml')) { $File = $File + '.ml' }
         $sourcePath = Join-Path $examplesDir $File
-        if (-not (Test-Path -LiteralPath $sourcePath)) {
-            throw "找不到示例文件: $sourcePath"
-        }
+        if (-not (Test-Path -LiteralPath $sourcePath)) { throw "找不到示例文件: $sourcePath" }
     }
 
-    $ok = Invoke-BuildExample -SourcePath $sourcePath
-    if ($Native) {
-        $okN = Invoke-BuildExample -SourcePath $sourcePath -Native
-        $ok = $ok -and $okN
-    }
+    $ok = Invoke-BuildExample -SourcePath $sourcePath -Channel byte
+    if ($Native) { $ok = (Invoke-BuildExample -SourcePath $sourcePath -Channel native) -and $ok }
+    if ($Interp) { $ok = (Invoke-BuildExample -SourcePath $sourcePath -Channel interp) -and $ok }
     if (-not $ok) { exit 1 }
     Write-Host "[Done] 编译并验证通过: $([System.IO.Path]::GetFileName($sourcePath))" -ForegroundColor Green
     exit 0
 }
 
 Write-Host "用法:" -ForegroundColor Yellow
-Write-Host "  .\build.ps1 -All            编译并运行 examples 下全部示例（字节码）"
-Write-Host "  .\build.ps1 -All -Native    同时做 ocamlopt 原生编译与运行"
-Write-Host "  .\build.ps1 -File <name.ml> 编译单个示例（只写编号也可以，如 01）"
+Write-Host "  .\build.ps1 -All             编译并运行 examples 下全部示例（字节码）"
+Write-Host "  .\build.ps1 -All -Native     追加 ocamlopt 原生通道"
+Write-Host "  .\build.ps1 -All -Interp     追加顶层解释器通道（ocaml X.ml）"
+Write-Host "  .\build.ps1 -File <name.ml>  编译单个示例（只写编号也可以，如 01）"
 Write-Host "  .\build.ps1 -File 15 -Native"
-Write-Host "  .\build.ps1 -All -NoRun     只编译不运行"
-Write-Host "  .\build.ps1 -Clean          清理 build 目录"
+Write-Host "  .\build.ps1 -All -NoRun      只编译不运行"
+Write-Host "  .\build.ps1 -Clean           清理 build 目录"
+Write-Host ""
+Write-Host "判定标准（与 run-all.sh 完全一致）：编译退出码 0 + 编译日志为空（零告警）"
+Write-Host "  + 运行退出码 0 + stderr 为空 + stdout 非空且无多余控制字符 + 结束标记"

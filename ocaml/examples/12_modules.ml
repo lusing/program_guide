@@ -133,8 +133,9 @@ let () =
 
 (* 也可以只 open 特定的几个名字 *)
 let demo_open_only () =
-  let (|>) = Stdlib.(|>) in   (* 实际上 |> 默认就有 *)
-  String.concat ", " ["a"; "b"; "c"];;
+  (* 只取需要的名字：把 Stdlib.(|>) 绑定到局部再使用（它默认就在作用域里） *)
+  let (|>) = Stdlib.(|>) in
+  ["a"; "b"; "c"] |> String.concat ", ";;
 Printf.printf "String.concat demo: %s\n" (demo_open_only ());;
 
 (* ========================================================================
