@@ -379,4 +379,4 @@ Linux 版示例的输出代码可以复用一组现成例程（与 `lib/mac_io.i
 
 ---
 
-> 上一篇：[x86-64 汇编简介](01_introduction.md) ｜ 下一篇：[寄存器详解](03_registers.md) ｜ 延伸：[macOS 平台移植指南](10_macos_porting.md) · [Linux 平台移植指南](11_linux.md)
+> 上一章：[x86-64 汇编简介](01_introduction.md) ｜ 下一章：[寄存器详解](03_registers.md) ｜ 返回：[README](../README.md)

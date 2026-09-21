@@ -125,4 +125,4 @@ mov rax, [rel counter]  ; 读取全局变量 counter 的值
 
 ---
 
-> 上一篇：[寄存器详解](03_registers.md) ｜ 下一篇：[标志寄存器](05_flags.md)
+> 上一章：[寄存器详解](03_registers.md) ｜ 下一章：[标志寄存器](05_flags.md) ｜ 返回：[README](../README.md)

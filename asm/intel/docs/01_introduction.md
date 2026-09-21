@@ -73,4 +73,4 @@ x86-64 属于 **CISC**（Complex Instruction Set Computer，复杂指令集计�
 
 ---
 
-> 下一篇：[环境配置](02_environment.md)
+> 下一章：[环境配置](02_environment.md) ｜ 返回：[README](../README.md)

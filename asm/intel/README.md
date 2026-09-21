@@ -145,29 +145,25 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 | 11_calculus_mkl | 7（5 + 2 个排查脚手架） | 5 | 5 |
 | **合计** | **58** | **56** | **56** |
 
-## 学习路径
+## 章节索引
 
-### 初级
+| 章 | 主题 | 建议实践 |
+|---|---|---|
+| [01 x86-64 汇编简介](docs/01_introduction.md) | 汇编语言是什么、为什么要学 | — |
+| [02 环境配置](docs/02_environment.md) | Windows / macOS / Linux 三平台工具链安装 | — |
+| [03 寄存器详解](docs/03_registers.md) | 通用 / 特殊 / 段 / SIMD 寄存器与使用约定 | `01_data_movement` |
+| [04 内存寻址模式](docs/04_memory_addressing.md) | 从立即数到 SIB 的寻址模式与速查表 | `01_data_movement` |
+| [05 标志寄存器](docs/05_flags.md) | RFLAGS 结构、六个状态标志位详解 | `02_arithmetic` `04_comparison` |
+| [06 调用约定（Win64 与 System V AMD64）](docs/06_calling_convention.md) | 两套约定的参数传递与对照总表 | `05_control_flow` |
+| [07 栈和栈帧](docs/07_stack_frames.md) | 栈帧结构、RBP 帧指针、栈帧图示 | `07_stack_ops` |
+| [08 调试方法](docs/08_debugging.md) | x64dbg / WinDbg / lldb / gdb 与常见错误排查 | `06_string_ops` `07_stack_ops` `08_system_misc` |
+| [09 Intel 混合架构（P核/E核）](docs/09_hybrid_architecture.md) | CPUID 检测核心类型、指令集差异、Thread Director | — |
+| [10 macOS 平台移植指南](docs/10_macos_porting.md) | macho64 工具链、平台差异对照、移植铁律与踩坑清单 | `examples-macos/` |
+| [11 Linux 平台移植指南](docs/11_linux.md) | elf64 工具链、libmvec、移植规则与踩坑清单 | `examples-linux/` |
 
-1. 阅读 [x86-64 汇编简介](docs/01_introduction.md)，建立整体认识
-2. 按 [环境配置](docs/02_environment.md) 搭建开发环境（含 macOS / Linux 两节）
-3. 学习 [寄存器详解](docs/03_registers.md) 与 [内存寻址模式](docs/04_memory_addressing.md)
-4. 实践 `01_data_movement` 与 `02_arithmetic` 类别示例
-
-### 中级
-
-1. 掌握 [标志寄存器](docs/05_flags.md) 与条件判断
-2. 学习 [调用约定](docs/06_calling_convention.md)（Win64 与 System V 双份对照）
-3. 深入 [栈和栈帧](docs/07_stack_frames.md)，理解函数调用机制
-4. 实践 `03_logic_bitwise`、`04_comparison`、`05_control_flow` 类别示例
-
-### 高级
-
-1. 学习 [调试方法](docs/08_debugging.md)，Windows 用 x64dbg/WinDbg、macOS 用 lldb、Linux 用 gdb
-2. 实践 `06_string_ops`、`07_stack_ops`、`08_system_misc` 类别示例
-3. 探索 `09_fpu` 浮点运算与 `10_sse_simd` 向量化编程
-4. 看 [macOS 平台移植指南](docs/10_macos_porting.md) 和 [Linux 平台移植指南](docs/11_linux.md)，把一套代码在多个平台上跑通
-5. 尝试混合 C 与汇编编程，优化关键路径代码
+学习路线：01–04 语言与内存模型 → 05–07 标志 / 调用约定 / 栈帧（核心硬骨头）→
+08–09 调试与混合架构 → 10–11 跨平台移植收束；`09_fpu` 与 `10_sse_simd`
+类别可在中级后随时穿插实践。
 
 ## 目录结构
 

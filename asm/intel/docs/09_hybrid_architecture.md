@@ -96,4 +96,4 @@ AVX-512： NO
 
 ---
 
-> 上一篇：[调试方法](08_debugging.md) ｜ 返回 [首页](../README.md) ｜ 延伸：[macOS 平台移植指南](10_macos_porting.md) · [Linux 平台移植指南](11_linux.md)
+> 上一章：[调试方法](08_debugging.md) ｜ 下一章：[macOS 平台移植指南](10_macos_porting.md) ｜ 返回：[README](../README.md)

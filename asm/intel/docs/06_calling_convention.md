@@ -326,4 +326,4 @@ _main:
 
 ---
 
-> 上一篇：[标志寄存器](05_flags.md) ｜ 下一篇：[栈和栈帧](07_stack_frames.md) ｜ 延伸：[macOS 平台移植指南](10_macos_porting.md) · [Linux 平台移植指南](11_linux.md)
+> 上一章：[标志寄存器](05_flags.md) ｜ 下一章：[栈和栈帧](07_stack_frames.md) ｜ 返回：[README](../README.md)

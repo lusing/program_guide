@@ -536,4 +536,4 @@ $ ./build-mac.sh -Clean && ./build-mac.sh -All
 
 ---
 
-> 上一篇：[调试方法](08_debugging.md) ｜ 下一篇：[Linux 平台移植指南](11_linux.md) ｜ 返回 [首页](../README.md)
+> 上一章：[Intel 混合架构（P核/E核）](09_hybrid_architecture.md) ｜ 下一章：[Linux 平台移植指南](11_linux.md) ｜ 返回：[README](../README.md)

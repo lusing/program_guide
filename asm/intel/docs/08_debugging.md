@@ -366,4 +366,4 @@ section .data
 
 ---
 
-> 上一篇：[栈和栈帧](07_stack_frames.md) ｜ 返回 [首页](../README.md) ｜ 延伸：[macOS 平台移植指南](10_macos_porting.md) · [Linux 平台移植指南](11_linux.md)
+> 上一章：[栈和栈帧](07_stack_frames.md) ｜ 下一章：[Intel 混合架构（P核/E核）](09_hybrid_architecture.md) ｜ 返回：[README](../README.md)

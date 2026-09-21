@@ -117,4 +117,4 @@ XMM0 也用于浮点函数的返回值。详见 `10_sse_simd` 类别示例。
 
 ---
 
-> 上一篇：[环境配置](02_environment.md) ｜ 下一篇：[内存寻址模式](04_memory_addressing.md)
+> 上一章：[环境配置](02_environment.md) ｜ 下一章：[内存寻址模式](04_memory_addressing.md) ｜ 返回：[README](../README.md)

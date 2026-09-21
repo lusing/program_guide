@@ -317,4 +317,4 @@ $ ./build-linux.sh -All
 
 ---
 
-> 上一篇：[macOS 平台移植指南](10_macos_porting.md) ｜ 返回 [首页](../README.md)
+> 上一章：[macOS 平台移植指南](10_macos_porting.md) ｜ 返回：[README](../README.md)

@@ -134,4 +134,4 @@ lahf             ; 将低8位标志载入 AH
 
 ---
 
-> 上一篇：[内存寻址模式](04_memory_addressing.md) ｜ 下一篇：[调用约定（Win64 与 System V AMD64）](06_calling_convention.md)
+> 上一章：[内存寻址模式](04_memory_addressing.md) ｜ 下一章：[调用约定（Win64 与 System V AMD64）](06_calling_convention.md) ｜ 返回：[README](../README.md)
