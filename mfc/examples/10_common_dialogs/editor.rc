@@ -17,3 +17,11 @@ BEGIN
         MENUITEM "文字颜色(&C)...",     IDM_FMT_COLOR
     END
 END
+
+// 菜单项文本里标了 Ctrl+O / Ctrl+S，就必须有这张加速键表来兑现它。
+// 与菜单共用 IDR_MAIN_MENU（资源 ID 按类型区分，同名不冲突）。
+IDR_MAIN_MENU ACCELERATORS
+BEGIN
+    "O",    IDM_FILE_OPEN,  VIRTKEY, CONTROL
+    "S",    IDM_FILE_SAVE,  VIRTKEY, CONTROL
+END

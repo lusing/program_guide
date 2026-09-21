@@ -1,0 +1,34 @@
+// 12_clipboard_dnd 的资源脚本。
+//
+// 拖放接收区在模板里只是个空静态框（IDC_DROPZONE）——OnInitDialog 里
+// 量出它的矩形、销毁它、在原位创建一个真正的 CWnd 子窗口，再把
+// COleDropTarget 注册到那个子窗口上。这样"只有这一小块能接收拖放"，
+// 而不是整个对话框。
+#pragma code_page(65001)
+
+#include "resource.h"
+#include "afxres.h"
+
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+
+IDD_MAIN DIALOGEX 0, 0, 360, 250
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "剪贴板与拖放演示"
+FONT 9, "微软雅黑"
+BEGIN
+    LTEXT           "文本内容：", IDC_STATIC, 12, 10, 200, 10
+    EDITTEXT        IDC_EDIT, 12, 24, 336, 56,
+                    ES_MULTILINE | ES_AUTOVSCROLL | WS_VSCROLL
+
+    PUSHBUTTON      "复制到剪贴板", IDC_COPY, 12, 88, 84, 22
+    PUSHBUTTON      "从剪贴板粘贴", IDC_PASTE, 104, 88, 84, 22
+    PUSHBUTTON      "拖出去 →", IDC_DRAGOUT, 196, 88, 152, 22
+
+    LTEXT           "把文件从资源管理器拖进下面这块区域：", IDC_STATIC, 12, 120, 240, 10
+
+    // 占位：OnInitDialog 会用 CDropZone 把它换掉
+    LTEXT           "", IDC_DROPZONE, 12, 134, 336, 58
+
+    LTEXT           "就绪", IDC_STATUS, 12, 200, 336, 12
+    DEFPUSHBUTTON   "关闭", IDOK, 290, 222, 58, 18
+END

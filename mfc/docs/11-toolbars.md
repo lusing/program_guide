@@ -234,4 +234,4 @@ afx_msg void OnSize(UINT nType, int cx, int cy) {
    —— 控制条占掉客户区上下之后 `GetClientRect` 仍然包含那块区域。`reposQuery` 让控制条先完成定位，再返回真正剩余的矩形给普通子控件，否则子控件会被工具栏和状态栏盖住。
 
 ---
-上一章：[10 通用对话框与文件 IO](10-common-dialogs.md) ｜ 下一章：[15 Doc/View 架构](15-docview.md)
+上一章：[10 通用对话框与文件 IO](10-common-dialogs.md) ｜ 下一章：[12 剪贴板与拖放](12-clipboard-dnd.md)

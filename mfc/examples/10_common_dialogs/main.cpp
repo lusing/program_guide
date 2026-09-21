@@ -20,6 +20,10 @@ public:
         Create(NULL, _T("迷你文本编辑器"), WS_OVERLAPPEDWINDOW,
                CRect(100, 100, 720, 500), nullptr,
                MAKEINTRESOURCE(IDR_MAIN_MENU));
+
+        // 菜单项文本里写了 "Ctrl+O" 就得真有这张表，否则用户按下去没反应
+        // （菜单里的 &O 只是助记符，展开菜单时才有用）。第 11 章详述。
+        LoadAccelTable(_T("IDR_MAIN_MENU"));
     }
 
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct) {
