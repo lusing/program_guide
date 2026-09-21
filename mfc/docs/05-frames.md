@@ -1,6 +1,6 @@
 # 05 · 窗口与框架类：创建、布局与生命周期
 
-> 对应示例：`examples/04_frame_layout`
+> 对应示例：`examples/05_frame_layout`
 
 ## 1. CWnd 体系
 
@@ -14,7 +14,7 @@ CWnd                       // 一切窗口的基础：句柄管理、消息映�
 ├── CDialog                // 对话框（第 06 章）
 │   └── CPropertySheet     // 属性表
 ├── 控件类                 // CButton/CEdit/CListBox/CListCtrl...（第 07 章）
-└── CView                  // Doc/View 的视图（第 10 章）
+└── CView                  // Doc/View 的视图（第 15 章）
 ```
 
 最常用的 `CWnd` 成员：

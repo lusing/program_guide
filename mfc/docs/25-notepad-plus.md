@@ -1,6 +1,6 @@
-# 13 · 实战项目：记事本+
+# 25 · 实战项目：记事本+
 
-> 对应示例：`examples/12_notepad_plus`——把全书知识串成的一个完整应用。
+> 对应示例：`examples/25_notepad_plus`——把全书知识串成的一个完整应用。
 
 ## 1. 功能清单与知识点映射
 
@@ -20,7 +20,7 @@
 ## 2. 工程结构
 
 ```text
-12_notepad_plus/
+25_notepad_plus/
 ├── resource.h        # 全部资源 ID
 ├── notepad.rc        # 菜单、加速键、3 个对话框、工具栏位图
 ├── toolbar.bmp       # 工具栏图标（16x15 x 3 格）
@@ -42,7 +42,7 @@ BOOL CMyApp::InitInstance() {
 }
 ```
 
-`CMainFrame::OnCreate` 按依赖顺序装配：工具栏 → 状态栏 → 编辑框。`OnSize` 里用 `RepositionBars(reposQuery)` 拿到控制条让位后的矩形，编辑框铺满剩余空间（第 09 章的标准写法）。
+`CMainFrame::OnCreate` 按依赖顺序装配：工具栏 → 状态栏 → 编辑框。`OnSize` 里用 `RepositionBars(reposQuery)` 拿到控制条让位后的矩形，编辑框铺满剩余空间（第 11 章的标准写法）。
 
 `LoadFrame(IDR_MAINFRAME, WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE)` 一次拿到菜单 + 加速键 + 标题串，比手工 `Create` + `LoadMenu` 干净——SDI 框架窗口的首选创建方式。
 
@@ -61,7 +61,7 @@ afx_msg void OnUpdateEditUndo(CCmdUI* pCmdUI) {
 
 ## 5. 文件读写与编码
 
-`LoadFile` / `SaveFile` 是第 08 章编码方案的直接复用：二进制读入 → `EF BB BF` = UTF-8、`FF FE` = UTF-16LE、无 BOM 按 ANSI → 转成 CString 显示；保存统一 UTF-8 + BOM。
+`LoadFile` / `SaveFile` 是第 10 章编码方案的直接复用：二进制读入 → `EF BB BF` = UTF-8、`FF FE` = UTF-16LE、无 BOM 按 ANSI → 转成 CString 显示；保存统一 UTF-8 + BOM。
 
 打开文件后的完整动作链值得注意——**改数据的地方要触发所有依赖它的 UI**：
 
@@ -75,7 +75,7 @@ SetPaneText(...);       // 状态栏
 PushStats();            // 统计面板（若开着）
 ```
 
-实战里这就是"数据变化 → 广播刷新"的手工版本。更系统的做法是第 10 章的 Doc/View `UpdateAllViews`。
+实战里这就是"数据变化 → 广播刷新"的手工版本。更系统的做法是第 15 章的 Doc/View `UpdateAllViews`。
 
 ## 6. 最近文件列表：动态菜单
 
@@ -137,7 +137,7 @@ CStatsDialog(CWnd* parent);                                // Create + ShowWindo
 void UpdateText(std::shared_ptr<std::wstring> text);       // 推一份文本快照
 ```
 
-线程模型（第 12 章模式的完整落地）：
+线程模型（第 20 章模式的完整落地）：
 
 ```text
 UI 线程                                worker 线程
@@ -174,9 +174,9 @@ SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 1. 查找/替换对话框（`CFindReplaceDialog` 或自建，加"区分大小写"选项）
 2. 状态栏加行列号窗格（`EN_SELCHANGE` + `LineFromChar/LineIndex`）
 3. 编辑命令接入撤销提示、保存后清撤销栈语义
-4. 把编辑区换成 Doc/View（第 10 章），支持多标签或 MDI
+4. 把编辑区换成 Doc/View（第 15 章），支持多标签或 MDI
 5. 拖放打开文件（`DragAcceptFiles` + `WM_DROPFILES`）
 6. 用虚拟列表重构统计面板的数据源
 
 ---
-上一章：[12 多线程与后台任务](12-threads.md) ｜ 返回：[README](../README.md)
+上一章：[20 多线程与后台任务](20-threads.md) ｜ 返回：[README](../README.md)

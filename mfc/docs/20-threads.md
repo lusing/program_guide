@@ -1,6 +1,6 @@
-# 12 · 多线程与后台任务
+# 20 · 多线程与后台任务
 
-> 对应示例：`examples/11_threads`
+> 对应示例：`examples/20_threads`
 
 ## 1. 核心纪律
 
@@ -69,7 +69,7 @@ PostMessage(hwnd, WM_APP_STATS_DONE, 0, (LPARAM)result);
 std::unique_ptr<StatsResult> r(reinterpret_cast<StatsResult*>(lParam));
 ```
 
-第 13 章实战项目的统计面板（stats.cpp）是这套模式的完整范本，包括"运行中又来了新请求"的排队处理。
+第 25 章实战项目的统计面板（stats.cpp）是这套模式的完整范本，包括"运行中又来了新请求"的排队处理。
 
 ## 4. 取消与收尾
 
@@ -110,7 +110,7 @@ m_cancel = true;
 | 场景 | 手段 |
 |---|---|
 | 简单标志（取消/暂停） | `std::atomic<bool>` |
-| 一批只读数据 | 提前拷贝快照，worker 只读（第 13 章 shared_ptr<wstring> 快照） |
+| 一批只读数据 | 提前拷贝快照，worker 只读（第 25 章 shared_ptr<wstring> 快照） |
 | 复杂共享状态 | `CRITICAL_SECTION`（MFC 封装 `CCriticalSection`）+ `CSingleLock` |
 | 线程间唤醒 | Windows 事件 `CEvent` / `WaitForSingleObject` |
 
@@ -136,9 +136,9 @@ lock.Unlock();                   // 或等作用域结束自动解锁
 
 ## 7. 实战建议
 
-- 把"worker + 进度消息 + 取消标志 + 完成消息"封装成可复用的小框架类，项目里每个后台任务都套同一个壳（第 13 章 stats.cpp 的结构可以直接抄）
+- 把"worker + 进度消息 + 取消标志 + 完成消息"封装成可复用的小框架类，项目里每个后台任务都套同一个壳（第 25 章 stats.cpp 的结构可以直接抄）
 - 进度消息别发太密：每 1% 或每 100ms 一条足够，PostMessage 本身有队列成本
 - 任务有"最新值才重要"的语义（如统计、搜索预览）时，做"运行中收到新请求先记下，结束后补跑一轮"的合并逻辑，比盲目排队聪明
 
 ---
-上一章：[11 GDI 绘图](11-gdi.md) ｜ 下一章：[13 实战项目：记事本+](13-notepad-plus.md)
+上一章：[18 GDI 绘图](18-gdi.md) ｜ 下一章：[25 实战项目：记事本+](25-notepad-plus.md)

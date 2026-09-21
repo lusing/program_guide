@@ -1,6 +1,6 @@
-# 10 · Doc/View 架构
+# 15 · Doc/View 架构
 
-> 对应示例：`examples/09_docview`
+> 对应示例：`examples/15_docview`
 
 ## 1. 为什么有 Doc/View
 
@@ -95,7 +95,7 @@ void CNoteDoc::Serialize(CArchive& ar) override {
 
 `CArchive` 支持 `<<`/`>>` 的类型：CString、基本类型、`CObject*` 派生（配合 `IMPLEMENT_SERIAL`）、字节数组等。
 
-注意：`ar << CString` 写的是 **MFC 二进制格式**，记事本打不开。想让文件是纯文本就绕过序列化、用 `ar.GetFile()` 直接写字节（示例 09 写的是 UTF-8 带 BOM，与第 08 章的编码函数一致）：
+注意：`ar << CString` 写的是 **MFC 二进制格式**，记事本打不开。想让文件是纯文本就绕过序列化、用 `ar.GetFile()` 直接写字节（示例 15 写的是 UTF-8 带 BOM，与第 10 章的编码函数一致）：
 
 ```cpp
 CFile* f = ar.GetFile();
@@ -105,7 +105,7 @@ if (ar.IsStoring()) {
     f->Write(bom, sizeof(bom));
     f->Write((LPCSTR)utf8, (UINT)strlen((LPCSTR)utf8));
 } else {
-    // 二进制读入 → 看 BOM → MultiByteToWideChar（同第 08 章）
+    // 二进制读入 → 看 BOM → MultiByteToWideChar（同第 10 章）
 }
 ```
 
@@ -166,4 +166,4 @@ class CNoteView : public CView {
 - 文档数据模型要能独立于 UI 测试：Serialize 逻辑写成"纯数据进出"，单测不用启动界面
 
 ---
-上一章：[09 工具栏与状态栏](09-toolbars.md) ｜ 下一章：[11 GDI 绘图](11-gdi.md)
+上一章：[11 工具栏与状态栏](11-toolbars.md) ｜ 下一章：[18 GDI 绘图](18-gdi.md)

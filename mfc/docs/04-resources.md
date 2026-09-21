@@ -1,6 +1,6 @@
 # 04 · 资源文件入门
 
-> 对应示例：`examples/03_resources`
+> 对应示例：`examples/04_resources`
 
 ## 1. 资源是什么
 
@@ -84,7 +84,7 @@ BOOL PreTranslateMessage(MSG* pMsg) override {
 }
 ```
 
-注意：**Doc/View 框架（第 10 章）不用这么写**，`CFrameWnd::LoadFrame` 会自动加载同 ID 的加速键表。
+注意：**Doc/View 框架（第 15 章）不用这么写**，`CFrameWnd::LoadFrame` 会自动加载同 ID 的加速键表。
 
 ### 3.3 字符串表
 
@@ -118,7 +118,7 @@ CMainWindow::CMainWindow() {
 
 ## 4. 命令 ID 的复用：菜单 = 工具栏 = 加速键
 
-一个命令 ID（比如 `IDM_FILE_SAVE`）可以同时出现在菜单、工具栏、加速键表里，三处触发都会路由到同一个 `ON_COMMAND` 处理函数。`ON_UPDATE_COMMAND_UI` 也对三者统一生效——菜单变灰时工具栏按钮同步变灰。这是 MFC 命令系统的核心红利，第 09 章展开。
+一个命令 ID（比如 `IDM_FILE_SAVE`）可以同时出现在菜单、工具栏、加速键表里，三处触发都会路由到同一个 `ON_COMMAND` 处理函数。`ON_UPDATE_COMMAND_UI` 也对三者统一生效——菜单变灰时工具栏按钮同步变灰。这是 MFC 命令系统的核心红利，第 11 章展开。
 
 ## 5. 常见坑
 

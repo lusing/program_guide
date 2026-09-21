@@ -11,7 +11,7 @@ MFC（Microsoft Foundation Classes）是微软提供的 C++ 类库，把 Win32 A
 - `WndProc` 的巨型 switch 不用你写，消息映射机制替你分发
 - 打开/保存文件的菜单命令（Doc/View 下）不用你写，框架自带
 
-MFC 本身**不新造概念**：你在 MFC 里写的每一个类，背后都是第 12 章之前的那个纯 Win32 世界。所以 MFC 是理解 Windows 窗口机制最好的跳板——API 没有藏起来，只是被组织好了。
+MFC 本身**不新造概念**：你在 MFC 里写的每一个类，背后都是本仓库《Win32 API 桌面编程指南》里的那个纯 Win32 世界。所以 MFC 是理解 Windows 窗口机制最好的跳板——API 没有藏起来，只是被组织好了。
 
 ## 2. 2026 年还该学/用 MFC 吗
 
@@ -48,7 +48,7 @@ VS 向导生成的工程有几百行 vcxproj，但 MFC 程序的本质只需要�
 ```powershell
 cd G:\code\guide\mfc
 .\build.ps1 -All              # 构建全部示例（编译 + 资源 + 链接）
-.\build.ps1 -File 03_resources   # 只构建一个示例
+.\build.ps1 -File 04_resources   # 只构建一个示例
 .\build.ps1 -Clean            # 清理 build 目录
 ```
 
@@ -74,7 +74,7 @@ cl /std:c++20 /EHsc /DUNICODE /D_UNICODE /D_AFXDLL /MD /utf-8 /D_WIN32_WINNT=0x0
 
 - 每章一个目录 `examples/NN_<名字>/`，构建脚本会编译它并生成 exe
 - `docs/` 是各章正文，示例代码全部在正文中讲解过
-- 第 13 章是一个完整实战项目 `12_notepad_plus`，把所有知识点串起来
+- 第 25 章是一个完整实战项目 `25_notepad_plus`，把所有知识点串起来
 
 ## 6. 第一个程序
 

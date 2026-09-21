@@ -1,6 +1,6 @@
-# 09 · 工具栏与状态栏
+# 11 · 工具栏与状态栏
 
-> 对应示例：`examples/08_toolbar_statusbar`
+> 对应示例：`examples/11_toolbar_statusbar`
 
 ## 1. 总览
 
@@ -106,7 +106,7 @@ afx_msg void OnSize(UINT nType, int cx, int cy) {
 }
 ```
 
-`AFX_IDW_CONTROLBAR_FIRST..LAST` 是所有控制条的 ID 范围。这个"先查询再布局"是带控制条的窗口的标准 OnSize 写法，第 13 章实战项目沿用。
+`AFX_IDW_CONTROLBAR_FIRST..LAST` 是所有控制条的 ID 范围。这个"先查询再布局"是带控制条的窗口的标准 OnSize 写法，第 25 章实战项目沿用。
 
 ## 6. 常见坑
 
@@ -125,4 +125,4 @@ afx_msg void OnSize(UINT nType, int cx, int cy) {
 - 需要现代外观时研究 `CMFCToolBar`（MFC 的功能包版本，支持 PNG、热态图标、自定义），API 同构
 
 ---
-上一章：[08 通用对话框与文件 IO](08-common-dialogs.md) ｜ 下一章：[10 Doc/View 架构](10-docview.md)
+上一章：[10 通用对话框与文件 IO](10-common-dialogs.md) ｜ 下一章：[15 Doc/View 架构](15-docview.md)

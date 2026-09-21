@@ -1,6 +1,6 @@
-# 11 · GDI 绘图与双缓冲
+# 18 · GDI 绘图与双缓冲
 
-> 对应示例：`examples/10_gdi`
+> 对应示例：`examples/18_gdi`
 
 ## 1. 绘图模型：DC 是什么
 
@@ -89,7 +89,7 @@ OnLButtonUp   → 记终点，ReleaseCapture()，退出状态
 
 `SetCapture` 让鼠标拖出窗口也继续收 `MouseMove`（否则拖出就断线）。**必须配对 ReleaseCapture**。
 
-笔画数据的组织：每笔画一个 `std::vector<CPoint>` + 颜色，整体 `std::vector<Stroke>` 就是文档数据——这个结构和第 10 章 Doc/View 天然契合（数据搬进 CDocument，OnDraw 画它）。
+笔画数据的组织：每笔画一个 `std::vector<CPoint>` + 颜色，整体 `std::vector<Stroke>` 就是文档数据——这个结构和第 15 章 Doc/View 天然契合（数据搬进 CDocument，OnDraw 画它）。
 
 ## 5. 文本绘制要点
 
@@ -124,4 +124,4 @@ dc.SelectObject(old);
 - 图表、波形这类高频刷新场景，考虑每帧只重绘变化区域（`Invalidate(rect)` 指定脏矩形）
 
 ---
-上一章：[10 Doc/View 架构](10-docview.md) ｜ 下一章：[12 多线程与后台任务](12-threads.md)
+上一章：[15 Doc/View 架构](15-docview.md) ｜ 下一章：[20 多线程与后台任务](20-threads.md)

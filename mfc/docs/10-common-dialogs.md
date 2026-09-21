@@ -1,6 +1,6 @@
-# 08 · 通用对话框与文件 IO
+# 10 · 通用对话框与文件 IO
 
-> 对应示例：`examples/07_common_dialogs`
+> 对应示例：`examples/10_common_dialogs`
 
 ## 1. 通用对话框家族
 
@@ -42,7 +42,7 @@ CString path = dlg.GetPathName();        // 完整路径
 - `OFN_PATHMUSTEXIST`：路径必须存在
 - `OFN_ALLOWMULTISELECT`：多选（配 `GetNextPathName` 遍历）
 
-经验：**保存时先判断"有没有地方可存"**——比如编辑器第一次保存时文件名为空，先弹保存对话框要路径，之后的保存静默覆盖（第 13 章实战项目就是这个逻辑）。
+经验：**保存时先判断"有没有地方可存"**——比如编辑器第一次保存时文件名为空，先弹保存对话框要路径，之后的保存静默覆盖（第 25 章实战项目就是这个逻辑）。
 
 ## 3. CFile：字节级读写
 
@@ -141,9 +141,9 @@ afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) {
 
 ## 7. 实战建议
 
-- 把"读任意编码 → CString"和"CString → UTF-8 写出"封装成两个自由函数，全项目复用（第 13 章就是这么干的）
+- 把"读任意编码 → CString"和"CString → UTF-8 写出"封装成两个自由函数，全项目复用（第 25 章就是这么干的）
 - 打开文件的错误提示要带路径和原因，`GetLastError()` 转成文字比"打开失败"有用得多
 - 频繁写日志用 `CStdioFile`（带缓冲）而不是 `CFile` 每次开关
 
 ---
-上一章：[07 常用控件深入](07-controls.md) ｜ 下一章：[09 工具栏与状态栏](09-toolbars.md)
+上一章：[07 常用控件深入](07-controls.md) ｜ 下一章：[11 工具栏与状态栏](11-toolbars.md)

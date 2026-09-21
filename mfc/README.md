@@ -7,7 +7,7 @@
 ```powershell
 cd G:\code\guide\mfc
 .\build.ps1 -All                # 构建全部示例（含资源编译与链接）
-.\build.ps1 -File 03_resources  # 构建单个示例
+.\build.ps1 -File 04_resources  # 构建单个示例
 .\build.ps1 -Clean              # 清理 build 目录
 ```
 
@@ -27,25 +27,25 @@ mfc/
 │   ├── 05-frames.md            # 窗口与框架类
 │   ├── 06-dialogs.md           # 对话框：模态、非模态与 DDX
 │   ├── 07-controls.md          # 常用控件深入
-│   ├── 08-common-dialogs.md    # 通用对话框与文件 IO
-│   ├── 09-toolbars.md          # 工具栏与状态栏
-│   ├── 10-docview.md           # Doc/View 架构
-│   ├── 11-gdi.md               # GDI 绘图与双缓冲
-│   ├── 12-threads.md           # 多线程与后台任务
-│   └── 13-notepad-plus.md      # 实战项目：记事本+
+│   ├── 10-common-dialogs.md    # 通用对话框与文件 IO
+│   ├── 11-toolbars.md          # 工具栏与状态栏
+│   ├── 15-docview.md           # Doc/View 架构
+│   ├── 18-gdi.md               # GDI 绘图与双缓冲
+│   ├── 20-threads.md           # 多线程与后台任务
+│   └── 25-notepad-plus.md      # 实战项目：记事本+
 └── examples/            # 每章示例（可独立编译运行）
     ├── 01_hello_mfc/           # 最小 MFC 程序骨架
-    ├── 02_message_map/         # 三类消息与消息映射
-    ├── 03_resources/           # .rc 资源：菜单/加速键/字符串表
-    ├── 04_frame_layout/        # 窗口创建与 OnSize 自适应布局
-    ├── 05_dialog/              # 模态 + 非模态对话框与 DDX
-    ├── 06_controls/            # CListCtrl 报表/排序/右键菜单
-    ├── 07_common_dialogs/      # CFileDialog/CColorDialog + 文件编码
-    ├── 08_toolbar_statusbar/   # 工具栏/状态栏/命令 UI 更新
-    ├── 09_docview/             # SDI Doc/View 全流程
-    ├── 10_gdi/                 # GDI 画板 + 双缓冲
-    ├── 11_threads/             # worker 线程 + 进度回传 + 取消
-    └── 12_notepad_plus/        # 实战项目：记事本+（多模块）
+    ├── 03_message_map/         # 三类消息与消息映射
+    ├── 04_resources/           # .rc 资源：菜单/加速键/字符串表
+    ├── 05_frame_layout/        # 窗口创建与 OnSize 自适应布局
+    ├── 06_dialog/              # 模态 + 非模态对话框与 DDX
+    ├── 07_controls/            # CListCtrl 报表/排序/右键菜单
+    ├── 10_common_dialogs/      # CFileDialog/CColorDialog + 文件编码
+    ├── 11_toolbar_statusbar/   # 工具栏/状态栏/命令 UI 更新
+    ├── 15_docview/             # SDI Doc/View 全流程
+    ├── 18_gdi/                 # GDI 画板 + 双缓冲
+    ├── 20_threads/             # worker 线程 + 进度回传 + 取消
+    └── 25_notepad_plus/        # 实战项目：记事本+（多模块）
 ```
 
 ## 学习路线

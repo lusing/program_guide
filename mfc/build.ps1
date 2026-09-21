@@ -1,7 +1,8 @@
 ﻿param(
     [switch]$All,
     [string]$File,
-    [switch]$Clean
+    [switch]$Clean,
+    [switch]$Static
 )
 
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -20,6 +21,13 @@ $rcIncludeFlags = @(
 ) | ForEach-Object { "/I`"$_`"" }
 $examplesDir = Join-Path $projectRoot "examples"
 $buildDir = Join-Path $projectRoot "build"
+
+# 逐示例额外链接库白名单（未列出的示例只链接 MFC 默认库）
+$extraLibsByExample = @{
+    '12_clipboard_dnd'  = @('ole32.lib', 'oleaut32.lib')
+    '14_dpi_darkmode'   = @('dwmapi.lib')
+    '22_modern_drawing' = @('gdiplus.lib', 'd2d1.lib', 'dwrite.lib')
+}
 
 if (-not (Test-Path -LiteralPath $vcvars)) {
     throw "未找到 vcvars64.bat，请检查 VC 安装路径。"
@@ -49,7 +57,8 @@ function Build-Example {
     $name = Split-Path -Leaf $ExamplePath
     $objDir = Join-Path $buildDir "obj\$name"
     New-Item -ItemType Directory -Force -Path $objDir | Out-Null
-    $exePath = Join-Path $buildDir ($name + ".exe")
+    $suffix = if ($Static) { '_static' } else { '' }
+    $exePath = Join-Path $buildDir ($name + $suffix + ".exe")
 
     $cpps = @(Get-ChildItem -LiteralPath $ExamplePath -Filter "*.cpp" | Sort-Object Name)
     $rcs = @(Get-ChildItem -LiteralPath $ExamplePath -Filter "*.rc")
@@ -59,27 +68,38 @@ function Build-Example {
         return
     }
 
-    Write-Host "[Build] $name" -ForegroundColor Cyan
+    # 静态模式：去掉 /D_AFXDLL，运行时改 /MT，链接器自动取 mfc140u.lib
+    $compileFlags = if ($Static) {
+        '/std:c++20 /EHsc /W3 /DUNICODE /D_UNICODE /MT /utf-8 /D_WIN32_WINNT=0x0A00'
+    } else {
+        '/std:c++20 /EHsc /W3 /DUNICODE /D_UNICODE /D_AFXDLL /MD /utf-8 /D_WIN32_WINNT=0x0A00'
+    }
+
+    $extraLibs = $extraLibsByExample[$name]
+    if (-not $extraLibs) { $extraLibs = @() }
+
+    Write-Host ("[Build] {0}{1}" -f $name, $(if ($Static) { ' (静态)' } else { '' })) -ForegroundColor Cyan
 
     $steps = @('call "{0}" >nul' -f $vcvars)
 
     foreach ($cpp in $cpps) {
-        $objPath = Join-Path $objDir ($cpp.BaseName + ".obj")
-        $steps += ('cl /nologo /std:c++20 /EHsc /W3 /DUNICODE /D_UNICODE /D_AFXDLL /MD /utf-8 /D_WIN32_WINNT=0x0A00 /c "{0}" /Fo"{1}"' -f $cpp.FullName, $objPath)
+        $objPath = Join-Path $objDir ($cpp.BaseName + $suffix + ".obj")
+        $steps += ('cl /nologo {0} /c "{1}" /Fo"{2}"' -f $compileFlags, $cpp.FullName, $objPath)
     }
 
     foreach ($rc in $rcs) {
-        $resPath = Join-Path $objDir ($rc.BaseName + ".res")
+        $resPath = Join-Path $objDir ($rc.BaseName + $suffix + ".res")
         $steps += ('rc /nologo /c65001 {0} /Fo"{1}" "{2}"' -f ($rcIncludeFlags -join " "), $resPath, $rc.FullName)
     }
 
-    $objList = ($cpps | ForEach-Object { Join-Path $objDir ($_.BaseName + ".obj") }) -join " "
+    $objList = ($cpps | ForEach-Object { Join-Path $objDir ($_.BaseName + $suffix + ".obj") }) -join " "
     $resList = ""
     if ($rcs.Count -gt 0) {
-        $resList = " " + (($rcs | ForEach-Object { Join-Path $objDir ($_.BaseName + ".res") }) -join " ")
+        $resList = " " + (($rcs | ForEach-Object { Join-Path $objDir ($_.BaseName + $suffix + ".res") }) -join " ")
     }
-    # Unicode MFC 的入口是 wWinMain（由 mfc140u.dll 提供），必须显式指定
-    $steps += ('cl /nologo {0}{1} /Fe"{2}" /link /SUBSYSTEM:WINDOWS /ENTRY:wWinMainCRTStartup' -f $objList, $resList, $exePath)
+    $libList = if ($extraLibs.Count -gt 0) { " " + ($extraLibs -join " ") } else { "" }
+    # Unicode MFC 的入口是 wWinMain（动态由 mfc140u.dll 提供，静态由 mfc140u.lib 提供），必须显式指定
+    $steps += ('cl /nologo {0}{1} /Fe"{2}" /link /SUBSYSTEM:WINDOWS /ENTRY:wWinMainCRTStartup{3}' -f $objList, $resList, $exePath, $libList)
 
     $cmd = $steps -join " && "
     & $env:ComSpec /c $cmd
@@ -110,4 +130,5 @@ if ($File) {
 Write-Host "用法:" -ForegroundColor Yellow
 Write-Host "  .\build.ps1 -All              构建全部示例（编译资源 + 链接 exe）"
 Write-Host "  .\build.ps1 -File <示例目录>   构建单个示例"
+Write-Host "  .\build.ps1 -File <示例目录> -Static   静态链接 MFC 构建（第 23 章用）"
 Write-Host "  .\build.ps1 -Clean            清理 build 目录"

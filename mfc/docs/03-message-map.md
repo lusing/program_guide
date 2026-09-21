@@ -1,6 +1,6 @@
 # 03 · 消息映射机制
 
-> 对应示例：`examples/02_message_map`
+> 对应示例：`examples/03_message_map`
 
 ## 1. 为什么需要消息映射
 
@@ -84,7 +84,7 @@ ON_MESSAGE(WM_APP_TICK, OnAppTick)
 - 发送方用 `PostMessage`（异步，发完就走）或 `SendMessage`（同步，等到处理完）
 - 跨进程不能这么干，要用 `RegisterWindowMessage` + `ON_REGISTERED_MESSAGE`
 
-**线程间通信就是靠它**（第 12 章）：worker 线程 `PostMessage(WM_APP_PROGRESS, ...)` 回 UI 线程，是 MFC 多线程的标准姿势。
+**线程间通信就是靠它**（第 20 章）：worker 线程 `PostMessage(WM_APP_PROGRESS, ...)` 回 UI 线程，是 MFC 多线程的标准姿势。
 
 ### 3.3 命令消息：`ON_COMMAND` / `ON_COMMAND_RANGE`
 
@@ -119,7 +119,7 @@ afx_msg void OnUpdateFileSave(CCmdUI* pCmdUI) {
 }
 ```
 
-`CCmdUI` 还能 `SetText`（动态菜单文案）、`SetCheck`（勾选状态）。这是 MFC 命令架构最省心的设计，第 09 章大量使用。
+`CCmdUI` 还能 `SetText`（动态菜单文案）、`SetCheck`（勾选状态）。这是 MFC 命令架构最省心的设计，第 11 章大量使用。
 
 ## 5. 消息处理函数的正确写法
 
@@ -155,7 +155,7 @@ END_MESSAGE_MAP()
 
 ## 7. 实战建议
 
-- 命令处理写在哪个类，取决于"谁拥有那份数据"。菜单命令先落在框架，再转发给真正干活的成员（第 13 章实战项目就是这么组织编辑命令的）
+- 命令处理写在哪个类，取决于"谁拥有那份数据"。菜单命令先落在框架，再转发给真正干活的成员（第 25 章实战项目就是这么组织编辑命令的）
 - 消息处理函数保持薄：拆出 `DoXxx()` 普通成员函数，处理函数只做参数转换和调用，方便测试和复用
 - 用 `SPY++`（VS 自带工具）观察真实消息流，是调试消息类问题最快的方法
 
