@@ -48,8 +48,12 @@ public:
     // 拉伸窗口时重新布置子控件 —— 手工布局的核心
     afx_msg void OnSize(UINT nType, int cx, int cy) {
         CFrameWnd::OnSize(nType, cx, cy);
-        if (m_edit.GetSafeHwnd() == nullptr)
-            return;  // OnCreate 之前也可能收到 WM_SIZE，控件还没建
+
+        // 两道守卫，缺一不可：
+        // ① 最小化时 cx/cy 都是 0，按 0 算出来的矩形是负尺寸，控件会被挤没
+        // ② OnCreate 之前也可能收到 WM_SIZE，此时控件还没建
+        if (nType == SIZE_MINIMIZED || m_edit.GetSafeHwnd() == nullptr)
+            return;
 
         const int margin = 12;
         const int editH = 28, btnW = 100, btnH = 30, gap = 8;
