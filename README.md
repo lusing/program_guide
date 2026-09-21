@@ -44,6 +44,7 @@
 - [julia](./julia) — Julia 1.13 教程（24 章对齐 cpp20/zig 标准：多重派发/类型系统/广播/元编程/性能/Pkg 环境细讲，23 个示例三层验证运行+测试+工程，24 为迷你 ODE 求解器包工程——问题-算法-解三件套 + 自适应步长 + 收敛阶测试）
 - [haskell](./haskell) — Haskell 教程（GHC 9.12.1，24 章对齐 julia/swift 标准：模式匹配/ADT/类型类/惰性求值/函子-应用-单子/单子变换器/parsec/TH/STM 特色细讲，主线纯 boot 库离线可验证；23 个示例两层验证 编译+运行+测试 六条判定，20/24 为 stack 工程（清华镜像 + compiler 覆盖实测链路），24 为 MiniLang 迷你解释器——词法/语法/求值三层管线 + 递归绑定打结 + 词法作用域闭包；CHEATSheet 收录 32 条实测坑位（GBK 编码/runghc 41s/-Wx-partial/惰性句柄锁/优先级表序/坏 strip shim）
 - [prolog](./prolog) — Prolog 逻辑编程教程（24 章对齐 haskell/julia/elixir 标准：合一/回溯/剪枝/DCG 解析/动态库/元编程/CLP(FD)/模块与加载边界/测试与性质测试细讲；23 个示例 × **三通道** SWI 解释 + GNU 解释 + `gplc` 本地二进制，六条判定含**跨通道输出区间逐字节比对**，`run-all.sh` 与 `build.ps1` 双入口均 119/0 全绿；24 为四百行迷你语言解释器——词法→DCG 分层语法→环境求值→断言与错误路径测试，其中两处语义（整除 `//`、比较返 1/0）是被可移植性逼出来的；双引擎差异是主线教学材料：GNU 无模块系统且**静默忽略** `module/2`、`consult/1` 往 stdout 打编译进度、`gplc` 静态链接需 `=..`+`call/1` 绕符号解析、CLP(FD) 两套独立实现需可移植适配层、`%` 在格式串里语义不同；CHEATSheet 收录 **226 条实测坑位** + 跨引擎「安全子集」清单）
+- [io](./io) — Io 语言教程（24 章对齐 haskell/julia/elixir/prolog 标准：纯原型对象模型 / 三种消息形状与优先级 / 槽与 proto 链 / 块与闭包 / `try`-`catch`-`signal` / 协程与 Future / 元编程内省 / `DynLib` FFI 细讲；Io 从源码编译（CMake + `build.sh`），**不用包管理器里的老版本**；23 个示例 × **两条通道**（动态链接 `io` + 静态 `io_static`）**七条判定**含跨通道输出区间逐字节比对，`run-all.sh` 与 `build.ps1` 双入口均 **94/0** 全绿；24 为访问日志分析器（解析 → 聚合 → 排序 → 渲染 → 落盘）；CHEATSheet 收录 **240 条实测坑位**——其中一批是「跟直觉相反」的硬骨头：未捕获异常横幅走 **stdout** 且退出码仍是 **0**、`try(expr)` 成功也返回 `nil`、无参 `split` **按字节**扫空白（`"上" split` 得 `list("")`）、`"abc" asNumber` 给 **`nan`** 而不是 0、`method(...)` 造的块 `isActivatable=true` 一进形参就被零参调用（`withHandler` 的处理器**必须**用 `block(...)`）、`do(...)` 里逗号分隔的槽定义只有第一个被求值且看不见外层局部槽（要 `lexicalDo`）、`setEnvironmentVariable(name, nil)` **段错误** rc=139、`DynLib` 调浮点签名 C 函数（`pow(2,10)` ≠ 1024）返回的是整数寄存器残留——详见 [io/README.md](./io/README.md)）
 - [renpy](./renpy) — Ren'Py 视觉小说与叙事游戏教程，使用 Ren'Py `compile` 验证
 - [kotlin](./kotlin) — Kotlin 2.4 教程（24 章对齐 cpp20/zig/go/rust 标准：空安全/密封与穷尽 when/委托/型变 reified/作用域函数/扩展/协程+Flow/Java 互操作/DSL 细讲，24 个示例四层验证 kotlinc -Werror + kotlin.test + 运行 + 输出快照；17 为 Gradle 多模块工程（JUnit5 + fat jar），18 为 Java/Kotlin 混编两遍法，24 为迷你待办 CLI（手写 JSON 解析器 + 文件存储 + 退出码约定），25 为多平台四目标（js/wasm-js/wasm-wasi/native；native 需 konanc，macOS 无包时跳过）。macOS 与 Windows 双平台实测，classpath 分隔符与产物后缀差异已由脚本吸收）
 - [lean4](./lean4) — Lean4/Mathlib4 教程与示例，使用 Lake + Lean 校验
@@ -131,6 +132,7 @@
 40. [haskell](./haskell)
 41. [algol68](./algol68)
 42. [llvm](./llvm)
+43. [io](./io)
 
 ## 工具链说明
 
@@ -164,6 +166,7 @@
 - OCaml 5.5.0 / ocamlc / ocamlopt / ocamllex（macOS macports 安装 `/opt/local/bin`，三通道对照：字节码 + 原生 + 顶层解释器；用到 `Unix` 的示例必须 `-I +unix`，否则 OCaml 5 会吐弃用告警）
 - LLVM 22.1.8 完整版（MSYS2 UCRT64：opt/lli/llc/llvm-config/FileCheck + g++ 16.2 + libLLVM 开发库，scoop msys2 + `pacman -S mingw-w64-ucrt-x86_64-llvm{,-tools,-libs}`；注意 scoop 的 llvm 23 是精简 clang 工具集，做不了 IR 实操；llvm-project 源码参考 `G:\github\lang\llvm-project`）
 - Julia 1.13.0（macOS 实测通道：MacPorts `/opt/local/bin/julia`；Windows 可 scoop/juliaup；两个验证入口都自动探测，不硬编码路径）
+- Io（**从源码编译**：CMake + `build.sh`，落在 `~/.workbuddy/binaries/io/bin/{io,io_static}`；**刻意不用包管理器里的 Io** —— 发行版自带的多停在 2009 年，缺 `actorRun`/`Future`/`serialized` 产物格式等本教程依赖的行为；两条通道语义相同、只差加载方式，跨通道逐字节比对用来查「示例有没有偷偷依赖动态库加载或安装前缀」；核心库 `lib/io/*.io` 是**用 Io 自己写的**）
 - SWI-Prolog 10.0.2 + GNU Prolog 1.5.0 / gplc（逻辑编程，macOS macports 安装）
 - Ren'Py
 - Rust 1.98.1 / cargo 1.98.0（edition 2024；macOS 实测通道：MacPorts `/opt/local/bin/cargo`；Windows 可 scoop/rustup；两个验证入口都自动探测，不硬编码路径）
