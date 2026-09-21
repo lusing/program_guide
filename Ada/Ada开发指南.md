@@ -1,19 +1,24 @@
-# Ada 语言开发指南 (Windows 平台)
+# Ada 语言开发指南 (Windows / Linux 平台)
 
-> 基于 **GNAT 16.1.0 (GCC 16.1.0)** — MSYS2 UCRT64  
-> 编译环境：`G:\scoop\apps\msys2\current\ucrt64\bin\`  
+> 基于 **GNAT 16.1.0 (GCC 16.1.0)** — MSYS2 UCRT64（Windows）
+> Linux 复验环境：**GNAT 16.2.1 (GCC 16.2.1)**，2026-09-21，17/17 示例编译运行全部通过
 > 测试日期：2026-07-21
 
 ## 示例工程化结构（guide 统一标准）
 
 - 教程文档：`Ada开发指南.md`
 - 示例源码：`examples/`
-- 统一构建脚本：`build.ps1`
+- 统一构建脚本：`build.ps1`（Windows）、`run-all.sh`（Linux/macOS）
 - 全量验证命令：
 
 ```powershell
 cd G:\code\guide\Ada
 .\build.ps1 -All
+```
+
+```bash
+cd guide/Ada
+./run-all.sh
 ```
 
 ---
@@ -303,26 +308,26 @@ function Sqrt (X : Float) return Float
 本文档包含 **16 个章节**，每章都对应一个可编译、可运行的完整示例程序。推荐的学习路径：
 
 1. **第一遍（快速浏览）**：从第 1 章环境搭建开始，依次阅读每章的"源码 + 要点"，对 Ada 形成整体印象。
-2. **第二遍（动手实践）**：把 `src\` 目录下的所有 `.adb/.ads` 文件用 GNAT 编译一遍，运行它们，观察输出。
+2. **第二遍（动手实践）**：把 `examples/`（即历史上的 `src/`）目录下的所有 `.adb/.ads` 文件用 GNAT 编译一遍，运行它们，观察输出。Windows 用 `.\build.ps1 -All`，Linux/macOS 用 `./run-all.sh`，二者等价。
 3. **第三遍（深入思考）**：每章末尾尝试自己修改代码——改变类型范围、增加新的子程序、打破约束看 Ada 如何反应。
 
-本指南的编译环境为 **GNAT 16.1.0 (GCC 16.1.0) on MSYS2 UCRT64**，所有示例都已经在该环境下编译通过并验证运行结果（见 [附录 A：编译测试结果汇总](#附录-a编译测试结果汇总)）。
+本指南的编译环境为 **GNAT 16.1.0 (GCC 16.1.0) on MSYS2 UCRT64**，所有示例都已经在该环境下编译通过并验证运行结果（见 [附录 A：编译测试结果汇总](#附录-a编译测试结果汇总)）。2026-09-21 又在 **Linux (GNAT 16.2.1)** 下全量复验，17 个示例编译运行全部通过（差异与注意事项见附录 A）。
 
 ---
 
-**准备好了吗？让我们从第 1 章——Windows 平台的 GNAT 环境搭建——正式开始。**
+**准备好了吗？让我们从第 1 章——GNAT 环境搭建（Windows / Linux）——正式开始。**
 
 ---
 
 ## 1. 环境搭建
 
-### 1.1 GNAT 编译器路径
+### 1.1 Windows：GNAT 编译器路径
 
 ```
 G:\scoop\apps\msys2\current\ucrt64\bin\
 ```
 
-### 1.2 关键工具
+### 1.2 Windows：关键工具
 
 | 工具 | 路径 | 用途 |
 |------|------|------|
@@ -331,7 +336,7 @@ G:\scoop\apps\msys2\current\ucrt64\bin\
 | `gnatls.exe` | `ucrt64\bin\gnatls.exe` | 列出 Ada 库信息 |
 | `gcc.exe` | `ucrt64\bin\gcc.exe` | GCC 编译器 |
 
-### 1.3 Ada 库路径
+### 1.3 Windows：Ada 库路径
 
 | 类型 | 路径 |
 |------|------|
@@ -339,7 +344,37 @@ G:\scoop\apps\msys2\current\ucrt64\bin\
 | 对象文件搜索路径 | `ucrt64\lib\gcc\x86_64-w64-mingw32\16.1.0\adalib` |
 | 项目文件搜索路径 | `ucrt64\lib\gnat`, `ucrt64\share\gpr` |
 
-### 1.4 编译命令
+### 1.4 Linux：安装 GNAT
+
+各发行版的安装方式：
+
+```bash
+# Debian / Ubuntu
+sudo apt install gnat
+
+# Fedora
+sudo dnf install gcc-gnat
+
+# Arch Linux
+sudo pacman -S gcc-ada
+
+# macOS（GNAT 不在 Xcode 工具链中，用 Homebrew 或 Alire）
+brew install gcc        # 包含 Ada 前端
+```
+
+安装后验证：
+
+```bash
+gnatmake --version
+# GNATMAKE 16.2.1 20260810
+# Copyright (C) 1995-2025, Free Software Foundation, Inc.
+```
+
+> Linux 上 `gnatmake`、`gcc` 等工具直接位于 `PATH` 中（如 `/usr/bin/gnatmake`），无需像 Windows 那样手动设置编译器路径。
+
+### 1.5 编译命令
+
+Windows (PowerShell)：
 
 ```powershell
 # 设置 PATH
@@ -350,6 +385,16 @@ gnatmake -o output.exe source.adb
 
 # 编译带包的项目（自动处理依赖）
 gnatmake -o output.exe main.adb
+```
+
+Linux / macOS (bash)：
+
+```bash
+# 编译单个文件（可执行文件无 .exe 后缀）
+gnatmake -o output source.adb
+
+# 编译带包的项目（自动处理依赖）
+gnatmake -o output main.adb
 ```
 
 ---
@@ -363,16 +408,23 @@ with Ada.Text_IO; use Ada.Text_IO;
 
 procedure Ch01_Hello is
 begin
-   Put_Line ("Hello, Ada on Windows!");
-   Put_Line ("GNAT 编译器: GCC 16.1.0 (MSYS2 UCRT64)");
+   Put_Line ("Hello, Ada!");
+   Put_Line ("GNAT 编译器 (GCC) — Windows / Linux 通用");
    Put_Line ("Ada 2012/2022 语言标准");
 end Ch01_Hello;
 ```
 
 **编译 & 运行：**
 ```powershell
+# Windows
 gnatmake -o src\ch01_hello.exe src\ch01_hello.adb
 .\src\ch01_hello.exe
+```
+
+```bash
+# Linux / macOS
+gnatmake -o ch01_hello examples/ch01_hello.adb
+./ch01_hello
 ```
 
 **要点：**
@@ -992,6 +1044,24 @@ with Interfaces.C.Strings;
 -- 提供: int, unsigned, size_t, char_array, chars_ptr, To_C, To_Ada 等
 ```
 
+### 14.5 编译与运行（注意 Linux 的 libm）
+
+```powershell
+# Windows：UCRT 已把数学函数并入主 C 运行时，直接编译即可
+gnatmake -o src\ch13_c_interop.exe src\ch13_c_interop.adb
+.\src\ch13_c_interop.exe
+```
+
+```bash
+# Linux / macOS：sqrtf 位于独立的数学库 libm，必须附加 -largs -lm
+gnatmake -o ch13_c_interop examples/ch13_c_interop.adb -largs -lm
+./ch13_c_interop
+```
+
+> **平台差异提示**：`sqrtf` 在 Windows UCRT 中随主 C 运行时提供，而 glibc 把它放在
+> 独立的 `libm.so` 里。GNU 链接器默认不链接 libm，因此 Linux 下必须显式加
+> `-largs -lm`（`-largs` 之后的参数全部传给链接器，且必须放在命令行末尾）。
+
 ---
 
 ## 15. 标准容器库
@@ -1433,7 +1503,7 @@ end;
 
 契约的启用/关闭由编译选项控制：
 
-```powershell
+```bash
 # 启用所有断言（Pre/Post/Predicate/Assert/Invariant）
 gnatmake -gnata source.adb
 
@@ -1481,9 +1551,16 @@ gnatmake -gnatc -gnata source.adb
 **编译与运行：**
 
 ```powershell
+# Windows
 $env:PATH = "G:\scoop\apps\msys2\current\ucrt64\bin;" + $env:PATH
 gnatmake -gnata -o src\ch16_contracts.exe src\ch16_contracts.adb
 .\src\ch16_contracts.exe
+```
+
+```bash
+# Linux / macOS
+gnatmake -gnata -o ch16_contracts examples/ch16_contracts.adb
+./ch16_contracts
 ```
 
 **典型输出：**
@@ -1877,22 +1954,28 @@ AdaCore 提供**免费**的 SPARK Discovery 版本，面向学生、研究者、
 - Why3（OCaml 编写）
 - 至少一个 SMT 求解器（推荐 Z3 或 CVC4）
 
-#### 方式 4：Windows 下快速尝鲜
+#### 方式 4：快速尝鲜（无商业订阅）
 
-若你在 MSYS2 环境下（如本文档配置），目前**没有**预编译的 `gnatprove` 包。推荐：
+- **Windows**：MSYS2 目前**没有**预编译的 `gnatprove` 包，推荐下载 SPARK Discovery 的 Windows 安装包，将其 bin 目录加入 `PATH`。
+- **Linux / macOS**：两种便捷途径：
+  1. 用 **Alire** 包管理器安装（见 [alire.ada.dev/crates/gnatprove](https://alire.ada.dev/crates/gnatprove)）：
 
-1. 下载 SPARK Discovery 的 Windows 安装包。
-2. 将其 bin 目录加入 `PATH`。
-3. 验证：
+     ```bash
+     alr install gnatprove
+     ```
 
-```powershell
+  2. 从 AdaCore 的 [spark2014 GitHub 仓库](https://github.com/AdaCore/spark2014) 发布页下载 Linux x86-64 / macOS 二进制包，解压后将 `bin` 目录加入 `PATH`。
+
+验证：
+
+```bash
 gnatprove --version
 # spark 16.x (Pro) [gcov enabled]
 ```
 
 #### 验证安装
 
-```powershell
+```bash
 gnatprove --version          # 版本
 gnatprove --help             # 帮助
 gnatprove -P my_project.gpr  # 运行证明
@@ -1915,9 +1998,16 @@ gnatprove -P my_project.gpr  # 运行证明
 **编译与运行（普通 GNAT，运行时检查契约）：**
 
 ```powershell
+# Windows
 $env:PATH = "G:\scoop\apps\msys2\current\ucrt64\bin;" + $env:PATH
 gnatmake -gnata -o src\ch17_spark.exe src\ch17_spark.adb
 .\src\ch17_spark.exe
+```
+
+```bash
+# Linux / macOS
+gnatmake -gnata -o ch17_spark examples/ch17_spark.adb
+./ch17_spark
 ```
 
 **典型输出：**
@@ -1958,7 +2048,7 @@ end Ch17_Spark;
 
 2. 运行 GNATprove：
 
-```powershell
+```bash
 gnatprove -P ch17_spark.gpr --level=2 --report=all
 ```
 
@@ -2092,6 +2182,17 @@ SPARK 不是银弹，它有明确的**适用边界**和**成本**：
 
 **总计：17 个章节，20 个源文件，全部编译通过，全部运行通过。**
 
+### Linux 平台复验（2026-09-21）
+
+在 **Linux x86_64, GNAT 16.2.1 (GCC 16.2.1)** 下用 `./run-all.sh` 全量复验，17 个示例**编译、运行全部通过**，运行输出与 Windows 环境一致。相对 Windows 仅有的差异：
+
+| 事项 | 说明 |
+|------|------|
+| `ch13_c_interop` 链接 | 需附加 `-largs -lm`（Linux 的数学函数在独立 libm 中）；`run-all.sh` 已自动处理 |
+| `ch16_contracts` / `ch17_spark` | 需 `-gnata`（与 Windows 相同）；`run-all.sh` 已自动处理 |
+| 可执行文件名 | 无 `.exe` 后缀 |
+| 环境搭建 | `sudo apt install gnat`（Debian/Ubuntu）等，见第 1 章 |
+
 ---
 
 ## 附录 B：常用编译选项
@@ -2118,6 +2219,20 @@ gnatmake -O2 source.adb
 # 检查语法（不生成可执行文件）
 gnatmake -gnatc source.adb
 ```
+
+```bash
+# Linux / macOS：命令相同，仅输出文件不加 .exe
+gnatmake -o output source.adb
+
+# 链接 C 数学库（导入 sqrtf/sin/cos 等 libm 函数时必需）
+gnatmake -o output source.adb -largs -lm
+
+# 启用断言（契约 Pre/Post/Predicate/Assert）
+gnatmake -gnata source.adb
+```
+
+> **提示**：`-largs` 之后的参数全部传给链接器，必须放在命令行末尾；
+> 切换 `-gnata` 等编译开关后 gnatmake 不会自动重编已有单元，需加 `-f` 强制重编。
 
 ---
 

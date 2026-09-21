@@ -1,0 +1,5 @@
+# GNAT 构建产物
+build/
+*.ali
+*.o
+*.exe

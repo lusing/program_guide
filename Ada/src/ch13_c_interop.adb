@@ -6,6 +6,9 @@ with Ada.Text_IO; use Ada.Text_IO;
 procedure Ch13_C_Interop is
 
    -- 导入 C 标准库函数
+   -- 注意: Linux 下 sqrtf 位于独立的数学库 libm，
+   --       编译时需附加链接选项: gnatmake ... -largs -lm
+   --       (Windows UCRT 已把数学函数并入主 C 运行时，无需额外指定)
    function C_Sqrt (X : Float) return Float
       with Import, Convention => C, External_Name => "sqrtf";
 
