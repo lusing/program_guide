@@ -161,5 +161,7 @@ zig build -Doptimize=ReleaseFast -Dtarget=aarch64-linux
 | 环境变量用户名 | `USERNAME` | `USER`（示例两者都试） | 22 |
 | `std.posix.getenv` | 不可用（用 `init.environ_map`） | 可用（但 Init 写法双平台一致） | 23 |
 | 路径分隔符 | `\`（`std.fs.path` 抹平） | `/` | 20 |
-| 内联汇编 | 本章示例 x86_64 专属，comptime 守卫 | 同左；aarch64 需换指令 | 21 |
-| 全量验证 | `build.ps1`（pwsh） | `./run-all.sh`（bash，`ZIG=` 可指定） | — |
+| 内联汇编 | x86_64 分支（`rdtsc`） | aarch64 分支（`mrs %[v], cntvct_el0`），Apple Silicon 直接可跑 | 21 |
+| panic 栈帧尾 | `... in main (xx.obj)` / DLL 名 | `0x... in main (main)`，末帧 `/usr/lib/dyld` | 23 |
+| 全量验证 | `build.ps1`（pwsh） | `./run-all.sh`（bash，`ZIG=` 可指定）；macOS 跑 ps1 版要 `pwsh -NoProfile -Command '& ./build.ps1 -All'` | — |
+| 合并重定向 `> f 2>&1` | 正常 | Zig 侧会覆盖 stderr 前部（0.16 实测），分开重定向 | 02 |

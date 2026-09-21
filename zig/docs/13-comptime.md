@@ -100,3 +100,5 @@ comptime std.debug.assert(@sizeOf(u64) == 8);             // 编译期断言
 5. **编译期递归无界**：comptime 递归 fibonacci(30+) 会先撞配额再撞编译时间——大表用迭代生成，别硬算。
 
 ---
+
+上一章：[12 集合](12-collections.md) · 下一章：[14 泛型](14-generics.md)

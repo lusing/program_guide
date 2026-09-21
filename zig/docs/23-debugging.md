@@ -29,7 +29,20 @@ G:\scoop\apps\zig\0.16.0\lib\std\start.zig:737: ... in callMain
 ???:?:?: 0x... in ??? (KERNEL32.DLL)
 ```
 
-> 上图是 Windows 实测；Linux/macOS 下栈跟踪格式相同，但路径是本机路径、帧尾没有 `.obj`/DLL 名（如 `... in main`），调试信息内嵌在 ELF/Mach-O 里而非单独的 pdb。
+**macOS 实测**（同一示例，`ZIG_PANIC=1`，Darwin x86_64 + zig 0.16.0）：
+
+```text
+thread 4082069 panic: 演示 panic：看栈跟踪（正文贴真实输出）
+/Volumes/.../zig/examples/23_debug/main.zig:26:9: 0x10760e2b5 in main (main)
+        @panic("演示 panic：看栈跟踪（正文贴真实输出）");
+        ^
+/opt/local/libexec/zig-0.16/lib/zig/std/start.zig:737:30: 0x10760e9d0 in callMain (main)
+    return wrapMain(root.main(.{
+                             ^
+???:?:?: 0x7ff8179ba344 in start (/usr/lib/dyld)
+```
+
+三处平台差异：**路径**是本机路径；**帧尾**没有 `.obj`/DLL 名，括号里是 Mach-O 镜像名（`(main)`）、最后一帧是动态链接器 `/usr/lib/dyld`（Linux 上是 libc 的 `__libc_start_main` 之类）；**每行带 `0x` 地址**（Windows 版没有）。调试信息内嵌在 ELF/Mach-O 里——没有单独的 pdb 文件（02 章坑位 5）。
 
 panic = 不可恢复的程序错误（`.?` 解 null、@intCast 越界、越界索引、除零……全是它）——**消息 + 完整栈跟踪**直接打到 stderr，连 ReleaseFast 都带（panic 路径不追求零成本）。调试信息默认就位：`zig build-exe` 产的 pdb 与 exe 同目录，栈里的行号是现成的。
 
@@ -40,6 +53,15 @@ panic = 不可恢复的程序错误（`.?` 解 null、@intCast 越界、越界�
 ```text
 error: DemoErrorReturnTrace
 G:\code\guide\zig\examples\23_debug\main.zig:32:9: ... in main
+```
+
+macOS 实测（同样带地址与镜像名）：
+
+```text
+error: DemoErrorReturnTrace
+/Volumes/.../zig/examples/23_debug/main.zig:32:9: 0x110037333 in main (main)
+        return error.DemoErrorReturnTrace; // Debug 下 stderr 打印完整来路
+        ^
 ```
 
 区别：**panic 栈**是"崩在哪"（调用栈）；**错误返回跟踪**是"这个错从哪来"（try 传播链，10 章）。两个都只在 Debug/ReleaseSafe 记录，Release 下零成本消失。排错顺序：错误跟踪找源头 → 必要时在源头下断点/加 panic。
@@ -105,3 +127,5 @@ zig doc src/main.zig       # 生成 HTML 文档（/// 注释）
 5. **环境变量开关法**在 0.16 Windows 上走 `init.environ_map`——`std.posix.getenv` 在 Windows 不可用（示例实测，不是猜测）。
 
 ---
+
+上一章：[22 进程](22-process.md) · 下一章：[24 实战：迷你 grep](24-minigrep.md)

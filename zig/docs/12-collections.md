@@ -111,3 +111,5 @@ fn byAge(_: void, a: User, b: User) bool { return a.age < b.age; }
 6. **`{d}` 打不出切片**：ArrayList 的 items、数组都要 `{any}`（02 章格式规则）。
 
 ---
+
+上一章：[11 分配器](11-allocators.md) · 下一章：[13 comptime I](13-comptime.md)

@@ -110,3 +110,5 @@ test "sluggify 行为" {
 5. **0.16 没有 `expectNull`**：写 `expect(opt == null)`（其他 expect* 也以 `std/testing.zig` 源码为准——15.5 的探针方法）。
 
 ---
+
+上一章：[14 泛型](14-generics.md) · 下一章：[16 构建与包管理](16-build.md)

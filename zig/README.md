@@ -40,15 +40,16 @@ zig/
 | [18 ⭐交叉编译](docs/18-cross.md) | -target、wasm、zig cc | `18_cross`（多目标） |
 | [19 并发](docs/19-threads.md) | Thread、Io.Mutex、原子游标 | `19_threads` |
 | [20 文件与 IO](docs/20-files-io.md) | std.Io.Dir、缓冲 Writer、std.json | `20_files` |
-| [21 内联汇编](docs/21-asm.md) | asm 语法、约束、rdtsc | `21_asm` |
+| [21 内联汇编](docs/21-asm.md) | asm 语法、约束、时间计数器 | `21_asm`（x86_64 + aarch64 双实现） |
 | [22 进程](docs/22-process.md) | argv、子进程、Io 时钟 | `22_process` |
 | [23 调试与工具](docs/23-debugging.md) | panic 栈跟踪、错误跟踪、LLDB | `23_debug` |
 | [24 实战：迷你 grep](docs/24-minigrep.md) | 递归 + 多线程 + 高亮 + 测试 | `24_minigrep`（工程） |
 
 ## 构建工具链
 
-- Zig **0.16.0**：`G:\scoop\apps\zig\current\zig.exe`（scoop 安装；版本不符先看 01 章的版本坑）。build.ps1 找不到该路径时自动回退 PATH 里的 `zig`。
-- Linux/macOS：发行版包（Arch `pacman -S zig`）或官网 tarball 解压即用（单文件无依赖），`zig version` 须为 `0.16.0`；本指南 23 个示例已在 Linux（Arch/WSL2, zig 0.16.0）全量实测通过。
+- Zig **0.16.0**：Windows 用 `G:\scoop\apps\zig\current\zig.exe`（scoop 安装；版本不符先看 01 章的版本坑）；**macOS 实测环境**是 MacPorts 的 `/opt/local/bin/zig`（0.16.0，真实 std 目录 `/opt/local/libexec/zig-0.16/lib/zig/std`）。build.ps1 找不到 scoop 路径时自动回退 PATH 里的 `zig`。
+- Linux/macOS：发行版包（Arch `pacman -S zig`、macOS `brew install zig` / `port install zig`）或官网 tarball 解压即用（单文件无依赖），`zig version` 须为 `0.16.0`。
+- **已实测的平台**：macOS Darwin 23 / x86_64 / zig 0.16.0 —— 23 个示例 `./run-all.sh` 全量三层验证通过；PowerShell 7.6.6（`pwsh`）下 `build.ps1` 同样全绿。Linux（Arch/WSL2, zig 0.16.0）全量实测通过。**Apple Silicon（arm64 macOS）**：逐示例用 `-target aarch64-macos` 交叉编译验证全部通过（21 章此前是硬失败，现已补 aarch64 实现）；运行验证待 arm64 真机。
 - 默认 Debug 模式（安全检查全开）；Windows 中文控制台乱码先 `chcp 65001`（build.ps1 已代设 UTF-8），Linux/macOS 终端原生 UTF-8 无此问题。
 
 ## 验证命令
@@ -69,11 +70,18 @@ cd zig
 ZIG=/path/to/zig ./run-all.sh       # 指定 zig 解释器
 ```
 
+macOS 上想跑 PowerShell 版也行（pwsh 7.6.6 实测全绿），但本机 `pwsh -File` 起不来（报 `Call to 'procargs' failed with errno 5`），用 `-Command` 调脚本：
+
+```bash
+pwsh -NoProfile -Command '& ./build.ps1 -All'
+```
+
 单跑某个示例（每章标准学法）——改代码后重跑：
 
 ```bash
 cd zig/examples/12_collections
-G:/scoop/apps/zig/current/zig.exe run main.zig        # 改完立刻看效果
+G:/scoop/apps/zig/current/zig.exe run main.zig        # Windows
+zig run main.zig                                      # macOS/Linux
 ```
 
 ## 相关教程

@@ -60,7 +60,7 @@
 - [swift](./swift) — Swift 6.3.3 教程（24 章对齐 cpp20/rust/go/zig 标准：可选/协议/some-any/actor/Sendable/swift-testing/SPM 特色细讲，23 个示例四层验证 format+build+test+run；scoop 6.4.0 坏包实测复盘，钉 6.3.3 + 环境三件套配方）
 - [csharp](./csharp) — C# 语言教程（36 章 + 36 示例，章号=示例号，零 NuGet 依赖：编译 + 逐个运行验证；C# 14 扩展成员实测；实战为 MiniLang 表达式解释器）
 - [wpf](./wpf) — WPF 编程指南，使用 .NET SDK + WPF 运行时验证
-- [zig](./zig) — Zig 0.16 教程（24 章对齐 cpp20 标准：分配器/comptime/构建系统/交叉编译特色细讲，全部示例三层验证）
+- [zig](./zig) — Zig 0.16 教程（24 章对齐 cpp20 标准：分配器/comptime/构建系统/交叉编译特色细讲，全部示例三层验证 fmt+test+运行；macOS Darwin x86_64 实测全绿，Apple Silicon 用 `-target aarch64-macos` 逐个交叉验证，21 章内联汇编含 x86_64/aarch64 双实现）
 
 ## 统一约定
 

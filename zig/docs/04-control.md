@@ -106,3 +106,5 @@ const total = sw: switch (st) {
 5. **continue 表达式在 continue 时也会执行**：靠 `: (i += 1)` 步进的循环里 continue 不会跳过步进（这正是它比 `for(;;)` 安全的地方）。
 
 ---
+
+上一章：[03 类型](03-types.md) · 下一章：[05 函数](05-functions.md)
