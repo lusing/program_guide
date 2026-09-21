@@ -71,7 +71,7 @@ dub add mir-core   # 加依赖（写进 dub.json + 拉包）
 
 | targetType | 产物 | 用途 |
 |---|---|---|
-| `executable` | .exe | 应用 |
+| `executable` | .exe（Linux / macOS 无后缀） | 应用 |
 | `library` | 静态/动态库（默认） | 给别的 D 项目 import |
 | `sourceLibrary` | 不编译只供 import | 头文件库式 |
 
@@ -85,5 +85,6 @@ dub add mir-core   # 加依赖（写进 dub.json + 拉包）
 4. **普通 import 后用"模块名.函数"限定访问会失败**（undefined identifier）——要么裸调用（推荐），要么 static import。
 5. dub.json 里 `"dflags": ["-w"]` 会触发 DUB 警告"flags handled by DUB, discouraged"——能用但建议迁移到 buildRequirements（教程保留 dflags 是为了和 dmd 命令行行为一致）。
 6. `dub run` 每次检查依赖/重建——想要"最快循环"还是 `dmd -i -run`（本章示例两种姿势都验证过）。
+7. **macOS 上 `dub` 的缓存目录可能直接起不来**：默认缓存在 `~/.dub`，而官方包的 dub 未签名，未签名进程对 `~/` 下文件 unlink 会 EPERM，症状是 `Failed to remove file ~/.dub/cache/.../__dub_write_test_XXXX: Operation not permitted`。解法：`export DUB_HOME=...` 指到非 `$HOME` 目录（build.sh 在 Darwin 上自动设成 `build/dub-home`），或对 `dmd2/osx/bin/*` 做 ad-hoc 签名（见 01 章坑位 5）。
 
 ---

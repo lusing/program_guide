@@ -16,7 +16,7 @@ void main() {
 
 ```bash
 dmd -run main.d           # 编译 + 立即运行（不落盘可执行文件）
-dmd main.d                # 产 main.exe / main.obj（Linux：main 可执行文件 + main.o）
+dmd main.d                # 产 main.exe / main.obj（Linux / macOS：main 可执行文件 + main.o）
 dmd -w -unittest -run main.d   # 本教程标准验证命令（-w：警告当错误；-unittest：带单测）
 ```
 
@@ -75,7 +75,7 @@ unittest {
 | （默认） | 无优化，断言/契约全开 | 开发 |
 | `-O -release` | 优化 + **剥离断言/契约** | 发布 |
 | `-O -release -inline` | 再加内联 | 发布 |
-| `-g` | 调试符号（Windows 产 PDB，Linux 产 DWARF） | 调试 |
+| `-g` | 调试符号（Windows 产 PDB，Linux / macOS 产 DWARF） | 调试 |
 | `-betterC` | 无运行时模式（22 章） | 嵌入式/C 互操作 |
 | `-w` / `-wi` | 警告当错误 / 警告仅提示 | 本教程用 -w |
 | `-cov` | 覆盖率统计（23 章） | 测试 |
@@ -86,8 +86,9 @@ unittest {
 
 1. **`-unittest` 编译的程序不执行 main**——想跑 main 再编译一次不带 `-unittest` 的版本（本教程所有示例如此验证）。网上老教程说"unittest 在 main 前自动运行"，2.113 实测不是。
 2. **PowerShell 的 `-of` 静默坑**：`dmd main.d -of=app.exe`（不加引号）在 PowerShell 里会产出**名为 `.exe` 的文件或干脆没有产物**且退出码 0。必须整体引号 `'-of=app.exe'` 或 `'-ofapp.exe'`；cmd/批处理无此问题。这是 PowerShell 参数解析与 dmd 组合的坑，报错完全静默。
-3. **obj 文件落 CWD**：`dmd main.d` 在当前目录留 `main.obj`（Linux：`main.o`）——用 `-od目录` 指到别处（build.ps1 / build.sh 已处理）。
+3. **obj 文件落 CWD**：`dmd main.d` 在当前目录留 `main.obj`（Linux / macOS：`main.o`）——用 `-od目录` 指到别处（build.ps1 / build.sh 已处理）。
 4. 源文件 **UTF-8 无 BOM**：带 BOM 的 UTF-8 会让 dmd 拒绝编译。
 5. `dmd -run` 传程序参数要 `--` 分隔：`dmd -run main.d -- these are args`。
+6. **macOS 的 `-g` 不产 dSYM**：调试信息直接进 Mach-O（`dwarfdump --uuid app` 能验到 UUID），`lldb ./app` 可断点；别按 Xcode 习惯去找 `app.dSYM`。
 
 ---

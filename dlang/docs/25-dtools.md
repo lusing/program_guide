@@ -1,7 +1,7 @@
 # 25 · 工具链深入：dtools 与生态
 
 > 对应示例：`examples/25_dtools/`（程序内部分：符号修饰/反修饰、编译器内省）
-> 本章大量"命令行工具"，**每节命令都在本机双平台（Win/Linux + DMD 2.113）实测**，输出为真实捕获。
+> 本章大量"命令行工具"，**每节命令都在本机三平台（Win/Linux/macOS + DMD 2.113）实测**，输出为真实捕获。
 
 ## 25.1 dtools 是什么
 
@@ -32,7 +32,9 @@ $ rdmd --eval='writeln([1,2,3].sum);'     # 一行式（实测）
 rdmd eval: 6
 ```
 
-与 `dmd -run` 的差别：rdmd 把编译产物缓存在用户缓存目录（Linux `~/.cache/rdmd`，Windows `%LOCALAPPDATA%\rdmd`），**重复运行不重新编译**；适合常驻脚本。CI 里要最新编译时 `rdmd --force`。
+与 `dmd -run` 的差别：rdmd 把编译产物缓存在用户缓存目录（Linux `~/.cache/rdmd`，Windows `%LOCALAPPDATA%\rdmd`，**macOS `$TMPDIR/.rdmd-$UID`**——实测落在 `/var/folders/yy/.../T/.rdmd-501`），**重复运行不重新编译**；适合常驻脚本。CI 里要最新编译时 `rdmd --force`。
+
+> macOS 的 `$TMPDIR` 由系统定期清理，缓存命中率比 Linux 的 `~/.cache/rdmd` 低——脚本卡顿时用 `rdmd --tmpdir=...` 指定固定目录。
 
 ## 25.3 ddemangle：读懂链接器在说什么
 
@@ -53,12 +55,12 @@ $ nm hello.o | ddemangle | grep writeln
 手工缩 bug 复现工程（几百行 → 十行）是体力活；`dustmite <源码目录> <测试命令>` 自动做：**只要测试命令退出码 0 就持续删代码**，收敛到最小复现。本机完整实测：
 
 ```bash
-mkdir -p src && cd src              # 一个 8 行小程序 + 检查脚本
+mkdir -p src                        # 一个 8 行小程序 + 检查脚本（src/app.d）
 cat > test.sh <<'EOF'
 #!/bin/sh
 dmd -run app.d 2>&1 | grep -q "result 242"
 EOF
-dustmite src ../test.sh
+dustmite src ../test.sh             # 注意 cwd 在工程根，测试脚本用 ../test.sh
 ```
 
 ```text
@@ -72,13 +74,15 @@ void main() {
 }
 ```
 
+macOS 复现同样收敛到这 5 行（本机实测 `Done in 105 tests and 35 secs and 831 ms`）——耗时随机器不同，结论一致。
+
 `import std.stdio` 收敛成 `import std;`、无关 `writeln("start")` 被删掉，而测试仍然通过。上报编译器/库 bug 前必跑——维护者只看 5 行就能定位。
 
 ## 25.5 dman 与文档获取
 
-- **`dman std.algorithm.sort`**：打印（Windows 版随包；**Linux 发行版与 dmd.org tarball 均未附带**，用在线 https://dlang.org/phobos 或 zeal 的 D docset 代替）。
+- **`dman std.algorithm.sort`**：打印（Windows 版随包；**Linux 发行版、dmd.org tarball 与 macOS 包均未附带**，用在线 https://dlang.org/phobos 或 zeal 的 D docset 代替）。
 - `dmd -D -o- source.d`：给自己工程生成 ddoc 文档（23 章）。
-- 标准库源码就是文档：`/usr/include/dlang/dmd/std/*.d`（Linux）每个 public 函数都有 ddoc 头。
+- 标准库源码就是文档：Linux `/usr/include/dlang/dmd/std/*.d`、macOS `<dmd2>/src/phobos/std/*.d`（即 `/Volumes/mac004/lang/dmd2/src/phobos/std/*.d`），每个 public 函数都有 ddoc 头。
 
 ## 25.6 dub 的工具面：`dub run` 当"通用启动器"
 
@@ -106,9 +110,9 @@ CI/本地统一环境的标准姿势；dfmt 配置写 `dfmt.json`（`dub run dfm
 
 1. **dustmite 的测试命令相对源码目录解析**：`dustmite src test.sh` 会提示"try ../test.sh instead"——测试脚本对 src 内文件**以目录内路径**引用（`dmd -run app.d`），调用时写 `dustmite src ../test.sh`。
 2. **dustmite 不弄脏原目录**：结果落在 `src.reduced/`，原 `src/` 原样保留（实测）——但别指向没备份的大目录，磁盘上两份。
-3. **rdmd 缓存**在 `~/.cache/rdmd`：换了 dmd 版本记得 `--force` 或清目录，否则可能跑旧产物。
+3. **rdmd 缓存**在 `~/.cache/rdmd`（**macOS 在 `$TMPDIR/.rdmd-$UID`**）：换了 dmd 版本记得 `--force` 或清目录，否则可能跑旧产物。
 4. **类的 `mangleof` 不是 `_D` 开头**：是 `C4main6Parser` 式（C = class 类型标签）；函数/变量才 `_D` 开头（25_dtools 示例实测）。
 5. **ddemangle 只管 D 符号**；混编 C++ 的输出要 `| c++filt` 另接一段。
-6. **dman 只有 Windows 版随包**——Linux 查文档用 dlang.org/phobos 或装 zeal docset。
+6. **dman 只有 Windows 版随包**——Linux / macOS 查文档用 dlang.org/phobos 或装 zeal docset（`dmd2/osx/bin` 下确实没有 dman，别照 Windows 教程抄命令）。
 
 ---

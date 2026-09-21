@@ -26,9 +26,9 @@ Java/Python 的开发体验 ─┘
 
 ## 1.3 工具链一览
 
-| 工具 | 角色 | 本机（Win / Linux 均有） |
+| 工具 | 角色 | 本机（Win / Linux / macOS 均有） |
 |---|---|---|
-| **DMD** | 参考实现编译器（前端 + Digital Mars 后端），语言新特性最先落地 | 2.113.0（scoop / apt） |
+| **DMD** | 参考实现编译器（前端 + Digital Mars 后端），语言新特性最先落地 | 2.113.0（scoop / apt / 官方包） |
 | **LDC** | 同前端 + LLVM 后端，优化激进，发布版首选 | 未安装 |
 | **GDC** | 同前端 + GCC 后端，Linux 发行版标配 | 未安装 |
 | **Phobos** | 标准库（`std.*`），链接形态 `libphobos2` | 随 DMD（26 章全景） |
@@ -63,7 +63,7 @@ auto result = 100.iota
 ## 1.6 本教程怎么读
 
 - 每章：读讲解 → 跑示例 → 改代码再跑。
-- 示例全部**双平台实测**：**DMD 2.113.0（Windows x64 + Linux x86_64）**——`dmd -w -unittest -run main.d` 通过 + 编译产物运行 exit 0；DUB 工程 `dub test`/`dub build` 通过。示例代码零平台改动（跨平台坑位都收录在各章清单）。
+- 示例全部**三平台实测**：**DMD 2.113.0（Windows x64 + Linux x86_64 + macOS x86_64）**——`dmd -w -unittest -run main.d` 通过 + 编译产物运行 exit 0；DUB 工程 `dub test`/`dub build` 通过。示例代码零平台改动（跨平台坑位都收录在各章清单，macOS 的 3 个环境坑见本章坑位 5/6）。
 - ⭐ 标记的是 D 独有/招牌特性章：UFCS（05）、scope guards（09）、CTFE/mixin（12）、ranges（13/14）、消息并发（16）。
 - 每章尾部**坑位清单**是本机实测踩过的坑——网上旧教程（2.07x/2.08x 时代）很多行为已变。
 
@@ -71,7 +71,9 @@ auto result = 100.iota
 
 1. **DMD 2.11x 是当前版本**，网上大量教程停留在 2.07x（2017）：`enum` 函数、`approxEqual`、`std.json` 新 API、`Task.force` 等均已变——本教程逐条实测。
 2. **Windows 上 dmd 的 `-of` 参数**：PowerShell 里必须 `'-of=name.exe'` 整体加引号，否则静默产出空名文件（详见 02 章坑位）。Linux/bash 无此坑，但建议同样整体引号 `"-ofapp"`。
-3. DMD 在 Windows 用 **MSVC link.exe** 链接（自动探测 VS 安装），Linux 则通过 `gcc` 驱动调 GNU ld（链接 `libphobos2.a` + `libdruntime.a` + glibc）——两边都不用手动指定。
-4. Windows 中文控制台乱码先 `chcp 65001`（build.ps1 已代设 UTF-8）；Linux 终端原生 UTF-8 无需处理。
+3. DMD 在 Windows 用 **MSVC link.exe** 链接（自动探测 VS 安装），Linux 通过 `gcc` 驱动 GNU ld（链接 `libphobos2.a` + `libdruntime.a` + glibc），**macOS 通过 `cc`（Xcode CLT 的 clang）**，实测命令行 `cc x.o -o x -Xlinker -no_compact_unwind -L<dmd2>/osx/lib -lphobos2 -lpthread -lm`。三边都不用手动指定库，但 macOS 必须先装 Xcode Command Line Tools。
+4. Windows 中文控制台乱码先 `chcp 65001`（build.ps1 已代设 UTF-8）；Linux / macOS 终端原生 UTF-8 无需处理。
+5. **macOS 官方包的二进制未签名**：`codesign -v dmd` 报 "code object is not signed at all"。在策略严格的机器上，未签名进程对 `~/` 下文件 `unlink` 会返回 **EPERM**，最典型的症状是 `dub` 起手就崩：`Failed to remove file ~/.dub/cache/.../__dub_write_test_XXXX: Operation not permitted`。两条路：`export DUB_HOME=<非 $HOME 目录>`（build.sh 在 Darwin 上已自动这么做），或 `codesign -s - <dmd2>/osx/bin/*` 做 ad-hoc 签名（实测签名后 unlink 立即正常）。
+6. **macOS 没有动态版 libphobos**：官方包只给 `osx/lib/libphobos2.a`（24 MB），`-defaultlib=libphobos2.so` **静默无效**（产物体积与静态版一致），`-defaultlib=libphobos2.dylib` 则链接报 `library 'libphobos2.dylib' not found`。26 章"瘦 30 倍"的动态链实验只在 Linux/WIN 成立。
 
 ---
