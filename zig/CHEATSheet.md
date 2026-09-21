@@ -147,3 +147,19 @@ zig build -Doptimize=ReleaseFast -Dtarget=aarch64-linux
 | `{x}` `{b}` | 十六/二进制 |
 | `{any}` | 数组/切片/指针/任意 |
 | `{}` | 默认（bool → true/false） |
+
+## 11. 平台差异速记（Windows ↔ Linux/macOS）
+
+示例代码全部双平台可跑（`builtin.os.tag` 分支）；差异在工具链与系统行为：
+
+| 差异点 | Windows | Linux/macOS | 章 |
+|---|---|---|---|
+| 产物 | `main.exe` + 旁生 `main.pdb` | `main`（无后缀，调试信息内嵌） | 02/23 |
+| 中文控制台 | 先 `chcp 65001` | 原生 UTF-8 无此问题 | 01 |
+| 原生 argv | UTF-16，必须走 `Args.Iterator` | UTF-8，迭代器同样能用 | 22 |
+| 子进程要 shell | `cmd /c` | `sh -c` | 22 |
+| 环境变量用户名 | `USERNAME` | `USER`（示例两者都试） | 22 |
+| `std.posix.getenv` | 不可用（用 `init.environ_map`） | 可用（但 Init 写法双平台一致） | 23 |
+| 路径分隔符 | `\`（`std.fs.path` 抹平） | `/` | 20 |
+| 内联汇编 | 本章示例 x86_64 专属，comptime 守卫 | 同左；aarch64 需换指令 | 21 |
+| 全量验证 | `build.ps1`（pwsh） | `./run-all.sh`（bash，`ZIG=` 可指定） | — |

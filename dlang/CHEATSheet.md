@@ -1,6 +1,6 @@
 # D 语言速查（DMD 2.113 实测版）
 
-> 配套 [26 章教程](docs/01-overview.md)。所有条目在 DMD 2.113.0 / **Windows x64 + Linux x86_64** 双平台验证。
+> 配套 [26 章教程](docs/01-overview.md)。所有条目在 DMD 2.113.0 / **Windows x64 + Linux x86_64 + macOS x86_64** 三平台验证（macOS 实测：DMD 2.113.0 + DUB 1.42.0，25 个示例全通过）。
 
 ## 编译与运行
 
@@ -207,3 +207,6 @@ asm nothrow @nogc { rdtsc; }               // DMD x86-64 内联汇编
 | 44 | 类的 `mangleof` 不是 `_D` 开头 | `C4main6Parser` 式（C=class 标签）；函数才 `_D` |
 | 45 | dustmite 测试脚本路径相对源码目录 | 脚本内 `dmd -run app.d`，调用 `dustmite src ../test.sh` |
 | 46 | `--DRT-gcopt` 当 dmd 开关 | 是程序参数：`./app --DRT-gcopt=disable:1` |
+| 47 | macOS：`dub` 报 `__dub_write_test_XXX: Operation not permitted` | 官方包二进制未签名，`~/` 下 unlink 被拒；`export DUB_HOME=<非 $HOME 目录>` 或 `codesign -s - dmd2/osx/bin/*` |
+| 48 | macOS 想动态链 libphobos 省体积 | 包里只有 `.a`；`-defaultlib=libphobos2.so` 静默无效，`.dylib` 直接链接报错 |
+| 49 | macOS 找不到 `dman` | 只有 Windows 版随包；用 dlang.org/phobos 或 zeal docset |

@@ -87,9 +87,9 @@ sw.peek.total!"msecs";                  // 毫秒（还有 nsecs/usecs/seconds�
 | dfmt | 官方格式化器 | ❌ 未装（dub 生态安装，25 章） |
 | DScanner | 静态检查/lint | ❌ 未装（25 章） |
 | unit-threaded | 第三方增强测试库 | 未用（内建够教程用） |
-| `dmd -g` + 调试器 | 调试 | ✅ Win: VS/WinDbg（PDB）；Linux: gdb（DWARF） |
+| `dmd -g` + 调试器 | 调试 | ✅ Win: VS/WinDbg（PDB）；Linux: gdb（DWARF）；macOS: lldb（DWARF） |
 
-调试崩溃栈：默认异常会打模块+偏移；`-g` 编译后有符号。Windows 下 DMD 产物是标准 PDB——VS/WinDbg 直接调；Linux 下是 DWARF——gdb 直接调（`gdb ./app`，`run` 后 `bt` 看栈）。
+调试崩溃栈：默认异常会打模块+偏移；`-g` 编译后有符号。Windows 下 DMD 产物是标准 PDB——VS/WinDbg 直接调；Linux 下是 DWARF——gdb 直接调（`gdb ./app`，`run` 后 `bt` 看栈）；macOS 下同样是 DWARF，但**调试信息直接进 Mach-O 不产 dSYM**——`lldb ./app` 直接调（`bt` 看栈，`dwarfdump --uuid ./app` 可确认调试信息在位）。
 
 ## 23.7 坑位清单
 

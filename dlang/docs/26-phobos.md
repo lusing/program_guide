@@ -1,7 +1,7 @@
 # 26 · 标准库全景：libphobos 与 druntime
 
 > 对应示例：`examples/26_phobos/`（11 个模块域的巡礼 + 单测）
-> 本章所有体积/开关数字均为本机实测（DMD 2.113，Linux x86_64；Windows 形态一并标注）。
+> 本章所有体积/开关数字均为本机实测（DMD 2.113，Linux x86_64；Windows 与 macOS 形态一并标注）。
 
 ## 26.1 libphobos 是什么：一个名字，两层内容
 
@@ -13,7 +13,13 @@ libphobos2.a             58 MB   ← 标准库本体（std.*）——静态链�
 libphobos2.so.0.113.0   8.8 MB   ← 同内容的动态库
 ```
 
-Windows 对应物是 `phobos64.lib`（MSVC link 用）。关键认知：**你 `import` 的是源码**（`/usr/include/dlang/dmd/std/*.d`），**链接的是编译好的库**——dmd 默认静态链入，所以 hello world 也有 1 MB 上下。
+Windows 对应物是 `phobos64.lib`（MSVC link 用）。**macOS 官方包只有一份静态库**（`ls <dmd2>/osx/lib`，本机实测）：
+
+```text
+libphobos2.a     25,406,448 字节（24 MB）   ← 静态库，没有 .dylib
+```
+
+关键认知：**你 `import` 的是源码**（Linux `/usr/include/dlang/dmd/std/*.d`，macOS `<dmd2>/src/phobos/std/*.d`），**链接的是编译好的库**——dmd 默认静态链入，所以 hello world 也有 1 MB 上下（macOS 实测 `-O` 产物 **887,352 字节**）。
 
 ## 26.2 两层地图：druntime（core.*）+ Phobos（std.*）
 
@@ -77,6 +83,7 @@ ldd mini_dyn | grep phobos                        # libphobos2.so.0.113 → 运�
 
 - **静态（默认）**：单文件分发，无运行时依赖；体积 +1 MB 上下，多进程各持一份 GC 副本。
 - **动态**：主程序瘦 30 倍，多个 D 程序共享一份 GC/运行时常驻内存；**分发必须带 `libphobos2.so` 或目标机装同版 dmd**（soname 带小版本号，跨版本不混用）。
+- **macOS 没有这一节**：官方包只发静态库。`-defaultlib=libphobos2.so` **静默无效**（实测产物同为 887,352 字节，`otool -L` 只见 `/usr/lib/libSystem.B.dylib`）；写 `-defaultlib=libphobos2.dylib` 则链接直接报 `ld: library 'libphobos2.dylib' not found`。要动态库只能自己从 `dmd2/src` 编。
 
 ## 26.5 运行时开关：--DRT-gcopt
 
@@ -111,7 +118,7 @@ $ ./gcapp --DRT-gcopt=disable:1     # 实测：GC 整场禁用（`new` 将抛 Ou
 1. **`Base64.encode(data)` 单参便捷版已移除**：`auto enc = Base64.encode(data, new char[Base64.encodeLength(n)])`；decode 同理用 `decodeLength`。模块 doc 注释里的单参示例是**残留旧文档**——以编译器报错为准。
 2. **`toHexString` 默认大写**：`md5Of("abc").toHexString` → `900150983CD24FB…`；要小写显式给 `toHexString!(LetterCase.lower)`。
 3. **`SumType` 没有 `.get`**：`.get!T` 是 `std.variant` 的 API；SumType 用自由函数 `match`（UFCS 调，需 `import std.sumtype : match`）。
-4. **动态链 libphobos2.so 的分发陷阱**：soname 带 `0.113` 小版本，目标机版本不一致直接起不来——发布物要么静态链，要么把 so 一起带上。
+4. **动态链 libphobos2.so 的分发陷阱**：soname 带 `0.113` 小版本，目标机版本不一致直接起不来——发布物要么静态链，要么把 so 一起带上。**macOS 官方包根本没有动态版**（26.4），`-defaultlib=libphobos2.so` 静默退回静态链，别以为自己瘦了 30 倍——用 `otool -L` / 产物体积验。
 5. **`--DRT-gcopt` 是程序参数**：写在程序名后；当成 dmd 开关会"静默无效"（程序照跑）。`--DRT-gcopt=help` 可验证通路。
 6. **`std.experimental` 命名空间的承诺**：experimental 下的模块**不保证语义稳定**，但 `std.experimental.allocator` 事实上久经考验、DUB 生态大量依赖——可用，只是 import 路径深（`std.experimental.allocator.mallocator` 等）。
 7. **`std.internal.*` / `std.*.internal.*` 千万别 import**：Phobos 实现内部模块，跨版本随意重构。

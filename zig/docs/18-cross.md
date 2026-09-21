@@ -12,13 +12,15 @@ zig build-exe main.zig -target x86_64-windows-gnu  # GNU ABI（mingw）
 zig targets                                      # 查询全部支持的目标
 ```
 
-目标写成 `arch-os-abi`（abi 可省）。`zig targets` 列出所有合法组合——包括 wasm、freestanding（裸机）这些" exotic"目标。**没有 sysroot 要配、没有工具链要装**：Zig 内置了各目标的 libc 源码，按需现场编译。本仓库 build.ps1 对 18 章示例自动执行：
+目标写成 `arch-os-abi`（abi 可省）。`zig targets` 列出所有合法组合——包括 wasm、freestanding（裸机）这些" exotic"目标。**没有 sysroot 要配、没有工具链要装**：Zig 内置了各目标的 libc 源码，按需现场编译。本仓库 build.ps1（Windows）/ run-all.sh（Linux/macOS）对 18 章示例自动执行：
 
 ```text
 build-exe main.zig -target aarch64-linux   → 4 MB 的 Linux ELF（本机是 Windows！）
 build-lib wasm_lib.zig -target wasm32-freestanding → 8 KB 的 wasm 模块
 cc hello.c                                 → zig cc 编的 Windows exe
 ```
+
+> 在 Linux/macOS 上跑同一套验证同理：本机 x86_64-linux 交叉出 aarch64-linux ELF、wasm 模块，`zig cc` 产本机可执行文件——命令一字不改（已实测）。
 
 ## 18.2 编译期感知目标：builtin
 

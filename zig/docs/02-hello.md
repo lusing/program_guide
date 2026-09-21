@@ -61,7 +61,7 @@ pub fn main(init: std.process.Init) !void {
 
 ```bash
 zig run main.zig            # 编译 + 立即运行：改代码→看结果最快路径
-zig build-exe main.zig      # 产 main.exe（Windows 旁生 main.pdb 调试信息）
+zig build-exe main.zig      # Windows 产 main.exe（旁生 main.pdb 调试信息）；Linux/macOS 产 main（无后缀、无 pdb）
 zig test main.zig           # 跑 test 块（2.6 节）
 ```
 
