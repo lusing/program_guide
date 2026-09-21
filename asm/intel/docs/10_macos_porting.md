@@ -432,4 +432,4 @@ $ ./build-mac.sh -All
 
 ---
 
-> 上一篇：[调试方法](08_debugging.md) ｜ 返回 [首页](../README.md)
+> 上一篇：[调试方法](08_debugging.md) ｜ 下一篇：[Linux 平台移植指南](11_linux.md) ｜ 返回 [首页](../README.md)

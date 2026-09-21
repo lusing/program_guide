@@ -7,7 +7,7 @@ x86-64 上有**两个**主流约定：
 - **Windows x64**（Microsoft x64 ABI）——Windows 平台使用
 - **System V AMD64 ABI**（下称 SysV）——macOS、Linux、BSD 使用
 
-两者差别不小，而且**同一份 C 代码在两平台上编译出的汇编调用序列完全不同**。本章先讲 Win64，再讲 SysV，最后给出一张对照表。macOS 相关的完整讨论见 [macOS 平台移植指南](10_macos_porting.md)。
+两者差别不小，而且**同一份 C 代码在两平台上编译出的汇编调用序列完全不同**。本章先讲 Win64，再讲 SysV，最后给出一张对照表。SysV 一侧的示例用 macOS 语法书写（Linux 仅符号名不同），macOS / Linux 各自的完整讨论见 [macOS 平台移植指南](10_macos_porting.md) 和 [Linux 平台移植指南](11_linux.md)。
 
 ## 一、Windows x64 调用约定
 
@@ -239,6 +239,8 @@ add  rsp, 16
 
 ### 函数调用完整示例
 
+> 例子里写的是 macOS 语法（符号带下划线：`_main` / `_printf`）。Linux 上**传参规则一字不差**，只要把下划线去掉（`main` / `printf`）、链接换成 `gcc -no-pie` 即可，详见 [Linux 平台移植指南](11_linux.md)。
+
 ```asm
 default rel
 
@@ -316,7 +318,7 @@ _main:
 | 调用者保存 | RAX RCX RDX R8-R11 XMM* | RAX RCX RDX RSI RDI R8-R11 XMM* |
 | 被调用者保存 | RBX RBP RSI RDI R12-R15 | RBX RBP R12-R15 |
 | `call` 时栈对齐 | 16 的倍数 | 16 的倍数 |
-| 入口符号 | `main`（`/entry:main`） | `_main` |
+| 入口符号 | `main`（`/entry:main`） | macOS：`_main`；Linux：`main`（gcc 链接时）或 `_start`（ld 直连） |
 | 收场方式 | `call ExitProcess`（**不能 `ret`**） | `leave` / `ret` |
 
 > 注意中间两行的一个反直觉之处：**RSI 和 RDI 在 Windows 里是被调用者保存**（要 push/pop 保护），**在 SysV 里是调用者保存**（不用保护，但会被 `printf` 冲掉）。
@@ -324,4 +326,4 @@ _main:
 
 ---
 
-> 上一篇：[标志寄存器](05_flags.md) ｜ 下一篇：[栈和栈帧](07_stack_frames.md) ｜ 延伸：[macOS 平台移植指南](10_macos_porting.md)
+> 上一篇：[标志寄存器](05_flags.md) ｜ 下一篇：[栈和栈帧](07_stack_frames.md) ｜ 延伸：[macOS 平台移植指南](10_macos_porting.md) · [Linux 平台移植指南](11_linux.md)

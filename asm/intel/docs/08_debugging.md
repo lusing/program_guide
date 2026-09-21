@@ -130,6 +130,64 @@ Process 12345 stopped
 | 某个 `andps` / `movaps` / `maxps` 指令上 | SSE 的内存操作数没做 16 字节对齐 |
 | `libsystem_malloc` / `free` | 写越界把堆元数据踩坏了 |
 
+## gdb（Linux）
+
+Linux 上汇编调试用 `gdb`（GNU 调试器），由发行版包管理器安装（`pacman -S gdb` / `apt install gdb` / `dnf install gdb`）。
+
+### 启动
+
+```bash
+# 汇编时带 DWARF 调试信息（-g -F dwarf；elf64 目标 -g 默认就是 DWARF）
+nasm -I lib -f elf64 -g -F dwarf examples-linux/05_control_flow/cmov.asm -o build/cmov.o
+gcc -no-pie -g build/cmov.o -o build/cmov
+
+# 非交互式：跑一遍，崩溃了直接看回溯
+gdb -batch -ex run -ex bt -ex quit ./build/cmov
+
+# 交互式
+gdb ./build/cmov
+```
+
+### 常用命令
+
+| 命令 | 作用 | WinDbg 对应 |
+|------|------|-------------|
+| `run` / `r` | 运行 | `g` |
+| `bt` | 打印调用栈 | `k` |
+| `info registers rip rsp rbp rax rbx` | 看指定寄存器 | `r rax` |
+| `info registers` | 看全部寄存器 | `r` |
+| `x/8gx $rsp` | 以 8 字节十六进制看栈顶 8 项 | `dq rsp L8` |
+| `stepi` / `si` | 单步进入（step instruction） | `t` |
+| `nexti` / `ni` | 单步越过（next instruction） | `p` |
+| `c` | 继续 | `g` |
+| `disas` | 反汇编当前函数 | `u` |
+| `b main` | 按符号下断点 | `bp program!main` |
+| `b *0x401234` | 按地址下断点 | `bp 0x...` |
+| `p/x $rax` | 打印寄存器（十六进制） | `r rax` |
+| `set $rax = 42` | 修改寄存器 | `r rax=42` |
+| `quit` / `q` | 退出 | `q` |
+
+### 崩溃诊断的典型套路
+
+```
+(gdb) run
+Program received signal SIGSEGV, Segmentation fault.
+0x00007ffff7e3a2b4 in __libc_start_main () from /usr/lib/libc.so.6
+(gdb) bt
+(gdb) info registers rip rsp rbp rbx r12 r13
+```
+
+根据栈顶（`bt` 的 `#0` 帧）的位置可以快速缩小范围：
+
+| `#0` 帧落在 | 基本可以断定 |
+|-------------|-------------|
+| `__libc_start_main` / `_start` | 破坏了被调用者保存寄存器（`rbx`/`r12`–`r15`），`main` 返回后 libc 启动代码用到坏值 |
+| `strlen` / `_IO_vfprintf` / `vfprintf` | `printf` 的参数与格式串字段错位，某个数字被当成指针 |
+| 某个 `andps` / `movaps` / `maxps` 指令上 | SSE 的内存操作数没做 16 字节对齐 |
+| `malloc` / `free` | 写越界把堆元数据踩坏了 |
+
+这些和 macOS 上是同一组病根，只是「崩溃现场」从 dyld/libSystem 换成了 `__libc_start_main`/libc：第 7 节「段错误 139，崩溃点在 dyld 里」在 Linux 上就是「崩溃点在 `__libc_start_main` 里」，修法完全相同。
+
 ## NASM 调试信息（-g）
 
 默认情况下 NASM 不生成调试信息，调试器中只能看到机器码与地址。添加 `-g` 参数可生成调试信息，让调试器显示源码行号与符号：
@@ -146,7 +204,13 @@ nasm -I lib -f macho64 -g example.asm -o example.o
 clang -arch x86_64 -g example.o -o example
 ```
 
-> NASM 的 `-g` 配合 `-F` 可指定调试格式：win64 目标默认 CV8（生成 PDB，可被 x64dbg / WinDbg 加载），macho64 目标默认 DWARF（直接内嵌在 `.o` 里，lldb 原生读取，不需要额外文件）。
+```bash
+# Linux：DWARF 格式
+nasm -I lib -f elf64 -g -F dwarf example.asm -o example.o
+gcc -no-pie -g example.o -o example
+```
+
+> NASM 的 `-g` 配合 `-F` 可指定调试格式：win64 目标默认 CV8（生成 PDB，可被 x64dbg / WinDbg 加载），macho64 目标默认 DWARF（直接内嵌在 `.o` 里，lldb 原生读取，不需要额外文件），elf64 目标默认 DWARF（gdb 原生读取；显式写 `-F dwarf` 更保险）。
 
 ## 常见错误排查
 
@@ -302,4 +366,4 @@ section .data
 
 ---
 
-> 上一篇：[栈和栈帧](07_stack_frames.md) ｜ 返回 [首页](../README.md) ｜ 延伸：[macOS 平台移植指南](10_macos_porting.md)
+> 上一篇：[栈和栈帧](07_stack_frames.md) ｜ 返回 [首页](../README.md) ｜ 延伸：[macOS 平台移植指南](10_macos_porting.md) · [Linux 平台移植指南](11_linux.md)

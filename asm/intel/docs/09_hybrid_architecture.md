@@ -72,14 +72,15 @@ Intel Thread Director 是混合架构的硬件线程调度机制。它通过监�
 
 ## 两个平台上的可运行示例
 
-这两件事都在 `08_system_misc/cpuid_hybrid.asm` 里演示了，两个平台各有一份：
+这两件事都在 `08_system_misc/cpuid_hybrid.asm` 里演示了，三个平台各有一份：
 
 | | 汇编 | 链接 |
 |---|------|------|
 | Windows | `nasm -f win64 examples/08_system_misc/cpuid_hybrid.asm -o cpuid_hybrid.obj` | `link ... cpuid_hybrid.obj` |
 | macOS | `nasm -I lib -f macho64 examples-macos/08_system_misc/cpuid_hybrid.asm -o cpuid_hybrid.o` | `clang -arch x86_64 cpuid_hybrid.o -o cpuid_hybrid` |
+| Linux | `nasm -I lib -f elf64 examples-linux/08_system_misc/cpuid_hybrid.asm -o cpuid_hybrid.o` | `gcc -no-pie cpuid_hybrid.o -o cpuid_hybrid` |
 
-探测逻辑两平台完全一致，唯一要改的是「CPUID 会踩 `EBX`，而 `EBX` 是被调用者保存寄存器」——Windows 版把原值存到 `.data`，macOS 版存到栈帧的 `[rbp-8]`，取完所有 CPUID 后都必须还原。
+探测逻辑各平台完全一致，唯一要改的是「CPUID 会踩 `EBX`，而 `EBX` 是被调用者保存寄存器」——Windows 版把原值存到 `.data`，macOS / Linux 版存到栈帧的 `[rbp-8]`，取完所有 CPUID 后都必须还原。
 
 在本机（Ivy Bridge，i7-3520M）上的实际输出：
 
@@ -95,4 +96,4 @@ AVX-512： NO
 
 ---
 
-> 上一篇：[调试方法](08_debugging.md) ｜ 返回 [首页](../README.md) ｜ 延伸：[macOS 平台移植指南](10_macos_porting.md)
+> 上一篇：[调试方法](08_debugging.md) ｜ 返回 [首页](../README.md) ｜ 延伸：[macOS 平台移植指南](10_macos_porting.md) · [Linux 平台移植指南](11_linux.md)

@@ -258,21 +258,125 @@ macOS 版示例的输出代码可以复用一组现成例程，避免每个例�
 
 汇编时要带上 `-I lib`。它是可选依赖，不用也完全没问题。
 
+## Linux 环境配置
+
+### 安装工具链
+
+```bash
+# Arch
+sudo pacman -S nasm gcc gdb
+
+# Debian / Ubuntu
+sudo apt install nasm gcc gdb
+
+# Fedora
+sudo dnf install nasm gcc gdb
+
+# 验证
+nasm -v        # 预期输出: NASM version 3.02 (or newer) compiled on ...
+gcc --version
+ld --version   # GNU ld（binutils）
+```
+
+`gcc`（含 GNU ld）、`gdb` 都由发行版包管理器提供；如果系统里没有独立的 `ld`，它在 `binutils` 包里。
+
+### 目标格式
+
+```bash
+nasm -f elf64 example.asm -o example.o
+```
+
+| 参数 | 说明 |
+|------|------|
+| `-f elf64` | 输出 64 位 ELF 目标文件（`.o`） |
+| `-I <dir>` | 追加 `%include` 的搜索路径（本项目用它找到 `lib/linux_io.inc`） |
+| `-g -F dwarf` | 生成 DWARF 调试信息，供 `gdb` 使用 |
+| `-l <file>` | 生成列表文件 |
+| `-d <name>=<value>` | 定义宏 |
+
+### 链接
+
+**推荐用 `gcc` 驱动**，它会自动补上 crt1.o（C 运行库启动代码）和 libc 搜索路径。**注意必须加 `-no-pie`**：发行版 gcc 默认生成 PIE，而 NASM 源码里的绝对重定位在 PIE 下编不过（报 `relocation R_X86_64_32S ... recompile with -fPIC`）。
+
+```bash
+gcc -no-pie example.o -o example
+./example
+```
+
+需要额外的库（例如第 11 类的 libmvec）直接跟在后面：
+
+```bash
+gcc -no-pie example.o -o example -lm -lmvec
+```
+
+**纯系统调用程序可以不用 gcc，直接 `ld`**：入口默认就是 `_start`，生成完全静态的可执行文件（这一点比 macOS 必须动态链接省心）：
+
+```bash
+nasm -f elf64 example.asm -o example.o
+ld example.o -o example
+./example
+```
+
+### 和 Windows 版的三处写法差异
+
+```asm
+; 1) 符号不带下划线，入口叫 main（和 Windows 一样，和 macOS 不同）
+    global main
+    extern printf
+
+; 2) 参数寄存器：rdi rsi rdx rcx r8 r9（不是 rcx rdx r8 r9）
+    lea rdi, [fmt]
+    mov esi, 42
+    xor eax, eax
+    call printf
+
+; 3) 收场用 leave / ret（不是 call ExitProcess）
+    xor eax, eax
+    leave
+    ret
+```
+
+### 项目自带的 Linux 构建脚本
+
+```bash
+./build-linux.sh -All                              # 构建并运行全部
+./build-linux.sh -Category 01_data_movement        # 指定类别
+./build-linux.sh -File 01_data_movement/lea.asm    # 单个文件
+./build-linux.sh -BuildOnly -All                   # 只构建不运行
+./build-linux.sh -Clean                            # 清理 build/linux
+```
+
+脚本会自动判断链接方式：源文件里有 `extern ` 就用 `gcc -no-pie` 驱动，否则用 `ld` 直连。示例里写一行 `; LINK: -lm -lmvec` 就能给链接器追加参数。
+
+### 辅助库 lib/linux_io.inc
+
+Linux 版示例的输出代码可以复用一组现成例程（与 `lib/mac_io.inc` 一一对应，前缀 `l_`）：
+
+```asm
+; 在文件末尾（顶层）写一行
+%include "linux_io.inc"
+
+; 可用：l_nl、l_puts、l_putchar、l_putint、l_putuint、l_putbool、
+;       l_puthex、l_putd、l_putg、l_putf、l_putflags、l_putsep
+```
+
+汇编时要带上 `-I lib`。它是可选依赖，不用也完全没问题。
+
 ## 常用命令速查
 
-| 操作 | Windows | macOS |
-|------|---------|-------|
-| 汇编 | `nasm -f win64 example.asm -o example.obj` | `nasm -I lib -f macho64 example.asm -o example.o` |
-| 带调试信息汇编 | `nasm -f win64 -g example.asm -o example.obj` | `nasm -f macho64 -g example.asm -o example.o` |
-| 生成列表文件 | `nasm -f win64 -l example.lst example.asm` | `nasm -f macho64 -l example.lst example.asm` |
-| 链接 | `link /subsystem:console /entry:main example.obj msvcrt.lib legacy_stdio_definitions.lib kernel32.lib` | `clang -arch x86_64 example.o -o example` |
-| 带调试信息链接 | 加 `/debug` | 加 `-g` |
-| 带框架链接 | — | `clang -arch x86_64 example.o -o example -framework Accelerate` |
-| 构建全部示例 | `.\build.ps1 -All` | `./build-mac.sh -All` |
-| 构建单个类别 | `.\build.ps1 -Category 01_data_movement` | `./build-mac.sh -Category 01_data_movement` |
-| 清理构建产物 | `.\build.ps1 -Clean` | `./build-mac.sh -Clean` |
-| 调试 | `x64dbg example.exe` | `lldb ./build/mac/example` |
+| 操作 | Windows | macOS | Linux |
+|------|---------|-------|-------|
+| 汇编 | `nasm -f win64 example.asm -o example.obj` | `nasm -I lib -f macho64 example.asm -o example.o` | `nasm -I lib -f elf64 example.asm -o example.o` |
+| 带调试信息汇编 | `nasm -f win64 -g example.asm -o example.obj` | `nasm -f macho64 -g example.asm -o example.o` | `nasm -f elf64 -g -F dwarf example.asm -o example.o` |
+| 生成列表文件 | `nasm -f win64 -l example.lst example.asm` | `nasm -f macho64 -l example.lst example.asm` | `nasm -f elf64 -l example.lst example.asm` |
+| 链接 | `link /subsystem:console /entry:main example.obj msvcrt.lib legacy_stdio_definitions.lib kernel32.lib` | `clang -arch x86_64 example.o -o example` | `gcc -no-pie example.o -o example` |
+| 带调试信息链接 | 加 `/debug` | 加 `-g` | 加 `-g` |
+| 带数学库链接 | — | `clang -arch x86_64 example.o -o example -framework Accelerate` | `gcc -no-pie example.o -o example -lm -lmvec` |
+| 构建全部示例 | `.\build.ps1 -All` | `./build-mac.sh -All` | `./build-linux.sh -All` |
+| 构建单个类别 | `.\build.ps1 -Category 01_data_movement` | `./build-mac.sh -Category 01_data_movement` | `./build-linux.sh -Category 01_data_movement` |
+| 清理构建产物 | `.\build.ps1 -Clean` | `./build-mac.sh -Clean` | `./build-linux.sh -Clean` |
+| 调试 | `x64dbg example.exe` | `lldb ./build/mac/example` | `gdb ./build/linux/example` |
 
 ---
 
-> 上一篇：[x86-64 汇编简介](01_introduction.md) ｜ 下一篇：[寄存器详解](03_registers.md) ｜ 延伸：[macOS 平台移植指南](10_macos_porting.md)
+> 上一篇：[x86-64 汇编简介](01_introduction.md) ｜ 下一篇：[寄存器详解](03_registers.md) ｜ 延伸：[macOS 平台移植指南](10_macos_porting.md) · [Linux 平台移植指南](11_linux.md)
