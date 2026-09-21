@@ -14,7 +14,7 @@ extern (C) {
 printf("printf: %d\n", 42);                     // 直接调用系统 libc
 ```
 
-extern(C) = "这个符号按 C ABI（无名字修饰）"——Windows 上 DMD 链 UCRT/MSVC 运行库，声明 libc 函数**不需要额外链接任何东西**。
+extern(C) = "这个符号按 C ABI（无名字修饰）"——Windows 上 DMD 链 UCRT/MSVC 运行库，Linux 上链 glibc，声明 libc 函数**两个平台都不需要额外链接任何东西**。
 
 ## 22.2 D 函数给 C 当回调
 

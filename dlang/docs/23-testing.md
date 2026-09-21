@@ -76,18 +76,20 @@ sw.peek.total!"msecs";                  // 毫秒（还有 nsecs/usecs/seconds�
 
 ## 23.6 工具链清单
 
-| 工具 | 用途 | 本机 |
+| 工具 | 用途 | 本机（双平台） |
 |---|---|---|
-| `rdmd x.d` | 编译+缓存+运行（脚本/单文件） | 随 DMD |
+| `rdmd x.d` | 编译+缓存+运行（脚本/单文件） | 随 DMD（25 章深入） |
+| `ddemangle` | 符号反修饰（读链接器/profiler 输出） | 随 DMD（25 章） |
+| `dustmite` | 自动最小化 bug 复现工程 | 随 DMD（25 章） |
 | `dub test` | 工程级全量单测 | ✅ |
 | `dmd -cov` | 覆盖率 | ✅ |
 | `dmd -D` | ddoc 文档生成 | ✅ |
-| dfmt | 官方格式化器 | ❌ 未装（要装：dub 生态 install） |
-| DScanner | 静态检查/lint | ❌ 未装 |
+| dfmt | 官方格式化器 | ❌ 未装（dub 生态安装，25 章） |
+| DScanner | 静态检查/lint | ❌ 未装（25 章） |
 | unit-threaded | 第三方增强测试库 | 未用（内建够教程用） |
-| `dmd -g` + WinDbg/VS | 调试（PDB 原生） | ✅ |
+| `dmd -g` + 调试器 | 调试 | ✅ Win: VS/WinDbg（PDB）；Linux: gdb（DWARF） |
 
-调试崩溃栈：默认异常会打模块+偏移；`-g` 编译后有符号。Windows 下 DMD 产物是标准 PDB——VS/WinDbg 直接调。
+调试崩溃栈：默认异常会打模块+偏移；`-g` 编译后有符号。Windows 下 DMD 产物是标准 PDB——VS/WinDbg 直接调；Linux 下是 DWARF——gdb 直接调（`gdb ./app`，`run` 后 `bt` 看栈）。
 
 ## 23.7 坑位清单
 

@@ -1,17 +1,18 @@
 # D 语言编程指南（DMD 2.113）
 
-面向**会编程（C/C++ 背景最佳）、初学 D** 的读者：从零教到现代 D 写法——UFCS 管道、ranges + 惰性算法、CTFE 与 mixin 代码生成、契约式编程、消息传递并发从对应章节起就是默认姿势。**D 特色全部独立成章细讲**：UFCS（05）、scope guards（09）、契约（10）、模板两章（11/12）、ranges 两章（13/14）、GC 与逃逸术（15）、消息并发（16）、并行（17）、DUB 构建（21）、C 互操作与 BetterC（22）。每章"读讲解 → 跑示例 → 改代码再跑"，全部示例在本机**双层验证**通过（`-unittest` 全绿 + 编译产物运行 exit 0）。
+面向**会编程（C/C++ 背景最佳）、初学 D** 的读者：从零教到现代 D 写法——UFCS 管道、ranges + 惰性算法、CTFE 与 mixin 代码生成、契约式编程、消息传递并发从对应章节起就是默认姿势。**D 特色全部独立成章细讲**：UFCS（05）、scope guards（09）、契约（10）、模板两章（11/12）、ranges 两章（13/14）、GC 与逃逸术（15）、消息并发（16）、并行（17）、DUB 构建（21）、C 互操作与 BetterC（22）、工具链深入（25）、标准库全景（26）。每章"读讲解 → 跑示例 → 改代码再跑"，全部示例**双平台双层验证**通过（`-unittest` 全绿 + 编译产物运行 exit 0）：**Windows x64（DMD 2.113.0 + DUB 1.42）与 Linux x86_64（DMD 2.113.0 + DUB 1.42.0）**，示例代码零平台改动。
 
-> ⚠️ 网上 D 教程多为 2.07x/2.08x 时代（2017-2019）：`enum` 函数、`approxEqual`、`Task.force`、std.json 新 API 等行为都已变化。本教程所有代码在 **DMD 2.113.0（Windows x64）+ DUB 1.42** 实测，每章坑位清单收录版本差异。
+> ⚠️ 网上 D 教程多为 2.07x/2.08x 时代（2017-2019）：`enum` 函数、`approxEqual`、`Task.force`、std.json 新 API 等行为都已变化。本教程所有代码在 **DMD 2.113.0 + DUB 1.42 双平台**实测，每章坑位清单收录版本差异。
 
 ## 目录结构
 
 ```text
 dlang/
 ├── README.md       本文件
-├── docs/           24 章教程（01 → 24 顺序阅读）
-├── examples/       23 个示例目录（章号 = 目录号；21/24 为 DUB 工程）
-├── build.ps1       统一验证脚本（须 PowerShell 7 / pwsh 运行）
+├── docs/           26 章教程（01 → 26 顺序阅读）
+├── examples/       25 个示例目录（章号 = 目录号；21/24 为 DUB 工程）
+├── build.ps1       Windows 统一验证脚本（PowerShell 7 / pwsh）
+├── build.sh        Linux 统一验证脚本（bash）
 └── CHEATSheet.md   语法速查 + 2.113 坑位索引
 ```
 
@@ -43,28 +44,49 @@ dlang/
 | [22 ⭐C 互操作](docs/22-cinterop.md) | extern(C)、qsort、内联汇编、BetterC | `22_cinterop`（含 betterC） |
 | [23 测试与工具](docs/23-testing.md) | unittest 深入、-cov、ddoc、StopWatch | `23_testing` |
 | [24 实战：迷你 grep](docs/24-minigrep.md) | 递归 + 并行 + 高亮 + 单测 | `24_minigrep`（工程） |
+| [25 工具链深入](docs/25-dtools.md) | ⭐dtools：rdmd/ddemangle/dustmite/dman + 生态工具 | `25_dtools` |
+| [26 标准库全景](docs/26-phobos.md) | ⭐libphobos/druntime：模块地图、链接形态、GC 开关 | `26_phobos` |
 
 ## 构建工具链
+
+**Windows（原版验证环境）**：
 
 - DMD **2.113.0**：`G:\scoop\apps\dmd\current\windows\bin64\dmd.exe`（scoop 安装；链接用本机 MSVC link.exe）。
 - DUB **1.42.0**：随 DMD（`dub.exe`）。
 - 中文控制台乱码先 `chcp 65001`（build.ps1 已代设 UTF-8）。
 
+**Linux（本仓库复验环境，Debian 系 dmd 包 + 官方 dub）**：
+
+- DMD **2.113.0**：`/usr/bin/dmd`（`apt install dmd`；头文件/库在 `/usr/include/dlang/dmd`、`/usr/lib/libphobos2.a`）。
+- DUB **1.42.0**：`/usr/local/bin/dub`（官方包 `dmd.2.113.0.linux.tar.xz` 内提取，或 `curl https://dlang.org/install.sh | bash -s dub`）。
+- 附带工具 `rdmd`/`ddemangle`/`dustmite` 随 dmd 包装好；`dman` 只在 dmd.org 发行的完整包里。
+
 ## 验证命令
+
+Windows（PowerShell）：
 
 ```powershell
 cd G:\code\guide\dlang
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All              # 全部 23 个示例：unittest + 编译运行
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All              # 全部示例：unittest + 编译运行
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 13_ranges  # 单个示例
-pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean             # 清理 build 目录与 .obj
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean             # 清理
+```
+
+Linux（bash）：
+
+```bash
+cd dlang
+./build.sh --all                 # 全部 25 个示例：unittest + 编译运行（21/24 走 dub test/build）
+./build.sh --example 13_ranges   # 单个示例
+./build.sh --clean               # 清理 build/、.o 与 DUB 工程 bin/
 ```
 
 单跑某个示例（每章标准学法）——改代码后重跑：
 
 ```bash
 cd dlang/examples/13_ranges
-G:/scoop/apps/dmd/current/windows/bin64/dmd.exe -w -run main.d        # 不带单测，跑 main
-G:/scoop/apps/dmd/current/windows/bin64/dmd.exe -w -unittest -run main.d   # 只跑 unittest
+dmd -w -run main.d                 # 不带单测，跑 main（Linux：产物无 .exe 后缀，main/main.o）
+dmd -w -unittest -run main.d       # 只跑 unittest
 ```
 
 ## 相关教程

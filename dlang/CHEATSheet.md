@@ -1,6 +1,6 @@
 # D 语言速查（DMD 2.113 实测版）
 
-> 配套 [24 章教程](docs/01-overview.md)。所有条目在 DMD 2.113.0 / Windows x64 验证。
+> 配套 [26 章教程](docs/01-overview.md)。所有条目在 DMD 2.113.0 / **Windows x64 + Linux x86_64** 双平台验证。
 
 ## 编译与运行
 
@@ -10,8 +10,13 @@ dmd -w -unittest -run main.d      # 只跑 unittest（main 不执行！）
 dmd -w main.d -ofapp.exe          # 出 exe（PowerShell 里 -of 必须整体加引号！）
 dmd -w -i -Isource source/app.d  # 多模块递归编译
 dmd -w -betterC betterc.d         # 无 GC/运行时模式（main 必须 extern(C) int main()）
-rdmd xx.d                         # 脚本式（随 DMD）
+rdmd xx.d                         # 脚本式（随 DMD，缓存编译产物）
+rdmd --eval='writeln([1,2,3].sum);'  # 一行式
 dub build / dub run / dub test    # 工程三连（21 章）
+dub run dfmt -- --inplace src/    # 跑注册表工具（25 章）
+nm xx.o | ddemangle               # 反修饰链接器符号（25 章）
+dustmite src ../test.sh           # 最小化 bug 复现（测试脚本在源码目录外！）
+./app --DRT-gcopt=help            # 运行时开关：GC 调参（26 章）
 ```
 
 ## 语法骨架
@@ -196,3 +201,9 @@ asm nothrow @nogc { rdtsc; }               // DMD x86-64 内联汇编
 | 38 | `defaultGetoptPrinter(text)` 单参不行 | 传 `(text, parsed.options)` |
 | 39 | 块式契约缺 `do` | `in {...} out (r) {...} do { 函数体 }` |
 | 40 | 契约失败 catch Exception 接不住 | 抛的是 AssertError（Error 子类） |
+| 41 | `Base64.encode(data)` 单参已移除 | 双参 + `encodeLength`/`decodeLength`（26 章实测） |
+| 42 | `toHexString` 输出大写 | 要小写给 `toHexString!(LetterCase.lower)` |
+| 43 | `SumType` 没有 `.get` | `match`（自由函数，UFCS 调，需 import match） |
+| 44 | 类的 `mangleof` 不是 `_D` 开头 | `C4main6Parser` 式（C=class 标签）；函数才 `_D` |
+| 45 | dustmite 测试脚本路径相对源码目录 | 脚本内 `dmd -run app.d`，调用 `dustmite src ../test.sh` |
+| 46 | `--DRT-gcopt` 当 dmd 开关 | 是程序参数：`./app --DRT-gcopt=disable:1` |
