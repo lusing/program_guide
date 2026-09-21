@@ -1,0 +1,42 @@
+// 09_custom_controls 的资源脚本。
+//
+// 自绘相关的关键样式：
+//   BS_OWNERDRAW   —— 按钮不再自己画，改成给父窗口发 WM_DRAWITEM
+//   LVS_REPORT     —— 列表用报表视图（斑马纹走 custom draw，不需要 OWNERDRAW）
+#pragma code_page(65001)
+
+#include "resource.h"
+#include "afxres.h"
+
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+
+IDD_MAIN DIALOGEX 0, 0, 320, 230
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "自绘控件演示"
+FONT 9, "微软雅黑"
+BEGIN
+    // BS_OWNERDRAW：外观完全由我们的 DrawItem 决定
+    CONTROL         "自绘按钮", IDC_OWNERDRAW_BTN, "Button",
+                    BS_OWNERDRAW | WS_TABSTOP,
+                    12, 10, 120, 26
+
+    LTEXT           "数字输入（子类化过滤）：", IDC_STATIC, 12, 46, 110, 10
+    EDITTEXT        IDC_NUMEDIT, 126, 43, 100, 14, ES_AUTOHSCROLL
+
+    LTEXT           "拖动改仪表值：", IDC_STATIC, 12, 66, 110, 10
+    CONTROL         "", IDC_SLIDER, "msctls_trackbar32",
+                    WS_TABSTOP | TBS_HORZ,
+                    126, 64, 182, 20
+
+    LTEXT           "自绘仪表盘（空静态框占位）：", IDC_STATIC, 12, 92, 140, 10
+    // 这个静态框只是个占位符：OnInitDialog 里量出它的矩形，
+    // 销毁它，再在原位创建 CGaugeCtrl。这样布局仍由资源编辑器负责。
+    LTEXT           "", IDC_GAUGE, 12, 104, 140, 90
+
+    LTEXT           "斑马纹列表（custom draw）：", IDC_STATIC, 162, 92, 140, 10
+    CONTROL         "", IDC_LIST, "SysListView32",
+                    WS_BORDER | WS_TABSTOP | LVS_REPORT | LVS_SHOWSELALWAYS,
+                    162, 104, 146, 90
+
+    DEFPUSHBUTTON   "关闭", IDOK, 250, 204, 58, 18
+END
