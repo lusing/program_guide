@@ -6,6 +6,11 @@
 #  通道2   Poly/ML 5.9.2     （poly -q --script）
 #  通道3   MLton 20241230    （整体优化编译器，标准符合性最严；可选）
 #
+#  已在 macOS（MacPorts/官方二进制）与 Linux（发行版包，如 Arch 的
+#  smlnj/polyml/mlton）上实测通过；工具按 环境变量 → 常见安装路径 → PATH
+#  三级回退解析。Linux 上 Arch 系 smlnj 包的「打包路径」bug 会自动修复
+#  （见 build_quiet_heap）。
+#
 #  用法：
 #    ./run-all.sh            跑全部示例
 #    ./run-all.sh 05 07      只跑 05、07
@@ -31,12 +36,13 @@ set -u
 
 # ---------------------------------------------------------------
 # 环境坑（很费时间，先看这里）：
-#   本机 PATH 最前面挂了一组 brokered 工具 shim（grep / sed / wc / head / tail）。
-#   这些 shim 在高频调用下会偶发失败，往输出里插一行
-#   "Brokered program policy check unavailable" 并返回非 0，
+#   编写本书的 macOS 机器 PATH 最前面挂了一组 brokered 工具 shim
+#   （grep / sed / wc / head / tail）。这些 shim 在高频调用下会偶发失败，
+#   往输出里插一行 "Brokered program policy check unavailable" 并返回非 0，
 #   表现出来就是「文件里明明有结束标记，却报缺少结束标记」。
 #   把真实的 BSD 工具提到 PATH 最前面即可绕开。
 #   awk / tr / cmp / diff / sort 不在 shim 列表里，本来就可以放心用。
+#   Linux 上没有这组 shim；PATH 钉死在 /usr/bin:/bin 前面对所有平台都无害。
 # ---------------------------------------------------------------
 PATH="/usr/bin:/bin:$PATH"
 export PATH
@@ -133,6 +139,13 @@ diff_reason() {
 #   把它换成空操作之后，顶层 val/fun/structure 的回显全部消失，
 #   stdout 里就只剩程序自己 print 的内容 —— 这正是逐字节比对的前提。
 #   注意：exportML 之后的语句在堆被加载时会继续执行，所以它必须是最后一句。
+#
+#   Linux（Arch 等发行版的 smlnj 包）有一个打包 bug：编译器堆把**打包机**
+#   上的绝对路径烤进了 basis.cm 的引用，exportML 触发自动加载时按那个
+#   不存在的路径 openIn，典型报错：
+#     Io: openIn failed on "/build/smlnj/src/sml.boot.amd64-unix/smlnj/basis/.cm/amd64-unix/basis.cm"
+#   这时把缺失的目录前缀符号链接到真实的库目录（sml 二进制 ../lib）即可
+#   绕开。需要 root 写 /build 之类的系统路径；没有权限就打印手动修复命令。
 # ---------------------------------------------------------------
 build_quiet_heap() {
     local suffix
@@ -146,7 +159,28 @@ val _ = Control.Print.out := { say = fn (_ : string) => (), flush = fn () => () 
 val _ = SMLofNJ.exportML "quiet"
 SMLEOF
     ( cd "$BUILD" && "$SML" @SMLquiet quiet.sml </dev/null >quiet.build.log 2>&1 )
-    [ -f "$QUIET" ]
+    if [ -f "$QUIET" ]; then return 0; fi
+
+    # 发行版打包路径自愈（见上方注释）
+    local baked libdir
+    baked=$(sed -n 's/.*openIn failed on "\([^"]*\)\/smlnj\/basis\/.*/\1/p' \
+                "$BUILD/quiet.build.log" | head -1)
+    if [ -n "$baked" ] && [ ! -e "$baked" ]; then
+        libdir=$(cd "$(dirname "$SML")/../lib" 2>/dev/null && pwd)
+        if [ -n "$libdir" ] && [ -d "$libdir/smlnj" ]; then
+            echo "  !! $SML 的内置库路径指向打包机目录 $baked（不存在）"
+            if mkdir -p "$(dirname "$baked")" 2>/dev/null \
+               && ln -s "$libdir" "$baked" 2>/dev/null; then
+                echo "  !! 已建符号链接 $baked -> $libdir，重试静音堆构建"
+                ( cd "$BUILD" && "$SML" @SMLquiet quiet.sml </dev/null >quiet.build.log 2>&1 )
+                [ -f "$QUIET" ] && return 0
+            else
+                echo "错误：无法自动修复（写 $(dirname "$baked") 需要 root）。请手动执行：" >&2
+                echo "    mkdir -p $(dirname "$baked") && ln -s $libdir $baked" >&2
+            fi
+        fi
+    fi
+    return 1
 }
 
 # ---------------------------------------------------------------

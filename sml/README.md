@@ -1,6 +1,6 @@
 # Standard ML 教程与示例
 
-Standard ML（SML'97）入门到进阶，配套 22 个可运行示例。**每个示例都在三套实现上分别跑一遍**：SML/NJ 110.99.9（主通道）、Poly/ML 5.9.2（对照通道）、MLton 20241230（最严通道），三份 stdout **逐字节比对**。
+Standard ML（SML'97）入门到进阶，配套 22 个可运行示例。**每个示例都在三套实现上分别跑一遍**：SML/NJ 110.99.9（主通道）、Poly/ML 5.9.2（对照通道）、MLton 20241230（最严通道），三份 stdout **逐字节比对**。macOS 与 Linux 两套环境都实测通过（结果一致：20 个示例三通道逐字节相同，2 个是登记在案的已知差异）。
 
 这里不是「语法速览」。模块系统（`signature` / `structure` / `functor` / `:>` 不透明约束）、`eqtype`、异常与 `exnName`、`ref` 的物理相等语义、`String.tokens` 与 `String.fields` 的区别、以及三套实现真实分叉的地方，都在示例里实打实跑过。
 
@@ -40,41 +40,48 @@ sml/
 
 ## 工具链
 
-| 工具 | 路径 | 版本 | 定位 |
-|---|---|---|---|
-| `sml` | `/opt/local/bin/sml` | SML/NJ 110.99.9（MacPorts `smlnj`，suffix `amd64-darwin`） | 主通道。生态最全、编译最快，但顶层会回显每一个绑定，直接跑没法做字节比对 |
-| `poly` | `/opt/local/bin/poly` | Poly/ML 5.9.2（MacPorts `polyml`） | 对照通道。`--script` 批量执行很干净，报错文本与 SML/NJ 完全不同 |
-| `mlton` | `~/.workbuddy/binaries/mlton/mlton-20241230-1.*/bin/mlton` | MLton 20241230-1（官方 macOS 二进制） | 最严通道。整体优化编译器，标准符合性最好，也最挑剔（32 位 `int`、拒绝 UTF-8 字面量） |
-| GMP | `/opt/local/include/gmp.h`、`/opt/local/lib/libgmp*` | MacPorts `gmp` | MLton 的运行时依赖，链接时必须显式指路 |
-| `pwsh` | `/opt/local/bin/pwsh` | PowerShell 7.6.5 | 跑 `build.ps1`（不在默认 PATH 里） |
+三套实现按 **环境变量 → 常见安装路径 → PATH** 三级回退解析（`run-all.sh` 的 `resolve_tool`），macOS 与 Linux 通用。也可用环境变量 `SML` / `POLY` / `MLTON` 显式指定。
+
+| 工具 | macOS（编写机） | Linux（Arch，亦适用于其他发行版包） | 版本 | 定位 |
+|---|---|---|---|---|
+| `sml` | MacPorts `smlnj`，`/opt/local/bin/sml` | `pacman -S smlnj`，`/usr/lib/smlnj/bin/sml` | SML/NJ 110.99.9 | 主通道。生态最全、编译最快，但顶层会回显每一个绑定，直接跑没法做字节比对 |
+| `poly` | MacPorts `polyml`，`/opt/local/bin/poly` | `pacman -S polyml`，`/usr/bin/poly` | Poly/ML 5.9.2 | 对照通道。`--script` 批量执行很干净，报错文本与 SML/NJ 完全不同 |
+| `mlton` | 官方 macOS 二进制 `~/.workbuddy/binaries/mlton/mlton-20241230-1.*/bin/mlton` | `pacman -S mlton`，`/usr/bin/mlton` | MLton 20241230 | 最严通道。整体优化编译器，标准符合性最好，也最挑剔（32 位 `int`、拒绝 UTF-8 字面量） |
+| GMP | MacPorts `gmp`，`/opt/local/include/gmp.h` | 系统自带 `/usr/include/gmp.h` | — | MLton 的运行时依赖。macOS 上链接时要显式指路，Linux 发行版包已配好 |
+| `pwsh` | `/opt/local/bin/pwsh` | 任意 pwsh 7 | PowerShell 7.6.5 | 跑 `build.ps1`（可选入口；Linux 上直接用 `run-all.sh`） |
+
+其他发行版：`apt install smlnj polyml mlton`（Debian/Ubuntu）。
 
 验证安装：
 
 ```bash
 sml @SMLversion                    # sml 110.99.9
+sml @SMLsuffix                     # amd64-darwin（macOS）/ amd64-linux（Linux）
 poly --version </dev/null          # Poly/ML 5.9.2 Release
-ls -d ~/.workbuddy/binaries/mlton/*/bin/mlton
+command -v mlton                   # 各平台路径见上表
 ```
 
 > `poly` 的选项写错时会转去读标准输入，表现是**卡住不动**。任何时候都加上 `</dev/null`。
 
-本机的 MLton 二进制是给 macOS 13 编的，这台机器是 12.7，所以每次链接都会刷几十 KB 的 `ld` 版本警告（走 stderr，退出码仍是 0）。验证脚本把编译日志单独收着、成功后就删掉，不让它污染判定。
+macOS 注意：本机的 MLton 二进制是给 macOS 13 编的，这台机器是 12.7，所以每次链接都会刷几十 KB 的 `ld` 版本警告（走 stderr，退出码仍是 0）。验证脚本把编译日志单独收着、成功后就删掉，不让它污染判定。**Linux 上无此问题。**
+
+Linux（Arch）注意：发行版打的 `smlnj` 包有打包 bug，`exportML`（静音堆必需）会按打包机残留路径 openIn 直接崩。`run-all.sh` 检测到后自动建符号链接修复（需要 root 写 `/build`；无权限时打印手动修复命令）。详见指南坑 38。
 
 ## 构建与验证
 
-三条通道，每个示例都跑一遍：
+三条通道，每个示例都跑一遍（`quiet.<后缀>` 的后缀取 `sml @SMLsuffix`：macOS 是 `amd64-darwin`，Linux 是 `amd64-linux`）：
 
 | 通道 | 命令 | 说明 |
 |---|---|---|
-| SML/NJ | `sml @SMLquiet @SMLload=build/quiet.amd64-darwin` ← `use "../examples/NN.sml";` | 主通道，走「静音堆」 |
+| SML/NJ | `sml @SMLquiet @SMLload=build/quiet.amd64-linux` ← `use "../examples/NN.sml";` | 主通道，走「静音堆」 |
 | Poly/ML | `poly -q --script ../examples/NN.sml` | 对照通道 |
-| MLton | `mlton -cc-opt -I/opt/local/include -link-opt -L/opt/local/lib -output bin NN.sml` 然后运行 `bin` | 最严通道 |
+| MLton | `mlton -output bin NN.sml` 然后运行 `bin` | 最严通道；macOS 上若 GMP 在 MacPorts 还需 `-cc-opt -I/opt/local/include -link-opt -L/opt/local/lib`（脚本自动检测） |
 | 一致性比对 | `cmp` / 逐字节比较 | 三份 stdout 应当逐字节相同 |
 
-PowerShell：
+PowerShell（可选入口，macOS / Windows / Linux 通用）：
 
 ```powershell
-cd /Users/xulun/code/programming/sml
+cd sml                                # 本目录
 pwsh ./build.ps1 -All                 # 跑全部（22 个 × 3 通道）
 pwsh ./build.ps1 -File 14-abstraction.sml
 pwsh ./build.ps1 -File 14              # 只写编号也行
@@ -82,10 +89,10 @@ pwsh ./build.ps1 -All -Verbose        # 附带打印每个示例的运行输出
 pwsh ./build.ps1 -Clean               # 清理 build 目录
 ```
 
-macOS / Linux（等价的 shell 脚本）：
+macOS / Linux（等价的 shell 脚本，两平台都实测通过）：
 
 ```bash
-cd /Users/xulun/code/programming/sml
+cd sml                  # 本目录
 ./run-all.sh            # 跑全部，只看结果摘要
 ./run-all.sh -v         # 跑全部并显示每个例子的完整输出
 ./run-all.sh 14 15      # 只跑指定编号
@@ -125,7 +132,7 @@ val _ = Control.Print.out := { say = fn (_ : string) => (), flush = fn () => () 
 val _ = SMLofNJ.exportML "quiet"
 ```
 
-`Control.Print.out` 是编译器消息与顶层回显的输出流，换成空操作之后，stdout 里就只剩程序自己 `print` 的内容。之后跑示例时用 `sml @SMLquiet @SMLload=build/quiet.amd64-darwin` 加载它。
+`Control.Print.out` 是编译器消息与顶层回显的输出流，换成空操作之后，stdout 里就只剩程序自己 `print` 的内容。之后跑示例时用 `sml @SMLquiet @SMLload=build/quiet.<后缀>` 加载它（后缀取 `sml @SMLsuffix`：macOS `amd64-darwin`，Linux `amd64-linux`）。
 
 两个必须记住的点：
 
@@ -202,7 +209,7 @@ python3 check-literals.py examples/*.sml
 | 22 | 输入输出与文件 | `print` vs `TextIO.output`、读写/追加、逐行读与 `inputLine` 的换行符、`Int.fmt` 进制、`padLeft`/`padRight`、目录遍历、环境变量、清理（示例 20） |
 | 23 | 测试与断言 | 记录+闭包写断言器、`checkInt`/`checkList`/`checkTrue`/`checkRaises`、异常断言用 `exnName`、固定输入的属性测试、失败长什么样（示例 21） |
 | 24 | 综合实战：成绩 CSV 分析与报告 | CSV 生成与读回、缺失值掩码、坏行异常、逐科统计、Top-N 排名与并列规则、最小二乘拟合、报告写回后逐行校验、临时文件清理（示例 22） |
-| 25 | 坑清单 | 语法层、类型推断、值限制、相等性、字符串字面量、模块系统、I/O、验证脚本共 37 条坑，每条给「现象 → 原因 → 修法」 |
+| 25 | 坑清单 | 语法层、类型推断、值限制、相等性、字符串字面量、模块系统、I/O、验证脚本共 38 条坑，每条给「现象 → 原因 → 修法」 |
 | 26 | 三实现差异清单与可移植写法 | 三通道搭建、17 条实测差异逐条拆解、三家一致的部分、30 条可移植写法手册、静音堆与结束标记两个脚本设计 |
 
 ## SML/NJ、Poly/ML、MLton 的差异清单
@@ -275,8 +282,11 @@ python3 check-literals.py examples/*.sml
 
 ## 当前状态
 
-22 个示例 × 3 条通道 = **66 项全部通过**，0 项意外输出差异（SML/NJ 110.99.9 / Poly/ML 5.9.2 / MLton 20241230 / macOS 12.7 x86_64）。
+22 个示例 × 3 条通道 = **66 项全部通过**，0 项意外输出差异。两个平台都实测过，结果一致：
 
-`run-all.sh`（22/22，失败 0，输出差异 0）与 `build.ps1`（22/22，失败 0，退出码 0）均已在本机实测，两种入口结果一致：20 个示例报 `[same]`，2 个报 `[diff] 已知差异`。
+- **macOS** 12.7 x86_64：SML/NJ 110.99.9（MacPorts）/ Poly/ML 5.9.2（MacPorts）/ MLton 20241230（官方二进制）。
+- **Linux**（Arch，WSL2 x86_64，内核 6.18）：SML/NJ 110.99.9 / Poly/ML 5.9.2 / MLton 20241230（均为发行版包）。首次运行会自动修复 Arch `smlnj` 包的 `exportML` 打包 bug（见指南坑 38）。
 
-教程正文 `StandardML编程指南.md` 共 26 章（约 7000 行）：第 1–24 章对应本书的 22 个示例逐章讲解，第 25 章是 37 条坑的清单（每条给「现象 → 原因 → 修法」），第 26 章是三实现差异清单与 30 条可移植写法手册。
+`run-all.sh`（22/22，失败 0，输出差异 0，退出码 0）与 `build.ps1`（22/22，失败 0，退出码 0）均已实测，两种入口结果一致：20 个示例报 `[same]`，2 个报 `[diff] 已知差异`。
+
+教程正文 `StandardML编程指南.md` 共 26 章（约 7000 行）：第 1–24 章对应本书的 22 个示例逐章讲解，第 25 章是 38 条坑的清单（每条给「现象 → 原因 → 修法」），第 26 章是三实现差异清单与 30 条可移植写法手册。

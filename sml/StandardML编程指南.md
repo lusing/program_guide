@@ -41,10 +41,10 @@
 - [第 25 章 坑清单](#第-25-章-坑清单)
 - [第 26 章 三实现差异清单与可移植写法](#第-26-章-三实现差异清单与可移植写法)
 
-对应示例在 `examples/` 下，文件名前缀是两位编号。跑全部：
+对应示例在 `examples/` 下，文件名前缀是两位编号。跑全部（macOS 与 Linux 通用）：
 
 ```bash
-cd /Users/xulun/code/programming/sml
+cd sml                   # 本目录（教程仓库的 sml/）
 ./run-all.sh            # 三条通道全跑一遍
 ./run-all.sh 14 -v      # 只看第 14 章，并打印完整输出
 ```
@@ -116,7 +116,7 @@ ECMA 在 1990 年代把 SML 标准化成了两个事实上的分支：
 - **SML/NJ 的扩展**：`SMLofNJ` 结构、柯里化 functor 语法（`functor F (A:S1) (B:S2)`）等。**这些 Poly/ML 和 MLton 都不认**，第 15 章有实测。
 - **Poly/ML 的扩展**：`PolyML` 结构、自己的并发/FFI 接口。
 
-幸运的是，**Basis（标准库）本身是标准的**。所以只要不碰实现私有的扩展，同一份源码在三套实现上都能跑 —— 本书 22 个示例就是这么做的，66 次执行全部通过。
+幸运的是，**Basis（标准库）本身是标准的**。所以只要不碰实现私有的扩展，同一份源码在三套实现上都能跑 —— 本书 22 个示例就是这么做的，66 次执行全部通过；而且在 macOS 与 Linux 两套环境下各跑过一遍，结果一致（20 个示例三通道逐字节相同，另 2 个是登记在案的已知差异）。
 
 ### 1.5 为什么值得学
 
@@ -133,6 +133,18 @@ ECMA 在 1990 年代把 SML 标准化成了两个事实上的分支：
 ---
 
 ## 第 2 章 工具链与三种运行方式
+
+三套实现都要装。各平台的包名：
+
+| 平台 | SML/NJ | Poly/ML | MLton |
+|---|---|---|---|
+| macOS | MacPorts `smlnj` | MacPorts `polyml` | 官方二进制（或 `brew install mlton`） |
+| Arch Linux | `pacman -S smlnj` | `pacman -S polyml` | `pacman -S mlton` |
+| Debian / Ubuntu | `apt install smlnj` | `apt install polyml` | `apt install mlton` |
+
+版本以本书实测为准：SML/NJ 110.99.9、Poly/ML 5.9.2、MLton 20241230。三套都进了 PATH 之后，`run-all.sh` 会自动找到它们（也可以用环境变量 `SML` / `POLY` / `MLTON` 显式指定）。
+
+Linux 上有一个发行版相关的坑（Arch 的 `smlnj` 包）：`exportML` 会因为打包机残留路径而失败，`run-all.sh` 会自动修复（见 2.2 节和坑 38）。
 
 ### 2.1 三套实现怎么跑一个文件
 
@@ -194,17 +206,20 @@ val _ = SMLofNJ.exportML "quiet"
 
 ```bash
 sml @SMLquiet quiet.sml </dev/null
-# 生成 quiet.amd64-darwin（后缀 = sml @SMLsuffix 的输出）
+# 生成 quiet.<后缀>（后缀 = sml @SMLsuffix 的输出：
+#   macOS 上是 amd64-darwin，Linux 上是 amd64-linux）
 ```
 
 之后这样加载它：
 
 ```bash
-printf 'use "hello.sml";\n' | sml @SMLquiet @SMLload=quiet.amd64-darwin
+printf 'use "hello.sml";\n' | sml @SMLquiet "@SMLload=quiet.amd64-linux"
 # hello, sml
 ```
 
 只剩程序的输出了。
+
+> **Linux（Arch）注意**：发行版打的 `smlnj` 包里，`exportML` 会触发一个打包 bug —— 编译器堆引用了打包机上的绝对路径，`basis.cm` openIn 直接失败。`run-all.sh` 检测到后会自动把缺失路径符号链接到真实库目录修复掉（详见坑 38）；手工跑上面的命令遇到同样报错时，照坑 38 的修法处理即可。
 
 **两个必须记住的点：**
 
@@ -253,9 +268,9 @@ val _ = print "==== 01 \231\187\147\230\157\159 ====\n"
 
 三套实现都会把 `\ddd` 解成**同一个原始字节**，所以转义后的结束标记在三家下逐字节相同 —— 这正是本书能做字节比对的前提。
 
-### 2.4 第三个坑：环境里的工具 shim
+### 2.4 第三个坑：环境里的工具 shim（编写机的环境问题）
 
-本机 PATH 最前面挂着一组 brokered 工具 shim（`grep` / `sed` / `wc` / `head` / `tail`）。这些 shim 在高频调用下会偶发失败，往输出里插一行 `Brokered program policy check unavailable` 并返回非 0。表现出来就是「文件里明明有 `==== 01 结束 ====`，脚本却报缺少结束标记」。
+编写本书的 macOS 机器 PATH 最前面挂着一组 brokered 工具 shim（`grep` / `sed` / `wc` / `head` / `tail`）。这些 shim 在高频调用下会偶发失败，往输出里插一行 `Brokered program policy check unavailable` 并返回非 0。表现出来就是「文件里明明有 `==== 01 结束 ====`，脚本却报缺少结束标记」。
 
 更烦的是它们在**诊断时**也会骗你：`grep -n 'pattern' file` 返回空，你会以为是没匹配上，其实是 shim 挂了。
 
@@ -267,6 +282,8 @@ export PATH
 ```
 
 `awk` / `tr` / `cmp` / `diff` / `sort` / `od` 不在 shim 列表里，本来就能放心用。
+
+Linux 机器上没有这组 shim，这个坑是**编写机特有的**；但把 PATH 钉死在 `/usr/bin:/bin` 前面在所有平台都无害，`run-all.sh` 照例保留。
 
 ### 2.5 第四个坑：Poly/ML 会等标准输入
 
@@ -281,7 +298,7 @@ poly --version
 ### 2.6 用脚本统一这三条通道
 
 ```bash
-cd /Users/xulun/code/programming/sml
+cd sml                  # 本目录
 ./run-all.sh            # 全部示例
 ./run-all.sh 05 07      # 只跑指定编号
 ./run-all.sh -v         # 附带每个示例的完整输出
@@ -6167,9 +6184,9 @@ val _ = say ("cleanup ok -> tmpFile exists = " ^ Bool.toString (OS.FileSys.acces
 
 **顺序**：先删文件，再删目录（`rmDir` 只能删空目录）。
 
-#### 坑 34：环境里的 `grep` / `sed` 可能是假的
+#### 坑 34：环境里的 `grep` / `sed` 可能是假的（编写机的环境问题）
 
-本机（macOS + macports）的 PATH 前缀里有一个 shim，会**遮蔽 `grep`/`sed`/`wc`/`head`/`tail`**，偶尔报：
+编写机（macOS + macports）的 PATH 前缀里有一个 shim，会**遮蔽 `grep`/`sed`/`wc`/`head`/`tail`**，偶尔报：
 
 ```
 Brokered program policy check unavailable
@@ -6292,6 +6309,37 @@ fun foldli f init xs =
 **这条和「柯里化 functor 只有 SML/NJ 认」是同一类问题：SML/NJ 提供了标准之外的扩展。**
 它的危险在于**反向的**：在 SML/NJ 上写出的、用到了扩展的代码，在另两家上编译不过。**用任何「便利函数」之前，先确认它是标准还是方言。**
 
+#### 坑 38：Linux（Arch）的 `smlnj` 包让 `exportML` 直接崩（打包路径残留）
+
+在 Arch Linux 上装官方 `smlnj` 包（`pacman -S smlnj`），跑 2.2 节的静音堆构建：
+
+```bash
+$ sml @SMLquiet quiet.sml </dev/null
+[autoloading]
+unexpected exception (bug?) in SML/NJ: Io [Io: openIn failed on
+  "/build/smlnj/src/sml.boot.amd64-unix/smlnj/basis/.cm/amd64-unix/basis.cm",
+  No such file or directory]
+```
+
+**现象**：普通 `sml` 交互、跑 `use` 全都正常，**一调 `SMLofNJ.exportML` 就崩**。报错里的路径 `/build/smlnj/src/...` 在本机根本不存在。
+
+**原因**：发行版打包时，编译器堆把**打包机（chroot）里的绝对路径**烤进了 `basis.cm` 的引用。REPL 日常用到的库都预载了，所以平时无感；`exportML` 会触发一次完整的自动加载，按烤死的路径去 openIn，立刻炸。
+
+**修法**（任选其一）：
+
+1. `run-all.sh` 已内置自愈：检测到这类日志后，把缺失路径符号链接到真实库目录再重试：
+
+   ```bash
+   sudo mkdir -p /build/smlnj/src
+   sudo ln -s /usr/lib/smlnj/lib /build/smlnj/src/sml.boot.amd64-unix
+   ```
+
+   （真实库目录 = `sml` 二进制所在目录的 `../lib`。）
+
+2. 不用 `exportML` 的方案（换环境时备用）：改用「过滤回显」跑 SML/NJ，或者干脆只在 SML/NJ 通道接受回显噪声、只比对 Poly/ML 与 MLton。代价是放弃 SML/NJ 通道的字节级比对，本书不取。
+
+**这条坑的教训**：**「包管理器装的编译器」不等于「能用的编译器」**。发行版重打包很容易引入这类只在冷门路径上发作的 bug —— 日常交互没问题，一用到高级特性（导出堆、交叉编译、某些优化）就露馅。所以本书的三通道验证脚本必须能在**干净的新机器**上一键跑通，并且把这类环境问题显式报出来，而不是静默跳过。
+
 ### 25.9 一张速查表
 
 最后把所有坑压缩成一张表，贴在显示器边上用：
@@ -6329,6 +6377,7 @@ fun foldli f init xs =
 | 29 | `grep` 返回空 | PATH 里钉上 `/usr/bin:/bin` |
 | 30 | `OS.Process.isFailure` 未声明 | 标准里就没有，自己写 `not (isSuccess st)` |
 | 31 | `Option.isNone` / `List.foldli` 在另两家未声明 | 都是 SML/NJ 扩展，自己写 `not o isSome` / `foldli` |
+| 32 | Arch 上 `exportML` 报 `openIn failed on "/build/..."` | 打包路径残留；把缺失前缀符号链接到真实 `../lib`（`run-all.sh` 自动修，坑 38） |
 
 **这张表里的每一条都对应本书某个示例里的一行注释。** 真正写代码时会遇到的大概是其中的五到八条 —— 但不知道是哪五到八条，所以值得通读一遍。
 
@@ -6346,15 +6395,15 @@ fun foldli f init xs =
 
 | 通道 | 实现 | 版本 | 角色 |
 |---|---|---|---|
-| 主 | **SML/NJ** | 110.99.9 | 生态最全、报错友好、编译最快；`/opt/local/bin/sml` |
-| 对照 | **Poly/ML** | 5.9.2 | 报错文本与 SML/NJ 完全不同，能暴露方言依赖；`/opt/local/bin/poly` |
+| 主 | **SML/NJ** | 110.99.9 | 生态最全、报错友好、编译最快；macOS 在 `/opt/local/bin/sml`，Linux 在 `/usr/lib/smlnj/bin/sml`（PATH 里有 `sml` 即可） |
+| 对照 | **Poly/ML** | 5.9.2 | 报错文本与 SML/NJ 完全不同，能暴露方言依赖；macOS 在 `/opt/local/bin/poly`，Linux 在 `/usr/bin/poly` |
 | 最严 | **MLton** | 20241230 | 整体优化编译器，标准符合性最好，也最挑剔 |
 
-**运行方式各不相同：**
+**运行方式各不相同**（`quiet.<后缀>` 的后缀取 `sml @SMLsuffix`：macOS 是 `amd64-darwin`，Linux 是 `amd64-linux`）：
 
 ```bash
 # SML/NJ：交互式，从 stdin 读 use 命令
-printf 'use "19-parsing.sml";\n' | sml @SMLquiet "@SMLload=quiet.amd64-darwin"
+printf 'use "19-parsing.sml";\n' | sml @SMLquiet "@SMLload=quiet.amd64-linux"
 
 # Poly/ML：脚本模式
 poly -q --script 19-parsing.sml </dev/null
@@ -6363,17 +6412,18 @@ poly -q --script 19-parsing.sml </dev/null
 mlton -output 19-parsing 19-parsing.sml && ./19-parsing
 ```
 
-**三个「必须记得」的调用细节：**
+**四个「必须记得」的调用细节：**
 
 1. **SML/NJ 必须配静音堆**（见 26.6），否则顶层回显会污染 stdout。
 2. **Poly/ML 必须加 `</dev/null`**。它的选项解析出错时会**回退到读 stdin**，然后**挂在那儿等输入**（实测被 SIGTERM 杀掉，退出码 137）。`poly --version` 不加重定向都会挂。
-3. **MLton 在这台机器上编译时会刷 ld 警告**。本机的 MLton 二进制是给 macOS 13 编的，系统是 12.7，所以每次链接都有约 169 行：
+3. **macOS 上，MLton 编译时会刷 ld 警告**。本机的 MLton 二进制是给 macOS 13 编的，系统是 12.7，所以每次链接都有约 169 行：
 
-```
-ld: warning: object file (...) was built for newer macOS version (13.0) than being linked (12.7)
-```
+   ```
+   ld: warning: object file (...) was built for newer macOS version (13.0) than being linked (12.7)
+   ```
 
-退出码是 **0**，警告在 **stderr**。验证脚本会把这类行过滤掉（`grep -v 'was built for newer macOS'`），并且**编译成功就删掉日志文件**，否则 `build/` 会被撑爆。
+   退出码是 **0**，警告在 **stderr**。验证脚本会把这类行过滤掉（`grep -v 'was built for newer macOS'`），并且**编译成功就删掉日志文件**，否则 `build/` 会被撑爆。**Linux 上无此问题**（发行版包与系统配套）。
+4. **Linux（Arch）上，SML/NJ 的 `exportML` 会被打包 bug 绊倒**（坑 38：openIn 一个不存在的 `/build/...` 路径）。`run-all.sh` 会自动建符号链接修复；手工搭环境时照坑 38 的修法处理。
 
 **三条通道的输出逐字节比对。** 比对的不是「看起来一样」，是 `cmp` 级别的完全相同。
 
@@ -6851,10 +6901,10 @@ val _ = SMLofNJ.exportML "quiet"
 **加载方式**：
 
 ```bash
-printf 'use "19-parsing.sml";\n' | sml @SMLquiet "@SMLload=quiet.amd64-darwin"
+printf 'use "19-parsing.sml";\n' | sml @SMLquiet "@SMLload=quiet.amd64-linux"
 ```
 
-`@SMLsuffix` 能查到后缀名（本机是 `amd64-darwin`）：
+`@SMLsuffix` 能查到后缀名（macOS 上是 `amd64-darwin`，Linux 上是 `amd64-linux`）：
 
 ```bash
 suffix=$(sml @SMLsuffix 2>/dev/null | tr -d '[:space:]')
