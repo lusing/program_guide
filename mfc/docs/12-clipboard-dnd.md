@@ -264,4 +264,4 @@ const DROPEFFECT de = src.DoDragDrop(DROPEFFECT_COPY);
    —— 不是错误，是"对方拒收"。用户把文字拖到桌面、或者拖到一个不接受文本的程序上，都会返回 `NONE`。它是常见结果，值得用它给用户一句反馈而不是静默处理。
 
 ---
-上一章：[11 工具栏与状态栏](11-toolbars.md) ｜ 下一章：[13 系统集成](13-shell-integration.md)
+上一章：[11 工具栏与状态栏](11-toolbars.md) ｜ 下一章：[13 系统集成：文件系统、最近文件与配置](13-shell-integration.md)

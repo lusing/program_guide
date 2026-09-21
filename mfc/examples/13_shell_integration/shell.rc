@@ -1,0 +1,31 @@
+// 13_shell_integration 的资源脚本。
+#pragma code_page(65001)
+
+#include "resource.h"
+#include "afxres.h"
+
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+
+IDD_MAIN DIALOGEX 0, 0, 400, 310
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "文件系统 / 最近文件 / 配置 / 单实例"
+FONT 9, "微软雅黑"
+BEGIN
+    LTEXT           "目录：", IDC_STATIC, 12, 10, 34, 10
+    EDITTEXT        IDC_FOLDER, 50, 8, 250, 14, ES_AUTOHSCROLL
+    PUSHBUTTON      "浏览...", IDC_BROWSE, 308, 7, 50, 15
+    PUSHBUTTON      "递归扫描", IDC_SCAN, 362, 7, 30, 15
+
+    LTEXT           "扫描结果：", IDC_STATIC, 12, 30, 60, 10
+    EDITTEXT        IDC_RESULT, 12, 42, 376, 100,
+                    ES_MULTILINE | ES_AUTOVSCROLL | WS_VSCROLL | ES_READONLY
+
+    LTEXT           "最近文件（双击打开）：", IDC_STATIC, 12, 152, 120, 10
+    LISTBOX         IDC_RECENT, 12, 164, 376, 76,
+                    LBS_NOTIFY | WS_VSCROLL | WS_BORDER
+
+    PUSHBUTTON      "保存配置", IDC_SAVE_CFG, 160, 254, 70, 18
+    PUSHBUTTON      "载入配置", IDC_LOAD_CFG, 240, 254, 70, 18
+
+    DEFPUSHBUTTON   "关闭", IDOK, 330, 282, 58, 18
+END
