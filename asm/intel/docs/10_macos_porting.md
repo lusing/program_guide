@@ -245,6 +245,33 @@ Mach-O 的符号表约定：C 函数名前面统一有个 `_`。所以源码里�
     bswap rax
 ```
 
+### 铁律 5：取数据地址一律 `lea`，别把绝对地址当立即数
+
+macOS 的可执行文件**默认是 PIE**（位置无关）。NASM 的 `-f macho64` 遇到
+
+```asm
+    mov rsi, src_str        ; 把 src_str 的绝对地址当 64 位立即数装进 rsi
+```
+
+会编出一条带**绝对重定位**的 `movabs $imm64, %rsi`，链接器直接拒：
+
+```
+ld: illegal text-relocation in '_main'+0x3A (rep_prefix.o) to 'src_str'
+```
+
+改成 RIP 相对取址就没事（文件头上的 `default rel` 正是为此）：
+
+```asm
+    lea rsi, [src_str]      ; => leaq src_str(%rip), %rsi
+```
+
+为什么同一行源码在 Windows / Linux 上不报错：Windows 的 `link.exe` 默认非 PIE，
+Linux 那边的构建脚本用的是 `gcc -no-pie`。于是 `mov rsi, label` 在另两个平台能过、
+只在 macOS 挂 —— 这是从 Windows 往 macOS 搬示例时最隐蔽的一类错误，
+因为它**汇编阶段完全正常**，只有链接时才会暴露。
+
+`equ` 定义的常量（如 `mov rcx, src_len`）不受影响，那是纯数字，不是地址。
+
 ### 附加 1：没有影子空间，别多预留
 
 Windows 示例里 `sub rsp, 32` 往往一半是为了影子空间。SysV 不需要，同样的 `sub rsp, 32` 就纯粹是局部变量空间了 —— 留着无害，但理解它「为什么在」很重要。
@@ -356,6 +383,9 @@ $SDK/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/
 | `ROL/ROL` 结果和注释对不上 | 循环移位在操作数宽度内回绕，32 位注释配了 64 位指令 | 改成 `rol eax,4` 或把位宽写对 |
 | `%warning: byte data exceeds bounds` | 数据定义超出预期 | 检查 `dd`/`dq`/`times` 的宽度 |
 | `symbol ... not defined` | 忘了下划线 | `extern _printf` |
+| `ld: illegal text-relocation in '_main' to 'xxx'` | 写成 `mov rsi, xxx` 这种绝对地址立即数，PIE 不允许 | 改成 `lea rsi, [xxx]`（见铁律 5） |
+| `-macosx_version_min has been renamed to -macos_version_min` | ld64 从 Xcode 15 起改了参数名 | 用新名字 `-macos_version_min`，旧 ld 再退回旧名 |
+| 同一份源码换台机器打出来的标志位不一样 | `pushfq` 放在 `call printf` **之后**，抓到的是 libc 遗留值 | `pushfq` 紧贴要观察的指令，快照先存栈槽 |
 
 ---
 
@@ -429,6 +459,80 @@ $ ./build-mac.sh -All
 | clang | 14.0.0 |
 | ld | ld64-820.1 |
 | SDK | MacOSX.sdk（13.x） |
+
+---
+
+## 10. 本机复核纪要（macOS 14 / Xcode 16 CLT）
+
+2026-09 在另一台 Intel Mac 上按第 9 节的流程完整复核了一遍 56 个示例，
+原始状态是 **55 通过 / 1 失败**。三个问题都修掉了，现在 **56/56**。
+
+环境：
+
+| 项目 | 值 |
+|------|-----|
+| OS | macOS 14.8.9（Darwin 23.6.0，x86_64） |
+| CPU | Intel Core i7-4770HQ（Haswell，AVX2 / FMA / BMI 都有） |
+| NASM | 3.02（`/opt/local/bin/nasm`，MacPorts） |
+| clang | 16.0.0（Apple clang-1600.0.26.6） |
+| ld | ld64-1115.7.3（`/opt/local/bin/ld` 与 `/usr/bin/ld` 同版本） |
+| SDK | `xcrun --show-sdk-path` → MacOSX14.x.sdk |
+
+### 10.1 `rep_prefix.asm`：唯一一个真跑不起来的示例
+
+```
+ld: illegal text-relocation in '_main'+0x3A (rep_prefix.o) to 'src_str'
+```
+
+根因就是上面的铁律 5：文件里 4 处写成了 `mov rsi, src_str` / `mov rsi, cmp1`
+（同一文件其它地方又规规矩矩用了 `lea rsi, [src_str]`，属于漏改）。
+全部改成 `lea` 后正常输出 5 个 REP 前缀例子。
+
+### 10.2 构建脚本的 `grep '^\s*extern _'` 在 macOS 上永不命中
+
+macOS 自带的是 BSD grep，**不支持 GNU 的 `\s`**（连 BRE 的 `\|` 也不支持，要用 `grep -E`）。
+于是这个判断「示例有没有引用 libc 符号」的条件恒为假，
+55 个本该走 `clang` 驱动的示例全部被误判成「纯系统调用程序」，走了 `ld` 直连分支。
+
+因为 `ld` 分支也带了 `-lSystem`，`_printf` 照样能解析，所以**表面上全都过了**——
+这也是它在旧机器上没被发现的原因。改成 `[[:space:]]` 后分支恢复正常
+（55 个走 clang，只有 `test_link` 走 ld），56 个依旧全过。
+顺带一提：`build-linux.sh` 里同样的判断用的是 `grep -E '^\s*extern '`，
+GNU grep 认 `\s` 所以 Linux 上没暴露，但也一并对齐成了 `[[:space:]]`。
+
+### 10.3 ld64 改了版本下限参数的拼写
+
+Xcode 15 起 `-macosx_version_min` 改名 `-macos_version_min`，旧拼法只剩一句警告。
+脚本改成「先试新名字，失败再退回旧名字」，两套 ld64 都能用。
+
+### 10.4 顺带查出的一处输出不确定：`adc_sbb.asm` 的标志位
+
+对比修复前后的输出时发现 `adc_sbb` 打的 `PF` 不一样（0 → 1）。
+查下来是示例自己的问题：`pushfq` 写在 `call _printf` **之后**，
+抓到的是 printf 返回时的 RFLAGS，不是 `sbb` 的。
+printf 内部走哪条分支跟链接方式有关，所以这个值会随平台/工具链漂移。
+修法是紧贴 `sbb` 抓快照存进栈槽，打印时再取出来。现在固定输出：
+
+```text
+SBB 带借位减法: 100 - 30 - 1(CF) = 69
+CF=0 PF=0 AF=1 ZF=0 SF=0 OF=0
+```
+
+（`AF=1` 是对的：低 4 位 `0x4 - 0xE` 借位。）
+`examples-linux/02_arithmetic/adc_sbb.asm` 有同一处毛病，已按同样方式修，
+但本机跑不了 Linux，**这一侧的修改没有实测**。
+
+### 10.5 复核结果
+
+```
+$ ./build-mac.sh -Clean && ./build-mac.sh -All
+==========================================
+  构建汇总: 总计 56 个, 通过 56 个, 失败 0 个
+==========================================
+```
+
+连跑两遍逐行比对输出，只有 3 个示例必然不同：
+`lea`（打印的是 ASLR 之后的真实地址）、`rdtsc` 和 `simd_trapezoid`（打印的是时钟周期数）。
 
 ---
 

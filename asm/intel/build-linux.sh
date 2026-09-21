@@ -72,7 +72,9 @@ build_one() {
     extra="$(sed -n 's/^; *LINK: *//p' "$src" | head -1)"
 
     local linkout linkrc
-    if [ -n "$extra" ] || grep -qE '^\s*extern ' "$src"; then
+    # [[:space:]] 而不是 \s：\s 是 GNU 扩展，BSD grep（macOS）不认，
+    # 换成 [[:space:]] 两边都能匹配（万一有人在 macOS 上跑这个脚本也不会全走 ld 分支）。
+    if [ -n "$extra" ] || grep -qE '^[[:space:]]*extern[[:space:]]' "$src"; then
         linkout=$("$GCC" -no-pie "$obj" -o "$bin" $extra 2>&1)
         linkrc=$?
         local how="gcc -no-pie${extra:+ $extra}"

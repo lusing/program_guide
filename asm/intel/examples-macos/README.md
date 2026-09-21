@@ -2,7 +2,12 @@
 
 `examples/` 是 Windows 版（`-f win64` + MSVC `link.exe`），本目录是**同样 11 个类别的 macOS 版**：`-f macho64` + `clang`（自动带 libSystem）。
 
-**56 个示例全部在本机实际汇编、链接、运行通过。**
+**56 个示例全部在本机实际汇编、链接、运行通过**（macOS 13.1/clang 14 与 macOS 14.8.9/clang 16 两套 Intel 配置各跑一遍，都是 56/56）。
+
+> 移植到本目录时最容易翻车的一条：**取数据地址必须写 `lea rsi, [label]`，不能写 `mov rsi, label`**。
+> macOS 可执行文件默认 PIE，后者会编出绝对重定位，链接阶段报
+> `ld: illegal text-relocation in '_main'+0xNN to 'label'`；而同样的写法在 Windows（非 PIE）
+> 和 Linux（脚本用 `gcc -no-pie`）都能过。详见 [docs/10_macos_porting.md](../docs/10_macos_porting.md) 的铁律 5。
 
 ```bash
 ../build-mac.sh -All                              # 全部构建并运行

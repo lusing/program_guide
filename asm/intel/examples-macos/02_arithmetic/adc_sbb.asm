@@ -51,14 +51,18 @@ _main:
     mov rdx, 30                      ; 减数
     stc                              ; CF = 1
     sbb rax, rbx                     ; rax = 100 - 30 - 1 = 69
+    ; 标志位必须紧贴 sbb 抓：后面 lea/xor/call 全会改 RFLAGS，
+    ; 尤其 printf 返回后标志位完全是 libc 的遗留值（实测 PF 会随链接方式变化）。
+    pushfq
+    pop r10
+    mov [rbp-16], r10                ; 快照存进栈槽，等 printf 打完再取出来
     mov rcx, rax                     ; 结果
     lea rdi, [fmt_sbb]
     xor eax, eax
     call _printf
 
-    ; 看一下 SBB 之后的 CF
-    pushfq
-    pop rdi
+    ; 打 SBB 那一刻的标志位（快照，不是 printf 留下的）
+    mov rdi, [rbp-16]
     call m_putflags
     call m_nl
 

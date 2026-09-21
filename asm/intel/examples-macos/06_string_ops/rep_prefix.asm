@@ -24,6 +24,12 @@
 ;   2. RSI/RDI 在 SysV 是调用者保存，不必像 Windows 那样 push/pop；
 ;   3. 标志位（ZF）在 printf 前必须用 setz 抢救出来；
 ;   4. 中间结果放 r12-r15，退场前还原（_main 靠 ret 返回）。
+;   5. **取数据地址一律用 lea reg,[label]（配合文件里的 default rel）**。
+;      写成 `mov rsi, cmp1` 这种「把绝对地址当立即数」的形式，nasm 会编出
+;      一条 64 位绝对重定位，而 macOS 的可执行文件默认是 PIE，链接器直接报
+;      ld: illegal text-relocation in '_main'+0x3A to 'cmp1'
+;      Windows（非 PIE）和 Linux（本教程用 gcc -no-pie）都允许这么写，
+;      所以同一行源码在另两个平台能过、只在 macOS 挂 —— 这是移植时最常踩的一个。
 ; ============================================================
 default rel
 
@@ -78,7 +84,7 @@ _main:
     mov byte [dest_buf + src_len], 0    ; 补上字符串结尾
 
     lea rdi, [fmt_movsb]
-    mov rsi, src_str
+    lea rsi, [src_str]                  ; 取地址必须用 lea（RIP 相对），见下方移植要点 5
     lea rdx, [dest_buf]
     xor eax, eax
     call _printf
@@ -114,7 +120,7 @@ _main:
     test r12b, r12b
     jz .neq3                            ; 本例不会走到这里
     lea rdi, [fmt_cmp_eq]
-    mov rsi, cmp1
+    lea rsi, [cmp1]
     lea rdx, [cmp2_same]
     xor eax, eax
     call _printf
@@ -139,7 +145,7 @@ _main:
     test r12b, r12b
     jnz .eq4
     lea rdi, [fmt_cmp_df]
-    mov rsi, cmp1
+    lea rsi, [cmp1]
     lea rdx, [cmp2_diff]
     mov rcx, r14                        ; 首个不同的位置
     xor eax, eax
@@ -147,7 +153,7 @@ _main:
     jmp .skip4
 .eq4:
     lea rdi, [fmt_cmp_eq]
-    mov rsi, cmp1
+    lea rsi, [cmp1]
     lea rdx, [cmp2_diff]
     xor eax, eax
     call _printf
