@@ -133,10 +133,14 @@ defmodule Ex21TestingSharedTest do
 
   test "追加标签 a", %{agent: agent} do
     assert Agent.get_and_update(agent, fn acc -> {:ok, [:a | acc]} end) == :ok
+    assert :a in Agent.get(agent, & &1)
   end
 
-  test "追加标签 b 并读到累积内容", %{agent: agent} do
+  test "追加标签 b：共享同一资源，但断言不依赖用例顺序", %{agent: agent} do
     state = Agent.get_and_update(agent, fn acc -> {[:b | acc], [:b | acc]} end)
-    assert :a in state and :b in state
+    # ExUnit 的用例顺序随机（seed 每次变）：断言「a 一定已写入」就是
+    # 21.9 坑位 6 说的用例顺序依赖——只断言自己的效果，两种顺序都成立。
+    assert :b in state
+    assert state == [:b] or state == [:b, :a]
   end
 end

@@ -1,8 +1,9 @@
-# Elixir 教程（Elixir 1.20.2 / OTP 29）
+# Elixir 教程（Elixir 1.20.2/1.20.4 · OTP 29）
 
 函数式 · 不可变数据 ·  actor 进程与监督树——从零教到能写容错并发应用的程度。
-定位：**会编程（C++/Python 背景最佳）、初学 Elixir**；所有示例在 macOS +
-Elixir 1.20.2 / OTP 29 实测通过。**零外部依赖、可离线验证**，主线只用标准库
+定位：**会编程（C++/Python 背景最佳）、初学 Elixir**；所有示例在 macOS
+（Elixir 1.20.2）与 Windows/scoop（Elixir 1.20.4）双轨实测通过，均为
+OTP 29。**零外部依赖、可离线验证**，主线只用标准库
 （GenServer/Task/Supervisor/Logger/ExUnit…）。
 
 ## 目录结构
@@ -13,7 +14,7 @@ elixir/
   examples/      23 个独立 mix 工程（章号 = 目录号；01 为纯文档章）
   build.ps1      验证脚本（pwsh；-All / -Example NN_topic / -Clean）
   run-all.sh     bash 版双入口
-  CHEATSheet.md  语法速查 + 32 条实测坑位索引
+  CHEATSheet.md  语法速查 + 36 条实测坑位索引
 ```
 
 每个示例工程的最小形态：
@@ -94,6 +95,10 @@ pwsh ./build.ps1 -All         # PowerShell 等价入口
 例外：`11_errors` 故意往 stderr 写异常与日志（run-all.sh 的 `STDERR_ALLOW`）。
 第 5 层是本教程确定性纪律的技术保障：示例只断言性质、排序后输出，
 不打印 pid/时间戳/路径等环境相关内容。
+
+Windows 注意：`mix format` 只认 LF——本目录自带 `.gitattributes` 强制
+`eol=lf`，防止 git `core.autocrlf=true` 把检出文件变 CRLF 令第 1 层全挂
+（见 CHEATSheet 坑位 33–35 的三条 Windows 实测坑）。
 
 ## 相关教程
 

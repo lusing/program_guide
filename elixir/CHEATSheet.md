@@ -1,4 +1,4 @@
-# Elixir 速查表（Elixir 1.20.2 / OTP 29 实测版）
+# Elixir 速查表（Elixir 1.20.2/1.20.4 · OTP 29 · macOS + Windows 双轨实测版）
 
 ## 运行与工具
 
@@ -121,7 +121,11 @@ GenServer.call(pid, {:put, :k, 1})      # cast 无回复；handle_info 必须有
 | 29 | Stream 不接终点操作永不执行；无限流必须有 take/take_while 短路；惰性链中间别插 Enum | 18 |
 | 30 | `File.read` 是 tagged tuple；行流保留换行符（末行没有）；`File.ls` 顺序不定必须 sort | 19 |
 | 31 | 四类日期结构不混用；`Date.range` 是结构体不是列表（`length` 崩，用 Enum.count）；1.20 逆序必须显式 `-1`；ISO 周一=1；零依赖唯一时区 `"Etc/UTC"` | 20 |
-| 32 | `capture_io`/`capture_log` 不随 ExUnit 导入；`send/2` 返回消息，替身要显式返回 `:ok`；Logger 宏要 `require`、异步要 `flush`；escript 无 `--path`、`mix run` 无 `--quiet`；quote 里用 `unquote(__MODULE__)`；`@spec` 无运行时强制；async 任务仍 link 调用方，`:kill` 不可 trap；重启清空内存态是契约 | 21–24 |
+| 32 | `capture_io`/`capture_log` 不随 ExUnit 导入；`send/2` 返回消息，替身要显式返回 `:ok`；Logger 宏要 `require`、异步要 `flush`；ExUnit 用例顺序随机，断言别依赖跨用例累积（setup_all 共享态只放可复用资源）；escript 无 `--path`、`mix run` 无 `--quiet`；quote 里用 `unquote(__MODULE__)`；`@spec` 无运行时强制；async 任务仍 link 调用方，`:kill` 不可 trap；重启清空内存态是契约 | 21–24 |
+| 33 | Windows：git `core.autocrlf=true` 检出把源文件变 CRLF，`mix format --check-formatted` 全挂——`elixir/.gitattributes` 强制 `* text=auto eol=lf`，工作区就地转回 LF | 全部 |
+| 34 | Windows：raw 文件 `:file.pread` 会把顺序指针挪到读末尾（Unix 不动位置）——别依赖 pread 后的顺序位置，跨平台要显式 `:file.position` | 19 |
+| 35 | Windows：escript 产物无扩展名非 PE，直接 spawn `:eacces`，须经 `System.cmd("escript", [path])` 运行；`System.cmd("mix")`/release `bin/app` 能自动解析到 `.bat` 无需处理 | 22 |
+| 36 | 1.20.4 类型检查器比 1.20.2 较真：`assert is_struct(字面量构造)` 重写出的失败分支被判不可达而告警（测试层 stderr 非空）——用 `struct/2` 动态构造抹掉静态类型 | 03 |
 
 ## 验证命令
 

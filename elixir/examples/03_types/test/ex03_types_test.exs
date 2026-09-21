@@ -142,7 +142,10 @@ defmodule Ex03TypesTest do
   end
 
   test "struct 是带 :__struct__ 键的 map；is_exception/1 认出异常 struct" do
-    p = %Ex03Types.Point{x: 1, y: 2}
+    # struct/2 动态构造：字面量 %Point{} 的静态类型太精确，1.20.4 的类型
+    # 检查器会把 assert is_struct(p) 重写出的失败分支证明为不可达而告警
+    # （stderr 非空）；动态构造既抹掉类型又演示了 struct/2 本身。
+    p = struct(Ex03Types.Point, x: 1, y: 2)
     assert is_struct(p)
     assert is_struct(p, Ex03Types.Point)
     assert is_map(p)

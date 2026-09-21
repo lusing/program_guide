@@ -92,7 +92,15 @@ Ex22MixRelease.Steps.run!(
   env: [{"EX22_ES_PATH", es_path}]
 )
 
-out = Ex22MixRelease.Steps.run!(es_path, [])
+# Windows：escript 产物无扩展名、不是 PE 可执行文件，直接 spawn 得 :eacces，
+# 必须经 escript.exe 运行；Unix 靠 shebang 直接执行产物本身。
+{es_cmd, es_args} =
+  case :os.type() do
+    {:win32, _} -> {"escript", [es_path]}
+    _ -> {es_path, []}
+  end
+
+out = Ex22MixRelease.Steps.run!(es_cmd, es_args)
 IO.write("  #{out}")
 
 # ------------------------------------------------------------

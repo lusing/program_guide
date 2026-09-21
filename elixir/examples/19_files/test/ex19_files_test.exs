@@ -113,7 +113,7 @@ defmodule Ex19FilesTest do
       assert Ex19Files.pread_record(dir, "r.bin") == {:ok, "BBBB"}
     end
 
-    test "pread 不移动顺序读位置" do
+    test "pread 按偏移读；顺序位置是否被移动取决于平台" do
       dir = tmp_dir()
       path = Path.join(dir, "s.bin")
       File.write!(path, "0123456789")
@@ -123,8 +123,17 @@ defmodule Ex19FilesTest do
           {:file.pread(fd, 5, 2), :file.read(fd, 3)}
         end)
 
-      # 随机读了 "56"，顺序读仍从头开始拿 "012"
-      assert result == {{:ok, "56"}, {:ok, "012"}}
+      # 随机读本身两个平台都按偏移拿 "56"；之后的顺序读则不同：
+      # Unix 上 pread 不动顺序位置（从头拿 "012"）；Windows 实测 raw 文件的
+      # pread 由底层 SetFilePointer+ReadFile 模拟，指针被挪到读末尾（拿 "789"）。
+      # 可移植代码不能依赖 pread 之后的顺序位置——要顺序读就显式 :file.position。
+      seq =
+        case :os.type() do
+          {:win32, _} -> {:ok, "789"}
+          _ -> {:ok, "012"}
+        end
+
+      assert result == {{:ok, "56"}, seq}
     end
 
     test "raw 模式直接写字节，无字符串编码转换" do

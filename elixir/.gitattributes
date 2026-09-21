@@ -1,0 +1,3 @@
+# mix format 只认 LF：Windows 上 core.autocrlf=true 会把检出文件变 CRLF，
+# 令 build.ps1 第 1 层（format --check-formatted）全挂。这里对本目录树强制 LF。
+* text=auto eol=lf

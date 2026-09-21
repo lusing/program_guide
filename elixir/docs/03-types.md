@@ -328,7 +328,9 @@ number < atom < reference < function < port < pid < tuple < map < list < binary
    `is_binary` 在 `is_bitstring` 前，否则结论被宽类型吞掉。
 
 7. **1.20 类型检查器对字面量较真**：`is_number(42)`、`1 < :a`、`1 === 1.0`、不同形状 map
-   比较都会告警。包进参数为 `term()` 的函数，让检查器失去静态信息。
+   比较都会告警。包进参数为 `term()` 的函数，让检查器失去静态信息。1.20.4 更进一步：
+   `assert is_struct(p)`（p 是字面量构造的 struct）会把守卫断言重写成模式匹配，失败
+   分支被证明不可达而告警——测试里用 `struct(Ex03Types.Point, ...)` 动态构造抹掉类型。
 
 8. **不可变 ≠ 不能「更新」**：所有「修改」都返回新值；这不是性能负担（结构共享），而是 BEAM
    无锁并发的前提。

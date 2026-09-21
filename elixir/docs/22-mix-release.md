@@ -192,13 +192,18 @@ end
   escript 运行成功
 ```
 
-两个实测细节：
+三个实测细节：
 
 - escript **只需要目标机有 Erlang/OTP**——Elixir 本身被嵌进文件；但它
   不是部署机制，跑常驻系统请用 release。
 - **输出路径只能在 mix.exs 的 `:path` 配置**，命令行没有 `--path`
   选项（误用会被静默忽略，escript 以 app 名落在当前目录）。本章让
   mix.exs 读环境变量 `EX22_ES_PATH`，从而把产物指到临时目录。
+- **运行产物的方式分平台**：Unix 靠 shebang 直接执行产物本身；Windows
+  上产物无扩展名、不是 PE 可执行文件，直接 spawn 报 `:eacces`，必须经
+  `escript` 命令（escript.exe）运行——`System.cmd("escript", [path])`。
+  顺带一提：`System.cmd("mix", ...)` 与 release 的 `bin/app` 在 Windows
+  上能被自动解析到 `mix.bat` / `bin/app.bat`，无需特殊处理（实测）。
 
 ## 22.6 umbrella：伞形工程
 
@@ -303,6 +308,10 @@ out =
 10. **离线/零依赖纪律下别引入需要 rebar3 或 hex 的东西**：NIF、git 依赖
     都会触发额外工具链；本章所有产物（release/escript/umbrella）只用
     Mix 内建能力手工生成。
+11. **Windows 上运行 escript 产物要走 escript 命令**：产物无扩展名、不是
+    PE 可执行文件，直接 spawn 报 `:eacces`；`System.cmd("escript", [path])`
+    即可。`System.cmd("mix", ...)` 与 release 的 `bin/app` 会被 Windows
+    自动解析到 `mix.bat` / `bin/app.bat`，无需特殊处理（实测）。
 
 ---
 

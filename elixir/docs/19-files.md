@@ -155,8 +155,12 @@ end
 ## 19.7 底层 :file：定长随机读 pread
 
 `File` 之下是 Erlang 的 `:file`。定长记录格式（每条 N 字节）最适合
-`:file.pread(fd, offset, length)`——按字节偏移随机读，**不移动顺序读的位置**，
-多个进程可以共享同一个 raw 文件句柄并发 pread：
+`:file.pread(fd, offset, length)`——按字节偏移随机读。**位置语义有平台差异**：
+Unix 上 pread 不动顺序读的位置，多个进程可以共享同一个 raw 文件句柄并发
+pread；Windows 上 raw 文件的 pread 由底层 SetFilePointer + ReadFile 模拟，
+会把文件指针挪到本次读取的末尾（实测：pread(5,2) 后顺序 read 拿到
+"789" 而不是 "012"）。可移植代码不要依赖 pread 之后的顺序位置——
+需要顺序读就先显式 `:file.position(fd, 0)`：
 
 ```elixir
 File.write!(path, "AAAA" <> "BBBB" <> "CCCC")
@@ -165,8 +169,9 @@ File.open!(path, [:raw, :read], fn fd ->
 end)
 ```
 
-对比记忆：`:file.read(fd, n)` 顺序读、推进位置；先 pread 再 read，read 仍从头
-开始（测试实测）。`File.open!/3` 传入函数时句柄用完自动关闭，异常也安全。
+对比记忆：`:file.read(fd, n)` 顺序读、推进位置；pread 与 read 的位置关系
+随平台不同（Unix 互不干扰，Windows 上 pread 挪指针，见上）。
+`File.open!/3` 传入函数时句柄用完自动关闭，异常也安全。
 
 ```text
 -- 7. :file.pread 按偏移读定长记录，不移动顺序位置 --
@@ -206,8 +211,10 @@ end)
    也删），脚本末尾 rm_rf；名字含 `unique_integer` 避免并发撞车。
 8. **`File.rm_rf/1` 的返回值含绝对路径**，打印它就是绝对路径噪声；只看
    `File.exists?/1` 的布尔结果。
-9. **pread 与 read 的位置语义不同**：pread 随机不动位置、可共享句柄并发；
-   read 顺序推进。二进制定长文件选 raw + pread；行文本选 File.stream!。
+9. **pread 与 read 的位置语义不同**：pread 随机按偏移读；read 顺序推进。
+   Unix 上 pread 不动位置、可共享句柄并发；**Windows 实测 raw 文件的 pread
+   会把顺序指针挪到读末尾**——跨平台别依赖 pread 后的顺序位置，显式
+   position 再读。二进制定长文件选 raw + pread；行文本选 File.stream!。
 10. **UTF-8 与 raw 别混用**：文本流负责编码（默认 utf8，非法字节会报错），
     raw 只搬运字节；处理来源不明的字节，用第 17 章的二进制模式自行校验。
 
