@@ -1,7 +1,7 @@
 # GNU COBOL CHEAT Sheet（GnuCOBOL 3.2.0 / cobc 实测）
 
 > 配套 [README](README.md) 与 docs/ 20 章；所有坑位来自本仓库示例的实测
-> （每章末"坑位清单"的汇总，完整分类索引见 [docs/20-pitfalls.md](docs/20-pitfalls.md)，共 **106 条**）。
+> （每章末"坑位清单"的汇总，完整分类索引见 [docs/20-pitfalls.md](docs/20-pitfalls.md)，共 **110 条**）。
 
 ## 1. 固定格式列位（每行都要守）
 
@@ -302,3 +302,17 @@ pwsh -File build.ps1                 # Windows 等价入口（与 run-all.sh 同
   必须带上 `cobc --info` 里的默认 include 路径，否则 `gmp.h not found`。
 - `C` locale 下 bash 会把紧邻全角标点的 `$var` 误分词 → `set -u` 报未绑定变量；脚本开头切 UTF-8 locale，
   并给所有紧邻 CJK 标点的变量加花括号 `${var}`。
+
+## 19. Windows（MSYS2 UCRT64）工具链备忘
+
+- 安装：MSYS2 UCRT64 环境 `pacman -S mingw-w64-ucrt-x86_64-gnucobol`（3.2.0，gcc 后端，
+  与 macOS 侧同版本不同后端，全部 18 示例双通道同判定通过）。
+- **`COB_CONFIG_DIR` 必须用 Windows 形式路径**（坑 12.16）：包编译期写死 `/ucrt64/...`，
+  原生 `cobc.exe` 解析成"当前盘符根\\ucrt64\\..." → `configuration error`。
+  `build.ps1` / `run-all.sh` 已按 cobc 所在目录自动探测配置；手工编译须自行导出。
+- 编译期找 gcc、运行期找 `libcob-4.dll` 都靠 `ucrt64\bin` 在 PATH 里（坑 12.17）；
+  部署 exe 到无 MSYS2 的机器要带上 `libcob-4.dll`。
+- Git Bash 里调原生 `cobc.exe` 依赖默认参数路径转换（`/g/...` → `G:\...`）；
+  设 `MSYS2_ARG_CONV_EXCL='*'` 反而弄坏（坑 12.18）。
+- gcc 后端对 UTF-8 中文字面量无告警（无 clang 的 `-Wno-invalid-source-encoding` 问题），
+  `-Wall` 通道照样零告警。输出行尾为 CRLF（坑 12.19）。

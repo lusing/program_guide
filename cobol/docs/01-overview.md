@@ -31,8 +31,8 @@ GnuCOBOL（旧名 OpenCOBOL）是本教程使用的开源实现，特点：
 - **运行时库 libcob**：所有 COBOL 动词（MOVE/DISPLAY/文件 I/O…）由 `libcob` 提供，
   链接进可执行文件。
 - **标准覆盖**：默认贴近 COBOL 85 + 部分 2002/2014；通过 `-std=` 切换方言。
-- **跨平台**：Linux / macOS / Windows 都能装。本机实测 **GnuCOBOL 3.2.0**（macOS，
-  MacPorts 安装，clang 15 后端）。
+- **跨平台**：Linux / macOS / Windows 都能装。本机实测 **GnuCOBOL 3.2.0** 双平台：
+  macOS（MacPorts 安装，clang 15 后端）与 Windows（MSYS2 UCRT64，gcc 后端）。
 
 ```text
 .cob 源码 ──cobc──▶ 临时 .c ──clang──▶ 可执行文件 / 共享模块
@@ -134,7 +134,17 @@ COBOL 最"考古"的特征是**固定格式（fixed format）**的列位约定�
 
 - **macOS**：`sudo port install gnucobol`（MacPorts）或 `brew install gnucobol`（Homebrew）。
 - **Linux**：`sudo apt install gnucobol4`（Debian/Ubuntu）/ `sudo dnf install gnucobol`。
-- **Windows**：从 GnuCOBOL 官网下压缩包解压，把 `bin` 加进 PATH（自带 MinGW，无需另装 C 编译器）。
+- **Windows（实测：MSYS2）**：MSYS2 里 `pacman -S mingw-w64-ucrt-x86_64-gnucobol`
+  （UCRT64 环境，gcc 后端，同样 3.2.0）。**坑**：该包的 `cobc.exe` 编译期写死 MSYS 风格前缀
+  `/ucrt64/...`，原生 Windows 进程把它解析成"当前盘符根\\ucrt64\\..." →
+  `configuration error: /ucrt64/share/gnucobol/config\default.conf: No such file or directory`。
+  必须导出 Windows 形式的 `COB_CONFIG_DIR`，并把 `ucrt64\bin` 加进 PATH（编译找 gcc、
+  运行找 `libcob-4.dll`）。本仓库 `build.ps1` / `run-all.sh` 已自动探测并配置，手工编译时：
+  ```powershell
+  $env:COB_CONFIG_DIR = 'C:\msys64\ucrt64\share\gnucobol\config'   # 按实际安装位置
+  $env:PATH = "C:\msys64\ucrt64\bin;$env:PATH"
+  ```
+  另一路线：从 GnuCOBOL 官网下压缩包解压，把 `bin` 加进 PATH（自带 MinGW，无需另装 C 编译器）。
 
 验证安装：
 

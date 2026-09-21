@@ -5,13 +5,14 @@
 表与 `SEARCH`、子程序与 C 互操作，到顺序/索引/相对三类文件、状态码与异常、`SCREEN SECTION`
 终端界面、控制break 报表、测试方法论，第 19 章实战**库存管理系统**（索引文件建档 → 过账 →
 按类别控制break 估值报表 → 低库存预警 → 全程断言）。每章"读讲解 → 跑示例 → 改代码再跑"，
-全部 18 个示例在本机**双通道验证**通过。
+全部 18 个示例在本机**双通道验证**通过（macOS 与 Windows 双平台）。
 
 > ⚠️ COBOL 是"看起来像英语、实则处处反直觉"的语言：`DIVIDE A INTO B` 是 `B / A`、下标从
 > 1 开始、无符号字段悄悄吞掉负号、溢出默认静默截断、`SEARCH ALL` 对乱序表给错结果还不吭声。
-> 网上教程多停留在 IBM 大型机方言或几十年前的标准。本教程所有代码在 **GnuCOBOL 3.2.0
-> （macOS + MacPorts + clang 后端）** 实测，每章末"坑位清单"收录版本差异与实测陷阱——
-> [CHEATSheet.md](CHEATSheet.md) 汇总 **106 条实测坑位**，[docs/20-pitfalls.md](docs/20-pitfalls.md)
+> 网上教程多停留在 IBM 大型机方言或几十年前的标准。本教程所有代码在 **GnuCOBOL 3.2.0**
+> 双平台实测——**macOS（MacPorts + clang 后端）** 与 **Windows（MSYS2 UCRT64 + gcc 后端）**，
+> 每章末"坑位清单"收录版本差异与实测陷阱——
+> [CHEATSheet.md](CHEATSheet.md) 汇总 **110 条实测坑位**，[docs/20-pitfalls.md](docs/20-pitfalls.md)
 > 是完整分类索引。
 
 ## 目录结构
@@ -23,7 +24,7 @@ cobol/
 ├── examples/       18 个示例目录（章号 = 目录号，02–19；01 为全景无示例，20 为坑位索引无示例）
 ├── build.ps1       统一验证脚本（pwsh 7 运行，Windows 入口）
 ├── run-all.sh      等价的 bash 验证入口（macOS / Linux / Git Bash）
-├── CHEATSheet.md   语法速查 + 106 条实测坑位索引
+├── CHEATSheet.md   语法速查 + 110 条实测坑位索引
 └── build/          编译产物（check/ 与 release/ 两通道，gitignore）
 ```
 
@@ -50,17 +51,22 @@ cobol/
 | [17 报表与批处理：控制break](docs/17-report.md) | 排序前提、break 检测、组小计、尾break、分页 | `17_report` |
 | [18 测试方法论](docs/18-testing.md) | 断言 + 退出码纪律、表驱动迷你框架、双通道验证、六条判定 | `18_testing` |
 | [19 综合实战：库存管理](docs/19-capstone.md) ⭐ | 索引文件 + 过账 + 控制break 报表 + 低库存预警；无符号吞负号坑 | `19_capstone` |
-| [20 坑位总清单](docs/20-pitfalls.md) | 全书 106 条实测坑的分类索引 + 三个"静默算错"警示 + 防御清单 | — |
+| [20 坑位总清单](docs/20-pitfalls.md) | 全书 110 条实测坑的分类索引 + 三个"静默算错"警示 + 防御清单 | — |
 
 ## 构建工具链
 
 - **GnuCOBOL 3.2.0**（`cobc`）：macOS 走 MacPorts `/opt/local/bin/cobc`，clang 后端
-  （COBOL → C → 原生可执行）；Linux/Windows 可用发行版包或官方构建。
+  （COBOL → C → 原生可执行）；Windows 实测走 **MSYS2 UCRT64**
+  （`pacman -S mingw-w64-ucrt-x86_64-gnucobol`，gcc 后端，同 3.2.0）；Linux 用发行版包。
 - 源码一律 **UTF-8、固定格式**（列位见 [docs/01](docs/01-overview.md)）；含中文的行须 ≤ 72 **字节**。
 - 脚本按 **环境变量 `COBC` → 固定路径 → PATH** 顺序探测编译器，不硬编码。
 - macOS/clang 专属：中文字面量会触发 `-Winvalid-source-encoding` 告警污染 stderr，脚本自动导出
   `COB_CFLAGS="-pipe ${默认CPPFLAGS} -Wno-invalid-source-encoding"`——**`COB_CFLAGS` 是覆盖不是
   追加**，必须带上 `cobc --info` 里的默认 include 路径，否则 `gmp.h not found`（实测坑）。
+- Windows/MSYS2 专属：该包的 `cobc.exe` 编译期写死 MSYS 风格前缀 `/ucrt64/...`，原生进程解析
+  不了 → **必须导出 Windows 形式的 `COB_CONFIG_DIR`**，且 PATH 要含 `ucrt64\bin`（编译找 gcc、
+  运行找 `libcob-4.dll`）。两个脚本按 `cobc` 所在目录**自动探测配置**，无需手工设（实测坑，
+  详见 [CHEATSheet §19](CHEATSheet.md)）。
 
 ## 验证命令
 
@@ -78,6 +84,10 @@ pwsh -File build.ps1                 # Windows 等价入口（与 run-all.sh 同
 pwsh -File build.ps1 -Example 19_capstone
 pwsh -File build.ps1 -Clean
 ```
+
+Windows 上脚本自动探测官方 GnuCOBOL 与 MSYS2 UCRT64 两种安装（含 scoop 布局），
+MSYS2 构建自动配置 `COB_CONFIG_DIR` 与 PATH；装在别处时设 `COBC=C:\path\to\cobc.exe`
+指向即可。
 
 **判定标准**：每个示例编两遍、跑两遍——
 
@@ -100,7 +110,7 @@ check/release 两通道 stdout **逐字节一致**（排除依赖未定义行为
   的看家本领，18（测试）解释了本仓库每个示例"凭什么可信"。
 - **实战（19）**：跟着源码读，`FINAL-CHECKS` 的断言就是功能清单；§5 的"无符号吞负号"是全书
   最有价值的一课。
-- **速查**：[CHEATSheet.md](CHEATSheet.md)（语法 + 106 条坑位）；[docs/20-pitfalls.md](docs/20-pitfalls.md)（坑位分类索引）。
+- **速查**：[CHEATSheet.md](CHEATSheet.md)（语法 + 110 条坑位）；[docs/20-pitfalls.md](docs/20-pitfalls.md)（坑位分类索引）。
 
 ## 相关教程
 

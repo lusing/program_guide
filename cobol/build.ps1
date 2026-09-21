@@ -1,6 +1,8 @@
 # GNU COBOL 教程统一验证脚本（Windows / pwsh 7），与 run-all.sh 等价：
 #   每个示例双通道（check: -Wall / release: -O2）× 四条判定 + 输出逐字节比对
 #   四条判定：退出码 0 / stderr 空 / stdout 无控制字符 / 含结束标记 ==== NN 结束 ====
+# 工具链：官方 GnuCOBOL 压缩包或 MSYS2 mingw-w64-ucrt-x86_64-gnucobol 均可；
+#   MSYS2 构建需导出 Windows 形式的 COB_CONFIG_DIR（脚本自动配置，见 Import-Msys2CobEnv）。
 # 用法：
 #   pwsh -File build.ps1                 # 全部示例
 #   pwsh -File build.ps1 -Example 03     # 单个示例（03 / 03_data 皆可）
@@ -23,6 +25,9 @@ function Resolve-Cobc {
     if ($env:COBC -and (Test-Path $env:COBC)) { return $env:COBC }
     foreach ($p in @(
         "$env:USERPROFILE\scoop\apps\gnucobol\current\bin\cobc.exe",
+        'C:\msys64\ucrt64\bin\cobc.exe',
+        "$env:USERPROFILE\scoop\apps\msys2\current\ucrt64\bin\cobc.exe",
+        "$env:ProgramData\scoop\apps\msys2\current\ucrt64\bin\cobc.exe",
         'C:\GnuCOBOL\bin\cobc.exe',
         'C:\Program Files\GnuCOBOL\bin\cobc.exe')) {
         if (Test-Path $p) { return $p }
@@ -30,6 +35,19 @@ function Resolve-Cobc {
     $cmd = Get-Command cobc -ErrorAction SilentlyContinue
     if ($cmd) { return $cmd.Source }
     return $null
+}
+
+# ── MSYS2 gnucobol（实测坑，见 docs/20-pitfalls.md 12.16）：其原生 cobc.exe 编译期写死的是
+#    MSYS 风格前缀（/ucrt64/share/gnucobol/config），Windows 解析成"当前盘符根\ucrt64\..."
+#    → configuration error。必须导出 Windows 形式的 COB_CONFIG_DIR；同时把 cobc 所在目录
+#    前置到 PATH：编译期找 gcc、运行期找 libcob-4.dll 都靠它。──
+function Import-Msys2CobEnv([string]$cobc) {
+    $dir = Split-Path $cobc -Parent
+    $cfg = Join-Path $dir '..\share\gnucobol\config'
+    if (Test-Path (Join-Path $cfg 'default.conf')) {
+        if (-not $env:COB_CONFIG_DIR) { $env:COB_CONFIG_DIR = (Resolve-Path $cfg).Path }
+        if ($env:PATH -notlike "*$dir*") { $env:PATH = "$dir;$env:PATH" }
+    }
 }
 
 if ($Clean) {
@@ -41,6 +59,7 @@ if ($Clean) {
 $COBC = Resolve-Cobc
 if (-not $COBC) { Write-Error '未找到 cobc（可设 COBC=C:\path\to\cobc.exe）'; exit 2 }
 if (-not (Test-Path $Examples)) { Write-Error "找不到 examples 目录：$Examples"; exit 2 }
+Import-Msys2CobEnv $COBC
 
 # Windows 上的 GnuCOBOL 自带 MinGW gcc 后端，不会有 macOS clang 的 source-encoding 告警，
 # 故无需设置 COB_CFLAGS（macOS 侧的抑制逻辑见 run-all.sh）。
@@ -163,6 +182,7 @@ function Find-Dir([string]$want) {
 
 Write-Host "工具链：cobc=$COBC"
 Write-Host "版本：  $COB_VER"
+if ($env:COB_CONFIG_DIR) { Write-Host "COB_CONFIG_DIR=$($env:COB_CONFIG_DIR)（MSYS2 构建，自动配置）" }
 Write-Host ''
 
 $dirs = @()

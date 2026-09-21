@@ -180,6 +180,10 @@
 | 12.13 | **`ORD`/`CHAR` 是 1 基序号，不是 ASCII** | `ORD("A")=66`、`CHAR(66)="A"` | [10](10-functions.md) |
 | 12.14 | **`REM` 与 `MOD` 对负数结果不同** | `REM(-10,3)=-1`、`MOD(-10,3)=2` | [10](10-functions.md) |
 | 12.15 | **cobc 混编 `.c` 无需特殊开关** | `.c` 与 `.cob` 一起列在命令里即可 | [16](16-c-interop.md) |
+| 12.16 | **Windows/MSYS2：`COB_CONFIG_DIR` 必须用 Windows 路径** | 包编译期写死 `/ucrt64/...`，原生 `cobc.exe` 解析成"当前盘符根\\ucrt64\\..." → `configuration error`；导出 Windows 形式的 `COB_CONFIG_DIR` | [01](01-overview.md) |
+| 12.17 | **MSYS2 产物动态链接 `libcob-4.dll`** | 目标机 PATH 没有 `ucrt64\bin` 时启动失败（报"找不到文件"其实是缺 DLL）；部署带上 DLL 或装 gnucobol | [01](01-overview.md) |
+| 12.18 | **Git Bash 调原生 cobc 别禁用参数转换** | `MSYS2_ARG_CONV_EXCL='*'` 把 `/g/...` 原样塞给 `cobc.exe` → `No such file or directory`；保留默认转换才对 | [01](01-overview.md) |
+| 12.19 | **Windows 输出行尾是 CRLF** | libcob 按文本模式输出；跨平台比对 stdout（macOS LF）先归一化行尾，同机双通道判定不受影响 | [18](18-testing.md) |
 
 ## 13. 三个"最阴险"的坑（静默错，不报错）
 

@@ -29,12 +29,18 @@ esac
 
 on_windows() { [ -n "${OSTYPE:-}" ] && [[ "$OSTYPE" == msys* || "$OSTYPE" == cygwin* ]]; }
 
+# --clean 不需要工具链，提前处理（没装 cobc 的环境也能清理）
+for _arg in "$@"; do
+    [ "$_arg" = "--clean" ] && { rm -rf "$BUILD"; echo '[Clean] 已清理 build/'; exit 0; }
+done
+
 # ── 工具链解析：环境变量 COBC → 固定路径 → PATH（固定路径优先，见 README 坑位）──
 resolve_cobc() {
     local fromenv p
     fromenv=$(printenv COBC 2>/dev/null || true)
     [ -n "$fromenv" ] && [ -x "$fromenv" ] && { echo "$fromenv"; return; }
-    for p in /opt/local/bin/cobc /usr/local/bin/cobc /usr/bin/cobc; do
+    for p in /opt/local/bin/cobc /usr/local/bin/cobc /usr/bin/cobc \
+             /ucrt64/bin/cobc /mingw64/bin/cobc; do
         [ -x "$p" ] && { echo "$p"; return; }
     done
     command -v cobc >/dev/null 2>&1 && { command -v cobc; return; }
@@ -44,6 +50,24 @@ COBC=$(resolve_cobc)
 die() { echo "错误：$*" >&2; exit 2; }
 [ -n "$COBC" ] || die "未找到 cobc（可设 COBC=/path/to/cobc）"
 [ -d "$EXAMPLES" ] || die "找不到 examples 目录"
+
+# ── Windows/MSYS2 gnucobol：编译期写死的是 MSYS 风格前缀（/ucrt64/...），原生 cobc.exe
+#    解析不了 → 必须用 Windows 形式路径导出 COB_CONFIG_DIR（实测坑，见 docs/20-pitfalls.md 12.16）。
+#    同时把 cobc 所在目录前置到 PATH：编译要找 gcc，运行要找 libcob-4.dll。──
+COBC_DIR=$(cd "$(dirname "$COBC")" && pwd)
+if [ -f "$COBC_DIR/../share/gnucobol/config/default.conf" ]; then
+    if [ -z "${COB_CONFIG_DIR:-}" ]; then
+        if command -v cygpath >/dev/null 2>&1; then
+            export COB_CONFIG_DIR=$(cygpath -w "$COBC_DIR/../share/gnucobol/config")
+        else
+            export COB_CONFIG_DIR="$COBC_DIR/../share/gnucobol/config"
+        fi
+    fi
+    case ":${PATH}:" in
+        *":$COBC_DIR:"*) ;;
+        *) export PATH="$COBC_DIR:$PATH" ;;
+    esac
+fi
 
 EXEEXT=''
 on_windows && EXEEXT='.exe'
@@ -125,13 +149,15 @@ run_cli() { # $1=示例目录
         rm -f "$exe"
         echo "[Compile] $channel $name"
         # -I "$dir"：让 COPY 能找到与源文件同目录的 copybook（cobc 默认不搜源文件目录）
+        # 注意：Git Bash / MSYS2 下必须保留默认的参数路径转换（/g/... → G:\...），
+        # 设 MSYS2_ARG_CONV_EXCL='*' 会把 POSIX 路径原样塞给原生 cobc.exe → No such file（实测坑）
         # shellcheck disable=SC2086
-        MSYS2_ARG_CONV_EXCL='*' "$COBC" $flags -I "$dir" -o "$exe" "${srcs[@]}" \
+        "$COBC" $flags -I "$dir" -o "$exe" "${srcs[@]}" \
             >"$outdir/$name.build.log" 2>"$outdir/$name.build.err"
         rc=$?
         if [ $rc -ne 0 ] || [ ! -f "$exe" ]; then
             echo "编译失败 [exit ${rc}]，见 ${outdir}/${name}.build.log" >&2
-            tail -10 "$outdir/$name.build.log" "$outdir/$name.build.err" | sed 's/^/        /' >&2
+            tail -n 10 "$outdir/$name.build.log" "$outdir/$name.build.err" | sed 's/^/        /' >&2
             FAIL=$((FAIL+1)); FAILED="$FAILED
   - $channel ${name}（编译失败）"
             continue
@@ -189,7 +215,7 @@ ARGS=()
 MODE=all
 for arg in "$@"; do
     case $arg in
-        --clean) rm -rf "$BUILD"; echo '[Clean] 已清理 build/'; exit 0 ;;
+        --clean) : ;;   # 已在脚本开头提前处理（无需工具链）
         -v)      VERBOSE=1 ;;
         *)       MODE=pick; ARGS+=("$arg") ;;
     esac
@@ -198,6 +224,7 @@ done
 echo "工具链：cobc=$COBC"
 echo "版本：  $COB_VER"
 [ -n "$COB_CFLAGS" ] && echo "COB_CFLAGS=$COB_CFLAGS"
+[ -n "${COB_CONFIG_DIR:-}" ] && echo "COB_CONFIG_DIR=$COB_CONFIG_DIR"
 echo
 
 if [ "$MODE" = pick ]; then
