@@ -131,7 +131,7 @@ Windows 11（scoop）：
 新机器安装：
 
 - **macOS**：`sudo port install algol68g`（MacPorts）。
-- **Linux**：发行版包（如 `apt install a68g`）或从官网源码构建。
+- **Linux**：发行版包（Debian/Ubuntu 包名是 `algol68g`：`sudo apt install algol68g`）或从官网源码构建。
 - **Windows**：`scoop install algol68g`（或官网下载构建）；注意官方构建**无 C 后端、无
   parallel-clause、INT 为 64 位**（三大缺口见 §9），验证脚本会自动探测并跳过受影响项。
 - 官方主页：<https://algol68genie.nl/>。
