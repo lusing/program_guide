@@ -98,7 +98,7 @@ sumArr(nums())                     ' 调用时带空括号
 ## 5.6 提前退出与调用约定
 
 - `Exit Sub` / `Exit Function` 立即退出。
-- FB 默认调用约定是 `StdCall`（Windows API 同款）；对接 C 回调时过程要标 `Cdecl`（19/20 章细讲）。
+- FB 默认调用约定是 `StdCall`（Windows API 同款）；对接 C 回调时过程要标 `Cdecl`（19/20 章细讲）。x86_64 Linux 只有单一调用约定，这些标注在 64 位 Linux 上无实际差别——但 `Cdecl` 标注依然保留（32 位平台上是必需的）。
 
 ## 5.7 坑位清单（1.10.1 实测）
 

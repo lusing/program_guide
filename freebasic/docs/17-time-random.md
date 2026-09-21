@@ -14,7 +14,7 @@ Sleep 60
 Var dt = Timer - t0          ' ≈ 0.06 秒
 ```
 
-**Windows 实测：`Timer` 返回开机以来的秒数**（不是很多文档说的"自午夜"——本机值 28 万秒 vs 自午夜 7 万秒，对不上）。做**间隔**测量正合适；要墙钟时间用 `Now`。
+**Windows 实测：`Timer` 返回开机以来的秒数**（不是很多文档说的"自午夜"——本机值 28 万秒 vs 自午夜 7 万秒，对不上）。**Linux 实测（1.10.2）：返回 Unix epoch 秒**（自 1970-01-01，形如 1790007793.75）。两边绝对语义不同，但做**间隔**测量都正合适；要墙钟时间用 `Now`。
 
 ## 17.3 Now 与 Format
 
@@ -53,12 +53,12 @@ Randomize             ' 不带参：用系统时间做种子（每次运行不�
 
 ## 17.6 高精度计时
 
-`Timer` 是 Double 秒（本机分辨率约微秒级，够用）。要纳秒级用 Win32 `QueryPerformanceCounter`（20 章互操作示例里有现成写法）。
+`Timer` 是 Double 秒（本机分辨率约微秒级，够用）。要纳秒级：Windows 用 Win32 `QueryPerformanceCounter`，Linux 用 `clock_gettime(CLOCK_MONOTONIC)`（20 章互操作示例里有双平台现成写法）。
 
 ## 17.7 坑位清单（1.10.1 实测）
 
 1. 日期/Format 函数都要 **`#Include Once "vbcompat.bi"`**。
-2. **Windows 上 `Timer` = 开机至今秒数**，不是自午夜——注释写清楚，别拿它当日历。
+2. `Timer` 绝对语义随平台：**Windows = 开机至今秒数，Linux = Unix epoch 秒**——都不是自午夜；只拿它做间隔，别拿它当日历。
 3. `Format` 分钟是 `n`，`m` 是月份。
 4. `Randomize n`（带种子）确定性；`Randomize`（无参）按时间——测试里永远用前者。
 5. `Rnd ∈ [0,1)`：`Int(Rnd * n)` 产 0..n-1，加 1 才是 1..n。

@@ -1,4 +1,4 @@
-# FreeBASIC CHEATSheet（fbc 1.10.1 win64 实测）
+# FreeBASIC CHEATSheet（fbc 1.10.1 win64 / 1.10.2 linux-x86_64 实测）
 
 语法速查 + 坑位索引。每行都以本机实测为准，标注与"直觉/老教程"相反的条目 ⚠。
 
@@ -17,12 +17,12 @@ fbc main.bas mod.bas -x out.exe           # 多文件：第一个是主模块
 | 写法 | 字节 | 备注 |
 |---|---|---|
 | `Integer`/`UInteger` | **8** | ⚠ 指针宽——win64 上 8，别当 C int 用 |
-| `Long` | 4 | ⚠ 恒 4 字节；C 的 int/long 映射到它 |
+| `Long` | 4 | ⚠ 恒 4 字节（两平台一致）；C 的 int 映射到它——⚠ 但 linux-x86_64 的 C `long` 是 8，用 `LongInt`/`clong` |
 | `LongInt` | 8 | 恒 64 位 |
 | `Single`/`Double` | 4/8 | 小数字面量默认 Double |
 | `String` | 24(描述符) | 变长；`Len` = **UTF-8 字节数** |
 | `ZString * N` | N 缓冲 | C 字符串 |
-| `WString * N` | 2N | Windows = UTF-16；⚠ 中文字面量会按 GBK 误解（无 BOM 源） |
+| `WString * N` | 2N | Windows = UTF-16（Linux = UTF-32，码元 4 字节）；⚠ 中文字面量会按 GBK 误解（无 BOM 源，Windows 构建） |
 
 ## 声明
 
@@ -154,7 +154,7 @@ On Error Goto handler           ' -lang fb 下半残：捕不到 Open 失败；R
 
 1. ⚠ 源码**无 BOM**：带 BOM → 字面量转 GBK + 宽字符输出，管道验证报废
 2. ⚠ `Assert` 由 **-g** 激活（老文档说 -e/-exx）
-3. ⚠ `Integer` win64 = 8 字节；`Long` 恒 4
+3. ⚠ `Integer` win64/linux-x86_64 = 8 字节；`Long` 恒 4（但 linux 上 C `long`=8，互操作用 `LongInt`/`clong`）
 4. ⚠ `Cast` 转整数 = 银行家舍入（截断用 `Fix`/`Int`）
 5. ⚠ `True` = -1（Print 显示 true/false）
 6. ⚠ `And/Or` 不短路——指针判空用 `AndAlso`
@@ -167,8 +167,10 @@ On Error Goto handler           ' -lang fb 下半残：捕不到 Open 失败；R
 13. ⚠ `Override` 只在 Declare 行；基类无默认构造器 → 派生初始化报 error 188
 14. ⚠ 复合赋值运算符重载必须成员；回调给 C 必须 `Cdecl`（ThreadCreate 入口相反）
 15. ⚠ `Open` 失败 `Err` 恒 0——查返回码
-16. ⚠ Windows `Timer` = 开机至今秒数（非自午夜）；`Format` 分钟是 `n`
+16. ⚠ `Timer` 语义随平台：Windows = 开机至今秒数，Linux = Unix epoch 秒（非自午夜）；`Format` 分钟是 `n`
 17. ⚠ `Format`/日期函数须 `vbcompat.bi`；`fbDirectory` 须 `dir.bi`；`SC_*` 须 `Using FB`
-18. ⚠ gfx：无 B 的 Line 画对角线；Cls 颜色参数 32bpp 不生效；Print 进图形窗
-19. ⚠ `SetEnviron` 单参 `"名=值"`；`Command(-1)` 无参为空串
+18. ⚠ gfx：无 B 的 Line 画对角线；Cls 颜色参数 32bpp 不生效；Print 进图形窗；Linux 走 X11（WSL2 需 WSLg，headless 用 `xvfb-run`）
+19. ⚠ `SetEnviron` 单参 `"名=值"`；`Command(-1)` 无参为空串；用户名变量 Windows `USERNAME` / Linux `USER`
 20. ⚠ `Gosub/Resume/行号/变量后缀` 仅 qb/fblite 方言；qb 字符串比较不区分大小写
+21. ⚠ Linux 互操作：`crt/*.bi` 不导出宏——`_SC_*`(84/85/30)、`CLOCK_MONOTONIC`(1) 手写 `#define`；无 `Extern "Windows"`，统一 `Extern "C"`
+22. ⚠ `Print Using` 格式串里 `_` 是转义前缀（"clock_gettime" 印成 "clockgettime"）；`Shell`：Windows 走 `cmd /c`，Linux 走 `/bin/sh`
