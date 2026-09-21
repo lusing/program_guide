@@ -124,4 +124,4 @@ dc.SelectObject(old);
 - 图表、波形这类高频刷新场景，考虑每帧只重绘变化区域（`Invalidate(rect)` 指定脏矩形）
 
 ---
-上一章：[15 Doc/View 架构](15-docview.md) ｜ 下一章：[20 多线程与后台任务](20-threads.md)
+上一章：[17 序列化深入与文档版本化](17-serialize.md) ｜ 下一章：[20 多线程与后台任务](20-threads.md)

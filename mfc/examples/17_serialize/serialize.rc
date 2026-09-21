@@ -1,0 +1,38 @@
+// 17_serialize 的资源脚本。这套菜单把第 16 章没启用的打开/保存补齐了：
+// ID_FILE_* 由框架标准实现处理，读写逻辑全部走文档的 Serialize。
+#pragma code_page(65001)
+
+#include "resource.h"
+#include "afxres.h"
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "文件(&F)"
+    BEGIN
+        MENUITEM "新建(&N)\tCtrl+N",    ID_FILE_NEW
+        MENUITEM "打开(&O)...\tCtrl+O", ID_FILE_OPEN
+        MENUITEM "保存(&S)\tCtrl+S",    ID_FILE_SAVE
+        MENUITEM "另存为(&A)...",       ID_FILE_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "退出(&X)",            ID_APP_EXIT
+    END
+    POPUP "条目(&I)"
+    BEGIN
+        MENUITEM "添加(&A)",  ID_ITEM_ADD
+        MENUITEM "清空(&C)",  ID_ITEM_CLEAR
+    END
+END
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "N", ID_FILE_NEW,  VIRTKEY, CONTROL
+    "O", ID_FILE_OPEN, VIRTKEY, CONTROL
+    "S", ID_FILE_SAVE, VIRTKEY, CONTROL
+END
+
+// 9 字段串：1标题 2文档名 3新建默认名 4过滤器名 5过滤器
+//           6默认扩展名 7注册表类型ID 8注册表类型名 9新文件过滤器名
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME "库存清单\n库存\n库存\n库存文件 (*.mfx)|*.mfx|所有文件 (*.*)|*.*||\n.mfx\nShop.Document\n库存文档\n库存"
+END
