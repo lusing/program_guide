@@ -5,6 +5,7 @@
 > 本机 Io 是**从源码编译**的（CMake + `build.sh`），两条通道 `io`（动态库）与 `io_static`（静态）。
 > 表中所有结论都在**两条通道上跑过、逐字节一致**，不是从文档抄来的。
 > 凡是标「实测」的数字，都是本机跑出来的，不是猜的。
+> 平台：macOS 为主；标「Linux」的条目在 Linux（WSL2 + GCC 16）上实测，其余平台无关。
 
 ---
 
@@ -16,16 +17,21 @@ io -e 'writeln("hi")'         # 一行代码（注意：-e 的代码里不能有
 io                            # 无参进入 REPL
 io -h                         # 帮助
 
-# 本机安装位置
-/Users/xulun/.workbuddy/binaries/io/bin/io
-/Users/xulun/.workbuddy/binaries/io/bin/io_static
+# 本机安装位置（macOS / Linux 同构，都在 $HOME 下）
+/Users/xulun/.workbuddy/binaries/io/bin/io           # macOS
+~/.workbuddy/binaries/io/bin/io                     # Linux（回归脚本候选路径之一）
 
 # 环境变量
-IO_BIN=/path/to/io_static     # 回归脚本优先读它
+IO=/path/to/io IO_STATIC=/path/to/io_static   # 回归脚本优先读它们（两条通道可分别指定）
 
 # 超时（macOS 没自带 timeout；MacPorts 的 gtimeout 才是对的）
 gtimeout --foreground -s KILL 10 io script.io
 #   ^^^^^^^^^^^^ 不带 --foreground 会连自己的进程组一起杀，父进程 stderr 多出 "Killed: 9"
+# Linux 自带 coreutils timeout，同样的形状实测可用：
+timeout --foreground -s KILL 10 io script.io
+
+# Linux 运行前置（实测）：默认不设 TMPDIR，示例与 stdlib runCommand 都依赖它
+export TMPDIR=/tmp            # run-all.sh 已内置兜底，手动单跑示例前自己补
 ```
 
 验证入口（等价两份，判定逐条一致）：

@@ -30,7 +30,7 @@ sleep / exit 都是 CFunction = CFunction / CFunction
 ```
 
 ```io
-System platform        // "Darwin" —— 可打
+System platform        // "Darwin"（macOS）/ "Linux" —— 可打
 System version         // "20260302" —— 固定字符串，可打
 System iospecVersion   // "0.1.0"
 System iovmName        // "iolanguage"
@@ -42,6 +42,13 @@ System getSlot("exit") type   // CFunction
 
 `platformVersion` 长这样：`Darwin Kernel Version 23.6.0: …; root:xnu-…`。
 本机跑两次是一模一样的，但它是彻头彻尾的「环境信息」，所以示例只断言「非空」和「以 `platform` 开头」。
+
+> **平台差异（实测）**：上面这些值取自 macOS。Linux 上 `System platform` 是
+> `"Linux"`；`platformVersion` 是 uname 的内核构建串（形如
+> `#1 SMP PREEMPT_DYNAMIC … 6.x.x-…`），**不**以 `platform` 开头 ——
+> 「platformVersion 以 platform 开头」这条只在 macOS 成立（Darwin 的
+> platformVersion 以 `Darwin Kernel Version` 开头，恰与平台名相同）。
+> 示例对这条只打印、不判定，所以两个平台都能跑完。
 
 > **为什么重要**：能打的只有**语言自身**的常量（`platform` 名字、`version` 号）。
 > 凡是内核版本、构建日期、路径这类「换个环境就变」的东西，示例里只允许断言，不允许打印。

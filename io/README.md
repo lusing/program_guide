@@ -14,6 +14,8 @@ Io 是 Steve Dekorte 2002 年发布的**纯原型、纯消息传递**动态语�
 > 输出逐字节一致。Io 是个相当小众、文档稀薄且新旧版本行为差异很大的语言——
 > 网上能找到的写法有相当一部分在本机构建（`System version` = `20260302`）上**跑不通或行为相反**。
 > 每条「实测」背后都有一个跑出来的数字，不是猜的。
+> 2026-09 起整套回归（23 示例 × 双通道 + 观察项）也在 **Linux**（WSL2、GCC 16、同一 tag）上
+> 完整跑通；平台相关的结论（`TMPDIR`、系统库路径、dlopen 行为等）在对应章节以「平台差异」标注。
 
 ## 目录结构
 
@@ -82,16 +84,27 @@ io/
 > 所以「两条通道输出逐字节一致」这条判定，检验的不是两种语义，
 > 而是**示例没有偷偷依赖动态库加载或安装前缀**。本仓库里管这叫「跨通道比对」。
 
-两个入口都**探测**解释器路径，**不硬编码**：环境变量 `IO_BIN` → `System installPrefix` 下的
-`bin/io_static` / `bin/io` → `PATH` 上的 `io_static` / `io`。找不到的通道自动跳过。
+两个入口都**探测**解释器路径，**不硬编码**：环境变量 `IO` / `IO_STATIC` → 安装前缀等
+固定候选（含 `$HOME/.workbuddy`）→ `PATH` 上的 `io_static` / `io`。找不到的通道自动跳过。
+
+> ⚠️ **Linux 构建注意（实测，2026-09）**：同一个 tag（`2026.04.20-native-final`）在
+> Linux 上构建必须**显式** `-DCMAKE_BUILD_TYPE=Release`。项目不指定构建类型时默认
+> `DebugFast`（`-g -O0`），GCC 在 `-O0` 下不合并跨编译单元的相同字符串字面量，而 Io
+> 的 proto 注册表恰以字面量**地址**为键 —— 编出来的二进制启动即
+> `missing proto 'Number'`（macOS 的 clang/ld64 无此问题，默认构建即可用）。
+> 另外 GCC 14+ 把三类警告当错误，需
+> `-DCMAKE_C_FLAGS="-Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -Wno-error=int-conversion"`。
+> 完整命令见 `run-all.sh` 找不到解释器时打印的提示。
+> 运行侧还有一个环境差异：**Linux 默认不设 `TMPDIR`**，示例和标准库 `runCommand`
+> 都依赖它（macOS 恒有）——`run-all.sh` 已内置兜底（未设且 `/tmp` 可写时补 `/tmp`）。
 
 ## 验证命令
 
 ```bash
 cd io
-bash run-all.sh                 # shell 入口：23 个示例 × 两条通道
+bash run-all.sh                 # shell 入口：23 个示例 × 两条通道（Linux 上自动补 TMPDIR）
 bash run-all.sh 07 13 24        # 只跑指定章（章节号即示例号）
-pwsh -File build.ps1            # PowerShell 入口，判定与上者逐条一致
+pwsh -File build.ps1            # PowerShell 入口，判定与上者逐条一致（Windows / macOS）
 pwsh -File build.ps1 -Example 24
 ```
 

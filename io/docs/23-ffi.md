@@ -8,8 +8,15 @@
 > `Sandbox` 的两个限额是空设（23.8）。
 > 23.4 / 23.8 里有两段标了「离线实测原文」的输出——它们**不在示例 stdout 里**
 > （会挂住，或含不确定内容），是为文档单独抓的。
-> 想要 `2^10 == 1024` 只有一条路：自己写整数签名的 C 函数、`cc -dynamiclib` 编出来，
-> 那就是 23.5，而且它是**示例里真的跑通了**的。
+> 想要 `2^10 == 1024` 只有一条路：自己写整数签名的 C 函数、`cc` 编成动态库
+> （macOS `-dynamiclib` / Linux `-shared -fPIC`），那就是 23.5，而且它是**示例里真的跑通了**的。
+>
+> **平台（实测）**：本章原实测在 macOS（libSystem.B.dylib / libm.dylib 的绝对路径）。
+> 2026-09 起示例带 **Darwin / Linux 双分支**并在 Linux（WSL2 + GCC 16）上整章跑通：
+> Linux 用 ld.so 认得的 soname（`"libc.so.6"` / `"libm.so.6"`），文件系统里同样
+> 「看不到」、dlopen 同样能开，教学点一致。文中未标注平台的输出均为 macOS 实测；
+> Linux 与之不同的点（dlsym(NULL) 全局解析、dlerror 措辞等）在对应小节以
+> 「Linux 实测」标注。
 
 ## 23.1 DynLib 的四个动作：setPath / open / isOpen / close
 
@@ -65,6 +72,8 @@ chk("clone 不继承已打开的句柄", (DynLib clone) isOpen, false)
 > **`false`**——系统库被收进了 dyld 共享缓存，文件系统里根本没有这个文件，但
 > `dlopen` 照样成功。**别用 `exists` 去预判 dlopen 能不能行**，唯一可靠的判据是
 > `try(... open)` 有没有抛。
+> Linux 实测：同一个教学点由 soname 承担——`File with("libc.so.6") exists` 同样是
+> **`false`**（相对名在当前目录 stat 不到），`dlopen` 走 ld.so 缓存照样开。
 
 ## 23.2 能过的：整数签名的 C 函数
 
@@ -156,7 +165,7 @@ sqrt(4.0) 等于 2 吗 = false
 ```
 
 ```io
-m := DynLib clone setPath("/usr/lib/libm.dylib")
+m := DynLib clone setPath("/usr/lib/libm.dylib")     // Linux 分支用 "libm.so.6"
 m open
 m call("pow", 2, 10) == 1024   // false
 m call("sqrt", 4.0) == 2       // false
@@ -164,7 +173,14 @@ m call("sqrt", 4.0) == 2       // false
 m call("labs", -7)             // 7    —— 同一个库里的整数函数照常
 ```
 
-**离线实测原文**（同一个脚本连跑三次，`gtimeout 10`）：
+> **Linux 实测**：布尔结论逐条相同（`pow == 1024` 为 false、`sqrt == 2` 为 false、
+> 返回类型 `Number`、`labs(-7) = 7`）。两个平台的机制也一样——参数被
+> `IoNumber_asInt` 截整、返回值只从整数寄存器取。Linux 上 `labs` 能从
+> `libm.so.6` 调到的原因略有不同：glibc 的 libm 自己不导出 `labs`，
+> 但 `dlsym` 会沿 libm→libc 的依赖链把符号找出来。
+
+**离线实测原文**（同一个脚本连跑三次，`gtimeout 10`；macOS。Linux 上同样
+**只断言布尔结论**、绝不打印 pow 的返回值，残值同样是每次不同）：
 
 ```text
 === 第 1 次
@@ -317,6 +333,23 @@ IoState_error_(IOSTATE, m, "Error loading object '%s': '%s'",
 
 > **为什么重要**：错误消息是 `dlopen` 唯一诚实的"能力清单"。写平台相关的 FFI 代码时，
 > 先把这个平台的失败原文抄进测试，比读文档靠谱——文档会过时，`dlerror()` 不会。
+
+> **Linux 实测（2026-09，glibc）**：23.6 有两处和 macOS **相反或不同**，示例按平台分支断言：
+>
+> 1. **「没 open 就 call」不报错，反而能调通。** 未 open 的克隆 handle 为 NULL，
+>    glibc 的 `dlsym(NULL, sym)` 按**全局符号表**解析——`abs` 就在全局已加载的
+>    libc 里，`(DynLib clone) call("abs", -5)` 返回 `5`、连异常都没有
+>    （macOS 上报 `Error resolving call 'abs'.`）。这比报错更值得警惕：
+>    一行 call 都不用 open，就能摸到进程里任意全局符号——23.8 的红线再加一条理由。
+> 2. **dlerror 的措辞完全不同。** 同一个 `dlopen("/etc/hosts")` 失败，glibc 给
+>    `'/etc/hosts: invalid ELF header'`——**不带** `dlopen(路径, 0x…)` 调用原文，
+>    也不列出尝试过的每个路径；库路径由 Io 的包装层
+>    （`Error loading object '…'`）带上。`0x000A` 那个 flag 值也不会出现
+>    （`RTLD_NOW|RTLD_GLOBAL` 在 glibc 上是 `0x102`，但 glibc 的 dlerror 根本不打印它）。
+>    库不存在时是 `'/no/such/libch23_nope.so: cannot open shared object file: No such file or directory'`。
+> 3. 符号不存在、参数超限的两条 Io 层错误文本（`Error resolving call '…'.` /
+>    `Error, too many arguments (9) to call '…'.`）**两个平台逐字节相同**——它们
+>    是 Io 自己拼的，不经过动态链接器。
 
 ## 23.7 CFunction 与缺失的编组设施
 
