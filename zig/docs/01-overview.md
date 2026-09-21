@@ -73,10 +73,13 @@ choco install zig
 
 ```bash
 # macOS
-brew install zig
+brew install zig            # Homebrew
+sudo port install zig       # MacPorts：本教程实测环境，装到 /opt/local/bin/zig
 # Linux：官网下载解压即可（无依赖、单文件）；Arch 也可 pacman -S zig
 wget https://ziglang.org/download/0.16.0/zig-linux-x86_64-0.16.0.tar.xz
 ```
+
+macOS 上 `zig` 常由包管理器软链到实际前缀（MacPorts 的真实 std 在 `/opt/local/libexec/zig-0.16/lib/zig/std`，panic 栈跟踪里出现的就是这条路径）——找本机的确切位置用 `zig env` 看 `lib_dir`。
 
 多版本管理用 **zvm**（Windows 友好）或 **zigup**：`zvm install 0.16.0 && zvm use 0.16.0`。验证：`zig version` → `0.16.0`。
 
@@ -94,4 +97,9 @@ wget https://ziglang.org/download/0.16.0/zig-linux-x86_64-0.16.0.tar.xz
 2. **`zig run` 传参要 `--`**：`zig run main.zig -- arg1 arg2`，否则参数被当成文件名（报 "unrecognized file extension"）。
 3. **中文乱码**：Windows 控制台先 `chcp 65001`（本仓库 build.ps1 已代设 UTF-8）；Linux/macOS 终端原生 UTF-8，无此问题。
 4. **源文件须 UTF-8 无 BOM**：带 BOM 的 .zig 文件直接编译错。
-5. **官网文档滞后于版本**：ziglang.org 的语言手册讲语法（大体稳定），但 std 文档要看本机 `zig` 对应版本——读标准库源码（Windows 如 `G:\scoop\apps\zig\0.16.0\lib\std\`，Linux 用 `zig env` 查 `lib_dir`）是最可靠的文档，这不是玩笑是日常。
+5. **官网文档滞后于版本**：ziglang.org 的语言手册讲语法（大体稳定），但 std 文档要看本机 `zig` 对应版本——读标准库源码（Windows 如 `G:\scoop\apps\zig\0.16.0\lib\std\`；macOS Homebrew 在 `/opt/homebrew/Cellar/zig/...`、MacPorts 在 `/opt/local/libexec/zig-0.16/lib/zig/std`）是最可靠的文档，这不是玩笑是日常。
+6. **Apple Silicon（arm64 Mac）**：Zig 原生支持，但**逐章示例里的 x86 汇编不可用**——21 章已备好 aarch64 版（`cntvct_el0` 计数器），其余 22 个示例在 arm64 上命令不变。Intel Mac 可用 `zig build-exe -target aarch64-macos` 预先验证（交叉编译只保证编译通过，运行要真机）。
+
+---
+
+下一章：[02 第一个程序](02-hello.md)

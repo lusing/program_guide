@@ -96,3 +96,5 @@ rect(.{ .color = "红", .bold = true }); // 覆盖个别
 5. **anytype 的错误在调用处爆**：函数体里对 T 的假设不满足时，报错指向你的调用（带着一长串模板式跟踪）——读第一条 error，别被 reference trace 吓到。
 
 ---
+
+上一章：[04 控制流](04-control.md) · 下一章：[06 数组切片字符串](06-slices.md)

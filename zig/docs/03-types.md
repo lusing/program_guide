@@ -98,3 +98,5 @@ const raw: [4]u8 = @bitCast(u);  // 逐字节 reinterpret
 6. **浮点别用 `==`**：和老语言一样的道理；要容差比较自己写 `@abs(a - b) < 1e-9`。
 
 ---
+
+上一章：[02 第一个程序](02-hello.md) · 下一章：[04 控制流](04-control.md)

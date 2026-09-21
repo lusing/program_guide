@@ -20,7 +20,16 @@ build-lib wasm_lib.zig -target wasm32-freestanding → 8 KB 的 wasm 模块
 cc hello.c                                 → zig cc 编的 Windows exe
 ```
 
-> 在 Linux/macOS 上跑同一套验证同理：本机 x86_64-linux 交叉出 aarch64-linux ELF、wasm 模块，`zig cc` 产本机可执行文件——命令一字不改（已实测）。
+macOS 实测（`./run-all.sh`，Darwin 23 x86_64 + zig 0.16.0）：同一套命令一字不改，交叉产物照样出，示例本机运行打印：
+
+```text
+架构 x86_64，系统 macos，模式 Debug
+本架构代号 1（交叉编译时代码随之切换）
+自检通过
+hello from C, compiled by zig cc
+```
+
+> 在 Linux/macOS 上跑同一套验证同理：本机 x86_64-linux（或 x86_64-macos）交叉出 aarch64-linux ELF、wasm 模块，`zig cc` 产本机可执行文件——命令一字不改（已实测）。
 
 ## 18.2 编译期感知目标：builtin
 
@@ -98,3 +107,5 @@ zig c++ -std=c++20 main.cpp          # clang 兼容：多数旗子直接认
 5. **Windows 双 ABI**：默认原生 MSVC ABI，`-windows-gnu` 是 mingw——链接行为和依赖不同，混着用会出"符号找不到"的怪错。
 
 ---
+
+上一章：[17 C 互操作](17-c-interop.md) · 下一章：[19 并发](19-threads.md)

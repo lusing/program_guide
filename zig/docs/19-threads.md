@@ -108,3 +108,5 @@ const t = try std.Thread.spawn(.{}, Task.run, .{ &worker, files, &next, mem });
 5. **持锁做 IO**：锁区里 printf/写文件/网络 = 全队排队看你 IO——锁区压到最小，纯内存操作。
 
 ---
+
+上一章：[18 交叉编译](18-cross.md) · 下一章：[20 文件与 IO](20-files-io.md)

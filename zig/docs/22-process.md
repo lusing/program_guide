@@ -97,3 +97,5 @@ pub fn main() !void { ... }
 6. **`cmd /c` 才有 shell 语义**：`run` 的 argv 不经 shell——`echo`、`dir` 这类内建命令要套 `cmd /c`（Windows）或 `sh -c`（POSIX）。
 
 ---
+
+上一章：[21 内联汇编](21-asm.md) · 下一章：[23 调试与工具](23-debugging.md)

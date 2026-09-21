@@ -110,3 +110,5 @@ try tmp.dir.writeFile(io, .{ .sub_path = "x.txt", .data = "abc" });
 6. **迭代时删条目**：`it.next()` 期间 `deleteFile` 同目录条目——行为未定义；先收集路径，迭代完再删。
 
 ---
+
+上一章：[19 并发](19-threads.md) · 下一章：[21 内联汇编](21-asm.md)

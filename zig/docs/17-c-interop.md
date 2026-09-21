@@ -89,3 +89,5 @@ zig translate-c header.h > bindings.zig
 6. **变参没类型检查**：`printf` 传错类型 C 那边一样崩——Zig 的编译期格式检查只保护 `std.debug.print`，不覆盖 extern 变参。
 
 ---
+
+上一章：[16 构建与包管理](16-build.md) · 下一章：[18 交叉编译](18-cross.md)

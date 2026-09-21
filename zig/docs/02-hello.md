@@ -104,5 +104,8 @@ Zig 没有 gofmt 式的"圣战"——官方格式化器就是唯一格式。本�
 4. **`zig run` 传参用 `--` 分隔**：`zig run main.zig -- these are args`。
 5. **exe 旁的 .pdb 别提交**：`zig build-exe` 产物含调试数据库，`.gitignore` 应忽略（本仓库已配 `**/build/`）。
 6. **`std.debug.print` 打的中文进的是 stderr**：重定向 stdout 时看不到它，`2>&1` 合并才能见。
+7. **`> f 2>&1` 合并落盘会吃掉 stderr 前部**（macOS 实测，zig 0.16）：stdout 是缓冲 Writer（退出前才 flush）、stderr 无缓冲即写，两者指向**同一个文件**时，那次迟到的 flush 会覆盖文件里已有的 stderr 内容——本机实测 02 章示例合并重定向后 165 字节只剩 124 字节，前两行 `debug.print` 被冲掉（C 程序同样写法 138 字节完整，是 Zig 侧行为）。终端与管道（`| cat`）不受影响；要落盘就分开重定向（`>out.txt 2>err.txt`），或统一走一个 Writer。
 
 ---
+
+上一章：[01 全景](01-overview.md) · 下一章：[03 类型](03-types.md)

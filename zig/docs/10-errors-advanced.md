@@ -109,3 +109,5 @@ fn addWrap(a: u8, b: u8) u8 {
 5. **errdefer 不覆盖 panic**：panic 是"放弃治疗"，defer/errdefer 都不保证执行——所以 panic 消息只该用于 bug 报告，不做资源清理依赖。
 
 ---
+
+上一章：[09 可选与错误 I](09-optionals-errors.md) · 下一章：[11 分配器](11-allocators.md)

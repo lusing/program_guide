@@ -104,3 +104,5 @@ const bits: u8 = @bitCast(f);   // 0b0011_0001：整块位模式
 5. **union 忘了初始化就读是 UB**：Debug 也能抓（坏 tag），但别依赖——初始化永远给 `.{ .形态 = 值 }`。
 
 ---
+
+上一章：[07 结构体](07-structs.md) · 下一章：[09 可选与错误 I](09-optionals-errors.md)
