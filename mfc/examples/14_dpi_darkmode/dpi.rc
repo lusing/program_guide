@@ -1,0 +1,18 @@
+// 14_dpi_darkmode 的资源脚本。
+//
+// 刻意只留一个空壳对话框：所有子控件都在运行时创建、
+// 位置尺寸全部经过 Scale() 按 DPI 换算 —— 模板里写死坐标
+// 正是高 DPI 下控件挤成一团的根源。
+#pragma code_page(65001)
+
+#include "resource.h"
+#include "afxres.h"
+
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+
+IDD_MAIN DIALOGEX 0, 0, 200, 120
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "DPI 感知与深色模式"
+FONT 9, "微软雅黑"
+BEGIN
+END

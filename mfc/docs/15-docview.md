@@ -166,4 +166,4 @@ class CNoteView : public CView {
 - 文档数据模型要能独立于 UI 测试：Serialize 逻辑写成"纯数据进出"，单测不用启动界面
 
 ---
-上一章：[11 工具栏与状态栏](11-toolbars.md) ｜ 下一章：[18 GDI 绘图](18-gdi.md)
+上一章：[14 DPI 感知与深色模式](14-dpi-darkmode.md) ｜ 下一章：[18 GDI 绘图](18-gdi.md)
