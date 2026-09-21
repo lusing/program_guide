@@ -74,7 +74,7 @@ choco install zig
 ```bash
 # macOS
 brew install zig
-# Linux：官网下载解压即可（无依赖、单文件）
+# Linux：官网下载解压即可（无依赖、单文件）；Arch 也可 pacman -S zig
 wget https://ziglang.org/download/0.16.0/zig-linux-x86_64-0.16.0.tar.xz
 ```
 
@@ -85,13 +85,13 @@ wget https://ziglang.org/download/0.16.0/zig-linux-x86_64-0.16.0.tar.xz
 - **读者定位**：会编程（C/C++/Rust 背景最佳），从零学 Zig。不教编程本身。
 - **主线是 0.16 现代写法**：`std.Io` 新接口、`Init` 入口、unmanaged 集合从第一天就是默认姿势，旧写法只在坑位里教"认得"。
 - **每章节奏**：读讲解 → 跑示例 → 改代码再跑。示例全在 `examples/NN_topic/`，章号 = 目录号。
-- **三层验证**：`build.ps1` 对每个示例执行 `zig fmt --check`（格式）+ `zig test`（断言）+ `zig build-exe` 运行 exit 0——全部通过才收工，你手上的代码是可信的。
+- **三层验证**：`build.ps1`（Windows）或 `run-all.sh`（Linux/macOS）对每个示例执行 `zig fmt --check`（格式）+ `zig test`（断言）+ `zig build-exe` 运行 exit 0——全部通过才收工，你手上的代码是可信的。两套脚本已在双平台全量实测。
 - 与本仓库其他教程对照：[cpp20](../cpp20/README.md)（同为系统语言主线）、[rust](../rust/README.md)、[dlang](../dlang/README.md)。
 
 ## 1.7 坑位清单
 
 1. **版本坑（最大的坑）**：网上资料多为 0.13/0.14 语法——`std.ArrayList(T).init(alloc)`、`std.io.getStdOut()`、`std.fmt.print` 这些已不存在或已改名。看到编译错先查版本。
 2. **`zig run` 传参要 `--`**：`zig run main.zig -- arg1 arg2`，否则参数被当成文件名（报 "unrecognized file extension"）。
-3. **中文乱码**：Windows 控制台先 `chcp 65001`（本仓库 build.ps1 已代设 UTF-8）。
+3. **中文乱码**：Windows 控制台先 `chcp 65001`（本仓库 build.ps1 已代设 UTF-8）；Linux/macOS 终端原生 UTF-8，无此问题。
 4. **源文件须 UTF-8 无 BOM**：带 BOM 的 .zig 文件直接编译错。
-5. **官网文档滞后于版本**：ziglang.org 的语言手册讲语法（大体稳定），但 std 文档要看本机 `zig` 对应版本——读标准库源码（`G:\scoop\apps\zig\0.16.0\lib\std\`）是最可靠的文档，这不是玩笑是日常。
+5. **官网文档滞后于版本**：ziglang.org 的语言手册讲语法（大体稳定），但 std 文档要看本机 `zig` 对应版本——读标准库源码（Windows 如 `G:\scoop\apps\zig\0.16.0\lib\std\`，Linux 用 `zig env` 查 `lib_dir`）是最可靠的文档，这不是玩笑是日常。

@@ -12,6 +12,7 @@ zig/
 ├── docs/           24 章教程（01 → 24 顺序阅读）
 ├── examples/       23 个示例目录（章号 = 目录号；16/24 为 build.zig 工程）
 ├── build.ps1       统一验证脚本（须 PowerShell 7 / pwsh 运行）
+├── run-all.sh      同一套验证的 bash 版（Linux/macOS；ZIG= 可指定解释器）
 └── CHEATSheet.md   语法速查 + 0.16 坑位索引
 ```
 
@@ -46,8 +47,9 @@ zig/
 
 ## 构建工具链
 
-- Zig **0.16.0**：`G:\scoop\apps\zig\current\zig.exe`（scoop 安装；版本不符先看 01 章的版本坑）。
-- 默认 Debug 模式（安全检查全开）；中文控制台乱码先 `chcp 65001`（build.ps1 已代设 UTF-8）。
+- Zig **0.16.0**：`G:\scoop\apps\zig\current\zig.exe`（scoop 安装；版本不符先看 01 章的版本坑）。build.ps1 找不到该路径时自动回退 PATH 里的 `zig`。
+- Linux/macOS：发行版包（Arch `pacman -S zig`）或官网 tarball 解压即用（单文件无依赖），`zig version` 须为 `0.16.0`；本指南 23 个示例已在 Linux（Arch/WSL2, zig 0.16.0）全量实测通过。
+- 默认 Debug 模式（安全检查全开）；Windows 中文控制台乱码先 `chcp 65001`（build.ps1 已代设 UTF-8），Linux/macOS 终端原生 UTF-8 无此问题。
 
 ## 验证命令
 
@@ -56,6 +58,15 @@ cd G:\code\guide\zig
 pwsh -ExecutionPolicy Bypass -File build.ps1 -All                 # 全部 23 个示例：fmt+test+运行
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 12_collections   # 单个示例
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean               # 清理 build 目录
+```
+
+Linux/macOS 用等价的 bash 脚本（与 build.ps1 同一套三层验证）：
+
+```bash
+cd zig
+./run-all.sh                        # 全部 23 个示例：fmt+test+运行
+./run-all.sh 12_collections         # 单个示例
+ZIG=/path/to/zig ./run-all.sh       # 指定 zig 解释器
 ```
 
 单跑某个示例（每章标准学法）——改代码后重跑：

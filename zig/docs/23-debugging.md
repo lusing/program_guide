@@ -29,6 +29,8 @@ G:\scoop\apps\zig\0.16.0\lib\std\start.zig:737: ... in callMain
 ???:?:?: 0x... in ??? (KERNEL32.DLL)
 ```
 
+> 上图是 Windows 实测；Linux/macOS 下栈跟踪格式相同，但路径是本机路径、帧尾没有 `.obj`/DLL 名（如 `... in main`），调试信息内嵌在 ELF/Mach-O 里而非单独的 pdb。
+
 panic = 不可恢复的程序错误（`.?` 解 null、@intCast 越界、越界索引、除零……全是它）——**消息 + 完整栈跟踪**直接打到 stderr，连 ReleaseFast 都带（panic 路径不追求零成本）。调试信息默认就位：`zig build-exe` 产的 pdb 与 exe 同目录，栈里的行号是现成的。
 
 ## 23.3 错误返回跟踪 vs panic 栈
@@ -56,7 +58,7 @@ if (init.environ_map.get("ZIG_BREAK") != null) {
 
 ```bash
 zig build-exe main.zig        # Debug 默认带调试信息
-lldb ./main.exe
+lldb ./main.exe               # Linux/macOS 产物无 .exe 后缀：lldb ./main
 
 (lldb) break set -n main      # 断点
 (lldb) run                    # 运行

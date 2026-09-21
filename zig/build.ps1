@@ -9,7 +9,15 @@ $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $projectRoot
 
 $zigExe = "G:\scoop\apps\zig\current\zig.exe"
-if (-not (Test-Path -LiteralPath $zigExe)) { throw "未找到 zig.exe：$zigExe" }
+if (-not (Test-Path -LiteralPath $zigExe)) {
+    # Linux/macOS（或未装在 scoop 路径的机器）：回退到 PATH 里的 zig；bash 环境也可直接用 run-all.sh
+    $fromPath = Get-Command zig -ErrorAction SilentlyContinue
+    if ($fromPath) {
+        $zigExe = $fromPath.Source
+    } else {
+        throw "未找到 zig：$zigExe 不存在，PATH 里也没有（Linux/macOS 可运行 ./run-all.sh）"
+    }
+}
 [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
 
 $buildDir = Join-Path $projectRoot "build"
