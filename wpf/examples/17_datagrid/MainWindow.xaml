@@ -1,0 +1,72 @@
+<Window x:Class="DataGridDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="列表数据：ListView 与 DataGrid" Height="560" Width="600">
+    <Window.Resources>
+        <!-- 薪水列的展示模板：数值带千分位，达到 18000 标蓝——CellTemplate 与 DataTemplate 同一回事 -->
+        <DataTemplate x:Key="SalaryCell">
+            <TextBlock HorizontalAlignment="Right"
+                       Text="{Binding Salary, StringFormat='￥{0:N0}'}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="#334155"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsHighSalary}" Value="True">
+                                <Setter Property="Foreground" Value="#2563EB"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </DataTemplate>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="16">
+
+            <TextBlock Text="① ListView + GridView：列结构自己搭，表头可点排序（试试点「薪水」）"
+                       FontWeight="Bold" Margin="0,0,0,6"/>
+            <ListView ItemsSource="{Binding Employees}"
+                      GridViewColumnHeader.Click="ListView_HeaderClick">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="姓名" DisplayMemberBinding="{Binding Name}" Width="90"/>
+                        <GridViewColumn Header="部门" DisplayMemberBinding="{Binding Department}" Width="90"/>
+                        <GridViewColumn Header="薪水" CellTemplate="{StaticResource SalaryCell}" Width="110"/>
+                        <GridViewColumn Header="在职" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding IsActive}" HorizontalAlignment="Center"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <TextBlock Text="② DataGrid：内置编辑/排序/选择。双击单元格直接改，改完 INPC 自动刷（ListView 那份也跟着变）"
+                       FontWeight="Bold" Margin="0,18,0,6" TextWrapping="Wrap"/>
+            <DataGrid ItemsSource="{Binding Employees}" AutoGenerateColumns="False"
+                      CanUserAddRows="False" SelectionMode="Single"
+                      HeadersVisibility="Column" GridLinesVisibility="Horizontal"
+                      RowHeight="30" ColumnWidth="*">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="姓名" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+                    <DataGridTextColumn Header="部门" Binding="{Binding Department, UpdateSourceTrigger=PropertyChanged}"/>
+                    <DataGridTextColumn Header="薪水" Binding="{Binding Salary, StringFormat={}{0:N0}, UpdateSourceTrigger=PropertyChanged}"/>
+                    <DataGridCheckBoxColumn Header="在职" Binding="{Binding IsActive}"/>
+                    <DataGridTemplateColumn Header="薪资水位">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <!-- 模板列：进度条相对最高薪水 21000 的比例 -->
+                                <ProgressBar Minimum="0" Maximum="21000" Value="{Binding Salary}"
+                                             Height="12"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>

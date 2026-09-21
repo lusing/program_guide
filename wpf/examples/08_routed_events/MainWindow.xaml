@@ -1,0 +1,44 @@
+<Window x:Class="RoutedEvents.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="路由事件可视化" Height="480" Width="560"
+        PreviewMouseDown="Window_PreviewMouseDown"
+        MouseDown="Window_MouseDown">
+    <DockPanel Margin="12">
+
+        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+            <TextBlock Text="点下面的按钮或空白处，看事件如何先隧道（根→子）再冒泡（子→根）穿过三层容器"
+                       Foreground="#555" TextWrapping="Wrap"/>
+            <CheckBox x:Name="StopAtMiddle" Content="在中间层（Grid）截停：e.Handled = true"
+                      Margin="0,6,0,0"/>
+        </StackPanel>
+
+        <Grid DockPanel.Dock="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <ListBox x:Name="EventLog" FontFamily="Consolas"/>
+            <Button x:Name="ClearBtn" Grid.Column="1" Content="清空" Width="70"
+                    VerticalAlignment="Bottom" Click="Clear_Click"/>
+        </Grid>
+
+        <!-- 事件传播路径上的三层：Window → Border → Grid → StackPanel → 按钮 -->
+        <Border x:Name="LayerBorder" BorderBrush="#94A3B8" BorderThickness="2" CornerRadius="8"
+                Padding="16" Margin="0,0,0,12"
+                PreviewMouseDown="Border_PreviewMouseDown"
+                MouseDown="Border_MouseDown">
+            <Grid x:Name="LayerGrid" Background="#F1F5F9" Margin="16"
+                  PreviewMouseDown="Grid_PreviewMouseDown"
+                  MouseDown="Grid_MouseDown">
+                <StackPanel x:Name="LayerStack" Orientation="Horizontal"
+                            HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="StackPanel 层" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <Button x:Name="DeepButton" Content="最深处的按钮" Padding="12,8"
+                            PreviewMouseDown="Button_PreviewMouseDown"
+                            MouseDown="Button_MouseDown" Click="DeepButton_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </DockPanel>
+</Window>

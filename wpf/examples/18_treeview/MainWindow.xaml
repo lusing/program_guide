@@ -1,0 +1,34 @@
+<Window x:Class="TreeViewDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:TreeViewDemo"
+        Title="TreeView：层级数据" Height="460" Width="420">
+    <Window.Resources>
+        <local:BoolToIconConverter x:Key="BoolToIcon"/>
+    </Window.Resources>
+    <DockPanel Margin="12">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
+            <Button Content="展开全部" Width="90" Margin="0,0,8,0" Click="ExpandAll_Click"/>
+            <Button Content="收起全部" Width="90" Click="CollapseAll_Click"/>
+        </StackPanel>
+        <StatusBar DockPanel.Dock="Bottom">
+            <TextBlock x:Name="StatusText" Text="选中树里的任意节点"/>
+        </StatusBar>
+
+        <!-- HierarchicalDataTemplate：每个节点怎么显示 + 它的孩子从哪来（ItemsSource 指向 Children） -->
+        <TreeView x:Name="FileTree" ItemsSource="{Binding Root}"
+                  SelectedItemChanged="FileTree_SelectedItemChanged"
+                  VirtualizingStackPanel.IsVirtualizing="True">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding IsFolder, Converter={StaticResource BoolToIcon}, FallbackValue=?}"/>
+                        <TextBlock Text="{Binding Name}" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding Badge}" FontSize="11" Foreground="#94A3B8"
+                                   Margin="8,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+    </DockPanel>
+</Window>

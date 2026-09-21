@@ -1,0 +1,102 @@
+<Window x:Class="TemplatesDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="模板实验室" Height="560" Width="520">
+    <Window.Resources>
+
+        <!-- ① ControlTemplate：整个重写按钮的视觉结构（外观从此我说了算） -->
+        <ControlTemplate x:Key="RoundButtonTemplate" TargetType="Button">
+            <Border x:Name="Chrome" CornerRadius="18"
+                    Background="{TemplateBinding Background}"
+                    Padding="{TemplateBinding Padding}">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+                <!-- 悬停/按压的状态变化写在模板内部，不再受默认按钮样式牵制 -->
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Chrome" Property="Opacity" Value="0.85"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="Chrome" Property="Opacity" Value="0.7"/>
+                    <Setter TargetName="Chrome" Property="BorderBrush" Value="#0EA5E9"/>
+                    <Setter TargetName="Chrome" Property="BorderThickness" Value="2"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter TargetName="Chrome" Property="Opacity" Value="0.4"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <!-- 同一个模板，换色即换"皮肤"：结构复用，值各有 -->
+        <Style x:Key="BlueRoundButton" TargetType="Button">
+            <Setter Property="Template" Value="{StaticResource RoundButtonTemplate}"/>
+            <Setter Property="Background" Value="#3B82F6"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="20,10"/>
+        </Style>
+        <Style x:Key="GreenRoundButton" TargetType="Button" BasedOn="{StaticResource BlueRoundButton}">
+            <Setter Property="Background" Value="#10B981"/>
+        </Style>
+
+        <!-- ② DataTemplate：数据对象长什么样，数据自己说了算 -->
+        <DataTemplate x:Key="PersonCard">
+            <StackPanel Orientation="Horizontal" Margin="0,2">
+                <Ellipse Width="10" Height="10" VerticalAlignment="Center">
+                    <Ellipse.Style>
+                        <Style TargetType="Ellipse">
+                            <Setter Property="Fill" Value="#94A3B8"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding AgeGroup}" Value="青年">
+                                    <Setter Property="Fill" Value="#3B82F6"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding AgeGroup}" Value="中年">
+                                    <Setter Property="Fill" Value="#F59E0B"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Ellipse.Style>
+                </Ellipse>
+                <TextBlock Text="{Binding Name}" FontWeight="Bold" Margin="8,0,0,0"
+                           VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Age, StringFormat='{}（{0} 岁）'}" Foreground="#64748B"
+                           Margin="4,0,0,0" VerticalAlignment="Center"/>
+                <Border Background="#F1F5F9" CornerRadius="8" Padding="8,1" Margin="8,0,0,0"
+                        VerticalAlignment="Center">
+                    <TextBlock Text="{Binding AgeGroup}" FontSize="11" Foreground="#475569"/>
+                </Border>
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="16">
+
+            <TextBlock Text="① ControlTemplate：圆角按钮，悬停/按压状态由模板内部触发器负责" FontWeight="Bold"
+                       Margin="0,0,0,10"/>
+            <StackPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BlueRoundButton}" Content="蓝色按钮" Margin="0,0,12,0"/>
+                <Button Style="{StaticResource GreenRoundButton}" Content="绿色按钮" Margin="0,0,12,0"/>
+                <Button Style="{StaticResource BlueRoundButton}" Content="禁用态" IsEnabled="False"/>
+            </StackPanel>
+
+            <TextBlock Text="② DataTemplate：同一份 PersonCard 模板用在三个地方" FontWeight="Bold"
+                       Margin="0,20,0,4"/>
+            <TextBlock Text="ListBox（可选）：" Foreground="#555"/>
+            <ListBox ItemsSource="{Binding People}" SelectedItem="{Binding Selected}"
+                     ItemTemplate="{StaticResource PersonCard}" Margin="0,2,0,10"/>
+
+            <TextBlock Text="ItemsControl（纯展示，无选中无高亮）：" Foreground="#555"/>
+            <ItemsControl ItemsSource="{Binding People}"
+                          ItemTemplate="{StaticResource PersonCard}" Margin="0,2,0,10"/>
+
+            <TextBlock Text="ContentControl（单个对象，选中谁显示谁）：" Foreground="#555"/>
+            <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="12">
+                <ContentControl Content="{Binding Selected}"
+                                ContentTemplate="{StaticResource PersonCard}"/>
+            </Border>
+            <TextBlock Text="↑ 在上面的 ListBox 里点选一行，这里跟着变——模板只管长相，数据决定内容"
+                       Foreground="#555" FontSize="11" Margin="0,6,0,0"/>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>

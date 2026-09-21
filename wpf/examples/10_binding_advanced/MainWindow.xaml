@@ -1,0 +1,72 @@
+<Window x:Class="BindingAdvanced.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:BindingAdvanced"
+        Title="绑定进阶实验室" Height="520" Width="480">
+    <Window.Resources>
+        <local:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <local:FullNameConverter x:Key="FullName"/>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="16">
+
+            <!-- ① MultiBinding：两个源聚合成一个目标 -->
+            <TextBlock Text="① MultiBinding：姓 + 名 = 全名" FontWeight="Bold" Margin="0,0,0,8"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                <TextBox Width="120" Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}"
+                         ToolTip="姓" Margin="0,0,8,0"/>
+                <TextBox Width="120" Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}"
+                         ToolTip="名"/>
+            </StackPanel>
+            <TextBlock FontSize="20" Margin="0,4,0,16">
+                <TextBlock.Text>
+                    <MultiBinding Converter="{StaticResource FullName}">
+                        <Binding Path="LastName"/>
+                        <Binding Path="FirstName"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+
+            <!-- ② 数值绑定 + StringFormat -->
+            <TextBlock Text="② Slider 驱动进度：值格式化全靠 StringFormat" FontWeight="Bold" Margin="0,0,0,8"/>
+            <Slider Minimum="0" Maximum="100" Value="{Binding Progress}" Margin="0,0,0,4"/>
+            <ProgressBar Minimum="0" Maximum="100" Height="18" Value="{Binding Progress}" Margin="0,0,0,4"/>
+            <TextBlock Text="{Binding Progress, StringFormat='{}完成 {0:F0}%'}" Margin="0,0,0,16"/>
+
+            <!-- ③ 集合绑定：ObservableCollection 增删即刷新 -->
+            <TextBlock Text="③ 任务列表：ObservableCollection + 元素 INPC" FontWeight="Bold" Margin="0,0,0,8"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                <TextBox x:Name="NewTaskBox" Width="240" Margin="0,0,8,0"
+                         KeyDown="NewTaskBox_KeyDown"/>
+                <Button Content="添加" Width="70" Click="Add_Click"/>
+            </StackPanel>
+            <ListBox x:Name="TaskList" Height="150" Margin="0,0,0,6"
+                     ItemsSource="{Binding Tasks}"
+                     SelectedItem="{Binding SelectedTask}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox IsChecked="{Binding Done}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Name}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Button Content="删除选中项" Width="110" HorizontalAlignment="Left"
+                    Click="Remove_Click" Margin="0,0,0,16"/>
+
+            <!-- ④ 转换器：bool → Visibility -->
+            <CheckBox Content="显示统计面板（转换器演示）" IsChecked="{Binding ShowStats}" Margin="0,0,0,6"/>
+            <Border Background="#F8FAFC" CornerRadius="8" Padding="12"
+                    Visibility="{Binding ShowStats, Converter={StaticResource BoolToVis}}">
+                <StackPanel>
+                    <TextBlock Text="{Binding TaskCount, StringFormat='共 {0} 项任务'}"/>
+                    <TextBlock Text="{Binding SelectedTask.Name, StringFormat='当前选中：{0}', TargetNullValue='（无）'}"
+                               Foreground="#555"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>

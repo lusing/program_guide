@@ -57,6 +57,7 @@
 - [sbcl](./sbcl) — Common Lisp / SBCL 教程与示例，运行全部示例验证（macOS + SBCL 2.6.7，17 个示例，双入口 `run-all.sh` / `build.ps1`，四条判定：退出码 0 + stderr 为空 + 无多余控制字符 + 结束标记）；教程正文 18 章 + 2 附录，文中 521 条 `; =>` 断言由 `verify-guide.py` 逐条回跑校验（mismatch 0）
 - [sdl2](./sdl2) — SDL2 C++ 教程与示例，使用 MSVC + SDL2 库编译验证
 - [swift](./swift) — Swift 6.3.3 教程（24 章对齐 cpp20/rust/go/zig 标准：可选/协议/some-any/actor/Sendable/swift-testing/SPM 特色细讲，23 个示例四层验证 format+build+test+run；scoop 6.4.0 坏包实测复盘，钉 6.3.3 + 环境三件套配方）
+- [csharp](./csharp) — C# 语言教程（36 章 + 36 示例，章号=示例号，零 NuGet 依赖：编译 + 逐个运行验证；C# 14 扩展成员实测；实战为 MiniLang 表达式解释器）
 - [wpf](./wpf) — WPF 编程指南，使用 .NET SDK + WPF 运行时验证
 - [zig](./zig) — Zig 0.16 教程（24 章对齐 cpp20 标准：分配器/comptime/构建系统/交叉编译特色细讲，全部示例三层验证）
 
@@ -118,6 +119,7 @@
 29. [sbcl](./sbcl)
 30. [swift](./swift)
 31. [WinUI3](./WinUI3)
+32. [csharp](./csharp)
 32. [zig](./zig)
 33. [lean4](./lean4)
 34. [forth](./forth)

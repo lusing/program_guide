@@ -1,0 +1,124 @@
+<Window x:Class="AnimationDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="动画实验室" Height="560" Width="540">
+
+    <Window.Triggers>
+        <!-- 永续动画：加载圈从窗口出生起一直转（RepeatBehavior=Forever） -->
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="SpinAngle"
+                                     Storyboard.TargetProperty="Angle"
+                                     From="0" To="360" Duration="0:0:1.2"
+                                     RepeatBehavior="Forever"/>
+                    <!-- 心跳点：1 ↔ 0.3 来回往返 -->
+                    <DoubleAnimation Storyboard.TargetName="PulseDot"
+                                     Storyboard.TargetProperty="Opacity"
+                                     From="1" To="0.3" Duration="0:0:0.7"
+                                     AutoReverse="True" RepeatBehavior="Forever"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="16">
+
+            <TextBlock Text="① 点击按钮自身变宽（Width 是布局属性，动画它会有重排开销）" FontWeight="Bold"
+                       Margin="0,0,0,8"/>
+            <Button Content="点我变宽" Width="120" Height="38" HorizontalAlignment="Left">
+                <Button.Triggers>
+                    <EventTrigger RoutedEvent="Click">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Width"
+                                                 From="120" To="260" Duration="0:0:0.4"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Button.Triggers>
+            </Button>
+
+            <TextBlock Text="② 同样的效果动画 ScaleTransform——不触发布局，性能更好" FontWeight="Bold"
+                       Margin="0,18,0,8"/>
+            <Button Content="点我放大" Width="120" Height="38" HorizontalAlignment="Left"
+                    RenderTransformOrigin="0.5,0.5">
+                <Button.RenderTransform>
+                    <ScaleTransform x:Name="GrowScale"/>
+                </Button.RenderTransform>
+                <Button.Triggers>
+                    <EventTrigger RoutedEvent="Click">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="GrowScale"
+                                                 Storyboard.TargetProperty="ScaleX"
+                                                 From="1" To="2" Duration="0:0:0.4"/>
+                                <DoubleAnimation Storyboard.TargetName="GrowScale"
+                                                 Storyboard.TargetProperty="ScaleY"
+                                                 From="1" To="2" Duration="0:0:0.4"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Button.Triggers>
+            </Button>
+
+            <TextBlock Text="③ 缓动函数对比：三个球下落 1.6 秒，手感完全不同（点「放手」）" FontWeight="Bold"
+                       Margin="0,18,0,8"/>
+            <Button Content="放手" Width="90" HorizontalAlignment="Left" Click="Drop_Click" Margin="0,0,0,8"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/><ColumnDefinition/><ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <Border Height="200" BorderBrush="#CBD5E1" BorderThickness="1" Margin="0,0,6,0">
+                        <Ellipse Width="26" Height="26" Fill="#3B82F6" HorizontalAlignment="Center">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="BallLinear"/>
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                    </Border>
+                    <TextBlock Text="Linear 匀速" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1">
+                    <Border Height="200" BorderBrush="#CBD5E1" BorderThickness="1" Margin="0,0,6,0">
+                        <Ellipse Width="26" Height="26" Fill="#10B981" HorizontalAlignment="Center">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="BallBounce"/>
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                    </Border>
+                    <TextBlock Text="Bounce 弹跳" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <Border Height="200" BorderBrush="#CBD5E1" BorderThickness="1">
+                        <Ellipse Width="26" Height="26" Fill="#EF4444" HorizontalAlignment="Center">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="BallElastic"/>
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                    </Border>
+                    <TextBlock Text="Elastic 弹簧" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Grid>
+
+            <TextBlock Text="④ 永续动画：加载圈与心跳点（窗口 Loaded 时启动，Forever 循环）" FontWeight="Bold"
+                       Margin="0,18,0,8"/>
+            <StackPanel Orientation="Horizontal">
+                <Grid Width="48" Height="48" Margin="0,0,24,0">
+                    <Ellipse Stroke="#E2E8F0" StrokeThickness="5"/>
+                    <Ellipse Stroke="#3B82F6" StrokeThickness="5" StrokeDashArray="40 100"
+                             RenderTransformOrigin="0.5,0.5">
+                        <Ellipse.RenderTransform>
+                            <RotateTransform x:Name="SpinAngle"/>
+                        </Ellipse.RenderTransform>
+                    </Ellipse>
+                </Grid>
+                <Ellipse x:Name="PulseDot" Width="18" Height="18" Fill="#10B981"
+                         VerticalAlignment="Center"/>
+                <TextBlock Text="录制中…" VerticalAlignment="Center" Margin="8,0,0,0"/>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>
