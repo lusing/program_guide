@@ -9,10 +9,13 @@
 #   ./build-mac.sh -BuildOnly -All       只汇编链接，不运行
 #   ./build-mac.sh -Clean                清理 build/mac 目录
 #
-# 工具链（本机实测）：
-#   nasm   3.02        /opt/local/bin/nasm
-#   clang  14.0.0      /usr/bin/clang      （链接器驱动，自动带上 libSystem）
-#   ld     ld64-820.1  /usr/bin/ld         （纯系统调用程序可直连，不需要 libSystem）
+# 工具链（两套配置都实测通过 56/56）：
+#   nasm   3.02           /opt/local/bin/nasm
+#   A) macOS 14.8.9 / Intel i7-4770HQ：clang 16.0.0（Apple clang-1600.0.26.6）
+#                                      ld64-1115.7.3（Xcode 16 CLT）
+#   B) macOS 13.1   / Intel i7-3520M ：clang 14.0.0 / ld64-820.1
+#   —— ld64 从 Xcode 15 起把 -macosx_version_min 改名为 -macos_version_min，
+#      脚本先试新名字，失败再退回旧名字，两套都能用。
 #
 # 判定标准（三条同时满足才算通过）：
 #   1) nasm 汇编退出码 0
@@ -70,8 +73,11 @@ build_one() {
     local extra=""
     extra="$(sed -n 's/^; *LINK: *//p' "$src" | head -1)"
 
+    # 注意：macOS 自带的 grep 是 BSD grep，不认 GNU 的 \s，这里必须写 [[:space:]]。
+    # 写成 '^\s*extern _' 的话在所有 macOS 上都匹配不到，于是每个示例都会误走
+    # 下面的 ld 直连分支——实测 56 个里 55 个会因此被换掉链接方式。
     local linkout linkrc
-    if [ -n "$extra" ] || grep -q '^\s*extern _' "$src"; then
+    if [ -n "$extra" ] || grep -q '^[[:space:]]*extern[[:space:]]*_' "$src"; then
         linkout=$("$CLANG" -arch x86_64 "$obj" -o "$bin" $extra 2>&1)
         linkrc=$?
         local how="clang -arch x86_64${extra:+ $extra}"
@@ -81,9 +87,15 @@ build_one() {
         # "dynamic executables or dylibs must link with libSystem.dylib"
         local sdk
         sdk="$(xcrun --show-sdk-path 2>/dev/null)"
-        linkout=$("$LD" -arch x86_64 -macosx_version_min 11.0 -e _main "$obj" -o "$bin" \
+        linkout=$("$LD" -arch x86_64 -macos_version_min 11.0 -e _main "$obj" -o "$bin" \
                         -lSystem -syslibroot "$sdk" -L"$sdk/usr/lib" 2>&1)
         linkrc=$?
+        if [ "$linkrc" -ne 0 ]; then
+            # 旧版 ld64 只认 -macosx_version_min（新名字从 Xcode 15 起才有）
+            linkout=$("$LD" -arch x86_64 -macosx_version_min 11.0 -e _main "$obj" -o "$bin" \
+                            -lSystem -syslibroot "$sdk" -L"$sdk/usr/lib" 2>&1)
+            linkrc=$?
+        fi
         how="ld -arch x86_64 -e _main"
     fi
     if [ $linkrc -ne 0 ]; then

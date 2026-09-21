@@ -7,7 +7,19 @@
 - Linux：`-f elf64` + `gcc -no-pie`（自动带 glibc 启动文件），示例在 [`examples-linux/`](examples-linux/)
 - 跨平台差异与移植规则：[macOS 平台移植指南](docs/10_macos_porting.md) · [Linux 平台移植指南](docs/11_linux.md)
 
-> **验证状态**：`examples-macos/` 下 **56 个示例在 macOS 全部实际汇编、链接、运行通过**（macOS 13.1 / Intel i7-3520M / NASM 3.02 / clang 14.0.0 / ld64-820.1）；`examples-linux/` 下 **56 个示例在 Linux 全部实际汇编、链接、运行通过**（Arch Linux / WSL2 / NASM 3.02 / GCC 16.2.1 / GNU ld 2.47 / glibc 2.44）。
+> **验证状态**：`examples-macos/` 下 **56 个示例在 macOS 全部实际汇编、链接、运行通过**，两套配置都实测过：
+>
+> | 机器 | 系统 | CPU | NASM | clang | ld64 |
+> |------|------|-----|------|-------|------|
+> | MacBook Pro（本机复核） | macOS 14.8.9 (23.6.0) | Intel i7-4770HQ | 3.02 | 16.0.0 (clang-1600.0.26.6) | 1115.7.3 |
+> | MacBook Air | macOS 13.1 | Intel i7-3520M | 3.02 | 14.0.0 | 820.1 |
+>
+> `examples-linux/` 下 56 个示例在 Linux 全部实际汇编、链接、运行通过（Arch Linux / WSL2 / NASM 3.02 / GCC 16.2.1 / GNU ld 2.47 / glibc 2.44）。
+>
+> 本机复核时修掉的三个 macOS 专属问题见 [macOS 平台移植指南](docs/10_macos_porting.md) 的「本机复核记要与坑位」一节：
+> ① `mov rsi, label` 这种绝对地址立即数在 PIE 下会 `illegal text-relocation`；
+> ② 构建脚本里 `grep '^\s*extern _'` 在 BSD grep 上永不命中，导致 55 个示例走错链接分支；
+> ③ ld64-1115 把 `-macosx_version_min` 改名为 `-macos_version_min`。
 
 ## 工具链说明
 
