@@ -191,4 +191,5 @@ BOOST_PYTHON_MODULE(calc) {
 
 ---
 
-下一章：[30 · 序列化与配置](30-serialization.md)——serialization / property_tree / json。
+
+> 上一章：[28 · 网络编程](28-network.md) ｜ 下一章：[30 · 序列化与配置](30-serialization.md) ｜ 返回：[README](../README.md)

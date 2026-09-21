@@ -98,4 +98,7 @@ leaf::try_catch(
 
 ---
 
-**第四部完**。最后：[33 · 全库总表](33-appendix.md)。
+
+**第四部完**。
+
+> 上一章：[31 · 运行时结构与散珠](31-runtime-structures.md) ｜ 下一章：[33 · 全库总表](33-appendix.md) ｜ 返回：[README](../README.md)

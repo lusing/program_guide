@@ -98,4 +98,7 @@ boost::throw_exception(std::out_of_range("checked_at: 下标越界"));
 
 ---
 
-**第二部完**。接下来第三部：现代波次——[12 · 词汇类型五虎](12-vocabulary.md)。
+
+**第二部完**。接下来第三部：现代波次。
+
+> 上一章：[10 · 原子操作](10-atomic.md) ｜ 下一章：[12 · 词汇类型五虎](12-vocabulary.md) ｜ 返回：[README](../README.md)

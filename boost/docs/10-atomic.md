@@ -51,4 +51,5 @@ atomic_ref 作用后普通变量 = 7
 
 ---
 
-下一章：[11 · 错误处理基石](11-error.md)——exception / system / throw_exception。
+
+> 上一章：[09 · 多线程第一课](09-thread.md) ｜ 下一章：[11 · 错误处理基石](11-error.md) ｜ 返回：[README](../README.md)

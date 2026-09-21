@@ -48,4 +48,5 @@ std::print("学生 {} 得分 {}\n", name, score);           // C++23 连 << 都�
 
 ---
 
-下一章：[15 · 范围与迭代器](15-ranges.md)——ranges 二十年的长跑。
+
+> 上一章：[13 · 文件系统与编码](13-filesystem.md) ｜ 下一章：[15 · 范围与迭代器](15-ranges.md) ｜ 返回：[README](../README.md)

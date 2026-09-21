@@ -78,4 +78,5 @@ std/boost 同种子序列一致? true
 
 ---
 
-下一章：[07 · 时间与日历](07-chrono.md)——`date_time`、`chrono`、`ratio`、`timer` 四兄弟。
+
+> 上一章：[05 · 语言基建先行者](05-langbase.md) ｜ 下一章：[07 · 时间与日历](07-chrono.md) ｜ 返回：[README](../README.md)

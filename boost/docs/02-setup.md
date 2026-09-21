@@ -205,4 +205,5 @@ MSVC 19.51
 
 ---
 
-下一章：[03 · 所有权革命](03-smartptr.md)——从 `scoped_ptr` 到 `unique_ptr`，Boost 给 C++ 上的最重要一课。
+
+> 上一章：[01 · 二十八年史](01-overview.md) ｜ 下一章：[03 · 所有权革命](03-smartptr.md) ｜ 返回：[README](../README.md)

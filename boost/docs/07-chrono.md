@@ -120,4 +120,5 @@ timer.elapsed().wall;                      // 纳秒计数的墙钟
 
 ---
 
-下一章：[08 · 无序与哈希](08-unordered.md)——`unordered`、`container_hash`、`hash2` 两代哈希的故事。
+
+> 上一章：[06 · 正则与随机](06-regex-random.md) ｜ 下一章：[08 · 无序与哈希](08-unordered.md) ｜ 返回：[README](../README.md)

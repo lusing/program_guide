@@ -135,4 +135,5 @@ is_member_function_pointer<M>;
 
 ---
 
-下一章：[27 · 古典元编程](27-classic-tmp.md)——mpl / preprocessor / vmd / metaparse / proto / yap / wave。
+
+> 上一章：[25 · 线代、图像与 GPU](25-compute.md) ｜ 下一章：[27 · 古典元编程](27-classic-tmp.md) ｜ 返回：[README](../README.md)

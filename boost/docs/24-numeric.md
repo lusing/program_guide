@@ -179,4 +179,5 @@ int8 最高 = 127 float 最低 = -3.40282e+38
 
 ---
 
-下一章：[25 · 线代、图像与 GPU](25-compute.md)——ublas / odeint / interval / accumulators / histogram / gil / compute。
+
+> 上一章：[23 · 图与几何](23-graph-geometry.md) ｜ 下一章：[25 · 线代、图像与 GPU](25-compute.md) ｜ 返回：[README](../README.md)

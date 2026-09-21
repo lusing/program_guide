@@ -89,4 +89,5 @@ xxhash_64(hello) = 0x26c7827d889f6da3
 
 ---
 
-下一章：[09 · 多线程第一课](09-thread.md)——`boost::thread` 与 C++11 线程的交接。
+
+> 上一章：[07 · 时间与日历](07-chrono.md) ｜ 下一章：[09 · 多线程第一课](09-thread.md) ｜ 返回：[README](../README.md)

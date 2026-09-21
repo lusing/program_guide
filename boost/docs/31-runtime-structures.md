@@ -170,4 +170,5 @@ downcast: Left
 
 ---
 
-下一章：[32 · 工程质量](32-quality.md)——test / log / contract / leaf。
+
+> 上一章：[30 · 序列化与配置](30-serialization.md) ｜ 下一章：[32 · 工程质量](32-quality.md) ｜ 返回：[README](../README.md)

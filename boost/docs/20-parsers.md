@@ -88,4 +88,5 @@ auto strict = bp::int_ > ',' > bp::int_;      // > = expect：失败给精确位
 
 ---
 
-下一章：[21 · 容器（上）](21-container-core.md)——container 家族 + circular_buffer + pool。
+
+> 上一章：[19 · 字符串工具](19-text.md) ｜ 下一章：[21 · 容器（上）](21-container-core.md) ｜ 返回：[README](../README.md)

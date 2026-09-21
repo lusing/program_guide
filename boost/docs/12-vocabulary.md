@@ -198,4 +198,5 @@ std 无对应。与 `optional<bool>` 的语义分界：**tribool 的 indetermina
 
 ---
 
-下一章：[13 · 文件系统与编码](13-filesystem.md)——`filesystem` + `nowide`。
+
+> 上一章：[11 · 错误处理基石](11-error.md) ｜ 下一章：[13 · 文件系统与编码](13-filesystem.md) ｜ 返回：[README](../README.md)

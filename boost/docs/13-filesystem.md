@@ -72,4 +72,5 @@ nowide::cout 输出中文无乱码
 
 ---
 
-下一章：[14 · 格式化](14-format.md)。
+
+> 上一章：[12 · 词汇类型五虎](12-vocabulary.md) ｜ 下一章：[14 · 格式化](14-format.md) ｜ 返回：[README](../README.md)

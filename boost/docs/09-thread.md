@@ -55,4 +55,5 @@ jt.request_stop();                          // = boost 的 interrupt()
 
 ---
 
-下一章：[10 · 原子操作](10-atomic.md)。
+
+> 上一章：[08 · 无序与哈希](08-unordered.md) ｜ 下一章：[10 · 原子操作](10-atomic.md) ｜ 返回：[README](../README.md)

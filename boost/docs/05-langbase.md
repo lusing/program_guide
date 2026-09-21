@@ -312,4 +312,5 @@ cv+引用完整型: class std::basic_string<...> const & __ptr64
 
 ---
 
-下一章：[06 · 正则与随机](06-regex-random.md)——TR1 双雄。
+
+> 上一章：[04 · 函数即对象](04-function.md) ｜ 下一章：[06 · 正则与随机](06-regex-random.md) ｜ 返回：[README](../README.md)

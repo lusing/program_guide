@@ -287,4 +287,5 @@ move_only_function 持 unique_ptr: 55
 
 ---
 
-下一章：[05 · 语言基建先行者](05-langbase.md)——tuple、type_traits、static_assert 那批"还没毕业时你根本没法写 C++"的库。
+
+> 上一章：[03 · 所有权革命](03-smartptr.md) ｜ 下一章：[05 · 语言基建先行者](05-langbase.md) ｜ 返回：[README](../README.md)

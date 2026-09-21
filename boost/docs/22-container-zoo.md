@@ -229,4 +229,5 @@ for (auto it = army.begin<Archer>(), e = army.end<Archer>(); it != e; ++it) ...
 
 ---
 
-下一章：[23 · 图与几何](23-graph-geometry.md)——graph / property_map / geometry / polygon。
+
+> 上一章：[21 · 容器（上）](21-container-core.md) ｜ 下一章：[23 · 图与几何](23-graph-geometry.md) ｜ 返回：[README](../README.md)

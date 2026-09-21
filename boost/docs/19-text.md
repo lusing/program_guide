@@ -106,4 +106,5 @@ NFC/NFD 字节数 = 2/3（分解形 e+́ 占更多字节）
 
 ---
 
-下一章：[20 · 解析器族谱](20-parsers.md)——spirit / xpressive / parser。
+
+> 上一章：[18 · C++26 展望](18-cpp26.md) ｜ 下一章：[20 · 解析器族谱](20-parsers.md) ｜ 返回：[README](../README.md)

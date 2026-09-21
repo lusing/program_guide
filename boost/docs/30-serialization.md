@@ -93,4 +93,5 @@ API 对接/高性能 JSON/大文件流式       → Boost.JSON
 
 ---
 
-下一章：[31 · 运行时结构与散珠](31-runtime-structures.md)。
+
+> 上一章：[29 · 进程与系统](29-process-system.md) ｜ 下一章：[31 · 运行时结构与散珠](31-runtime-structures.md) ｜ 返回：[README](../README.md)

@@ -159,4 +159,5 @@ STL 算法（transform/sort/accumulate/...）的 GPU 版 + lambda 内核（`_1 *
 
 ---
 
-下一章：[26 · 现代元编程](26-modern-tmp.md)——mp11 / hana / fusion / tti / function_types。
+
+> 上一章：[24 · 数值计算](24-numeric.md) ｜ 下一章：[26 · 现代元编程](26-modern-tmp.md) ｜ 返回：[README](../README.md)

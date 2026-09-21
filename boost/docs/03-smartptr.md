@@ -184,4 +184,5 @@ struct Task : boost::enable_shared_from_this<Task> {
 
 ---
 
-下一章：[04 · 函数即对象](04-function.md)——`function`/`bind` 家族与 lambda 的战争。
+
+> 上一章：[02 · 环境与构建](02-setup.md) ｜ 下一章：[04 · 函数即对象](04-function.md) ｜ 返回：[README](../README.md)
