@@ -189,3 +189,10 @@ pwsh build.ps1 -All          # 24 示例 + lein-lab（25 验证单元）
 pwsh build.ps1 -File 19      # 单跑一个
 pwsh build.ps1 -Lab          # lein-lab 四步链
 ```
+
+```bash
+# macOS / Linux（Clojure CLI + deps.edn）
+./build.sh --all                       # 24 个示例
+./build.sh --file 19_algorithms.clj    # 单跑一个
+./build.sh --lab                       # lein-lab 四步链（需 lein）
+```

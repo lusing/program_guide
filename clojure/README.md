@@ -76,6 +76,8 @@ clojure/
 ./build.sh --file 01_hello.clj
 ```
 
+前置：JDK + Clojure CLI（`--lab` 另需 Leiningen），安装步骤见 [02 章](docs/02-toolchain.md)。
+
 ### 判定标准（三层）
 
 1. 退出码 0；2. stdout 出现结束标记 `==== NN jieshu ====`（lab 为 `==== LAB jieshu ====`）；3. `build/` 生成 `.log`。算法类示例另有 `(= (sort x) (f x))` 对账断言（CHEATSheet W8 的教训）。

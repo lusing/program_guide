@@ -1,12 +1,40 @@
 # 02 · 工具链与运行方式
 
-> 对应示例：无（本章命令全部可直接在项目根目录执行）
+> 对应示例：无（2.1 安装是系统级命令，其余本章命令全部可直接在项目根目录执行）
 
 > Clojure 有两条主流工具链：官方 **Clojure CLI**（`deps.edn`）与社区元老
 > **Leiningen**（`project.clj`）。本教程双轨并存——两侧声明同一组依赖，
 > `build.sh` / `build.ps1` 分别是两条轨的验证入口。
 
-## 2.1 Clojure CLI：三种模式
+## 2.1 安装：先装 JDK，再装工具
+
+唯一的硬前置是 **JDK**：Clojure 本体要求 JDK 8+，Leiningen 2.13 的启动器需要 JDK 16+（CHEATSheet W1），本教程在 JDK 26 上验证。
+
+**Clojure CLI**（macOS/Linux 侧主力，`build.sh` 用它）：
+
+```bash
+# Linux：官方一键脚本，装到 /usr/local/bin，提供 clojure 与 clj 两个命令
+curl -O https://github.com/clojure/brew-install/releases/latest/download/linux-install.sh
+sudo bash linux-install.sh
+
+# macOS
+brew install clojure/tools/clojure
+```
+
+`clj` 包装依赖 rlwrap 做行编辑（Debian/Ubuntu：`sudo apt install rlwrap`）；只用 `clojure` 命令则不需要。发行版自带包（`apt install clojure` 之类）版本普遍陈旧，不建议用。
+
+**Leiningen**（26 章工程链要用；发行版仓库同样滞后，直接装官方最新版）：
+
+```bash
+mkdir -p ~/bin
+curl -o ~/bin/lein https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+chmod +x ~/bin/lein
+lein version        # 首次运行自举下载完整发行版
+```
+
+注意 `~/bin` 要在 `PATH` 里。`clojure --version` 与 `lein version` 都能打印版本号，环境即就绪。
+
+## 2.2 Clojure CLI：三种模式
 
 | 模式 | 命令 | 语义 |
 |---|---|---|
@@ -22,7 +50,7 @@ clojure                              # 进 REPL：user=>
 
 `-M` 与 `--main` 缩写同源：`clojure -M -m my.ns` 跑命名空间的 `-main`。
 
-## 2.2 deps.edn 解剖
+## 2.3 deps.edn 解剖
 
 ```clojure
 {:deps {org.clojure/clojure {:mvn/version "1.12.6"}
@@ -36,7 +64,7 @@ clojure                              # 进 REPL：user=>
 - `ring/*` 这类坐标在 **Clojars**（社区仓库）而非 Maven Central——首次拉取需要两者都可达。
 - 改了 `deps.edn` 下次运行自动重算，无需显式 install 步骤。
 
-## 2.3 Leiningen：project.clj 一览
+## 2.4 Leiningen：project.clj 一览
 
 ```clojure
 (defproject clojure-guide "1.0.0"
@@ -56,7 +84,7 @@ clojure                              # 进 REPL：user=>
 
 工程化细节（布局、profile、uberjar）见 [26 章](26-leiningen.md)。
 
-## 2.4 本教程的实际执行方式（无 clojure CLI 时）
+## 2.5 本教程的实际执行方式（无 clojure CLI 时）
 
 `build.ps1` 的做法可以单独借用——lein 只当**依赖解析器**，脚本用 JVM 直接跑：
 
@@ -68,7 +96,7 @@ java -cp $cp clojure.main 脚本.clj  # 与 clojure -M 等价
 
 示例是独立脚本（文件名与命名空间不对应），所以走 `clojure.main 文件` 而非 `lein run -m`。
 
-## 2.5 REPL 工作流：程序不停，代码热换
+## 2.6 REPL 工作流：程序不停，代码热换
 
 REPL 不是"试一行就退的计算器"，而是 Clojure 的开发方式本体：
 
@@ -89,13 +117,13 @@ user=> (dir clojure.set)  ; 列命名空间公共符号
 user=> (apropos "merge")  ; 按名字搜
 ```
 
-## 2.6 Windows 实测坑（本教程踩过的）
+## 2.7 Windows 实测坑（本教程踩过的）
 
 1. **PATH 里的 java 是 8**：Leiningen 2.13 启动器给 JVM 传 `--enable-native-access=ALL-UNNAMED`，Java 8 直接 `Unrecognized option` 崩溃。且 `lein.bat` 只认 **`JAVA_CMD`** 环境变量（不认 `JAVA_HOME`），必须设成 JDK 16+ 完整路径。
 2. **PowerShell 拆散 JVM 参数**：`java -Dfile.encoding=UTF-8 ...` 会被拆成 `-Dfile` + `.encoding=UTF-8`，报 `ClassNotFoundException: .encoding=UTF-8`。参数要逐个成串传递：`& $java '-Dfile.encoding=UTF-8' '-cp' $cp 'clojure.main' $f`。
 3. **Clojars 偶发 SSL 握手失败**：重试即可，Maven 有自己的重试逻辑。
 
-## 2.7 坑位清单
+## 2.8 坑位清单
 
 1. **`clj` vs `clojure`**：`clj` 是带 rlwrap 行编辑的包装（仅类 Unix）；Windows 上只有 `clojure`。
 2. **首次启动慢是正常的**：下载依赖 + 解压；之后有 `.cpcache` 缓存，亚秒级。
