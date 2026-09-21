@@ -39,6 +39,17 @@ PROJECT_ROOT=$(pwd)
 BUILD_DIR="$PROJECT_ROOT/build"
 EXAMPLES_DIR="$PROJECT_ROOT/examples"
 
+# ------------------------------------------------------------
+# TMPDIR 兜底：示例与标准库 runCommand 都把临时文件拼在 TMPDIR 下。
+# macOS 恒有 TMPDIR；Linux 默认不设 —— getEnvironmentVariable 拿回 nil，
+# 示例里 nil size 直接炸（14/15 章），runCommand 的捕获文件还会落进
+# CWD 污染仓库（observe_15 的「cd + 相对重定向」会读丢 stdout）。
+# 未设置且 /tmp 可写时补 /tmp；macOS 本就有值，不受影响。
+# ------------------------------------------------------------
+if [ -z "${TMPDIR:-}" ] && [ -w /tmp ]; then
+    export TMPDIR=/tmp
+fi
+
 VERBOSE=0
 RERUN=1
 SELECT=()
@@ -93,11 +104,11 @@ pick_io() {             # pick_io <名字> [候选路径...]
     return 1
 }
 
-IO_DYN=$(pick_io io \
+IO_DYN=$(pick_io io "${IO:-}" \
         /opt/local/bin/io /usr/local/bin/io \
         "$HOME/.workbuddy/binaries/io/bin/io" \
         /opt/local/libexec/io/bin/io) || IO_DYN=""
-IO_STA=$(pick_io io_static \
+IO_STA=$(pick_io io_static "${IO_STATIC:-}" "${IO:-}" \
         /opt/local/bin/io_static /usr/local/bin/io_static \
         "$HOME/.workbuddy/binaries/io/bin/io_static" \
         /opt/local/libexec/io/bin/io_static) || IO_STA=""
@@ -109,13 +120,18 @@ if [ ${#CHANNELS[@]} -eq 0 ]; then
     cat >&2 <<'EOF'
 未找到 Io 解释器。任一通道都行：
   · MacPorts：      sudo port install Io        （装出 /opt/local/bin/io）
-  · 源码构建：      git clone https://github.com/IoLanguage/io.git
+  · 源码构建（Linux 上必须显式 Release！项目默认 DebugFast 是 -g -O0，
+    GCC 在 -O0 下不合并跨编译单元的相同字符串字面量，而 Io 的 proto 注册表
+    按字面量地址做键 —— 启动即 missing proto 'Number'。macOS 的 clang/ld64
+    无此问题，所以 mac 上默认构建能跑、Linux 上是坏的）：
+                    git clone https://github.com/IoLanguage/io.git
                     git -C io fetch --depth 1 origin tag 2026.04.20-native-final
                     git -C io checkout native-final
                     git -C io submodule update --init --depth 1 deps/parson
                     mkdir -p io/build && cd io/build
-                    cmake -DCMAKE_INSTALL_PREFIX=$HOME/.workbuddy/binaries/io .. && make -j8 all && make install
-也可以用 IO=/path/to/io_static 指定二进制后再跑。
+                    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/.workbuddy/binaries/io -DCMAKE_C_FLAGS="-Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -Wno-error=int-conversion" .. && make -j8 all && make install
+                    （GCC 14+ 把这三类警告当错误，IOASSERT 宏必中，需显式降级；clang 不用加）
+也可以用 IO=/path/to/io（动态）或 IO_STATIC=/path/to/io_static 指定二进制后再跑。
 EOF
     exit 1
 fi
@@ -132,6 +148,7 @@ echo "工作目录 : $PROJECT_ROOT"
 [ -n "$IO_DYN" ] && echo "通道 io      : $IO_DYN ($(with_limit "$IO_DYN" -e 'System version println'))"
 [ -n "$IO_STA" ] && echo "通道 io_static: $IO_STA ($(with_limit "$IO_STA" -e 'System version println'))"
 [ -n "$TIMEOUT" ] && echo "超时守卫 : $TIMEOUT $PROBE_LIMIT"
+[ -n "${TMPDIR:-}" ] && echo "TMPDIR    : $TMPDIR"
 echo
 
 mkdir -p "$BUILD_DIR"

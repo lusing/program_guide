@@ -175,6 +175,15 @@ tf setContents("t" asUTF8)
 tf remove                                            // 用完删掉
 ```
 
+> **平台差异（实测）**：macOS 恒有 `TMPDIR`；**Linux 默认不设置**这个环境变量，
+> `getEnvironmentVariable("TMPDIR")` 拿回的是 nil —— 上表里「TMPDIR 非空」在
+> Linux 上是 false，继续 `tmp size` 之类的用法会直接炸（nil does not respond
+> to 'size'）。Linux 上先 `export TMPDIR=/tmp` 再跑（`run-all.sh` 已内置这个兜底）。
+> 顺带一个 Linux 新坑：标准库 `System runCommand` 的输出捕获文件也拼在
+> `TMPDIR` 下，nil 时路径变相对、落进 CWD —— 跑完会在当前目录留下一堆
+> `PID-时间戳-stdout/stderr` 文件，而且**正常情况下它也从不删除**这些文件
+> （macOS 有系统级 TMPDIR 清理兜底，Linux 上会一直留着）。
+
 > **为什么重要**：示例一律把临时文件建在 `TMPDIR` 下、结束时删干净，并且**输出里绝不出现绝对路径**。
 > 这样示例之间不会互相踩，跨机器也能跑。
 

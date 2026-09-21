@@ -89,7 +89,7 @@ Number getSlot("+")       type = CFunction
 
 | 通道 | 路径 | 大小量级 | 特点 |
 |---|---|---|---|
-| `io` | `~/…/io/bin/io` | 十几 KB | 动态链接版，运行时按 rpath / 安装前缀找 `libiovmall.dylib` 与 addon |
+| `io` | `~/…/io/bin/io` | 十几 KB | 动态链接版，运行时按 rpath / 安装前缀找 `libiovmall.dylib`（Linux 为 `libiovmall.so`）与 addon |
 | `io_static` | `~/…/io/bin/io_static` | 1.5 MB | 静态单文件版，不依赖任何外部动态库 |
 
 两者都报同一个版本号（本机实测 `System version` 是 `20260302`，Io 用日期当版本号），
@@ -103,7 +103,7 @@ Number getSlot("+")       type = CFunction
 本机两通道都是**从源码编译**得到的（CMake + `build.sh`），没有用包管理器里的 Io——
 本教程依赖的若干行为（`actorRun`、`Future`、`serialized` 的具体产物格式）在旧版二进制里
 根本不存在，用包管理器装一个出来只会得到一堆对不上的实测输出。
-回归脚本一律**探测**解释器路径（先看环境变量 `IO_BIN`，再看安装前缀，最后按 `io_static` / `io` 从 `PATH` 找），
+回归脚本一律**探测**解释器路径（先看环境变量 `IO` / `IO_STATIC`，再看安装前缀等固定候选，最后按 `io` / `io_static` 从 `PATH` 找），
 **不硬编码**；找不到的通道自动跳过。
 
 ## 01.4 验证纪律：七条判定 + 观察项
