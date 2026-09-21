@@ -244,4 +244,4 @@ m_tree.Expand(root, TVE_EXPAND);
 4. **虚拟列表（`LVS_OWNERDATA`）适合什么场景？代价是什么？** —— 适合上万行以上、且数据本来就存在自己容器里的场景，控件不复制任何数据；代价是 `InsertItem`/`DeleteItem`/`SortItems` 都不适用，增删排序要改自己的数据源再 `RedrawItems`。另外比较函数必须 `static`（系统回调不带 `this`），`this` 通过 `SortItems` 的第二参传进回调的第三个 `LPARAM`。
 
 ---
-上一章：[06 对话框](06-dialogs.md) ｜ 下一章：[10 通用对话框与文件 IO](10-common-dialogs.md)
+上一章：[06 对话框](06-dialogs.md) ｜ 下一章：[08 控件进阶：树、属性页与任务对话框](08-controls-advanced.md)

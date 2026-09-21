@@ -1,0 +1,82 @@
+// 08_controls_advanced 的资源脚本。
+//
+// 演示三类资源：主对话框模板、属性页模板、字符串表。
+// 属性页模板的关键差别：必须是 WS_CHILD（它是被"嵌"进属性表的子窗口），
+// 且不带 WS_CAPTION/WS_SYSMENU —— 页签由属性表自己画。
+#pragma code_page(65001)
+
+#include "resource.h"
+#include "afxres.h"
+
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+
+STRINGTABLE
+BEGIN
+    IDS_APP_TITLE   "控件进阶演示"
+    IDS_PAGE1       "基本设置"
+    IDS_PAGE2       "外观"
+    IDS_PAGE3       "完成"
+END
+
+// ---- 主对话框：树 + 进度条 + 滑块 + 日期 + 两个按钮 ----
+IDD_MAIN DIALOGEX 0, 0, 300, 200
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "控件进阶演示"
+FONT 9, "微软雅黑"
+BEGIN
+    LTEXT           "目录树：", IDC_STATIC, 8, 8, 50, 10
+    CONTROL         "", IDC_TREE, "SysTreeView32",
+                    WS_BORDER | WS_TABSTOP | TVS_HASLINES | TVS_HASBUTTONS |
+                    TVS_LINESATROOT,
+                    8, 20, 130, 140
+
+    LTEXT           "进度：", IDC_STATIC, 150, 20, 40, 10
+    CONTROL         "", IDC_PROGRESS, "msctls_progress32",
+                    WS_BORDER, 150, 32, 140, 14
+
+    LTEXT           "滑块：", IDC_STATIC, 150, 56, 40, 10
+    CONTROL         "", IDC_SLIDER, "msctls_trackbar32",
+                    WS_TABSTOP | TBS_HORZ | TBS_AUTOTICKS,
+                    150, 68, 140, 22
+
+    LTEXT           "日期：", IDC_STATIC, 150, 98, 40, 10
+    CONTROL         "", IDC_DATE, "SysDateTimePick32",
+                    WS_TABSTOP | DTS_SHORTDATEFORMAT,
+                    150, 110, 140, 14
+
+    PUSHBUTTON      "任务对话框(&T)", IDC_TASKDLG, 150, 140, 68, 18
+    PUSHBUTTON      "向导(&W)", IDC_WIZARD, 224, 140, 66, 18
+    DEFPUSHBUTTON   "关闭", IDOK, 232, 172, 58, 18
+END
+
+// ---- 三个属性页模板：注意 WS_CHILD，且没有 CAPTION ----
+IDD_PAGE1 DIALOGEX 0, 0, 240, 120
+STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE | WS_CAPTION
+CAPTION "基本设置"
+FONT 9, "微软雅黑"
+BEGIN
+    LTEXT           "这里放第一页的控件。", IDC_STATIC, 12, 12, 200, 10
+    LTEXT           "向导模式下，本页点“下一步”时才会触发 OnWizardNext。",
+                    IDC_STATIC, 12, 32, 210, 20
+END
+
+IDD_PAGE2 DIALOGEX 0, 0, 240, 120
+STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE | WS_CAPTION
+CAPTION "外观"
+FONT 9, "微软雅黑"
+BEGIN
+    LTEXT           "这里放第二页的控件。", IDC_STATIC, 12, 12, 200, 10
+    LTEXT           "点“上一步”会回到第一页，页面对象不会被销毁。",
+                    IDC_STATIC, 12, 32, 210, 20
+END
+
+IDD_PAGE3 DIALOGEX 0, 0, 240, 120
+STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE | WS_CAPTION
+CAPTION "完成"
+FONT 9, "微软雅黑"
+BEGIN
+    LTEXT           "最后一页。点“完成”触发 OnWizardFinish。",
+                    IDC_STATIC, 12, 12, 210, 20
+    LTEXT           "向导的“完成”按钮是属性表自己画的，不用你放。",
+                    IDC_STATIC, 12, 36, 210, 20
+END

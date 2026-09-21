@@ -146,4 +146,4 @@ afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) {
 - 频繁写日志用 `CStdioFile`（带缓冲）而不是 `CFile` 每次开关
 
 ---
-上一章：[07 常用控件深入](07-controls.md) ｜ 下一章：[11 工具栏与状态栏](11-toolbars.md)
+上一章：[09 自绘控件与自定义控件](09-custom-controls.md) ｜ 下一章：[11 工具栏与状态栏](11-toolbars.md)
