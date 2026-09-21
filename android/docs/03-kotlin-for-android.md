@@ -275,4 +275,4 @@ class NoteListActivity : Activity() {
 - 语言全景深入入口：同仓库兄弟教程《Kotlin 指南》（`G:\code\guide\kotlin\KOTLIN_GUIDE.md`，本目录的相对路径是 `../kotlin/KOTLIN_GUIDE.md`），含 169 个可编译片段；其协程章节与本教程[第 08 章](08-threads-network.md)互补
 
 ---
-上一章：[02 工程结构与构建工具链](02-project-toolchain.md) ｜ 下一章：[04 Activity 与应用生命周期](04-activity-lifecycle.md)
+上一章：[02 工程结构与构建工具链](02-project-toolchain.md) ｜ 下一章：[04 Activity 与应用生命周期](04-activity-lifecycle.md) ｜ 返回：[README](../README.md)

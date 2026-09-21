@@ -253,4 +253,4 @@ pwsh -File .\build.ps1 -Compose
 - 把第 09 章的 SharedPreferences（记住"上次打开的便签"）、第 10 章的通知（定时提醒）逐个加进来，每加一个功能回读对应章节——这本教程的闭环就完成了
 
 ---
-上一章：[15 JNI 与 NDK](15-jni-ndk.md) ｜ 本教程完，回到[目录](../README.md)
+上一章：[15 JNI 与 NDK](15-jni-ndk.md) ｜ 返回：[README](../README.md)

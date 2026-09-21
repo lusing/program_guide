@@ -262,4 +262,4 @@ LazyColumn {
 - item 布局层级越扁越好：行内嵌套越深，每帧测量布局成本越高，滚动越肉
 
 ---
-上一章：[06 Intent 与页面导航](06-intents-navigation.md) ｜ 下一章：[08 线程、Handler 与网络请求](08-threads-network.md)
+上一章：[06 Intent 与页面导航](06-intents-navigation.md) ｜ 下一章：[08 线程、Handler 与网络请求](08-threads-network.md) ｜ 返回：[README](../README.md)

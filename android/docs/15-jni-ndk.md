@@ -247,4 +247,4 @@ fun JniStatusSample() {
 - 第 16 章实战项目是纯 Kotlin，不需要 JNI——本章的定位是"看得懂现有 native 集成、接得上真实项目"，不是"天天写"
 
 ---
-上一章：[14 Compose 工程化架构](14-compose-architecture.md) ｜ 下一章：[16 实战项目：MemoPad 便签应用](16-memopad.md)
+上一章：[14 Compose 工程化架构](14-compose-architecture.md) ｜ 下一章：[16 实战项目：MemoPad 便签应用](16-memopad.md) ｜ 返回：[README](../README.md)

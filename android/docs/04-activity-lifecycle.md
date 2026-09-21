@@ -249,4 +249,4 @@ android.app.Activity                         ← 本教程基础篇示例用这�
 - Compose 的 `rememberSaveable` 本质上就是 Bundle 机制的声明式包装（[第 12 章](12-compose-basics.md)）——本章的模型到那一章仍然成立
 
 ---
-上一章：[03 Kotlin for Android 必需子集](03-kotlin-for-android.md) ｜ 下一章：[05 传统 View 体系：布局、控件与事件](05-views-events.md)
+上一章：[03 Kotlin for Android 必需子集](03-kotlin-for-android.md) ｜ 下一章：[05 传统 View 体系：布局、控件与事件](05-views-events.md) ｜ 返回：[README](../README.md)

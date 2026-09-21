@@ -426,4 +426,4 @@ private fun UiButtonsSamplePreview() {
 - 改完跑 `.\build.ps1 -Compose` 做编译验证；[第 16 章](16-memopad.md)会把本章组件、动画与第 14 章架构全部串成完整应用
 
 ---
-上一章：[12 Jetpack Compose 基础](12-compose-basics.md) ｜ 下一章：[14 Compose 工程化架构](14-compose-architecture.md)
+上一章：[12 Jetpack Compose 基础](12-compose-basics.md) ｜ 下一章：[14 Compose 工程化架构](14-compose-architecture.md) ｜ 返回：[README](../README.md)

@@ -249,4 +249,4 @@ db.query("topics", null, "name = ?", arrayOf(keyword), null, null, null)
 - 第 16 章的 MemoPad 存便签选的就是 `filesDir` + JSON 文件——数据量小、不需要按条件查询，文件方案代码量最少；等需求长出"搜索/排序/分页"，再迁去 SQLite/Room 不迟
 
 ---
-上一章：[08 线程、Handler 与网络请求](08-threads-network.md) ｜ 下一章：[10 BroadcastReceiver、Service 与通知](10-system-components.md)
+上一章：[08 线程、Handler 与网络请求](08-threads-network.md) ｜ 下一章：[10 BroadcastReceiver、Service 与通知](10-system-components.md) ｜ 返回：[README](../README.md)

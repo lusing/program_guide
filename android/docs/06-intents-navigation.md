@@ -260,4 +260,4 @@ try {
 - 回退栈 flag 按需学习：先记住压栈/出栈两条基本操作，出现"清栈回首页"类需求再查 `FLAG_ACTIVITY_CLEAR_TOP`
 
 ---
-上一章：[05 传统 View 体系：布局、控件与事件](05-views-events.md) ｜ 下一章：[07 列表与 Adapter 模式](07-lists-adapters.md)
+上一章：[05 传统 View 体系：布局、控件与事件](05-views-events.md) ｜ 下一章：[07 列表与 Adapter 模式](07-lists-adapters.md) ｜ 返回：[README](../README.md)

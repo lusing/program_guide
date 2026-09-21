@@ -259,4 +259,4 @@ lifecycleScope.launch {
 - UI 更新收敛到一个入口：后台逻辑只负责把数据交回主线程，改界面的代码集中一处，散落各处的 post 是维护噩梦的起点
 
 ---
-上一章：[07 列表与 Adapter 模式](07-lists-adapters.md) ｜ 下一章：[09 本地数据持久化](09-data-storage.md)
+上一章：[07 列表与 Adapter 模式](07-lists-adapters.md) ｜ 下一章：[09 本地数据持久化](09-data-storage.md) ｜ 返回：[README](../README.md)

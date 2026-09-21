@@ -331,4 +331,4 @@ WorkManager 的卖点是**保证执行**：任务入库后，进程被杀、甚�
 - 改完跑 `.\build.ps1 -Compose` 验证编译；[第 16 章](16-memopad.md)会把本章的 ViewModel + StateFlow + Navigation 全部串成完整应用
 
 ---
-上一章：[13 Compose 组件与交互](13-compose-ui.md) ｜ 下一章：[15 JNI 与 NDK](15-jni-ndk.md)
+上一章：[13 Compose 组件与交互](13-compose-ui.md) ｜ 下一章：[15 JNI 与 NDK](15-jni-ndk.md) ｜ 返回：[README](../README.md)

@@ -251,4 +251,4 @@ builder
 - 通知 id 收进常量表：进度类通知复用固定 id 做原地更新，新事件用新 id，避免抽屉被刷屏
 
 ---
-上一章：[09 本地数据持久化](09-data-storage.md) ｜ 下一章：[11 运行时权限、ContentResolver 与硬件服务](11-permissions-content.md)
+上一章：[09 本地数据持久化](09-data-storage.md) ｜ 下一章：[11 运行时权限、ContentResolver 与硬件服务](11-permissions-content.md) ｜ 返回：[README](../README.md)

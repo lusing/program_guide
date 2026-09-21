@@ -268,4 +268,4 @@ override fun onDestroy() {
 - 第 16 章的 MemoPad 不涉及权限与硬件，但通知权限链路（第 10 章）与本章第 2 节的流程会在你自己的扩展需求里天天见面
 
 ---
-上一章：[10 BroadcastReceiver、Service 与通知](10-system-components.md) ｜ 下一章：[12 Jetpack Compose 基础](12-compose-basics.md)
+上一章：[10 BroadcastReceiver、Service 与通知](10-system-components.md) ｜ 下一章：[12 Jetpack Compose 基础](12-compose-basics.md) ｜ 返回：[README](../README.md)

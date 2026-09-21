@@ -259,4 +259,4 @@ val padding = 16.toPx()      // 16dp → 当前屏幕上的像素数
 - 事件"没反应"先 `Log.d` 打一行确认回调到没到，再怀疑业务逻辑
 
 ---
-上一章：[04 Activity 与应用生命周期](04-activity-lifecycle.md) ｜ 下一章：[06 Intent 与页面导航](06-intents-navigation.md)
+上一章：[04 Activity 与应用生命周期](04-activity-lifecycle.md) ｜ 下一章：[06 Intent 与页面导航](06-intents-navigation.md) ｜ 返回：[README](../README.md)

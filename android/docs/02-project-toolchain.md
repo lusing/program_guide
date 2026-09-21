@@ -312,4 +312,4 @@ kotlin {
 
 ---
 
-上一章：[01 Android 平台概述与架构](01-overview.md) ｜ 下一章：[03 Kotlin for Android 必需子集](03-kotlin-for-android.md)
+上一章：[01 Android 平台概述与架构](01-overview.md) ｜ 下一章：[03 Kotlin for Android 必需子集](03-kotlin-for-android.md) ｜ 返回：[README](../README.md)
