@@ -17,3 +17,14 @@ BEGIN
         MENUITEM "文字颜色(&C)...", IDM_FMT_COLOR
     END
 END
+
+// 加速键表。菜单文本里的 &O / &S 只在菜单已经打开时才起作用；
+// 想让 Ctrl+O 在任意时刻都能触发命令，必须有一张加速键表。
+// 这里复用菜单的 ID（资源 ID 按类型区分，菜单和加速键表可以同名，
+// MFC 向导生成的 IDR_MAINFRAME 就是这么干的）。
+IDR_MAIN_MENU ACCELERATORS
+BEGIN
+    "O",    IDM_FILE_OPEN,  VIRTKEY, CONTROL
+    "S",    IDM_FILE_SAVE,  VIRTKEY, CONTROL
+    "C",    IDM_FMT_COLOR,  VIRTKEY, CONTROL, SHIFT
+END

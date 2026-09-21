@@ -21,6 +21,10 @@ public:
         Create(NULL, _T("工具栏与状态栏演示"), WS_OVERLAPPEDWINDOW,
                CRect(100, 100, 720, 480), nullptr,
                MAKEINTRESOURCE(IDR_MAIN_MENU));
+
+        // 装上加速键表。CFrameWnd::PreTranslateMessage 会在消息进队列前
+        // 自动调 ::TranslateAccelerator —— 不需要我们自己写 PreTranslateMessage。
+        LoadAccelTable(_T("IDR_MAIN_MENU"));
     }
 
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct) {
