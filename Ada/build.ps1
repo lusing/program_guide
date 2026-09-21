@@ -33,23 +33,23 @@ if (-not (Test-Path -LiteralPath $examplesDir)) {
 New-Item -ItemType Directory -Force -Path $objDir | Out-Null
 
 $mainUnits = @(
-    "ch01_hello.adb",
-    "ch02_types.adb",
-    "ch03_control.adb",
-    "ch04_subprograms.adb",
-    "ch05_arrays.adb",
-    "ch06_records.adb",
-    "ch07_packages.adb",
-    "ch08_exceptions.adb",
-    "ch09_generics.adb",
-    "ch10_oop.adb",
-    "ch11_tasking.adb",
-    "ch12_fileio.adb",
-    "ch13_c_interop.adb",
-    "ch14_containers.adb",
-    "ch15_protected.adb",
-    "ch16_contracts.adb",
-    "ch17_spark.adb"
+    "ch02_hello.adb",
+    "ch03_types.adb",
+    "ch04_control.adb",
+    "ch05_subprograms.adb",
+    "ch06_arrays.adb",
+    "ch07_records.adb",
+    "ch08_packages.adb",
+    "ch09_exceptions.adb",
+    "ch10_generics.adb",
+    "ch11_oop.adb",
+    "ch12_tasking.adb",
+    "ch13_fileio.adb",
+    "ch14_c_interop.adb",
+    "ch15_containers.adb",
+    "ch16_protected.adb",
+    "ch17_contracts.adb",
+    "ch18_spark.adb"
 )
 
 function Invoke-AdaCompile {
@@ -93,5 +93,5 @@ if ($File) {
 
 Write-Host "用法:" -ForegroundColor Yellow
 Write-Host "  .\build.ps1 -All              编译 examples 下全部主示例"
-Write-Host "  .\build.ps1 -File <name.adb>  编译单个示例（如 ch01_hello.adb）"
+Write-Host "  .\build.ps1 -File <name.adb>  编译单个示例（如 ch02_hello.adb）"
 Write-Host "  .\build.ps1 -Clean            清理 build 目录"

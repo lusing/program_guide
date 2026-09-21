@@ -15,7 +15,7 @@
 
 这些目录已经按 “专门文件 + 示例目录 + 构建脚本” 的方式落地，并完成了编译验证：
 
-- [Ada](./Ada) — Ada 语言教程与示例，使用 MSYS2 UCRT64 的 GNAT (`gnatmake`) 验证
+- [Ada](./Ada) — Ada 教程与示例（19 章分章文档 docs/：全景与工具链 / 语言核心 / Tasking 并发 / 受保护对象 / Ada 2012 契约式编程 / SPARK 形式化验证压轴），**章号 = 示例编号**（17 个示例，02–18），Windows MSYS2 UCRT64 GNAT 16.1.0→16.2.0 + Linux GNAT 16.2.1 双平台实测（17/17 编译运行通过；libm / `-gnata` 平台差异已内置到脚本），双入口 `run-all.sh` / `build.ps1`，详见 [Ada/README.md](./Ada/README.md)
 - [algol68](./algol68) — Algol 68 教程与示例（20 章对齐 cobol 标准：上戳写法 / 模式 mode 系统 / 一切皆表达式 / 自定义运算符与优先级 / 过程与闭包（含作用域规则）/ 行·结构·联合·引用 / transput 文件 / FORMAT 格式化 / 事件式异常 / 内建并行 PAR·SEMA / 测试方法论 / 库存管理实战），使用 Algol 68 Genie 3.13.3（macOS MacPorts + clang 后端，解释器+C 后端二合一）双通道验证（check `--warnings --notices` / release `-O2`，四条判定 + 两通道输出逐字节一致），18 个示例（02–19）全部通过，双入口 `run-all.sh` / `build.ps1`，CHEATSheet 收录约 130 条实测坑位，详见 [algol68/README.md](./algol68/README.md)
 - [android](./android) — Android 应用开发教程（Kotlin），含 Jetpack Compose 与 JNI 示例，使用 Kotlin/Gradle/NDK 验证
 - [asm/intel](./asm/intel) — x86-64 汇编编程指南，双平台验证：Windows 用 NASM + MSVC link.exe，macOS 用 NASM `-f macho64` + clang/ld（56 个 macOS 示例全部实际编译运行通过）

@@ -13,9 +13,9 @@
 #   build.ps1 -Clean   ->  ./run-all.sh --clean
 #
 # 平台差异（相对 Windows build.ps1）：
-#   * ch13_c_interop 导入 C 的 sqrtf，Linux 下数学函数在独立的
+#   * ch14_c_interop 导入 C 的 sqrtf，Linux 下数学函数在独立的
 #     libm 中，链接时必须附加 -largs -lm（Windows UCRT 无需）
-#   * ch16_contracts / ch17_spark 需 -gnata 启用契约断言检查
+#   * ch17_contracts / ch18_spark 需 -gnata 启用契约断言检查
 #   * gnatmake 从 PATH 定位，也可用环境变量 GNATMAKE 指定
 # ============================================================
 set -u
@@ -60,23 +60,23 @@ echo
 
 # 章节编号:单元名:额外编译选项
 UNITS=(
-    "01:ch01_hello:"
-    "02:ch02_types:"
-    "03:ch03_control:"
-    "04:ch04_subprograms:"
-    "05:ch05_arrays:"
-    "06:ch06_records:"
-    "07:ch07_packages:"
-    "08:ch08_exceptions:"
-    "09:ch09_generics:"
-    "10:ch10_oop:"
-    "11:ch11_tasking:"
-    "12:ch12_fileio:"
-    "13:ch13_c_interop:-largs -lm"
-    "14:ch14_containers:"
-    "15:ch15_protected:"
-    "16:ch16_contracts:-gnata"
-    "17:ch17_spark:-gnata"
+    "02:ch02_hello:"
+    "03:ch03_types:"
+    "04:ch04_control:"
+    "05:ch05_subprograms:"
+    "06:ch06_arrays:"
+    "07:ch07_records:"
+    "08:ch08_packages:"
+    "09:ch09_exceptions:"
+    "10:ch10_generics:"
+    "11:ch11_oop:"
+    "12:ch12_tasking:"
+    "13:ch13_fileio:"
+    "14:ch14_c_interop:-largs -lm"
+    "15:ch15_containers:"
+    "16:ch16_protected:"
+    "17:ch17_contracts:-gnata"
+    "18:ch18_spark:-gnata"
 )
 
 TIMEOUT=""
@@ -114,7 +114,7 @@ for spec in "${UNITS[@]}"; do
         continue
     fi
 
-    # 统一在 build/ 下运行：ch12_fileio 会在当前目录创建数据文件
+    # 统一在 build/ 下运行：ch13_fileio 会在当前目录创建数据文件
     if ! ( cd "$BUILD_DIR" && $TIMEOUT "./$name" >"$name.out" 2>"$name.err" ); then
         rc=$?
         echo "  [FAIL] $name —— 运行失败（退出码 $rc，见 build/$name.out/.err）"
