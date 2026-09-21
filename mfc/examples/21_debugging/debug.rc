@@ -1,0 +1,17 @@
+// 21_debugging 的资源脚本。
+#pragma code_page(65001)
+
+#include "resource.h"
+#include "afxres.h"
+
+IDD_MAIN DIALOGEX 0, 0, 260, 180
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "调试与诊断"
+FONT 9, "微软雅黑"
+BEGIN
+    PUSHBUTTON  "断言与 TRACE",         IDC_TRACE,    10,  10, 110, 14
+    PUSHBUTTON  "异常演示",             IDC_THROW,   130,  10, 110, 14
+    PUSHBUTTON  "内存诊断",             IDC_MEMCHECK, 10,  28, 110, 14
+    EDITTEXT    IDC_RESULT,              10,  46, 230, 120,
+                ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL
+END
