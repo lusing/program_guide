@@ -2,6 +2,7 @@
 // 惯例：资源用 #define 数值 ID（而不是 enum），因为 rc.exe 不认 C++ 的 enum。
 #pragma once
 
+#define IDR_MAINFRAME       100   // 主图标（一个 .ico 里含 32×32 与 16×16 两档）
 #define IDR_MAIN_MENU       101   // 主菜单
 #define IDR_MAIN_ACCEL      102   // 加速键表
 

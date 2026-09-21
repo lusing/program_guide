@@ -1,4 +1,4 @@
-// 05_dialog：对话框两种形态 + DDX 数据绑定。
+// 06_dialog：对话框两种形态 + DDX 数据绑定。
 //
 // 模态（DoModal）：阻塞调用方，适合必须先回答的输入（登录、设置）。
 // 非模态（Create + ShowWindow）：和主窗口共存，适合面板、监视窗。
@@ -6,7 +6,7 @@
 // DDX（Dialog Data Exchange）：控件值 <-> C++ 成员变量自动同步，
 // DDV（Dialog Data Validation）：自动校验取值范围。
 //
-// 编译运行：.\build.ps1 -File 05_dialog
+// 编译运行：.\build.ps1 -File 06_dialog
 
 #include "resource.h"
 #include <afxwin.h>

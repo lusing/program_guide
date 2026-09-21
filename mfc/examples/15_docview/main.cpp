@@ -1,4 +1,4 @@
-// 09_docview：SDI Doc/View 全流程。
+// 15_docview：SDI Doc/View 全流程。
 //
 // 核心思想：把"框架窗口 + 文档数据 + 显示视图"交给 CSingleDocTemplate 组装，
 // 框架免费提供新建/打开/保存（菜单命令 ID_FILE_* 由 MFC 标准实现处理），
@@ -8,7 +8,7 @@
 //   CEdit 输入 --EN_CHANGE--> CDocument（SetModifiedFlag 标脏）
 //   文件打开  --Serialize-->  CDocument --UpdateAllViews--> CView 刷新
 //
-// 编译运行：.\build.ps1 -File 09_docview
+// 编译运行：.\build.ps1 -File 15_docview
 
 #include "resource.h"
 #include <afxwin.h>

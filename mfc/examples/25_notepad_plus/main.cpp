@@ -5,7 +5,7 @@
 //   ch06 对话框与 DDX        ch07 CListCtrl(stats.cpp)  ch08 文件读写与编码
 //   ch09 工具栏/状态栏       ch11 双缓冲与 GDI       ch12 后台线程(stats.cpp)
 //
-// 编译运行：.\build.ps1 -File 12_notepad_plus
+// 编译运行：.\build.ps1 -File 25_notepad_plus
 #include "resource.h"
 #include "stats.h"
 #include <afxwin.h>

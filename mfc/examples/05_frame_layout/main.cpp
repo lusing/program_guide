@@ -1,4 +1,4 @@
-// 04_frame_layout：框架窗口与子窗口布局。
+// 05_frame_layout：框架窗口与子窗口布局。
 //
 // 要点：
 //   1. OnCreate 里创建子控件（此时窗口框架已建好、尚未显示）
@@ -8,7 +8,7 @@
 // 这是所有“手工布局”的 MFC 程序的基本套路，理解它可以看懂任何
 // 用向导生成的 MFC 工程里的 CMainFrame。
 //
-// 编译运行：.\build.ps1 -File 04_frame_layout
+// 编译运行：.\build.ps1 -File 05_frame_layout
 
 #include <afxwin.h>
 

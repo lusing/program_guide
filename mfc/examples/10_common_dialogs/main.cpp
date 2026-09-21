@@ -1,4 +1,4 @@
-// 07_common_dialogs：通用对话框 + 文件读写。
+// 10_common_dialogs：通用对话框 + 文件读写。
 //
 // 演示：
 //   1. CFileDialog 打开/保存：过滤器写法、OFN_OVERWRITEPROMPT
@@ -8,7 +8,7 @@
 //       这里演示自己转码的规范做法）
 //   4. OnCtlColor 改编辑框文字颜色
 //
-// 编译运行：.\build.ps1 -File 07_common_dialogs
+// 编译运行：.\build.ps1 -File 10_common_dialogs
 
 #include "resource.h"
 #include <afxwin.h>

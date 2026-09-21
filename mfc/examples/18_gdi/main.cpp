@@ -1,4 +1,4 @@
-// 10_gdi：GDI 绘图与双缓冲。
+// 18_gdi：GDI 绘图与双缓冲。
 //
 // 演示：
 //   1. OnPaint + CPaintDC 的标准绘图流程
@@ -7,7 +7,7 @@
 //   4. 双缓冲：先画到内存 DC，再一次性拷到屏幕 —— 消除闪烁
 //   5. OnEraseBkgnd 返回 TRUE，把擦除时机也收进双缓冲
 //
-// 编译运行：.\build.ps1 -File 10_gdi
+// 编译运行：.\build.ps1 -File 18_gdi
 
 #include <afxwin.h>
 #include <vector>

@@ -1,4 +1,4 @@
-// 12_notepad_plus 的资源脚本：菜单、加速键、三个对话框、工具栏位图。
+// 25_notepad_plus 的资源脚本：菜单、加速键、三个对话框、工具栏位图。
 #pragma code_page(65001)
 
 #include "resource.h"

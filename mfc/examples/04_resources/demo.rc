@@ -5,6 +5,14 @@
 #include "resource.h"
 #include "afxres.h"
 
+// 声明本文件里所有资源的语言归属。单语言程序写上它是为将来加多语言版留路：
+// 复制一份改 LANGUAGE 与文案，编译成卫星 DLL 即可（正文第 6 节）。
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+
+// 图标。一个 .ico 文件里可以打包多档尺寸（这里是 32×32 与 16×16），
+// Windows 按需要挑一档——所以大图标小图标只需这一个资源。
+IDR_MAINFRAME ICON "app.ico"
+
 // 主菜单。&后面的字母是 Alt 快捷键，\t 后面是加速键提示文本。
 IDR_MAIN_MENU MENU
 BEGIN

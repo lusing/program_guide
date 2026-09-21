@@ -1,4 +1,4 @@
-// 03_resources：使用 .rc 资源文件创建菜单、加速键和字符串表。
+// 04_resources：使用 .rc 资源文件创建菜单、加速键和字符串表。
 //
 // 真实的 MFC 工程（VS 向导生成的）几乎都把菜单、对话框、图标放在 .rc
 // 资源里，而不是代码里手工拼。本章演示资源如何进入 exe：
@@ -6,7 +6,7 @@
 //   resource.h  --(被 .cpp 和 .rc 共同包含)--> 两边用同一套 ID
 //   demo.rc     --rc.exe--> demo.res       --link--> 嵌进 exe
 //
-// 编译运行：.\build.ps1 -File 03_resources
+// 编译运行：.\build.ps1 -File 04_resources
 
 #include "resource.h"
 #include <afxwin.h>
@@ -18,6 +18,12 @@ public:
         Create(NULL, LoadText(IDS_APP_TITLE), WS_OVERLAPPEDWINDOW,
                CRect(100, 100, 680, 440), nullptr,
                MAKEINTRESOURCE(IDR_MAIN_MENU));
+
+        // 图标：同一个 ID 装两次，分别当大图标和小图标。
+        // 传 FALSE 时 Windows 会自动从 .ico 里挑 16×16 那一档。
+        HICON hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+        SetIcon(hIcon, TRUE);    // 大图标：任务栏、Alt+Tab 切换器
+        SetIcon(hIcon, FALSE);   // 小图标：标题栏左上角
     }
 
     afx_msg void OnPaint() {

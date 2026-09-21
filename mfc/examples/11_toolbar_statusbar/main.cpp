@@ -1,4 +1,4 @@
-// 08_toolbar_statusbar：工具栏 + 状态栏 + 命令 UI 更新。
+// 11_toolbar_statusbar：工具栏 + 状态栏 + 命令 UI 更新。
 //
 // 演示：
 //   1. CToolBar 的组装：CreateEx -> SetButtons -> 图标位图 -> SetButtonText
@@ -7,7 +7,7 @@
 //   3. ON_UPDATE_COMMAND_UI：菜单和工具栏状态（可用/禁用）统一由
 //      一处代码维护 —— 这是 MFC 命令架构最省心的特性
 //
-// 编译运行：.\build.ps1 -File 08_toolbar_statusbar
+// 编译运行：.\build.ps1 -File 11_toolbar_statusbar
 
 #include "resource.h"
 #include <afxwin.h>

@@ -1,4 +1,4 @@
-// 11_threads：后台线程与 UI 的配合。
+// 20_threads：后台线程与 UI 的配合。
 //
 // 规则：凡是可能超过 0.1 秒的计算都不要在 UI 线程里做——界面会卡死、
 // 无法重绘、无法响应。正确做法是 worker 线程算数，PostMessage 回 UI 线程。
@@ -11,7 +11,7 @@
 //
 // 任务：统计 [2, N] 里的素数个数（够慢，能看清进度条走动）。
 //
-// 编译运行：.\build.ps1 -File 11_threads
+// 编译运行：.\build.ps1 -File 20_threads
 
 #include <afxwin.h>
 #include <afxcmn.h>

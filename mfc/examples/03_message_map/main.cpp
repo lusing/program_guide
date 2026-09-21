@@ -1,4 +1,4 @@
-// 02_message_map：消息映射机制详解。
+// 03_message_map：消息映射机制详解。
 //
 // 演示三类最常见的消息：
 //   1. Windows 标准消息  WM_*   -> ON_WM_*      （OnPaint / OnLButtonDown ...）
@@ -7,7 +7,7 @@
 //
 // 同时展示消息处理函数的标准签名和 afx_msg 的含义。
 //
-// 编译运行：.\build.ps1 -File 02_message_map
+// 编译运行：.\build.ps1 -File 03_message_map
 
 #include <afxwin.h>
 

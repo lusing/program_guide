@@ -1,4 +1,4 @@
-// 06_controls：控件深入 —— CListCtrl 报表视图是重点。
+// 07_controls：控件深入 —— CListCtrl 报表视图是重点。
 //
 // 演示：
 //   1. CListCtrl 报表模式：插入列、插入行、子项文本
@@ -7,7 +7,7 @@
 //   4. CComboBox / CEdit / CButton 组成“添加一行”表单
 //   5. 选中项操作：获取、删除
 //
-// 编译运行：.\build.ps1 -File 06_controls
+// 编译运行：.\build.ps1 -File 07_controls
 
 #include <afxwin.h>
 #include <afxcmn.h>   // CListCtrl 等公共控件
