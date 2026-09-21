@@ -1,0 +1,66 @@
+// 16_mdi_splitter 的资源脚本。
+//
+// MDI 要两套资源：
+//   IDR_MAINFRAME —— 外壳（没有子窗口时显示的菜单 + 主框架标题）
+//   IDR_MDITYPE   —— 文档类型（子窗口激活时框架自动切换到这套菜单，
+//                    并从同 ID 的字符串表解析文档信息）
+#pragma code_page(65001)
+
+#include "resource.h"
+#include "afxres.h"
+
+// ------------------------------------------------- 外壳菜单（无子窗口时）
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "文件(&F)"
+    BEGIN
+        MENUITEM "新建(&N)\tCtrl+N", ID_FILE_NEW
+        MENUITEM SEPARATOR
+        MENUITEM "退出(&X)",         ID_APP_EXIT
+    END
+END
+
+// ------------------------------------------------- 文档类型菜单（有子窗口时）
+// 新建/关闭不需要写处理代码：ID_FILE_NEW 由 CWinApp、ID_FILE_CLOSE 由
+// CDocument 的标准实现处理；ID_WINDOW_* 由 CMDIFrameWnd 的标准实现处理。
+IDR_MDITYPE MENU
+BEGIN
+    POPUP "文件(&F)"
+    BEGIN
+        MENUITEM "新建(&N)\tCtrl+N", ID_FILE_NEW
+        MENUITEM "关闭(&C)",         ID_FILE_CLOSE
+        MENUITEM SEPARATOR
+        MENUITEM "退出(&X)",         ID_APP_EXIT
+    END
+    POPUP "窗口(&W)"
+    BEGIN
+        MENUITEM "层叠(&C)",        ID_WINDOW_CASCADE
+        MENUITEM "水平平铺(&T)",    ID_WINDOW_TILE_HORZ
+        MENUITEM "排列图标(&A)",    ID_WINDOW_ARRANGE
+    END
+END
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "N", ID_FILE_NEW, VIRTKEY, CONTROL
+END
+
+IDR_MDITYPE ACCELERATORS
+BEGIN
+    "N", ID_FILE_NEW, VIRTKEY, CONTROL
+END
+
+// IDR_MAINFRAME 的字符串表只用到第一个字段（主框架标题），其余留空。
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME "MDI 分割窗口\n\n\n\n\n\n\n\n"
+END
+
+// 文档类型的 9 字段串（\n 分隔）。本例菜单没有打开/保存（第 17 章补
+// Serialize），过滤器字段留空 —— 留空就不会弹出带空过滤器的对话框。
+//   1窗口标题  2文档名  3新建默认名  4过滤器名  5过滤器
+//   6默认扩展名  7注册表类型ID  8注册表类型名  9新文件过滤器名
+STRINGTABLE
+BEGIN
+    IDR_MDITYPE "条目\n条目\n条目\n\n\n\nMdiSplitter.Document\nMdiSplitter 文档\n条目"
+END

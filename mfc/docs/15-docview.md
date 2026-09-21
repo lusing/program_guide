@@ -288,4 +288,4 @@ class CNoteView : public CView {
    —— 加载是边读边改文档的过程，中途广播会让视图读到半成品数据。界面刷新由框架在加载完成后统一触发（会调 `OnUpdate`）。
 
 ---
-上一章：[14 DPI 感知与深色模式](14-dpi-darkmode.md) ｜ 下一章：[16 MDI 与分隔窗口](16-mdi-splitter.md)
+上一章：[14 DPI 感知与深色模式](14-dpi-darkmode.md) ｜ 下一章：[16 MDI 多文档与分割窗口](16-mdi-splitter.md)
