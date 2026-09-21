@@ -10,6 +10,13 @@
 #   ./run-all.sh 02 08      只跑指定编号/名称
 #   ./run-all.sh -v         附带每个示例的完整输出
 #   ./run-all.sh --clean    清理 build/ 产物
+#
+# ★ Windows 实测（scoop algol68g 3.13.3）两大能力缺口，脚本开头会自动探测：
+#   1) 官方 Windows 构建未实现 C 后端：-O2 / --compile / --optimise 一律报
+#      "not implemented for this platform" → release 通道自动 [SKIP]，仅以 check 判定；
+#   2) 未编入 parallel-clause：含 PAR 的源码直接 syntax error
+#      （"interpreter was built without parallel-clause support"，语法级特性无法运行时探测）
+#      → 17_parallel 双通道自动 [SKIP]。两者都计入「平台跳过」而非失败。
 set -u
 
 cd "$(dirname "$0")"
@@ -69,7 +76,7 @@ EOF
         fi ;;
 esac
 
-PASS=0; FAIL=0; DIFFWARN=0; FAILED=""
+PASS=0; FAIL=0; DIFFWARN=0; SKIP=0; FAILED=""; SKIPPED=""
 VERBOSE=0
 
 # 控制字符检测（TAB/LF/CR 之外的 0x00-0x1F）。
@@ -109,7 +116,22 @@ run_one() { # $1=示例目录
     entry=$dir/$name.a68
     [ -f "$entry" ] || { die "$entry 不存在"; }
 
+    # PAR 未编入的构建（Windows 官方构建）里，含 PAR 的源码是语法错误，两通道都无法运行
+    if [ "$HAS_PAR" = 0 ] && grep -qF 'PAR (' "$entry"; then
+        SKIP=$((SKIP+1)); SKIPPED="$SKIPPED
+  - check/release $name（本机 a68g 构建未编入 parallel-clause，PAR 为语法级特性）"
+        echo "  [SKIP] check/release $name —— 本机 a68g 构建未编入 parallel-clause（PAR 为语法级特性，见 docs/01-overview.md §9）"
+        return
+    fi
+
     for channel in check release; do
+        # 无 C 后端的构建（Windows 官方构建）里 -O2 直接报错，release 通道跳过而非失败
+        if [ "$channel" = release ] && [ "$HAS_BACKEND" = 0 ]; then
+            SKIP=$((SKIP+1)); SKIPPED="$SKIPPED
+  - release $name（本机 a68g 未实现 C 后端，-O2 不可用）"
+            echo "  [SKIP] release $name —— 本机 a68g 未实现 C 后端（-O2 报 not implemented for this platform，见 docs/01-overview.md §9）"
+            continue
+        fi
         case $channel in
             check)   flags='--warnings --notices' ;;
             release) flags='-O2' ;;
@@ -164,9 +186,13 @@ find_dir() { # $1=编号或名称
 
 summary() {
     echo
-    echo "通过 $PASS   失败 $FAIL   输出差异 $DIFFWARN"
+    echo "通过 $PASS   失败 $FAIL   平台跳过 $SKIP   输出差异 $DIFFWARN"
     if [ "$FAIL" -eq 0 ]; then
         echo '[Done] 全部验证通过。'
+        if [ "$SKIP" -gt 0 ]; then
+            echo "（有 ${SKIP} 项因本机构建能力缺口跳过，不计失败：）"
+            printf '%s\n' "$SKIPPED"
+        fi
         [ "$DIFFWARN" -gt 0 ] && echo "（有 $DIFFWARN 项双通道输出不同，请人工确认）"
         exit 0
     fi
@@ -184,9 +210,32 @@ for arg in "$@"; do
     esac
 done
 
+# ── 构建能力探测（各跑一次微型探针；结果决定 release 通道与 PAR 示例的去留）──
+# C 后端：Windows 官方构建未实现 -O2（"not implemented for this platform"）；
+#         有后端的机器（macOS/Linux）探针会被真实编译并运行，rc 0。
+# parallel-clause：PAR 是语法级特性，未编入的构建里含 PAR 的源码直接 syntax error。
+mkdir -p "$BUILD"
+printf 'print((1, new line))' > "$BUILD/.probe_backend.a68"
+if ( cd "$BUILD" && "$A68G" -O2 .probe_backend.a68 ) > /dev/null 2>&1; then
+    HAS_BACKEND=1; else HAS_BACKEND=0; fi
+printf 'PAR (SKIP)' > "$BUILD/.probe_par.a68"
+if ( cd "$BUILD" && "$A68G" .probe_par.a68 ) > /dev/null 2>&1; then
+    HAS_PAR=1; else HAS_PAR=0; fi
+rm -f "$BUILD"/.probe* 2>/dev/null
+
+be_str=不可用; [ "$HAS_BACKEND" = 1 ] && be_str=可用
+pa_str=不可用; [ "$HAS_PAR" = 1 ] && pa_str=可用
+
 echo "工具链：a68g=$A68G"
 echo "版本：  $A68_VER"
+echo "能力：  C 后端（-O2）= ${be_str}   parallel-clause（PAR）= ${pa_str}"
 [ -n "$SHIM_DIR" ] && echo "ld 垫片：$SHIM_DIR/ld（macOS -O2 链接修复）"
+if [ "$HAS_BACKEND" = 0 ]; then
+    echo '注意：  本机 a68g 未实现 C 后端（Windows 官方构建如此）——release 通道自动跳过，仅以 check 通道判定。'
+fi
+if [ "$HAS_PAR" = 0 ]; then
+    echo '注意：  本机 a68g 未编入 parallel-clause——含 PAR 的示例（17_parallel）自动跳过，需 macOS/Linux 构建运行。'
+fi
 echo
 
 if [ "$MODE" = pick ]; then

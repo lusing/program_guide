@@ -15,6 +15,13 @@ Algol 68 是极少数把**并行写进语言本体**的老语言（1968 年！�
 SEMA 互斥 → SEMA 握手，最后讲清**竞态（race）为什么阴险**——以及为什么本示例在
 check（解释器）与 release（-O2 编译到 C）两条通道下 stdout 仍然**逐字节一致**。
 
+> ⚠️ **Windows 读者注意**：官方 Windows 构建（scoop algol68g 3.13.3 实测）**未编入
+> parallel-clause**——`PAR` 是语法级特性，未编入的构建里含 `PAR` 的源码在语法层就被拒：
+> `a68g: syntax error: 1: interpreter was built without parallel-clause support`，连解释执行
+> 都不行。验证脚本会探测（跑一次 `PAR (SKIP)` 探针）并自动跳过本章示例。要实际运行本章
+> 程序，需 macOS/Linux 上的 a68g 构建（或自行编译 a68g 源码时启用线程支持）。本章讲解
+> 与输出记录来自 macOS 构建，照读无妨——只是别在 Windows 上敲 `./run-all.sh 17` 期望它跑。
+
 ## 1. PAR 基本形：并发执行，结束处汇合
 
 语法是 `PAR (u1, u2, ...)`——操作数是一个**并列子句**（collateral clause），每个成分
@@ -241,6 +248,9 @@ SEMA 保护的共享计数器 shared=8000
    集合不相交（如 [1:4] 与 [5:8]）才能免锁（§3）。只读共享是安全的。
 6. **汇合是免费的，顺序不是**：PAR 结束即 join，无需手动等待；但子句**之间**的先后
    顺序不存在——需要顺序就用 SEMA 握手显式表达（§5）。
+7. **Windows 官方构建没有 parallel-clause**：含 `PAR` 的源码直接
+   `syntax error: interpreter was built without parallel-clause support`（语法层拒绝，无法
+   运行时绕过）；脚本探针检测后自动跳过本章示例（见章首警告）。
 
 ---
 上一章：[16 异常与事件](16-exceptions.md) ｜ 下一章：[18 测试方法论](18-testing.md) ｜ 返回：[README](../README.md)

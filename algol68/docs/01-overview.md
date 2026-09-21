@@ -34,6 +34,8 @@ a68g 是本教程使用的开源实现，特点：
   - **解释器**（默认）：直接读 `.a68` 源码、边解析边执行——开发期最快，运行期带全套检查。
   - **C 后端编译**（`-O0..-O3`，常用 `-O2`）：把源码翻译成 C，再交给系统 C 编译器（本机是
     `clang`）编成原生代码运行——这是真实"出货"形态。
+    **Windows 例外**：官方 Windows 构建未实现 C 后端——`-O2`/`--compile`/`--optimise` 一律报
+    `not implemented for this platform`，Windows 上只有解释执行一种形态（详见 §9）。
 - **修订报告的完整实现**：`port info` 的原话——"an implementation of Algol 68 as defined by the
   Revised Report. It ranks among the most complete implementations of the language."
 - **可选大依赖**：GSL（GNU Scientific Library，数值）、MPFR/GMP（高精度）、ncurses（终端）、
@@ -104,7 +106,9 @@ END
 
 ## 6. 工具链安装（本机布局）
 
-本教程实测机器（macOS，MacPorts）：
+本教程实测机器有两台。
+
+macOS（MacPorts）：
 
 | 组件 | 路径 / 值 | 说明 |
 |---|---|---|
@@ -115,11 +119,21 @@ END
 | 依赖库 | gmp、gsl、mpfr、ncurses、readline | `port info algol68g` |
 | C 后端 | `/usr/bin/clang`（Apple LLVM） | `-O2` 翻译出的 C 由它编译 |
 
+Windows 11（scoop）：
+
+| 组件 | 路径 / 值 | 说明 |
+|---|---|---|
+| a68g 3.13.3 | `%SCOOP%\apps\algol68g\current\bin\a68g.exe`（scoop shim 在 PATH） | `scoop install algol68g` |
+| C 后端 | **无** | `-O2`/`--compile`/`--optimise` 报 `not implemented for this platform` |
+| parallel-clause | **未编入** | 含 `PAR` 的源码直接 syntax error（第 17 章示例跳过） |
+| INT 宽度 | **64 位**（`max int` = 9223372036854775807） | macOS 构建为 32 位——宽度随构建变，勿硬编码 |
+
 新机器安装：
 
 - **macOS**：`sudo port install algol68g`（MacPorts）。
 - **Linux**：发行版包（如 `apt install a68g`）或从官网源码构建。
-- **Windows**：官网下载构建，或用 scoop/MSYS2 等；把含 `a68g` 的目录加进 PATH。
+- **Windows**：`scoop install algol68g`（或官网下载构建）；注意官方构建**无 C 后端、无
+  parallel-clause、INT 为 64 位**（三大缺口见 §9），验证脚本会自动探测并跳过受影响项。
 - 官方主页：<https://algol68genie.nl/>。
 
 验证安装：
@@ -165,6 +179,7 @@ stropping
 check 通道：  a68g --warnings --notices prog.a68   （解释器，告警+提示零容忍是纪律）
 release 通道：a68g -O2 prog.a68                    （C 后端，真实出货形态）
 两通道输出必须逐字节一致——任何差异都是"优化改变了语义"的味道，要查
+（Windows 构建无 C 后端：脚本探针检测后 release 自动 [SKIP]，仅以 check 判定——见 §9）
 ```
 
 ## 8. 本教程的验证方法论（贯穿全部示例）
@@ -175,6 +190,9 @@ release 通道：a68g -O2 prog.a68                    （C 后端，真实出货
 | 运行 | 退出码 0 + stderr 空 + stdout 无控制字符（TAB/LF/CR 除外）+ 含结束标记 | 程序真跑通了 |
 | 断言 | 自定义 `assert` 把 FAIL 写进 `stand error`；内建 `ASSERT` 守硬不变量 | 关键数值/行为正确 |
 | 一致性 | check 与 release 两通道 stdout 逐字节 `cmp` | 解释器与编译后端语义吻合 |
+
+> Windows 等无 C 后端的构建上，"编译/运行"与"一致性"两层自动收缩为单通道判定——脚本
+> 探针确认后跳过 release 通道（计入「平台跳过」，不计失败）。
 
 **断言习惯（全书一致）**：a68g **没有"以整数退出码结束"的标准设施**（不像 COBOL 的
 `STOP RUN RETURNING n`）——退出码 0 只表示"无运行时错误"。所以本教程统一用——
@@ -193,7 +211,9 @@ release 通道：a68g -O2 prog.a68                    （C 后端，真实出货
 `ASSERT (BOOL)`，条件为假 → 运行期错误 `false assertion`、**退出码 1**——这是 a68g 里唯一
 能"以非零退出码 fail-fast"的机制，详见 [18 章](18-testing.md)。
 
-## 9. macOS 专属坑：a68g -O2 的链接步骤缺 `-syslibroot`
+## 9. 平台专属坑：macOS 链接缺 `-syslibroot`；Windows 三大缺口
+
+### 9.1 macOS：`a68g -O2` 的链接步骤缺 `-syslibroot`
 
 本机（macOS）实测：`a68g -O2` 把源码翻成 `.c` → `.o` 后，用
 
@@ -214,10 +234,34 @@ exec /usr/bin/ld -syslibroot "$(xcrun --show-sdk-path)" "$@"
 ```
 
 > 垫片只在 **Darwin 且能取到 SDK** 时安装；Linux 上 a68g 的链接命令本就正常，垫片不触发。
-> Windows 的 a68g 自带后端，也不需要——故 `build.ps1` 里没有这段。
 > 另外 `run-all.sh` 开头会把 locale 切到某个 UTF-8（`C.UTF-8`/`en_US.UTF-8`）：在 `C` locale 下，
 > bash 会把紧邻全角标点的 `$变量`（如 `"$why；"`）误分词，触发 `set -u` 报"未绑定变量"——这是
 > 写验证脚本时踩到的真实坑。
+
+### 9.2 Windows：官方构建的三大缺口（scoop algol68g 3.13.3 实测）★
+
+1. **无 C 后端**：`-O2` / `--compile` / `--optimise` 一律
+   `a68g: scanner error: at option "-O2", not implemented for this platform`。
+   Windows 上只有解释执行一种形态。验证脚本（`build.ps1` 与 Git Bash 下的 `run-all.sh`）开头
+   用微型探针（跑一次 `a68g -O2` 一行程序）确认后，release 通道自动 `[SKIP]`，仅以 check
+   通道判定，计入「平台跳过」而非失败。想要编译执行：用 Linux/macOS 构建，或自行编译
+   a68g 源码启用插件编译。
+2. **未编入 parallel-clause**：含 `PAR` 的源码在**语法层**就被拒——
+   `a68g: syntax error: 1: interpreter was built without parallel-clause support`，
+   连解释器都跑不起来（并行是语法特性，不是运行时库）。17 章示例在 Windows 上经探针
+   （跑 `PAR (SKIP)`）确认后自动跳过；要跑并行章节需 macOS/Linux 构建。
+3. **INT 是 64 位**：`max int` = `9223372036854775807`，而 macOS MacPorts 构建是 32 位
+   `2147483647`——**INT 宽度随构建而变，代码里别硬编码**。第 04 章示例已把断言改为
+   `assert(max int >= 2147483647, ...)`。
+
+另两个同机实测的小坑：
+
+- `a68g --strict`（关闭语法扩展）把 `DOWNTO` 直接判 `syntax error`、给 `stand error` 报
+  `not portable` notice——本教程示例按 a68g 常规模式写，不受影响，但想拿 `--strict` 当
+  额外验证通道就行不通。
+- pwsh 的 `Get-ChildItem -Path 裸目录 -Include '*.txt'` **匹配不到任何文件**（`-Include`
+  须配 `-Path "$dir\*"` 或 `-Recurse`）——曾让 `build.ps1` 的数据文件清理静默失效，第二轮
+  起触发 `establish` 的 `file exists` 中止。
 
 ## 10. 学习路线
 
@@ -238,9 +282,12 @@ exec /usr/bin/ld -syslibroot "$(xcrun --show-sdk-path)" "$@"
 2. **`END` 前多写 `;`**：触发 `skipped superfluous semi-symbol` 告警，check 通道 stderr 非空 → 判 FAIL。
 3. **`print` 裸 `INT` 是宽格式**：右对齐、带 `+`/`-` 号；要紧凑输出先 `whole(n, 0)`。
 4. **没有整数退出码设施**：断言失败要自己写 `stand error`；退出码 0 只代表无运行时错误（唯一例外是内建 `ASSERT` 失败 → 退出码 1）。
-5. **macOS + `a68g -O2` 链接缺 `-syslibroot`**：`ld: library 'System' not found`；用 `ld` 垫片修复（见 §9）。
+5. **macOS + `a68g -O2` 链接缺 `-syslibroot`**：`ld: library 'System' not found`；用 `ld` 垫片修复（见 §9.1）。
 6. **`C` locale 下的 bash 误分词**：紧邻全角标点的 `$var` 被吞；脚本开头切 UTF-8 locale，并给紧邻 CJK 标点的变量加花括号 `${var}`。
 7. **别和 prelude 撞名**：把变量命名为 `pi`/`e`/`ln`/`eof`/`lock` 等会遮蔽 prelude 声明，触发 notice → check 通道 stderr 非空。
+8. **Windows 构建无 C 后端**：`-O2`/`--compile`/`--optimise` 报 `not implemented for this platform`；脚本探针检测后 release 通道自动跳过（见 §9.2）。
+9. **Windows 构建未编入 parallel-clause**：含 `PAR` 的源码语法层直接报错；17 章示例自动跳过（见 §9.2）。
+10. **INT 宽度随构建而变**：macOS 构建 32 位 / Windows 构建 64 位；勿硬编码 `max int`（见第 04 章）。
 
 ---
 下一章：[02 第一个程序](02-hello.md) ｜ 返回：[README](../README.md)

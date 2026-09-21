@@ -98,3 +98,6 @@ haskell/examples/16_files/scratch16/
 **/.nrepl-port
 **/.lein-repl-history
 **/.lein-failures
+
+# Algol 68：macOS 上 a68g -O2 的编译产物（Mach-O .so），曾在 examples/ 误入库
+algol68/examples/**/*.so

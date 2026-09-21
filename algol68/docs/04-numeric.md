@@ -18,7 +18,9 @@ print(("1.0/3.0    = ", fixed(lq, 0, 12), "  (LONG REAL)", new line));
 print(("max int    = ", whole(max int, 0), new line));
 ```
 
-- **`INT`**：a68g 里是 32 位有符号整数——实测 `max int = 2147483647`（示例断言钉死）。
+- **`INT`**：有符号整数，**宽度随 a68g 构建而变**——实测 macOS（MacPorts）3.13.3 是 32 位
+  （`max int = 2147483647`），Windows（scoop）3.13.3 是 64 位（`max int = 9223372036854775807`）。
+  **别硬编码 `max int`**（示例断言只要求"至少 32 位"，见 §7）。
 - **`REAL`**：双精度浮点（第 03 章）。
 - **`LONG REAL`**：更高精度浮点，需要更多有效位时用（示例里保留 12 位小数）。
 - **`/` 永远是实数除法**：`7 / 2 = 3.5`，两个 INT 相除自动升 REAL——想要整数商得用
@@ -126,7 +128,9 @@ assert(ABS(sin(0.0)) < 1.0e-12, "sin(0)≈0");
 ```algol68
 # 实测：max int + 1 直接 abort —— 「INT value overflow, result too large」。 #
 # 好处是不会悄悄算错；坏处是生产代码要先判界。这里只做边界断言，不真的触发。 #
-assert(max int = 2147483647, "a68g 的 INT 是 32 位");
+# 坑：INT 宽度随 a68g 构建而变，勿硬编码——macOS(MacPorts) 3.13.3 是 32 位 #
+#      (2147483647)，Windows(scoop) 3.13.3 是 64 位 (9223372036854775807)。 #
+assert(max int >= 2147483647, "INT 至少 32 位（宽度随构建平台而变，勿硬编码）");
 assert(max int - 1 < max int, "接近上界仍单调");
 ```
 
@@ -164,7 +168,7 @@ fixed(x, before, after)   # REAL → 定点串：整数部至少 before 位、�
 
 ## 10. 实测输出（本机 a68g 3.13.3）
 
-`./run-all.sh 04` 中 check 通道的真实 stdout（release 通道逐字节一致）：
+`./run-all.sh 04` 中 check 通道的真实 stdout（release 通道逐字节一致；有 C 后端的构建上）：
 
 ```text
 7 / 2      = 3.5000
@@ -199,7 +203,7 @@ acc 经 +10 -3 *2 = 14
 |---|---|
 | `7 / 2 = 3.5000` | `/` 是实数除法，INT 自动升 REAL；`fixed(q, 0, 4)` 补满 4 位小数 |
 | `.333333333333` | LONG REAL 保留 12 位小数；`fixed` 对 <1 的值**省略前导零** |
-| `max int = 2147483647` | a68g 的 INT 是 32 位（2^31 − 1） |
+| `max int = 2147483647` | macOS 构建的 INT 是 32 位（2^31 − 1）；**Windows 构建此行是 64 位的 `9223372036854775807`**——宽度随构建变 |
 | `-7 OVER 2 = -3   -7 MOD 2 = 1` | OVER 向零截断、MOD 给非负余数——二者方向不一致（§3） |
 | `floor 商 = -4 ... flq*2+flr = -7` | 用 `ENTIER(-7.0/2.0)` 自算 floor 商，恒等式恢复成立 |
 | `ENTIER(-3.7) = -4` | ENTIER 是 floor 不是截断：往更小方向取整 |

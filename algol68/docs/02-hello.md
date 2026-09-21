@@ -10,13 +10,17 @@
 ```bash
 cd examples/02_hello
 a68g 02_hello.a68          # 直接解释执行，没有单独的"编译"步骤
-a68g -O2 02_hello.a68      # 或经 C 后端编译成优化代码再运行（真实出货形态）
+a68g -O2 02_hello.a68      # 或经 C 后端编译成优化代码再运行（真实出货形态；macOS/Linux）
 ```
+
+> Windows 注意：官方 Windows 构建**没有 C 后端**，`a68g -O2` 报
+> `not implemented for this platform`——第一条（解释执行）就是 Windows 上唯一的跑法
+> （见 [01 章 §9.2](01-overview.md)）。
 
 同一份源码，两种跑法。本教程的 `run-all.sh 02` 做的是严格版：
 
 - **check 通道**：`a68g --warnings --notices`（解释器，全运行时检查 + 告警 + notice）；
-- **release 通道**：`a68g -O2`（编译到 C 后端，优化）；
+- **release 通道**：`a68g -O2`（编译到 C 后端，优化；无 C 后端的构建上脚本自动跳过）；
 - **四条判定**：运行退出码 0、stderr 为空、stdout 无控制字符、输出含结束标记 `==== 02 结束 ====`；
 - **跨通道比对**：两通道 stdout 必须**逐字节一致**——解释器与编译后端的语义若有分歧，当场暴露。
 
@@ -170,7 +174,7 @@ ok = T  letter = A
 
 # 手工等价
 a68g --warnings --notices examples/02_hello/02_hello.a68   # check
-a68g -O2 examples/02_hello/02_hello.a68                    # release
+a68g -O2 examples/02_hello/02_hello.a68                    # release（macOS/Linux；Windows 无 C 后端）
 ```
 
 ## 9. 坑位清单（实测）

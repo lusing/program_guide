@@ -53,7 +53,9 @@ BEGIN
   # ═══ 4.6 溢出是「运行时错误」，不是静默截断（与 COBOL 相反）★ ═══ #
   # 实测：max int + 1 直接 abort —— 「INT value overflow, result too large」。 #
   # 好处是不会悄悄算错；坏处是生产代码要先判界。这里只做边界断言，不真的触发。 #
-  assert(max int = 2147483647, "a68g 的 INT 是 32 位");
+  # 坑：INT 宽度随 a68g 构建而变，勿硬编码——macOS(MacPorts) 3.13.3 是 32 位 #
+  #      (2147483647)，Windows(scoop) 3.13.3 是 64 位 (9223372036854775807)。 #
+  assert(max int >= 2147483647, "INT 至少 32 位（宽度随构建平台而变，勿硬编码）");
   assert(max int - 1 < max int, "接近上界仍单调");
   print(("提示：INT 溢出在 a68g 里会运行时报错并退出，而非静默回绕", new line));
 

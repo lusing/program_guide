@@ -20,6 +20,11 @@
 | 1.2 | **`C` locale 下 bash 误分词** | 紧邻全角标点的 `$var` 被吞 → `set -u` 报未绑定变量；脚本开头切 UTF-8 locale | [01](01-overview.md) |
 | 1.3 | **没有独立的"编译再运行"两步** | `a68g -O2 x.a68` 一条命令完成翻译 C→clang→运行；编译告警与运行错误同走 stderr | [01](01-overview.md) |
 | 1.4 | **文件类示例的幂等** | `establish` 撞已有数据文件会中止；脚本每次运行前清掉 `build/*/` 里的 `*.txt`/`*.dat` | [01](01-overview.md) [14](14-transput.md) [19](19-capstone.md) |
+| 1.5 | **Windows 官方构建无 C 后端** ★ | `-O2`/`--compile`/`--optimise` 报 `not implemented for this platform`；脚本探针检测后 release 通道自动跳过 | [01](01-overview.md) [18](18-testing.md) |
+| 1.6 | **Windows 官方构建未编入 parallel-clause** ★ | 含 `PAR` 的源码语法层即拒（`built without parallel-clause support`）；17 章示例自动跳过 | [01](01-overview.md) [17](17-parallel.md) |
+| 1.7 | **INT 宽度随构建而变** | macOS 32 位 / Windows 64 位；勿硬编码 `max int`，断言写 `max int >= 2147483647` | [01](01-overview.md) [03](03-modes.md) [04](04-numeric.md) |
+| 1.8 | **`--strict` 把常用设施判为扩展** | `DOWNTO` 直接 syntax error、`stand error` 报 `not portable` notice——`--strict`/`--portcheck` 当不了验证通道 | [01](01-overview.md) |
+| 1.9 | **pwsh `Get-ChildItem -Path 裸目录 -Include` 匹配不到** | 清理逻辑静默失效 → 第二轮起 `establish` 报 `file exists`；`-Path` 必须带 `\*` | [01](01-overview.md) |
 
 ## 2. 词法与语法
 
@@ -232,7 +237,7 @@
 - [ ] 报表数字想要无符号右对齐，手写 `digits`/`padl`/`ustr`（`whole`/`fixed` 带符号位）。
 - [ ] 并发写同一变量用 `SEMA`（`:= LEVEL n`）临界区；并行子句里别 print，汇合后再统一输出。
 - [ ] 每个程序末尾：`print(("==== NN 结束 ====", new line))` + 自定义断言失败写 `stand error`。
-- [ ] check（`--warnings --notices`）与 release（`-O2`）双通道，输出逐字节一致——`[DIFF]` 先怀疑代码。
+- [ ] check（`--warnings --notices`）与 release（`-O2`）双通道，输出逐字节一致——`[DIFF]` 先怀疑代码（无 C 后端的构建上 release 自动跳过，仅单通道判定）。
 
 ---
 上一章：[19 综合实战：库存管理](19-capstone.md) ｜ 返回：[README](../README.md) ｜ 速查：[CHEATSheet](../CHEATSheet.md)

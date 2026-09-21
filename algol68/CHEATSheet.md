@@ -283,7 +283,7 @@ ELSE print(("自检全部通过", new line)) FI
 ./run-all.sh -v              # 附完整输出
 ./run-all.sh --clean         # 清理 build/
 a68g --warnings --notices prog.a68   # check 通道（手工版，解释执行）
-a68g -O2 prog.a68                    # release 通道（C 后端编译执行）
+a68g -O2 prog.a68                    # release 通道（C 后端编译执行；Windows 构建无此能力）
 a68g --check prog.a68                # 只做语法/语义检查，不运行
 a68g --version                       # Algol 68 Genie 3.13.3
 a68g --help                          # 全部开关（诊断/优化/断言/stropping…）
@@ -295,15 +295,21 @@ pwsh -File build.ps1                 # Windows 等价入口（与 run-all.sh 同
 
 **四条判定 + 跨通道**：① 运行退出码 0 ② stderr 空（告警/提示/FAIL/运行错误都走 stderr）
 ③ stdout 无控制字符（TAB/LF/CR 除外）④ 含结束标记 `==== NN 结束 ====`；外加 check/release
-两通道 stdout **逐字节一致**。
+两通道 stdout **逐字节一致**（无 C 后端的构建上 release 自动 [SKIP]，仅单通道判定）。
 
-## 19. macOS 工具链备忘
+## 19. 平台工具链备忘
 
 - a68g 走 MacPorts：`/opt/local/bin/a68g`（`port install algol68g`），clang 后端，a68g→C→native。
 - ★macOS `a68g -O2` 链接缺 `-syslibroot` → `ld: library 'System' not found`；`run-all.sh` 造一个
   `ld` 垫片放进 PATH 最前补上 `-syslibroot`（仅 Darwin 且能取到 SDK 时安装；Linux/Windows 不触发）。
 - `C` locale 下 bash 会把紧邻全角标点的 `$var` 误分词 → `set -u` 报未绑定变量；脚本开头切 UTF-8 locale，
   并给紧邻 CJK 标点的变量加花括号 `${var}`。
+- ★**Windows（scoop algol68g 3.13.3）三大缺口**：① 无 C 后端——`-O2`/`--compile`/`--optimise`
+  报 `not implemented for this platform`，脚本探针后 release 通道自动跳过；② 未编入
+  parallel-clause——含 `PAR` 的源码语法层即拒，17 章示例跳过；③ INT 是 **64** 位（macOS 构建是
+  32 位）——勿硬编码 `max int`。安装：`scoop install algol68g`。
+- pwsh 坑：`Get-ChildItem -Path 裸目录 -Include '*.txt'` 匹配不到任何文件——`-Path` 须带 `\*`，
+  否则数据文件清理静默失效，第二轮起 `establish` 报 `file exists`。
 
 > 别信"看起来对"——三个**静默算错**的坑（并行 `+:=` 丢更新 / `CASE` 按位置匹配 / `create+associate` no-op）
 > 退出码 0、零告警，只有断言最终数字或双通道比对才抓得住。见 [docs/20-pitfalls.md §17](docs/20-pitfalls.md)。
