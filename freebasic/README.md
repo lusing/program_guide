@@ -1,8 +1,8 @@
 # FreeBASIC 编程指南（fbc 1.10.1）
 
-面向**会编程（C/QBASIC 背景皆可）、初学 FreeBASIC** 的读者：以现代 **`-lang fb` 方言**为主线，从零教到能写出带图形、多线程、直调 Win32 API 的完整程序。**FB 特色全部独立成章细讲**：内置 GFX 图形库（18）、多线程（19）、C 互操作（20）、三方言模式与 QB 迁移（22）。每章"读讲解 → 跑示例 → 改代码再跑"，全部示例在本机**双层验证**通过（`-g -exx` 通道：断言+边界+空指针检查；发布形态通道；各加四条判定）。
+面向**会编程（C/QBASIC 背景皆可）、初学 FreeBASIC** 的读者：以现代 **`-lang fb` 方言**为主线，从零教到能写出带图形、多线程、直调系统 API 的完整程序。**FB 特色全部独立成章细讲**：内置 GFX 图形库（18）、多线程（19）、C 互操作（20）、三方言模式与 QB 迁移（22）。每章"读讲解 → 跑示例 → 改代码再跑"，全部示例**双平台双层验证**通过（Windows 11 x64 + Arch Linux WSL2；`-g -exx` 通道：断言+边界+空指针检查；发布形态通道；各加四条判定）。
 
-> ⚠️ 网上 FreeBASIC 教程多为 0.2x 时代（2008 前后）或 QB 教程直接改写：OOP 语法（2004 年 0.90 才引入 `Extends`/`Virtual`）、`Open` 返回值式错误检查、win64 下的类型尺寸都与老说法不同。本教程所有代码在 **fbc 1.10.1（win64 standalone，Windows 11 x64）** 实测，每章末"坑位清单"收录版本差异——包括 BOM 导致的 GBK 转码大坑、`Integer` 在 win64 是 8 字节等 20 余条。
+> ⚠️ 网上 FreeBASIC 教程多为 0.2x 时代（2008 前后）或 QB 教程直接改写：OOP 语法（2004 年 0.90 才引入 `Extends`/`Virtual`）、`Open` 返回值式错误检查、win64 下的类型尺寸都与老说法不同。本教程代码在 **fbc 1.10.1（win64 standalone，Windows 11 x64）** 与 **fbc 1.10.2（linux-x86_64，Arch/WSL2+WSLg）** 实测，每章末"坑位清单"收录版本与平台差异——包括 BOM 导致的 GBK 转码大坑（Windows 构建）、`Integer` 在 win64 是 8 字节、`Timer` 语义随平台（开机秒/epoch 秒）等 20 余条。
 
 ## 目录结构
 
@@ -39,7 +39,7 @@ freebasic/
 | [17 时间与随机](docs/17-time-random.md) | Timer、日期函数、Randomize 确定性种子 | `17_time_random` |
 | [18 ⭐GFX 图形库](docs/18-gfx.md) | ScreenRes、绘图原语、离屏 Image、像素校验 | `18_gfx` |
 | [19 ⭐多线程](docs/19-threads.md) | ThreadCreate/Mutex/Cond、数据竞争演示 | `19_threads` |
-| [20 ⭐C 互操作](docs/20-cinterop.md) | windows.bi 直调 Win32、Extern "C"、Declare Lib | `20_cinterop` |
+| [20 ⭐C 互操作](docs/20-cinterop.md) | windows.bi 直调 Win32、crt 头直调 glibc、Extern "C"、Declare Lib | `20_cinterop` |
 | [21 命令行程序](docs/21-cli.md) | Command/ArgV、Environ、Dir、自制 getopt | `21_cli` |
 | [22 ⭐方言模式](docs/22-dialects.md) | -lang fb/fblite/qb 对照、Gosub、QB 代码迁移 | `22_langs`（含 qb 通道） |
 | [23 工具链与测试](docs/23-tooling.md) | -exx/-w all、-pp、自制测试框架、编译选项 | `23_tooling` |
@@ -47,9 +47,10 @@ freebasic/
 
 ## 构建工具链
 
-- fbc **1.10.1**（2023-12-24，win64 standalone）：`G:\scoop\apps\freebasic\current\fbc.exe`（scoop 安装，自带 MinGW-w64 后端与 `inc/` 头文件库，含 `windows.bi`）。
-- 源码一律 **UTF-8 无 BOM**（带 BOM 时 fbc 会把字面量转成系统 GBK 并用宽字符 API 输出，管道验证全乱——见 02 章实测）。
-- 中文控制台先 `chcp 65001`（build.ps1 / run-all.sh 已代设）。
+- Windows：fbc **1.10.1**（2023-12-24，win64 standalone）：`G:\scoop\apps\freebasic\current\fbc.exe`（scoop 安装，自带 MinGW-w64 后端与 `inc/` 头文件库，含 `windows.bi`）。
+- Linux：fbc **1.10.2**（2025-12-23，linux-x86_64，Arch 包）——`crt/*.bi` 头在 `/usr/include/freebasic/`（与 Windows 的 `inc/` 同源）。GFX 示例需 X11 显示（WSL2 自带 WSLg；headless CI 用 `xvfb-run`）。
+- 源码一律 **UTF-8 无 BOM**（带 BOM 时 Windows 构建会把字面量转成系统 GBK 并用宽字符 API 输出，管道验证全乱——见 02 章实测）。
+- 中文控制台：Windows 先 `chcp 65001`（build.ps1 / run-all.sh 已代设）；Linux 终端原生 UTF-8，无需设置。
 
 ## 验证命令
 
@@ -59,6 +60,8 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -All                # 全部 23 个
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 18_gfx     # 单个示例
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean              # 清理 build 目录
 ```
+
+Linux 直接跑 `./run-all.sh`（fbc 自动探测：优先 Windows 的 scoop 路径，回退 `PATH` 里的 `fbc`），参数同上。
 
 单跑某个示例（每章标准学法）——改代码后重跑：
 

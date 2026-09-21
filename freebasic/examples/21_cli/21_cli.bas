@@ -18,8 +18,13 @@ Print "== 环境 =="
 SetEnviron "FB_DEMO_OPT=42"           ' 注意：单参 "名字=值" 形式
 Print "FB_DEMO_OPT ="; Environ("FB_DEMO_OPT")
 Assert(Environ("FB_DEMO_OPT") = "42")
-Dim user_ As String = Environ("USERNAME")
+#ifdef __FB_WIN32__
+Dim user_ As String = Environ("USERNAME")        ' Windows 恒有 USERNAME
 Print "USERNAME ="; user_
+#else
+Dim user_ As String = Environ("USER")            ' Linux/macOS 惯例是 USER（USERNAME 常为空）
+Print "USER ="; user_
+#endif
 Assert(Len(user_) > 0)
 
 ' ---- 3) 目录与可执行文件 ----

@@ -9,7 +9,7 @@
 | **`String`** | 变长，24 字节描述符 + 堆数据 | **字节数** | 日常 99% 的场景 |
 | `String * N` | 定长 N 字节，右侧补空格 | 恒 N | 随机文件记录（16 章） |
 | **`ZString * N`** | NUL 结尾（C 字符串），缓冲 N 字节 | 有效字符数 | 对接 C API（20 章） |
-| **`WString * N`** | 宽字符，Windows 上 = **UTF-16** | 码元数 | 对接 Win32 W 系列 API |
+| **`WString * N`** | 宽字符，Windows 上 = **UTF-16**（Linux 构建是 UTF-32，`Sizeof` 码元 4 字节，1.10.2 实测） | 码元数 | 对接 Win32 W 系列 API |
 
 ```freebasic
 Dim s As String = "你好"        ' Len = 6：UTF-8 字节数，不是字符数！
@@ -28,6 +28,8 @@ Dim ws As WString * 10 = "abc"  ' Len = 3（UTF-16 码元）
    ```
    （VB 的 `ChrW` 在 FB 里叫 `WChr`。）
 3. 若源码**带 BOM**，fbc 走另一条路：`String` 字面量被转成系统 GBK、输出走宽字符 API——管道验证全乱（02 章实测）。别带 BOM。
+
+> 平台标注：以上 GBK 行为是 **Windows 构建**（系统编码 GBK）的实测；Linux 构建系统编码即 UTF-8，`String` 字节透传同样成立（本教程 Linux 回归全过）。跨平台恒成立的结论：**`WChr` 拼码位可靠**、`Len(WString)` 数的是码元（UTF-16/UTF-32 宽度不同，字符数在 BMP 内一致）。
 
 ## 7.3 内建函数全家桶
 

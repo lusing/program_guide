@@ -71,7 +71,7 @@ fbc -w all main.bas mod_counter.bas mod_math.bas -x app.exe
 ## 11.5 库形态
 
 - `fbc -lib mod.bas` → 静态库 `.a`，使用方 `#inclib "mod"` 链接。
-- `fbc -dll mod.bas` → Windows DLL（20 章配套讲导出与 Declare）。
+- `fbc -dll mod.bas` → Windows 上产 DLL，Linux 上产 `.so`（20 章配套讲导出与 Declare）。
 
 ## 11.6 坑位清单（1.10.1 实测）
 

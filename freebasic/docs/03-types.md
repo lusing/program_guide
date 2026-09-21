@@ -2,14 +2,14 @@
 
 > 对应示例：`examples/03_types/`
 
-## 3.1 内建类型尺寸表（win64 实测）⭐
+## 3.1 内建类型尺寸表（win64 / linux-x86_64 双平台实测）⭐
 
 | 类型 | 字节 | 范围/说明 |
 |---|---|---|
 | `Byte` / `UByte` | 1 | 有符号/无符号 8 位 |
 | `Short` / `UShort` | 2 | 16 位 |
-| **`Integer` / `UInteger`** | **8** | **指针宽度**——win64 上是 8，win32 上是 4！ |
-| `Long` / `ULong` | 4 | 恒 32 位（Windows ABI 传统） |
+| **`Integer` / `UInteger`** | **8** | **指针宽度**——win64/linux-x86_64 都是 8，win32/x86 上是 4！ |
+| `Long` / `ULong` | 4 | 恒 32 位（两平台实测一致；⚠ 但 C 的 `long` 在 linux-x86_64 是 8，见下） |
 | `LongInt` / `ULongInt` | 8 | 恒 64 位 |
 | `Single` | 4 | 单精度浮点 |
 | `Double` | 8 | 双精度浮点 |
@@ -17,7 +17,7 @@
 | `String` | 24 | 变长字符串**描述符**的尺寸（数据另算，07 章） |
 | `Boolean` | 1 | 真 = **-1**（QB 血统），假 = 0 |
 
-**最大的坑**：`Integer` 是"指针宽"类型，跨平台变化；`Long` 在 FB 里恒 4 字节（与 C 的 `long` 在 Windows 上一致，但和很多人"long = 64 位"的直觉相反）。要恒定宽度用 `LongInt`；对接 C API 时按 `windows.bi`/`crt` 头里的类型映射抄（20 章）。
+**最大的坑**：`Integer` 是"指针宽"类型，跨平台变化；`Long` 在 FB 里恒 4 字节（与 C 的 `long` 在 Windows 上一致，但和很多人"long = 64 位"的直觉相反）。要恒定宽度用 `LongInt`；对接 C API 时按 `windows.bi`/`crt` 头里的类型映射抄（20 章）。**⚠ Linux 例外**：linux-x86_64 上 C 的 `long` 是 8 字节，FB `Long`（4）对不上——C 接口里的 `long` 要映射 `LongInt` 或 `crt` 头的 `clong`（该类型随平台伸缩：win64=4、linux-x86_64=8，1.10.2 实测）。
 
 ## 3.2 声明：Dim、Var、Const
 

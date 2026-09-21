@@ -23,6 +23,8 @@ Print Environ("FB_DEMO_OPT")
 
 `SetEnviron` 改的是**本进程**的环境（传给子进程可见），不改注册表/父进程。
 
+平台差异（1.10.2 linux 实测）：变量名惯例不同——Windows 恒有 `USERNAME`；Linux/macOS 用 **`USER`**（`USERNAME` 常为空，root 尤甚）。示例按 `#ifdef __FB_WIN32__` 分支取值。
+
 ## 21.3 目录与文件系统
 
 ```freebasic
@@ -43,11 +45,11 @@ f = Dir("*", fbDirectory)
 ## 21.4 执行外部程序
 
 ```freebasic
-Var rc = Shell("cmd /c mytool.exe")   ' 同步执行，返回退出码
+Var rc = Shell("cmd /c mytool.exe")   ' Windows：同步执行，返回退出码
 Exec("notepad", "readme.txt")         ' 也是执行（带参数分离）
 ```
 
-`Shell` 走 `cmd`，返回码就是子进程的。注意转义与注入——拼用户输入进命令串前三思。
+`Shell` 走 `cmd`，返回码就是子进程的。注意转义与注入——拼用户输入进命令串前三思。Linux 上 `Shell` 走 `/bin/sh`（POSIX 语法），直接 `Shell("mytool")` 即可，没有 `cmd /c` 一层。
 
 ## 21.5 自制选项解析
 
@@ -75,3 +77,4 @@ End Sub
 3. `fbDirectory` 等属性常量要 `#Include Once "dir.bi"`（vbcompat.bi 里也有）。
 4. 找 exe 旁边的资源用 `ExePath()`，`CurDir()` 是用户运行时的目录——两者经常不同。
 5. `Dir()` 是**游标式**遍历：第一次带模式，后续空参取下一个；中途改遍历别的模式会丢游标。
+6. **用户名变量平台不同**：Windows `USERNAME` 恒有；Linux/macOS 是 `USER`（`USERNAME` 常为空）——跨平台程序两都得试或 `#ifdef` 分支。

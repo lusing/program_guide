@@ -46,6 +46,8 @@ fbc -w all hello.bas -x build/hello.exe
 
 实测带 BOM 后 `"你好"` 的 `Len()` 从 6（UTF-8 字节）变成 4（GBK 字节），整个程序的输出管道里变成 UTF-16——**CI/脚本验证直接报废**。无 BOM + `chcp 65001` 是唯一确定性行为。副作用见 07 章：无 BOM 时 `WString` 字面量会按系统 GBK 误解 UTF-8 源码，宽字符场景用 `ChrW` 拼或走转换函数。
 
+> 平台标注：上表的 GBK 转码/宽字符输出是 **Windows 构建**行为（"系统编码"是 GBK 所致）。Linux 构建的系统编码就是 UTF-8，终端原生 UTF-8、无 `chcp` 一说；但**无 BOM 纪律跨平台不变**——Linux 下带 BOM 同样改变字面量的存储语义，别指望平台帮你兜底。
+
 ## 2.4 结束与暂停
 
 ```freebasic
