@@ -1,0 +1,27 @@
+<Page
+    x:Class="BasicGallery.TextBoxPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Margin="24">
+        <StackPanel Spacing="12" MaxWidth="480">
+            <TextBlock x:Name="StatusText" Text="Ready" FontSize="18"/>
+
+            <!-- 9.2 TextBox：Header 是标签，PlaceholderText 是提示，MaxLength 限长 -->
+            <TextBox x:Name="NameBox" Header="Task title" PlaceholderText="type here..."
+                     MaxLength="20" TextChanged="OnNameChanged"/>
+
+            <!-- 9.4 PasswordBox：事件读值，不绑进 ViewModel -->
+            <PasswordBox x:Name="SecretBox" Header="Password"
+                         PasswordRevealMode="Peek" PasswordChanged="OnPasswordChanged"/>
+
+            <!-- 9.5 RichEditBox：内容在 Document()，不是 string 属性 -->
+            <RichEditBox x:Name="RichBox" Header="Notes" Height="120"
+                         AcceptsReturn="True" TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <Button Content="Bold selection" Click="OnBoldClicked"/>
+                <Button Content="Read text" Click="OnReadRichClicked"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Page>

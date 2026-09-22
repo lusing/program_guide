@@ -23,6 +23,7 @@
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 #include <winrt/Microsoft.UI.Xaml.Navigation.h>
 #include <winrt/Microsoft.UI.Xaml.Shapes.h>
+#include <winrt/Microsoft.UI.Text.h>
 #include <winrt/Microsoft.UI.Windowing.h>
 #include <winrt/Windows.Graphics.h>
 
@@ -34,3 +35,4 @@
 #include "HomePage.xaml.h"
 #include "ButtonPage.xaml.h"
 #include "TextBlockPage.xaml.h"
+#include "TextBoxPage.xaml.h"
