@@ -1,0 +1,9 @@
+// App.idl -- see docs/04-first-app.md 4.3
+namespace BasicGallery
+{
+    [default_interface]
+    runtimeclass App : Microsoft.UI.Xaml.Application
+    {
+        App();
+    }
+}

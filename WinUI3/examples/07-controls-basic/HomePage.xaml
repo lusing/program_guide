@@ -1,0 +1,13 @@
+<Page
+    x:Class="BasicGallery.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Margin="24" RowDefinitions="Auto,*">
+        <TextBlock Text="Basic Controls Gallery" FontSize="28" FontWeight="Bold"/>
+        <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                   TextAlignment="Center" FontSize="16" Opacity="0.7" TextWrapping="Wrap">
+            左侧导航列出每个控件章的演示页。&#x0a;每页顶部一行 StatusText 是该页交互的即时反馈。
+        </TextBlock>
+    </Grid>
+</Page>

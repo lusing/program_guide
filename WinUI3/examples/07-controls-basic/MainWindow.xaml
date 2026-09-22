@@ -1,0 +1,19 @@
+<Window
+    x:Class="BasicGallery.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 画廊外壳：NavigationView 提供导航，Frame 承载每章一个 Page（docs/22）。
+         PaneDisplayMode 必须显式钉死 Left：默认值会按窗口宽度自适应收起
+         （150% DPI 下 900 物理px = 600 逻辑px，低于 640 阈值，面板会被折叠）。 -->
+    <NavigationView x:Name="Nav" IsBackButtonVisible="Auto"
+                    PaneDisplayMode="Left" IsPaneOpen="True" OpenPaneLength="200"
+                    SelectionChanged="OnNavSelectionChanged">
+        <NavigationView.MenuItems>
+            <NavigationViewItem Content="Home" Tag="home"/>
+            <NavigationViewItem Content="Button" Tag="button"/>
+            <!-- 每章任务在此追加一个导航项 -->
+        </NavigationView.MenuItems>
+        <Frame x:Name="ContentFrame"/>
+    </NavigationView>
+</Window>
