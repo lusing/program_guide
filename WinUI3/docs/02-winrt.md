@@ -298,7 +298,7 @@ winrt::Windows::Foundation::IAsyncAction LoadAsync()
 
     // 切回 UI 线程：用 DispatcherQueue::TryEnqueue，不要 co_await resume_foreground
     // （WinUI 3 的 Microsoft.UI.Dispatching.DispatcherQueue 没有 resume_foreground 重载，
-    //   换 Windows.System 的同名类型能编过但运行时永不恢复——见 8.7.1）
+    //   换 Windows.System 的同名类型能编过但运行时永不恢复——见 32.7.1）
     m_dispatcherQueue.TryEnqueue([strong = get_strong()]
     {
         strong->StatusText().Text(L"done");       // 现在在 UI 线程，可以更新界面
@@ -309,9 +309,9 @@ winrt::Windows::Foundation::IAsyncAction LoadAsync()
 两个必须内化的规则：
 
 1. **UI 对象只能在 UI 线程（单线程 apartment）访问**。后台线程直接改控件属性会抛异常。
-2. `co_await` 之后默认回到原来的 apartment（C++/WinRT 协程自动处理上下文恢复）；要显式控制切换点，UI→后台用 `resume_background()`，后台→UI 用 `Microsoft.UI.Dispatching.DispatcherQueue::TryEnqueue`（WinUI 3 桌面线程上**不要**用 `resume_foreground`，见 [08-binding-mvvm.md](./08-binding-mvvm.md) 8.7.1）。
+2. `co_await` 之后默认回到原来的 apartment（C++/WinRT 协程自动处理上下文恢复）；要显式控制切换点，UI→后台用 `resume_background()`，后台→UI 用 `Microsoft.UI.Dispatching.DispatcherQueue::TryEnqueue`（WinUI 3 桌面线程上**不要**用 `resume_foreground`，见 [32-binding-mvvm.md](./32-binding-mvvm.md) 32.7.1）。
 
-异步的完整工程模式（加载状态、错误处理、重入）见 [08-binding-mvvm.md](./08-binding-mvvm.md) 第 8.7 节。
+异步的完整工程模式（加载状态、错误处理、重入）见 [32-binding-mvvm.md](./32-binding-mvvm.md) 第 32.7 节。
 
 ## 2.9 错误模型
 

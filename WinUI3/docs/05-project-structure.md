@@ -42,11 +42,11 @@ MyApp/
 
 **要被 XAML 绑定、或被其他 runtimeclass 引用的类型，必须先进 IDL**——这是 C++/WinRT 与 C# WinUI 3 最大的工程差异。但"一个 runtimeclass 一个 `.idl`"这条想当然的规则**是错的**：
 
-> **MIDL 不能跨 `.idl` 文件解析 runtimeclass 引用**（实测报 `MIDL2011` 未解析类型）。如果 `MainWindow` 引用 `TasksViewModel`、`TasksViewModel` 又引用 `TaskItem`，这三个 runtimeclass **必须合并进同一个 `.idl`**，否则 MIDL 在编译 `MainWindow.idl` 时找不到 `TasksViewModel` 的定义。`examples/08-binding-mvvm/` 就是这么组织的：`MvvmApp.idl` 里一次性声明了 `TaskItem` + `TasksViewModel` + `MainWindow`；`App.idl` 因为不引用它们，可以独立留着。
+> **MIDL 不能跨 `.idl` 文件解析 runtimeclass 引用**（实测报 `MIDL2011` 未解析类型）。如果 `MainWindow` 引用 `TasksViewModel`、`TasksViewModel` 又引用 `TaskItem`，这三个 runtimeclass **必须合并进同一个 `.idl`**，否则 MIDL 在编译 `MainWindow.idl` 时找不到 `TasksViewModel` 的定义。`examples/32-binding-mvvm/` 就是这么组织的：`MvvmApp.idl` 里一次性声明了 `TaskItem` + `TasksViewModel` + `MainWindow`；`App.idl` 因为不引用它们，可以独立留着。
 
 所以上面目录树里 `TaskItem.idl` / `TasksViewModel.idl` / `MainWindow.idl` 分文件画，是为了讲清**类型归属**；真正落到工程时，**凡是有引用关系的类要合到一个 `.idl`**。判断标准：这个类型引用了别的自定义 runtimeclass、或被别的自定义 runtimeclass 引用吗？是 → 和它们同一个 `.idl`；否（如 `App`）→ 可以独立。
 
-> 从这一篇到布局篇（[05](./05-project-structure.md)~[07](./07-layout.md)），代码片段为控制篇幅**多数省略了配套 IDL 声明**。要进 IDL 的其实只有两类：**runtimeclass 本身的声明**，和**`x:Bind` 路径上的成员**（属性/方法）。像 `Click="OnNavSelectionChanged"` 这种**按名字挂接的事件处理器不必进 IDL**，只要它是实现类的成员函数即可。完整规则见 [04 篇](./04-first-app.md) 4.7。
+> 从这一篇到布局篇（[05](./05-project-structure.md)~[06](./06-layout.md)），代码片段为控制篇幅**多数省略了配套 IDL 声明**。要进 IDL 的其实只有两类：**runtimeclass 本身的声明**，和**`x:Bind` 路径上的成员**（属性/方法）。像 `Click="OnNavSelectionChanged"` 这种**按名字挂接的事件处理器不必进 IDL**，只要它是实现类的成员函数即可。完整规则见 [04 篇](./04-first-app.md) 4.7。
 
 ## 5.3 Window 只做壳：Frame + NavigationView
 
@@ -182,7 +182,7 @@ Unloaded 事件
 三个工程决定要做：
 
 - **状态是否要跨导航保留**：默认不保留（重新构造）。设 `NavigationCacheMode="Enabled"` 让 Frame 缓存页面实例，ViewModel 状态随之保留
-- **事件退订挂在哪**：页面自己 `Unloaded` 里退订是常见做法，但它**不可靠**——父容器整体被摘掉时，子元素的 `Unloaded` 不保证触发。所以跨页面的长命订阅（Service 事件、`DispatcherQueueTimer`）不要依赖页面 `Unloaded` 做清理，要么挂在窗口/应用级钩子上集中回收，要么用 `winrt::weak_ref` 让泄漏自然失效（见 [10 篇](./10-os-integration.md) 10.5）
+- **事件退订挂在哪**：页面自己 `Unloaded` 里退订是常见做法，但它**不可靠**——父容器整体被摘掉时，子元素的 `Unloaded` 不保证触发。所以跨页面的长命订阅（Service 事件、`DispatcherQueueTimer`）不要依赖页面 `Unloaded` 做清理，要么挂在窗口/应用级钩子上集中回收，要么用 `winrt::weak_ref` 让泄漏自然失效（见 [34 篇](./34-os-integration.md) 34.5）
 - **异步加载的时机**：构造函数里不能 `co_await`（构造函数不是协程）。标准做法是订阅 `Loaded` 事件后启动异步加载：
 
 ```cpp
@@ -263,4 +263,4 @@ Page 永远不直接调 Service，ViewModel 永远不碰 UI 对象。保持这�
 
 ---
 
-上一篇：[04-first-app.md](./04-first-app.md) ｜ 下一篇：[06-controls.md](./06-controls.md)
+上一篇：[04-first-app.md](./04-first-app.md) ｜ 下一篇：[24-dialogs-flyouts.md](./24-dialogs-flyouts.md)

@@ -1,10 +1,10 @@
-# 10. OS 集成：进程、线程、文件与配置
+# 34. OS 集成：进程、线程、文件与配置
 
 WinUI 3 不是"逃离系统编程"。一个 WinUI 3 应用就是一个 Windows 进程：有线程、有句柄、能用全部 Win32/WinRT 能力。这一篇讲清 UI 工程里最常遇到的系统集成点：线程边界、文件访问、配置存储、子进程，以及对象生命周期。
 
 > 原教程此章包含大量通用 OS 编程内容（纤程、自写线程池、Fork-Join、Future），已移除——那些属于系统编程教程的主题。这里只保留与 WinUI 3 工程直接相关、且容易踩坑的部分。
 
-## 10.1 线程边界：UI 线程与 DispatcherQueue
+## 34.1 线程边界：UI 线程与 DispatcherQueue
 
 WinUI 3 应用的线程模型：
 
@@ -28,10 +28,10 @@ co_await winrt::resume_background();
 // WinUI 3 的 Microsoft.UI.Dispatching.DispatcherQueue 没有 resume_foreground 重载
 // （换 Windows.System 的同名类型能编过，但运行时永不恢复）。正确做法是 TryEnqueue：
 m_dispatcherQueue.TryEnqueue([strong = get_strong()] { strong->UpdateUi(); });
-// 完整说明见 08 篇 8.7.1；下面 10.1 的手工线程模式也是走 TryEnqueue
+// 完整说明见 08 篇 8.7.1；下面 34.1 的手工线程模式也是走 TryEnqueue
 ```
 
-自建线程往 UI 线程投递工作，用 `TryEnqueue`。**优先用 [08 篇](./08-binding-mvvm.md) 8.7 的协程写法**；只有"要长期跑的独立线程"（轮询、监听、串口读取）才需要下面这种手工模式：
+自建线程往 UI 线程投递工作，用 `TryEnqueue`。**优先用 [32 篇](./32-binding-mvvm.md) 32.7 的协程写法**；只有"要长期跑的独立线程"（轮询、监听、串口读取）才需要下面这种手工模式：
 
 ```cpp
 // 头文件里持为成员：std::jthread m_worker;
@@ -64,11 +64,11 @@ m_worker = std::jthread([weakVm, queue](std::stop_token st)
 
 三个必须做对的点：
 
-- **不要用 `detach()`**。线程生命周期要有主人，否则它会在页面销毁后继续访问 `this` —— 这正是 10.5 讲的循环引用之外的第二类悬空访问
+- **不要用 `detach()`**。线程生命周期要有主人，否则它会在页面销毁后继续访问 `this` —— 这正是 34.5 讲的循环引用之外的第二类悬空访问
 - **回调里只持弱引用**（`winrt::weak_ref`）+ `DispatcherQueue`，不持 UI 对象强引用；`TryEnqueue` 的 lambda 里再 `get()` 升级
 - **后台线程调用任何 WinRT API 前要先 `init_apartment`**（一般是 MTA）。漏了这行，报出来的错和真实原因差得很远
 
-工程纪律（完整异步模式见 [08 篇](./08-binding-mvvm.md) 8.7）：
+工程纪律（完整异步模式见 [32 篇](./32-binding-mvvm.md) 32.7）：
 
 ```text
 后台线程：只产生数据、只持有纯数据对象
@@ -76,9 +76,9 @@ m_worker = std::jthread([weakVm, queue](std::stop_token st)
 UI 线程：更新 ViewModel 状态 → 绑定刷界面
 ```
 
-## 10.2 文件访问
+## 34.2 文件访问
 
-### 10.2.1 WinRT 文件 API
+### 34.2.1 WinRT 文件 API
 
 WinUI 3 应用首选 WinRT 的 `StorageFile` 异步 API：
 
@@ -102,11 +102,11 @@ winrt::Windows::Foundation::IAsyncAction SaveTasksAsync(winrt::hstring const& co
 
 #### 非打包应用拿不到 `ApplicationData`（两个类型都不行——实测）
 
-`Windows.Storage.ApplicationData::Current()` 的语义建立在**包身份**上：非打包（unpackaged）进程没有包身份，这行代码运行时会直接抛异常（[09 篇](./09-theming-packaging.md) 9.6.2 的两种形态在这里就分岔了）。Windows App SDK 提供了一个同名但不同命名空间的类型 `Microsoft.Windows.Storage.ApplicationData`，静态入口是 `GetDefault()`——**很多资料说它是"非打包也能用"的回退，这是错的**。
+`Windows.Storage.ApplicationData::Current()` 的语义建立在**包身份**上：非打包（unpackaged）进程没有包身份，这行代码运行时会直接抛异常（[33 篇](./33-theming-packaging.md) 33.6.2 的两种形态在这里就分岔了）。Windows App SDK 提供了一个同名但不同命名空间的类型 `Microsoft.Windows.Storage.ApplicationData`，静态入口是 `GetDefault()`——**很多资料说它是"非打包也能用"的回退，这是错的**。
 
-> **实测（WASDK 1.8，`examples/10-os-integration/` 非打包运行）**：`Microsoft.Windows.Storage.ApplicationData::GetDefault().LocalPath()` 同样抛 `hresult_error`，消息是 **"该进程没有程序包标识符"**（no package identity）。也就是说 **`GetDefault()` 和 `Current()` 一样依赖包身份**，不是非打包的救命稻草。（类型成员集本身是元数据实测：`Microsoft.Windows.Storage.winmd` 里确有 `LocalPath` / `LocalFolder` / `LocalCachePath` / `TemporaryPath` / `LocalSettings` / `ClearAsync` 及 `GetForUser` / `GetForPackageFamily`——但它们在非打包进程里都在 `GetDefault()` 这一步就抛了。）
+> **实测（WASDK 1.8，`examples/34-os-integration/` 非打包运行）**：`Microsoft.Windows.Storage.ApplicationData::GetDefault().LocalPath()` 同样抛 `hresult_error`，消息是 **"该进程没有程序包标识符"**（no package identity）。也就是说 **`GetDefault()` 和 `Current()` 一样依赖包身份**，不是非打包的救命稻草。（类型成员集本身是元数据实测：`Microsoft.Windows.Storage.winmd` 里确有 `LocalPath` / `LocalFolder` / `LocalCachePath` / `TemporaryPath` / `LocalSettings` / `ClearAsync` 及 `GetForUser` / `GetForPackageFamily`——但它们在非打包进程里都在 `GetDefault()` 这一步就抛了。）
 
-非打包进程要一个"每用户可写目录"，可靠做法是**回到 Win32**：`%LOCALAPPDATA%` 拼上你的应用名。`examples/10-os-integration/` 里就是这样兜底的：
+非打包进程要一个"每用户可写目录"，可靠做法是**回到 Win32**：`%LOCALAPPDATA%` 拼上你的应用名。`examples/34-os-integration/` 里就是这样兜底的：
 
 ```cpp
 #include <winrt/Microsoft.Windows.Storage.h>
@@ -134,11 +134,11 @@ winrt::hstring ResolveLocalDir()
 两条路二选一，取决于你的部署形态：
 
 - **就是非打包**（绿色 exe、开发期直接跑）→ 用上面的 `%LOCALAPPDATA%` / `SHGetKnownFolderPath(FOLDERID_LocalAppData)` 兜底，别指望 `ApplicationData`
-- **想要 `ApplicationData` 的托管语义**（自动清理、按用户/包族隔离）→ 给应用**包身份**：打完整 MSIX，或挂一个稀疏包（sparse package，见 [09 篇](./09-theming-packaging.md)）。有了身份，`GetDefault()` 就不抛了
+- **想要 `ApplicationData` 的托管语义**（自动清理、按用户/包族隔离）→ 给应用**包身份**：打完整 MSIX，或挂一个稀疏包（sparse package，见 [33 篇](./33-theming-packaging.md)）。有了身份，`GetDefault()` 就不抛了
 
 一个会浪费你半小时的坑：两个类型都叫 `ApplicationData`，如果同一个 `.cpp` 里同时写了 `using namespace winrt::Windows::Storage;` 和 `using namespace winrt::Microsoft::Windows::Storage;`，编译器会报歧义——像上面那样显式写全 `winrt::Microsoft::Windows::Storage::ApplicationData::GetDefault()` 即可。
 
-### 10.2.2 文件选择器：Windows App SDK picker
+### 34.2.2 文件选择器：Windows App SDK picker
 
 桌面应用里的文件选择器必须和"哪个窗口"绑定，否则弹不出来。Windows App SDK 提供了专门为桌面设计的 picker——`Microsoft.Windows.Storage.Pickers`（本机 1.8 元数据实测，见文末版本说明），**窗口归属通过构造函数的 `WindowId` 传入**，不再需要手写 HWND 互操作：
 
@@ -170,7 +170,7 @@ winrt::Windows::Foundation::IAsyncAction MainWindow::PickFileAsync()
 | 返回类型 | `StorageFile` / `StorageFolder` | `PickFileResult` / `PickFolderResult`，只有 `Path()` 字符串 |
 | 文件类型过滤 | `FileTypeFilter()`；UWP 侧不往里面加扩展名，调用选择器就抛异常 | 同样是 `FileTypeFilter()`（`winrt::IVector<winrt::hstring>`），照样显式 `Append` 最省事 |
 
-拿到路径之后要读内容，就自己接上一步：`co_await FileIO::ReadTextAsync(co_await StorageFile::GetFileFromPathAsync(path))`，或者直接用 `std::filesystem` / 文件流（见 10.2.3）。`FileSavePicker`（`SuggestedFileName`、`SuggestedFolder`、`FileTypeChoices`）与 `FolderPicker`（`PickSingleFolderAsync`）同一套模式。
+拿到路径之后要读内容，就自己接上一步：`co_await FileIO::ReadTextAsync(co_await StorageFile::GetFileFromPathAsync(path))`，或者直接用 `std::filesystem` / 文件流（见 34.2.3）。`FileSavePicker`（`SuggestedFileName`、`SuggestedFolder`、`FileTypeChoices`）与 `FolderPicker`（`PickSingleFolderAsync`）同一套模式。
 
 **旧写法仍然有效**，在必须拿到 HWND 做传统互操作、或工程里的 Windows App SDK 还没有这个命名空间时要用到：
 
@@ -197,7 +197,7 @@ auto file = co_await picker.PickSingleFileAsync();
 > **版本说明**：本节签名对照本机 NuGet 缓存的 `Microsoft.WindowsAppSDK.Foundation` 1.8.260222000（`Microsoft.Windows.Storage.Pickers.winmd`）逐个方法核对：三个 picker 的构造参数都是 `Microsoft.UI.WindowId`，`PickSingleFileAsync` 返回 `PickFileResult`、`PickSaveFileAsync` 同、`PickSingleFolderAsync` 返回 `PickFolderResult`，两个结果类型都只有 `Path` 一个属性。想确认自己那版 SDK 有没有这些成员，直接在 `%USERPROFILE%\.nuget\packages\microsoft.windowsappsdk.foundation\<版本>\metadata\` 下用 [.NET 的 `MetadataReader` 或 `ILDASM`](https://learn.microsoft.com/dotnet/api/system.reflection.metadata) 打开同名 `.winmd`；这个命名空间是较近的版本才加进来的，老版本里搜不到属正常。
 
 
-### 10.2.3 文件操作放 Service 层
+### 34.2.3 文件操作放 Service 层
 
 无论用哪套 API，读写的职责在 Service，页面只发起和展示（分层依据见 [05 篇](./05-project-structure.md) 5.7）：
 
@@ -207,7 +207,7 @@ ViewModel：更新 IsLoading 状态 → 调 Service → 结果写入可观察状
 Service：真实 IO（StorageFile / std::filesystem / 第三方库）
 ```
 
-## 10.3 配置存储：注册表、JSON、XML 怎么选
+## 34.3 配置存储：注册表、JSON、XML 怎么选
 
 | 存储 | 适合 | 注意 |
 |------|------|------|
@@ -219,7 +219,7 @@ Service：真实 IO（StorageFile / std::filesystem / 第三方库）
 
 原则一句话：**格式是 Service 的实现细节，上层只看"保存设置 / 加载任务"**。
 
-## 10.4 子进程
+## 34.4 子进程
 
 WinUI 3 应用可以启动、等待其他程序——桌面工具类应用的常见需求：
 
@@ -242,7 +242,7 @@ bool RunTool(std::wstring cmdLine, DWORD& exitCode)
         return false;
     }
 
-    WaitForSingleObject(pi.hProcess, INFINITE);   // 阻塞等待：必须在后台线程，见 10.1
+    WaitForSingleObject(pi.hProcess, INFINITE);   // 阻塞等待：必须在后台线程，见 34.1
 
     DWORD code{};
     BOOL gotCode = GetExitCodeProcess(pi.hProcess, &code);
@@ -261,7 +261,7 @@ bool RunTool(std::wstring cmdLine, DWORD& exitCode)
 
 - **先等再关句柄**。最常见的写法是 `CreateProcessW` 成功就立刻 `CloseHandle` 两个句柄然后返回 true——那等于宣布"我不关心结果"，而工具类应用恰恰需要子进程的退出码来判断成功与否
 - **`GetExitCodeProcess` 的 `STILL_ACTIVE`（259）歧义**：进程还在跑时它返回 259，于是真正以 259 退出的进程无法区分。要可靠判定"已结束"，只认 `WaitForSingleObject` 的返回，不要把退出码 259 当作"仍在运行"的证据
-- **等待属于后台工作**。UI 线程上 `WaitForSingleObject(..., INFINITE)` 会让界面假死，正确姿势是 `co_await winrt::resume_background()` 之后再等，结果按 10.1 的纪律回流 UI 线程
+- **等待属于后台工作**。UI 线程上 `WaitForSingleObject(..., INFINITE)` 会让界面假死，正确姿势是 `co_await winrt::resume_background()` 之后再等，结果按 34.1 的纪律回流 UI 线程
 
 或者走 WinRT 的 `Launcher`（更语义化）：
 
@@ -272,9 +272,9 @@ winrt::Windows::System::Launcher::LaunchUriAsync(
     winrt::Windows::Foundation::Uri(L"https://learn.microsoft.com"));
 ```
 
-耗时地等待/轮询子进程属于后台工作，遵守 10.1 的线程边界。
+耗时地等待/轮询子进程属于后台工作，遵守 34.1 的线程边界。
 
-## 10.5 对象生命周期：引用计数 + RAII
+## 34.5 对象生命周期：引用计数 + RAII
 
 WinUI 3 / C++/WinRT 的内存模型是两条规则的组合：
 
@@ -296,9 +296,9 @@ if (auto vm = weak.get())
 }
 ```
 
-- 后台线程/长命任务**不要**持有 UI 对象强引用（既是线程边界问题也是生命周期问题），需要回调 UI 时持 `DispatcherQueue` + 弱引用（见 10.1）
+- 后台线程/长命任务**不要**持有 UI 对象强引用（既是线程边界问题也是生命周期问题），需要回调 UI 时持 `DispatcherQueue` + 弱引用（见 34.1）
 
-## 10.6 系统层与 UI 层的全景
+## 34.6 系统层与 UI 层的全景
 
 把本篇与前面各篇合起来，一个真实 WinUI 3 应用的全景是：
 
@@ -315,4 +315,4 @@ UI 层     XAML / Page / 绑定（03、06、07 篇）
 
 ---
 
-上一篇：[09-theming-packaging.md](./09-theming-packaging.md) ｜ 返回 [目录](../README.md)
+上一篇：[33 主题资源与交付](./33-theming-packaging.md) ｜ 下一篇：[35 TaskFlow 实战](./35-taskflow.md) ｜ 返回 [目录](../README.md)

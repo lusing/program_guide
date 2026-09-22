@@ -26,16 +26,16 @@
 |---|------|-----------|
 | [04 第一个真实应用](docs/04-first-app.md) | 模板工程结构、App/MainWindow 真实代码、启动时序、事件签名 | 一个真实 WinUI 3 程序怎么启动、怎么跑起来 |
 | [05 工程分层](docs/05-project-structure.md) | 各层职责、Frame 导航、页面生命周期、IDL 的角色、Service 边界 | 真实应用的代码怎么组织 |
-| [06 常用控件](docs/06-controls.md) | Button/TextBox/CheckBox/ComboBox/ListView/ContentDialog 等的真实写法与使用模式 | 控件在工程里扮演什么角色、哪些细节是坑 |
-| [07 布局](docs/07-layout.md) | Grid/StackPanel/Border/RelativePanel/ScrollViewer 与真实页面结构 | 页面区域怎么划分和伸缩 |
+| [06 布局](docs/06-layout.md) | Grid/StackPanel/Border/RelativePanel/ScrollViewer 与真实页面结构 | 页面区域怎么划分和伸缩 |
+| 07–25 控件篇 | 每个核心控件一章（Button、TextBox、ListView、NavigationView、ContentDialog…），**扩充中** | 控件在工程里扮演什么角色、哪些细节是坑 |
 
 ### 应用篇
 
 | 篇 | 内容 | 回答的问题 |
 |---|------|-----------|
-| [08 绑定、MVVM 与异步](docs/08-binding-mvvm.md) | INotifyPropertyChanged 完整实现、IObservableVector、x:Bind 模式、ICommand、协程异步模式 | 界面怎么跟随数据变、耗时工作怎么不卡 UI |
-| [09 主题资源与交付](docs/09-theming-packaging.md) | ThemeResource/StaticResource、资源字典分层、主题切换、Assets/Manifest/MSIX | 深浅色怎么自动适配、应用怎么打包分发 |
-| [10 OS 集成](docs/10-os-integration.md) | 线程边界与 DispatcherQueue、文件/选择器、注册表/JSON、子进程、生命周期 | UI 框架之下的系统能力怎么用 |
+| [32 绑定、MVVM 与异步](docs/32-binding-mvvm.md) | INotifyPropertyChanged 完整实现、IObservableVector、x:Bind 模式、ICommand、协程异步模式 | 界面怎么跟随数据变、耗时工作怎么不卡 UI |
+| [33 主题资源与交付](docs/33-theming-packaging.md) | ThemeResource/StaticResource、资源字典分层、主题切换、Assets/Manifest/MSIX | 深浅色怎么自动适配、应用怎么打包分发 |
+| [34 OS 集成](docs/34-os-integration.md) | 线程边界与 DispatcherQueue、文件/选择器、注册表/JSON、子进程、生命周期 | UI 框架之下的系统能力怎么用 |
 
 ## 学习路线
 
@@ -46,18 +46,24 @@
         │
 04 ── 05              骨架：真实应用怎么启动、代码怎么分层
    │
-06 ── 07              界面能力：控件与布局
+06                    布局
    │
-08                    枢纽：绑定 / MVVM / 异步（最核心的一篇）
+07 ── 25              控件篇：基础 / 集合 / 导航浮层（扩充中）
    │
-09 ── 10              应用级：主题交付与系统能力
+26 ── 31              进阶：样式模板 / 自定义控件 / VSM / 动画 / 绘图 / 窗口
+   │
+32                    枢纽：绑定 / MVVM / 异步（最核心的一篇）
+   │
+33 ── 34              应用级：主题交付与系统能力
+   │
+35                    实战收束
 ```
 
 已经熟悉某个领域的读者可以跳读：
 
 - 会 WPF/UWP → 先读 [02 WinRT 机制](docs/02-winrt.md) 和 [03 XAML 机制](docs/03-xaml.md) 3.6（`x:Bind` 与 WPF 的 `{Binding}` 差异很大），再按需查目录
 - 会 Win32/C++ → [04 第一个真实应用](docs/04-first-app.md) 起步，重点体会 IDL 和投影（[02 篇](docs/02-winrt.md) 2.5）
-- 只想快速上手 → [04](docs/04-first-app.md) → [06](docs/06-controls.md) → [08](docs/08-binding-mvvm.md)，出问题再回概念篇
+- 只想快速上手 → [04](docs/04-first-app.md) → [06 布局](docs/06-layout.md) → [32 绑定](docs/32-binding-mvvm.md)，出问题再回概念篇
 
 ## 环境要求
 
@@ -85,13 +91,12 @@
 ```text
 examples/
 ├── 01-first-app/        MyApp        最小闭环：Button + Click 处理器改文本
-├── 06-controls/         ControlsApp  ComboBox/CheckBox/RadioButton/ToggleSwitch/Slider/ContentDialog
-├── 07-layout/           LayoutApp    Grid(*/Auto) + ScrollViewer + 尺寸回报
-├── 08-binding-mvvm/     MvvmApp      INotifyPropertyChanged + IObservableVector + x:Bind + 协程异步
-└── 10-os-integration/   OsIntApp     子进程 CreateProcessW + 应用数据目录 + WASDK picker
+├── 06-layout/           LayoutApp    Grid(*/Auto) + ScrollViewer + 尺寸回报
+├── 32-binding-mvvm/     MvvmApp      INotifyPropertyChanged + IObservableVector + x:Bind + 协程异步
+└── 34-os-integration/   OsIntApp     子进程 CreateProcessW + 应用数据目录 + WASDK picker
 ```
 
-在 `WinUI3/` 目录下跑 **`.\build.ps1`** 即可从零编译全部五个工程（脚本用 vswhere 定位 MSBuild，`-restore` 还原 NuGet，逐个打印 `PASS`/`FAIL`）。五个工程当前均 **PASS**，只剩无害告警（MSB8027/LNK4042 重复项、C4002 `GetCurrentTime`、C4100 未用形参）。
+在 `WinUI3/` 目录下跑 **`.\build.ps1`** 即可从零编译全部工程（脚本用 vswhere 定位 MSBuild，`-restore` 还原 NuGet，逐个打印 `PASS`/`FAIL`）。当前全部工程 **PASS**，只剩无害告警（MSB8027/LNK4042 重复项、C4002 `GetCurrentTime`、C4100 未用形参）。
 
 ### 三条验证通道
 
@@ -110,43 +115,42 @@ examples/
 | 工程 | 实测的流程 | 证据 |
 |------|-----------|------|
 | `01-first-app` | 点击 Button，`StatusText` 由 "Ready" 翻成 "Clicked from C++/WinRT" | `.smoke/01-first-app/after.png` |
-| `08-binding-mvvm` | 点 Refresh → 后台协程 → `TryEnqueue` 切回 UI → 集合整体替换，列表出现 2 项、状态 "Loaded 2 tasks"/"Finished" | `.smoke/08-binding-mvvm/after.png` |
-| `10-os-integration` | 点 Run tool → `CreateProcessW` 起 `cmd.exe` → 回收退出码 → 界面报 "tool succeeded"；点 Show path → `GetDefault()` **抛 "该进程没有程序包标识符"** → 兜底解析出 `%LOCALAPPDATA%\OsIntApp` | `.smoke/10-os-integration/after.png` |
-| `06-controls` | 点 Show dialog → `ContentDialog` 模态弹出（Confirm/OK/Cancel） | `.smoke/06-controls/after.png` |
-| `07-layout` | Grid `*/Auto` 行列 + ScrollViewer 滚动条 + 尺寸回报正确渲染 | `.smoke/07-layout/after.png` |
+| `32-binding-mvvm` | 点 Refresh → 后台协程 → `TryEnqueue` 切回 UI → 集合整体替换，列表出现 2 项、状态 "Loaded 2 tasks"/"Finished" | `.smoke/32-binding-mvvm/after.png` |
+| `34-os-integration` | 点 Run tool → `CreateProcessW` 起 `cmd.exe` → 回收退出码 → 界面报 "tool succeeded"；点 Show path → `GetDefault()` **抛 "该进程没有程序包标识符"** → 兜底解析出 `%LOCALAPPDATA%\OsIntApp` | `.smoke/34-os-integration/after.png` |
+| `06-layout` | Grid `*/Auto` 行列 + ScrollViewer 滚动条 + 尺寸回报正确渲染 | `.smoke/06-layout/after.png` |
 
 ### 验证推翻并改回正文的写法
 
 三条通道合起来逼出了下面这些修正（都已写回对应章节，不是列在这儿就算了）：
 
-- **`co_await winrt::resume_foreground(m_dispatcherQueue)` 在 WinUI 3 桌面应用里是错的**（编译级 + 运行时级）：`resume_foreground` 只有 `Windows.System.DispatcherQueue` / `Windows.UI.Core.CoreDispatcher` 两个重载，**没有** WinUI 3 的 `Microsoft.UI.Dispatching.DispatcherQueue` 重载；改用 `Windows.System` 那个同名类型能编过，但运行时协程**永不恢复**，界面死在 "Loading..."。正文改为 `DispatcherQueue::TryEnqueue` + `get_strong()`（见 [08 篇 8.7.1](docs/08-binding-mvvm.md#871-标准模式winui-3-实测写法)、[10 篇 10.1](docs/10-os-integration.md#101-线程边界ui-线程与-dispatcherqueue)）
-- **非打包进程 `Microsoft.Windows.Storage.ApplicationData::GetDefault()` 同样抛 "该进程没有程序包标识符"**（运行时级）：它和 `Windows.Storage.ApplicationData::Current()` 一样依赖包身份，不是非打包的救命稻草；非打包要退回 `%LOCALAPPDATA%` 或给应用挂稀疏包（见 [10 篇 10.2.1](docs/10-os-integration.md#1021-winrt-文件-api)）
-- **ViewModel 的 IDL 必须声明 `: Microsoft.UI.Xaml.Data.INotifyPropertyChanged`**（编译级 + 运行时级）：否则 `Mode=OneWay` 绑定静默不刷新（见 [08 篇 8.3](docs/08-binding-mvvm.md#83-页面与-viewmodel-的连接)）
-- **有构造函数的 runtimeclass 必须写 `factory_implementation` 结构**（编译级）：漏掉是链接/激活失败（见 [08 篇 8.2](docs/08-binding-mvvm.md#82-可观察对象在-cwinrt-里实现-inotifypropertychanged)）
-- **按名字挂接的事件处理器（`Click="OnX"`）不需要进 IDL**，只有 `x:Bind` 路径上的成员才需要（编译级，见 [04 篇 4.7](docs/04-first-app.md#47-常见启动期错误)、[05 篇 5.2](docs/05-project-structure.md#52-目录组织)、[06 篇](docs/06-controls.md)）
+- **`co_await winrt::resume_foreground(m_dispatcherQueue)` 在 WinUI 3 桌面应用里是错的**（编译级 + 运行时级）：`resume_foreground` 只有 `Windows.System.DispatcherQueue` / `Windows.UI.Core.CoreDispatcher` 两个重载，**没有** WinUI 3 的 `Microsoft.UI.Dispatching.DispatcherQueue` 重载；改用 `Windows.System` 那个同名类型能编过，但运行时协程**永不恢复**，界面死在 "Loading..."。正文改为 `DispatcherQueue::TryEnqueue` + `get_strong()`（见 [32 篇 32.7.1](docs/32-binding-mvvm.md#321-标准模式winui-3-实测写法)、[34 篇 34.1](docs/34-os-integration.md#341-线程边界ui-线程与-dispatcherqueue)）
+- **非打包进程 `Microsoft.Windows.Storage.ApplicationData::GetDefault()` 同样抛 "该进程没有程序包标识符"**（运行时级）：它和 `Windows.Storage.ApplicationData::Current()` 一样依赖包身份，不是非打包的救命稻草；非打包要退回 `%LOCALAPPDATA%` 或给应用挂稀疏包（见 [34 篇 34.2.1](docs/34-os-integration.md#1021-winrt-文件-api)）
+- **ViewModel 的 IDL 必须声明 `: Microsoft.UI.Xaml.Data.INotifyPropertyChanged`**（编译级 + 运行时级）：否则 `Mode=OneWay` 绑定静默不刷新（见 [32 篇 32.3](docs/32-binding-mvvm.md#323-页面与-viewmodel-的连接)）
+- **有构造函数的 runtimeclass 必须写 `factory_implementation` 结构**（编译级）：漏掉是链接/激活失败（见 [32 篇 32.2](docs/32-binding-mvvm.md#322-可观察对象在-cwinrt-里实现-inotifypropertychanged)）
+- **按名字挂接的事件处理器（`Click="OnX"`）不需要进 IDL**，只有 `x:Bind` 路径上的成员才需要（编译级，见 [04 篇 4.7](docs/04-first-app.md#47-常见启动期错误)、[05 篇 5.2](docs/05-project-structure.md#52-目录组织)）
 - **MIDL 不能跨 `.idl` 解析 runtimeclass 引用**（编译级，`MIDL2011`）：互相引用的类要合并进同一个 `.idl`（见 [04 篇 4.8](docs/04-first-app.md#48-命令行构建模板之外必须补上的工程细节)、[05 篇 5.2](docs/05-project-structure.md#52-目录组织)）
 - **命令行构建的一整套工程细节**（编译级）：`/utf-8` 无 BOM、`pch.h` 要含所有 `x:Class` 实现头、每个 `<Page>.xaml.g.hpp` 要靠 `CompileXamlPageImplementationFiles` target 喂给第二趟编译、`App.xaml.g.hpp` 自带 `wWinMain`、`#undef GetCurrentTime`——见 [04 篇 4.8](docs/04-first-app.md#48-命令行构建模板之外必须补上的工程细节)
 
-> 诚实边界：元数据证明签名、编译证明能构建、运行时截图证明**被点到的那条流程**行为正确。没被 ui-smoke 点到的流程只有编译级证据——例如 [10 篇 10.2.2](docs/10-os-integration.md#1022-文件选择器windows-app-sdk-picker) 的 `FileOpenPicker` 会弹**系统模态对话框**，合成点击驱动不了它，因此它是"编译通过、签名对照元数据核过"，但未做运行时点击验证。
+> 诚实边界：元数据证明签名、编译证明能构建、运行时截图证明**被点到的那条流程**行为正确。没被 ui-smoke 点到的流程只有编译级证据——例如 [34 篇 34.2.2](docs/34-os-integration.md#1022-文件选择器windows-app-sdk-picker) 的 `FileOpenPicker` 会弹**系统模态对话框**，合成点击驱动不了它，因此它是"编译通过、签名对照元数据核过"，但未做运行时点击验证。
 
 ## 常见错误速查
 
 | 症状 | 原因与解法 | 出处 |
 |------|-----------|------|
-| 绑定了属性，界面不刷新 | ① `x:Bind` 默认 `OneTime`，忘加 `Mode=OneWay`；② 源没实现 `INotifyPropertyChanged`；③ 属性名与通知名不一致；④ 属性没进 IDL | [08 篇 8.3](docs/08-binding-mvvm.md#83-页面与-viewmodel-的连接) |
-| `std::vector` 绑到 `ItemsSource` 列表不动 | 绑定数据源必须是 WinRT 集合接口，用 `winrt::single_threaded_observable_vector` | [08 篇 8.4](docs/08-binding-mvvm.md#84-可观察集合iobservablevector) |
-| ContentDialog 抛 "XamlRoot has not been set" | WinUI 3 必须 `dialog.XamlRoot(...)`，且值从**内容树根元素**取（`rootPanel().XamlRoot()`）——`Window` 自己没有 `XamlRoot` 成员 | [06 篇 6.7](docs/06-controls.md#67-contentdialog临时确认交互) |
-| 后台线程改控件抛异常 | UI 对象只能在 UI 线程访问，用 `Microsoft.UI.Dispatching.DispatcherQueue::TryEnqueue` 切回再改（**别用 `resume_foreground`**，WinUI 3 桌面线程上它永不恢复） | [08 篇 8.7](docs/08-binding-mvvm.md#87-异步后台工作与-ui-更新) |
-| `IsChecked()` 当 bool 用编译不过 | 返回 `IReference<bool>` 三态，需 `.Value()` 解包 | [06 篇 6.3](docs/06-controls.md#63-checkbox-与-radiobutton状态表达) |
+| 绑定了属性，界面不刷新 | ① `x:Bind` 默认 `OneTime`，忘加 `Mode=OneWay`；② 源没实现 `INotifyPropertyChanged`；③ 属性名与通知名不一致；④ 属性没进 IDL | [32 篇 32.3](docs/32-binding-mvvm.md#323-页面与-viewmodel-的连接) |
+| `std::vector` 绑到 `ItemsSource` 列表不动 | 绑定数据源必须是 WinRT 集合接口，用 `winrt::single_threaded_observable_vector` | [32 篇 32.4](docs/32-binding-mvvm.md#324-可观察集合iobservablevector) |
+| ContentDialog 抛 "XamlRoot has not been set" | WinUI 3 必须 `dialog.XamlRoot(...)`，且值从**内容树根元素**取（`rootPanel().XamlRoot()`）——`Window` 自己没有 `XamlRoot` 成员 | [24 篇](docs/24-dialogs-flyouts.md) |
+| 后台线程改控件抛异常 | UI 对象只能在 UI 线程访问，用 `Microsoft.UI.Dispatching.DispatcherQueue::TryEnqueue` 切回再改（**别用 `resume_foreground`**，WinUI 3 桌面线程上它永不恢复） | [32 篇 32.7](docs/32-binding-mvvm.md#327-异步后台工作与-ui-更新) |
+| `IsChecked()` 当 bool 用编译不过 | 返回 `IReference<bool>` 三态，需 `.Value()` 解包 | [10 章](docs/10-checkbox-radio.md) |
 | XAML 引用成员报"找不到类型" | `x:Bind` 路径上的属性/方法必须声明在 IDL，`x:Class` 与 runtimeclass 全名要一致；**按名字挂接的事件处理器（`Click="OnX"`）不需要进 IDL**。若是 `.idl` 之间互相引用报 `MIDL2011`，把相关 runtimeclass 合并进同一个 `.idl` | [04 篇 4.7](docs/04-first-app.md#47-常见启动期错误)、[04 篇 4.8](docs/04-first-app.md#48-命令行构建模板之外必须补上的工程细节) |
-| 桌面应用 FileOpenPicker 弹不出来 | 首选 WASDK 的 `Microsoft.Windows.Storage.Pickers`，构造时传 `AppWindow().Id()`；旧路径才需要 `IInitializeWithWindow` + HWND | [10 篇 10.2.2](docs/10-os-integration.md#1022-文件选择器windows-app-sdk-picker) |
-| `Click="{x:Bind VM.SomeMethod}"` 编译报错 | 函数绑定的方法签名必须和事件委托逐参数对上；绑 `ICommand` 要用 `Command=` 而不是 `Click=` | [03 篇 3.6](docs/03-xaml.md#36-xbind-与-binding编译期绑定-vs-运行期绑定)、[08 篇 8.6](docs/08-binding-mvvm.md#86-动作入口xbind-函数绑定优先于-icommand) |
-| 集合整体换了对象，界面还显示旧数据 | `IObservableVector` 的通知只跟**内容增删**；替换集合对象本身要再 `RaisePropertyChanged(L"Tasks")` | [08 篇 8.4](docs/08-binding-mvvm.md#84-可观察集合iobservablevector) |
-| 后台线程一调 WinRT 就报奇怪错误 | 任何 WinRT 调用前先 `winrt::init_apartment(winrt::apartment_type::multi_threaded)`；报错信息和真实原因差得很远 | [10 篇 10.1](docs/10-os-integration.md#101-线程边界ui-线程与-dispatcherqueue) |
-| 非打包运行取应用数据目录抛异常 | `Windows.Storage.ApplicationData::Current()` **和** WASDK 的 `Microsoft.Windows.Storage.ApplicationData::GetDefault()` **都依赖包身份**，非打包进程两个都抛 "该进程没有程序包标识符"（实测）。非打包就退回 `%LOCALAPPDATA%`（`GetEnvironmentVariableW` / `SHGetKnownFolderPath`）拼应用名；想用托管语义就给应用挂稀疏包/MSIX | [10 篇 10.2.1](docs/10-os-integration.md#1021-winrt-文件-api) |
-| 逻辑上无循环引用却内存不释放 | 事件订阅未退订，或引用计数成环；用 `weak_ref` 断环 | [10 篇 10.5](docs/10-os-integration.md#105-对象生命周期引用计数--raii) |
+| 桌面应用 FileOpenPicker 弹不出来 | 首选 WASDK 的 `Microsoft.Windows.Storage.Pickers`，构造时传 `AppWindow().Id()`；旧路径才需要 `IInitializeWithWindow` + HWND | [34 篇 34.2.2](docs/34-os-integration.md#1022-文件选择器windows-app-sdk-picker) |
+| `Click="{x:Bind VM.SomeMethod}"` 编译报错 | 函数绑定的方法签名必须和事件委托逐参数对上；绑 `ICommand` 要用 `Command=` 而不是 `Click=` | [03 篇 3.6](docs/03-xaml.md#36-xbind-与-binding编译期绑定-vs-运行期绑定)、[32 篇 32.6](docs/32-binding-mvvm.md#326-动作入口xbind-函数绑定优先于-icommand) |
+| 集合整体换了对象，界面还显示旧数据 | `IObservableVector` 的通知只跟**内容增删**；替换集合对象本身要再 `RaisePropertyChanged(L"Tasks")` | [32 篇 32.4](docs/32-binding-mvvm.md#324-可观察集合iobservablevector) |
+| 后台线程一调 WinRT 就报奇怪错误 | 任何 WinRT 调用前先 `winrt::init_apartment(winrt::apartment_type::multi_threaded)`；报错信息和真实原因差得很远 | [34 篇 34.1](docs/34-os-integration.md#341-线程边界ui-线程与-dispatcherqueue) |
+| 非打包运行取应用数据目录抛异常 | `Windows.Storage.ApplicationData::Current()` **和** WASDK 的 `Microsoft.Windows.Storage.ApplicationData::GetDefault()` **都依赖包身份**，非打包进程两个都抛 "该进程没有程序包标识符"（实测）。非打包就退回 `%LOCALAPPDATA%`（`GetEnvironmentVariableW` / `SHGetKnownFolderPath`）拼应用名；想用托管语义就给应用挂稀疏包/MSIX | [34 篇 34.2.1](docs/34-os-integration.md#1021-winrt-文件-api) |
+| 逻辑上无循环引用却内存不释放 | 事件订阅未退订，或引用计数成环；用 `weak_ref` 断环 | [34 篇 34.5](docs/34-os-integration.md#105-对象生命周期引用计数--raii) |
 | 改 XAML 不生效 | 清理 `Generated Files` 重新构建 | [04 篇 4.7](docs/04-first-app.md#47-常见启动期错误) |
-| 事件处理器越写越长，页面成泥团 | 事件只做转交，逻辑进 ViewModel，状态进可观察属性 | [05 篇](docs/05-project-structure.md)、[06 篇 6.8](docs/06-controls.md#68-控件协作的总原则) |
+| 事件处理器越写越长，页面成泥团 | 事件只做转交，逻辑进 ViewModel，状态进可观察属性 | [05 篇](docs/05-project-structure.md)、[22 章](docs/22-navigationview.md) |
 
 ## 后续扩展方向
 
@@ -157,7 +161,7 @@ examples/
 - **值转换器**：WinUI 3 的 `x:Bind` 没有内置 bool→`Visibility` 之类的转换，`IValueConverter` 是绕不开的一块，目前全教程未覆盖
 - **诊断与测试**：绑定失败的定位手段（`DebugSettings` / 输出窗口）、单元测试工程怎么起（`CppUnitTest` 或 GoogleTest + C++/WinRT）、CI 里如何构建打包工程
 - **能力集成**：`Microsoft.Windows.ApplicationModel.Background.BackgroundTaskBuilder` 后台任务；`Microsoft.Windows.AppNotifications.AppNotificationManager` 通知（含 `AppNotificationProgressData` 进度）；网络用 `Windows.Web.Http` 或 WinHTTP + 进度回报
-- **进阶机制**：自定义控件与 `ControlTemplate`、自定义依赖属性、`VisualStateManager` + `AdaptiveTrigger`（[07 篇](docs/07-layout.md) 完全没提状态与触发器这块，自适应目前只有 Grid 拆分一档）
+- **进阶机制**：自定义控件与 `ControlTemplate`、自定义依赖属性、`VisualStateManager` + `AdaptiveTrigger`（[07 篇](docs/06-layout.md) 完全没提状态与触发器这块，自适应目前只有 Grid 拆分一档）
 - **生态**：CommunityToolkit 的 C++ 可用组件、WinUI 与 Win32 混合（XAML Island 思路）
 
 > 明确不做：**系统托盘图标**。本机 1.8 的**全部** WASDK `.winmd` 里搜不到任何 `NotifyIcon` / `SystemTray` / `TrayIcon` 类型——该能力当时仍是 preview 或未进公开元数据。真要写托盘，得走 Win32 `Shell_NotifyIcon`，那是另一套故事，别按"WinRT API 应该有一个"来找。

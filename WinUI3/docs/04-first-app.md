@@ -247,7 +247,7 @@ Activate：窗口显示，框架进入消息循环
 真实应用在模板骨架上的第一轮扩展通常是：
 
 1. 把业务界面从 `MainWindow.xaml` 挪到 `Page`，`MainWindow` 只留导航壳（见 [05 篇](./05-project-structure.md)）
-2. 把状态从控件挪到 ViewModel，用 `x:Bind` 连接（见 [08 篇](./08-binding-mvvm.md)）
+2. 把状态从控件挪到 ViewModel，用 `x:Bind` 连接（见 [32 篇](./32-binding-mvvm.md)）
 3. 在 `App` 里注册全局异常处理：
 
 ```cpp
@@ -266,7 +266,7 @@ this->UnhandledException([](IInspectable const&, UnhandledExceptionEventArgs con
 | `x:Bind` 引用的属性/方法编译报"找不到成员" | 只有 **`x:Bind` 可见的成员**（绑定路径上的属性、方法）必须在 IDL 里声明；用 `Click="OnClick"` 这种**按名字挂接的事件处理器不需要进 IDL**，只要它是 `x:Class` 实现类上的成员函数即可（本篇 `OnClick` 就没在 `MainWindow.idl` 里，编译验证通过） |
 | 窗口闪退，无异常信息 | `OnLaunched` 里抛异常；在 App 构造和 `OnLaunched` 下断点逐步排查 |
 | 改了 XAML 没生效 | 生成代码缓存问题：清理 `Generated Files` 后重新构建 |
-| 非打包模式启动报运行时缺失 | Windows App SDK 运行时未安装或 bootstrapper 未初始化（见 [09 篇](./09-theming-packaging.md)） |
+| 非打包模式启动报运行时缺失 | Windows App SDK 运行时未安装或 bootstrapper 未初始化（见 [33 篇](./33-theming-packaging.md)） |
 
 ## 4.8 命令行构建：模板之外必须补上的工程细节
 
@@ -331,7 +331,7 @@ MarkupCompilePass2：XAML 编译器写出 <Page>.xaml.g.hpp（InitializeComponen
 
 ### 6. MIDL 不能跨 `.idl` 文件解析 runtimeclass 引用
 
-如果一个 `.idl` 里的 runtimeclass 引用了**另一个 `.idl`** 里声明的类型，MIDL 会报 `MIDL2011` 未解析类型。模板工程类少碰不到；一旦像 [08 篇](./08-binding-mvvm.md) 那样有 `MainWindow → TasksViewModel → TaskItem` 的引用链，**必须把这条链上的所有 runtimeclass 合并进同一个 `.idl`**（`App.idl` 因为不引用它们，可以独立留着）。
+如果一个 `.idl` 里的 runtimeclass 引用了**另一个 `.idl`** 里声明的类型，MIDL 会报 `MIDL2011` 未解析类型。模板工程类少碰不到；一旦像 [32 篇](./32-binding-mvvm.md) 那样有 `MainWindow → TasksViewModel → TaskItem` 的引用链，**必须把这条链上的所有 runtimeclass 合并进同一个 `.idl`**（`App.idl` 因为不引用它们，可以独立留着）。
 
 ---
 

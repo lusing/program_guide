@@ -1,8 +1,8 @@
-# 8. 数据绑定、MVVM 与异步
+# 32. 数据绑定、MVVM 与异步
 
 这一篇是工程的枢纽：界面为什么跟着数据变、用户动作怎么驱动状态、耗时工作怎么不卡界面。所有代码都是 C++/WinRT 真实可用的写法——包括 C++ 里实现 `INotifyPropertyChanged` 的完整样板，这是 C# 教程里查不到的部分。
 
-## 8.1 绑定解决什么问题
+## 32.1 绑定解决什么问题
 
 没有绑定的页面是这样的：
 
@@ -26,7 +26,7 @@ void MainPage::OnAddClicked(IInspectable const&, RoutedEventArgs const&)
 
 于是界面成了状态的**投影**：改状态，界面自己变。
 
-## 8.2 可观察对象：在 C++/WinRT 里实现 INotifyPropertyChanged
+## 32.2 可观察对象：在 C++/WinRT 里实现 INotifyPropertyChanged
 
 XAML 绑定引擎听的是 `INotifyPropertyChanged` 接口——数据对象属性变化时触发 `PropertyChanged` 事件。C++/WinRT 的完整实现（IDL + 头 + 实现）：
 
@@ -136,9 +136,9 @@ void TaskItem::RaisePropertyChanged(winrt::hstring const& propertyName)
 - `winrt::event<D>` 负责处理器列表的线程安全存储，`add`/`remove` 对应 ABI 的事件方法（见 [02 篇](./02-winrt.md) 2.6.3）
 - `PropertyChangedEventArgs` 携带属性名，绑定引擎按名字找到要刷新的 `x:Bind` 目标
 - 必须在 **IDL 里声明**：绑定要跨 WinRT 边界调用属性，普通 C++ struct 的成员绑定引擎看不见
-- **`factory_implementation` 结构不能省**：`TaskItem` 的 IDL 有构造函数 `TaskItem(String title)`，cppwinrt 生成的激活工厂要靠这个结构把投影类型接到实现类型上。漏掉它不会在编译期报错，而是在链接期或首次 `winrt::make<TaskItem>()`/激活时报错——`examples/08-binding-mvvm/` 编译验证过：有这个结构才链得过
+- **`factory_implementation` 结构不能省**：`TaskItem` 的 IDL 有构造函数 `TaskItem(String title)`，cppwinrt 生成的激活工厂要靠这个结构把投影类型接到实现类型上。漏掉它不会在编译期报错，而是在链接期或首次 `winrt::make<TaskItem>()`/激活时报错——`examples/32-binding-mvvm/` 编译验证过：有这个结构才链得过
 
-## 8.3 页面与 ViewModel 的连接
+## 32.3 页面与 ViewModel 的连接
 
 ViewModel 把可观察状态暴露为 IDL 属性：
 
@@ -154,7 +154,7 @@ namespace MyApp
 }
 ```
 
-> **IDL 必须声明 `: Microsoft.UI.Xaml.Data.INotifyPropertyChanged`**：只要这个 ViewModel 上有 `Mode=OneWay` 的属性绑定（这里的 `Status`），或它的集合会被整体替换（下面的 `Tasks`），就得让绑定引擎知道它实现了这个接口——否则 `OneWay` 绑定**静默不刷新**，编译不报错，运行也不报错，只是界面永远停在初值。`examples/08-binding-mvvm/` 编译验证过这一点。
+> **IDL 必须声明 `: Microsoft.UI.Xaml.Data.INotifyPropertyChanged`**：只要这个 ViewModel 上有 `Mode=OneWay` 的属性绑定（这里的 `Status`），或它的集合会被整体替换（下面的 `Tasks`），就得让绑定引擎知道它实现了这个接口——否则 `OneWay` 绑定**静默不刷新**，编译不报错，运行也不报错，只是界面永远停在初值。`examples/32-binding-mvvm/` 编译验证过这一点。
 
 页面持有它并通过属性暴露（见 [05 篇](./05-project-structure.md) 5.4），XAML 侧用 `x:Bind`：
 
@@ -186,9 +186,9 @@ namespace MyApp
 2. 源没实现 `INotifyPropertyChanged`，或 setter 里忘了触发
 3. 属性名和 `RaisePropertyChanged` 的参数不一致
 4. 属性没进 IDL，绑定引擎根本看不到
-5. 在后台线程改了状态（通知必须回到 UI 线程发，见 8.7）
+5. 在后台线程改了状态（通知必须回到 UI 线程发，见 32.7）
 
-## 8.4 可观察集合：IObservableVector
+## 32.4 可观察集合：IObservableVector
 
 列表控件（`ListView` 等）要感知"集合内容变了"，数据源需要实现 `IObservableVector<T>`。不用手写——C++/WinRT 提供现成实现：
 
@@ -284,7 +284,7 @@ void TasksViewModel::ReloadFrom(IObservableVector<TaskItem> const& replacement)
 
 `x:Bind` 的 `Mode=OneWay` 监听的是 **`Tasks` 这个属性的变化**；集合内部的变化靠 `VectorChanged`。两条通知通道各自独立，替换对象只触发了前者才能生效。
 
-## 8.5 Model / ViewModel / View 各管什么
+## 32.5 Model / ViewModel / View 各管什么
 
 以任务应用收束一遍边界：
 
@@ -296,7 +296,7 @@ void TasksViewModel::ReloadFrom(IObservableVector<TaskItem> const& replacement)
 
 判断题：`TaskItem` 要不要加 `IsSelected`？如果"选中"只是 ListView 的交互态，用控件的 `SelectedItem()` 就够；如果 ViewModel 的动作需要知道选中项，页面在转交时把选中项传给 `DeleteSelected(TaskItem)`，Model 依然保持纯净。
 
-## 8.6 动作入口：x:Bind 函数绑定优先于 ICommand
+## 32.6 动作入口：x:Bind 函数绑定优先于 ICommand
 
 C# MVVM 用 `Command="{Binding SaveCommand}"`，C++/WinRT 里实现完整 `ICommand` 是可行的（`winrt::implements<ICommand>` + `winrt::event` 实现 `CanExecuteChanged`），但多数场景有更轻的选择——**`x:Bind` 直接绑到方法**：
 
@@ -349,7 +349,7 @@ private:
 - 它是 `winrt::implements` 的纯 C++ 类型、**没有进 IDL**，所以只能在 C++ 代码里当值传递。要让 XAML 的 `Command="{x:Bind ...}"` 绑到它，得把命令类型做成 runtimeclass，或在页面/ViewModel 上暴露一个返回它的 IDL 属性
 - WinUI 3 的 `ICommand` 在 **`Microsoft.UI.Xaml.Input`** 命名空间下（C# 的 WPF/WinUI 习惯写 `System.Windows.Input`，这里是另一套）
 
-## 8.7 异步：后台工作与 UI 更新
+## 32.7 异步：后台工作与 UI 更新
 
 UI 线程被占用 = 界面假死。所有可能超过几十毫秒的工作（文件、网络、大数据量计算）必须离开 UI 线程。三条铁律：
 
@@ -357,9 +357,9 @@ UI 线程被占用 = 界面假死。所有可能超过几十毫秒的工作（�
 2. UI 对象只能在 UI 线程碰
 3. 后台结果必须切回 UI 线程再落地
 
-### 8.7.1 标准模式（WinUI 3 实测写法）
+### 32.7.1 标准模式（WinUI 3 实测写法）
 
-> ⚠️ **先说结论**：网上和 UWP 时代教程里的 `co_await winrt::resume_foreground(m_dispatcherQueue)` **在 WinUI 3 桌面应用里是错的**，而且是"静默挂起"这种最难查的错。原因见本节末尾的说明。下面是 `examples/08-binding-mvvm/` 里**运行时验证过**的写法。
+> ⚠️ **先说结论**：网上和 UWP 时代教程里的 `co_await winrt::resume_foreground(m_dispatcherQueue)` **在 WinUI 3 桌面应用里是错的**，而且是"静默挂起"这种最难查的错。原因见本节末尾的说明。下面是 `examples/32-binding-mvvm/` 里**运行时验证过**的写法。
 
 ```cpp
 // TasksPage.xaml.h（节选）
@@ -431,7 +431,7 @@ winrt::Windows::Foundation::IAsyncAction TasksPage::RefreshAsync()
 
 第二种尤其阴险——不崩、不报异常，只是不动。所以 WinUI 3 的标准做法是绕开 `resume_foreground`，直接 `TryEnqueue` 到 `Microsoft.UI.Dispatching` 的队列上。
 
-### 8.7.2 带结果的异步与错误处理
+### 32.7.2 带结果的异步与错误处理
 
 ```cpp
 winrt::Windows::Foundation::IAsyncOperation<winrt::hstring>
@@ -464,20 +464,20 @@ winrt::Windows::Foundation::IAsyncAction RefreshAsync()
 
 **调用异步函数要不要 `co_await`**：从事件处理器启动一个"发后不管"的任务（如刷新）可以不等待，但要保证：它不会在页面销毁后还访问页面成员（必要时用弱引用 `winrt::make_weak` / `winrt::weak_ref`）。需要结果、需要异常传播的调用必须 `co_await`。
 
-### 8.7.3 常见异步错误清单
+### 32.7.3 常见异步错误清单
 
 | 错误 | 后果 | 正确做法 |
 |------|------|---------|
-| 后台线程直接改控件属性 | 抛跨线程异常 | 用 `DispatcherQueue::TryEnqueue` 切回 UI 线程再改（见 8.7.1，别用 `resume_foreground`） |
+| 后台线程直接改控件属性 | 抛跨线程异常 | 用 `DispatcherQueue::TryEnqueue` 切回 UI 线程再改（见 32.7.1，别用 `resume_foreground`） |
 | 后台段落持有 UI 对象引用 | 生命周期/线程边界混乱 | 后台只处理纯数据 |
 | 忘记切回 UI 线程就发状态通知 | 绑定不刷新或崩溃 | 通知必须在 UI 线程触发 |
 | 异步重入（连点按钮） | 状态竞争、结果错乱 | 期间 `IsEnabled(false)` 或做重入检查 |
 | `co_await` 挂起后页面被销毁 | 悬空访问崩溃 | 弱引用捕获，恢复时检查存活 |
 
-## 8.8 一句话总结
+## 32.8 一句话总结
 
 > 绑定让界面自动跟随状态，ViewModel 让状态有唯一权威来源，异步让耗时工作不卡 UI——三者合起来，就是把"界面"从"状态存储器"降级成"状态投影"，这是 WinUI 3 工程化的核心。
 
 ---
 
-上一篇：[07-layout.md](./07-layout.md) ｜ 下一篇：[09-theming-packaging.md](./09-theming-packaging.md)
+上一篇：[31 窗口与外壳](./31-window-shell.md) ｜ 下一篇：[33 主题资源与交付](./33-theming-packaging.md)

@@ -100,7 +100,7 @@ auto t = StatusText().Text();            // t 是 winrt::hstring
 注意两个易错点：
 
 - 控件属性大多是**方法对**：`Text()` 读取，`Text(value)` 写入。C++/WinRT 用重载代替 C# 的 property 语法。
-- `x:Name` 只在**声明它的那个 XAML 文件对应的类里**可见。跨页面访问控件是设计错误——需要共享的数据应该走 ViewModel（见 [08-binding-mvvm.md](./08-binding-mvvm.md)）。
+- `x:Name` 只在**声明它的那个 XAML 文件对应的类里**可见。跨页面访问控件是设计错误——需要共享的数据应该走 ViewModel（见 [32-binding-mvvm.md](./32-binding-mvvm.md)）。
 
 ## 3.4 XAML 语法要素
 
@@ -140,7 +140,7 @@ auto t = StatusText().Text();            // t 是 winrt::hstring
 | 扩展 | 作用 |
 |------|------|
 | `{StaticResource Key}` | 从资源字典查找一次，之后不变 |
-| `{ThemeResource Key}` | 查找资源，**主题切换时自动重取**（见 [09 篇](./09-theming-packaging.md)） |
+| `{ThemeResource Key}` | 查找资源，**主题切换时自动重取**（见 [33 篇](./33-theming-packaging.md)） |
 | `{x:Bind Path=..., Mode=...}` | 编译期绑定（WinUI 3 首选） |
 | `{Binding Path=...}` | 运行期绑定（遗留，一般不用） |
 | `{TemplateBinding X}` | 控件模板内引用模板宿主的属性 |
@@ -224,7 +224,7 @@ WinUI 3 有两种数据绑定，区别是本质性的：
 <TextBox Text="{x:Bind ViewModel.Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 ```
 
-常见坑：写了 `Mode=OneWay` 但 ViewModel 忘了实现 `INotifyPropertyChanged`，界面永远不刷新且**没有任何报错**——因为 OneWay 的通知是源主动推送的。排查思路见 [08 篇](./08-binding-mvvm.md)。
+常见坑：写了 `Mode=OneWay` 但 ViewModel 忘了实现 `INotifyPropertyChanged`，界面永远不刷新且**没有任何报错**——因为 OneWay 的通知是源主动推送的。排查思路见 [32 篇](./32-binding-mvvm.md)。
 
 ## 3.7 资源系统与查找顺序
 
@@ -254,7 +254,7 @@ App.xaml 的 Application.Resources
 
 - 页面资源可以覆盖应用资源，实现局部定制
 - 任何资源最终都能回退到框架主题资源——这就是 Fluent 控件"自动适配深浅色"的机制
-- `ThemeResource` 和 `StaticResource` 的区别在于主题切换时是否重新求值，细节在 [09 篇](./09-theming-packaging.md)
+- `ThemeResource` 和 `StaticResource` 的区别在于主题切换时是否重新求值，细节在 [33 篇](./33-theming-packaging.md)
 
 ## 3.8 可视树与逻辑树
 
@@ -264,7 +264,7 @@ XAML 定义的是**逻辑树**（元素嵌套关系），渲染时框架会展�
 
 - `VisualTreeHelper` / `FindName` 类操作作用于可视树
 - 控件模板（ControlTemplate）重定义的是可视树
-- `ContentDialog`、`Flyout` 等弹层会被挂到弹层根，而不是声明位置——这就是 `ContentDialog` 必须设置 `XamlRoot` 的原因（见 [06 篇](./06-controls.md) 6.7 节）
+- `ContentDialog`、`Flyout` 等弹层会被挂到弹层根，而不是声明位置——这就是 `ContentDialog` 必须设置 `XamlRoot` 的原因（见 [24 篇](./24-dialogs-flyouts.md)）
 
 ## 3.9 DataTemplate 与 x:DataType
 

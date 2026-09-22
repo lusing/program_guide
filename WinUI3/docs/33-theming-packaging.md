@@ -1,8 +1,8 @@
-# 9. 主题资源与应用交付
+# 33. 主题资源与应用交付
 
 前半篇讲 Fluent Design 在工程上如何落地（主题资源系统），后半篇讲应用怎么打包交付（Assets、Manifest、MSIX、打包/非打包两种形态）。
 
-## 9.1 主题系统：换的是资源，不是控件
+## 33.1 主题系统：换的是资源，不是控件
 
 主题系统的本质：**颜色、字体、间距不写在控件上，而是定义成资源；控件只按键引用；主题切换时换资源值，控件结构不动**。
 
@@ -22,7 +22,7 @@
 
 这些键是框架预定义的（`ApplicationPageBackgroundThemeBrush`、`TextFillColorPrimaryBrush`、`CardBackgroundFillColorDefaultBrush`、`AccentFillColorDefaultBrush`……），每个主题（Light/Dark/HighContrast）下各有一套值。**控件只依赖键名，永远不感知当前主题是什么。**
 
-## 9.2 ThemeResource 与 StaticResource
+## 33.2 ThemeResource 与 StaticResource
 
 ```xml
 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
@@ -52,7 +52,7 @@
 </ResourceDictionary>
 ```
 
-## 9.3 资源分层与合并字典
+## 33.3 资源分层与合并字典
 
 查找顺序（[03 篇](./03-xaml.md) 3.7）决定了资源放哪一层：
 
@@ -107,7 +107,7 @@ App.xaml Application.Resources —— 全局
 </Border>
 ```
 
-## 9.4 主题切换
+## 33.4 主题切换
 
 ```cpp
 // 启动前：在 App 构造函数里设默认主题（此后 Application::RequestedTheme 不可再改）
@@ -130,9 +130,9 @@ void MainWindow::ApplyTheme(winrt::Microsoft::UI::Xaml::ElementTheme theme)
 
 - `Application.RequestedTheme` 只能在 App 构造时设置一次；运行期切换靠**根元素**（或任意子树）的 `FrameworkElement.RequestedTheme`
 - `ElementTheme::Default` 表示跟随系统设置
-- 切换时所有 `ThemeResource` 自动重新求值——这就是 9.1 说的"换资源不换控件"
+- 切换时所有 `ThemeResource` 自动重新求值——这就是 33.1 说的"换资源不换控件"
 
-## 9.5 应用资源：Assets 与 Package.appxmanifest
+## 33.5 应用资源：Assets 与 Package.appxmanifest
 
 图标、Logo、启动图不是页面资源，是**应用资源**，放工程根的 `Assets/`：
 
@@ -161,9 +161,9 @@ manifest 在 Visual Studio 里是图形编辑器，底层是 XML。视觉元素�
 
 路径写错或文件缺失 → 安装后图标显示异常。这些文件会被打进安装包，必须纳入版本控制。
 
-## 9.6 交付：MSIX 与两种部署形态
+## 33.6 交付：MSIX 与两种部署形态
 
-### 9.6.1 生成 MSIX（打包应用）
+### 33.6.1 生成 MSIX（打包应用）
 
 Visual Studio 流程：
 
@@ -182,7 +182,7 @@ Remove-AppxPackage <PackageFullName>
 
 MSIX 包的内容：可执行文件 + 依赖 + Assets + manifest + 签名。它是"可安装、可卸载、可更新"的完整应用单元，Store 和企业侧载都用它。
 
-### 9.6.2 打包 vs 非打包
+### 33.6.2 打包 vs 非打包
 
 | | 打包（MSIX） | 非打包（unpackaged） |
 |---|---|---|
@@ -195,4 +195,4 @@ MSIX 包的内容：可执行文件 + 依赖 + Assets + manifest + 签名。它�
 
 ---
 
-上一篇：[08-binding-mvvm.md](./08-binding-mvvm.md) ｜ 下一篇：[10-os-integration.md](./10-os-integration.md)
+上一篇：[32 绑定、MVVM 与异步](./32-binding-mvvm.md) ｜ 下一篇：[34 OS 集成](./34-os-integration.md)

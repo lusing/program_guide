@@ -210,7 +210,7 @@ WinUI 3 应用是普通 Win32 进程，但部署有两种形态：
 | 身份 | 有包身份（可用全部平台 API） | 部分需要包身份的 API 受限 |
 | 适用 | 正式分发、Store 上架 | 开发调试、内部工具 |
 
-Visual Studio 的 WinUI 3 模板默认生成打包应用。两种形态的工程结构完全一样，详见 [09-theming-packaging.md](./09-theming-packaging.md)。
+Visual Studio 的 WinUI 3 模板默认生成打包应用。两种形态的工程结构完全一样，详见 [33-theming-packaging.md](./33-theming-packaging.md)。
 
 ## 1.8 关键名词速查
 
