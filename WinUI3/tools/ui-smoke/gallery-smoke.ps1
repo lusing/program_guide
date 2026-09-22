@@ -28,9 +28,10 @@ $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $uiSmoke = Join-Path $here 'ui-smoke.ps1'
 $repoRoot = Split-Path -Parent (Split-Path -Parent $here)
 
-# Nav row geometry at 150% DPI (physical px, measured): first menu item centre y=238,
-# row pitch 72, pane item centre x=150. Calibrate per gallery if the shell changes.
-function Nav-Y([int]$index) { 238 + 72 * $index }
+# Nav-row pitch is NOT constant: NavigationView tightens item spacing as the menu grows
+# (measured: ~72 px pitch with 6 items, ~56 px with 7+). So scenario tables store
+# measured window coordinates for both the nav click and the in-page action; calibrate
+# each page with zoom-grid.ps1 when it is registered.
 
 $galleries = @{
     '07' = @{
@@ -38,12 +39,14 @@ $galleries = @{
         Exe  = 'examples\07-controls-basic\x64\Debug\BasicGallery\BasicGallery.exe'
         Size = @(900, 1100)
         Pages = [ordered]@{
-            # tag       nav item y-index (0=Home), optional in-page click / typed text
-            home    = @{ Nav = 0 }
-            button  = @{ Nav = 1; Act = '475,147' }   # Click me -> StatusText "clicked 1"
-            textblock = @{ Nav = 2; Act = '475,250' } # Cycle trim -> "trim = CharacterEllipsis" + ellipsis appears
-            textbox  = @{ Nav = 3; Act = '568,560' }  # Read text -> status shows rich text content
-            checkbox = @{ Nav = 4; Act = '502,180' }  # 3-state checkbox -> "notifications = off"
+            # tag        nav item centre (measured)  in-page action point (measured)
+            home      = @{ Nav = '150,238' }
+            button    = @{ Nav = '150,310'; Act = '475,147' }  # Click me -> "clicked 1"
+            textblock = @{ Nav = '150,382'; Act = '475,250' }  # Cycle trim -> "trim = CharacterEllipsis"
+            textbox   = @{ Nav = '150,454'; Act = '568,560' }  # Read text -> rich text content
+            checkbox  = @{ Nav = '150,526'; Act = '502,180' }  # 3-state checkbox -> "notifications = off"
+            toggle    = @{ Nav = '150,583'; Act = '420,172' }  # switch body -> "autosave off"
+            slider    = @{ Nav = '150,641'; Act = '600,196;535,315;535,315' } # track -> sync bar; 2x busy toggle -> "ring idle"
         }
     }
     '17' = @{
@@ -96,7 +99,7 @@ foreach ($name in $names) {
     "`n=== $($g.Dir) / $name ==="
 
     $clickSeq = @()
-    if ($null -ne $sc.Nav)   { $clickSeq += "150,$(Nav-Y ([int]$sc.Nav))" }
+    if ($sc.Nav)             { $clickSeq += $sc.Nav }
     if ($sc.Act)             { $clickSeq += $sc.Act }
 
     $psi = @{ Exe = $exe; OutDir = $outDir; WindowW = $g.Size[0]; WindowH = $g.Size[1] }

@@ -1,0 +1,27 @@
+<Page
+    x:Class="BasicGallery.TogglePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Margin="24">
+        <StackPanel Spacing="12" MaxWidth="480">
+            <TextBlock x:Name="StatusText" Text="Ready" FontSize="18"/>
+
+            <!-- 11.2 ToggleSwitch：设置项开关，IsOn 是普通 bool -->
+            <ToggleSwitch x:Name="AutoSaveSwitch" Header="Auto save"
+                          OnContent="Saving after every edit" OffContent="Manual save only"
+                          IsOn="True" Toggled="OnAutoSaveToggled"/>
+
+            <!-- 11.3 ToggleButton：工具栏式状态开关，IsChecked 同 CheckBox 的三态机制 -->
+            <TextBlock Text="Editor mode:" FontWeight="SemiBold"/>
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <ToggleButton x:Name="BoldBtn" Content="Bold" IsThreeState="False"
+                              Checked="OnModeToggled" Unchecked="OnModeToggled"/>
+                <ToggleButton x:Name="ItalicBtn" Content="Italic"
+                              Checked="OnModeToggled" Unchecked="OnModeToggled"/>
+                <ToggleButton x:Name="WrapBtn" Content="Wrap" IsChecked="True"
+                              Checked="OnModeToggled" Unchecked="OnModeToggled"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Page>

@@ -37,3 +37,5 @@
 #include "TextBlockPage.xaml.h"
 #include "TextBoxPage.xaml.h"
 #include "CheckBoxPage.xaml.h"
+#include "TogglePage.xaml.h"
+#include "SliderPage.xaml.h"

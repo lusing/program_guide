@@ -73,6 +73,8 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
     </Link>
     <Midl>
       <MergedFromFileName>$(MSBuildProjectName).idl.h</MergedFromFileName>
@@ -81,6 +83,8 @@
 
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="SliderPage.xaml.h" />
+    <ClInclude Include="TogglePage.xaml.h" />
     <ClInclude Include="CheckBoxPage.xaml.h" />
     <ClInclude Include="TextBoxPage.xaml.h" />
     <ClInclude Include="TextBlockPage.xaml.h" />
@@ -98,6 +102,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="App.xaml.cpp" />
+    <ClCompile Include="SliderPage.xaml.cpp" />
+    <ClCompile Include="TogglePage.xaml.cpp" />
     <ClCompile Include="CheckBoxPage.xaml.cpp" />
     <ClCompile Include="TextBoxPage.xaml.cpp" />
     <ClCompile Include="TextBlockPage.xaml.cpp" />
@@ -108,6 +114,8 @@
 
   <ItemGroup>
     <Midl Include="App.idl" />
+    <Midl Include="SliderPage.idl" />
+    <Midl Include="TogglePage.idl" />
     <Midl Include="CheckBoxPage.idl" />
     <Midl Include="TextBoxPage.idl" />
     <Midl Include="TextBlockPage.idl" />
@@ -119,6 +127,8 @@
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
     <Page Include="MainWindow.xaml" />
+    <Page Include="SliderPage.xaml" />
+    <Page Include="TogglePage.xaml" />
     <Page Include="CheckBoxPage.xaml" />
     <Page Include="TextBoxPage.xaml" />
     <Page Include="TextBlockPage.xaml" />

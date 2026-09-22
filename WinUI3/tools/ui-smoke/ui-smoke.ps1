@@ -224,5 +224,12 @@ try {
     }
 }
 finally {
-    if (-not $proc.HasExited) { Stop-Process -Id $proc.Id -Force }
+    if (-not $proc.HasExited) {
+        # Ask nicely first: a WinUI 3 process killed with TerminateProcess while a
+        # composition animation is running (e.g. an always-on ProgressRing) dies with an
+        # access violation in the event log. A graceful WM_CLOSE lets the XAML teardown
+        # run and keeps the log clean. Fall back to a hard kill after a grace period.
+        $null = $proc.CloseMainWindow()
+        if (-not $proc.WaitForExit(3000)) { Stop-Process -Id $proc.Id -Force }
+    }
 }
