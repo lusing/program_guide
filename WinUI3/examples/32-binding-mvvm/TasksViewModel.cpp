@@ -54,6 +54,7 @@ namespace winrt::MvvmApp::implementation
     {
         if (m_query.empty()) { return; }
         m_tasks.Append(winrt::make<TaskItem>(m_query));
+        SyncTaskCount();
         Status(L"Added: " + m_query);
         m_query.clear();
         // The TextBox is TwoWay-bound to Query; clearing the field without notifying
@@ -67,6 +68,7 @@ namespace winrt::MvvmApp::implementation
         if (m_tasks.IndexOf(item, index))
         {
             m_tasks.RemoveAt(index);
+            SyncTaskCount();
             Status(L"Deleted");
         }
     }
@@ -81,6 +83,7 @@ namespace winrt::MvvmApp::implementation
             m_tasks.Append(winrt::make<TaskItem>(title));
         }
         RaisePropertyChanged(L"Tasks");
+        SyncTaskCount();
         Status(L"Loaded " + winrt::to_hstring(titles.Size()) + L" tasks");
     }
 
@@ -88,5 +91,16 @@ namespace winrt::MvvmApp::implementation
     {
         m_propertyChanged(*this,
             Microsoft::UI::Xaml::Data::PropertyChangedEventArgs(propertyName));
+    }
+
+    int32_t TasksViewModel::TaskCount()
+    {
+        return static_cast<int32_t>(m_tasks.Size());
+    }
+
+    void TasksViewModel::SyncTaskCount()
+    {
+        // 集合内容变化不会自动通知"派生计数"，显式再发一次属性通知
+        RaisePropertyChanged(L"TaskCount");
     }
 }

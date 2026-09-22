@@ -17,6 +17,7 @@ namespace winrt::MvvmApp::implementation
         void Status(winrt::hstring const& value);
         winrt::hstring Query();
         void Query(winrt::hstring const& value);
+        int32_t TaskCount();
 
         winrt::Windows::Foundation::Collections::IObservableVector<
             winrt::MvvmApp::TaskItem> Tasks();
@@ -35,6 +36,7 @@ namespace winrt::MvvmApp::implementation
         winrt::hstring m_query;
 
         void RaisePropertyChanged(winrt::hstring const& propertyName);
+        void SyncTaskCount();   // m_tasks.Size() -> TaskCount + INPC（32.8 转换器的数据源）
     };
 }
 

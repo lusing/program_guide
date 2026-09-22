@@ -32,3 +32,4 @@
 #include "MainWindow.xaml.h"
 #include "TaskItem.h"
 #include "TasksViewModel.h"
+#include "Converters.h"

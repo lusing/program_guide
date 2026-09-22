@@ -478,6 +478,86 @@ winrt::Windows::Foundation::IAsyncAction RefreshAsync()
 
 > 绑定让界面自动跟随状态，ViewModel 让状态有唯一权威来源，异步让耗时工作不卡 UI——三者合起来，就是把"界面"从"状态存储器"降级成"状态投影"，这是 WinUI 3 工程化的核心。
 
+
+
+## 32.8 值转换器：IValueConverter 与它的两条使用路线
+
+x:Bind **没有内置转换**——WPF 时代 `{Binding IsChecked, Converter=...}` 之外还能指望的 bool→Visibility 隐式行为，在 x:Bind 里不存在。绑定值需要"翻译"时有两条路线。
+
+### 路线一：函数绑定（首选）
+
+x:Bind 可以直接绑页面/VM 上的**函数**（8.6 的推广）：
+
+```xml
+<TextBlock Text="{x:Bind FormatCount(ViewModel.TaskCount), Mode=OneWay}"/>
+```
+
+```cpp
+hstring MainWindow::FormatCount(int32_t count)
+{
+    return count == 0 ? L"no tasks" : to_hstring(count) + L" tasks";
+}
+```
+
+编译期生成订阅，类型安全，无注册步骤——**单页面内的一次性格式化首选它**。
+
+### 路线二：IValueConverter（跨页复用的转换逻辑）
+
+元数据形状（1.8 核对）：`Microsoft.UI.Xaml.Data.IValueConverter` 的两个方法都是
+`(Object value, TypeName targetType, Object parameter, String language) -> Object`。
+
+```idl
+// 与 ViewModel 同一个 .idl；[default_interface] 不能省（无自有成员的类不会自动生成默认接口）
+[default_interface]
+runtimeclass DoneToOpacityConverter : Microsoft.UI.Xaml.Data.IValueConverter
+{
+    DoneToOpacityConverter();
+}
+```
+
+```cpp
+Windows::Foundation::IInspectable DoneToOpacityConverter::Convert(
+    IInspectable const& value, Interop::TypeName const&,
+    IInspectable const&, hstring const&)
+{
+    // 装箱进出：bool 路径装箱成 IReference<bool>，解包后业务转换，再装回去
+    bool done = value.as<Windows::Foundation::IReference<bool>>().Value();
+    return box_value(done ? 0.55 : 1.0);
+}
+// ConvertBack：OneWay 用途直接 throw hresult_not_implemented()
+```
+
+XAML 侧两步：资源字典注册 + 绑定引用：
+
+```xml
+<Grid.Resources>
+    <vm:DoneToTextConverter x:Key="DoneToText"/>
+    <vm:DoneToOpacityConverter x:Key="DoneToOpacity"/>
+</Grid.Resources>
+...
+<StackPanel Opacity="{Binding Done, Converter={StaticResource DoneToOpacity}}">
+    <CheckBox Content="{x:Bind Title, Mode=OneWay}" IsChecked="{x:Bind Done, Mode=TwoWay}"/>
+    <TextBlock Text="{Binding Done, Converter={StaticResource DoneToText}}"/>
+</StackPanel>
+```
+
+### 实测坑：x:Bind + Converter 需要 FrameworkElement 根
+
+在 **Window 直接作 x:Class 根**的工程里（本例），`{x:Bind Done, Converter=...}` 编不过——
+生成代码里 `SetConverterLookupRoot` 收 `FrameworkElement`，而 Window 不是。**x:Bind+Converter
+只在 Page/UserControl 根（及其 DataTemplate）里可用**；Window 根的工程走经典
+`{Binding Converter=}`（运行期查找，任意根可用，本例即此）。
+
+### 选择矩阵
+
+| 场景 | 路线 |
+|------|------|
+| 单页格式化 | 函数绑定 |
+| 跨页/跨工程复用的转换 | IValueConverter |
+| Window 根工程 | {Binding Converter}（x:Bind 路线不可用） |
+| 双向转换 | IValueConverter + 实现ConvertBack（慎用：反向语义易错） |
+
+运行时证据：`.smoke/32-binding-mvvm/converter/click-2.png`——Refresh 后列表两行（Buy milk / Walk dog），勾选首行后该行**变暗**（Opacity 转换器）并出现强调色 **"done!"**（文本转换器），次行原样。
 ---
 
 上一篇：[31 窗口与外壳](./31-window-shell.md) ｜ 下一篇：[33 主题资源与交付](./33-theming-packaging.md)

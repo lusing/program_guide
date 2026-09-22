@@ -22,12 +22,26 @@ namespace MvvmApp
         TasksViewModel();
 
         String Status;
+        Int32 TaskCount { get; };
         String Query;
         Windows.Foundation.Collections.IObservableVector<MvvmApp.TaskItem> Tasks { get; };
 
         void AddFromInput();
         void DeleteSelected(MvvmApp.TaskItem item);
         void LoadFrom(Windows.Foundation.Collections.IVector<String> titles);
+    }
+
+    // 32.8 IValueConverter: x:Bind ships no built-in bool->Visibility conversion
+    [default_interface]
+    runtimeclass DoneToTextConverter : Microsoft.UI.Xaml.Data.IValueConverter
+    {
+        DoneToTextConverter();
+    }
+
+    [default_interface]
+    runtimeclass DoneToOpacityConverter : Microsoft.UI.Xaml.Data.IValueConverter
+    {
+        DoneToOpacityConverter();
     }
 
     // Only members the XAML binding compiler must see through the winmd go here

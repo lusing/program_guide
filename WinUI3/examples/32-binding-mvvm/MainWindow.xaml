@@ -6,8 +6,20 @@
 
     <!-- 根元素必须有名字：ContentDialog 的 XamlRoot 只能从内容树根取（docs/06 6.7） -->
     <Grid x:Name="rootPanel" Margin="24">
+        <Grid.Resources>
+            <!-- 32.8 值转换器：资源字典注册，x:Bind 经 StaticResource 引用
+                 （注意：Window 根上的 x:Bind+Converter 编不过——SetConverterLookupRoot
+                  要 FrameworkElement；转换器用法放 Page/DataTemplate 内） -->
+            <vm:DoneToTextConverter x:Key="DoneToText"/>
+            <vm:DoneToOpacityConverter x:Key="DoneToOpacity"/>
+        </Grid.Resources>
         <StackPanel Spacing="12">
             <TextBlock Text="{x:Bind ViewModel.Status, Mode=OneWay}" FontSize="20" />
+
+            <TextBlock FontStyle="Italic" Opacity="0.6">
+                <Run Text="{x:Bind ViewModel.TaskCount, Mode=OneWay}"/>
+                <Run Text=" tasks (converter demos live in the list rows below)"/>
+            </TextBlock>
 
             <TextBox x:Name="TaskInput" Header="New task" PlaceholderText="Enter a task"
                      Text="{x:Bind ViewModel.Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
@@ -25,8 +37,16 @@
                       ItemsSource="{x:Bind ViewModel.Tasks, Mode=OneWay}">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="vm:TaskItem">
-                        <CheckBox Content="{x:Bind Title, Mode=OneWay}"
-                                  IsChecked="{x:Bind Done, Mode=TwoWay}" />
+                        <!-- 32.8 转换器：Window 根下 x:Bind+Converter 编不过（SetConverterLookupRoot
+                             要 FrameworkElement），走经典 {Binding Converter}（运行期查找，任意根可用） -->
+                        <StackPanel Orientation="Horizontal" Spacing="8"
+                                    Opacity="{Binding Done, Converter={StaticResource DoneToOpacity}}">
+                            <CheckBox Content="{x:Bind Title, Mode=OneWay}"
+                                      IsChecked="{x:Bind Done, Mode=TwoWay}" />
+                            <TextBlock Text="{Binding Done, Converter={StaticResource DoneToText}}"
+                                       Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

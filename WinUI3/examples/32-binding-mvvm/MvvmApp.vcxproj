@@ -81,6 +81,7 @@
 
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Converters.h" />
     <ClInclude Include="App.xaml.h" />
     <ClInclude Include="MainWindow.xaml.h" />
     <ClInclude Include="TaskItem.h" />
@@ -95,6 +96,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="App.xaml.cpp" />
+    <ClCompile Include="Converters.cpp" />
     <ClCompile Include="MainWindow.xaml.cpp" />
     <ClCompile Include="TaskItem.cpp" />
     <ClCompile Include="TasksViewModel.cpp" />
