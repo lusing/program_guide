@@ -12,6 +12,7 @@
         <NavigationView.MenuItems>
             <NavigationViewItem Content="Home" Tag="home"/>
             <NavigationViewItem Content="Button" Tag="button"/>
+            <NavigationViewItem Content="TextBlock" Tag="textblock"/>
             <!-- 每章任务在此追加一个导航项 -->
         </NavigationView.MenuItems>
         <Frame x:Name="ContentFrame"/>

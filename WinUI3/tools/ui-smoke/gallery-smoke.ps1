@@ -41,6 +41,7 @@ $galleries = @{
             # tag       nav item y-index (0=Home), optional in-page click / typed text
             home    = @{ Nav = 0 }
             button  = @{ Nav = 1; Act = '475,147' }   # Click me -> StatusText "clicked 1"
+            textblock = @{ Nav = 2; Act = '475,250' } # Cycle trim -> "trim = CharacterEllipsis" + ellipsis appears
         }
     }
     '17' = @{
