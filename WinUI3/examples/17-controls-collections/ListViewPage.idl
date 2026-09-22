@@ -1,0 +1,8 @@
+namespace CollectionsGallery
+{
+    [default_interface]
+    runtimeclass ListViewPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        ListViewPage();
+    }
+}

@@ -319,11 +319,11 @@ param(
 
 **关键差异**：vcxproj 的 PackageReference 加 `<PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />`（**提前到骨架就引入，编译+启动立即验证与 WASDK 1.8/CppWinRT 2.0.250303.1 的兼容性——这是本计划最大的外部风险，早失败早调整**）。
 
-- [ ] Step 1: 建工程（照 Task 2 五步，导航项 listview/gridview/treeview/datagrid）
-- [ ] Step 2: `./build.ps1 -Examples 17-controls-collections` PASS（restore 7.1.2 成功 = 兼容性第一道关）
-- [ ] Step 3: 启动 exe 冒烟（能起窗 = 第二道关；若 7.1.2 与 1.8 冲突：20 章降级为"元数据级证据 + 诚实边界"方案并在该任务记录）
-- [ ] Step 4: gallery-smoke 场景表加 17 画廊 home 场景并调偏移
-- [ ] Step 5: Commit `feat(winui3): 17-controls-collections 画廊骨架 + DataGrid 包兼容性前置验证`
+- [x] Step 1: 建工程（照 Task 2 五步，导航项 listview/gridview/treeview/datagrid）
+- [x] Step 2: `./build.ps1 -Examples 17-controls-collections` PASS（restore 7.1.2 成功 = 兼容性第一道关）
+- [x] Step 3: 启动 exe 冒烟（能起窗 = 第二道关；若 7.1.2 与 1.8 冲突：20 章降级为"元数据级证据 + 诚实边界"方案并在该任务记录）
+- [x] Step 4: gallery-smoke 场景表加 17 画廊 home 场景并调偏移
+- [x] Step 5: Commit `feat(winui3): 17-controls-collections 画廊骨架 + DataGrid 包兼容性前置验证`
 
 ---
 

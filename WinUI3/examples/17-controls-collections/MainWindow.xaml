@@ -1,0 +1,19 @@
+<Window
+    x:Class="CollectionsGallery.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <NavigationView x:Name="Nav" IsBackButtonVisible="Auto"
+                    PaneDisplayMode="Left" IsPaneOpen="True" OpenPaneLength="200"
+                    SelectionChanged="OnNavSelectionChanged">
+        <NavigationView.MenuItems>
+            <NavigationViewItem Content="Home" Tag="home"/>
+            <NavigationViewItem Content="ListView" Tag="listview"/>
+            <NavigationViewItem Content="GridView" Tag="gridview"/>
+            <NavigationViewItem Content="TreeView" Tag="treeview"/>
+            <NavigationViewItem Content="Table" Tag="table"/>
+            <!-- 每章任务在此追加一个导航项 -->
+        </NavigationView.MenuItems>
+        <Frame x:Name="ContentFrame"/>
+    </NavigationView>
+</Window>

@@ -1,0 +1,8 @@
+namespace CollectionsGallery
+{
+    [default_interface]
+    runtimeclass TablePage : Microsoft.UI.Xaml.Controls.Page
+    {
+        TablePage();
+    }
+}

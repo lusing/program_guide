@@ -59,7 +59,14 @@ $galleries = @{
         Dir  = '17-controls-collections'
         Exe  = 'examples\17-controls-collections\x64\Debug\CollectionsGallery\CollectionsGallery.exe'
         Size = @(900, 1100)
-        Pages = [ordered]@{ home = @{ Nav = 0 } }
+        Pages = [ordered]@{
+            # 5 items, ~72px pitch (measured: home 238, listview 310, gridview 382, treeview 454, table 526)
+            home    = @{ Nav = '150,238' }
+            listview  = @{ Nav = '150,310'; Act = '450,205' }  # banana item -> "selected = banana"
+            gridview  = @{ Nav = '150,382'; Act = '722,457' }  # Next -> "flip page = 2"
+            treeview  = @{ Nav = '150,454'; Act = '460,470' }  # Expand all -> "expanded 9 nodes"
+            table     = @{ Nav = '150,526'; Act = '450,175' }  # first row -> "row = write guide"
+        }
     }
     '21' = @{
         Dir  = '21-controls-shell'

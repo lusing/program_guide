@@ -1,0 +1,44 @@
+<Page
+    x:Class="CollectionsGallery.TablePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Margin="24">
+        <StackPanel Spacing="12">
+            <TextBlock x:Name="StatusText" Text="Ready" FontSize="18"/>
+
+            <!-- 20.3 自制表格：Grid 表头 + ListView 行（C++/WinRT 没有 Toolkit DataGrid） -->
+            <Grid ColumnDefinitions="2*,1*,1*" MaxWidth="560">
+                <TextBlock Text="Name" FontWeight="SemiBold" Padding="8,6"/>
+                <TextBlock Grid.Column="1" Text="Priority" FontWeight="SemiBold" Padding="8,6"/>
+                <TextBlock Grid.Column="2" Text="Done" FontWeight="SemiBold" Padding="8,6"/>
+            </Grid>
+            <ListView x:Name="TaskTable" MaxWidth="560" SelectionChanged="OnRowSelected">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <Grid ColumnDefinitions="2*,1*,1*" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                            <TextBlock Text="{Binding}" Padding="8,6"/>
+                            <TextBlock Grid.Column="1" Text="P2" Padding="8,6"/>
+                            <TextBlock Grid.Column="2" Text="no" Padding="8,6"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <!-- 20.4 ItemsRepeater + UniformGridLayout：高性能平铺 -->
+            <TextBlock Text="ItemsRepeater (UniformGridLayout):" FontWeight="SemiBold"/>
+            <ItemsRepeater x:Name="TileRepeater" MaxWidth="560">
+                <ItemsRepeater.Layout>
+                    <UniformGridLayout MinItemWidth="90" MinItemHeight="40" MinRowSpacing="8" MinColumnSpacing="8"/>
+                </ItemsRepeater.Layout>
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <Border Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="6">
+                            <TextBlock Text="{Binding}" Foreground="White" Padding="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </StackPanel>
+    </Grid>
+</Page>

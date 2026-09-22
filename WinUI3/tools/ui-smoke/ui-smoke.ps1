@@ -154,6 +154,13 @@ try {
     Start-Sleep -Seconds $StartupSeconds
     $proc.Refresh()
     if ($proc.HasExited) { throw "process exited during startup with code $($proc.ExitCode)" }
+    # First launch of a freshly built self-contained app can outrun the startup window
+    # while DLLs unpack and the AV scans them; re-check instead of failing immediately.
+    for ($wait = 0; $wait -lt 4 -and $proc.MainWindowHandle -eq [IntPtr]::Zero; $wait++) {
+        Start-Sleep -Seconds 2
+        $proc.Refresh()
+        if ($proc.HasExited) { throw "process exited during startup with code $($proc.ExitCode)" }
+    }
     if ($proc.MainWindowHandle -eq [IntPtr]::Zero) { throw 'process has no main window' }
     "window : [$($proc.MainWindowTitle)] pid=$($proc.Id)"
 

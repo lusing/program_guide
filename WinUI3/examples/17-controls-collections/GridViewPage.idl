@@ -1,0 +1,8 @@
+namespace CollectionsGallery
+{
+    [default_interface]
+    runtimeclass GridViewPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        GridViewPage();
+    }
+}
