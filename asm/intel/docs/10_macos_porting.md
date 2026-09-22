@@ -2,7 +2,10 @@
 
 本指南原本只面向 Windows（`-f win64` + MSVC `link.exe`）。这一章说明**同一份汇编知识在 macOS 上怎么落地**，以及把现有示例搬到 macOS 需要改哪些地方、会踩哪些坑。
 
-所有 `examples-macos/` 下的示例都已在本机（macOS 13.1 / Intel i7-3520M Ivy Bridge / NASM 3.02 / clang 14.0.0 / ld64-820.1）**实际汇编、链接、运行通过**，共 56 个，见 [examples-macos/README.md](../examples-macos/README.md)。
+所有 `examples-macos/` 下的示例都已**实际汇编、链接、运行通过**，共 59 个，见 [examples-macos/README.md](../examples-macos/README.md)。
+其中 56 个最初在 macOS 13.1 / Intel i7-3520M Ivy Bridge / NASM 3.02 / clang 14.0.0 / ld64-820.1 上验过，
+2026-09 又在一台 Intel Haswell 机器（macOS 14.8.9 / clang 16 / ld64-1115.7.3）上完整复核并把数量补到 59 ——
+复核纪要与修掉的四个问题见 [第 10 节](#10-本机复核纪要macos-14--xcode-16-clt)。
 
 ---
 
@@ -325,8 +328,10 @@ SysV 里整数和浮点的寄存器编号**各自独立**。`printf("%f %f", a, 
 ```
 
 本机（Ivy Bridge）的探测结果就是：最大页号 `0xD`、无页 `0x1A`、`AVX2: NO`、`AVX-512: NO`。
+换成 Haswell（i7-4770HQ）同一支程序则报 `AVX2: YES`、`FMA: YES`、`BMI: YES` —— 两台机器的
+完整对照见 [第 9 章「本机 CPUID 特性探测」](09_hybrid_architecture.md)。
 
-所以 `examples-macos/11_calculus_mkl/` 里的 SIMD 示例**改用 SSE 4 路**，算法、数据布局、结论完全一致。真正的差别只有两处：
+**当年的处理**：`examples-macos/11_calculus_mkl/` 里的 SIMD 示例**改用 SSE 4 路**，算法、数据布局、结论完全一致。真正的差别只有两处：
 
 | 写法 | AVX2 | SSE |
 |------|------|-----|
@@ -334,7 +339,11 @@ SysV 里整数和浮点的寄存器编号**各自独立**。`printf("%f %f", a, 
 | 4×float 水平求和 | `vextractf128` + `vhadde`/`vhaddps` | 两次 `shufps` + `addps` |
 | 错位加载做差分 | `vmovups ymm` | `movups xmm` |
 
-把 `xmm` 写宽成 `ymm`、加上 `v` 前缀，就是 AVX2 版本。
+**后来的处理**：这个「把 `xmm` 写宽成 `ymm`、加上 `v` 前缀」的降级，代价是**整本指南没有 AVX2 的正文**。
+在 Haswell 机器上复核时补上了这块 —— `examples-macos/10_sse_simd/` 新增
+`avx_basics.asm` / `avx2_int.asm` / `avx2_fma.asm` 三支，本机 59/59 实跑通过，
+正文见 **[第 12 章 SIMD 与 AVX](12_simd_avx.md)**。第 11 类的 `simd_*.asm` 保持 SSE 4 路不动
+（它教的是数值积分，不是指令宽度；两套并行反而好对照）。
 
 ### 6.2 MKL 在 macOS 上换成 Accelerate
 
@@ -438,7 +447,7 @@ Process stopped
 
 ---
 
-## 9. 验证记录
+## 9. 验证记录（最初两台机器的实测）
 
 ```
 $ ./build-mac.sh -All
@@ -447,6 +456,10 @@ $ ./build-mac.sh -All
   构建汇总: 总计 56 个, 通过 56 个, 失败 0 个
 ==========================================
 ```
+
+> 这是**当年**的记录：macOS 13.1 / i7-3520M（Ivy Bridge）上的 56/56。
+> 当前示例数是 **59**（后来补了 3 个 AVX 示例），最新一次全量结果是
+> macOS 14.8.9 / i7-4770HQ（Haswell）上的 **59/59**，见第 10 节。
 
 环境：
 
@@ -464,8 +477,9 @@ $ ./build-mac.sh -All
 
 ## 10. 本机复核纪要（macOS 14 / Xcode 16 CLT）
 
-2026-09 在另一台 Intel Mac 上按第 9 节的流程完整复核了一遍 56 个示例，
-原始状态是 **55 通过 / 1 失败**。三个问题都修掉了，现在 **56/56**。
+2026-09 在另一台 Intel Mac 上按第 9 节的流程完整复核了一遍当时已有的 56 个示例，
+原始状态是 **55 通过 / 1 失败**。三个问题都修掉了，接着又补了 3 个 AVX 示例，
+现在是 **59/59**。
 
 环境：
 
@@ -533,6 +547,33 @@ $ ./build-mac.sh -Clean && ./build-mac.sh -All
 
 连跑两遍逐行比对输出，只有 3 个示例必然不同：
 `lea`（打印的是 ASLR 之后的真实地址）、`rdtsc` 和 `simd_trapezoid`（打印的是时钟周期数）。
+
+### 10.6 补写 AVX / AVX2 三支示例（56 → 59）
+
+复核时发现一个**内容缺口**：原版当年在 Ivy Bridge 上用不了 AVX2，于是把第 11 类的
+`avx2_*` 三支降级成了 SSE 的 `simd_*`，结果**整本指南没有一处讲 AVX**。
+而这台 Haswell 的 `cpuid` 报 `AVX2: YES` / `FMA: YES`，完全跑得动 —— 于是补上：
+
+| 新文件 | 讲什么 | 本机实测关键输出 |
+|--------|--------|-----------------|
+| `10_sse_simd/avx_basics.asm` | VEX 三操作数、256 位 `ymm`、`vzeroupper` | SSE 版要先把 `xmm1` 备份才能连算和与积，AVX 版直接 `vaddps ymm0,ymm1,ymm2` / `vmulps ymm3,ymm1,ymm2` |
+| `10_sse_simd/avx2_int.asm` | `vpmulld` / `vpsllvd` / `vpermd` / `vpbroadcastd` | `vpermd` 能跨 128 位 lane 置换，SSE 的 `pshufd` 只能在 lane 内动 |
+| `10_sse_simd/avx2_fma.asm` | `vfmadd231ps` 与 `mulps`+`addps` 的舍入差 | 边界常量上 SSE 得 `0`，FMA 得 `-1.4210854715202004e-14` |
+
+`./build-mac.sh -All` 现在是 **59/59**，正文见 **[第 12 章 SIMD 与 AVX](12_simd_avx.md)**。
+
+两点说明：
+
+1. **这三支内置了运行时探测，不是「Haswell 专用」**。每支开头都是 `cpu_features`
+   （`cpuid` 取页 1 / 页 7，再 `xgetbv` 看 XCR0 的 OS 放行位），能力不够就打印一行
+   「本机不支持 …，跳过」并**正常退出 0**，不会抛 `#UD`。所以它们挪到 Ivy Bridge 上
+   也能跑到底 —— 只是 `avx_basics` 会跑全（Ivy Bridge 有 AVX 1.0），
+   `avx2_int` / `avx2_fma` 会走跳过分支。**不过这一点没有在 Ivy Bridge 上实地验过**，
+   本机只有 Haswell 一台能跑。
+2. **`avx2_fma.asm` 里踩过一个数错了的坑**：想让 1−2⁻²³ 那种「刚好在 1 下面的邻居」参与运算，
+   先写成 `0x3F7FFFFF`，结果打印出 `5.9604637669963267e-08`。原因是 **1.0 以下的 ulp 是 2⁻²⁴
+   而不是 2⁻²³**（上面的 2⁻²³ 是阶码 +1 之后才有的），`0x3F7FFFFF` 其实是 1−2⁻²⁴。
+   改成 `0x3F7FFFFE` 才得到预期的 `-1.4210854715202004e-14`。这条也写进了第 12 章的坑位清单。
 
 ---
 

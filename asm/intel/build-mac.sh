@@ -9,11 +9,14 @@
 #   ./build-mac.sh -BuildOnly -All       只汇编链接，不运行
 #   ./build-mac.sh -Clean                清理 build/mac 目录
 #
-# 工具链（两套配置都实测通过 56/56）：
+# 工具链：
 #   nasm   3.02           /opt/local/bin/nasm
-#   A) macOS 14.8.9 / Intel i7-4770HQ：clang 16.0.0（Apple clang-1600.0.26.6）
-#                                      ld64-1115.7.3（Xcode 16 CLT）
-#   B) macOS 13.1   / Intel i7-3520M ：clang 14.0.0 / ld64-820.1
+#   A) macOS 14.8.9 / Intel i7-4770HQ（Haswell）：clang 16.0.0（Apple clang-1600.0.26.6）
+#                                      ld64-1115.7.3（Xcode 16 CLT）—— 59/59
+#   B) macOS 13.1   / Intel i7-3520M （Ivy Bridge）：clang 14.0.0 / ld64-820.1 —— 56/56
+#                                      （当年只有 56 个示例；后补的 3 个 AVX 示例
+#                                       未在 Ivy Bridge 上实测，但它们内置 cpuid+xgetbv 探测，
+#                                       能力不足时会打印提示并正常退出 0）
 #   —— ld64 从 Xcode 15 起把 -macosx_version_min 改名为 -macos_version_min，
 #      脚本先试新名字，失败再退回旧名字，两套都能用。
 #

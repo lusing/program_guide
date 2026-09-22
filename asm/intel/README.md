@@ -7,19 +7,27 @@
 - Linux：`-f elf64` + `gcc -no-pie`（自动带 glibc 启动文件），示例在 [`examples-linux/`](examples-linux/)
 - 跨平台差异与移植规则：[macOS 平台移植指南](docs/10_macos_porting.md) · [Linux 平台移植指南](docs/11_linux.md)
 
-> **验证状态**：`examples-macos/` 下 **56 个示例在 macOS 全部实际汇编、链接、运行通过**，两套配置都实测过：
+> **验证状态**：`examples-macos/` 下 **59 个示例在 macOS 全部实际汇编、链接、运行通过（59/59）**。
+> 本机配置如下，另外当年在 Ivy Bridge 那台上也跑过（当时示例总数 56，56/56）：
 >
-> | 机器 | 系统 | CPU | NASM | clang | ld64 |
-> |------|------|-----|------|-------|------|
-> | MacBook Pro（本机复核） | macOS 14.8.9 (23.6.0) | Intel i7-4770HQ | 3.02 | 16.0.0 (clang-1600.0.26.6) | 1115.7.3 |
-> | MacBook Air | macOS 13.1 | Intel i7-3520M | 3.02 | 14.0.0 | 820.1 |
+> | 机器 | 系统 | CPU | NASM | clang | ld64 | 结果 |
+> |------|------|-----|------|-------|------|------|
+> | MacBook Pro（本机复核） | macOS 14.8.9 (23.6.0) | Intel i7-4770HQ（Haswell，有 AVX2/FMA/BMI） | 3.02 | 16.0.0 (clang-1600.0.26.6) | 1115.7.3 | 59/59 |
+> | MacBook Air（当年） | macOS 13.1 | Intel i7-3520M（Ivy Bridge，无 AVX2/FMA） | 3.02 | 14.0.0 | 820.1 | 56/56（当时就是 56 个） |
 >
-> `examples-linux/` 下 56 个示例在 Linux 全部实际汇编、链接、运行通过（Arch Linux / WSL2 / NASM 3.02 / GCC 16.2.1 / GNU ld 2.47 / glibc 2.44）。
+> `examples-linux/` 下 59 个示例：其中 56 个在 Linux 实际汇编、链接、运行通过（Arch Linux / WSL2 / NASM 3.02 / GCC 16.2.1 / GNU ld 2.47 / glibc 2.44）；
+> **新增的 3 个 AVX/AVX2 示例（`10_sse_simd/avx_*.asm`、`avx2_*.asm`）在本机只做到 `nasm -f elf64` 汇编通过，链接与运行未实测**（本机是 macOS，无 Linux 环境）。
+> `examples/`（Windows）下 61 个示例中，**新增的 3 个 AVX/AVX2 示例同样只做到 `nasm -f win64` 汇编通过**，链接与运行未实测。
 >
-> 本机复核时修掉的三个 macOS 专属问题见 [macOS 平台移植指南](docs/10_macos_porting.md) 的「本机复核记要与坑位」一节：
+> 本机复核时修掉的三个 macOS 专属问题见 [macOS 平台移植指南](docs/10_macos_porting.md) 的
+> 「10. 本机复核纪要（macOS 14 / Xcode 16 CLT）」一节：
 > ① `mov rsi, label` 这种绝对地址立即数在 PIE 下会 `illegal text-relocation`；
 > ② 构建脚本里 `grep '^\s*extern _'` 在 BSD grep 上永不命中，导致 55 个示例走错链接分支；
 > ③ ld64-1115 把 `-macosx_version_min` 改名为 `-macos_version_min`。
+>
+> AVX / AVX2 / FMA 的原理与三个新示例见 [SIMD 进阶：AVX / AVX2 / FMA](docs/12_simd_avx.md)。
+> 这三支示例都内置 `cpuid` + `xgetbv` 运行时探测，缺能力时打印提示并正常退出 0，
+> 所以放在缺少 AVX2/FMA 的老机器上也不会崩。
 
 ## 工具链说明
 
@@ -94,7 +102,7 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 # ---- macOS ----
 ./build-mac.sh -Category 01_data_movement  # 构建并运行某一类别
 ./build-mac.sh -File 01_data_movement/lea.asm
-./build-mac.sh -All                        # 构建并运行全部（56 个）
+./build-mac.sh -All                        # 构建并运行全部（59 个）
 ./build-mac.sh -BuildOnly -All             # 只构建不运行
 ./build-mac.sh -Clean
 ```
@@ -103,7 +111,7 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 # ---- Linux ----
 ./build-linux.sh -Category 01_data_movement  # 构建并运行某一类别
 ./build-linux.sh -File 01_data_movement/lea.asm
-./build-linux.sh -All                        # 构建并运行全部（56 个）
+./build-linux.sh -All                        # 构建并运行全部（59 个）
 ./build-linux.sh -BuildOnly -All             # 只构建不运行
 ./build-linux.sh -Clean
 ```
@@ -125,7 +133,7 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 | 7 | 栈操作（Stack Operations） | 6 | `07_stack_ops` | PUSH、POP、ENTER、LEAVE 等栈管理指令 |
 | 8 | 系统与杂项（System & Misc） | 6 | `08_system_misc` | SYSCALL、CPUID、RDTSC、NOP、HLT 等 |
 | 9 | 浮点运算（FPU） | 8 | `09_fpu` | FLD、FST、FADD、FMUL、FDIV、FCOM 等 x87 指令 |
-| 10 | SSE/SIMD（SIMD） | 10 | `10_sse_simd` | MOVAPS、ADDPS、MULPS、CVT* 等 SIMD 指令 |
+| 10 | SSE/SIMD（SIMD） | 10 | `10_sse_simd` | MOVAPS、ADDPS、MULPS、CVT* 等 SSE 指令，以及 VADDPS / VPMULLD / VFMADD231PS 等 **AVX / AVX2 / FMA** 指令 |
 | 11 | 高等数学与数学库（Calculus） | 7 | `11_calculus_mkl` | 数值微分/积分（梯形、辛普森、样条）与厂商数学库调用 |
 
 三侧的示例数量对照：
@@ -141,9 +149,9 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 | 07_stack_ops | 3 | 3 | 3 |
 | 08_system_misc | 4 | 4 | 4 |
 | 09_fpu | 5 | 5 | 5 |
-| 10_sse_simd | 5 | 5 | 5 |
+| 10_sse_simd | 8 | 8 | 8 |
 | 11_calculus_mkl | 7（5 + 2 个排查脚手架） | 5 | 5 |
-| **合计** | **58** | **56** | **56** |
+| **合计** | **61** | **59** | **59** |
 
 ## 章节索引
 
@@ -160,10 +168,11 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 | [09 Intel 混合架构（P核/E核）](docs/09_hybrid_architecture.md) | CPUID 检测核心类型、指令集差异、Thread Director | — |
 | [10 macOS 平台移植指南](docs/10_macos_porting.md) | macho64 工具链、平台差异对照、移植铁律与踩坑清单 | `examples-macos/` |
 | [11 Linux 平台移植指南](docs/11_linux.md) | elf64 工具链、libmvec、移植规则与踩坑清单 | `examples-linux/` |
+| [12 SIMD 进阶：AVX / AVX2 / FMA](docs/12_simd_avx.md) | VEX 三操作数、YMM 与 XCR0、vzeroupper、AVX2 整数质变、FMA 单次舍入、运行时降级 | `10_sse_simd/avx_*` `avx2_*` |
 
 学习路线：01–04 语言与内存模型 → 05–07 标志 / 调用约定 / 栈帧（核心硬骨头）→
-08–09 调试与混合架构 → 10–11 跨平台移植收束；`09_fpu` 与 `10_sse_simd`
-类别可在中级后随时穿插实践。
+08–09 调试与混合架构 → 10–11 跨平台移植 → 12 SIMD 进阶收束；`09_fpu`
+与 `10_sse_simd` 类别可在中级后随时穿插实践。
 
 ## 目录结构
 
@@ -184,7 +193,8 @@ intel/
 │   ├── 08_debugging.md           # 调试方法（x64dbg / WinDbg / lldb / gdb）
 │   ├── 09_hybrid_architecture.md # Intel 混合架构（P核/E核）
 │   ├── 10_macos_porting.md       # macOS 工具链与移植指南
-│   └── 11_linux.md               # Linux 工具链与移植指南
+│   ├── 11_linux.md               # Linux 工具链与移植指南
+│   └── 12_simd_avx.md            # SIMD 进阶：AVX / AVX2 / FMA
 ├── lib/
 │   ├── mac_io.inc                # macOS 输出辅助例程（%include 用）
 │   └── linux_io.inc              # Linux 输出辅助例程（%include 用）

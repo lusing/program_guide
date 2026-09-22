@@ -2,7 +2,12 @@
 
 `examples/` 是 Windows 版（`-f win64` + MSVC `link.exe`），本目录是**同样 11 个类别的 Linux 版**：`-f elf64` + `gcc -no-pie`（自动带 glibc 启动文件）。
 
-**56 个示例全部在本机实际汇编、链接、运行通过。**
+**原有 56 个示例在 Arch Linux（WSL2，gcc 16.2.1 / glibc 2.44）上实际汇编、链接、运行通过（56/56）。**
+
+**新增的 3 个 AVX 示例（`avx_basics` / `avx2_int` / `avx2_fma`）在本机只做了汇编验证** —— 本机是 macOS，没有 Linux 环境（`docker`/`podman`/`colima`/`lima`/`qemu-*` 都不存在），只能跑 `nasm -I ../lib -f elf64` 确认语法与符号正确，**没有链接、没有运行**。要在 Linux 上确认，请实地跑一次 `build-linux.sh`。
+
+> 这三支都内置 `cpuid` + `xgetbv` 运行时探测：机器缺少 AVX / AVX2 / FMA 时打印一行
+> 「本机不支持 …，跳过」并**正常退出 0**，不会崩。所以它们能安全地放进全量脚本。
 
 ```bash
 ../build-linux.sh -All                              # 全部构建并运行
@@ -27,7 +32,7 @@
 | [07_stack_ops](#07_stack_ops) | 3 | 同名 | `ENTER`/`LEAVE` 指令一样 |
 | [08_system_misc](#08_system_misc) | 4 | 同名 | `CPUID` 会踩 `EBX` |
 | [09_fpu](#09_fpu) | 5 | 同名 | x87 指令完全一样 |
-| [10_sse_simd](#10_sse_simd) | 5 | 同名 | 常量要 `align 16` |
+| [10_sse_simd](#10_sse_simd) | 8 | 同名 | 常量要 `align 16`；`ymm` 要 `align 32` |
 | [11_calculus_mkl](#11_calculus_mkl) | 5 | `avx2_*` / `mkl_*` | AVX2→SSE，MKL→libmvec |
 
 `examples/11_calculus_mkl/` 里的 `test_align.asm`、`test_simpson_min.asm` 是 Windows 版的排查脚手架（当时用来定位对齐问题），不是教学内容，所以没有移植。
@@ -149,7 +154,7 @@ x87 浮点：FLD/FST/FSTP/FILD、FADD/FSUB/FMUL/FDIV、FCOM/FCOMI、FSIN/FCOS/FP
 
 ## 10_sse_simd
 
-SSE / SIMD：MOVAPS/MOVUPS/MOVSS/MOVSD、标量与打包算术、比较、类型转换。
+SSE / SIMD：MOVAPS/MOVUPS/MOVSS/MOVSD、标量与打包算术、比较、类型转换；后半段是 AVX / AVX2 / FMA。
 
 | 文件 | 内容 |
 |------|------|
@@ -158,8 +163,24 @@ SSE / SIMD：MOVAPS/MOVUPS/MOVSS/MOVSD、标量与打包算术、比较、类型
 | `sse_arithmetic.asm` | `ADDPS`/`SUBPS`/`MULPS`/`DIVPS` 一次算四个 |
 | `sse_compare.asm` | `COMISS`/`COMISD` 出标志位；`CMPPS` 出掩码（0xFFFFFFFF / 0） |
 | `sse_convert.asm` | `CVT*` 全家族；`cvtss2si` 就近舍入 vs `cvttss2si` 向零截断 |
+| `avx_basics.asm` | VEX 三操作数 + 256 位 `ymm`：同一对源寄存器连算和与积，SSE 版必须先备份；末尾 `vzeroupper` |
+| `avx2_int.asm` | `vpmulld` / `vpsllvd` / `vpermd` / `vpbroadcastd` —— SSE 做不到的三件事（含跨 lane 置换） |
+| `avx2_fma.asm` | `vfmadd231ps` vs `mulps`+`addps`：中间乘积少舍入一次，边界输入上 SSE 得 0、FMA 得 -1.4210854715202004e-14 |
 
 > `andps` / `maxps` / `subps` 这些指令的**内存操作数必须 16 字节对齐**，常量前面记得写 `align 16`；错位加载一律用 `movups`。
+> AVX 同理升到 32 字节：`vmovaps ymm` 的内存操作数要 `align 32`，拿不准就用 `vmovups`。
+
+> 注意 `avx2_int.asm` 里 **32 字节对齐是靠 NASM 的 `align 32` 拿到、不是靠链接脚本**：
+> `-f elf64` 下实测 NASM 会把 `.data` 段的 `sh_addralign` 直接写成 **32**
+> （`llvm-readelf -S <obj> | grep .data` 可见 `Al` 列是 32），
+> 而 ELF 规范要求链接器按输入段的对齐布置输出段，GNU ld 与 `gcc -no-pie` 都遵守，
+> 所以链接后这些常量的地址仍是 32 的倍数。
+> **这一条只验证到「目标文件段对齐 = 32」为止** —— 本机没有 Linux 环境，链接后地址没实测。
+> 真出问题（`vmovaps` 直接 `#GP` 崩掉）就把这几条改成 `vmovups`。
+
+AVX / AVX2 / FMA 的完整讲解（世代表、VEX 编码、三操作数为什么省一次 `movaps`、
+YMM 与 `vzeroupper` 的代价、运行时降级探测）见
+**[docs/12_simd_avx.md](../docs/12_simd_avx.md)** —— 上面三个示例就是那一章的实测代码（实测数据取自 macOS 侧，见章内说明）。
 
 ## 11_calculus_mkl
 
@@ -175,7 +196,7 @@ SSE / SIMD：MOVAPS/MOVUPS/MOVSS/MOVSD、标量与打包算术、比较、类型
 
 三个「必须说明」的移植决定：
 
-1. **AVX2 → SSE**：SIMD 示例沿用 SSE 的 4 路（和 macOS 版一致，任何 x86-64 都能跑）。算法、数据布局、结论一致，只是通道变窄；本机（支持 AVX2）RDTSC 实测加速比仍在 4× 上下。
+1. **AVX2 → SSE**：SIMD 示例沿用 SSE 的 4 路（和 macOS 版一致，任何 x86-64 都能跑）。算法、数据布局、结论一致，只是通道变窄；本机（支持 AVX2）RDTSC 实测加速比仍在 4× 上下。**AVX2 / FMA 本身并没有丢** —— 后来在 `10_sse_simd/` 下补齐了 `avx_basics` / `avx2_int` / `avx2_fma` 三个示例，讲解见 [docs/12_simd_avx.md](../docs/12_simd_avx.md)。
 2. **MKL → libmvec**：`mkl_vml_math.asm` 换成 glibc 的 `_ZGVbN4v_*` 系列。和 MKL（`n,in,out`）、vForce（`out,in,&n`）都不同，libmvec **不传指针**：4 个 float 打包进 `xmm0` 传入，结果同样在 `xmm0` 里回来，一次只算一个向量，数组要自己写循环。
 3. **MKL DF → 手写样条**：libmvec **没有** pp-form 样条 API（也没有 vDSP_maxv 那样的归约函数），所以样条和最大值归约都手写。这反而更能看清那条 API 背后在算什么，而且这份代码在哪个平台上都原样可编译。
 

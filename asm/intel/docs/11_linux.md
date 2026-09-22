@@ -2,7 +2,8 @@
 
 本指南原本面向 Windows（`-f win64` + MSVC `link.exe`），后来加了 macOS（`-f macho64` + `clang`）。这一章说明**同一份汇编知识在 Linux 上怎么落地**，以及把现有示例搬到 Linux 需要改哪些地方、会踩哪些坑。
 
-所有 `examples-linux/` 下的示例都已在本机（Arch Linux / WSL2 x86-64 / NASM 3.02 / GCC 16.2.1 / GNU ld 2.47 / glibc 2.44）**实际汇编、链接、运行通过**，共 56 个，见 [examples-linux/README.md](../examples-linux/README.md)。
+`examples-linux/` 下的示例共 59 个，其中 56 个已在 Linux 上（Arch Linux / WSL2 x86-64 / NASM 3.02 / GCC 16.2.1 / GNU ld 2.47 / glibc 2.44）**实际汇编、链接、运行通过**，见 [examples-linux/README.md](../examples-linux/README.md)。
+后补的 3 个 AVX 示例（`10_sse_simd/avx_*.asm`、`avx2_*.asm`）**只在 macOS 上做到 `nasm -f elf64` 汇编通过，链接与运行未实测** —— 原因和复核结论见 [第 9.1 节](#91-本机补做的汇编级核查macos-上做没有-linux-环境)。
 
 ---
 
@@ -225,7 +226,7 @@ _ZGVbN4v_sinf:  xmm0 = 4 个 float（打包输入）→  xmm0 = 4 个结果
 | `_ZGVdN8v_sinf` | d = AVX2 | 8 个 float | ymm0 |
 | `_ZGVe16v_sinf` | e = AVX-512 | 16 个 float | zmm0 |
 
-本指南的 SIMD 章节用 SSE，示例固定调 `_ZGVbN4v_*`（任何 x86-64 都能跑；AVX2 版把 `xmm` 写宽成 `ymm`、N4 换成 N8 即可）。这些符号是 IFUNC（按 CPU 特性在加载时选实现），**声明成普通 extern 直接 call 就行**，加载器会自动解析。
+本指南的 SIMD 章节用 SSE，示例固定调 `_ZGVbN4v_*`（任何 x86-64 都能跑；AVX2 版把 `xmm` 写宽成 `ymm`、N4 换成 N8 即可 —— 字节码里就是 `_ZGVdN8v_*`，VEX 编码和 256 位寄存器的用法见 **[第 12 章 SIMD 与 AVX](12_simd_avx.md)**）。这些符号是 IFUNC（按 CPU 特性在加载时选实现），**声明成普通 extern 直接 call 就行**，加载器会自动解析。
 
 **坑三：链接要带 `-lmvec`。** libmvec 是独立于 libc/libm 的库，示例用 `; LINK: -lm -lmvec` 声明（`build-linux.sh` 读到后附在 gcc 命令行末尾）。
 
@@ -296,6 +297,9 @@ Program received signal SIGSEGV, Segmentation fault.
 
 ## 9. 验证记录
 
+> 下面是**当年**在真 Linux 上跑出的 56/56（当时示例总数就是 56）。
+> 当前示例数是 59，新增的 3 个 AVX 示例只做了汇编级核查，见 9.1。
+
 ```
 $ ./build-linux.sh -All
 ...
@@ -313,8 +317,43 @@ $ ./build-linux.sh -All
 | gcc | 16.2.1 |
 | ld | GNU ld（binutils 2.47） |
 | glibc | 2.44（含 libmvec 2.44） |
-| CPU | 支持 SSE4.2 / AVX2 / FMA（本指南示例只用 SSE，任何 x86-64 可跑） |
+| CPU | 支持 SSE4.2 / AVX2 / FMA（`11_calculus_mkl/` 的 SIMD 示例只用 SSE，任何 x86-64 可跑；AVX/AVX2/FMA 的示例在 `10_sse_simd/`，见第 12 章） |
+
+### 9.1 本机补做的汇编级核查（macOS 上做，没有 Linux 环境）
+
+上面那张 56/56 是真的在 Linux 上跑出来的。后来在 `10_sse_simd/` 下补了三个 AVX 示例
+（`avx_basics` / `avx2_int` / `avx2_fma`），而补写时手边是 macOS —— `docker` / `podman` /
+`colima` / `lima` / `qemu-*` 一个都不在，**没有 Linux 环境可以实地链接、运行**，
+于是只做了**汇编级**核查，逐文件执行 `nasm -I lib -f elf64 <src> -o /tmp/x.o`
+并要求退出码 0 且无 warning：
+
+```
+elf64 汇编通过: 59  失败: 0
+```
+
+**这只证明了语法与符号引用正确，不能证明链接后能跑。** 特别是新增示例还多押了两个赌注：
+
+1. `avx2_int.asm` 用 `vmovaps ymm` 读常量，要求这些常量在**最终可执行文件里**落在 32 的倍数上。
+   本机用 `llvm-readelf -S` 解析目标文件段表，确认 NASM 已把 `.data` 的 `Al`（即
+   `sh_addralign`）写成 **32**（macOS 上 `readelf` 缺失，MacPorts 装的这几个带版本后缀，
+   本机实际是 `/opt/local/bin/llvm-readelf-mp-21`）：
+
+   ```
+   $ llvm-readelf -S /tmp/avx2_int.o | grep .data
+     [ 1] .data  PROGBITS  0000000000000000 000240 0003db 00  WA  0  0 32
+   ```
+
+   按 ELF 规范链接器会遵守输入段的对齐，但**链接后的实际地址没验**（没有 Linux 环境）。
+2. `avx2_fma.asm` 用 `vfmadd231ps`（FMA3），要求机器真的有 FMA —— 在没 FMA 的 CPU 上
+   是 `SIGILL` 而不是算错。**这一条示例自己处理了**：三支 AVX 示例开头都调 `cpu_features`
+   （`cpuid` 页 1 / 页 7 + `xgetbv` 看 XCR0），能力不够就走跳过分支、打印一行提示、
+   退出码仍是 0。所以「探测逻辑写没写对」也是需要实地跑一次才知道的东西之一 ——
+   本机的汇编核查证明不了它能正确分流。
+
+所以：**请在真有 Linux 的机器上跑一次 `./build-linux.sh -All` 复核**（预期 59/59）。
+Windows 侧同样是汇编级核查，`nasm -f win64` 61/61（含未移植的两个排查脚手架
+`test_align.asm` / `test_simpson_min.asm`）。
 
 ---
 
-> 上一章：[macOS 平台移植指南](10_macos_porting.md) ｜ 返回：[README](../README.md)
+> 上一章：[macOS 平台移植指南](10_macos_porting.md) ｜ 下一章：[SIMD 与 AVX：从 SSE 到 AVX2 / FMA](12_simd_avx.md) ｜ 返回：[README](../README.md)

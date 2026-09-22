@@ -2,7 +2,8 @@
 
 `examples/` 是 Windows 版（`-f win64` + MSVC `link.exe`），本目录是**同样 11 个类别的 macOS 版**：`-f macho64` + `clang`（自动带 libSystem）。
 
-**56 个示例全部在本机实际汇编、链接、运行通过**（macOS 13.1/clang 14 与 macOS 14.8.9/clang 16 两套 Intel 配置各跑一遍，都是 56/56）。
+**59 个示例全部在本机实际汇编、链接、运行通过**（macOS 14.8.9 / i7-4770HQ Haswell / clang 16 / ld64-1115.7.3 上 59/59；其中 56 个当年在 macOS 13.1 / i7-3520M Ivy Bridge / clang 14 上也跑过 56/56）。
+新增的 3 个 AVX 示例都内置 `cpuid` + `xgetbv` 运行时探测，缺少对应指令集时打印一行「本机不支持 …，跳过」并正常退出 0，**但未在 Ivy Bridge 上实地验证过**。
 
 > 移植到本目录时最容易翻车的一条：**取数据地址必须写 `lea rsi, [label]`，不能写 `mov rsi, label`**。
 > macOS 可执行文件默认 PIE，后者会编出绝对重定位，链接阶段报
@@ -32,7 +33,7 @@
 | [07_stack_ops](#07_stack_ops) | 3 | 同名 | `ENTER`/`LEAVE` 指令一样 |
 | [08_system_misc](#08_system_misc) | 4 | 同名 | `CPUID` 会踩 `EBX` |
 | [09_fpu](#09_fpu) | 5 | 同名 | x87 指令完全一样 |
-| [10_sse_simd](#10_sse_simd) | 5 | 同名 | 常量要 `align 16` |
+| [10_sse_simd](#10_sse_simd) | 8 | 同名 | 常量要 `align 16`；`ymm` 要 `align 32` |
 | [11_calculus_mkl](#11_calculus_mkl) | 5 | `avx2_*` / `mkl_*` | AVX2→SSE，MKL→Accelerate |
 
 `examples/11_calculus_mkl/` 里的 `test_align.asm`、`test_simpson_min.asm` 是 Windows 版的排查脚手架（当时用来定位对齐问题），不是教学内容，所以没有移植。
@@ -134,7 +135,7 @@
 | 文件 | 内容 |
 |------|------|
 | `cpuid.asm` | 厂商串、Family/Model/Stepping、特性位图（含 NASM 宏 + `bt` 解码特性名） |
-| `cpuid_hybrid.asm` | 检测大小核（页 0x1A）与 AVX2 / AVX-512（页 7）—— 本机如实报 NO，本身就是一次正确的能力探测 |
+| `cpuid_hybrid.asm` | 检测大小核（页 0x1A）与 AVX2 / AVX-512（页 7）—— 两台无混合架构的旧 Intel（i7-3520M / i7-4770HQ）都如实报「非混合」，AVX2 则一 NO 一 YES，本身就是一次正确的能力探测 |
 | `nop_align.asm` | 单字节/多字节 NOP 与 `ALIGN 16` |
 | `rdtsc.asm` | 时间戳计数器；用 1000 次 NOP 循环量周期数 |
 
@@ -154,7 +155,7 @@ x87 浮点：FLD/FST/FSTP/FILD、FADD/FSUB/FMUL/FDIV、FCOM/FCOMI、FSIN/FCOS/FP
 
 ## 10_sse_simd
 
-SSE / SIMD：MOVAPS/MOVUPS/MOVSS/MOVSD、标量与打包算术、比较、类型转换。
+SSE / SIMD：MOVAPS/MOVUPS/MOVSS/MOVSD、标量与打包算术、比较、类型转换；后半段是 AVX / AVX2 / FMA。
 
 | 文件 | 内容 |
 |------|------|
@@ -163,8 +164,16 @@ SSE / SIMD：MOVAPS/MOVUPS/MOVSS/MOVSD、标量与打包算术、比较、类型
 | `sse_arithmetic.asm` | `ADDPS`/`SUBPS`/`MULPS`/`DIVPS` 一次算四个 |
 | `sse_compare.asm` | `COMISS`/`COMISD` 出标志位；`CMPPS` 出掩码（0xFFFFFFFF / 0） |
 | `sse_convert.asm` | `CVT*` 全家族；`cvtss2si` 就近舍入 vs `cvttss2si` 向零截断 |
+| `avx_basics.asm` | VEX 三操作数 + 256 位 `ymm`：同一对源寄存器连算和与积，SSE 版必须先备份；末尾 `vzeroupper` |
+| `avx2_int.asm` | `vpmulld` / `vpsllvd` / `vpermd` / `vpbroadcastd` —— SSE 做不到的三件事（含跨 lane 置换） |
+| `avx2_fma.asm` | `vfmadd231ps` vs `mulps`+`addps`：中间乘积少舍入一次，边界输入上 SSE 得 0、FMA 得 -1.4210854715202004e-14 |
 
 > `andps` / `maxps` / `subps` 这些指令的**内存操作数必须 16 字节对齐**，常量前面记得写 `align 16`；错位加载一律用 `movups`。
+> AVX 同理升到 32 字节：`vmovaps ymm` 的内存操作数要 `align 32`，拿不准就用 `vmovups`。
+
+AVX / AVX2 / FMA 的完整讲解（世代表、VEX 编码、三操作数为什么省一次 `movaps`、
+YMM 与 `vzeroupper` 的代价、运行时降级探测）见
+**[docs/12_simd_avx.md](../docs/12_simd_avx.md)** —— 上面三个示例就是那一章的实测代码。
 
 ## 11_calculus_mkl
 
@@ -180,7 +189,7 @@ SSE / SIMD：MOVAPS/MOVUPS/MOVSS/MOVSD、标量与打包算术、比较、类型
 
 三个「必须说明」的移植决定：
 
-1. **AVX2 → SSE**：本机（Ivy Bridge）不支持 AVX2 / FMA，SIMD 示例改用 SSE 的 4 路。算法、数据布局、结论一致，只是通道变窄。
+1. **AVX2 → SSE**：原作者本机（Ivy Bridge）不支持 AVX2 / FMA，SIMD 示例改用 SSE 的 4 路。算法、数据布局、结论一致，只是通道变窄。**AVX2 / FMA 本身并没有丢** —— 后来在 `10_sse_simd/` 下补齐了 `avx_basics` / `avx2_int` / `avx2_fma` 三个示例，本机 Haswell 实测通过，讲解见 [docs/12_simd_avx.md](../docs/12_simd_avx.md)。
 2. **MKL → Accelerate**：`mkl_vml_math.asm` 换成 vForce/vDSP。注意三家参数顺序互不相同（`MKL(n,in,out)` / `vForce(out,in,&n)` / `vDSP(in,stride,out,n)`）。
 3. **MKL DF → 手写样条**：Accelerate **没有** pp-form 样条 API，所以把样条手写出来。这反而更能看清那条 API 背后在算什么，而且这份代码在 Windows 上原样可编译。
 
