@@ -23,6 +23,17 @@ param(
     [string]$ClickOffset = '0,44',
     # Absolute screen point to click instead of the island-centre computation.
     [string]$ClickAtScreen,
+    # Sequence of clicks, semicolon-separated "x,y" points in WINDOW coordinates (the same
+    # space as the saved screenshots: 0,0 = window top-left including the title bar). A
+    # screenshot click-N.png is saved after each click. Takes precedence over the single
+    # click params above; -TypeText is typed after the first click (which usually focuses
+    # an input field) and before any further clicks.
+    [string]$Clicks,
+    [string]$TypeText,
+    # Parked window size; galleries need a taller window so every nav item is on-screen
+    # (NavigationView menu rows are ~72 physical px at 150% DPI).
+    [int]$WindowW = 900,
+    [int]$WindowH = 600,
     [int]$StartupSeconds = 8,
     [switch]$NoClick
 )
@@ -47,6 +58,7 @@ Add-Type -Namespace Win32 -Name Native -MemberDefinition @'
 [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr hwnd, out uint processId);
 [DllImport("user32.dll")] public static extern void keybd_event(byte vk, byte scan, uint flags, System.UIntPtr extra);
 [DllImport("user32.dll")] public static extern bool GetCursorPos(out POINT p);
+[DllImport("user32.dll")] public static extern ushort VkKeyScanW(char ch);
 public delegate bool EnumWindowsProc(IntPtr hwnd, System.IntPtr lParam);
 public struct RECT { public int Left, Top, Right, Bottom; }
 public struct POINT { public int X, Y; }
@@ -98,8 +110,25 @@ function Get-LargestChild([IntPtr]$parent) {
     $children | Sort-Object Area -Descending | Select-Object -First 1
 }
 
-function Save-WindowShot([IntPtr]$hwnd, [string]$path) {
-    $rect = New-Object Win32.Native+RECT
+# Types text the way a user would: VkKeyScanW resolves each character to a virtual key
+# (plus a shift state in the high byte), then keybd_event presses it. ASCII letters,
+# digits and common punctuation only.
+function Invoke-TypeText([string]$text) {
+    foreach ($ch in $text.ToCharArray()) {
+        $vk = [Win32.Native]::VkKeyScanW($ch)
+        if ($vk -eq 0) { continue }
+        $code = $vk -band 0xFF
+        $shift = ((($vk -shr 8) -band 0xFF) -band 1) -eq 1
+        if ($shift) { [Win32.Native]::keybd_event(0x10, 0, 0, [UIntPtr]::Zero) }   # SHIFT down
+        [Win32.Native]::keybd_event($code, 0, 0, [UIntPtr]::Zero)
+        [Win32.Native]::keybd_event($code, 0, 2, [UIntPtr]::Zero)
+        if ($shift) { [Win32.Native]::keybd_event(0x10, 0, 2, [UIntPtr]::Zero) }   # SHIFT up
+        Start-Sleep -Milliseconds 60
+    }
+    Start-Sleep -Milliseconds 300
+}
+
+function Save-WindowShot([IntPtr]$hwnd, [string]$path) {    $rect = New-Object Win32.Native+RECT
     if (-not [Win32.Native]::GetWindowRect($hwnd, [ref]$rect)) { throw "GetWindowRect failed for $hwnd" }
     $width = $rect.Right - $rect.Left
     $height = $rect.Bottom - $rect.Top
@@ -131,11 +160,36 @@ try {
     Invoke-BringForward $proc.MainWindowHandle
     [Win32.Native]::ShowWindow($proc.MainWindowHandle, 9) | Out-Null   # SW_RESTORE
     # Park the window fully on-screen: a clipped capture would put the "centre" off the panel.
-    [Win32.Native]::SetWindowPos($proc.MainWindowHandle, [IntPtr]::Zero, 100, 100, 900, 600, 0x0040) | Out-Null
+    [Win32.Native]::SetWindowPos($proc.MainWindowHandle, [IntPtr]::Zero, 100, 100, $WindowW, $WindowH, 0x0040) | Out-Null
     Start-Sleep -Milliseconds 800
     Save-WindowShot $proc.MainWindowHandle (Join-Path $OutDir 'before.png')
 
-    if (-not $NoClick) {
+    if ($Clicks) {
+        # Multi-click sequence in window coordinates (screenshot space): the first click
+        # usually lands on a nav item (or focuses an input), optional -TypeText follows it,
+        # and every click leaves a click-N.png behind for judging what changed.
+        $wrect = New-Object Win32.Native+RECT
+        if (-not [Win32.Native]::GetWindowRect($proc.MainWindowHandle, [ref]$wrect)) { throw 'GetWindowRect failed' }
+        $seq = @($Clicks.Split(';') | Where-Object { $_.Trim() })
+        for ($i = 0; $i -lt $seq.Count; $i++) {
+            [int[]]$c = $seq[$i].Split(',')
+            $x = $wrect.Left + $c[0]
+            $y = $wrect.Top + $c[1]
+            "click  : window($($c[0]),$($c[1])) -> screen($x,$y)"
+            [Win32.Native]::SetCursorPos($x, $y) | Out-Null
+            Start-Sleep -Milliseconds 300
+            [Win32.Native]::mouse_event(0x0002, 0, 0, 0, [UIntPtr]::Zero)   # LEFTDOWN
+            [Win32.Native]::mouse_event(0x0004, 0, 0, 0, [UIntPtr]::Zero)   # LEFTUP
+            Start-Sleep -Milliseconds 800
+            if ($i -eq 0 -and $TypeText) {
+                "type   : '$TypeText'"
+                Invoke-TypeText $TypeText
+            }
+            Start-Sleep -Milliseconds 400
+            Save-WindowShot $proc.MainWindowHandle (Join-Path $OutDir ("click-{0}.png" -f ($i + 1)))
+        }
+    }
+    elseif (-not $NoClick) {
         if ($ClickAtScreen) {
             [int[]]$point = $ClickAtScreen.Split(',')
             $x = $point[0]
