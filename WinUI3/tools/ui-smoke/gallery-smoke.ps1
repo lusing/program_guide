@@ -99,8 +99,11 @@ $galleries = @{
     '31' = @{
         Dir  = '31-window-shell'
         Exe  = 'examples\31-window-shell\x64\Debug\WindowShellApp\WindowShellApp.exe'
-        Size = @(900, 800)
-        Pages = [ordered]@{ home = @{ Act = '480,300' } }
+        Size = @(900, 640)
+        Pages = [ordered]@{
+            # no nav shell: direct interactions (acrylic switch + new window)
+            home = @{ Act = '615,190;450,270' }  # Acrylic -> material change; New window -> "second window opened"
+        }
     }
     '35' = @{
         Dir  = '35-taskflow'
