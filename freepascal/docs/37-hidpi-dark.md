@@ -46,6 +46,7 @@ Windows 应用暗色化是两件事：
 **标题栏/边框**——系统画的，走 DWM 属性（LCL 没封装，自己声明）：
 
 ```pascal
+{$IFDEF MSWINDOWS}                        // ★ 整条包起来——原因见下
 function DwmSetWindowAttribute(hwnd: HWND; dwAttribute: DWORD;
   pvAttribute: Pointer; cbAttribute: DWORD): LongInt;
   stdcall; external 'dwmapi';
@@ -53,17 +54,37 @@ function DwmSetWindowAttribute(hwnd: HWND; dwAttribute: DWORD;
 const
   DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;   // Win10 1809 前期
   DWMWA_USE_IMMERSIVE_DARK_MODE     = 20;   // Win10 1809+/Win11
+{$ENDIF}
 
-procedure THiDpiForm.ApplyDarkTitleBar(OnOff: Boolean);
+function THiDpiForm.ApplyDarkTitleBar(OnOff: Boolean): LongInt;
+{$IFDEF MSWINDOWS}
 var Flag: Integer;
+{$ENDIF}
 begin
+{$IFDEF MSWINDOWS}
   Flag := IfThen(OnOff, 1, 0);
-  if DwmSetWindowAttribute(Handle, DWMWA_USE_IMMERSIVE_DARK_MODE,
-       @Flag, SizeOf(Flag)) < 0 then        // 新号失败退回旧号
-    DwmSetWindowAttribute(Handle, DWMWA_USE_IMMERSIVE_DARK_MODE_OLD,
+  Result := DwmSetWindowAttribute(Handle, DWMWA_USE_IMMERSIVE_DARK_MODE,
+    @Flag, SizeOf(Flag));
+  if Result < 0 then                        // 新号失败退回旧号
+    Result := DwmSetWindowAttribute(Handle, DWMWA_USE_IMMERSIVE_DARK_MODE_OLD,
       @Flag, SizeOf(Flag));
+{$ELSE}
+  Result := 0;                              // cocoa：没有等价 API（见下）
+{$ENDIF}
 end;
 ```
+
+⚠️ **`external 'dwmapi'` 必须包平台条件**（双平台回归实测）：Unix 上 `external`
+的库名会在链接期展开成 `-ldwmapi`，而 cocoa 根本没有这个库——不包就死在
+`ld: symbol(s) not found for architecture x86_64`。注意这是**构建期**失败，不是
+运行期：示例连编都编不出来，跟"老系统不支持暗色属性"完全是两类问题。
+
+**macOS 上这一半压根不存在**：标题栏外观由系统统一决定（NSAppearance / 系统设置里
+的"外观"），没有"按窗口把标题栏改暗"的等价 API，LCL 也没抽这一层。cocoa 的示例里
+`ApplyDarkTitleBar` 直接返回 0（保持调用方语义一致，selftest 日志会先打一行
+`标题栏暗色 API=none(cocoa 无等价 API)`，免得 NoOp 的 0 被误读成"真调到了 DWM"）。
+—于是 cocoa 上**暗色主题只剩"控件配色自管"那一半**，这恰好印证本节主旨：
+LCL 没有全局主题，客户区永远归你。
 
 实测：Windows 11 本机 HRESULT=0（成功）——标题栏立刻暗。返回负值=
 系统不支持（老 Win10）或窗体未显示，代码要容错。
@@ -95,7 +116,7 @@ WndProc 拦消息 → 读注册表 → ApplyDarkControls + ApplyDarkTitleBar。
 | 窗口整体发糊 | 未声明 DPI 感知 | .lpi 清单声明（§1） |
 | 字大控件小（或反之） | 字体缩了布局没缩 | Scaled=True / AutoAdjustLayout |
 | 换显示器后错位 | Per-Monitor 未处理 | DPI 改变消息时重算（进阶） |
-| 标题栏白得刺眼 | 只改了客户区 | DWMWA_USE_IMMERSIVE_DARK_MODE |
+| 标题栏白得刺眼 | 只改了客户区 | DWMWA_USE_IMMERSIVE_DARK_MODE（win32 专有） |
 | 部件暗部分亮 | 配色散落 | 集中调色板函数 |
 
 ## 6. 示例与验证
@@ -105,8 +126,8 @@ pwsh -File build.ps1 -Example 37_hidpi_dark
 ```
 
 selftest 覆盖：PixelsPerInch 事实记录（本机 96）、ScaleBy 3:2 精确数学、
-暗色调色板往返（改暗/复原）、DWM 调用 HRESULT 记录（0=成功）、Scaled
-默认值。
+暗色调色板往返（改暗/复原）、标题栏暗色调用记录（先打一行"本平台走哪条 API"，
+再记 HRESULT——win32 是真 DWM 返回值，cocoa 是 NoOp 的 0）、Scaled 默认值。
 
 ## 7. 坑位清单（实测）
 
@@ -116,6 +137,10 @@ selftest 覆盖：PixelsPerInch 事实记录（本机 96）、ScaleBy 3:2 精确
 4. 写死像素的代码在高 DPI 必错——一律 `* PixelsPerInch div 96` 换算。
 5. DWM 调用要求窗口句柄已建（Handle 首访即建——30 章句柄懒加载）。
 6. 本机实测 HRESULT=0 但老系统可能负值——暗色标题栏是渐进增强不是依赖。
+7. **`external 'dwmapi'` 不包 `{$IFDEF MSWINDOWS}` 就死在链接期**——Unix 上库名
+   展开成 `-ldwmapi`，cocoa 无此库 → `ld: symbol(s) not found`（**构建期**失败，
+   不是运行期）；且 cocoa 没有"按窗口改标题栏暗色"的等价 API（外观由系统统一
+   决定），只能给 NoOp 分支——暗色在这平台上只剩客户区配色自管。
 
 ---
 上一章：[36 国际化](36-i18n.md) ｜ 下一章：[38 数据感知控件](38-data-aware.md) ｜ 返回：[README](../README.md)

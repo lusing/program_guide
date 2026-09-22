@@ -82,12 +82,25 @@ Assert(Length(a) = 6);           // Length：按【字节】
 ```pascal
 raw := a;                          // RawByteString：无码页语义的"字节袋"
 SetCodePage(raw, 936, False);      // 只改标记不转字节：伪造"GBK 标记的 UTF-8 字节"
-w := raw;                          // RTL 按 GBK 解码 UTF-8 字节 → 3 个乱码字符
-Assert(Length(w) = 3);
+w := raw;                          // RTL 按 GBK 解码 UTF-8 字节 → 乱码
+Assert(w <> UnicodeString(a));     // 只有这条断言跨平台成立——为什么见下
 
 SetCodePage(raw, 65001, False);    // 改回标记，字节一个没动
 Assert(string(raw) = a);           // "复原"——错的从来不是字节，是标记
 ```
+
+⚠️ **乱码的"形状"是解码器实现相关的，不是语言规范**（双平台回归实测：同一份
+字节 `E4 B8 AD E6 96 87` + 同一个 936 标记）：
+
+| 平台 | 解码后端 | 结果 |
+|---|---|---|
+| win64 | `MultiByteToWideChar(CP936)` | 严格按双字节切 → **3** 个乱码字符 |
+| macOS | cwstring（iconv / CFString，走 GB18030） | 非法字节对补 `?` → **4** 个（含 2 个 `?`） |
+
+所以断言只能写"结果 ≠ 按正确标记解码"，**不能断言具体字符数**。写
+`Assert(Length(w) = 3)` 的坑很阴：macOS 上只在开了 `-Sa` 的检查通道炸
+（`-O2` 通道断言被剥掉、静默通过），看起来像偶发故障——这也是双通道验证
+存在的理由之一。
 
 转换函数族都在 System/SysUtils：`UnicodeString(s)`（按标记解码）、`UTF8String(s)`（按标记
 编码）、`SetCodePage(s, cp, Convert)`（`Convert=True` 时真转字节，`False` 只改标记——
@@ -178,6 +191,10 @@ pwsh -File build.ps1 -Example 07_strings
 6. string 变动（拼接/SetLength）后旧 PChar 悬垂。
 7. 网上 Delphi 资料的"string=AnsiString 无码页"（D7 前）或"string=UnicodeString"
    （D2009+）在 FPC 都不成立——FPC 的 string 是带码页的 AnsiString。
+8. **错误标记的乱码是"解码器实现"的产物，不是语言规范**——同一份 UTF-8 字节挂
+   936 标记：win64 严格双字节切得 **3** 个乱码字符；macOS 走 iconv/CFString
+   （GB18030）给非法字节对补 `?`，得 **4** 个。断言只能写"≠ 按正确标记解码"，
+   写死字符数会在 cocoa 上挂——而且只挂在 `-Sa` 的检查通道，`-O2` 通道静默通过。
 
 ---
 上一章：[06 数组与集合](06-arrays.md) ｜ 下一章：[08 记录与指针](08-records.md) ｜ 返回：[README](../README.md)

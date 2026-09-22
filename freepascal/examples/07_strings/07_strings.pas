@@ -90,7 +90,10 @@ begin
   raw := a;
   SetCodePage(raw, 936, False);            // 只改标记不转字节：伪造"GBK 标记的 UTF-8 字节"
   w := raw;                                // RTL 按 GBK 解码 UTF-8 字节 → 乱码
-  Assert(Length(w) = 3, '6 个 UTF-8 字节被按 GBK 解成 3 个乱码字符');
+  // 坑（实测，跨平台差异）：乱码的"形状"取决于平台的解码器实现，不是语言规范——
+  //   win64：MultiByteToWideChar(CP936) 严格按双字节切 → 6 字节 = 3 个乱码字符；
+  //   macOS：cwstring 走 iconv/CFString(GB18030)，非法字节对补 '?' → 4 个（含 2 个 '?'）。
+  // 所以只断言跨平台都成立的语义：解码结果必然 ≠ "按正确标记解码"的结果。
   Assert(w <> UnicodeString(a), '字节相同、标记不同，解码结果天差地别');
   WriteLn('标记错误演示：6 字节按 GBK 解码 → ', Length(w), ' 个乱码字符');
 

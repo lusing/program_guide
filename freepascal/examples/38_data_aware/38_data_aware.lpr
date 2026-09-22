@@ -2,13 +2,16 @@
 program data_aware_demo;
 { 38 · 数据感知控件：SQLDB 三件套（TSQLite3Connection + TSQLTransaction +
   TSQLQuery）→ TDataSource → TDBGrid/TDBEdit/TDBNavigator 自动跟随。
-  sqlite3.dll 由 selftest 启动时从 System32 的 winsqlite3.dll 复制（公共域库，
-  Windows 10+ 自带）——真实部署随 exe 带 dll。正文见 docs/38-data-aware.md。 }
+  win64：sqlite3.dll 由 selftest 启动时从 System32 的 winsqlite3.dll 复制
+  （公共域库，Windows 10+ 自带），真实部署随 exe 带 dll；
+  macOS：SQLDB 直接 dlopen 系统自带的 /usr/lib/libsqlite3.dylib，无需准备。
+  正文见 docs/38-data-aware.md。 }
 
 uses
   Interfaces, Forms, Controls, StdCtrls, ExtCtrls, Grids, DBGrids, DBCtrls,
   Graphics, LCLIntf, DB, SQLDB, SQLite3Conn,
-  Classes, SysUtils, LazUTF8, Windows;
+  Classes, SysUtils, LazUTF8
+  {$IFDEF MSWINDOWS}, Windows{$ENDIF};   // Windows 单元只服务于下面的 winsqlite3.dll 复制
 
 const
   DbFile = 'demo38.db';
@@ -80,9 +83,12 @@ begin
 end;
 
 procedure EnsureSqliteDll;
+{$IFDEF MSWINDOWS}
 var
   SysDir: array[0..260] of Char;
+{$ENDIF}
 begin
+{$IFDEF MSWINDOWS}
   if FileExists('sqlite3.dll') then Exit;
   // Windows 10+ 自带 winsqlite3.dll（API 集的一部分）——复制一份改名即可
   // （SQLDB 的绑定找的是 sqlite3.dll 这个名字）
@@ -90,6 +96,11 @@ begin
     if not CopyFile(PChar(StrPas(@SysDir) + '\winsqlite3.dll'),
       'sqlite3.dll', False) then
       raise Exception.Create('复制 winsqlite3.dll 失败（部署时可随包带 sqlite3.dll）');
+{$ELSE}
+  // macOS：FPC 的 sqlite3 绑定直接 dlopen 系统自带的 /usr/lib/libsqlite3.dylib，
+  // 无需任何准备。坑：别照搬 win32 的"复制到当前目录"——Unix 动态库查找走
+  // dyld 搜索路径，当前目录不在其中（Windows 的 DLL 搜索才含当前目录）。
+{$ENDIF}
 end;
 
 procedure RunSelfTest;
