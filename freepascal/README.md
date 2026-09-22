@@ -12,12 +12,13 @@ Frame），交互篇讲透生命周期/消息/焦点验证，深水区覆盖工�
 
 > ⚠️ 网上 FreePascal 教程多停留在 Delphi 7 或 Lazarus 1.x 时代：`and then` 运算符
 > （objfpc 没有）、无码页的 string 语义（FPC 3.x 全变）、`Extended` 10 字节（win64 是 8）
-> 等说法皆过时。本教程代码**以本机实测为准**：
+> 等说法皆过时。本教程代码**以本机实测为准**，两个平台各跑一遍全量：
 > **FPC 3.2.2 x86_64-win64 + Lazarus 4.8（win32 控件集）**——全部 40 章在 Windows 上
-> 验证通过；**macOS 12.7 x86_64-darwin（MacPorts）FPC 3.2.2 + Lazarus 4.8（cocoa
-> 控件集）**——01–16/23–28 章双平台实测（GUI 篇扩充的 17–22 控件章与 29–39 深水章
-> 当前仅 win64，macOS 回归待补）。
-> 每章末"坑位清单"收录版本与平台差异——CHEATSheet 汇总 **78 条实测坑位**（其中 26 条为 17–39 章新增实测）。
+> 验证通过；**macOS 14 x86_64-darwin（MacPorts）FPC 3.2.2 + Lazarus 4.8（cocoa
+> 控件集）**——45 个示例全量通过（13 个 CLI 走双通道、32 个 GUI 工程走 lazbuild +
+> selftest，共 90 项判定零失败）。两条路线上暴露的平台差异（GBK 解码器形状、
+> cocoa 的 `OnActivate`、`external 'dwmapi'`、sqlite3 库）都写进了对应章的坑位清单。
+> 每章末"坑位清单"收录版本与平台差异——CHEATSheet 汇总 **85 条实测坑位**（含 17–39 章与双平台回归新增）。
 
 ## 目录结构
 
@@ -133,9 +134,11 @@ freepascal/
   ——这是 macOS 上最隐蔽的一个坑，详见 02 章 5.1 节。
 - 改 `LANG`/`LC_ALL` 对它**无效**（实测三种取值都照样变 `?`），只能改源码。
 - lazbuild 首次构建会把 LCL 编进 `~/.lazarus/lib/`（系统 Lazarus 目录不可写）。
-  首个 GUI 工程约 5 分钟，之后增量；产物是 `lib/x86_64-darwin/<工程名>` + 同名 `.app` 包。
-- **17–22 控件章与 29–39 深水章尚未在 cocoa 上回归**（win32 上全绿）；跑
-  `./run-all.sh` 若这几章失败，多半是控件集差异——见各章"坑位清单"。
+  首个 GUI 工程约 3.5 分钟（整个 LCL 要编一遍），之后 32 个 GUI 工程走增量，
+  全量约 3 分半；产物是 `lib/x86_64-darwin/<工程名>` + 同名 `.app` 包。
+- **45 个示例在 cocoa 上已全部回归通过**（macOS 14 / FPC 3.2.2 / Lazarus 4.8，
+  `通过 90   失败 0`）。上一轮"17–22 与 29–39 未在 cocoa 回归"的欠账已清；
+  期间修掉 4 处平台硬编码，逐条记在 07 / 29 / 37 / 38 章的坑位清单里。
 
 ### 平台差异速查（实测）
 
@@ -146,6 +149,10 @@ freepascal/
 | `DirectorySeparator` / `PathSep` | `\` / `;` | `/` / `:` |
 | `LineEnding` 长度 | 2 | 1 |
 | `external` 的 C 库名 | `msvcrt` | `c` |
+| 引用 `external 'dwmapi'` | 可用（系统自带） | **链接期报错**（无此库，也无等价 API） |
+| GBK 解 UTF-8 字节的乱码 | 3 个字符（严格双字节切） | **4 个**（非法字节对补 `?`） |
+| `Form.Active` / `OnActivate` | Show 即激活、发 `OnActivate` | 恒 False、**不发**（`Close` 事件照发） |
+| sqlite3 动态库 | 复制 System32 的 winsqlite3.dll | 系统自带 `/usr/lib/libsqlite3.dylib` |
 | `FormatDateTime('dddd')` | 中文星期 | `Saturday`（随 locale） |
 | LCL 控件集 | win32 | cocoa |
 | GUI 产物 | `lib/x86_64-win64/*.exe` | `lib/x86_64-darwin/*` + `*.app` |
@@ -162,9 +169,10 @@ pwsh -File build.ps1 -Clean            # 清理 build/ 与产物
 
 ```bash
 # macOS / Linux 等价入口（两个入口判定完全一致）
-cd /Users/xulun/code/programming/freepascal
-./run-all.sh                       # 全部示例
-./run-all.sh 02 07 --gui           # 指定示例/只跑 GUI
+cd /Volumes/mac004/code/programming/freepascal   # 本机工作区
+./run-all.sh                       # 全部 45 示例（CLI 双通道 + GUI selftest）
+./run-all.sh 02 07 --gui           # 指定示例 / 只跑 GUI
+./run-all.sh 29 37 38              # 按编号前缀匹配
 ./run-all.sh -v                    # 附带每个示例的完整输出
 ./run-all.sh --clean               # 清理 build/、selftest.log、lib/
 ```

@@ -98,15 +98,18 @@ c.Perform(LM_USER+100, w, l);   // 同步；PostMessage 异步需泵；QueueAsyn
 ## 5. 编译/验证命令
 
 ```powershell
-pwsh -File build.ps1 -All              # 23 示例全量（CLI 双通道 + GUI selftest）
+pwsh -File build.ps1 -All              # 45 示例全量（CLI 双通道 + GUI selftest）
 pwsh -File build.ps1 -Example 07_strings
 pwsh -File build.ps1 -Gui              # 只跑 GUI 工程
 pwsh -File build.ps1 -Clean
-./run-all.sh                           # Git Bash 等价入口
+./run-all.sh                           # macOS / Linux 等价入口（判定与 build.ps1 逐项一致）
 fpc -MObjFPC -Cr -Co -Ci -Sa -B xx.pas # 检查通道（手工版）
 fpc -gh xx.pas                          # heaptrc 泄漏排查（stderr）
 lazbuild project.lpi                    # GUI 工程（只认 .lpi）
 ```
+
+macOS 工具链在 MacPorts：`/opt/local/bin/fpc`（3.2.2）、`/opt/local/bin/lazbuild`
+（4.8，控件集 **cocoa**）、`/opt/local/bin/gtimeout`（GUI selftest 的 60 秒超时）。
 
 ## 6. 坑位总索引（实测，按主题）
 
@@ -124,6 +127,10 @@ lazbuild project.lpi                    # GUI 工程（只认 .lpi）
 5. TextFile 默认按系统码页标记读写——AssignFile 后立即 `SetTextCodePage(f,65001)`。
 6. TIniFile 走 Windows ANSI API：中文节/键按 GBK 落盘且键查不到——节/键一律 ASCII。
 7. TStrings.LoadFromFile 默认 ANSI 读——UTF-8 文件显式 `TEncoding.UTF8`。
+7b. **错误标记的乱码"形状"是解码器实现相关的**——`SetCodePage(raw,936,False)` 后把
+   UTF-8 字节按 GBK 解：win64 用 MultiByteToWideChar 严格双字节切 → 6 字节 = **3** 个
+   乱码字符；macOS 经 cwstring（iconv/CFString，GB18030）把非法字节对补成 `?` → **4** 个
+   （含 2 个 `?`）。跨平台只能断言"结果 ≠ 按正确标记解码"，别断言具体字符数。
 
 **类型/运算（03/04 章）**
 8. 枚举成员叫 Low/High 遮蔽内建 → 全程序 `Low(..)` 报 `")" expected but "(" found`。
@@ -214,17 +221,28 @@ lazbuild project.lpi                    # GUI 工程（只认 .lpi）
      program 主文件的 resourcestring 按单元名翻译失灵——用全表
      TranslateResourceStrings；API 返回 True ≠ 翻译生效。
 41w. ScaleBy 往返有 1px 漂移风险（整数取整）；DWM 暗色标题栏属性号 20（旧 19），
-     返回值要检查。
+     返回值要检查（**win32 专有**——cocoa 上连库都没有，见 41dd）。
 41x. SQLDB：**Post 后必须 ApplyUpdates**——漏了不报错、Commit"成功"、重开
      数据集还是旧值（缓存更新机制）。
 41y. SQLite text 列=ftMemo——`Locate('文本列',…)` 运行时炸 invalid field type；
      按数值键定位或 SQL where。
-41z. winsqlite3.dll（System32，Win10+）复制改名 sqlite3.dll 即可用（38 章
-     selftest 自动做，不入仓库）。
+41z. **sqlite3 库是平台相关的**——win64：复制 System32 的 winsqlite3.dll 改名
+     sqlite3.dll 即可用（38 章 selftest 自动做，不入仓库）；macOS：SQLDB 直接 dlopen
+     系统自带的 `/usr/lib/libsqlite3.dylib`，**无需任何准备**——也别照搬"复制到当前
+     目录"（Unix 动态库查找走 dyld 搜索路径，不含当前目录）。
 41aa. `DebugLn(['数组常量'])` 打出 `?unknown variant?`——单字符串参数；
      Assert 的消息自动带**文件+行号**（EAssertionFailed）。
 41bb. Integer 溢出**静默回绕**（500000500000→1784293664，无 -Cr 时）——大数
      Int64；本条是 39 章 selftest 现场抓获的。
+41cc. **OnActivate 不是 Show 的必然结果**——win32：Show 即 WM_ACTIVATE，序列
+     `OnShow,OnActivate`；cocoa：脚本进程拿不到前台焦点（`Form.Active` 恒 False），
+     Show / `Application.BringToFront` / `SetFocus` 实测**都不发**——但 Close 照发
+     `OnCloseQuery→OnClose→OnHide`。判据写"窗口真激活了就必须有 OnActivate"
+     （看 `Active` 这个事实，别用平台宏，也别写死"Show 后必有 OnActivate"）。
+41dd. **`external 'dwmapi'` 死在链接期**——Unix 上 external 的库名会变成 `-ldwmapi`，
+     cocoa 没这个库 → `ld: symbol(s) not found for architecture x86_64`（是**构建期**
+     报错，不是运行期）。且 cocoa 没有"按窗口把标题栏改暗"的等价 API（外观由系统
+     统一决定）——只能整条包 `{$IFDEF MSWINDOWS}`，非 Windows 给个 NoOp 返回值。
 
 **工具链（01 章/脚本）**
 42. scoop 独立 freepascal 包只有 i386——解析顺序错=静默 32 位 exe。

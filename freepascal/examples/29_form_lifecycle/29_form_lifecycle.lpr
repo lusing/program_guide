@@ -118,10 +118,16 @@ begin
     Application.ProcessMessages;
     if f.EvLog[0] <> 'OnShow' then
       raise Exception.Create('首个事件应 OnShow，实测=' + f.EvLog[0]);
-    if f.EvLog.IndexOf('OnActivate') < 0 then
-      raise Exception.Create('Show 后应有 OnActivate');
-    if f.EvLog.IndexOf('OnActivate') < f.EvLog.IndexOf('OnShow') then
-      raise Exception.Create('OnShow 应先于 OnActivate');
+    // 坑（实测，平台差异）：OnActivate 是"窗口管理器授予焦点"的产物，不是 Show 的必然结果。
+    //   win32：Show 即激活（WM_ACTIVATE）→ 序列 OnShow,OnActivate；
+    //   cocoa：脚本进程拿不到前台焦点（Active 恒 False），Show/BringToFront/SetFocus
+    //          都实测不发 OnActivate——但 Close 仍照发 OnCloseQuery→OnClose→OnHide。
+    // 判据用"窗口是否真的激活了"这个事实，不用平台宏：真激活就必须有 OnActivate。
+    if f.Active and (f.EvLog.IndexOf('OnActivate') < 0) then
+      raise Exception.Create('窗口已激活却没有 OnActivate');
+    if f.EvLog.IndexOf('OnActivate') >= 0 then
+      if f.EvLog.IndexOf('OnActivate') < f.EvLog.IndexOf('OnShow') then
+        raise Exception.Create('OnShow 应先于 OnActivate');
     WriteLn(Log, 'Show 序列: ', f.EvLog.CommaText);
 
     // 2) 正常关闭：OnCloseQuery(CanClose=True) → OnClose(caHide)

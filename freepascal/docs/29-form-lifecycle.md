@@ -6,15 +6,28 @@
 
 ## 1. 事件顺序实测（selftest.log 的证据链）
 
-29 工程把生命周期事件逐个记录，无头实测结论：
+29 工程把生命周期事件逐个记录；无头实测结论如下——这份序列是 **win32 路线**的
+完整形态（cocoa 少了 `OnActivate`，原因见块后的平台表）：
 
 ```text
 Create(nil)        → （构造器本体——纯代码窗体没有 OnCreate！）
-Show               → OnShow → OnActivate
+Show               → OnShow → OnActivate      ← OnActivate 平台相关，见下
 （另一个窗体激活） → OnDeactivate（本窗体）
 Close              → OnCloseQuery → OnClose
 Free               → OnDestroy（最后一个）
 ```
+
+⚠️ **第二行的 `OnActivate` 不是 Show 的必然结果**（双平台回归实测）：
+
+| 平台 | `Form.Active` | `Show` 之后的事件 |
+|---|---|---|
+| win64 | True | `OnShow,OnActivate` |
+| cocoa | **False** | 只有 `OnShow`——`Show` / `Application.BringToFront` / `SetFocus` 实测都不发 |
+
+原因：`OnActivate` 的语义是"窗口管理器把焦点给了这个窗口"，不是"窗口变可见"。
+macOS 上脚本进程拿不到前台焦点（没走真正的 `.app` 激活流程），所以永远不激活。
+但 `Close` **不受影响**——cocoa 上照样发 `OnCloseQuery → OnClose → OnHide`。
+判据要盯 `Form.Active` 这个事实，别写死"Show 之后必有 OnActivate"。
 
 三条实测要点：
 
@@ -26,6 +39,8 @@ Free               → OnDestroy（最后一个）
    就挂在这。
 3. OnShow 先于 OnActivate（先"显示出来"再"成为活动窗体"）。OnDeactivate/
    OnHide 只在相应时刻发，顺序依赖用户操作，别写依赖它们的时序逻辑。
+   **并且 OnActivate 可能根本不发**——cocoa 上脚本进程拿不到前台焦点
+   （`Active` 恒 False），Show/BringToFront/SetFocus 实测都不触发（见 §1 平台表）。
 
 ## 2. OnClose 的 TCloseAction：四种死法
 
@@ -123,8 +138,8 @@ bug 是设计（主窗体是生命周期锚点）。
 pwsh -File build.ps1 -Example 29_form_lifecycle
 ```
 
-selftest 覆盖：Show 事件顺序（OnShow→OnActivate）、Close 顺序
-（OnCloseQuery→OnClose）、CanClose 否决（序列停在 OnCloseQuery、窗体
+selftest 覆盖：Show 事件顺序（`OnShow`；窗口真激活时还须紧跟 `OnActivate`）、
+Close 顺序（OnCloseQuery→OnClose）、CanClose 否决（序列停在 OnCloseQuery、窗体
 可见性不变）、CloseAction 参数回写、ModalResult 设定值、窗体继承
 （父按钮装配/inherited 根级覆盖/代码改子控件/is 判定）、Free→OnDestroy。
 
@@ -137,6 +152,9 @@ selftest 覆盖：Show 事件顺序（OnShow→OnActivate）、Close 顺序
 4. 窗体继承的子控件级 inherited 块运行时 Duplicate name（同 22 章）——
    覆盖写代码。
 5. OnActivate/OnDeactivate 顺序随用户操作漂移——别在它们里写时序依赖。
+   **更彻底的是它们可能根本不来**：cocoa 上 `Show` 不发 `OnActivate`（`Active`
+   恒 False，BringToFront/SetFocus 也白搭），而 `Close` 的事件链照发——判据要看
+   `Active` 这个事实，别写死"Show 后必有 OnActivate"。
 6. 主窗体关闭即应用退出——别的窗体的释放责任在 Owner 链。
 
 ---

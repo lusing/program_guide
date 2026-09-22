@@ -9,14 +9,27 @@ uses
   Interfaces, Forms, Controls, StdCtrls, ExtCtrls, Graphics, LCLType,
   Classes, SysUtils, Math, StrUtils;
 
+{$IFDEF MSWINDOWS}
 const
   // Win10 1809+ / Win11：暗色标题栏的 DWM 属性号（旧版 19，新版 20——都试）
   DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;
   DWMWA_USE_IMMERSIVE_DARK_MODE     = 20;
 
-// LCL 没封装 DWM——自己声明（dwmapi.dll 系统自带；HRESULT>=0 即成功）
+// LCL 没封装 DWM——自己声明（dwmapi.dll 系统自带；HRESULT>=0 即成功）。
+// 坑（实测，跨平台）：external 的库名在链接期会变成 -ldwmapi——cocoa 上没有这个库，
+// 不包条件编译就死在 ld: symbol(s) not found（不是运行期，是构建期）。
 function DwmSetWindowAttribute(hwnd: HWND; dwAttribute: DWORD;
   pvAttribute: Pointer; cbAttribute: DWORD): LongInt; stdcall; external 'dwmapi';
+{$ENDIF}
+
+const
+  // 标题栏暗色在这个平台上走哪条路——selftest 日志里标出来，免得 cocoa 上的
+  // NoOp 返回值（0）被误读成"真的调到了 DWM"。
+  {$IFDEF MSWINDOWS}
+  DarkTitleBarApi = 'DwmSetWindowAttribute';
+  {$ELSE}
+  DarkTitleBarApi = 'none(cocoa 无等价 API)';
+  {$ENDIF}
 
 type
   THiDpiForm = class(TForm)
@@ -75,9 +88,12 @@ begin
 end;
 
 function THiDpiForm.ApplyDarkTitleBar(OnOff: Boolean): LongInt;
+{$IFDEF MSWINDOWS}
 var
   Flag: Integer;
+{$ENDIF}
 begin
+{$IFDEF MSWINDOWS}
   // 暗色标题栏是窗口级 DWM 属性（1=开 0=关）；旧属性号 19 失败再试 20
   Flag := IfThen(OnOff, 1, 0);
   Result := DwmSetWindowAttribute(Handle, DWMWA_USE_IMMERSIVE_DARK_MODE,
@@ -85,6 +101,13 @@ begin
   if Result < 0 then
     Result := DwmSetWindowAttribute(Handle, DWMWA_USE_IMMERSIVE_DARK_MODE_OLD,
       @Flag, SizeOf(Flag));
+{$ELSE}
+  // cocoa：标题栏外观由系统统一决定（NSAppearance / 系统设置里的"外观"），
+  // 没有"按窗口把标题栏改暗"的等价 API。返回 0（win32 侧的"成功"值）
+  // 让调用方语义一致——cocoa 上"暗色主题"只剩控件配色自管那一半
+  // （见 ApplyDarkControls；这正是正文要讲的"LCL 无全局主题"）。
+  Result := 0;
+{$ENDIF}
 end;
 
 procedure THiDpiForm.ApplyDarkControls(OnOff: Boolean);
@@ -150,7 +173,10 @@ begin
     if f.Color <> clDefault then
       raise Exception.Create('恢复默认配色失败');
 
-    // 4) DWM 标题栏属性调用（返回值记录：0=成功；负值=系统不支持/句柄未显示）
+    // 4) 标题栏暗色调用（返回值记录：0=成功；负值=系统不支持/句柄未显示）
+    //    cocoa 上没有等价 API（见 ApplyDarkTitleBar），下面两行记的是 NoOp=0，
+    //    先打一行平台标记，免得被误读成"真的调到了 DWM"。
+    WriteLn(Log, '标题栏暗色 API=', DarkTitleBarApi);
     Hr := f.ApplyDarkTitleBar(True);
     WriteLn(Log, 'DwmSetWindowAttribute(dark) HRESULT=', Hr);
     f.ApplyDarkTitleBar(False);

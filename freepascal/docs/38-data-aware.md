@@ -5,19 +5,36 @@ LCL 生态的看家本领：**控件直连数据库**——DBGrid 显示、DBNav
 TDataSource 总线、数据感知控件一次走通。本章的坑位密度是全书第一梯队
 ——每个都是"不踩不知道"。
 
-## 1. 依赖就位：sqlite3.dll 的零下载方案
+## 1. 依赖就位：sqlite3 库的零下载方案
 
-TSQLite3Connection 动态加载 `sqlite3.dll`。Windows 10+ 系统自带
-`System32\winsqlite3.dll`（公共域库）——复制改名即可（38 工程的
-EnsureSqliteDll 在启动时自动做）：
+TSQLite3Connection 动态加载 sqlite3 库，而**两个平台的库名与就位方式完全不同**。
+
+**win64**：系统自带 `System32\winsqlite3.dll`（公共域库）——复制改名即可
+（38 工程的 EnsureSqliteDll 在启动时自动做）：
 
 ```pascal
+{$IFDEF MSWINDOWS}
 if not FileExists('sqlite3.dll') then
   CopyFile(SystemDir + '\winsqlite3.dll', 'sqlite3.dll', False);
+{$ENDIF}
 ```
 
-真实部署随 exe 带官方 sqlite3.dll（或干脆链接静态库——进阶话题）。
-本章示例**不提交 dll 进仓库**——它是环境事实不是教程内容。
+**macOS**：SQLDB 直接 dlopen 系统自带的 `/usr/lib/libsqlite3.dylib`，**什么都不用做**。
+
+⚠️ 别照搬 win32 的"复制到当前目录"——Unix 的动态库查找走 dyld 搜索路径
+（`DYLD_LIBRARY_PATH` 等），**当前目录不在其中**（Windows 的 DLL 搜索顺序才含当前
+目录）。`uses` 也得跟着分支：38 工程原本写 `Uses ..., Windows;`，在 cocoa 上编译期
+就死在 `Can't find unit Windows used by data_aware_demo`：
+
+```pascal
+uses
+  ..., Classes, SysUtils, LazUTF8
+  {$IFDEF MSWINDOWS}, Windows{$ENDIF};   // Windows 单元只服务于上面的 dll 复制
+```
+
+真实部署：win32 随 exe 带官方 sqlite3.dll（或链接静态库——进阶话题）；macOS 直接用
+系统库（版本足够新；要锁版本就随 `.app` 带自己的 dylib 并设 install_name）。
+本章示例**不提交任何库文件进仓库**——它是环境事实不是教程内容。
 
 ## 2. 三件套 + 总线：五件东西一条链
 
@@ -144,8 +161,9 @@ selftest 覆盖：建库建表插三行（含中文）、三件套打开、Recor
 3. ExecuteDirect 的 DDL 也要 Commit——建表语句不提交，下个连接看不到。
 4. 三件套是一条链：Transaction 没绑 DataBase / Query 没绑 Transaction，
    Open 时才报错（配置错误报得晚）。
-5. sqlite3.dll 找不到时报的是连接错误（信息不直说缺 dll）——
-   EnsureSqliteDll 放最前。
+5. sqlite3.dll 找不到时报的是连接错误（信息不直说缺 dll）——EnsureSqliteDll 放最前。
+   且**库是平台相关的**：win32 复制 winsqlite3.dll；macOS 用系统自带的
+   `/usr/lib/libsqlite3.dylib`、无需准备，也别想"复制到当前目录"（dyld 不查当前目录）。
 6. 每次测试删掉旧库文件——"数据怎么不对了"九成是上次的库还在。
 
 ---
