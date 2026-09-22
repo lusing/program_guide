@@ -1,0 +1,8 @@
+namespace CustomGallery
+{
+    [default_interface]
+    runtimeclass StylesPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        StylesPage();
+    }
+}

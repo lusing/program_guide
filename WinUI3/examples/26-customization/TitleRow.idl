@@ -1,0 +1,10 @@
+namespace CustomGallery
+{
+    [default_interface]
+    runtimeclass TitleRow : Microsoft.UI.Xaml.Controls.UserControl
+    {
+        TitleRow();
+        String Title;
+        String Value;
+    }
+}

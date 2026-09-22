@@ -1,0 +1,8 @@
+namespace CustomGallery
+{
+    [default_interface]
+    runtimeclass DrawingPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        DrawingPage();
+    }
+}

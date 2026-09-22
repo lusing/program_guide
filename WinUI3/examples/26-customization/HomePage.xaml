@@ -1,0 +1,13 @@
+<Page
+    x:Class="CustomGallery.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Margin="24" RowDefinitions="Auto,*">
+        <TextBlock Text="Customization Gallery" FontSize="28" FontWeight="Bold"/>
+        <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                   TextAlignment="Center" FontSize="16" Opacity="0.7" TextWrapping="Wrap">
+            样式模板 / 自定义控件 / VSM 自适应 / 动画 / 图形媒体五章的演示页。
+        </TextBlock>
+    </Grid>
+</Page>

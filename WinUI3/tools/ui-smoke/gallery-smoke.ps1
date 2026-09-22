@@ -86,7 +86,15 @@ $galleries = @{
         Dir  = '26-customization'
         Exe  = 'examples\26-customization\x64\Debug\CustomGallery\CustomGallery.exe'
         Size = @(900, 1100)
-        Pages = [ordered]@{ home = @{ Nav = 0 } }
+        Pages = [ordered]@{
+            # 6 items, ~72px pitch (measured)
+            home          = @{ Nav = '150,238' }
+            styles        = @{ Nav = '150,310'; Act = '460,150' }  # implicit styled -> "styled button works"
+            customcontrol = @{ Nav = '150,382'; Act = '450,265' }  # Bump value -> "value = 1"
+            vsm           = @{ Nav = '150,454'; Act = '450,150' }  # Force narrow -> "state = narrow (manual)"
+            animation     = @{ Nav = '150,526'; Act = '450,165' }  # Animate -> rect 40->320 + "animated, shots = 1"
+            drawing       = @{ Nav = '150,598'; Act = '500,230' }  # color picker -> "color = R,G,B" + dot recolor
+        }
     }
     '31' = @{
         Dir  = '31-window-shell'
