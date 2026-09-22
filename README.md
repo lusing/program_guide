@@ -54,6 +54,7 @@
 - [win32](./win32) — Win32 API 桌面编程指南，使用 MSVC + Win32 API 编译验证
 - [WinUI3](./WinUI3) — WinUI 3 C++/WinRT 教程（10 篇 + README），使用 MSVC + Windows App SDK 1.8 编译验证：`examples/` 下 5 个工程（first-app / controls / layout / binding-mvvm / os-integration）经 `build.ps1` 全部编过，再用 `tools/ui-smoke/` 启动 + 合成点击 + 前后截图做运行时验证；`tools/winmd-probe/` 做元数据级签名核对。三条通道逼出的修正（WinUI 3 上 `resume_foreground` 失效须改 `DispatcherQueue::TryEnqueue`、非打包 `ApplicationData::GetDefault()` 抛"该进程没有程序包标识符"、ViewModel IDL 须声明 `INotifyPropertyChanged`、事件处理器不必进 IDL、跨 `.idl` 引用触发 `MIDL2011` 须合并等）已写回正文，详见 [WinUI3/README.md](./WinUI3/README.md) 的「验证状态」节
 - [OpenCL](./OpenCL) — OpenCL Windows 教程，使用 Visual Studio + CUDA CL 头文件验证
+- [ruby](./ruby) — Ruby 4.0 教程（24 章对齐 julia/haskell/elixir 标准：类与模块/Data/Enumerable/模式匹配/块与闭包/元编程/GC 与性能/标准库/线程/Ractor 并行/Fiber/Fiddle FFI 特色细讲，23 个示例（02–24）双层验证：运行层六条判定（退出码 0 + stderr 空 + stdout 非空 + 无控制字符 + 结束标记 + 诊断字样兜底）+ minitest 测试层，双入口 `run-all.sh` / `build.ps1` 全绿；24 为迷你 Markdown→HTML 渲染器压轴（纯函数引擎 + 14 条端到端测试）；输出确定性纪律（不打印耗时/随机值，文档引用 build 产物逐字节一致）；Ruby 4.0.7 实测，CHEATSheet 收录 **274 条实测坑位**（4.0 chilled strings 告警 / case-in 不能单行 / Ractor `.take` 已删 / minitest 6 拆 mock / `Time#utc` 原地修改 / ensure return 吞异常等），详见 [ruby/README.md](./ruby/README.md)）
 - [rust](./rust) — Rust 教程与示例（24 章 + 23 个 cargo 工程），四层验证：fmt + clippy `-D warnings` + test + run；macOS 12.7 上用 MacPorts rustc **1.98.1** 实测 23/23 通过（Windows scoop 同版本亦通过），双入口 `run-all.sh` / `build.ps1` 判定一致；详见 [rust/README.md](./rust/README.md) 的「macOS 上的兼容性」节
 - [commonlisp](./commonlisp) — Common Lisp 教程与示例（SBCL + GNU CLISP **双实现**，27 章对齐 cpp20/zig 标准：求值模型/数值塔/五种相等/条件系统与重启/CLOS 两章/宏两章/format/类型系统/可移植性细讲），Linux（WSL2，SBCL 2.6.8 + CLISP 2.49.95）实测 26 个示例 × **双通道**：21 个可移植示例 SBCL 与 CLISP 的 stdout **逐字节一致**（跨实现比对为第五条判定）+ 5 个 SBCL 专属章（ASDF/run-program/线程/FFI sb-alien/性能），`run-all.sh` 47/47 全绿，双入口 `build.ps1`；正文 `; =>` 断言由 `verify-guide.py` 在 docs/ 上逐条回跑（mismatch 0）；22 章收录 **27 条双实现实测差异**总账 + CHEATSheet 报错速查
 - [sdl2](./sdl2) — SDL2 C++ 教程与示例，使用 MSVC + SDL2 库编译验证
@@ -133,6 +134,7 @@
 41. [algol68](./algol68)
 42. [llvm](./llvm)
 43. [io](./io)
+44. [ruby](./ruby)
 
 ## 工具链说明
 
