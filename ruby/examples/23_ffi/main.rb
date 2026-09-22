@@ -13,9 +13,12 @@ def ok(cond, msg = "断言失败")
   raise(msg) unless cond
 end
 
-# 坑：别硬编码系统库路径（各平台差异巨大）。Fiddle.dlopen(nil) 拿「当前进程」句柄 ——
-# macOS 的 libSystem（含 libc/libm 常用函数）早已随进程加载，sqrt/pow/strlen/qsort 全能解析。
-LIBC = Fiddle.dlopen(nil)
+# 坑：别硬编码系统库路径（各平台差异巨大）。
+#   macOS/Linux：Fiddle.dlopen(nil) 拿「当前进程」句柄 —— libSystem/libc 早已随进程
+#   加载，sqrt/pow/strlen/qsort 全能解析。
+#   Windows：进程句柄只搜 exe 自身的导出表，C 运行时函数一个都找不到
+#   （Fiddle::DLError: unknown symbol "sqrt"）—— UCRT 住在 ucrtbase.dll，按名打开即可。
+LIBC = Fiddle.dlopen(Gem.win_platform? ? "ucrtbase" : nil)
 
 # ═══ 23.1 dlopen + Function：最小调用 sqrt
 sec("23.1 最小调用：sqrt")

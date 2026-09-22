@@ -1,6 +1,6 @@
 # Ruby 4.0 速查表
 
-语法速查 + 4.0 实测坑位索引。详细讲解见对应章（N.M = 第 N 章 M 节）。适用版本：**Ruby 4.0.7**（2026-09-15 revision 229531a6cf +PRISM，MacPorts `/opt/local/bin/ruby4.0`，x86_64-darwin23）——本表所有行为均为该版本实测。
+语法速查 + 4.0 实测坑位索引。详细讲解见对应章（N.M = 第 N 章 M 节）。适用版本：**Ruby 4.0.7**（2026-09-15 revision 229531a6cf +PRISM；macOS 为 MacPorts `/opt/local/bin/ruby4.0` x86_64-darwin23，Windows 为 RubyInstaller/scoop `x64-mingw-ucrt`）——本表行为均为该版本双平台实测（含 sort 平局顺序、Ractor×minitest 死锁、Fiddle 句柄三个平台差异，见对应章坑位清单）。
 
 ## 1. 命令速查
 
@@ -369,7 +369,7 @@ fib_enum.take(8)   # 生成器（日常优先 Enumerator）；消费无限序列
 
 ```ruby
 require "fiddle"
-LIBC = Fiddle.dlopen(nil)   # 当前进程句柄（macOS libSystem 全能解析），别硬编码系统库路径
+LIBC = Fiddle.dlopen(Gem.win_platform? ? "ucrtbase" : nil)   # macOS/Linux 进程句柄全能解析；Windows 要打开 ucrtbase（exe 导出表里没有 libc 符号）
 sqrt = Fiddle::Function.new(LIBC["sqrt"], [Fiddle::TYPE_DOUBLE], Fiddle::TYPE_DOUBLE)
 sqrt.call(2.0)    # 签名表 = 唯一契约：查原型、数参数、对类型；错一个类型就是段错误（无法 rescue）
 buf = Fiddle::Pointer.malloc(16)   # GC 托管免手洗 free；buf[0, 5] = "hello" 按字节读写；to_i 裸地址不打印
@@ -396,9 +396,9 @@ render(md)            # lines.map(&:chomp)（String#lines 保留 \n）；未闭�
 
 ---
 
-# 274 条实测坑位索引
+# 275 条实测坑位索引
 
-按章分组，与各章 `## N.k 坑位清单` 一一对应（条目数：02–06 各 12、07 章 11、08–10 各 12、11 章 11、12–24 各 12，合计 274）。每条一句话：坑 + 出处节号。
+按章分组，与各章 `## N.k 坑位清单` 一一对应（条目数：02–06 各 12、07 章 11、08–10 各 12、11 章 11、12–20 各 12、21 章 13、22–24 各 12，合计 275）。每条一句话：坑 + 出处节号。
 
 ## 02 · 第一个程序（12 条）
 
@@ -545,7 +545,7 @@ render(md)            # lines.map(&:chomp)（String#lines 保留 \n）；未闭�
 7. **`zip` 短的一方补 nil**：下游 `to_h` 前要想想（11.7）。
 8. **`flatten` 无限展平**：元素本身是数组的数据会被展到不见，一层展平用 `flatten(1)` 或 `flat_map`（11.7）。
 9. **`sort_by` 多键靠数组字典序**：忘写数组直接单键排（11.8）。
-10. **等值元素顺序无语言保证**：跨实现/跨版本别赌 sort 稳定（9.4、11.8）。
+10. **等值元素顺序无语言保证**：跨实现/跨版本/跨平台别赌 sort 稳定——同款降序比较器，92 分平局 macOS 出 tom、Windows 出 anna（4.0.7 双平台实测）（9.4、11.8）。
 11. **Enumerator 链上每层都是暂停点**：去掉 lazy 就是全量算——性能敏感链路盯紧 lazy 位置（11.5、11.6）。
 
 ## 12 · 符号与正则（12 条）
@@ -683,7 +683,7 @@ render(md)            # lines.map(&:chomp)（String#lines 保留 \n）；未闭�
 11. **`pop` 返回 `nil` 是 close 的信号**：忘了 close 就永远阻塞（20.3）。
 12. **嵌套两把锁是死锁配方**：要么单锁，要么统一加锁顺序（20.4）。
 
-## 21 · Ractor 并行（12 条）
+## 21 · Ractor 并行（13 条）
 
 1. **`Warning[:experimental] = false` 必须是第一行代码**：Ractor 实验告警默认打 stderr，要在任何 `Ractor.new` 之前关（章首）。
 2. **`.take` 已删除**：4.0 取值一律 `r.value`（21.1）。
@@ -697,6 +697,7 @@ render(md)            # lines.map(&:chomp)（String#lines 保留 \n）；未闭�
 10. **`value` 或 `join` 二选一收口**：不收口的 Ractor 由 GC 兜底但时机不可控（21.7）。
 11. **Port 只有 `<<`/`receive`/`close`/`closed?` 四件套**：3.x 的 `yield`/`take` 配对已不存在（21.3）。
 12. **Ractor 仍是实验特性**：行为可能随版本变动，结论绑定 4.0.7 实测（章首）。
+13. **Windows 上 Ractor × minitest 并行线程池必死锁**：池 ≥2 时主线程 `.value` 丢唤醒永久阻塞；`require "minitest/autorun"` 前 `ENV["MT_CPU"] = "1"` 绕开，macOS 不受影响（runtests.rb 章首）。
 
 ## 22 · Fiber 与协程（12 条）
 
@@ -715,7 +716,7 @@ render(md)            # lines.map(&:chomp)（String#lines 保留 \n）；未闭�
 
 ## 23 · Fiddle C 互操作（12 条）
 
-1. **别硬编码系统库路径**：`Fiddle.dlopen(nil)`（或 `dlload nil`）拿当前进程句柄（23.1、23.5）。
+1. **别硬编码系统库路径**：macOS/Linux `dlopen(nil)` 进程句柄全能解析；Windows 进程句柄只搜 exe 导出表，要 `dlopen("ucrtbase")`（23.1、23.5）。
 2. **签名必须与 C 原型一字不差**：错一个类型就是运行时段错误，Ruby 异常救不了（23.1、23.7）。
 3. **`Pointer#to_s` 是 BINARY 编码**：读回先 `force_encoding(Encoding::UTF_8)`（23.4）。
 4. **`strlen` 算的是字节不是字符**：中文 `"你好"` 是 6 不是 2（23.4）。
@@ -724,7 +725,7 @@ render(md)            # lines.map(&:chomp)（String#lines 保留 \n）；未闭�
 7. **裸地址（`to_i`）不打印、不当数据用**：且要保证原对象在使用期间存活（23.3、23.7）。
 8. **Closure 的 `call(a, b)` 收到的是指针不是整数**：要 `Pointer.new(a)[0, 4].unpack1("l<")` 解引用（23.6）。
 9. **Ruby 大整数过 FFI 按 C 规则截断/溢出，不报错**：超出范围自己先验（23.2）。
-10. **`LIBC["名字"]` 查不到符号返回 nil**：绑定阶段就确认非 nil（23.1）。
+10. **`LIBC["名字"]` 查不到符号当场抛 `DLError`**：`unknown symbol` 在查找阶段报错，不会静默返回 nil（Windows 4.0.7 实测）（23.1）。
 11. **段错误无法 rescue**：先在一次性脚本里把签名验对（23.7）。
 12. **`pack("l<*")` 的端序要和 C 平台对齐**：写死了就要知道自己在赌什么（23.6）。
 

@@ -122,7 +122,9 @@ people = [["tom", 92], ["jerry", 85], ["anna", 92], ["bob", 78]]
 by_rule = people.sort_by { |name, score| [-score, name] }   # 分数降序（取负），同分按名字升序
 ok by_rule == [["anna", 92], ["tom", 92], ["jerry", 85], ["bob", 78]]
 ok people.sort_by { |_, score| score } == [["bob", 78], ["jerry", 85], ["tom", 92], ["anna", 92]]
-ok people.sort { |a, b| b[1] <=> a[1] }.first == ["tom", 92]    # <=> 自己写比较器也行
+# 坑：sort 不稳定 —— tom/anna 同为 92 分，谁排第一由算法实现决定（实测 macOS 出 tom、
+# Windows 出 anna），比较器没写平局裁决就别断言具体元素，只断言不受平局影响的部分
+ok people.sort { |a, b| b[1] <=> a[1] }.first[1] == 92    # <=> 自己写比较器也行（平局顺序平台相关）
 ok [3, 1, 2].each_with_object([]) { |n, acc| acc.unshift(n) } == [2, 1, 3]
 puts "sort_by { |x| [键1, 键2] } 用数组字典序实现多键排序，降序键取负即可"
 

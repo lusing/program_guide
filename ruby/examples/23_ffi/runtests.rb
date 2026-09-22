@@ -4,7 +4,9 @@ require "minitest/autorun"
 require "fiddle"
 require "fiddle/import"
 
-LIBC = Fiddle.dlopen(nil) # 当前进程句柄：libSystem 的 sqrt/pow/strlen/qsort 都可用
+# 句柄两分支：macOS/Linux 用当前进程句柄（libSystem/libc 已随进程加载）；
+# Windows 进程句柄只搜 exe 导出表，C 运行时在 ucrtbase.dll（见 main.rb 23.1 的坑位注释）
+LIBC = Fiddle.dlopen(Gem.win_platform? ? "ucrtbase" : nil)
 
 class TestFiddle < Minitest::Test
   def test_sqrt_function

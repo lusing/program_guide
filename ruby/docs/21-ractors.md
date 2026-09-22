@@ -195,6 +195,7 @@ Ractor 块引用外层局部变量 → 编译期拒绝（实测抛 ArgumentError
 10. **`value` 或 `join` 二选一收口**：不收口的 Ractor 由 GC 兜底，但清理时机不可控（21.7）。
 11. **Port 只有 `<<`/`receive`/`close`/`closed?` 四件套**：3.x 的 `yield`/`take` 配对已不存在，别按旧 API 找方法（21.3）。
 12. **Ractor 仍是实验特性**：行为可能随版本变动，教程结论绑定 Ruby 4.0.7 实测（章首）。
+13. **Windows 上 Ractor × minitest 并行线程池必死锁**：mingw 构建的 4.0.7 实测，minitest 6 默认起与核数等大的空闲工作线程池（`MT_CPU`/`Etc.nprocessors`），池线程在场时主线程 `Ractor#value` 的结果唤醒丢失 → 永久阻塞（池 ≥2 全挂、`MT_CPU=1` 十连绿）——Windows 上在 `require "minitest/autorun"` 之前 `ENV["MT_CPU"] = "1"` 即绕开，macOS 不受影响（runtests.rb 章首）。
 
 ---
 

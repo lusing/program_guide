@@ -1,5 +1,11 @@
 # 21 测试层：minitest 套件（自包含，不 require main.rb —— 避免把演示输出打进测试结果）
 # frozen_string_literal: true
+# 坑（Windows 实测，Ruby 4.0.7 x64-mingw-ucrt）：minitest 6 默认起一个与核数等大的
+# 空闲工作线程池（MT_CPU / Etc.nprocessors），池线程在场时主线程 Ractor#value 的
+# 结果唤醒会丢失 → 永久阻塞（实测线程池 ≥2 全挂；另一个线程的定时器恰好到期才能
+# 「撞醒」它）。MT_CPU=1 让执行器不启用，测试在主线程串行跑 —— 10/10 全绿。
+# macOS 不受影响，只在 Windows 生效；必须在 require minitest 之前设置。
+ENV["MT_CPU"] = "1" if Gem.win_platform?
 Warning[:experimental] = false
 require "minitest/autorun"
 

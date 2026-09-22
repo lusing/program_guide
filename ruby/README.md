@@ -1,8 +1,8 @@
 # Ruby 编程指南（4.0）
 
-面向**会编程、初学 Ruby** 的读者：从第一个 `puts` 一路教到 Ruby 4.0 的现代写法——`frozen_string_literal` 纪律、关键字参数分离后的参数族、`case/in` 模式匹配、Ractor 并行，旧写法只在坑位清单里教「认得」。**Ruby 特色全部独立成章细讲**：Enumerable 全家桶（11）、块与闭包（14）、元编程（15）、Ractor 真并行（21）、Fiber 协程（22）、Fiddle C 互操作（23）；收官实战是一个约 100 行的迷你 Markdown → HTML 渲染器（24）。每章末尾「坑位清单」收录 8–12 条实测坑（全书合计 274 条），速查见 [CHEATSheet.md](CHEATSheet.md)。
+面向**会编程、初学 Ruby** 的读者：从第一个 `puts` 一路教到 Ruby 4.0 的现代写法——`frozen_string_literal` 纪律、关键字参数分离后的参数族、`case/in` 模式匹配、Ractor 并行，旧写法只在坑位清单里教「认得」。**Ruby 特色全部独立成章细讲**：Enumerable 全家桶（11）、块与闭包（14）、元编程（15）、Ractor 真并行（21）、Fiber 协程（22）、Fiddle C 互操作（23）；收官实战是一个约 100 行的迷你 Markdown → HTML 渲染器（24）。每章末尾「坑位清单」收录 8–13 条实测坑（全书合计 275 条），速查见 [CHEATSheet.md](CHEATSheet.md)。
 
-> 网上大量教程停留在 1.8/2.x 时代写法，在 4.0 上有静默差异或直接报错（`Fixnum` 已不存在、位置哈希塞给关键字参数抛 `ArgumentError`、gsub 块参数只剩 1 个、Ractor `.take` 已删除）。本书所有代码在 **Ruby 4.0.7** 实测。
+> 网上大量教程停留在 1.8/2.x 时代写法，在 4.0 上有静默差异或直接报错（`Fixnum` 已不存在、位置哈希塞给关键字参数抛 `ArgumentError`、gsub 块参数只剩 1 个、Ractor `.take` 已删除）。本书所有代码在 **Ruby 4.0.7** 实测（macOS x86_64-darwin23 与 Windows x64-mingw-ucrt 双平台）。
 
 ## 目录结构
 
@@ -13,7 +13,7 @@ ruby/
 ├── examples/       23 个示例目录（02–24，章号 = 目录号；24 为综合收官）
 ├── run-all.sh      shell 入口（双入口之一，macOS/Linux）
 ├── build.ps1       PowerShell 入口（双入口之一，判定与 run-all.sh 逐条一致）
-└── CHEATSheet.md   语法速查 + 4.0 实测坑位索引（274 条）
+└── CHEATSheet.md   语法速查 + 4.0 实测坑位索引（275 条）
 ```
 
 ## 章节索引
@@ -47,8 +47,8 @@ ruby/
 
 ## 构建工具链
 
-- Ruby **4.0.7**（MacPorts `port install ruby40`）：本机装在 `/opt/local/bin/ruby4.0`（PATH 上命令名 `ruby4.0`，`ruby --version` 为 4.x 的任意渠道均可）。
-- 两个验证入口都**自动定位**解释器，不硬编码路径——顺序为：环境变量 `RUBY` 显式指定 → PATH 上的 `ruby4.0`，其次 `ruby` → 常见安装位置（MacPorts `/opt/local/bin`、Homebrew `/opt/homebrew/bin`、`/usr/local/bin`）。
+- Ruby **4.0.7**：macOS 为 MacPorts `port install ruby40`（`/opt/local/bin/ruby4.0`）；Windows 为 RubyInstaller/scoop（`x64-mingw-ucrt`，PATH 上命令名 `ruby`）。`ruby --version` 为 4.x 的任意渠道均可。
+- 两个验证入口都**自动定位**解释器，不硬编码路径——顺序为：环境变量 `RUBY` 显式指定 → PATH 上的 `ruby4.0`，其次 `ruby` → 常见安装位置（MacPorts `/opt/local/bin`、Homebrew `/opt/homebrew/bin`、`/usr/local/bin`；Windows 另查 `%LOCALAPPDATA%\Programs\Ruby*`、`C:\Ruby*`）。
 - **刻意不用本机 `/opt/local/bin/ruby1.8`（1.8.7）**，理由三条：缺现代语法的关键部分（无编码系统、无 `frozen_string_literal`、关键字参数语义完全不同，示例大多直接报错）；2011 年就停止维护；留着的唯一用途是**演进史参照**（01 章的版本演进小史）。想看化石，`docs/01-overview.md` 里有几行 ruby1.8 实测探针。
 - 每示例含 `main.rb`（`sec` 分节演示 + `ok` 断言自检 + 结束标记）与 `runtests.rb`（独立 minitest 套件）。
 
@@ -59,6 +59,7 @@ cd ruby
 ./run-all.sh              # shell 入口：全部 23 个示例（运行层 + 测试层）
 ./run-all.sh -v 03        # 附带指定示例的完整输出
 ./run-all.sh 13 21        # 只跑指定编号（或目录名，如 09_arrays）
+# Windows 上用 Git Bash 跑同一入口：bash run-all.sh（判定逻辑与 POSIX 完全一致）
 ```
 
 ```powershell
@@ -78,9 +79,9 @@ ruby main.rb && ruby runtests.rb    # 改完立刻看效果
 
 **输出确定性纪律**：示例不打印耗时、随机值与机器路径（时间演示用 `Time.at(0).utc` 固定基准、线程/Ractor 结果 join 后按固定顺序汇总、临时文件用 `Dir.mktmpdir` 且不打印随机路径）——本书各章引用的实测输出都来自 `build/` 快照，与你自己跑出来的结果逐字节一致；不一致先查 `ruby -v`。
 
-## 兼容性与实测坑（Ruby 4.0.7 / macOS）
+## 兼容性与实测坑（Ruby 4.0.7 / macOS + Windows）
 
-网上旧教程搬到 4.0 上最容易翻车的十条，全部在各章坑位清单里有出处：
+前十条是网上旧教程搬到 4.0 上最容易翻车的语言坑，11–13 是双平台校验实测的平台差异，全部在各章坑位清单里有出处：
 
 1. **chilled strings 告警**：没写 `# frozen_string_literal: true` 的文件里裸改字符串字面量（`s << "x"`）照常执行，但 stderr 打出 `warning: literal string will be frozen in the future...`——本书示例全带魔法注释，可变副本用 `+"abc"` 或 `.dup`（01.3、02.8）。
 2. **`case/in` 不能单行**：`case 1 in String then :s end` 是语法错误，`in` 前必须换行；而 `case/when` 的单行形式反而合法——Prism 下实测，两者别记反（4.6）。
@@ -93,10 +94,17 @@ ruby main.rb && ruby runtests.rb    # 改完立刻看效果
 9. **商向负无穷、余数跟除数同号**：`7 / -2 == -4`、`-7 % 3 == 2`——从 C/Java 移植整除/取模逻辑必错（3.5）。
 10. **`1` 与 `1.0` 不是同一个 Hash 键**：`1 == 1.0` 为真但 `1.eql?(1.0)` 为假（4.0.7 实测），Hash 按 `eql?` 判键（6.6、10.6）。
 
+Windows（`x64-mingw-ucrt`，4.0.7）双平台校验实测出的三条平台差异，示例已内置分支/规避，各章坑位清单有详解：
+
+11. **`sort` 平局顺序平台相关**：同款降序比较器，92 分平局 macOS 出 `tom`、Windows 出 `anna`——比较器没写平局裁决就别断言具体元素（11.8、11.9 #10）。
+12. **Ractor × minitest 并行线程池死锁**：minitest 6 默认起与核数等大的空闲线程池，池 ≥2 时主线程 `Ractor#value` 丢唤醒永久阻塞（另一线程定时器到期才能「撞醒」）；`require "minitest/autorun"` 前 `ENV["MT_CPU"] = "1"` 十连绿，macOS 不受影响（21.9 #13）。
+13. **Fiddle 进程句柄在 Windows 解析不到 libc 符号**：`unknown symbol "sqrt"`——C 运行时在 `ucrtbase.dll`，`Fiddle.dlopen(Gem.win_platform? ? "ucrtbase" : nil)` 一行跨三平台（23.8 #1）。
+
 ## 当前状态
 
 - **23/23 示例 × 2 入口全绿（Ruby 4.0.7 / macOS）**：`./run-all.sh` 与 `pwsh ./build.ps1 -All` 均通过（运行层六条判定 + minitest 测试层，两层全绿）。
-- 速查与坑位索引见 [CHEATSheet.md](CHEATSheet.md)（语法速查 + 274 条实测坑位索引，条目数与各章坑位清单逐一对应）。
+- **23/23 示例 × 2 入口全绿（Ruby 4.0.7 / Windows 11，x64-mingw-ucrt）**：Git Bash `bash run-all.sh` 与 `pwsh ./build.ps1 -All` 均通过；三处平台差异（sort 平局、Ractor×minitest、Fiddle 句柄）已修复并记入坑位清单。
+- 速查与坑位索引见 [CHEATSheet.md](CHEATSheet.md)（语法速查 + 275 条实测坑位索引，条目数与各章坑位清单逐一对应）。
 
 ## 相关教程
 

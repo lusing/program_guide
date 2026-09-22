@@ -6,11 +6,11 @@
 
 ## 23.1 最小调用：sqrt
 
-第一步是拿库句柄。坑位先说：**别硬编码系统库路径**（各平台差异巨大），`Fiddle.dlopen(nil)` 拿「当前进程」的句柄——macOS 的 libSystem（含 libc/libm 常用函数）早已随进程加载，`sqrt`/`pow`/`strlen`/`qsort` 全能解析：
+第一步是拿库句柄。坑位先说：**别硬编码系统库路径**（各平台差异巨大）。macOS/Linux 用 `Fiddle.dlopen(nil)` 拿「当前进程」的句柄——libSystem/libc（含 libc/libm 常用函数）早已随进程加载，`sqrt`/`pow`/`strlen`/`qsort` 全能解析。**Windows 是例外**：进程句柄只搜 exe 自身的导出表，C 运行时函数一个都查不到（`unknown symbol "sqrt"`），UCRT 住在 `ucrtbase.dll`，按名打开即可（`msvcrt` 等老运行时同样能解析这批符号，但新代码认准 UCRT）：
 
 ```ruby
 require "fiddle"
-LIBC = Fiddle.dlopen(nil)
+LIBC = Fiddle.dlopen(Gem.win_platform? ? "ucrtbase" : nil)
 sqrt = Fiddle::Function.new(LIBC["sqrt"],
   [Fiddle::TYPE_DOUBLE], Fiddle::TYPE_DOUBLE)
 sqrt.call(2.0)   # => 1.4142135623730951
@@ -23,10 +23,10 @@ sqrt.call(2.0)   # => 1.4142135623730951
 sqrt(2.0) = 1.4142135623730951（确定性小数，Fiddle::TYPE_DOUBLE 签名）
 ```
 
-签名必须与 C 原型一字不差：`double sqrt(double)` → 一个 `TYPE_DOUBLE` 进、一个 `TYPE_DOUBLE` 出。`LIBC["sqrt"]` 按符号名查函数指针，查不到返回 nil，调用时才炸——绑定阶段就先确认非 nil。
+签名必须与 C 原型一字不差：`double sqrt(double)` → 一个 `TYPE_DOUBLE` 进、一个 `TYPE_DOUBLE` 出。`LIBC["sqrt"]` 按符号名查函数指针，查不到**当场抛 `Fiddle::DLError: unknown symbol`**（Windows 4.0.7 实测；别指望它静默返回 nil 拖到 call 才炸）——绑定阶段就把句柄和符号名备齐，错误暴露越早越好。
 
 - 示例顶部 `require "fiddle/import"` 是给 23.5 的 `Fiddle::Importer` 准备的，最小调用只要 `require "fiddle"`。
-- `dlopen(nil)` 与 23.5 的 `dlload nil` 是同一件事的两种写法：Importer 层用 `dlload`，裸 Fiddle 层用 `dlopen`。
+- `dlopen(nil)` 与 23.5 的 `dlload nil` 是同一件事的两种写法：Importer 层用 `dlload`，裸 Fiddle 层用 `dlopen`。23.5 只定义结构体不做符号查找，`dlload nil` 在 Windows 上也照常工作，无需分支。
 
 ## 23.2 类型映射：INT / DOUBLE / VOIDP
 
@@ -183,7 +183,7 @@ BlockCaller 版回调：double_cb(21) = 42
 
 ## 23.8 坑位清单
 
-1. **别硬编码系统库路径**：`Fiddle.dlopen(nil)`（或 `dlload nil`）拿当前进程句柄，macOS 的 libSystem 函数全能解析（23.1、23.5）。
+1. **别硬编码系统库路径**：macOS/Linux 用 `Fiddle.dlopen(nil)` 拿当前进程句柄，libSystem/libc 函数全能解析；**Windows 进程句柄只搜 exe 导出表**，C 运行时函数要打开 `ucrtbase` 才能解析——`Fiddle.dlopen(Gem.win_platform? ? "ucrtbase" : nil)` 一行跨三平台（23.1、23.5）。
 2. **签名必须与 C 原型一字不差**：签名表是唯一契约，错一个类型就是运行时段错误，Ruby 异常救不了（23.1、23.7）。
 3. **`Pointer#to_s` 是 BINARY 编码**：从 C 内存读回的 String 要 `force_encoding(Encoding::UTF_8)` 才能正常比较/打印（23.4）。
 4. **`strlen` 算的是字节不是字符**：中文 `"你好"` 是 6 不是 2——C 世界没有字符，只有字节（23.4）。
@@ -192,7 +192,7 @@ BlockCaller 版回调：double_cb(21) = 42
 7. **裸地址（`to_i`）不打印、不当数据用**：每次运行都不同；且要保证原对象在使用期间存活，否则悬空指针（23.3、23.7）。
 8. **Closure 的 `call(a, b)` 收到的是指针不是整数**：要 `Pointer.new(a)[0, 4].unpack1("l<")` 手工解引用（23.6）。
 9. **Ruby 大整数过 FFI 按 C 规则截断/溢出，不报错**：超出 int/double 范围的值自己先验（23.2）。
-10. **`LIBC["名字"]` 查不到符号返回 nil**：绑定阶段就确认非 nil，别拖到 call 才炸（23.1）。
+10. **`LIBC["名字"]` 查不到符号当场抛 `DLError`**：`unknown symbol` 在查找阶段就报错（Windows 4.0.7 实测，不会静默返回 nil），绑定阶段就确保句柄与符号可用（23.1）。
 11. **段错误无法 rescue**：FFI 调试别在关键进程里试错，先在一次性脚本里把签名验对（23.7）。
 12. **`pack("l<*")` 的端序要和 C 平台对齐**：跨平台传二进制结构时，`l<`（little-endian）写死了就要知道自己在赌什么（23.6）。
 
