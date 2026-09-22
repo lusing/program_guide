@@ -91,14 +91,25 @@ clang version 22.1.8 (https://github.com/msys2/MINGW-packages ...)
 Target: x86_64-w64-windows-gnu
 ```
 
-MSYS2 的安装方式（如果换机器需要重来）：
+### macOS 上的同一件事（本机实况）
+
+换到 macOS，**不要去找"22.1.8 这个版本"**——MacPorts 上只有 19.1.7 / 21.1.8 / 23.1.0。选 **23**，判据是**头文件布局**：
 
 ```bash
-scoop install msys2
-# 然后在 MSYS2 UCRT64 shell 里：
-pacman -S mingw-w64-ucrt-x86_64-llvm mingw-w64-ucrt-x86_64-llvm-tools \
-          mingw-w64-ucrt-x86_64-llvm-libs
+ls /opt/local/libexec/llvm-21/include/llvm/Plugins/     # 不存在：21 还是老位置
+ls /opt/local/libexec/llvm-23/include/llvm/Plugins/     # PassPlugin.h：与 22 一致
+ls /opt/local/libexec/llvm-21/include/llvm/Passes/PassPlugin.h   # 老位置
 ```
+
+第 6/7 章的插件第一件事就是 `#include "llvm/Plugins/PassPlugin.h"`，21 上直接编不过。其余用到的 API（`Triple` 对象、`parseIR(MemoryBufferRef)`、`getProcessSymbolsJITDylib`）在 23 上行为一致；唯一要改的是 `OptimizationLevel`（23 变成裸 enum，见 7.3）。
+
+三个 macOS 专属的安装/使用要点：
+
+1. `sudo port install llvm-23 clang-23` 之后，工具在 `/opt/local/libexec/llvm-23/bin`，**不在 PATH 上**。
+2. **MacPorts 的 llvm-23 不装 FileCheck 可执行文件**——`port contents llvm-23` 里只有 `libLLVMFileCheck.a` 和 `llvm/FileCheck/FileCheck.h`。第 21 章的做法是用官方那份库自己链一个驱动（`tools/filecheck_main.cpp`，`run-all.sh` 会自动构建），语义和真的 FileCheck 一致。
+3. **clang 要显式 `-isysroot $(xcrun --show-sdk-path)`**：MacPorts 的 clang 不认 Xcode 的隐式 SDK 查找，少了它连 `stdio.h` 都找不到（C++ 侧表现为 libc++ 报 `mbstate_t`/`EOF` 未声明）。
+
+验证入口是 `./run-all.sh`（build.ps1 的 shell 镜像），判定项与 build.ps1 逐项对齐，另加两条："编译日志必须为空"（即零告警）和"shared/static 双通道输出逐字节一致"。
 
 ### 为什么是 UCRT64 而不是别的 MSYS2 环境
 
@@ -250,3 +261,6 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 02_first_ir   # 单章
 | MSVC 与 MinGW ABI 不互通 | 编译/链接同一套 | 1.3 |
 | 旧教材的 `i32*` 指针写法已废弃 | LLVM 15+ 只认不透明指针 `ptr` | 2.7 |
 | 网上 Kaleidoscope 教程的 `llvm/Passes/PassPlugin.h` 已搬家 | 22 里在 `llvm/Plugins/PassPlugin.h` | 6 章 |
+| macOS 没有 LLVM 22，且 llvm-21 还是老头文件位置 | MacPorts 选 23：Plugins/PassPlugin.h 与 22 一致 | 1.3 |
+| MacPorts 的 llvm-2x 不装 FileCheck 可执行文件 | 用 libLLVMFileCheck 自己链驱动（tools/） | 1.3 / 21 章 |
+| MacPorts 的 clang 找不到 stdio.h / 链接报 library 'System' not found | 显式 `-isysroot $(xcrun --show-sdk-path)` | 1.3 |

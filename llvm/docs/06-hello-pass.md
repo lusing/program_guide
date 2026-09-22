@@ -94,6 +94,16 @@ $ex = 'G:\code\guide\llvm\examples\06_hello_pass'
 
 > **实测坑**：`--link-shared` 必须与 `--libs <组件>` 连用才会真正输出 `-lLLVM-22`；只写 `--ldflags --link-shared` 一个 `-l` 都没有，链接报一屏 undefined reference。
 
+macOS 侧同一条命令（产物扩展名 `.so`，`run-all.sh` 里就是这么写的）：
+
+```bash
+clang++ -shared $(llvm-config --cxxflags) HelloPass.cpp -o HelloPass.so \
+        $(llvm-config --ldflags --link-shared --libs core)
+opt -load-pass-plugin=HelloPass.so -passes=hello-pass test.ll -disable-output
+```
+
+两点平台差异：Mach-O 动态库默认**不**导出全部符号，但 `extern "C" LLVM_ATTRIBUTE_WEAK` 那个入口仍然能被 `dlsym` 到（示例不改即可）；插件**只走 shared 通道**——静态链会把 libLLVM 复制进插件，opt 与插件各持一份 LLVM，符号必然打架。
+
 运行：
 
 ```powershell
@@ -158,5 +168,6 @@ static RegisterPass<Hello> X("hello", "Hello World Pass", false, false);
 | pass 被静默跳过 | 打印型 pass 加 `isRequired(){return true;}` |
 | `-load` 了但没跑 | 还要 `-passes=名字` 指定执行 |
 | 代码里写 throw | llvm-config 带 `-fno-exceptions`，改返回码/llvm::Error |
+| macOS 插件链静态库后符号打架 | 插件只走 `--link-shared`（一份 libLLVM 由 opt 提供） |
 
 下一章给 pass 装上"眼睛"（自定义 Analysis）和"自动驾驶"（自动接入 -O2）。

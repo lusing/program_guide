@@ -27,8 +27,10 @@ $out = 'G:\code\guide\llvm\build\10_codegen'
 `demo.ll` 里有 `square`（一次乘法）和一个调用它的 alloca 风格循环。看 x86-64 汇编里的关键行（AT&T 语法，`源, 目标`）：
 
 ```text
-demo.s:18:   imull   %ecx, %eax       # square 的乘法实打实在
+demo.s:18:   imull   %ecx, %eax       # square 的乘法实打实在（x86-64）
 ```
+
+> **跨平台的注意**：这条汇编长什么样取决于 `llc` 的默认三元组，也就是宿主机。ARM64 Mac 上本机汇编里是 `mul w0, w0, w0`，没有 `imul`；所以验证脚本不能写死"必须有 imul"，而应按 `uname -m` 选助记符（x86_64→`imul`，arm64→`mul`），交叉编 aarch64 则恒为 `mul`。**断言改成随事实走，而不是用平台宏把它跳过**——跳过了这条断言就永久失效了。
 
 > **注意**：`llc` 出的 `.o` 不含 C 运行库——直接双击不能跑，得由 `clang`（驱动）补上 crt、libc 和链接器（这就是上面第三行的意义；第 20 章拆解完整链路）。`-filetype=asm` 是默认；`-filetype=obj` 走 MC 直接出目标文件（不经过文本汇编，快且无语法歧义）。
 
@@ -44,7 +46,9 @@ target triple = "x86_64-pc-windows-gnu"
 
 | 三元组 | 含义 |
 |---|---|
-| `x86_64-pc-windows-gnu` | 64 位 Windows，MinGW ABI（本教程主线） |
+| `x86_64-pc-windows-gnu` | 64 位 Windows，MinGW ABI（Windows 侧主线） |
+| `x86_64-apple-darwin23.6.0` | 64 位 Intel macOS（本机默认，示例不写死三元组时就是这个） |
+| `arm64-apple-darwin*` | Apple Silicon macOS；本机汇编里的乘法是 `mul` 不是 `imul` |
 | `x86_64-pc-windows-msvc` | 64 位 Windows，MSVC ABI（scoop clang 的默认） |
 | `aarch64-linux-gnu` | 64 位 ARM Linux |
 | `wasm32-unknown-emscripten` | WebAssembly |
@@ -135,5 +139,7 @@ llc 也有优化级别，但和 opt 的 -O2 是**两回事**：
 | 模块 DataLayout 与目标不符 | 以后端为准回填（clang 自动 / JIT 用 J->getDataLayout()） |
 | 想看交叉汇编没有工具链 | llc 本来就能交叉，--mtriple 即可 |
 | --debug-only 无输出 | release 构建 stripped，只有带 assert 的构建有 |
+| ARM64 上本机汇编找不到 imul | 助记符随 CPU 变（x86_64→imul / arm64→mul），按 uname -m 断言 |
+| macOS 链接 .o 报 `library 'System' not found` | MacPorts 的 clang 要显式 `-isysroot $(xcrun --show-sdk-path)` |
 
 下一章是"不走 llc 也能跑"的另一半世界：ORC JIT。

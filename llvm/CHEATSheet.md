@@ -1,14 +1,27 @@
-# LLVM 22 速查表（Windows MSYS2 UCRT64 实测）
+# LLVM 22/23 速查表（Windows MSYS2 UCRT64 + macOS MacPorts 双平台实测）
 
-命令速查 + 坑位索引。详细讲解见对应章（表中 `N.M` = 第 N 章 M 节）。主线工具链：`G:\scoop\apps\msys2\current\ucrt64`（LLVM 22.1.8 完整版）。
+命令速查 + 坑位索引。详细讲解见对应章（表中 `N.M` = 第 N 章 M 节）。
+
+- Windows 主线：`G:\scoop\apps\msys2\current\ucrt64`（LLVM 22.1.8 完整版）
+- macOS 主线：`/opt/local/libexec/llvm-23`（LLVM 23.1.0）。**MacPorts 没有 22，只有 19/21/23；选 23 的判据是 `llvm/Plugins/PassPlugin.h` 已就位**（21 还在老位置，6/7 章编不过）
 
 ## 1. 工具链就位（换机先跑）
 
 ```powershell
+# Windows
 $uc = 'G:\scoop\apps\msys2\current\ucrt64\bin'
 foreach ($t in 'opt','lli','llc','llvm-as','llvm-dis','llvm-config','FileCheck','g++','clang') {
     Test-Path "$uc\$t.exe" }        # 9 个 True 才齐活（01.3）
 & "$uc\llvm-config.exe" --version   # 22.1.8
+```
+
+```bash
+# macOS：MacPorts 的工具不在 PATH 上，且**不装 FileCheck 可执行文件**
+LB=/opt/local/libexec/llvm-23/bin
+for t in opt lli llc llvm-as llvm-dis llvm-config clang; do [ -x "$LB/$t" ] || echo "MISSING $t"; done
+"$LB/llvm-config" --version                  # 23.1.0
+port contents llvm-23 | grep -c FileCheck    # 只有 .a 和 .h，没有 bin/FileCheck（01.3）
+xcrun --show-sdk-path                        # clang 要显式 -isysroot，否则找不到 stdio.h
 ```
 
 ## 2. IR 工具五连
@@ -41,6 +54,20 @@ $lnk = ((& $uc\llvm-config.exe --ldflags --link-shared --libs core support) -joi
 $env:PATH = "$uc;" + $env:PATH                        # 运行期要找 libLLVM-22.dll
 ```
 
+```bash
+# macOS（run-all.sh 里的写法）
+LB=/opt/local/libexec/llvm-23/bin
+SDK=$(xcrun --show-sdk-path)
+# 关键：把 llvm-config 的 -I 换成 -isystem。-Wall -Wextra 下不换的话，
+# LLVM 自己的头文件会刷满 unused-parameter 告警，示例的告警被淹掉
+CF=(-isystem "$("$LB/llvm-config" --includedir)" -std=c++17 -stdlib=libc++ -fno-exceptions \
+    -Wall -Wextra -isysroot "$SDK")
+SH=($("$LB/llvm-config" --ldflags --link-shared --libs core support))
+ST=($("$LB/llvm-config" --ldflags --libs core support; "$LB/llvm-config" --system-libs))
+/opt/local/bin/clang++-mp-23 "${CF[@]}" prog.cpp -o prog "${SH[@]}"      # 程序（8.7）
+/opt/local/bin/clang++-mp-23 -shared "${CF[@]}" pass.cpp -o pass.so "${SH[@]}"  # 插件（6.3）
+```
+
 ## 4. Pass 插件骨架（新 PM）
 
 ```cpp
@@ -64,7 +91,7 @@ extern "C" LLVM_ATTRIBUTE_WEAK PassPluginLibraryInfo llvmGetPassPluginInfo() {
 }
 ```
 
-运行：`opt -load-pass-plugin=MyPass.dll -passes=my-pass f.ll -disable-output`
+运行：`opt -load-pass-plugin=MyPass.dll -passes=my-pass f.ll -disable-output`（macOS 产物名 `MyPass.so`；插件只走 `--link-shared`，静态链会让 opt 与插件各持一份 LLVM）
 
 ## 5. ORC JIT 骨架（LLJIT）
 
@@ -75,7 +102,12 @@ TSM.withModuleDo([](Module&M){ M.setDataLayout(J->getDataLayout()); }); // DL �
 ExitOnErr(J->addIRModule(std::move(TSM)));
 auto Addr = ExitOnErr(J->lookup("fn"));
 double (*fp)() = Addr.toPtr<double(*)()>();
-// 宿主函数给 JIT 调用：extern "C" __declspec(dllexport)（Windows 必需）
+// 宿主函数给 JIT 调用：
+//   Windows → extern "C" __declspec(dllexport)
+//   Unix    → extern "C" __attribute__((visibility("default")))
+//   示例用 JIT_HOST_EXPORT 宏统一，两侧都不 #if 掉
+// 查进程符号：ES.lookup({J->getProcessSymbolsJITDylib().get()}, 名字)
+//   macOS 的名字要带全局前缀：getDataLayout().getGlobalPrefix() + "host_mul"
 // 重定义：JD.createResourceTracker() + addIRModule(RT,...) + RT->remove()
 ```
 
@@ -107,6 +139,16 @@ double (*fp)() = Addr.toPtr<double(*)()>();
 | 无括号 if 吞 return | 单语句也写花括号（13 调试惨案） | 13 |
 | 双精度写整数算法出 nan | exp/2=0.5；先取整 | 18.4 |
 | 标识符不带 `_` | 词法字符集加下划线 | 12.2 |
+| macOS 没有 LLVM 22 | MacPorts 只有 19/21/23；选 23（Plugins/PassPlugin.h 已就位） | 1.3 |
+| MacPorts 无 FileCheck 可执行文件 | 用 `libLLVMFileCheck.a` 自链驱动（tools/filecheck_main.cpp） | 1.3/21 |
+| macOS clang 找不到 stdio.h | 显式 `-isysroot $(xcrun --show-sdk-path)` | 1.3/10/20/22 |
+| macOS 链接报 `library 'System' not found` | 同上，链接那一步也要带 isysroot | 10.1/20.2 |
+| C++ 报 `mbstate_t`/`EOF` 未声明 | libc++ 缺 SDK 头：CXXFLAGS 里补 `-isysroot` | 1.3 |
+| `-Wall -Wextra` 被 LLVM 头文件刷屏 | `llvm-config` 的 `-I` 换成 `-isystem <includedir>` | 8.7 |
+| macOS 查不到 JIT 宿主符号 | 名字带 `'_'` 前缀（DataLayout 的全局前缀） | 11.3 |
+| `getSpeedupLevel` 不是成员（23） | `OptimizationLevel` 变裸 enum，比 `>= OptimizationLevel::O2` | 7.3 |
+| ARM64 上本机汇编没有 imul | 助记符随 CPU 变，按 `uname -m` 断言（x86_64→imul / arm64→mul） | 10.1 |
+| 第 23 章无源码检出 | `LLVM_SRC=/path/to/llvm-project ./run-all.sh 23`；不设则记 SKIP | 23 |
 
 ## 7. 新旧 PassManager 对照（认旧代码用）
 
@@ -131,4 +173,9 @@ getAnalysis<T>()                 →   AM.getResult<T>(F)（Analysis 要 Analysi
 21-24  工程化（FileCheck/clang 工具/源码导览/v1.0 回归）
 ```
 
-全量验证：`pwsh build.ps1 -All`（24/24 全绿）
+全量验证：
+
+```bash
+pwsh build.ps1 -All      # Windows：24/24 全绿（LLVM 22.1.8）
+./run-all.sh             # macOS：24/24 全绿（LLVM 23.1.0；第 23 章要 LLVM_SRC）
+```

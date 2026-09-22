@@ -1,8 +1,16 @@
 # 23 · LLVM 源码导览：把仓库变成你的地图
 
-> 对应示例：`examples/23_source_tour/run.ps1`（对 `G:\github\lang\llvm-project` 的只读寻宝）
+> 对应示例：`examples/23_source_tour/run.ps1`（Windows，对 `G:\github\lang\llvm-project` 的只读寻宝）／`run.sh`（macOS/Linux，路径由 `LLVM_SRC` 给定）
 
 用别人的库到深处，迟早要读它的源码。本章带你把 **llvm-project monorepo**（本机检出：主干 ≥24 时代）走一遍——每个地标都对应本教程前面某一章的实操。脚本会跑 7 组断言，全部 `[found]` 即通过。
+
+> **macOS 侧怎么拿到源码**：本机没有现成检出，`run.sh` 通过环境变量定位：
+>
+> ```bash
+> LLVM_SRC=/path/to/llvm-project ./run-all.sh 23
+> ```
+>
+> 不设 `LLVM_SRC` 时 `run-all.sh` 把本章记为**环境缺口并跳过**（而不是改断言迁就）。实测用的那份是从官方源码包里只解开需要的子树（`llvm/include`、`llvm/lib/IR`、`llvm/lib/Passes`、`llvm/tools/{opt,llc,lli,llvm-as,llvm-dis}`、`clang/lib/Sema`、`lld/ELF`），约 52 MB，7 组断言全过。
 
 ## 23.1 monorepo 布局：一个仓库住下所有项目
 

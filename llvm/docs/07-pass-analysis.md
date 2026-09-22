@@ -66,12 +66,22 @@ PB.registerAnalysisRegistrationCallback(
 PB.registerOptimizerLastEPCallback(
     [](ModulePassManager &MPM, OptimizationLevel Level,
        ThinOrFullLTOPhase) {                     // ← 22 起第三个参数（LTO 阶段）
-      if (Level.getSpeedupLevel() >= 2) {        // 只在 -O2 及以上
+      if (atLeastO2(Level)) {                    // 只在 -O2 及以上
         FunctionPassManager FPM;
         FPM.addPass(MemStats());
         MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
       }
     });
+```
+
+`atLeastO2` 是示例里的一个辅助函数，为的是跨版本：**23 把 `OptimizationLevel` 从"带 `getSpeedupLevel()` 的类"改成了裸 `enum class`**，旧写法（连同 `isOptimizingForSpeed()`）一并没了。
+
+```cpp
+#if LLVM_VERSION_MAJOR >= 23
+static bool atLeastO2(OptimizationLevel Level) { return Level >= OptimizationLevel::O2; }
+#else
+static bool atLeastO2(OptimizationLevel Level) { return Level.getSpeedupLevel() >= 2; }
+#endif
 ```
 
 三个细节：
@@ -127,7 +137,7 @@ invalidate 返回 false（永不作废）在示例里安全吗？验证：让 pa
 
 - Analysis = 缓存的纯计算：Mixin + Result::invalidate + run + out-of-line Key。
 - 注册分析用 `registerAnalysisRegistrationCallback`，消费用 `AM.getResult<T>()`。
-- EP 让 pass 自动进标准管线；22 的 EP lambda 带 `ThinOrFullLTOPhase` 参数。
+- EP 让 pass 自动进标准管线；22 的 EP lambda 带 `ThinOrFullLTOPhase` 参数，23 的 `OptimizationLevel` 变成裸 enum。
 - `-O2` 尾部观察到的"归零"是分析+优化协作的直观证据。
 
 | 坑 | 解法 |
@@ -135,6 +145,7 @@ invalidate 返回 false（永不作废）在示例里安全吗？验证：让 pa
 | `'ID' is not a member` | 继承 AnalysisInfoMixin + 定义 static AnalysisKey Key |
 | invalidate 语义绕 | 返回 false = 作废；true = 仍有效 |
 | EP lambda 编不过（22） | 补第三个参数 ThinOrFullLTOPhase |
+| `getSpeedupLevel` 不是成员（23） | 23 起 OptimizationLevel 是裸 enum class，改比 `Level >= OptimizationLevel::O2` |
 | 函数 pass 挂模块级 EP | 包 createModuleToFunctionPassAdaptor |
 | 分析结果好像过期 | 检查上游 pass 的 PreservedAnalyses 是否谎报 |
 

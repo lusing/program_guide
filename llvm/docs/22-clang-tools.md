@@ -1,6 +1,6 @@
 # 22 · clang 前端工具链：ast-dump / clang-format / clang-tidy
 
-> 对应示例：`examples/22_clang_tools/`（sample.c + ugly.c + .clang-format + run.ps1）
+> 对应示例：`examples/22_clang_tools/`（sample.c + ugly.c + .clang-format + run.ps1 / run.sh）
 
 scoop 的 LLVM 23 干不了 IR 实操（第 1 章勘察：无 opt/lli/开发库），但它是**一流的 clang 前端工具集**——clang-format、clang-tidy、clangd 的宿主。本章四连：emit-llvm 跨版本互通、AST 观测、格式化、静态体检。
 
@@ -24,6 +24,20 @@ sum = 55
 **clang 23 产的 IR，LLVM 22 的 lli 直接执行**——文本 IR 的版本兼容性是生态的粘合剂（bitcode 可没这个待遇，见 2.5）。
 
 > **实测坑（MSVC 头文件失踪）**：scoop clang 默认目标 `x86_64-pc-windows-msvc`，无 VS 环境变量时直接 `fatal error: 'stdio.h' file not found`。两条出路：① 开 VS 开发者环境让它找到 MSVC 头；② 切 GNU 目标 `-target x86_64-pc-windows-gnu` 并 `-isystem` 借 MSYS2 UCRT64 的头文件。本教程选②——与主线工具链同一套头。
+
+### macOS 上的同一个实验
+
+本机没有 MSYS2，但 MacPorts 同时装着 llvm-21 和 llvm-23，跨版本照样能做——**clang 23 产 IR，llvm-21 的 lli 执行**：
+
+```bash
+/opt/local/libexec/llvm-23/bin/clang -isysroot $(xcrun --show-sdk-path) \
+    -S -emit-llvm -O1 sample.c -o sample.ll
+/opt/local/libexec/llvm-21/bin/lli sample.ll     # 21 执行 23 的 IR：同样通过
+```
+
+`run.sh` 里取的是 `LLVM2_BIN`（`run-all.sh` 自动探测到的第二套 LLVM）；若本机只装了一套，它会打印"同版本，未构成跨版本验证"而**不假装跨了**。
+
+macOS 侧要补的两处平台差异：代替 `-isystem 借 MSYS2 头` 的是 `-isysroot $(xcrun --show-sdk-path)`；clang-tidy 的 SDK 根要经 `--` 传给底层 clang。bash 不吃 `--`（那是 PowerShell 的坑），所以 run.sh 里直接写 `"$TIDY" --checks=... sample.c -- "${SDK_ARGS[@]}"` 就行。
 
 ## 22.2 AST 观测：-Xclang -ast-dump
 
@@ -103,5 +117,7 @@ warning: statement should be inside braces [readability-braces-around-statements
 | tidy 只打 usage | `--` 经 cmd /c 传；或 compile_commands.json |
 | tidy 无输出 | scoop 版零默认检查，--checks 点名 |
 | IDE 红波浪线 | clangd 没有 include 路径信息，以构建脚本为准 |
+| macOS：stdio.h not found | clang 要 `-isysroot $(xcrun --show-sdk-path)`（等价于 Windows 的借头） |
+| macOS 无第二套 LLVM | run.sh 会打印"同版本，未构成跨版本验证"，不假装跨了 |
 
 下一章把 G:\github\lang\llvm-project 的现代源码树变成你的地图。

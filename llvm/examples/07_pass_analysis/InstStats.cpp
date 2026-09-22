@@ -16,6 +16,20 @@
 
 using namespace llvm;
 
+// "是不是 -O2 及以上"的判断。23 把 OptimizationLevel 从一个带
+// getSpeedupLevel() 的类改成了裸 enum class（O0/O1/O2/O3），旧写法连带
+// isOptimizingForSpeed() 一起没了。两侧语义一致，只是取法不同，
+// 于是收进这个辅助函数，别把版本差异散到回调体里。
+#if LLVM_VERSION_MAJOR >= 23
+static bool atLeastO2(OptimizationLevel Level) {
+  return Level >= OptimizationLevel::O2;
+}
+#else
+static bool atLeastO2(OptimizationLevel Level) {
+  return Level.getSpeedupLevel() >= 2;
+}
+#endif
+
 namespace {
 
 // ---------- 自定义分析：数内存相关指令 ----------
@@ -99,7 +113,7 @@ extern "C" LLVM_ATTRIBUTE_WEAK PassPluginLibraryInfo llvmGetPassPluginInfo() {
             PB.registerOptimizerLastEPCallback(
                 [](ModulePassManager &MPM, OptimizationLevel Level,
                    ThinOrFullLTOPhase) {
-                  if (Level.getSpeedupLevel() >= 2) {
+                  if (atLeastO2(Level)) {
                     FunctionPassManager FPM;
                     FPM.addPass(MemStats());
                     MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
