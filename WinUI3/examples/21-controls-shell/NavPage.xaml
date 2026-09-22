@@ -1,0 +1,39 @@
+<Page
+    x:Class="ShellGallery.NavPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Margin="24">
+        <StackPanel Spacing="12">
+            <TextBlock x:Name="StatusText" Text="Ready" FontSize="18"/>
+
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <Button Content="Left" Click="OnLeftClicked"/>
+                <Button Content="Compact" Click="OnCompactClicked"/>
+                <Button Content="Top" Click="OnTopClicked"/>
+            </StackPanel>
+
+            <!-- 22.2 页内第二个 NavigationView：外壳机制的活教材 -->
+            <NavigationView x:Name="Embedded" Height="300" PaneDisplayMode="Left"
+                            SelectionChanged="OnEmbeddedSelectionChanged">
+                <NavigationView.MenuItems>
+                    <NavigationViewItem Content="Inbox" Tag="inbox"/>
+                    <NavigationViewItem Content="Sent" Tag="sent"/>
+                    <NavigationViewItem Content="Drafts" Tag="drafts"/>
+                </NavigationView.MenuItems>
+                <TextBlock x:Name="EmbeddedContent" Text="(pick a pane item)"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </NavigationView>
+
+            <!-- 22.4 SplitView：NavigationView 的底座 -->
+            <SplitView x:Name="Split" Height="120" DisplayMode="Inline" OpenPaneLength="160"
+                       PaneBackground="{ThemeResource LayerFillColorDefaultBrush}">
+                <SplitView.Pane>
+                    <TextBlock Text="pane" Margin="12"/>
+                </SplitView.Pane>
+                <TextBlock Text="content" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </SplitView>
+            <Button Content="Toggle split pane" Click="OnToggleSplitClicked"/>
+        </StackPanel>
+    </Grid>
+</Page>

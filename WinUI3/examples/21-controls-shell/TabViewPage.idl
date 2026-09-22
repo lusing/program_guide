@@ -1,0 +1,8 @@
+namespace ShellGallery
+{
+    [default_interface]
+    runtimeclass TabViewPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        TabViewPage();
+    }
+}

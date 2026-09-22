@@ -1,0 +1,8 @@
+namespace ShellGallery
+{
+    [default_interface]
+    runtimeclass CommandBarPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        CommandBarPage();
+    }
+}

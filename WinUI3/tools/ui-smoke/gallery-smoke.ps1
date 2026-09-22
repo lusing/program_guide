@@ -72,7 +72,15 @@ $galleries = @{
         Dir  = '21-controls-shell'
         Exe  = 'examples\21-controls-shell\x64\Debug\ShellGallery\ShellGallery.exe'
         Size = @(900, 1100)
-        Pages = [ordered]@{ home = @{ Nav = 0 } }
+        Pages = [ordered]@{
+            # 6 items, ~72px pitch (measured)
+            home          = @{ Nav = '150,238' }
+            tabview        = @{ Nav = '150,310'; Act = '490,152' }  # second tab -> "tab = notes.md"
+            navigationview = @{ Nav = '150,382'; Act = '520,165' }  # Compact -> "pane mode = LeftCompact"
+            commandbar     = @{ Nav = '150,454'; Act = '440,165' }  # Add -> "command: add"
+            dialogs        = @{ Nav = '150,526'; Act = '440,150;450,540' } # dialog + Remove -> "primary: removed"
+            overlays       = @{ Nav = '150,598'; Act = '470,152;450,300' } # tip + severity -> "severity = success"
+        }
     }
     '26' = @{
         Dir  = '26-customization'

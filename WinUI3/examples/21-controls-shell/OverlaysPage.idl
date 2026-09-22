@@ -1,0 +1,8 @@
+namespace ShellGallery
+{
+    [default_interface]
+    runtimeclass OverlaysPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        OverlaysPage();
+    }
+}
