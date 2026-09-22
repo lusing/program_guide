@@ -53,15 +53,15 @@
 **Interfaces:**
 - Produces: 新编号体系（06=布局、32=绑定、33=主题、34=OS），后续所有任务按此编号建章
 
-- [ ] **Step 1: git mv 文档与示例目录**（删除的用 git rm），一次性完成上面 Files 列表
-- [ ] **Step 2: 改文档内部章号**：06-layout.md 标题 `# 7. …`→`# 6. …`、小节 `## 7.1`→`## 6.1`（余类推）；32 章全部 `8.x`→`32.x`；33 章 `9.x`→`33.x`；34 章 `10.x`→`34.x`
-- [ ] **Step 3: 修交叉引用**（在 WinUI3/ 下 grep 找全）：
+- [x] **Step 1: git mv 文档与示例目录**（删除的用 git rm），一次性完成上面 Files 列表
+- [x] **Step 2: 改文档内部章号**：06-layout.md 标题 `# 7. …`→`# 6. …`、小节 `## 7.1`→`## 6.1`（余类推）；32 章全部 `8.x`→`32.x`；33 章 `9.x`→`33.x`；34 章 `10.x`→`34.x`
+- [x] **Step 3: 修交叉引用**（在 WinUI3/ 下 grep 找全）：
   - `docs/07-layout` → `docs/06-layout`；`docs/08-binding-mvvm` → `docs/32-binding-mvvm`；`docs/09-…` → `docs/33-…`；`docs/10-…` → `docs/34-…`
   - 锚点同步改：`#871-` → `#321-`、`#101-` → `#341-` 等（GitHub 锚点跟标题走）
   - 旧 06-controls 引用按内容映射到未来章节：`6.1 Button`→`docs/07-button.md`、`6.2 TextBox`→`docs/09-textbox.md`、`6.3 CheckBox`→`docs/10-checkbox-radio.md`、`6.4 ComboBox`→`docs/14-combobox.md`、`6.5 ListView`→`docs/17-listview.md`、`6.6 Toggle/Slider`→`docs/11-toggleswitch.md` 与 `docs/12-slider-progress.md`、`6.7 ContentDialog`→`docs/24-dialogs-flyouts.md`（这些链接在对应章节写成前是死链，各章节任务落地时自动变活，README 终稿统一校验）
-- [ ] **Step 4: README 临时最小更新**：目录表数字与文件名对上（完整重写留给 Task 36）；`06-controls` 示例行删除
-- [ ] **Step 5: 验证**：`./build.ps1` 全绿（目录改名后 build.ps1 自动发现）；`grep -rn "06-controls\|07-layout\|08-binding\|09-theming\|10-os-integration" docs README.md` 无残留
-- [ ] **Step 6: Commit** `docs(winui3): 目录重编号——布局 06/绑定 32/主题 33/OS 34，06-controls 吸收进画廊`
+- [x] **Step 4: README 临时最小更新**：目录表数字与文件名对上（完整重写留给 Task 36）；`06-controls` 示例行删除
+- [x] **Step 5: 验证**：`./build.ps1` 全绿（目录改名后 build.ps1 自动发现）；`grep -rn "06-controls\|07-layout\|08-binding\|09-theming\|10-os-integration" docs README.md` 无残留
+- [x] **Step 6: Commit** `docs(winui3): 目录重编号——布局 06/绑定 32/主题 33/OS 34，06-controls 吸收进画廊`
 
 ---
 
@@ -73,8 +73,8 @@
 **Interfaces:**
 - Produces: 画廊页面四件套模板（后续 24 个页面任务照抄）；`NavigateTo(hstring tag)` 分发表模式；smoke 判读锚点 `StatusText`
 
-- [ ] **Step 1: 建 vcxproj 与 App/main/pch**（照抄现有工程，RootNamespace=BasicGallery，新 GUID；pch.h 先只含 `App.xaml.h` + `MainWindow.xaml.h` + `HomePage.xaml.h`）
-- [ ] **Step 2: MainWindow.xaml**——NavigationView 外壳：
+- [x] **Step 1: 建 vcxproj 与 App/main/pch**（照抄现有工程，RootNamespace=BasicGallery，新 GUID；pch.h 先只含 `App.xaml.h` + `MainWindow.xaml.h` + `HomePage.xaml.h`）
+- [x] **Step 2: MainWindow.xaml**——NavigationView 外壳：
 
 ```xml
 <Window
@@ -93,7 +93,7 @@
 </Window>
 ```
 
-- [ ] **Step 3: MainWindow.xaml.h/.cpp**——分发表（.idl 最小化：只 `runtimeclass MainWindow : Microsoft.UI.Xaml.Window { MainWindow(); }`，事件按名字挂接不进 IDL）：
+- [x] **Step 3: MainWindow.xaml.h/.cpp**——分发表（.idl 最小化：只 `runtimeclass MainWindow : Microsoft.UI.Xaml.Window { MainWindow(); }`，事件按名字挂接不进 IDL）：
 
 ```cpp
 // MainWindow.xaml.cpp 关键实现
@@ -122,7 +122,7 @@ void MainWindow::NavigateTo(winrt::hstring const& tag)
 
 （`NavigateTo` 声明进 .xaml.h 私有段；unbox 失败风险：Tag 都是字符串字面量，安全。）
 
-- [ ] **Step 4: HomePage 四件套**——页面模板（后续所有页照此改名）：
+- [x] **Step 4: HomePage 四件套**——页面模板（后续所有页照此改名）：
 
 `HomePage.idl`:
 ```idl
@@ -139,10 +139,10 @@ namespace BasicGallery
 `HomePage.xaml.h`: `struct HomePage : HomePageT<HomePage> { HomePage(); };` + factory_implementation；
 `HomePage.xaml.cpp`: ctor `InitializeComponent();`
 
-- [ ] **Step 5: vcxproj 登记 HomePage**（ClInclude/ClCompile/Midl/Page 四处）与 pch.h 加头
-- [ ] **Step 6: 验证**：`./build.ps1 -Examples 07-controls-basic` PASS
-- [ ] **Step 7: 手动冒烟**：直接启动 exe，点 Button 导航项确认 Frame 切页（为 Task 3 定 nav 偏移），关掉
-- [ ] **Step 8: Commit** `feat(winui3): 07-controls-basic 画廊骨架——NavigationView 外壳 + Frame 分发表`
+- [x] **Step 5: vcxproj 登记 HomePage**（ClInclude/ClCompile/Midl/Page 四处）与 pch.h 加头
+- [x] **Step 6: 验证**：`./build.ps1 -Examples 07-controls-basic` PASS
+- [x] **Step 7: 手动冒烟**：直接启动 exe，点 Button 导航项确认 Frame 切页（为 Task 3 定 nav 偏移），关掉
+- [x] **Step 8: Commit** `feat(winui3): 07-controls-basic 画廊骨架——NavigationView 外壳 + Frame 分发表`
 
 ---
 
@@ -155,8 +155,8 @@ namespace BasicGallery
 **Interfaces:**
 - Produces: `ui-smoke.ps1 -Exe <exe> -OutDir <dir> -Clicks "x,y;x,y" [-TypeText "ab"]`——坐标相对 XAML island 客户区**左上角**，每次点击后存 `click-N.png`（打字在首击聚焦后、末击之前进行）；`gallery-smoke.ps1 -Gallery 07 [-Page button]`——逐页调 ui-smoke，输出 `.smoke/07-controls-basic/<tag>/`
 
-- [ ] **Step 1: ui-smoke.ps1 加参数**：`[string]$Clicks`（分号分隔点列）、`[string]$TypeText`。实现：Get-LargestChild 拿 island 原点后，逐点 `SetCursorPos(origin.X+x, origin.Y+y)` → mouse_event 按下/抬起 → Sleep 700ms → `Save-WindowShot … click-N.png`；若 `-TypeText` 且点数 ≥2，在第 1 次点击后用 `[Win32.Native]::VkKeyScanW`（需在 Add-Type MemberDefinition 里补 P/Invoke 声明 `[DllImport("user32.dll")] public static extern ushort VkKeyScanW(char ch);`）逐字符 keybd_event（处理高字节 shift 位）。旧 `-ClickOffset/-ClickAtScreen` 路径原样保留
-- [ ] **Step 2: gallery-smoke.ps1**（纯 ASCII）：
+- [x] **Step 1: ui-smoke.ps1 加参数**：`[string]$Clicks`（分号分隔点列）、`[string]$TypeText`。实现：Get-LargestChild 拿 island 原点后，逐点 `SetCursorPos(origin.X+x, origin.Y+y)` → mouse_event 按下/抬起 → Sleep 700ms → `Save-WindowShot … click-N.png`；若 `-TypeText` 且点数 ≥2，在第 1 次点击后用 `[Win32.Native]::VkKeyScanW`（需在 Add-Type MemberDefinition 里补 P/Invoke 声明 `[DllImport("user32.dll")] public static extern ushort VkKeyScanW(char ch);`）逐字符 keybd_event（处理高字节 shift 位）。旧 `-ClickOffset/-ClickAtScreen` 路径原样保留
+- [x] **Step 2: gallery-smoke.ps1**（纯 ASCII）：
 
 ```powershell
 param(
@@ -168,9 +168,9 @@ param(
 ```
 
   初始只装 07 画廊 `home` 场景（Nav='48,140' 之类，靠 Step 3 实测调）
-- [ ] **Step 3: 实测调偏移**：跑 `-Gallery 07 -Page home`，读 `.smoke` 截图确认 Nav 落点真点中导航项（点完应仍显示 HomePage）；记下每个导航项的稳定 y 偏移规律（NavigationView 行高固定，相邻项差恒定，后续页可推算再微调）
-- [ ] **Step 4: 验证**：连跑两遍结果一致（点击确定性）
-- [ ] **Step 5: Commit** `feat(winui3): ui-smoke 序列点击/打字扩展 + gallery-smoke 驱动器`
+- [x] **Step 3: 实测调偏移**：跑 `-Gallery 07 -Page home`，读 `.smoke` 截图确认 Nav 落点真点中导航项（点完应仍显示 HomePage）；记下每个导航项的稳定 y 偏移规律（NavigationView 行高固定，相邻项差恒定，后续页可推算再微调）
+- [x] **Step 4: 验证**：连跑两遍结果一致（点击确定性）
+- [x] **Step 5: Commit** `feat(winui3): ui-smoke 序列点击/打字扩展 + gallery-smoke 驱动器`
 
 ---
 
@@ -185,7 +185,7 @@ param(
 **文档必须覆盖**：ButtonBase 继承树（Button/RepeatButton/HyperlinkButton/DropDownButton/ToggleButton 指向 11 章）；Click 事件签名与按名字挂接不进 IDL（README 结论重申）；Command vs Click（指向 32 章）；IsEnabled 禁用语义与 AutomationProperties；RepeatButton 的 Delay/Interval 默认值（**probe**）；HyperlinkButton.NavigateUri 机制（ShellExecute 打开浏览器，应用内导航要用 Frame.Navigate 对比）；DropDownButton 的 Flyout 自动管理 vs Button.Flyout；CornerRadius/Padding 造型。
 **probe 清单**：`RepeatButton.Delay/Interval`、`DropDownButton` 在 1.8 元数据存在性、`HyperlinkButton.NavigateUri` 类型（Windows.Foundation.Uri）。
 
-- [ ] Step 1–5: 按通用模板五步执行（页面 → smoke → 文档 → 验证 → 提交 `docs(winui3): 第 7 章 Button 与按钮族`）
+- [x] Step 1–5: 按通用模板五步执行（页面 → smoke → 文档 → 验证 → 提交 `docs(winui3): 第 7 章 Button 与按钮族`）
 
 ---
 
@@ -304,10 +304,10 @@ param(
 
 ### Task 14: 基础篇阶段收尾
 
-- [ ] **Step 1**: `./build.ps1` 全量全绿（01/06/07/32/34 五工程）
-- [ ] **Step 2**: `pwsh tools/ui-smoke/gallery-smoke.ps1 -Gallery 07` 全 10 页跑通，逐页判读截图（StatusText 变化全部确认）
-- [ ] **Step 3**: 对照新截图与文档陈述，发现不符回写正文（"验证推翻"条目记入 README 草稿区）
-- [ ] **Step 4**: Commit `docs(winui3): 控件·基础篇 10 章收尾——画廊全页 smoke 通过`
+- [x] **Step 1**: `./build.ps1` 全量全绿（01/06/07/32/34 五工程）
+- [x] **Step 2**: `pwsh tools/ui-smoke/gallery-smoke.ps1 -Gallery 07` 全 10 页跑通，逐页判读截图（StatusText 变化全部确认）
+- [x] **Step 3**: 对照新截图与文档陈述，发现不符回写正文（"验证推翻"条目记入 README 草稿区）
+- [x] **Step 4**: Commit `docs(winui3): 控件·基础篇 10 章收尾——画廊全页 smoke 通过`
 
 ---
 

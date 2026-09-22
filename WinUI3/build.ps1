@@ -56,6 +56,7 @@ foreach ($project in $projects) {
         -p:Configuration=$Configuration `
         -p:Platform=$Platform `
         -m `
+        -nr:false `
         -nologo `
         -v:m
     if ($LASTEXITCODE -eq 0) {

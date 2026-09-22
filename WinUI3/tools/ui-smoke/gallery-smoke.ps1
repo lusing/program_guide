@@ -40,13 +40,19 @@ $galleries = @{
         Size = @(900, 1100)
         Pages = [ordered]@{
             # tag        nav item centre (measured)  in-page action point (measured)
-            home      = @{ Nav = '150,238' }
-            button    = @{ Nav = '150,310'; Act = '475,147' }  # Click me -> "clicked 1"
-            textblock = @{ Nav = '150,382'; Act = '475,250' }  # Cycle trim -> "trim = CharacterEllipsis"
-            textbox   = @{ Nav = '150,454'; Act = '568,560' }  # Read text -> rich text content
-            checkbox  = @{ Nav = '150,526'; Act = '502,180' }  # 3-state checkbox -> "notifications = off"
-            toggle    = @{ Nav = '150,583'; Act = '420,172' }  # switch body -> "autosave off"
-            slider    = @{ Nav = '150,641'; Act = '600,196;535,315;535,315' } # track -> sync bar; 2x busy toggle -> "ring idle"
+            # 11 items at 50px pitch: 228,278,328,378,428,478,528,578,628,678,728 (measured;
+            # cross-checked against 4 independently-hit anchors)
+            home      = @{ Nav = '150,228' }
+            button    = @{ Nav = '150,278'; Act = '475,147' }  # Click me -> "clicked 1"
+            textblock = @{ Nav = '150,328'; Act = '475,250' }  # Cycle trim -> "trim = CharacterEllipsis"
+            textbox   = @{ Nav = '150,378'; Act = '568,560' }  # Read text -> rich text content
+            checkbox  = @{ Nav = '150,428'; Act = '502,180' }  # 3-state checkbox -> "notifications = off"
+            toggle    = @{ Nav = '150,478'; Act = '420,172' }  # switch body -> "autosave off"
+            slider    = @{ Nav = '150,528'; Act = '600,196;535,315;535,315' } # track; 2x busy -> "ring idle"
+            numberbox = @{ Nav = '150,578'; Act = '460,270' }  # Double it -> "quantity = 2"
+            combobox  = @{ Nav = '150,628'; Act = '460,345' }  # Select Dark -> "theme = Dark"
+            autosuggest = @{ Nav = '150,678'; Act = '450,150'; Type = 'ap' } # suggestions apple/apricot
+            datetime  = @{ Nav = '150,728'; Act = '460,345' }  # Set to today -> "date ticks = ..."
         }
     }
     '17' = @{

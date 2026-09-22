@@ -43,6 +43,8 @@ namespace winrt::BasicGallery::implementation
         if (tag == L"slider") ContentFrame().Navigate(xaml_typename<BasicGallery::SliderPage>());
         if (tag == L"numberbox") ContentFrame().Navigate(xaml_typename<BasicGallery::NumberBoxPage>());
         if (tag == L"combobox") ContentFrame().Navigate(xaml_typename<BasicGallery::ComboBoxPage>());
+        if (tag == L"autosuggest") ContentFrame().Navigate(xaml_typename<BasicGallery::AutoSuggestPage>());
+        if (tag == L"datetime") ContentFrame().Navigate(xaml_typename<BasicGallery::DateTimePage>());
         // 每章任务追加分支
     }
 }

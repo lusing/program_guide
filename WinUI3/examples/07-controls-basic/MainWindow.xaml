@@ -19,6 +19,8 @@
             <NavigationViewItem Content="Slider" Tag="slider"/>
             <NavigationViewItem Content="NumberBox" Tag="numberbox"/>
             <NavigationViewItem Content="ComboBox" Tag="combobox"/>
+            <NavigationViewItem Content="AutoSuggest" Tag="autosuggest"/>
+            <NavigationViewItem Content="DateTime" Tag="datetime"/>
             <!-- 每章任务在此追加一个导航项 -->
         </NavigationView.MenuItems>
         <Frame x:Name="ContentFrame"/>

@@ -41,3 +41,5 @@
 #include "SliderPage.xaml.h"
 #include "NumberBoxPage.xaml.h"
 #include "ComboBoxPage.xaml.h"
+#include "AutoSuggestPage.xaml.h"
+#include "DateTimePage.xaml.h"
