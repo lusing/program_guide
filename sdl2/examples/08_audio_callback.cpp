@@ -40,12 +40,23 @@ int main() {
     desired.userdata = &tone;
 
     SDL_AudioSpec obtained{};
+    // requested vs obtained：驱动有权改 freq/channels/samples，
+    // 回调里必须按 obtained 的参数算，不能假定 desired 被原样接受。
     SDL_AudioDeviceID dev = SDL_OpenAudioDevice(nullptr, 0, &desired, &obtained, 0);
     if (dev == 0) {
         std::cerr << SDL_GetError() << '\n';
         SDL_Quit();
         return 1;
     }
+
+    std::cout << "==== 08 开始 ====\n";
+    std::cout << "deviceOpened=" << (dev > 0)
+              << ", freq=" << obtained.freq
+              << ", channels=" << static_cast<int>(obtained.channels)
+              << ", samples=" << obtained.samples << '\n';
+    std::cout << "==== 08 结束 ====\n";
+    // 设备名取决于机器接了什么声卡，只做观测，不参与字节比对。
+    std::cout << "[观测] 默认输出设备: " << SDL_GetAudioDeviceName(0, 0) << '\n';
 
     SDL_CloseAudioDevice(dev);
     SDL_Quit();

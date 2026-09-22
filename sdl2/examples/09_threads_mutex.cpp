@@ -45,7 +45,10 @@ int main() {
 
     SDL_WaitThread(t1, nullptr);
     SDL_WaitThread(t2, nullptr);
+
+    std::cout << "==== 09 开始 ====\n";
     std::cout << "counter=" << counter.value << '\n';
+    std::cout << "==== 09 结束 ====\n";
 
     SDL_DestroyMutex(counter.mutex);
     SDL_Quit();

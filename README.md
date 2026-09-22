@@ -57,7 +57,7 @@
 - [ruby](./ruby) — Ruby 4.0 教程（24 章对齐 julia/haskell/elixir 标准：类与模块/Data/Enumerable/模式匹配/块与闭包/元编程/GC 与性能/标准库/线程/Ractor 并行/Fiber/Fiddle FFI 特色细讲，23 个示例（02–24）双层验证：运行层六条判定（退出码 0 + stderr 空 + stdout 非空 + 无控制字符 + 结束标记 + 诊断字样兜底）+ minitest 测试层，双入口 `run-all.sh` / `build.ps1` 全绿；24 为迷你 Markdown→HTML 渲染器压轴（纯函数引擎 + 14 条端到端测试）；输出确定性纪律（不打印耗时/随机值，文档引用 build 产物逐字节一致）；Ruby 4.0.7 实测，CHEATSheet 收录 **274 条实测坑位**（4.0 chilled strings 告警 / case-in 不能单行 / Ractor `.take` 已删 / minitest 6 拆 mock / `Time#utc` 原地修改 / ensure return 吞异常等），详见 [ruby/README.md](./ruby/README.md)）
 - [rust](./rust) — Rust 教程与示例（24 章 + 23 个 cargo 工程），四层验证：fmt + clippy `-D warnings` + test + run；macOS 12.7 上用 MacPorts rustc **1.98.1** 实测 23/23 通过（Windows scoop 同版本亦通过），双入口 `run-all.sh` / `build.ps1` 判定一致；详见 [rust/README.md](./rust/README.md) 的「macOS 上的兼容性」节
 - [commonlisp](./commonlisp) — Common Lisp 教程与示例（SBCL + GNU CLISP **双实现**，27 章对齐 cpp20/zig 标准：求值模型/数值塔/五种相等/条件系统与重启/CLOS 两章/宏两章/format/类型系统/可移植性细讲），Linux（WSL2，SBCL 2.6.8 + CLISP 2.49.95）实测 26 个示例 × **双通道**：21 个可移植示例 SBCL 与 CLISP 的 stdout **逐字节一致**（跨实现比对为第五条判定）+ 5 个 SBCL 专属章（ASDF/run-program/线程/FFI sb-alien/性能），`run-all.sh` 47/47 全绿，双入口 `build.ps1`；正文 `; =>` 断言由 `verify-guide.py` 在 docs/ 上逐条回跑（mismatch 0）；22 章收录 **27 条双实现实测差异**总账 + CHEATSheet 报错速查
-- [sdl2](./sdl2) — SDL2 C++ 教程与示例，使用 MSVC + SDL2 库编译验证
+- [sdl2](./sdl2) — SDL2 C++ 教程与示例（11 章 + 10 个单文件示例，跨平台代码），macOS 兼容性已校验：Apple clang 16.0.0 + MacPorts SDL2 2.32.10 下 `run-all.sh` 双通道（shared 动态 / static 静态带 frameworks）**10 示例 × 2 通道 = 20/20 通过**，`SDL_VIDEODRIVER=dummy` 无窗口会话 10/10 通过；校验逼出并修掉 3 处真实缺陷（02 无条件要 `SDL_RENDERER_ACCELERATED` 在 dummy 下必然失败→改事实降级、10 的 `unique_ptr` 析构晚于 `SDL_Quit()`→显式 `reset()`、06 的帧长/fps 无法字节比对→区间内只留跨机器恒真结论），新增 `run-all.sh` 并让 `build.ps1` 判定逐条对齐，CHEATSheet 收录 **22 条实测坑位**，详见 [sdl2/README.md](./sdl2/README.md)
 - [swift](./swift) — Swift 6.3.3 教程（24 章对齐 cpp20/rust/go/zig 标准：可选/协议/some-any/actor/Sendable/swift-testing/SPM 特色细讲，23 个示例四层验证 format+build+test+run；scoop 6.4.0 坏包实测复盘，钉 6.3.3 + 环境三件套配方）
 - [csharp](./csharp) — C# 语言教程（36 章 + 36 示例，章号=示例号，零 NuGet 依赖：编译 + 逐个运行验证；C# 14 扩展成员实测；实战为 MiniLang 表达式解释器）
 - [wpf](./wpf) — WPF 编程指南，使用 .NET SDK + WPF 运行时验证
@@ -180,7 +180,7 @@
 - Xcode 16.2（Swift 6.0.3）+ iOS 18.2 SDK + iPhone 模拟器（iOS 应用开发 / SwiftUI + UIKit + Swift + Objective-C；iOS SDK 只随 Xcode 提供，故单工具链，用 debug/release 两配置逐字节比对代替双通道；`xcrun simctl spawn` 跑 headless 自测）
 - Win32 API 原生桌面编程
 - CUDA OpenCL Headers
-- SDL2
+- SDL2 2.32.10（macOS：MacPorts `libsdl2` + `sdl2-config`，静态链接须带 Cocoa/CoreAudio/CoreVideo 等 frameworks；Windows：scoop + MSVC `SDL2.lib`；双入口 `run-all.sh` / `build.ps1` 判定对齐）
 - .NET SDK + WPF
 - MSVC + Windows App SDK 1.8 + C++/WinRT（WinUI 3；`build.ps1` 批量编译 + `tools/ui-smoke/` 运行时截图验证 + `tools/winmd-probe/` 元数据核对）
 - Zig 0.16

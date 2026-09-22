@@ -36,6 +36,10 @@ int main() {
         ++ticks;
     }
 
+    std::cout << "==== 03 开始 ====\n";
+    std::cout << "loopTicks=" << ticks << ", running=" << running << '\n';
+    std::cout << "==== 03 结束 ====\n";
+
     SDL_DestroyWindow(window);
     SDL_Quit();
     return 0;
