@@ -17,7 +17,7 @@
 >
 > `examples-linux/` 下 59 个示例：其中 56 个在 Linux 实际汇编、链接、运行通过（Arch Linux / WSL2 / NASM 3.02 / GCC 16.2.1 / GNU ld 2.47 / glibc 2.44）；
 > **新增的 3 个 AVX/AVX2 示例（`10_sse_simd/avx_*.asm`、`avx2_*.asm`）在本机只做到 `nasm -f elf64` 汇编通过，链接与运行未实测**（本机是 macOS，无 Linux 环境）。
-> `examples/`（Windows）下 61 个示例中，**新增的 3 个 AVX/AVX2 示例同样只做到 `nasm -f win64` 汇编通过**，链接与运行未实测。
+> `examples/`（Windows）下 61 个示例：**2026-09 在 Windows 11（i7-12700F，Alder Lake，P/E 混合架构 / NASM 3.02 / MSVC 14.52 `link.exe`）全部实际汇编、链接、运行通过（61/61）**，包括此前「只做到汇编通过」的 3 个 AVX/AVX2 示例——逐通道数值与 macOS 版一致，Windows 侧实测输出见 [SIMD 进阶](docs/12_simd_avx.md) 第 8 节；`cpuid_hybrid` 在该机上的逐逻辑处理器（P核/E核）实测见 [混合架构](docs/09_hybrid_architecture.md)。
 >
 > 本机复核时修掉的三个 macOS 专属问题见 [macOS 平台移植指南](docs/10_macos_porting.md) 的
 > 「10. 本机复核纪要（macOS 14 / Xcode 16 CLT）」一节：

@@ -205,10 +205,12 @@ cpu_features:
 | macOS | `-f macho64` | `clang -arch x86_64` | `rdi rsi rdx`，浮点走 `xmm0..`，`al` = 用到的 xmm 个数 | `leave` / `ret` |
 | Linux | `-f elf64` | `gcc -no-pie` | 同 macOS | `leave` / `ret` |
 
-Windows 那一列是本文档三个示例里唯一「写法不同」的地方，也是本机没法验证的地方
-（本机是 macOS）。三份源码放在一起 diff，差异应该只出现在这些行上。
+Windows 那一列是本文档三个示例里唯一「写法不同」的地方，初稿写作时没条件在本机验证
+（当时用的 macOS）。2026-09 已在 Windows 11（i7-12700F，nasm + MSVC link.exe + UCRT）
+上补测：三个示例全部构建、运行通过，逐通道数值与 macOS 版完全一致（见第 8 节），
+「双写」技巧实测有效。三份源码放在一起 diff，差异确实只出现在这些行上。
 
-## 8. 实测输出（i7-4770HQ / Haswell）
+## 8. 实测输出（i7-4770HQ / Haswell；末小节为 i7-12700F / Windows 补测）
 
 `avx_basics.asm`：
 
@@ -290,6 +292,38 @@ AVX2 integer demo completed.
 > **这段是照源码推的，不是在 Ivy Bridge 上实测的** —— 手边只有 Haswell 一台能跑。
 > 本机验证到的只是「Haswell 上走的是完整路径」。等真有老机器时，这是首要复核项。
 
+### Windows 侧补测（i7-12700F / Alder Lake，2026-09）
+
+教程初稿的实测全在 macOS 上完成，Windows 列当时只做了源码推演。在
+Windows 11（nasm + MSVC link.exe + UCRT）上补测：三个示例全部构建、运行通过，
+**逐通道数值与 macOS 版完全一致**——包括 `vfmadd231ps = -1.4210854715202004e-14`
+这个只在边界输入下才显形的值，说明 FMA 的语义与平台无关。输出文案唯一的差别在
+`avx_basics` 的逐通道行：Windows 版格式串是 `[%d] = %f`（`[0] = 11.000000`），
+macOS 版是 `[%d] = ` 接独立打印（`[0] = 11`）——排版差异，不是数值差异。
+
+Windows 版 `avx2_fma` 的探测行与关键结果：
+
+```text
+探测：AVX2 = YES，FMA = YES
+mulps+addps 结果 = 0
+vfmadd231ps 结果 = -1.4210854715202004e-14
+（第 4 段普通常数两条路径同为 10，与第 5 节 macOS 输出一致）
+```
+
+这次补测还顺带验证了第 7 节的「双写」：`avx2_fma.asm` 的 `put_g17` 把浮点参数放在
+`xmm1`（**并非**位置对应的 `xmm2`）仍能打印出正确值——反证 UCRT 的 printf 读的是
+整数槽 `r8`，与踩坑清单第 10 条的说法一致。
+
+`build.ps1 -All` 的汇总（Windows 全量 61 个；macOS 侧 `build-mac.sh` 为 59 个。
+总数之差来自第 11 类两侧示例集不同：macOS 侧是 `simd_*` 四件 + Accelerate/spline
+共五件，Windows 侧是 AVX2 积分三件套 + MKL 两件 + 对齐/最小复现两件共七件）：
+
+```text
+==========================================
+  构建汇总: 总计 61 个, 成功 61 个, 失败 0 个
+==========================================
+```
+
 ## 9. 与第 11 类的关系
 
 第 11 类（`11_calculus_mkl/`）的 SIMD 示例仍是 **SSE 4 路版**，这是有意保留的：
@@ -327,6 +361,8 @@ AVX2 integer demo completed.
    且内存操作数只能出现在最后一个源的位置。
 10. **Windows 的浮点参数要双写**：既写 `xmm`，又写对应的整数槽（`rcx/rdx/r8/r9`），
     MSVC 的 `printf` 才读得到；只写 xmm 会打出 `0`。
+    （2026-09 已在 UCRT 上实测佐证：`put_g17` 把 double 放在 `xmm1` 而非位置对应的
+    `xmm2`，仍打印出正确值——说明 printf 读的确实是整数槽。）
 
 ---
 
