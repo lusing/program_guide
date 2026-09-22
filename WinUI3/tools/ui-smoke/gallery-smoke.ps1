@@ -108,8 +108,13 @@ $galleries = @{
     '35' = @{
         Dir  = '35-taskflow'
         Exe  = 'examples\35-taskflow\x64\Debug\TaskFlow\TaskFlow.exe'
-        Size = @(900, 1100)
-        Pages = [ordered]@{ home = @{ Nav = 0 } }
+        Size = @(1000, 800)
+        Pages = [ordered]@{
+            # seed %LOCALAPPDATA%\TaskFlow\tasks.json with ["buy milk","walk dog"] first
+            load    = @{ Act = '480,180' }  # Add task -> dialog opens; list already Loaded 2 tasks
+            toggle  = @{ Act = '470,270' }  # first row checkbox -> "finished a task" + saved
+            persist = @{}                   # relaunch -> Loaded 2 tasks again (round trip)
+        }
     }
 }
 

@@ -1,0 +1,35 @@
+// Model + ViewModel + page live in ONE idl: TaskListPage's x:Bind paths reference
+// TaskViewModel/Task, and MIDL only resolves within the same file (MIDL2011).
+namespace TaskFlow
+{
+    [default_interface]
+    runtimeclass Task : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        Task(String title);
+        String Title;
+        Boolean Done;
+    }
+
+    [default_interface]
+    runtimeclass TaskViewModel : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        TaskViewModel();
+
+        String Status;
+        Int32 Count { get; };
+        Windows.Foundation.Collections.IObservableVector<TaskFlow.Task> Tasks { get; };
+
+        void Add(String title, Boolean important);
+        void Toggle(TaskFlow.Task item);
+        void Remove(TaskFlow.Task item);
+        void Load();
+        Windows.Foundation.IAsyncAction SaveAsync();
+    }
+
+    [default_interface]
+    runtimeclass TaskListPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        TaskListPage();
+        TaskFlow.TaskViewModel ViewModel { get; };
+    }
+}

@@ -1,0 +1,9 @@
+namespace TaskFlow
+{
+    [default_interface]
+    runtimeclass App : Microsoft.UI.Xaml.Application
+    {
+        App();
+        void SetMica(Boolean on);
+    }
+}

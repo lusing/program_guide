@@ -1,0 +1,22 @@
+
+=== 35-taskflow (Build Debug|x64) ===
+
+  姝ｅ湪纭畾瑕佽繕鍘熺殑椤圭洰鈥?
+  鎵€鏈夐」鐩潎鏄渶鏂扮殑锛屾棤娉曡繕鍘熴€?
+G:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VC\v180\Microsoft.CppBuild.targets(1151,5): warning MSB8027: 鍚嶄负 WindowsAppRuntimeAutoInitializer.cpp 鐨勪袱涓垨鏇村鏂囦欢灏嗙敓鎴愬埌鍚屼竴浣嶇疆鐨勮緭鍑恒€傝繖浼氬鑷撮敊璇殑鐢熸垚缁撴灉銆?  璋冪敤鐨勬枃浠舵槸 g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp, g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp銆?[G:\code\guide\WinUI3\examples\35-taskflow\TaskFlow.vcxproj]
+  MainWindow.xaml.cpp
+  UndockedRegFreeWinRT-AutoInitializer.cpp
+  WindowsAppRuntimeAutoInitializer.cpp
+  WindowsAppRuntimeAutoInitializer.cpp
+TaskFlow\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 瀵硅薄琚娆℃寚瀹氾紱宸插拷鐣ュ浣欑殑鎸囧畾 [G:\code\guide\WinUI3\examples\35-taskflow\TaskFlow.vcxproj]
+  XamlTypeInfo.g.cpp
+  XamlMetaDataProvider.cpp
+  MainWindow.xaml.g.hpp
+  TaskListPage.xaml.g.hpp
+  SettingsPage.xaml.g.hpp
+TaskFlow\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 瀵硅薄琚娆℃寚瀹氾紱宸插拷鐣ュ浣欑殑鎸囧畾 [G:\code\guide\WinUI3\examples\35-taskflow\TaskFlow.vcxproj]
+  TaskFlow.vcxproj -> G:\code\guide\WinUI3\examples\35-taskflow\x64\Debug\TaskFlow\TaskFlow.exe
+PASS : 35-taskflow
+
+=== summary ===
+PASS  35-taskflow
