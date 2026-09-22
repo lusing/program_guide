@@ -17,6 +17,8 @@
             <NavigationViewItem Content="CheckBox" Tag="checkbox"/>
             <NavigationViewItem Content="Toggle" Tag="toggle"/>
             <NavigationViewItem Content="Slider" Tag="slider"/>
+            <NavigationViewItem Content="NumberBox" Tag="numberbox"/>
+            <NavigationViewItem Content="ComboBox" Tag="combobox"/>
             <!-- 每章任务在此追加一个导航项 -->
         </NavigationView.MenuItems>
         <Frame x:Name="ContentFrame"/>

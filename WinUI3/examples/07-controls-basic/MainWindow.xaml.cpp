@@ -41,6 +41,8 @@ namespace winrt::BasicGallery::implementation
         if (tag == L"checkbox") ContentFrame().Navigate(xaml_typename<BasicGallery::CheckBoxPage>());
         if (tag == L"toggle") ContentFrame().Navigate(xaml_typename<BasicGallery::TogglePage>());
         if (tag == L"slider") ContentFrame().Navigate(xaml_typename<BasicGallery::SliderPage>());
+        if (tag == L"numberbox") ContentFrame().Navigate(xaml_typename<BasicGallery::NumberBoxPage>());
+        if (tag == L"combobox") ContentFrame().Navigate(xaml_typename<BasicGallery::ComboBoxPage>());
         // 每章任务追加分支
     }
 }

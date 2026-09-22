@@ -83,6 +83,8 @@
 
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="ComboBoxPage.xaml.h" />
+    <ClInclude Include="NumberBoxPage.xaml.h" />
     <ClInclude Include="SliderPage.xaml.h" />
     <ClInclude Include="TogglePage.xaml.h" />
     <ClInclude Include="CheckBoxPage.xaml.h" />
@@ -102,6 +104,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="App.xaml.cpp" />
+    <ClCompile Include="ComboBoxPage.xaml.cpp" />
+    <ClCompile Include="NumberBoxPage.xaml.cpp" />
     <ClCompile Include="SliderPage.xaml.cpp" />
     <ClCompile Include="TogglePage.xaml.cpp" />
     <ClCompile Include="CheckBoxPage.xaml.cpp" />
@@ -114,6 +118,8 @@
 
   <ItemGroup>
     <Midl Include="App.idl" />
+    <Midl Include="ComboBoxPage.idl" />
+    <Midl Include="NumberBoxPage.idl" />
     <Midl Include="SliderPage.idl" />
     <Midl Include="TogglePage.idl" />
     <Midl Include="CheckBoxPage.idl" />
@@ -127,6 +133,8 @@
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
     <Page Include="MainWindow.xaml" />
+    <Page Include="ComboBoxPage.xaml" />
+    <Page Include="NumberBoxPage.xaml" />
     <Page Include="SliderPage.xaml" />
     <Page Include="TogglePage.xaml" />
     <Page Include="CheckBoxPage.xaml" />

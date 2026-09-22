@@ -39,3 +39,5 @@
 #include "CheckBoxPage.xaml.h"
 #include "TogglePage.xaml.h"
 #include "SliderPage.xaml.h"
+#include "NumberBoxPage.xaml.h"
+#include "ComboBoxPage.xaml.h"
