@@ -1,10 +1,11 @@
 // 第 11 章示例：ORC JIT（LLJIT）——三个方向的互调
 //
 //   ① IR 来自文本字符串（parseIR）    ② IR 来自 IRBuilder 手工构建
-//   ③ JIT'd 代码回调宿主的 C 函数（Windows 上必须 __declspec(dllexport)！）
+//   ③ JIT'd 代码回调宿主的 C 函数（宿主侧要显式导出，见下面 JIT_HOST_EXPORT）
+
 //
 // 构建：
-//   g++ jit_demo.cpp -o jit_demo $(llvm-config --cxxflags --ldflags \
+//   clang++ jit_demo.cpp -o jit_demo $(llvm-config --cxxflags --ldflags \
 //        --link-shared --libs core support orcjit executionengine irreader)
 // 使用：
 //   ./jit_demo
@@ -14,18 +15,32 @@
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IRReader/IRReader.h"
+#include "llvm/Support/Error.h"
 #include "llvm/Support/SourceMgr.h"
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Support/raw_ostream.h"
+#include <string>
 
 using namespace llvm;
 using namespace llvm::orc;
 
 static ExitOnError ExitOnErr;
 
-// 宿主函数：JIT'd 代码要能"看见"它们，Windows 上必须显式导出
-extern "C" __declspec(dllexport) int host_mul(int a, int b) { return a * b; }
-extern "C" __declspec(dllexport) void print_i32(int v) {
+// 宿主函数：JIT'd 代码要能"看见"它们，两侧平台都得显式导出，但理由不同：
+//   * Windows（PE）：符号解析走**导出表**，MinGW 默认不给 exe 导出普通函数，
+//     不写 dllexport 就报 Symbols not found: [ host_mul ]；
+//   * Unix（ELF/Mach-O）：ORC 的 ProcessSymbols JD 走 dlsym(RTLD_DEFAULT)，
+//     靠的是"默认可见性"。显式写 default 才能在别人加了 -fvisibility=hidden
+//     的构建里依旧可见（macOS 上即使不加该开关也建议写，语义才对得上）。
+// 所以这里用一个宏把两种写法统一，而不是#if 掉某一侧。
+#if defined(_WIN32) || defined(__CYGWIN__)
+#define JIT_HOST_EXPORT __declspec(dllexport)
+#else
+#define JIT_HOST_EXPORT __attribute__((visibility("default")))
+#endif
+
+extern "C" JIT_HOST_EXPORT int host_mul(int a, int b) { return a * b; }
+extern "C" JIT_HOST_EXPORT void print_i32(int v) {
   outs() << "jit says: " << v << "\n";
 }
 
@@ -115,10 +130,29 @@ int main() {
   outs() << "fib(10)  = " << fib(10) << "\n";  // 55
 
   // 顺带验证：进程符号（宿主自己的函数）也能查——但要用 ProcessSymbols JITDylib，
-  // J->lookup() 只搜 Main JITDylib（22 的行为，实测结论）
+  // J->lookup() 只搜 Main JITDylib
+  //
+  // 查询名要带**目标平台的全局前缀**：DataLayout 的 m: 段是权威来源，
+  // Mach-O 给 '_'，ELF 与 COFF-x86_64 给空。Windows/Linux 上 "host_mul"
+  // 直接命中；macOS 上 dlsym 只认 "_host_mul"，裸名会报
+  // "Symbols not found: [ host_mul ]"。
+  // 另外各 LLVM 版本对"前缀由谁加"并不一致（23 的 LLJIT 交给调用方，
+  // 22 的 DynamicLibrarySearchGenerator 自己加），所以两种写法都试，
+  // 命中哪个都算数——这条断言要保证的事实是"宿主符号确实可见"。
   JITDylib *PJD = J->getProcessSymbolsJITDylib().get();
-  auto HostMul = J->getExecutionSession().lookup({PJD}, "host_mul");
-  outs() << "host_mul visible: " << (HostMul ? "yes" : "no") << "\n";
+  char GP = J->getDataLayout().getGlobalPrefix();
+  std::string HostNames[2] = {"host_mul",
+                              (GP ? std::string(1, GP) : "") + "host_mul"};
+  bool HostVisible = false;
+  for (const std::string &N : HostNames) {
+    auto R = J->getExecutionSession().lookup({PJD}, N);
+    if (R) {
+      HostVisible = true;
+      break;
+    }
+    consumeError(R.takeError());
+  }
+  outs() << "host_mul visible: " << (HostVisible ? "yes" : "no") << "\n";
 
   outs() << "==== 11 ok ====\n";
   return 0;

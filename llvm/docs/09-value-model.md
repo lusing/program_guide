@@ -74,6 +74,8 @@ auto *F = dyn_cast_if_present<Function>(V);      // 处理 nullptr 的 dyn_cast
 
 配合 `I.getOpcodeName()`（"add"/"mul"…）就能做指令分类统计。walker 的直方图：
 
+> **注意流别**：这些报告走的是 `errs()` 不是 `outs()`（和 opt 的 pass 报告同一套约定——诊断信息不上 stdout，stdout 留给"真正的结果"）。build.ps1 把 `2>&1` 合并了所以看不出来；shell 侧如果分开重定向，报告全在 stderr 里。
+
 （实测输出）：
 
 ```text
@@ -151,5 +153,6 @@ wrote ...\after.ll
 | CloneFunctionInto 参数不够 | Returns 是必填出参 |
 | erase 崩溃 | 先 RAUW 清 use 链再删 |
 | dyn_cast 拿到 nullptr | 检查返回值；确定类型才用 cast |
+| 报告打在 stderr 上看着像"没输出" | walker 用 errs()（诊断约定），重定向时别只捞 stdout |
 
 下一章从对象树降回工具层：`llc` 与目标代码生成。

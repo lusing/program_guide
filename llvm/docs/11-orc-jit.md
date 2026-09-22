@@ -48,18 +48,34 @@ outs() << "fib(10) = " << fib(10) << "\n";
 
 `ExitOnError` 是 LLVM 的错误处理糖：`Expected<T>` 带错误就打印并退出。LLVM 用 `Expected<T>`/`Error` 代替异常（`llvm-config --cxxflags` 带着 `-fno-exceptions`），**你的 LLVM 程序也不该 throw**。
 
-## 11.3 双向互调与 Windows 大坑
+## 11.3 双向互调与「宿主符号可见性」大坑（Windows / macOS 各有一半）
 
-JIT'd 代码回调宿主函数（`host_mul`、`print_i32`），IR 里只写 `declare`，链接时 ORC 从 ProcessSymbols JD 解析。Windows 上这里有个**必踩坑**：
+JIT'd 代码回调宿主函数（`host_mul`、`print_i32`），IR 里只写 `declare`，链接时 ORC 从 ProcessSymbols JD 解析。**这里两个平台各埋一半坑，而且坑的形状不一样**：
 
 ```cpp
-// 必须 __declspec(dllexport)！否则 JIT 报 Symbols not found: [ host_mul ]
-extern "C" __declspec(dllexport) int host_mul(int a, int b) { return a * b; }
+// 两侧都得显式导出，但理由不同——所以收进一个宏，而不是 #if 掉某一侧
+#if defined(_WIN32) || defined(__CYGWIN__)
+#define JIT_HOST_EXPORT __declspec(dllexport)
+#else
+#define JIT_HOST_EXPORT __attribute__((visibility("default")))
+#endif
+
+extern "C" JIT_HOST_EXPORT int host_mul(int a, int b) { return a * b; }
 ```
 
-原因：Windows PE 的符号解析走**导出表**，MinGW 默认不给 exe 导出普通函数；Linux/macOS 的 dlsym(NULL) 天下大同。同理，宿主侧如果直接 `J->lookup("host_mul")` 查不到（详见 11.5）。
+- **Windows**：PE 的符号解析走**导出表**，MinGW 默认不给 exe 导出普通函数，不写就报 `Symbols not found: [ host_mul ]`。
+- **Unix**：ORC 走 `dlsym(RTLD_DEFAULT)`，看的是**符号可见性**。默认可见性下不写也能过，但只要构建里加了 `-fvisibility=hidden` 就立刻失效——显式写 `default` 才对得上语义。
 
-（实测输出）：
+第二个坑在**查询名**上（macOS 专属）。`ES.lookup({PJD}, "host_mul")` 在本机实测：
+
+```text
+ProcessSymbols "host_mul"  → no: Symbols not found: [ host_mul ]
+ProcessSymbols "_host_mul" → yes
+```
+
+Mach-O 的符号带 `'_'` 全局前缀，而 `dlsym` 只认带前缀的那个名字；ELF 与 COFF-x86_64 前缀为空，裸名直接命中。前缀从哪来？**DataLayout 的 `m:` 段**——`J->getDataLayout().getGlobalPrefix()`（macOS 给 `'_'`）。更麻烦的是 LLVM 各版本对"前缀由谁加"并不一致（23 的 LLJIT 交给调用方，22 的 `DynamicLibrarySearchGenerator` 自己会加），所以稳妥写法是两种名字都试一遍，命中哪个都算数。
+
+（实测输出，Windows 与 macOS 一致）：
 
 ```text
 poly(7)  = 70        ← 文本 IR 模块：host_mul(7,7)+host_mul(7,3)
@@ -91,7 +107,7 @@ return ThreadSafeModule(std::move(M), std::move(Ctx));
 | 想查 | 写法 | 说明 |
 |---|---|---|
 | 你 addIRModule 的函数 | `J->lookup("fib")` | 只搜 Main JITDylib，够用 |
-| 宿主进程符号 | `ES.lookup({J->getProcessSymbolsJITDylib().get()}, "host_mul")` | **`J->lookup` 不搜进程符号**（22 实测），要显式指向 ProcessSymbols JD |
+| 宿主进程符号 | `ES.lookup({J->getProcessSymbolsJITDylib().get()}, 带前缀的名字)` | **`J->lookup` 不搜进程符号**（22/23 实测），要显式指向 ProcessSymbols JD；macOS 上名字还得带 `'_'` 前缀 |
 
 这个行为差异在老教程里说法混乱（早期 LLJIT 把进程生成器挂在 Main 上）。心智模型：**lookup 按你给的 JD 列表顺序搜索**；Main 的"链接顺序"里含 ProcessSymbols（所以 JIT 内部调用能解析），但便捷版 `J->lookup` 只查 Main。
 
@@ -107,12 +123,13 @@ return ThreadSafeModule(std::move(M), std::move(Ctx));
 
 - LLJIT = Session + JITDylib + 两层（编译/链接）；lookup 触发按需编译。
 - 模块来源三选一（文本/Builder/位码）；DataLayout 对齐 JIT 是硬规则。
-- Windows：宿主函数给 JIT 用必须 dllexport；`J->lookup` 不搜进程符号。
+- 宿主符号可见性：Windows 要 `__declspec(dllexport)`，Unix 要 `visibility("default")`；查进程符号时 macOS 的名字还得带 `'_'` 前缀。`J->lookup` 不搜进程符号。
 - `Expected/Error` + `ExitOnError` 替代异常；函数指针寿命 ≤ LLJIT。
 
 | 坑 | 解法 |
 |---|---|
-| `Symbols not found: [xxx ]` | 宿主函数加 `__declspec(dllexport)`；或 IR 里缺 declare |
+| `Symbols not found: [xxx ]` | 宿主函数加 `__declspec(dllexport)`（Unix 加 `visibility("default")`）；或 IR 里缺 declare |
+| macOS 上 `host_mul` 查不到 | 名字要带全局前缀：`getDataLayout().getGlobalPrefix()` + 符号名（`'_host_mul'`） |
 | `use of undefined value` | 22 解析器要求先声明外部函数 |
 | parseIR 编不过 | 用 MemoryBufferRef（22 API） |
 | `J->lookup` 查不到宿主函数 | 走 ProcessSymbols JD + `ES.lookup({JD*}, ...)` |

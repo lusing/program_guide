@@ -1,6 +1,6 @@
 # 24 · 收官：MiniLang v1.0 与全书总账
 
-> 对应示例：`examples/24_minilang_full/`（minilang.cpp v1.0 + mandel.mini + regression.mini + regr.ps1）
+> 对应示例：`examples/24_minilang_full/`（minilang.cpp v1.0 + mandel.mini + regression.mini + regr.ps1 / regr.sh）
 
 九章连载的终点。MiniLang v1.0 的完整能力表：函数/原型/extern、if/for/while、var 与赋值、用户自定义一元/二元运算符、`&&`/`||` 短路、print/putch 内置、六种执行模式。压轴演出是**曼德博集合 ASCII 图**，回归武器是**四路径一致性套件**。
 
@@ -45,7 +45,7 @@ minilang stats <f>      进程内统计 pass             ← 观察哨
 
 ## 24.2 四路径一致性回归
 
-`regr.ps1` 用同一份 `regression.mini`（覆盖全部语言特性，期望十个数值输出）跑四条执行路径：
+`regr.ps1`（Windows）/`regr.sh`（macOS）用同一份 `regression.mini`（覆盖全部语言特性，期望十个数值输出）跑四条执行路径：
 
 | 路径 | 链路 | 验证的是 |
 |---|---|---|
@@ -95,6 +95,7 @@ minilang stats <f>      进程内统计 pass             ← 观察哨
 4. **ConstantExpr 家族已删除**（21 起）：全局直接当 ptr，别再写 getGetElementPtr 常量（8）。
 5. **内存/所有权类**（最难查）：悬垂 StringRef 键（9）；CloneFunction 自动入模块、双重插入死循环（9）；ResourceTrackerSP 寿命 ≤ Session（14）；跨 Context 复用 FunctionType* 错乱（14）。
 6. **Windows 专属**：JIT 宿主函数要 dllexport（11）；scoop clang 无 VS 环境时借 MSYS2 头（22）；PowerShell 吞 `--`（22）；原生 cmake 探测 MinGW g++ 失败→llvm-config 直连最稳（S6）。
+6b. **macOS 专属**：MacPorts 只有 19/21/23，选 23（Plugins/PassPlugin.h 与 22 同位置），但 `OptimizationLevel` 变裸 enum（7）；llvm-2x 不装 FileCheck 可执行文件，用官方库自链驱动（21）；clang 必须 `-isysroot`（1/10/20/22）；JIT 宿主函数改 `visibility("default")` 且查进程符号要带 `'_'` 前缀（11）；本机汇编乘法助记符随 CPU 变（10）；源码导览要 `LLVM_SRC`（23）。
 7. **C++ 自伤类**：无括号 if 吞 return（13 的调试惨案）；`(char)` 强转 200 → -56（18）；map 键存临时 .str()（9 的孪生坑）。
 8. **语言设计类**：double 写整数算法（18）；测试覆盖不足让原型逗号 bug 潜伏九章（18）。
 

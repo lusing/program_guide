@@ -224,7 +224,6 @@ struct BinaryExprAST : ExprAST {
           BasicBlock::Create(*TheContext, "rhs", F);
       BasicBlock *MergeBB =
           BasicBlock::Create(*TheContext, "logic.end", F);
-      BasicBlock *LBB = Builder->GetInsertBlock();
       if (Op == (int)Tok::And)
         Builder->CreateCondBr(LBool, RHSBB, LShortBB);
       else

@@ -61,9 +61,9 @@ $uc = 'G:\scoop\apps\msys2\current\ucrt64\bin'
 
 上游测试每个目录一个 `lit.cfg.py`，文件头写 `; RUN: opt -S %s | FileCheck %s`，跑 `llvm-lit .` 全量驱动（并行、按依赖过滤）。**MSYS2 的 llvm-tools 包不带 llvm-lit**——本教程用 build.ps1 当手动驱动器（等价物），lit 的理念照搬：
 
-| lit 概念 | 我们的等价物 |
+| lit 概念 | 我们的等价物（build.ps1 / run-all.sh） |
 |---|---|
-| `RUN:` 行 | build.ps1 的 Invoke-Tool 序列 |
+| `RUN:` 行 | Invoke-Tool / run_step 序列 |
 | `%s`/`%S` | 示例目录变量 |
 | XFAIL | （未实现——教程规模用不上）|
 | 并行调度 | ForEach 串行（24 个够快）|
@@ -78,7 +78,7 @@ $uc = 'G:\scoop\apps\msys2\current\ucrt64\bin'
         海量：单元级（C++ assert / verifyModule——全程在线）
 ```
 
-第 24 章的 regr.ps1 把四条执行路径的**输出一致性**纳入顶层回归——金字塔封顶。
+第 24 章的 regr.ps1 / regr.sh 把四条执行路径的**输出一致性**纳入顶层回归——金字塔封顶。
 
 ## 21.6 本章小结
 
@@ -91,5 +91,6 @@ $uc = 'G:\scoop\apps\msys2\current\ucrt64\bin'
 | CHECK 顺序报 not found | 按文件出现顺序排断言；--dump-input=always 排查 |
 | CHECK-NOT 没管住全局 | 区间语义，末尾加收口 CHECK |
 | 断言过脆频繁红 | 删掉钉依赖行为的断言，留结构性断言 |
+| macOS 上没有 FileCheck 可执行文件 | MacPorts 的 llvm-2x 只给 libLLVMFileCheck.a；用官方库自链驱动（tools/filecheck_main.cpp） |
 
 下一章终于给 scoop 那套"精简版 clang 23"派正经用场。
