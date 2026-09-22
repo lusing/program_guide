@@ -35,6 +35,7 @@ namespace winrt::BasicGallery::implementation
     void MainWindow::NavigateTo(winrt::hstring const& tag)
     {
         if (tag == L"home") ContentFrame().Navigate(xaml_typename<BasicGallery::HomePage>());
-        // 每章任务追加: if (tag == L"button") ...ButtonPage
+        if (tag == L"button") ContentFrame().Navigate(xaml_typename<BasicGallery::ButtonPage>());
+        // 每章任务追加分支
     }
 }

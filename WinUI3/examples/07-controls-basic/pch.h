@@ -32,3 +32,4 @@
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
 #include "HomePage.xaml.h"
+#include "ButtonPage.xaml.h"

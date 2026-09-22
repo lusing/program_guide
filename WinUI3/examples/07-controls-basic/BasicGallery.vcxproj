@@ -84,6 +84,7 @@
     <ClInclude Include="App.xaml.h" />
     <ClInclude Include="MainWindow.xaml.h" />
     <ClInclude Include="HomePage.xaml.h" />
+    <ClInclude Include="ButtonPage.xaml.h" />
   </ItemGroup>
 
   <ItemGroup>
@@ -96,18 +97,21 @@
     <ClCompile Include="App.xaml.cpp" />
     <ClCompile Include="MainWindow.xaml.cpp" />
     <ClCompile Include="HomePage.xaml.cpp" />
+    <ClCompile Include="ButtonPage.xaml.cpp" />
   </ItemGroup>
 
   <ItemGroup>
     <Midl Include="App.idl" />
     <Midl Include="MainWindow.idl" />
     <Midl Include="HomePage.idl" />
+    <Midl Include="ButtonPage.idl" />
   </ItemGroup>
 
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
     <Page Include="MainWindow.xaml" />
     <Page Include="HomePage.xaml" />
+    <Page Include="ButtonPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>

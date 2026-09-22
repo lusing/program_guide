@@ -40,7 +40,7 @@ $galleries = @{
         Pages = [ordered]@{
             # tag       nav item y-index (0=Home), optional in-page click / typed text
             home    = @{ Nav = 0 }
-            button  = @{ Nav = 1 }
+            button  = @{ Nav = 1; Act = '475,147' }   # Click me -> StatusText "clicked 1"
         }
     }
     '17' = @{
