@@ -1,0 +1,9 @@
+// Chapter 10 demo page. Name-wired handlers need no IDL entries.
+namespace BasicGallery
+{
+    [default_interface]
+    runtimeclass CheckBoxPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        CheckBoxPage();
+    }
+}

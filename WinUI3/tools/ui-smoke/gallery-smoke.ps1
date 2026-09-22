@@ -43,6 +43,7 @@ $galleries = @{
             button  = @{ Nav = 1; Act = '475,147' }   # Click me -> StatusText "clicked 1"
             textblock = @{ Nav = 2; Act = '475,250' } # Cycle trim -> "trim = CharacterEllipsis" + ellipsis appears
             textbox  = @{ Nav = 3; Act = '568,560' }  # Read text -> status shows rich text content
+            checkbox = @{ Nav = 4; Act = '502,180' }  # 3-state checkbox -> "notifications = off"
         }
     }
     '17' = @{

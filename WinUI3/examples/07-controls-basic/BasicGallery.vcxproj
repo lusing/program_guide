@@ -81,6 +81,7 @@
 
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="CheckBoxPage.xaml.h" />
     <ClInclude Include="TextBoxPage.xaml.h" />
     <ClInclude Include="TextBlockPage.xaml.h" />
     <ClInclude Include="App.xaml.h" />
@@ -97,6 +98,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="App.xaml.cpp" />
+    <ClCompile Include="CheckBoxPage.xaml.cpp" />
     <ClCompile Include="TextBoxPage.xaml.cpp" />
     <ClCompile Include="TextBlockPage.xaml.cpp" />
     <ClCompile Include="MainWindow.xaml.cpp" />
@@ -106,6 +108,7 @@
 
   <ItemGroup>
     <Midl Include="App.idl" />
+    <Midl Include="CheckBoxPage.idl" />
     <Midl Include="TextBoxPage.idl" />
     <Midl Include="TextBlockPage.idl" />
     <Midl Include="MainWindow.idl" />
@@ -116,6 +119,7 @@
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
     <Page Include="MainWindow.xaml" />
+    <Page Include="CheckBoxPage.xaml" />
     <Page Include="TextBoxPage.xaml" />
     <Page Include="TextBlockPage.xaml" />
     <Page Include="HomePage.xaml" />

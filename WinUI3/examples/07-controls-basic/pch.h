@@ -36,3 +36,4 @@
 #include "ButtonPage.xaml.h"
 #include "TextBlockPage.xaml.h"
 #include "TextBoxPage.xaml.h"
+#include "CheckBoxPage.xaml.h"
