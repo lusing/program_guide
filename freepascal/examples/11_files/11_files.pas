@@ -117,7 +117,7 @@ begin
   end;
 end;
 
-// ═══ 11.5 TIniFile：配置文件的标准答案（24 章记事本+ 用它记忆设置）
+// ═══ 11.5 TIniFile：配置文件的标准答案（40 章记事本+ 用它记忆设置）
 procedure ShowIniFile;
 var
   ini: TIniFile;

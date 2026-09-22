@@ -100,9 +100,9 @@ begin
   ComboFruit.ItemIndex := -1;             // -1 = 无选择
   ComboFruit.OnChange := @ComboFruitChange;
 
-  Log := TMemo.Create(Self);              // TMemo：多行文本（24 章记事本的主角）
+  Log := TMemo.Create(Self);              // TMemo：多行文本（40 章记事本的主角）
   Log.Parent := Self;
-  Log.Align := alClient;                  // 占满剩余空间（17 章布局细讲）
+  Log.Align := alClient;                  // 占满剩余空间（23 章布局细讲）
   Log.ReadOnly := True;
   Log.ScrollBars := ssAutoVertical;
 end;

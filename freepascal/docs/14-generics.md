@@ -87,7 +87,7 @@ begin
 - **零拷贝接口**：TList<UTF8String> 不需要像 TList 那样装对象包一层
 - **算法复用**：一份 TMath<T>.MaxOf 服务所有可比较类型
 - 14 章之后 GUI 篇直接受益：`TObjectList<TTabSheet>`、`TDictionary<UTF8String, Integer>`
-  （24 章记事本+ 的标签页管理与字数统计就是这两个）
+  （40 章记事本+ 的标签页管理与字数统计就是这两个）
 
 ## 6. 示例与验证
 

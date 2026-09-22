@@ -69,7 +69,7 @@ end;
 | `TLabeledEdit` | 带浮动标签的输入框 | `EditLabel.Caption`——省一排对齐代码 |
 
 `Caption`（按钮/标签/窗体的"标题"）与 `Text`（编辑类的"内容"）**是两个属性名**——
-历史如此，记即可。TMemo 是 24 章记事本的主角，`Lines` 是字符串列表（11 章 TStringList
+历史如此，记即可。TMemo 是 40 章记事本的主角，`Lines` 是字符串列表（11 章 TStringList
 同族）。
 
 ## 4. 按钮类：Button / BitBtn / SpeedButton / ToggleBox
@@ -77,7 +77,7 @@ end;
 | 控件 | 特点 | 什么时候用 |
 |---|---|---|
 | `TButton` | 标准按钮，占 Tab 顺序 | 默认选择 |
-| `TBitBtn` | 带图标的按钮（`Glyph`），可设 `ModalResult`（20 章对话框） | 对话框确定/取消 |
+| `TBitBtn` | 带图标的按钮（`Glyph`），可设 `ModalResult`（25 章对话框） | 对话框确定/取消 |
 | `TSpeedButton` | **不占 Tab**、可保持按下（`GroupIndex`/`AllowAllUp`） | 工具栏按钮（19 章） |
 | `TToggleBox` | 两态按钮（按住/弹起） | 开关 |
 
@@ -98,7 +98,7 @@ ComboFruit.ItemIndex := -1;              // 下拉：-1 = 未选；csDropDownLis
 ## 6. 容器类：GroupBox / Panel / ScrollBox
 
 - `TGroupBox`：带标题的分组框（视觉分区 + 单选天然成组）。
-- `TPanel`：无标题容器——布局的乐高（17 章 Align/Anchors 的主角）。
+- `TPanel`：无标题容器——布局的乐高（23 章 Align/Anchors 的主角）。
 - `TScrollBox`：内容超界自动出滚动条。
 
 容器嵌套 = UI 树：`Self → Panel → EdName`。`Parent` 链决定坐标与裁剪；
@@ -155,4 +155,4 @@ pwsh -File build.ps1 -Example 16_controls      # lazbuild + 无头 selftest（�
 6. `TForm.CreateNew` 只属于 TForm；纯代码窗体用它避开 lfm 流加载（15 章）。
 
 ---
-上一章：[15 Lazarus 入门](15-lazarus.md) ｜ 下一章：[17 更多控件](17-more-controls.md) ｜ 返回：[README](../README.md)
+上一章：[15 Lazarus 入门](15-lazarus.md) ｜ 下一章：[17 数值与进度控件](17-value-controls.md) ｜ 返回：[README](../README.md)

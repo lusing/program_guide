@@ -44,7 +44,7 @@ XML 格式，手写最小版完全可行（本教程全部 GUI 工程都是手�
 <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>   <!-- 产物目录 -->
 ```
 
-要加第三方包（如 datetimectrls，17 章的 DateTimePicker）就是在 RequiredPackages 加一项。
+要加第三方包（如 datetimectrls，18 章的 DateTimePicker）就是在 RequiredPackages 加一项。
 
 ### .lpr——主程序
 
@@ -176,7 +176,7 @@ end;
 4. .lfm 的 OnClick 方法名拼错 = 运行时"方法不存在"类错误，不是编译期。
 5. GUI 程序未捕获异常弹 LCL 对话框——selftest/后台逻辑必须 try-except 自捕获。
 6. 纯代码建窗体用 `TForm.CreateNew(nil)`（跳过 lfm）；但 **TFrame 没有 CreateNew**——
-   Frame 天生与 .lfm 配对，缺资源报 `Resource THeaderFrame not found`（17 章）。
+   Frame 天生与 .lfm 配对，缺资源报 `Resource THeaderFrame not found`（22 章）。
 
 ---
 上一章：[14 泛型与容器](14-generics.md) ｜ 下一章：[16 基础控件与事件模型](16-controls.md) ｜ 返回：[README](../README.md)

@@ -1,0 +1,5 @@
+inherited BaseForm: TAdvForm
+  Caption = '高级设置'
+  Height = 160
+  ClientHeight = 160
+end

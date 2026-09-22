@@ -22,7 +22,7 @@ var
 implementation
 
 var
-  LoadedAt: string;               // 私有：接口段看不见（外部无法访问）
+  CompiledWith: string;           // 私有：接口段看不见（外部无法访问）
 
 function Distance(const a, b: TPoint): Double;
 begin
@@ -36,12 +36,12 @@ end;
 
 function UnitName: string;
 begin
-  Result := 'ugeometry（编译于 ' + LoadedAt + ' 编译期，见实现段）';
+  Result := 'ugeometry（编译于 FPC ' + CompiledWith + '，见实现段）';
 end;
 
 initialization                    // 单元被加载时执行一次（在主程序 begin 之前）
   InitCount := 1;
-  LoadedAt := {$I %DATE%};
+  CompiledWith := {$I %FPCVERSION%};  // 编译期常量（版本号稳定——%DATE% 跨天会让双通道 DIFF）
 
 finalization                      // 程序结束时执行（与 initialization 反序）
   InitCount := 0;

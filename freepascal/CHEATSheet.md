@@ -1,6 +1,6 @@
 # FreePascal/Lazarus CHEAT Sheet（FPC 3.2.2 / Lazarus 4.8 实测）
 
-> 配套 [README](README.md) 与 docs/ 24 章；所有坑位来自本仓库示例的实测（每章末
+> 配套 [README](README.md) 与 docs/ 40 章；所有坑位来自本仓库示例的实测（每章末
 > "坑位清单"的汇总索引）。
 
 ## 1. 源码头三件套（每个 .pas/.lpr 第一行）
@@ -82,6 +82,17 @@ a := TAction.Create(Self); a.OnExecute := ...;
 menuItem.Action := a;  toolBtn.Action := a; // Caption/快捷键/Enabled 单一来源
 // 线程
 TThread.Create(False); Synchronize(@M)/Queue(@M); CheckSynchronize; Terminate(协作式)
+// 虚拟列表（万行）
+lv.OwnerData := True; lv.Items.Count := N; lv.OnData := @供数;   // 改层后 Invalidate
+// 组件流（.lfm 读写）
+WriteComponentAsTextToStream(st, ctrl); ReadComponentFromTextStream(st, c, @FindClass, nil, nil);
+// 运行时切语言
+TranslateResourceStrings('lang_zh.po');     // resourcestring 全表换（.po 条目带 #: 行）
+// 数据感知
+Conn/Trans/Query 三件套 → DataSource.DataSet := Query → DBGrid.DataSource := Src;
+q.Edit; q.FieldByName(..).AsInteger := v; q.Post; q.ApplyUpdates; tr.Commit;  // 五步缺一不可
+// 消息三通道
+c.Perform(LM_USER+100, w, l);   // 同步；PostMessage 异步需泵；QueueAsyncCall 回主线程
 ```
 
 ## 5. 编译/验证命令
@@ -146,7 +157,7 @@ lazbuild project.lpi                    # GUI 工程（只认 .lpi）
 26. objfpc 泛型使用点处处 `specialize`；3.2.2 无独立泛型函数（包进泛型类）。
 27. `TDictionary<string,...>` 中文键查不到（比较器码页敏感）——键用 UTF8String。
 
-**GUI（15–24 章）**
+**GUI 控件篇（15–22 章）**
 28. `Interfaces` 必须 uses 第一；lazbuild 只认 .lpi；exe 落 `lib/<CPU>-<OS>/`。
 29. lfm 字段须默认可见性（published）才被流填充；OnClick 方法名错=运行时错。
 30. GUI 未捕获异常弹 LCL 框——无头挂死；selftest 必须 try-except 自捕获
@@ -164,6 +175,56 @@ lazbuild project.lpi                    # GUI 工程（只认 .lpi）
 40. 线程：非主线程禁碰控件（Synchronize/Queue 唯一通道）；无消息循环手动
     CheckSynchronize；非 TPersistent 类不能进 TForm 默认（published）段。
 41. TTabSheet 无 Data 属性；行列换算从 SelStart **从左往右**扫 #10。
+41b. **FPC published 区只收类类型字段**——Integer/数组/记录字段放默认区编译错
+    （3133 Symbol cannot be published），显式 `public`（17–39 章反复实测）。
+41c. SpinEdit 默认 **Min=0/Max=0=不限**——忘设 MaxValue 放行任意值（比钳制危险）。
+41d. TrackBar/SpinEdit 程序赋值**触发** OnChange；Calendar 程序赋值**全不发**；
+    TabControl.TabIndex 程序赋值不发（要 nboDoChangeOnSetIndex）——逐控件实测。
+41e. 改 Min/Max **立即**重钳 Position（TrackBar/ProgressBar 同）。
+41f. `Inc(属性)` 编译不过——属性取不了地址，var 参数类例程都不行。
+41g. **包名≠单元名**：包 `DateTimeCtrls` 里的单元叫 `DateTimePicker`——uses 写
+    包名报 Identifier not found。
+41h. ColorBox：OnGetColors **先挂再设 Style**（Style 赋值触发条目重建）；
+    TGetColorsEvent 首参是 TCustomColorBox 不是 TObject；cbPrettyNames 显示英文。
+41i. StringGrid **双重排序坑**：ColumnClickSorts 内建排序 + OnHeaderClick 里再排
+    =方向翻两次净效果没排；数值列默认字符串序（"9">"80"），挂 OnCompareCells。
+41j. OnValidateEntry 拒绝编辑的唯一通道：`NewValue := OldValue`。
+41k. `TMenuItem.Add` 收**已有项**（先 Create 再 Add）；`Panels.Add` 是工厂——
+    同名不同义。`with Obj do` 块里 `Self` 仍指方法 Self。
+41l. `TGraphic.SaveToFile` **认对象不认后缀**（PNG 对象存 .bmp 名还是 PNG 字节）；
+    格式分发是 TPicture 的职责。
+41m. **Frame/窗体继承**：inherited lfm 根级属性覆盖 OK；子控件级 `inherited Xxx`
+    块运行时 Duplicate name——子控件覆盖写子类构造器代码。
+41n. ListBox `MultiSelect` 默认 False：`Selected[2]:=True` 会**清掉** [0]（单选语义）。
+
+**GUI 深水区（26/29–39 章）**
+41o. ListView OwnerData：`Items.Count` 纯计数器；改数据层后 Invalidate 即刷新
+     （LCL 无 VCL 逐行 UpdateItems）。
+41p. 纯代码窗体（CreateNew）**没有 OnCreate**——构造器本体就是它；OnCreate 属于
+     .lfm 流装配路线。
+41q. `caFree` 走**异步** Release——Close 后立刻访问窗体字段是竞态。
+41r. ShowModal 在无头 selftest 会进模态循环挂死——只测 ModalResult 纯逻辑。
+41s. `ReadComponentFromBinaryStream` 直呼 OnFindComponentClass **不查 nil**——
+     不传 handler 当场 AV；自备 GetClass 转发器 + RegisterClass。
+41t. 裸 TWriter/TReader 缺"根组件头"仪式（Driver.BeginRootComponent 配对）=AV
+     ——用 LCL 的 Read/WriteComponentAsBinaryStream 封装。
+41u. `default` 指令=等于默认值**不落流**（.lfm 里缺行=取类默认）；构造器仍要
+     手工赋初值。无 Name 的组件不落流。
+41v. **.po 条目必须带 `#:` 标识行**——没有就静默当 header 丢（Count=0 不报错）；
+     program 主文件的 resourcestring 按单元名翻译失灵——用全表
+     TranslateResourceStrings；API 返回 True ≠ 翻译生效。
+41w. ScaleBy 往返有 1px 漂移风险（整数取整）；DWM 暗色标题栏属性号 20（旧 19），
+     返回值要检查。
+41x. SQLDB：**Post 后必须 ApplyUpdates**——漏了不报错、Commit"成功"、重开
+     数据集还是旧值（缓存更新机制）。
+41y. SQLite text 列=ftMemo——`Locate('文本列',…)` 运行时炸 invalid field type；
+     按数值键定位或 SQL where。
+41z. winsqlite3.dll（System32，Win10+）复制改名 sqlite3.dll 即可用（38 章
+     selftest 自动做，不入仓库）。
+41aa. `DebugLn(['数组常量'])` 打出 `?unknown variant?`——单字符串参数；
+     Assert 的消息自动带**文件+行号**（EAssertionFailed）。
+41bb. Integer 溢出**静默回绕**（500000500000→1784293664，无 -Cr 时）——大数
+     Int64；本条是 39 章 selftest 现场抓获的。
 
 **工具链（01 章/脚本）**
 42. scoop 独立 freepascal 包只有 i386——解析顺序错=静默 32 位 exe。

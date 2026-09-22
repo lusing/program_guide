@@ -83,7 +83,7 @@ end;
 - `Write/Read`（返回字节数）与 `WriteBuffer/ReadBuffer`（不够即抛异常）——
   优先 Buffer 版，失败有异常可捕。
 - 模式旗标：`fmCreate`/`fmOpenRead`/`fmOpenWrite`/`fmOpenReadWrite`（可 or `fmShareDenyWrite`）。
-- `Position`/`Seek()` 手动定位；GUI 端（图片/文档读写）全是它，24 章记事本+ 用它读写文本。
+- `Position`/`Seek()` 手动定位；GUI 端（图片/文档读写）全是它，40 章记事本+ 用它读写文本。
 
 ## 5. TIniFile：配置文件的标准答案
 

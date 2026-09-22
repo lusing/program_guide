@@ -1,0 +1,35 @@
+object BaseForm: TBaseForm
+  Left = 0
+  Height = 120
+  Top = 0
+  Width = 300
+  Caption = 'BaseForm'
+  ClientHeight = 120
+  ClientWidth = 300
+  object LblTitle: TLabel
+    Left = 12
+    Height = 16
+    Top = 12
+    Width = 200
+    Caption = '对话框基座'
+    ParentColor = False
+  end
+  object BtnOk: TButton
+    Left = 104
+    Height = 28
+    Top = 76
+    Width = 80
+    Caption = '确定'
+    ModalResult = 1
+    TabOrder = 0
+  end
+  object BtnCancel: TButton
+    Left = 196
+    Height = 28
+    Top = 76
+    Width = 80
+    Caption = '取消'
+    ModalResult = 2
+    TabOrder = 1
+  end
+end
