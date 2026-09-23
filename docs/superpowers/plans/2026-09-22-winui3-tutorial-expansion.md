@@ -589,12 +589,12 @@ TaskFlow/
 
 **Files:** Rewrite `WinUI3/README.md`
 
-- [ ] **Step 1**: 新目录表（35 篇七部分）、新学习路线图（ASCII，依赖链到 35）、环境要求与版本基线照旧
-- [ ] **Step 2**: 验证状态区重写：10 工程清单表、**每画廊每页 smoke 结果表**（页名/交互/证据截图路径）、新"验证推翻并改回正文的写法"清单（把各阶段记下的新坑全部汇总——预计 ProgressRing determinate、TreeView ItemsSource、DataGrid 资源字典、Generic.xaml 构建动作、UpdateSourceTrigger 实测等条目）
-- [ ] **Step 3**: 常见错误速查表扩容（新坑按"症状/原因与解法/出处"格式补 ~10 行）
-- [ ] **Step 4**: 后续扩展方向更新（删已落实项：值转换器/窗口外壳/自定义控件/VSM；保留：通知/后台任务/测试/Islands）
-- [ ] **Step 5**: **全量终验**：`./build.ps1` 10 工程全绿；`gallery-smoke.ps1` 全画廊全页跑通并逐页判读；`grep -rn "](docs/" README.md docs/*.md` 无死链
-- [ ] **Step 6**: Commit `docs(winui3): README 重写——35 章目录/验证状态/速查表扩容`
+- [x] **Step 1**: 新目录表（35 篇七部分）、新学习路线图（ASCII，依赖链到 35）、环境要求与版本基线照旧
+- [x] **Step 2**: 验证状态区重写：10 工程清单表、**每画廊每页 smoke 结果表**（页名/交互/证据截图路径）、新"验证推翻并改回正文的写法"清单（把各阶段记下的新坑全部汇总——预计 ProgressRing determinate、TreeView ItemsSource、DataGrid 资源字典、Generic.xaml 构建动作、UpdateSourceTrigger 实测等条目）
+- [x] **Step 3**: 常见错误速查表扩容（新坑按"症状/原因与解法/出处"格式补 ~10 行）
+- [x] **Step 4**: 后续扩展方向更新（删已落实项：值转换器/窗口外壳/自定义控件/VSM；保留：通知/后台任务/测试/Islands）
+- [x] **Step 5**: **全量终验**：`./build.ps1` 10 工程全绿；`gallery-smoke.ps1` 全画廊全页跑通并逐页判读；`grep -rn "](docs/" README.md docs/*.md` 无死链
+- [x] **Step 6**: Commit `docs(winui3): README 重写——35 章目录/验证状态/速查表扩容`
 
 ---
 

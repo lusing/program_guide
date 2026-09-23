@@ -1,0 +1,140 @@
+
+=== 01-first-app (Build Debug|x64) ===
+
+  正在确定要还原的项目…
+  所有项目均是最新的，无法还原。
+G:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VC\v180\Microsoft.CppBuild.targets(1151,5): warning MSB8027: 名为 WindowsAppRuntimeAutoInitializer.cpp 的两个或更多文件将生成到同一位置的输出。这会导致错误的生成结果。   调用的文件是 g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp, g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp。 [G:\code\guide\WinUI3\examples\01-first-app\MyApp.vcxproj]
+  WindowsAppRuntimeAutoInitializer.cpp
+  WindowsAppRuntimeAutoInitializer.cpp
+MyApp\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\01-first-app\MyApp.vcxproj]
+MyApp\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\01-first-app\MyApp.vcxproj]
+  MyApp.vcxproj -> G:\code\guide\WinUI3\examples\01-first-app\x64\Debug\MyApp\MyApp.exe
+PASS : 01-first-app
+
+=== 06-layout (Build Debug|x64) ===
+
+  正在确定要还原的项目…
+  所有项目均是最新的，无法还原。
+G:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VC\v180\Microsoft.CppBuild.targets(1151,5): warning MSB8027: 名为 WindowsAppRuntimeAutoInitializer.cpp 的两个或更多文件将生成到同一位置的输出。这会导致错误的生成结果。   调用的文件是 g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp, g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp。 [G:\code\guide\WinUI3\examples\06-layout\LayoutApp.vcxproj]
+  WindowsAppRuntimeAutoInitializer.cpp
+  WindowsAppRuntimeAutoInitializer.cpp
+LayoutApp\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\06-layout\LayoutApp.vcxproj]
+LayoutApp\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\06-layout\LayoutApp.vcxproj]
+  LayoutApp.vcxproj -> G:\code\guide\WinUI3\examples\06-layout\x64\Debug\LayoutApp\LayoutApp.exe
+PASS : 06-layout
+
+=== 07-controls-basic (Build Debug|x64) ===
+
+  正在确定要还原的项目…
+  所有项目均是最新的，无法还原。
+G:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VC\v180\Microsoft.CppBuild.targets(1151,5): warning MSB8027: 名为 WindowsAppRuntimeAutoInitializer.cpp 的两个或更多文件将生成到同一位置的输出。这会导致错误的生成结果。   调用的文件是 g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp, g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp。 [G:\code\guide\WinUI3\examples\07-controls-basic\BasicGallery.vcxproj]
+  WindowsAppRuntimeAutoInitializer.cpp
+  WindowsAppRuntimeAutoInitializer.cpp
+BasicGallery\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\07-controls-basic\BasicGallery.vcxproj]
+  XamlTypeInfo.g.cpp
+BasicGallery\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\07-controls-basic\BasicGallery.vcxproj]
+  BasicGallery.vcxproj -> G:\code\guide\WinUI3\examples\07-controls-basic\x64\Debug\BasicGallery\BasicGallery.exe
+PASS : 07-controls-basic
+
+=== 17-controls-collections (Build Debug|x64) ===
+
+  正在确定要还原的项目…
+  所有项目均是最新的，无法还原。
+G:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VC\v180\Microsoft.CppBuild.targets(1151,5): warning MSB8027: 名为 WindowsAppRuntimeAutoInitializer.cpp 的两个或更多文件将生成到同一位置的输出。这会导致错误的生成结果。   调用的文件是 g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp, g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp。 [G:\code\guide\WinUI3\examples\17-controls-collections\CollectionsGallery.vcxproj]
+  WindowsAppRuntimeAutoInitializer.cpp
+  WindowsAppRuntimeAutoInitializer.cpp
+Collecti.17a1b2c3\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\17-controls-collections\CollectionsGallery.vcxproj]
+Collecti.17a1b2c3\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\17-controls-collections\CollectionsGallery.vcxproj]
+  CollectionsGallery.vcxproj -> G:\code\guide\WinUI3\examples\17-controls-collections\x64\Debug\CollectionsGallery\CollectionsGallery.exe
+PASS : 17-controls-collections
+
+=== 21-controls-shell (Build Debug|x64) ===
+
+  正在确定要还原的项目…
+  所有项目均是最新的，无法还原。
+G:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VC\v180\Microsoft.CppBuild.targets(1151,5): warning MSB8027: 名为 WindowsAppRuntimeAutoInitializer.cpp 的两个或更多文件将生成到同一位置的输出。这会导致错误的生成结果。   调用的文件是 g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp, g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp。 [G:\code\guide\WinUI3\examples\21-controls-shell\ShellGallery.vcxproj]
+  WindowsAppRuntimeAutoInitializer.cpp
+  WindowsAppRuntimeAutoInitializer.cpp
+ShellGallery\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\21-controls-shell\ShellGallery.vcxproj]
+  XamlTypeInfo.g.cpp
+ShellGallery\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\21-controls-shell\ShellGallery.vcxproj]
+  ShellGallery.vcxproj -> G:\code\guide\WinUI3\examples\21-controls-shell\x64\Debug\ShellGallery\ShellGallery.exe
+PASS : 21-controls-shell
+
+=== 26-customization (Build Debug|x64) ===
+
+  正在确定要还原的项目…
+  所有项目均是最新的，无法还原。
+G:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VC\v180\Microsoft.CppBuild.targets(1151,5): warning MSB8027: 名为 WindowsAppRuntimeAutoInitializer.cpp 的两个或更多文件将生成到同一位置的输出。这会导致错误的生成结果。   调用的文件是 g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp, g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp。 [G:\code\guide\WinUI3\examples\26-customization\CustomGallery.vcxproj]
+  WindowsAppRuntimeAutoInitializer.cpp
+  WindowsAppRuntimeAutoInitializer.cpp
+CustomGallery\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\26-customization\CustomGallery.vcxproj]
+G:\code\guide\WinUI3\examples\26-customization\TitleRow.xaml(9,24): XamlCompiler warning WMC1506: OneWay bindings require at least one of their steps to support raising notifications when their value changes [G:\code\guide\WinUI3\examples\26-customization\CustomGallery.vcxproj]
+G:\code\guide\WinUI3\examples\26-customization\TitleRow.xaml(10,24): XamlCompiler warning WMC1506: OneWay bindings require at least one of their steps to support raising notifications when their value changes [G:\code\guide\WinUI3\examples\26-customization\CustomGallery.vcxproj]
+  XamlTypeInfo.g.cpp
+CustomGallery\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\26-customization\CustomGallery.vcxproj]
+  CustomGallery.vcxproj -> G:\code\guide\WinUI3\examples\26-customization\x64\Debug\CustomGallery\CustomGallery.exe
+PASS : 26-customization
+
+=== 31-window-shell (Build Debug|x64) ===
+
+  正在确定要还原的项目…
+  所有项目均是最新的，无法还原。
+G:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VC\v180\Microsoft.CppBuild.targets(1151,5): warning MSB8027: 名为 WindowsAppRuntimeAutoInitializer.cpp 的两个或更多文件将生成到同一位置的输出。这会导致错误的生成结果。   调用的文件是 g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp, g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp。 [G:\code\guide\WinUI3\examples\31-window-shell\WindowShellApp.vcxproj]
+  WindowsAppRuntimeAutoInitializer.cpp
+  WindowsAppRuntimeAutoInitializer.cpp
+WindowShellApp\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\31-window-shell\WindowShellApp.vcxproj]
+  XamlTypeInfo.g.cpp
+WindowShellApp\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\31-window-shell\WindowShellApp.vcxproj]
+  WindowShellApp.vcxproj -> G:\code\guide\WinUI3\examples\31-window-shell\x64\Debug\WindowShellApp\WindowShellApp.exe
+PASS : 31-window-shell
+
+=== 32-binding-mvvm (Build Debug|x64) ===
+
+  正在确定要还原的项目…
+  所有项目均是最新的，无法还原。
+G:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VC\v180\Microsoft.CppBuild.targets(1151,5): warning MSB8027: 名为 WindowsAppRuntimeAutoInitializer.cpp 的两个或更多文件将生成到同一位置的输出。这会导致错误的生成结果。   调用的文件是 g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp, g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp。 [G:\code\guide\WinUI3\examples\32-binding-mvvm\MvvmApp.vcxproj]
+  WindowsAppRuntimeAutoInitializer.cpp
+  WindowsAppRuntimeAutoInitializer.cpp
+MvvmApp\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\32-binding-mvvm\MvvmApp.vcxproj]
+MvvmApp\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\32-binding-mvvm\MvvmApp.vcxproj]
+  MvvmApp.vcxproj -> G:\code\guide\WinUI3\examples\32-binding-mvvm\x64\Debug\MvvmApp\MvvmApp.exe
+PASS : 32-binding-mvvm
+
+=== 34-os-integration (Build Debug|x64) ===
+
+  正在确定要还原的项目…
+  所有项目均是最新的，无法还原。
+G:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VC\v180\Microsoft.CppBuild.targets(1151,5): warning MSB8027: 名为 WindowsAppRuntimeAutoInitializer.cpp 的两个或更多文件将生成到同一位置的输出。这会导致错误的生成结果。   调用的文件是 g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp, g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp。 [G:\code\guide\WinUI3\examples\34-os-integration\OsIntApp.vcxproj]
+  WindowsAppRuntimeAutoInitializer.cpp
+  WindowsAppRuntimeAutoInitializer.cpp
+OsIntApp\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\34-os-integration\OsIntApp.vcxproj]
+  XamlTypeInfo.g.cpp
+OsIntApp\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\34-os-integration\OsIntApp.vcxproj]
+  OsIntApp.vcxproj -> G:\code\guide\WinUI3\examples\34-os-integration\x64\Debug\OsIntApp\OsIntApp.exe
+PASS : 34-os-integration
+
+=== 35-taskflow (Build Debug|x64) ===
+
+  正在确定要还原的项目…
+  所有项目均是最新的，无法还原。
+G:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VC\v180\Microsoft.CppBuild.targets(1151,5): warning MSB8027: 名为 WindowsAppRuntimeAutoInitializer.cpp 的两个或更多文件将生成到同一位置的输出。这会导致错误的生成结果。   调用的文件是 g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp, g:\nuget\packages\microsoft.windowsappsdk.foundation\1.8.260222000\buildTransitive\native\..\..\include\WindowsAppRuntimeAutoInitializer.cpp。 [G:\code\guide\WinUI3\examples\35-taskflow\TaskFlow.vcxproj]
+  WindowsAppRuntimeAutoInitializer.cpp
+  WindowsAppRuntimeAutoInitializer.cpp
+TaskFlow\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\35-taskflow\TaskFlow.vcxproj]
+  XamlTypeInfo.g.cpp
+TaskFlow\x64\Debug\WindowsAppRuntimeAutoInitializer.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定 [G:\code\guide\WinUI3\examples\35-taskflow\TaskFlow.vcxproj]
+  TaskFlow.vcxproj -> G:\code\guide\WinUI3\examples\35-taskflow\x64\Debug\TaskFlow\TaskFlow.exe
+PASS : 35-taskflow
+
+=== summary ===
+PASS  01-first-app
+PASS  06-layout
+PASS  07-controls-basic
+PASS  17-controls-collections
+PASS  21-controls-shell
+PASS  26-customization
+PASS  31-window-shell
+PASS  32-binding-mvvm
+PASS  34-os-integration
+PASS  35-taskflow
