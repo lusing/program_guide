@@ -18,21 +18,23 @@
 > `examples-linux/` 下 60 个示例：
 > - 56 个在 Arch Linux / WSL2（NASM 3.02 / GCC 16.2.1 / GNU ld 2.47 / glibc 2.44）实际汇编、链接、运行通过；
 > - **3 个 AVX/AVX2/FMA 示例（`10_sse_simd/avx_basics.asm`、`avx2_int.asm`、`avx2_fma.asm`）现已在本机（Ubuntu 22.04 / KVM / Intel Xeon Platinum，Skylake-SP）实际汇编、链接、运行通过**——逐通道数值与 macOS/Windows 版一致；
-> - **1 个 AVX-512 示例（`10_sse_simd/avx512_basics.asm`，仅 Linux 版）在本机实测通过**——演示 ZMM 16 路整数加、opmask 合并掩码 `{k1}` 与归零掩码 `{k1}{z}`，本机支持 AVX-512F/DQ/CD/BW/VL 且 XCR0[7:5] 全开，逐通道输出与预期完全吻合（见 [SIMD 进阶](docs/12_simd_avx.md) 第 9 节）；
+> - **1 个 AVX-512 示例（`10_sse_simd/avx512_basics.asm`，当时只有 Linux 版，2026-09 已补齐 Windows 版）在本机实测通过**——演示 ZMM 16 路整数加、opmask 合并掩码 `{k1}` 与归零掩码 `{k1}{z}`，本机支持 AVX-512F/DQ/CD/BW/VL 且 XCR0[7:5] 全开，逐通道输出与预期完全吻合（见 [SIMD 进阶](docs/12_simd_avx.md) 第 9 节）；
 > - 至此 `examples-linux/` **60/60** 全部实测通过。
 >   - 本机用的是 apt 自带的 **NASM 2.15.05**（指南标注的 3.02+ 是推荐版本，2.15 汇编这 60 个示例完全没问题，包括 AVX-512 指令与 `{k1}`/`{k1}{z}` 掩码语法）。
-> `examples/`（Windows）下 61 个示例：**全部实际汇编、链接、运行通过（61/61）**，已在两台 Windows 机器上各完整跑过一遍：
+> `examples/`（Windows）下 62 个示例：**全部实际汇编、链接、运行通过（62/62）**，已在两台 Windows 机器上各完整跑过一遍：
 >
 > | 机器 | 系统 | CPU | NASM | link.exe | 结果 |
 > |------|------|-----|------|----------|------|
-> | i7-12700F（2026-09 首测） | Windows 11 | Intel i7-12700F（Alder Lake，P/E 混合架构） | 3.02 | MSVC 14.52 | 61/61 |
-> | Xeon Platinum（本机复核） | Windows 11 企业版 23H2（10.0.22631） | Intel Xeon Platinum 8378C（Ice Lake-SP，KVM 虚拟机，4 核 8 线程） | 3.02 | MSVC 14.51（VS 2026 18.8） | **61/61** |
+> | i7-12700F（2026-09 首测） | Windows 11 | Intel i7-12700F（Alder Lake，P/E 混合架构） | 3.02 | MSVC 14.52 | 61/61（当时示例 61 个） |
+> | Xeon Platinum（本机复核） | Windows 11 企业版 23H2（10.0.22631） | Intel Xeon Platinum 8378C（Ice Lake-SP，KVM 虚拟机，4 核 8 线程） | 3.02 | MSVC 14.51（VS 2026 18.8） | **62/62** |
 >
 > 两台都包括此前「只做到汇编通过」的 3 个 AVX/AVX2 示例——逐通道数值与 macOS 版一致，
-> Windows 侧实测输出见 [SIMD 进阶](docs/12_simd_avx.md) 第 9 节；`cpuid_hybrid` 在 Alder Lake
-> 那台上的逐逻辑处理器（P核/E核）实测见 [混合架构](docs/09_hybrid_architecture.md)；
-> 本机复核的另外几个读数：AVX2 = YES、**AVX-512F/DQ/CD/BW/VL = YES**（Windows 已放开 ZMM 状态）、
-> 页 0x1A 因虚拟机把最大基本页号限成 `0xD` 而走前置检查跳过——详见同一章的第五台机器一节。
+> Windows 侧实测输出见 [SIMD 进阶](docs/12_simd_avx.md) 第 9 节；本机复核时还补齐了
+> **Windows 版 `avx512_basics.asm`**（AVX-512 此前只有 Linux 版），并在本机真跑出完整三段输出：
+> 该机 AVX2 = YES、**AVX-512F/DQ/CD/BW/VL = YES**（Windows 已放开 ZMM 状态），ZMM / opmask
+> 指令确实能执行，见同节末；`cpuid_hybrid` 在 Alder Lake 那台上的逐逻辑处理器（P核/E核）实测见
+> [混合架构](docs/09_hybrid_architecture.md)，本机则因虚拟机把最大基本页号限成 `0xD`
+> 而走前置检查跳过——详见同一章的第五台机器一节。
 >
 > 本机复核时把构建脚本里写死的工具链盘符去掉了（原来固定 `G:\Program Files\Microsoft Visual Studio\18\Community`
 > 与 `G:\Intel\OneAPI\mkl\latest`，换机器就编不动）：现在 VS 用 `vswhere` 定位，MKL 依次探测常见安装位置。
@@ -129,7 +131,7 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 # ---- Linux ----
 ./build-linux.sh -Category 01_data_movement  # 构建并运行某一类别
 ./build-linux.sh -File 01_data_movement/lea.asm
-./build-linux.sh -All                        # 构建并运行全部（59 个）
+./build-linux.sh -All                        # 构建并运行全部（60 个）
 ./build-linux.sh -BuildOnly -All             # 只构建不运行
 ./build-linux.sh -Clean
 ```
@@ -151,7 +153,7 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 | 7 | 栈操作（Stack Operations） | 6 | `07_stack_ops` | PUSH、POP、ENTER、LEAVE 等栈管理指令 |
 | 8 | 系统与杂项（System & Misc） | 6 | `08_system_misc` | SYSCALL、CPUID、RDTSC、NOP、HLT 等 |
 | 9 | 浮点运算（FPU） | 8 | `09_fpu` | FLD、FST、FADD、FMUL、FDIV、FCOM 等 x87 指令 |
-| 10 | SSE/SIMD（SIMD） | 10 | `10_sse_simd` | MOVAPS、ADDPS、MULPS、CVT* 等 SSE 指令，以及 VADDPS / VPMULLD / VFMADD231PS 等 **AVX / AVX2 / FMA** 指令，以及 VPADDD zmm / opmask 等 **AVX-512** 指令（Linux 版） |
+| 10 | SSE/SIMD（SIMD） | 10 | `10_sse_simd` | MOVAPS、ADDPS、MULPS、CVT* 等 SSE 指令，以及 VADDPS / VPMULLD / VFMADD231PS 等 **AVX / AVX2 / FMA** 指令，以及 VPADDD zmm / opmask 等 **AVX-512** 指令（Linux / Windows 版；macOS 机器不支持 AVX-512，未提供） |
 | 11 | 高等数学与数学库（Calculus） | 7 | `11_calculus_mkl` | 数值微分/积分（梯形、辛普森、样条）与厂商数学库调用 |
 
 三侧的示例数量对照：
@@ -167,9 +169,9 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 | 07_stack_ops | 3 | 3 | 3 |
 | 08_system_misc | 4 | 4 | 4 |
 | 09_fpu | 5 | 5 | 5 |
-| 10_sse_simd | 8 | 8 | 9（含 `avx512_basics.asm`，仅 Linux 版，本机实测） |
+| 10_sse_simd | 9（含 `avx512_basics.asm`，本机实测） | 8 | 9（含 `avx512_basics.asm`，本机实测） |
 | 11_calculus_mkl | 7（5 + 2 个排查脚手架） | 5 | 5 |
-| **合计** | **61** | **59** | **60** |
+| **合计** | **62** | **59** | **60** |
 
 ## 章节索引
 
