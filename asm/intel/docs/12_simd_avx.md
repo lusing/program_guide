@@ -286,8 +286,10 @@ Windows 那一列是本文档三个示例里唯一「写法不同」的地方，
 （当时用的 macOS）。2026-09 已在 Windows 11（i7-12700F，nasm + MSVC link.exe + UCRT）
 上补测：三个示例全部构建、运行通过，逐通道数值与 macOS 版完全一致（见第 9 节），
 「双写」技巧实测有效。三份源码放在一起 diff，差异确实只出现在这些行上。
+同月复核 Windows 全量 61 个示例时，这三个示例又在第二台 Windows 机器
+（Xeon Platinum Ice Lake-SP 虚拟机）上跑通一遍，数值同样不变，见第 9 节末。
 
-## 9. 实测输出（i7-4770HQ / Haswell；末小节为 i7-12700F / Windows 补测；AVX-512 为 Xeon-SP / Linux 本机实测）
+## 9. 实测输出（i7-4770HQ / Haswell；Windows 补测有 i7-12700F 与 Xeon Ice Lake-SP 两台；AVX-512 为 Xeon-SP / Linux 本机实测）
 
 `avx_basics.asm`：
 
@@ -400,6 +402,32 @@ vfmadd231ps 结果 = -1.4210854715202004e-14
   构建汇总: 总计 61 个, 成功 61 个, 失败 0 个
 ==========================================
 ```
+
+#### 本机复核（Xeon Platinum Ice Lake-SP 虚拟机 / Windows 11 企业版 23H2，2026-09）
+
+同月在一台 KVM 虚拟机上把 `build.ps1 -All` 整个跑了一遍：**61/61 全部汇编、链接、运行通过，
+61 个程序的退出码全为 0**（NASM 3.02 / MSVC 14.51 `link.exe` / Windows SDK 10.0.28000.0；
+`11_calculus_mkl` 的 7 个示例链接的是 oneAPI MKL 2025.3）。三个 SIMD 示例的输出与
+Alder Lake 那台逐字一致：
+
+```text
+探测：AVX2 = YES，FMA = YES
+mulps+addps 结果 = 0
+vfmadd231ps 结果 = -1.4210854715202004e-14
+mulps+addps 结果 = 10
+vfmadd231ps 结果 = 10
+```
+
+`avx_basics` 的逐通道行仍是 Windows 版格式（`[0] = 11.000000`），`avx2_int` 的四段
+（VPMULLD `[0] = 300000`…`[7] = -2400000`、VPSLLVD、VPERMD、VPBROADCASTD）也与前两台相同。
+
+机器能力上，这台和前两台 Windows 机器不同的一点是 **AVX-512 = YES**：页 7 `EBX[16]` 置位
+（`EBX = 0xF1BF0FBB`，AVX-512F/DQ/CD/BW/VL 全有），且操作系统已放开 ZMM / opmask 状态——
+.NET 运行时的 `Avx512F.IsSupported` 要求 CPUID 与 OS 的 `XCR0[7:5]` 同时满足，本机为 `True`。
+换句话说，**Windows 侧并不缺 AVX-512 能力，缺的只是本文档的 Windows 版 AVX-512 示例**
+（`avx512_basics.asm` 目前只有 Linux 版）。这台机器另外两个读数见
+[混合架构](09_hybrid_architecture.md) 第五台一节：最大基本页号被虚拟化限成 `0xD`、
+页 0x1A 够不到。
 
 ### AVX-512 侧补测（Xeon Platinum Skylake-SP / Ubuntu 22.04 KVM，2026-09）
 

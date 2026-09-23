@@ -21,7 +21,21 @@
 > - **1 个 AVX-512 示例（`10_sse_simd/avx512_basics.asm`，仅 Linux 版）在本机实测通过**——演示 ZMM 16 路整数加、opmask 合并掩码 `{k1}` 与归零掩码 `{k1}{z}`，本机支持 AVX-512F/DQ/CD/BW/VL 且 XCR0[7:5] 全开，逐通道输出与预期完全吻合（见 [SIMD 进阶](docs/12_simd_avx.md) 第 9 节）；
 > - 至此 `examples-linux/` **60/60** 全部实测通过。
 >   - 本机用的是 apt 自带的 **NASM 2.15.05**（指南标注的 3.02+ 是推荐版本，2.15 汇编这 60 个示例完全没问题，包括 AVX-512 指令与 `{k1}`/`{k1}{z}` 掩码语法）。
-> `examples/`（Windows）下 61 个示例：**2026-09 在 Windows 11（i7-12700F，Alder Lake，P/E 混合架构 / NASM 3.02 / MSVC 14.52 `link.exe`）全部实际汇编、链接、运行通过（61/61）**，包括此前「只做到汇编通过」的 3 个 AVX/AVX2 示例——逐通道数值与 macOS 版一致，Windows 侧实测输出见 [SIMD 进阶](docs/12_simd_avx.md) 第 9 节；`cpuid_hybrid` 在该机上的逐逻辑处理器（P核/E核）实测见 [混合架构](docs/09_hybrid_architecture.md)。
+> `examples/`（Windows）下 61 个示例：**全部实际汇编、链接、运行通过（61/61）**，已在两台 Windows 机器上各完整跑过一遍：
+>
+> | 机器 | 系统 | CPU | NASM | link.exe | 结果 |
+> |------|------|-----|------|----------|------|
+> | i7-12700F（2026-09 首测） | Windows 11 | Intel i7-12700F（Alder Lake，P/E 混合架构） | 3.02 | MSVC 14.52 | 61/61 |
+> | Xeon Platinum（本机复核） | Windows 11 企业版 23H2（10.0.22631） | Intel Xeon Platinum 8378C（Ice Lake-SP，KVM 虚拟机，4 核 8 线程） | 3.02 | MSVC 14.51（VS 2026 18.8） | **61/61** |
+>
+> 两台都包括此前「只做到汇编通过」的 3 个 AVX/AVX2 示例——逐通道数值与 macOS 版一致，
+> Windows 侧实测输出见 [SIMD 进阶](docs/12_simd_avx.md) 第 9 节；`cpuid_hybrid` 在 Alder Lake
+> 那台上的逐逻辑处理器（P核/E核）实测见 [混合架构](docs/09_hybrid_architecture.md)；
+> 本机复核的另外几个读数：AVX2 = YES、**AVX-512F/DQ/CD/BW/VL = YES**（Windows 已放开 ZMM 状态）、
+> 页 0x1A 因虚拟机把最大基本页号限成 `0xD` 而走前置检查跳过——详见同一章的第五台机器一节。
+>
+> 本机复核时把构建脚本里写死的工具链盘符去掉了（原来固定 `G:\Program Files\Microsoft Visual Studio\18\Community`
+> 与 `G:\Intel\OneAPI\mkl\latest`，换机器就编不动）：现在 VS 用 `vswhere` 定位，MKL 依次探测常见安装位置。
 >
 > 本机复核时修掉的三个 macOS 专属问题见 [macOS 平台移植指南](docs/10_macos_porting.md) 的
 > 「10. 本机复核纪要（macOS 14 / Xcode 16 CLT）」一节：

@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     共享构建逻辑（供 build_all.ps1 与 build_category.ps1 复用）
 .DESCRIPTION
@@ -13,8 +13,43 @@ $script:ExamplesDir  = Join-Path $script:ProjectRoot "examples"
 
 # ----------------------------------------------------------------------------
 # MSVC 工具链路径（使用 link.exe 替代 gcc 进行链接）
+# 先用 vswhere 定位 Visual Studio 安装目录（跨机器通用），
+# vswhere 不可用时再回退到若干常见安装根目录，避免把盘符写死。
 # ----------------------------------------------------------------------------
-$script:VCBasePath = "G:\Program Files\Microsoft Visual Studio\18\Community\VC"
+function Resolve-VSRoot {
+    $vswhere = Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio\Installer\vswhere.exe"
+    if (Test-Path $vswhere) {
+        $installs = & $vswhere -all -products * -property installationPath 2>$null
+        foreach ($install in $installs) {
+            if ($install -and (Test-Path (Join-Path $install "VC\Tools\MSVC"))) {
+                return $install.Trim()
+            }
+        }
+    }
+    # 回退：扫描常见安装根目录下的各版本/各版本号
+    $roots = @("$env:ProgramFiles\Microsoft Visual Studio",
+               "${env:ProgramFiles(x86)}\Microsoft Visual Studio",
+               "D:\Program Files\Microsoft Visual Studio",
+               "G:\Program Files\Microsoft Visual Studio")
+    foreach ($root in $roots) {
+        if (-not (Test-Path $root)) { continue }
+        $editions = Get-ChildItem -Path $root -Directory -ErrorAction SilentlyContinue |
+            Sort-Object FullName -Descending
+        foreach ($edition in $editions) {
+            if (Test-Path (Join-Path $edition.FullName "VC\Tools\MSVC")) {
+                return $edition.FullName
+            }
+        }
+    }
+    return $null
+}
+
+$script:VSRoot = Resolve-VSRoot
+if (-not $script:VSRoot) {
+    Write-Host "错误: 未找到 Visual Studio 的 VC 工具链（见 docs/02_environment.md 的安装说明）。" -ForegroundColor Red
+    exit 1
+}
+$script:VCBasePath = Join-Path $script:VSRoot "VC"
 # 自动查找最新 MSVC 版本目录
 $msvcVerDirs = Get-ChildItem "$script:VCBasePath\Tools\MSVC" -Directory -ErrorAction SilentlyContinue
 if (-not $msvcVerDirs) {
@@ -38,10 +73,29 @@ $script:UMLibPath   = "$script:WinSDKBase\Lib\$script:WinSDKVersion\um\x64"
 
 # ----------------------------------------------------------------------------
 # Intel MKL 路径 (用于 11_calculus_mkl 类别)
+# 依次探测常见安装位置；未安装时置空，由调用处给出明确提示。
 # ----------------------------------------------------------------------------
-$script:MKLBasePath = "G:\Intel\OneAPI\mkl\latest"
-$script:MKLLibPath  = Join-Path $script:MKLBasePath "lib"
-$script:MKLBinPath  = Join-Path $script:MKLBasePath "bin"
+function Resolve-MKLBase {
+    $candidates = @()
+    if ($env:ONEAPI_ROOT) { $candidates += (Join-Path $env:ONEAPI_ROOT "mkl\latest") }
+    $candidates += @("G:\Intel\OneAPI\mkl\latest",
+                     "D:\Intel\oneAPI\mkl\latest",
+                     "C:\Program Files (x86)\Intel\oneAPI\mkl\latest",
+                     "C:\Program Files\Intel\oneAPI\mkl\latest")
+    foreach ($candidate in $candidates) {
+        if ($candidate -and (Test-Path (Join-Path $candidate "lib\mkl_rt.lib"))) {
+            return $candidate
+        }
+    }
+    return $null
+}
+
+$script:MKLBasePath = Resolve-MKLBase
+$script:MKLLibPath  = if ($script:MKLBasePath) { Join-Path $script:MKLBasePath "lib" } else { $null }
+$script:MKLBinPath  = if ($script:MKLBasePath) { Join-Path $script:MKLBasePath "bin" } else { $null }
+if (-not $script:MKLBasePath) {
+    Write-Host "提示: 未找到 Intel MKL，11_calculus_mkl 类别将无法链接（其余类别不受影响）。" -ForegroundColor DarkYellow
+}
 
 # 确保 build 目录存在
 function Ensure-BuildDir {
@@ -85,6 +139,10 @@ function Invoke-BuildFile {
                   $objPath, "ucrt.lib", "msvcrt.lib", "legacy_stdio_definitions.lib", "kernel32.lib",
                   "/libpath:$script:VCLibPath", "/libpath:$script:UCRTLibPath", "/libpath:$script:UMLibPath")
     if ($isMKL) {
+        if (-not $script:MKLBasePath) {
+            Write-Host "  [失败] 该示例需要 Intel MKL，但本机未检测到 mkl_rt.lib。" -ForegroundColor Red
+            return $false
+        }
         $linkArgs += @("mkl_rt.lib", "/libpath:$script:MKLLibPath", "/LARGEADDRESSAWARE:NO")
         Write-Host "  [MKL] 链接 mkl_rt.lib (运行时CPU调度)" -ForegroundColor DarkYellow
     }
