@@ -77,7 +77,7 @@ Intel Thread Director 是混合架构的硬件线程调度机制。它通过监�
 3. **AVX-512 谨慎使用**——E核可能不支持 AVX-512，若使用需做运行时降级（fallback 到 AVX2 或 SSE）；消费级 12 代更是 P/E 整片禁用（见下文实测）。
 4. **核心类型可在运行中变化**——线程被调度到另一类型核心后，之前的检测结果可能不再适用；对关键路径可定期重新检测。
 
-## 四台机器上的实测
+## 五台机器上的实测
 
 这两件事都在 `08_system_misc/cpuid_hybrid.asm` 里演示了，三个平台各有一份：
 
@@ -89,7 +89,7 @@ Intel Thread Director 是混合架构的硬件线程调度机制。它通过监�
 
 探测逻辑各平台完全一致，唯一要改的是「CPUID 会踩 `EBX`，而 `EBX` 是被调用者保存寄存器」——Windows 版把原值存到 `.data`，macOS / Linux 版存到栈帧的 `[rbp-8]`，取完所有 CPUID 后都必须还原。
 
-在两台**没有混合架构**的旧 Intel 客户端机器上各实测一遍（都是 macOS 版），正好对照「同一套探测代码，如何如实报告不同代际的能力」。2026-09 又在一台**真正的混合架构**机器（Alder Lake / Windows）上补测，页 0x1A 的两种答案第一次都跑了出来。同月再加一台**同构服务器**（Xeon Platinum Skylake-SP / Linux KVM），它既不是混合架构，又带上了前三台都没有的 **AVX-512**——把「非混合 = 没有 AVX-512」这个容易从样本里误读出来的结论也给否掉了。
+在两台**没有混合架构**的旧 Intel 客户端机器上各实测一遍（都是 macOS 版），正好对照「同一套探测代码，如何如实报告不同代际的能力」。2026-09 又在一台**真正的混合架构**机器（Alder Lake / Windows）上补测，页 0x1A 的两种答案第一次都跑了出来。同月再加一台**同构服务器**（Xeon Platinum Skylake-SP / Linux KVM），它既不是混合架构，又带上了前三台都没有的 **AVX-512**——把「非混合 = 没有 AVX-512」这个容易从样本里误读出来的结论也给否掉了。随后在 Windows 侧复核 61 个示例时，又补上了第五台：一台跑在 Xeon Platinum Ice Lake-SP 上的 **Windows 虚拟机**，AVX-512 照样是 YES，但最大基本页号被虚拟化限成了 `0xD`。
 
 ### Alder Lake（i7-12700F，2022；Family 6 / Model 151 / Stepping 2）——真·混合架构
 
@@ -184,20 +184,53 @@ Hybrid architecture detection completed.
 同样 `< 0x1A`，所以混合探测被前置检查正确跳过——
 「页 0x1A 够不到 = 没有混合架构报告」这条结论在服务器平台上同样成立。
 
-### 四台机器读出来的信息怎么对比
+### 第五台：Xeon Platinum（Ice Lake-SP，Windows 11 / KVM 虚拟机；Family 6 / Model 106 / Stepping 6）
 
-| 探测项 | i7-3520M（Ivy Bridge） | i7-4770HQ（Haswell） | i7-12700F（Alder Lake） | Xeon Platinum（Skylake-SP，KVM） | 说明 |
-|--------|------------------------|----------------------|-------------------------|----------------------------------|------|
-| 最大页号 | `0xD` | `0xD` | `0x20` | `0x16` | 旧客户端停在 0xD，Alder Lake 到 0x20，服务器 Skylake-SP 在中间 0x16 |
-| 页 1A 能查吗 | 否（`0xD < 0x1A`，跳过） | 否（跳过） | **能** | 否（`0x16 < 0x1A`，跳过） | 前置检查决定混合探测是否执行 |
-| 核心类型 | 未报告 | 原始值 `0x00` | **`0x40`（P）/ `0x20`（E），随绑核翻转** | 原始值 `0x00` | `0x00` = 非混合架构 / 未报告 |
-| AVX2（页 7 EBX bit 5） | NO | **YES** | **YES（P/E 全部 20 个 LP）** | **YES（8 个 LP 全部）** | Haswell 起、服务器 Skylake-SP 起都有 AVX2 |
-| AVX-512F（页 7 EBX bit 16） | NO | NO | **NO（消费级整片禁用）** | **YES** | 消费级混合架构指望不上；服务器同构 CPU 通常支持 |
+2026-09 复核 Windows 侧 61 个示例时，顺手把 Windows 版 `cpuid_hybrid.exe` 也跑了一遍
+（Windows 11 企业版 23H2 / NASM 3.02 / MSVC 14.51 `link.exe`）。这台是 **KVM 虚拟机**
+（CPUID 页 1 `ECX[31]` 置位，页 `0x40000000` 返回 `Microsoft Hv`），
+宿主是 Intel Xeon Platinum 8378C（Ice Lake-SP），虚拟机分到 4 核 8 线程：
+
+```text
+Hybrid Architecture Supported: NO
+Current Core Type: Unknown
+Raw Core Type Value: 0x00
+AVX2: YES
+AVX-512: YES
+Hybrid architecture detection completed.
+```
+
+三个新情况：
+
+1. **AVX-512 第一次在 Windows 上读到 YES**。此前 AVX-512 = YES 只出现在 Linux 那一台，
+   容易让人误以为「Windows 侧用不上 AVX-512」。本机页 7 `EBX[16]` 置位，且 ZMM / opmask
+   状态已由操作系统放开——.NET 运行时的 `Avx512F.IsSupported` 要求 CPUID 与 OS 的
+   `XCR0[7:5]` 同时满足，本机为 `True`。也就是说 **Windows 侧缺的只是一个 AVX-512 示例，
+   不是平台能力**（本指南的 `avx512_basics.asm` 目前只有 Linux 版）。
+2. **最大基本页号被虚拟化限成了 `0xD`**。用 CPUID 页 0 单独测得本机最大页号 `0xD`
+   ——物理上支持 AVX-512 的 Ice Lake-SP 在虚拟机里只报到 `0xD`，`< 0x1A`，
+   混合探测于是被前置检查整段跳过，输出如实报 `NO` / `0x00`。
+   和第四台（Skylake-SP 直通、页号 `0x16`）对照，两台的 AVX-512 能力相同、
+   页号却不同：**页号是「有哪些页」，不是「页里有什么」**，这条在虚拟化下尤其要记牢。
+3. **「够不到页 0x1A」不再等于「机器老」**。前四台够不到页 0x1A 各有原因
+   （老客户端 `0xD`、服务器 `0x16`），这台则是现代服务器 CPU 在虚拟化下被限制。
+   程序不需要知道原因——`cmp eax, 0x1A` / `jb` 照常跳过，如实降级。
+
+### 五台机器读出来的信息怎么对比
+
+| 探测项 | i7-3520M（Ivy Bridge） | i7-4770HQ（Haswell） | i7-12700F（Alder Lake） | Xeon Platinum（Skylake-SP，KVM） | Xeon Platinum（Ice Lake-SP，KVM / Windows） | 说明 |
+|--------|------------------------|----------------------|-------------------------|----------------------------------|---------------------------------------------|------|
+| 最大页号 | `0xD` | `0xD` | `0x20` | `0x16` | `0xD`（虚拟机限制） | 旧客户端停在 0xD，Alder Lake 到 0x20，服务器直通 0x16，虚拟化限流 0xD——**页号与「新不新、强不强」没有单调关系** |
+| 页 1A 能查吗 | 否（`0xD < 0x1A`，跳过） | 否（跳过） | **能** | 否（`0x16 < 0x1A`，跳过） | 否（`0xD < 0x1A`，跳过） | 前置检查决定混合探测是否执行 |
+| 核心类型 | 未报告 | 原始值 `0x00` | **`0x40`（P）/ `0x20`（E），随绑核翻转** | 原始值 `0x00` | 原始值 `0x00` | `0x00` = 非混合架构 / 未报告 |
+| AVX2（页 7 EBX bit 5） | NO | **YES** | **YES（P/E 全部 20 个 LP）** | **YES（8 个 LP 全部）** | **YES（8 个 LP 全部）** | Haswell 起、服务器 Skylake-SP 起都有 AVX2 |
+| AVX-512F（页 7 EBX bit 16） | NO | NO | **NO（消费级整片禁用）** | **YES（Linux）** | **YES（Windows 已放开 ZMM 状态）** | 消费级混合架构指望不上；服务器同构 CPU 通常支持，且不限于 Linux |
 
 五条可迁移的结论：
 
 1. **前置检查决定了你能不能「安全地失败」**。Ivy Bridge / Haswell 最大页号是 `0xD`，
-   Xeon-SP 是 `0x16`，三者都 `< 0x1A`，`cmp eax, 0x1A / jb` 直接把页 1A 查询跳掉了。
+   Skylake-SP 是 `0x16`，Ice Lake-SP 虚拟机也是 `0xD`，四者都 `< 0x1A`，
+   `cmp eax, 0x1A / jb` 直接把页 1A 查询跳掉了。
    不查就上会怎样？在 Haswell 上实测：
    越界查页 1A，CPU 返回的是 `EAX=0x00000007 / EBX=0x00000340 / ECX=0x00000340` ——
    既不是 0，也不是 1A 的输入回显，而是**别的页的遗留数据**，内容未定义、
@@ -211,8 +244,8 @@ Hybrid architecture detection completed.
    变 `0x20`。运行时的核型检测要跟着线程走，不能只在启动时问一次就当作全局事实。
 4. **核型分界不在 AVX2，在 AVX-512**。混合架构两种核的 SIMD 基线相同，写 AVX2 代码不用
    挑核；想上 AVX-512 才需要运行时位检测 + 降级路径——消费级混合架构上它基本指望不上，
-   但同构服务器 CPU（如 Skylake-SP）通常支持。
-5. **同一段代码在四台机器上都能跑通且结论都正确**，靠的正是「先问、再查、
+   但同构服务器 CPU（如 Skylake-SP / Ice Lake-SP）通常支持，Windows 上同样如此。
+5. **同一段代码在五台机器上都能跑通且结论都正确**，靠的正是「先问、再查、
    按位判断」这套流程，而不是按 CPU 型号写死分支。
 
 这正好是一份「正确的能力探测」长什么样：不是猜，而是问，然后如实降级。
