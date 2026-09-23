@@ -2,8 +2,7 @@
 
 本指南原本面向 Windows（`-f win64` + MSVC `link.exe`），后来加了 macOS（`-f macho64` + `clang`）。这一章说明**同一份汇编知识在 Linux 上怎么落地**，以及把现有示例搬到 Linux 需要改哪些地方、会踩哪些坑。
 
-`examples-linux/` 下的示例共 59 个，其中 56 个已在 Linux 上（Arch Linux / WSL2 x86-64 / NASM 3.02 / GCC 16.2.1 / GNU ld 2.47 / glibc 2.44）**实际汇编、链接、运行通过**，见 [examples-linux/README.md](../examples-linux/README.md)。
-后补的 3 个 AVX 示例（`10_sse_simd/avx_*.asm`、`avx2_*.asm`）**只在 macOS 上做到 `nasm -f elf64` 汇编通过，链接与运行未实测** —— 原因和复核结论见 [第 9.1 节](#91-本机补做的汇编级核查macos-上做没有-linux-环境)。
+`examples-linux/` 下的示例共 60 个：其中 56 个在 Arch Linux / WSL2（x86-64 / NASM 3.02 / GCC 16.2.1 / GNU ld 2.47 / glibc 2.44）**实际汇编、链接、运行通过**；后补的 4 个示例（`10_sse_simd/avx_*`、`avx2_*`、`avx512_basics.asm`）在另一台真 Linux（Ubuntu 22.04 / KVM / Intel Xeon Platinum，Skylake-SP）上也已实测通过，**60/60** —— 复核经过见 [第 9.1 节](#91-后补的-avx--avx512-示例先汇编级核查后在真-linux-上实测)，见 [examples-linux/README.md](../examples-linux/README.md)。
 
 ---
 
@@ -298,7 +297,8 @@ Program received signal SIGSEGV, Segmentation fault.
 ## 9. 验证记录
 
 > 下面是**当年**在真 Linux 上跑出的 56/56（当时示例总数就是 56）。
-> 当前示例数是 59，新增的 3 个 AVX 示例只做了汇编级核查，见 9.1。
+> 当前示例数是 60；后补的 4 个示例（AVX / AVX2 / FMA / AVX-512）已在另一台真 Linux 上
+> 实测通过，复核经过见 9.1。
 
 ```
 $ ./build-linux.sh -All
@@ -319,39 +319,53 @@ $ ./build-linux.sh -All
 | glibc | 2.44（含 libmvec 2.44） |
 | CPU | 支持 SSE4.2 / AVX2 / FMA（`11_calculus_mkl/` 的 SIMD 示例只用 SSE，任何 x86-64 可跑；AVX/AVX2/FMA 的示例在 `10_sse_simd/`，见第 12 章） |
 
-### 9.1 本机补做的汇编级核查（macOS 上做，没有 Linux 环境）
+### 9.1 后补的 AVX / AVX-512 示例（先汇编级核查，后在真 Linux 上实测）
 
-上面那张 56/56 是真的在 Linux 上跑出来的。后来在 `10_sse_simd/` 下补了三个 AVX 示例
-（`avx_basics` / `avx2_int` / `avx2_fma`），而补写时手边是 macOS —— `docker` / `podman` /
-`colima` / `lima` / `qemu-*` 一个都不在，**没有 Linux 环境可以实地链接、运行**，
-于是只做了**汇编级**核查，逐文件执行 `nasm -I lib -f elf64 <src> -o /tmp/x.o`
-并要求退出码 0 且无 warning：
+上面那张 56/56 是真的在 Linux 上跑出来的。后来在 `10_sse_simd/` 下补了四个示例
+（`avx_basics` / `avx2_int` / `avx2_fma` / `avx512_basics`），而补写时手边是 macOS ——
+`docker` / `podman` / `colima` / `lima` / `qemu-*` 一个都不在，**没有 Linux 环境可以实地
+链接、运行**，于是先做了**汇编级**核查，逐文件执行
+`nasm -I lib -f elf64 <src> -o /tmp/x.o` 并要求退出码 0 且无 warning：
 
 ```
 elf64 汇编通过: 59  失败: 0
 ```
 
-**这只证明了语法与符号引用正确，不能证明链接后能跑。** 特别是新增示例还多押了两个赌注：
+**汇编级核查只证明语法与符号引用正确，不能证明链接后能跑。** 其中两个「押注」当时没兑现：
 
 1. `avx2_int.asm` 用 `vmovaps ymm` 读常量，要求这些常量在**最终可执行文件里**落在 32 的倍数上。
-   本机用 `llvm-readelf -S` 解析目标文件段表，确认 NASM 已把 `.data` 的 `Al`（即
+   当时只能用 `llvm-readelf -S` 解析目标文件段表，确认 NASM 已把 `.data` 的 `Al`（即
    `sh_addralign`）写成 **32**（macOS 上 `readelf` 缺失，MacPorts 装的这几个带版本后缀，
-   本机实际是 `/opt/local/bin/llvm-readelf-mp-21`）：
+   实际是 `/opt/local/bin/llvm-readelf-mp-21`）：
 
    ```
    $ llvm-readelf -S /tmp/avx2_int.o | grep .data
      [ 1] .data  PROGBITS  0000000000000000 000240 0003db 00  WA  0  0 32
    ```
 
-   按 ELF 规范链接器会遵守输入段的对齐，但**链接后的实际地址没验**（没有 Linux 环境）。
+   按 ELF 规范链接器会遵守输入段的对齐，但**链接后的实际地址当时没验**。
 2. `avx2_fma.asm` 用 `vfmadd231ps`（FMA3），要求机器真的有 FMA —— 在没 FMA 的 CPU 上
-   是 `SIGILL` 而不是算错。**这一条示例自己处理了**：三支 AVX 示例开头都调 `cpu_features`
+   是 `SIGILL` 而不是算错。**这一条示例自己处理了**：四支 AVX 示例开头都调 `cpu_features`
    （`cpuid` 页 1 / 页 7 + `xgetbv` 看 XCR0），能力不够就走跳过分支、打印一行提示、
-   退出码仍是 0。所以「探测逻辑写没写对」也是需要实地跑一次才知道的东西之一 ——
-   本机的汇编核查证明不了它能正确分流。
+   退出码仍是 0。所以「探测逻辑写没写对」必须实地跑一次才知道 ——
+   汇编级核查证明不了它能正确分流。
 
-所以：**请在真有 Linux 的机器上跑一次 `./build-linux.sh -All` 复核**（预期 59/59）。
-Windows 侧同样是汇编级核查，`nasm -f win64` 61/61（含未移植的两个排查脚手架
+**这两个押注后来都在真 Linux 上兑现了。** 在一台 Ubuntu 22.04 / KVM / Intel Xeon Platinum
+（Skylake-SP）上把 `build-linux.sh -All` 整个跑了一遍，后补的四个示例全部走完整路径：
+
+- 32 字节对齐在链接后依然成立 —— `avx2_int` 的 `vmovaps ymm` 没触发 `#GP`；
+- FMA 确实是这台机器的固有能力，`vfmadd231ps` 对上 `mulps+addps` 的边界差异
+  （`-1.4210854715202004e-14` 对 `0`）与 macOS / Windows 版逐字相同；
+- `avx512_basics.asm` 走完整演示路径，说明 AVX-512F 与 `XCR0[7:5]` 同时成立
+  （本机 `XCR0 = 0xe7`），三段逐通道数值与预期完全吻合，完整输出见
+  [docs/12_simd_avx.md](12_simd_avx.md) 第 9 节。
+
+> 这台 Ubuntu 机上用的是 apt 自带的 **NASM 2.15.05** —— 指南标注的 3.02+ 是推荐版本，
+> 不过 2.15 汇编这 60 个示例完全没问题，包括 AVX-512 指令与 `{k1}` / `{k1}{z}` 掩码语法。
+
+至此 `examples-linux/` **60/60** 全部实测通过。换成别的发行版 / 别的 CPU 仍建议自行跑一次
+`./build-linux.sh -All` 复核：AVX 系列会按能力走跳过分支、退出码照样是 0，脚本不会误报失败。
+Windows 侧则已做到 `build.ps1 -All` 全量实测 62/62（含未移植到 Linux 的两个排查脚手架
 `test_align.asm` / `test_simpson_min.asm`）。
 
 ---

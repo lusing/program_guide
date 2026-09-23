@@ -5,18 +5,19 @@
 **AVX2**（整数也到 256 位）、**FMA**（乘加融合，只舍入一次）、
 **AVX-512**（512 位 ZMM + opmask 掩码寄存器）。
 
-配套示例（前三个三平台各一份，AVX-512 目前只有 Linux 版，在支持 AVX-512F 的机器上实测）：
+配套示例（前三个三平台各一份；AVX-512 有 Linux / Windows 两份——macOS 那几台机器都不支持 AVX-512，写出来只会走跳过分支，故未提供）：
 
 | 示例 | 讲什么 | 最低要求 |
 |------|--------|----------|
 | `avx_basics.asm` | VEX 三操作数、YMM、`vzeroupper` | AVX（Sandy Bridge，2011） |
 | `avx2_int.asm` | 256 位整数乘、每通道变量移位、跨 lane 置换 | AVX2（Haswell，2013） |
 | `avx2_fma.asm` | `vfmadd231ps` 与 SSE 两指令版的数值差异 | FMA3（Haswell，2013） |
-| `avx512_basics.asm`（Linux） | ZMM 16 路、opmask `k1`、合并/归零掩码 | AVX-512F（Skylake-X/SP，2017） |
+| `avx512_basics.asm`（Linux / Windows） | ZMM 16 路、opmask `k1`、合并/归零掩码 | AVX-512F（Skylake-X/SP，2017） |
 
 > 前三个示例都**内置 CPUID + XGETBV 运行时探测**：机器不具备对应能力时，
 > 会打印一行「本机不支持…，跳过」并正常退出 0，不会抛 #UD 崩掉。
-> `avx512_basics.asm` 同样内置探测，缺 AVX-512F 或 XCR0[7:5] 未全开时走跳过分支。
+> `avx512_basics.asm` 同样内置探测，缺 AVX-512F 或 XCR0[7:5] 未全开时走跳过分支——
+> Linux 版在 Xeon-SP 上、Windows 版在 Xeon Ice Lake-SP 虚拟机上各自真跑过一遍，见第 9 节。
 
 ---
 
@@ -286,10 +287,11 @@ Windows 那一列是本文档三个示例里唯一「写法不同」的地方，
 （当时用的 macOS）。2026-09 已在 Windows 11（i7-12700F，nasm + MSVC link.exe + UCRT）
 上补测：三个示例全部构建、运行通过，逐通道数值与 macOS 版完全一致（见第 9 节），
 「双写」技巧实测有效。三份源码放在一起 diff，差异确实只出现在这些行上。
-同月复核 Windows 全量 61 个示例时，这三个示例又在第二台 Windows 机器
-（Xeon Platinum Ice Lake-SP 虚拟机）上跑通一遍，数值同样不变，见第 9 节末。
+同月复核 Windows 全量示例时，这三个示例又在第二台 Windows 机器
+（Xeon Platinum Ice Lake-SP 虚拟机）上跑通一遍，数值同样不变；并在同一台机器上补齐了
+Windows 版 `avx512_basics.asm`（AVX-512 原先只有 Linux 版），见第 9 节末。
 
-## 9. 实测输出（i7-4770HQ / Haswell；Windows 补测有 i7-12700F 与 Xeon Ice Lake-SP 两台；AVX-512 为 Xeon-SP / Linux 本机实测）
+## 9. 实测输出（i7-4770HQ / Haswell；Windows 补测有 i7-12700F 与 Xeon Ice Lake-SP 两台；AVX-512 为 Xeon-SP / Linux 与 Xeon Ice Lake-SP / Windows 两侧实测）
 
 `avx_basics.asm`：
 
@@ -405,9 +407,9 @@ vfmadd231ps 结果 = -1.4210854715202004e-14
 
 #### 本机复核（Xeon Platinum Ice Lake-SP 虚拟机 / Windows 11 企业版 23H2，2026-09）
 
-同月在一台 KVM 虚拟机上把 `build.ps1 -All` 整个跑了一遍：**61/61 全部汇编、链接、运行通过，
-61 个程序的退出码全为 0**（NASM 3.02 / MSVC 14.51 `link.exe` / Windows SDK 10.0.28000.0；
-`11_calculus_mkl` 的 7 个示例链接的是 oneAPI MKL 2025.3）。三个 SIMD 示例的输出与
+同月在一台 KVM 虚拟机上把 `build.ps1 -All` 整个跑了一遍：**62/62 全部汇编、链接、运行通过，
+62 个程序的退出码全为 0**（NASM 3.02 / MSVC 14.51 `link.exe` / Windows SDK 10.0.28000.0；
+`11_calculus_mkl` 的 7 个示例链接的是 oneAPI MKL 2025.3）。其中三个 SIMD 示例的输出与
 Alder Lake 那台逐字一致：
 
 ```text
@@ -424,10 +426,9 @@ vfmadd231ps 结果 = 10
 机器能力上，这台和前两台 Windows 机器不同的一点是 **AVX-512 = YES**：页 7 `EBX[16]` 置位
 （`EBX = 0xF1BF0FBB`，AVX-512F/DQ/CD/BW/VL 全有），且操作系统已放开 ZMM / opmask 状态——
 .NET 运行时的 `Avx512F.IsSupported` 要求 CPUID 与 OS 的 `XCR0[7:5]` 同时满足，本机为 `True`。
-换句话说，**Windows 侧并不缺 AVX-512 能力，缺的只是本文档的 Windows 版 AVX-512 示例**
-（`avx512_basics.asm` 目前只有 Linux 版）。这台机器另外两个读数见
-[混合架构](09_hybrid_architecture.md) 第五台一节：最大基本页号被虚拟化限成 `0xD`、
-页 0x1A 够不到。
+既然能力在，就把本文档原先缺的 Windows 版 `avx512_basics.asm` 补齐并在本机跑了（见下）。
+这台机器另外两个读数见 [混合架构](09_hybrid_architecture.md) 第五台一节：
+最大基本页号被虚拟化限成 `0xD`、页 0x1A 够不到。
 
 ### AVX-512 侧补测（Xeon Platinum Skylake-SP / Ubuntu 22.04 KVM，2026-09）
 
@@ -503,6 +504,35 @@ AVX-512 basics demo completed.
 奇数下标保留初值；第 3 段偶数下标 `a+b`、奇数下标清零。这台机器用的是 apt 自带的
 **NASM 2.15.05**——它完整支持 AVX-512 指令与 `{k1}`/`{k1}{z}` 掩码语法，
 不需要 3.x。
+
+### Windows 版补测（Xeon Platinum Ice Lake-SP 虚拟机 / Windows 11 企业版 23H2，2026-09）
+
+AVX-512 原先只有 Linux 版。2026-09 复核 Windows 全量示例时补上了
+`examples/10_sse_simd/avx512_basics.asm`：算法与输出文本跟 Linux 版一致，
+只按 Win64 约定改写（printf 参数走 `rcx / rdx / r8`、退场 `ExitProcess`、
+zmm 数据一律 `align 64`、以及掩码使用前重新 `kmovw`——opmask 是**调用者保存**的，
+`printf` 会把它冲掉）。
+
+这台机器走的是**完整演示路径，不是跳过分支**——这本身就说明 `cpu_features` 探到的
+页 7 `EBX[16]` 与 `XCR0[7:5]` 三个状态位都成立（缺任一位只会打印「本机不支持…」）。
+三段逐通道数值与上面 Linux 版逐字相同：
+
+| 段 | 通道 `[0]`…`[15]` |
+|----|--------------------|
+| 1. `VPADDD zmm` | `101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116`（16 路全加） |
+| 2. 合并掩码 `{k1}` | `101 2 103 4 105 6 107 8 109 10 111 12 113 14 115 16`（偶数下标 `+100`，奇数下标保留初值） |
+| 3. 归零掩码 `{k1}{z}` | `101 0 103 0 105 0 107 0 109 0 111 0 113 0 115 0`（奇数下标清零） |
+
+构建脚本里的记录是 `[完成] avx512_basics 运行退出码: 0`。
+
+两点值得记下来：
+
+1. **虚拟机里 AVX-512 是真能执行的**。[混合架构](09_hybrid_architecture.md) 记了这台机器的最大
+   基本页号被虚拟化限成 `0xD`（页 0x1A 够不到），CPUID profile 明显被改造过；但页 7 的能力位与
+   `XCR0` 都如实，于是 zmm / opmask 指令照跑不误——**「页号被限」和「指令能不能执行」是两回事**。
+   这也补上了本机一个只靠 CPUID 读不出来、必须真跑一条才知道的结论。
+2. **跨平台要改的只有平台那几件事**：探测代码一行未动（CPUID / XGETBV 与操作系统无关），
+   改动集中在打印参数、退场，以及对 k 寄存器「调用者保存」的额外小心上。
 
 ## 10. 与第 11 类的关系
 

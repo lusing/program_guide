@@ -186,7 +186,7 @@ Hybrid architecture detection completed.
 
 ### 第五台：Xeon Platinum（Ice Lake-SP，Windows 11 / KVM 虚拟机；Family 6 / Model 106 / Stepping 6）
 
-2026-09 复核 Windows 侧 61 个示例时，顺手把 Windows 版 `cpuid_hybrid.exe` 也跑了一遍
+2026-09 复核 Windows 侧全量示例（62 个）时，顺手把 Windows 版 `cpuid_hybrid.exe` 也跑了一遍
 （Windows 11 企业版 23H2 / NASM 3.02 / MSVC 14.51 `link.exe`）。这台是 **KVM 虚拟机**
 （CPUID 页 1 `ECX[31]` 置位，页 `0x40000000` 返回 `Microsoft Hv`），
 宿主是 Intel Xeon Platinum 8378C（Ice Lake-SP），虚拟机分到 4 核 8 线程：
@@ -205,8 +205,9 @@ Hybrid architecture detection completed.
 1. **AVX-512 第一次在 Windows 上读到 YES**。此前 AVX-512 = YES 只出现在 Linux 那一台，
    容易让人误以为「Windows 侧用不上 AVX-512」。本机页 7 `EBX[16]` 置位，且 ZMM / opmask
    状态已由操作系统放开——.NET 运行时的 `Avx512F.IsSupported` 要求 CPUID 与 OS 的
-   `XCR0[7:5]` 同时满足，本机为 `True`。也就是说 **Windows 侧缺的只是一个 AVX-512 示例，
-   不是平台能力**（本指南的 `avx512_basics.asm` 目前只有 Linux 版）。
+   `XCR0[7:5]` 同时满足，本机为 `True`。也就是说 **Windows 侧从来不缺 AVX-512 平台能力，
+   缺的只是一个 AVX-512 示例**——本轮复核时已把 Windows 版 `avx512_basics.asm` 补上，
+   并在本机真跑通（见 [SIMD 进阶](12_simd_avx.md) 第 9 节末）。
 2. **最大基本页号被虚拟化限成了 `0xD`**。用 CPUID 页 0 单独测得本机最大页号 `0xD`
    ——物理上支持 AVX-512 的 Ice Lake-SP 在虚拟机里只报到 `0xD`，`< 0x1A`，
    混合探测于是被前置检查整段跳过，输出如实报 `NO` / `0x00`。
