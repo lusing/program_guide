@@ -15,9 +15,13 @@
 > | MacBook Pro（本机复核） | macOS 14.8.9 (23.6.0) | Intel i7-4770HQ（Haswell，有 AVX2/FMA/BMI） | 3.02 | 16.0.0 (clang-1600.0.26.6) | 1115.7.3 | 59/59 |
 > | MacBook Air（当年） | macOS 13.1 | Intel i7-3520M（Ivy Bridge，无 AVX2/FMA） | 3.02 | 14.0.0 | 820.1 | 56/56（当时就是 56 个） |
 >
-> `examples-linux/` 下 59 个示例：其中 56 个在 Linux 实际汇编、链接、运行通过（Arch Linux / WSL2 / NASM 3.02 / GCC 16.2.1 / GNU ld 2.47 / glibc 2.44）；
-> **新增的 3 个 AVX/AVX2 示例（`10_sse_simd/avx_*.asm`、`avx2_*.asm`）在本机只做到 `nasm -f elf64` 汇编通过，链接与运行未实测**（本机是 macOS，无 Linux 环境）。
-> `examples/`（Windows）下 61 个示例：**2026-09 在 Windows 11（i7-12700F，Alder Lake，P/E 混合架构 / NASM 3.02 / MSVC 14.52 `link.exe`）全部实际汇编、链接、运行通过（61/61）**，包括此前「只做到汇编通过」的 3 个 AVX/AVX2 示例——逐通道数值与 macOS 版一致，Windows 侧实测输出见 [SIMD 进阶](docs/12_simd_avx.md) 第 8 节；`cpuid_hybrid` 在该机上的逐逻辑处理器（P核/E核）实测见 [混合架构](docs/09_hybrid_architecture.md)。
+> `examples-linux/` 下 60 个示例：
+> - 56 个在 Arch Linux / WSL2（NASM 3.02 / GCC 16.2.1 / GNU ld 2.47 / glibc 2.44）实际汇编、链接、运行通过；
+> - **3 个 AVX/AVX2/FMA 示例（`10_sse_simd/avx_basics.asm`、`avx2_int.asm`、`avx2_fma.asm`）现已在本机（Ubuntu 22.04 / KVM / Intel Xeon Platinum，Skylake-SP）实际汇编、链接、运行通过**——逐通道数值与 macOS/Windows 版一致；
+> - **1 个 AVX-512 示例（`10_sse_simd/avx512_basics.asm`，仅 Linux 版）在本机实测通过**——演示 ZMM 16 路整数加、opmask 合并掩码 `{k1}` 与归零掩码 `{k1}{z}`，本机支持 AVX-512F/DQ/CD/BW/VL 且 XCR0[7:5] 全开，逐通道输出与预期完全吻合（见 [SIMD 进阶](docs/12_simd_avx.md) 第 9 节）；
+> - 至此 `examples-linux/` **60/60** 全部实测通过。
+>   - 本机用的是 apt 自带的 **NASM 2.15.05**（指南标注的 3.02+ 是推荐版本，2.15 汇编这 60 个示例完全没问题，包括 AVX-512 指令与 `{k1}`/`{k1}{z}` 掩码语法）。
+> `examples/`（Windows）下 61 个示例：**2026-09 在 Windows 11（i7-12700F，Alder Lake，P/E 混合架构 / NASM 3.02 / MSVC 14.52 `link.exe`）全部实际汇编、链接、运行通过（61/61）**，包括此前「只做到汇编通过」的 3 个 AVX/AVX2 示例——逐通道数值与 macOS 版一致，Windows 侧实测输出见 [SIMD 进阶](docs/12_simd_avx.md) 第 9 节；`cpuid_hybrid` 在该机上的逐逻辑处理器（P核/E核）实测见 [混合架构](docs/09_hybrid_architecture.md)。
 >
 > 本机复核时修掉的三个 macOS 专属问题见 [macOS 平台移植指南](docs/10_macos_porting.md) 的
 > 「10. 本机复核纪要（macOS 14 / Xcode 16 CLT）」一节：
@@ -133,7 +137,7 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 | 7 | 栈操作（Stack Operations） | 6 | `07_stack_ops` | PUSH、POP、ENTER、LEAVE 等栈管理指令 |
 | 8 | 系统与杂项（System & Misc） | 6 | `08_system_misc` | SYSCALL、CPUID、RDTSC、NOP、HLT 等 |
 | 9 | 浮点运算（FPU） | 8 | `09_fpu` | FLD、FST、FADD、FMUL、FDIV、FCOM 等 x87 指令 |
-| 10 | SSE/SIMD（SIMD） | 10 | `10_sse_simd` | MOVAPS、ADDPS、MULPS、CVT* 等 SSE 指令，以及 VADDPS / VPMULLD / VFMADD231PS 等 **AVX / AVX2 / FMA** 指令 |
+| 10 | SSE/SIMD（SIMD） | 10 | `10_sse_simd` | MOVAPS、ADDPS、MULPS、CVT* 等 SSE 指令，以及 VADDPS / VPMULLD / VFMADD231PS 等 **AVX / AVX2 / FMA** 指令，以及 VPADDD zmm / opmask 等 **AVX-512** 指令（Linux 版） |
 | 11 | 高等数学与数学库（Calculus） | 7 | `11_calculus_mkl` | 数值微分/积分（梯形、辛普森、样条）与厂商数学库调用 |
 
 三侧的示例数量对照：
@@ -149,9 +153,9 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 | 07_stack_ops | 3 | 3 | 3 |
 | 08_system_misc | 4 | 4 | 4 |
 | 09_fpu | 5 | 5 | 5 |
-| 10_sse_simd | 8 | 8 | 8 |
+| 10_sse_simd | 8 | 8 | 9（含 `avx512_basics.asm`，仅 Linux 版，本机实测） |
 | 11_calculus_mkl | 7（5 + 2 个排查脚手架） | 5 | 5 |
-| **合计** | **61** | **59** | **59** |
+| **合计** | **61** | **59** | **60** |
 
 ## 章节索引
 
@@ -168,7 +172,7 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 | [09 Intel 混合架构（P核/E核）](docs/09_hybrid_architecture.md) | CPUID 检测核心类型、指令集差异、Thread Director | — |
 | [10 macOS 平台移植指南](docs/10_macos_porting.md) | macho64 工具链、平台差异对照、移植铁律与踩坑清单 | `examples-macos/` |
 | [11 Linux 平台移植指南](docs/11_linux.md) | elf64 工具链、libmvec、移植规则与踩坑清单 | `examples-linux/` |
-| [12 SIMD 进阶：AVX / AVX2 / FMA](docs/12_simd_avx.md) | VEX 三操作数、YMM 与 XCR0、vzeroupper、AVX2 整数质变、FMA 单次舍入、运行时降级 | `10_sse_simd/avx_*` `avx2_*` |
+| [12 SIMD 进阶：AVX / AVX2 / FMA / AVX-512](docs/12_simd_avx.md) | VEX 三操作数、YMM 与 XCR0、vzeroupper、AVX2 整数质变、FMA 单次舍入、AVX-512 ZMM 与 opmask 掩码、运行时降级 | `10_sse_simd/avx_*` `avx2_*` `avx512_*` |
 
 学习路线：01–04 语言与内存模型 → 05–07 标志 / 调用约定 / 栈帧（核心硬骨头）→
 08–09 调试与混合架构 → 10–11 跨平台移植 → 12 SIMD 进阶收束；`09_fpu`
@@ -194,7 +198,7 @@ intel/
 │   ├── 09_hybrid_architecture.md # Intel 混合架构（P核/E核）
 │   ├── 10_macos_porting.md       # macOS 工具链与移植指南
 │   ├── 11_linux.md               # Linux 工具链与移植指南
-│   └── 12_simd_avx.md            # SIMD 进阶：AVX / AVX2 / FMA
+│   └── 12_simd_avx.md            # SIMD 进阶：AVX / AVX2 / FMA / AVX-512
 ├── lib/
 │   ├── mac_io.inc                # macOS 输出辅助例程（%include 用）
 │   └── linux_io.inc              # Linux 输出辅助例程（%include 用）
