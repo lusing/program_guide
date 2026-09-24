@@ -1,0 +1,9 @@
+namespace SettingsHub
+{
+    [default_interface]
+    runtimeclass MainWindow : Microsoft.UI.Xaml.Window
+    {
+        MainWindow();
+        void ShowSaved();   // 各设置页保存后的全局反馈 (InfoBar)
+    }
+}

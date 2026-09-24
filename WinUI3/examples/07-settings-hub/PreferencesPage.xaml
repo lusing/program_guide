@@ -1,0 +1,36 @@
+<Page
+    x:Class="SettingsHub.PreferencesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 23 章预告 + 冒烟可测：Ctrl+S 保存（键盘加速器是真 UX，不只为了测试） -->
+    <Page.KeyboardAccelerators>
+        <KeyboardAccelerator Modifiers="Control" Key="S" Invoked="OnSaveAccelerator"/>
+    </Page.KeyboardAccelerators>
+
+    <StackPanel Spacing="18" Margin="24,18" MaxWidth="620">
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Preferences" FontSize="26" FontWeight="Bold"/>
+            <TextBlock Text="Task defaults consumed by the TaskFlow app (chapter 35)."
+                       TextWrapping="Wrap" Opacity="0.7"/>
+        </StackPanel>
+
+        <!-- 13 章 NumberBox：空输入 = NaN = 无限制（真实业务语义） -->
+        <NumberBox x:Name="DefaultCount" Header="Default task count (empty = unlimited)"
+                   PlaceholderText="no limit" Minimum="0" Maximum="99"
+                   SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="5"
+                   ValueChanged="OnCountChanged"/>
+
+        <!-- 16 章 DatePicker/TimePicker -->
+        <DatePicker x:Name="WeekStart" Header="Week starts on" DateChanged="OnWeekStartChanged"/>
+        <TimePicker x:Name="ReminderTime" Header="Daily reminder at" MinuteIncrement="15"/>
+
+        <Button x:Name="SaveButton" Content="Save preferences" Style="{ThemeResource AccentButtonStyle}"
+                Click="OnSaveClicked" HorizontalAlignment="Left"/>
+
+        <!-- 12 章 ProgressBar：保存时真的分帧走完 -->
+        <ProgressBar x:Name="SaveProgress" Minimum="0" Maximum="100" Value="0" Width="320"/>
+        <TextBlock x:Name="StatusText" Text="" Opacity="0.7"/>
+    </StackPanel>
+</Page>

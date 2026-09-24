@@ -1,0 +1,8 @@
+namespace SettingsHub
+{
+    [default_interface]
+    runtimeclass NotificationsPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        NotificationsPage();
+    }
+}

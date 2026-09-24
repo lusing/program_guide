@@ -1,0 +1,42 @@
+<Page
+    x:Class="SettingsHub.NotificationsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <StackPanel Spacing="18" Margin="24,18" MaxWidth="620">
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Notifications" FontSize="26" FontWeight="Bold"/>
+            <TextBlock Text="The master switch disables every channel below it."
+                       TextWrapping="Wrap" Opacity="0.7"/>
+        </StackPanel>
+
+        <!-- 11 章 ToggleSwitch：总闸，关掉真的禁用整组渠道 -->
+        <ToggleSwitch x:Name="MasterSwitch" Header="Notifications"
+                      OnContent="On" OffContent="Off" IsOn="True"
+                      Toggled="OnMasterToggled"/>
+
+        <!-- 10 章 CheckBox：渠道组，IsEnabled 跟随总闸 -->
+        <StackPanel x:Name="ChannelBox" Spacing="8" Margin="0,4,0,0">
+            <CheckBox x:Name="ToastCheck" Content="Toast banners" IsChecked="True"
+                      Checked="OnChannelChanged" Unchecked="OnChannelChanged"/>
+            <CheckBox x:Name="SoundCheck" Content="Sounds"/>
+            <CheckBox x:Name="MailCheck" Content="Email digest"/>
+        </StackPanel>
+
+        <!-- 25 章 TeachingTip：首次进入本页才出现的引导 -->
+        <Button x:Name="TipAnchor" Content="What is this page?" Click="OnTipClicked"
+                HorizontalAlignment="Left"/>
+        <TeachingTip x:Name="FirstRunTip"
+                     Title="Notification channels"
+                     Subtitle="Each channel can be turned on individually while the master switch is on."
+                     CloseButtonContent="Got it"
+                     Target="{x:Bind TipAnchor}"
+                     PreferredPlacement="Bottom"
+                     CloseButtonClick="OnTipClosed"/>
+
+        <Button Content="Save notifications" Style="{ThemeResource AccentButtonStyle}"
+                Click="OnSaveClicked" HorizontalAlignment="Left"/>
+        <TextBlock x:Name="StatusText" Text="" Opacity="0.7"/>
+    </StackPanel>
+</Page>

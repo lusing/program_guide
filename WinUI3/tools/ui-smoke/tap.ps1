@@ -1,0 +1,166 @@
+<#
+.SYNOPSIS
+    Clicks a WinUI 3 control by injecting a touch tap at window-relative pixels.
+
+.DESCRIPTION
+    Injected MOUSE input reaches WinUI 3 islands as pointer presses that never
+    complete a ButtonBase Click (the press demonstrably lands on the right
+    element - app-side diagnostics see it - but the release gets lost in the
+    island's legacy-to-pointer translation; nav rows, ToggleSwitch and Slider
+    still work). Touch injection walks the real pointer stack via
+    InitializeTouchInjection + InjectTouchInput, and ButtonBase must respond to
+    taps, so this is the reliable driver for buttons and radio buttons. The
+    first InjectTouchInput after initialization can return false and still
+    deliver, so a failure is retried once before giving up.
+
+    Coordinates are WINDOW pixels (same space as ui-smoke screenshots).
+
+.EXAMPLE
+    ./tap.ps1 -Exe app.exe -OutDir out -X 681 -Y 347
+#>
+param(
+    [Parameter(Mandatory = $true)][string]$Exe,
+    [Parameter(Mandatory = $true)][string]$OutDir,
+    # Semicolon-separated taps in window coordinates, e.g. '140,166;681,347'.
+    [Parameter(Mandatory = $true)][string]$Taps,
+    [int]$WindowW = 1080,
+    [int]$WindowH = 800,
+    [int]$ParkX = 100,
+    [int]$ParkY = 100,
+    [int]$HoldMs = 120,
+    # Relaunch the whole app until the last frame differs from the first one.
+    # Injected input into WinUI 3 islands is launch-lottery on some machines:
+    # identical taps land on some launches and vanish on others.
+    [int]$Attempts = 5
+)
+
+$ErrorActionPreference = 'Stop'
+Add-Type -AssemblyName System.Drawing
+Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+
+namespace TouchInj
+{
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TOUCHINPUT
+    {
+        public int X;
+        public int Y;
+        public IntPtr Handle;
+        public int Flags;
+        public int Mask;
+        public uint Time;
+        public IntPtr ExtraInfo;
+    }
+
+    public static class Native
+    {
+        [DllImport("user32.dll")] public static extern bool InitializeTouchInjection(uint maxCount, uint feedbackMode);
+        [DllImport("user32.dll")] public static extern bool InjectTouchInput(uint count, TOUCHINPUT[] contacts);
+        [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr h, out RECT r);
+        [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);
+        [DllImport("user32.dll")] public static extern bool SetWindowPos(IntPtr h, IntPtr after, int x, int y, int cx, int cy, uint flags);
+        [DllImport("user32.dll")] public static extern bool SetProcessDpiAwarenessContext(IntPtr value);
+        public struct RECT { public int Left, Top, Right, Bottom; }
+    }
+
+    public static class Tap
+    {
+        // TOUCH_FEEDBACK_DEFAULT = 1; flags: DOWN 0x1, UP 0x2
+        public static string Do(IntPtr hwnd, int screenX, int screenY, int holdMs)
+        {
+            if (!Native.InitializeTouchInjection(2, 1)) { return "init failed"; }
+            var input = new TOUCHINPUT[1];
+            input[0].X = screenX;
+            input[0].Y = screenY;
+            input[0].Handle = IntPtr.Zero;
+            input[0].Mask = 0;
+
+            input[0].Flags = 0x0001;   // TOUCHEVENTF_DOWN
+            bool down = Native.InjectTouchInput(1, input);
+            System.Threading.Thread.Sleep(holdMs);
+            input[0].Flags = 0x0002;   // TOUCHEVENTF_UP
+            bool up = Native.InjectTouchInput(1, input);
+            // The very first call after initialization may report failure and
+            // still deliver; retry the pair once on a reported failure.
+            if (!down || !up)
+            {
+                input[0].Flags = 0x0001;
+                Native.InjectTouchInput(1, input);
+                System.Threading.Thread.Sleep(holdMs);
+                input[0].Flags = 0x0002;
+                Native.InjectTouchInput(1, input);
+                return "tapped (retried; first reported down=" + down + " up=" + up + ")";
+            }
+            return "tapped";
+        }
+    }
+}
+'@
+[TouchInj.Native]::SetProcessDpiAwarenessContext([IntPtr](-4)) | Out-Null
+
+function Save-Shot([IntPtr]$hwnd, [string]$path) {
+    $rect = New-Object TouchInj.Native+RECT
+    [TouchInj.Native]::GetWindowRect($hwnd, [ref]$rect) | Out-Null
+    $w = $rect.Right - $rect.Left; $h = $rect.Bottom - $rect.Top
+    $bmp = New-Object System.Drawing.Bitmap($w, $h)
+    $g = [System.Drawing.Graphics]::FromImage($bmp)
+    $g.CopyFromScreen($rect.Left, $rect.Top, 0, 0, $bmp.Size)
+    $g.Dispose(); $bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Png); $bmp.Dispose()
+    "shot   : $path (${w}x${h}) origin=($($rect.Left),$($rect.Top))"
+}
+
+New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
+
+function Get-FileMd5([string]$path) {
+    if (-not (Test-Path $path)) { return '' }
+    (Get-FileHash $path -Algorithm MD5).Hash
+}
+
+for ($attempt = 1; $attempt -le $Attempts; $attempt++) {
+    $proc = Start-Process -FilePath $Exe -PassThru
+    try {
+        Start-Sleep -Seconds 8
+        $proc.Refresh()
+        if ($proc.HasExited) { throw "process exited during startup with code $($proc.ExitCode)" }
+        if ($proc.MainWindowHandle -eq [IntPtr]::Zero) { throw 'process has no main window' }
+        [TouchInj.Native]::SetForegroundWindow($proc.MainWindowHandle) | Out-Null
+        # DO NOT move or resize the window at all: any SetWindowPos after the XAML
+        # island settles corrupts its input transform (rendering stays correct,
+        # hit-testing lands elsewhere, every tap misses). The window stays at its
+        # cascade position and taps are computed from the live window rect.
+        Start-Sleep -Milliseconds 800
+        $beforePath = Join-Path $OutDir 'before.png'
+        Save-Shot $proc.MainWindowHandle $beforePath
+
+        $wrect = New-Object TouchInj.Native+RECT
+        [TouchInj.Native]::GetWindowRect($proc.MainWindowHandle, [ref]$wrect) | Out-Null
+
+        $seq = @($Taps.Split(';') | Where-Object { $_.Trim() })
+        for ($i = 0; $i -lt $seq.Count; $i++) {
+            [int[]]$c = $seq[$i].Split(',')
+            $result = [TouchInj.Tap]::Do($proc.MainWindowHandle, $wrect.Left + $c[0], $wrect.Top + $c[1], $HoldMs)
+            "tap    : [$($i+1)] window($($c[0]),$($c[1])) -> $result"
+            Start-Sleep -Milliseconds 1100
+            Save-Shot $proc.MainWindowHandle (Join-Path $OutDir ("tap-{0}.png" -f ($i + 1)))
+        }
+
+        $first = Get-FileMd5 $beforePath
+        $last = Get-FileMd5 (Join-Path $OutDir ("tap-{0}.png" -f $seq.Count))
+        if ($first -ne $last) {
+            "result : attempt $attempt changed the window (evidence captured)"
+            return
+        }
+        "result : attempt $attempt was a no-op launch; retrying"
+    }
+    finally {
+        if (-not $proc.HasExited) {
+            $null = $proc.CloseMainWindow()
+            if (-not $proc.WaitForExit(3000) -and -not $proc.HasExited) {
+                Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+            }
+        }
+    }
+}
+throw "no attempt out of $Attempts produced a visible change"

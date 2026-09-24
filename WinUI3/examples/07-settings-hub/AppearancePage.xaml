@@ -1,0 +1,61 @@
+<Page
+    x:Class="SettingsHub.AppearancePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <StackPanel Spacing="18" Margin="24,18" MaxWidth="620">
+            <!-- 8 章 TextBlock 的真实角色：区块标题与说明文案 -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Appearance" FontSize="26" FontWeight="Bold"/>
+                <TextBlock Text="Theme, density and translucency apply immediately and are remembered."
+                           TextWrapping="Wrap" Opacity="0.7"/>
+            </StackPanel>
+
+            <!-- 10 章 RadioButton：点选真的切换整窗主题 -->
+            <TextBlock Text="App theme" FontWeight="SemiBold"/>
+            <StackPanel Orientation="Horizontal" Spacing="16">
+                <RadioButton x:Name="LightRadio" Content="Light" GroupName="Theme" Checked="OnThemeChecked"/>
+                <RadioButton x:Name="DarkRadio" Content="Dark" GroupName="Theme" Checked="OnThemeChecked"/>
+                <RadioButton x:Name="SystemRadio" Content="Follow system" GroupName="Theme" Checked="OnThemeChecked"/>
+            </StackPanel>
+
+            <!-- 14 章 ComboBox：密度选择真的改预览列表行距 -->
+            <TextBlock Text="Panel density" FontWeight="SemiBold"/>
+            <ComboBox x:Name="DensityBox" Header="List spacing" Width="220"
+                      SelectionChanged="OnDensityChanged">
+                <x:String>Comfortable</x:String>
+                <x:String>Compact</x:String>
+            </ComboBox>
+
+            <!-- 12 章 Slider：透明度实时改预览条 -->
+            <TextBlock Text="Preview translucency" FontWeight="SemiBold"/>
+            <Slider x:Name="OpacitySlider" Header="Opacity" Minimum="20" Maximum="100" Value="100"
+                    Width="320" ValueChanged="OnOpacityChanged"/>
+
+            <!-- 预览区：三个设置的真实可见结果 -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Preview" FontWeight="SemiBold"/>
+                <Border x:Name="PreviewBar" Background="{ThemeResource AccentFillColorDefaultBrush}"
+                        CornerRadius="6" Padding="14,10" Width="320">
+                    <TextBlock Text="accent preview bar"
+                               Foreground="{ThemeResource TextOnAccentFillColorDefaultBrush}"/>
+                </Border>
+                <ListView x:Name="PreviewList" Width="320">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <TextBlock Text="{Binding}" Margin="8,4"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
+
+            <!-- 7 章 Button：命令入口（保存走强调样式） -->
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button Content="Save appearance" Style="{ThemeResource AccentButtonStyle}"
+                        Click="OnSaveClicked"/>
+                <Button Content="Reset" Click="OnResetClicked"/>
+            </StackPanel>
+            <TextBlock x:Name="StatusText" Text="" Opacity="0.7"/>
+
+    </StackPanel>
+</Page>

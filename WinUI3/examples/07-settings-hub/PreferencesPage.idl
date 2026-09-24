@@ -1,0 +1,8 @@
+namespace SettingsHub
+{
+    [default_interface]
+    runtimeclass PreferencesPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        PreferencesPage();
+    }
+}

@@ -1,0 +1,40 @@
+<Window
+    x:Class="SettingsHub.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 22 章：NavigationView 直接做窗口根（对齐画廊模板：多包一层 Grid+双行布局
+         会让 ButtonBase 在高 DPI 注入输入下丢点击，实测坑）+ 15 章内建设置搜索位。
+         SavedBar 作为内容浮层盖在 Frame 之上。 -->
+    <NavigationView x:Name="Nav" IsBackButtonVisible="Collapsed"
+                    PaneDisplayMode="Left" IsPaneOpen="True" OpenPaneLength="210"
+                    PointerPressed="OnRootPointer" GotFocus="OnRootFocus"
+                    SelectionChanged="OnNavSelectionChanged">
+        <NavigationView.MenuItems>
+            <NavigationViewItem Content="Appearance" Tag="appearance">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xE790;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem Content="Notifications" Tag="notifications">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xEA8F;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem Content="Preferences" Tag="preferences">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xE713;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <!-- 每章任务在此追加一个导航项 -->
+        </NavigationView.MenuItems>
+        <Grid>
+            <Frame x:Name="ContentFrame"/>
+            <!-- 25 章 InfoBar：保存反馈浮层 -->
+            <InfoBar x:Name="SavedBar" IsOpen="False" IsClosable="True"
+                     Severity="Success" Title="Saved" Margin="24,0,24,12"
+                     VerticalAlignment="Bottom"
+                     Message="Your changes are written to %LOCALAPPDATA%\SettingsHub\settings.json"/>
+        </Grid>
+    </NavigationView>
+</Window>

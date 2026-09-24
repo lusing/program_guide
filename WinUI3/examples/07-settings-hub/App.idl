@@ -1,0 +1,11 @@
+namespace SettingsHub
+{
+    [default_interface]
+    runtimeclass App : Microsoft.UI.Xaml.Application
+    {
+        App();
+        void ApplyTheme(String theme);   // "light" / "dark" / "default"
+        void ShowSavedBar();              // green InfoBar feedback at the window bottom
+        void SetDebugTitle(String title); // smoke diagnostics: mirror into the caption
+    }
+}

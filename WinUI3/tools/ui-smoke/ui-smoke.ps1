@@ -30,12 +30,26 @@ param(
     # an input field) and before any further clicks.
     [string]$Clicks,
     [string]$TypeText,
+    # Comma-separated virtual-key names sent after the click sequence, e.g.
+    # 'tab,tab,right,space'. On high-DPI machines whose XAML islands swallow
+    # injected pointer events for ButtonBase controls, the keyboard path still
+    # works: TAB into the control and drive it with arrows/space.
+    [string]$Keys,
     # Parked window size; galleries need a taller window so every nav item is on-screen
     # (NavigationView menu rows are ~72 physical px at 150% DPI).
     [int]$WindowW = 900,
     [int]$WindowH = 600,
+    # Park position; zombies of crashed earlier runs can keep a hidden window at
+    # the default (100,100) that swallows injected clicks - vary it per flow.
+    [int]$ParkX = 100,
+    [int]$ParkY = 100,
     [int]$StartupSeconds = 8,
-    [switch]$NoClick
+    [switch]$NoClick,
+    # Skip the SetWindowPos park. Moving a WinUI 3 window whose DesktopChildSiteBridge
+    # has already settled can leave the island's input transform stale: rendering stays
+    # correct but pointer hit-testing lands offset, which eats clicks on small targets
+    # (radio rings, buttons) while big ones (nav rows, sliders) still connect.
+    [switch]$NoPark
 )
 
 $ErrorActionPreference = 'Stop'
@@ -128,6 +142,54 @@ function Invoke-TypeText([string]$text) {
     Start-Sleep -Milliseconds 300
 }
 
+# Named virtual keys for -Keys (keyboard works even where injected pointer
+# events are swallowed by the XAML island).
+$script:vkMap = @{
+    'tab' = 0x09; 'space' = 0x20; 'enter' = 0x0D; 'esc' = 0x1B
+    'left' = 0x25; 'up' = 0x26; 'right' = 0x27; 'down' = 0x28
+    'home' = 0x24; 'end' = 0x23; 'pgup' = 0x21; 'pgdn' = 0x22
+    'shift' = 0x10; 'ctrl' = 0x11; 'alt' = 0x12
+}
+# Single letters a-z, for accelerators like ctrl+s (hold 'ctrl' while pressing).
+for ($code = [int][char]'a'; $code -le [int][char]'z'; $code++) {
+    $script:vkMap[[string][char]$code] = $code - 32   # ASCII -> virtual key
+}
+
+function Invoke-Keys([string]$keys) {
+    $hold = @{}
+    foreach ($token in ($keys.Split(',') | Where-Object { $_.Trim() })) {
+        $name = $token.Trim().ToLowerInvariant()
+        if (-not $vkMap.ContainsKey($name)) { "key    : unknown '$name'"; continue }
+        $code = $vkMap[$name]
+        if ($name -in 'shift', 'ctrl', 'alt') {
+            # modifier token: press and hold until the paired '+key' (or a bare
+            # modifier token ends the chord implicitly at the next non-modifier)
+            [Win32.Native]::keybd_event($code, 0, 0, [UIntPtr]::Zero)
+            $hold[$name] = $code
+            "key    : $name down"
+        }
+        else {
+            [Win32.Native]::keybd_event($code, 0, 0, [UIntPtr]::Zero)
+            [Win32.Native]::keybd_event($code, 0, 2, [UIntPtr]::Zero)
+            "key    : $name"
+        }
+        Start-Sleep -Milliseconds 250
+        # release any held modifiers after a non-modifier key
+        if ($name -notin 'shift', 'ctrl', 'alt') {
+            foreach ($mod in $hold.Keys) {
+                [Win32.Native]::keybd_event($hold[$mod], 0, 2, [UIntPtr]::Zero)
+                "key    : $mod up"
+            }
+            $hold.Clear()
+        }
+    }
+    foreach ($mod in $hold.Keys) {
+        [Win32.Native]::keybd_event($hold[$mod], 0, 2, [UIntPtr]::Zero)
+        "key    : $mod up"
+    }
+    Start-Sleep -Milliseconds 400
+}
+
 function Save-WindowShot([IntPtr]$hwnd, [string]$path) {    $rect = New-Object Win32.Native+RECT
     if (-not [Win32.Native]::GetWindowRect($hwnd, [ref]$rect)) { throw "GetWindowRect failed for $hwnd" }
     $width = $rect.Right - $rect.Left
@@ -167,8 +229,10 @@ try {
     Invoke-BringForward $proc.MainWindowHandle
     [Win32.Native]::ShowWindow($proc.MainWindowHandle, 9) | Out-Null   # SW_RESTORE
     # Park the window fully on-screen: a clipped capture would put the "centre" off the panel.
-    [Win32.Native]::SetWindowPos($proc.MainWindowHandle, [IntPtr]::Zero, 100, 100, $WindowW, $WindowH, 0x0040) | Out-Null
-    Start-Sleep -Milliseconds 800
+    if (-not $NoPark) {
+        [Win32.Native]::SetWindowPos($proc.MainWindowHandle, [IntPtr]::Zero, $ParkX, $ParkY, $WindowW, $WindowH, 0x0040) | Out-Null
+        Start-Sleep -Milliseconds 800
+    }
     Save-WindowShot $proc.MainWindowHandle (Join-Path $OutDir 'before.png')
 
     if ($Clicks) {
@@ -186,6 +250,10 @@ try {
             [Win32.Native]::SetCursorPos($x, $y) | Out-Null
             Start-Sleep -Milliseconds 300
             [Win32.Native]::mouse_event(0x0002, 0, 0, 0, [UIntPtr]::Zero)   # LEFTDOWN
+            # Real users hold the button ~100ms; a zero-duration press+release
+            # in the same tick gets dropped by the XAML island's pointer
+            # translation, so ButtonBase never sees a complete click.
+            Start-Sleep -Milliseconds 120
             [Win32.Native]::mouse_event(0x0004, 0, 0, 0, [UIntPtr]::Zero)   # LEFTUP
             Start-Sleep -Milliseconds 800
             if ($i -eq 0 -and $TypeText) {
@@ -194,6 +262,10 @@ try {
             }
             Start-Sleep -Milliseconds 400
             Save-WindowShot $proc.MainWindowHandle (Join-Path $OutDir ("click-{0}.png" -f ($i + 1)))
+        }
+        if ($Keys) {
+            Invoke-Keys $Keys
+            Save-WindowShot $proc.MainWindowHandle (Join-Path $OutDir 'keys.png')
         }
     }
     elseif (-not $NoClick) {
