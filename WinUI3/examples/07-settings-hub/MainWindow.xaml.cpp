@@ -19,10 +19,10 @@ namespace winrt::SettingsHub::implementation
         Title(L"Settings Hub");
         if (auto appWindow = AppWindow())
         {
-            // 1080x700 逻辑 = 1890x1225 物理 @175%，正好装进 2194x1234 的屏；
-            // 超屏窗口会被系统钳制，而外部再 Resize 会把岛的输入变换打烂
-            //（渲染照旧、命中错位——冒烟点击全灭的元凶）
-            appWindow.Resize({ 1080, 700 });
+            // 自定位 + 自适配：级联位置可能把 1225 高的窗口顶出 1234 高的屏，
+            // 底部出屏会让注入点击的 release 命中失效；构造期自己挪到
+            // (30,30) 是安全的（岛尚未安定），外部再动才会打烂输入变换
+            appWindow.MoveAndResize({ 30, 30, 1890, 1085 });
         }
         // 主题恢复由窗口自理：构造链里 App 还没拿到本窗口引用，页面侧恢复会踩空引用（实测崩）
         // hstring theme = SettingsStore::Get(L"theme", L"default");
