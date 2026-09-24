@@ -143,7 +143,7 @@ DatePicker 的三段轮盘（年/月/日）顺序与格式**跟随系统文化�
 
 TimePicker 还有 `HourIncrement`（12/24 混排场景排 2 小时步）与 `ClockIdentifier`（"24HourClock"/"12HourClock"显式钉死——不给就随系统）。设置中心只调了分钟粒度；跨时区产品（提醒时间跟人走）还要想清楚存的是本地时间还是 UTC——本例存本地 TimeSpan（自午夜，无时区语义），换时区不重算，对"每天 9 点提醒我"恰好正确。
 
-### 16.6.5 DatePicker 的钳制
+### 16.6.6 DatePicker 的钳制
 
 `MinYear`/`MaxYear`（DateTime）给可选年份划界——周起始选择里年份其实无意义（产品上该用两选项 ComboBox，16.6.3 已自我检讨）；真用日期的表单（生日、预约）必设：**MinYear=今天**防选过去，预约类 MaxYear 防飘到下世纪。域外年份在下拉里直接不出现——又是"拒收优于提示"（13.5.2 同款纪律）。
 
