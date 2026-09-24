@@ -151,6 +151,18 @@ AutoSuggestBox 不是"更好的 ComboBox"——它假设**选项集大到用户�
 
 用户打完字直接回车（没碰下拉）触发的是 `QuerySubmitted` 而非 SuggestionChosen——事件参数带 `Args.ChosenSuggestion()`（null 如果没选）。设置中心没处理它（回车=放弃搜索，可接受）；要做"回车选第一条"就在 QuerySubmitted 里 `if (!Args.ChosenSuggestion()) { 取 ItemsSource 首项走跳转; }`——浏览器地址栏就是这个行为。
 
+### 15.5.4 防抖：搜索的节奏
+
+设置中心三页的过滤瞬间完成，不用防抖；**真搜索（磁盘/网络）必须防抖**——每次击键都发起查询是自我 DDoS。模式：
+
+```cpp
+// TextChanged 里重置一个延迟任务，300ms 内的连续输入只留最后一个
+m_searchDelay.Cancel();                       // 上一个待执行的作废
+m_searchDelay = DispatchedAsync([&]{ ... });  // 32.7 协程版
+```
+
+协程版（`co_await resume_after(300ms)` + 检查代际标志）比 DispatcherTimer 干净；代际标志就是"我是第几次输入的查询"——await 回来时发现自己不是最新一代，直接 return。**防抖与 Reason 过滤互补**：Reason 挡程序化回环（15.2），防抖挡用户手速——两个都要。
+
 ## 15.6 小结
 
 | 环节 | API |

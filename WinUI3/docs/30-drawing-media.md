@@ -149,6 +149,22 @@ void MainWindow::BuildChart()
 
 Shape 之外本章的另两块：`Image`（位图，Source 接 BitmapImage/WriteableBitmap）与 `ImageBrush`（当填充用）。位图没有矢量的事——尺寸固定，缩放即插值（DecodePixelWidth 提前解码到目标尺寸省内存）。**图表为什么不用位图**：柱高是数据函数，运行时要变（accent 换色、数据更新）——Shape 是活对象改属性即重绘，位图是死像素要重画整张。判据：**内容跟数据走用矢量，内容跟照片走用位图**。
 
+### 30.5.5 Brush 家族总账
+
+| Brush | 用在哪 | 跟主题走吗 |
+|---|---|---|
+| SolidColorBrush | 处处（颜色唯一确定的场景） | 手动（给 Color 赋值时不跟） |
+| ThemeResource 引用（`{ThemeResource ...}`） | 应该是默认选择 | **自动**（亮暗切换重取） |
+| LinearGradientBrush | 渐变背景、玻璃拟态 | 手动备两份或参数化 |
+| AcrylicBrush | 大面积背景（31 章窗口） | 自动（它本身是主题体系成员） |
+| ImageBrush | 形状/文字里贴图 | 图片恒定 |
+
+判据一行：**颜色值来自设计系统就 ThemeResource，来自数据（用户选的 accent、图表系列色）就代码建 SolidColorBrush**——主题实验室两条都用：磁贴卡底走 ThemeResource（跟亮暗），柱子颜色代码灌（跟 accent）。
+
+### 30.5.6 Shape 的命中与缩放
+
+Shape 默认参与命中测试（IsHitTestVisible=true）——柱状图上 `Tapped` 事件可以直接挂在每根 Rectangle 上（"点了周三"），不用算坐标。`Stretch` 属性（Shape 当画刷用时怎么填）与 `Stroke` 轮廓线（DataExplorer 色板的 Border 换成 Ellipse+Stroke 更圆滑）是剩下的两个常用位。**矢量缩放零损**——175% DPI 下 Shape 永远锐利，这是它对位图的物理优势（30.5.4 的判据另一半）。
+
 ## 30.6 小结
 
 | 需求 | API |

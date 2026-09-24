@@ -172,6 +172,14 @@ void MainWindow::OnToggleFind(IInspectable const&, RoutedEventArgs const&)
 
 `Expander.ExpandDirection`（Down 默认/Up/Left/Right）决定内容从哪边长出来——查找面板在底部时 Up 更贴（向屏内展开）。数据浏览器把它放在列表与命令栏之间用默认 Down。**布局占位是 Expander 的隐性成本**：收起时高度为零但仍在视觉树，频繁开合会让下方内容跳——本例下方是命令栏（固定行），跳的是面板自身，无感；若下方还有滚动内容，开合瞬间滚动位置会被顶，必要时 ScrollIntoView 压回。
 
+### 21.5.6 页签的中键关闭与拖拽
+
+TabView 内建：**鼠标中键点页签=关闭**（浏览器习惯，免费）+ 页签拖拽重排（`CanReorderTabs`，默认开，含拖出成新窗口的 `CanDragTabs`——拖出行为要配 31 章多窗口）。重排后 m_docs 向量与视觉顺序脱钩——FindEntry 按对象身份查找的架构（21.5.4）对重排免疫；若哪里缓存了索引，重排即错。**教学取舍**：ScratchPad 没关 CanReorderTabs 也没处理顺序持久化——重排后保存顺序与视觉不一致，记为已知边界（产品化要么关重排要么持久化顺序）。
+
+### 21.5.7 Expander 的无障碍语义
+
+Expander 的展开头**自动是按钮**（朗读"可展开/已折叠"+ 回车切换）——这是它对手搓"标题+Visibility 切换"的碾压级优势（手搓版朗读器只念文字，不知道能点）。`AutomationProperties.Name` 默认取 Header——别给 Header 塞图标（Content 装对象时 Name 落空，要显式补）。
+
 ## 21.4 小结
 
 | 需求 | API |

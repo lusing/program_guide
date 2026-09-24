@@ -166,6 +166,32 @@ ToastCheck().IsChecked(SettingsStore::Get(L"toast", L"true") == L"true");
 
 渠道组的三个 CheckBox 垂直间距 Spacing=8——比按钮组（16）紧：**复选清单是"一组相关小项"，视觉上要聚成一团**。框与文字的间距由控件内建（8px 逻辑），别用 Margin 手调（主题更新会变）。列表项复选（DataExplorer 若加"多选下载"）用 `ListView` + ItemTemplate 包 CheckBox 而非 StackPanel 硬摆——虚拟化与键盘导航都是白送的。
 
+### 10.6.6 三态传播：父子联动的完整实现
+
+总闸-渠道的结构推广到树形（父复选=子集投影）：
+
+```cpp
+void SyncParentCheckBox(CheckBox parent, IVector<CheckBox> children)
+{
+    size_t checkedCount = 0, indeterminate = 0;
+    for (auto&& c : children)
+    {
+        auto state = c.IsChecked();
+        if (state == nullptr) { indeterminate++; }
+        else if (state.Value()) { checkedCount++; }
+    }
+    if (checkedCount == children.Size()) { parent.IsChecked(true); }
+    else if (checkedCount == 0 && indeterminate == 0) { parent.IsChecked(false); }
+    else { parent.IsChecked(nullptr); }   // 部分：三态显式呈现
+}
+```
+
+**坑位**：给 `IsChecked` 赋 `nullptr` 要写 `parent.IsChecked(nullptr)`——可空属性赋空是合法调用，但会**触发 Checked/Unchecked 之外的第三态通知吗**？不会（只有 IsThreeState=true 时用户能点到 null，代码总能设）。父项 `Toggled`（或 Checked+Unchecked）里反向写全部子项——注意防环（父变→写子→子变→写父）：一个 `m_syncing` 闸（18 章 FlipView 同步同款）解决。
+
+### 10.6.7 表单语义：radio 的"必须选一个"
+
+HTML 的 radio 有 required 语义；WinUI 没有——**同组全不选是合法状态**（设置中心启动时就是这样，直到用户点选）。要"必选"语义：代码校验（提交前查同组是否 IsChecked==true）+ 状态行报错；或启动时程序化预选默认项（在 ctor 里设，别在 XAML 里——10.6.1 的坑）。产品上**预选默认**通常优于强制选择（少一次交互），除非默认真的会误导。
+
 ## 10.6 小结
 
 | 需求 | 写法 |

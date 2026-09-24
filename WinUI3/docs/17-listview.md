@@ -199,6 +199,20 @@ void MainWindow::OnRowSelected(IInspectable const&, SelectionChangedEventArgs co
 
 `.smoke/17-data-explorer/tree/tap-1.png`：TreeView 点 Images → 表格剩三行图像文件、计数行 "3 items · Images"——列表视图对过滤的全部响应，一帧可见。
 
+### 17.6.5 选择模式三档的现实用法
+
+| 模式 | 用法 | 设置中心/数据浏览器外的例子 |
+|---|---|---|
+| Single | 选中即详情 | 文件列表→预览 |
+| Multiple | 勾选收集 | 批量下载选择 |
+| Extended | 单选+Ctrl 多选+Shift 范围 | 资源管理器 |
+
+**Multiple 与 CheckBox 的组合**：SelectionMode=Multiple 时 WinUI 自动给行加复选框（SelectionCheckMode）——不用自己做 ItemTemplate 塞 CheckBox。收集选中项：`SelectedItems()`（IVector<object>）——**不是 SelectedItem 的复数语法糖**，是独立集合，双向维护。Extended 模式的 Ctrl/Shift 处理内建，别自己拦键盘。
+
+### 17.6.6 ContainerGeneration：行容器的坑与钱
+
+ListView 行不是 DataTemplate 本体——外面裹着 ListViewItem（选择态、悬停、键盘焦点的宿主）。**ItemContainerStyle 改的是这层**（14 章密度实战）。两个坑：容器异步生成（`ContainerContentChanging` 事件能接住每个容器就位时机——图片懒加载的标准位）；`ItemsPanel` 换 StackPanel 为 ItemsStackGrid 时虚拟化语义跟着变（非虚拟化面板=全量生成=千行卡死）。
+
 ## 17.8 小结
 
 | 环节 | API |

@@ -165,6 +165,10 @@
 3. **小范围对齐**用局部 Grid/StackPanel 解决
 4. **外观**交给 Border，**弹性**交给 `*`，**固定**留给侧栏/工具栏
 
+### 6.6.1 ScrollViewer 的裁决：什么时候不该包
+
+ScratchPad/设置中心的页面都**没有**用 ScrollViewer 包内容（SettingsHub 的 AppearancePage 特意去掉）——本套教程实测：**ScrollViewer 的手势层在高 DPI 注入输入下会吞掉 ButtonBase 的点击**（press 到达、click 不闭合），而滑杆/开关不受影响。真实用户不踩这条（硬件输入路径不同），但它揭示了架构层的真相：**ScrollViewer 是带手势识别的交互层，不只是"加滚动条"**——它参与指针事件的路由（捕获、预按下判定）。产品含义：短表单页（设置类）不该包 ScrollViewer——内容本来一屏装得下，多一层手势层只有成本没有收益；长文档（ScratchPad 的 RichEditBox 内部自带滚动）才需要。**判断式：内容可能超过一屏才上 ScrollViewer，且它应该是页面的最外层**（嵌套 ScrollViewer 的滚动冲突是新手经典坑）。
+
 ## 6.7 布局思想总结
 
 背容器定义没有意义，要建立的是选型判断：

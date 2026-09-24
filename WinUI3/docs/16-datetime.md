@@ -147,6 +147,23 @@ TimePicker 还有 `HourIncrement`（12/24 混排场景排 2 小时步）与 `Clo
 
 `MinYear`/`MaxYear`（DateTime）给可选年份划界——周起始选择里年份其实无意义（产品上该用两选项 ComboBox，16.6.3 已自我检讨）；真用日期的表单（生日、预约）必设：**MinYear=今天**防选过去，预约类 MaxYear 防飘到下世纪。域外年份在下拉里直接不出现——又是"拒收优于提示"（13.5.2 同款纪律）。
 
+### 16.6.7 日期算术：周起始的实现
+
+"一周从周几开始"真的要算时（日历网格渲染）：
+
+```cpp
+auto now = winrt::clock::now();                       // 系统时钟 → DateTime
+auto days = now.time_since_epoch().count() / 864000000000LL;   // 100ns → 天
+auto weekday = (days + 4) % 7;                         // 1970-01-01 是周四
+auto shifted = (weekday + 7 - firstDayOffset) % 7;     // 以周一起始为例
+```
+
+**月视图同理加一坨**（闰年、月长不齐）——`winrt::clock` 只做点转换，日历数学自己写或上 `Windows.Globalization.Calendar`（它懂一切历法：`ChangeCalendarSystem(L"ja-JP")` 直接和历）。教学工程存 ticks 避开了这些；真做日历功能，Globalization.Calendar 是唯一的正路。
+
+### 16.6.8 CalendarView：月历网格
+
+`CalendarView`（与 DatePicker 不同控件）渲染整月网格：可圈选日期范围（SelectedDates 集合）、`DisplayMode="Month/Year/Decade"` 钻取。它是"选日子"的重型形态（订机票、请假起止）——设置中心用不着；DataExplorer 若加"按日期过滤文件"也用 DatePicker 足矣。**CalendarView 的黑话日期格式**（FirstDayOfWeek/BlackoutStrikes）走 `CalendarViewDayItemChanging` 事件改样式——又是"数据驱动外观"的一课（17 章 ContainerContentChanging 的日历版）。
+
 ## 16.7 小结
 
 | 需求 | 控件 + API |

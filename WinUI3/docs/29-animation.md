@@ -141,6 +141,18 @@ void MainWindow::PlaySkinTransition()
 
 Storyboard 之下还有 Composition API（`ElementCompositionVisual`/`ScalarKeyFrameAnimation`）——在合成器线程跑、不走 UI 线程，适合永动动画（加载环、呼吸灯）与大量并行动画。分界：**交互驱动的属性动画用 Storyboard**（与布局系统协作），**装饰性高频动画用 Composition**（绕开 UI 线程）。31 章窗口篇的自定义标题栏按钮 hover 会碰到它的边缘；教程主线不深入——知道分界线在哪，需要时才知道往哪查。
 
+### 29.5.6 From/To/By 的语义三角
+
+三个属性给两个：From+To（绝对起终）、From+By（相对增量）、To+By（从当前到 To）——**只给 By = 每次从当前值再加**（可重入的累加动画，慎用）。全不给 = "回到基值"（动画逆放回 XAML 初值，做"弹出又收回"的另一半）。设置中心换肤动画给全 From+To（29.5 坑 6）是可重入的保险——连续换肤每次都从同一起点，视觉确定。
+
+### 29.5.7 动画与数据绑定打架
+
+动画临时改属性值，**期间绑定的 setter 不生效**（动画持锁）——To 动画结束后 HoldEnd（默认）会**永久占着属性**，绑定更新失效。解法：动画完播后手动清（`EnableDependentAnimation=false` 的独立动画不占）或动画只打"影子属性"（TranslateTransform 那种纯视觉层）再让布局属性归绑定管。换肤动画打 Opacity+Transform（都不绑数据）正是绕开此坑的选型——**绑定的属性交给绑定，动画打视觉层**，两世界互不越界。
+
+### 29.5.8 关键帧与离散动画
+
+`DoubleAnimation` 之外还有 `ObjectAnimationUsingKeyFrames`（离散值切换——状态点、图标替换）：KeyFrame 按 KeyTime 排布，到达即切值。**什么时候不用补间**：值空间不连续（图标 A→图标 B 没有"中间图标"）——补间属性（double/Color/Point 三种）之外全是离散域。主题实验室的柱子换色用 ColorAnimation 补间会很顺（red→blue 渐变），实测用了硬切（Fill 直接赋新画刷）——教学取舍：换肤的"啪"一下比 300ms 渐变更符合"应用了新预设"的确认感。**动画的品味问题最终是产品问题**。
+
 ## 29.5 小结
 
 | 需求 | API |

@@ -124,6 +124,21 @@ Windows::Foundation::IAsyncAction TaskListPage::ShowAddDialogAsync()
 - 打包成 MSIX（33 章）后，把 Storage 换回 `ApplicationData`（34 章的正路）。
 - 接 34 章的通知：任务到期弹 `AppNotificationBuilder`。
 
+### 35.9 TaskFlow 与四个功能工程的血缘
+
+TaskFlow 不是孤岛——它是全书四个功能工程的汇流点：
+
+- **设置中心**（07）写的偏好（`default count`、`reminder`）就是 TaskFlow 的配置输入——PreferencesPage 的 Header 明说 "Task defaults consumed by the TaskFlow app"。两个应用共享 `%LOCALAPPDATA%` 下的 JSON 持久化模式（SettingsStore 的读写纪律，34 章同款）。
+- **编辑器**（09）的未保存确认（ContentDialog + 脏标记）在 TaskFlow 的行内编辑里复用——改任务标题未提交就导航离开，同一套确认时序。
+- **数据浏览器**（17）的过滤管线（多输入归一 ApplyFilters）就是 TaskFlow"按状态筛选任务列表"的模板——单选按钮组当 TreeView 用，计数行同款。
+- **主题实验室**（26）的 accent 覆盖在 TaskFlow 的强调色（今日焦点任务）上兑现——`{ThemeResource AccentFillColorDefaultBrush}` 引用让用户在主题实验室调的色对 TaskFlow 生效（同一台机器同一应用资源系统）。
+
+**教程的收束结构**：01-06 打地基，7-30 每个控件在功能工程里干真活，31-34 补窗口与系统边界，35 把四条线索拧回一根——你在这本书里没有学过"控件"，你学过的是四个能用的应用，TaskFlow 是第五个。
+
+### 35.10 从 TaskFlow 到你的应用
+
+抄走 TaskFlow 骨架后的自然扩展（按复杂度排序）：**到期提醒**（16 章 TimePicker 的 reminder 值喂 `DispatcherQueueTimer`，到点 ToastNotification——34 章）、**多列表**（21 章 TabView 每列表一页签，持久化结构升级）、**统计视图**（30 章 Shape 柱状图渲染完成趋势）、**云同步**（34 章的 JSON 序列化对接任意后端）。每一项都只差"最后一块板"——地基在这本书里已经打完。
+
 ## 35.9 小结
 
 全书 34 章的内容在这一个工程里各就各位：**外壳（22/31）→ 列表（17/20）→ 对话框（24）→ 状态与集合（32）→ 持久化（34）→ IDL 组织（04/27）**。读懂这个工程的每一行为什么这么写，教程的产出就真正归你了。

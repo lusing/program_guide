@@ -156,6 +156,21 @@ void MainWindow::OnSortSize(IInspectable const&, RoutedEventArgs const&)
 
 **"3.4 MB" 排序的陷阱**：字符串序 "88 MB" > "410 MB"（'8'>'4'）——格式化前置（17.6.1）的代价在这里付：排序键要么存原始数值（FileItem 加个 double Bytes 字段），要么比较器里解析。这是"展示与数据分离"原则的又一次现身——**模板里只展示，但数据的原始形态要为排序/过滤留好字段**。三视图同源（17.6.3）在排序后自动全刷——列表、卡片、详情跟着重排，一处排序处处生效。
 
+### 20.5.7 ItemsRepeater 的最小示例（补完路线图）
+
+```xml
+<ItemsRepeater ItemsSource="{x:Bind Items}">
+    <ItemsRepeater.Layout>
+        <UniformGridLayout MinItemWidth="180" MinItemHeight="90"/>
+    </ItemsRepeater.Layout>
+    <ItemsRepeater.ItemTemplate>
+        <DataTemplate x:DataType="local:FileItem">...</DataTemplate>
+    </ItemsRepeater.ItemTemplate>
+</ItemsRepeater>
+```
+
+无选择、无悬停、无容器——**纯布局机**。UniformGridLayout 自动换行排卡片（MinItemWidth 决定每行几个）；StackLayout 是另一个内建（虚拟化竖排）。要选择语义自己接：模板里包 RadioButton/CheckBox，或上 PointerPressed 手动管理。**什么时候它比 GridView 强**：十万项（虚拟化更激进）、非网格布局（接自定义 Layout 类）、GridView 的容器开销成为瓶颈时。数据浏览器百项级，ListView/GridView 正合适——本章记录这条升级路径的存在与触发条件。
+
 ## 20.5 小结
 
 | 场景 | 做法 |

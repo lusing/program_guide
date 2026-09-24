@@ -162,6 +162,18 @@ ToggleSwitch 的 `Header` 渲染在开关上方（设置中心 "Notifications" �
 
 ToggleSwitch 在触屏上是**点击翻转**（不是拖拽）——WinUI 的触控适配已把它做成大目标按钮。别在 Tapped 里自己实现"拖到左半关右半开"，原生语义就够。真正的"拖拽调量"需求（连续值）用 Slider——这也反过来解释了 11/12 章的分界：**离散二值给开关，连续量程给滑杆**，中间态（三档）用 ComboBox 或分段控件。
 
+### 11.5.8 开关与确认：即时生效的例外
+
+"开关即时生效"有例外清单：**破坏性或高代价操作**（删数据、断连接、付费开关）不该拨了就执行——拨向危险侧要 ContentDialog 二次确认，取消则**把开关拨回去**（`MasterSwitch().IsOn(false)` 在代码里反转，视觉与意图重新对齐）。反转时又触发一次 Toggled——处理器要能区分"用户拨的"与"程序回拨的"（一个 bool 标志或检查 m_syncing）。这是开关家族最容易写错的时序，没有之一。
+
+### 11.5.9 ToggleSwitch 的自动化面孔
+
+朗读顺序：Header（"Notifications"）→ 状态（"on/off，开关"）。**OnContent/OffContent 参与朗读**——`OnContent="On"` 时念 "On, 开关"；自定义成 "已启用" 更友好。AutomationProperties.Name 可整体覆盖。触屏目标尺寸：开关本体约 44×20 逻辑 px——**点击区含 Header 与文案区**（整个控件行），比看起来大，别在窄行里挤两个开关（误触率翻倍）。
+
+### 11.5.10 ToggleSwitch 与设置搜索的联动
+
+设置中心有搜索（15 章）——开关们是搜索的**目标域**：搜 "notification" 该命中总闸所在的页。实现层：页面的可搜索文本集合（kPages 表）扩到控件级（"Notifications, master switch, channels"）——**每个交互控件的语义描述是搜索资产**，不是文案包袱。Windows 11 设置的搜索就是这么工作的（搜"深色"能到主题页）。教学工程的 kPages 停在页级；控件级搜索是自然的下一步扩展，架构上只改 OnSearchChanged 的扫描范围。
+
 ## 11.6 小结
 
 | 需求 | 控件 + 关键 API |

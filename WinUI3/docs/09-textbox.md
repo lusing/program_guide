@@ -203,6 +203,18 @@ m_saveProbe = DocStore::Load(entry->Name, check)
 
 这不是测试代码，是产品决策：保存按钮的反馈从"调用成功"升级成"磁盘可证"——`.smoke/09-scratchpad/save/tap-2.png` 状态行的 **"verified on disk (15 chars)"** 就是它。写后回读的成本一次磁盘 IO，换来的是把"保存了但文件是空的"这类灾难在发生当场暴露。
 
+### 9.9.6 撤销栈：RichEditBox 自带的那层
+
+RichEditBox 内建 undo/redo（Ctrl+Z/Ctrl+Y 直接可用）——`Document().GetRedoEnabled()` 查询、`Document().SetUndoLimit(n)` 设深度（0 关闭）。**教学演示常自己存快照做 undo，对 RichEditBox 是重复建设**；但要与"页签关闭/文档切换"协同：切页签时 undo 栈跟 RichEditBox 实例走（每个页签一个编辑器，栈天然隔离——21 章架构的又一红利）。
+
+### 9.9.7 IME 与 composition 事件
+
+中文输入法的"组字窗口期"里，文本框内容是**中间态**（拼音串）。`TextChanging`（composition 前）vs `TextChanged`（提交后）的分界在这：脏标记该挂 TextChanged（组字期不算"改过文档"）；实时搜索过滤（15 章 ASB）该挂 TextChanging 之外的防抖。TextBox 三个事件的完整序：`TextChanging`（内容将变，可拦截）→ `TextChanged`（已变）→ `SelectionChanged`（光标动）。
+
+### 9.9.8 剪贴板互操作
+
+`TextBox.CopySelectionToClipboard()` / `PasteFromClipboard()` 显式操作；系统 Ctrl+C/V 默认走这两条路。程序化灌文本（不走剪贴板）：TextBox 直接 `Text()`，RichEditBox 必须 `Document().SetText(TextSetOptions::None, L"...")`（选项里的 `FormatRtf` 收 RTF 串、`AllowBidi` 处理双向文）——**RichEditBox 没有 Text 属性**，它的世界只有 Document。
+
 ## 9.8 小结
 
 | 需求 | 控件 + 关键 API |

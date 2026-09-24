@@ -152,6 +152,18 @@ GridView 项默认带选中勾选框格（SelectionCheckMarkMode）与拖拽重�
 
 子串过滤可能让 m_view 清空——ListView 显示空白（没有内建空态模板）。产品化补法：叠一个 `TextBlock x:Name="EmptyHint" Visibility="Collapsed"`，ApplyFilters 里 `m_view.Size()==0` 时 Visible（"No files match 'xyz' in Images"）。设置中心同款问题（搜索无建议时下拉自动收起，天然安全）。**空态是过滤类 UI 的义务**——白屏让用户怀疑是 bug 还是没结果，一句文案就能说清。
 
+### 18.5.6 卡片的选中态与点击区
+
+GridView 的选中视觉（描边+勾）由 ItemContainer（GridViewItem）承担——卡片模板里的 Border 描边是**内容自己的边**，与选中描边是两层。别在模板里模仿选中态（重复且不同步）；**点击区=整张卡片**（容器级命中），StackPanel 留白也是可点区——手指友好。要"只点图片才选中"的精确语义，得在模板里放 Button 吃点击再代码选中（罕见需求，别自找）。
+
+### 18.5.7 FlipView 的翻页按钮与手势
+
+FlipView 内建左右箭头 + 触屏滑动 + （键盘）PgUp/PgDn——三套翻页免费。箭头按钮的 AutomationProperties 自动带（"下一页/上一页"）。**数据不足两条时**箭头自动隐藏（一条数据时 FlipView 仍显示，只是没得翻）。循环翻页（末页→首页）不内建：监听 SelectionChanged，index 到头尾时 SelectedIndex 跳回——慎用，用户常把循环当 bug（"怎么又回来了"）。
+
+### 18.5.8 SemanticZoom：列表的 ABC 跳转
+
+集合控件的第三件少有人知的能力：`SemanticZoom` 包两个视图（ZoomedInView 正常列表 + ZoomedOutView 缩略/分组索引），捏合手势（或 `-` 按键）切换——通讯录按字母跳转的标准形态。ListView/GridView 都能当内层。数据浏览器十项数据用不着；文件过千的"按类型分组+跳转"就是它的主场。**C++/WinRT 的实现注意**：两个视图各自 ItemsSource 同源，分组用 `CollectionViewSource`（IsSourceGrouped）——32 章集合视图的预告。
+
 ## 18.5 小结
 
 | 控件 | 一句话 | 关键差异 |

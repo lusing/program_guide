@@ -169,6 +169,28 @@ AppBarButton 的 `Icon` 有三档供给：**字体字形**（`Icon="Add"`——S
 
 MenuBar 内建 Alt 助记键体系：按 Alt 高亮菜单标题首字母、再按字母展开（Windows 传统）。自定义加速键（如 F5=刷新）挂 KeyboardAccelerator 不带 Modifiers 即可。**别抢系统级**：Ctrl+Alt+Del 类组合拿不到，Alt+Space 是窗口菜单——23 章的加速器注册在应用窗口焦点内，全局热键（应用不在前台也响应）是 RegisterHotKey 的 Win32 领地（31 章）。
 
+### 23.5.6 MenuFlyout 与右键菜单
+
+上下文菜单（右键）的挂法：
+
+```xml
+<ListView ...>
+    <ListView.ContextFlyout>
+        <MenuFlyout>
+            <MenuFlyoutItem Text="Open" Click="OnOpen"/>
+            <MenuFlyoutSeparator/>
+            <MenuFlyoutItem Text="Delete" Icon="Delete"/>
+        </MenuFlyout>
+    </ListView.ContextFlyout>
+</ListView>
+```
+
+`ContextFlyout` 属性一切 UIElement 都有——**右键（桌面）与长按（触屏）自动触发**。位置自适应（控件的上下左右哪有空间去哪）。菜单项的 Icon 同 AppBarButton 的供给体系（23.5.4）。与 MenuBar 的分工：MenuBar 是全局命令的常驻入口，ContextFlyout 是**对象级**命令（"对这个文件做什么"）——同一个动作两边都出现（File>Open 与右键 Open）是正常冗余，处理器共用一个（23.5.1 的汇流原则）。
+
+### 23.5.7 命令的 CanExecute 化（32 章前传）
+
+三层入口共用处理器解决了"行为一致"，没解决"可用性一致"——没有选中项时 Bold 该灰。事件路线的土法：每个影响状态的交互后手动刷一批 `IsEnabled`（遗漏点是常态）；命令路线（`XamlUICommand` + `CanExecute` 事件）把可用性逻辑集中，三入口绑同一命令自动同步。设置中心/ScratchPad 体量小走事件；第 32 章把命令路线走全——**复杂度超过一屏命令时，事件路线的维护成本曲线陡升**，那是切换点。
+
 ## 23.6 小结
 
 | 需求 | API |

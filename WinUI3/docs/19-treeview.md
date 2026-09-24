@@ -146,6 +146,18 @@ TreeView 的 SelectionMode=Single 有内建高亮——但**过滤后选中项�
 
 TreeView 键盘内建：方向键在**可见节点间**移动、左右键展开/收起/进出层级、Home/End 到首尾。**展开过的节点才进键盘序**（惰性填充的子节点未展开时不可达）——大树的键盘体验取决于填充策略。AutomationProperties 默认按 Content 朗读（"Images, tree item, level 2"）——层级自动带上，这是 TreeView 相对手搓 Expander 列表的最大无障碍红利。
 
+### 19.5.7 树的持久化：展开态
+
+TreeView 的展开状态是**纯 UI 状态**（用户展开过什么）——产品上常要记忆（重启回到上次展开的样子）。挂 `TreeExpanding` 事件记录节点路径、启动时回放 `IsExpanded(true)`。路径用节点 Content 拼（"All/Images"）而不是索引（树结构变了索引即错）。数据浏览器的五节点树不需要；文件树类应用必须有——**展开态记忆是"树形 UI 尊重用户"的最低标准**。
+
+### 19.5.8 TreeView vs 手搓 Expander 链
+
+层级展示的另一条土路：Expander 嵌 Expander。差在没有**统一的选择模型**（每层各管各的）、没有键盘层级导航（19.5.6）、没有懒加载钩子（19.5.3）——只省了一个 ItemInvoked 处理器。三层以下且不需要选择的静态结构（FAQ 页）可以用；但凡有交互，TreeView 全维度碾压。
+
+### 19.5.9 拖放：树的进阶交互
+
+TreeView 支持节点拖拽重排/跨层级移动（`AllowDrop`+`CanDragItems`+ `DragItemsStarting/Completed` 一族事件）——文件管理器的"拖进文件夹"就是它。**数据模型的代价**：拖放落点要改的是你的层级数据（不是 TreeView 的）——DragOver 里校验合法性（图片文件夹不能拖进音频节点）、Drop 里改 m_all 重建过滤。数据浏览器没做拖放（分类是静态的）；**有拖放的树=数据可变的应用**，持久化结构先想清楚再开这个口。
+
 ## 19.6 小结
 
 | 环节 | API |

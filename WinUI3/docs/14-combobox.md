@@ -149,6 +149,18 @@ DensityBox().SelectedIndex(density == L"Compact" ? 1 : 0);
 
 取选中项有三条路：`SelectedItem()`（IInspectable，要 unbox）、`SelectedIndex()`（int，但要自己映射语义）、`Text()`（IsEditable 才有意义）。**设置中心用 SelectedItem+unbox**——选项即语义（"Compact" 字符串直接进存储与判断）。索引版在选项重排时是定时炸弹（"1 是紧凑"硬编码进逻辑）；对象版（FileItem 那类）最稳但两选项犯不着。选哪条都行，**别混用**——一处用索引一处用字符串，重构时必漏。
 
+### 14.5.5 下拉的虚拟化与大量选项
+
+ComboBox 的下拉列表**默认虚拟化**（百项无压力）；但 `IsEditable=true` 时自动关闭——可编辑下拉建议走 AutoSuggestBox（15 章）。选项超三四十个就该给用户过滤入口：要么 ASB，要么分组（`ComboBoxItem` 前插不可选的分组头——IsEnabled=false 的伪标题项，土但有效）。**MaxDropDownHeight** 控制下拉高度（默认约 7 项高），别调太大——比窗口还高的下拉是事故。
+
+### 14.5.6 SelectedValue 与绑定（32 章预告）
+
+ComboBox 有 `SelectedItem`（对象）与 `SelectedValue`+`SelectedValuePath`（取对象的某属性做值）——WPF 迁移者熟悉这对。WinUI 3 里 **SelectedValuePath 存在但 x:Bind 场景基本用不上**：直接 SelectedItem 双向绑到视图模型的对象属性更 C++/WinRT 风格（值转换在属性 getter 里做）。设置中心走事件直读 SelectedItem——三种风格（事件/绑定/ValuePath）在同一控件上的取舍，32 章统一讲。
+
+### 14.5.7 下拉动画与开合感知
+
+ComboBox 下拉展开有系统动画（滑出）——`IsDropDownOpen` 可查/可设（程序化开合）。教学常见误区：自己写开合动画（Storyboard 折叠面板）复刻 ComboBox——内建的这个就是了（还带遮罩关闭、Esc 关闭、焦点管理三件免费）。**ComboBox 开着时点外面=选中关闭**；要"点外面=取消关闭"（不改变选择）用 `IsEditable=false` + SelectionChanged 里校验，或干脆用 ListPickerFlyout（更冷门但语义正）。
+
 ## 14.7 小结
 
 | 需求 | 写法 |

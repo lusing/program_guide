@@ -228,6 +228,26 @@ void MainWindow::OnBoldMenu(IInspectable const&, RoutedEventArgs const&)
 
 设置中心与 ScratchPad 的主保存按钮都用 `Style="{ThemeResource AccentButtonStyle}"`（强调填充），次级动作（Reset、Next）用默认样式。**一屏最多一个强调按钮**——两个实心蓝钮并排，用户不知道回车会触发哪个。DefaultButton（ContentDialog 的 `DefaultButton(ContentDialogButton::Primary)`，24 章）是同一逻辑的键盘版：视觉强调与回车行为指向同一处。
 
+### 7.10.1 迁移对照：从 WPF/UWP 带来的肌肉记忆
+
+| 直觉（别处学的） | WinUI 3 现实 | 章 |
+|---|---|---|
+| `IsDefault`/`IsCancel`（回车/Esc 触发） | **不存在**——ContentDialog 的 DefaultButton 管回车，普通窗口自己挂 KeyDown | 24 |
+| `Command` + `CanExecute` 自动禁用 | 存在但 C++/WinRT 要自己实现 `ICommand`（XamlUICommand 可带图标） | 32 |
+| 按钮模板里找 `PART_*` | 默认模板没约定部件名；重模板拿 `TemplateBinding` 属性即可 | 26 |
+| WPF `Style.Triggers`（IsMouseOver 换色） | 不存在——视觉态（VisualState）在模板里，改外观 = 改模板或资源 | 26 |
+| UWP `Button.Click` 路由到代码后置 | 一样，但处理器**必须**在 x:Class 类里（不能挂到别的类） | 03 |
+
+**最快上手姿势**：把 WPF 的"触发器思维"整块换成"资源/模板思维"——想改 hover 色不是加 Trigger，是覆盖 `AccentButtonStyle` 引的画刷资源或整个换 ControlTemplate。
+
+### 7.10.2 无障碍：按钮的自动化面孔
+
+屏幕阅读器读按钮的顺序：**AutomationProperties.Name（显式）> Content（字符串时）> x:Name（最后兜底，且常常不友好）**。图标按钮（AppBarButton Icon 无 Label）是重灾区——设置中心 BoldToggle 有 Label 兜住；纯图标按钮必配 `AutomationProperties.Name`。快速自检：跑 `inspect.exe`（Windows SDK 自带）指到按钮上看 Name 字段——它就是朗读器会念的东西。
+
+### 7.10.3 按钮的视觉状态家族
+
+ButtonBase 模板内部维护六个 VisualState（Normal/PointerOver/Pressed/Disabled + Focus）：你不动它们时一切自动；**换模板时六个都得给**（缺 PointerOver 会在悬停时"死色"）。ThemeResource 的意义正在此——默认模板的悬停色是 `{ThemeResource ButtonBackgroundPointerOver}`，**覆盖资源键就能换悬停色而不用碰模板**，这是 26 章"改资源优于改模板"的直接理由。
+
 ## 7.10 小结
 
 | 成员 | 一句话定位 | 关键属性/事件 |

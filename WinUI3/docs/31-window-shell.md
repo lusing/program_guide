@@ -54,11 +54,37 @@ void MainWindow::OnNewWindowClicked(IInspectable const&, RoutedEventArgs const&)
 
 窗口生命周期：不持有强引用的窗口会被回收——`App` 里像 04 章那样存 `window` 成员，多窗口就 `std::vector<Window>`（34 章的引用计数纪律同样适用）。
 
-## 31.5 单实例与激活重定向（方向）
+## 31.5 尺寸、位置与逻辑单位（本套教程实测最贵的一课）
 
-`Microsoft.Windows.AppLifecycle.AppInstance` 提供 `FindOrRegisterForKey` / `GetActivatedEventArgs` / `RedirectActivationToAsync`——第二实例启动时把激活转给已存在实例并退出。这块依赖应用激活协议的完整链路（打包形态有额外要求），本教程定位为**方向指引**而非已验证路径：非打包形态下的重定向实测留作诚实边界，工程需要时从 `AppInstance` 的元数据起步。
+### 31.5.1 AppWindow 系按逻辑单位解释
 
-## 31.6 实测坑位
+实测（175% DPI 显示器）：`appWindow.Resize({ 1080, 700 })` 得到 **1890×1225 物理**窗口；`MoveAndResize({ 30, 30, ... })` 的落点在 **(53, 53)**——30 × 1.75 的取整。文档口径与实测口径不一致时以实测为准，本教程四个功能工程全部按逻辑单位传参。
+
+四个工程的自定位写法（构造期一次到位）：
+
+```cpp
+if (auto appWindow = AppWindow())
+{
+    // 1000x620 逻辑 = 1750x1085 物理 @175%，装得进 2194x1234 的屏
+    appWindow.MoveAndResize(Windows::Graphics::RectInt32{ 30, 30, 1000, 620 });
+}
+```
+
+两个细节：**`{...}` 花括号字面量有歧义**——它可能解析到 float 的 Rect 重载（又乘一次 1.75），显式写 `Windows::Graphics::RectInt32{...}` 钉死整数版；**构造期自移是安全的，外部再动窗口会打烂 XAML 岛的输入变换**（下一节的战争实录）。
+
+### 31.5.2 级联出屏与注入输入
+
+系统级联位置可能把大窗口顶出屏幕（底部出屏）——视觉上只是"截了一块"，**但对自动化是灾难**：注入点击的 release 命中在出屏区域失效，表现为"点了没反应"。自定位到完全在屏内后消失。这条坑与下一条合起来是"为什么教程应用全部自定位 (30,30)"的完整答案。
+
+### 31.5.3 SetWindowPos 与岛输入变换（战争实录摘要）
+
+外部 `SetWindowPos`（测试工具停靠窗口的常规操作）在 XAML 岛安定后执行：**渲染照旧、指针命中错位**——press 落在 A 处、界面认为点在 B 处。大目标（导航行、滑杆）仍在错位后的可命中区里"碰巧能点"，小目标（按钮、单选环）全军覆没。结论：**外部工具永远不要移动/缩放 WinUI 3 窗口**——要固定布局，让应用构造期自己来。完整排查过程见 README 验证段的"输入注入战争实录"。
+
+## 31.6 单实例与激活重定向（方向）
+
+`Microsoft.Windows.AppLifecycle.AppInstance` 是方向性内容：`FindMainInstance`/重定向激活（第二实例启动时把参数转给先例并退出）。多窗口编辑器（每文档一窗）与单窗口工具（如设置中心）是两个典型用例。本教程工程未覆盖（教学边界如实声明）；官方 WindowsAppSDK 礷例 `AppLifecycle` 有完整可抄实现。
+
+## 31.7 实测坑位（窗口篇）
 
 1. **`AppWindow().Resize` 的参数是 `SizeInt32`**（物理像素！150% DPI 下 Resize({900,640}) 得到的是 600×427 逻辑）——三个画廊统一 Resize({1280,860}) 的换算即为此。
 2. **自绘标题栏要留系统按钮区**：右上角约 138×44 逻辑像素内别放可点内容。
@@ -66,7 +92,7 @@ void MainWindow::OnNewWindowClicked(IInspectable const&, RoutedEventArgs const&)
 4. **多窗口同线程共享 DispatcherQueue**：跨线程改 UI 仍必须 `TryEnqueue`（34 章）。
 5. **材质要求 Win11**：Win10 上 Mica 退化为纯色——按系统版本降级预期。
 
-## 31.7 小结
+## 31.8 小结
 
 | 需求 | API |
 |------|-----|

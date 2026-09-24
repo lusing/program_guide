@@ -149,6 +149,18 @@ Style 是"一组属性的预设包"（按类型命中）；资源是"值的具�
 
 做换肤/配主题时最常用的键（Fluent 家族的公共子集）：`AccentFillColorDefaultBrush`（主强调填充）、`AccentTextFillColorPrimaryBrush`（强调文字色）、`CardBackgroundFillColorDefaultBrush`/`CardStrokeColorDefaultBrush`（卡片底/描边——DataExplorer 卡片、LabeledValueControl 瓷贴都用）、`LayerFillColorDefaultBrush`（浮层底）、`TextOnAccentFillColorDefaultBrush`（accent 上的文字）。**找键的方法**：Visual Studio 的 Live Visual Tree 看系统控件实际用的键名，或 WinUI 的 generic.xaml 源码——比背表可靠，因为版本会加新键。
 
+### 26.6.7 BasedOn：站在默认样式的肩膀上
+
+改一两个属性而保留系统样式的其余部分：
+
+```xml
+<Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+    <Setter Property="MinWidth" Value="120"/>
+</Style>
+```
+
+**BasedOn 引的是 key 而非类型**——系统样式都有资源 key（DefaultButtonStyle/AcccentButtonStyle...），隐式样式（无 key）之间不能 BasedOn（要挂 key 才行，26 章实测坑的正式解法）。设置中心保存按钮直接用 AccentButtonStyle（零自定义）；密度样式（14 章）是纯代码 Style 不 BasedOn（容器自定义从零起更干净）——**两条路线：覆盖资源（值变）零样式代码，改结构才写 Style**。
+
 ## 26.5 小结
 
 | 需求 | 手段 |
