@@ -1,0 +1,27 @@
+session IsaTut = HOL +
+  options [document = false]
+  theories
+    T01_overview
+    T02_first_theory
+    T03_terms_types
+    T04_datatype
+    T05_recursion
+    T06_induction
+    T07_simp
+    T08_auto_vs_isar
+    T09_logic_rules
+    T10_lists
+    T11_arithmetic
+    T12_isar_basics
+    T13_isar_advanced
+    T14_sets
+    T15_relations_wf
+    T16_functions_deep
+    T17_automation
+    T18_hoare
+    T19_codegen
+    T20_locales
+    T21_sessions
+    T22_diagnosis
+    T23_engineering
+    T24_capstone
