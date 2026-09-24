@@ -192,6 +192,12 @@ void SyncParentCheckBox(CheckBox parent, IVector<CheckBox> children)
 
 HTML 的 radio 有 required 语义；WinUI 没有——**同组全不选是合法状态**（设置中心启动时就是这样，直到用户点选）。要"必选"语义：代码校验（提交前查同组是否 IsChecked==true）+ 状态行报错；或启动时程序化预选默认项（在 ctor 里设，别在 XAML 里——10.6.1 的坑）。产品上**预选默认**通常优于强制选择（少一次交互），除非默认真的会误导。
 
+## 10.7 练习与思考
+
+1. 实现 10.6.6 的三态传播：给设置中心的渠道组加一个"全选/部分/全不选"父复选框，与总闸（开关）并存——两者语义会打架吗？给出你的裁决。
+2. 单选组不加 GroupName 会怎样？做实验：两个 GroupName 缺失的单选组互相抢选中，然后用一句话向团队解释 GroupName 的真实作用域。
+3. RadioButton 的 Checked 在解析期触发（10.6.1 坑）——设计一个"启动即崩"的最小复现，再设计三层防御（XAML 侧/ctor 侧/handler 侧）。
+
 ## 10.6 小结
 
 | 需求 | 写法 |

@@ -331,6 +331,10 @@ catch (winrt::hresult_error const& e)
 
 反过来，你自己的代码抛 `winrt::hresult_error`（或派生类型），跨过 ABI 后就变成对应 `HRESULT`。不要让裸 C++ 异常穿过 WinRT 边界。
 
+### 2.9.x 四工程里的投影实战位
+
+hstring/std::wstring_view 过桥（设置中心搜索的 find/substr）、box_value/unbox_value（Tag 路由、ComboBox 选项）、make<T> 与 factory_implementation（每个 runtimeclass 的另一半）、协程 + get_strong（保存动画）——2 章的每个机制在四个工程里都有高频出场。**回望法**：卡在某个投影概念时，grep 四工程的对应用法（`grep -r "wstring_view" examples/`）看真实上下文，比读三遍文档快。
+
 ## 2.10 一图总结：一次属性赋值的完整旅程
 
 ```text

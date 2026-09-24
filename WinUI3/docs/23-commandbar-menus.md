@@ -191,6 +191,12 @@ MenuBar 内建 Alt 助记键体系：按 Alt 高亮菜单标题首字母、再�
 
 三层入口共用处理器解决了"行为一致"，没解决"可用性一致"——没有选中项时 Bold 该灰。事件路线的土法：每个影响状态的交互后手动刷一批 `IsEnabled`（遗漏点是常态）；命令路线（`XamlUICommand` + `CanExecute` 事件）把可用性逻辑集中，三入口绑同一命令自动同步。设置中心/ScratchPad 体量小走事件；第 32 章把命令路线走全——**复杂度超过一屏命令时，事件路线的维护成本曲线陡升**，那是切换点。
 
+## 23.6 练习与思考
+
+1. 23.5.7 的 CanExecute 化：把 Bold 入口绑到 XamlUICommand，CanExecute 返回"有选中文字"——三入口的可用性怎么自动同步？
+2. 给编辑区加 ContextFlyout（右键）：Cut/Copy/Paste/Select all——与 MenuBar 的 Edit 菜单共用处理器，但有些项要上下文禁用（无选中时 Cut 灰）。在哪层做？
+3. MenuBar 的 Alt 助记实测：按 Alt 再按 F——File 菜单开了吗？再按 N（New tab 的内嵌加速器）呢？把两级行为写成说明。
+
 ## 23.6 小结
 
 | 需求 | API |

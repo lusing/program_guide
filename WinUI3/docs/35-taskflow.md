@@ -106,7 +106,65 @@ Windows::Foundation::IAsyncAction TaskListPage::ShowAddDialogAsync()
 - 构造参数写 `String` 不写 `hstring`（27 章实测：命名空间内 `hstring` 触发 MIDL2011）。
 - 纯代码构造的类型（无 x:Bind 引用）不需要 IDL 成员声明——按名字挂的事件处理器照旧免进 IDL（04 章）。
 
-## 35.7 运行时验证
+## 35.7 全书坑位总表（按主题归档）
+
+35 个章节撞出来的实测坑，按主题归档速查（每条后括号是首发现章节）：
+
+**事件与解析期**
+
+| 坑 | 症状 | 解法 |
+|---|---|---|
+| XAML 预置状态触发解析期事件 | IsChecked/SelectedIndex/Value 预置 → 启动即崩 0xC000027B | XAML 放结构、ctor 放状态；handler 首行判空（10.6.1/12.5/14.5.1） |
+| ValueChanged 析构期再触发 | 关窗口时 handler 访问半销毁控件 = AV | null 守卫 + 声明顺序（12.5） |
+| SelectionChanged 空 AddedItems | 过滤 Clear 触发、GetAt(0) 抛 | 取前查 Size()（17.6.4） |
+| AutoSuggest 重入 | 设 ItemsSource 再触发 TextChanged 死循环 | Reason() 过滤 UserInput（15.2） |
+
+**IDL 与投影**
+
+| 坑 | 症状 | 解法 |
+|---|---|---|
+| IDL 注释非 ASCII | MIDL2025 语法错（位置漂移） | 注释纯英文（27.2.1） |
+| MIDL2011 跨 .idl/namespace 内 hstring | 解析成工程命名空间类型 | 同文件声明；String 代 hstring（04/27） |
+| CppWinRTOptimized 裁投影 | Storyboard 等冷门类型命名空间消失 | 关掉或全限定名（27.4） |
+| runtimeclass 静态成员 | MIDL2025 | XXXProperty 静态留 C++（27.2） |
+| GetText 两参/TextGetOptions 在 Microsoft.UI.Text | C2660/C2665 一串 | (options, hstring&) 双参 + 正确命名空间（9.9.3） |
+
+**依赖属性与自定义控件**
+
+| 坑 | 症状 | 解法 |
+|---|---|---|
+| DP 无默认值 | x:Bind 解析期取值 unbox null 崩 | PropertyMetadata(box_value(L""))（27.2.1 坑①） |
+| getter 直用未注册字段 | GetValue(nullptr) 崩 | 先经 XXXProperty() 惰性注册（27.2.1 坑②） |
+| DefaultStyleKey 收装箱对象 | C2665 | box_value(类名串)（27.3） |
+
+**布局与窗口**
+
+| 坑 | 症状 | 解法 |
+|---|---|---|
+| NavigationView Auto 自折叠 | 高 DPI 窄窗面板变汉堡条 | PaneDisplayMode=Left 钉死（22.2） |
+| AppWindow 系按逻辑单位 | Resize({1080,700}) 得 1890 物理宽 | 按逻辑传参（31.5.1） |
+| 级联出屏吃注入点击 | 底部出屏的窗口按钮点不动 | 构造期自定位完整在屏（31.5.2） |
+| 外部 SetWindowPos 打烂岛输入 | 渲染正常、命中错位 | 应用自己动窗口，外部工具绝不动（31.5.3） |
+
+**输入与自动化**
+
+| 坑 | 症状 | 解法 |
+|---|---|---|
+| 注入鼠标点击 ButtonBase 不闭合 | press 命中但 Click 不完成 | 触摸注入 InjectTouchInput（README 战争实录） |
+| 注入输入启动抽奖 | 同一流程时通时不通 | 帧哈希检测 + 整进程重试（tap.ps1） |
+| UIA3 树不可见 | 非打包应用 provider 缺失 | 无解（留档）；驱动走输入注入 |
+| 视觉读坐标网格不可靠 | 三轮三套数 | 像素连通域扫描 find-blob.ps1 |
+
+**资源与主题**
+
+| 坑 | 症状 | 解法 |
+|---|---|---|
+| RequestedTheme 同值连设不重估 | 换肤无效但读回值对 | 先 Default 再目标（26.6.1） |
+| 代码 TryLookup 拿不到主题资源 | 返回空 | 登记元素手动重刷（26.6.3） |
+| 动画 Duration 直传 TimeSpan | C2665 | 包 Xaml::Duration（29.5 细节2） |
+| x:Bind+Converter 需 FrameworkElement 根 | Window 根工程编不过 | 走 {Binding Converter}（32.8） |
+
+## 35.8 运行时验证
 
 | 流程 | 证据 |
 |------|------|
@@ -116,7 +174,7 @@ Windows::Foundation::IAsyncAction TaskListPage::ShowAddDialogAsync()
 
 设置页的材质开关与 Add 对话框的完整输入流（键入→Add）在自动化边界外：对话框键盘焦点时序由 DefaultButton 管理，合成键盘流不做断言（诚实边界；编译与弹出已验证）。
 
-## 35.8 从这里去哪
+## 35.9 从这里去哪
 
 - 把 Add 对话框换成 24 章的 Closing 校验（空标题拦截）。
 - 给列表加 20 章的自制表格（优先级列）。

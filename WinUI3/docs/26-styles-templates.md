@@ -161,6 +161,16 @@ Style 是"一组属性的预设包"（按类型命中）；资源是"值的具�
 
 **BasedOn 引的是 key 而非类型**——系统样式都有资源 key（DefaultButtonStyle/AcccentButtonStyle...），隐式样式（无 key）之间不能 BasedOn（要挂 key 才行，26 章实测坑的正式解法）。设置中心保存按钮直接用 AccentButtonStyle（零自定义）；密度样式（14 章）是纯代码 Style 不 BasedOn（容器自定义从零起更干净）——**两条路线：覆盖资源（值变）零样式代码，改结构才写 Style**。
 
+## 26.7 练习与思考
+
+1. 26.6.7 的 BasedOn：给 AccentButtonStyle 加 MinWidth=120 的派生样式——BasedOn 的 key 是什么？隐式样式间能 BasedOn 吗（26 章实测坑）？
+2. 把 ThemeLab 的预设色板做成 Contrast 校验（WCAG AA 4.5:1）——哪些预设过不了？改色还是接受？
+3. 26.6.3 的边界：柱子改用 ThemeResource 引用 + 资源覆盖（不手动重刷）——为什么 TryLookup 拿不到？两条路的本质差异是什么？
+
+### 26.6.8 换肤的完整决策树
+
+把这一章的散点串成一棵可执行的树：**换色值？**→ 覆盖 Application.Resources 的主题键（26.6）；**换布局参数？**→ Style + Setter（14 章密度）；**换整块长相？**→ ControlTemplate 重写（26.3）；**换明暗？**→ RequestedTheme 双赋值（26.6.1）；**全部一起换？**→ 预设（ThemeLab：四件事打包成一次点击）。**判断从"变的是什么"开始**，每层的成本与影响半径递增——最贵的（重模板）应该是最后的选择。
+
 ## 26.5 小结
 
 | 需求 | 手段 |

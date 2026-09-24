@@ -171,6 +171,12 @@ void MainWindow::OnSortSize(IInspectable const&, RoutedEventArgs const&)
 
 无选择、无悬停、无容器——**纯布局机**。UniformGridLayout 自动换行排卡片（MinItemWidth 决定每行几个）；StackLayout 是另一个内建（虚拟化竖排）。要选择语义自己接：模板里包 RadioButton/CheckBox，或上 PointerPressed 手动管理。**什么时候它比 GridView 强**：十万项（虚拟化更激进）、非网格布局（接自定义 Layout 类）、GridView 的容器开销成为瓶颈时。数据浏览器百项级，ListView/GridView 正合适——本章记录这条升级路径的存在与触发条件。
 
+## 20.6 练习与思考
+
+1. 20.5.4 的可达性债：给行容器拼 AutomationProperties.Name（"第 3 行，holiday.jpg，图片，3.4 MB"）——在哪挂？行模板还是 ItemContainerStyle？
+2. 用 ItemsRepeater + UniformGridLayout 复刻 GridView 的卡片流（20.5.7）——你失去了什么免费能力？列表对账。
+3. 列宽拖拽（20.5.3 的"贵"项）：评估 GridSplitter（CommunityToolkit）与自写指针拖拽两条路的成本，写出你的选型报告。
+
 ## 20.5 小结
 
 | 场景 | 做法 |

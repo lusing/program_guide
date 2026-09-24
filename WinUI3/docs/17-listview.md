@@ -213,6 +213,12 @@ void MainWindow::OnRowSelected(IInspectable const&, SelectionChangedEventArgs co
 
 ListView 行不是 DataTemplate 本体——外面裹着 ListViewItem（选择态、悬停、键盘焦点的宿主）。**ItemContainerStyle 改的是这层**（14 章密度实战）。两个坑：容器异步生成（`ContainerContentChanging` 事件能接住每个容器就位时机——图片懒加载的标准位）；`ItemsPanel` 换 StackPanel 为 ItemsStackGrid 时虚拟化语义跟着变（非虚拟化面板=全量生成=千行卡死）。
 
+## 17.7 练习与思考
+
+1. 给 DataExplorer 加 Multiple 选择模式 + 批量删除按钮：SelectedItems 的维护、删除后过滤刷新、计数行更新——三件事的顺序是什么？
+2. 17.6.2 的表头/行模板双栅格是"契约"——写一个启动时的断言（比较两份 ColumnDefinitions 的 Width），契约破坏时状态行报错。
+3. 把 FileItem 加排序键（double Bytes）字段，实现 20.5.6 的 Size 排序。观察 "88 MB" vs "410 MB" 的字符串序陷阱。
+
 ## 17.8 小结
 
 | 环节 | API |

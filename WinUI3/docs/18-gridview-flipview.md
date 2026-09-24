@@ -164,6 +164,16 @@ FlipView 内建左右箭头 + 触屏滑动 + （键盘）PgUp/PgDn——三套�
 
 集合控件的第三件少有人知的能力：`SemanticZoom` 包两个视图（ZoomedInView 正常列表 + ZoomedOutView 缩略/分组索引），捏合手势（或 `-` 按键）切换——通讯录按字母跳转的标准形态。ListView/GridView 都能当内层。数据浏览器十项数据用不着；文件过千的"按类型分组+跳转"就是它的主场。**C++/WinRT 的实现注意**：两个视图各自 ItemsSource 同源，分组用 `CollectionViewSource`（IsSourceGrouped）——32 章集合视图的预告。
 
+## 18.6 练习与思考
+
+1. 双视图切换时保持滚动位置：ListView 的 ScrollIntoView vs 手动记录 ScrollViewer 偏移——GridView 的对应物是什么？
+2. 给卡片加右键 ContextFlyout（23.5.6）：Open/ Delete 两项。处理器怎么知道右键的是哪个 FileItem？（提示：FlyoutItem 的 DataContext）
+3. FlipView 循环翻页（18.5.7 的慎用项）：实现它，然后找一个"用户会把它当 bug"的具体场景写成注释。
+
+### 18.5.9 卡片的自适应尺寸
+
+固定 Width=180 的卡片在超窄窗口挤成三列变一列浪费横向——进阶用 `ItemsWrapGrid` 的 ItemWidth + 窗口宽算列数，或上 20 章的 UniformGridLayout（MinItemWidth 自动适配列数）。**GridView 默认面板（ItemsWrapGrid）的 GridCellSize 布局**：所有卡同一格——高度不齐的卡（文本行数不同）要么统一 MinHeight（整整齐齐）要么上 VariableSizedWrapGrid（复杂）。卡片流的"整齐"几乎总是对的——用户扫的是网格不是内容。
+
 ## 18.5 小结
 
 | 控件 | 一句话 | 关键差异 |

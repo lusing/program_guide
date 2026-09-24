@@ -248,6 +248,12 @@ void MainWindow::OnBoldMenu(IInspectable const&, RoutedEventArgs const&)
 
 ButtonBase 模板内部维护六个 VisualState（Normal/PointerOver/Pressed/Disabled + Focus）：你不动它们时一切自动；**换模板时六个都得给**（缺 PointerOver 会在悬停时"死色"）。ThemeResource 的意义正在此——默认模板的悬停色是 `{ThemeResource ButtonBackgroundPointerOver}`，**覆盖资源键就能换悬停色而不用碰模板**，这是 26 章"改资源优于改模板"的直接理由。
 
+## 7.11 练习与思考
+
+1. 把 ScratchPad 的 Bold 入口从三处（菜单/命令栏/Ctrl+B）删掉一处，观察哪个用户群体受伤害最大——然后用一段话把这个判断写成设计决策记录。
+2. 给设置中心的 Save appearance 按钮实现"保存中"状态：点击后禁用 360ms（协程），期间文本换 "Saving..."。哪些入口要同步禁用？（提示：不止按钮）
+3. RepeatButton 的 Interval=100ms 意味着处理器每秒 10 次——设计一个"按住加速滚动"的用法，并说出你会怎么防止它把 UI 线程打满。
+
 ## 7.10 小结
 
 | 成员 | 一句话定位 | 关键属性/事件 |

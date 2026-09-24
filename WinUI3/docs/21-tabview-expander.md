@@ -180,6 +180,12 @@ TabView 内建：**鼠标中键点页签=关闭**（浏览器习惯，免费）+
 
 Expander 的展开头**自动是按钮**（朗读"可展开/已折叠"+ 回车切换）——这是它对手搓"标题+Visibility 切换"的碾压级优势（手搓版朗读器只念文字，不知道能点）。`AutomationProperties.Name` 默认取 Header——别给 Header 塞图标（Content 装对象时 Name 落空，要显式补）。
 
+## 21.6 练习与思考
+
+1. 实现页签重排持久化（21.5.6 的已知边界）：CanReorderTabs 后把 m_docs 顺序写盘，启动按序重建。FindEntry 的对象身份查找为什么天然免疫重排？
+2. Expander 的 Up 方向（21.5.5）：把查找面板挪到窗口底部向上展开——布局与焦点流各要动什么？
+3. 页签的 AutomationProperties：朗读器怎么念一个页签？（名字、关闭按钮、脏标记 \* 该念吗）
+
 ## 21.4 小结
 
 | 需求 | API |

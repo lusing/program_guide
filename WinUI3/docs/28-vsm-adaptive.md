@@ -157,6 +157,16 @@ AdaptiveTrigger 是自动的；手动切换（如"编辑模式/预览模式"）�
 
 自适应的另一条腿是**约束窗口本身**：`appWindow.Resize` 定初始值之外，`OverlappedPresenter` 系（31 章）可设最小尺寸（PreferMinSize 族）——窗口不能拖到比最窄态还窄，AdaptiveTrigger 就永远有家。不约束的后果：用户把窗口拖到 300px 宽，Narrow 态的单词列也挤没了。**自适应与最小尺寸是同一枚硬币**——只做触发器不做下限，等于只修了半座桥。
 
+## 28.6 练习与思考
+
+1. 28.5.1 的教训实践：把宽窄切换改成两棵子树 Visibility 互切（18 章双视图思路）对比 Setter 方案——各自维护成本与过渡动画能力？
+2. 自定义 StateTrigger：用"数据状态"（在线/离线）触发 UI 形态切换——StateTrigger 的 IsActive 属性怎么接你的模型？
+3. 28.5.7 的最小宽度：给 ThemeLab 窗口设 OverlappedPresenter 的最小尺寸，验证 Narrow 态永远有家。
+
+### 28.5.8 状态与数据的双向债
+
+VSM 状态描述"长什么样"，不持有"为什么"——**触发原因（窗口宽、数据态）与状态内容（Setter 集）必须一一对应但分层存放**。常见债：把业务判断写进 VisualState 的选择逻辑（"离线且窄屏才 Narrow"——两个维度挤一个状态组），正确做法是**两个状态组**（OnlineOffline 组 + WideNarrow 组）正交组合，框架自动合成四态。组合爆炸（三维以上）时 VSM 退化为维护负担——那是换 GoToState 手动编排或重新设计信息层级的信号。
+
 ## 28.6 小结
 
 | 需求 | API |

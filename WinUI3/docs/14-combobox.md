@@ -161,6 +161,12 @@ ComboBox 有 `SelectedItem`（对象）与 `SelectedValue`+`SelectedValuePath`�
 
 ComboBox 下拉展开有系统动画（滑出）——`IsDropDownOpen` 可查/可设（程序化开合）。教学常见误区：自己写开合动画（Storyboard 折叠面板）复刻 ComboBox——内建的这个就是了（还带遮罩关闭、Esc 关闭、焦点管理三件免费）。**ComboBox 开着时点外面=选中关闭**；要"点外面=取消关闭"（不改变选择）用 `IsEditable=false` + SelectionChanged 里校验，或干脆用 ListPickerFlyout（更冷门但语义正）。
 
+## 14.6 练习与思考
+
+1. 把 DensityBox 换成两个 RadioButton——哪个更省一次点击？哪个更省屏幕？什么时候空间比点击贵？
+2. 给 ComboBox 选项换成 FileItem 对象（17 章模型）：SelectedItem 取回对象后 as 成什么？对照 14.5.4 的三条取值路。
+3. 14.5.1 的坑：把 SelectedIndex=0 写回 XAML，用 UnhandledException 落盘法（27.2.1 坑③）抓启动崩溃的消息，把它变成你的教学素材。
+
 ## 14.7 小结
 
 | 需求 | 写法 |

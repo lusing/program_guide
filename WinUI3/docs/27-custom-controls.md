@@ -185,6 +185,12 @@ void LabeledValueControl::OnApplyTemplate()
 7. **IDL 注释必须 ASCII**（27.2.1 坑③的姊妹）：中文注释的报错位置会漂移。
 8. **投影裁剪**（27.4）。
 
+## 27.7 练习与思考
+
+1. 给 LabeledValueControl 加第三个属性 Icon（String，显示 FontIcon）——IDL/DP/模板三处各加什么？27.2.1 的三连坑会在哪步等你？
+2. 把 UserControl 升级为 templated Control（27.3 路线）：Generic.xaml 写默认模板，使用者整体换模板——工作量差多少？值吗？
+3. 附加属性（AttachedProperty）：实现 Grid.Row 的山寨版 MyGrid.Slot——RegisterAttached 的参数与普通 DP 差在哪？
+
 ## 27.6 小结
 
 | 需求 | 路线 |

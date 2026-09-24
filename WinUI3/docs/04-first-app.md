@@ -268,6 +268,10 @@ this->UnhandledException([](IInspectable const&, UnhandledExceptionEventArgs con
 | 改了 XAML 没生效 | 生成代码缓存问题：清理 `Generated Files` 后重新构建 |
 | 非打包模式启动报运行时缺失 | Windows App SDK 运行时未安装或 bootstrapper 未初始化（见 [33 篇](./33-theming-packaging.md)） |
 
+### 4.7.x 从模板到功能工程的距离
+
+01 的 MyApp 到四个功能工程的差异清单：App 自定义方法（SettingsHub 的 ApplyTheme 走 IDL + factory_implementation）、多页面/多文档状态、持久化层、窗口自定位（31.5 的 MoveAndResize 纪律）。**每一步都是 04 章骨架的加法而非重写**——四个工程的 App.xaml.cpp 与 MyApp 的差异只有 OnLaunched 前的一个方法与成员。教学含义：**04 章的模板就是你的终身起点**，功能长在骨架上。
+
 ## 4.8 命令行构建：模板之外必须补上的工程细节
 
 VS 模板替你把这些都配好了，所以你从没注意过它们存在。`examples/01-first-app/` 是**手写的 `.vcxproj`**，靠 `WinUI3/build.ps1` 从命令行编译——下面每一条都是让它真正编过时踩出来的，逐条对照你自己的工程能省掉一整天的试错。

@@ -157,6 +157,16 @@ MainWindow::MainWindow()
 
 页切换默认无动画（Frame.Navigate 直接跳）——加 `Frame.ContentTransitions`（NavigationThemeTransition）获得系统级滑动过场，一行 XAML。**导航动画的方向语义**：前进从右滑入、后退向左滑出——Frame 的导航栈自动判定方向，你不用管。设置中心没加（设置页切换要"快"不要"炫"）；内容消费类应用（阅读器、浏览器）值得加——**动画的存在理由是解释空间关系**（从哪来、到哪去），不是装饰。
 
+## 22.7 练习与思考
+
+1. 22.6.3 的返回栈：给设置中心加 IsBackButtonVisible=Auto，实测点三次导航后按返回——栈里是什么？再用 BackStack().Clear() 的姿势修它。
+2. 把搜索结果做成第四种导航来源（22.6.1 的三路径之外）：搜索选中后返回栈要不要记录？你的规则是什么？
+3. FooterMenuItems 加 About 页（22.6.5）——它和主菜单的 Tag 路由共用 NavigateTo 吗？分离的理由？
+
+### 22.6.9 导航项的数据驱动形态
+
+导航项过十或需要权限过滤时，MenuItems 换 `MenuItemsSource`（接向量 + ItemTemplate）——设置中心三页的静态 XAML 是教学形态；数据驱动的完整形态：`IVector<NavItem{Name, Glyph, Tag}>` 模板里 x:Bind 三样，SelectionChanged 的路由逻辑一字不改。**静态到数据驱动的切换点**：导航结构进入配置/权限系统时——本地代码常量永远快过任何绑定，别过早数据化。
+
 ## 22.6 小结
 
 | 需求 | API |

@@ -185,6 +185,12 @@ CountText().Text(to_hstring(m_view.Size()) + L" items · " + m_category
 
 TextBlock 默认行高由字体度量决定，中文（Segoe UI 回退到中文字体）与西文混排时基线对不齐是常态——标题行混排丑八成是这个。两个抓手：`TextBlock.LineHeight`（显式行高，配 `LineStackingStrategy="BlockLineHeight"`）钉死行距；段落间距用容器 Spacing 而不是空行 TextBlock（后者在辅助树里是噪音节点）。设置中心的 Spacing=18 段间距、LineHeight 未动（纯中文场景默认度量可接受）——**先量再调，不猜**。
 
+## 8.11 练习与思考
+
+1. 设置中心的说明文案用 Opacity=0.7 而不是灰色 Foreground——把两种写法分别截到亮/暗主题下对比，解释为什么前者是主题自适应的。
+2. 给 DataExplorer 的空列表加 EmptyHint（18.5.5 提到的未实现项）：过滤无结果时显示 "No files match ..."。它该是 TextBlock 还是别的？放哪层布局？
+3. 用 Run 拼一段带加粗的混排行（"已保存 3 个文件，共 1.2 MB"，数字加粗）——为什么 TextBlock.Inlines 比拼多个 TextBlock 好？
+
 ## 8.10 小结
 
 | 需求 | 属性 |

@@ -164,6 +164,16 @@ auto shifted = (weekday + 7 - firstDayOffset) % 7;     // 以周一起始为例
 
 `CalendarView`（与 DatePicker 不同控件）渲染整月网格：可圈选日期范围（SelectedDates 集合）、`DisplayMode="Month/Year/Decade"` 钻取。它是"选日子"的重型形态（订机票、请假起止）——设置中心用不着；DataExplorer 若加"按日期过滤文件"也用 DatePicker 足矣。**CalendarView 的黑话日期格式**（FirstDayOfWeek/BlackoutStrikes）走 `CalendarViewDayItemChanging` 事件改样式——又是"数据驱动外观"的一课（17 章 ContainerContentChanging 的日历版）。
 
+## 16.7 练习与思考
+
+1. 16.6.7 的周历算术：写一个"本周一日期"的函数，输入周起始设置（周一/周日），输出 DatePicker 该显示的 Date。再用 Windows.Globalization.Calendar 重写一遍对比。
+2. 把 ReminderTime 的存储从 TimeSpan.count() 换成 "HH:mm" 字符串——列出你要处理的区域/格式坑（16.6.2 反例实操）。
+3. CalendarView（16.6.8）圈选本周：SelectedDates 的多选语义与 DatePicker 单选的转换在哪写？
+
+### 16.6.9 时区与"每天 9 点"
+
+提醒类时间的完整语义链：存储（本地 TimeSpan，16.6.2）→ 显示（TimePicker，随系统区域）→ 触发（DispatcherQueueTimer 到点）。**跨时区旅行的坑**：存的是"本地 9 点"，人飞到另一个时区后系统本地变了、存的 9 点不变——提醒会在"新的本地 9 点"响（大概率仍是用户要的：随人走的闹钟）。反例是会议时间（随地点走）：存 UTC + 显示时转本地。**两种"9 点"没有对错，只有选错场景**——写下你的应用属于哪种比任何代码都重要。
+
 ## 16.7 小结
 
 | 需求 | 控件 + API |

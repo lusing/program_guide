@@ -266,6 +266,10 @@ XAML 定义的是**逻辑树**（元素嵌套关系），渲染时框架会展�
 - 控件模板（ControlTemplate）重定义的是可视树
 - `ContentDialog`、`Flyout` 等弹层会被挂到弹层根，而不是声明位置——这就是 `ContentDialog` 必须设置 `XamlRoot` 的原因（见 [24 篇](./24-dialogs-flyouts.md)）
 
+### 3.8.x x:Bind 在四工程的密度
+
+DataExplorer 是 x:Bind 密度最高的工程（FileItem 模板三处 + PresetInfo）——对照 3 章的 x:Bind 规则清单逐条验证：模板类型必须投影（FileItem runtimeclass）、Mode 默认 OneTime（PresetInfo 色板够用）、OneWay 用于会变的（LabeledValueControl 的 Label/Value）。**03 章读完拿 DataExplorer 当习题册**：每条规则在工程里找一个反例（故意改错看编译错误）——错误信息是最严格的老师。
+
 ## 3.9 DataTemplate 与 x:DataType
 
 列表控件的每一项长什么样，由 `DataTemplate` 描述。用 `x:Bind` 时必须声明项类型：

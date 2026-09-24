@@ -215,6 +215,12 @@ RichEditBox 内建 undo/redo（Ctrl+Z/Ctrl+Y 直接可用）——`Document().Ge
 
 `TextBox.CopySelectionToClipboard()` / `PasteFromClipboard()` 显式操作；系统 Ctrl+C/V 默认走这两条路。程序化灌文本（不走剪贴板）：TextBox 直接 `Text()`，RichEditBox 必须 `Document().SetText(TextSetOptions::None, L"...")`（选项里的 `FormatRtf` 收 RTF 串、`AllowBidi` 处理双向文）——**RichEditBox 没有 Text 属性**，它的世界只有 Document。
 
+## 9.10 练习与思考
+
+1. ScratchPad 的脏标记只记 bool——改成记录"上次保存后的字符数"，状态行显示 "editing (+42 chars)"。TextChanged 的边沿触发逻辑要怎么配合？
+2. 给查找加"替换"：Expander 里再放一个 TextBox + Replace 按钮。替换用 ITextRange 的哪个能力？（提示：SetRange 之后 Selection 能干什么）
+3. 实测：在 RichEditBox 里按 Ctrl+B（原生快捷键），观察它与你实现的 OnBoldKey 谁先谁后、会不会双重生效。结论写进 23 章的知识库。
+
 ## 9.8 小结
 
 | 需求 | 控件 + 关键 API |

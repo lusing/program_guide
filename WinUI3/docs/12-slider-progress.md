@@ -186,6 +186,12 @@ Slider 是键盘友好的（内建）：方向键 ±SmallChange（默认 1%量�
 
 长任务的进度条该配取消按钮（IsEnabled 绑定"任务进行中"）——设置中心的保存快（360ms）不需要；ScratchPad 若加"导出全部文档"，进度循环里每帧查 `co_await resume_after` 后的取消标志（`winrt::cancelation_token` 家族或简单 atomic<bool>），取消即 break + 进度归零 + InfoBar 报"已取消"。**有进度没取消的任务是绑架**——用户看着 87% 的进度条只能等，那种无力感比没进度条更糟。
 
+## 12.8 练习与思考
+
+1. 给透明度滑杆加 12.7.6 的节流：拖动中只改预览，PointerReleased 后才 Put 存储。实测拖动时 SettingsStore 的写入次数降为多少。
+2. ScratchPad 保存动画的 90ms×4 帧间隔改成 30ms×12——观察进度条视觉差异。哪个更"流畅"哪个更"快"？两者的取舍维度是什么？
+3. ProgressRing 的 IsActive 在长任务里闪烁（任务时长波动大）——设计一个"不确定→确定"的切换策略（前 2 秒 Ring，之后 ProgressBar）。
+
 ## 12.7 小结
 
 | 需求 | 控件 + 关键 API |

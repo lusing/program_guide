@@ -163,6 +163,12 @@ m_searchDelay = DispatchedAsync([&]{ ... });  // 32.7 协程版
 
 协程版（`co_await resume_after(300ms)` + 检查代际标志）比 DispatcherTimer 干净；代际标志就是"我是第几次输入的查询"——await 回来时发现自己不是最新一代，直接 return。**防抖与 Reason 过滤互补**：Reason 挡程序化回环（15.2），防抖挡用户手速——两个都要。
 
+## 15.6 练习与思考
+
+1. 15.5.4 的防抖：给搜索加 300ms 延迟与代际检查。实测连打 "pref" 五个字符触发几次过滤？
+2. 把建议项从 "Label|tag" 字符串升级成 runtimeclass（SearchHit{Name, Tag}）——模板怎么写？SuggestionChosen 里少了什么拆串代码？
+3. QuerySubmitted（15.5.3）：实现"回车直接选第一条"，浏览器地址栏行为。
+
 ## 15.6 小结
 
 | 环节 | API |

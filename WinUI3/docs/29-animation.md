@@ -153,6 +153,16 @@ Storyboard 之下还有 Composition API（`ElementCompositionVisual`/`ScalarKeyF
 
 `DoubleAnimation` 之外还有 `ObjectAnimationUsingKeyFrames`（离散值切换——状态点、图标替换）：KeyFrame 按 KeyTime 排布，到达即切值。**什么时候不用补间**：值空间不连续（图标 A→图标 B 没有"中间图标"）——补间属性（double/Color/Point 三种）之外全是离散域。主题实验室的柱子换色用 ColorAnimation 补间会很顺（red→blue 渐变），实测用了硬切（Fill 直接赋新画刷）——教学取舍：换肤的"啪"一下比 300ms 渐变更符合"应用了新预设"的确认感。**动画的品味问题最终是产品问题**。
 
+## 29.6 练习与思考
+
+1. 29.5.3 的缓动：给换肤动画加 CircleEase 与 BackEase 各跑一遍——哪个"更像系统"？把结论写成团队的动画规范一句话。
+2. 29.5.7 的绑定打架：故意给 Dashboard.Opacity 加绑定再跑动画——观察 HoldEnd 后绑定失效，然后用手动清零修它。
+3. Transitions 路线：把 InfoBar 的开合换成 Transitions（隐式）——一行 XAML 能替代你写的什么？
+
+### 29.5.9 动画调试的三个抓手
+
+动画"没跑"时按序查：①**Duration 为零或未设**（Begin 立即结束——换 3000ms 试）；②**属性路径错**（RenderTransform 路径打错不报错、静默不动——29.5 细节 5 的阴险面）；③**目标对象销毁**（页面导航走了，动画对着空引用播——get_strong 纪律）。第四个冷门：**EnableDependentAnimation**——动画影响布局（Width 类）时默认**被关**（省电策略），要 `EnableDependentAnimation(true)` 显式开。设置中心换肤动画打 Opacity/Transform（独立动画）不踩这条；动 Width 的人八成会莫名其妙一阵子。
+
 ## 29.5 小结
 
 | 需求 | API |

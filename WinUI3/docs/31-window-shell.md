@@ -92,6 +92,14 @@ if (auto appWindow = AppWindow())
 4. **多窗口同线程共享 DispatcherQueue**：跨线程改 UI 仍必须 `TryEnqueue`（34 章）。
 5. **材质要求 Win11**：Win10 上 Mica 退化为纯色——按系统版本降级预期。
 
+### 31.5.4 DPI 感知与坐标一致性
+
+窗口内容在高 DPI 屏上"清晰但坐标乱"的根源是**进程 DPI 感知级别**：WinUI 3 应用默认 Per-Monitor V2（清晰）；测试工具若不声明（ui-smoke.ps1 里那行 `SetProcessDpiAwarenessContext(PER_MONITOR_AWARE_V2)` 就是为此），GetWindowRect 拿到虚拟化坐标——点击换算差一个 1.75 倍，全盘错位。**工具与应用必须同感知级别**，这是自动化坐标系的隐含契约。自家代码里 `GetSystemMetrics`/`GetCursorPos` 系列同理——混用感知级别的进程互相看对方的窗口，尺寸永远是错的。
+
+### 31.5.5 多显示器的 MoveAndResize
+
+窗口跨屏（从 175% 屏拖到 100% 屏）：XAML 自动重排（逻辑单位不变、物理尺寸变），AppWindow 的 MoveAndResize 传的是**当前屏的坐标系**——跨屏定位要按目标屏 DPI 换算（`DisplayArea.GetFromPoint` 拿屏信息，31 章工程未覆盖，方向性提示）。单屏教学工程无此坑；产品化的多屏支持是窗口篇最深的坑矿。
+
 ## 31.8 小结
 
 | 需求 | API |

@@ -174,6 +174,12 @@ ToggleSwitch 在触屏上是**点击翻转**（不是拖拽）——WinUI 的触
 
 设置中心有搜索（15 章）——开关们是搜索的**目标域**：搜 "notification" 该命中总闸所在的页。实现层：页面的可搜索文本集合（kPages 表）扩到控件级（"Notifications, master switch, channels"）——**每个交互控件的语义描述是搜索资产**，不是文案包袱。Windows 11 设置的搜索就是这么工作的（搜"深色"能到主题页）。教学工程的 kPages 停在页级；控件级搜索是自然的下一步扩展，架构上只改 OnSearchChanged 的扫描范围。
 
+## 11.6 练习与思考
+
+1. 11.5.8 的"危险开关确认"：把设置中心总闸改成关掉时弹 ContentDialog（关=停用所有通知，高风险），Cancel 时开关回弹。处理 Toggled 重入。
+2. 把 DataExplorer 的 Cards 视图开关从 ToggleButton 换成 ToggleSwitch——用户会困惑吗？用 11.5.3 的语义分界论证。
+3. 数一数 Windows 11 设置页里 ToggleSwitch 与 ToggleButton 的出现比例，推断微软的判断标准。
+
 ## 11.6 小结
 
 | 需求 | 控件 + 关键 API |
