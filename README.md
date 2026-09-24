@@ -46,6 +46,7 @@
 - [haskell](./haskell) — Haskell 教程（GHC 9.12.1，24 章对齐 julia/swift 标准：模式匹配/ADT/类型类/惰性求值/函子-应用-单子/单子变换器/parsec/TH/STM 特色细讲，主线纯 boot 库离线可验证；23 个示例两层验证 编译+运行+测试 六条判定，20/24 为 stack 工程（清华镜像 + compiler 覆盖实测链路），24 为 MiniLang 迷你解释器——词法/语法/求值三层管线 + 递归绑定打结 + 词法作用域闭包；CHEATSheet 收录 32 条实测坑位（GBK 编码/runghc 41s/-Wx-partial/惰性句柄锁/优先级表序/坏 strip shim）
 - [prolog](./prolog) — Prolog 逻辑编程教程（24 章对齐 haskell/julia/elixir 标准：合一/回溯/剪枝/DCG 解析/动态库/元编程/CLP(FD)/模块与加载边界/测试与性质测试细讲；23 个示例 × **三通道** SWI 解释 + GNU 解释 + `gplc` 本地二进制，六条判定含**跨通道输出区间逐字节比对**，`run-all.sh` 与 `build.ps1` 双入口均 119/0 全绿；24 为四百行迷你语言解释器——词法→DCG 分层语法→环境求值→断言与错误路径测试，其中两处语义（整除 `//`、比较返 1/0）是被可移植性逼出来的；双引擎差异是主线教学材料：GNU 无模块系统且**静默忽略** `module/2`、`consult/1` 往 stdout 打编译进度、`gplc` 静态链接需 `=..`+`call/1` 绕符号解析、CLP(FD) 两套独立实现需可移植适配层、`%` 在格式串里语义不同；CHEATSheet 收录 **226 条实测坑位** + 跨引擎「安全子集」清单）
 - [io](./io) — Io 语言教程（24 章对齐 haskell/julia/elixir/prolog 标准：纯原型对象模型 / 三种消息形状与优先级 / 槽与 proto 链 / 块与闭包 / `try`-`catch`-`signal` / 协程与 Future / 元编程内省 / `DynLib` FFI 细讲；Io 从源码编译（CMake + `build.sh`），**不用包管理器里的老版本**；23 个示例 × **两条通道**（动态链接 `io` + 静态 `io_static`）**七条判定**含跨通道输出区间逐字节比对，`run-all.sh` 与 `build.ps1` 双入口均 **94/0** 全绿；24 为访问日志分析器（解析 → 聚合 → 排序 → 渲染 → 落盘）；CHEATSheet 收录 **240 条实测坑位**——其中一批是「跟直觉相反」的硬骨头：未捕获异常横幅走 **stdout** 且退出码仍是 **0**、`try(expr)` 成功也返回 `nil`、无参 `split` **按字节**扫空白（`"上" split` 得 `list("")`）、`"abc" asNumber` 给 **`nan`** 而不是 0、`method(...)` 造的块 `isActivatable=true` 一进形参就被零参调用（`withHandler` 的处理器**必须**用 `block(...)`）、`do(...)` 里逗号分隔的槽定义只有第一个被求值且看不见外层局部槽（要 `lexicalDo`）、`setEnvironmentVariable(name, nil)` **段错误** rc=139、`DynLib` 调浮点签名 C 函数（`pow(2,10)` ≠ 1024）返回的是整数寄存器残留——详见 [io/README.md](./io/README.md)）
+- [isabelle](./isabelle) — Isabelle/HOL 教程（24 章对齐 coq/lean4/agda 标准：机器当裁判的心智模型 / 项与类型 / datatype / 递归与终止性 / 归纳与 `arbitrary:` / `simp` 调教 / 两种证明风格 / 逻辑规则手动档 / 列表库 / nat 算术 / Isar 基础与进阶 / 集合与关系良基 / 函数定义深水区 / 自动化边界 / **霍尔逻辑大案例** / 代码生成 / locale / 会话工程 / 诊断 / 工程风格 / **编译器正确性收官**），**章号 = 示例编号**（`examples/T01..T24_*.thy` 扁平布局 + `ROOT` 会话 `IsaTut`），Isabelle2025-2 + polyml-5.9.2（macOS x86_64_32-darwin）四关验证：`isabelle build -D examples` 退出码 0 且日志无溃逃痕迹 + `process_theories -O` 标记区间提取 + 连跑两遍 + **区间逐字节比对**（单引擎无跨通道可比，用运行间确定性替代；实测靠这一关抓到 `parallel_print` 导致 12/24 示例消息顺序漂移，关掉后归零），24/24 全绿；正文每段输出都从 `build/` 产物抽字节；CHEATSheet 收录 **240 条实测坑位**（字面 Unicode 在项里报 `Inner lexical error` 而字面 cartouche 分隔符直接 `Malformed command syntax`、**8 个全大写词 `ALL/EX/SUM/PROD/INT/UN/INF/SUP` 被词法层整词替换**致 `definition SUM` 报 `Failed to parse prop`、`ISABELLE_HOME_USER` 与 `ISABELLE_HEAPS` 不能靠环境变量改（只有 `USER_HOME` 能改）、未签名二进制在 `~/` 下 unlink EPERM 致 SQLite `[SQLITE_IOERR_DELETE]`、归纳规则名撞构造器名、`measure` 方向、`add_assoc` → `add.assoc` 改名等），详见 [isabelle/README.md](./isabelle/README.md)
 - [renpy](./renpy) — Ren'Py 视觉小说与叙事游戏教程，使用 Ren'Py `compile` 验证
 - [kotlin](./kotlin) — Kotlin 2.4 教程（24 章对齐 cpp20/zig/go/rust 标准：空安全/密封与穷尽 when/委托/型变 reified/作用域函数/扩展/协程+Flow/Java 互操作/DSL 细讲，24 个示例四层验证 kotlinc -Werror + kotlin.test + 运行 + 输出快照；17 为 Gradle 多模块工程（JUnit5 + fat jar），18 为 Java/Kotlin 混编两遍法，24 为迷你待办 CLI（手写 JSON 解析器 + 文件存储 + 退出码约定），25 为多平台四目标（js/wasm-js/wasm-wasi/native；native 需 konanc，macOS 无包时跳过）。macOS 与 Windows 双平台实测，classpath 分隔符与产物后缀差异已由脚本吸收）
 - [lean4](./lean4) — Lean4/Mathlib4 教程与示例，使用 Lake + Lean 校验
@@ -135,7 +136,8 @@
 41. [algol68](./algol68)
 42. [llvm](./llvm)
 43. [io](./io)
-44. [ruby](./ruby)
+44. [isabelle](./isabelle)
+45. [ruby](./ruby)
 
 ## 工具链说明
 
