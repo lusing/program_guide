@@ -210,6 +210,59 @@ examples/
 
 > 诚实边界：元数据证明签名、编译证明能构建、运行时截图证明**被点到的那条流程**行为正确。没被点到的流程只有编译级证据——例如 `FileOpenPicker` 的系统模态对话框（[34 章](docs/34-os-integration.md)）、`HyperlinkButton.NavigateUri` 的浏览器跳转（[07 章](docs/07-button.md)）、ToolTip 的悬停时序（[25 章](docs/25-overlays.md)）、MediaPlayerElement 的视频解码（[30 章](docs/30-drawing-media.md)）、TaskFlow 对话框的完整键入流（[35 章](docs/35-taskflow.md)）。
 
+## 构建与冒烟工具手册
+
+### build.ps1
+
+```powershell
+.\build.ps1                                   # 全部 10 个工程（Debug|x64）
+.\build.ps1 -Examples 09-scratchpad           # 单工程
+.\build.ps1 -Examples 07-settings-hub,26-theme-lab -Rebuild   # 多工程强制重建
+```
+
+内部：vswhere 定位 MSBuild → `-restore`（NuGet 还原）→ `-nr:false`（防节点复用僵尸）→ `-m` 并行。**pch.h 变更 = 全量重编**（4-8 分钟级）。构建卡死先杀 mspdbsrv.exe + 删 obj/x64（历史死锁档案见 04 章）。
+
+### ui-smoke.ps1（合成输入，鼠标路线）
+
+```powershell
+pwsh tools\ui-smoke\ui-smoke.ps1 -Exe <exe> -OutDir <dir> -Clicks 'x,y;x,y' [-TypeText '...'] [-Keys 'tab,enter'] [-WindowW 900] [-WindowH 1100] [-NoPark] [-ParkX 100]
+```
+
+- `-Clicks`：窗口坐标系（=截图空间）分号分隔序列，每击后存 `click-N.png`
+- `-Keys`：虚键名序列（tab/space/enter/方向键/ctrl+字母）
+- `-NoPark`：**不移动窗口**——高 DPI 机器必须（31.5.3 坑：外部 SetWindowPos 打烂岛输入变换）
+- 适用：导航行、ToggleSwitch、Slider 等非 ButtonBase 目标
+
+### tap.ps1（触摸注入——按钮的可靠驱动）
+
+```powershell
+pwsh tools\ui-smoke\tap.ps1 -Exe <exe> -OutDir <dir> -Taps '500,400;140,315' [-TypeText 'hello'] [-KeysAfter 'ctrl,s'] [-TapsAfter '875,700'] [-Attempts 5]
+```
+
+三段式：**Taps（触摸点击）→ TypeText+KeysAfter（键盘）→ TapsAfter（再点击，如对话框按钮）**。`-Attempts N`：帧哈希不变则整进程重试（注入输入的启动抽奖）。ButtonBase 控件（按钮/单选）一律走它。
+
+### smoke-*.ps1（四功能应用的流程脚本）
+
+```powershell
+pwsh tools\ui-smoke\smoke-settingshub.ps1    # 主题/总闸/保存/搜索
+pwsh tools\ui-smoke\smoke-scratchpad.ps1     # 保存/加粗/查找/关闭确认
+pwsh tools\ui-smoke\smoke-dataexplorer.ps1   # 树过滤/文本过滤/卡片/FlipView
+pwsh tools\ui-smoke\smoke-themelab.ps1       # 预设换肤/ColorPicker
+pwsh tools\ui-smoke\gallery-smoke.ps1 -Gallery 31   # 窗口工程场景表
+```
+
+### 坐标测量：find-blob.ps1（像素连通域）
+
+```powershell
+pwsh tools\ui-smoke\find-blob.ps1 -Image shot.png -R 0 -G 120 -B 212 -Tolerance 45 -MinW 200 -MaxH 60 [-XMin 330 -XMax 800] [-Top 5]
+```
+
+按颜色找控件（accent 蓝 (0,120,212)tol45 找按钮、中性灰方形 24-46px 找单选环）——**视觉模型读网格标注不可靠，像素扫描才是 ground truth**。`zoom-grid.ps1` 裁剪+网格仅供人眼复核。
+
+### 证据体系
+
+`.smoke/<工程>/<流程>/` 下 `before.png`（基线）+ `tap-N.png`（每步后）+ 帧哈希对比（tap.ps1 内建）。文件级断言（ScratchPad 的 verified-on-disk）比截图更硬。**诚实边界**：没被驱动的流程只有编译级证据。
+
 ## 常见错误速查
 
 | 症状 | 原因与解法 | 出处 |
