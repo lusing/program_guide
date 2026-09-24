@@ -100,6 +100,16 @@ if (auto appWindow = AppWindow())
 
 窗口跨屏（从 175% 屏拖到 100% 屏）：XAML 自动重排（逻辑单位不变、物理尺寸变），AppWindow 的 MoveAndResize 传的是**当前屏的坐标系**——跨屏定位要按目标屏 DPI 换算（`DisplayArea.GetFromPoint` 拿屏信息，31 章工程未覆盖，方向性提示）。单屏教学工程无此坑；产品化的多屏支持是窗口篇最深的坑矿。
 
+### 31.4.x 多窗口的进阶形态
+
+每窗口独立线程的完整姿势（防一窗卡全卡）：`std::thread` 里 `init_apartment(MTA)` + 各自 `DispatcherQueueController` + `make<Window>()`——31 章工程没走这条（同线程双窗够教学），产品级的"多文档独立响应"是它。**窗口间通信**：同线程直接调（本工程的 StatusText 跨窗写）；跨线程 `DispatcherQueue.TryEnqueue` 把 lambda 投递过去（34 章线程边界）。
+
+## 31.9 练习与思考
+
+1. 给 ThemeLab 加第二窗口（预设对照：左窗 Sunset 右窗 Forest）——两窗的 accent 独立吗？（提示：Application.Resources 是进程级的——这个练习逼你理解"应用级资源"与"窗口级主题"的分界）
+2. 把设置中心的自定位改成"记住上次位置"（退出存盘、启动读回）——MoveAndResize 时机与出屏校验（拖到副屏后副屏被拔）各怎么处理？
+3. OverlappedPresenter 全家：把窗口改成不可调（Resizable=false）与置顶（IsAlwaysOnTop）各跑一遍，观察标题栏按钮变化。
+
 ## 31.8 小结
 
 | 需求 | API |

@@ -177,6 +177,14 @@ void MainWindow::OnSortSize(IInspectable const&, RoutedEventArgs const&)
 2. 用 ItemsRepeater + UniformGridLayout 复刻 GridView 的卡片流（20.5.7）——你失去了什么免费能力？列表对账。
 3. 列宽拖拽（20.5.3 的"贵"项）：评估 GridSplitter（CommunityToolkit）与自写指针拖拽两条路的成本，写出你的选型报告。
 
+## 20.7 上生产前的审查清单
+
+- [ ] 表头与行模板的列定义有契约保障（双栅格一致）
+- [ ] 行高统一（虚拟化的前置条件，20.5.5）
+- [ ] 排序键用原始值不用格式化串（20.5.6）
+- [ ] 行级无障碍语义已补或已记账（20.5.4）
+- [ ] ItemsRepeater 的升级触发条件写进了设计记录
+
 ## 20.5 小结
 
 | 场景 | 做法 |

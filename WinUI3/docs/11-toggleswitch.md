@@ -180,6 +180,14 @@ ToggleSwitch 在触屏上是**点击翻转**（不是拖拽）——WinUI 的触
 2. 把 DataExplorer 的 Cards 视图开关从 ToggleButton 换成 ToggleSwitch——用户会困惑吗？用 11.5.3 的语义分界论证。
 3. 数一数 Windows 11 设置页里 ToggleSwitch 与 ToggleButton 的出现比例，推断微软的判断标准。
 
+## 11.7 上生产前的审查清单
+
+- [ ] 开关状态即时生效（无保存按钮语义混用），或明确走"先试后存"且全应用统一
+- [ ] OnContent/OffContent 已设置且语义对仗（不是 On/空）
+- [ ] 危险方向的开关有确认与回弹（11.5.8）
+- [ ] 构造期恢复状态时 Toggled 重入已评估（11.5.2）
+- [ ] 开关与滑杆的语义分工正确（离散二值 vs 连续量程）
+
 ## 11.6 小结
 
 | 需求 | 控件 + 关键 API |

@@ -169,6 +169,14 @@ m_searchDelay = DispatchedAsync([&]{ ... });  // 32.7 协程版
 2. 把建议项从 "Label|tag" 字符串升级成 runtimeclass（SearchHit{Name, Tag}）——模板怎么写？SuggestionChosen 里少了什么拆串代码？
 3. QuerySubmitted（15.5.3）：实现"回车直接选第一条"，浏览器地址栏行为。
 
+## 15.7 上生产前的审查清单
+
+- [ ] Reason 过滤防重入（15.2）+ 真搜索有防抖（15.5.4）
+- [ ] 回车无建议时的行为已定义（QuerySubmitted）
+- [ ] 建议项含可解析载荷（对象或双段字符串）
+- [ ] PlaceholderText 写内容域不写客套话
+- [ ] 搜索是导航路径之一：选中后的返回栈行为已想清
+
 ## 15.6 小结
 
 | 环节 | API |

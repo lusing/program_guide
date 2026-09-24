@@ -172,6 +172,14 @@ ContentDialog 的遮罩（Scrim）默认半透明黑——它不只是"挡视线
 
 ContentDialog 的 Content 能放任意 UIElement（表单、列表甚至嵌套滚动）——**但别放需要滚动的长内容**：对话框无内建滚动，超高的 Content 顶出屏幕，Esc 都救不回来（焦点在屏幕外）。长内容用页面/窗口而非对话框（"对话框=一个决定"）。表单类内容（两个输入框+说明）是 Content 的正当上限。ScratchPad 确认框的 Content 是纯文本——最稳形态。
 
+## 24.7 上生产前的审查清单
+
+- [ ] XamlRoot 已显式赋值（每处 ShowAsync）
+- [ ] Cancel 分支显式 return（不会误落关闭逻辑）
+- [ ] 同窗并发对话框有排他闸（24.5.4）
+- [ ] DefaultButton 与视觉强调一致
+- [ ] 内容不超一屏（对话框无滚动）
+
 ## 24.6 小结
 
 | 需求 | API |

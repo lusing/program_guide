@@ -174,6 +174,14 @@ FlipView 内建左右箭头 + 触屏滑动 + （键盘）PgUp/PgDn——三套�
 
 固定 Width=180 的卡片在超窄窗口挤成三列变一列浪费横向——进阶用 `ItemsWrapGrid` 的 ItemWidth + 窗口宽算列数，或上 20 章的 UniformGridLayout（MinItemWidth 自动适配列数）。**GridView 默认面板（ItemsWrapGrid）的 GridCellSize 布局**：所有卡同一格——高度不齐的卡（文本行数不同）要么统一 MinHeight（整整齐齐）要么上 VariableSizedWrapGrid（复杂）。卡片流的"整齐"几乎总是对的——用户扫的是网格不是内容。
 
+## 18.7 上生产前的审查清单
+
+- [ ] 卡片定宽与列数策略在窄窗下验证过
+- [ ] 变长字段有截断（TextTrimming）不撑破卡片
+- [ ] 选中态用容器内建，不在模板里手搓
+- [ ] 空态有提示（18.5.5）
+- [ ] FlipView 与列表的选中同步有防重入闸
+
 ## 18.5 小结
 
 | 控件 | 一句话 | 关键差异 |

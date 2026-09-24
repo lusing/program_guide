@@ -492,7 +492,7 @@ winrt::Windows::Foundation::IAsyncAction RefreshAsync()
 
 
 
-## 32.8 值转换器：IValueConverter 与它的两条使用路线
+## 32.9 值转换器：IValueConverter 与它的两条使用路线
 
 x:Bind **没有内置转换**——WPF 时代 `{Binding IsChecked, Converter=...}` 之外还能指望的 bool→Visibility 隐式行为，在 x:Bind 里不存在。绑定值需要"翻译"时有两条路线。
 

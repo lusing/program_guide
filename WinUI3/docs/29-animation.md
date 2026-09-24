@@ -163,6 +163,14 @@ Storyboard 之下还有 Composition API（`ElementCompositionVisual`/`ScalarKeyF
 
 动画"没跑"时按序查：①**Duration 为零或未设**（Begin 立即结束——换 3000ms 试）；②**属性路径错**（RenderTransform 路径打错不报错、静默不动——29.5 细节 5 的阴险面）；③**目标对象销毁**（页面导航走了，动画对着空引用播——get_strong 纪律）。第四个冷门：**EnableDependentAnimation**——动画影响布局（Width 类）时默认**被关**（省电策略），要 `EnableDependentAnimation(true)` 显式开。设置中心换肤动画打 Opacity/Transform（独立动画）不踩这条；动 Width 的人八成会莫名其妙一阵子。
 
+## 29.7 上生产前的审查清单
+
+- [ ] 动画属性按价目表选（Opacity/Transform 贱、布局贵）
+- [ ] From/To 显式给全（可重入）
+- [ ] RenderTransform 目标存在（静默失效坑）
+- [ ] 绑定的属性不被动画长期占用（HoldEnd 冲突）
+- [ ] 每个动画能回答"解释了什么"（空间/因果），答不出就删
+
 ## 29.5 小结
 
 | 需求 | API |

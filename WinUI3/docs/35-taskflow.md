@@ -174,6 +174,18 @@ Windows::Foundation::IAsyncAction TaskListPage::ShowAddDialogAsync()
 
 设置页的材质开关与 Add 对话框的完整输入流（键入→Add）在自动化边界外：对话框键盘焦点时序由 DefaultButton 管理，合成键盘流不做断言（诚实边界；编译与弹出已验证）。
 
+### 35.8.x 读者毕业设计：五个整合小项目
+
+按难度排序，每个都只组合本书已有材料（括号为主章节）：
+
+1. **记账本**：TabView 月度页签 + ListView 流水 + ContentDialog 记账表单 + JSON 持久化 + NumberBox 金额（9/17/24/34）——入门整合，两天。
+2. **密码保险箱**：PasswordBox + DataProtection API（System.Cryptography——34 章系统层的延伸方向）+ ContentDialog 主密码 + TreeView 分类——加一个真实的安全议题。
+3. **看板**：GridView 卡片 + 拖拽重排（CanReorderItems）+ VSM 宽窄列数 + 持久化顺序（18/28）——拖拽与顺序持久化的组合拳。
+4. **图片浏览器**：FlipView 大图 + 缩略图 GridView + SemanticZoom + StorageFile/Picker（20/31/34）——文件系统与集合控件的大戏。
+5. **主题工坊**（终极）：ThemeLab 扩展——用户自定义预设的增删改存（ListView + ContentDialog 表单 + JSON）、色板对比度校验（WCAG）、导入导出——把 26/27 章的机制做成完整产品。
+
+每个项目的验收标准沿用本教程的三通道：元数据/编译/运行时截图——**你已经知道怎么证明自己的代码是对的，这是比任何控件知识都值钱的毕业证**。
+
 ## 35.9 从这里去哪
 
 - 把 Add 对话框换成 24 章的 Closing 校验（空标题拦截）。

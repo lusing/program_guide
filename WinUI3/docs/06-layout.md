@@ -169,6 +169,14 @@
 
 ScratchPad/设置中心的页面都**没有**用 ScrollViewer 包内容（SettingsHub 的 AppearancePage 特意去掉）——本套教程实测：**ScrollViewer 的手势层在高 DPI 注入输入下会吞掉 ButtonBase 的点击**（press 到达、click 不闭合），而滑杆/开关不受影响。真实用户不踩这条（硬件输入路径不同），但它揭示了架构层的真相：**ScrollViewer 是带手势识别的交互层，不只是"加滚动条"**——它参与指针事件的路由（捕获、预按下判定）。产品含义：短表单页（设置类）不该包 ScrollViewer——内容本来一屏装得下，多一层手势层只有成本没有收益；长文档（ScratchPad 的 RichEditBox 内部自带滚动）才需要。**判断式：内容可能超过一屏才上 ScrollViewer，且它应该是页面的最外层**（嵌套 ScrollViewer 的滚动冲突是新手经典坑）。
 
+### 6.7.1 布局性能的三条军规
+
+1. **深树贵过宽树**：嵌套 Grid/StackPanel 五层以上，每帧布局的测量递归翻倍——拍平用 Grid.RowSpan/ColumnSpan 或 Canvas（真正静态的装饰层）。
+2. **Auto 是协商不是免费**：Auto 尺寸两轮测量（先量内容再分剩余），`*` 一轮搞定——长列表 ItemTemplate 里 Auto 慎用。
+3. **嵌套 ScrollViewer 必坏**：内外两层抢滚动手势——**一个方向一条滚动链**。
+
+设置中心的页面全是"一屏静态布局"（军规无事可做）；ScratchPad 的页签内容区（RichEditBox 自管滚动）与 DataExplorer 的列表（ListView 虚拟化滚动）是军规的正反面教材各一。
+
 ## 6.7 布局思想总结
 
 背容器定义没有意义，要建立的是选型判断：

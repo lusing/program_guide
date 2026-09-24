@@ -167,6 +167,14 @@ ComboBox 下拉展开有系统动画（滑出）——`IsDropDownOpen` 可查/�
 2. 给 ComboBox 选项换成 FileItem 对象（17 章模型）：SelectedItem 取回对象后 as 成什么？对照 14.5.4 的三条取值路。
 3. 14.5.1 的坑：把 SelectedIndex=0 写回 XAML，用 UnhandledException 落盘法（27.2.1 坑③）抓启动崩溃的消息，把它变成你的教学素材。
 
+## 14.7 上生产前的审查清单
+
+- [ ] 选项数与形态匹配（2 项改单选、3-7 项下拉、更多改搜索）
+- [ ] 预选在 ctor 代码设置，不在 XAML（14.5.1）
+- [ ] 取值路线统一（SelectedItem/Index/Text 三选一不混用）
+- [ ] 动态选项走 ItemsSource，静态常量才用 x:String
+- [ ] IsEditable 的自由文本有校验出口
+
 ## 14.7 小结
 
 | 需求 | 写法 |

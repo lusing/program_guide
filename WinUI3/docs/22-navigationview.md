@@ -167,6 +167,14 @@ MainWindow::MainWindow()
 
 导航项过十或需要权限过滤时，MenuItems 换 `MenuItemsSource`（接向量 + ItemTemplate）——设置中心三页的静态 XAML 是教学形态；数据驱动的完整形态：`IVector<NavItem{Name, Glyph, Tag}>` 模板里 x:Bind 三样，SelectionChanged 的路由逻辑一字不改。**静态到数据驱动的切换点**：导航结构进入配置/权限系统时——本地代码常量永远快过任何绑定，别过早数据化。
 
+## 22.8 上生产前的审查清单
+
+- [ ] PaneDisplayMode 显式钉死（不赌 Auto）
+- [ ] 构造期直航首页，不依赖初始选中事件
+- [ ] 返回栈策略明确（清栈 or 保留）
+- [ ] 导航项数据驱动的切换点已评估（22.6.9）
+- [ ] 搜索/权限 gating 的灰显 vs 移除已决策
+
 ## 22.6 小结
 
 | 需求 | API |
