@@ -140,6 +140,45 @@ text \<open>以下几类东西没有可执行方程，遇到 @{verbatim "value"}
 再用 @{verbatim "[code]"} 把实现装进去——上一节的 @{verbatim "my_len"}
 就是这个套路的最小样本。\<close>
 
+subsection \<open>19.7 用 @{verbatim "code_datatype"} 定制后端表示\<close>
+
+text \<open>逻辑里 @{verbatim "Set"} 是抽象类型，代码生成器把它实现为
+@{verbatim "List.coset"}（补集表示，见报错里的 @{verbatim "List.coset"}）。
+@{verbatim "code_datatype"} 用于**把某个类型映射到指定的构造器集合**——
+最有代表性的场景是自己定义了一个抽象类型，然后用另一份具体的表示来导出代码。
+下面造一个小 @{verbatim "wrapper"} 类型演示。\<close>
+
+datatype 'a wrapped = Wrap "'a list"
+
+primrec unwrap :: "'a wrapped \<Rightarrow> 'a list" where
+  "unwrap (Wrap xs) = xs"
+
+code_datatype Wrap  \<comment> \<open>把 @{verbatim "Wrap"} 声明为 @{verbatim "wrapped"} 的代码构造器\<close>
+
+value "unwrap (Wrap [1::nat, 2, 3])"
+
+text \<open>这条 @{verbatim "code_datatype Wrap"} 在 @{verbatim "wrapped"} 上把
+@{verbatim "Wrap"} 从 @{verbatim "datatype"} 生成的默认表示中"提"出来，
+让后端**直接**把它当作构造器；不加这条也能导出，只是加之后端表现更贴近
+@{verbatim "list"}。 @{verbatim "Set"} 的类型同理，只是它的构造器叫
+@{verbatim "List.coset"} 且**必须**配 @{verbatim "code_datatype"} 才可用。\<close>
+
+subsection \<open>19.8 @{verbatim "code_module"} / 目标限定\<close>
+
+text \<open>导出时可以在常量、类型、构造器后加 @{verbatim "(Haskell)"}
+这样的**目标限定**，只影响指定后端。@{verbatim "code_module"} 更进一步，
+把一堆常量绑成一个可复用模块；@{verbatim "code_module_attribute"} 给
+生成的模块头加一段固定文本。这类"目标限定"的语法与 @{verbatim "export_code"}
+同族，具体形式见 @{verbatim "codegen.pdf"} §4；本教程只演示 @{verbatim "export_code ... in Haskell"}
+这种**基础形式**（上一节 19.5），高级形式留给读者。\<close>
+
+subsection \<open>19.9 让导出保持稳定的两条纪律\<close>
+
+text \<open>本教程的 @{verbatim "export_code"} 不带 @{verbatim "file"} 参数，产物
+进 Isabelle 的 export 区，不进工作树；因此**不会**污染两遍输出比对。
+如果加了 @{verbatim "file"} 就必须注意：**导出路径的绝对化**会
+让 macOS/Linux 两端的输出不一致，逐字节比对直接崩。\<close>
+
 ML \<open>writeln "==== 19 结束 ===="\<close>
 
 end

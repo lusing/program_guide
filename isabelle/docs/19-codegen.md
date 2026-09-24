@@ -222,6 +222,43 @@ See theory exports
 
 对应的办法通常是：先证明一个**可计算的**实现与说明式定义等价，再用 `[code]` 把实现装进去。19.4 的 `my_len` 就是这个套路的最小样本。
 
+## 19.7 用 `code_datatype` 定制后端表示
+
+`Set` 之类的抽象类型，代码生成器把它实现成 `List.coset`（补集表示）。
+`code_datatype` 用来把某个类型映射到**指定**的构造器集合。最有代表性的
+场景是自己定义了一个抽象类型，想用另一份具体的表示来导出代码。
+
+```isabelle
+datatype 'a wrapped = Wrap "'a list"
+
+primrec unwrap :: "'a wrapped \<Rightarrow> 'a list" where
+  "unwrap (Wrap xs) = xs"
+
+code_datatype Wrap
+
+value "unwrap (Wrap [1::nat, 2, 3])"
+```
+
+`code_datatype Wrap` 之后，导出时 `wrapped` 后端表示**直接**是 `Wrap` 构造器，
+跟 `list` 的表示同构。不加这条也能跑，只是加之后后端表现更贴近 `list`。
+HOL 里 `set` 类型的 `code_datatype List.coset` 就是同一个套路——因为
+`Set` 是 `typedef`，不指明构造器代码生成器根本找不到表示。
+
+## 19.8 `code_module` / 目标限定 / `code_identifier`
+
+导出时对单个常量加 `(Haskell)` / `(SML)` 这样的**目标限定**，只影响指定后端；
+`code_module` 把一堆常量绑成一个可复用模块；`code_module_attribute` 给生成
+模块头加一段固定文本。这类"目标限定"的语法与 `export_code` 同族，具体形式
+见 `codegen.pdf` §4；本教程只在 19.5 演示基础形式的 `export_code ... in SML/
+OCaml/Haskell/Scala`，高级形式留给读者。
+
+## 19.9 让导出保持稳定的两条纪律
+
+- **`export_code` 不带 `file` 参数**：产物进 Isabelle 的 export 区、不进工作树，
+  两遍输出比对不受影响。
+- **绝对路径**：一旦 `file` 里出现 `/Users/…` 或 `/home/…`，macOS 与 Linux
+  两端逐字节比对**直接崩**。要么用相对路径，要么不带 `file`。
+
 ---
 
 ## 本章坑位清单（实测）

@@ -2,9 +2,11 @@
 
 面向**会编程、初学证明助手**的读者：从"机器当裁判"的心智模型讲到项与类型、
 数据类型、递归与归纳、化简器、Isar 证明语言，再到霍尔逻辑与编译器正确性
-两个大案例，最后以工程组织、诊断方法与代码生成收束。
+两个大案例，最后以工程组织、诊断方法与代码生成收束；附录三章补齐**类型类**
+（`class`/`instantiation`）、**共归**（`codatatype`/`primcorec`）与
+**Eisbach**（`method`/`match`）三条 HOL 生态里最常见的进阶设施。
 
-**章号 = 示例编号**——01–24 章每章对应 `examples/` 里一个经
+**章号 = 示例编号**——01–27 章每章对应 `examples/` 里一个经
 `isabelle build` 构建通过、且两遍输出逐字节一致的 `.thy` 文件。
 
 > 核心理念：**每个示例都是被机器逐条认可过的数学文本，不是"能跑就行"的程序。**
@@ -16,10 +18,10 @@
 ```text
 isabelle/
 ├── README.md        本文件
-├── CHEATSheet.md    语法速查 + 实测坑位索引（240 条）
+├── CHEATSheet.md    语法速查 + 实测坑位索引（300+ 条）
 ├── run-all.sh       验证脚本（bash）
-├── docs/            24 章教程（01 → 24 顺序阅读）
-├── examples/        24 个 .thy 示例 + ROOT（章号 = 示例编号）
+├── docs/            27 章教程（01 → 27 顺序阅读）
+├── examples/        27 个 .thy 示例 + ROOT（章号 = 示例编号）
 └── build/           验证产物（build.log + 两遍输出，可删）
 ```
 
@@ -51,10 +53,13 @@ isabelle/
 | [22 诊断](docs/22-diagnosis.md) | 打印开关、报错速查表 | `T22_diagnosis.thy` |
 | [23 工程实践](docs/23-engineering.md) | 探索式证明 → 归档形式、裸 `context` | `T23_engineering.thy` |
 | [24 综合案例：编译器](docs/24-capstone.md) | 栈机、`exec_compile`、常量折叠优化 | `T24_capstone.thy` |
+| [25 类型类](docs/25-classes.md) | `class` / `instantiation` / 子类 / sort 约束 | `T25_classes.thy` |
+| [26 共归与 codatatype](docs/26-codatatype.md) | `codatatype` / `primcorec` / 无限流与树 | `T26_codatatype.thy` |
+| [27 Eisbach 方法 DSL](docs/27-eisbach.md) | `method` / `match premises` / `match conclusion` | `T27_eisbach.thy` |
 
 学习路线：01–03 心智模型与基本材料 → 04–07 数据建模与化简 →
 08–13 证明技法主线（自动化 / 逻辑 / 归纳 / Isar）→ 14–17 结构与方法论
-→ 18–19 大案例 → 20–23 工程化 → 24 综合收束。
+→ 18–19 大案例 → 20–23 工程化 → 24 综合收束 → 25–27 三个进阶专题。
 
 ## 工具链
 
@@ -64,13 +69,13 @@ isabelle/
 | 可执行文件（macOS） | `/Applications/Isabelle2025-2.app/bin/isabelle` |
 | 可执行文件（Linux） | `/home/admin/hol/Isabelle2025-2/bin/isabelle`（本机 Ubuntu 22.04 实测路径） |
 | ML 系统 | polyml-5.9.2，`x86_64_32-darwin` / `x86_64_32-linux` |
-| 会话 | `IsaTut`（见 `examples/ROOT`，父会话 `HOL`） |
+| 会话 | `IsaTut`（见 `examples/ROOT`，父会话 `"HOL-Eisbach"`，`HOL` 的超集） |
 | 交互前端 | `isabelle jedit`（随发行版自带） |
 
-发行版自带预编译的 `Pure` / `HOL` 堆镜像，所以第一次 `build` 不需要
-从源码重建 HOL，全量验证 Linux 上约 20 秒、macOS 上 1–2 分钟。
-`run-all.sh` 会按 `uname -s` 自选默认 `ISABELLE` 路径，找不到再回退
-到 `PATH` 里的 `isabelle`；显式覆盖用 `ISABELLE=/path/to/isabelle ./run-all.sh`。
+发行版自带预编译的 `Pure` / `HOL` 堆镜像，`HOL-Eisbach` 需要现场构建一次
+（约 20 秒），之后 `T01–T26` 与 `T27` 都命中缓存；Linux 全量验证约 40 秒、
+macOS 约 1–2 分钟。`run-all.sh` 会按 `uname -s` 自选默认 `ISABELLE` 路径；
+显式覆盖用 `ISABELLE=/path/to/isabelle ./run-all.sh`。
 
 ## 验证命令
 

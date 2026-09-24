@@ -92,8 +92,11 @@ extract() { # $1=run目录 $2=theory名 $3=输出文件
 
 run_once() { # $1=run目录
   mkdir -p "$1/out"
-  # -l HOL：绕过 examples/ROOT，用临时 Draft 会话逐条跑，
+  # -l HOL-Eisbach：绕过 examples/ROOT，用临时 Draft 会话逐条跑，
   # 与 build 那条路径互为独立检查（build 走会话，这里走命令行）。
+  # 用 HOL-Eisbach 而非 HOL：T27 用了 Eisbach `method` DSL，Draft 会话
+  # 必须有 HOL-Eisbach 才能装；其他 26 个 theory 只用 HOL 的定理，父
+  # 会话是 HOL 的超集，不受影响。
   #
   # 三个 -o 是"两遍逐字节可比"的前提，缺一个都不行（本机实测）：
   #   parallel_print=false —— 否则消息按线程异步落地，同一条命令的输出
@@ -103,7 +106,7 @@ run_once() { # $1=run目录
   # 实测关掉之后，两遍之间的唯一差异只剩末尾那行
   #   "Finished Draft (... cpu time, factor 0.51)"
   # 的耗时数字，而它在标记区间之外，不参与比对。
-  "$ISABELLE" process_theories -O -l HOL \
+  "$ISABELLE" process_theories -O -l HOL-Eisbach \
     -o parallel_print=false -o parallel_proofs=0 -o threads=1 \
     -H 'T[0-9]{2}_[a-z_]+\.thy' -D "$EXAMPLES" $theories \
     >"$1/run.log" 2>"$1/run.err"

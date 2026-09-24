@@ -1,4 +1,4 @@
-session IsaTut = HOL +
+session IsaTut = "HOL-Eisbach" +
   options [document = false]
   theories
     T01_overview
@@ -25,3 +25,6 @@ session IsaTut = HOL +
     T22_diagnosis
     T23_engineering
     T24_capstone
+    T25_classes
+    T26_codatatype
+    T27_eisbach

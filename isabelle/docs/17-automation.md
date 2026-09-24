@@ -165,6 +165,41 @@ theorem rev (?xs @ ?ys) = rev ?ys @ rev ?xs
 
 ---
 
+## 17.6 `sledgehammer`：外挂在阶梯顶端
+
+前面五级阶梯（`simp` → `auto` → `blast` → `metis` → `meson`）都跑在 Isabelle 内核里，
+所以两遍输出可以逐字节一致。`sledgehammer` 不一样：
+
+- 它把目标编成 TPTP，交给外部 ATP（`z3` / `vampire` / `cvc5` / `e` / `verit` …）；
+- 从 ATP 返回的 proof 里**再**用 `metis` 在内核里重构；
+- 结果依赖 ATP 版本、时间预算、机器负载——**同一条命令两次运行可能挑到不同证明**。
+
+因此本教程**不**把 `sledgehammer` 放进任何 `.thy`，只在这里给出定位与用法。
+
+```text
+sledgehammer                                    (* 默认：全上下文，5 秒 *)
+sledgehammer [timeout = 20]                     (* 更久一点 *)
+sledgehammer [provers = zipperposition vampire] (* 只跑指定 ATP *)
+sledgehammer [expect = some]                    (* 断言"至少一个 ATP 能过" *)
+sledgehammer [expect = 0]                       (* 断言"所有 ATP 都失败"，回归测试用 *)
+```
+
+`sledgehammer` 的输出是**建议**：它给几条 `by metis (...)` 候选、按耗时排序；
+把候选粘进脚本、跑通、然后**删掉 `sledgehammer`**——这是教程推荐的用法。
+留在源码里的 `sledgehammer` 让每次构建都依赖外部工具链，与"离线可复现"
+直接冲突。
+
+`mirabelle`（`sledgehammer.pdf` §8）是它的批量版：把整个 session 的每个 `lemma`
+自动跑一遍 `sledgehammer`，看哪些真的能被自动化关掉——工程价值在于回归
+基准，本教程的 27 章已经全部人工过 `simp`/`auto`/`metis`，不需要。
+
+**与 `nitpick` 的分工**：`nitpick`（22 章表格里给过一行）是找反例，`sledgehammer`
+是找证明；两者都需要外部求解器。想快速试错，先 `nitpick`（如果命题假，几秒钟
+就给出小模型），再 `sledgehammer`（如果命题真，通常几分钟内一条 metis）。
+两者都**不能**当回归测试的一部分——一次能过不代表下次也能过。
+
+---
+
 ## 本章坑位清单（实测）
 
 1. **一上来就用 `metis`**：慢且脆弱。先 `simp`/`auto`。

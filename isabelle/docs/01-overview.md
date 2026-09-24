@@ -35,9 +35,10 @@ Linux 下优先 `/home/admin/hol/Isabelle2025-2/bin/isabelle`；`ISABELLE=…` �
 | 可执行文件（macOS） | `/Applications/Isabelle2025-2.app/bin/isabelle` |
 | 可执行文件（Linux） | `/home/admin/hol/Isabelle2025-2/bin/isabelle` |
 | ML 系统 | polyml-5.9.2，`x86_64_32-darwin` / `x86_64_32-linux` |
-| 会话 | `IsaTut`（见 `../examples/ROOT`） |
+| 会话 | `IsaTut`（见 `../examples/ROOT`，父会话 `"HOL-Eisbach"`） |
 
-发行版自带预编译好的 `Pure` 与 `HOL` 堆镜像，所以第一次 `build` 不需要从源码重建 HOL——这也是为什么全量验证能在 1 分钟内跑完。
+发行版自带预编译好的 `Pure` 与 `HOL` 堆镜像，所以第一次 `build` 不需要
+从源码重建 HOL；只有 `HOL-Eisbach`（27 章引入）需要现场构建，约 20 秒。
 
 ## 1.3 计算：先看看求值器长什么样
 

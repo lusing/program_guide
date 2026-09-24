@@ -196,6 +196,26 @@ Nat.add_le_mono                               单调性
 | 出了 context 用不了 `assoc` | 要写 `semigroup.assoc` | 20 |
 | `hide_const` 后短名失效 | 包括 `_def` 派生事实，要写全名 | 21 |
 
+### 类型类 / 共归 / Eisbach（25–27）
+
+| 症状 | 真凶 | 章 |
+|---|---|---|
+| `instantiation list :: mg` 报 `Bad number of arguments for type constructor` | list 是类型构造子，要写 `(type)` 参数 sort | 25 |
+| `intro_class` 未定义方法 | 正确名字是 `intro_classes`（复数） | 25 |
+| `print_class` 不是命令 | 用 `print_classes`（复数）或直接 `thm mg.axioms` | 25 |
+| `thm mg.inf2_assoc` 里出现 `?inf2.0` | 类参数字段的显式形态，不是 bug | 25 |
+| 数字字面量传进 `for X :: 'a` 的方法报"two distinct sorts" | 类型推不下来，在 `for` 里给具体类型 | 27 |
+| `codatatype stream = ... (stail: "stream")` 报 `Extra type variables` | codatatype 也要类型参数 `'a stream` | 26 |
+| `value "grow 5"` 挂死 | `grow` 返回 codatatype，代码生成器要展整棵无限树 | 26 |
+| `primcorec` 缺 `is_STerm` 方程 | 单构造子 codatatype 无需判别式，多构造子需要 | 26 |
+| `stream.induct` 未定义 | codatatype 用 `stream.coinduct`，与 datatype 不共享 | 26 |
+| `corec` 命令找不到 | `corec` 在 HOL-Corec/HOL-Eisbach，`primcorec` 才在 Main | 26 |
+| `method` 命令找不到 | Eisbach 要 imports `"HOL-Eisbach.Eisbach_Tools"` | 27 |
+| `match premises in U: ... for P Q U` 报错 | 事实名 `U` 不进 `for` | 27 |
+| `by (m1 m2)` | 不合法；用 `by (m1, m2)` 或分行 apply | 27 |
+| `simp add: X` 里 X 已在 simpset | Warning "Ignoring duplicate rewrite rule" 但不 fail | 27 |
+| `sledgehammer` 想放 `.thy` | 外部 ATP 不确定；只在开发期用，脚本里删净 | 17.6 |
+
 ### 环境类
 
 | 症状 | 真凶 | 章 |
