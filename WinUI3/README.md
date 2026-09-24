@@ -28,7 +28,7 @@
 | [05 工程分层](docs/05-project-structure.md) | 各层职责、Frame 导航、IDL 角色 | 代码怎么组织 |
 | [06 布局](docs/06-layout.md) | Grid/StackPanel/Border/RelativePanel/ScrollViewer | 页面怎么划分伸缩 |
 
-### 控件·基础篇（画廊 `07-controls-basic`）
+### 控件·基础篇（设置中心 `07-settings-hub`）
 
 | 章 | 控件 | 章 | 控件 |
 |---|------|---|------|
@@ -38,7 +38,7 @@
 | [10 CheckBox 与 RadioButton](docs/10-checkbox-radio.md) | 三态/互斥 | [15 AutoSuggestBox](docs/15-autosuggestbox.md) | 搜索式输入 |
 | [11 ToggleSwitch 与 ToggleButton](docs/11-toggleswitch.md) | 状态开关 | [16 日期与时间族](docs/16-datetime.md) | Date/Time/Calendar |
 
-### 控件·集合篇（画廊 `17-controls-collections`）
+### 控件·集合篇（数据浏览器 `17-data-explorer`）
 
 | 章 | 控件 |
 |---|------|
@@ -47,7 +47,7 @@
 | [19 TreeView](docs/19-treeview.md) | 层级模型、懒加载 |
 | [20 表格数据](docs/20-datagrid-itemsrepeater.md) | **DataGrid 在 C++/WinRT 不存在（实测）** + 自制路线 + ItemsRepeater |
 
-### 控件·导航与浮层篇（画廊 `21-controls-shell`）
+### 控件·导航与浮层篇（编辑器 `09-scratchpad`）
 
 | 章 | 控件 | 章 | 控件 |
 |---|------|---|------|
@@ -55,7 +55,7 @@
 | [22 NavigationView 与 SplitView](docs/22-navigationview.md) | 应用外壳 | [25 TeachingTip、InfoBar、ToolTip](docs/25-overlays.md) | 非模态提示 |
 | [23 CommandBar 与菜单](docs/23-commandbar-menus.md) | 命令三容器 | | |
 
-### 进阶篇（画廊 `26-customization` + `31-window-shell`）
+### 进阶篇（主题实验室 `26-theme-lab` + `31-window-shell`）
 
 | 章 | 内容 | 章 | 内容 |
 |---|------|---|------|
@@ -121,23 +121,23 @@
 
 ## 验证状态
 
-`examples/` 下 **10 个工程**全部真实 MSBuild + WASDK 1.8 编过；`tools/ui-smoke/` 对三个画廊**逐页**做了启动/点击/打字/截图验证，另含窗口工程与 TaskFlow 的专项流程。
+`examples/` 下 **10 个工程**全部真实 MSBuild + WASDK 1.8 编过。控件章节的运行时证据由**四个功能应用**承载（取代了旧版控件画廊）：每个应用是一个有真实用途的小程序，控件在其中承担真实职责；`tools/ui-smoke/` 的 `smoke-<app>.ps1` 逐流程验证。
 
 ```text
 examples/
-├── 01-first-app/           MyApp        最小闭环
-├── 06-layout/              LayoutApp    Grid(*/Auto) + ScrollViewer
-├── 07-controls-basic/      BasicGallery 基础控件 10 页（7-16 章对应）
-├── 17-controls-collections/ CollectionsGallery 集合 4 页（17-20 章）
-├── 21-controls-shell/      ShellGallery 导航浮层 5 页（21-25 章）
-├── 26-customization/       CustomGallery 进阶 5 页（26-30 章）
-├── 31-window-shell/        WindowShellApp 标题栏/Mica/多窗口（31 章）
-├── 32-binding-mvvm/        MvvmApp      INPC + 转换器 + 协程（32 章）
-├── 34-os-integration/      OsIntApp     子进程 + 数据目录兜底（34 章）
-└── 35-taskflow/            TaskFlow     实战收束（35 章）
+├── 01-first-app/        MyApp         最小闭环
+├── 06-layout/           LayoutApp     Grid(*/Auto) + ScrollViewer
+├── 07-settings-hub/     SettingsHub   设置中心（7/8/10-16/22/25 章）
+├── 09-scratchpad/       ScratchPad    编辑器（9/21/23/24 章）
+├── 17-data-explorer/    DataExplorer  数据浏览器（17-20 章）
+├── 26-theme-lab/        ThemeLab      主题实验室（26-30 章）
+├── 31-window-shell/     WindowShellApp 标题栏/Mica/多窗口（31 章）
+├── 32-binding-mvvm/     MvvmApp       INPC + 转换器 + 协程（32 章）
+├── 34-os-integration/   OsIntApp      子进程 + 数据目录兜底（34 章）
+└── 35-taskflow/         TaskFlow      实战收束（35 章）
 ```
 
-在 `WinUI3/` 下跑 **`.\build.ps1`** 即可全量编译（vswhere 定位 MSBuild、`-restore` 还原 NuGet、`-nr:false` 防节点复用僵尸）。
+在 `WinUI3/` 下跑 **`.uild.ps1`** 即可全量编译（vswhere 定位 MSBuild、`-restore` 还原 NuGet、`-nr:false` 防节点复用僵尸）。
 
 ### 三条验证通道
 
@@ -145,41 +145,38 @@ examples/
 |------|------|---------|-------------|
 | **元数据级** | `tools/winmd-probe/`（System.Reflection.Metadata 读真实 `.winmd`） | API 签名存在与形状 | 运行时行为 |
 | **编译级** | `build.ps1` + MSVC/WASDK 1.8 | 代码真能编过、链过 | 运行时是否正确 |
-| **运行时级** | `tools/ui-smoke/`（启动→合成点击/键盘→截图，`gallery-smoke.ps1` 场景表驱动） | 被点到的流程真的跑通 | 没被点到的流程 |
+| **运行时级** | `tools/ui-smoke/`（`tap.ps1` 触摸注入点击 + 键盘序列 + 截图；`smoke-*.ps1` 逐流程驱动） | 被驱动的流程真的跑通 | 没被驱动的流程 |
 
-### 运行时级实测结果（逐页）
+### 运行时级实测结果（逐流程）
 
-三个画廊共 **26 个演示页/场景**全部过合成点击验证（证据在 `.smoke/<工程>/<页>/click-N.png`，标注关键状态行断言）：
+四个功能应用共 **14 条已验证流程**（证据在 `.smoke/<工程>/<流程>/tap-N.png`；DataExplorer 的 filter/cards/flip 三流待输入抽奖补证，逻辑同 tree 流已验路径）：
 
-| 画廊 | 页 | 实测交互 → 断言 |
-|------|----|----------------|
-| 07 基础 | button | Click me → "clicked 1" |
-| | textblock | Cycle trim → "trim = CharacterEllipsis" + 省略号出现 |
-| | textbox | Read text → 状态行显示 RichEditBox 内容 |
-| | checkbox | 三态点击 → "notifications = off" |
-| | toggle | 开关本体 → "autosave off" + OnContent/OffContent 切换 |
-| | slider | 轨道点击 → thumb/ProgressBar 同步 42%；2× busy → "ring idle" |
-| | numberbox | Double it → "quantity = 2" |
-| | combobox | Select Dark → "theme = Dark" |
-| | autosuggest | 合成键盘输入 "ap" → 建议 apple/apricot 弹出 |
-| | datetime | Set to today → "date ticks = …" + DatePicker 同步 |
-| 17 集合 | listview | banana 项 → "selected = banana" |
-| | gridview | Next → FlipView 蓝色 page two + "flip page = 2" |
-| | treeview | Expand all → 九节点全展开 "expanded 9 nodes" |
-| | table | 首行 → "row = write guide"，表头列对齐 + T1–T8 平铺 |
-| 21 壳 | tabview | 第二页签 → "tab = notes.md" |
-| | navigationview | Compact → 内嵌导航收窄 "pane mode = LeftCompact" |
-| | commandbar | Add → "command: add"（MenuBar/右键区同帧） |
-| | dialogs | Show → 模态弹出 → Remove → "primary: removed"（三点接力） |
-| | overlays | TeachingTip 弹出 + Cycle severity → "severity = success" |
-| 26 进阶 | styles | 隐式/keyed/模板三形态渲染 + 点击可交互 |
-| | customcontrol | Bump value → templated 控件 "value = 1"（DefaultStyleKey+Generic.xaml 全链路） |
-| | vsm | Force narrow → "state = narrow (manual)" + 布局翻转 |
-| | animation | Animate → 矩形 40→320 HoldEnd + "animated, shots = 1" |
-| | drawing | 色板点击 → 椭圆变色 "color = 43,172,255" |
-| 31 窗口 | — | Acrylic 切换 + New window → "second window opened" + 自绘标题栏 |
-| 32 绑定 | — | Refresh → "Finished"/"2 tasks"；勾选行 → done! + 变暗（双转换器） |
-| 35 实战 | — | JSON 预置 → "Loaded 2 tasks"；勾选 → "finished a task"；重启 → 照旧加载（持久化闭环） |
+| 应用 | 流程 | 驱动 | 断言（截图/文件级） |
+|------|------|------|---------------------|
+| 设置中心 | theme | 触摸点 Dark 单选 | 整窗换暗 + 圆点选中 + 状态行 "theme = Dark" |
+| | master | 导航 + 点总闸 | 总闸 Off + 渠道灰显 + "notifications off: channels disabled" |
+| | save | 导航 + 点 Save | 进度充满 + InfoBar "Saved" + "preferences saved" |
+| | search | 点搜索框 + 键入 Pref + 下箭头回车 | 建议过滤 + 真跳转 Preferences 页 |
+| 编辑器 | save | 点编辑区 + 键入 + Ctrl+S | 状态行 "saved untitled-1.txt \| verified on disk (15 chars)"（**应用内写后回读铁证**） |
+| | bold | 键入 + Ctrl+A/B/S | 全选加粗 + 落盘（11 chars）+ 工具栏同步 |
+| | find | 键入 + Ctrl+F + a | Expander 展开 + "3 match(es) for 'a'" |
+| | close | 键入 + 点页签 X + 点对话框 Save | ContentDialog 三钮实拍 → 存盘关页签 |
+| 数据浏览器 | tree | 点 TreeView Images 节点 | 表格过滤至 3 行 + 计数行 "3 items · Images" |
+| | filter/cards/flip | （待补证） | 逻辑与 tree 同路径（ApplyFilters/双视图/选中联动） |
+| 主题实验室 | preset | 点 Sunset 预设 | 选中高亮 + 暗壳 + 七柱图变红 + 状态行复述 |
+| | picker | 点 ColorPicker 光谱 | accent 实时变 + 状态行 "accent = #107,10,10" + 柱图随刷 |
+| 窗口 | — | `gallery-smoke.ps1 -Gallery 31` | Acrylic 切换 + 第二窗口 + 自绘标题栏 |
+| 绑定/实战 | — | 32/35 章流程 | INPC 刷新 / TaskFlow 持久化闭环 |
+
+### 输入注入战争实录（本机的硬边界，方法论入册）
+
+高 DPI（175%）桌面这台机上验证 UI 学到的、写进 `tools/ui-smoke/` 注释与教程各章的东西：
+
+- **注入鼠标点击对 ButtonBase 永不闭合**：press 精确命中（应用侧诊断实证），Click 不完成——`SetCursorPos + mouse_event` 只能驱动导航行/ToggleSwitch/Slider；**触摸注入**（`InitializeTouchInput + InjectTouchInput`）走真实指针栈，按钮才响应。
+- **任何 `SetWindowPos`（含纯移动）在 XAML 岛安定后打烂输入变换**：渲染照旧、命中错位。冒烟绝不动窗口——应用在构造期自定位（`AppWindow.MoveAndResize`，实测按逻辑单位解释）。
+- **注入输入是启动抽奖**：同一流程时通时不通（分钟级相位）。`tap.ps1` 用帧哈希检测 + 整进程重试兜底。
+- **UIA3 树不可见**（非打包自包含应用的 provider 缺失）：managed UIA2 早就看不见，手写 UIA3 COM 互操作全链路（InterfaceIsIUnknown / __ComObject 退化 / VARIANT 封送三坑）踩过后留档 `uia-smoke.ps1`——树仍是空的。
+- 视觉验证的教训：**视觉模型读网格标注不可靠**（三轮三套坐标）——像素连通域扫描（`find-blob.ps1`）才是 ground truth；提示词里带预期答案的"验证"等于没验证。
 
 ### 验证推翻并改回正文的写法（原有 + 本次扩充）
 
