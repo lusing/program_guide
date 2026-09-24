@@ -200,7 +200,7 @@ Nat.add_le_mono                               单调性
 
 | 症状 | 真凶 | 章 |
 |---|---|---|
-| `[SQLITE_ERROR] cannot commit` / `[SQLITE_IOERR_DELETE]` | 构建库在 `~/`，未签名二进制 `unlink` 被 EPERM；改 `USER_HOME` 指到 `/tmp` | 01 |
+| `[SQLITE_ERROR] cannot commit` / `[SQLITE_IOERR_DELETE]` | macOS 下构建库在 `~/` 且未签名二进制 `unlink` 被 EPERM（Linux 无此问题）；`USER_HOME` 指到 `/tmp` 都能规避 | 01 |
 | 设 `ISABELLE_HEAPS` 无效 | `etc/settings` 无条件赋值，只有 `USER_HOME` 能改 | 01 |
 | 两遍输出不一致 | `parallel_print` 没关 | 01 |
 | `isabelle process` 不存在 | Isabelle2025 叫 `process_theories` | 01 |
