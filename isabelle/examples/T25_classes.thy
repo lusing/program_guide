@@ -49,7 +49,7 @@ definition inf2_nat :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
   "inf2_nat m n = m + n"
 
 instance
-  by intro_classes (simp add: inf2_nat_def add.assoc)
+  by intro_classes (simp add: inf2_nat_def)
 
 end
 
@@ -70,7 +70,7 @@ definition inf2_list :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" wh
   "inf2_list xs ys = xs @ ys"
 
 instance
-  by intro_classes (simp add: inf2_list_def append_assoc[symmetric])
+  by intro_classes (simp add: inf2_list_def)
 
 end
 
@@ -96,8 +96,8 @@ text \<open>把这条引理**具体化**到 nat 上，得写成限定名。这�
 @{verbatim "inf2_nat_def"} 到加法，再用 @{verbatim "mg.inf2_four"}（自动带上
 @{verbatim "mg"} 类型约束的 nat 实例）证明两边一致。\<close>
 
-lemma nat_four: "((1 :: nat) \<bullet> 2) \<bullet> 3 \<bullet> 4 = 1 \<bullet> (2 \<bullet> (3 \<bullet> (4 :: nat)))"
-  unfolding mg.inf2_four [of "(1::nat)" 2 3 4] by (simp add: inf2_nat_def)
+lemma nat_four: "((1 :: nat) \<bullet> 2) \<bullet> 3 \<bullet> (4 :: nat) = 1 \<bullet> (2 \<bullet> (3 \<bullet> (4 :: nat)))"
+  by (simp add: inf2_nat_def)
 
 subsection \<open>25.6 子类：@{verbatim "class ... = father + ..."}\<close>
 

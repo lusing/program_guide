@@ -248,4 +248,4 @@ See theory exports
 
 ---
 
-上一章：[23 · 工程实践与证明风格](23-engineering.md) ｜ 返回：[README](../README.md)
+上一章：[23 · 工程实践与证明风格](23-engineering.md) ｜ 下一章：[25 · 类型类](25-classes.md) ｜ 返回：[README](../README.md)
