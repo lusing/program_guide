@@ -8,7 +8,7 @@
 
 开发语言为 **C++/WinRT**（WinRT 的官方 C++17 投影）。教程代码均为真实 WinUI 3 写法，要编译运行需要 Visual Studio（17.x / 18.x 皆可）带桌面 C++ 工具链，并在可选组件里装上 **C++/WinRT 项目模板** 与 **WinUI 应用模板**。
 
-教程里每个关键机制都对应 `examples/` 下一个**能真编译、能真运行**的工程：在本目录跑 `.\build.ps1` 全部从零编过；`tools/ui-smoke/` 会启动它们、合成点击与键盘输入、截图验证行为——**三个画廊的每个演示页都逐页点过**。完整清单与证据见文末 [验证状态](#验证状态)。
+教程里每个关键机制都对应 `examples/` 下一个**能真编译、能真运行**的工程：在本目录跑 `.\build.ps1` 全部从零编过；`tools/ui-smoke/` 会启动它们、触摸注入点击与键盘输入、截图验证行为——**四个功能应用的每条流程都逐条驱动过**。完整清单与证据见文末 [验证状态](#验证状态)。
 
 ## 目录
 
@@ -79,7 +79,7 @@
       │
 04 ─ 05 ─ 06            骨架与布局
       │
-07 ─ 16                 控件·基础（画廊 BasicGallery 逐页对应）
+07 ─ 16                 控件·基础（设置中心 SettingsHub 承载）
       │
 17 ─ 20                 控件·集合（CollectionsGallery）
       │
@@ -251,7 +251,7 @@ examples/
 ```powershell
 .\build.ps1                          # 全部工程（Debug|x64）
 .\build.ps1 -Examples 07-controls-basic -Rebuild
-pwsh tools\ui-smoke\gallery-smoke.ps1 -Gallery 07        # 画廊逐页点击验证
+pwsh tools\ui-smoke\smoke-settingshub.ps1               # 设置中心四流程
 pwsh tools\ui-smoke\gallery-smoke.ps1 -Gallery 07 -Page slider
 pwsh tools\ui-smoke\ui-smoke.ps1 -Exe <exe> -OutDir <dir> -Clicks "x,y;x,y" -TypeText "ap"
 pwsh tools\ui-smoke\zoom-grid.ps1 -Image <png> -Out <png> -X0 350 -Y0 100 -X1 900 -Y1 500   # 坐标校准
