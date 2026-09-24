@@ -26,13 +26,15 @@ isabelle process_theories -O ...        # 捕获每个示例的输出消息
 Isabelle 版本标识: Isabelle2025-2
 ```
 
-本机工具链（写在 `run-all.sh` 顶部，换了环境要重新确认）：
+本机工具链（写在 `run-all.sh` 顶部，按 `uname -s` 自动选路径，
+Linux 下优先 `/home/admin/hol/Isabelle2025-2/bin/isabelle`；`ISABELLE=…` 可覆盖）：
 
 | 项 | 值 |
 |---|---|
 | 发行版 | Isabelle2025-2 |
-| 可执行文件 | `/Applications/Isabelle2025-2.app/bin/isabelle` |
-| ML 系统 | polyml-5.9.2，`x86_64_32-darwin` |
+| 可执行文件（macOS） | `/Applications/Isabelle2025-2.app/bin/isabelle` |
+| 可执行文件（Linux） | `/home/admin/hol/Isabelle2025-2/bin/isabelle` |
+| ML 系统 | polyml-5.9.2，`x86_64_32-darwin` / `x86_64_32-linux` |
 | 会话 | `IsaTut`（见 `../examples/ROOT`） |
 
 发行版自带预编译好的 `Pure` 与 `HOL` 堆镜像，所以第一次 `build` 不需要从源码重建 HOL——这也是为什么全量验证能在 1 分钟内跑完。
@@ -126,7 +128,7 @@ theorem and_swap: (?A \<and> ?B) = (?B \<and> ?A)
 1. **字面写 Unicode**：源文件里出现 `‹ › ∀ ∧ →`，报 `Malformed command syntax` 或 `Inner lexical error`。一律写 `\<open>` `\<close>` `\<forall>` `\<and>` `\<longrightarrow>`。
 2. **`@{verbatim xxx}` 忘了加引号**：报 `Bad arguments for document antiquotation`。必须写 `@{verbatim "xxx"}`。
 3. **`isabelle process` 不是命令**：Isabelle2025 里叫 `process_theories`；`isabelle help` 也不存在，直接裸跑 `isabelle` 看工具列表。
-4. **build 报 `[SQLITE_ERROR] cannot commit` / `[SQLITE_IOERR_DELETE]`**：构建库是 SQLite，写库时要 `unlink` 掉 `-journal` 文件。本机在 `~/` 下对未签名二进制的 `unlink` 会返回 EPERM（macOS 实测），所以脚本把 `ISABELLE_HOME_USER` 指到 `/tmp` 下绕开，并在开跑前清掉上次留下的半截 journal。
+4. **build 报 `[SQLITE_ERROR] cannot commit` / `[SQLITE_IOERR_DELETE]`**：构建库是 SQLite，写库时要 `unlink` 掉 `-journal` 文件。macOS 上本机对 `~/` 下未签名二进制的 `unlink` 会返回 EPERM（Linux 无此问题）；脚本把 `USER_HOME` 指到 `/tmp` 下绕开，并在开跑前清掉上次留下的半截 journal。
 5. **改 `ISABELLE_HEAPS` 没用**：`etc/settings` 里写的是 `ISABELLE_HEAPS="$ISABELLE_HOME_USER/heaps"`，直接设会被覆盖。要改就改 `ISABELLE_HOME_USER`。
 6. **数字字面量不写类型标注**：报 `Wellsortedness error`，不是语法错误而是"不知道放哪个类型"。算术表达式永远写 `(1::nat)`。
 7. **`real` 不在 `Main` 里**：要用实数得 `imports Complex_Main`。很多教程直接写 `imports Main` 然后奇怪类型找不到。

@@ -61,13 +61,16 @@ isabelle/
 | 组件 | 值 |
 |---|---|
 | 发行版 | Isabelle2025-2 |
-| 可执行文件 | `/Applications/Isabelle2025-2.app/bin/isabelle` |
-| ML 系统 | polyml-5.9.2，`x86_64_32-darwin` |
+| 可执行文件（macOS） | `/Applications/Isabelle2025-2.app/bin/isabelle` |
+| 可执行文件（Linux） | `/home/admin/hol/Isabelle2025-2/bin/isabelle`（本机 Ubuntu 22.04 实测路径） |
+| ML 系统 | polyml-5.9.2，`x86_64_32-darwin` / `x86_64_32-linux` |
 | 会话 | `IsaTut`（见 `examples/ROOT`，父会话 `HOL`） |
 | 交互前端 | `isabelle jedit`（随发行版自带） |
 
 发行版自带预编译的 `Pure` / `HOL` 堆镜像，所以第一次 `build` 不需要
-从源码重建 HOL，全量验证约 1–2 分钟。
+从源码重建 HOL，全量验证 Linux 上约 20 秒、macOS 上 1–2 分钟。
+`run-all.sh` 会按 `uname -s` 自选默认 `ISABELLE` 路径，找不到再回退
+到 `PATH` 里的 `isabelle`；显式覆盖用 `ISABELLE=/path/to/isabelle ./run-all.sh`。
 
 ## 验证命令
 
@@ -94,15 +97,19 @@ cd isabelle
 那本身就是 bug。实测这一步抓到过真问题：默认开启 `parallel_print` 时，
 24 个示例里有 12 个两次运行的消息顺序不同；关掉并行打印后差异归零。
 
-## 环境注意事项（本机实测）
+## 环境注意事项（macOS + Linux 双端实测）
 
-- **构建库是 SQLite，写库要 `unlink` 掉 `-journal`**。本机 macOS 对 `~/`
-  下未签名二进制的 `unlink` 返回 EPERM，于是报
-  `[SQLITE_ERROR] cannot commit` / `[SQLITE_IOERR_DELETE]`。
-  脚本的应对是**把 `USER_HOME` 指到 `/tmp` 下**——这是唯一有效的入口：
-  `ISABELLE_HOME_USER` / `ISABELLE_HEAPS` 在 `etc/settings` 里是**无条件**
-  赋值，靠环境变量改不动，但它们都由 `USER_HOME` 派生。
-  若在受限沙箱里跑，还必须放开文件删除权限。
+- **SQLite 构建库与 `-journal` 清理**：写库时要 `unlink` 掉 `-journal`。
+  Linux 下普通权限就能删；macOS 本机对 `~/` 下未签名二进制的 `unlink`
+  返回 EPERM，于是报 `[SQLITE_ERROR] cannot commit` / `[SQLITE_IOERR_DELETE]`。
+  脚本的应对是**把 `USER_HOME` 指到 `/tmp` 下**——两平台都受益（隔离产物
+  与 `~/.isabelle`），macOS 上更是必需。之所以改 `USER_HOME` 而不是
+  直接改 `ISABELLE_HOME_USER` / `ISABELLE_HEAPS`：它们在 `etc/settings`
+  里是**无条件**赋值，靠环境变量改不动，但都由 `USER_HOME` 派生。
+- **控制字符检查用 POSIX `[[:cntrl:]]`**：曾经写的是 `[^[:print:][:space:]]`，
+  Linux 的 `LC_ALL=C` 下 `[:print:]` 只覆盖 ASCII，示例标记里的中文
+  `==== 01 开始 ====` 会被误判为"含控制字符"，24 个 theory 全错。
+  `[[:cntrl:]]` 两平台语义一致，只匹配 0x00–0x1F / 0x7F。
 - **源文件一律 ASCII 转义**：分隔符写 `\<open>` `\<close>`，项里写
   `\<forall>` `\<in>` `\<longrightarrow>`。字面 `‹ › ∀` 会被拒（第 1 章
   有实测边界表）。
