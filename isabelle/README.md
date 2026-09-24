@@ -2,11 +2,13 @@
 
 面向**会编程、初学证明助手**的读者：从"机器当裁判"的心智模型讲到项与类型、
 数据类型、递归与归纳、化简器、Isar 证明语言，再到霍尔逻辑与编译器正确性
-两个大案例，最后以工程组织、诊断方法与代码生成收束；附录三章补齐**类型类**
-（`class`/`instantiation`）、**共归**（`codatatype`/`primcorec`）与
-**Eisbach**（`method`/`match`）三条 HOL 生态里最常见的进阶设施。
+两个大案例，最后以工程组织、诊断方法与代码生成收束；附录六章补齐**类型类**
+（`class`/`instantiation`）、**共归**（`codatatype`/`primcorec`）、
+**Eisbach**（`method`/`match`）、**子集抽象**（`typedef`/`lift_definition`）、
+**商类型**（`quotient_type`/`transfer`）与**序与格**（`Orderings`/`Lattices`）
+六条 HOL 生态里最常见的进阶设施。
 
-**章号 = 示例编号**——01–27 章每章对应 `examples/` 里一个经
+**章号 = 示例编号**——01–30 章每章对应 `examples/` 里一个经
 `isabelle build` 构建通过、且两遍输出逐字节一致的 `.thy` 文件。
 
 > 核心理念：**每个示例都是被机器逐条认可过的数学文本，不是"能跑就行"的程序。**
@@ -20,8 +22,8 @@ isabelle/
 ├── README.md        本文件
 ├── CHEATSheet.md    语法速查 + 实测坑位索引（300+ 条）
 ├── run-all.sh       验证脚本（bash）
-├── docs/            27 章教程（01 → 27 顺序阅读）
-├── examples/        27 个 .thy 示例 + ROOT（章号 = 示例编号）
+├── docs/            30 章教程（01 → 30 顺序阅读）
+├── examples/        30 个 .thy 示例 + ROOT（章号 = 示例编号）
 └── build/           验证产物（build.log + 两遍输出，可删）
 ```
 
@@ -56,10 +58,14 @@ isabelle/
 | [25 类型类](docs/25-classes.md) | `class` / `instantiation` / 子类 / sort 约束 | `T25_classes.thy` |
 | [26 共归与 codatatype](docs/26-codatatype.md) | `codatatype` / `primcorec` / 无限流与树 | `T26_codatatype.thy` |
 | [27 Eisbach 方法 DSL](docs/27-eisbach.md) | `method` / `match premises` / `match conclusion` | `T27_eisbach.thy` |
+| [28 抽象类型 typedef](docs/28-typedef.md) | `typedef` / `setup_lifting` / `lift_definition` | `T28_typedef.thy` |
+| [29 商类型 quotient_type](docs/29-quotient.md) | `quotient_type` / `Quotient` / `transfer` | `T29_quotient.thy` |
+| [30 序与格类层次](docs/30-order.md) | `Orderings` / `Lattices` / `mono` / `instantiation linorder` | `T30_order.thy` |
 
 学习路线：01–03 心智模型与基本材料 → 04–07 数据建模与化简 →
 08–13 证明技法主线（自动化 / 逻辑 / 归纳 / Isar）→ 14–17 结构与方法论
-→ 18–19 大案例 → 20–23 工程化 → 24 综合收束 → 25–27 三个进阶专题。
+→ 18–19 大案例 → 20–23 工程化 → 24 综合收束 → 25–30 六个进阶专题
+（类 / 共归 / Eisbach / typedef / quotient / Orderings+Lattices）。
 
 ## 工具链
 

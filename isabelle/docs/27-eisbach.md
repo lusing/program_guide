@@ -154,4 +154,4 @@ theorem (\<forall>x. ?P x) \<longrightarrow> ?P ?y
 
 ---
 
-上一章：[26 · 共归与 codatatype](26-codatatype.md) ｜ 返回：[README](../README.md)
+上一章：[26 · 共归与 codatatype](26-codatatype.md) ｜ 下一章：[28 · 抽象类型 typedef](28-typedef.md) ｜ 返回：[README](../README.md)

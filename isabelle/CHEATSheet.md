@@ -216,6 +216,24 @@ Nat.add_le_mono                               单调性
 | `simp add: X` 里 X 已在 simpset | Warning "Ignoring duplicate rewrite rule" 但不 fail | 27 |
 | `sledgehammer` 想放 `.thy` | 外部 ATP 不确定；只在开发期用，脚本里删净 | 17.6 |
 
+### typedef / quotient / Orderings+Lattices（28–30）
+
+| 症状 | 真凶 | 章 |
+|---|---|---|
+| `value "Rep_seven (Abs_seven 3)"` 报 Abstraction violation | typedef 类型默认无代码方程；要 `code_datatype Abs_seven`，或直接 `by (simp add: Abs_seven_inverse)` | 28 |
+| `lift_definition` 报 `Constant not registered for lifting` | 缺 `setup_lifting type_definition_seven` | 28 |
+| `thm Rep_inverse` 未定义 | 事实名带类型后缀：`Rep_seven_inverse` / `Abs_seven_inject` / `type_definition_seven` | 28 |
+| `class plus = assumes "zero ⊕ x = x"` 里 `zero` 未声明 | `class` 只 `fixes` 自己那批；跨类共享要走 `extends` | 28 |
+| `quotient_type three = nat / r by auto` 报 `A partial equivalence relation is required` | 直接把 `intro!: equivpI reflpI sympI transpI` 一起给 `by` | 29 |
+| `thm Abs_three` 类型不对 | 大写 `Abs_three :: nat set ⇒ three` 吃 Collect 类；用户面用小写 `abs_three :: nat ⇒ three` | 29 |
+| `lift_definition ... by metis` 挂死 | 兼容性目标要显式给引理：`by (rule mod_add_cong) blast+`，别丢给 metis | 29 |
+| `lift_definition zero_three is 0 by simp` 报 No subgoals | 常量 lift 无兼容性目标；用 `.` 收尾 | 29 |
+| `@{verbatim "A"/"B"}` 编译不过 | verbatim  antiquotation 内不能出现 `"/`（跨两段的斜杠）；拆两个 verbatim | 28–30 |
+| `thm inf_distrib` 未定义 | 分配律的真名是 `inf_sup_distrib1` / `sup_inf_distrib1` | 30 |
+| `datatype` 上 `instantiation linorder` 剩 4 subgoals | `auto` 缺 case-split：`split: colour.splits`，`if_split_asm` 只管 `if` | 30 |
+| `by (simp add: Sup_set_def)` 剩目标 | 补 `auto` 走双向：`by (auto simp add: Sup_set_def)` | 30 |
+| `thm wf_less` 用 `real` 挂 | `real` 上 `<` 非良基；`int` 上也不是 wellorder | 30 |
+
 ### 环境类
 
 | 症状 | 真凶 | 章 |

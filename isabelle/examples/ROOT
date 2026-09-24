@@ -28,3 +28,6 @@ session IsaTut = "HOL-Eisbach" +
     T25_classes
     T26_codatatype
     T27_eisbach
+    T28_typedef
+    T29_quotient
+    T30_order
