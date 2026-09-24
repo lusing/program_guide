@@ -1,0 +1,88 @@
+<Window
+    x:Class="ScratchPad.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 编辑器骨架：菜单栏 / TabView 多文档 / 查找折叠板 / 命令栏 / 状态行。
+         键盘加速器挂在根 Grid 上（Ctrl+S/N/F/B），与菜单命令同一条代码路径。 -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.KeyboardAccelerators>
+            <KeyboardAccelerator Modifiers="Control" Key="S" Invoked="OnSaveKey"/>
+            <KeyboardAccelerator Modifiers="Control" Key="N" Invoked="OnNewTabKey"/>
+            <KeyboardAccelerator Modifiers="Control" Key="F" Invoked="OnFindKey"/>
+            <KeyboardAccelerator Modifiers="Control" Key="B" Invoked="OnBoldKey"/>
+        </Grid.KeyboardAccelerators>
+
+        <!-- 21 章 MenuBar：应用级菜单，和 CommandBar 互补（菜单=完整命令集，
+             命令栏=高频动作） -->
+        <MenuBar Grid.Row="0">
+            <MenuBarItem Title="File">
+                <MenuFlyoutItem Text="New tab" Click="OnNewTab">
+                    <MenuFlyoutItem.KeyboardAccelerators>
+                        <KeyboardAccelerator Modifiers="Control" Key="N"/>
+                    </MenuFlyoutItem.KeyboardAccelerators>
+                </MenuFlyoutItem>
+                <MenuFlyoutSeparator/>
+                <MenuFlyoutItem Text="Save" Click="OnSave">
+                    <MenuFlyoutItem.KeyboardAccelerators>
+                        <KeyboardAccelerator Modifiers="Control" Key="S"/>
+                    </MenuFlyoutItem.KeyboardAccelerators>
+                </MenuFlyoutItem>
+                <MenuFlyoutSeparator/>
+                <MenuFlyoutItem Text="Exit" Click="OnExit"/>
+            </MenuBarItem>
+            <MenuBarItem Title="Edit">
+                <MenuFlyoutItem Text="Select all" Click="OnSelectAll">
+                    <MenuFlyoutItem.KeyboardAccelerators>
+                        <KeyboardAccelerator Modifiers="Control" Key="A"/>
+                    </MenuFlyoutItem.KeyboardAccelerators>
+                </MenuFlyoutItem>
+                <MenuFlyoutItem Text="Find" Click="OnToggleFind">
+                    <MenuFlyoutItem.KeyboardAccelerators>
+                        <KeyboardAccelerator Modifiers="Control" Key="F"/>
+                    </MenuFlyoutItem.KeyboardAccelerators>
+                </MenuFlyoutItem>
+                <MenuFlyoutItem Text="Bold" Click="OnBoldMenu">
+                    <MenuFlyoutItem.KeyboardAccelerators>
+                        <KeyboardAccelerator Modifiers="Control" Key="B"/>
+                    </MenuFlyoutItem.KeyboardAccelerators>
+                </MenuFlyoutItem>
+            </MenuBarItem>
+        </MenuBar>
+
+        <!-- 多文档：每个 TabViewItem 的 Content 是一个独立 RichEditBox（9 章） -->
+        <TabView x:Name="Docs" Grid.Row="1" Margin="8,6"
+                 TabCloseRequested="OnTabCloseRequested"
+                 AddTabButtonClick="OnAddTabButton"/>
+
+        <!-- 23 章 Expander：查找面板默认收起，Ctrl+F 展开 -->
+        <Expander x:Name="FindPane" Grid.Row="2" Margin="8,0,8,6"
+                  Header="Find in document" IsExpanded="False">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBox x:Name="FindBox" Width="260" PlaceholderText="search text"
+                         TextChanged="OnFindChanged"/>
+                <Button Content="Next" Click="OnFindNext"/>
+            </StackPanel>
+        </Expander>
+
+        <!-- 21 章 CommandBar：高频动作用图标按钮直达 -->
+        <CommandBar Grid.Row="3" DefaultLabelPosition="Right">
+            <AppBarButton Icon="Add" Label="New tab" Click="OnNewTab"/>
+            <AppBarButton Icon="Save" Label="Save" Click="OnSave"/>
+            <AppBarToggleButton x:Name="BoldToggle" Icon="Bold" Label="Bold" Click="OnBold"/>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton Icon="Find" Label="Find" Click="OnToggleFind"/>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+
+        <TextBlock x:Name="StatusText" Grid.Row="4" Margin="12,4,12,8" Opacity="0.75"/>
+    </Grid>
+</Window>

@@ -35,7 +35,10 @@ param(
     # Text typed after the LAST tap (clicks an input field first), and virtual
     # keys sent after that (e.g. 'down,enter' to pick an AutoSuggestBox item).
     [string]$TypeText,
-    [string]$KeysAfter
+    [string]$KeysAfter,
+    # Taps sent after the keyboard phase, e.g. click a dialog button that
+    # only exists once text has been typed.
+    [string]$TapsAfter
 )
 
 $ErrorActionPreference = 'Stop'
@@ -64,6 +67,8 @@ namespace TouchInj
         [DllImport("user32.dll")] public static extern bool InjectTouchInput(uint count, TOUCHINPUT[] contacts);
         [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr h, out RECT r);
         [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);
+        [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
+        [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr hwnd, out uint processId);
         [DllImport("user32.dll")] public static extern bool SetWindowPos(IntPtr h, IntPtr after, int x, int y, int cx, int cy, uint flags);
         [DllImport("user32.dll")] public static extern bool SetProcessDpiAwarenessContext(IntPtr value);
         [DllImport("user32.dll")] public static extern void keybd_event(byte vk, byte scan, uint flags, System.UIntPtr extra);
@@ -109,6 +114,11 @@ namespace TouchInj
 $script:vkMap = @{
     'tab' = 0x09; 'space' = 0x20; 'enter' = 0x0D; 'esc' = 0x1B
     'left' = 0x25; 'up' = 0x26; 'right' = 0x27; 'down' = 0x28
+    'shift' = 0x10; 'ctrl' = 0x11; 'alt' = 0x12
+}
+# Letters a-z for accelerators (ctrl+s etc.); hold the modifier while pressing.
+for ($code = [int][char]'a'; $code -le [int][char]'z'; $code++) {
+    $script:vkMap[[string][char]$code] = $code - 32
 }
 
 function Invoke-TypeKeys([string]$text, [string]$keys) {
@@ -163,7 +173,19 @@ for ($attempt = 1; $attempt -le $Attempts; $attempt++) {
         $proc.Refresh()
         if ($proc.HasExited) { throw "process exited during startup with code $($proc.ExitCode)" }
         if ($proc.MainWindowHandle -eq [IntPtr]::Zero) { throw 'process has no main window' }
-        [TouchInj.Native]::SetForegroundWindow($proc.MainWindowHandle) | Out-Null
+        # A background process cannot steal the foreground; the ALT press is the
+        # documented workaround (same trick as ui-smoke.ps1). Without it the
+        # typed keys land in whatever window really owns the foreground and the
+        # taps hit whatever window is on top at that point.
+        $foreground = [TouchInj.Native]::GetForegroundWindow()
+        $fgpid = [uint32]0
+        [TouchInj.Native]::GetWindowThreadProcessId($foreground, [ref]$fgpid) | Out-Null
+        if ($fgpid -ne 0 -and $fgpid -ne $proc.Id) {
+            [TouchInj.Native]::keybd_event(0x12, 0, 0, [UIntPtr]::Zero)    # ALT down
+            [TouchInj.Native]::keybd_event(0x12, 0, 2, [UIntPtr]::Zero)    # ALT up
+        }
+        $ok = [TouchInj.Native]::SetForegroundWindow($proc.MainWindowHandle)
+        "fg     : pid=$fgpid -> ours=$($proc.Id) SetForegroundWindow=$ok"
         # DO NOT move or resize the window at all: any SetWindowPos after the XAML
         # island settles corrupts its input transform (rendering stays correct,
         # hit-testing lands elsewhere, every tap misses). The window stays at its
@@ -184,14 +206,28 @@ for ($attempt = 1; $attempt -le $Attempts; $attempt++) {
             Save-Shot $proc.MainWindowHandle (Join-Path $OutDir ("tap-{0}.png" -f ($i + 1)))
         }
 
+        $shot = $seq.Count
         if ($TypeText -or $KeysAfter) {
             Invoke-TypeKeys $TypeText $KeysAfter
-            Save-Shot $proc.MainWindowHandle (Join-Path $OutDir ("tap-{0}.png" -f ($seq.Count + 1)))
+            $shot += 1
+            Save-Shot $proc.MainWindowHandle (Join-Path $OutDir ("tap-{0}.png" -f $shot))
+        }
+        if ($TapsAfter) {
+            $wrect = New-Object TouchInj.Native+RECT
+            [TouchInj.Native]::GetWindowRect($proc.MainWindowHandle, [ref]$wrect) | Out-Null
+            $after = @($TapsAfter.Split(';') | Where-Object { $_.Trim() })
+            for ($i = 0; $i -lt $after.Count; $i++) {
+                [int[]]$c = $after[$i].Split(',')
+                $result = [TouchInj.Tap]::Do($proc.MainWindowHandle, $wrect.Left + $c[0], $wrect.Top + $c[1], $HoldMs)
+                "tap    : [after $($i+1)] window($($c[0]),$($c[1])) -> $result"
+                Start-Sleep -Milliseconds 1100
+                $shot += 1
+                Save-Shot $proc.MainWindowHandle (Join-Path $OutDir ("tap-{0}.png" -f $shot))
+            }
         }
 
         $first = Get-FileMd5 $beforePath
-        $lastShot = if ($TypeText -or $KeysAfter) { $seq.Count + 1 } else { $seq.Count }
-        $last = Get-FileMd5 (Join-Path $OutDir ("tap-{0}.png" -f $lastShot))
+        $last = Get-FileMd5 (Join-Path $OutDir ("tap-{0}.png" -f $shot))
         if ($first -ne $last) {
             "result : attempt $attempt changed the window (evidence captured)"
             return
