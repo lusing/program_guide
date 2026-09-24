@@ -302,6 +302,11 @@ if (auto vm = weak.get())
 
 教程至今用过的一切"出 UI 界"的操作：%LOCALAPPDATA% 数据目录（SettingsStore/DocStore——两套同款纪律：目录自建、坏文件当空、UTF-8 无 BOM 落盘）；JSON 持久化（Windows.Data.Json——教学工程的轻量选择，产品可换 cJSON/rapidjson 但**读写纪律不变**）；窗口定位（AppWindow.MoveAndResize——31.5 的逻辑单位实测）；触摸注入与像素扫描（冒烟工具链——`tools/ui-smoke/` 是教程自产的"系统集成"活样本）。**34 章的每一个主题都能在四工程或工具链里找到非玩具用法**——这是"系统层"教学不打空炮的底气。
 
+## 34.7 练习与思考
+
+1. 给 ScratchPad 加"在资源管理器中显示"（explorer.exe /select）——CreateProcess 参数转义坑实测。
+2. 把 DocStore 换成 ApplicationData（MSIX 打包后）——两套路径的迁移开关怎么设计？
+
 ## 34.6 系统层与 UI 层的全景
 
 把本篇与前面各篇合起来，一个真实 WinUI 3 应用的全景是：

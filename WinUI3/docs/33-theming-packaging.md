@@ -165,6 +165,11 @@ manifest 在 Visual Studio 里是图形编辑器，底层是 XML。视觉元素�
 
 26 章/`26-theme-lab` 展示的运行时 accent 覆盖（Application.Resources Insert）是本章静态主题体系的动态出口：**ThemeResource 的查找链在运行时依然成立**——Insert 同键的值优先于主题字典，全树引用即时重取。配套实测坑（26.6.1）：RequestedTheme 同值连设不触发重估，先设 Default 再设目标（两轮变更通知）。发布态的考虑：运行时换肤的色值要过对比度校验（WCAG）——ThemeLab 的预设色板是手工挑的，产品化要走设计 token 体系；MSIX 打包不影响运行时资源操作（资源字典是进程内的，与包身份无关）。
 
+## 33.7 练习与思考
+
+1. 给 ThemeLab 加预设导出/导入（m_presets 序列化 JSON + 读回）——33 章资源与 34 章文件的合流练习。
+2. MSIX 打包四个功能工程之一，实测 SettingsStore 的 %LOCALAPPDATA% 路径变化（ApplicationData 可用了吗）。
+
 ## 33.6 交付：MSIX 与两种部署形态
 
 ### 33.6.1 生成 MSIX（打包应用）

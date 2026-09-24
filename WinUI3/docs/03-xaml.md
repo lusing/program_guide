@@ -270,6 +270,11 @@ XAML 定义的是**逻辑树**（元素嵌套关系），渲染时框架会展�
 
 DataExplorer 是 x:Bind 密度最高的工程（FileItem 模板三处 + PresetInfo）——对照 3 章的 x:Bind 规则清单逐条验证：模板类型必须投影（FileItem runtimeclass）、Mode 默认 OneTime（PresetInfo 色板够用）、OneWay 用于会变的（LabeledValueControl 的 Label/Value）。**03 章读完拿 DataExplorer 当习题册**：每条规则在工程里找一个反例（故意改错看编译错误）——错误信息是最严格的老师。
 
+## 3.10 练习与思考
+
+1. 把 DataExplorer 的 FileItem 从 runtimeclass 降级为 C++ 结构体——x:Bind 报什么？这个错误信息怎么指导你补回 IDL。
+2. 给 LabeledValueControl 的 x:Bind 去掉 Mode=OneWay，程序化改 Label 还刷新吗？哪个环节断了？
+
 ## 3.9 DataTemplate 与 x:DataType
 
 列表控件的每一项长什么样，由 `DataTemplate` 描述。用 `x:Bind` 时必须声明项类型：

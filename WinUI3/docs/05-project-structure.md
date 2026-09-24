@@ -235,6 +235,11 @@ Model 里出现 `IsSelected`（选中态）这类字段时要警惕：选中态�
 
 四工程里有两个不走"页面四件套"路线：编辑器与数据浏览器是**单窗工程**（MainWindow + 代码造的 TabViewItem/文件条目），IDL 里只有 App/MainWindow（+FileItem/PresetInfo 数据类）。**分层原则不变、载体变化**：页面变成了"代码创建的视图对象"，Frame 导航变成了 TabView 切换/过滤刷新——05 章的"谁持有状态"追问在两种形态下同一答案（成员变量 + 事件汇流）。判断自己的应用走哪形：**目的地互斥且少→导航页面；工作区并存→单窗多文档**。
 
+## 5.8 练习与思考
+
+1. 对比 SettingsHub（页面四件套）与 ScratchPad（单窗）的 pch.h——包含差集说明什么架构事实？
+2. 把 ScratchPad 的 TabEntry 挪到独立头文件——vcxproj/pch 各动哪行？四处登记规则的又一轮实操。
+
 ## 5.7 Service 层
 
 Service 封装真实 IO，对上只暴露业务语义的接口：

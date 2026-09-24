@@ -313,6 +313,11 @@ winrt::Windows::Foundation::IAsyncAction LoadAsync()
 
 异步的完整工程模式（加载状态、错误处理、重入）见 [32-binding-mvvm.md](./32-binding-mvvm.md) 第 32.7 节。
 
+## 2.11 练习与思考
+
+1. 在四个工程里各找一处 hstring→wstring_view 的过桥，说出各自的理由（find/substr/构造）。
+2. 把 SettingsStore::Put 的参数改成 std::wstring 行不行？ABI 边界在哪一侧、hstring 在哪一侧接手？
+
 ## 2.9 错误模型
 
 ABI 层一切错误都是 `HRESULT`。C++/WinRT 投影层把它转成异常：

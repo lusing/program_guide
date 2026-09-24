@@ -177,6 +177,11 @@ ScratchPad/设置中心的页面都**没有**用 ScrollViewer 包内容（Settin
 
 设置中心的页面全是"一屏静态布局"（军规无事可做）；ScratchPad 的页签内容区（RichEditBox 自管滚动）与 DataExplorer 的列表（ListView 虚拟化滚动）是军规的正反面教材各一。
 
+## 6.8 练习与思考
+
+1. 把 AppearancePage 的 StackPanel 换成 Grid 行布局——视觉不变的前提下哪个更适合加"右侧预览栏"？
+2. 实测军规 3：给 DataExplorer 主列表外再包一层 ScrollViewer，滚动行为怎么坏？（坏了就知道为什么禁）
+
 ## 6.7 布局思想总结
 
 背容器定义没有意义，要建立的是选型判断：

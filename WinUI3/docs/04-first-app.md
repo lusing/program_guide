@@ -258,6 +258,11 @@ this->UnhandledException([](IInspectable const&, UnhandledExceptionEventArgs con
 });
 ```
 
+## 4.9 练习与思考
+
+1. 画出 01-first-app 的启动时序（WinMain→App→MainWindow→Activate），标注每步哪些成员可用（对照 04 章启动崩溃家族）。
+2. 用 UnhandledException 落盘法（27.2.1 坑③）给 01 加崩溃日志——5 行代码换终身的调试利器。
+
 ## 4.7 常见启动期错误
 
 | 现象 | 原因 |
