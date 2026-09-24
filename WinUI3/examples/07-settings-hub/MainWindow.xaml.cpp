@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "MainWindow.xaml.h"
-#include "winrt/Microsoft.UI.Input.h"
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -39,33 +38,6 @@ namespace winrt::SettingsHub::implementation
     void MainWindow::ShowSaved()
     {
         SavedBar().IsOpen(true);   // 25 章：保存反馈真的出现
-    }
-
-    // SMOKE 诊断（临时）：窗口级指针落点 + 命中目标镜像到标题，反解注入点击映射
-    void MainWindow::OnRootPointer(Windows::Foundation::IInspectable const&,
-        Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e)
-    {
-        auto pos = e.GetCurrentPoint(Content()).Position();
-        hstring target = winrt::get_class_name(e.OriginalSource());
-        if (auto fe = e.OriginalSource().try_as<FrameworkElement>())
-        {
-            if (!fe.Name().empty()) { target = target + L" '" + fe.Name() + L"'"; }
-        }
-        wchar_t buffer[160]{};
-        swprintf(buffer, 160, L"hit %.0f,%.0f -> %s", pos.X, pos.Y, target.c_str());
-        Title(buffer);
-    }
-
-    // SMOKE 诊断（临时）：TAB 链逐站镜像到标题
-    void MainWindow::OnRootFocus(Windows::Foundation::IInspectable const&,
-        Microsoft::UI::Xaml::RoutedEventArgs const& e)
-    {
-        hstring target = winrt::get_class_name(e.OriginalSource());
-        if (auto fe = e.OriginalSource().try_as<FrameworkElement>())
-        {
-            if (!fe.Name().empty()) { target = target + L" '" + fe.Name() + L"'"; }
-        }
-        Title(L"focus -> " + target);
     }
 
     void MainWindow::OnNavSelectionChanged(IInspectable const&,

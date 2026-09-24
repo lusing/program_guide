@@ -8,8 +8,15 @@
          SavedBar 作为内容浮层盖在 Frame 之上。 -->
     <NavigationView x:Name="Nav" IsBackButtonVisible="Collapsed"
                     PaneDisplayMode="Left" IsPaneOpen="True" OpenPaneLength="210"
-                    PointerPressed="OnRootPointer" GotFocus="OnRootFocus"
                     SelectionChanged="OnNavSelectionChanged">
+        <!-- 15 章内建搜索位：NavigationView 自带的 AutoSuggestBox 槽位，
+             TextChanged 过滤导航项、SuggestionChosen 真跳转（15.2 的机制是真功能） -->
+        <NavigationView.AutoSuggestBox>
+            <AutoSuggestBox x:Name="SearchBox" QueryIcon="Find"
+                            PlaceholderText="Search settings"
+                            TextChanged="OnSearchChanged"
+                            SuggestionChosen="OnSearchChosen"/>
+        </NavigationView.AutoSuggestBox>
         <NavigationView.MenuItems>
             <NavigationViewItem Content="Appearance" Tag="appearance">
                 <NavigationViewItem.Icon>

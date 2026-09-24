@@ -32,11 +32,6 @@ namespace winrt::SettingsHub::implementation
             // 先归 Default 再设目标值，两轮变更通知才能让整树换肤
             root.RequestedTheme(ElementTheme::Default);
             root.RequestedTheme(value);
-            SetDebugTitle(L"apply " + theme + L" ok, now=" + to_hstring(static_cast<int32_t>(root.RequestedTheme())));
-        }
-        else
-        {
-            SetDebugTitle(L"apply " + theme + L" NO ROOT");
         }
     }
 
@@ -45,14 +40,6 @@ namespace winrt::SettingsHub::implementation
         if (auto main = m_window.as<SettingsHub::MainWindow>())
         {
             main.ShowSaved();
-        }
-    }
-
-    void App::SetDebugTitle(hstring const& title)
-    {
-        if (m_window)
-        {
-            m_window.Title(title);
         }
     }
 }

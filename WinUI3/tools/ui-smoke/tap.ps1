@@ -31,7 +31,11 @@ param(
     # Relaunch the whole app until the last frame differs from the first one.
     # Injected input into WinUI 3 islands is launch-lottery on some machines:
     # identical taps land on some launches and vanish on others.
-    [int]$Attempts = 5
+    [int]$Attempts = 5,
+    # Text typed after the LAST tap (clicks an input field first), and virtual
+    # keys sent after that (e.g. 'down,enter' to pick an AutoSuggestBox item).
+    [string]$TypeText,
+    [string]$KeysAfter
 )
 
 $ErrorActionPreference = 'Stop'
@@ -62,6 +66,8 @@ namespace TouchInj
         [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);
         [DllImport("user32.dll")] public static extern bool SetWindowPos(IntPtr h, IntPtr after, int x, int y, int cx, int cy, uint flags);
         [DllImport("user32.dll")] public static extern bool SetProcessDpiAwarenessContext(IntPtr value);
+        [DllImport("user32.dll")] public static extern void keybd_event(byte vk, byte scan, uint flags, System.UIntPtr extra);
+        [DllImport("user32.dll")] public static extern ushort VkKeyScanW(char ch);
         public struct RECT { public int Left, Top, Right, Bottom; }
     }
 
@@ -99,6 +105,38 @@ namespace TouchInj
 }
 '@
 [TouchInj.Native]::SetProcessDpiAwarenessContext([IntPtr](-4)) | Out-Null
+
+$script:vkMap = @{
+    'tab' = 0x09; 'space' = 0x20; 'enter' = 0x0D; 'esc' = 0x1B
+    'left' = 0x25; 'up' = 0x26; 'right' = 0x27; 'down' = 0x28
+}
+
+function Invoke-TypeKeys([string]$text, [string]$keys) {
+    if ($text) {
+        foreach ($ch in $text.ToCharArray()) {
+            $vk = [TouchInj.Native]::VkKeyScanW($ch)
+            if ($vk -eq 0) { continue }
+            $code = $vk -band 0xFF
+            $shift = ((($vk -shr 8) -band 0xFF) -band 1) -eq 1
+            if ($shift) { [TouchInj.Native]::keybd_event(0x10, 0, 0, [UIntPtr]::Zero) }
+            [TouchInj.Native]::keybd_event($code, 0, 0, [UIntPtr]::Zero)
+            [TouchInj.Native]::keybd_event($code, 0, 2, [UIntPtr]::Zero)
+            if ($shift) { [TouchInj.Native]::keybd_event(0x10, 0, 2, [UIntPtr]::Zero) }
+            Start-Sleep -Milliseconds 60
+        }
+        "typed  : '$text'"
+    }
+    foreach ($token in ($keys.Split(',') | Where-Object { $_.Trim() })) {
+        $name = $token.Trim().ToLowerInvariant()
+        if (-not $vkMap.ContainsKey($name)) { "key    : unknown '$name'"; continue }
+        $code = $vkMap[$name]
+        [TouchInj.Native]::keybd_event($code, 0, 0, [UIntPtr]::Zero)
+        [TouchInj.Native]::keybd_event($code, 0, 2, [UIntPtr]::Zero)
+        "key    : $name"
+        Start-Sleep -Milliseconds 300
+    }
+    Start-Sleep -Milliseconds 500
+}
 
 function Save-Shot([IntPtr]$hwnd, [string]$path) {
     $rect = New-Object TouchInj.Native+RECT
@@ -146,8 +184,14 @@ for ($attempt = 1; $attempt -le $Attempts; $attempt++) {
             Save-Shot $proc.MainWindowHandle (Join-Path $OutDir ("tap-{0}.png" -f ($i + 1)))
         }
 
+        if ($TypeText -or $KeysAfter) {
+            Invoke-TypeKeys $TypeText $KeysAfter
+            Save-Shot $proc.MainWindowHandle (Join-Path $OutDir ("tap-{0}.png" -f ($seq.Count + 1)))
+        }
+
         $first = Get-FileMd5 $beforePath
-        $last = Get-FileMd5 (Join-Path $OutDir ("tap-{0}.png" -f $seq.Count))
+        $lastShot = if ($TypeText -or $KeysAfter) { $seq.Count + 1 } else { $seq.Count }
+        $last = Get-FileMd5 (Join-Path $OutDir ("tap-{0}.png" -f $lastShot))
         if ($first -ne $last) {
             "result : attempt $attempt changed the window (evidence captured)"
             return

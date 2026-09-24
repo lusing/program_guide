@@ -18,12 +18,6 @@ namespace winrt::SettingsHub::implementation
         void OnSearchChosen(
             Windows::Foundation::IInspectable const& sender,
             Microsoft::UI::Xaml::Controls::AutoSuggestBoxSuggestionChosenEventArgs const& args);
-        void OnRootPointer(
-            Windows::Foundation::IInspectable const& sender,
-            Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
-        void OnRootFocus(
-            Windows::Foundation::IInspectable const& sender,
-            Microsoft::UI::Xaml::RoutedEventArgs const& e);
 
     private:
         void NavigateTo(winrt::hstring const& tag);
