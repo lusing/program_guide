@@ -2,7 +2,7 @@
 
 上一篇：[11 ToggleSwitch](./11-toggleswitch.md) ｜ 下一篇：[13 NumberBox](./13-numberbox.md)
 
-"值在一段范围里"有四个控件：让用户**调**（Slider）、给用户**看进度**（ProgressBar/ProgressRing）、让用户**评**（RatingControl）。它们共享同一个基类机制 `RangeBase`。本章除了控件本身，还有全书目前最深的一个实测坑案例分析（12.5）。示例来自画廊工程的 `SliderPage`（左侧导航 **Slider** 项）。
+"值在一段范围里"有四个控件：让用户**调**（Slider）、给用户**看进度**（ProgressBar/ProgressRing）、让用户**评**（RatingControl）。它们共享同一个基类机制 `RangeBase`。本章除了控件本身，还有全书目前最深的一个实测坑案例分析（12.5）。示例代码来自功能工程 `examples/07-settings-hub/`（设置中心：主题/密度/透明度即点即生效并持久化）。
 
 ## 12.1 RangeBase：范围值控件的地基
 
@@ -115,6 +115,69 @@ void SliderPage::OnVolumeChanged(IInspectable const&, RangeBaseValueChangedEvent
 4. **`RatingControl` 类名**：XAML 元素名与类型名一致是 `RatingControl`。
 5. **在 ValueChanged 里回写 Value**：即使判了空，回写前也要比对值——等值回放在部分内部路径上仍会重入（防御性写法，见 12.5 代码）。
 
+## 12.7 实战：一条滑杆一份进度（设置中心 + ScratchPad）
+
+### 12.7.1 Slider 即时预览：透明度
+
+```xml
+<Slider x:Name="OpacitySlider" Header="Opacity" Minimum="20" Maximum="100" Value="100"
+        Width="320" ValueChanged="OnOpacityChanged"/>
+```
+
+```cpp
+void AppearancePage::OnOpacityChanged(IInspectable const&,
+    Primitives::RangeBaseValueChangedEventArgs const& args)
+{
+    if (!PreviewBar() || !StatusText()) { return; }   // 12.5 的守卫，一行都不能省
+    double v = args.NewValue();
+    PreviewBar().Opacity(v / 100.0);
+    SettingsStore::Put(L"opacity", to_hstring(static_cast<int>(v)));
+    StatusText().Text(L"opacity = " + to_hstring(static_cast<int>(v)) + L"%");
+}
+```
+
+三个动作同帧：预览条真的变透明（**用户看到的**）、值落存储（**应用记住的**）、状态行报数（**用户读到的**）。`args.NewValue()` 比 `OpacitySlider().Value()` 多走一步的意义：事件参数是快照，处理器里哪怕有人再改 Value 也不影响本次语义。
+
+**Minimum="20" 不是随手**：透明度低于 20% 时预览条基本不可见，用户会以为控件坏了——约束输入域本身就是可用性设计。
+
+### 12.7.2 ProgressBar 分帧推进：保存动画
+
+ScratchPad 的保存进度是协程驱动的：
+
+```cpp
+Windows::Foundation::IAsyncAction PreferencesPage::AnimateSaveAsync()
+{
+    auto strong = get_strong();   // 页面可能中途被导航销毁，先抓强引用
+    SaveProgress().Value(0);
+    for (int step = 1; step <= 4; ++step)
+    {
+        using namespace std::chrono_literals;
+        co_await winrt::resume_after(90ms);   // 让出 UI 线程，进度分帧可见
+        SaveProgress().Value(step * 25.0);
+    }
+    SettingsStore::Save();
+    StatusText().Text(L"preferences saved");
+}
+```
+
+三个纪律：**`get_strong()` 保命**（协程挂起期间页面可能被销毁，回来后访问成员就是悬空）；**每帧 `resume_after` 让出线程**（一口气循环设四次值，用户只看到终值——进度条的"进度"就没了）；**动画和落盘分离**（动画负责感知，Save 负责事实，谁也不假装对方）。`.smoke/09-scratchpad/save/tap-2.png`：进度充满 + InfoBar 弹出 + 状态行三同帧。
+
+**IsIndeterminate 的适用线**：无法估计剩余工作（网络请求、编译）用 `IsIndetermined="True"` 的往复动画，诚实地表达"在忙但不知道多久"；能分帧就 determinate——虚假的 99% 停滞比没有进度条更伤信任。
+
+### 12.7.3 滑杆与进度条的血缘
+
+两个控件都从 `RangeBase` 继承值语义（Minimum/Maximum/Value + ValueChanged），但方向相反：**Slider 的 Value 由用户写，ProgressBar 的 Value 由应用写**。所以 Slider 的 ValueChanged 处理器里做"应用状态"，ProgressBar 的（如果你真挂了）只该做"取消按钮的启用逻辑"这类元操作。把两者混用（比如拿 Slider 显示进度）在可达性上是灾难：屏幕阅读器会朗读"可调节"。
+
+### 12.7.4 滑杆的键盘与精度
+
+Slider 是键盘友好的（内建）：方向键 ±SmallChange（默认 1%量程）、PgUp/PgDn ±LargeChange、Home/End 到极值。**量程与步长的搭配**：透明度 20–100 共 80 个单位、方向键一步 1——81 个可停点对"调个大概"的场景偏多，SmallChange=5 更体贴（设置中心用默认值教学，产品化会调）。刻度线 `TickFrequency` + `TickPlacement` 只在确有锚点意义时开（0/25/50/75/100），满刻度线是视觉噪音。
+
+**StepFrequency 与贴齐**：拖动后值吸附到步长倍数（`SnapsTo="StepValues"`）——百分比场景整数贴齐，省掉 StatusText 里 "opacity = 43.333333%" 的尴尬。设置中心在显示侧取整（`static_cast<int>(v)`）达到同样效果——**贴在数据侧还是显示侧**取决于下游要不要用原值：透明度显示用，取整即可；金额滑杆必须数据侧贴齐（分单位）。
+
+### 12.7.5 ProgressRing 的使用纪律
+
+环形不定进度（ProgressRing）只表达"进行中"，不给量——**两秒以内的操作别挂 Ring**（闪烁一下就消失，像 bug）。设置中心保存 360ms 动画用线性 ProgressBar 而非 Ring，正是这个纪律。Ring 的正当场景：启动加载、搜索中、编译中——时长不可预估且通常超五秒。`IsActive=false` 时它不渲染动画但占位（布局不跳），需要彻底消失配 Visibility。
+
 ## 12.7 小结
 
 | 需求 | 控件 + 关键 API |
@@ -126,7 +189,7 @@ void SliderPage::OnVolumeChanged(IInspectable const&, RangeBaseValueChangedEvent
 | 打分 | RatingControl：Value/MaxRating/PlaceholderValue，args 是 IInspectable |
 | 值联动 | handler 判空 + 比对后直写；x:Bind 函数绑定见 32 章 |
 
-画廊 `SliderPage` 运行时证据：`.smoke/07-controls-basic/slider/click-4.png`——轨道点击后 thumb 与 ProgressBar 同步 ~42%，busy 按钮两次切换后状态行 **"ring idle"**，全交互序列零崩溃（修复后 3/3 复测）。
+运行时证据：`.smoke/07-settings-hub/save/tap-2.png`——ScratchPad 保存协程把 SaveProgress 分四帧推到 100%（每步 co_await resume_after 90ms 让出 UI 线程），终帧进度条充满、绿色 InfoBar 弹出；AppearancePage 的 Opacity Slider 则是拖动即时改 PreviewBar 透明度。
 
 ---
 

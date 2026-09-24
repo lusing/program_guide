@@ -2,7 +2,7 @@
 
 上一篇：[20 表格数据](./20-datagrid-itemsrepeater.md) ｜ 下一篇：[22 NavigationView 与 SplitView](./22-navigationview.md)
 
-文档型界面（编辑器、浏览器、设置页）的骨架是 `TabView`；把一屏长表单收拢成"按需展开"用 `Expander`。示例来自画廊工程 `examples/21-controls-shell/` 的 `TabViewPage`（导航 **TabView** 项）。
+文档型界面（编辑器、浏览器、设置页）的骨架是 `TabView`；把一屏长表单收拢成"按需展开"用 `Expander`。示例代码来自功能工程 `examples/09-scratchpad/`（编辑器：多文档、加粗、查找、未保存确认、落盘回读）。
 
 ## 21.1 TabView：页签容器
 
@@ -27,7 +27,7 @@
 | `TabCloseRequested` | 用户点了关闭叉——**关闭不会自动发生** |
 | `AddTabButtonClick` + `IsAddTabButtonVisible` | 右侧 "+" 按钮 |
 
-两个行为要点（都在演示页代码里）：
+两个行为要点（都在 ScratchPad 的代码里）：
 
 ```cpp
 void TabViewPage::OnTabCloseRequested(IInspectable const&,
@@ -78,6 +78,100 @@ void TabViewPage::OnAddTabClicked(IInspectable const&, IInspectable const&)
 4. **页签内容直接塞 TabViewItem 里**：静态可以；动态文档用 TabItemsSource + Header 模板。
 5. TabView 默认可拖拽重排页签（`CanReorderTabs`）——数据驱动时确认你的顺序假设。
 
+## 21.5 实战：多文档编辑器的两件套（ScratchPad）
+
+### 21.5.1 TabView：每个页签一份独立世界
+
+页签不是"标签字符串"——每个 TabViewItem 的 Content 是一个**独立的 RichEditBox**：
+
+```cpp
+void MainWindow::AddTab()
+{
+    hstring name = L"untitled-" + to_hstring(m_docs.size() + 1) + L".txt";
+
+    RichEditBox editor;
+    editor.AcceptsReturn(true);
+    // ...编辑器配置（9.9.1）...
+
+    TabViewItem tab;
+    tab.Header(box_value(name));   // 页签标题：装箱字符串
+    tab.Content(editor);           // 页签内容：整个文档编辑器
+    Docs().TabItems().Append(tab);
+    Docs().SelectedItem(tab);      // 新页签即选中
+
+    TabEntry entry{ tab, name, false };   // 脏标记与名字跟页签走
+    m_docs.push_back(std::move(entry));
+}
+```
+
+**页面状态放哪**：`m_docs` 向量存 `{TabViewItem, name, dirty}`——TabViewItem 是引用计数对象，存副本安全。不把状态塞进 Tag 里装箱拆箱，因为脏标记要高频读写。`AddTabButtonClick`（页签栏的 + 按钮）与 Ctrl+N、File 菜单三个入口都汇到这个函数——**创建文档只有一条路**。
+
+### 21.5.2 关闭确认：TabCloseRequested
+
+```xml
+<TabView x:Name="Docs" TabCloseRequested="OnTabCloseRequested"
+         AddTabButtonClick="OnAddTabButton"/>
+```
+
+页签的 X 触发 `TabCloseRequested`，处理器是协程（要 await 对话框）：
+
+```cpp
+Windows::Foundation::IAsyncAction MainWindow::OnTabCloseRequested(
+    TabView const&, TabViewTabCloseRequestedEventArgs const& args)
+{
+    auto tab = args.Tab();
+    auto entry = FindEntry(tab);
+    if (entry && entry->Dirty)
+    {
+        ContentDialog dlg;   // 24 章的完整形态，此处只看关闭侧
+        ...
+        auto choice = co_await dlg.ShowAsync();
+        if (choice == ContentDialogResult::Primary) { SaveTab(tab); }
+        else if (choice == ContentDialogResult::None) { co_return; }   // Cancel
+    }
+    CloseTab(tab);
+    if (m_docs.empty()) { AddTab(); }   // 关到最后补一个空文档
+}
+```
+
+最后两行是产品语义：**关掉最后一个页签不等于关窗口**——编辑器空转不如给个新文档（VS Code 的行为）；真要关窗走 File > Exit。**注意 e.Tab() 按值捕获**——协程挂起期间 UI 可能继续动，引用参数会悬空。
+
+### 21.5.3 Expander：查找面板的收与放
+
+```xml
+<Expander x:Name="FindPane" Header="Find in document" IsExpanded="False">
+    <StackPanel Orientation="Horizontal" Spacing="8">
+        <TextBox x:Name="FindBox" Width="260" .../>
+        <Button Content="Next" Click="OnFindNext"/>
+    </StackPanel>
+</Expander>
+```
+
+Ctrl+F 的处理器做两件事：翻面 + 抢焦点：
+
+```cpp
+void MainWindow::OnToggleFind(IInspectable const&, RoutedEventArgs const&)
+{
+    FindPane().IsExpanded(!FindPane().IsExpanded());
+    if (FindPane().IsExpanded())
+    {
+        FindBox().Focus(FocusState::Programmatic);
+    }
+}
+```
+
+**展开后立刻 Focus 是键盘流的闭环**：用户按 Ctrl+F 是想输入，不是想再点一下输入框。收起面板不用做任何事——焦点自然流回。Expander 的适用线（21.2 说过"低频次级选项"）在这里兑现：查找是次级功能，但一旦展开就是高频输入，所以内容区放完整交互（输入框+按钮）而非静态说明。
+
+**XAML 默认 `IsExpanded="False"` 是安全方向**：True 会在解析期触发展开动画与布局，虽然 Expander 的事件不像 Checked 那样危险，但"收起"本来就是查找面板的正确初态。
+
+### 21.5.4 页签的生命周期尾巴
+
+关闭页签后 `m_docs.erase` + `TabItems.RemoveAt`——但**异步尾巴**：21.5.2 的协程 await 期间用户可能已关掉别的页签（索引位移）。这就是为什么 FindEntry 遍历匹配 TabViewItem 而不是存索引：**句柄式查找（对象身份）对异步重排免疫**，索引式查找（下标）在两个 await 点之间就可能失效。同理由，m_view 的 IndexOf 拿到 index 后立即用、不缓存（18 章的同步代码也一样纪律）。
+
+### 21.5.5 Expander 的展开方向与布局
+
+`Expander.ExpandDirection`（Down 默认/Up/Left/Right）决定内容从哪边长出来——查找面板在底部时 Up 更贴（向屏内展开）。数据浏览器把它放在列表与命令栏之间用默认 Down。**布局占位是 Expander 的隐性成本**：收起时高度为零但仍在视觉树，频繁开合会让下方内容跳——本例下方是命令栏（固定行），跳的是面板自身，无感；若下方还有滚动内容，开合瞬间滚动位置会被顶，必要时 ScrollIntoView 压回。
+
 ## 21.4 小结
 
 | 需求 | API |
@@ -87,7 +181,7 @@ void TabViewPage::OnAddTabClicked(IInspectable const&, IInspectable const&)
 | 添加页签 | AddTabButtonClick + Append + SelectedItem |
 | 折叠分组 | Expander：Header/Content + Expanding/Collapsed |
 
-画廊 `TabViewPage` 运行时证据：`.smoke/21-controls-shell/tabview/click-2.png`——点击第二个页签，状态行 **"tab = notes.md"**，页签高亮切换。
+运行时证据：`.smoke/09-scratchpad/close/tap-3.png`——TabView 的页签 X 触发未保存确认（ContentDialog 三钮），FindPane 是 Expander 折叠板（Ctrl+F 展开、聚焦查找框）；每个 TabViewItem 的 Content 是一个独立 RichEditBox，TextChanged 脏标记驱动页签语义。
 
 ---
 

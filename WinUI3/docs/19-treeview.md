@@ -2,7 +2,7 @@
 
 上一篇：[18 GridView 与 FlipView](./18-gridview-flipview.md) ｜ 下一篇：[20 表格数据：DataGrid 缺位与自制](./20-datagrid-itemsrepeater.md)
 
-文件树、组织架构、章节目录——层级数据的展示归 `TreeView`。它没有走 Selector 路线，而是有自己的 `TreeViewNode` 对象模型和 `ItemInvoked` 事件。示例来自画廊工程的 `TreeViewPage`（导航 **TreeView** 项）。
+文件树、组织架构、章节目录——层级数据的展示归 `TreeView`。它没有走 Selector 路线，而是有自己的 `TreeViewNode` 对象模型和 `ItemInvoked` 事件。示例代码来自功能工程 `examples/17-data-explorer/`（数据浏览器：分类树、双视图、名称过滤、详情轮播）。
 
 ## 19.1 建树：TreeViewNode 模型
 
@@ -74,6 +74,78 @@ WinUI 的 TreeView 有 `ItemsSource` 与 `HierarchicalDataTemplate`（XAML 侧�
 3. **展开不触发 ItemInvoked**：两套交互，别混。
 4. **深树的递归深度**：万级深度才需要考虑，常规目录树无虞。
 
+## 19.5 实战：分类树真过滤（数据浏览器）
+
+```xml
+<TreeView x:Name="Categories" SelectionMode="Single"
+          ItemInvoked="OnCategoryInvoked">
+    <TreeView.RootNodes>
+        <TreeViewNode Content="All" IsExpanded="True">
+            <TreeViewNode.Children>
+                <TreeViewNode Content="Documents"/>
+                <TreeViewNode Content="Images"/>
+                <TreeViewNode Content="Audio"/>
+                <TreeViewNode Content="Archives"/>
+            </TreeViewNode.Children>
+        </TreeViewNode>
+    </TreeView.RootNodes>
+</TreeView>
+```
+
+静态树直接在 XAML 里声明节点（`TreeViewNode` 带 `Content` 与 `Children`），**不预选任何节点**——TreeView 的选中/展开在解析期触发事件，与 12.5 家族同源。
+
+### 19.5.1 ItemInvoked 与双形态载荷
+
+```cpp
+void MainWindow::OnCategoryInvoked(TreeView const&,
+    TreeViewItemInvokedEventArgs const& args)
+{
+    // 19 章：ItemInvoked 的载荷是 TreeViewItem 或节点本身，两种都接
+    if (auto item = args.InvokedItem().try_as<TreeViewItem>())
+    {
+        m_category = unbox_value<hstring>(item.Content());
+    }
+    else if (auto node = args.InvokedItem().try_as<TreeViewNode>())
+    {
+        m_category = unbox_value<hstring>(node.Content());
+    }
+    m_view.Clear();
+    ApplyFilters();
+}
+```
+
+**为什么选 ItemInvoked 而不是 SelectionChanged**：真实分类树允许"点已选中的类别重新触发过滤"（清掉文本过滤回到纯类别态）。SelectionChanged 只在选中态变化时触发——点同一个节点没事件；ItemInvoked 是纯点击语义，每次都到。两者的取舍与 22 章 NavigationView 相同。
+
+**载荷双形态**（TreeViewItem vs TreeViewNode）不是设计美感，是历史包袱的实况：节点由 ItemsSource 供给时载荷是数据对象，XAML 静态声明时是 TreeViewItem——`try_as` 两连判是最稳的接法。
+
+### 19.5.2 树在 SplitView 侧栏里
+
+TreeView 住在 `SplitView.Pane`（22.4 的底座在此上岗）：侧栏分类树 + 主区表格，是"导航不配做、列表懒得筛"的中间态——**层级过滤**。NavigationView 适合"互斥的目的地"，TreeView 适合"可组合的维度"（类别 × 文本过滤两个维度同时生效，ApplyFilters 是它们的交点）。窗口窄时 `DisplayMode="Inline"` 的面板推挤内容——窄屏形态把它切 Overlay 就是文件资源管理器的行为。
+
+`.smoke/17-data-explorer/tree/tap-1.png`：点 Images 节点 → 树高亮、表格剩 3 行、计数行 "3 items · Images"。树的可视反馈（高亮）与列表的内容反馈（行数变化）在同一个交互里各说各的话——这才是"过滤控件"的完整形态，而不是状态行里一句 "selected = images"。
+
+### 19.5.3 展开态与 HasUnrealizedChildren
+
+静态树的展开就是 `IsExpanded="True"` 一行。数据驱动的大树要用 `HasUnrealizedChildren="True"` 开惰性填充（展开时才 `Children().Append(...)`）——文件系统目录树没有别的写法（C 盘全量展开是天文数字）。数据浏览器的五节点树用不着，但记住这条升级路径的存在：**TreeView 的对象模型按十万节点设计，别拿它当五个RadioButton用**——那不如 ComboBox。
+
+### 19.5.4 ItemTemplate：节点的自定义长相
+
+静态节点的 Content 是字符串；数据驱动（TreeViewNode 承对象）时要 ItemTemplate：
+
+```xml
+<TreeView ItemTemplate="..."/>
+```
+
+模板里 `x:Bind` 到节点数据类（如 Category{Name, Icon}）——与 17 章 DataTemplate 完全同机制。**不要用 Content 塞 UIElement**（能跑但节点展开/选中态的视觉不跟随）；也别忘了 TreeViewItem 的缩进由控件层管，模板只管"一行里的内容"。
+
+### 19.5.5 选中态的维护成本
+
+TreeView 的 SelectionMode=Single 有内建高亮——但**过滤后选中项可能不在视图里**（类别切走、选中还挂在旧项上）。数据浏览器点新类别时旧选中自然被替换（ItemInvoked + SelectionMode 双轨）；更复杂的"选中与数据不同步"bug 出在 ItemsSource 重建后 SelectedItem 悬空引用——重建向量后要么清选中要么重设到等价新对象（IndexOf 找不到就清，别硬设旧引用）。
+
+### 19.5.6 树的键盘与无障碍
+
+TreeView 键盘内建：方向键在**可见节点间**移动、左右键展开/收起/进出层级、Home/End 到首尾。**展开过的节点才进键盘序**（惰性填充的子节点未展开时不可达）——大树的键盘体验取决于填充策略。AutomationProperties 默认按 Content 朗读（"Images, tree item, level 2"）——层级自动带上，这是 TreeView 相对手搓 Expander 列表的最大无障碍红利。
+
 ## 19.6 小结
 
 | 环节 | API |
@@ -84,7 +156,7 @@ WinUI 的 TreeView 有 `ItemsSource` 与 `HierarchicalDataTemplate`（XAML 侧�
 | 懒加载 | `HasChildren(true)` + Expanding 事件填充 |
 | 数据驱动 | C++ 推荐"模型↔TreeViewNode"手动同步递归 |
 
-画廊 `TreeViewPage` 运行时证据：`.smoke/17-controls-collections/treeview/click-2.png`——点击 Expand all，三根六子全部展开，状态行 **"expanded 9 nodes"**。
+运行时证据：`.smoke/17-data-explorer/tree/tap-1.png`——侧栏 TreeView（All/Documents/Images/Audio/Archives）点击 Images 节点，ItemInvoked 过滤主列表与计数行，状态 **"3 items · Images"**；XAML 里不预选节点，避免解析期触发事件（全书反复出现的坑）。
 
 ---
 

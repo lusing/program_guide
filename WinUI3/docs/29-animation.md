@@ -2,7 +2,7 @@
 
 上一篇：[28 VisualStateManager 与自适应](./28-vsm-adaptive.md) ｜ 下一篇：[30 图形与媒体](./30-drawing-media.md)
 
-XAML 动画两条路：**Storyboard**（显式编排出帧）与 **Transitions**（隐式过场——属性变了自动播）。示例来自画廊工程的 `AnimationPage`（导航 **Animation** 项）。
+XAML 动画两条路：**Storyboard**（显式编排出帧）与 **Transitions**（隐式过场——属性变了自动播）。示例代码来自功能工程 `examples/26-theme-lab/`（主题实验室：预设换肤、自定义控件仪表盘、accent 即改、VSM、动画、Shape 图表）。
 
 ## 29.1 Storyboard：显式动画
 
@@ -70,6 +70,77 @@ XAML 声明式等价物（动画作为资源，`BeginStoryboard` 由事件触发
 4. **动画目标属性必须是依赖属性**：普通 CLR 属性编不过（SetTargetProperty 校验）。
 5. **Storyboard 可以重复 Begin**：第二次从头播；要做"只播一次"自己置标志。
 
+## 29.5 实战：换肤过渡动画（主题实验室）
+
+预设切换时仪表盘跑一段 450ms 的"淡入+上移"，全程代码建 Storyboard：
+
+```cpp
+void MainWindow::PlaySkinTransition()
+{
+    anim::Storyboard storyboard;
+
+    anim::DoubleAnimation fade;
+    fade.From(0.2);
+    fade.To(1.0);
+    fade.Duration(Microsoft::UI::Xaml::Duration(
+        Windows::Foundation::TimeSpan{ std::chrono::milliseconds(450) }));
+    anim::Storyboard::SetTarget(fade, Dashboard());
+    anim::Storyboard::SetTargetProperty(fade, L"Opacity");
+    storyboard.Children().Append(fade);
+
+    anim::DoubleAnimation slide;
+    slide.From(18.0);
+    slide.To(0.0);
+    slide.Duration(Microsoft::UI::Xaml::Duration(
+        Windows::Foundation::TimeSpan{ std::chrono::milliseconds(450) }));
+    anim::Storyboard::SetTarget(slide, Dashboard());
+    anim::Storyboard::SetTargetProperty(slide,
+        L"(UIElement.RenderTransform).(TranslateTransform.Y)");
+    storyboard.Children().Append(slide);
+
+    // XAML 里没有 RenderTransform 占位，代码里补一个再动它
+    Dashboard().RenderTransform(Microsoft::UI::Xaml::Media::TranslateTransform());
+
+    storyboard.Begin();
+}
+```
+
+七个实战级细节，全部实测：
+
+1. **命名空间别名**：`namespace anim = Microsoft::UI::Xaml::Media::Animation;`——CppWinRTOptimized 裁投影后裸名 Storyboard 可能不存在（27.4），别名 + 全限定是最稳姿势。
+2. **Duration 要三层包装**：`Duration(TimeSpan{ milliseconds(450) })`——Storyboard 的钟表是 `Microsoft::UI::Xaml::Duration`（结构体包 TimeSpan），直传 TimeSpan 编不过（C2665）。
+3. **SetTargetProperty 吃 hstring 不吃装箱**：`L"Opacity"` 直传；`box_value(L"Opacity")` 反而 C2664。
+4. **属性路径的圆括号语法**：`(UIElement.RenderTransform).(TranslateTransform.Y)`——先取 RenderTransform 属性再钻到 Y。XAML 里的等价写法是 `Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"`。
+5. **RenderTransform 要先存在**：代码里给目标赋一个空 TranslateTransform 再动它——路径指向不存在的对象，动画静默不生效（不崩，就是没效果，最阴险的那种）。
+6. **From/To 都给**：只给 To 时从当前值出发——连续快速换预设会从半途值起跳，视觉抖动；From 钉死起点，可重入。
+7. **局部 storyboard 的生命周期**：栈上构造、Begin 后函数返回——Storyboard 持有动画的引用计数，Begin 后由时钟系统接管，不随局部变量销毁（这点与 WinRT 对象的默认计数语义一致，但值得点名，因为它反直觉）。
+
+### 29.5.1 动画的两条路线怎么选
+
+| | Storyboard（本节） | Transitions（隐式） |
+|---|---|---|
+| 触发 | 显式 `Begin()` | 属性被改即播 |
+| 适用 | 一次性编排（换肤、入场） | 常态属性变化（Visibility/尺寸） |
+| 代码量 | 多（逐动画建） | 一行 XAML（`<Grid.Transitions>`） |
+
+**换肤为什么用 Storyboard 而不是 Transitions**：触发的不是单一属性变化（accent、主题、布局都可能变），Transitions 盯不住"一组变化"；Storyboard 是导演视角——"这 450ms 里仪表盘该干嘛"独立陈述，与换肤的具体内容解耦。
+
+### 29.5.2 别动画的东西
+
+动画的第一守则是**别动画用户没关心的东西**：换肤动画 450ms 讲"新皮肤到了"，但按钮 hover 变色加 300ms 就是拖累——高频微交互要即时。第二守则是**能停**：窗口关闭/页面导航时动画该打断就打断（Storyboard 的持有者销毁自然停），别为动画续命而续命。`.smoke/26-theme-lab/preset/tap-1.png` 捕捉在动画终点附近——终态即 29.5 的 From/To 里 To 的那一头。
+
+### 29.5.3 缓动函数：动画的语气
+
+`DoubleAnimation.EasingFunction` 决定中段曲线——线性（默认）是机器语气，人味的默认是 `CubeEase`（徐入徐出）。换肤动画没设缓动（450ms 短到线性无妨）；超过 600ms 的动画必须给 Ease（线性的长动画一眼假）。常用三件：`CircleEase`（圆滑收尾，入场）、`BackEase`（过冲回弹，强调）、`ExponentialEase`（急起缓收，退出）。口诀：**入场收着来、出场快着走、强调才弹**。
+
+### 29.5.4 动画性能的边界
+
+动画的帧率成本排在**布局类属性最贵**（Width/Height 触发整树重排）、**渲染类次之**（Opacity 走合成器）、**变换类最贱**（RenderTransform/TranslateTransform 纯矩阵）。换肤动画选 Opacity + TranslateTransform 正是按这个价目表点的菜——450ms 里零布局重排。反面教材是动画 Width：每帧全页 re-layout，低配机上动画本身变成卡顿源。**性能不是优化阶段的事，是选属性那一刻的事**。
+
+### 29.5.5 Composition：动画的下下层
+
+Storyboard 之下还有 Composition API（`ElementCompositionVisual`/`ScalarKeyFrameAnimation`）——在合成器线程跑、不走 UI 线程，适合永动动画（加载环、呼吸灯）与大量并行动画。分界：**交互驱动的属性动画用 Storyboard**（与布局系统协作），**装饰性高频动画用 Composition**（绕开 UI 线程）。31 章窗口篇的自定义标题栏按钮 hover 会碰到它的边缘；教程主线不深入——知道分界线在哪，需要时才知道往哪查。
+
 ## 29.5 小结
 
 | 需求 | API |
@@ -80,7 +151,7 @@ XAML 声明式等价物（动画作为资源，`BeginStoryboard` 由事件触发
 | 页面切换过场 | Frame 上 NavigationThemeTransition |
 | 性能 | Transform/Opacity 优先于布局属性 |
 
-画廊 `AnimationPage` 运行时证据：`.smoke/26-customization/animation/click-2.png`——点击 Animate 约 2 秒后截图：矩形由 40 宽撑到 320（HoldEnd 终值），状态行 **"animated, shots = 1"**。
+ThemeLab 换肤过渡是代码建 Storyboard 的活例：DoubleAnimation 一条管 Opacity 0.2→1.0、一条管 TranslateTransform.Y 18→0（450ms），CppWinRTOptimized 裁掉快捷名字后必须全限定 `Microsoft::UI::Xaml::Media::Animation::`（29 章实测坑）。运行时证据：`.smoke/26-theme-lab/preset/tap-1.png`。
 
 ---
 

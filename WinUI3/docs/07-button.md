@@ -2,7 +2,7 @@
 
 上一篇：[06 布局](./06-layout.md) ｜ 下一篇：[08 TextBlock](./08-textblock.md)
 
-按钮是界面上"用户主动发起动作"的标准入口。本章讲 WinUI 3 里整个按钮族——Button、RepeatButton、HyperlinkButton、DropDownButton（以及 11 章的 ToggleButton）——它们的共同基类、事件模型，和四个成员各自的存在理由。示例代码全部来自画廊工程 `examples/07-controls-basic/` 的 `ButtonPage`（左侧导航 **Button** 项）。
+按钮是界面上"用户主动发起动作"的标准入口。本章讲 WinUI 3 里整个按钮族——Button、RepeatButton、HyperlinkButton、DropDownButton（以及 11 章的 ToggleButton）——它们的共同基类、事件模型，和四个成员各自的存在理由。示例代码来自功能工程 `examples/09-scratchpad/`（编辑器：多文档、加粗、查找、未保存确认、落盘回读）。
 
 ## 7.1 按钮族的家谱：ButtonBase
 
@@ -161,7 +161,7 @@ DropDownButton（1.8 元数据确认存在：`Microsoft.UI.Xaml.Controls.DropDow
 <Button Content="Save" Command="{x:Bind ViewModel.SaveCommand}"/>
 ```
 
-- **小工具/演示页**：Click 直接写，简单透明，本画廊全用这条路。
+- **小工具/单窗应用**：Click 直接写，简单透明，ScratchPad 与设置中心全用这条路。
 - **正经应用**：Command 让"能不能点"（`CanExecute`）和"点什么"（`Execute`）都活在 ViewModel 里，按钮退化为纯视图。Command 路线的 `IsEnabled` 会**自动跟随 CanExecute**，这是事件路线做不到的。
 
 判断线：**逻辑要不要离开页面**。要，就走 Command。
@@ -174,7 +174,61 @@ DropDownButton（1.8 元数据确认存在：`Microsoft.UI.Xaml.Controls.DropDow
 4. **HyperlinkButton 期望应用内导航**：NavigateUri 不会碰你的 Frame，别在 Click 里又写导航又设 NavigateUri。
 5. **禁用按钮的可达性**：IsEnabled=False 之后屏幕阅读器跳过它。如果"为什么不能点"需要解释，更友好的做法是保持可点、点了弹 TeachingTip/ContentDialog 说明原因（25/24 章）。
 
-## 7.9 小结
+## 7.9 实战：按钮的三个真实身份（ScratchPad / 设置中心）
+
+按钮在演示页里只有一个身份（"点了报状态"）；在功能应用里它同时是**命令入口、状态镜像、可达性锚点**。ScratchPad 的保存按钮把三个身份都占全了。
+
+### 7.9.1 一个命令，三个入口
+
+同一个"保存"动作有三条进入路径，终点是同一个函数：
+
+```xml
+<!-- 路径一：菜单 -->
+<MenuFlyoutItem Text="Save" Click="OnSave">
+    <MenuFlyoutItem.KeyboardAccelerators>
+        <KeyboardAccelerator Modifiers="Control" Key="S"/>
+    </MenuFlyoutItem.KeyboardAccelerators>
+</MenuFlyoutItem>
+
+<!-- 路径二：命令栏 -->
+<AppBarButton Icon="Save" Label="Save" Click="OnSave"/>
+
+<!-- 路径三：根 Grid 上的全局加速器 -->
+<Grid.KeyboardAccelerators>
+    <KeyboardAccelerator Modifiers="Control" Key="S" Invoked="OnSaveKey"/>
+</Grid.KeyboardAccelerators>
+```
+
+```cpp
+void MainWindow::OnSaveKey(Input::KeyboardAccelerator const&,
+    Input::KeyboardAcceleratorInvokedEventArgs const& args)
+{
+    args.Handled(true);        // 不再冒泡给别的处理器
+    OnSave(nullptr, nullptr);  // 与按钮同一条路径
+}
+```
+
+**为什么值得这么写**：菜单教用户"完整命令集在哪"，命令栏给高频动作一次点击的捷径，加速器服务键盘用户——三者共存不是冗余，是同一命令的三种可达性。而它们共用一个处理器，意味着"保存"的行为永远只有一份实现。**实测坑**：MenuFlyoutItem 的加速器槽是集合属性 `KeyboardAccelerators`（复数）——写成单数 `KeyboardAccelerator` 会在 XAML 编译期报 WMC0011。
+
+### 7.9.2 按钮作为状态镜像
+
+工具栏的加粗按钮（AppBarToggleButton）多一个义务：**它的选中态必须与文档的真实状态一致**。ScratchPad 的做法是任何程序化改变都回写开关：
+
+```cpp
+void MainWindow::OnBoldMenu(IInspectable const&, RoutedEventArgs const&)
+{
+    BoldToggle().IsChecked(true);   // 菜单入口开了加粗 → 工具栏同步点亮
+    ToggleBold(true);
+}
+```
+
+漏掉这一行，用户从菜单开加粗后看到工具栏仍是暗的——控件之间互相说谎，是"API demo 感"的最典型来源。
+
+### 7.9.3 AccentButtonStyle 与视觉层级
+
+设置中心与 ScratchPad 的主保存按钮都用 `Style="{ThemeResource AccentButtonStyle}"`（强调填充），次级动作（Reset、Next）用默认样式。**一屏最多一个强调按钮**——两个实心蓝钮并排，用户不知道回车会触发哪个。DefaultButton（ContentDialog 的 `DefaultButton(ContentDialogButton::Primary)`，24 章）是同一逻辑的键盘版：视觉强调与回车行为指向同一处。
+
+## 7.10 小结
 
 | 成员 | 一句话定位 | 关键属性/事件 |
 |------|-----------|--------------|
@@ -184,7 +238,7 @@ DropDownButton（1.8 元数据确认存在：`Microsoft.UI.Xaml.Controls.DropDow
 | DropDownButton | 附带菜单暗示 | Flyout（自动开合） |
 | ToggleButton（11 章） | 状态切换入口 | IsChecked |
 
-画廊 `ButtonPage` 的运行时证据：`.smoke/07-controls-basic/button/click-2.png`——导航切到 Button 页后点击 "Click me"，状态行由 "Ready" 变为 **"clicked 1"**。
+运行时证据：`.smoke/09-scratchpad/save/tap-2.png`——编辑器里输入 hello scratchpad 后按 Ctrl+S（页面级 KeyboardAccelerator，与 "Save" 按钮同一条代码路径），状态行变 **"saved untitled-1.txt | verified on disk (15 chars)"**；`examples/09-scratchpad/MainWindow.xaml.cpp` 的 `OnSave`/`OnSaveKey` 两个入口共用一个实现。
 
 ---
 

@@ -2,7 +2,7 @@
 
 上一篇：[08 TextBlock](./08-textblock.md) ｜ 下一篇：[10 CheckBox 与 RadioButton](./10-checkbox-radio.md)
 
-用户往应用里"写字"的地方有三个控件：`TextBox`（纯文本）、`PasswordBox`（密码）、`RichEditBox`（富文本）。它们看起来像三兄弟，机制却各走各路——本章把三条路都走一遍，重点讲清"值怎么出来"（事件还是绑定）。示例来自画廊工程的 `TextBoxPage`（左侧导航 **TextBox** 项）。
+用户往应用里"写字"的地方有三个控件：`TextBox`（纯文本）、`PasswordBox`（密码）、`RichEditBox`（富文本）。它们看起来像三兄弟，机制却各走各路——本章把三条路都走一遍，重点讲清"值怎么出来"（事件还是绑定）。示例代码来自功能工程 `examples/09-scratchpad/`（编辑器：多文档、加粗、查找、未保存确认、落盘回读）。
 
 ## 9.1 一张表先分家
 
@@ -122,6 +122,87 @@ RichBox().Document().Selection().CharacterFormat().Bold(FormatEffect::Toggle);
 5. **密码绑进 ViewModel**：机制上可行（1.8 有 DP）、工程上别做（9.4）。
 6. **多行只开 AcceptsReturn**：横向滚动条出来说明忘了 `TextWrapping="Wrap"`。
 
+## 9.9 实战：一个真正的编辑器文本管线（ScratchPad）
+
+演示页里 TextBox 的用法到 `Text()` 读值为止；ScratchPad 把 RichEditBox 放进了一条完整的"输入→标脏→取值→落盘→回读"管线。
+
+### 9.9.1 编辑器的出生配置
+
+每个页签的新文档都是代码里造的 RichEditBox：
+
+```cpp
+RichEditBox editor;
+editor.AcceptsReturn(true);            // 多行：没有它回车不换行
+editor.TextWrapping(TextWrapping::Wrap);
+editor.IsSpellCheckEnabled(false);     // 代码/草稿场景关拼写线
+editor.PlaceholderText(L"Type something, select it, then toggle Bold");
+```
+
+四个属性对应四个真实决策：多行、换行策略、拼写检查的噪音、空态引导。**PlaceholderText 是最便宜的可用性投资**——空文档一眼知道能干什么。
+
+### 9.9.2 标脏：TextChanged 的最小用法
+
+页签标题旁的 `*`（未保存标记）由 TextChanged 驱动：
+
+```cpp
+editor.TextChanged([this, tab](IInspectable const&, IInspectable const&)
+{
+    if (auto entry = FindEntry(tab))
+    {
+        if (!entry->Dirty)
+        {
+            entry->Dirty = true;
+            UpdateStatus(L"editing " + entry->Name);
+        }
+    }
+});
+```
+
+注意两个细节：**lambda 按值捕获 `tab`**（TabViewItem 是引用计数对象，存副本安全，不用怕悬空）；**只在 false→true 的边沿做事**，每次击键都刷状态行是浪费。
+
+### 9.9.3 取值：GetText 的两参形态（实测坑）
+
+读 RichEditBox 内容的正确姿势：
+
+```cpp
+hstring text;
+editor.Document().GetText(Microsoft::UI::Text::TextGetOptions::None, text);
+```
+
+**单参数版 `GetText(options)` 不存在**——投影里的签名是两参（选项 + 出参 hstring）。另一个 namespace 陷阱：`TextGetOptions`/`FormatEffect` 住在 **Microsoft**.UI.Text（不是 Windows.UI.Text），写错命名空间是一串 C2664/C2665 里最难看懂的那个。工程层面还要 pch 里 `#include <winrt/Microsoft.UI.Text.h>`——缺了它 RichEditTextDocument 的 consume 函数全是"返回 auto 但未定义"（C3779 连锁）。
+
+### 9.9.4 富文本：选区格式化
+
+加粗不改"整个文档的字体"，而是改**选区**的字符格式：
+
+```cpp
+editor.Document().Selection().CharacterFormat().Bold(
+    on ? Microsoft::UI::Text::FormatEffect::On
+       : Microsoft::UI::Text::FormatEffect::Off);
+```
+
+这就是"先选中再点 B"的机制本尊：`Selection()` 返回光标/选区对象，`CharacterFormat()` 是它的格式代理，`Bold(FormatEffect)` 三态（On/Off/Toggle——Toggle 交给 RichEditBox 原生 Ctrl+B 更省事）。**全选**没有 `SelectAll()` 直通车，用钳制法：
+
+```cpp
+editor.Document().Selection().SetRange(0, 0x7FFFFFFF);   // 末点超界自动夹到文尾
+```
+
+（投影里没有 `DocumentRange()`，这是它的替代写法。）
+
+### 9.9.5 落盘与回读
+
+保存走 UTF-8 写文件（WideCharToMultiByte），然后**立刻读回来**：
+
+```cpp
+DocStore::Save(entry->Name, text);
+hstring check;
+m_saveProbe = DocStore::Load(entry->Name, check)
+    ? (L"verified on disk (" + to_hstring(check.size()) + L" chars)")
+    : L"WRITE FAILED";
+```
+
+这不是测试代码，是产品决策：保存按钮的反馈从"调用成功"升级成"磁盘可证"——`.smoke/09-scratchpad/save/tap-2.png` 状态行的 **"verified on disk (15 chars)"** 就是它。写后回读的成本一次磁盘 IO，换来的是把"保存了但文件是空的"这类灾难在发生当场暴露。
+
 ## 9.8 小结
 
 | 需求 | 控件 + 关键 API |
@@ -133,7 +214,7 @@ RichBox().Document().Selection().CharacterFormat().Bold(FormatEffect::Toggle);
 | 边打边搜 | TextChanged + InputScope |
 | 提交读取 | 各读一次，集中校验 |
 
-画廊 `TextBoxPage` 运行时证据：`.smoke/07-controls-basic/textbox/click-2.png`——点击 "Read text" 后状态行显示 `rich text = "Hello from RichEditBox. Select a word, then click Bold selection."`。
+运行时证据：`.smoke/09-scratchpad/save/tap-2.png`——RichEditBox 收下整段输入，Ctrl+S 落盘后状态行 **"saved untitled-1.txt | verified on disk (15 chars)"**；`.smoke/09-scratchpad/find/tap-2.png`——Expander 里的查找 TextBox 输入 "a"，TextChanged 实时统计出 **"3 match(es) for 'a'"**。
 
 ---
 

@@ -2,7 +2,7 @@
 
 上一篇：[13 NumberBox](./13-numberbox.md) ｜ 下一篇：[15 AutoSuggestBox](./15-autosuggestbox.md)
 
-选项多到 RadioButton 铺不下（10 章），就要收进下拉框。`ComboBox` 是"点开才见选项"的单选控件；WinUI 3 还给了它 `IsEditable`——能打字的下拉框，介于选择与输入之间。示例来自画廊工程的 `ComboBoxPage`（左侧导航 **ComboBox** 项）。
+选项多到 RadioButton 铺不下（10 章），就要收进下拉框。`ComboBox` 是"点开才见选项"的单选控件；WinUI 3 还给了它 `IsEditable`——能打字的下拉框，介于选择与输入之间。示例代码来自功能工程 `examples/07-settings-hub/`（设置中心：主题/密度/透明度即点即生效并持久化）。
 
 ## 14.1 喂选项的三种方式
 
@@ -90,6 +90,65 @@ WinUI 3 的 ComboBox 支持 `IsEditable`（元数据核对：1.8 有此属性）
 4. **`MaxDropDownHeight`**：列表太长时下拉自己滚动，别在外面包 ScrollViewer。
 5. **PlaceholderText 不参与选择**：它不是一项。要"默认选 System"就程序化设 SelectedIndex。
 
+## 14.5 实战：下拉框改的是真实布局（设置中心）
+
+密度选择不是"选了报状态"——选中项直接改预览列表的行高：
+
+```xml
+<ComboBox x:Name="DensityBox" Header="List spacing" Width="220"
+          SelectionChanged="OnDensityChanged">
+    <x:String>Comfortable</x:String>
+    <x:String>Compact</x:String>
+</ComboBox>
+```
+
+处理器在**代码里构造 Style** 套到列表的项容器上：
+
+```cpp
+void AppearancePage::OnDensityChanged(IInspectable const&, SelectionChangedEventArgs const&)
+{
+    if (!PreviewList() || !StatusText()) { return; }
+    if (auto item = DensityBox().SelectedItem())
+    {
+        hstring density = unbox_value<hstring>(item);
+        double minHeight = density == L"Compact" ? 28.0 : 44.0;
+
+        // 元数据实测：ListViewItem 没有静态 PaddingProperty——密度用
+        // FrameworkElement::MinHeight 的容器样式实现
+        Microsoft::UI::Xaml::Style spacing;
+        spacing.TargetType(xaml_typename<ListViewItem>());
+        Microsoft::UI::Xaml::Setter height(FrameworkElement::MinHeightProperty(),
+            box_value(minHeight));
+        spacing.Setters().Append(height);
+        PreviewList().ItemContainerStyle(spacing);
+        ...
+    }
+}
+```
+
+三处都是实战级细节：**`Style`/`Setter` 裸名会被 FrameworkElement::Style 属性遮蔽**（成员上下文里 C2146/C2665），必须全限定 `Microsoft::UI::Xaml::Style`；**密度用 MinHeight 而不是 Padding**——ListViewItem 的元数据里没有静态 PaddingProperty，MinHeight 同样达成"行高"且兼容虚拟化；**SelectionChanged 出参是 SelectedItem（IInspectable）**，`x:String` 项用 `unbox_value<hstring>` 取回。
+
+### 14.5.1 预选必须在 ctor 里
+
+```cpp
+hstring density = SettingsStore::Get(L"density", L"Comfortable");
+DensityBox().SelectedIndex(density == L"Compact" ? 1 : 0);
+```
+
+**XAML 里写 `SelectedIndex="0"` 会在 Items 子元素建立之前应用**——启动即崩（stowed exception，实测复现）。这是 12.5 家族的第三名成员：RadioButton 的 IsChecked、Slider 的 Value、ComboBox 的 SelectedIndex，凡是"属性即事件"的控件，XAML 预置值都在赌解析时序。规则统一为：**XAML 放结构，代码放状态**。
+
+### 14.5.2 IsEditable 的适用边界
+
+`IsEditable="True"` 让下拉框变"可输入的单行框 + 建议列表"——但输入值不在选项里时它**不是**自动新增选项，而是把自由文本原样交给你（`Text` 与 `SelectedItem` 可能对不上）。设置中心没用它：密度只有两个合法值，自由输入是制造脏数据的入口。它适合的形态是"历史记录 + 允许临时新值"（如浏览器地址栏）——那其实已经是 AutoSuggestBox（15 章）的领域，两者的分界就在"选项封闭与否"。
+
+### 14.5.3 ItemsSource 化：三个以上选项就该换队形
+
+两选项的 ComboBox 是浪费（点开下拉才见第二个——RadioButton 摆开更直接）。设置中心两选项走 ComboBox 是**教学覆盖**优先；产品判断线：**2 项用 RadioButton/ToggleSwitch，3–7 项 ComboBox，更多项 AutoSuggestBox**（输字过滤胜过滚动找）。选项集合会变（如 DataExplorer 的类别）就 ItemsSource 接向量，XAML 里静态 `x:String` 只喂真正的常量。
+
+### 14.5.4 SelectionChanged 的负载取舍
+
+取选中项有三条路：`SelectedItem()`（IInspectable，要 unbox）、`SelectedIndex()`（int，但要自己映射语义）、`Text()`（IsEditable 才有意义）。**设置中心用 SelectedItem+unbox**——选项即语义（"Compact" 字符串直接进存储与判断）。索引版在选项重排时是定时炸弹（"1 是紧凑"硬编码进逻辑）；对象版（FileItem 那类）最稳但两选项犯不着。选哪条都行，**别混用**——一处用索引一处用字符串，重构时必漏。
+
 ## 14.7 小结
 
 | 需求 | 写法 |
@@ -101,7 +160,7 @@ WinUI 3 的 ComboBox 支持 `IsEditable`（元数据核对：1.8 有此属性）
 | 可输的定位 | IsEditable="True" |
 | 自由输入 | 换 AutoSuggestBox |
 
-画廊 `ComboBoxPage` 运行时证据：`.smoke/07-controls-basic/combobox/click-2.png`——点击 "Select Dark"，状态行 **"theme = Dark"**，下拉框同步显示 Dark。
+AppearancePage 的 DensityBox（Comfortable/Compact 两项）真改 ListView 密度：OnDensityChanged 在代码里构造 ItemContainerStyle（ListViewItem 的 MinHeight 44/28）套到预览列表上，状态行同步 **"density = Compact"**。注意预选必须在 ctor 里 `SelectedIndex(...)`——XAML 里设置会在 Items 建立前应用而崩（实测）。
 
 ---
 

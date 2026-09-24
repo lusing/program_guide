@@ -2,7 +2,7 @@
 
 上一篇：[16 日期与时间族](./16-datetime.md) ｜ 下一篇：[18 GridView 与 FlipView](./18-gridview-flipview.md)
 
-ListView 是集合控件的基准形态—— GridView、FlipView、ComboBox 的下拉、TreeView 的列表部分都建立在同一套 ItemsControl 机制上。本章把这套机制讲透：项从哪来、怎么长、怎么选、怎么点。示例来自画廊工程 `examples/17-controls-collections/` 的 `ListViewPage`（导航 **ListView** 项）。
+ListView 是集合控件的基准形态—— GridView、FlipView、ComboBox 的下拉、TreeView 的列表部分都建立在同一套 ItemsControl 机制上。本章把这套机制讲透：项从哪来、怎么长、怎么选、怎么点。示例代码来自功能工程 `examples/17-data-explorer/`（数据浏览器：分类树、双视图、名称过滤、详情轮播）。
 
 ## 17.1 ItemsControl 的三层结构
 
@@ -102,6 +102,103 @@ void ListViewPage::OnAddClicked(IInspectable const&, RoutedEventArgs const&)
 5. **SelectionChanged 解析期触发**：12.5 的通用坑；handler 第一行判空控件。
 6. **ItemClick 与选择互斥**：开了 IsItemClickEnabled 点按不再选。
 
+## 17.6 实战：一张真表格（数据浏览器）
+
+### 17.6.1 数据模型先行：FileItem runtimeclass
+
+x:Bind 的模板需要投影类型——集合控件的真实工程从 IDL 开始：
+
+```idl
+runtimeclass FileItem
+{
+    FileItem(String name, String kind, String size, String date, String category);
+    String Name;
+    String Kind;
+    String Size;
+    String Date;
+    String Category;
+}
+```
+
+**格式化前置到构造期**（"3.4 MB"、"2026-08-14" 存好字符串）——模板里只做展示，不做单位换算。列宽、排序、过滤这些"表格逻辑"全部发生在 UI 之外。
+
+### 17.6.2 四列表格 = 同栅格的表头 + 行模板
+
+```xml
+<!-- 表头 -->
+<Grid Padding="12,0">
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="2*"/><ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <TextBlock Grid.Column="0" Text="Name" FontWeight="SemiBold"/>
+    ...
+</Grid>
+
+<!-- 行模板：与表头同栅格 -->
+<ListView x:Name="Table" SelectionMode="Single" SelectionChanged="OnRowSelected">
+    <ListView.ItemTemplate>
+        <DataTemplate x:DataType="local:FileItem">
+            <Grid Padding="12,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/><ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{x:Bind Name}"/>
+                <TextBlock Grid.Column="1" Text="{x:Bind Kind}" Opacity="0.75"/>
+                ...
+            </Grid>
+        </DataTemplate>
+    </ListView.ItemTemplate>
+</ListView>
+```
+
+**"自制表格"的全部秘密就是两份相同的 ColumnDefinitions**。代价要诚实：列宽是契约，两边改一边必歪；窗口缩放时 `2*:*:*:*` 按比例同步，但没有列拖拽（那要上 GridSplitter 或 ItemsRepeater 自绘，20 章）。
+
+### 17.6.3 过滤管线：一个向量喂三个视图
+
+```cpp
+void MainWindow::ApplyFilters()
+{
+    std::wstring_view query{ m_query };
+    for (auto const& item : m_all)
+    {
+        bool categoryOk = m_category == L"All" || item.Category() == m_category;
+        if (!categoryOk) { continue; }
+        if (!query.empty())
+        {
+            std::wstring_view name{ item.Name() };
+            if (name.find(query) == std::wstring_view::npos) { continue; }
+        }
+        m_view.Append(item);
+    }
+    Table().ItemsSource(m_view);
+    Cards().ItemsSource(m_view);      // GridView 同源（18 章）
+    Details().ItemsSource(m_view);    // FlipView 同源（20 章）
+    CountText().Text(...);            // 计数行
+}
+```
+
+**单一 m_view 是架构决策**：类别（TreeView）、子串（TextBox）两个输入归一到一个过滤函数，三个视图共享结果——列表、卡片、详情永远显示同一份数据，不存在"卡片视图忘了过滤"这种分叉 bug。
+
+### 17.6.4 选中联动（与防重入）
+
+```cpp
+void MainWindow::OnRowSelected(IInspectable const&, SelectionChangedEventArgs const& args)
+{
+    // 坑：Clear/过滤会触发空 AddedItems 的 SelectionChanged，GetAt(0) 前必须查 Size
+    if (args.AddedItems().Size() == 0) { return; }
+    if (auto item = args.AddedItems().GetAt(0).try_as<winrt::DataExplorer::FileItem>())
+    {
+        SelectDetail(item);   // 翻 FlipView，内部有 m_syncing 防重入闸
+    }
+}
+```
+
+**空 AddedItems 是启动崩溃的来源**（实测）：`m_view.Clear()` 触发一次"没有新增项"的 SelectionChanged，直接 `GetAt(0)` 抛出 stowed exception。三个视图互相同步（列表选→详情翻；详情翻→列表选）共用一个 `m_syncing` 布尔闸——选中事件里的级联更新是重入的重灾区。
+
+`.smoke/17-data-explorer/tree/tap-1.png`：TreeView 点 Images → 表格剩三行图像文件、计数行 "3 items · Images"——列表视图对过滤的全部响应，一帧可见。
+
 ## 17.8 小结
 
 | 环节 | API |
@@ -113,7 +210,7 @@ void ListViewPage::OnAddClicked(IInspectable const&, RoutedEventArgs const&)
 | 点击即动作 | `IsItemClickEnabled` + `ItemClick` |
 | 增删 | `ItemCollection.Append/RemoveAt` |
 
-画廊 `ListViewPage` 运行时证据：`.smoke/17-controls-collections/listview/click-2.png`——点击 banana 项，状态行 **"selected = banana"**，项高亮。
+运行时证据：`.smoke/17-data-explorer/tree/tap-1.png`——自制四列表格（Grid 列定义 + DataTemplate x:Bind）承载 10 条文件数据，TreeView 切到 Images 后列表只剩 3 条图像、计数行 **"3 items · Images"**。
 
 ---
 

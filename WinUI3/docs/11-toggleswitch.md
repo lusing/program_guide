@@ -2,7 +2,7 @@
 
 上一篇：[10 CheckBox 与 RadioButton](./10-checkbox-radio.md) ｜ 下一篇：[12 Slider、ProgressBar、ProgressRing 与 RatingControl](./12-slider-progress.md)
 
-10 章的 CheckBox/RadioButton 表达的是"表单数据"；本章的两个控件表达"即时生效的状态"——设置页的开关（ToggleSwitch）和工具栏的模式按钮（ToggleButton）。示例来自画廊工程的 `TogglePage`（左侧导航 **Toggle** 项）。
+10 章的 CheckBox/RadioButton 表达的是"表单数据"；本章的两个控件表达"即时生效的状态"——设置页的开关（ToggleSwitch）和工具栏的模式按钮（ToggleButton）。示例代码来自功能工程 `examples/07-settings-hub/`（设置中心：主题/密度/透明度即点即生效并持久化）。
 
 ## 11.1 定位：数据 vs 状态的分界线
 
@@ -86,6 +86,82 @@ CommandBar 里有专门的 `AppBarToggleButton`（23 章）——语义同 Toggl
 3. **`IsChecked` 判空**：ToggleButton 上它仍是 `IReference<bool>`，`.Value()` 前的老规矩。
 4. **OnContent/OffContent 文案方向**：写现状（"自动保存已开启"），不写动作（"点击开启"）。
 
+## 11.5 实战：总闸的完整生命周期（设置中心 + 数据浏览器）
+
+### 11.5.1 开关的三件套：本体、文案、连坐
+
+设置中心的通知总闸是 ToggleSwitch 的教科书场景——**状态立即生效，不需要确认**：
+
+```xml
+<ToggleSwitch x:Name="MasterSwitch" Header="Notifications"
+              OnContent="On" OffContent="Off" IsOn="True"
+              Toggled="OnMasterToggled"/>
+```
+
+`OnContent`/`OffContent` 让开关自带状态朗读：视觉是滑块位置，文字是当前语义——**两套反馈指同一状态，缺一个都算半残**（无文案的开关在暗色主题里尤其容易看错方向）。
+
+处理器里做三件事（10.6.2 的全文）：
+
+```cpp
+bool on = MasterSwitch().IsOn();
+for (auto&& child : ChannelBox().Children())
+{
+    if (auto control = child.try_as<Control>()) { control.IsEnabled(on); }
+}
+SettingsStore::Put(L"notify", on ? L"on" : L"off");
+StatusText().Text(on ? L"notifications on: channels enabled"
+                     : L"notifications off: channels disabled");
+```
+
+**连坐 → 持久化 → 状态行**，顺序即优先级：先让界面立刻对齐（用户的手还没离开开关），再写盘，最后补文字确认。`.smoke/07-settings-hub/master/tap-2.png`：开关 Off、三个渠道灰显、状态行三联动一帧完成。
+
+### 11.5.2 构造期恢复：Toggled 会在你设值时触发
+
+把上次的状态读回来：
+
+```cpp
+MasterSwitch().IsOn(SettingsStore::Get(L"notify", L"on") == L"on");
+```
+
+这行代码会**触发一次 Toggled**——ToggleSwitch 的 IsOn 是属性变更即事件（与 12 章 ValueChanged 同族）。构造期触发通常无害（处理器里的控件都已就绪），但若处理器引用了尚未构造的成员就是崩溃。防御性写法与 12.5 同款：处理器首行判空。**顺序也重要**：这行必须放在 InitializeComponent 之后、页面其余状态恢复之前——否则连坐禁用会把后续初始化的控件状态又改一遍。
+
+### 11.5.3 ToggleButton：模式开关（数据浏览器）
+
+视图切换用的是 ToggleButton（两态按钮，不是滑轨）：
+
+```xml
+<ToggleButton x:Name="CardsToggle" Content="Cards" Click="OnCardsToggled"/>
+```
+
+```cpp
+void MainWindow::OnCardsToggled(IInspectable const&, RoutedEventArgs const&)
+{
+    m_cards = CardsToggle().IsChecked().Value();
+    Table().Visibility(m_cards ? Visibility::Collapsed : Visibility::Visible);
+    Cards().Visibility(m_cards ? Visibility::Visible : Visibility::Collapsed);
+}
+```
+
+**坑位两枚**（都实测）：ToggleButton **没有 `Toggled` 事件**（XAML 编译器 WMC0011）——用 `Click`（每次点按必触发）或 `Checked`+`Unchecked` 成对挂；`IsChecked()` 返回 `IReference<bool>`（可空，支持三态），消费前 `.Value()` 取值。
+
+**Switch 还是 ToggleButton？** 语义分界：Switch 表达"某功能开/关"（改变世界状态），ToggleButton 表达"某模式启用/停用"（改变交互视图）。总闸是前者，卡片视图是后者；颠倒使用不会崩，但用户的肌肉记忆会迷路——设置页里出现按钮样式的开关，没人敢直接点。
+
+### 11.5.4 状态读写不对称
+
+读开关：`IsOn()` / `IsChecked().Value()`——一个直接 bool，一个可空封装。这是 WinUI 遗产接口的写实：ToggleSwitch 从 UWP 时代就是强 bool；ToggleButton 的三态血统（继承 CheckBox 家族）注定它 nullable。写都一样直接赋值。跨控件搬代码时这个不对称最容易咬人。
+
+### 11.5.5 Header 的排版位与标签虚线
+
+ToggleSwitch 的 `Header` 渲染在开关上方（设置中心 "Notifications" 标签）——它不是行内标签。要"标签在左开关在右"的横排，自己摆 Grid 两列（TextBlock + ToggleSwitch），别扭曲 Header。**点击热区**：开关本体 + On/Off 文案可点，Header 标签不可点——小目标定律（Fitts）在触屏上是要紧事，行内标签紧贴开关时把标签也做进点击区（包一层 Button 样式化或处理 Tapped）是常见的补丁，设置中心没做（桌面鼠标场景热区足够）。
+
+### 11.5.6 持久化的原子性
+
+开关类设置的写入是**每拨一次写一次**（SettingsStore::Put 立即跟 Save 或攒批）——用户拨开关后杀进程（断电、崩溃）不能丢。设置中心走内存 Put + 显式 Save（保存按钮）——**开关即时生效但持久化等确认**，这个组合的产品语义是"先试后存"：拨了马上看到效果（主题/密度），保存才写盘；不保存就退出=回到旧值。另一种产品选择是"拨即存"（Windows 系统设置页），实现上把 Save 塞进 OnMasterToggled 即可——两种都对，**错的是没想清楚就混着**（有的开关即存、有的等保存，用户建模会分裂）。
+
+### 11.5.7 触屏与滑轨
+
+ToggleSwitch 在触屏上是**点击翻转**（不是拖拽）——WinUI 的触控适配已把它做成大目标按钮。别在 Tapped 里自己实现"拖到左半关右半开"，原生语义就够。真正的"拖拽调量"需求（连续值）用 Slider——这也反过来解释了 11/12 章的分界：**离散二值给开关，连续量程给滑杆**，中间态（三档）用 ComboBox 或分段控件。
+
 ## 11.6 小结
 
 | 需求 | 控件 + 关键 API |
@@ -95,7 +171,7 @@ CommandBar 里有专门的 `AppBarToggleButton`（23 章）——语义同 Toggl
 | 命令栏模式开关 | AppBarToggleButton（23 章） |
 | 表单多选 | 回 10 章 CheckBox |
 
-画廊 `TogglePage` 运行时证据：`.smoke/07-controls-basic/toggle/click-2.png`——点击 Auto save 开关本体，状态行变 **"autosave off"**，开关翻 Off、文案切到 "Manual save only"。
+运行时证据：`.smoke/07-settings-hub/master/tap-2.png`——Notifications 总闸翻 Off：开关本体移到左侧、On/Off 文案切换、下方三个渠道复选框整体灰显、状态行 **"notifications off: channels disabled"**。
 
 ---
 

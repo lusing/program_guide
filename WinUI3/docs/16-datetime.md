@@ -2,7 +2,7 @@
 
 上一篇：[15 AutoSuggestBox](./15-autosuggestbox.md) ｜ 下一篇：[17 ListView](./17-listview.md)
 
-WinRT 的日期时间模型（`Windows::Foundation::DateTime` / `TimeSpan`）先在 02 篇讲过；本章讲四个让用户"选"它们的控件。它们长得不同，但值模型统一，而且有一个共同的新坑：**事件 args 的可空性**。示例来自画廊工程的 `DateTimePage`（左侧导航 **DateTime** 项）。
+WinRT 的日期时间模型（`Windows::Foundation::DateTime` / `TimeSpan`）先在 02 篇讲过；本章讲四个让用户"选"它们的控件。它们长得不同，但值模型统一，而且有一个共同的新坑：**事件 args 的可空性**。示例代码来自功能工程 `examples/07-settings-hub/`（设置中心：主题/密度/透明度即点即生效并持久化）。
 
 ## 16.1 一张表分家
 
@@ -98,6 +98,55 @@ void DateTimePage::OnTodayClicked(IInspectable const&, RoutedEventArgs const&)
 4. **TimeSpan 与 std::chrono 互转**：直接 `duration_cast`，不要手撸 tick 除法。
 5. **三段顺序随区域变**：自动化脚本别假设"第一段是月"。
 
+## 16.6 实战：偏好页里的两个选择器（设置中心）
+
+```xml
+<DatePicker x:Name="WeekStart" Header="Week starts on" DateChanged="OnWeekStartChanged"/>
+<TimePicker x:Name="ReminderTime" Header="Daily reminder at" MinuteIncrement="15"/>
+```
+
+`MinuteIncrement="15"` 是 TimePicker 在真实场景里最重要的属性：提醒时间几乎总是整点/一刻/半点/三刻，15 分钟步进把滚轮从 60 项砍到 4 项——**选项粒度本身是产品语言**（精确到分钟的提醒是日历事件，不是每日提醒）。
+
+### 16.6.1 事件载荷：裸值不是可空引用
+
+```cpp
+void PreferencesPage::OnWeekStartChanged(IInspectable const&,
+    DatePickerValueChangedEventArgs const& args)
+{
+    // 16 章实测：NewDate() 是裸 DateTime，不是 IReference
+    StatusText().Text(L"week start ticks = "
+        + to_hstring(args.NewDate().time_since_epoch().count()));
+}
+```
+
+与 NumberBox 的 `NewValue()`（double，可能 NaN）对照着记：**WinUI 的事件载荷没有统一的可空策略**——DatePicker 给裸 `DateTime`，ComboBox 给 `SelectedItem`（IInspectable 可空），CheckBox 给 `IReference<bool>`。写处理器前先查载荷类型，别按上一个控件的经验类推。
+
+### 16.6.2 值的落盘形态
+
+TimePicker 的取值是 `TimeSpan`（自午夜的 100ns 计数），直接数字落盘：
+
+```cpp
+SettingsStore::Put(L"reminder", to_hstring(ReminderTime().Time().count()));
+```
+
+`count()` 给 int64——存的是 485400000000 这类数，人看不懂但**双向无损**（回读 `TimeSpan{ count }` 即可恢复）。日期同理走 ticks。反例是存格式化字符串（"08:05"）：解析回来要过一层文化区域设置（有的地方 24 小时制、有的 12 小时制），多出整整一类 bug。**序列化存机器格式、显示才格式化**，两者永不混用。
+
+### 16.6.3 CalendarDatePicker 与联动的边界
+
+裸 `DatePicker` 适合表单内嵌；要"弹层选日期"（点输入框出日历）用 CalendarDatePicker，或在 24 章的 ContentDialog 里放 DatePicker 组成日期选择对话框。设置中心只需要"一周从周几开始"——它的 UI 形态恰好是 DatePicker 的年/月/日三段轮盘（选 2026-09-21 那种完整日期），产品上更贴的其实是"周一/周日"两选项的 ComboBox——**但教程要覆盖日期选择器，且 DateChanged 管线与 TimePicker 对称**，工程取舍里教学权重也是权重。
+
+### 16.6.4 文化区域设置的雷区
+
+DatePicker 的三段轮盘（年/月/日）顺序与格式**跟随系统文化区域设置**——中文系统 年/月/日，美式 月/日/年。**不要假设段序**，也别在 UI 测试里按固定顺序找控件（自动化按 Header 或 AutomationId 定位）。存储侧 16.6.2 已用 ticks 避雷；显示侧 `DateTime` 转 `winrt::clock` 相关 API（或 std::format with locale）时同样显式传区域，别赌默认。
+
+### 16.6.5 MinuteIncrement 的兄弟们
+
+TimePicker 还有 `HourIncrement`（12/24 混排场景排 2 小时步）与 `ClockIdentifier`（"24HourClock"/"12HourClock"显式钉死——不给就随系统）。设置中心只调了分钟粒度；跨时区产品（提醒时间跟人走）还要想清楚存的是本地时间还是 UTC——本例存本地 TimeSpan（自午夜，无时区语义），换时区不重算，对"每天 9 点提醒我"恰好正确。
+
+### 16.6.5 DatePicker 的钳制
+
+`MinYear`/`MaxYear`（DateTime）给可选年份划界——周起始选择里年份其实无意义（产品上该用两选项 ComboBox，16.6.3 已自我检讨）；真用日期的表单（生日、预约）必设：**MinYear=今天**防选过去，预约类 MaxYear 防飘到下世纪。域外年份在下拉里直接不出现——又是"拒收优于提示"（13.5.2 同款纪律）。
+
 ## 16.7 小结
 
 | 需求 | 控件 + API |
@@ -108,7 +157,7 @@ void DateTimePage::OnTodayClicked(IInspectable const&, RoutedEventArgs const&)
 | 常驻日历/多选 | CalendarView：SelectedDates + SelectionMode + BlackoutDates |
 | 程序化设值 | `Pick().Date(winrt::clock::now())`，事件复用 |
 
-画廊 `DateTimePage` 运行时证据：`.smoke/07-controls-basic/datetime/click-2.png`——点击 "Set to today"，状态行变 **"date ticks = 639366720000000000"**（= 2026-09-23），DatePicker 三段同步显示当天。
+PreferencesPage 的 WeekStart（DatePicker）与 ReminderTime（TimePicker，MinuteIncrement=15）：OnWeekStartChanged 读 `args.NewDate()`（裸 DateTime，不是 IReference——16 章实测坑），保存时 ReminderTime().Time().count() 落盘。运行时证据见 `.smoke/07-settings-hub/save/tap-2.png`。
 
 ---
 

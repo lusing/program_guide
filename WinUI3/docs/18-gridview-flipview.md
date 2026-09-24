@@ -2,7 +2,7 @@
 
 上一篇：[17 ListView](./17-listview.md) ｜ 下一篇：[19 TreeView](./19-treeview.md)
 
-17 章说 GridView 和 ListView 共享 ItemsControl 机制——本章兑现这句话：换一个属性（ItemsPanel），列表变平铺。FlipView 则是同一机制的"一次只看一项"特化。示例来自画廊工程的 `GridViewPage`（导航 **GridView** 项）。
+17 章说 GridView 和 ListView 共享 ItemsControl 机制——本章兑现这句话：换一个属性（ItemsPanel），列表变平铺。FlipView 则是同一机制的"一次只看一项"特化。示例代码来自功能工程 `examples/17-data-explorer/`（数据浏览器：分类树、双视图、名称过滤、详情轮播）。
 
 ## 18.1 GridView = ListView 换默认面板
 
@@ -75,6 +75,83 @@ ListView/GridView/FlipView 都在 `Microsoft.UI.Xaml.Controls`（WinUI 3 的投�
 3. **UWP 命名空间残留**（18.3）。
 4. **GridView 里放可交互项**（卡片里有按钮）：点击被项选择吞掉的场景，用 `IsItemClickEnabled` 或在卡片按钮上处理冒泡。
 
+## 18.5 实战：一份数据两张脸（数据浏览器）
+
+### 18.5.1 双视图共用一个 ItemsSource
+
+```cpp
+m_view = single_threaded_observable_vector<winrt::DataExplorer::FileItem>();
+...
+Table().ItemsSource(m_view);   // ListView：表格
+Cards().ItemsSource(m_view);   // GridView：卡片
+```
+
+切换是**可见性互换**，不是数据搬运：
+
+```cpp
+void MainWindow::OnCardsToggled(IInspectable const&, RoutedEventArgs const&)
+{
+    m_cards = CardsToggle().IsChecked().Value();
+    Table().Visibility(m_cards ? Visibility::Collapsed : Visibility::Visible);
+    Cards().Visibility(m_cards ? Visibility::Visible : Visibility::Collapsed);
+}
+```
+
+为什么不销毁重建？两个理由：**选中状态在控件里**——重建即丢失，用户切到卡片视图又得重新找刚才那一行；**ItemsSource 共享**意味着数据层对"现在是哪个视图"零感知，加第三种视图（如平铺缩略图）只是再加一个控件、再接同一份 m_view。
+
+### 18.5.2 GridView 的卡片模板
+
+```xml
+<GridView x:Name="Cards" Visibility="Collapsed" SelectionMode="Single"
+          SelectionChanged="OnCardSelected">
+    <GridView.ItemTemplate>
+        <DataTemplate x:DataType="local:FileItem">
+            <StackPanel Width="180" Padding="12" Spacing="4"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1" CornerRadius="8">
+                <TextBlock Text="{x:Bind Name}" FontWeight="SemiBold"
+                           TextTrimming="CharacterEllipsis"/>
+                <TextBlock Text="{x:Bind Kind}" Opacity="0.7"/>
+                <TextBlock Text="{x:Bind Size}" Opacity="0.7"/>
+            </StackPanel>
+        </DataTemplate>
+    </GridView.ItemTemplate>
+</GridView>
+```
+
+**卡片视觉靠 ThemeResource 拼**（CardBackground/CardStroke 是 WinUI 的卡片体系色），不写死颜色——亮暗主题自动适配。`TextTrimming="CharacterEllipsis"` 是文件名这类变长字段的标配：溢出截断优于撑破卡片或换行破坏三行式。`Width="180"` 定宽让 GridView 的自适应换行（默认 ItemsPanel 是 ItemsWrapGrid）排得整齐——卡片流与表格流的信息密度差，正是双视图存在的理由。
+
+### 18.5.3 FlipView：同一数据的"一次一项"
+
+详情条是 FlipView 承载的第三张脸：
+
+```cpp
+void MainWindow::SelectDetail(winrt::DataExplorer::FileItem const& item)
+{
+    if (m_syncing || !item) { return; }
+    m_syncing = true;
+    uint32_t index = 0;
+    if (m_view.IndexOf(item, index))
+    {
+        Details().SelectedIndex(static_cast<int32_t>(index));
+    }
+    m_syncing = false;
+}
+```
+
+**FlipView 的 SelectedIndex 与 ListView 的选中是同一 index 空间**（同源 m_view）——这是"列表点一行、详情翻一页"的全部实现。反向同步（翻详情条时让列表跟选）在 `OnDetailChanged` 里对偶实现，`Table().ScrollIntoView(item)` 顺手把滚走的行拉回视野。**`ScrollIntoView` 是 Selector 系的公开方法，FlipView 没有**（实测 C2039）——轮播视图不需要滚动到某项，它就是那一项。
+
+**何时用 FlipView**：数据有"逐项细看"的节奏（图片轮播、章节阅读、本例的文件详情）。它与 ListView 不是竞争是分工——同一集合，浏览用列表、细读用 FlipView，中缝靠 SelectionChanged 双向缝合。
+
+### 18.5.4 GridView 的选择边框与拖拽
+
+GridView 项默认带选中勾选框格（SelectionCheckMarkMode）与拖拽重排（CanReorderItems）——后者是 GridView 比 ListView 多的内置交互，做看板/收藏夹时白拿。数据浏览器关了重排（默认关）——**可重排=可持久化顺序**，开了就要接 DragItemsCompleted 写回存储，半吊子的拖拽比没有更坑。
+
+### 18.5.5 空态：过滤器把一切滤光时
+
+子串过滤可能让 m_view 清空——ListView 显示空白（没有内建空态模板）。产品化补法：叠一个 `TextBlock x:Name="EmptyHint" Visibility="Collapsed"`，ApplyFilters 里 `m_view.Size()==0` 时 Visible（"No files match 'xyz' in Images"）。设置中心同款问题（搜索无建议时下拉自动收起，天然安全）。**空态是过滤类 UI 的义务**——白屏让用户怀疑是 bug 还是没结果，一句文案就能说清。
+
 ## 18.5 小结
 
 | 控件 | 一句话 | 关键差异 |
@@ -83,7 +160,7 @@ ListView/GridView/FlipView 都在 `Microsoft.UI.Xaml.Controls`（WinUI 3 的投�
 | GridView | 卡片平铺 | 默认 ItemsWrapGrid + 项固有宽 |
 | FlipView | 翻页器 | 只显示当前项，翻页=改 SelectedIndex |
 
-画廊 `GridViewPage` 运行时证据：`.smoke/17-controls-collections/gridview/click-2.png`——点击 Next，状态行 **"flip page = 2"**，FlipView 切到蓝色 page two。
+DataExplorer 的 Table（ListView）与 Cards（GridView）共用同一份 `m_view` 数据源，ToggleButton 一键互换 Visibility；Details 是 FlipView 详情条，列表选中与翻页双向同步（防重入闸 m_syncing）。运行时证据：`.smoke/17-data-explorer/cards/tap-1.png`（切换瞬间同帧可见）。
 
 ---
 

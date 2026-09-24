@@ -2,7 +2,7 @@
 
 上一篇：[19 TreeView](./19-treeview.md) ｜ 下一篇：[21 TabView 与 Expander](./21-tabview-expander.md)
 
-本章与其他控件章不同：它讲一个**不存在的东西**——C++/WinRT 的 DataGrid——以及在没有它的世界里怎么把表格做出来。结论先行：**CommunityToolkit 的 DataGrid 用不了，自制 = Grid 表头 + ListView 行 + ItemsRepeater 高性能场景**。示例来自画廊工程的 `TablePage`（导航 **Table** 项）。
+本章与其他控件章不同：它讲一个**不存在的东西**——C++/WinRT 的 DataGrid——以及在没有它的世界里怎么把表格做出来。结论先行：**CommunityToolkit 的 DataGrid 用不了，自制 = Grid 表头 + ListView 行 + ItemsRepeater 高性能场景**。示例代码来自功能工程 `examples/17-data-explorer/`（数据浏览器：分类树、双视图、名称过滤、详情轮播）。
 
 ## 20.1 为什么没有 DataGrid（实测证据）
 
@@ -98,6 +98,64 @@ ItemsRepeater 的定位：**ItemsControl 拆到只剩"重复 + 布局"**。没�
 3. **ItemsRepeater 没有选择**：从 ListView 过来最容易踩的预期差。
 4. **表头不随行虚拟化**（本来就不该），但表头在 ListView **外**——横向滚动要自己同步（本表无横向滚动，规避）。
 
+## 20.5 实战路线回顾：自制表格的最终形态
+
+数据浏览器把本章路线全部走通，这里把"没有 DataGrid 时怎么办"的完整决策链摊开：
+
+### 20.5.1 需求分层
+
+| 需求 | 数据浏览器的答案 | 章节 |
+|---|---|---|
+| 多列对齐 | 表头 Grid + 行模板同栅格（2\*/\*/\*\*） | 17.6.2 |
+| 行选择/高亮 | ListView 的 SelectionMode + SelectionChanged | 17.6.4 |
+| 行内字段绑定 | FileItem runtimeclass + x:Bind | 17.6.1 |
+| 过滤（维度一） | TreeView 类别 | 19.5 |
+| 过滤（维度二） | TextBox 子串 | 9 章 |
+| 双视图 | GridView 卡片共用 m_view | 18.5 |
+| 详情 | FlipView 选中联动 | 18.5.3 |
+
+**没有一列需求指向 DataGrid**——这就是本章的论点：表格 = 列栅格 + 行选择 + 数据绑定，三者 ListView 全有。DataGrid 真正的增量是内联编辑、列排序点击、列拖拽——那是 Excel 级交互的领域，你的应用八成不在那里。
+
+### 20.5.2 ItemsRepeater 的位置
+
+数据浏览器没上 ItemsRepeater，因为它换来的性能（无选择/无内置模板开销）在百行级数据上无感。它的真实舞台：**虚拟化自定义布局**——时间线、看板、瀑布流这类"ItemsPanel 之外的形状"。`Layout` 属性接 `StackLayout`/`UniformGridLayout`（社区包还有更多），选择语义要自己搭（它是纯展示控件）。判断线：数据量过万、或布局非行非网格，才值得为此放弃 ListView 的免费午餐。
+
+### 20.5.3 排序与列宽：自制的边界
+
+给自制表格加排序：表头 TextBlock 换 Button，Click 里对 m_view 重排（`std::sort` + 重建向量 + 计数行刷新）——二十行的事。列宽拖拽：两份 ColumnDefinitions 变成代码里共享的 GridLength 资源 + Splitter 手势——这就开始贵了。**贵到什么程度换 ItemsRepeater 或等 DataGrid**：当"表格交互"开始吃掉"业务功能"的开发时间，重新评估依赖。教程立场：自制路线的教学价值（理解 ItemsControl 机制）先于工程价值（省一个依赖），两者都在数据浏览器里兑现了。
+
+### 20.5.4 表格的可达性语义
+
+自制表格的盲区：屏幕阅读器听到的是"逐个 TextBlock"，行列关系丢失（真表格该读"第 3 行，名称列，holiday.jpg"）。ListView 的行级语义（List item）有，**列级没有**——补法是 AutomationProperties.Name 挂到行容器（拼好整行文本）或在每个单元格 TextBlock 上 `AutomationProperties.LabeledBy` 指向表头。教学示例不必全做，**知道欠了什么**比假装不欠强：这是自制路线对 DataGrid 真正的还债项。
+
+### 20.5.5 虚拟化的现实检验
+
+ListView 默认虚拟化（行超出视口才实例化）——千行数据内存平稳。**但行高不齐时（本例文件名单行/换行不定）虚拟化会退化**：容器回收要量高，VariableHeight 模式性能打折。数据浏览器十行无所谓；上万行不齐高，先 `TextTrimming` 钉死单行高（本例已做——文件名超长截断），这是虚拟化的前置条件而非审美选择。
+
+### 20.5.6 排序的完整接线（补 20.5.3 的缺口）
+
+给表头加排序，从 XAML 到逻辑的完整清单：
+
+```xml
+<!-- 表头列从 TextBlock 换成可点 -->
+<Button Grid.Column="2" Click="OnSortSize" Content="Size" FontWeight="SemiBold"
+        Style="{ThemeResource TextButtonStyle}"/>
+```
+
+```cpp
+void MainWindow::OnSortSize(IInspectable const&, RoutedEventArgs const&)
+{
+    std::sort(begin(m_view), end(m_view),
+        [](auto const& a, auto const& b) { return a.Size() < b.Size(); });
+    // observable vector 的排序通知：Clear + 重灌最笨最稳
+    auto snapshot = std::vector(m_view.begin(), m_view.end());
+    m_view.Clear();
+    for (auto&& item : snapshot) { m_view.Append(item); }
+}
+```
+
+**"3.4 MB" 排序的陷阱**：字符串序 "88 MB" > "410 MB"（'8'>'4'）——格式化前置（17.6.1）的代价在这里付：排序键要么存原始数值（FileItem 加个 double Bytes 字段），要么比较器里解析。这是"展示与数据分离"原则的又一次现身——**模板里只展示，但数据的原始形态要为排序/过滤留好字段**。三视图同源（17.6.3）在排序后自动全刷——列表、卡片、详情跟着重排，一处排序处处生效。
+
 ## 20.5 小结
 
 | 场景 | 做法 |
@@ -108,7 +166,7 @@ ItemsRepeater 的定位：**ItemsControl 拆到只剩"重复 + 布局"**。没�
 | 自定义流式 | ItemsRepeater + FlowLayout/自写 Layout |
 | 企业级 DataGrid | 不存在于 C++/WinRT；改架构或自造（诚实评估） |
 
-画廊 `TablePage` 运行时证据：`.smoke/17-controls-collections/table/click-2.png`——点击首行，状态行 **"row = write guide"**，表头与数据列对齐，T1–T8 瓷砖正常平铺。
+DataExplorer 的自制表格就是本章路线的成品：表头一行 Grid（4 列 2\*/\*/\*\*），行模板用同栅格 DataTemplate，数据来自 FileItem runtimeclass 的 x:Bind——没有 DataGrid 依赖也能对齐成表。运行时证据：`.smoke/17-data-explorer/tree/tap-1.png`。
 
 ---
 

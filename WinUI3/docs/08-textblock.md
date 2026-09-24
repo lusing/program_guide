@@ -2,7 +2,7 @@
 
 上一篇：[07 Button](./07-button.md) ｜ 下一篇：[09 TextBox](./09-textbox.md)
 
-界面上绝大部分"字"都是 `TextBlock` 画的。它是最常出现也最被低估的控件：看起来只会 `Text("...")`，实际上换行、截断、富文本、可选中文本各有一套机制。本章把这些一次性讲清。示例来自画廊工程 `examples/07-controls-basic/` 的 `TextBlockPage`（左侧导航 **TextBlock** 项）。
+界面上绝大部分"字"都是 `TextBlock` 画的。它是最常出现也最被低估的控件：看起来只会 `Text("...")`，实际上换行、截断、富文本、可选中文本各有一套机制。本章把这些一次性讲清。示例代码来自功能工程 `examples/07-settings-hub/`（设置中心：主题/密度/透明度即点即生效并持久化）。
 
 ## 8.1 TextBlock 的定位：呈现，不是编辑
 
@@ -97,7 +97,7 @@ TextBlock 不是编辑控件，但支持**选择复制**——文档页、错误
 <TextBlock Text="{x:Bind Status, Mode=OneWay}"/>
 ```
 
-或者用事件处理器直写（画廊的做法）：`StatusText().Text(L"trim = " + name)`。小页面直写更直观；状态多处复用就走绑定。
+或者用事件处理器直写（设置中心的做法）：`StatusText().Text(L"theme = " + name)`。单窗应用直写更直观；状态多处复用就走绑定。
 
 ## 8.7 长文本与滚动
 
@@ -119,7 +119,73 @@ TextBlock **自己不滚动**。滚动是容器（`ScrollViewer`）的职责（[
 4. **FontSize 物理像素混淆**：截图量坐标（ui-smoke 校准）时，150% DPI 下一个 FontSize=18 的行实际占约 40 物理px——视觉测量和属性值差一个 DPI 因子。
 5. **TextBlock 没有 Background**：要背景/圆角/边框，套 `Border`（06 章 6.3），别找不存在的属性。
 
-## 8.9 小结
+## 8.9 实战：一页里的四种 TextBlock（设置中心）
+
+功能应用里 TextBlock 担着四种截然不同的角色，AppearancePage 一页全占：
+
+**① 区块标题**——大、重、独占一行：
+
+```xml
+<TextBlock Text="Appearance" FontSize="26" FontWeight="Bold"/>
+```
+
+**② 说明文案**——换行 + 降不透明度，视觉上退到第二层：
+
+```xml
+<TextBlock Text="Theme, density and translucency apply immediately and are remembered."
+           TextWrapping="Wrap" Opacity="0.7"/>
+```
+
+`Opacity="0.7"` 比 Foreground 写死灰色更对：它跟随亮暗主题自动适配（暗色下 0.7 白、亮色下 0.7 黑），不用为两套主题各写一色。
+
+**③ 标签行**——`FontWeight="SemiBold"` 的短标签（"App theme"、"Panel density"），比正文重、比标题轻，构成页面的层级节奏。
+
+**④ 状态行**——被代码反复改写的那一个：
+
+```cpp
+StatusText().Text(L"theme = " + name);        // 单选后
+StatusText().Text(L"density = " + density);   // 下拉后
+StatusText().Text(L"saved");                  // 保存后
+```
+
+同一个 TextBlock 接住全页所有动作的回声——这是"直写"路线（8.6 的左列）在单窗应用里的终态：状态只有一处、永远最新、不涉及绑定管线。
+
+### 8.9.1 内联混排：Run 的实战位
+
+DataExplorer 的详情条用 `Run` 把四个字段拼进一行，字段间以间隔符连接：
+
+```xml
+<TextBlock Opacity="0.8">
+    <Run Text="{x:Bind Kind}"/>
+    <Run Text="  ·  "/>
+    <Run Text="{x:Bind Size}"/>
+    <Run Text="  ·  "/>
+    <Run Text="{x:Bind Date}"/>
+</TextBlock>
+```
+
+注意写法差异：普通 TextBlock 的 `Text="字面量"` 与模板里的 `Text="{x:Bind Path}"` 可以混用，但 **`Run` 的 Text 同样两者都吃**——静态间隔符与动态字段在同一个 TextBlock 里各安其位，比拼四个 TextBlock 进 StackPanel 少三个元素、行距天然一致。
+
+### 8.9.2 计数行：一处 Text，两路来源
+
+DataExplorer 顶部的计数行是"代码直写"的另一个典型：它同时反映两个输入（类别 + 子串），每次过滤后整串重建：
+
+```cpp
+CountText().Text(to_hstring(m_view.Size()) + L" items · " + m_category
+    + (query.empty() ? L"" : L" · '" + m_query + L"'"));
+```
+
+`.smoke/17-data-explorer/tree/tap-1.png` 里它显示 **"3 items · Images"**——TreeView 点一下，这行字是用户得到的第一层反馈（列表变化是第二层）。**反馈顺序的教训**：先更新轻量文本再更新列表，用户感知的响应更快；反过来会让重布局阻塞住"已经点了"的确认感。
+
+### 8.9.3 TextBlock vs TextBox：一次性的选择错误
+
+新手最常见的误用是拿 TextBox 显示只读文本（因为"能选中复制"）。代价清单：TextBox 有输入法挂载（移动端弹键盘）、有焦点环、光标闪烁抢注意力、屏幕阅读器朗读"可编辑"。**TextBlock 支持选中复制**：`IsTextSelectionEnabled="True"`——这才是"只读但可复制"的正确控件。设置中心的说明文案全部 TextBlock+Wrap；ScratchPad 的状态行是 TextBlock（会被代码改，但永远不可编辑）。判断只问一句：**用户会在这里打字吗**——不会就 TextBlock，会才 TextBox（9 章）。
+
+### 8.9.4 字体度量与行高的隐形战场
+
+TextBlock 默认行高由字体度量决定，中文（Segoe UI 回退到中文字体）与西文混排时基线对不齐是常态——标题行混排丑八成是这个。两个抓手：`TextBlock.LineHeight`（显式行高，配 `LineStackingStrategy="BlockLineHeight"`）钉死行距；段落间距用容器 Spacing 而不是空行 TextBlock（后者在辅助树里是噪音节点）。设置中心的 Spacing=18 段间距、LineHeight 未动（纯中文场景默认度量可接受）——**先量再调，不猜**。
+
+## 8.10 小结
 
 | 需求 | 属性 |
 |------|------|
@@ -130,7 +196,7 @@ TextBlock **自己不滚动**。滚动是容器（`ScrollViewer`）的职责（[
 | 文本随数据变 | `x:Bind ... Mode=OneWay` 或事件直写 |
 | 长文滚动 | 外套 `ScrollViewer` |
 
-画廊 `TextBlockPage` 运行时证据：`.smoke/07-controls-basic/textblock/click-2.png`——点击 Cycle trim mode 后状态行变 **"trim = CharacterEllipsis"**，演示行尾部出现省略号。
+运行时证据：`.smoke/07-settings-hub/theme/tap-1.png`——AppearancePage 的区块标题（FontSize=26 SemiBold）、说明文案（TextWrapping=Wrap + Opacity 0.7）与底部 `StatusText` 状态行同帧可见；点击 Dark 后状态行即时显示 **"theme = Dark"**。
 
 ---
 

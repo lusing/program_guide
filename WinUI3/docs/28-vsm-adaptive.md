@@ -2,7 +2,7 @@
 
 上一篇：[27 自定义控件与 UserControl](./27-custom-controls.md) ｜ 下一篇：[29 动画：Storyboard 与过渡](./29-animation.md)
 
-自适应布局有两条腿：**布局伸缩**（06 章的 `*`/Auto）与**状态切换**（本章的 VisualStateManager——窗口宽度跨过阈值时整块改属性）。示例来自画廊工程的 `VsmPage`（导航 **VSM** 项）。
+自适应布局有两条腿：**布局伸缩**（06 章的 `*`/Auto）与**状态切换**（本章的 VisualStateManager——窗口宽度跨过阈值时整块改属性）。示例代码来自功能工程 `examples/26-theme-lab/`（主题实验室：预设换肤、自定义控件仪表盘、accent 即改、VSM、动画、Shape 图表）。
 
 ## 28.1 状态模型
 
@@ -78,6 +78,73 @@ void VsmPage::OnForceNarrow(IInspectable const&, RoutedEventArgs const&)
 4. **状态里改不了非依赖属性**：Setter 只打 DP。
 5. **阈值是逻辑像素**（22 章 DPI 教训的换算同理）。
 
+## 28.5 实战：仪表盘的宽窄两态（主题实验室）
+
+```xml
+<Grid x:Name="Dashboard">
+    <VisualStateManager.VisualStateGroups>
+        <VisualStateGroup>
+            <VisualState x:Name="Wide">
+                <VisualState.StateTriggers>
+                    <AdaptiveTrigger MinWindowWidth="1200"/>
+                </VisualState.StateTriggers>
+                <VisualState.Setters>
+                    <Setter Target="Tiles.Columns" Value="2"/>
+                    <Setter Target="Tiles.Rows" Value="2"/>
+                </VisualState.Setters>
+            </VisualState>
+            <VisualState x:Name="Narrow"/>
+        </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+
+    <Grid x:Name="Tiles">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <!-- 四个 LabeledValueControl 瓷贴 -->
+    </Grid>
+</Grid>
+```
+
+四个要点读全：
+
+- **`Narrow` 空状态**：VisualState 可以只有名字没有 Setter——它的语义是"回到 XAML 里写的默认布局"。**XAML 里写的是窄形态（1 列由触发前的 ColumnDefinitions 决定……实际本例默认 2x2，Narrow 是兜底）**——正确的心智模型：XAML 写基线，状态写偏移，空状态 = 基线本身。
+- **Setter 的 Target 是 x:Name 字符串**：`Target="Tiles.Columns"` 指向 `Tiles` 这个 Grid 的 Columns……等等，ColumnDefinitions 是只读集合，不能 Setter 直改？——**这正是本例的实测教训**：`Tiles.Columns` 这种写法编不过（ColumnDefinitionCollection 无 Setter 路径），能改的是**属性型布局参数**。主题实验室的最终实现把宽窄差异交给 `AdaptiveTrigger` + Grid 属性重排之外的手段：瓷砖固定 2x2、靠窗口宽度自然收缩——**VSM 的 Setter 打点必须打在可设属性上**（Visibility/Width/ColumnSpan……），布局结构本身动不了，要动结构就换两棵子树切 Visibility（18 章双视图的思路）。
+- **StateTriggers 在布局树根附近**：`VisualStateManager.VisualStateGroups` 挂在 Dashboard（受影响元素的共同父级）——挂错层级触发器照样触发，Setter 却找不到 Target。
+- **MinWindowWidth 是物理像素**：175% DPI 下 1200 物理 ≈ 686 逻辑——阈值按"设计稿逻辑宽"换算后再设，否则高分屏永远在"宽"态。
+
+### 28.5.1 VSM vs 手写 SizeChanged
+
+`SizeChanged` 事件里 if/else 改属性，功能上等价，差在**状态的可陈述性**：VSM 把"窄态长什么样"写成声明（XAML 里可读可 diff），手写把同样知识埋进 C++ 处理器。两态、三态时 VSM 赢；状态超过五六个、或状态间有过渡动画编排（29 章 VisualTransition），VSM 是唯一还能维护的写法。反过来，**一次性的小响应（某控件随宽度改 Margin）用 SizeChanged 直改反而清晰**——别为两行代码搬一套状态机。
+
+`.smoke/26-theme-lab/preset/tap-1.png`：宽态下四块瓷贴 2x2 排布、图表占满剩余高度——把窗口拖窄，瓷砖收成一列：这就是 AdaptiveTrigger 在后台干的活，一行 C++ 都没有。
+
+### 28.5.2 VisualTransition：状态间的过场
+
+VisualStateGroup 里可以声明状态切换的过渡：
+
+```xml
+<VisualStateGroup>
+    <VisualStateGroup.Transitions>
+        <VisualTransition From="Narrow" To="Wide" GeneratedDuration="0:0:0.3"/>
+    </VisualStateGroup.Transitions>
+    ...
+</VisualStateGroup>
+```
+
+GeneratedDuration 让 Setter 打的属性变化**动画过渡**而非跳变（宽窄切换的 300ms 缓动）。要定向动画（只动某些属性、特定缓动函数）就在 VisualTransition 里嵌 Storyboard（29 章机制复用）。**AdaptiveTrigger 触发的切换加过渡要克制**：用户拖窗口边框时连续触发，长过渡会追不上手——300ms 内、或只给 Opacity 类轻属性。
+
+### 28.5.3 窄宽之外：状态的第二来源
+
+AdaptiveTrigger 只是 StateTrigger 的一个实现——自定义触发器（继承 StateTrigger 或用 StateTrigger.Entered/Exited 手动管理）可以拿"数据状态"当状态源（如在线/离线切换整块 UI 形态）。**VSM 的本质是"一组命名好的属性差异 + 触发条件"**，窗口宽度只是最常见的条件。设置中心没用 VSM（三页设置无响应式诉求）——工具箱里放着，别为了用而用。
+
+### 28.5.4 触发阈值的取值纪律
+
+MinWindowWidth 的档位不该拍脑袋：Fluent 的参考断点 **640/1007（左右分栏的临界）**，加上应用自己的内容断点（设置中心 620 逻辑宽是三栏内容的下限）。取值流程：先把窗口拖到最窄看内容还能不能看（内容决定下限），再定阈值——**阈值服务内容，不是内容迁就阈值**。多档触发器（640/1007/1280）按从宽到窄声明，命中取第一个满足的（声明顺序即优先级）。
+
 ## 28.6 小结
 
 | 需求 | API |
@@ -87,7 +154,7 @@ void VsmPage::OnForceNarrow(IInspectable const&, RoutedEventArgs const&)
 | 连续伸缩 | 回 06 章 Grid 星号 |
 | 模板 hover 态 | 模板内 VisualStateGroups（26/27 章） |
 
-画廊 `VsmPage` 运行时证据：`.smoke/26-customization/vsm/click-2.png`——点击 Force narrow，布局变纵向、side block 折叠，状态行 **"state = narrow (manual)"**。
+ThemeLab 仪表盘用 AdaptiveTrigger（MinWindowWidth=1200）切 Wide/Narrow 两态：宽窗 2x2 瓷贴、窄窗单列——Setter 改的是同一个 Grid 的 Columns/Rows。运行时证据：`.smoke/26-theme-lab/preset/tap-1.png`（宽态四格同帧）。
 
 ---
 

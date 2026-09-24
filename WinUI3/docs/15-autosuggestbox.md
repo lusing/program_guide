@@ -2,7 +2,7 @@
 
 上一篇：[14 ComboBox](./14-combobox.md) ｜ 下一篇：[16 日期与时间族](./16-datetime.md)
 
-`AutoSuggestBox` 是"能打字的下拉"：用户输入，你给建议。搜索框、@提及、命令面板都是它的形态。本章给出一套完整可抄的最小实现，并讲清防重入的关键机制。示例来自画廊工程的 `AutoSuggestPage`（左侧导航 **AutoSuggest** 项）。
+`AutoSuggestBox` 是"能打字的下拉"：用户输入，你给建议。搜索框、@提及、命令面板都是它的形态。本章给出一套完整可抄的最小实现，并讲清防重入的关键机制。示例代码来自功能工程 `examples/07-settings-hub/`（设置中心：主题/密度/透明度即点即生效并持久化）。
 
 ## 15.1 三个事件，一条流水线
 
@@ -81,6 +81,76 @@ void AutoSuggestPage::OnFruitQuerySubmitted(IInspectable const&,
 3. **ItemsSource 整体替换**：别用可观察集合做增量增删——每次过滤都是全量结果，新集合最干净（17 章会讲什么时候才需要可观察）。
 4. **自动化测试**：合成键盘输入（ui-smoke 的 `-TypeText`，VkKeyScanW + keybd_event）实测可驱动本控件——Text 事件带 Reason=UserInput 走真实路径。
 
+## 15.5 实战：搜索真的跳页（设置中心）
+
+NavigationView 自带一个 AutoSuggestBox 槽位——设置类应用把搜索放导航栏顶端是 Windows 11 的标准形态：
+
+```xml
+<NavigationView ...>
+    <NavigationView.AutoSuggestBox>
+        <AutoSuggestBox x:Name="SearchBox" QueryIcon="Find"
+                        PlaceholderText="Search settings"
+                        TextChanged="OnSearchChanged"
+                        SuggestionChosen="OnSearchChosen"/>
+    </NavigationView.AutoSuggestBox>
+```
+
+输入过滤与选中跳转：
+
+```cpp
+void MainWindow::OnSearchChanged(IInspectable const&,
+    AutoSuggestBoxTextChangedEventArgs const& args)
+{
+    if (args.Reason() != AutoSuggestionBoxTextChangeReason::UserInput) { return; }
+    auto box = Nav().AutoSuggestBox();
+    std::wstring_view query(box.Text());
+    auto hits = single_threaded_vector<IInspectable>();
+    for (auto const& page : kPages)
+    {
+        std::wstring_view label(page[1]);
+        if (query.empty() || label.find(query) != std::wstring_view::npos
+            || query.find(label) != std::wstring_view::npos)
+        {
+            hits.Append(box_value(page[1] + L"|" + page[0]));
+        }
+    }
+    box.ItemsSource(hits);
+}
+
+void MainWindow::OnSearchChosen(IInspectable const&,
+    AutoSuggestBoxSuggestionChosenEventArgs const& args)
+{
+    // 建议格式 "Label|tag"：选了真的跳转对应分区
+    std::wstring_view text(args.SelectedItem().as<hstring>());
+    size_t bar = text.find(L'|');
+    if (bar != std::wstring_view::npos)
+    {
+        NavigateTo(hstring(text.substr(bar + 1)));
+    }
+}
+```
+
+四个实战级细节：
+
+- **`Reason()` 过滤是防重入的命门**：设置 `ItemsSource` 会再次触发 TextChanged（原因 `Programmatic`）——不过滤就是无限循环里闪死下拉。15.2 讲的机制在真实应用里不是优化，是正确性。
+- **建议项是"显示|载荷"双段字符串**：用户看 Label，选中后拆出路由键。轻量做法不需要对象模型；建议变复杂时才升级成 runtimeclass（27 章）。
+- **`hstring` 没有 find/substr**：一律 `std::wstring_view` 过桥（`std::wstring_view query(box.Text())` 零拷贝）。
+- **键盘选中链路**：输入 → 下拉 → 方向键高亮 → 回车，`SuggestionChosen` 在回车时同样触发——鼠标用户和键盘用户汇合在同一个处理器。
+
+`.smoke/07-settings-hub/search/tap-2.png`：输入 "Pref" → 建议列表出现 → 方向键+回车 → 页面真的切到 Preferences、导航选中项同步——搜索不是摆设，是第三条导航路径（另两条：点导航项、Ctrl+F 找设置名……好吧第三条是键盘 Tab，但搜索是唯一支持模糊意图的）。
+
+### 15.5.1 QueryIcon 与空态
+
+`QueryIcon="Find"`（放大镜）不只装饰——它是搜索框的可识别锚点，用户扫视页面时第一眼找它。没有图标的搜索框常被当成普通输入框。`PlaceholderText="Search settings"` 则回答"能搜什么"——**placeholder 写内容域，别写"请输入"**这种无信息量的客套。
+
+### 15.5.2 与 ComboBox 的分界（14.5.3 的对侧）
+
+AutoSuggestBox 不是"更好的 ComboBox"——它假设**选项集大到用户愿意打字**。设置中心三个分区本用不着搜索（一眼看完），放 AutoSuggestBox 是 Windows 11 设置形态的教学复刻；真实工程里它的启动条件是选项过十或记忆成本高（命令面板、@提及）。低于这条线，打字比点选贵——两三下的点击永远快于"切输入法-打字-选择"三段动作。
+
+### 15.5.3 QuerySubmitted：回车不选建议时
+
+用户打完字直接回车（没碰下拉）触发的是 `QuerySubmitted` 而非 SuggestionChosen——事件参数带 `Args.ChosenSuggestion()`（null 如果没选）。设置中心没处理它（回车=放弃搜索，可接受）；要做"回车选第一条"就在 QuerySubmitted 里 `if (!Args.ChosenSuggestion()) { 取 ItemsSource 首项走跳转; }`——浏览器地址栏就是这个行为。
+
 ## 15.6 小结
 
 | 环节 | API |
@@ -91,7 +161,7 @@ void AutoSuggestPage::OnFruitQuerySubmitted(IInspectable const&,
 | 收提交 | QuerySubmitted → `args.QueryText()` |
 | 自由文本 | QueryText 可能不在建议里，按搜索词处理 |
 
-画廊 `AutoSuggestPage` 运行时证据：`.smoke/07-controls-basic/autosuggest/click-2.png`——合成点击聚焦后键入 `ap`，下拉出现 **apple / apricot** 两条建议（TypeText 机制全链路验证）。
+运行时证据：`.smoke/07-settings-hub/search/tap-2.png`——NavigationView 的内建 AutoSuggestBox 槽位输入 "Pref"，TextChanged 过滤出建议、方向键+回车触发 SuggestionChosen，真的导航到 Preferences 页（计数行显示跳转结果）。15.2 的 Reason 防重入机制在这里是真功能不是装饰。
 
 ---
 

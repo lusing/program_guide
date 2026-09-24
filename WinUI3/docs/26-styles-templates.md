@@ -2,7 +2,7 @@
 
 上一篇：[25 TeachingTip、InfoBar 与 ToolTip](./25-overlays.md) ｜ 下一篇：[27 自定义控件与 UserControl](./27-custom-controls.md)
 
-界面的"同一套外观"从重复属性里解放出来靠 Style；"换骨架"靠 ControlTemplate。本章讲两者机制与分工。示例来自画廊工程 `examples/26-customization/` 的 `StylesPage`（导航 **Styles** 项）。
+界面的"同一套外观"从重复属性里解放出来靠 Style；"换骨架"靠 ControlTemplate。本章讲两者机制与分工。示例代码来自功能工程 `examples/26-theme-lab/`（主题实验室：预设换肤、自定义控件仪表盘、accent 即改、VSM、动画、Shape 图表）。
 
 ## 26.1 Style：属性批量覆盖
 
@@ -66,6 +66,89 @@
 4. **隐式样式误伤**：给 App.xaml 写隐式 Button 样式 = 全应用按钮变形，确认这是意图。
 5. **Style 里 setter 顺序**：同类属性后写覆盖先写；BasedOn 的优先级低于本地显式设置（XAML 属性 > Style）。
 
+## 26.6 实战：运行时改主题资源（主题实验室）
+
+演示页里换肤是"换个 Style 名"；主题实验室把换肤做成**资源系统级的操作**——往 `Application.Resources` 里盖一层 accent 键，全树的 `{ThemeResource Accent*}` 引用跟着走：
+
+```cpp
+void MainWindow::ApplyAccent(Windows::UI::Color const& color)
+{
+    auto resources = Application::Current().Resources();
+    auto brush = SolidColorBrush(color);
+    resources.Insert(box_value(L"AccentFillColorDefaultBrush"), brush);
+    resources.Insert(box_value(L"AccentFillColorSecondaryBrush"), SolidColorBrush(Windows::UI::Color{
+        0xFF,
+        static_cast<uint8_t>(color.R * 0.8f),
+        static_cast<uint8_t>(color.G * 0.8f),
+        static_cast<uint8_t>(color.B * 0.8f) }));
+    for (auto&& bar : m_bars) { bar.Fill(SolidColorBrush(color)); }
+}
+```
+
+三个层次各司其职：
+
+- **资源字典 Insert** 是正路：`AccentFillColorDefaultBrush` 是 XamlControlsResources 里的主题键，应用级字典同键覆盖后，按钮填充、单选圆点、滑杆轨道……所有走 ThemeResource 的控件换色——一处改，处处改。
+- **Secondary 键手工调暗 20%**：Fluent 的次级 accent 有自己的明度曲线，简化成 0.8 倍乘算——够用且可控。
+- **代码造的元素（m_bars 柱子）不能靠 ThemeResource**：`Resources().TryLookup` 拿不到 XamlControlsResources 内层字典的键（实测返回空）——代码里建的 Shape 想跟 accent 走，就把元素登记进容器，ApplyAccent 时全量重刷。**"资源跟随"与"手动重刷"的边界就是 XAML 声明与代码创建的边界。**
+
+### 26.6.1 明暗壳：RequestedTheme 的双赋值
+
+预设还带明暗（Sunset=暗壳）：
+
+```cpp
+if (auto root = Content().try_as<FrameworkElement>())
+{
+    root.RequestedTheme(preset.Dark ? ElementTheme::Dark : ElementTheme::Light);
+}
+```
+
+配套实测坑：**运行时对根设 RequestedTheme，同值连设不触发 ThemeResource 重估**（WindowsAppSDK 实测）——先设 `ElementTheme::Default` 再设目标值，两轮变更通知才把整树刷过来。这条在设置中心（07 章）与主题实验室都验证过。
+
+### 26.6.2 预设列表：隐式样式 + 数据模板的组合位
+
+```xml
+<ListBox x:Name="PresetList" SelectionChanged="OnPresetSelected">
+    <ListBox.ItemTemplate>
+        <DataTemplate x:DataType="local:PresetInfo">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Border Width="22" Height="22" CornerRadius="6">
+                    <Border.Background>
+                        <SolidColorBrush Color="{x:Bind Swatch}"/>
+                    </Border.Background>
+                </Border>
+                <TextBlock Text="{x:Bind Name}" VerticalAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+    </ListBox.ItemTemplate>
+</ListBox>
+```
+
+每个预选项 = 色板（`Color` 直接 x:Bind 进 SolidColorBrush.Color）+ 名字。**色板是这套 UI 的"样式预览"**——用户不读 "#C42B1C"，读的是那块红。选中预设后 `PresetStatus` 状态行复述（"preset 'Sunset' (dark shell)"）——与 8 章的状态行纪律同源。
+
+`.smoke/26-theme-lab/preset/tap-1.png`：Sunset 选中、窗口暗壳、柱状图红、状态行复述——Style/资源/主题三层在一次点击里同时生效，这就是"主题实验室"的存在意义。
+
+### 26.6.3 ColorPicker：accent 的自由形态
+
+```xml
+<ColorPicker x:Name="AccentPicker" IsColorSliderVisible="True"
+             IsColorChannelTextInputVisible="False"
+             IsHexInputVisible="True" ColorChanged="OnAccentChanged"/>
+```
+
+`ColorChanged` 直通 ApplyAccent——拖动光谱的每一下都实时改全局 accent（状态行同步 "accent = #107,10,10"，`.smoke/26-theme-lab/picker/tap-1.png`）。三个可见性开关是信息密度旋钮：色相/饱和度光谱 + 明度滑杆 + 十六进制输入，按用户光谱（随手拖）到工程光谱（要精确值）分层供给。
+
+### 26.6.4 隐式样式的覆盖顺位
+
+应用级字典 Insert 的 accent 键优先于主题字典（先查应用层）——这正是 ApplyAccent 生效的机制。通用规律：**资源查找从使用点向上冒泡**（控件自身 Style → 页面资源 → 应用资源 → 主题资源），先命中先用。所以三层覆盖手法：控件直设属性（最高）> 页面/应用资源 > 主题默认。**别越过层级写死**——在控件上写死颜色的那一刻，主题切换、换肤、高对比模式全部失效；设置中心预览条用 `{ThemeResource AccentFillColorDefaultBrush}`（跟 accent 走）而文字用 `TextOnAccentFillColorDefaultBrush`（accent 上的前景色，自动保证对比度）——两个键成对用是 Fluent 的配色纪律。
+
+### 26.6.5 Style 与资源的分工
+
+Style 是"一组属性的预设包"（按类型命中）；资源是"值的具名仓库"（按键命中）。换肤改资源（值层，一处改处处跟）；换皮肤密度改 Style（结构层，ListViewItem 的 MinHeight——14 章实战）。**混淆的信号**：你在 Style 里写死颜色（该是 ThemeResource 引用）、或在资源里塞 Setter（该是 Style）。主题实验室的 ApplyAccent 动资源不动 Style，设置中心的 OnDensityChanged 动 Style 不动资源——两工程各示范一半，合起来是完整答案。
+
+### 26.6.6 主题资源键的速查锚点
+
+做换肤/配主题时最常用的键（Fluent 家族的公共子集）：`AccentFillColorDefaultBrush`（主强调填充）、`AccentTextFillColorPrimaryBrush`（强调文字色）、`CardBackgroundFillColorDefaultBrush`/`CardStrokeColorDefaultBrush`（卡片底/描边——DataExplorer 卡片、LabeledValueControl 瓷贴都用）、`LayerFillColorDefaultBrush`（浮层底）、`TextOnAccentFillColorDefaultBrush`（accent 上的文字）。**找键的方法**：Visual Studio 的 Live Visual Tree 看系统控件实际用的键名，或 WinUI 的 generic.xaml 源码——比背表可靠，因为版本会加新键。
+
 ## 26.5 小结
 
 | 需求 | 手段 |
@@ -75,7 +158,7 @@
 | 换骨架 | ControlTemplate + ContentPresenter/TemplateBinding |
 | 状态视觉 | VisualStateManager（28 章） |
 
-画廊 `StylesPage` 运行时证据：`.smoke/26-customization/styles/click-2.png`——隐式样式两按钮成卡片、AccentBtn 实心、模板按钮药丸形，点击报 **"styled button works"**。
+运行时证据：`.smoke/26-theme-lab/preset/tap-1.png`——点 Sunset 预设：`Application::Current().Resources()` 里 Insert 覆盖 Accent 键（26 章资源系统的运行时正路），整树 ThemeResource 引用跟着走、RequestedTheme 切暗（双赋值触发重估）、柱状图与新 accent 同帧变红。
 
 ---
 

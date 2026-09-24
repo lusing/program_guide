@@ -2,7 +2,7 @@
 
 上一篇：[12 Slider、ProgressBar 族](./12-slider-progress.md) ｜ 下一篇：[14 ComboBox](./14-combobox.md)
 
-"输入一个数"看似 TextBox 加一行解析就够，实际暗藏着解析、步进、校验、空态四件事——`NumberBox` 把它们一次做完。示例来自画廊工程的 `NumberBoxPage`（左侧导航 **NumberBox** 项）。
+"输入一个数"看似 TextBox 加一行解析就够，实际暗藏着解析、步进、校验、空态四件事——`NumberBox` 把它们一次做完。示例代码来自功能工程 `examples/07-settings-hub/`（设置中心：主题/密度/透明度即点即生效并持久化）。
 
 ## 13.1 TextBox 做数值输入的痛
 
@@ -79,6 +79,75 @@ void NumberBoxPage::OnDoubleClicked(IInspectable const&, RoutedEventArgs const&)
 4. **Compact 模式的 spin 按钮**：悬停/聚焦才显示。自动化测试别依赖它常驻（要常驻用 `Inline`）。
 5. **ValueChanged 解析期触发**：12.5 的通用坑在此同样适用，handler 判空开路。
 
+## 13.5 实战：空输入的真实语义（设置中心）
+
+演示页里 NumberBox 的 NaN 是个知识点；在设置中心它是**产品决策**——TaskFlow 的任务数上限，"没填"必须与"填 0"严格区分：
+
+```xml
+<NumberBox x:Name="DefaultCount" Header="Default task count (empty = unlimited)"
+           PlaceholderText="no limit" Minimum="0" Maximum="99"
+           SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="5"
+           ValueChanged="OnCountChanged"/>
+```
+
+四个细节各有其位：**Header 把语义写进标签**（"empty = unlimited"——用户不用猜空框什么意思）；**PlaceholderText 是空态的第二次提示**；**Minimum/Maximum 收紧输入域**（0–99 之外的值连输入机会都没有）；**Inline 旋转按钮**给鼠标用户 ±1 的捷径（SmallChange/LargeChange 分别对应点击与按住）。
+
+```cpp
+void PreferencesPage::OnCountChanged(IInspectable const&,
+    NumberBoxValueChangedEventArgs const& args)
+{
+    if (!StatusText()) { return; }
+    double v = args.NewValue();
+    if (std::isnan(v))
+    {
+        SettingsStore::Put(L"count", L"nan");
+        StatusText().Text(L"default count = unlimited");
+    }
+    else
+    {
+        SettingsStore::Put(L"count", to_hstring(static_cast<int>(v)));
+        StatusText().Text(L"default count = " + to_hstring(static_cast<int>(v)));
+    }
+}
+```
+
+注意 **`NewValue()` 是 double 且清空时是 NaN**——不是 0、不是空串、不是异常。用 `std::isnan` 分流后，"无限"与"0 个"成为两个可持久化的独立状态（消费端 TaskFlow 拿到 `nan` 字符串就走不限量路径）。
+
+### 13.5.1 恢复：字符串回填要防"nan"
+
+构造期把持久值读回来：
+
+```cpp
+hstring saved = SettingsStore::Get(L"count", L"");
+if (!saved.empty() && saved != L"nan")
+{
+    try { DefaultCount().Value(std::stod(std::wstring(saved))); }
+    catch (...) {}
+}
+```
+
+三重防御各挡一层：空串（从未设过）不回填；**字面量 "nan" 不喂给 stod**（喂了会把 NaN 设回去——但这正是我们要显式跳过的路径：恢复语义是"回到空框"，不是"显示 NaN"）；解析异常静默（脏数据当年怎么存的已经不是现在能修的事，别让设置页起不来）。
+
+**为什么不用 TextBox + 自己解析**：NumberBox 一并处理了非法输入拒收、上下限钳制、步进按钮、滚轮调节、还有 IME 数字键盘——自写 TextBox 版本每个都要手工做一遍，且每个都能做错。教程里"看似一个控件能解决"的题，背后几乎都真有一个这样的控件。
+
+### 13.5.2 校验的三道门
+
+NumberBox 的输入控制是三道闸：**拒收**（非法字符进不来）、**钳制**（超出 Min/Max 自动贴边，`Value` 永远在域内）、**NaN**（清空的显式空态）。演示页常只考第三道；产品里第一道最值钱——拒收让"错误状态"根本不发生，比"错了再提示"少一轮交互。设置中心的 0–99 域把"负数任务数"这个概念从 UI 里抹掉了，OnCountChanged 里不用写一行防御。
+
+**LargeChange 的语义**：按住旋转按钮的加速步进（LargeChange=5 vs SmallChange=1）——键盘上对应 PgUp/PgDn 与方向键。参数不是装饰，是"粗调/细调"双速交互的实现位。
+
+### 13.5.3 双向绑定的钩子（32 章预告）
+
+NumberBox 的 `Value` 是依赖属性——`{x:Bind ... Mode=TwoWay}` 直挂视图模型，ValueChanged 就不用写了。设置中心走事件直写（教学显式），产品代码里绑定是常态。两者的分界在**副作用**：值变更要做的事不止"记住"（刷新依赖控件、触发重算）时，事件处理器里的命令式链条比绑定的隐式传播好排错；纯数据同步用绑定。32 章的 TaskFlow 把这条线走全。
+
+### 13.5.4 旋转按钮的位置学问
+
+`SpinButtonPlacementMode` 两档：`Inline`（常驻在框内右侧，设置中心用）与 `Compact`（聚焦才出现）。Inline 占宽约 60 逻辑 px——**窄表单里三个 NumberBox 各吃 180px**，横向空间紧时 Compact 更划算；触屏主导的界面 Inline 直观（手指不用长按）。设置中心单框横排无压力，Inline 的即时可见性赢。
+
+### 13.5.5 一个框的国际化
+
+NumberBox 的解析**跟随系统区域**（小数点/千分位）——中文系统 "1.5" 合法、某些区域要 "1,5"。存储侧 13.5.1 的 `std::stod` 用 C locale（永远认点）——**显示与存储的解析器不一致**是国际化 bug 标准款：德区用户输入 "1,5" 框内合法（逗号小数），落盘 std::stod 解析成 15。修法要么全程 WinRT 的 `DoubleFormatter` 家族，要么存储也走区域感知解析。教学工程单区域无感——这条债记在国际化清单上（与 16.6.4 日期区域同款）。
+
 ## 13.6 小结
 
 | 需求 | 写法 |
@@ -89,7 +158,7 @@ void NumberBoxPage::OnDoubleClicked(IInspectable const&, RoutedEventArgs const&)
 | 算式输入 | AcceptsExpression="True" |
 | 程序化改值 | 直写 Value，事件自动跟随 |
 
-画廊 `NumberBoxPage` 运行时证据：`.smoke/07-controls-basic/numberbox/click-2.png`——点击 "Double it"，状态行 **"quantity = 2"**（1 → 2 的程序化路径 + 事件回环）。
+PreferencesPage 的 Default task count 用 NumberBox 承载"空输入=NaN=无限制"的真实语义：OnCountChanged 里 std::isnan 分支写 "default count = unlimited"，否则写具体数值；值随保存落盘。运行时证据见 `.smoke/07-settings-hub/save/tap-2.png`（NumberBox/DatePicker/TimePicker 同页可见）。
 
 ---
 
