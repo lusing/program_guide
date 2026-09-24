@@ -149,7 +149,7 @@ examples/
 
 ### 运行时级实测结果（逐流程）
 
-四个功能应用共 **14 条已验证流程**（证据在 `.smoke/<工程>/<流程>/tap-N.png`；DataExplorer 的 filter/cards/flip 三流待输入抽奖补证，逻辑同 tree 流已验路径）：
+四个功能应用共 **14 条已验证流程**（证据在 `.smoke/<工程>/<流程>/tap-N.png`；DataExplorer 的 filter 流待输入抽奖补证（打字注入 TextBox 的路径），cards/flip/tree 已验）：
 
 | 应用 | 流程 | 驱动 | 断言（截图/文件级） |
 |------|------|------|---------------------|
