@@ -1,8 +1,0 @@
-namespace ShellGallery
-{
-    [default_interface]
-    runtimeclass NavPage : Microsoft.UI.Xaml.Controls.Page
-    {
-        NavPage();
-    }
-}

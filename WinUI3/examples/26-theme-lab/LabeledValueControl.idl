@@ -1,0 +1,13 @@
+namespace ThemeLab
+{
+    // Chapter 27 custom control in its plainest form: UserControl plus two
+    // dependency properties. Every dashboard tile is one of these.
+    // The XXXProperty static members stay in C++: IDL runtimeclasses reject
+    // static members.
+    runtimeclass LabeledValueControl : Microsoft.UI.Xaml.Controls.UserControl
+    {
+        LabeledValueControl();
+        String Label;
+        String Value;
+    }
+}

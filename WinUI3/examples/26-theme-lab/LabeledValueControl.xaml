@@ -1,0 +1,17 @@
+<UserControl
+    x:Class="ThemeLab.LabeledValueControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ThemeLab">
+
+    <!-- 27 章自定义控件：卡片外观固定，内容（标签/数值）由依赖属性喂；
+         {x:Bind} 的 Mode=OneWay 让代码里 SetValue 立刻刷新界面 -->
+    <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1" CornerRadius="10" Padding="18,14">
+        <StackPanel Spacing="4">
+            <TextBlock Text="{x:Bind Label, Mode=OneWay}" Opacity="0.65"/>
+            <TextBlock Text="{x:Bind Value, Mode=OneWay}" FontSize="26" FontWeight="Bold"/>
+        </StackPanel>
+    </Border>
+</UserControl>

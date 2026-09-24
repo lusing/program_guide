@@ -1,9 +1,0 @@
-// Chapter 12 demo page. Name-wired handlers need no IDL entries.
-namespace BasicGallery
-{
-    [default_interface]
-    runtimeclass SliderPage : Microsoft.UI.Xaml.Controls.Page
-    {
-        SliderPage();
-    }
-}

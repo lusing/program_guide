@@ -1,0 +1,15 @@
+namespace DataExplorer
+{
+    // One row of the explorer table. String properties keep the template
+    // x:Bind simple; formatting decisions (KB/MB, date) live in FilesStore.
+    runtimeclass FileItem
+    {
+        FileItem(String name, String kind, String size, String date, String category);
+
+        String Name;
+        String Kind;
+        String Size;
+        String Date;
+        String Category;
+    }
+}

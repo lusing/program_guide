@@ -1,9 +1,0 @@
-// 页面 runtimeclass：Frame::Navigate(xaml_typename<T>()) 需要激活工厂，因此必须进 IDL
-namespace BasicGallery
-{
-    [default_interface]
-    runtimeclass HomePage : Microsoft.UI.Xaml.Controls.Page
-    {
-        HomePage();
-    }
-}

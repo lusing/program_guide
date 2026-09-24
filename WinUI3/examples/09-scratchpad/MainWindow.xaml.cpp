@@ -18,7 +18,9 @@ namespace winrt::ScratchPad::implementation
         if (auto appWindow = AppWindow())
         {
             // 自定位：任何级联位置下都完整在屏内（出屏底部会吃掉注入点击）
-            appWindow.MoveAndResize({ 30, 30, 1750, 1085 });
+            // AppWindow 的 MoveAndResize 实测按逻辑单位解释（30→53、1080→1890）：
+            // 传 1000x620 逻辑 = 1750x1085 物理，构造期自定位 + 完整在屏
+            appWindow.MoveAndResize(Windows::Graphics::RectInt32{ 30, 30, 1000, 620 });
         }
         AddTab();   // 开场给一个空文档，用户零点击即可输入
     }

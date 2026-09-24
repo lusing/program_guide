@@ -1,0 +1,122 @@
+<Window
+    x:Class="DataExplorer.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DataExplorer">
+
+    <!-- 18 章 SplitView 外壳：TreeView 分类树在侧栏，主区是过滤器行 +
+         双视图列表 + FlipView 详情条 -->
+    <SplitView x:Name="Shell" DisplayMode="Inline" OpenPaneLength="230" IsPaneOpen="True">
+        <SplitView.Pane>
+            <StackPanel Margin="8,12" Spacing="8">
+                <TextBlock Text="Categories" FontWeight="SemiBold"/>
+                <!-- 19 章 TreeView：SelectionChanged 真过滤（XAML 里不预选，
+                     避免解析期触发事件） -->
+                <TreeView x:Name="Categories" SelectionMode="Single"
+                          ItemInvoked="OnCategoryInvoked">
+                    <TreeView.RootNodes>
+                        <TreeViewNode Content="All" IsExpanded="True">
+                            <TreeViewNode.Children>
+                                <TreeViewNode Content="Documents"/>
+                                <TreeViewNode Content="Images"/>
+                                <TreeViewNode Content="Audio"/>
+                                <TreeViewNode Content="Archives"/>
+                            </TreeViewNode.Children>
+                        </TreeViewNode>
+                    </TreeView.RootNodes>
+                </TreeView>
+            </StackPanel>
+        </SplitView.Pane>
+
+        <Grid Margin="12,8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- 过滤行：TextBox 名称过滤 + 卡片视图开关 + 计数 -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10">
+                <TextBox x:Name="FilterBox" Width="220" PlaceholderText="filter by name"
+                         TextChanged="OnFilterChanged"/>
+                <ToggleButton x:Name="CardsToggle" Content="Cards" Click="OnCardsToggled"/>
+                <TextBlock x:Name="CountText" VerticalAlignment="Center" Opacity="0.75"/>
+            </StackPanel>
+
+            <!-- 自制表格表头：与 ListView 行模板同栅格（17 章"多列"的朴素做法） -->
+            <Grid Grid.Row="1" Margin="0,10,0,4" Padding="12,0" ColumnSpacing="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Name" FontWeight="SemiBold"/>
+                <TextBlock Grid.Column="1" Text="Kind" FontWeight="SemiBold"/>
+                <TextBlock Grid.Column="2" Text="Size" FontWeight="SemiBold"/>
+                <TextBlock Grid.Column="3" Text="Date" FontWeight="SemiBold"/>
+            </Grid>
+
+            <!-- 双视图共用一份数据源和同一选中逻辑（17/18 章） -->
+            <ListView x:Name="Table" Grid.Row="2"
+                      SelectionMode="Single"
+                      SelectionChanged="OnRowSelected">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="local:FileItem">
+                        <Grid Padding="12,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{x:Bind Name}"/>
+                            <TextBlock Grid.Column="1" Text="{x:Bind Kind}" Opacity="0.75"/>
+                            <TextBlock Grid.Column="2" Text="{x:Bind Size}" Opacity="0.75"/>
+                            <TextBlock Grid.Column="3" Text="{x:Bind Date}" Opacity="0.75"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <GridView x:Name="Cards" Grid.Row="2" Visibility="Collapsed"
+                      SelectionMode="Single"
+                      SelectionChanged="OnCardSelected">
+                <GridView.ItemTemplate>
+                    <DataTemplate x:DataType="local:FileItem">
+                        <StackPanel Width="180" Padding="12" Spacing="4"
+                                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="8">
+                            <TextBlock Text="{x:Bind Name}" FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Text="{x:Bind Kind}" Opacity="0.7"/>
+                            <TextBlock Text="{x:Bind Size}" Opacity="0.7"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+            </GridView>
+
+            <!-- 20 章 FlipView 详情条：选中的行同步到这里，左右键翻 -->
+            <FlipView x:Name="Details" Grid.Row="3" Height="150" Margin="0,8,0,0"
+                      Background="{ThemeResource LayerFillColorDefaultBrush}"
+                      CornerRadius="8"
+                      SelectionChanged="OnDetailChanged">
+                <FlipView.ItemTemplate>
+                    <DataTemplate x:DataType="local:FileItem">
+                        <StackPanel VerticalAlignment="Center" Spacing="6" Margin="24,0">
+                            <TextBlock FontSize="22" FontWeight="Bold" Text="{x:Bind Name}"/>
+                            <TextBlock Opacity="0.8">
+                                <Run Text="{x:Bind Kind}"/>
+                                <Run Text="  ·  "/>
+                                <Run Text="{x:Bind Size}"/>
+                                <Run Text="  ·  "/>
+                                <Run Text="{x:Bind Date}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </FlipView.ItemTemplate>
+            </FlipView>
+        </Grid>
+    </SplitView>
+</Window>

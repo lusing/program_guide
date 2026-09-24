@@ -1,9 +1,0 @@
-// Chapter 8 demo page. Name-wired handlers need no IDL entries.
-namespace BasicGallery
-{
-    [default_interface]
-    runtimeclass TextBlockPage : Microsoft.UI.Xaml.Controls.Page
-    {
-        TextBlockPage();
-    }
-}

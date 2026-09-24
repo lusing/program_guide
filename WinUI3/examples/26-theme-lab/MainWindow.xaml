@@ -1,0 +1,106 @@
+<Window
+    x:Class="ThemeLab.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ThemeLab">
+
+    <!-- 主题实验室：左侧预设列表（真换肤）、中部仪表盘（自定义控件 + VSM
+         + Shape 迷你图）、底部 ColorPicker（实时改全局 accent） -->
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Theme Lab" FontSize="24" FontWeight="Bold" Margin="4,0,0,8"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="240"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 预设列表：代码里按 Presets::All 生成，点击整套换肤 -->
+            <StackPanel Grid.Column="0" Spacing="8" Margin="0,0,12,0">
+                <TextBlock Text="Presets" FontWeight="SemiBold"/>
+                <ListBox x:Name="PresetList" SelectionChanged="OnPresetSelected">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="local:PresetInfo">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <Border Width="22" Height="22" CornerRadius="6">
+                                    <Border.Background>
+                                        <SolidColorBrush Color="{x:Bind Swatch}"/>
+                                    </Border.Background>
+                                </Border>
+                                <TextBlock Text="{x:Bind Name}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <TextBlock x:Name="PresetStatus" Opacity="0.7" TextWrapping="Wrap"/>
+            </StackPanel>
+
+            <!-- 仪表盘：29 章 VSM 按窗口宽切两栏/单栏；28 章换肤时跑过渡动画 -->
+            <Grid x:Name="Dashboard" Grid.Column="1">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup>
+                        <VisualState x:Name="Wide">
+                            <VisualState.StateTriggers>
+                                <AdaptiveTrigger MinWindowWidth="1200"/>
+                            </VisualState.StateTriggers>
+                            <VisualState.Setters>
+                                <Setter Target="Tiles.Columns" Value="2"/>
+                                <Setter Target="Tiles.Rows" Value="2"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Narrow"/>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- 27 章：四个格子全是同一个自定义控件 -->
+                <Grid x:Name="Tiles" Grid.Row="0" Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <local:LabeledValueControl Grid.Column="0" Grid.Row="0" Margin="0,0,6,6"
+                        x:Name="TileUsers" Label="Active users" Value="1,284"/>
+                    <local:LabeledValueControl Grid.Column="1" Grid.Row="0" Margin="6,0,0,6"
+                        x:Name="TileOrders" Label="Orders today" Value="312"/>
+                    <local:LabeledValueControl Grid.Column="0" Grid.Row="1" Margin="0,6,6,0"
+                        x:Name="TileRevenue" Label="Revenue" Value="98.2k"/>
+                    <local:LabeledValueControl Grid.Column="1" Grid.Row="1" Margin="6,6,0,0"
+                        x:Name="TileUptime" Label="Uptime" Value="99.98%"/>
+                </Grid>
+
+                <!-- 30 章 Shape 迷你柱状图：矩形即数据，accent 填充跟随全局资源 -->
+                <StackPanel Grid.Row="1" Spacing="6">
+                    <TextBlock Text="This week (visits)" FontWeight="SemiBold"/>
+                    <Grid x:Name="Chart" Height="220"
+                          Background="{ThemeResource LayerFillColorDefaultBrush}"
+                          CornerRadius="10" Padding="12"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+        <!-- 26 章 ColorPicker：任何颜色都立即变成全局 accent -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="14" Margin="0,12,0,0">
+            <TextBlock Text="Accent" VerticalAlignment="Center" FontWeight="SemiBold"/>
+            <ColorPicker x:Name="AccentPicker" IsColorSliderVisible="True"
+                         IsColorChannelTextInputVisible="False"
+                         IsHexInputVisible="True"
+                         ColorChanged="OnAccentChanged"/>
+            <TextBlock x:Name="AccentStatus" VerticalAlignment="Center" Opacity="0.7"/>
+        </StackPanel>
+    </Grid>
+</Window>

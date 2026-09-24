@@ -1,0 +1,10 @@
+namespace ThemeLab
+{
+    // Bindable row for the preset list: a display name plus a swatch colour.
+    runtimeclass PresetInfo
+    {
+        PresetInfo(String name, Windows.UI.Color swatch);
+        String Name;
+        Windows.UI.Color Swatch;
+    }
+}

@@ -1,8 +1,0 @@
-namespace CollectionsGallery
-{
-    [default_interface]
-    runtimeclass TreeViewPage : Microsoft.UI.Xaml.Controls.Page
-    {
-        TreeViewPage();
-    }
-}

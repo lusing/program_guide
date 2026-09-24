@@ -22,7 +22,9 @@ namespace winrt::SettingsHub::implementation
             // 自定位 + 自适配：级联位置可能把 1225 高的窗口顶出 1234 高的屏，
             // 底部出屏会让注入点击的 release 命中失效；构造期自己挪到
             // (30,30) 是安全的（岛尚未安定），外部再动才会打烂输入变换
-            appWindow.MoveAndResize({ 30, 30, 1890, 1085 });
+            // AppWindow 的 MoveAndResize 实测按逻辑单位解释（30→53、1080→1890）：
+            // 传 1000x620 逻辑 = 1750x1085 物理，构造期自定位 + 完整在屏
+            appWindow.MoveAndResize(Windows::Graphics::RectInt32{ 30, 30, 1080, 620 });
         }
         // 主题恢复由窗口自理：构造链里 App 还没拿到本窗口引用，页面侧恢复会踩空引用（实测崩）
         // hstring theme = SettingsStore::Get(L"theme", L"default");

@@ -1,8 +1,0 @@
-namespace CustomGallery
-{
-    [default_interface]
-    runtimeclass VsmPage : Microsoft.UI.Xaml.Controls.Page
-    {
-        VsmPage();
-    }
-}

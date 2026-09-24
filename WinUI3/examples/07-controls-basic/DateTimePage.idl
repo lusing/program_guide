@@ -1,9 +1,0 @@
-// Chapter 16 demo page. Name-wired handlers need no IDL entries.
-namespace BasicGallery
-{
-    [default_interface]
-    runtimeclass DateTimePage : Microsoft.UI.Xaml.Controls.Page
-    {
-        DateTimePage();
-    }
-}
