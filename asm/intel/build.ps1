@@ -58,7 +58,11 @@ else {
     Write-Host "可用类别:" -ForegroundColor Yellow
     Write-Host "  01_data_movement, 02_arithmetic, 03_logic_bitwise, 04_comparison,"
     Write-Host "  05_control_flow, 06_string_ops, 07_stack_ops, 08_system_misc,"
-    Write-Host "  09_fpu, 10_sse_simd, 11_calculus_mkl"
+    Write-Host "  09_fpu, 10_sse_simd, 11_calculus_mkl, 12_data_repr,"
+    Write-Host "  13_exceptions, 14_threads_sync"
+    Write-Host ""
+    Write-Host "引导链示例（实模式/保护模式/分页/长模式，需 qemu-system-x86_64）:"
+    Write-Host "  cd boot; ./build-boot.sh [01|02|03|04|all]"
 }
 
 Write-Host ""

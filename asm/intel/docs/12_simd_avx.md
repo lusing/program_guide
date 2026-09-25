@@ -587,4 +587,4 @@ zmm 数据一律 `align 64`、以及掩码使用前重新 `kmovw`——opmask �
 
 ---
 
-> 上一章：[Linux 平台移植指南](11_linux.md) ｜ 返回：[README](../README.md)
+> 下一章：[x87 FPU 与浮点运算](13_x87_fpu.md) ｜ 返回：[README](../README.md)

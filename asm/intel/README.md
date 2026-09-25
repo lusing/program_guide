@@ -1,10 +1,11 @@
 # Intel x86-64 汇编编程指南
 
-一份面向 **Windows、macOS 和 Linux** 三平台的 Intel x86-64 汇编语言学习指南。使用 **NASM** 作为汇编器，通过 11 个类别、大量可运行示例，帮助你从零掌握 64 位汇编编程。
+一份面向 **Windows、macOS 和 Linux** 三平台的 Intel x86-64 汇编语言学习指南。使用 **NASM** 作为汇编器，通过 14 个类别、75 个可运行示例，外加一条 **QEMU 实跑的 16→32→64 位引导链**，帮助你从零掌握 64 位汇编编程。
 
 - Windows：`-f win64` + MSVC `link.exe`，示例在 [`examples/`](examples/)
 - macOS：`-f macho64` + `clang`（自动带 libSystem），示例在 [`examples-macos/`](examples-macos/)
 - Linux：`-f elf64` + `gcc -no-pie`（自动带 glibc 启动文件），示例在 [`examples-linux/`](examples-linux/)
+- 引导链（实模式/保护模式/分页/长模式）：`boot/` 目录 + QEMU，见[第 15-17 章](docs/15_real_protected_mode.md)
 - 跨平台差异与移植规则：[macOS 平台移植指南](docs/10_macos_porting.md) · [Linux 平台移植指南](docs/11_linux.md)
 
 > **验证状态**：`examples-macos/` 下 **59 个示例在 macOS 全部实际汇编、链接、运行通过（59/59）**。
@@ -21,12 +22,18 @@
 > - **1 个 AVX-512 示例（`10_sse_simd/avx512_basics.asm`，当时只有 Linux 版，2026-09 已补齐 Windows 版）在本机实测通过**——演示 ZMM 16 路整数加、opmask 合并掩码 `{k1}` 与归零掩码 `{k1}{z}`，本机支持 AVX-512F/DQ/CD/BW/VL 且 XCR0[7:5] 全开，逐通道输出与预期完全吻合（见 [SIMD 进阶](docs/12_simd_avx.md) 第 9 节）；
 > - 至此 `examples-linux/` **60/60** 全部实测通过。
 >   - 本机用的是 apt 自带的 **NASM 2.15.05**（指南标注的 3.02+ 是推荐版本，2.15 汇编这 60 个示例完全没问题，包括 AVX-512 指令与 `{k1}`/`{k1}{z}` 掩码语法）。
-> `examples/`（Windows）下 62 个示例：**全部实际汇编、链接、运行通过（62/62）**，已在两台 Windows 机器上各完整跑过一遍：
+> `examples/`（Windows）下 75 个示例：**全部实际汇编、链接、运行通过（75/75）**，已在两台 Windows 机器上各完整跑过一遍（2026-09 教材大扩充新增 13 支：`09_fpu` 追加控制字/BCD/栈溢出 3 支，新增 `12_data_repr`、`13_exceptions`、`14_threads_sync` 三类——扩充后全量在 i7-12700F 复测 75/75）：
 >
 > | 机器 | 系统 | CPU | NASM | link.exe | 结果 |
 > |------|------|-----|------|----------|------|
-> | i7-12700F（2026-09 首测） | Windows 11 | Intel i7-12700F（Alder Lake，P/E 混合架构） | 3.02 | MSVC 14.52 | 61/61（当时示例 61 个） |
-> | Xeon Platinum（本机复核） | Windows 11 企业版 23H2（10.0.22631） | Intel Xeon Platinum 8378C（Ice Lake-SP，KVM 虚拟机，4 核 8 线程） | 3.02 | MSVC 14.51（VS 2026 18.8） | **62/62** |
+> | i7-12700F（2026-09 首测） | Windows 11 | Intel i7-12700F（Alder Lake，P/E 混合架构） | 3.02 | MSVC 14.52 | 61/61（当时示例 61 个）；扩充后 **75/75** |
+> | Xeon Platinum（本机复核） | Windows 11 企业版 23H2（10.0.22631） | Intel Xeon Platinum 8378C（Ice Lake-SP，KVM 虚拟机，4 核 8 线程） | 3.02 | MSVC 14.51（VS 2026 18.8） | 62/62（当时示例 62 个） |
+>
+> 另有 `boot/` 下 4 支**引导链示例**（实模式 MBR、进保护模式、32 位分页、
+> 64 位长模式）在本机 QEMU 无头模式下实跑验证通过（4/4，`./build-boot.sh all`
+> 自动校验串口输出；QEMU 8.x / Windows 11）。`12_data_repr`、`13_exceptions`、
+> `14_threads_sync` 三类为 Windows 专属（SEH/线程 API），macOS/Linux 镜像暂缺，
+> 概念与可移植部分见各章说明。
 >
 > 两台都包括此前「只做到汇编通过」的 3 个 AVX/AVX2 示例——逐通道数值与 macOS 版一致，
 > Windows 侧实测输出见 [SIMD 进阶](docs/12_simd_avx.md) 第 9 节；本机复核时还补齐了
@@ -140,7 +147,7 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 
 ## 指令类别一览
 
-项目将 x86-64 指令划分为 11 个类别，每个类别对应一个子目录：
+项目将 x86-64 指令划分为 14 个类别，每个类别对应一个子目录（12-14 为 2026-09 教材扩充新增）：
 
 | # | 类别 | 指令数 | 目录 | 说明 |
 |---|------|--------|------|------|
@@ -155,6 +162,9 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 | 9 | 浮点运算（FPU） | 8 | `09_fpu` | FLD、FST、FADD、FMUL、FDIV、FCOM 等 x87 指令 |
 | 10 | SSE/SIMD（SIMD） | 10 | `10_sse_simd` | MOVAPS、ADDPS、MULPS、CVT* 等 SSE 指令，以及 VADDPS / VPMULLD / VFMADD231PS 等 **AVX / AVX2 / FMA** 指令，以及 VPADDD zmm / opmask 等 **AVX-512** 指令（Linux / Windows 版；macOS 机器不支持 AVX-512，未提供） |
 | 11 | 高等数学与数学库（Calculus） | 7 | `11_calculus_mkl` | 数值微分/积分（梯形、辛普森、样条）与厂商数学库调用 |
+| 12 | 数据表示（Data Representation） | 4 | `12_data_repr` | 补码、OF/CF 双视角溢出、IEEE 754 位级、16.16 定点数 |
+| 13 | 异常处理（Exceptions / VEH） | 3 | `13_exceptions` | 除零 / INT3 / 空指针写的向量化异常捕获，CONTEXT 修改 |
+| 14 | 多线程与同步（Threads & Sync） | 3 | `14_threads_sync` | CreateThread、LOCK 原子计数、CMPXCHG 自旋锁、伪共享 |
 
 三侧的示例数量对照：
 
@@ -168,10 +178,14 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 | 06_string_ops | 5 | 5 | 5 |
 | 07_stack_ops | 3 | 3 | 3 |
 | 08_system_misc | 4 | 4 | 4 |
-| 09_fpu | 5 | 5 | 5 |
+| 09_fpu | **8**（+3：控制字/BCD/栈溢出） | 5 | 5 |
 | 10_sse_simd | 9（含 `avx512_basics.asm`，本机实测） | 8 | 9（含 `avx512_basics.asm`，本机实测） |
 | 11_calculus_mkl | 7（5 + 2 个排查脚手架） | 5 | 5 |
-| **合计** | **62** | **59** | **60** |
+| 12_data_repr | 4（Windows 专属） | — | — |
+| 13_exceptions | 3（Windows 专属） | — | — |
+| 14_threads_sync | 3（Windows 专属） | — | — |
+| `boot/`（QEMU 引导链） | 4（平台无关，QEMU 实测） | 同左 | 同左 |
+| **合计** | **75 + 4 boot** | **59** | **60** |
 
 ## 章节索引
 
@@ -189,10 +203,21 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 | [10 macOS 平台移植指南](docs/10_macos_porting.md) | macho64 工具链、平台差异对照、移植铁律与踩坑清单 | `examples-macos/` |
 | [11 Linux 平台移植指南](docs/11_linux.md) | elf64 工具链、libmvec、移植规则与踩坑清单 | `examples-linux/` |
 | [12 SIMD 进阶：AVX / AVX2 / FMA / AVX-512](docs/12_simd_avx.md) | VEX 三操作数、YMM 与 XCR0、vzeroupper、AVX2 整数质变、FMA 单次舍入、AVX-512 ZMM 与 opmask 掩码、运行时降级 | `10_sse_simd/avx_*` `avx2_*` `avx512_*` |
+| [13 x87 FPU 与浮点运算](docs/13_x87_fpu.md) | ST0-ST7 栈机、控制字与四种舍入、fxam 与栈溢出、fbstp BCD | `09_fpu` |
+| [14 数据表示与运算基础](docs/14_data_representation.md) | 补码、OF/CF 双视角溢出、IEEE 754 位级、16.16 定点 | `12_data_repr` |
+| [15 实模式与保护模式](docs/15_real_protected_mode.md) | 段:偏移、主引导扇区、GDT/选择子/特权级、CR0.PE 切换 | `boot/01` `boot/stage1` `boot/02` |
+| [16 分页与虚拟内存](docs/16_paging.md) | 两级页表 10-10-12、PDE/PTE 格式、TLB、#PF 与按需调页 | `boot/03` |
+| [17 长模式：进入 64 位](docs/17_long_mode.md) | IA-32e、PAE+4级分页+EFER.LME+PG 切换序列、canonical 地址 | `boot/04` |
+| [18 中断与异常](docs/18_interrupts_exceptions.md) | fault/trap/abort、IVT/IDT、8259A→APIC、Windows VEH/SEH | `13_exceptions` |
+| [19 多核与原子同步](docs/19_multicore_atomic.md) | 数据竞争、LOCK、cmpxchg 自旋锁与 EAX 陷阱、内存序、伪共享 | `14_threads_sync` |
+| [20 MASM ↔ NASM 对照与教材阅读指南](docs/20_masm_nasm.md) | 两大语法逐项对照、invoke 展开、DOS 教材示例现代化路径 | — |
 
 学习路线：01–04 语言与内存模型 → 05–07 标志 / 调用约定 / 栈帧（核心硬骨头）→
-08–09 调试与混合架构 → 10–11 跨平台移植 → 12 SIMD 进阶收束；`09_fpu`
-与 `10_sse_simd` 类别可在中级后随时穿插实践。
+08–09 调试与混合架构 → 10–11 跨平台移植 → 12 SIMD 进阶 →
+13–14 x87 FPU 与数据表示（数值基础）→ 15–17 实模式/保护模式/分页/长模式
+（配合 `boot/` 引导链，参考李忠两本书）→ 18–19 中断与多核同步（内核视角）
+→ 20 MASM↔NASM 对照（衔接王爽/罗云彬/大学教材）；`09_fpu` 与 `10_sse_simd`
+类别可在中级后随时穿插实践。
 
 ## 目录结构
 
@@ -214,7 +239,22 @@ intel/
 │   ├── 09_hybrid_architecture.md # Intel 混合架构（P核/E核）
 │   ├── 10_macos_porting.md       # macOS 工具链与移植指南
 │   ├── 11_linux.md               # Linux 工具链与移植指南
-│   └── 12_simd_avx.md            # SIMD 进阶：AVX / AVX2 / FMA / AVX-512
+│   ├── 12_simd_avx.md            # SIMD 进阶：AVX / AVX2 / FMA / AVX-512
+│   ├── 13_x87_fpu.md             # x87 FPU 与浮点运算
+│   ├── 14_data_representation.md # 数据表示与运算基础
+│   ├── 15_real_protected_mode.md # 实模式与保护模式
+│   ├── 16_paging.md              # 分页与虚拟内存
+│   ├── 17_long_mode.md           # 长模式：进入 64 位
+│   ├── 18_interrupts_exceptions.md # 中断与异常
+│   ├── 19_multicore_atomic.md    # 多核与原子同步
+│   └── 20_masm_nasm.md           # MASM ↔ NASM 对照与教材阅读指南
+├── boot/                         # QEMU 引导链（-f bin 裸二进制）
+│   ├── build-boot.sh             # 汇编 + 制盘 + QEMU 无头运行 + 串口校验
+│   ├── 01_mbr_hello.asm          # 实模式主引导扇区（段:偏移演示）
+│   ├── stage1.asm                # 共享加载器（BIOS 扩展读 INT 13h AH=42h）
+│   ├── 02_pm32.asm               # 进入 32 位保护模式（GDT / CR0.PE）
+│   ├── 03_paging.asm             # 32 位两级分页（恒等 + 高端映射）
+│   └── 04_long64.asm             # 完整 16→32→64 引导链（长模式）
 ├── lib/
 │   ├── mac_io.inc                # macOS 输出辅助例程（%include 用）
 │   └── linux_io.inc              # Linux 输出辅助例程（%include 用）
@@ -222,7 +262,10 @@ intel/
 │   ├── 01_data_movement/
 │   ├── 02_arithmetic/
 │   ├── ...
-│   └── 11_calculus_mkl/
+│   ├── 11_calculus_mkl/
+│   ├── 12_data_repr/             # 补码 / 溢出 / IEEE 754 / 定点
+│   ├── 13_exceptions/            # Windows VEH：除零 / int3 / 空指针写
+│   └── 14_threads_sync/          # 原子计数 / cmpxchg 自旋锁 / 伪共享
 ├── examples-macos/               # macOS 示例（-f macho64）
 │   ├── README.md                 # macOS 示例索引与对照表
 │   ├── 01_data_movement/
@@ -255,6 +298,14 @@ intel/
 .\build.ps1 -Category 01_data_movement    # 构建指定类别
 .\build.ps1 -Clean                        # 清理构建产物
 .\build.ps1                               # 查看帮助
+```
+
+### 引导链（QEMU）
+
+```bash
+cd boot
+./build-boot.sh            # 汇编 + 制盘 + QEMU 无头运行 + 串口输出校验（01-04 全部）
+./build-boot.sh 02         # 只跑 02_pm32（进保护模式）
 ```
 
 ### macOS
