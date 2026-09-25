@@ -41,12 +41,12 @@ fmt_done: .string "Spline integrate demo completed.\n"
 
 .bss
 	.align 16
-xa: .zero NNODES*8	# 节点 x_i
-ya: .zero NNODES*8	# 节点 y_i = sin(x_i)
-mm: .zero NNODES*8	# 二阶导 M_i（M_0 = M_20 = 0）
-w_rhs: .zero NNODES*8	# 右端项
-w_cp: .zero NNODES*8	# Thomas 的 c'
-w_dp: .zero NNODES*8	# Thomas 的 d'
+xa: .zero (NNODES)*8	# 节点 x_i
+ya: .zero (NNODES)*8	# 节点 y_i = sin(x_i)
+mm: .zero (NNODES)*8	# 二阶导 M_i（M_0 = M_20 = 0）
+w_rhs: .zero (NNODES)*8	# 右端项
+w_cp: .zero (NNODES)*8	# Thomas 的 c'
+w_dp: .zero (NNODES)*8	# Thomas 的 d'
 
 
 .text
@@ -70,9 +70,9 @@ spline_eval:
     jns	.L_spline_evalnonneg
     xorl	%eax, %eax
 .L_spline_evalnonneg:
-    cmpl	NSEG - 1, %eax
+    cmpl	$NSEG - 1, %eax
     jle	.L_spline_evalok
-    movl	NSEG - 1, %eax
+    movl	$NSEG - 1, %eax
 .L_spline_evalok:
     movslq	%eax, %rax
 
@@ -199,7 +199,7 @@ main:
     mulsd	%xmm7, %xmm0
     movsd	%xmm0, (%r15,%rcx,8)
     incl	%ecx
-    cmpl	NNODES - 1, %ecx	# 到 19
+    cmpl	$NNODES - 1, %ecx	# 到 19
     jb	.L_mainrhs
 
 # --------------------------------------------------------
@@ -228,10 +228,10 @@ main:
     movapd	%xmm1, %xmm3
     movapd	%xmm2, %xmm4
     incl	%ecx
-    cmpl	NNODES - 1, %ecx
+    cmpl	$NNODES - 1, %ecx
     jb	.L_mainfwd
 
-    movl	NNODES - 2, %ecx	# 19
+    movl	$NNODES - 2, %ecx	# 19
     movsd	(%rsi,%rcx,8), %xmm0
     movsd	%xmm0, (%r14,%rcx,8)	# M_19 = dp_19
     decl	%ecx	# 18 … 1

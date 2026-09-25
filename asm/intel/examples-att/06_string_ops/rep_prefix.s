@@ -52,7 +52,7 @@ main:
     movb	$0, dest_buf+src_len(%rip)	# 补上字符串结尾
 
     leaq	fmt_movsb(%rip), %rdi
-    movq	src_str, %rsi
+    leaq	src_str(%rip), %rsi
     leaq	dest_buf(%rip), %rdx
     xorl	%eax, %eax
     call	printf
@@ -88,7 +88,7 @@ main:
     testb	%r12b, %r12b
     jz	.L_mainneq3	# 本例不会走到这里
     leaq	fmt_cmp_eq(%rip), %rdi
-    movq	cmp1, %rsi
+    leaq	cmp1(%rip), %rsi
     leaq	cmp2_same(%rip), %rdx
     xorl	%eax, %eax
     call	printf
@@ -113,7 +113,7 @@ main:
     testb	%r12b, %r12b
     jnz	.L_maineq4
     leaq	fmt_cmp_df(%rip), %rdi
-    movq	cmp1, %rsi
+    leaq	cmp1(%rip), %rsi
     leaq	cmp2_diff(%rip), %rdx
     movq	%r14, %rcx	# 首个不同的位置
     xorl	%eax, %eax
@@ -121,7 +121,7 @@ main:
     jmp	.L_mainskip4
 .L_maineq4:
     leaq	fmt_cmp_eq(%rip), %rdi
-    movq	cmp1, %rsi
+    leaq	cmp1(%rip), %rsi
     leaq	cmp2_diff(%rip), %rdx
     xorl	%eax, %eax
     call	printf

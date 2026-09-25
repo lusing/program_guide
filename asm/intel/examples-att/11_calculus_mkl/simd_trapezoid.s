@@ -38,7 +38,7 @@ fmt_done: .string "SIMD trapezoid demo completed.\n"
 
 .bss
 	.align 16
-x_arr: .zero N+1*4	# x_i = i·h
+x_arr: .zero (N+1)*4	# x_i = i·h
 
 # ============================================================
 # 两条 Horner 链写成 NASM 宏，在各自的循环体里展开

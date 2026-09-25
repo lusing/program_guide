@@ -43,11 +43,11 @@
 > |------|------|------|--------|
 > | NASM（主版本） | Windows 78 + boot 4 + Linux 60 + macOS 59 | **全部实测** | nasm 3.02 / MSVC / gcc / clang |
 > | MASM（`examples-masm/`） | Windows 78 支全量镜像 | **78/78 实测**（`build-masm.ps1 -All`） | ml64 14.52 + link |
-> | AT&T（`examples-att/`） | Linux 54/60 支镜像 | 54 支实测通过；`rep_prefix`/`stosb`/`sse_mov` 与 11 类 4 支共 **6 支运行期待修**（半自动翻译器深水区） | GNU as 2.41 / gcc 12.3（WSL Deepin） |
+> | AT&T（`examples-att/`） | Linux 60 支全量镜像 | **60/60 实测通过**（WSL Ubuntu-26.04：GNU as 2.46 / gcc 15.2 / glibc 2.43；亦曾在 WSL Deepin as 2.41 验证 54 支） | GNU as + gcc |
 >
 > MASM/AT&T 版由 NASM 版半自动翻译 + 人工修正生成（翻译器淬炼出的语法坑已回填进
-> [第 20 章](docs/20_masm_nasm.md)对照表）。AT&T 版剩余 6 支不通过的已知问题与
-> 复现方法记录在 `examples-att/` 目录的构建日志中。
+> [第 20 章](docs/20_masm_nasm.md)对照表）。`build-att.sh` 在任意 Linux/WSL 上：
+> `cd asm/intel && ./build-att.sh`（11 类需 `libmvec`，Ubuntu/Debian 在 glibc 包内）。
 >
 > 两台都包括此前「只做到汇编通过」的 3 个 AVX/AVX2 示例——逐通道数值与 macOS 版一致，
 > Windows 侧实测输出见 [SIMD 进阶](docs/12_simd_avx.md) 第 9 节；本机复核时还补齐了

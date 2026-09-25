@@ -26,9 +26,9 @@ fmt_done: .string "SIMD derivative demo completed.\n"
 
 .bss
 	.align 16
-f_arr: .zero N+1*4	# sin(x_i)
-c_arr: .zero N+1*4	# 参考用的 cos(x_i)
-d_arr: .zero N+1*4	# 差分求出的导数
+f_arr: .zero (N+1)*4	# sin(x_i)
+c_arr: .zero (N+1)*4	# 参考用的 cos(x_i)
+d_arr: .zero (N+1)*4	# 差分求出的导数
 
 
 .text
@@ -108,7 +108,7 @@ main:
     mulps	%xmm4, %xmm0	# ÷ 2h
     movups	%xmm0, 4(%r12,%rcx)	# 存 der[i..i+3]
     addl	$16, %ecx
-    cmpl	(N-8)*4, %ecx	# 覆盖 i = 1..1020（255 组 × 4）
+    cmpl	$(N-8)*4, %ecx	# 覆盖 i = 1..1020（255 组 × 4）
     jbe	.L_mainvloop
 
 # --------------------------------------------------------
@@ -125,7 +125,7 @@ main:
     andps	%xmm5, %xmm0
     maxps	%xmm0, %xmm3
     addl	$16, %ecx
-    cmpl	(N-8)*4, %ecx
+    cmpl	$(N-8)*4, %ecx
     jbe	.L_maineloop
 
 # 水平归约：把 4 条通道的最大值压成 1 个

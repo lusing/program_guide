@@ -120,7 +120,7 @@ main:
     addps	%xmm2, %xmm3	# 累加
     addps	%xmm8, %xmm10	# idx += 4
     addl	$4, %ecx
-    cmpl	N - 4, %ecx	# 处理 i = 1..1020
+    cmpl	$N - 4, %ecx	# 处理 i = 1..1020
     jb	.L_mainvloop
 
 # 水平归约
@@ -137,7 +137,7 @@ main:
 # 奇数下标权重 4，偶数权重 2
 # --------------------------------------------------------
     pxor	%xmm7, %xmm7
-    movl	N - 3, %ecx	# 1021
+    movl	$N - 3, %ecx	# 1021
 .L_maintail:
     cvtsi2ss	%ecx, %xmm0
     mulss	f_h(%rip), %xmm0
@@ -151,7 +151,7 @@ main:
 .L_mainacc:
     addss	%xmm0, %xmm7
     incl	%ecx
-    cmpl	N - 1, %ecx	# 1023
+    cmpl	$N - 1, %ecx	# 1023
     jbe	.L_maintail
     movss	%xmm7, -16(%rbp)
 

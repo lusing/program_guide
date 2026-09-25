@@ -32,7 +32,7 @@ fmt_done: .string "SSE data movement demo completed.\n"
     movss	xmm_buf+\p1, %xmm0	# 取第 \p2 个 float
     cvtss2sd	%xmm0, %xmm0	# float -> double（%f 要 double）
     leaq	fmt_elem(%rip), %rdi
-    movl	\p2, %esi
+    movl	$\p2, %esi
     movl	$1, %eax	# 用了 1 个向量寄存器
     call	printf
 .endm

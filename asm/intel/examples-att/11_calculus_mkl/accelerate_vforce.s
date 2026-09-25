@@ -25,10 +25,10 @@ fmt_done: .string "libmvec demo completed.\n"
 
 .bss
 	.align 16
-x_arr: .zero N*4
-y_sin: .zero N*4
-y_cos: .zero N*4
-y_exp: .zero N*4
+x_arr: .zero (N)*4
+y_sin: .zero (N)*4
+y_cos: .zero (N)*4
+y_exp: .zero (N)*4
 
 
 .text
