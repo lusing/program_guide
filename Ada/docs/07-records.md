@@ -55,5 +55,5 @@ end record;
 ```
 
 ---
-上一章：[06 数组与字符串](06-arrays-strings.md) ｜ 下一章：[08 包](08-packages.md) ｜ 返回：[README](../README.md)
+上一章：[06 数组与字符串](06-arrays-strings.md) ｜ 下一章：[08 判别类型](08-discriminants.md) ｜ 返回：[README](../README.md)
 

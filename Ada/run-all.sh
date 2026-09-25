@@ -2,7 +2,7 @@
 # ============================================================
 # run-all.sh —— Linux/macOS 版全量编译运行脚本（等价于 build.ps1）
 #
-#   ./run-all.sh            编译并运行全部 17 个示例，打印通过/失败摘要
+#   ./run-all.sh            编译并运行全部 25 个示例，打印通过/失败摘要
 #   ./run-all.sh -v         附带每个示例的完整输出
 #   ./run-all.sh 01 13      只跑指定章节编号（如 01 13 16）
 #   ./run-all.sh --clean    清理 build 目录
@@ -13,9 +13,9 @@
 #   build.ps1 -Clean   ->  ./run-all.sh --clean
 #
 # 平台差异（相对 Windows build.ps1）：
-#   * ch14_c_interop 导入 C 的 sqrtf，Linux 下数学函数在独立的
+#   * ch20_c_interop 导入 C 的 sqrtf，Linux 下数学函数在独立的
 #     libm 中，链接时必须附加 -largs -lm（Windows UCRT 无需）
-#   * ch17_contracts / ch18_spark 需 -gnata 启用契约断言检查
+#   * ch24_contracts / ch25_spark 需 -gnata 启用契约断言检查
 #   * gnatmake 从 PATH 定位，也可用环境变量 GNATMAKE 指定
 # ============================================================
 set -u
@@ -66,17 +66,25 @@ UNITS=(
     "05:ch05_subprograms:"
     "06:ch06_arrays:"
     "07:ch07_records:"
-    "08:ch08_packages:"
-    "09:ch09_exceptions:"
-    "10:ch10_generics:"
-    "11:ch11_oop:"
-    "12:ch12_tasking:"
-    "13:ch13_fileio:"
-    "14:ch14_c_interop:-largs -lm"
-    "15:ch15_containers:"
+    "08:ch08_discriminants:"
+    "09:ch09_access:"
+    "10:ch10_packages:"
+    "11:ch11_exceptions:"
+    "12:ch12_generics:"
+    "13:ch13_generics_deep:"
+    "14:ch14_oop:"
+    "15:ch15_tasking:"
     "16:ch16_protected:"
-    "17:ch17_contracts:-gnata"
-    "18:ch18_spark:-gnata"
+    "17:ch17_select:"
+    "18:ch18_fileio:"
+    "19:ch19_files:"
+    "20:ch20_c_interop:-largs -lm"
+    "21:ch21_lowlevel:"
+    "22:ch22_fixed:"
+    "23:ch23_containers:"
+    "24:ch24_contracts:-gnata"
+    "25:ch25_spark:-gnata"
+    "26:ch26_separate:"
 )
 
 TIMEOUT=""
@@ -114,7 +122,7 @@ for spec in "${UNITS[@]}"; do
         continue
     fi
 
-    # 统一在 build/ 下运行：ch13_fileio 会在当前目录创建数据文件
+    # 统一在 build/ 下运行：ch18_fileio 会在当前目录创建数据文件
     if ! ( cd "$BUILD_DIR" && $TIMEOUT "./$name" >"$name.out" 2>"$name.err" ); then
         rc=$?
         echo "  [FAIL] $name —— 运行失败（退出码 $rc，见 build/$name.out/.err）"

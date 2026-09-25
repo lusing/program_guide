@@ -1,0 +1,48 @@
+# 14 · 面向对象编程
+
+> 示例：[`examples/ch14_oop.adb`](../examples/ch14_oop.adb)
+> 运行：`./run-all.sh 11`
+
+## 14.1 基类 (Tagged Type)
+
+```ada
+type Shape is tagged record
+   Name : String (1 .. 20) := (others => ' ');
+end record;
+
+function Area (S : Shape) return Float is (0.0);
+procedure Print (S : Shape);
+```
+
+## 14.2 派生类
+
+```ada
+type Circle is new Shape with record
+   Radius : Float := 0.0;
+end record;
+
+overriding function Area (C : Circle) return Float;
+overriding procedure Print (C : Circle);
+```
+
+## 14.3 多态分发 (Dynamic Dispatch)
+
+```ada
+-- Class-wide 类型参数实现动态分发
+procedure Print_Shape_Info (S : Shape'Class) is
+begin
+   Print (S);  -- dispatching call
+end Print_Shape_Info;
+```
+
+## 14.4 关键概念
+
+| 关键字 | 说明 |
+|--------|------|
+| `tagged record` | 标记记录，支持继承和多态 |
+| `overriding` | 显式覆盖父类方法 |
+| `Shape'Class` | 类范围类型，包含 Shape 及其所有派生类 |
+
+---
+上一章：[13 泛型进阶](13-generics-deep.md) ｜ 下一章：[15 Tasking](15-tasking.md) ｜ 返回：[README](../README.md)
+
