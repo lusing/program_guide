@@ -188,6 +188,50 @@ Program received signal SIGSEGV, Segmentation fault.
 
 这些和 macOS 上是同一组病根，只是「崩溃现场」从 dyld/libSystem 换成了 `__libc_start_main`/libc：第 7 节「段错误 139，崩溃点在 dyld 里」在 Linux 上就是「崩溃点在 `__libc_start_main` 里」，修法完全相同。
 
+## 硬件断点：调试寄存器 DR0–DR7
+
+x64dbg / WinDbg 界面里的「硬件断点」不修改任何代码字节——它用的是
+x86 自带的 **8 个调试寄存器**（《80X86汇编语言程序设计教程》11.2 节
+有原理与实例）：
+
+| 寄存器 | 作用 |
+|--------|------|
+| DR0–DR3 | 4 个断点槽：各存一个**线性地址** |
+| DR4/DR5 | 保留（等价 DR6/DR7） |
+| DR6 | 状态：B0–B3 位指示哪个槽命中（其余位由调试陷阱置位） |
+| DR7 | 控制：每槽 L/G（局部/全局使能）、RW（00=执行 01=写 11=读写）、LEN（00=1B…11=8B） |
+
+三个关键语义（可在配套示例
+[`examples/08_system_misc/hw_breakpoint.asm`](../examples/08_system_misc/hw_breakpoint.asm)
+里实测）：
+
+1. **执行断点（RW=00）是 fault**：在指令执行**前**触发，进入处理器时
+   `Rip == DR0`。实测输出：`Rip == DR0 == 0x...EDC0`；
+2. 触发异常码是 `0x80000004`（EXCEPTION_SINGLE_STEP，#DB 与单步共用）；
+   本机实测 `Dr6 = 0xFFFF0FF1`——低 4 位的 B0 置位表示槽 0 命中，
+   高位是 Windows 调试支撑置的标志；
+3. **RW=01/11 是「数据断点」（watchpoint）**：地址被读/写时触发——
+   软件断点做不到的「谁改了这个变量」就靠它。
+
+用户态设置走 `Get/SetThreadContext` 携带
+`CONTEXT_DEBUG_REGISTERS`（x64 CONTEXT 偏移：Dr0=+0x48、Dr6=+0x68、
+Dr7=+0x70）：
+
+```nasm
+        mov dword [rdx+0x30], 0x00100010  ; ContextFlags
+        call GetThreadContext             ; 先取，再改 Dr0/Dr7，再 Set
+        ...
+        mov qword [rdp_ctx + 0x48], rax   ; Dr0 = 目标地址
+        mov qword [rdp_ctx + 0x70], 1     ; Dr7 = L0（槽0局部使能）
+```
+
+处理器里清 `Dr7` 后 `CONTINUE_EXECUTION`，断点指令重执行不再触发
+（fault 语义 + 已关闭，不会死循环——对比[第 18 章](18_interrupts_exceptions.md)
+里 INT3 的 trap/Rip 回拨坑）。
+
+硬件断点只有 4 个槽、且对地址有对齐/长度约束；好处是不动代码
+（自校验代码、ROM）、能在不暂停写权限的场景抓数据写入。
+
 ## NASM 调试信息（-g）
 
 默认情况下 NASM 不生成调试信息，调试器中只能看到机器码与地址。添加 `-g` 参数可生成调试信息，让调试器显示源码行号与符号：

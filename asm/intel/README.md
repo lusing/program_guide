@@ -1,10 +1,12 @@
 # Intel x86-64 汇编编程指南
 
-一份面向 **Windows、macOS 和 Linux** 三平台的 Intel x86-64 汇编语言学习指南。使用 **NASM** 作为汇编器，通过 14 个类别、75 个可运行示例，外加一条 **QEMU 实跑的 16→32→64 位引导链**，帮助你从零掌握 64 位汇编编程。
+一份面向 **Windows、macOS 和 Linux** 三平台、覆盖 **NASM / MASM / AT&T 三套语法** 的 Intel x86-64 汇编学习指南：14 个类别、78 个 Windows 示例（NASM 版），同批示例的 **MASM 全量镜像（78 支）**与 **AT&T/Linux 镜像（54 支）**，外加一条 **QEMU 实跑的 16→32→64 位引导链**。
 
-- Windows：`-f win64` + MSVC `link.exe`，示例在 [`examples/`](examples/)
-- macOS：`-f macho64` + `clang`（自动带 libSystem），示例在 [`examples-macos/`](examples-macos/)
-- Linux：`-f elf64` + `gcc -no-pie`（自动带 glibc 启动文件），示例在 [`examples-linux/`](examples-linux/)
+- Windows·NASM：`-f win64` + MSVC `link.exe`，示例在 [`examples/`](examples/)
+- Windows·MASM：`ml64.exe` + 同一套 link，镜像在 [`examples-masm/`](examples-masm/)（语法对照见[第 20 章](docs/20_masm_nasm.md)）
+- Linux·NASM：`-f elf64` + `gcc -no-pie`，示例在 [`examples-linux/`](examples-linux/)
+- Linux·AT&T：GNU `as` + gcc，镜像在 [`examples-att/`](examples-att/)（GNU as 语法练习场）
+- macOS：`-f macho64` + `clang`，示例在 [`examples-macos/`](examples-macos/)
 - 引导链（实模式/保护模式/分页/长模式）：`boot/` 目录 + QEMU，见[第 15-17 章](docs/15_real_protected_mode.md)
 - 跨平台差异与移植规则：[macOS 平台移植指南](docs/10_macos_porting.md) · [Linux 平台移植指南](docs/11_linux.md)
 
@@ -34,6 +36,18 @@
 > 自动校验串口输出；QEMU 8.x / Windows 11）。`12_data_repr`、`13_exceptions`、
 > `14_threads_sync` 三类为 Windows 专属（SEH/线程 API），macOS/Linux 镜像暂缺，
 > 概念与可移植部分见各章说明。
+
+> **三语法验证状态**（2026-09-26 追加）：
+>
+> | 语法 | 范围 | 验证 | 工具链 |
+> |------|------|------|--------|
+> | NASM（主版本） | Windows 78 + boot 4 + Linux 60 + macOS 59 | **全部实测** | nasm 3.02 / MSVC / gcc / clang |
+> | MASM（`examples-masm/`） | Windows 78 支全量镜像 | **78/78 实测**（`build-masm.ps1 -All`） | ml64 14.52 + link |
+> | AT&T（`examples-att/`） | Linux 54/60 支镜像 | 54 支实测通过；`rep_prefix`/`stosb`/`sse_mov` 与 11 类 4 支共 **6 支运行期待修**（半自动翻译器深水区） | GNU as 2.41 / gcc 12.3（WSL Deepin） |
+>
+> MASM/AT&T 版由 NASM 版半自动翻译 + 人工修正生成（翻译器淬炼出的语法坑已回填进
+> [第 20 章](docs/20_masm_nasm.md)对照表）。AT&T 版剩余 6 支不通过的已知问题与
+> 复现方法记录在 `examples-att/` 目录的构建日志中。
 >
 > 两台都包括此前「只做到汇编通过」的 3 个 AVX/AVX2 示例——逐通道数值与 macOS 版一致，
 > Windows 侧实测输出见 [SIMD 进阶](docs/12_simd_avx.md) 第 9 节；本机复核时还补齐了
@@ -152,13 +166,13 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 | # | 类别 | 指令数 | 目录 | 说明 |
 |---|------|--------|------|------|
 | 1 | 数据传送（Data Movement） | 9 | `01_data_movement` | MOV、LEA、XCHG、PUSH/POP、CMOVcc 等数据移动指令 |
-| 2 | 算术运算（Arithmetic） | 9 | `02_arithmetic` | ADD、SUB、MUL、DIV、INC、DEC、NEG 等算术运算 |
-| 3 | 逻辑与位运算（Logic & Bitwise） | 13 | `03_logic_bitwise` | AND、OR、XOR、NOT、SHL、SHR、ROL、BT 等位操作 |
+| 2 | 算术运算（Arithmetic） | 10 | `02_arithmetic` | ADD、SUB、MUL、DIV、INC、DEC、NEG 等算术运算，以及 128 位多精度（add/adc、sub/sbb、mul 64x64→128） |
+| 3 | 逻辑与位运算（Logic & Bitwise） | 14 | `03_logic_bitwise` | AND、OR、XOR、NOT、SHL、SHR、ROL、BT 等位操作，位域打包/解包与 popcount |
 | 4 | 比较与测试（Comparison） | 5 | `04_comparison` | CMP、TEST、SETcc 等比较与条件设置指令 |
 | 5 | 控制流（Control Flow） | 8 | `05_control_flow` | JMP、Jcc、CALL、RET、LOOP 等跳转与循环指令 |
 | 6 | 字符串操作（String Operations） | 8 | `06_string_ops` | MOVS、STOS、LODS、CMPS、SCAS 及 REP 前缀 |
 | 7 | 栈操作（Stack Operations） | 6 | `07_stack_ops` | PUSH、POP、ENTER、LEAVE 等栈管理指令 |
-| 8 | 系统与杂项（System & Misc） | 6 | `08_system_misc` | SYSCALL、CPUID、RDTSC、NOP、HLT 等 |
+| 8 | 系统与杂项（System & Misc） | 7 | `08_system_misc` | SYSCALL、CPUID、RDTSC、NOP、HLT 等，DR0/DR7 硬件断点 |
 | 9 | 浮点运算（FPU） | 8 | `09_fpu` | FLD、FST、FADD、FMUL、FDIV、FCOM 等 x87 指令 |
 | 10 | SSE/SIMD（SIMD） | 10 | `10_sse_simd` | MOVAPS、ADDPS、MULPS、CVT* 等 SSE 指令，以及 VADDPS / VPMULLD / VFMADD231PS 等 **AVX / AVX2 / FMA** 指令，以及 VPADDD zmm / opmask 等 **AVX-512** 指令（Linux / Windows 版；macOS 机器不支持 AVX-512，未提供） |
 | 11 | 高等数学与数学库（Calculus） | 7 | `11_calculus_mkl` | 数值微分/积分（梯形、辛普森、样条）与厂商数学库调用 |
@@ -171,13 +185,13 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 | 类别 | `examples/`（Windows） | `examples-macos/`（macOS） | `examples-linux/`（Linux） |
 |------|----------------------|--------------------------|---------------------------|
 | 01_data_movement | 7 | 7 | 7 |
-| 02_arithmetic | 7 | 7 | 7 |
-| 03_logic_bitwise | 4 | 4 | 4 |
+| 02_arithmetic | 8 | 7 | 7 |
+| 03_logic_bitwise | 5 | 4 | 4 |
 | 04_comparison | 2 | 2 | 2 |
 | 05_control_flow | 9 | 9 | 9 |
 | 06_string_ops | 5 | 5 | 5 |
 | 07_stack_ops | 3 | 3 | 3 |
-| 08_system_misc | 4 | 4 | 4 |
+| 08_system_misc | 5 | 4 | 4 |
 | 09_fpu | **8**（+3：控制字/BCD/栈溢出） | 5 | 5 |
 | 10_sse_simd | 9（含 `avx512_basics.asm`，本机实测） | 8 | 9（含 `avx512_basics.asm`，本机实测） |
 | 11_calculus_mkl | 7（5 + 2 个排查脚手架） | 5 | 5 |
@@ -185,7 +199,7 @@ gcc -no-pie build/mov_basic.o -o build/mov_basic
 | 13_exceptions | 3（Windows 专属） | — | — |
 | 14_threads_sync | 3（Windows 专属） | — | — |
 | `boot/`（QEMU 引导链） | 4（平台无关，QEMU 实测） | 同左 | 同左 |
-| **合计** | **75 + 4 boot** | **59** | **60** |
+| **合计** | **78 + 4 boot** | **59** | **60**（另有 AT&T 镜像 54，见上表） |
 
 ## 章节索引
 
@@ -266,6 +280,11 @@ intel/
 │   ├── 12_data_repr/             # 补码 / 溢出 / IEEE 754 / 定点
 │   ├── 13_exceptions/            # Windows VEH：除零 / int3 / 空指针写
 │   └── 14_threads_sync/          # 原子计数 / cmpxchg 自旋锁 / 伪共享
+├── examples-masm/                # MASM 版 Windows 示例（ml64，78 支全量镜像）
+├── examples-att/                 # AT&T 版 Linux 示例（GNU as，54 支）
+├── lib-att/                      # AT&T 版输出辅助库 att_io.s
+├── build-masm.ps1                # MASM 版构建入口（ml64 -> link -> 运行）
+├── build-att.sh                  # AT&T 版构建脚本（WSL/Linux 里跑）
 ├── examples-macos/               # macOS 示例（-f macho64）
 │   ├── README.md                 # macOS 示例索引与对照表
 │   ├── 01_data_movement/
@@ -298,6 +317,20 @@ intel/
 .\build.ps1 -Category 01_data_movement    # 构建指定类别
 .\build.ps1 -Clean                        # 清理构建产物
 .\build.ps1                               # 查看帮助
+```
+
+### MASM 版（Windows）
+
+```powershell
+.uild-masm.ps1 -All                      # 全量 78 支：ml64 汇编 -> link -> 运行
+.uild-masm.ps1 -Category 01_data_movement
+```
+
+### AT&T 版（WSL / Linux）
+
+```bash
+./build-att.sh                              # GNU as -> gcc -no-pie -> 运行
+./build-att.sh 01                           # 只跑 01 类
 ```
 
 ### 引导链（QEMU）

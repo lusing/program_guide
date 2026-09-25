@@ -96,7 +96,13 @@ main:
 | 过程 | `name PROC ... RET name ENDP` | `name: ... ret`（自行保存寄存器） |
 | 调用 API | `invoke MessageBoxA, hWnd, lpText, ...` | 手工布参（rcx/rdx/r8/r9/栈）+ `call` |
 | 宏 | `name MACRO ... ENDM` | `%macro name nargs ... %endmacro` |
+| 宏内参数 | `parm`（按名引用） | `%1`、`%2`…（按序号，`%rep` 里配 `%%label` 生成唯一标号） |
+| 重复汇编 | `REPT n ... ENDM` | `%rep n ... %endrep` |
+| 重复汇编（列表） | `IRP p, <a,b,c> ... ENDM` | 无直接对应（`%rep` + 手工展开或 `%macro` 重载） |
+| 重复汇编（字符） | `IRPC p, ABC ... ENDM` | 无直接对应（预处理期字符串迭代要 `%rep`+`%strcat` 组合） |
 | 条件汇编 | `IF/ELSE/ENDIF`（伪指令） | `%if/%else/%endif` |
+| 条件汇编（定义检查） | `IFDEF/IFNDEF name` | `%ifdef/%ifndef name` |
+| 宏库 | `INCLUDE macro.lib`（宏库 = 纯宏文件） | `%include "macro.inc"`（同名文件即可） |
 | 包含文件 | `include windows.inc` | `%include "xxx.inc"` |
 | 当前位置计数器 | `$` | `$`（本指令地址）；`$$` = 段起始 |
 | 对齐 | `ALIGN 16` | `align 16` |
@@ -157,9 +163,11 @@ Win32 下 `invoke f, a, b, c` ≈ `push c; push b; push a; call f`
 | 书 | 怎么读 |
 |----|--------|
 | 王爽《汇编语言》 | 基础概念最佳入门；示例为 DOS 16 位，按 2.5 现代化 |
+| 《80X86汇编语言程序设计教程》 | 硬件原理参考书：第 7-8 章宏/重复汇编/模块化最系统（本表 MASM 高级伪指令对照的出处），第 10 章保护方式 11 个实例与 TSS/调用门/V86、11.2 调试寄存器是[第 8 章](08_debugging.md)硬件断点与[第 15/17 章](15_real_protected_mode.md)的深挖材料；MASM 5.x 时代注意与 6.x 语法差异 |
 | 《汇编语言程序设计》教材（2019 版） | 系统性参考书：指令集/伪指令/寻址方式的速查手册；DOS 服务部分跳过 |
 | 罗云彬《Win32 汇编》 | Windows 消息循环/资源/SEH(x86 版)的最佳实战书；`invoke` 对照 2.3，x86 SEH 一章与 x64 差异大（见[第 18 章](18_interrupts_exceptions.md)第 5.2 节） |
 | 李忠《从实模式到保护模式》 | 与本教程 [15-16 章](15_real_protected_mode.md)直接对应，NASM 同源 |
+| 《汇编语言编程艺术》（AoA，中译本） | Randall Hyde 的教学经典，但用自创的 HLA 语法（介于 Pascal 与汇编之间）；第 8 章「多精度运算」与第 10 章「位操作」（打包/解包/位计数）是同类书里最深的全科教材，本教程的 `multi_precision.asm` 与 `bit_fields.asm` 即取材于此；读它时按本表对照 HLA→NASM 即可 |
 | 李忠《64 位多处理器多线程操作系统》 | 对应[第 17-19 章](17_long_mode.md)，进阶必读 |
 | Intel SDM（三卷合一） | 一切争议的终审法院——指令语义/CR/MSR/页表格式查它 |
 
