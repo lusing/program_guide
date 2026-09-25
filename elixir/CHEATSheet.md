@@ -126,6 +126,12 @@ GenServer.call(pid, {:put, :k, 1})      # cast 无回复；handle_info 必须有
 | 34 | Windows：raw 文件 `:file.pread` 会把顺序指针挪到读末尾（Unix 不动位置）——别依赖 pread 后的顺序位置，跨平台要显式 `:file.position` | 19 |
 | 35 | Windows：escript 产物无扩展名非 PE，直接 spawn `:eacces`，须经 `System.cmd("escript", [path])` 运行；`System.cmd("mix")`/release `bin/app` 能自动解析到 `.bat` 无需处理 | 22 |
 | 36 | 1.20.4 类型检查器比 1.20.2 较真：`assert is_struct(字面量构造)` 重写出的失败分支被判不可达而告警（测试层 stderr 非空）——用 `struct/2` 动态构造抹掉静态类型 | 03 |
+| 37 | 结构共享实证须用运行时构建的列表（`Enum.to_list`）：字面量住在 BEAM 只读字面量区，`tl/1` 与模式匹配取出的子项指针随求值上下文漂移；`[0] ++ base` 被编译器重写为 cons 照样共享——证「++ 复制左表」必须变量作左操作数 | 25 |
+| 38 | doctest 里空行切断变量作用域（两组 `iex>` 是两个独立会话，「undefined variable」）；重绑前先读一次旧值，否则首次绑定是死代码（unused variable 告警挂零告警门禁）——doctest、测试、run.exs 三处同规矩 | 25–28 |
+| 39 | 闭包三坑：匿名函数必须 `.()` 调用（`flat(1000)` 找的是具名函数）；`upcase = String.upcase` 是调用零参版本不是取引用（要 `&String.upcase/1`）；`&` 造不出零参函数（`&(true)` 编译错，零参只有 `fn -> ... end`） | 26 |
+| 40 | 守卫里不能调用闭包（`when cmp.(a, b)` 编译错——白名单纯函数 only），比较器分派用 if/case；列表对半切用 `div(Enum.count(l), 2)`，`/ 2` 出浮点 `Enum.split` 不收 | 27 |
+| 41 | 同一模块 import 两次，后者**替换**前者（`only:` 合并成一次写全）；自定义运算符宏（如 `~>>`）在测试/doctest/iex 使用处都必须先 `import` 定义模块 | 28 |
+| 42 | 多值返回按参数顺序（`Battle.fight/2` 返回 `{A 终态, B 终态, 战报}`，解构反了英雄变怪物）；`function_exported?/3` 对未加载模块恒 false（批量验契约先 `Code.ensure_loaded!`）；`Map.values/1` 顺序不保证，「全集」要输出顺序就自持 `@order` 键表 | 29 |
 
 ## 验证命令
 

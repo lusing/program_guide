@@ -10,11 +10,11 @@ OTP 29。**零外部依赖、可离线验证**，主线只用标准库
 
 ```text
 elixir/
-  docs/          24 章正文（01 全景 → 24 收官项目）
-  examples/      23 个独立 mix 工程（章号 = 目录号；01 为纯文档章）
+  docs/          29 章正文（01 全景 → 29 领域建模收官）
+  examples/      28 个独立 mix 工程（章号 = 目录号；01 为纯文档章）
   build.ps1      验证脚本（pwsh；-All / -Example NN_topic / -Clean）
   run-all.sh     bash 版双入口
-  CHEATSheet.md  语法速查 + 36 条实测坑位索引
+  CHEATSheet.md  语法速查 + 42 条实测坑位索引
 ```
 
 每个示例工程的最小形态：
@@ -31,8 +31,8 @@ NN_topic/
     └── exNN_topic_test.exs doctest + 多个 test
 ```
 
-部分章（16、22、24）因需要 Application/release/监督树，在 `lib/` 下另有
-拆分模块与 `config/` 配置层。
+部分章（16、22、24、29）因需要 Application/release/监督树/多模块领域
+模型，在 `lib/` 下另有拆分模块与 `config/` 配置层。
 
 ## 章节索引
 
@@ -62,6 +62,11 @@ NN_topic/
 | 22 | [Mix 与 release：三层配置、自定义任务、release、escript、umbrella](docs/22-mix-release.md) |
 | 23 | [宏与元编程 / 类型检查：quote/unquote、卫生性、use、@type/@spec](docs/23-macros-types.md) |
 | 24 | [收官项目：容错缓存 + 并发词频（杀 worker 重试、杀服务自愈）](docs/24-capstone.md) |
+| 25 | [函数式思维：不可变与结构共享、纯函数、声明式（书 ch1）](docs/25-functional-thinking.md) |
+| 26 | [闭包与函数组合：捕获定值、遮蔽、`&` 全形态、compose](docs/26-closures.md) |
+| 27 | [递归进阶：减治/分治、归并排序、无界护栏、自递归](docs/27-recursion-deep.md) |
+| 28 | [纯函数纪律与错误单子：case/rescue/throw/单子/with 五策略](docs/28-purity-monad.md) |
+| 29 | [领域建模：回合制地下城（struct+协议+行为+typespec）](docs/29-dungeon.md) |
 
 ## 怎么跑
 
@@ -77,7 +82,7 @@ mix run run.exs       # 跑分节演示
 ## 验证
 
 ```bash
-./run-all.sh                  # 全量：23 个工程 × 五层
+./run-all.sh                  # 全量：28 个工程 × 五层
 ./run-all.sh 24_capstone      # 单个示例
 ./run-all.sh --clean          # 清理 build/
 pwsh ./build.ps1 -All         # PowerShell 等价入口
@@ -103,5 +108,5 @@ Windows 注意：`mix format` 只认 LF——本目录自带 `.gitattributes` �
 ## 相关教程
 
 同仓库：[haskell](../haskell/)、[julia](../julia/)、[clojure](../clojure/)、
-[erlang](../erlang/)、[rust](../rust/) 等（同一结构标准：24 章分章 +
+[erlang](../erlang/)、[rust](../rust/) 等（同一结构标准：分章文档 +
 章号=示例号 + 坑位清单 + 多层验证）。
