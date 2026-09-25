@@ -74,7 +74,7 @@ swap b = tt , b
 swapIsEquiv : isEquiv swap
 swapIsEquiv .equiv-proof y .fst = snd y , refl
 swapIsEquiv .equiv-proof y .snd (z , p) i =
-  snd (p (~ i)) , λ j → p (j ∨ ~ i)
+  snd (p (~ i)) , λ j → p (j ∨ (~ i))
 
 -- 完整证明：类型等价 → 类型路径。
 boolPath : Bool ≡ B̂

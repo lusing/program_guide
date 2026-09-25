@@ -173,7 +173,7 @@ _ = refl
 -- 18.5 结构之间：monoid 同态（新版 Algebra.Morphism.Structures）
 ------------------------------------------------------------------------
 
--- 同态 = 一个函数 + 保运算（homo）+ 保单位元（ε-homo）。
+-- 同态 = 一个函数 + 保运算（∙-homo）+ 保单位元（ε-homo）。
 -- 注意：Data.Nat.Properties 里的 ^-monoid-morphism 用的是 1.5 版起
 -- 弃用的 IsMonoidMorphism，触碰会报 deprecation 警告；这里手写新 record。
 
@@ -184,7 +184,7 @@ two-pow-hom : IsMonoidHomomorphism +-0-rawMonoid *-1-rawMonoid (2 ^_)
 two-pow-hom = record
   { isMagmaHomomorphism = record
       { isRelHomomorphism = record { cong = cong (2 ^_) }
-      ; homo              = ^-distribˡ-+-* 2
+      ; ∙-homo            = ^-distribˡ-+-* 2
       }
   ; ε-homo = refl                        -- 2 ^ 0 ≡ 1 定义成立
   }
@@ -192,7 +192,7 @@ two-pow-hom = record
 module P = IsMonoidHomomorphism two-pow-hom
 
 pow-distrib : ∀ m n → 2 ^ (m + n) ≡ (2 ^ m) * (2 ^ n)
-pow-distrib = P.homo
+pow-distrib = P.∙-homo
 
 pow-ε : 2 ^ 0 ≡ 1
 pow-ε = P.ε-homo
@@ -202,7 +202,7 @@ length-hom : IsMonoidHomomorphism (++-[]-rawMonoid ℕ) +-0-rawMonoid length
 length-hom = record
   { isMagmaHomomorphism = record
       { isRelHomomorphism = record { cong = cong length }
-      ; homo              = λ xs ys → length-++ xs { ys }
+      ; ∙-homo            = λ xs ys → length-++ xs { ys }
       }
   ; ε-homo = refl
   }
