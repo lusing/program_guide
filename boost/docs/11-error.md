@@ -55,14 +55,17 @@ ec.message();                                    // "网络超时"
 是 timeout? true
 默认构造无错? true
 捕获 system_error: 连接被拒
-std 版: timed out (域 generic)
+std 版: Operation timed out (域 generic)
 ENOENT: 有错=true 值=2（generic 类别）
 自定义类别: mylib.net
+自检通过
 ```
 
 **毕业档案**：`std::error_code`/`std::error_category`/`std::system_error`（C++11，直系——委员会照着 Boost.System 的设计逐条标准化）。boost 版从 1.69 起甚至默认就是 std 的薄包装。**2026 新代码用 `<system_error>`。**
 
 > 实测坑：自定义 `enum class` 错误码**不能**隐式构造 `error_code`（要显式 `(value, category)`），除非为它特化 `is_error_code_enum`；另外 Windows `system_category().message()` 走 **ACP 编码**，中文系统上打印到 UTF-8 终端是乱码——通用错误用 generic 类别。
+>
+> 实测坑（跨平台）：`std::error_code::message()` 的**文案是平台给的**，不是标准规定的。同一个 `ETIMEDOUT`，MSVC 的 `generic_category` 给 `timed out`，macOS 的给 `Operation timed out`；`ENOENT` 同理（`No such file or directory` vs MSVC 的 `No such file or directory`……但 errno 值 2 是一致的）。写断言要比**错误码**和**类别**，别比文案。
 
 ## 11.3 Boost.ThrowException：统一的抛出出口
 

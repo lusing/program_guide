@@ -3,10 +3,14 @@
 // C++26 contracts（P2900）落地前的生产答案。
 // 对应文档：docs/32-quality.md
 // C4701：contract 内部头在新 MSVC 下的固有告警，定点压制
+#if defined(_MSC_VER)   // MSVC 专用：clang/GCC 认不出会报 -Wunknown-pragmas
 #pragma warning(push)
 #pragma warning(disable : 4701)
+#endif
 #include <boost/contract.hpp>
+#if defined(_MSC_VER)   // MSVC 专用：clang/GCC 认不出会报 -Wunknown-pragmas
 #pragma warning(pop)
+#endif
 #include <iostream>
 #include <vector>
 

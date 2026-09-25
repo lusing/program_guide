@@ -2,13 +2,17 @@
 // std::priority_queue 是二叉堆且不可迭代不可合并——这里四个变体各有绝活。
 // 对应文档：docs/22-container-zoo.md
 // C4702：binomial_heap.hpp 在新 MSVC 下有不可达代码（库自身问题）
+#if defined(_MSC_VER)   // MSVC 专用：clang/GCC 认不出会报 -Wunknown-pragmas
 #pragma warning(push)
 #pragma warning(disable : 4702)
+#endif
 #include <boost/heap/priority_queue.hpp>
 #include <boost/heap/d_ary_heap.hpp>
 #include <boost/heap/binomial_heap.hpp>
 #include <boost/heap/fibonacci_heap.hpp>
+#if defined(_MSC_VER)   // MSVC 专用：clang/GCC 认不出会报 -Wunknown-pragmas
 #pragma warning(pop)
+#endif
 #include <iostream>
 
 int main() {

@@ -37,11 +37,15 @@ int main() {
     //    规范入口是工厂函数：make_unique_resource_checked 专治"fopen 失败
     //    返回 NULL"这类语义（NULL 时不会拿去调 fclose）
     //（fopen 有 MSVC 安全告警 C4996，教学场景按原样使用 POSIX 形态）
+#if defined(_MSC_VER)   // MSVC 专用：clang/GCC 认不出会报 -Wunknown-pragmas
 #pragma warning(push)
 #pragma warning(disable : 4996)
+#endif
     auto file = boost::scope::make_unique_resource_checked(
         std::fopen("build_scope_demo.txt", "w"), nullptr, &std::fclose);
+#if defined(_MSC_VER)   // MSVC 专用：clang/GCC 认不出会报 -Wunknown-pragmas
 #pragma warning(pop)
+#endif
     if (file.get() != nullptr) {
         std::fputs("unique_resource write", file.get());
         std::cout << "文件句柄有效，离开作用域自动 fclose\n";

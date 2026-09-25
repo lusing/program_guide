@@ -70,7 +70,7 @@ port = 443
 path = /lusing/programming
 片段 = README
 参数 tab = activity
-构造 = https://example.com:8443/a%20path/%E4%B8%AD%E6%96%87?q=hello+world
+构造 = https://example.com:8443/a%20path/%E4%B8%AD%E6%96%87?q=hello%20world
 相对解析 = https://example.com/api
 自检通过
 ```
@@ -78,6 +78,8 @@ path = /lusing/programming
 解析零分配（`url_view` 指向原串）、百分号编码自动处理、RFC 3986 语义完整。⭐ Web/API 开发的地基件，std 无对应。
 
 > 实测坑：`set_port` 吃字符串（`"8443"` 不吃 `8443`）；加查询参数是 `params().append({k,v})`（没有 `set_query_param`）；相对解析是**成员函数** `base.resolve(ref)`（原地吸收），不是自由函数二参版。
+>
+> 实测坑（跨版本）：查询串里**空格的编码方式随 Boost.URL 版本变**——Boost 1.92 打 `?q=hello+world`，Boost 1.88 打 `?q=hello%20world`（后者才是 RFC 3986 的严格百分号编码）。别把整个 URL 字符串写进断言，要比 `params()` 的键值对。
 
 ## 28.4 网络客户端三兄弟（简介，未纳入验证）
 

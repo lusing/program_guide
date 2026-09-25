@@ -45,10 +45,10 @@ struct Idle : sc::simple_state<Idle, Active> {
 // msm：迁移表元编程展开成跳转表，快一个数量级
 struct transition_table : boost::mpl::vector<
     _row<Stopped, play,   Playing>,
-    _row<Playing, pause,  Paused>> {};
+    _row<Playing, pause_evt,  Paused>> {};   // 事件名不能叫 pause：POSIX 有 pause()
 ```
 
-运行输出（`statechart.cpp` / `msm.cpp`）：
+运行输出（`statechart.cpp`；macOS 侧末尾那行是**状态机析构**打的，Windows 上不出现）：
 
 ```text
   进入 Idle
@@ -60,7 +60,13 @@ struct transition_table : boost::mpl::vector<
   离开 Running
   进入 Idle
 状态机工作正常
----
+自检通过
+  离开 Idle
+```
+
+运行输出（`msm.cpp`）：
+
+```text
   [进入初始态]
 play:
 pause:

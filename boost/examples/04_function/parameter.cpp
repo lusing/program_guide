@@ -12,9 +12,18 @@ BOOST_PARAMETER_NAME(color)
 // 函数签名声明"我接受这些命名参数，各自有默认值，顺序随便"
 // 语法注意：多个可选参数共用一个 (optional ...) 组，缺省值里逗号要加括号
 // C4003（PP 序列判空的固有告警）和 C4100（宏生成的转发参数未引用）
-// 都是宏展开噪声，不是代码问题
+// 都是宏展开噪声，不是代码问题。clang/GCC 侧对应的是
+// -Wunused-parameter（同一个宏展开出来的 args 转发参数）
+#if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable : 4003 4100)
+#elif defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
 BOOST_PARAMETER_FUNCTION(
     (void), render,
     tag,                                   // 关键字前缀
@@ -26,7 +35,13 @@ BOOST_PARAMETER_FUNCTION(
     std::cout << "render title=" << title << " width=" << width
               << " color=" << color << '\n';
 }
+#if defined(_MSC_VER)
 #pragma warning(pop)
+#elif defined(__clang__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 int main() {
     // 顺序无关 + 任意省略——1990 年代 Python 风格 API 在 C++03 的实现

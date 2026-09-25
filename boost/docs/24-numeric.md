@@ -89,7 +89,7 @@ quantity<si::velocity> v = d / t;      // 量纲自动推导
 
 ```text
 100m / 9.58s = 10.4384 m s^-1（量纲自动推导成速度）
-加速度 = 1.09031 m s^-2
+加速度 = 1.0896 m s^-2
 1500m 量纲输出 = 1500 m
 60J = 60 J
 float 能量 = 60 J
@@ -159,14 +159,19 @@ safe<std::int8_t> s = 100;  s += 100;      // 抛 positive_overflow
 boost::numeric_cast<unsigned int>(-1);      // 抛 negative_overflow
 ```
 
-运行输出（`safe_numerics.cpp` / `numeric_conversion.cpp`）：
+运行输出（`safe_numerics.cpp`）：
 
 ```text
 int8 原生 100+100 = -56（UB 现场，碰巧回绕）
 safe 溢出被抓住（positive_overflow）
 安全范围內: 1000000×2 = 2000000
 除零被抓住（divide_by_zero）
----
+自检通过
+```
+
+运行输出（`numeric_conversion.cpp`）：
+
+```text
 原生 cast(-1 → unsigned) = 4294967295（静默回绕）
 numeric_cast 抓住负溢出
 numeric_cast 抓住正溢出

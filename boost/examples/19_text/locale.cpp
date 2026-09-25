@@ -5,6 +5,7 @@
 #include <iostream>
 
 int main() {
+    std::cout << std::boolalpha;
     using namespace boost::locale;
 
     // 生成一个 UTF-8 环境（with_generations 默认后端：Windows 上用 WinAPI）

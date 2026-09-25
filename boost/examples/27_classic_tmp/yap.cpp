@@ -2,10 +2,14 @@
 // 表达式模板工厂。目标：让"写 EDSL"不再是 TMP 大师的专利。
 // 对应文档：docs/27-classic-tmp.md
 // C4702：yap/algorithm.hpp 在新 MSVC 下有不可达代码（库自身问题）
+#if defined(_MSC_VER)   // MSVC 专用：clang/GCC 认不出会报 -Wunknown-pragmas
 #pragma warning(push)
 #pragma warning(disable : 4702)
+#endif
 #include <boost/yap/yap.hpp>
+#if defined(_MSC_VER)   // MSVC 专用：clang/GCC 认不出会报 -Wunknown-pragmas
 #pragma warning(pop)
+#endif
 #include <iostream>
 #include <vector>
 
@@ -24,6 +28,10 @@ int main() {
 
     // 1) 捕获表达式（不求值）：a + b * 2.0 是 AST
     auto ast = make_terminal(a) + make_terminal(b) * 2.0;
+    // ast 只是"捕获形态"的展示，求值走下面 sum_expr 那条支路。MSVC /W4 不报
+    // 未使用变量（非平凡析构的类型不报），clang 的 -Wall 会报
+    // -Wunused-variable —— 显式标一次"有意为之"，别让零告警判定挂在死代码上
+    (void)ast;
     std::cout << "AST 建好（未求值）\n";
 
     // 2) 用 transform 求值：逐元素解释 AST

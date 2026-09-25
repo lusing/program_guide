@@ -10,9 +10,14 @@ namespace msm = boost::msm;
 namespace front = boost::msm::front;
 
 // 事件
+// `pause` 不能叫 pause：POSIX 里有同名函数 pause()（<unistd.h>，被 Boost
+// 的某个头间接拉进来），全局 struct pause 与它共存时，裸写 pause 会先解析成
+// 函数——clang 报 "template argument for template type parameter must be a
+// type"，MSVC 的 <unistd.h> 没把它带进来所以不报。改名最省事，
+// 也可以在每个使用处写 struct pause（详述型说明符）绕开。
 struct play {};
 struct stop {};
-struct pause {};
+struct pause_evt {};
 
 // 状态（简单态：无行为的空结构）
 struct Stopped : front::state<> {};
@@ -28,7 +33,7 @@ struct Player_ : front::state_machine_def<Player_> {
     struct transition_table : boost::mpl::vector<
         _row<Stopped,  play,   Playing>,
         _row<Playing,  stop,   Stopped>,
-        _row<Playing,  pause,  Paused>,
+        _row<Playing,  pause_evt,  Paused>,
         _row<Paused,   play,   Playing>,
         _row<Paused,   stop,   Stopped>> {};
 
@@ -43,7 +48,7 @@ int main() {
     Player p;
     p.start();
     std::cout << "play:\n";    p.process_event(play{});
-    std::cout << "pause:\n";   p.process_event(pause{});
+    std::cout << "pause:\n";   p.process_event(pause_evt{});
     std::cout << "play:\n";    p.process_event(play{});
     std::cout << "stop:\n";    p.process_event(stop{});
     std::cout << "状态机全链路走完\n";

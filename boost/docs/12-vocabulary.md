@@ -105,11 +105,14 @@ a.clear();                             // boost 版叫 clear（std 版叫 reset�
 double = 3.14
 any_cast<int> 失败抛 bad_any_cast
 指针式取回 = 3.14
-有值? 1 类型 = double
-clear 后有值? 0
+有值? 1 类型 = d
+reset 后有值? 0
 std 版长度 = 3
 选型：开放载荷 any / 封闭分派 variant
+自检通过
 ```
+
+> 实测坑（跨平台）：`any::type()` 打的是 `typeid(T).name()`，MSVC 给 `double`，clang/GCC 给 `d`（Itanium ABI 的 mangled 名）。想打印可读类型名就用 `boost::core::demangle` 或 `boost::typeindex`（见第 5 章）。
 
 **毕业档案**：`std::any`（C++17，直系）。**any vs variant 的分界**：any 是开放的（装任何可拷贝类型，运行期才知道是什么）——消息总线、属性表；variant 是封闭的（编译期列出候选，分派穷尽）——状态机、AST 节点。拿 variant 当 any 用会写出一长串候选列表，拿 any 当 variant 用会丢掉编译期穷尽性检查。
 
@@ -154,23 +157,32 @@ std 无对应。⭐ 用途明确：**不能分配内存的地方**（中断上�
 ## 12.7 Boost.UUID（2006）：还没毕业的词汇类型
 
 ```cpp
-boost::uuids::random_generator_mt19937 gen;
+// 固定种子的 mt19937：basic_random_generator 收外部引擎时**不会**重新播种，
+// 于是 v4 也是可复现的（默认构造会用 random_provider 播种，每次都不一样）
+boost::mt19937 rng(20240924u);
+boost::uuids::basic_random_generator<boost::mt19937> gen(rng);
 boost::uuids::uuid id = gen();                  // v4：随机
 boost::uuids::name_generator sha1gen(boost::uuids::ns::dns());
 sha1gen("codeberg.org");                        // v5：名字哈希，确定性
 ```
 
-运行输出（`uuid.cpp`；v4 首行每次运行不同，断言全部确定）：
+运行输出（`uuid.cpp`；v4 首行也是固定的——换了种子才会变）：
 
 ```text
-uuid v4: b2047237-d7eb-41e8-815b-7657d251b447
+uuid v4: 8bff3725-4b96-4ee5-b411-15e3a2303891
 两次不同? 1 版本位 = 4（4 = 随机版）
 解析还原一致? 1
 v5(dns,codeberg.org) 版本位 = 5
 两次生成一致? 1
 nil = 00000000-0000-0000-0000-000000000000 is_nil? 1
 大小 = 16 字节
+自检通过
 ```
+
+> **为什么把 v4 也做成可复现**：随机 UUID 每次运行都不同，文档里嵌的输出没法复核，
+> "两条通道输出逐字节一致"这条判定也会永远挂在它身上。给生成器一个固定种子的
+> 引擎（而不是让它自己去 random_provider 播种），演示的语义一点没变，输出却可
+> 以逐字节对账——这个技巧对任何"要写进文档的随机输出"都适用。
 
 选型口诀：**v4 给"生成的唯一 ID"（会话、请求追踪），v5 给"从名字派生的稳定 ID"（同一 URL/域名永远同一 UUID，可跨系统对齐）**。16 字节定长可 memcpy，比哈希字符串省一半以上。`std::uuid` 是 C++26 前后的提案热点——到时再看毕业档案。
 

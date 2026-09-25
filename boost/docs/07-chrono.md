@@ -108,13 +108,19 @@ boost::timer::cpu_timer timer; timer.start(); ...; timer.stop();
 timer.elapsed().wall;                      // 纳秒计数的墙钟
 ```
 
-运行输出（`timer.cpp`，**wall 数值随机器与运行浮动**）：
+运行输出（`timer.cpp`；第一行是 `auto_cpu_timer` 打的**真实耗时，每次都不同**）：
 
 ```text
 段1（50ms）:
- 0.059365s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+ 0.050000s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
 段2 wall>=1ms? true
+format 摘要: wall/user/system 三列 = 墙钟/用户态/内核态
+自检通过
 ```
+
+> 实测坑：`段2 wall>=1ms?` 这条断言**不能卡在阈值附近**。原来例程是 200 万次 `volatile double` 累加，实测耗时正好压在 1ms 线上——同一条通道连跑 5 次里有 2 次打印 `false`，而它本该是"断言"。放大到 2000 万次（离阈值两个数量级）之后才 5/5 稳定。
+>
+> 实测坑（跨平台）：`auto_cpu_timer` 那行是唯一"本来就不可能跨通道一致"的输出，所以 `run-all.sh` 对它的豁免是**按行**给的（只删 `^ [0-9]+\.[0-9]+s wall, ` 这一行），其余行照常逐字节比——整例豁免会把上面那条掷硬币的输出一起放过。脚本还会校验"豁免模式确实命中了行"，命中 0 行就报警（模式过期 = 判据失效）。
 
 `auto_cpu_timer` 是"这个函数到底多慢"的一行答案（RAII，忘不了打印）。std 没有对应物——`<chrono>` + `<format>` 自己拼五十行才有同等输出。**⭐ 2026 年仍是趁手小工具**，尤其 `cpu_times` 的 wall/user/system 三分（进程 CPU 时间）比 std 里任何现成件都全。
 

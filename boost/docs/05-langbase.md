@@ -167,18 +167,28 @@ Utility 和 Core 都是杂物抽屉，里面每个小工具的归宿各不相同
 | `boost::string_view` | utility | `std::string_view`（C++17，见第 12 章） |
 | `boost::core::demangle` | core | 无对应（GCC/MSVC 各自的 unmangle 不是标准件） |
 
-运行输出（`utility.cpp` / `core.cpp`）：
+运行输出（`utility.cpp`）：
 
 ```text
 take_over 拿到 fd=7 留下 fd=-1
 swap 后 x=2 y=1
 string_view... 长度 30
-...
+in_place 家族见 optional/container 章
+自检通过
+```
+
+运行输出（`core.cpp`）：
+
+```text
 noncopyable 会话 id=1
 真实地址非空? true
-demangle: class std::shared_ptr<int> 可读
+demangle: std::__1::shared_ptr<int> 可读
 exchange: old=1 new=99
+lightweight_test 见第 32 章（其报告走 stderr，与本章判定口径不合）
+自检通过
 ```
+
+> 实测坑（跨平台）：`demangle` 那行取决于 `typeid(T).name()` 给什么——MSVC 给 `class std::shared_ptr<int>`，Itanium ABI（clang/GCC）给 `NSt3__110shared_ptrIiE`，`core::demangle` 还原出来就是 `std::__1::shared_ptr<int>`（libc++ 的内联命名空间名 `__1` 会露出来）。两边都"可读"，但字符串不同。
 
 **2026 价值**：直接用 std 版（`exchange`/`addressof`/`=delete`）；`demangle` 在跨平台日志/调试输出里仍是趁手小工具。这两个库的真正用户是**其他 Boost 库**——你 include 任何 Boost 头，Core 几乎必然在场。
 
@@ -214,7 +224,7 @@ std::cout << BOOST_COMPILER;      // "Microsoft Visual C++ version 14.5"
 #endif
 ```
 
-运行输出（`config.cpp` / `predef.cpp`）：
+运行输出（`config.cpp`，**Windows 侧**）：
 
 ```text
 编译器=Microsoft Visual C++ version 14.5
@@ -224,12 +234,42 @@ std::cout << BOOST_COMPILER;      // "Microsoft Visual C++ version 14.5"
 线程支持: 有
 异常: 开启
 ...
+```
+
+运行输出（`config.cpp`，macOS 侧）：
+
+```text
+编译器=Clang version 16.0.0 (clang-1600.0.26.6)
+标准库=libc++ version 180100
+平台=Mac OS
+变参宏: 有
+线程支持: 有
+异常: 开启
+span 头可用(Boost 视角): true
+自检通过
+```
+
+运行输出（`predef.cpp`，**Windows 侧**）：
+
+```text
 Windows? 1
 x86-64? 1
 MSVC? 195136257 检测到
 MSVC >= 19.30：C++20 协程可用
 这是 MSVC
 ```
+
+运行输出（`predef.cpp`，macOS 侧）：
+
+```text
+Windows? 0
+x86-64? 1
+MSVC? 0 检测不到
+这是 clang
+自检通过
+```
+
+> 实测坑（跨平台）：`BOOST_PLATFORM` / `BOOST_STDLIB` 这类宏的**值随平台变**（`Win32` vs `Mac OS`、`Dinkumware` vs `libc++`），`BOOST_COMP_MSVC` 在非 MSVC 上干脆是 0。所以 02 章 `version.cpp` 那段按编译器分支打印（MSVC / Clang / GCC 各一支），而不是写死 `_MSC_VER`。
 
 Predef 的版本比较能力（`BOOST_COMP_MSVC >= BOOST_VERSION_NUMBER(19,30,0)`）是它比 Config 高明的地方——Config 的宏只能"有没有"，Predef 能"够不够新"。**2026 价值**：写跨平台库时，标准库特性用 `__has_include` + `__cpp_*` 特性宏，编译器/OS 判断用 Predef，两者互补。
 
@@ -265,16 +305,23 @@ boost::alignment::is_aligned(96, 32);            // → true
 boost::alignment::aligned_allocator<int, 64>;    // 容器分配器
 ```
 
-运行输出（`align.cpp`）：
+运行输出（`align.cpp`；Windows 与 macOS 一致，见下面关于第 2 行的说明）：
 
 ```text
 64 对齐分配: 0 (余数应为 0)
-32 对齐推进 16 字节
+推进量 < 32? true  结果 32 对齐? true
 align_up(100, 64) = 128
 align_down(100, 64) = 64
 is_aligned(96, 32) = true
 容器分配器对齐: true
+自检通过
 ```
+
+> **"推进量"为什么不明写数字**：`align()` 推进多少字节取决于 `buffer` 这次落在
+> 哪个地址上——同一个二进制跑两遍都可能不同（本机两条通道一次 16、一次 0，
+> 早年 Windows 上是 16）。会漂的量不能当实测值写进文档，也不能进"两通道逐字节
+> 一致"的比对范围，所以例程改成打两个**恒真的事实**：推进量必 < 32、结果地址
+> 必是 32 的倍数。
 
 `std::aligned_alloc`（C++17）毕业了分配部分（且 POSIX 语义有坑：size 必须是对齐的倍数）；但 **`align_up`/`align_down`/`is_aligned` 三个整数级工具没有 std 对应**——SIMD 内存池、网络协议对齐、游戏引擎的 arena allocator 里天天用。⭐ 2026 年仍值得 include。
 
@@ -286,7 +333,7 @@ boost::typeindex::type_id_runtime(*b)                    // 多态精确类型�
 boost::typeindex::type_id_with_cvr<decltype(s)>()        // cv + 引用全保留
 ```
 
-运行输出（`type_index.cpp`）：
+运行输出（`type_index.cpp`，**Windows 侧**）：
 
 ```text
 可读名: class std::vector<class std::basic_string<...>, ...>
@@ -297,7 +344,21 @@ int == int32_t ? true
 cv+引用完整型: class std::basic_string<...> const & __ptr64
 ```
 
+运行输出（`type_index.cpp`，macOS 侧）：
+
+```text
+可读名: std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>
+原生名: NSt3__16vectorINS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEENS4_IS6_EEEE（MSVC 恰好也可读）
+int == int32_t ? true
+运行期精确类型: Derived
+另一个对象: Other 是 Base 吗? false
+cv+引用完整型: std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&
+自检通过
+```
+
 三个独有价值：**pretty_name** 归一 GCC/clang 的 mangled 名；**type_id_runtime** 在跨 DLL 边界（typeid 的经典失灵区）仍然可靠；**type_id_with_cvr** 显示完整 cv/引用限定（`const std::string&` 不退化成 `std::string`）——调试模板代码的神器。⭐ std 无对应。
+
+> 实测坑（跨平台）：`pretty_name()` 在 MSVC 上**几乎等于** `raw_name()`（MSVC 的 `typeid().name()` 本来就可读，还带 `class`/`struct` 前缀和 `__ptr64`），所以上面两行在 Windows 上长得很像；只有在 Itanium ABI 上才能看出 pretty 的价值（`NSt3__1...` → `std::__1::...`）。另外 MSVC 的 `__ptr64` 后缀是它独有的。
 
 ## 5.15 本章速查
 

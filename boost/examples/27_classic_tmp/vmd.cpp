@@ -3,10 +3,14 @@
 // 不能当运行期函数用（这是初学最常见的误会）。
 // 对应文档：docs/27-classic-tmp.md
 // C4003：VMD 内部宏在 MSVC 预处理器的固有告警（与 Boost.Parameter 同类）
+#if defined(_MSC_VER)   // MSVC 专用：clang/GCC 认不出会报 -Wunknown-pragmas
 #pragma warning(push)
 #pragma warning(disable : 4003)
+#endif
 #include <boost/vmd/vmd.hpp>
+#if defined(_MSC_VER)   // MSVC 专用：clang/GCC 认不出会报 -Wunknown-pragmas
 #pragma warning(pop)
+#endif
 #include <boost/preprocessor.hpp>
 #include <iostream>
 
@@ -18,14 +22,18 @@
 #endif
 
 // IS_SEQ 展开有 MSVC 预处理器固有 C4003（库内部宏），就地压制
+#if defined(_MSC_VER)   // MSVC 专用：clang/GCC 认不出会报 -Wunknown-pragmas
 #pragma warning(push)
 #pragma warning(disable : 4003)
+#endif
 #if BOOST_VMD_IS_SEQ((x)(y))
     const char* kSeqDemo = "序列";
 #else
     const char* kSeqDemo = "非序列";
 #endif
+#if defined(_MSC_VER)   // MSVC 专用：clang/GCC 认不出会报 -Wunknown-pragmas
 #pragma warning(pop)
+#endif
 
 #define TUPLE_SIZE_OF(...) BOOST_PP_TUPLE_SIZE(__VA_ARGS__)
 

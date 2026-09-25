@@ -9,7 +9,9 @@
 v2 接口（1.86 起）基于 asio 执行器，同步/异步一体：
 
 ```cpp
-proc::process h(io, boost::filesystem::path(L"C:/Windows/System32/hostname.exe"), {});
+// exe 路径用 find_executable 按 PATH 找，别写死 C:/Windows/System32/…
+const boost::filesystem::path hostname = proc::environment::find_executable("hostname");
+proc::process h(io, hostname, {});
 int rc = h.wait();                       // 0
 proc::process::environment::get("PATH");
 ```
@@ -17,18 +19,24 @@ proc::process::environment::get("PATH");
 运行输出（`process.cpp`；首行是子进程直接继承父进程 stdout 写的机器名）：
 
 ```text
-xulun-main
+xulundeMacBook-Pro.local
+找到 hostname? 1
 hostname 退出码 = 0（预期 0）
-where where 退出码 = 0（预期 0；找不到时为 1）
+自己 --exit-3 退出码 = 3（预期 3）
 PATH 非空? 1
 自检通过
 ```
 
-本章实测的**三条坑**（都写进了例程注释）：
+（Windows 侧的同一份例程打的是 `where where 退出码 = 0` 那一行——本机改成
+"跑自己 + `--exit-3`" 之后，两平台的输出完全一致，见下面第 4、5 条。）
+
+本章实测的**五条坑**（都写进了例程注释）：
 
 1. **exe 路径要显式 `boost::filesystem::path`**——`const char*` 重载会走"命令行搜索"分支，报"系统找不到文件"（system:2）；
 2. **cmd.exe 对参数引号极敏感**（`"/c"` 被引号包裹就"命令语法不正确"）——演示选无参系统工具最稳；
-3. **`asio::readable_pipe` + `process_stdio` 捕获组合在本机 fail-fast**（0xC0000409，连 stderr 都来不及吐）——需要捕获输出时考虑重定向到文件或 process v1。
+3. **`asio::readable_pipe` + `process_stdio` 捕获组合在本机（MSVC 19.51 + vc145 DLL）fail-fast**（0xC0000409，连 stderr 都来不及吐）——需要捕获输出时考虑重定向到文件或 process v1；
+4. **【跨平台】exe 路径不能写死** `C:/Windows/System32/hostname.exe`——换到 macOS/Linux 连文件都没有。用 `environment::find_executable("hostname")` 按 PATH 找，Windows 与 Unix 都有这个同名工具；
+5. **【跨平台】"退出码传递"别去撞系统工具的失败分支**：`hostname` 遇到非法参数会往 stderr 打一行，本教程的"stderr 恒空"判定不放过子进程的输出。改成跑自己——带 `--exit-3` 参数时 `main` 直接 `return 3`，安静、可控、跨三平台同输出。
 
 ## 29.2 Boost.DLL（2014）：运行期加载共享库
 
@@ -40,15 +48,25 @@ auto greet = dll::import_symbol<const char*(const char*)>(path, "greet");
 auto add = dll::import_symbol<int(int, int)>(path, "add");
 ```
 
-运行输出（`dll.cpp`）：
+运行输出（`dll.cpp`；macOS 侧首行是 `.dylib`，Windows 侧是 `.dll`）：
 
 ```text
+插件文件名 = plugin_greeter.dylib
 DLL 已加载? 1
 有 greet? 1 有 missing? 0
 greet(boost) = 你好, boost!
 add(3,4) = 7
 自检通过
 ```
+
+**跨平台两条**（都是"写死 Windows 形态"踩出来的）：
+
+- 文件名后缀不能写 `".dll"`：Windows 是 `.dll`、Linux 是 `.so`、macOS 是 `.dylib`。
+  例程用 `boost::dll::shared_library::suffix()` 问库自己（构建脚本 `run-all.sh`
+  也用同一个 API 定产物名，两边不可能说不到一块去）；
+- 导出符号的写法三家不同：`__declspec(dllexport)`（MSVC/MinGW）对
+  `__attribute__((visibility("default")))`（clang/GCC）。用宏统一，别 `#if` 掉一侧
+  ——Unix 侧这行看着多余，宿主一旦带 `-fvisibility=hidden` 编库，缺它就 dlsym 失败。
 
 **本章最惊险的实测坑**：`shared_library::get<T>()` 把符号当 **T 类型的数据对象**返回引用——拿它取函数（`get<int(*)(int,int)>`），等于把函数机器码字节当指针解引用，调用即访问违例（0xC0000005）。逐层探针（裸 LoadLibrary 对照 → 打印指针值发现是机器码字节）才定位。**函数导入永远用 `import_symbol<签名>`**。⭐ 插件架构、热加载模块的标准件。
 
@@ -80,7 +98,7 @@ boost::winapi::GetCurrentProcessId();            // API 同名
 boost::winapi::DWORD_ / SYSTEM_INFO_             // 类型/常量加 _ 后缀
 ```
 
-运行输出（`winapi.cpp`）：
+运行输出（`winapi.cpp`，Windows 侧）：
 
 ```text
 PID = 16800 TID = 8412
@@ -90,7 +108,29 @@ PID/TID 都非零? 1
 自检通过
 ```
 
+运行输出（`winapi.cpp`，macOS/Linux 侧）：
+
+```text
+本机不是 Windows：Boost.WinAPI 不可用
+  boost/winapi/basic_types.hpp 在非 Windows 上直接 #error
+  "Win32 functions not available"（连编译都过不去）
+自检通过
+```
+
 写跨平台库的 `#ifdef _WIN32` 分支时用它代替裸 `windows.h`：不污染全局命名空间、头文件粒度细。库作者工具，应用代码一般轮不到。
+
+> **它是"编译期就不跨平台"的那一类**：`boost/winapi/basic_types.hpp` 在非 Windows
+> 上直接 `#error "Win32 functions not available"`（macOS 上实测，第 38 行）——
+> 不是链接不上，也不是跑不通，连语法检查都过不去。所以 `#include` 本身就得跟着
+> 平台走。例程的非 Windows 分支把这段事实打出来（仍然以"自检通过"收尾），
+> macOS 上跑出来是这样：
+>
+> ```text
+> 本机不是 Windows：Boost.WinAPI 不可用
+>   boost/winapi/basic_types.hpp 在非 Windows 上直接 #error
+>   "Win32 functions not available"（连编译都过不去）
+> 自检通过
+> ```
 
 ## 29.5 Boost.Endian（2013）：字节序双件套
 

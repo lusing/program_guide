@@ -6,6 +6,8 @@
 #include <iostream>
 
 int main() {
+    // 三处布尔都显式 boolalpha：不打出来是 1/0，读起来像错误码
+    std::cout << std::boolalpha;
     char buf[64];
 
     // 1) 整数 to_chars：最快捷径（无 locale、无分配、无异常）
