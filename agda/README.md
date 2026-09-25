@@ -1,11 +1,12 @@
-# Agda 教程（Agda 2.8.0 / 标准库 2.3）
+# Agda 教程（Agda 2.9.0 / 标准库 3.0）
 
 面向**会编程（任意语言背景）、初学 Agda** 的读者：从依赖类型语言的心智模型讲到
 类型系统、数据与模式匹配、命题等价与归纳证明，再到 Vec/Fin 依赖编程实战、
 判定性与代数结构、Monad/IO/余归纳/反射等工程专题，最后以**类型良好表达式
 解释器**与**可验证插入排序**两个综合项目收束。
-**章号 = 示例编号**——01–27 章每章对应 `examples/` 里一个经 agda 2.8.0
-类型检查验证的完整 .agda 文件（28 章为 60+ 条实测坑位总清单，无示例）。
+**章号 = 示例编号**——01–27 章每章对应 `examples/` 里一个经 agda 2.9.0 +
+stdlib 3.0 类型检查验证的完整 .agda 文件，29–34 章为 stdlib 深潜示例
+（28 章为 60+ 条实测坑位总清单、35 章为 macOS 校验清单，均无示例）。
 
 > 核心理念：**类型即命题，程序即证明，且程序必须终止。**
 > Agda 把依赖类型做成了一等公民——编译（类型检查）通过，定理就成立；
@@ -18,8 +19,8 @@ agda/
 ├── README.md              本文件
 ├── build.sh               类型检查 / 编译运行脚本（bash）
 ├── AgdaTutorial.agda-lib  项目库定义（examples 目录 + 标准库路径）
-├── docs/                  28 章教程（01 → 28 顺序阅读）
-├── examples/              27 个 .agda 示例（章号 = 示例编号）
+├── docs/                  35 章教程（01 → 35 顺序阅读）
+├── examples/              33 个 .agda 示例（章号 = 示例编号）
 └── _build/                类型检查产物（已 gitignore）
 ```
 
@@ -55,19 +56,28 @@ agda/
 | [26 实战：可验证插入排序](docs/26-sorting.md) | sorted 谓词 + 重排证明的插入排序 | `Ex26_sorting.agda` |
 | [27 标准库阅读指南](docs/27-stdlib-guide.md) | 模块组织、Base/API 约定、命名地图 | `Ex27_stdlib.agda` |
 | [28 坑清单与最佳实践](docs/28-pitfalls.md) | 60+ 条实测坑位与最佳实践总清单 | — |
+| [29 stdlib 代数结构](docs/29-stdlib-algebra.md) | Algebra 三层（Definitions/Structures/Bundles）+ Solver 家族 | `Ex29_stdlib-algebra.agda` |
+| [30 stdlib 判定性体系](docs/30-stdlib-decidable.md) | Dec 内部构造、Recomputable、判定式组合子、`_≟_`→`_≡?_` | `Ex30_stdlib-decidable.agda` |
+| [31 stdlib 关系产业](docs/31-stdlib-relations.md) | 关系三层 + Construct 变形、Reasoning 挂接 | `Ex31_stdlib-relations.agda` |
+| [32 stdlib 函数论与类型运算](docs/32-stdlib-functions.md) | Function.Base/Bundles/Related、外延公理位置 | `Ex32_stdlib-functions.agda` |
+| [33 stdlib 数据结构系统](docs/33-stdlib-data.md) | List 关系树、Fin 构造、`Data.AVL`→`Data.Tree.AVL` | `Ex33_stdlib-data.agda` |
+| [34 stdlib 自动证明](docs/34-stdlib-automation.md) | Reasoning 基础设施 + Tactic 求解器（Cong/Monoid/Ring） | `Ex34_stdlib-automation.agda` |
+| [35 macOS 校验与 3.0 迁移](docs/35-macos-checklist.md) | macOS 源码编译装机 + 2.3→3.0 导入迁移清单 | — |
 
 学习路线：01–04 上手与记号 → 05–10 数据建模与依赖类型（宇宙/匹配/递归/
 列表/记录/Fin）→ 11–18 证明主线（等式/逻辑/归纳/推理/判定/Vec/同构/代数）→
 19–24 工程专题（Monad/IO/文本/余归纳/反射/立方）→ 25–26 综合实战 →
-27–28 手册化收尾（先查 28 再动手）。
+27–28 手册化收尾（先查 28 再动手）→ 29–34 stdlib 深潜（代数/判定/关系/
+类型运算/数据结构/自动化，可穿插此前各章复习）→ 35 macOS 装机校验清单。
 
 ## 工具链
 
 | 组件 | 路径 / 版本 |
 |---|---|
-| Agda | `/usr/bin/agda`（2.8.0，apt 安装） |
-| 标准库 | `/usr/share/agda-stdlib`（stdlib 2.3，经 `AgdaTutorial.agda-lib` 引入） |
-| Emacs 交互 | `elpa-agda2-mode`（C-u C-x ` 跳孔洞，C-c C-l 加载） |
+| Agda（Debian/WSL） | `/usr/bin/agda`（2.8.0，apt 安装） |
+| Agda（macOS） | 源码编译：`/Volumes/mac004/lang/agda`（master，Agda 2.9.0）经 stack + GHC 9.14.1 构建，详见 [35 章](docs/35-macos-checklist.md) |
+| 标准库 | Debian：`/usr/share/agda-stdlib`（2.3）；macOS：git 源 `/Volumes/mac004/lang/agda-stdlib/src`（3.0），经 `AgdaTutorial.agda-lib` 引入 |
+| Emacs 交互 | Debian：`elpa-agda2-mode`（C-u C-x ` 跳孔洞，C-c C-l 加载） |
 
 ## 验证命令
 
@@ -86,12 +96,17 @@ cd agda
 
 - .agda 文件为 UTF-8 无 BOM；中文注释直接可用（Agda 的 Unicode 标识符
   与中文注释天然共存）。
-- `AgdaTutorial.agda-lib` 里标准库路径写死为 `/usr/share/agda-stdlib/src`
-  （Debian 安装位）；换机器改这一行即可，或在 `~/.agda/libraries`
-  注册后用 `agda -l standard-library-2.3`。
-- 本教程钉在 Agda 2.8.0 + stdlib 2.3。stdlib 各版本间模块路径有挪动
-  （如 `Data.Nat` 拆分出 `Data.Nat.Base`），新版 Agda 下个别 import
-  需按报错微调——这本身就是 28 章的头号坑位。
+- `AgdaTutorial.agda-lib` 的 `include` 写死标准库源码路径（当前为 macOS
+  git 源 `/Volumes/mac004/lang/agda-stdlib/src`，stdlib 3.0）；换机器改
+  这一行即可。
+- 本教程现以 Agda 2.9.0 + stdlib 3.0 为基线（macOS 源码编译装机与全量
+  校验结果见 35 章）。stdlib 各版本间模块路径有挪动（如 `Data.AVL` →
+  `Data.Tree.AVL`、单子群顶层名 `+-isMonoid` → `+-0-isMonoid`），
+  2.3→3.0 的实测迁移清单见 [35 章](docs/35-macos-checklist.md)。
+- `build.sh` 自动定位 agda：先探 `PATH`，再逐个试常见安装位（stack/
+  cabal/ghcup/Homebrew），找不到才报错——非交互 shell 里 PATH 缺
+  `/opt/local/bin` 也能跑；darwin 下脚本会 `export LC_ALL=en_US.UTF-8`，
+  保证 `≟`/`ℕ`/`≤` 等 Unicode 正常输出。
 
 ## 示例怎么读
 

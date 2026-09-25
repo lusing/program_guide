@@ -1,2 +1,2 @@
 name: agda-tutorial
-include: examples /usr/share/agda-stdlib/src
+include: examples /Volumes/mac004/lang/agda-stdlib/src

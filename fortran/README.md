@@ -9,7 +9,7 @@
 ```
 fortran/
 ├── README.md                 本文件
-├── Fortran编程指南.md         教程正文（32 章）
+├── docs/                     教程正文（32 章，每章一个文件）
 ├── build.ps1                 PowerShell 构建/验证入口（两条通道）
 ├── run-all.sh                等价的 shell 版验证脚本
 └── examples/
@@ -143,41 +143,44 @@ cd /Users/xulun/code/programming/fortran
 
 失败时 `build.ps1` / `run-all.sh` 返回退出码 1，可以直接拿去做回归。
 
-## 各章索引
+## 章节索引
 
-| 编号 | 主题 | 关键内容 |
+| 章 | 主题 | 示例 |
 |---|---|---|
-| 01 | 程序结构与输出 | `program`/`end program`、`implicit none`、`print` vs `write`、格式描述符、`;` 与 `&`、内部写、`block` |
-| 02 | 类型与 KIND | `integer(int32)`/`real(real64)`、`selected_real_kind`、`digits`/`range`/`huge`/`tiny`/`epsilon`、`complex`、`z'FF'` |
-| 03 | 表达式与运算符 | 优先级、整数除法 vs 实数除法、混合模式、`**` 的坑 |
-| 04 | 控制流 | `if`/`select case`、命名循环、`exit`/`cycle`、`where`/`elsewhere`、`merge`、`associate`、`block` 作用域 |
-| 05 | 数组基础 | 声明与自定义下标、数组构造器、`reshape`、静态赋值、切片与跨步、重叠赋值 |
-| 06 | 数组内建函数 | 归约、`dim=`/`mask=`、`maxloc`/`findloc`、`matmul`/`dot_product`/`norm2`/`transpose`、`pack`/`unpack`/`spread`/`cshift`/`eoshift`、位归约 |
-| 07 | 字符与字符串 | 定长 vs 延迟长度、拼接、`index`/`scan`/`adjustl`/`trim`/`repeat`、内部读写、手写 `split` |
-| 08 | 格式化 I/O | 描述符全表、`dt` 自定义 I/O、namelist、格式重现与复用 |
-| 09 | 文件与流 I/O | 有格式/无格式/流/直接访问、`newunit`、`inquire`、`rec=` |
-| 10 | 过程 | 内部/外部/模块过程、可选参数、`procedure()` 哑元、把内建函数包起来、递归、`impure elemental` |
-| 11 | 模块与接口 | `use`/`only`/重命名、`private`/`public`、模块变量、`-J` 模块目录 |
-| 12 | 派生类型 | 构造器、数组与可分配分量、嵌套、`move_alloc`、深拷贝 |
-| 13 | 面向对象与多态 | 抽象类型、`extends`、延迟绑定、`class(*)`、`select type`、多态数组、终结器、类型绑定泛型 |
-| 14 | 指针与可分配变量 | 指针 vs 可分配（别名 vs 值语义）、`target`、`associated`/`nullify`、指针切片、链表、`move_alloc` |
-| 15 | 经典算法 | 冒泡/插入/快速/归并排序、递归与迭代二分、筛法、`gcd`、汉诺塔、记忆化斐波那契、洗牌 |
-| 16 | 数值计算 | 二分/牛顿/割线/不动点求根、梯形/辛普森/中点积分、中心差分 + 理查森外推、**列主元 LU 分解**、行列式、拉格朗日插值 |
-| 17 | 随机数与统计 | `random_seed`/`random_number`、直方图、Box-Muller、蒙特卡洛求 π 与积分、中心极限定理、均值/方差/中位数/分位数/偏度/峰度/相关系数 |
-| 18 | 泛型、重载与 submodule | 运算符重载、`assignment(=)`、泛型接口、`elemental`、`dt` 自定义 I/O、`submodule` 拆分实现、`pure` |
-| 19 | C 互操作 | KIND 对照表、`strlen`/`malloc`/`memset`/`memcpy`/`fabs`、字符串互转、`c_f_pointer`、`qsort` 回调、`bind(c)` 结构体布局、列主序陷阱 |
-| 20 | 并行计算 | `!$omp` 指令、reduction/atomic/critical/private、`schedule`、sections、计时与加速比、竞态、`do concurrent` |
-| 21 | 错误处理与单元测试 | 手写 `unittest` 断言框架、被测模块、`iostat`/`stat`/`err=`/`inquire`、子进程 `error stop` 退出码 |
-| 22 | 综合实战 | CSV 读入/写出/解析（含缺失值）、描述统计、Top-N 排名、最小二乘回归、对齐报表、写回校验 |
-| 23 | 数组内存布局 | 列主序存储顺序、`reshape` 的 `order=`、隐 DO 在输出表/输入表/构造器、循环嵌套顺序与存储位序、`transfer` vs `reshape` |
-| 24 | 格式化输入 | `Iw` 空格/截断/全空规则、`Fw.d` 自带小数点优先、指数输入、`Lw`、`Aw` 取最右、`X` 跳列、`BN`/`BZ`、输入版格式重现、`iostat` 捕获 |
-| 25 | Gauss-Jordan 与求逆 | 列主元消元、`[A|I]→[I|A⁻¹]`、乘法验算、Hilbert 病态矩阵误差爆炸（1e-14→3e-7） |
-| 26 | 常微分方程 | 欧拉/改进欧拉/RK4 三法对照（精确解标尺）、二阶降阶成方程组、`procedure` 哑元传右端函数、显式欧拉稳定边界 |
-| 27 | 调试与查错 | 三类错误活体、`iostat` 防御、打印摘要/计数器二分三板斧、断言不变量、手写边界自查、Recursive I/O 陷阱 |
-| 28 | 读程序自测 | 十二道改编自教材的谜题（整数除法/循环变量终值/if 配对/mod-modulo/case 语义等），十题实跑验证 |
-| 70 | 老格式：固定格式 | `.f` 版面规则（标号区/续行列/C 注释）、`DO 100 ... CONTINUE`、算术 `IF`、计算 `GOTO`、`FORMAT` 语句 |
-| 71 | 老特性 | 隐式类型规则、`COMMON` 块、`EQUIVALENCE` 位型查看、无 `intent` 的过程调用；注释里逐条给现代对照写法 |
-| 72 | 老特性 II | `DATA`（重复因子/隐 DO/SAVE 语义）、语句函数、alternate return（`*` 虚参 + `RETURN n`）、`EXTERNAL`/`INTRINSIC`；注释给现代对照 |
+| [01 语言概览：Fortran 到底在干什么](docs/01-overview.md) | 1957 年出身与设计哲学、公式到代码的一对一映射、固定格式与自由格式（打孔卡片遗产）、Fortran 90 分水岭 | — |
+| [02 工具链与运行方式](docs/02-toolchain.md) | flang/gfortran 双编译器、编译命令与模块目录、构建验证脚本 | — |
+| [03 算法与程序设计方法](docs/03-methodology.md) | 不涉语法：怎么把问题变成「计算机能执行的步骤」，从欧几里得算法讲起 | — |
+| [04 程序结构、类型与 KIND](docs/04-program-kinds.md) | `program`/`end program`、`implicit none`、`print` vs `write`、格式描述符、`;` 与 `&`、内部写、`block`；`integer(int32)`/`real(real64)`、`selected_real_kind`、`digits`/`range`/`huge`/`tiny`/`epsilon`、`complex`、`z'FF'` | `01-basics`、`02-kinds` |
+| [05 表达式、运算符与数值陷阱](docs/05-expressions.md) | 优先级、整数除法 vs 实数除法、混合模式、`**` 的坑 | `03-expressions` |
+| [06 控制流](docs/06-control-flow.md) | `if`/`select case`、命名循环、`exit`/`cycle`、`where`/`elsewhere`、`merge`、`associate`、`block` 作用域 | `04-control-flow` |
+| [07 数组（一）：声明、构造、切片](docs/07-arrays-basics.md) | 声明与自定义下标、数组构造器、`reshape`、静态赋值、切片与跨步、重叠赋值 | `05-arrays-basics` |
+| [08 数组（二）：内建函数](docs/08-arrays-intrinsics.md) | 归约、`dim=`/`mask=`、`maxloc`/`findloc`、`matmul`/`dot_product`/`norm2`/`transpose`、`pack`/`unpack`/`spread`/`cshift`/`eoshift`、位归约 | `06-arrays-intrinsics` |
+| [09 数组在内存里的样子：存储顺序与隐 DO 循环](docs/09-memory-layout.md) | 列主序存储顺序、`reshape` 的 `order=`、隐 DO 在输出表/输入表/构造器、循环嵌套顺序与存储位序、`transfer` vs `reshape` | `23-memory-layout` |
+| [10 字符与字符串](docs/10-strings.md) | 定长 vs 延迟长度、拼接、`index`/`scan`/`adjustl`/`trim`/`repeat`、内部读写、手写 `split` | `07-strings` |
+| [11 格式化 I/O：输出](docs/11-formatted-output.md) | 描述符全表、`dt` 自定义 I/O、namelist、格式重现与复用 | `08-formatted-io` |
+| [12 格式化输入](docs/12-formatted-input.md) | `Iw` 空格/截断/全空规则、`Fw.d` 自带小数点优先、指数输入、`Lw`、`Aw` 取最右、`X` 跳列、`BN`/`BZ`、输入版格式重现、`iostat` 捕获 | `24-formatted-input` |
+| [13 文件与流 I/O](docs/13-files.md) | 有格式/无格式/流/直接访问、`newunit`、`inquire`、`rec=` | `09-files` |
+| [14 过程：子程序、函数与参数传递](docs/14-procedures.md) | 内部/外部/模块过程、可选参数、`procedure()` 哑元、把内建函数包起来、递归、`impure elemental` | `10-procedures` |
+| [15 模块、接口与模块目录](docs/15-modules.md) | `use`/`only`/重命名、`private`/`public`、模块变量、`-J` 模块目录 | `11-modules` |
+| [16 派生类型](docs/16-derived-types.md) | 构造器、数组与可分配分量、嵌套、`move_alloc`、深拷贝 | `12-derived-types` |
+| [17 面向对象与多态](docs/17-oop.md) | 抽象类型、`extends`、延迟绑定、`class(*)`、`select type`、多态数组、终结器、类型绑定泛型 | `13-oop` |
+| [18 指针与可分配变量](docs/18-pointers.md) | 指针 vs 可分配（别名 vs 值语义）、`target`、`associated`/`nullify`、指针切片、链表、`move_alloc` | `14-pointers` |
+| [19 老特性考古 II：DATA、语句函数与 alternate return](docs/19-obsolescent.md) | 隐式类型规则、`COMMON` 块、`EQUIVALENCE` 位型查看、无 `intent` 的过程调用；`DATA`（重复因子/隐 DO/SAVE 语义）、语句函数、alternate return（`*` 虚参 + `RETURN n`）、`EXTERNAL`/`INTRINSIC`；注释里逐条给现代对照写法 | `71-legacy-features`、`72-obsolescent` |
+| [20 泛型、重载与 submodule](docs/20-generics.md) | 运算符重载、`assignment(=)`、泛型接口、`elemental`、`dt` 自定义 I/O、`submodule` 拆分实现、`pure` | `18-generics` |
+| [21 经典算法](docs/21-algorithms.md) | 冒泡/插入/快速/归并排序、递归与迭代二分、筛法、`gcd`、汉诺塔、记忆化斐波那契、洗牌 | `15-algorithms` |
+| [22 数值计算](docs/22-numeric.md) | 二分/牛顿/割线/不动点求根、梯形/辛普森/中点积分、中心差分 + 理查森外推、**列主元 LU 分解**、行列式、拉格朗日插值 | `16-numeric` |
+| [23 线性方程组专题：Gauss-Jordan 与矩阵求逆](docs/23-gauss-jordan.md) | 列主元消元、`[A|I]→[I|A⁻¹]`、乘法验算、Hilbert 病态矩阵误差爆炸（1e-14→3e-7） | `25-gauss-jordan` |
+| [24 常微分方程数值解](docs/24-ode.md) | 欧拉/改进欧拉/RK4 三法对照（精确解标尺）、二阶降阶成方程组、`procedure` 哑元传右端函数、显式欧拉稳定边界 | `26-ode` |
+| [25 随机数与统计](docs/25-random.md) | `random_seed`/`random_number`、直方图、Box-Muller、蒙特卡洛求 π 与积分、中心极限定理、均值/方差/中位数/分位数/偏度/峰度/相关系数 | `17-random` |
+| [26 C 互操作](docs/26-c-interop.md) | KIND 对照表、`strlen`/`malloc`/`memset`/`memcpy`/`fabs`、字符串互转、`c_f_pointer`、`qsort` 回调、`bind(c)` 结构体布局、列主序陷阱 | `19-c-interop` |
+| [27 并行计算：OpenMP 与 do concurrent](docs/27-parallel.md) | `!$omp` 指令、reduction/atomic/critical/private、`schedule`、sections、计时与加速比、竞态、`do concurrent` | `20-parallel` |
+| [28 调试与查错方法](docs/28-debugging.md) | 三类错误活体、`iostat` 防御、打印摘要/计数器二分三板斧、断言不变量、手写边界自查、Recursive I/O 陷阱 | `27-debugging` |
+| [29 错误处理与单元测试](docs/29-testing.md) | 手写 `unittest` 断言框架、被测模块、`iostat`/`stat`/`err=`/`inquire`、子进程 `error stop` 退出码 | `21-errors-testing` |
+| [30 读程序自测：谜题集](docs/30-quiz.md) | 十二道改编自教材的谜题（整数除法/循环变量终值/if 配对/mod-modulo/case 语义等），十题实跑验证 | `28-quiz` |
+| [31 坑清单（与编译器无关）](docs/31-pitfalls.md) | `cs(i)` 是函数调用不是子串赋值、格式重现把整数当字符串吐出、`a(5:1:-1)` 是 5 个元素、`es`/`en`/`e` 不写 `Ee` 时指数只占 2 位 | — |
+| [32 双编译器差异清单与可移植写法](docs/32-diffs.md) | flang 23 × gfortran 15 共 15 条实测差异（`real128`、PDT、coarray、`omp_lib`、`random_seed` 长度等）与可移植写法 | — |
+
+`22-project`（CSV 综合实战）与 `70-fixed-form`（FORTRAN 77 固定格式手感）不对应单一章节：前者把前面各章的能力拼成一个完整小工具；后者的固定格式版面规则讲解在第 1 章末「固定格式与自由格式」一节。
 
 ## flang 23 与 gfortran 15 的差异清单
 
@@ -221,7 +224,7 @@ cd /Users/xulun/code/programming/fortran
 
 ## Fortran 本身容易踩的坑
 
-跟编译器无关、纯粹是语言层面的坑，值得先看一眼（详见《Fortran编程指南》第 31 章）：
+跟编译器无关、纯粹是语言层面的坑，值得先看一眼（详见[第 31 章 · 坑清单](docs/31-pitfalls.md)）：
 
 - **`cs(i) = x` 是函数调用，不是子串赋值**。要给子串赋值必须写 `cs(i:i) = x`。
 - **格式描述符个数少于数据项会「格式重现」**。`write(*,'(a,3i5)') 'x', arr` 里 `arr` 有 5 个元素时，多出来的 2 个会从头再走一遍格式，而第一个描述符是 `(a)`——于是整数的原始字节被当字符串吐出来，stdout 里混进 NUL。这是本次编写过程中真实踩到的坑，验证脚本现在专门查这个。
@@ -238,7 +241,7 @@ cd /Users/xulun/code/programming/fortran
 
 ## 当前状态
 
-- **macOS x86_64**（flang 23.1.0 / GNU Fortran 15.2.0）：扩充前的 22 示例 × 2 通道 = 44 项全部通过（新增的 23-28/72 示例在 Windows 侧验证）。
+- **macOS x86_64**（flang 23.1.0 / GNU Fortran 15.2.0，2026-09-26 扩充后全量复验）：31 示例 × 2 通道 = **62 项全部通过**，0 项意外输出差异；已登记的按设计差异中 5 项在 macOS 上实际不同（02/08/15/17/20，脚本打印原因、不计告警），3 项仅 Windows（09/16/21，macOS 上逐字节一致）。
 - **Windows 11**（flang 23.1.1 / GNU Fortran 16.2.0，2026-09 扩充校验）：31 示例 × 2 通道（22 个原有示例 + 6 个新增 `.f90` + 3 个固定格式老示例 70/71/72）= **62 项全部通过**，0 项意外输出差异；仅剩上表列出的已知差异（其中 3 项只在 Windows 出现，根因见「Windows 已知问题」W2/W3）。
 
 `build.ps1` 与 `run-all.sh` 在两个平台上均实测，结果一致。
