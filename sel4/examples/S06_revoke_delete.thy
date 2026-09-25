@@ -47,10 +47,12 @@ subsection \<open>6.2 单槽删除\<close>
 
 text \<open>
   真实内核的"删一个槽"叫 @{verbatim "empty_slot"}
-  （@{verbatim "CSpace_A.thy"}，被 @{verbatim "rec_del"} 第 514 行调用），
+  （定义在 @{verbatim "l4v/spec/abstract/IpcCancel_A.thy"} 第 275 行，
+  被 @{verbatim "CSpace_A.thy"} 第 514 行的 @{verbatim "rec_del"} 调用），
   它做四件事：把槽置成 @{verbatim "NullCap"}、摘掉它在 CDT 里的边、
   清掉 @{verbatim "is_original_cap"} 标记、把孩子们改挂到它父亲下。
-\<close>
+  本节模型 @{verbatim "delete_slot"} 只做前两件——"孩子们改挂到父亲下"这一步
+  在模型里被 @{verbatim "revoke"} 的整棵子树清除替代了。\<close>
 
 definition delete_slot :: "cslot_ptr \<Rightarrow> kstate \<Rightarrow> kstate" where
   "delete_slot p s \<equiv> s\<lparr> ks_cspace := (ks_cspace s)(p \<mapsto> NullCap),
@@ -66,9 +68,21 @@ lemma delete_slot_keeps_others:
 subsection \<open>6.3 撤销：把子孙全部删掉\<close>
 
 text \<open>
-  模型里用"一次性把所有子孙槽清掉"来等价真实内核的循环。
-  两者在\emph{结果}上相同（真实证明要证的就是这一点），
-  模型省掉的是中间那些不确定的步骤顺序。
+  模型里用"一次性把所有子孙槽清掉"来近似真实内核的循环，但两者\emph{不完全}相同，
+  这一条偏差必须写出来（@{verbatim "l4v/spec/abstract/CSpace_A.thy"} 第 603 行）：
+
+  @{verbatim "whenE (cap \<noteq> NullCap \<and> descendants \<noteq> {}) (doE"}
+  @{verbatim "  child \<leftarrow> without_preemption $ select_ext (next_revoke_cap slot) descendants;"}
+  @{verbatim "  cap_delete child; preemption_point; cap_revoke slot odE)"}
+
+  \begin{itemize}
+  \item 真实 @{verbatim "cap_revoke"} 只删\emph{子孙}，\textbf{目标槽 own 自己的能力保留}；
+        本节模型连目标一起清（下面 @{verbatim "revoke_clears_target"} 就是这条偏差）。
+        想要"连自己一起没了"，用户得再发一次 @{verbatim "seL4_CNode_Delete"}。
+  \item 目标槽里若是 @{verbatim "NullCap"}，真实实现\emph{什么都不做}（那个 @{verbatim "whenE"}）；
+  \item 每次只删一个子孙，删完递归重来，中间还插一个 @{verbatim "preemption_point"}
+        ——revoke 是可抢占的长操作，"删到一半"是正常状态。
+  \end{itemize}
 \<close>
 
 definition revoke :: "cslot_ptr \<Rightarrow> kstate \<Rightarrow> kstate" where
@@ -94,10 +108,13 @@ lemma revoke_removes_cdt_edges:
   by (simp add: revoke_def)
 
 text \<open>
-  这四条放在一起就是 revoke 的规格：\emph{目标与它的所有子孙被清空，
+  这四条放在一起就是本节模型的规格：\emph{目标与它的所有子孙被清空，
   其他人毫发无损}。"毫发无损"这一条在真实证明里是最难的部分——
-  要证明被删对象没有别的引用（@{verbatim "is_final_cap"}），
-  见 @{verbatim "CSpace_A.thy"} 第 335 行。
+  要先判定被删对象没有别的引用（@{verbatim "is_final_cap"}，定义在
+  @{verbatim "l4v/spec/abstract/IpcCancel_A.thy"} 第 253 行；
+  @{verbatim "CSpace_A.thy"} 第 335 行处调用它）。
+  真实实现还要区分"暴露给用户"与"没暴露"两种删除路径
+  （@{verbatim "rec_del"} 的参数 @{verbatim "exposed"}）。
 \<close>
 
 subsection \<open>6.4 撤销是幂等的\<close>
@@ -187,8 +204,17 @@ lemma null_cap_can_be_replaced: "can_be_replaced NullCap"
 
 text \<open>
   @{verbatim "NullCap"} 与 @{verbatim "Zombie"} 都不授权，但只有前者能被覆盖。
-  这条区别是 delete-first 类错误（@{verbatim "seL4_DeleteFirst"}）的根源：
-  往一个还挂着 Zombie 的槽里插能力会被拒绝。
+  上面的 @{verbatim "can_be_replaced"} 是模型起的名字；真实规范里对应的判定是
+  @{verbatim "cap_removeable"}（@{verbatim "CSpace_A.thy"} 第 493 行），
+  它对 @{verbatim "Zombie slot' bits n"} 只在"这个 Zombie 已经不再覆盖任何别的槽"
+  时才返回真。而"目标槽必须是空的"这道闸是
+  @{verbatim "ensure_empty"}（@{verbatim "l4v/spec/abstract/CSpaceAcc_A.thy"} 第 75 行），
+  槽里非空就 @{verbatim "throwError DeleteFirst"}。错误枚举里的构造子就叫
+  @{verbatim "DeleteFirst"}（@{verbatim "l4v/spec/abstract/ExceptionTypes_A.thy"} 第 48 行）。
+  用户侧看到的常量是 @{verbatim "seL4_DeleteFirst"}，在
+  @{verbatim "seL4/libsel4/include/sel4/errors.h"} 第 18 行。
+  C 侧的对应判定在 @{verbatim "seL4/src/object/cnode.c"} 的 @{verbatim "cteInsert"}
+  （它同样要求目标为空）。
 \<close>
 
 ML \<open>

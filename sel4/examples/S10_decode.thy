@@ -14,7 +14,7 @@ text \<open>
   解码\emph{同时}就是检查。
 
   标签的合法性检查用 @{verbatim "gen_invocation_type"}
-  （@{verbatim "l4v/spec/abstract/InvocationLabels_A.thy"} 第 27 行）完成，
+  （@{verbatim "l4v/spec/abstract/InvocationLabels_A.thy"} 第 26 行）完成，
   它把越界的数字压成 @{verbatim "InvalidInvocation"}。
 \<close>
 
@@ -54,8 +54,8 @@ text \<open>
 subsection \<open>10.2 一次完整的 CNode 解码\<close>
 
 text \<open>
-  @{verbatim "Decode_A.thy"} 第 49 行 @{verbatim "decode_cnode_invocation"}
-  的骨架是四步：查标签 → 查参数个数 → 查目标槽 →（复制类操作）查源槽、
+  @{verbatim "Decode_A.thy"} 第 49 行的
+  @{verbatim "decode_cnode_invocation label args cap excaps"} 骨架是四步：查标签 → 查参数个数 → 查目标槽 →（复制类操作）查源槽、
   解权利、掩码、派生。模型按这个顺序写一遍。
 \<close>
 
@@ -157,39 +157,53 @@ text \<open>
   代价是移动之后源槽被清空——"权利守恒"靠的是源槽消失，不是掩码。
 \<close>
 
-subsection \<open>10.4 extra caps：随消息带来的能力\<close>
+subsection \<open>10.4 接收窗口与 extra caps：全有或全无\<close>
 
 text \<open>
-  IPC 可以附带能力（@{verbatim "extraCaps"}）。它们在消息里只是一个
-  @{verbatim "CPtr"}，内核要按接收方的 CSpace 解析。真实函数叫
-  @{verbatim "get_receive_slots"}（@{verbatim "Ipc_A.thy"}）与
-  @{verbatim "lookup_slot_for_cnode_op"}。
+  这里有两条不同的通道，别混在一起：
 
-  模型只保留一点：extra caps 的解析可能整体失败，
-  一旦失败就退回"不带能力"，而不是让整个 IPC 失败。
+  \begin{itemize}
+    \item \emph{发送方}随消息带来的 extra caps：@{verbatim "lookup_extra_caps"}
+          （@{verbatim "Ipc_A.thy"} 第 64 行）把消息缓冲里的每个 CPtr 在
+          \emph{发送者}的 CSpace 里解析一遍（@{verbatim "mapME"} 配
+          @{verbatim "lookup_cap_and_slot"}。第 212 行调用它时写的是
+          @{verbatim "if grant then lookup_extra_caps sender sbuf mi <catch> K (return [])"}
+          ——没有 grant 就一个都不传，解析中途失败就把整表清空。
+    \item \emph{接收方}的接收窗口：@{verbatim "get_receive_slots"}
+          （@{verbatim "l4v/spec/abstract/CSpace_A.thy"} 第 292 行）只解析
+          \emph{一个}槽，而且要求那个槽当下就是 @{verbatim "NullCap"}，
+          整段被 @{verbatim "empty_on_failure"} 包着：任何一步出错就返回空表。
+  \end{itemize}
+
+  模型保留的是两边共有的那条性质——"全有或全无"：
 \<close>
 
-definition lookup_extra_caps :: "nat list \<Rightarrow> cslot list option" where
-  "lookup_extra_caps cptrs \<equiv> if \<forall>c \<in> set cptrs. c \<noteq> 0
-                              then Some cptrs else None"
+datatype resolve = Resolved cslot | NotFound | AlreadyFilled
 
-definition get_receive_slots :: "nat list \<Rightarrow> cslot list" where
-  "get_receive_slots cptrs \<equiv> case lookup_extra_caps cptrs of
-      Some cs \<Rightarrow> cs
-    | None \<Rightarrow> []"
+definition get_receive_slots :: "resolve \<Rightarrow> cslot list" where
+  "get_receive_slots r \<equiv> case r of Resolved s \<Rightarrow> [s] | _ \<Rightarrow> []"
 
-lemma bad_extra_cap_drops_all:
-  "0 \<in> set cptrs \<Longrightarrow> get_receive_slots cptrs = []"
-  by (auto simp: get_receive_slots_def lookup_extra_caps_def)
+lemma receive_window_holds_at_most_one_slot:
+  "length (get_receive_slots r) \<le> 1"
+  by (cases r) (auto simp: get_receive_slots_def)
 
-lemma good_extra_caps_kept:
-  "0 \<notin> set cptrs \<Longrightarrow> get_receive_slots cptrs = cptrs"
-  by (auto simp: get_receive_slots_def lookup_extra_caps_def)
+lemma filled_target_yields_no_window:
+  "get_receive_slots AlreadyFilled = []"
+  by (simp add: get_receive_slots_def)
+
+lemma failed_lookup_yields_no_window:
+  "get_receive_slots NotFound = []"
+  by (simp add: get_receive_slots_def)
+
+lemma only_a_clean_resolve_yields_a_slot:
+  "get_receive_slots r = [s] \<longleftrightarrow> r = Resolved s"
+  by (cases r) (auto simp: get_receive_slots_def)
 
 text \<open>
-  @{thm bad_extra_cap_drops_all} 对应真实内核里的
-  @{verbatim "empty_on_failure"}：解析失败就当"没有能力被传递"。
+  @{thm only_a_clean_resolve_yields_a_slot} 说的是"部分成功"在这套接口里
+  \emph{根本没有表示}：要么给出那一个槽，要么什么都没有。
   这是 seL4 的一贯取舍——宁可少给，不可多给。
+  发送方那一路的"没有 grant 就不传能力"是同一取向的另一半。
 \<close>
 
 ML \<open>

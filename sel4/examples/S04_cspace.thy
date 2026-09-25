@@ -89,10 +89,17 @@ text \<open>
   CNode 里存的能力如果还是 CNode 能力，就继续往下走，直到路径用完。
   模型把 CNode 的内容直接写成"索引到可选能力"的函数。
 
-  真实内核靠 @{verbatim "word_bits"} 天然限制了路径长度（一个 CPtr 只有
-  那么多位），所以递归必然终止。模型显式带一份\emph{燃料}：跑不完就失败。
-  这比"证明终止"更好懂，而且和真实约束等价。
-\<close>
+  真实规范用的是 @{verbatim "function"}，终止性由一条\emph{手写}的算术引理支撑
+  （@{verbatim "CSpace_A.thy"} 第 184 行的 @{verbatim "rab_termination"}
+  加第 197 行的 @{verbatim "termination"}，其关系是
+  @{verbatim "measure (\<lambda>(z,cap,cs). size cs)"}）。
+
+  也就是说自动化方法\emph{单靠 @{verbatim "size cs"} 递减证不出来}，必须先把
+  "每吃一层 CNode，剩余路径确实变短"这件事写成引理（还要额外排除
+  @{verbatim "radix_bits = 0 \<and> guard = []"} 这个退化情形，否则原地打转）。
+  本模型改用显式\emph{燃料}参数：每下潜一层消耗一格，跑不完就失败。
+  这样定义立刻是结构递归，代价是燃料本身要选够
+  （下面 @{verbatim "resolve"} 取 @{verbatim "Suc (length path)"}）。\<close>
 
 type_synonym cnode_contents = "cnode_index \<Rightarrow> cap option"
 
@@ -122,9 +129,16 @@ definition resolve :: "cspace_state \<Rightarrow> cap \<Rightarrow> bool list \<
 text \<open>
   注意 @{verbatim "resolve_fuel (Suc n) s NullCap path = None"} 这一支：
   路径还没走完却遇到非 CNode 能力，就是 @{verbatim "DepthMismatch"} 那类
-  错误的来源。真实定义（@{verbatim "CSpace_A.thy"} 第 251 行的
-  @{verbatim "lookup_slot_for_cnode_op"}）会把它精确到"还剩几位"。
-\<close>
+  错误的来源。真实定义 @{verbatim "lookup_slot_for_cnode_op"}
+  （@{verbatim "l4v/spec/abstract/CSpace_A.thy"} 第 232 行）会把它精确到"还剩几位"：
+
+  @{verbatim "case rem of [] \<Rightarrow> returnOk slot | _ \<Rightarrow> throwError $ DepthMismatch (length rem) 0"}
+
+  同一行上方还有第二个检查 @{verbatim "whenE (depth < 1 \<or> depth > word_bits)"}，
+  它把"深度不合法"挡在解析之前，报 @{verbatim "RangeError 1 (of_nat word_bits)"}。
+  模型把两件事合并成了"返回 None"，所以模型的失败不带原因——
+  这是本章为可读性付出的代价，真实内核的每个失败都必须带原因，
+  因为错误码要回给用户态（第 10 章）。\<close>
 
 lemma resolve_leaf_is_none: "resolve s NullCap path = None"
   by (simp add: resolve_def)
@@ -139,9 +153,18 @@ lemma resolve_empty_path_at_cnode:
 subsection \<open>4.4 空路径解析到根槽位本身\<close>
 
 text \<open>
-  这是 @{verbatim "lookup_cap_and_slot"}（@{verbatim "CSpace_A.thy"} 第 216 行）
-  在 depth = 0 时的行为：不需要查任何 CNode，直接返回根槽位。
-\<close>
+  这一支是模型自己给的便利定义，\emph{真实内核不做这件事}：
+  @{verbatim "l4v/spec/abstract/CSpace_A.thy"} 第 232 行的
+  @{verbatim "lookup_slot_for_cnode_op"} 开头就是
+
+  @{verbatim "whenE (depth < 1 \<or> depth > word_bits)"}
+  @{verbatim "  $ throwError (RangeError 1 (of_nat word_bits));"}
+
+  即 depth = 0 直接被拒。同理第 217 行的 @{verbatim "lookup_cap_and_slot"}
+  走的是 @{verbatim "lookup_slot_for_thread"}（第 209 行），路径为空时
+  在 @{verbatim "resolve_address_bits'"} 里撞上 @{verbatim "DepthMismatch"}。
+  本模型保留"空路径 = 根槽"只为给"根"这个概念一个可写的名字，
+  引用它时务必记得这是模型偏离，不是内核性质。\<close>
 
 definition lookup_slot :: "cspace_state \<Rightarrow> cap \<Rightarrow> bool list \<Rightarrow> cslot_ptr option" where
   "lookup_slot s root path \<equiv> if path = [] then Some (cs_root s) else resolve s root path"
@@ -149,16 +172,29 @@ definition lookup_slot :: "cspace_state \<Rightarrow> cap \<Rightarrow> bool lis
 lemma empty_path_resolves_to_root: "lookup_slot s root [] = Some (cs_root s)"
   by (simp add: lookup_slot_def)
 
-text \<open>深度为 0 的"我自己的 CSpace 根"就是这样取的：@{verbatim "tcb_ctable"} 里
-  那张 CNode 能力所指向的槽。真实定义在 @{verbatim "CSpace_A.thy"} 第 208 行的
-  @{verbatim "lookup_slot_for_thread"}。\<close>
+text \<open>"我自己的 CSpace 根"在真实代码里是 TCB 的 @{verbatim "tcb_ctable"} 字段；
+  第 209 行的 @{verbatim "lookup_slot_for_thread"} 就是从它出发解析路径：
+
+  @{verbatim "tcb \<leftarrow> liftE $ gets_the $ get_tcb thread;"}
+  @{verbatim "resolve_address_bits (tcb_ctable tcb, cref)"}
+
+  注意它\emph{没有} @{verbatim "depth \<ge> 1"} 那道检查——那是
+  @{verbatim "lookup_slot_for_cnode_op"} 特有的；但空 cref 仍然会在
+  @{verbatim "resolve_address_bits'"} 里撞上 @{verbatim "DepthMismatch"}。\<close>
 
 subsection \<open>4.5 井形 CNode：槽位索引长度必须一致\<close>
 
 text \<open>
-  @{verbatim "Structures_A.thy"} 第 471 行的 @{verbatim "well_formed_cnode_n"}
-  要求一个 CNode 的所有键长度都等于它的位数。少了这个约束，"同一个槽位"
-  就会有两种写法，删除与撤销时会漏掉幽灵槽。
+  @{verbatim "l4v/spec/abstract/Structures_A.thy"} 第 471 行的
+  @{verbatim "well_formed_cnode_n"} 比"键长度一致"更强，它是一个\emph{等式}：
+
+  @{verbatim "well_formed_cnode_n n \<equiv> \<lambda>cs. dom cs = {x. length x = n}"}
+
+  也就是"长度为 n 的索引\emph{每一个}都必须有值"，一个都不能少。
+  本节模型用的是弱化版（只要求有值者长度正确），因为要把注意力放在
+  "同一个槽位不能有第二种写法"这一点上；用真实那条时，下面
+  @{verbatim "empty_cnode_is_well_formed"} 就不成立了（空 CNode 只有在 n = 0 时才井形）。
+  少了这条约束，删除与撤销时会漏掉幽灵槽。
 \<close>
 
 definition well_formed_cnode_n :: "nat \<Rightarrow> cnode_contents \<Rightarrow> bool" where

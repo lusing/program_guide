@@ -10,11 +10,15 @@ text \<open>
   机器码的证明链。本教程的示例沿用在 Isabelle/HOL 教程里立下的规矩：
   \emph{每一条 lemma 都必须被机器逐条认可}，整个会话构建通过，示例才算活着。
 
-  本教程的"真实代码"在两个仓库里（本机路径）：
+  本教程引用的"真实代码"分成两个仓库，都放在验证脚本的 @{verbatim "SE4SRC"}
+  根目录下（默认 Linux 是 @{verbatim "/home/admin/hol/seL4"}，见 README）：
   \begin{itemize}
-    \item @{verbatim "/Volumes/mac004/lang/seL4/seL4"}：内核 C 源码、libsel4 头文件、manual；
-    \item @{verbatim "/Volumes/mac004/lang/seL4/l4v"}：Isabelle/HOL 规范与证明（l4v = L4.verified）。
+    \item @{verbatim "seL4/"}：内核 C 源码、libsel4 头文件、manual；
+    \item @{verbatim "l4v/"}：Isabelle/HOL 规范与证明（l4v = L4.verified）。
   \end{itemize}
+  教程里出现的每个 @{verbatim "seL4/..."} 与 @{verbatim "l4v/..."} 路径都由
+  @{verbatim "tools/check-refs.py"} 对着这个根目录逐条核实，带行号的还要
+  在该行上下 8 行内找到离它最近的那个标识名。
 
   示例文件本身是\emph{自包含的迷你模型}：它们只 imports @{verbatim Main}，
   不依赖 l4v 的会话。原因是 l4v 全量构建需要若干小时与特定的

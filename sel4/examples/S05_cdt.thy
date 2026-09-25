@@ -41,11 +41,14 @@ datatype cap =
   | IRQControlCap
 
 text \<open>
-  一个容易踩的坑：l4v 里 @{verbatim "cap_rights"} 是 @{verbatim "datatype"} 生成的
-  选择子，对\emph{没有 rights 字段}的构造子返回 @{verbatim "UNIV"}（见
-  @{verbatim "Structures_A.thy"} 第 242 行 @{verbatim "mask_cap"} 依赖的行为）。
-  那是"选择子的默认值"，不是"这个能力真的有全部权利"——语义上
-  @{verbatim "NullCap"} 什么也不授权。模型里按语义写：没有权利字段就是空集。
+  一个容易踩的坑：l4v 里 @{verbatim "cap_rights"} 是第 210 行的
+  @{verbatim "primrec (nonexhaustive)"} 选择子，只覆盖
+  EndpointCap、NotificationCap、ReplyCap、ArchObjectCap 四支，
+  对其余构造子取值\emph{无约束}（@{verbatim "undefined"}）。
+  既别把它当 UNIV 也别把它当空集用—— @{verbatim "mask_cap"}（第 242 行）
+  之所以安全，是因为 @{verbatim "cap_rights_update"} 对不带权利字段的
+  构造子写了 @{verbatim "_ \<Rightarrow> cap"} 直接原样返回，交集结果根本没被用到。
+  语义上 @{verbatim "NullCap"} 什么也不授权，模型里按语义写：没有权利字段就是空集。
 \<close>
 
 definition cap_rights_of :: "cap \<Rightarrow> cap_rights" where
@@ -74,9 +77,12 @@ lemma no_children_iff: "descendants_of p (Map.empty) = {}"
   by (auto simp: descendants_of_def cdt_parent_rel_def is_cdt_parent_def)
 
 text \<open>
-  真实内核里 @{verbatim "ensure_no_children"} 用的就是
-  @{term "descendants_of p t = {}"} 这个条件（Untyped 能力只有在没有
-  子孙时才允许被 retype，见第 15 章）。
+  真实内核里 @{verbatim "ensure_no_children"} 判的就是这个条件为空
+  （@{verbatim "l4v/spec/abstract/CSpace_A.thy"} 第 67 行）：只要 CDT 里有谁的
+  父亲是这个槽，就 @{verbatim "throwError RevokeFirst"}。
+  它的用途要说准：用在 @{verbatim "derive_cap"}（把 Untyped 能力\emph{复制/转授}
+  出去）上，而\emph{不是} retype 本身——带子孙的 Untyped 照样可以继续 retype，
+  只是不会再复位水位（第 15 章）。
 \<close>
 
 subsection \<open>5.3 派生：derive_cap\<close>
@@ -126,10 +132,10 @@ lemma derive_untyped_needs_no_children:
 subsection \<open>5.4 mint / copy / move：三种"搬能力"的方式\<close>
 
 text \<open>
-  用户侧的 @{verbatim "seL4_CNode_Mint"}、@{verbatim "seL4_CNode_Copy"}、
-  @{verbatim "seL4_CNode_Move"}、@{verbatim "seL4_CNode_Mutate"} 在
-  @{verbatim "l4v/spec/abstract/Decode_A.thy"} 第 49 行的
-  @{verbatim "decode_cnode_invocation"} 里被解码成同一件事：
+  @{verbatim "CNodeMint"}、@{verbatim "CNodeCopy"}、@{verbatim "CNodeMove"}、
+  @{verbatim "CNodeMutate"} 这四个 label 都进
+  @{verbatim "decode_cnode_invocation"}（@{verbatim "l4v/spec/abstract/Decode_A.thy"} 第 49 行），
+  被解码成同一件事：
   \emph{先掩码，再派生，最后插入}。区别只在两处参数：
 
   \begin{itemize}

@@ -9,8 +9,10 @@ text \<open>
 
   @{verbatim "get_cap :: cslot_ptr => (cap,'z::state_ext) s_monad"}
 
-  类型 @{verbatim "s_monad"} 是 \emph{非确定性状态单子}。真实定义在
-  @{verbatim "l4v/lib/Monads/nondet/Nondet_Monad.thy"} 第 36 行：
+  类型 @{verbatim "s_monad"} 只是 @{verbatim "nondet_monad"} 的别名
+  （@{verbatim "l4v/spec/abstract/Exceptions_A.thy"} 第 21 行）。
+  \emph{非确定性状态单子}本体的真实定义在
+  @{verbatim "nondet_monad"}（@{verbatim "l4v/lib/Monads/nondet/Nondet_Monad.thy"} 第 36 行）：
 
   @{verbatim "type_synonym ('s,'a) nondet_monad = 's => ('a * 's) set * bool"}
 
@@ -178,9 +180,11 @@ text \<open>
 subsection \<open>7.6 非确定性是怎么进到内核里的\<close>
 
 text \<open>
-  @{verbatim "kselect"} 会把一个集合整个变成"可能的结果"。真实内核用它表达
-  @{verbatim "select_ext"}（@{verbatim "Nondet_Monad.thy"} 第 118 行的
-  @{verbatim "select_f"}）与中断/调度顺序的不确定性。
+  @{verbatim "kselect"} 会把一个集合整个变成"可能的结果"。l4v 里对应的
+  函数叫 @{verbatim "select_f"}（@{verbatim "Nondet_Monad.thy"} 第 118 行），
+  在它之上还包了一层 @{verbatim "select_ext"}，定义在
+  @{verbatim "l4v/spec/abstract/Deterministic_A.thy"} 第 420 行，
+  @{verbatim "cap_revoke"} 挑"下一个子孙"时用的就是它（第 610 行）。
 \<close>
 
 lemma select_singleton_is_return: "kselect {x} = kreturn x"

@@ -117,31 +117,76 @@ text \<open>
   规范用"井形性"逼着实现不要产生第二种写法。
 \<close>
 
-subsection \<open>11.5 badge：区分发送方\<close>
+subsection \<open>11.5 badge：区分发送方，但\emph{不}决定能不能发\<close>
 
 text \<open>
-  端点能力上带一个 @{verbatim "badge"}（徽章）。带 badge 的能力派生出的
-  副本在发送消息时，接收方会看到这个 badge，从而知道"是谁发的"。
-  没有 badge（@{verbatim "badge = 0"}）的端点能力不能用于发送。
+  端点能力上带一个 @{verbatim "badge"}（徽章）。发送时接收方看到的徽章
+  来自\emph{能力本身}，不是用户参数：@{verbatim "l4v/spec/abstract/Decode_A.thy"}
+  第 632--634 行把端点能力解成
+  @{verbatim "InvokeEndpoint ptr badge (AllowGrant \<in> rights) (AllowGrantReply \<in> rights)"}。
 
-  @{verbatim "Ipc_A.thy"} 里 @{verbatim "cap_ep_badge"} 取这个值，
-  @{verbatim "Decode_A.thy"} 的 @{verbatim "update_cap_data"} 在 mint 时把它打上去。
+  一条常见误传要在这里纠正：**徽章为 0 并不阻止发送**。能不能发由\emph{权利位}
+  决定——C 侧是端点能力的 @{verbatim "capCanSend"} 一位
+  （@{verbatim "seL4/include/object/structures_32.bf"} 第 28 行的位域
+  @{verbatim "endpoint_cap(capEPBadge, capCanGrantReply, capCanGrant, capCanSend, \<dots>)"}），
+  Isabelle 侧就是 @{verbatim "AllowSend"}，而它按第 03 章等于 @{verbatim "AllowWrite"}。
+  取徽章的工具函数是 @{verbatim "cap_ep_badge"}，定义在
+  @{verbatim "l4v/spec/abstract/Structures_A.thy"} 第 141 行；
+  mint 时把徽章打上去的是 @{verbatim "update_cap_data"}，在
+  @{verbatim "l4v/spec/abstract/CSpace_A.thy"} 第 122 行。
 \<close>
+
+datatype rights = AllowRead | AllowWrite | AllowGrant | AllowGrantReply
+
+type_synonym cap_rights = "rights set"
 
 type_synonym badge = nat
 
-definition can_send :: "badge \<Rightarrow> bool" where
-  "can_send b \<equiv> b \<noteq> 0"
+datatype ep_cap = EndpointCap nat badge cap_rights
 
-lemma unbadged_cannot_send: "\<not> can_send 0"
-  by (simp add: can_send_def)
+definition AllowSend :: rights where "AllowSend \<equiv> AllowWrite"
 
-lemma badged_can_send: "can_send 42"
-  by (simp add: can_send_def)
+definition can_send :: "ep_cap \<Rightarrow> bool" where
+  "can_send c \<equiv> case c of EndpointCap _ _ R \<Rightarrow> AllowSend \<in> R"
+
+lemma zero_badge_still_sends: "can_send (EndpointCap ptr 0 {AllowSend})"
+  by (simp add: can_send_def AllowSend_def)
+
+lemma no_right_blocks_sending: "AllowWrite \<notin> R \<Longrightarrow> \<not> can_send (EndpointCap ptr b R)"
+  by (auto simp: can_send_def AllowSend_def)
 
 text \<open>
-  "0 号 badge 不能发送"这条规则看似小，却是 seL4 认证里"身份不可伪造"
-  的关键一环：只有持有带 badge 能力的一方才能以该身份发言。
+  徽章真正触发的是另一件事：@{verbatim "seL4_CNode_CancelBadgedSends"}。
+  它的解码闸是 @{verbatim "has_cancel_send_rights"}
+  （@{verbatim "l4v/spec/abstract/CSpace_A.thy"} 第 787 行），条件苛刻——
+  权利集必须等于全集；执行那一支则是
+  @{verbatim "CancelBadgedSendsCall (EndpointCap ep b R) \<Rightarrow> without_preemption $ when (b \<noteq> 0) $ cancel_badged_sends ep b"}（同文件第 838 行）。
+  换句话说：\emph{只有"全权利 + 有徽章"的那一份能力能取消别人排队的发送}。
+\<close>
+
+definition has_cancel_send_rights :: "ep_cap \<Rightarrow> bool" where
+  "has_cancel_send_rights c \<equiv> case c of EndpointCap _ _ R \<Rightarrow> R = UNIV"
+
+definition cancels_pending_sends :: "ep_cap \<Rightarrow> bool" where
+  "cancels_pending_sends c \<equiv>
+     case c of EndpointCap _ b R \<Rightarrow> R = UNIV \<and> b \<noteq> 0"
+
+lemma unbadged_full_cap_cancels_nothing:
+  "\<not> cancels_pending_sends (EndpointCap ptr 0 UNIV)"
+  by (simp add: cancels_pending_sends_def)
+
+lemma badged_full_cap_cancels:
+  "cancels_pending_sends (EndpointCap ptr 7 UNIV)"
+  by (simp add: cancels_pending_sends_def)
+
+lemma reduced_rights_cannot_cancel:
+  "R \<noteq> UNIV \<Longrightarrow> \<not> cancels_pending_sends (EndpointCap ptr b R)"
+  by (simp add: cancels_pending_sends_def)
+
+text \<open>
+  @{thm zero_badge_still_sends} 与 @{thm unbadged_full_cap_cancels_nothing}
+  放在一起才是徽章的完整语义：0 号徽章是"没有身份标记"，
+  它让\emph{取消}失去对象，但从不关闭\emph{发送}。
 \<close>
 
 ML \<open>

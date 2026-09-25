@@ -57,7 +57,7 @@ type_synonym badge = nat
 
 datatype cap =
     NullCap
-  | UntypedCap obj_ref nat nat              \<comment> \<open>指针 / 大小（2^n 字节）/ freeIndex\<close>
+  | UntypedCap obj_ref nat nat              \<comment> \<open>指针 / 大小（2^n 字节）/ freeIndex；真实定义在这里还多一个开头的 device 标志\<close>
   | EndpointCap obj_ref badge cap_rights
   | NotificationCap obj_ref badge cap_rights
   | ReplyCap obj_ref cap_rights
@@ -69,12 +69,14 @@ datatype cap =
   | Zombie obj_ref "nat option" nat
 
 text \<open>能力上挂着哪些权利，由下面这个函数给出。真实代码里它是
-  @{verbatim "Structures_A.thy"} 自动生成的选择子 @{verbatim "cap_rights"}
-  （第 242 行的 @{verbatim "mask_cap"} 就作用在它上面）。
+  @{verbatim "Structures_A.thy"} 第 210 行的 @{verbatim "primrec (nonexhaustive)"}
+  选择子 @{verbatim "cap_rights"}（第 242 行的 @{verbatim "mask_cap"} 就作用在它上面），
+  只覆盖 EndpointCap、NotificationCap、ReplyCap、ArchObjectCap 四支。
 
-  注意：那个选择子对不带 rights 字段的构造子返回 @{verbatim "UNIV"}，
-  这是选择子的默认值，不是"这个能力拥有全部权利"。语义上
-  @{verbatim "NullCap"} 什么也不授权，所以本模型按语义写成空集。\<close>
+  关键区别：非穷尽 primrec 对\emph{其余}构造子返回的是 @{verbatim "undefined"}，
+  不是 UNIV 也不是空集——把它当默认值用，证出来的东西在真实规范里根本不成立。
+  本模型按\emph{语义}改成空集：NullCap、ThreadCap、CNodeCap 这些不带权利字段的
+  能力，问"它有没有某权利"应当回答"没有"。\<close>
 
 definition cap_rights_of :: "cap \<Rightarrow> cap_rights" where
   "cap_rights_of c \<equiv> case c of
@@ -100,15 +102,18 @@ subsection \<open>2.3 对象被创建时得到的"原始能力"\<close>
 
 text \<open>
   retype 一个对象时，内核会给目标槽位装上一个\emph{原始能力（original cap）}。
-  真实定义在 @{verbatim "l4v/spec/abstract/Retype_A.thy"} 的
+  真实定义在 @{verbatim "l4v/spec/abstract/Retype_A.thy"} 第 31 行的
   @{verbatim "default_cap"}（紧跟着 "Creating Caps" 一节）：
 
   @{verbatim "default_cap EndpointObject oref s _ = EndpointCap oref 0 UNIV"}
-  @{verbatim "default_cap NotificationObject oref s _ = NotificationCap oref 0 {AllowRead,AllowWrite}"}
+  @{verbatim "default_cap NotificationObject oref s _ ="}
+  @{verbatim "  NotificationCap oref 0 {AllowRead, AllowWrite}"}
 
-  端点能力默认是\emph{全权}的，通知能力默认\emph{不给 Grant}——因为没有
-  badge 的通知能力无法区分发送方，转授出去没有意义。
-\<close>
+  端点能力默认是\emph{全权}的，通知能力默认\emph{只有读写}——Grant 与
+  GrantReply 都不给，所以"把一个通知能力转授给别人"必须显式 mint。
+  另外注意 @{verbatim "default_cap"} 有四个参数，最后一个 @{verbatim "is_device"}
+  会被 Untyped 那一支存进能力里；@{verbatim "create_cap"}（第 43 行）在装能力之前
+  还先 @{verbatim "set_original dest True"} 并把 CDT 边挂到源 Untyped 上。\<close>
 
 primrec default_cap :: "apiobject_type \<Rightarrow> obj_ref \<Rightarrow> nat \<Rightarrow> cap" where
   "default_cap Untyped oref sz = UntypedCap oref sz 0"
@@ -137,9 +142,17 @@ subsection \<open>2.4 对象的大小\<close>
 
 text \<open>
   CNode 是个特例：用户说"要一个 n 位的 CNode"，内核实际占用的是
-  @{verbatim "obj_size_bits + slot_bits"} 位，因为槽位本身也要空间
-  （真实定义 @{verbatim "Retype_A.thy"} 的 @{verbatim "obj_bits_api"}）。
-\<close>
+  @{verbatim "obj_size_bits + slot_bits"} 位，因为每个槽本身也要空间
+  （真实定义 @{verbatim "l4v/spec/abstract/Retype_A.thy"} 第 78 行的
+  @{verbatim "obj_bits_api"}）。@{verbatim "slot_bits"} 按体系结构取 4 或 5
+  （@{verbatim "l4v/spec/abstract/ARM/Machine_A.thy"} 第 116 行为 4，
+  @{verbatim "X64/Machine_A.thy"} 第 106 行为 5；C 侧同名宏是
+  @{verbatim "seL4_SlotBits"}）。
+
+  但要小心：真实 @{verbatim "obj_bits_api"} 里\emph{只有} Untyped 原样返回请求位数，
+  TCB、Endpoint、Notification 分支直接返回编译期算好的 @{verbatim "obj_bits"}，
+  压根不看用户传了什么。下面这条模型为了可算，把"其余类型"简化成了返回 @{verbatim "sz"}，
+  所以下面 @{verbatim "tcb_needs_exactly_asked"} 是模型的性质，不是内核的性质。\<close>
 
 definition slot_bits :: nat where "slot_bits \<equiv> 4"
 

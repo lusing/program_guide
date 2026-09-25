@@ -36,6 +36,30 @@ type_synonym cap_rights = "rights set"
 definition all_rights :: cap_rights where "all_rights \<equiv> UNIV"
 definition no_rights :: cap_rights where "no_rights \<equiv> {}"
 
+text \<open>
+  真实规范里 @{verbatim "AllowSend"}、@{verbatim "AllowRecv"}、@{verbatim "CanModify"}
+  不是新的权利位，只是已有位的\emph{别名}
+  （@{verbatim "l4v/spec/abstract/CapRights_A.thy"} 第 21–26 行分别定义为
+  @{verbatim "AllowWrite"}、@{verbatim "AllowRead"}、@{verbatim "AllowWrite"}）。
+
+  也就是说端点上的"能不能发"就是那个 Write 位，不存在第五个位。
+  下面照抄这三条别名，好让"权利只有四个位"这句话在本模型里也可判定。\<close>
+
+definition AllowSend :: rights where "AllowSend \<equiv> AllowWrite"
+definition AllowRecv :: rights where "AllowRecv \<equiv> AllowRead"
+definition CanModify :: rights where "CanModify \<equiv> AllowWrite"
+
+lemma send_is_write: "AllowSend = (AllowWrite :: rights)"
+  by (simp add: AllowSend_def)
+
+lemma allow_recv_is_not_a_fifth_right:
+  "(UNIV :: rights set) = {AllowRecv, AllowWrite, AllowGrant, AllowGrantReply}"
+  apply (rule set_eqI)
+  apply (rule iffI)
+   apply (cases rule: rights.exhaust)
+   apply (auto simp: AllowRecv_def)
+  done
+
 subsection \<open>3.2 掩码：派生时削权\<close>
 
 text \<open>
@@ -128,18 +152,29 @@ subsection \<open>3.4 从数据字解码权利\<close>
 
 text \<open>
   用户通过一个机器字传权利进来，内核用 @{verbatim "data_to_rights"} 解码
-  （@{verbatim "l4v/spec/abstract/CSpace_A.thy"} 第 56 行附近）。
-  模型里用一个四位布尔组合同样地做一次，顺便验证"解码再掩码"是幂等的。
-\<close>
+  （真实定义在 @{verbatim "l4v/spec/abstract/CSpace_A.thy"} 第 57 行，
+  @{verbatim "Decode_A.thy"} 第 72 行才调用它）：
+
+  @{verbatim "data_to_rights data \<equiv> let w = data_to_16 data in"}
+  @{verbatim "  {x. case x of AllowWrite \<Rightarrow> w !! 0 | AllowRead \<Rightarrow> w !! 1"}
+  @{verbatim "             | AllowGrant \<Rightarrow> w !! 2 | AllowGrantReply \<Rightarrow> w !! 3}"}
+
+  注意位序：0 是 Write、1 是 Read，\emph{与} @{verbatim "rights"} 枚举的书写顺序
+  （Read 在前）\emph{相反}。下面这个四位布尔模型按真实位序排列，
+  免得读者把"第一位是读"记成习惯。\<close>
 
 type_synonym rights_word = "bool \<times> bool \<times> bool \<times> bool"
 
 definition data_to_rights :: "rights_word \<Rightarrow> cap_rights" where
-  "data_to_rights w \<equiv> case w of (gr, gw, rd, wr) \<Rightarrow>
-     (if rd then {AllowRead} else {}) \<union>
+  "data_to_rights w \<equiv> case w of (wr, rd, gr, grv) \<Rightarrow>
      (if wr then {AllowWrite} else {}) \<union>
+     (if rd then {AllowRead} else {}) \<union>
      (if gr then {AllowGrant} else {}) \<union>
-     (if gw then {AllowGrantReply} else {})"
+     (if grv then {AllowGrantReply} else {})"
+
+text \<open>真实解码只看低 4 位（@{verbatim "data_to_16"}），高位一律丢弃；
+  模型的 @{typ rights_word} 只有四位，天然满足同一件事。
+  因此解码结果永远是 @{verbatim "all_rights"} 的子集——用户传什么位都造不出新权利。\<close>
 
 lemma decode_then_mask_idempotent:
   "mask (mask (data_to_rights w) R) R = mask (data_to_rights w) R"

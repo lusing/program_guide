@@ -116,6 +116,18 @@ text \<open>
 
 datatype syscall_error = IllegalOperation | TruncatedMessage | InvalidCapability | DeleteFirst
 
+text \<open>真实规范的标签枚举不是手写的：它由 @{verbatim "l4v"} 的
+  @{verbatim "ExecSpec.ArchLabelFuns_H"}（构建期从内核的调用号生成）给出，
+  所以规范里用的是\emph{区间}判定而不是集合枚举
+  （@{verbatim "l4v/spec/abstract/Decode_A.thy"} 第 50 行）：
+
+  @{verbatim "unlessE (gen_invocation_type label \<in> set [CNodeRevoke .e. CNodeSaveCaller]) $"}
+  @{verbatim "  throwError IllegalOperation;"}
+
+  区间里除了下面这五个还含 @{verbatim "CNodeMutate"}、@{verbatim "CNodeRotate"}、
+  @{verbatim "CNodeReassign"}、@{verbatim "CNodeCancelBadgedSends"}。
+  模型只需要"有个不认识的标签"这一件事，所以写成显式集合。\<close>
+
 datatype gen_label = CNodeRevoke | CNodeDelete | CNodeCopy | CNodeMint | CNodeMove | OtherLabel
 
 definition valid_cnode_labels :: "gen_label set" where
@@ -167,12 +179,29 @@ lemma no_error_means_success:
 subsection \<open>8.5 把错误提升成故障（fault）\<close>
 
 text \<open>
-  系统调用里还有一类"不是错误，是故障"的情况：地址越界、能力查找失败等，
-  会被包装成 @{verbatim "fault"} 递给线程的 fault handler，
-  见 @{verbatim "seL4/src/api/faults.c"} 与
-  @{verbatim "l4v/spec/abstract/ExceptionTypes_A.thy"}。
-  第 9 章讲 @{verbatim "call_kernel"} 的三阶段时，会看到 fault 与 error
-  分处在两个不同的阶段。
+  规范自己的注释把这两类说得很清楚
+  （@{verbatim "l4v/spec/abstract/ExceptionTypes_A.thy"} 第 20–26 行）：
+
+  \begin{quote}
+    "There are two types of exceptions that can occur in the kernel: faults and errors.
+     Faults are reported to the user's fault handler. Errors are reported to the user
+     directly. Capability lookup failures can be either fault or error, depending on context."
+  \end{quote}
+
+  关键是最后一句：@{verbatim "lookup_failure"}（第 27 行：@{verbatim "InvalidRoot"}、
+  @{verbatim "MissingCapability"}、@{verbatim "DepthMismatch"}、@{verbatim "GuardMismatch"}）
+  既不是 error 也不是 fault，它是第三种东西，靠两个提升函数选边站：
+
+  \begin{itemize}
+  \item @{verbatim "cap_fault_on_failure cptr rp m \<equiv> handleE' m (throwError \<circ> CapFault cptr rp)"}
+        —— 抬成 fault（@{verbatim "l4v/spec/abstract/Exceptions_A.thy"} 第 75 行）；
+  \item @{verbatim "lookup_error_on_failure s m \<equiv> handleE' m (throwError \<circ> FailedLookup s)"}
+        —— 抬成 error（同文件第 78 行）。
+  \end{itemize}
+
+  也就是说真实规范里\emph{没有}"error 映射成 fault"这个函数；下面这个
+  @{verbatim "to_fault"} 是模型用来演示"两种结局长得不一样"的简化品。
+  C 侧的 fault 递送在 @{verbatim "seL4/src/api/faults.c"}。
 \<close>
 
 datatype fault = CapFault | VMFault | UnknownFault
