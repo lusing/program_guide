@@ -1,6 +1,6 @@
 # Fortran 教程与示例
 
-现代 Fortran（Fortran 2018）入门到进阶，配套 24 个可运行示例：22 个现代 `.f90`，外加 2 个 FORTRAN 77 风格的固定格式 `.f`（70、71，让初学者对老 Fortran 有个手感）。**每个示例都在两个编译器上分别编译运行**：LLVM flang 23（主通道）与 GNU Fortran 15（对照通道）。
+现代 Fortran（Fortran 2018）入门到进阶，配套 31 个可运行示例：28 个现代 `.f90`，外加 3 个 FORTRAN 77 风格的固定格式 `.f`（70、71、72，让初学者对老 Fortran 有个手感）。**每个示例都在两个编译器上分别编译运行**：LLVM flang 23（主通道）与 GNU Fortran 15（对照通道）。教程正文 32 章，扩充时参考了《FORTRAN 语言程序设计——FORTRAN95》（清华 2017）与配套《实验指导与测试》（2018）两本教材的体系与习题。
 
 这里讲的不是 FORTRAN 77 —— 但会把 FORTRAN 77 长什么样也演示一遍。`do concurrent`、`submodule`、`iso_c_binding`、类型绑定过程、`select type`、OpenMP 都在示例里实打实地跑了一遍。
 
@@ -9,7 +9,7 @@
 ```
 fortran/
 ├── README.md                 本文件
-├── Fortran编程指南.md         教程正文（24 章）
+├── Fortran编程指南.md         教程正文（32 章）
 ├── build.ps1                 PowerShell 构建/验证入口（两条通道）
 ├── run-all.sh                等价的 shell 版验证脚本
 └── examples/
@@ -35,8 +35,15 @@ fortran/
     ├── 20-parallel.f90           并行计算（OpenMP + do concurrent）
     ├── 21-errors-testing.f90     错误处理与单元测试
     ├── 22-project.f90            综合实战：一个 CSV 数据分析小工具
+    ├── 23-memory-layout.f90      数组存储顺序（列主序）与隐 DO 循环
+    ├── 24-formatted-input.f90    格式化输入：Iw/Fw.d/Lw/Aw、BN/BZ、格式重现
+    ├── 25-gauss-jordan.f90       Gauss-Jordan 消元、矩阵求逆、Hilbert 病态演示
+    ├── 26-ode.f90                常微分方程：欧拉/改进欧拉/RK4、方程组、稳定性
+    ├── 27-debugging.f90          调试三板斧：打印摘要、计数器、断言、边界自查
+    ├── 28-quiz.f90               读程序自测：十二道谜题实跑验证
     ├── 70-fixed-form.f           老格式：固定格式版面、算术 IF、计算 GOTO
-    └── 71-legacy-features.f      老特性：隐式类型、COMMON、EQUIVALENCE（附现代对照）
+    ├── 71-legacy-features.f      老特性：隐式类型、COMMON、EQUIVALENCE（附现代对照）
+    └── 72-obsolescent.f          老特性 II：DATA、语句函数、alternate return、EXTERNAL
 ```
 
 ## 工具链
@@ -80,7 +87,7 @@ gfortran-mp-15 --version  # GNU Fortran (MacPorts gcc15 15.2.0_0+stdlib_flag) 15
 |---|---|---|
 | flang | `flang-mp-23 -std=f2018 -pedantic -O2 -J build/mod/flang FILE -o OUT` | 主通道（`.f90`） |
 | gfortran | `gfortran-mp-15 -std=f2018 -pedantic -O2 -J build/mod/gfortran FILE -o OUT` | 对照通道（`.f90`） |
-| 老格式 `.f` | gfortran 侧改 `-std=legacy`；flang 侧去掉 `-std` 与 `-pedantic` | 70、71 两个示例，脚本按后缀自动切换 |
+| 老格式 `.f` | gfortran 侧改 `-std=legacy`；flang 侧去掉 `-std` 与 `-pedantic` | 70、71、72 三个示例，脚本按后缀自动切换 |
 | 一致性比对 | `cmp` | 两个编译器的 stdout 应当逐字节相同 |
 
 老格式示例不跑 `-pedantic`：老特性本来就是标准里的「已删/已过时」集合，用现代标准挑它的毛病没有意义。顺带一提，flang 23 不认 `-std=legacy`（只接受 `-std=f2018`），不加 `-std` 时本来就接受固定格式 —— 这本身就是一个跨编译器差异。
@@ -89,7 +96,7 @@ PowerShell：
 
 ```powershell
 cd /Users/xulun/code/programming/fortran        # Windows: cd G:\code\guide\fortran
-pwsh ./build.ps1 -All                 # 跑全部（24 个 × 2 通道）
+pwsh ./build.ps1 -All                 # 跑全部（31 个 × 2 通道）
 pwsh ./build.ps1 -File 12-derived-types.f90
 pwsh ./build.ps1 -All -Verbose        # 附带打印每个示例的运行输出
 pwsh ./build.ps1 -Clean               # 清理 build 目录
@@ -162,8 +169,15 @@ cd /Users/xulun/code/programming/fortran
 | 20 | 并行计算 | `!$omp` 指令、reduction/atomic/critical/private、`schedule`、sections、计时与加速比、竞态、`do concurrent` |
 | 21 | 错误处理与单元测试 | 手写 `unittest` 断言框架、被测模块、`iostat`/`stat`/`err=`/`inquire`、子进程 `error stop` 退出码 |
 | 22 | 综合实战 | CSV 读入/写出/解析（含缺失值）、描述统计、Top-N 排名、最小二乘回归、对齐报表、写回校验 |
+| 23 | 数组内存布局 | 列主序存储顺序、`reshape` 的 `order=`、隐 DO 在输出表/输入表/构造器、循环嵌套顺序与存储位序、`transfer` vs `reshape` |
+| 24 | 格式化输入 | `Iw` 空格/截断/全空规则、`Fw.d` 自带小数点优先、指数输入、`Lw`、`Aw` 取最右、`X` 跳列、`BN`/`BZ`、输入版格式重现、`iostat` 捕获 |
+| 25 | Gauss-Jordan 与求逆 | 列主元消元、`[A|I]→[I|A⁻¹]`、乘法验算、Hilbert 病态矩阵误差爆炸（1e-14→3e-7） |
+| 26 | 常微分方程 | 欧拉/改进欧拉/RK4 三法对照（精确解标尺）、二阶降阶成方程组、`procedure` 哑元传右端函数、显式欧拉稳定边界 |
+| 27 | 调试与查错 | 三类错误活体、`iostat` 防御、打印摘要/计数器二分三板斧、断言不变量、手写边界自查、Recursive I/O 陷阱 |
+| 28 | 读程序自测 | 十二道改编自教材的谜题（整数除法/循环变量终值/if 配对/mod-modulo/case 语义等），十题实跑验证 |
 | 70 | 老格式：固定格式 | `.f` 版面规则（标号区/续行列/C 注释）、`DO 100 ... CONTINUE`、算术 `IF`、计算 `GOTO`、`FORMAT` 语句 |
 | 71 | 老特性 | 隐式类型规则、`COMMON` 块、`EQUIVALENCE` 位型查看、无 `intent` 的过程调用；注释里逐条给现代对照写法 |
+| 72 | 老特性 II | `DATA`（重复因子/隐 DO/SAVE 语义）、语句函数、alternate return（`*` 虚参 + `RETURN n`）、`EXTERNAL`/`INTRINSIC`；注释给现代对照 |
 
 ## flang 23 与 gfortran 15 的差异清单
 
@@ -184,6 +198,8 @@ cd /Users/xulun/code/programming/fortran
 | 11 | `random_seed` 的 `size` | 1 | 8 |
 | 12 | `stat=` 返回的数值 | 与 gfortran 不同（如 12） | 与 flang 不同（如 5014） |
 | 13 | namelist 输出排版 | 各自的排版风格 | 各自的排版风格 |
+| 14 | 已删/过时特性（PAUSE、语句函数、alternate return）在 `-std=f2018` 下 | PAUSE 接受（仅 portability 警告），另两个零警告接受 | **PAUSE 拒绝编译**；另两个报 Obsolescent 警告 |
+| 15 | 同一数组元素被两条 DATA 重复初始化（legacy 通道） | 拒绝 | 接受（后者覆盖） |
 
 第 4 条最要命：`use omp_lib` 在 flang 上直接编译不过。示例 20 的解法是自己写一个 `module omprt`，用 `bind(c, name='omp_get_wtime')` 这类接口把 OpenMP 运行时函数声明一遍 —— 这也顺便说明了 `bind(c)` 是怎么用的。
 
@@ -205,7 +221,7 @@ cd /Users/xulun/code/programming/fortran
 
 ## Fortran 本身容易踩的坑
 
-跟编译器无关、纯粹是语言层面的坑，值得先看一眼（详见《Fortran编程指南》第 23 章）：
+跟编译器无关、纯粹是语言层面的坑，值得先看一眼（详见《Fortran编程指南》第 31 章）：
 
 - **`cs(i) = x` 是函数调用，不是子串赋值**。要给子串赋值必须写 `cs(i:i) = x`。
 - **格式描述符个数少于数据项会「格式重现」**。`write(*,'(a,3i5)') 'x', arr` 里 `arr` 有 5 个元素时，多出来的 2 个会从头再走一遍格式，而第一个描述符是 `(a)`——于是整数的原始字节被当字符串吐出来，stdout 里混进 NUL。这是本次编写过程中真实踩到的坑，验证脚本现在专门查这个。
@@ -222,7 +238,7 @@ cd /Users/xulun/code/programming/fortran
 
 ## 当前状态
 
-- **macOS x86_64**（flang 23.1.0 / GNU Fortran 15.2.0）：22 示例 × 2 通道 = **44 项全部通过**，0 项意外输出差异。
-- **Windows 11**（flang 23.1.1 / GNU Fortran 16.2.0，2026-09 校验）：24 示例 × 2 通道（含新增的 70/71 固定格式老示例）= **48 项全部通过**，0 项意外输出差异；仅剩上表列出的已知差异（其中 3 项只在 Windows 出现，根因见「Windows 已知问题」W2/W3）。
+- **macOS x86_64**（flang 23.1.0 / GNU Fortran 15.2.0）：扩充前的 22 示例 × 2 通道 = 44 项全部通过（新增的 23-28/72 示例在 Windows 侧验证）。
+- **Windows 11**（flang 23.1.1 / GNU Fortran 16.2.0，2026-09 扩充校验）：31 示例 × 2 通道（22 个原有示例 + 6 个新增 `.f90` + 3 个固定格式老示例 70/71/72）= **62 项全部通过**，0 项意外输出差异；仅剩上表列出的已知差异（其中 3 项只在 Windows 出现，根因见「Windows 已知问题」W2/W3）。
 
 `build.ps1` 与 `run-all.sh` 在两个平台上均实测，结果一致。
