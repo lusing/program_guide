@@ -40,11 +40,18 @@ BOOST_LOG_TRIVIAL(info) << "服务启动完成";
 ```text
 [info] 服务启动完成
 [warning] 连接数接近上限
-命名 logger 的一条记录
+[info] 命名 logger 的一条记录
 自检通过
 ```
 
 三大件：**sink**（目的地：文件/控制台/网络，同步或异步前端）、**filter**（全局/线程级快速开关——重度过滤在格式化之前）、**formatter**（属性集模板）。广度过滤器 + 属性 + 多 sink 广播的吞吐设计是十年以上打磨的工程件。⭐ 服务端日志的 C++ 标准答案（spdlog 是流行的轻量第三方对手）。
+
+> 实测坑：过滤器引用 `Severity` 属性时，**没有该属性的记录会被静默丢掉**。裸 `sources::logger` 不带 Severity，所以 `BOOST_LOG(lg) << …` 那条在设了 `severity >= info` 全局过滤后**根本不输出**（本机实测：这一行一度整个消失）。要它出现就得自己挂属性：
+> ```cpp
+> lg.add_attribute("Severity", boost::log::attributes::constant<logging::trivial::severity_level>(
+>                                  logging::trivial::info));
+> ```
+> 另：Unix 上动态链接 Boost.Log 必须加 `-DBOOST_LOG_DYN_LINK`（与 Windows 的 `BOOST_ALL_DYN_LINK` 对应）。
 
 ## 32.3 Boost.Contract（2018 成库）：按契约设计
 

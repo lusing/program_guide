@@ -143,7 +143,7 @@ compute::transform(gpu.begin(), gpu.end(), gpu.begin(), _1 * _1, queue);   // GP
 float sum = compute::accumulate(gpu.begin(), gpu.end(), 0.0f, queue);      // GPU 归约
 ```
 
-运行输出（`compute.cpp`）：
+运行输出（`compute.cpp`，**Windows 侧**：RTX 3060 + CUDA OpenCL）：
 
 ```text
 设备 = NVIDIA GeForce RTX 3060
@@ -152,6 +152,21 @@ float sum = compute::accumulate(gpu.begin(), gpu.end(), 0.0f, queue);      // GP
 GPU 排序首尾 = 1/6
 自检通过
 ```
+
+**macOS 侧**：没有 CUDA 那套，OpenCL 由系统框架提供（`#include <OpenCL/cl.h>`
+——Boost.Compute 自己按 `__APPLE__` 分支，不用改代码），链接写
+`-framework OpenCL`。本机（Intel Iris Pro）实测输出：
+
+```text
+设备 = Iris Pro
+计算单元 = 40 个
+平方和 = 91（1²+2²+…+6² = 91）
+GPU 排序首尾 = 1/6
+自检通过
+```
+
+设备名与计算单元数随**机器**变（换台机器就不同，所以文档里这是"本机实测"），
+但在同一台机器上两条通道必然拿到同一个设备——因此不用登记进"已知漂量"名单。
 
 STL 算法（transform/sort/accumulate/...）的 GPU 版 + lambda 内核（`_1 * _1` 编译成 OpenCL C）。⭐ 数据并行计算的轻量入口（不想拉 CUDA C++ 全家桶时的选择）。
 

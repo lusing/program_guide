@@ -27,8 +27,11 @@ int main() {
     Rect d = gtl::construct<Rect>(2, 2, 6, 6);
     std::vector<Rect> uni;
     gtl::assign(uni, c + d);                            // 并集
-    std::cout << "并集矩形块数 = " << uni.size() << " 总面积 = "
-              << (uni.empty() ? 0 : gtl::area(uni[0])) << '\n';
+    // 总面积要**把所有块加起来**：扫描线把 L 形切成若干矩形（本机 3 块），
+    // 只取 uni[0] 算出来的不是总面积（旧版就是这么写的，打出来是 8 而不是 28）
+    long long total = 0;
+    for (const Rect& r : uni) total += gtl::area(r);
+    std::cout << "并集矩形块数 = " << uni.size() << " 总面积 = " << total << '\n';
 
     // 3) 定位与距离（曼哈顿度量）
     std::cout << "(1,1) 与 (4,4) 曼哈顿距离 = "

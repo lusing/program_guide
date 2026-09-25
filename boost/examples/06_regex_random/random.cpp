@@ -34,13 +34,20 @@ int main() {
     for (int h = 160; h <= 180; h += 10) std::cout << h << ':' << height_hist[h] << ' ';
     std::cout << '\n';
 
-    // 4) std 版对照：同种子同算法 → 同序列（mt19937 是数值确定的）
+    // 4) std 版对照：**引擎**（mt19937）是数值确定的——标准把算法写死了，
+    //    同种子 → 同原始序列，跨实现都成立（MSVC/libc++/libstdc++ 都是）。
+    //    但**分布**（uniform_int_distribution）把 32 位随机值映射成 [1,6]
+    //    的那一步，标准只规定结果的分布、不规定映射算法，各家 STL 自己来：
+    //    MSVC 上 std 与 boost 一致，libc++ 上不一致。所以这里两个都打，
+    //    别把"引擎确定"说成"分布也确定"。
     std::mt19937 sgen(42);
-    std::uniform_int_distribution<> sdie(1, 6);
     boost::random::mt19937 bgen(42);
+    std::cout << "同种子的裸引擎序列一致? " << std::boolalpha << (sgen() == bgen())
+              << '\n';
+    std::uniform_int_distribution<> sdie(1, 6);
     boost::random::uniform_int_distribution<> bdie(1, 6);
-    std::cout << "std/boost 同种子序列一致? " << std::boolalpha
-              << (sdie(sgen) == bdie(bgen)) << '\n';
+    std::cout << "std/boost 同种子分布一致? " << (sdie(sgen) == bdie(bgen))
+              << "（分布映射算法标准未规定，随 STL 变）\n";
 
     // 5) 坑位演示：忘了播种 vs 播种（rand() 时代 srand 忘调是经典 bug）
     boost::random::mt19937 unseeded1, unseeded2;

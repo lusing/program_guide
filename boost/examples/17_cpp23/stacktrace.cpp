@@ -1,19 +1,24 @@
 // stacktrace.cpp —— Boost.Stacktrace（2016）：std::stacktrace（C++23）的直系原型
 // 对应文档：docs/17-cpp23.md
+#include <boost/config.hpp>     // BOOST_NOINLINE
 #include <boost/stacktrace.hpp>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 
-std::string inner() {
+// 三个函数都标 BOOST_NOINLINE：不加的话开优化时 middle 会被内联进 outer、
+// 栈里只剩 inner，第 1 项断言就变成 1/0（本机 -O2 下实测如此，Windows 侧
+// 的 build.ps1 不开优化所以一直是 1/1）。回溯示例要的是"函数还在栈上"，
+// 那件事得由代码保证，不能指望编译器的优化档位。
+BOOST_NOINLINE std::string inner() {
     // 想要当前调用链：一行构造 stacktrace
     std::ostringstream oss;
     oss << boost::stacktrace::stacktrace();
     return oss.str();
 }
 
-std::string middle() { return inner(); }
-std::string outer()  { return middle(); }
+BOOST_NOINLINE std::string middle() { return inner(); }
+BOOST_NOINLINE std::string outer()  { return middle(); }
 
 int main() {
     std::string trace = outer();
@@ -24,8 +29,10 @@ int main() {
     std::cout << "栈里能找到 inner/middle? " << has_inner << '/' << has_chain << '\n';
 
     // 2) 帧计数与程序化访问
+    //    从这里起开 boolalpha（文档里这几行是 true/false；上面那行保持 1/1，
+    //    因为它打的是两个位、读起来紧凑些）
     boost::stacktrace::stacktrace st;
-    std::cout << "当前栈帧数 >= 2? " << (st.size() >= 2) << '\n';
+    std::cout << std::boolalpha << "当前栈帧数 >= 2? " << (st.size() >= 2) << '\n';
     // st[0].name() 是本帧；源文件名/行号在调试符号就位时可取
     std::cout << "第 0 帧非空名? " << !st[0].name().empty() << '\n';
 

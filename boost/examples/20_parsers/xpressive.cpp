@@ -24,7 +24,11 @@ int main() {
     }
 
     // 3) 命名捕获（比数字下标可读）
-    xp::sregex cnt = '(' >> (xp::s2 = +xp::_d) >> ')';
+    //    坑（本机实测）：原来的正则写成 '('  >> (s2 = +_d) >> ')'，对
+    //    "(retry 3)" 匹配不上——'(' 后面紧跟的是字母不是数字，整个 search 失败，
+    //    这一行从来没被打印过（Windows 侧的文档里那条"重试次数 = 3"是凭印象写的）。
+    //    要抓的是 retry 后面的数字，就把前缀写进正则。
+    xp::sregex cnt = xp::as_xpr("retry ") >> (xp::s2 = +xp::_d);
     if (xp::regex_search(log, what, cnt)) {
         std::cout << "重试次数 = " << what[2] << '\n';
     }

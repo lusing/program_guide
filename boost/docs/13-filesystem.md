@@ -21,7 +21,7 @@ for (const auto& entry : fs::recursive_directory_iterator(dir)) {
 }
 ```
 
-运行输出（`filesystem.cpp`）：
+运行输出（`filesystem.cpp`，**Windows 侧**）：
 
 ```text
 目录 = "F:\temp\boost_tutorial_demo"
@@ -32,6 +32,21 @@ for (const auto& entry : fs::recursive_directory_iterator(dir)) {
 std 版文件名 = "data.txt"
 清理后存在? 0
 ```
+
+运行输出（`filesystem.cpp`，macOS 侧）：
+
+```text
+目录 = "/Volumes/mac004/code/programming/boost/build/tmp/boost_tutorial_demo"
+文件名 = "data.txt" 扩展名 = ".txt"
+存在? 1 大小 = 8
+目录下条目数 = 2（data.txt + sub）
+递归找到 .log = 2 个
+std 版文件名 = "data.txt"
+清理后存在? 0
+自检通过
+```
+
+> 实测坑（跨平台）：临时目录的路径**分隔符与根目录都不一样**（`F:\temp\…` vs `/…/build/tmp/…`），而且 macOS 侧是绝对路径、含仓库位置。验证脚本把 `TMPDIR` 固定成 `build/tmp` 的**绝对路径**——用相对路径的话两条通道各自的 cwd 不同，跨通道比对必然失败。
 
 **毕业档案**：`std::filesystem`（C++17，直系）。两版并存的注意事项：
 

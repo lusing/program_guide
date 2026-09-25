@@ -85,7 +85,7 @@ SAX 流式 = {"streamed":true}
 
 ## 30.4 选型速查
 
-```text
+```plain
 保存/恢复程序状态（对象图、版本演进） → Serialization
 读写小配置文件（JSON/XML/INI 互转）   → PropertyTree
 API 对接/高性能 JSON/大文件流式       → Boost.JSON

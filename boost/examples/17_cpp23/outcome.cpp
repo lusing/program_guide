@@ -27,8 +27,11 @@ int main() {
     // 1) 判定与取值：.value() 失败抛，.error() 拿错误码
     auto ok = parse_port("8080");
     auto bad = parse_port("99999");
+    // 判失败要用 has_error()：result 的 operator bool 语义是**有值**（跟
+    // std::expected 一致），直接 static_cast<bool> 会把"失败"打成 0，
+    // 跟这一行的字面意思正好相反（旧版就这么写错了）
     std::cout << "成功值 = " << ok.value()
-              << " 失败吗? " << static_cast<bool>(bad)
+              << " 失败吗? " << std::boolalpha << bad.has_error()
               << " 消息 = " << bad.error().message() << '\n';
 
     // 2) TRY 惯用法：错误向上传播一行流（库作者的心头好）

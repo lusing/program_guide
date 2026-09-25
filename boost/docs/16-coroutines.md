@@ -55,17 +55,23 @@ coroutine<std::string>::push_type writer([](pull_type& in) { ... });
 writer("hello");
 ```
 
-运行输出（`coroutine.cpp` / `coroutine2.cpp`）：
+运行输出（`coroutine.cpp`）：
 
 ```text
 平方序列: 1 4 9 16 25
   收到: hello
   收到: coroutine
   收到: world
----
+自检通过
+```
+
+运行输出（`coroutine2.cpp`）：
+
+```text
 斐波那契: 0 1 1 2 3 5 8 13
 1..100 求和 = 5050
 分界线：有栈（coroutine2）vs 无栈（C++20 co_await）
+自检通过
 ```
 
 **选型**：新代码一律 Coroutine2（Coroutine 是 C++03 时代的，1.92 已标弃用趋势）。**毕业档案**：生成器用途毕业为 `std::generator`（C++23，无栈）；**双向管道（进一个出一个的 `pull<T(U)>`）std 没有**——不过实测发现 coroutine2 的这个形式在本机 `/std:c++latest` 下有编译冲突（和 09 章 future.hpp 同类问题），例程里回避了。

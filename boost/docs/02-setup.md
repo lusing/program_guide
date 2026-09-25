@@ -148,7 +148,21 @@ examples/NN_章名/plugin_*.cpp  编成 DLL（/LD），只编译不运行（29 �
 #include <print>
 #include <string_view>
 
-// 把 _MSVC_LANG 的数值翻译成标准名。
+// 编译器与标准档位的宏三家各说各话，只能逐个认领：
+//   MSVC     _MSC_VER / _MSVC_LANG（__cplusplus 默认不报真值，要 /Zc:__cplusplus）
+//   clang    __clang_major__ / __cplusplus
+//   GCC      __GNUC__ / __cplusplus
+// 写成条件编译而不是"统一用 __cplusplus"：MSVC 不带 /Zc:__cplusplus 时
+// __cplusplus 恒为 199711，拿它判档位会永远停在 C++98。
+constexpr long lang_ver() {
+#if defined(_MSC_VER) && !defined(__clang__)
+    return _MSVC_LANG;
+#else
+    return __cplusplus;
+#endif
+}
+
+// 把档位数值翻译成标准名。
 // /std:c++latest 下 MSVC 报 202400（C++26 草案档），比正式值更新。
 constexpr std::string_view lang_name(long v) {
     switch (v) {
@@ -157,15 +171,25 @@ constexpr std::string_view lang_name(long v) {
         case 201703L: return "C++17";
         case 202002L: return "C++20";
         case 202302L: return "C++23";
-        default:      return "C++26 草案（/std:c++latest）";
+        case 202400L: return "C++26 草案（MSVC /std:c++latest）";
+        default:      return "C++26 草案或更新";
     }
 }
 
 int main() {
     std::print("Boost {}.{}.{}\n", BOOST_VERSION / 100000,
                BOOST_VERSION / 100 % 1000, BOOST_VERSION % 100);
+#if defined(_MSC_VER) && !defined(__clang__)
     std::print("MSVC {}.{}\n", _MSC_VER / 100, _MSC_VER % 100);
-    std::println("标准档位: {}", lang_name(_MSVC_LANG));
+#elif defined(__clang__)
+    std::print("Clang {}.{}.{}\n", __clang_major__, __clang_minor__,
+               __clang_patchlevel__);
+#elif defined(__GNUC__)
+    std::print("GCC {}.{}.{}\n", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
+#else
+    std::print("未知编译器\n");
+#endif
+    std::println("标准档位: {}", lang_name(lang_ver()));
 
     // __has_include 探一下本教程后面要用到的标准头——
     // Boost 与 std 的"毕业对照"要两边都能跑，先确认 std 侧的弹药充足
@@ -186,7 +210,7 @@ int main() {
 }
 ```
 
-实际运行输出（`pwsh ./build.ps1 -Chapter 02 -ShowOutput`）：
+实际运行输出（`pwsh ./build.ps1 -Chapter 02 -ShowOutput`，**Windows 侧**）：
 
 ```text
 Boost 1.92.0
@@ -198,6 +222,56 @@ MSVC 19.51
 <mdspan>   有  C++23 std::mdspan
 自检通过
 ```
+
+同一份例程在 macOS 上（`./run-all.sh 02 -v`）：
+
+```text
+Boost 1.88.0
+Clang 16.0.0
+标准档位: C++23
+<format>   有  C++20 std::format
+<print>    有  C++23 std::print
+<expected> 有  C++23 std::expected
+<mdspan>   有  C++23 std::mdspan
+自检通过
+```
+
+差的就是"编译器身份"和"档位"两行：前者的宏三家不通用（`_MSC_VER` 在 clang/GCC 上
+根本不存在，旧版例程在 macOS 上第一行就编不过），后者是 MSVC 的 `/std:c++latest`
+比 clang 的 `-std=c++2b` 更超前。
+
+## 2.7 同一批例程在 macOS / Linux 上（`run-all.sh`）
+
+`build.ps1` 绑死 MSVC + Boost DLL + `G:\` 路径，换平台就得换入口：`run-all.sh`
+（shell 版）跑同一批 149 个例程、同样六条判定，再加一条本仓库的多通道惯例——
+**两条通道（动态 / 静态链接 Boost）的 stdout 逐字节一致**。工具链与 Boost 的准备
+见 [README](../README.md#macos--linux-验证run-allsh)。
+
+三条"换了就跑不起来"的差异：
+
+1. **没有自动链接**。Windows 头文件里的 `#pragma comment(lib, ...)` 在 Unix 上没人
+   认，要哪个库得自己写在命令行上，名字还带 layout 后缀
+   （`libboost_regex-mt-x64.dylib`）；`run-all.sh` 按章列了一张表（对应 build.ps1 的
+   `$chapterConfig`，但换成了 Unix 侧的名字：`Shell32.lib` → 不需要、`dbghelp.lib` →
+   不需要、`ws2_32.lib` → 不需要、`OpenCL.lib` → `-framework OpenCL`）。
+2. **运行期找动态库靠 rpath**。没有"把 DLL 目录前置进 PATH"这回事，编译期写
+   `-Wl,-rpath,<库目录>`；静态通道则要写库的**完整路径**（macOS 的 ld64 没有
+   `-Bstatic`，同一个 `-L` 目录里 `.dylib` 永远压过 `.a`）。
+3. **`-isystem <boost根>` 顶替 `/external:I` + `/external:W0`**——同一件事：Boost 头
+   的告警不算在例程头上。但有个补丁：`/external:W0` 连"Boost 宏在例程里展开出的
+   告警"也一起压掉了，clang 不会（诊断落在例程那个宏调用的行上），04 章两个宏库
+   例程因此各自补了 `#pragma clang diagnostic ignored`；MSVC 侧的
+   `#pragma warning(disable: …)` 照旧保留——两家写法并列，不是互相替换。
+
+还有三条属于"标准库 / 库实现"的差异：
+
+- `std::jthread`：Apple 自带的 libc++ 把它和 `stop_token` 标成"未完成"
+  （`__config` 里的 `_LIBCPP_HAS_NO_EXPERIMENTAL_STOP_TOKEN`），要
+  `-fexperimental-library` 才给名字（09 章）；
+- Boost.Stacktrace：Unix 侧要 `-DBOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED`
+  （`_Unwind_Backtrace` 不需要 `_GNU_SOURCE` 就有），Windows 走 dbghelp 没这回事（17 章）；
+- Boost.Test：非 Windows 上**默认**给报告加 ANSI 颜色转义，Windows 走控制台 API
+  不打转义字节——判"stdout 无控制字符"之前要 `BOOST_TEST_COLOR_OUTPUT=0`（32 章）。
 
 四发探照灯全亮：std 侧弹药充足，后面每一章的"Boost vs std 对照"都是两边真编译、真运行出来的，不是文档抄写。
 

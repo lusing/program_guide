@@ -45,7 +45,7 @@ boost::offset_separator offs(b, e);                 // 定长切片
 运行输出（`tokenizer.cpp`）：
 
 ```text
-分词: [ada] [lovelace] [36] ["计算
+分词: [ada] [lovelace] [36] ["计算] [数学"]
 CSV: [ada] [lovelace;36] [计算,数学]
 定长: [ada] [036] [gra] [ce0] [85]（尾段不足 3 也保留——partial 默认开）
 自检通过
@@ -63,14 +63,20 @@ boost::convert<int>("not-a-number", cnv).value_or(-1);// 失败不抛，回落
 cnv(std::hex); boost::convert<int>("ff", cnv);        // 流操纵符直通
 ```
 
-运行输出（`lexical_cast.cpp` / `convert.cpp`）：
+运行输出（`lexical_cast.cpp`）：
 
 ```text
 数值→串 = 3.1415899999999999
 串→int = 42
 坏转换被抓住: bad_lexical_cast
 串→double = 2.71
----
+std 版 = 42（非泛型，仅内置类型）
+自检通过
+```
+
+运行输出（`convert.cpp`）：
+
+```text
 合法 = 2026 非法回落 = -1
 hex ff = 255
 精度 3 的 pi = 3.14159
@@ -95,12 +101,19 @@ boost::locale::translate("File not found").str();    // gettext 翻译骨架
 
 ```text
 大写 = GRÜSSE
-小写 = grüße
+小写 = grüsse
 NFC/NFD 字节数 = 2/3（分解形 e+́ 占更多字节）
 归一化后相等? true
 翻译键 = File not found（无字典时原样返回）
 自检通过
 ```
+
+> 实测坑（**构建期**，不是平台差异）：Boost.Locale **必须带 ICU 编出来**，否则这一章的语义是残的。本机第一次构建没带 ICU（`otool -L` 里只有 `libiconv`），于是打出来的是
+> `大写 = GRÜßE`（`ß` 没变成 `SS`）、`NFC/NFD 字节数 = 2/2`（`normalize(NFD)` **原样返回**，根本没分解）——
+> 这不是"macOS 就这样"，是 Boost.Locale 退到了无 ICU 的后端。带 ICU 重建后输出与 Windows 侧一致。
+> 判断自己有没有踩到：跑一遍上面的例程，`NFC/NFD` 是 `2/3` 就对了，`2/2` 就是没带 ICU。
+>
+> 带 ICU 的重建要点（本机）：b2 的 ICU 探测结果**被缓存在 `bin.v2/project-cache.jam`**，改了 `-sICU_PATH` 也不会重探，要先把 `has_icu`/`icu-` 那几行从缓存里删掉；另外 ICU 的 `-L` 会把 `-liconv` 引到 MacPorts 的 GNU libiconv（只导出 `_libiconv`），链接报 `Undefined symbols: _iconv`——解法见 README 的构建段。
 
 **归一化是重点**：视觉相同的字符串可能是不同码点序列（`é` 可以是一个码点或 `e`+重音符两个码点）——**用户输入做键（去重/查找）之前必须归一化**，否则"看起来一样却匹配不上"。四种形式里 NFC（组合）适合存储，NFD（分解）适合比较。⭐ 国际化代码的必需品，std 无对应。
 

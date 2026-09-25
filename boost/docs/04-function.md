@@ -159,14 +159,17 @@ using ret  = boost::callable_traits::return_type_t<F>;  // 返回类型
 boost::callable_traits::is_const_member_v<memfn>;       // 成员函数的 const 性
 ```
 
-运行输出（`callable_traits.cpp`）：
+运行输出（`callable_traits.cpp`；`typeid` 名在 MSVC 上是可读形，见下）：
 
 ```text
-函数类型: 参数个数=2 返回类型=int 第2参数=class std::basic_string<...>
-仿函数: 参数个数=2 返回类型=double 第2参数=int
-lambda: 参数个数=2 返回类型=double 第2参数=double
+函数类型: 参数个数=2 返回类型=i 第2参数=NSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEE
+仿函数: 参数个数=2 返回类型=d 第2参数=i
+lambda: 参数个数=2 返回类型=d 第2参数=d
 成员函数 is_const = true
+自检通过
 ```
+
+> 实测坑（跨平台）：这三行的"类型名"是 `typeid(T).name()`，MSVC 给 `int` / `class std::basic_string<...>`，Itanium ABI（clang/GCC）给 `i` / `NSt3__112basic_stringIc...` 这种 mangled 裸名。同一份代码在两个平台上打印完全不同——**别把类型名字符串写进断言**，要判断类型就用 `std::is_same` 或 `boost::typeindex`。
 
 写泛型库时回答"T 能不能调、怎么调"的专用工具。**2026 视角**：日常泛型约束用 C++20 concepts（`std::invocable<F, int>`）；callable_traits 剩余价值在**拆解**签名（取出第 N 个参数类型、判断 noexcept/const 成员、变换签名再重组）——这些 concepts 做不到。
 
@@ -189,7 +192,21 @@ threshold=4 以上: 5 8 9
 
 宏实现的函数体内具名函数，能引用局部变量（`bind&` 是引用捕获）。它对 lambda 的**唯一残余优势**是天然可递归（名字先行声明）；但 lambda 的 `auto fib = [&](auto&& self, int n) { ... self(self, n-1) ... };` 自递归惯用法加上 Y 组合子的知识已经覆盖了这个场景。**判死刑**：被淘汰。
 
-> 实测坑：这个库的宏在 `/W4` 下有固有噪声（C4459 宏内部变量遮蔽），例程里用 `#pragma warning` 定点压制并注明了原因——宏库的通病。
+> 实测坑：这个库的宏在 `/W4` 下有固有噪声（C4459 宏内部变量遮蔽），例程里定点压制并注明了原因——宏库的通病。
+>
+> 实测坑（跨平台写法）：压制**不能只写 MSVC 那一支**。原来的写法是裸 `#pragma warning(push/disable:4459/pop)`，在 clang 上先变成 `-Wunknown-pragmas` 告警；用 `#if defined(_MSC_VER)` 把它围起来之后，clang 立刻报出**另一批**告警（`-Wunused-local-typedef`、`-Wunused-private-field`）——也就是说 MSVC 的 pragma 一直在**顺手盖掉 clang 的不同告警**。正确姿势是三支分开写，并配 `#pragma clang/gcc diagnostic push/ignored/pop`：
+> ```cpp
+> #if defined(_MSC_VER)
+> #  pragma warning(push) / #  pragma warning(disable: 4459) … #  pragma warning(pop)
+> #elif defined(__clang__)
+> #  pragma clang diagnostic push
+> #  pragma clang diagnostic ignored "-Wunused-local-typedef"
+> #  pragma clang diagnostic ignored "-Wunused-private-field"
+> #  pragma clang diagnostic pop
+> #elif defined(__GNUC__)
+> #  pragma GCC diagnostic push … #  pragma GCC diagnostic pop
+> #endif
+> ```
 
 ## 4.9 Boost.Phoenix：函数式 EDSL 的完全体
 

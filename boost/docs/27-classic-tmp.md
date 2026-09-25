@@ -20,9 +20,11 @@ mpl::accumulate<Cnts, mpl::int_<0>, mpl::plus<mpl::_1, mpl::_2>>::type;
 transform → int* OK（比 mp11 多个 ::type）
 浮点数 = 2 个
 accumulate 求和 = 6
-size = 4 at<2> = double
+size = 4 at<2> = d
 自检通过
 ```
+
+> 实测坑（跨平台）：`typeid(T).name()` 的返回是**实现自定义的**。MSVC 给可读的 `double`，Itanium ABI（clang/GCC）给 `d`（mangled 的裸名）。上面 `at<2> = d` 与 12 章 `any` 的 `类型 = d` 都是同一件事——教程正文按 MSVC 记的是 `double`。要比类型就用 `type_index` 或 `std::is_same`，别比字符串。
 
 **已被 mp11/hana 取代**——但它定义的词汇（sequence/algorithm/metafunction/tag dispatch）是整个 TMP 世界的母语，海量老代码与 Boost 内部仍在用。
 
@@ -112,10 +114,10 @@ eval = 3（AST 先建好，eval 才算）
 存了再 eval = 3
 AST 结构:
 plus(
-    terminal[1]
+    terminal(1)
   , multiplies(
-        terminal[_1]
-      , terminal[1]
+        terminal(8Wildcard)
+      , terminal(1)
     )
 )
 自检通过
@@ -158,9 +160,11 @@ for (auto it = ctx.begin(); it != ctx.end(); ++it)
 
 ```text
 宏展开含 Hello? 1 含 World? 1
-token 数 = 14
+token 数 = 13
 自检通过
 ```
+
+> 实测坑（跨版本）：`display_expr` 的终端打印与 Wave 的 token 计数都**随 Boost 版本变**——Boost 1.92 打 `terminal[1]` / `terminal[_1]` 且 `token 数 = 14`，Boost 1.88 打 `terminal(1)` / `terminal(8Wildcard)` 且 `token 数 = 13`。结构（plus/multiplies 嵌套）才是稳定的；字符串形式的 AST 别写进断言。
 
 `GREETING(WORLD)` 展开成 `Hello, World!`——例程验证了宏与条件编译全部正确展开。⭐ 静态分析工具、编译器前端、预处理转储的唯一标准件级选择。
 

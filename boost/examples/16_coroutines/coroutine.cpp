@@ -6,7 +6,9 @@
 #include <iostream>
 
 int main() {
-    using co_t = boost::coroutines::coroutine<int(int)>;
+    // （原先用 using co_t = ... 起了个别名又没用上：MSVC /W4 不管未使用的
+    //   局部 typedef，clang 的 -Wall 会报 -Wunused-local-typedef，
+    //   "零告警"判定直接挂掉。本机按示例实际用到的形态写，不留死代码）
 
     // 1) 经典生产者：pull 型（协程推出来，主循环拉）
     boost::coroutines::coroutine<int>::pull_type source(

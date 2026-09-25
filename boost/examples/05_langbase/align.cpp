@@ -12,11 +12,19 @@ int main() {
     boost::alignment::aligned_free(p);
 
     // 2) align：在缓冲区里找下一个对齐位置（SIMD/网络协议解析的核心操作）
+    //    注意：别把"推进了几字节"直接打出来当实测值——它取决于 buffer 这次
+    //    落在哪个地址上（本机两条通道一个 16 一个 0，Windows 上是 16），
+    //    是个会漂的量。能稳定复核的是下面两个**事实**：
+    //      · 推进量必落在 0..31（对齐 32 时最多推 31 字节）
+    //      · 结果地址一定是 32 的倍数
     char buffer[256];
     void* raw = buffer;
     std::size_t space = sizeof(buffer);
     void* aligned = boost::alignment::align(32, 64, raw, space);
-    std::cout << "32 对齐推进 " << ((char*)aligned - buffer) << " 字节\n";
+    std::size_t advance = static_cast<std::size_t>((char*)aligned - buffer);
+    std::cout << "推进量 < 32? " << std::boolalpha << (advance < 32)
+              << "  结果 32 对齐? "
+              << boost::alignment::is_aligned(aligned, 32) << '\n';
 
     // 3) align_up/align_down/is_aligned：整数级别的对齐算术（无 std 对应，常用！）
     std::cout << "align_up(100, 64) = " << boost::alignment::align_up(100, 64) << '\n';

@@ -50,7 +50,7 @@ cb.front();        // 最老
 运行输出（`circular_buffer.cpp`）：
 
 ```text
-内容:  3 4 5（size=3 capacity=3）
+内容: 3 4 5（size=3 capacity=3）
 最新 = 5 最老 = 3
   窗口均值 = 10
   窗口均值 = 15

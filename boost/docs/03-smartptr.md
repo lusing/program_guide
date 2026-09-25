@@ -38,7 +38,7 @@ boost::scoped_ptr<Sensor> s{new Sensor("scoped")};
 
 `scoped_ptr` 用"不可拷贝"表达独占——这是 C++03 没有移动语义时代的杰作：既然不能转移，所有权就永远清晰。C++11 的 `unique_ptr` 在同样语义上增加了**可移动**（所有权可以交接），并加入了数组特化、自定义删除器、零开销抽象（就是裸指针大小）。
 
-`scoped_ptr` 与 `unique_ptr` 的实测差异（例程第 1 节）：
+`scoped_ptr` 与 `unique_ptr` 的实测差异（例程第 1 节）：（运行输出 `smart_ptr.cpp`）
 
 ```text
 == 1. scoped_ptr：独占、不可拷贝（unique_ptr 的直系祖先）==
@@ -62,7 +62,7 @@ boost::shared_ptr<Sensor> a = boost::make_shared<Sensor>("shared");
 }                                      // 计数 -1，对象还活着
 ```
 
-例程实测：
+运行输出（`smart_ptr.cpp`）：
 
 ```text
 == 2. shared_ptr：引用计数共享 ==
@@ -87,7 +87,7 @@ boost::weak_ptr<Sensor> w = a;          // 不增加计数
 if (auto locked = w.lock()) { ... }     // 使用前提升回 shared_ptr
 ```
 
-例程实测：
+运行输出（`smart_ptr.cpp`）：
 
 ```text
 == 3. weak_ptr：观察不拥有（打破循环/缓存）==
@@ -123,7 +123,7 @@ inline void intrusive_ptr_add_ref(Node* p) { ++p->refs; }
 inline void intrusive_ptr_release(Node* p) { if (--p->refs == 0) delete p; }
 ```
 
-例程实测：
+运行输出（`smart_ptr.cpp`）：
 
 ```text
 == 5. intrusive_ptr：计数长在对象身上（零控制块开销）==
@@ -151,7 +151,7 @@ struct Task : boost::enable_shared_from_this<Task> {
 };
 ```
 
-例程实测：
+运行输出（`smart_ptr.cpp`）：
 
 ```text
 == 6. enable_shared_from_this：对象内部拿到自己的 shared_ptr ==

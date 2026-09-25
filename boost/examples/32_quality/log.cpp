@@ -8,6 +8,7 @@
 #include <boost/log/sinks/sync_frontend.hpp>
 #include <boost/log/sources/logger.hpp>
 #include <boost/log/sources/record_ostream.hpp>
+#include <boost/log/attributes/constant.hpp>
 #include <iostream>
 #include <memory>
 #include <ostream>
@@ -35,7 +36,13 @@ int main() {
     BOOST_LOG_TRIVIAL(warning) << "连接数接近上限";
 
     // 4) 命名 logger + 属性（结构化日志的起点）
+    //    坑：上面的全局过滤器引用了 Severity 属性，**没有这个属性的记录会被
+    //    静默丢掉**——裸 sources::logger 不带 Severity，那一行在 macOS 上
+    //    直接不出现（本机实测）。给它挂一个常量 Severity 才过得了过滤器。
     boost::log::sources::logger lg;
+    lg.add_attribute("Severity",
+                     boost::log::attributes::constant<logging::trivial::severity_level>(
+                         logging::trivial::info));
     BOOST_LOG(lg) << "命名 logger 的一条记录";
 
     logging::core::get()->remove_all_sinks();

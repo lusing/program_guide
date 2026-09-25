@@ -19,7 +19,7 @@ int main() {
     std::cout << name_of(yes) << '/' << name_of(no) << '/' << name_of(unknown) << '\n';
 
     // 2) Kleene 三值逻辑运算：未知参与运算的传播
-    std::cout << "未知 AND 假 = " << name_of(unknown && no) << "（短 路 吸收）\n";
+    std::cout << "未知 AND 假 = " << name_of(unknown && no) << "（短路吸收）\n";
     std::cout << "未知 AND 真 = " << name_of(unknown && yes) << "（未知传播）\n";
     std::cout << "未知 OR 真 = " << name_of(unknown || yes) << "（短路吸收）\n";
     std::cout << "NOT 未知 = " << name_of(!unknown) << '\n';

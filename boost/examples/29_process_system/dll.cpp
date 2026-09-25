@@ -1,5 +1,5 @@
 // dll.cpp —— Boost.DLL（2014）：运行期加载共享库的跨平台封装。
-// 加载本目录 plugin_greeter.cpp 编出的 plugin_greeter.dll。
+// 加载本目录 plugin_greeter.cpp 编出的插件（plugin_greeter.dll / .so / .dylib）。
 // 对应文档：docs/29-process-system.md
 #include <boost/dll.hpp>
 #include <boost/dll/import.hpp>
@@ -9,10 +9,19 @@
 namespace dll = boost::dll;
 
 int main() {
-    // boost::dll::program_location() 即本 exe 路径；DLL 与 exe 同目录
-    // （build.ps1 的产物布局保证这一点）
+    // boost::dll::program_location() 即本 exe 路径；插件产物与 exe 同目录
+    // （build.ps1 / run-all.sh 的产物布局保证这一点）。
+    //
+    // 文件名后缀**不能写死 ".dll"**：Windows 是 .dll，Linux 是 .so，
+    // macOS 是 .dylib，写死了换平台必扑空。问 Boost.DLL 自己最稳——
+    // 构建脚本（run-all.sh）也用同一个 API 定产物名，两边不会说不到一块去。
     boost::filesystem::path lib_path =
-        dll::program_location().parent_path() / "plugin_greeter.dll";
+        dll::program_location().parent_path() /
+        ("plugin_greeter" + dll::shared_library::suffix().string());
+    // 只打文件名不打全路径：全路径里含产物目录（build/shared 与 build/static
+    // 不同），会让"两通道输出逐字节一致"这条判定凭空失败——那是构建布局的
+    // 差异，不是示例行为的差异。
+    std::cout << "插件文件名 = " << lib_path.filename().string() << '\n';
 
     // 1) shared_library：加载与符号检查
     dll::shared_library lib(lib_path);

@@ -14,10 +14,14 @@ int main() {
     }   // 析构 → 打印 wall/user/system
 
     // 2) cpu_timer 手动控制 + 格式化
+    //    坑（本机实测）：迭代数不能卡在阈值附近。原来写 200 万次 volatile double
+    //    累加，实测耗时正好落在 1ms 上下——同一条通道连跑 5 次里就有 2 次打印
+    //    false，所谓断言其实是掷硬币。放大到 2000 万次，离 1ms 阈值有两个数量级
+    //    余量，才配叫"断言"。
     boost::timer::cpu_timer timer;
     timer.start();
     volatile double acc = 0;
-    for (int i = 0; i < 2000000; ++i) acc += i * 0.25;
+    for (int i = 0; i < 20000000; ++i) acc += i * 0.25;
     timer.stop();
     (void)acc;
     boost::timer::cpu_times times = timer.elapsed();
