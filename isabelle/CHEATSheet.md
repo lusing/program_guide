@@ -261,3 +261,48 @@ Nat.add_le_mono                               单调性
 4. 区间逐字节比对。
 
 单引擎无多通道可比，用"运行间确定性"替代"跨通道一致性"。
+
+---
+
+## 十、第二轮扩充（31–53 章）坑位速览
+
+按症状归并的新章高频坑（详单见各章"坑位清单"）：
+
+| 症状/要点 | 章 |
+|---|---|
+| `by (sledgehammer)` / `by nitpick` 是**语法错误**——两者都是命令不是方法 | 32/33 |
+| sledgehammer 建议行含 `(0.0 ms)` 计时——两遍比对必炸，放标记区间外 | 32 |
+| Windows 上 E 冷启动 10–30 秒，教学示例省着用 | 32 |
+| smt 视变量乘法为未解释函数（环分配律证不了） | 32 |
+| nitpick 的 `expect` 把反例变成可验证断言 | 33 |
+| `card 'a = 1` 时"全体相等"成立、基数 2 才露馅 | 33 |
+| 嵌套数字模式 primrec 不收（`Nonprimitive pattern`） | 34/49 |
+| 函数空间不能当 datatype 嵌套位（`Cannot define empty datatype`） | 34 |
+| `partial_function` 只吃单条方程（`command expected, but keyword |`） | 35 |
+| `pinduct` 不存在——`raw_induct`/结构归纳代替；code 方程要手动 `[code]` | 35 |
+| 未知常量静默变自由变量，value 打印原样项 | 35 |
+| `corec` 不在 Main；primcorec 拒构造子模式 | 36 |
+| 自定义 codatatype 上友元默认策略打不动（`Tactic failed`） | 36 |
+| `simp add: foo.code` 对 corec 方程发散；`subst` 单步 | 36 |
+| 官方 LFilter 三引理环环相扣，少抄一条 `[simp]` 当场卡死 | 36 |
+| `[code equation]` 不存在；`file_prefix` 相对会话导出区 | 37 |
+| locale 定义要全限定名喂 value；interpret/interpretation 一字之差 | 38 |
+| `instantiation` 忘 `instance` 收尾：`Unfinished instantiation` | 39 |
+| `Max` 空集 undefined；`THE` 无唯一性不可计算 | 40 |
+| `@{const Cons}` 要类型实参——取名字用 `@{const_name}` | 41 |
+| `@{verbatim "..."}` 字符串里放不了 `\<open>` 类转义 | 41 |
+| `method_setup` 三段式忘文档串=语法错误 | 42 |
+| Git Bash 直跑 isabelle 报 uname 错；必须经 Cygwin | 43 |
+| Cygwin 登录 shell 里 isabelle 不在 PATH | 43 |
+| JDK18+ 管道输出按 ANSI 转码（中文变 GBK 字节） | 43 |
+| 文档反引号拼错名字构建必死（编译期检查） | 44 |
+| Library 理论必须 `imports "HOL-Library.X"` 全名 | 45 |
+| `AList.lookup` 第一个参数是相等函数 | 45 |
+| Complex_Main **不含**积分（has_integral 零结果） | 46 |
+| 现代 FOL 无 `i` 类型；`P x` 空格应用解析失败，要 `P(x)` | 47/48 |
+| de Bruijn 移位必须带 cutoff；代换进壳抬 s 一层 | 49 |
+| **`induct` 与 `induction` 是两个方法**：只有 `induction` 给 `.IH`/`.prems` | 49–52 |
+| 谓词格 lfp 引理放 locale 块**外**用 sort 声明更稳 | 51 |
+| 集合补全式显示形态与书写不同——给关系起**命名常量**免疫 | 52 |
+| wf 归纳用 `wf_induct_rule`+`induct x arbitrary: ...`；链式事实按"wf 在前"排序，多余前提会被吸进归纳谓词 | 52 |
+| ε-δ 定义对齐 `eventually_at` 的去心形态最省事（`imp_conjL` 桥接） | 53 |

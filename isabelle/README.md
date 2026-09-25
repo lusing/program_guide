@@ -8,8 +8,17 @@
 **商类型**（`quotient_type`/`transfer`）与**序与格**（`Orderings`/`Lattices`）
 六条 HOL 生态里最常见的进阶设施。
 
-**章号 = 示例编号**——01–30 章每章对应 `examples/` 里一个经
-`isabelle build` 构建通过、且两遍输出逐字节一致的 `.thy` 文件。
+第二轮扩充（31–53 章）把 `G:\hol` 十六本手册的缺口逐一补上：
+**手册覆盖篇 31–44**（归纳定义、Sledgehammer、Nitpick、嵌套/互斥
+datatype、partial_function、corec 友元、codegen/locale/类进阶、
+Main 库漫游、Isabelle/ML、tactic、jEdit/PIDE、文档生成）；
+**库与对象逻辑篇 45–48**（HOL-Library 选讲、HOL-Analysis 入门、
+FOL 一阶逻辑、ZF 集合论）；**数学原理篇 49–53**（λ 演算与 STLC
+类型安全双定理、自然演绎、Knaster–Tarski 不动点、Newman 引理、
+ε-δ 分析基础）——每条数学定理都在 Isabelle 里证出来，不是空谈。
+
+**章号 = 示例编号**——01–53 章每章对应 `examples/`（及其会话子目录）
+里一个经 `isabelle build` 构建通过、且两遍输出逐字节一致的 `.thy` 文件。
 
 > 核心理念：**每个示例都是被机器逐条认可过的数学文本，不是"能跑就行"的程序。**
 > 正文里出现的每一段输出都从 `build/` 产物里抽出，不是想象中的样子。
@@ -61,6 +70,29 @@ isabelle/
 | [28 抽象类型 typedef](docs/28-typedef.md) | `typedef` / `setup_lifting` / `lift_definition` | `T28_typedef.thy` |
 | [29 商类型 quotient_type](docs/29-quotient.md) | `quotient_type` / `Quotient` / `transfer` | `T29_quotient.thy` |
 | [30 序与格类层次](docs/30-order.md) | `Orderings` / `Lattices` / `mono` / `instantiation linorder` | `T30_order.thy` |
+| [31 归纳定义](docs/31-inductive.md) | `inductive` / 规则归纳 / `intro!` 自爆点 | `T31_inductive.thy` |
+| [32 Sledgehammer](docs/32-sledgehammer.md) | 命令不是方法 / 本地 E/cvc5/z3 / metis 与 smt | `T32_sledgehammer.thy` |
+| [33 Nitpick](docs/33-nitpick.md) | `expect` 断言 / card 基数 / 反例优先工作流 | `T33_nitpick.thy` |
+| [34 嵌套与互斥 datatype](docs/34-datatypes-deep.md) | BNF 白名单 / 互斥归纳 / 嵌套 size·map | `T34_datatypes_deep.thy` |
+| [35 partial_function 深水](docs/35-partial-function.md) | 单方程铁律 / `raw_induct` / code 注册 | `T35_partial_function.thy` |
+| [36 corec 友元](docs/36-corec-friends.md) | `corec` 三档 / friends / `corecursive` lfilter | `T36_corec_friends.thy`（Lib） |
+| [37 代码生成进阶](docs/37-codegen-deep.md) | 三引擎 / `[code_unfold]` / `export_code` | `T37_codegen_deep.thy` |
+| [38 Locale 进阶](docs/38-locales-deep.md) | locale 内定义 / `sublocale` 义务 / `interpret` | `T38_locales_deep.thy` |
+| [39 类型类进阶](docs/39-classes-deep.md) | `overloading` / 非空义务实例 / sort 读法 | `T39_classes_deep.thy` |
+| [40 Main 库漫游](docs/40-main-tour.md) | `∑`/`card`/`⇀`/`THE`/nibble 内幕 | `T40_main_tour.thy` |
+| [41 Isabelle/ML 世界](docs/41-ml-world.md) | ML 块 / 反引号四件套 / 输出纪律 | `T41_ml_world.thy` |
+| [42 tactic 与自定义方法](docs/42-tactics.md) | `resolve_tac` / `method_setup` / SUBGOAL | `T42_tactics.thy` |
+| [43 jEdit 与系统工具](docs/43-system-jedit.md) | PIDE / 面板 / Windows Cygwin 三连坑 | `T43_system_jedit.thy` |
+| [44 文档生成 sugar](docs/44-document-sugar.md) | 文档反引号 / markup / 会话文档 | `T44_document_sugar.thy` |
+| [45 HOL-Library 选讲](docs/45-library-tour.md) | Multiset / Sublist / AList / while_option | `T45_library_tour.thy`（Lib） |
+| [46 HOL-Analysis 入门](docs/46-analysis-intro.md) | 滤子 / 极限 / 连续 / DERIV / IVT | `T46_analysis_intro.thy` |
+| [47 FOL 一阶逻辑](docs/47-fol.md) | IFOL/FOL / `P(x)` 函数式写法 / 量词手动挡 | `T47_fol.thy`（FOL） |
+| [48 ZF 集合论](docs/48-zf.md) | 公理定理形态 / `Ord` / 超穷归纳 | `T48_zf.thy`（ZF） |
+| [49 λ 演算与 STLC](docs/49-stlc.md) | de Bruijn / weakening / 进展+保持 | `T49_stlc.thy` |
+| [50 自然演绎](docs/50-natded.md) | ND↔Isar / 导出规则兵器谱 / 经典等价链 | `T50_natded.thy` |
+| [51 Knaster–Tarski](docs/51-fixpoints.md) | `lfp` 三刻画 / gfp 对偶 / 三首编曲 | `T51_fixpoints.thy` |
+| [52 重写系统与 Newman](docs/52-rewrite-ars.md) | ARS locale / 强归纳过 trancl / 合流 | `T52_rewrite_ars.thy` |
+| [53 ε-δ 分析基础](docs/53-epsilon-delta.md) | 裸 ε-N/ε-δ / 与滤子定义的等价 | `T53_epsilon_delta.thy` |
 
 学习路线：01–03 心智模型与基本材料 → 04–07 数据建模与化简 →
 08–13 证明技法主线（自动化 / 逻辑 / 归纳 / Isar）→ 14–17 结构与方法论
@@ -72,16 +104,25 @@ isabelle/
 | 组件 | 值 |
 |---|---|
 | 发行版 | Isabelle2025-2 |
+| 可执行文件（Windows） | `G:\xulun3\isabelle\Isabelle2025-2\bin\isabelle`（**必须经自带 Cygwin**，见下） |
 | 可执行文件（macOS） | `/Applications/Isabelle2025-2.app/bin/isabelle` |
 | 可执行文件（Linux） | `/home/admin/hol/Isabelle2025-2/bin/isabelle`（本机 Ubuntu 22.04 实测路径） |
-| ML 系统 | polyml-5.9.2，`x86_64_32-darwin` / `x86_64_32-linux` |
-| 会话 | `IsaTut`（见 `examples/ROOT`，父会话 `"HOL-Eisbach"`，`HOL` 的超集） |
+| ML 系统 | polyml-5.9.2，`x86_64_32-windows` / `x86_64_32-darwin` / `x86_64_32-linux` |
+| 会话（四组） | `IsaTut`（HOL-Eisbach，examples/）/ `IsaTutLib`（HOL-Library，examples/lib/）/ `IsaTutFOL`（FOL，examples/fol/）/ `IsaTutZF`（ZF，examples/zf/）——一个裸会话独占一个目录 |
 | 交互前端 | `isabelle jedit`（随发行版自带） |
+| 本地 ATP/SAT | contrib 自带 `e-3.2` / `cvc5-1.2.0` / `z3-4.4.0pre` / `verit` / `minisat-2.2.1`（第 32/33 章全离线可用） |
 
-发行版自带预编译的 `Pure` / `HOL` 堆镜像，`HOL-Eisbach` 需要现场构建一次
-（约 20 秒），之后 `T01–T26` 与 `T27` 都命中缓存；Linux 全量验证约 40 秒、
-macOS 约 1–2 分钟。`run-all.sh` 会按 `uname -s` 自选默认 `ISABELLE` 路径；
+发行版自带预编译的 `Pure` / `HOL` 堆镜像；`HOL-Eisbach` / `HOL-Library` /
+`FOL` / `ZF` 四个堆需要现场构建一次（本机 Windows/Cygwin 实测：
+Eisbach 27 秒、Library 约 3 分钟、FOL/ZF 各约 1 分钟），之后全部命中缓存。
+`run-all.sh` 会按 `uname -s` 自选默认 `ISABELLE` 路径与重入方式；
 显式覆盖用 `ISABELLE=/path/to/isabelle ./run-all.sh`。
+
+**Windows 专行**（run-all.sh 已自动处理，手动操作时需知道）：
+Git Bash 里直接跑 `bin/isabelle` 报
+`Failed to determine hardware and operating system type!`——唯一正解是
+经 `contrib/cygwin/bin/bash --login` 进入 Cygwin 世界，且登录 shell 里
+`isabelle` 不在 PATH（用完整 `/cygdrive/.../bin/isabelle` 路径）。
 
 ## 验证命令
 
@@ -94,7 +135,8 @@ cd isabelle
 
 **判定标准**（四关，全部通过才算过）：
 
-1. `isabelle build -D examples` 退出码 0，且日志无 `FAILED` /
+1. `isabelle build -D examples` 退出码 0（四个会话：IsaTut 及其
+   lib/fol/zf 子目录里的三个附加会话），且日志无 `FAILED` /
    `Unfinished session` / `^\*\*\*`——Isabelle/Scala 工具失败不一定让
    进程退出码非 0，必须查日志；
 2. `process_theories -O` 抽出的 `==== NN 开始 ====` / `==== NN 结束 ====`
@@ -108,7 +150,7 @@ cd isabelle
 那本身就是 bug。实测这一步抓到过真问题：默认开启 `parallel_print` 时，
 24 个示例里有 12 个两次运行的消息顺序不同；关掉并行打印后差异归零。
 
-## 环境注意事项（macOS + Linux 双端实测）
+## 环境注意事项（Windows/Cygwin + Linux + macOS 三端实测）
 
 - **SQLite 构建库与 `-journal` 清理**：写库时要 `unlink` 掉 `-journal`。
   Linux 下普通权限就能删；macOS 本机对 `~/` 下未签名二进制的 `unlink`

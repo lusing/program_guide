@@ -1,0 +1,4 @@
+session IsaTutZF = ZF +
+  options [document = false]
+  theories
+    T48_zf

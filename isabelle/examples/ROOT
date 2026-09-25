@@ -31,3 +31,22 @@ session IsaTut = "HOL-Eisbach" +
     T28_typedef
     T29_quotient
     T30_order
+    T31_inductive
+    T32_sledgehammer
+    T33_nitpick
+    T34_datatypes_deep
+    T35_partial_function
+    T37_codegen_deep
+    T38_locales_deep
+    T39_classes_deep
+    T40_main_tour
+    T41_ml_world
+    T42_tactics
+    T43_system_jedit
+    T44_document_sugar
+    T46_analysis_intro
+    T49_stlc
+    T50_natded
+    T51_fixpoints
+    T52_rewrite_ars
+    T53_epsilon_delta

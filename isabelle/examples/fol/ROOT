@@ -1,0 +1,4 @@
+session IsaTutFOL = FOL +
+  options [document = false]
+  theories
+    T47_fol

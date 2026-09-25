@@ -1,0 +1,5 @@
+session IsaTutLib = "HOL-Library" +
+  options [document = false]
+  theories
+    T36_corec_friends
+    T45_library_tour
