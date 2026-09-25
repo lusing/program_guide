@@ -1,6 +1,6 @@
 # Erlang/OTP 29 速查表
 
-一页纸放下 24 章的常用语法与命令；`N.M` = 第 N 章 M 节，详细讲解见对应章（02–24 章都有可跑示例）。
+一页纸放下 32 章的常用语法与命令；`N.M` = 第 N 章 M 节，详细讲解见对应章（02–32 章都有可跑示例）。
 
 ## 1. 环境与命令（01/02）
 
@@ -200,3 +200,90 @@ sys:get_state(Name).  sys:replace_state(Name, F). sys:no_debug(Name).
 | 改代码不生效 | 循环用了局部调用——`?MODULE:loop`（23.5） |
 | code:purge 杀进程 | 先 soft_purge（23.5） |
 | init_fail/2 老 API | 已变 (Ret,Exception)——用 /3（23.4 实测） |
+
+## 13. 分布式、套接字与端口（25/26/27）
+
+```erlang
+{ok, P, N} = peer:start(#{name => ex_peer}).                 %% 自动连接父节点
+{ok, P, N} = peer:start(#{name => X, connection => 0}).      %% TCP 控制：不自动连
+rpc:call(N, M, F, A, 5000).                                 %% 第 5 参超时
+spawn(N, Mod, Fun, Args).                                   %% 分布式 spawn
+yes = rpc:call(N, global, register_name, [name, Pid]).
+ok = global:sync().                                         %% 名字同步是异步的
+true = erlang:set_cookie(Node, Cookie).
+
+{ok, L} = gen_tcp:listen(0, [binary, {packet, 2}, {active, false}, {reuseaddr, true}]).
+inet:setopts(S, [{active, once}]).                          %% 每包后双侧再武装
+{ok, {Addr, Port, Data}} = gen_udp:recv(S, 0, 2400).        %% OTP29 扁平三元组
+gen_udp:send(S, {127,0,0,1}, Port, Data).                   %% 未连接 socket 用 /4
+
+Port_ = open_port({spawn_executable, Exe}, [binary, {packet, 2},
+              {args, [Script]}, exit_status]).
+%% escript 端口程序第一行：
+ok = io:setopts(standard_io, [{binary, true}, {encoding, latin1}]).
+```
+
+| 坑 | 解法 |
+|---|---|
+| peer 生命周期绑父连接 | disconnect 杀死 peer——反复断连用 `connection => 0`（25.7） |
+| peer_start 选项不存在 | 传 erl 参数用 `args => ["-eval", ...]`（25.9） |
+| peer 的 logger 声明失效 | `level => none` 是**全放行**不是全静音——`remove_handler(default)`（25.9） |
+| 失配握手 ERROR REPORT | ERTS 层带时间戳，摘 handler 拦不住——别触发真实失配握手（25.6） |
+| global:register_name 返回 | yes 不是 true；查名前先 global:sync()（25.5） |
+| gen_udp:recv 形状 | OTP29 扁平 `{Addr,Port,Packet}`——老书 `{Addr,Port},Packet` badmatch（26.5） |
+| gen_udp:send/3 badarg | 未连接 socket 用 send/4；地址写 {127,0,0,1} 防 v6 解析（26.5） |
+| active once 单侧武装 | 服务器与客户端每条消息后都要再 setopts（26.3） |
+| escript 端口透传 | 不 setopts 则 unicode→latin1 转译崩：binary+latin1 双保险（27.3） |
+| {packet,N} 双重成帧 | command 发裸载荷——帧由驱动管（27.2） |
+| escript 异常栈进 stderr | 崩溃演示自捕异常后 halt(1)（27.4） |
+
+## 14. 持久化与行为补全（28/29）
+
+```erlang
+{ok, R} = dets:open_file(n, [{file, F}, {type, set}]).
+dets:info(R, size).                                   %% no_items 是 undefined！
+lists:sort(dets:foldl(fun (O, Acc) -> [O|Acc] end, [], R)).
+
+ok = application:set_env(mnesia, dir, Dir).           %% 先于 create_schema
+ok = mnesia:create_schema([node()]), ok = mnesia:start().
+{atomic, R} = mnesia:transaction(fun () -> ... end).  %% fun 无副作用
+mnesia:dirty_index_read(T, V, Attr).                  %% 事务外用 dirty 版
+
+{ok, M} = gen_event:start().
+ok = gen_event:swap_handler(M, {H1, []}, {H2, []}).   %% OTP29 是 /3
+%% gen_statem: state_timeout 事件类型就叫 state_timeout
+```
+
+| 坑 | 解法 |
+|---|---|
+| dets 文件跨运行累积 | 测试/演示每次清沙箱或删文件（28.2） |
+| mnesia dir 时序 | set_env 必须在 create_schema 之前（28.3） |
+| mnesia 启停 INFO REPORT | 首行 logger:remove_handler(default)（28.3） |
+| index_read 事务外 | 直接 exit({aborted,no_transaction})——外面用 dirty_index_read（28.3） |
+| dets 错误带绝对路径 | 打印只留标签 not_a_dets_file（28.2） |
+| gen_event code_change 是 /3 | gen_server/gen_statem 才是 /4（29.5） |
+| swap_handler 老书 /4 | OTP29 是 /3；携带值走 terminate→init({Args2,Term})（29.3） |
+| state_timeout 写成 timeout | function_clause 崩掉状态机（29.4） |
+| handler 崩溃摘除异步 | notify 后 sleep 一拍再断言 which_handlers（29.2） |
+
+## 15. 剖析、多核与收官（30/31/32）
+
+```erlang
+{Micros, V} = timer:tc(M, F, A).        %% 时间只断言 >= 0（Windows 可量出 0）
+cprof:start(), ... , cprof:analyse(M).  %% 计数确定可打印；用完 cprof:stop()
+erlang:trace_pattern({M, '_', '_'}, true, [local]).   %% 返回匹配数
+erlang:trace(self(), true, [call, arity, {tracer, Tracer}]).
+%% pmap 无序收齐 sort；有序带序号；pmmap：deadline+杀+drain 三步曲
+%% ~p 打整数列表会变字符串：[44,41] -> ",)"——装元组
+```
+
+| 坑 | 解法 |
+|---|---|
+| cprof:analyse 嵌套形状 | {Mod,数,[{FA,数}]}——别当扁平表 keysort（30.2） |
+| trace_pattern 返回值 | 匹配到的函数个数，不是 1（30.3） |
+| arity 旗标位置 | trace/3 的裸原子，不是元组/不是 pattern 选项（30.3） |
+| trace 本地调用 | pattern 要 [local]，默认只抓外部调用（30.3） |
+| pmmap 孤儿消息 | 杀 worker 后 drain，否则污染后续 receive（31.3） |
+| 时间数字进输出 | 第 4 层挂——计数/结果/布尔才可打印（30/31 通例） |
+| 串接字符串缺句号 | 多行 "..." 拼接最后要有 .——报错在下一函数头上（32.7） |
+| 模式里取负 | {-C, W} 非法——排序用元组、还原再取负（32.6） |

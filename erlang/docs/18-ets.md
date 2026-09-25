@@ -60,7 +60,7 @@ ets:new(tab, [named_table, public, {heir, self(), Data}]).
 
 ## 18.7 选型
 
-单进程缓存用 map；多进程共享读用 ETS（protected）；范围扫描 ordered_set；计数/限流 update_counter；要事务用 mnesia（本教程不涉及）。
+单进程缓存用 map；多进程共享读用 ETS（protected）；范围扫描 ordered_set；计数/限流 update_counter；要事务用 Mnesia（[28 章](28-dets-mnesia.md)）。
 
 ## 18.8 坑位清单
 

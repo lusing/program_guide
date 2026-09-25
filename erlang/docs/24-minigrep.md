@@ -86,3 +86,9 @@ handle_info({'DOWN', _, process, Pid, _}, ...) -> %% DOWN 取结果/记崩溃，
 6. **多模式 OR**：Pattern 变列表，命中任意一个都算。
 
 ---
+
+---
+
+> 本章曾是收官；第 25–32 章的扩充（分布式、套接字、端口、
+> DETS/Mnesia、gen_event/gen_statem、剖析、多核、文本侦探）接在它后面——
+> OTP 的世界铺完之后，第 32 章回到纯函数收官。

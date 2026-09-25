@@ -237,10 +237,17 @@ function Test-One {
         Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $ebin $_.Name) -Force
     }
 
+    # 某些示例需要额外的 erl 启动参数：25_distributed 要 -sname（本节点是
+    # 活节点）才能用 peer 起对端节点——EUnit 层与运行层都要带上
+    $extraErlFlags = @()
+    switch ($name) {
+        "25_distributed" { $extraErlFlags = @("-sname", "ex25_a") }
+    }
+
     # ---- 第 2 层：EUnit ----
     Remove-Item -LiteralPath $tstOut, $tstErr -Force -ErrorAction SilentlyContinue
     $eval = "case eunit:test('${name}_tests') of ok -> halt(0); _ -> halt(1) end."
-    $r = Invoke-Proc -Exe $erlBin -Arguments @("-noshell", "-pa", $ebin, "-eval", $eval) `
+    $r = Invoke-Proc -Exe $erlBin -Arguments (@("-noshell") + $extraErlFlags + @("-pa", $ebin, "-eval", $eval)) `
                      -OutFile $tstOut -ErrFile $tstErr -TimeoutMs ($TimeoutSec * 1000)
     $ok = ($r.ExitCode -eq 0) -and ((Read-TextFile $tstErr).Trim() -eq "")
     if (-not $ok) {
@@ -264,7 +271,7 @@ function Test-One {
         "24_minigrep" { $runArgs = @("spawn", "corpus"); $runCwd = $Dir }
     }
 
-    $baseArgs = @("-noshell", "-pa", $ebin, "-run", $name, "main") + $runArgs + @("-s", "init", "stop")
+    $baseArgs = (@("-noshell") + $extraErlFlags + @("-pa", $ebin, "-run", $name, "main")) + $runArgs + @("-s", "init", "stop")
     Remove-Item -LiteralPath $outA, $errA, $outB, $errB -Force -ErrorAction SilentlyContinue
 
     $rA = Invoke-Proc -Exe $erlBin -Arguments $baseArgs -OutFile $outA -ErrFile $errA `
