@@ -31,6 +31,9 @@ require mathlib from "G:/github/lang/mathlib4"
 - 15_mathlib_measure_probability → MathlibMeasureProbability
 - 16_advanced_tactics     → AdvancedTactics
 - 17_workflow             → Workflow
+- 18_mathlib_sets_functions → MathlibSetsFunctions
+- 19_mathlib_order_lattices → MathlibOrderLattices
+- 20_mathlib_filters      → MathlibFilters
 -/
 
 @[default_target]

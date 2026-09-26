@@ -40,4 +40,4 @@
 
 ---
 
-> 上一章：[29 · 性能、编译与程序验证](29-performance-verification.md) ｜ 返回：[README](../README.md)
+> 上一章：[44 · 证明校验与 grind](44-proof-validation-grind.md) ｜ 返回：[README](../README.md)

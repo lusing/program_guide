@@ -111,4 +111,4 @@ example (n : Nat) : ⦃ True ⦄ (m := Id) (pure (inc n)) ⦃ fun r => r = n + 1
 
 ---
 
-> 上一章：[28 · 迭代器](28-iterators.md) ｜ 返回：[README](../README.md)
+> 上一章：[28 · 迭代器](28-iterators.md) ｜ 下一章：[31 · 集合与函数](31-sets-functions.md) ｜ 返回：[README](../README.md)

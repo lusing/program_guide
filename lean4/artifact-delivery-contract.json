@@ -1,11 +1,6 @@
 {
   "outputs": [
     {
-      "path": "g:\\code\\guide\\lean4\\lean4-mathlib4-tutorial.md",
-      "type": "markdown",
-      "editable": true
-    },
-    {
       "path": "g:\\code\\guide\\lean4\\README.md",
       "type": "markdown",
       "editable": true
@@ -41,7 +36,7 @@
     {
       "quote": "格式为markdown",
       "expected": "HARD | 输出文件为 Markdown 格式，扩展名为 .md",
-      "final_check": "PASS | 主教程文件为 lean4-mathlib4-tutorial.md，README.md 为项目说明"
+      "final_check": "PASS | 教程按章拆分于 docs/（01-44 章 + 附录），README.md 为项目说明与章节索引"
     },
     {
       "quote": "所有示例要用最新的lean-4.33.1编译运行成功",

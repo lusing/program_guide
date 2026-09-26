@@ -2,7 +2,9 @@
 
 面向**零基础入门 Lean 4 定理证明与函数式编程**的读者：第一部分从依赖类型讲到战术证明，
 第二部分进入 **Mathlib4 的真实用法**（代数、数论、分析、拓扑、线代、组合、测度概率），
-第三部分对标四份官方文档覆盖单子编程、IO、依赖类型实战、公理体系、宏、迭代器与程序验证。
+第三部分对标四份官方文档覆盖单子编程、IO、依赖类型实战、公理体系、宏、迭代器与程序验证，
+第四部分（专题补遗）继续对照官方文档补齐：集合与函数、序与格、滤子、逻辑与经典推理、conv 转换战术、
+归纳类型深入、可计算性、惰性求值、可变状态、测试与属性测试、与 Lean 交互、元编程、属性系统、证明校验与 grind。
 
 > 本教程所有代码均在 Windows + Lean 4.34.0 + 本地 Mathlib4（master 分支）下编译验证通过，
 > 并已于 2026-09 在 **macOS（Apple Silicon）** 上全量复验：
@@ -17,8 +19,8 @@
 ```text
 lean4/
 ├── README.md       本文件
-├── docs/           29 章 + 附录（01 → 30 顺序阅读）
-├── examples/       章节示例（00_verified 快速冒烟 + 01_basics … 17_workflow）
+├── docs/           43 章 + 附录（01-29 前三部分 · 31-44 第四部分 · 30 附录）
+├── examples/       章节示例（00_verified 快速冒烟 + 01_basics … 20_mathlib_filters）
 ├── build.ps1       构建验证脚本
 ├── lakefile.lean
 ├── lean-toolchain  leanprover/lean4:v4.34.0
@@ -27,8 +29,11 @@ lean4/
 ```
 
 说明：
-- `docs/` 每章一个文件，章内代码块与 `examples/` 章节文件一一对应，全部编译验证通过。
-- `build.ps1 -All` 校验 `00_verified` + 教程章节文件的纯 Lean 部分；`-WithMathlib` 追加含 Mathlib 的章节（第 12-20 章对应文件）。
+- `docs/` 每章一个文件，**全部代码块均逐文件编译验证通过**。第一、二部分及第四部分的 Mathlib 章节（31-33）
+  另有 `examples/` 同步文件 + `Lean4Tutorial/` 镜像；第三部分与第四部分其余章节（34-44）为 docs-only
+  （纯 Lean / 元编程主题，与第三部分惯例一致，不建 Lake 镜像）。
+- `build.ps1 -All` 校验 `00_verified` + 教程章节文件的纯 Lean 部分；`-WithMathlib` 追加含 Mathlib 的章节
+  （第 12-20 章及第 31-33 章对应文件）。macOS / Linux 改用 `lake build`（递归构建全部镜像模块）。
 - `Lean4Tutorial/Examples/` 是章节文件的 Lake 模块镜像（模块名见各文件头注释），`lake build` 递归构建全部模块。
 - `examples/` 中其他历史文件（basic_types.lean 等旧命名）保留为扩展素材，不在默认验证集内（可用 `-All -LegacyAll` 全量尝试，旧 API 可能失效）。
 
@@ -77,6 +82,34 @@ lean4/
 | [27 强制转换、记法与宏](docs/27-coe-notation-macros.md) | Coe/CoeFun、notation、macro | — |
 | [28 迭代器](docs/28-iterators.md) | Std.Iter 组合子、惰性求值 | — |
 | [29 性能、编译与程序验证](docs/29-performance-verification.md) | implemented_by/extern、profiler、vcgen | — |
+
+### 第四部分：专题补遗（31–44）
+
+> 对照四份官方文档补齐前三部分未覆盖或较薄的主题。Mathlib 章节（31-33）在 Mathlib4 v4.35.0-rc3 验证并建
+> `examples/` + `Lean4Tutorial/` 镜像；其余为纯 Lean / 元编程主题，在 4.34.1 验证（grind 需 4.35+），
+> 仅在 `docs/` 中讲解并逐文件验证（与第三部分一致，不建 Lake 镜像）。
+
+| 章 | 主题 | 示例 |
+|---|---|---|
+| [31 集合与函数](docs/31-sets-functions.md) | Set=α→Prop、像/原像/值域、单射满射双射、Equiv、Schröder-Bernstein | `18_mathlib_sets_functions` |
+| [32 序与格](docs/32-order-lattices.md) | Preorder/PartialOrder/LinearOrder、Lattice、CompleteLattice、OrderHom、Galois 连接 | `19_mathlib_order_lattices` |
+| [33 滤子](docs/33-filters.md) | Filter、∀ᶠ eventually、Tendsto、map/comap、𝓝 邻域与序列收敛 | `20_mathlib_filters` |
+| [34 逻辑深入与经典推理](docs/34-logic-classical.md) | by_cases/by_contra、Classical.em、push Not（旧 push_neg）、tauto、De Morgan | — |
+| [35 conv 转换战术](docs/35-conv.md) | lhs/rhs、enter、arg、pattern、conv at h、whnf/simp 局部改写 | — |
+| [36 归纳类型深入](docs/36-inductive-deep.md) | 归纳谓词、mutual、nested、W-type、索引族、良基递归 termination_by | — |
+| [37 可计算性](docs/37-computability.md) | Part、Nat.Primrec/Partrec、Computable、停机问题与 Rice 定理 | — |
+| [38 惰性求值](docs/38-lazy-evaluation.md) | 严格求值、Thunk 记忆化、全函数性约束、partial 惰性列表、LazyList | — |
+| [39 可变状态](docs/39-mutable-state.md) | do+let mut、Array 原地修改、while、StateM、ST/EStateM、引用计数 | — |
+| [40 测试与属性测试](docs/40-testing.md) | #eval 断言、#guard_msgs、自定义测试框架、decide、plausible（用 sorry 收尾） | — |
+| [41 与 Lean 交互与精细化](docs/41-interacting-elaboration.md) | #check/#eval/#reduce/#print/#synth、set_option pp.*、trace、精细化流水线 | — |
+| [42 元编程](docs/42-metaprogramming.md) | Syntax→MetaM→Expr、quoting/antiquoting、macro、elab、自定义战术 | — |
+| [43 属性系统](docs/43-attributes.md) | @[simp]/@[instance]/@[class]/@[reducible]/@[deprecated]、attribute 命令、register_attribute | — |
+| [44 证明校验与 grind](docs/44-proof-validation-grind.md) | 内核可信基、sorry/sorryAx、#print axioms 审计、grind 自动化 | — |
+
+### 附录
+
+| 章 | 主题 | 示例 |
+|---|---|---|
 | [30 附录：学习资源](docs/30-appendix.md) | 官方文档、书籍、定理搜索工具、社区 | — |
 
 ## 如何使用本教程
@@ -87,6 +120,10 @@ lean4/
 - **第三部分**对标四份官方文档——*Functional Programming in Lean*、*Theorem Proving in Lean 4*、
   *Mathematics in Lean* 与 *Lean Language Reference*——覆盖单子编程、IO、依赖类型、公理体系、
   宏、迭代器与程序验证等进阶主题；全部示例在 Lean 4.34.1 下验证通过（vcgen 一节需 4.35+）。
+- **第四部分（专题补遗）**继续对照同一批官方文档，补齐前三部分未覆盖或较薄的主题：Mathlib 的
+  集合与函数 / 序与格 / 滤子，证明技术层面的逻辑与经典推理 / conv / 归纳类型深入 / 可计算性，
+  函数式层面的惰性求值 / 可变状态 / 测试，以及元编程 / 属性系统 / 证明校验与 grind。
+  Mathlib 章节在 v4.35.0-rc3 验证，纯 Lean 章节在 4.34.1 验证（grind 需 4.35+）。
 - 代码块中的 `#check` / `#eval` 输出以注释形式给出；`example` 与 `theorem` 均可直接编译。
 - Mathlib 的定理名遵循严格的命名约定（见 11.4 节），掌握命名规律比死记硬背重要得多。
 

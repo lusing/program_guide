@@ -8,9 +8,9 @@
 # Lean 4 & Mathlib4 教程示例
 
 本项目包含完整的 Lean 4 和 Mathlib4 教程示例代码，
-按类别分模块组织，与教程文档逐章对应（单文件版 `lean4-mathlib4-tutorial.md`，
-按章拆分版见 `docs/01-intro-setup.md` … `docs/30-appendix.md`），
-所有示例均在 Lean 4.34.0 + Mathlib4（master@2026-09）上编译验证通过。
+按类别分模块组织，与教程文档逐章对应（按章拆分见 `docs/01-intro-setup.md` … `docs/44-proof-validation-grind.md`，
+附录见 `docs/30-appendix.md`），
+所有示例均在 Lean 4.34.x + Mathlib4（master@2026-09）上编译验证通过。
 
 ## 使用方式
 
@@ -49,6 +49,14 @@ lake env lean Lean4Tutorial/Examples/Basics/Basics.lean
 - `Lean4Tutorial.Examples.MathlibMeasureProbability` - 测度论与概率论（第 18 章）
 - `Lean4Tutorial.Examples.AdvancedTactics` - 常用高级战术（第 19 章）
 - `Lean4Tutorial.Examples.Workflow` - 定理检索与工作流（第 20 章）
+
+### 第四部分：专题补遗（教程第 31-44 章，仅 Mathlib 章节建镜像）
+
+- `Lean4Tutorial.Examples.MathlibSetsFunctions` - 集合与函数（第 31 章）
+- `Lean4Tutorial.Examples.MathlibOrderLattices` - 序与格（第 32 章）
+- `Lean4Tutorial.Examples.MathlibFilters` - 滤子（第 33 章）
+
+（第 34-44 章为纯 Lean / 元编程主题，仅在 `docs/` 中讲解并逐文件验证，不建 Lake 镜像，与第三部分一致。）
 -/
 
 namespace Lean4Tutorial

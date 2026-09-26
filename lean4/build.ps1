@@ -57,7 +57,7 @@ if ($All) {
         # 全量扫描（含历史遗留文件，可能较慢且有失效文件）
         $files = Get-ChildItem -LiteralPath $examplesDir -Filter "*.lean" -Recurse -File | Sort-Object FullName
     } else {
-        # 默认验证集 = 00_verified + 教程章节同步文件（与教程 docs/ 各章及 lean4-mathlib4-tutorial.md 对应）
+        # 默认验证集 = 00_verified + 教程章节同步文件（与教程 docs/ 各章一一对应）
         $chapterFiles = @(
             "01_basics\basics.lean",
             "02_inductive_types\universes.lean",
@@ -76,7 +76,10 @@ if ($All) {
             "14_mathlib_combinatorics\combinatorics.lean",
             "15_mathlib_measure_probability\measure_probability.lean",
             "16_advanced_tactics\advanced_tactics.lean",
-            "17_workflow\workflow.lean"
+            "17_workflow\workflow.lean",
+            "18_mathlib_sets_functions\sets_functions.lean",
+            "19_mathlib_order_lattices\order_lattices.lean",
+            "20_mathlib_filters\filters.lean"
         )
         $files = @(Get-ChildItem -LiteralPath $validatedDir -Filter "*.lean" -Recurse -File | Sort-Object FullName)
         if (-not $WithMathlib) {
