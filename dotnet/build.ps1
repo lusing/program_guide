@@ -7,12 +7,15 @@ param(
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $projectRoot
 
-$dotnet = "G:\scoop\apps\dotnet-sdk\current\dotnet.exe"
+# 跨平台探测 dotnet：优先 DOTNET_EXE 环境变量，其次 PATH 中的 dotnet（Windows/macOS/Linux 通用）
+$dotnet = if ($env:DOTNET_EXE) { $env:DOTNET_EXE } else { (Get-Command dotnet -ErrorAction SilentlyContinue).Source }
 $examplesDir = Join-Path $projectRoot "examples"
 $buildDir = Join-Path $projectRoot "build"
+$sep = [IO.Path]::DirectorySeparatorChar
+$binRoot = (Join-Path $buildDir "bin") + $sep
 
-if (-not (Test-Path -LiteralPath $dotnet)) {
-    throw "未找到 dotnet.exe，请检查 .NET SDK 安装路径。"
+if (-not $dotnet -or -not (Test-Path -LiteralPath $dotnet)) {
+    throw "未找到 dotnet，请确认已安装 .NET SDK 且 dotnet 在 PATH 中（或设置环境变量 DOTNET_EXE 指向可执行文件）。"
 }
 
 if (-not (Test-Path -LiteralPath $examplesDir)) {
@@ -57,9 +60,10 @@ function Invoke-BuildProject {
     }
 
     Write-Host "[Build] $projName" -ForegroundColor Cyan
+    $objRoot = (Join-Path (Join-Path $buildDir "obj") $csproj.BaseName) + $sep
     & $dotnet build $csproj.FullName --nologo -v minimal `
-        "-p:BaseOutputPath=$buildDir\bin\" `
-        "-p:BaseIntermediateOutputPath=$buildDir\obj\$($csproj.BaseName)\"
+        "-p:BaseOutputPath=$binRoot" `
+        "-p:BaseIntermediateOutputPath=$objRoot"
 
     if ($LASTEXITCODE -ne 0) {
         throw "编译失败: $($csproj.FullName)"
@@ -91,8 +95,9 @@ if ($Project) {
 }
 
 Write-Host "用法:" -ForegroundColor Yellow
-Write-Host "  .\build.ps1 -All                  编译 examples 下全部示例工程"
-Write-Host "  .\build.ps1 -Project <name>       编译单个示例工程（例如 09_linq）"
-Write-Host "  .\build.ps1 -Project 19_portable  嵌套多工程目录会构建其下全部 csproj"
-Write-Host "  .\build.ps1 -Clean                清理 build 目录"
+Write-Host "  pwsh build.ps1 -All                  编译 examples 下全部示例工程"
+Write-Host "  pwsh build.ps1 -Project <name>       编译单个示例工程（例如 09_linq）"
+Write-Host "  pwsh build.ps1 -Project 19_portable  嵌套多工程目录会构建其下全部 csproj"
+Write-Host "  pwsh build.ps1 -Clean                清理 build 目录"
+Write-Host "（Windows PowerShell 下用 .\build.ps1 ...；脚本会自动探测 PATH 中的 dotnet，可用 DOTNET_EXE 覆盖）"
 

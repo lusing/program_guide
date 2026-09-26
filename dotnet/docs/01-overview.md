@@ -42,11 +42,13 @@ C# 源码 ──Roslyn 编译──▶ IL 中间语言 ──CLR: JIT 即时编�
 
 ## 4. SDK 与命令行
 
-SDK（软件开发工具包）= 编译器 + 运行时 + 项目工具。本机安装路径与验证：
+SDK（软件开发工具包）= 编译器 + 运行时 + 项目工具。安装后 `dotnet` 通常已在 PATH 中，验证版本（三平台通用）：
 
-```powershell
-G:\scoop\apps\dotnet-sdk\current\dotnet.exe --version
+```bash
+dotnet --version          # Windows / macOS / Linux 一致
 ```
+
+> 查看本机已装的 SDK 与运行时：`dotnet --list-sdks`、`dotnet --list-runtimes`；完整环境信息：`dotnet --info`（含平台 RID，如 macOS 为 `osx-x64`/`osx-arm64`、Windows 为 `win-x64`、Linux 为 `linux-x64`）。
 
 日常三板斧（在任意目录）：
 
@@ -109,16 +111,16 @@ dotnet run                     # 编译并运行
 | 19 | 跨平台与可移植性 | `examples/19_portable` |
 | 20 | 现代 C# 纵览 | `examples/20_modern` |
 
-统一构建（比逐个 `dotnet build` 快且集中产物）：
+统一构建（比逐个 `dotnet build` 快且集中产物）。`build.ps1` 会自动探测 PATH 中的 `dotnet`（也可用环境变量 `DOTNET_EXE` 指定），需 PowerShell 7（`pwsh`），三平台通用：
 
-```powershell
-cd G:\code\guide\dotnet
-.\build.ps1 -All                    # 编译全部示例
-.\build.ps1 -Project 09_linq        # 只编译一个
-.\build.ps1 -Clean                  # 清理 build 目录
+```bash
+cd dotnet
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All          # 编译全部示例
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 09_linq  # 只编译一个
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean        # 清理 build 目录
 ```
 
-> 提示：`build.ps1` 含中文且无 BOM，需要 PowerShell 7（`pwsh`）运行；Windows 自带的 PowerShell 5.1 会因编码解析失败。
+> 提示：`build.ps1` 含中文且无 BOM，需要 PowerShell 7（`pwsh`）运行；Windows 自带的 PowerShell 5.1 会因编码解析失败。Windows 下也可用 `.\build.ps1 -All`。
 
 推荐学法：每章**读讲解 → 跑示例 → 改代码再跑**。改坏了就 `git checkout -- examples/NN_xxx` 还原，改对了就对正确输出形成肌肉记忆。
 

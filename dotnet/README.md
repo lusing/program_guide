@@ -45,18 +45,23 @@ dotnet/
 
 ## 构建工具链
 
-- .NET SDK：`G:\scoop\apps\dotnet-sdk\current\dotnet.exe`（详见[第 01 章](docs/01-overview.md)）
+- .NET SDK：`dotnet`（须在 PATH 中；Windows/macOS/Linux 通用，详见[第 01 章](docs/01-overview.md)）
+- 验证：`dotnet --version`（本教程主线 .NET 10 / LTS）
 
 ## 编译验证
 
-```powershell
-cd G:\code\guide\dotnet
+`build.ps1` 会自动探测 PATH 中的 `dotnet`（也可用环境变量 `DOTNET_EXE` 指定），需 PowerShell 7（`pwsh`）运行，三平台通用：
+
+```bash
+cd dotnet
 pwsh -ExecutionPolicy Bypass -File build.ps1 -All                  # 全部示例
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 09_linq      # 单个示例
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean                # 清理 build 目录
 ```
 
-单跑某个示例（第 02 章起的标准学法）：
+> Windows PowerShell 下等价写法：`.\build.ps1 -All`（若报"禁止运行脚本"，改用 `pwsh -ExecutionPolicy Bypass -File build.ps1 -All`）。
+
+单跑某个示例（第 02 章起的标准学法，任意平台）：
 
 ```bash
 cd examples/09_linq
