@@ -43,6 +43,31 @@ class Repo<T : Any>(private val initial: List<T> = emptyList()) {
 /** reified：inline 才能保留类型实参，做运行时过滤不需要传 Class 对象 */
 inline fun <reified T> List<Any>.pick(): List<T> = filterIsInstance<T>()
 
+/** out 类里的 private 成员不受型变位置限制——内部可变、外部只读（协变与可变性的和解） */
+class Refillable<out T>(private var current: T, private val next: (T) -> T) {
+    fun get(): T = current
+    fun advance(): T { current = next(current); return current }
+    // fun set(v: T) { current = v }   // ✗ 公开消费位：out 违例编译错（文档 11.10）
+}
+
+/** 同名重载擦除后 JVM 签名相同 → platform declaration clash 编译错；@JvmName 区分后共存 */
+@JvmName("sumInts")
+fun sum(xs: List<Int>): Int = xs.sum()
+@JvmName("sumStrs")
+fun sum(xs: List<String>): String = xs.joinToString("-")
+
+/** 旧式"吃 Class<T>"的 API（Gson.fromJson 同形状） */
+@Suppress("UNCHECKED_CAST")
+fun <T : Any> parseOf(raw: String, cls: Class<T>): T? = when (cls) {
+    Int::class.javaObjectType -> raw.toIntOrNull()
+    Long::class.javaObjectType -> raw.toLongOrNull()
+    String::class.javaObjectType -> raw.trim('"')
+    else -> null
+} as T?
+
+/** reified 工程化：包装成无参泛型扩展——调用方再也不传 Class */
+inline fun <reified T : Any> String.parseAs(): T? = parseOf(this, T::class.javaObjectType)
+
 inline fun <reified T> Any?.isA(): Boolean = this is T
 
 fun main() {
@@ -96,4 +121,12 @@ fun main() {
 
     println("== 11.8 与其他语言对照 ==")
     println("Kotlin: 声明处型变（out/in）+ reified；Java: 使用处通配符 ? extends；C#：out/in；Rust：所有泛型单态化")
+
+    println("== 11.9 型变细则、签名冲突与 reified 工程化 ==")
+    val counter: Refillable<Int> = Refillable(1) { it + 10 }
+    val asNumber: Refillable<Number> = counter        // out：Int 生产者可当 Number 生产者
+    println("Refillable: get=${asNumber.get()}, advance=${counter.advance()}（private var 内部可变，外部只读）")
+    println("同名 sum 重载: Int 版=${sum(listOf(1, 2, 3))}, String 版=${sum(listOf("a", "b"))}（@JvmName 消除擦除冲突）")
+    println("旧式传 Class: ${parseOf("42", Int::class.javaObjectType)}")
+    println("reified 包装: \"42\".parseAs<Int>()=${"42".parseAs<Int>()}, \"hi\".parseAs<String>()=${"\"hi\"".parseAs<String>()}, \"x\".parseAs<Long>()=${"x".parseAs<Long>()}")
 }

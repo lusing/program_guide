@@ -56,6 +56,19 @@ fun testMapDelegate() {
     assertTrue(true)
 }
 
+fun testNotNullAndObservableEdge() {
+    val s = Service()
+    assertFailsWith<IllegalStateException> { s.name }     // 读前未赋值
+    s.name = "svc"
+    assertEquals("svc", s.name)
+    val b = Basket()
+    b.fruits.add("梨")
+    assertEquals(0, b.changes.size)                       // 内部改动不触发
+    b.fruits = mutableListOf("苹果", "梨", "西瓜")
+    assertEquals(1, b.changes.size)                       // 换引用才触发
+    assertEquals("[苹果, 梨] → [苹果, 梨, 西瓜]", b.changes.single())
+}
+
 fun main() {
     testRegistry()
     testCompanion()
@@ -64,5 +77,6 @@ fun main() {
     testVetoable()
     testCustomDelegate()
     testMapDelegate()
+    testNotNullAndObservableEdge()
     println("09_delegation 全部测试通过")
 }

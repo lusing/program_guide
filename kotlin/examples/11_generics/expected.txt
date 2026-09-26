@@ -24,3 +24,8 @@ li::class.java.name = java.util.Collections$SingletonList   // .java 是通往 J
 静态类型时检查恒真（警告），先转 Any 再查星投影: true
 == 11.8 与其他语言对照 ==
 Kotlin: 声明处型变（out/in）+ reified；Java: 使用处通配符 ? extends；C#：out/in；Rust：所有泛型单态化
+== 11.9 型变细则、签名冲突与 reified 工程化 ==
+Refillable: get=1, advance=11（private var 内部可变，外部只读）
+同名 sum 重载: Int 版=6, String 版=a-b（@JvmName 消除擦除冲突）
+旧式传 Class: 42
+reified 包装: "42".parseAs<Int>()=42, "hi".parseAs<String>()=hi, "x".parseAs<Long>()=null

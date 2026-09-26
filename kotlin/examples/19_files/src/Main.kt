@@ -71,4 +71,11 @@ fun main() {
         "due" to null,
     )
     println(toJson(task))
+
+    println("== 19.10 进程执行扩展 ==")
+    val proc = "java -version".execute()
+    val out = proc.text()          // 先读到 EOF
+    val rc = proc.waitFor()        // 再收退出码——顺序别反
+    println("\"java -version\".execute(): exit=$rc, 输出非空=${out.isNotBlank()}（版本细节随机器，不进快照）")
+    println("防御: redirectErrorStream(true) 合流——双管道不排空时缓冲写满会把 waitFor 挂死")
 }

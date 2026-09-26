@@ -60,6 +60,17 @@ class Conf(private val map: Map<String, Any?>) {
     val debug: Boolean by map
 }
 
+/** 委托属性 5：notNull——读前必须赋值（基本类型/顶级属性不能用 lateinit 时的替代） */
+class Service { var name: String by Delegates.notNull() }
+
+/** observable 只盯"赋值"不盯内部改动——引用没换就不触发（经典坑） */
+class Basket {
+    val changes = mutableListOf<String>()
+    var fruits: MutableList<String> by Delegates.observable(mutableListOf("苹果")) { _, o, n ->
+        changes += "$o → $n"
+    }
+}
+
 /** lateinit vs lazy 的选型在 docs/09-delegation.md 有对照表 */
 
 fun main() {
@@ -100,4 +111,16 @@ fun main() {
     println("== 9.8 Map 委托 ==")
     val conf = Conf(mapOf("host" to "db.local", "port" to 5432, "debug" to true))
     println("${conf.host}:${conf.port} debug=${conf.debug}")
+
+    println("== 9.9 notNull 与 observable 的边界 ==")
+    val svc = Service()
+    try { svc.name } catch (e: IllegalStateException) { println("notNull 未初始化即读: ${e.message}") }
+    svc.name = "main-service"
+    println("赋值后: ${svc.name}")
+    val b = Basket()
+    b.fruits.add("梨")
+    println("内部 add 后内容=${b.fruits}，但 observable 记录数=${b.changes.size}（引用没换，没触发！）")
+    b.fruits = mutableListOf("苹果", "梨", "西瓜")
+    println("整体换引用: 记录数=${b.changes.size}，最后一条=${b.changes.last()}")
+    println("选型: lateinit 更快但不能用于基本类型/顶级属性；notNull 全类型可用但要过委托调用")
 }

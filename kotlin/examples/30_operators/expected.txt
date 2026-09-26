@@ -1,0 +1,26 @@
+== 30.1/30.2 约定全景与不可重载 ==
+a+b→plus | a+=b→plusAssign 或 plus 二选一（都有=歧义编译错）| in→contains（接收者反转）
+a[i]→get/set（下标任意元） | a()→invoke | <..→compareTo | for→iterator/next/hasNext
+不可重载: && || ?:(短路/空安全语义没法用函数保证), === !==(身份原语), =(赋值), ==(只能 override equals)
+== 30.3 rem 与 mod ==
+-7 % 4 = -3（rem：符号随被除数，同 Java/C）
+(-7).mod(4) = 1（mod：符号随除数，数学模）
+7 % -4 = 3 vs 7.mod(-4) = -1
+mod 不是 infix：'7 mod -4' 编译不过——只能写 7.mod(-4)；哈希桶/环形缓冲用 mod
+== 30.4 复数四则 ==
+z1+z2 = 4.0+6.0i, z1-z2 = -2.0-2.0i
+z1*z2 = -5.0+10.0i（(1+2i)(3+4i) = -5+10i）
+-z1 = -1.0-2.0i, |z2| = 5.00
+data class equals: (z1+z2)-z2 == z1 -> true
+无全序不实现 Comparable——要按模排序用 sortedBy
+== 30.5 BigDecimal ==
+0.1 + 0.2 (Double)   = 0.30000000000000004
+0.1 + 0.2 (BigDecimal) = 0.3
+2.0 == 2.00 -> false（equals 含 scale！）；x<y=false, x>y=false（compareTo 说相等）
+x.compareTo(y) = 0 —— 金额比较一律 compareTo
+== 30.6 约定五连 ==
+m[0,1] = 2.0, m[1,0] = 3.0
+m[0,0]=9.0 后 m = [9.0, 2.0, 3.0, 4.0]
+2.0 in m -> true, 99.0 in m -> false
+invoke: hi("Kotlin") = 你好, Kotlin!
+Countdown(3) for: 3 2 1 

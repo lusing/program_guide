@@ -1,0 +1,20 @@
+== 32.1 起服务与 MVP 装配 ==
+ChatServer 已启动（临时端口），TranscriptView + ChatPresenter + ChatApi 装配完成
+== 32.2 ann 加入并读历史 ==
+== 32.3 对话与机器人 ==
+== 32.4 错误路径也走 View ==
+== 32.5 告别与离开 ==
+== 32.6 完整字幕（快照即回放）==
+[bob] 你好
+[cat] 在吗
+[bob] 终端聊天室上线
+*** ann 进入聊天室
+*** bot 进入聊天室
+[ann] 你好，聊天室
+[bot] 你好！我是回声机器人
+[ann] Kotlin 好学吗？
+[错误] {"error":"text blank"}
+[bot] 好问题！「Kotlin 好学吗」的答案是：42
+[ann] 再见
+[bot] 再见，下次见！
+*** ann 离开

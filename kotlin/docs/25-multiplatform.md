@@ -56,7 +56,7 @@ konanc -Xmulti-platform -Xseparate-kmp-compilation -Xcommon-sources=src/Common.k
 
 四条实测注意（两个入口脚本都已防御）：
 
-1. **必须 JDK 21**：Windows 的 `run_konan.bat` 在 JDK ≥ 24 下因 `--enable-native-access=ALL-UNNAMED` 的引号解析直接崩（cmd 报"此时不应有 =ALL-UNNAMED"）。脚本全局钉 JDK 21（macOS 走 `/usr/libexec/java_home -v 21`）。
+1. **必须 JDK 21**：Windows 的 `run_konan.bat` 在 JDK ≥ 24 下因 `--enable-native-access=ALL-UNNAMED` 的引号解析直接崩（cmd 报"此时不应有 =ALL-UNNAMED"）。脚本全局钉 JDK 21——**版本感知**：`JAVA_HOME` 指向非 21（如 scoop openjdk 27）会被跳过，自动改用 oraclejdk-lts/microsoft-jdk 里的真 21（macOS 走 `/usr/libexec/java_home -v 21`）。
 2. **首次编译自动下载 LLVM**：konanc 首跑会从 JetBrains CDN 拉 `llvm-21-*-essentials`（约 275 MB）到 `~/.konan/dependencies/`——只要 CDN 通，一次到位。
 3. **输出目录要先建**：konanc 不自建 `-o` 的父目录，目录不存在时链接阶段才报 `cannot open output file`。
 4. **macOS 上没有 konanc**：MacPorts 只有 `kotlin`（JVM/JS/Wasm），没有 `kotlin-native`。脚本探测不到就跳过 native 目标（`[SKIP]` 而非失败），本章 native 分支的**实测记录目前只来自 Windows**。

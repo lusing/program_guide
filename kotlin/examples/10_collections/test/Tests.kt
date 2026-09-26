@@ -55,6 +55,17 @@ fun testMapOps() {
     assertEquals(mapOf("a" to 10), mapOf("a" to 1).mapValues { it.value * 10 })
 }
 
+fun testHierarchy() {
+    assertTrue(listOf(1) as Any is Collection<*>)            // List 继承 Collection（转 Any 避开恒真告警）
+    assertTrue(mapOf(1 to 2) as Any !is Collection<*>)       // Map 独立族
+    // simpleName 分不清两者（嵌套类不带外层前缀）——用全限定名看穿 JDK 委托
+    assertEquals("java.util.Arrays\$ArrayList", listOf(1, 2)::class.java.name)
+    assertEquals("java.util.ArrayList", mutableListOf(1, 2)::class.java.name)
+    // 单元素 mapOf 是 Collections$SingletonMap；≥2 元素才是 LinkedHashMap（大小分派省内存）
+    assertEquals("java.util.Collections\$SingletonMap", mapOf(1 to 2)::class.java.name)
+    assertEquals("java.util.LinkedHashMap", mapOf(1 to 2, 3 to 4)::class.java.name)
+}
+
 fun main() {
     testWordCount()
     testGroupByGrade()
@@ -64,5 +75,6 @@ fun main() {
     testSortTrap()
     testSetOps()
     testMapOps()
+    testHierarchy()
     println("10_collections 全部测试通过")
 }

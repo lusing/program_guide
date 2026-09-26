@@ -70,6 +70,8 @@ new Meter(3); m.getValue()       // 属性变成 getter/setter
 | `@JvmOverloads` | 为默认参数生成全重载 | `scale(5)` 和 `scale(5, 10)` 都有 |
 | `@JvmName("x")` | 改 JVM 方法/类名 | 扩展函数可读的静态名 |
 | `@file:JvmName("StrKit")` | 顶层函数门面类改名 | `StrKit.safeLen(null)` |
+| `@file:JvmMultifileClass` | 多文件同名门面合并（双方都要标） | `More.kt` 的函数也进 `StrKit` |
+| `@get:ColumnName(...)` 等 | 使用处目标——注解挂到 getter/字段/构造参数 | 库按预期位置找到注解（详见 27 章） |
 | `@Throws(X::class)` | 方法签名声明受检异常 | Java 编译器强制 catch |
 
 ```java
@@ -77,6 +79,7 @@ MathKit.square(7);                          // @JvmStatic
 MathKit.scale(5);                           // @JvmOverloads：默认参数的重载
 m.value = 9;                                // @JvmField
 StrKit.shout("hey");                        // @file:JvmName + @JvmName
+StrKit.reverseShout("abc");                 // @file:JvmMultifileClass：More.kt 同门面
 try { bad.requirePositive(); } catch (IllegalArgumentException e) { }   // @Throws
 ```
 

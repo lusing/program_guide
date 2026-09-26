@@ -17,6 +17,8 @@ public class Caller {
         sb.append("Java→Kotlin Meter.show(\"cm\") = ").append(m.show("cm")).append('\n');
         // 顶层函数：门面类名来自 @file:JvmName("StrKit")，方法名来自 @JvmName("shout")
         sb.append("Java→Kotlin StrKit.shout(\"hey\") = ").append(StrKit.shout("hey")).append('\n');
+        // @file:JvmMultifileClass：More.kt 的顶层函数也进了同一个 StrKit 门面
+        sb.append("Java→Kotlin StrKit.reverseShout(\"abc\") = ").append(StrKit.reverseShout("abc")).append('\n');
         // 可空参数：Java 随便传 null，Kotlin 的 ?. 在边界兜底
         sb.append("Java→Kotlin safeLen(null) = ").append(StrKit.safeLen(null)).append('\n');
         // @Throws：Java 侧能捕获 Kotlin 抛的异常

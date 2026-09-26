@@ -135,7 +135,26 @@ fun jsonEscape(s: String): String = buildString {
 - Windows 控制台是另码事：JVM 输出加 `-Dstdout.encoding=UTF-8`（JDK 19+），PowerShell 侧 `[Console]::OutputEncoding = UTF8`——本教程 build.ps1 已内置。
 - 处理旧系统 GBK 文件：`File.readText(charset("GBK"))`。
 
-## 19.9 坑位清单
+## 19.9 进程执行：`"cmd".execute()`
+
+Groovy 的 `"ls -R".execute()` 用扩展函数三行搬到 Kotlin——顺手修掉书上版的**挂死隐患**：
+
+```kotlin
+fun String.execute(): Process =
+    ProcessBuilder(*split(Regex("\\s+")).toTypedArray())
+        .redirectErrorStream(true)     // stdout/stderr 合流——关键防御（见下）
+        .start()
+
+fun Process.text(): String = inputStream.bufferedReader().readText()
+
+val p = "java -version".execute()
+val out = p.text()          // 先读完（到 EOF）再 waitFor，顺序别反
+val rc = p.waitFor()
+```
+
+**为什么必须 `redirectErrorStream(true)`**：子进程的两条管道各只有几 KB 缓冲，父进程只读一条时另一条写满就**死锁**（子进程阻塞在写、父进程阻塞在 waitFor）——`java -version` 这类往 stderr 狂喷的命令最容易踩。合流后一条管道一个读者，天然安全。
+
+## 19.10 坑位清单
 
 1. **`Period.days` 是分量不是总天数**（19.4 实测：13 vs 104）——总差值用 `ChronoUnit.DAYS`。
 2. **原始字符串行尾 `$`**（19.5）——正则行尾锚的高频翻车点。
@@ -144,3 +163,4 @@ fun jsonEscape(s: String): String = buildString {
 5. `deleteRecursively` 失败会静默返回 false（个别文件占用时）——重要删除要检查返回值。
 6. Windows 路径分隔符混用：展示路径前 `replace('\\', '/')` 统一（快照测试才稳定）。
 7. `copyTo(target)` 默认 **不覆盖**——同名会抛 FileAlreadyExistsException，要覆盖传 `overwrite = true`。
+8. 子进程 stdout/stderr **双管道不排空会死锁**——`redirectErrorStream(true)` 合流 + 先 `text()` 后 `waitFor()`。

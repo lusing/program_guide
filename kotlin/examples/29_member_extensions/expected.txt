@@ -1,0 +1,21 @@
+== 29.1 双接收者 ==
+sameCategory("ann") = [cat@管理员]（catNames 来自分发接收者）
+== 29.2 作用域收口 ==
+with(dir) 里 users 调 labelAll 要走类内方法；类外直接调扩展编译不过
+顶层扩展全局可见、成员扩展圈在类内——DSL 收口的第二根支柱（第一根是 @DslMarker）
+== 29.3 抽象成员扩展 ==
+| 姓名 | 分数 |
+| ann | 95 |
+| bob | 88 |
+姓名,分数
+ann,95
+bob,88
+== 29.4 typealias ==
+isEven(4)=true, isEven(5)=false
+Grid 内容: 0, 1, 2, 3
+类实现 Handler: h("login", 1)=true, h("login", 0)=false, 调用次数=2
+注意: typealias 不产生新类型——Handler 与 (String, Int) -> Boolean 完全互换
+== 29.5 import as 与纸牌 DSL ==
+hand = [K♥, A♠, Q♦]
+排序后 = [Q♦, K♥, A♠]
+零前缀调用 + infix of + 编译期杜绝非法牌；解冲突用 import a.Node as ANode

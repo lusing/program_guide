@@ -109,7 +109,30 @@ class Form { var title: String by Trimmed("  默认标题  ") }   // 读写都�
 | 探测 | `::x.isInitialized` | 无（也不需要） |
 | 典型 | `@Inject lateinit var svc` | `val db by lazy { connect() }` |
 
-## 9.8 坑位清单
+## 9.8 notNull 委托与 observable 的边界
+
+`Delegates.notNull()`——"必须先赋值才能读"的 lateinit 替代品（**读前未赋值抛 IllegalStateException**）：
+
+```kotlin
+class Service { var name: String by Delegates.notNull() }
+val s = Service()
+s.name                    // ✗ IllegalStateException: Property name should be initialized before get.
+s.name = "main"           // ✓ 之后随便读
+```
+
+与 lateinit 的分工：lateinit 更快（无委托开销）但**不能用于基本类型属性和顶级属性**；notNull 全类型可用（`var port: Int by Delegates.notNull()` 合法）。测试里"先造对象、后装依赖"的形状两者皆可，DI 字段注入用 lateinit 居多。
+
+`observable` 的边界（高频翻车点）：它盯的是**赋值**，不是对象内部变化——
+
+```kotlin
+var fruits: MutableList<String> by Delegates.observable(mutableListOf("苹果")) { _, o, n -> ... }
+fruits.add("梨")                       // 不触发！引用没换，回调零日志
+fruits = mutableListOf("苹果", "梨")   // 触发（整体换引用）
+```
+
+要用 observable 监控集合内容，就把属性声明成**不可变 List**，改动一律 `fruits = fruits + "梨"`——顺带换来线程安全（22 章"不可变更新"思想）。
+
+## 9.9 坑位清单
 
 1. **object 的初始化在类加载时**——object 里引用其他类可能触发加载顺序问题；重初始化逻辑放显式 `init`/首次调用。
 2. companion 的 `const val` 只能是编译期常量；`val x = System.currentTimeMillis()` 不行（也不该）——运行时求值用普通 `val`（每次类加载算一次）。
@@ -117,3 +140,5 @@ class Form { var title: String by Trimmed("  默认标题  ") }   // 读写都�
 4. `vetoable` 的谓词**返回 false = 拒绝本次赋值**（旧值保留），不是抛异常。
 5. 类委托 `List<T> by items` 转发的是**接口方法**——`equals/hashCode/toString` 是 Any 的方法，不会转发；要控制就自己 override（示例的 Box 就覆写了 toString）。
 6. `lazy` 默认线程安全但也意味着**第一次访问有锁开销**；确认单线程用 NONE 模式。
+7. `notNull` 读前未赋值抛 `IllegalStateException`（不是 NPE）；基本类型属性/顶级属性用不了 lateinit，选 notNull。
+8. `observable` 只在**赋值**时回调——`list.add(...)` 静默无声；要监控内容就声明成不可变 List 并整体换引用。

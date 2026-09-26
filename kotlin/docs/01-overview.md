@@ -46,7 +46,7 @@ Kotlin 是一门**运行在 JVM 上的静态类型语言**，也可以编译到 
 
 ⚠️ 网上教程版本混杂：1.x 时代的写法绝大多数仍然成立，但 K2 编译器（2.0+）报错信息全新、部分历史 API 被移除。本教程所有代码在 **kotlinc 2.4.20** 实测。
 
-**重要**：别信 PATH 上的 `java`。Windows 本机 PATH 上是 **Java 8**，macOS 本机 PATH 上是 **Java 26**（装了 21/25/26 三套）——用错版本跑 Kotlin 2.x 产物会出各种诡异问题，而且 **konanc 在 JDK ≥ 24 会因为引号解析直接崩**。两个入口脚本都自己钉 JDK 21（`$JAVA_HOME` → `/usr/libexec/java_home -v 21` → PATH），你手敲命令时也要先 `export JAVA_HOME=...`。
+**重要**：别信 PATH 上的 `java`，也别信 `JAVA_HOME`——Windows 本机 PATH 上是 **Java 8**、用户级 `JAVA_HOME` 一度指着 **openjdk 27**，macOS 本机 PATH 上是 **Java 26**（装了 21/25/26 三套）——用错版本跑 Kotlin 2.x 产物会出各种诡异问题，而且 **konanc 在 JDK ≥ 24 会因为引号解析直接崩**。两个入口脚本都**按版本探测**钉 JDK 21（`$JAVA_HOME` 且确为 21 → scoop oraclejdk-lts/microsoft-jdk 里验证过版本的 → 才回退 `$JAVA_HOME`/PATH），你手敲命令时也要先 `export JAVA_HOME=<JDK 21>`。
 
 > 跨平台差异一览（脚本已吸收，读代码时会遇到）：classpath 分隔符 Windows `;` / Unix `:`；编译器脚本 `.bat` 有无；原生产物 `probe.exe` vs `probe.kexe`；`File.path` 的分隔符 `\` vs `/`（19、24 章的快照为此做了归一化）。
 
@@ -57,7 +57,7 @@ Kotlin 是一门**运行在 JVM 上的静态类型语言**，也可以编译到 
 - **Native**：编译成原生二进制（LLVM），无 JVM 依赖。
 - **Wasm**：WebAssembly（2.x 新增，试验推进中）。
 
-多平台共享**同一套语言与公共 stdlib**，平台差异封装在 expect/actual 机制里。本教程主线在 JVM（90% 的现实场景），第 [25 章](25-multiplatform.md)进阶专题会把同一份代码真编到 JS / Wasm / Native 四个目标实测。
+多平台共享**同一套语言与公共 stdlib**，平台差异封装在 expect/actual 机制里。本教程主线在 JVM（90% 的现实场景），第 [25 章](25-multiplatform.md)进阶专题会把同一份代码真编到 JS / Wasm / Native 四个目标实测。25 章之后还有两段：26–30 章下潜**语言深水区**（数值装箱/原语数组、注解反射、inline、成员扩展、运算符约定），31–33 章三个**实战项目**压轴（零依赖 HTTP 服务、MVP 终端聊天室、俄罗斯方块——取材自 4 本参考书，全部按四层验证标准重写实测）。
 
 ## 1.6 本教程的学法
 

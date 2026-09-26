@@ -20,3 +20,9 @@ title 初始 = '默认标题'（读值时 trim）
 title 赋值后 = '新标题'
 == 9.8 Map 委托 ==
 db.local:5432 debug=true
+== 9.9 notNull 与 observable 的边界 ==
+notNull 未初始化即读: Property name should be initialized before get.
+赋值后: main-service
+内部 add 后内容=[苹果, 梨]，但 observable 记录数=0（引用没换，没触发！）
+整体换引用: 记录数=1，最后一条=[苹果, 梨] → [苹果, 梨, 西瓜]
+选型: lateinit 更快但不能用于基本类型/顶级属性；notNull 全类型可用但要过委托调用

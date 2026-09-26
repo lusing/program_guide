@@ -33,3 +33,6 @@ toSnakeCase(myKotlinVar2) = my_kotlin_var2
   LogLine(ts=09:15:03, level=WARN, msg=磁盘 85%)
 == 19.9 极简 JSON 编码器 ==
 {"id": 1, "title": "写 Kotlin 教程", "done": false, "tags": ["docs", "wip"], "note": "带\"引号\"与\n换行", "due": null}
+== 19.10 进程执行扩展 ==
+"java -version".execute(): exit=0, 输出非空=true（版本细节随机器，不进快照）
+防御: redirectErrorStream(true) 合流——双管道不排空时缓冲写满会把 waitFor 挂死

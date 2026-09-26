@@ -9,6 +9,14 @@ import java.time.format.DateTimeFormatter
 
 // ---------- 文本与目录 ----------
 
+/** Groovy 风格进程扩展：redirectErrorStream 合流——双管道不排空时 waitFor 会死锁 */
+fun String.execute(): Process =
+    ProcessBuilder(*split(Regex("\\s+")).toTypedArray())
+        .redirectErrorStream(true)
+        .start()
+
+fun Process.text(): String = inputStream.bufferedReader().readText()
+
 /** 逐行流式处理大文件：useLines 用完自动关流，常量内存 */
 fun countWords(file: File): Int =
     file.useLines { lines -> lines.sumOf { it.split(Regex("\\s+")).count { w -> w.isNotEmpty() } } }

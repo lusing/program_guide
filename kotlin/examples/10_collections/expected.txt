@@ -46,3 +46,12 @@ a − b = [1, 2]
 == 10.10 排序：sorted 新列表 vs sort 原地 ==
 src=[3, 1, 2], copy=[1, 2, 3]
 按年龄降序: Dave, Alice, Carol, Bob
+== 10.11 接口层次与实现内幕 ==
+继承检查: List is Collection=true, Map is Collection=false
+  listOf -> java.util.Arrays$ArrayList
+  mutableListOf -> java.util.ArrayList
+  listOf().toList() -> java.util.ArrayList
+  buildList -> kotlin.collections.builders.ListBuilder
+  setOf -> java.util.LinkedHashSet
+  mapOf -> java.util.Collections$SingletonMap
+sorted/reversed 是 JDK 静态调用的薄糖衣（Arrays.sort / Collections.reverse）

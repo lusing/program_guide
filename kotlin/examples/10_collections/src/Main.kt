@@ -86,4 +86,18 @@ fun main() {
     println(sortDemo())
     val byName = people.sortedWith(compareByDescending<Person> { it.age }.thenBy { it.name })
     println("按年龄降序: ${byName.joinToString { it.name }}")
+
+    println("== 10.11 接口层次与实现内幕 ==")
+    // 注：is 检查对静态类型恒真/恒假会触发 K2 告警（10 章老坑），教学演示先转 Any
+    println("继承检查: List is Collection=${listOf(1) as Any is Collection<*>}, Map is Collection=${mapOf(1 to 2) as Any is Collection<*>}")
+    val impls = listOf(
+        "listOf" to listOf(1, 2),
+        "mutableListOf" to mutableListOf(1, 2),
+        "listOf().toList()" to listOf(1, 2).toList(),
+        "buildList" to buildList { add(1) },
+        "setOf" to setOf(1, 2),
+        "mapOf" to mapOf(1 to 2),
+    )
+    impls.forEach { (name, c) -> println("  $name -> ${c::class.java.name}") }
+    println("sorted/reversed 是 JDK 静态调用的薄糖衣（Arrays.sort / Collections.reverse）")
 }

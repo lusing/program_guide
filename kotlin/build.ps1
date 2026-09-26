@@ -55,9 +55,25 @@ function Resolve-KotlinHome {
     return $null
 }
 
+function Get-JdkMajor {
+    # java 大版本号（"1.8.0_x" → 8；"21.0.12" → 21）；探测失败返回 0
+    param([string]$JdkPath)
+    try {
+        $out = & (Join-Path $JdkPath "bin/java$exe") -version 2>&1 | Out-String
+        if ($out -match 'version "(\d+)(?:\.(\d+))?') {
+            if ([int]$Matches[1] -eq 1 -and $Matches[2]) { return [int]$Matches[2] }
+            return [int]$Matches[1]
+        }
+    } catch { }
+    return 0
+}
+
 function Resolve-JavaHome {
-    # 教程钉 JDK 21（konanc 在 JDK ≥ 24 会崩；Gradle 的 jvmToolchain(21) 也要真 JDK 21）
-    if ($env:JAVA_HOME -and (Test-Path -LiteralPath (Join-Path $env:JAVA_HOME "bin/java$exe"))) { return $env:JAVA_HOME }
+    # 教程钉 JDK 21（konanc 在 JDK ≥ 24 会崩；Gradle 的 jvmToolchain(21) 也要真 JDK 21）。
+    # JAVA_HOME 指向非 21（如 scoop openjdk 27）时跳过它找真 21；实在没有才回退（此时 25 章 native 会挂）
+    if ($env:JAVA_HOME -and (Test-Path -LiteralPath (Join-Path $env:JAVA_HOME "bin/java$exe"))) {
+        if ((Get-JdkMajor $env:JAVA_HOME) -eq 21) { return $env:JAVA_HOME }
+    }
     if (-not $onWindows) {
         $jh = '/usr/libexec/java_home'
         if (Test-Path -LiteralPath $jh) {
@@ -67,12 +83,14 @@ function Resolve-JavaHome {
             if ($h) { return "$h".Trim() }
         }
     } else {
-        if ($env:USERPROFILE) { $c = Join-Path $env:USERPROFILE 'scoop/apps/oraclejdk-lts/current' }
-        else { $c = $null }
-        foreach ($p in @($c, 'G:\scoop\apps\oraclejdk-lts\current')) {
-            if ($p -and (Test-Path -LiteralPath (Join-Path $p "bin/java.exe"))) { return $p }
+        if ($env:USERPROFILE) { $c = @((Join-Path $env:USERPROFILE 'scoop/apps/oraclejdk-lts/current'),
+                                      (Join-Path $env:USERPROFILE 'scoop/apps/microsoft-jdk/current')) }
+        else { $c = @() }
+        foreach ($p in @($c + @('G:\scoop\apps\oraclejdk-lts\current', 'G:\scoop\apps\microsoft-jdk\current'))) {
+            if ($p -and (Test-Path -LiteralPath (Join-Path $p "bin/java.exe")) -and (Get-JdkMajor $p) -eq 21) { return $p }
         }
     }
+    if ($env:JAVA_HOME -and (Test-Path -LiteralPath (Join-Path $env:JAVA_HOME "bin/java$exe"))) { return $env:JAVA_HOME }
     $j = Get-Command 'java' -ErrorAction SilentlyContinue
     if ($j) { return (Split-Path (Split-Path $j.Source -Parent) -Parent) }
     return $null
@@ -105,8 +123,10 @@ $libDir     = Join-Path $kotlinHome 'lib'
 $cpTest     = @(
     (Join-Path $libDir 'kotlin-stdlib.jar'),
     (Join-Path $libDir 'kotlin-test.jar'),
-    (Join-Path $libDir 'kotlinx-coroutines-core-jvm.jar')
-) -join $sep
+    (Join-Path $libDir 'kotlinx-coroutines-core-jvm.jar'),
+    (Join-Path $libDir 'kotlin-reflect.jar')   # 27 章反射要用；不存在则自动略过
+) | Where-Object { Test-Path -LiteralPath $_ } | ForEach-Object { $_ }
+$cpTest     = $cpTest -join $sep
 $gradle = Resolve-Tool -Name 'gradle' -WindowsPaths @('G:\scoop\apps\gradle\current\bin\gradle.bat')
 $node   = Resolve-Tool -Name 'node'
 $konanc = Resolve-Tool -Name 'konanc' -WindowsPaths @('G:\scoop\apps\kotlin-native\current\bin\konanc.bat')

@@ -66,6 +66,14 @@ fun testJson() {
     assertEquals("\"line\\nnext\"", toJson("line\nnext"))
 }
 
+fun testProcessExecute() {
+    val p = "java -version".execute()
+    val out = p.text()               // 先读 EOF
+    val rc = p.waitFor()             // 再收码
+    assertEquals(0, rc)
+    assertTrue(out.isNotBlank())     // -version 输出走 stderr，合流后统一可读
+}
+
 fun main() {
     testWriteRead()
     testCountWords()
@@ -73,5 +81,6 @@ fun main() {
     testDates()
     testRegex()
     testJson()
+    testProcessExecute()
     println("19_files 全部测试通过")
 }

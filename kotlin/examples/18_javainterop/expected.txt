@@ -12,6 +12,7 @@ Java→Kotlin MathKit.scale(5, 10) = 50
 Java→Kotlin Meter.value = 9
 Java→Kotlin Meter.show("cm") = 9cm
 Java→Kotlin StrKit.shout("hey") = HEY!
+Java→Kotlin StrKit.reverseShout("abc") = CBA!
 Java→Kotlin safeLen(null) = 0
 Java 捕获 Kotlin 异常: 负数: -1
 Kotlin→Java Lib.runOp(6, x -> x * 3) = 18

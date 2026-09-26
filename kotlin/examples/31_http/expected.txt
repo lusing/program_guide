@@ -1,0 +1,23 @@
+== 31.1 起服务（零依赖，端口系统分配不进快照）==
+服务端已启动: 127.0.0.1:<临时端口>，端点: /token /users /messages
+== 31.2 登录换令牌（无令牌访问受保护端点 401）==
+无令牌: HTTP 401 {"error":"missing or bad token"}
+登录成功: token=tok-ann（此后每次请求自动带 Authorization 头——拦截器位置）
+== 31.3 REST 增与查 ==
+GET /users  -> {"users":[{"id":1,"name":"ann"},{"id":2,"name":"bob"}]}
+POST /users -> {"id":3,"name":"cat"}
+POST /messages -> 4 号消息入库
+== 31.4 校验与错误映射 ==
+名字太短: HTTP 400 {"error":"name too short"}
+名字重复: HTTP 409 {"error":"name exists"}
+用户列表也要令牌: HTTP 401 {"error":"missing or bad token"}
+AppError(status, code) 在全局映射器统一翻译——@ControllerAdvice 的零依赖形态
+== 31.5 Flow 轮询与结构化取消 ==
+take(3) 收到 3 条，上游实际只轮询 1 轮（第一轮就有 3 条，取消掐停了后续）
+  bob: 你好
+  cat: 在吗
+  bob: 终端聊天室上线
+RxJava2 时代对照: 手工 CompositeDisposable + Activity 销毁记得 dispose；Flow 沿结构化并发自动传播
+== 31.6 增量轮询（since 游标）==
+since=3 只拉新消息: 1 条 -> ann: 第一条来自客户端的消息
+服务端已停止

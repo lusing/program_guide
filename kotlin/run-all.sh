@@ -50,17 +50,41 @@ resolve_kotlin_home() {
     fi
 }
 
+jdk_major() {  # java 大版本号（1.8.0_x → 8；21.0.12 → 21）；探测失败输出 0
+    local v major
+    v=$("$1/bin/java" -version 2>&1 | sed -n '1s/.*version "\([0-9][0-9.]*\)".*/\1/p')
+    case "$v" in
+        1.*) major=${v#1.}; major=${major%%.*} ;;
+        *)   major=${v%%.*} ;;
+    esac
+    case "$major" in ''|*[!0-9]*) echo 0 ;; *) echo "$major" ;; esac
+}
+
 resolve_java_home() {
-    # 教程钉 JDK 21（konanc 在 JDK ≥ 24 会崩；产物目标也是 21）
+    # 教程钉 JDK 21（konanc 在 JDK ≥ 24 会崩；产物目标也是 21）。
+    # JAVA_HOME 指向非 21（如 scoop openjdk 27）时跳过它找真 21；实在没有才回退（此时 25 章 native 会挂）
     if [ -n "${JAVA_HOME:-}" ] && [ -x "$JAVA_HOME/bin/java" ]; then
-        printf '%s\n' "$JAVA_HOME"; return
+        [ "$(jdk_major "$JAVA_HOME")" = "21" ] && { printf '%s\n' "$JAVA_HOME"; return; }
     fi
     if [ -x /usr/libexec/java_home ]; then            # macOS
         local h
         h=$(/usr/libexec/java_home -v 21 2>/dev/null || true)
         [ -n "$h" ] && { printf '%s\n' "$h"; return; }
-        h=$(/usr/libexec/java_home 2>/dev/null || true)
-        [ -n "$h" ] && { printf '%s\n' "$h"; return; }
+    fi
+    local d                                           # Windows scoop 候选（Git Bash 下跑本脚本）
+    for d in "$HOME/scoop/apps/oraclejdk-lts/current" "G:/scoop/apps/oraclejdk-lts/current" \
+             "$HOME/scoop/apps/microsoft-jdk/current"  "G:/scoop/apps/microsoft-jdk/current"; do
+        if [ -x "$d/bin/java" ] && [ "$(jdk_major "$d")" = "21" ]; then
+            printf '%s\n' "$d"; return
+        fi
+    done
+    if [ -x /usr/libexec/java_home ]; then            # macOS：没有 21 就用默认
+        local h2
+        h2=$(/usr/libexec/java_home 2>/dev/null || true)
+        [ -n "$h2" ] && { printf '%s\n' "$h2"; return; }
+    fi
+    if [ -n "${JAVA_HOME:-}" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+        printf '%s\n' "$JAVA_HOME"; return
     fi
     local j
     j=$(command -v java 2>/dev/null || true)
@@ -90,6 +114,10 @@ JAVA="$JAVA_HOME/bin/java"
 JAVAC="$JAVA_HOME/bin/javac"
 LIB_DIR="$KOTLIN_HOME/lib"
 CP_TEST="$LIB_DIR/kotlin-stdlib.jar:$LIB_DIR/kotlin-test.jar:$LIB_DIR/kotlinx-coroutines-core-jvm.jar"
+# 27 章反射需要 kotlin-reflect.jar（发行版自带；不存在则自动略过）
+for jar in "$LIB_DIR/kotlin-reflect.jar"; do
+    [ -f "$jar" ] && CP_TEST="$CP_TEST:$jar"
+done
 GRADLE=$(resolve_tool gradle)
 NODE=$(resolve_tool node nodejs)
 KONANC=$(resolve_tool konanc)

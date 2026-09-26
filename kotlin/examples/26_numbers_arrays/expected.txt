@@ -1,0 +1,32 @@
+== 26.1 无隐式加宽与转换函数族 ==
+42.toLong() = 42, 3.9.toInt() = 3, 257.toByte() = 1
+65.toChar() = A, 'A'.code = 65
+255.toString(16) = ff, "ff".toInt(16) = 255
+"1010".toInt(2) = 10
+== 26.2 字面值、边界与位运算 ==
+dec=1000000, hex=255, bin=10, L=1000000000000
+017 编译不过（leading zeros are not allowed）——八进制陷阱堵死在源头
+max+1 = -2147483648（静默回绕；常量表达式才编译期报错）
+1 shl 10 = 1024, (-8) shr 1 = -4, (-8) ushr 1 = 2147483644
+0xFF and 0x0F = 15, 0xF0 xor 0xFF = 15, 0.inv() = -1
+'A'+1 要写 ('A'.code + 1).toChar() = B（Char 不是数字）
+== 26.3 装箱身份：Integer 缓存陷阱 ==
+== 恒安全: 1000==1000 -> true
+(100 as Any) === (100 as Any) -> true（缓存内，同一对象）
+(1000 as Any) === (1000 as Any) -> false（缓存外，各装各的）
+运行期装箱同样: box(100)=true, box(1000)=false
+K2 直接禁止 a === b（装箱身份比较）——编译器替你踩坑
+== 26.4 数组三件套与原语数组 ==
+arrayOf=1, 2, 3, arrayOfNulls=null, null, null
+Array(5){it*it} = 0, 1, 4, 9, 16（it 是下标）
+intArrayOf=2, 4, 6, IntArray(5){it*2}=0, 2, 4, 6, 8, ia.sum()=12
+互转: 2, 4, 6 / 2, 4, 6
+无继承: Array<Int> 与 IntArray 互不相关，只能显式互转
+== 26.5 无符号家族 ==
+255u.toString(16) = ff, 4_000_000_000u = 4000000000（Int 放不下）
+UInt.MAX_VALUE = 4294967295, 1u shl 4 = 16, 255u and 0x0Fu = 15
+uintArrayOf/sorted 等部分 API 仍标实验（类型已转正）——要用得 @OptIn(ExperimentalUnsignedTypes)
+排序改用稳定区: listOf(3u, 1u, 2u).sorted() = [1, 2, 3]
+== 26.6 装箱开销微基准 ==
+n=10000000, 3轮取最优: 两种数组总和一致；IntArray 不慢于装箱版（实测显著更快，倍率随机器漂移已隐去）
+内存: int 4 字节 vs Integer 盒子 16 字节——热路径数值集合选原语数组

@@ -1,5 +1,7 @@
 // Kotlin 侧的 API：Java 会调用它（kotlinc 编译后，javac -cp 引用）
-@file:JvmName("StrKit")   // 顶层函数的门面类名：默认是 ApiKt，改成 StrKit 更好看
+// @file:JvmMultifileClass：允许 More.kt 等其他文件的同名门面类合并进 StrKit（两份文件都要标）
+@file:JvmName("StrKit")
+@file:JvmMultifileClass
 
 /** @JvmStatic：让 companion/object 里的函数以真正的静态方法暴露给 Java */
 object MathKit {

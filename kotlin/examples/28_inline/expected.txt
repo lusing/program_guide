@@ -1,0 +1,24 @@
+== 28.1 内联原理 ==
+printExecutionTime 返回纳秒差: e>=0 -> true（数值不进快照）
+收益: lambda 不装箱成 Function 对象 + 非局部返回；代价: 调用点字节码膨胀
+== 28.2 非局部返回 ==
+firstNegative(listOf(3, 7, -2, 9)) = -2
+firstNegative(listOf(1, 2)) = null
+eachSlow 标签返回: visited=[1, -2, 3]（-2 后停当轮，3 仍会访问）
+再跑一轮累计: [1, -2, 3, 100, 300]
+== 28.3 自造控制流 ==
+repeatUntilError 读了 3 条后收到 EOF
+tryFewTimes(5){ it >= 3 } = 3（第 3 次成功）
+tryFewTimes(5){ false } = 5（始终失败用满 5 次）
+== 28.4 noinline ==
+注册期回调(onRegister 内联展开): [已注册]
+later 返回的 lambda 对象: saved()=延迟求值
+== 28.5 crossinline ==
+logs=[任务体执行（Runnable.run 同步触发）]
+crossinline 里裸 return 编译不过——只能 return@runAsTask（Android runOnUiThread 同形状）
+== 28.6 @PublishedApi ==
+publicInlineApi() = 内部实现（@PublishedApi = 承诺当公开对待）, 加变换 = 内部实现（@PUBLISHEDAPI = 承诺当公开对待）
+不加 @PublishedApi 会编译错: public inline 不能引用 internal——防止私有实现内联泄漏到模块外
+== 28.7 inline 属性与 reified ==
+tag = 无幕后字段的内联属性
+typeName<List<Int>>() = List, typeName<String>() = String

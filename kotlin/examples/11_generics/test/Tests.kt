@@ -44,6 +44,26 @@ fun testErasure() {
     assertTrue(anyList !is Set<*>)
 }
 
+fun testVarianceDetails() {
+    val c = Refillable(1) { it + 10 }
+    val asNumber: Refillable<Number> = c              // out 协变
+    assertEquals(1, asNumber.get())
+    assertEquals(11, c.advance())
+    // 公开 set(v: T) 会编译错（out 违例）——见 Main 注释与文档 11.10
+}
+
+fun testErasedOverloads() {
+    assertEquals(6, sum(listOf(1, 2, 3)))
+    assertEquals("a-b", sum(listOf("a", "b")))
+}
+
+fun testReifiedWrapper() {
+    assertEquals(42, "42".parseAs<Int>())
+    assertEquals("hi", "\"hi\"".parseAs<String>())
+    assertEquals(null, "x".parseAs<Long>())
+    assertEquals(42L, parseOf("42", Long::class.javaObjectType))
+}
+
 fun main() {
     testBox()
     testVariance()
@@ -51,5 +71,8 @@ fun main() {
     testWhere()
     testReified()
     testErasure()
+    testVarianceDetails()
+    testErasedOverloads()
+    testReifiedWrapper()
     println("11_generics 全部测试通过")
 }

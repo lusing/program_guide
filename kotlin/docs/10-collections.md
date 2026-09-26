@@ -116,7 +116,22 @@ people.sortedWith(compareByDescending<Person> { it.age }.thenBy { it.name })   /
 
 **命名规则**：动词原形（sort/filter/map…）= 原地或急切；过去式（sortedBy/filtered…）= 返回新集合。`sortedBy` 返回新列表、`sortBy` 原地——一字母之差，数据丢不丢全看它。
 
-## 10.10 坑位清单
+## 10.10 接口层次与实现内幕
+
+Kotlin 集合不是另起炉灶，而是给 `java.util` 贴上双轨接口（只读父 + 可变子）：
+
+```text
+Iterable → Collection → List / Set        （MutableIterable → MutableCollection → MutableList / MutableSet）
+Map（独立族，不继承 Collection）
+```
+
+- `List`/`Set` 都继承 `Collection`（`contains/size/iterator` 的来源），`Map` **不在** Collection 族里——`map !is Collection<*>` 恒成立。
+- `listOf(1, 2)` 背后是 `Arrays.asList`（JDK 委托）；`mutableListOf` 才是真 `ArrayList`。
+- `sorted()` 委托 `Arrays.sort`、`reversed()` 委托 `Collections.reverse`——Kotlin 标准库大量函数是 JDK 静态调用的**薄糖衣**（源码里一行 `java.util.Arrays.xxx`）。
+
+用 `::class.java.simpleName` 看穿（示例程序打印了每个创建函数的真实实现类）——选型时心中有实现，性能讨论才有地基。
+
+## 10.11 坑位清单
 
 1. **只读 ≠ 不可变**：传出去的 `List` 可能背后是别人的 MutableList。防御性拷贝 `toList()`。
 2. **reduce 空集合抛 UnsupportedOperationException**——可能空就用 fold。
@@ -125,3 +140,4 @@ people.sortedWith(compareByDescending<Person> { it.age }.thenBy { it.name })   /
 5. `zip` 按短的截断——长度不等时静默丢数据，要显式处理用 `zipAll`?（stdlib 无，自己写或先检查长度）。
 6. `average()` 空集合返回 NaN（不抛异常）——显示前记得兜底。
 7. `Map.forEach` 的 `(k, v)` 是解构——在 lambda 里写 `it` 拿到的是 Entry，两种风格别混。
+8. `Map` 不继承 `Collection`——`map as Collection<*>` 编译不过，别在层次图里画错线。

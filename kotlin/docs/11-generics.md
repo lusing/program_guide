@@ -112,7 +112,35 @@ li::class.java.name                    // java.util.Collections$SingletonList
 
 Kotlin 的取舍：擦除换互操作（字节码和 Java 完全互通），reified 补最高频的痛点。
 
-## 11.10 坑位清单
+## 11.10 型变细则、同擦除冲突与 reified 工程化
+
+**private 成员不受型变位置限制**——`out T` 类里公开 `var`/消费位会编译错，但 private 的可以（不进公开契约，外部无法借它破坏协变）：
+
+```kotlin
+class Refillable<out T>(private var current: T, private val next: (T) -> T) {
+    fun get(): T = current            // 公开产出位 ✓
+    fun advance(): T { current = next(current); return current }   // T 只在 private 里被消费 ✓
+    // fun set(v: T) { ... }          // ✗ 公开消费位：out 违例编译错
+}
+```
+
+**同擦除签名冲突是编译错**：两个同名重载擦除后 JVM 签名相同（`sum(List)`），Kotlin 直接报 *platform declaration clash*——`@JvmName` 给其中一个改 JVM 名即可共存（18 章互操作注解在纯 Kotlin 里的正当用途）：
+
+```kotlin
+@JvmName("sumInts") fun sum(xs: List<Int>): Int = xs.sum()
+@JvmName("sumStrs") fun sum(xs: List<String>): String = xs.joinToString("-")
+```
+
+**reified 工程化套路**——把任何"吃 `Class<T>` 的旧 API"包装成无参泛型扩展（Gson 的 `fromJson(this, T::class.java)` 就该这么藏）：
+
+```kotlin
+fun <T : Any> parseOf(raw: String, cls: Class<T>): T? = ...       // 旧式：调用方传 Class
+inline fun <reified T : Any> String.parseAs(): T? = parseOf(this, T::class.javaObjectType)
+
+"42".parseAs<Int>()        // 42——再也不写 T::class.java
+```
+
+## 11.11 坑位清单
 
 1. **`is List<Int>` 编译错**——擦除。要运行时类型就星投影 + 元素逐个 `is`，或 reified 函数包一层。
 2. reified 脱离 inline 不存在——不能在普通函数/类上声明 `reified`；抽象 API 想暴露它，只能 public inline + `@PublishedApi` internal 实函数。
@@ -120,3 +148,5 @@ Kotlin 的取舍：擦除换互操作（字节码和 Java 完全互通），reif
 4. 星投影的读是 Any?，写是禁止——拿 `MutableList<*>` 当参数时编译器什么都拦，基本说明 API 设计错了。
 5. 泛型默认可空：`class Box<T>(val x: T)` 的 x 可空——要非空 `T : Any`。
 6. `filterIsInstance` 内部就是 reified——别自己再写一遍。
+7. 同名重载擦除后 JVM 签名相同 → *platform declaration clash* **编译错**；`@JvmName` 区分。
+8. `out T` 类的 private var/消费位合法（不进公开契约）——想协变又想内部可变，收成 private。
