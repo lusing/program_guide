@@ -57,7 +57,7 @@ if ($All) {
         # 全量扫描（含历史遗留文件，可能较慢且有失效文件）
         $files = Get-ChildItem -LiteralPath $examplesDir -Filter "*.lean" -Recurse -File | Sort-Object FullName
     } else {
-        # 默认验证集 = 00_verified + 教程章节同步文件（与 lean4-mathlib4-tutorial.md 对应）
+        # 默认验证集 = 00_verified + 教程章节同步文件（与教程 docs/ 各章及 lean4-mathlib4-tutorial.md 对应）
         $chapterFiles = @(
             "01_basics\basics.lean",
             "02_inductive_types\universes.lean",
