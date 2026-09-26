@@ -7,8 +7,8 @@
 ```text
 dotnet/
 ├── README.md               本文件
-├── docs/                   20 章教程（01 → 20 顺序阅读）
-├── examples/               19 个示例工程（章号 = 示例号）
+├── docs/                   24 章教程（01 → 24 顺序阅读）
+├── examples/               23 个示例工程（章号 = 示例号）
 ├── build.ps1               统一构建脚本（须 PowerShell 7 / pwsh 运行）
 ├── CHEATSheet.md           开发清单速查
 └── advanced/               预留扩展阅读（docker/微服务/可观测/安全）
@@ -38,6 +38,10 @@ dotnet/
 | [18 测试](docs/18-testing.md) | AAA、断言设计、测试替身 | `examples/18_testing` |
 | [19 跨平台与可移植性](docs/19-portable.md) | 支持矩阵、netstandard、多目标、发布、Mono | `examples/19_portable` |
 | [20 现代 C# 纵览](docs/20-modern-csharp.md) | C# 9→13+ 特性演进 | `examples/20_modern` |
+| [21 正则表达式](docs/21-regex.md) | 命名组、GeneratedRegex、超时防御 | `examples/21_regex` |
+| [22 网络编程](docs/22-networking.md) | TCP 分帧、UDP、字节序、WOL | `examples/22_networking` |
+| [23 进程与原生互操作](docs/23-interop.md) | Process、P/Invoke、反射、DLL 地狱 | `examples/23_interop` |
+| [24 同步原语与 IPC](docs/24-sync.md) | SemaphoreSlim、事件句柄、管道、FSW | `examples/24_sync` |
 
 ## 构建工具链
 

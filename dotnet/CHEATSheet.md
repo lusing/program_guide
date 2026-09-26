@@ -1,6 +1,6 @@
 # .NET 开发清单
 
-配合 [docs/](docs/) 20 章教程使用；每条主题链接到对应章节。
+配合 [docs/](docs/) 24 章教程使用；每条主题链接到对应章节。
 
 ## 环境设置（[第 01 章](docs/01-overview.md)）
 
@@ -36,6 +36,10 @@ dotnet new xunit -n MyTests      # 单元测试
 | Web API / EF Core / 测试 | [第 16](docs/16-webapi.md) / [17](docs/17-efcore.md) / [18 章](docs/18-testing.md) |
 | 跨平台 / 老平台支持 / Mono | [第 19 章](docs/19-portable.md) |
 | 版本特性演进 | [第 20 章](docs/20-modern-csharp.md) |
+| 正则 / GeneratedRegex | [第 21 章](docs/21-regex.md) |
+| TCP·UDP / 字节序 / 分帧 | [第 22 章](docs/22-networking.md) |
+| Process / P/Invoke / 反射 | [第 23 章](docs/23-interop.md) |
+| 同步原语 / 管道 / FSW | [第 24 章](docs/24-sync.md) |
 
 ## 高频坑位速查
 
@@ -49,6 +53,10 @@ dotnet new xunit -n MyTests      # 单元测试
 - [ ] EF `Add` 后忘 `SaveChanges` → 数据没进库（[第 17 章](docs/17-efcore.md)）
 - [ ] 扩展方法点不出来 → 缺 `using System.Linq`（[第 06 章](docs/06-generics.md)）
 - [ ] 硬编码 `\` 或 `/` 拼路径 → 跨平台炸，用 `Path.Combine`（[第 19 章](docs/19-portable.md)）
+- [ ] 正则不设超时处理用户输入 → ReDoS 挂死（[第 21 章](docs/21-regex.md)）
+- [ ] TCP 把流当消息读 → 粘包/半包，长度前缀分帧（[第 22 章](docs/22-networking.md)）
+- [ ] 子进程先 WaitForExit 后读输出 → 死锁，先读后等（[第 23 章](docs/23-interop.md)）
+- [ ] `lock(this)` / `lock("字符串")` → 用 `private readonly object`（[第 24 章](docs/24-sync.md)）
 
 ## 开发流程
 

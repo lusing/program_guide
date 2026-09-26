@@ -78,7 +78,23 @@ var options = new JsonSerializerOptions
 
 字段在 JSON 里缺失时：引用类型得 null、`int` 得 0——**数值 0 与"缺失"无法区分**，这是 int 类型的盲区。解法在类型上：`record Config(int Retries, string? NextPageToken)` 用 `string?` 表达"可缺失"；需要区分 0/缺失的数值用 `int?`。反序列化目标类型就是把 JSON 形状翻译成 C# 契约——第 10 章的功课后置到这兑现。
 
-## 5. 坑位清单
+## 5. 顺带一提：XML 还在，但默认不选
+
+对接老系统（SOAP、老的配置文件、Office 文档里的 xml 部件）时 XML 仍会出现，标准库三件套够用：
+
+```csharp
+using System.Xml.Linq;
+
+var doc = XDocument.Parse("<user id=\"1\"><name>alice</name></user>");
+var name = doc.Root!.Element("name")!.Value;            // LINQ to XML：xpath 之外的另一种查法
+var id = (int)doc.Root!.Attribute("id")!;               // XAttribute 显式转换
+```
+
+- **读取/查询**：`XDocument`（LINQ to XML，现代）或 `XmlReader`（前向流式，大文件）。
+- **对象序列化**：`XmlSerializer`——record/类加 `[XmlElement]` 标注即可，与 JSON 的思路同构。
+- **选型**：新接口一律 JSON（第 12 章主体）；XML 只在**对方定死了**时出场。别用正则解析 XML（第 21 章的判据）。
+
+## 6. 坑位清单
 
 1. **无 Encoding 参数的读写乱码**：中文 Windows 上默认 GBK，文件若是 UTF-8（现代默认）就花——`ReadAllText(path, Encoding.UTF8)` 一律显式。
 2. **字段名不匹配静默得默认值**：JSON 是 `user_name` 而 C# 属性是 `UserName`，反序列化**不报错**，得 null——排查"字段莫名是 null"先看名字大小写/命名策略。

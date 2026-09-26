@@ -110,7 +110,29 @@ curl http://localhost:5000/api/users/1
 
 预期：列表 JSON → 201 创建 → 单个用户。改代码里的端口/数据再试，端点行为立刻跟走。
 
-## 6. 坑位清单
+## 6. 从 Web 到后台服务：Worker Service
+
+同一套宿主模型换个模板就是**长期运行的后台服务**（定时任务、队列消费、监控 agent）：
+
+```csharp
+// dotnet new worker 生成的骨架，核心是 BackgroundService
+public class Worker(ILogger<Worker> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            logger.LogInformation("worker running at {Time}", DateTimeOffset.Now);
+            await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+        }
+    }
+}
+// Program.cs: builder.Services.AddHostedService<Worker>(); builder.Build().RunAsync();
+```
+
+循环 + `stoppingToken` 是全部框架：宿主启动时调 `ExecuteAsync`，关闭时取消 token。发布成 Windows 服务/系统守护进程只差一行 `builder.Services.AddWindowsService()`（或 `AddSystemd()`）——老教材里专章讲的"Windows 服务程序"，如今是 `dotnet new worker` + 一个 NuGet 包的事。
+
+## 7. 坑位清单
 
 1. **路由顺序**：具体的在前、带参数/通配的在后——`/api/users/me` 若注册在 `/api/users/{id}` 之后，"me" 会被 {id} 捕获（幸有 `:int` 约束兜底，但依赖约束不如排对顺序）。
 2. **返回匿名对象 vs record**：`Results.Ok(new {message = "deleted", id})` 应急可以，正式契约用 record——字段名拼写错误在编译期就暴露。
