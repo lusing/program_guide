@@ -4,11 +4,11 @@
 
 | 平台 | SML/NJ | Poly/ML | MLton |
 |---|---|---|---|
-| macOS | MacPorts `smlnj` | MacPorts `polyml` | 官方二进制（或 `brew install mlton`） |
+| macOS | MacPorts `smlnj` | MacPorts `polyml` | MacPorts `mlton`（或官方二进制 / `brew install mlton`） |
 | Arch Linux | `pacman -S smlnj` | `pacman -S polyml` | `pacman -S mlton` |
 | Debian / Ubuntu | `apt install smlnj` | `apt install polyml` | `apt install mlton` |
 
-版本以本书实测为准：SML/NJ 110.99.9、Poly/ML 5.9.2、MLton 20241230。三套都进了 PATH 之后，`run-all.sh` 会自动找到它们（也可以用环境变量 `SML` / `POLY` / `MLTON` 显式指定）。
+版本以本书实测为准：SML/NJ 110.99.9、Poly/ML 5.9.2、MLton 20241230（Arch）/ 20240519（MacPorts）——两个 MLton 版本下全量验证结果分布相同。三套都进了 PATH 之后，`run-all.sh` 会自动找到它们（也可以用环境变量 `SML` / `POLY` / `MLTON` 显式指定；MacPorts 的安装路径 `/opt/local/bin` 脚本已经内置为回退项）。
 
 Linux 上有一个发行版相关的坑（Arch 的 `smlnj` 包）：`exportML` 会因为打包机残留路径而失败，`run-all.sh` 会自动修复（见 2.2 节和坑 38）。
 
@@ -149,7 +149,7 @@ export PATH
 
 `awk` / `tr` / `cmp` / `diff` / `sort` / `od` 不在 shim 列表里，本来就能放心用。
 
-Linux 机器上没有这组 shim，这个坑是**编写机特有的**；但把 PATH 钉死在 `/usr/bin:/bin` 前面在所有平台都无害，`run-all.sh` 照例保留。
+Linux 机器上没有这组 shim，这个坑是**编写机特有的**；换一台 macOS 也不一定复现（macOS 14.8.9 + 普通 shell 实测 `command -v grep` 直接给 `/usr/bin/grep`，没有 shim）。但把 PATH 钉死在 `/usr/bin:/bin` 前面在所有平台都无害，`run-all.sh` 照例保留。
 
 ## 2.5 第四个坑：Poly/ML 会等标准输入
 

@@ -152,23 +152,24 @@ fun fibs () : int stream =
 Harper 第 15 章的写法基于 SML/NJ 私有扩展：
 
 ```sml
-Compiler.Control.lazysml := true;
-open Lazy;
+Control.lazysml := true;      (* 110.99.9 实测：写老手册上的 Compiler.Control.lazysml
+                                 会报 unbound structure: Control in path ... *)
+open Lazy;                     (* 只带进 datatype 'a susp = $ of 'a，没有 force 函数 *)
 
 datatype lazy 'a stream = Cons of 'a * 'a stream   (* 没有基础情形！ *)
 val rec lazy ones = Cons (1, ones)                  (* 循环流 *)
 ```
 
-第 31.3 节揭示了它展开成什么：`datatype lazy 'a stream` 其实是
+第 31.3 节揭示了它展开成什么。上面那行 `datatype lazy` 在 110.99.9 上的实际回显是：
 
-```sml
-datatype 'a stream! = Cons of 'a * 'a stream
-withtype 'a stream = 'a stream! Susp.susp
+```
+datatype 'a stream! = Cons of 'a * 'a stream! susp
+type 'a stream = 'a stream! susp
 ```
 
-——**流的类型本身就是「流值的挂起」**。构造 `Cons e` 自动 `delay`，模式匹配自动 `force`。`val rec lazy` 则让递归值的打结由编译器完成。
+——**流的类型本身就是「流值的挂起」**。构造 `Cons e` 自动 `delay`，模式匹配自动 `force`（强制是**用 `$` 解模式**，不是调函数；实测 `Susp.force` / `Lazy.force` 都是 unbound）。`val rec lazy` 则让递归值的打结由编译器完成。
 
-问题：Poly/ML 没有这个扩展，MLton 要 `-default-ann` 开编译开关且语义有差异。本目录要求三通道逐字节一致，所以全部示例用 25.2–25.3 的可移植写法（datatype + ref + 显式 delay/force）。`val rec lazy ones` 的可移植替代（ref 占位 + 回填）在第 26 章实录。
+问题：Poly/ML 完全没有这个扩展（实测 `error: Value or constructor (lazy) has not been declared`），MLton 也没有（20240519 实测 `Undefined variable: lazy`，连 `-default-ann 'allowSuccessorML true'` 都救不回来——它只开了 Successor ML 的一部分）。本目录要求三通道逐字节一致，所以全部示例用 25.2–25.3 的可移植写法（datatype + ref + 显式 delay/force）。`val rec lazy ones` 的可移植替代（ref 占位 + 回填）在第 26 章实录。
 
 ## 25.9 本章小结
 

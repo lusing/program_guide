@@ -85,7 +85,7 @@ mlton                              # MLton 20241230
 
 > Linux（Arch）的发行版 `smlnj` 包有打包 bug：`exportML`（静音堆必需）按打包机残留路径 `openIn` 直接崩。`run-all.sh` 检测到后自动建符号链接修复（需要 root 写 `/build`；无权限时打印手动修复命令）。详见坑 38。
 
-> macOS 也实测过（MacPorts 的 SML/NJ、Poly/ML + 官方 MLton 二进制）：结果与 WSL/Linux 一致，脚本自动挂钩 MacPorts 的 GMP。
+> macOS 也实测过（12.7 与 14.8.9 两台都是 x86_64，见「当前状态」）：结果与 WSL/Linux 一致，脚本自动挂钩 MacPorts 的 GMP（`/opt/local/include`、`/opt/local/lib`）。装官方 MLton 二进制时，如果它是给更高版本 macOS 编的，链接阶段会刷一大片 ld 版本警告，脚本按行过滤掉（见第 33 章 33.1 节）；MacPorts 的 `mlton` 与系统配套，没有这类警告。
 
 ## 构建与验证
 
@@ -197,9 +197,12 @@ val _ = say "==== 22 \231\187\147\230\157\159 ===="   (* 结束 *)
 29 个示例 × 3 条通道 = **87 项全部通过**，0 项意外输出差异。已实测环境：
 
 - **Windows 11 + WSL2（Arch，内核 6.18，x86_64）**：SML/NJ 110.99.9 / Poly/ML 5.9.2 / MLton 20241230（均为发行版包）。首次运行自动修复 Arch `smlnj` 包的 `exportML` 打包 bug（坑 38）。
-- **macOS 12.7 x86_64**：SML/NJ 110.99.9（MacPorts）/ Poly/ML 5.9.2（MacPorts）/ MLton 20241230（官方二进制）。
+- **macOS 12.7 x86_64**：SML/NJ 110.99.9（MacPorts）/ Poly/ML 5.9.2（MacPorts）/ MLton 20241230（官方二进制，与系统版本不匹配 → 每次链接刷 ld 版本警告，脚本过滤）。
+- **macOS 14.8.9 x86_64（bash 3.2.57 / Python 3.9.6）**：SML/NJ 110.99.9 / Poly/ML 5.9.2 / MLton 20240519，全部来自 MacPorts。`./run-all.sh` 与 `pwsh ./build.ps1 -All` **两个入口分别跑过一遍**，结果与 WSL/Linux 一致：27 个 `[same]` + 2 个登记在案的 `[diff]`（`02-types`、`18-numeric`），0 失败、0 意外差异，退出码 0。静音堆后缀为 `quiet.amd64-darwin`。
 
 `run-all.sh` 与 `build.ps1 -All`（经 WSL）结果一致：27 个示例报 `[same]`，2 个报 `[diff] 已知差异`（`02-types`、`18-numeric`，原因见上表）。
+
+**未覆盖**：Apple Silicon（arm64）——上面三套环境都是 x86_64。脚本对工具路径与堆后缀都是运行时探测（`sml @SMLsuffix`），arm64 上大概率是 `arm64-darwin` 与 Homebrew 路径，用 `SML` / `POLY` / `MLTON` 环境变量显式指定即可。
 
 教程正文拆分为 `docs/` 下 33 个分章文档：第 1–24 章对应 22 个基础示例逐章讲解，第 25–31 章是按两本书扩充的书本篇进阶（对应示例 23–29），第 32 章是 47 条坑的清单，第 33 章是三实现差异清单与 30 条可移植写法手册。
 

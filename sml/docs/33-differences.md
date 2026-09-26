@@ -14,7 +14,7 @@
 |---|---|---|---|
 | 主 | **SML/NJ** | 110.99.9 | 生态最全、报错友好、编译最快；macOS 在 `/opt/local/bin/sml`，Linux 在 `/usr/lib/smlnj/bin/sml`（PATH 里有 `sml` 即可） |
 | 对照 | **Poly/ML** | 5.9.2 | 报错文本与 SML/NJ 完全不同，能暴露方言依赖；macOS 在 `/opt/local/bin/poly`，Linux 在 `/usr/bin/poly` |
-| 最严 | **MLton** | 20241230 | 整体优化编译器，标准符合性最好，也最挑剔 |
+| 最严 | **MLton** | 20241230（Arch 包）/ 20240519（MacPorts 包） | 整体优化编译器，标准符合性最好，也最挑剔。两个版本各跑过一遍全量验证，**结果分布完全相同**：27 个示例三通道 [same]，2 个登记在案的 [diff] |
 
 **运行方式各不相同**（`quiet.<后缀>` 的后缀取 `sml @SMLsuffix`：macOS 是 `amd64-darwin`，Linux 是 `amd64-linux`）：
 
@@ -32,14 +32,14 @@ mlton -output 19-parsing 19-parsing.sml && ./19-parsing
 **四个「必须记得」的调用细节：**
 
 1. **SML/NJ 必须配静音堆**（见 33.6），否则顶层回显会污染 stdout。
-2. **Poly/ML 必须加 `</dev/null`**。它的选项解析出错时会**回退到读 stdin**，然后**挂在那儿等输入**（实测被 SIGTERM 杀掉，退出码 137）。`poly --version` 不加重定向都会挂。
-3. **macOS 上，MLton 编译时会刷 ld 警告**。本机的 MLton 二进制是给 macOS 13 编的，系统是 12.7，所以每次链接都有约 169 行：
+2. **Poly/ML 必须加 `</dev/null`**。它的选项解析出错时会**回退到读 stdin**，然后**挂在那儿等输入**（macOS 实测：stdin 不关闭时 `poly --version` 只打印版本号就阻塞，被超时信号杀掉才退出，退出码 = 128+信号，如 SIGALRM 是 142）。`poly --version` 不加重定向都会挂。
+3. **macOS 上，MLton 编译时*可能*刷 ld 警告——取决于装的是哪个二进制**。官方发布的二进制常是给更高版本 macOS 编的：在 macOS 12.7 上跑「为 13.0 编」的那份，每次链接有约 169 行：
 
    ```
    ld: warning: object file (...) was built for newer macOS version (13.0) than being linked (12.7)
    ```
 
-   退出码是 **0**，警告在 **stderr**。验证脚本会把这类行过滤掉（`grep -v 'was built for newer macOS'`），并且**编译成功就删掉日志文件**，否则 `build/` 会被撑爆。**Linux 上无此问题**（发行版包与系统配套）。
+   退出码是 **0**，警告在 **stderr**。验证脚本会把这类行过滤掉（`grep -v 'was built for newer macOS'`），并且**编译成功就删掉日志文件**，否则 `build/` 会被撑爆。**MacPorts 自己编的 mlton 与系统配套，实测一行警告都没有**（macOS 14.8.9 + MacPorts 20240519）——过滤逻辑留着对两种安装方式都无害。**Linux 上也无此问题**（发行版包与系统配套）。
 4. **Linux（Arch）上，SML/NJ 的 `exportML` 会被打包 bug 绊倒**（坑 38：openIn 一个不存在的 `/build/...` 路径）。`run-all.sh` 会自动建符号链接修复；手工搭环境时照坑 38 的修法处理。
 
 **三条通道的输出逐字节比对。** 比对的不是「看起来一样」，是 `cmp` 级别的完全相同。

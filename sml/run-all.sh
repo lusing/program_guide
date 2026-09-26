@@ -4,12 +4,13 @@
 #
 #  通道1 ★ SML/NJ 110.99.9   （解释执行；先构建一个「静音堆」）
 #  通道2   Poly/ML 5.9.2     （poly -q --script）
-#  通道3   MLton 20241230    （整体优化编译器，标准符合性最严；可选）
+#  通道3   MLton 20240519/20241230（整体优化编译器，标准符合性最严；可选）
 #
-#  已在 macOS（MacPorts/官方二进制）与 Linux（发行版包，如 Arch 的
-#  smlnj/polyml/mlton）上实测通过；工具按 环境变量 → 常见安装路径 → PATH
-#  三级回退解析。Linux 上 Arch 系 smlnj 包的「打包路径」bug 会自动修复
-#  （见 build_quiet_heap）。
+#  已在 macOS 12.7 / 14.8.9（MacPorts，堆后缀 amd64-darwin）与 Linux
+#  （发行版包，如 Arch 的 smlnj/polyml/mlton）上实测通过；工具按
+#  环境变量 → 常见安装路径 → PATH 三级回退解析。Linux 上 Arch 系
+#  smlnj 包的「打包路径」bug 会自动修复（见 build_quiet_heap）。
+#  bash 3.2（macOS 自带）与 Python 3.9 下均可运行。
 #
 #  用法：
 #    ./run-all.sh            跑全部示例
@@ -61,8 +62,10 @@ resolve_tool() {
     printf ''
 }
 
-# MLton 官方 macOS 二进制：托管目录下的固定名字，找不到就跳过该通道
-MLTON_GLOB="/Users/xulun/.workbuddy/binaries/mlton/*/bin/mlton"
+# MLton 官方 macOS 二进制：托管目录下的固定名字，找不到就跳过该通道。
+# 用 $HOME 而不是写死的用户名；这个目录不存在时（如 MLton 来自 MacPorts）
+# 会自然落到后面的 /opt/local/bin/mlton 与 PATH 回退。
+MLTON_GLOB="${HOME:-}/.workbuddy/binaries/mlton/*/bin/mlton"
 
 SML=$(resolve_tool "${SML:-}" /opt/local/bin/sml sml)
 POLY=$(resolve_tool "${POLY:-}" /opt/local/bin/poly poly)
@@ -209,8 +212,9 @@ run_mlton() {   # $1 = 相对 build/ 的源路径, $2 = stdout 路径, $3 = stde
         : > "$out"
         return 1
     fi
-    # 编译成功就不留日志了：本机的 MLton 二进制是给 macOS 13 编的，
-    # 每次链接都会刷几十 KB 的 ld 版本警告，留着只会把 build/ 撑大。
+    # 编译成功就不留日志了：官方 macOS 二进制可能是给更高版本系统编的
+    # （实测 macOS 12.7 + 为 13.0 编的二进制每次链接刷几十 KB 的 ld 版本警告），
+    # 留着只会把 build/ 撑大。MacPorts/发行版包与系统配套时没有这类警告。
     [ "$VERBOSE" -eq 1 ] || rm -f "$wextra"
     ( cd "$BUILD" && "./$bin" >"$out" 2>"$err" )
 }

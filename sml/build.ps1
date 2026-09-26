@@ -56,7 +56,7 @@ if ($env:OS -eq "Windows_NT" -and ($All -or $File) -and
 #
 #  通道1 ★ SML/NJ 110.99.9   （解释执行；先构建一个「静音堆」）
 #  通道2   Poly/ML 5.9.2     （poly -q --script）
-#  通道3   MLton 20241230    （整体优化编译器，标准符合性最严；可选）
+#  通道3   MLton 20240519/20241230（整体优化编译器，标准符合性最严；可选）
 #
 #  判定标准（五条，缺一不可）：
 #    1) 退出码为 0
@@ -394,8 +394,9 @@ function Invoke-Mlton {
         Write-TextFile $OutFile ""
         return @{ ExitCode = 1; TimedOut = $false }
     }
-    # 编译成功就不留日志：本机 MLton 是给 macOS 13 编的，
-    # 每次链接都刷几十 KB 的 ld 版本警告，留着只会撑大 build/
+    # 编译成功就不留日志：官方 macOS 二进制可能是给更高版本系统编的
+    # （macOS 12.7 + 为 13.0 编的那份，每次链接刷几十 KB 的 ld 版本警告），
+    # 留着只会撑大 build/。MacPorts/发行版包与系统配套时没有这类警告。
     if (-not $Verbose) {
         Remove-Item -LiteralPath $compileOut -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $compileErr -Force -ErrorAction SilentlyContinue
