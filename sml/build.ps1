@@ -8,8 +8,51 @@ param(
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $projectRoot
 
+# ---------------------------------------------------------------
+# Windows 分支：SML 工具链（smlnj / polyml / mlton）装在 WSL 里。
+# 本地 PATH 上没有 sml 时，把整件事委托给 wsl + run-all.sh——
+# 那是与本脚本等价的三通道验证实现（判定五条完全一致）。
+# wsl.exe 的 NAT 提示噪音（"wsl: 检测到 localhost 代理..."）
+# 会混进 stdout，按行过滤掉，退出码原样透传。
+# ---------------------------------------------------------------
+if ($env:OS -eq "Windows_NT" -and ($All -or $File) -and
+    -not (Get-Command sml -ErrorAction SilentlyContinue)) {
+
+    function Convert-ToLinuxPath {
+        param([Parameter(Mandatory = $true)][string]$WinPath)
+        $full = [System.IO.Path]::GetFullPath($WinPath)
+        if ($full -match '^([A-Za-z]):[\\/](.*)$') {
+            return ("/mnt/{0}/{1}" -f $Matches[1].ToLower(), ($Matches[2] -replace '\\', '/'))
+        }
+        throw "无法把路径翻译成 WSL 路径: $WinPath"
+    }
+
+    # -File 收编号或文件名，都归一成编号（run-all.sh 只认编号）
+    if ($File) {
+        if ($File -match '^([0-9]+)') { $sel = $Matches[1] }
+        else { throw "无法从 -File '$File' 里解析出示例编号。" }
+    } else { $sel = "" }
+
+    $shArgs = @()
+    if ($Verbose) { $shArgs += "-v" }
+    if ($sel) { $shArgs += $sel }
+
+    $linuxRoot = Convert-ToLinuxPath $projectRoot
+    $cmd = "cd '{0}' && bash run-all.sh {1}" -f $linuxRoot, ($shArgs -join " ")
+
+    [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+    $env:WSL_UTF8 = "1"
+    & wsl -e bash -lc $cmd 2>&1 |
+        Where-Object { "$_" -notmatch '^wsl:' } |
+        ForEach-Object { Write-Host "$_" }
+    exit $LASTEXITCODE
+}
+
 # ===============================================================
 # StandardML 教程 —— 三通道全量验证（PowerShell 版，与 run-all.sh 等价）
+#
+#  在 Windows 上没有本地 SML 工具链时自动委托 wsl 跑 run-all.sh
+#  （见文件开头的「Windows 分支」）；WSL/Linux/macOS 上原生执行。
 #
 #  通道1 ★ SML/NJ 110.99.9   （解释执行；先构建一个「静音堆」）
 #  通道2   Poly/ML 5.9.2     （poly -q --script）

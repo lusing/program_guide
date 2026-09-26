@@ -2,3 +2,5 @@
 # gforth 的 .fs 源码同理（CRLF 会把 \r 混进 token）。
 *.sh text eol=lf
 forth/**/*.fs text eol=lf
+# SML 源码在 WSL 里跑三套编译器：CRLF 会混进注释/字符串比较，统一 LF。
+sml/examples/*.sml text eol=lf
