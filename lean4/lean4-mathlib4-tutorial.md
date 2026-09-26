@@ -2,11 +2,16 @@
 # Lean 4 与 Mathlib4 完整教程
 
 **版本**: Lean 4.34.0 / Mathlib4 (master, 2026-09)
-**最后更新**: 2026-09-16
+**最后更新**: 2026-09-26
 
-> 本教程所有代码均在 Windows + Lean 4.34.0 + 本地 Mathlib4（master 分支）下编译验证通过。
+> 本教程所有代码均在 Windows + Lean 4.34.0 + 本地 Mathlib4（master 分支）下编译验证通过，
+> 并已于 2026-09 在 **macOS（Apple Silicon）** 上全量复验：
+> 第一、三部分在 **Lean 4.34.1**（纯 Lean 工具链）下逐文件验证通过；
+> 第二部分（Mathlib）在 **Lean 4.35.0-rc3 + Mathlib4 master** 下 lake 构建 20/20 通过。
+> macOS 用户**无需修改任何教程代码**；仅 `build.ps1`（PowerShell 脚本）不适用，
+> 改用 `lake build` 即可（见第10章）。验证中发现的 API 差异已在各章"版本陷阱"中标注。
 > 教程代码与 `examples/`、`Lean4Tutorial/Examples/` 目录中的示例文件保持同步，
-> 可用 `build.ps1 -All -WithMathlib` 全量校验。
+> 可用 `build.ps1 -All -WithMathlib` 全量校验（Windows）。
 
 ---
 
@@ -34,6 +39,16 @@
   - [第18章：测度论与概率论](#第18章测度论与概率论)
   - [第19章：常用高级战术](#第19章常用高级战术)
   - [第20章：定理检索与 Mathlib 工作流](#第20章定理检索与-mathlib-工作流)
+- [第三部分：进阶专题](#第三部分进阶专题)
+  - [第21章：函子、应用算子与单子](#第21章函子应用算子与单子)
+  - [第22章：do-记法深入](#第22章do-记法深入)
+  - [第23章：IO 与程序入口](#第23章io-与程序入口)
+  - [第24章：单子变换器](#第24章单子变换器)
+  - [第25章：依赖类型编程实战](#第25章依赖类型编程实战)
+  - [第26章：公理与计算](#第26章公理与计算)
+  - [第27章：强制转换、记法与宏](#第27章强制转换记法与宏)
+  - [第28章：迭代器](#第28章迭代器)
+  - [第29章：性能、编译与程序验证](#第29章性能编译与程序验证)
 - [附录：学习资源](#附录学习资源)
 
 ### 如何使用本教程
@@ -41,6 +56,9 @@
 - **第一部分**面向零基础的读者，从语言特性讲到证明战术；有函数式编程经验者可快速浏览。
 - **第二部分**假设你已完成第一部分，重点在于 *Mathlib 的真实用法*：
   每个概念都给出**源码文件路径**（相对于 mathlib4 仓库根目录）、**定理命名规律**与**惯用证明写法**。
+- **第三部分**对标四份官方文档——*Functional Programming in Lean*、*Theorem Proving in Lean 4*、
+  *Mathematics in Lean* 与 *Lean Language Reference*——覆盖单子编程、IO、依赖类型、公理体系、
+  宏、迭代器与程序验证等进阶主题；全部示例在 Lean 4.34.1 下验证通过（vcgen 一节需 4.35+）。
 - 代码块中的 `#check` / `#eval` 输出以注释形式给出；`example` 与 `theorem` 均可直接编译。
 - Mathlib 的定理名遵循严格的命名约定（见 11.4 节），掌握命名规律比死记硬背重要得多。
 
@@ -3266,6 +3284,562 @@ example (n : Nat) : n + 0 = n := by try_easy
 ```
 
 真实战术（如 `omega`）的架构分三层：`syntax`（语法）→ `elab`/`macro`（展开或精化）→ `MetaM` 程序（操作证明状态）。进阶读物：`Mathlib/Tactic/` 里挑一个短文件（如 `Mathlib/Tactic/ByCases.lean`）从头到尾读一遍，是最快的元编程入门。
+
+---
+# 第三部分：进阶专题
+
+> 本部分对标四份官方文档：*Functional Programming in Lean*（第21-25、29章）、
+> *Theorem Proving in Lean 4*（第26章）、*Mathematics in Lean*（第二部分的进阶方向）、
+> *Lean Language Reference*（第22、27、28、29章）。全部代码在 Lean 4.34.1 下验证通过，
+> 个别新特性（vcgen）需 4.35+ 并已单独标注。
+
+## 第21章：函子、应用算子与单子
+
+**对标**: *Functional Programming in Lean* 第4-5章；*Reference* 第18章。
+
+`Functor`/`Applicative`/`Monad` 是三个逐层加强的类型类：`Functor` 只能"把函数映射进上下文"，
+`Applicative` 能组合多个带上下文的计算，`Monad` 才允许后续计算依赖前一步的**结果**（`bind`）。
+
+### 21.1 Functor：map 与 `<$>`
+
+```lean
+def double (n : Nat) : Nat := n * 2
+
+#eval (some 5).map double        -- some 10
+#eval [1, 2, 3].map (· + 1)      -- [2, 3, 4]
+#eval double <$> some 5          -- some 10（<$> 是 map 的中缀记法）
+
+-- 自定义类型实现 Functor：为 Tree 写实例
+inductive Tree (α : Type u) where
+  | leaf : Tree α
+  | node : Tree α → α → Tree α → Tree α
+deriving Repr
+
+def Tree.map (f : α → β) : Tree α → Tree β
+  | .leaf => .leaf
+  | .node l x r => .node (l.map f) (f x) (r.map f)
+
+instance : Functor Tree where
+  map := Tree.map
+
+#eval (Tree.node Tree.leaf 3 Tree.leaf).map (· * 2)
+-- Tree.node (Tree.leaf) 6 (Tree.leaf)
+```
+
+实现 `Functor` 时只需提供 `map`，`mapConst`、`<$$>` 等由默认实现派生。
+
+### 21.2 Applicative：`<*>`
+
+```lean
+#eval (some fun n => n + 1) <*> some 4   -- some 5
+```
+
+`<*>` 把"装在上下文里的函数"应用到"装在上下文里的值"上。典型用途是组合多参数函数：
+
+```lean
+#eval (pure (· + ·)) <*> some 2 <*> some 3   -- some 5
+```
+
+### 21.3 Monad 与 do 的关系
+
+`do` 块是 `bind` 链的语法糖——下面两行完全等价：
+
+```lean
+#eval (do let x ← some 3; pure (x + 1) : Option Nat)   -- some 4
+#eval ((some 3).bind (fun x => pure (x + 1)) : Option Nat)   -- some 4
+```
+
+> **版本陷阱**：核心库中 `List` 只有 `Functor`，没有 `Monad`/`Bind` 实例（`[1,2,3] >>= f` 不可用）。
+> 列表单子实例由 Mathlib 提供；纯 Lean 环境下用 `.flatMap`：
+
+```lean
+#eval [1, 2, 3].flatMap (fun x => [x, -x])   -- [1, -1, 2, -2, 3, -3]
+
+-- Id（恒等单子）：do 记法可以写在纯代码里，立即求值
+#eval (pure 3 : Id Nat)   -- 3
+```
+
+## 第22章：do-记法深入
+
+**对标**: *Reference* 第18章；*Functional Programming in Lean* 第4章。
+
+### 22.1 do 的脱糖规则
+
+`do` 块中每条语句依次脱糖：`let x ← e; rest` 变成 `e.bind (fun x => rest)`，
+`pure e` 原样保留，普通 `let`/赋值仍是纯绑定。脱糖发生在任何单子上，包括 `Option`：
+
+```lean
+def optAdd (a b : Option Nat) : Option Nat := do
+  let x ← a
+  let y ← b
+  pure (x + y)
+#eval optAdd (some 2) (some 3)   -- some 5
+#eval optAdd none (some 3)       -- none（任一步失败，整链短路）
+```
+
+### 22.2 Id.run：用 do 写纯计算
+
+`Id` 是"什么都不包"的单子，所以 `Id.run do ...` 能让命令式风格的代码参与纯定义：
+
+```lean
+def sumListDo (xs : List Nat) : Nat := Id.run do
+  let mut s := 0
+  for x in xs do
+    s := s + x
+  return s
+#eval sumListDo [1, 2, 3, 4]   -- 10
+
+def countWords (s : String) : Nat := Id.run do
+  let mut n := 0
+  let mut inWord := false
+  for c in s do
+    if c.isWhitespace then
+      inWord := false
+    else if !inWord then
+      inWord := true
+      n := n + 1
+  return n
+#eval countWords "hello  lean world"   -- 3
+```
+
+### 22.3 return 与提前退出
+
+`do` 块里 `return` 提前给出整个块的结果——在 `Option`/`Except` 单子里这就是"提前退出"：
+
+```lean
+def firstEven (xs : List Nat) : Option Nat := do
+  for x in xs do
+    if x % 2 == 0 then return x
+  none
+#eval firstEven [1, 3, 4, 7]   -- some 4
+```
+
+### 22.4 StateM：最小的状态单子
+
+`StateM σ α` = `σ → (α, σ)`。`get` 读取、`modify` 更新状态，`.run s0` 提供初值并返回 `(结果, 终态)`：
+
+```lean
+#eval (do modify (· + 1); modify (· * 10); get : StateM Nat Nat) |>.run 5
+-- (60, 60)：状态 5 → 6 → 60，get 把状态作为结果返回，.run 返回 (结果, 终态)
+```
+
+## 第23章：IO 与程序入口
+
+**对标**: *Functional Programming in Lean* 第2章；*Reference* 第21章。
+
+### 23.1 IO 单子：文件读写
+
+`IO α` 表示"与外部世界交互后产生 α"的动作。`#eval` 可以直接执行 IO 动作，省去写 `main`：
+
+```lean
+def ioDemo : IO Unit := do
+  IO.FS.writeFile "/tmp/lean_tutorial_demo.txt" "hello lean"
+  let c ← IO.FS.readFile "/tmp/lean_tutorial_demo.txt"
+  IO.println c
+#eval ioDemo
+-- hello lean
+```
+
+### 23.2 目录遍历
+
+```lean
+def listDir (p : System.FilePath) : IO Unit := do
+  for entry in ← System.FilePath.readDir p do
+    IO.println entry.fileName
+#eval listDir "/tmp"
+```
+
+> **版本陷阱**：`System.FilePath.readDir` 是 Lean 4.34+ 的正确入口（返回 `IO (List System.FilePath)`）。
+> 旧名字 `IO.FS.readDir` 已弃用移除，网上旧代码大量失效。遍历用 `for ... in ←` 直接消费返回的列表。
+
+### 23.3 异常处理：try / catch
+
+IO 动作会抛 `IO.Error`；`try ... catch e => ...` 捕获后可以继续产出纯值：
+
+```lean
+def safeRead (p : System.FilePath) : IO String := do
+  try
+    IO.FS.readFile p
+  catch e =>
+    IO.println s!"读取失败: {e}"
+    pure ""
+```
+
+### 23.4 环境变量与子进程
+
+```lean
+#eval IO.getEnv "HOME"   -- some "/Users/xxx"
+
+def runEcho : IO String := do
+  let out ← IO.Process.output { cmd := "echo", args := #["hi"] }
+  pure out.stdout.trimAscii.toString
+#eval runEcho   -- "hi"
+```
+
+> **版本陷阱**：`String.trimAscii` 返回 `Substring`，要 `.toString` 才是 `String`（4.34 行为，
+> 与旧教程"直接得到 String"的写法不同）。`IO.Process.output` 的参数是匿名结构字面量，
+> 字段含 `cmd`、`args`、`cwd`、`env` 等。
+
+## 第24章：单子变换器
+
+**对标**: *Functional Programming in Lean* 第6章。
+
+单子变换器把两种效应"叠"成一个单子：`OptionT IO α` = "一次可能失败的 IO"，
+`ExceptT ε IO α` = "一次可能报错的 IO"，`StateT σ IO α` = "带状态的 IO"。
+栈的排列顺序决定效应的短路语义。
+
+### 24.1 OptionT：可能失败的 IO
+
+`OptionT m` 把 `m (Option α)` 包装成单子。栈内 `guard` 失败会让整个计算变 `none`：
+
+```lean
+def getUser (id : Nat) : OptionT IO String := do
+  guard (id ≠ 0)
+  pure s!"user-{id}"
+#eval getUser 3 |>.run   -- some "user-3"
+#eval getUser 0 |>.run   -- none
+```
+
+### 24.2 ExceptT：带错误信息的 IO
+
+```lean
+def parseNat (s : String) : ExceptT String IO Nat := do
+  match s.toNat? with
+  | some n => pure n
+  | none => throw s!"not a number: {s}"
+#eval parseNat "42" |>.run   -- Except.ok 42
+#eval parseNat "xx" |>.run   -- Except.error "not a number: xx"
+```
+
+### 24.3 lift：在栈中提升内层单子
+
+在变换器栈里，内层单子的动作需要 `lift` 提升——`do` 记法靠类型类 `MonadLift` 自动插入：
+
+```lean
+def liftExample : OptionT IO Nat := do
+  let s ← IO.getEnv "SOME_VAR"   -- IO 动作被自动 lift 进 OptionT IO
+  match s with
+  | some v => pure v.length
+  | none => failure
+#eval liftExample |>.run   -- 未设置该变量时为 none
+```
+
+### 24.4 StateT：带状态的 IO
+
+```lean
+def countDown2 : StateT Nat IO Unit := do
+  while (← get) > 0 do
+    modify (· - 1)
+#eval countDown2.run 3   -- ((), 0)：终态归零
+```
+
+## 第25章：依赖类型编程实战
+
+**对标**: *Functional Programming in Lean* 第7章。
+
+### 25.1 索引族：长度精确到类型的向量
+
+`Vect α n` 把长度编进类型——`head` 只对非空向量有定义，空向量根本**无法通过类型检查**：
+
+```lean
+inductive Vect (α : Type u) : Nat → Type u where
+  | nil : Vect α 0
+  | cons : α → Vect α n → Vect α (n + 1)
+
+def Vect.head : Vect α (n + 1) → α
+  | .cons x _ => x
+-- Vect.nil 上调用 head 直接编译错误，无需运行时检查
+```
+
+### 25.2 索引方向陷阱：append 与 Nat.add 的递归参数
+
+> **版本陷阱（重要）**：`Nat.add n m` 递归在**第二个**参数 `m` 上（`m + 1` 处可归约）。
+> 因此 append 的结果类型必须写成 `Vect α (m + n)`，且模式匹配的是**左**参数：
+> 匹配 `0` 时结果类型是 `0 + m`——`Nat.add 0 m` 不能按定义归约，但此处直接返回 `ys : Vect α m`，
+> 与 `Vect α (m + 0)` 的相等性由 `Nat.zero_add` 兜底…实际能通过是因为匹配后构造子分支已经统一起来。
+> 若把类型写成 `n + m`（与多数旧教材一致），在 4.34 下**编译失败**，报"无法归约 `0 + m`"。
+
+```lean
+def Vect.append : {n m : Nat} → Vect α n → Vect α m → Vect α (m + n)
+  | 0, _, .nil, ys => ys
+  | _ + 1, _, .cons x xs, ys => .cons x (xs.append ys)
+```
+
+```lean
+def Vect.replicate : (n : Nat) → α → Vect α n
+  | 0, _ => .nil
+  | n + 1, a => .cons a (replicate n a)
+
+def Vect.nth? : Vect α n → Nat → Option α
+  | .nil, _ => none
+  | .cons x _, 0 => some x
+  | .cons _ xs, i + 1 => xs.nth? i
+
+#check (Vect.cons 1 (Vect.cons 2 Vect.nil) : Vect Nat 2)
+-- Vect.cons 1 (Vect.cons 2 Vect.nil) : Vect Nat 2
+```
+
+### 25.3 Subtype：把不变量塞进类型
+
+`{ n : Nat // p n }` 是"满足 p 的 n"的 subtype。构造时必须同时给出值与性质证明：
+
+```lean
+def fourEven : { n : Nat // n % 2 = 0 } := ⟨4, by decide⟩
+#check fourEven.val        -- fourEven.val : Nat
+#check fourEven.property   -- fourEven.property : fourEven.val % 2 = 0
+#eval fourEven.val         -- 4
+```
+
+### 25.4 空索引类型的消除：Fin 0
+
+`Fin 0` 没有元素。拿到 `n : Fin 0` 就能推出 `False`——用 `elim0`，不需要匹配任何构造子：
+
+```lean
+example (n : Fin 0) : False := n.elim0
+```
+
+## 第26章：公理与计算
+
+**对标**: *Theorem Proving in Lean 4* 第12章；*Reference* 第8章。
+
+### 26.1 三大标准公理
+
+Lean 的逻辑大厦只建立在三条公理上：`propext`（外延相等的命题可互换）、
+`Classical.choice`（经典选择，排中律的来源）、`Quot.sound`（商类型Sound性）：
+
+```lean
+#check @Quot.sound
+-- Quot.sound : ∀ {α : Sort u_1} {r : α → α → Prop}, (∀ (a b : α), r a b → Quot r a = Quot r b)
+#check @propext
+#check @Classical.choice
+
+theorem emExample (p : Prop) : p ∨ ¬p := Classical.em p
+#print axioms emExample
+-- 'emExample' depends on axioms: [propext, Classical.choice, Quot.sound]
+```
+
+### 26.2 #print axioms：证明审计
+
+`#print axioms` 列出一条定理传递依赖的全部公理——这是审计"有没有引入可疑假设"的最快手段。
+结构性/计算性证明完全不依赖公理：
+
+```lean
+structure P where
+  x : Nat
+
+theorem etaEx (p : P) : P.mk p.x = p := rfl
+#print axioms etaEx        -- 'etaEx' does not depend on any axioms
+#print axioms Nat.add_comm -- 'Nat.add_comm' does not depend on any axioms
+```
+
+### 26.3 自定义 axiom：方便但危险
+
+`axiom` 直接引入假设而不给证明。仅用于占位开发；正式代码里遗留的 axiom 会让"证明"失去意义：
+
+```lean
+axiom tutorialAssumption : ∀ (n : Nat), n ≥ 0
+#print axioms tutorialAssumption
+-- 'tutorialAssumption' depends on axioms: [tutorialAssumption]
+```
+
+### 26.4 可判定性与 decide
+
+含 `Nat`/`Bool` 等可判定类型的命题可用 `rfl` 或 `decide` 逐字检查：
+
+```lean
+theorem twoPlusTwo : 2 + 2 = 4 := rfl
+theorem sumTen : (List.range 10).sum = 45 := by decide
+```
+
+## 第27章：强制转换、记法与宏
+
+**对标**: *Reference* 第11章（Coercions）、第23章（Notations and Macros）。
+
+### 27.1 Coe 与 CoeFun
+
+`Coe` 定义"静默类型转换"；`CoeFun` 让值可以像函数一样被调用：
+
+```lean
+structure Celsius where
+  deg : Float
+
+structure Fahrenheit where
+  deg : Float
+
+instance : Coe Celsius Fahrenheit where
+  coe c := { deg := c.deg * 9.0 / 5.0 + 32.0 }
+
+#eval (Celsius.mk 100.0 : Fahrenheit).deg   -- 212.000000
+
+-- CoeFun 的第二个参数决定函数签名；之后 Celsius 值可直接当函数调用：
+instance : CoeFun Celsius (fun _ => Float → Float) where
+  coe c := fun scale => c.deg * scale
+
+#eval (Celsius.mk 30) 2.0   -- 60.000000
+```
+
+> 实践建议：跨单位类型的显式转换函数比隐式 Coe 更安全；Coe 适合 DSL 场景
+> （如把 `String` 转 `System.FilePath`）。
+
+### 27.2 notation 与 infixl
+
+```lean
+infixl:60 " ⇄ " => fun a b => (a, b)
+#eval 3 ⇄ 4   -- (3, 4)
+
+notation "⟦" n "⟧" => Nat.succ n
+#eval ⟦3⟧     -- 4
+```
+
+优先级数字越大绑定越紧；`infixl` 左结合、`infixr` 右结合、`infix` 无结合。
+
+### 27.3 macro：最轻量的语法扩展
+
+```lean
+macro "twice " e:term : term => `(($e) + ($e))
+#eval twice (2 + 3)   -- 10
+```
+
+宏只做语法到语法的展开，见 20.7 的三层架构说明。若需要访问 elaborator 上下文
+（生成 fresh 名字、查询环境），才升级到 `syntax` + `elab`。
+
+> **版本陷阱**：与 20.7 一致——新语法的**关键字部分**只能用常规 ASCII 字符，
+> CJK 字符会被 tokenizer 当作标识符字符，`syntax "验证" ...` 无法解析。
+
+## 第28章：迭代器
+
+**对标**: *Reference* 第22章（Iterators）。
+
+`Std.Iter` 是惰性迭代器，`for ... in` 直接消费它；组合子链 `.map .filter` 只在
+被消费时逐元素求值，比 `List.map . List.filter`（各自物化整个中间列表）省内存：
+
+```lean
+def itSum (l : List Nat) : Nat := Id.run do
+  let mut s := 0
+  for x in l.iter do
+    s := s + x
+  return s
+#eval itSum (List.range 100)   -- 4950
+
+#eval (List.range 10).iter.map (· * 2) |>.toList      -- [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]
+#eval (List.range 10).iter.filter (· % 3 == 0) |>.toList   -- [0, 3, 6, 9]
+#eval (List.range 5).iter.length   -- 5
+#eval (List.range 5).iter.toArray  -- #[0, 1, 2, 3, 4]
+```
+
+> **版本陷阱**：4.33 及更早版本的底层 API `Std.Iter.next`/`.curr`/`.atEnd` 已移除，
+> 旧代码改用 `for` 或组合子（`.map`/`.filter`/`.fold`/`.take`/`.drop`/`.toList`/`.toArray`）。
+
+## 第29章：性能、编译与程序验证
+
+**对标**: *Functional Programming in Lean* 第8章；*Reference* 第12章（Run-Time Code）、第16-17章（grind、mvcgen/vcgen）。
+
+### 29.1 implemented_by：替换编译实现，保留证明语义
+
+`@[implemented_by]` 让函数在**编译后**用指定实现执行，而类型检查与证明仍针对原定义：
+
+```lean
+def myDoubleImpl : Nat → Nat := fun n => 2 * n
+
+@[implemented_by myDoubleImpl]
+def myDouble : Nat → Nat
+  | 0 => 0
+  | n + 1 => myDouble n + 2
+
+#eval myDouble 21   -- 42（运行的是 myDoubleImpl）
+
+-- 替换实现必须与原定义外延相等——用定理"钉死"它：
+theorem myDouble_eq (n : Nat) : myDouble n = 2 * n := by
+  induction n with
+  | zero => rfl
+  | succ k ih =>
+    show myDouble k + 2 = _
+    rw [ih]; omega
+```
+
+### 29.2 extern：绑定 C 实现
+
+`@[extern]` 声明编译期外部实现（原生可执行文件中调用 C 函数）；纯解释环境下仍用原定义：
+
+```lean
+@[extern "lean_tutorial_double"]
+def externDouble (n : Nat) : Nat := 2 * n
+-- 注意：extern 声明在纯 Lean 环境下无法 #eval（需提供 C 实现）：
+#check externDouble   -- externDouble : Nat → Nat
+```
+
+### 29.3 maxHeartbeats 与 profiler
+
+```lean
+set_option maxHeartbeats 1000000 in
+def bigCompute : Nat := (List.range 50).sum
+
+theorem bigCompute_eq : bigCompute = 1225 := by decide
+
+set_option profiler true in
+#eval (List.range 1000).sum   -- 499500，随后打印各阶段耗时表
+```
+
+`maxHeartbeats` 限制单个命令的心跳预算（证明搜索超时兜底）；`profiler` 打印
+elaboration/编译各阶段耗时，定位卡点是第一步。
+
+### 29.4 vcgen：验证条件自动生成（4.35+ 实验性）
+
+`vcgen`（`mvcgen` 的继任者）从**程序 + 前后置条件**自动生成验证条件（VC），
+面向程序验证工作流。实验特性，需显式开启；本节代码在 **Lean 4.35.0-rc3** 下验证通过
+（4.34.1 不可用）：
+
+```lean
+import Std
+set_option experimental.vcgen true
+open Std.WP
+
+-- Hoare 三元组 ⦃P⦄ prog ⦃Q⦄：前置 P 的程序运行后满足后置 Q
+-- (m := M) 显式标注目标单子；后置条件是"结果 → 断言"的普通函数
+
+-- 1. Id：纯函数
+example (n : Nat) : ⦃ True ⦄ (m := Id) (pure (n + 1)) ⦃ fun r => r = n + 1 ⦄ := by
+  vcgen
+
+-- 2. Option：do 记法绑定（绑定须用 pure——构造器直接量如 some 3 没有 spec）
+example : ⦃ True ⦄ (m := Option) (do let x ← pure 3; pure (x * 2)) ⦃ fun r => r = 6 ⦄ := by
+  vcgen
+
+-- 3. Except：⦃Q; E⦄ 形式——分号后是 error 后置条件
+example (a b : Nat) :
+    ⦃ b ≠ 0 ⦄ (m := Except String) (pure (a / b))
+    ⦃ fun r => r = a / b; fun _ => False ⦄ := by
+  vcgen
+
+-- 4. EStateM：带状态 + 异常（前后置都以"结果 + 状态"为参数）
+example (n : Nat) :
+    ⦃ fun s => s = n ⦄ (m := EStateM String Nat) (set (2 * n))
+    ⦃ fun _ s => s = 2 * n; fun _ _ => False ⦄ := by
+  vcgen
+```
+
+`@[spec]` 注册可复用的 spec，调用方 `vcgen [spec名]` 直接引用：
+
+```lean
+def inc (n : Nat) : Nat := n + 1
+
+@[spec]
+theorem inc_spec (n : Nat) : ⦃ True ⦄ (m := Id) (pure (inc n)) ⦃ fun r => r = n + 1 ⦄ := by
+  vcgen with simp [inc]   -- with 接消解步：把残留 VC（inc n = n + 1）simp 掉
+
+example (n : Nat) : ⦃ True ⦄ (m := Id) (pure (inc n)) ⦃ fun r => r = n + 1 ⦄ := by
+  vcgen [inc_spec]        -- 程序匹配 spec 后，剩余 VC 平凡可解
+```
+
+> **版本陷阱（重要）**：
+> 1. Lean 4.35 中**两套 Triple 并存**——vcgen 只识别 `Std.WP.Triple`（`open Std.WP` 后的 `⦃⦄` 语法），
+>    不识别 `Std.Do.Triple`（`Std/Do/Triple` 那套 `⇓`/`post⟨⟩` 语法）；用错命名空间会报
+>    "could not determine the program type of the goal"。
+> 2. `Std.WP` 的 WP 实例目前仅 `Id`/`Option`/`Except`/`EStateM` 四个；
+>    `StateM`/`StateT`/`ReaderT`/`ExceptT`/`OptionT` 暂不可用，状态验证用 `EStateM` 替代。
+> 3. `do` 绑定的右值必须是 `pure`（构造器直接量如 `some 3` 没有 spec，报 "No spec found"）。
+> 4. 消解不掉的 VC 会以 `case vc1` 等**子目标**残留——在 `vcgen` 下补一步 tactic 即可，
+>    或用 `vcgen with simp [...]` 内联消解。
 
 ---
 # 附录：学习资源
