@@ -1,0 +1,4 @@
+# 这些文件必须保持 LF：bash 脚本在 WSL/Linux 里跑（CRLF 会报 bash\r），
+# gforth 的 .fs 源码同理（CRLF 会把 \r 混进 token）。
+*.sh text eol=lf
+forth/**/*.fs text eol=lf
