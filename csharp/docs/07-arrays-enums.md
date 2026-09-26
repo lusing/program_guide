@@ -106,4 +106,4 @@ mine & ~Perms.Write                      // 去掉 Write
 4. **[Flags] 生效的真正条件？** —— 取值为 2 的幂（特性只管显示）。
 
 ---
-上一章：[06 字符串深度](06-strings.md) ｜ 下一章：[08 类与封装](08-classes.md)
+上一章：[06 字符串深度](06-strings.md) ｜ 下一章：[08 类与封装](08-classes.md) ｜ 返回：[README](../README.md)

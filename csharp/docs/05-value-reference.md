@@ -115,4 +115,4 @@ int unboxed = (int)boxed;       // 拆箱：显式强转取回（类型必须精
 4. **"值类型在栈上"的准确表述？** —— 值类型的值直接存在变量所在处：局部变量在栈，字段随对象在堆。
 
 ---
-上一章：[04 流程控制与方法](04-control-methods.md) ｜ 下一章：[06 字符串深度](06-strings.md)
+上一章：[04 流程控制与方法](04-control-methods.md) ｜ 下一章：[06 字符串深度](06-strings.md) ｜ 返回：[README](../README.md)

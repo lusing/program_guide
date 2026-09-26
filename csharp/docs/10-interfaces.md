@@ -151,4 +151,4 @@ class OrderService(IOrderRepository repo) { ... }        // 注入什么用什�
 4. **"双方依赖抽象"带来什么？** —— 实现可替换（测试替身）、模块解耦、并行开发。
 
 ---
-上一章：[09 继承与多态](09-inheritance.md) ｜ 下一章：[11 结构体与记录](11-records.md)
+上一章：[09 继承与多态](09-inheritance.md) ｜ 下一章：[11 结构体与记录](11-records.md) ｜ 返回：[README](../README.md)

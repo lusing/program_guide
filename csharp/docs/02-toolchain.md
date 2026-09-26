@@ -9,7 +9,7 @@
 
 本教程全程用命令行构建（不需要 Visual Studio）。五个命令覆盖 90% 日常：
 
-```powershell
+```bash
 dotnet new console -o MyApp    # 新建控制台工程（目录 MyApp）
 dotnet build                    # 编译（产物进 bin/Debug/net10.0）
 dotnet run                      # 编译 + 运行
@@ -17,14 +17,16 @@ dotnet run -- a b               # 同上，-- 之后是传给程序的参数
 dotnet publish                  # 发布（部署优化版，见 WPF 教程 24 章的完整展开）
 ```
 
-本教程的 `build.ps1` 把 36 个示例的构建/运行包成一条命令：
+本教程的 `build.ps1` 把 36 个示例的构建/运行包成一条命令（需 PowerShell 7 / `pwsh`，三平台通用）：
 
-```powershell
-cd G:\code\guide\csharp
-.\build.ps1 -All              # 编译全部
-.\build.ps1 -Run              # 编译 + 运行全部（每个示例输出讲解内容）
-.\build.ps1 -Project 06_strings   # 只构建/运行某一个
+```bash
+cd csharp
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All                    # 编译全部
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Run                    # 编译 + 运行全部（每个示例输出讲解内容）
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 06_strings     # 只构建/运行某一个
 ```
+
+> Windows PowerShell 下等价写法：`.\build.ps1 -All`（报"禁止运行脚本"就改用上面的 `pwsh -File` 形式）。脚本自动探测 PATH 中的 `dotnet`，也可用环境变量 `DOTNET_EXE` 指定。
 
 脚本把 36 个工程的产物集中到 `build/` 目录（避免示例目录里散落 obj/bin），并清扫游离产物——实现细节见脚本注释。
 
@@ -79,7 +81,7 @@ internal static class ClassicEntry
 
 参数通过 `args`（顶层语句直接可用 / Main 的形参）传入：
 
-```powershell
+```bash
 dotnet run -- --repl      # 程序收到 args = ["--repl"]
 ```
 
@@ -110,7 +112,7 @@ dotnet run -- --repl      # 程序收到 args = ["--repl"]
 ## 实战建议
 
 - 把 `build.ps1 -Run` 当"带讲解的教材"跑——先看输出再读代码，学习效率翻倍
-- 改示例立即 `.\build.ps1 -Project NN_name` 验证——反馈环越短学得越快
+- 改示例立即 `build.ps1 -Project NN_name` 验证——反馈环越短学得越快
 - 每个示例都开着编辑器对照读：代码是最终的事实，正文只是导游
 
 ## 自测
@@ -120,4 +122,4 @@ dotnet run -- --repl      # 程序收到 args = ["--repl"]
 3. **怎么给 dotnet run 传程序参数？** —— `dotnet run -- 参数`。
 
 ---
-上一章：[01 C# 与 .NET 全景](01-overview.md) ｜ 下一章：[03 变量、类型与运算符](03-variables-operators.md)
+上一章：[01 C# 与 .NET 全景](01-overview.md) ｜ 下一章：[03 变量、类型与运算符](03-variables-operators.md) ｜ 返回：[README](../README.md)

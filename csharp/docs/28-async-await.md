@@ -139,4 +139,4 @@ await foreach (var item in ProduceAsync())
 4. **"先启动再等"与顺序 await 的区别？** —— 并行（总时长=最慢）vs 串行（总时长=总和）。
 
 ---
-上一章：[27 unsafe 与互操作](27-unsafe-interop.md) ｜ 下一章：[29 Task 深度](29-tasks.md)
+上一章：[27 unsafe 与互操作](27-unsafe-interop.md) ｜ 下一章：[29 Task 深度](29-tasks.md) ｜ 返回：[README](../README.md)

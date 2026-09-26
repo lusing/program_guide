@@ -127,4 +127,4 @@ var fastJson = JsonSerializer.Serialize(repo, SourceGenContext.Default.Repo);
 4. **循环引用的两个出路？** —— ReferenceHandler.Preserve（打标记）或改设计去环。
 
 ---
-上一章：[32 文件与 IO](32-files-io.md) ｜ 下一章：[34 诊断与日志](34-diagnostics.md)
+上一章：[32 文件与 IO](32-files-io.md) ｜ 下一章：[34 诊断与日志](34-diagnostics.md) ｜ 返回：[README](../README.md)

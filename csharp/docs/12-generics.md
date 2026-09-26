@@ -127,4 +127,4 @@ Action<string> printStr = printObj;                          // ✓ 逆变 in
 4. **静态字段在泛型类里几份？** —— 每个封闭类型（T 的每个具体化）各一份。
 
 ---
-上一章：[11 结构体与记录](11-records.md) ｜ 下一章：[13 委托](13-delegates.md)
+上一章：[11 结构体与记录](11-records.md) ｜ 下一章：[13 委托](13-delegates.md) ｜ 返回：[README](../README.md)

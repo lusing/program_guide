@@ -121,4 +121,4 @@ week[0]        // 周一
 4. **分部类存在的意义？** —— 多来源合并一个类，代码生成器与手写代码的接缝。
 
 ---
-上一章：[07 数组与枚举](07-arrays-enums.md) ｜ 下一章：[09 继承与多态](09-inheritance.md)
+上一章：[07 数组与枚举](07-arrays-enums.md) ｜ 下一章：[09 继承与多态](09-inheritance.md) ｜ 返回：[README](../README.md)

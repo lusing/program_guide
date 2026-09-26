@@ -121,4 +121,4 @@ public void Clear() => _items.Clear();             // 表达式方法
 4. **可选参数的两条限制？** —— 必须在必选参数后；默认值须编译期常量。
 
 ---
-上一章：[03 变量、类型与运算符](03-variables-operators.md) ｜ 下一章：[05 值类型、引用类型与内存](05-value-reference.md)
+上一章：[03 变量、类型与运算符](03-variables-operators.md) ｜ 下一章：[05 值类型、引用类型与内存](05-value-reference.md) ｜ 返回：[README](../README.md)

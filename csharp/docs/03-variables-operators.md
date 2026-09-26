@@ -122,4 +122,4 @@ typeof(string)               // Type 对象（第 23 章反射的入口）
 5. **Parse 与 TryParse 怎么选？** —— 内部可信数据可 Parse；任何外部输入一律 TryParse。
 
 ---
-上一章：[02 工具链与第一个程序](02-toolchain.md) ｜ 下一章：[04 流程控制与方法](04-control-methods.md)
+上一章：[02 工具链与第一个程序](02-toolchain.md) ｜ 下一章：[04 流程控制与方法](04-control-methods.md) ｜ 返回：[README](../README.md)

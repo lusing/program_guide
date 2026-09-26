@@ -121,4 +121,4 @@ EF Core 的 `DbSet<T>` 是 IQueryable——`Where(u => u.Age > 18)` 被翻译成
 4. **N+1 问题怎么发生怎么解？** —— 循环内单查；先 ToDictionary 一次载入。
 
 ---
-上一章：[16 LINQ 基础](16-linq-basics.md) ｜ 下一章：[18 迭代器与 yield](18-iterators.md)
+上一章：[16 LINQ 基础](16-linq-basics.md) ｜ 下一章：[18 迭代器与 yield](18-iterators.md) ｜ 返回：[README](../README.md)

@@ -82,11 +82,13 @@ C# 从 2002 年的 1.0 到今天，每年 11 月随 .NET 新版发布一次，�
   5. **异步与并发（28-31）**：async/await、Task、线程安全、并行
   6. **平台延伸与实战（32-36）**：IO、JSON、诊断、测试、解释器实战
 
-```powershell
-cd G:\code\guide\csharp
-.\build.ps1 -All          # 编译全部 36 个示例
-.\build.ps1 -Run          # 编译 + 逐个运行（输出即讲解）
+```bash
+cd csharp
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All   # 编译全部 36 个示例
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Run   # 编译 + 逐个运行（输出即讲解）
 ```
+
+> 需 PowerShell 7（`pwsh`），三平台通用；Windows PowerShell 下等价写法是 `.\build.ps1 -All`。
 
 ## 常见坑
 
@@ -103,4 +105,4 @@ cd G:\code\guide\csharp
 3. **C# 3.0 和 5.0 各带来了什么划时代特性？** —— LINQ/lambda 家族；async/await。
 
 ---
-上一章：无 ｜ 下一章：[02 工具链与第一个程序](02-toolchain.md)
+下一章：[02 工具链与第一个程序](02-toolchain.md) ｜ 返回：[README](../README.md)

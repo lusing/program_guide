@@ -127,4 +127,4 @@ int? 是**运行时真实存在的结构**（装着 HasValue 标志），不是�
 4. **[NotNullWhen] 给编译器递了什么？** —— 方法行为证据，让调用方 if 后自动收窄 null 性。
 
 ---
-上一章：[20 扩展方法与运算符重载](20-extensions-operators.md) ｜ 下一章：[22 异常处理](22-exceptions.md)
+上一章：[20 扩展方法与运算符重载](20-extensions-operators.md) ｜ 下一章：[22 异常处理](22-exceptions.md) ｜ 返回：[README](../README.md)

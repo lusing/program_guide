@@ -128,4 +128,4 @@ Console.WriteLine($"{after - before:N0} 字节");
 4. **ArrayPool.Rent 的两个纪律？** —— 容量 ≥ 请求（按实际长度用）；try/finally 归还。
 
 ---
-上一章：[25 GC 与内存管理](25-gc.md) ｜ 下一章：[27 unsafe 与互操作](27-unsafe-interop.md)
+上一章：[25 GC 与内存管理](25-gc.md) ｜ 下一章：[27 unsafe 与互操作](27-unsafe-interop.md) ｜ 返回：[README](../README.md)

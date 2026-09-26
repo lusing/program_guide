@@ -134,4 +134,4 @@ static string Describe(int[] a) => a switch
 4. **穷尽性检查的价值？** —— 新增枚举值/新形态时，漏改的 switch 直接编译失败。
 
 ---
-上一章：[18 迭代器与 yield](18-iterators.md) ｜ 下一章：[20 扩展方法与运算符重载](20-extensions-operators.md)
+上一章：[18 迭代器与 yield](18-iterators.md) ｜ 下一章：[20 扩展方法与运算符重载](20-extensions-operators.md) ｜ 返回：[README](../README.md)

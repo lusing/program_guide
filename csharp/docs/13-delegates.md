@@ -115,4 +115,4 @@ list.Sort(StringComparer.OrdinalIgnoreCase);          // 对象：有状态/可�
 4. **Action 与 Func 的分界？最后一个类型参数是什么？** —— 无返回 vs 有返回；Func 的最后一个是返回类型。
 
 ---
-上一章：[12 泛型](12-generics.md) ｜ 下一章：[14 事件](14-events.md)
+上一章：[12 泛型](12-generics.md) ｜ 下一章：[14 事件](14-events.md) ｜ 返回：[README](../README.md)

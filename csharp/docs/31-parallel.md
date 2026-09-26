@@ -119,4 +119,4 @@ await Parallel.ForEachAsync(urls, async (url, ct) =>
 5. **Amdahl 定律的直觉？** —— 串行部分封顶并行收益。
 
 ---
-上一章：[30 线程安全](30-thread-safety.md) ｜ 下一章：[32 文件与 IO](32-files-io.md)
+上一章：[30 线程安全](30-thread-safety.md) ｜ 下一章：[32 文件与 IO](32-files-io.md) ｜ 返回：[README](../README.md)

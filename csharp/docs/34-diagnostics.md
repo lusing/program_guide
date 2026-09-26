@@ -120,4 +120,4 @@ _logger.LogInformation("用户 {UserId} 下单 {OrderId}，金额 {Amount}", use
 4. **日志与 Metrics 的分工？** —— 事件叙事（谁干了什么）vs 量的曲线（干了多少/多快）。
 
 ---
-上一章：[33 序列化与 JSON](33-json.md) ｜ 下一章：[35 单元测试](35-testing.md)
+上一章：[33 序列化与 JSON](33-json.md) ｜ 下一章：[35 单元测试](35-testing.md) ｜ 返回：[README](../README.md)

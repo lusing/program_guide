@@ -144,4 +144,4 @@ static ValueTask<int> CachedAsync(bool warm)
 5. **TaskCompletionSource 解决什么？** —— 把回调/事件式完成机制翻译成可 await 的 Task。
 
 ---
-上一章：[28 async/await](28-async-await.md) ｜ 下一章：[30 线程安全](30-thread-safety.md)
+上一章：[28 async/await](28-async-await.md) ｜ 下一章：[30 线程安全](30-thread-safety.md) ｜ 返回：[README](../README.md)

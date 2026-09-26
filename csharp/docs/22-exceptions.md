@@ -118,4 +118,4 @@ WPF 教程 02 章的 `DispatcherUnhandledException` 是 GUI 版的同一个网�
 4. **finally 的铁律？** —— 无论如何都执行；只放清理，不放 return/throw。
 
 ---
-上一章：[21 可空引用类型](21-nullable.md) ｜ 下一章：[23 反射与特性](23-reflection-attributes.md)
+上一章：[21 可空引用类型](21-nullable.md) ｜ 下一章：[23 反射与特性](23-reflection-attributes.md) ｜ 返回：[README](../README.md)

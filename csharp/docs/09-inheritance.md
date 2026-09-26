@@ -124,4 +124,4 @@ class Car { private readonly Engine _engine = new(); }   // 组合
 4. **为什么说 C# 方法默认非虚是好设计？** —— 调用快、行为可预测、扩展点显式声明。
 
 ---
-上一章：[08 类与封装](08-classes.md) ｜ 下一章：[10 接口](10-interfaces.md)
+上一章：[08 类与封装](08-classes.md) ｜ 下一章：[10 接口](10-interfaces.md) ｜ 返回：[README](../README.md)

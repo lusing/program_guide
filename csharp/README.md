@@ -1,17 +1,29 @@
 # C# 语言教程
 
-一套以**语言本身**为主线的 C# 系统教程：**36 章正文 + 36 个可编译可运行的示例**（章号=示例号），收束于一个能跑的表达式解释器实战。所有示例在 .NET 10 SDK 上编译并逐一运行验证（输出即讲解内容），语言特性声明（含 C# 14 扩展成员）均经实测编译确认。
+一套以**语言本身**为主线的 C# 系统教程：**36 章正文 + 36 个可编译可运行的示例**（章号=示例号），收束于一个能跑的表达式解释器实战。所有示例在 .NET 10 SDK 上编译并逐一运行验证（Windows 与 macOS 双平台实测，输出即讲解内容），语言特性声明（含 C# 14 扩展成员）均经实测编译确认。
 
 与同仓库其他教程的分工：**csharp 深挖语言 → [dotnet](../dotnet) 用语言建平台应用（Web/EF/测试）→ [wpf](../wpf) 用语言建桌面界面**。
 
 ## 快速开始
 
-```powershell
-cd G:\code\guide\csharp
-.\build.ps1 -All              # 编译全部 36 个示例（集中产物到 build/）
-.\build.ps1 -Run              # 编译 + 逐个运行（每个示例输出讲解内容，零交互）
-.\build.ps1 -Project 36_minilang   # 只构建/运行某一个
-.\build.ps1 -Clean            # 清理集中构建目录
+`build.ps1` 会自动探测 PATH 中的 `dotnet`（也可用环境变量 `DOTNET_EXE` 指定），需 PowerShell 7（`pwsh`）运行，三平台通用：
+
+```bash
+cd csharp
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All                       # 编译全部 36 个示例（集中产物到 build/）
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Run                       # 编译 + 逐个运行（每个示例输出讲解内容，零交互）
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 36_minilang       # 只构建某一个
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 36_minilang -Run  # 只构建并运行某一个
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean                     # 清理集中构建目录
+```
+
+> Windows PowerShell 下等价写法：`.\build.ps1 -All`（若报"禁止运行脚本"，改用 `pwsh -ExecutionPolicy Bypass -File build.ps1 -All`）。
+
+单跑某个示例（任意平台）：
+
+```bash
+cd examples/16_linq_basic
+dotnet run
 ```
 
 ## 目录结构
@@ -19,7 +31,7 @@ cd G:\code\guide\csharp
 ```text
 csharp/
 ├── README.md
-├── build.ps1                  # 一键构建/运行脚本
+├── build.ps1                  # 一键构建/运行脚本（须 PowerShell 7 / pwsh 运行，三平台通用）
 ├── docs/                      # 36 章正文
 │   ├── 01-overview.md             # C# 与 .NET 全景
 │   ├── 02-toolchain.md            # 工具链与第一个程序
@@ -64,10 +76,11 @@ csharp/
 
 ## 工具链
 
-- .NET SDK: `G:\scoop\apps\dotnet-sdk\current\dotnet.exe`（.NET 10）
+- .NET SDK: .NET 10（`dotnet --version` 确认；`build.ps1` 自动探测 PATH 中的 `dotnet`，也可用环境变量 `DOTNET_EXE` 覆盖）
 - 目标框架: `net10.0`（27 章示例额外开 `AllowUnsafeBlocks`）
 - 零 NuGet 依赖：全部示例只用 BCL，离线可复现
-- 编译方式: `dotnet build`（不需要 Visual Studio）
+- 编译方式: `dotnet build`（不需要 Visual Studio；跨平台 IDE 用 VS Code + C# Dev Kit）
+- 已验证平台: Windows / macOS —— 36 章全部编译通过并逐个运行；27 章 P/Invoke 按平台分支（Windows 调 `kernel32`，macOS/Linux 调 `libc`）
 
 ## 学习路线
 

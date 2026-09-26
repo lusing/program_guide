@@ -144,4 +144,4 @@ Channel = **线程安全的异步队列**：生产快过消费时 WriteAsync 自
 5. **死锁四预防？** —— 减锁、全局锁序、TryEnter 超时、锁内不等待。
 
 ---
-上一章：[29 Task 深度](29-tasks.md) ｜ 下一章：[31 并行编程](31-parallel.md)
+上一章：[29 Task 深度](29-tasks.md) ｜ 下一章：[31 并行编程](31-parallel.md) ｜ 返回：[README](../README.md)

@@ -131,4 +131,4 @@ public event EventHandler<PriceChangedEventArgs>? PriceChanged;
 4. **事件怎么会造成内存泄漏？** —— 订阅即持引用；短命订阅者挂在长命发布者上就回收不了——退订。
 
 ---
-上一章：[13 委托](13-delegates.md) ｜ 下一章：[15 Lambda 与闭包](15-lambdas.md)
+上一章：[13 委托](13-delegates.md) ｜ 下一章：[15 Lambda 与闭包](15-lambdas.md) ｜ 返回：[README](../README.md)

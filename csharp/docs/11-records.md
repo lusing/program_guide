@@ -121,4 +121,4 @@ record struct SearchFilter(int Page, int Size);               // 高频小参数
 4. **什么时候 record 反而是错的选择？** —— 有身份语义的实体（同 ID 即同一物），内容相等会误判。
 
 ---
-上一章：[10 接口](10-interfaces.md) ｜ 下一章：[12 泛型](12-generics.md)
+上一章：[10 接口](10-interfaces.md) ｜ 下一章：[12 泛型](12-generics.md) ｜ 返回：[README](../README.md)

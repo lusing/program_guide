@@ -122,4 +122,4 @@ frozen.Count                                                     // 不变——
 4. **ToList 的三个用途？** —— 定格复用、多次消费、查询转数据。
 
 ---
-上一章：[15 Lambda 与闭包](15-lambdas.md) ｜ 下一章：[17 LINQ 进阶](17-linq-advanced.md)
+上一章：[15 Lambda 与闭包](15-lambdas.md) ｜ 下一章：[17 LINQ 进阶](17-linq-advanced.md) ｜ 返回：[README](../README.md)

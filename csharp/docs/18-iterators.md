@@ -141,4 +141,4 @@ static IEnumerable<T> Core<T>(IEnumerable<T> s, Func<T,bool> p) { ... yield ... 
 4. **迭代器参数验证的两层结构解决什么？** —— 迭代器体延迟执行导致验证延迟；外层普通方法立即验证。
 
 ---
-上一章：[17 LINQ 进阶](17-linq-advanced.md) ｜ 下一章：[19 模式匹配](19-patterns.md)
+上一章：[17 LINQ 进阶](17-linq-advanced.md) ｜ 下一章：[19 模式匹配](19-patterns.md) ｜ 返回：[README](../README.md)

@@ -115,4 +115,4 @@ partial 类（第 08 章）+ partial 方法构成"人机协作"的标准接口�
 4. **partial 在生成器模式里的角色？** —— 人机代码的接缝：你写一半、生成器写一半、编译器合并。
 
 ---
-上一章：[23 反射与特性](23-reflection-attributes.md) ｜ 下一章：[25 GC 与内存管理](25-gc.md)
+上一章：[23 反射与特性](23-reflection-attributes.md) ｜ 下一章：[25 GC 与内存管理](25-gc.md) ｜ 返回：[README](../README.md)

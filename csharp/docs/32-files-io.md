@@ -124,4 +124,4 @@ if (!full.StartsWith(Path.GetFullPath(rootDir))) throw new UnauthorizedAccessExc
 4. **GB18030 用之前要做什么？** —— RegisterProvider(CodePagesEncodingProvider) 注册代码页编码。
 
 ---
-上一章：[31 并行编程](31-parallel.md) ｜ 下一章：[33 序列化与 JSON](33-json.md)
+上一章：[31 并行编程](31-parallel.md) ｜ 下一章：[33 序列化与 JSON](33-json.md) ｜ 返回：[README](../README.md)

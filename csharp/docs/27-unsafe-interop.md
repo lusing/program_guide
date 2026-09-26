@@ -49,7 +49,7 @@ fixed 要点：**作用域越短越好**（钉住妨碍 GC 压缩）；可同时
 声明 extern + DllImport，托管代码直接调 DLL 导出函数：
 
 ```csharp
-static class Native
+static class WinNative
 {
     [DllImport("kernel32")]
     public static extern uint GetCurrentThreadId();
@@ -59,7 +59,22 @@ static class Native
 }
 ```
 
-三件事要对齐：**参数类型的封送**（blittable 类型直接过；string/StringBuilder 有专门规则——CharSet 声明编码）、**调用约定**（现代 Win32 默认 StdCall，DLLImport 自处理）、**错误处理**（C API 的返回码自己查，没有异常）。真正的互操作坑场在结构体：
+**macOS/Linux 是同一套机制，只换导出库名**——运行时自动补 `.dylib` / `.so` 后缀：
+
+```csharp
+static class UnixNative
+{
+    [DllImport("libc")]
+    public static extern int getpid();
+
+    [DllImport("libc")]
+    public static extern IntPtr getenv(string name);             // 返回 char*
+}
+
+Marshal.PtrToStringUTF8(UnixNative.getenv("HOME"));              // C 字符串按 UTF-8 取回
+```
+
+所以示例用 `RuntimeInformation.IsOSPlatform(OSPlatform.Windows)` 分支，两边各调各的：**库名是 P/Invoke 里唯一真正平台相关的部分**，其余三件事在哪个平台都要对齐——**参数类型的封送**（blittable 类型直接过；string/StringBuilder 有专门规则——CharSet 声明编码）、**调用约定**（现代 Win32 默认 StdCall，DLLImport 自处理）、**错误处理**（C API 的返回码自己查，没有异常）。真正的互操作坑场在结构体：
 
 ```csharp
 [StructLayout(LayoutKind.Sequential)]    // 字段按声明顺序线性排布（C 的默认）
@@ -98,7 +113,9 @@ unsafe
 
 **fixed 块里调用会触发 GC 的代码**：钉住对象让 GC 分代计划变差；长 fixed 块 = 内存碎片化加速器——块越短越好。
 
-**封送字符串忘了 CharSet**：默认 ANSI——Windows 的 Unicode API 收到乱码。Win32 现代函数几乎都 `CharSet.Unicode` + `ExactSpelling`（W 后缀函数）。
+**封送字符串忘了 CharSet**：默认 ANSI——Windows 的 Unicode API 收到乱码。Win32 现代函数几乎都 `CharSet.Unicode` + `ExactSpelling`（W 后缀函数）。Unix 侧没有 CharSet 这回事：C 字符串就是一串 UTF-8 字节，拿 `IntPtr` 回来再 `Marshal.PtrToStringUTF8` 自己解。
+
+**在 macOS/Linux 上 DllImport 了 Windows 库**：`kernel32`/`user32`/`advapi32` 只在 Windows 存在，别的平台是运行时 `DllNotFoundException`（编译期不报），整段直接崩。要么 `RuntimeInformation.IsOSPlatform` 分支各调各的，要么用 `NativeLibrary.SetDllImportResolver` 注册库名回退。
 
 **结构体布局对不齐**：字段顺序/位宽/对齐差异 → C 端读到的数据错位。互操作结构体：逐字段 `Marshal.OffsetOf` 验证 + 两端 sizeof 对账。
 
@@ -120,4 +137,4 @@ unsafe
 4. **函数指针与委托的分工？** —— 非托管回调/裸地址场景用 delegate*；托管世界（多播/事件）用委托。
 
 ---
-上一章：[26 Span 与高性能内存](26-span.md) ｜ 下一章：[28 async/await](28-async-await.md)
+上一章：[26 Span 与高性能内存](26-span.md) ｜ 下一章：[28 async/await](28-async-await.md) ｜ 返回：[README](../README.md)

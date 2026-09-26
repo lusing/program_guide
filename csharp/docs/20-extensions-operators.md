@@ -129,4 +129,4 @@ Fahrenheit f = (Fahrenheit)c;    // 显式：要写强转——提醒"这里有�
 4. **重载 == 的连带义务？** —— 同步重写 Equals/GetHashCode（三件套）。
 
 ---
-上一章：[19 模式匹配](19-patterns.md) ｜ 下一章：[21 可空引用类型](21-nullable.md)
+上一章：[19 模式匹配](19-patterns.md) ｜ 下一章：[21 可空引用类型](21-nullable.md) ｜ 返回：[README](../README.md)

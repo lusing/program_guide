@@ -81,7 +81,7 @@ Assert.Throws<ArgumentException>(() => calc.Gross(-1m));
 
 ## 6. 真实项目的工具链
 
-```powershell
+```bash
 dotnet new xunit -o MyApp.Tests       # 测试工程（独立目录，不混进主工程）
 dotnet add reference ../MyApp/MyApp.csproj
 dotnet test                            # 跑全部（VS/Rider 里一键运行/调试）
@@ -119,4 +119,4 @@ dotnet test                            # 跑全部（VS/Rider 里一键运行/�
 4. **替身三兄弟？** —— Stub（固定返回）/ Mock（验交互）/ Fake（轻量实现）。
 
 ---
-上一章：[34 诊断与日志](34-diagnostics.md) ｜ 下一章：[36 实战：MiniLang 解释器](36-minilang.md)
+上一章：[34 诊断与日志](34-diagnostics.md) ｜ 下一章：[36 实战：MiniLang 解释器](36-minilang.md) ｜ 返回：[README](../README.md)

@@ -129,4 +129,4 @@ var result = sb.ToString();                       // 最后一次性定型
 4. **什么时候换 StringBuilder？** —— 循环/未知次数拼接；3~5 个片段内插值更优。
 
 ---
-上一章：[05 值类型、引用类型与内存](05-value-reference.md) ｜ 下一章：[07 数组与枚举](07-arrays-enums.md)
+上一章：[05 值类型、引用类型与内存](05-value-reference.md) ｜ 下一章：[07 数组与枚举](07-arrays-enums.md) ｜ 返回：[README](../README.md)

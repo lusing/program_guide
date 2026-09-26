@@ -113,4 +113,4 @@ fn(10)                   // 22
 4. **Func 与 Expression<Func> 的本质区别？** —— 机器码（执行）vs 语法树数据（可翻译/分析/再编译）。
 
 ---
-上一章：[14 事件](14-events.md) ｜ 下一章：[16 LINQ 基础](16-linq-basics.md)
+上一章：[14 事件](14-events.md) ｜ 下一章：[16 LINQ 基础](16-linq-basics.md) ｜ 返回：[README](../README.md)
