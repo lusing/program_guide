@@ -2,7 +2,7 @@
 
 对应示例：`../examples/11-exceptions.fs`
 
-`CATCH` / `THROW` 是 ANS 标准，直接用即可。**不要用 `except.fs`**（见 [21 · 坑清单](21-pitfalls.md)）。
+`CATCH` / `THROW` 是 ANS 标准，直接用即可。**不要用 `except.fs`**（见 [31 · 坑清单](31-pitfalls.md)）。
 
 ```forth
 : risky  ( -- )  -5 throw  ." 这行永远执行不到" ;

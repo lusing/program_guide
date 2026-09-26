@@ -4,17 +4,32 @@ param(
     [switch]$Clean
 )
 
+# ============================================================
+#  Forth 教程构建入口（gforth 跑在 wsl -d Debian 里）
+#
+#  Windows 路径自动翻译成 /mnt/<盘>/...；gforth 的 stderr 在
+#  WSL 内部落到临时文件再取回——wsl.exe 自己的 NAT 提示噪音
+#  不混进判定。
+# ============================================================
+
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $projectRoot
 
-# gforth 路径：优先用环境变量 GFORTH，其次用本机 macports 路径，最后退回 PATH
-$gforth = $env:GFORTH
-if (-not $gforth) { $gforth = "/opt/local/bin/gforth" }
-if (-not (Get-Command $gforth -ErrorAction SilentlyContinue)) {
-    $gforth = "gforth"
+$distro = "Debian"
+
+function Convert-ToLinuxPath {
+    param([Parameter(Mandatory = $true)][string]$WinPath)
+    $full = [System.IO.Path]::GetFullPath($WinPath)
+    if ($full -match '^([A-Za-z]):[\\/](.*)$') {
+        $drive = $Matches[1].ToLower()
+        $rest = $Matches[2] -replace '\\', '/'
+        return "/mnt/$drive/$rest"
+    }
+    throw "无法把路径翻译成 WSL 路径: $WinPath"
 }
-if (-not (Get-Command $gforth -ErrorAction SilentlyContinue)) {
-    throw "未找到 gforth 可执行文件，请检查安装路径或设置环境变量 GFORTH。"
+
+if (-not (wsl -l -q | Select-String -SimpleMatch $distro)) {
+    throw "未找到 WSL 发行版 $distro。请安装或在脚本顶部改 `$distro。"
 }
 
 $examplesDir = Join-Path $projectRoot "examples"
@@ -37,36 +52,43 @@ if (-not (Test-Path -LiteralPath $examplesDir)) {
 New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
 
 # Forth 特有的三条判定标准：退出码 0、stderr 为空、结束时数据栈为空（<0>）
+# 注意：gforth 脚本报错后退出码也可能是 0——所以 stderr 与 <0> 两关才是硬门槛。
 function Invoke-ValidateFile {
     param(
         [Parameter(Mandatory = $true)][string]$SourcePath
     )
 
     $name = [System.IO.Path]::GetFileName($SourcePath)
+    $linuxPath = Convert-ToLinuxPath $SourcePath
     $logPath = Join-Path $buildDir ($name + ".log")
     $errPath = Join-Path $buildDir ($name + ".err")
 
     Write-Host "[Run] $name" -ForegroundColor Cyan
-    & $gforth $SourcePath > $logPath 2> $errPath
+
+    # 在 WSL 内把 stdout / stderr 分开，用哨兵行带回 stderr 内容
+    $inner = "gforth '$linuxPath' 2>/tmp/gforth-ps-err; rc=`$?; echo '===STDERR==='; cat /tmp/gforth-ps-err; rm -f /tmp/gforth-ps-err; exit `$rc"
+    $raw = (& wsl -d $distro -- bash -c $inner 2>$null) -join "`n"
     $code = $LASTEXITCODE
 
-    # 注意：Get-Content -Raw 读空文件会返回 $null，必须兜底
-    $errText = ""
-    if (Test-Path -LiteralPath $errPath) {
-        $errText = [string](Get-Content -Raw -LiteralPath $errPath -ErrorAction SilentlyContinue)
+    $stdoutText = ""
+    $stderrText = ""
+    if ($raw -match '(?s)^(.*)===STDERR===\r?\n?(.*)$') {
+        $stdoutText = $Matches[1]
+        $stderrText = $Matches[2]
+    } else {
+        $stdoutText = $raw
     }
-    if ($null -eq $errText) { $errText = "" }
 
-    $lines = @()
-    if (Test-Path -LiteralPath $logPath) {
-        $lines = @(Get-Content -LiteralPath $logPath | Where-Object { $_.Trim() -ne "" })
-    }
+    [System.IO.File]::WriteAllText($logPath, $stdoutText)
+    [System.IO.File]::WriteAllText($errPath, $stderrText)
+
+    $lines = @($stdoutText -split "`n" | Where-Object { $_.Trim() -ne "" })
     $last = ""
     if ($lines.Count -gt 0) { $last = $lines[$lines.Count - 1] }
 
     $reasons = @()
     if ($code -ne 0) { $reasons += "退出码 $code" }
-    if ($errText.Trim() -ne "") { $reasons += "stderr 有输出" }
+    if ($stderrText.Trim() -ne "") { $reasons += "stderr 有输出" }
     if ($last -notlike "*<0>*") { $reasons += "结束时栈非空（$last）" }
 
     if ($reasons.Count -eq 0) {
@@ -93,7 +115,7 @@ if ($All) {
     Write-Host "--------------------------------" -ForegroundColor DarkGray
     Write-Host "通过 $pass   失败 $fail" -ForegroundColor $(if ($fail -eq 0) { "Green" } else { "Red" })
     if ($fail -ne 0) { exit 1 }
-    Write-Host "[Done] examples 目录全部验证通过。" -ForegroundColor Green
+    Write-Host "[Done] examples 目录全部验证通过（gforth @ wsl -d $distro）。" -ForegroundColor Green
     exit 0
 }
 
@@ -109,8 +131,8 @@ if ($File) {
 }
 
 Write-Host "用法:" -ForegroundColor Yellow
-Write-Host "  .\build.ps1 -All                运行并验证 examples 下全部示例"
+Write-Host "  .\build.ps1 -All                运行并验证 examples 下全部示例（经 wsl -d $distro）"
 Write-Host "  .\build.ps1 -File <name>        运行并验证单个示例（如 04-control-flow.fs）"
 Write-Host "  .\build.ps1 -Clean              清理 build 目录"
 Write-Host ""
-Write-Host "提示：也可直接用 ./run-all.sh 做同样的事（含 -v 显示完整输出、按编号前缀筛选）。"
+Write-Host "提示：也可直接在 WSL 里 ./run-all.sh（含 -v 显示完整输出、按编号前缀筛选）。"

@@ -39,4 +39,4 @@ utime 2>r  <被测词>  utime 2r> d- d>s
 运行：`gforth examples/19-testing.fs`
 
 ---
-上一章：[18 · 生成器与惰性序列](18-generators.md) ｜ 下一章：[20 · 速查表](20-cheatsheet.md) ｜ 返回：[README](../README.md)
+上一章：[18 · 生成器与惰性序列](18-generators.md) ｜ 下一章：[20 · 栈戏法与返回栈](20-stack-fu.md) ｜ 返回：[README](../README.md)

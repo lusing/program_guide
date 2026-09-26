@@ -30,8 +30,9 @@ dup    ( n -- n n )        \ 复制栈顶
 
 ```
 gforth      0.7.3
-路径        PATH 中的 `gforth`（Linux: `/usr/bin/gforth`；macOS MacPorts: `/opt/local/bin/gforth`）
-系统        Linux (WSL2) 与 macOS (darwin) 双平台实测通过
+路径        WSL Debian 的 /usr/bin/gforth（Windows 侧：wsl -d Debian -- gforth）
+仓库路径    WSL 内是 /mnt/g/code/guide/forth
+系统        WSL Debian (Linux x86-64) 实测通过
 ```
 
 一个最小程序：
