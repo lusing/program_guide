@@ -1,6 +1,6 @@
 (* 21 插入排序与正确性证明 —— 函数、有序性、重排性三合一 *)
 
-From Coq Require Import List Arith Sorting.Permutation.
+From Stdlib Require Import List Arith Sorting.Permutation.
 Import ListNotations.
 
 Module Ex21Sorting.

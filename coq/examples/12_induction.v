@@ -1,6 +1,6 @@
 (* 12 归纳证明 —— induction、归纳假设 IH、四类常见目标 *)
 
-From Coq Require Import Arith List.
+From Stdlib Require Import Arith List.
 Import ListNotations.
 
 Module Ex12Induction.

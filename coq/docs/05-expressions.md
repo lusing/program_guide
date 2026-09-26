@@ -60,7 +60,7 @@ nat 的比较函数返回 **bool**（可计算的数据）：
 | `Nat.ltb a b` | `a <? b` | a < b？ |
 
 ```coq
-From Coq Require Import Arith.   (* 三个记号都要它（实测） *)
+From Stdlib Require Import Arith.   (* 三个记号都要它（实测） *)
 
 Compute (Nat.eqb 3 3).   (* = true *)
 Compute (Nat.leb 3 7).   (* = true *)
@@ -117,10 +117,10 @@ Fail Compute (if 1%Z then 2 else 3).   (* 如期失败 *)
 
 ### 5.6 Z 速览：%Z 作用域
 
-要负数、要机器风格的整数运算，用 `Z`（无界二进制有符号整数，第 22 章详解）：
+要负数、要机器风格的整数运算，用 `Z`（无界二进制有符号整数，第 24 章详解）：
 
 ```coq
-From Coq Require Import ZArith.
+From Stdlib Require Import ZArith.
 
 Compute (2 - 5)%Z.     (* = -3 : Z *)
 Compute (- 3)%Z.       (* = -3 : Z —— 一元负号在 Z 上才有 *)
@@ -130,7 +130,7 @@ Compute (2 - 5).       (* = 0 : nat —— 括号外默认仍是 nat *)
 
 `%Z` 是**作用域限定符**：只在这对括号里，把数字和运算符解释成 Z 的。这是 Coq 处理「一个记号多种解释」的标准姿势——比全局 `Open Scope Z_scope.` 更可控（全局开作用域会让整个文件后面的 `2 + 3` 都变成 Z 加法，新手极易踩）。建议：**教学与小段代码用 `%Z` 局部限定；确实整段都是 Z 运算时再 Open Scope，并且 Open 在哪个 Module 里就只在哪个里生效**。
 
-nat 与 Z 怎么选，第 22 章给决策表。现阶段记住一句话：**写证明用 nat（形状简单，归纳友好），做计算用 Z（二进制，快）**。
+nat 与 Z 怎么选，第 24 章给决策表。现阶段记住一句话：**写证明用 nat（形状简单，归纳友好），做计算用 Z（二进制，快）**。
 
 ### 5.7 本章坑位清单（实测）
 

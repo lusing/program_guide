@@ -1,6 +1,6 @@
 (* 17 Option：安全建模 —— 用类型消灭「查无此值」 *)
 
-From Coq Require Import List Arith.
+From Stdlib Require Import List Arith.
 Import ListNotations.
 
 Module Ex17Option.

@@ -1,6 +1,6 @@
 (* 23 测试与断言风格 —— Example 即测试、负向断言、公理审查 *)
 
-From Coq Require Import Arith List Bool.
+From Stdlib Require Import Arith List Bool.
 Import ListNotations.
 
 Module Ex23Testing.

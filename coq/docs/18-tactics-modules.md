@@ -121,4 +121,4 @@ Fail Check (SealedStack.push 5 [1; 2]).
 5. **封印后的模块看不到表示**：`SealedStack.t` 只是抽象 Type，想对实现做计算/证明得用未封印的原模块——封装与便利的取舍。
 
 ---
-上一章：[17 · Option：安全建模](17-option.md) ｜ 下一章：[19 · 表达式求值器：AST 入门](19-ast.md) ｜ 返回：[README](../README.md)
+上一章：[17 · Option：安全建模](17-option.md) ｜ 下一章：[19 · Ltac：自定义策略](19-ltac.md) ｜ 返回：[README](../README.md)

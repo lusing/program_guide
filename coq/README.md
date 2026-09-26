@@ -1,14 +1,15 @@
-# Coq 教程（Coq 8.20 / Rocq）
+# Coq 教程（Rocq 9.1）
 
 面向**会编程（任意语言背景）、初学 Coq** 的读者：从证明助手的心智模型讲到
 类型系统、归纳类型、tactic 证明技法，再到 AST 求值器、插入排序正确性、
-列表定律等证明实战，最后以综合项目**表达式解释器与优化器**收束。
-**章号 = 示例编号**——01–24 章每章对应 `examples/` 里一个经 coqc 8.20.1
-编译验证的完整 .v 文件，25 章为 60+ 条实测坑位总清单。
+列表定律等证明实战，继而是依赖类型、余归纳、一般递归、自反证明四大进阶
+主题，最后以综合项目**表达式解释器与优化器**收束。
+**章号 = 示例编号**——01–32 章每章对应 `examples/` 里一个经 coqc（Rocq
+Platform 9.1.0）编译验证的完整 .v 文件，33 章为 80+ 条实测坑位总清单。
 
 > 核心理念：**类型即命题，程序即证明。** Coq 把"写代码"和"证定理"变成
 > 同一种语言里的同一件事——编译通过就是定理成立；详见
-> [01 章](docs/01-intro.md) 与 [25 章](docs/25-pitfalls.md)。
+> [01 章](docs/01-intro.md) 与 [33 章](docs/33-pitfalls.md)。
 
 ## 目录结构
 
@@ -16,8 +17,8 @@
 coq/
 ├── README.md        本文件
 ├── build.ps1        编译验证脚本（PowerShell）
-├── docs/            25 章教程（01 → 25 顺序阅读）
-├── examples/        24 个 .v 示例（章号 = 示例编号，01–24）
+├── docs/            33 章教程（01 → 33 顺序阅读）
+├── examples/        32 个 .v 示例（章号 = 示例编号，01–32）
 └── build/           编译输出（已 gitignore）
 ```
 
@@ -26,7 +27,7 @@ coq/
 | 章 | 主题 | 示例 |
 |---|---|---|
 | [01 认识 Coq](docs/01-intro.md) | Coq 是什么、Check / Compute 与第一个证明 | `01_intro.v` |
-| [02 工具链与运行方式](docs/02-toolchain.md) | coqc / coqtop / CoqIDE、问询四件套 | `02_toolchain.v` |
+| [02 工具链与运行方式](docs/02-toolchain.md) | rocq/coqc/coqtop、问询四件套、Coq→Rocq 更名史 | `02_toolchain.v` |
 | [03 第一个证明](docs/03-first-proof.md) | Proof-Qed 解剖、Fail、Abort | `03_first_proof.v` |
 | [04 类型系统](docs/04-types.md) | nat 真身、sorts、多态与隐式参数 | `04_types.v` |
 | [05 表达式与运算符](docs/05-expressions.md) | 记号、nat 算术坑、if 真身、%Z | `05_expressions.v` |
@@ -43,25 +44,44 @@ coq/
 | [16 高阶函数及其证明](docs/16-higher-order.md) | map 定律、filter 幂等 | `16_higher_order.v` |
 | [17 Option：安全建模](docs/17-option.md) | option 建模、bind 链、定律 | `17_option.v` |
 | [18 策略武器库与模块](docs/18-tactics-modules.md) | auto / assert、模块签名封装 | `18_tactics_modules.v` |
-| [19 表达式求值器：AST 入门](docs/19-ast.md) | aexp 求值器 + 优化器正确性 | `19_ast.v` |
-| [20 列表定律证明实战](docs/20-list-laws.md) | 六条列表定律 + rev_acc 强化 | `20_list_laws.v` |
-| [21 插入排序与正确性证明](docs/21-sorting.md) | 插入排序 + 有序 / 重排双正确性 | `21_sorting.v` |
-| [22 数值专题：nat、N 与 Z](docs/22-numbers.md) | nat/N/Z、lia、作用域坑 | `22_numbers.v` |
-| [23 测试与断言风格](docs/23-testing.md) | Example 即测试、Print Assumptions | `23_testing.v` |
-| [24 综合实战：表达式解释器与优化器](docs/24-project.md) | 解释器 + 双 pass 流水线 + Extraction | `24_project.v` |
-| [25 坑清单与最佳实践](docs/25-pitfalls.md) | 60+ 条实测坑位与最佳实践总清单 | — |
+| [19 Ltac：自定义策略](docs/19-ltac.md) | 参数 / 递归 / match goal / fail n / Hint | `19_ltac.v` |
+| [20 决策过程](docs/20-decision.md) | ring / lia / nia / field / lra / tauto | `20_decision.v` |
+| [21 表达式求值器：AST 入门](docs/21-ast.md) | aexp 求值器 + 优化器正确性 | `21_ast.v` |
+| [22 列表定律证明实战](docs/22-list-laws.md) | 六条列表定律 + rev_acc 强化 | `22_list_laws.v` |
+| [23 插入排序与正确性证明](docs/23-sorting.md) | 插入排序 + 有序 / 重排双正确性 | `23_sorting.v` |
+| [24 数值专题：nat、N 与 Z](docs/24-numbers.md) | nat/N/Z、lia、作用域坑 | `24_numbers.v` |
+| [25 测试与断言风格](docs/25-testing.md) | Example 即测试、Print Assumptions | `25_testing.v` |
+| [26 依赖类型与强规范](docs/26-dependent.md) | vect、sig/sumbool、Defined vs Qed | `26_dependent.v` |
+| [27 互归纳：树与森林](docs/27-mutual.md) | Scheme、嵌套 fix、正性约束 | `27_mutual.v` |
+| [28 二叉搜索树实战](docs/28-bst.md) | 谓词建模、引理库、剪枝查找 | `28_bst.v` |
+| [29 余归纳与无限数据](docs/29-coinductive.md) | CoFixpoint、guard、互模拟 | `29_coinductive.v` |
+| [30 一般递归](docs/30-general-recursion.md) | 燃料、良基递归、Program Fixpoint | `30_general_recursion.v` |
+| [31 自反证明](docs/31-reflection.md) | 判定函数 + 桥定理、flatten 规格化 | `31_reflection.v` |
+| [32 综合实战：表达式解释器与优化器](docs/32-project.md) | 解释器 + 双 pass 流水线 + Extraction | `32_project.v` |
+| [33 坑清单与最佳实践](docs/33-pitfalls.md) | 80+ 条实测坑位与最佳实践总清单 | — |
 
 学习路线：01–05 语言与基本证明 → 06–10 数据建模（元组/匹配/列表/归纳/
 递归）→ 11–15 证明技法主线（归纳/重写/逻辑）→ 16–18 高阶与工程化 →
-19–24 实战递进（AST → 列表定律 → 排序 → 数值 → 测试 → 解释器）→
-25 坑清单收束（写代码前先查）。
+**19–20 自动化双章（Ltac 与决策过程）** → 21–25 实战递进（AST → 列表定律
+→ 排序 → 数值 → 测试）→ **26–31 进阶四重奏（依赖类型 → 互归纳 → BST →
+余归纳 → 一般递归 → 自反证明）** → 32 综合项目收束 → 33 坑清单（写代码
+前先查）。
+
+19–20 与 26–31 八章为 2026-09 按经典教材《交互式定理证明与程序开发：
+Coq 归纳构造演算的艺术》（Bertot & Casteran，中译本）扩充的「书本篇」，
+同时把全书实测环境从 Coq 8.20.1 迁到 Rocq Platform 9.1.0。
 
 ## 工具链
 
 | 组件 | 路径 / 版本 |
 |---|---|
-| Coq | `G:\scoop\apps\coq\current`（8.20.1，scoop 安装） |
-| 编译器 | `G:\scoop\apps\coq\current\bin\coqc.exe` |
+| Rocq Platform | `G:\rocq\Rocq-Platform~9.1~2026.01`（9.1.0，2026-01 版） |
+| 编译器 | `...\bin\coqc.exe`（新入口 `rocq compile`） |
+| 交互顶层 | `...\bin\rocq.exe repl`（兼容名 coqtop） |
+
+2024 年 Coq 更名 **Rocq**；9.0 起标准库命名空间 `Coq.*` → `Stdlib.*`
+（前言库进一步拆出 `Corelib.*`），本教程全部示例已按 9.x 写法
+（`From Stdlib Require Import ...`）验证。
 
 ## 验证命令
 
@@ -72,22 +92,23 @@ cd coq
 .\build.ps1 -Clean                      # 清理 build/
 ```
 
-**判定标准**：全部 24 个示例 coqc 编译退出码 0。`24_project.v` 的
+**判定标准**：全部 32 个示例 coqc 编译退出码 0。`32_project.v` 的
 `Recursive Extraction` 会向输出打印抽取的 OCaml 代码，全量编译耗时略长
-（2–4 分钟）属正常。
+属正常。
 
 ## 平台差异说明
 
 - .v 文件为 UTF-8 **无 BOM**，中文注释可直接编译。
-- 2024 年 Coq 更名 **Rocq**，9.0 起库命名空间 `Coq.*` → `Stdlib.*`；
-  本教程钉在 8.20.1（旧命名空间），新版本 Rocq 下部分 `From Coq Require`
-  需改为 `From Stdlib Require`。
+- Windows 下 scoop 的 `coq` 包停在 8.x 旧版线；要用 9.x 请装 Rocq
+  Platform（本教程环境）或 opam。
+- 老资料（含本书 2004 年原版）是 `Coq.*` 命名空间与旧 tactic 名
+  （omega 已删、fourier 弃用等），抄代码先 `Fail Check 名字.` 探路。
 
 ## 示例怎么读
 
 - **章号 = 示例编号**：`docs/05-expressions.md` ↔ `examples/05_expressions.v`，
   每章开头一行"对应示例"标注。
-- 25 章无示例，是全教程坑位的汇总清单——写代码前先查它。
+- 33 章无示例，是全教程坑位的汇总清单——写代码前先查它。
 - 改示例后重跑对应文件：`.\build.ps1 -File NN_xxx.v`。
 
 ## 相关教程

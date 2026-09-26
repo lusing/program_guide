@@ -3,7 +3,7 @@
    写 8 / 2 会直接报 Unknown interpretation for notation "_ / _"。
    这本身就是本教程记录的第一个实测坑。 *)
 
-From Coq Require Import Arith.
+From Stdlib Require Import Arith.
 
 Module Ex03FirstProof.
 

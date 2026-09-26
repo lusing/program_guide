@@ -1,6 +1,6 @@
 (* 20 列表定律证明实战 —— 六条经典定律，一套通用方法 *)
 
-From Coq Require Import List Arith.
+From Stdlib Require Import List Arith.
 Import ListNotations.
 
 Module Ex20ListLaws.

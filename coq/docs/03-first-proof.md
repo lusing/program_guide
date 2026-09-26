@@ -105,7 +105,7 @@ Fail Check (0 : bool).
    type "bool". *)
 ```
 
-Coq 的报错信息值得逐字读：**谁**（the term "0"）、**是什么**（has type "nat"）、**哪里不匹配**（expected "bool"）。它几乎总在说真话——第 25 章的坑清单里，一半条目的排查方法就是「把错误信息完整读完」。
+Coq 的报错信息值得逐字读：**谁**（the term "0"）、**是什么**（has type "nat"）、**哪里不匹配**（expected "bool"）。它几乎总在说真话——第 33 章的坑清单里，一半条目的排查方法就是「把错误信息完整读完」。
 
 ### 3.6 Theorem 家族与命名习惯
 
@@ -131,7 +131,7 @@ Theorem i_promise : forall n : nat, n + 0 = n.
 Proof. Admitted.   (* 假装证完了！ *)
 ```
 
-`Admitted.` 把定理**作为公理**收下——之后所有依赖它的证明都建立在空中楼阁上。它是开发过程中「先跳过这段，后面再补」的合法手段，但**任何提交/发布的代码里都不该有它**。检查工具（第 23 章）：`Print Assumptions 定理名.` 会列出该定理依赖的全部公理——输出 `Closed under the global context` 才是干净证明。
+`Admitted.` 把定理**作为公理**收下——之后所有依赖它的证明都建立在空中楼阁上。它是开发过程中「先跳过这段，后面再补」的合法手段，但**任何提交/发布的代码里都不该有它**。检查工具（第 25 章）：`Print Assumptions 定理名.` 会列出该定理依赖的全部公理——输出 `Closed under the global context` 才是干净证明。
 
 ### 3.8 本章坑位清单（实测）
 

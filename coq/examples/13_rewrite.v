@@ -1,6 +1,6 @@
 (* 13 重写、化简与分情况 —— rewrite 的方向、destruct、discriminate、injection *)
 
-From Coq Require Import Arith List.
+From Stdlib Require Import Arith List.
 Import ListNotations.
 
 Module Ex13Rewrite.

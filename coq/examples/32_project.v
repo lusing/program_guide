@@ -1,11 +1,11 @@
 (* 24 综合实战 —— 表达式解释器、常量折叠优化器、
    优化器正确性（两个 pass 的组合证明）、抽取到 OCaml *)
 
-From Coq Require Import List Arith String ZArith Extraction.
+From Stdlib Require Import List Arith String ZArith Extraction.
 
 Module Ex24Project.
 
-(* ---------- 一、语言：带变量的算术表达式（第 19 章加强版） ---------- *)
+(* ---------- 一、语言：带变量的算术表达式（第 21 章加强版） ---------- *)
 
 Inductive aexp : Type :=
   | AConst (n : nat)
@@ -31,7 +31,7 @@ Definition st1 : state := fun x =>
 Example run1 : aeval (APlus (AVar "x") (AMult (AConst 2) (AConst 3))) st1 = 16.
 Proof. reflexivity. Qed.
 
-(* ---------- 二、优化 pass 1：吃掉 0 + e（第 19 章原样） ---------- *)
+(* ---------- 二、优化 pass 1：吃掉 0 + e（第 21 章原样） ---------- *)
 
 Definition optimize0_plus (e1 e2 : aexp) : aexp :=
   match e1 with
@@ -141,7 +141,7 @@ Proof. reflexivity. Qed.
 Recursive Extraction pipeline.
 (* 输出的 OCaml 代码可以在 OCaml 工程里直接编译使用——
    证明留在 Coq 世界，计算落到真实世界。
-   注意（实测坑）：必须先 From Coq Require Import Extraction，
+   注意（实测坑）：必须先 From Stdlib Require Import Extraction，
    裸写 Recursive Extraction 报 illegal begin of vernac *)
 
 End Ex24Project.

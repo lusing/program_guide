@@ -1,6 +1,6 @@
 (* 10 递归函数 —— Fixpoint、结构递归、终止性检查（实测拒绝） *)
 
-From Coq Require Import List Arith.
+From Stdlib Require Import List Arith.
 Import ListNotations.
 
 Module Ex10Fixpoint.
@@ -30,7 +30,7 @@ Compute (power 2 10).          (* = 1024 *)
 
 (* ---------- 终止性检查：不是「更小」就拒绝（实测） ---------- *)
 
-(* 直觉说「k - 1 不是子项，应该被拒」——实测 8.20.1 会放行！
+(* 直觉说「k - 1 不是子项，应该被拒」——实测 8.20.1/9.1.0 均放行！
    守卫检查器会展开定义：k - 1 展开后每个分支都是（常量或）
    子项，于是接受。这个函数真的终止（还沾了截断减法的光：
    bad_sum 1 = bad_sum 0 + 1，因为 0 - 1 = 0）。 *)

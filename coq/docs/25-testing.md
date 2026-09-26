@@ -1,8 +1,8 @@
-# 23 · 测试与断言风格
+# 25 · 测试与断言风格
 
-对应示例：`../examples/23_testing.v`
+对应示例：`../examples/25_testing.v`
 
-### 23.1 Example 即测试
+### 25.1 Example 即测试
 
 Coq 里不需要测试框架——`Example` + `reflexivity` 就是断言，`coqc` 就是测试运行器：
 
@@ -18,7 +18,7 @@ Proof. reflexivity. Qed.
 
 改坏 `inc` 的任何一行，`build.ps1 -All` 当场全红。回归测试的全部要素（断言、运行、失败定位）都在，只是「跑测试」变成了「编译检查」。本教程每个示例文件从第 1 章起就在用这套——你已经在 TDD 了。
 
-### 23.2 负向断言
+### 25.2 负向断言
 
 「不该发生的」也要钉住：
 
@@ -31,9 +31,9 @@ Fail Check (inc true).     (* 类型误用，如期失败 *)
 
 `<>`（不等于）配 `discriminate`（第 13 章）锁具体值；`Fail`（第 3 章）锁「这行不该编译过」。两类负向断言把 API 的边界写成可执行文档。
 
-### 23.3 从测试升级为定理
+### 25.3 从测试升级为定理
 
-测试思维与证明思维的分界线是 **forall**。工作流（示例 23 的完整示范）：
+测试思维与证明思维的分界线是 **forall**。工作流（示例 25 的完整示范）：
 
 ```coq
 (* 第一步：具体样例找感觉 *)
@@ -57,7 +57,7 @@ Qed.
 
 具体值是测试（跑有限个），量化命题是证明（覆盖无穷个），Example 是通往 Theorem 的脚手架。`apply IH; assumption.` 的分号用法（第 18 章）在这里顺手续掉两个前提。`andb_true_iff` 是 bool 世界的拆桥工具——第 14 章 `destruct` 拆 `/\` 的 bool 版。
 
-### 23.4 公理审查：Print Assumptions
+### 25.4 公理审查：Print Assumptions
 
 测试证明「行为对」，`Print Assumptions` 审查「出身清白」（第 3 章埋的线）：
 
@@ -77,19 +77,19 @@ Print Assumptions poisoned.
 
 一条 `Admitted`、一个手滑的 `Axiom`，都会在这里现形（实测输出如上）。**工程化纪律**：CI 里对每个公开定理跑 `Print Assumptions`，只许 `Closed under the global context`——「无公理依赖」是可验证代码的最低出厂标准。
 
-### 23.5 什么时候测试、什么时候证明
+### 25.5 什么时候测试、什么时候证明
 
 | 场景 | 手段 |
 |---|---|
 | 具体行为快照（回归锚点） | Example + reflexivity |
 | API 误用应被拒绝 | Fail Check / Fail Definition |
 | 不变式对一切输入成立 | Theorem + induction |
-| 纯算术性质 | lia（第 22 章） |
+| 纯算术性质 | lia（第 24 章） |
 | 发布检查 | Print Assumptions 全绿 |
 
 成本直觉：Example 十秒写完零维护；Theorem 十分钟起步但永久免疫。**原型期堆 Example，接口稳定后把关键性质升格为 Theorem**——两层的配比就是工程判断。
 
-### 23.6 本章坑位清单（实测）
+### 25.6 本章坑位清单（实测）
 
 1. **`Fail Example 名 : 假命题. Proof. reflexivity. Qed.`**：Fail 只包一句——陈述句本身合法（成功），下一个 reflexivity 才失败且不在 Fail 保护内，文件直接编译失败。负向断言的正确写法是 `Example 名 : x <> y. Proof. discriminate. Qed.`（实测对照）；
 2. **`<>` 目标忘了它是否定**：`x <> y` 即 `x = y -> False`——`discriminate`/`intros H` 后引爆即可，别试图「直接证」；
@@ -97,4 +97,4 @@ Print Assumptions poisoned.
 4. **测试 bool 函数忘了负例**：只测 `= true` 的样例测不出「永远返回 true」的假实现——`all_even [2;3] = false` 这类负例与正例同等重要。
 
 ---
-上一章：[22 · 数值专题：nat、N 与 Z](22-numbers.md) ｜ 下一章：[24 · 综合实战：表达式解释器与优化器](24-project.md) ｜ 返回：[README](../README.md)
+上一章：[24 · 数值专题：nat、N 与 Z](24-numbers.md) ｜ 下一章：[26 · 依赖类型与强规范](26-dependent.md) ｜ 返回：[README](../README.md)

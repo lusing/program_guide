@@ -2,7 +2,7 @@
    本文件的注释里画出了每一步的证明状态。在 CoqIDE / coqtop 里
    逐句执行，亲眼对照这些「快照」是理解 Coq 的最快路径。 *)
 
-From Coq Require Import Arith.
+From Stdlib Require Import Arith.
 
 Module Ex11ProofState.
 

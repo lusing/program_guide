@@ -1,6 +1,6 @@
 (* 08 列表 —— list 的真身、常用操作、fold 方向坑 *)
 
-From Coq Require Import List Arith.
+From Stdlib Require Import List Arith.
 Import ListNotations.
 
 Module Ex08Lists.

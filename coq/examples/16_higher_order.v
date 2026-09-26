@@ -1,6 +1,6 @@
 (* 16 高阶函数及其证明 —— 函数是值：组合、应用、定律 *)
 
-From Coq Require Import List Arith.
+From Stdlib Require Import List Arith.
 Import ListNotations.
 
 Module Ex16HigherOrder.

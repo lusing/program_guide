@@ -118,7 +118,7 @@ Qed.
 | 查找类（head/nth/lookup） | 返回 option，失败显式 |
 | 可能失败的计算（除法、解析） | option + bind 串联 |
 | 调用方有合理默认值 | 在**调用处** `default`，不要在 API 里吞错 |
-| 失败需要携带原因 | 变体类型 `Inductive result := Ok : A -> result \| Err : string -> result`（第 24 章用到类似手法） |
+| 失败需要携带原因 | 变体类型 `Inductive result := Ok : A -> result \| Err : string -> result`（第 32 章用到类似手法） |
 
 原则一句话：**让失败在类型里可见，在最近的地方处理**。
 

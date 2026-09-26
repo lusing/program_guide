@@ -1,6 +1,6 @@
 (* 22 数值专题 —— nat 的成本、N/Z 二进制、lia 自动算术 *)
 
-From Coq Require Import ZArith Arith Lia.
+From Stdlib Require Import ZArith Arith Lia.
 
 Module Ex22Numbers.
 

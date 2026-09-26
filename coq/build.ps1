@@ -7,7 +7,7 @@ param(
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $projectRoot
 
-$coqc = "G:\scoop\apps\coq\current\bin\coqc.exe"
+$coqc = "G:\rocq\Rocq-Platform~9.1~2026.01\bin\coqc.exe"
 $examplesDir = Join-Path $projectRoot "examples"
 $buildDir = Join-Path $projectRoot "build"
 $buildExamplesDir = Join-Path $buildDir "examples"

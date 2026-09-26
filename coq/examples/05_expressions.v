@@ -1,6 +1,6 @@
 (* 05 表达式与运算符 —— 记号、nat 算术的坑、bool 与 if、Z 速览 *)
 
-From Coq Require Import ZArith.
+From Stdlib Require Import ZArith.
 
 Module Ex05Expressions.
 

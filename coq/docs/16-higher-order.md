@@ -68,7 +68,7 @@ Proof.
 Qed.
 ```
 
-麻烦在于 `filter` 的定义里有 `if p x`：`simpl` 展开后 `p x` 卡在判断里（p 是变量，算不出）。`destruct (p x) eqn:E` 按它的值分情况——但注意**展开内层 filter 时 `if p x` 会再次出现**（第一次 destruct 替换的是当时可见的那处），所以再 `simpl` 暴露新的 `if` 后，要用 `E : p x = true` 来 `rewrite E` 消掉它。这套「**destruct eqn → simpl → rewrite E**」的连环是所有涉及 bool 判断的函数（filter、find、partition……）证明的通用解法，第 21 章排序证明会再次依赖它。
+麻烦在于 `filter` 的定义里有 `if p x`：`simpl` 展开后 `p x` 卡在判断里（p 是变量，算不出）。`destruct (p x) eqn:E` 按它的值分情况——但注意**展开内层 filter 时 `if p x` 会再次出现**（第一次 destruct 替换的是当时可见的那处），所以再 `simpl` 暴露新的 `if` 后，要用 `E : p x = true` 来 `rewrite E` 消掉它。这套「**destruct eqn → simpl → rewrite E**」的连环是所有涉及 bool 判断的函数（filter、find、partition……）证明的通用解法，第 23 章排序证明会再次依赖它。
 
 ### 16.4 用 fold 造一切
 

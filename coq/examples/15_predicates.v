@@ -1,6 +1,6 @@
 (* 15 谓词逻辑与 reflect —— 归纳谓词、存在量词、bool 与 Prop 的桥 *)
 
-From Coq Require Import Arith List Bool.
+From Stdlib Require Import Arith List Bool.
 Import ListNotations.
 
 Module Ex15Predicates.

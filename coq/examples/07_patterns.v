@@ -1,6 +1,6 @@
 (* 07 模式匹配 —— match 的全部词汇、穷尽性、冗余分支（实测错误） *)
 
-From Coq Require Import List.
+From Stdlib Require Import List.
 Import ListNotations.
 
 Module Ex07Patterns.
@@ -75,7 +75,7 @@ Fail Definition missing (b : bool) : nat :=
 (* Error: Non exhaustive pattern-matching:
    no clause found for pattern "false" *)
 
-(* ---------- 冗余分支 = 编译错误（实测，8.20） ---------- *)
+(* ---------- 冗余分支 = 编译错误（实测，8.20/9.1） ---------- *)
 
 Fail Definition redundant (b : bool) : nat :=
   match b with

@@ -106,7 +106,7 @@ Example mirror_ex : mirror t1 = node (node leaf 3 leaf) 2 (node leaf 1 leaf).
 Proof. reflexivity. Qed.
 ```
 
-`mirror (mirror t) = t` 这类定律第 20 章的习题里会证。
+`mirror (mirror t) = t` 这类定律第 22 章的习题里会证。
 
 ### 9.5 自动生成的归纳原理
 

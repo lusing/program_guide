@@ -108,7 +108,7 @@ Compute (fold_left (fun acc x => x :: acc) [1; 2; 3] []).
 
 ### 8.5 证明预告
 
-列表是第一个「值得证明」的结构。三个经典定律，第 20 章全部证一遍：
+列表是第一个「值得证明」的结构。三个经典定律，第 22 章全部证一遍：
 
 ```coq
 (* app_nil_r  : forall xs, xs ++ [] = xs          （看似显然，需归纳） *)
@@ -120,7 +120,7 @@ Compute (fold_left (fun acc x => x :: acc) [1; 2; 3] []).
 
 ### 8.6 本章坑位清单（实测）
 
-1. **`[1; 2]` 记号默认不存在**：必须 `From Coq Require Import List.` + `Import ListNotations.`，否则 `[` 直接语法错误。新手第一大坑；
+1. **`[1; 2]` 记号默认不存在**：必须 `From Stdlib Require Import List.` + `Import ListNotations.`，否则 `[` 直接语法错误。新手第一大坑；
 2. **fold_left/fold_right 参数顺序不同**：`fold_left f l a0` vs `fold_right f a0 l`——初值位置互换，放错**不报错**只给错结果；
 3. **`nth` 越界静默返回默认值**：默认值会掩盖「列表太短」的事实；要显式失败用 `nth_error`（option 版）；
 4. **`++` 是右结合**：`[1] ++ [2] ++ [3]` = `[1] ++ ([2] ++ [3])`——对拼接无感（结合律成立），但换成别的右结合运算时要意识到求值形状；

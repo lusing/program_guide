@@ -1,6 +1,6 @@
 (* 18 策略武器库与模块 —— 自动化、assert、模块签名与封装 *)
 
-From Coq Require Import List Arith.
+From Stdlib Require Import List Arith.
 Import ListNotations.
 
 Module Ex18TacticsModules.

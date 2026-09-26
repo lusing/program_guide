@@ -1,6 +1,6 @@
 (* 14 命题逻辑 —— Prop 世界的 /\ \/ -> ~ <-> 与它们的策略 *)
 
-From Coq Require Import List.
+From Stdlib Require Import List.
 Import ListNotations.
 
 Module Ex14Logic.

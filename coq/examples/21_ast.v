@@ -1,6 +1,6 @@
 (* 19 表达式求值器：AST 入门 —— 定义语言、写解释器、证优化器正确 *)
 
-From Coq Require Import List Arith String.
+From Stdlib Require Import List Arith String.
 
 Module Ex19Ast.
 
@@ -69,7 +69,7 @@ Compute (optimize (APlus (APlus (AConst 0) (AVar "x")) (AConst 0))).
 (* = APlus (AVar "x") (AConst 0)
    —— 递归生效（里层的 0 + x 被吃），
       但 x + 0 保留（优化器只认 0 在左边的模式，
-      e + 0 的折叠留给第 24 章当练习） *)
+      e + 0 的折叠留给第 32 章当练习） *)
 
 (* ---------- 正确性定理 ---------- *)
 

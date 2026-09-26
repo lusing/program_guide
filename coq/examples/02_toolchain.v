@@ -38,7 +38,7 @@ Print Nat.add.
 
 About Nat.add.
 (* Nat.add : nat -> nat -> nat
-   Expands to: Constant Coq.Init.Nat.add *)
+   Expands to: Constant Corelib.Init.Nat.add`n      ——9.x 起前言库拆成 Corelib（Init/Prelude），`n        Stdlib（Arith/List/...）两层 *)
 
 About eq.
 (* eq : forall {A : Type}, A -> A -> Prop
