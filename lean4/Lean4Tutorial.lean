@@ -8,7 +8,8 @@
 # Lean 4 & Mathlib4 教程示例
 
 本项目包含完整的 Lean 4 和 Mathlib4 教程示例代码，
-按类别分模块组织，与 `lean4-mathlib4-tutorial.md` 逐章对应，
+按类别分模块组织，与教程文档逐章对应（单文件版 `lean4-mathlib4-tutorial.md`，
+按章拆分版见 `docs/01-intro-setup.md` … `docs/30-appendix.md`），
 所有示例均在 Lean 4.34.0 + Mathlib4（master@2026-09）上编译验证通过。
 
 ## 使用方式
