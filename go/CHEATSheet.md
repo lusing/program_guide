@@ -243,3 +243,60 @@ jsonv2.Marshal / jsontext.NewEncoder(w, jsontext.WithIndent("  "))  // 1.27
 | any 解码数字变 float64 | json.Number 或结构体目标（21.2） |
 | nil 切片序列化成 null | 初始化 `[]T{}`（21.7） |
 | DefaultClient 无超时 | 自建 Client{Timeout}（22.4） |
+
+## 13. 标准库篇（25–35）
+
+```go
+// 文本（25–27）
+var b strings.Builder; b.Grow(n); s := b.String()   // 循环拼串
+k, v, ok := strings.Cut(s, "=")                     // key=value 解析
+for f := range strings.FieldsSeq(s) {}              // 1.24+ 迭代器版 Fields
+rep := strings.NewReplacer("a", "b")                // 预编译替换表
+n, err := strconv.ParseInt("0x1F", 0, 64)           // base 0 认 0x/0o/0b
+re := regexp.MustCompile(`(?P<y>\d{4})`)            // 写死的模式 MustCompile
+m := re.FindStringSubmatch(s); m[re.SubexpIndex("y")]
+re.ReplaceAllString(s, "${1}x")                     // ${1} 防后缀粘连
+utf8.RuneCountInString(s)                           // 字符数（len 是字节）
+unicode.Is(unicode.Han, r)                          // 分类表
+
+// 容器 / 数学（28–29）
+heap.Init(&h); heap.Push(&h, x); heap.Pop(&h)       // 进出只走 heap.*
+i := sort.Search(len(a), func(i int) bool { ... })  // 谓词二分（可能返回 len）
+math.RoundToEven(2.5)                               // 银行家舍入
+r := rand.New(rand.NewPCG(s1, s2))                  // 可复现随机流
+new(big.Int).MulRange(1, 30)                        // 精确 30!
+
+// 编码 / 压缩（30–31）
+w.Flush(); w.Error()                                // csv.Writer 两连
+xml:"id,attr" / xml:"author>name"                   // 属性 / 嵌套路径
+gob.Register(Email{})                               // 接口值先注册
+zw := gzip.NewWriter(&buf); ...; zw.Close()         // 尾部 CRC 在 Close
+tw.WriteHeader(hdr); tw.Write(data)                 // tar：先头后内容
+zip.NewReader(r, size)                              // 要 ReaderAt + 总长
+
+// 进程 / CLI / 数据库 / 底层（32–35）
+out, _ := cmd.CombinedOutput()                      // 拿输出
+cmd := exec.CommandContext(ctx, ...)                // 超时自动杀
+ctx, stop := signal.NotifyContext(bg, os.Interrupt); defer stop()
+fs := flag.NewFlagSet(name, flag.ContinueOnError)   // 测试/库代码用 FlagSet
+slog.Info("登录", "user", u)                         // 字段化，别拼串
+var nick sql.NullString; rows.Scan(&nick)           // NULL 用 NullX
+tx, _ := db.Begin(); defer tx.Rollback()            // 事务期全走 tx
+unsafe.String(unsafe.SliceData(b), len(b))          // 零拷贝（b 冻结！）
+```
+
+| 坑 | 解法 |
+|---|---|
+| 循环里 `s += x` | strings.Builder（25.1） |
+| `Split(s, "")` 想切空白 | 那是逐字符切——用 Fields（25.2） |
+| 替换串 `$1x` 变空 | `${1}x`（26.4） |
+| `len(s)` 当字符数 | RuneCountInString（27.1） |
+| heap.Pop 自己弹 h[0] | 协议弹最后一个，库已换好位（28.1） |
+| `NaN == NaN` | 恒 false——math.IsNaN（29.2） |
+| Python 惯性 `-7 % 3 == 2` | Go 得 -1；非负模 `((a%b)+b)%b`（29.1） |
+| csv.Writer 忘 Flush | Error() 里吞错误（30.1） |
+| gzip.Writer 忘 Close | 尾部 CRC 丢失，读侧 unexpected EOF（31.2） |
+| StdoutPipe 配 Run | 用 Start；不读管道就 Wait 会死锁（32.2） |
+| 测试里 flag.Parse | 撞 -test.*——FlagSet（33.2） |
+| NULL 扫进普通 string | 报 converting NULL——sql.NullString（34.4） |
+| uintptr 存变量再算术 | GC 野指针——unsafe.Add 一表达式（35.2） |

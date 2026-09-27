@@ -2,6 +2,8 @@
 
 面向**会编程（C/C++ 背景最佳）、初学 Go** 的读者：从零教到现代 Go——`wg.Go`、`range` 整数、迭代器（`iter.Seq`）从对应章节就是默认姿势，老写法（`err == io.EOF`、`interface{}`、`for i := 0; i < b.N; i++`）只在坑位清单里教"认得"。**Go 特色全部独立成章细讲**：接口（09）、泛型（11）、迭代器（13）、测试（15）、并发三连（16–18）、HTTP（22）。每章"读讲解 → 跑示例 → 改代码再跑"，全部示例四层验证通过（gofmt + vet + test + 运行 exit 0；并发三章加 `-race`）。
 
+全书分两篇：**语言篇 01–24**（语法到实战）+ **标准库篇 25–35**（按《[Go 标准库示例](https://github.com/polaris1119/The-Golang-Standard-Library-by-Example)》的地图，把 strings/regexp/unicode、容器、数学、编码、压缩归档、进程信号、flag/日志、database/sql、unsafe 补齐；书里 ioutil、math/rand 等"老写法"一律翻新成 1.27 的默认姿势，差异进坑位清单）。
+
 > ⚠️ 网上教程版本混杂（1.20 前的写法与现在差异不小）。本教程所有代码在 **go1.27.1 windows/amd64** 与 **darwin/amd64** 双平台实测（两个入口都会跑交叉编译检查，见下），每章坑位清单收录版本差异（含 1.27 的 `synctest.Test` 新签名、`json/v2` 默认可用等）。
 
 ## 目录结构
@@ -9,14 +11,16 @@
 ```text
 go/
 ├── README.md       本文件
-├── docs/           24 章教程（01 → 24 顺序阅读）
-├── examples/       23 个示例目录（章号 = 目录号；14/24 为自带 go.mod 的多包工程）
+├── docs/           35 章教程（01 → 35 顺序阅读；01–24 语言篇，25–35 标准库篇）
+├── examples/       34 个示例目录（章号 = 目录号；14/24 为自带 go.mod 的多包工程）
 ├── build.ps1       统一验证脚本（须 PowerShell 7 / pwsh 运行）
 ├── run-all.sh      等价的 shell 入口（macOS/Linux 用；额外做交叉编译检查）
 └── CHEATSheet.md   语法速查 + 坑位索引
 ```
 
 ## 章节索引
+
+**语言篇（01–24）**
 
 | 章 | 主题 | 示例 |
 |---|---|---|
@@ -45,6 +49,22 @@ go/
 | [23 工具链与调试](docs/23-tooling.md) | 交叉编译、pprof/trace、delve、构建信息 | `23_tooling` |
 | [24 ⭐实战：迷你 grep](docs/24-minigrep.md) | flag + 正则 + 并发遍历 + 高亮 + 测试 | `24_minigrep`（工程） |
 
+**标准库篇（25–35，按《Go 标准库示例》扩充）**
+
+| 章 | 主题 | 示例 |
+|---|---|---|
+| [25 文本三件套](docs/25-strings.md) | strings/bytes/strconv：Builder、Cut、Replacer、NumError | `25_strings` |
+| [26 正则表达式](docs/26-regexp.md) | RE2 边界、查找家族、命名分组、$ 陷阱 | `26_regexp` |
+| [27 Unicode 与 UTF-8/16](docs/27-unicode.md) | rune/字节、分类表、编解码、代理对 | `27_unicode` |
+| [28 容器](docs/28-container.md) | heap 协议、优先队列、list/ring、sort.Search | `28_container` |
+| [29 数学计算](docs/29-math.md) | 舍入/NaN、cmplx、rand/v2、math/big | `29_math` |
+| [30 编码三件套](docs/30-encoding.md) | CSV 转义、XML 标签、gob 接口注册 | `30_encoding` |
+| [31 压缩与归档](docs/31-archive.md) | gzip/zlib/flate/bzip2、tar、zip | `31_archive` |
+| [32 进程与信号](docs/32-process.md) | exec 三种输出、ExitError、CommandContext、NotifyContext | `32_process` |
+| [33 命令行与日志](docs/33-flaglog.md) | flag 子命令/自定义 Value、log、slog、expvar | `33_flaglog` |
+| [34 数据库接口](docs/34-database.md) | 手写进程内驱动：池、Scan、NULL、事务 | `34_database` |
+| [35 底层窥视](docs/35-unsafe.md) | Sizeof/Offsetof、零拷贝 string、四条合法通道 | `35_unsafe` |
+
 ## 构建工具链
 
 两个平台都要求 **Go 1.27+**（版本不符先看 01 章的版本时间线）。两个入口都会自己找 `go`，
@@ -67,7 +87,7 @@ PowerShell 入口（Windows 主用，macOS 装了 pwsh 也能跑）：
 
 ```powershell
 cd G:\code\guide\go
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All                  # 全部 23 个示例：gofmt+vet+test+运行
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All                  # 全部 34 个示例：gofmt+vet+test+运行
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 12_collections   # 单个示例
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean               # 清理 build 目录
 ```
@@ -76,7 +96,7 @@ shell 入口（macOS/Linux）：
 
 ```bash
 cd go
-./run-all.sh              # 全部 23 个示例 + 交叉编译检查
+./run-all.sh              # 全部 34 个示例 + 交叉编译检查
 ./run-all.sh 12 23        # 只跑 12_collections、23_tooling
 ./run-all.sh -v           # 附带每个示例的完整输出
 ./run-all.sh --no-cross   # 跳过末尾的交叉编译检查

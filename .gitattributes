@@ -4,3 +4,6 @@
 forth/**/*.fs text eol=lf
 # SML 源码在 WSL 里跑三套编译器：CRLF 会混进注释/字符串比较，统一 LF。
 sml/examples/*.sml text eol=lf
+# Go 源码 gofmt 只认 LF：autocrlf=true 检出成 CRLF 后 gofmt -l 会整文件标记
+# （build.ps1 的四层验证第一层就挂）。统一 LF。
+go/**/*.go text eol=lf
