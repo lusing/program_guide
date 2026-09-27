@@ -60,6 +60,12 @@ freepascal/examples/*/lib/
 # selftest 运行时产物（GUI 示例的 --selftest 日志）
 freepascal/examples/*/selftest.log
 
+# OpenCL 示例运行时产物（图像输出 / 二进制缓存 / 预编译 SPIR-V，均可由 build.ps1 再生）
+OpenCL/examples/**/*.ppm
+OpenCL/examples/**/*.pgm
+OpenCL/examples/**/kernel_cache.bin
+OpenCL/examples/**/*.spv
+
 # .NET artifacts
 *.user
 *.rsuser
