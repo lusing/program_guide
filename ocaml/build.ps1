@@ -122,6 +122,18 @@ function Test-FileEmpty {
     return ((Get-Item -LiteralPath $Path).Length -eq 0)
 }
 
+# ocamlc -o x 在 Windows 产出无后缀 PE，PowerShell 的 & 只认 .exe；
+# 补一份带后缀的副本（native 走 flexlink 会自动加 .exe，不用管）
+function Copy-BareExeIfNeeded {
+    param([Parameter(Mandatory = $true)][string]$OutName)
+    if (-not $onWindows) { return }
+    $bareExe = Join-Path $buildDir $OutName
+    $dotExe = Join-Path $buildDir "$OutName.exe"
+    if ((Test-Path -LiteralPath $bareExe) -and -not (Test-Path -LiteralPath $dotExe)) {
+        Copy-Item -LiteralPath $bareExe -Destination $dotExe -Force
+    }
+}
+
 # ----------------------------------------------------------------------
 # 六条判定。返回值只有 $true/$false，明细全部走 Write-Host
 # ----------------------------------------------------------------------
@@ -248,6 +260,10 @@ function Invoke-BuildExample {
                              -ExitCode $compileRc -LogFile $logFile @co)
     }
 
+    # ocamlc -o x 在 Windows 产出无后缀 PE，PowerShell 的 & 只认 .exe；
+    # 补一份带后缀的副本（native 走 flexlink 会自动加 .exe，不用管）
+    if ($Channel -eq "byte") { Copy-BareExeIfNeeded $outName }
+
     Push-Location $buildDir
     if ($onWindows) { & ".\$outName.exe" >$outFile 2>$errFile } else { & "./$outName" >$outFile 2>$errFile }
     $rc = $LASTEXITCODE
@@ -307,6 +323,8 @@ function Invoke-BuildLexExample {
         return (Invoke-Check -Tag $tag -Marker $marker -OutFile $outFile -ErrFile $errFile `
                              -ExitCode $compileRc -LogFile $logFile @co)
     }
+
+    if ($Channel -eq "byte") { Copy-BareExeIfNeeded $outName }
 
     Push-Location $buildDir
     if ($onWindows) { & ".\$outName.exe" >$outFile 2>$errFile } else { & "./$outName" >$outFile 2>$errFile }
