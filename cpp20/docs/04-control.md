@@ -47,7 +47,7 @@ for (int level = 1; level <= 3; ++level) {
 
 switch 的经典暗坑是**隐式穿透**：忘写 `break`，匹配 3 会一路掉进 1——上面这个"级别越高头衔越多"正是主动利用穿透的合法场景。C++17 的 `[[fallthrough]]` 把意图翻到明面上：**想穿透就标注，不标注的穿透编译器直接警告**。新代码规矩：每个 case 结尾要么 `break;` 要么 `[[fallthrough]];`，二选一不许省。
 
-switch 只接受整数/枚举/char 条件——**不能 switch 字符串**（对比 Java/C#）。string 的多路分发用 map（第 10 章）或一串 if；枚举配 switch 是天作之合（第 06 章 `enum class` 会回来）。
+switch 只接受整数/枚举/char 条件——**不能 switch 字符串**（对比 Java/C#）。string 的多路分发用 map（第 14 章）或一串 if；枚举配 switch 是天作之合（第 08 章 `enum class` 会回来）。
 
 ## 4.3 经典 for 与 while
 
@@ -92,7 +92,7 @@ for (char ch : std::string("C++")) {  // string 也能逐字符
 | `for (auto& v : xs)` | 可写引用 | 要修改元素 |
 | `for (const auto& v : xs)` | 只读引用 | 大对象（string、容器） |
 
-**默认 `const auto&`，要改才 `auto&`，确认小才按值**——这条规则覆盖 90% 场景。range-for 配 ranges 视图（第 12 章）还能再进化一层（带索引的 `enumerate`、惰性过滤）。
+**默认 `const auto&`，要改才 `auto&`，确认小才按值**——这条规则覆盖 90% 场景。range-for 配 ranges 视图（第 17 章）还能再进化一层（带索引的 `enumerate`、惰性过滤）。
 
 ## 4.5 break 与 continue
 
@@ -120,8 +120,8 @@ for (int v : nums) {
 ## 4.7 坑位清单
 
 1. **switch 穿透漏 break**：本节开头的头号坑，`[[fallthrough]]` 纪律解决。
-2. **range-for 里改容器**：遍历中 push_back/erase 会使迭代器失效（UB）。收集式改法：先遍历记录、后统一修改；过滤用 `std::erase_if`（第 10 章）。
-3. **无符号倒序死循环**：`size_t i` 减到 0 再 `--` 回绕成最大值，`i >= 0` 永真。倒序用 `views::reverse`（第 12 章）或迭代器。
+2. **range-for 里改容器**：遍历中 push_back/erase 会使迭代器失效（UB）。收集式改法：先遍历记录、后统一修改；过滤用 `std::erase_if`（第 14 章）。
+3. **无符号倒序死循环**：`size_t i` 减到 0 再 `--` 回绕成最大值，`i >= 0` 永真。倒序用 `views::reverse`（第 17 章）或迭代器。
 4. **浮点相等比较**：`0.1 + 0.2 == 0.3` 是 false（二进制表示误差）。判相等用差值 `< 1e-9` 一类容差。
 5. **逗号表达式混入**：`for (i = 0, j = 9; ...)` 的逗号是"顺序求值"不是双变量声明——多变量分别声明。
 6. **`v % 2 == 1` 判奇数遇到负数**：`-3 % 2 == -1`，负奇数漏判。判奇用 `v % 2 != 0`。

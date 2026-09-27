@@ -39,7 +39,7 @@ int main() {
     // ═══ 3.5 constexpr：编译期就定下来的值 ═══
     constexpr double tau = 2.0 * std::numbers::pi;  // <numbers> (C++20)
     constexpr int months = 12;
-    int weekly[months]{};  // C 数组长度须是编译期常量（数组详见第 06 章）
+    int weekly[months]{};  // C 数组长度须是编译期常量（数组详见第 08 章）
     weekly[0] = 1;
     static_assert(months == 12);  // 编译期断言：免费的单测
 

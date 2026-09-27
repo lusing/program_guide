@@ -2,7 +2,7 @@
   build.ps1 —— 编译 + 运行 + 自检 examples 下的全部示例（PowerShell 入口）
 
     pwsh ./build.ps1 -All                 全量：逐示例编译（零告警）+ 运行自检
-    pwsh ./build.ps1 -Example 06_compound 单示例
+    pwsh ./build.ps1 -Example 08_compound 单示例
     pwsh ./build.ps1 18 22                按编号跑（位置参数）
     pwsh ./build.ps1 -All -ShowOutput     附带打印每个示例的运行输出
     pwsh ./build.ps1 -Clean               清理 build 目录
@@ -23,7 +23,7 @@
        —— 编译命令把 stderr 并进了日志文件，所以第 2 条盖不住编译期告警
 
   结束标记用示例自己最后一行打印的 "自检通过"，不用 "==== NN 结束 ===="：
-  docs/ 下 24 章正文里嵌了示例的完整输出，改一行文案就要同步 24 篇文档；
+  docs/ 下 31 章正文里嵌了示例的完整输出，改一行文案就要同步 31 篇文档；
   "自检通过"本来就承担了这个语义。
 #>
 [CmdletBinding(PositionalBinding = $false)]
@@ -152,9 +152,13 @@ if ($clangxx) {
         }
     }
     if (-not $libcxxDir) {
-        # 非 MacPorts 布局（系统 clang / Linux 的 clang）
-        $clangCflags  += "-stdlib=libc++"
-        $clangLdflags += @("-stdlib=libc++", "-lc++abi")
+        # 非 MacPorts 布局：Linux 的系统 clang 走 libc++；Windows 的原生 clang
+        # （如 scoop LLVM）自动探测 MSVC 的 STL 与链接库，什么 -stdlib 都不要加
+        # ——加了 -lc++abi 反而链接失败（2026-09-28 实测：could not open 'c++abi.lib'）。
+        if (-not $onWindows) {
+            $clangCflags  += "-stdlib=libc++"
+            $clangLdflags += @("-stdlib=libc++", "-lc++abi")
+        }
     }
     $clangCflags += "-fexperimental-library"
 }
@@ -185,13 +189,13 @@ function Get-Channels {
 function Get-DiffReason {
     param([string]$Name)
     switch ($Name) {
-        "08_classes"    { return "示例故意演示实参求值顺序未指定（MSVC/GCC 从右往左、clang 从左往右）" }
-        "19_threads"    { return "多线程按完成顺序打印，调度不同则行序不同" }
-        "20_atomic"     { return "并行算法把工作拆给几个线程由实现决定" }
-        "21_coroutines" { return "libc++ 无 <generator>，clang 通道跳过 21.3 并说明" }
-        "22_textfiles"  { return "libstdc++ 15 无 <mdspan>，gcc 通道跳过 22.4 并说明" }
-        "23_tooling"    { return "两套库都没有 <stacktrace>，各通道都跳过 23.3 并说明" }
-        "24_minigrep"   { return "多线程搜索的命中行顺序随调度变化" }
+        "11_classes"    { return "示例故意演示实参求值顺序未指定（MSVC/GCC 从右往左、clang 从左往右）" }
+        "26_threads"    { return "多线程按完成顺序打印，调度不同则行序不同" }
+        "27_atomic"     { return "并行算法把工作拆给几个线程由实现决定" }
+        "28_coroutines" { return "libc++ 无 <generator>，clang 通道跳过 28.3 并说明" }
+        "29_textfiles"  { return "libstdc++ 15 无 <mdspan>，gcc 通道跳过 29.4 并说明" }
+        "30_tooling"    { return "stacktrace：两库都可用时帧数/符号地址因编译器而异；库缺失时跳过 30.3 并说明" }
+        "31_minigrep"   { return "多线程搜索的命中行顺序随调度变化" }
         default         { return "" }
     }
 }
@@ -212,7 +216,12 @@ function Invoke-Capture {
         [Parameter(Mandatory = $true)][string]$OutFile,
         [Parameter(Mandatory = $true)][string]$ErrFile,
         [string]$WorkDir = $projectRoot,
-        [int]$TimeoutMs = 300000
+        [int]$TimeoutMs = 300000,
+        # 非空时把整个字符串原样作为命令行尾巴（不再逐参数转义）。
+        # 只给 cmd.exe 的批处理入口用：pwsh 7.6/.NET 9 起 ArgumentList 会把
+        # 内嵌引号转义成 \"，cmd 的 /c 引号规则一搅和，vcvars64.bat 就变成了
+        # 带字面反斜杠引号的"未知命令"（2026-09-28 实测回归）。
+        [string]$RawArgs = ""
     )
 
     $psi = New-Object System.Diagnostics.ProcessStartInfo
@@ -221,9 +230,11 @@ function Invoke-Capture {
     $psi.RedirectStandardOutput = $true
     $psi.RedirectStandardError  = $true
     $psi.WorkingDirectory       = $WorkDir
-    $psi.EnvironmentVariables["TMPDIR"] = $tmpDir   # 让 22_textfiles 打出的临时路径可复现
+    $psi.EnvironmentVariables["TMPDIR"] = $tmpDir   # 让 29_textfiles 打出的临时路径可复现
 
-    if ($PSVersionTable.PSVersion.Major -ge 6) {
+    if ($RawArgs -ne "") {
+        $psi.Arguments = $RawArgs
+    } elseif ($PSVersionTable.PSVersion.Major -ge 6) {
         foreach ($a in $Args) { $psi.ArgumentList.Add($a) }
     } else {
         # PS 5.1 只能传一个命令行串，按 CommandLineToArgvW 的规则转义
@@ -255,7 +266,8 @@ function Invoke-Capture {
     return @{ ExitCode = $code; TimedOut = $timedOut }
 }
 
-# 走 cmd.exe 跑一段批处理（MSVC 需要先 call vcvars64.bat 才认得 cl）
+# 走 cmd.exe 跑一段批处理（MSVC 需要先 call vcvars64.bat 才认得 cl）。
+# 注意走 -RawArgs：整行原样交给 cmd，不经 ArgumentList 的转义。
 function Invoke-Batch {
     param(
         [Parameter(Mandatory = $true)][string]$CommandLine,
@@ -263,8 +275,54 @@ function Invoke-Batch {
         [Parameter(Mandatory = $true)][string]$ErrFile,
         [string]$WorkDir = $projectRoot
     )
-    return Invoke-Capture -Exe $env:ComSpec -Args @("/c", $CommandLine) `
+    return Invoke-Capture -Exe $env:ComSpec -RawArgs ("/c " + $CommandLine) `
                           -OutFile $OutFile -ErrFile $ErrFile -WorkDir $WorkDir
+}
+
+# ---------------------------------------------------------------
+# Windows 上的"通道体检"：PATH 里找得到的编译器不一定真能链接本教程的特性。
+# 典型案例（2026-09-28 实测）：scoop GCC 15.2.0 (MinGW) 的 libstdc++ 缺
+# MinGW 终端补丁的两个符号（std::__open_terminal / __write_to_terminal），
+# 一链接 <print> 就 undefined reference —— 编译能过、链接必挂，跑完全部
+# 示例之前先用 8 行探针把通道资格测掉，失败就禁用该通道并说明原因，
+# 免得 69 项全红却看不出是环境问题还是代码问题。
+# ---------------------------------------------------------------
+$probeSrc = Join-Path $buildDir "_probe.cpp"
+if ($onWindows -and ($clangxx -or $gccxx)) {
+    Set-Content -LiteralPath $probeSrc -Encoding utf8 -Value @'
+#include <print>
+#include <thread>
+#include <execution>
+#include <vector>
+#include <numeric>
+int main() {
+    std::vector<int> v{1, 2, 3};
+    std::println("{}", std::reduce(std::execution::par, v.begin(), v.end()));
+    (void)std::jthread{[] {}};
+}
+'@
+    foreach ($pair in @(@("clang", $clangxx, $clangCflags, $clangLdflags),
+                        @("gcc",   $gccxx,   $gccCflags,   $gccLdflags))) {
+        $chan, $tool, $cf, $lf = $pair
+        if (-not $tool) { continue }
+        $probeExe = Join-Path $buildDir "_probe_$chan.exe"
+        $r = Invoke-Capture -Exe $tool `
+                -Args (@($commonFlags) + $cf + @($probeSrc, "-o", $probeExe) + $lf) `
+                -OutFile (Join-Path $buildDir "_probe_$chan.build") `
+                -ErrFile (Join-Path $buildDir "_probe_$chan.builderr") -WorkDir $buildDir
+        $ok = ($r.ExitCode -eq 0)
+        if ($ok) {
+            $r2 = Invoke-Capture -Exe $probeExe -Args @() `
+                    -OutFile (Join-Path $buildDir "_probe_$chan.out") `
+                    -ErrFile (Join-Path $buildDir "_probe_$chan.err") -WorkDir $buildDir
+            $ok = ($r2.ExitCode -eq 0)
+        }
+        if (-not $ok) {
+            Write-Host ("[skip] {0} 通道在 Windows 上编译/运行探针失败，本机禁用（详见 build/_probe_{0}.builderr）" -f $chan) -ForegroundColor DarkYellow
+            if ($chan -eq "clang") { $clangxx = ""; $clangCflags = @(); $clangLdflags = @() }
+            else { $gccxx = ""; $gccCflags = @(); $gccLdflags = @() }
+        }
+    }
 }
 
 function Read-TextFile {
@@ -397,7 +455,7 @@ function Invoke-OneChannel {
                           -OutFile $bldLog -ErrFile $bldErr
         if ($r.ExitCode -ne 0) { return @{ Ok = $false; Result = $r } }
     }
-    elseif ($Name -eq "18_modules") {
+    elseif ($Name -eq "24_modules") {
         # ---- 模块：接口单元必须先编成"已编译模块接口" ----
         #   clang: --precompile 出 .pcm，import 方用 -fmodule-file=math=math.pcm
         #   gcc  : -fmodules-ts 编 .ixx 时把 math.gcm 落进 ./gcm.cache
@@ -406,7 +464,7 @@ function Invoke-OneChannel {
         Get-ChildItem -LiteralPath $wd -File -ErrorAction SilentlyContinue | Remove-Item -Force
         Copy-Item -Path (Join-Path $Dir "*") -Destination $wd -Force
         $ixx = (Get-ChildItem -LiteralPath $wd -Filter "*.ixx" | Select-Object -First 1)
-        if (-not $ixx) { throw "18_modules 缺 .ixx 模块接口文件" }
+        if (-not $ixx) { throw "24_modules 缺 .ixx 模块接口文件" }
         $mod = [System.IO.Path]::GetFileNameWithoutExtension($ixx.Name)  # math.ixx → math
 
         if ($Channel -eq "clang") {
@@ -563,7 +621,7 @@ if ($All) {
 
 Write-Host "用法:" -ForegroundColor Yellow
 Write-Host "  ./build.ps1 -All                 全量：逐示例编译（零告警）+ 运行自检"
-Write-Host "  ./build.ps1 -Example 06_compound 单示例编译+运行"
+Write-Host "  ./build.ps1 -Example 08_compound 单示例编译+运行"
 Write-Host "  ./build.ps1 18 22                按编号跑"
 Write-Host "  ./build.ps1 -All -ShowOutput     附带打印运行输出"
 Write-Host "  ./build.ps1 -Clean               清理 build 目录"
