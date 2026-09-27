@@ -3,7 +3,9 @@
 前面 23 章里，等式 `x ≡ y` 一直是个归纳数据类型：只有 `refl` 一个构造子，
 证明要么"两边本来就一样"，要么靠 `J`/subst 做替换。这种 intensional 等式
 很好用，但它有一个著名的欠账：**函数外延性和 univalence 在纯 MLTT 里证不
-出来**，第 17 章我们只能把 `Function.Extensionality` 当 postulate 摆着。
+出来**，第 17 章我们只能自己 postulate 一枚外延公理摆着（stdlib 3.0 里
+这条公理的**类型**住在 `Axiom.Extensionality.Propositional`，库本身不
+提供它的证明）。
 本章引入 Agda 的 **立方模式（cubical mode）**：等式被解释成**路径**——
 `x ≡ y` 是从 `x` 走到 `y` 的一条道路，参数 `i` 取值于一个区间 `I`，
 `i0` 是起点、`i1` 是终点。在这个解释下，univalence（等价即相等）不再是

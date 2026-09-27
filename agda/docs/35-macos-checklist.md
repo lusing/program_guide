@@ -199,4 +199,4 @@ Data/String.agda:30:open import Data.String.Properties using (_≟_; _≈?_; _�
    或乱码，`build.sh` 的 darwin 分支 `export LC_ALL=en_US.UTF-8` 后正常。
 
 ---
-上一章：[34 · stdlib 自动证明](34-stdlib-automation.md) ｜ 返回：[README](../README.md)
+上一章：[34 · stdlib 自动证明](34-stdlib-automation.md) ｜ 下一章：[36 · Agda 的计算模型](36-computation-model.md) ｜ 返回：[README](../README.md)

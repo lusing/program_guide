@@ -2,11 +2,16 @@
 
 面向**会编程（任意语言背景）、初学 Agda** 的读者：从依赖类型语言的心智模型讲到
 类型系统、数据与模式匹配、命题等价与归纳证明，再到 Vec/Fin 依赖编程实战、
-判定性与代数结构、Monad/IO/余归纳/反射等工程专题，最后以**类型良好表达式
-解释器**与**可验证插入排序**两个综合项目收束。
+判定性与代数结构、Monad/IO/余归纳/反射等工程专题，以**类型良好表达式
+解释器**与**可验证插入排序**两个综合项目收束基础篇，最后 36–44 章为
+**书本篇**——按 Maguire《Certainty by Construction》与 Stump《Verified
+Functional Programming in Agda》两本教材扩充的计算模型、pattern 同义词、
+instance 参数、intrinsic/extrinsic、monoid 折叠、类型代数、Braun 树、
+类型层反射与 SK 组合子实战。
 **章号 = 示例编号**——01–27 章每章对应 `examples/` 里一个经 agda 2.9.0 +
-stdlib 3.0 类型检查验证的完整 .agda 文件，29–34 章为 stdlib 深潜示例
-（28 章为 60+ 条实测坑位总清单、35 章为 macOS 校验清单，均无示例）。
+stdlib 3.0 类型检查验证的完整 .agda 文件，29–34 章为 stdlib 深潜示例，
+36–44 章为书本篇示例（28 章为 106 条实测坑位总清单 + 书本篇索引、
+35 章为 macOS 校验清单，均无示例）。
 
 > 核心理念：**类型即命题，程序即证明，且程序必须终止。**
 > Agda 把依赖类型做成了一等公民——编译（类型检查）通过，定理就成立；
@@ -19,8 +24,8 @@ agda/
 ├── README.md              本文件
 ├── build.sh               类型检查 / 编译运行脚本（bash）
 ├── AgdaTutorial.agda-lib  项目库定义（examples 目录 + 标准库路径）
-├── docs/                  35 章教程（01 → 35 顺序阅读）
-├── examples/              33 个 .agda 示例（章号 = 示例编号）
+├── docs/                  44 章教程（01 → 44 顺序阅读）
+├── examples/              42 个 .agda 示例（章号 = 示例编号）
 └── _build/                类型检查产物（已 gitignore）
 ```
 
@@ -55,7 +60,7 @@ agda/
 | [25 实战：类型良好表达式解释器](docs/25-typedast.md) | 依赖 AST：良 scoped + 良 typed 构造即正确 | `Ex25_typedast.agda` |
 | [26 实战：可验证插入排序](docs/26-sorting.md) | sorted 谓词 + 重排证明的插入排序 | `Ex26_sorting.agda` |
 | [27 标准库阅读指南](docs/27-stdlib-guide.md) | 模块组织、Base/API 约定、命名地图 | `Ex27_stdlib.agda` |
-| [28 坑清单与最佳实践](docs/28-pitfalls.md) | 60+ 条实测坑位与最佳实践总清单 | — |
+| [28 坑清单与最佳实践](docs/28-pitfalls.md) | 106 条实测坑位与最佳实践总清单 + 书本篇坑位索引 | — |
 | [29 stdlib 代数结构](docs/29-stdlib-algebra.md) | Algebra 三层（Definitions/Structures/Bundles）+ Solver 家族 | `Ex29_stdlib-algebra.agda` |
 | [30 stdlib 判定性体系](docs/30-stdlib-decidable.md) | Dec 内部构造、Recomputable、判定式组合子、`_≟_`→`_≡?_` | `Ex30_stdlib-decidable.agda` |
 | [31 stdlib 关系产业](docs/31-stdlib-relations.md) | 关系三层 + Construct 变形、Reasoning 挂接 | `Ex31_stdlib-relations.agda` |
@@ -63,12 +68,24 @@ agda/
 | [33 stdlib 数据结构系统](docs/33-stdlib-data.md) | List 关系树、Fin 构造、`Data.AVL`→`Data.Tree.AVL` | `Ex33_stdlib-data.agda` |
 | [34 stdlib 自动证明](docs/34-stdlib-automation.md) | Reasoning 基础设施 + Tactic 求解器（Cong/Monoid/Ring） | `Ex34_stdlib-automation.agda` |
 | [35 macOS 校验与 3.0 迁移](docs/35-macos-checklist.md) | macOS 源码编译装机 + 2.3→3.0 导入迁移清单 | — |
+| [36 Agda 的计算模型](docs/36-computation-model.md) | 规范化、卡住项（stuck）、分支因子、copattern 与 η | `Ex36_computation-model.agda` |
+| [37 pattern 同义词与差分整数](docs/37-pattern-synonyms.md) | monus、差分整数记录与标签法、规范形做类型、`pattern` 声明、`Data.Integer` | `Ex37-patsyn.agda` |
+| [38 instance 参数与模算术](docs/38-instance-modular.md) | `⦃ ⦄` 实例搜索算法、手写 typeclass、多实例冲突、`ℕ/nℕ` 商模型 | `Ex38_modular.agda` |
+| [39 intrinsic 与 extrinsic 证明](docs/39-intrinsic-extrinsic.md) | 三种「判断」、`Dec`/`Tri`、BST 插入查找的两版实现与 ±∞ 收口 | `Ex39_intrinsic_extrinsic.agda` |
+| [40 monoid 与折叠：单子折纸](docs/40-monoid-origami.md) | `IsMonoid`/`Monoid`、`foldList`、`fold-++`、融合与同态搬运 | `Ex40_monoids.agda` |
+| [41 类型的代数](docs/41-type-algebra.md) | `≅`、`Bool ≅ Fin 2`、`Vec ≅ Fin →`、半环定律与 ADT 多项式 | `Ex41_type_algebra.agda` |
+| [42 Braun 树与列表运算推理](docs/42-braun-lists.md) | `length`/`reverse`/`filter` 等式、keep/inspect idiom、Braun 树 | `Ex42_braun_lists.agda` |
+| [43 类型层计算与证明反射](docs/43-typelevel-reflection.md) | 类型层整数与 `≤Z`、`Setω`、格式化打印、`quoteTerm`/`showTerm` 反射 | `Ex43_typelevel_reflection.agda` |
+| [44 SK 组合子：操作语义与终止性](docs/44-combinators.md) | 规则即构造子、`Sfree` 谓词、`Acc` 良基递归与规范化器 | `Ex44_combinators.agda` |
 
 学习路线：01–04 上手与记号 → 05–10 数据建模与依赖类型（宇宙/匹配/递归/
 列表/记录/Fin）→ 11–18 证明主线（等式/逻辑/归纳/推理/判定/Vec/同构/代数）→
 19–24 工程专题（Monad/IO/文本/余归纳/反射/立方）→ 25–26 综合实战 →
 27–28 手册化收尾（先查 28 再动手）→ 29–34 stdlib 深潜（代数/判定/关系/
-类型运算/数据结构/自动化，可穿插此前各章复习）→ 35 macOS 装机校验清单。
+类型运算/数据结构/自动化，可穿插此前各章复习）→ 35 macOS 装机校验清单 →
+36–44 **书本篇**（Maguire/Stump 教材扩充：36 计算模型是这一段的钥匙，
+37–38 记号与实例机制，39–42 证明风格与 algebra of types 实战，
+43–44 反射与语义学收官）。
 
 ## 工具链
 
@@ -101,8 +118,11 @@ cd agda
   这一行即可。
 - 本教程现以 Agda 2.9.0 + stdlib 3.0 为基线（macOS 源码编译装机与全量
   校验结果见 35 章）。stdlib 各版本间模块路径有挪动（如 `Data.AVL` →
-  `Data.Tree.AVL`、单子群顶层名 `+-isMonoid` → `+-0-isMonoid`），
-  2.3→3.0 的实测迁移清单见 [35 章](docs/35-macos-checklist.md)。
+  `Data.Tree.AVL`、顶层没有 `Data.Tree` 这个模块而树族住在
+  `Data/Tree/{Rose,Binary,AVL}`、单子群顶层名 `+-isMonoid` →
+  `+-0-isMonoid`），2.3→3.0 的实测迁移清单见
+  [35 章](docs/35-macos-checklist.md)（书本篇另见 39 章 39.10 与
+  42 章 42.14 的实名普查）。
 - `build.sh` 自动定位 agda：先探 `PATH`，再逐个试常见安装位（stack/
   cabal/ghcup/Homebrew），找不到才报错——非交互 shell 里 PATH 缺
   `/opt/local/bin` 也能跑；darwin 下脚本会 `export LC_ALL=en_US.UTF-8`，
@@ -114,9 +134,12 @@ cd agda
   每章开头一行"对应示例"标注。
 - 示例文件名带 `Ex` 前缀：Agda 模块名不能以数字开头，
   `module 13_induction` 直接是语法错误——这个坑 01 章就会撞上。
-  04/22 两章用**连字符**（`Ex04-syntax`、`Ex22-codata`）：`syntax`/`codata`
-  是关键字，被下划线分隔成独立词法片段后连 parse 都过不去。
+  04/22/37 三章用**连字符**（`Ex04-syntax`、`Ex22-codata`、`Ex37-patsyn`）：
+  `syntax`/`codata`/`pattern` 是关键字，被下划线分隔成独立词法片段后
+  连 parse 都过不去。
 - 28 章无示例，是全教程坑位的汇总清单——写代码前先查它。
+- 36–44 章（书本篇）每章除示例与正文外，还各自带一份「实测坑位清单」，
+  报错文本全部来自当时删除的临时探针文件（正文首段注明）。
 
 ## 相关教程
 

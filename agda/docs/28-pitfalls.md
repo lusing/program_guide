@@ -5,7 +5,8 @@
 在 `examples/` 下临时建 `Probe28*.agda` 探针、用 agda 2.8.0 + stdlib 2.3 逐条跑出
 真实报错后删除）。共 106 条，按主题分八节；每条给**坑名 → 报错/现象 → 正确姿势 →
 涉及章节**。用法：新报错先按标签（如 `UnsolvedMetaVariables`）在本页搜；动手写
-某类代码前把对应小节通读一遍。全部坑位的共同底纹是——
+某类代码前把对应小节通读一遍。36–44 章（书本篇）的坑位不在下面 106 条内，
+另立各章末尾，本页 28.10 给索引与跨章高频九条。全部坑位的共同底纹是——
 
 > **Agda 的退出码 0 只代表「没有 error」，不代表「没有事故」。**
 > `ModuleDoesntExport`、`UnreachableClauses`、`RewritesNothing` 统统不拦 CI。
@@ -344,7 +345,7 @@
 - 现象：猜 import、猜记号、猜定律顺序三件事烧掉新手一半时间。姿势：报错三读（标签→坐标→脑内 normalize）+ 用前 `:Check`/`:type` + 改动后最小化复跑 `./build.sh ExNN`；`--only-scope-checking` 可先验作用域再谈类型。→ [02](02-toolchain.md) [14](14-reasoning.md)
 
 **106 · 版本迁移以编译通过为准**
-- 现象：Agda/stdlib 每版都在挪模块、杀语法（`inherit`、`ret`、`--partial-definitions`、`_≡˂_`……本页相当一部分条目是版本祭品）。姿势：教程/代码库钉死版本对（本教程 = Agda 2.8.0 + stdlib 2.3）；升级时按报错微调 import，把每处失效记进 27 章阅读指南。→ [27](27-stdlib-guide.md)
+- 现象：Agda/stdlib 每版都在挪模块、杀语法（`inherit`、`ret`、`--partial-definitions`、`_≡˂_`……本页相当一部分条目是版本祭品）。姿势：教程/代码库钉死版本对（本页条目实测于 Agda 2.8.0 + stdlib 2.3，教程当前基线已升到 Agda 2.9.0 + stdlib 3.0，逐条差异见 [35 章](35-macos-checklist.md)）；升级时按报错微调 import，把每处失效记进 27 章阅读指南。→ [27](27-stdlib-guide.md) [35](35-macos-checklist.md)
 
 ## 28.9 最佳实践十条（全教程收束）
 
@@ -359,5 +360,50 @@
 9. **求值即证明**：源文件里展示计算用 `_ : 2 + 3 ≡ 5; _ = refl`，交互命令 `Compute` 不进代码；能 refl 的实例先钉住，再归纳通式（03/11 章主线）。
 10. **验证收口**：每章示例过 `agda` 退出码 0 才算数；`--compile` 产物要 `ls` 确认（9 条）；升级 Agda/stdlib 版本时，本页就是你的回归测试清单（106 条）。
 
+## 28.10 书本篇（36–44 章）新增坑位索引
+
+上面 106 条收束到 35 章为止。36–44 章（Maguire / Stump 教材扩充）每章
+末尾另带一份「实测坑位清单」，本页不重复收录，只给索引与**跨章复用率
+最高**的九条——新报错在本页搜不到时，先按下表去对应章查。
+
+| 章 | 坑位小节 | 主题关键词 |
+|---|---|---|
+| 36 | [36.8](36-computation-model.md) | 卡住项、section 下划线、`using` 漏构造子、copattern 要先 `open` |
+| 37 | [37.10](37-pattern-synonyms.md) | `pattern` 是关键字、dot pattern 过度约束、`Data.Integer` 命名 |
+| 38 | [坑位清单](38-instance-modular.md) | instance 搜索作用域、多实例冲突、`refl/sym/trans` 重载、record 即 Σ |
+| 39 | [39.11](39-intrinsic-extrinsic.md) | 嵌套 with、`λ ()` 的适用面、`toWitness` 点名、intrinsic 报错读法 |
+| 40 | [40.10](40-monoid-origami.md) | monoid record 装箱层级、`Set₁`、dual 的 `sym` 换向 |
+| 41 | [41.10](41-type-algebra.md) | `≅` 字段不裸进作用域、`mk↔ₛ′` 反交方向、隐式模式按位置吃 |
+| 42 | [坑位清单](42-braun-lists.md) | `length-++` 参数结构、`rewrite` 不apply、`inspect` 与 `keep` |
+| 43 | [43.7](43-typelevel-reflection.md) | `Setω`、`quoteTerm` 不是可 import 的名字、格式化打印 |
+| 44 | [44.6](44-combinators.md) | `Acc` 字段方向、Bool+`T` 的卡住合取、符号构造子撞 fixity |
+
+九条最容易再次撞上的：
+
+1. **2.9 报错文案换代**：`The terms … and … are not equal at type …`
+   三段式取代旧版 `… !=< …`；老教程的报错对不上先怀疑版本。→ [36](36-computation-model.md)
+2. **嵌套 with 回不到外层**：单 `...` 永远咬住最内层，外层分支被当成对
+   内层结果做匹配（`ConstructorPatternInWrongDatatype`）；`... ... |` 想
+   显式点两层则在 parse 阶段就死（`Syntax.MultipleEllipses`）。→ [39](39-intrinsic-extrinsic.md)
+3. **`λ ()` 只吃「构造子层面为空」的类型**：索引冲突不算空——
+   `7 ∈ tree` 报 `ShouldBeEmpty` 并列出形状合法的 `left`/`right`。→ [39](39-intrinsic-extrinsic.md)
+4. **`toWitness` / `toWitnessFalse` 的隐式 `Dec` 必须点名**：`toWitness tt`
+   省掉 `{a? = …}` 直接 `UnsolvedMetaVariables`。→ [39](39-intrinsic-extrinsic.md)
+5. **`¬ A` 里的 `⊥` 在 3.0 打印成 `Data.Irrelevant.Irrelevant Data.Empty.Empty`**：
+   因为 `⊥ = Irrelevant Empty`（好让 Agda 判定地宣布「⊥ 的一切证明相等」），
+   读报错时把这层剥掉。→ [39](39-intrinsic-extrinsic.md)
+6. **模块搬家与「压根不是模块」**：顶层没有 `Data.Tree`（树族在
+   `Data/Tree/{Rose,Binary,AVL}`）、没有 `Function.Extensionality`（外延
+   公理的*类型*在 `Axiom.Extensionality.Propositional`）、`Fin` 的旧搬运工
+   `embed`/`with≤`/`fromℕ≤` 与 `funExt` 全部不导出。→ [32](32-stdlib-functions.md) [39](39-intrinsic-extrinsic.md) [42](42-braun-lists.md)
+7. **终止检查只认语法结构**：把「测度变小」写成函数参数的递归照撞
+   `TerminationIssue`；良基递归的正规写法是让递归走 `acc` 的字段
+   （`normalize c (acc h) with step? c | ... = normalize d (h p)`）。→ [44](44-combinators.md)
+8. **符号构造子名会卡 fixity**：`-∘-` 这类名字写 `infixr 6 _-∘-_` 报
+   `UnknownNamesInFixityDecl`，声明放在 `data` 之后也一样——换名最省事。→ [44](44-combinators.md)
+9. **Bool 判定 + `T` 在合取上会卡死**：`T (P a ∧ Q b)` 拆不出两支证据
+   （stuck 合取无法 unify），需要**结构化的证据数据类型**而不是布尔
+   谓词——这是「什么时候该从 Bool 版升级到归纳谓词」的判据。→ [44](44-combinators.md)
+
 ---
-上一章：[27 · 标准库阅读指南](27-stdlib-guide.md) ｜ 返回：[README](../README.md)
+上一章：[27 · 标准库阅读指南](27-stdlib-guide.md) ｜ 下一章：[29 · stdlib 代数结构](29-stdlib-algebra.md) ｜ 返回：[README](../README.md)
