@@ -3,7 +3,7 @@
 OCaml 入门到进阶，**41 章分章文档 + 36 个可运行示例**。全部示例在字节码编译器（`ocamlc`）、原生编译器（`ocamlopt`）与顶层解释器（`ocaml`）三种方式下验证通过；验证环境：
 
 - **Windows 11 + MSYS2 UCRT64，OCaml 5.4.1**（全量三通道全绿）
-- **macOS 12.7 (Darwin x86_64) + MacPorts，OCaml 5.5.0**（2026-09-20 实测）：
+- **macOS 12.7 / 14.8.9 (Darwin x86_64) + MacPorts，OCaml 5.5.0**（2026-09-20 首测，2026-09-27 在 14.8.9 上三通道复测，`run-all.sh --interp` 通过 107 / 失败 0）：
   两个入口结论一致，零告警、零 stderr 差异
 
 macOS 侧唯一需要留意的差异是：**用到 `Unix` 模块的示例必须显式写 `-I +unix`**，否则 OCaml 5 会吐 `Alert ocaml_deprecated_auto_include`（属于告警，会被「编译日志为空」这条判定拦下）。两个入口都已内置 unix 依赖表。
@@ -189,6 +189,10 @@ ocamlc -w -24 -I +unix unix.cma -o build/15_algorithms examples/15_algorithms.ml
 - macOS（12.7 x86_64 + MacPorts, OCaml 5.5.0）2026-09-20 实测：
   两个入口全绿，零告警（扩充前基线；新增 10 个示例中仅
   36_memory_model 的 `[@atomic]` 字段需要 OCaml ≥ 5.4）
+- macOS（14.8.9 x86_64 + MacPorts, OCaml 5.5.0 非 flambda）2026-09-27 复测：
+  两个入口各自三通道 107 项全通过（36 示例 byte+native，
+  35 单文件示例另走解释器，26 多文件跳过），零告警、零 stderr 差异；
+  `run-all.sh --interp` 与 `pwsh build.ps1 -All -Native -Interp`（PowerShell 7.6.6）结论一致
 - 初版 12–22 号示例存在与平台无关的结构性语法错误（顶层
   `let ... in`、缺 `;;`、无效 package type 等），已全部修复并
   计入第 36 章坑清单
