@@ -1,6 +1,6 @@
 # OCaml 教程与示例
 
-OCaml 入门到进阶，**36 章分章文档 + 31 个可运行示例**。全部示例在字节码编译器（`ocamlc`）、原生编译器（`ocamlopt`）与顶层解释器（`ocaml`）三种方式下验证通过；验证环境：
+OCaml 入门到进阶，**41 章分章文档 + 36 个可运行示例**。全部示例在字节码编译器（`ocamlc`）、原生编译器（`ocamlopt`）与顶层解释器（`ocaml`）三种方式下验证通过；验证环境：
 
 - **Windows 11 + MSYS2 UCRT64，OCaml 5.4.1**（全量三通道全绿）
 - **macOS 12.7 (Darwin x86_64) + MacPorts，OCaml 5.5.0**（2026-09-20 实测）：
@@ -8,11 +8,12 @@ OCaml 入门到进阶，**36 章分章文档 + 31 个可运行示例**。全部�
 
 macOS 侧唯一需要留意的差异是：**用到 `Unix` 模块的示例必须显式写 `-I +unix`**，否则 OCaml 5 会吐 `Alert ocaml_deprecated_auto_include`（属于告警，会被「编译日志为空」这条判定拦下）。两个入口都已内置 unix 依赖表。
 
-这里不是「语法速览」。模块系统（`module` / `signature` / `functor` / `include`）、首类模块、GADT、OCaml 5 的 Domain 并行与 Effect 效应处理器、绑定运算符（`let*` / `and*`）、错误处理、ocamllex 生成式词法分析，都在示例里实打实跑过。
+这里不是「语法速览」。模块系统（`module` / `signature` / `functor` / `include`）、首类模块、GADT、OCaml 5 的 Domain 并行、Effect 效应处理器与内存模型、绑定运算符（`let*` / `and*`）、错误处理、ocamllex 生成式词法分析，都在示例里实打实跑过。
 
-**2026-09 按书扩充**：第 31–35 章为「书本篇进阶」，按
-《OCaml 语言编程基础教程》（陈钢、张静著，人民邮电出版社 2018）
-第 2.11–2.12、3.9–3.12、4.5、4.10–4.11、8.1–8.14 节扩充——标签参数与可选参数、延迟求值、模块表达式与抽象类型深水区、弱多态与四向链表、面向对象进阶（多重继承 / 虚拟类 / 子类型 / 二元方法）。书的第 5–7 章（Graphics 图形编程、移植 F#、C# 互操作）平台绑定强、无法无头三通道验证，不在本教程范围内；图形案例在示例 31 中改写为控制台等价版本。另参考 Real World OCaml 中文翻译（`G:\github\book\translation\real_world_ocaml`）第 1–10 章。
+**2026-09 两轮扩充**：
+
+- **第 31–35 章按书扩充**（书本篇）：按《OCaml 语言编程基础教程》（陈钢、张静著，人民邮电出版社 2018）第 2.11–2.12、3.9–3.12、4.5、4.10–4.11、8.1–8.14 节——标签参数与可选参数、延迟求值、模块表达式与抽象类型深水区、弱多态与四向链表、面向对象进阶。书的第 5–7 章（Graphics 图形编程、移植 F#、C# 互操作）平台绑定强、无法无头三通道验证，未纳入；图形案例在示例 31 中改写为控制台等价版本。另参考 Real World OCaml 中文翻译第 1–10 章。
+- **第 36–40 章按官方手册扩充**（manual 篇）：按 OCaml 官方仓库 manual 源码（`G:\github\lang\ocaml\manual`）的 tutorials 与 refman 语言扩展——`%a` 自定义打印机与 Format 盒子、多态变体深水区、显式多态与类型注记（rank-2 / variance / `type nonrec` / inline record / extensible variant）、语言扩展拾遗（generative functor / `open!` / `let exception` / `{< >}` / refutation case / 字面量全集 / `module rec`）、OCaml 5 内存模型（happens-before / DRF-SC / `[@atomic]` 字段）。
 
 ## 目录结构
 
@@ -21,16 +22,18 @@ ocaml/
 ├── README.md                 本文件
 ├── build.ps1                 PowerShell 构建/验证入口（跨平台）
 ├── run-all.sh                shell 构建/验证入口（与 build.ps1 判定完全一致）
-├── docs/                     01–36 章分章文档
+├── docs/                     01–41 章分章文档
 │   ├── 01-overview.md        认识 OCaml
 │   ├── 02-toolchain.md       工具链与三种运行方式（2.8 Windows/MSYS2 六坑）
 │   ├── 03 .. 30              核心语言 → 模块 → 并发 → ocamllex（章号 = 示例号 + 2）
-│   ├── 31 .. 35              书本篇进阶（2026-09 按陈钢/张静教材扩充）
-│   └── 36-pitfalls.md        坑清单与最佳实践（12 大类）
-└── examples/                 31 个示例
+│   ├── 31 .. 35              书本篇进阶（按陈钢/张静教材扩充）
+│   ├── 36 .. 40              manual 篇进阶（按官方手册扩充）
+│   └── 41-pitfalls.md        坑清单与最佳实践（13 节）
+└── examples/                 36 个示例
     ├── 01_basics.ml .. 25_domains_effects.ml   单文件示例
     ├── 26_ocamllex/          ocamllex 两段式（.mll + main.ml）
-    └── 27_labeled_args.ml .. 31_objects_advanced.ml   书本篇配套示例
+    ├── 27_labeled_args.ml .. 31_objects_advanced.ml   书本篇配套
+    └── 32_pp_printers.ml .. 36_memory_model.ml        manual 篇配套
 ```
 
 ## 章节索引
@@ -72,9 +75,15 @@ ocaml/
 | [33 模块表达式与抽象类型 ⭐](docs/33-module-exprs.md) | 首类模块、私有抽象、局部抽象、`with type :=`、多参数函子 | 29_module_exprs |
 | [34 命令式进阶 ⭐](docs/34-imperative-deep.md) | 弱多态实测、四向链表（CNF）、Hashtbl/Stack/Queue 三实现 | 30_imperative_deep |
 | [35 面向对象进阶 ⭐](docs/35-objects-deep.md) | 多重继承、延迟绑定、虚拟类、子类型、二元方法 | 31_objects_advanced |
-| [36 坑清单与最佳实践](docs/36-pitfalls.md) | 语法/类型/模块/结构/运算符/GADT/标签与对象/平台十二大类坑 | — |
+| [36 美化打印：%a 与 Format 盒子 ◆](docs/36-pp-printers.md) | pp 组合子、盒子/断点、优先级感知打印机、Format 三大实测坑 | 32_pp_printers |
+| [37 多态变体深水区 ◆](docs/37-poly-variants.md) | row type 上下界、`as 'a` 共享、交类型、`#type` 模式、弱点 | 33_poly_variants |
+| [38 显式多态与类型注记 ◆](docs/38-explicit-poly.md) | `'a. τ` 多态递归、rank-2 打包、variance、`type nonrec`、inline record、extensible variant | 34_explicit_poly |
+| [39 语言扩展拾遗 ◆](docs/39-lang-ext.md) | generative functor、`open!`/generalized open、`let exception`、`{< >}`、refutation case、字面量全集、`module rec` | 35_lang_ext |
+| [40 OCaml 5 内存模型 ◆](docs/40-memory-model.md) | happens-before、数据竞争、DRF-SC、`[@atomic]` 字段（5.4+） | 36_memory_model |
+| [41 坑清单与最佳实践](docs/41-pitfalls.md) | 语法/类型/模块/结构/运算符/GADT/标签对象/Format 与扩展/平台十三节 | — |
 
 ⭐ = 2026-09 按《OCaml 语言编程基础教程》（陈钢、张静）扩充的书本篇。
+◆ = 2026-09-27 按官方手册（manual）扩充的 manual 篇。
 
 ## 工具链
 
@@ -117,7 +126,7 @@ ocamlopt -version        # 查看原生编译器版本
 | `./run-all.sh 01 25` | 只跑指定编号 |
 | `./run-all.sh -v` | 附每个示例的完整输出 |
 
-通道说明：`26_ocamllex` 是多文件示例，只有 byte / native 两个通道（解释器跑不了两段式构建），所以「全通道」是 **30×3 + 2 = 92** 条。
+通道说明：`26_ocamllex` 是多文件示例，只有 byte / native 两个通道（解释器跑不了两段式构建），所以「全通道」是 **35×3 + 2 = 107** 条。
 
 ### 判定标准（两个入口逐条一致）
 
@@ -147,12 +156,26 @@ ocamlc -w -24 -I +unix unix.cma -o build/15_algorithms examples/15_algorithms.ml
 
 ## 当前状态
 
-- 31 个示例：Windows（MSYS2 UCRT64, OCaml 5.4.1）三通道全绿
-- 2026-09-27 按陈钢/张静《OCaml 语言编程基础教程》扩充：新增
-  27–31 号示例与第 31–35 章（标签参数、延迟求值、模块表达式与
-  抽象类型、命令式进阶、面向对象进阶），坑清单顺延为第 36 章并
-  新增 36.8 节（13 条 2026-09 实测坑）
-- 本次扩充的代表性实测发现（详见各章「实测坑」）：
+- 36 个示例：Windows（MSYS2 UCRT64, OCaml 5.4.1）三通道全绿
+- 2026-09-27 第一轮（按书）：新增 27–31 号示例与第 31–35 章
+  （标签参数、延迟求值、模块表达式与抽象类型、命令式进阶、
+  面向对象进阶）
+- 2026-09-27 第二轮（按手册）：新增 32–36 号示例与第 36–40 章
+  （美化打印 `%a`/Format、多态变体深水区、显式多态与类型注记、
+  语言扩展拾遗、OCaml 5 内存模型），坑清单顺延为第 41 章
+- 手册轮代表性实测发现（详见各章「实测坑」）：
+  - Format 顶层裸断点**恒换行**（断点只在盒内有「能塞就不换」
+    语义）；`set_margin` 收紧会连带压低 `max_indent` 且不随 margin
+    恢复（默认几何 78/68）；连续 `Format.printf` 不 flush 会跨调用
+    累积列计数导致盒子误竖排
+  - Printf 与 Format 两家族的 `%a` 打印机类型不通用、缓冲独立
+    （混用输出乱序）
+  - `let` 位置的多态变体模式会把 row 闭口
+  - 同一编译单元同名类型二次定义：interp 过、编译不过
+    （`type nonrec` 演示须包嵌套模块）
+  - 非原子竞争实测丢 5–6 万次更新（静默算错）；Atomic / Mutex /
+    `[@atomic]` 记录字段（5.4+）三修法全部精确
+- 第一轮（按书）代表性实测发现：
   - `Hashtbl.replace` / `remove` 一次只动**最近一个**绑定，更早的
     重复键原样保留（与「清光重挂」的直觉相反）
   - `let g = f 1` 是弱类型（`'b` 在逆变位置）；`id id` **不**泛化；
@@ -164,7 +187,8 @@ ocamlc -w -24 -I +unix unix.cma -o build/15_algorithms examples/15_algorithms.ml
   - 二元方法 `object(self : 'a)` 使子类失去对父类的子类型关系
     （`(b : e4 :> e3)` 编译不过）——子类未必是子类型
 - macOS（12.7 x86_64 + MacPorts, OCaml 5.5.0）2026-09-20 实测：
-  两个入口全绿，零告警（扩充前基线；新增 5 个示例不依赖平台特性）
+  两个入口全绿，零告警（扩充前基线；新增 10 个示例中仅
+  36_memory_model 的 `[@atomic]` 字段需要 OCaml ≥ 5.4）
 - 初版 12–22 号示例存在与平台无关的结构性语法错误（顶层
   `let ... in`、缺 `;;`、无效 package type 等），已全部修复并
   计入第 36 章坑清单

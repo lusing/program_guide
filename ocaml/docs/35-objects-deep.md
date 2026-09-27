@@ -266,4 +266,4 @@ let only = new blank in only = only   (* true *)
 本章每个机制都跑了一遍。
 
 ---
-上一章：[34 · 命令式进阶：弱多态、四向链表与命令式容器](34-imperative-deep.md) ｜ 下一章：[36 · 坑清单与最佳实践](36-pitfalls.md) ｜ 返回：[README](../README.md)
+上一章：[34 · 命令式进阶：弱多态、四向链表与命令式容器](34-imperative-deep.md) ｜ 下一章：[36 · 美化打印：%a 自定义打印机与 Format 盒子](36-pp-printers.md) ｜ 返回：[README](../README.md)

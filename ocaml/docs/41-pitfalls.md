@@ -1,9 +1,9 @@
-# 36 · 坑清单与最佳实践
+# 41 · 坑清单与最佳实践
 
 本章按层次收集本教程全程（包括 2026 年 Windows 全量复验）
 踩过的坑。前面各章的“实测坑”在这里汇总成速查表。
 
-### 36.1 语法层的坑
+### 41.1 语法层的坑
 
 **坑 1：int 和 float 运算符不同**
 
@@ -76,7 +76,7 @@ f x y        (* 这才是两个参数 *)
 
 OCaml 的函数调用语法就是空格分隔参数，没有括号也没有逗号。
 
-### 36.2 类型系统的坑
+### 41.2 类型系统的坑
 
 **坑 6：值限制（Value Restriction）**
 
@@ -151,7 +151,7 @@ let x = Color.Red
 let y = TrafficLight.Red
 ```
 
-### 36.3 模块系统的坑
+### 41.3 模块系统的坑
 
 **坑 10：透明约束会暴露内部类型**
 
@@ -220,7 +220,7 @@ module S2 = Set.Make(struct type t = string let compare = compare end)
 - 模块之间是「使用」关系时，用普通的模块调用（`M.f x`）
 - 不要为了少写几个前缀就 `include` 一个大模块
 
-### 36.4 可变状态的坑
+### 41.4 可变状态的坑
 
 **坑 13：= 和 == 的区别**
 
@@ -261,7 +261,7 @@ r1 == r2    (* true 还是 false？ *)
 
 使用第三方库的哈希表时，一定要看清楚它的相等语义。
 
-### 36.5 I/O 的坑
+### 41.5 I/O 的坑
 
 **坑 16：input_line 保留换行符吗？**
 
@@ -299,7 +299,7 @@ print_endline "done"
 
 解决方法：用 `Fun.protect ~finally` 或 `with_file` 模式（见第 22 章），确保无论正常返回还是抛出异常，文件都会被关闭。
 
-### 36.6 顶层结构与短语终结的坑（本教程实测重灾区）
+### 41.6 顶层结构与短语终结的坑（本教程实测重灾区）
 
 本教程 12–22 号示例初版全部编译失败，病根就是这一节的内容——
 这些坑**与平台无关**，macOS 上同样编译不过：
@@ -331,7 +331,7 @@ print_endline "done"
   **后面**的 `(try () with Exit -> ())` 永远接不住（本教程
   优快排里真实修过的一个潜在运行时崩溃）。
 
-### 36.7 绑定运算符、GADT 与 Effect 的坑（5.4.1 实测）
+### 41.7 绑定运算符、GADT 与 Effect 的坑（5.4.1 实测）
 
 - `let*` / `and*` / `let+` 是**算子值**，Stdlib 没有自带，
   `let open Result in let* ...` 直接 `Unbound value ( let* )`——
@@ -362,7 +362,7 @@ print_endline "done"
 - `Stream` 模块不在 5.4 标准库发行里；`Seq.nth` / `Seq.sort` /
   `print_bool` 不存在（速查见第 2.8 节）。
 
-### 36.8 标签参数、lazy、首类模块与对象的坑（2026-09 扩充实测）
+### 41.8 标签参数、lazy、首类模块与对象的坑（2026-09 扩充实测）
 
 - **可选参数不能是最后一个参数**：`let g ?(a = 1) = ...` 直接
   Syntax error；后面必须跟非可选参数钉住调用时机。
@@ -400,7 +400,43 @@ print_endline "done"
 - **`class` 不自动泛化方法**：要 `class ['a] c = ...`；`new` 多态类
   的结果是 `'_a c`（value restriction 作用于对象），首次使用后固化。
 
-### 36.9 Windows 平台的坑（MSYS2 UCRT64 实测）
+### 41.9 手册扩充轮实测坑（2026-09-27，Format 与语言扩展）
+
+- **顶层裸断点恒换行**：Format 的 `@ ` 断点只有包在 `@[<hov>` 盒
+  里才有「能塞就不换」的语义；写在任何盒外的裸断点总是换行，
+  哪怕整行只有 13 个字符（第 36 章）。
+- **`Format.set_margin` 收紧会连带压低 `max_indent`**（78/68 ->
+  20/10），只恢复 margin 不恢复 max_indent，之后超过第 10 列的
+  断点全被误触发。恢复要成对：`set_margin 78; set_max_indent 68`
+  （默认几何是 78/68，不是 78/76）。
+- **连续 `Format.printf` 不 flush 会跨调用累积列计数**：3 行 26
+  字符的输出后第 4 次调用的盒子被误判放不下而竖排。修法：每次
+  `Format.print_flush ()`，或用 kfprintf helper 在 continuation 里
+  flush（第 36 章）。
+- **Printf 与 Format 两家族缓冲独立**：混用时输出顺序会乱；
+  `%a` 打印机类型也不通用（`out_channel` vs `formatter` 域）。
+- **自制 printf helper 必须显式多态标注 + kfprintf**：
+  `ksprintf` 的 `%a` 只吃 `unit -> 'a -> string` 打印器（第 36 章）。
+- **`let` 位置的多态变体模式把 row 闭口**：直接匹配 `int vlist`
+  报 "does not allow tag `Nil"；补标注后穷尽检查又要求 `Nil`
+  分支——访问器用完整 match 写（第 37 章）。
+- **同一编译单元同名类型出现两次**：interp 逐句执行能过，
+  byte/native 直接 "Multiple definition"（`type nonrec` 的演示必须
+  包在嵌套模块里，第 38 章）。
+- **`module A = G () and B = G ()` 语法非法**：generative functor
+  应用分两行写（第 39 章）。
+- **refutation 臂必须用通配模式**：`| Bool _ -> .` 的模式自己先
+  类型错误，要写 `| _ -> .`（第 39 章）。
+- **extensible variant 的 match 必须带通配臂**（Warning 8 提示
+  `*extension*`，第 38 章）。
+- **`Warning 10` 系列**：`for` 循环体里的非 unit 表达式
+  （`Atomic.fetch_and_add`、`CA.bump ()`）要 `ignore (...)`
+  包住，否则零告警判定失败。
+- **非原子竞争是静默算错**：两域各 30 万次 `r := !r + 1` 实测丢
+  5-6 万次更新，不崩溃；Atomic / Mutex / `[@atomic]` 字段三修法
+  实测全部精确（第 40 章）。
+
+### 41.10 Windows 平台的坑（MSYS2 UCRT64 实测）
 
 详见第 2.8 节，速查：
 
@@ -416,7 +452,7 @@ print_endline "done"
 - 临时目录：`Filename.get_temp_dir_name ()` 取的是 `TMP` 而
   不是 `TEMP`（两者可能不同，检查残留时两个都要看）。
 
-### 36.10 macOS 平台的坑（MacPorts + OCaml 5.5.0，2026-09-20 实测）
+### 41.11 macOS 平台的坑（MacPorts + OCaml 5.5.0，2026-09-20 实测）
 
 - **工具链不在 `/usr/bin`**：MacPorts 装在 `/opt/local/bin/ocamlc`
   （Homebrew 是 `/opt/homebrew/bin`），`ocamlc -where` 给出
@@ -441,7 +477,7 @@ print_endline "done"
   `with` 是多余的）。教学代码里「定义完看都不看一眼」的写法最容易踩前者——
   要么把它打印出来（教程里更合适），要么写成 `let _ = ...`。
 
-### 36.11 最佳实践
+### 41.12 最佳实践
 
 **实践 1：优先使用不可变数据**
 
@@ -505,7 +541,7 @@ let find key map =
 
 **一个好的类型设计胜过 100 个单元测试。** 类型系统在编译时为你保证所有可能的值都是合法的，而测试只能覆盖有限的情况。
 
-### 36.12 本章小结
+### 41.13 本章小结
 
 语法层的坑：
 - 整数和浮点数运算符不同，不能混用
@@ -559,4 +595,4 @@ Windows 的坑（MSYS2）：
 - 失败链用绑定运算符直着写，语义随 `( and* )` 实现选
 
 ---
-上一章：[35 · 面向对象进阶：继承、子类型与二元方法](objects-deep.md) ｜ 返回：[README](../README.md)
+上一章：[40 · OCaml 5 内存模型](40-memory-model.md) ｜ 返回：[README](../README.md)
