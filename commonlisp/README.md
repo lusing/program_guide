@@ -1,12 +1,14 @@
 # Common Lisp 教程（SBCL + CLISP 双实现）
 
 面向**会编程、看得懂 S 表达式、没系统写过 Lisp** 的读者：从 REPL 讲到
-CLOS、宏、条件系统，再到线程/FFI/性能的 SBCL 专属扩展。**语言主线与实现解耦**
-——第 02–20 章及 22/27 章的每个示例同时跑在 **SBCL 和 GNU CLISP** 上，
-两个通道的 stdout **逐字节一致**；SBCL 扩展（21/23–26 章）单独成章。
+CLOS、宏、条件系统，再到线程/FFI/性能的 SBCL 专属扩展，收束于**书本实践篇**
+（28–33 章，按《Practical Common Lisp》的六个 Practical 项目重演）。
+**语言主线与实现解耦**——语言主线与实践篇（02–20、22、27–33 章）的每个示例
+同时跑在 **SBCL 和 GNU CLISP** 上，两个通道的 stdout **逐字节一致**；
+SBCL 扩展（21/23–26 章）单独成章。
 
 > 核心方法论：**可移植性不是背出来的，是 diff 出来的**。本目录的验证脚本
-> 对每个双通道示例执行跨实现逐字节比对，27 条实测差异全部记录在
+> 对每个双通道示例执行跨实现逐字节比对，实测差异全部记录在
 > [22 章](docs/22-implementations.md)与 [CHEATSheet](CHEATSheet.md)。
 
 ## 目录结构
@@ -14,9 +16,9 @@ CLOS、宏、条件系统，再到线程/FFI/性能的 SBCL 专属扩展。**语
 ```text
 commonlisp/
 ├── README.md        本文件
-├── docs/            27 章教程（01 → 27 顺序阅读）
-├── examples/        26 个示例目录（章号 = 目录号，各含 main.lisp）
-├── CHEATSheet.md    语法速查 + 27 条双实现差异 + 报错速查
+├── docs/            33 章教程（01 → 33 顺序阅读）
+├── examples/        32 个示例目录（章号 = 目录号，各含 main.lisp）
+├── CHEATSheet.md    语法速查 + 双实现差异 + 报错速查
 ├── build.ps1        统一验证脚本（PowerShell 7 / pwsh）
 ├── run-all.sh       同一套验证的 bash 版（macOS/Linux）
 └── verify-guide.py  核查 docs/ 里 `; =>` 断言的脚本
@@ -61,6 +63,17 @@ commonlisp/
 | [26 性能优化](docs/26-performance.md) | 声明、optimize、profile、disassemble | `26_perf` | sbcl |
 | [27 实战：迷你 Lisp 解释器](docs/27-minilisp.md) | 环境/闭包/递归 + 40 断言 | `27_minilisp` | both |
 
+### 书本实践篇（《Practical Common Lisp》六个 Practical，双实现通道）
+
+| 章 | 主题（书章） | 示例 |
+|---|---|---|
+| [28 简易 CD 数据库](docs/28-pcl-db.md) | plist/免费序列化/where 宏三代（书 3） | `28_pcl_db` |
+| [29 单元测试框架](docs/29-pcl-testfw.md) | check/combine-results/失败不中断（书 9） | `29_pcl_testfw` |
+| [30 可移植路径名库](docs/30-pcl-pathname.md) | directory 差异统一/walk 树（书 15） | `30_pcl_pathname` |
+| [31 垃圾邮件过滤器](docs/31-pcl-spam.md) | 分词/特征/概率/有理数纪律（书 23） | `31_pcl_spam` |
+| [32 二进制与 ID3](docs/32-pcl-binary.md) | read-value 框架/合成标签回读（书 24–25） | `32_pcl_binary` |
+| [33 HTML 生成库](docs/33-pcl-html.md) | 解释器 vs 宏编译器对账（书 30–31） | `33_pcl_html` |
+
 ## 工具链
 
 | 通道 | 本教程实测 | 安装 |
@@ -75,7 +88,7 @@ CLISP 启动记得 `-E UTF-8`（默认编码跟 locale 走，ASCII 终端下中�
 
 ```bash
 cd commonlisp
-./run-all.sh                    # 全部 26 个示例 × 双通道（47 单元）
+./run-all.sh                    # 全部 32 个示例 × 双通道（60 单元）
 ./run-all.sh 12                 # 只跑 12 章
 SBCL=/path/sbcl CLISP=/path/clisp ./run-all.sh
 ```
