@@ -151,7 +151,18 @@ var big = Array.ConvertAll(arr, x => x * 10);     // 映射（≈ Select+ToArray
 | 有序表 | `SortedDictionary<K,V>` |
 | 优先队列/堆 | `PriorityQueue<TElement,TPriority>` |
 
-## 10. 复杂度总表与并发
+## 10. 非泛型集合 ArrayList/Hashtable：教材讲、新代码别用
+
+三本教材都花大篇幅讲 `ArrayList`/`Hashtable`——它们是 .NET 1.x **没有泛型时代**的遗产，元素类型是 `object`：
+
+```csharp
+var mixed = new ArrayList { 1, "二", 3.0 };   // 什么都能塞——这正是问题
+int x = (int)mixed[1];                        // 运行时 InvalidCastException
+```
+
+示例实测两个代价：**int 全部装箱**（[05 章](05-value-reference.md)的分配账单）、**类型安全拖到运行期**（强转当场翻脸）。2005 年 C# 2.0 起 `List<T>`/`Dictionary<K,V>` 编译期类型安全 + 免装箱 + 更快，全方位替代。见到老代码按口诀迁移：见 `ArrayList` 想 `List<T>`，见 `Hashtable` 想 `Dictionary<K,V>`。
+
+## 11. 复杂度总表与并发
 
 ```
 ┌────────────────────┬─────────┬──────────┬──────────┐

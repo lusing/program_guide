@@ -64,7 +64,7 @@
 - [commonlisp](./commonlisp) — Common Lisp 教程与示例（SBCL + GNU CLISP **双实现**，27 章对齐 cpp20/zig 标准：求值模型/数值塔/五种相等/条件系统与重启/CLOS 两章/宏两章/format/类型系统/可移植性细讲），Linux（WSL2，SBCL 2.6.8 + CLISP 2.49.95）实测 26 个示例 × **双通道**：21 个可移植示例 SBCL 与 CLISP 的 stdout **逐字节一致**（跨实现比对为第五条判定）+ 5 个 SBCL 专属章（ASDF/run-program/线程/FFI sb-alien/性能），`run-all.sh` 47/47 全绿，双入口 `build.ps1`；正文 `; =>` 断言由 `verify-guide.py` 在 docs/ 上逐条回跑（mismatch 0）；22 章收录 **27 条双实现实测差异**总账 + CHEATSheet 报错速查
 - [sdl2](./sdl2) — SDL2 C++ 教程与示例（11 章 + 10 个单文件示例，跨平台代码），macOS 兼容性已校验：Apple clang 16.0.0 + MacPorts SDL2 2.32.10 下 `run-all.sh` 双通道（shared 动态 / static 静态带 frameworks）**10 示例 × 2 通道 = 20/20 通过**，`SDL_VIDEODRIVER=dummy` 无窗口会话 10/10 通过；校验逼出并修掉 3 处真实缺陷（02 无条件要 `SDL_RENDERER_ACCELERATED` 在 dummy 下必然失败→改事实降级、10 的 `unique_ptr` 析构晚于 `SDL_Quit()`→显式 `reset()`、06 的帧长/fps 无法字节比对→区间内只留跨机器恒真结论），新增 `run-all.sh` 并让 `build.ps1` 判定逐条对齐，CHEATSheet 收录 **22 条实测坑位**，详见 [sdl2/README.md](./sdl2/README.md)
 - [swift](./swift) — Swift 6.3.3 教程（24 章对齐 cpp20/rust/go/zig 标准：可选/协议/some-any/actor/Sendable/swift-testing/SPM 特色细讲，23 个示例四层验证 format+build+test+run；scoop 6.4.0 坏包实测复盘，钉 6.3.3 + 环境三件套配方）
-- [csharp](./csharp) — C# 语言教程（42 章 + 42 示例，章号=示例号，零 NuGet 依赖：编译 + 逐个运行验证；C# 14 扩展成员实测；主线收束 MiniLang 解释器，37-42 为教材/《Effective C#》书本实践篇）
+- [csharp](./csharp) — C# 语言教程（45 章 + 45 示例，章号=示例号，零 NuGet 依赖：编译 + 逐个运行验证；C# 14 扩展成员实测；主线收束 MiniLang 解释器，37-42 书本实践篇，43-45 查缺补漏篇）
 - [wpf](./wpf) — WPF 编程指南，使用 .NET SDK + WPF 运行时验证
 - [zig](./zig) — Zig 0.16 教程（24 章对齐 cpp20 标准：分配器/comptime/构建系统/交叉编译特色细讲，全部示例三层验证 fmt+test+运行；macOS Darwin x86_64 实测全绿，Apple Silicon 用 `-target aarch64-macos` 逐个交叉验证，21 章内联汇编含 x86_64/aarch64 双实现）
 

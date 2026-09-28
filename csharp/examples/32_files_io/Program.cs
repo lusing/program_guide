@@ -46,6 +46,21 @@ Console.WriteLine($"  UTF-8 字节数: {System.Text.Encoding.UTF8.GetByteCount("
 Console.WriteLine("  WPF 教程 22/25 章的编码识别器就是这套 API 的完整应用");
 
 Console.WriteLine();
+Console.WriteLine("===== FileSystemWatcher：盯住目录的变化 =====");
+var watchDir = Path.Combine(dir, "watched");
+Directory.CreateDirectory(watchDir);
+var fired = new TaskCompletionSource<string>();
+using var watcher = new FileSystemWatcher(watchDir) { Filter = "*.txt" };
+watcher.Created += (_, e) => fired.TrySetResult($"Created: {e.Name}");
+watcher.Renamed += (_, e) => fired.TrySetResult($"Renamed: {e.OldName} → {e.Name}");
+watcher.EnableRaisingEvents = true;                       // 别忘了开闸（默认 false）
+File.WriteAllText(Path.Combine(watchDir, "新文件.txt"), "hello");
+var evt = fired.Task.Wait(2000) ? fired.Task.Result : "（2 秒超时未触发）";
+Console.WriteLine($"  在监视目录写一个 txt → 收到 [{evt}]");
+Console.WriteLine("  事件在线程池线程上异步回调——不是你代码的线程（28 章同步上下文、31 章并行的老朋友）");
+Console.WriteLine("  注意 NTFS 上一次大拷贝可能连发多个事件；崩溃重连要自己记位点重扫（生产级监控的必修课）");
+
+Console.WriteLine();
 Console.WriteLine("===== 清理与习惯 =====");
 Directory.Delete(dir, recursive: true);
 Console.WriteLine("  临时目录已清理（Delete recursive）");

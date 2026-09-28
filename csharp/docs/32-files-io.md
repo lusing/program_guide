@@ -85,7 +85,19 @@ Encoding.GetEncoding("GB18030").GetByteCount("简体中文")   // 8
 - **GB18030/GBK 不是白送的**：`Encoding.RegisterProvider(CodePagesEncodingProvider.Instance)` 先注册（示例代码第一行）——WPF 教程 25 章的编码探测器（BOM → 严格 UTF-8 试解 → GB18030 回退）是完整实战
 - 写文件**显式传 Encoding**：默认 UTF-8 无 BOM——要 BOM 用 `new UTF8Encoding(true)`
 
-## 6. IO 的两条纪律
+## 6. FileSystemWatcher：盯住目录的变化
+
+监控一个目录的创建/改名/删除/内容变化——日志收集器、热重载、同步盘的核心机制。示例实测：向受监视目录写入一个 txt，`Created` 事件随即触发。
+
+```csharp
+using var watcher = new FileSystemWatcher(dir) { Filter = "*.txt" };
+watcher.Created += (_, e) => Console.WriteLine($"新文件 {e.Name}");
+watcher.EnableRaisingEvents = true;        // 别忘了开闸（默认 false）
+```
+
+两个纪律：**事件在线程池线程上异步回调**——不是你的线程，改 UI 要切回 UI 线程（[28 章](28-async-await.md)）；网络盘/大拷贝会**连发、丢发事件**——生产级监控要自己记位点重扫兜底。
+
+## 7. IO 的两条纪律
 
 **异常纪律**：磁盘满、权限不够、文件被别的进程锁住——IO 是异常重灾区。**每个对外暴露的 IO 操作 try/catch 包好**（22 章：可预期的失败给返回值/消息，意外上抛）。删目录前 `Exists` 检查也防不了"检查完就被删"的竞态——TryXxx 形态（`Directory.Exists` + 容忍异常）更稳。
 

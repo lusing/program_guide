@@ -176,4 +176,4 @@ catch (TimeoutException) when (failures++ < 10 && !Debugger.IsAttached)
 5. **no-throw 的四个特例？** —— Dispose、终结器、when 表达式、委托目标（含事件处理器）。
 
 ---
-上一章：[41 Effective C#·LINQ 惯用法](41-effective-linq.md) ｜ 返回：[README](../README.md)
+上一章：[41 Effective C#·LINQ 惯用法](41-effective-linq.md) ｜ 下一章：[43 常用工具类型](43-common-types.md) ｜ 返回：[README](../README.md)

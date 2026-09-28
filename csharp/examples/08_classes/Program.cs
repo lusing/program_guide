@@ -33,6 +33,7 @@ Console.WriteLine();
 Console.WriteLine("===== 索引器与分部类 =====");
 var week = new WeekDays();
 Console.WriteLine($"week[0] = {week[0]}, week[6] = {week[6]}   ← 像数组一样用对象");
+Console.WriteLine($"week[\"三\"] = {week["三"]}   ← 索引器可以重载：同名不同参数，按内容反查下标");
 
 class Account
 {
@@ -84,7 +85,8 @@ static class Math2
 class WeekDays
 {
     private readonly string[] _days = { "一", "二", "三", "四", "五", "六", "日" };
-    public string this[int i] => $"周{_days[i]}";    // 索引器：this[参数]
+    public string this[int i] => $"周{_days[i]}";                 // 索引器：this[参数]
+    public int this[string day] => Array.IndexOf(_days, day);     // 重载：参数不同即可（接口里也能声明索引器）
 }
 
 partial class Program { }                            // 分部类示意：一个类可拆多个文件（WPF 教程 02 章的核心机制）

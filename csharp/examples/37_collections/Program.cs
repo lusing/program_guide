@@ -129,6 +129,18 @@ pq.Enqueue("低优先", 5); pq.Enqueue("高优先", 1); pq.Enqueue("中优先", 
 Console.WriteLine($"  PriorityQueue 出队序: {pq.Dequeue()} → {pq.Dequeue()} → {pq.Dequeue()}（最小堆，数字小先出）");
 
 Console.WriteLine();
+Console.WriteLine("===== 非泛型集合 ArrayList/Hashtable：教材讲、新代码别用 =====");
+var mixed = new System.Collections.ArrayList { 1, "二", 3.0 };    // 什么都能塞——这正是问题所在
+Console.WriteLine($"  ArrayList 装 {mixed.Count} 个异类: {mixed[0]} {mixed[1]} {mixed[2]}（元素类型 object，int 全装箱）");
+try { int badCast = (int)mixed[1]!; }
+catch (InvalidCastException) { Console.WriteLine("  (int)mixed[1] → InvalidCastException：类型安全拖到运行期才翻脸"); }
+var ht = new System.Collections.Hashtable { ["one"] = 1, ["two"] = "二" };
+Console.WriteLine($"  Hashtable 取值也是 object: one={(int)ht["one"]!} two={(string)ht["two"]!}——读方全靠强转");
+Console.WriteLine("  它们是 .NET 1.x 没有泛型时代的遗产（三本教材都讲是因为历史惯性）：");
+Console.WriteLine("  List<T>/Dictionary<K,V> 编译期类型安全 + 值类型不装箱 + 更快，全方位替代");
+Console.WriteLine("  迁移口诀：见 ArrayList 想 List<object>→再想具体 T；见 Hashtable 想 Dictionary<K,V>");
+
+Console.WriteLine();
 Console.WriteLine("===== 选型速查（复杂度表） =====");
 Console.WriteLine("  ┌────────────────────┬─────────┬──────────┬──────────┐");
 Console.WriteLine("  │ 类型                │ 索引/查 │ 插入(尾) │ 插入(中)  │");

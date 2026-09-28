@@ -1,6 +1,6 @@
 # C# 语言教程
 
-一套以**语言本身**为主线的 C# 系统教程：**42 章正文 + 42 个可编译可运行的示例**（章号=示例号，net10.0 控制台，零 NuGet 依赖离线可复现）。主线 36 章收束于一个能跑的表达式解释器实战；**书本实践篇（37-42）按四本参考书扩充**——集合体系与选型（三本教材的共讲专题）+《Effective C#（第 3 版）》50 条全落位。所有示例在 .NET 10 SDK 上编译并逐一运行验证（Windows 与 macOS 双平台实测，输出即讲解内容），语言特性声明（含 C# 14 扩展成员）均经实测编译确认。
+一套以**语言本身**为主线的 C# 系统教程：**45 章正文 + 45 个可编译可运行的示例**（章号=示例号，net10.0 控制台，零 NuGet 依赖离线可复现）。主线 36 章收束于一个能跑的表达式解释器实战；**书本实践篇（37-42）按四本参考书扩充**——集合体系与选型（三本教材的共讲专题）+《Effective C#（第 3 版）》50 条全落位；**查缺补漏篇（43-45）按另五本教材补齐**——常用工具类型、预处理指令与代码组织、XML。所有示例在 .NET 10 SDK 上编译并逐一运行验证（Windows 与 macOS 双平台实测，输出即讲解内容），语言特性声明（含 C# 14 扩展成员）均经实测编译确认。
 
 与同仓库其他教程的分工：**csharp 深挖语言 → [dotnet](../dotnet) 用语言建平台应用（Web/EF/测试）→ [wpf](../wpf) 用语言建桌面界面**。
 
@@ -10,7 +10,7 @@
 
 ```bash
 cd csharp
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All                       # 编译全部 42 个示例（集中产物到 build/）
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All                       # 编译全部 45 个示例（集中产物到 build/）
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Run                       # 编译 + 逐个运行（每个示例输出讲解内容，零交互）
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 36_minilang       # 只构建某一个
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 36_minilang -Run  # 只构建并运行某一个
@@ -32,8 +32,8 @@ dotnet run
 csharp/
 ├── README.md                  # 本文件
 ├── build.ps1                  # 一键构建/运行脚本（须 PowerShell 7 / pwsh 运行，三平台通用）
-├── docs/                      # 42 章正文（01 → 42 顺序阅读）
-└── examples/                  # 42 个示例（NN_名字/XxxConsole.csproj + Program.cs，零 NuGet 依赖）
+├── docs/                      # 45 章正文（01 → 45 顺序阅读）
+└── examples/                  # 45 个示例（NN_名字/XxxConsole.csproj + Program.cs，零 NuGet 依赖）
 ```
 
 ## 章节索引
@@ -117,7 +117,17 @@ csharp/
 | [41 Effective·LINQ 惯用法](docs/41-effective-linq.md) ⭐ | 条 29-44：迭代器 API、查询 vs 循环、映射表、无穷序列边界、lambda 复用、闭包资源、Single/First 断言、绑定变量 | `41_effective_linq` |
 | [42 Effective·异常设计](docs/42-effective-exceptions.md) ⭐ | 条 45-50：契约与 TryXxx、专属异常与转换、三级保证、筛选器保栈、副作用日志钩子——50 条收束 | `42_effective_exceptions` |
 
-⭐ = 2026-09 按教材扩充的书本实践篇，可独立跳读（向前依赖都有链接）。
+### 八 · 查缺补漏篇（43-45）
+
+按另五本教材（《C# 从入门到项目实践》《基础入门与实战》《程序设计教程》两种《第2版》《经典教程（第三版）》）目录交叉比对补齐的专题——四本共讲而主线只顺带使用。
+
+| 章 | 主题 | 示例 |
+|---|---|---|
+| [43 常用工具类型](docs/43-common-types.md) | DateTime/TimeSpan/DateOnly 时区规则、Guid、Uri、Math 银行家舍入、Random 同种子实测与安全随机 | `43_common_types` |
+| [44 预处理指令与代码组织](docs/44-preprocessing.md) | #if 布尔开关、DEBUG/NET10_0 符号、#error 哨兵、#pragma 定点静音、#line hidden 实测、命名空间/嵌套类/程序集 | `44_preprocessor` |
+| [45 XML 与 LINQ to XML](docs/45-xml.md) | XElement 函数式构建、Descendants 查询、命名空间第一大坑、函数式转换、XmlDocument/XPath、XmlReader 流式 | `45_xml` |
+
+⭐ = 2026-09 按教材扩充的书本实践篇，可独立跳读（向前依赖都有链接）。43-45 为同期查缺补漏篇，同样可跳读。
 
 ## 学习路线
 
@@ -139,6 +149,8 @@ csharp/
 37                集合体系（教材共讲专题，承前：数组/泛型/迭代器）
       │
 38 ─ 42           Effective C# 50 条：语言习惯 → 生命周期 → 泛型 → LINQ → 异常
+      │
+43 ─ 45           查缺补漏：工具类型 → 预处理与代码组织 → XML
 ```
 
 跳读指南：
@@ -147,6 +159,7 @@ csharp/
 - 性能敏感场景 → [37 集合选型](docs/37-collections.md) + [41 LINQ 惰性](docs/41-effective-linq.md)
 - 写库给别人用 → [40 泛型设计](docs/40-effective-generics.md) + [42 异常设计](docs/42-effective-exceptions.md)
 - 想验证自己的语言功力 → [36 MiniLang](docs/36-minilang.md) 改出第 7 节的练习
+- 处理日期/随机数/XML/老代码 → [43](docs/43-common-types.md)、[45](docs/45-xml.md) 直接查
 
 每章结构：本章你将学会 → 正文 → 常见坑 → 实战建议 → 自测。**建议节奏**：`build.ps1 -Run` 看输出 → 对照正文读代码 → 自测答不上来回读 → 改示例做实验。
 
@@ -160,4 +173,4 @@ csharp/
 - 目标框架: `net10.0`（27 章示例额外开 `AllowUnsafeBlocks`）
 - 零 NuGet 依赖：全部示例只用 BCL（含内置的 System.Collections.Immutable / System.Collections.Concurrent），离线可复现
 - 编译方式: `dotnet build`（不需要 Visual Studio；跨平台 IDE 用 VS Code + C# Dev Kit）
-- 已验证平台: Windows / macOS —— 42 章全部编译通过并逐个运行；27 章 P/Invoke 按平台分支（Windows 调 `kernel32`，macOS/Linux 调 `libc`）
+- 已验证平台: Windows / macOS —— 45 章全部编译通过并逐个运行；27 章 P/Invoke 按平台分支（Windows 调 `kernel32`，macOS/Linux 调 `libc`）
