@@ -158,4 +158,4 @@ if (g_target->EndDraw() == (HRESULT)D2DERR_RECREATE_TARGET) {
 
 ---
 
-上一章：[第 27 章 COM 实现](27-COM实现.md) ｜ 下一章：[第 29 章 WinRT 与 C++/WinRT](29-WinRT与CppWinRT.md) ｜ 返回：[目录](../Win32%20API开发指南.md)
+上一章：[27 · COM 实现](27-COM实现.md) ｜ 下一章：[29 · WinRT 与 C++/WinRT](29-WinRT与CppWinRT.md) ｜ 返回：[目录](../Win32%20API开发指南.md)
