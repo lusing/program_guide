@@ -8,7 +8,7 @@
 
 > 本章显式链接细节、延迟加载与 TLS 部分参考《Windows 核心编程》（Jeffrey Richter）第 19~21 章整理。
 
-本章示例：`examples/23_dll_math`（mathlib.h / mathlib.cpp / main.cpp / build.ps1）。
+本章示例：`examples/23_dll_math`（mathlib.h / mathlib.cpp / main.cpp / build.ps1）、`examples/39_tls_demo`（TLS 两种机制对照）。
 
 ## 22.1 DLL 是什么
 
@@ -106,6 +106,8 @@ __declspec(thread) int t_errno = 0;        // 每线程一份，链接器安排�
 能初始化、写法最省事，但有一个历史坑：**显式加载（`LoadLibrary`）的 DLL 里的静态 TLS，在 Vista 之前不被加载器支持**——所以"DLL + 线程局部"的老规矩是动态 TLS。现代系统两者皆可，新代码首选静态，DLL 供第三方动态加载时仍值得保守。
 
 对照记忆：CRT 的 `errno`、`strtok` 的内部状态就是 TLS 的经典用户——这也解释了它们为什么线程不安全的老黄历（前 TLS 时代）与如今安全的原因。C++11 的 `thread_local` 是同一概念的标准化外衣。
+
+`examples/39_tls_demo`（控制台）让三个线程交错跑两种机制各三圈：动态侧每个线程把栈上 `Ctx` 挂进同一个槽位，读回的地址与计数器各是各的；静态侧每线程的 `t_counter` 地址不同、主线程的始终为 0——"每线程一份"四个字从推测变成观测。注意一个输出层小坑：窄字符 `printf` 的 `%ls` 遇中文在 C locale 下会中断转换（示例因此打印线程号而非中文名）——控制台中文输出见 15.6 的编码讨论。
 
 ## 22.5 导出怎么写：宏模式与 `extern "C"`
 
