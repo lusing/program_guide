@@ -87,6 +87,26 @@ namespace winrt::MvvmApp::implementation
         Status(L"Loaded " + winrt::to_hstring(titles.Size()) + L" tasks");
     }
 
+    void TasksViewModel::MarkAllDone()
+    {
+        // TaskItem 自己实现 INPC，逐项置 Done 界面逐行刷新，集合无需重建
+        for (auto const& item : m_tasks)
+        {
+            if (!item.Done()) { item.Done(true); }
+        }
+        Status(L"Marked all done: " + winrt::to_hstring(m_tasks.Size()) + L" tasks");
+    }
+
+    int32_t TasksViewModel::OutstandingCount()
+    {
+        int32_t n = 0;
+        for (auto const& item : m_tasks)
+        {
+            if (!item.Done()) { n++; }
+        }
+        return n;
+    }
+
     void TasksViewModel::RaisePropertyChanged(winrt::hstring const& propertyName)
     {
         m_propertyChanged(*this,

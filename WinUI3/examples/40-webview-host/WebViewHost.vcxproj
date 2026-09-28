@@ -3,8 +3,8 @@
 
   <PropertyGroup Label="Globals">
     <CppWinRTOptimized>true</CppWinRTOptimized>
-    <ProjectGuid>{10a1b2c3-4d5e-4f60-8a9b-0c1d2e3f4a10}</ProjectGuid>
-    <RootNamespace>OsIntApp</RootNamespace>
+    <ProjectGuid>{8b2c3d4e-5f60-4b71-9c0d-1e2f3a4b5c48}</ProjectGuid>
+    <RootNamespace>WebViewHost</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>17.0</MinimumVisualStudioVersion>
     <AppContainerApplication>false</AppContainerApplication>
@@ -18,8 +18,7 @@
     <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
     <UseWinUI>true</UseWinUI>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-    <!-- None = unpackaged so the sample builds and runs from the command line;
-         pass -p:WindowsPackageType=MSIX with a Package.appxmanifest to package. -->
+    <!-- None = unpackaged so the sample builds and runs from the command line. -->
     <WindowsPackageType Condition="'$(WindowsPackageType)' == ''">None</WindowsPackageType>
     <EnableMsixTooling>true</EnableMsixTooling>
   </PropertyGroup>
@@ -83,7 +82,6 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h" />
     <ClInclude Include="MainWindow.xaml.h" />
-    <ClInclude Include="ToolService.h" />
   </ItemGroup>
 
   <ItemGroup>
@@ -95,24 +93,16 @@
     </ClCompile>
     <ClCompile Include="App.xaml.cpp" />
     <ClCompile Include="MainWindow.xaml.cpp" />
-    <ClCompile Include="ToolService.cpp" />
   </ItemGroup>
 
   <ItemGroup>
     <Midl Include="App.idl" />
-    <Midl Include="MainWindow.idl" />
+    <Midl Include="WebViewHost.idl" />
   </ItemGroup>
 
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
     <Page Include="MainWindow.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- 39 章：unpackaged 通知注册的图标（Register(displayName, iconUri)） -->
-    <Content Include="Assets\appicon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -137,5 +127,4 @@
   </Target>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-
 </Project>

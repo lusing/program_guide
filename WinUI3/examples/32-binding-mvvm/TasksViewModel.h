@@ -26,6 +26,8 @@ namespace winrt::MvvmApp::implementation
         void DeleteSelected(winrt::MvvmApp::TaskItem const& item);
         void LoadFrom(
             winrt::Windows::Foundation::Collections::IVector<winrt::hstring> const& titles);
+        void MarkAllDone();
+        int32_t OutstandingCount();
 
     private:
         winrt::event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler>

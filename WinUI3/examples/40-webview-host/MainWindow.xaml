@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="WebViewHost.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Margin="16" RowSpacing="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 冒烟判读锚点 -->
+        <TextBlock x:Name="StatusText"
+                   Grid.Row="0"
+                   Text="initializing webview2..."
+                   FontSize="13"
+                   TextWrapping="Wrap"/>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+            <TextBox x:Name="AddressBox"
+                     MinWidth="340"
+                     KeyDown="OnAddressKeyDown"
+                     PlaceholderText="https://example.com"/>
+            <Button Content="Go" Style="{StaticResource AccentButtonStyle}" Click="OnGoClicked"/>
+            <Button Content="Local page" Click="OnLocalClicked"/>
+            <Button Content="Get title" Click="OnScriptClicked"/>
+            <Button Content="Post to page" Click="OnPostClicked"/>
+        </StackPanel>
+
+        <!-- 40 章：XAML WebView2 控件。控件自带 NavigateToString/ExecuteScriptAsync/
+             WebMessageReceived 转发，Core 侧对象在 CoreWebView2Initialized 之后才可用 -->
+        <WebView2 x:Name="Web"
+                  Grid.Row="2"
+                  CoreWebView2Initialized="OnCoreInitialized"
+                  NavigationCompleted="OnNavCompleted"
+                  WebMessageReceived="OnWebMessage"/>
+    </Grid>
+</Window>

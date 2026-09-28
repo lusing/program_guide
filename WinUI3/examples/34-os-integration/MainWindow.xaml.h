@@ -16,14 +16,23 @@ namespace winrt::OsIntApp::implementation
         void OnRunToolClicked(
             Windows::Foundation::IInspectable const& sender,
             Microsoft::UI::Xaml::RoutedEventArgs const& args);
+        // 39 章：本地应用通知
+        void OnNotifyClicked(
+            Windows::Foundation::IInspectable const& sender,
+            Microsoft::UI::Xaml::RoutedEventArgs const& args);
 
     private:
         Microsoft::UI::Dispatching::DispatcherQueue m_dispatcherQueue{ nullptr };
         // jthread 析构时自动请求停止并 join，不会像 detach() 那样线程失控（docs/10 10.1）
         std::jthread m_worker;
+        // 39 章：NotificationInvoked 的自动退订票据
+        winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::NotificationInvoked_revoker
+            m_notificationRevoker{};
 
         winrt::Windows::Foundation::IAsyncAction PickFileAsync();
         void ReportToolResult(bool ok, DWORD exitCode);
+        void RegisterAppNotifications();
+        void SendTestNotification();
     };
 }
 

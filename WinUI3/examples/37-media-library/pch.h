@@ -12,7 +12,6 @@
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
-#include <winrt/Microsoft.UI.Composition.h>
 #include <winrt/Microsoft.UI.Dispatching.h>
 #include <winrt/Microsoft.UI.Xaml.h>
 #include <winrt/Microsoft.UI.Xaml.Controls.h>
@@ -22,21 +21,11 @@
 #include <winrt/Microsoft.UI.Xaml.Markup.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 #include <winrt/Microsoft.UI.Xaml.Navigation.h>
-#include <winrt/Microsoft.UI.Xaml.Shapes.h>
-// AppWindow().Id() feeds the picker its WindowId; the consume template for Id()
-// must be defined before the use site, so the Windowing projection goes in the PCH.
+// AppWindow().MoveAndResize needs the Windowing projection in the PCH
+// (the consume template for Id() must be defined before the use site).
 #include <winrt/Microsoft.UI.Windowing.h>
 
-// OS-integration surfaces exercised by this example (docs/10).
-#include <winrt/Microsoft.Windows.Storage.h>
-#include <winrt/Microsoft.Windows.Storage.Pickers.h>
-// 39 章：本地应用通知（Builder 头是链式构造器所在）
-#include <winrt/Microsoft.Windows.AppNotifications.h>
-#include <winrt/Microsoft.Windows.AppNotifications.Builder.h>
-
-#include <stop_token>
 #include <string>
-#include <thread>
 
 // Generated Files/XamlTypeInfo.g.cpp includes nothing but this header, yet it
 // names every x:Class type, and the markup compiler emits a static_assert that

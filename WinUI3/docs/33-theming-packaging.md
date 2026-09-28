@@ -170,7 +170,9 @@ manifest 在 Visual Studio 里是图形编辑器，底层是 XML。视觉元素�
 1. 给 ThemeLab 加预设导出/导入（m_presets 序列化 JSON + 读回）——33 章资源与 34 章文件的合流练习。
 2. MSIX 打包四个功能工程之一，实测 SettingsStore 的 %LOCALAPPDATA% 路径变化（ApplicationData 可用了吗）。
 
-## 33.6 交付：MSIX 与两种部署形态
+## 33.6 交付：MSIX 与两种部署形态（概览）
+
+> 本章只到"能生成包"的深度；**MSIX 内部结构、命令行打包（makeappx/signtool）、自签名证书与旁加载、winget 与商店流程**见 [42 章](42-packaging-deploy.md)的实测全流程。
 
 ### 33.6.1 生成 MSIX（打包应用）
 

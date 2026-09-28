@@ -21,3 +21,8 @@ examples/**/XamlMetaDataProvider.h
 
 # ui-smoke screenshot evidence; regenerated on every run.
 .smoke/
+
+# Chapter 42 msix-pack.ps1 by-products (staging dir, package, signing key).
+examples/*/.msix-stage/
+examples/**/*.msix
+examples/**/signing.pfx

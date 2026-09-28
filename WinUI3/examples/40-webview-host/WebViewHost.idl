@@ -1,0 +1,10 @@
+namespace WebViewHost
+{
+    // Only members the XAML binding compiler must see through the winmd go here.
+    // Event handlers wired by name in XAML do not (chapter 04, 4.7).
+    [default_interface]
+    runtimeclass MainWindow : Microsoft.UI.Xaml.Window
+    {
+        MainWindow();
+    }
+}

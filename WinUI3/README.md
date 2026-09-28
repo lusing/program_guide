@@ -1,10 +1,10 @@
 # WinUI 3 C++/WinRT 编程指南
 
-面向"从零到工程"的 WinUI 3 教程，35 章、10 个可运行示例工程。目标不是罗列控件语法，而是讲清三层东西：
+面向"从零到工程"的 WinUI 3 教程，43 章、12 个可运行示例工程。目标不是罗列控件语法，而是讲清三层东西：
 
 1. **机制**：WinRT 对象模型、XAML 编译流程、绑定引擎——代码背后发生了什么
 2. **结构**：App / Window / Page / ViewModel / Model / Service 的分层与协作
-3. **交付**：主题资源、窗口外壳、JSON 持久化、MSIX 打包
+3. **交付**：主题资源、窗口外壳、SQLite 持久化、通知、WebView2、MSIX 打包分发
 
 开发语言为 **C++/WinRT**（WinRT 的官方 C++17 投影）。教程代码均为真实 WinUI 3 写法，要编译运行需要 Visual Studio（17.x / 18.x 皆可）带桌面 C++ 工具链，并在可选组件里装上 **C++/WinRT 项目模板** 与 **WinUI 应用模板**。
 
@@ -69,8 +69,17 @@
 |---|------|
 | [32 绑定、MVVM 与异步](docs/32-binding-mvvm.md) | INPC/可观察集合/x:Bind/协程 + **32.8 值转换器** |
 | [33 主题资源与交付](docs/33-theming-packaging.md) | ThemeResource 分层、Assets/Manifest/MSIX |
-| [34 OS 集成](docs/34-os-integration.md) | 线程边界、文件/选择器、注册表/JSON、子进程 |
+| [34 OS 集成](docs/34-os-integration.md) | 线程边界、文件/选择器、注册表/JSON、子进程 + **39 章通知扩展** |
 | [35 TaskFlow 实战](docs/35-taskflow.md) | 全书模式收束：导航+列表+对话框+绑定+持久化 |
+
+### 生产化篇（媒体库 `37-media-library` + `40-webview-host`）
+
+| 章 | 内容 | 章 | 内容 |
+|---|------|---|------|
+| [36 MVVM 进阶](docs/36-mvvm-commands-di.md) | 命令/DI/导航服务 | [40 WebView2](docs/40-webview2.md) | 嵌浏览器：导航/消息/脚本/本地内容 |
+| [37 SQLite 持久化](docs/37-sqlite-storage.md) | 生命周期 + sqlite3 C API + 数据服务 | [41 调试与诊断](docs/41-debugging.md) | 绑定失败/可视化树/stowed exception |
+| [38 Fluent 设计与材质](docs/38-fluent-materials.md) | 原则/排版 ramp/亚克力画刷/云母 | [42 打包与分发](docs/42-packaging-deploy.md) | MSIX 实测：makeappx/签名/winget/商店 |
+| [39 应用通知](docs/39-app-notifications.md) | AppNotificationBuilder C++ 全流程 | [43 生态巡礼](docs/43-ecosystem.md) | WCT/TemplateStudio/Blazor/Uno 的 C++ 视角 |
 
 ## 学习路线
 
@@ -92,6 +101,12 @@
 33 ─ 34                 主题交付与系统能力
       │
 35                      TaskFlow 实战收束
+      │
+36 ─ 37                 命令/DI/导航 + SQLite 数据层（生产化起点）
+      │
+38 ─ 40                 Fluent 材质 / 通知 / WebView2（能力扩展）
+      │
+41 ─ 43                 调试 / 打包分发 / 生态（交付与维护）
 ```
 
 跳读指南：
@@ -115,13 +130,33 @@
 | `Microsoft.WindowsAppSDK` | 1.8.260317003 |
 | `Microsoft.WindowsAppSDK.WinUI`（`Microsoft.UI.Xaml.winmd` 等） | 1.8.260224000 |
 | `Microsoft.Windows.CppWinRT` | 2.0.250303.1 |
+| SQLite（`thirdparty/` 合并源码） | 3.53.4（37 章工程内置） |
 | MSVC 工具集 | VS 18 Community（随机器） |
+
+## 与《Learn WinUI 3》（Alivin Ashcraft, 2nd ed.）的对照
+
+2026-09-28 起，生产化篇（36-43 章）按这本 Packt 教材扩充——书是 C#/.NET 向，本指南把它全部可承接的内容译成 C++ 落地：
+
+| 书章 | 主题 | 本指南 |
+|---|---|---|
+| 1 概览与框架对比 | 01 章（就地补对比表） |
+| 2 环境与首个项目 | 04/05 章 |
+| 3-4 MVVM/命令/DI/导航 | **36 章**（+32 例扩展命令区） |
+| 5 控件巡视 | 07-16 章 |
+| 6 生命周期 + SQLite + 服务 | **37 章**（+新工程 37-media-library） |
+| 7 Fluent 设计/亚克力/云母 | **38 章**（+31.3 实测） |
+| 8 通知（推送/应用通知） | **39 章**（+34 例通知区） |
+| 9 WCT / 10 Template Studio | **43 章**生态视角 |
+| 11 调试 | **41 章**（+本书 stowed 战争史） |
+| 12 Blazor/WebView2 | **40 章**（+新工程 40-webview-host；Blazor 概述归 43） |
+| 13 Uno Platform | 43 章 |
+| 14 打包/winget/Store/旁加载 | **42 章**（命令行 makeappx+signtool 实测，`tools/msix-pack.ps1`） |
 
 **注意文档站默认 moniker 已切到 2.0**，个别成员只在 2.0 页面列出——按 1.8 写工程时不要照抄 2.0 页面的签名。
 
 ## 验证状态
 
-`examples/` 下 **10 个工程**全部真实 MSBuild + WASDK 1.8 编过。控件章节的运行时证据由**四个功能应用**承载（取代了旧版控件画廊）：每个应用是一个有真实用途的小程序，控件在其中承担真实职责；`tools/ui-smoke/` 的 `smoke-<app>.ps1` 逐流程验证。
+`examples/` 下 **12 个工程**全部真实 MSBuild + WASDK 1.8 编过。控件章节的运行时证据由**四个功能应用**承载（取代了旧版控件画廊）：每个应用是一个有真实用途的小程序，控件在其中承担真实职责；`tools/ui-smoke/` 的 `smoke-<app>.ps1` 逐流程验证。
 
 ```text
 examples/
@@ -132,9 +167,11 @@ examples/
 ├── 17-data-explorer/    DataExplorer  数据浏览器（17-20 章）
 ├── 26-theme-lab/        ThemeLab      主题实验室（26-30 章）
 ├── 31-window-shell/     WindowShellApp 标题栏/Mica/多窗口（31 章）
-├── 32-binding-mvvm/     MvvmApp       INPC + 转换器 + 协程（32 章）
-├── 34-os-integration/   OsIntApp      子进程 + 数据目录兜底（34 章）
-└── 35-taskflow/         TaskFlow      实战收束（35 章）
+├── 32-binding-mvvm/     MvvmApp       INPC + 转换器 + 协程 + 命令（32/36 章）
+├── 34-os-integration/   OsIntApp      子进程 + 数据目录兜底 + 应用通知（34/39 章）
+├── 35-taskflow/         TaskFlow      实战收束（35 章）
+├── 37-media-library/    MediaLibrary  SQLite 媒体收藏：过滤/增删/持久化（37 章）
+└── 40-webview-host/     WebViewHost   WebView2：导航/本地页/双向消息（40 章）
 ```
 
 在 `WinUI3/` 下跑 **`.uild.ps1`** 即可全量编译（vswhere 定位 MSBuild、`-restore` 还原 NuGet、`-nr:false` 防节点复用僵尸）。
@@ -167,6 +204,10 @@ examples/
 | | picker | 点 ColorPicker 光谱 | accent 实时变 + 状态行 "accent = #107,10,10" + 柱图随刷 |
 | 窗口 | — | `gallery-smoke.ps1 -Gallery 31` | Acrylic 切换 + 第二窗口 + 自绘标题栏 |
 | 绑定/实战 | — | 32/35 章流程 | INPC 刷新 / TaskFlow 持久化闭环 |
+| 媒体库 | seed/insert/delete | `smoke-medialibrary.ps1` 坐标 + tap.ps1 | 启动 "sqlite ready: 3 rows \| 3 items"（种子）→ 插入后重启 **"4 rows \| 4 items"**（SQLite 持久化铁证）→ 删除后重启 **"3 rows"**；证据 `.smoke/37-media-library/{launch3,relaunch,delete-verify}` |
+| WebView | init/local/script/post | tap.ps1 | "webview2 ready -> local page" + 本地页渲染；`posted json to page` 状态行 + 页面 `host says: {"from":"winrt host","n":42}`（宿主→页 JSON 消息实拍 `.smoke/40-webview-host/roundtrip/tap-2.png`）；Get title 单步被第二步覆盖（编译级 + 同机制已证） |
+| 通知 | send | tap.ps1 + 全屏截屏 | 状态行 "notification shown (id above zero)" + **toast 横幅实拍**（"Hello from C++/WinRT" + Activate app 按钮，`.smoke/34-os-integration/notify-toast/fullscreen-toast2.png`）；点击横幅的激活回传未注入（诚实边界） |
+| 打包 | pack/sign | `tools/msix-pack.ps1` | makeappx 打包（runFullTrust 坑实录）+ signtool 签名成功；安装停在 0x800B0109（自签名证书须提权入 LocalMachine 存储——命令在脚本尾注，留用户执行） |
 
 ### 输入注入战争实录（本机的硬边界，方法论入册）
 
@@ -248,6 +289,8 @@ pwsh tools\ui-smoke\smoke-settingshub.ps1    # 主题/总闸/保存/搜索
 pwsh tools\ui-smoke\smoke-scratchpad.ps1     # 保存/加粗/查找/关闭确认
 pwsh tools\ui-smoke\smoke-dataexplorer.ps1   # 树过滤/文本过滤/卡片/FlipView
 pwsh tools\ui-smoke\smoke-themelab.ps1       # 预设换肤/ColorPicker
+pwsh tools\ui-smoke\smoke-medialibrary.ps1   # 37：SQLite 种子/插入持久化/删除
+pwsh tools\ui-smoke\smoke-webviewhost.ps1    # 40：WebView2 初始化/脚本/双向消息
 pwsh tools\ui-smoke\gallery-smoke.ps1 -Gallery 31   # 窗口工程场景表
 ```
 
@@ -289,13 +332,28 @@ pwsh tools\ui-smoke\find-blob.ps1 -Image shot.png -R 0 -G 120 -B 212 -Tolerance 
 | Window 根工程 x:Bind+Converter 编不过 | `SetConverterLookupRoot` 要 FrameworkElement——用 `{Binding Converter}` 或改 Page 根 | [32 章 32.8](docs/32-binding-mvvm.md) |
 | NuGet 装 Toolkit DataGrid 直接失败 | NU1202：7.x 无 native 目标——走表格自制 | [20 章 20.1](docs/20-datagrid-itemsrepeater.md) |
 | 改 XAML 不生效 | 清 `Generated Files` 重新构建 | [04 章 4.7](docs/04-first-app.md) |
+| `XamlUICommand::Label` 报 C3779（返回 auto 须先定义） | 投影裁剪：pch 显式 `#include <winrt/Microsoft.UI.Xaml.Input.h>` | [36 章 36.8](docs/36-mvvm-commands-di.md) |
+| 命令按钮启用态不刷新 | WinUI 无 CommandManager：INPC 里手动 `NotifyCanExecuteChanged()` | [36 章 36.3](docs/36-mvvm-commands-di.md) |
+| sqlite 报无法打开库文件（中文用户名路径） | 用 `sqlite3_open16`（宽字符）而不是 `sqlite3_open`（UTF-8） | [37 章 37.8](docs/37-sqlite-storage.md) |
+| 宽字符 SQL 想走 `sqlite3_exec16` | 不存在——`prepare16_v2 + step` 一套模式打天下 | [37 章 37.8](docs/37-sqlite-storage.md) |
+| 通知发出去收不到激活回调 | unpackaged 先 `Register(displayName, iconUri)`；管理员权限进程不可收通知 | [39 章 39.8](docs/39-app-notifications.md) |
+| 访问 `Web().CoreWebView2()` 空引用崩 | 初始化未完成——碰 Core 的代码放 `CoreWebView2Initialized` 后 | [40 章 40.9](docs/40-webview2.md) |
+| `{Binding}` 运行期失败无声无息 | App 构造挂 `DebugSettings().BindingFailed` 埋点 | [41 章 41.2](docs/41-debugging.md) |
+| MSBuild 卡死不报错 | mspdbsrv 死锁：杀 MSBuild/cl/mspdbsrv + 删 obj/x64 重编 | [04 章 4.8](docs/04-first-app.md) |
+| 手写 MSIX 装不上（签名不受信） | 证书 Subject 必须等于 Identity Publisher；**CurrentUser 存储不被采信，须提权入 LocalMachine\TrustedPeople** | [42 章](docs/42-packaging-deploy.md) |
+| makeappx 报 0x80080204 要 runFullTrust | 桌面应用清单必声明 `<rescap:Capability Name="runFullTrust"/>` | [42 章 42.8](docs/42-packaging-deploy.md) |
+| ItemsSource 直绑 IVector<String> 的属性白窗即崩 | 1.8 实测 stowed E_INVALIDARG——静态条目用内联 `<x:String>`，动态条目代码填充 | [37 章 37.8](docs/37-sqlite-storage.md) |
+| ComboBox XAML 里 SelectedIndex 写在 ItemsSource 前 | 属性按出现序赋值，空集合设选中即抛——默认选中放首次 Activated | [37 章 37.8](docs/37-sqlite-storage.md) |
+| 首启白窗找不到原因 | 挂 `App::UnhandledException` 落盘，stowed 的 HRESULT/消息直接到手 | [41 章 41.4.1](docs/41-debugging.md) |
 
 ## 后续扩展方向
 
-- **能力集成**：`Microsoft.Windows.AppNotifications`（含进度）、`BackgroundTaskBuilder`、网络（WinHTTP / `Windows.Web.Http` + 进度回报）
-- **诊断与测试**：绑定失败定位（`DebugSettings`）、单元测试工程（GoogleTest + C++/WinRT）、CI 构建打包
+- ~~**能力集成**：`Microsoft.Windows.AppNotifications`（含进度）~~ ✅ 39 章已交付
+- **能力集成**：`BackgroundTaskBuilder`、网络（WinHTTP / `Windows.Web.Http` + 进度回报）
+- ~~**诊断与测试**：绑定失败定位（`DebugSettings`）~~ ✅ 41 章已交付；单元测试工程（GoogleTest + C++/WinRT）、CI 构建打包待做
 - **性能与混合**：XAML Islands 思路、SwapChainPanel 高性能自绘、`CommunityToolkit`（C# 侧）组件的进程外替代
 - **单实例激活重定向**：`AppInstance.FindOrRegisterForKey` 全链路（31.5 的边界待补）
+- **推送通知**：WNS/Azure 全链路（39.6 概述；需要云端身份，按需铺）
 
 > 明确不做：**系统托盘图标**（1.8 元数据无对应类型，走 Win32 `Shell_NotifyIcon` 是另一套故事）。
 

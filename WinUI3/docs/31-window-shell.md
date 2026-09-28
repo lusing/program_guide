@@ -28,6 +28,8 @@ SetTitleBar(AppTitleBar());         // 这块 Border 成为拖拽区 + 双击最
 
 ## 31.3 SystemBackdrop：背景材质
 
+> 本章是窗口级材质的 API 实测；Fluent 设计原则、元素级亚克力画刷与主题工具见 [38 章](38-fluent-materials.md)。
+
 ```cpp
 SystemBackdrop(MicaBackdrop());            // 加载即 Mica
 ...

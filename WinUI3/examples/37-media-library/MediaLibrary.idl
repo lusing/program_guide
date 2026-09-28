@@ -1,0 +1,49 @@
+// MediaLibrary.idl -- model / viewmodel / window runtimeclasses in ONE file.
+//
+// MIDL resolves a runtimeclass reference only against types declared in the
+// same compilation unit (MIDL2011 otherwise), so MainWindow.ViewModel ->
+// LibraryViewModel -> MediaItem must live together here. App.idl stays
+// separate because nothing references it. (Same lesson as chapter 32.)
+namespace MediaLibrary
+{
+    // Immutable row: lists refresh by rebuilding Items, so no INPC needed here.
+    runtimeclass MediaItem
+    {
+        MediaItem(Int64 id, String name, String category, String location);
+
+        Int64 Id { get; };
+        String Name { get; };
+        String Category { get; };
+        String Location { get; };
+    }
+
+    [default_interface]
+    runtimeclass LibraryViewModel : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        LibraryViewModel();
+
+        String Status;
+        String DbPath { get; };
+        Boolean HasSelection;
+        Windows.Foundation.Collections.IObservableVector<MediaLibrary.MediaItem> Items { get; };
+        String SelectedCategory;
+
+        void AddItem();
+        void DeleteSelected();
+        void SelectItem(MediaLibrary.MediaItem item);
+        void ClearSelection();
+        // Projected type only sees IDL members: the startup coroutine must be
+        // declared here for MainWindow (which holds the projected VM) to call it.
+        Windows.Foundation.IAsyncAction InitializeAsync();
+    }
+
+    // Only members the XAML binding compiler must see through the winmd go here
+    // (ViewModel, for x:Bind). Event handlers wired by name in XAML do not.
+    [default_interface]
+    runtimeclass MainWindow : Microsoft.UI.Xaml.Window
+    {
+        MainWindow();
+
+        MediaLibrary.LibraryViewModel ViewModel { get; };
+    }
+}

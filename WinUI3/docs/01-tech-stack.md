@@ -79,6 +79,18 @@ WPF 是 .NET 时代的优秀桌面 UI 框架，至今仍在维护。但它和 Wi
 
 本教程使用 **C++/WinRT** 作为开发语言——它是 WinRT 的官方 C++17 投影，也是 WinUI 3 的一等公民语言。
 
+### 四框架优劣对照（WinUI 3 vs UWP / WPF / WinForms）
+
+《Learn WinUI 3》1.6 节给的三张对照表合成一张（结论在 2026 年的 Windows 11 语境下依然成立）：
+
+| | WinUI 3 优势 | 对方优势 |
+|---|---|---|
+| **vs UWP** | Win32 桌面进程（完整 API 面）；框架随应用分发不受 OS 锁死；非打包可跑 | UWP 的挂起/恢复生命周期更省电（移动端语义）；已上架的 UWP 应用仍受支持 |
+| **vs WPF** | 系统原生集成（Composition/MSIX/通知/材质）；Fluent 视觉开箱即用；支持 C++ 直连原生代码；体积不含 .NET 运行时（自包含 MSIX 更小） | WPF 生态厚（第三方控件、二十年的答案存量）；设计器/工具链成熟；MonoAOT 之外的跨平台尝试都在 WPF 侧 |
+| **vs WinForms** | 现代渲染（合成器、动画、高 DPI 完整）；XAML 数据绑定 vs 手工事件连线；无障碍与主题跟随免费 | WinForms 拖拽出活极快；对"表格+按钮"型企业工具的性价比仍然无敌 |
+
+历史脉络见 [1.6 的全景表](#16-历史脉络每一代-ui-技术在解决什么问题)。
+
 ## 1.4 XAML：被编译的界面声明
 
 XAML（Extensible Application Markup Language）用 XML 语法描述界面树：

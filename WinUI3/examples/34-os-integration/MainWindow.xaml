@@ -8,5 +8,7 @@
         <Button Content="Show app data path" Click="OnShowPathClicked" />
         <Button Content="Pick a .json file" Click="OnPickClicked" />
         <Button Content="Run child process" Click="OnRunToolClicked" />
+        <!-- 39 章：本地应用通知（AppNotificationBuilder，unpackaged 注册路线） -->
+        <Button Content="Send app notification" Click="OnNotifyClicked" />
     </StackPanel>
 </Window>

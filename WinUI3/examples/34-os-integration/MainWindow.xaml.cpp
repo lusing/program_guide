@@ -12,7 +12,79 @@ namespace winrt::OsIntApp::implementation
         InitializeComponent();
         // 在 UI 线程上抓取 UI 队列，供后台线程回流（docs/10 10.1）
         m_dispatcherQueue = Microsoft::UI::Dispatching::DispatcherQueue::GetForCurrentThread();
+        // 39 章：unpackaged 应用通知注册（displayName + 图标的重载）
+        RegisterAppNotifications();
     }
+
+    // ── 39 章：本地应用通知 ───────────────────────────────────────────────
+    void MainWindow::RegisterAppNotifications()
+    {
+        using winrt::Microsoft::Windows::AppNotifications::AppNotificationManager;
+
+        auto manager = AppNotificationManager::Default();
+
+        // NotificationInvoked 在后台线程触发：回流 UI 必须走队列（32.7 纪律）
+        m_notificationRevoker = manager.NotificationInvoked(auto_revoke_t{},
+            [this](AppNotificationManager const&,
+                winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs const& args)
+        {
+            auto strong = get_strong();
+            m_dispatcherQueue.TryEnqueue([strong, argument = args.Argument()]
+            {
+                strong->StatusText().Text(std::wstring{ L"notification activated: " } +
+                    argument.c_str());
+            });
+        });
+
+        // unpackaged 没有 MSIX 清单可登记 AUMID：用 IAppNotificationManager2 的
+        // Register(displayName, iconUri) 重载现场注册。图标必须是 file:// URI。
+        wchar_t exePath[MAX_PATH]{};
+        GetModuleFileNameW(nullptr, exePath, MAX_PATH);
+        std::wstring dir{ exePath };
+        auto slash = dir.find_last_of(L"\\");
+        std::wstring icon = dir.substr(0, slash) + L"\\Assets\\appicon.png";
+
+        try
+        {
+            manager.Register(L"OsIntApp (C++/WinRT demo)",
+                Windows::Foundation::Uri{ L"file:///" + icon });
+        }
+        catch (winrt::hresult_error const& e)
+        {
+            StatusText().Text(std::wstring{ L"notification register failed: " } +
+                e.message().c_str());
+        }
+    }
+
+    void MainWindow::SendTestNotification()
+    {
+        using namespace winrt::Microsoft::Windows::AppNotifications;
+        using winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationBuilder;
+        using winrt::Microsoft::Windows::AppNotifications::Builder::AppNotificationButton;
+
+        // 链式构造器：每步返回接口类型，逐步写比一整条链更能对上投影签名
+        AppNotificationBuilder builder;
+        builder.AddArgument(L"action", L"send");
+        builder.AddText(L"Hello from C++/WinRT");
+        builder.AddText(L"Local app notification - no WNS, no cloud, no package identity.");
+
+        AppNotificationButton button{ L"Activate app" };
+        button.AddArgument(L"action", L"activate");
+        builder.AddButton(button);
+
+        AppNotification notification = builder.BuildNotification();
+        AppNotificationManager::Default().Show(notification);
+
+        StatusText().Text(notification.Id() != 0
+            ? L"notification shown (id above zero)"
+            : L"notification Id = 0 (still delivered; Id is per-update)");
+    }
+
+    void MainWindow::OnNotifyClicked(IInspectable const&, RoutedEventArgs const&)
+    {
+        SendTestNotification();
+    }
+    // ── 39 章结束 ─────────────────────────────────────────────────────────
 
     void MainWindow::OnShowPathClicked(IInspectable const&, RoutedEventArgs const&)
     {

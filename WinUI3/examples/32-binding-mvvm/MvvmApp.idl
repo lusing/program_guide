@@ -23,12 +23,15 @@ namespace MvvmApp
 
         String Status;
         Int32 TaskCount { get; };
+        Int32 OutstandingCount { get; };
         String Query;
         Windows.Foundation.Collections.IObservableVector<MvvmApp.TaskItem> Tasks { get; };
 
         void AddFromInput();
         void DeleteSelected(MvvmApp.TaskItem item);
         void LoadFrom(Windows.Foundation.Collections.IVector<String> titles);
+        // Chapter 36: XamlUICommand's ExecuteRequested lands here
+        void MarkAllDone();
     }
 
     // 32.8 IValueConverter: x:Bind ships no built-in bool->Visibility conversion

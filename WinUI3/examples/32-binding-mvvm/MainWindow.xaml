@@ -31,6 +31,15 @@
                 <Button x:Name="RefreshButton" Content="Refresh" Click="OnRefreshClicked" />
             </StackPanel>
 
+            <!-- 36 章：ICommand 路线。命令对象在代码隐藏里创建（XamlUICommand +
+                 StandardUICommand），按钮经 Command 属性消费，CanExecute 决定启用 -->
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button x:Name="CompleteAllButton" />
+                <Button x:Name="DeleteUiButton" />
+                <TextBlock Text="^ XamlUICommand(Ctrl+K) / StandardUICommand(Delete)"
+                           VerticalAlignment="Center" Opacity="0.55" FontSize="12"/>
+            </StackPanel>
+
             <TextBlock x:Name="LoadingText" Text="" />
 
             <ListView x:Name="TaskList" Height="240"

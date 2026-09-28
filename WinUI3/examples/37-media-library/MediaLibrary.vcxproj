@@ -3,8 +3,8 @@
 
   <PropertyGroup Label="Globals">
     <CppWinRTOptimized>true</CppWinRTOptimized>
-    <ProjectGuid>{10a1b2c3-4d5e-4f60-8a9b-0c1d2e3f4a10}</ProjectGuid>
-    <RootNamespace>OsIntApp</RootNamespace>
+    <ProjectGuid>{7a1b2c3d-4e5f-4a60-8b9c-0d1e2f3a4b37}</ProjectGuid>
+    <RootNamespace>MediaLibrary</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>17.0</MinimumVisualStudioVersion>
     <AppContainerApplication>false</AppContainerApplication>
@@ -19,7 +19,7 @@
     <UseWinUI>true</UseWinUI>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <!-- None = unpackaged so the sample builds and runs from the command line;
-         pass -p:WindowsPackageType=MSIX with a Package.appxmanifest to package. -->
+         chapter 42 repackages this exact output with makeappx by hand. -->
     <WindowsPackageType Condition="'$(WindowsPackageType)' == ''">None</WindowsPackageType>
     <EnableMsixTooling>true</EnableMsixTooling>
   </PropertyGroup>
@@ -83,7 +83,10 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h" />
     <ClInclude Include="MainWindow.xaml.h" />
-    <ClInclude Include="ToolService.h" />
+    <ClInclude Include="MediaItem.h" />
+    <ClInclude Include="LibraryViewModel.h" />
+    <ClInclude Include="LibraryStore.h" />
+    <ClInclude Include="thirdparty\sqlite3.h" />
   </ItemGroup>
 
   <ItemGroup>
@@ -95,24 +98,26 @@
     </ClCompile>
     <ClCompile Include="App.xaml.cpp" />
     <ClCompile Include="MainWindow.xaml.cpp" />
-    <ClCompile Include="ToolService.cpp" />
+    <ClCompile Include="MediaItem.cpp" />
+    <ClCompile Include="LibraryViewModel.cpp" />
+    <ClCompile Include="LibraryStore.cpp" />
+    <!-- sqlite3.c is vendored C; it must not touch the pch and only needs
+         its own warnings tamed once. -->
+    <ClCompile Include="thirdparty\sqlite3.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level1</WarningLevel>
+      <DisableSpecificWarnings>4996;4267;4244;4311;4131;4100;4189</DisableSpecificWarnings>
+    </ClCompile>
   </ItemGroup>
 
   <ItemGroup>
     <Midl Include="App.idl" />
-    <Midl Include="MainWindow.idl" />
+    <Midl Include="MediaLibrary.idl" />
   </ItemGroup>
 
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
     <Page Include="MainWindow.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- 39 章：unpackaged 通知注册的图标（Register(displayName, iconUri)） -->
-    <Content Include="Assets\appicon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -137,5 +142,4 @@
   </Target>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-
 </Project>
