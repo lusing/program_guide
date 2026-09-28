@@ -48,7 +48,7 @@ $"表达式也行: {name.Length} 个字符"
 
 格式占位语法 `{值,宽度:格式}`，常用格式符：`F2`（定点两位）、`N0`（千分位整数）、`P1`（百分比）、`x4`/`X4`（十六进制，第 23 章示例用过）、`yyyy-MM-dd`（日期）。要输出 `{` 本身，写 `{{`。
 
-文化（Culture）陷阱：`ToString`/插值默认用当前区域——`1.5` 在某些区域是 `1,5`。**对外协议/文件格式固定用** `CultureInfo.InvariantCulture`：`value.ToString(CultureInfo.InvariantCulture)`。界面显示才用默认文化。
+文化（Culture）陷阱：`ToString`/插值默认用当前区域——`1.5` 在某些区域是 `1,5`。**对外协议/文件格式固定用** `CultureInfo.InvariantCulture`：`value.ToString(CultureInfo.InvariantCulture)`。界面显示才用默认文化。需要「同一个插值按不同区域输出」时，把插值字符串存进 `FormattableString` 再按文化求值——机制与实测见 [38 章 Effective 条 5](38-effective-habits.md)。
 
 ## 4. 原始字符串（C# 11）：三引号消灭转义
 

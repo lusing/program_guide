@@ -146,4 +146,4 @@ private double Eval(Expr expr) => expr switch
 它强迫你**同时使用**全书的一切：类型系统建模（数据形态选 record）、模式匹配做分派、异常做错误通道、LINQ 组织流程——而且产出物是"活的"：改一行优先级表，语言行为立刻变。**能独立改出第 7 节的任意一个练习，这门语言的机制你就真的掌握了**——比任何"总结章"都实在。
 
 ---
-上一章：[35 单元测试](35-testing.md) ｜ 返回：[README](../README.md)
+上一章：[35 单元测试](35-testing.md) ｜ 下一章：[37 集合体系与选型](37-collections.md) ｜ 返回：[README](../README.md)

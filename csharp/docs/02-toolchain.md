@@ -17,7 +17,7 @@ dotnet run -- a b               # 同上，-- 之后是传给程序的参数
 dotnet publish                  # 发布（部署优化版，见 WPF 教程 24 章的完整展开）
 ```
 
-本教程的 `build.ps1` 把 36 个示例的构建/运行包成一条命令（需 PowerShell 7 / `pwsh`，三平台通用）：
+本教程的 `build.ps1` 把 42 个示例的构建/运行包成一条命令（需 PowerShell 7 / `pwsh`，三平台通用）：
 
 ```bash
 cd csharp
@@ -32,7 +32,7 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 06_strings     # 只构建
 
 ## 2. csproj 逐行解读
 
-`02_toolchain/ToolchainConsole.csproj` 全貌（36 个示例共用这套模板，仅 27 章多了 AllowUnsafeBlocks）：
+`02_toolchain/ToolchainConsole.csproj` 全貌（42 个示例共用这套模板，仅 27 章多了 AllowUnsafeBlocks）：
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
