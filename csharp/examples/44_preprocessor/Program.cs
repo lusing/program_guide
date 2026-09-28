@@ -5,6 +5,7 @@
 //   定义预处理器符号」——C# 的 #define/#undef 都只能待在文件头，这点与 C/C++ 不同）
 
 using IntMap = System.Collections.Generic.Dictionary<int, string>;   // using 别名：长类型名起短名
+using Coll = System.Collections;                                     // 命名空间别名：可配 :: 限定符用
 
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
@@ -75,6 +76,16 @@ Console.WriteLine("  常规文件的两种写法：namespace Foo {{ ... }}（块
 Console.WriteLine("  global using X; 写一次全解决方案生效——ImplicitUsings 就是微软替你写的 global using 包（02 章拆过）");
 
 Console.WriteLine();
+Console.WriteLine("===== :: 限定符与 global::：给名字一个绝对起点 =====");
+Coll.Hashtable legacy = new() { ["一"] = 1 };
+Console.WriteLine($"  Coll.Hashtable（命名空间别名 + ::）→ {legacy["一"]}；别名指向类型时只能用 .（:: 报 CS0431）");
+var probe = global::System.Text.Encoding.UTF8;
+Console.WriteLine($"  global::System.Text.Encoding.UTF8 → {probe.WebName}   ← 从全局命名空间根出发，无视局部遮蔽");
+var shadow = new Named("字段值", 42);
+Console.WriteLine($"  类里恰好有个字段叫 System 时：{shadow.Escape()}");
+Console.WriteLine("  实测：那个类里直接写 System.Console 会 CS1061（int 没有 Console）——global:: 是唯一逃生通道");
+
+Console.WriteLine();
 Console.WriteLine("===== 嵌套类型：Inner 是 Outer 的成员，能读 Outer 的私有 =====");
 Console.WriteLine($"  Outer.Inner.Peek() → {Organizer.Outer.Inner.Peek()}");
 Console.WriteLine("  非嵌套的任何类都读不到 secret——嵌套是「设计上的一家人」，常用于外部不应感知的实现细节");
@@ -102,6 +113,13 @@ static void PrintFrame(Exception ex, string label)
 }
 
 // 类型声明必须在所有语句之后（顶层语句文件的规矩）
+class Named(string label, int value)
+{
+    public int System = value;                       // 成员名撞命名空间——邪恶但合法
+
+    public string Escape() => $"global:: 打印 {label}={System}（类内裸写 System.Console 已被字段遮蔽）";
+}
+
 file class Organizer
 {
     public class Outer

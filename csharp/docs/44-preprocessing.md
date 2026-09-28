@@ -2,7 +2,7 @@
 
 > 对应示例：`examples/44_preprocessor`
 
-> **本章你将学会**：#define/#if 家族的布尔开关语义（与 C 宏的本质区别）、DEBUG/NET10_0 等白送符号、#error/#pragma warning/#line 的实战用法、命名空间与 using 别名的组织术、嵌套类型的访问特权、程序集这一「集装箱」里装了什么。
+> **本章你将学会**：#define/#if 家族的布尔开关语义（与 C 宏的本质区别）、DEBUG/NET10_0 等白送符号、#error/#pragma warning/#line 的实战用法、命名空间与 using 别名的组织术、:: 限定符与 global::、嵌套类型的访问特权、程序集这一「集装箱」里装了什么。
 > **前置章节**：[02 工具链](02-toolchain.md)（csproj 逐行解读）、[21 可空引用类型](21-nullable.md)、[23 反射与特性](23-reflection-attributes.md)。
 
 《程序设计教程》（唐大仕版）4.5-4.6 节把「命名空间、嵌套类型、程序集、编译预处理」合成一讲——视角很对：**这些都是编译器如何看待你代码的问题**，本教程此前散落各章，本章收拢。
@@ -68,6 +68,21 @@ int unused = 42;                // 这段不再报「赋值未使用」
 - **using 别名**：`using IntMap = Dictionary<int, string>;`——长泛型名起短名，还能消歧两个同名类
 - **global using**：写一次全解决方案生效；csproj 的 `ImplicitUsings` 就是微软预置的 global using 包（[02 章](02-toolchain.md)拆过箱）
 
+**`::` 限定符与 `global::`**：给名字一个「绝对起点」，专治遮蔽与歧义：
+
+```csharp
+using Coll = System.Collections;              // 命名空间别名
+Coll.Hashtable h = new();                     // 别名::类型 —— 名字解析从别名处出发
+var e = global::System.Text.Encoding.UTF8;    // global:: —— 从全局命名空间根出发
+```
+
+两条实测规则：
+
+- `::` 左边必须是**命名空间**别名——别名指向类型（如 `IntMap`）时只能用 `.`，用 `::` 报 **CS0431**「无法将别名与 :: 一起使用，因为该别名引用了类型」
+- 真正的使用场景：类里恰好有成员叫 `System`（字段/属性）时，类内裸写 `System.Console` 会被成员遮蔽（实测报 CS1061「int 未包含 Console 的定义」），`global::System.Console` 是唯一逃生通道。生成的代码（不知道会被贴进什么类里）尤其依赖它
+
+示例实测输出：`global::System.Text.Encoding.UTF8 → utf-8`；带 `System` 字段的类里，`Escape()` 方法必须写 `global::` 才能引用命名空间。
+
 ## 7. 嵌套类型：设计上的一家人
 
 ```csharp
@@ -105,6 +120,8 @@ class Outer
 
 **条件编译看不出来**：`#if` 分支在编辑器里灰显；code review 时留意灰掉的代码是不是该删。
 
+**类型别名后面试着用 `::`**：`IntMap::KeyCollection` 报 CS0431——`::` 只配命名空间别名，类型别名用 `.`。
+
 ## 实战建议
 
 - 诊断代码：`#if DEBUG` 包住，Release 产物零残留
@@ -119,6 +136,7 @@ class Outer
 3. **#line hidden 的实际效果在哪能看到？** —— 异常 StackTrace 里该帧丢失行号（示例实测对比）。
 4. **嵌套类有什么访问特权？** —— 可访问外层类的 private 成员（反向不行）。
 5. **#if 与反射各自管什么期的「选择」？** —— 编译期固化（产物无痕迹）vs 运行期读元数据动态决策。
+6. **`::` 能跟在类型别名后面吗？global:: 解决什么问题？** —— 不能（CS0431，只配命名空间别名）；global:: 从全局命名空间根出发，专治成员名撞命名空间的遮蔽。
 
 ---
 上一章：[43 常用工具类型](43-common-types.md) ｜ 下一章：[45 XML 与 LINQ to XML](45-xml.md) ｜ 返回：[README](../README.md)

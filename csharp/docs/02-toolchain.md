@@ -77,6 +77,21 @@ internal static class ClassicEntry
 
 选型建议：小工具用顶层语句（少仪式感）；大项目用经典 Main（入口逻辑集中）。本教程示例小，一律顶层语句。
 
+**Main 的四种签名**（写法二/三可用；顶层语句是它们的语法糖）：
+
+| 签名 | 用途 |
+|---|---|
+| `static void Main(string[] args)` | 最基础 |
+| `static int Main(string[] args)` | 返回**退出码**：0 = 成功，非 0 = 失败（脚本/CI 靠 `$LASTEXITCODE` 判断） |
+| `static async Task Main()` | 入口直接 await（顶层语句里的 await 就是它） |
+| `static async Task<int> Main()` | 异步 + 退出码 |
+
+三个要点（示例 02 的 `--exit` 参数可现场验证）：
+
+1. 方法名必须**恰好是 `Main`**（大写 M）——C# 大小写敏感，写 `static void main()` 直接 CS5001「程序不包含适合于入口点的静态 Main 方法」
+2. 顶层语句里 `return N;` 等价于 `int Main` 的返回值。实测 `dotnet run -- --exit 7` 后 `$LASTEXITCODE` 是 7；不带参数跑就是 0
+3. 一旦某个分支写了 `return`，入口就按 `int` 处理，**所有路径都必须 return**（CS0161）——没有要返回的就末尾补 `return 0;`
+
 ## 4. 命令行参数
 
 参数通过 `args`（顶层语句直接可用 / Main 的形参）传入：
@@ -85,7 +100,7 @@ internal static class ClassicEntry
 dotnet run -- --repl      # 程序收到 args = ["--repl"]
 ```
 
-`36_minilang` 就用 `--repl` 切换"演示模式/交互模式"。处理参数的成熟方案是 `System.CommandLine` 或手写 switch——第 36 章展示了最朴素的一个 if。
+`36_minilang` 就用 `--repl` 切换"演示模式/交互模式"。处理参数的成熟方案是 `System.CommandLine` 或手写 switch——第 36 章展示了最朴素的一个 if。示例 02 的 `--exit N`（返回指定退出码）是另一个最小范本。
 
 ## 5. 开发环境选择
 
@@ -104,6 +119,10 @@ dotnet run -- --repl      # 程序收到 args = ["--repl"]
 **类型声明混在语句中间**：顶层语句文件里 class/enum 声明出现在语句之前 → 编译错误。声明一律放文件末尾。
 
 **`dotnet run` 的参数没传进去**：少了 `--` 分隔符，参数被 dotnet 自己吃了。
+
+**小写 `main` 没被认作入口**：CS5001——方法名大小写敏感，入口必须恰好是 `Main`。
+
+**顶层语句写了 return 别的分支没写**：CS0161「并非所有的代码路径都返回值」——有一条 return，入口就是 int 型，条条路径都要 return。
 
 **中文输出乱码**：Windows 控制台默认 GBK。程序第一行设 `Console.OutputEncoding = System.Text.Encoding.UTF8`（本教程全部示例的惯例），或终端切 UTF-8 代码页。
 

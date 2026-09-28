@@ -35,6 +35,17 @@ var week = new WeekDays();
 Console.WriteLine($"week[0] = {week[0]}, week[6] = {week[6]}   ← 像数组一样用对象");
 Console.WriteLine($"week[\"三\"] = {week["三"]}   ← 索引器可以重载：同名不同参数，按内容反查下标");
 
+Console.WriteLine();
+Console.WriteLine("===== 分部类与分部方法：一个类拆几半，编译期合并 =====");
+var report = new Report("月报");
+report.Append("第一段");
+report.Append("第二段");
+Console.WriteLine($"  {report.Title}: {report.Sections.Count} 段，约 {report.EstimatedLength()} 字   ← 两半声明拼成了同一个类");
+_ = new SilentHook();
+Console.WriteLine("  SilentHook 的 OnCreated() 没写实现：构造照常，调用点被编译器整体移除（不报错也不执行）");
+Console.WriteLine("  规则（实测）：无访问修饰符 + void = 经典形态（实现可省略）；一旦写出修饰符或非 void 返回值就升级为");
+Console.WriteLine("  扩展形态、必须两半都有实现（缺实现 CS8795、非 void 没修饰符 CS8796）");
+
 class Account
 {
     private decimal _balance;                        // 私有字段：实现细节
@@ -89,4 +100,35 @@ class WeekDays
     public int this[string day] => Array.IndexOf(_days, day);     // 重载：参数不同即可（接口里也能声明索引器）
 }
 
-partial class Program { }                            // 分部类示意：一个类可拆多个文件（WPF 教程 02 章的核心机制）
+// 分部类：同一个类拆成多份声明（可跨文件，也可像这样同文件多段）——编译器合并成一个类
+partial class Report
+{
+    public string Title { get; }
+    public List<string> Sections { get; } = new();   // 「手写的一半」：核心状态
+
+    public Report(string title) => Title = title;
+
+    public void Append(string s)
+    {
+        Sections.Add(s);
+        OnAppended(s);                                // 经典分部方法调用点：没实现就被移除，有实现就接上
+    }
+
+    partial void OnAppended(string s);                // 经典形态：无修饰符 + void → 实现可以省略
+
+    public partial int EstimatedLength();             // 扩展形态：有修饰符、可返回值 → 必须有实现（CS8795）
+}
+
+partial class Report                                  // 想象这段在另一个文件（或源生成器写出的 .g.cs）
+{
+    partial void OnAppended(string s) => Console.WriteLine($"    [钩子] 追加了「{s}」");
+
+    public partial int EstimatedLength() => Title.Length + Sections.Sum(s => s.Length);
+}
+
+partial class SilentHook
+{
+    public SilentHook() => OnCreated();               // 调用点存在……
+
+    partial void OnCreated();                         // ……但实现缺席：编译后这里什么都不剩
+}

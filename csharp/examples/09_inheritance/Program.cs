@@ -34,6 +34,13 @@ Base b = d;
 Console.WriteLine($"  override: b.Say() = {b.Say()}   ← 虚分发，看真身");
 Console.WriteLine($"  new 隐藏: b.Hi() = {b.Hi()}   ← 非虚，看变量类型（隐藏是坑，少用）");
 
+Console.WriteLine();
+Console.WriteLine("===== base：子类复用父类的那一半 =====");
+var ebike = new Electric(80);
+Console.WriteLine($"  {ebike.Describe()}");
+Console.WriteLine("  构造链 : Vehicle(2) 先跑（父类先就位），battery 再初始化——顺序由语言定死");
+Console.WriteLine("  Describe 里 base.Describe() 复用父类版本，再加自己的话——覆写不是推翻，是接力");
+
 abstract class Shape
 {
     public abstract double Area();                   // 抽象成员：子类必须实现
@@ -70,4 +77,18 @@ class Derived : Base
 {
     public override string Say() => "Derived.Say";
     public new string Hi() => "Derived.Hi";          // new：故意隐藏（不推荐）
+}
+
+class Vehicle
+{
+    protected readonly int Wheels;                   // protected：子类可见、外人免进（封装对家族开门）
+
+    public Vehicle(int wheels) => Wheels = wheels;
+
+    public virtual string Describe() => $"{Wheels} 个轮子";
+}
+
+class Electric(int battery) : Vehicle(2)             // : Vehicle(2) = 构造链：先跑父类构造再初始化自己
+{
+    public override string Describe() => base.Describe() + $" + {battery} 度电";   // base. 复用父类版本
 }

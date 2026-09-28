@@ -2,7 +2,7 @@
 
 > 对应示例：`examples/09_inheritance`
 
-> **本章你将学会**：virtual/override/abstract/sealed 四件套、多态的运行机制、object 的虚方法、隐藏（new）与覆写（override）的区别。
+> **本章你将学会**：virtual/override/abstract/sealed 四件套、多态的运行机制、object 的虚方法、隐藏（new）与覆写（override）的区别、base 复用与构造链。
 > **前置章节**：[08 类与封装](08-classes.md)。
 
 ## 1. 多态：同一句话，各表其意
@@ -87,6 +87,24 @@ b.Hi()    // "Base.Hi"     ← new 看变量类型！
 
 **override 参与 vtable 分发；new 只是同名遮蔽**——用基类引用调用时绕过遮蔽，跑的是基类版本。`new` 几乎总是设计坏味道（调用方行为取决于变量类型），示例用它只为演示差异。看到编译器警告"用 new 隐藏基类成员"时，先想是不是该 override 或改名。
 
+覆写不是推翻父类，是**接力**——`base` 关键字让你复用父类的那一半：
+
+```csharp
+class Vehicle
+{
+    protected readonly int Wheels;                    // protected：子类可见、外人免进
+    public Vehicle(int wheels) => Wheels = wheels;
+    public virtual string Describe() => $"{Wheels} 个轮子";
+}
+
+class Electric(int battery) : Vehicle(2)              // 构造链：先跑 Vehicle(2)，再初始化 battery
+{
+    public override string Describe() => base.Describe() + $" + {battery} 度电";
+}
+```
+
+示例实测 `new Electric(80).Describe()` 输出 `2 个轮子 + 80 度电`。两条铁律：**构造链**——子类构造先跑父类构造（父类先就位，子类初始化才安全），顺序由语言定死，`: Vehicle(2)` 就是显式指定父类构造的参数；**base 复用**——override 里 `base.Describe()` 拿到父类版本再加工，比从零重写省一半且不怕父类逻辑变化。`base` 只能用在 override/构造链里，**不能越级**（`base.base` 不存在——那是破坏封装）。
+
 ## 6. 组合优于继承（老生常谈但真）
 
 继承表达 **is-a**（猫是动物），组合表达 **has-a**（车有引擎）：
@@ -105,7 +123,7 @@ class Car { private readonly Engine _engine = new(); }   // 组合
 
 **Equals 重写了 GetHashCode 忘了**：字典/哈希集合直接失灵（按哈希分桶找不到对象）。两个必须成对。
 
-**调用 base 的时机**：`override` 方法里 `base.Say()` 可复用父类逻辑；忘了调导致父类初始化被跳过（构造链同理）。
+**调用 base 的时机**：`override` 方法里 `base.Say()` 可复用父类逻辑；忘了调导致父类版本被整体替换而非接力（构造链同理——子类构造不指定 `: base(...)` 就用父类无参构造，没有就编译错）。
 
 **用继承凑代码复用**：Stack 想复用 List 的代码继承 List——is-a 关系是假的，接口语义全歪。复用用组合。
 
@@ -122,6 +140,7 @@ class Car { private readonly Engine _engine = new(); }   // 组合
 2. **virtual/override/abstract/sealed 各自的语义？** —— 允许替换/执行替换/强制实现/禁止再继承。
 3. **new 隐藏与 override 的区别？** —— 隐藏按变量类型静态绑定；override 按对象真身动态分发。
 4. **为什么说 C# 方法默认非虚是好设计？** —— 调用快、行为可预测、扩展点显式声明。
+5. **子类构造的执行顺序？base 在 override 里干什么？** —— 先父类构造再子类初始化（`: base(...)` 指定父类构造参数）；override 里 `base.方法()` 复用父类版本再加工。
 
 ---
 上一章：[08 类与封装](08-classes.md) ｜ 下一章：[10 接口](10-interfaces.md) ｜ 返回：[README](../README.md)

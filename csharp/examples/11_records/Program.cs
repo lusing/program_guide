@@ -21,6 +21,22 @@ Console.WriteLine($"  原单: {o1.Amount}");
 Console.WriteLine($"  新单: {upgraded.Amount}（o1 毫发无损）");
 
 Console.WriteLine();
+Console.WriteLine("===== 浅拷贝 vs 深拷贝：引用成员的复制边界 =====");
+var team = new Team("一组", ["张三", "李四"]);
+var shallow = team.ShallowCopy();
+shallow.Members.Add("王五");                          // 改的是「新对象」里那个旧 List
+Console.WriteLine($"  浅拷贝后原队: {string.Join("、", team.Members)}   ← 两个对象共享同一个 List");
+var deep = team.DeepCopy();
+deep.Members.Add("赵六");
+Console.WriteLine($"  深拷贝后原队: {string.Join("、", team.Members)}（新队 {string.Join("、", deep.Members)}）");
+var viaJson = System.Text.Json.JsonSerializer.Deserialize<Team>(
+    System.Text.Json.JsonSerializer.Serialize(team))!;
+Console.WriteLine($"  JSON roundtrip 深拷贝: {viaJson.Name} {viaJson.Members.Count} 人（偷懒法，要求类型可序列化）");
+Console.WriteLine("  MemberwiseClone 是 protected：只能在类自己的 Clone() 方法里用，类外调不到");
+Console.WriteLine("  ICloneable 官方不推荐：它没说清拷出来的是浅还是深，实现者各猜各的");
+Console.WriteLine("  首选：record + with（明确就是浅拷贝）；要深不可变用 ImmutableList（37 章）");
+
+Console.WriteLine();
 Console.WriteLine("===== 解构：一拆为多 =====");
 var (id, name, amount) = o1;
 Console.WriteLine($"  var (id, name, amount) = o1 → {id}, {name}, {amount}");
@@ -41,3 +57,13 @@ Console.WriteLine("  超过这个量级用 class/record——大 struct 拷贝�
 record Order(int Id, string Customer, decimal Amount);
 
 record struct Pixel(int X, int Y);
+
+class Team(string name, List<string> members)
+{
+    public string Name { get; } = name;
+    public List<string> Members { get; } = members;
+
+    public Team ShallowCopy() => (Team)MemberwiseClone();   // 逐字段拷贝：引用成员仍指向同一个 List
+
+    public Team DeepCopy() => new(Name, [.. Members]);      // 引用成员另造一份，与原型彻底脱钩
+}

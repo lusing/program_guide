@@ -121,13 +121,15 @@ csharp/
 
 按另五本教材（《C# 从入门到项目实践》《基础入门与实战》《程序设计教程》两种《第2版》《经典教程（第三版）》）目录交叉比对补齐的专题——四本共讲而主线只顺带使用。
 
+第三轮（2026-09-29）再按《C#入门经典（第8版）》《C#从入门到精通（第4版）》交叉比对，缺口以**就地加深**落位：02 章 Main 完整形态与退出码、08 章经典/扩展两种分部方法（CS8795/CS8796 实测）、09 章 base 复用与构造链、11 章浅拷贝 vs 深拷贝（MemberwiseClone/ICloneable/JSON roundtrip）、44 章 `::` 限定符与 global::；《C#网络程序开发》全书归 [dotnet 教程 22 章](../dotnet/docs/22-networking.md)（TCP/UDP/分帧已在那边展开），语言侧不重复。
+
 | 章 | 主题 | 示例 |
 |---|---|---|
 | [43 常用工具类型](docs/43-common-types.md) | DateTime/TimeSpan/DateOnly 时区规则、Guid、Uri、Math 银行家舍入、Random 同种子实测与安全随机 | `43_common_types` |
 | [44 预处理指令与代码组织](docs/44-preprocessing.md) | #if 布尔开关、DEBUG/NET10_0 符号、#error 哨兵、#pragma 定点静音、#line hidden 实测、命名空间/嵌套类/程序集 | `44_preprocessor` |
 | [45 XML 与 LINQ to XML](docs/45-xml.md) | XElement 函数式构建、Descendants 查询、命名空间第一大坑、函数式转换、XmlDocument/XPath、XmlReader 流式 | `45_xml` |
 
-⭐ = 2026-09 按教材扩充的书本实践篇，可独立跳读（向前依赖都有链接）。43-45 为同期查缺补漏篇，同样可跳读。
+⭐ = 2026-09 按教材扩充的书本实践篇，可独立跳读（向前依赖都有链接）。43-45 为同期查缺补漏篇，同样可跳读；第三轮补缺以就地加深形式并入 02/08/09/11/44 章。
 
 ## 学习路线
 
