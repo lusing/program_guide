@@ -1,0 +1,11 @@
+# C++/CLI（vcxproj）中间目录与 VS 缓存
+**/x64/
+**/Release/
+**/Debug/
+**/ipch/
+**/.vs/
+*.aps
+*.tlog
+*.recipe
+*.log
+*.user

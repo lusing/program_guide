@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- 手写窗体没有设计器生成的字段，NRT 噪音大于收益，教学代码统一关闭（01 章有说明） -->
+    <Nullable>disable</Nullable>
+    <RootNamespace>HelloWin</RootNamespace>
+  </PropertyGroup>
+</Project>

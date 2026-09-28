@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  winforms 教程所有 C++/CLI 工程共享的属性。
+
+  为什么需要这个文件（三条实测事实，见 docs/01-overview.md §5）：
+  1. .NET Core/.NET 10 上的 C++/CLI 只能产混合模式 DLL（NETSDK1116），
+     EXE 入口由 C# 启动器工程承担（examples/*/cpp/host/）。
+  2. 裸写 <Reference Include="System.Windows.Forms"/> 会解析到 GAC 里
+     .NET Framework 2.0 的旧程序集（C4691 警告 + 运行时错配），
+     必须 HintPath 指向 WindowsDesktop 目标包（ref pack）。
+  3. 源码含中文时必须给 cl 传 /utf-8（文件无 BOM 的前提下的唯一正确读法）。
+
+  如果你的机器上 ref pack 版本不同：列出已安装版本后改 DesktopRefDir 即可——
+    dir "C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref"
+-->
+<Project>
+  <PropertyGroup>
+    <DesktopRefRoot Condition="'$(DesktopRefRoot)' == ''">C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref</DesktopRefRoot>
+    <DesktopRefDir Condition="'$(DesktopRefDir)' == ''">$(DesktopRefRoot)\10.0.12\ref\net10.0</DesktopRefDir>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms">
+      <HintPath>$(DesktopRefDir)\System.Windows.Forms.dll</HintPath>
+    </Reference>
+    <!-- System.Drawing.dll 只是门面（type-forward），
+         真实类型在 System.Drawing.Common / System.Drawing.Primitives，编译器要见到本体 -->
+    <Reference Include="System.Drawing">
+      <HintPath>$(DesktopRefDir)\System.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing.Common">
+      <HintPath>$(DesktopRefDir)\System.Drawing.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing.Primitives">
+      <HintPath>$(DesktopRefDir)\System.Drawing.Primitives.dll</HintPath>
+    </Reference>
+    <!-- Padding 等类型的本体在 Primitives 分包里（编译器会点名要哪个程序集） -->
+    <Reference Include="System.Windows.Forms.Primitives">
+      <HintPath>$(DesktopRefDir)\System.Windows.Forms.Primitives.dll</HintPath>
+    </Reference>
+    <!-- 部分 API（如 Controls->AddRange）的签名牵出这个模块的类型，一并引用 -->
+    <Reference Include="System.Private.Windows.Core">
+      <HintPath>$(DesktopRefDir)\System.Private.Windows.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
