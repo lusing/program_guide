@@ -99,9 +99,66 @@ std::generator<int> squares(int n) {
 
 C++23 的 `<generator>` 提供 21.2 的成品版（还支持引用元素、递归委托等进阶特性）。**新代码直接用它**，手写版的价值是排障时看得懂"帧、promise、handle"在报错里指什么。两种生成器在本示例里并排跑，输出对照着看。
 
-## 30.5 co_await 与生态：教程的边界
+## 30.5 co_await 的机械：最小 Task\<T\>
 
-`co_yield` 背后其实就是 `co_await promise.yield_value(v)`——co_await 才是协程的通用原语："**暂停，直到这个可等待物就绪**"。它配合"任务类型"（task/when_all）才能表达异步组合（并发下载全部再汇总），而 C++23 标准库尚未内置任务类型——生态靠 cppcoro、P2300 `std::execution`（C++26 方向）。本教程的边界：**会写会用生成器、理解 co_await 的语义**；异步框架等标准落地再学不迟（落地前用第 28 章的 jthread + 条件变量完全够用）。
+`co_yield` 背后其实就是 `co_await promise.yield_value(v)`——co_await 才是协程的通用原语："**暂停，直到这个可等待物就绪**"。要真正理解它，得看它幕后的 **awaiter 协议**——三个钩子，编译器按固定顺序一一问到：
+
+| awaiter 钩子 | 编译器问的问题 | 返回与含义 |
+|---|---|---|
+| `await_ready()` | 现在就绪了吗？ | `true` → 不挂起，直接取结果（快路径） |
+| `await_suspend(h)` | 怎么挂？ | `void`：挂起后返回调用者；返回**另一个 handle**：**对称转移**，立刻切到那个协程 |
+| `await_resume()` | 恢复时带回什么？ | `co_await expr` 整个表达式的值 |
+
+有了这张表就能读懂**最小 Task\<T\>**（惰性任务，示例 30.5 全程单线程、顺序确定）：
+
+```cpp
+template <typename T>
+class Task {
+public:
+    struct promise_type {
+        std::variant<std::monostate, T, std::exception_ptr> box_;  // 结果或异常
+        std::coroutine_handle<> continuation_{};                   // 等我的人
+
+        Task get_return_object();
+        std::suspend_always initial_suspend() noexcept { return {}; }  // 惰性
+        struct FinalAwaiter {
+            bool await_ready() const noexcept { return false; }
+            std::coroutine_handle<> await_suspend(std::coroutine_handle<promise_type> h) noexcept {
+                auto cont = h.promise().continuation_;
+                return cont ? cont : std::noop_coroutine();  // 完工交接棒
+            }
+            void await_resume() const noexcept {}
+        };
+        FinalAwaiter final_suspend() noexcept { return {}; }
+        void return_value(T v) { box_ = std::move(v); }
+        void unhandled_exception() { box_ = std::current_exception(); }
+    };
+
+    // Task 自己就是可等待物（awaiter 三件套）
+    bool await_ready() const noexcept { return false; }
+    std::coroutine_handle<> await_suspend(std::coroutine_handle<> awaiting) noexcept {
+        handle_.promise().continuation_ = awaiting;  // 记下谁在等我
+        return handle_;                              // 对称转移：立刻开跑我
+    }
+    T await_resume() { return result(); }
+    // ……（start/result/移动专属权/析构 destroy，同 Generator 的纪律）
+};
+
+Task<int> middle() {
+    int v = co_await leaf();   // 挂起让位给 leaf；leaf 完成后从这里恢复
+    co_return v + 1;
+}
+```
+
+读一遍它的运行轨迹（示例的实测输出）：`top()` 开跑 → 碰到 `co_await middle()` → middle 的 awaiter 说"未就绪"，记下 top 为接棒者、**对称转移**切进 middle → middle 又 `co_await leaf()` → leaf `co_return 42` 落进 `return_value` → **FinalAwaiter** 把棒交回 middle → middle 算出 43 → 再交回 top → 86。
+
+三个设计点：
+
+- **对称转移**（`await_suspend` 返回 handle）而不是"返回后由谁 resume"：每层交接都是直接跳转，不经过新栈帧——深链 `co_await` 也不会栈溢出；
+- **continuation 记在 promise 里**：谁在等我，我完工时就唤醒谁——这套"接棒链"就是异步框架里 `then`/continuation 的素颜；
+- **异常走通道**：`unhandled_exception` 把 `current_exception()` 存进帧里，`result()` 时重抛——协程里的 throw 不会凭空飞出去，得有人接（与 29.8 的 future 同一哲学）。
+
+**标准库的边界与生态**：C++23 只内置了 `std::generator`（30.4），任务类型仍要自造或用库——cppcoro、async_simple、以及 P2300 `std::execution`（senders/receivers，C++26 方向）。教程立场：**会写会用生成器、读懂 awaiter 协议与上面的最小 Task**；真要上异步框架时，这些机械就是你读源码的钥匙——落地前用第 28/29 章的 jthread + 条件变量/线程池完全够用。
 
 ## 30.6 坑位清单
 
@@ -110,4 +167,8 @@ C++23 的 `<generator>` 提供 21.2 的成品版（还支持引用元素、递�
 3. **final_suspend 忘 noexcept**：直接编译错（标准要求 noexcept——析构路径上不能再抛）。照抄 `std::suspend_always final_suspend() noexcept`。
 4. **把生成器存起来二次消费**：跑到尾的生成器 done 了，再迭代是空的/UB。一遍流式消费；要重跑重造一个。
 5. **co_yield 函数的返回类型乱写**：返回类型必须有 promise_type（或经由 traits 找到）——"含 co_yield 的普通函数"直接编译错，这是提示你缺的类型骨架。
-6. **在协程里抛异常没人接**：示例的 unhandled_exception 选 terminate；自定义类型可以实现"存起来、迭代时重抛"——别假设异常会自己飞出去。
+6. **在协程里抛异常没人接**：示例的 unhandled_exception 选 terminate；Task 型实现了"存起来、result() 时重抛"——别假设异常会自己飞出去。
+7. **Task 忘了 start**：initial_suspend 挂着的惰性任务，造出来不点火就 result()——读到的是空 box（或抛坏 variant 访问）。惰性是特性，点火是义务。
+8. **co_await 一个临时 Task 后再想复用它**：临时对象当场合就析构（帧被 destroy），接棒回去就是悬垂。要复用就得把 Task 存进具名变量、生命周期盖过整条链。
+9. **await_suspend 里干重活**：它的返回路径是调度热点（对称转移要求轻快）；正经工作放协程体里，钩子里只做"记录 + 转移"。
+

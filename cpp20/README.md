@@ -45,9 +45,9 @@ cpp20/
 | [25 编译期编程](docs/25-compiletime.md) | constexpr、if constexpr、fold | `examples/25_compiletime` |
 | [26 模块](docs/26-modules.md) | ODR、命名空间、C++20 modules 实战 | `examples/26_modules` |
 | [27 预处理器](docs/27-preproc.md) | 宏、条件编译、链接性、头文件 | `examples/27_preproc` |
-| [28 并发 I](docs/28-threads.md) | jthread、mutex、条件变量 | `examples/28_threads` |
-| [29 并发 II](docs/29-atomic.md) | atomic、latch/barrier、并行算法、**async/future** | `examples/29_atomic` |
-| [30 协程](docs/30-coroutines.md) | 手写 generator、**std::generator (C++23)** | `examples/30_coroutines` |
+| [28 并发 I](docs/28-threads.md) | jthread、锁全家福、条件变量、读写锁、call_once/thread_local | `examples/28_threads` |
+| [29 并发 II](docs/29-atomic.md) | atomic/内存序、CAS/自旋锁、信号量、并行算法、任务与**线程池** | `examples/29_atomic` |
+| [30 协程](docs/30-coroutines.md) | 手写 generator、**std::generator (C++23)**、co_await/Task | `examples/30_coroutines` |
 | [31 时间](docs/31-time.md) | duration、时钟、日历、时区 | `examples/31_time` |
 | [32 流 I/O](docs/32-streams.md) | 流状态、操纵符、文件、自定义 << | `examples/32_streams` |
 | [33 文本与文件](docs/33-textfiles.md) | format、regex、filesystem、mdspan | `examples/33_textfiles` |

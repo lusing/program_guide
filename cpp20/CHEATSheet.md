@@ -253,7 +253,7 @@ for (auto [i, x] : v | std::views::enumerate) {}    // C++23 带索引
 // 无限序列 iota(1) 必须 take
 ```
 
-## 模板与概念（20/19）
+## 模板与概念（20/21）
 
 ```cpp
 template <typename T>
@@ -276,7 +276,7 @@ void relay(T&& arg) { target(std::forward<T>(arg)); }  // 完美转发
 // 移动构造/赋值记得 noexcept（容器扩容才敢用）
 ```
 
-## 多态骨架（23/22）
+## 多态骨架（24/23）
 
 ```cpp
 class Shape {
@@ -319,7 +319,7 @@ static int helper();   // 内部链接；或匿名命名空间 namespace { }
 // 宏三宗罪：无类型/无作用域/盲替换 → constexpr + 模板替代
 ```
 
-## 并发（28/27）
+## 并发（28/29）
 
 ```cpp
 std::jthread worker{[](std::stop_token st) { while (!st.stop_requested()) { /* ... */ } }};
@@ -327,18 +327,31 @@ worker.request_stop();                                // 协作式取消；析�
 
 std::mutex mtx;
 { std::lock_guard lock{mtx}; /* 临界区：越小越好 */ }  // RAII 锁
+std::scoped_lock both{m1, m2};                 // 多锁一把抓（内部死锁避免算法）
+std::unique_lock dfl{m, std::defer_lock};      // 先造后锁；try_lock_for 要 timed_mutex
+std::shared_mutex sm;
+{ std::shared_lock r{sm}; /* 读：多读者并行 */ } { std::unique_lock w{sm}; /* 写：独占 */ }
+std::once_flag flag;  std::call_once(flag, init);      // 一次性初始化（magic static 同效）
+thread_local int visits = 0;                  // 每线程一份，天然无竞争
+cv_any.wait(lock, stop_token, pred);          // 可中断等待：stop 一请求就醒（28.5）
 
 std::atomic<int> hits{0};
 hits.fetch_add(1, std::memory_order_relaxed);        // 计数专用（其余场景用默认序）
+int exp = v.load();                           // CAS 循环："检查再设置"的原子化
+while (!v.compare_exchange_weak(exp, exp + 1)) {}
+while (sp_flag.test_and_set(acquire)) {}      // atomic_flag 自旋锁（临界区极短才配）
 
 std::latch go{1};      go.count_down();  go.wait();  // 一次性发令枪
 std::barrier sync{4};  sync.arrive_and_wait();        // 可复用集合点
+std::counting_semaphore<2> empty{2};          // 名额/容量：acquire 占，release 还
 auto fut = std::async(std::launch::async, task);      // 任务：future.get() 直取结果
 // 必须接住 fut！丢弃 future 的析构会阻塞等任务完（伪同步）；异常经通道在 get() 重抛
+auto sf = fut.share();  sf.get();  sf.get();          // shared_future 可多次取
+fut.wait_for(50ms) == std::future_status::timeout;    // 限时等（promise 活着才会超时）
 std::for_each(std::execution::par, v.begin(), v.end(), f);  // 并行算法（谓词须线程安全）
 // 注意：par 只保证"允许并行"，不保证真并行。macOS 实测：libc++ 的后端是桩实现，
 // 五条 par 算法在 400 万元素上都只跑 1 个线程；Apple 自带 libc++ 连 par 都没有。
-// 要真并行就自己开 std::thread（见 docs/29-atomic.md 29.5）。
+// 要真并行就自己开 std::thread 或用线程池（见 docs/29-atomic.md 29.7/29.9）。
 ```
 
 ## 协程（30）
@@ -348,6 +361,8 @@ std::generator<int> squares(int n) {          // C++23 <generator>
     for (int i = 1; i <= n; ++i) co_yield i * i;
 }
 for (int v : squares(5)) { /* 1 4 9 16 25 */ }
+int v = co_await task();    // awaiter 三钩子：await_ready / await_suspend / await_resume
+// 最小 Task<T>：惰性（要 start() 点火）+ 对称转移交棒 + 异常存档 result() 重抛
 ```
 
 ## 时间（31）
@@ -430,3 +445,12 @@ for (auto& t : tests) { t.run(); std::println("[PASS] {}", t.name); }
 20. **`sys_days + months` 按平均月（30.44 天）漂移**：加出 07:27:18 这种时分秒——月份运算要在 `year_month_day` 上做（31）。
 21. **`>>` 后直接 `getline` 拿空行**：残留 `'\n'` 被当整行；且失败的算术抽取会把变量**清成 0**（C++11 规则）——clear + ignore 清场（32）。
 22. **丢弃 `std::async` 的 future**：临时 future 析构阻塞等任务完——`std::async(f);` 是伪同步；get() 只能调一次（29）。
+
+**并发深化补录**（2026-09-28 按《C++ Concurrency in Action》《Mastering Asynchronous C++》实测补 28/29/30 三章）：
+
+23. **promise 析构 = 投递 broken_promise**：孤儿 future 立刻就绪、get() 抛 future_error——wait_for 想真超时，promise 得活着（29）。
+24. **普通 mutex 没有 try_lock_for**：限时等锁得用 timed_mutex；unique_lock 的 defer_lock 才支持"先造后锁"（28）。
+25. **shared_mutex 读锁不可递归**：同线程两次 shared_lock 自找死锁；读多写少才值得读写锁，写者还可能被读者饿死（28）。
+26. **信号量不绑身份**：任何线程都能 release——它管名额/容量，不护数据；护数据用 mutex（29）。
+27. **线程池成员逆序析构**：靠 jthread 自动收尾时 workers_ 必须最后声明，否则工人摸已死的锁；显式 join 最稳（29）。
+28. **惰性 Task 忘 start 就 result**：读到空 box；co_await 临时 Task 后再复用 = 悬垂（30）。
