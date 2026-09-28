@@ -143,7 +143,7 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, void** ppv) {
 HKCU\Software\Classes\CLSID\{6B92FBEE-1E6D-4010-9AC0-5783E288F9C1}
 └── InprocServer32
     ├── (默认) = C:\...\calcdll.dll 的完整路径    ← GetModuleFileNameW(g_module) 取
-    └── ThreadingModel = Apartment                ← 声明组件的套间要求（22.7）
+    └── ThreadingModel = Apartment                ← 声明组件的套间要求（25.7）
 ```
 
 三条注册路线对比：
@@ -184,7 +184,7 @@ HKCU\Software\Classes\CLSID\{6B92FBEE-1E6D-4010-9AC0-5783E288F9C1}
 
 ## 27.8 `ThreadingModel=Apartment` 承诺了什么
 
-回看 22.7：这个值的含义是**组件对线程安全的承诺**——`Apartment` 表示"我的对象需要在 STA 线程被调用，跨线程请 COM 用代理排队"；`Free` 表示"我自己线程安全，随便哪个线程直接调"；`Both` 两种都行。**写错这个值 = 随机崩溃**（对象在没保护的情况下被多线程摸）。教学版 Calc 用 `Apartment`：与消费者的 STA 匹配，调用全部同步直达、无代理。
+回看 25.7：这个值的含义是**组件对线程安全的承诺**——`Apartment` 表示"我的对象需要在 STA 线程被调用，跨线程请 COM 用代理排队"；`Free` 表示"我自己线程安全，随便哪个线程直接调"；`Both` 两种都行。**写错这个值 = 随机崩溃**（对象在没保护的情况下被多线程摸）。教学版 Calc 用 `Apartment`：与消费者的 STA 匹配，调用全部同步直达、无代理。
 
 ## 27.9 易错清单
 

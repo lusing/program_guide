@@ -43,7 +43,7 @@ HRESULT hr = CoCreateInstance(
     IID_PPV_ARGS(&dlg));      // ④+⑤ 要什么接口 + 接收指针的地址
 ```
 
-**CLSID 从哪来**：SDK 头文件常量（`CLSID_FileOpenDialog`）、注册表反查（`CLSIDFromProgID(L"Excel.Application")`）、文档抄录。**③ 上下文**：`CLSCTX_INPROC_SERVER`（进程内 DLL，绝大多数场景）为主，了解 `CLSCTX_LOCAL_SERVER`（独立 EXE 进程，如 Word 自动化——调用透明地跨了进程，代理在中间排队，22.7 的套间机制在干活）。**`IID_PPV_ARGS(&p)`** 是"IID 与取地址"二合一宏，避免类型手滑——新代码一律用它。
+**CLSID 从哪来**：SDK 头文件常量（`CLSID_FileOpenDialog`）、注册表反查（`CLSIDFromProgID(L"Excel.Application")`）、文档抄录。**③ 上下文**：`CLSCTX_INPROC_SERVER`（进程内 DLL，绝大多数场景）为主，了解 `CLSCTX_LOCAL_SERVER`（独立 EXE 进程，如 Word 自动化——调用透明地跨了进程，代理在中间排队，25.7 的套间机制在干活）。**`IID_PPV_ARGS(&p)`** 是"IID 与取地址"二合一宏，避免类型手滑——新代码一律用它。
 
 ## 26.3 实战：`IFileOpenDialog` 全解剖
 
@@ -60,7 +60,7 @@ FILEOPENDIALOGOPTIONS opts = 0;
 dlg->GetOptions(&opts);
 dlg->SetOptions(opts | FOS_FORCEFILESYSTEM | FOS_ALLOWMULTISELECT);
 
-// ③b 显示：模态；内部自己转消息循环（STA 的隐藏窗口机制在干活，22.7）
+// ③b 显示：模态；内部自己转消息循环（STA 的隐藏窗口机制在干活，25.7）
 HRESULT hr = dlg->Show(hwnd);
 if (FAILED(hr)) {
     if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED)) {

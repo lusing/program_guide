@@ -6,6 +6,8 @@
 >
 > **你将做出什么**：一个双插件宿主（`examples/24_dll_plugin`）：扫描目录、显式加载、版本握手、调用计算、优雅卸载——插件机制的完整骨架。
 
+> 本章 rebase、注入与挂接部分参考《Windows 核心编程》（Jeffrey Richter）第 20/22 章整理（注入按防御视角改写）。
+
 本章示例：`examples/24_dll_plugin`（plugin_api.h / plugin_circle.cpp / plugin_square.cpp / main.cpp / build.ps1）。
 
 ## 23.1 插件契约三原则
@@ -106,6 +108,10 @@ NT 头 ── 签名 PE\0\0
 
 理解 PE 的回报：读得懂 `dumpbin /imports`（第 22 章欠条论的实体）、`dumpbin /exports`（你的 DLL 卖什么）、`dumpbin /dependents`（它依赖谁）；理解为什么 DLL 能被"内存映射"加载（第 18 章的映射机制——PE 的节就是按页属性映射的）；理解签名校验与防篡改落在哪里。用 `Dependencies`（开源工具）对着自己的 mathlib.dll 看一眼，一上午胜过十页文字。
 
+### 基址与重定位：`.reloc` 存在的理由
+
+PE 头里写着"我希望被加载到 `ImageBase`（exe 默认 0x140000000，DLL 默认 0x180000000）"。理想情况下多个 DLL 各占各的 preferred 基址，加载器直接按文件里的绝对地址映射，**零修补**。两个 DLL 撞了基址怎么办？加载器把它挪到别处，然后**逐条应用 `.reloc` 表**修正代码里的绝对地址——这一步有真实代价（改页 → 写时复制 → 代码页不再跨进程共享，Richter 时代一屋子 DLL 齐撞车的机器上启动慢得肉眼可见）。当年的对策是手工 `/BASE` 链接开关给每个 DLL 分地盘，或 `editbin \/rebase` 批量调基址再加"绑定"；现代 Windows 用 **ASLR**（`/DYNAMICBASE` 默认开启）主动每次随机化基址——牺牲那点启动时间换取"地址不可预测"的安全收益，老对策就此退役。你仍该知道的遗产：`dumpbin /headers` 里的 `Image base` 与 `.reloc` 节，以及"为什么共享库撞基址是个历史名词"。
+
 ## 23.7 API Set：为什么依赖列表里全是 `api-ms-win-*`
 
 `dumpbin /dependents some.exe` 常看到：
@@ -126,7 +132,18 @@ ext-ms-win-ntuser-window-l1-1-0.dll
 
 1. **Windows 文件保护 + 系统目录只读**（Win2000）：治了覆盖，治不了版本选择；
 2. **SxS（Side-by-Side）**（XP/Vista）：同一 DLL 多版本共存于 WinSxS 仓库，程序用**清单（manifest）**声明要哪版——manifest 从此进入 Win32 词汇表；
-3. **现代实践**：应用自带依赖（exe 旁目录，22.6 的第一条）+ VC 运行库有.redist 约定；`SetDefaultDllDirectories` 收紧搜索面。今天的 DLL Hell 主要剩下"PATH 里飘着的野 DLL"和"劫持攻击"两个变体——第 22 章的搜索纪律就是解药。
+3. **现代实践**：应用自带依赖（exe 旁目录，22.7 的第一条）+ VC 运行库有.redist 约定；`SetDefaultDllDirectories` 收紧搜索面。今天的 DLL Hell 主要剩下"PATH 里飘着的野 DLL"和"劫持攻击"两个变体——第 22 章的搜索纪律就是解药。
+
+### 注入与 API 挂接：黑魔法一瞥（防御视角）
+
+《核心编程》第 22 章专题讲"把自己的 DLL 塞进别人的进程"（注入）与"截获别人对 API 的调用"（挂接）。**了解原理是防御与排障的必修课**（杀软、崩溃监控、兼容垫片全是这门手艺的正用），这里只讲机制不写武器：
+
+- **注册表 `AppInit_DLLs`**：最古老的一招——系统把它列的 DLL 注入每个加载 user32 的进程。因为滥用成灾，现代 Windows 默认禁用（注册表开关归零），知道它是历史名词即可；
+- **Windows 钩子注入**：`SetWindowsHookExW` 装一个 `WH_CBT`/`WH_GETMESSAGE` 钩子且钩子函数在你的 DLL 里——目标进程一用到相关消息，系统自动把你的 DLL 映射进去（第 31 章托盘程序会正式用钩子的正当功能）；
+- **远程线程注入**：`CreateRemoteThread` 在目标进程里起一个线程，入口指向 `LoadLibraryA`，参数指向事先用 `WriteProcessMemory` 写进目标地址空间的 DLL 路径字符串——目标进程"亲手"加载了你的 DLL；
+- **API 挂接**两路：改**导入表**（把目标模块 IAT 里的 `kernel32!CreateFileW` 换成自己的函数地址）或改**代码**（把函数开头几字节换成跳转）。前者温和可逆，后者激进且易翻车。
+
+防御视角的现代答案：**CFG**（控制流防护，间接调用只许跳白名单）、**代码完整性**与签名校验、UIPI/完整性级别拦低权限注入高权限进程（第 20 章）、以及"看到进程里加载了不认识的 DLL"这一排查意识（Process Explorer 的 DLL 视图）。理解注入，你才知道进程边界真正防的是什么。
 
 ## 23.9 易错清单
 

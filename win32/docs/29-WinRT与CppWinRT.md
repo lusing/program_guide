@@ -69,7 +69,7 @@ auto s = fmt.Format(winrt::clock::now());      // 投影方法：像普通 C++ �
 winrt::init_apartment(winrt::apartment_type::single_threaded);   // = CoInitializeEx(STA)
 ```
 
-内部就是 `CoInitializeEx`（22.7 的套间规则原封不动）。GUI 线程用 `single_threaded`（STA），后台线程按需 `multi_threaded`。忘了初始化？和 COM 一样给你 `CO_E_NOTINITIALIZED`。
+内部就是 `CoInitializeEx`（25.7 的套间规则原封不动）。GUI 线程用 `single_threaded`（STA），后台线程按需 `multi_threaded`。忘了初始化？和 COM 一样给你 `CO_E_NOTINITIALIZED`。
 
 ## 29.5 实战：全球化格式化（29 示例第一段）
 
