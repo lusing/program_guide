@@ -1,16 +1,16 @@
-# 第 24 章 COM 实现：手写进程内服务器
+# 第 27 章 COM 实现：手写进程内服务器
 
 > **本章回答的问题**：`CoCreateInstance` 内部到底发生了什么？怎么从零写一个 COM 组件 DLL？类厂怎么写？注册表里登记哪些键？HKCU 注册为什么不用管理员？
 >
-> **前置章节**：第 21 章（注册表——COM 的登记簿）、第 19 章（DllMain/DLL 导出）、第 22 章（IUnknown/引用计数）、第 23 章（使用侧骨架——现在站到对面）。
+> **前置章节**：第 24 章（注册表——COM 的登记簿）、第 22 章（DllMain/DLL 导出）、第 25 章（IUnknown/引用计数）、第 26 章（使用侧骨架——现在站到对面）。
 >
 > **你将做出什么**：一个完整可用的进程内 COM 服务器（`examples/27_com_server`）：自己的接口、自己的组件 DLL、HKCU 注册、`CoCreateInstance` 真实创建、用完注销——全链路 60 秒跑完。
 
 本章示例：`examples/27_com_server`（calc.h / server.cpp / main.cpp / build.ps1）。
 
-## 24.1 反向理解 `CoCreateInstance`：全链路泳道
+## 27.1 反向理解 `CoCreateInstance`：全链路泳道
 
-第 23 章你是调用方；现在把自己想成"被调用方"。`CoCreateInstance(CLSID_Calc, ...)` 那一瞬间，系统替你跑了这条链：
+第 26 章你是调用方；现在把自己想成"被调用方"。`CoCreateInstance(CLSID_Calc, ...)` 那一瞬间，系统替你跑了这条链：
 
 ```text
 你的进程                                    注册表 / 磁盘
@@ -22,7 +22,7 @@ HKCU\Software\Classes\CLSID\{6B92FBEE-...}\InprocServer32
    │        默认值 = C:\...\build\calcdll.dll   ThreadingModel = Apartment
    │
    ▼ ② 还没加载？LoadLibraryW("C:\...\calcdll.dll")
-   │     （第 19 章的加载机制，COM 亲自下场）
+   │     （第 22 章的加载机制，COM 亲自下场）
    ▼ ③ GetProcAddress("DllGetClassObject") → 调它
    │        "给我 CLSID_Calc 的类厂，要 IClassFactory 接口"
    ▼ ④ 类厂->CreateInstance(nullptr, IID_ICalc, &p)
@@ -35,7 +35,7 @@ HKCU\Software\Classes\CLSID\{6B92FBEE-...}\InprocServer32
 
 本章的全部内容就是把这条泳道上的四个"你"写出来：**接口定义 → 组件 → 类厂 → 四个标准导出**。
 
-## 24.2 接口定义：教学版与工业版
+## 27.2 接口定义：教学版与工业版
 
 `calc.h` 用教学版路线——C++ 纯虚类直接写，IID 手工固定：
 
@@ -54,7 +54,7 @@ interface ICalc : public IUnknown {
 
 **GUID 两条铁律**：生成一次永不变；**定义放共享头文件**而不是各写各的 `static`（两个 `static` 同名不同值 = 每个翻译单元一个副本，跨模块对比 IID 居然能撞车失败——23 章的 `IID_PPV_ARGS` 之所以要求统一来源，原因之一）。
 
-## 24.3 组件实现：Calc 类三件事
+## 27.3 组件实现：Calc 类三件事
 
 ```cpp
 class Calc : public ICalc {
@@ -89,7 +89,7 @@ public:
 
 三个细节：`delete this` 是 COM 的合法姿势（对象自己决定生命周期，调用方只管 Release）；`InterlockedIncrement` 保证线程安全（引用计数是多线程环境下最热的字段）；`STDMETHODIMP` 宏 = `virtual HRESULT STDMETHODCALLTYPE`，照宏写防笔误。
 
-## 24.4 类厂：对象的中介
+## 27.4 类厂：对象的中介
 
 COM 不让你直接 `new` 别人的类——统一走**类厂（class factory）**，它也是一个小 COM 对象（实现 `IClassFactory`）：
 
@@ -111,7 +111,7 @@ class CalcFactory : public IClassFactory {
 
 `CreateInstance` 里"new 出来是 1，QI 加成 2，Release 掉 1，交出去 1"——这道引用算术题是本章最值得在脑中走一遍的流程。`LockServer(TRUE)` 的真实用途是"进程里还有用户时别让 DLL 卸载"，需要配一个计数器与 `DllCanUnloadNow` 联动，教学版从简。
 
-## 24.5 四个标准导出：DLL 的门面
+## 27.5 四个标准导出：DLL 的门面
 
 进程内 COM 服务器必须导出四个函数（`STDAPI` 定义 + 链接器 `/EXPORT` 导出，见 build.ps1）：
 
@@ -135,9 +135,9 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, void** ppv) {
 }
 ```
 
-## 24.6 注册：登记簿里写什么
+## 27.6 注册：登记簿里写什么
 
-`DllRegisterServer` 写的键树（第 21 章知识的现场应用）：
+`DllRegisterServer` 写的键树（第 24 章知识的现场应用）：
 
 ```text
 HKCU\Software\Classes\CLSID\{6B92FBEE-1E6D-4010-9AC0-5783E288F9C1}
@@ -156,13 +156,13 @@ HKCU\Software\Classes\CLSID\{6B92FBEE-1E6D-4010-9AC0-5783E288F9C1}
 
 本教程选 HKCU 路线：**不需要管理员、随注销即清、机器零残留**——HKCR 合成视图（21 章）保证系统照常找到它。注意 `GetModuleFileNameW(g_module)` 里 `g_module` 来自 `DllMain` 记下的自身句柄（19 章的"DllMain 只做零风险事"清单里的标准项）。
 
-## 24.7 消费者：全链路验证程序
+## 27.7 消费者：全链路验证程序
 
-`main.cpp` 不是普通 demo，是**全链路验收器**——它把 24.1 泳道上的每一步亲手走一遍：
+`main.cpp` 不是普通 demo，是**全链路验收器**——它把 27.1 泳道上的每一步亲手走一遍：
 
 ```text
 [1] LoadLibraryW("calcdll.dll") + GetProcAddress("DllRegisterServer") + 调用
-     —— 手动注册（regsvr32 干的就是这件事；第 20 章显式链接的又一课）
+     —— 手动注册（regsvr32 干的就是这件事；第 23 章显式链接的又一课）
 [2] CoInitializeEx + CoCreateInstance(CLSID_Calc, IID_ICalc)
      —— 成功 = 注册表 → 加载 → 类厂 → CreateInstance 全链贯通
 [3] calc->Add(20,22) / Sub(50,8)     —— 接口真实可用
@@ -182,24 +182,24 @@ HKCU\Software\Classes\CLSID\{6B92FBEE-1E6D-4010-9AC0-5783E288F9C1}
 全链路完成
 ```
 
-## 24.8 `ThreadingModel=Apartment` 承诺了什么
+## 27.8 `ThreadingModel=Apartment` 承诺了什么
 
 回看 22.7：这个值的含义是**组件对线程安全的承诺**——`Apartment` 表示"我的对象需要在 STA 线程被调用，跨线程请 COM 用代理排队"；`Free` 表示"我自己线程安全，随便哪个线程直接调"；`Both` 两种都行。**写错这个值 = 随机崩溃**（对象在没保护的情况下被多线程摸）。教学版 Calc 用 `Apartment`：与消费者的 STA 匹配，调用全部同步直达、无代理。
 
-## 24.9 易错清单
+## 27.9 易错清单
 
 | 症状 | 原因 | 解法 |
 |------|------|------|
 | `REGDB_E_CLASSNOTREG` | 没注册 / 注册到 HKLM 但程序看 HKCU / 位数不符（21.8） | 检查 `reg query`；确认 64 位一致 |
 | QI 成功但调方法崩 | 接口布局两边不一致（各改各的头） | 共享一个 calc.h |
 | `CLASS_E_NOAGGREGATION` | 传了 outer——你没实现聚合 | 正常拒绝 |
-| 对象泄漏 | CreateInstance 的引用算术没配平 | 24.4 的加一减一 |
+| 对象泄漏 | CreateInstance 的引用算术没配平 | 27.4 的加一减一 |
 | `delete this` 后再访问 | Release 后还用指针 | 用完即弃指针置空 |
 | GUID 每次编译变 | 用了"每次生成"的宏/工具 | 生成一次写死进共享头 |
 | 注销后残留 | `RegDeleteKeyW` 只删空键 | `RegDeleteTreeW`（21 章） |
 | DllMain 里注册自己 | loader lock（19 章） | 注册推给 DllRegisterServer |
 
-## 24.10 小结
+## 27.10 小结
 
 1. CoCreateInstance 全链路：查注册表 → LoadLibrary → DllGetClassObject → 类厂 CreateInstance → QI。
 2. 组件三件事：QI 给指针必 AddRef、计数用 Interlocked、归零 `delete this`。
@@ -207,7 +207,7 @@ HKCU\Software\Classes\CLSID\{6B92FBEE-1E6D-4010-9AC0-5783E288F9C1}
 4. 四个标准导出是 COM DLL 的门面；`STDAPI` + `/EXPORT` 或 .def 导出。
 5. HKCU 注册 = 免管理员 per-user COM（HKCR 合成视图兜底）；ThreadingModel 是线程安全承诺。
 
-## 24.11 动手练习
+## 27.11 动手练习
 
 1. 给 `ICalc` 加 `Mul`（改共享头 → 重编 DLL 与消费者 → 验证），体会"接口演进 = 重新发布两端"。
 2. 写第二个组件 `CLSID_Calc2`（同 DLL 双类）：`DllGetClassObject` 按 CLSID 分发到不同类厂——一个 DLL 装多个组件的标准形态。
@@ -215,4 +215,4 @@ HKCU\Software\Classes\CLSID\{6B92FBEE-1E6D-4010-9AC0-5783E288F9C1}
 
 ---
 
-**下一章**：[第 25 章 Direct2D 与 DirectWrite](25-Direct2D与DirectWrite.md)——COM 接口风格的现代渲染。
+上一章：[第 26 章 COM 实战](26-COM实战.md) ｜ 下一章：[第 28 章 Direct2D 与 DirectWrite](28-Direct2D与DirectWrite.md) ｜ 返回：[目录](../Win32%20API开发指南.md)

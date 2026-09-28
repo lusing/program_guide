@@ -1,14 +1,14 @@
-# 第 19 章 DLL 基础：创建、导出与链接
+# 第 22 章 DLL 基础：创建、导出与链接
 
 > **本章回答的问题**：DLL 和 EXE 到底差在哪？隐式链接和显式链接怎么选？怎么亲手造一个 DLL 并用两种方式调用它？`DllMain` 里为什么不能乱写？Windows 按什么顺序找 DLL？
 >
-> **前置章节**：第 2 章（链接与导入库——本章把那笔"欠条"彻底讲透）、第 18 章（你已经用过一次 `GetProcAddress`）。
+> **前置章节**：第 2 章（链接与导入库——本章把那笔"欠条"彻底讲透）、第 21 章（你已经用过一次 `GetProcAddress`）。
 >
 > **你将做出什么**：自己的第一个 DLL（`examples/23_dll_math`：mathlib.dll + 隐式链接消费者），并把它的构建链路亲手走一遍。
 
 本章示例：`examples/23_dll_math`（mathlib.h / mathlib.cpp / main.cpp / build.ps1）。
 
-## 19.1 DLL 是什么
+## 22.1 DLL 是什么
 
 DLL（Dynamic-Link Library）与 EXE 一样都是 **PE（Portable Executable）格式的模块**，本质区别只有两条：
 
@@ -17,7 +17,7 @@ DLL（Dynamic-Link Library）与 EXE 一样都是 **PE（Portable Executable）�
 
 价值在于三件事：**共享代码**（一份系统 DLL 供全部进程映射，物理内存只驻留一份）、**模块化**（功能拆分、按需加载）、**插件机制**（运行时决定加载谁——下一章的主角）。整个 Windows 的系统功能就是一大组 DLL：`kernel32.dll`、`user32.dll`、`d3d12.dll`……你调 Win32 API 的每一步都在跨 DLL。
 
-## 19.2 隐式链接：加载器替你干活
+## 22.2 隐式链接：加载器替你干活
 
 隐式链接（implicit / load-time linking）= 链接时挂上**导入库**，加载器在**进程启动时**自动加载 DLL 并填好函数地址。第 2 章链接命令里的 `user32.lib` 就是这个机制——现在我们站在另一侧，亲手造一个。
 
@@ -47,7 +47,7 @@ wprintf(L"%d\n", Math_Add(20, 22));   // 进程启动时 mathlib.dll 已被映�
 1. `dumpbin /imports build\23_dll_math.exe`——导入表里出现 `mathlib.dll` 和三个函数名，这就是第 2 章欠条论的实体；
 2. 把 `build\mathlib.dll` 临时移走再跑 exe——启动即弹"无法启动此程序，缺少 mathlib.dll"：**缺 DLL 进程直接起不来**，这是隐式链接的代价，也是它的问题定位如此简单的原因。
 
-## 19.3 显式链接：运行时做主
+## 22.3 显式链接：运行时做主
 
 显式链接（explicit / run-time linking）三步曲——`LoadLibraryW` / `GetProcAddress` / `FreeLibrary`：
 
@@ -65,9 +65,9 @@ if (add) {
 FreeLibrary(hMod);      // 引用计数减一，归零才真正卸载
 ```
 
-你其实已经用过这套：第 18 章取 `RtlGetVersion` 就是"拿已加载模块 + 查函数地址"的显式链接形态。适用场景：**插件系统**（运行时扫描决定加载谁，下一章）、**可选功能**（缺 DLL 只禁用该功能而不是起不来）、**延迟加载**（启动提速）、**绕过版本差异**（新 API 不存在时降级——第 9 章 DPI 兼容写法就可以这样做）。
+你其实已经用过这套：第 21 章取 `RtlGetVersion` 就是"拿已加载模块 + 查函数地址"的显式链接形态。适用场景：**插件系统**（运行时扫描决定加载谁，下一章）、**可选功能**（缺 DLL 只禁用该功能而不是起不来）、**延迟加载**（启动提速）、**绕过版本差异**（新 API 不存在时降级——第 12 章 DPI 兼容写法就可以这样做）。
 
-## 19.4 导出怎么写：宏模式与 `extern "C"`
+## 22.4 导出怎么写：宏模式与 `extern "C"`
 
 工程惯例是"一个宏服务双方"，23 示例的 `mathlib.h` 就是标准模板：
 
@@ -87,7 +87,7 @@ extern "C" MATHLIB_API int Math_Add(int a, int b);
 
 `.def` 文件是另一种导出方式（可给符号改名/定序号），如今主要见于需要稳定**序号导出**的系统级组件（`Ordinal.1` 那种），新代码用 `__declspec(dllexport)` 即可。
 
-## 19.5 `DllMain`：最小化纪律
+## 22.5 `DllMain`：最小化纪律
 
 DLL 可选的初始化入口：
 
@@ -115,7 +115,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD reason, LPVOID reserved) {
 
 正确姿势：`DLL_PROCESS_ATTACH` 里只做"记下模块句柄、初始化少量原始状态"这类零风险工作，**复杂的初始化推到显式的导出初始化函数**（如 `MyLib_Initialize()`），由使用方在 `main` 后主动调用。文档《Dynamic-Link Library Best Practices》值得通读。
 
-## 19.6 DLL 搜索顺序
+## 22.6 DLL 搜索顺序
 
 `LoadLibraryW(L"foo.dll")` 传**裸文件名**时，Windows 按固定顺序找：
 
@@ -136,7 +136,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD reason, LPVOID reserved) {
 - 传**绝对路径**最稳：`LoadLibraryW(L"C:\\MyApp\\plugins\\demo.dll")`；
 - 依赖缺失的典型报错：加载时 `ERROR_MOD_NOT_FOUND`（找不到 DLL 本身或它的依赖）或 `ERROR_PROC_NOT_FOUND`（DLL 在，导出函数不在——版本不匹配）。
 
-## 19.7 完整示例解剖
+## 22.7 完整示例解剖
 
 `examples/23_dll_math` 的文件分工：`mathlib.h`（契约 + 双面宏）、`mathlib.cpp`（实现 + 最小 `DllMain`）、`main.cpp`（隐式消费者）、`build.ps1`（四步构建 + 运行验证）。运行输出：
 
@@ -147,19 +147,19 @@ Math_Version()   = mathlib 1.0 (MSVC x64)
 （没有 LoadLibrary——加载发生在进程启动，这就是隐式链接）
 ```
 
-## 19.8 易错清单
+## 22.8 易错清单
 
 | 错误 | 后果 |
 |------|------|
 | 函数指针签名与导出不一致（漏 `WINAPI`/参数错） | 传参错乱、栈损坏，崩溃点飘忽 |
-| C++ 类/模板跨 DLL 边界导出 | 各模块 CRT/编译器版本不同则行为未定义；只导出 C 接口或纯虚接口（COM 路线，第 22 章） |
+| C++ 类/模板跨 DLL 边界导出 | 各模块 CRT/编译器版本不同则行为未定义；只导出 C 接口或纯虚接口（COM 路线，第 25 章） |
 | 在 A.DLL 分配、在 B.EXE 释放内存 | 两边用不同 CRT 堆，释放崩溃；统一"谁分配谁释放"（下一章插件三原则） |
 | `DllMain` 里做复杂初始化 | loader lock 死锁/加载失败 |
 | 依赖"当前目录"加载 DLL | 行为随启动方式漂移 + 劫持攻击面 |
 | `LoadLibrary` 不检查返回值 | 空句柄往下传，`GetProcAddress` 崩溃 |
 | 导出忘 `extern "C"` | `GetProcAddress` 按名找不到（被修饰成 `?xxx@...`） |
 
-## 19.9 小结
+## 22.9 小结
 
 1. DLL = PE 模块 + 导出表；EXE 用导入表声明欠账，加载器启动时结清（隐式）或你运行时结清（显式）。
 2. 隐式：`.lib` 上链接命令即完事；缺 DLL 启动即死——代价换来零样板。
@@ -168,7 +168,7 @@ Math_Version()   = mathlib 1.0 (MSVC x64)
 5. `DllMain` 最小化纪律：loader lock 在场，复杂初始化推给显式导出函数。
 6. 搜索顺序六步，exe 目录优先、当前目录勿依赖。
 
-## 19.10 动手练习
+## 22.10 动手练习
 
 1. 给 mathlib 加 `Math_Div(int a, int b, int* out)`：除零返回 `HRESULT` 风格错误码（`E_INVALIDARG`），正常返回 `S_OK`——DLL 边界上传错误的正确姿势预习。
 2. 把 23 的消费者改成显式链接版（`LoadLibraryW(L"mathlib.dll")` + `GetProcAddress` 取三个函数），对比两种版本代码量与启动行为。
@@ -176,4 +176,4 @@ Math_Version()   = mathlib 1.0 (MSVC x64)
 
 ---
 
-**下一章**：[第 20 章 DLL 进阶与插件系统](20-DLL进阶与插件系统.md)——插件架构实战、资源段、PE 与 API Set 的秘密。
+上一章：[第 21 章 系统信息与定时器](21-系统信息与定时器.md) ｜ 下一章：[第 23 章 DLL 进阶与插件系统](23-DLL进阶与插件系统.md) ｜ 返回：[目录](../Win32%20API开发指南.md)
