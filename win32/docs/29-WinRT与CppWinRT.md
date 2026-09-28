@@ -157,4 +157,4 @@ int wmain() {
 
 ---
 
-上一章：[28 · Direct2D 与 DirectWrite](28-Direct2D与DirectWrite.md) ｜ 下一章：[30 · Windows 服务与事件日志](30-Windows服务与事件日志.md) ｜ 返回：[目录](../Win32%20API开发指南.md)
+上一章：[28 · Direct2D 与 DirectWrite](28-Direct2D与DirectWrite.md) ｜ 下一章：[30 · Windows 服务与事件日志](30-Windows服务与事件日志.md) ｜ 返回：[README](../README.md)

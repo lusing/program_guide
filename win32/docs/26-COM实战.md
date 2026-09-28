@@ -148,4 +148,4 @@ CoTaskMemFree(path);      // ★ 组件分配的内存：CoTaskMemFree，不是 
 
 ---
 
-上一章：[25 · COM 入门](25-COM入门.md) ｜ 下一章：[27 · COM 实现](27-COM实现.md) ｜ 返回：[目录](../Win32%20API开发指南.md)
+上一章：[25 · COM 入门](25-COM入门.md) ｜ 下一章：[27 · COM 实现](27-COM实现.md) ｜ 返回：[README](../README.md)

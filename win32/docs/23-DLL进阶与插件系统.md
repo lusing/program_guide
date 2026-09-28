@@ -158,4 +158,4 @@ ext-ms-win-ntuser-window-l1-1-0.dll
 
 ---
 
-上一章：[22 · DLL 基础](22-DLL基础.md) ｜ 下一章：[24 · 注册表](24-注册表.md) ｜ 返回：[目录](../Win32%20API开发指南.md)
+上一章：[22 · DLL 基础](22-DLL基础.md) ｜ 下一章：[24 · 注册表](24-注册表.md) ｜ 返回：[README](../README.md)

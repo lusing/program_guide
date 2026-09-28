@@ -136,4 +136,4 @@ Explorer 重启       → TaskbarCreated → 重挂
 
 ---
 
-上一章：[30 · Windows 服务与事件日志](30-Windows服务与事件日志.md) ｜ 下一章：[32 · 剪贴板与拖放](32-剪贴板与拖放.md) ｜ 返回：[目录](../Win32%20API开发指南.md)
+上一章：[30 · Windows 服务与事件日志](30-Windows服务与事件日志.md) ｜ 下一章：[32 · 剪贴板与拖放](32-剪贴板与拖放.md) ｜ 返回：[README](../README.md)

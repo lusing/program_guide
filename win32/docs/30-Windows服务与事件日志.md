@@ -146,4 +146,4 @@ DeregisterEventSource(hLog);                                    // ③ 注销
 
 ---
 
-上一章：[29 · WinRT 与 C++/WinRT](29-WinRT与CppWinRT.md) ｜ 下一章：[31 · Shell 集成](31-Shell集成.md) ｜ 返回：[目录](../Win32%20API开发指南.md)
+上一章：[29 · WinRT 与 C++/WinRT](29-WinRT与CppWinRT.md) ｜ 下一章：[31 · Shell 集成](31-Shell集成.md) ｜ 返回：[README](../README.md)

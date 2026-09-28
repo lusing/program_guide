@@ -1,91 +1,129 @@
-# Win32 API 开发指南示例集
+# Win32 API 开发指南
 
-面向"从零到工程"的 Win32 教程。教程正文在 [docs/](docs/) 目录下按 33 章组织（目录页见 [Win32 API开发指南.md](Win32%20API开发指南.md)），本目录的可编译示例与章节一一对应，并使用本机 Visual Studio VC 工具链编译验证。
+> Win32 API 是 Windows 操作系统暴露给应用程序的官方 C 语言服务接口——不只是"窗口库"。它覆盖两大板块：窗口、消息、控件、GDI 等界面能力（被各代 UI 框架不断封装），以及进程、线程、同步、内存、文件、DLL、COM、安全等系统服务能力（**至今没有任何替代品**）。
+
+本教程面向初学者，按依赖链组织为 33 章（五篇 + 收束），全部示例可编译验证。通用控件部分参考《Win32 开发人员参考库·第 4 卷：Windows 通用控件》整理。
+
+## 章节索引
+
+### 第一篇 入门
+
+| 章 | 内容 | 回答的问题 |
+|---|------|-----------|
+| [01 全景与发展史](docs/01-全景与发展史.md) | 操作系统服务接口定位、分层视图、1985–Win11 演化 | Win32 到底是什么、为什么现在还要学 |
+| [02 环境搭建与第一个窗口](docs/02-环境搭建与第一个窗口.md) | 工具链、编译链接、`wWinMain`、宽字符、报错对照表 | 怎么把源码变成能跑的 exe |
+| [03 错误处理与调试](docs/03-错误处理与调试.md) | `GetLastError`、`FormatMessageW`、`HRESULT`、`OutputDebugString`、SEH、调试器 | 出错了怎么查、怎么不被错误码淹没 |
+
+### 第二篇 界面层
+
+| 章 | 内容 | 回答的问题 |
+|---|------|-----------|
+| [04 窗口与消息机制](docs/04-窗口与消息机制.md) | 句柄、窗口类、消息的完整旅程、`SendMessage` vs `PostMessage` | 事件驱动的程序到底怎么运转 |
+| [05 控件基础](docs/05-控件基础.md) | 控件即窗口、`WM_COMMAND`、六种基础控件、布局 | 按钮输入框怎么用、事件怎么回来 |
+| [06 ListView 与 TreeView](docs/06-ListView与TreeView.md) | 报表视图、项与子项、ImageList、树形层级、头标控件、`WM_NOTIFY`、comctl32 版本与通用协议 | 数据列表和树怎么展示 |
+| [07 更多通用控件](docs/07-更多通用控件.md) | 工具栏、状态栏、进度条、Tab、RichEdit、可定制工具条 | 现代应用的外围控件怎么组装 |
+| [08 输入与调节控件](docs/08-输入与调节控件.md) | 轨迹条、增减数与 buddy、热键、IP 地址、扩展组合框 | 数值与专门输入怎么做 |
+| [09 日期时间与反馈控件](docs/09-日期时间与反馈控件.md) | 日期检出器、月历与日状态、动画控件、工具提示 | 日期怎么选、忙时怎么转、悬停怎么提示 |
+| [10 Rebar 与属性页](docs/10-Rebar与属性页.md) | Rebar band 与 chevron、Pager、属性表与向导 | IE 风格工具区与设置对话框怎么搭 |
+| [11 自绘与子类化](docs/11-自绘与子类化.md) | Owner Draw、Custom Draw 完整协议、`SetWindowSubclass` | 控件长得丑怎么办、行为想改怎么办 |
+| [12 GDI 绘图与现代显示](docs/12-GDI绘图与现代显示.md) | 重绘模型、GDI 对象、双缓冲；DWM、Per-Monitor V2、Win11 视觉 | 屏幕内容怎么画、怎么不闪、怎么适配高分屏 |
+| [13 菜单、对话框与资源](docs/13-菜单对话框与资源.md) | 命令 ID 分发、加速键、模态对话框、通用对话框、资源脚本 | 命令入口怎么做、临时交互怎么弹 |
+| [14 综合应用三例](docs/14-综合应用三例.md) | 计算器、RichEdit 编辑器、绘图板 | 零件怎么组装成完整程序 |
+
+### 第三篇 系统服务层
+
+| 章 | 内容 | 回答的问题 |
+|---|------|-----------|
+| [15 字符编码与字符串](docs/15-字符编码与字符串.md) | 代码页、`wchar_t`、`MultiByteToWideChar`、UTF-8 互转、StrSafe | 中文为什么乱码、编码怎么转换 |
+| [16 进程与作业对象](docs/16-进程与作业对象.md) | `CreateProcessW`、快照枚举、Job 对象 | 怎么启动和管理别的程序 |
+| [17 线程与同步](docs/17-线程与同步.md) | `CreateThread`、竞态、`CRITICAL_SECTION` 到 SRWLock/条件变量/线程池 | 怎么"同时做多件事"且不崩溃 |
+| [18 内存管理](docs/18-内存管理.md) | 虚拟地址空间、页、堆、文件映射 | `new` 底下发生了什么 |
+| [19 文件系统](docs/19-文件系统.md) | `CreateFileW` 详解、读写循环、目录枚举、NTFS 特性、长路径 | 可靠的文件代码怎么写 |
+| [20 内核对象与安全](docs/20-内核对象与安全.md) | 句柄表、句柄复制、SD/ACL、令牌、UAC、完整性级别 | 权限是怎么回事、UAC 拦了什么 |
+| [21 系统信息与定时器](docs/21-系统信息与定时器.md) | 版本、环境变量、系统时间、高精度定时器、电源 | 程序怎么感知它所处的机器 |
+
+### 第四篇 模块与 COM
+
+| 章 | 内容 | 回答的问题 |
+|---|------|-----------|
+| [22 DLL 基础](docs/22-DLL基础.md) | 导出表、隐式/显式链接、`DllMain` 纪律、搜索顺序 | 模块化机制怎么工作 |
+| [23 DLL 进阶与插件系统](docs/23-DLL进阶与插件系统.md) | 插件架构实战、资源段、PE 速览、API Set | 怎么做一个能加载插件的宿主 |
+| [24 注册表](docs/24-注册表.md) | 键值类型、增删改查、枚举、HKCU 策略 | Windows 的配置中心怎么用 |
+| [25 COM 入门](docs/25-COM入门.md) | 二进制接口、`IUnknown`、引用计数、`HRESULT`、`ComPtr` | COM 是什么、为什么到处是它 |
+| [26 COM 实战](docs/26-COM实战.md) | `CoInitialize`、`CoCreateInstance`、`IFileOpenDialog` | 怎么调用系统里的 COM 组件 |
+| [27 COM 实现](docs/27-COM实现.md) | 类厂、`DllGetClassObject`、`DllRegisterServer`、HKCU 注册 | 怎么手写一个 COM 组件 |
+| [28 Direct2D 与 DirectWrite](docs/28-Direct2D与DirectWrite.md) | 工厂、渲染目标、画刷、DWrite 文本、与 GDI 对照 | 现代渲染怎么写 |
+| [29 WinRT 与 C++/WinRT](docs/29-WinRT与CppWinRT.md) | `IInspectable`、激活工厂、投影、C++20 协程异步 | 怎么从 Win32 调用现代 API |
+
+### 第五篇 平台专题
+
+| 章 | 内容 | 回答的问题 |
+|---|------|-----------|
+| [30 Windows 服务与事件日志](docs/30-Windows服务与事件日志.md) | SCM、最小服务、安装启动停止、`ReportEventW` | 后台服务怎么写 |
+| [31 Shell 集成](docs/31-Shell集成.md) | 托盘图标、右键菜单、气泡通知 | 程序怎么融进桌面环境 |
+| [32 剪贴板与拖放](docs/32-剪贴板与拖放.md) | `CF_UNICODETEXT` 全链路、`WM_DROPFILES`、`IDropTarget` | 复制粘贴和拖放怎么实现 |
+
+### 收束
+
+| 章 | 内容 | 回答的问题 |
+|---|------|-----------|
+| [33 现代 Win32 与学习路线](docs/33-现代Win32与学习路线.md) | Win10/11 新增 API、技术栈关系图谱、避坑总表、学习地图 | 接下来去哪 |
+
+## 示例代码
+
+`examples/` 下每个目录对应一个可编译工程，全部经本机 MSVC 编译验证（35 个示例）：
+
+| # | 示例 | 章 | 一句话 |
+|---|------|----|----|
+| 01 | `01_hello_window` | 02 | 最小窗口骨架 |
+| 02 | `02_message_loop` | 04 | 鼠标/键盘消息观测器 |
+| 03 | `03_controls` | 05 | 基础控件三件套 |
+| 04 | `04_gdi_drawing` | 12 | GDI 基础绘制 |
+| 05 | `05_mini_calculator` | 14 | 状态机计算器 |
+| 06 | `06_text_editor` | 13/14 | RichEdit 编辑器 + 文件 I/O |
+| 07 | `07_paint_app` | 12/14 | 会重绘的绘图板 |
+| 08 | `08_process_manager` | 16 | 进程枚举/启动/终止 |
+| 09 | `09_memory_monitor` | 18 | 内存状态观测 |
+| 10 | `10_file_manager` | 19 | 文件创建与目录枚举 |
+| 11 | `11_thread_sync_demo` | 17 | 工作线程 + PostMessage 回传 |
+| 12 | `12_memory_deep_dive` | 18 | 虚拟内存/页保护/堆/映射 |
+| 13 | `13_file_system_deep_dive` | 19 | 元数据与 NTFS 细节 |
+| 14 | `14_srwlock_demo` | 17 | SRWLock + 条件变量 |
+| 15 | `15_dpi_modern_window` | 12 | DPI V2 + Win11 圆角 |
+| 16 | `16_error_handling` | 03 | 错误处理四件套 |
+| 17 | `17_listview_treeview` | 06 | ListView + TreeView |
+| 18 | `18_common_controls` | 07 | 通用控件五件套 |
+| 19 | `19_custom_draw` | 11 | 自绘/Custom Draw/子类化 |
+| 20 | `20_encoding_convert` | 15 | 编码互转 + StrSafe |
+| 21 | `21_security_descriptors` | 20 | 令牌/DACL 读写 |
+| 22 | `22_sysinfo_timers` | 21 | 系统信息与定时器 |
+| 23 | `23_dll_math` | 22 | DLL + 隐式链接 |
+| 24 | `24_dll_plugin` | 23 | 插件宿主 |
+| 25 | `25_registry_tool` | 24 | 注册表全流程 |
+| 26 | `26_com_file_dialog` | 26 | COM 文件对话框 |
+| 27 | `27_com_server` | 27 | 手写 COM 服务器 |
+| 28 | `28_direct2d_hello` | 28 | D2D + DirectWrite |
+| 29 | `29_winrt_modern` | 29 | C++/WinRT + 协程 |
+| 30 | `30_windows_service` | 30 | 服务 + 事件日志 |
+| 31 | `31_shell_tray` | 31 | 托盘程序 |
+| 32 | `32_clipboard_dnd` | 32 | 剪贴板 + 拖放 |
+| 33 | `33_input_controls` | 08 | 轨迹条/增减数/热键/IP/ComboBoxEx |
+| 34 | `34_datetime_feedback` | 09 | DTP/月历/动画/工具提示 |
+| 35 | `35_rebar_propsheet` | 10 | Rebar 工具区 + 属性表 + 向导 |
 
 ## 目录结构
 
 ```text
 win32/
-├── README.md                   # 本文件：结构、工具链、构建说明
-├── Win32 API开发指南.md         # 教程目录页（指向 docs/ 各章）
+├── README.md                   # 本文件：章节索引 + 示例对照 + 构建说明
 ├── build.ps1                   # 编译验证脚本
-├── docs/                       # 33 章（五篇 + 收束，见目录页）
+├── docs/                       # 33 章（五篇 + 收束）
 │   ├── 01-全景与发展史.md
-│   ├── 02-环境搭建与第一个窗口.md
-│   ├── 03-错误处理与调试.md
-│   ├── 04-窗口与消息机制.md
-│   ├── 05-控件基础.md
-│   ├── 06-ListView与TreeView.md
-│   ├── 07-更多通用控件.md
-│   ├── 08-输入与调节控件.md
-│   ├── 09-日期时间与反馈控件.md
-│   ├── 10-Rebar与属性页.md
-│   ├── 11-自绘与子类化.md
-│   ├── 12-GDI绘图与现代显示.md
-│   ├── 13-菜单对话框与资源.md
-│   ├── 14-综合应用三例.md
-│   ├── 15-字符编码与字符串.md
-│   ├── 16-进程与作业对象.md
-│   ├── 17-线程与同步.md
-│   ├── 18-内存管理.md
-│   ├── 19-文件系统.md
-│   ├── 20-内核对象与安全.md
-│   ├── 21-系统信息与定时器.md
-│   ├── 22-DLL基础.md
-│   ├── 23-DLL进阶与插件系统.md
-│   ├── 24-注册表.md
-│   ├── 25-COM入门.md
-│   ├── 26-COM实战.md
-│   ├── 27-COM实现.md
-│   ├── 28-Direct2D与DirectWrite.md
-│   ├── 29-WinRT与CppWinRT.md
-│   ├── 30-Windows服务与事件日志.md
-│   ├── 31-Shell集成.md
-│   ├── 32-剪贴板与拖放.md
+│   ├── …（见上方章节索引）
 │   └── 33-现代Win32与学习路线.md
-├── examples/                   # 可编译示例（见下表）
+├── examples/                   # 可编译示例（见上表）
 └── build/                      # 编译输出
 ```
-
-## 章节与示例对照
-
-| 示例 | 对应章节 | 演示内容 | 形态 |
-|------|---------|---------|------|
-| `01_hello_window` | 02 | WinMain + RegisterClass + CreateWindow + 消息循环的最小窗口应用 | GUI |
-| `02_message_loop` | 04 | `WM_LBUTTONDOWN`、`WM_MOUSEMOVE`、`WM_CHAR` 等消息处理 | GUI |
-| `03_controls` | 05 | 按钮、编辑框、静态文本等原生控件的创建与 `WM_COMMAND` 事件 | GUI |
-| `04_gdi_drawing` | 12 | GDI 在 `WM_PAINT` 中绘制矩形、圆形和文本 | GUI |
-| `05_mini_calculator` | 14 | 完整计算器：窗口布局、按钮事件与状态机式计算逻辑 | GUI |
-| `06_text_editor` | 13/14 | RichEdit 编辑器：菜单、文件对话框、文件 I/O、编码转换 | GUI |
-| `07_paint_app` | 12/14 | 绘图程序：线段状态列表 + `WM_PAINT` 全量重绘 | GUI |
-| `08_process_manager` | 16 | 进程快照枚举、`CreateProcessW` 启动、终止进程 | GUI |
-| `09_memory_monitor` | 18 | `GlobalMemoryStatusEx` 内存状态 + 基本 `VirtualAlloc` | GUI |
-| `10_file_manager` | 19 | `CreateFileW`、`WriteFile`、`FindFirstFileW` 文件管理基础 | GUI |
-| `11_thread_sync_demo` | 17 | `CRITICAL_SECTION`、`CreateThread`、`PostMessageW` 跨线程回传 | GUI |
-| `12_memory_deep_dive` | 18 | `VirtualAlloc`/`VirtualProtect`/堆/文件映射 | 控制台 |
-| `13_file_system_deep_dive` | 19 | 文件元数据、真实路径反查、目录枚举 | 控制台 |
-| `14_srwlock_demo` | 17 | SRWLock + 条件变量的生产者/消费者 | 控制台 |
-| `15_dpi_modern_window` | 12 | Per-Monitor V2 DPI 感知 + Win11 圆角 | GUI |
-| `16_error_handling` | 03 | GetLastError → FormatMessageW、HRESULT、SEH 四件套 | 控制台 |
-| `17_listview_treeview` | 06 | ListView 报表视图 + TreeView 层级 + ImageList 共享 | GUI |
-| `18_common_controls` | 07 | 工具栏/状态栏/进度条/Tab/RichEdit 五件套 | GUI |
-| `19_custom_draw` | 11 | Owner Draw 按钮 + Custom Draw 隔行变色 + 子类化大写输入 | GUI |
-| `20_encoding_convert` | 15 | 代码页/UTF-8 互转、非法序列检测、StrSafe | 控制台 |
-| `21_security_descriptors` | 20 | 令牌/完整性级别 + 给文件写 DACL 并读回 | 控制台 |
-| `22_sysinfo_timers` | 21 | 版本/系统信息/环境/QPC/可等待定时器/电源 | 控制台 |
-| `23_dll_math` | 22 | 数学 DLL + 隐式链接消费者 | DLL+EXE |
-| `24_dll_plugin` | 23 | 插件契约 + 双插件 DLL + 扫描加载宿主 | DLL×2+EXE |
-| `25_registry_tool` | 24 | HKCU 增删改查/枚举/整树清场 | 控制台 |
-| `26_com_file_dialog` | 26 | CoInitializeEx + ComPtr + IFileOpenDialog | GUI |
-| `27_com_server` | 27 | 手写 COM 服务器：HKCU 注册→创建→注销全链路 | DLL+EXE |
-| `28_direct2d_hello` | 28 | D2D 渐变/抗锯齿 + DWrite 文本 + resize/重建 | GUI |
-| `29_winrt_modern` | 29 | C++/WinRT 投影 + C++20 协程异步 | 控制台 |
-| `30_windows_service` | 30 | 最小服务五要素 + 事件日志 + console/list 双模式 | 服务 |
-| `31_shell_tray` | 31 | 托盘图标 + 右键菜单 + 气泡 + Explorer 重启自愈 | GUI |
-| `32_clipboard_dnd` | 32 | 剪贴板全链路 + WM_DROPFILES + 手写 IDropTarget | GUI |
-| `33_input_controls` | 08 | 轨迹条/增减数+ buddy/热键/IP 地址/ComboBoxEx 五件 | GUI |
-| `34_datetime_feedback` | 09 | DTP/月历日状态/动画（附 demo.avi）/工具提示 | GUI |
-| `35_rebar_propsheet` | 10 | Rebar 双 band + chevron 菜单 + 属性表 + 三页向导 | GUI |
 
 ## 工具链
 

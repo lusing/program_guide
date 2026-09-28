@@ -215,4 +215,4 @@ HKCU\Software\Classes\CLSID\{6B92FBEE-1E6D-4010-9AC0-5783E288F9C1}
 
 ---
 
-上一章：[26 · COM 实战](26-COM实战.md) ｜ 下一章：[28 · Direct2D 与 DirectWrite](28-Direct2D与DirectWrite.md) ｜ 返回：[目录](../Win32%20API开发指南.md)
+上一章：[26 · COM 实战](26-COM实战.md) ｜ 下一章：[28 · Direct2D 与 DirectWrite](28-Direct2D与DirectWrite.md) ｜ 返回：[README](../README.md)
