@@ -41,6 +41,35 @@ let tryParseInt (s: string) =
     | true, v -> Some v
     | false, _ -> None
 
+// ═══ 14.6 生产级 CE 实例：asyncRetry（重试语义藏进 let!）═══
+// 《Concurrency in .NET》第 9 章的 AsyncRetry：操作失败自动重试，成功才继续链
+type AsyncRetryBuilder(maxRetries: int) =
+    // 重试住在公共路径 runWithRetry 里——ReturnFrom 若写成恒等，return! 会整个绕过重试（实测踩过）
+    let runWithRetry (m: Async<'T>) : Async<'T> =
+        async {
+            let rec attempt n =
+                async {
+                    try
+                        return! m
+                    with ex ->
+                        if n < maxRetries then
+                            printfn "  重试 %d/%d（%s）" (n + 1) maxRetries ex.Message
+                            return! attempt (n + 1)
+                        else
+                            return raise ex                             // 重试次数用尽：异常上抛
+                }
+            return! attempt 0
+        }
+    member _.Bind(m: Async<'T>, f: 'T -> Async<'R>) : Async<'R> =
+        async {
+            let! v = runWithRetry m
+            return! f v
+        }
+    member _.Return x = async { return x }
+    member _.ReturnFrom x = runWithRetry x
+
+let asyncRetry = AsyncRetryBuilder(3)
+
 [<EntryPoint>]
 let main _ =
 
@@ -94,4 +123,15 @@ let main _ =
     // ═══ 14.5 return!：直接透传另一个同类计算 ═══
     let passthrough = maybe { return! Some 9 }
     printfn "return! = %A" passthrough
+
+    // ═══ 14.6 asyncRetry：失败自动重试的 async 链 ═══
+    let mutable failures = 0
+    let flaky () =
+        async {
+            failures <- failures + 1
+            if failures < 3 then failwith $"第 {failures} 次故意失败"
+            return $"第 {failures} 次尝试终于成功"
+        }
+    let retryOutcome = asyncRetry { return! flaky () } |> Async.RunSynchronously
+    printfn "asyncRetry = %s" retryOutcome
     0

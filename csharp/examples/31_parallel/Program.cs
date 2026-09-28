@@ -47,3 +47,21 @@ Console.WriteLine("===== 并行度选择 =====");
 Console.WriteLine($"  环境 CPU 核数: {Environment.ProcessorCount}");
 Console.WriteLine("  CPU 密集 → 默认并行度≈核数；混合 IO → 可超核（MaxDegreeOfParallelism 调高）");
 Console.WriteLine("  一切并行改写都要以量测开头、量测收尾——「感觉会快」不算数");
+
+Console.WriteLine();
+Console.WriteLine("===== Fork/Join 局部累积：Parallel.For 的 TLocal 重载 =====");
+// 《Concurrency in .NET》第 4 章的素数计数教法：
+// 每个工作线程累加「自己那份」局部和（localInit），收工时才合并一次（localFinally）——全程无锁
+long primeCount = 0;
+Parallel.For(0, 1_000_000,
+    () => 0L,                                              // localInit：每线程开工建一份局部计数
+    (i, _, local) => local + (IsPrime(i) ? 1 : 0),         // 循环体：只读写自己的 local，不碰共享
+    local => Interlocked.Add(ref primeCount, local));      // localFinally：每线程收工合并一次
+Console.WriteLine($"  1..1,000,000 素数 {primeCount:#,0} 个（局部累加 + 合并，比每次 Interlocked 都碰共享变量快）");
+
+static bool IsPrime(int n)
+{
+    if (n < 2) return false;
+    for (var d = 2; (long)d * d <= n; d++) if (n % d == 0) return false;
+    return true;
+}

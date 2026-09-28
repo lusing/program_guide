@@ -2,7 +2,7 @@
 
 > 对应示例：`examples/14_events`（股价变动的完整发布-订阅链路）
 
-> **本章你将学会**：发布-订阅模式、event 关键字的保护语义、EventHandler<T> 标准签名、触发事件的规范三步。
+> **本章你将学会**：发布-订阅模式、event 关键字的保护语义、EventHandler<T> 标准签名、触发事件的规范三步、IObservable 可组合事件流。
 > **前置章节**：[13 委托](13-delegates.md)。
 
 ## 1. 事件解决什么问题
@@ -104,6 +104,41 @@ public event EventHandler<PriceChangedEventArgs>? PriceChanged;
 2. **lambda 订阅要能退**：先存变量 `EventHandler h = (s,e) => ...; obj.Ev += h; ... obj.Ev -= h;`
 3. 短命对象别订阅长命对象的全局事件；反过来（长订阅短）才安全
 
+## 7. IObservable&lt;T&gt;：可组合的事件流
+
+事件的进化形态是 BCL 内置的 `IObservable<T>`/`IObserver<T>`（System 命名空间，零依赖）。《Concurrency in .NET》第 6 章给了它一个精准的定位：**IObservable 是 IEnumerable 的对偶**——
+
+```text
+IEnumerable<T>：消费者主动 pull（foreach 一个一个要）
+IObservable<T>：生产者主动 push（OnNext 一个一个推）
+```
+
+推送模型换来的是**LINQ 级的组合能力**。订阅者实现三个方法：`OnNext`（来了一条）、`OnError`（流出错）、`OnCompleted`（流结束——这是 event 没有的语义，事件永远不知道"以后没有了"）。示例手写了最小实现（生产代码用 Rx 库）：
+
+```csharp
+var prices = new Subject<decimal>();                     // 发布端：OnNext/OnCompleted
+using var sub = prices
+    .WhereR(p => p >= 200m)                              // 只放行 200 以上的
+    .SelectR(p => $"高价 {p:F1}")                         // 再加工成消息
+    .Subscribe(new PrintObserver());                     // 订阅
+foreach (var p in new[] { 198.0m, 203.2m, 201.5m, 42m }) prices.OnNext(p);
+prices.OnCompleted();
+```
+
+实测输出：
+
+```text
+[订阅] 高价 203.2
+[订阅] 高价 201.5
+[订阅] 流结束（OnCompleted）
+```
+
+三个对照记忆点：
+
+- **退订是句柄**：`Subscribe` 返回 `IDisposable`，`Dispose` 即退——比事件的 `-=` 更工程化（F# 教程 18 章有同一主题的 F# 形态）
+- **`WhereR`/`SelectR` 是手写教学版**：把 `IObservable` 的 `Subscribe` 接到"变换/筛选后的观察者"上；**Rx（System.Reactive NuGet 包）把整套 LINQ 都做成了推送版**（`Where/Select/Buffer/Throttle/Scan...`），股价、传感器、消息流这类"持续到来的事件序列"是它的主场
+- 与第 18 章迭代器互为镜像：pull 世界靠 `yield return`，push 世界靠 `OnNext`；两边的组合子形状一模一样
+
 ## 常见坑
 
 **忘退订导致对象长存**：第 6 节——"窗口关了怎么内存还在涨"的第一嫌疑人。
@@ -129,6 +164,7 @@ public event EventHandler<PriceChangedEventArgs>? PriceChanged;
 2. **EventHandler<T> 的标准签名两部分各是什么？** —— (object? sender, TEventArgs e)：谁发的 + 发生了什么。
 3. **触发事件的三个纪律？** —— 快照、?.、this 作 sender。
 4. **事件怎么会造成内存泄漏？** —— 订阅即持引用；短命订阅者挂在长命发布者上就回收不了——退订。
+5. **IObservable 与事件的核心差异？** —— push 模型可像 LINQ 一样组合，且有 OnCompleted「流结束」语义；退订变成 IDisposable 句柄。
 
 ---
 上一章：[13 委托](13-delegates.md) ｜ 下一章：[15 Lambda 与闭包](15-lambdas.md) ｜ 返回：[README](../README.md)

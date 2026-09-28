@@ -41,7 +41,7 @@ dotnet/
 | [21 正则表达式](docs/21-regex.md) | 命名组、GeneratedRegex、超时防御 | `examples/21_regex` |
 | [22 网络编程](docs/22-networking.md) | System.Net 地基（Dns/Ping）、TCP 分帧、UDP 组播/WOL、HttpClient、手写 POP3、老 API 迁移表 | `examples/22_networking` |
 | [23 进程与原生互操作](docs/23-interop.md) | Process、P/Invoke、反射、DLL 地狱 | `examples/23_interop` |
-| [24 同步原语与 IPC](docs/24-sync.md) | SemaphoreSlim、事件句柄、管道、FSW | `examples/24_sync` |
+| [24 同步原语与 IPC](docs/24-sync.md) | SemaphoreSlim、事件句柄、Channel/Dataflow 流水线、管道、FSW | `examples/24_sync` |
 
 ## 构建工具链
 

@@ -2,7 +2,7 @@
 
 > 对应示例：`examples/31_parallel`
 
-> **本章你将学会**：ThreadPool 的角色、Parallel.For/ForEach 数据并行、取消与并行度、PLINQ、并行决策与量测纪律。
+> **本章你将学会**：ThreadPool 的角色、Parallel.For/ForEach 数据并行（含 Fork/Join 局部累积）、取消与并行度、PLINQ、并行决策与量测纪律。
 > **前置章节**：[29 Task](29-tasks.md)、[30 线程安全](30-thread-safety.md)。
 
 ## 1. 并行 vs 异步：先分清两件事
@@ -40,6 +40,19 @@ Parallel.ForEach(items,
 - `Parallel.Invoke(act1, act2, act3)`：几个独立动作并发跑
 
 Parallel 是**阻塞调用**（方法返回时全部完成）——天生适合"一段计算"，不适合异步管线（那是 29/30 章的领地）。
+
+**要累积结果，用 TLocal 重载**（Fork/Join 的标准形态，《Concurrency in .NET》第 4 章的素数计数教法）：每个工作线程累加**自己那份**局部结果，收工时才合并一次——循环体内零共享、零锁：
+
+```csharp
+long primeCount = 0;
+Parallel.For(0, 1_000_000,
+    () => 0L,                                        // localInit：每线程开工建一份局部计数
+    (i, _, local) => local + (IsPrime(i) ? 1 : 0),   // 体：只读写自己的 local
+    local => Interlocked.Add(ref primeCount, local));// localFinally：每线程收工合并一次
+// 示例实测：78,498 个素数（< 1,000,000 的素数个数，已知正确值）
+```
+
+对比 §3 说的"共享 total 用 Interlocked"：那是一百万次原子加；TLocal 版只在**线程数**那么多次合并时碰共享变量——并行累积的默认姿势。
 
 ## 4. PLINQ：声明式并行
 
@@ -86,7 +99,7 @@ await Parallel.ForEachAsync(urls, async (url, ct) =>
 ## 7. 量测纪律
 
 1. **先有基线**（Stopwatch/PerfView/dotnet-benchmark）——"感觉慢"不算需求
-2. **Amdahl 定律直觉**：串行部分决定并行上限——90% 可并行的工作，4 核最多提速 ~3 倍
+2. **Amdahl 定律直觉**：串行部分决定并行上限——90% 可并行的工作，4 核最多提速 ~3 倍；**Gustafson 定律**是它的另一面：问题规模随核数长大时（数据多了就多分给每个核），加速比可以随核数线性走——《Concurrency in .NET》第 4 章的结论：小任务测 Amdahl，可扩展负载看 Gustafson
 3. **并行后量数据**：CPU 利用率、实际耗时、分配量（26 章的观测法）三者都要
 4. **小数据别并行**：几千元素以下，调度开销白付
 
@@ -116,7 +129,8 @@ await Parallel.ForEachAsync(urls, async (url, ct) =>
 2. **Parallel.For 安全的前提？** —— 下标独立、循环体无共享状态。
 3. **PLINQ 什么时候反而慢？** —— 数据量小（分片合并开销 > 收益）。
 4. **ForEachAsync 的定位？** —— 异步工作项 + 控制并发度（批量 IO 限流标准姿势）。
-5. **Amdahl 定律的直觉？** —— 串行部分封顶并行收益。
+5. **并行累积为什么用 TLocal 重载而不是每次 Interlocked？** —— 局部累加零共享，只在每线程收工时合并一次。
+6. **Amdahl 定律的直觉？** —— 串行部分封顶并行收益。
 
 ---
 上一章：[30 线程安全](30-thread-safety.md) ｜ 下一章：[32 文件与 IO](32-files-io.md) ｜ 返回：[README](../README.md)

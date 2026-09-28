@@ -13,6 +13,7 @@
 | 单实例应用（跨进程互斥） | `Mutex`（命名） |
 | 线程间信号 | `AutoResetEvent` / `ManualResetEventSlim` |
 | 生产者-消费者 | `Channel<T>` 首选；经典写法 `Monitor.Wait/Pulse` |
+| 多段流水线 / 消息网络 | TPL Dataflow（第 5 节） |
 | 进程间字节流 | 管道 / Socket（第 22 章） |
 | 目录变更通知 | `FileSystemWatcher` |
 
@@ -49,7 +50,37 @@ await foreach (var item in channel.Reader.ReadAllAsync())
 
 `Channel<T>`（第 13/14 章引过）就是生产者-消费者的框架化：背压、完成语义、异步等待全内置。看到 `Wait/Pulse` 的老代码，读懂，然后有条件就迁。
 
-## 5. 管道：进程间的字节流
+## 5. TPL Dataflow：把流水线组装成积木
+
+Channel 解决"**一对**生产者-消费者"；当流水线有**多段变换、多个节点**时，TPL Dataflow（`System.Threading.Tasks.Dataflow`，基础框架自带）把"块"当积木拼（《Concurrency in .NET》第 12 章整章的主题）：
+
+```csharp
+var square = new TransformBlock<int, long>(n => (long)n * n);   // 变换块：进 int 出 long
+var format = new TransformBlock<long, string>(v => $"#{v}");    // 再变换
+var collect = new ActionBlock<string>(s => parts.Add(s));       // 终点块：只消费
+var linkOpts = new DataflowLinkOptions { PropagateCompletion = true };
+square.LinkTo(format, linkOpts);          // 连线
+format.LinkTo(collect, linkOpts);
+foreach (var i in Enumerable.Range(1, 5)) square.Post(i);       // 投递
+square.Complete();                        // 告诉源头：没有更多了
+await collect.Completion;                 // 完成沿链传播，末端等齐
+```
+
+```text
+dataflow: 1..5 平方 → #1 #4 #9 #16 #25（保序输出）
+```
+
+三块积木与选型：
+
+| 块 | 语义 | 对应 |
+|---|---|---|
+| `BufferBlock<T>` | FIFO 缓冲，只存不处理 | Channel 的 dataflow 版 |
+| `TransformBlock<TIn,TOut>` | 每条消息变换后转发 | 流水线的"工位" |
+| `ActionBlock<T>` | 每条消息执行动作，终点 | 消费者 |
+
+与 Channel 的分工：**Channel 是"自己写泵"**（`await foreach` 循环怎么消费你说了算），**Dataflow 是"声明式网络"**（连线之后消息自己流动，`MaxDegreeOfParallelism` 一设就是并行工位）。两个容易错的默认值：`TransformBlock`/`ActionBlock` **默认每消息串行处理**（这其实是特性——一个块 ≈ 一个串行化状态的 agent，《Concurrency in .NET》第 11 章 F# `MailboxProcessor` 在 C# 里的对应物）；输出**默认保序**（`EnsureOrdered = true`，不在乎顺序时显式关掉换吞吐）。
+
+## 6. 管道：进程间的字节流
 
 ```csharp
 using var pipeOut = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.None);
@@ -61,7 +92,7 @@ using var pipeIn  = new AnonymousPipeClientStream(PipeDirection.In, pipeOut.Clie
 
 管道是**字节流**，消息边界自理——第 22 章的分帧（长度前缀/分隔符）原样适用。
 
-## 6. FileSystemWatcher：事件重入坑
+## 7. FileSystemWatcher：事件重入坑
 
 ```csharp
 using var watcher = new FileSystemWatcher(dir)
@@ -87,3 +118,5 @@ watcher.Created += (_, e) => seen.Enqueue($"created:{e.Name}");
 5. **`Monitor.Wait` 的条件用 `if`** → 虚假唤醒下抢到不该抢的货，必须 `while (条件) Monitor.Wait(...)`。
 6. **裸 `WaitOne()` 无超时**：依赖对端行为才能返回，对端一死就陪葬；给超时或取消。
 7. **管道读端不处理 EOF**：写端关闭后 `Read` 返回 0（不是抛异常），循环条件写成 `> 0`，忘了就是死循环读零字节。
+8. **Dataflow 忘 `Complete()` / 忘 `PropagateCompletion`**：`await collect.Completion` 永远不完成——完成不会沿链自动传（除非 `DataflowLinkOptions { PropagateCompletion = true }`），程序挂在收尾。
+9. **默认并发度误判**：`TransformBlock`/`ActionBlock` 默认一次处理一条消息——以为是并行流水线，其实每个工位单线程；要并行工位显式 `new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = N }`，要乱序加速显式 `EnsureOrdered = false`。

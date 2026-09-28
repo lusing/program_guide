@@ -9,6 +9,11 @@ let fetchPage (url: string) =
         return sprintf "%s → %d 字节（模拟）" url url.Length
     }
 
+// ═══ 13.7 agent 的消息类型（DU：编译器保证消息形状穷尽）═══
+type CounterMsg =
+    | Increment of int
+    | GetCount of AsyncReplyChannel<int>
+
 [<EntryPoint>]
 let main _ =
 
@@ -76,4 +81,25 @@ let main _ =
         with :? OperationCanceledException ->
             None
     printfn "取消演示 outcome = %A" outcome
+
+    // ═══ 13.7 MailboxProcessor：agent = 消息循环 + 状态隔离 ═══
+    // 《Concurrency in .NET》第 11 章：状态只活在 agent 的消息循环里，外面摸不到——无锁也不丢更新
+    let counter =
+        MailboxProcessor<CounterMsg>.Start(fun inbox ->
+            let rec loop count =                   // 「当前状态」就是递归参数，新状态 = f(旧状态, 消息)
+                async {
+                    let! msg = inbox.Receive()      // 等下一条消息（不占线程）
+                    match msg with
+                    | Increment n -> return! loop (count + n)
+                    | GetCount reply -> reply.Reply count; return! loop count
+                }
+            loop 0)
+
+    for _ in 1 .. 1000 do counter.Post(Increment 1)      // Post 立即返回（只入队）
+    let finalCount = counter.PostAndAsyncReply(GetCount) |> Async.RunSynchronously
+    printfn "agent: 1000 次 Increment → %d（队列串行处理，无锁不丢）" finalCount
+
+    // ═══ 13.8 Array.Parallel：数据并行的一行版 ═══
+    let parSquares = Array.Parallel.map (fun x -> x * x) [| 1 .. 8 |]
+    printfn "Array.Parallel.map 1..8 = %A" parSquares
     0

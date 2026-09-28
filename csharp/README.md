@@ -65,8 +65,8 @@ csharp/
 | 章 | 主题 | 示例 |
 |---|---|---|
 | [13 委托](docs/13-delegates.md) | 委托类型、多播、Func/Action | `13_delegates` |
-| [14 事件](docs/14-events.md) | 事件模型、解订防泄漏 | `14_events` |
-| [15 Lambda 与闭包](docs/15-lambdas.md) | 捕获机制、static lambda、表达式树 | `15_lambdas` |
+| [14 事件](docs/14-events.md) | 事件模型、解订防泄漏、IObservable 事件流 | `14_events` |
+| [15 Lambda 与闭包](docs/15-lambdas.md) | 捕获机制、static lambda、memoize、表达式树 | `15_lambdas` |
 | [16 LINQ 基础](docs/16-linq-basics.md) | 两种语法、高频操作符、延迟执行 | `16_linq_basic` |
 | [17 LINQ 进阶](docs/17-linq-advanced.md) | GroupBy/Join/自造操作符、IQueryable 分界 | `17_linq_advanced` |
 | [18 迭代器](docs/18-iterators.md) | yield、状态机、IEnumerable 设计 | `18_iterators` |
@@ -92,7 +92,7 @@ csharp/
 | [28 async/await](docs/28-async-await.md) | 状态机、同步上下文、ValueTask | `28_async` |
 | [29 Task 深度](docs/29-tasks.md) | 组合、取消、异常传播 | `29_tasks` |
 | [30 线程安全](docs/30-thread-safety.md) | 锁家族、Interlocked、并发集合 | `30_threadsafe` |
-| [31 并行](docs/31-parallel.md) | PLINQ、Partitioner、Channel | `31_parallel` |
+| [31 并行](docs/31-parallel.md) | PLINQ、Partitioner、TLocal 局部累积、Channel | `31_parallel` |
 
 ### 六 · 平台延伸与实战（32-36）
 

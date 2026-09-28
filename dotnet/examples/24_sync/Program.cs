@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.IO.Pipes;
 using System.Text;
+using System.Threading.Tasks.Dataflow;
 
 // ---------- SemaphoreSlim：并发限流（限 2，放 6 个任务过） ----------
 using var gate = new SemaphoreSlim(initialCount: 2, maxCount: 2);
@@ -67,8 +68,24 @@ while ((n = await pipeIn.ReadAsync(buf)) > 0)
 await writer;
 Console.WriteLine($"pipe: {Encoding.UTF8.GetString(ms.ToArray())}");
 
+// ---------- TPL Dataflow：把生产者-消费者组装成声明式流水线 ----------
+// 数据流块 = 流水线积木（《Concurrency in .NET》第 12 章整章主题）：进料 → 变换 → 消费
+var parts = new List<string>();
+var square = new TransformBlock<int, long>(n => (long)n * n);     // 变换块：进 int 出 long
+var format = new TransformBlock<long, string>(v => $"#{v}");       // 再变换
+var collect = new ActionBlock<string>(s => parts.Add(s));          // 终点块：只消费不产出
+var linkOpts = new DataflowLinkOptions { PropagateCompletion = true };   // 「源头完成」沿链自动传播
+square.LinkTo(format, linkOpts);
+format.LinkTo(collect, linkOpts);
+foreach (var i in Enumerable.Range(1, 5)) square.Post(i);          // 投递 5 个
+square.Complete();                                                 // 告诉源头：没有更多了
+await collect.Completion;                                          // 等完成传播到末端、全部处理完
+Console.WriteLine($"dataflow: 1..5 平方 → {string.Join(" ", parts)}（保序输出）");
+Console.WriteLine("dataflow: TransformBlock/ActionBlock 默认每消息串行处理（≈一个 agent）；要并发得显式 MaxDegreeOfParallelism");
+
 // ---------- FileSystemWatcher：事件只收集，业务在别处做 ----------
 var dir = Path.Combine(Path.GetTempPath(), "dotnet-fsw-demo");
+if (Directory.Exists(dir)) Directory.Delete(dir, recursive: true);   // 清掉上次的残留（File.Move 不覆盖已存在文件）
 Directory.CreateDirectory(dir);
 using var watcher = new FileSystemWatcher(dir)
 {

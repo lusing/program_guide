@@ -137,16 +137,64 @@ let passthrough = maybe { return! Some 9 }   // Some 9
 
 `return! m` = `ReturnFrom m`——不做包装直接采用另一个同类值。async 世界的 `return! otherAsync`、seq 的 `yield! 子序列` 同源。
 
-## 14.8 何时自定义 CE
+## 14.8 生产级实例：asyncRetry builder
+
+14.4 成员表说"写生产级 CE（如自定义异步/重试）时按需补"——现在兑现（《Concurrency in .NET》第 9 章的 AsyncRetry）。它把「失败自动重试」藏进 `let!`，调用方写出来的重试链和普通 async 一模一样：
+
+```fsharp
+type AsyncRetryBuilder(maxRetries: int) =
+    // 重试住在公共路径 runWithRetry 里——ReturnFrom 若写成恒等，return! 会整个绕过重试（实测踩过）
+    let runWithRetry (m: Async<'T>) : Async<'T> =
+        async {
+            let rec attempt n =
+                async {
+                    try
+                        return! m
+                    with ex ->
+                        if n < maxRetries then
+                            printfn "  重试 %d/%d（%s）" (n + 1) maxRetries ex.Message
+                            return! attempt (n + 1)
+                        else
+                            return raise ex                // 次数用尽：异常上抛
+                }
+            return! attempt 0
+        }
+    member _.Bind(m: Async<'T>, f: 'T -> Async<'R>) : Async<'R> =
+        async { let! v = runWithRetry m; return! f v }
+    member _.Return x = async { return x }
+    member _.ReturnFrom x = runWithRetry x
+
+let asyncRetry = AsyncRetryBuilder(3)
+```
+
+用法与实测输出（`flaky` 前两次故意失败、第三次成功）：
+
+```fsharp
+let retryOutcome = asyncRetry { return! flaky () } |> Async.RunSynchronously
+//   重试 1/3（第 1 次故意失败）
+//   重试 2/3（第 2 次故意失败）
+// asyncRetry = 第 3 次尝试终于成功
+```
+
+三个看点：
+
+- **递归 + 默认参数就是重试计数器**：`attempt n` 带着次数递归，与 13.7 agent 的 `loop count` 同一个"状态放参数"手法
+- **`with ex ->` 在 async 里照样接住**：`let! v = m` 期间抛的异常被 CE 内的 try/with 捕获——这正是 13.6 说"取消异常接不住"的对照组（failwith 是普通异常，接得住；取消经运行器走特殊通道）
+- **坑：`ReturnFrom` 写成恒等就绕过重试**——`asyncRetry { return! flaky () }` 脱糖成 `ReturnFrom(flaky())`，不经过 `Bind`；重试逻辑必须同时住在两个成员里（或者像这里抽成公共函数）。这个坑是示例开发时实测踩出来的
+
+错误处理还可以更进一步：把返回类型换成 `Async<Result<'T, string>>`（书第 10 章的 AsyncResult——重试 N 次**都**失败时返回 `Error` 而不是抛异常），Bind/Return 的实现留给 14.5 的 ResultBuilder 作参考，两块拼起来就是。
+
+## 14.9 何时自定义 CE
 
 - bind/map 链**超过两三层**、或普通管道读着费劲 → 值得；
 - 需要统一处理横切关注点（短路、日志、重试、资源池）→ CE 是 F# 的"语法级中间件"；
 - 一两层就停的简单串联 → 高阶函数足够，别过度抽象。
 
-## 14.9 坑位清单
+## 14.10 坑位清单
 
 - **缺 Zero() 的编译错**：CE 体里有不产出 return 的分支（如 if 无 else）时需要 `Zero()`，错误提示很隐晦。
 - **副作用时机**：CE 体是按 Bind 链求值的，想惰性要 Delay；别假设"定义即整体执行"。
 - **Delay 忘调 f**：自定义 Delay 时 `f()` 不调用会拿到闭包而非结果。
 - **builder 命名习惯**：类型叫 XxxBuilder、实例叫小写（maybe/validate/async），全仓库一致。
+- **自定义 builder 的成员写漏语义**：`ReturnFrom` 恒等、`Delay` 直调——每个"不起眼"的成员都是语义通道，重试/日志这类横切逻辑漏一个成员就漏一条通道（14.8 的实测坑）。
 - **可读性边界**：CE 太"聪明"（隐藏大量控制流）会失去透明性——注释里写清短路语义。

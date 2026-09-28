@@ -43,6 +43,19 @@ let main _ =
     Threading.Thread.Sleep 400
     timer.Stop()
 
+    // ═══ 18.6b 事件 → IObservable：可组合的事件流（FSharp.Core 内置组合子）═══
+    // 《Concurrency in .NET》第 6 章：IEvent 本身继承 IObservable，事件流能 map/filter 像序列一样组合
+    use timer2 = new Timers.Timer(80.0)
+    let ticks = ref 0
+    use sub =
+        timer2.Elapsed                                       // IEvent<_,_> 继承 IObservable<_>，直接进管道
+        |> Observable.map (fun _ -> incr ticks; !ticks * 100)   // 变换：刻度序号 → 数字
+        |> Observable.filter (fun v -> v >= 200)                // 筛选：只留第 2 个刻度起
+        |> Observable.subscribe (fun v -> printfn "observable: 第 %d 个刻度 → %d" (v / 100) v)
+    timer2.Start()
+    Threading.Thread.Sleep 400
+    timer2.Stop()
+
     // ═══ 18.7 Task 与 async 互转 ═══
     let fromTask: Task<int> = Task.FromResult 20
     let viaAsync = fromTask |> Async.AwaitTask |> Async.RunSynchronously

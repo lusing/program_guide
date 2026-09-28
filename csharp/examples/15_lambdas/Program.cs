@@ -32,6 +32,26 @@ Func<int, int> pure = static x => x + 1;   // static：编译器保证不捕获�
 Console.WriteLine($"  static lambda: {pure(41)}   ← 想捕获会直接编译错误");
 
 Console.WriteLine();
+Console.WriteLine("===== memoize：闭包造出的「带缓存的函数」 =====");
+// 《Concurrency in .NET》第 2 章的招牌技巧：返回的 lambda 连同捕获的 cache 一起打包成闭包
+static Func<T, R> Memoize<T, R>(Func<T, R> f) where T : notnull
+{
+    var cache = new System.Collections.Concurrent.ConcurrentDictionary<T, R>();
+    return arg => cache.GetOrAdd(arg, f);       // GetOrAdd 原子：并发首调也不会算出两套结果
+}
+
+int calls = 0;                                  // 闭包计数器：统计「真进了函数体」几次
+Func<int, long> slowSquare = n => { Thread.Sleep(200); calls++; return (long)n * n; };   // 模拟昂贵计算
+var fastSquare = Memoize(slowSquare);
+var swMemo = System.Diagnostics.Stopwatch.StartNew();
+var firstMemo = fastSquare(9);                  // 第一次：真算（含 200ms 模拟开销）
+var firstMs = swMemo.ElapsedMilliseconds;
+swMemo.Restart();
+var secondMemo = fastSquare(9);                 // 第二次：缓存命中（~0ms）
+Console.WriteLine($"  fastSquare(9) = {firstMemo} = {secondMemo}：首次 {firstMs}ms，重复 {swMemo.ElapsedMilliseconds}ms");
+Console.WriteLine($"  两次调用只进了函数体 {calls} 次 ← 第二次直接查表，这就是「函数 + 缓存环境」的闭包威力");
+
+Console.WriteLine();
 Console.WriteLine("===== 表达式树：lambda 的「源码」形态 =====");
 System.Linq.Expressions.Expression<Func<int, int>> expr = x => (x + 1) * 2;
 Console.WriteLine($"  表达式树: {expr}   ← 不是可执行代码，是语法树（EF 翻译成 SQL 靠它）");

@@ -2,7 +2,7 @@
 
 > 对应示例：`examples/15_lambdas`
 
-> **本章你将学会**：lambda 的形态、闭包的捕获语义、循环变量捕获的历史陷阱、static lambda、表达式树。
+> **本章你将学会**：lambda 的形态、闭包的捕获语义、循环变量捕获的历史陷阱、static lambda、memoize、表达式树。
 > **前置章节**：[13 委托](13-delegates.md)。
 
 ## 1. lambda：方法的字面量
@@ -72,7 +72,30 @@ fn(10)                   // 22
 
 **Expression 是"代码即数据"**：lambda 的结构（参数、运算、嵌套）被存成一棵树。它的用武之地：**EF Core 把它翻译成 SQL**（`Where(u => u.Age > 18)` 变 `WHERE Age > 18`——机器码没法翻译，数据才能）、动态查询拼接、规则引擎。普通业务代码用 `Func`；要**翻译/分析/转发**逻辑时用 `Expression`。
 
-## 6. lambda 的一切使用场景串门
+## 6. memoize：闭包造出的「带缓存的函数」
+
+闭包最漂亮的实战应用（《Concurrency in .NET》第 2 章的招牌技巧）——**memoize**：给函数包一层缓存，重复参数直接查表：
+
+```csharp
+static Func<T, R> Memoize<T, R>(Func<T, R> f) where T : notnull
+{
+    var cache = new System.Collections.Concurrent.ConcurrentDictionary<T, R>();
+    return arg => cache.GetOrAdd(arg, f);       // GetOrAdd 原子：并发首调也不会算两套
+}
+
+Func<int, long> slowSquare = n => { Thread.Sleep(200); calls++; return (long)n * n; };
+var fastSquare = Memoize(slowSquare);
+```
+
+示例实测：`fastSquare(9)` 首次 205ms（真算），重复 0ms（查表），两次调用只进了函数体 **1 次**。
+
+读法：`Memoize` 返回的 lambda 连同它捕获的 `cache` 一起构成闭包——**「函数 + 缓存环境」打包成一个可传递的值**。这就是 §2 那句"柯里化、计数器、缓存都能用几行闭包表达"的兑现。三个配套事实：
+
+- 缓存选 `ConcurrentDictionary.GetOrAdd` 是有意的：被 memoize 的函数往往在并行环境里被同时首调（书里用它加速并行爬虫），普通字典在此会竞态
+- `Lazy<T>` 是它的近亲："第一次用才算、以后都用缓存值"——书第 2 章还给了 `Lazy + Task` 组合做线程安全的昂贵资源初始化
+- **前提是纯函数**：结果只由参数决定才能缓存；有随机/时间/IO 副作用的函数 memoize 会把第一次的副作用固化下来
+
+## 7. lambda 的一切使用场景串门
 
 | 场景 | 形态 | 章节 |
 |---|---|---|
@@ -97,6 +120,8 @@ fn(10)                   // 22
 
 **性能热点的闭包分配**：高频路径上 `x => x + _factor` 每次调用可能分配闭包对象——static lambda 或局部函数（零分配）替代。
 
+**memoize 非纯函数 / 参数域无限**：带随机、时间、IO 的函数缓存会固化第一次的副作用；参数域无限增长（如用户输入的字符串）会把缓存撑爆——限定参数域或干脆别 memoize。
+
 ## 实战建议
 
 - lambda 三行为限：超过就提局部函数或方法——**可读性优先**
@@ -110,7 +135,8 @@ fn(10)                   // 22
 1. **闭包捕获的是值还是变量？怎么验证？** —— 变量本身；创建后改外部变量，lambda 结果跟着变。
 2. **C# 5 前后的循环捕获行为差异？** —— 旧：共享变量全打印终值；新：每轮新变量。
 3. **static lambda 提供什么保证？** —— 编译期禁止捕获（捕获即报错）。
-4. **Func 与 Expression<Func> 的本质区别？** —— 机器码（执行）vs 语法树数据（可翻译/分析/再编译）。
+4. **memoize 为什么天然适合闭包实现？前提是什么？** —— cache 被返回的 lambda 捕获，成为函数自带的缓存环境；前提是纯函数。
+5. **Func 与 Expression<Func> 的本质区别？** —— 机器码（执行）vs 语法树数据（可翻译/分析/再编译）。
 
 ---
 上一章：[14 事件](14-events.md) ｜ 下一章：[16 LINQ 基础](16-linq-basics.md) ｜ 返回：[README](../README.md)

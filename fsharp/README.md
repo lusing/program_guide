@@ -32,12 +32,12 @@ fsharp/
 | [10 判别联合](docs/10-unions.md) | 递归 DU、单 case 包装、vs enum | `examples/10_unions` |
 | [11 OOP 在 F#](docs/11-oop.md) | 类、接口、对象表达式、use | `examples/11_oop` |
 | [12 泛型与度量单位](docs/12-generics.md) | 约束、SRTP、units of measure | `examples/12_generics` |
-| [13 异步](docs/13-async.md) | async{} vs task{}、Parallel、取消 | `examples/13_async` |
-| [14 计算表达式](docs/14-computations.md) | builder 协议、maybe/validate | `examples/14_computations` |
+| [13 异步](docs/13-async.md) | async{} vs task{}、Parallel、取消、MailboxProcessor agent | `examples/13_async` |
+| [14 计算表达式](docs/14-computations.md) | builder 协议、maybe/validate、asyncRetry | `examples/14_computations` |
 | [15 文件与 JSON](docs/15-files-json.md) | IO、CSV、System.Text.Json | `examples/15_files_json` |
 | [16 Web API](docs/16-webapi.md) | Minimal API、自测型示例 | `examples/16_webapi` |
 | [17 测试](docs/17-testing.md) | xUnit、Fact/Theory、纯函数架构 | `examples/17_testing` |
-| [18 .NET 互操作](docs/18-interop.md) | null 边界、byref/Span、事件、query | `examples/18_interop` |
+| [18 .NET 互操作](docs/18-interop.md) | null 边界、byref/Span、事件与 Observable、query | `examples/18_interop` |
 | [19 桌面 GUI](docs/19-gui.md) | WinForms 与 WPF（双工程） | `examples/19_gui` |
 | [20 实战：待办管理器](docs/20-todo.md) | 建模、解析、持久化、测试 | `examples/20_todo` |
 

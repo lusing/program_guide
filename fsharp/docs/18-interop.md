@@ -81,6 +81,20 @@ timer.Stop()
 
 F# 侧事件是 `IEvent`，`.Add` 订阅（`.Remove` 退订要保存 handler）。第 19 章 GUI 的 `button.Click.Add` 就是同一机制——UI 事件与 BCL 事件在 F# 里一个写法。
 
+F# 事件的隐藏技能：**`IEvent<_,_>` 本身继承 `IObservable<_>`**，而 FSharp.Core 内置了 `Observable` 组合子——事件流可以像序列一样 `map`/`filter`（《Concurrency in .NET》第 6 章的"F# 事件组合子"）：
+
+```fsharp
+use timer2 = new Timers.Timer(80.0)
+let ticks = ref 0
+use sub =
+    timer2.Elapsed                                    // IEvent 直接进管道（不需要 .Observable）
+    |> Observable.map (fun _ -> incr ticks; !ticks * 100)
+    |> Observable.filter (fun v -> v >= 200)
+    |> Observable.subscribe (fun v -> printfn "第 %d 个刻度 → %d" (v / 100) v)
+```
+
+对比 `.Add(fun ...)` 的裸回调：组合子把"筛选、变换"从回调体里提到管道上——事件多了这层组合能力就成了**流**。`Observable.subscribe` 返回 `IDisposable`（`use` 接住，退出即退订）；C# 教程 14 章手写过同一套推送模型的 IObserver 三方法（OnNext/OnError/OnCompleted）。
+
 ## 18.8 Task 与 async 互转 + query
 
 互转回顾（第 13 章详解）：
