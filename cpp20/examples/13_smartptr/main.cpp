@@ -47,7 +47,7 @@ int main() {
     shared1.reset();  // 释放最后一个强引用 → Task 立即析构
     std::println("对象还活着吗？{}", !observer.expired());  // false
 
-    // ═══ 13.5 vector<unique_ptr>：多态持有的标配（见第 22 章）═══
+    // ═══ 13.5 vector<unique_ptr>：多态持有的标配（见第 24 章）═══
     std::vector<std::unique_ptr<Task>> backlog;
     backlog.push_back(make_task("收尾"));
     backlog.push_back(make_task("复盘"));

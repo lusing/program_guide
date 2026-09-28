@@ -23,7 +23,7 @@
        —— 编译命令把 stderr 并进了日志文件，所以第 2 条盖不住编译期告警
 
   结束标记用示例自己最后一行打印的 "自检通过"，不用 "==== NN 结束 ===="：
-  docs/ 下 31 章正文里嵌了示例的完整输出，改一行文案就要同步 31 篇文档；
+  docs/ 下 35 章正文里嵌了示例的完整输出，改一行文案就要同步 35 篇文档；
   "自检通过"本来就承担了这个语义。
 #>
 [CmdletBinding(PositionalBinding = $false)]
@@ -183,19 +183,19 @@ function Get-Channels {
 # ---------------------------------------------------------------
 # 已知的跨工具链差异（原因写清楚，免得后人以为是回归）
 # 纪律：能修的一律修。这里面的 08 是示例**故意**演示"实参求值顺序未指定"；
-# 19/20/24 是"线程调度/并行度由实现决定"；21/22/23 是标准库缺头文件
+# 28/29/35 是"线程调度/并行度由实现决定"；30/33/34 是标准库缺头文件
 # （示例里已用 __has_include 显式跳过并打出一行说明）。
 # ---------------------------------------------------------------
 function Get-DiffReason {
     param([string]$Name)
     switch ($Name) {
         "11_classes"    { return "示例故意演示实参求值顺序未指定（MSVC/GCC 从右往左、clang 从左往右）" }
-        "26_threads"    { return "多线程按完成顺序打印，调度不同则行序不同" }
-        "27_atomic"     { return "并行算法把工作拆给几个线程由实现决定" }
-        "28_coroutines" { return "libc++ 无 <generator>，clang 通道跳过 28.3 并说明" }
-        "29_textfiles"  { return "libstdc++ 15 无 <mdspan>，gcc 通道跳过 29.4 并说明" }
-        "30_tooling"    { return "stacktrace：两库都可用时帧数/符号地址因编译器而异；库缺失时跳过 30.3 并说明" }
-        "31_minigrep"   { return "多线程搜索的命中行顺序随调度变化" }
+        "28_threads"    { return "多线程按完成顺序打印，调度不同则行序不同" }
+        "29_atomic"     { return "并行算法把工作拆给几个线程由实现决定" }
+        "30_coroutines" { return "libc++ 无 <generator>，clang 通道跳过 30.3 并说明" }
+        "33_textfiles"  { return "libstdc++ 15 无 <mdspan>，gcc 通道跳过 33.4 并说明" }
+        "34_tooling"    { return "stacktrace：两库都可用时帧数/符号地址因编译器而异；库缺失时跳过 34.3 并说明" }
+        "35_minigrep"   { return "多线程搜索的命中行顺序随调度变化" }
         default         { return "" }
     }
 }
@@ -230,7 +230,7 @@ function Invoke-Capture {
     $psi.RedirectStandardOutput = $true
     $psi.RedirectStandardError  = $true
     $psi.WorkingDirectory       = $WorkDir
-    $psi.EnvironmentVariables["TMPDIR"] = $tmpDir   # 让 29_textfiles 打出的临时路径可复现
+    $psi.EnvironmentVariables["TMPDIR"] = $tmpDir   # 让 33_textfiles 打出的临时路径可复现
 
     if ($RawArgs -ne "") {
         $psi.Arguments = $RawArgs
@@ -455,7 +455,7 @@ function Invoke-OneChannel {
                           -OutFile $bldLog -ErrFile $bldErr
         if ($r.ExitCode -ne 0) { return @{ Ok = $false; Result = $r } }
     }
-    elseif ($Name -eq "24_modules") {
+    elseif ($Name -eq "26_modules") {
         # ---- 模块：接口单元必须先编成"已编译模块接口" ----
         #   clang: --precompile 出 .pcm，import 方用 -fmodule-file=math=math.pcm
         #   gcc  : -fmodules-ts 编 .ixx 时把 math.gcm 落进 ./gcm.cache
@@ -464,7 +464,7 @@ function Invoke-OneChannel {
         Get-ChildItem -LiteralPath $wd -File -ErrorAction SilentlyContinue | Remove-Item -Force
         Copy-Item -Path (Join-Path $Dir "*") -Destination $wd -Force
         $ixx = (Get-ChildItem -LiteralPath $wd -Filter "*.ixx" | Select-Object -First 1)
-        if (-not $ixx) { throw "24_modules 缺 .ixx 模块接口文件" }
+        if (-not $ixx) { throw "26_modules 缺 .ixx 模块接口文件" }
         $mod = [System.IO.Path]::GetFileNameWithoutExtension($ixx.Name)  # math.ixx → math
 
         if ($Channel -eq "clang") {

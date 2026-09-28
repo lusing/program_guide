@@ -70,7 +70,7 @@ std::transform(nums.begin(), nums.end(), doubled.begin(),
                [](int v) { return v * 2; });
 ```
 
-`accumulate`（`<numeric>`）折叠求和（初始值 0 起步）；`transform` 逐元素变形写进目标区间（目标要**先有空间**——示例预先构造了 doubled(nums.size())，写越界是 UB）。 Cousins 一句话认识：`for_each`（逐个执行动作）、`copy_if`（条件拷贝）、`reduce`（并行版 accumulate，第 27 章见 execution 策略）。
+`accumulate`（`<numeric>`）折叠求和（初始值 0 起步）；`transform` 逐元素变形写进目标区间（目标要**先有空间**——或者用 `back_inserter` 让它自动生长，见第 16 章）。 Cousins 一句话认识：`for_each`（逐个执行动作）、`copy_if`（条件拷贝）、`reduce`（并行版 accumulate，第 29 章见 execution 策略）。
 
 **accumulate 初始值类型陷阱**：`accumulate(v.begin(), v.end(), 0)` 对 `vector<double>` 求和会**按 int 累加**（初始值定了累加类型），小数全被截断——初始值写 `0.0`。
 
@@ -103,7 +103,7 @@ f = [sum](int v) { return v + sum; };  // std::function 可重新绑定
 std::println("f(3) = {}", f(3));
 ```
 
-**泛型 lambda**（`auto` 参数）一个 lambda 服务多种类型——每个调用类型各实例化一份，零运行开销。**`std::function`** 是"能装任何可调用对象"的容器：lambda 可以**换弹**（f 先后绑了两个不同 lambda）——回调注册表、事件处理器这种"函数要当变量管理"的场景才需要它。代价：比裸 lambda 多一层间接调用与可能的堆分配——**能 `auto` 接 lambda 就别包 function**。函数指针、仿函数、`std::function` 的完整演化链在第 16 章。
+**泛型 lambda**（`auto` 参数）一个 lambda 服务多种类型——每个调用类型各实例化一份，零运行开销。**`std::function`** 是"能装任何可调用对象"的容器：lambda 可以**换弹**（f 先后绑了两个不同 lambda）——回调注册表、事件处理器这种"函数要当变量管理"的场景才需要它。代价：比裸 lambda 多一层间接调用与可能的堆分配——**能 `auto` 接 lambda 就别包 function**。函数指针、仿函数、`std::function` 的完整演化链在第 17 章。
 
 ## 15.7 坑位清单
 

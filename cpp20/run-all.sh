@@ -15,8 +15,8 @@
 #   + 输出里没有控制字符 + 输出里有结束标记 "自检通过"
 #
 #   结束标记用的是示例自己最后一行打印的 "自检通过"，不是仓库其他目录的
-#   "==== NN 结束 ===="。原因：本教程 31 章的正文（docs/*.md）里嵌了示例
-#   的完整输出，改一行文案就要同步 31 篇文档；"自检通过" 本来就是示例
+#   "==== NN 结束 ===="。原因：本教程 35 章的正文（docs/*.md）里嵌了示例
+#   的完整输出，改一行文案就要同步 35 篇文档；"自检通过" 本来就是示例
 #   自带的"我跑完了"声明，语义与结束标记完全一致。
 #
 #   MSVC 的 /W4 在这里换成 -Wall -Wextra。注意「编译日志为空」这条不能省：
@@ -24,7 +24,7 @@
 #   （反向验证时故意写了个 "int unused = 42;" 的样例，一开始正是靠这条抓出来的）。
 #
 # 自动加分项：
-#   * 24_modules 走真正的模块构建（clang 用 .pcm，gcc 用 gcm.cache）
+#   * 26_modules 走真正的模块构建（clang 用 .pcm，gcc 用 gcm.cache）
 #   * clang 通道自动补 libc++ 的可用性开关与自带 libc++ 的运行库路径
 #     （原因见下面 libcxx 那一段注释，这是 macOS 上最大的一个坑）
 #   * 两个通道的输出逐字节比对；已知差异（见 diff_reason）只打印原因
@@ -151,12 +151,12 @@ select_channel() {
 diff_reason() {
     case "$1" in
         11_classes)    echo "示例故意演示实参求值顺序未指定（GCC 从右往左、clang 从左往右）" ;;
-        26_threads)    echo "多线程按完成顺序打印，调度不同则行序不同" ;;
-        27_atomic)     echo "并行算法把工作拆给几个线程由实现决定" ;;
-        28_coroutines) echo "libc++ 无 <generator>，clang 通道跳过 28.3 并说明" ;;
-        29_textfiles)  echo "libstdc++ 15 无 <mdspan>，gcc 通道跳过 29.4 并说明" ;;
-        30_tooling)    echo "stacktrace：两库都可用时帧数/符号地址因编译器而异；库缺失时跳过 30.3 并说明" ;;
-        31_minigrep)   echo "多线程搜索的命中行顺序随调度变化" ;;
+        28_threads)    echo "多线程按完成顺序打印，调度不同则行序不同" ;;
+        29_atomic)     echo "并行算法把工作拆给几个线程由实现决定" ;;
+        30_coroutines) echo "libc++ 无 <generator>，clang 通道跳过 30.3 并说明" ;;
+        33_textfiles)  echo "libstdc++ 15 无 <mdspan>，gcc 通道跳过 33.4 并说明" ;;
+        34_tooling)    echo "stacktrace：两库都可用时帧数/符号地址因编译器而异；库缺失时跳过 34.3 并说明" ;;
+        35_minigrep)   echo "多线程搜索的命中行顺序随调度变化" ;;
         *)             echo "" ;;
     esac
 }
@@ -227,7 +227,7 @@ check() {
 }
 
 # 示例会在临时目录里造文件：把 TMPDIR 固定到 build/tmp，
-# 这样两条通道看到同一份路径，29_textfiles 打出来的路径也可复现
+# 这样两条通道看到同一份路径，33_textfiles 打出来的路径也可复现
 run_binary() {
     local name="$1" channel="$2"
     ( cd build && TMPDIR="$PWD/tmp" "./$name.$channel" \
@@ -251,7 +251,7 @@ build_and_run() {
     run_binary "$name" "$channel"
 }
 
-# build_with_modules <通道> <示例目录> <示例名> —— 24_modules 专用。
+# build_with_modules <通道> <示例目录> <示例名> —— 26_modules 专用。
 # 模块接口单元必须先编成「已编译模块接口」，再编 import 方，最后链接；
 # 两套工具链的命令行完全不同：
 #   clang: --precompile 出 .pcm，import 方用 -fmodule-file=math=math.pcm
@@ -323,7 +323,7 @@ for dir in examples/*/; do
             gcc)   [ -n "$GCCXX" ] || continue ;;
         esac
 
-        if [ "$name" = "24_modules" ]; then
+        if [ "$name" = "26_modules" ]; then
             build_with_modules "$channel" "$dir" "$name"
         else
             build_and_run "$channel" "$dir" "$name"

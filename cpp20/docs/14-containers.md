@@ -28,7 +28,7 @@ tags[1] = "modern-cpp";       // 下标读写（不检查越界）
 std::println("{} 个标签，第 2 个是 {}", tags.size(), tags[1]);
 ```
 
-`push_back` 尾部追加、`pop_back` 尾删、`insert`/`erase` 任意位置（O(n)）、`size()`/`empty()`/`clear()`。容量机制值得知道：vector 按指数扩容（满时申请更大内存、搬移全部元素），所以**中间插入/删除会使指向元素的指针和迭代器全部失效**——坑位清单的头号常客。`reserve(n)` 预留容量避免反复搬（第 20 章会实测搬移成本）。
+`push_back` 尾部追加、`pop_back` 尾删、`insert`/`erase` 任意位置（O(n)）、`size()`/`empty()`/`clear()`。容量机制值得知道：vector 按指数扩容（满时申请更大内存、搬移全部元素），所以**中间插入/删除会使指向元素的指针和迭代器全部失效**——坑位清单的头号常客。`reserve(n)` 预留容量避免反复搬（第 22 章会实测搬移成本）。
 
 注意 `size()` 返回**无符号**整数类型（第 03 章的坑在容器时代高频回归）：`tags.size() - 1` 在空 vector 上回绕成天文数字。
 
@@ -92,7 +92,7 @@ for (auto it = nums.begin(); it != nums.end(); ++it) {
 | 双向 | `--` 后退 | list、map、set |
 | **随机访问** | `+n` 跳跃 | vector、deque |
 
-vector 的迭代器是随机访问类（能 `it + 3`），map 是双向类——这就是为什么有些算法（如 std::sort）只收随机访问迭代器、map 不能直接 sort。
+vector 的迭代器是随机访问类（能 `it + 3`），map 是双向类——这就是为什么有些算法（如 std::sort）只收随机访问迭代器、map 不能直接 sort。类目体系、插入/流/移动适配器（back_inserter、istream_iterator、move_iterator）与 next/prev/distance 辅助函数在**第 16 章**展开。
 
 ## 14.6 删除惯用法：erase_if（C++20）
 

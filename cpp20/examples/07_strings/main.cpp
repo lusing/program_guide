@@ -78,7 +78,7 @@ int main() {
     // ═══ 7.8 原始字符串字面量：反斜杠不再转义 ═══
     auto path{R"(C:\ProgramData\guide\file.ext)"};
     std::println("路径字面量 = {}", path);
-    auto regex_like{R"(\d{4}-\d{2})"};           // 正则写法原样保留（第 29 章实战）
+    auto regex_like{R"(\d{4}-\d{2})"};           // 正则写法原样保留（第 33 章实战）
     std::println("正则字面量 = {}", regex_like);
 
     // ═══ 7.9 逐字符处理：<cctype> 的分类与大小写 ═══

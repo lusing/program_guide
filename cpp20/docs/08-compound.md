@@ -97,7 +97,7 @@ C 数组是历史地层（第 03 章已见过它需要编译期长度）；**新
 
 1. **string_view/span 悬垂**：指向临时 string、返回底层是参数的 view、存进成员的 view——全部 UB。口诀"视图不养数据"。
 2. **指定初始化器乱序**：`.pages` 写在 `.price` 前编译错，这是特性不是 bug。
-3. **`s.size()` 当字符数**：UTF-8 下中文一字占 3 字节，`"你好".size() == 6`。按"字符"处理文本要按字节解码，第 29 章编码节展开。
-4. **enum class 直接 print**：`std::println("{}", f)` 编译错——没有对应 formatter；要么 `static_cast<int>`，要么给它写格式化器（进阶，第 29 章）。
+3. **`s.size()` 当字符数**：UTF-8 下中文一字占 3 字节，`"你好".size() == 6`。按"字符"处理文本要按字节解码，第 33 章编码节展开。
+4. **enum class 直接 print**：`std::println("{}", f)` 编译错——没有对应 formatter；要么 `static_cast<int>`，要么给它写格式化器（进阶，第 33 章）。
 5. **string 频繁拼接 O(n²)**：循环里 `s += x` 各次追加本身没问题，但**跨函数反复传值拷贝**才是浪费大户——传 `const string&` / `string_view`。
 6. **span 空参数**：`subspan` 的 offset/count 越界是 UB（不是异常），切片前自己核对边界。

@@ -48,7 +48,7 @@ public:
     ~Session() {  // 作用域结束自动调用——异常也拦不住它
         std::println("[{}] 离开会话", name_);
     }
-    Session(const Session&) = delete;  // 拷贝/移动见第 20 章
+    Session(const Session&) = delete;  // 拷贝/移动见第 22 章
     Session& operator=(const Session&) = delete;
 
 private:

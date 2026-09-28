@@ -29,7 +29,7 @@ char comma{','}, space{' '};
 int code = comma + space;                       // 44 + 32 = 76，恰好是 'L' 的字符码
 ```
 
-`+` 的重载要求**至少一侧是 std::string**（字面量只是 `const char[]`，没有运算符）。更隐蔽的是**字符 + 字符**：它不是拼接而是**字符码算术**——`',' + ' '` 得到 76，拼进字符串变成大写 L。这也是 `std::string{"a"} + std::string{"b"}` 与 `'a' + 'b'` 的本质区别。数拼字符串用 `std::to_string(x)`（小数固定 6 位，不可定制）或 `std::format`/`std::print`（第 29 章全家桶）。
+`+` 的重载要求**至少一侧是 std::string**（字面量只是 `const char[]`，没有运算符）。更隐蔽的是**字符 + 字符**：它不是拼接而是**字符码算术**——`',' + ' '` 得到 76，拼进字符串变成大写 L。这也是 `std::string{"a"} + std::string{"b"}` 与 `'a' + 'b'` 的本质区别。数拼字符串用 `std::to_string(x)`（小数固定 6 位，不可定制）或 `std::format`/`std::print`（第 33 章全家桶）。
 
 ## 7.3 查找家族：返回下标或 npos 哨兵
 
@@ -101,7 +101,7 @@ auto path{R"(C:\ProgramData\guide\file.ext)"};   // 原样保留，无需 \\
 auto regex_like{R"(\d{4}-\d{2})"};                // 正则模式串的标配写法
 ```
 
-普通字面量里 `\\`、`\"`、`\n` 都是转义，Windows 路径和正则被写成"反斜杠面条"。`R"(...)"` 里**所见即所得**，直到配对的 `)"` 才结束（内容含 `)"` 时用 `R"xx(...)xx"` 自定义分隔）。第 29 章正则实战会回来谢它。
+普通字面量里 `\\`、`\"`、`\n` 都是转义，Windows 路径和正则被写成"反斜杠面条"。`R"(...)"` 里**所见即所得**，直到配对的 `)"` 才结束（内容含 `)"` 时用 `R"xx(...)xx"` 自定义分隔）。第 33 章正则实战会回来谢它。
 
 ## 7.9 逐字符处理：`<cctype>` 的分类与大小写
 
@@ -114,7 +114,7 @@ for (char& ch : mixed) {
 }
 ```
 
-`isalpha`/`isdigit`/`isspace`/`ispunct` 分类，`tolower`/`toupper` 转大小写——C 时代传下来的一族（入参出参都是 int，所以喂 unsigned char、收回时 static_cast）。**只对 ASCII 安全**：`"你好"` 的 UTF-8 字节传进去分类结果没有意义，中文文本按字节流处理，编解码见第 29 章。
+`isalpha`/`isdigit`/`isspace`/`ispunct` 分类，`tolower`/`toupper` 转大小写——C 时代传下来的一族（入参出参都是 int，所以喂 unsigned char、收回时 static_cast）。**只对 ASCII 安全**：`"你好"` 的 UTF-8 字节传进去分类结果没有意义，中文文本按字节流处理，编解码见第 33 章。
 
 ## 7.10 坑位清单
 

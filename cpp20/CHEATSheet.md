@@ -12,7 +12,7 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -All / -Example 08_compound / -Clea
 cl /nologo /std:c++latest /EHsc /utf-8 /permissive- /Zc:__cplusplus /W4 main.cpp
 chcp 65001   # 直接跑 exe 时防中文乱码
 
-# 模块两步（24）
+# 模块两步（26）
 cl /std:c++latest /interface /c /ifcOutput build\m.ifc math.ixx
 cl /std:c++latest /reference math=build\m.ifc main.cpp build\m.obj
 ```
@@ -30,7 +30,7 @@ clang++-mp-23 -std=c++23 -Wall -Wextra -O2 \
   -L/opt/local/libexec/llvm-23/lib/libc++ -Wl,-rpath,/opt/local/libexec/llvm-23/lib/libc++ -lc++ \
   -L/opt/local/libexec/llvm-23/lib/libunwind -Wl,-rpath,/opt/local/libexec/llvm-23/lib/libunwind
 
-# 模块三步（24）：clang 用 --precompile 出 .pcm；gcc 用 -fmodules-ts（产物落 ./gcm.cache）
+# 模块三步（26）：clang 用 --precompile 出 .pcm；gcc 用 -fmodules-ts（产物落 ./gcm.cache）
 CF="-std=c++23 -Wall -Wextra -O2 -D_LIBCPP_DISABLE_AVAILABILITY -fexperimental-library"
 LD="-L/opt/local/libexec/llvm-23/lib/libc++ -Wl,-rpath,/opt/local/libexec/llvm-23/lib/libc++ -lc++"
 LD="$LD -L/opt/local/libexec/llvm-23/lib/libunwind -Wl,-rpath,/opt/local/libexec/llvm-23/lib/libunwind"
@@ -199,7 +199,20 @@ auto by_val = [thr](int x) { return x > thr; };    // 值捕获：快照
 auto by_ref = [&thr](int x) { return x > thr; };   // 引用捕获：实时（防悬垂）
 ```
 
-## 一等函数（16）
+## 迭代器（16）
+
+```cpp
+static_assert(std::random_access_iterator<std::vector<int>::iterator>);  // 类目验票
+std::copy(src.begin(), src.end(), std::back_inserter(dst));   // 写入=push_back（免预分配）
+std::copy(src.begin(), src.end(), std::inserter(s, s.end())); // + set = 有序去重
+std::vector<int> nums{std::istream_iterator<int>{in}, {}};    // 迭代器对当区间
+std::vector<std::string> taken{std::make_move_iterator(v.begin()),
+                                std::make_move_iterator(v.end())};   // 搬空源
+auto it2 = std::next(it);  std::advance(it, 2);  std::distance(a, b); // 副本/原地/计数
+// std::sort 只收随机访问迭代器：list/map 用成员 sort()；distance 在 list 上是 O(n)
+```
+
+## 一等函数（17）
 
 ```cpp
 using BinOp = long (*)(long, long);      // 函数指针类型别名；auto* op{fn};
@@ -213,7 +226,22 @@ std::function<void()> cb = []{};         // 类型擦除容器（空调用抛 ba
 std::vector<std::function<void()>> on_event;   // 回调注册表（lambda 类型只有编译器知道）
 ```
 
-## Ranges（17）
+## 数值与随机（18）
+
+```cpp
+double s = std::accumulate(v.begin(), v.end(), 0.0); // 初值 0.0！初始值定累加类型
+auto n = std::transform_reduce(v.begin(), v.end(), 0, std::plus{},
+                               [](auto& s) { return s.size(); });    // MapReduce
+std::partial_sum(v.begin(), v.end(), std::back_inserter(out));       // 前缀和
+std::iota(v.begin(), v.end(), 1);                    // 填 1..N
+std::gcd(36, 60);  std::midpoint(a, b);  std::lerp(a, b, t);   // C++17/20
+double pi = std::numbers::pi;                        // C++20 <numbers>（pi_v<float> 换精度）
+std::mt19937 gen{seed};                              // 引擎构造一次反复用（循环里重造=同序列）
+std::uniform_int_distribution<int> dice{1, 6};  dice(gen);      // 用法=分布(引擎)
+// rand()%n 退役：质量差+偏差；分布算法实现定义——跨平台只断言统计量不断言序列
+```
+
+## Ranges（19）
 
 ```cpp
 auto out = data | std::views::filter(pred)
@@ -225,7 +253,7 @@ for (auto [i, x] : v | std::views::enumerate) {}    // C++23 带索引
 // 无限序列 iota(1) 必须 take
 ```
 
-## 模板与概念（18/19）
+## 模板与概念（20/19）
 
 ```cpp
 template <typename T>
@@ -238,7 +266,7 @@ static_assert(Addable<int>);       // 概念是编译期布尔
 // 约束重载：同族形参形式必须一致（都 const T&）
 ```
 
-## 移动语义（20）
+## 移动语义（22）
 
 ```cpp
 Widget b = std::move(a);              // 转移：a 变"有效但未定"，别再用
@@ -248,7 +276,7 @@ void relay(T&& arg) { target(std::forward<T>(arg)); }  // 完美转发
 // 移动构造/赋值记得 noexcept（容器扩容才敢用）
 ```
 
-## 多态骨架（21/22）
+## 多态骨架（23/22）
 
 ```cpp
 class Shape {
@@ -265,7 +293,7 @@ std::vector<std::unique_ptr<Shape>> shapes;      // 多态容器（值传递会�
 // 默认实参静态绑、函数体动态绑：虚函数的默认实参全层次写同一个值
 ```
 
-## 编译期（23）
+## 编译期（25）
 
 ```cpp
 constexpr unsigned long long factorial(unsigned n) { /* for 循环即可 */ }
@@ -275,7 +303,7 @@ template <typename... Ts>
 auto sum_all(Ts... vs) { return (0 + ... + vs); } // fold（空包安全）
 ```
 
-## 预处理器（25）
+## 预处理器（27）
 
 ```cpp
 #define STR(x) #x     // 字符串化        #define CAT(a,b) a##b   // 拼接
@@ -291,7 +319,7 @@ static int helper();   // 内部链接；或匿名命名空间 namespace { }
 // 宏三宗罪：无类型/无作用域/盲替换 → constexpr + 模板替代
 ```
 
-## 并发（26/27）
+## 并发（28/27）
 
 ```cpp
 std::jthread worker{[](std::stop_token st) { while (!st.stop_requested()) { /* ... */ } }};
@@ -305,13 +333,15 @@ hits.fetch_add(1, std::memory_order_relaxed);        // 计数专用（其余场
 
 std::latch go{1};      go.count_down();  go.wait();  // 一次性发令枪
 std::barrier sync{4};  sync.arrive_and_wait();        // 可复用集合点
+auto fut = std::async(std::launch::async, task);      // 任务：future.get() 直取结果
+// 必须接住 fut！丢弃 future 的析构会阻塞等任务完（伪同步）；异常经通道在 get() 重抛
 std::for_each(std::execution::par, v.begin(), v.end(), f);  // 并行算法（谓词须线程安全）
 // 注意：par 只保证"允许并行"，不保证真并行。macOS 实测：libc++ 的后端是桩实现，
 // 五条 par 算法在 400 万元素上都只跑 1 个线程；Apple 自带 libc++ 连 par 都没有。
-// 要真并行就自己开 std::thread（见 docs/27-atomic.md 27.5）。
+// 要真并行就自己开 std::thread（见 docs/29-atomic.md 29.5）。
 ```
 
-## 协程（28）
+## 协程（30）
 
 ```cpp
 std::generator<int> squares(int n) {          // C++23 <generator>
@@ -320,7 +350,34 @@ std::generator<int> squares(int n) {          // C++23 <generator>
 for (int v : squares(5)) { /* 1 4 9 16 25 */ }
 ```
 
-## 文本与文件（29）
+## 时间（31）
+
+```cpp
+using namespace std::chrono;  using namespace std::chrono_literals;
+auto wait = 500ms;                       // 单位在类型里：1h/30min/45s/100ms/150us/60ns
+minutes m = duration_cast<minutes>(90s); // 细化自动、粗化显式（余数截断）
+auto t0 = steady_clock::now();           // 测耗时只准 steady（system 会被 NTP 回拨）
+duration<double> elapsed = steady_clock::now() - t0;
+year_month_day d{2026y / September / 28d};
+d + months{3};                           // 月份运算在日历类型上！sys_days+months=平均月漂移
+year{2026} / February / last;            // 月末
+zoned_time tokyo{"Asia/Tokyo", tp};      // 同一时刻的不同说法
+std::println("{:%Y-%m-%d %H:%M}", tp);   // %S/%M/%Y… chrono 格式说明符（:.2f 会编译错）
+```
+
+## 流 I/O（32）
+
+```cpp
+while (in >> x) { }                // 流到 bool：fail/bad 即停；失败的算术抽取把 x 写成 0
+in.clear();  in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+std::getline(in, line);            // 整行；>> 后直接 getline 拿空行（残留 '\n'）
+out << std::hex << 255 << ' ' << std::setw(6) << 42;   // 粘性；setw 只管下一次
+std::ofstream f{"a.txt"};          // 析构自动关（RAII）；if (!f) 必查；二进制加 binary
+friend std::ostream& operator<<(std::ostream&, const T&);   // 自定义类型：返回流引用
+// 输出首选 print/format（33）；流的不可替代处：>> 解析、文件读写
+```
+
+## 文本与文件（33）
 
 ```cpp
 std::println("{:.2f} / {:#x} / {:*^12}", 3.14159, 255, "标题");
@@ -333,7 +390,7 @@ std::ofstream{path} << "content";             // 临时对象即写即 flush
 // 实测坑：浮点 {:.1%} 编译期报错（MSVC）→ ×100 手写 %；mdspan 用 m[r, c] 不是 m(r, c)
 ```
 
-## 测试（30）
+## 测试（34）
 
 ```cpp
 std::vector<TestCase> tests{
@@ -351,18 +408,25 @@ for (auto& t : tests) { t.run(); std::println("[PASS] {}", t.name); }
 4. range-for 遍历中 push_back/erase → 迭代器失效（04/14）
 5. map 的 `[]` 只读访问也插入（14）
 6. move 后继续用源对象（13/20）
-7. 忘虚析构，基类指针删除子类（22）
+7. 忘虚析构，基类指针删除子类（24）
 8. lambda 引用捕获悬垂（15）
-9. 锁里调未知代码 / 条件变量裸 wait（26）
-10. 循环里反复构造 regex（29）
+9. 锁里调未知代码 / 条件变量裸 wait（28）
+10. 循环里反复构造 regex（33）
 11. delete 后不置空 / new[] 配 delete（05）
-12. 拷贝构造漏 Base{other}——基类部分被默认构造（21）
-13. 虚函数配默认实参——实参取静态类型版（22）
+12. 拷贝构造漏 Base{other}——基类部分被默认构造（23）
+13. 虚函数配默认实参——实参取静态类型版（24）
 
 **跨编译器校验补录**（2026-09-17 双工具链实测，前两条是"标准没规定"、后两条是"各家进度不一"）：
 
-14. **实参求值顺序未指定**：`println("{} {} {}", next(), next(), next())` 在 GCC/MSVC 上打 `3 2 1`、clang 上打 `1 2 3`（11 示例故意演示）；`println("{}", v.size(), v.pop())` 同理（18）。带副作用的实参一律拆成多条语句。
+14. **实参求值顺序未指定**：`println("{} {} {}", next(), next(), next())` 在 GCC/MSVC 上打 `3 2 1`、clang 上打 `1 2 3`（11 示例故意演示）；`println("{}", v.size(), v.pop())` 同理（20）。带副作用的实参一律拆成多条语句。
 15. **容器元素的析构顺序未规定**：`vector<unique_ptr<T>>` 析构时，libc++ 逆序销毁、libstdc++ 正序（13）。顺序重要就自己 `pop_back` 弹空。
-16. **C++23 头文件各家进度不一**：`<generator>`/`<stacktrace>` libc++ 23 还没有，`<mdspan>` libstdc++ 15 还没有（28/29/30）。跨平台代码用 `__has_include` + 特性宏探测，别硬 `#include`。
+16. **C++23 头文件各家进度不一**：`<generator>`/`<stacktrace>` libc++ 23 还没有，`<mdspan>` libstdc++ 15 还没有（30/33/34）。跨平台代码用 `__has_include` + 特性宏探测，别硬 `#include`。
 17. **`-Wall -Wextra` 不是"更严的 MSVC `/W4`"**：clang 的 `-Wunused-but-set-parameter`（06）、GCC 的 `-Wrange-loop-construct`（14）在 MSVC 上都不报——只在一个编译器上"零告警"不等于零告警。
-18. **`std::execution::par` 可能只是"允许并行"而没有真并行**：macOS 上 libc++ 的后端是桩实现（`par` 五条算法 400 万元素实测各只 1 个线程，`hardware_concurrency = 4`），Apple 自带 libc++ 干脆没有 `par`（27）。要真并行自己开 `std::thread`；别用运行时长/加速比来断言并行度，要数线程 id。
+18. **`std::execution::par` 可能只是"允许并行"而没有真并行**：macOS 上 libc++ 的后端是桩实现（`par` 五条算法 400 万元素实测各只 1 个线程，`hardware_concurrency = 4`），Apple 自带 libc++ 干脆没有 `par`（29）。要真并行自己开 `std::thread`；别用运行时长/加速比来断言并行度，要数线程 id。
+
+**标准库扩充补录**（2026-09-28 按《The C++ Standard Library, 4th》补 16/18/31/32 四章实测）：
+
+19. **system_clock 测耗时**：NTP 回拨让耗时报负数——测量一律 steady_clock（31）。
+20. **`sys_days + months` 按平均月（30.44 天）漂移**：加出 07:27:18 这种时分秒——月份运算要在 `year_month_day` 上做（31）。
+21. **`>>` 后直接 `getline` 拿空行**：残留 `'\n'` 被当整行；且失败的算术抽取会把变量**清成 0**（C++11 规则）——clear + ignore 清场（32）。
+22. **丢弃 `std::async` 的 future**：临时 future 析构阻塞等任务完——`std::async(f);` 是伪同步；get() 只能调一次（29）。

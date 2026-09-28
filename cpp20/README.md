@@ -1,4 +1,4 @@
-# C++ 编程指南（C++20/23）
+# C++ 编程指南（C++20/25）
 
 面向**会编程、初学 C++** 的读者：从零教到现代 C++——主线 C++23（兼容讲 20 的 concepts/ranges/协程/模块四大件），现代写法（`std::print`、智能指针、views）从第 02 章就是默认姿势，老式写法只教"认得"。每章"读讲解 → 跑示例 → 改代码再跑"，示例全部 /W4 零告警 + 运行自检通过。
 
@@ -7,8 +7,8 @@
 ```text
 cpp20/
 ├── README.md       本文件
-├── docs/           31 章教程（01 → 31 顺序阅读）
-├── examples/       30 个示例目录（章号 = 目录号；24/25/31 多文件）
+├── docs/           35 章教程（01 → 35 顺序阅读）
+├── examples/       34 个示例目录（章号 = 目录号；26/27/35 多文件）
 ├── run-all.sh      shell 入口（macOS/Linux 双工具链：clang++ 23 + g++ 15）
 ├── build.ps1       PowerShell 入口（Windows 走 MSVC；macOS/Linux 与 run-all.sh 等价）
 └── CHEATSheet.md   语法速查 + 坑位索引
@@ -33,22 +33,26 @@ cpp20/
 | [13 智能指针](docs/13-smartptr.md) | 所有权、unique/shared/weak | `examples/13_smartptr` |
 | [14 容器](docs/14-containers.md) | vector、map/set、迭代器、flat_map | `examples/14_containers` |
 | [15 算法与 lambda](docs/15-algorithms.md) | sort/find_if、捕获、std::function | `examples/15_algorithms` |
-| [16 一等函数](docs/16-firstclass.md) | 函数指针、仿函数、捕获全家福 | `examples/16_firstclass` |
-| [17 Ranges](docs/17-ranges.md) | 惰性管道、投影、ranges::to | `examples/17_ranges` |
-| [18 模板基础](docs/18-templates.md) | 函数/类模板、CTAD | `examples/18_templates` |
-| [19 概念](docs/19-concepts.md) | requires、约束重载 | `examples/19_concepts` |
-| [20 移动语义](docs/20-moves.md) | 值类别、std::move、完美转发、RVO | `examples/20_moves` |
-| [21 继承](docs/21-inheritance.md) | 构造链、protected、遮蔽、切片 | `examples/21_inheritance` |
-| [22 多态](docs/22-polymorphism.md) | 虚函数、虚析构、RTTI、组合优于继承 | `examples/22_polymorphism` |
-| [23 编译期编程](docs/23-compiletime.md) | constexpr、if constexpr、fold | `examples/23_compiletime` |
-| [24 模块](docs/24-modules.md) | ODR、命名空间、C++20 modules 实战 | `examples/24_modules` |
-| [25 预处理器](docs/25-preproc.md) | 宏、条件编译、链接性、头文件 | `examples/25_preproc` |
-| [26 并发 I](docs/26-threads.md) | jthread、mutex、条件变量 | `examples/26_threads` |
-| [27 并发 II](docs/27-atomic.md) | atomic、latch/barrier、并行算法 | `examples/27_atomic` |
-| [28 协程](docs/28-coroutines.md) | 手写 generator、**std::generator (C++23)** | `examples/28_coroutines` |
-| [29 文本与文件](docs/29-textfiles.md) | format、regex、filesystem、mdspan | `examples/29_textfiles` |
-| [30 测试与工具](docs/30-tooling.md) | assert 单测、调试器、CMake 一瞥 | `examples/30_tooling` |
-| [31 实战：迷你 grep](docs/31-minigrep.md) | 递归 + 多线程搜索 + 高亮 | `examples/31_minigrep` |
+| [16 迭代器深入](docs/16-iterators.md) | 类目、插入/流/移动适配器 | `examples/16_iterators` |
+| [17 一等函数](docs/17-firstclass.md) | 函数指针、仿函数、捕获全家福 | `examples/17_firstclass` |
+| [18 数值与随机](docs/18-numeric.md) | `<numeric>`、`<numbers>`、`<random>` | `examples/18_numeric` |
+| [19 Ranges](docs/19-ranges.md) | 惰性管道、投影、ranges::to | `examples/19_ranges` |
+| [20 模板基础](docs/20-templates.md) | 函数/类模板、CTAD | `examples/20_templates` |
+| [21 概念](docs/21-concepts.md) | requires、约束重载 | `examples/21_concepts` |
+| [22 移动语义](docs/22-moves.md) | 值类别、std::move、完美转发、RVO | `examples/22_moves` |
+| [23 继承](docs/23-inheritance.md) | 构造链、protected、遮蔽、切片 | `examples/23_inheritance` |
+| [24 多态](docs/24-polymorphism.md) | 虚函数、虚析构、RTTI、组合优于继承 | `examples/24_polymorphism` |
+| [25 编译期编程](docs/25-compiletime.md) | constexpr、if constexpr、fold | `examples/25_compiletime` |
+| [26 模块](docs/26-modules.md) | ODR、命名空间、C++20 modules 实战 | `examples/26_modules` |
+| [27 预处理器](docs/27-preproc.md) | 宏、条件编译、链接性、头文件 | `examples/27_preproc` |
+| [28 并发 I](docs/28-threads.md) | jthread、mutex、条件变量 | `examples/28_threads` |
+| [29 并发 II](docs/29-atomic.md) | atomic、latch/barrier、并行算法、**async/future** | `examples/29_atomic` |
+| [30 协程](docs/30-coroutines.md) | 手写 generator、**std::generator (C++23)** | `examples/30_coroutines` |
+| [31 时间](docs/31-time.md) | duration、时钟、日历、时区 | `examples/31_time` |
+| [32 流 I/O](docs/32-streams.md) | 流状态、操纵符、文件、自定义 << | `examples/32_streams` |
+| [33 文本与文件](docs/33-textfiles.md) | format、regex、filesystem、mdspan | `examples/33_textfiles` |
+| [34 测试与工具](docs/34-tooling.md) | assert 单测、调试器、CMake 一瞥 | `examples/34_tooling` |
+| [35 实战：迷你 grep](docs/35-minigrep.md) | 递归 + 多线程搜索 + 高亮 | `examples/35_minigrep` |
 
 ## 构建工具链
 
@@ -74,7 +78,7 @@ cpp20/
 ```powershell
 # Windows
 pwsh -ExecutionPolicy Bypass -File build.ps1 -All                  # 全部示例：编译+运行+自检
-pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 17_ranges    # 单个示例
+pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 19_ranges    # 单个示例
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean                # 清理 build 目录
 ```
 
@@ -95,8 +99,8 @@ pwsh ./build.ps1 -All     # 同一个套件的 PowerShell 版，结论必须一�
 单跑某个示例（第 02 章起的标准学法）——改代码后重跑：
 
 ```bash
-cd cpp20/examples/17_ranges
-# Windows：用 README 的手工编译命令，或 build.ps1 -Example 17_ranges
+cd cpp20/examples/19_ranges
+# Windows：用 README 的手工编译命令，或 build.ps1 -Example 19_ranges
 # macOS ：clang++-mp-23 -std=c++23 -Wall -Wextra -O2 main.cpp -o demo
 #         （需要 macOS 兼容性一节里那三个开关，最简单的办法还是用 run-all.sh）
 ```
@@ -164,7 +168,7 @@ ld: symbol(s) not found for architecture x86_64
 
 > 这不影响示例 20 的判定：它只断言 `par_sum == 1000000`（`par` 的语义本来就是"**允许**并行"，
 > 不保证真的并行），所以两条通道输出逐字节一致。写跨平台代码时据此推理即可：
-> **要真并行就自己开 `std::thread`（示例 19/20 的前几节就是这么做的），别指望 `par`。**
+> **要真并行就自己开 `std::thread`（示例 28/29 的前几节就是这么做的），别指望 `par`。**
 
 ### 4. 三套标准库各缺一块 C++23
 
@@ -177,7 +181,7 @@ ld: symbol(s) not found for architecture x86_64
 | `<generator>` | **没有这个头文件** | 有 | 有 |
 | `<stacktrace>` | **没有这个头文件** | 有头文件但 `std::stacktrace` 没实现 | 有 |
 
-所以 `28_coroutines` / `29_textfiles` / `30_tooling` 里用 `__has_include` 与 `__cpp_lib_stacktrace`
+所以 `30_coroutines` / `33_textfiles` / `34_tooling` 里用 `__has_include` 与 `__cpp_lib_stacktrace`
 做了探测，缺了就跳过对应小节并打一行说明（`MSVC` 上走的是原分支，行为不变）。
 
 ### 5. 顺带查出来的两个跨编译器坑
@@ -194,24 +198,24 @@ ld: symbol(s) not found for architecture x86_64
 |---|---|---|
 | 06_functions | clang 报 `-Wunused-but-set-parameter`（GCC/MSVC 都不报，所以只在 macOS 暴露） | 加 `(void)x;` 表明是刻意演示 |
 | 14_containers | `const std::string&` 绑字面量列表元素 → GCC 报 `-Wrange-loop-construct`，白构造临时 string | 改 `const char*` |
-| 18_templates | `println("size = {}，弹出 {}", ints.size(), ints.pop())` 依赖实参求值顺序，两个通道打出 3 和 2 | 拆成两条语句 |
+| 20_templates | `println("size = {}，弹出 {}", ints.size(), ints.pop())` 依赖实参求值顺序，两个通道打出 3 和 2 | 拆成两条语句 |
 
 ### 已知差异（`run-all.sh` / `build.ps1` 里各有一张表，只打印原因不计入告警）
 
 | 示例 | 差在哪 | 原因 |
 |---|---|---|
 | 11_classes | `Counter: 1 2 3` vs `3 2 1` | **示例故意演示**实参求值顺序未指定（GCC/MSVC 从右往左、clang 从左往右） |
-| 26_threads / 31_minigrep | 命中行/线程输出行序 | 调度不同 —— 2026-09-17 单独压过 18+8 轮，**每轮都逐字节一致**（示例把结论都放在 join 之后由主线程打印），但仍登记为差异：调度不是我们能保证的东西 |
-| 27_atomic | 并行拆分方式 | 由实现决定（压了 8 轮，输出一致） |
+| 28_threads / 35_minigrep | 命中行/线程输出行序 | 调度不同 —— 2026-09-17 单独压过 18+8 轮，**每轮都逐字节一致**（示例把结论都放在 join 之后由主线程打印），但仍登记为差异：调度不是我们能保证的东西 |
+| 29_atomic | 并行拆分方式 | 由实现决定（压了 8 轮，输出一致） |
 | 21 / 22 / 23 | 缺特性那一节的说明行 | 见上表第 4 条 |
 
 ### 两个入口脚本的实现要点
 
 - **逐字节比对两条通道的输出**（`cmp`），不一致就报 `[DIFF]` 要求人工确认；
   已登记的原因走 `[diff]` 只打印说明。
-- `24_modules` 走真正的模块构建：clang 用 `--precompile` 出 `.pcm` + `-fmodule-file=math=…`；
+- `26_modules` 走真正的模块构建：clang 用 `--precompile` 出 `.pcm` + `-fmodule-file=math=…`；
   gcc 用 `-fmodules-ts`（产物落进 `./gcm.cache`）。两条通道输出逐字节一致。
-- 运行示例时把 `TMPDIR` 固定到 `build/tmp`，这样 `29_textfiles` 打出来的临时路径可复现；
+- 运行示例时把 `TMPDIR` 固定到 `build/tmp`，这样 `33_textfiles` 打出来的临时路径可复现；
   每轮开跑前把这个目录里的 `*.s/*.o/*.d/*.ii` 清一遍 —— 中途被打断时编译器会往那儿丢中间产物。
 - 编译与运行的产物一律落 `build/`，示例在 `build/` 下运行；判定的 6 条规则两个入口用同一套。
 
