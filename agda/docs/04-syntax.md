@@ -1,5 +1,7 @@
 # 04 · 记号与运算符
 
+> **第一部分 · 入门与工具（01–04）** ｜ 全书结构与阅读路线见 [README](../README.md)
+
 Agda 源码和核心演算之间没有「语法糖展开器」这一层：`x + y * 1 ≡ y * 1 + x`
 是命题，`Σ[ x ∈ A ] B` 是类型，`1 ∷ 2 ∷ []` 是数据——所有这些「表面记号」由
 三个正交的机制撑起：**mixfix 名字**（名字里带洞 `_`）、**fixity 声明**
@@ -8,6 +10,10 @@ Agda 源码和核心演算之间没有「语法糖展开器」这一层：`x + y
 彻底讲清：优先级冲突时 Agda 会把整张优先级表打进报错里，学会读表，就不用猜。
 
 对应示例：`../examples/Ex04-syntax.agda`
+
+**实测口径**（两台机器的交代见 02 章）：本章示例已在 **Agda 2.9.0 + stdlib 3.0**
+下类型检查通过；下文报错原文取自 Debian 装机（Agda 2.8.0 + stdlib 2.3），
+两版文案与模块路径的差异见 [44 章](44-macos-checklist.md)。
 
 先回答看到文件名就会冒出的问题：为什么示例叫 `Ex04-syntax`（连字符）而不是
 `Ex04_syntax`？因为 `syntax` 是关键字，**被下划线分隔的关键字片段连词法检查都
@@ -253,7 +259,7 @@ binder 捕获的实战价值，示例那段「2 是偶数」的证明足够说�
   （6 级的 ⊞ 进不了 20 级的 y 尾槽）。
 - `do` 记号**不是**用户级 syntax 声明：stdlib 2.3 的 `Effect/`、`IO/` 里 grep
   不到任何 do 相关 syntax（实测），块布局与 `_>>=_` 尾拼是解析器内建规则——
-  19 章学单子不需要先学本章。
+  26 章学单子不需要先学本章。
 
 ## 4.5 Unicode、Emacs 输入与命名惯例
 
@@ -360,7 +366,7 @@ fixity 与 syntax 跟着名字进作用域：实测 `renaming (_++_ to _⧺_)` �
 **记号属性跟着定义走**，4.2 的「声明顺序自由」仅限本模块内部，跨模块仍要
 「先导后用」。
 
-## 4.7 本章坑位清单（实测）
+## 4.7 坑位清单（实测）
 
 1. **`_关键字_` 片段词法非法**：`module Ex04_syntax` 报
    `the part syntax is not valid because it is a keyword`（ParseError，模块名
@@ -387,6 +393,5 @@ fixity 与 syntax 跟着名字进作用域：实测 `renaming (_++_ to _⧺_)` �
    歧义——修冲突要用 hiding/renaming，重排 import 行序没用；
 9. **Emacs 输入表别背老教程**：本机 `\bN` 出 ℕ、`\Gl` 出 λ、`\inf` 出 ∞，而
    `\oo` 是 ⊚——以 `agda-input.el` / `M-x customize-group agda-input` 为准。
-
 ---
 上一章：[03 · 第一个文件](03-basics.md) ｜ 下一章：[05 · 类型系统与宇宙](05-universes.md) ｜ 返回：[README](../README.md)

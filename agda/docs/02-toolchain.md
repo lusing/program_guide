@@ -1,16 +1,36 @@
 # 02 · 工具链与交互方式
 
+> **第一部分 · 入门与工具（01–04）** ｜ 全书结构与阅读路线见 [README](../README.md)
+
 上一章我们知道了 Agda「类型检查通过即证明成立」，那么一个自然的工程问题浮出水面：
 **我们通过什么命令、在什么界面里完成这次「检查」？** Agda 的答案有三层：命令行
 `agda` 负责一次性检查与编译；`.agda-lib` 机制负责让标准库和自家模块互相找到对方；
 Emacs 的 `agda2-mode` 负责日常开发中的「对话式」构造证明。本章把这三层全部实测一遍——
-包括 Agda 2.8 与 Debian 打包特有的几个坑（`DEPENDS` 字段失效、`--ignore-interfaces`
+包括 Debian 打包特有的几个坑（`DEPENDS` 字段失效、`--ignore-interfaces`
 炸权限、`--emacs-mode=locate` 指向不存在的路径），它们值得你在动手前就知道。
+
+**先交代两台机器**，全书后面所有引文的口径都以此为准：
+
+| | 本仓库现在用的 | 早期转写来源 |
+|---|---|---|
+| 系统 | macOS，源码编译 | Debian/WSL，apt 安装 |
+| Agda | `/Volumes/mac004/.stack-home/bin/agda`（2.9.0，master） | `/usr/bin/agda`（2.8.0） |
+| 标准库 | `/Volumes/mac004/lang/agda-stdlib/src`（`standard-library-3.0`） | `/usr/share/agda-stdlib`（`standard-library-2.3`） |
+| 装法 | 见 [44 章](44-macos-checklist.md) | `apt install agda agda-stdlib elpa-agda2-mode` |
+
+命令行接口、`.agda-lib` 机制与 Emacs 键位两版一致，本章讲的照用不误；读到
+`/usr/share/...` 或 `Agda version 2.8.0` 时，把它当成「另一台机器上的同一条命令」。
+两套之间的差异账（源码编译的坑、stdlib 模块搬家、报错文案换代）记在 44 章。
+还有一处两版都容易找错地方：`Agda.Builtin.*`、`Agda.Primitive` 这些**内置前置库**
+（prelude）不在 stdlib 里——Agda 仓库源码在 `src/data/lib/prim/`，装机后落在
+`<Agda 安装目录>/lib/prim/`（Debian 即 `/usr/share/libghc-agda-dev/lib/prim/`），
+后文几章引的 `List`/`Sigma`/`String`/`Coinduction`/`Reflection` 原文都出自这里。
 
 对应示例：`../examples/Ex02_toolchain.agda`
 
-本章所有命令行输出、报错文本、协议报文均为 Agda 2.8.0 实测原样粘贴（部分路径为
-复现方便用了临时目录，已标注），这也是全书引用报错的规矩：**没跑过的输出不上墙**。
+本章的命令行输出、报错文本、协议报文均取自 Debian 那台机器（Agda 2.8.0）实测原样
+粘贴（部分路径为复现方便用了临时目录，已标注）。这也是全书引用输出的规矩：
+**没跑过的输出不上墙**——各章开头那行「实测口径」就是它的落地形式。
 
 ## 2.1 agda 命令行：检查是主业
 
@@ -287,7 +307,7 @@ ghc 随 agda-bin 依赖链在场）。
   `MAlonzo/` 中间产物也在源文件旁边——模块按 include 解析后「住在」`examples/` 下；
   想控制产物位置用 `--compile-dir=DIR`；
 - 编译一个 IO 程序约 1–2 分钟（18 个 Haskell 模块起步），比纯检查慢一个量级；
-  20 章会给出「检查与编译分工」的完整约定；
+  27 章会给出「检查与编译分工」的完整约定；
 - 编译只认 `main`：示例里那个最小 `main : Main`（`main = run (putStrLn ...)`）
   就是全部——它同时验证了 `--guardedness` 规则：文件第一行的 pragma 一旦删掉，
   检查阶段就直接报 `[InfectiveImport]`（真实报错原文见 2.8 坑位清单）。
@@ -363,11 +383,11 @@ _build/
 
 - 首行 `{-# OPTIONS --guardedness #-}`：IO 的入场券（2.4 节）；
 - `answer = 6 * 7` + `_ : answer ≡ 42` 配 `refl`：交互式 `Compute` 的源文件替身；
-- `main : Main`：`--compile` 流水线的靶子（本章只做类型检查；20 章约定完整 IO）。
+- `main : Main`：`--compile` 流水线的靶子（本章只做类型检查；27 章约定完整 IO）。
 
 验证命令：`cd agda && timeout 600 agda examples/Ex02_toolchain.agda`（实测退出码 0）。
 
-## 2.8 坑位清单（本章实测）
+## 2.8 坑位清单（实测）
 
 1. **一个目录只许一个 `.agda-lib`**：多放一个，连累该目录下所有文件的检查
    （`[LibraryError] The project root ... may contain only one .agda-lib file`），
@@ -392,6 +412,5 @@ _build/
    中间 Haskell 在 `examples/MAlonzo/`。写脚本/`.gitignore` 时路径要按这个实测来；
 9. **检查成功是沉默的**：`Checking ...` 只在真正重检时打印，缓存命中时零输出。
    别把「没输出」当成「没跑」。
-
 ---
 上一章：[01 · 认识 Agda](01-intro.md) ｜ 下一章：[03 · 第一个文件](03-basics.md) ｜ 返回：[README](../README.md)

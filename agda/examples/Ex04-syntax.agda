@@ -4,9 +4,9 @@
 -- mixfix 名字、infix/infixl/infixr 与优先级、syntax 声明、
 -- 括号类运算符、词法级记号（if_then_else_）、Unicode 命名。
 --
--- 注意：本文件原名 Ex04_syntax.agda，但 Agda 规定标识符里被下划线
--- 分隔的片段不能是关键字（syntax 是关键字），该文件名根本无法通过
--- 词法检查，故按 stdlib 惯例（∃-syntax 等）改用连字符。
+-- 注意：按"章号 = 示例编号"的规矩本文件该叫 Ex04_syntax.agda，但 Agda
+-- 规定标识符里被下划线分隔的片段不能是关键字（syntax 是关键字），该
+-- 文件名根本无法通过词法检查，故按 stdlib 惯例（∃-syntax 等）改用连字符。
 --
 -- 类型检查：cd agda && agda examples/Ex04-syntax.agda
 ------------------------------------------------------------------------

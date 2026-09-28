@@ -2,8 +2,8 @@
 # Agda 教程示例验证脚本（macOS 实测：Agda 2.9.0 + agda-stdlib 3.0；Linux/WSL 同样适用）
 # 用法:
 #   ./build.sh                 # 类型检查全部示例
-#   ./build.sh Ex13_induction  # 只检查一个（不带 .agda 后缀）
-#   ./build.sh run Ex20_io     # 编译为可执行文件并运行
+#   ./build.sh Ex15_induction  # 只检查一个（不带 .agda 后缀）
+#   ./build.sh run Ex27_io     # 编译为可执行文件并运行
 #   ./build.sh clean           # 清理 _build/
 set -euo pipefail
 cd "$(dirname "$0")"

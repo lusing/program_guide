@@ -1,5 +1,7 @@
 # 05 · 类型系统与宇宙
 
+> **第二部分 · 类型、数据与计算（05–12）** ｜ 全书结构与阅读路线见 [README](../README.md)
+
 01 章立下心智模型：类型即命题、程序即证明；03 章你已经见过「编译器把
 `2 + 3` 算到范式才放行 `refl`」的场面。本章把镜头拉远一层，回答一个新手必然
 冒出的问题：**类型自己有没有类型？** 如果有，它住在哪一层？顺着这条线索会
@@ -11,7 +13,9 @@
 
 对应示例：`../examples/Ex05_universes.agda`
 
-本章所有类型/报错均为 Agda 2.8.0 + stdlib 2.3 实测：示例文件整体退出码 0，
+**实测口径**（两台机器的交代见 02 章）：本章示例已在 **Agda 2.9.0 + stdlib 3.0**
+下类型检查通过；下文报错原文取自 Debian 装机（Agda 2.8.0 + stdlib 2.3），两版文案
+与模块路径的差异见 [44 章](44-macos-checklist.md)。
 引号里的错误文本都是把「反面写法」单独喂给 agda 抓下来的原文。
 
 ## 5.1 再强调一遍：类型检查即证明
@@ -104,7 +108,7 @@ V = Bool
 
 **(a) 要 import 才能用**（裸写 `Set` 在默认作用域、`Setω` 不在）。
 `open import Agda.Primitive using (Setω)` 之后才可用，否则实测 NotInScope，
-且提示里还出现 `SSetω`（`--cubical` 的严格变体，24 章见）：
+且提示里还出现 `SSetω`（`--cubical` 的严格变体，32 章见）：
 
 ```text
 error: [NotInScope]
@@ -158,7 +162,7 @@ _ = refl
 调用 `pick true` 时返回类型**算出**是 `ℕ`，调用 `pick false` 时是 `Bool`——
 类型检查器在做符号执行级别的活。
 
-招牌预告（16 章主角、10 章的 Fin 同理）：**向量长度进入类型**，
+招牌预告（18 章主角、10 章的 Fin 同理）：**向量长度进入类型**，
 `Vec` 就是一个从值到类型的函数（type family）：
 
 ```agda
@@ -323,7 +327,7 @@ _ = refl
 ```
 
 记录类型 `Lift {a} ℓ (A : Set a) : Set (a ⊔ ℓ)` 就是「带层级税票的转运箱」；
-12 章讲逻辑等价、18 章讲代数层级参数时会再遇到它。
+14 章讲逻辑等价、21 章讲代数层级参数时会再遇到它。
 
 ## 5.6 判定性内核：排中律不免费，公理要 postulate
 
@@ -358,7 +362,7 @@ dn {A = A} nn = ¬¬-elim (em A) nn
 的工程美学。
 
 而且「借没借」是机器可查的元性质。给文件开 `--safe` 再检查
-（12/15/17 章会解释 `--safe` 的完整语义）：
+（14/17/20 章会解释 `--safe` 的完整语义）：
 
 ```text
 error: [SafeFlagPostulate]
@@ -369,7 +373,7 @@ when scope checking the declaration
 `--safe` 下 postulate 全禁、unsafe 内建函数全禁：一个 `--safe` 通过的文件，
 **结构上不可能**藏着经典公理。审计证明时先看它开没开 safe，比通读全文便宜。
 
-## 5.7 本章坑位清单（实测）
+## 5.7 坑位清单（实测）
 
 1. **`Type` 不存在**：Agda 2.6.1+ 统一 `Set`；从 Coq/Haskell 带来的
    `Type`/`*` 写法全是 `[NotInScope]`；
@@ -391,6 +395,5 @@ when scope checking the declaration
 8. **fixity 是数据声明的一部分**：`_∷_` 不写 `infixr 5` 链式表直接
    `[NoParseForApplication]`，且 fixity 声明不能夹在 `data` 块里
    （`[Syntax.WrongContentBlock]`）。
-
 ---
 上一章：[04 · 记号与运算符](04-syntax.md) ｜ 下一章：[06 · 数据类型与模式匹配](06-patterns.md) ｜ 返回：[README](../README.md)

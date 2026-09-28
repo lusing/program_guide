@@ -115,7 +115,7 @@ _ = refl
 _ : pick false ≡ true
 _ = refl
 
--- 招牌预告（16 章主角）：向量的长度是类型的一部分。
+-- 招牌预告（18 章主角）：向量的长度是类型的一部分。
 -- Vec 是「从 ℕ 到类型」的函数（type family）：
 infixr 5 _∷_
 data Vec (A : Set) : ℕ → Set where

@@ -1,20 +1,25 @@
 # 08 · 列表专题
 
+> **第二部分 · 类型、数据与计算（05–12）** ｜ 全书结构与阅读路线见 [README](../README.md)
+
 列表是函数式编程的呼吸，也是依赖类型教程里最常见的「第一个真正有用的
 数据类型」。本章把 `List` 从头解剖一遍：data 定义里参数 `{A}` 到底去了哪、
 构造子 `∷` 的优先级怎么读、map/filter/zipWith/concat/`_++_`/foldr/foldl
-这一族操作在 stdlib 2.3 里的**真实签名**（有好几处和 Haskell 不一样，
+这一族操作在 stdlib 里的**真实签名**（有好几处和 Haskell 不一样，
 不实测根本发现不了）、`reverse` 的三种写法与它们的价格标签，最后用一截
-把长度写进类型的小型 `Vec` 为 16 章埋伏笔——你会亲眼看到隐式索引参数
-{m} {n} 如何既添乱又救命。照例：一切以 Agda 2.8.0 + stdlib 2.3 实测为准，
-报错原文直接粘贴。
+把长度写进类型的小型 `Vec` 为 18 章埋伏笔——你会亲眼看到隐式索引参数
+{m} {n} 如何既添乱又救命。
 
 对应示例：`../examples/Ex08_lists.agda`
 
+**实测口径**（两台机器的交代见 02 章）：本章示例已在 **Agda 2.9.0 + stdlib 3.0**
+下类型检查通过；下文报错原文取自 Debian 装机（Agda 2.8.0 + stdlib 2.3），两版文案
+与模块路径的差异见 [44 章](44-macos-checklist.md)。
+
 ## 8.1 data 定义解剖：参数、构造子与优先级
 
-`List` 是内建类型，真身在 Agda 安装目录的 prim 库里
-（`/usr/share/libghc-agda-dev/lib/prim/Agda/Builtin/List.agda`），
+`List` 是内建类型，真身在编译器自带的内置前置库（prelude）里
+（Agda 仓库 `src/data/lib/prim/Agda/Builtin/List.agda`，装位对照见 2.1），
 stdlib 的 `Data.List.Base` 只是给它套了层家常便饭的 re-export：
 
 ```agda
@@ -119,7 +124,7 @@ length  : List A → ℕ      -- 实际定义：foldr (const suc) 0
 ```
 
 **分水岭一：`filter` 收 Bool 谓词是 Haskell 的写法。**stdlib 2.x 起
-`filter` 要的是**可判定性的证明** `Decidable P`（15 章主角），Bool 版本
+`filter` 要的是**可判定性的证明** `Decidable P`（17 章主角），Bool 版本
 被挪到 `filterᵇ`。拿 Haskell 肌肉记忆直接喂 Bool，撞上的是一条相当
 玄学的类型不匹配（实测）：
 
@@ -147,7 +152,7 @@ _ = refl
 
 **分水岭二：zipWith 短截断，且长度不进类型**。`zipWith _+_ [1,2,3] [10,20]`
 得到两元素的 `11 ∷ 22 ∷ []`——丢掉的尾巴在类型上**毫无痕迹**。这正是
-16 章 `Vec` 要解决的失忆症（8.7 先尝一口）。concat、`_++_`、`[_]` 等
+18 章 `Vec` 要解决的失忆症（8.7 先尝一口）。concat、`_++_`、`[_]` 等
 一切照旧，全部有 refl 焊死的实测等式，示例文件里挨个排着。
 
 ## 8.4 附录：`_++_` 与结合律方向——「哪侧被重抄」决定你白送哪些引理
@@ -182,7 +187,7 @@ when checking that the expression refl has type xs ++ [] ≡ xs
 
 对**闭**列表却算得动——`lit ++ [] ≡ lit` 一条 refl 过关。这种
 「同一个引理，实例能 refl、一般陈述不能」的分裂是 Agda 新手最高频的
-困惑源之一，第 13 章用归纳法补一般陈述。剧透：stdlib 的
+困惑源之一，第 15 章用归纳法补一般陈述。剧透：stdlib 的
 `Data.List.Properties` 里 `++-identityˡ xs = refl` 一字不差就是本节
 后果一，而 `++-identityʳ (x ∷ xs) = cong (x ∷_) (…)` 正是标准归纳剧本——
 左单位白送、右单位归纳，方向感完全一致。
@@ -237,11 +242,11 @@ _ = refl
 Haskell 经验需要覆写的两处：
 
 1. **foldr 的惰性红利没了**。Agda 按需求值但终止检查器不买「lazy
-   foldr 处理无限表」的账（无限表属于 22 章的 Stream + guardedness），
+   foldr 处理无限表」的账（无限表属于 29 章的 Stream + guardedness），
    而 `foldr const 0 lit` 这类「短路」在类型上也不比 foldl 便宜——
    两家都得列表有限。
 2. **foldl 攒不出 Haskell 的 thunk 塔**：Agda 的规范化策略不同，性能
-   讨论请 entirely 以 26 章实测为准；日常记住 stdlib 自己就用
+   讨论请 entirely 以 34 章实测为准；日常记住 stdlib 自己就用
    `foldl (flip _∷_)` 造 `reverseAcc`（Base 原文），`flip` 来自
    `Function`/`Data.List.Base` 的内部 import。
 
@@ -285,18 +290,18 @@ Base 还顺手卖了一条 `xs ʳ++ ys = reverse xs ++ ys`（`_ʳ++_`），
 **依赖版**长什么样？「反转保长度」在 List 上只能当定理说
 （`length (reverse xs) ≡ length xs`），进了 `Vec` 就变成**类型**
 （8.7）：`Vec.reverse : Vec A n → Vec A n`。效率之外它还有免费午餐：
-16 章里你会看到 Vec 版反转连「越界/错位」这类 bug 都写不出来。
+18 章里你会看到 Vec 版反转连「越界/错位」这类 bug 都写不出来。
 
-**一条免费的分配律实例**（一般陈述留给 13 章练手）：
+**一条免费的分配律实例**（一般陈述留给 15 章练手）：
 
 ```agda
 _ : reverse (lit ++ one) ≡ reverse one ++ reverse lit
 _ = refl
 ```
 
-## 8.7 隐式长度预告：把「几」写进类型，为 16 章埋雷
+## 8.7 隐式长度预告：把「几」写进类型，为 18 章埋雷
 
-最后 30 行代码，演示依赖版 append 的**手感**（完整 Vec 16 章再学）。
+最后 30 行代码，演示依赖版 append 的**手感**（完整 Vec 18 章再学）。
 自己搭一个最小索引类型——注意构造子上的 `{n : ℕ}` 隐式索引参数：
 
 ```agda
@@ -331,10 +336,10 @@ v[]       v++ ys = ys
 
 好消息是账本同时送你**免检权利**：`v[] v++ v3 ≡ v3` 一条 refl 通过，
 而且结果类型自动是 `Vec ℕ 3`——检查器**顺手**证明了「append 保持
-长度」这类在 List 上需要归纳的命题的一部分。这就是 16 章的世界观：
+长度」这类在 List 上需要归纳的命题的一部分。这就是 18 章的世界观：
 **推断从运行期搬到编译期，先付隐式参数的税，再领类型安全的退税**。
 
-## 8.8 本章坑位清单（实测）
+## 8.8 坑位清单（实测）
 
 1. **`[ 1 , 2 , 3 ]` 在 2.8 不存在**：`Not in scope: [`；`[ x ]` 只是
    单元素函数 `[_]`；`Agda.Builtin.FromList` 也没有（`FileNotFound`）；
@@ -348,11 +353,10 @@ v[]       v++ ys = ys
    `length {A = ℕ} []` 式显式填参；且 **Agda 没有项级标注语法
    `([] : List ℕ)`**——实测 `ParseError`（冒号标注只属于签名行）；
 5. **`xs ++ [] ≡ xs` 对开口变量 refl 不过**，但闭列表实例过——同一个
-   引理「有时能证」的分裂感要先适应（右单位/结合律归 13 章归纳管）；
+   引理「有时能证」的分裂感要先适应（右单位/结合律归 15 章归纳管）；
 6. **自定义 cons 型构造子忘 `infixr 5` 直接不能成链**：默认 `infixl 9`
    下报 `Could not parse the application ...`（报错会附 level 20 的语法表）；
 7. **`using` 列表里运算符的下划线数就是名字本身**：`_*_` 写成 `_*`
    报 `ModuleDoesntExport _*` + 后续 `Not in scope: *` 连环撞。
-
 ---
 上一章：[07 · 递归与终止检查](07-recursion.md) ｜ 下一章：[09 · 记录与 Σ 类型](09-records.md) ｜ 返回：[README](../README.md)
