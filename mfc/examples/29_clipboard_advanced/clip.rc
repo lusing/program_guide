@@ -1,0 +1,21 @@
+// 剪贴板深入资源
+#pragma code_page(65001)
+
+#include "resource.h"
+#include <afxres.h>
+
+IDD_MAIN DIALOGEX 0, 0, 460, 320
+STYLE DS_SETFONT | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX
+CAPTION "第 29 章 · 剪贴板深入：多格式 / DIB / 延迟渲染 / 文件列表"
+FONT 9, "Microsoft YaHei UI", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "自定义格式(结构体)", IDC_BTN_CUSTOM, 10, 10, 130, 22
+    PUSHBUTTON      "CF_DIB 位图", IDC_BTN_DIB, 145, 10, 130, 22
+    PUSHBUTTON      "延迟渲染", IDC_BTN_DELAYED, 280, 10, 130, 22
+    PUSHBUTTON      "CF_HDROP 文件列表", IDC_BTN_HDROP, 10, 36, 130, 22
+    PUSHBUTTON      "粘贴并枚举格式", IDC_BTN_PASTE, 145, 36, 130, 22
+    PUSHBUTTON      "清空预览", IDC_BTN_CLEAR, 280, 36, 130, 22
+    CTEXT           "位图预览", IDC_PREVIEW, 10, 66, 210, 180, SS_SUNKEN
+    EDITTEXT        IDC_EDIT_LOG, 228, 66, 222, 180, ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL
+    LTEXT           "提示：延迟渲染后先用记事本粘贴试试——只有别的程序真要数据时才生成", -1, 10, 250, 440, 16
+END

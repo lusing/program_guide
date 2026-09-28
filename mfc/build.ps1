@@ -27,6 +27,7 @@ $extraLibsByExample = @{
     '12_clipboard_dnd'  = @('ole32.lib', 'oleaut32.lib')
     '14_dpi_darkmode'   = @('dwmapi.lib')
     '22_modern_drawing' = @('gdiplus.lib', 'd2d1.lib', 'dwrite.lib')
+    '31_winsock'        = @('ws2_32.lib')
 }
 
 if (-not (Test-Path -LiteralPath $vcvars)) {
@@ -68,6 +69,19 @@ function Build-Example {
         return
     }
 
+    # DLL 约定：文件名形如 xxx.dll.cpp（代码 DLL）或 xxx.dll.rc（资源 DLL）。
+    # 代码 DLL 走 link /DLL 产出 xxx.dll + xxx.lib；资源 DLL 走 link /DLL /NOENTRY。
+    # 其余 .cpp/.rc 属于 exe；exe 自动 /LIBPATH 到 build 并链接本目录 DLL 的导入库。
+    $dllCpps = @($cpps | Where-Object { $_.BaseName -like '*.dll' })
+    $exeCpps = @($cpps | Where-Object { $_.BaseName -notlike '*.dll' })
+    $dllRcs  = @($rcs  | Where-Object { $_.BaseName -like '*.dll' })
+    $appRcs  = @($rcs  | Where-Object { $_.BaseName -notlike '*.dll' })
+
+    if (($dllCpps.Count -gt 0 -or $dllRcs.Count -gt 0) -and $Static) {
+        Write-Host "[Skip] $name (DLL 示例不支持 -Static：MFC 扩展 DLL 依赖共享 MFC 运行时)" -ForegroundColor Yellow
+        return
+    }
+
     # 静态模式：去掉 /D_AFXDLL，运行时改 /MT，链接器自动取 mfc140u.lib
     $compileFlags = if ($Static) {
         '/std:c++20 /EHsc /W3 /DUNICODE /D_UNICODE /MT /utf-8 /D_WIN32_WINNT=0x0A00'
@@ -82,22 +96,46 @@ function Build-Example {
 
     $steps = @('call "{0}" >nul' -f $vcvars)
 
-    foreach ($cpp in $cpps) {
+    # —— DLL 目标先编先链（exe 的导入库依赖它们）——
+    $implLibs = @()
+    foreach ($dll in $dllCpps) {
+        # mathlib.dll.cpp 的 BaseName 是 "mathlib.dll"（只剥最后的 .cpp），目标名再去掉 .dll 尾巴
+        $base = $dll.BaseName -replace '\.dll$', ''
+        $objPath = Join-Path $objDir ($base + ".obj")
+        # /D_AFXEXT：MFC 扩展 DLL 的标志，AFX_EXT_CLASS 展开为 dllexport（exe 侧无此宏则展开为 dllimport）
+        $steps += ('cl /nologo {0} /D_AFXEXT /c "{1}" /Fo"{2}"' -f $compileFlags, $dll.FullName, $objPath)
+        $dllPath = Join-Path $buildDir ($base + ".dll")
+        $libPath = Join-Path $buildDir ($base + ".lib")
+        $steps += ('link /nologo /DLL /OUT:"{0}" /IMPLIB:"{1}" "{2}"' -f $dllPath, $libPath, $objPath)
+        $implLibs += $base + ".lib"
+    }
+    foreach ($drc in $dllRcs) {
+        $base = $drc.BaseName -replace '\.dll$', ''
+        $resPath = Join-Path $objDir ($base + ".res")
+        $steps += ('rc /nologo /c65001 {0} /Fo"{1}" "{2}"' -f ($rcIncludeFlags -join " "), $resPath, $drc.FullName)
+        $dllPath = Join-Path $buildDir ($base + ".dll")
+        $steps += ('link /nologo /DLL /NOENTRY /OUT:"{0}" "{1}"' -f $dllPath, $resPath)
+    }
+
+    foreach ($cpp in $exeCpps) {
         $objPath = Join-Path $objDir ($cpp.BaseName + $suffix + ".obj")
         $steps += ('cl /nologo {0} /c "{1}" /Fo"{2}"' -f $compileFlags, $cpp.FullName, $objPath)
     }
 
-    foreach ($rc in $rcs) {
+    foreach ($rc in $appRcs) {
         $resPath = Join-Path $objDir ($rc.BaseName + $suffix + ".res")
         $steps += ('rc /nologo /c65001 {0} /Fo"{1}" "{2}"' -f ($rcIncludeFlags -join " "), $resPath, $rc.FullName)
     }
 
-    $objList = ($cpps | ForEach-Object { Join-Path $objDir ($_.BaseName + $suffix + ".obj") }) -join " "
+    $objList = ($exeCpps | ForEach-Object { Join-Path $objDir ($_.BaseName + $suffix + ".obj") }) -join " "
     $resList = ""
-    if ($rcs.Count -gt 0) {
-        $resList = " " + (($rcs | ForEach-Object { Join-Path $objDir ($_.BaseName + $suffix + ".res") }) -join " ")
+    if ($appRcs.Count -gt 0) {
+        $resList = " " + (($appRcs | ForEach-Object { Join-Path $objDir ($_.BaseName + $suffix + ".res") }) -join " ")
     }
     $libList = if ($extraLibs.Count -gt 0) { " " + ($extraLibs -join " ") } else { "" }
+    if ($implLibs.Count -gt 0) {
+        $libList += ' /LIBPATH:"' + $buildDir + '" ' + ($implLibs -join " ")
+    }
     # Unicode MFC 的入口是 wWinMain（动态由 mfc140u.dll 提供，静态由 mfc140u.lib 提供），必须显式指定
     $steps += ('cl /nologo {0}{1} /Fe"{2}" /link /SUBSYSTEM:WINDOWS /ENTRY:wWinMainCRTStartup{3}' -f $objList, $resList, $exePath, $libList)
 

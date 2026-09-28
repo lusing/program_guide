@@ -1,0 +1,32 @@
+// 菜单深入资源：静态底子 + 加速键（动态部分全在代码里）
+#pragma code_page(65001)
+
+#include "resource.h"
+#include <afxres.h>
+
+IDR_MAIN_MENU MENU
+BEGIN
+    POPUP "文件(&F)"
+    BEGIN
+        MENUITEM "退出(&X)\tAlt+F4", IDM_FILE_EXIT
+    END
+    POPUP "菜单实验(&M)"
+    BEGIN
+        MENUITEM "动态构造弹出菜单(&D)\tCtrl+D", IDM_TEST_DYNAMIC
+        MENUITEM "上下文菜单（右键客户区）(&P)", IDM_TEST_POPUP
+        MENUITEM "系统菜单加“关于”(&S)\tCtrl+S", IDM_TEST_SYSCMD
+        MENUITEM SEPARATOR
+        MENUITEM "状态栏(&A)", IDM_VIEW_STATUS
+        MENUITEM "工具栏(&T)", IDM_VIEW_TOOL
+        MENUITEM SEPARATOR
+        MENUITEM "红色(&R)", IDM_COLOR_RED
+        MENUITEM "绿色(&G)", IDM_COLOR_GREEN
+        MENUITEM "蓝色(&B)", IDM_COLOR_BLUE
+    END
+END
+
+IDR_MAIN_MENU ACCELERATORS
+BEGIN
+    "D", IDM_TEST_DYNAMIC, VIRTKEY, CONTROL
+    "S", IDM_TEST_SYSCMD,  VIRTKEY, CONTROL
+END

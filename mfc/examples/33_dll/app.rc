@@ -1,0 +1,21 @@
+// app.rc：DLL 演示主程序资源
+#pragma code_page(65001)
+
+#include "resource.h"
+#include <afxres.h>
+
+IDD_MAIN DIALOGEX 0, 0, 440, 300
+STYLE DS_SETFONT | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX
+CAPTION "第 33 章 · DLL 三种形态：普通 / MFC 扩展 / 资源专用"
+FONT 9, "Microsoft YaHei UI", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "隐式链接普通 DLL", IDC_BTN_IMPLICIT, 10, 10, 130, 24
+    PUSHBUTTON      "显式加载 GetProcAddress", IDC_BTN_EXPLICIT, 145, 10, 130, 24
+    PUSHBUTTON      "扩展 DLL 导出类(矩形)", IDC_BTN_EXTCLASS, 280, 10, 150, 24
+    PUSHBUTTON      "按名动态创建(椭圆)", IDC_BTN_RUNTIMECLASS, 10, 38, 130, 24
+    PUSHBUTTON      "加载资源 DLL", IDC_BTN_RESOURCE, 145, 38, 130, 24
+    PUSHBUTTON      "切换资源语言", IDC_BTN_LANG_TOGGLE, 280, 38, 150, 24
+    CTEXT           "画布（扩展 DLL 的类在这里绘制）", IDC_CANVAS, 10, 68, 180, 130, SS_SUNKEN
+    EDITTEXT        IDC_EDIT_LOG, 198, 68, 232, 130, ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL
+    LTEXT           "DLL 与 exe 同目录（build\\）；DbgView 可见 DllMain 挂接日志", -1, 10, 205, 420, 16
+END

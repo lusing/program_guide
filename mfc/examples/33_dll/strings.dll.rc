@@ -1,0 +1,27 @@
+// strings.dll.rc：资源专用 DLL（*.dll.rc 约定）—— 只有资源没有代码，
+// build.ps1 用 link /DLL /NOENTRY 产出。应用 LoadLibrary 后用模块句柄取串。
+//
+// 书1 第15章 例85：资源库（原书场景是英文/德文两套字符串，这里换中英双语）
+// 布局：100 段 = 中文，200 段 = English —— 故意用两段 ID 而不是两块 LANGUAGE，
+// 因为 LoadString 按线程 locale 挑语言块在无 MUI 资源的场景并不可控，显式选段最稳。
+#pragma code_page(65001)
+
+#include <afxres.h>
+
+STRINGTABLE
+BEGIN
+    100             "你好，世界（资源 DLL：中文段）"
+    101             "颜色"
+    102             "形状"
+    103             "关于本程序"
+    104             "资源专用 DLL 演示：本字符串来自 strings.dll"
+END
+
+STRINGTABLE
+BEGIN
+    200             "Hello, world (resource DLL: English block)"
+    201             "Color"
+    202             "Shape"
+    203             "About"
+    204             "Resource-only DLL demo: this string lives in strings.dll"
+END

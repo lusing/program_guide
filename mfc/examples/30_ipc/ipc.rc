@@ -1,0 +1,20 @@
+// IPC 资源
+#pragma code_page(65001)
+
+#include "resource.h"
+#include <afxres.h>
+
+IDD_MAIN DIALOGEX 0, 0, 460, 300
+STYLE DS_SETFONT | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX
+CAPTION "第 30 章 · 进程间通信：WM_COPYDATA / 邮槽 / 命名管道 / 共享内存"
+FONT 9, "Microsoft YaHei UI", 400, 0, 0x1
+BEGIN
+    LTEXT           "要发送的文本", -1, 10, 12, 60, 12
+    EDITTEXT        IDC_EDIT_SEND, 72, 10, 300, 14, ES_AUTOHSCROLL
+    PUSHBUTTON      "WM_COPYDATA 广播", IDC_BTN_COPYDATA, 10, 34, 105, 22
+    PUSHBUTTON      "邮槽收发", IDC_BTN_MAILSLOT, 120, 34, 105, 22
+    PUSHBUTTON      "命名管道回声", IDC_BTN_PIPE, 230, 34, 105, 22
+    PUSHBUTTON      "共享内存读写", IDC_BTN_SHAREDMEM, 340, 34, 105, 22
+    EDITTEXT        IDC_EDIT_LOG, 10, 64, 440, 200, ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL
+    LTEXT           "WM_COPYDATA 需要“另一个实例”在跑：再开一个本程序，两边互发", -1, 10, 270, 440, 16
+END

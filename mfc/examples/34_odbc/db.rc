@@ -1,0 +1,21 @@
+// ODBC 资源
+#pragma code_page(65001)
+
+#include "resource.h"
+#include <afxres.h>
+
+IDD_MAIN DIALOGEX 0, 0, 480, 330
+STYLE DS_SETFONT | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX
+CAPTION "第 34 章 · ODBC：CDatabase / CRecordset / RFX（文本驱动实测）"
+FONT 9, "Microsoft YaHei UI", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "1 建库+写入", IDC_BTN_CREATE, 10, 10, 110, 22
+    PUSHBUTTON      "2 RFX 查询", IDC_BTN_QUERY, 125, 10, 110, 22
+    PUSHBUTTON      "3 参数化过滤", IDC_BTN_PARAM, 240, 10, 110, 22
+    PUSHBUTTON      "4 GetFieldValue", IDC_BTN_FIELDS, 355, 10, 115, 22
+    LTEXT           "qty 下限（参数化用）", -1, 10, 40, 100, 12
+    EDITTEXT        IDC_EDIT_MINQTY, 112, 38, 60, 14, ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "事务实验", IDC_BTN_TRANSACTION, 240, 36, 110, 22
+    EDITTEXT        IDC_EDIT_LOG, 10, 66, 460, 220, ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL
+    LTEXT           "数据落在 %TEMP%\\mfc_guide_34\\data.txt（CSV），schema.ini 定义列型 —— Access Text 驱动 DSN-less", -1, 10, 292, 460, 16
+END

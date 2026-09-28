@@ -1,0 +1,31 @@
+// 控制条资源：菜单 + 对话条模板
+#pragma code_page(65001)
+
+#include "resource.h"
+#include <afxres.h>
+
+IDR_MAIN_MENU MENU
+BEGIN
+    POPUP "文件(&F)"
+    BEGIN
+        MENUITEM "退出(&X)", IDM_FILE_EXIT
+    END
+    POPUP "控制条(&B)"
+    BEGIN
+        MENUITEM "对话条 开/关(&D)",      IDM_BAR_TOGGLE_DLG
+        MENUITEM "浮动对话条(&F)",        IDM_BAR_FLOAT_DLG
+        MENUITEM "ReBar 开/关(&R)",       IDM_BAR_TOGGLE_REBAR
+    END
+END
+
+// 对话条模板：长得像对话框，但 WS_CHILD | WS_VISIBLE 是硬要求，
+// 没有 OK/Cancel（对话条不模态、不自己关闭）
+IDD_DIALOGBAR DIALOGEX 0, 0, 260, 26
+STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE | CBRS_SIZE_DYNAMIC
+FONT 9, "Microsoft YaHei UI", 400, 0, 0x1
+BEGIN
+    COMBOBOX IDC_DB_COMBO, 6, 3, 90, 120, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL  "粗体", IDC_DB_CHECK, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 102, 6, 36, 16
+    EDITTEXT IDC_DB_EDIT, 144, 3, 76, 14, ES_AUTOHSCROLL
+    PUSHBUTTON "应用", IDC_DB_BUTTON, 224, 3, 34, 14
+END

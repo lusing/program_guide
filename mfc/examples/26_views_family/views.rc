@@ -1,0 +1,51 @@
+// 视图家族资源：SDI 模板 + 窗体视图的对话框模板
+#pragma code_page(65001)
+
+#include "resource.h"
+#include "afxres.h"
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "文件(&F)"
+    BEGIN
+        MENUITEM "新建(&N)\tCtrl+N",    ID_FILE_NEW
+        MENUITEM "打开(&O)...\tCtrl+O", ID_FILE_OPEN
+        MENUITEM "保存(&S)\tCtrl+S",    ID_FILE_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "退出(&X)",            ID_APP_EXIT
+    END
+    POPUP "视图(&V)"
+    BEGIN
+        MENUITEM "滚动视图(&S)",         ID_VIEW_SCROLLVIEW
+        MENUITEM "窗体视图(&F)",         ID_VIEW_FORMVIEW
+        MENUITEM "列表视图(&L)",         ID_VIEW_LISTVIEW
+        MENUITEM "富文本视图(&R)",       ID_VIEW_RICHVIEW
+    END
+END
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "N", ID_FILE_NEW,  VIRTKEY, CONTROL
+    "O", ID_FILE_OPEN, VIRTKEY, CONTROL
+    "S", ID_FILE_SAVE, VIRTKEY, CONTROL
+END
+
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME "视图家族\n条目\n条目\n条目文件 (*.items)|*.items|所有文件 (*.*)|*.*||\n.items\nItems.Document\n条目文档\n条目"
+END
+
+// 窗体视图复用对话框模板：CFormView 把它铺满整个视图区。
+// 注意：没有 OK/Cancel——窗体视图不是对话框，按钮各自处理命令。
+IDD_FORM_VIEW DIALOGEX 0, 0, 280, 200
+STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE   // WS_CHILD：作为视图必须
+FONT 9, "Microsoft YaHei UI", 400, 0, 0x1
+BEGIN
+    LTEXT           "条目名", -1, 12, 14, 40, 12
+    EDITTEXT        IDC_FORM_NAME, 56, 12, 150, 14, ES_AUTOHSCROLL
+    LTEXT           "分值", -1, 12, 36, 40, 12
+    EDITTEXT        IDC_FORM_POINTS, 56, 34, 40, 14, ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "添加到文档", IDC_FORM_ADD, 104, 33, 70, 16
+    LTEXT           "窗体视图（CFormView）：对话框即视图。\r\n同一份文档数据，四种视图同时在菜单里可切换。",
+                    -1, 12, 60, 250, 40
+END
