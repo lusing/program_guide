@@ -133,6 +133,12 @@ TwoWay 绑定里，**目标改了什么时候回写源**由 `UpdateSourceTrigger
 - 绑定表达式保持"短"：Path 超过两级（`A.B.C.D`）意味着中间任何一环为 null 都断链，考虑在 VM 层预加工
 - 目标属性是不是依赖属性不用背——WPF 控件的公开属性几乎都是；自定义类要接绑定目标才需要自己注册（第 04 章选读节）
 
+## 三语言落地
+
+- **代码绑定的直路是 Source**：XAML 的 `{Binding ElementName=X, Path=Y}` 在代码里写 `Binding("Y", Source = X)` 更省事——ElementName 依赖 NameScope 注册（RegisterName 路线在 16/20 章有用武之地）。
+- `SetBinding` 挂目标属性：`text.SetBinding(TextBlock.TextProperty, b)`；C++ 里用 `Binding` 就必须连带 System.Xaml（Cpp.Common.props 已配齐 4 引用，01 §8 硬事实 2）。
+- `StringFormat` 是 Binding 的普通属性，三语言一致：`Binding("Text", StringFormat = "Hello, {0}!")` / `b->StringFormat = L"Hello, {0}!"`。
+
 ## 自测
 
 1. **绑定与 DDX 式同步的本质区别？** —— 持续管道 vs 手动触发的快照复制。

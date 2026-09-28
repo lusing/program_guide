@@ -147,6 +147,13 @@ private void ListView_HeaderClick(object sender, RoutedEventArgs e)
 - 导出/打印类需求直接读 ItemsSource 数据集合，**别遍历 DataGrid 行控件**——数据才是真相，控件是投影
 - DataGrid 的深入主题（分页、主从表、行详情 RowDetails）都在"列 + 绑定 + 模板"三个机制上生长，需要时按这个拆解去查
 
+## 三语言落地
+
+- **表头点击排序是附加路由事件**：XAML 的 `GridViewColumnHeader.Click` 在代码里 `listView.AddHandler(GridViewColumnHeader.ClickEvent, 委托)`，处理器里 `e.OriginalSource` 转型 `GridViewColumnHeader` 取列头——三语言同一套。
+- 排序核心：`CollectionViewSource.GetDefaultView(集合)` + `SortDescriptions` 增删——与语言无关。
+- DataGrid 五种列型的代码挂法：Text/CheckBox 列设 `.Binding`；Template 列设 `.CellTemplate`（进度条工厂）。`ColumnWidth="*"` 的代码版是 `DataGridLength(1., DataGridLengthUnitType.Star)`。
+- C++ 注意 `SelectionMode`/`HeadersVisibility` 等 DataGrid 专属枚举与属性同名——实例赋值没问题，声明枚举变量时要限定到 `Controls::` 前缀。
+
 ## 自测
 
 1. **只读表格与可编辑表格分别选哪个控件？** —— ListView+GridView 展示；DataGrid 编辑。

@@ -161,6 +161,13 @@ VS 里还有个免代码的：选中元素看"实时可视化树"，DataContext 
 - 开发全程保持输出窗口可见，绑定错误当场看，不要攒到联调
 - 第 11 章的 ViewModelBase 将把 INPC 样板抽成基类——本章先痛一次，下一章就知道基类替你省了什么
 
+## 三语言落地
+
+- **INPC 三形态**：C# 用 CallerMemberName；F# 是 `Event<PropertyChangedEventHandler,_>` + `[<CLIEvent>]` 暴露 + `pc.Trigger(this, PropertyChangedEventArgs "Name")`；C++ 是 `virtual event PropertyChangedEventHandler^ PropertyChanged;` + 直接触发（C3918：不能 `if (ev != nullptr)` 判空，合成的 raise_ 自带保护）。
+- **ItemTemplate 只能 FrameworkElementFactory**：`DataTemplate(typeof<T>)` + `factory.SetBinding(...)` + `dt.VisualTree <- factory`——XAML 的模板树在代码里是一座"工厂树"（15 章全面展开）。
+- F# 的可空选中项：`Unchecked.defaultof<TaskItem>` 声明、`obj.ReferenceEquals(x, null)` 判空（自定义类没挂 `AllowNullLiteral` 就没有 `isNull`）。
+- MultiBinding 代码形态：`mb.Bindings.Add(Binding …)` 逐个装、`SetBinding(属性, mb)` 一次挂。
+
 ## 自测
 
 1. **INPC setter 的三步曲？漏掉判等会怎样？** —— 判等、赋值、通知；漏判等会重复通知（轻则浪费，重则循环触发）。

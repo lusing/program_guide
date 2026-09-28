@@ -168,6 +168,12 @@ MessageBox.Show(this, "文档已修改，保存吗？", "记事本+",
 - 对话框链（设置 → 高级设置 → …）别超过两层，第三层改成导航页（第 23 章）
 - 键盘体验一次配齐：IsDefault/IsCancel + Tab 顺序（TabIndex）——手写 KeyDown 监听 Enter/Esc 是弯路
 
+## 三语言落地
+
+- `OpenFileDialog/SaveFileDialog` 在 **Microsoft.Win32** 命名空间（不在 System.Windows）——三语言都要单独引。
+- `ShowDialog()` 返回 `Nullable<bool>`：C# `== true`；F# `.GetValueOrDefault()`；C++ `result.HasValue && result.Value`——同一个返回值，三种方言。
+- `File.WriteAllText` 三语言同名：F# `File.WriteAllText(path, text)`，C++ `File::WriteAllText(...)`。
+
 ## 自测
 
 1. **模态与非模态的生命周期差异？** —— 模态局部变量即可；非模态要字段持有（防 GC、防重复开）。

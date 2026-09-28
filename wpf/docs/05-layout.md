@@ -154,6 +154,12 @@ WPF 内置六种常用面板，各自一条排布规则：
 - 布局不对时先画层级图，逐层核对 Alignment/Margin——大多数"控件乱跑"是对默认 Stretch 的误解
 - 跨 Grid 的列对齐用 `SharedSizeGroup`，大界面拆分后仍能保持标签列对齐（第 06 章实战演示）
 
+## 三语言落地
+
+- **UniformGrid（教材 3.2.5）已并入三版**：5 个按钮一行等分。它在 `System.Windows.Controls.Primitives` 分包——F# 要 `open System.Windows.Controls.Primitives`，C++ 要 `using namespace ...Primitives`。
+- `StatusBar` 同样在 Primitives，且它是 ItemsControl：F# 想写 `StatusBar(Content = x)` 会 FS0495（没有 Content 属性），子项进 `.Items`。
+- 行高列宽三态的代码写法：`GridLength.Auto` / `GridLength(1., GridUnitType.Star)` / `GridLength(220.)`；附加属性一律静态方法：`Grid.SetRow(el, 1)`、`DockPanel.SetDock(el, Dock.Top)`。
+
 ## 自测
 
 1. **Measure 和 Arrange 各自做什么、方向如何？** —— Measure 自下而上收集 DesiredSize；Arrange 自上而下分配最终矩形。

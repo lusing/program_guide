@@ -142,6 +142,13 @@ private void ScaleUp_Click(object sender, RoutedEventArgs e)
 - 特效/动效永远 RenderTransform；需要占位变化的（如真把按钮放大推开周围）才 LayoutTransform
 - 本章 + 第 20 章 = WPF 的"动效基础"，自定义控件库的视觉几乎全靠这两章的机制
 
+## 三语言落地（含 3D 一瞥，教材 7.3）
+
+- Path 的 `Data="M … Q …"` 字符串三语言共用 `Geometry.Parse(...)`——与 XAML 同源，不用手工 Build 几何。
+- 渐变画刷的代码组装：`GradientStops.Add(GradientStop(color, offset))` 逐个装；`GradientOrigin`/`StartPoint` 都是普通属性。
+- **3D 五件套**（三版同装）：`MeshGeometry3D`（Positions 装 `Point3D`、TriangleIndices 装索引）+ `DiffuseMaterial`（正面）+ **BackMaterial（防绕序画反黑屏）** + `AmbientLight`/`DirectionalLight` + `PerspectiveCamera`。旋转与 2D 同思路：`RotateTransform3D(AxisAngleRotation3D)` 改 Angle 即重渲染。
+- C++ 的 `Point3D/Vector3D` 是 Media3D 里的值类型结构体，直接 `Point3D(0, 1, 0)` 构造；F# 要 `open System.Windows.Media.Media3D`。
+
 ## 自测
 
 1. **Path 迷你语言里 M/Q/Z 各是什么？** —— M 移动起点、Q 二次贝塞尔、Z 闭合。

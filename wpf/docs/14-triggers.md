@@ -128,6 +128,12 @@ DataTrigger 只做**等值比较**（Value 等于绑定值）。范围判断（"
 - 触发器条件超过 3 个、或需要链式联动时，改写代码——声明式也有复杂度上限
 - XAML 改外观卡住时先画"值从哪来"的优先级链（本地值 → 触发器 → Setter → 继承 → 默认），九成问题在链上
 
+## 三语言落地
+
+- **EventTrigger 的代码形态**：`EventTrigger(FrameworkElement.LoadedEvent)` 收 RoutedEvent → `BeginStoryboard` 包 Storyboard → `Actions.Add` → 目标元素 `Triggers.Add`。XAML 的 `<Window.Triggers>` 区块整个变成四行代码。
+- C++ 的 `BeginStoryboard` 类型名会与 FrameworkElement 上的同名成员查找打架（C3867/C2061 连锁）——必须 `System::Windows::Media::Animation::BeginStoryboard` 全限定；写 `Media::` 前缀也不行（`Media` 歧义到 System::Media）。
+- DataTrigger 指向控件：`DataTrigger(Binding = Binding("IsChecked", Source = darkBox), Value = true)`——绑定控件状态驱动样式，三语言同一个零事件代码思路。
+
 ## 自测
 
 1. **触发器相对事件处理的核心优势？** —— 条件消失自动还原（无 else、无状态残留），且声明在 XAML。

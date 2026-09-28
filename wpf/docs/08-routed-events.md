@@ -103,6 +103,15 @@ private void List_DoubleClick(object sender, MouseButtonEventArgs e)
 - 调试路由问题时学示例的做法：沿途每层打个日志，传播路径立刻显形
 - 自定义控件需要对外通知时优先定义路由事件（`RoutedEvent.Register`），用户就能在任意层级挂——与依赖属性同为"控件级 API"的标配
 
+## 三语言落地（含自定义路由事件，教材 6.3）
+
+- **挂载即 AddHandler**：XAML 的 `PreviewMouseDown="..."` 在代码里是 `AddHandler(UIElement.PreviewMouseDownEvent, 委托, true)`——委托类型必须是该事件专属的 `MouseButtonEventHandler`（写 RoutedEventHandler 直接 C3352）。
+- 自定义路由事件三形态：
+  - C#：`EventManager.RegisterRoutedEvent` + `static readonly RoutedEvent` + CLR 事件包装器；
+  - F#：`static let alarmEvent = EventManager.RegisterRoutedEvent(...)` + `static member AlarmEvent`——**F# 没有 add/remove 访问器语法**，包装器写不了，挂载直接 `window.AddHandler(AlarmButton.AlarmEvent, …)`；
+  - C++：`static initonly RoutedEvent^ AlarmEvent = …`，触发 `RaiseEvent(gcnew RoutedEventArgs(AlarmEvent, this))`。
+- C++ 每层容器的日志标签靠 `Dictionary<UIElement^, String^>` 查表——替代 C# 闭包捕获的"标签随处理器走"。
+
 ## 自测
 
 1. **隧道和冒泡各是什么方向、谁先触发？** —— 隧道根→子（Preview 前缀）先，冒泡子→根后。

@@ -124,6 +124,13 @@ private async void Node_Expanded(object sender, RoutedEventArgs e)
 - 树 + 列表的主从界面：`SelectedItemChanged` → 更新 VM → 详情区绑定 VM，第 15 章"三件套"的树形版
 - 展开状态要持久化（下次打开还原）的话，把 IsExpanded 序列化进配置——因为它是模型属性，这条路径是免费的
 
+## 三语言落地
+
+- **HierarchicalDataTemplate 两挂钩**：`VisualTree`（节点长相工厂）+ `ItemsSource`（**值是一个 Binding**——`hdt.ItemsSource <- Binding "Children"`，不是集合本身）。
+- `TreeView.SelectedItem` 只读不能 TwoWay：三语言都只能靠 `SelectedItemChanged` 事件拿（委托类型是 `RoutedPropertyChangedEventHandler<Object^>` 的泛型版）。
+- 代码版没再包 ViewModel：`tree.ItemsSource <- root` 直赋——数据就在手边时不必绕绑定一圈（XAML 版才需要 DataContext 供 `{Binding Root}` 解析）。
+- `VirtualizingStackPanel.IsVirtualizing` 附加属性 → `VirtualizingStackPanel.SetIsVirtualizing(tree, true)` 静态方法。
+
 ## 自测
 
 1. **HierarchicalDataTemplate 比普通 DataTemplate 多了什么？** —— `ItemsSource` 指向孩子的来源，模板由此递归套用每一层。

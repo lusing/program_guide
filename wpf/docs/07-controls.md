@@ -107,6 +107,13 @@ ToolTip 值得一提：它不是属性里的字符串，而是一个弹出的 Co
 - 输入类控件的"内容对齐"交给布局章的工具（SharedSizeGroup），不要用空格凑
 - 每类控件先用默认行为，确认不够再上样式——默认模板对键盘/无障碍的处理是你手写容易漏的
 
+## 三语言落地
+
+- **事件委托各回各家**：TextChanged→`TextChangedEventHandler`、SelectionChanged→`SelectionChangedEventHandler`、ValueChanged→`RoutedPropertyChangedEventHandler<double>`、DatePicker→`EventHandler<SelectionChangedEventArgs>`。C# 靠签名匹配共用处理器；F# 直接 `.Add(fun …)`；C++ 逐个 `gcnew` 对应委托——类型系统不认识"长得像"的处理器。
+- F# 命名实参的值是运算符表达式要括号：`ComboBoxItem(IsSelected = (city = "北京"))`，不括 FS0691。
+- 菜单工具栏（教材 4.2）、DatePicker/InkCanvas（教材 4.5.4/4.8）三版同装。F# 判 `SelectedDate`（`Nullable<DateTime>`）用 `HasValue/Value`；C++ 用 `Nullable<DateTime>` 的 `HasValue`。
+- 三态复选框的 `IsChecked` 是 `Nullable<bool>`：F# 判真 `GetValueOrDefault()`，C++ 同名方法，C# 里 `== true`。
+
 ## 自测
 
 1. **ContentControl 与 ItemsControl 的本质区别？** —— 装一个任意对象 vs 装一组对象再批量生成条目。

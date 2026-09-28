@@ -155,6 +155,13 @@ WPF 与 WinForms 的分水岭在这里：**Content/Items 装的是 object，不�
 - 自定义类型要在 XAML 里用，先加 xmlns 映射；"找不到类型"是编译期错误，比绑定错误友好得多，改起来快
 - 数字/尺寸直接写（TypeConverter 会转），颜色能写名字就写名字（`AliceBlue`），要精确值再写 `#3B82F6`（RGBA 的十六进制）
 
+## 三语言落地
+
+- **F# / C++/CLI 版没有 XAML**——XAML 编译器只生成 C# 分部类。两版都走纯代码：创建控件 → 设属性 → `Children.Add` 三步搭出同一棵对象树（`fsharp/Program.fs` 与 `cpp/HelloWpfCpp.cpp` 对照 XAML 逐行可读）。
+- F# 的 `[<STAThread>]` 要 `open System`（`STAThread` 在 System 命名空间，FS0039 是本章第一个欢迎礼）。
+- C++/CLI：`WindowStartupLocation = System::Windows::WindowStartupLocation::CenterScreen`——属性名遮蔽同名枚举类型，本路线头号坑（01 章 §8 硬事实 4）。
+- F# 里 `Grid` 的 `Children` 是只读集合属性，不能写进构造器命名实参——先建容器再 `Add`。
+
 ## 自测
 
 1. **XAML 的本质是什么？为什么它没有 if 和循环？** —— 对象图的声明式写法；它的职责只是"描述一组对象和嵌套关系"，逻辑属于 C#。

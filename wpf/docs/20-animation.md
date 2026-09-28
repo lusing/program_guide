@@ -149,6 +149,13 @@ RepeatBehavior="2x"       <!-- 播 2 遍 -->
 - 状态切换优先 VisualStateManager/模板触发器（第 14、15 章）组织动画，EventTrigger 只做"一次性入场"
 - 调动画时长时先改 Duration 再改缓动——多数"不舒服"是太长，不是曲线不对
 
+## 三语言落地（含路径动画，教材 8.2.3）
+
+- **Storyboard.TargetName 的代码版是 Storyboard.SetTarget(动画, 目标对象)**——比注册名字更直接；TargetProperty 用 `PropertyPath(Button.WidthProperty)`。启动即播的动画挂 `Loaded` 事件里 `sb.Begin()`。
+- 即发即忘的单个动画可以绕过 Storyboard：`transform.BeginAnimation(TranslateTransform.YProperty, anim)`——缓动函数对比就是这么写的（`BounceEase(Bounces = 3, Bounciness = 1.8)`）。
+- **路径动画**：`DoubleAnimationUsingPath` 要挂两个——`Source = X` 和 `Source = Y` 各驱动一个坐标，共用同一份 `PathGeometry`（贝塞尔 `BezierSegment`）。
+- 两个实测小坑：C# 在 Window 子类里 `Duration(...)` 会被成员查找劫持（CS1955，全限定解）；F# 的 `Nullable 0.3.` 双点号——`1.` 是合法字面量而 `0.3.` 不是。
+
 ## 自测
 
 1. **动画能驱动什么属性？"To 动画"从哪出发？** —— 依赖属性；从当前值出发（From 省略时）。

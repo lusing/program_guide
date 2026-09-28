@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  wpf 教程所有 C++/CLI 工程共享的属性（与 winforms 教程的 Cpp.Common.props 同族）。
+
+  为什么需要这个文件（四条实测事实，见 docs/01-overview.md §5）：
+  1. .NET Core/.NET 10 上的 C++/CLI 只能产混合模式 DLL（NETSDK1116），
+     EXE 入口由 C# 启动器工程承担（examples/*/cpp/host/）。
+  2. 裸写 <Reference Include="PresentationFramework"/> 会解析到 GAC 里
+     .NET Framework 4.x 的旧程序集（C4691 警告 + 运行时错配），
+     必须 HintPath 指向 WindowsDesktop 目标包（ref pack）。
+  3. Binding/BindingBase 的基类 MarkupExtension 本体在 System.Xaml——
+     编译器会点名要这个程序集（C3624），WPF 引用集固定为 4 个。
+  4. 源码含中文时必须给 cl 传 /utf-8（文件无 BOM 的前提下的唯一正确读法）。
+
+  如果你的机器上 ref pack 版本不同：列出已安装版本后改 DesktopRefDir 即可——
+    dir "C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref"
+-->
+<Project>
+  <PropertyGroup>
+    <DesktopRefRoot Condition="'$(DesktopRefRoot)' == ''">C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref</DesktopRefRoot>
+    <DesktopRefDir Condition="'$(DesktopRefDir)' == ''">$(DesktopRefRoot)\10.0.12\ref\net10.0</DesktopRefDir>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <Reference Include="WindowsBase">
+      <HintPath>$(DesktopRefDir)\WindowsBase.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <HintPath>$(DesktopRefDir)\PresentationCore.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <HintPath>$(DesktopRefDir)\PresentationFramework.dll</HintPath>
+    </Reference>
+    <!-- Binding 系的基类 MarkupExtension 在这里（编译器点名 C3624） -->
+    <Reference Include="System.Xaml">
+      <HintPath>$(DesktopRefDir)\System.Xaml.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

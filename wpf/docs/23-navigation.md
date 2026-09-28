@@ -135,6 +135,12 @@ MainFrame.Navigate(page);
 - 大型应用的社区标准做法：`INavigationService.NavigateTo<TViewModel>()` + DataTemplate 把 VM 映射到 View（VM 优先导航，页面不实例化）——本章的 Frame 是它的手工版，理解了前者后者只是一层注册
 - 与第 22 章的边界：向导/设置用导航；确认/输入用模态对话框——"流程"导航、"打断"对话框
 
+## 三语言落地
+
+- `NavigationUIVisibility` 枚举在 **System.Windows.Navigation** 命名空间（不是 Controls）——F# 要 `open System.Windows.Navigation`，C++ 同名 using。
+- `Frame.Navigate(page)` 三语言一致；Page 完全可以纯代码构建（C# 原版就是），F#/C++ 版把两页做成函数/静态方法，每次导航都新实例（对象导航语义）。
+- 导航栏（前进/后退）由 `NavigationUIVisibility = Visible` 开启——Frame 自带，不写一行代码。
+
 ## 自测
 
 1. **什么场景选导航而不是多窗口？** —— 功能是"同一件事的步骤/区域"，用户有前进/后退心智（向导、设置中心）。

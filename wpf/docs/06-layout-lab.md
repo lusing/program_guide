@@ -128,6 +128,13 @@
 - Viewbox 只给"图形化、固定版式"的内容；文字流界面永远走重排路线
 - 上线前把窗口拉到极小（200×100）和极大（2560 宽）各过一遍——MinWidth/MinHeight 是给极端尺寸兜底的，别裸奔
 
+## 三语言落地
+
+- **Viewbox 是 Decorator 不是 ContentControl**：子元素属性叫 `Child`，写 `.Content` 直接编译错（F# FS0039 / C++ C2039）。XAML 里 `ContentProperty` 特性把这个差异抹平了，代码建树会现形。
+- C++ 里 Viewbox 的 `Stretch` 属性赋值：枚举类型在 `System::Windows::Media`——写 `System::Windows::Stretch` 会 C2039（`Stretch` 不是 `System::Windows` 的成员）。
+- C++ 没有闭包，RadioButton 的 Checked 处理器要区分"是谁"：用 `Tag` 存枚举值、处理器里 `safe_cast` 取回（06 章起多次复用这招）。
+- SharedSizeGroup 的代码形态：`ColumnDefinition` 的 `SharedSizeGroup = "label"` 属性 + `Grid.SetIsSharedSizeScope(容器, true)`。
+
 ## 自测
 
 1. **SharedSizeGroup 需要哪三个条件才生效？** —— 祖先 IsSharedSizeScope=True、列 Width=Auto、组名一致。

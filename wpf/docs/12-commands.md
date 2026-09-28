@@ -165,6 +165,12 @@ private async Task SaveAsync() { try { ... } catch (Exception ex) { StatusText =
 - InputBindings（快捷键）+ CommandBindings 只写在 View——快捷键是界面层的事，VM 不感知
 - 菜单条目的参数化命令配合 ItemContainerStyle 是动态菜单的标准解（第 25 章实战第 7 节有完整代码）
 
+## 三语言落地（含 WPF 命令库，教材 9.2.5）
+
+- 两套命令机制并装三版：RelayCommand（ICommand 自实现，配 MVVM 数据绑定）+ `ApplicationCommands.Copy`（RoutedUICommand，配窗口级 `CommandBinding`——`Executed/CanExecute` 两个委托一次挂上）。
+- 命令可执行性重估：属性 setter 里调 `RaiseCanExecuteChanged()`——F# 里触发 `Event.Trigger(null, EventArgs.Empty)`，C++ 里 `CanExecuteChanged(this, EventArgs::Empty)`（virtual event 直接触发）。
+- F# 环引用解法定型：`let mutable addCmd = Unchecked.defaultof<RelayCommand>` + `do addCmd <- RelayCommand(…)`——比 C# 的字段初始化器啰嗦，但依赖关系更显眼。
+
 ## 自测
 
 1. **ICommand 三个成员各管什么？** —— CanExecute 能不能做（置灰）、Execute 做什么、CanExecuteChanged 通知界面重查。

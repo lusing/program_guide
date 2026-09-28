@@ -183,6 +183,15 @@ _vm.FindRequested += () => new FindReplaceWindow().Show();
 - 反馈一律用状态属性（状态栏/内联提示），弹窗只留给必须打断的决策
 - 每写一个 VM 自问：不启动界面能把主要流程跑一遍吗？能，说明分层干净
 
+## 三语言落地
+
+- **RelayCommand 三形态**——本章最值得对照的文件：
+  - C#：`Action<object?>` + 可选 `Predicate<object?>`；
+  - F#：execute/canExecute 都是函数值（`RelayCommand(exec, ?canExec)`），`CanExecuteChanged` 走 `Event<EventHandler,_>` + `[<CLIEvent>]`；
+  - C++：`Action<Object^>^` + `Predicate<Object^>^` 委托，命令体是"this + 方法组"——没有闭包，ViewModel 的方法就是命令体。
+- 三版 View 都只有 DataContext 赋值一行逻辑——"View 只认 ViewModel"在 F# 里体现得最纯粹（连事件处理器都没有）。
+- F# 的 ViewModel 环引用（属性 setter 要摸命令、命令体要摸属性）：`let mutable cmd = Unchecked.defaultof<RelayCommand>` 占位 + `do` 块补齐（12 章同一手法）。
+
 ## 自测
 
 1. **MVVM 三层各自知道谁？关键约束是哪条？** —— View→VM→Model 单向依赖；VM 不引用任何 UI 类型。

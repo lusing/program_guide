@@ -66,7 +66,7 @@
 - [sdl2](./sdl2) — SDL2 C++ 教程与示例（11 章 + 10 个单文件示例，跨平台代码），macOS 兼容性已校验：Apple clang 16.0.0 + MacPorts SDL2 2.32.10 下 `run-all.sh` 双通道（shared 动态 / static 静态带 frameworks）**10 示例 × 2 通道 = 20/20 通过**，`SDL_VIDEODRIVER=dummy` 无窗口会话 10/10 通过；校验逼出并修掉 3 处真实缺陷（02 无条件要 `SDL_RENDERER_ACCELERATED` 在 dummy 下必然失败→改事实降级、10 的 `unique_ptr` 析构晚于 `SDL_Quit()`→显式 `reset()`、06 的帧长/fps 无法字节比对→区间内只留跨机器恒真结论），新增 `run-all.sh` 并让 `build.ps1` 判定逐条对齐，CHEATSheet 收录 **22 条实测坑位**，详见 [sdl2/README.md](./sdl2/README.md)
 - [swift](./swift) — Swift 6.3.3 教程（24 章对齐 cpp20/rust/go/zig 标准：可选/协议/some-any/actor/Sendable/swift-testing/SPM 特色细讲，23 个示例四层验证 format+build+test+run；scoop 6.4.0 坏包实测复盘，钉 6.3.3 + 环境三件套配方）
 - [csharp](./csharp) — C# 语言教程（45 章 + 45 示例，章号=示例号，零 NuGet 依赖：编译 + 逐个运行验证；C# 14 扩展成员实测；主线收束 MiniLang 解释器，37-42 书本实践篇，43-45 查缺补漏篇）
-- [wpf](./wpf) — WPF 编程指南，使用 .NET SDK + WPF 运行时验证
+- [wpf](./wpf) — WPF 编程指南（**C#/F#/C++/CLI 三语言**，25 章 / 21 示例章，骨架按《WPF编程基础》(清华 2018，OCR 目录) 12 章体系 + 现代 .NET 10 重写：XAML/布局/控件族谱 / 路由事件（含自定义）/ 绑定与 MVVM 核心四连 / 样式触发器模板（含换肤）/ 验证 / DataGrid / TreeView / 绘图（含 3D 一瞥）/ 动画（含路径动画）/ 异步 / 发布三形态 / 记事本+ 实战收官），03–23 章每章 csharp(XAML)+fsharp+C++/CLI 三份同功能实现——XAML 编译器只生成 C# 分部类，F#/C++ 走纯代码 UI；C++/CLI 走"混合模式 DLL + C# 启动器"路线（NETSDK1116 / WPF 四引用含 System.Xaml / 属性名遮蔽类型名 / template 关键字等实测硬事实见 docs/01 §8），`build.ps1`（pwsh 7 + VS MSBuild）clean 全量 0 失败、`smoke.ps1` 冒烟 61 exe 全过，详见 [wpf/README.md](./wpf/README.md)
 - [zig](./zig) — Zig 0.16 教程（24 章对齐 cpp20 标准：分配器/comptime/构建系统/交叉编译特色细讲，全部示例三层验证 fmt+test+运行；macOS Darwin x86_64 实测全绿，Apple Silicon 用 `-target aarch64-macos` 逐个交叉验证，21 章内联汇编含 x86_64/aarch64 双实现）
 
 ## 统一约定

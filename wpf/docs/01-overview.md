@@ -1,9 +1,9 @@
 # 01 · WPF 概述与架构
 
-> 对应示例：`examples/03_hello_wpf`（第 8 节逐行走读）
+> 对应示例：`examples/03_hello_wpf`（第 9 节逐行走读；02–23 章示例每章都有 **C# / F# / C++/CLI 三份同功能实现**）
 
-> **本章你将学会**：WPF 是什么、它与其他 Windows UI 技术的关系、五个贯穿全书的核心概念、如何用纯命令行构建第一个 WPF 程序。
-> **前置知识**：C# 基本语法（本仓库《C# 语言教程》前几章的深度即可）。
+> **本章你将学会**：WPF 是什么、它与其他 Windows UI 技术的关系、五个贯穿全书的核心概念、三语言（C#/F#/C++/CLI）路线各走哪条路、如何用纯命令行构建第一个 WPF 程序。
+> **前置知识**：C# 基本语法（本仓库《C# 语言教程》前几章的深度即可）；读 F# / C++ 章节另需 [fsharp](../../fsharp/README.md) / 对应语言教程的前几章。
 
 ## 1. WPF 是什么
 
@@ -102,12 +102,13 @@ DirectX 硬件加速绘制到屏幕
 
 | 组件 | 路径 / 版本 |
 |---|---|
-| .NET SDK | `G:\scoop\apps\dotnet-sdk\current\dotnet.exe`（.NET 10） |
-| 构建方式 | `dotnet build`（**不需要 Visual Studio**） |
-| 编辑器 | 任意；VS 2022 / VS Code + C# Dev Kit 体验更好 |
+| .NET SDK | `G:\scoop\apps\dotnet-sdk\current\dotnet.exe`（.NET 10，`global.json` 钉 10.0.*） |
+| 构建方式 | C#/F#：`dotnet build`；C++/CLI：VS 2026 MSBuild（v145 工具集） |
+| C++/CLI 组件 | VS 安装 `Microsoft.VisualStudio.Component.VC.CLI.Support`（脚本经 vswhere 自动定位 MSBuild） |
+| 编辑器 | 任意；VS 2026 / VS Code + C# Dev Kit 体验更好 |
 | 运行平台 | Windows（WPF 不跨平台，这是它与 MAUI 的分界） |
 
-唯一硬性要求是 .NET SDK（SDK 安装包自带 Windows Desktop 运行时）。验证安装：
+只读 C# 章节的话，唯一硬性要求是 .NET SDK（SDK 安装包自带 Windows Desktop 运行时）。验证安装：
 
 ```powershell
 dotnet --version   # 输出 10.x
@@ -115,11 +116,14 @@ dotnet --version   # 输出 10.x
 
 ## 7. 用命令行构建 WPF 程序
 
-Visual Studio 向导生成的工程文件很多，但 WPF 程序的本质只需要**一个 csproj + App.xaml + MainWindow.xaml**。本目录的 `build.ps1` 逐个调用 `dotnet build` 编译全部 21 个示例：
+Visual Studio 向导生成的工程文件很多，但 WPF 程序的本质只需要**一个 csproj + App.xaml + MainWindow.xaml**。本目录的 `build.ps1` 自动发现并构建全部示例（C#/F# 走 dotnet build，C++/CLI 走 VS MSBuild）：
 
 ```powershell
 cd G:\code\guide\wpf
-.\build.ps1        # 构建全部示例（还原依赖 + 编译）
+.\build.ps1                              # 构建全部（C# + F# + C++/CLI）
+.\build.ps1 -Lang fsharp                 # 只构建某一语言：csharp | fsharp | cpp
+.\build.ps1 -Chapter 15_templates        # 只构建某一章
+.\build.ps1 -Clean                       # 清理 bin/obj/x64（脚本用安全的目录名比对，勿手写 -Include）
 ```
 
 示例工程 `examples/03_hello_wpf/HelloWpfApp.csproj` 的全貌，每一行都有注释：
@@ -139,18 +143,56 @@ cd G:\code\guide\wpf
 
 对 WPF 而言三行是开关：`OutputType=WinExe`、`net10.0-windows`、`UseWPF`。没有其他魔法。手写这三个文件（csproj + App.xaml + MainWindow.xaml）就能构建出可运行的 GUI 程序——本教程所有示例都保持这种"最小工程"形态，方便你看清每个零件。
 
-## 8. 第一个程序：逐文件走读
+## 8. 三语言路线：C# / F# / C++/CLI
 
-`examples/03_hello_wpf` 是最小的可运行 WPF 程序，一共 5 个文件：
+本教程 03–23 章的每章示例都有三份**同功能实现**（csharp / fsharp / cpp 三个目录）。三条路线的分野一句话：**XAML 是 C# 的专属红利**——XAML 编译器只生成 C# 分部类，F# 和 C++/CLI 都写不了 XAML 代码后置，因此走"纯代码 UI"路线。
+
+| | C#（主线） | F# | C++/CLI |
+|---|---|---|---|
+| 工程文件 | `.csproj` | `.fsproj` | `.vcxproj`（VS MSBuild，v145） |
+| 构建命令 | `dotnet build` | `dotnet build` | host.csproj → ProjectReference 连带 vcxproj |
+| 界面描述 | **XAML**（+ 代码后置） | 纯代码（对象初始化器） | 纯代码（gcnew 三步：建 → 设属性 → Add） |
+| 产物 | exe | exe | **混合模式 DLL + C# 启动器 exe** |
+| 事件接线 | `Click += (s,e) => …` | `btn.Click.Add(fun _ -> …)` | `gcnew RoutedEventHandler(this, &T::OnX)` |
+| 特色章节 | 全部 | 11 章（命令是函数值） | 17 章（Tag 传状态）、21 章（无 async 的三连等价物） |
+
+### 8.1 C++/CLI 路线的五条硬事实（全部本机实测）
+
+1. **NETSDK1116：.NET Core/.NET 10 的 C++/CLI 只能产动态库** → 每章"混合模式 DLL（UI 代码）+ `cpp/host/` 的 10 行 C# 启动器（ProjectReference 引 vcxproj）"。启动器上的 `[STAThread]` 服务整个 UI 线程，C++ 侧的窗口同样受益。
+2. **裸写 `<Reference Include="PresentationFramework"/>` 会解析到 GAC 的旧程序集**（C4691 警告 + 类型错配）→ HintPath 指向 WindowsDesktop 目标包（`C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\10.0.12\ref\net10.0\`），且 **Binding 的基类 MarkupExtension 本体在 System.Xaml**（编译器点名 C3624）——WPF 引用集固定为 4 个：WindowsBase、PresentationCore、PresentationFramework、System.Xaml，统一放在 `wpf/Cpp.Common.props`。
+3. **中文源码必须给 cl 传 `/utf-8`**（无 BOM 文件被按 ANSI 读，吐 C2001 怪错）——同样在 Cpp.Common.props。
+4. **属性名遮蔽同名类型**（本路线头号坑，比 WinForms 更凶）：
+   - 枚举类：`WindowStartupLocation` / `VerticalAlignment` / `Stretch`（Viewbox 的）等属性名会遮蔽同名枚举类型，赋值右侧必须全限定 `System::Windows::VerticalAlignment::Center`；
+   - 类名：Window 子类里裸写 `Style^` / `Trigger^` 被解析成 `FrameworkElement::Style` 属性 / 别的成员——`System::Windows::Style^` 全限定；
+   - 连 C# 都会中招：Window 子类里 `Duration(...)` 被解析成不可调用的成员（CS1955），要 `new System.Windows.Duration(...)`；
+   - **`template` 是 C++ 关键字**，不能当变量名（存 ControlTemplate 的变量请叫 ctrlTemplate）。
+5. **没有 lambda 捕获**：事件处理器只能是"目标对象 + 方法组"委托（`gcnew RoutedEventHandler(this, &T::OnX)`）；循环里挂处理器要带上下文就用 `Tag` 存状态、处理器里 `safe_cast` 取回（17 章 RadioButton 的做法）；`BeginStoryboard`、`FindName`（返 `Object^`）等名字要小心与成员查找打架，必要时全限定。
+
+### 8.2 F# 路线的三条要点
+
+1. **INPC 接口成员必须 `[<CLIEvent>]`]**（FS0859）：`Event<PropertyChangedEventHandler, _>()` + `pc.Publish` 暴露，触发用 `pc.Trigger(this, PropertyChangedEventArgs "Name")`；ICommand / INotifyDataErrorInfo 同理（10、11、16 章）。
+2. **XAML 三件套的代码等价物**要背下来：`{StaticResource k}` → 字典取值；`{DynamicResource k}` → `SetResourceReference(属性, k)`；`{TemplateBinding X}` → `Binding("X", RelativeSource = RelativeSource.TemplatedParent)`；`Storyboard.TargetName` → `Storyboard.SetTarget(动画, 对象)`。
+3. **可空与判空是方言区**：`IsChecked` 是 `Nullable<bool>`（判真 `GetValueOrDefault()`）；自定义类没有 `AllowNullLiteral` 就不能用 `isNull`（用 `obj.ReferenceEquals(x, null)`）；`ShowDialog()` 的返回同样判 `GetValueOrDefault()`。
+
+三语言的完整坑位清单散布在各章正文（每章"三语言落地"一节），速查见 `wpf/README.md`。
+
+## 9. 第一个程序：逐文件走读
+
+`examples/03_hello_wpf` 是最小的可运行 WPF 程序。C# 版 5 个文件：
 
 ```text
 03_hello_wpf/
-├── HelloWpfApp.csproj     # 工程定义（上一节）
-├── App.xaml               # 应用对象声明：StartupUri 指向主窗口
-├── App.xaml.cs            # App 的 C# 部分（初始为空）
-├── MainWindow.xaml        # 主窗口的界面（本节主体）
-└── MainWindow.xaml.cs     # 主窗口的逻辑（事件处理）
+├── csharp/
+│   ├── HelloWpfApp.csproj     # 工程定义（上一节）
+│   ├── App.xaml               # 应用对象声明：StartupUri 指向主窗口
+│   ├── App.xaml.cs            # App 的 C# 部分（初始为空）
+│   ├── MainWindow.xaml        # 主窗口的界面（本节主体）
+│   └── MainWindow.xaml.cs     # 主窗口的逻辑（事件处理）
+├── fsharp/                    # 同功能纯代码版（Program.fs 一个文件）
+└── cpp/                       # 同功能 C++/CLI 版（vcxproj + .cpp + host/ 启动器）
 ```
+
+三版的差异一眼看穿：C# 版靠 XAML 声明界面；F# / C++ 版"创建控件 → 设属性 → Children.Add"三步搭出同一棵对象树——**对象树殊途同归**，这正是"界面即对象"的活证明。
 
 主窗口 XAML——现在看不懂每个细节没关系，第 03、05 章会逐个拆开：
 
@@ -190,12 +232,14 @@ private void Button_Click(object sender, RoutedEventArgs e)
 
 注意 `Button_Click` 里直接用了 `NameTextBox.Text`——XAML 里写的 `x:Name="NameTextBox"` 会生成一个同名字段，这是 XAML 与 C# 的第一根连接线，第 02、03 章细讲。
 
-## 9. 本教程的结构与用法
+## 10. 本教程的结构与用法
 
 - 每章正文在 `docs/`，**章号与示例号对应**：第 06 章讲 `examples/06_layout_lab`，以此类推
-- 示例代码全部被 `build.ps1` 编译验证，且做过启动冒烟测试（拉起 3 秒不崩）
+- **03–23 章每章示例都有 csharp / fsharp / cpp 三份同功能实现**；01、02、04、24 为概念/发布章，25 实战项目为 C# 专属（F# 接手思路见该章）
+- 示例代码全部被 `build.ps1` 编译验证（61 个 exe），且做过启动冒烟测试（拉起 3 秒不崩）
 - 第 25 章是完整实战项目 `25_notepad_plus`（MVVM 架构的记事本+），把全书知识串起来
 - 学习路线按章顺序走：02 骨架 → 03-04 XAML 与依赖属性 → 05-06 布局 → 07-08 控件与事件 → 09-10 绑定 → 11-12 MVVM（**核心两连**）→ 13-15 样式触发器模板 → 16-20 专题 → 21-23 异步/对话框/导航 → 24 部署 → 25 实战
+- 只学 C# 主线的读者可以完全无视另外两份；对照阅读的最佳时机是第二遍
 
 每章末尾有"自测"，答不上来自测题就回读对应小节——比一路顺读的留存率高得多。
 
@@ -205,6 +249,7 @@ private void Button_Click(object sender, RoutedEventArgs e)
 2. **"界面即对象"在代码上意味着什么？** —— 改界面 = 改对象属性（`label.Text = "…"`），不需要句柄 + 消息。
 3. **全书五个核心概念是什么？** —— XAML、依赖属性、布局、数据绑定、MVVM。
 4. **csproj 里让工程变成 WPF 程序的三行是什么？** —— `OutputType=WinExe`、`TargetFramework=net10.0-windows`、`UseWPF=true`。
+5. **为什么 F# / C++/CLI 版不能用 XAML？各走什么替代路线？** —— XAML 编译器只生成 C# 分部类；两者都走纯代码 UI（对象初始化器 / gcnew 三步），C++/CLI 还要外加"混合模式 DLL + C# 启动器"解决 NETSDK1116。
 
 ---
 上一章：无 ｜ 下一章：[02 应用骨架与生命周期](02-app-lifecycle.md)

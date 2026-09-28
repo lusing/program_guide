@@ -163,6 +163,13 @@ public void Submit()
 - 提交按钮 CanExecute 绑 HasErrors（第 12 章命令 + 本章验证的合流），双保险
 - 第 25 章实战没做输入验证（记事本对内容无规则），把本章 FormViewModel 抄进去给"查找"对话框加"查找内容不能为空"验证，是个好练习
 
+## 三语言落地
+
+- **INotifyDataErrorInfo 是双接口秀**：C++ 里 `INotifyPropertyChanged + INotifyDataErrorInfo` 双继承，`HasErrors`/`GetErrors`/`ErrorsChanged` 三件全实现（`GetErrors` 返回非泛型 `IEnumerable`）；F# 里 ErrorsChanged 一样要 `[<CLIEvent>]`。
+- `(Validation.Errors)[0].ErrorContent` 的代码版照用：先 `RegisterName("UserNameBox", box)` 再 `Binding("(Validation.Errors)[0].ErrorContent", ElementName = "UserNameBox", FallbackValue = "")`——验证路径绑定不是 XAML 专属。
+- 自定义错误模板（红框+叹号+ToolTip）在 F#/C++ 里就是 15 章工厂法的复练：`ControlTemplate()` + `AdornedElementPlaceholder` 工厂 + `Validation.SetErrorTemplate(box, template)`。
+- 绑定侧别忘了 `ValidatesOnNotifyDataErrors = true`——代码里它是 Binding 的普通属性。
+
 ## 自测
 
 1. **三种验证方案各自的适用？为什么教程主讲 INDE？** —— 异常最简、DataAnnotation 声明式、INDE 最灵活；一属性多错误/异步/跨字段只有 INDE 撑得住。

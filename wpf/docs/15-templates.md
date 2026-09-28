@@ -155,6 +155,13 @@ ScrollViewer、边框这些"壳"也在控件模板里——`ListBox` 的完整�
 - 模板触发器的状态尽量齐：悬停、按压、禁用三态是底线
 - 列表性能：模板保持浅（第 05 章），条目内少用嵌套 Grid 套 Grid；大数据量配虚拟化（`VirtualizingStackPanel.IsVirtualizing`，第 18 章）
 
+## 三语言落地
+
+- **TargetName 触发器两件套**：`factory.Name = "Chrome"`（注册部件名，= XAML 的 `x:Name="Chrome"`）+ `Setter.TargetName = "Chrome"`（指名改它）。三语言同一动作：F# `chrome.Name <- "Chrome"`，C++ `chrome->Name = L"Chrome"`。
+- BasedOn：`Style(typeof<Button>, BasedOn = blueStyle)` / `greenStyle->BasedOn = blueStyle`——继承后只覆盖背景色，模板引用原样生效。
+- 模板工厂里 StringFormat/Style/DataTrigger 全部照常工作：徽章 TextBlock 挂 `Binding("AgeGroup")`、Ellipse 的工厂直接 `SetValue(FrameworkElement.StyleProperty, dotStyle)`（样式里装 DataTrigger）。
+- 一份 PersonCard 模板喂三个容器（ListBox/ItemsControl/ContentControl）——"模板只管长相"在三份代码里同样成立。
+
 ## 自测
 
 1. **ControlTemplate 与 DataTemplate 各回答什么问题？** —— 控件自己长什么样 vs 数据对象显示成什么样。

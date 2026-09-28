@@ -131,6 +131,13 @@ Themes/
 - 通用色一律 `x:Key` 的画刷资源，XAML 里**禁止裸写色值**（`#3B82F6` 只允许出现在 Colors.xaml）——这是可维护性的分水岭
 - 隐式样式慎用：它影响作用域内全部同类控件，全局隐式样式 + 个别特殊按钮 = 排查地狱。批量统一用它，个性化用显式样式
 
+## 三语言落地（含动态资源换肤，教材 10.3.2 / 11.3.5）
+
+- **Trigger 没有 (属性, 值) 构造器**：F# 写 `Trigger(Property = Control.IsMouseOverProperty, Value = true)`（XAML 属性语法的直接映射）；C++ 默认构造 + 逐属性赋值——两语言实测同坑。
+- C++ 里 `Style` 类名被 Window 的 `Style` **属性**遮蔽（C2039 连锁报错）：声明必须 `System::Windows::Style^`；`Trigger` 同理。另外 **`template` 是 C++ 关键字**，存 ControlTemplate 的变量不能叫 template。
+- 换肤三件套：资源进字典 `Resources.Add("accentBrush", 刷子)`；按钮 `SetResourceReference(Button.BackgroundProperty, "accentBrush")`（= `{DynamicResource}`）；点击换 `Resources["accentBrush"] = 新刷子`——所有引用处就地刷新。
+- TemplateBinding 是 XAML 专属标记扩展：代码等价物 `Binding("Background", RelativeSource = RelativeSource.TemplatedParent)`。
+
 ## 自测
 
 1. **资源查找链的顺序？App 级资源的价值？** —— 沿逻辑树向上直到 App.Resources 再到系统主题；全局可用、换主题集中修改。

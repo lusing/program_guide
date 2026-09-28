@@ -181,6 +181,12 @@ public bool IsBusy
 - 超时也是取消家族：`CancellationTokenSource(TimeSpan.FromSeconds(10))` 构造即定时
 - 第 25 章实战的文件读写全走异步 API（`File.ReadAllBytesAsync`/`WriteAllTextAsync`），状态栏实时显示"正在打开…/已保存"——本章模式的最小完整落地
 
+## 三语言落地
+
+- **F# 的 async/await 对应物是 `task { }`**——await 之后自动回 UI 线程，循环里直接改 ViewModel 属性，不用 Dispatcher。
+- **C++/CLI 没有 async/await**：等价物是三连——`Task::Delay(200)->ContinueWith(处理器)` → 处理器落在线程池线程 → `Dispatcher->InvokeAsync(gcnew Action(...))` 回 UI 线程再走下一步。链条长但每环都是 16 章 Dispatcher 概念的复用。
+- 三版进度条都走 `Value="{Binding Progress}"` 绑定——UI 线程语义对了，绑定传播就不需要任何额外代码。
+
 ## 自测
 
 1. **await 前后为什么都能直接改绑定属性？** —— SynchronizationContext 记住了 UI 线程，续体自动排回 Dispatcher。
