@@ -1,7 +1,7 @@
 package guide.android.compose.jni
 
 /**
- * 第 24 章 POSIX Socket：TCP/UDP/UNIX domain 回环 echo。
+ * 第 31 章 POSIX Socket：TCP/UDP/UNIX domain 回环 echo。
  * 镜像文件：cpp/native_sockets.cpp
  */
 object SocketBridge {

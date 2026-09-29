@@ -2,11 +2,11 @@
 
 > 对应示例：`compose_examples/app/src/main/java/guide/android/compose/samples/StateSamples.kt`
 
-第 12 章教会了"状态驱动界面"，第 14 章把业务状态搬进了 ViewModel。本章回到 Compose 自己的两台底层机器——**状态**与**重组**——把它们拆开看：重组的范围是怎么划定的、什么时候组件会被"跳过"、`remember` 的三条等高线（重组 / 配置变更 / 进程回收）、以及 `derivedStateOf`、`snapshotFlow` 这类为性能而生的 API。学完本章，"列表为什么卡""状态为什么丢""界面为什么不刷新"三类问题都有了系统性的排查路径。
+第 19 章教会了"状态驱动界面"，第 21 章把业务状态搬进了 ViewModel。本章回到 Compose 自己的两台底层机器——**状态**与**重组**——把它们拆开看：重组的范围是怎么划定的、什么时候组件会被"跳过"、`remember` 的三条等高线（重组 / 配置变更 / 进程回收）、以及 `derivedStateOf`、`snapshotFlow` 这类为性能而生的 API。学完本章，"列表为什么卡""状态为什么丢""界面为什么不刷新"三类问题都有了系统性的排查路径。
 
 ## 1. 重组的范围：读到状态的那个代码块
 
-第 12 章说过重组是"智能的"，现在把"智能"说精确。Compose 编译器会给每个 Composable 函数与 lambda 插桩：**函数体在执行中读了哪个可变状态，就与它建立订阅**。状态变化时，读到它的**最小代码块**被标记失效，下一帧重新执行——这就是重组的最小范围。
+第 19 章说过重组是"智能的"，现在把"智能"说精确。Compose 编译器会给每个 Composable 函数与 lambda 插桩：**函数体在执行中读了哪个可变状态，就与它建立订阅**。状态变化时，读到它的**最小代码块**被标记失效，下一帧重新执行——这就是重组的最小范围。
 
 但"最小代码块"有资格限制：必须是**非 inline 且无返回值的 Composable 函数或 lambda**。这解释了两个日常现象：
 
@@ -56,7 +56,7 @@ private fun StableTagRow(item: StableTagList) {
 
 - `data class` 尽量全 `val` + 稳定类型属性，让编译器自动判稳
 - 实在要用 `List` 字段，要么换 `ImmutableList`（kotlinx.collections.immutable），要么给类加 `@Stable` 并自律不改内容
-- `UiState` 密封类（第 14 章第 3 节）加 `@Stable`，列表屏幕的跳过效率会好一截
+- `UiState` 密封类（第 21 章第 3 节）加 `@Stable`，列表屏幕的跳过效率会好一截
 
 ## 3. key()：给循环里的组件发身份证
 
@@ -70,11 +70,11 @@ rows.forEach { row ->
 }
 ```
 
-`key(row.id)` 给循环里的组件发放了**运行时身份**：插入头部后，旧行的 id 没变、参数没变，逐个被跳过——计数器纹丝不动，只有新行从 1 开始计。这正是第 13 章 `LazyColumn` 的 `items(list, key = { it.id })` 的底层原理：Lazy 列表把 key 机制做成了参数；普通 `Column + forEach` 场景就手包一层 `key()`。**只要列表会增删/排序，且条目内有状态或重组成本高，key 必给。**
+`key(row.id)` 给循环里的组件发放了**运行时身份**：插入头部后，旧行的 id 没变、参数没变，逐个被跳过——计数器纹丝不动，只有新行从 1 开始计。这正是第 20 章 `LazyColumn` 的 `items(list, key = { it.id })` 的底层原理：Lazy 列表把 key 机制做成了参数；普通 `Column + forEach` 场景就手包一层 `key()`。**只要列表会增删/排序，且条目内有状态或重组成本高，key 必给。**
 
 ## 4. remember 的三条等高线：rememberSaveable
 
-第 14 章第 1 节给过 `remember` / `rememberSaveable` / `ViewModel` 的对照表，本章补上 `rememberSaveable` 的机制细节。`StateSaveableSample`（状态1）是两条可点的计数器，旋转屏幕后一条归零、一条保留：
+第 21 章第 1 节给过 `remember` / `rememberSaveable` / `ViewModel` 的对照表，本章补上 `rememberSaveable` 的机制细节。`StateSaveableSample`（状态1）是两条可点的计数器，旋转屏幕后一条归零、一条保留：
 
 ```kotlin
 var plain by remember { mutableIntStateOf(0) }          // 活过重组，死于配置变更
@@ -95,7 +95,7 @@ val CitySaver = listSaver<City, Any>(save = { listOf(it.name, it.population) },
 val city = rememberSaveable(stateSaver = CitySaver) { mutableStateOf(City("北京", 2189)) }
 ```
 
-一句话选型（承接第 14 章的表格）：界面小状态过旋转用 `rememberSaveable`；带业务逻辑的屏幕状态交给 ViewModel；`ViewModel` + `SavedStateHandle` 组合能同时活过进程回收——那是第 14 章的领地。
+一句话选型（承接第 21 章的表格）：界面小状态过旋转用 `rememberSaveable`；带业务逻辑的屏幕状态交给 ViewModel；`ViewModel` + `SavedStateHandle` 组合能同时活过进程回收——那是第 21 章的领地。
 
 ## 5. derivedStateOf：一份数据，两种变化频率
 
@@ -145,12 +145,12 @@ private fun CountdownStrip(totalSeconds: Int, onTick: () -> Unit, onDone: () -> 
 
 ## 8. StateHolder：状态与逻辑一起搬出 Composable
 
-第 12 章的"状态提升"把状态搬到调用方；当**多个状态 + 配套逻辑**长在一起（步进计数器的 count/step/increment/reset），逐个提升会让调用方参数爆炸。第三个选项：写一个普通类打包，`remember` 进组合——状态容器（StateHolder）：
+第 19 章的"状态提升"把状态搬到调用方；当**多个状态 + 配套逻辑**长在一起（步进计数器的 count/step/increment/reset），逐个提升会让调用方参数爆炸。第三个选项：写一个普通类打包，`remember` 进组合——状态容器（StateHolder）：
 
 ```kotlin
 private class CounterStateHolder(initial: Int = 0) {
     var count by mutableIntStateOf(initial)
-        private set                       // 对外只读，写走方法——与第 14 章 VM 同一纪律
+        private set                       // 对外只读，写走方法——与第 21 章 VM 同一纪律
     var step by mutableIntStateOf(1)
     fun increment() { count += step }
     fun reset() { count = 0 }
@@ -192,4 +192,4 @@ private fun rememberCounterState() = remember { CounterStateHolder() }
 
 ---
 
-上一章：[14 Compose 工程化架构](14-compose-architecture.md) ｜ 下一章：[16 Compose 自定义布局与绘制](16-compose-layout-draw.md) ｜ 返回：[README](../README.md)
+上一章：[21 Compose 工程化架构](21-compose-architecture.md) ｜ 下一章：[23 Compose 自定义布局与绘制](23-compose-layout-draw.md) ｜ 返回：[README](../README.md)

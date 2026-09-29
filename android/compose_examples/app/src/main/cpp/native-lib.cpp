@@ -1,4 +1,4 @@
-// 第 20 章：JNI 最小闭环 + 原生日志 + JNI_OnLoad
+// 第 27 章：JNI 最小闭环 + 原生日志 + JNI_OnLoad
 // Kotlin 侧镜像：jni/GuideNativeBridge.kt
 #include <jni.h>
 #include <string>
@@ -6,7 +6,7 @@
 
 #include <android/log.h>
 
-// 第 23 章 native_threads.cpp 使用：JNI_OnLoad 时缓存 JavaVM。
+// 第 30 章 native_threads.cpp 使用：JNI_OnLoad 时缓存 JavaVM。
 // JNIEnv 是线程局部的，不能缓存跨线程使用；JavaVM 是进程级的，可以。
 // （JNI_OnLoad 全库只定义一次，在 native_threads.cpp，那里顺带预取回调类）
 JavaVM* g_guideJavaVm = nullptr;
@@ -18,7 +18,7 @@ Java_guide_android_compose_jni_GuideNativeBridge_stringFromJNI(JNIEnv* env, jobj
 }
 
 // 原生日志：printf 在 Android 上没有控制台可去，标准输出是空的；
-// native 世界的"打印"出口是 logcat（教程 20 章第 8 节）。
+// native 世界的"打印"出口是 logcat（教程 27 章第 8 节）。
 extern "C" JNIEXPORT jstring JNICALL
 Java_guide_android_compose_jni_GuideNativeBridge_logFromNative(JNIEnv* env, jobject, jstring tag) {
     const char* tagChars = env->GetStringUTFChars(tag, nullptr);

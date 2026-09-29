@@ -25,10 +25,10 @@ import guide.android.compose.jni.SocketBridge
 import java.io.File
 import java.nio.ByteBuffer
 
-// 第 20–25 章原生线示例：每条对应 cpp/ 下一个 JNI 函数。
+// 第 27–32 章原生线示例：每条对应 cpp/ 下一个 JNI 函数。
 // 纯计算在 remember { } 里调一次即收；会碰文件/线程的写法保证真机可跑。
 
-// ---------- 第 20 章：日志 ----------
+// ---------- 第 27 章：日志 ----------
 
 @Composable
 fun JniLogSample() {
@@ -41,7 +41,7 @@ fun JniLogSample() {
     )
 }
 
-// ---------- 第 21 章：JNI 深入 ----------
+// ---------- 第 28 章：JNI 深入 ----------
 
 @Composable
 fun JniDeepStringSample() {
@@ -147,7 +147,7 @@ fun JniDeepReferenceSample() {
     }
 }
 
-// ---------- 第 22 章：Bionic ----------
+// ---------- 第 29 章：Bionic ----------
 
 @Composable
 fun BionicSystemSample() {
@@ -200,7 +200,7 @@ fun BionicStlSample() {
     )
 }
 
-// ---------- 第 23 章：原生线程 ----------
+// ---------- 第 30 章：原生线程 ----------
 
 @Composable
 fun NativeThreadSample() {
@@ -219,7 +219,7 @@ fun NativeThreadSample() {
     )
 }
 
-// ---------- 第 24 章：POSIX Socket ----------
+// ---------- 第 31 章：POSIX Socket ----------
 
 @Composable
 fun SocketEchoSample() {
@@ -246,7 +246,7 @@ fun SocketLocalEchoSample() {
     )
 }
 
-// ---------- 第 25 章：图形、音频与 NEON ----------
+// ---------- 第 32 章：图形、音频与 NEON ----------
 
 @Composable
 fun MediaBitmapSample() {

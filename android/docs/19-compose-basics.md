@@ -63,17 +63,17 @@ class MainActivity : ComponentActivity() {
                         .verticalScroll(rememberScrollState())
                         .padding(16.dp)
                 ) {
-                    // 第 12 章基础示例（ComposeSamples.kt）
+                    // 第 19 章基础示例（ComposeSamples.kt）
                     ComposeCounterSample()
                     ComposeLazyListSample()
                     // ……主题/表单/卡片/布局/互操作示例、JNI 示例
-                    // 第 13 章组件与交互示例（UiSamples.kt）
+                    // 第 20 章组件与交互示例（UiSamples.kt）
                     UiButtonsSample()
                     // ……Scaffold/对话框/列表进阶/副作用/动画/主题示例
-                    // 第 14 章架构示例（AdvancedSamples.kt）
+                    // 第 21 章架构示例（AdvancedSamples.kt）
                     AdvancedViewModelStateFlowSample()
                     // ……Navigation/Room/WorkManager/UiState 示例
-                    // 第 15–19 章深入课示例（State/LayoutDraw/Animation/Gesture/Ecosystem 五个文件）
+                    // 第 22–26 章深入课示例（State/LayoutDraw/Animation/Gesture/Ecosystem 五个文件）
                     StateSaveableSample()
                     // ……稳定性/key/派生状态/自定义布局/Canvas/动画/手势/手动 DI 等示例
                 }
@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
 - `ComponentActivity` 与第 04 章讲解的是同一谱系（`androidx.activity` 提供），生命周期回调一个不少——Compose 没有"另起炉灶"
 - `setContent { }` 是 `activity-compose` 提供的扩展函数，代替 `setContentView`；花括号内就是界面本身
 - `Surface` + `MaterialTheme.colorScheme.background`：Material3 主题的背景容器（第 10 节展开）
-- 中段 `Ui*` 是第 13 章的组件与交互示例，末段 `Advanced*` 是第 14 章的架构示例；本章只看前段
+- 中段 `Ui*` 是第 20 章的组件与交互示例，末段 `Advanced*` 是第 21 章的架构示例；本章只看前段
 
 开关在 `app/build.gradle.kts`：
 
@@ -113,7 +113,7 @@ android {
 | `androidx.activity:activity-compose` | 1.10.1 | `setContent` 入口 |
 | `androidx.compose.ui:ui` | 1.7.8 | runtime、布局、输入、Modifier |
 | `androidx.compose.material3:material3` | 1.3.1 | Material 3 组件与主题 |
-| `androidx.compose.material:material-icons-core` | 1.7.8 | Material 图标核心集（第 13 章） |
+| `androidx.compose.material:material-icons-core` | 1.7.8 | Material 图标核心集（第 20 章） |
 | `androidx.compose.ui:ui-tooling-preview` | 1.7.8 | `@Preview` 预览支持 |
 
 ## 3. @Composable：函数即组件
@@ -148,7 +148,7 @@ var count by remember { mutableIntStateOf(0) }
 
 关键推论：**函数体会被反复执行**。所以函数体必须"纯"——同样的状态进来，产出同样的界面；网络请求、写库、弹 Toast 这类副作用不能直接放函数体里（第 9 节）。
 
-还有一个边界要划清：`remember` 活过重组，但**不活过 Activity 重建**（旋转屏幕、切换深色模式，见[第 04 章](04-activity-lifecycle.md)）——旋转后 `count` 归零不是 bug，是设计边界。跨过这条边界就需要 ViewModel，那是[第 14 章](14-compose-architecture.md)的动机。
+还有一个边界要划清：`remember` 活过重组，但**不活过 Activity 重建**（旋转屏幕、切换深色模式，见[第 04 章](04-activity-lifecycle.md)）——旋转后 `count` 归零不是 bug，是设计边界。跨过这条边界就需要 ViewModel，那是[第 21 章](21-compose-architecture.md)的动机。
 
 ## 5. 状态提升：状态放哪，事件往哪流
 
@@ -194,7 +194,7 @@ var input by remember { mutableStateOf("") }
 ValidatedField(input, { input = it })
 ```
 
-提升到哪层为止？提到"需要这份状态的最小共同祖先"为止；再往上（跨屏、业务级）就该交给 ViewModel 了（[第 14 章](14-compose-architecture.md)）。
+提升到哪层为止？提到"需要这份状态的最小共同祖先"为止；再往上（跨屏、业务级）就该交给 ViewModel 了（[第 21 章](21-compose-architecture.md)）。
 
 ## 6. Modifier：普通对象，不是魔法字符串
 
@@ -357,9 +357,9 @@ fun ComposeLazyListSample() {
 | 复用机制 | 手写ViewHolder 复用 | 框架只组合可见项 |
 | 代码量 | 几十到上百行 | 六行 |
 
-Lazy 的含义是**虚拟化**：不是把所有项都组合出来，而是只组合视口内（及附近）的项，滚动时按需创建销毁——RecyclerView 用 ViewHolder 复用达成的目标，Compose 用"函数随叫随到"达成。数据是静态的所以 `remember` 了一次；真实应用里列表数据通常来自 ViewModel（[第 14 章](14-compose-architecture.md)）。
+Lazy 的含义是**虚拟化**：不是把所有项都组合出来，而是只组合视口内（及附近）的项，滚动时按需创建销毁——RecyclerView 用 ViewHolder 复用达成的目标，Compose 用"函数随叫随到"达成。数据是静态的所以 `remember` 了一次；真实应用里列表数据通常来自 ViewModel（[第 21 章](21-compose-architecture.md)）。
 
-选型：几个固定项用 `Column` + `forEach`（第 10 节的卡片列表就是这么写的）；可能超屏、动态增删的列表用 `LazyColumn`，并建议 `items(list, key = { it.id })` 给稳定 key，帮框架识别增删——key 的语义、增删动画与横向 `LazyRow` 在[第 13 章](13-compose-ui.md)第 4 节展开。
+选型：几个固定项用 `Column` + `forEach`（第 10 节的卡片列表就是这么写的）；可能超屏、动态增删的列表用 `LazyColumn`，并建议 `items(list, key = { it.id })` 给稳定 key，帮框架识别增删——key 的语义、增删动画与横向 `LazyRow` 在[第 20 章](20-compose-ui.md)第 4 节展开。
 
 ## 10. Material 3：主题与卡片
 
@@ -392,7 +392,7 @@ MaterialTheme(colorScheme = if (dark) darkColorScheme() else lightColorScheme())
 }
 ```
 
-这样所有组件统一从 `MaterialTheme.colorScheme` 读颜色。`MaterialTheme` 本质是框架用 CompositionLocal 提供的"隐式环境参数"，`MainActivity` 里的 `Surface(color = MaterialTheme.colorScheme.background)` 就是它的消费方。本章只展示了主题"读"的一面；应用级骨架（`Scaffold` 顶栏/浮动按钮/Snackbar）、按钮族、对话框等成套组件在[第 13 章](13-compose-ui.md)。
+这样所有组件统一从 `MaterialTheme.colorScheme` 读颜色。`MaterialTheme` 本质是框架用 CompositionLocal 提供的"隐式环境参数"，`MainActivity` 里的 `Surface(color = MaterialTheme.colorScheme.background)` 就是它的消费方。本章只展示了主题"读"的一面；应用级骨架（`Scaffold` 顶栏/浮动按钮/Snackbar）、按钮族、对话框等成套组件在[第 20 章](20-compose-ui.md)。
 
 `ComposeCardListSample` 则是 Material 容器组件的样子：
 
@@ -417,7 +417,7 @@ fun ComposeCardListSample() {
 
 Compose 与 View 不是二选一：存量工程可以逐屏迁移，两种方向各有官方桥梁。
 
-**Compose 里嵌传统 View** 用 `AndroidView`。`ComposeInteropSample`（示例 8，第 12 章示例文件的最后一条）：
+**Compose 里嵌传统 View** 用 `AndroidView`。`ComposeInteropSample`（示例 8，第 19 章示例文件的最后一条）：
 
 ```kotlin
 AndroidView(
@@ -437,7 +437,7 @@ AndroidView(
 
 **状态忘了 remember**：写成 `var count = 0`，或 `var input by mutableStateOf("")` 不套 `remember`——每次重组都重新初始化。症状是"界面不理你"：点击计数没反应、输入框打不出字（每敲一个字符，重组把状态抹回初值）。不报错，极具迷惑性。
 
-**在重组里做副作用**：函数体里直接发请求、写文件、弹 Toast——重组次数与时机不受你控制（父级刷新、主题变化、旋转都会触发），副作用会无端多跑。用 `LaunchedEffect(key) { }`（key 变化才重新执行）承载副作用，API 全家福见[第 13 章](13-compose-ui.md)第 5 节；业务型副作用干脆上移到 ViewModel（[第 14 章](14-compose-architecture.md)）。
+**在重组里做副作用**：函数体里直接发请求、写文件、弹 Toast——重组次数与时机不受你控制（父级刷新、主题变化、旋转都会触发），副作用会无端多跑。用 `LaunchedEffect(key) { }`（key 变化才重新执行）承载副作用，API 全家福见[第 20 章](20-compose-ui.md)第 5 节；业务型副作用干脆上移到 ViewModel（[第 21 章](21-compose-architecture.md)）。
 
 **Modifier 顺序敏感**：`clickable` 与 `padding` 谁在外层，点击区就差一块（第 6 节）。Compose 不给任何警告，布局"反了"先查链序。
 
@@ -445,12 +445,12 @@ AndroidView(
 
 ## 13. 实战建议
 
-- 界面小状态（输入内容、开关）用 `remember`；屏幕级、业务级状态进 ViewModel（[第 14 章](14-compose-architecture.md)），不要什么都塞 `remember`
+- 界面小状态（输入内容、开关）用 `remember`；屏幕级、业务级状态进 ViewModel（[第 21 章](21-compose-architecture.md)），不要什么都塞 `remember`
 - 派生值永远现算，不存第二份状态——"两处状态不同步"这一整类 bug 从根上消灭
 - 自定义组件写成无状态 + `modifier` 参数，状态放调用方：复用、预览、测试三赢
-- 超过一屏或动态增删的列表用 `LazyColumn` 并给 `key`；几个固定项才用 `Column` + `forEach`；列表进阶（key 语义、增删动画、LazyRow）见[第 13 章](13-compose-ui.md)
+- 超过一屏或动态增删的列表用 `LazyColumn` 并给 `key`；几个固定项才用 `Column` + `forEach`；列表进阶（key 语义、增删动画、LazyRow）见[第 20 章](20-compose-ui.md)
 - 改完跑 `.\build.ps1 -Compose` 做编译验证，这是本仓库的标准流程（[第 02 章](02-project-toolchain.md)）
-- 第 26 章实战项目会把本章与第 13、14 章的内容串成一个完整应用
+- 第 33 章实战项目会把本章与第 13、21 章的内容串成一个完整应用
 
 ---
-上一章：[11 运行时权限、ContentResolver 与硬件服务](11-permissions-content.md) ｜ 下一章：[13 Compose 组件与交互](13-compose-ui.md) ｜ 返回：[README](../README.md)
+上一章：[18 WebView 与混合开发](18-webview-hybrid.md) ｜ 下一章：[20 Compose 组件与交互](20-compose-ui.md) ｜ 返回：[README](../README.md)

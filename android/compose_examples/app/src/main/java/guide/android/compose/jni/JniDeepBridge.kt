@@ -3,7 +3,7 @@ package guide.android.compose.jni
 import java.nio.ByteBuffer
 
 /**
- * 第 21 章 JNI 深入：字符串/数组/NIO/域/方法/异常/引用。
+ * 第 28 章 JNI 深入：字符串/数组/NIO/域/方法/异常/引用。
  * 镜像文件：cpp/jni_deep.cpp——改方法名/签名时两边必须同步。
  */
 object JniDeepBridge {
@@ -55,7 +55,7 @@ object JniDeepBridge {
     /** 全局引用跨调用存活：上次 Remember 的值仍可取回 */
     external fun nativeRecallTag(): String
 
-    /** DeleteGlobalRef 显式释放；弱全局引用见教程 21 章第 8 节 */
+    /** DeleteGlobalRef 显式释放；弱全局引用见教程 28 章第 8 节 */
     external fun nativeForgetTag()
 
     // ---- 供 native 回调的方法（描述符见 cpp 注释）----

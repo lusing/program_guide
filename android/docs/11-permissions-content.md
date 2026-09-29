@@ -18,7 +18,7 @@ Android 是多应用沙箱系统：你的应用默认什么敏感资源都摸不
 <uses-permission android:name="android.permission.CAMERA" />
 ```
 
-只声明不请求 → 用相机照样被拒；只请求不声明（见第 6 节）→ 请求立即被驳回。声明是"资格"，请求是"使用时的签字"。
+只声明不请求 → 用相机照样被拒；只请求不声明（见第 7 节）→ 请求立即被驳回。声明是"资格"，请求是"使用时的签字"。
 
 危险权限总共几十个，按**权限组**（permission group）归类，系统设置里用户看到的开关也是按组展示的：
 
@@ -165,7 +165,56 @@ contentResolver.query(
 
 与读系统设置唯一的区别是换了 URI 和列名——五参数模型、Cursor 遍历、`use` 收尾原样复用。官方把每类数据的 URI 和列名都定成常量（`ContactsContract`、`MediaStore`），查文档就是查这张常量表。
 
-## 4. 位置：LocationManager
+## 4. 自建 ContentProvider 与数据变更监听
+
+第 3 节站在客户端读系统的数据；把自己的数据供出去（或供给自己进程外的组件），就轮到**服务端**（取材：疯狂Android讲义 9.2/9.4）。
+
+**两步开工**：继承 `ContentProvider`，实现六个方法——`onCreate`（首次被访问时回调一次，懒加载的钩子）、`query/insert/update/delete`（CRUD，参数形态与 ContentResolver 完全对称——它就是被 ContentResolver 跨进程"隔空调用"的那一头）、`getType`（返回 Uri 的 MIME 类型）；然后 manifest 注册：
+
+```xml
+<provider
+    android:name=".DictProvider"
+    android:authorities="guide.android.examples.dictprovider"
+    android:exported="true" />
+```
+
+`authorities` 是这个提供器的"域名"——`content://guide.android.examples.dictprovider/words` 里，中间一段就是它，末段是资源路径（`words` 全表、`word/2` 单条、`word/2/word` 单字段）。
+
+**UriMatcher 是服务端的分拣员**——注册 Uri 模式到整数码，每个方法进来先 `match(uri)` 分流：
+
+```kotlin
+private val matcher = UriMatcher(UriMatcher.NO_MATCH).apply {
+    addURI(AUTHORITY, "words", WORDS)          // 全表 → 1
+    addURI(AUTHORITY, "word/#", WORD_ID)       // '#' 通配数字段 → 2
+}
+// query() 里：
+when (matcher.match(uri)) {
+    WORDS -> db.query("dict", projection, selection, args, null, null, sort)
+    WORD_ID -> db.query("dict", projection, "_id=?", arrayOf(ContentUris.parseId(uri).toString()), ...)
+    else -> throw IllegalArgumentException("Unknown URI: $uri")
+}
+```
+
+`ContentUris.withAppendedId(uri, id)` 反向拼、`parseId(uri)` 拆——id 进出 Uri 都靠这对工具。
+
+**数据变更通知是这对协议的回程票**：提供器在 insert/update/delete 成功后调一行 `context?.contentResolver?.notifyChange(uri, null)`，客户端就能收到——**忘了这行，客户端的观察者永远沉默**（自建 provider 最常见的"不工作"）。客户端注册观察者：
+
+```kotlin
+contentResolver.registerContentObserver(
+    uri, true,                              // true = 子路径变化也通知（notifyForDescendents）
+    object : ContentObserver(android.os.Handler(android.os.Looper.getMainLooper())) {
+        override fun onChange(selfChange: Boolean) {   // 数据变了，重查
+            reloadFromProvider()
+        }
+    })
+// 用完 unregisterContentObserver——离开界面必须注销，否则泄漏 + 空指针
+```
+
+书里的经典应用是监听 `content://sms` 短信库变化——**2026 校准**：`READ_SMS` 早已是危险权限且应用必须被设为默认短信 App 才真正读得到，这类"监听系统库"的玩法基本封死；ContentObserver 的活跃场景移到了自己 App 的 provider（进程间同步：主进程写、Widget 进程听）与 `MediaStore`（拍照入库后刷新相册列表）。
+
+**自建 provider 的现代选型**：App 内部**不需要** provider（Room 直接访问即可，加一层只添堵）；真正的高频场景只有两个——**`FileProvider`**（把私有文件以 `content://` Uri 分享给别的 App，配合 Intent 用，`support-file-provider` 一配即用，见 09 章 Scoped Storage）与跨进程共享数据（输入法词库、桌面插件数据源）。`exported="true"` + 自定义权限（permission 属性挂读写两级）是对外供数的安全底线；Android 12 起 exported 必须显式写。
+
+## 5. 位置：LocationManager
 
 位置是"危险权限 + 硬件服务"的典型组合。`examples/17_location_manager.kt` 完整生命周期：
 
@@ -211,7 +260,7 @@ val last = locationManager?.getLastKnownLocation(LocationManager.GPS_PROVIDER)
 
 权限上，`ACCESS_FINE_LOCATION`（精确）与 `ACCESS_COARSE_LOCATION`（粗略）**都是危险权限**，manifest 声明 + 运行时请求两步走（第 2 节流程原样套用）；targetSdk 31+ 若声明 FINE 必须同时声明 COARSE。生态里更常用的是 Google Play services 的 `FusedLocationProviderClient`（融合定位）：一个 API 自动融合 GPS/网络/传感器并做电池优化——但它是外部依赖，本章先用框架自带的 LocationManager 把机制讲透。
 
-## 5. 传感器：SensorManager
+## 6. 传感器：SensorManager
 
 传感器（sensor）是同一套"系统服务 + 注册监听"模式的最纯样本。`examples/18_sensor_manager.kt`：
 
@@ -244,11 +293,11 @@ override fun onDestroy() {
 - `getDefaultSensor(Sensor.TYPE_ACCELEROMETER)` 按类型取加速度计，**可能返回 `null`**（低端机、无该硬件的模拟器）——判空再注册是硬要求；同理还有 `TYPE_GYROSCOPE`、`TYPE_LIGHT` 等
 - `SensorEventListener` 是双方法接口，只能写 `object` 表达式：`onSensorChanged` 收数据（`event.values` 是 `FloatArray`，加速度计三轴各一），`onAccuracyChanged` 收精度变化（多数应用忽略）
 - 第三个参数 `SENSOR_DELAY_NORMAL` 是采样速率档位：`NORMAL`（约 5 次/秒）→ `UI` → `GAME` → `FASTEST`（不做节流）。**越快越耗电**，按需选档，别默认拉满
-- `onDestroy` 里 `unregisterListener`：传感器回调默认走主线程、离开界面仍在采样，不注销是后台耗电的经典来源（第 6 节）
+- `onDestroy` 里 `unregisterListener`：传感器回调默认走主线程、离开界面仍在采样，不注销是后台耗电的经典来源（第 7 节）
 
 和 LocationManager 对照记忆：**取服务 → 拿到"源" → `register` 监听 → `unregister` 收尾**，Android 的硬件访问几乎全是这四步。
 
-## 6. 常见坑
+## 7. 常见坑
 
 **manifest 漏声明**：只写了运行时请求、忘了 `<uses-permission>`。症状极具迷惑性——`requestPermissions` 对话框弹都不弹，`onRequestPermissionsResult` 立刻返回拒绝。排查权限问题永远先看 manifest，再看授权态，最后看代码。
 
@@ -258,14 +307,14 @@ override fun onDestroy() {
 
 **主线程解析大量 Cursor**：`Cursor` 的数据躺在跨进程的 `CursorWindow` 里，`moveToNext` + `getString` 是逐行 IPC 拷贝——查几百行通讯录在主线程做就是 ANR 预备役。遍历放后台线程/协程（第 08 章），只把结果列表带回主线程。
 
-## 7. 实战建议
+## 8. 实战建议
 
 - 权限请求写进"功能触发的时刻"（点拍照才请求相机），而不是启动时排队轰炸；先查 `checkSelfPermission`，已授权绝不重复弹
 - 新代码一律 Activity Result API；老式 `requestPermissions` + requestCode 只用于读旧工程
 - 为"拒绝后"设计：权限被拒不是错误路径，是正常分支——拍照没有相机权限就切系统相机应用（第 06 章隐式 Intent），定位被拒就手选城市
 - 读写系统数据（通讯录、媒体库）用 `ContentResolver` + 官方 Contract 类，别琢磨文件路径直读——Scoped Storage 之下后者既不可行也不体面
 - 硬件服务四步诀"取服务、拿源、注册、注销"背下来，位置与传感器如此，指南针、计步器也如此
-- 第 26 章的 MemoPad 不涉及权限与硬件，但通知权限链路（第 10 章）与本章第 2 节的流程会在你自己的扩展需求里天天见面
+- 第 33 章的 MemoPad 不涉及权限与硬件，但通知权限链路（第 10 章）与本章第 2 节的流程会在你自己的扩展需求里天天见面
 
 ---
-上一章：[10 BroadcastReceiver、Service 与通知](10-system-components.md) ｜ 下一章：[12 Jetpack Compose 基础](12-compose-basics.md) ｜ 返回：[README](../README.md)
+上一章：[10 BroadcastReceiver、Service 与通知](10-system-components.md) ｜ 下一章：[12 传统 View 深水区：布局、菜单与样式](12-views-deep.md) ｜ 返回：[README](../README.md)

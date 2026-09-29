@@ -1,4 +1,4 @@
-// 第 25 章：原生图形、音频与 NEON——Bitmap 直访/OpenSL ES/EGL 探测/NEON intrinsics
+// 第 32 章：原生图形、音频与 NEON——Bitmap 直访/OpenSL ES/EGL 探测/NEON intrinsics
 // Kotlin 侧镜像：jni/MediaBridge.kt
 #include <jni.h>
 #include <cstdio>
@@ -89,7 +89,7 @@ Java_guide_android_compose_jni_MediaBridge_mediaOpenSlProbe(JNIEnv* env, jobject
 }
 
 // ---------- EGL：显示连接初始化探测 ----------
-// 应用层常规路径是 GLSurfaceView（教程 25 章校准节）；EGL 原生 API
+// 应用层常规路径是 GLSurfaceView（教程 32 章校准节）；EGL 原生 API
 // 属于"自己管 GL 上下文"的场景（引擎/播放器内嵌渲染）。
 extern "C" JNIEXPORT jstring JNICALL
 Java_guide_android_compose_jni_MediaBridge_mediaEglProbe(JNIEnv* env, jobject) {

@@ -51,7 +51,7 @@ Android 官方架构图自底向上五层。对应用开发者，越往上越要
 |---|---|---|
 | Linux 内核 | 进程/内存/驱动/电源管理，厂商按硬件定制 | 几乎不直接接触 |
 | HAL（Hardware Abstraction Layer，硬件抽象层） | 给上层统一硬件接口：相机、音频、传感器 | 不接触 |
-| 原生库 + ART | C/C++ 库（SQLite、OpenGL ES、媒体编解码）与 Android 运行时 | 第 20–25 章原生线会碰 |
+| 原生库 + ART | C/C++ 库（SQLite、OpenGL ES、媒体编解码）与 Android 运行时 | 第 27–32 章原生线会碰 |
 | Java/Kotlin Framework API | Activity Manager、Window Manager、View 体系、包管理、通知……数千个类的官方 API | **主要工作面** |
 | 应用层 | 你写的 APK 与系统预装应用 | 你的代码 |
 
@@ -97,7 +97,7 @@ myapp.apk
 ├── classes.dex             # dex 字节码，ART 的输入（类太多时会有 classes2.dex…）
 ├── res/                    # 编译后的资源：布局、图片、字符串
 ├── resources.arsc          # 资源索引表
-├── lib/<abi>/*.so          # 原生库（若有，详见第 20 章 [JNI 与 NDK](20-jni-ndk.md)）
+├── lib/<abi>/*.so          # 原生库（若有，详见第 27 章 [JNI 与 NDK](27-jni-ndk.md)）
 └── META-INF/               # 签名信息
 ```
 
@@ -140,7 +140,7 @@ myapp.apk
 | 学习曲线 | 概念分散：XML、findViewById、Adapter | 函数式思维 + 重组心智模型 |
 | 适用场景 | 存量代码、简单界面、与老代码互操作 | 新工程的默认选择 |
 
-本教程两者都教，且有明确的顺序观点：第 05~07 章先走 View 体系——它是平台的地基，也仍然是数十亿设备上存量代码的现实；第 12~13 章再走 Compose——现代默认。另一个常被忽视的事实：**Compose 不会让 View 时代的知识作废**。Activity、生命周期、权限、存储、进程模型都是平台知识，Compose 改变的只是"界面怎么写"这一层。
+本教程两者都教，且有明确的顺序观点：第 05~07 章先走 View 体系——它是平台的地基，也仍然是数十亿设备上存量代码的现实；第 12~20 章再走 Compose——现代默认。另一个常被忽视的事实：**Compose 不会让 View 时代的知识作废**。Activity、生命周期、权限、存储、进程模型都是平台知识，Compose 改变的只是"界面怎么写"这一层。
 
 ### minSdk 的现实
 
@@ -160,11 +160,11 @@ myapp.apk
 | 库 | 一句话 | 本教程 |
 |---|---|---|
 | appcompat | 让新平台的界面行为在老系统上可用 | 第 05 章 |
-| Lifecycle | 感知生命周期的状态与作用域 | 第 04、13 章 |
+| Lifecycle | 感知生命周期的状态与作用域 | 第 04、20 章 |
 | Room | SQLite 之上的对象映射层 | 第 09 章 |
 | WorkManager | 可约束、可延续的后台任务调度 | 第 10 章 |
-| Navigation | 页面路由与返回栈管理 | 第 06、13 章 |
-| Compose | 声明式 UI 全家桶 | 第 12、13 章 |
+| Navigation | 页面路由与返回栈管理 | 第 06、20 章 |
+| Compose | 声明式 UI 全家桶 | 第 12、20 章 |
 
 一条实用的判断标准：**能用 AndroidX 就不用裸平台 API**。前者修 bug 快、跨设备行为一致，不受碎片化拖累；后者只在涉及系统底层能力（ContentResolver、PackageManager、SensorManager 等，第 11 章）时才是唯一选择。
 
@@ -174,17 +174,17 @@ myapp.apk
 
 | 概念 | Windows 桌面线 | Android 线 |
 |---|---|---|
-| 声明式界面 | WPF XAML | Compose 函数（第 12 章） |
-| 状态驱动的界面更新 | WPF 数据绑定 | Compose 状态与重组（第 12 章） |
-| MVVM 架构 | WPF ViewModel + INPC | ViewModel + StateFlow（第 14 章） |
+| 声明式界面 | WPF XAML | Compose 函数（第 19 章） |
+| 状态驱动的界面更新 | WPF 数据绑定 | Compose 状态与重组（第 19 章） |
+| MVVM 架构 | WPF ViewModel + INPC | ViewModel + StateFlow（第 21 章） |
 | UI 线程纪律 | Dispatcher | 主线程 + 协程（第 08 章） |
 | 页面导航 | WPF 导航窗口 | Intent 与返回栈（第 06 章） |
 | 列表的虚拟化 | ItemsControl | RecyclerView 与 Adapter（第 07 章） |
-| C/C++ 互操作 | MFC/Win32 本身就是 C++ | JNI 与 NDK（第 20 章） |
+| C/C++ 互操作 | MFC/Win32 本身就是 C++ | JNI 与 NDK（第 27 章） |
 
 最大的分野只有一条：桌面线里进程是你的，Android 线里进程是系统的。所有表格里看似平行的概念，落到代码里都带着这个前提的印记。
 
-## 8. 本教程结构：26 章地图
+## 8. 本教程结构：33 章地图
 
 | 章 | 文件 | 标题 | 一句话 |
 |---|---|---|---|
@@ -199,23 +199,30 @@ myapp.apk
 | 09 | `09-data-storage.md` | 本地数据持久化 | SharedPreferences、文件与 Room |
 | 10 | `10-system-components.md` | BroadcastReceiver、Service 与通知 | 无界面组件与系统级交互 |
 | 11 | `11-permissions-content.md` | 运行时权限、ContentResolver 与硬件服务 | 敏感资源的中介模式 |
-| 12 | `12-compose-basics.md` | Jetpack Compose 基础 | 声明式 UI 的心智模型 |
-| 13 | `13-compose-ui.md` | Compose 组件与交互 | 组件、Scaffold、副作用、动画与主题 |
-| 14 | `14-compose-architecture.md` | Compose 工程化架构 | 状态、导航与 ViewModel 分层 |
-| 15 | `15-compose-state.md` | Compose 状态与重组深入 | 稳定性、key、rememberSaveable、性能 |
-| 16 | `16-compose-layout-draw.md` | Compose 自定义布局与绘制 | 三阶段、Layout/Intrinsic、Canvas |
-| 17 | `17-compose-animation.md` | Compose 动画进阶 | Spec 家族、Transition、Animatable |
-| 18 | `18-compose-gestures.md` | Compose 手势处理 | 检测器、吸附、嵌套滚动、Fling |
-| 19 | `19-compose-di-ecosystem.md` | Compose 依赖注入与生态 | 手写 DI、Hilt、三方库现状 |
-| 20 | `20-jni-ndk.md` | JNI 与 NDK | Kotlin 与 C/C++ 的边界（含构建沿革、原生日志、SWIG） |
-| 21 | `21-jni-deep.md` | JNI 深入 | 字符串、数组、NIO、域与方法、异常、引用 |
-| 22 | `22-bionic-cpp.md` | Bionic 与 C++ 标准库 | 自家 libc、内存三世界、运行库变迁 |
-| 23 | `23-native-threads.md` | 原生线程与同步 | pthread、互斥/条件变量、信号量、挂靠虚拟机 |
-| 24 | `24-native-sockets.md` | POSIX Socket 原生网络 | TCP/UDP/UNIX domain、字节序、epoll |
-| 25 | `25-native-media-perf.md` | 原生图形、音频与性能 | Bitmap 直访、EGL/OpenSL 现状、NEON、simpleperf |
-| 26 | `26-memopad.md` | 实战项目：MemoPad 便签应用 | 全书知识串成一个完整应用 |
+| 12 | `12-views-deep.md` | 传统 View 深水区：布局、菜单与样式 | 六大布局、三种菜单、样式主题、Drawable 七类 |
+| 13 | `13-custom-view-drawing.md` | 自定义 View 与绘图 | Canvas/Paint/Path、Shader、Matrix、SurfaceView |
+| 14 | `14-view-animations.md` | 动画三体系 | 逐帧、补间、属性动画与 Interpolator |
+| 15 | `15-fragment-tasks.md` | Fragment 与任务栈 | 生命周期、事务、通信、四种加载模式 |
+| 16 | `16-media.md` | 多媒体开发 | MediaPlayer、SoundPool、MediaRecorder、Camera2 |
+| 17 | `17-appwidget-managers.md` | 桌面组件与系统管理器 | AppWidget、AlarmManager、电话/短信/振动 |
+| 18 | `18-webview-hybrid.md` | WebView 与混合开发 | JS 桥双向通信与混合架构 |
+| 19 | `19-compose-basics.md` | Jetpack Compose 基础 | 声明式 UI 的心智模型 |
+| 20 | `20-compose-ui.md` | Compose 组件与交互 | 组件、Scaffold、副作用、动画与主题 |
+| 21 | `21-compose-architecture.md` | Compose 工程化架构 | 状态、导航与 ViewModel 分层 |
+| 22 | `22-compose-state.md` | Compose 状态与重组深入 | 稳定性、key、rememberSaveable、性能 |
+| 23 | `23-compose-layout-draw.md` | Compose 自定义布局与绘制 | 三阶段、Layout/Intrinsic、Canvas |
+| 24 | `24-compose-animation.md` | Compose 动画进阶 | Spec 家族、Transition、Animatable |
+| 25 | `25-compose-gestures.md` | Compose 手势处理 | 检测器、吸附、嵌套滚动、Fling |
+| 26 | `26-compose-di-ecosystem.md` | Compose 依赖注入与生态 | 手写 DI、Hilt、三方库现状 |
+| 27 | `27-jni-ndk.md` | JNI 与 NDK | Kotlin 与 C/C++ 的边界（含构建沿革、原生日志、SWIG） |
+| 28 | `28-jni-deep.md` | JNI 深入 | 字符串、数组、NIO、域与方法、异常、引用 |
+| 29 | `29-bionic-cpp.md` | Bionic 与 C++ 标准库 | 自家 libc、内存三世界、运行库变迁 |
+| 30 | `30-native-threads.md` | 原生线程与同步 | pthread、互斥/条件变量、信号量、挂靠虚拟机 |
+| 31 | `31-native-sockets.md` | POSIX Socket 原生网络 | TCP/UDP/UNIX domain、字节序、epoll |
+| 32 | `32-native-media-perf.md` | 原生图形、音频与性能 | Bitmap 直访、EGL/OpenSL 现状、NEON、simpleperf |
+| 33 | `33-memopad.md` | 实战项目：MemoPad 便签应用 | 全书知识串成一个完整应用 |
 
-学习路线分四段：**地基**（01–03，平台与语言）→ **平台核心**（04–11，传统 View 体系与系统能力）→ **现代 UI**（12–19，Compose 八章：基础 → 组件 → 架构 → 状态/渲染/动画/手势四门深入课 → 生态）→ **原生与实战**（20–26：第 20 章是 JNI 边界必修，21–25 章为原生线纵深选修，第 26 章实战收束）。建议按序走，第 05 章开始的每个示例都值得动手改。
+学习路线分五段：**地基**（01–03，平台与语言）→ **平台核心**（04–11，传统 View 体系与系统能力）→ **传统深水区**（12–18，View 纵深：布局全景 → 自定义绘图 → 动画三体系 → Fragment → 多媒体 → 桌面组件与系统管理器 → WebView 混合）→ **现代 UI**（19–26，Compose 八章：基础 → 组件 → 架构 → 状态/渲染/动画/手势四门深入课 → 生态）→ **原生与实战**（27–33：第 27 章是 JNI 边界必修，28–32 章为原生线纵深选修，第 33 章实战收束）。建议按序走，第 05 章开始的每个示例都值得动手改。
 
 ## 9. 本教程的验证体系
 
@@ -223,7 +230,7 @@ myapp.apk
 
 1. **`examples/` 下的单文件示例**（`01_hello_activity.kt` 等）：用 kotlinc 挂上 `android.jar` 做**静态编译验证**——确认 API 名称、参数、类型的用法真实无误
 2. **`compose_examples/` Gradle 工程**：跑 `gradle :app:compileDebugKotlin` 验证完整工程配置与 Compose 代码可编译
-3. **JNI 部分**：NDK + CMake 交叉编译验证 C++ 侧（第 20–25 章的六个 cpp 文件，详见第 20 章）
+3. **JNI 部分**：NDK + CMake 交叉编译验证 C++ 侧（第 27–32 章的六个 cpp 文件，详见第 27 章）
 
 教学定位一句话：**API 与语法可信，运行需要真机**。所有正文里的 API 用法都通过了编译对账，不是凭记忆手写；但"编译通过"不等于"运行通过"——Android 程序的运行需要真实设备或模拟器，本教程不内置模拟器搭建流程。为什么只靠编译就能对账 API？答案是 `android.jar` 的特殊本质，这是第 02 章的主角。
 
@@ -250,7 +257,7 @@ myapp.apk
 
 ## 11. 实战建议
 
-- 按章序走，前 11 章是层层依赖的地基，第 12 章起才进入 Compose；跳章学 Compose 会同时欠下生命周期与状态两笔债
+- 按章序走，前 11 章是层层依赖的地基，第 19 章起才进入 Compose；跳章学 Compose 会同时欠下生命周期与状态两笔债
 - 尽早备一台开了开发者模式的真机或一个模拟器：第 04 章起，"跑起来看"与"编译过"的收获差一个量级
 - 笔记分两栏记：**平台知识**（生命周期、权限、存储、进程）与 **UI 框架知识**（View/Compose）分开归档——换 UI 框架时只有一栏作废
 - 查官方文档先看 API Level 标注：右上角的"Added in API level N"决定这个 API 在 minSdk 24 上能不能直接用

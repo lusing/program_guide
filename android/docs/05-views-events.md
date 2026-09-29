@@ -48,7 +48,7 @@ val input = findViewById<EditText>(R.id.name_input)    // 再按 id 找回控件
 | 动态性 | 强，可用条件/循环生成 | 弱，适合静态结构 |
 | 工具链 | 只要 `android.jar` | 需要 aapt2 资源管线（[第 02 章](02-project-toolchain.md)） |
 
-本教程示例为什么用代码：示例集只用 `kotlinc + android.jar` 编译（[第 02 章](02-project-toolchain.md)），没有 aapt 参与，`R` 类无从产生；更重要的教学理由是——代码建界面把"**View 就是普通对象**"暴露无遗，XML 只是把 `new` + `addView` 换了一种书写。真实项目的传统界面九成是 XML；而 Compose 又回到了纯代码建界面（[第 12 章](12-compose-basics.md)），这条路你并不白走。
+本教程示例为什么用代码：示例集只用 `kotlinc + android.jar` 编译（[第 02 章](02-project-toolchain.md)），没有 aapt 参与，`R` 类无从产生；更重要的教学理由是——代码建界面把"**View 就是普通对象**"暴露无遗，XML 只是把 `new` + `addView` 换了一种书写。真实项目的传统界面九成是 XML；而 Compose 又回到了纯代码建界面（[第 19 章](19-compose-basics.md)），这条路你并不白走。
 
 顺带一提，`setContentView` 有两个常用重载：传 View 对象（本章示例）或传布局资源 id（`R.layout.x`）——两条路最终都汇到同一棵 View 树上。
 
@@ -235,7 +235,7 @@ val padding = 16.toPx()      // 16dp → 当前屏幕上的像素数
 两条边界决定了它的历史位置：
 
 1. **只有主线程能碰 UI**。后台线程改 `textView.text` 直接抛 `CalledFromWrongThreadException`（异常名一眼可辨）。所以网络取回数据必须先回到主线程——`Handler(Looper.getMainLooper())` 的做法与协程方案都在[第 08 章](08-threads-network.md)（`examples/06_handler_looper.kt` 就是前者的实例）
-2. **命令式同步是它的原罪**。本章每个示例都是"找到控件 → 设属性"的命令式代码：状态一多，每处变化都要手动同步到每个控件，漏一处就是 bug。Compose 用"声明式 + 自动重组"取代的正是这一层（[第 12 章](12-compose-basics.md)）——把本章当对照组读，Compose 的价值才看得清
+2. **命令式同步是它的原罪**。本章每个示例都是"找到控件 → 设属性"的命令式代码：状态一多，每处变化都要手动同步到每个控件，漏一处就是 bug。Compose 用"声明式 + 自动重组"取代的正是这一层（[第 19 章](19-compose-basics.md)）——把本章当对照组读，Compose 的价值才看得清
 
 ## 8. 常见坑
 

@@ -4,7 +4,7 @@
 
 ## 1. 三条原生媒体通道总览
 
-原书第 12、13 章用两个完整播放器（AVI 视频 + WAVE 音频）串起了三条"native 直接碰显示与声音"的 API 通道，2026 年坐标如下：
+原书第 12、20 章用两个完整播放器（AVI 视频 + WAVE 音频）串起了三条"native 直接碰显示与声音"的 API 通道，2026 年坐标如下：
 
 | 通道 | 原书用法 | 2026 现状 | 本教程取材 |
 |---|---|---|---|
@@ -12,7 +12,7 @@
 | OpenGL ES + EGL | 手工 EGL 上下文 + 纹理上传 | 现役但路径变化（校准见第 4 节） | EGL 探测样张 |
 | OpenSL ES | WAVE 播放器全流程 | **API 34 起官方 deprecated** → AAudio | 引擎探测样张 |
 
-本章立场与第 20 章一脉相承：应用开发里图像显示交给 Compose/Coil、音频播放交给系统播放器与 ExoPlayer 系；这三条通道属于"引擎与播放器内核"的世界。教学目标是**看懂它们的样子与边界**，最后落在 NEON 与性能测量——那是全原生线的收束点。
+本章立场与第 27 章一脉相承：应用开发里图像显示交给 Compose/Coil、音频播放交给系统播放器与 ExoPlayer 系；这三条通道属于"引擎与播放器内核"的世界。教学目标是**看懂它们的样子与边界**，最后落在 NEON 与性能测量——那是全原生线的收束点。
 
 ## 2. JNI Graphics：Bitmap 像素直访
 
@@ -64,7 +64,7 @@ eglTerminate(display);
 
 2026 年的应用层路线校准：
 
-- **常规应用渲染**：`GLSurfaceView`（View 体系）持有 EGL 上下文与 GL 线程，你只实现 Renderer 回调；Compose 世界经 `AndroidView` 嵌一个即可（第 12 章第 11 节的互操作场景）。手工 EGL 属于游戏引擎/播放器内核的活
+- **常规应用渲染**：`GLSurfaceView`（View 体系）持有 EGL 上下文与 GL 线程，你只实现 Renderer 回调；Compose 世界经 `AndroidView` 嵌一个即可（第 19 章第 11 节的互操作场景）。手工 EGL 属于游戏引擎/播放器内核的活
 - **ES 版本**：原书兼写 ES 1.x 固定管线与 ES 2.0——**1.x 已淘汰**，现代目标是 ES 3.0/3.1（API 24 起全量支持，恰好是本教程 minSdk）
 - **上屏路径**：纹理上传（`glTexSubImage2D`，原书 12.4 的方案）或 SurfaceView/ANativeWindow；无窗口离屏渲染用 EGL surfaceless 扩展或 PBuffer
 - ANativeWindow 系列（`libandroid`）仍现役，是 Surface ↔ native 渲染的桥
@@ -91,7 +91,7 @@ vst1q_s16(bufA, sum);
 
 但先泼两盆冷水，都来自原书第 14 章自己的提醒：
 
-1. **先测量再向量化**（第 20 章"先 profiler 后下潜"的 SIMD 版）：NEON 上限加速约 8×（int16），实际拿到 2–4× 已属优秀——内存带宽与装载/存储常常才是瓶颈
+1. **先测量再向量化**（第 27 章"先 profiler 后下潜"的 SIMD 版）：NEON 上限加速约 8×（int16），实际拿到 2–4× 已属优秀——内存带宽与装载/存储常常才是瓶颈
 2. **编译器会自动向量化**：`-O2` 起的 clang 对简单循环已能生成 NEON 代码（原书 14.3 整节讲此）。手写 intrinsics 的前提是 profiler 证明热点且自动向量化没吃满
 
 ## 6. 性能测量：GProf 已死，simpleperf 当立
@@ -129,9 +129,9 @@ vst1q_s16(bufA, sum);
 - 音频新项目一律 AAudio/Oboe 起步；OpenSL ES 的对象模型知识用于读老引擎
 - 渲染从 GLSurfaceView 起步，手工 EGL 留给引擎内核；ES 3.0 为最低目标
 - SIMD 工作流固定为四步：simpleperf 找热点 → `-O2` 看自动向量化 → intrinsics 改写 → 回测对比。省任何一步都是赌博
-- 原生线的总回顾：20 章（边界）→ 21 章（数据与异常）→ 22 章（环境）→ 23 章（并发）→ 24 章（网络）→ 本章（媒体与性能）——六步恰好是"接得住一个 native 库"的完整知识面
-- 下一章回到纯 Kotlin 世界，用前 14 章的知识组装完整应用 MemoPad——原生线是纵深选修，不是必经之路
+- 原生线的总回顾：27 章（边界）→ 28 章（数据与异常）→ 29 章（环境）→ 30 章（并发）→ 31 章（网络）→ 本章（媒体与性能）——六步恰好是"接得住一个 native 库"的完整知识面
+- 下一章回到纯 Kotlin 世界，用前 21 章的知识组装完整应用 MemoPad——原生线是纵深选修，不是必经之路
 
 ---
 
-上一章：[24 POSIX Socket 原生网络](24-native-sockets.md) ｜ 下一章：[26 实战项目：MemoPad 便签应用](26-memopad.md) ｜ 返回：[README](../README.md)
+上一章：[31 POSIX Socket 原生网络](31-native-sockets.md) ｜ 下一章：[33 实战项目：MemoPad 便签应用](33-memopad.md) ｜ 返回：[README](../README.md)

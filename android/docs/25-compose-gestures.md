@@ -16,7 +16,7 @@
 
 事件到达路径与传统体系同构：输入系统 → 窗口 → LayoutNode 树自上而下分发。事件分三个阶段投递（Initial 自上而下 / Main 自下而上 / Final 自上而下），分别对应 View 体系的 `onInterceptTouchEvent`、`onTouchEvent` 与"事后知情"——大多数需求停在前两层，不需要碰分发细节。
 
-Modifier 链序惯例：**手势 Modifier 放链尾**（第 12 章第 6 节的洋葱模型——放外层会扩大响应区或吃到不该吃的位移）。
+Modifier 链序惯例：**手势 Modifier 放链尾**（第 19 章第 6 节的洋葱模型——放外层会扩大响应区或吃到不该吃的位移）。
 
 ## 2. detectTapGestures：单击/双击/长按
 
@@ -71,7 +71,7 @@ val state = rememberTransformableState { zoomChange, panChange, rotationChange -
 Box(modifier = Modifier.transformable(state)) { ... }
 ```
 
-状态更新后用 `graphicsLayer`（scaleX/rotationZ/translationX）施加——**图形层变换不触发布局**，比 `size()/rotate()` 修饰符省一整次测量摆放（第 16 章重排优化的直接应用）。`lockRotationOnZoomPan` 参数可在缩放/平移时锁定旋转，避免手抖误转。
+状态更新后用 `graphicsLayer`（scaleX/rotationZ/translationX）施加——**图形层变换不触发布局**，比 `size()/rotate()` 修饰符省一整次测量摆放（第 23 章重排优化的直接应用）。`lockRotationOnZoomPan` 参数可在缩放/平移时锁定旋转，避免手抖误转。
 
 ## 5. anchoredDraggable：锚点吸附
 
@@ -100,7 +100,7 @@ Box(modifier = Modifier.anchoredDraggable(state, Orientation.Horizontal)) {
 
 ## 6. nestedScroll：父子分账
 
-嵌套滚动的本质是**滚动量的分账**：子列表滚不动了（到顶），剩下的手势给谁？第 12 章的崩溃警告（verticalScroll 嵌 LazyColumn）是约束问题；这里处理的是**协商**问题。`NestedScrollConnection` 四个回调按顺序参与：
+嵌套滚动的本质是**滚动量的分账**：子列表滚不动了（到顶），剩下的手势给谁？第 19 章的崩溃警告（verticalScroll 嵌 LazyColumn）是约束问题；这里处理的是**协商**问题。`NestedScrollConnection` 四个回调按顺序参与：
 
 | 回调 | 时机 | 典型用途 |
 |---|---|---|
@@ -134,7 +134,7 @@ override fun onPostScroll(consumed: Offset, available: Offset, ...): Offset {
 
 ## 7. 手势 + 动画：Fling 惯性滑行
 
-松手后按出指速度继续滑行并衰减——这是手势与动画（第 17 章）的合流点，也是 `Animatable.animateDecay` 的主场。`GestureFlingSample`（手势6）三步：
+松手后按出指速度继续滑行并衰减——这是手势与动画（第 24 章）的合流点，也是 `Animatable.animateDecay` 的主场。`GestureFlingSample`（手势6）三步：
 
 ```kotlin
 // ① 拖动期：位移即时跟随，同时把每帧位置喂给速度追踪器
@@ -179,4 +179,4 @@ onDragEnd = {
 
 ---
 
-上一章：[17 Compose 动画进阶](17-compose-animation.md) ｜ 下一章：[19 Compose 依赖注入与生态](19-compose-di-ecosystem.md) ｜ 返回：[README](../README.md)
+上一章：[24 Compose 动画进阶](24-compose-animation.md) ｜ 下一章：[26 Compose 依赖注入与生态](26-compose-di-ecosystem.md) ｜ 返回：[README](../README.md)

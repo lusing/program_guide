@@ -1,4 +1,4 @@
-// 第 22 章：Bionic libc 与 C++ 标准库
+// 第 29 章：Bionic libc 与 C++ 标准库
 // Kotlin 侧镜像：jni/BionicBridge.kt
 #include <jni.h>
 #include <cerrno>
@@ -87,7 +87,7 @@ Java_guide_android_compose_jni_BionicBridge_bionicFileRoundTrip(
 
 // ---------- C++ 标准库：容器 + 算法 ----------
 // NDK 现役运行库 c++_shared/c++_static 都带完整 STL；
-// 当年的 GAbi++/STLport/GNU STL 已全部退役（教程 22 章校准表）。
+// 当年的 GAbi++/STLport/GNU STL 已全部退役（教程 29 章校准表）。
 extern "C" JNIEXPORT jdoubleArray JNICALL
 Java_guide_android_compose_jni_BionicBridge_bionicSortDoubles(JNIEnv* env, jobject, jdoubleArray arr) {
     const jsize len = env->GetArrayLength(arr);

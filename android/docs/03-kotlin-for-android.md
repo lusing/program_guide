@@ -4,7 +4,7 @@
 
 ## 1. 为什么 Android 世界倒向了 Kotlin
 
-Kotlin 是 JetBrains 2011 年发布的 JVM 语言。2017 年 Google I/O 宣布它成为 Android 官方支持语言，2019 年进一步宣布 **Kotlin-first**：官方文档、示例与 Jetpack 新 API 一律 Kotlin 优先，Jetpack Compose（详见[第 12 章](12-compose-basics.md)）的 API 干脆只能用 Kotlin 写。今天新建 Android 工程的默认语言就是 Kotlin，Java 反而成了存量。
+Kotlin 是 JetBrains 2011 年发布的 JVM 语言。2017 年 Google I/O 宣布它成为 Android 官方支持语言，2019 年进一步宣布 **Kotlin-first**：官方文档、示例与 Jetpack 新 API 一律 Kotlin 优先，Jetpack Compose（详见[第 19 章](19-compose-basics.md)）的 API 干脆只能用 Kotlin 写。今天新建 Android 工程的默认语言就是 Kotlin，Java 反而成了存量。
 
 倒向的理由不是赶时髦，是三笔实账：
 
@@ -112,7 +112,7 @@ println(b)                      // Note(id=1, title=买牛奶, done=true)
 val (id, title, done) = b       // 解构声明：按声明顺序取字段
 ```
 
-**不可变 + copy** 是 Kotlin 变更状态的默认姿势：不原地改，而是派生新对象。这与第 12 章 Compose 的"状态不可变、变化即重组"是同一种哲学，现在养成习惯，后面白捡。
+**不可变 + copy** 是 Kotlin 变更状态的默认姿势：不原地改，而是派生新对象。这与第 19 章 Compose 的"状态不可变、变化即重组"是同一种哲学，现在养成习惯，后面白捡。
 
 ## 5. when 表达式
 

@@ -51,7 +51,7 @@ fun ComposeCounterSample() {
 fun ComposeLazyListSample() {
     val itemsData = remember { (1..5).map { "Compose 列表项 $it" } }
     // 固定高度：MainActivity 外层 Column 带 verticalScroll，高度约束无限，
-    // 不给 LazyColumn 定高会在运行期崩溃（详见第 12 章第 8 节）
+    // 不给 LazyColumn 定高会在运行期崩溃（详见第 19 章第 8 节）
     LazyColumn(modifier = Modifier.height(120.dp).padding(vertical = 6.dp)) {
         items(itemsData) { item ->
             Text(text = "Compose 示例2：$item", modifier = Modifier.padding(2.dp))
@@ -166,7 +166,7 @@ fun JniStatusSample() {
 }
 
 // 示例8：与 View 体系互操作——Compose 里嵌传统 View（AndroidView）；
-// 反方向（View 工程里嵌 Compose）用 ComposeView，见第 12 章第 11 节
+// 反方向（View 工程里嵌 Compose）用 ComposeView，见第 19 章第 11 节
 @Composable
 fun ComposeInteropSample() {
     var clickCount by remember { mutableIntStateOf(0) }

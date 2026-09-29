@@ -14,7 +14,7 @@
 | 体积 | glibc 面向桌面，Bionic 刻意精简，适合移动设备 |
 | 定制 | 线程/进程/信号处理针对 Linux 内核与 Android 的使用方式定制 |
 
-代价是 **Bionic 不完整也不追求完整**：部分 glibc 扩展没有、部分 POSIX 函数缺席、`pthread` 实现细节不同（第 23 章）。从 Linux 移植 C 代码，"在 glibc 上能编"不等于"在 Bionic 上能编"——缺什么查 NDK 文档的 stable API 列表，或直接在 sysroot 头文件里找。
+代价是 **Bionic 不完整也不追求完整**：部分 glibc 扩展没有、部分 POSIX 函数缺席、`pthread` 实现细节不同（第 30 章）。从 Linux 移植 C 代码，"在 glibc 上能编"不等于"在 Bionic 上能编"——缺什么查 NDK 文档的 stable API 列表，或直接在 sysroot 头文件里找。
 
 ## 2. 系统配置与系统属性
 
@@ -56,7 +56,7 @@ auto* v = new std::vector<int>(100);     // C++ 世界：new 连构造函数一�
 delete v;                                // delete 先跑析构再释放
 ```
 
-原书 6.3.3 的建议照旧：C++ 对象用 `new`/`delete`（类型敏感、管构造析构），`malloc`/`free` 留给纯 C 数据和第 21 章的直接 ByteBuffer；运行期变长优先 STL 容器（`vector` 自己管理增长），别手搓 realloc。
+原书 6.3.3 的建议照旧：C++ 对象用 `new`/`delete`（类型敏感、管构造析构），`malloc`/`free` 留给纯 C 数据和第 28 章的直接 ByteBuffer；运行期变长优先 STL 容器（`vector` 自己管理增长），别手搓 realloc。
 
 真正要建立的是**三个内存世界的地图**：
 
@@ -66,7 +66,7 @@ delete v;                                // delete 先跑析构再释放
 | native 堆 | `malloc`/`new` | **你，手动** | Java 堆正常，进程 RSS 涨 |
 | JNI 引用 | `NewGlobalRef` | `DeleteGlobalRef`（你） | 对象永远不可回收 |
 
-第 21 章的直接 ByteBuffer 在此对号入座：它就是"native 堆的内存借了个 Java 马甲"。三个世界的泄漏症状与排查工具各不相同，混着用会互相掩护。
+第 28 章的直接 ByteBuffer 在此对号入座：它就是"native 堆的内存借了个 Java 马甲"。三个世界的泄漏症状与排查工具各不相同，混着用会互相掩护。
 
 ## 5. 标准 C 文件 I/O：FILE* 全家桶
 
@@ -86,7 +86,7 @@ fclose(in);
 三个 Android 特色认知：
 
 - **path 必须来自 Kotlin 侧**：`context.filesDir` 下的路径（第 09 章内部存储）。native 没有 `Context`，也无权碰应用沙箱之外——分区存储（第 09 章）的约束对 C 代码同样生效，内核看的是 UID，不看语言
-- **printf 没有出口**：Android 应用的 stdout/stderr 不接任何控制台。调试输出去 logcat（第 20 章第 8 节），正式日志走文件。原书 6.4.1 的"标准流"在应用层是半残的——`stderr` 在某些系统版本会转投 logcat，但别依赖
+- **printf 没有出口**：Android 应用的 stdout/stderr 不接任何控制台。调试输出去 logcat（第 27 章第 8 节），正式日志走文件。原书 6.4.1 的"标准流"在应用层是半残的——`stderr` 在某些系统版本会转投 logcat，但别依赖
 - 与 Kotlin `File` API 双轨并存：同一文件谁都可以读写，编码与并发要自己协调
 
 ## 6. C++ 运行库：从三国杀到一统
@@ -127,7 +127,7 @@ STL 本体（容器/迭代器/算法，原书 11.6 的分类速览）不单独�
 
 **glibc 惯例直接搬**：非标准函数（`strerror_r` 的 GNU 变体、`__libc` 系列）、`/etc/passwd` 全量遍历、glibc 特有扩容接口——Bionic 上编不过或行为不同。移植老代码先把编译错误当地图。
 
-**stdout 里找日志**：`printf` 调试法在 Android 上失灵，输出进了黑洞还以为代码没跑到。native 调试输出口是 `__android_log_print`（第 20 章）。
+**stdout 里找日志**：`printf` 调试法在 Android 上失灵，输出进了黑洞还以为代码没跑到。native 调试输出口是 `__android_log_print`（第 27 章）。
 
 **native 碰外部存储**：C 的 `fopen("/sdcard/...")` 在分区存储时代基本必败（第 09 章的规则按 UID 执行）。路径一律从 Kotlin `filesDir`/`cacheDir` 传入。
 
@@ -148,4 +148,4 @@ STL 本体（容器/迭代器/算法，原书 11.6 的分类速览）不单独�
 
 ---
 
-上一章：[21 JNI 深入：字符串、数组、域与异常](21-jni-deep.md) ｜ 下一章：[23 原生线程与同步](23-native-threads.md) ｜ 返回：[README](../README.md)
+上一章：[28 JNI 深入：字符串、数组、域与异常](28-jni-deep.md) ｜ 下一章：[30 原生线程与同步](30-native-threads.md) ｜ 返回：[README](../README.md)

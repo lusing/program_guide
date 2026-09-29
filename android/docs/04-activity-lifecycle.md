@@ -208,7 +208,7 @@ override fun onRestoreInstanceState(savedInstanceState: Bundle) {
 - Bundle 经 Binder 跨进程传输，别塞大对象（事务缓冲区约 1MB 且全局共享），大文件直接写磁盘（[第 09 章](09-data-storage.md)）
 - manifest 里 `android:configChanges="orientation"` 可以声明"旋转我自己处理"从而跳过重建——不推荐，等于把一堆状态同步的脏活从系统接回自己手上
 
-现代补充：架构组件 ViewModel 在旋转重建时跨过生死保留数据，比手动搬 Bundle 省心，Compose 工程里配合 StateFlow 使用——见[第 14 章](14-compose-architecture.md)。
+现代补充：架构组件 ViewModel 在旋转重建时跨过生死保留数据，比手动搬 Bundle 省心，Compose 工程里配合 StateFlow 使用——见[第 21 章](21-compose-architecture.md)。
 
 ## 6. Activity 谱系：ComponentActivity 与 AppCompatActivity
 
@@ -220,7 +220,7 @@ android.app.Activity                         ← 本教程基础篇示例用这�
    └─ androidx.appcompat.app.AppCompatActivity ← 传统 View 项目默认
 ```
 
-`android.app.Activity` 是根；Jetpack 在其上叠了 `androidx.activity.ComponentActivity`，挂载 Lifecycle 等架构组件能力，**Compose 的 `setContent { }` 就定义在这一层**（[第 12 章](12-compose-basics.md)）；`AppCompatActivity` 再继承它，补上主题与 ActionBar 兼容，是传统 View 项目的默认选择。选择规则：纯 Compose 项目用 ComponentActivity，其余用 AppCompatActivity，本教程示例（无 AndroidX 依赖）用框架 Activity。
+`android.app.Activity` 是根；Jetpack 在其上叠了 `androidx.activity.ComponentActivity`，挂载 Lifecycle 等架构组件能力，**Compose 的 `setContent { }` 就定义在这一层**（[第 19 章](19-compose-basics.md)）；`AppCompatActivity` 再继承它，补上主题与 ActionBar 兼容，是传统 View 项目的默认选择。选择规则：纯 Compose 项目用 ComponentActivity，其余用 AppCompatActivity，本教程示例（无 AndroidX 依赖）用框架 Activity。
 
 ## 7. 常见坑
 
@@ -246,7 +246,7 @@ android.app.Activity                         ← 本教程基础篇示例用这�
 - 开发者选项里打开"不保留活动"（Don't keep activities），把"后台被杀"从偶发变成每次可复现
 - 状态分三层放：瞬态进 Bundle、会话级进内存对象、持久化进磁盘（[第 09 章](09-data-storage.md)）——三层别混
 - 读别人的 Activity 先看它重写了哪几个回调，生命周期足迹一望便知
-- Compose 的 `rememberSaveable` 本质上就是 Bundle 机制的声明式包装（[第 12 章](12-compose-basics.md)）——本章的模型到那一章仍然成立
+- Compose 的 `rememberSaveable` 本质上就是 Bundle 机制的声明式包装（[第 19 章](19-compose-basics.md)）——本章的模型到那一章仍然成立
 
 ---
 上一章：[03 Kotlin for Android 必需子集](03-kotlin-for-android.md) ｜ 下一章：[05 传统 View 体系：布局、控件与事件](05-views-events.md) ｜ 返回：[README](../README.md)

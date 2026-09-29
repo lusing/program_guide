@@ -2,7 +2,7 @@
 
 > 对应示例：`compose_examples/app/src/main/java/guide/android/compose/samples/AnimationSamples.kt`
 
-第 13 章的动画两节覆盖了 90% 的日常需求：`animate*AsState`、`AnimatedVisibility`、`AnimatedContent`、`animateContentSize`、无限循环。本章补齐剩下 10% 的深水区——按《Jetpack Compose 从入门到实战》第 6 章的体系：先认识动画 API 的分层地图，再用 `AnimationSpec` 家族精确控制"过渡的性格"，然后是 `updateTransition`（多属性联动）与 `Animatable`（完全手动驱动），最后以两个实战收尾：骨架屏 shimmer 与收藏按钮。
+第 20 章的动画两节覆盖了 90% 的日常需求：`animate*AsState`、`AnimatedVisibility`、`AnimatedContent`、`animateContentSize`、无限循环。本章补齐剩下 10% 的深水区——按《Jetpack Compose 从入门到实战》第 6 章的体系：先认识动画 API 的分层地图，再用 `AnimationSpec` 家族精确控制"过渡的性格"，然后是 `updateTransition`（多属性联动）与 `Animatable`（完全手动驱动），最后以两个实战收尾：骨架屏 shimmer 与收藏按钮。
 
 ## 1. 动画地图：高级别与低级别
 
@@ -13,7 +13,7 @@ Compose 动画 API 按易用性分两层：
 | 高级别 | `AnimatedVisibility` / `AnimatedContent` / `Crossfade` / `animateContentSize` / `animate*AsState` | Composable 或 Modifier，开箱即用，覆盖常见业务 |
 | 低级别 | `updateTransition` / `Animatable` / `AnimationSpec` / `TwoWayConverter` | 状态驱动任意动画，接口复杂、控制力强 |
 
-高层全部由低层实现：`animate*AsState` 的底层是 `Animatable`，`AnimatedContent` 的底层是 `updateTransition`。选型路径一句话（第 13 章已给速查表，本章给原理）：**从 `animate*AsState` 起步，一个状态要驱动多个值就用 `updateTransition`，连"目标值"都想自己算就用 `Animatable`。**
+高层全部由低层实现：`animate*AsState` 的底层是 `Animatable`，`AnimatedContent` 的底层是 `updateTransition`。选型路径一句话（第 20 章已给速查表，本章给原理）：**从 `animate*AsState` 起步，一个状态要驱动多个值就用 `updateTransition`，连"目标值"都想自己算就用 `Animatable`。**
 
 传统 View 时代 `ObjectAnimator`（固定时长）与 `SpringAnimation`（物理驱动）是两套 API；Compose 用统一的 `AnimationSpec` 把两者收编进了同一条参数。
 
@@ -37,13 +37,13 @@ val snapValue   by animateFloatAsState(target, snap())
 | `tween` | 固定时长 + 缓动 | `durationMillis`、`easing` | 与设计稿对时长、进度条 |
 | `keyframes` | 关键帧（时长类） | `值 at 时刻 using 曲线` | 分段节奏、复杂路径 |
 | `snap` | 无过渡立即到位 | `delayMillis` | 程序化跳变、关闭过场 |
-| `repeatable` / `infiniteRepeatable` | 循环播放时长类 spec | `iterations` / 无限、`RepeatMode` | 加载动画（第 13 章已用） |
+| `repeatable` / `infiniteRepeatable` | 循环播放时长类 spec | `iterations` / 无限、`RepeatMode` | 加载动画（第 20 章已用） |
 
 三个要点：
 
 - **spring 是默认**且值得信赖：物理驱动意味着打断时从当前位置、当前速度续算，不会像时间轴动画那样闪跳。`DampingRatioMediumBouncy` 有肉眼可见的回弹，`NoBouncy`（默认）干净利落
 - **keyframes 的中缀语法**就是给"时间-值-曲线"三元组写的 DSL：`0.5f at 700 using FastOutSlowInEasing` 读作"700 毫秒时到 0.5，这一段用这条曲线"
-- **repeatable 只包时长类 spec**——`spring` 不能循环，永动的弹簧违背物理定律；要循环动画，里面包 `tween` 或 `keyframes`（第 13 章的 `infiniteRepeatable(tween(800))` 即是）
+- **repeatable 只包时长类 spec**——`spring` 不能循环，永动的弹簧违背物理定律；要循环动画，里面包 `tween` 或 `keyframes`（第 20 章的 `infiniteRepeatable(tween(800))` 即是）
 
 `easing` 曲线（`LinearEasing` 线性、`FastOutSlowInEasing` 快进慢出等）是 tween/keyframes 的时间函数：输入时间进度 0~1、输出值进度 0~1；内置曲线不够用时有 `CubicBezierEasing` 自定义。
 
@@ -62,7 +62,7 @@ val size   by transition.animateDp(label = "size")      { if (it == Expanded) 96
 
 读法：`updateTransition(状态)` 建一个 Transition，`transition.animateXxx { 状态 -> 目标值 }` 注册子动画——**状态一变，所有子动画同起同止**，各自用默认 spring（可传 `transitionSpec` 定制）。它相当于传统 View 的 `AnimationSet`。
 
-注意与第 13 章 `EnterTransition`/`ExitTransition` 的名字撞车——那是 `AnimatedVisibility` 的出入场描述，此 Transition 是"多属性动画事务"，两码事。
+注意与第 20 章 `EnterTransition`/`ExitTransition` 的名字撞车——那是 `AnimatedVisibility` 的出入场描述，此 Transition 是"多属性动画事务"，两码事。
 
 配套技巧两个：`createChildTransition` 把父状态 map 成子状态（拨号按钮只关心自己的显隐布尔，不感知整机状态）；`Transition.AnimatedVisibility` / `Transition.AnimatedContent` 扩展把出入场动画也纳入同一事务。动画属性多了以后，用"持有全部动画值的类 + 更新函数"封装复用（动效 6 的做法）。
 
@@ -80,7 +80,7 @@ scope.launch {
 }
 ```
 
-相比 `animate*AsState`，手动驱动的额外能力：初值可以任意指定；`snapTo` 跳变、`animateDecay` 衰减（第 18 章 Fling 的引擎）；动画中途再次 `animateTo` 会**从当前位置、当前速度平滑改道**；还能加边界（`Animatable(0f, 0f..1f)`）自动在边界反弹。代价是你要自己管协程与生命周期——`remember` + `rememberCoroutineScope` / `LaunchedEffect` 是标准搭配。
+相比 `animate*AsState`，手动驱动的额外能力：初值可以任意指定；`snapTo` 跳变、`animateDecay` 衰减（第 25 章 Fling 的引擎）；动画中途再次 `animateTo` 会**从当前位置、当前速度平滑改道**；还能加边界（`Animatable(0f, 0f..1f)`）自动在边界反弹。代价是你要自己管协程与生命周期——`remember` + `rememberCoroutineScope` / `LaunchedEffect` 是标准搭配。
 
 ## 5. TwoWayConverter：给任意类型插值
 
@@ -119,7 +119,7 @@ val brush = Brush.linearGradient(
 repeat(2) { ShimmerItem(brush) }        // 每个占位块都刷同一支笔刷
 ```
 
-第 13 章的 `rememberInfiniteTransition` 在这里驱动的是**笔刷几何**而非组件属性——"动画什么"完全由你决定，这是声明式动画的深层灵活性：把 `translate` 换成 DrawScope 里的画布偏移（第 16 章），就是书的"波浪加载"实战。
+第 20 章的 `rememberInfiniteTransition` 在这里驱动的是**笔刷几何**而非组件属性——"动画什么"完全由你决定，这是声明式动画的深层灵活性：把 `translate` 换成 DrawScope 里的画布偏移（第 23 章），就是书的"波浪加载"实战。
 
 ## 7. 实战二：收藏按钮（多属性状态切换）
 
@@ -149,11 +149,11 @@ val width  by transition.animateDp(transitionSpec = { tween(300) }, label = "wid
 
 **手写 1D 转换器取 `.v1`**：`AnimationVector1D` 的取值属性叫 `value` 不叫 `v1`（v1/v2 是 2D 的）——编译器会直接告诉你 `Unresolved reference 'v1'`。
 
-**在重组路径里驱动 Animatable**：`value.animateTo(...)` 写在 Composable 函数体里（不在协程/回调中）——挂起函数没地方跑，动画随重组反复重启。挂起动画只属于 `LaunchedEffect`、`rememberCoroutineScope.launch` 或 `pointerInput`（第 18 章）。
+**在重组路径里驱动 Animatable**：`value.animateTo(...)` 写在 Composable 函数体里（不在协程/回调中）——挂起函数没地方跑，动画随重组反复重启。挂起动画只属于 `LaunchedEffect`、`rememberCoroutineScope.launch` 或 `pointerInput`（第 25 章）。
 
 ## 9. 实战建议
 
-- 日常动画仍在 `animate*AsState` / `AnimatedVisibility` 停留（第 13 章）；本章的 API 只在"多属性联动、精确控制、自定义插值"三类需求出现时上
+- 日常动画仍在 `animate*AsState` / `AnimatedVisibility` 停留（第 20 章）；本章的 API 只在"多属性联动、精确控制、自定义插值"三类需求出现时上
 - 交互类动画优先 spring（打断不打闪），展示类/进度类用 tween 对齐设计时长——这条默认约定能省掉大多数 spec 讨论
 - 动画 label（`label = "xxx"`）不是装饰：Android Studio 的动画预览工具靠它识别曲线，都写上
 - 复杂状态切换先建"状态 → UI 参数"的 enum/data class 表（动效 6），再对表逐属性建动画——表驱动比 if/else 散落各处好维护
@@ -161,4 +161,4 @@ val width  by transition.animateDp(transitionSpec = { tween(300) }, label = "wid
 
 ---
 
-上一章：[16 Compose 自定义布局与绘制](16-compose-layout-draw.md) ｜ 下一章：[18 Compose 手势处理](18-compose-gestures.md) ｜ 返回：[README](../README.md)
+上一章：[23 Compose 自定义布局与绘制](23-compose-layout-draw.md) ｜ 下一章：[25 Compose 手势处理](25-compose-gestures.md) ｜ 返回：[README](../README.md)

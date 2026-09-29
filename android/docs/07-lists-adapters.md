@@ -229,7 +229,7 @@ class StringListAdapter : ListAdapter<String, StringListAdapter.ItemViewHolder>(
 
 ## 7. Compose：LazyColumn 一行的事
 
-第 12 章的 Jetpack Compose 里，同样的列表只剩一个概念：
+第 19 章的 Jetpack Compose 里，同样的列表只剩一个概念：
 
 ```kotlin
 LazyColumn {
@@ -239,7 +239,7 @@ LazyColumn {
 }
 ```
 
-没有 Adapter、没有 ViewHolder、没有 notify——Compose 的组合与重组机制天然按需构建可见项，"复用"下沉为框架内部的实现细节。想给条目稳定身份（避免增删时状态错位），加个 key 即可：`items(data, key = { it })`。但请留意思想上的血缘：`LazyColumn` 的"lazy（惰性组合）"与 RecyclerView 的"recycle（回收复用）"解决的是同一个问题——**数据无限，视图有限**。传统体系里你手写的每一处复用技巧，都在帮你理解声明式方案为什么这样设计（详见[第 12 章](12-compose-basics.md)；key 的语义、增删动画与横向列表在[第 13 章](13-compose-ui.md)展开）。
+没有 Adapter、没有 ViewHolder、没有 notify——Compose 的组合与重组机制天然按需构建可见项，"复用"下沉为框架内部的实现细节。想给条目稳定身份（避免增删时状态错位），加个 key 即可：`items(data, key = { it })`。但请留意思想上的血缘：`LazyColumn` 的"lazy（惰性组合）"与 RecyclerView 的"recycle（回收复用）"解决的是同一个问题——**数据无限，视图有限**。传统体系里你手写的每一处复用技巧，都在帮你理解声明式方案为什么这样设计（详见[第 19 章](19-compose-basics.md)；key 的语义、增删动画与横向列表在[第 20 章](20-compose-ui.md)展开）。
 
 ## 8. 常见坑
 
@@ -255,7 +255,7 @@ LazyColumn {
 
 ## 9. 实战建议
 
-- 新列表一律 RecyclerView（传统工程）或 `LazyColumn`（Compose 工程，第 12 章）；ListView 只在维护旧代码时才会遇到
+- 新列表一律 RecyclerView（传统工程）或 `LazyColumn`（Compose 工程，第 19 章）；ListView 只在维护旧代码时才会遇到
 - Adapter 保持"翻译器"身份：只做 position → 视图的映射；点击回调用 lambda 注入，别让 Adapter 持有 Activity 干业务
 - 图片加载交给 Coil / Glide 这类库（异步、缓存、生命周期安全一揽子解决），不要在 getView 里自己解码 Bitmap
 - 频繁增删的列表用 `ListAdapter` + `DiffUtil`（把差分与通知自动化），别手搓 notify 序列

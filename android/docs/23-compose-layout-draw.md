@@ -2,7 +2,7 @@
 
 > 对应示例：`compose_examples/app/src/main/java/guide/android/compose/samples/LayoutDrawSamples.kt`
 
-第 12、13 章的界面全部由现成组件搭成。当设计稿超出组件库的表达力（文字基线对齐、等高分割线、圆环进度、网格背景），就要下到 Compose 渲染管线的后两个阶段——**布局**与**绘制**——自己动手。本章先讲清"组合 / 布局 / 绘制"三阶段模型，再沿"Modifier.layout → Layout 组件 → Intrinsic → Canvas → DrawModifier"的阶梯逐层放权：每一层都只在上一层不满足时才动用。
+第 12、20 章的界面全部由现成组件搭成。当设计稿超出组件库的表达力（文字基线对齐、等高分割线、圆环进度、网格背景），就要下到 Compose 渲染管线的后两个阶段——**布局**与**绘制**——自己动手。本章先讲清"组合 / 布局 / 绘制"三阶段模型，再沿"Modifier.layout → Layout 组件 → Intrinsic → Canvas → DrawModifier"的阶梯逐层放权：每一层都只在上一层不满足时才动用。
 
 ## 1. 三阶段：组合、布局、绘制
 
@@ -14,15 +14,15 @@
 | 布局（Layout） | 测量每个节点宽高并摆放 | 约束 → 尺寸与位置 | `onMeasure` + `onLayout` |
 | 绘制（Draw） | 把节点画上屏幕 | 尺寸 → 像素 | `onDraw` |
 
-组合阶段就是"重组"（第 15 章）；本章定制后两个。布局阶段的核心规则只有一条：
+组合阶段就是"重组"（第 22 章）；本章定制后两个。布局阶段的核心规则只有一条：
 
 **每个节点只允许被测量一次，再次测量直接抛异常。**
 
 这不是偷懒，是防指数爆炸：若允许测两次，子测两次、孙就测四次，测量次数随树的深度 2ⁿ 增长。Compose 在框架层掐死了这条路；确实需要"先知道子级尺寸再决定怎么测它"的场景，用 Intrinsic（第 4 节）或 SubcomposeLayout 这两个受控出口。
 
-**约束（Constraints）**是布局的语言：父节点给子节点一组 `minWidth/maxWidth/minHeight/maxHeight`。maxWidth == minWidth 意味着"宽度必须是这个值"；`verticalScroll` 的容器给子级的高度约束是无限大（`maxHeight = ∞`）——第 12 章第 8 节"LazyColumn 不给定高就崩"的根源就在这：LazyColumn 需要有限 maxHeight 才能算出"可见区"。
+**约束（Constraints）**是布局的语言：父节点给子节点一组 `minWidth/maxWidth/minHeight/maxHeight`。maxWidth == minWidth 意味着"宽度必须是这个值"；`verticalScroll` 的容器给子级的高度约束是无限大（`maxHeight = ∞`）——第 19 章第 8 节"LazyColumn 不给定高就崩"的根源就在这：LazyColumn 需要有限 maxHeight 才能算出"可见区"。
 
-在 Modifier 或 Layout 里**读了可变状态**，状态变化会跳过组合、直接触发重排（relayout）；尺寸位置没变则连绘制都不用重跑。这是性能优化的一个正规出口：动画位移写在 `offset { }` lambda 里就只重排不重组（第 18 章手势大量用到）。
+在 Modifier 或 Layout 里**读了可变状态**，状态变化会跳过组合、直接触发重排（relayout）；尺寸位置没变则连绘制都不用重跑。这是性能优化的一个正规出口：动画位移写在 `offset { }` lambda 里就只重排不重组（第 25 章手势大量用到）。
 
 ## 2. Modifier.layout：改一个节点的测量与摆放
 
@@ -69,7 +69,7 @@ fun MySpacedColumn(modifier: Modifier = Modifier, spacing: Dp = 12.dp,
 }
 ```
 
-与第 2 节的差别只在规模：`measurables` 是子节点们的测量句柄 List；测量策略（measurePolicy）遍历、汇总、摆放。把中间两行换成"取最大 x 之和、按权重分"就手写出了 Row；官方布局组件与它同构。第 12 章的布局三件套从此不再是黑盒。
+与第 2 节的差别只在规模：`measurables` 是子节点们的测量句柄 List；测量策略（measurePolicy）遍历、汇总、摆放。把中间两行换成"取最大 x 之和、按权重分"就手写出了 Row；官方布局组件与它同构。第 19 章的布局三件套从此不再是黑盒。
 
 ## 4. Intrinsic：先问尺寸，再定约束
 
@@ -175,9 +175,9 @@ Modifier.drawWithCache {
 - 需求超出组件库时按阶梯下放：**Modifier 拼装 → Modifier.layout → Layout 组件 → Canvas/DrawModifier**，能用上一层就不下探
 - 间距、对齐类需求先查 `Arrangement`/`Alignment` 参数与 `paddingFromBaseline` 等现成 Modifier——多数"自定义"其实是"没找对参数"
 - 圆环/图表/波形类"自绘图形"用 Canvas；给现成组件加装饰（边框、角标、网格背景）用 DrawModifier；两者不要混用 Canvas 包组件（Canvas 没有子级）
-- 动画驱动的绘制（进度、shimmer）把动画值在 onDraw 回调里读——只触发重绘，不惊动组合与布局（连接第 17 章）
+- 动画驱动的绘制（进度、shimmer）把动画值在 onDraw 回调里读——只触发重绘，不惊动组合与布局（连接第 24 章）
 - 改完跑 `.\build.ps1 -Compose` 验证编译；本章 API 来自 ui/foundation，零新增依赖
 
 ---
 
-上一章：[15 Compose 状态与重组深入](15-compose-state.md) ｜ 下一章：[17 Compose 动画进阶](17-compose-animation.md) ｜ 返回：[README](../README.md)
+上一章：[22 Compose 状态与重组深入](22-compose-state.md) ｜ 下一章：[24 Compose 动画进阶](24-compose-animation.md) ｜ 返回：[README](../README.md)

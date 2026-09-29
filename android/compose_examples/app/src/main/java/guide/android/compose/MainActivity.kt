@@ -1,8 +1,8 @@
 package guide.android.compose
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.fragment.app.FragmentActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -17,6 +17,7 @@ import guide.android.compose.samples.AdvancedRoomArchitectureSample
 import guide.android.compose.samples.AdvancedUiStateSample
 import guide.android.compose.samples.AdvancedViewModelStateFlowSample
 import guide.android.compose.samples.AdvancedWorkManagerSample
+import guide.android.compose.samples.FragmentTransactionSample
 import guide.android.compose.samples.AnimCustomTypeSample
 import guide.android.compose.samples.AnimFavButtonSample
 import guide.android.compose.samples.AnimManualSample
@@ -81,20 +82,23 @@ import guide.android.compose.samples.UiSelectionSample
 import guide.android.compose.samples.UiSideEffectSample
 import guide.android.compose.samples.UiThemeCustomizeSample
 
-class MainActivity : ComponentActivity() {
+// FragmentActivity（ComponentActivity 的子类）：第 15 章 Fragment 事务需要 supportFragmentManager
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
                 // verticalScroll：示例总数已超一屏，整列可滚动
-                //（嵌在其中的 LazyColumn/Scaffold 必须定高，见第 12 章第 8 节）
+                //（嵌在其中的 LazyColumn/Scaffold 必须定高，见第 19 章第 8 节）
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
                         .padding(16.dp)
                 ) {
-                    // 第 12 章基础示例（ComposeSamples.kt）
+                    // 第 15 章 Fragment 与任务栈示例（FragmentSamples.kt）
+                    FragmentTransactionSample()
+                    // 第 19 章基础示例（ComposeSamples.kt）
                     ComposeCounterSample()
                     ComposeLazyListSample()
                     ComposeThemeToggleSample()
@@ -104,7 +108,7 @@ class MainActivity : ComponentActivity() {
                     ComposeWeightSample()
                     ComposeInteropSample()
                     JniStatusSample()
-                    // 第 13 章组件与交互示例（UiSamples.kt）
+                    // 第 20 章组件与交互示例（UiSamples.kt）
                     UiButtonsSample()
                     UiSelectionSample()
                     UiScaffoldSample()
@@ -116,13 +120,13 @@ class MainActivity : ComponentActivity() {
                     UiAnimationVisibilitySample()
                     UiInfinitePulseSample()
                     UiThemeCustomizeSample()
-                    // 第 14 章架构示例（AdvancedSamples.kt）
+                    // 第 21 章架构示例（AdvancedSamples.kt）
                     AdvancedViewModelStateFlowSample()
                     AdvancedNavigationSample()
                     AdvancedRoomArchitectureSample()
                     AdvancedWorkManagerSample()
                     AdvancedUiStateSample()
-                    // 第 15 章状态与重组示例（StateSamples.kt）
+                    // 第 22 章状态与重组示例（StateSamples.kt）
                     StateSaveableSample()
                     StateStabilitySample()
                     StateKeySample()
@@ -130,30 +134,30 @@ class MainActivity : ComponentActivity() {
                     StateSnapshotFlowSample()
                     StateRememberUpdatedSample()
                     StateHolderSample()
-                    // 第 16 章自定义布局与绘制示例（LayoutDrawSamples.kt）
+                    // 第 23 章自定义布局与绘制示例（LayoutDrawSamples.kt）
                     LayoutBaselineSample()
                     LayoutCustomColumnSample()
                     LayoutIntrinsicSample()
                     DrawCanvasSample()
                     DrawLayerSample()
                     DrawCacheSample()
-                    // 第 17 章动画进阶示例（AnimationSamples.kt）
+                    // 第 24 章动画进阶示例（AnimationSamples.kt）
                     AnimSpecCompareSample()
                     AnimTransitionSample()
                     AnimManualSample()
                     AnimCustomTypeSample()
                     AnimShimmerSample()
                     AnimFavButtonSample()
-                    // 第 18 章手势示例（GestureSamples.kt）
+                    // 第 25 章手势示例（GestureSamples.kt）
                     GestureTapSample()
                     GestureDragSample()
                     GestureTransformSample()
                     GestureAnchoredDragSample()
                     GestureNestedScrollSample()
                     GestureFlingSample()
-                    // 第 19 章生态示例（EcosystemSamples.kt）
+                    // 第 26 章生态示例（EcosystemSamples.kt）
                     EcoManualDiSample()
-                    // 第 20–25 章原生线示例（JniSamples.kt + cpp/ 六个文件）
+                    // 第 27–32 章原生线示例（JniSamples.kt + cpp/ 六个文件）
                     JniLogSample()
                     JniDeepStringSample()
                     JniDeepArraySample()

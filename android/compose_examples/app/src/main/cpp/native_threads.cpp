@@ -1,4 +1,4 @@
-// 第 23 章：原生线程与同步——pthread/互斥/条件变量/信号量/AttachCurrentThread
+// 第 30 章：原生线程与同步——pthread/互斥/条件变量/信号量/AttachCurrentThread
 // Kotlin 侧镜像：jni/NativeThreadBridge.kt
 #include <jni.h>
 #include <cstdio>

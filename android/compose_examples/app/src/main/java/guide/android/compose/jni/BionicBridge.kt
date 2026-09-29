@@ -1,7 +1,7 @@
 package guide.android.compose.jni
 
 /**
- * 第 22 章 Bionic 与 C++ 标准库。
+ * 第 29 章 Bionic 与 C++ 标准库。
  * 镜像文件：cpp/bionic_samples.cpp
  */
 object BionicBridge {

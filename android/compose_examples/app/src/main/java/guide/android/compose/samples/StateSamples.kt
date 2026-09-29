@@ -163,7 +163,7 @@ fun StateDerivedSample() {
                 }
             }
             // 条件渲染徽标（Box 嵌在 Column 里时 AnimatedVisibility 会被
-            // ColumnScope 扩展遮蔽——改用 if，淡入淡出交给第 13 章的动画 API）
+            // ColumnScope 扩展遮蔽——改用 if，淡入淡出交给第 20 章的动画 API）
             if (awayFromTop) {
                 Text(
                     text = "↑ 顶部之上还有内容",

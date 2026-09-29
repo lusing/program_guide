@@ -64,7 +64,7 @@ fun EcoManualDiSample() {
                 modifier = Modifier.padding(top = 4.dp)
             ) { Text(if (useBackup) "切回默认数据源" else "切换到备份数据源") }
             Text(
-                text = "手写装配在依赖图变大后难以为继；Hilt 用 KSP 生成装配代码，本工程不接 KSP（见第 19 章）",
+                text = "手写装配在依赖图变大后难以为继；Hilt 用 KSP 生成装配代码，本工程不接 KSP（见第 26 章）",
                 color = Color.Gray,
                 modifier = Modifier.padding(top = 4.dp)
             )

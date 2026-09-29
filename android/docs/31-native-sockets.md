@@ -89,7 +89,7 @@ bind(fd, (sockaddr*)&addr, sizeof(addr));
 - **路径从 Kotlin 侧传**（本例 `filesDir/guide.sock`）：应用沙箱内的路径天然受权限保护。绑文件系统路径前先 `unlink` 残留（否则 `EADDRINUSE`），用完再 `unlink`——socket 文件不会随连接消失自动清理
 - **abstract namespace**：Linux 扩展，`sun_path[0] = '\0'` 时名字不落盘（原书 10.3.2 有专节）。优点是自动随进程消失而清理；Android 内部大量使用，应用间对接也可以用——代价是没有文件权限这道闸
 
-选型：跨设备 → TCP；同机跨进程 → UNIX domain；同进程内 → 它俩都别用（直接函数调用或第 21 章的 JNI）。
+选型：跨设备 → TCP；同机跨进程 → UNIX domain；同进程内 → 它俩都别用（直接函数调用或第 28 章的 JNI）。
 
 ## 5. 字节序：htons/htonl 不是仪式
 
@@ -145,4 +145,4 @@ Android 上写事件循环用 `epoll_create`/`epoll_ctl`/`epoll_wait`——这�
 
 ---
 
-上一章：[23 原生线程与同步](23-native-threads.md) ｜ 下一章：[25 原生图形、音频与性能](25-native-media-perf.md) ｜ 返回：[README](../README.md)
+上一章：[30 原生线程与同步](30-native-threads.md) ｜ 下一章：[32 原生图形、音频与性能](32-native-media-perf.md) ｜ 返回：[README](../README.md)

@@ -408,7 +408,7 @@ fun UiThemeCustomizeSample() {
     }
 }
 
-// @Preview：不装进设备，Android Studio 侧栏直接渲染（第 13 章第 10 节）
+// @Preview：不装进设备，Android Studio 侧栏直接渲染（第 20 章第 10 节）
 @Preview(showBackground = true)
 @Composable
 private fun UiButtonsSamplePreview() {

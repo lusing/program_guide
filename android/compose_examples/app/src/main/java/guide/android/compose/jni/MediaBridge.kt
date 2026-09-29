@@ -3,7 +3,7 @@ package guide.android.compose.jni
 import android.graphics.Bitmap
 
 /**
- * 第 25 章原生图形、音频与 NEON。
+ * 第 32 章原生图形、音频与 NEON。
  * 镜像文件：cpp/native_media.cpp
  */
 object MediaBridge {

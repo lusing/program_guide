@@ -2,7 +2,7 @@
 
 > 对应示例：`compose_examples/app/src/main/java/guide/android/compose/samples/UiSamples.kt`
 
-第 12 章解决了"怎么想"（状态驱动界面），本章解决"怎么搭"：把常用组件、应用骨架、对话框、进阶列表、副作用、动画与主题定制一次备齐。学完本章，你就能不查文档搭出一张真实应用的界面。
+第 19 章解决了"怎么想"（状态驱动界面），本章解决"怎么搭"：把常用组件、应用骨架、对话框、进阶列表、副作用、动画与主题定制一次备齐。学完本章，你就能不查文档搭出一张真实应用的界面。
 
 ## 1. 组件速查：按钮族与选择控件
 
@@ -44,7 +44,7 @@ fun UiButtonsSample() {
 
 三个要点：
 
-- **按钮内容是 `@Composable` lambda**：`Button(onClick = ...) { Text("实心") }` 的花括号就是槽位（slot），放文字、图标、行布局都行——这是 Compose 组件组合的基本手法，`Card` 的内容（第 12 章）同理
+- **按钮内容是 `@Composable` lambda**：`Button(onClick = ...) { Text("实心") }` 的花括号就是槽位（slot），放文字、图标、行布局都行——这是 Compose 组件组合的基本手法，`Card` 的内容（第 19 章）同理
 - **`Icon(Icons.Filled.Add, contentDescription = "新增")`**：图标来自 Material 图标库。本工程为此新增了唯一一个依赖 `androidx.compose.material:material-icons-core:1.7.8`（核心集 49 枚常用图标，`Add`/`Delete`/`Home` 等都在内；更大的 `icons-extended` 有数千枚但会拖慢构建，按需再加）
 - **`contentDescription` 不是注释**：它是读屏软件（TalkBack）朗读的文案，漏写等于把按钮对视障用户藏起来；纯装饰性图标才显式传 `null`
 
@@ -65,7 +65,7 @@ Slider(value = slider, onValueChange = { slider = it })
 Text("滑块进度：${(slider * 100).toInt()}%")
 ```
 
-注意 `RadioButton` 的用法：`selected = option == opt` 是**派生值**（第 12 章第 5 节）——不存"哪个选中"的重复状态，单选互斥由"一个状态 + 现算比较"天然保证。`Switch`（第 12 章主题示例）同一模式。这批控件在传统体系里的对应物见[第 05 章](05-views-events.md)控件表，行为语义没变，变的只是"状态上报"替代了"属性读写"。
+注意 `RadioButton` 的用法：`selected = option == opt` 是**派生值**（第 19 章第 5 节）——不存"哪个选中"的重复状态，单选互斥由"一个状态 + 现算比较"天然保证。`Switch`（第 19 章主题示例）同一模式。这批控件在传统体系里的对应物见[第 05 章](05-views-events.md)控件表，行为语义没变，变的只是"状态上报"替代了"属性读写"。
 
 ## 2. Scaffold：一屏应用的标准骨架
 
@@ -152,7 +152,7 @@ fun UiDialogSample() {
 
 ## 4. 列表进阶：key、增删动画与横向列表
 
-第 12 章的 `LazyColumn` 只展示了"列表能滚动"。真实列表会增删，`UiListKeySample`（UI 示例5）补上这一课：
+第 19 章的 `LazyColumn` 只展示了"列表能滚动"。真实列表会增删，`UiListKeySample`（UI 示例5）补上这一课：
 
 ```kotlin
 @Composable
@@ -201,7 +201,7 @@ fun UiListKeySample() {
 
 ## 5. 副作用 API：代码什么时候真的会跑
 
-第 12 章埋下的线：Composable 函数体会被反复执行，副作用不能直接写在函数体里。那"加载一次数据""启动一个定时器"写在哪？`UiSideEffectSample`（UI 示例6）给出标准答案：
+第 19 章埋下的线：Composable 函数体会被反复执行，副作用不能直接写在函数体里。那"加载一次数据""启动一个定时器"写在哪？`UiSideEffectSample`（UI 示例6）给出标准答案：
 
 ```kotlin
 @Composable
@@ -236,7 +236,7 @@ fun UiSideEffectSample() {
 
 （`rememberCoroutineScope` 严格说是"作用域"而非"副作用"，但它们解决同一件事：组合之外何时能有协程。）
 
-分工原则一条：**界面级副作用**（滚到顶、弹个 Snackbar）留在 Composable 用这族 API；**业务副作用**（请求、写库）上移到 ViewModel 的 `viewModelScope`（[第 14 章](14-compose-architecture.md)）——那里不随重组反复执行，还能活过旋转。
+分工原则一条：**界面级副作用**（滚到顶、弹个 Snackbar）留在 Composable 用这族 API；**业务副作用**（请求、写库）上移到 ViewModel 的 `viewModelScope`（[第 21 章](21-compose-architecture.md)）——那里不随重组反复执行，还能活过旋转。
 
 ## 6. 动画（上）：值动画与内容切换
 
@@ -281,7 +281,7 @@ fun UiAnimationValueSample() {
 
 spring 的参数只有物理意义：`dampingRatio` 越小回弹越明显（示例 0.35f 能看到明显过冲），`stiffness` 越大越"硬"。这是 Compose 动画哲学的体现：**描述物理，而不是描述时间轴**——被打断时弹簧从当前位置继续算，不会像时间轴动画那样跳变。
 
-同族还有 `animateColorAsState`（第 12 章主题开关的颜色切换加上它就是动画）、`animateDpAsState`（尺寸）等，参数结构完全一致。
+同族还有 `animateColorAsState`（第 19 章主题开关的颜色切换加上它就是动画）、`animateDpAsState`（尺寸）等，参数结构完全一致。
 
 内容随状态**整体切换**时，用 `AnimatedContent` / `Crossfade`（UI 示例8）：
 
@@ -387,7 +387,7 @@ fun UiInfinitePulseSample() {
 
 ## 9. 主题定制与 CompositionLocal
 
-第 12 章第 10 节留了个尾巴：`MaterialTheme` 是"用 CompositionLocal 提供的隐式环境参数"。这一节把两个概念一起落地。
+第 19 章第 10 节留了个尾巴：`MaterialTheme` 是"用 CompositionLocal 提供的隐式环境参数"。这一节把两个概念一起落地。
 
 **CompositionLocal** 解决"深层嵌套时参数逐层透传"（prop drilling）的问题：在树顶提供一个值，任意深度的后代直接取用——`LocalContext`、`LocalDensity` 以及 `MaterialTheme` 的配色、字体、形状，全是这个机制。自己定义一个也只是两行：
 
@@ -415,7 +415,7 @@ MaterialTheme(colorScheme = if (candy) CandyColorScheme else MaterialTheme.color
 
 真实工程的组织方式（新项目模板自带）：`ui/theme/` 目录四个文件集中管理——`Color.kt`（色板）、`Type.kt`（字体层级）、`Shape.kt`（圆角体系）、`Theme.kt`（组装 light/dark 两套 scheme，按系统暗色模式选择）。设计规范换肤时只动这四个文件，正是"主题参数与组件实现解耦"的收益。
 
-纪律提醒（第 19 章还会遇到）：CompositionLocal 只放**环境级不变量**（主题、容器、窗口信息）；业务数据走参数与 ViewModel，否则数据流会变得不可追踪。
+纪律提醒（第 26 章还会遇到）：CompositionLocal 只放**环境级不变量**（主题、容器、窗口信息）；业务数据走参数与 ViewModel，否则数据流会变得不可追踪。
 
 ## 10. @Preview：不装机的看图开发
 
@@ -431,7 +431,7 @@ private fun UiButtonsSamplePreview() {
 
 规则只有三条：
 
-- 被预览的函数**无参**（或参数全有默认值）——所以组件要写成无状态 + 参数传入的形态（第 12 章状态提升），预览能力是白送的回报
+- 被预览的函数**无参**（或参数全有默认值）——所以组件要写成无状态 + 参数传入的形态（第 19 章状态提升），预览能力是白送的回报
 - `showBackground = true` 加白色底，否则组件浮在检查器背景上难看清；还有 `widthDp`/`heightDp`（模拟尺寸）、`fontScale`（大字号无障碍）等参数
 - 一个文件可以放**多个** Preview 函数，侧栏逐个渲染——把同一组件的多个数据形态（空列表/满列表/错误态）各写一个 Preview，等于给组件拍了组照
 
@@ -451,12 +451,12 @@ private fun UiButtonsSamplePreview() {
 
 - 组件优先选 Material3 标准件（本章速查表 + 官方组件目录），自定义控件是最后手段——先组合现有组件 + Modifier，组合不出来再谈自定义
 - 每屏一个 `Scaffold`，顶栏/FAB/Snackbar 的交互契约它已经替你谈好；`innerPadding` 记得应用
-- 动画从 `animate*AsState` 与 `animateContentSize` 起步，90% 的"质感提升"就来自这两者；`AnimatedContent` 用在真正的内容切换上，别给静态界面加戏；深水区（Transition/Animatable/Spec 全家）见[第 17 章](17-compose-animation.md)
+- 动画从 `animate*AsState` 与 `animateContentSize` 起步，90% 的"质感提升"就来自这两者；`AnimatedContent` 用在真正的内容切换上，别给静态界面加戏；深水区（Transition/Animatable/Spec 全家）见[第 24 章](24-compose-animation.md)
 - 列表只要有增删/条目内状态，`key` 必给；`animateItem()` 顺手加上，成本一句话收益肉眼可见
-- 副作用清单化检查：函数体里每出现一个非 UI 调用，问一句"它该在 `LaunchedEffect`/`DisposableEffect` 里，还是该搬去 ViewModel"（[第 14 章](14-compose-architecture.md)）
+- 副作用清单化检查：函数体里每出现一个非 UI 调用，问一句"它该在 `LaunchedEffect`/`DisposableEffect` 里，还是该搬去 ViewModel"（[第 21 章](21-compose-architecture.md)）
 - 主题定制集中在 `ui/theme/` 四文件，组件永远读 `MaterialTheme.colorScheme` 而不是写死色值
 - 写组件时顺手写 `@Preview`——无状态设计 + 预览，是 Compose 开发体验的复利
-- 改完跑 `.\build.ps1 -Compose` 做编译验证；[第 26 章](26-memopad.md)会把本章组件、动画与第 14 章架构全部串成完整应用
+- 改完跑 `.\build.ps1 -Compose` 做编译验证；[第 33 章](33-memopad.md)会把本章组件、动画与第 21 章架构全部串成完整应用
 
 ---
-上一章：[12 Jetpack Compose 基础](12-compose-basics.md) ｜ 下一章：[14 Compose 工程化架构](14-compose-architecture.md) ｜ 返回：[README](../README.md)
+上一章：[19 Jetpack Compose 基础](19-compose-basics.md) ｜ 下一章：[21 Compose 工程化架构](21-compose-architecture.md) ｜ 返回：[README](../README.md)

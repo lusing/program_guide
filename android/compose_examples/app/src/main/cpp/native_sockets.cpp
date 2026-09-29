@@ -1,4 +1,4 @@
-// 第 24 章：POSIX Socket——TCP/UDP/UNIX domain 回环 echo
+// 第 31 章：POSIX Socket——TCP/UDP/UNIX domain 回环 echo
 // Kotlin 侧镜像：jni/SocketBridge.kt
 //
 // 三个示例都用"单线程回环"设计：服务器与客户端在同一个 JNI 调用里先后跑。

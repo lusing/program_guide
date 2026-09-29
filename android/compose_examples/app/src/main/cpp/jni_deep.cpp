@@ -1,4 +1,4 @@
-// 第 21 章：JNI 深入——字符串/数组/NIO/域/方法/异常/引用
+// 第 28 章：JNI 深入——字符串/数组/NIO/域/方法/异常/引用
 // Kotlin 侧镜像：jni/JniDeepBridge.kt
 #include <jni.h>
 #include <cmath>

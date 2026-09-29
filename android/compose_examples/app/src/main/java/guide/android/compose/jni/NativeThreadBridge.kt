@@ -1,7 +1,7 @@
 package guide.android.compose.jni
 
 /**
- * 第 23 章原生线程与同步。
+ * 第 30 章原生线程与同步。
  * 镜像文件：cpp/native_threads.cpp（回调方法在 JNI_OnLoad 里预取并缓存）
  */
 object NativeThreadBridge {

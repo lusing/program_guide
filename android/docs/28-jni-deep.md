@@ -2,9 +2,9 @@
 
 > 对应示例：`compose_examples/app/src/main/cpp/jni_deep.cpp` + `jni/JniDeepBridge.kt`（Compose 消费层在 `samples/JniSamples.kt`）
 
-## 1. 第 20 章之外还有什么
+## 1. 第 27 章之外还有什么
 
-第 20 章的闭环只动了一种数据：`String` 进出。真实世界的 native 库要吃数组、要回传大块二进制、要改 Kotlin 对象的字段、要回调 Kotlin 方法、要把 Java 异常接住或抛出——这些全是 JNI 规范里的标准动作，也是本章的全部内容（对应原书第 3 章的水下部分）。
+第 27 章的闭环只动了一种数据：`String` 进出。真实世界的 native 库要吃数组、要回传大块二进制、要改 Kotlin 对象的字段、要回调 Kotlin 方法、要把 Java 异常接住或抛出——这些全是 JNI 规范里的标准动作，也是本章的全部内容（对应原书第 3 章的水下部分）。
 
 先摆一个总原则，后面每一节都是它的展开：
 
@@ -176,7 +176,7 @@ GC 通过引用追踪对象，native 侧的引用分三档，生命周期完全�
 
 - 接口设计成"厚数据、薄往返"：参数一次传齐（数组/ByteBuffer 打包），返回值同样打包，跨界次数最小化
 - 描述符集中在常量里定义并注释来源（"经 javap -s 核对"），别散落各处手写
-- `jfieldID`/`jmethodID` 缓存复用；跨线程场景配全局引用（第 23 章的 JNI_OnLoad 方案是标准姿势）
+- `jfieldID`/`jmethodID` 缓存复用；跨线程场景配全局引用（第 30 章的 JNI_OnLoad 方案是标准姿势）
 - 大块二进制一律直接 `ByteBuffer`（第 4 节），并写好 free 路径——native 内存泄漏不归 GC 报警
 - native API 的错误处理约定要想清楚：抛 Java 异常（能被 Kotlin runCatching 接住）还是返回哨兵值，别混用两套
 - 域/方法回调保持"通知"性质（进度、事件），别让 native 频繁回头取数据——那是设计错误，不是优化问题
@@ -184,4 +184,4 @@ GC 通过引用追踪对象，native 侧的引用分三档，生命周期完全�
 
 ---
 
-上一章：[20 JNI 与 NDK](20-jni-ndk.md) ｜ 下一章：[22 Bionic 与 C++ 标准库](22-bionic-cpp.md) ｜ 返回：[README](../README.md)
+上一章：[27 JNI 与 NDK](27-jni-ndk.md) ｜ 下一章：[29 Bionic 与 C++ 标准库](29-bionic-cpp.md) ｜ 返回：[README](../README.md)

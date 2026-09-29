@@ -94,7 +94,40 @@ startActivity(openWeb)
 
 观点：**App 内导航一律显式**——类名写死换来编译期可追溯，重构时 IDE 能跟着改；隐式 Intent 的正确定位是"跨 App 能力调用"，不要用它做内部跳转（耦合系统选择行为，难测试）。
 
-## 4. 数据传递：extras 的边界
+## 4. Intent 七属性与 intent-filter 匹配规则
+
+上面两节只用了 Intent 的一小半火力。完整的 Intent 有**七种属性**（疯狂Android讲义的归纳沿用至今），一张表认全：
+
+| 属性 | 类型 | 一句话 |
+|---|---|---|
+| `Component` | ComponentName | 收件人——写了就是显式 Intent |
+| `Action` | String（单个） | 想干的抽象动作（`ACTION_VIEW`…） |
+| `Category` | String（可多个） | 给动作加的附加类别 |
+| `Data` | Uri | 动作操作的数据（scheme://host:port/path） |
+| `Type` | MIME 字符串 | 数据的类型（`text/plain`…） |
+| `Extra` | Bundle | 随信携带的数据（第 5 节） |
+| `Flag` | int 位标志 | 投递方式指令（第 7 节的栈操作就靠它） |
+
+**intent-filter 的匹配规则**是隐式 Intent 的判定逻辑（manifest 里 `<intent-filter>` 可含 0..N 个 `<action>`、0..N 个 `<category>`、0..1 个 `<data>`）：
+
+1. **Action**：Intent 的 action 必须**命中 filter 声明的任意一个** action
+2. **Category**：Intent 里的**每一个** category 都必须被 filter 覆盖（方向反过来——filter 可以富余）。关键细节：`startActivity/ startActivityForResult` 会给 Intent 自动补一个 `CATEGORY_DEFAULT`，所以**想被隐式启动的 Activity，filter 里必须声明 `<category android:name="android.intent.category.DEFAULT"/>`**——漏了它，filter 写得再对也匹配不上（头号静默坑）
+3. **Data/Type**：filter 的 `<data>` 用七个属性逐层收紧——`mimeType` 对 Type；`scheme/host/port/path/pathPrefix/pathPattern` 对 Uri 的各段。**部分匹配**规则：只声明 scheme 就只比 scheme；声明了 host+path 就都比——但 **port 离开 host、path 离开 host 都不生效**。通配符 `#`（数字段）与 `*`（任意段）用在 path 里，`content://auth/word/#` 匹配任意 id
+
+**Data 与 Type 互相覆盖**是经典冷知识：先 `setData` 后 `setType`，Data 被清空；反之亦然——两个都要时用 **`setDataAndType(uri, type)`** 一步到位。
+
+几个高频系统组合（完整常量表在 `Intent` 类文档）：
+
+| 组合 | 效果 |
+|---|---|
+| `ACTION_MAIN` + `CATEGORY_HOME` | 回到桌面（书里"返回系统 Home"实例） |
+| `ACTION_VIEW` + `tel:` Uri | 拨号盘预填 |
+| `ACTION_VIEW` + `geo:` Uri | 地图定位 |
+| `ACTION_SEND` + Type + `EXTRA_TEXT` | 分享面板 |
+
+发前探测：`intent.resolveActivity(packageManager)` 返回 null 就别 start（防 `ActivityNotFoundException`，也省得在无浏览器设备上崩）；`queryIntentActivities` 还能列出全部候选。**校准一条**：Android 11（API 30）起包可见性收紧——你的 `<queries>` 声明（或 `QUERY_ALL_PACKAGES` 权限）之外的 App，`resolveActivity` 也会看不见，探测结果不再等于"设备上装没装"。
+
+## 5. 数据传递：extras 的边界
 
 extras 是 Intent 内部的一个 `Bundle`（键值对容器），常用 API 就四个：
 
@@ -127,7 +160,7 @@ val urgent = intent.getBooleanExtra("urgent", false)
 
 正确姿势是**传 id 不传数据**：Intent 里只放数据库主键或标识符，数据本体走第 09 章的持久层或进程内仓库（单例）。导航与数据分家，这是中大型 App 的基本功。
 
-## 5. 回传数据：从 startActivityForResult 到 Activity Result API
+## 6. 回传数据：从 startActivityForResult 到 Activity Result API
 
 单向传值之外，常见"打开选择页 → 用户挑一个 → 带回来"的闭环。`examples/20_activity_result_style.kt` 演示的是这个闭环的经典写法：
 
@@ -203,7 +236,7 @@ launcher 的归属也值得看清：它是**注册它的组件的私有财产**�
 
 `registerForActivityResult` 有个硬约束：**必须在 Activity 进入 STARTED 状态之前调用**——写成属性初始化（如上）或放在 `onCreate` 里都行，放到按钮点击回调里再注册会直接 `IllegalStateException`。另外 `ActivityResultContracts.RequestPermission` 契约把运行时权限申请也统一到了这套 API，第 11 章会用到。
 
-## 6. 任务与回退栈：导航的骨架
+## 7. 任务与回退栈：导航的骨架
 
 系统用一个**任务（Task）**承载用户的一段操作连续性，任务内部以**回退栈（back stack）**组织 Activity：
 
@@ -229,7 +262,7 @@ launcher 的归属也值得看清：它是**注册它的组件的私有财产**�
 
 观点：简单导航链用 `startActivity / finish` 就够，别一上来背 flag 全家桶——栈行为一旦复杂化，排查"为什么返回不回到预期页面"的成本远高于收益。
 
-## 7. 常见坑
+## 8. 常见坑
 
 **目标 Activity 没在 Manifest 注册**：`ActivityNotFoundException: Unable to find explicit activity class ... have you declared this activity in your AndroidManifest.xml?`——报错把修法都写明了，补 `<activity>` 声明即可。新建 Activity 时用 IDE 模板会自动注册，手写类就要自己想着这行。
 
@@ -251,7 +284,7 @@ try {
 
 **把大对象塞进 extras**：跨进程路径上等着你的是 `TransactionTooLargeException`；侥幸不炸时也是双端序列化开销。传 id，不传数据。
 
-## 8. 实战建议
+## 9. 实战建议
 
 - App 内导航一律显式 Intent；隐式只用于"跨 App 能力"（开网页、分享、拍照），并且必带 `ActivityNotFoundException` 兜底
 - extras 键名收进伴生对象常量，再配一个 `newIntent(context, ...)` 工厂函数，收发两侧用同一份真源，杜绝拼写错位

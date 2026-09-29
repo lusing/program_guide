@@ -2,11 +2,11 @@
 
 > 对应示例：`compose_examples/app/src/main/java/guide/android/compose/samples/EcosystemSamples.kt`
 
-第 14 章的 `viewModel()` 有个没展开的问题：带构造参数的 ViewModel（Repository 进构造函数）怎么创建？答案是依赖注入（Dependency Injection，DI）。本章先用手写方式把 DI 的本质讲透（`EcoManualDiSample`），再看工业标准 Hilt 为什么长那样、接入它要付出什么；最后盘一遍 Compose 周边生态——书里的 Accompanist 一章已成"历史课"，官方库已收编其大半，这一章按 2026 年的现状重新校准。
+第 21 章的 `viewModel()` 有个没展开的问题：带构造参数的 ViewModel（Repository 进构造函数）怎么创建？答案是依赖注入（Dependency Injection，DI）。本章先用手写方式把 DI 的本质讲透（`EcoManualDiSample`），再看工业标准 Hilt 为什么长那样、接入它要付出什么；最后盘一遍 Compose 周边生态——书里的 Accompanist 一章已成"历史课"，官方库已收编其大半，这一章按 2026 年的现状重新校准。
 
 ## 1. 依赖注入：问题与最小解
 
-回看第 14 章的 `NoteListViewModel(repository = FakeNoteRepository())`——带默认值的构造参数其实就是最朴素的注入：**依赖从外面递进来，组件不自己造**。它解决三件事：
+回看第 21 章的 `NoteListViewModel(repository = FakeNoteRepository())`——带默认值的构造参数其实就是最朴素的注入：**依赖从外面递进来，组件不自己造**。它解决三件事：
 
 - **可替换**：换数据源（内存 → Room → 网络）不改 UI 代码
 - **可测试**：塞一个"立即成功/立即失败"的假实现，逻辑测试不碰真 IO
@@ -29,7 +29,7 @@ CompositionLocalProvider(LocalAppContainer provides container) {
 }
 ```
 
-四个角色各司其职：**接口**隔离变化、**容器**集中装配（真实工程在 `Application` 子类里建全局一份）、**CompositionLocal** 免逐层透传（第 13 章主题一节讲过的"隐式环境参数"，DI 是它最重的用例）、**消费方**只面向接口。点击示例里的"切换到备份数据源"，UI 代码一行没动、数据全换——这就是注入的全部价值。
+四个角色各司其职：**接口**隔离变化、**容器**集中装配（真实工程在 `Application` 子类里建全局一份）、**CompositionLocal** 免逐层透传（第 20 章主题一节讲过的"隐式环境参数"，DI 是它最重的用例）、**消费方**只面向接口。点击示例里的"切换到备份数据源"，UI 代码一行没动、数据全换——这就是注入的全部价值。
 
 手写的极限也一目了然：依赖图大了以后，"谁初始化谁、单例还是每次新建、ViewModel 的工厂怎么接容器"全靠手排，容器自己长成一个大工厂类。这正是 DI 框架的入口。
 
@@ -52,13 +52,13 @@ object DataModule {
 }
 
 @Composable fun NoteListScreen() {
-    val vm: NoteListViewModel = hiltViewModel()       // 与第 14 章 viewModel() 同型，依赖已注入
+    val vm: NoteListViewModel = hiltViewModel()       // 与第 21 章 viewModel() 同型，依赖已注入
 }
 ```
 
-为什么 Compose 项目格外需要它：`viewModel()` 只能创建**无参**构造的 ViewModel（第 14 章的 `CounterViewModel` 因此不敢带参数）；带参构造要手写 `ViewModelProvider.Factory`，而 Hilt 为每个 `@HiltViewModel` 自动生成工厂，`hiltViewModel()` 直接可用。配合 Navigation，每个 Destination 的 ViewModelStore 各自持有实例（页面级状态隔离），依赖照样注入。
+为什么 Compose 项目格外需要它：`viewModel()` 只能创建**无参**构造的 ViewModel（第 21 章的 `CounterViewModel` 因此不敢带参数）；带参构造要手写 `ViewModelProvider.Factory`，而 Hilt 为每个 `@HiltViewModel` 自动生成工厂，`hiltViewModel()` 直接可用。配合 Navigation，每个 Destination 的 ViewModelStore 各自持有实例（页面级状态隔离），依赖照样注入。
 
-**本工程的取舍（与第 14 章 Room/KSP 同一条纪律）**：Hilt 依赖 KSP 注解处理器，接入要动 plugins/依赖且版本与 Kotlin 严格对齐；教学主线保持零处理器，示例用手写容器如实演示同一套思想。真实工程接法：根工程加 `id("com.google.devtools.ksp") version "<kotlin版本>-<ksp版本>"`，app 模块加 `ksp("com.google.dagger:hilt-android-compiler:...")` 与 `hilt-navigation-compose` 依赖——步骤与第 14 章第 5 节的 Room/KSP 完全同构。轻量替代品 Koin（运行时 DSL 注入、无代码生成）在中小项目也常见，取舍：Hilt 编译期查错但构建重，Koin 轻但错误延迟到运行期。
+**本工程的取舍（与第 21 章 Room/KSP 同一条纪律）**：Hilt 依赖 KSP 注解处理器，接入要动 plugins/依赖且版本与 Kotlin 严格对齐；教学主线保持零处理器，示例用手写容器如实演示同一套思想。真实工程接法：根工程加 `id("com.google.devtools.ksp") version "<kotlin版本>-<ksp版本>"`，app 模块加 `ksp("com.google.dagger:hilt-android-compiler:...")` 与 `hilt-navigation-compose` 依赖——步骤与第 21 章第 5 节的 Room/KSP 完全同构。轻量替代品 Koin（运行时 DSL 注入、无代码生成）在中小项目也常见，取舍：Hilt 编译期查错但构建重，Koin 轻但错误延迟到运行期。
 
 ## 3. 生态现状课：Accompanist 的兴衰与官方收编
 
@@ -68,7 +68,7 @@ object DataModule {
 |---|---|
 | `accompanist-pager`（HorizontalPager） | ✅ 官方化：`androidx.compose.foundation.pager.HorizontalPager/VerticalPager`（1.4+） |
 | `accompanist-flowlayout`（FlowRow） | ✅ 官方化：`foundation.layout.FlowRow`（1.4+） |
-| `accompanist-swiperefresh` | ✅ 替代：material3 `PullToRefresh` / `pullToRefresh` 修饰符（第 18 章手写过它的内核） |
+| `accompanist-swiperefresh` | ✅ 替代：material3 `PullToRefresh` / `pullToRefresh` 修饰符（第 25 章手写过它的内核） |
 | `accompanist-insets` + `SystemUiController` | ✅ 官方化：`WindowInsets` API + `enableEdgeToEdge()`（androidx.activity） |
 | `accompanist-navigation-*` | 部分并入 `navigation-compose`；动画版转 community 维护 |
 
@@ -94,11 +94,11 @@ AsyncImage(
 
 | 书中写法 | 本教程（Compose 1.7.8） |
 |---|---|
-| `swipeable` 修饰符做吸附开关 | `anchoredDraggable`（第 18 章第 5 节） |
-| `BottomNavigation`（Material2） | `NavigationBar`（Material3，第 13 章谱系） |
-| `ScaffoldState`/`rememberScaffoldState` | `SnackbarHostState` 直挂 `snackbarHost`（第 13 章第 2 节） |
+| `swipeable` 修饰符做吸附开关 | `anchoredDraggable`（第 25 章第 5 节） |
+| `BottomNavigation`（Material2） | `NavigationBar`（Material3，第 20 章谱系） |
+| `ScaffoldState`/`rememberScaffoldState` | `SnackbarHostState` 直挂 `snackbarHost`（第 20 章第 2 节） |
 | Accompanist Pager/Insets | 官方 `HorizontalPager` / `WindowInsets` |
-| `Modifier.animationType` 时代的过渡 API | `togetherWith` / `AnimatedContent`（第 13 章） |
+| `Modifier.animationType` 时代的过渡 API | `togetherWith` / `AnimatedContent`（第 20 章） |
 
 方法论：任何 Compose API 先看**所属包**——`androidx.compose.*` 官方稳定、`accompanist.*` 查退役公告、三方包查维护状态；再在 Android Studio 里看**是否有删除线**（deprecated）与 **@ExperimentalXxx 标注**（要 @OptIn 的都是未稳定区）。
 
@@ -115,11 +115,11 @@ AsyncImage(
 ## 6. 实战建议
 
 - 中小工程先手写 AppContainer（本章示例的完整套路），依赖图长到"容器初始化函数超过一屏"再上 Hilt——框架是规模化的产物，不是起点
-- `hiltViewModel()` 与 `viewModel()` 的关系记住一句话：前者是后者加了注入的版本；第 14 章的 UDF 纪律一条不变
+- `hiltViewModel()` 与 `viewModel()` 的关系记住一句话：前者是后者加了注入的版本；第 21 章的 UDF 纪律一条不变
 - 引三方库前过一遍"官方补丁测试"（第 3 节），并用 Context7/官方文档核对当前版本的推荐 API——教材与博客的时滞是常态
 - 图片用 Coil、设计师动画用 Lottie、其余需求先在 `androidx.compose.*` 里找——生态收敛后"选择困难"反而是最少的问题
 - 改完跑 `.\build.ps1 -Compose` 验证编译（本章示例零新增依赖，Hilt/Coil 代码为文档示意）
 
 ---
 
-上一章：[18 Compose 手势处理](18-compose-gestures.md) ｜ 下一章：[20 JNI 与 NDK](20-jni-ndk.md) ｜ 返回：[README](../README.md)
+上一章：[25 Compose 手势处理](25-compose-gestures.md) ｜ 下一章：[27 JNI 与 NDK](27-jni-ndk.md) ｜ 返回：[README](../README.md)

@@ -4,7 +4,7 @@
 
 ## 1. 一条边界，两个世界
 
-先复述第 21 章最烫的两条 JNI 线程规则，本章所有内容都踩在它们上面：
+先复述第 28 章最烫的两条 JNI 线程规则，本章所有内容都踩在它们上面：
 
 - **`JNIEnv*` 是线程局部的**：哪个线程调进 native，那个 `env` 只在该线程有效。缓存它、跨线程用它，是未定义行为
 - **局部引用不出线程**：本次调用的局部引用在别的线程里是悬空的
@@ -69,9 +69,9 @@ g_guideJavaVm->DetachCurrentThread();                   // 用完分离，否则
 
 - **`JavaVM*` 从哪来**：`JNI_OnLoad` 回调的入参（本工程在 `native_threads.cpp` 顶部）。它是进程级的，可以放心存全局；`JNIEnv*` 则绝对不行——这正是两个指针的本质区别
 - 重复 attach 无副作用；attach 了不 detach，线程退出时 JNI 线程表泄漏（长跑进程的慢性病）
-- 回调抛的异常同样要 `ExceptionCheck`/`ExceptionClear` 处理干净再 detach（第 21 章第 6 节的纪律在线程侧加倍严格）
+- 回调抛的异常同样要 `ExceptionCheck`/`ExceptionClear` 处理干净再 detach（第 28 章第 6 节的纪律在线程侧加倍严格）
 
-**一个藏得极深的坑（本工程代码里就有示范防御）**：原生线程里 `FindClass` 找**应用自己的类**会失败——attach 出来的线程拿的是系统类加载器上下文。标准解法是 **JNI_OnLoad 时预取**：那时类加载器是加载本库的 app loader，`FindClass` 必定成功；把 `jclass` 用 `NewGlobalRef` 提升成全局、`jmethodID` 一并缓存（`native_threads.cpp` 的 `g_bridgeClass`/`g_onNativeMessage`）。这个组合同时示范了第 21 章第 5 节"缓存 ID"与第 7 节"全局引用"的实战用法。
+**一个藏得极深的坑（本工程代码里就有示范防御）**：原生线程里 `FindClass` 找**应用自己的类**会失败——attach 出来的线程拿的是系统类加载器上下文。标准解法是 **JNI_OnLoad 时预取**：那时类加载器是加载本库的 app loader，`FindClass` 必定成功；把 `jclass` 用 `NewGlobalRef` 提升成全局、`jmethodID` 一并缓存（`native_threads.cpp` 的 `g_bridgeClass`/`g_onNativeMessage`）。这个组合同时示范了第 28 章第 5 节"缓存 ID"与第 7 节"全局引用"的实战用法。
 
 `threadNotifyBack` 把整条链跑通：pthread 起线程 → attach → `CallStaticVoidMethod` 回调 Kotlin 的 `onNativeMessage` → detach → join。Kotlin 侧 `NativeThreadBridge.lastNativeMessage` 收货——join 先于返回，读它没有竞态。
 
@@ -110,7 +110,7 @@ if (env->MonitorEnter(obj) == JNI_OK) {
 
 - 非 root 进程改 `SCHED_FIFO`/`SCHED_RR` 直接 `EPERM`；Android 从未对第三方应用开放这个 cap
 - 应用线程全部活在 `SCHED_OTHER`（分时调度）里，`sched_priority` 恒为 0——`threadSchedInfo` 的探测输出就是这句证词
-- 想表达"这个线程更重要"，可用的杠杆是 `nice` 值（`setpriority`，范围受限）与**少干活**——把热点算进 native（第 25 章）比抢调度器实在
+- 想表达"这个线程更重要"，可用的杠杆是 `nice` 值（`setpriority`，范围受限）与**少干活**——把热点算进 native（第 32 章）比抢调度器实在
 
 这也是一条认知免疫：见到老代码里 `pthread_setschedparam(SCHED_FIFO, 99)`，那在真机上从来没成功过——检查返回值的话。
 
@@ -135,10 +135,10 @@ if (env->MonitorEnter(obj) == JNI_OK) {
 - 新代码先问"协程能不能做"（第 08 章），原生线程留给对接既有 native 库的场景
 - 对接自带线程的库时，先查清它的线程模型：回调在哪个线程？需要你 attach 吗？回调抛异常谁接？这三个问题的答案决定封装层怎么写
 - 线程入口的 `void*` 参数用结构体打包，生命周期约定写进注释（join 前不能析构）
-- "缓存 ID + 全局引用"的 JNI_OnLoad 模式直接抄本工程 `native_threads.cpp`，它同时是第 21 章两节内容的标准落法
+- "缓存 ID + 全局引用"的 JNI_OnLoad 模式直接抄本工程 `native_threads.cpp`，它同时是第 28 章两节内容的标准落法
 - 线程命名（`JavaVMAttachArgs.name`）花不了三秒钟，logcat/debugger/tombstone 里全靠它认人
 - 下一章把这线程功夫用到网络上：POSIX socket 在 native 侧怎么干活
 
 ---
 
-上一章：[22 Bionic 与 C++ 标准库](22-bionic-cpp.md) ｜ 下一章：[24 POSIX Socket 原生网络](24-native-sockets.md) ｜ 返回：[README](../README.md)
+上一章：[29 Bionic 与 C++ 标准库](29-bionic-cpp.md) ｜ 下一章：[31 POSIX Socket 原生网络](31-native-sockets.md) ｜ 返回：[README](../README.md)
