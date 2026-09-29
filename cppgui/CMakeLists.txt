@@ -124,6 +124,12 @@ endif()
 # ---- 一、wxWidgets ----
 if(CPPGUI_ENABLE_WX)
     cppgui_example_wx(01_wx_hello wx::core wx::base)
+    cppgui_example_wx(02_wx_menus wx::core wx::base)
+    cppgui_example_wx(03_wx_sizers wx::core wx::base)
+    cppgui_example_wx(04_wx_controls wx::core wx::base wx::adv)
+    cppgui_example_wx(05_wx_dialogs wx::core wx::base wx::adv)
+    cppgui_example_wx(06_wx_drawing wx::core wx::base wx::adv)
+    cppgui_example_wx(07_wx_docview_thread wx::core wx::base wx::adv)
 endif()
 
 # ---- 二、Dear ImGui ----
