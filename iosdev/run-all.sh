@@ -148,11 +148,12 @@ build_config() {
     log="$out/build.$cfg.log"
     : > "$log"
 
-    local -a srcs objs frameworks
-    srcs=(); objs=(); frameworks=()
+    local -a srcs objs csrcs frameworks
+    srcs=(); objs=(); csrcs=(); frameworks=()
     local f
     for f in $(cd "$dir" && ls *.swift 2>/dev/null | sort); do srcs+=("$dir/$f"); done
     for f in $(cd "$dir" && ls *.m 2>/dev/null | sort); do objs+=("$dir/$f"); done
+    for f in $(cd "$dir" && ls *.c 2>/dev/null | sort); do csrcs+=("$dir/$f"); done
 
     if [ -f "$dir/Frameworks" ]; then
         while IFS= read -r line; do
@@ -170,7 +171,22 @@ build_config() {
     local target_args=(-sdk "$SDK" -target "$DEPLOY_TARGET")
     local bin="$out/$name.$cfg"
 
-    if [ "${#objs[@]}" -eq 0 ]; then
+    # ---- 纯 C 文件先单独编一遍 ----
+    # 关键：绝不能给 .c 传 -fobjc-arc，clang 会对它报「argument unused / 只适用于 ObjC」的告警，
+    # 而本教程要求编译日志为空。所以 C 文件走一条没有 ObjC 开关的命令。
+    local -a csrcobjs
+    csrcobjs=()
+    for f in ${csrcs[@]+"${csrcs[@]}"}; do
+        local cbase
+        cbase="$(basename "$f" .c)"
+        "$CLANG" -c -O2 -std=gnu11 -fmodules -Wall -Wextra -Wno-unused-parameter \
+            -isysroot "$SDK" -target "$DEPLOY_TARGET" -I "$dir" \
+            "$f" -o "$out/$cbase.$cfg.o" >> "$log" 2>&1
+        if [ $? -ne 0 ]; then return 1; fi
+        csrcobjs+=("$out/$cbase.$cfg.o")
+    done
+
+    if [ "${#objs[@]}" -eq 0 ] && [ "${#csrcobjs[@]}" -eq 0 ]; then
         # ---- 纯 Swift ----
         "$SWIFTC" "$opt" "${target_args[@]}" -module-name "$mod" \
             ${srcs[@]+"${srcs[@]}"} -o "$bin" \
@@ -180,10 +196,14 @@ build_config() {
     fi
 
     if [ "${#srcs[@]}" -eq 0 ]; then
-        # ---- 纯 Objective-C ----
-        "$CLANG" -O2 -std=gnu11 -fobjc-arc -fmodules -Wall -Wextra -Wno-unused-parameter \
+        # ---- 纯 Objective-C（或纯 C）----
+        # 没有 .m 时不传 -fobjc-arc，免得链接阶段冒出「argument unused」告警
+        local -a arcf
+        arcf=("-fobjc-arc")
+        [ "${#objs[@]}" -eq 0 ] && arcf=()
+        "$CLANG" -O2 -std=gnu11 -fmodules -Wall -Wextra -Wno-unused-parameter "${arcf[@]}" \
             -isysroot "$SDK" -target "$DEPLOY_TARGET" -I "$dir" \
-            ${objs[@]+"${objs[@]}"} -o "$bin" \
+            ${objs[@]+"${objs[@]}"} ${csrcobjs[@]+"${csrcobjs[@]}"} -o "$bin" \
             -framework Foundation -framework UIKit \
             ${frameworks[@]+"${frameworks[@]}"} >> "$log" 2>&1
         return $?
@@ -226,7 +246,8 @@ build_config() {
     done
 
     "$SWIFTC" "$opt" "${target_args[@]}" \
-        ${swiftobjs[@]+"${swiftobjs[@]}"} ${cobjects[@]+"${cobjects[@]}"} -o "$bin" \
+        ${swiftobjs[@]+"${swiftobjs[@]}"} ${cobjects[@]+"${cobjects[@]}"} \
+        ${csrcobjs[@]+"${csrcobjs[@]}"} -o "$bin" \
         -framework Foundation -framework UIKit -framework SwiftUI \
         ${frameworks[@]+"${frameworks[@]}"} >> "$log" 2>&1
     return $?
