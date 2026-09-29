@@ -77,12 +77,12 @@ my_app/
 每章三步：**读讲解 → `cd examples/NN_name && flutter run -d windows` 跑起来 → 改代码看热重载**。批量验证用构建脚本（**须 pwsh 7**，含中文无 BOM）：
 
 ```powershell
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All                  # 全量：29 工程 pub get + analyze + test；02/20/27 额外 windows 构建
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All                  # 全量：31 工程 pub get + analyze + test；02/20/27/31_plugin 额外 windows 构建
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 06_material  # 单工程全流程（含构建）
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean                # 清理全部构建产物
 ```
 
-## 1.8 30 章路线图
+## 1.8 32 章路线图
 
 | 阶段 | 章 | 你将获得 |
 |---|---|---|
@@ -93,6 +93,7 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean                # 清理全�
 | 进阶篇（21+） | 21 调试 · 22 集中状态 · 23 认证 · 24 媒体选取 | 工程硬功夫：让代码可维护、可发布 |
 | 进阶篇（25+） | 25 性能 · 26 Cupertino 自适应 · 27 平台通道 · 28 移动发布 | 优化、跨脸、直通原生、上架闭环 |
 | 进阶篇（29+） | 29 滚动进阶与页面事件 · 30 国际化 | Sliver 拼装、返回拦截、事件广播、多语言 |
+| 进阶篇（31+） | 31 插件开发 · 32 IM 界面实战 | 可复用通道包、完整应用拼装毕业 |
 
 ## 坑位清单
 
@@ -100,3 +101,6 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean                # 清理全�
 - **flutter clean 慎用**：清空缓存后首次构建回到几分钟；增量构建才是日常（本仓库 build.ps1 特意不做 clean）。
 - **生成物别提交**：`build/`、`ephemeral/`、`.idea/`、`*.iml`、`pubspec.lock`——旧工程就是教训。
 - **Windows 构建前置**：需要 Visual Studio"使用 C++ 的桌面开发"组件（不是 VS Code）；缺它 `flutter build windows` 直接报错。
+---
+
+下一章：[02 · 第一个应用：从 create 到热重载](02-hello.md) ｜ 返回：[README](../README.md)

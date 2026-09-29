@@ -66,3 +66,6 @@ class DetailPage extends StatelessWidget {
 - **pop 两次**：一次关对话框一次关页面——连点确认按钮时容易叠（对话框的 pop 与页面 pop 是同一个栈）。
 - **routes 表必须有 '/'**：没有首页直接红屏。
 - **嵌套 Navigator**：标签页各持独立栈（Flutter 的 shell route 思路）是进阶话题；先用"单栈 + pushNamed"跑通。
+---
+
+上一章：[09 · 状态提升与共享：数据放哪](09-state-sharing.md) ｜ 下一章：[11 · 表单：校验与提交](11-forms.md) ｜ 返回：[README](../README.md)

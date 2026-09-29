@@ -127,3 +127,6 @@ MaterialApp(debugShowMaterialGrid: true);  // 栅格网格（Material 布局对�
 - **debug 开关拨了没反应**：热重载不重读全局 debug 变量——热重启 `R`。
 - **release 包里找红屏**：错误屏/断言都是 debug 专属，release 只有无声失败——验收以 release 行为为准（18 章）。
 - **移动端日志被截断**：长文本用 `debugPrint` 不用 `print`（自动分片）。
+---
+
+上一章：[20 · 实战：记事本](20-notes.md) ｜ 下一章：[22 · 集中状态管理：从传参链到 ScopedModel](22-scoped-model.md) ｜ 返回：[README](../README.md)

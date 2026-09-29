@@ -75,3 +75,6 @@ ThemeData themeFor(TargetPlatform platform) => platform == TargetPlatform.iOS
 - **Cupertino 控件吃 Material 主题**：它不读 ThemeData——颜色显式传或上 CupertinoTheme。
 - **处处三元表达式**：分叉收进 helper/主题函数，调用点声明意图而不是实现。
 - **测试里硬等 iOS 控件**：用 Theme 覆写 `platform:` 再断言（示例的手法），别依赖真宿主。
+---
+
+上一章：[25 · 性能优化与质量债](25-performance.md) ｜ 下一章：[27 · 平台通道：MethodChannel 直通原生](27-platform-channel.md) ｜ 返回：[README](../README.md)

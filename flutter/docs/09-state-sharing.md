@@ -97,3 +97,6 @@ InheritedWidget 是 Flutter 的"沿树广播"原语：放在树的任何位置�
 - **InheritedNotifier 每次通知重建整片子树**：粒度控制靠"订阅范围小"（把 depend 收在真正用数据的叶子），不是无脑包全页。
 - **const 构造里装 ChangeNotifier**：编译错（notifier 非常量）——CartScope 构造去掉 const。
 - **提升后又全树 setState**：状态提上去了、通知却炸全页——该换成 notifier 精确重建。
+---
+
+上一章：[08 · 有状态 Widget：setState 与生命周期](08-stateful.md) ｜ 下一章：[10 · 导航与路由：页面的栈](10-navigation.md) ｜ 返回：[README](../README.md)

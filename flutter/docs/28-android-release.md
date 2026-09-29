@@ -97,3 +97,6 @@ flutter build apk --release \
 - **manifest 还在改 package 属性**：现代模板没有这一项——身份归 `namespace`/`applicationId` 管。
 - **改图标/闪屏没重新构建**：生成物在原生目录，热重载不覆盖——完整重跑。
 - **AAB 当 APK 到处分发**：AAB 只有商店能装——直发用户用 APK。
+---
+
+上一章：[27 · 平台通道：MethodChannel 直通原生](27-platform-channel.md) ｜ 下一章：[29 · 滚动进阶与页面事件](29-scroll-events.md) ｜ 返回：[README](../README.md)

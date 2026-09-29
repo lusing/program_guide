@@ -156,3 +156,6 @@ class InMemoryStorage implements NotesStorage {
 - **DateTime 直接 jsonEncode**：不报错但存的是字符串，读回时 `as DateTime` 崩——手转 ISO 字符串（20.3）。
 - **编辑页拿旧 controller**：热重载后 State 复用而 widget.note 变了——didUpdateWidget 里同步，或页面不复用。
 - **空标题笔记**：列表里显示兜底文案（`n.title.isEmpty ? '（无标题）' : n.title`），别让用户看到空白行。
+---
+
+上一章：[19 · Widget 测试：自动化的界面验证](19-testing.md) ｜ 下一章：[21 · 调试与 DevTools：让代码开口说话](21-debugging.md) ｜ 返回：[README](../README.md)

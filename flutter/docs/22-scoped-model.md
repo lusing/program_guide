@@ -175,3 +175,6 @@ scoped_model 停更于 2022，provider 是同批作者写的直系继任（把 `
 - **过滤列表的 index 传给模型**：展示索引 ≠ 内部索引——按实体操作，或传过滤前算好的引用。
 - **在 build 里调模型方法**：`builder: (c, w, m) => m.addNews(...)` 每次重建都执行——改模型的调用放回调/生命周期里。
 - **对话框里找不到模型**：`showDialog` 的路由挂在 Navigator 下、仍在 `ScopedModel` 子树内——能找到；但如果你把模型挂在了某个页面下面，全屏对话框就够不着了（挂根上）。
+---
+
+上一章：[21 · 调试与 DevTools：让代码开口说话](21-debugging.md) ｜ 下一章：[23 · 认证与凭据：token 的完整一生](23-auth.md) ｜ 返回：[README](../README.md)

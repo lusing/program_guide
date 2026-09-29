@@ -1,14 +1,14 @@
 # Flutter 开发指南
 
-面向**会编程、已具备 Dart 基础** 的读者：重点是 Widget 体系、布局、状态管理与跨平台交付。主线 Flutter 3.47（Material 3、Windows 桌面验证），章节与示例工程一一对应，每章"读讲解 → `flutter run -d windows` 跑起来 → 改代码看热重载"。01–20 为基础篇（以记事本实战毕业），21–30 为进阶篇（调试/状态/认证/媒体/性能/自适应/平台通道/发布/滚动进阶/国际化）。Dart 语言请先读 [Dart 教程](../dart/README.md)——本教程只讲框架层。
+面向**会编程、已具备 Dart 基础** 的读者：重点是 Widget 体系、布局、状态管理与跨平台交付。主线 Flutter 3.47（Material 3、Windows 桌面验证），章节与示例工程一一对应，每章"读讲解 → `flutter run -d windows` 跑起来 → 改代码看热重载"。01–20 为基础篇（以记事本实战毕业），21–32 为进阶篇（调试/状态/认证/媒体/性能/自适应/平台通道/发布/滚动进阶/国际化/插件开发/IM 实战）。Dart 语言请先读 [Dart 教程](../dart/README.md)——本教程只讲框架层。
 
 ## 目录结构
 
 ```text
 flutter/
 ├── README.md           本文件
-├── docs/               30 章教程（01 → 20 基础篇；21 → 30 进阶篇）
-├── examples/           29 个独立 Flutter 工程（章号 = 目录号）
+├── docs/               32 章教程（01 → 20 基础篇；21 → 32 进阶篇）
+├── examples/           31 个独立 Flutter 工程（章号 = 目录号；31_plugin 内嵌 example/ 演示应用）
 ├── build.ps1           统一构建脚本（须 PowerShell 7 / pwsh 运行）
 └── CHEATSheet.md       Widget/命令速查
 ```
@@ -47,6 +47,8 @@ flutter/
 | [28 移动端构建发布](docs/28-android-release.md) | 签名、混淆、release APK、商店流程 | `examples/28_android_release` |
 | [29 滚动进阶与页面事件](docs/29-scroll-events.md) | Sliver 家族、滚动通知、PopScope、Stream 广播 | `examples/29_scroll_events` |
 | [30 国际化](docs/30-i18n.md) | Localizations/Delegate、intl、运行时切换 | `examples/30_i18n` |
+| [31 Flutter 插件开发](docs/31-plugin-dev.md) | 插件包工程、EventChannel、Channel 三剑客 | `examples/31_plugin` |
+| [32 IM 聊天界面实战](docs/32-im-ui.md) | 四 Tab 骨架、消息气泡、A–Z 索引条 | `examples/32_im` |
 
 ## 构建工具链
 
@@ -62,7 +64,7 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 06_material  # 单工程�
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean                # 各工程 flutter clean + 清根 build
 ```
 
-行为分级：全部工程 analyze 零告警 + widget 测试全绿；02_hello 与 20_notes 通过 `flutter build windows --debug` 实际构建。
+行为分级：全部工程 analyze 零告警 + widget 测试全绿；02_hello、20_notes、27_platform_channel 与 31_plugin（连插件 C++ 侧一起编译）通过 `flutter build windows --debug` 实际构建。
 
 单跑某个示例（第 02 章起的标准学法）：
 

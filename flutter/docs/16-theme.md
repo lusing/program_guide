@@ -105,3 +105,6 @@ themeMode 是状态，放**根 State**（MaterialApp 的父级），通过回调
 - **Theme.of 结果缓存到字段**：主题切换后字段还是旧值——在 build 里取（或用依赖 InheritedWidget 的机制自动重建）。
 - **断点用屏幕宽而非约束宽**：侧栏展开时内容区变窄，按屏幕宽判"宽屏"就错了——LayoutBuilder 拿局部约束。
 - **SegmentedButton 的 selected 是 Set**：`selected: {mode}` 不是 `mode`。
+---
+
+上一章：[15 · 动画：隐式、Hero 与显式](15-animation.md) ｜ 下一章：[17 · 数据持久化：记住用户的世界](17-persist.md) ｜ 返回：[README](../README.md)

@@ -154,3 +154,6 @@ class ImageInput extends StatefulWidget {
 - **弹层没关就去等选取**：先 `pop` 弹层再 `await`，顺序反了上下文先失效（书 14.3 的顺序）。
 - **iOS 忘配 Info.plist**：一调相机/图库就崩，控制台给的原因在真机日志里——两个 UsageDescription key 先写上。
 - **widget 测试里调真 picker**：测试环境没有文件框——picker/upload 全注入。
+---
+
+上一章：[23 · 认证与凭据：token 的完整一生](23-auth.md) ｜ 下一章：[25 · 性能优化与质量债](25-performance.md) ｜ 返回：[README](../README.md)

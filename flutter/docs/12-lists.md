@@ -63,9 +63,39 @@ _ctrl.animateTo(0, duration: ..., curve: Curves.easeOut); // 平滑回顶
 
 controller 拿到位置（offset/maxScrollExtent）并能动它（jumpTo/animateTo）；桌面加 `Scrollbar(controller: _ctrl, ...)` 才有可见滚动条（第 18 章桌面习惯）。dispose 纪律同第 08 章。
 
+## 12.6 Dismissible：滑动删除
+
+通讯录、会话列表的招牌操作——手指一滑删一项。`Dismissible` 包住列表项即可：
+
+```dart
+// ═══ 12.6 ═══
+Dismissible(
+  key: ValueKey(item.id),               // 必须给：唯一且稳定
+  direction: DismissDirection.endToStart,  // 只许从右往左滑
+  background: Container(color: Colors.red, child: Icon(Icons.delete)),  // 滑出时露出的底
+  onDismissed: (direction) {
+    setState(() => items.remove(item)); // 删数据！组件只是跟着数据走
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${item.name} 已删除')));
+  },
+  child: ListTile(title: Text(item.name)),
+)
+```
+
+三条纪律：
+
+- **key 是命门**：必须每项唯一且**跨删除稳定**（业务 id，不是数组下标）。用 `ValueKey(index)` 时删除一项后框架认错人，动画错乱甚至红屏；
+- **onDismissed 里必须删数据**：组件已经飞出去了，数据不删的话滚回来它又"复活"；
+- **要拦截就上 confirmDismiss**：返回 `Future<bool>`——false 则弹回不删（"确认删除该会话？"对话框版删除的正规入口）。
+
+> **当年如此 → 现在这样**：老教程（与旧书示例）在 StatelessWidget 里 `List items = new List.generate(30, ...)` 直接 `items.removeAt(index)`——可变字段 + 按下标删，刷新后错位。现代写法：状态进 State、数据用 `remove(item)` 按实体删（22 章军规"按实体不按索引"在列表上的投影）。
+
 ## 坑位清单
 
 - **ListView 嵌 ListView**：内层要 `shrinkWrap: true` + 固定高（能不嵌就别嵌），正经方案是 CustomScrollView 拼 Sliver。
 - **"没滚到的条目不存在"**：find/finders 与业务都受影响——断言远处条目时先滚过去（第 19 章测试就用了 dragUntilVisible）。
 - **separator 不占 itemCount**：separated 版的 itemCount 只算数据项，别把分隔线也算进去。
 - **忘了 itemCount**：builder 无限造下去——数据多少就写多少。
+---
+
+上一章：[11 · 表单：校验与提交](11-forms.md) ｜ 下一章：[13 · 网络与 JSON：数据从远方来](13-http-json.md) ｜ 返回：[README](../README.md)

@@ -150,3 +150,6 @@ override func application(_ application: UIApplication,
 - **改了宿主代码热重载找自信**：原生侧改动要完全重启 `flutter run`。
 - **widget 测试直连真通道**：mock 挂 messenger 或注入函数（24 章手法），二选一。
 - **自定义对象直接过河**：StandardCodec 只认基本类型与容器——复杂对象拆 Map 过河再组装。
+---
+
+上一章：[26 · Cupertino 与平台自适应](26-adaptive.md) ｜ 下一章：[28 · 移动端构建与发布：以 Android 为例](28-android-release.md) ｜ 返回：[README](../README.md)

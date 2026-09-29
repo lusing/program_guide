@@ -79,3 +79,6 @@ sqflite 是社区事实标准（非 flutter.dev 第一方，本教程的第一�
 - **initState 里同步读 prefs**：拿不到（异步）——initState 里启动加载，回调里 setState（示例 `_loadPrefs` 的形状）。
 - **相对路径依赖 cwd**：`File('data.json')` 的基准是运行目录不是工程目录——绝对路径或注入。
 - **大 JSON 塞 prefs**：它是键值不是数据库——结构化数据走文件/DB。
+---
+
+上一章：[16 · 主题与响应式：一处定义，处处生效](16-theme.md) ｜ 下一章：[18 · 桌面专题：Windows 的一等公民](18-desktop.md) ｜ 返回：[README](../README.md)

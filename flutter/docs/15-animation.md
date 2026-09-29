@@ -87,3 +87,6 @@ AnimatedContainer 与 Container 用法完全一致，只多 `duration` 与 `curv
 - **vsync 忘 with**：编译错（this 不是 TickerProvider）——`with SingleTickerProviderStateMixin`（多个动画用 TickerProviderStateMixin）。
 - **repeat() 配 pumpAndSettle**：永不停止的动画让测试的 settle 等到超时——测试里用 forward() 或手动 pump。
 - **AnimatedXxx 属性值没变**：值相同不触发（补间需要起止差）——检查是不是真的 setState 换了值。
+---
+
+上一章：[14 · 异步 UI：把 Future 画出来](14-async-ui.md) ｜ 下一章：[16 · 主题与响应式：一处定义，处处生效](16-theme.md) ｜ 返回：[README](../README.md)

@@ -63,3 +63,6 @@ validator 的契约：**返回错误文案或 null**（null = 通过）——就
 - **validator 忘 return null**：条件写反，字段永远报错——契约是"错误文案 or null"。
 - **controller 与 onSaved 混用取值**：两处来源容易不一致；选一套贯彻。
 - **dispose 漏 controller**：表单页字段多，统一在 dispose 里逐个释放（第 08 章纪律）。
+---
+
+上一章：[10 · 导航与路由：页面的栈](10-navigation.md) ｜ 下一章：[12 · 列表与滚动：从十条到十万条](12-lists.md) ｜ 返回：[README](../README.md)

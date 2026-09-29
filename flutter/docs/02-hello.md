@@ -109,3 +109,6 @@ widget 测试跑在 flutter_tester 虚拟环境里——**不需要真窗口、�
 - **桌面文本默认不可选**：桌面用户习惯选中复制，`Text` 默认不行——第 18 章 SelectionArea 解决。
 - **设备列表**：`flutter devices` 看可运行目标；`-d windows` 明确指定桌面，避免开成浏览器。
 - **中文乱码**：Windows 老终端（PowerShell 5.1）按 ANSI 读无 BOM 文件会把中文源码读烂——一律 pwsh 7（仓库全局约定）。
+---
+
+上一章：[01 · Flutter 全景：一套代码，多端一致](01-overview.md) ｜ 下一章：[03 · Widget：不可变的配置树](03-widgets.md) ｜ 返回：[README](../README.md)

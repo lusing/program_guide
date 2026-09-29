@@ -90,3 +90,6 @@ Drawer 里**用 ListView 开头**（示例 6.2）：它处理了顶部安全区�
 - **Card 默认 margin**：4 逻辑像素，紧贴边缘的设计要么接受要么 `margin: EdgeInsets.zero`。
 - **ListTile 长文案溢出**：subtitle 多行默认截断到两行（`isThreeLine` 开三行）；真长文本换自己的布局。
 - **Drawer 项点击无反应**：忘写 `Navigator.pop`——抽屉盖在页面上，不关掉看不见跳转效果。
+---
+
+上一章：[05 · 布局 II：线性、弹性与层叠](05-layout-multi.md) ｜ 下一章：[07 · 交互与对话框：点击、轻提示、确认](07-interaction.md) ｜ 返回：[README](../README.md)

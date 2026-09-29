@@ -89,3 +89,6 @@ flutter build windows --release   # 发布（AOT，体积小启动快）
 - **改了 windows/runner 没生效**：原生侧改动不走热重载/热重启，完全停掉重跑。
 - **滚动区没滚动条**：桌面观感差评——Scrollbar 包上。
 - **触屏习惯带上桌面**：间距/字体/命中区域过小——桌面 `dense:` 列表、紧凑模式按需开。
+---
+
+上一章：[17 · 数据持久化：记住用户的世界](17-persist.md) ｜ 下一章：[19 · Widget 测试：自动化的界面验证](19-testing.md) ｜ 返回：[README](../README.md)

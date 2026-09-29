@@ -64,7 +64,30 @@ Align 把唯一的孩子放到盒子里的指定位置。`Alignment(x, y)` 用 -
 
 Align 还有一个隐藏用途：**放松约束**。父级给的紧约束（"宽度必须是 768"）会让孩子的 `width` 设置失效——套一层 Align/Center，约束变松（"0..768 都行"），孩子的自有尺寸才能生效。第 15 章的动画示例就踩过这个坑（ListView 里 AnimatedContainer 宽度被顶满，Center 一包就好）。
 
-## 4.4 布局选型小结
+## 4.4 裁剪、旋转与透明度
+
+装饰盒子管"加东西"，这一组管"变形"：
+
+```dart
+// ═══ 4.4 ═══
+ClipRRect(borderRadius: BorderRadius.circular(24), child: 图片或卡片)  // 圆角裁剪
+ClipOval(child: avatar)                 // 裁成椭圆/圆（头像常用）
+ClipRect(child: ...)                    // 矩形裁剪（Stack 的默认行为就是它）
+ClipPath(clipper: MyClipper(), child: ...)  // 任意路径（自定义形状）
+
+RotatedBox(quarterTurns: 1, child: Text('竖排'))   // 顺时针转 90°×n（布局期）
+
+Opacity(opacity: 0.3, child: Container(...))       // 整体不透明度 0.0–1.0
+```
+
+两处易混：
+
+- **Clip vs BoxDecoration 圆角**：给纯色/渐变盒子做圆角，borderRadius 就够（绘制期，便宜）；给**图片/任意子树**做圆角必须真裁剪（ClipRRect，多一层的合成开销）；
+- **RotatedBox vs Transform（15 章）**：RotatedBox 是**布局期**旋转——占位也跟着转，后面的兄弟会给它让位；Transform 是**绘制期**旋转——视觉转了、占位没变，会与邻居重叠。要"真转"用前者，要做动画特效用后者。
+
+透明度同理：静态半透明用 `Opacity`；若只是让**颜色**半透明，`Colors.black.withValues(alpha: 0.3)` 更便宜（不引入合成层）。频繁动画的透明度交给 `AnimatedOpacity`/`FadeTransition`（15 章）。
+
+## 4.5 布局选型小结
 
 | 需求 | 用 |
 |---|---|
@@ -72,6 +95,8 @@ Align 还有一个隐藏用途：**放松约束**。父级给的紧约束（"宽
 | 间隙/固定尺寸 | `SizedBox` |
 | 圆角边框阴影渐变 | `Container + BoxDecoration` |
 | 摆放/居中/放松约束 | `Align` / `Center` |
+| 圆形头像/裁剪图片 | `ClipOval` / `ClipRRect` |
+| 旋转（布局真实占位） | `RotatedBox` |
 | 摆多个孩子 | Row/Column/Stack（下一章） |
 | 内容超出屏幕 | ListView（第 12 章） |
 
@@ -81,3 +106,6 @@ Align 还有一个隐藏用途：**放松约束**。父级给的紧约束（"宽
 - **阴影被裁剪**：父级带裁剪（ClipRect）或贴边时阴影被切——留出 margin 余量。
 - **Container 同时写 color 和 decoration 会编译错**：把 color 挪进 BoxDecoration。
 - **`double.infinity` 的条件**：无界父级（如横向 Row 里写 `width: infinity`）直接崩（unbounded 约束）——用 Expanded/Flexible（05 章）表达"占满"。
+---
+
+上一章：[03 · Widget：不可变的配置树](03-widgets.md) ｜ 下一章：[05 · 布局 II：线性、弹性与层叠](05-layout-multi.md) ｜ 返回：[README](../README.md)

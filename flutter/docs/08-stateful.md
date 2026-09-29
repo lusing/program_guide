@@ -90,3 +90,6 @@ setState 重建的是**整个 State 的 build**。界面小时无所谓；某块
 - **initState 里用 ScaffoldMessenger/Navigator**：树还没插完，祖先不可达——这类调用放 `didChangeDependencies` 或延后到回调里。
 - **dispose 后访问 controller**：抛错；异步回调里用资源前查 `mounted`（第 10 章的 async 回调同理）。
 - **忘 dispose**：TextEditingController/AnimationController/StreamSubscription——凡是 initState 里 new 的资源，dispose 里成对释放。
+---
+
+上一章：[07 · 交互与对话框：点击、轻提示、确认](07-interaction.md) ｜ 下一章：[09 · 状态提升与共享：数据放哪](09-state-sharing.md) ｜ 返回：[README](../README.md)

@@ -125,3 +125,6 @@ Future<List<NewsItem>> fetchNews(Channel c) async {
 - **jsonDecode 结果裸用**：全程 dynamic、拼错字段名运行时才炸——立刻 as + fromJson 进类型世界。
 - **错误处理只考虑成功**：断网/500 时 FutureBuilder 给你 error 态（14 章），别让界面白屏。
 - **API key 写进代码**：桌面应用也是要发出去的——配置/环境变量，别提交仓库。
+---
+
+上一章：[12 · 列表与滚动：从十条到十万条](12-lists.md) ｜ 下一章：[14 · 异步 UI：把 Future 画出来](14-async-ui.md) ｜ 返回：[README](../README.md)

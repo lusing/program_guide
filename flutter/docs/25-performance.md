@@ -67,3 +67,6 @@ debugPrintLayouts = true;               // 布局风暴排查
 - **忘 const**：ListView item、静态子树全部补上；`flutter analyze` 的 `prefer_const_constructors` 提示就是免费清单。
 - **图片全尺寸解码**：小框大图必传 `cacheWidth`。
 - **登出不清会话状态**：残留数据在下次登录冒出来（书 16.1 原案）。
+---
+
+上一章：[24 · 相机与图库：媒体选取](24-camera-gallery.md) ｜ 下一章：[26 · Cupertino 与平台自适应](26-adaptive.md) ｜ 返回：[README](../README.md)

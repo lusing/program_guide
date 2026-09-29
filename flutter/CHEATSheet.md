@@ -169,7 +169,7 @@ testWidgets('名', (tester) async {
 // 边界注入假实现；真实 IO 放普通 test()
 ```
 
-## 进阶篇（21–30）
+## 进阶篇（21–32）
 
 ```dart
 // 调试（21）：flutter run 键位 r/R/q/d · p 构造线 · P 性能 overlay · i Inspector · v DevTools
@@ -243,4 +243,20 @@ class D extends LocalizationsDelegate<AppL10n> {  // isSupported / load / should
   load(loc) => SynchronousFuture(AppL10n(loc)); }
 Intl.plural(n, locale: loc.toString(), other: ..., one: ...)  // 不传 locale 按英文分叉
 await initializeDateFormatting('zh', null)     // DateFormat 非默认 locale 必先初始化
+
+// 插件开发（31）
+flutter create --template=plugin --platforms=windows --project-name x 31_x
+// 联邦三层：lib/x.dart（API）→ platform_interface（契约）→ method_channel（实现）
+EventChannel('x_status').receiveBroadcastStream()          // Dart 侧事件流
+StreamHandlerFunctions(onListen, onCancel)                 // C++ 侧（event_stream_handler_functions.h）
+sink->Success(EncodableValue("charging"))                  // EventSink 方法是 Success 不是 Event
+// 测试注入：EventChannel 底层是 listen/cancel 的 MethodChannel——
+messenger.handlePlatformMessage(name, codec.encodeSuccessEnvelope(v), (_) {})  // 模拟原生推送
+
+// IM 实战（32）
+Navigator.pushReplacement(...)                 // 加载页换主页：返回栈不残留
+IndexedStack(index: _tab, ...)                 // 切 Tab 不丢各页状态
+Badge.count(count: n)                          // M3 未读红点
+Dismissible(key: ValueKey(item.id), ...)       // 滑动删除：key 必须稳定；onDismissed 必删数据
+// A–Z 索引条：onVerticalDragUpdate.localPosition / 条高 × 字母数 → jumpTo(组偏移)
 ```

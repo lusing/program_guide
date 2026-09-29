@@ -72,3 +72,6 @@ FutureBuilder 适合"一次性展示"。要**重试、缓存、并发合并、�
 - **waiting 期取 data**：`snapshot.data!` 在等待期是 null 直接崩——先判 connectionState/hasData。
 - **失败无重试入口**：error 态放个按钮重新 setState 换新 future。
 - **测试里的 pumpAndSettle 提前返回**：定时器驱动的流（periodic）在 tick 之间没有帧调度，pumpAndSettle 立即结束——手动 `pump(Duration)` 逐格推进（示例测试即如此）。
+---
+
+上一章：[13 · 网络与 JSON：数据从远方来](13-http-json.md) ｜ 下一章：[15 · 动画：隐式、Hero 与显式](15-animation.md) ｜ 返回：[README](../README.md)

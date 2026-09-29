@@ -113,3 +113,6 @@ void _armTimer(int seconds) {
 - **登出忘 cancel Timer**：到点对着已注销会话再"登出"一次；widget 测试里是 "Timer is still pending"。
 - **把凭据拼进 URL**：日志/历史/缓存全留痕——走 Authorization 头。
 - **错误码直接怼给用户**：`EMAIL_EXISTS` 不是给人看的——网关层翻译成人话。
+---
+
+上一章：[22 · 集中状态管理：从传参链到 ScopedModel](22-scoped-model.md) ｜ 下一章：[24 · 相机与图库：媒体选取](24-camera-gallery.md) ｜ 返回：[README](../README.md)

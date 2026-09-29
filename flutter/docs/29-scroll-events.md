@@ -172,3 +172,6 @@ _busSub = ChannelBus.instance.stream.listen((channel) {
 - **`SystemChannels.platform` 上不止 pop**：SystemChrome 样式消息随时插队——mock 断言只盯 `SystemNavigator.pop` 方法名，别断言消息列表为空。
 - **Drawer 与页面内组件撞名**：主页频道 Chip 和 Drawer 里的频道同名时，`find.text('财经')` 歧义——用 `find.descendant(of: find.byType(Drawer), matching: ...)` 限定。
 - **broadcast 流无缓冲**：先发后订阅收不到（测试单测锁死这条语义）；订阅端 `dispose` 里必须 `cancel`。
+---
+
+上一章：[28 · 移动端构建与发布：以 Android 为例](28-android-release.md) ｜ 下一章：[30 · 国际化：一套代码，多副面孔](30-i18n.md) ｜ 返回：[README](../README.md)

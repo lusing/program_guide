@@ -117,3 +117,6 @@ void main() {
 - **find.text 命中多个**：同文案多处（如 AppBar 与正文）——换 byKey 或更 specific 的 finder。
 - **真实 IO 塞进 testWidgets**：假时钟里事件不推进，测试卡死——注入/mock（19.5）。
 - **await 期间页面已变**：异步回调后先查 `mounted` 再断言（生产代码同款纪律）。
+---
+
+上一章：[18 · 桌面专题：Windows 的一等公民](18-desktop.md) ｜ 下一章：[20 · 实战：记事本](20-notes.md) ｜ 返回：[README](../README.md)

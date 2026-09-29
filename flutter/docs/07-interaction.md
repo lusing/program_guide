@@ -85,9 +85,34 @@ SnackBar 是底部滑入、几秒自动消失的轻提示，适合"已保存/已
 
 `showModalBottomSheet` 与 Dialog 同为模态（挡住背后、点外关闭），只是从底部升起——适合"一组相关选项"（分享渠道、更多操作）。内容多时记得给固定高度或包 ListView。选型：**二选一确认用 Dialog，选项菜单用 Sheet，告知用 SnackBar**。
 
+## 7.5 手势竞技场与原始指针
+
+GestureDetector 的回调清单（点击/双击/长按/横竖拖动/缩放/次级点击）在 7.1 已见。往深一层：**同一根手指落下时，所有感兴趣的识别器进入"竞技场"，只有一个能赢**。三条裁决规则够用：
+
+1. **同节点共存**：`onTap` 与 `onLongPress` 可以共存（语义不冲突，看谁先成立）；但 `onHorizontalDrag` 与 `onVerticalDrag` 同节点**互相排斥**（框架只能判一个方向，都不触发或抖动）；
+2. **父子竞争，深的赢**：ListView 里一个可拖动卡片——内层识别器先赢，列表不滚；这是"嵌套滚动/拖拽"一切行为的根源；
+3. **兄弟层叠，命中测试说了算**：Stack 上层组件命中（`HitTestBehavior.opaque` 连空隙都算）后，下层根本收不到指针——32 章索引条盖在列表上不抢手势就是靠这个。
+
+比 GestureDetector 更底的一层是 **Listener**——**原始指针事件**（无语义、无竞技场）：
+
+```dart
+// ═══ 7.5 ═══
+Listener(
+  onPointerDown: (e) => print('按下 at ${e.localPosition}'),
+  onPointerMove: (e) => ...,
+  onPointerUp: (e) => ...,
+  child: ...,
+)
+```
+
+用途：自制手势（竞技场语义不够用，比如"画板"要每一根指针的原始轨迹）、指针级统计（多指触控）。日常点击长按永远先用 GestureDetector/InkWell；Listener 是"框架不给力时自己上"的后门——32 章的 A–Z 索引条就是"竖向拖动 + 位置换算"这类**位置敏感**交互，用 onVerticalDragUpdate 的 localPosition 正好够，再刁钻的需求才轮到 Listener。
+
 ## 坑位清单
 
 - **async 回调里直接用 context**：`await showDialog(...)` 之后 context 可能已失效——用前必查 `if (!context.mounted) return;`（lint 会强制）。
 - **SnackBar 报 "ScaffoldMessenger not found"**：widget 树上没有 MaterialApp/Scaffold 祖先——测试里要 pumpWidget 完整 App 而不是光秃秃的页面。
 - **Dialog 没关就跳页面**：路由栈叠乱（Dialog 还在上面）——先 pop 对话框再 push。
 - **onPressed: null 与 () {} 混淆**：null 是禁用（灰），`() {}` 是可点但无事发生；测试断言"点击有反应"时写错会安静地失败。
+---
+
+上一章：[06 · Material 组件库：搭积木的说明书](06-material.md) ｜ 下一章：[08 · 有状态 Widget：setState 与生命周期](08-stateful.md) ｜ 返回：[README](../README.md)
