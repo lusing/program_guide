@@ -2,7 +2,7 @@
 
 > iOS 原生应用开发讲的是 **两套界面框架 + 一套地基**：**SwiftUI** 是现代的声明式 UI（`body` 描述界面长什么样，系统负责画），**UIKit** 是它底下的命令式基石（`UIView`/`UIViewController`、Auto Layout、响应链）——即便你只写 SwiftUI，`UIHostingController`、手势、列表复用这些仍是 UIKit 在扛。而两者都建立在 **Foundation** 与 **Objective-C 运行时**之上：字符串、集合、`Codable`、`NotificationCenter`，以及 Swift↔OC 双向桥接处那些「看起来一样其实不一样」的坑。本教程 **SwiftUI 为主、UIKit 为底**，ObjC 与 Swift 并重。
 
-本教程面向「想真正搞懂 iOS 开发、而不是只会拖 Xcode 控件」的读者，按依赖链组织为 **29 章（六篇）**，每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例，全部用本机 **Xcode 16.2（Swift 6.0.3）+ iOS 18.2 SDK** 在 **iPhone 模拟器**里编译运行验证，`debug(-Onone)` 与 `release(-O)` 两个配置**输出逐字节一致**。全部示例**不打开 Xcode、不建窗口、不弹 UI**——只用 `swiftc` / `clang` 编成命令行可执行文件，`xcrun simctl spawn` 在模拟器里跑 headless 自测，因为这样你才知道 Xcode 到底替你做了什么。
+本教程面向「想真正搞懂 iOS 开发、而不是只会拖 Xcode 控件」的读者，按依赖链组织为 **30 章（六篇）**，每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例，全部用本机 **Xcode 16.2（Swift 6.0.3）+ iOS 18.2 SDK** 在 **iPhone 模拟器**里编译运行验证，`debug(-Onone)` 与 `release(-O)` 两个配置**输出逐字节一致**。全部示例**不打开 Xcode、不建窗口、不弹 UI**——只用 `swiftc` / `clang` 编成命令行可执行文件，`xcrun simctl spawn` 在模拟器里跑 headless 自测，因为这样你才知道 Xcode 到底替你做了什么。
 
 ## 目录
 
@@ -24,6 +24,7 @@
 | [07 OC 与 Swift 混编](docs/07-objc-swift-mix.md) | bridging header、生成的 `<Module>-Swift.h`、nullability 注解（`String!` 的来历）、轻量泛型、`BOOL`+`NSError**`→`throws` | 两个方向（Swift→OC、OC→Swift）各怎么打通 |
 | [27 Objective-C 运行时](docs/27-objc-runtime.md) | 选择器与 nil 消息的返回值表、`objc_msgSend` 与四个隐藏参数、`@encode` 类型编码、属性/ivar/关联对象、分类与协议的可执行面、动态注册与消息转发三步、`method_setImplementation`/交换实现、KVC 四条取值路径、KVO 手动触发、类内省与 `objc_copyClassList` | `[self foo]` 这一行到底走了哪些步、哪些步能在运行时被改写 |
 | [28 C 语言层](docs/28-c-layer.md) | LP64 尺寸与 `char` 符号性、数组退化与指针相减、结构体对齐与 padding、联合体看 IEEE 754、不透明句柄三件套、`va_list` 与函数指针表、`memcpy`/`memmove` 的 UB、`malloc` 与「`-O2` 把判空整体删掉」、宏的六种坑、Swift 看见的 C 类型映射、`withUnsafeBytes` 与 `@convention(c)` | Swift/OC 眼里的那个 C 到底是什么，跨界时要付哪些账 |
+| [30 Swift 语言基础与面向对象](docs/30-swift-language-basics.md) | 注释与 `print(_:terminator:)`、操作符空格的真实诊断、`UInt32`→`Int` 与外部名/`inout`、`ClosedRange` vs `Range` 与 `99...1` 的运行期 fatal、斐波那契的 off-by-one、作用域三层、`do/catch/try?/try!` 与 `defer`/`rethrows`、class 与 struct 的 `let` 语义、枚举（原始值/关联值/`CaseIterable`）、designated/convenience 的硬规则、方法与 `self`、继承重写与两阶段初始化、可选的四种拆法、闭包六步简化与逃逸捕获、`#if swift` vs `#if compiler`、数组/字典/Set 的三种「取不到」 | 这本书拿 Playground 侧栏和 Xcode 红点当判据的语言层条目，在没有 IDE 的机器上还能不能逐条兑现——「编译器会报错」这句话的证据在哪 |
 
 ### 第三篇 SwiftUI 主线
 
@@ -67,7 +68,7 @@
 
 ## 示例代码
 
-`examples/` 下每个目录对应一个可编译工程，全部经本机模拟器编译并运行验证（**29 个示例 × 2 配置 = 58 次运行全部通过，debug/release 输出逐字节一致**，构建说明见 [README](README.md)）。每个示例都是 headless `--selftest`：构造 SwiftUI `View` / `UIViewController` / Foundation 对象 / Quartz 位图上下文，跑断言，打印，退出——**不建窗口、不弹 UI、不调 `UIApplicationMain`**，却真用了 iOS SDK 与 UIKit/SwiftUI 运行时。
+`examples/` 下每个目录对应一个可编译工程，全部经本机模拟器编译并运行验证（**30 个示例 × 2 配置 = 60 次运行全部通过，debug/release 输出逐字节一致**，构建说明见 [README](README.md)）。每个示例都是 headless `--selftest`：构造 SwiftUI `View` / `UIViewController` / Foundation 对象 / Quartz 位图上下文，跑断言，打印，退出——**不建窗口、不弹 UI、不调 `UIApplicationMain`**，却真用了 iOS SDK 与 UIKit/SwiftUI 运行时。
 
 | # | 示例 | 章 | 一句话 |
 |---|------|----|----|
@@ -100,16 +101,18 @@
 | 27 | `27_objc_runtime` | 27 | OC 侧三个 .m 出证据、Swift 侧逐条复核：消息发送 / 属性分类协议 / 转发·换实现·KVC·KVO |
 | 28 | `28_c_layer` | 28 | 全教程第一个 .c + .m + Swift 三方混编示例：C 只负责量，ObjC 负责说，Swift 负责印 |
 | 29 | `29_quartz2d_drawing` | 29 | 自己给缓冲区的 23 节绘制实验：每条断言都回读那四个字节（含 CoreText 文本、PDF、画板） |
+| 30 | `30_swift_language_basics` | 30 | 22 节 209 条断言 + 55 个独立探针：把「编译器会报错 / 运行会崩」的每一句量成一行证据 |
 
 ## 建议阅读顺序
 
 - **从零开始（SwiftUI 主线）**：01 → 02 → 03 → 08 → 09 → 10 → 11 → 12 → 17 → 18 → 26 → 20
 - **要写 Objective-C / 维护老项目**：04 → 05 → 07 → 27（运行时）→ 28（C 层）
+- **Swift 语言本身没吃透**：30（语法与 OOP：可选、闭包、init 规则、class vs struct）→ 06（Foundation 桥接）→ 27（运行时）
 - **要吃透 UIKit 底层**：13 → 14 → 15 → 16 → 21 → 22 → 23 → 29
 - **要做动画**：12（SwiftUI 侧）→ 23（Core Animation 侧）
 - **要做自绘 / 图像 / PDF**：12（SwiftUI 的 `Canvas`/`Path`）→ 23（图层树侧）→ **29（像素侧：Quartz 2D）**
-- **要摸到语言的地板**：28（C：尺寸、对齐、句柄、UB）→ 27（OC：消息、转发、KVC/KVO）
+- **要摸到语言的地板**：30（Swift 语法与 OOP）→ 28（C：尺寸、对齐、句柄、UB）→ 27（OC：消息、转发、KVC/KVO）
 - **要做音视频 / 传感器 / 定位**：19（权限）→ 24、25
-- **专项**：06（Swift 侧桥接）、19（权限/通知）、20（打包上架）、26（SQLite 与 CoreData）、29（离屏出图与画板）
+- **专项**：06（Swift 侧桥接）、19（权限/通知）、20（打包上架）、26（SQLite 与 CoreData）、29（离屏出图与画板）、30（语言层探针方法学）
 
-> 第二篇（04–07、27–28）是本教程的地基：SwiftUI/UIKit 的每一条 API 都建立在 Foundation 与 OC 运行时之上，而运行时底下还有一层 C——`CGContextRef` 是个不透明句柄、`CGRect` 是个值类型、`NSError **` 是个出参，这些在第 28 章一次讲清。把这几章读透，后面所有界面章节都会顺理成章。第三篇（08–13）是现代 iOS 的主线；第四篇（14–16、21–22、29）补上你迟早要读懂的 UIKit 底层，其中第 29 章把「画出来」这件事从「眼睛看效果」变成「回读四个字节」，是第 12、13、22、23 章所有绘制代码的共同地基；第五篇（23–25）是动画与硬件——它们共用一套「headless 环境下怎么验证」的方法；第六篇（17–20、26）把网络、数据、上架这条工程链路走完。
+> 第二篇（04–07、27–28、30）是本教程的地基：SwiftUI/UIKit 的每一条 API 都建立在 Foundation 与 OC 运行时之上，而运行时底下还有一层 C——`CGContextRef` 是个不透明句柄、`CGRect` 是个值类型、`NSError **` 是个出参，这些在第 28 章一次讲清；第 30 章则把本书语言层的每一条「编译器会报错」「运行会崩」都换成 55 个独立探针的原文与 209 条断言，是全教程「判据换成可复现输出」这件事最集中的示范。把这几章读透，后面所有界面章节都会顺理成章。第三篇（08–13）是现代 iOS 的主线；第四篇（14–16、21–22、29）补上你迟早要读懂的 UIKit 底层，其中第 29 章把「画出来」这件事从「眼睛看效果」变成「回读四个字节」，是第 12、13、22、23 章所有绘制代码的共同地基；第五篇（23–25）是动画与硬件——它们共用一套「headless 环境下怎么验证」的方法；第六篇（17–20、26）把网络、数据、上架这条工程链路走完。

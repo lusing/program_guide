@@ -4,7 +4,7 @@
 SwiftUI（主线）、UIKit（底层）、Objective-C 运行时与 C 语言层（地基）、Foundation、网络并发、持久化（含 SQLite3
 与 CoreData）、权限通知、动画与多媒体、传感器定位、Quartz 2D 直接绘制、打包签名上架。
 
-29 章正文放在 [`docs/`](./docs)（目录页见 [`iOS开发指南.md`](./iOS开发指南.md)），每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例。
+30 章正文放在 [`docs/`](./docs)（目录页见 [`iOS开发指南.md`](./iOS开发指南.md)），每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例。
 全部示例都**不打开 Xcode、不建窗口、不弹 UI**——只用 `swiftc` / `clang` 编成命令行可执行文件，
 `xcrun simctl spawn` 在模拟器里跑 headless 自测，因为这样你才知道 Xcode 到底替你做了什么。
 
@@ -13,7 +13,7 @@ SwiftUI（主线）、UIKit（底层）、Objective-C 运行时与 C 语言层�
 ```bash
 cd iosdev
 
-./run-all.sh                # 跑全部 29 个示例（debug + release 两配置 × 六条判定）
+./run-all.sh                # 跑全部 30 个示例（debug + release 两配置 × 六条判定）
 ./run-all.sh 13             # 只跑编号 13 的示例（SwiftUI ⇄ UIKit 互操作）
 ./run-all.sh 08 09 10       # 跑指定的几个
 ./run-all.sh --clean        # 清空 build/
@@ -47,7 +47,7 @@ iosdev/
 ├── README.md                 本文件
 ├── iOS开发指南.md             教程目录页（指向 docs/ 各章）
 ├── run-all.sh                构建 / 模拟器运行 / 六条判定 / debug·release 比对
-├── docs/                     29 章正文
+├── docs/                     30 章正文
 │   ├── 01-toolchain.md
 │   ├── ...
 │   ├── 20-packaging-signing.md
@@ -59,8 +59,9 @@ iosdev/
 │   ├── 26-sqlite-coredata.md
 │   ├── 27-objc-runtime.md
 │   ├── 28-c-layer.md
-│   └── 29-quartz-2d.md
-├── examples/                 29 个示例目录（NN_topic）
+│   ├── 29-quartz-2d.md
+│   └── 30-swift-language-basics.md
+├── examples/                 30 个示例目录（NN_topic）
 │   ├── 01_toolchain/main.swift
 │   ├── 07_objc_swift_mix/    (OC + Swift 混编，含 Bridging.h / Greeter.h/.m / LegacyNote.h/.m)
 │   ├── 19_permissions_notifications/  (含 Frameworks 文件，声明额外链接的系统框架)
@@ -69,7 +70,8 @@ iosdev/
 │   ├── 26_sqlite_coredata/   (SQLite3 走 `import SQLite3`，不需要额外 framework 文件)
 │   ├── 27_objc_runtime/      (含 Bridging.h + 三个 .m：RTMsg 消息发送与类型编码 / RTDecl 属性·分类·协议 / RTDyn 转发·换实现·KVC·KVO)
 │   ├── 28_c_layer/           (三方混编：四个 .c + 一个 .m + Swift，含 Bridging.h；.c/.m 恒为 -O2)
-│   └── 29_quartz2d_drawing/  (含 Frameworks：CoreText；全章判据是回读自己提供的位图缓冲区)
+│   ├── 29_quartz2d_drawing/  (含 Frameworks：CoreText；全章判据是回读自己提供的位图缓冲区)
+│   └── 30_swift_language_basics/  (含 probes/ 目录：55 个一次性小文件 + run.sh/w01_whitespace.sh，专量「编译器会报错 / 运行会崩」的原文)
 ├── tools/
 │   └── check_docs.py         文档一致性 / 输出快照漂移检查
 └── build/                    编译产物（stdout/stderr/日志，不入库）
@@ -108,6 +110,7 @@ iosdev/
 | 27 | Objective-C 运行时 | `27_objc_runtime` | 选择器与 nil 返回值 / objc_msgSend 与隐藏参数 / @encode 类型编码 / 属性·ivar·关联对象 / 分类与协议的可执行面 / 动态注册与消息转发三步 / method_setImplementation·交换实现 / KVC 的四个取值路径 / KVO 手动触发 / 类 introspection |
 | 28 | C 语言层 | `28_c_layer` | LP64 尺寸与符号性 / 数组退化与指针相减 / 结构体对齐与 padding / 联合体看 IEEE 754 / 不透明句柄三件套 / va_list 与函数指针表 / memcpy vs memmove 的 UB / malloc 与「-O2 把判空删了」/ 宏的六种坑 / Swift 看见的 C 类型映射 / withUnsafeBytes 与 @convention(c) |
 | 29 | Quartz 2D 直接绘制 | `29_quartz2d_drawing` | 位图上下文与 bytesPerRow 对齐 / 内存行号与用户 y 镜像 / 翻转 CTM 与 UIKit 等价 / 面积覆盖与抗锯齿 / 色空间与预乘 / 绘画模型层序 / 当前路径与「谁吃路径」/ winding vs even-odd / CTM 乘法顺序与退化逆 / 裁剪求交与蒙版 / 端帽·连接·miterLimit / 点线相位取模 / addArcToPoint 与 flatness / 状态栈 LIFO / 透明层消接缝 / 十三种混合模式的字节 / 阴影走设备轴 / 梯度像素中心 / CoreText 直画 / CGImage·UIImage·插值·平铺 / headless 绘制周期驱动 / PDF 写出与读回 / 画板案例 |
+| 30 | Swift 语言基础与面向对象 | `30_swift_language_basics` | 注释与 `print(_:terminator:)` / 操作符空格的真实诊断 / `UInt32`→`Int` / 外部名·默认值·`inout` / `ClosedRange` vs `Range` 与 `99...1` 的运行期 fatal / 斐波那契 off-by-one / 作用域三层 / `do·catch·try?·try!`·`defer`·`rethrows` / class 与 struct 的 `let` 语义 / 枚举（原始值·关联值·`CaseIterable`）/ designated 与 convenience 的硬规则 / 方法与 `self` / 继承·重写·两阶段初始化 / 可选四种拆法 / 闭包六步简化与逃逸捕获 / `#if swift` vs `#if compiler` / 数组·字典·Set 的三种「取不到」
 
 ## 建议阅读顺序
 
@@ -118,17 +121,18 @@ iosdev/
 - **要做自绘 / 图像 / PDF**：12（SwiftUI 的 Canvas/Path）→ 23（图层树侧）→ **29（像素侧：Quartz 2D）**
 - **要摸到语言的地板**：28（C：尺寸、对齐、句柄、UB）→ 27（OC：消息、转发、KVC/KVO）
 - **要做音视频 / 传感器 / 定位**：19（权限）→ 24、25
-- **专项**：06（Swift 侧桥接）、19（权限/通知）、20（打包上架）、26（SQLite 与 CoreData）、29（离屏出图与画板）
+- **语言层地板**：30（Swift 语法与 OOP，55 个探针）⇄ 28（C）⇄ 27（OC 运行时）⇄ 06（Swift 侧桥接）
+- **专项**：06（Swift 侧桥接）、19（权限/通知）、20（打包上架）、26（SQLite 与 CoreData）、29（离屏出图与画板）、30（语言层探针方法学）
 
 ## 验证状态（全部通过）
 
 ```
-通过 58   失败 0   输出差异 0   示例 29   配置 2
+通过 60   失败 0   输出差异 0   示例 30   配置 2
 ```
 
-- **29 个示例 × 2 个优化配置（debug/release）= 58 次运行，全部 PASS**
+- **30 个示例 × 2 个优化配置（debug/release）= 60 次运行，全部 PASS**
 - **两配置 stdout 逐字节一致**（`[cmp]` 全绿）
-- `tools/check_docs.py`：结构（01..29 齐全）/ 引用（示例·输出路径存在）/ 快照（文档里贴的断言行逐字对得上 build 输出）三项全绿
+- `tools/check_docs.py`：结构（01..30 齐全）/ 引用（示例·输出路径存在）/ 快照（文档里贴的断言行逐字对得上 build 输出）三项全绿
 
 ### 六条判定标准
 
@@ -184,6 +188,10 @@ iosdev/
 | 非法位图参数组合（非预乘 RGBA、灰度 + 预乘、行距小于 `width × bytesPerPixel`）只登记不演示 | 第 29 章 | CG 一律静默给 `nil`，不崩、不报错、不打日志；拿这个返回值继续用就是越界写内存 |
 | renderer 给的 `cgContext` 读不到像素、阴影偏移方向、真机 Metal 光栅化性能 | 第 29 章 | 那个上下文不是位图上下文（`width`/`bytesPerRow`=0、`data`=nil）；阴影偏移实测走设备轴、与文档措辞相反，需真机目视复核；性能数字不属于可复现断言 |
 | 字体栅格化的墨像素绝对值、PNG/JPEG 体积差 | 第 29 章 | 随 iOS 版本与字体版本变，体积还会踩判定 4/5；只断言「有没有墨」「谁比谁多」和排版宽的近似区间 |
+| 本章所有「编译器会报错 / 运行会崩」的写法只进 `examples/30_*/probes/` | 第 30 章 | 主线示例的六条判定要编译日志为空、退出码 0、stderr 为空；不合规的空格、缺 `override`、convenience 没委托、`99...1`、拆 nil 这些一律当场失败，只能各开一个进程量原文（`probes/run.sh` 跑 55 个，`w01_whitespace.sh` 跑 §2 那张空格表） |
+| 随机数只问范围、字典与 Set 必先排序才打印 | 第 30 章 | `arc4random_uniform` 每次进程换种子、`Dictionary`/`Set` 的遍历顺序每进程重随机，都会让 debug/release 两份 stdout 对不齐（判定「两配置逐字节一致」） |
+| 文档注释的 Quick Help 渲染、报错画线位置、Playground 结果栏不在验证范围 | 第 30 章 | 那是 IDE 功能；headless 只能拿到诊断**文本**（`file:line:col:` 里已带行列号）。本书原判据是「Playground 右侧显示什么」，本章整体换成 stdout 断言 |
+| Swift 6 语言模式只测了一条新增拦截 | 第 30 章 | 探针 s06（全局可变状态被非隔离函数改）。`Sendable`/`actor`/`@MainActor` 整座山属于并发章节，本章不做 |
 
 这些都给出了**正确的 API 用法**并解释清楚为什么 headless 下走不通。第 20 章更进一步：把签名/装机/启动
 的完整流水线**在宿主 shell 上真实跑通**（编译 → ad-hoc 签名 → `simctl install` → `launch --console-pty`），
