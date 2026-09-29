@@ -55,8 +55,11 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -363,7 +366,49 @@ fun UiInfinitePulseSample() {
     }
 }
 
-// @Preview：不装进设备，Android Studio 侧栏直接渲染（第 13 章第 8 节）
+// UI 示例11：主题定制——lightColorScheme 换配色 + 自定义 CompositionLocal 传“隐式参数”
+private val CandyColorScheme = lightColorScheme(
+    primary = Color(0xFF7B1FA2),
+    secondary = Color(0xFFFF80AB),
+    background = Color(0xFFFDF7FF),
+    surface = Color(0xFFFDF7FF)
+)
+
+// 自定义 CompositionLocal：给整棵子树提供隐式环境值（MaterialTheme 内部也是这个机制）
+val LocalBrandName = compositionLocalOf { "默认品牌" }
+
+@Composable
+fun UiThemeCustomizeSample() {
+    var candy by remember { mutableStateOf(false) }
+    MaterialTheme(
+        colorScheme = if (candy) CandyColorScheme else MaterialTheme.colorScheme,
+        typography = MaterialTheme.typography,
+        shapes = MaterialTheme.shapes
+    ) {
+        CompositionLocalProvider(LocalBrandName provides if (candy) "糖果品牌" else "默认品牌") {
+            Column(modifier = Modifier.padding(vertical = 6.dp)) {
+                Text("UI 示例11：主题定制与 CompositionLocal", fontWeight = FontWeight.Bold)
+                Button(
+                    onClick = { candy = !candy },
+                    modifier = Modifier.padding(top = 4.dp)
+                ) { Text("切换配色（品牌：${LocalBrandName.current}）") }
+                // 主题块内所有组件自动改从新 colorScheme 取色，无需逐个传 color
+                Text(
+                    text = "primary 色：${MaterialTheme.colorScheme.primary}",
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                Text(
+                    text = "真实工程把 lightColorScheme 的定义放进 ui/theme/Theme.kt 统一管理",
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.padding(top = 2.dp)
+                )
+            }
+        }
+    }
+}
+
+// @Preview：不装进设备，Android Studio 侧栏直接渲染（第 13 章第 10 节）
 @Preview(showBackground = true)
 @Composable
 private fun UiButtonsSamplePreview() {

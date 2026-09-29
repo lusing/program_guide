@@ -17,14 +17,41 @@ import guide.android.compose.samples.AdvancedRoomArchitectureSample
 import guide.android.compose.samples.AdvancedUiStateSample
 import guide.android.compose.samples.AdvancedViewModelStateFlowSample
 import guide.android.compose.samples.AdvancedWorkManagerSample
+import guide.android.compose.samples.AnimCustomTypeSample
+import guide.android.compose.samples.AnimFavButtonSample
+import guide.android.compose.samples.AnimManualSample
+import guide.android.compose.samples.AnimShimmerSample
+import guide.android.compose.samples.AnimSpecCompareSample
+import guide.android.compose.samples.AnimTransitionSample
 import guide.android.compose.samples.ComposeCardListSample
 import guide.android.compose.samples.ComposeCounterSample
 import guide.android.compose.samples.ComposeFormValidationSample
+import guide.android.compose.samples.ComposeInteropSample
 import guide.android.compose.samples.ComposeLazyListSample
 import guide.android.compose.samples.ComposeLayoutRowSample
 import guide.android.compose.samples.ComposeThemeToggleSample
 import guide.android.compose.samples.ComposeWeightSample
+import guide.android.compose.samples.DrawCacheSample
+import guide.android.compose.samples.DrawCanvasSample
+import guide.android.compose.samples.DrawLayerSample
+import guide.android.compose.samples.EcoManualDiSample
+import guide.android.compose.samples.GestureAnchoredDragSample
+import guide.android.compose.samples.GestureDragSample
+import guide.android.compose.samples.GestureFlingSample
+import guide.android.compose.samples.GestureNestedScrollSample
+import guide.android.compose.samples.GestureTapSample
+import guide.android.compose.samples.GestureTransformSample
 import guide.android.compose.samples.JniStatusSample
+import guide.android.compose.samples.LayoutBaselineSample
+import guide.android.compose.samples.LayoutCustomColumnSample
+import guide.android.compose.samples.LayoutIntrinsicSample
+import guide.android.compose.samples.StateDerivedSample
+import guide.android.compose.samples.StateHolderSample
+import guide.android.compose.samples.StateKeySample
+import guide.android.compose.samples.StateRememberUpdatedSample
+import guide.android.compose.samples.StateSaveableSample
+import guide.android.compose.samples.StateSnapshotFlowSample
+import guide.android.compose.samples.StateStabilitySample
 import guide.android.compose.samples.UiAnimationTransitionSample
 import guide.android.compose.samples.UiAnimationValueSample
 import guide.android.compose.samples.UiAnimationVisibilitySample
@@ -35,6 +62,7 @@ import guide.android.compose.samples.UiListKeySample
 import guide.android.compose.samples.UiScaffoldSample
 import guide.android.compose.samples.UiSelectionSample
 import guide.android.compose.samples.UiSideEffectSample
+import guide.android.compose.samples.UiThemeCustomizeSample
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +85,7 @@ class MainActivity : ComponentActivity() {
                     ComposeCardListSample()
                     ComposeLayoutRowSample()
                     ComposeWeightSample()
+                    ComposeInteropSample()
                     JniStatusSample()
                     // 第 13 章组件与交互示例（UiSamples.kt）
                     UiButtonsSample()
@@ -69,12 +98,44 @@ class MainActivity : ComponentActivity() {
                     UiAnimationTransitionSample()
                     UiAnimationVisibilitySample()
                     UiInfinitePulseSample()
+                    UiThemeCustomizeSample()
                     // 第 14 章架构示例（AdvancedSamples.kt）
                     AdvancedViewModelStateFlowSample()
                     AdvancedNavigationSample()
                     AdvancedRoomArchitectureSample()
                     AdvancedWorkManagerSample()
                     AdvancedUiStateSample()
+                    // 第 15 章状态与重组示例（StateSamples.kt）
+                    StateSaveableSample()
+                    StateStabilitySample()
+                    StateKeySample()
+                    StateDerivedSample()
+                    StateSnapshotFlowSample()
+                    StateRememberUpdatedSample()
+                    StateHolderSample()
+                    // 第 16 章自定义布局与绘制示例（LayoutDrawSamples.kt）
+                    LayoutBaselineSample()
+                    LayoutCustomColumnSample()
+                    LayoutIntrinsicSample()
+                    DrawCanvasSample()
+                    DrawLayerSample()
+                    DrawCacheSample()
+                    // 第 17 章动画进阶示例（AnimationSamples.kt）
+                    AnimSpecCompareSample()
+                    AnimTransitionSample()
+                    AnimManualSample()
+                    AnimCustomTypeSample()
+                    AnimShimmerSample()
+                    AnimFavButtonSample()
+                    // 第 18 章手势示例（GestureSamples.kt）
+                    GestureTapSample()
+                    GestureDragSample()
+                    GestureTransformSample()
+                    GestureAnchoredDragSample()
+                    GestureNestedScrollSample()
+                    GestureFlingSample()
+                    // 第 19 章生态示例（EcosystemSamples.kt）
+                    EcoManualDiSample()
                 }
             }
         }

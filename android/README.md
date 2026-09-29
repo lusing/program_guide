@@ -1,9 +1,10 @@
 # Android 应用开发教程（Kotlin · View + Compose 双范式）
 
 面向**会编程（任意语言背景）、初学 Android 应用开发**的读者：从平台架构、
-工程工具链讲到传统 View 体系与系统能力，再到 **Jetpack Compose 三部曲**与
+工程工具链讲到传统 View 体系与系统能力，再到 **Jetpack Compose 八章主线**（基础
+→ 组件 → 架构 → 状态/渲染/动画/手势四门深入课 → 依赖注入与生态），然后是
 JNI/NDK，最后以实战项目 **MemoPad 便签应用**收束。传统 View（05–08）与
-Compose（12–14）两套并存 UI 范式都讲——新项目从 Compose 开始，读懂存量
+Compose（12–19）两套并存 UI 范式都讲——新项目从 Compose 开始，读懂存量
 代码仍需 View 体系。
 
 > 核心理念：**先弄清"APK 是什么、Gradle 在干嘛"，再写 UI。** Activity
@@ -16,11 +17,13 @@ Compose（12–14）两套并存 UI 范式都讲——新项目从 Compose 开�
 android/
 ├── README.md        本文件
 ├── build.ps1        构建验证脚本（PowerShell 7，UTF-8 无 BOM）
-├── docs/            16 章教程（01 → 16 顺序阅读）
+├── docs/            21 章教程（01 → 21 顺序阅读）
 ├── examples/        21 条 Kotlin API 示例（kotlinc + android.jar 编译验证）
 ├── compose_examples/ Gradle 工程：Compose + ViewModel + Navigation + Room + WorkManager + JNI
 │   └── app/src/main/
-│       ├── java/guide/android/compose/samples/  ComposeSamples / UiSamples / AdvancedSamples / MemoPadSample
+│       ├── java/guide/android/compose/samples/  ComposeSamples / UiSamples / AdvancedSamples /
+│       │     StateSamples / LayoutDrawSamples / AnimationSamples / GestureSamples /
+│       │     EcosystemSamples / MemoPadSample
 │       ├── java/guide/android/compose/jni/      GuideNativeBridge（external fun 声明）
 │       ├── cpp/                                  native-lib.cpp + CMakeLists.txt
 │       └── AndroidManifest.xml
@@ -42,14 +45,20 @@ android/
 | [09 本地数据持久化](docs/09-data-storage.md) | SharedPreferences、内部存储、SQLiteOpenHelper | `07` `08` `09` |
 | [10 广播、Service 与通知](docs/10-system-components.md) | 广播收发、Service 起停、NotificationChannel | `10` `11` `12` |
 | [11 权限、ContentResolver 与硬件](docs/11-permissions-content.md) | 危险权限流程、跨应用数据、位置与传感器 | `13` `14` `17` `18` |
-| [12 Jetpack Compose 基础](docs/12-compose-basics.md) | 声明式 UI、remember/重组、Modifier、布局三件套 | `ComposeSamples.kt` |
-| [13 Compose 组件与交互](docs/13-compose-ui.md) | 组件速查、Scaffold、对话框、副作用、动画 | `UiSamples.kt` |
+| [12 Jetpack Compose 基础](docs/12-compose-basics.md) | 声明式 UI、remember/重组、Modifier、布局三件套、互操作 | `ComposeSamples.kt` |
+| [13 Compose 组件与交互](docs/13-compose-ui.md) | 组件速查、Scaffold、对话框、副作用、动画入门、主题定制 | `UiSamples.kt` |
 | [14 Compose 工程化架构](docs/14-compose-architecture.md) | ViewModel+StateFlow、UiState、Navigation、Room、WorkManager | `AdvancedSamples.kt` |
-| [15 JNI 与 NDK](docs/15-jni-ndk.md) | external fun、C++ 侧符号规则、CMake 交叉编译 | `21_jni_bridge` + `cpp/` |
-| [16 实战项目：MemoPad](docs/16-memopad.md) | 单向数据流三层架构组装完整应用 | `MemoPadSample.kt` |
+| [15 Compose 状态与重组深入](docs/15-compose-state.md) | 稳定性与跳过、key、rememberSaveable、derivedStateOf、snapshotFlow、StateHolder | `StateSamples.kt` |
+| [16 Compose 自定义布局与绘制](docs/16-compose-layout-draw.md) | 三阶段、Modifier.layout、Layout/Intrinsic、Canvas、DrawModifier | `LayoutDrawSamples.kt` |
+| [17 Compose 动画进阶](docs/17-compose-animation.md) | AnimationSpec 家族、updateTransition、Animatable、TwoWayConverter、骨架屏/收藏按钮 | `AnimationSamples.kt` |
+| [18 Compose 手势处理](docs/18-compose-gestures.md) | detectTap/Drag/Transform、anchoredDraggable、nestedScroll、Fling | `GestureSamples.kt` |
+| [19 Compose 依赖注入与生态](docs/19-compose-di-ecosystem.md) | 手写 AppContainer、Hilt 概念、Coil/Lottie/Accompanist 现状 | `EcosystemSamples.kt` |
+| [20 JNI 与 NDK](docs/20-jni-ndk.md) | external fun、C++ 侧符号规则、CMake 交叉编译 | `21_jni_bridge` + `cpp/` |
+| [21 实战项目：MemoPad](docs/21-memopad.md) | 单向数据流三层架构组装完整应用 | `MemoPadSample.kt` |
 
 学习路线：01–04 建心智模型 → 05–08 传统 UI 与并发 → 09–11 系统能力 →
-12–14 Compose 现代主线 → 15–16 JNI 纵深与实战收束。
+12–14 Compose 主线（基础/组件/架构）→ 15–18 四门深入课（状态·渲染·动画·手势，
+按需精读）→ 19 生态 → 20–21 JNI 纵深与实战收束。
 
 ## 工具链
 
@@ -84,14 +93,18 @@ android.jar` 静态编译（API 调用与语法可信）；`compose_examples/` �
 - `build.ps1` 为 UTF-8 **无 BOM** 编码，必须用 **PowerShell 7（pwsh）** 运行；
   Windows PowerShell 5.1 会把中文脚本误读为 ANSI 直接报语法错。
 - `build.ps1` 自动探测 `platforms/` 下最高 API（不硬编码 compileSdk 的 35）。
-- 刻意不接 Room/KSP 注解处理器：Room 三件套只定义不实例化（14 章如实说明）。
+- 刻意不接 Room/KSP/Hilt 注解处理器：Room 三件套与手写 DI 容器只定义不实例化
+  （14、19 章如实说明接法与代价）。
 
 ## 示例怎么读
 
 - 每章开头 blockquote 标注对应示例文件；`examples/` 按**主题聚合编号**
   （01–21），与章号不一一对应——完整映射见上方章节索引表。
-- Compose 示例集中在 `compose_examples/` 工程的 4 个 samples 文件里
-  （23 条示例，含 @Preview 与 UiState 三态）。
+- Compose 示例集中在 `compose_examples/` 工程的 9 个 samples 文件里
+  （52 条示例：12–19 章 51 条 + MemoPad 1 条，含 @Preview、UiState 三态、
+  手势/动画/自绘等可交互条目）。
+- MainActivity 外层 Column 带 `verticalScroll`，因此嵌套的 LazyColumn/Scaffold
+  必须**定高**（嵌套无限高度会运行期崩溃，教程 12 章第 8 节讲透）。
 - 改示例后跑对应验证：Kotlin 单文件 `-File`，Compose 工程 `-Compose`，JNI `-Jni`。
 
 ## 实战项目：MemoPad
@@ -99,7 +112,7 @@ android.jar` 静态编译（API 调用与语法可信）；`compose_examples/` �
 `compose_examples/.../samples/MemoPadSample.kt` 是一个约 330 行的完整应用：
 Compose 列表/编辑双屏、Navigation 路由、ViewModel + StateFlow 单向数据流、
 JSON 文件持久化、WorkManager 后台备份，零新增依赖。详见
-[16 章](docs/16-memopad.md)。
+[21 章](docs/21-memopad.md)。
 
 ## 相关教程
 

@@ -66,13 +66,16 @@ class MainActivity : ComponentActivity() {
                     // 第 12 章基础示例（ComposeSamples.kt）
                     ComposeCounterSample()
                     ComposeLazyListSample()
-                    // ……主题/表单/卡片/布局示例、JNI 示例
+                    // ……主题/表单/卡片/布局/互操作示例、JNI 示例
                     // 第 13 章组件与交互示例（UiSamples.kt）
                     UiButtonsSample()
-                    // ……Scaffold/对话框/列表进阶/副作用/动画示例
+                    // ……Scaffold/对话框/列表进阶/副作用/动画/主题示例
                     // 第 14 章架构示例（AdvancedSamples.kt）
                     AdvancedViewModelStateFlowSample()
                     // ……Navigation/Room/WorkManager/UiState 示例
+                    // 第 15–19 章深入课示例（State/LayoutDraw/Animation/Gesture/Ecosystem 五个文件）
+                    StateSaveableSample()
+                    // ……稳定性/key/派生状态/自定义布局/Canvas/动画/手势/手动 DI 等示例
                 }
             }
         }
@@ -410,7 +413,27 @@ fun ComposeCardListSample() {
 
 `Card` 的内容就是一个 `@Composable` lambda——三个固定项用 `Column` + `forEach`，换成 `LazyColumn` + `items` 即可承载长列表。
 
-## 11. 常见坑
+## 11. 与 View 体系互操作：AndroidView 与 ComposeView
+
+Compose 与 View 不是二选一：存量工程可以逐屏迁移，两种方向各有官方桥梁。
+
+**Compose 里嵌传统 View** 用 `AndroidView`。`ComposeInteropSample`（示例 8，第 12 章示例文件的最后一条）：
+
+```kotlin
+AndroidView(
+    factory = { context -> TextView(context).apply { textSize = 15f } },  // 只跑一次：创建 View
+    update = { textView -> textView.text = "已被 Compose 重组同步 $clickCount 次" },  // 每次重组回调
+    modifier = Modifier.fillMaxWidth()
+)
+```
+
+两个 lambda 的分工是理解互操作的关键：`factory` 只在首次组合执行（View 创建很贵，绝不能随重组反复建）；`update` 在**每次重组**回调，职责是把 Compose 状态"推"给 View——你依然用声明式的思维管理它，只是叶子节点换成了命令式控件。WebView、MapView、视频播放器这类没有 Compose 对应物的重型控件，都从这里进 Compose 工程。
+
+**View 工程里嵌 Compose** 用 `ComposeView`：XML 里摆一个 `androidx.compose.ui.platform.ComposeView`，代码里 `composeView.setContent { MaterialTheme { ... } }`。Layout Inspector 里能看到两者的连接点——Compose 树通过它挂载进 View 树（本工程 `setContent` 的内部同样是这条路）。
+
+选型建议：新工程全 Compose；存量工程按屏迁移，每屏整体替换（一屏里两套体系混排的双向互操作最复杂，值得专门设计再动工）。
+
+## 12. 常见坑
 
 **状态忘了 remember**：写成 `var count = 0`，或 `var input by mutableStateOf("")` 不套 `remember`——每次重组都重新初始化。症状是"界面不理你"：点击计数没反应、输入框打不出字（每敲一个字符，重组把状态抹回初值）。不报错，极具迷惑性。
 
@@ -420,14 +443,14 @@ fun ComposeCardListSample() {
 
 **`by` 委托缺 import**：忘 `import androidx.compose.runtime.getValue` / `setValue` 时，报错是一句费解的 "no method 'getValue()"，与真实原因相去甚远。用 `by remember` 就成对带上这两个 import。
 
-## 12. 实战建议
+## 13. 实战建议
 
 - 界面小状态（输入内容、开关）用 `remember`；屏幕级、业务级状态进 ViewModel（[第 14 章](14-compose-architecture.md)），不要什么都塞 `remember`
 - 派生值永远现算，不存第二份状态——"两处状态不同步"这一整类 bug 从根上消灭
 - 自定义组件写成无状态 + `modifier` 参数，状态放调用方：复用、预览、测试三赢
 - 超过一屏或动态增删的列表用 `LazyColumn` 并给 `key`；几个固定项才用 `Column` + `forEach`；列表进阶（key 语义、增删动画、LazyRow）见[第 13 章](13-compose-ui.md)
 - 改完跑 `.\build.ps1 -Compose` 做编译验证，这是本仓库的标准流程（[第 02 章](02-project-toolchain.md)）
-- 第 16 章实战项目会把本章与第 13、14 章的内容串成一个完整应用
+- 第 21 章实战项目会把本章与第 13、14 章的内容串成一个完整应用
 
 ---
 上一章：[11 运行时权限、ContentResolver 与硬件服务](11-permissions-content.md) ｜ 下一章：[13 Compose 组件与交互](13-compose-ui.md) ｜ 返回：[README](../README.md)

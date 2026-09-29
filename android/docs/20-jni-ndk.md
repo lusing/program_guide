@@ -1,4 +1,4 @@
-# 15 · JNI 与 NDK
+# 20 · JNI 与 NDK
 
 > 对应示例：`examples/21_jni_bridge.kt`、`compose_examples/app/src/main/cpp/native-lib.cpp`
 
@@ -244,7 +244,7 @@ fun JniStatusSample() {
 - 引第三方 native 库时，优先找官方预编译的 AAR（内含各 ABI 的 `.so`），自己维护源码交叉编译是最后手段
 - 构建验证用 `.\build.ps1 -Jni`（纯 native 编译）与 `.\build.ps1 -Compose`（整工程含 JNI 打包链），见[第 02 章](02-project-toolchain.md)
 - 模拟器（x86_64）与真机（arm64-v8a）各装一次，`JniStatusSample` 十秒钟就能确认 ABI 覆盖与链路通断
-- 第 16 章实战项目是纯 Kotlin，不需要 JNI——本章的定位是"看得懂现有 native 集成、接得上真实项目"，不是"天天写"
+- 第 21 章实战项目是纯 Kotlin，不需要 JNI——本章的定位是"看得懂现有 native 集成、接得上真实项目"，不是"天天写"
 
 ---
-上一章：[14 Compose 工程化架构](14-compose-architecture.md) ｜ 下一章：[16 实战项目：MemoPad 便签应用](16-memopad.md) ｜ 返回：[README](../README.md)
+上一章：[19 Compose 依赖注入与生态](19-compose-di-ecosystem.md) ｜ 下一章：[21 实战项目：MemoPad 便签应用](21-memopad.md) ｜ 返回：[README](../README.md)

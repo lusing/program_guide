@@ -16,7 +16,7 @@ Android Studio 的"New Project"向导很贴心：选个模板，三十多个文�
 |---|---|---|---|
 | 单文件示例 | `examples/*.kt` | kotlinc + `android.jar` 静态编译 | API 与语法用法 |
 | Gradle 工程 | `compose_examples/` | `gradle :app:compileDebugKotlin` | 真实工程配置与 Compose 代码 |
-| JNI 原生 | `compose_examples/app/src/main/cpp/` | NDK + CMake 交叉编译 | C++ 侧可编译（详见第 15 章 [JNI 与 NDK](15-jni-ndk.md)） |
+| JNI 原生 | `compose_examples/app/src/main/cpp/` | NDK + CMake 交叉编译 | C++ 侧可编译（详见第 20 章 [JNI 与 NDK](20-jni-ndk.md)） |
 
 命令行学 Android 不是苦行，而是把"编译一个 Activity 到底需要什么"变成一个可以亲手验证的问题。等你再打开 Android Studio，向导生成的每个文件都能对上号。
 
@@ -42,7 +42,7 @@ Android Studio 的"New Project"向导很贴心：选个模板，三十多个文�
 | `platforms/android-37.1/android.jar` | 当前最高平台 API 的**编译期存根**（下一节的主角） | kotlinc 的 `-classpath` |
 | `build-tools/` | 打包工具链：aapt2（编译打包资源）、d8（字节码转 dex）、R8（混淆收缩）、apksigner（签名）、zipalign（对齐优化） | 由 AGP 在 Gradle 构建中内部调用 |
 | `platform-tools/` | `adb`（Android Debug Bridge，设备桥）、fastboot（刷机） | 装应用到真机、看日志 |
-| `ndk/30.0.15729638/` | C/C++ 交叉编译工具链（clang 等，按 ABI 产出 `.so`） | 第 15 章、`-Jni` 开关 |
+| `ndk/30.0.15729638/` | C/C++ 交叉编译工具链（clang 等，按 ABI 产出 `.so`） | 第 20 章、`-Jni` 开关 |
 | `cmake/` | CMake + Ninja，NDK 官方推荐的原生构建前端 | `-Jni` 开关 |
 
 `build-tools` 里那串工具值得记一遍接力顺序：**.kt/.java →(kotlinc/javac)→ .class →(d8)→ .dex →(aapt2)→ 打包资源 →(apksigner)→ 可安装 APK**。本教程的静态验证只走第一棒；后面几棒由 Gradle 流水线自动完成。`adb` 则是联调期的瑞士军刀：`adb install xxx.apk` 装应用、`adb logcat` 看运行日志，第 04 章起会反复用到。
@@ -195,7 +195,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            path = file("src/main/cpp/CMakeLists.txt")  // JNI 构建入口，第 15 章
+            path = file("src/main/cpp/CMakeLists.txt")  // JNI 构建入口，第 20 章
         }
     }
 }

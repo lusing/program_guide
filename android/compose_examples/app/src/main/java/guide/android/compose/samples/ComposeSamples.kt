@@ -30,6 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import android.widget.TextView
 import guide.android.compose.jni.GuideNativeBridge
 
 @Composable
@@ -161,5 +163,30 @@ fun JniStatusSample() {
         text = "JNI 示例：$nativeMessage",
         modifier = Modifier.padding(vertical = 8.dp)
     )
+}
+
+// 示例8：与 View 体系互操作——Compose 里嵌传统 View（AndroidView）；
+// 反方向（View 工程里嵌 Compose）用 ComposeView，见第 12 章第 11 节
+@Composable
+fun ComposeInteropSample() {
+    var clickCount by remember { mutableIntStateOf(0) }
+    Column(modifier = Modifier.padding(vertical = 6.dp)) {
+        Text("Compose 示例8：AndroidView 互操作", fontWeight = FontWeight.Bold)
+        // factory 只在首次组合调用一次（创建传统 View）；
+        // update 在每次重组回调（把 Compose 状态同步给 View）
+        AndroidView(
+            factory = { context ->
+                TextView(context).apply {
+                    textSize = 15f
+                    setPadding(0, 12, 0, 12)
+                }
+            },
+            update = { textView ->
+                textView.text = "我是 android.widget.TextView，已被 Compose 重组同步 $clickCount 次"
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Button(onClick = { clickCount += 1 }) { Text("重组一次（update 回调刷新 TextView）") }
+    }
 }
 

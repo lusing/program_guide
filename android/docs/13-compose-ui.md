@@ -2,7 +2,7 @@
 
 > 对应示例：`compose_examples/app/src/main/java/guide/android/compose/samples/UiSamples.kt`
 
-第 12 章解决了"怎么想"（状态驱动界面），本章解决"怎么搭"：把常用组件、应用骨架、对话框、进阶列表、副作用与动画一次备齐。学完本章，你就能不查文档搭出一张真实应用的界面。
+第 12 章解决了"怎么想"（状态驱动界面），本章解决"怎么搭"：把常用组件、应用骨架、对话框、进阶列表、副作用、动画与主题定制一次备齐。学完本章，你就能不查文档搭出一张真实应用的界面。
 
 ## 1. 组件速查：按钮族与选择控件
 
@@ -385,7 +385,39 @@ fun UiInfinitePulseSample() {
 
 前瞻一句：Compose 1.7 引入了实验性的 `SharedTransitionLayout`（列表图片点开铺满全屏那类"共享元素"动画），API 尚未稳定，本工程不示范；等它转正，上面的选型表加一行即可。
 
-## 8. @Preview：不装机的看图开发
+## 9. 主题定制与 CompositionLocal
+
+第 12 章第 10 节留了个尾巴：`MaterialTheme` 是"用 CompositionLocal 提供的隐式环境参数"。这一节把两个概念一起落地。
+
+**CompositionLocal** 解决"深层嵌套时参数逐层透传"（prop drilling）的问题：在树顶提供一个值，任意深度的后代直接取用——`LocalContext`、`LocalDensity` 以及 `MaterialTheme` 的配色、字体、形状，全是这个机制。自己定义一个也只是两行：
+
+```kotlin
+val LocalBrandName = compositionLocalOf { "默认品牌" }        // 声明 + 默认值
+
+CompositionLocalProvider(LocalBrandName provides "糖果品牌") {  // 子树内生效
+    Text("当前品牌：${LocalBrandName.current}")
+}
+```
+
+**主题定制**就是用一份自定义 `colorScheme` 换掉 MaterialTheme 的默认值。`UiThemeCustomizeSample`（UI 示例11）把两者合在一起演示：
+
+```kotlin
+private val CandyColorScheme = lightColorScheme(       // 从亮色基线改起
+    primary = Color(0xFF7B1FA2), secondary = Color(0xFFFF80AB),
+    background = Color(0xFFFDF7FF), surface = Color(0xFFFDF7FF))
+
+MaterialTheme(colorScheme = if (candy) CandyColorScheme else MaterialTheme.colorScheme,
+              typography = MaterialTheme.typography, shapes = MaterialTheme.shapes) {
+    // 块内所有组件自动取新配色——注意没有任何一处显式传 color
+    Button(...) { Text("切换配色（品牌：${LocalBrandName.current}）") }
+}
+```
+
+真实工程的组织方式（新项目模板自带）：`ui/theme/` 目录四个文件集中管理——`Color.kt`（色板）、`Type.kt`（字体层级）、`Shape.kt`（圆角体系）、`Theme.kt`（组装 light/dark 两套 scheme，按系统暗色模式选择）。设计规范换肤时只动这四个文件，正是"主题参数与组件实现解耦"的收益。
+
+纪律提醒（第 19 章还会遇到）：CompositionLocal 只放**环境级不变量**（主题、容器、窗口信息）；业务数据走参数与 ViewModel，否则数据流会变得不可追踪。
+
+## 10. @Preview：不装机的看图开发
 
 写界面最大的时间黑洞是"改一行 → 编译 → 装机 → 看一眼"。`@Preview` 把这个循环压缩到侧栏秒级刷新。`UiSamples.kt` 末尾：
 
@@ -405,7 +437,7 @@ private fun UiButtonsSamplePreview() {
 
 进阶一步是 `@PreviewParameter`（自动注入多组样例参数）与交互式预览（Studio 里直接点）。依赖上，编译期只需 `ui-tooling-preview`（已在工程），渲染器本体是 `debugImplementation("androidx.compose.ui:ui-tooling")`——只进 debug 包，release 包不背这个重量。
 
-## 9. 常见坑
+## 11. 常见坑
 
 **Scaffold / LazyColumn 塞进可滚动容器不限高**：外层 `Column` 加了 `verticalScroll` 后给子级的最大高度约束是**无限**，里面的 `LazyColumn`（"给我无限高度我才能滚"）会直接抛异常，Scaffold 则会塌成一条。解法见本工程两个示例的处理：定高（`Modifier.height(220.dp)`）或把滚动交给 LazyColumn 自己（外层别套 verticalScroll）。MainActivity 整页用 `verticalScroll` 是因为示例全是小段静态内容；真实应用的"列表页"应该让 LazyColumn 占满、只有它滚。
 
@@ -415,15 +447,16 @@ private fun UiButtonsSamplePreview() {
 
 **IconButton 不写 `contentDescription`**：读屏用户听到的是"未加标签的按钮"。写清动作语义（"新增"），纯装饰图标才传 `null`。
 
-## 10. 实战建议
+## 12. 实战建议
 
 - 组件优先选 Material3 标准件（本章速查表 + 官方组件目录），自定义控件是最后手段——先组合现有组件 + Modifier，组合不出来再谈自定义
 - 每屏一个 `Scaffold`，顶栏/FAB/Snackbar 的交互契约它已经替你谈好；`innerPadding` 记得应用
-- 动画从 `animate*AsState` 与 `animateContentSize` 起步，90% 的"质感提升"就来自这两者；`AnimatedContent` 用在真正的内容切换上，别给静态界面加戏
+- 动画从 `animate*AsState` 与 `animateContentSize` 起步，90% 的"质感提升"就来自这两者；`AnimatedContent` 用在真正的内容切换上，别给静态界面加戏；深水区（Transition/Animatable/Spec 全家）见[第 17 章](17-compose-animation.md)
 - 列表只要有增删/条目内状态，`key` 必给；`animateItem()` 顺手加上，成本一句话收益肉眼可见
 - 副作用清单化检查：函数体里每出现一个非 UI 调用，问一句"它该在 `LaunchedEffect`/`DisposableEffect` 里，还是该搬去 ViewModel"（[第 14 章](14-compose-architecture.md)）
+- 主题定制集中在 `ui/theme/` 四文件，组件永远读 `MaterialTheme.colorScheme` 而不是写死色值
 - 写组件时顺手写 `@Preview`——无状态设计 + 预览，是 Compose 开发体验的复利
-- 改完跑 `.\build.ps1 -Compose` 做编译验证；[第 16 章](16-memopad.md)会把本章组件、动画与第 14 章架构全部串成完整应用
+- 改完跑 `.\build.ps1 -Compose` 做编译验证；[第 21 章](21-memopad.md)会把本章组件、动画与第 14 章架构全部串成完整应用
 
 ---
 上一章：[12 Jetpack Compose 基础](12-compose-basics.md) ｜ 下一章：[14 Compose 工程化架构](14-compose-architecture.md) ｜ 返回：[README](../README.md)
