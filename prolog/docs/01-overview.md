@@ -203,25 +203,26 @@ pwsh ./build.ps1 -Verbose
 
 | 章 | 主题 | 章 | 主题 |
 |---|---|---|---|
-| [02](02-hello.md) | 第一个程序 | [14](14-io.md) | 输入输出 |
-| [03](03-facts-rules.md) | 事实、规则与查询 | [15](15-text.md) | 文本处理 |
-| [04](04-terms.md) | 项：原子/数字/变量/复合项 | [16](16-operators.md) | 运算符 |
-| [05](05-unification.md) | 合一与同一性 | [17](17-database.md) | 动态数据库 |
-| [06](06-backtracking.md) | 回溯与搜索树 | [18](18-dcg.md) | 定子句文法（DCG） |
-| [07](07-arithmetic.md) | 算术与比较 | [19](19-parser.md) | 写一个解析器 |
-| [08](08-lists.md) | 列表 | [20](20-exceptions.md) | 异常处理 |
-| [09](09-recursion.md) | 递归、累加器与尾调用 | [21](21-constraints.md) | 约束求解 CLP(FD) |
-| [10](10-cut.md) | 剪枝与否定 | [22](22-modules.md) | 模块与工程组织 |
-| [11](11-higher-order.md) | 高阶谓词与元调用 | [23](23-testing.md) | 测试 |
-| [12](12-metaprogramming.md) | 元编程 | [24](24-capstone.md) | 综合项目：解释器 |
-| [13](13-all-solutions.md) | 解集收集 | | |
+| [02](02-hello.md) | 第一个程序 | [15](15-text.md) | 文本处理 |
+| [03](03-facts-rules.md) | 事实、规则与查询 | [16](16-operators.md) | 运算符 |
+| [04](04-terms.md) | 项：原子/数字/变量/复合项 | [17](17-database.md) | 动态数据库 |
+| [05](05-unification.md) | 合一与同一性 | [18](18-dcg.md) | 定子句文法（DCG） |
+| [06](06-backtracking.md) | 回溯与搜索树 | [19](19-parser.md) | 写一个解析器 |
+| [07](07-arithmetic.md) | 算术与比较 | [20](20-exceptions.md) | 异常处理 |
+| [08](08-lists.md) | 列表 | [21](21-constraints.md) | 约束求解 CLP(FD) |
+| [09](09-recursion.md) | 递归、累加器与尾调用 | [22](22-modules.md) | 模块与工程组织 |
+| [10](10-cut.md) | 剪枝与否定 | [23](23-testing.md) | 测试 |
+| [11](11-higher-order.md) | 高阶谓词与元调用 | [24](24-capstone.md) | 综合项目：解释器 |
+| [12](12-metaprogramming.md) | 元编程 | [25](25-loops.md) | 循环的三种写法 |
+| [13](13-all-solutions.md) | 解集收集 | [26](26-robot.md) | 实战：机器人命令语言 |
+| [14](14-io.md) | 输入输出 | [27](27-expert-shell.md) | 实战：专家系统外壳 |
 
 示例目录与章号一一对应：
 
 ```text
 prolog/
-  docs/          24 章正文（01 全景 → 24 收官项目）
-  examples/      NN_topic/NN_topic.pl（02–24 共 23 个可运行示例）
+  docs/          27 章正文（01 全景 → 24 解释器收官 → 25–27 按 Bramer 书扩充的实战篇）
+  examples/      NN_topic/NN_topic.pl（02–27 共 26 个可运行示例）
   run-all.sh     三通道验证入口（bash）
   build.ps1      三通道验证入口（pwsh，判定与 run-all.sh 一致）
   CHEATSheet.md  语法速查 + 坑位总索引
@@ -241,6 +242,8 @@ prolog/
 - **做解析**：18–19 两章，从 DCG 识别器做到完整计算器。
 - **做规则/推理系统**：17（动态库）+ 12（元编程）。
 - **写可移植代码**：21、22、23 与每章末尾的坑位清单，外加 `CHEATSheet.md`。
+- **想看完整的应用怎么拼**：24（解释器）之后是实战篇 —— 25（循环总览）、
+  26（机器人命令语言 REPL）、27（专家系统外壳），三章按 Bramer 书扩充。
 
 ---
 

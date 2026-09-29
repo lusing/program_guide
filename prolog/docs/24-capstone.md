@@ -463,4 +463,4 @@ name(err_div_zero,   expect_throw(value_of("7 / 0;", _), division_by_zero))
 
 ---
 
-上一章：[23 · 测试](23-testing.md) · 回到 [教程总览](01-overview.md)
+上一章：[23 · 测试](23-testing.md) · 下一章：[25 · 循环的三种写法](25-loops.md) · 回到 [教程总览](01-overview.md)

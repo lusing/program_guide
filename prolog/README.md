@@ -1,8 +1,10 @@
 # Prolog 教程（SWI-Prolog 10.0.2 / GNU Prolog 1.5.0）
 
-逻辑编程 · 合一与回溯 · DCG 解析 · 约束求解 · 元编程 —— 从零教到能自己写解释器。
+逻辑编程 · 合一与回溯 · DCG 解析 · 约束求解 · 元编程 —— 从零教到能自己写解释器，
+再按 Bramer《Logic Programming with Prolog》补出实战篇（循环总览 / 机器人命令语言 / 专家系统外壳）。
 定位：**会编程（有任意一门语言基础即可）、初学 Prolog**。
-所有示例在 macOS + SWI-Prolog 10.0.2 / GNU Prolog 1.5.0 实测通过，
+所有示例在 macOS + SWI-Prolog 10.0.2 / GNU Prolog 1.5.0 实测通过
+（25–27 章另在 Linux/WSL2 + SWI 9.2.9 + GNU 1.5.0 复验），
 **同一份源码在三条通道上输出逐字节一致**。
 
 ## 本教程的主张：两套引擎交叉验证
@@ -26,12 +28,12 @@ Prolog 有 ISO 标准（ISO/IEC 13211-1，1995），但两套主流实现各有�
 
 ```text
 prolog/
-  docs/          24 章正文（01 全景 → 24 综合项目）
-  examples/      NN_topic/NN_topic.pl（02–24 共 23 个可运行示例）
+  docs/          27 章正文（01 全景 → 24 解释器收官 → 25–27 实战篇）
+  examples/      NN_topic/NN_topic.pl（02–27 共 26 个可运行示例）
                  + 部分章附 observe_*.pl（引擎差异观察文件，只要求跑到底）
   run-all.sh     三通道验证入口（bash）
   build.ps1      三通道验证入口（pwsh，判定与 run-all.sh 逐项一致）
-  CHEATSheet.md  语法速查 + 226 条实测坑位索引
+  CHEATSheet.md  语法速查 + 256 条实测坑位索引
   build/         验证产物（可删；.gitignore 覆盖）
 ```
 
@@ -80,11 +82,14 @@ prolog/
 | 22 | [模块与工程组织：命名空间冲突、加载边界、手写加载器](docs/22-modules.md) |
 | 23 | [测试：迷你框架、框架自检、性质测试](docs/23-testing.md) |
 | 24 | [综合项目：一个四百行的解释器](docs/24-capstone.md) |
+| 25 | [循环的三种写法：定数 / until / 失败驱动（按 Bramer 第 6 章扩充）](docs/25-loops.md) |
+| 26 | [实战：给机器人造一门命令语言（REPL，按 Bramer 12.3+13.1 扩充）](docs/26-robot.md) |
+| 27 | [实战：专家系统外壳（数据驱动测验，按 Bramer 13.2 扩充）](docs/27-expert-shell.md) |
 
 ## 怎么跑
 
 ```bash
-./run-all.sh                  # 全量：23 个示例 × 三通道，只打摘要
+./run-all.sh                  # 全量：26 个示例 × 三通道，只打摘要
 ./run-all.sh -v               # 附每个通道抽出的输出区间
 ./run-all.sh 07 21            # 只跑指定编号
 ./run-all.sh -Clean           # 清理 build/
@@ -160,11 +165,18 @@ apt install swi-prolog gprolog         # Debian / Ubuntu
 
 ## 当前状态
 
-- **macOS**（darwin）：**119 项全部通过**。
-  23 个示例 × 5 项（3 条通道 + 2 组区间一致：swipl=gprolog、swipl=gplc）
-  + 第 21、22 章的 4 个观察通道 = 119。
-- `run-all.sh` 与 `build.ps1` 两种入口均实测，结果**逐项一致**（同为 119/0）。
-- 全部 226 条坑位都在两套引擎上实测过，不是抄来的。
+- **Linux**（Ubuntu 26.04 / WSL2，SWI-Prolog 9.2.9 + GNU Prolog 1.5.0）：
+  **134 项全部通过** —— 26 个示例 × 5 项（3 条通道 + 2 组区间一致：
+  swipl=gprolog、swipl=gplc）+ 第 21、22 章的 4 个观察通道 = 134。
+- **Windows 11**（build.ps1，SWI 单通道）：**28 项全部通过**
+  （26 个示例 + 2 个 SWI 观察通道；GNU 两条通道自动跳过）。
+  注：Windows 版 swipl 的 stdout 是 CRLF 文本模式，`build.ps1` 在 Windows 上
+  会先把捕获输出规范化为 LF 再判定（那不是程序输出的 CR）；
+  Linux/macOS 上判定保持原样严格。
+- **macOS**（darwin，SWI 10.0.2 + GNU 1.5.0）：扩充前 24 章 **119 项全部通过**；
+  25–27 章延续同一可移植子集与判定纪律，未在 macOS 复验。
+- `run-all.sh` 与 `build.ps1` 两种入口的判定逻辑逐项一致。
+- 全部 256 条坑位都在两套引擎上实测过，不是抄来的。
 
 ## 怎么读
 
@@ -175,6 +187,8 @@ apt install swi-prolog gprolog         # Debian / Ubuntu
 - **想快速用起来**：08（列表）、10（剪枝）、13（收集解）覆盖日常八成写法。
 - **做解析**：18–19，从 DCG 识别器做到完整计算器。
 - **做规则/推理系统**：17（动态库）+ 12（元编程）。
+- **想看完整应用怎么拼**：24（解释器）之后的实战篇 —— 25（循环总览）、
+  26（机器人命令语言 REPL）、27（专家系统外壳）。
 - **写可移植代码**：21、22、23 与每章末尾的坑位清单，外加 `CHEATSheet.md`。
 
 ## 相关教程

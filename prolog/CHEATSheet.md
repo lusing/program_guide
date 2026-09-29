@@ -439,7 +439,7 @@ library(plunit) begin_tests/1 test/1 end_tests/1 run_tests/1
 assertion/1  call_with_time_limit/2  time/1
 ```
 
-## 20. 坑位总索引（226 条）
+## 20. 坑位总索引（256 条）
 
 按章列，只列**最常撞**的那几条；完整版在各章末尾的「坑位清单」。
 
@@ -497,16 +497,30 @@ assertion/1  call_with_time_limit/2  time/1
 | 24 | `truth(true,1).` 这种写法 | 传进来的是项 `>(A,B)`，要 `call/1` |
 | 24 | 环境查找用 `=` 而不是 `==` | 查询变量被静默绑到环境键上 |
 | 24 | 用 `/` 而不是 `//` | 浮点打印位数因引擎而异 |
+| 25 | `loop(N-1)` 直接递归 | 传项不传值，永不终止 → 先 `M is N-1` |
+| 25 | 失败驱动循环少第二条子句 | 副作用照做、整体 false，失败上传 |
+| 25 | `repeat` 循环没留出口 | 条件耗尽后 repeat ↔ 下一目标无限空转 |
+| 25 | `repeat`+`read` 只查哨兵不查 EOF | 截尾文件死循环（`read` 永远吐 end_of_file） |
+| 25 | `forall` 当存在量词用 | 空集恒真；「有吗」用 `once(member(...))` |
+| 26 | `call/1` 前没有白名单 | 外部文本变成任意目标执行（RCE） |
+| 26 | 命令动词撞内建谓词名 | `stop/0` 是 GNU 内建，gplc 拒绝编译 |
+| 26 | 拿码表和原子比较 | `[115,116,...] \== [stop]`；判定放 `=..` 之后 |
+| 26 | 打印浮点坐标 | 位数不同 → 整数厘米 + 手工小数点，负号单独补 |
+| 26 | GNU `round/1` 吃整数 | `type_error(float,0)` → 乘 `100.0` 强制浮点 |
+| 27 | 数据文件项后无空白 | `Earth.20.` 的 `.20` 被吃成浮点，整文件语法错误 |
+| 27 | setup 不先 `retractall` | 换数据时上一份事实残留 |
+| 27 | `runquiz` 不复位 `myscore` | 二次运行分数翻倍 |
+| 27 | 评分表区间配出空洞 | 落空没反馈；兜底分支显式打印 |
 
 ## 21. 安全子集（跨引擎一致的写法）
 
 **只有这些才敢写进可移植代码**：
 
 ```text
-控制    ,  ;  ->  \+  !  once/1  forall/2  call/1..8  repeat/0
+控制    ,  ;  ->  \+  !  once/1  forall/2  call/1..8  repeat/0  between/3  succ/2
 合一    =  ==  \=  =..  functor/3  arg/3  copy_term/2  term_variables/2
 判定    var nonvar atom number integer float atomic compound callable is_list ground
-算术    + - * // mod rem  abs sign max min // > < >= =< =:= =\=
+算术    + - * // mod rem  abs sign max min // > < >= =< =:= =\=  sin cos（25–27 实测补充）
 列表    member append length reverse nth0 nth1 last sort msort keysort
 收集    findall bagof setof
 文本    atom_codes atom_chars atom_length sub_atom atom_concat char_code number_codes
@@ -524,13 +538,17 @@ CLP(FD) 高级功能           两套独立实现（21 章只用 domain/labeling
 模块系统                   GNU 没有（22 章）
 未绑定变量的打印            编号不同（_A vs _G123）
 引擎给的错误项内容          形状自由（只打 functor）
+GNU round/1 的参数         只吃浮点；round(0) 抛 type_error（26 章）
+format 反引号填充 ~`0t~d    GNU 直接 domain_error（25–27 探针实测）
+GNU 内建谓词撞名           stop/0 是 GNU 内建，重定义 gplc 拒绝编译（26 章）
 with_output_to/2 term_string/2 atom_to_term/3 split_string/4
-atomic_list_concat/3 upcase_atom/2 downcase_atom/2 include/3 exclude/3
+atom_number/2 term_to_atom/2（SWI 专有，GNU 1.5 没有）
+atomic_list_concat/3 upcase_atom/2 downcase_atom/2 code_type/2 include/3 exclude/3
 foldl/4 aggregate_all/3 sort/4 predsort/3 library(plunit) statistics/2
 exists_file/1（SWI）vs file_exists/1（GNU）—— 连文件存在性都不统一
 ```
 
 ---
 
-**读法**：`docs/01-overview.md` 是地图，`docs/02`–`docs/24` 逐章；
+**读法**：`docs/01-overview.md` 是地图，`docs/02`–`docs/27` 逐章；
 每章末尾都有「坑位清单」。本表查语法与坑位，正文查原理与实测输出。

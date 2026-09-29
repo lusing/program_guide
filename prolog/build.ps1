@@ -228,6 +228,11 @@ function Test-Channel {
 
     $errText = Read-TextFile $ErrPath
     $outText = Read-TextFile $OutPath
+    # Windows 版 swipl 的 stdout 走 C 运行时文本模式，\n 一律被翻成 \r\n
+    # （连 set_prolog_flag(newline, posix) 都拦不住，实测）。
+    # 这里的 CR 是平台噪声而非程序 bug：先规范化再判定；
+    # Linux/macOS 上不动 —— 那边 CR 仍按第 4 条原样抓。
+    if ($IsWindows) { $outText = $outText -replace "`r`n", "`n" }
     $hasBegin = $outText.Contains($Begin)
     $hasEnd   = $outText.Contains($End)
 
