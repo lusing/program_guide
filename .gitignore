@@ -118,3 +118,6 @@ algol68/examples/**/*.so
 
 # AI 工作区元数据
 .workbuddy/
+
+# cppgui：构建产物（wx 预构建库、CMake 树、示例二进制）
+cppgui/build/
