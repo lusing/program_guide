@@ -168,3 +168,52 @@ testWidgets('名', (tester) async {
 // pump=一帧；pumpAndSettle=到动画结束（定时器驱动的事件要手动 pump(Duration)）
 // 边界注入假实现；真实 IO 放普通 test()
 ```
+
+## 进阶篇（21–28）
+
+```dart
+// 调试（21）：flutter run 键位 r/R/q/d · p 构造线 · P 性能 overlay · i Inspector · v DevTools
+debugPrint('长日志')                          // print 会截断；溢出错误从底部往上读
+debugPaintSizeEnabled = true;                 // 视觉开关（改完须热重启 R）
+tester.takeException()                        // 测试断言渲染错误（如 overflow）
+
+// 集中状态（22）：手写 scoped_model 三零件
+class M extends ChangeNotifier {}             // Model
+ScopedModel<T>(model: T(), child: ...)        // 挂树（InheritedNotifier 封装）
+ScopedModelDescendant<T>(builder: (c, w, m) => ...)  // 订阅；notifyListeners 重跑 builder
+// 军规：私有状态 / getter 出口 List.of 拷贝 / 按实体不按索引 / 改完必通知
+// mixin 合并：class Main extends Model with NewsPart, UserPart {}
+
+// 认证（23）：token 一生
+http.post(url, headers: {'Authorization': 'Bearer $token'})   // 凭据走头不走 URL
+prefs.setString('expiryTime', t.toIso8601String())            // 存绝对时间点
+Timer(Duration(seconds: left), logout)                        // 剩余秒数重挂；dispose 必 cancel
+
+// 媒体（24）
+final x = await ImagePicker().pickImage(      // 实例方法；null=用户取消
+    source: ImageSource.gallery, maxWidth: 800, imageQuality: 70);
+Image.file(File(x.path), errorBuilder: (_, _, _) => ...)      // XFile 三态预览
+..files.add(await MultipartFile.fromPath('files', x.path))    // 第一方 http multipart
+
+// 性能（25）
+const MyCard()                                // identical 短路：父重建不波及
+debugPrintRebuildDirtyWidgets = true;         // 找过度重建（测试结束前必须复位）
+Image.network(u, cacheWidth: 200)             // 小框大图必限解码
+
+// 自适应（26）
+Theme.of(context).platform == TargetPlatform.iOS   // 可覆写，测试友好（勿用 dart:io Platform）
+? const CupertinoActivityIndicator() : const CircularProgressIndicator()
+// helper 层收拢分叉；对话框与按钮成对换脸；Cupertino 不读 ThemeData
+
+// 平台通道（27）
+const ch = MethodChannel('guide.flutter/battery');
+try { await ch.invokeMethod<int>('getBatteryLevel'); }
+  on PlatformException {} on MissingPluginException {}        // 三分支 try 必写
+// Windows 宿主：flutter_window.cpp OnCreate 里 SetMethodCallHandler
+// 测试：TestDefaultBinaryMessengerBinding...setMockMethodCallHandler(ch, handler)
+
+// 发布（28）
+keytool -genkeypair -keystore android/app/x.jks -alias x -validity 10000 ...
+flutter build apk --release / appbundle        // versionCode 每次发版必递增
+// key.properties + *.jks 绝不进 git；AAB 只进 Google Play
+```

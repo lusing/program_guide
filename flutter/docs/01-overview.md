@@ -77,19 +77,21 @@ my_app/
 每章三步：**读讲解 → `cd examples/NN_name && flutter run -d windows` 跑起来 → 改代码看热重载**。批量验证用构建脚本（**须 pwsh 7**，含中文无 BOM）：
 
 ```powershell
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All                  # 全量：19 工程 pub get + analyze + test；02/20 额外 windows 构建
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All                  # 全量：27 工程 pub get + analyze + test；02/20/27 额外 windows 构建
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 06_material  # 单工程全流程（含构建）
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean                # 清理全部构建产物
 ```
 
-## 1.8 20 章路线图
+## 1.8 28 章路线图
 
 | 阶段 | 章 | 你将获得 |
 |---|---|---|
 | 入门 | 02 hello · 03 Widget · 04/05 布局 · 06 Material · 07 交互 | 能搭出静态界面并响应点击 |
 | 状态与数据 | 08 有状态 · 09 状态共享 · 10 导航 · 11 表单 · 12 列表 | 能写出多页面有数据的应用 |
 | 异步与打磨 | 13 网络 · 14 异步 UI · 15 动画 · 16 主题 · 17 持久化 | 应用接近可交付 |
-| 交付 | 18 桌面专题 · 19 测试 · 20 实战记事本 | 构建、测试、发布完整闭环 |
+| 毕业实战 | 18 桌面专题 · 19 测试 · 20 实战记事本 | 桌面交付 + 测试 + 完整小应用 |
+| 进阶篇（21+） | 21 调试 · 22 集中状态 · 23 认证 · 24 媒体选取 | 工程硬功夫：让代码可维护、可发布 |
+| 进阶篇（25+） | 25 性能 · 26 Cupertino 自适应 · 27 平台通道 · 28 移动发布 | 优化、跨脸、直通原生、上架闭环 |
 
 ## 坑位清单
 

@@ -14,7 +14,7 @@ $flutter = "G:\scoop\apps\flutter\current\bin\flutter.bat"
 $examplesDir = Join-Path $projectRoot "examples"
 $buildDir = Join-Path $projectRoot "build"
 # windows 构建抽查名单（其余工程 analyze+test 已足够）
-$buildCheck = @('02_hello', '20_notes')
+$buildCheck = @('02_hello', '20_notes', '27_platform_channel')
 
 if (-not (Test-Path -LiteralPath $flutter)) {
     throw "未找到 Flutter：$flutter"

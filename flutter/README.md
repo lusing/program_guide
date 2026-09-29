@@ -1,14 +1,14 @@
 # Flutter 开发指南
 
-面向**会编程、已具备 Dart 基础** 的读者：重点是 Widget 体系、布局、状态管理与桌面交付。主线 Flutter 3.47（Material 3、Windows 桌面验证），章节与示例工程一一对应，每章"读讲解 → `flutter run -d windows` 跑起来 → 改代码看热重载"。Dart 语言请先读 [Dart 教程](../dart/README.md)——本教程只讲框架层。
+面向**会编程、已具备 Dart 基础** 的读者：重点是 Widget 体系、布局、状态管理与跨平台交付。主线 Flutter 3.47（Material 3、Windows 桌面验证），章节与示例工程一一对应，每章"读讲解 → `flutter run -d windows` 跑起来 → 改代码看热重载"。01–20 为基础篇（以记事本实战毕业），21–28 为进阶篇（调试/状态/认证/媒体/性能/自适应/平台通道/发布）。Dart 语言请先读 [Dart 教程](../dart/README.md)——本教程只讲框架层。
 
 ## 目录结构
 
 ```text
 flutter/
 ├── README.md           本文件
-├── docs/               20 章教程（01 → 20 顺序阅读）
-├── examples/           19 个独立 Flutter 工程（章号 = 目录号）
+├── docs/               28 章教程（01 → 20 基础篇；21 → 28 进阶篇）
+├── examples/           27 个独立 Flutter 工程（章号 = 目录号）
 ├── build.ps1           统一构建脚本（须 PowerShell 7 / pwsh 运行）
 └── CHEATSheet.md       Widget/命令速查
 ```
@@ -37,6 +37,14 @@ flutter/
 | [18 桌面专题](docs/18-desktop.md) | 菜单栏、构建与发布 | `examples/18_desktop` |
 | [19 Widget 测试](docs/19-testing.md) | testWidgets、finders、假时钟 | `examples/19_testing` |
 | [20 实战：记事本](docs/20-notes.md) | 列表/编辑/持久化/主题/测试 | `examples/20_notes` |
+| [21 调试与 DevTools](docs/21-debugging.md) | 三类错误、断点、Inspector、视觉开关 | `examples/21_debugging` |
+| [22 集中状态管理](docs/22-scoped-model.md) | 手写 scoped_model、模型军规、mixin 合并 | `examples/22_scoped_model` |
+| [23 认证与凭据](docs/23-auth.md) | token 一生、自动登录、过期登出 | `examples/23_auth` |
+| [24 相机与图库](docs/24-camera-gallery.md) | image_picker、multipart 上传、注入 | `examples/24_camera_gallery` |
+| [25 性能与质量债](docs/25-performance.md) | const 重建、质量债四件套、测量先行 | `examples/25_performance` |
+| [26 Cupertino 与自适应](docs/26-adaptive.md) | 平台判断、Cupertino 族、adaptive helper | `examples/26_adaptive` |
+| [27 平台通道](docs/27-platform-channel.md) | MethodChannel、Windows C++ 宿主 | `examples/27_platform_channel` |
+| [28 移动端构建发布](docs/28-android-release.md) | 签名、release APK、商店流程 | `examples/28_android_release` |
 
 ## 构建工具链
 
@@ -47,7 +55,7 @@ flutter/
 ## 编译验证
 
 ```powershell
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All                  # 全量：19 工程 pub get + analyze + test；02_hello/20_notes 额外 windows 构建
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All                  # 全量：27 工程 pub get + analyze + test；02_hello/20_notes/27_platform_channel 额外 windows 构建
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Project 06_material  # 单工程全流程（含 windows 构建）
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean                # 各工程 flutter clean + 清根 build
 ```

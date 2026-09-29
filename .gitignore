@@ -2,6 +2,14 @@
 # Guide-wide ignore rules
 # =========================
 
+# Working scratch (book OCR intermediates)
+.flutter-ocr/
+
+# Android release signing secrets (never commit)
+**/android/key.properties
+**/*.jks
+**/*.keystore
+
 # OS / editor
 .DS_Store
 Thumbs.db
