@@ -114,7 +114,7 @@ int wmain() {
 - **需要身份的**：Toast 通知要求应用有 AUMID（AppUserModelID）+ 开始菜单快捷方式的配合，否则系统不知道"通知是谁发的"；解决法是 `SetCurrentProcessExplicitAppUserModelID` + 安装期建快捷方式（文档《Toast notifications from desktop apps》），或干脆 MSIX 打包；
 - **需要能力的**：位置、摄像头、麦克风等在打包世界由 manifest 声明能力；无打包程序走系统级隐私设置（用户首次使用弹同意框）。
 
-工程结论：**工具类程序直接调；要通知/商店分发，再研究打包**。第 33 章学习地图的 MSIX 一支由此展开。
+工程结论：**工具类程序直接调；要通知/商店分发，再研究打包**。第 34 章的 MSIX 打包与第 35 章学习地图的 MSIX 一支由此展开。
 
 ## 29.8 WinRT 地图：哪些现代能力只在这里
 
