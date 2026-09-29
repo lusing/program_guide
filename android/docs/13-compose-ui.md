@@ -456,7 +456,7 @@ private fun UiButtonsSamplePreview() {
 - 副作用清单化检查：函数体里每出现一个非 UI 调用，问一句"它该在 `LaunchedEffect`/`DisposableEffect` 里，还是该搬去 ViewModel"（[第 14 章](14-compose-architecture.md)）
 - 主题定制集中在 `ui/theme/` 四文件，组件永远读 `MaterialTheme.colorScheme` 而不是写死色值
 - 写组件时顺手写 `@Preview`——无状态设计 + 预览，是 Compose 开发体验的复利
-- 改完跑 `.\build.ps1 -Compose` 做编译验证；[第 21 章](21-memopad.md)会把本章组件、动画与第 14 章架构全部串成完整应用
+- 改完跑 `.\build.ps1 -Compose` 做编译验证；[第 26 章](26-memopad.md)会把本章组件、动画与第 14 章架构全部串成完整应用
 
 ---
 上一章：[12 Jetpack Compose 基础](12-compose-basics.md) ｜ 下一章：[14 Compose 工程化架构](14-compose-architecture.md) ｜ 返回：[README](../README.md)

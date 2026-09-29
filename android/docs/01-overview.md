@@ -51,7 +51,7 @@ Android 官方架构图自底向上五层。对应用开发者，越往上越要
 |---|---|---|
 | Linux 内核 | 进程/内存/驱动/电源管理，厂商按硬件定制 | 几乎不直接接触 |
 | HAL（Hardware Abstraction Layer，硬件抽象层） | 给上层统一硬件接口：相机、音频、传感器 | 不接触 |
-| 原生库 + ART | C/C++ 库（SQLite、OpenGL ES、媒体编解码）与 Android 运行时 | 第 20 章 JNI 会碰 |
+| 原生库 + ART | C/C++ 库（SQLite、OpenGL ES、媒体编解码）与 Android 运行时 | 第 20–25 章原生线会碰 |
 | Java/Kotlin Framework API | Activity Manager、Window Manager、View 体系、包管理、通知……数千个类的官方 API | **主要工作面** |
 | 应用层 | 你写的 APK 与系统预装应用 | 你的代码 |
 
@@ -184,7 +184,7 @@ myapp.apk
 
 最大的分野只有一条：桌面线里进程是你的，Android 线里进程是系统的。所有表格里看似平行的概念，落到代码里都带着这个前提的印记。
 
-## 8. 本教程结构：21 章地图
+## 8. 本教程结构：26 章地图
 
 | 章 | 文件 | 标题 | 一句话 |
 |---|---|---|---|
@@ -207,10 +207,15 @@ myapp.apk
 | 17 | `17-compose-animation.md` | Compose 动画进阶 | Spec 家族、Transition、Animatable |
 | 18 | `18-compose-gestures.md` | Compose 手势处理 | 检测器、吸附、嵌套滚动、Fling |
 | 19 | `19-compose-di-ecosystem.md` | Compose 依赖注入与生态 | 手写 DI、Hilt、三方库现状 |
-| 20 | `20-jni-ndk.md` | JNI 与 NDK | Kotlin 与 C/C++ 的边界 |
-| 21 | `21-memopad.md` | 实战项目：MemoPad 便签应用 | 全书知识串成一个完整应用 |
+| 20 | `20-jni-ndk.md` | JNI 与 NDK | Kotlin 与 C/C++ 的边界（含构建沿革、原生日志、SWIG） |
+| 21 | `21-jni-deep.md` | JNI 深入 | 字符串、数组、NIO、域与方法、异常、引用 |
+| 22 | `22-bionic-cpp.md` | Bionic 与 C++ 标准库 | 自家 libc、内存三世界、运行库变迁 |
+| 23 | `23-native-threads.md` | 原生线程与同步 | pthread、互斥/条件变量、信号量、挂靠虚拟机 |
+| 24 | `24-native-sockets.md` | POSIX Socket 原生网络 | TCP/UDP/UNIX domain、字节序、epoll |
+| 25 | `25-native-media-perf.md` | 原生图形、音频与性能 | Bitmap 直访、EGL/OpenSL 现状、NEON、simpleperf |
+| 26 | `26-memopad.md` | 实战项目：MemoPad 便签应用 | 全书知识串成一个完整应用 |
 
-学习路线分四段：**地基**（01–03，平台与语言）→ **平台核心**（04–11，传统 View 体系与系统能力）→ **现代 UI**（12–19，Compose 八章：基础 → 组件 → 架构 → 状态/渲染/动画/手势四门深入课 → 生态）→ **原生与实战**（20–21）。建议按序走，第 05 章开始的每个示例都值得动手改。
+学习路线分四段：**地基**（01–03，平台与语言）→ **平台核心**（04–11，传统 View 体系与系统能力）→ **现代 UI**（12–19，Compose 八章：基础 → 组件 → 架构 → 状态/渲染/动画/手势四门深入课 → 生态）→ **原生与实战**（20–26：第 20 章是 JNI 边界必修，21–25 章为原生线纵深选修，第 26 章实战收束）。建议按序走，第 05 章开始的每个示例都值得动手改。
 
 ## 9. 本教程的验证体系
 
@@ -218,7 +223,7 @@ myapp.apk
 
 1. **`examples/` 下的单文件示例**（`01_hello_activity.kt` 等）：用 kotlinc 挂上 `android.jar` 做**静态编译验证**——确认 API 名称、参数、类型的用法真实无误
 2. **`compose_examples/` Gradle 工程**：跑 `gradle :app:compileDebugKotlin` 验证完整工程配置与 Compose 代码可编译
-3. **JNI 部分**：NDK + CMake 交叉编译验证 C++ 侧（详见第 20 章）
+3. **JNI 部分**：NDK + CMake 交叉编译验证 C++ 侧（第 20–25 章的六个 cpp 文件，详见第 20 章）
 
 教学定位一句话：**API 与语法可信，运行需要真机**。所有正文里的 API 用法都通过了编译对账，不是凭记忆手写；但"编译通过"不等于"运行通过"——Android 程序的运行需要真实设备或模拟器，本教程不内置模拟器搭建流程。为什么只靠编译就能对账 API？答案是 `android.jar` 的特殊本质，这是第 02 章的主角。
 

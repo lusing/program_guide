@@ -1,6 +1,6 @@
 # 20 · JNI 与 NDK
 
-> 对应示例：`examples/21_jni_bridge.kt`、`compose_examples/app/src/main/cpp/native-lib.cpp`
+> 对应示例：`examples/21_jni_bridge.kt`、`compose_examples/app/src/main/cpp/native-lib.cpp`（原生线开篇；21–25 章分别深入 JNI 数据/Bionic/线程/网络/媒体）
 
 ## 1. JNI 与 NDK 分别是什么
 
@@ -28,7 +28,7 @@
 - **极限性能**：音视频编解码、加密、物理仿真这类热点路径，native 实现常有数倍吞吐
 - **更贴硬件/系统底层**：个别传感器/驱动接口只有 C 头文件可用
 
-反忠告（观点）：**默认不需要**。普通应用的瓶颈几乎从不在"Kotlin 不够快"，而在网络、IO 与布局层级；把业务逻辑搬进 C++ 是双输——平白多出内存安全、类型边界、调试三重成本，换来的毫秒没人感知。正确次序是先用 profiler 拿到证据（[第 08 章](08-threads-network.md)的性能排查思路），再决定下潜。另外每个 ABI 一份 `.so`，包体积是真金白银。
+反忠告（观点）：**默认不需要**。普通应用的瓶颈几乎从不在"Kotlin 不够快"，而在网络、IO 与布局层级；把业务逻辑搬进 C++ 是双输——平白多出内存安全、类型边界、调试三重成本，换来的毫秒没人感知。正确次序是先用 profiler 拿到证据（[第 08 章](08-threads-network.md)的排查思路；native 侧工具见[第 25 章](25-native-media-perf.md)第 6 节的 simpleperf），再决定下潜。另外每个 ABI 一份 `.so`，包体积是真金白银。
 
 快速判断表：
 
@@ -66,6 +66,9 @@ object GuideNativeBridge {
     }
 
     external fun stringFromJNI(): String
+
+    /** 第 20 章第 8 节：native 日志示例 */
+    external fun logFromNative(tag: String): String
 }
 ```
 
@@ -88,6 +91,8 @@ Kotlin: 拿到普通 String，照常使用
 ```
 
 如实的边界说明：`21_jni_bridge.kt` 走 `build.ps1` 的 examples 链路只做**编译验证**（kotlinc 对着 `android.jar` 编过），`native-lib.cpp` 并没有实现它对应的符号；真正"声明—实现—打包—界面消费"全链路闭环的是 Compose 工程这一份。
+
+Kotlin 侧的 `external fun` 家族现已不止一个文件：`jni/` 目录下 `JniDeepBridge`/`BionicBridge`/`NativeThreadBridge`/`SocketBridge`/`MediaBridge` 分别镜像 `cpp/` 里的 `jni_deep.cpp`/`bionic_samples.cpp`/`native_threads.cpp`/`native_sockets.cpp`/`native_media.cpp`——**一个 Kotlin object 对一个 C++ 文件**，这是本仓库原生线的镜像纪律。
 
 ## 4. C++ 侧：解剖一个 JNI 函数
 
@@ -121,13 +126,13 @@ Java_guide_android_compose_jni_GuideNativeBridge_stringFromJNI
  = Java_ + 包名(guide.android.compose.jni 的 . 换成 _) + _ + 类名 + _ + 方法名
 ```
 
-Kotlin 侧改包名、挪类、改方法名，这串必须同步——编译器完全不检查，错位的代价是运行时 `UnsatisfiedLinkError`。方法重载还需要签名后缀或 `JNI_OnLoad` 动态注册，本教程不展开。
+Kotlin 侧改包名、挪类、改方法名，这串必须同步——编译器完全不检查，错位的代价是运行时 `UnsatisfiedLinkError`。方法重载还需要签名后缀或动态注册；`JNI_OnLoad`（加载库时的回调）则是缓存全局信息的标准入口——本工程在[第 23 章](23-native-threads.md)用它缓存 `JavaVM` 与回调类。
 
 函数体两行：`std::string` 在 native 世界内部随便用；`env->NewStringUTF(message.c_str())` 是跨界最后一步——把 UTF-8 C 字符串包装成 `jstring` 返回给 Kotlin。返回的 `jstring` 归 GC 管，不需要（也不能）手动释放。
 
-反方向（本示例没用到，但迟早会用到）：Kotlin 传 `String` 进 native 时，用 `env->GetStringUTFChars(jstr, nullptr)` 换出 `const char*`，**用完必须** `env->ReleaseStringUTFChars(jstr, chars)` 配对释放；基本类型数组是 `GetIntArrayElements` / `ReleaseIntArrayElements` 同款套路。
+反方向（本示例没用到，但迟早会用到）：Kotlin 传 `String` 进 native 时，用 `env->GetStringUTFChars(jstr, nullptr)` 换出 `const char*`，**用完必须** `env->ReleaseStringUTFChars(jstr, chars)` 配对释放；基本类型数组是 `GetIntArrayElements` / `ReleaseIntArrayElements` 同款套路——完整展开在[第 21 章](21-jni-deep.md)。
 
-两个容易忽略的事实：JNI 函数在**调用者线程**上执行——Kotlin 侧在哪个线程调，C++ 就在哪个线程跑，线程安全要自己管；`jobject` 等引用只在本次调用期间有效，想跨调用持有需经 `env` 创建全局引用（本教程不展开）。
+两个容易忽略的事实：JNI 函数在**调用者线程**上执行——Kotlin 侧在哪个线程调，C++ 就在哪个线程跑，线程安全要自己管（原生线程反过来挂靠虚拟机的方向见[第 23 章](23-native-threads.md)）；`jobject` 等引用只在本次调用期间有效，想跨调用持有需经 `env` 创建全局引用（[第 21 章](21-jni-deep.md)第 7 节）。
 
 ## 5. 类型映射表
 
@@ -148,25 +153,36 @@ Kotlin 侧改包名、挪类、改方法名，这串必须同步——编译器�
 
 ## 6. 构建：CMakeLists 与 Gradle 联动
 
-`compose_examples/app/src/main/cpp/CMakeLists.txt` 全文：
+`compose_examples/app/src/main/cpp/CMakeLists.txt`（本章只关注加粗的两个名字，其余源文件属于 21–25 章）：
 
 ```cmake
 cmake_minimum_required(VERSION 3.22.1)
 project(guide_native)
 
 add_library(
-    guide_native
+    guide_native          # ← Kotlin 侧 loadLibrary 的锚点
     SHARED
-    native-lib.cpp
+    native-lib.cpp        # ← 第 20 章
+    jni_deep.cpp          #    第 21 章
+    bionic_samples.cpp    #    第 22 章
+    native_threads.cpp    #    第 23 章
+    native_sockets.cpp    #    第 24 章
+    native_media.cpp      #    第 25 章
 )
 
 find_library(log-lib log)
-target_link_libraries(guide_native ${log-lib})
+target_link_libraries(
+    guide_native
+    ${log-lib}      # __android_log_print（本章第 8 节）
+    jnigraphics     # AndroidBitmap_*（第 25 章）
+    OpenSLES        # slCreateEngine（第 25 章）
+    EGL             # eglGetDisplay（第 25 章）
+)
 ```
 
 - `cmake_minimum_required(VERSION 3.22.1)`：与 SDK 自带 CMake/NDK 工具链的最低要求对齐
-- `add_library(guide_native SHARED native-lib.cpp)`：声明一个共享库 target，产物是 `libguide_native.so`——**这个名字同时是 Kotlin 侧 `loadLibrary("guide_native")` 的锚点**
-- `find_library(log-lib log)` + `target_link_libraries`：找到并链接 Android 系统 log 库（本示例没打日志，链上是给真实工程留的位置）
+- `add_library(guide_native SHARED ...)`：声明一个共享库 target，产物是 `libguide_native.so`——**这个名字同时是 Kotlin 侧 `loadLibrary("guide_native")` 的锚点**。全部原生示例编进同一个 `.so`，`build.ps1 -Jni` 一次验证全链
+- `find_library` / `target_link_libraries`：链上 NDK 系统库——`log` 之外三个都是 NDK 稳定预编译库，按名字链接即可（当年 Android.mk 里的 `LOCAL_LDLIBS += -ljnigraphics` 同一件事的 CMake 写法）
 
 Gradle 侧的联动在 `app/build.gradle.kts`（连接[第 02 章](02-project-toolchain.md)的构建体系）：
 
@@ -197,7 +213,49 @@ cmake --build build/jni      # 产出 build/jni/libguide_native.so
 
 两条链的分工：AGP 模式的 `.so` 自动进 APK，开发调试用；`-Jni` 模式只验证 native 能否编过，产物留在 `build/jni`，适合当快速冒烟。想确认 APK 里到底打了哪些库，解包看 `lib/<abi>/` 目录有没有 `libguide_native.so`。
 
-## 7. Compose 消费：把 JNI 结果显示到界面
+## 7. 构建体系沿革：从 ndk-build 到 CMake
+
+本教程直接用了"CMake + Gradle"这条现代链，但老教程、老开源库、StackOverflow 上的历史答案用的都是另一套词汇。对照表帮你把它们翻译过来（原书第 2 章整章讲的就是中间那列的世界——2014 年它是对的）：
+
+| | ndk-build 时代（≤2017） | CMake 时代（本教程） |
+|---|---|---|
+| 构建脚本 | `Android.mk` + `Application.mk` | `CMakeLists.txt` |
+| 变量对应 | `LOCAL_MODULE` / `APP_STL` | `add_library(...)` / `ANDROID_STL` |
+| 链系统库 | `LOCAL_LDLIBS += -llog` | `target_link_libraries(... log)` |
+| 构建入口 | `ndk-build` 命令 | Gradle 自动调 CMake（或直接 `cmake --build`） |
+| IDE 集成 | Eclipse + ADT + Cygwin（Windows） | Android Studio（Cygwin 已死） |
+| 源码目录 | `jni/` | 约定 `src/main/cpp/`（位置已自由） |
+
+要点三句：AGP 2.3 起 CMake 成为一等公民，ndk-build 进入维护模式（老项目仍支持，新项目别再选）；当年 Windows 上还要 Cygwin 提供 Unix shell 的整段生态已消亡；`Android.mk` 的 `APP_ABI`/`APP_PLATFORM` 对应今天 Gradle 的 `abiFilters` 与 `minSdk`。读到老文档时按此表逐项翻译即可。
+
+## 8. 原生日志：printf 的正确替代
+
+C/C++ 世界的肌肉记忆是 `printf` 调试——在 Android 上这一招**静默失灵**：应用的 stdout 不接任何控制台，输出进了黑洞（第 22 章第 5 节）。native 侧的打印出口是 logcat，走 `liblog` 的 `__android_log_print`。`logFromNative`（`native-lib.cpp`）：
+
+```cpp
+#include <android/log.h>
+
+__android_log_print(ANDROID_LOG_INFO, tagChars, "hello from native code, tid=%d", (int) gettid());
+// logcat 里：I/GuideNative( 1234): hello from native code, tid=2345
+```
+
+要点：
+
+- 第一参是级别（`ANDROID_LOG_VERBOSE/DEBUG/INFO/WARN/ERROR`，对应 logcat 的 V/D/I/W/E 列）；第二参 tag 是过滤锚点，惯例用组件名
+- 格式串是 printf 家族语法，`__android_log_vprint` 收 va_list、`__android_log_write` 免格式化
+- 输出去向与 `Log.d`（第 05 章）完全同池——`adb logcat` 一起看，Kotlin 与 C++ 的日志在同一时间线上对表
+- 这是 native 侧**唯一**建议的调试输出口；正式发布记得收敛级别（与 Kotlin 侧日志纪律同款）
+
+## 9. 用 SWIG 自动生成 JNI 代码：一瞥
+
+第 21 章会看到，手写 JNI 的字符串/数组/异常样板相当磨人。原书第 4 章整章介绍 SWIG（Simplified Wrapper and Interface Generator）——写一个 `.i` 接口文件描述 C/C++ API，工具自动生成整套 JNI 包装（含全局变量、结构体、C++ 类、重载、甚至"Directors"反向回调）。它的价值判断：
+
+- **适合**：包装一个大型现成 C/C++ 库（几百个函数），手写不现实；团队已维护 `.i` 文件
+- **不适合**：小型集成——生成的对象模型带着 SWIG 的代理类与内存语义（`new`/`delete` 显式配对），学习成本可能高于手写薄层；与 Kotlin 的空安全/协程生态有隔阂
+
+现代 Android 世界的主流做法是**手写薄 JNI 层**（边界小而清，如本仓库）或用 Kotlin Multiplatform 共享 C++ 之外的逻辑。SWIG 仍是活项目（也支持 Kotlin 后端），定位是重包装场景的工业工具。本教程不引入它，见一个 `.i` 文件认得即可。
+
+## 10. Compose 消费：把 JNI 结果显示到界面
 
 `ComposeSamples.kt` 里的 `JniStatusSample`：
 
@@ -216,11 +274,11 @@ fun JniStatusSample() {
 - 库的加载时机也在这条链上：首次访问 `GuideNativeBridge` 触发 object 的 `init`（即 `loadLibrary`），恰好发生在首次组合执行 `remember` lambda 那一刻；加载一次后，后续调用直接走已解析的符号
 - 边界在 UI 层的姿态：JNI 结果就是普通 `String`，Compose 不关心它从哪来。重的 native 调用应放进 ViewModel 或协程后台（[第 14 章](14-compose-architecture.md)的分工），回到 UI 的永远是现成的状态
 
-顺带一个运行期自查：如果这个示例在设备上闪退并报 `UnsatisfiedLinkError`，先查两件事——APK 里有没有该设备 ABI 的 `libguide_native.so`，以及 `loadLibrary` 名字与 `add_library` 的 target 是否一致（第 8 节的完整排查）。
+顺带一个运行期自查：如果这个示例在设备上闪退并报 `UnsatisfiedLinkError`，先查两件事——APK 里有没有该设备 ABI 的 `libguide_native.so`，以及 `loadLibrary` 名字与 `add_library` 的 target 是否一致（第 11 节的完整排查）。
 
 这也演示了跨章知识的合流：C++ 产出 → JNI 跨界 → Kotlin object 持有 → Compose 状态消费，四段各管各的。
 
-## 8. 常见坑
+## 11. 常见坑
 
 **loadLibrary 名字与 CMake target 不一致**：`System.loadLibrary("guide_native")` 找的是 `libguide_native.so`，而 `.so` 名由 `add_library` 的第一个参数决定——两处任何一个改了没同步，启动即 `UnsatisfiedLinkError`。本工程两处都叫 `guide_native`。
 
@@ -234,7 +292,7 @@ fun JniStatusSample() {
 
 **忘 `extern "C"`**：C++ 编译器默认做名字修饰，导出符号变成 `_Z34Java_...` 之类的乱码，与 JNI 命名规则对不上，照样 `UnsatisfiedLinkError`。每个导出函数前都要带，示例里的 `extern "C" JNIEXPORT jstring JNICALL` 是固定三件套。
 
-## 9. 实战建议
+## 12. 实战建议
 
 - 边界设计得**薄**：native API 做成少量高内聚函数（字符串进/出、`ByteArray` 传二进制），别让对象图漏过边界
 - JNI 函数名与 Kotlin 声明一一对应，改包名/方法名时把 C++ 侧当镜像同步；重载能不玩就不玩
@@ -244,7 +302,7 @@ fun JniStatusSample() {
 - 引第三方 native 库时，优先找官方预编译的 AAR（内含各 ABI 的 `.so`），自己维护源码交叉编译是最后手段
 - 构建验证用 `.\build.ps1 -Jni`（纯 native 编译）与 `.\build.ps1 -Compose`（整工程含 JNI 打包链），见[第 02 章](02-project-toolchain.md)
 - 模拟器（x86_64）与真机（arm64-v8a）各装一次，`JniStatusSample` 十秒钟就能确认 ABI 覆盖与链路通断
-- 第 21 章实战项目是纯 Kotlin，不需要 JNI——本章的定位是"看得懂现有 native 集成、接得上真实项目"，不是"天天写"
+- 第 26 章实战项目是纯 Kotlin，不需要 JNI——本章的定位是"看得懂现有 native 集成、接得上真实项目"；要继续下潜，[第 21 章](21-jni-deep.md)开始是原生线五章纵深
 
 ---
-上一章：[19 Compose 依赖注入与生态](19-compose-di-ecosystem.md) ｜ 下一章：[21 实战项目：MemoPad 便签应用](21-memopad.md) ｜ 返回：[README](../README.md)
+上一章：[19 Compose 依赖注入与生态](19-compose-di-ecosystem.md) ｜ 下一章：[21 JNI 深入：字符串、数组、域与异常](21-jni-deep.md) ｜ 返回：[README](../README.md)

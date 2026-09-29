@@ -1,10 +1,10 @@
-# 21 · 实战项目：MemoPad 便签应用
+# 26 · 实战项目：MemoPad 便签应用
 
 > 对应示例：`compose_examples/app/src/main/java/guide/android/compose/samples/MemoPadSample.kt`
 
 ## 1. 项目目标
 
-前 14 章学的东西散落在 21 个 Kotlin 示例和 10 个 Compose 示例里，本章把它们组装成一个能装进手机的真实应用：**MemoPad 便签**。功能清单：
+前 14 章学的东西散落在 21 个 Kotlin 示例和 10 个 Compose 示例里，本章把它们组装成一个能装进手机的真实应用：**MemoPad 便签**（第 20–25 章原生线是纵深选修，本项目纯 Kotlin 即可完成）。功能清单：
 
 | 功能 | 用到的知识 | 来自哪章 |
 |---|---|---|
@@ -253,4 +253,4 @@ pwsh -File .\build.ps1 -Compose
 - 把第 09 章的 SharedPreferences（记住"上次打开的便签"）、第 10 章的通知（定时提醒）逐个加进来，每加一个功能回读对应章节——这本教程的闭环就完成了
 
 ---
-上一章：[20 JNI 与 NDK](20-jni-ndk.md) ｜ 返回：[README](../README.md)
+上一章：[25 原生图形、音频与性能](25-native-media-perf.md) ｜ 返回：[README](../README.md)

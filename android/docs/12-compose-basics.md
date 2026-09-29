@@ -450,7 +450,7 @@ AndroidView(
 - 自定义组件写成无状态 + `modifier` 参数，状态放调用方：复用、预览、测试三赢
 - 超过一屏或动态增删的列表用 `LazyColumn` 并给 `key`；几个固定项才用 `Column` + `forEach`；列表进阶（key 语义、增删动画、LazyRow）见[第 13 章](13-compose-ui.md)
 - 改完跑 `.\build.ps1 -Compose` 做编译验证，这是本仓库的标准流程（[第 02 章](02-project-toolchain.md)）
-- 第 21 章实战项目会把本章与第 13、14 章的内容串成一个完整应用
+- 第 26 章实战项目会把本章与第 13、14 章的内容串成一个完整应用
 
 ---
 上一章：[11 运行时权限、ContentResolver 与硬件服务](11-permissions-content.md) ｜ 下一章：[13 Compose 组件与交互](13-compose-ui.md) ｜ 返回：[README](../README.md)

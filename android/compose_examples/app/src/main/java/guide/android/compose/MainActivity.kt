@@ -42,6 +42,23 @@ import guide.android.compose.samples.GestureNestedScrollSample
 import guide.android.compose.samples.GestureTapSample
 import guide.android.compose.samples.GestureTransformSample
 import guide.android.compose.samples.JniStatusSample
+import guide.android.compose.samples.BionicFileSample
+import guide.android.compose.samples.BionicStlSample
+import guide.android.compose.samples.BionicSystemSample
+import guide.android.compose.samples.BionicUidSample
+import guide.android.compose.samples.JniDeepArraySample
+import guide.android.compose.samples.JniDeepBufferSample
+import guide.android.compose.samples.JniDeepExceptionSample
+import guide.android.compose.samples.JniDeepFieldMethodSample
+import guide.android.compose.samples.JniDeepReferenceSample
+import guide.android.compose.samples.JniDeepStringSample
+import guide.android.compose.samples.JniLogSample
+import guide.android.compose.samples.MediaBitmapSample
+import guide.android.compose.samples.MediaNeonSample
+import guide.android.compose.samples.MediaProbeSample
+import guide.android.compose.samples.NativeThreadSample
+import guide.android.compose.samples.SocketEchoSample
+import guide.android.compose.samples.SocketLocalEchoSample
 import guide.android.compose.samples.LayoutBaselineSample
 import guide.android.compose.samples.LayoutCustomColumnSample
 import guide.android.compose.samples.LayoutIntrinsicSample
@@ -136,6 +153,24 @@ class MainActivity : ComponentActivity() {
                     GestureFlingSample()
                     // 第 19 章生态示例（EcosystemSamples.kt）
                     EcoManualDiSample()
+                    // 第 20–25 章原生线示例（JniSamples.kt + cpp/ 六个文件）
+                    JniLogSample()
+                    JniDeepStringSample()
+                    JniDeepArraySample()
+                    JniDeepBufferSample()
+                    JniDeepFieldMethodSample()
+                    JniDeepExceptionSample()
+                    JniDeepReferenceSample()
+                    BionicSystemSample()
+                    BionicUidSample()
+                    BionicFileSample()
+                    BionicStlSample()
+                    NativeThreadSample()
+                    SocketEchoSample()
+                    SocketLocalEchoSample()
+                    MediaBitmapSample()
+                    MediaNeonSample()
+                    MediaProbeSample()
                 }
             }
         }

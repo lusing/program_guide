@@ -246,7 +246,7 @@ db.query("topics", null, "name = ?", arrayOf(keyword), null, null, null)
 - `SQLiteOpenHelper` 按单例持有（配合 `applicationContext`），全应用共用一个连接池；示例里 `db.close()` 是演示用，频繁开关库反而低效
 - 任何带用户输入的查询都用 `selection` + `selectionArgs` 占位符，把"拼 SQL"从肌肉记忆里删掉
 - 数据库版本号只升不降；`onUpgrade` 写成 `if (oldVersion < 2) { ... }` 的阶梯，保证跳版本升级也能走通
-- 第 21 章的 MemoPad 存便签选的就是 `filesDir` + JSON 文件——数据量小、不需要按条件查询，文件方案代码量最少；等需求长出"搜索/排序/分页"，再迁去 SQLite/Room 不迟
+- 第 26 章的 MemoPad 存便签选的就是 `filesDir` + JSON 文件——数据量小、不需要按条件查询，文件方案代码量最少；等需求长出"搜索/排序/分页"，再迁去 SQLite/Room 不迟
 
 ---
 上一章：[08 线程、Handler 与网络请求](08-threads-network.md) ｜ 下一章：[10 BroadcastReceiver、Service 与通知](10-system-components.md) ｜ 返回：[README](../README.md)

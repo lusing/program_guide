@@ -135,7 +135,7 @@ class NoteListViewModel(
 
 三件事：
 
-- **Repository 经构造函数注入**（带默认值便于直接用）：ViewModel 不自己造数据源——测试时塞一个"立即成功/立即失败"的假实现，三态渲染逻辑不碰网络就能验证。这是分层的第一块砖，[第 21 章](21-memopad.md)的 MemoPad 会再遇到它
+- **Repository 经构造函数注入**（带默认值便于直接用）：ViewModel 不自己造数据源——测试时塞一个"立即成功/立即失败"的假实现，三态渲染逻辑不碰网络就能验证。这是分层的第一块砖，[第 26 章](26-memopad.md)的 MemoPad 会再遇到它
 - **`runCatching { }`**：把异常收进 `Result`，`onSuccess`/`onFailure` 各写各的，比 try/catch 少一层缩进；失败映射成 `Error(message)` 而不是让协程崩掉
 - **每次 `load()` 先回 `Loading`**：重试时 UI 自动回到转圈分支，不需要单独的 `isRefreshing` 布尔
 
@@ -151,7 +151,7 @@ when (val s = state) {
 
 `when` 摆在 `state` 的收口处，密封类的威力在编译期兑现：**漏写任何一个分支，编译直接报错**；将来加第四态（比如"空数据 `Empty`"），所有渲染点被编译器逐个揪出来补分支。对比布尔组合方案——漏判一个 `if (isError)` 只会在测试甚至线上暴露。这是"派生值现算"（第 12 章第 5 节）在屏幕维度的对应物：状态不是散落的标志位，是一台状态机。
 
-诚实标注边界：不是每块界面都值得上密封类——数据**必然**可得的本地状态（如 MemoPad 的便签列表）用 `StateFlow<List<Memo>>` 就够（[第 21 章](21-memopad.md)即如此）；UiState 的用武之地是"异步加载、可能失败"的屏幕，也就是绝大多数联网页面。
+诚实标注边界：不是每块界面都值得上密封类——数据**必然**可得的本地状态（如 MemoPad 的便签列表）用 `StateFlow<List<Memo>>` 就够（[第 26 章](26-memopad.md)即如此）；UiState 的用武之地是"异步加载、可能失败"的屏幕，也就是绝大多数联网页面。
 
 ## 4. Navigation Compose：应用内路由
 
@@ -265,7 +265,7 @@ val db = Room.databaseBuilder(context, GuideRoomDatabase::class.java, "guide.db"
 db.noteDao().observeAll()      // Flow<List<NoteEntity>>，接第 2 节的收集链
 ```
 
-[第 21 章](21-memopad.md)实战项目选择用 JSON 文件做持久层，就是为了绕开这个额外依赖——架构思想（DAO 接口 + 响应式流）不变，落地物换成文件读写。
+[第 26 章](26-memopad.md)实战项目选择用 JSON 文件做持久层，就是为了绕开这个额外依赖——架构思想（DAO 接口 + 响应式流）不变，落地物换成文件读写。
 
 ## 6. WorkManager：可保证执行的后台任务
 
@@ -326,9 +326,9 @@ WorkManager 的卖点是**保证执行**：任务入库后，进程被杀、甚�
 - 异步屏幕状态用 `UiState` 密封类建模（第 3 节），本地必然可得的数据用裸 `StateFlow<List<T>>` 就够——按需上强度
 - Room 数据库全局一份（单例），DAO 经构造函数进 ViewModel，不要在 Composable 里建库
 - 路由字符串提常量或扩展属性，`"detail/{id}"` 这类模板散落各处必然拼写漂移
-- Room 三件套随时可写，但要跑起来先接 KSP（第 5 节步骤）；不想接就学第 21 章用文件持久层
+- Room 三件套随时可写，但要跑起来先接 KSP（第 5 节步骤）；不想接就学第 26 章用文件持久层
 - 架构不是层数越多越好：单屏小工具一个 ViewModel 足够，别提前引入 Repository/UseCase 层
-- 改完跑 `.\build.ps1 -Compose` 验证编译；[第 21 章](21-memopad.md)会把本章的 ViewModel + StateFlow + Navigation 全部串成完整应用
+- 改完跑 `.\build.ps1 -Compose` 验证编译；[第 26 章](26-memopad.md)会把本章的 ViewModel + StateFlow + Navigation 全部串成完整应用
 
 ---
 上一章：[13 Compose 组件与交互](13-compose-ui.md) ｜ 下一章：[15 Compose 状态与重组深入](15-compose-state.md) ｜ 返回：[README](../README.md)
