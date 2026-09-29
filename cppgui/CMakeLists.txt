@@ -135,6 +135,11 @@ endif()
 # ---- 二、Dear ImGui ----
 if(CPPGUI_ENABLE_IMGUI)
     cppgui_example(08_imgui_hello cppgui_imgui d3d11 dxgi d3dcompiler)
+    cppgui_example(09_imgui_widgets cppgui_imgui d3d11 dxgi d3dcompiler)
+    cppgui_example(10_imgui_windows cppgui_imgui d3d11 dxgi d3dcompiler)
+    cppgui_example(11_imgui_tables cppgui_imgui d3d11 dxgi d3dcompiler)
+    cppgui_example(12_imgui_drawlist_fonts cppgui_imgui d3d11 dxgi d3dcompiler)
+    cppgui_example(13_imgui_app cppgui_imgui d3d11 dxgi d3dcompiler)
 
     cppgui_example(08_imgui_hello_sdl2 cppgui_imgui_sdl2 opengl32)
     # SDL2 是动态库：把 DLL 拷到产物目录
