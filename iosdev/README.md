@@ -1,9 +1,10 @@
 # iOS 应用开发教程（Xcode / Swift / Objective-C / SwiftUI / UIKit）
 
 用**本机 Xcode 16.2（Swift 6.0.3）+ iOS 18.2 SDK**，在 **iPhone 模拟器**里讲 iOS 原生应用开发：
-SwiftUI（主线）、UIKit（底层）、Objective-C、Foundation、网络并发、持久化、权限通知、打包签名上架。
+SwiftUI（主线）、UIKit（底层）、Objective-C、Foundation、网络并发、持久化（含 SQLite3 与 CoreData）、
+权限通知、动画与多媒体、传感器定位、打包签名上架。
 
-20 章正文放在 [`docs/`](./docs)（目录页见 [`iOS开发指南.md`](./iOS开发指南.md)），每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例。
+26 章正文放在 [`docs/`](./docs)（目录页见 [`iOS开发指南.md`](./iOS开发指南.md)），每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例。
 全部示例都**不打开 Xcode、不建窗口、不弹 UI**——只用 `swiftc` / `clang` 编成命令行可执行文件，
 `xcrun simctl spawn` 在模拟器里跑 headless 自测，因为这样你才知道 Xcode 到底替你做了什么。
 
@@ -12,7 +13,7 @@ SwiftUI（主线）、UIKit（底层）、Objective-C、Foundation、网络并�
 ```bash
 cd iosdev
 
-./run-all.sh                # 跑全部 20 个示例（debug + release 两配置 × 六条判定）
+./run-all.sh                # 跑全部 26 个示例（debug + release 两配置 × 六条判定）
 ./run-all.sh 13             # 只跑编号 13 的示例（SwiftUI ⇄ UIKit 互操作）
 ./run-all.sh 08 09 10       # 跑指定的几个
 ./run-all.sh --clean        # 清空 build/
@@ -46,15 +47,23 @@ iosdev/
 ├── README.md                 本文件
 ├── iOS开发指南.md             教程目录页（指向 docs/ 各章）
 ├── run-all.sh                构建 / 模拟器运行 / 六条判定 / debug·release 比对
-├── docs/                     20 章正文
+├── docs/                     26 章正文
 │   ├── 01-toolchain.md
 │   ├── ...
-│   └── 20-packaging-signing.md
-├── examples/                 20 个示例目录（NN_topic）
+│   ├── 20-packaging-signing.md
+│   ├── 21-uikit-layout-advanced.md
+│   ├── 22-scroll-containers-controls.md
+│   ├── 23-core-animation.md
+│   ├── 24-audio-video.md
+│   ├── 25-sensors-location.md
+│   └── 26-sqlite-coredata.md
+├── examples/                 26 个示例目录（NN_topic）
 │   ├── 01_toolchain/main.swift
 │   ├── 07_objc_swift_mix/    (OC + Swift 混编，含 Bridging.h / Greeter.h/.m / LegacyNote.h/.m)
 │   ├── 19_permissions_notifications/  (含 Frameworks 文件，声明额外链接的系统框架)
-│   └── 20_packaging_signing/main.swift
+│   ├── 24_audio_video/       (含 Frameworks：AVFoundation / AVKit / MediaPlayer)
+│   ├── 25_sensors_location/  (含 Frameworks：CoreMotion / CoreLocation / AVFoundation / LocalAuthentication / CoreBluetooth / MapKit / Security)
+│   └── 26_sqlite_coredata/   (SQLite3 走 `import SQLite3`，不需要额外 framework 文件)
 ├── tools/
 │   └── check_docs.py         文档一致性 / 输出快照漂移检查
 └── build/                    编译产物（stdout/stderr/日志，不入库）
@@ -84,23 +93,31 @@ iosdev/
 | 18 | 数据持久化 | `18_persistence` | UserDefaults / 文件三目录 / Codable·sortedKeys / plist / Keychain |
 | 19 | 权限 / 通知 / 设备能力 | `19_permissions_notifications` | UIDevice/UIScreen/ProcessInfo / authorizationStatus / UNNotification 内容对象 |
 | 20 | 打包 / 签名 / 上架 | `20_packaging_signing` | .app=bundle / Info.plist 契约 / codesign / simctl install·launch / Archive→Upload |
+| 21 | UIKit 布局进阶 | `21_uikit_layout_advanced` | autoresizingMask 六档弹性位 / `translatesAutoresizingMaskIntoConstraints` / VFL / 布局优先级 / `systemLayoutSizeFitting` / UIStackView |
+| 22 | 滚动视图、容器控制器与高级控件 | `22_scroll_containers_controls` | UIScrollView 五量与越界/NaN / Navigation·Tab·自定义 containment / 十个高级控件 / ImageIO 多帧 GIF |
+| 23 | 核心动画 | `23_core_animation` | CALayer 四量 / model vs presentation / 隐式动画 / Basic·Keyframe·Group·Transition·Spring / 八种特殊图层 / CATransform3D / CATransaction / CADisplayLink |
+| 24 | 音频与视频 | `24_audio_video` | AVAudioSession / AVAudioPlayer / AVAssetWriter 造 mp4 / AVPlayer 状态机与 KVO / Reader·Export·ImageGenerator / AVAudioEngine offline 渲染 / MediaPlayer |
+| 25 | 传感器、定位与设备能力 | `25_sensors_location` | CMMotionManager 八条可用性 / Pedometer·Altimeter·MotionActivity / CLLocationManager 五档授权 / CLLocation 纯数学 / CLCircularRegion / CLGeocoder / UIDevice·UIScreen·ProcessInfo / AVCaptureDevice / LAContext 政策与错误码 / CBManager 状态机与 CBUUID / MapKit 墨卡托数学·标注·渲染器·GeoJSON / proximity |
+| 26 | SQLite3 与 CoreData | `26_sqlite_coredata` | prepare·tail·nByte / 绑定与槽位 / 类型亲和 / 主码·扩展码 / 事务与 close_v2 / 自定义函数 / CoreData 模型·容器·Z 表·删除规则·objectID·fault·迁移·聚合·批量请求 |
 
 ## 建议阅读顺序
 
-- **从零开始（SwiftUI 主线）**：01 → 02 → 03 → 08 → 09 → 10 → 11 → 12 → 17 → 18 → 20
+- **从零开始（SwiftUI 主线）**：01 → 02 → 03 → 08 → 09 → 10 → 11 → 12 → 17 → 18 → 26 → 20
 - **要写 Objective-C / 维护老项目**：04 → 05 → 07
-- **要吃透 UIKit 底层**：13 → 14 → 15 → 16
-- **专项**：06（Swift 侧桥接）、19（权限/通知）、20（打包上架）
+- **要吃透 UIKit 底层**：13 → 14 → 15 → 16 → 21 → 22 → 23
+- **要做动画**：12（SwiftUI 侧）→ 23（Core Animation 侧）
+- **要做音视频 / 传感器 / 定位**：19（权限）→ 24、25
+- **专项**：06（Swift 侧桥接）、19（权限/通知）、20（打包上架）、26（SQLite 与 CoreData）
 
 ## 验证状态（全部通过）
 
 ```
-通过 40   失败 0   输出差异 0   示例 20   配置 2
+通过 52   失败 0   输出差异 0   示例 26   配置 2
 ```
 
-- **20 个示例 × 2 个优化配置（debug/release）= 40 次运行，全部 PASS**
+- **26 个示例 × 2 个优化配置（debug/release）= 52 次运行，全部 PASS**
 - **两配置 stdout 逐字节一致**（`[cmp]` 全绿）
-- `tools/check_docs.py`：结构（01..20 齐全）/ 引用（示例·输出路径存在）/ 快照（文档里贴的断言行逐字对得上 build 输出）三项全绿
+- `tools/check_docs.py`：结构（01..26 齐全）/ 引用（示例·输出路径存在）/ 快照（文档里贴的断言行逐字对得上 build 输出）三项全绿
 
 ### 六条判定标准
 
@@ -124,6 +141,10 @@ iosdev/
 - **SwiftUI ⇄ UIKit 互操作**用 `UIWindow(isHidden:false)` + **有界的** run-loop 抽送（`RunLoop.current.run(mode:before:)` 转若干圈）触发 `makeUIView`/`updateUIView`——**绝不** `makeKeyAndVisible`、**绝不**无限 runloop。
 - **`UITableView`/`UICollectionView`** 给了 frame 后 `reloadData()` 即同步填充，行数/cell/diffable 快照都可读——无需窗口。
 - **网络**用自定义 `URLProtocol` 拦截所有请求返回写死响应，离线、确定。
+- **动画**不看画面，只读回值：`presentationLayer` 的实时值、`animationKeys`、`CAMediaTimingFunction` 求点、`CATransaction` 的 completion 计数；墙钟不参与判断。
+- **音视频**用 `AVAudioFile` 现场写出定长 wav、`AVAssetWriter` + pixel buffer 现场写出定长 mp4，再用 `AVAssetReader` 解回来数样本；`AVAudioEngine` 切**手动（offline）渲染**，长度由帧数决定而不是由播放进度决定。
+- **传感器/定位**只断言「可用性=false」「属性=nil」「回调计数==0」这类可复现形态，时间一律用固定时间戳（连「查过去一小时」都写成两个常量之差正好 3600 秒），于是错误码也能逐字断言。
+- **CoreData** 全部用代码构造模型（没有 `.xcdatamodeld`），每个出厂值都读回来打印；故意制造的失败用 `quiet()` 临时把 fd 2 指向 `/dev/null`，错误信息由自己从 `NSError` 取。
 - 环境相关的数字（耗时、线程 id、`processorCount`、屏幕尺寸、系统版本）**只打印性质、不断言具体值**；耗时只作相对比较（如 `concElapsed < seqElapsed`）。
 
 ### 诚实处理 headless 的边界（不伪造绿灯）
@@ -136,6 +157,11 @@ iosdev/
 | Keychain `SecItem*` 返回 `errSecMissingEntitlement(-34018)` | 第 18 章 | 裸 spawn 无 `keychain-access-groups` entitlement |
 | `UNUserNotificationCenter.current()` 会崩，不调用 | 第 19 章 | 需真实 `.app` 包（`bundleProxyForCurrentProcess`） |
 | 无法在进程内 `exec` `codesign`/`simctl` | 第 20 章 | iOS 无 `Process`/`NSTask`（macOS 独有） |
+| 真机才能验的行为（相机取景、录音、扬声器、震动、真实 GPS 轨迹、指纹/面容弹窗、蓝牙收发数据、地图出图） | 第 24、25 章 | 模拟器没有对应硬件；本章只断言「可用性=false / 属性=nil / 回调 0 次 / 错误码 -7·-1004 / state=unsupported」这些可复现的形态 |
+| 会崩或会死循环的调用只在独立探针进程里量，正文只引原文 | 第 22、23、25、26 章 | 判定 2 要退出码为 0、判定 3 要 stderr 为空（`CLVisit` 日期、`CMAttitude` 属性、`MKOverlayPathRenderer()` 裸构造、`CBUUID(string:)` 非法形状、`localizedReason: ""`、不设 flag 的 `evaluatePolicy` 挂死、`MKMapSnapshotter.start` 不回、`NSFetchRequest<NSDictionary>` 泛型错配、`dictionaryHandler` 永不返回） |
+| `MKMapView` 整条使用面只引探针原文 | 第 25 章 | 单纯 `MKMapView(frame:)` 就往 stderr 写一条 `CAMetalLayer ignoring invalid setDrawableSize…`（120 字节），判定 3 直接判死；`MKMarkerAnnotationView` 等对象的 `description` 又带 `0x…` 指针地址，无法做逐字节比对 |
+| CoreData 的失败日志带绝对路径，一律 `quiet()` 包住 fd 2 | 第 26 章 | 判定 3/4 要求 stderr 为空且输出可复现，错误信息改由 `NSError` 的 `domain/code/userInfo` 自己打印 |
+| 路径、store UUID、BLOB 内容、`Z_MAX` 之外的行数一并不打印 | 第 26 章 | 临时目录带设备标识、UUID 每次建库都不同，BLOB 会踩判定 5 的控制字符 |
 
 这些都给出了**正确的 API 用法**并解释清楚为什么 headless 下走不通。第 20 章更进一步：把签名/装机/启动
 的完整流水线**在宿主 shell 上真实跑通**（编译 → ad-hoc 签名 → `simctl install` → `launch --console-pty`），

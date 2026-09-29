@@ -5,7 +5,8 @@ iosdev 文档一致性 / 输出快照漂移检查器。
 
 它做三件事，任一失败即以退出码 1 结束（可挂进 CI / pre-commit）：
 
-  1) 结构一致：docs/ 与 examples/ 的 01..20 章一一对应，无缺号、无孤儿。
+  1) 结构一致：docs/ 与 examples/ 的章节编号从 01 起连续、一一对应，无缺号、无孤儿
+     （上界由实际目录算出，新增章节不需要改这个脚本）。
   2) 引用有效：每篇 doc 顶部 `> 示例：` / `> 实测输出见` 指向的路径真实存在。
   3) 快照未漂移：doc 正文里 ```代码块中形如 "  ok ..." / "  FAIL ..." 的**断言行**，
      必须逐字出现在对应示例的 build/NN_*/stdout.debug.txt 里。
@@ -62,10 +63,11 @@ def main():
     # ---- 1) 结构一致 ----
     print("\n-- 1) docs/ 与 examples/ 编号一一对应 --")
     all_nums = sorted(set(doc_nums) | set(ex_nums))
-    expected = list(range(1, 21))
+    # 编号上界由实际目录决定：新加一章就不用再改这里，但缺号/越界照样能报出来
+    expected = list(range(1, max(all_nums, default=0) + 1))
     if all_nums != expected:
         problems += 1
-        fail("编号不是完整的 1..20（实际：%s）" % all_nums)
+        fail("编号不是连续的 1..%d（实际：%s）" % (len(expected), all_nums))
     for n in expected:
         if n not in doc_nums:
             problems += 1
@@ -74,7 +76,7 @@ def main():
             problems += 1
             fail("examples/ 缺少第 %02d 个示例" % n)
     if problems == 0:
-        print("  ok   01..20 章文档与示例齐全、无缺号")
+        print("  ok   01..%02d 章文档与示例齐全、无缺号" % len(expected))
 
     # ---- 2) 引用有效 ----
     print("\n-- 2) doc 顶部引用的示例/输出路径存在 --")

@@ -1,0 +1,7 @@
+CoreMotion
+CoreLocation
+AVFoundation
+LocalAuthentication
+CoreBluetooth
+MapKit
+Security

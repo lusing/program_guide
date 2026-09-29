@@ -254,6 +254,22 @@ Info.plist = 身份证+说明书：CFBundleIdentifier 唯一标识，CFBundleExe
 - **实测跑通了完整流水线**：编译 → ad-hoc 签名（验签通过）→ 装机 → 启动，`@main` 的 `init`
   真实执行、`bundleIdentifier` 从 nil 变为 `com.iosdev.realapp`——打包前后的分水岭一目了然。
 
-至此，iOS 应用开发指南的 20 章全部完成：从工具链、生命周期、ObjC/Swift/Foundation 基础，到
-SwiftUI 主线、UIKit 补充、网络并发、持久化、权限通知，最后落到打包签名上架。每一章都有可
-`./run-all.sh` 一键验证的 headless 示例，debug/release 双配置逐字节一致。
+主线到这里收尾：从工具链、生命周期、ObjC/Swift/Foundation 基础，到 SwiftUI 主线、UIKit 补充、
+网络并发、持久化、权限通知，最后落到打包签名上架。
+
+后面还有六章**进阶与深入**，它们不新增「上架必需的步骤」，而是把前面每一章往底层再挖一层，
+按主题成对安排：
+
+| 章 | 挖的是哪一层 | 与主线哪章呼应 |
+| --- | --- | --- |
+| 21 UIKit 布局进阶 | `autoresizingMask` / VFL / 优先级 / 反推尺寸 | 第 10、14 章 |
+| 22 滚动视图、容器控制器与高级控件 | `UIScrollView` 与 containment | 第 15 章 |
+| 23 核心动画 | `CALayer` 与显式动画（动画真正作用的对象） | 第 12、14 章 |
+| 24 音频与视频 | `AVFoundation` 全链路 | 第 19 章（只申请过麦克风权限） |
+| 25 传感器、定位与设备能力 | CoreMotion / CoreLocation 的「没反应」 | 第 19 章 |
+| 26 SQLite3 与 CoreData | 第 18 章那层文件底下真正的事务与查询 | 第 18 章 |
+
+下一章离开「怎么把 App 交付出去」，回到界面前端：**UIKit 布局进阶**——第 14 章只讲了 Auto Layout
+的正路，而 `autoresizingMask`、VFL、布局优先级、`systemLayoutSizeFitting` 反推尺寸这些
+「约束系统自己也在用的底层机制」还没动过。每一章都有可 `./run-all.sh` 一键验证的 headless 示例，
+debug/release 双配置逐字节一致。

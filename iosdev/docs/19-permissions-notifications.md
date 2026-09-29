@@ -196,5 +196,6 @@ Info.plist 必须有对应 NSxxxUsageDescription，否则请求即崩（不是 d
   `Info.plist` 的 `UsageDescription` 缺了就崩。
 - **本地通知**：`Content`+`Trigger`=`Request` 是纯数据，headless 可验证；调度器
   `UNUserNotificationCenter.current()` 需真实 `.app` 包，裸 spawn 调用会崩——如实标注边界。
-- 下一章（本教程最后一章）把这些串起来：**打包 / 签名 / 上架**——构造一个真正的 `.app` 包，
-  签名、装进模拟器、启动它。
+- 下一章把这些串起来：**打包 / 签名 / 上架**——构造一个真正的 `.app` 包，
+  签名、装进模拟器、启动它。本章的「只查状态不弹框」在真机上还要配上第 25 章那批
+  硬件相关的 `authorizationStatus`，才是完整的权限清单。
