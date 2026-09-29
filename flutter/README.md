@@ -1,14 +1,14 @@
 # Flutter 开发指南
 
-面向**会编程、已具备 Dart 基础** 的读者：重点是 Widget 体系、布局、状态管理与跨平台交付。主线 Flutter 3.47（Material 3、Windows 桌面验证），章节与示例工程一一对应，每章"读讲解 → `flutter run -d windows` 跑起来 → 改代码看热重载"。01–20 为基础篇（以记事本实战毕业），21–28 为进阶篇（调试/状态/认证/媒体/性能/自适应/平台通道/发布）。Dart 语言请先读 [Dart 教程](../dart/README.md)——本教程只讲框架层。
+面向**会编程、已具备 Dart 基础** 的读者：重点是 Widget 体系、布局、状态管理与跨平台交付。主线 Flutter 3.47（Material 3、Windows 桌面验证），章节与示例工程一一对应，每章"读讲解 → `flutter run -d windows` 跑起来 → 改代码看热重载"。01–20 为基础篇（以记事本实战毕业），21–30 为进阶篇（调试/状态/认证/媒体/性能/自适应/平台通道/发布/滚动进阶/国际化）。Dart 语言请先读 [Dart 教程](../dart/README.md)——本教程只讲框架层。
 
 ## 目录结构
 
 ```text
 flutter/
 ├── README.md           本文件
-├── docs/               28 章教程（01 → 20 基础篇；21 → 28 进阶篇）
-├── examples/           27 个独立 Flutter 工程（章号 = 目录号）
+├── docs/               30 章教程（01 → 20 基础篇；21 → 30 进阶篇）
+├── examples/           29 个独立 Flutter 工程（章号 = 目录号）
 ├── build.ps1           统一构建脚本（须 PowerShell 7 / pwsh 运行）
 └── CHEATSheet.md       Widget/命令速查
 ```
@@ -43,8 +43,10 @@ flutter/
 | [24 相机与图库](docs/24-camera-gallery.md) | image_picker、multipart 上传、注入 | `examples/24_camera_gallery` |
 | [25 性能与质量债](docs/25-performance.md) | const 重建、质量债四件套、测量先行 | `examples/25_performance` |
 | [26 Cupertino 与自适应](docs/26-adaptive.md) | 平台判断、Cupertino 族、adaptive helper | `examples/26_adaptive` |
-| [27 平台通道](docs/27-platform-channel.md) | MethodChannel、Windows C++ 宿主 | `examples/27_platform_channel` |
-| [28 移动端构建发布](docs/28-android-release.md) | 签名、release APK、商店流程 | `examples/28_android_release` |
+| [27 平台通道](docs/27-platform-channel.md) | MethodChannel、Windows C++ 宿主、移动端对照 | `examples/27_platform_channel` |
+| [28 移动端构建发布](docs/28-android-release.md) | 签名、混淆、release APK、商店流程 | `examples/28_android_release` |
+| [29 滚动进阶与页面事件](docs/29-scroll-events.md) | Sliver 家族、滚动通知、PopScope、Stream 广播 | `examples/29_scroll_events` |
+| [30 国际化](docs/30-i18n.md) | Localizations/Delegate、intl、运行时切换 | `examples/30_i18n` |
 
 ## 构建工具链
 

@@ -67,7 +67,23 @@ flutter build appbundle             # AAB：Google Play 的唯一格式
 - 签名核对：`apksigner verify --print-certs app-release.apk` 能看到你的证书指纹。
 - Windows 上验证安装：USB 连 Android 设备开调试 → `flutter install` 或 `adb install -r app-release.apk`（本机 `G:\android\platform-tools` 有 adb）。
 
-## 28.6 商店与 iOS 流程
+## 28.6 代码混淆与符号
+
+书 15.1.3 的混淆在 Flutter 3 时代是两条参数的事（当年还要配 `--no-shrink` 说明 shrink 行为）：
+
+```bash
+# ═══ 28.6 混淆构建：Dart AOT 产物去符号名 ═══
+flutter build apk --release \
+  --obfuscate \
+  --split-debug-info=build/symbols     # 符号表输出目录（不随包发布）
+```
+
+- **`--obfuscate`**：Dart 类名/函数名变成 `aBc` 之类短名，逆向成本陡增（不是加密，配合足够大的 release 产物依然是可分析的字节码）。
+- **`--split-debug-info`**：混淆的代价是崩溃栈也成了天书——符号表单独落在这，**自己收好**。线上崩溃拿到的栈用 `flutter symbolize -d build/symbols/app.android-arm64.symbols < stack.txt` 还原成可读帧。
+- **符号表跟版本走**：每次发版的 symbols 归档（与 keystore 同级的重要资产），丢了的版本崩溃栈永久天书。
+- Android 侧的 R8/ProGuard 收缩由构建默认接管（`minifyEnabled` 模板已配）， Dart 侧才是这两条参数管的地盘。
+
+## 28.7 商店与 iOS 流程
 
 - **国内 Android 商店**（应用宝/华为/小米……）：各开开发者后台，上传 APK + 截图 + 软著等材料，各家审核节奏不同——一次签名多处上架。
 - **Google Play**：只收 AAB；首版审核最严。

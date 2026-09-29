@@ -130,6 +130,22 @@ class ImageInput extends StatefulWidget {
 
 `main()` 传真实现（`ImagePicker().pickImage`），测试传假函数（返回写死的 `XFile` 或 null 模拟取消）。上传同理注入 `Future<String> Function(XFile)`——23 章的教训在这里升级成习惯：**平台通道背后的能力，一概注入化**（下一章的 MethodChannel 更是如此）。
 
+## 24.8 媒体之外：其他硬件能力对照
+
+书第 8 章把设备硬件拉了个全家福（GPS/相机/蓝牙/音视频/距离传感器/NFC）。现实是：**这些能力的插件几乎全是社区包**（非 flutter.dev 第一方），且大多只实现移动端。本教程第一方主线不引入，但选型地图值得立此存照：
+
+| 能力 | 常用包（社区） | Windows 桌面 | 第一方出路 |
+|---|---|---|---|
+| 相机/图库 | image_picker | ✅ 图库 / ❌ 相机 | ——（已是第一方） |
+| GPS 定位 | geolocator | ❌ | MethodChannel 桥 Win32 `GetLatLon` 系 API |
+| 加速度/陀螺仪 | sensors_plus | 部分 | MethodChannel 自桥 |
+| 蓝牙 BLE | flutter_blue_plus | ❌ | MethodChannel 自桥 |
+| 音频播放 | audioplayers / just_audio | 部分 | MethodChannel 桥 Media Foundation |
+| 视频播放 | video_player | ✅（官方实现） | —— |
+| NFC | nfc_manager | ❌（桌面无 NFC） | 无解 |
+
+三条纪律：**认包先看维护方与平台覆盖表**（pub.dev 的 Platforms 一栏是硬信息，别只看下载量）；**桌面缺席的能力别硬上**——按平台隐藏功能入口（同 24.6 的相机教训）；**极端可控需求走第 27 章**——自己写 MethodChannel 桥宿主 API，零第三方依赖，代价是每个平台各写一份宿主代码。权限侧同理：Android 的定位/蓝牙权限要在 manifest 里声明，iOS 要在 Info.plist 给用途说明文案——漏了直接崩。
+
 ## 坑位清单
 
 - **拿旧 API 抄书**：`ImagePicker.pickImage` 静态版已死——实例方法 + `XFile?`，取消返回 null 不抛错。

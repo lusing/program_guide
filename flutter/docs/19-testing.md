@@ -83,6 +83,34 @@ widget 测试跑在 FakeAsync 里：**真实时间不流动**，`pump(Duration)`
 
 跑法：`flutter test` / `--plain-name "用例名"` / `--coverage`（配合 lcov 看覆盖率）。本仓库 build.ps1 -All 的全量验证就是 19 个工程各跑一遍。
 
+## 19.6 集成测试：跑在真进程里的另一半
+
+书 14.4 的集成测试讲的是老方案 flutter_driver（App 与"驾驶员"两个进程，经服务端口通信）——**现在这样**：`integration_test` 包（flutter.dev 第一方）把两者合进一个进程，测试代码直接编译进 App：
+
+```yaml
+# ═══ 19.6 pubspec ═══
+dev_dependencies:
+  integration_test:
+    sdk: flutter
+```
+
+```dart
+// ═══ 19.6 integration_test/app_test.dart（目录名是约定）═══
+void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  testWidgets('记事本全流程', (tester) async {
+    app.main();                       // 启动整个应用（不是 pumpWidget 单页）
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), '集成测试');
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpAndSettle();
+    expect(find.text('集成测试'), findsOneWidget);
+  });
+}
+```
+
+跑法：`flutter test integration_test/app_test.dart -d windows`（桌面也能跑！指定设备就是真机/模拟器）。与 widget 测试的分工：**widget 测试在进程外仿真 UI（毫秒级、可入 CI 全量），集成测试在真进程里走完整启动链路（插件初始化、真实窗口、多页流程）**。本教程的示例全部轻量，widget 测试层足够覆盖，故未引入集成测试工程；发布前拿它过一遍主流程是性价比最高的一道保险。
+
 ## 坑位清单
 
 - **断言前忘 pump**：setState 之后界面还没重建——tap 后至少 `pump()` 一次。

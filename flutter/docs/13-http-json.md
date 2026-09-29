@@ -93,6 +93,32 @@ class NewsApp extends StatelessWidget {
 
 这就是依赖注入在 Flutter 里最朴素的形态——构造参数传函数/对象。第 17 章的存储、第 20 章的 NotesStorage 都是同款思路：**边界（网络/文件）注入化，核心逻辑才可测**。
 
+## 13.6 频道切换：参数化 URL + Drawer 联动
+
+真实资讯类 App 的列表不是一张嘴等喂数据——用户在抽屉里换频道，列表得跟着换请求。《Flutter从0基础到App上线》13 章的头条新闻实战把这套联动浓缩成一个模式：**频道对象 = 显示名 + 请求参数**：
+
+```dart
+// ═══ 13.6 ═══
+class Channel {
+  const Channel(this.id, this.name);   // 书里的 ChannelList(type, name) 同构
+  final String id;                     // 进 URL 的请求参数
+  final String name;                   // Drawer 里显示的名字
+}
+
+const channels = [
+  Channel('top', '头条'), Channel('shehui', '社会'), Channel('keji', '科技'),
+];
+
+Future<List<NewsItem>> fetchNews(Channel c) async {
+  // 每次换频道都要重新生成 URL——参数变了旧地址就是废纸
+  final uri = Uri.parse('https://api.example.com/news')
+      .replace(queryParameters: {'channel': c.id});
+  ...
+}
+```
+
+当年如此 → 现在这样：书里 `new List()` + `channelList.add(...)` 逐个塞；现代是 `const` 列表字面量。联动链路两跳：Drawer 的 `ListTile.onTap` 换 `currentChannel` → 触发 `fetchNews(currentChannel)` 重拉。频道与页面的解耦升级版见第 29 章——用 Stream 广播替代直接持有，换频道的发起方甚至不需要认识列表页。
+
 ## 坑位清单
 
 - **build 里发请求**：每次重建都发（帧率掉、接口被打爆）——initState 发一次存 State（14 章详述）。

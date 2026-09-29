@@ -94,6 +94,54 @@ TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
 
 成功值、`PlatformException`、未实现三条分支都能在测试里精确复现（示例测试三连）。真机验证用 `flutter run -d windows`——笔记本上能看到真实电量，台式机走 `UNAVAILABLE` 分支。
 
+## 27.6 移动端宿主对照：Android 与 iOS 的四副面孔
+
+本教程主线用 Windows C++ 宿主实测（27.3）；同一套 Dart 侧代码落到移动端，宿主注册长这样（书第 10 章给了 Java/Kotlin/OC/Swift 四版，这里按现代 API 校订——本节文档级，与 28 章 iOS 同待遇：Windows 主线上知道每步在干嘛）。
+
+**Android · Kotlin（现代模板默认）**——入口从书年代的 `onCreate + getFlutterView()` 迁到 `configureFlutterEngine`：
+
+```kotlin
+// ═══ 27.6a android/app/src/main/.../MainActivity.kt ═══
+class MainActivity : FlutterActivity() {
+    override fun configureFlutterEngine(engine: FlutterEngine) {
+        super.configureFlutterEngine(engine)
+        MethodChannel(engine.dartExecutor.binaryMessenger, CHANNEL)
+            .setMethodCallHandler { call, result ->
+                if (call.method == "getBatteryLevel") {
+                    val level = getBatteryLevel()       // BatteryManager 广播取值
+                    if (level != -1) result.success(level)
+                    else result.error("UNAVAILABLE", "电量不可用", null)
+                } else result.notImplemented()
+            }
+    }
+}
+```
+
+**Android · Java**：同结构，匿名内部类版 `new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler(new MethodCallHandler() {...})` 是书当年的写法——`getFlutterView()` 与手调 `GeneratedPluginRegistrant.registerWith(this)` 均已废弃，注册插件由模板自动完成。
+
+**iOS · Swift**——AppDelegate 里拿 root ViewController 的 messenger：
+
+```swift
+// ═══ 27.6b ios/Runner/AppDelegate.swift ═══
+override func application(_ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: ...) -> Bool {
+    GeneratedPluginRegistrant.register(with: self)
+    if let controller = window?.rootViewController as? FlutterViewController {
+        FlutterMethodChannel(name: CHANNEL,
+                             binaryMessenger: controller.binaryMessenger)
+            .setMethodCallHandler { call, result in
+                // UIDevice.current.batteryLevel：-1.0 表示未知（模拟器）
+                // 成功 result(level)、失败 result(FlutterError(code:...))
+            }
+    }
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+}
+```
+
+**iOS · Objective-C**：`FlutterMethodChannel channelWithName:binaryMessenger:` + block handler，书 10.3.1 的原版结构。
+
+四版宿主对比 Windows C++（27.3），规律只有一条：**拿 messenger/二进制信使 → 建 channel → 挂 handler → success/error/notImplemented 三分支**。语言是皮，协议是骨。电量这个例子在各平台的"未知值"还各有性格：Windows `BatteryLifePercent == 255`、Android 广播拿不到、iOS `batteryLevel == -1.0`（模拟器恒如此）——跨平台的"未知"分支永远别省。
+
 ## 坑位清单
 
 - **通道名两边不一致**：静默 `MissingPluginException`——先查字符串，域名风格防撞车。

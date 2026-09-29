@@ -61,6 +61,18 @@ class FileCounter {
 
 widget 测试跑在 FakeAsync 环境里，真实文件 IO 的事件不一定推进——所以示例的测试文件分两层：**普通 `test()`** 做文件往返（真实 IO，测封装类），**testWidgets** 做 prefs 流（mock 值）。判断口诀：测"存储对不对"用纯 test，测"界面吃数据"用注入/mock 的 widget 测试——这正是第 13 章依赖注入思想的存储版。
 
+## 17.5 选型：键值 / 文件 / 数据库
+
+书 7.5 用 sqflite 做通讯录 CRUD（建库建表 + 增查）。三条路线怎么选：
+
+| 路线 | 适合 | 不适合 | 依赖 |
+|---|---|---|---|
+| shared_preferences | 设置项、小标志位 | 结构化查询、大数据量 | 第一方 |
+| 文件（JSON 落盘） | 中等结构、整体读写（第 20 章记事本） | 频繁局部更新 | 零依赖 |
+| SQLite（sqflite） | 大量记录、条件查询、迁移 | 简单场景（杀鸡牛刀） | **社区包** |
+
+sqflite 是社区事实标准（非 flutter.dev 第一方，本教程的第一方主线不引入），但概念值得记住：数据库文件放应用私有目录（path_provider 的 `getApplicationDocumentsDirectory()` 拼库名）；先 `create table if not exists` 再增删改查；**SQL 拼接要用参数占位**（`db.rawQuery('select * from t where id = ?', [id])`）防注入。数据量到"文件每次全量重写开始肉疼"时，就是上它的时机——在那之前，第 20 章的文件方案完全够。
+
 ## 坑位清单
 
 - **忘 await 的读写**：写还没落盘就退出，数据丢了；读拿到旧值——prefs/文件 API 全是 Future。

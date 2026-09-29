@@ -169,7 +169,7 @@ testWidgets('名', (tester) async {
 // 边界注入假实现；真实 IO 放普通 test()
 ```
 
-## 进阶篇（21–28）
+## 进阶篇（21–30）
 
 ```dart
 // 调试（21）：flutter run 键位 r/R/q/d · p 构造线 · P 性能 overlay · i Inspector · v DevTools
@@ -215,5 +215,32 @@ try { await ch.invokeMethod<int>('getBatteryLevel'); }
 // 发布（28）
 keytool -genkeypair -keystore android/app/x.jks -alias x -validity 10000 ...
 flutter build apk --release / appbundle        // versionCode 每次发版必递增
+flutter build apk --release --obfuscate --split-debug-info=build/symbols
+flutter symbolize -d build/symbols/... < stack.txt   // 崩溃栈还原，symbols 按版本归档
 // key.properties + *.jks 绝不进 git；AAB 只进 Google Play
+
+// 滚动进阶（29）
+CustomScrollView(slivers: [SliverAppBar(pinned: true, ...),
+  SliverPersistentHeader(delegate: ...),       // minExtent<=maxExtent；内容高给足
+  SliverFixedExtentList(itemExtent: 64, ...),  // SliverList 没有 itemExtent！
+])
+NotificationListener<ScrollNotification>(onNotification: (n) {
+  n.metrics.extentAfter < 300 && loadMore();   // 快到底自动翻页
+  return false;                                // 继续冒泡
+}, child: ...)
+PopScope(canPop: false, onPopInvokedWithResult: (didPop, _) { ... })  // WillPopScope 已废
+StreamController<T>.broadcast()                // 书的 event_bus 现代零依赖版；无缓冲
+clock.now()                                    // 时间窗口逻辑可测（DateTime.now 是真实墙钟）
+_scrollController.animateTo(0, duration: ..., curve: ...)   // 精控回顶
+
+// 国际化（30）
+localizationsDelegates: [AppL10n.delegate,
+  GlobalMaterialLocalizations.delegate,        // 需 import flutter_localizations
+  GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+supportedLocales: [Locale('zh'), Locale('en')], locale: _override,
+class AppL10n { static of(ctx) => Localizations.of<AppL10n>(ctx, AppL10n)!; }
+class D extends LocalizationsDelegate<AppL10n> {  // isSupported / load / shouldReload
+  load(loc) => SynchronousFuture(AppL10n(loc)); }
+Intl.plural(n, locale: loc.toString(), other: ..., one: ...)  // 不传 locale 按英文分叉
+await initializeDateFormatting('zh', null)     // DateFormat 非默认 locale 必先初始化
 ```
