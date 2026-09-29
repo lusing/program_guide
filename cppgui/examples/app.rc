@@ -1,0 +1,19 @@
+//////////////////////////////////////////////////////////////////////////////
+// app.rc -- shared resource file for all cppgui wx examples
+//
+// Embeds the wx-provided application manifest (comctl32 v6 dependency +
+// DPI awareness). Without it, wx apps fail to initialize common controls
+// on Windows (measured: exit code 255 at startup).
+// Reference: wxWidgets/samples/sample.rc + samples/minimal/CMakeLists.txt
+//////////////////////////////////////////////////////////////////////////////
+
+// Embed the wx-defined manifest (instead of the MSVS default one)
+#define wxUSE_RC_MANIFEST 1
+
+// 2 = Per-Monitor v2 DPI awareness (Win10 1703+; older systems fall back)
+#ifndef wxUSE_DPI_AWARE_MANIFEST
+#define wxUSE_DPI_AWARE_MANIFEST 2
+#endif
+
+// wx.rc provides standard bitmaps/cursors and embeds the manifest per above
+#include "wx/msw/wx.rc"
