@@ -45,6 +45,8 @@ static_assert(std::contiguous_iterator<std::map<int,int>::iterator>);     // 编
 
 `next` 返回副本、`advance` 修改原值——这是两套风格。`distance` 在前向迭代器上是**走着数**的，list 上调它的成本要心里有数。
 
+> 冷知识：老书《Effective STL》第 26/27 条曾建议"尽量别用 const_iterator"（当年 insert/erase 只收 iterator、还转不回去）。C++11 起 `cbegin/cend` 诞生、insert/erase 全面接受 const_iterator——**建议已反转**，今天能用 const 就用。裁决过程见 36.5。
+
 ## 16.4 反向迭代器：rbegin / rend
 
 `rbegin()` 指向**最后一个元素**、`rend()` 指向首元素的前一格——正好是 begin/end 的镜像：

@@ -7,8 +7,8 @@
 ```text
 cpp20/
 ├── README.md       本文件
-├── docs/           35 章教程（01 → 35 顺序阅读）
-├── examples/       34 个示例目录（章号 = 目录号；26/27/35 多文件）
+├── docs/           36 章教程（01 → 36 顺序阅读）
+├── examples/       35 个示例目录（章号 = 目录号；26/27/35 多文件）
 ├── run-all.sh      shell 入口（macOS/Linux 双工具链：clang++ 23 + g++ 15）
 ├── build.ps1       PowerShell 入口（Windows 走 MSVC；macOS/Linux 与 run-all.sh 等价）
 └── CHEATSheet.md   语法速查 + 坑位索引
@@ -53,6 +53,7 @@ cpp20/
 | [33 文本与文件](docs/33-textfiles.md) | format、regex、filesystem、mdspan | `examples/33_textfiles` |
 | [34 测试与工具](docs/34-tooling.md) | assert 单测、调试器、CMake 一瞥 | `examples/34_tooling` |
 | [35 实战：迷你 grep](docs/35-minigrep.md) | 递归 + 多线程搜索 + 高亮 | `examples/35_minigrep` |
+| [36 Effective STL](docs/36-effective-stl.md) | 50 条精要的现代解读（✅/🔁/⚰️ 逐条裁决） | `examples/36_effectivestl` |
 
 ## 构建工具链
 

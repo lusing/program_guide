@@ -101,7 +101,7 @@ std::erase_if(nums, [](int v) { return v <= 2; });
 // 输出：3 4 5 9 6
 ```
 
-"边遍历边删"是 C++ 史上最著名的雷区：erase 让 it 失效，下一次 ++ 直接 UB。老时代要背 erase-remove 惯用法（`v.erase(std::remove_if(...), v.end())`——一句需要解释三遍的咒语）。**C++20 的 `std::erase_if` 一行说人话**：留下不满足条件的、删掉满足的，返回删除数。新代码没有理由再写旧咒语。
+"边遍历边删"是 C++ 史上最著名的雷区：erase 让 it 失效，下一次 ++ 直接 UB。老时代要背 erase-remove 惯用法（`v.erase(std::remove_if(...), v.end())`——一句需要解释三遍的咒语）。**C++20 的 `std::erase_if` 一行说人话**：留下不满足条件的、删掉满足的，返回删除数。新代码没有理由再写旧咒语。这条进化史（remove 为什么"不删除"）与《Effective STL》50 条全景见第 36 章。
 
 ## 14.7 flat_map 一瞥（C++23）
 

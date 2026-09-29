@@ -87,7 +87,7 @@ G:\...\include\print(21): note: 参见 "std" 的声明
 
 ```bash
 cd cpp20                                    # 换成你自己的检出位置
-pwsh -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All      # 全部 34 个示例（Windows）
+pwsh -NoProfile -ExecutionPolicy Bypass -File build.ps1 -All      # 全部 35 个示例（Windows）
 ./run-all.sh                                                      # 同上（macOS / Linux）
 pwsh -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Example 19_ranges   # 单个示例
 ./run-all.sh 12                                                   # 同上，按编号
@@ -100,7 +100,7 @@ build.ps1 做三层验证：**编译（/W4 零告警）→ 运行（退出码 0�
 
 直接双击/命令行运行 exe 时中文会乱码（控制台默认 GBK）：先 `chcp 65001`。经 build.ps1 运行无此问题（脚本已设 UTF-8）。
 
-## 1.7 35 章路线图
+## 1.7 36 章路线图
 
 | 段 | 章 | 你将获得 |
 |---|---|---|
@@ -111,8 +111,9 @@ build.ps1 做三层验证：**编译（/W4 零告警）→ 运行（退出码 0�
 | 对象与组织 | 23–27 | 继承、多态、编译期计算、模块、预处理器 |
 | 并发 | 28–30 | 线程与锁、原子与任务（含线程池）、协程 |
 | 标准库专题与收尾 | 31–35 | 时间、流 I/O、文本文件、工具链、实战迷你 grep |
+| 进阶加餐 | 36 | Effective STL 50 条精要的现代解读 |
 
-每章末尾有**坑位清单**：全教程 35 份清单就是你的"code review 检查表"，复习时先扫清单再看正文。
+每章末尾有**坑位清单**：全教程 36 份清单就是你的"code review 检查表"，复习时先扫清单再看正文。
 
 ## 1.8 学习心态
 

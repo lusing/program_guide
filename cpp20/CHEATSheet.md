@@ -415,6 +415,23 @@ for (auto& t : tests) { t.run(); std::println("[PASS] {}", t.name); }
 // 真实项目：GoogleTest / Catch2 / doctest
 ```
 
+## Effective STL 精要（36）
+
+```cpp
+std::erase_if(c, pred);                    // C++20 统一删除（vector/map 通吃，真删）
+auto [it, ok] = m.try_emplace(k, args...); // 只添加：撞键不动手（实参保证不被搬空）
+m.insert_or_assign(k, v);                  // 添加或覆盖（operator[] 是"默认构造+赋值"两步）
+auto node = m.extract(k);  node.key() = k2;  m.insert(std::move(node));   // C++17 改键正道
+v.reserve(n);   v.shrink_to_fit();         // 防扩容搬移 / 收缩多余容量（swap 技巧的转正）
+v.data();       s.c_str();                 // 送 C API（空容器 data() 可调不可解引用）
+std::vector<int> v{read, eof};             // 迭代器对构造用 {}——() 会撞"最烦人的解析"
+auto [lo, hi] = std::equal_range(v.begin(), v.end(), x);   // 排序区间：位置 + 个数
+std::partial_sort / nth_element / partition;   // 要多少排多少（前 n 名别用全排 sort）
+std::istreambuf_iterator<char> it{in}, end{};  std::string s{it, end};    // 原样读流（含空白）
+// 50 条裁决速记：约七成原样成立；unordered_*/flat_map/try_emplace/erase_if 是原书
+// 预言的兑现；auto_ptr/配接器/COW string/vector<bool> 的老对策已成历史（详见 docs/36）
+```
+
 ## 坑位索引（高频）
 
 1. 全角标点混入源码（02）
@@ -454,3 +471,16 @@ for (auto& t : tests) { t.run(); std::println("[PASS] {}", t.name); }
 26. **信号量不绑身份**：任何线程都能 release——它管名额/容量，不护数据；护数据用 mutex（29）。
 27. **线程池成员逆序析构**：靠 jthread 自动收尾时 workers_ 必须最后声明，否则工人摸已死的锁；显式 join 最稳（29）。
 28. **惰性 Task 忘 start 就 result**：读到空 box；co_await 临时 Task 后再复用 = 悬垂（30）。
+
+**Effective STL 补录**（2026-09-29 按《Effective STL 中文版》50 条实测补 36 章）：
+
+29. **remove/unique 不删元素**：size 不变、返回"新逻辑尾"、尾段值未指定——erase 收尾或 `std::erase_if`；打印 remove 后的尾段靠不住（36）。
+30. **同一容器两种"找到"**：忽略大小写 set 里成员 find（按等价）命中、`std::find`（按相等）落空——查关联容器只用成员函数/`contains`（36）。
+31. **`try_emplace` 撞已有键保证实参不被搬空**；`operator[]` 添加则走"默认构造+赋值"且要求值可默认构造——添加/更新用 `try_emplace`/`insert_or_assign` 各归其位（36）。
+32. **reverse_iterator 删除偏一格**：删 ri 所指用 `std::next(ri).base()`，直接 base() 删到隔壁；插入才用 base 本尊（36）。
+33. **vector\<bool\> 的 `operator[]` 是代理不是 `bool&`**：不连续、`&v[0]` 编不过——真 bool 用 `deque<bool>`/`vector<char>`，定长用 `bitset`（36）。
+34. **`tolower/toupper` 前先转 `unsigned char`**（负值 char 直接喂是 UB）；它们依赖全局 locale，非 ASCII 场景走 `std::locale`（36）。
+35. **改 set/map 的键**：C++11 起 set 迭代器解引用是 const 的（直接改编译不过）；正道是 `extract` 拔节点改 `key()` 再插回（36）。
+36. **排序区间算法喂未排序区间 = 运行期算错**：`binary_search`/`equal_range`/`set_*`/`merge`/`includes` 不报错直接给错答案；比较函数还要与排序时同一个（36）。
+37. **`accumulate` 的折叠函数不许有副作用**（标准原文级禁令）；带状态统计用 for_each 的返回 functor；初始值类型劫持累加类型（15/36）。
+38. **const 整型局部量在 lambda 里可免捕获**：带常量初值的 const int 不捕获也能用，再显式捕获 clang 报 `-Wunused-lambda-capture`——要演示捕获语义就用非 const（36）。
