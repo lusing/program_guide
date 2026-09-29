@@ -2,7 +2,7 @@
 
 > iOS 原生应用开发讲的是 **两套界面框架 + 一套地基**：**SwiftUI** 是现代的声明式 UI（`body` 描述界面长什么样，系统负责画），**UIKit** 是它底下的命令式基石（`UIView`/`UIViewController`、Auto Layout、响应链）——即便你只写 SwiftUI，`UIHostingController`、手势、列表复用这些仍是 UIKit 在扛。而两者都建立在 **Foundation** 与 **Objective-C 运行时**之上：字符串、集合、`Codable`、`NotificationCenter`，以及 Swift↔OC 双向桥接处那些「看起来一样其实不一样」的坑。本教程 **SwiftUI 为主、UIKit 为底**，ObjC 与 Swift 并重。
 
-本教程面向「想真正搞懂 iOS 开发、而不是只会拖 Xcode 控件」的读者，按依赖链组织为 **26 章（六篇）**，每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例，全部用本机 **Xcode 16.2（Swift 6.0.3）+ iOS 18.2 SDK** 在 **iPhone 模拟器**里编译运行验证，`debug(-Onone)` 与 `release(-O)` 两个配置**输出逐字节一致**。全部示例**不打开 Xcode、不建窗口、不弹 UI**——只用 `swiftc` / `clang` 编成命令行可执行文件，`xcrun simctl spawn` 在模拟器里跑 headless 自测，因为这样你才知道 Xcode 到底替你做了什么。
+本教程面向「想真正搞懂 iOS 开发、而不是只会拖 Xcode 控件」的读者，按依赖链组织为 **29 章（六篇）**，每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例，全部用本机 **Xcode 16.2（Swift 6.0.3）+ iOS 18.2 SDK** 在 **iPhone 模拟器**里编译运行验证，`debug(-Onone)` 与 `release(-O)` 两个配置**输出逐字节一致**。全部示例**不打开 Xcode、不建窗口、不弹 UI**——只用 `swiftc` / `clang` 编成命令行可执行文件，`xcrun simctl spawn` 在模拟器里跑 headless 自测，因为这样你才知道 Xcode 到底替你做了什么。
 
 ## 目录
 
@@ -14,7 +14,7 @@
 | [02 第一个 App](docs/02-hello-app.md) | SwiftUI `@main App` / `WindowGroup` 与 UIKit `UIApplicationMain` / `AppDelegate` / `SceneDelegate` 两条最小骨架 | 一个最小的 iOS App 由哪几块拼成 |
 | [03 生命周期与场景](docs/03-lifecycle.md) | App 级 vs Scene 级生命周期、`UIScene` 多窗口、前后台状态迁移、`@Environment(\.scenePhase)` | App 从启动到进后台，回调按什么顺序来、各归谁管 |
 
-### 第二篇 语言与 Foundation（Objective-C / Swift 基础）
+### 第二篇 语言与 Foundation（Objective-C / Swift / C 的地基）
 
 | 章 | 内容 | 回答的问题 |
 |---|------|-----------|
@@ -22,6 +22,8 @@
 | [05 Foundation（OC 篇）](docs/05-objc-foundation.md) | `NSString.length` 是 UTF-16 码元、`NSNotFound` ≠ -1、`NSNumber`/`NSValue`/`NSNull`、集合、`NSData`、日期、JSON | OC 侧的地基类有哪些「一半安全一半不安全」的坑 |
 | [06 Foundation（Swift 篇）](docs/06-swift-foundation.md) | `String`↔`NSString`、`Range`↔`NSRange`、`Data` 值语义、`Codable`、`==` vs `===`、`NotificationCenter`、`URL`/`FileManager` | Swift 值类型与 OC 引用类型桥接时哪里会错位 |
 | [07 OC 与 Swift 混编](docs/07-objc-swift-mix.md) | bridging header、生成的 `<Module>-Swift.h`、nullability 注解（`String!` 的来历）、轻量泛型、`BOOL`+`NSError**`→`throws` | 两个方向（Swift→OC、OC→Swift）各怎么打通 |
+| [27 Objective-C 运行时](docs/27-objc-runtime.md) | 选择器与 nil 消息的返回值表、`objc_msgSend` 与四个隐藏参数、`@encode` 类型编码、属性/ivar/关联对象、分类与协议的可执行面、动态注册与消息转发三步、`method_setImplementation`/交换实现、KVC 四条取值路径、KVO 手动触发、类内省与 `objc_copyClassList` | `[self foo]` 这一行到底走了哪些步、哪些步能在运行时被改写 |
+| [28 C 语言层](docs/28-c-layer.md) | LP64 尺寸与 `char` 符号性、数组退化与指针相减、结构体对齐与 padding、联合体看 IEEE 754、不透明句柄三件套、`va_list` 与函数指针表、`memcpy`/`memmove` 的 UB、`malloc` 与「`-O2` 把判空整体删掉」、宏的六种坑、Swift 看见的 C 类型映射、`withUnsafeBytes` 与 `@convention(c)` | Swift/OC 眼里的那个 C 到底是什么，跨界时要付哪些账 |
 
 ### 第三篇 SwiftUI 主线
 
@@ -34,7 +36,7 @@
 | [12 绘制与动画](docs/12-drawing-animation.md) | `Shape`/`Path`（boundingRect/trim）、内置形状、自定义 `Shape`、`animatableData`、`Canvas`、`Animation`/`AnyTransition` | 自定义图形怎么画、怎么让它动起来 |
 | [13 SwiftUI ⇄ UIKit 互操作](docs/13-swiftui-uikit-interop.md) | `UIViewRepresentable`/`Coordinator`、`makeUIView`/`updateUIView`、`UIHostingController` 把 SwiftUI 嵌进 UIKit | 两套框架怎么互相嵌套、边界在哪 |
 
-### 第四篇 UIKit 补充
+### 第四篇 UIKit 补充与绘制
 
 | 章 | 内容 | 回答的问题 |
 |---|------|-----------|
@@ -43,6 +45,7 @@
 | [16 手势、触摸与响应链](docs/16-gestures-responder.md) | `hitTest`/`point(inside:)`、响应链（`next`/`isFirstResponder`）、`UIGestureRecognizer` 状态机 | 一次点击怎么找到目标视图、怎么变成事件 |
 | [21 UIKit 布局进阶](docs/21-uikit-layout-advanced.md) | `autoresizingMask` 六档弹性位、`translatesAutoresizingMaskIntoConstraints`、`NSLayoutConstraint` 原始形式与 VFL、布局优先级裁决、`systemLayoutSizeFitting` 反推尺寸、`UIStackView` | Auto Layout 之外那套老机制还在哪活着、约束与尺寸怎么互相推导 |
 | [22 滚动视图、容器控制器与高级控件](docs/22-scroll-containers-controls.md) | `UIScrollView` 的 contentSize/Offset/Inset/分页/缩放（含越界赋值不夹取、NaN 崩）、`UINavigationController`/`UITabBarController`/自定义 containment、`UIPickerView`/`UIDatePicker`/`UIAlertController` 等十个控件、ImageIO 合成多帧 GIF | 表格集合视图的父类到底管什么、一个界面怎么装进另一个界面 |
+| [29 Quartz 2D 直接绘制](docs/29-quartz-2d.md) | 位图上下文与 `bytesPerRow` 对齐、内存行号与用户 y 的镜像、翻转 CTM 与 UIKit 逐字节等价、面积覆盖与抗锯齿、色空间与预乘、绘画模型层序、当前路径与「谁吃路径」、winding vs even-odd、CTM 乘法顺序与退化逆矩阵、裁剪求交与蒙版、端帽/连接/`miterLimit`、点线图案与相位取模、`addArcToPoint` 与 `flatness`、状态栈 LIFO、透明层消接缝、十三种混合模式的逐通道字节、阴影走设备轴、梯度的像素中心采样、CoreText 直画与 UIKit 文本两条通路、`CGImage`/`UIImage`/插值/平铺、headless 绘制周期驱动、PDF 写出与读回、画板案例 | 「这一笔落在哪四个字节上」——把第 16 章那套「眼睛看效果」的判据换成回读缓冲区 |
 
 ### 第五篇 动画与硬件
 
@@ -64,7 +67,7 @@
 
 ## 示例代码
 
-`examples/` 下每个目录对应一个可编译工程，全部经本机模拟器编译并运行验证（**26 个示例 × 2 配置 = 52 次运行全部通过，debug/release 输出逐字节一致**，构建说明见 [README](README.md)）。每个示例都是 headless `--selftest`：构造 SwiftUI `View` / `UIViewController` / Foundation 对象，跑断言，打印，退出——**不建窗口、不弹 UI、不调 `UIApplicationMain`**，却真用了 iOS SDK 与 UIKit/SwiftUI 运行时。
+`examples/` 下每个目录对应一个可编译工程，全部经本机模拟器编译并运行验证（**29 个示例 × 2 配置 = 58 次运行全部通过，debug/release 输出逐字节一致**，构建说明见 [README](README.md)）。每个示例都是 headless `--selftest`：构造 SwiftUI `View` / `UIViewController` / Foundation 对象 / Quartz 位图上下文，跑断言，打印，退出——**不建窗口、不弹 UI、不调 `UIApplicationMain`**，却真用了 iOS SDK 与 UIKit/SwiftUI 运行时。
 
 | # | 示例 | 章 | 一句话 |
 |---|------|----|----|
@@ -94,14 +97,19 @@
 | 24 | `24_audio_video` | 24 | AVAudioSession·Player·Writer·Reader·Engine 全链路（offline 渲染） |
 | 25 | `25_sensors_location` | 25 | CoreMotion·CoreLocation·LA·CoreBluetooth·MapKit 的「没反应」十二种形态 + 设备自查 |
 | 26 | `26_sqlite_coredata` | 26 | SQLite3 C API 八节 + CoreData 八节，两套 API 指向同一个库文件 |
+| 27 | `27_objc_runtime` | 27 | OC 侧三个 .m 出证据、Swift 侧逐条复核：消息发送 / 属性分类协议 / 转发·换实现·KVC·KVO |
+| 28 | `28_c_layer` | 28 | 全教程第一个 .c + .m + Swift 三方混编示例：C 只负责量，ObjC 负责说，Swift 负责印 |
+| 29 | `29_quartz2d_drawing` | 29 | 自己给缓冲区的 23 节绘制实验：每条断言都回读那四个字节（含 CoreText 文本、PDF、画板） |
 
 ## 建议阅读顺序
 
 - **从零开始（SwiftUI 主线）**：01 → 02 → 03 → 08 → 09 → 10 → 11 → 12 → 17 → 18 → 26 → 20
-- **要写 Objective-C / 维护老项目**：04 → 05 → 07
-- **要吃透 UIKit 底层**：13 → 14 → 15 → 16 → 21 → 22 → 23
+- **要写 Objective-C / 维护老项目**：04 → 05 → 07 → 27（运行时）→ 28（C 层）
+- **要吃透 UIKit 底层**：13 → 14 → 15 → 16 → 21 → 22 → 23 → 29
 - **要做动画**：12（SwiftUI 侧）→ 23（Core Animation 侧）
+- **要做自绘 / 图像 / PDF**：12（SwiftUI 的 `Canvas`/`Path`）→ 23（图层树侧）→ **29（像素侧：Quartz 2D）**
+- **要摸到语言的地板**：28（C：尺寸、对齐、句柄、UB）→ 27（OC：消息、转发、KVC/KVO）
 - **要做音视频 / 传感器 / 定位**：19（权限）→ 24、25
-- **专项**：06（Swift 侧桥接）、19（权限/通知）、20（打包上架）、26（SQLite 与 CoreData）
+- **专项**：06（Swift 侧桥接）、19（权限/通知）、20（打包上架）、26（SQLite 与 CoreData）、29（离屏出图与画板）
 
-> 第二篇（04–07）是本教程的地基：SwiftUI/UIKit 的每一条 API 都建立在 Foundation 与 OC 运行时之上，Foundation 的每个类都有 Swift/OC 两副面孔。把这几章读透，后面所有界面章节都会顺理成章。第三篇（08–13）是现代 iOS 的主线；第四篇（14–16、21–22）补上你迟早要读懂的 UIKit 底层；第五篇（23–25）是动画与硬件——它们共用一套「headless 环境下怎么验证」的方法；第六篇（17–20、26）把网络、数据、上架这条工程链路走完。
+> 第二篇（04–07、27–28）是本教程的地基：SwiftUI/UIKit 的每一条 API 都建立在 Foundation 与 OC 运行时之上，而运行时底下还有一层 C——`CGContextRef` 是个不透明句柄、`CGRect` 是个值类型、`NSError **` 是个出参，这些在第 28 章一次讲清。把这几章读透，后面所有界面章节都会顺理成章。第三篇（08–13）是现代 iOS 的主线；第四篇（14–16、21–22、29）补上你迟早要读懂的 UIKit 底层，其中第 29 章把「画出来」这件事从「眼睛看效果」变成「回读四个字节」，是第 12、13、22、23 章所有绘制代码的共同地基；第五篇（23–25）是动画与硬件——它们共用一套「headless 环境下怎么验证」的方法；第六篇（17–20、26）把网络、数据、上架这条工程链路走完。
