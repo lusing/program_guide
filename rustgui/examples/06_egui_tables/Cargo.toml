@@ -1,0 +1,13 @@
+[package]
+name = "egui_tables"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+eframe = "0.36"
+egui = "0.36"
+egui_extras = "0.36"
+# egui_plot 已从 egui 主仓库迁出，且版本号与 egui 错位 +1：
+# egui_plot 0.36 配 egui 0.35；配 egui 0.36 的是 0.37（同日 2026-08-05 发布）
+egui_plot = "0.37"
+egui_kittest = { version = "0.36", features = ["eframe"] }

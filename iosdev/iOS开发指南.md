@@ -2,7 +2,7 @@
 
 > iOS 原生应用开发讲的是 **两套界面框架 + 一套地基**：**SwiftUI** 是现代的声明式 UI（`body` 描述界面长什么样，系统负责画），**UIKit** 是它底下的命令式基石（`UIView`/`UIViewController`、Auto Layout、响应链）——即便你只写 SwiftUI，`UIHostingController`、手势、列表复用这些仍是 UIKit 在扛。而两者都建立在 **Foundation** 与 **Objective-C 运行时**之上：字符串、集合、`Codable`、`NotificationCenter`，以及 Swift↔OC 双向桥接处那些「看起来一样其实不一样」的坑。本教程 **SwiftUI 为主、UIKit 为底**，ObjC 与 Swift 并重。
 
-本教程面向「想真正搞懂 iOS 开发、而不是只会拖 Xcode 控件」的读者，按依赖链组织为 **32 章（六篇）**，每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例，全部用本机 **Xcode 16.2（Swift 6.0.3）+ iOS 18.2 SDK** 在 **iPhone 模拟器**里编译运行验证，`debug(-Onone)` 与 `release(-O)` 两个配置**输出逐字节一致**。全部示例**不打开 Xcode、不建窗口、不弹 UI**——只用 `swiftc` / `clang` 编成命令行可执行文件，`xcrun simctl spawn` 在模拟器里跑 headless 自测，因为这样你才知道 Xcode 到底替你做了什么。
+本教程面向「想真正搞懂 iOS 开发、而不是只会拖 Xcode 控件」的读者，按依赖链组织为 **33 章（六篇）**，每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例，全部用本机 **Xcode 16.2（Swift 6.0.3）+ iOS 18.2 SDK** 在 **iPhone 模拟器**里编译运行验证，`debug(-Onone)` 与 `release(-O)` 两个配置**输出逐字节一致**。全部示例**不打开 Xcode、不建窗口、不弹 UI**——只用 `swiftc` / `clang` 编成命令行可执行文件，`xcrun simctl spawn` 在模拟器里跑 headless 自测，因为这样你才知道 Xcode 到底替你做了什么。
 
 ## 目录
 
@@ -67,10 +67,11 @@
 | [19 权限 / 通知 / 设备能力](docs/19-permissions-notifications.md) | `UIDevice`/`UIScreen`/`ProcessInfo`、各框架 `authorizationStatus`（只查不弹框）、`Info.plist` 用途说明、`UNNotification` 内容对象（含需 `.app` 包的调度边界） | 受保护能力怎么申请、设备信息怎么读 |
 | [20 打包 / 签名 / 上架](docs/20-packaging-signing.md) | `.app` = 目录（bundle）、`Info.plist` 契约、两个版本号、`codesign` ad-hoc、`simctl install`/`launch`、Archive→Export→Upload；附**真实签名+装机+启动实测** | 怎么把可执行文件变成能装、能跑、能上架的 App |
 | [26 SQLite3 与 CoreData](docs/26-sqlite-coredata.md) | `import SQLite3` 与返回码族、`open` 的三种「成功」、`prepare`/`tail`/`nByte`、绑定与槽位、类型亲和、主码 vs 扩展码、扁平事务与 `close_v2`、`sqlite3_exec` 回调与自定义函数；CoreData 侧的程序化模型出厂值、容器默认值、Z 表结构、四种删除规则、`objectID`/fault/多上下文/合并冲突、两个迁移开关、聚合表达式、批量请求 | 第 18 章那一层底下真正的事务与查询是谁在做、出事时谁说话 |
+| [33 依赖管理：`import` 那一行背后，谁在算模块搜索路径](docs/33-dependency-management.md) | 一次 import 要吃到的四类输入（`-I Modules`、`-Xcc -fmodule-map-file=`、逐 target 的 `.o`、旁边的 `.bundle`）、SDK 里也有 `WeatherKit.framework` 而包的那个赢（`canImport` 只问「有没有」）、product 名 ≠ target 名 ≠ module 名（撞 product 名 SwiftPM 一声不响、撞 target 名才红）、identity = 目录名小写而 bundle 前缀 = manifest 的 `name:`、包↔包与 target↔target 是两层、internal 的边界在哪一层生效（`@testable` 只在 debug 那份成立）、`import WeatherKit` 不顺手带进 ClimateCore（重导出与「返回值能用但类型名要 import」）、一个 C 头文件→一个模块且函数名不改、Magnus 公式在 `-Onone`/`-O` 下的 11.999894615745436、资源路径的基准是 target 目录（写错只 `warning:` 且退出码 0，末级名撞车才硬失败）、`.copy` 保层级与 `.process` 摊平、`Bundle.module` 的两个候选路径（第二个是**假绿**）、`package(name:dependencies:)` 里那句 `path:` 让 `Package.resolved` 根本不生成、`swift test` 只在主机上跑通、中间目录三层清单（`<T>.build/`、`Modules/` 一个模块四份文件、`resource_bundle_accessor.swift.o`）、没有依赖管理器时这几行得自己写 | 「Add Package」那一下点掉的是什么——四个开关（`--triple`/`--sdk`/`env -u SDKROOT`/`--scratch-path`）各自挡掉哪一种「照样绿着但结果是错的」 |
 
 ## 示例代码
 
-`examples/` 下每个目录对应一个可编译工程，全部经本机模拟器编译并运行验证（**32 个示例 × 2 配置 = 64 次运行全部通过，debug/release 输出逐字节一致**，构建说明见 [README](README.md)）。每个示例都是 headless `--selftest`：构造 SwiftUI `View` / `UIViewController` / Foundation 对象 / Quartz 位图上下文，跑断言，打印，退出——**不建窗口、不弹 UI、不调 `UIApplicationMain`**，却真用了 iOS SDK 与 UIKit/SwiftUI 运行时。
+`examples/` 下每个目录对应一个可编译工程，全部经本机模拟器编译并运行验证（**33 个示例 × 2 配置 = 66 次运行全部通过，debug/release 输出逐字节一致**，构建说明见 [README](README.md)）。每个示例都是 headless `--selftest`：构造 SwiftUI `View` / `UIViewController` / Foundation 对象 / Quartz 位图上下文，跑断言，打印，退出——**不建窗口、不弹 UI、不调 `UIApplicationMain`**，却真用了 iOS SDK 与 UIKit/SwiftUI 运行时。
 
 | # | 示例 | 章 | 一句话 |
 |---|------|----|----|
@@ -106,6 +107,7 @@
 | 30 | `30_swift_language_basics` | 30 | 22 节 209 条断言 + 55 个独立探针：把「编译器会报错 / 运行会崩」的每一句量成一行证据 |
 | 31 | `31_interface_builder` | 31 | 26 节 220 条断言 + 26 支探针（b01–b11 坏界面文件 / e01 编译期 / r01–r14 运行期现场）：主线示例之外还要先经 `ibtool` 把 `.storyboard`/`.xib` 编进产物目录 |
 | 32 | `32_app_architecture` | 32 | 31 节 148 条断言 + 18 支探针（e01–e09 编译期原文 / r01–r05 崩溃现场 / c01 两配置对照 / m01–m03 Swift·OC 混编）：示例目录里的 `Bridging.h` 与空标记 `Needs-Swift-Header` 会让构建脚本自动加桥接头与 `-emit-objc-header-path` |
+| 33 | `33_dependency_management` | 33 | 23 节 50 条断言 + 26 支探针（s01–s13 SwiftPM 命令行现场 / e01–e09 编译期原文 / r01 绿着的错接线 / c01–c03 两配置对照）：`Packages/` 下两个本地包先由 `swift build` 按配置各编一遍，标记文件 `Needs-SwiftPM` 决定构建脚本加不加这四类输入 |
 
 ## 建议阅读顺序
 
@@ -121,4 +123,4 @@
 - **要做音视频 / 传感器 / 定位**：19（权限）→ 24、25
 - **专项**：06（Swift 侧桥接）、19（权限/通知）、20（打包上架）、26（SQLite 与 CoreData）、29（离屏出图与画板）、30（语言层探针方法学）、31（界面文件的编译产物与运行时接线）、32（Controller 层架构与 Swift/OC 混编的分层代价）
 
-> 第二篇（04–07、27–28、30）是本教程的地基：SwiftUI/UIKit 的每一条 API 都建立在 Foundation 与 OC 运行时之上，而运行时底下还有一层 C——`CGContextRef` 是个不透明句柄、`CGRect` 是个值类型、`NSError **` 是个出参，这些在第 28 章一次讲清；第 30 章则把本书语言层的每一条「编译器会报错」「运行会崩」都换成 55 个独立探针的原文与 209 条断言，是全教程「判据换成可复现输出」这件事最集中的示范。把这几章读透，后面所有界面章节都会顺理成章。第三篇（08–13）是现代 iOS 的主线；第四篇（14–16、21–22、29–32）补上你迟早要读懂的 UIKit 底层，其中第 29 章把「画出来」这件事从「眼睛看效果」变成「回读四个字节」，是第 12、13、22、23 章所有绘制代码的共同地基；第 31 章则把「在 Xcode 里拖一条线、跑起来看看」换成三段可查的账——编译产物里有什么、运行时解出什么、线和 segue 在运行时是谁，它也是全教程唯一一章需要 `ibtool` 参与构建的示例；第 32 章把「MVC」这个说法量成三笔可查的账——状态归谁、更新走哪条机制、「同一个意思被写了几遍」，它同时是第一份 Swift 与 Objective-C 双向混编的示例（`Bridging.h` 与空标记 `Needs-Swift-Header` 两个文件决定构建脚本加不加 `-import-objc-header` 和 `-emit-objc-header-path`）；第五篇（23–25）是动画与硬件——它们共用一套「headless 环境下怎么验证」的方法；第六篇（17–20、26）把网络、数据、上架这条工程链路走完。
+> 第二篇（04–07、27–28、30）是本教程的地基：SwiftUI/UIKit 的每一条 API 都建立在 Foundation 与 OC 运行时之上，而运行时底下还有一层 C——`CGContextRef` 是个不透明句柄、`CGRect` 是个值类型、`NSError **` 是个出参，这些在第 28 章一次讲清；第 30 章则把本书语言层的每一条「编译器会报错」「运行会崩」都换成 55 个独立探针的原文与 209 条断言，是全教程「判据换成可复现输出」这件事最集中的示范。把这几章读透，后面所有界面章节都会顺理成章。第三篇（08–13）是现代 iOS 的主线；第四篇（14–16、21–22、29–32）补上你迟早要读懂的 UIKit 底层，其中第 29 章把「画出来」这件事从「眼睛看效果」变成「回读四个字节」，是第 12、13、22、23 章所有绘制代码的共同地基；第 31 章则把「在 Xcode 里拖一条线、跑起来看看」换成三段可查的账——编译产物里有什么、运行时解出什么、线和 segue 在运行时是谁，它也是全教程唯一一章需要 `ibtool` 参与构建的示例；第 32 章把「MVC」这个说法量成三笔可查的账——状态归谁、更新走哪条机制、「同一个意思被写了几遍」，它同时是第一份 Swift 与 Objective-C 双向混编的示例（`Bridging.h` 与空标记 `Needs-Swift-Header` 两个文件决定构建脚本加不加 `-import-objc-header` 和 `-emit-objc-header-path`）；第五篇（23–25）是动画与硬件——它们共用一套「headless 环境下怎么验证」的方法；第六篇（17–20、26、33）把网络、数据、上架这条工程链路走完，其中第 33 章把「在 Xcode 里点一下 Add Package」换成看得见的一串输入——`-I Modules`、C target 的 `-Xcc -fmodule-map-file=`、逐 target 的 `.o`、可执行文件旁边那个 `<Package>_<target>.bundle`，它也是全教程唯一一章在 `swiftc` 之前先跑 `swift build` 的示例（示例目录里那份 `Needs-SwiftPM` 清单决定这几行加不加），而它量出的最锋利一条是：`Bundle.module` 有两条候选路径，本机第二条（编译期写死的构建目录）也能命中，于是「忘了拷 bundle」在本地是一颗假绿。
