@@ -8,7 +8,7 @@
 //   * 原语：AddLine/AddRect/AddCircleFilled/AddTriangleFilled/
 //     AddBezierQuadratic/AddText；PushClipRect 裁剪
 //   * 字体：默认是嵌入的 ASCII 位图（ProggyClean）——中文必须自载：
-//     AddFontFromFileTTF + GetGlyphRangesChineseSimplifiedFull
+//     AddFontFromFileTTF + GetGlyphRangesChineseSimplifiedCommon
 //   * 【坑】改字体要在首帧 NewFrame 之前；运行中换字体需重建图集
 //     （backend 会在 NewFrame 检测 Fonts->TexID 变化自动重建 D3D 纹理）
 // 官方参考：docs/FONTS.md（必读）、imgui_demo.cpp 的 Custom Rendering 节
@@ -106,7 +106,7 @@ static void Ui(int frame)
         ImGui::Text("PushFont 切换的文本");
         ImGui::PopFont();
     }
-    ImGui::TextWrapped("字形范围：GetGlyphRangesChineseSimplifiedFull "
+    ImGui::TextWrapped("字形范围：GetGlyphRangesChineseSimplifiedCommon "
                        "覆盖常用简体+标点（docs/FONTS.md 有全表）。"
                        "图集是运行时烘焙的纹理，backend 自动上传/重建。");
     ImGui::End();
