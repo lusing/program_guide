@@ -5478,6 +5478,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "slint_state"
+version = "0.1.0"
+dependencies = [
+ "i-slint-backend-testing",
+ "i-slint-core",
+ "slint",
+ "slint-build",
+]
+
+[[package]]
 name = "slotmap"
 version = "1.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

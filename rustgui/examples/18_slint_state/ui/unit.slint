@@ -1,0 +1,67 @@
+// ═══ 18.1 单位换算器：绑定、TouchArea 与全局单例 ═══
+// 属性是状态，绑定是反应式更新——改 km，miles 的显示自动跟着变，
+// 没有任何"刷新界面"的代码要写。
+
+import { LineEdit } from "std-widgets.slint";
+
+// 全局单例：跨组件共享的状态（18.3 节）。Rust 侧经 Settings::get() 读写。
+export global Settings {
+    in-out property <bool> dark: false;
+}
+
+export component UnitConverter inherits Window {
+    title: "18 slint 换算器";
+    preferred-width: 360px;
+    preferred-height: 240px;
+
+    // in-out：Rust 侧与 .slint 侧都能读写
+    in-out property <float> km: 0;
+    in-out property <float> miles: 0;
+
+    callback refresh-miles();
+    refresh-miles() => {
+        root.miles = root.km * 0.621371;
+    }
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 12px;
+
+        Text {
+            text: "千米 → 英里";
+            font-size: 20px;
+        }
+        // 输入框：每击键触发 edited 回调 → to-float 解析 → 改 km → 联动 miles。
+        // 注意 text 不做回写绑定：用户打的内容由 LineEdit 自己持有，
+        // 绑定回写会和光标位置打架（高频坑，见坑位清单）。
+        // 元素名 km-input：无头测试按 id 查元素的锚点（18.4 节）。
+        km-input := LineEdit {
+            placeholder-text: "输入千米数";
+            edited(text) => {
+                root.km = text.to-float(); // 解析失败得 0
+                root.refresh-miles();
+            }
+        }
+        Text {
+            // Math.round 控制显示精度（@tr 只支持 {} 占位）
+            text: root.miles > 0 ? @tr("{} miles", Math.round(root.miles * 1000) / 1000) : "—";
+            font-size: 24px;
+        }
+
+        // 主题开关条：TouchArea 捕获点击，翻转全局 Settings.dark
+        Rectangle {
+            height: 40px;
+            background: Settings.dark ? #233 : #dee;
+            border-radius: 6px;
+            dark-toggle := TouchArea {
+                clicked => {
+                    Settings.dark = !Settings.dark;
+                }
+            }
+            Text {
+                text: Settings.dark ? "深色：开（点击切换）" : "深色：关（点击切换）";
+                color: Settings.dark ? white : black;
+            }
+        }
+    }
+}
