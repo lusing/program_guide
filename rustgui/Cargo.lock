@@ -1449,6 +1449,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "egui_widgets"
+version = "0.1.0"
+dependencies = [
+ "eframe",
+ "egui",
+ "egui_kittest",
+]
+
+[[package]]
 name = "either"
 version = "1.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
