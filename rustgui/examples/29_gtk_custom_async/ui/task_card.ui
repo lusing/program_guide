@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ═══ 29.2 模板 XML：<template> 声明类名与父类，id 对应 template_child ═══ -->
+<interface>
+  <template class="RustGuiTaskCard" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <property name="spacing">6</property>
+    <child>
+      <object class="GtkLabel" id="title">
+        <property name="label">任务卡</property>
+        <property name="halign">start</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel" id="status">
+        <property name="label">待启动</property>
+        <property name="halign">start</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkProgressBar" id="progress"/>
+    </child>
+  </template>
+</interface>

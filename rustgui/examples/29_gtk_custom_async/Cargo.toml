@@ -1,0 +1,11 @@
+[package]
+name = "gtk_custom_async"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# 同 24 章：钉 crates.io 0.11.5，重命名 gtk（官方惯例）。
+gtk = { package = "gtk4", version = "0.11.5" }
+# 官方书 main_event_loop 章同款异步通道：worker 线程 send_blocking、
+# UI 线程 spawn_future_local 里 recv().await——gio 自带异步腿，不引 tokio。
+async-channel = "2"

@@ -2627,6 +2627,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "gtk_custom_async"
+version = "0.1.0"
+dependencies = [
+ "async-channel",
+ "gtk4",
+]
+
+[[package]]
 name = "gtk_drawing"
 version = "0.1.0"
 dependencies = [
@@ -2642,6 +2650,13 @@ dependencies = [
 
 [[package]]
 name = "gtk_layout_css"
+version = "0.1.0"
+dependencies = [
+ "gtk4",
+]
+
+[[package]]
+name = "gtk_models"
 version = "0.1.0"
 dependencies = [
  "gtk4",
