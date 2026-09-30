@@ -72,12 +72,15 @@ if(CPPGUI_ENABLE_IMGUI)
         ${CPPGUI_IMGUI_DIR}/imgui_demo.cpp)
 
     # 主线：Win32 平台后端 + D3D11 渲染后端（零第三方依赖，Windows SDK 自带）
-    add_library(cppgui_imgui STATIC
-        ${CPPGUI_IMGUI_CORE}
-        ${CPPGUI_IMGUI_DIR}/backends/imgui_impl_win32.cpp
-        ${CPPGUI_IMGUI_DIR}/backends/imgui_impl_dx11.cpp)
-    target_include_directories(cppgui_imgui PUBLIC
-        ${CPPGUI_IMGUI_DIR} ${CPPGUI_IMGUI_DIR}/backends)
+    # 仅 Windows 登记——macOS/Linux 无 d3d11 SDK；可移植通路见下方 SDL2 变体
+    if(WIN32)
+        add_library(cppgui_imgui STATIC
+            ${CPPGUI_IMGUI_CORE}
+            ${CPPGUI_IMGUI_DIR}/backends/imgui_impl_win32.cpp
+            ${CPPGUI_IMGUI_DIR}/backends/imgui_impl_dx11.cpp)
+        target_include_directories(cppgui_imgui PUBLIC
+            ${CPPGUI_IMGUI_DIR} ${CPPGUI_IMGUI_DIR}/backends)
+    endif()
 
     # 08 章对照变体：SDL2 平台后端 + OpenGL3 渲染后端（scoop SDL2）
     add_library(cppgui_imgui_sdl2 STATIC
@@ -86,12 +89,17 @@ if(CPPGUI_ENABLE_IMGUI)
         ${CPPGUI_IMGUI_DIR}/backends/imgui_impl_opengl3.cpp)
     target_include_directories(cppgui_imgui_sdl2 PUBLIC
         ${CPPGUI_IMGUI_DIR} ${CPPGUI_IMGUI_DIR}/backends)
-    # scoop 的 SDL2 不带 CMake config（裸 .lib + 头文件），用 IMPORTED 目标直连
+    # Windows（scoop）：SDL2 不带 CMake config（裸 .lib + 头文件），IMPORTED 直连；
+    # 其他平台（macOS/Linux）：系统 SDL2 自带 CMake config（MacPorts/Homebrew 提供 SDL2::SDL2）
     if(NOT TARGET SDL2::SDL2)
-        add_library(SDL2::SDL2 INTERFACE IMPORTED)
-        set_target_properties(SDL2::SDL2 PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES "${CPPGUI_SDL2_DIR}/include/SDL2"
-            INTERFACE_LINK_LIBRARIES "${CPPGUI_SDL2_DIR}/lib/SDL2.lib")
+        if(WIN32)
+            add_library(SDL2::SDL2 INTERFACE IMPORTED)
+            set_target_properties(SDL2::SDL2 PROPERTIES
+                INTERFACE_INCLUDE_DIRECTORIES "${CPPGUI_SDL2_DIR}/include/SDL2"
+                INTERFACE_LINK_LIBRARIES "${CPPGUI_SDL2_DIR}/lib/SDL2.lib")
+        else()
+            find_package(SDL2 REQUIRED)
+        endif()
     endif()
     target_link_libraries(cppgui_imgui_sdl2 PUBLIC SDL2::SDL2)
 endif()
@@ -134,16 +142,28 @@ endif()
 
 # ---- 二、Dear ImGui ----
 if(CPPGUI_ENABLE_IMGUI)
-    cppgui_example(08_imgui_hello cppgui_imgui d3d11 dxgi d3dcompiler)
-    cppgui_example(09_imgui_widgets cppgui_imgui d3d11 dxgi d3dcompiler)
-    cppgui_example(10_imgui_windows cppgui_imgui d3d11 dxgi d3dcompiler)
-    cppgui_example(11_imgui_tables cppgui_imgui d3d11 dxgi d3dcompiler)
-    cppgui_example(12_imgui_drawlist_fonts cppgui_imgui d3d11 dxgi d3dcompiler)
-    cppgui_example(13_imgui_app cppgui_imgui d3d11 dxgi d3dcompiler)
+    # 主线（Win32+D3D11）仅 Windows 登记；SDL2 变体全平台
+    if(WIN32)
+        cppgui_example(08_imgui_hello cppgui_imgui d3d11 dxgi d3dcompiler)
+        cppgui_example(09_imgui_widgets cppgui_imgui d3d11 dxgi d3dcompiler)
+        cppgui_example(10_imgui_windows cppgui_imgui d3d11 dxgi d3dcompiler)
+        cppgui_example(11_imgui_tables cppgui_imgui d3d11 dxgi d3dcompiler)
+        cppgui_example(12_imgui_drawlist_fonts cppgui_imgui d3d11 dxgi d3dcompiler)
+        cppgui_example(13_imgui_app cppgui_imgui d3d11 dxgi d3dcompiler)
+    endif()
 
-    cppgui_example(08_imgui_hello_sdl2 cppgui_imgui_sdl2 opengl32)
-    # SDL2 是动态库：把 DLL 拷到产物目录
-    if(TARGET 08_imgui_hello_sdl2)
+    # OpenGL 链接名按平台：Windows 是 opengl32；macOS 链 OpenGL.framework；
+    # Linux 链 GL。（SDL2 dylib 自带 Cocoa 等框架依赖，随链接自动传播）
+    if(WIN32)
+        cppgui_example(08_imgui_hello_sdl2 cppgui_imgui_sdl2 opengl32)
+    elseif(APPLE)
+        find_library(CPPGUI_OPENGL_FRAMEWORK OpenGL)
+        cppgui_example(08_imgui_hello_sdl2 cppgui_imgui_sdl2 ${CPPGUI_OPENGL_FRAMEWORK})
+    else()
+        cppgui_example(08_imgui_hello_sdl2 cppgui_imgui_sdl2 GL)
+    endif()
+    # SDL2 是动态库：把 DLL 拷到产物目录（仅 Windows 需要）
+    if(WIN32 AND TARGET 08_imgui_hello_sdl2)
         add_custom_command(TARGET 08_imgui_hello_sdl2 POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${CPPGUI_SDL2_DIR}/lib/SDL2.dll" $<TARGET_FILE_DIR:08_imgui_hello_sdl2>)

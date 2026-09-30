@@ -20,6 +20,8 @@
 #include <string>
 #include <thread>
 
+#include "cppgui_jthread.hpp"            // std::jthread 兼容层（macOS 用）
+
 #include "ftxui/component/app.hpp"
 #include "ftxui/component/component.hpp"
 #include "ftxui/component/component_base.hpp"
@@ -157,7 +159,7 @@ int main(int argc, char** argv)
     });
 
     // 异步演示：后台线程每 500ms Post 一个闭包回主循环（安全改 UI 状态）
-    std::jthread worker([&screen] {
+    cppgui::jthread worker([&screen] {
         for (int i = 0; i < 20; ++i)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
