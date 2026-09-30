@@ -1,0 +1,69 @@
+// ═══ 22.1 模型：数据驱动的列表 + ListView 虚拟化 ═══
+// Rust 侧 VecModel 持有数据，模型通知驱动界面增量更新；
+// for-in 渲染：普通布局是急切，ListView 是虚拟化（行复用）。
+
+import { Button, ListView } from "std-widgets.slint";
+
+// struct 导出后 Rust 侧生成同名结构体（SharedString/bool 字段）
+export struct Item {
+    name: string,
+    done: bool,
+}
+
+export component ModelLab inherits Window {
+    title: "22 slint models";
+    preferred-width: 400px;
+    preferred-height: 420px;
+
+    // 模型属性：Rust 侧 set 成 ModelRc<VecModel<Item>>
+    in-out property <[Item]> items;
+    out property <int> item-count: root.items.length;
+
+    // 行交互的出口（带索引载荷）
+    callback toggle(int);
+    callback remove(int);
+    callback add-sample();
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 12px;
+
+        HorizontalLayout {
+            spacing: 8px;
+            Text {
+                text: @tr("{} 项", root.item-count);
+                vertical-alignment: center;
+            }
+            Button {
+                text: "加一条";
+                clicked => { root.add-sample(); }
+            }
+        }
+
+        // ListView：虚拟化列表——只实例化视口内的行（行模板复用），
+        // 1 千条和 10 万条的首帧成本差不多
+        ListView {
+            for item[i] in root.items: Rectangle {
+                height: 44px;
+                background: Math.mod(i, 2) == 0 ? #f5f5f5 : #ffffff; // 取模用 Math.mod（% 是单位）
+                HorizontalLayout {
+                    padding: 8px;
+                    spacing: 8px;
+                    // 点行切换完成态
+                    TouchArea {
+                        clicked => { root.toggle(i); }
+                        Text {
+                            text: item.name;
+                            color: item.done ? #888 : #111;
+                        }
+                    }
+                    // 删除（回调带索引）
+                    Button {
+                        text: "删";
+                        clicked => { root.remove(i); }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,96 @@
+// ═══ 23.1 待办管理器（Slint 版）：模型 + 动画划线 + 持久化出口 ═══
+// 统一规格的第三份答卷；特色亮点：完成项的划线过渡动画（states+animate）
+
+import { Button, LineEdit, ListView } from "std-widgets.slint";
+
+export struct Todo {
+    text: string,
+    done: bool,
+}
+
+export component TodoApp inherits Window {
+    title: "23 slint todo";
+    preferred-width: 420px;
+    preferred-height: 480px;
+
+    in-out property <[Todo]> todos;
+    in-out property <string> draft: "";
+    // 完成计数：.slint 表达式聚合不了模型内容，由 Rust 侧每次变更后 set
+    in-out property <int> done-count: 0;
+    property <int> total: root.todos.length; // length 聚合是内建的
+
+    callback add(string);
+    callback toggle(int);
+    callback remove(int);
+    callback persist();   // 任何变更后由 Rust 落盘（dirty 节流在 Rust 侧）
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 12px;
+
+        Text {
+            text: @tr("待办 · 已完成 {}/{}", root.done-count, root.total);
+            font-size: 20px;
+        }
+        HorizontalLayout {
+            spacing: 8px;
+            draft-input := LineEdit {
+                placeholder-text: "新待办…";
+                text: root.draft;
+                edited(t) => { root.draft = t; }
+                accepted(t) => { root.add(t); root.draft = ""; }
+            }
+            Button {
+                text: "添加";
+                clicked => { root.add(root.draft); root.draft = ""; }
+            }
+        }
+
+        ListView {
+            for todo[i] in root.todos: Rectangle {
+                height: 48px;
+                HorizontalLayout {
+                    padding: 8px;
+                    spacing: 8px;
+
+                    // 点行切换完成
+                    TouchArea {
+                        clicked => { root.toggle(i); }
+                        // 完成态：文字变灰 + 划线（宽度动画）
+                        HorizontalLayout {
+                            alignment: start;
+                            spacing: 0px;
+                            line-holder := Rectangle {
+                                width: todo-text.width;
+                                height: todo-text.height;
+                                todo-text := Text {
+                                    text: todo.text;
+                                    color: todo.done ? #999 : #111;
+                                }
+                                Rectangle {
+                                    // 划线：done 时从 0 撑到满宽（animate 过渡）。
+                                    // 注意 percent 与 length 不能混在三目里——用 parent.width
+                                    y: parent.height / 2;
+                                    height: 2px;
+                                    width: todo.done ? parent.width : 0px;
+                                    background: #e53935;
+                                    animate width { duration: 200ms; easing: ease-out; }
+                                }
+                            }
+                        }
+                    }
+                    Button {
+                        text: "删";
+                        clicked => { root.remove(i); }
+                    }
+                }
+            }
+        }
+
+        Text {
+            text: "修改后自动保存";
+            color: #888;
+            font-size: 12px;
+        }
+    }
+}
