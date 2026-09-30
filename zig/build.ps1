@@ -95,6 +95,8 @@ function Test-One {
         "16_build" { Test-ProjectExample $Dir }
         "24_minigrep" { Test-ProjectExample $Dir }
         "17_cinterop" { Test-PlainExample $Dir @("-lc") }
+        # 32：直链系统自带的 winsqlite3.dll（LLD 可拿 DLL 当导入库；Linux 对应 -lsqlite3）
+        "32_sqlite" { Test-PlainExample $Dir @("$env:SystemRoot\System32\winsqlite3.dll") }
         "18_cross" { Test-CrossExample $Dir }
         default { Test-PlainExample $Dir }
     }

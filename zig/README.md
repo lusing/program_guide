@@ -1,6 +1,6 @@
 # Zig 编程指南（0.16）
 
-面向**会编程（C/C++ 背景最佳）、初学 Zig** 的读者：从零教到 0.16 现代写法——`std.Io` 新接口、`std.process.Init` 入口、unmanaged 集合从第 02 章就是默认姿势，旧写法只在坑位清单里教"认得"。**Zig 特色全部独立成章细讲**：分配器（11）、comptime 两章（13/14）、测试（15）、构建系统与包管理（16）、C 互操作（17）、交叉编译与 zig cc（18）。每章"读讲解 → 跑示例 → 改代码再跑"，全部示例三层验证通过（fmt + test + 运行 exit 0）。
+面向**会编程（C/C++ 背景最佳）、初学 Zig** 的读者：从零教到 0.16 现代写法——`std.Io` 新接口、`std.process.Init` 入口、unmanaged 集合从第 02 章就是默认姿势，旧写法只在坑位清单里教"认得"。**Zig 特色全部独立成章细讲**：分配器（11）、comptime 两章（13/14）、测试（15）、构建系统与包管理（16）、C 互操作（17）、交叉编译与 zig cc（18）。**25–34 章为书本扩充的十大进阶缺口**：二进制布局、编码流处理、目录树、文件监视、网络双协议、HTTP、并发进阶、SQLite 直连、解释器、LRU 缓存服务器（取材《Systems Programming with Zig》《Learning Zig》两书，0.16 实测改写）。每章"读讲解 → 跑示例 → 改代码再跑"，全部示例三层验证通过（fmt + test + 运行 exit 0）。
 
 > ⚠️ Zig 尚未 1.0：网上教程多为 0.13/0.14 语法，直接照抄编译不过。本教程所有代码在 **0.16.0** 实测，每章坑位清单收录迁移差异。
 
@@ -9,8 +9,8 @@
 ```text
 zig/
 ├── README.md       本文件
-├── docs/           24 章教程（01 → 24 顺序阅读）
-├── examples/       23 个示例目录（章号 = 目录号；16/24 为 build.zig 工程）
+├── docs/           34 章教程（01 → 34 顺序阅读；25 起为书本扩充进阶篇）
+├── examples/       33 个示例目录（章号 = 目录号；16/24 为 build.zig 工程；32 链 winsqlite3.dll）
 ├── build.ps1       统一验证脚本（须 PowerShell 7 / pwsh 运行）
 ├── run-all.sh      同一套验证的 bash 版（Linux/macOS；ZIG= 可指定解释器）
 └── CHEATSheet.md   语法速查 + 0.16 坑位索引
@@ -44,19 +44,29 @@ zig/
 | [22 进程](docs/22-process.md) | argv、子进程、Io 时钟 | `22_process` |
 | [23 调试与工具](docs/23-debugging.md) | panic 栈跟踪、错误跟踪、LLDB | `23_debug` |
 | [24 实战：迷你 grep](docs/24-minigrep.md) | 递归 + 多线程 + 高亮 + 测试 | `24_minigrep`（工程） |
+| [25 二进制数据与内存布局](docs/25-binary.md) | extern/packed struct、字节序、bytesToValue | `25_binary` |
+| [26 编码与流处理](docs/26-encoding.md) | hex、base64、手写编码器、@Vector SIMD | `26_encoding` |
+| [27 目录遍历与文件树](docs/27-tree.md) | 递归走查、statFile、glob、du、ztree | `27_tree` |
+| [28 文件监视](docs/28-watch.md) | 轮询快照求差、Windows RDCW extern | `28_watch` |
+| [29 TCP 与 UDP](docs/29-networking.md) | echo 双协议、ws2_32 直调、AFD 缺陷实录 | `29_netecho` |
+| [30 HTTP 服务与客户端](docs/30-http.md) | 手写报文、路由、JSON 响应 | `30_http` |
+| [31 并发进阶](docs/31-concurrency.md) | 原子/CAS、RwLock、条件变量、线程池 | `31_concurrency` |
+| [32 SQLite 实战](docs/32-sqlite.md) | extern 直连 winsqlite3、comptime 行映射 | `32_sqlite`（DLL 直链） |
+| [33 实战：表达式解释器](docs/33-zcalc.md) | lexer、Pratt 解析、AST、树遍求值 | `33_zcalc` |
+| [34 实战：LRU 缓存服务器](docs/34-zcache.md) | LRU、文本协议、并发客户端、zcache | `34_zcache` |
 
 ## 构建工具链
 
 - Zig **0.16.0**：Windows 用 `G:\scoop\apps\zig\current\zig.exe`（scoop 安装；版本不符先看 01 章的版本坑）；**macOS 实测环境**是 MacPorts 的 `/opt/local/bin/zig`（0.16.0，真实 std 目录 `/opt/local/libexec/zig-0.16/lib/zig/std`）。build.ps1 找不到 scoop 路径时自动回退 PATH 里的 `zig`。
 - Linux/macOS：发行版包（Arch `pacman -S zig`、macOS `brew install zig` / `port install zig`）或官网 tarball 解压即用（单文件无依赖），`zig version` 须为 `0.16.0`。
-- **已实测的平台**：macOS Darwin 23 / x86_64 / zig 0.16.0 —— 23 个示例 `./run-all.sh` 全量三层验证通过；PowerShell 7.6.6（`pwsh`）下 `build.ps1` 同样全绿。Linux（Arch/WSL2, zig 0.16.0）全量实测通过。**Apple Silicon（arm64 macOS）**：逐示例用 `-target aarch64-macos` 交叉编译验证全部通过（21 章此前是硬失败，现已补 aarch64 实现）；运行验证待 arm64 真机。
+- **已实测的平台**：macOS Darwin 23 / x86_64 / zig 0.16.0 —— `./run-all.sh` 全量三层验证通过；PowerShell 7.6.6（`pwsh`）下 `build.ps1` 同样全绿。Linux（Arch/WSL2, zig 0.16.0）全量实测通过。**25–34 章（2026-09-30 扩充）在 Windows 11 / 0.16.0 全量 build.ps1 -All 实测通过**（29/30/34 的 TCP 走 ws2_32 直调——std.Io.net 的 AFD 数据面缺陷见 29 章实录；Linux/macOS 复验 32 章需 libsqlite3-dev）。**Apple Silicon（arm64 macOS）**：逐示例用 `-target aarch64-macos` 交叉编译验证全部通过（21 章此前是硬失败，现已补 aarch64 实现）；运行验证待 arm64 真机。
 - 默认 Debug 模式（安全检查全开）；Windows 中文控制台乱码先 `chcp 65001`（build.ps1 已代设 UTF-8），Linux/macOS 终端原生 UTF-8 无此问题。
 
 ## 验证命令
 
 ```powershell
 cd G:\code\guide\zig
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All                 # 全部 23 个示例：fmt+test+运行
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All                 # 全部 33 个示例：fmt+test+运行
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 12_collections   # 单个示例
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean               # 清理 build 目录
 ```
@@ -65,7 +75,7 @@ Linux/macOS 用等价的 bash 脚本（与 build.ps1 同一套三层验证）：
 
 ```bash
 cd zig
-./run-all.sh                        # 全部 23 个示例：fmt+test+运行
+./run-all.sh                        # 全部 33 个示例：fmt+test+运行
 ./run-all.sh 12_collections         # 单个示例
 ZIG=/path/to/zig ./run-all.sh       # 指定 zig 解释器
 ```

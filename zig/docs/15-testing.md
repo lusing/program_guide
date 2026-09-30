@@ -108,6 +108,8 @@ test "sluggify 行为" {
 3. **子模块测试没跑的假绿**：忘了 `test { _ = util; }`，util 的测试静默缺席——绿得莫名其妙时先查测试清单（输出里的 `N/M` 计数）。
 4. **测试里 defer 照常执行**：断言失败抛错误也会走 defer 清理——所以 `defer a.free(r)` 在失败路径也不泄漏。
 5. **0.16 没有 `expectNull`**：写 `expect(opt == null)`（其他 expect* 也以 `std/testing.zig` 源码为准——15.5 的探针方法）。
+6. **doctest：书上有，0.16.0 编译器里没有**：《Learning Zig》ch7 讲"文档注释里的 ```zig 示例自动当测试跑"——本机实测（0.16.0）`zig test` 对这种写法报 `All 0 tests passed`，编译器源码里也搜不到 doctest 钩子。文档示例想被验证，老老实实写成显式 `test` 块或独立示例工程（本教程的路线）。
+7. **锁原语别在 `std.testing.io` 上多线程用**：31 章实测 `Io.Condition.wait` 在 test runner 的 io 实例上挂死——线程 + 锁的编排测试放进 main（`init.io`），测试只覆盖原子与纯函数。
 
 ---
 

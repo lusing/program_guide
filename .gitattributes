@@ -7,3 +7,6 @@ sml/examples/*.sml text eol=lf
 # Go 源码 gofmt 只认 LF：autocrlf=true 检出成 CRLF 后 gofmt -l 会整文件标记
 # （build.ps1 的四层验证第一层就挂）。统一 LF。
 go/**/*.go text eol=lf
+# Zig 源码 zig fmt 只认 LF：autocrlf=true 检出成 CRLF 后 fmt --check 整文件挂
+# （build.ps1 三层验证第一层就挂；混合行尾时只有部分行报）。统一 LF。
+zig/**/*.zig text eol=lf

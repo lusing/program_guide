@@ -137,6 +137,11 @@ zig build -Doptimize=ReleaseFast -Dtarget=aarch64-linux
 | `std.fmt.print` | 不存在：`std.debug.print` 或 Writer | 02 |
 | `expectNull` | 已移除：`expect(opt == null)` | 15 |
 | asm `%[r]` 之外的 `{[r]}` | 模板占位就是 `%[r]` | 21 |
+| `callconv(.win64)` | `callconv(.winapi)`（自动选架构变体） | 28/29 |
+| `std.Thread.Mutex/Condition/RwLock` | 全并入 `std.Io.*`，方法带 io | 31 |
+| `windows.BOOL == 0` | BOOL 是枚举：比较 `.FALSE` | 28 |
+| `DoublyLinkedList.pushFront` | `prepend` / `pop`（队尾）/ `popFirst` | 34 |
+| `extern "sqlite3" fn ...` | 去库名 + DLL 路径当对象传给 zig | 32 |
 
 ## 10. 格式化占位符（02）
 
@@ -165,3 +170,61 @@ zig build -Doptimize=ReleaseFast -Dtarget=aarch64-linux
 | panic 栈帧尾 | `... in main (xx.obj)` / DLL 名 | `0x... in main (main)`，末帧 `/usr/lib/dyld` | 23 |
 | 全量验证 | `build.ps1`（pwsh） | `./run-all.sh`（bash，`ZIG=` 可指定）；macOS 跑 ps1 版要 `pwsh -NoProfile -Command '& ./build.ps1 -All'` | — |
 | 合并重定向 `> f 2>&1` | 正常 | Zig 侧会覆盖 stderr 前部（0.16 实测），分开重定向 | 02 |
+
+## 12. 25–34 章新增速查（书本扩充篇）
+
+```zig
+// 二进制（25）
+std.mem.readInt(u32, bytes, .little)        // 任意偏移解包（不要求对齐）
+std.mem.bytesToValue(Record, &raw)          // 整体 view（extern struct + align 关）
+const board: u16 = @bitCast(packed_val);    // packed struct(u16) ↔ 背板整数
+std.meta.fields(T)                          // comptime 遍历字段（wire 尺寸断言/行映射）
+
+// 编码与流（26）
+std.fmt.bytesToHex(data, .upper) / hexToBytes(&out, &hex)
+std.base64.standard.Encoder.calcSize(n) + .encode(dst, src)
+r.readSliceShort(&chunk)                    // short read：EOF 返 0 不报错
+const v: @Vector(32, u8) = slice[0..32].*;  // SIMD：比较→位掩码→@popCount
+
+// 文件系统（27/28）
+statFile(io, p, .{ .follow_symlinks = false })  // lstat 语义
+std.Io.sleep(io, Duration.fromMilliseconds(200), .awake)
+extern "kernel32" ReadDirectoryChangesW      // Windows 目录监视（手写声明）
+
+// 网络（29/30）——Windows 上 std.Io.net TCP 数据面 0.16.0 实测坏（AFD）：
+std.Io.net.IpAddress.parseIp4("127.0.0.1", port)
+.listen(io, .{}) / .connect(io, .{ .mode = .stream }) / .bind(io, .{ .mode = .dgram })
+sock.receive(io, &buf) → IncomingMessage{ .from, .data }   // UDP 可用（实测）
+extern "ws2_32" socket/bind/accept/connect/send/recv       // TCP 逃生门（需 WSAStartup）
+
+// 并发（31）
+std.atomic.Value(u64).init / fetchAdd / cmpxchgWeak(cur, want, .seq_cst, .seq_cst)
+Io.RwLock.lockSharedUncancelable(io) / unlockShared(io)
+Io.Condition.waitUncancelable(io, &mutex)   // 持锁判断 + while 重判
+哨兵 job 关停线程池；放哨兵后先解锁再 join（持锁 join = 自锁）
+
+// SQLite（32）——zig build-exe main.zig C:\Windows\System32\winsqlite3.dll
+sqlite3_open_v2(":memory:", ...) / prepare_v2 / bind_text(TRANSIENT) / step(ROW=100,DONE=101)
+column_text 的借用窗口：下一次 step 前有效，出循环前 dupe
+
+// 解释器（33）与 LRU（34）
+Pratt：bindingPower 每算符一对 (left,right)——右结合 caret 是 left>right
+@fieldParentPtr("link", node)               // 侵入式链表节点反查宿主
+```
+
+### 25–34 实测坑位（按疼度排）
+
+| 坑 | 解 | 章 |
+|---|---|---|
+| std.Io.net TCP：Windows 数据面 recv 等不到/对端 RESET | 0.16.0 AFD 已知缺陷域；UDP 实测可用，TCP 走 ws2_32 extern | 29 |
+| extern 符号名 ≠ DLL 导出名（自造 win_ 前缀） | 没有别名机制：真名 + 内层命名空间防撞 | 29/32 |
+| `extern "库名"` 自动找导入库 | Windows 直链 DLL 时去掉库名字符串 | 32 |
+| 迭代器 entry.name 跨 next 收集 | 内部缓冲复用，必须 dupe | 27 |
+| 返回栈上缓冲切片 | 函数返回栈帧死，dupe 进调用方 | 30 |
+| 持锁 join worker | worker 拿不到锁吃不到哨兵：先解锁再 join | 31 |
+| 锁原语在 std.testing.io 上多线程挂 | 编排测试放 main(init.io)，测试只测原子/纯函数 | 31/15 |
+| doctest 书上有、0.16.0 无 | `zig test` 不编译文档示例：写显式 test 块 | 15 |
+| OPEN_MEMORY 标志误加 | 只对 :memory: 特殊文件名；加了标志文件库静默变内存库 | 32 |
+| packed struct 字段取地址 | 字段不按字节对齐：整个背板 @bitCast 出来再取 | 25 |
+| AST 字段名用 var | 关键字：改 variable | 33 |
+| u64 混合值演示求和溢出 panic | Debug 溢出即崩，用 +% | 31 |

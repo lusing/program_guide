@@ -73,6 +73,8 @@ test_one() { # test_one <目录>
     case "$(basename "$dir")" in
         16_build | 24_minigrep) test_project_example "$dir" ;;
         17_cinterop) test_plain_example "$dir" -lc ;;
+        # 32：Linux 链系统 sqlite3（需 libsqlite3-dev）；对应 Windows 的 winsqlite3.dll 直链
+        32_sqlite) test_plain_example "$dir" -lsqlite3 ;;
         18_cross) test_cross_example "$dir" ;;
         *) test_plain_example "$dir" ;;
     esac

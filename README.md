@@ -68,7 +68,7 @@
 - [swift](./swift) — Swift 6.3.3 教程（24 章对齐 cpp20/rust/go/zig 标准：可选/协议/some-any/actor/Sendable/swift-testing/SPM 特色细讲，23 个示例四层验证 format+build+test+run；scoop 6.4.0 坏包实测复盘，钉 6.3.3 + 环境三件套配方）
 - [csharp](./csharp) — C# 语言教程（45 章 + 45 示例，章号=示例号，零 NuGet 依赖：编译 + 逐个运行验证；C# 14 扩展成员实测；主线收束 MiniLang 解释器，37-42 书本实践篇，43-45 查缺补漏篇）
 - [wpf](./wpf) — WPF 编程指南（**C#/F#/C++/CLI 三语言**，25 章 / 21 示例章，骨架按《WPF编程基础》(清华 2018，OCR 目录) 12 章体系 + 现代 .NET 10 重写：XAML/布局/控件族谱 / 路由事件（含自定义）/ 绑定与 MVVM 核心四连 / 样式触发器模板（含换肤）/ 验证 / DataGrid / TreeView / 绘图（含 3D 一瞥）/ 动画（含路径动画）/ 异步 / 发布三形态 / 记事本+ 实战收官），03–23 章每章 csharp(XAML)+fsharp+C++/CLI 三份同功能实现——XAML 编译器只生成 C# 分部类，F#/C++ 走纯代码 UI；C++/CLI 走"混合模式 DLL + C# 启动器"路线（NETSDK1116 / WPF 四引用含 System.Xaml / 属性名遮蔽类型名 / template 关键字等实测硬事实见 docs/01 §8），`build.ps1`（pwsh 7 + VS MSBuild）clean 全量 0 失败、`smoke.ps1` 冒烟 61 exe 全过，详见 [wpf/README.md](./wpf/README.md)
-- [zig](./zig) — Zig 0.16 教程（24 章对齐 cpp20 标准：分配器/comptime/构建系统/交叉编译特色细讲，全部示例三层验证 fmt+test+运行；macOS Darwin x86_64 实测全绿，Apple Silicon 用 `-target aarch64-macos` 逐个交叉验证，21 章内联汇编含 x86_64/aarch64 双实现）
+- [zig](./zig) — Zig 0.16 教程（24→34 章：原 24 章分配器/comptime/构建/交叉编译 + 书本扩充篇 25–34 十章——二进制布局/编码流处理/SIMD/目录树/文件监视（Windows RDCW extern）/网络双协议（std.Io.net AFD 缺陷实录 + ws2_32 直调）/手写 HTTP/并发进阶（Io 原语迁移 + 线程池）/SQLite winsqlite3.dll 直链 comptime 行映射/Pratt 解释器/LRU 缓存服务器，取材《Systems Programming with Zig》《Learning Zig》两书 0.16 改写实测；33 个示例三层验证 fmt+test+运行；macOS/Linux/Windows 三平台实测，21 章内联汇编 x86_64/aarch64 双实现）
 
 ## 统一约定
 

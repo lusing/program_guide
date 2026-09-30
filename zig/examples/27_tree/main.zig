@@ -8,12 +8,8 @@ pub fn main(init: std.process.Init) !void {
     const err = std.debug;
     const cwd = std.Io.Dir.cwd();
 
-    // ═══ 27.1 元数据：statFile（follow_symlinks=false 是 lstat 语义——能"看见"链接本身）
-    const self_meta = try cwd.statFile(io, "main.zig", .{ .follow_symlinks = false });
-    err.print("main.zig：{d} 字节，kind={s}\n", .{ self_meta.size, @tagName(self_meta.kind) });
-    // mtime 是纳秒时间戳：Io.Timestamp
-
-    // ═══ 27.2 演示沙盒：搭一棵有层次的树（确定性：名字即内容）
+    // ═══ 27.2 演示沙盒：搭一棵有层次的树（确定性：名字即内容）。
+    // 注意：示例从仓库 zig/ 根目录运行（build.ps1 约定），演示一律自含沙盒——不碰 cwd 里的既有文件。
     const sandbox = "tree_demo";
     try cwd.deleteTree(io, sandbox); // 幂等重来
     try cwd.createDirPath(io, sandbox);
@@ -22,6 +18,11 @@ pub fn main(init: std.process.Init) !void {
     try cwd.createDirPath(io, sandbox ++ "/sub");
     try cwd.writeFile(io, .{ .sub_path = sandbox ++ "/sub/c.txt", .data = "CCCCCC" });
     try cwd.writeFile(io, .{ .sub_path = sandbox ++ "/sub/d.log", .data = "D" });
+
+    // ═══ 27.1 元数据：statFile（follow_symlinks=false 是 lstat 语义——能"看见"链接本身）
+    const self_meta = try cwd.statFile(io, sandbox ++ "/a.md", .{ .follow_symlinks = false });
+    err.print("{s}：{d} 字节，kind={s}\n", .{ sandbox ++ "/a.md", self_meta.size, @tagName(self_meta.kind) });
+    // mtime 是纳秒时间戳：Io.Timestamp
 
     // ═══ 27.3 通配符：极简 glob（只支持 * 与 ?，够用且可测）
     std.debug.assert(matchGlob("a.md", "*.md"));
