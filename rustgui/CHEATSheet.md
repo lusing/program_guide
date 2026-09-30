@@ -1,8 +1,8 @@
-# Rust GUI 速查表（egui 0.36 / iced 0.14 / Slint 1.18）
+# Rust GUI 速查表（egui 0.36 / iced 0.14 / Slint 1.18 / GTK4 0.11）
 
-三框架横向速查 + 坑位索引。详细讲解见对应章（N.M = 第 N 章 M 节）。
+四框架横向速查 + 坑位索引。详细讲解见对应章（N.M = 第 N 章 M 节）。
 
-## 1. 应用骨架（02 / 10 / 17）
+## 1. 应用骨架（02 / 10 / 17 / 24）
 
 ```rust
 // egui：App::ui（0.34 起取代 update）
@@ -27,26 +27,34 @@ let app = AppWindow::new()?; app.run()
 // build.rs: slint_build::compile("ui/app.slint")
 ```
 
-## 2. 事件与状态（03 / 10-11 / 18）
+```rust
+// GTK：Application + activate 信号（真窗口腿）；无头腿 gtk::init() 直构控件
+let app = gtk::Application::builder().application_id("org.x.Y").build();
+app.connect_activate(|app| { /* 建窗口 */ });
+app.run()
+```
 
-| 任务 | egui | iced | Slint |
-|---|---|---|---|
-| 按钮 | `if ui.button("X").clicked() {}` | `button("X").on_press(Msg::X)` | `TouchArea { clicked => {} }` |
-| 输入 | `ui.text_edit_singleline(&mut s)` | `text_input(ph, &s).on_input(Msg)` | `LineEdit { edited(t) => {} }` |
-| 勾选 | `ui.checkbox(&mut b, "标签")` | `checkbox(b).label(..).on_toggle(..)` | TouchArea 自绘或 std CheckBox |
-| 选中值变化 | Response.changed() | on_change(Fn(T)->Msg) | 属性绑定自动 |
+## 2. 事件与状态（03 / 10-11 / 18 / 25）
 
-## 3. 布局（04 / 12 / 19）
+| 任务 | egui | iced | Slint | GTK4 |
+|---|---|---|---|---|
+| 按钮 | `if ui.button("X").clicked() {}` | `button("X").on_press(Msg::X)` | `TouchArea { clicked => {} }` | `btn.connect_clicked(\|_\| {})` |
+| 输入 | `ui.text_edit_singleline(&mut s)` | `text_input(ph, &s).on_input(Msg)` | `LineEdit { edited(t) => {} }` | `entry.connect_activate(\|e\| e.text())` |
+| 勾选 | `ui.checkbox(&mut b, "标签")` | `checkbox(b).label(..).on_toggle(..)` | TouchArea 自绘或 std CheckBox | `check.connect_toggled(\|c\| c.is_active())` |
+| 选中值变化 | Response.changed() | on_change(Fn(T)->Msg) | 属性绑定自动 | `connect_active_notify`（程序赋值靠 notify） |
+| 声明式联动 | ——（每帧重算即联动） | ——（update 集中改） | `property <=> other` | `a.bind_property("x", &b, "y").build()` |
 
-| 概念 | egui | iced | Slint |
-|---|---|---|---|
-| 垂直/水平 | `ui.vertical/horizontal` | `column![]/row![]` | `VerticalLayout/HorizontalLayout` |
-| 弹性 | `Length::Fill(FillPortion)` | `Length::Fill/FillPortion` | `horizontal-stretch: n` |
-| 网格 | `egui::Grid` | ——（row/column 拼） | `GridLayout` |
-| 面板/容器 | `egui::Panel::left(..).show(ui, ..)` | `container(c).center(Fill)` | 布局盒嵌套 |
-| 滚动 | `ScrollArea::vertical()` | `scrollable(..)` | `ListView`（虚拟化） |
+## 3. 布局（04 / 12 / 19 / 26）
 
-## 4. 自绘（05 / 15 / 20）
+| 概念 | egui | iced | Slint | GTK4 |
+|---|---|---|---|---|
+| 垂直/水平 | `ui.vertical/horizontal` | `column![]/row![]` | `VerticalLayout/HorizontalLayout` | `gtk::Box::new(Orientation, spacing)` |
+| 弹性 | `Length::Fill(FillPortion)` | `Length::Fill/FillPortion` | `horizontal-stretch: n` | `set_hexpand(true)` |
+| 网格 | `egui::Grid` | ——（row/column 拼） | `GridLayout` | `grid.attach(列,行,宽,高)`（宽高即跨行列） |
+| 面板/容器 | `egui::Panel::left(..).show(ui, ..)` | `container(c).center(Fill)` | 布局盒嵌套 | 容器控件嵌套（Box/Grid/Overlay/FlowBox） |
+| 滚动 | `ScrollArea::vertical()` | `scrollable(..)` | `ListView`（虚拟化） | `ScrolledWindow::set_child(..)` |
+
+## 4. 自绘（05 / 15 / 20 / 27）
 
 ```rust
 // egui：painter 命令式（弧线手算点列 → Shape::line）
@@ -65,17 +73,24 @@ impl canvas::Program<Msg> for P { fn draw(..) -> Vec<Geometry> {
 Path { commands: root.arc-cmd; stroke: #4a9eff; stroke-width: 10px; }
 ```
 
-三家都没有现成 arc API——点列/A 命令手算是通识。
+```rust
+// GTK：DrawingArea 回调拿 &cairo::Context（GTK 4.16 起，snapshot 画法已断代）
+area.set_draw_func(move |_, cr, w, h| draw_ring(cr, w as f64, h as f64, frac));
+cr.arc(cx, cy, r, start, start + sweep * frac); let _ = cr.stroke();
+```
 
-## 5. 异步与并发（09 / 14 / 21）
+四家都没有现成 arc-to-API 的糖——点列/A 命令/cairo arc 各自手算是通识；GTK 的独门是
+**绘制可纯函数化 + ImageSurface 无头像素断言**（27 章唯一的真·光栅级无头验证）。
 
-| | egui | iced | Slint |
-|---|---|---|---|
-| 一次性请求 | 后台线程 + mpsc + `ctx.request_repaint` | `Task::perform(async, Msg)` | `slint::spawn`/线程 + `invoke_from_event_loop` |
-| 持续流 | request_repaint 循环 | `Subscription`（`time::every`） | Timer / 后台 invoke |
-| 唤醒 UI 线程 | `ctx.request_repaint_from` | 消息即重绘 | `invoke_from_event_loop` |
+## 5. 异步与并发（09 / 14 / 21 / 29）
 
-## 6. 无头测试三通道（02 / 10 / 17-18）
+| | egui | iced | Slint | GTK4 |
+|---|---|---|---|---|
+| 一次性请求 | 后台线程 + mpsc + `ctx.request_repaint` | `Task::perform(async, Msg)` | `slint::spawn`/线程 + `invoke_from_event_loop` | `gio::spawn_blocking` + async-channel |
+| 持续流 | request_repaint 循环 | `Subscription`（`time::every`） | Timer / 后台 invoke | `glib::timeout_add_local(Duration, \|\| ControlFlow)` |
+| 唤醒 UI 线程 | `ctx.request_repaint_from` | 消息即重绘 | `invoke_from_event_loop` | `glib::spawn_future_local` 收通道 |
+
+## 6. 无头测试四通道（02 / 10 / 17-18 / 24）
 
 ```rust
 // egui_kittest
@@ -101,9 +116,20 @@ el.set_accessible_value("42");               // a11y 输入通道（触发 edite
 send_mouse_click(&app, x, y);                 // 坐标注入（4 行官方同款 shim）
 ```
 
+```rust
+// GTK：#[gtk::test]（官方，串行线程池自动 init）+ 句柄直驱直断
+#[gtk::test]
+fn t() {
+    let c = Counter::new();
+    c.button.emit_clicked();                  // 直发信号，同步派发
+    while ctx.pending() { ctx.iteration(false); }   // 排空主循环
+    assert_eq!(c.label.text(), "count: 3");
+}
+```
+
 ## 7. 断代翻译表（旧教程 → 本教程版本）
 
-| 旧写法（0.31-/0.12-/1.17-） | 新写法 |
+| 旧写法（0.31-/0.12-/1.17-/GTK 4.12-） | 新写法 |
 |---|---|
 | `App::update(&mut self, ctx, frame)` | `App::ui(&mut self, ui, frame)`（02.2） |
 | `SidePanel::left("id").show(ctx, ..)` | `egui::Panel::left("id").show(ui, ..)`（04.1） |
@@ -113,6 +139,9 @@ send_mouse_click(&app, x, y);                 // 坐标注入（4 行官方同�
 | `impl button::StyleSheet` | `.style(fn(&Theme, Status) -> Style)`（13.2） |
 | `slint::testing::send_mouse_click(&h, x, y)` | i-slint-backend-testing + shim（17.3） |
 | `Subscription::tick` | `iced::time::every(d)`（14.3） |
+| DrawingArea 的 snapshot 画法（书 4.12 时代） | `set_draw_func(\|_, cr, w, h\| ..)` cairo 回调（27.1） |
+| `glib::MainContext::channel()` | async-channel crate（send_blocking/recv().await）（29.2） |
+| `ListStore<T>` 泛型字段 | 0.22 起裸 `ListStore`，泛型在 `new::<T>()` 方法上（30 坑位） |
 
 ## 8. 坑位总索引（按框架，章号回链）
 
@@ -150,9 +179,23 @@ send_mouse_click(&app, x, y);                 // 坐标注入（4 行官方同�
 | % 是单位（Math.mod）；set_row_data 放回；selftest 别忘接回调 | 22 |
 | percent/length 不混三目；生成类型无 serde；模型聚合 Rust 算 | 23 |
 
+**GTK4**
+| 坑 | 章 |
+|---|---|
+| gtk::init 跨线程 panic（#[gtk::test] 正解）；无 gtk::main_iteration；MSVC 要 --msvc-syntax | 24 |
+| Entry 文本在 EditableExt；is_active vs active；set_active 只保证 notify；transform_to 显式标注 | 25 |
+| Revealer 动画破坏两跑一致（transition None）；CSS 解析错只走 stderr；provider 是自由函数 | 26 |
+| draw 回调 cairo 化（断代）；data() 的 NonExclusive；ARGB32 预乘 BGR A；嵌套 move 偷捕获 | 27 |
+| factory bind 无窗不触发（隐形窗口技巧）；Option 泛型两代并存；locale collate 只断言排列 | 28 |
+| template 路径相对源文件；XML id≠字段名运行时 abort；@implements Accessible E0425；无 MainContext::channel | 29 |
+| GSettings Windows 不落盘；connect_notify 要 Send+Sync（local 版）；item() 临时值 E0716 | 30 |
+
 ## 9. 版本事实速记
 
 - egui 0.36.2：MSRV 1.95；wgpu 默认渲染器；github master 领先已发布版（Role/corner_radius 改名未发布）
 - iced 0.14.0：rust-version 1.88；默认 features 含 wgpu+tiny-skia；iced_test 是 0.14 新增
 - Slint 1.18.1：三许可（GPL/royalty-free/商业）；默认 femtovg+software 渲染（不碰 wgpu）
-- 本 workspace：730 依赖包，wgpu 双版本（eframe→30、iced→27），edition 2024
+- gtk4 0.11.5（配 GTK 4.22/gvsbuild 2026.8.0）：绑定随 GTK 小版本走（v4_2…v4_24 feature 门，
+  本教程零 feature）；gtk-rs master 是 0.12.0-alpha 未发布；依赖树仅 +26 包（无 GPU）；
+  GTK 本体 LGPL（Windows 动态链接可闭源）
+- 本 workspace：756 依赖包，wgpu 双版本（eframe→30、iced→27），edition 2024

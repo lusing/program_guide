@@ -81,7 +81,7 @@ let saved_len = fs::read_to_string(&path)?.len();         // 回调已即时落�
 assert_eq!(load(&path).len(), 2);                         // 重启读档一致
 ```
 
-九处对照点全部机器判定：模型条数、done 计数、划线状态（模型侧）、落盘字节数、读档往返。**同一张考卷，三份答卷的判卷标准完全一致**——这就是 24 章横评的底座。
+九处对照点全部机器判定：模型条数、done 计数、划线状态（模型侧）、落盘字节数、读档往返。**同一张考卷，多份答卷的判卷标准完全一致**——这就是 31 章横评的底座。
 
 ## 23.5 运行与输出
 
@@ -110,4 +110,4 @@ items=2 done=1 saved=84 bytes
 
 ---
 
-上一章：[22 · Slint 模型与 ListView](22-slint-models.md) ｜ 下一章：[24 · 三框架横评与选型](24-comparison.md) ｜ 返回：[README](../README.md)
+上一章：[22 · Slint 模型与 ListView](22-slint-models.md) ｜ 下一章：[24 · GTK4 最小应用](24-gtk-hello.md) ｜ 返回：[README](../README.md)

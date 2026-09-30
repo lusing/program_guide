@@ -30,7 +30,7 @@ enum Message {
 }
 ```
 
-注意 egui 版"勾选"直接改 `&mut done`（状态就地改），iced 版必须把意图翻译成 `ToggleDone(text)` 消息走 update——同一功能的两种哲学，24 章详细对账。
+注意 egui 版"勾选"直接改 `&mut done`（状态就地改），iced 版必须把意图翻译成 `ToggleDone(text)` 消息走 update——同一功能的两种哲学，31 章详细对账。
 
 ## 16.2 消息带载荷：按文本定位条目
 

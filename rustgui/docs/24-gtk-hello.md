@@ -10,7 +10,7 @@ gtk4 crate（0.11.5，本教程钉版）只是 gir 生成的安全封装。Windo
 **gvsbuild** 路线——gvsbuild 项目在 GitHub Releases 提供用 MSVC 预编译的全栈 zip，
 解压即用，与本仓库的 rustc（纯 MSVC）天然配套：
 
-```text
+```
 三步装好（一次性）：
   1. 下载 gvsbuild release zip（如 GTK4_Gvsbuild_2026.8.0_x64.zip，含 GTK 4.22）
      → 解压到 G:\gtk（bin/ lib/ include/ 平铺在根；zip 自带 pkg-config.exe）

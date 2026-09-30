@@ -7,7 +7,7 @@ param(
 
 # 真窗口人工验证辅助：逐个启动示例（不带 --selftest，开真窗口），
 # 前置 + 取窗口矩形 + 截屏存 build/gui-shots/NN.png，然后关闭。
-# 用法：pwsh -File tools/gui-shots.ps1            全部 22 个
+# 用法：pwsh -File tools/gui-shots.ps1            全部 29 个
 #       pwsh -File tools/gui-shots.ps1 02_egui_hello  只截一个
 
 $ErrorActionPreference = "Stop"
@@ -101,3 +101,4 @@ $summary | ForEach-Object { Write-Host $_ }
 $okCount = ($summary | Where-Object { $_ -match ' OK ' }).Count
 Write-Host "`n[Summary] 截图成功 $okCount / $($Names.Count)（产物 build/gui-shots/）"
 exit ($(if ($okCount -eq $Names.Count) { 0 } else { 1 }))
+
