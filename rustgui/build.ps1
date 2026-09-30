@@ -201,5 +201,17 @@ $fail = 0; $pass = 0
 foreach ($d in $dirs) {
     if (Test-Example $d.FullName) { $pass++ } else { $fail++ }
 }
+
+# ---- 文档五关核查（-All 末尾自动跑；全绿才算过）----
+$py = Get-Command python -ErrorAction SilentlyContinue
+if ($py) {
+    Write-Host "`n[Docs] 五关机器核查" -ForegroundColor Cyan
+    & python (Join-Path $projectRoot "tools\check_docs.py") 2>&1 | Tee-Object -Variable docsOut | Write-Host
+    if ($LASTEXITCODE -ne 0) { $fail++ }
+}
+else {
+    Write-Host "[Docs] 未找到 python，跳过五关核查" -ForegroundColor Yellow
+}
+
 Write-Host "`n[Summary] 通过 $pass 失败 $fail" -ForegroundColor $(if ($fail -eq 0) { "Green" } else { "Red" })
 exit ($(if ($fail -gt 0) { 1 } else { 0 }))

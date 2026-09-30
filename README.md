@@ -63,6 +63,7 @@
 - [OpenCL](./OpenCL) — OpenCL Windows 教程，使用 Visual Studio + CUDA CL 头文件验证
 - [ruby](./ruby) — Ruby 4.0 教程（24 章对齐 julia/haskell/elixir 标准：类与模块/Data/Enumerable/模式匹配/块与闭包/元编程/GC 与性能/标准库/线程/Ractor 并行/Fiber/Fiddle FFI 特色细讲，23 个示例（02–24）双层验证：运行层六条判定（退出码 0 + stderr 空 + stdout 非空 + 无控制字符 + 结束标记 + 诊断字样兜底）+ minitest 测试层，双入口 `run-all.sh` / `build.ps1` 全绿；24 为迷你 Markdown→HTML 渲染器压轴（纯函数引擎 + 14 条端到端测试）；输出确定性纪律（不打印耗时/随机值，文档引用 build 产物逐字节一致）；Ruby 4.0.7 实测，CHEATSheet 收录 **274 条实测坑位**（4.0 chilled strings 告警 / case-in 不能单行 / Ractor `.take` 已删 / minitest 6 拆 mock / `Time#utc` 原地修改 / ensure return 吞异常等），详见 [ruby/README.md](./ruby/README.md)）
 - [rust](./rust) — Rust 教程与示例（24 章 + 23 个 cargo 工程），四层验证：fmt + clippy `-D warnings` + test + run；macOS 12.7 上用 MacPorts rustc **1.98.1** 实测 23/23 通过（Windows scoop 同版本亦通过），双入口 `run-all.sh` / `build.ps1` 判定一致；详见 [rust/README.md](./rust/README.md) 的「macOS 上的兼容性」节
+- [rustgui](./rustgui) — Rust GUI 教程（**三框架三范式 24 章**：egui 0.36 即时模式 01–09 / iced 0.14 Elm 架构 10–16 / Slint 1.18 声明式 DSL 17–23 / 横评选型 24），**章号 = 示例号**（22 个 cargo 工程，01/24 无示例），三大断代全按新 API 实测编写（egui 0.34/0.35 `App::ui`+统一 Panel、iced 0.13 删 Sandbox+Task、Slint 1.18 移除 `slint::testing`），特色是**三条官方无头测试通道**（egui_kittest / iced_test / i-slint-backend-testing）让 GUI 示例全部 `--selftest` 自动判卷；同一待办应用三份实现（09/16/23）供 24 章横评量化；rustc 1.98.1 实测 `-All` 22/22 全绿 + `tools/check_docs.py` 五关全过；CHEATSheet 收录**三框架断代翻译表 + 60+ 条实测坑位**（egui_plot 版本错位 +1、iced_test &str 全等匹配、Slint 元素 id 带组件前缀等），详见 [rustgui/README.md](./rustgui/README.md)
 - [commonlisp](./commonlisp) — Common Lisp 教程与示例（SBCL + GNU CLISP **双实现**，33 章 = 27 章语言/工程主线 + **书本实践篇 28–33**（按《Practical Common Lisp》六个 Practical：CD 数据库 where 宏三代 / 单元测试框架 / 可移植路径名库 / 垃圾邮件过滤器（有理数算术纪律）/ 二进制+ID3 合成回读 / HTML 解释器 vs 宏编译器对账）），Linux（WSL2，SBCL 2.6.8 + CLISP 2.49.95）实测 32 个示例 × **双通道**：27 个可移植示例 SBCL 与 CLISP 的 stdout **逐字节一致**（跨实现比对为第五条判定）+ 5 个 SBCL 专属章（ASDF/run-program/线程/FFI sb-alien/性能），`run-all.sh` 59/59 全绿，双入口 `build.ps1`；正文 `; =>` 断言由 `verify-guide.py` 在 docs/ 上逐条回跑（mismatch 0）；22 章收录 **27 条双实现实测差异**总账 + CHEATSheet 报错速查
 - [sdl2](./sdl2) — SDL2 C++ 教程与示例（11 章 + 10 个单文件示例，跨平台代码），macOS 兼容性已校验：Apple clang 16.0.0 + MacPorts SDL2 2.32.10 下 `run-all.sh` 双通道（shared 动态 / static 静态带 frameworks）**10 示例 × 2 通道 = 20/20 通过**，`SDL_VIDEODRIVER=dummy` 无窗口会话 10/10 通过；校验逼出并修掉 3 处真实缺陷（02 无条件要 `SDL_RENDERER_ACCELERATED` 在 dummy 下必然失败→改事实降级、10 的 `unique_ptr` 析构晚于 `SDL_Quit()`→显式 `reset()`、06 的帧长/fps 无法字节比对→区间内只留跨机器恒真结论），新增 `run-all.sh` 并让 `build.ps1` 判定逐条对齐，CHEATSheet 收录 **22 条实测坑位**，详见 [sdl2/README.md](./sdl2/README.md)
 - [swift](./swift) — Swift 6.3.3 教程（24 章对齐 cpp20/rust/go/zig 标准：可选/协议/some-any/actor/Sendable/swift-testing/SPM 特色细讲，23 个示例四层验证 format+build+test+run；scoop 6.4.0 坏包实测复盘，钉 6.3.3 + 环境三件套配方）
@@ -146,6 +147,7 @@
 46. [ruby](./ruby)
 47. [sel4](./sel4)
 48. [cppgui](./cppgui)
+49. [rustgui](./rustgui)
 
 ## 工具链说明
 

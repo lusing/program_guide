@@ -6,7 +6,7 @@
 
 egui 把界面写在 Rust 函数里（即时模式），iced 把界面写成 Rust 值的树（Elm 架构），Slint 干脆发明了一门**界面语言**——`.slint` 文件编译期生成 Rust 代码，Rust 侧只拿组件句柄：
 
-```text
+```
 .slint 源文件 ──build.rs(slint_build 编译)──▶ 生成的 Rust 组件类型 ──▶ Rust 侧读写属性/调回调
 ```
 

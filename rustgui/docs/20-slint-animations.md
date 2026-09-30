@@ -103,7 +103,7 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 20_slint_animations
 ```text
 ==== 20 slint 动画与 Path 开始 ====
 knob-x: 20.0 -> 120.0 (mock +260ms 后到位)
-arc(0.5) = M 40.51 139.49 A 70 70 0 0 1 139.49 139.49
+arc(0.5) = M 40.50 139.50 A 70 70 0 0 1 90.00 20.00
 ==== 20 slint 动画与 Path 结束 ====
 ```
 
