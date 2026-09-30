@@ -102,7 +102,12 @@ def blocks_of(md_path):
 
 
 def fit_in_order(block, seq):
-    """顺序敏感子序列匹配：块每行按序出现在 seq 里，中间允许省略。"""
+    """顺序敏感子序列匹配：块每行按序出现在 seq 里，中间允许省略。
+
+    产物侧的 NUL 字节按 ␀（U+2400）归一化后再比——15 章的 Fullscreen
+    协议输出含 NUL，文档侧以可见符号代之（git 不收二进制 .md）。
+    """
+    seq = [ln.replace("\x00", "␀") for ln in seq]
     p = 0
     for b in block:
         while p < len(seq):
