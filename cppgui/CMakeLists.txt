@@ -163,4 +163,8 @@ endif()
 # ---- 四、tvision ----
 if(CPPGUI_ENABLE_TVISION)
     cppgui_example(20_tv_hello tvision)
+    cppgui_example(21_tv_menus_dialogs tvision)
+    cppgui_example(22_tv_views tvision)
+    cppgui_example(23_tv_colors_forms tvision)
+    cppgui_example(24_tv_editor tvision)
 endif()

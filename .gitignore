@@ -121,3 +121,4 @@ algol68/examples/**/*.so
 
 # cppgui：构建产物（wx 预构建库、CMake 树、示例二进制）
 cppgui/build/
+cppgui/imgui.ini
