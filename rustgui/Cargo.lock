@@ -2627,6 +2627,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "gtk_app"
+version = "0.1.0"
+dependencies = [
+ "gtk4",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "gtk_custom_async"
 version = "0.1.0"
 dependencies = [

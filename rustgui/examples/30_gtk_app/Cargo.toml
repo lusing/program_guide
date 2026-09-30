@@ -1,0 +1,11 @@
+[package]
+name = "gtk_app"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# 同 24 章：钉 crates.io 0.11.5，重命名 gtk（官方惯例）。
+gtk = { package = "gtk4", version = "0.11.5" }
+# 持久化（对齐 16/23 章：平行 serde 结构，GObject 不直接 derive serde）。
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
