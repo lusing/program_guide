@@ -1,0 +1,9 @@
+[package]
+name = "iced_canvas"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# canvas 是独立 feature（默认不开）；tokio 供 time::every 驱动自动播放
+iced = { version = "0.14", features = ["canvas", "tokio"] }
+iced_test = "0.14"
