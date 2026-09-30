@@ -8,6 +8,8 @@
 //      egui 自动预约重绘（kittest 里动画时长为 0，瞬时到位）。
 //   3. 持久化：eframe "persistence" feature + App::save 挂钩，
 //      退出/定期自动序列化到 app 数据目录；启动时从 cc.storage 恢复。
+//   4. 中文字体：0.36.2 没有系统字体回退——CustomApp::new 里注册
+//      系统 CJK 字体（07 章方案），否则真窗口里中文全是豆腐块。
 //
 // 官方参考：https://docs.rs/egui/latest/egui/（Widget trait / Context::animate_bool_with_time）
 // ============================================================
@@ -82,6 +84,41 @@ impl egui::Widget for ToggleSwitch {
     }
 }
 
+/// 07 章同款：从系统字体目录找一枚中文字体（Windows 命中黑体）
+fn load_cjk_font() -> Option<Vec<u8>> {
+    const CANDIDATES: &[&str] = &[
+        "C:\\Windows\\Fonts\\simhei.ttf",
+        "C:\\Windows\\Fonts\\msyh.ttc",
+        "/System/Library/Fonts/PingFang.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+    ];
+    CANDIDATES.iter().find_map(|p| std::fs::read(p).ok())
+}
+
+/// 不注册的后果只在真窗口现形：满屏 ◻ 豆腐块。无头通道（kittest）
+/// 只走无障碍树、从不光栅化字形——cargo test 全绿也发现不了，
+/// 本仓库 tools/gui-shots.ps1 的真窗口截图就是为抓这类问题建的。
+fn install_cjk_font(cc: &eframe::CreationContext<'_>) {
+    if let Some(bytes) = load_cjk_font() {
+        let mut fonts = egui::FontDefinitions::default();
+        fonts.font_data.insert(
+            "cjk".into(),
+            std::sync::Arc::new(egui::FontData::from_owned(bytes)),
+        );
+        fonts
+            .families
+            .entry(egui::FontFamily::Proportional)
+            .or_default()
+            .insert(0, "cjk".into());
+        fonts
+            .families
+            .entry(egui::FontFamily::Monospace)
+            .or_default()
+            .push("cjk".into());
+        cc.egui_ctx.set_fonts(fonts);
+    }
+}
+
 /// 需要跨启动保存的状态（serde 序列化）
 #[derive(Clone, Default, serde::Serialize, serde::Deserialize)]
 struct Persist {
@@ -98,6 +135,9 @@ const STORAGE_KEY: &str = "egui_custom_state";
 
 impl CustomApp {
     fn new(cc: &eframe::CreationContext<'_>) -> Self {
+        // 先把中文字体装上（真窗口与无头共用这一处入口）
+        install_cjk_font(cc);
+
         // 启动恢复：persistence feature 开启时 eframe 会带着上次的存储调进来
         let state = cc
             .storage

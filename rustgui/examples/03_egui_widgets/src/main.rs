@@ -9,8 +9,8 @@
 //   3. 菜单栏 MenuBar + Popup::menu + 浮动 Window——即时模式下
 //      这些"有状态"的控件全靠 Id 跨帧记状态。
 //
-// 【坑】02-06 章 UI 文本保持 ASCII：egui 默认字体不含 CJK，
-//      kittest 的 MissingGlyphPolicy::Panic 会让无头测试直接炸
+// 【坑】02-06 章 UI 文本保持 ASCII：egui 0.36 内置字体无 CJK，
+//      缺字形只画替换符（豆腐块），无头测试与真窗口都不报错
 //      （07 章注册中文字体后放开）。
 //
 // 官方参考：https://docs.rs/egui/latest/egui/

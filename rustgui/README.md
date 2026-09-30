@@ -126,11 +126,17 @@ cargo test         # 无头交互测试（与 selftest 同一通道）
 对**当前二进制**现场重跑的顺序敏感子序列命中、每章坑位 ≥3、docs 链接有效、本 README 导航含
 全部 24 章。
 
+无头通道测不到字形（kittest 只走无障碍树、从不光栅化）：**真窗口层**用
+`tools/gui-shots.ps1` 逐例启动真窗口截图（`tools/gui-contact-sheet.ps1` 拼总览图人工复核），
+截到 `build/gui-shots/*.png`。
+
 ### 验证状态（2026-10-01）
 
 - `build.ps1 -All` **22/22 全绿**（含三条无头通道 × 22 示例的交互测试）
 - 三条无头通道均为官方设施：egui=egui_kittest（AccessKit 查询）、iced=iced_test（simulator）、
   slint=i-slint-backend-testing（ffi + ElementHandle 查询 + a11y 注入）
+- 真窗口截图 22/22：首跑抓出 egui 08/09 缺 CJK 字体注册（无头全绿、真窗口满屏豆腐块——
+  0.36.2 无系统字体回退），已修复并复验
 
 ## 相关教程
 

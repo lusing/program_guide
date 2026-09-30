@@ -4,7 +4,7 @@
 
 ## 7.1 为什么前五章不敢用中文
 
-egui 内置字体只有拉丁 + 少量符号，**没有 CJK 字形**。真窗口里 eframe 的 `system_font_fallback`（`NativeOptions` 默认开）会在运行时借用系统字体兜底，中文能显示；但 **kittest 无头通道没有这层兜底**——默认 `MissingGlyphPolicy::Panic` 在文本整形阶段遇到缺字形直接 panic。所以 02–06 章的 UI 文本全部 ASCII，本章把字体问题正面解决掉，之后各章放开中文。
+egui 内置字体只有拉丁 + 少量符号，**没有 CJK 字形**。缺字形的字符只会被画成替换符 ◻（豆腐块），而且**全程无报错**：kittest 无头通道只走无障碍树、从不光栅化字形；0.36.2 的 eframe 也没有系统字体回退（github master 已加入 `NativeOptions::system_font_fallback` 与 kittest 的 `MissingGlyphPolicy::Panic`，**都未发布**）。所以 02–06 章的 UI 文本全部 ASCII；本章注册字体正面解决，08/09 章复用本章方案。
 
 两条路线：
 
@@ -78,13 +78,18 @@ ui.horizontal(|ui| {
 
 三层作用域：`ctx.set_style`（全局）→ `ui.style_mut()`（当前 Ui 及子树）→ 单个控件的 builder 参数。改完下一帧自动生效——即时模式没有"使样式失效"这种事。
 
-## 7.4 无头断言：中文进树 = 字体成功
+## 7.4 无头断言的边界：进树 ≠ 有字形
 
 ```rust
-// ═══ 7.4 缺字形会 panic，所以"中文标签能查到"就是注册成功的证明 ═══
+// ═══ 7.4 标签查得到只证明文本进了无障碍树；字形画没画出来，无头通道看不见 ═══
 assert!(harness.query_by_label("中文字体与主题").is_some());
+```
 
-// 主题翻转的可观察证据：按钮文案换成了反向邀请
+要诚实面对边界：0.36.2 的 kittest 不光栅化任何像素，`query_by_label` 拿到的是原始字符串——**就算字体没注册，这条断言照样过**。selftest 里真正证明字体装上的是 `font=simhei.ttf` 那行输出（文件读到了、`set_fonts` 调了）；字形的最终裁决只能靠真窗口——本仓库 `tools/gui-shots.ps1` 逐例启动真窗口截图核对，08/09 章的豆腐块事故就是它抓到的。
+
+主题翻转的证据链则完全无头可信（不涉及字形，只涉及文案换向）：
+
+```rust
 harness.get_by_label("切换到亮色").click();
 harness.run();
 assert!(harness.query_by_label("切换到暗色").is_some());
@@ -109,7 +114,7 @@ font=simhei.ttf dark=false
 
 ## 坑位清单
 
-- **kittest 见中文就 panic**：默认字体无 CJK，`MissingGlyphPolicy::Panic` 在整形阶段炸。要么先注册字体（本例），要么 `Harness::builder().allow_missing_glyphs()`（快而脏，断言不了中文标签）。eframe 的 `system_font_fallback` 只救真窗口，救不了无头测试。
+- **豆腐块在无头测试里隐形（08/09 章真实事故）**：缺字形不 panic、不报错——无头只查无障碍树，0.36.2 真窗口又没有系统字体回退。08/09 章初稿 UI 用了中文却没注册字体，`cargo test` 与 `--selftest` 全绿，真窗口截图（`tools/gui-shots.ps1`）才发现满屏 ◻。master 已加入 kittest 的 `MissingGlyphPolicy::Panic` 与 eframe 的 `system_font_fallback`，**均未发布**——这两条 API 曾以"master 事实"的身份混进本教程初稿，是断代期照 master 写文档的典型幻觉。
 - **`FontDefinitions.font_data` 的值是 `Arc<FontData>`**：旧教程的 `insert(name, FontData::from_static(..))` 编译不过；也没有 `FontDefinitions::insert` 这种便捷方法，直接操作两个 map。
 - **github master ≠ crates.io**：本教程编写时 github 主线已把 `WidgetVisuals::rounding` 改名 `corner_radius` 相关重构（`Role` vs `WidgetType` 等），但**未发布**。以 docs.rs（= crates.io）和本机 registry 源码为准，别照 master 抄。
 - **TTC 集合字体有兼容风险**：`.ttc` 是字体集合，解析器支持度不一；候选列表把单文件 `.ttf`（simhei）排在 `.ttc`（msyh）前面就是这个原因。

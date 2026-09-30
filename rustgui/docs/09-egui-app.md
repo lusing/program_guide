@@ -130,6 +130,7 @@ items=6 done=1 trend-points=8 chunks=4
 - **闭包里借了 items 就别再借 app**：勾选回调里直接 `app.record_trend()` 会 E0502。惯例是闭包内摆 `toggled/remove` 标志位，闭包外统一处理。
 - **mpsc::Receiver 不能 Clone**：`Todos` 不能 derive Clone，selftest 用 `snapshot()` 拆出可 Clone 的证据字段。
 - **worker 的 sleep 破坏帧确定性**：真窗口里 60ms/块合理，无头里消息必须"发完即达"。`fast_worker` 标志一刀切开两种节奏，测试与产品共用全部逻辑。
+- **中文 UI 必须注册字体（真窗口验证教训）**：0.36.2 的 eframe 无系统字体回退，无头全绿 ≠ 真窗口正常——本例初稿没注册字体，无头 22 项全过，真窗口截图才发现满屏豆腐块。`run_native` 闭包里 `install_cjk_font(cc)`（07 章方案）。
 
 ---
 

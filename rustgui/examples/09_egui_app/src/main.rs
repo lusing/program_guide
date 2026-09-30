@@ -247,6 +247,41 @@ impl eframe::App for Todos {
     }
 }
 
+/// 07 章同款：从系统字体目录找一枚中文字体（Windows 命中黑体）
+fn load_cjk_font() -> Option<Vec<u8>> {
+    const CANDIDATES: &[&str] = &[
+        "C:\\Windows\\Fonts\\simhei.ttf",
+        "C:\\Windows\\Fonts\\msyh.ttc",
+        "/System/Library/Fonts/PingFang.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+    ];
+    CANDIDATES.iter().find_map(|p| std::fs::read(p).ok())
+}
+
+/// 0.36.2 没有系统字体回退：不注册，真窗口里 UI 中文全是豆腐块。
+/// 无头通道（kittest）不光栅化字形，cargo test 全绿也发现不了——
+/// 这正是真窗口截图验证（tools/gui-shots.ps1）存在的理由。
+fn install_cjk_font(cc: &eframe::CreationContext<'_>) {
+    if let Some(bytes) = load_cjk_font() {
+        let mut fonts = egui::FontDefinitions::default();
+        fonts.font_data.insert(
+            "cjk".into(),
+            std::sync::Arc::new(egui::FontData::from_owned(bytes)),
+        );
+        fonts
+            .families
+            .entry(egui::FontFamily::Proportional)
+            .or_default()
+            .insert(0, "cjk".into());
+        fonts
+            .families
+            .entry(egui::FontFamily::Monospace)
+            .or_default()
+            .push("cjk".into());
+        cc.egui_ctx.set_fonts(fonts);
+    }
+}
+
 fn main() -> eframe::Result {
     let selftest = std::env::args().nth(1).is_some_and(|a| a == "--selftest");
     if selftest {
@@ -261,7 +296,10 @@ fn main() -> eframe::Result {
     eframe::run_native(
         "09_egui_app · 待办管理器",
         options,
-        Box::new(|_cc| Ok(Box::new(Todos::new(false)))),
+        Box::new(|cc| {
+            install_cjk_font(cc); // Todos::new 不拿 cc，字体在窗口入口装
+            Ok(Box::new(Todos::new(false)))
+        }),
     )
 }
 

@@ -124,6 +124,7 @@ lamp=true clicks=1 roundtrip=true
 - **`Color32::lerp_rgb` 不存在**：颜色插值自己算三个分量，或用 `egui::Rgba` 转一手。
 - **mpsc::Receiver 不能 Clone**：含通道的结构体别 derive Clone——给 selftest 单做一个 `snapshot()`（只装可 Clone 的字段），09 章就是这个模式。
 - **persistence 只在真窗口生效**：kittest 的 `build_eframe` 给的 `cc.storage` 是 None——持久化路径无法无头验证，退而验证序列化往返（本例 `roundtrip` 断言）。
+- **真窗口豆腐块：无头测试的字形盲区（本例真实踩过）**：0.36.2 没有系统字体回退，UI 用中文却没注册字体时，`cargo test`/`--selftest` 全绿（kittest 从不光栅化），真窗口里满屏 ◻。修法：`CustomApp::new` 里 `install_cjk_font`（07 章方案）。`tools/gui-shots.ps1` 逐例真窗口截图，这类问题才现形。
 
 ---
 

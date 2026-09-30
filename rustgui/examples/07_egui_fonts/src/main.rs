@@ -2,17 +2,18 @@
 // 07_egui_fonts —— 中文字体注册、主题与样式定制
 //
 // 读法：
-//   1. egui 内置字体只有拉丁字符——中文要么靠 eframe 的
-//      system_font_fallback（运行时系统回退，真窗口有效），
-//      要么自己 FontDefinitions 换血（本例，测试环境也有效）。
+//   1. egui 内置字体只有拉丁字符——0.36.2 没有任何系统字体回退
+//      （master 的 system_font_fallback 未发布），中文只能自己
+//      FontDefinitions 换血（本例）。
 //   2. 运行时从系统字体目录读文件：零字节资源入库、无许可问题；
 //      生产上要绝对可控则 include_bytes! 打包 OFL 字体（07.3 节）。
 //   3. 主题 = Visuals（亮/暗）+ Style（间距/控件外观），
 //      都是"每帧可改"的普通数据。
 //
 // 【坑】02-06 章 UI 文本保持 ASCII 的原因到这里揭晓：默认字体
-//      无 CJK 字形，kittest 的 MissingGlyphPolicy::Panic 会在
-//      文本整形阶段直接 panic。本章注册字体后放开中文。
+//      无 CJK 字形，缺字只画豆腐块且全程不报错——无头通道不查
+//      字形，只有真窗口截图能抓（tools/gui-shots.ps1）。
+//      08/09 章曾因漏注册在真窗口全豆腐，引以为鉴。
 //
 // 官方参考：https://docs.rs/egui/latest/egui/
 // ============================================================
@@ -148,15 +149,16 @@ fn main() -> eframe::Result {
     )
 }
 
-/// 无头自检：中文字体已注册（中文标签能进树且整形不 panic）、
-/// 主题切换真实生效。
+/// 无头自检：字体文件命中并装进 FontDefinitions（font= 输出）、
+/// 中文标签进无障碍树、主题切换真实生效。
 fn selftest_body() -> FontsApp {
     use egui_kittest::kittest::Queryable;
 
     let mut harness = egui_kittest::Harness::builder().build_eframe(|cc| FontsApp::new(cc));
     harness.run();
 
-    // 中文标签能查到 == 字体注册成功（否则 MissingGlyphPolicy::Panic 早就炸了）
+    // 标签能查到只证明文本进了无障碍树（0.36.2 无头不查字形，
+    // master 的 MissingGlyphPolicy 未发布）——字形的最终裁决在真窗口
     assert!(
         harness.query_by_label("中文字体与主题").is_some(),
         "中文字体未加载：UI 含中文但无 CJK 字形"
