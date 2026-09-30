@@ -15,6 +15,14 @@ $projectRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Pa
 Set-Location $projectRoot
 try { [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new() } catch { }
 
+# ---- GTK4（24–30 章）：示例进程需要 GTK 的 DLL 在 PATH（gvsbuild 栈） ----
+foreach ($g in @("G:\gtk", "C:\gtk")) {
+    if (Test-Path -LiteralPath (Join-Path $g "lib\pkgconfig\gtk4.pc")) {
+        $env:PATH = "$g\bin;$env:PATH"
+        break
+    }
+}
+
 Add-Type -AssemblyName System.Drawing
 Add-Type -TypeDefinition @"
 using System;

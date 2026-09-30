@@ -25,6 +25,22 @@ if (-not $cargoDir) {
 $env:PATH = if ($onWindows) { "$cargoDir;$env:PATH" } else { "${cargoDir}:$env:PATH" }
 try { [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new() } catch { }
 
+# ---- GTK4（第四部分 24–30 章）：gvsbuild 栈自动注入 ----
+# gtk4 crate 的 system-deps 经 pkg-config（--msvc-syntax）找 GTK；编译出的
+# 二进制运行期还要 GTK 的 DLL 在 PATH。按 24 章步骤解压到 G:\gtk（或
+# C:\gtk）的机器在此自动生效；装在别处或 Linux/macOS 的读者按 24 章设好
+# PKG_CONFIG_PATH / PATH 即可，本守卫找不到就什么都不做。
+if ($onWindows) {
+    foreach ($g in @("G:\gtk", "C:\gtk")) {
+        if (Test-Path -LiteralPath (Join-Path $g "lib\pkgconfig\gtk4.pc")) {
+            $env:PATH = "$g\bin;$env:PATH"
+            if ($env:PKG_CONFIG_PATH) { $env:PKG_CONFIG_PATH = "$g\lib\pkgconfig;$env:PKG_CONFIG_PATH" }
+            else { $env:PKG_CONFIG_PATH = "$g\lib\pkgconfig" }
+            break
+        }
+    }
+}
+
 $buildDir     = Join-Path $projectRoot "build"
 $examplesDir  = Join-Path $projectRoot "examples"
 $targetDir    = Join-Path $projectRoot "target"
