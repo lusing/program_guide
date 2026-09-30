@@ -1,0 +1,68 @@
+// ═══ 21.1 自定义组件：属性即接口，复用即实例化 ═══
+// LabeledCounter 是一个自足的组件：进（label）出（value）口 + 回调。
+
+import { Button } from "std-widgets.slint";
+
+// ---- 可复用组件：接口 = 公开属性 + 回调 ----
+component LabeledCounter {
+    in property <string> label;
+    in-out property <int> value: 0;
+    in property <int> step: 1;
+    callback bump();
+    callback reset();
+
+    HorizontalLayout {
+        spacing: 8px;
+        Text { text: root.label + "：" + root.value; vertical-alignment: center; }
+        Button {
+            text: "+";
+            clicked => { root.value += root.step; root.bump(); }
+        }
+        Button {
+            text: "清零";
+            clicked => { root.value = 0; root.reset(); }
+        }
+    }
+}
+
+export component CompLab inherits Window {
+    title: "21 slint components";
+    preferred-width: 420px;
+    preferred-height: 240px;
+
+    // 根级出口：把嵌套组件的回调转发出来（生成代码只暴露根的接口）
+    callback bump-a();
+    callback reset-a();
+    callback bump-b();
+    callback reset-b();
+    // 后台线程到达的计数（invoke_from_event_loop 写它）
+    in-out property <int> ticks: 0;
+    // 根级镜像：根的绑定能读嵌套实例的属性——生成代码只暴露根接口，
+    // 想让 Rust 读嵌套值，就在根上开一扇窗（out 属性 + 绑定）
+    out property <int> value-a: counter-a.value;
+    out property <int> value-b: counter-b.value;
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 12px;
+
+        // 复用 ×2：同一组件、不同配置，状态彼此独立
+        counter-a := LabeledCounter {
+            label: "A";
+            step: 1;
+            bump => { root.bump-a(); }
+            reset => { root.reset-a(); }
+        }
+        counter-b := LabeledCounter {
+            label: "B";
+            step: 10;
+            bump => { root.bump-b(); }
+            reset => { root.reset-b(); }
+        }
+
+        Text {
+            text: "后台心跳：" + root.ticks;
+            font-size: 16px;
+        }
+    }
+}

@@ -1,0 +1,82 @@
+// ═══ 20.1 状态、动画与声明式 Path 自绘 ═══
+// 动画是属性的附属品：animate <属性> { duration; easing }
+// 状态是命名的属性组合：states [ 名字 when 条件 { 属性: 值 } ]
+// Path 是第三种自绘哲学：SVG 风格命令字符串，绑定即重绘。
+
+import { Button } from "std-widgets.slint";
+
+export component AnimLab inherits Window {
+    title: "20 slint animations";
+    preferred-width: 360px;
+    preferred-height: 440px;
+
+    in-out property <bool> on: false;
+
+    // 动画可观测：滑块 x 由条件绑定给出，animate 让它平滑走过去。
+    // 暴露给 Rust，无头测试用它验证动画确实推进到位。
+    in-out property <length> knob-x: root.on ? 120px : 20px;
+    animate knob-x { duration: 250ms; easing: ease-in-out; }
+
+    // ---- 进度环：Path 命令字符串由 Rust 侧计算 ----
+    in property <float> progress: 0;
+    in-out property <string> arc-commands;
+    callback update-arc();
+    changed progress => {
+        // 属性变更回调（1.5+）：反应式链跨过语言边界——
+        // Rust 侧 on_update_arc 里算 SVG 弧命令再写回 arc-commands
+        root.update-arc();
+    }
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 16px;
+
+        // ---- 灯：states 给本元素自己的属性分组 ----
+        lamp := Rectangle {
+            height: 56px;
+            states [
+                lit when root.on: { background: #2e7d32; }
+                dark when !root.on: { background: #444; }
+            ]
+            animate background { duration: 200ms; easing: ease-in-out; }
+
+            Rectangle {
+                y: 16px;
+                x: root.knob-x;
+                width: 24px;
+                height: 24px;
+                border-radius: 12px;
+                background: white;
+            }
+            Text {
+                text: root.on ? "开" : "关";
+                color: white;
+                x: 8px;
+            }
+            TouchArea {
+                clicked => { root.on = !root.on; }
+            }
+        }
+        Button {
+            text: "翻转开关";
+            clicked => { root.on = !root.on; }
+        }
+
+        // ---- 声明式进度环：Path 吃命令字符串 ----
+        Path {
+            width: 180px;
+            height: 180px;
+            viewbox-width: 180;
+            viewbox-height: 180;
+            // 270° 弧的 SVG 命令由 Rust 侧计算（slint 表达式没有 sin/cos）
+            commands: root.arc-commands;
+            stroke: #4a9eff;
+            stroke-width: 10px; // length 类型：数值必须带单位
+            fill: transparent;
+        }
+        Text {
+            text: @tr("{}%", Math.round(root.progress * 100));
+            font-size: 20px;
+        }
+    }
+}

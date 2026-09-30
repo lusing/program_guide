@@ -5468,7 +5468,37 @@ dependencies = [
 ]
 
 [[package]]
+name = "slint_animations"
+version = "0.1.0"
+dependencies = [
+ "i-slint-backend-testing",
+ "i-slint-core",
+ "slint",
+ "slint-build",
+]
+
+[[package]]
+name = "slint_components"
+version = "0.1.0"
+dependencies = [
+ "i-slint-backend-testing",
+ "i-slint-core",
+ "slint",
+ "slint-build",
+]
+
+[[package]]
 name = "slint_hello"
+version = "0.1.0"
+dependencies = [
+ "i-slint-backend-testing",
+ "i-slint-core",
+ "slint",
+ "slint-build",
+]
+
+[[package]]
+name = "slint_layout"
 version = "0.1.0"
 dependencies = [
  "i-slint-backend-testing",
