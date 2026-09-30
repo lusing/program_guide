@@ -1,0 +1,9 @@
+[package]
+name = "iced_subscription"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# tokio feature：打开 iced::time::every 等定时订阅（默认 feature 不含任何异步运行时）
+iced = { version = "0.14", features = ["tokio"] }
+iced_test = "0.14"
