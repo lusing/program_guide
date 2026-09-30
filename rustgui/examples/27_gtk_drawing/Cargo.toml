@@ -1,0 +1,9 @@
+[package]
+name = "gtk_drawing"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# 同 24 章：钉 crates.io 0.11.5，重命名 gtk（官方惯例）。
+# cairo 随 gtk 树自带（gtk::cairo 再导出），无需单独依赖。
+gtk = { package = "gtk4", version = "0.11.5" }
