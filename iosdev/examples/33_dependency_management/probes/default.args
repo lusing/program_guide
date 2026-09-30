@@ -1,0 +1,7 @@
+# 主线那条 swiftc 的最小等价形态：四类输入齐（-I、CLIBrain 的 modulemap、各 target 的 .o）。
+# 没有自己的 .args 的探针都走这一套 —— eNN 一族要量的就是「从这里少给一样会怎样」。
+-I
+@MODULES@
+-Xcc
+-fmodule-map-file=@DIR@/CLIBrain.build/module.modulemap
+@DIR@/*.build/*.o

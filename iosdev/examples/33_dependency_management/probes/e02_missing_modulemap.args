@@ -1,0 +1,5 @@
+# e02：只少一样 —— CLIBrain 那份生成出来的 modulemap 不递给 clang。
+# -I 与 .o 都照常给，免得错因混在一起。
+-I
+@MODULES@
+@DIR@/*.build/*.o

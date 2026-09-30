@@ -1,0 +1,3 @@
+# e07 故意一个额外参数都不给：没有 -I，包的那份 WeatherKit.swiftmodule 不在搜索路径里。
+# 这个文件必须存在且只有注释 —— 空文件会让 run.sh 回落到 default.args（-I 给全），
+# 那就是 e08 了。

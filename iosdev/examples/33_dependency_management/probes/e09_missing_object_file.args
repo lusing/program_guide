@@ -1,0 +1,11 @@
+# e09：只扣掉一个目标文件 —— CLIBrain 那份 brain.c.o，其余四类输入照主线给全。
+# 这里不写 glob（*.build/*.o 会把要扣的那个也收进来），而是逐个列出四个 Swift 侧的 .o，
+# 名字来自 s12 在同一个中间目录里数出来的清单。
+-I
+@MODULES@
+-Xcc
+-fmodule-map-file=@DIR@/CLIBrain.build/module.modulemap
+@DIR@/ClimateCore.build/Unit.swift.o
+@DIR@/WeatherKit.build/Forecast.swift.o
+@DIR@/WeatherKit.build/Resources.swift.o
+@DIR@/WeatherKit.build/resource_bundle_accessor.swift.o

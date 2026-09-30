@@ -62,6 +62,9 @@ XCODE_XT="$XCODE_ROOT/Toolchains/XcodeDefault.xctoolchain"
 SDK="$(xcrun --sdk iphonesimulator --show-sdk-path)"
 SWIFTC="$XCODE_XT/usr/bin/swiftc"
 CLANG="$XCODE_XT/usr/bin/clang"
+# SwiftPM 用的是 `swift`（不是 swiftc）：`swift build --package-path …`。
+# 和 swiftc 同一个工具链，免得两套版本对不上。
+SWIFT="$XCODE_XT/usr/bin/swift"
 # 界面文件（.storyboard / .xib）由 ibtool 编译成 .storyboardc / .nib。
 # 部署目标从 DEPLOY_TARGET 里抠出来（x86_64-apple-ios15.0-simulator → 15.0），
 # 免得两处数字各改各的。
@@ -160,6 +163,24 @@ build_config() {
     log="$out/build.$cfg.log"
     : > "$log"
 
+    # SwiftPM 依赖包（见 build_packages）在这里并进主线，两样东西：
+    #   1) 包编译器说过的告警/错误 —— 必须在这句截断**之后**才并进 build.<配置>.log，
+    #      否则会被上面那行抹掉，包里的告警就悄悄不算失败了；
+    #   2) swiftc 要多吃的输入（-I / -Xcc -fmodule-map-file / 各 target 的 .o）。
+    # 只接「纯 Swift」那条分支：用包的示例就是纯 Swift。混编示例要用包，得先把
+    # swiftc -c 那一步也带上这批输入，这里没有铺。
+    local -a pmargs
+    pmargs=()
+    local arg
+    if [ -s "$out/spm.$cfg.diags" ]; then
+        cat "$out/spm.$cfg.diags" >> "$log"
+    fi
+    if [ -f "$out/spm/$cfg.extra.args" ]; then
+        while IFS= read -r arg; do
+            [ -n "$arg" ] && pmargs+=("$arg")
+        done < "$out/spm/$cfg.extra.args"
+    fi
+
     local -a srcs objs csrcs frameworks
     srcs=(); objs=(); csrcs=(); frameworks=()
     local f
@@ -203,7 +224,7 @@ build_config() {
         "$SWIFTC" "$opt" "${target_args[@]}" -module-name "$mod" \
             ${srcs[@]+"${srcs[@]}"} -o "$bin" \
             -framework Foundation -framework UIKit -framework SwiftUI \
-            ${frameworks[@]+"${frameworks[@]}"} >> "$log" 2>&1
+            ${frameworks[@]+"${frameworks[@]}"} ${pmargs[@]+"${pmargs[@]}"} >> "$log" 2>&1
         return $?
     fi
 
@@ -313,6 +334,114 @@ compile_interfaces() {
     return 0
 }
 
+# ---------------------------------------------------------- SwiftPM 依赖包 --
+# 示例目录里放一个 `Needs-SwiftPM`，它的**每一行**是一个包目录（相对示例目录），
+# 脚本就按当前配置对每个包跑一遍
+#   swift build --triple $DEPLOY_TARGET --sdk $SDK -c debug|release
+#           --scratch-path build/<示例>/spm/<配置>
+# 然后把编好的 .o、.swiftmodule、C 语言的 module.modulemap 接到主线的 swiftc 上。
+#
+# 为什么要单独立一条判定之外的日志：`swift build` 会打「Building for debugging… /
+# Build complete!」这类进度文本，它们不是编译器诊断，进 build.<配置>.log 会让每个
+# 用包的示例都撞上判定 1（编译日志为空）。所以进度文本进 spm.<配置>.log，
+# 而从里面**筛出**含 warning/error 的行放进 spm.<配置>.diags，由 build_config 在
+# 清空 build.<配置>.log 之后接进去 —— 包里的告警照样是硬失败，构建噪声不算。
+# （顺序很关键：`swift build` 一定跑在 build_config **把日志截断**之前，
+# 所以诊断不能由这里直接写 build.<配置>.log，否则会被那句 `: > "$log"` 抹掉。）
+#
+# 这一条也是本章正文的落点：Xcode 里点一下「Add Package」就消失的那些步骤
+# （解析、编到哪个中间目录、C 语言的 module map 谁递给 clang、资源 bundle 放哪），
+# 在这里全是看得见的命令与文件。
+build_packages() {
+    # $1 = 示例目录名，$2 = 配置名
+    local name="$1" cfg="$2"
+    local dir="$EXAMPLES/$name" out="$BUILD/$name"
+    local pmlog="$out/spm.$cfg.log" diags="$out/spm.$cfg.diags"
+    local root rc
+
+    : > "$pmlog"
+    : > "$diags"
+    while IFS= read -r root; do
+        root="${root%%#*}"
+        root="$(printf '%s' "$root" | tr -d '[:space:]')"
+        [ -z "$root" ] && continue
+        if [ ! -f "$dir/$root/Package.swift" ]; then
+            printf 'error: Needs-SwiftPM 指定的目录里没有 Package.swift：%s\n' "$root" >> "$pmlog"
+            return 1
+        fi
+        # SwiftPM 的 -c 只认 debug/release，正好和本教程两个配置同名。
+        #
+        # `env -u SDKROOT` 不是保险，是**必须**：Package.swift 自己是一段要编译执行的
+        # Swift 程序（manifest），而它只能为**主机**编（x86_64-apple-macosx13.0）。
+        # 本脚本为了压掉 sysroot 告警把 SDKROOT 指到模拟器 SDK（见文件头），SwiftPM 会
+        # 把它一起递给 manifest 的编译，于是当场失败：
+        #   <unknown>:0: warning: using sysroot for 'iPhoneSimulator' but targeting 'MacOSX'
+        #   <unknown>:0: error: unable to load standard library for target 'x86_64-apple-macosx13.0'
+        # 目标侧的 SDK 不靠这个环境变量，走下面的 --sdk 显式传；manifest 因此回到主机 SDK。
+        run_with_timeout "${BUILD_TIMEOUT:-600}" env -u SDKROOT "$SWIFT" build \
+            --package-path "$dir/$root" \
+            --scratch-path "$out/spm/$cfg/$(basename "$root")" \
+            --triple "$DEPLOY_TARGET" --sdk "$SDK" -c "$cfg" >> "$pmlog" 2>&1
+        rc=$?
+        if [ "$rc" -ne 0 ]; then
+            printf 'error: swift build 退出码 %s（见 %s）\n' "$rc" "$pmlog" >> "$pmlog"
+            return 1
+        fi
+        # 把包编译器说过的告警/错误挑出来，交给 build_config 并进了日志
+        grep -E '^(warning|error):| warning: | error: ' "$pmlog" >> "$diags" 2>/dev/null
+    done < "$dir/Needs-SwiftPM"
+    return 0
+}
+
+# 把上一个函数编出来的东西汇成 swiftc 的输入，按行写进
+# build/<示例>/spm/<配置>.extra.args（每行一个参数或一个 .o 路径）：
+#   -I <中间目录>/Modules                     —— .swiftmodule 在这里
+#   -Xcc -fmodule-map-file=<T>.build/module.modulemap
+#                                            —— **只给 C 语言的 target**：Swift target
+#   的 modulemap 指向的是 <T>-Swift.h，再递一遍会和 Modules/<T>.swiftmodule 撞名
+#   <T>.build/*.o                             —— 各 target 编好的目标文件，链接期要用
+# 顺带把 <T>_<T>.bundle 拷进 build/<示例>/（也就是二进制自己躺的那个目录）。
+# 这一步看着多余，其实是本机最容易骗过判定的一环：SwiftPM 生成的 Bundle.module
+# 找资源只有两个候选位置 —— 二进制旁边的 <bundleName>.bundle，和**编译期写死在
+# 二进制里的绝对中间目录路径**。后者在本机能命中，所以不拷 bundle 也照样跑出正确
+# 输出；换台机器、或者把可执行文件单独拷走，才变成 fatalError。主线按前者摆。
+#
+# 这四类输入就是本章正文要量的东西：Xcode 里点「Add Package」之后全部由它替你
+# 算好；命令行上它们是可数、可打印的。
+spm_extra_args() {
+    # $1 = 示例目录名，$2 = 配置名
+    local name="$1" cfg="$2"
+    local out="$BUILD/$name"
+    local spmroot="$out/spm/$cfg"
+    local args="$out/spm/$cfg.extra.args"
+    local pkgdir cfgdir mm obj base b
+    : > "$args"
+    [ -d "$spmroot" ] || return 0
+    for pkgdir in "$spmroot"/*/; do
+        [ -d "$pkgdir" ] || continue
+        for cfgdir in "$pkgdir"*/"$cfg"; do
+            [ -d "$cfgdir/Modules" ] || continue
+            printf '%s\n' "-I" "$cfgdir/Modules" >> "$args"
+            for mm in "$cfgdir"/*.build/module.modulemap; do
+                [ -f "$mm" ] || continue
+                base="$(basename "$(dirname "$mm")" .build)"
+                [ -f "$cfgdir/Modules/$base.swiftmodule" ] && continue
+                printf '%s\n' "-Xcc" "-fmodule-map-file=$mm" >> "$args"
+            done
+            for obj in "$cfgdir"/*.build/*.o; do
+                [ -f "$obj" ] || continue
+                printf '%s\n' "$obj" >> "$args"
+            done
+            for b in "$cfgdir"/*.bundle; do
+                [ -d "$b" ] || continue
+                rm -rf "$out/$(basename "$b")"
+                cp -R "$b" "$out/" || return 1
+            done
+        done
+    done
+    return 0
+}
+
 # -------------------------------------------------------------- 判定单个配置 --
 check_config() {
     # $1 = 示例目录名，$2 = 配置名，$3 = 结束标记
@@ -387,6 +516,7 @@ log_line "=== 工具链 ==="
 log_line "  Xcode 根 = $XCODE_ROOT"
 log_line "  swiftc   = $SWIFTC"
 log_line "  clang    = $CLANG"
+log_line "  swift    = $SWIFT（只有 Needs-SwiftPM 的示例会用：swift build）"
 log_line "  ibtool   = $ITOOL（界面文件最小部署目标 $IB_MIN_DEPLOY）"
 log_line "  SDK      = $SDK"
 log_line "  部署目标 = $DEPLOY_TARGET"
@@ -405,6 +535,18 @@ for name in "${names[@]}"; do
     log_line "[$name]"
 
     for cfg in $CONFIGS; do
+        # 先编包：build_config 需要包里的 .o / .swiftmodule / module map 已经就位
+        if [ -f "$EXAMPLES/$name/Needs-SwiftPM" ]; then
+            if ! build_packages "$name" "$cfg"; then
+                FAIL=$((FAIL + 1))
+                FAILURES+=("失败: ${name} [$cfg] SwiftPM 依赖包构建失败，见 $outdir/spm.$cfg.log")
+                NFAIL=$((NFAIL + 1))
+                log_line "      [$cfg] 依赖包构建失败"
+                sed 's/^/        /' "$outdir/spm.$cfg.log" 2>/dev/null | head -25
+                continue
+            fi
+            spm_extra_args "$name" "$cfg"
+        fi
         if ! build_config "$name" "$cfg"; then
             FAIL=$((FAIL + 1))
             FAILURES+=("失败: ${name} [$cfg] 构建失败，见 $outdir/build.$cfg.log")
