@@ -4,7 +4,7 @@
 SwiftUI（主线）、UIKit（底层）、Objective-C 运行时与 C 语言层（地基）、Foundation、网络并发、持久化（含 SQLite3
 与 CoreData）、权限通知、动画与多媒体、传感器定位、Quartz 2D 直接绘制、打包签名上架。
 
-31 章正文放在 [`docs/`](./docs)（目录页见 [`iOS开发指南.md`](./iOS开发指南.md)），每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例。
+32 章正文放在 [`docs/`](./docs)（目录页见 [`iOS开发指南.md`](./iOS开发指南.md)），每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例。
 全部示例都**不打开 Xcode、不建窗口、不弹 UI**——只用 `swiftc` / `clang` 编成命令行可执行文件，
 `xcrun simctl spawn` 在模拟器里跑 headless 自测，因为这样你才知道 Xcode 到底替你做了什么。
 
@@ -13,7 +13,7 @@ SwiftUI（主线）、UIKit（底层）、Objective-C 运行时与 C 语言层�
 ```bash
 cd iosdev
 
-./run-all.sh                # 跑全部 31 个示例（debug + release 两配置 × 六条判定）
+./run-all.sh                # 跑全部 32 个示例（debug + release 两配置 × 六条判定）
 ./run-all.sh 13             # 只跑编号 13 的示例（SwiftUI ⇄ UIKit 互操作）
 ./run-all.sh 08 09 10       # 跑指定的几个
 ./run-all.sh --clean        # 清空 build/
@@ -47,7 +47,7 @@ iosdev/
 ├── README.md                 本文件
 ├── iOS开发指南.md             教程目录页（指向 docs/ 各章）
 ├── run-all.sh                构建 / 模拟器运行 / 六条判定 / debug·release 比对
-├── docs/                     31 章正文
+├── docs/                     32 章正文
 │   ├── 01-toolchain.md
 │   ├── ...
 │   ├── 20-packaging-signing.md
@@ -61,8 +61,9 @@ iosdev/
 │   ├── 28-c-layer.md
 │   ├── 29-quartz-2d.md
 │   ├── 30-swift-language-basics.md
-│   └── 31-interface-builder.md
-├── examples/                 31 个示例目录（NN_topic）
+│   ├── 31-interface-builder.md
+│   └── 32-app-architecture-mvc.md
+├── examples/                 32 个示例目录（NN_topic）
 │   ├── 01_toolchain/main.swift
 │   ├── 07_objc_swift_mix/    (OC + Swift 混编，含 Bridging.h / Greeter.h/.m / LegacyNote.h/.m)
 │   ├── 19_permissions_notifications/  (含 Frameworks 文件，声明额外链接的系统框架)
@@ -73,7 +74,8 @@ iosdev/
 │   ├── 28_c_layer/           (三方混编：四个 .c + 一个 .m + Swift，含 Bridging.h；.c/.m 恒为 -O2)
 │   ├── 29_quartz2d_drawing/  (含 Frameworks：CoreText；全章判据是回读自己提供的位图缓冲区)
 │   ├── 30_swift_language_basics/  (含 probes/ 目录：55 个一次性小文件 + run.sh/w01_whitespace.sh，专量「编译器会报错 / 运行会崩」的原文)
-│   └── 31_interface_builder/  (主线之外的界面文件：Main.storyboard / Nav.storyboard / Card.xib / Resources/*.png；含 probes/ 26 支：b01–b11 坏界面文件、e01 编译期、r01–r14 运行期现场 + run.sh)
+│   ├── 31_interface_builder/  (主线之外的界面文件：Main.storyboard / Nav.storyboard / Card.xib / Resources/*.png；含 probes/ 26 支：b01–b11 坏界面文件、e01 编译期、r01–r14 运行期现场 + run.sh)
+│   └── 32_app_architecture/   (MVC 小测验 App + 情商测试产品线；Swift/OC 混编四件：Bridging.h / ProgressHUD.h / ProgressHUD.m / 空标记 Needs-Swift-Header（后者让构建脚本加 -emit-objc-header-path）；含 probes/ 18 支：e01–e09 编译期原文、r01–r05 崩溃现场、c01 两配置对照、m01–m03 混编 + run.sh)
 ├── tools/
 │   └── check_docs.py         文档一致性 / 输出快照漂移检查
 └── build/                    编译产物（stdout/stderr/日志，不入库）
@@ -114,29 +116,31 @@ iosdev/
 | 29 | Quartz 2D 直接绘制 | `29_quartz2d_drawing` | 位图上下文与 bytesPerRow 对齐 / 内存行号与用户 y 镜像 / 翻转 CTM 与 UIKit 等价 / 面积覆盖与抗锯齿 / 色空间与预乘 / 绘画模型层序 / 当前路径与「谁吃路径」/ winding vs even-odd / CTM 乘法顺序与退化逆 / 裁剪求交与蒙版 / 端帽·连接·miterLimit / 点线相位取模 / addArcToPoint 与 flatness / 状态栈 LIFO / 透明层消接缝 / 十三种混合模式的字节 / 阴影走设备轴 / 梯度像素中心 / CoreText 直画 / CGImage·UIImage·插值·平铺 / headless 绘制周期驱动 / PDF 写出与读回 / 画板案例 |
 | 30 | Swift 语言基础与面向对象 | `30_swift_language_basics` | 注释与 `print(_:terminator:)` / 操作符空格的真实诊断 / `UInt32`→`Int` / 外部名·默认值·`inout` / `ClosedRange` vs `Range` 与 `99...1` 的运行期 fatal / 斐波那契 off-by-one / 作用域三层 / `do·catch·try?·try!`·`defer`·`rethrows` / class 与 struct 的 `let` 语义 / 枚举（原始值·关联值·`CaseIterable`）/ designated 与 convenience 的硬规则 / 方法与 `self` / 继承·重写·两阶段初始化 / 可选四种拆法 / 闭包六步简化与逃逸捕获 / `#if swift` vs `#if compiler` / 数组·字典·Set 的三种「取不到」 |
 | 31 | Interface Builder：故事板、XIB 与代码之间的接线 | `31_interface_builder` | 产物目录就是 bundle（无 Info.plist，`bundleIdentifier=nil` 也能取到故事板）/ 一份 XML → 每场景两条 nib / `.storyboardc` 里那张「标识符 → nib 名」查找表 / 不可达场景被 ibtool 无声删掉 / `customClass`·`customModule` 三段字符串写错 → 静默退回 plain `UIViewController` / `storyboardIdentifier` ≠ XML 的 `id` / `relationship` 收养后查找表少一项 / 连接的时机（`instantiate` 解控制器 nib、`loadView` 解视图 nib）/ 连线是一次 KVC 赋值（约束也能连、`===` 成立）/ creator 闭包与 `UINibDecoder` / Inspector 三格与 `@IBInspectable` 到底管什么 / `@IBAction` 是控件表里的字符串选择器 / 按钮直连 segue 时 target 是 `UIStoryboardSegueTemplate` / `performSegue` 时序与 `UIStoryboardSegue` 三量 / unwind 的 `<exit>` 与两条触发路径 / XIB 的顶层对象数组与 File's Owner 不跑 `awakeFromNib` / 设计值 `<rect>` 有几格真生效（`translatesAutoresizingMaskIntoConstraints`）/ 松散 PNG 的 @2x/@3x 查表与 `contentsOfFile:` 的倍率替换 / 同一个界面的三条路（界面文件·代码装配·SwiftUI `body`） |
+| 32 | 应用架构：MVC 三层里状态住在谁的哪一次赋值 | `32_app_architecture` | Model 层不碰 UIKit（整章 `UIApplication.shared == nil`）/ 无 init 的 class 红点落在类声明那行 / 两阶段初始化里 `didSet` 一次都不跑 / 游标只有一个主人 / class 与 struct 的「改一次影响谁」/ `let` 锁引用不锁数据 / `list[13]` 与 `[-1]` 同一句 `Index out of range`（132 / SIGILL）/ 抄来的边界不跟着源头动 / `questionNumber + 1` 的编号差 / 进度条提前一格满格 / CGFloat 与 Int 混算 / `sender.tag - 1` 那道焊缝 / 五种更新机制的账本（手动·KVO·NotificationCenter·代理·闭包）/ `@objc dynamic` 才有 KVO（e06 只 warning，r05 当场 trap）/ KVC 一句跨过分层：MVC 那句话是纪律不是机制 / 弹窗四字段可读、`present` 不生效 / `UIAlertAction.handler` 读不回来 → 自存闭包 → 三方环 / 回收时机由自动释放池层次决定（不是优化等级）/ 29 题产品线：两个数组没人强制对齐、「最大 EQ 154」连可达都不是 / 四个 `else if` 之间 129 掉进缝里（空标题 + 空正文，仍带那颗按钮）/ 二选一三选一混排：`isHidden` 挡住手挡不住方法调用 / 「只需把 13 改成 29」值三处字面量 / ProgressHUD 混编：桥接头标记、三个名字、nullability 三种态度、单例即全局状态、OC 反方向写进来 / 一个协议两份 Model 同一台控制器 |
 
 ## 建议阅读顺序
 
 - **从零开始（SwiftUI 主线）**：01 → 02 → 03 → 08 → 09 → 10 → 11 → 12 → 17 → 18 → 26 → 20
-- **要写 Objective-C / 维护老项目**：04 → 05 → 07 → 27（运行时）→ 28（C 层）
-- **要吃透 UIKit 底层**：13 → 14 → 15 → 16 → 21 → 22 → 23
+- **要写 Objective-C / 维护老项目**：04 → 05 → 07 → 27（运行时）→ 28（C 层）→ 32（拖进一份 OC 第三方库）
+- **要弄清「状态住在谁的哪一次赋值里」**：30（语言地板）→ 27（KVC/KVO 那张表）→ **32（MVC 三层、五种更新机制、小测验 App）** → 31（界面文件那一侧同一条「名字即接口」的焊缝）
+- **要吃透 UIKit 底层**：13 → 14 → 15 → 16 → 21 → 22 → 23 → **32（Controller 层的五种更新机制）**
 - **要弄懂「拖一条线」到底连上了什么**：21（布局与生命周期）→ **31（Interface Builder：故事板 / XIB / segue）** → 16（事件与响应链）
 - **要做动画**：12（SwiftUI 侧）→ 23（Core Animation 侧）
 - **要做自绘 / 图像 / PDF**：12（SwiftUI 的 Canvas/Path）→ 23（图层树侧）→ **29（像素侧：Quartz 2D）**
 - **要摸到语言的地板**：28（C：尺寸、对齐、句柄、UB）→ 27（OC：消息、转发、KVC/KVO）
 - **要做音视频 / 传感器 / 定位**：19（权限）→ 24、25
 - **语言层地板**：30（Swift 语法与 OOP，55 个探针）⇄ 28（C）⇄ 27（OC 运行时）⇄ 06（Swift 侧桥接）
-- **专项**：06（Swift 侧桥接）、19（权限/通知）、20（打包上架）、26（SQLite 与 CoreData）、29（离屏出图与画板）、30（语言层探针方法学）、31（界面文件的编译产物与运行时接线）
+- **专项**：06（Swift 侧桥接）、19（权限/通知）、20（打包上架）、26（SQLite 与 CoreData）、29（离屏出图与画板）、30（语言层探针方法学）、31（界面文件的编译产物与运行时接线）、32（架构与混编）
 
 ## 验证状态（全部通过）
 
 ```
-通过 62   失败 0   输出差异 0   示例 31   配置 2
+通过 64   失败 0   输出差异 0   示例 32   配置 2
 ```
 
-- **31 个示例 × 2 个优化配置（debug/release）= 62 次运行，全部 PASS**
+- **32 个示例 × 2 个优化配置（debug/release）= 64 次运行，全部 PASS**
 - **两配置 stdout 逐字节一致**（`[cmp]` 全绿）
-- `tools/check_docs.py`：结构（01..31 齐全）/ 引用（示例·输出路径存在）/ 快照（文档里贴的断言行逐字对得上 build 输出）三项全绿
+- `tools/check_docs.py`：结构（01..32 齐全）/ 引用（示例·输出路径存在）/ 快照（文档里贴的断言行逐字对得上 build 输出）三项全绿
 
 ### 六条判定标准
 
@@ -203,6 +207,13 @@ iosdev/
 | `sendActions(for:)` 不派发、unwind 模板 `perform:` 弹不掉栈、SwiftUI 的 `body` 不挂窗口不算 | 第 31 章 | 三条同一个根：裸可执行文件里 `UIApplication.shared == nil`，事件派发与呈现都归它管。主线只断言「target-action 表读得出 + 手工把那句 `perform:` 打出去调得到」，并给出 Xcode 真 App 里的对应写法（§16/§20/§25） |
 | 主线输出里所有 ObjC `description` 过一次地址脱敏，探针留档不脱敏 | 第 31 章 | 判定「debug 与 release 逐字节一致」容不下内存地址；而崩溃原文的 `0x…` 是异常消息的一部分，改了就不是原文。附录比对以消息文本、帧号与符号名为准 |
 | Xcode 面板与资源编译器的功能不在验证范围 | 第 31 章 | 画布渲染、Inspector 的红点、`@IBDesignable` 预览、launch storyboard、trait variations、state restoration、导航容器在故事板里的 wiring，以及 `actool`/`Assets.car`（本章产物目录里只有松散 PNG，§24 走的是那条按文件名查表的路）。判据一律换成「`.storyboardc` 里有什么 + 运行时解出什么」 |
+| 会崩的下标与 KVO 现场只进 `examples/32_*/probes/`，主线只断言可算的那一半 | 第 32 章 | 判定 2/3 要退出码 0、stderr 为空。`list[13]`（答完再点）、`questionScore[-1]`（忘填 tag）、`questionScore[2]`（隐藏按钮按在二选一那题）、漏改守卫的 `<= 28`、纯 Swift 属性上的 `observe(\.score)` 五处都是当场 SIGILL（退出码 132 / 信号 4），一句话都留不下；原文交给探针 r01–r05 |
+| OC 侧的 nil 崩溃同样只在探针里量 | 第 32 章 | 探针 m02 把 `nil` 递进 `NSMutableArray` 的 `addObject:`，得到 `NSInvalidArgumentException`、退出码 **134 / SIGABRT**。这个数字和 rNN 那五支的 **132 / SIGILL** 不是一类崩溃（Swift 运行时断言走 `fatalError()`，OC 异常走 `objc_exception_throw`），正文只登记两族读数 |
+| 书 7.12 那批「黄色叹号」在本仓库是硬失败 | 第 32 章 | 判定 1 要求编译日志为空。而 `-Wnullability-completeness` 的触发条件是头文件**标了一半**：m01（`HUDLoose` 并排一个 `NS_ASSUME_NONNULL` 包起来的 `HUDStrict`）逐条点出裸指针，m03（整份都不标）swiftc 日志为空、退出码 0 —— 所以「第三方库完全没标」这一种连判定 1 都碰不到，反而是工程里另一处标了、两边一撞才叫起来。原文交给探针 m01/m03 现跑现抄，主线那份 `ProgressHUD.h` 用第三种写法（宏不写、逐指针标 `_Null_unspecified`，Swift 侧与 m03 同样是隐式解析可选）—— 「不影响应用程序的功能」与「不许进构建」差的正是脚本里那一行判定 |
+| 弹窗的**出现**、HUD 的**显示**、按钮的**点击**三件事不在验证范围 | 第 32 章 | 同一个缺失的 window 与事件循环：`present` 之后 `presentedViewController=nil`、`view.window=nil` 且 stderr 空；HUD 的 `frame` 是真的（`UIScreen.main.bounds`）而 `window`/`superview` 是 `nil`、`onScreen=false`；`sendActions(for:)` 不派发。判据换成「读回弹窗四字段 + `Trace` 账本 + 直调方法」（§17/§24/§30），与第 31 章 §16 是同一条边 |
+| 不写「断环之后对象当场被收」这类断言 | 第 32 章 | 探针 c01 把同一句置空放进七种位置、两遍配置实测：`-Onone` 与 `-O` 两份 stdout 逐字一致，只有「连创建都在 `autoreleasepool` 里」那一格收得干净。回收时机由自动释放池层次决定，不由优化等级决定，所以 §25 只断言两个属性归 `nil` |
+| 情商测试其余 27 题的题干文本不在仓库里 | 第 32 章 | 书 7.13 步骤 2 只印了前两题的 `Question` 构造，剩下让读者去 GitHub 的初始化项目取。主线用「第3题…第29题」占位，并把这件事写在断言里；本章量的是那组**数字**（29 题、6/3/0 三档、四个结论区间），不是那 27 行文字 |
+| 故事板 / XIB 的装配与 IBOutlet·IBAction 接线归第 31 章 | 第 32 章 | 本章三台控制器全部代码装配（`tag` 也写代码里，等价于 Inspector 填 1/2/3），`init(coder:)` 直接 `fatalError`。第 32 章量的是「状态与更新机制」，界面文件那一侧的同一条「名字即接口」留给第 31 章 |
 
 这些都给出了**正确的 API 用法**并解释清楚为什么 headless 下走不通。第 20 章更进一步：把签名/装机/启动
 的完整流水线**在宿主 shell 上真实跑通**（编译 → ad-hoc 签名 → `simctl install` → `launch --console-pty`），
