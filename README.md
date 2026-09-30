@@ -26,6 +26,7 @@
 - [clojure](./clojure) — Clojure 教程与示例（28 章分章文档 docs/ + CHEATSheet 46 语言坑 8 工具坑 / 24 示例 + lein-lab 工程），双工具链验证：Windows 用 Leiningen 2.13 + OpenJDK 26（`build.ps1`，25 个验证单元全绿），macOS 用 Clojure CLI 1.12.6（`build.sh`）；覆盖函数式编程 / 惰性序列 / 宏 / 多方法 / 记录与协议 / 并发与 STM / Java 互操作 / clojure.spec / Transducer / 性能优化（类型提示实测 537 倍）/ core.async / Ring Web 真实 HTTP / Leiningen 全流程（test→uberjar→java -jar）/ MiniLisp 解释器压轴（TCO + 33 断言）
 - [cobol](./cobol) — GNU COBOL 教程与示例（20 章对齐 freepascal/freebasic 标准：固定格式列位 / PIC 数据模型 / PERFORM / 表与 SEARCH / 子程序与 C 互操作 / 三类文件 / 状态码异常 / SCREEN 终端界面 / 控制break 报表 / 测试方法论 / 库存管理实战），使用 GnuCOBOL 3.2.0（macOS MacPorts + clang 后端）双通道验证（check `-Wall -std=default` / release `-O2`，六条判定 + 两通道输出逐字节一致），18 个示例（02–19）全部通过，双入口 `run-all.sh` / `build.ps1`，CHEATSheet 收录 106 条实测坑位，详见 [cobol/README.md](./cobol/README.md)
 - [cpp20](./cpp20) — C++ 从零到 C++20/23 教程（35 章，按《Beginning C++23》+《The C++ Standard Library 4th》扩充指针/字符串/词汇类型/运算符重载/一等函数/继承多态/预处理器/迭代器/数值随机/时间/流 I/O/async-future + 迷你 grep 实战）；Windows 走 MSVC 主线，macOS/Linux 用 clang++ 23（自带 libc++）+ g++ 15 双工具链对照，34 个示例 × 2 通道全部通过（Windows：MSVC + scoop clang 输出逐字节一致；macOS/Linux：clang 23 + gcc 15），双入口 `run-all.sh` / `build.ps1`，六条判定（退出码 0 + stderr 空 + 编译零告警 + 输出非空 + 无控制字符 + 结束标记），详见 [cpp20/README.md](./cpp20/README.md) 的「macOS / Linux 上的兼容性」
+- [cppgui](./cppgui) — C++ GUI 编程指南（**四框架四范式 24 章**：wxWidgets 保留模式 01–07 / Dear ImGui 即时模式 08–13 / FTXUI 声明式 14–19 / tvision 桌面隐喻 20–24，同一批任务四框架各写一遍），**章号 = 示例号**（25 个单文件示例，08 章 win32+D3D11 主线外附 SDL2+OpenGL3 变体），Windows MSVC x64 （CMake 4.4.3 + Ninja；wx 3.3.4 静态库预构建 / imgui 源码编入 / FTXUI·tvision add_subdirectory）`build.ps1 -Clean` 后 `-All` **从零 25/25 全绿**（5m10s），四框架 selftest 通路各异（wx=wxTimer+Close / imgui=40 帧计数 / FTXUI=无头 Post 事件 / tvision=setTimer 广播+cmQuit），`tools/check_docs.py` 五关文档核查（输出块对当前二进制子序列对账·反假绿）全绿，CHEATSheet 收录 **134 条实测坑位**（tvision 广播 clearEvent 吃事件挂死、调色板三级间接 0x87 上限、imgui SimplifiedCommon 无 Full、FTXUI ToString 自带 CRLF 叠管道 \r\r\n 等），`run-all.sh` 非 Windows 声明式跳过，详见 [cppgui/README.md](./cppgui/README.md)
 - [dart](./dart) — Dart 语言入门与示例，使用 Dart SDK 验证
 - [dlang](./dlang) — D 语言教程与示例（26 章 + 25 个示例），使用 DMD 2.113.0 / DUB 1.42.0 双层验证（`-w -unittest` 全绿 + 编译产物运行 exit 0），**Windows + Linux + macOS 三平台**实测；macOS 侧记录 3 个环境坑（未签名二进制在 `~/` 下 unlink EPERM 致 dub 缓存起不来、无动态 libphobos、无 dman），详见 [dlang/README.md](./dlang/README.md)
 - [emacs](./emacs) — Emacs Lisp 扩展开发教程与示例，使用 Emacs 31.1 `--batch` 验证（26 个示例，双入口 `run-all.sh` / `build.ps1`，四条判定标准：编译零警告 + 运行 stderr 为空 + 无多余控制字符 + 结束标记）
@@ -144,6 +145,7 @@
 45. [hol4](./hol4)
 46. [ruby](./ruby)
 47. [sel4](./sel4)
+48. [cppgui](./cppgui)
 
 ## 工具链说明
 

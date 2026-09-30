@@ -170,8 +170,10 @@ bool MyApp::OnInit()
         // 【坑】CreateDocument 非 SILENT 时会弹"选模板"对话框——selftest
         // 直接走模板创建（等价 File→New 确认后的路径）。
         MyDocument* doc = static_cast<MyDocument*>(tpl->CreateDocument("", wxDOC_NEW));
-        Log("CreateDocument: doc=%p, view attached=%d\n",
-            (void*)doc, (int)(frame->m_view != nullptr));
+        // selftest 日志只打稳定事实（非空判定），不打堆指针——
+        // 指针逐跑不同，进了输出就没法做逐字节对账（实测教训）
+        Log("CreateDocument: doc non-null=%d, view attached=%d\n",
+            (int)(doc != nullptr), (int)(frame->m_view != nullptr));
         if (!doc) { Log("模板创建失败\n"); return true; }
         doc->Modify(true);
         Log("doc modified=%d（脏标记由框架跟踪）\n", (int)doc->IsModified());

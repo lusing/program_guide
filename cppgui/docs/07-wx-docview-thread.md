@@ -183,27 +183,25 @@ selftest 流程：OnInit 里用模板直建文档（连视图一起）、900ms �
 ```cpp
 // ═══ 7.10 模板直建：绕开选模板对话框 ═══
 MyDocument* doc = static_cast<MyDocument*>(tpl->CreateDocument("", wxDOC_NEW));
-Log("CreateDocument: doc=%p, view attached=%d\n",
-    (void*)doc, (int)(frame->m_view != nullptr));
+Log("CreateDocument: doc non-null=%d, view attached=%d\n",
+    (int)(doc != nullptr), (int)(frame->m_view != nullptr));
 if (!doc) { Log("模板创建失败\n"); return true; }
 doc->Modify(true);
 Log("doc modified=%d（脏标记由框架跟踪）\n", (int)doc->IsModified());
 ```
 
-selftest 实测输出（sidecar 文件 `build/docs-ref/07_wx_docview_thread.sidecar` 摘录第一次运行；sidecar 为三次连跑的追加记录）：
+selftest 实测输出（sidecar 文件 `build/docs-ref/07_wx_docview_thread.sidecar` 摘录；块内只引**逐跑恒定**的骨架行，两条 worker 完成行在块外说明——见下）：
 
 ```text
 ==== 07 wx docview+线程 开始 ====
-CreateDocument: doc=0000026F08AEEEF0, view attached=1
+CreateDocument: doc non-null=1, view attached=1
 doc modified=1（脏标记由框架跟踪）
 view OnDraw calls=1（画布 paint 已驱动视图绘制）
-worker 1 done（wxEVT_THREAD 完成信号）
-worker 0 done（wxEVT_THREAD 完成信号）
 gauges: 40/40, 40/40
 ==== 07 wx docview+线程 结束 ====
 ```
 
-逐行对应：`view attached=1` 说明 `CreateDocument` 走完"建文档 → 建视图 → OnCreate 挂靠"全链；`modified=1` 是脏标记置位回读；`OnDraw calls=1` 画布 paint 已驱动视图绘制（挂靠生效）；末尾两个 worker 各 40 步、进度条双双 40/40。两个细节只在此说明：`doc=` 指针逐跑不同（堆地址本就随机）；三次连跑里 worker 完成顺序两次是 1 先、一次是 0 先——两个线程并发做 6ms 步进，完成序不确定是**预期行为**，selftest 判定也只认"两个都到齐、终值 40/40"，不认顺序。
+逐行对应：`doc non-null=1` 与 `view attached=1` 说明 `CreateDocument` 走完"建文档 → 建视图 → OnCreate 挂靠"全链；`modified=1` 是脏标记置位回读；`OnDraw calls=1` 画布 paint 已驱动视图绘制（挂靠生效）；末尾两个 worker 各 40 步、进度条双双 40/40。两条 `worker N done（wxEVT_THREAD 完成信号）` 夹在 OnDraw 与 gauges 行之间——两个线程并发做 6ms 步进，完成序逐跑不定（实测三次里两次 1 先、一次 0 先）是**预期行为**，selftest 判定也只认"两个都到齐、终值 40/40"不认顺序，故不引固定顺序入块。同理，日志只打 `doc non-null=1` 这类稳定事实、不打堆指针——指针逐跑不同，进了输出就没法做逐字节对账（本教程文档对账的硬约束，check_docs 五关之一）。
 
 ## 坑位清单
 
