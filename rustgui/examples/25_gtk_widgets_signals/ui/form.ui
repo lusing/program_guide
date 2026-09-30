@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ═══ 25.2 Builder XML：界面即数据（属性名一律 kebab-case）═══ -->
+<interface>
+  <object class="GtkApplicationWindow" id="window">
+    <property name="title">25 gtk widgets signals</property>
+    <property name="default-width">420</property>
+    <property name="default-height">400</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="spacing">10</property>
+        <property name="margin-top">14</property>
+        <property name="margin-bottom">14</property>
+        <property name="margin-start">14</property>
+        <property name="margin-end">14</property>
+        <child>
+          <object class="GtkEntry" id="name-entry">
+            <property name="placeholder-text">姓名</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkDropDown" id="city-dropdown"/>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="subscribe-check">
+            <property name="label">订阅通知</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">8</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">深色</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSwitch" id="dark-switch"/>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScale" id="count-scale">
+            <property name="draw-value">true</property>
+            <property name="hexpand">true</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="count-spin"/>
+        </child>
+        <child>
+          <object class="GtkProgressBar" id="progress-bar"/>
+        </child>
+        <child>
+          <object class="GtkLabel" id="summary-label">
+            <property name="label">未提交</property>
+            <property name="wrap">true</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="submit-button">
+            <property name="label">提交</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

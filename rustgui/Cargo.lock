@@ -2634,6 +2634,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "gtk_widgets_signals"
+version = "0.1.0"
+dependencies = [
+ "gtk4",
+]
+
+[[package]]
 name = "guillotiere"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
