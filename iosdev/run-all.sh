@@ -30,6 +30,13 @@
 #   6) stdout 有结束标记 "==== NN 结束 ===="
 #
 # 外加一条：debug 与 release 两个配置的 stdout 逐字节一致。
+#
+# 界面文件：示例目录里的 .storyboard / .xib 会先经 ibtool 编译成 .storyboardc /
+# .nib，和二进制一起放进 build/<示例>/；示例还可以放一个 Resources/ 目录，内容
+# 原样拷进同一处。命令行可执行文件的 Bundle.main 就是它自己所在的目录，所以示例
+# 代码里直接 UIStoryboard(name:bundle:nil) 就能取到故事板，不用拼任何路径。
+# ibtool 的输出同样进 build.<配置>.log —— 故事板里冒出个告警（deprecated segue、
+# 无入口的场景……）也算判定 1 失败。
 # ============================================================================
 set -u
 
@@ -55,6 +62,11 @@ XCODE_XT="$XCODE_ROOT/Toolchains/XcodeDefault.xctoolchain"
 SDK="$(xcrun --sdk iphonesimulator --show-sdk-path)"
 SWIFTC="$XCODE_XT/usr/bin/swiftc"
 CLANG="$XCODE_XT/usr/bin/clang"
+# 界面文件（.storyboard / .xib）由 ibtool 编译成 .storyboardc / .nib。
+# 部署目标从 DEPLOY_TARGET 里抠出来（x86_64-apple-ios15.0-simulator → 15.0），
+# 免得两处数字各改各的。
+ITOOL="$(xcrun -f ibtool)"
+IB_MIN_DEPLOY="$(printf '%s' "$DEPLOY_TARGET" | sed -e 's/.*ios//' -e 's/-[^-]*$//')"
 
 # SDKROOT 一设，swiftc 调用 clang 链接时就不会再默认 MacOSX sysroot，
 # 也就没有那条 -Wincompatible-sysroot 噪声（判定 1 要求编译日志全空）。
@@ -253,6 +265,54 @@ build_config() {
     return $?
 }
 
+# ---------------------------------------------------------- 界面文件与资源 --
+# 示例目录里可以额外放两样东西：
+#   *.storyboard / *.xib —— 用 ibtool 编成 <同名>.storyboardc / <同名>.nib
+#   Resources/           —— 目录内容原样拷进 build/<示例>/
+# 两者都放进 build/<示例>/，也就是**二进制自己所在的那个目录**。这不是巧合，是
+# 命令行可执行文件的 Bundle.main 语义：为本机跑的可执行文件（不是 .app），
+# Bundle.main 就是它所在的目录，resourcePath 也等于那个目录（实测见第 31 章）。
+# 于是示例里既不用拼路径也不用读环境变量，直接 UIStoryboard(name:bundle:nil)、
+# Bundle.main.url(forResource:withExtension:)、UINib(nibName:bundle:nil) 就能取到。
+#
+# ibtool 的 stdout/stderr 一律追加进 build.<配置>.log，所以界面文件里任何一个
+# 告警或错误都会撞上判定 1（编译日志为空）—— 故事板里遗留的「deprecated segue」
+# 「无法访问的场景」这类问题，在这里和被弃用的 API 一样是硬失败。
+compile_interfaces() {
+    # $1 = 示例目录名，$2 = 配置名
+    local name="$1" cfg="$2"
+    local dir="$EXAMPLES/$name"
+    local out="$BUILD/$name"
+    local log="$out/build.$cfg.log"
+    local f base
+    # 先清掉上一轮编出来的界面产物，免得改名或删掉某个 .storyboard 之后，
+    # 旧 .storyboardc 还留在 build/ 里被 Bundle.main 捡到，跑出「改了源码却
+    # 还是老界面」的假绿。
+    find "$out" -maxdepth 1 \( -name '*.storyboardc' -o -name '*.nib' \) -exec rm -rf {} + 2>/dev/null
+    for f in $(cd "$dir" && ls *.storyboard 2>/dev/null | sort); do
+        base="${f%.storyboard}"
+        "$ITOOL" --compile "$out/$base.storyboardc" "$dir/$f" \
+            --errors --warnings --notices \
+            --target-device iphone --minimum-deployment-target "$IB_MIN_DEPLOY" \
+            --output-format human-readable-text >> "$log" 2>&1
+        if [ $? -ne 0 ]; then return 1; fi
+    done
+    for f in $(cd "$dir" && ls *.xib 2>/dev/null | sort); do
+        base="${f%.xib}"
+        "$ITOOL" --compile "$out/$base.nib" "$dir/$f" \
+            --errors --warnings --notices \
+            --target-device iphone --minimum-deployment-target "$IB_MIN_DEPLOY" \
+            --output-format human-readable-text >> "$log" 2>&1
+        if [ $? -ne 0 ]; then return 1; fi
+    done
+    if [ -d "$dir/Resources" ]; then
+        mkdir -p "$out"
+        cp -R "$dir/Resources/." "$out/" >> "$log" 2>&1
+        if [ $? -ne 0 ]; then return 1; fi
+    fi
+    return 0
+}
+
 # -------------------------------------------------------------- 判定单个配置 --
 check_config() {
     # $1 = 示例目录名，$2 = 配置名，$3 = 结束标记
@@ -327,6 +387,7 @@ log_line "=== 工具链 ==="
 log_line "  Xcode 根 = $XCODE_ROOT"
 log_line "  swiftc   = $SWIFTC"
 log_line "  clang    = $CLANG"
+log_line "  ibtool   = $ITOOL（界面文件最小部署目标 $IB_MIN_DEPLOY）"
 log_line "  SDK      = $SDK"
 log_line "  部署目标 = $DEPLOY_TARGET"
 log_line "  配置     = debug(-Onone) / release(-O)"
@@ -349,6 +410,14 @@ for name in "${names[@]}"; do
             FAILURES+=("失败: ${name} [$cfg] 构建失败，见 $outdir/build.$cfg.log")
             NFAIL=$((NFAIL + 1))
             log_line "      [$cfg] 构建失败"
+            sed 's/^/        /' "$outdir/build.$cfg.log" 2>/dev/null | head -25
+            continue
+        fi
+        if ! compile_interfaces "$name" "$cfg"; then
+            FAIL=$((FAIL + 1))
+            FAILURES+=("失败: ${name} [$cfg] 界面文件（storyboard/xib）编译失败，见 $outdir/build.$cfg.log")
+            NFAIL=$((NFAIL + 1))
+            log_line "      [$cfg] 界面文件编译失败"
             sed 's/^/        /' "$outdir/build.$cfg.log" 2>/dev/null | head -25
             continue
         fi

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17150" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="NAV-10-010">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17122"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Nav-->
+        <scene sceneID="scNav">
+            <objects>
+                <navigationController id="NAV-10-010" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="navBar">
+                        <rect key="frame" x="0.0" y="44.0" width="414.0" height="44.0"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="A-11-011" kind="relationship" relationship="rootViewController" id="sgRoot"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="frNav" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="0.0" y="0.0"/>
+        </scene>
+        <!--A-->
+        <scene sceneID="scA">
+            <objects>
+                <viewController id="A-11-011" sceneMemberID="viewController" customClass="AlphaVC" customModule="interface_builder">
+                    <view key="view" contentMode="scaleToFill" id="vA">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="saA"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="第一层" id="niA"/>
+                    <connections>
+                        <outlet property="navItem" destination="niA" id="olNavItem"/>
+                        <segue destination="B-12-012" kind="show" identifier="showB" id="sgShowB"/>
+                        <segue destination="M-14-014" kind="presentation" identifier="presentM" modalPresentationStyle="pageSheet" modalTransitionStyle="coverVertical" id="sgPresM"/>
+                        <segue destination="B-12-012" kind="custom" identifier="customFade" customClass="FadeSegue" customModule="interface_builder" id="sgCustom"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="frA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="400.0" y="0.0"/>
+        </scene>
+        <!--B-->
+        <scene sceneID="scB">
+            <objects>
+                <viewController id="B-12-012" sceneMemberID="viewController" customClass="BetaVC" customModule="interface_builder">
+                    <title>场景上的名字</title>
+                    <view key="view" contentMode="scaleToFill" id="vB">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="B" textAlignment="natural" lineBreakMode="tailClipping" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="lblB">
+                                <rect key="frame" x="24.0" y="120.0" width="40.0" height="30.0"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="btnBack">
+                                <rect key="frame" x="24.0" y="180.0" width="160.0" height="44.0"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="回到 Alpha"/>
+                                <connections>
+                                    <segue destination="EXIT-13-013" kind="unwind" identifier="backToAlpha" unwindAction="unwindToAlpha:" id="sgUnwind"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="saB"/>
+                        <color key="backgroundColor" red="0.96" green="1" blue="0.92" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="第二层" id="niB"/>
+                    <connections>
+                        <outlet property="markLabel" destination="lblB" id="olMark"/>
+                        <outlet property="unwindButton" destination="btnBack" id="olBack"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="frB" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="EXIT-13-013" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="800.0" y="0.0"/>
+        </scene>
+        <!--Modal-->
+        <scene sceneID="scM">
+            <objects>
+                <viewController id="M-14-014" sceneMemberID="viewController" customClass="ModalVC" customModule="interface_builder">
+                    <view key="view" contentMode="scaleToFill" id="vM">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="saM"/>
+                        <color key="backgroundColor" red="1" green="0.96" blue="0.9" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="frM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="800.0" y="400.0"/>
+        </scene>
+    </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="sgShowB"/>
+    </inferredMetricsTieBreakers>
+</document>

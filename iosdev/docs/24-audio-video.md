@@ -508,8 +508,9 @@ file.write(from: buf)
   继续轮询到 playing=true：timeControlStatus=2 reason=nil item.status=1 player.status=1
   ok   play() 之后**同一行代码里**读到的还是 waiting(1)、reason=AVPlayerWaitingWhileEvaluatingBufferingRateReason —— 别在这里判「播起来了没有」
   ok   再等一会儿（本机实测约十几步 ×20ms）才走到 playing(2)、reason 变 nil：waiting 是过渡态，不是失败
-  ready 之后 item.duration=value=44100 ts=44100 valid=true indefinite=false secs=1.0 currentTime()=value=0 ts=1 valid=true indefinite=false secs=0.0 likelyKeepUp=true bufferEmpty=false
+  ready 之后 item.duration=value=44100 ts=44100 valid=true indefinite=false secs=1.0 currentTime() 的 valid=true indefinite=false（秒数是墙钟读数，不参与打印与断言）likelyKeepUp=true bufferEmpty=false
   ok   duration 从 indefinite 变成 1.0 —— 是 play() 触发的加载给的，不需要你先 await load
+  ok   readyToPlay 之后 currentTime() 已经是有效时间（valid=true、indefinite=false）—— 但「现在是第几秒」取决于这一行什么时候被执行，本机 debug 与 release 就读出过两个值，所以只断言形状
   avPlayer.actionAtItemEnd=1（枚举：advance=0 pause=1 none=2；AVPlayer.h 明写只有 AVQueuePlayer 支持 advance，普通 player 设了会 raise NSInvalidArgumentException）
   ok   actionAtItemEnd 默认 pause（rawValue 1）—— 播完自动停，想循环得自己监听 AVPlayerItemDidPlayToEndTime 再 seek 回头
   avPlayer.automaticallyWaitsToMinimizeStalling=true preventsDisplaySleepDuringVideoPlayback=true allowsExternalPlayback=true volume=1.0000 isMuted=false
@@ -526,6 +527,18 @@ file.write(from: buf)
 `automaticallyWaitsToMinimizeStalling=true` 才会有这些等待原因。
 另外注意 `rate` 是直接可写的：`rate = 2.5` 就快放，`rate = -1` 就倒放，
 不需要 `canPlayReverse` 那类标志（8.1 已证它们对本地轨道全是 false）。
+
+这一节曾经踩过一次本教程方法论的底线，值得留档：上面那行原来写的是
+`currentTime()=value=0 ts=1 … secs=0.0`，看着人畜无害。它其实违反了几行之前刚立的
+第 1 条铁律——**这一行是在 `play()` 之后跑的**，读到的正是「播放推进了多少秒」。
+全量回归跑过一次就露馅：debug(-Onone) 那趟慢一点，读到 `value=42566414 ts=1000000000`
+即 `secs=0.042566414`；release(-O) 那趟快，读到 `secs=0.0`。两配置逐字节比对当场报
+DIFF，而单独重跑又十次有九次对得上——正是最难查的那类偶发失败。
+现在的写法只留 `valid` / `indefinite` 两个布尔（它们才是这一节要证的形状），
+秒数既不打也不断言；断言改成 `ctAfterReady.valid && !ctAfterReady.indefinite`。
+对比 8.3：那里也打 `currentTime` 的具体值（`300/600`、`44100/44100`），
+但那两处是**显式 seek 的落点**，跟墙钟无关，所以敢写进断言。同一件事，
+一个依赖调度一个不依赖，输出上必须看得出区别。
 
 ### 8.3 seek：completion 先到，ready 后到
 

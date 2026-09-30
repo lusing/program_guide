@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17150" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="NU-00-016">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17122"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <scene sceneID="scNav">
+            <objects>
+                <navigationController id="NU-00-016" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="nbNU-00-016">
+                        <rect key="frame" x="0.0" y="44.0" width="414.0" height="44.0"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="NU-01-016" kind="relationship" relationship="rootViewController" id="sgRootNU-00-016"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="frscNav" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-400" y="0.0"/>
+        </scene>
+        <scene sceneID="scNU">
+            <objects>
+                <viewController id="NU-01-016" sceneMemberID="viewController" customClass="HostNU" customModule="interface_builder">
+                    <view key="view" contentMode="scaleToFill" id="vNU">
+                        <rect key="frame" x="0.0" y="0.0" width="414.0" height="896.0"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="savNU"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </view>
+                    <connections>
+                        <segue destination="NZ-02-016" kind="show" identifier="dup" id="sgDupA"/>
+                        <segue destination="NZ-03-016" kind="show" identifier="dup" id="sgDupB"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="frscNU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="0" y="0.0"/>
+        </scene>
+        <scene sceneID="scNZ1">
+            <objects>
+                <viewController id="NZ-02-016" sceneMemberID="viewController" customClass="HostZ1" customModule="interface_builder">
+                    <title>第一个目标</title>
+                    <view key="view" contentMode="scaleToFill" id="vZ1">
+                        <rect key="frame" x="0.0" y="0.0" width="414.0" height="896.0"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="savZ1"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="frscNZ1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="400" y="0.0"/>
+        </scene>
+        <scene sceneID="scNZ2">
+            <objects>
+                <viewController id="NZ-03-016" sceneMemberID="viewController" customClass="HostZ2" customModule="interface_builder">
+                    <title>第二个目标</title>
+                    <view key="view" contentMode="scaleToFill" id="vZ2">
+                        <rect key="frame" x="0.0" y="0.0" width="414.0" height="896.0"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="savZ2"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="frscNZ2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="400" y="300"/>
+        </scene>
+    </scenes>
+</document>
