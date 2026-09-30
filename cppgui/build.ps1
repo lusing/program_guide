@@ -114,6 +114,11 @@ function Invoke-Selftest {
         $psi.UseShellExecute = $false
         $psi.RedirectStandardOutput = $true
         $psi.RedirectStandardError = $true
+        # 【坑】TUI 框架（FTXUI 等）启动时会改控制台代码页；.NET 管道读取
+        # 默认按"当前控制台 CP"解码——同批第二跑就变 UTF-8，两跑必然不一致。
+        # 显式钉死管道编码，输出按字节忠实回读。
+        $psi.StandardOutputEncoding = [System.Text.Encoding]::UTF8
+        $psi.StandardErrorEncoding = [System.Text.Encoding]::UTF8
         $p = [System.Diagnostics.Process]::Start($psi)
         $outTask = $p.StandardOutput.ReadToEndAsync()
         $errTask = $p.StandardError.ReadToEndAsync()
@@ -133,7 +138,11 @@ function Invoke-Selftest {
         if (-not $markerOk) { throw "stdout 与 sidecar 均未见结束标记" }
         $runs += $out
     }
-    if (($runs[0] -replace '\r', '') -ne (($runs[1]) -replace '\r', '')) { throw "两次运行 stdout 不一致（输出含非确定性内容）" }
+    if (($runs[0] -replace '\r', '') -ne (($runs[1]) -replace '\r', '')) {
+        [System.IO.File]::WriteAllText((Join-Path $buildDir "selftest-dbg-$Name-1.txt"), $runs[0], [System.Text.Encoding]::UTF8)
+        [System.IO.File]::WriteAllText((Join-Path $buildDir "selftest-dbg-$Name-2.txt"), $runs[1], [System.Text.Encoding]::UTF8)
+        throw "两次运行 stdout 不一致（输出含非确定性内容；现场存 selftest-dbg-$Name-*.txt）"
+    }
     return $runs[0]
 }
 

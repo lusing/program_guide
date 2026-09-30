@@ -153,6 +153,11 @@ endif()
 # ---- 三、FTXUI ----
 if(CPPGUI_ENABLE_FTXUI)
     cppgui_example(14_ftxui_dom ftxui)
+    cppgui_example(15_ftxui_components ftxui)
+    cppgui_example(16_ftxui_layout ftxui)
+    cppgui_example(17_ftxui_style_canvas ftxui)
+    cppgui_example(18_ftxui_composition ftxui)
+    cppgui_example(19_ftxui_app ftxui)
 endif()
 
 # ---- 四、tvision ----
