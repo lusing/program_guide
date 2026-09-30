@@ -33,7 +33,8 @@ fi
 [ -d "$FTXUI_DIR" ]   && cmake_args+=(-DCPPGUI_ENABLE_FTXUI=ON   -DCPPGUI_FTXUI_DIR="$FTXUI_DIR")   || missing_frameworks+=("FTXUI：$FTXUI_DIR 不存在")
 [ -d "$TVISION_DIR" ] && cmake_args+=(-DCPPGUI_ENABLE_TVISION=ON -DCPPGUI_TVISION_DIR="$TVISION_DIR") || missing_frameworks+=("tvision：$TVISION_DIR 不存在")
 # wx：需先有预构建前缀 build/dep-wx（本脚本不自建；无则跳过）
-[ -d "build/dep-wx/lib/cmake/wxWidgets" ] && cmake_args+=(-DCPPGUI_ENABLE_WX=ON -DCPPGUI_WX_DIR="$WX_DIR") || missing_frameworks+=("wx：build/dep-wx 预构建不存在（tools/build-wx.ps1 产物）")
+# config 安装在 lib/cmake/wxWidgets-<主>.<次>/ 带版本子目录，用通配检查
+ls build/dep-wx/lib/cmake/wxWidgets*/wxWidgetsConfig.cmake >/dev/null 2>&1 && cmake_args+=(-DCPPGUI_ENABLE_WX=ON -DCPPGUI_WX_DIR="$WX_DIR") || missing_frameworks+=("wx：build/dep-wx 预构建不存在（tools/build-wx.ps1 产物）")
 
 if [ ${#missing_frameworks[@]} -gt 0 ]; then
   echo "[声明式跳过] 以下部分不参与本次验证："
@@ -47,18 +48,20 @@ cmake --build "$BUILD" -j "$(sysctl -n hw.ncpu 2>/dev/null || nproc 2>/dev/null 
 for src in examples/*.cpp; do
   name="$(basename "$src" .cpp)"
   exe="$BUILD/bin/$name"
-  [ -f "$exe" ] || { echo "  [跳过] $name（该部分未启用）"; continue; }
+  [ -f "$exe" ] || { echo "  [跳过] ${name}（该部分未启用）"; continue; }
   sidecar="$BUILD/selftest-$name.txt"; rm -f "$sidecar"
-  if timeout 60 "$exe" --selftest >"$BUILD/$name.out" 2>"$BUILD/$name.err"; then
+  # 在 $BUILD 内执行：tvision 系示例的 sidecar 用相对路径写入进程 CWD，
+  # 统一让所有产物（.out/.err/sidecar）落 $BUILD，判定路径才能对齐。
+  if (cd "$BUILD" && timeout 60 "bin/$name" --selftest >"$name.out" 2>"$name.err"); then
     if grep -q '==== [0-9]' "$BUILD/$name.out" && grep -q '结束 ====' "$BUILD/$name.out" \
        || { [ -f "$sidecar" ] && grep -q '==== [0-9]' "$sidecar" && grep -q '结束 ====' "$sidecar"; }; then
-      if [ -s "$BUILD/$name.err" ]; then echo "  [失败] $name：stderr 非空"; fail=$((fail+1)); continue; fi
+      if [ -s "$BUILD/$name.err" ]; then echo "  [失败] ${name}：stderr 非空"; fail=$((fail+1)); continue; fi
       echo "  [通过] $name"; pass=$((pass+1))
     else
-      echo "  [失败] $name：未见结束标记"; fail=$((fail+1))
+      echo "  [失败] ${name}：未见结束标记"; fail=$((fail+1))
     fi
   else
-    echo "  [失败] $name：退出码非 0 或超时"; fail=$((fail+1))
+    echo "  [失败] ${name}：退出码非 0 或超时"; fail=$((fail+1))
   fi
 done
 

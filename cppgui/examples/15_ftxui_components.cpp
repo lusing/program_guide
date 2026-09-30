@@ -20,6 +20,8 @@
 #include <thread>
 #include <vector>
 
+#include "cppgui_jthread.hpp"            // std::jthread 兼容层（macOS 用）
+
 #include "ftxui/component/app.hpp"       // App（= 旧 ScreenInteractive 的改名）
 #include "ftxui/component/component.hpp"
 
@@ -89,7 +91,7 @@ int main(int argc, char** argv)
 
     if (selftest)
     {
-        std::jthread t([&screen] {
+        cppgui::jthread t([&screen] {
             std::this_thread::sleep_for(std::chrono::milliseconds(600));
             screen.PostEvent(Event::Custom);
         });

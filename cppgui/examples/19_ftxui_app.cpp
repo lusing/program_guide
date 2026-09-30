@@ -12,6 +12,8 @@
 #include <thread>
 #include <vector>
 
+#include "cppgui_jthread.hpp"            // std::jthread 兼容层（macOS 用）
+
 #include "ftxui/component/app.hpp"
 #include "ftxui/component/component.hpp"
 #include "ftxui/component/event.hpp"
@@ -178,9 +180,9 @@ int main(int argc, char** argv)
     // 后台时钟：每 500ms Post 闭包回主循环安全地改状态。
     // 【实测坑位】selftest 不启动它——Post 会触发重绘，重绘次数随时序
     // 漂移，stdout 两跑一致性判定必炸（异步机制的交互演示见交互模式）。
-    std::jthread clock_thread;
+    cppgui::jthread clock_thread;
     if (!selftest)
-        clock_thread = std::jthread([&screen, &clock_ticks] {
+        clock_thread = cppgui::jthread([&screen, &clock_ticks] {
             for (int i = 0; i < 100; ++i)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
