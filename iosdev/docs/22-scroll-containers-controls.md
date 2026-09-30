@@ -519,8 +519,8 @@ alert.addTextField { tf in tf.placeholder = "输入原因"; tf.text = "" }
   actionSheet 还没 present 时 popoverPresentationController = false
 ```
 
-`UIAlertController` 取代了 `UIAlertView` / `UIActionSheet`（仓库里的 `iOS开发指南.md`
-会有一张老 API → 现用 API 的对照表）。
+`UIAlertController` 一个类取代了老的 `UIAlertView` + `UIActionSheet`（两者都是 iOS 8 起废弃的
+独立弹窗对象，没有 present、没有 action 表，本章不再用）。
 样式原始值：`.alert = 1`、`.actionSheet = 2`（没有 0；0 是老的 `UIAlertView` 风格枚举残留）。
 动作样式：`.default = 0`、`.cancel = 1`、`.destructive = 2`。`actions` 数组保持 `addAction`
 的顺序，`preferredAction` 决定哪个动作被高亮为默认（`.destructive` 的红色仍由 style 决定）。

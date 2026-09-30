@@ -2,9 +2,10 @@
 
 用**本机 Xcode 16.2（Swift 6.0.3）+ iOS 18.2 SDK**，在 **iPhone 模拟器**里讲 iOS 原生应用开发：
 SwiftUI（主线）、UIKit（底层）、Objective-C 运行时与 C 语言层（地基）、Foundation、网络并发、持久化（含 SQLite3
-与 CoreData）、权限通知、动画与多媒体、传感器定位、Quartz 2D 直接绘制、依赖管理（SwiftPM 离线版）、打包签名上架。
+与 CoreData）、权限通知、动画与多媒体、传感器定位、Quartz 2D 直接绘制、依赖管理（SwiftPM 离线版）、设备端机器学习
+（Core ML，离线手写模型）、打包签名上架。
 
-33 章正文放在 [`docs/`](./docs)（目录页见 [`iOS开发指南.md`](./iOS开发指南.md)），每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例。
+34 章正文放在 [`docs/`](./docs)，按依赖链分成七篇（篇目见下面的「章节索引」，它同时是本教程的目录页），每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例。
 全部示例都**不打开 Xcode、不建窗口、不弹 UI**——只用 `swiftc` / `clang` 编成命令行可执行文件，
 `xcrun simctl spawn` 在模拟器里跑 headless 自测，因为这样你才知道 Xcode 到底替你做了什么。
 
@@ -13,7 +14,7 @@ SwiftUI（主线）、UIKit（底层）、Objective-C 运行时与 C 语言层�
 ```bash
 cd iosdev
 
-./run-all.sh                # 跑全部 33 个示例（debug + release 两配置 × 六条判定）
+./run-all.sh                # 跑全部 34 个示例（debug + release 两配置 × 六条判定）
 ./run-all.sh 13             # 只跑编号 13 的示例（SwiftUI ⇄ UIKit 互操作）
 ./run-all.sh 08 09 10       # 跑指定的几个
 ./run-all.sh --clean        # 清空 build/
@@ -44,10 +45,9 @@ python3 tools/check_docs.py # 文档一致性 / 输出快照漂移检查（结�
 
 ```
 iosdev/
-├── README.md                 本文件
-├── iOS开发指南.md             教程目录页（指向 docs/ 各章）
+├── README.md                 本文件（同时是教程目录页：章节索引 + 示例规模 + 验证状态）
 ├── run-all.sh                构建 / 模拟器运行 / 六条判定 / debug·release 比对
-├── docs/                     33 章正文
+├── docs/                     34 章正文
 │   ├── 01-toolchain.md
 │   ├── ...
 │   ├── 20-packaging-signing.md
@@ -63,8 +63,9 @@ iosdev/
 │   ├── 30-swift-language-basics.md
 │   ├── 31-interface-builder.md
 │   ├── 32-app-architecture-mvc.md
-│   └── 33-dependency-management.md
-├── examples/                 33 个示例目录（NN_topic）
+│   ├── 33-dependency-management.md
+│   └── 34-core-ml.md
+├── examples/                 34 个示例目录（NN_topic）
 │   ├── 01_toolchain/main.swift
 │   ├── 07_objc_swift_mix/    (OC + Swift 混编，含 Bridging.h / Greeter.h/.m / LegacyNote.h/.m)
 │   ├── 19_permissions_notifications/  (含 Frameworks 文件，声明额外链接的系统框架)
@@ -77,50 +78,127 @@ iosdev/
 │   ├── 30_swift_language_basics/  (含 probes/ 目录：55 个一次性小文件 + run.sh/w01_whitespace.sh，专量「编译器会报错 / 运行会崩」的原文)
 │   ├── 31_interface_builder/  (主线之外的界面文件：Main.storyboard / Nav.storyboard / Card.xib / Resources/*.png；含 probes/ 26 支：b01–b11 坏界面文件、e01 编译期、r01–r14 运行期现场 + run.sh)
 │   ├── 32_app_architecture/   (MVC 小测验 App + 情商测试产品线；Swift/OC 混编四件：Bridging.h / ProgressHUD.h / ProgressHUD.m / 空标记 Needs-Swift-Header（后者让构建脚本加 -emit-objc-header-path）；含 probes/ 18 支：e01–e09 编译期原文、r01–r05 崩溃现场、c01 两配置对照、m01–m03 混编 + run.sh)
-│   └── 33_dependency_management/  (两个真的包 Packages/ClimateCore 与 Packages/WeatherKit（后者内含一个 C target CLIBrain 与一份 test target）；标记文件 Needs-SwiftPM 的**每一行**是一个包目录，构建脚本先跑 `swift build` 再把四类输入拼进 swiftc；含 probes/ 26 支：s01–s13 SwiftPM 命令行现场、e01–e09 编译期原文、r01 运行期现场、c01–c03 两配置对照 + run.sh)
+│   ├── 33_dependency_management/  (两个真的包 Packages/ClimateCore 与 Packages/WeatherKit（后者内含一个 C target CLIBrain 与一份 test target）；标记文件 Needs-SwiftPM 的**每一行**是一个包目录，构建脚本先跑 `swift build` 再把四类输入拼进 swiftc；含 probes/ 26 支：s01–s13 SwiftPM 命令行现场、e01–e09 编译期原文、r01 运行期现场、c01–c03 两配置对照 + run.sh)
+│   └── 34_core_ml/           (含 Frameworks：CoreML / Vision / CoreVideo / AVFoundation / CoreImage；`tiny_scaler.swift` 是 `xcrun coremlcompiler generate` 的原样产物（293 行）而非手写模型，**.mlmodel 那 46 个字节由 Swift 现场拼出来**，所以本章不入库任何模型文件；含 probes/ 4 支：a01 主机 coremlcompiler 现场、g01 真模型的 protobuf 树取证、r01 结构自省摔在 .mlmodel 上、r02 scaler 二维输入 + run.sh)
 ├── tools/
 │   └── check_docs.py         文档一致性 / 输出快照漂移检查
 └── build/                    编译产物（stdout/stderr/日志，不入库）
 ```
 
-## 各章索引
+## 章节索引（七篇）
 
-| 章 | 标题 | 示例 | 要点 |
-| --- | --- | --- | --- |
-| 01 | 全景与工具链 | `01_toolchain` | 单工具链 / 模拟器 spawn / 部署目标 vs `#available` / 六条判定 |
-| 02 | 第一个 App | `02_hello_app` | SwiftUI `@main App` 与 UIKit `AppDelegate`/`SceneDelegate` 两条骨架 |
-| 03 | 生命周期与场景 | `03_lifecycle` | App 级 vs Scene 级、多窗口、前后台迁移、`scenePhase` |
-| 04 | Objective-C 语言基础 | `04_objc_language` | 消息发送 / nil / SEL / 协议分类 / block / NSError |
-| 05 | Foundation（OC 篇） | `05_objc_foundation` | NSString length / NSNotFound / NSNumber / JSON |
-| 06 | Foundation（Swift 篇） | `06_swift_foundation` | String↔NSString / Range↔NSRange / Codable / 值语义 / ==·=== |
-| 07 | OC 与 Swift 混编 | `07_objc_swift_mix` | bridging header / 生成的 Swift 头 / nullability / 轻量泛型 |
-| 08 | SwiftUI 基础 | `08_swiftui_basics` | View/body/some View / 修饰符值语义 / 栈 / UIHostingController |
-| 09 | 状态与数据流 | `09_state_dataflow` | @State/@Binding/@StateObject/@ObservedObject/@Environment / @Published / `$` |
-| 10 | 布局 | `10_layout` | VStack/HStack/ZStack / spacing/padding/frame/Spacer / 精确布局算术 |
-| 11 | 列表与导航 | `11_list_navigation` | List/ForEach/Section / LazyVStack / NavigationStack/NavigationPath |
-| 12 | 绘制与动画 | `12_drawing_animation` | Shape/Path / animatableData / Canvas / Animation/AnyTransition |
-| 13 | SwiftUI ⇄ UIKit | `13_swiftui_uikit_interop` | UIViewRepresentable/Coordinator / UIHostingController 嵌套 |
-| 14 | UIKit 视图与 Auto Layout | `14_uikit_views_autolayout` | frame/bounds/center / anchor 约束 / 布局周期 / safe area |
-| 15 | UIKit 控件与列表 | `15_uikit_controls_lists` | 控件 / UITableView dataSource·delegate / cell 复用 / Diffable / UICollectionView |
-| 16 | 手势、触摸与响应链 | `16_gestures_responder` | hitTest/point(inside:) / 响应链 / UIGestureRecognizer 状态机 |
-| 17 | 网络与并发 | `17_networking_concurrency` | 离线 URLProtocol / async·await / async let / TaskGroup / actor / @MainActor |
-| 18 | 数据持久化 | `18_persistence` | UserDefaults / 文件三目录 / Codable·sortedKeys / plist / Keychain |
-| 19 | 权限 / 通知 / 设备能力 | `19_permissions_notifications` | UIDevice/UIScreen/ProcessInfo / authorizationStatus / UNNotification 内容对象 |
-| 20 | 打包 / 签名 / 上架 | `20_packaging_signing` | .app=bundle / Info.plist 契约 / codesign / simctl install·launch / Archive→Upload |
-| 21 | UIKit 布局进阶 | `21_uikit_layout_advanced` | autoresizingMask 六档弹性位 / `translatesAutoresizingMaskIntoConstraints` / VFL / 布局优先级 / `systemLayoutSizeFitting` / UIStackView |
-| 22 | 滚动视图、容器控制器与高级控件 | `22_scroll_containers_controls` | UIScrollView 五量与越界/NaN / Navigation·Tab·自定义 containment / 十个高级控件 / ImageIO 多帧 GIF |
-| 23 | 核心动画 | `23_core_animation` | CALayer 四量 / model vs presentation / 隐式动画 / Basic·Keyframe·Group·Transition·Spring / 八种特殊图层 / CATransform3D / CATransaction / CADisplayLink |
-| 24 | 音频与视频 | `24_audio_video` | AVAudioSession / AVAudioPlayer / AVAssetWriter 造 mp4 / AVPlayer 状态机与 KVO / Reader·Export·ImageGenerator / AVAudioEngine offline 渲染 / MediaPlayer |
-| 25 | 传感器、定位与设备能力 | `25_sensors_location` | CMMotionManager 八条可用性 / Pedometer·Altimeter·MotionActivity / CLLocationManager 五档授权 / CLLocation 纯数学 / CLCircularRegion / CLGeocoder / UIDevice·UIScreen·ProcessInfo / AVCaptureDevice / LAContext 政策与错误码 / CBManager 状态机与 CBUUID / MapKit 墨卡托数学·标注·渲染器·GeoJSON / proximity |
-| 26 | SQLite3 与 CoreData | `26_sqlite_coredata` | prepare·tail·nByte / 绑定与槽位 / 类型亲和 / 主码·扩展码 / 事务与 close_v2 / 自定义函数 / CoreData 模型·容器·Z 表·删除规则·objectID·fault·迁移·聚合·批量请求 |
-| 27 | Objective-C 运行时 | `27_objc_runtime` | 选择器与 nil 返回值 / objc_msgSend 与隐藏参数 / @encode 类型编码 / 属性·ivar·关联对象 / 分类与协议的可执行面 / 动态注册与消息转发三步 / method_setImplementation·交换实现 / KVC 的四个取值路径 / KVO 手动触发 / 类 introspection |
-| 28 | C 语言层 | `28_c_layer` | LP64 尺寸与符号性 / 数组退化与指针相减 / 结构体对齐与 padding / 联合体看 IEEE 754 / 不透明句柄三件套 / va_list 与函数指针表 / memcpy vs memmove 的 UB / malloc 与「-O2 把判空删了」/ 宏的六种坑 / Swift 看见的 C 类型映射 / withUnsafeBytes 与 @convention(c) |
-| 29 | Quartz 2D 直接绘制 | `29_quartz2d_drawing` | 位图上下文与 bytesPerRow 对齐 / 内存行号与用户 y 镜像 / 翻转 CTM 与 UIKit 等价 / 面积覆盖与抗锯齿 / 色空间与预乘 / 绘画模型层序 / 当前路径与「谁吃路径」/ winding vs even-odd / CTM 乘法顺序与退化逆 / 裁剪求交与蒙版 / 端帽·连接·miterLimit / 点线相位取模 / addArcToPoint 与 flatness / 状态栈 LIFO / 透明层消接缝 / 十三种混合模式的字节 / 阴影走设备轴 / 梯度像素中心 / CoreText 直画 / CGImage·UIImage·插值·平铺 / headless 绘制周期驱动 / PDF 写出与读回 / 画板案例 |
-| 30 | Swift 语言基础与面向对象 | `30_swift_language_basics` | 注释与 `print(_:terminator:)` / 操作符空格的真实诊断 / `UInt32`→`Int` / 外部名·默认值·`inout` / `ClosedRange` vs `Range` 与 `99...1` 的运行期 fatal / 斐波那契 off-by-one / 作用域三层 / `do·catch·try?·try!`·`defer`·`rethrows` / class 与 struct 的 `let` 语义 / 枚举（原始值·关联值·`CaseIterable`）/ designated 与 convenience 的硬规则 / 方法与 `self` / 继承·重写·两阶段初始化 / 可选四种拆法 / 闭包六步简化与逃逸捕获 / `#if swift` vs `#if compiler` / 数组·字典·Set 的三种「取不到」 |
-| 31 | Interface Builder：故事板、XIB 与代码之间的接线 | `31_interface_builder` | 产物目录就是 bundle（无 Info.plist，`bundleIdentifier=nil` 也能取到故事板）/ 一份 XML → 每场景两条 nib / `.storyboardc` 里那张「标识符 → nib 名」查找表 / 不可达场景被 ibtool 无声删掉 / `customClass`·`customModule` 三段字符串写错 → 静默退回 plain `UIViewController` / `storyboardIdentifier` ≠ XML 的 `id` / `relationship` 收养后查找表少一项 / 连接的时机（`instantiate` 解控制器 nib、`loadView` 解视图 nib）/ 连线是一次 KVC 赋值（约束也能连、`===` 成立）/ creator 闭包与 `UINibDecoder` / Inspector 三格与 `@IBInspectable` 到底管什么 / `@IBAction` 是控件表里的字符串选择器 / 按钮直连 segue 时 target 是 `UIStoryboardSegueTemplate` / `performSegue` 时序与 `UIStoryboardSegue` 三量 / unwind 的 `<exit>` 与两条触发路径 / XIB 的顶层对象数组与 File's Owner 不跑 `awakeFromNib` / 设计值 `<rect>` 有几格真生效（`translatesAutoresizingMaskIntoConstraints`）/ 松散 PNG 的 @2x/@3x 查表与 `contentsOfFile:` 的倍率替换 / 同一个界面的三条路（界面文件·代码装配·SwiftUI `body`） |
-| 32 | 应用架构：MVC 三层里状态住在谁的哪一次赋值 | `32_app_architecture` | Model 层不碰 UIKit（整章 `UIApplication.shared == nil`）/ 无 init 的 class 红点落在类声明那行 / 两阶段初始化里 `didSet` 一次都不跑 / 游标只有一个主人 / class 与 struct 的「改一次影响谁」/ `let` 锁引用不锁数据 / `list[13]` 与 `[-1]` 同一句 `Index out of range`（132 / SIGILL）/ 抄来的边界不跟着源头动 / `questionNumber + 1` 的编号差 / 进度条提前一格满格 / CGFloat 与 Int 混算 / `sender.tag - 1` 那道焊缝 / 五种更新机制的账本（手动·KVO·NotificationCenter·代理·闭包）/ `@objc dynamic` 才有 KVO（e06 只 warning，r05 当场 trap）/ KVC 一句跨过分层：MVC 那句话是纪律不是机制 / 弹窗四字段可读、`present` 不生效 / `UIAlertAction.handler` 读不回来 → 自存闭包 → 三方环 / 回收时机由自动释放池层次决定（不是优化等级）/ 29 题产品线：两个数组没人强制对齐、「最大 EQ 154」连可达都不是 / 四个 `else if` 之间 129 掉进缝里（空标题 + 空正文，仍带那颗按钮）/ 二选一三选一混排：`isHidden` 挡住手挡不住方法调用 / 「只需把 13 改成 29」值三处字面量 / ProgressHUD 混编：桥接头标记、三个名字、nullability 三种态度、单例即全局状态、OC 反方向写进来 / 一个协议两份 Model 同一台控制器 |
-| 33 | 依赖管理：一行 `import` 后面的四类输入、三个名字、两层声明 | `33_dependency_management` | 「装好了」= 一条 `-I` + 一份 modulemap + 一批 `.o` + 一个 bundle 目录 / **SDK 里也有一个 `WeatherKit.framework`**：依赖没接上可以全程绿灯（e07 与 e08 同一份源码换个错，r01 不给 `-I` 也六条全过）/ `canImport` 只问「有没有」/ product·target·module·identity·bundle 前缀是五个来源，只有 target 名全图唯一（撞 product 名一句警告都没有，撞 target 名报 `moduleAliases`）/ 依赖两层的硬度与直觉相反（内层漏写全过，外层漏写死在 manifest）/ 传递 import 不传染 / internal 跨模块两种措辞（`cannot find` vs `inaccessible`）/ `@testable` 只成立于一半（debug 带 `-enable-testing`，release 拒绝）/ C target 的 modulemap 是生成的、umbrella 是绝对路径 / `.copy` 保留层级、`.process` 摊平、路径基准是 target 目录（写错只 warning + 少文件）/ bundle 名 = `Package(name:)_<target>.bundle` / `Bundle.module` 是生成出来的 internal `static let`，两个候选路径里那个绝对值是**假绿** / path 依赖连 `Package.resolved` 都不写，加 tag 不动锁、`package update` 才动 / `env -u SDKROOT`（manifest 是主机程序）/ 默认目标是主机而产物照样能在模拟器里跑 / automatic·static·dynamic 三种 product 的落盘 |
+这一张表就是本教程的目录页：`docs/` 下每章一份正文，`examples/` 下每个目录一个可编译、可运行、可自测的示例。
+按依赖链分成七篇，篇内按阅读顺序排列。
 
+### 第一篇 入门与生命周期
+
+| 章 | 示例 | 内容（本章覆盖的东西） | 回答的问题 |
+|---|---|---|---|
+| [01 全景与工具链](docs/01-toolchain.md) | `01_toolchain` | iOS SDK 只随 Xcode 提供、模拟器 `simctl spawn`、部署目标 vs `#available`、六条判定 + debug/release 双配置比对 | 不打开 Xcode，怎么把一个 iOS 程序编出来、在模拟器里跑起来 |
+| [02 第一个 App](docs/02-hello-app.md) | `02_hello_app` | SwiftUI `@main App` / `WindowGroup` 与 UIKit `UIApplicationMain` / `AppDelegate` / `SceneDelegate` 两条最小骨架 | 一个最小的 iOS App 由哪几块拼成 |
+| [03 生命周期与场景](docs/03-lifecycle.md) | `03_lifecycle` | App 级 vs Scene 级生命周期、`UIScene` 多窗口、前后台状态迁移、`@Environment(\.scenePhase)` | App 从启动到进后台，回调按什么顺序来、各归谁管 |
+
+### 第二篇 语言与 Foundation（Objective-C / Swift / C 的地基）
+
+| 章 | 示例 | 内容（本章覆盖的东西） | 回答的问题 |
+|---|---|---|---|
+| [04 Objective-C 语言基础](docs/04-objc-language.md) | `04_objc_language` | 消息发送、nil 消息、SEL、协议与分类、block、`NSError`、`@try`、ARC 要点 | 读懂/改动/排查 OC 代码所需的最小集合是什么 |
+| [05 Foundation（OC 篇）](docs/05-objc-foundation.md) | `05_objc_foundation` | `NSString.length` 是 UTF-16 码元、`NSNotFound` ≠ -1、`NSNumber`/`NSValue`/`NSNull`、集合、`NSData`、日期、JSON | OC 侧的地基类有哪些「一半安全一半不安全」的坑 |
+| [06 Foundation（Swift 篇）](docs/06-swift-foundation.md) | `06_swift_foundation` | `String`↔`NSString`、`Range`↔`NSRange`、`Data` 值语义、`Codable`、`==` vs `===`、`NotificationCenter`、`URL`/`FileManager` | Swift 值类型与 OC 引用类型桥接时哪里会错位 |
+| [07 OC 与 Swift 混编](docs/07-objc-swift-mix.md) | `07_objc_swift_mix` | bridging header、生成的 `<Module>-Swift.h`、nullability 注解（`String!` 的来历）、轻量泛型、`BOOL`+`NSError**`→`throws` | 两个方向（Swift→OC、OC→Swift）各怎么打通 |
+| [27 Objective-C 运行时](docs/27-objc-runtime.md) | `27_objc_runtime` | 选择器与 nil 消息的返回值表、`objc_msgSend` 与四个隐藏参数、`@encode` 类型编码、属性/ivar/关联对象、分类与协议的可执行面、动态注册与消息转发三步、`method_setImplementation`/交换实现、KVC 四条取值路径、KVO 手动触发、类内省与 `objc_copyClassList` | `[self foo]` 这一行到底走了哪些步、哪些步能在运行时被改写 |
+| [28 C 语言层](docs/28-c-layer.md) | `28_c_layer` | LP64 尺寸与 `char` 符号性、数组退化与指针相减、结构体对齐与 padding、联合体看 IEEE 754、不透明句柄三件套、`va_list` 与函数指针表、`memcpy`/`memmove` 的 UB、`malloc` 与「`-O2` 把判空整体删掉」、宏的六种坑、Swift 看见的 C 类型映射、`withUnsafeBytes` 与 `@convention(c)` | Swift/OC 眼里的那个 C 到底是什么，跨界时要付哪些账 |
+| [30 Swift 语言基础与面向对象](docs/30-swift-language-basics.md) | `30_swift_language_basics` | 注释与 `print(_:terminator:)` / 操作符空格的真实诊断 / `UInt32`→`Int` / 外部名·默认值·`inout` / `ClosedRange` vs `Range` 与 `99...1` 的运行期 fatal / 斐波那契 off-by-one / 作用域三层 / `do·catch·try?·try!`·`defer`·`rethrows` / class 与 struct 的 `let` 语义 / 枚举（原始值·关联值·`CaseIterable`）/ designated 与 convenience 的硬规则 / 方法与 `self` / 继承·重写·两阶段初始化 / 可选四种拆法 / 闭包六步简化与逃逸捕获 / `#if swift` vs `#if compiler` / 数组·字典·Set 的三种「取不到」 | 这本书拿 Playground 侧栏和 Xcode 红点当判据的语言层条目，在没有 IDE 的机器上还能不能逐条兑现——「编译器会报错」这句话的证据在哪 |
+
+### 第三篇 SwiftUI 主线
+
+| 章 | 示例 | 内容（本章覆盖的东西） | 回答的问题 |
+|---|---|---|---|
+| [08 SwiftUI 基础](docs/08-swiftui-basics.md) | `08_swiftui_basics` | `View`/`body`/`some View`（opaque）、修饰符的**值语义**（`ModifiedContent` 层层包裹）、栈、组合、`UIHostingController` | 声明式的视图树到底是个什么东西 |
+| [09 状态与数据流](docs/09-state-dataflow.md) | `09_state_dataflow` | `@State`/`@Binding`/`@StateObject`/`@ObservedObject`/`@Environment`、`ObservableObject`/`@Published`/`objectWillChange`、`$` 前缀（projectedValue）、拥有 vs 借用 | 数据变了界面怎么自动跟着变、该用哪个属性包装器 |
+| [10 布局](docs/10-layout.md) | `10_layout` | `VStack`/`HStack`/`ZStack`、`spacing`/`padding`/`frame`/`Spacer`、对齐、`GeometryReader`；用 `intrinsicContentSize` 做**精确布局算术** | 视图怎么摆、尺寸怎么算出来的 |
+| [11 列表与导航](docs/11-list-navigation.md) | `11_list_navigation` | `List`/`ForEach`/`Section`、`LazyVStack` vs `VStack`、`Identifiable`、`NavigationStack`/`NavigationPath`/`navigationDestination` | 列表怎么渲染、页面怎么跳转传值 |
+| [12 绘制与动画](docs/12-drawing-animation.md) | `12_drawing_animation` | `Shape`/`Path`（boundingRect/trim）、内置形状、自定义 `Shape`、`animatableData`、`Canvas`、`Animation`/`AnyTransition` | 自定义图形怎么画、怎么让它动起来 |
+| [13 SwiftUI ⇄ UIKit 互操作](docs/13-swiftui-uikit-interop.md) | `13_swiftui_uikit_interop` | `UIViewRepresentable`/`Coordinator`、`makeUIView`/`updateUIView`、`UIHostingController` 把 SwiftUI 嵌进 UIKit | 两套框架怎么互相嵌套、边界在哪 |
+
+### 第四篇 UIKit 补充、界面文件接线与 Controller 层架构
+
+| 章 | 示例 | 内容（本章覆盖的东西） | 回答的问题 |
+|---|---|---|---|
+| [14 视图体系与 Auto Layout](docs/14-uikit-views-autolayout.md) | `14_uikit_views_autolayout` | `frame`/`bounds`/`center`、视图层级、anchor 约束、布局周期（`setNeedsLayout`/`layoutIfNeeded`/`layoutSubviews`）、`intrinsicContentSize`、safe area | 命令式界面怎么摆、约束怎么解 |
+| [15 控件与列表](docs/15-uikit-controls-lists.md) | `15_uikit_controls_lists` | `UILabel`/`UIButton.Configuration`/`UITextField`/`UISwitch`/`UISlider`、`UITableView` dataSource/delegate、**cell 复用**、Diffable Data Source、`UICollectionView` | UIKit 的列表怎么高效渲染上万行 |
+| [16 手势、触摸与响应链](docs/16-gestures-responder.md) | `16_gestures_responder` | `hitTest`/`point(inside:)`、响应链（`next`/`isFirstResponder`）、`UIGestureRecognizer` 状态机 | 一次点击怎么找到目标视图、怎么变成事件 |
+| [21 UIKit 布局进阶](docs/21-uikit-layout-advanced.md) | `21_uikit_layout_advanced` | `autoresizingMask` 六档弹性位、`translatesAutoresizingMaskIntoConstraints`、`NSLayoutConstraint` 原始形式与 VFL、布局优先级裁决、`systemLayoutSizeFitting` 反推尺寸、`UIStackView` | Auto Layout 之外那套老机制还在哪活着、约束与尺寸怎么互相推导 |
+| [22 滚动视图、容器控制器与高级控件](docs/22-scroll-containers-controls.md) | `22_scroll_containers_controls` | `UIScrollView` 的 contentSize/Offset/Inset/分页/缩放（含越界赋值不夹取、NaN 崩）、`UINavigationController`/`UITabBarController`/自定义 containment、`UIPickerView`/`UIDatePicker`/`UIAlertController` 等十个控件、ImageIO 合成多帧 GIF | 表格集合视图的父类到底管什么、一个界面怎么装进另一个界面 |
+| [29 Quartz 2D 直接绘制](docs/29-quartz-2d.md) | `29_quartz2d_drawing` | 位图上下文与 bytesPerRow 对齐 / 内存行号与用户 y 镜像 / 翻转 CTM 与 UIKit 等价 / 面积覆盖与抗锯齿 / 色空间与预乘 / 绘画模型层序 / 当前路径与「谁吃路径」/ winding vs even-odd / CTM 乘法顺序与退化逆 / 裁剪求交与蒙版 / 端帽·连接·miterLimit / 点线相位取模 / addArcToPoint 与 flatness / 状态栈 LIFO / 透明层消接缝 / 十三种混合模式的字节 / 阴影走设备轴 / 梯度像素中心 / CoreText 直画与 UIKit 文本两条通路 / CGImage·UIImage·插值·平铺 / headless 绘制周期驱动 / PDF 写出与读回 / 画板案例 | 「这一笔落在哪四个字节上」——把第 16 章那套「眼睛看效果」的判据换成回读缓冲区 |
+| [31 Interface Builder：故事板、XIB 与代码之间的接线](docs/31-interface-builder.md) | `31_interface_builder` | `Bundle.main` 在命令行产物里就是那个目录（无 Info.plist、`bundleIdentifier=nil`，故事板照样取得到）、一份 XML → **每场景两条 nib**、`.storyboardc` 里那张「标识符 → nib 名」查找表与 `UIStoryboardDesignatedEntryPointIdentifier`、不可达场景被 `ibtool` 无声删掉、`customClass`/`customModule` 三段字符串写错 → 静默退回 plain `UIViewController`、`storyboardIdentifier` ≠ XML 的 `id`、`relationship` 收养后查找表少一项、连接的时机（`instantiate` 解控制器 nib、`loadView` 解视图 nib）、连线是**一次 KVC 赋值**（约束也能连、`===` 成立、`@IBInspectable` 只管 Xcode 给不给那一格）、creator 闭包与 `UINibDecoder`、`@IBAction` 落到运行时是控件表里的一个字符串选择器、按钮直连 segue 时 target 是 `UIStoryboardSegueTemplate`、`performSegue` 时序与 `UIStoryboardSegue` 三量、unwind 的 `<exit>` 占位对象与两条触发路径、XIB 的顶层对象数组与 File's Owner 不跑 `awakeFromNib`、设计值 `<rect>` 有几格真生效（只看 `translatesAutoresizingMaskIntoConstraints`）、松散 PNG 的 @2x/@3x 查表与 `contentsOfFile:` 的倍率替换、同一个界面的三条路（界面文件/代码装配/SwiftUI `body`） | 「按住 ctrl 拖一条线」在运行时到底是什么——那条线连上了吗、什么时候连的、名字写错的下场是崩溃还是静默、按 XIB 设计的尺寸摆出来为什么不是那个尺寸 |
+| [32 应用架构：MVC 三层里，状态到底住在谁的哪一次赋值里](docs/32-app-architecture-mvc.md) | `32_app_architecture` | Model 层不碰 UIKit（整章 `UIApplication.shared == nil`）/ 无 init 的 class 红点落在类声明那行 / 两阶段初始化里 `didSet` 一次都不跑 / 游标只有一个主人 / class 与 struct 的「改一次影响谁」/ `let` 锁引用不锁数据 / `list[13]` 与 `[-1]` 同一句 `Index out of range`（132 / SIGILL）/ 抄来的边界不跟着源头动 / `questionNumber + 1` 的编号差 / 进度条提前一格满格 / CGFloat 与 Int 混算 / `sender.tag - 1` 那道焊缝 / 五种更新机制的账本（手动·KVO·NotificationCenter·代理·闭包）/ `@objc dynamic` 才有 KVO（e06 只 warning，r05 当场 trap）/ KVC 一句跨过分层：MVC 那句话是纪律不是机制 / 弹窗四字段可读、`present` 不生效 / `UIAlertAction.handler` 读不回来 → 自存闭包 → 三方环 / 回收时机由自动释放池层次决定（不是优化等级）/ 29 题产品线：两个数组没人强制对齐、「最大 EQ 154」连可达都不是 / 四个 `else if` 之间 129 掉进缝里（空标题 + 空正文，仍带那颗按钮）/ 二选一三选一混排：`isHidden` 挡住手挡不住方法调用 / 「只需把 13 改成 29」值三处字面量 / ProgressHUD 混编：桥接头标记、三个名字、nullability 三种态度、单例即全局状态、OC 反方向写进来 / 一个协议两份 Model 同一台控制器 | 「数据模型与视图永远不会直接发生联系」这句话在运行时有没有强制力、「换掉 Model 而控制器一行不改」到底要靠什么才成立——本章的答案是「同一个意思只有一个来源」，而它跟目录结构无关 |
+
+### 第五篇 动画与硬件
+
+| 章 | 示例 | 内容（本章覆盖的东西） | 回答的问题 |
+|---|---|---|---|
+| [23 核心动画](docs/23-core-animation.md) | `23_core_animation` | `CALayer` 四量推导、model 层与 presentation 层、隐式动画与关闭、`CABasicAnimation` 三条给值路数与 `fillMode`、时序函数与 `speed`/`timeOffset`/`beginTime`、`CAKeyframeAnimation`（含沿 `CGPath`）、`CAAnimationGroup`/`CATransition`/`CASpringAnimation`、八种特殊图层、`CATransform3D` 与 m34 透视、`CATransaction`、`CADisplayLink` | 不看文档的情况下，怎么让一个层动起来、动到哪、什么时候算完 |
+| [24 音频与视频](docs/24-audio-video.md) | `24_audio_video` | `AVAudioSession` 类别与打断、`AVAudioPlayer` 状态机、`AVAssetWriter` 现场造 mp4、`AVPlayer`/`AVPlayerItem` 与 KVO 抢跑、`AVPlayerViewController`/`AVPlayerLayer`/画中画能力、`AVAsset` 新旧两读法、`AVAssetReader` 解码与 reader→writer 转码、`AVAssetExportSession`、`AVAssetImageGenerator`、`AVAudioEngine` 手动（offline）渲染与五个内置 `AVAudioUnit`、`MediaPlayer` 锁屏与远端命令 | 没有扬声器也没有画面时，怎么验证音视频代码是对的 |
+| [25 传感器、定位与设备能力](docs/25-sensors-location.md) | `25_sensors_location` | `CMMotionManager` 出厂状态与八条可用性、拉取 vs 推送、陀螺仪/磁力计/融合姿态、`CMQuaternion`/`CMRotationMatrix`/`CMAttitude` 空壳、`CMAltimeter`、`CMPedometer`（离线查询必回，错误码可逐字断言）、`CMMotionActivityManager`、`CLLocationManager` 五档授权与精度常量、`CLLocation` 纯数学、`CLCircularRegion.contains`、`CLGeocoder` 悬住不回、`UIDevice`/`UIScreen`/`ProcessInfo`、`AVCaptureDevice` 权限、`LAContext` 政策与负数错误码（`interactionNotAllowed` 把异步变同步）、`CBManager` 状态机与 `CBUUID`、MapKit 墨卡托数学（±85 夹紧、metersPerMapPoint）与标注/渲染器/GeoJSON、proximity 开关写不进、四种崩溃形态 | 硬件不存在、界面不在、网络不在时，这七个框架各自用什么方式告诉你「现在给不了」 |
+
+### 第六篇 系统能力与工程
+
+| 章 | 示例 | 内容（本章覆盖的东西） | 回答的问题 |
+|---|---|---|---|
+| [17 网络与并发](docs/17-networking-concurrency.md) | `17_networking_concurrency` | 自定义 `URLProtocol` 离线测网络、`URLComponents`、`URLSession` + `async`/`await`、`async let`、`withTaskGroup`、`actor`（消灭 data race）、`@MainActor` | 怎么「同时做多件事」且不违反 UI 线程规则 |
+| [18 数据持久化](docs/18-persistence.md) | `18_persistence` | `UserDefaults`（suite 隔离）、`FileManager` 三类目录、`Codable`+`.sortedKeys`、plist（XML/二进制）、Keychain `SecItem*`（含 headless 的 entitlement 边界） | 数据存哪、怎么存、敏感数据怎么加密 |
+| [19 权限 / 通知 / 设备能力](docs/19-permissions-notifications.md) | `19_permissions_notifications` | `UIDevice`/`UIScreen`/`ProcessInfo`、各框架 `authorizationStatus`（只查不弹框）、`Info.plist` 用途说明、`UNNotification` 内容对象（含需 `.app` 包的调度边界） | 受保护能力怎么申请、设备信息怎么读 |
+| [20 打包 / 签名 / 上架](docs/20-packaging-signing.md) | `20_packaging_signing` | `.app` = 目录（bundle）、`Info.plist` 契约、两个版本号、`codesign` ad-hoc、`simctl install`/`launch`、Archive→Export→Upload；附**真实签名+装机+启动实测** | 怎么把可执行文件变成能装、能跑、能上架的 App |
+| [26 SQLite3 与 CoreData](docs/26-sqlite-coredata.md) | `26_sqlite_coredata` | `import SQLite3` 与返回码族、`open` 的三种「成功」、`prepare`/`tail`/`nByte`、绑定与槽位、类型亲和、主码 vs 扩展码、扁平事务与 `close_v2`、`sqlite3_exec` 回调与自定义函数；CoreData 侧的程序化模型出厂值、容器默认值、Z 表结构、四种删除规则、`objectID`/fault/多上下文/合并冲突、两个迁移开关、聚合表达式、批量请求 | 第 18 章那一层底下真正的事务与查询是谁在做、出事时谁说话 |
+| [33 依赖管理：`import` 那一行背后，谁在算模块搜索路径](docs/33-dependency-management.md) | `33_dependency_management` | 「装好了」= 一条 `-I` + 一份 modulemap + 一批 `.o` + 一个 bundle 目录 / **SDK 里也有一个 `WeatherKit.framework`**：依赖没接上可以全程绿灯（e07 与 e08 同一份源码换个错，r01 不给 `-I` 也六条全过）/ `canImport` 只问「有没有」/ product·target·module·identity·bundle 前缀是五个来源，只有 target 名全图唯一（撞 product 名一句警告都没有，撞 target 名报 `moduleAliases`）/ 依赖两层的硬度与直觉相反（内层漏写全过，外层漏写死在 manifest）/ 传递 import 不传染 / internal 跨模块两种措辞（`cannot find` vs `inaccessible`）/ `@testable` 只成立于一半（debug 带 `-enable-testing`，release 拒绝）/ C target 的 modulemap 是生成的、umbrella 是绝对路径 / `.copy` 保留层级、`.process` 摊平、路径基准是 target 目录（写错只 warning + 少文件）/ bundle 名 = `Package(name:)_<target>.bundle` / `Bundle.module` 是生成出来的 internal `static let`，两个候选路径里那个绝对值是**假绿** / path 依赖连 `Package.resolved` 都不写，加 tag 不动锁、`package update` 才动 / `env -u SDKROOT`（manifest 是主机程序）/ 默认目标是主机而产物照样能在模拟器里跑 / automatic·static·dynamic 三种 product 的落盘 / 重导出的两种样子（`import WeatherKit` 不顺手带进 ClimateCore：返回值能用，类型名要自己 import）/ 一个 C 头文件 → 一个模块且函数名不改 / Magnus 公式在两配置下的同一个 `11.999894615745436` / `swift test` 只在主机上跑通 / 中间目录那三层清单（`<T>.build/`、`Modules/` 一个模块四份文件、`resource_bundle_accessor.swift.o`） | 「Add Package」那一下点掉的是什么——四个开关（`--triple`/`--sdk`/`env -u SDKROOT`/`--scratch-path`）各自挡掉哪一种「照样绿着但结果是错的」 |
+
+### 第七篇 设备端机器学习
+
+| 章 | 示例 | 内容（本章覆盖的东西） | 回答的问题 |
+|---|---|---|---|
+| [34 Core ML：一个 `.mlmodel` 的 46 个字节、一次断言、和一条走不通的摄像头路](docs/34-core-ml.md) | `34_core_ml` | 书本 15.1 那四节概念（塞缪尔的定义、监督式、非监督式、强化学习）逐条对上可复现的断言（哪几条卡得住、哪几条判据本身不存在）/ `.mlmodel` 的 protobuf 字节层：tag 是「字段号左移 3 位再加 wiretype」，wt1 那 8 个字节是**小端** double，而 oneof 的类型成员在字节层是一个空消息 —— 所以字段号到名字的映射光看字节读不出来 / 「完全的开放」的本机含义：`.mlmodel` 是 protobuf，46 个字节能自己写出来（Model 的字段 1 是规格版本、604 是 scaler，scaler 里的两个 double 就是 offset=10.0 与 scale=2.0）/ `compileModel(at:)` 只吃 `.mlmodel`、`contentsOf:` 只吃 `.mlmodelc`，把前者递给后者得 `Compile the model with Xcode` / 编译产物只有 `analytics` 与 `coremldata.bin`，**没有 Info.plist**，所以它不是 bundle / `MLModelAsset(specification: Data)` 连临时文件都不用（iOS 16+，只有 async 入口）/ 生成类 293 行、声明 `let model: MLModel` 而运行时给的是 `MLDelegateModel` / 「做一个断言」在代码里就一行 `scaler.prediction(x: 0.5).y = 21.0`（批量那半是 `predictions(inputs:)` 吃一串 `MLFeatureProvider`，`MLArrayBatchProvider` 自己数出 3 条）/ 输入输出表在运行时读回来：`modelDescription`、`classLabels`、`metadata` 的键是 `MLModelMetadataKey` / shape 与 dataType 是读出来的不是代码里规定的（`MLMultiArrayDataType.float32` 的 rawValue 是 65568，而规格里 multiArray 的字段号是 5）、约束对象自己 `「Float32, 6」`；float32 的精度尾巴能露出来（`20.28571429848671`）、ImageConstraint 四个字段各有自己的默认值（BGRA=1111970369、`sizeConstraint.type`=2、可变宽高写的是 `pixelsWideRange 2…1`）/ 手写一层神经网络：`LayerParams` 字段号 130 是 activation、内层 10 是 RELU / `MLModelStructure` 只有编译产物有这一层（r01 递 `.mlmodel` 得 signal 6，而且**崩溃是异步到达**的，不等就退出码 0）/ Vision 那条通路全程可跑，但自己的模型出来的是 `VNPixelBufferObservation`（`confidence` 永远是 1）—— 书本那句 `as? [VNClassificationObservation]` 在这里给 nil，`VNClassifyImageRequest` 当场 `Failed to create espresso context.` / 「即插即用」的对应物是操作系统自带的 26 881 字节决策树模型，只读复用：五个 double 输入 → 概率字典 `{0: 0.7954, 1: 0.2046}`、两项和为 1、取第一名就是书本那个热狗判决 / 相机在模拟器里是 `isSourceTypeAvailable(.camera)=false` 且 `authorizationStatus.rawValue=2`（denied，不是 authorized）/ 类型宽容度四种各量一次：多喂一个描述里没有的键**不报错**、int64 喂给 double 特征被自动加宽、跨到图像那一族才被拦、缺必填特征时 `localizedDescription` 只点名五个里的第一个 / 三道墙钉死：手写图像分类器过不了校验器（合法输出只有 double·multiArray，原话抄全）、结构自省不吃 `.mlmodel`、scaler 拒绝二维数组（校验期就拒，不在预测期） | wiretype`、wt1 是小端 double、oneof 的类型成员是空消息）、`compileModel(at:)` 与 `contentsOf:` 各吃哪一种扩展名、编译产物里只有 `analytics` 与 `coremldata.bin`、`MLModelAsset(specification:)` 这条内存里的第二入口、`coremlcompiler generate` 那 293 行（声明 `MLModel` 而运行时是 `MLDelegateModel`）、`modelDescription` 与三类约束对象（`Float32, 6`、BGRA=1111970369、`sizeConstraint.type=2`）、手写一层 RELU（`LayerParams` 字段号 130）、`MLModelStructure` 只属于编译产物、Vision 通路（`CIImage` → `VNPixelBufferObservation`，`confidence` 永远是 1）、书本那句 `as? [VNClassificationObservation]` 的 `guard` 在本机第一次真的进 `else`、系统自带那份 26 881 字节决策树模型的只读复用（概率字典和为 1、取第一名）、模拟器里相机的四形态、四种 `computeUnits` 结果一致 |
+
+## 示例规模
+
+每个示例跑多少节、断言多少条、探针几支，以及构建脚本要不要为它多做一步。
+
+| 章 | 示例 | 规模与构建特判 |
+|---|---|---|
+| 01 | `01_toolchain` | 编译目标 / 部署目标 vs `#available` / 三框架可达性 |
+| 02 | `02_hello_app` | SwiftUI + UIKit 两条最小骨架 |
+| 03 | `03_lifecycle` | App / Scene 生命周期与 scenePhase 观测 |
+| 04 | `04_objc_language` | OC 消息发送 / nil / SEL / 协议分类 / block / NSError |
+| 05 | `05_objc_foundation` | OC 侧 Foundation 的字符串/集合/数据/日期/JSON 坑 |
+| 06 | `06_swift_foundation` | Swift 侧桥接 / Codable / 值语义 / 相等性 |
+| 07 | `07_objc_swift_mix` | OC↔Swift 双向混编（含 bridging header + nullability） |
+| 08 | `08_swiftui_basics` | View/body / 修饰符值语义 / 栈 / UIHostingController |
+| 09 | `09_state_dataflow` | ObservableObject/@Published / Binding / $ / Environment |
+| 10 | `10_layout` | 栈/spacing/padding/frame/Spacer 的精确布局算术 |
+| 11 | `11_list_navigation` | List/ForEach/Section + NavigationStack |
+| 12 | `12_drawing_animation` | Path/Shape/animatableData/Canvas |
+| 13 | `13_swiftui_uikit_interop` | UIViewRepresentable/Coordinator/UIHostingController 嵌套 |
+| 14 | `14_uikit_views_autolayout` | frame/bounds/center + Auto Layout + 布局周期 |
+| 15 | `15_uikit_controls_lists` | 控件 + UITableView 复用 + Diffable + UICollectionView |
+| 16 | `16_gestures_responder` | hitTest / 响应链 / 手势状态机 |
+| 17 | `17_networking_concurrency` | 离线 URLProtocol + async/await + TaskGroup + actor |
+| 18 | `18_persistence` | UserDefaults / 文件 / Codable / plist / Keychain |
+| 19 | `19_permissions_notifications` | 设备能力 / 权限状态查询 / 通知内容对象 |
+| 20 | `20_packaging_signing` | 亲手搭 .app bundle + Info.plist + Bundle 加载验证 |
+| 21 | `21_uikit_layout_advanced` | autoresizingMask / VFL / 优先级 / systemLayoutSizeFitting / UIStackView |
+| 22 | `22_scroll_containers_controls` | UIScrollView 五量 + 容器控制器 + 十个高级控件 + ImageIO |
+| 23 | `23_core_animation` | CALayer 四量 / 显式动画 / 关键帧 / 特殊图层 / CATransform3D |
+| 24 | `24_audio_video` | AVAudioSession·Player·Writer·Reader·Engine 全链路（offline 渲染） |
+| 25 | `25_sensors_location` | CoreMotion·CoreLocation·LA·CoreBluetooth·MapKit 的「没反应」十二种形态 + 设备自查 |
+| 26 | `26_sqlite_coredata` | SQLite3 C API 八节 + CoreData 八节，两套 API 指向同一个库文件 |
+| 27 | `27_objc_runtime` | OC 侧三个 .m 出证据、Swift 侧逐条复核：消息发送 / 属性分类协议 / 转发·换实现·KVC·KVO |
+| 28 | `28_c_layer` | 全教程第一个 .c + .m + Swift 三方混编示例：C 只负责量，ObjC 负责说，Swift 负责印 |
+| 29 | `29_quartz2d_drawing` | 自己给缓冲区的 23 节绘制实验：每条断言都回读那四个字节（含 CoreText 文本、PDF、画板） |
+| 30 | `30_swift_language_basics` | 22 节 209 条断言 + 55 个独立探针：把「编译器会报错 / 运行会崩」的每一句量成一行证据 |
+| 31 | `31_interface_builder` | 26 节 220 条断言 + 26 支探针（b01–b11 坏界面文件 / e01 编译期 / r01–r14 运行期现场）：主线示例之外还要先经 `ibtool` 把 `.storyboard`/`.xib` 编进产物目录 |
+| 32 | `32_app_architecture` | 31 节 148 条断言 + 18 支探针（e01–e09 编译期原文 / r01–r05 崩溃现场 / c01 两配置对照 / m01–m03 Swift·OC 混编）：示例目录里的 `Bridging.h` 与空标记 `Needs-Swift-Header` 会让构建脚本自动加桥接头与 `-emit-objc-header-path` |
+| 33 | `33_dependency_management` | 23 节 50 条断言 + 26 支探针（s01–s13 SwiftPM 命令行现场 / e01–e09 编译期原文 / r01 绿着的错接线 / c01–c03 两配置对照）：`Packages/` 下两个本地包先由 `swift build` 按配置各编一遍，标记文件 `Needs-SwiftPM` 决定构建脚本加不加这四类输入 |
+| 34 | `34_core_ml` | 19 节 96 条断言 + 4 支探针（a01 主机侧 `coremlcompiler` 现场 / g01 真模型的 protobuf 树 / r01 结构自省摔在 `.mlmodel` 上 / r02 scaler 的二维输入）：模型文件的 46 个字节由 Swift 现场写出并在模拟器里编译，仓库里一个 `.mlmodel` 都不入库 |
 ## 建议阅读顺序
 
 - **从零开始（SwiftUI 主线）**：01 → 02 → 03 → 08 → 09 → 10 → 11 → 12 → 17 → 18 → 26 → 20
@@ -134,17 +212,19 @@ iosdev/
 - **要摸到语言的地板**：28（C：尺寸、对齐、句柄、UB）→ 27（OC：消息、转发、KVC/KVO）
 - **要做音视频 / 传感器 / 定位**：19（权限）→ 24、25
 - **语言层地板**：30（Swift 语法与 OOP，55 个探针）⇄ 28（C）⇄ 27（OC 运行时）⇄ 06（Swift 侧桥接）
-- **专项**：06（Swift 侧桥接）、19（权限/通知）、20（打包上架）、26（SQLite 与 CoreData）、29（离屏出图与画板）、30（语言层探针方法学）、31（界面文件的编译产物与运行时接线）、32（架构与混编）、33（依赖管理与构建目录）
+- **要弄清「一个文件到底怎么变成能跑的模型」**：20（bundle 与资源）→ 28（C 与模块地图）→ 33（SwiftPM：四类输入、五个名字）→ **34（Core ML：字节 → 编译产物 → 断言，以及设备侧和主机侧各管哪一段）**
+- **要做图像 / 视觉 / 设备端 ML**：29（Quartz 2D 出图，§11 的输入图像就是它那一套）→ 25（相机与授权的那堵墙）→ **34（Vision + Core ML 的完整通路，摄像头那半条断在模拟器里）**
+- **专项**：06（Swift 侧桥接）、19（权限/通知）、20（打包上架）、26（SQLite 与 CoreData）、29（离屏出图与画板）、30（语言层探针方法学）、31（界面文件的编译产物与运行时接线）、32（架构与混编）、33（依赖管理与构建目录）、34（模型文件的字节层与设备侧/主机侧分工）
 
 ## 验证状态（全部通过）
 
 ```
-通过 66   失败 0   输出差异 0   示例 33   配置 2
+通过 68   失败 0   输出差异 0   示例 34   配置 2
 ```
 
-- **33 个示例 × 2 个优化配置（debug/release）= 66 次运行，全部 PASS**
+- **34 个示例 × 2 个优化配置（debug/release）= 68 次运行，全部 PASS**
 - **两配置 stdout 逐字节一致**（`[cmp]` 全绿）
-- `tools/check_docs.py`：结构（01..33 齐全）/ 引用（示例·输出路径存在）/ 快照（文档里贴的断言行逐字对得上 build 输出）三项全绿
+- `tools/check_docs.py`：结构（01..34 齐全）/ 引用（示例·输出路径存在）/ 快照（文档里贴的断言行逐字对得上 build 输出）三项全绿
 
 ### 六条判定标准
 
@@ -177,6 +257,7 @@ iosdev/
 - **Quartz 2D** 的一切结论都来自**回读自己提供的位图缓冲区**（`CGBitmapContext`），因为 UIKit 的 `draw(_:)` 给的那个上下文读不到像素（§20 实测 `width`/`bytesPerRow` 为 0、`data` 为 nil）。内存行号与用户 y 是镜像关系（`row = h-1-y`），所以量具同时交出 `mem()` 与 `at()` 两种读法，防止混用得假结论。像素值只选能精确落在格点上的分量（0/1/0.5），避免量化抖动写进断言。
 - **界面文件（故事板 / XIB）**：`.storyboardc` / `.nib` 由 `ibtool` 在 Swift 编译之后单独编一次，放进**可执行文件所在目录**——那里没有 `.app`、没有 Info.plist，`UIStoryboard(name:bundle:)` 与 `UINib(nibName:bundle:)` 照样取得到（找的就是同名那个目录）。断言读两样东西：**编译产物的清单**（包里有几条 nib、那张「标识符 → nib 名」查找表有哪些键）和**运行时解出的对象**（类名、`===` 身份、frame、控件的 target-action 表）。ObjC 的 `description` 会把内存地址打进 stdout，所以本章所有输出统一先过一次脱敏（长十六进制串换成 `0x…`），否则同一份代码的 debug 与 release 两次进程对不齐。
 - **依赖管理（SwiftPM 离线版）**：章节根放一个 `Needs-SwiftPM` 清单（每行一个包目录），`run-all.sh` 在编译 `main.swift` **之前**先按配置各跑一遍 `env -u SDKROOT swift build --package-path … --scratch-path build/33_dependency_management/spm/<cfg>/<PkgName> --triple $DEPLOY_TARGET --sdk $SDK`，再把 `-I <cfgdir>/Modules`、每个 `<T>.build/*.o` 交给 swiftc（C 语言的 target 另给一条 `-Xcc -fmodule-map-file=`），并把 `*.bundle` **拷到可执行文件旁边**。三个开关各自挡掉一种「照样绿着但结果是错的」：不给 `--triple`/`--sdk` 会编出**主机**二进制（落在 `x86_64-apple-macosx/`，而它 `simctl spawn` 居然也能跑起来，只是读到的系统是 10.16 而不是 18.3）；只给 `--triple` 不给 `--sdk` 会红在 `unable to load standard library for target 'x86_64-apple-ios12.0-simulator'`；不 `env -u SDKROOT` 会红在 `Package.swift` 自己身上——manifest 是一段只能为**主机**编译执行的 Swift 程序，模拟器 SDK 递给它就当场 `Invalid manifest`。`--scratch-path` 必须显式给：不给就在包目录里写一个 `.build/`，而本章的两个包就住在 `examples/` 下面（主线把它指到 `build/33_dependency_management/spm/<cfg>/<包名>`，探针指到 `$TMP`，两处都可复现、也都不会被别人当成产品）。SwiftPM 自己的 `warning:` **不进判定 1**（判定 1 只管 swiftc），而是单独筛进 `spm.<cfg>.diags` 留档；进度文本（`Building for debugging…` / `Build complete! (…)`）进 `spm.<cfg>.log`，两样都不并进 `build.<cfg>.log`——`swift build` 一定跑在 `build_config` 截断那句之前，直接写会被抹掉。
+- **Core ML（离线手写模型）**：本章**不入库任何模型文件**——`.mlmodel` 的那 46 个字节由 Swift 现写（protobuf：tag = `(字段号<<3)|wiretype`，wt1 那 8 个字节是**小端** double），落成临时文件，再在模拟器里 `MLModel.compileModel(at:)` 编成 `.mlmodelc` 载入。所以「字段号→名字」的每一个号都不是抄来的：要么把苹果自己那份 `.mlmodel` 读成树（探针 g01），要么引校验器的原话（§18 那三道墙）。唯一的例外是 `tiny_scaler.swift`——它是 `xcrun coremlcompiler generate` 的原样产物（293 行），提交进来是因为主线要**用它**（书本 15.2.2 那个「自动出现的类」在命令行上没人替你生成）。判据全走「读回来的东西」：`modelDescription` 的表、约束对象的字段、概率字典的键与和、错误原文的 `domain/code`；一次断言都不依赖画面、耗时或真机。三条跑法上的坑：① 错误原文的前半截是模拟器容器的绝对路径，所以主线只断言它**包含**那句 `Compile the model with Xcode`；② `__MLModelStructure`（iOS 17.4）与 `MLModelAsset(specification:)`（iOS 16）都比部署目标新，必须包在 `if #available` 里——顶层写 `guard #available … else { exit(0) }` 不收窄作用域，`swiftc` 照样报红；③ 结构自省那次 abort 是**异步到达**的，不等回调就退出码 0、stderr 全空，看起来像「它没报错」。
 - 环境相关的数字（耗时、线程 id、`processorCount`、屏幕尺寸、系统版本）**只打印性质、不断言具体值**；耗时只作相对比较（如 `concElapsed < seqElapsed`）。这条的现形记在第 24 章：一行 `currentTime()=… secs=0.0` 平时次次过，全量回归里被抓到 debug 读到 `0.042566414`、release 读到 `0.0`（那一行在 `play()` 之后跑，读的就是「播了几秒」），两配置比对当场报 DIFF，单独重跑又九成能过——正是最难查的那类偶发失败。现在只打 `valid`/`indefinite` 两个布尔，断言也跟着改成形状判断。
 
 ### 诚实处理 headless 的边界（不伪造绿灯）
@@ -227,6 +308,13 @@ iosdev/
 | SwiftPM 的 `warning:` 不进判定 1 | 第 33 章 | 判定 1 管的是 swiftc 那份日志。`swift build` 的进度文本（`Building for debugging…` / `Build complete! (…)`）不是诊断，混进 `build.<cfg>.log` 会让每个用包的示例当场失败；所以进度进 `spm.<cfg>.log`，从里面**筛出**含 warning/error 的行单独立 `spm.<cfg>.diags`，由 `build_config` 在截断那句之后接进日志——包里的告警照样是硬失败，构建噪声不算 |
 | Xcode 的「Add Package」面板、`.xcworkspace` 里的 `Package.resolved`、framework embedding 与签名不在范围 | 第 33 章 | 本教程没有 `.xcodeproj`/`.xcworkspace`，也没有 `.app` 可签。判据换成命令行上可数的东西：`swift build` 的退出码与原文、`--scratch-path` 下有什么（s12 那三层清单：`<T>.build/`、`Modules/<T>.{swiftmodule,swiftdoc,abi.json,swiftsourceinfo}`、`resource_bundle_accessor.swift.o`）、swiftc 实际收到的四类输入 |
 | 预编译产物（`.xcframework`、裸 `.a`、`vendored_frameworks`）不在第 33 章 | 第 33 章 | 本章的 C 依赖是**源码级**的（`CLIBrain` 的 `brain.c` + `include/CLIBrain.h`），s12 量到它的 `module.modulemap` 里 umbrella 指向源码那个头。书 10.4 那节讲的「把第三方 `.framework` 拖进工程」在这一台机器上没有对应的可复现断言 |
+| 「构建并运行项目，看图 15-15 那串控制台输出」整条判据换掉 | 第 34 章 | 本教程没有工程、没有窗口、没有摄像头。书本那句「相似度最高的第一个元素」在本机的对应物是可数的三样：概率字典两项**和为 1**、`argmax` 与 `predictedFeatureName` 回读到的**同一个**、换一组输入之后仍然成立 |
+| 手写不出一个能过校验器的**图像分类器** | 第 34 章 | §18 墙二：输出的合法类型只有 `double` 与 `multiArray`，图像/字符串/字典三种都被 `validator error: Unsupported type … Should be one of: MLFeatureTypeType_doubleType, MLFeatureTypeType_multiArrayType.` 顶回；字段号 303（`neuralNetworkClassifier`）编得过，但输出类型仍是数组，`request.results` 依旧不是 `[VNClassificationObservation]`。所以书本 15.2.3 那句 `as?` 的 `fatalError("模型处理图像失败")` 在这里第一次真的被走到（§12），热狗判决改由系统自带那份真分类器给出（§13/§14） |
+| 真相机、真照片、`NSCameraUsageDescription` 那条崩溃 | 第 34 章 | 模拟器 `isSourceTypeAvailable(.camera)=false`、`AVCaptureDevice.default(for:.video)=nil`、枚举到 0 台视频设备、授权状态实测 `rawValue=2`（`.denied`，不是「已授权」）。原书那句 `'Source type 1 not available'` 的现场就是一行 `false`；输入图像改用第 29 章那套 Quartz 2D 现画（§11），`UIImagePickerController` 那半条路只登记形态 |
+| Apple 神经引擎（ANE）的性能与 `cpuAndNeuralEngine` 的实际效果 | 第 34 章 | `MLModel.availableComputeDevices` 本机只有 2 个、标签 `["cpu","gpu"]`，没有任何「神经引擎」条目。四种 `computeUnits` 跑同一份真模型，概率字典**逐字节一致**——所以本章能说「选哪块芯片是性能问题，不是结果问题」，不能说 ANE 快多少 |
+| `.mlmodel` 的字段号没有 `.proto` 可查，全部来自两条取证路 | 第 34 章 | 本机与 SDK 里都没有那份 schema（§1 结尾那段说明）。每个号要么来自把苹果真模型读成树（探针 g01：`f402 msg len=26559`、`f12 str "classProbability"`），要么来自校验器/运行时的原话。oneof 的类型成员在字节层是**空消息**（`f2 bytes len=0`），光看字节永远分不清 double 还是 int64 |
+| 训练、导出（`coremltools`）、Inception v3 的下载与 97.9313% 那个数字 | 第 34 章 | 回归不联网、本机没有 Python 侧的转换工具。书 15.2.1 说 Core ML「不能用自己的数据训练」，这条反倒在 §13 量到了正面证据：真模型的元数据里写着 `coremltoolsVersion=3.3`（训练发生在机器之外，App 拿到的是一段静态字节），而 `isUpdatable=false` |
+| 会 abort 的调用只进 `examples/34_*/probes/` | 第 34 章 | 判定 2/3 要退出码 0、stderr 为空。r01（结构自省喂 `.mlmodel` → libc++abi 那句 `… is not a valid .mlmodelc file.`、signal 6）、r02（scaler 二维输入 → `domain=com.apple.CoreML code=3`）都是当场失败；而 r01 的崩溃是**异步**的，第一版不等回调时量到的是「退出码 0 + stderr 全空」这种假绿 |
 
 这些都给出了**正确的 API 用法**并解释清楚为什么 headless 下走不通。第 20 章更进一步：把签名/装机/启动
 的完整流水线**在宿主 shell 上真实跑通**（编译 → ad-hoc 签名 → `simctl install` → `launch --console-pty`），
@@ -249,6 +337,7 @@ iosdev/
 | `@main` App 入口 | 源文件不叫 `main.swift` 且加 `-parse-as-library` |
 | Build Configuration | `-Onone`（debug） / `-O`（release） |
 | 故事板 / XIB 的编译（Build Phases 里自动的那一步） | `xcrun ibtool --compile <输出目录或 .nib> <文件.storyboard\|.xib>`（第 31 章：`run-all.sh` 自动扫示例目录里的界面文件，产物直接放进可执行文件所在目录，ibtool 输出并入 `build.<配置>.log` 参与「编译日志为空」判定） |
+| `.mlmodel` 的编译与那个「自动出现的类」（第 34 章书本 15.2.2 那一步） | `xcrun coremlcompiler compile 模型.mlmodel 输出目录` 与 `xcrun coremlcompiler generate 模型.mlmodel 输出目录 --language Swift`（两个 `输出目录` 都是**位置参数**且必须**已存在**；`--language` 的值大小写敏感，`--output-path` 会被当成没给目标路径。运行时等价物是 `MLModel.compileModel(at:)`，所以本章主线一个模型文件都不需要提交） |
 | 装到模拟器 | `xcrun simctl install <UDID> App.app` |
 | 启动 App | `xcrun simctl launch <UDID> <bundle-id>` |
 
@@ -257,6 +346,6 @@ iosdev/
 ## 维护
 
 - 改了判定函数 → **必须重做反向验证**（造坏样例确认每条判定真的会 FAIL）
-- 新增示例 → 同步本文件「各章索引」+ `iOS开发指南.md` + `docs/` 下加一章；跑 `python3 tools/check_docs.py`
+- 新增示例 → 同步本文件「章节索引（七篇）」+「示例规模」两张表 + `docs/` 下加一章（索引只这一份，不再单开目录页）；跑 `python3 tools/check_docs.py`
 - 改了示例断言文案 → 同步更新对应 doc 里贴的输出块（`check_docs.py` 的「快照漂移」会挡住不一致）
 - 示例需要额外系统框架 → 在示例目录放一个 `Frameworks` 文件，每行一个框架名
