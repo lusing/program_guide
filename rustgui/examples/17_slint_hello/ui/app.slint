@@ -1,0 +1,46 @@
+// ═══ 17.1 声明式最小界面：属性 + 回调 + TouchArea ═══
+// .slint 是一门独立的界面语言，build.rs 用 slint_build::compile 编译成 Rust 代码。
+// 属性声明状态、绑定驱动显示——与 egui 的"每帧重跑"完全不同的范式。
+//
+// 点击条带放在第一个子元素：VerticalLayout padding 16px + 固定 height: 40px，
+// 坐标 (50, 35) 稳定命中——无头测试按坐标注入事件，布局可预测是前提。
+
+export component AppWindow inherits Window {
+    title: "17 slint hello";
+    preferred-width: 320px;
+    preferred-height: 200px;
+
+    // 对 Rust 侧公开的属性与回调（生成 get_/set_/invoke_ 方法）
+    in-out property <int> click-count;
+    callback increment();
+    increment() => {
+        root.click-count += 1;
+    }
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 12px;
+        Rectangle {
+            height: 40px;
+            background: touch.pressed ? #4a9eff : #2b6cb0;
+            border-radius: 6px;
+            touch := TouchArea {
+                clicked => {
+                    root.increment();
+                }
+            }
+            Text {
+                text: "Increment";
+                color: white;
+            }
+        }
+        Text {
+            text: "Hello Slint!";
+            font-size: 24px;
+        }
+        Text {
+            text: "count: " + root.click-count;
+            font-size: 16px;
+        }
+    }
+}

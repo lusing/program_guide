@@ -1,0 +1,9 @@
+[package]
+name = "iced_counter"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+iced = "0.14"
+# iced_test 无头模拟器：--selftest 与 #[test] 共用。
+iced_test = "0.14"

@@ -1,0 +1,13 @@
+# Cargo 配置（本项目级）—— crates.io 走清华 TUNA 镜像
+#
+# 本机直连 crates.io 下载近乎停滞，改走 TUNA sparse 镜像（用户配置）。
+# 配置来源：https://mirrors.tuna.tsinghua.edu.cn/help/crates.io-index/
+# 若你的网络可直连 crates.io，删除本文件即可——不影响任何代码。
+[source.crates-io]
+replace-with = 'mirror'
+
+[source.mirror]
+registry = "sparse+https://mirrors.tuna.tsinghua.edu.cn/crates.io-index/"
+
+[registries.mirror]
+index = "sparse+https://mirrors.tuna.tsinghua.edu.cn/crates.io-index/"

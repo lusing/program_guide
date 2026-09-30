@@ -1,0 +1,11 @@
+[package]
+name = "egui_hello"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+eframe = "0.36"
+egui = "0.36"
+# kittest 无头测试通道：--selftest 与 #[test] 共用，故是正式依赖而非 dev-dependency。
+# "eframe" feature 允许 Harness 直接驱动完整的 eframe::App。
+egui_kittest = { version = "0.36", features = ["eframe"] }

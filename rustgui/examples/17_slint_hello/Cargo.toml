@@ -1,0 +1,20 @@
+[package]
+name = "slint_hello"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+slint = "1.18"
+# 官方无头测试通道（slint 自己的 doctest 也这么用）：
+#   init_no_event_loop() 安装测试 backend；"ffi" feature 打开
+#   testing_backend 模块的 send_mouse_click / send_keyboard_string_sequence
+#   等注入函数（纯门控、零额外依赖）。
+# 1.18 起旧的 slint::testing 模块已移除；"internal" feature（人体工学
+# 封装）在 1.18.1 发布包里因缺字体文件编译不过（打包 bug），故用
+# src/testing.rs 里 4 行官方同款 shim 桥接（见该文件注释）。
+i-slint-backend-testing = { version = "1.18", default-features = false, features = ["ffi"] }
+# shim 需要的 WindowInner（与 slint 内部 =1.18.1 严格同版，cargo 自动统一）
+i-slint-core = { version = "1.18", default-features = false }
+
+[build-dependencies]
+slint-build = "1.18"

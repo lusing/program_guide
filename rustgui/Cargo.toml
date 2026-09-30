@@ -1,0 +1,5 @@
+# rustgui 教程根 workspace：22 个示例工程（章号=目录号），共享一个 target/。
+# 首次构建需联网拉取 egui/iced/slint 依赖（Cargo.lock 已入库锁定版本）。
+[workspace]
+resolver = "3"
+members = ["examples/*"]
