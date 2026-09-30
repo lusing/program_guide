@@ -2989,6 +2989,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "iced_widgets"
+version = "0.1.0"
+dependencies = [
+ "iced",
+ "iced_test",
+]
+
+[[package]]
 name = "iced_winit"
 version = "0.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
