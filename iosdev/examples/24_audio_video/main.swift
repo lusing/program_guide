@@ -637,7 +637,12 @@ expect(rightAfterPlay == .waitingToPlayAtSpecifiedRate,
        "play() 之后**同一行代码里**读到的还是 waiting(1)、reason=AVPlayerWaitingWhileEvaluatingBufferingRateReason —— 别在这里判「播起来了没有」")
 expect(reachedPlaying && avPlayer.reasonForWaitingToPlay == nil,
        "再等一会儿（本机实测约十几步 ×20ms）才走到 playing(2)、reason 变 nil：waiting 是过渡态，不是失败")
-line("  ready 之后 item.duration=\(cm(item.duration)) currentTime()=\(cm(item.currentTime())) likelyKeepUp=\(item.isPlaybackLikelyToKeepUp) bufferEmpty=\(item.isPlaybackBufferEmpty)")
+let ctAfterReady = item.currentTime()
+// currentTime() 是墙钟读数：这一行在 play() 之后跑，慢一点就读到 0.04 秒、快一点读到 0.0，
+// 连 timescale 都跟着变 —— 所以只报它的形状（有效、非 indefinite），具体秒数不进输出。
+line("  ready 之后 item.duration=\(cm(item.duration)) currentTime() 的 valid=\(ctAfterReady.isValid) indefinite=\(ctAfterReady.isIndefinite)（秒数是墙钟读数，不参与打印与断言）likelyKeepUp=\(item.isPlaybackLikelyToKeepUp) bufferEmpty=\(item.isPlaybackBufferEmpty)")
+expect(ctAfterReady.isValid && !ctAfterReady.isIndefinite,
+       "readyToPlay 之后 currentTime() 已经是有效时间（valid=true、indefinite=false）—— 但「现在是第几秒」取决于这一行什么时候被执行，本机 debug 与 release 就读出过两个值，所以只断言形状")
 expect(CMTimeGetSeconds(item.duration) == 1.0,
        "duration 从 indefinite 变成 1.0 —— 是 play() 触发的加载给的，不需要你先 await load")
 line("  avPlayer.actionAtItemEnd=\(avPlayer.actionAtItemEnd.rawValue)（枚举：advance=\(AVPlayer.ActionAtItemEnd.advance.rawValue) pause=\(AVPlayer.ActionAtItemEnd.pause.rawValue) none=\(AVPlayer.ActionAtItemEnd.none.rawValue)；AVPlayer.h 明写只有 AVQueuePlayer 支持 advance，普通 player 设了会 raise NSInvalidArgumentException）")

@@ -2,7 +2,7 @@
 
 > iOS 原生应用开发讲的是 **两套界面框架 + 一套地基**：**SwiftUI** 是现代的声明式 UI（`body` 描述界面长什么样，系统负责画），**UIKit** 是它底下的命令式基石（`UIView`/`UIViewController`、Auto Layout、响应链）——即便你只写 SwiftUI，`UIHostingController`、手势、列表复用这些仍是 UIKit 在扛。而两者都建立在 **Foundation** 与 **Objective-C 运行时**之上：字符串、集合、`Codable`、`NotificationCenter`，以及 Swift↔OC 双向桥接处那些「看起来一样其实不一样」的坑。本教程 **SwiftUI 为主、UIKit 为底**，ObjC 与 Swift 并重。
 
-本教程面向「想真正搞懂 iOS 开发、而不是只会拖 Xcode 控件」的读者，按依赖链组织为 **30 章（六篇）**，每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例，全部用本机 **Xcode 16.2（Swift 6.0.3）+ iOS 18.2 SDK** 在 **iPhone 模拟器**里编译运行验证，`debug(-Onone)` 与 `release(-O)` 两个配置**输出逐字节一致**。全部示例**不打开 Xcode、不建窗口、不弹 UI**——只用 `swiftc` / `clang` 编成命令行可执行文件，`xcrun simctl spawn` 在模拟器里跑 headless 自测，因为这样你才知道 Xcode 到底替你做了什么。
+本教程面向「想真正搞懂 iOS 开发、而不是只会拖 Xcode 控件」的读者，按依赖链组织为 **31 章（六篇）**，每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例，全部用本机 **Xcode 16.2（Swift 6.0.3）+ iOS 18.2 SDK** 在 **iPhone 模拟器**里编译运行验证，`debug(-Onone)` 与 `release(-O)` 两个配置**输出逐字节一致**。全部示例**不打开 Xcode、不建窗口、不弹 UI**——只用 `swiftc` / `clang` 编成命令行可执行文件，`xcrun simctl spawn` 在模拟器里跑 headless 自测，因为这样你才知道 Xcode 到底替你做了什么。
 
 ## 目录
 
@@ -37,7 +37,7 @@
 | [12 绘制与动画](docs/12-drawing-animation.md) | `Shape`/`Path`（boundingRect/trim）、内置形状、自定义 `Shape`、`animatableData`、`Canvas`、`Animation`/`AnyTransition` | 自定义图形怎么画、怎么让它动起来 |
 | [13 SwiftUI ⇄ UIKit 互操作](docs/13-swiftui-uikit-interop.md) | `UIViewRepresentable`/`Coordinator`、`makeUIView`/`updateUIView`、`UIHostingController` 把 SwiftUI 嵌进 UIKit | 两套框架怎么互相嵌套、边界在哪 |
 
-### 第四篇 UIKit 补充与绘制
+### 第四篇 UIKit 补充与界面文件接线
 
 | 章 | 内容 | 回答的问题 |
 |---|------|-----------|
@@ -47,6 +47,7 @@
 | [21 UIKit 布局进阶](docs/21-uikit-layout-advanced.md) | `autoresizingMask` 六档弹性位、`translatesAutoresizingMaskIntoConstraints`、`NSLayoutConstraint` 原始形式与 VFL、布局优先级裁决、`systemLayoutSizeFitting` 反推尺寸、`UIStackView` | Auto Layout 之外那套老机制还在哪活着、约束与尺寸怎么互相推导 |
 | [22 滚动视图、容器控制器与高级控件](docs/22-scroll-containers-controls.md) | `UIScrollView` 的 contentSize/Offset/Inset/分页/缩放（含越界赋值不夹取、NaN 崩）、`UINavigationController`/`UITabBarController`/自定义 containment、`UIPickerView`/`UIDatePicker`/`UIAlertController` 等十个控件、ImageIO 合成多帧 GIF | 表格集合视图的父类到底管什么、一个界面怎么装进另一个界面 |
 | [29 Quartz 2D 直接绘制](docs/29-quartz-2d.md) | 位图上下文与 `bytesPerRow` 对齐、内存行号与用户 y 的镜像、翻转 CTM 与 UIKit 逐字节等价、面积覆盖与抗锯齿、色空间与预乘、绘画模型层序、当前路径与「谁吃路径」、winding vs even-odd、CTM 乘法顺序与退化逆矩阵、裁剪求交与蒙版、端帽/连接/`miterLimit`、点线图案与相位取模、`addArcToPoint` 与 `flatness`、状态栈 LIFO、透明层消接缝、十三种混合模式的逐通道字节、阴影走设备轴、梯度的像素中心采样、CoreText 直画与 UIKit 文本两条通路、`CGImage`/`UIImage`/插值/平铺、headless 绘制周期驱动、PDF 写出与读回、画板案例 | 「这一笔落在哪四个字节上」——把第 16 章那套「眼睛看效果」的判据换成回读缓冲区 |
+| [31 Interface Builder：故事板、XIB 与代码之间的接线](docs/31-interface-builder.md) | `Bundle.main` 在命令行产物里就是那个目录（无 Info.plist、`bundleIdentifier=nil`，故事板照样取得到）、一份 XML → **每场景两条 nib**、`.storyboardc` 里那张「标识符 → nib 名」查找表与 `UIStoryboardDesignatedEntryPointIdentifier`、不可达场景被 `ibtool` 无声删掉、`customClass`/`customModule` 三段字符串写错 → 静默退回 plain `UIViewController`、`storyboardIdentifier` ≠ XML 的 `id`、`relationship` 收养后查找表少一项、连接的时机（`instantiate` 解控制器 nib、`loadView` 解视图 nib）、连线是**一次 KVC 赋值**（约束也能连、`===` 成立、`@IBInspectable` 只管 Xcode 给不给那一格）、creator 闭包与 `UINibDecoder`、`@IBAction` 落到运行时是控件表里的一个字符串选择器、按钮直连 segue 时 target 是 `UIStoryboardSegueTemplate`、`performSegue` 时序与 `UIStoryboardSegue` 三量、unwind 的 `<exit>` 占位对象与两条触发路径、XIB 的顶层对象数组与 File's Owner 不跑 `awakeFromNib`、设计值 `<rect>` 有几格真生效（只看 `translatesAutoresizingMaskIntoConstraints`）、松散 PNG 的 @2x/@3x 查表与 `contentsOfFile:` 的倍率替换、同一个界面的三条路（界面文件/代码装配/SwiftUI `body`） | 「按住 ctrl 拖一条线」在运行时到底是什么——那条线连上了吗、什么时候连的、名字写错的下场是崩溃还是静默、按 XIB 设计的尺寸摆出来为什么不是那个尺寸 |
 
 ### 第五篇 动画与硬件
 
@@ -68,7 +69,7 @@
 
 ## 示例代码
 
-`examples/` 下每个目录对应一个可编译工程，全部经本机模拟器编译并运行验证（**30 个示例 × 2 配置 = 60 次运行全部通过，debug/release 输出逐字节一致**，构建说明见 [README](README.md)）。每个示例都是 headless `--selftest`：构造 SwiftUI `View` / `UIViewController` / Foundation 对象 / Quartz 位图上下文，跑断言，打印，退出——**不建窗口、不弹 UI、不调 `UIApplicationMain`**，却真用了 iOS SDK 与 UIKit/SwiftUI 运行时。
+`examples/` 下每个目录对应一个可编译工程，全部经本机模拟器编译并运行验证（**31 个示例 × 2 配置 = 62 次运行全部通过，debug/release 输出逐字节一致**，构建说明见 [README](README.md)）。每个示例都是 headless `--selftest`：构造 SwiftUI `View` / `UIViewController` / Foundation 对象 / Quartz 位图上下文，跑断言，打印，退出——**不建窗口、不弹 UI、不调 `UIApplicationMain`**，却真用了 iOS SDK 与 UIKit/SwiftUI 运行时。
 
 | # | 示例 | 章 | 一句话 |
 |---|------|----|----|
@@ -102,6 +103,7 @@
 | 28 | `28_c_layer` | 28 | 全教程第一个 .c + .m + Swift 三方混编示例：C 只负责量，ObjC 负责说，Swift 负责印 |
 | 29 | `29_quartz2d_drawing` | 29 | 自己给缓冲区的 23 节绘制实验：每条断言都回读那四个字节（含 CoreText 文本、PDF、画板） |
 | 30 | `30_swift_language_basics` | 30 | 22 节 209 条断言 + 55 个独立探针：把「编译器会报错 / 运行会崩」的每一句量成一行证据 |
+| 31 | `31_interface_builder` | 31 | 26 节 220 条断言 + 26 支探针（b01–b11 坏界面文件 / e01 编译期 / r01–r14 运行期现场）：主线示例之外还要先经 `ibtool` 把 `.storyboard`/`.xib` 编进产物目录 |
 
 ## 建议阅读顺序
 
@@ -109,10 +111,11 @@
 - **要写 Objective-C / 维护老项目**：04 → 05 → 07 → 27（运行时）→ 28（C 层）
 - **Swift 语言本身没吃透**：30（语法与 OOP：可选、闭包、init 规则、class vs struct）→ 06（Foundation 桥接）→ 27（运行时）
 - **要吃透 UIKit 底层**：13 → 14 → 15 → 16 → 21 → 22 → 23 → 29
+- **要弄懂「拖一条线」连上了什么**：21（布局与 `translates…`）→ **31（故事板 / XIB / segue）** → 16（事件与响应链）→ 13（SwiftUI `body` 那条对照路）
 - **要做动画**：12（SwiftUI 侧）→ 23（Core Animation 侧）
 - **要做自绘 / 图像 / PDF**：12（SwiftUI 的 `Canvas`/`Path`）→ 23（图层树侧）→ **29（像素侧：Quartz 2D）**
 - **要摸到语言的地板**：30（Swift 语法与 OOP）→ 28（C：尺寸、对齐、句柄、UB）→ 27（OC：消息、转发、KVC/KVO）
 - **要做音视频 / 传感器 / 定位**：19（权限）→ 24、25
-- **专项**：06（Swift 侧桥接）、19（权限/通知）、20（打包上架）、26（SQLite 与 CoreData）、29（离屏出图与画板）、30（语言层探针方法学）
+- **专项**：06（Swift 侧桥接）、19（权限/通知）、20（打包上架）、26（SQLite 与 CoreData）、29（离屏出图与画板）、30（语言层探针方法学）、31（界面文件的编译产物与运行时接线）
 
-> 第二篇（04–07、27–28、30）是本教程的地基：SwiftUI/UIKit 的每一条 API 都建立在 Foundation 与 OC 运行时之上，而运行时底下还有一层 C——`CGContextRef` 是个不透明句柄、`CGRect` 是个值类型、`NSError **` 是个出参，这些在第 28 章一次讲清；第 30 章则把本书语言层的每一条「编译器会报错」「运行会崩」都换成 55 个独立探针的原文与 209 条断言，是全教程「判据换成可复现输出」这件事最集中的示范。把这几章读透，后面所有界面章节都会顺理成章。第三篇（08–13）是现代 iOS 的主线；第四篇（14–16、21–22、29）补上你迟早要读懂的 UIKit 底层，其中第 29 章把「画出来」这件事从「眼睛看效果」变成「回读四个字节」，是第 12、13、22、23 章所有绘制代码的共同地基；第五篇（23–25）是动画与硬件——它们共用一套「headless 环境下怎么验证」的方法；第六篇（17–20、26）把网络、数据、上架这条工程链路走完。
+> 第二篇（04–07、27–28、30）是本教程的地基：SwiftUI/UIKit 的每一条 API 都建立在 Foundation 与 OC 运行时之上，而运行时底下还有一层 C——`CGContextRef` 是个不透明句柄、`CGRect` 是个值类型、`NSError **` 是个出参，这些在第 28 章一次讲清；第 30 章则把本书语言层的每一条「编译器会报错」「运行会崩」都换成 55 个独立探针的原文与 209 条断言，是全教程「判据换成可复现输出」这件事最集中的示范。把这几章读透，后面所有界面章节都会顺理成章。第三篇（08–13）是现代 iOS 的主线；第四篇（14–16、21–22、29、31）补上你迟早要读懂的 UIKit 底层，其中第 29 章把「画出来」这件事从「眼睛看效果」变成「回读四个字节」，是第 12、13、22、23 章所有绘制代码的共同地基；第 31 章则把「在 Xcode 里拖一条线、跑起来看看」换成三段可查的账——编译产物里有什么、运行时解出什么、线和 segue 在运行时是谁，它也是全教程唯一一章需要 `ibtool` 参与构建的示例；第五篇（23–25）是动画与硬件——它们共用一套「headless 环境下怎么验证」的方法；第六篇（17–20、26）把网络、数据、上架这条工程链路走完。
