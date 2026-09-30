@@ -157,4 +157,4 @@ frames=50; theme=0; logs=4; last cpu=65%
 
 ---
 
-上一章：[12 · DrawList 自绘与字体](12-imgui-drawlist-fonts.md) ｜ 下一章：[14 · FTXUI 声明式 DOM](14-ftxui-dom.md) ｜ 返回：[README](../README.md)
+上一章：[12 · DrawList 自绘与字体图集：中文渲染](12-imgui-drawlist-fonts.md) ｜ 下一章：[14 · FTXUI 元素树：声明式范式与渲染到字符串](14-ftxui-dom.md) ｜ 返回：[README](../README.md)

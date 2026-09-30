@@ -231,4 +231,4 @@ SDL2 窗口/GL 上下文创建成功，主循环渲染 40 帧后按预期退出
 
 ---
 
-上一章：[07 · 文档/视图与线程](07-wx-docview-thread.md) ｜ 下一章：[09 · 控件全集与 ID 机制](09-imgui-widgets.md) ｜ 返回：[README](../README.md)
+上一章：[07 · 文档/视图与线程](07-wx-docview-thread.md) ｜ 下一章：[09 · 控件全集与 ID 机制：返回值即事件](09-imgui-widgets.md) ｜ 返回：[README](../README.md)

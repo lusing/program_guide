@@ -166,4 +166,4 @@ pwsh build.ps1 -Example 11_imgui_tables
 
 ---
 
-上一章：[10 · 窗口系统](10-imgui-windows.md) ｜ 下一章：[12 · DrawList 自绘与字体](12-imgui-drawlist-fonts.md) ｜ 返回：[README](../README.md)
+上一章：[10 · 窗口系统：Begin/End、标志与子窗口](10-imgui-windows.md) ｜ 下一章：[12 · DrawList 自绘与字体图集：中文渲染](12-imgui-drawlist-fonts.md) ｜ 返回：[README](../README.md)

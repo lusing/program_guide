@@ -149,4 +149,4 @@ pwsh build.ps1 -Example 09_imgui_widgets
 
 ---
 
-上一章：[08 · Dear ImGui 骨架](08-imgui-hello.md) ｜ 下一章：[10 · 窗口系统](10-imgui-windows.md) ｜ 返回：[README](../README.md)
+上一章：[08 · Dear ImGui 骨架：即时模式与双后端](08-imgui-hello.md) ｜ 下一章：[10 · 窗口系统：Begin/End、标志与子窗口](10-imgui-windows.md) ｜ 返回：[README](../README.md)

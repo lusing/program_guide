@@ -148,4 +148,4 @@ pwsh build.ps1 -Example 10_imgui_windows
 
 ---
 
-上一章：[09 · 控件全集与 ID 机制](09-imgui-widgets.md) ｜ 下一章：[11 · 表格与曲线](11-imgui-tables.md) ｜ 返回：[README](../README.md)
+上一章：[09 · 控件全集与 ID 机制：返回值即事件](09-imgui-widgets.md) ｜ 下一章：[11 · 表格与曲线：Tables API 实战](11-imgui-tables.md) ｜ 返回：[README](../README.md)

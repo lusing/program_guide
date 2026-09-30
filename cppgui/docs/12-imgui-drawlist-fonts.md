@@ -153,4 +153,4 @@ frames=40; cnfont=1; glyphs=47
 
 ---
 
-上一章：[11 · 表格与曲线](11-imgui-tables.md) ｜ 下一章：[13 · 综合实战：迷你监视器](13-imgui-app.md) ｜ 返回：[README](../README.md)
+上一章：[11 · 表格与曲线：Tables API 实战](11-imgui-tables.md) ｜ 下一章：[13 · 综合实战：迷你系统监视器](13-imgui-app.md) ｜ 返回：[README](../README.md)
