@@ -1,0 +1,8 @@
+[package]
+name = "ratatui_charts"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# 同 32 章：钉 crates.io 0.30.2（= 本地仓库 tag ratatui-v0.30.2）。
+ratatui = "0.30.2"

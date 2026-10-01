@@ -5804,6 +5804,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "ratatui_charts"
+version = "0.1.0"
+dependencies = [
+ "ratatui",
+]
+
+[[package]]
 name = "ratatui_hello"
 version = "0.1.0"
 dependencies = [
@@ -5812,6 +5819,13 @@ dependencies = [
 
 [[package]]
 name = "ratatui_layout"
+version = "0.1.0"
+dependencies = [
+ "ratatui",
+]
+
+[[package]]
+name = "ratatui_widgets"
 version = "0.1.0"
 dependencies = [
  "ratatui",
