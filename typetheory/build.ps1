@@ -99,18 +99,35 @@ foreach ($u in $units) {
                 $ok = ($LASTEXITCODE -eq 0) -and -not ($out -match '(?m)^Error')
                 if (-not $ok) { $detail = $out }
             }
+            'lean' {
+                $out = & lean $u.Path 2>&1 | Out-String
+                $ok = ($LASTEXITCODE -eq 0) -and -not ($out -match 'error:|warning:')
+                # 带 main 的文件加跑一遍编译执行（18 章的运行通道）
+                if ($ok -and (Select-String -LiteralPath $u.Path -Pattern 'def main' -Quiet)) {
+                    $outRun = & lean --run $u.Path 2>&1 | Out-String
+                    $ok = ($LASTEXITCODE -eq 0) -and -not ($outRun -match 'error:|warning:')
+                    if (-not $ok) { $detail = $outRun }
+                }
+                if (-not $ok -and -not $detail) { $detail = $out }
+            }
             'agda' {
                 $dir = (Split-Path -Parent $u.Path) -replace '\\', '/'
                 $wslDir = '/mnt/' + $dir.Substring(0, 1).ToLower() + $dir.Substring(2)
                 $cmd = "cd '$wslDir' && agda -i $agdaStdlib -i . '$($u.Name)'"
                 $out = & wsl -d $wslDistro bash -lc $cmd 2>&1 | Out-String
                 $ok = ($LASTEXITCODE -eq 0) -and -not ($out -match 'error|warning')
-                if (-not $ok) { $detail = $out }
-            }
-            'lean' {
-                $out = & lean $u.Path 2>&1 | Out-String
-                $ok = ($LASTEXITCODE -eq 0) -and -not ($out -match 'error:|warning:')
-                if (-not $ok) { $detail = $out }
+                # _run.agda 结尾的文件：--compile 成原生可执行并运行（18 章）
+                if ($ok -and $u.Name.EndsWith('_run.agda')) {
+                    $exe = $u.Name -replace '\.agda$', ''
+                    $drive = $buildDir.Substring(0, 1).ToLower()
+                    $compDir = ((($buildDir.Substring(3) -replace '\\', '/')) -replace '^', "/mnt/$drive/") + '/agda-compile'
+                    $cmd2 = "cd '$wslDir' && agda --compile --compile-dir='$compDir' -i $agdaStdlib -i . '$($u.Name)' && '$compDir/$exe' ; rc=`$? ; rm -rf '$compDir/MAlonzo' '$compDir/$exe' ; exit `$rc"
+                    $outRun = & wsl -d $wslDistro bash -lc $cmd2 2>&1 | Out-String
+                    $ok = ($LASTEXITCODE -eq 0) -and -not ($outRun -match 'error:')
+                    if ($ok) { Write-Host "      | $($outRun.Trim() -split "`n" | Select-Object -First 3 | Out-String)".Trim() -ForegroundColor DarkGray }
+                    if (-not $ok) { $detail = $outRun }
+                }
+                if (-not $ok -and -not $detail) { $detail = $out }
             }
         }
     } catch {
