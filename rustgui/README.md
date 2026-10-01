@@ -1,37 +1,43 @@
-# Rust GUI 编程指南（egui 0.36 / iced 0.14 / Slint 1.18 / GTK4 0.11）
+# Rust GUI/TUI 编程指南（egui 0.36 / iced 0.14 / Slint 1.18 / GTK4 0.11 / Ratatui 0.30）
 
-一个目录，四种 Rust GUI 框架，四种界面范式。同一批"建窗口/控件事件/布局/输入/自绘/综合应用"
-的任务在四个框架里各写一遍，**范式差异不是听来的、是手上写出来的、还是机器判卷的**（对齐
+一个目录，五种 Rust UI 框架，五种界面范式。同一批"建窗口/控件事件/布局/输入/自绘/综合应用"
+的任务在五个框架里各写一遍，**范式差异不是听来的、是手上写出来的、还是机器判卷的**（对齐
 [cppgui](../cppgui/README.md) 的多框架哲学）。
 
-> ⚠️ 四家在 2025–2026 都经历了断代：egui 0.34/0.35 大重构（`App::ui` 取代 `update`、统一
+> ⚠️ 五家在 2025–2026 都经历了断代：egui 0.34/0.35 大重构（`App::ui` 取代 `update`、统一
 > `Panel` 体系）、iced 0.13 删 `Sandbox`（`Command`→`Task`）、Slint 1.18 移除 `slint::testing`、
-> GTK 4.16 起 DrawingArea 回调 cairo 化。网上大量教程已失效——本教程全部代码在 **rustc 1.98.1**
+> GTK 4.16 起 DrawingArea 回调 cairo 化、Ratatui 0.30 workspace 拆分 + `assert_buffer_eq!`
+> 废弃 + Key 事件按 kind 过滤。网上大量教程已失效——本教程全部代码在 **rustc 1.98.1**
 > 实测，按新版 API 写，每章坑位清单收录新旧对照。
 
 | 部分 | 框架 | 范式 | 章 |
 |---|---|---|---|
-| 一 | egui 0.36.2（+egui_kittest） | 即时模式（每帧重跑，返回值即事件） | 01–09 |
+| 一 | egui 0.36.2（+egui_kittest） | 即时模式 GUI（每帧重跑，返回值即事件） | 01–09 |
 | 二 | iced 0.14.0（+iced_test） | Elm 架构（state/update/view 单向流） | 10–16 |
 | 三 | Slint 1.18.1（+i-slint-backend-testing） | 声明式 DSL（.slint 语言 + 绑定反应） | 17–23 |
 | 四 | GTK4 gtk4 0.11.5（+#[gtk::test]） | retained 模式（持久控件树 + 信号/属性） | 24–30 |
-| 尾 | 横评 | 同一待办应用四份实现对照 + 选型决策树 | 31 |
+| 五 | Ratatui 0.30.2（+TestBackend） | 即时模式 TUI（字符网格 + 每帧重画） | 32–37 |
+| 尾 | 横评 | 同一待办应用五份实现对照 + 选型决策树 | 31 |
+
+> 第五部分（32–37）是 **TUI 支线**：与 egui 同为 immediate mode（37.3 有两端对照），
+> 渲染边界在字符 buffer——TestBackend 断言即"真渲染验证"，无头通道比四条 GUI 通道更硬。
 
 ## 目录结构
 
 ```text
 rustgui/
-├── Cargo.toml            根 workspace（members = examples/*，29 个示例共享 target/）
-├── Cargo.lock            依赖锁定（756 包；TUNA 镜像配置见 .cargo/config.toml）
+├── Cargo.toml            根 workspace（members = examples/*，35 个示例共享 target/）
+├── Cargo.lock            依赖锁定（TUNA 镜像配置见 .cargo/config.toml）
 ├── build.ps1             Windows 验证入口（-All / -Example NN_name / -Clean）
 ├── run-all.sh            POSIX 入口（同判定；WSL/macOS/Linux 用这个）
-├── docs/                 31 章正文（NN-slug.md，01 → 31 顺序阅读）
-├── examples/             29 个示例工程（章号 = 目录号；package 名不带数字）
-│   ├── 02_egui_hello/    … 每章一个 cargo 工程，src/main.rs + （slint 章）ui/*.slint
-│   └── 30_gtk_app/       … （gtk 章）ui/*.ui 模板 XML
+├── docs/                 37 章正文（NN-slug.md，01 → 37 顺序阅读）
+├── examples/             35 个示例工程（章号 = 目录号；package 名不带数字）
+│   ├── 02_egui_hello/    … 每章一个 cargo 工程，src/main.rs + （slint/gtk 章）ui/ 模板
+│   └── 37_ratatui_app/
 ├── tools/check_docs.py   文档五关机器核查（build.ps1 -All 末尾自动跑）
+├── tools/gui-shots.ps1   真窗口截图（29 个 GUI 例；TUI 例自动排除）
 ├── build/                验证产物（.out/.err/.run.out，不入库）
-└── CHEATSheet.md         四框架横向速查 + 坑位总索引
+└── CHEATSheet.md         五框架横向速查 + 坑位总索引
 ```
 
 ## 分章导航
@@ -82,6 +88,15 @@ rustgui/
 
 31. [四框架横评与选型](docs/31-comparison.md)（无独立示例）
 
+**第五部分 Ratatui 即时模式 TUI（32–37）**
+
+32. [Ratatui 最小应用：buffer 心智与 TestBackend](docs/32-ratatui-hello.md)
+33. [Ratatui 布局：Constraint 与 Flex](docs/33-ratatui-layout.md)
+34. [Ratatui 控件与样式](docs/34-ratatui-widgets.md)
+35. [Ratatui 图表与画布](docs/35-ratatui-charts.md)
+36. [Ratatui 异步事件流](docs/36-ratatui-async.md)
+37. [Ratatui 综合实战：待办管理器（含 immediate mode 两端对照）](docs/37-ratatui-app.md)
+
 速查与坑位总索引：[CHEATSheet.md](CHEATSheet.md)
 
 ## 工具链
@@ -95,18 +110,18 @@ rustgui/
 | slint / slint-build | 1.18.1 | i-slint-backend-testing 用 ffi feature + 4 行官方同款 shim |
 | gtk4（crate 名 `gtk`） | 0.11.5 | 配 GTK 4.22 运行时；Windows 用 gvsbuild（24.1 三步） |
 | GTK 运行时 | gvsbuild 2026.8.0 → G:\gtk | zip 自带 pkg-config；build.ps1/gui-shots 自动探测注入 |
+| ratatui | 0.30.2 | = 本地 tag `ratatui-v0.30.2`；默认 feature 含 crossterm；零系统依赖 |
 | 依赖源 | TUNA 镜像 | `.cargo/config.toml`（可删，不影响代码） |
 
-- 首次全量构建 15–30 分钟（三棵 GPU 依赖树：eframe→wgpu 30、iced→wgpu 27 双版本共存，
-  slint→femtovg；GTK 树仅 +26 包无 GPU），之后增量秒级。
+- 首次全量构建 15–30 分钟（三棵 GPU 依赖树 + GTK 26 包轻树 + ratatui 极轻树），之后增量秒级。
 - 07 章示例需要系统里有任意常见中文字体（simhei/msyh/PingFang/Noto，桌面系统都有）；
-  GTK 部分中文零配置（Pango 系统回退）。
+  GTK/Ratatui 部分中文零配置（Pango/unicode-width）。
 
 ## 构建与验证
 
 ```powershell
 cd G:\code\guide\rustgui
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All                 # 全部 29 个
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All                 # 全部 35 个
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 02_egui_hello  # 单个
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean               # 清理 target
 ```
@@ -121,40 +136,39 @@ cd rustgui && ./run-all.sh              # 全部
 
 ```bash
 cd rustgui/examples/02_egui_hello
-cargo run          # 打开真窗口（人工查看）
+cargo run          # 打开真窗口（TUI 例开真终端）
 cargo run -- --selftest   # 无头自检（自动验证走的就是它）
 cargo test         # 无头交互测试（与 selftest 同一通道）
 ```
 
-## 验证判定（四层 + 四条）
+## 验证判定（四层 + 五条）
 
 每个示例：
 
 1. `cargo fmt --check`
 2. `cargo clippy --all-targets -- -D warnings`
-3. `cargo test`——无头 UI 交互测试（kittest / iced_test / slint testing backend / `#[gtk::test]`）
+3. `cargo test`——无头 UI 交互测试（kittest / iced_test / slint testing backend /
+   `#[gtk::test]` / `TestBackend + assert_buffer_lines`）
 4. `cargo run -- --selftest`（60s 超时）——同一 harness 走 main 通道，exit 0
 5. stdout 同时含 `==== NN ` 起 / ` 结束 ====` 止标记；stderr 空；无控制字符；**两跑逐字节一致**
    （时间戳/随机数禁止进 selftest 输出）
 
 外加 `tools/check_docs.py` 五关：章号↔示例对齐（01/31 无示例白名单）、docs 的 ```text 输出块
 对**当前二进制**现场重跑的顺序敏感子序列命中、每章坑位 ≥3、docs 链接有效、本 README 导航含
-全部 31 章。
+全部 37 章。
 
-无头通道测不到字形（kittest 只走无障碍树、从不光栅化）：**真窗口层**用
-`tools/gui-shots.ps1` 逐例启动真窗口截图（`tools/gui-contact-sheet.ps1` 拼总览图人工复核），
-截到 `build/gui-shots/*.png`。GTK 的 27 章是唯一例外——cairo ImageSurface 像素断言在无头
-阶段就完成了真实光栅化的机器判卷。
+视觉层按域分治：GUI 例（02–30）用 `tools/gui-shots.ps1` 真窗口截图（kittest 不光栅化、
+字形盲区的最终裁决在这里）；**TUI 例（32–37）的渲染边界就在 buffer——TestBackend 断言即
+真渲染验证**（32.5 有完整论证；官方 vhs 录像链在 Windows 上 ConPTY/浏览器注入双层不稳，
+实测后放弃）。
 
 ### 验证状态（2026-10-01）
 
-- `build.ps1 -All` **29/29 全绿**（含四条无头通道 × 29 示例的交互测试）
-- 四条无头通道：egui=egui_kittest（AccessKit 查询）、iced=iced_test（simulator）、
-  slint=i-slint-backend-testing（ffi + ElementHandle 查询 + a11y 注入）、
-  **gtk=#[gtk::test] + 直连句柄 + emit_* 驱动**（官方无模拟器，句柄即接口；
-  28 章隐形窗口技巧打通视图层）
-- 真窗口截图 29/29：egui 08/09 的 CJK 豆腐块事故（无头全绿、真窗口翻车）已修复复验；
-  GTK 部分中文零配置逐字正确（Pango 免费午餐）
+- `build.ps1 -All` **35/35 全绿**（含五条无头通道 × 35 示例的交互测试）
+- 五条无头通道：egui=egui_kittest（AccessKit 查询）、iced=iced_test（simulator）、
+  slint=i-slint-backend-testing（ffi + ElementHandle）、gtk=`#[gtk::test]` + 直连句柄 +
+  隐形窗口 realize、ratatui=TestBackend buffer 断言（纯内存、零 init，最硬的一条）
+- 真窗口截图 29/29（GUI 例）；TUI 例走 buffer 断言（两跑逐字节一致天然成立）
 
 ## 相关教程
 

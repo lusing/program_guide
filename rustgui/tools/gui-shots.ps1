@@ -1,5 +1,5 @@
 param(
-    # 要截图的示例目录名列表；默认全部
+    # 要截图的示例目录名列表；默认全部（GUI 例——TUI 例见下方过滤）
     [string[]]$Names,
     # 每个窗口启动后等待的毫秒数
     [int]$WaitMs = 2000
@@ -7,8 +7,10 @@ param(
 
 # 真窗口人工验证辅助：逐个启动示例（不带 --selftest，开真窗口），
 # 前置 + 取窗口矩形 + 截屏存 build/gui-shots/NN.png，然后关闭。
-# 用法：pwsh -File tools/gui-shots.ps1            全部 29 个
+# 用法：pwsh -File tools/gui-shots.ps1            全部 29 个 GUI 例
 #       pwsh -File tools/gui-shots.ps1 02_egui_hello  只截一个
+# 注意：ratatui 例（32–37）是 TUI，无 GUI 窗口——自动排除（它们的
+# "渲染验证"走 TestBackend buffer 断言，见 docs/32-ratatui-hello.md 32.5）。
 
 $ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
@@ -41,7 +43,12 @@ $shotsDir = Join-Path $projectRoot "build\gui-shots"
 New-Item -ItemType Directory -Force $shotsDir | Out-Null
 
 if (-not $Names) {
-    $Names = Get-ChildItem "examples" -Directory | Sort-Object Name | Select-Object -ExpandProperty Name
+    # 全部 GUI 例：TUI 例（ratatui 前缀）无主窗口，跳过——它们的渲染
+    # 边界在 buffer，TestBackend 断言即视觉验证
+    $Names = Get-ChildItem "examples" -Directory |
+        Sort-Object Name |
+        Select-Object -ExpandProperty Name |
+        Where-Object { $_ -notmatch '^\d+_ratatui_' }
 }
 
 $summary = @()
@@ -101,4 +108,3 @@ $summary | ForEach-Object { Write-Host $_ }
 $okCount = ($summary | Where-Object { $_ -match ' OK ' }).Count
 Write-Host "`n[Summary] 截图成功 $okCount / $($Names.Count)（产物 build/gui-shots/）"
 exit ($(if ($okCount -eq $Names.Count) { 0 } else { 1 }))
-

@@ -5,13 +5,13 @@
     python tools/check_docs.py 02 23      只查指定章号（关①仍全量对照）
 
 五关：
-  ① 章节对齐：docs/NN-slug.md 与 examples/NN_*/ 一一对应（01/31 无示例白名单）
+  ① 章节对齐：docs/NN-slug.md 与 examples/NN_*/ 一一对应（01/31 无示例白名单（37 为 TUI 终章有示例））
   ② 输出对账：每章 ```text 块必须是该章示例实测输出的【顺序敏感子序列】
      —— 产物由本脚本现场重跑 target/debug/<pkg>.exe --selftest 生成
      （写 build/docs-ref/NN_name.out），对的永远是当前二进制，不食陈粮。
   ③ 坑位清单：每章「## 坑位清单」下条目 ≥3
   ④ 链接有效：docs/*.md 里的相对链接全部存在（../README.md 除外）
-  ⑤ README 导航：README.md 含全部 31 章的链接
+  ⑤ README 导航：README.md 含全部 37 章的链接
 
 反假绿纪律（沿用 cppgui/tools/check_docs.py）：
   * 子序列而非集合成员——块内两行调换、抄别的示例输出，都判失败；
@@ -40,7 +40,7 @@ NON_OUTPUT_MARKERS = ("├──", "└──", "│ ", "$ ", "pwsh ", "cd rustg
                       "Measure-Command", "Get-Item", "--target", "examples/",
                       "docs/", "build.ps1", "run-all.sh")
 
-EXPECTED_CHAPTERS = 31
+EXPECTED_CHAPTERS = 37
 # 无独立示例的章（全景观 / 横评）
 NO_EXAMPLE_CHAPTERS = {"01", "31"}
 
@@ -218,7 +218,7 @@ def main():
     print(f"[②] ALL {cnt['ALL']}   NONOUT {cnt['NONOUT']}   "
           f"PARTIAL {cnt['PARTIAL']}   NONE {cnt['NONE']}   NOPROD {cnt['NOPROD']}")
 
-    # ---------- 关⑤：README 导航含全部 31 章 ----------
+    # ---------- 关⑤：README 导航含全部 37 章 ----------
     readme = ROOT / "README.md"
     if readme.is_file():
         txt = readme.read_text(encoding="utf-8", errors="replace")
@@ -243,4 +243,5 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
 

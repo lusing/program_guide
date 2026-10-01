@@ -53,7 +53,7 @@ x0/y0/x1/y1，抄错报 unknown field。
    `█/▇/▆` 计数（实测 15 = 三根 5 宽柱全在）；
 3. **print 文字**：Canvas 里 `ctx.print` 的"原点"两字全屏收集后命中。
 
-```text
+```
 实测输出：chart-axis=0/5 braille=ok bars-solid=15 canvas=原点
 ```
 
@@ -91,3 +91,5 @@ chart-axis=0/5 braille=ok bars-solid=15 canvas=原点
 ---
 
 上一章：[34 · Ratatui 控件与样式](34-ratatui-widgets.md) ｜ 下一章：[36 · Ratatui 异步事件流](36-ratatui-async.md) ｜ 返回：[README](../README.md)
+
+

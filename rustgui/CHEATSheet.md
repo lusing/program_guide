@@ -1,8 +1,8 @@
 # Rust GUI 速查表（egui 0.36 / iced 0.14 / Slint 1.18 / GTK4 0.11）
 
-四框架横向速查 + 坑位索引。详细讲解见对应章（N.M = 第 N 章 M 节）。
+五框架横向速查 + 坑位索引。详细讲解见对应章（N.M = 第 N 章 M 节）。
 
-## 1. 应用骨架（02 / 10 / 17 / 24）
+## 1. 应用骨架（02 / 10 / 17 / 24 / 32）
 
 ```rust
 // egui：App::ui（0.34 起取代 update）
@@ -34,7 +34,14 @@ app.connect_activate(|app| { /* 建窗口 */ });
 app.run()
 ```
 
-## 2. 事件与状态（03 / 10-11 / 18 / 25）
+```rust
+// Ratatui（TUI）：官方骨架 run/draw/poll（0.30 拆分后只依赖门面 crate）
+ratatui::run(run)?;                    // fn run(t: &mut DefaultTerminal)
+t.draw(|frame| render(frame, &app))?;  // 每帧全量重画（纯渲染函数）
+event::poll(250ms)? + read()?.as_key_press_event()
+```
+
+## 2. 事件与状态（03 / 10-11 / 18 / 25 / 32）
 
 | 任务 | egui | iced | Slint | GTK4 |
 |---|---|---|---|---|
@@ -44,7 +51,10 @@ app.run()
 | 选中值变化 | Response.changed() | on_change(Fn(T)->Msg) | 属性绑定自动 | `connect_active_notify`（程序赋值靠 notify） |
 | 声明式联动 | ——（每帧重算即联动） | ——（update 集中改） | `property <=> other` | `a.bind_property("x", &b, "y").build()` |
 
-## 3. 布局（04 / 12 / 19 / 26）
+**Ratatui**：输入不是回调——主循环 poll 事件队列，`handle_key(app, KeyEvent)`
+纯函数分发；`KeyEvent::from(KeyCode::Char('x'))` 手工构造直喂（kind 按 Press 过滤）。
+
+## 3. 布局（04 / 12 / 19 / 26 / 33）
 
 | 概念 | egui | iced | Slint | GTK4 |
 |---|---|---|---|---|
@@ -54,7 +64,11 @@ app.run()
 | 面板/容器 | `egui::Panel::left(..).show(ui, ..)` | `container(c).center(Fill)` | 布局盒嵌套 | 容器控件嵌套（Box/Grid/Overlay/FlowBox） |
 | 滚动 | `ScrollArea::vertical()` | `scrollable(..)` | `ListView`（虚拟化） | `ScrolledWindow::set_child(..)` |
 
-## 4. 自绘（05 / 15 / 20 / 27）
+**Ratatui**：`Layout::vertical([Constraint::Length(3), Fill(1)])` + `area.layout::<N>(&l)`
+数组解构（split 返回 Rc<[Rect]> 不能 try_into）；`Flex` 七态管多余空间
+（SpaceAround 0.30 语义变了）；popup = `Clear` + `area.centered(..)`。
+
+## 4. 自绘（05 / 15 / 20 / 27 / 35）
 
 ```rust
 // egui：painter 命令式（弧线手算点列 → Shape::line）
@@ -82,7 +96,10 @@ cr.arc(cx, cy, r, start, start + sweep * frac); let _ = cr.stroke();
 四家都没有现成 arc-to-API 的糖——点列/A 命令/cairo arc 各自手算是通识；GTK 的独门是
 **绘制可纯函数化 + ImageSurface 无头像素断言**（27 章唯一的真·光栅级无头验证）。
 
-## 5. 异步与并发（09 / 14 / 21 / 29）
+**Ratatui**：`Canvas`（世界坐标 + ctx.draw(&Line{x1..y2}) + print 的 y 翻转）；
+`Chart`（braille 一格 2x4 子像素，Axis 显式锁 bounds）；断言=特征字符统计。
+
+## 5. 异步与并发（09 / 14 / 21 / 29 / 36）
 
 | | egui | iced | Slint | GTK4 |
 |---|---|---|---|---|
@@ -90,7 +107,10 @@ cr.arc(cx, cy, r, start, start + sweep * frac); let _ = cr.stroke();
 | 持续流 | request_repaint 循环 | `Subscription`（`time::every`） | Timer / 后台 invoke | `glib::timeout_add_local(Duration, \|\| ControlFlow)` |
 | 唤醒 UI 线程 | `ctx.request_repaint_from` | 消息即重绘 | `invoke_from_event_loop` | `glib::spawn_future_local` 收通道 |
 
-## 6. 无头测试四通道（02 / 10 / 17-18 / 24）
+**Ratatui**：`tokio::select!` 三路消息（interval/EventStream/数据通道）——
+纯核 `step(app, Msg)` 与异步壳分离，selftest 零 async（常量消息序列）。
+
+## 6. 无头测试五通道（02 / 10 / 17-18 / 24 / 32）
 
 ```rust
 // egui_kittest
@@ -127,6 +147,14 @@ fn t() {
 }
 ```
 
+```rust
+// Ratatui：TestBackend——纯内存渲染，buffer 断言即"真渲染验证"
+let mut t = Terminal::new(TestBackend::new(24, 5))?;
+t.draw(|f| render(f, &app))?;
+t.backend().assert_buffer_lines(["你好，Ratatui！        ", …]); // 行宽=backend 宽
+handle_key(&mut app, KeyEvent::from(KeyCode::Char('q')));        // 事件直喂
+```
+
 ## 7. 断代翻译表（旧教程 → 本教程版本）
 
 | 旧写法（0.31-/0.12-/1.17-/GTK 4.12-） | 新写法 |
@@ -142,6 +170,16 @@ fn t() {
 | DrawingArea 的 snapshot 画法（书 4.12 时代） | `set_draw_func(\|_, cr, w, h\| ..)` cairo 回调（27.1） |
 | `glib::MainContext::channel()` | async-channel crate（send_blocking/recv().await）（29.2） |
 | `ListStore<T>` 泛型字段 | 0.22 起裸 `ListStore`，泛型在 `new::<T>()` 方法上（30 坑位） |
+
+**Ratatui 断代补录（0.26–0.29 → 0.30）**
+
+| 旧写法 | 新写法 |
+|---|---|
+| `ratatui = "0.29"` 单 crate | workspace 拆分（门面 ratatui + core/crossterm/widgets/macros；只依赖门面）（32.1） |
+| `assert_buffer_eq!(&a, &b)` | `assert_eq!` / `assert_buffer_lines([...])`（宏已废弃）（32.3） |
+| `if let Event::Key(key) = read()?` | `as_key_press_event()` 或 `key.kind == Press` 过滤（32.4） |
+| `split(area)[0]` / `.try_into()` 数组 | `area.layout::<N>(&layout)` 数组解构（33.1） |
+| `ListState::new()` | `ListState::default()`（34 坑位） |
 
 ## 8. 坑位总索引（按框架，章号回链）
 
@@ -190,6 +228,16 @@ fn t() {
 | template 路径相对源文件；XML id≠字段名运行时 abort；@implements Accessible E0425；无 MainContext::channel | 29 |
 | GSettings Windows 不落盘；connect_notify 要 Send+Sync（local 版）；item() 临时值 E0716 | 30 |
 
+**Ratatui**
+| 坑 | 章 |
+|---|---|
+| as_key_press_event 是 Event 级方法；·(U+00B7) 宽 1 列；期望行宽恰=backend 宽；selftest 禁 poll/read | 32 |
+| SpaceAround 语义 0.30 变更；split 返 Rc<[Rect]>；centered 半行取整；cell 吃 Position(u16)；边框扫描按序号 | 33 |
+| ListState::default；render_stateful_widget；scroll 是 (y,x)；Fill 段被压零整块消失；Tabs 用扫描法断言 | 34 |
+| Axis 必锁 bounds；data(&vec) 临时值 E0716；canvas::Line 是 x1/y1/x2/y2；柱体行坐标 dump 实测 | 35 |
+| event-stream 是 crossterm feature(钉 0.29)；EventStream.next 需 StreamExt；init 返非 Result；双宽禁连续子串断言 | 36 |
+| 同键双义漏模式判断；删除后 select clamp；样式断言扫描法；Mode 要 derive(Debug) | 37 |
+
 ## 9. 版本事实速记
 
 - egui 0.36.2：MSRV 1.95；wgpu 默认渲染器；github master 领先已发布版（Role/corner_radius 改名未发布）
@@ -198,4 +246,8 @@ fn t() {
 - gtk4 0.11.5（配 GTK 4.22/gvsbuild 2026.8.0）：绑定随 GTK 小版本走（v4_2…v4_24 feature 门，
   本教程零 feature）；gtk-rs master 是 0.12.0-alpha 未发布；依赖树仅 +26 包（无 GPU）；
   GTK 本体 LGPL（Windows 动态链接可闭源）
-- 本 workspace：756 依赖包，wgpu 双版本（eframe→30、iced→27），edition 2024
+- ratatui 0.30.2（=本地 tag ratatui-v0.30.2）：0.30 workspace 拆分（门面 + core 0.1.2/crossterm 0.1.2/widgets 0.3.2/macros 0.7.2）；crossterm 0.29；MSRV 1.88；TestBackend 是官方测试后端（纯内存）
+- 本 workspace：约 770 依赖包（ratatui 树极轻 +14 包），wgpu 双版本（eframe→30、iced→27），edition 2024
+
+
+

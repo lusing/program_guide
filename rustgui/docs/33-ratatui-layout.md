@@ -34,7 +34,7 @@ let [title, body, status] = area.layout(&Layout::vertical([
 约束说了"块要多大"，**Flex 说剩下的空间怎么摆**。40 列终端里放
 `Length(16) + Length(12)`（余 12 列），七种策略的**实测矩阵**：
 
-```text
+```
 flex:Legacy=0 Start=0 End=0 Center=0 SpaceBetween=12 SpaceAround=6 SpaceEvenly=4
 ```
 
@@ -111,3 +111,5 @@ flex:Legacy=0 Start=0 End=0 Center=0 SpaceBetween=12 SpaceAround=6 SpaceEvenly=4
 ---
 
 上一章：[32 · Ratatui 最小应用](32-ratatui-hello.md) ｜ 下一章：[34 · Ratatui 控件与样式](34-ratatui-widgets.md) ｜ 返回：[README](../README.md)
+
+

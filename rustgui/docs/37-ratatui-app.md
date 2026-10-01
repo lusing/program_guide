@@ -28,7 +28,7 @@ match (&app.mode, key.code) {
 
 ## 37.2 无头剧本：与四份前卷同构
 
-```text
+```
 种子 2 条 → j+空格勾选（done 2、趋势记一笔）→ a 进 Insert 逐字符输入
 "对照五框架" → Enter 提交（3 条）→ d 删第 3 条（clamp 回第 2 条）→
 k 到底再 k / j 到顶再 j（边界 clamp）→ 渲染断言（统计行 + 完成行
@@ -92,3 +92,5 @@ j/k/space/d/a 键位操作、输入框蓝框高亮、趋势条随勾选爬升。
 ---
 
 上一章：[36 · Ratatui 异步事件流](36-ratatui-async.md) ｜ 返回：[README](../README.md)（本教程终章——横评见 [31 章](31-comparison.md)）
+
+
