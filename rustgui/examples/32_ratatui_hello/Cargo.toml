@@ -1,0 +1,12 @@
+[package]
+name = "ratatui_hello"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# ratatui 0.30.2（crates.io 最新，与本地仓库 tag ratatui-v0.30.2 精确对齐）。
+# 0.30 起拆成 workspace：门面 crate ratatui（默认 feature 已含 crossterm 后端
+# + all-widgets + macros）——普通应用只依赖这一个；widget 库作者才需要
+# ratatui-core / ratatui-widgets。旧教程（0.26–0.29）的单 crate 写法大体兼容，
+# 但 init/run 便捷 API、Key 事件过滤、断言宏都已换代（见本章坑位清单）。
+ratatui = "0.30.2"

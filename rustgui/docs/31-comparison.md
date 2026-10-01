@@ -198,4 +198,6 @@ GPU 受限或老机器 / 工具类小快灵？
 
 ---
 
-上一章：[30 · GTK 综合实战：待办管理器](30-gtk-app.md) ｜ 返回：[README](../README.md)
+横评到此覆盖四种 GUI 范式；第五部分（32–37 章）把同一套"写出来 + 机器判卷"的方法论带到**终端 UI**——Ratatui 与 egui 同为 immediate mode，读 [32 章](32-ratatui-hello.md)起会不断看到本章各维度的 TUI 镜像。
+
+上一章：[30 · GTK 综合实战：待办管理器](30-gtk-app.md) ｜ 下一章：[32 · Ratatui 最小应用](32-ratatui-hello.md) ｜ 返回：[README](../README.md)
