@@ -12,3 +12,5 @@ go/**/*.go text eol=lf
 zig/**/*.zig text eol=lf
 # typetheory 的 .agda 源码在 WSL 里由 agda 直接检查：统一 LF。
 typetheory/**/*.agda text eol=lf
+# category 的 .agda 源码同理：统一 LF。
+category/**/*.agda text eol=lf
