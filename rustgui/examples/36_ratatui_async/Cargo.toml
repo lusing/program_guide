@@ -1,0 +1,16 @@
+[package]
+name = "ratatui_async"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# 同 32 章：钉 crates.io 0.30.2（= 本地仓库 tag ratatui-v0.30.2）。
+ratatui = "0.30.2"
+# event-stream 是 crossterm 的 feature（不是 ratatui 的）——版本钉 0.29
+# 与 ratatui 内部一致，否则双版本共存、事件类型转换编译期就炸。
+crossterm = { version = "0.29", features = ["event-stream"] }
+# 异步执行器：select! 多路复用（对照 14 章 iced Subscription 的 TUI 形态）。
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time"] }
+# EventStream 的 .next() 需要 StreamExt（crossterm 只实现 Stream）
+tokio-stream = "0.1"
+
