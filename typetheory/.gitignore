@@ -1,0 +1,12 @@
+# Agda 类型检查产物（.agdai 落在源码旁）
+*.agdai
+# Coq 编译产物（正常应只在 build/，兜底）
+*.vo
+*.vok
+*.vos
+*.glob
+.*.aux
+.lia.cache
+.nia.cache
+# 验证工作目录
+build/
