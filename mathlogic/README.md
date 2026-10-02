@@ -5,7 +5,7 @@
 [PLAN.md](./PLAN.md)），横跨 **Coq / Agda / Lean 4 / Isabelle/HOL /
 HOL4 / Coq-HoTT** 六种实现机器验证。
 
-**施工中**：01–06 章已交付（六通道全绿）；总蓝图 26 章见
+**施工中**：01–08 章已交付（全部通道绿）；总蓝图 26 章见
 [PLAN.md](./PLAN.md) 的章节表。
 
 > 核心理念：**逻辑 = 语法 + 证明演算 + 语义**，而证明助手把三者
@@ -33,6 +33,8 @@ mathlogic/
 | [04 经典加成](docs/04-classical.md) | 五原理等价矩阵零公理；HoTT 首秀 | C/A/L/I/H4/T |
 | [05 Hilbert 系统](docs/05-hilbert.md) | 推导归纳证演绎定理；深浅嵌入 | C/A/L/I/H4 |
 | [06 矢列演算 G](docs/06-sequent.md) | 九规则 + 可靠性旗舰（零公理） | C/A/L/I |
+| [07 语义表列](docs/07-tableau.md) | fuel 化搜索 + **三定理链**（sound/complete/decides，零公理） | C/L |
+| [08 范式](docs/08-cnf.md) | NNF/CNF 保语义；Agda case-tree 互卡边界实录 | C/A/L |
 
 ## 工具链（本机实测）
 
