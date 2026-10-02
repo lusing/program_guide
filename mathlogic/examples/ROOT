@@ -17,3 +17,8 @@ session ML04 in "04_classical" = HOL +
   options [document = false]
   theories
     ex04_classical
+
+session ML05 in "05_hilbert" = HOL +
+  options [document = false]
+  theories
+    ex05_hilbert
