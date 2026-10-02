@@ -12,3 +12,8 @@ session ML03 in "03_njp" = HOL +
   options [document = false]
   theories
     ex03_njp
+
+session ML04 in "04_classical" = HOL +
+  options [document = false]
+  theories
+    ex04_classical
