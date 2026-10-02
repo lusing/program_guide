@@ -36,8 +36,8 @@
 | 04 | 经典加成矩阵（六家账本对照；HoTT 首秀） | C/A/L/I/H4/T | ✅ |
 | 05 | Hilbert 系统与演绎定理（推导归纳的元定理范本） | C/A/L/I/H4 | ✅ |
 | 06 | 矢列演算 G（九规则+可靠性旗舰；G 天生经典） | C/A/L/I | ✅ |
-| 07 | 语义表列 tableau（fuel 化搜索+可靠性；闭分支=矛盾） | C/L | ⬜ |
-| 08 | 范式 NNF/CNF（转换算法+等价保持） | C/A/L | ⬜ |
+| 07 | 语义表列 tableau（fuel 化搜索+双向正确+判定程序） | C/L | ✅ |
+| 08 | 范式 NNF/CNF（Agda 止步 NNF——case tree 互卡实录） | C/A/L | ✅ |
 | 09 | DPLL 与 SAT（单元传播+分裂；Horn 线性判定） | C/L/I | ⬜ |
 | 10 | BDD（Shannon/化简/apply；规范性文档化） | C/L | ⬜ |
 | 11 | 直觉主义与 Glivenko（¬¬ 翻译；不可证≠反例） | C/A/L/T | ⬜ |
