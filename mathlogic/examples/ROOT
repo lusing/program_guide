@@ -22,3 +22,8 @@ session ML05 in "05_hilbert" = HOL +
   options [document = false]
   theories
     ex05_hilbert
+
+session ML06 in "06_sequent" = HOL +
+  options [document = false]
+  theories
+    ex06_sequent
