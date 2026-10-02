@@ -1,0 +1,4 @@
+session IsaTest = HOL +
+  options [document = false]
+  theories
+    Test

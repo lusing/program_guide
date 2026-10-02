@@ -1,0 +1,14 @@
+session ML01 in "01_intro" = HOL +
+  options [document = false]
+  theories
+    ex01_intro
+
+session ML02 in "02_propsem" = HOL +
+  options [document = false]
+  theories
+    ex02_propsem
+
+session ML03 in "03_njp" = HOL +
+  options [document = false]
+  theories
+    ex03_njp

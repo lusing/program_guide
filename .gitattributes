@@ -14,3 +14,8 @@ zig/**/*.zig text eol=lf
 typetheory/**/*.agda text eol=lf
 # category 的 .agda 源码同理：统一 LF。
 category/**/*.agda text eol=lf
+# mathlogic 的 .agda（WSL agda）、.thy（Isabelle/Cygwin）、.sml（HOL4/WSL）统一 LF。
+mathlogic/**/*.agda text eol=lf
+mathlogic/**/*.thy text eol=lf
+mathlogic/examples/**/*.sml text eol=lf
+mathlogic/tools/*.sh text eol=lf
