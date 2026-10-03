@@ -41,7 +41,7 @@
 | 09 | DPLL 与 SAT（upd 复合装配模型；三定理零公理；Isabelle 边界实录） | C/L/I | ✅ |
 | 10 | BDD（深度编码+apply 三旗舰；坍缩与深度编码相克实录；树形 vs DAG） | C/L | ✅ |
 | 11 | Glivenko 现象（经典原理 ¬¬ 化全部直觉可证；四通道零公理） | C/A/L/T | ✅ |
-| 12 | Curry–Howard 与正规化（演绎项=λ；析取性质） | C/A/L/T | ⬜ |
+| 12 | Curry–Howard 与析取性质（双 canonical 零公理；截断丢标签的 HoTT 观点） | C/A/L/T | ✅ |
 | 13 | Kripke 语义（两世界反模型机器 witness；模态对应） | C/A/L | ⬜ |
 | 14 | FOL 语法与代入（capture-avoiding；代入引理） | C/A/L | ⬜ |
 | 15 | FOL 语义与一阶理论（locale/结构三例） | C/A/L/I | ⬜ |
