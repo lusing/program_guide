@@ -5,7 +5,7 @@
 [PLAN.md](./PLAN.md)），横跨 **Coq / Agda / Lean 4 / Isabelle/HOL /
 HOL4 / Coq-HoTT** 六种实现机器验证。
 
-**施工中**：01–20 章已交付（全部通道绿）；总蓝图 26 章见
+**施工中**：01–21 章已交付（全部通道绿）；总蓝图 26 章见
 [PLAN.md](./PLAN.md) 的章节表。
 
 > 核心理念：**逻辑 = 语法 + 证明演算 + 语义**，而证明助手把三者
@@ -47,6 +47,7 @@ mathlogic/
 | [18 前束范式](docs/18-prenex.md) | 量词穿越四条零公理 | C/L |
 | [19 合一与归结](docs/19-resolution.md) | occurs check + 归结可靠性（三通道） | C/L/I |
 | [20 Herbrand 与 SLD](docs/20-herbrand.md) | T_P 单调+头原子（Prolog 桥） | C/L |
+| [21 可判定性与 SMT](docs/21-decidability.md) | presburger 现场+Decidable 机器面 | I/L |
 
 ## 工具链（本机实测）
 

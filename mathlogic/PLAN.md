@@ -50,7 +50,7 @@
 | 18 | 前束范式构件（量词穿越四条零公理；侧条件不对称实录） | C/L | ✅ |
 | 19 | 合一与归结（occurs check 结构锚+归结可靠性侧条件版） | C/L/I | ✅ |
 | 20 | Herbrand 与 SLD（T_P 单调+头原子；Knaster-Tarski 边界） | C/L | ✅ |
-| 21 | 可判定性与 SMT（z3/sledgehammer 现场；Church 文档） | I/L+文档 | ⬜ |
+| 21 | 可判定性与 SMT（presburger 现场+Decidable 机器面；Church 文档） | I/L | ✅ |
 | 22 | 哥德尔不完备（文档章；可表示性/算术化/对角化） | 文档 | ⬜ |
 | 23 | 完备性定理（Henkin 构造文档章；机器先例索引） | 文档 | ⬜ |
 | 24 | 时序逻辑与模型检查（LTL/CTL 语义+不动点算法+正确性） | C/A/L | ⬜ |

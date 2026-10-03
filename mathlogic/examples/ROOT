@@ -47,3 +47,8 @@ session ML19 in "19_resolution" = HOL +
   options [document = false]
   theories
     ex19_resolution
+
+session ML21 in "21_decidability" = HOL +
+  options [document = false]
+  theories
+    ex21_decidability
