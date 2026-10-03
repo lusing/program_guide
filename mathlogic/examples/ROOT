@@ -37,3 +37,8 @@ session ML15 in "15_folsem" = HOL +
   options [document = false]
   theories
     ex15_folsem
+
+session ML16 in "16_folnd" = HOL +
+  options [document = false]
+  theories
+    ex16_folnd
