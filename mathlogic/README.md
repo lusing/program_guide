@@ -5,7 +5,7 @@
 [PLAN.md](./PLAN.md)），横跨 **Coq / Agda / Lean 4 / Isabelle/HOL /
 HOL4 / Coq-HoTT** 六种实现机器验证。
 
-**施工中**：01–10 章已交付（全部通道绿）；总蓝图 26 章见
+**施工中**：01–11 章已交付（全部通道绿）；总蓝图 26 章见
 [PLAN.md](./PLAN.md) 的章节表。
 
 > 核心理念：**逻辑 = 语法 + 证明演算 + 语义**，而证明助手把三者
@@ -37,6 +37,7 @@ mathlogic/
 | [08 范式](docs/08-cnf.md) | NNF/CNF 保语义；Agda case-tree 互卡边界实录 | C/A/L |
 | [09 DPLL](docs/09-dpll.md) | upd 复合装配模型；三定理零公理 | C/L/I |
 | [10 BDD](docs/10-bdd.md) | apply/mk 编译保语义；树形 vs DAG 现场实录 | C/L |
+| [11 Glivenko 现象](docs/11-glivenko.md) | 经典原理 ¬¬ 化全部直觉可证（零公理四通道） | C/A/L/T |
 
 ## 工具链（本机实测）
 

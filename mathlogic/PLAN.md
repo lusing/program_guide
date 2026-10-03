@@ -40,7 +40,7 @@
 | 08 | 范式 NNF/CNF（Agda 止步 NNF——case tree 互卡实录） | C/A/L | ✅ |
 | 09 | DPLL 与 SAT（upd 复合装配模型；三定理零公理；Isabelle 边界实录） | C/L/I | ✅ |
 | 10 | BDD（深度编码+apply 三旗舰；坍缩与深度编码相克实录；树形 vs DAG） | C/L | ✅ |
-| 11 | 直觉主义与 Glivenko（¬¬ 翻译；不可证≠反例） | C/A/L/T | ⬜ |
+| 11 | Glivenko 现象（经典原理 ¬¬ 化全部直觉可证；四通道零公理） | C/A/L/T | ✅ |
 | 12 | Curry–Howard 与正规化（演绎项=λ；析取性质） | C/A/L/T | ⬜ |
 | 13 | Kripke 语义（两世界反模型机器 witness；模态对应） | C/A/L | ⬜ |
 | 14 | FOL 语法与代入（capture-avoiding；代入引理） | C/A/L | ⬜ |
