@@ -38,7 +38,7 @@
 | 06 | 矢列演算 G（九规则+可靠性旗舰；G 天生经典） | C/A/L/I | ✅ |
 | 07 | 语义表列 tableau（fuel 化搜索+双向正确+判定程序） | C/L | ✅ |
 | 08 | 范式 NNF/CNF（Agda 止步 NNF——case tree 互卡实录） | C/A/L | ✅ |
-| 09 | DPLL 与 SAT（单元传播+分裂；Horn 线性判定） | C/L/I | ⬜ |
+| 09 | DPLL 与 SAT（upd 复合装配模型；三定理零公理；Isabelle 边界实录） | C/L/I | ✅ |
 | 10 | BDD（Shannon/化简/apply；规范性文档化） | C/L | ⬜ |
 | 11 | 直觉主义与 Glivenko（¬¬ 翻译；不可证≠反例） | C/A/L/T | ⬜ |
 | 12 | Curry–Howard 与正规化（演绎项=λ；析取性质） | C/A/L/T | ⬜ |

@@ -27,3 +27,8 @@ session ML06 in "06_sequent" = HOL +
   options [document = false]
   theories
     ex06_sequent
+
+session ML09 in "09_dpll" = HOL +
+  options [document = false]
+  theories
+    ex09_dpll
