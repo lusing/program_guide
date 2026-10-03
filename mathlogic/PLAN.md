@@ -46,7 +46,7 @@
 | 14 | FOL 语法与代入（fv 条款含 In x 条件教训；同型不挡混淆实录） | C/A/L | ✅ |
 | 15 | FOL 语义（一致性+完整代入交换+locale/结构理论） | C/A/L/I | ✅ |
 | 16 | FOL 自然演绎（Drinker 悖论三旗舰；Agda 构造边界实录） | C/A/L/I/H4 | ✅ |
-| 17 | FOL Hilbert 与元定理（Gen 侧条件的演绎定理） | C/L | ⬜ |
+| 17 | FOL Hilbert 与 Gen 侧条件演绎定理（GenMove 公理；Lean 三连坑实录） | C/L | ✅ |
 | 18 | 前束范式与子句形 | C/A/L | ⬜ |
 | 19 | 合一与归结（Robinson；occurs check；归结可靠） | C/A/L/I | ⬜ |
 | 20 | Herbrand 与 SLD（Horn 语义；Prolog 桥，衔接 prolog 教程） | C/L | ⬜ |

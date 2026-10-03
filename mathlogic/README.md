@@ -5,7 +5,7 @@
 [PLAN.md](./PLAN.md)），横跨 **Coq / Agda / Lean 4 / Isabelle/HOL /
 HOL4 / Coq-HoTT** 六种实现机器验证。
 
-**施工中**：01–16 章已交付（全部通道绿）；总蓝图 26 章见
+**施工中**：01–17 章已交付（全部通道绿）；总蓝图 26 章见
 [PLAN.md](./PLAN.md) 的章节表。
 
 > 核心理念：**逻辑 = 语法 + 证明演算 + 语义**，而证明助手把三者
@@ -43,6 +43,7 @@ mathlogic/
 | [14 FOL 语法](docs/14-folsyntax.md) | 自由变元+代入交换（零公理三通道） | C/A/L |
 | [15 FOL 语义](docs/15-folsem.md) | 一致性引理+完整代入交换+locale 理论 | C/A/L/I |
 | [16 FOL 自然演绎](docs/16-folnd.md) | Drinker 悖论三旗舰（五通道） | C/A/L/I/H4 |
+| [17 FOL Hilbert](docs/17-folhilbert.md) | Gen 侧条件演绎定理（GenMove 公理） | C/L |
 
 ## 工具链（本机实测）
 
