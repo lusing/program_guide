@@ -47,7 +47,7 @@
 | 15 | FOL 语义（一致性+完整代入交换+locale/结构理论） | C/A/L/I | ✅ |
 | 16 | FOL 自然演绎（Drinker 悖论三旗舰；Agda 构造边界实录） | C/A/L/I/H4 | ✅ |
 | 17 | FOL Hilbert 与 Gen 侧条件演绎定理（GenMove 公理；Lean 三连坑实录） | C/L | ✅ |
-| 18 | 前束范式与子句形 | C/A/L | ⬜ |
+| 18 | 前束范式构件（量词穿越四条零公理；侧条件不对称实录） | C/L | ✅ |
 | 19 | 合一与归结（Robinson；occurs check；归结可靠） | C/A/L/I | ⬜ |
 | 20 | Herbrand 与 SLD（Horn 语义；Prolog 桥，衔接 prolog 教程） | C/L | ⬜ |
 | 21 | 可判定性与 SMT（z3/sledgehammer 现场；Church 文档） | I/L+文档 | ⬜ |
