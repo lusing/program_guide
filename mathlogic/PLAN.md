@@ -43,7 +43,7 @@
 | 11 | Glivenko 现象（经典原理 ¬¬ 化全部直觉可证；四通道零公理） | C/A/L/T | ✅ |
 | 12 | Curry–Howard 与析取性质（双 canonical 零公理；截断丢标签的 HoTT 观点） | C/A/L/T | ✅ |
 | 13 | Kripke 语义（两世界 LEM 反例零公理；DNE 空真认知修正） | C/A/L | ✅ |
-| 14 | FOL 语法与代入（capture-avoiding；代入引理） | C/A/L | ⬜ |
+| 14 | FOL 语法与代入（fv 条款含 In x 条件教训；同型不挡混淆实录） | C/A/L | ✅ |
 | 15 | FOL 语义与一阶理论（locale/结构三例） | C/A/L/I | ⬜ |
 | 16 | FOL 自然演绎（∀∃I/E 侧条件；witness 纪律四家） | C/A/L/I/H4 | ⬜ |
 | 17 | FOL Hilbert 与元定理（Gen 侧条件的演绎定理） | C/L | ⬜ |
