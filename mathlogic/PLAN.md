@@ -48,7 +48,7 @@
 | 16 | FOL 自然演绎（Drinker 悖论三旗舰；Agda 构造边界实录） | C/A/L/I/H4 | ✅ |
 | 17 | FOL Hilbert 与 Gen 侧条件演绎定理（GenMove 公理；Lean 三连坑实录） | C/L | ✅ |
 | 18 | 前束范式构件（量词穿越四条零公理；侧条件不对称实录） | C/L | ✅ |
-| 19 | 合一与归结（Robinson；occurs check；归结可靠） | C/A/L/I | ⬜ |
+| 19 | 合一与归结（occurs check 结构锚+归结可靠性侧条件版） | C/L/I | ✅ |
 | 20 | Herbrand 与 SLD（Horn 语义；Prolog 桥，衔接 prolog 教程） | C/L | ⬜ |
 | 21 | 可判定性与 SMT（z3/sledgehammer 现场；Church 文档） | I/L+文档 | ⬜ |
 | 22 | 哥德尔不完备（文档章；可表示性/算术化/对角化） | 文档 | ⬜ |
