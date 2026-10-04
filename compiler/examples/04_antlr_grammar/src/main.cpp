@@ -1,4 +1,4 @@
-// 第 04 章配套程序：读入 TIP 源文件，用 ANTLR 生成的 Lexer/Parser 解析，
+// 第 4 章配套程序：读入 TIP 源文件，用 ANTLR 生成的 Lexer/Parser 解析，
 // 成功则打印 parse tree；语法错则收集诊断后以退出码 2 退出。
 #include <fstream>
 #include <iostream>
