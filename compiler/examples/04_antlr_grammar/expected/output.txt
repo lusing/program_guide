@@ -1,0 +1,4 @@
+== ite.tip ==
+(program (function ite ( (params n) ) { (varDecls var f ;) (stmt (lvalue f) = (expr 1) ;) (stmt while ( (expr (expr n) > (expr 0)) ) (stmt { (stmt (lvalue f) = (expr (expr f) * (expr n)) ;) (stmt (lvalue n) = (expr (expr n) - (expr 1)) ;) })) return (expr f) ; }) <EOF>)
+== twice.tip ==
+(program (function twice ( (params f , x) ) { return (expr (expr f) ( (args (expr (expr f) ( (args (expr x)) ))) )) ; }) (function inc ( (params y) ) { return (expr (expr y) + (expr 1)) ; }) (function main ( (params z) ) { return (expr (expr twice) ( (args (expr inc) , (expr z)) )) ; }) <EOF>)

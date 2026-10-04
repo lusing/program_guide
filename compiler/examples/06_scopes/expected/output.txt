@@ -1,0 +1,17 @@
+== good.tip ==
+== main ==
+use 1: x -> local in main
+use 2: helper -> fun
+use 3: x -> local in main
+== helper ==
+use 1: n -> param in helper
+== ite.tip ==
+== ite ==
+use 1: f -> local in ite
+use 2: n -> param in ite
+use 3: f -> local in ite
+use 4: f -> local in ite
+use 5: n -> param in ite
+use 6: n -> param in ite
+use 7: n -> param in ite
+use 8: f -> local in ite

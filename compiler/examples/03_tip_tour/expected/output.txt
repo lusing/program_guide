@@ -1,0 +1,8 @@
+TIP 语法构造总览:
+  表达式: 整数字面量/变量/input | 二元算术与比较 | 函数调用
+          alloc/&/*/null (指针) | 记录字面量与字段访问
+  语句:   赋值 | output | if-else | while | 块 | return
+  程序:   函数声明的集合; main 的参数从输入流依次读入
+
+factorial: 120 120 120
+[chapter 03 OK]

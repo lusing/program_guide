@@ -1,0 +1,28 @@
+== ite.tip ==
+ite(n) {
+  var f ;
+  f = 1 ;
+  while ((> n 0))
+    {
+      f = (* f n) ;
+      n = (- n 1) ;
+    }
+  return f ;
+}
+== rec.tip ==
+main() {
+  var x,y ;
+  x = {f: 1, g: 2} ;
+  y = (. x f) ;
+  return y ;
+}
+== twice.tip ==
+twice(f,x) {
+  return (call f (call f x)) ;
+}
+inc(y) {
+  return (+ y 1) ;
+}
+main(z) {
+  return (call twice inc z) ;
+}
