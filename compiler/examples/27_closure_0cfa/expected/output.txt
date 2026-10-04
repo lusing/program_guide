@@ -1,0 +1,20 @@
+== apply.tip ==
+== 0-CFA control-flow analysis ==
+-- resolved call sites --
+  apply:1 (call f x): {dbl,inc}
+  main:1 (call apply inc 3): {apply}
+  main:2 (call apply dbl 3): {apply}
+-- abstract caches (named locations) --
+  apply.f: {dbl,inc}
+-- stats --
+cache rises: 8, call activations: 4
+== twice.tip ==
+== 0-CFA control-flow analysis ==
+-- resolved call sites --
+  twice:1 (call f x): {inc}
+  twice:2 (call f (call f x)): {inc}
+  main:1 (call twice inc 5): {twice}
+-- abstract caches (named locations) --
+  twice.f: {inc}
+-- stats --
+cache rises: 5, call activations: 3

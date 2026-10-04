@@ -1,0 +1,17 @@
+apply(f, x) {
+  return f(x);
+}
+inc(a) {
+  return a + 1;
+}
+dbl(b) {
+  return b * 2;
+}
+main() {
+  var r, s;
+  r = apply(inc, 3);
+  s = apply(dbl, 3);
+  output r;
+  output s;
+  return 0;
+}

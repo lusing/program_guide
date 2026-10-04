@@ -1,0 +1,22 @@
+== nullcheck.tip ==
+== pointer analysis: Andersen vs Steensgaard ==
+-- ANDERSEN (inclusion-based) --
+  p: {L1,null}
+-- STEENSGAARD (unification-based) --
+  p: {L1,null}
+-- stats --
+andersen rises: 2, steensgaard unifications: 0
+== ptr.tip ==
+== pointer analysis: Andersen vs Steensgaard ==
+-- ANDERSEN (inclusion-based) --
+  p: {&x}
+  q: {L1,L2}
+  x: {L1,L2}
+  y: {L2}
+-- STEENSGAARD (unification-based) --
+  p: {&x}
+  q: {L1,L2}
+  x: {L1,L2}
+  y: {L1,L2}
+-- stats --
+andersen rises: 8, steensgaard unifications: 3

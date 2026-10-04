@@ -1,0 +1,47 @@
+== callf.tip ==
+== IFDS path-edge tabulation, possibly-uninitialized ==
+-- f --
+  1: {r,x}
+  2 output x ;: {r,x}
+  3 r = x ;: {r,x}
+  4 return r ;: {r,x}
+  5: {r,x}
+-- main --
+  1: {a,b,c}
+  2 if ((> input 0))
+  {
+    a = 1 ;
+  }: {a,b,c}
+  3 a = 1 ;: {a,b,c}
+  4 b = (call f a) ;: {a,b,c} (call site)
+  5 c = (call f 5) ;: {a,b,c} (call site)
+  6 output b ;: {a,b}
+  7 output c ;: {a,b}
+  8 return 0 ;: {a,b}
+  9: {a,b}
+-- warnings --
+  node 2: output x ;  possibly uninitialized: x
+  node 3: r = x ;  possibly uninitialized: x
+  node 4: return r ;  possibly uninitialized: r
+  node 4: b = (call f a) ;  possibly uninitialized: a
+  node 6: output b ;  possibly uninitialized: b
+== init.tip ==
+== IFDS path-edge tabulation, possibly-uninitialized ==
+-- main --
+  1: {a,b,c}
+  2 a = input ;: {a,b,c}
+  3 if ((> a 0))
+  {
+    b = 1 ;
+  }: {b,c}
+  4 b = 1 ;: {b,c}
+  5 output a ;: {b,c}
+  6 output b ;: {b,c}
+  7 c = b ;: {b,c}
+  8 output c ;: {b,c}
+  9 return 0 ;: {b,c}
+  10: {b,c}
+-- warnings --
+  node 6: output b ;  possibly uninitialized: b
+  node 7: c = b ;  possibly uninitialized: b
+  node 8: output c ;  possibly uninitialized: c

@@ -1,0 +1,14 @@
+main() {
+  var p;
+  if (input > 0) {
+    p = alloc 7;
+  } else {
+    p = null;
+  }
+  if (p == null) {
+    output -1;
+  } else {
+    output *p;
+  }
+  return 0;
+}

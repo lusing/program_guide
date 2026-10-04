@@ -1,0 +1,6 @@
+static deref sites: 3
+  *(p): cannot-be-null
+  *(p): cannot-be-null
+  *(q): cannot-be-null
+run 1: inputs 0 -> outputs 10
+JIT completed 1 runs: no null-deref crash observed

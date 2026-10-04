@@ -1,0 +1,17 @@
+pid(x) {
+  var r;
+  r = x;
+  return r;
+}
+main() {
+  var a, b;
+  a = pid(7);
+  if (input > 0) {
+    b = pid(2);
+  } else {
+    b = pid(3);
+  }
+  output a;
+  output b;
+  return 0;
+}

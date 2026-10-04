@@ -1,0 +1,17 @@
+f(x) {
+  var r;
+  output x;
+  r = x;
+  return r;
+}
+main() {
+  var a, b, c;
+  if (input > 0) {
+    a = 1;
+  }
+  b = f(a);
+  c = f(5);
+  output b;
+  output c;
+  return 0;
+}

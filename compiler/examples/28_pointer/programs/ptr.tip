@@ -1,0 +1,10 @@
+main() {
+  var x, y, p, q;
+  x = alloc 10;
+  y = alloc 20;
+  p = &x;
+  q = *p;
+  *p = y;
+  output *q;
+  return 0;
+}

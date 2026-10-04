@@ -1,0 +1,60 @@
+== const.tip ==
+== IDE interprocedural constant propagation ==
+-- main --
+  1: a=TOP, b=TOP
+  2 a = (+ 3 (* 4 2)) ;: a=TOP, b=TOP
+  3 b = (+ (* a 2) input) ;: a=11, b=TOP
+  4 output a ;: a=11, b=TOP
+  5 output b ;: a=11, b=TOP
+  6 return 0 ;: a=11, b=TOP
+  7: a=11, b=TOP
+-- summary --
+worklist joins: 18, IDE fact updates: 42
+cross-check vs ch17 CONST: const.tip constants agree (a=11, b=TOP)
+== idc.tip ==
+== IDE interprocedural constant propagation ==
+-- pid --
+  1: x=7, r=TOP
+  2 r = x ;: x=7, r=TOP
+  3 return r ;: x=7, r=7
+  4: x=7, r=7
+-- main --
+  1: a=TOP, b=TOP, c=TOP
+  2 a = (call pid 7) ;: a=TOP, b=TOP, c=TOP
+  3 b = (call pid a) ;: a=7, b=TOP, c=TOP
+  4 c = (call pid 7) ;: a=7, b=7, c=TOP
+  5 output a ;: a=7, b=7, c=7
+  6 output b ;: a=7, b=7, c=7
+  7 output c ;: a=7, b=7, c=7
+  8 return 0 ;: a=7, b=7, c=7
+  9: a=7, b=7, c=7
+-- summary --
+worklist joins: 42, IDE fact updates: 96
+cross-check vs ch17 CONST: const.tip constants agree (a=11, b=TOP)
+== idm.tip ==
+== IDE interprocedural constant propagation ==
+-- pid --
+  1: x=TOP, r=TOP
+  2 r = x ;: x=TOP, r=TOP
+  3 return r ;: x=TOP, r=TOP
+  4: x=TOP, r=TOP
+-- main --
+  1: a=TOP, b=TOP
+  2 a = (call pid 7) ;: a=TOP, b=TOP
+  3 if ((> input 0))
+  {
+    b = (call pid 2) ;
+  }
+else
+  {
+    b = (call pid 3) ;
+  }: a=TOP, b=TOP
+  4 b = (call pid 2) ;: a=TOP, b=TOP
+  5 b = (call pid 3) ;: a=TOP, b=TOP
+  6 output a ;: a=TOP, b=TOP
+  7 output b ;: a=TOP, b=TOP
+  8 return 0 ;: a=TOP, b=TOP
+  9: a=TOP, b=TOP
+-- summary --
+worklist joins: 51, IDE fact updates: 146
+cross-check vs ch17 CONST: const.tip constants agree (a=11, b=TOP)
