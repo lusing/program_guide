@@ -52,3 +52,8 @@ session ML21 in "21_decidability" = HOL +
   options [document = false]
   theories
     ex21_decidability
+
+session ML25 in "25_hoare" = HOL +
+  options [document = false]
+  theories
+    ex25_hoare

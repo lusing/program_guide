@@ -51,6 +51,7 @@ mathlogic/
 | [22 不完备性](docs/22-incompleteness.md) | 三步证明+先例索引（文档章） | 文档 |
 | [23 完备性 Henkin](docs/23-completeness.md) | 构造七步+紧致性推论（文档章） | 文档 |
 | [24 CTL 模型检查](docs/24-temporal.md) | AG/EG 展开等价+不动点构件 | C/L |
+| [25 霍尔逻辑](docs/25-hoare.md) | while 规则五通道对照+别名前提+倒数程序 | C/A/L/I/H4 |
 
 ## 工具链（本机实测）
 
