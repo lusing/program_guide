@@ -153,6 +153,20 @@ C++23 的视角下这套分类轴有了第三种可能：模板和 concepts 提�
 
 关于示例工程的组织再说一句：本仓库每个示例都自带一个 `main.cpp`（以及若干 `.hpp`），末行固定打印"自检通过"并全程用 `assert` 自校验；构建脚本会用 MSVC 与 clang 两套编译器分别编译、运行、比对输出——**双通道全绿**是每章代码的及格线，正文里出现的输出都是从真实运行结果里原样抄录的，不是手写的"理想输出"。你在自己的环境里复现时若发现输出不一致，优先怀疑编译器版本差异，而不是怀疑正文。
 
+## 环境搭建
+
+跟着敲代码需要的全套工具，Windows 上一小时内能配完：
+
+1. **编译器（二选一即可，全要更好）**：
+   - MSVC：安装 Visual Studio 2022 17.10 以上（本教程写作时用 VS 18），勾选"使用 C++ 的桌面开发"。编译参数固定为 `/std:c++latest /EHsc /utf-8 /W4`——`/utf-8` 一项不能省，否则中文源码在 GBK 代码页下编译直接报错；`/W4` 让编译器替你盯住未初始化、类型收窄这些模式实现里最常犯的错。
+   - clang：`scoop install llvm`（或 LLVM 官方安装包），编译参数 `-std=c++23 -Wall -Wextra`。Windows 上的 clang 默认使用 MSVC 的 STL 头文件和链接器，它能自动找到已装的 Visual Studio，不需要额外配置环境变量。
+2. **构建**：仓库根目录 `pwsh ./build.ps1 -All` 一键跑全部示例（MSVC+clang 双通道、输出逐字节比对）；`./run-all.sh` 是等价的 shell 版。单章验证用 `pwsh ./build.ps1 -Example 05_simplefactory` 这样的编号/名字参数。
+3. **编辑器**：VS Code + clangd 插件即可。clangd 默认按旧标准解析头文件会报"找不到 `std::print`"之类的假错误，配一个 `compile_commands.json`（CMake 工程）或把 `.vscode/settings.json` 里 clangd 参数设为 `--std=c++23` 就消停了——本书示例都不依赖 IDE，看报错以构建脚本输出为准。
+
+非 Windows 读者（macOS：MacPorts clang-23 / Linux：gcc 15 或 clang）同样能跑全套示例，`run-all.sh` 会自动适配平台差异——这层适配已经写进构建脚本，正文不再赘述。
+
+代码之外只有一个硬性提醒：**中文注释/字符串一律 UTF-8 保存**。Windows 记事本旧版默认存 ANSI（GBK），MSVC 报 C4819 警告或直接乱码；用 VS Code 把编码固定成 UTF-8 一了百了。
+
 ## 三书对应关系
 
 - 之禅：第 1 章（单一职责原则）之前的前言部分，全书导读；其"如何阅读本书"一节给出的学习路径与本教程的线性读法一致。
