@@ -52,8 +52,8 @@
 | 章 | 文档 | CLRS | 主题 |
 |---|---|---|---|
 | 15 | [docs/15-dp-foundations.md](docs/15-dp-foundations.md) | ch.15.1–15.3 | 动态规划（上）：钢条切割、矩阵链、方法论 |
-| 16 | （待交付） | ch.15.4–15.5 | 动态规划（下）：LCS、最优 BST |
-| 17 | （待交付） | ch.16 | 贪心算法、Huffman、拟阵 |
+| 16 | [docs/16-dp-applications.md](docs/16-dp-applications.md) | ch.15.4–15.5 | 动态规划（下）：LCS、最优 BST |
+| 17 | [docs/17-greedy.md](docs/17-greedy.md) | ch.16 | 贪心算法、Huffman、拟阵 |
 | 18 | （待交付） | ch.17 | 摊还分析：聚合/记账/势能三法 |
 
 **第五部分 高级数据结构（CLRS Part V）**
