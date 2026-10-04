@@ -73,6 +73,7 @@ OpenCL/examples/**/*.ppm
 OpenCL/examples/**/*.pgm
 OpenCL/examples/**/kernel_cache.bin
 OpenCL/examples/**/*.spv
+OpenCL/examples/**/*.bc
 
 # .NET artifacts
 *.user
