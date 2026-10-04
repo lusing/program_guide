@@ -1,0 +1,103 @@
+== pressure.tip ==
+== TAC ==
+  0: t1 = input
+  1: a = t1
+  2: t2 = input
+  3: b = t2
+  4: t3 = input
+  5: c = t3
+  6: t4 = input
+  7: d = t4
+  8: t5 = a + b
+  9: t6 = c + d
+  10: t7 = a - b
+  11: t8 = t6 * t7
+  12: t9 = t5 + t8
+  13: e = t9
+  14: output e
+  15: t10 = 0
+  16: return t10
+== liveness ==
+  B0 in={} out={}
+== interference ==
+  a -- b
+  a -- c
+  a -- d
+  a -- t2
+  a -- t3
+  a -- t4
+  a -- t5
+  a -- t6
+  b -- c
+  b -- d
+  b -- t3
+  b -- t4
+  b -- t5
+  b -- t6
+  c -- d
+  c -- t4
+  c -- t5
+  d -- t5
+  t5 -- t6
+  t5 -- t7
+  t5 -- t8
+  t6 -- t7
+  moves:
+== coloring (k=3) ==
+  c -> r2
+  d -> r1
+  t2 -> r0
+  t3 -> r0
+  t4 -> r0
+  t5 -> r0
+  t6 -> r1
+  t7 -> r2
+  t8 -> r1
+  spilled: a b（溢出改写留作练习；本表未含溢出者）
+  spill-free: no
+== 校验 ==
+  已着色子图相邻异色且色域<=k: yes
+== 对账 ==
+  outputs: -10
+  (着色是分配方案，不改程序；解释器照常执行原 TAC)
+== reg.tip ==
+== TAC ==
+  0: t1 = input
+  1: a = t1
+  2: t2 = input
+  3: b = t2
+  4: t3 = a + b
+  5: c = t3
+  6: t4 = a - b
+  7: d = t4
+  8: t5 = c * d
+  9: e = t5
+  10: output e
+  11: t6 = 0
+  12: return t6
+== liveness ==
+  B0 in={} out={}
+== interference ==
+  a -- b
+  a -- c
+  a -- t2
+  a -- t3
+  b -- c
+  b -- t3
+  c -- d
+  c -- t4
+  moves:
+== coloring (k=3) ==
+  a -> r2
+  b -> r0
+  c -> r1
+  d -> r0
+  t2 -> r0
+  t3 -> r1
+  t4 -> r0
+  spill-free: yes
+== 校验 ==
+  已着色子图相邻异色且色域<=k: yes
+== 对账 ==
+  outputs: -33
+  (着色是分配方案，不改程序；解释器照常执行原 TAC)

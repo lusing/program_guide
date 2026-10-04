@@ -74,8 +74,8 @@
 
 ### 第九篇　代码生成与并行（43–46）
 
-- 43 寄存器分配（扩充中）—— 活跃范围、干涉图、Chaitin-Briggs 着色、溢出
-- 44 指令选择与窥孔（扩充中）—— 树覆盖、Ershov 数、窥孔模式族
+- [43 寄存器分配](docs/43-regalloc.md) —— 干涉图、Chaitin–Briggs 着色、溢出与相邻异色校验（`examples/43_regalloc`）
+- [44 指令选择与窥孔](docs/44-isel-peephole.md) —— 树重建、Ershov 标号、maximal munch、窥孔清扫（`examples/44_isel_peephole`）
 - 45 指令级并行（扩充中）—— 依赖 DAG、表调度、软件流水
 - 46 并行与局部性（扩充中）—— 迭代空间、GCD 依赖检验、循环交换、分块、缓存模拟
 
@@ -86,6 +86,6 @@
 
 ## 验证状态
 
-现有 44/48 章三层对账全绿（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
+现有 46/48 章三层对账全绿（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
 
 每章 = `docs/NN-<slug>.md` + `examples/NN_<slug>/`（章号=示例号）。LLVM 示例的运行需要 MSYS2 UCRT64 工具链在 PATH（`run-all.sh` 自动处理；`tools/example_build.sh <examples/NN_slug> "$(pwd)"` 单独构建一个示例）。

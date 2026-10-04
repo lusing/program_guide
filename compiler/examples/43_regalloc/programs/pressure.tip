@@ -1,0 +1,10 @@
+main() {
+  var a, b, c, d, e;
+  a = input;
+  b = input;
+  c = input;
+  d = input;
+  e = (a + b) + ((c + d) * (a - b));
+  output e;
+  return 0;
+}

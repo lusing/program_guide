@@ -1,0 +1,79 @@
+== expr.tip ==
+== TAC ==
+  0: t1 = 2
+  1: t2 = 3
+  2: t3 = t1 * t2
+  3: t4 = 4
+  4: t5 = t3 + t4
+  5: x = t5
+  6: t6 = 0
+  7: t7 = x + t6
+  8: y = t7
+  9: t8 = 1
+  10: t9 = y * t8
+  11: t10 = 5
+  12: t11 = 6
+  13: t12 = t10 + t11
+  14: t13 = t9 + t12
+  15: z = t13
+  16: output z
+  17: output y
+  18: t14 = 0
+  19: return t14
+== 表达式树（含 Ershov 标号）==
+  x =
+    op +  [E2]
+        op *  [E2]
+            const 2  [E1]
+            const 3  [E1]
+        const 4  [E1]
+  y =
+    op +  [E2]
+        var x  [E1]
+        const 0  [E1]
+  z =
+    op +  [E3]
+        op *  [E2]
+            var y  [E1]
+            const 1  [E1]
+        op +  [E2]
+            const 5  [E1]
+            const 6  [E1]
+== 指令选择（maximal munch）==
+  loadi r0 6
+  loadi r1 4
+  add r2 r0,r1
+  mov x r2
+  loadi r3 0
+  add r4 x,r3
+  mov y r4
+  loadi r5 1
+  mul r6 y,r5
+  loadi r7 11
+  add r0 r6,r7
+  mov z r0
+  output z
+  output y
+  (瓦片 [loadi c1 op c2] 命中)
+  (瓦片 [loadi c1 op c2] 命中)
+== 窥孔清扫后 ==
+  loadi r0 6
+  loadi r1 4
+  add r2 r0,r1
+  mov x r2
+  mov r4 x
+  mov y r4
+  mov r6 y
+  loadi r7 11
+  add r0 r6,r7
+  mov z r0
+  output z
+  output y
+== stats ==
+  instructions: 14 -> 12
+  pattern add-0 x1
+  pattern mul-1 x1
+== 对账 ==
+  tac outputs: 21 10
+  risc outputs: 21 10
+  tac==risc: yes
