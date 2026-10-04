@@ -70,9 +70,9 @@
 | 章 | 文档 | CLRS | 主题 |
 |---|---|---|---|
 | 23 | [docs/23-graphs-basics.md](docs/23-graphs-basics.md) | ch.22 | 图表示、BFS、DFS、拓扑排序、强连通分量 |
-| 24 | （待交付） | ch.23 | 最小生成树：Kruskal/Prim |
-| 25 | （待交付） | ch.24 | 单源最短路：Bellman-Ford/Dijkstra |
-| 26 | （待交付） | ch.25 | 全源最短路：Floyd-Warshall/Johnson |
+| 24 | [docs/24-mst.md](docs/24-mst.md) | ch.23 | 最小生成树：Kruskal/Prim |
+| 25 | [docs/25-sssp.md](docs/25-sssp.md) | ch.24 | 单源最短路：Bellman-Ford/Dijkstra |
+| 26 | [docs/26-apsp.md](docs/26-apsp.md) | ch.25 | 全源最短路：Floyd-Warshall/Johnson |
 | 27 | （待交付） | ch.26 | 最大流：Ford-Fulkerson/推送-重贴标签 |
 
 **第七部分 专题选讲（CLRS Part VII）**
