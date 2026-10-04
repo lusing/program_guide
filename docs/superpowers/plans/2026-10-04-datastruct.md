@@ -22,7 +22,7 @@
 - 确定性禁打：指针/地址、sizeof/capacity/chrono 原始值；随机只用固定种子 `std::mt19937 rng{5489}`；平局按编号/字典序。
 - 错误处理：教学 ADT 约定——编程错误（越界、空容器 pop）throw 标准异常；可预期失败返回 `std::expected`/`optional`；每处选型在正文说明。
 - **正文以讲解为主体，示例代码是辅助**：只读 `docs/`、不打开 `examples/` 也必须能完整学会本章。禁止"连续大段代码无讲解"——任何嵌入代码段前面要有"为什么/要解决什么"，后面要有"逐行/逐块在做什么、关键不变量是什么"；代码段是论证的论据，不是内容本身。概念用直觉引入（生活类比/图示性文字/小实例手工推演），再给形式化合同。
-- 每章正文固定结构：`# NN · 标题` → `> 对应示例：examples/NN_name/`（仅指路，正文自成体系）→ 动机与直觉 → ADT 合同（操作语义用文字+小例子讲清）→ 设计与不变量（分步推演，关键代码小块嵌入并逐块讲解）→ 复杂度推导 → **完整示例输出**（真实粘贴+逐行解释说明了什么）→ std 对照 → 坑位（每个坑：现象/原因/后果）。每章正文不少于 200 行，讲解文字篇幅明显多于代码。
+- 每章正文固定结构：`# NN · 标题`（开头直接进正文，不放示例指路）→ 动机与直觉 → ADT 合同（操作语义用文字+小例子讲清）→ 设计与不变量（分步推演，关键代码小块嵌入并逐块讲解）→ 复杂度推导 → **完整示例输出**（真实粘贴+逐行解释说明了什么）→ std 对照 → 坑位（每个坑：现象/原因/后果）→ **末尾**才用一行斜体给出可选项：`*可选延伸：可运行示例见 examples/NN_name/。*`。每章正文不少于 200 行，讲解文字篇幅明显多于代码。
 - 提交：每批一次提交，信息 `feat(datastruct): 批次N——……`，末尾 `Co-Authored-By: Claude Code <noreply@anthropic.com>`；中文斜杠串若被安全层拦截，改写文件用 `git commit -F`。
 
 ## File Structure
@@ -362,7 +362,7 @@ const WordPos* ds::lookup(std::span<const WordPos> idx, std::string_view word);
 - **05**：单链 push/pop/insert/erase 内容序列；reverse 后等于期望；iterator 遍历计数；双链双向遍历、erase 中部；merge_sorted 两个有序链结果有序完整；循环链连续 rotate n 步回头，size 不变，析构不挂。
 - **06**：StaticList 释放后再分配复用同一槽号；IndirectList sort 后指针序变而原数据顺序未动；UnionFind 两次 unite 后 size 与根；Polynomial：`(x+1)+(x-1)=2x`（1 项）、`(x+1)*(x-1)=x²-1`（2 项）。
 - **07**：栈 LIFO、空 pop throw；balanced 四正两负；to_postfix(`3 + 4 * 2 / ( 1 - 5 )`)==`3 4 2 * 1 5 - / +`；eval_postfix 该串==1.0（注意空格分隔音 token）；迷宫固定 8×8 网格，路径首格起点、末格终点、每步四邻接且不撞墙。
-- **08**：FIFO 与循环回绕（连续 enq/deq 100 次内容正确）；josephus(5,2)==3；bank_simulation(arrivals=[0,2,4,6], services=[3,3,3,3])：avg_wait==0.75、max_wait==1、served==4。
+- **08**：FIFO 与循环回绕（连续 enq/deq 100 次内容正确）；josephus(5,2)==3；bank_simulation(arrivals=[0,2,4,6], services=[3,3,3,3])：avg_wait==1.5、max_wait==3、served==4（等待口径 = 开始服务时刻−到达时刻；原计划写的 0.75/1 是误把"到达时前面人数"当等待时间，已订正）。
 - **09**：bf/kmp 在固定文本上命中同一位置、未命中返回 npos；build_pi("ababaca")==[0,0,1,2,3,0,1]；pos=起始偏移参数生效；index 中 lookup("data") 位置正确、不存在词返回 nullptr。
 
 - [ ] **Step 1: 18 个头文件按合同实现（RAII：拷贝/移动/析构齐全，零裸泄漏）**

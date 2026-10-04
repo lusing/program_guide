@@ -287,7 +287,8 @@ function Invoke-Batch {
 # 示例之前先用 8 行探针把通道资格测掉，失败就禁用该通道并说明原因，
 # 免得 69 项全红却看不出是环境问题还是代码问题。
 # ---------------------------------------------------------------
-$probeSrc = Join-Path $buildDir "_probe.cpp"
+# 探针文件名带 $PID：多个 build.ps1 并发时各自一组，不互相踩锁
+$probeSrc = Join-Path $buildDir "_probe_$PID.cpp"
 if ($onWindows -and ($clangxx -or $gccxx)) {
     Set-Content -LiteralPath $probeSrc -Encoding utf8 -Value @'
 #include <print>
@@ -305,20 +306,20 @@ int main() {
                         @("gcc",   $gccxx,   $gccCflags,   $gccLdflags))) {
         $chan, $tool, $cf, $lf = $pair
         if (-not $tool) { continue }
-        $probeExe = Join-Path $buildDir "_probe_$chan.exe"
+        $probeExe = Join-Path $buildDir "_probe_${chan}_$PID.exe"
         $r = Invoke-Capture -Exe $tool `
                 -Args (@($commonFlags) + $cf + @($probeSrc, "-o", $probeExe) + $lf) `
-                -OutFile (Join-Path $buildDir "_probe_$chan.build") `
-                -ErrFile (Join-Path $buildDir "_probe_$chan.builderr") -WorkDir $buildDir
+                -OutFile (Join-Path $buildDir "_probe_${chan}_$PID.build") `
+                -ErrFile (Join-Path $buildDir "_probe_${chan}_$PID.builderr") -WorkDir $buildDir
         $ok = ($r.ExitCode -eq 0)
         if ($ok) {
             $r2 = Invoke-Capture -Exe $probeExe -Args @() `
-                    -OutFile (Join-Path $buildDir "_probe_$chan.out") `
-                    -ErrFile (Join-Path $buildDir "_probe_$chan.err") -WorkDir $buildDir
+                    -OutFile (Join-Path $buildDir "_probe_${chan}_$PID.out") `
+                    -ErrFile (Join-Path $buildDir "_probe_${chan}_$PID.err") -WorkDir $buildDir
             $ok = ($r2.ExitCode -eq 0)
         }
         if (-not $ok) {
-            Write-Host ("[skip] {0} 通道在 Windows 上编译/运行探针失败，本机禁用（详见 build/_probe_{0}.builderr）" -f $chan) -ForegroundColor DarkYellow
+            Write-Host ("[skip] {0} 通道在 Windows 上编译/运行探针失败，本机禁用（详见 build/_probe_${chan}_$PID.builderr）" -f $chan) -ForegroundColor DarkYellow
             if ($chan -eq "clang") { $clangxx = ""; $clangCflags = @(); $clangLdflags = @() }
             else { $gccxx = ""; $gccCflags = @(); $gccLdflags = @() }
         }
