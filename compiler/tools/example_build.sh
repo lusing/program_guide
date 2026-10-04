@@ -20,9 +20,12 @@ FLAGS=(-std=c++17 -Wall -Wextra -Werror -DANTLR4CPP_STATIC
        -I"$ROOT/build/antlr/include/antlr4-runtime")
 LIBS=("$ROOT/build/antlr/lib/libantlr4-runtime-static.a")
 if [ -f "$EX/llvm.need" ]; then
-  mapfile -t LCXX < <(llvm-config --cxxflags | tr ' ' '\n' | grep -v '^-std=')
+  # 过滤 -fno-exceptions/-fno-rtti：ANTLR 头与本书代码都依赖异常与 dynamic_cast。
+  mapfile -t LCXX < <(llvm-config --cxxflags | tr ' ' '\n' \
+       | grep -v '^-std=' | grep -vE '^-fno-(exceptions|rtti)' | grep -v '^$')
   mapfile -t LLIB < <(llvm-config --ldflags --link-shared \
-       --libs core orcjit support native analysis passes --system-libs)
+       --libs core orcjit support native analysis passes --system-libs \
+       | tr ' ' '\n' | grep -v '^$')
   FLAGS+=("${LCXX[@]}"); LIBS+=("${LLIB[@]}")
 fi
 
