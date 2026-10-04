@@ -85,8 +85,8 @@
 | 31 | [docs/31-fft.md](docs/31-fft.md) | ch.30 | 多项式与 FFT |
 | 32 | [docs/32-number-theory.md](docs/32-number-theory.md) | ch.31 | 数论算法：模运算、RSA、Miller-Rabin |
 | 33 | [docs/33-string-matching.md](docs/33-string-matching.md) | ch.32 | 字符串匹配：Rabin-Karp/KMP |
-| 34 | （待交付） | ch.33 | 计算几何：凸包、最近点对 |
-| 35 | （待交付） | ch.34 | NP 完全性 |
+| 34 | [docs/34-geometry.md](docs/34-geometry.md) | ch.33 | 计算几何：凸包、最近点对 |
+| 35 | [docs/35-np-completeness.md](docs/35-np-completeness.md) | ch.34 | NP 完全性 |
 | 36 | （待交付） | ch.35 | 近似算法 |
 
 **收束**
