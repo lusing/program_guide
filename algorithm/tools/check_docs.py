@@ -111,13 +111,17 @@ def is_non_output(block):
 
 
 def pitfalls_of(md_path):
-    """「## 坑位清单」小节下的加粗标题条数（下一个 ## 之前）。"""
+    """「## 坑位清单」小节下的加粗标题条数（下一个 ## 之前）。
+
+    条目形态：无序（- **标题**）或有序（1. **标题**）——本教程 docs 用有序
+    编号体例，cppgui 蓝本只认无序，这里两者都收。
+    """
     lines = md_path.read_text(encoding="utf-8", errors="replace").splitlines()
     n, inside = 0, False
     for ln in lines:
         if ln.startswith("## "):
             inside = "坑位清单" in ln
-        elif inside and re.match(r"\s*[-*]\s+\*\*", ln):
+        elif inside and re.match(r"\s*(?:[-*]|\d+\.)\s+\*\*", ln):
             n += 1
     return n
 

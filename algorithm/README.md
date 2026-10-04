@@ -22,10 +22,10 @@
 
 | 章 | 文档 | CLRS | 主题 |
 |---|---|---|---|
-| 01 | （待交付） | ch.1 | 算法的角色、C++23 工具链与本教程验证体系 |
-| 02 | （待交付） | ch.2 | 插入排序、循环不变式、算法分析、归并排序 |
-| 03 | （待交付） | ch.3 | 渐近记号 O/Ω/Θ/o/ω、常用函数 |
-| 04 | （待交付） | ch.4 | 分治、最大子数组、Strassen、主定理 |
+| 01 | [docs/01-role-and-toolchain.md](docs/01-role-and-toolchain.md) | ch.1 | 算法的角色、C++23 工具链与本教程验证体系 |
+| 02 | [docs/02-getting-started.md](docs/02-getting-started.md) | ch.2 | 插入排序、循环不变式、算法分析、归并排序 |
+| 03 | [docs/03-growth-of-functions.md](docs/03-growth-of-functions.md) | ch.3 | 渐近记号 O/Ω/Θ/o/ω、常用函数 |
+| 04 | [docs/04-divide-and-conquer.md](docs/04-divide-and-conquer.md) | ch.4 | 分治、最大子数组、Strassen、主定理 |
 | 05 | （待交付） | ch.5 | 概率分析、指示器随机变量、随机化算法 |
 
 **第二部分 排序与顺序统计量（CLRS Part II）**
@@ -113,7 +113,8 @@ pwsh ./build.ps1 -Docs           # 只跑文档五关
   （x86_64-pc-windows-msvc，共享 MSVC STL、独立前端，交叉核对通道）；scoop MinGW
   g++ 15.2（独立 libstdc++，机会型通道——其 `<print>` 链接缺终端符号，探针会自动
   降级到 `-DALGO_NO_PRINT` 垫片，见 build.ps1 两级探针）。
-- 交付进度：**批次一（工程骨架）已落地，正文分 15 个批次交付中。**
+- 交付进度：**批次一（工程骨架）+ 批次二（01–04 章：角色与工具链 / 插入归并
+  排序与循环不变式 / 渐近记号 / 分治与主定理）已全绿，共 4 示例 × 3 通道。**
 
 ## 写作约定
 

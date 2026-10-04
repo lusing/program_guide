@@ -9,7 +9,27 @@
 
 ## B. C++23 语言/库坑位
 
-（随批次登记，每条四段式：现象/原因/后果/对策。）
+（逐批登记，四段式详见各章「坑位清单」，此处是速查摘要。）
+
+01–04 章批次（8 条）：
+
+1. `std::ranges::sort` 报「不是 std::ranges 的成员」——算法在 `<algorithm>`，
+   `<ranges>` 只有视图（01 章，三通道齐红实测）。
+2. libstdc++ 特性宏拆散在各头文件，`<algorithm>` 只带自己的宏；探测前必须
+   `#include <version>`（01 章，msvc=1/gcc=0 假象）。
+3. MinGW libstdc++ 15.2 链接 `<print>` 必挂（缺 `std::__open_terminal`）——
+   两级探针 + `-DALGO_NO_PRINT` + IO 垫片（01 章；垫片用 `std::format`+
+   `printf`，字节流与 `std::print` 一致）。
+4. 特性宏「数值」跨库不同（`__cpp_lib_ranges_zip` 202207 vs 202110）——
+   探测表只打 0/1 布尔（01 章）。
+5. 无符号 `assert(n > 0)` 触发 gcc `-Wextra`（-Wtype-limits）——写 `n != 0`
+   （01 章）。
+6. `std::size_t` 下标回绕：边界检查必须前置（`i > 0 && a[i-1] > key`），
+   且比较计数放 `&&` 右侧防短路漏计（02 章）。
+7. `std::log/pow` 尾数跨标准库可异——分析实验全整数运算，⌊lg n⌋ 用
+   `bit_width(n)-1`（03 章）。
+8. Strassen 公式手抄错号（C22 的 −P7 写进括号变成 +P7）——与朴素乘法
+   `assert(mat_eq(...))` 对账，第一次运行就抓住（04 章，真实翻车实录）。
 
 ## C. 跨通道差异判据
 
