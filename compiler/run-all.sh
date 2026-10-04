@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 MSYS=/g/scoop/apps/msys2/current
-if [ "${MSYSTEM:-}" != "UCRT64" ] && [ -z "$UCRT_INVOKED" ]; then
+if [ "${MSYSTEM:-}" != "UCRT64" ] && [ -z "${UCRT_INVOKED:-}" ]; then
   export UCRT_INVOKED=1
   exec "$MSYS/usr/bin/bash" -lc "cd '$(pwd)' && UCRT_INVOKED=1 ./run-all.sh $*"
 fi
