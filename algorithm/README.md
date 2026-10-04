@@ -54,14 +54,14 @@
 | 15 | [docs/15-dp-foundations.md](docs/15-dp-foundations.md) | ch.15.1–15.3 | 动态规划（上）：钢条切割、矩阵链、方法论 |
 | 16 | [docs/16-dp-applications.md](docs/16-dp-applications.md) | ch.15.4–15.5 | 动态规划（下）：LCS、最优 BST |
 | 17 | [docs/17-greedy.md](docs/17-greedy.md) | ch.16 | 贪心算法、Huffman、拟阵 |
-| 18 | （待交付） | ch.17 | 摊还分析：聚合/记账/势能三法 |
+| 18 | [docs/18-amortized.md](docs/18-amortized.md) | ch.17 | 摊还分析：聚合/记账/势能三法 |
 
 **第五部分 高级数据结构（CLRS Part V）**
 
 | 章 | 文档 | CLRS | 主题 |
 |---|---|---|---|
-| 19 | （待交付） | ch.18 | B 树 |
-| 20 | （待交付） | ch.19 | 斐波那契堆 |
+| 19 | [docs/19-b-tree.md](docs/19-b-tree.md) | ch.18 | B 树 |
+| 20 | [docs/20-fibonacci-heap.md](docs/20-fibonacci-heap.md) | ch.19 | 斐波那契堆 |
 | 21 | （待交付） | ch.20 | van Emde Boas 树 |
 | 22 | （待交付） | ch.21 | 不相交集（并查集） |
 
