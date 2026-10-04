@@ -1,0 +1,8 @@
+main() {
+  var a, b, c;
+  a = 7;
+  b = 3;
+  if (a > b) c = a * b + 1; else c = a * b + 2;
+  output c;
+  return 0;
+}

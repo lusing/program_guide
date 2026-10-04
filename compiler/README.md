@@ -28,7 +28,7 @@
 - [12 LLVM 执行台](docs/12-llvm-run.md) —— ORC JIT：让"具体语义"有证人（`examples/12_llvm_run`）
 - [13 三地址码与基本块](docs/13-tac-blocks.md) —— 四元组 TAC、leader 三规则、next-use、解释器与 JIT 对账（`examples/13_tac_blocks`）
 - [14 栈与活动记录](docs/14-activation-records.md) —— 活动树、帧布局、调用/返回序列、访问链与 display（`examples/14_activation_records`）
-- 15 垃圾回收（扩充中）—— 可达性、引用计数与环、标记清除、Cheney 复制、分代
+- [15 垃圾回收](docs/15-garbage-collection.md) —— 可达性闭包、引用计数与环、标记清除、Cheney 复制（`examples/15_garbage_collection`）
 
 ### 第四篇　类型推断（16–19）
 
@@ -45,9 +45,9 @@
 - [23 工作表](docs/23-worklist.md) —— 只追变化、单调即止；四种顺序的收敛账（`examples/23_worklist`）
 - [24 符号与常量](docs/24-sign-const.md) —— 两域同台；强更新是精度的发动机；soundness 采样检验（`examples/24_sign_const`）
 - [25 经典双向流](docs/25-classic-dfa.md) —— 活跃变量（后向）与可用表达式（前向），交半格管精度（`examples/25_classic_dfa`）
-- 26 到达定值与非常忙表达式（扩充中）—— 四大分析补全、ud/du 链、复制传播、代码提升
+- [26 到达定值与非常忙](docs/26-reaching-verybusy.md) —— 四大分析补全、ud 链、复制传播与代码提升（`examples/26_reaching_verybusy`）
 - [27 转移函数](docs/27-transfer.md) —— 语义的表格化：kill/gen 的系统化（`examples/27_transfer`）
-- 28 数据流框架定理（扩充中）—— 半格框架、单调性、MFP≤MOP、分配性等号
+- [28 数据流框架定理](docs/28-dfa-framework.md) —— 半格框架、收敛定理、MFP≤MOP 与非分配反例（`examples/28_dfa_framework`）
 
 ### 第六篇　精度的深水（29–31）
 
@@ -86,6 +86,6 @@
 
 ## 验证状态
 
-现有 36/48 章三层对账全绿（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
+现有 39/48 章三层对账全绿（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
 
 每章 = `docs/NN-<slug>.md` + `examples/NN_<slug>/`（章号=示例号）。LLVM 示例的运行需要 MSYS2 UCRT64 工具链在 PATH（`run-all.sh` 自动处理；`tools/example_build.sh <examples/NN_slug> "$(pwd)"` 单独构建一个示例）。

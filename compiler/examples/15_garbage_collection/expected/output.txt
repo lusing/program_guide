@@ -1,0 +1,37 @@
+== objects ==
+  0: A [B C]
+  1: B [D]
+  2: C [D]
+  3: D []
+  4: E [E]
+  5: F [G]
+  6: G [F]
+  7: H [B]
+== roots ==
+  -> A
+  -> B
+== reference counting ==
+  A: count=1
+  B: count=3
+  C: count=1
+  D: count=2
+  E: count=1
+  F: count=1
+  G: count=1
+  H: count=0
+  non-zero but unreachable: E F G  （环：计数永不为零，泄漏）
+  rc_freed = 1（只有 H 计数归零；环上三个永远漏掉）
+== mark-and-sweep ==
+  survived: A B C D
+  freed: E F G H
+  ms_freed = 4
+== cheney copying ==
+  copy order: A B C D
+  new0 = A [new1 new2]
+  new1 = B [new3]
+  new2 = C [new3]
+  new3 = D []
+  cheney_copied = 4
+== 对账 ==
+  survivors(ms) == copied(cheney) : yes
+  rc_freed = 1 < ms_freed = 4：差额正是环

@@ -1,0 +1,166 @@
+== diamond.tip ==
+== TAC ==
+  0: t1 = input
+  1: c = t1
+  2: t2 = 0
+  3: if c > t2 goto L5
+  4: goto L10
+  5: t3 = 1
+  6: x = t3
+  7: t4 = 1
+  8: y = t4
+  9: goto L14
+  10: t5 = 2
+  11: x = t5
+  12: t6 = 2
+  13: y = t6
+  14: t7 = x - y
+  15: z = t7
+  16: output z
+  17: t8 = 0
+  18: return t8
+== blocks ==
+  B0 [0,4) succs: 4 5
+  B1 [4,5) succs: 10
+  B2 [5,10) succs: 14
+  B3 [10,14) succs: 14
+  B4 [14,19) succs:
+== reaching ==
+  B0  MFP {0:t1, 1:c, 2:t2}  |  MOP<= 8 {0:t1, 1:c, 2:t2}
+  B1  MFP {0:t1, 1:c, 2:t2}  |  MOP<= 8 {0:t1, 1:c, 2:t2}
+  B2  MFP {0:t1, 1:c, 2:t2, 5:t3, 6:x, 7:t4, 8:y}  |  MOP<= 8 {0:t1, 1:c, 2:t2, 5:t3, 6:x, 7:t4, 8:y}
+  B3  MFP {0:t1, 10:t5, 11:x, 12:t6, 13:y, 1:c, 2:t2}  |  MOP<= 8 {0:t1, 10:t5, 11:x, 12:t6, 13:y, 1:c, 2:t2}
+  B4  MFP {0:t1, 10:t5, 11:x, 12:t6, 13:y, 14:t7, 15:z, 17:t8, 1:c, 2:t2, 5:t3, 6:x, 7:t4, 8:y}  |  MOP<= 8 {0:t1, 10:t5, 11:x, 12:t6, 13:y, 14:t7, 15:z, 17:t8, 1:c, 2:t2, 5:t3, 6:x, 7:t4, 8:y}
+  MFP == MOP<= 8 : yes
+  MFP 在正确的一侧（方向性）: yes
+== available ==
+  B0  MFP {}  |  MOP<= 8 {}
+  B1  MFP {}  |  MOP<= 8 {}
+  B2  MFP {}  |  MOP<= 8 {}
+  B3  MFP {}  |  MOP<= 8 {}
+  B4  MFP {x - y}  |  MOP<= 8 {x - y}
+  MFP == MOP<= 8 : yes
+  MFP 在正确的一侧（方向性）: yes
+== live ==
+  B0  MFP {}  |  MOP<= 8 {}
+  B1  MFP {}  |  MOP<= 8 {}
+  B2  MFP {}  |  MOP<= 8 {}
+  B3  MFP {}  |  MOP<= 8 {}
+  B4  MFP {x, y}  |  MOP<= 8 {x, y}
+  MFP == MOP<= 8 : yes
+  MFP 在正确的一侧（方向性）: yes
+== verybusy ==
+  B0  MFP {}  |  MOP<= 8 {}
+  B1  MFP {}  |  MOP<= 8 {}
+  B2  MFP {}  |  MOP<= 8 {}
+  B3  MFP {}  |  MOP<= 8 {}
+  B4  MFP {x - y}  |  MOP<= 8 {x - y}
+  MFP == MOP<= 8 : yes
+  MFP 在正确的一侧（方向性）: yes
+== constprop ==
+  B0  MFP {c=T, t1=T, t2=0}  |  MOP<= 8 {c=T, t1=T, t2=0}
+  B1  MFP {c=T, t1=T, t2=0}  |  MOP<= 8 {c=T, t1=T, t2=0}
+  B2  MFP {c=T, t1=T, t2=0, t3=1, t4=1, x=1, y=1}  |  MOP<= 8 {c=T, t1=T, t2=0, t3=1, t4=1, x=1, y=1}
+  B3  MFP {c=T, t1=T, t2=0, t5=2, t6=2, x=2, y=2}  |  MOP<= 8 {c=T, t1=T, t2=0, t5=2, t6=2, x=2, y=2}
+  B4  MFP {c=T, t1=T, t2=0, t3=T, t4=T, t5=T, t6=T, t7=T, t8=0, x=T, y=T, z=T}  |  MOP<= 8 {c=T, t1=T, t2=0, t3=T, t4=T, t5=T, t6=T, t7=0, t8=0, x=T, y=T, z=0}
+  MFP == MOP<= 8 : no
+  MFP 在正确的一侧（方向性）: yes
+== 结论 ==
+  分配性实例（四大经典）：MFP 与 MOP 一致
+  常量传播：MFP 可能严格粗于 MOP（差集见上方 no 的块）
+== four.tip ==
+== TAC ==
+  0: t1 = input
+  1: a = t1
+  2: t2 = 1
+  3: b = t2
+  4: t3 = 0
+  5: if a > t3 goto L7
+  6: goto L11
+  7: t4 = 2
+  8: t5 = a + t4
+  9: b = t5
+  10: goto L14
+  11: t6 = 2
+  12: t7 = a - t6
+  13: b = t7
+  14: t8 = 0
+  15: if a > t8 goto L17
+  16: goto L21
+  17: t9 = 1
+  18: t10 = a - t9
+  19: a = t10
+  20: goto L14
+  21: t11 = 1
+  22: t12 = b + t11
+  23: cc = t12
+  24: output cc
+  25: t13 = 0
+  26: return t13
+== blocks ==
+  B0 [0,6) succs: 6 7
+  B1 [6,7) succs: 11
+  B2 [7,11) succs: 14
+  B3 [11,14) succs: 14
+  B4 [14,16) succs: 16 17
+  B5 [16,17) succs: 21
+  B6 [17,21) succs: 14
+  B7 [21,27) succs:
+== reaching ==
+  B0  MFP {0:t1, 1:a, 2:t2, 3:b, 4:t3}  |  MOP<= 8 {0:t1, 1:a, 2:t2, 3:b, 4:t3}
+  B1  MFP {0:t1, 1:a, 2:t2, 3:b, 4:t3}  |  MOP<= 8 {0:t1, 1:a, 2:t2, 3:b, 4:t3}
+  B2  MFP {0:t1, 1:a, 2:t2, 4:t3, 7:t4, 8:t5, 9:b}  |  MOP<= 8 {0:t1, 1:a, 2:t2, 4:t3, 7:t4, 8:t5, 9:b}
+  B3  MFP {0:t1, 11:t6, 12:t7, 13:b, 1:a, 2:t2, 4:t3}  |  MOP<= 8 {0:t1, 11:t6, 12:t7, 13:b, 1:a, 2:t2, 4:t3}
+  B4  MFP {0:t1, 11:t6, 12:t7, 13:b, 14:t8, 17:t9, 18:t10, 19:a, 1:a, 2:t2, 4:t3, 7:t4, 8:t5, 9:b}  |  MOP<= 8 {0:t1, 11:t6, 12:t7, 13:b, 14:t8, 17:t9, 18:t10, 19:a, 1:a, 2:t2, 4:t3, 7:t4, 8:t5, 9:b}
+  B5  MFP {0:t1, 11:t6, 12:t7, 13:b, 14:t8, 17:t9, 18:t10, 19:a, 1:a, 2:t2, 4:t3, 7:t4, 8:t5, 9:b}  |  MOP<= 8 {0:t1, 11:t6, 12:t7, 13:b, 14:t8, 17:t9, 18:t10, 19:a, 1:a, 2:t2, 4:t3, 7:t4, 8:t5, 9:b}
+  B6  MFP {0:t1, 11:t6, 12:t7, 13:b, 14:t8, 17:t9, 18:t10, 19:a, 2:t2, 4:t3, 7:t4, 8:t5, 9:b}  |  MOP<= 8 {0:t1, 11:t6, 12:t7, 13:b, 14:t8, 17:t9, 18:t10, 19:a, 2:t2, 4:t3, 7:t4, 8:t5, 9:b}
+  B7  MFP {0:t1, 11:t6, 12:t7, 13:b, 14:t8, 17:t9, 18:t10, 19:a, 1:a, 21:t11, 22:t12, 23:cc, 25:t13, 2:t2, 4:t3, 7:t4, 8:t5, 9:b}  |  MOP<= 8 {0:t1, 11:t6, 12:t7, 13:b, 14:t8, 17:t9, 18:t10, 19:a, 1:a, 21:t11, 22:t12, 23:cc, 25:t13, 2:t2, 4:t3, 7:t4, 8:t5, 9:b}
+  MFP == MOP<= 8 : yes
+  MFP 在正确的一侧（方向性）: yes
+== available ==
+  B0  MFP {}  |  MOP<= 8 {}
+  B1  MFP {}  |  MOP<= 8 {}
+  B2  MFP {a + t4}  |  MOP<= 8 {a + t4}
+  B3  MFP {a - t6}  |  MOP<= 8 {a - t6}
+  B4  MFP {}  |  MOP<= 8 {}
+  B5  MFP {}  |  MOP<= 8 {}
+  B6  MFP {}  |  MOP<= 8 {}
+  B7  MFP {b + t11}  |  MOP<= 8 {b + t11}
+  MFP == MOP<= 8 : yes
+  MFP 在正确的一侧（方向性）: yes
+== live ==
+  B0  MFP {}  |  MOP<= 8 {}
+  B1  MFP {a}  |  MOP<= 8 {a}
+  B2  MFP {a}  |  MOP<= 8 {a}
+  B3  MFP {a}  |  MOP<= 8 {a}
+  B4  MFP {a, b}  |  MOP<= 8 {a, b}
+  B5  MFP {b}  |  MOP<= 8 {b}
+  B6  MFP {a, b}  |  MOP<= 8 {a, b}
+  B7  MFP {b}  |  MOP<= 8 {b}
+  MFP == MOP<= 8 : yes
+  MFP 在正确的一侧（方向性）: yes
+== verybusy ==
+  B0  MFP {}  |  MOP<= 8 {}
+  B1  MFP {}  |  MOP<= 8 {}
+  B2  MFP {}  |  MOP<= 8 {}
+  B3  MFP {}  |  MOP<= 8 {}
+  B4  MFP {}  |  MOP<= 8 {}
+  B5  MFP {}  |  MOP<= 8 {}
+  B6  MFP {}  |  MOP<= 8 {}
+  B7  MFP {}  |  MOP<= 8 {}
+  MFP == MOP<= 8 : yes
+  MFP 在正确的一侧（方向性）: yes
+== constprop ==
+  B0  MFP {a=T, b=1, t1=T, t2=1, t3=0}  |  MOP<= 8 {a=T, b=1, t1=T, t2=1, t3=0}
+  B1  MFP {a=T, b=1, t1=T, t2=1, t3=0}  |  MOP<= 8 {a=T, b=1, t1=T, t2=1, t3=0}
+  B2  MFP {a=T, b=T, t1=T, t2=1, t3=0, t4=2, t5=T}  |  MOP<= 8 {a=T, b=T, t1=T, t2=1, t3=0, t4=2, t5=T}
+  B3  MFP {a=T, b=T, t1=T, t2=1, t3=0, t6=2, t7=T}  |  MOP<= 8 {a=T, b=T, t1=T, t2=1, t3=0, t6=2, t7=T}
+  B4  MFP {a=T, b=T, t10=T, t1=T, t2=T, t3=T, t4=T, t5=T, t6=T, t7=T, t8=0, t9=T}  |  MOP<= 8 {a=T, b=T, t10=T, t1=T, t2=1, t3=0, t4=T, t5=T, t6=T, t7=T, t8=0, t9=T}
+  B5  MFP {a=T, b=T, t10=T, t1=T, t2=T, t3=T, t4=T, t5=T, t6=T, t7=T, t8=0, t9=T}  |  MOP<= 8 {a=T, b=T, t10=T, t1=T, t2=1, t3=0, t4=T, t5=T, t6=T, t7=T, t8=0, t9=T}
+  B6  MFP {a=T, b=T, t10=T, t1=T, t2=T, t3=T, t4=T, t5=T, t6=T, t7=T, t8=0, t9=1}  |  MOP<= 8 {a=T, b=T, t10=T, t1=T, t2=1, t3=0, t4=T, t5=T, t6=T, t7=T, t8=0, t9=1}
+  B7  MFP {a=T, b=T, cc=T, t10=T, t11=1, t12=T, t13=0, t1=T, t2=T, t3=T, t4=T, t5=T, t6=T, t7=T, t8=0, t9=T}  |  MOP<= 8 {a=T, b=T, cc=T, t10=T, t11=1, t12=T, t13=0, t1=T, t2=1, t3=0, t4=T, t5=T, t6=T, t7=T, t8=0, t9=T}
+  MFP == MOP<= 8 : no
+  MFP 在正确的一侧（方向性）: yes
+== 结论 ==
+  分配性实例（四大经典）：MFP 与 MOP 一致
+  常量传播：MFP 可能严格粗于 MOP（差集见上方 no 的块）

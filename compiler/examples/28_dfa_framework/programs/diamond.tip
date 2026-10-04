@@ -1,0 +1,8 @@
+main() {
+  var c, x, y, z;
+  c = input;
+  if (c > 0) { x = 1; y = 1; } else { x = 2; y = 2; }
+  z = x - y;
+  output z;
+  return 0;
+}

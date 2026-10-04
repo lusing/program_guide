@@ -1,0 +1,10 @@
+main() {
+  var a, b, cc;
+  a = input;
+  b = 1;
+  if (a > 0) { b = a + 2; } else { b = a - 2; }
+  while (a > 0) { a = a - 1; }
+  cc = b + 1;
+  output cc;
+  return 0;
+}
