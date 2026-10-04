@@ -59,7 +59,7 @@
 
 - [32 支配者与自然循环](docs/32-dominators.md) —— 支配集/支配树、DFS 四类边、自然循环、可归约性（`examples/32_dominators`）
 - [33 SSA 形式](docs/33-ssa.md) —— CHK 支配边界、φ 插入、版本栈改名、与 opt mem2reg 对账（`examples/33_ssa`）
-- 34 基本块 DAG（扩充中）—— 值编号、代数恒等式、局部公共子表达式
+- [34 基本块 DAG](docs/34-dag-local.md) —— 值图登记、代数恒等式、局部 CSE 与死结点剔除（`examples/34_dag_local`）
 - 35 循环优化（扩充中）—— 不变式外提、归纳变量、强度削减
 - 36 部分冗余消除（扩充中）—— 六方程与惰性代码移动
 
@@ -86,6 +86,6 @@
 
 ## 验证状态
 
-现有 41/48 章三层对账全绿（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
+现有 42/48 章三层对账全绿（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
 
 每章 = `docs/NN-<slug>.md` + `examples/NN_<slug>/`（章号=示例号）。LLVM 示例的运行需要 MSYS2 UCRT64 工具链在 PATH（`run-all.sh` 自动处理；`tools/example_build.sh <examples/NN_slug> "$(pwd)"` 单独构建一个示例）。

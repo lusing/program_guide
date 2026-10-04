@@ -1,0 +1,7 @@
+main() {
+  var u, v;
+  u = input;
+  v = u * 1 + u * 0;
+  output v;
+  return 0;
+}

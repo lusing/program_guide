@@ -1,0 +1,66 @@
+== algebra.tip ==
+== TAC ==
+  0: t1 = input
+  1: u = t1
+  2: t2 = 1
+  3: t3 = u * t2
+  4: t4 = 0
+  5: t5 = u * t4
+  6: t6 = t3 + t5
+  7: v = t6
+  8: output v
+  9: t7 = 0
+  10: return t7
+== DAG B0 ==
+  nodes=3 labels=9 algebraHits=3 cseHits=0
+== after DAG ==
+  0: t1 = input
+  1: u = t1
+  2: v = t1
+  3: output t1
+  4: return 0
+== stats ==
+  instructions: 11 -> 5
+  algebraHits = 3  cseHits = 0
+== 对账 ==
+  outputs: 3
+  outputs preserved: yes
+== cse.tip ==
+== TAC ==
+  0: t1 = input
+  1: a = t1
+  2: t2 = a * a
+  3: t3 = a * a
+  4: t4 = t2 + t3
+  5: b = t4
+  6: t5 = a * a
+  7: x = t5
+  8: t6 = b + x
+  9: y = t6
+  10: output y
+  11: t7 = 0
+  12: return t7
+== DAG B0 ==
+  nodes=5 labels=11 algebraHits=0 cseHits=2
+    n1 =  =  *  kids(0,0) labels: t2 t3 t5 x
+    n2 =  =  +  kids(1,1) labels: t4 b
+    n3 =  =  +  kids(1,2) labels: t6 y
+== after DAG ==
+  0: t1 = input
+  1: t2 = t1 * t1
+  2: t3 = t2
+  3: t5 = t2
+  4: x = t2
+  5: t4 = t2 + t2
+  6: b = t4
+  7: t6 = t2 + t4
+  8: y = t6
+  9: a = t1
+  10: output y
+  11: return 0
+== stats ==
+  instructions: 13 -> 12
+  algebraHits = 0  cseHits = 2
+== 对账 ==
+  outputs: 27
+  outputs preserved: yes
