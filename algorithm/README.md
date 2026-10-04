@@ -80,9 +80,9 @@
 | 章 | 文档 | CLRS | 主题 |
 |---|---|---|---|
 | 28 | [docs/28-parallel.md](docs/28-parallel.md) | ch.27 | 多线程算法 → C++23 jthread/async 适配 |
-| 29 | （待交付） | ch.28 | 矩阵运算：LUP 分解、求逆 |
-| 30 | （待交付） | ch.29 | 线性规划与单纯形法 |
-| 31 | （待交付） | ch.30 | 多项式与 FFT |
+| 29 | [docs/29-matrices.md](docs/29-matrices.md) | ch.28 | 矩阵运算：LUP 分解、求逆 |
+| 30 | [docs/30-linear-programming.md](docs/30-linear-programming.md) | ch.29 | 线性规划与单纯形法 |
+| 31 | [docs/31-fft.md](docs/31-fft.md) | ch.30 | 多项式与 FFT |
 | 32 | （待交付） | ch.31 | 数论算法：模运算、RSA、Miller-Rabin |
 | 33 | （待交付） | ch.32 | 字符串匹配：Rabin-Karp/KMP |
 | 34 | （待交付） | ch.33 | 计算几何：凸包、最近点对 |
