@@ -491,7 +491,7 @@ std::string ds::lzw_decode(std::span<const int> codes);
 **章节 assert 规格：**
 
 - **10**：SymmetricMatrix at(r,c)==at(c,r) 映射同槽；SparseMatrix 固定例 transpose 后行列互换、triples 按 (r,c) 有序；相加零项消失；CrossList set/get 往返、row() 与 triples 数量一致、node_count 确定；GeneralList parse(`(a,(b,(c)),d)`)：length()==3、depth()==3、flatten 顺序 a,b,c,d。
-- **11**：from_pre_in(pre="ABDECFG", in="DBEAFCG")：postorder=="DEBFGCA"、postorder_iter 相同、levelorder=="ABCDEFG"、size 7、height 3、leaves 3；拷贝独立性 + 移动后 empty。
+- **11**：from_pre_in(pre="ABDECFG", in="DBEAFCG")：postorder=="DEBFGCA"、postorder_iter 相同、levelorder=="ABCDEFG"、size 7、height 3、leaves 4（重建结果为完美二叉树，叶 D/E/F/G；原计划写 3 有误）；拷贝独立性 + 移动后 empty。
 - **12**：给定两棵树组成的森林，preorder 固定序列；to_binary_tree 再 from_binary_tree 的 preorder 与原森林一致；UnionFind2：unite 后 find 同根、rank 单调、1000 次操作后深度 sanity（rank≤⌊log₂n⌋+1）。
 - **13**：逐 push 后 is_heap；heapify `[3,1,4,1,5,9,2,6]` 后 pop 序列 `9,6,5,4,3,2,1,1`；heap_sort 对固定数组有序且为降/升预期。
 - **14**：meld 后 property_ok（s(left)≥s(right)、s=1+min）；root_s 确定；pop 序列降序；kway_merge 三个有序段结果与手工 expected 完全一致且长度守恒。
