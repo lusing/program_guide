@@ -602,7 +602,7 @@ std::optional<CritResult> ds::critical_path(const AdjList& g);
 
 - **16**：跳表插入固定键序列后 get 全中、sorted_entries 按键升序、erase 后 get==nullopt；固定种子下 size/层级统计两次运行一致（main 内插同样数据两遍，断言统计相同）；两哈希表：插入 30 键 get 全中、erase 10 键后其余仍中、rehash 前后内容一致；构造桶数 4 的小表插入同余键（如 0,4,8）三键互不覆盖。
 - **17**：BST 插入/删除后 keys_sorted 有序、search；AVL 四情形（插 3,2,1 → LL；插 1,2,3 → RR；插 3,1,2 → LR；插 1,3,2 → RL）各自 preorder（含高度）精确断言：LL 后根为 2、子 1,3，balance 全 0；删除后仍平衡；红黑：固定插入序列（1..7）后 rb_legal，根键与黑高确定。
-- **18**：BTree 顺序插入 1..10：每步 all_keys 有序；root_keys 在各次分裂点精确断言（插 4 后首次分裂 root=={3}，自己推其余关键点至少断言 3 个分裂时刻）；contains；BPlus range(3,7)==[3,4,5,6,7] 且叶链不重不漏；倒排：三文档固定文本，postings 升序精确、未登录词空。
+- **18**：BTree 顺序插入 1..10：每步 all_keys 有序；root_keys 分裂时刻断言为阶数相关——默认 3 阶（2-3 树，节点容量 2）插 3 即首次分裂、root=={2}（main 另设 4 阶对照：容量 3、插 4 才分裂、root=={3}；原计划"插 4 后 root{3}"是 4 阶行为）；至少断言 3 个分裂时刻；contains；BPlus range(3,7)==[3,4,5,6,7] 且叶链不重不漏；倒排：三文档固定文本，postings 升序精确、未登录词空。
 - **19**：固定无向图 7 顶点：边数、bfs(0) 与 dfs(0) 顺序精确（邻点升序，自己先在草稿纸/程序核对后写死）；固定 DAG topo 精确一解；有环图 topo==nullopt。
 - **20**：图（无向，边 0-1:4, 0-2:1, 2-1:2, 1-3:1, 2-3:5, 3-4:3）：dijkstra(0)==[0,3,1,4,7]；floyd 行 0 相同且 [i][i]==0；prim 与 kruskal total 都==7、边集（排序后）相同。AOE DAG（0→1:3, 0→2:2, 1→3:1, 2→3:3）：length==5，activities=={(0,2),(2,3)}。
 
