@@ -1,0 +1,11 @@
+== 依赖检验 ==
+  写 a[i][j] / 读 a[i-1][j]: gcd(1,1)=1 整除 1: yes => 存在依赖
+  方向向量: (<,=) 交换合法: yes
+  反例（读 a[i+1][j]）: (>,=) 交换合法: no
+== 缓存模拟（直接映射，行=4 单元，槽=8）==
+  row-major : reads=240 writes=256 misses=64
+  col-major : reads=240 writes=256 misses=256
+  2x2 tiled : reads=240 writes=256 misses=120
+== 对账 ==
+  col 交换后读 miss 高于 row（行主序缓存下行序即正义）
+  tiled 摊 miss 最低（时间局部性入袋）
