@@ -1,0 +1,9 @@
+build/
+materials/
+*.exe
+*.obj
+*.o
+*.ii
+*.s
+*.pcm
+gcm.cache/
