@@ -1,10 +1,10 @@
 # 静态分析教程（ANTLR4 + LLVM）
 
-以 Anders Møller & Michael I. Schwartzbach《Static Program Analysis》为骨架、Aho & Ullman《Principles of Compiler Design》（绿龙）与 Aho, Lam, Sethi & Ullman《Compilers: Principles, Techniques, and Tools》（紫龙）为扩充取材，在 TIP 语言上系统实现类型分析、格与不动点数据流、widening、上下文敏感、IFDS/IDE、控制流与指针分析、抽象解释，并补全前端原理（自动机/LL/LR/语法制导翻译）、经典优化（三地址码、四大数据流分析、框架定理、支配者、SSA、DAG、循环优化、部分冗余消除）与目标代码（寄存器分配、指令选择、指令级并行、局部性）。ANTLR4 构建前端，LLVM（ORC JIT）让程序真实运行以检验分析结论。
+以 Anders Møller & Michael I. Schwartzbach《Static Program Analysis》为骨架、Aho & Ullman《Principles of Compiler Design》（绿龙 1977）与 Aho, Lam, Sethi & Ullman《Compilers: Principles, Techniques, and Tools》（紫龙 2006）两本龙书为扩充取材（两书核心内容全部自包含蒸馏进正文），在 TIP 语言上系统实现类型分析、格与不动点数据流、widening、上下文敏感、IFDS/IDE、控制流与指针分析、抽象解释，并补全前端原理（自动机/LL/LR/语法制导翻译）、经典优化（三地址码、四大数据流分析、框架定理、支配者、SSA、DAG、循环优化、部分冗余消除）与目标代码（寄存器分配、指令选择、指令级并行、局部性）。ANTLR4 构建前端，LLVM（ORC JIT）让程序真实运行以检验分析结论。
 
 构建：`pwsh ./build.ps1`（Windows）或 `./run-all.sh`（Git Bash 自动进入 UCRT64）。首次使用先在 UCRT64 shell 内运行 `bash tools/bootstrap.sh`。
 
-## 48 章导航（扩充中：18 个新章按槽位逐步落成）
+## 48 章导航（全部落成）
 
 ### 第一篇　地基（1–2）
 

@@ -61,16 +61,62 @@ const std::vector<SurveyRow> &surveyRows() {
          "子集约束闭包（最坏 O(n³) 工作表）",
          "流不敏感；语句顺序无关",
          "真实指向集合 ⊆ 预测集合；Steensgaard 合并只会更大不会不可靠"},
+        {"到达定值", "26",
+         "定值集合（TAC 行号标识）",
+         "前向工作表（may：并合并）",
+         "流敏感；路径与上下文均合并",
+         "ud 链必含真实到达者：可能多报、永不漏报"},
+        {"非常忙表达式", "26",
+         "表达式键集合（空格分界）",
+         "后向工作表（must：交合并）",
+         "流敏感；路径与上下文均合并",
+         "集合中的表达式沿每条路径必在操作数改写前被使用"},
+        {"数据流框架", "28",
+         "任意半格 + 单调转移函数（may/must/常量三口径）",
+         "轮转迭代到最大不动点（MFP）",
+         "由实例自定（四大经典全部齐备）",
+         "MFP ⊑ MOP：分配性（gen/kill）取等，常量传播严格粗（菱形反例机器检验）"},
+        {"基本块 DAG", "34",
+         "值图：运算结点 + 名字标签（结点即值）",
+         "单遍贪心登记（恒等式折叠 + 交换律规范键）",
+         "块内（局部）；不跨块",
+         "多名一结点 = 公共子表达式；恒等式按整数语义逐条成立"},
+        {"循环不变式", "35",
+         "指令集合（循环内/外二分）",
+         "自然循环识别 + 三判据外提（迭代两轮）",
+         "循环级；preheader 为唯一落点",
+         "steps 下降 + outputs 不变（解释器对账）；判据缺一即语义翻车"},
+        {"部分冗余消除", "36",
+         "表达式集合 × 六个方程（antic/avail/earliest/post/used/latest）",
+         "三向方程联立（前向 must + 后向 must + 后向 may）",
+         "流敏感；分支几何即优化几何",
+         "latest 落点保证安全（操作数必已定值）且至多一算（复用区间）"},
+        {"干涉图着色", "43",
+         "变量集合上的干涉图（边 = 活跃重叠）",
+         "Chaitin–Briggs 压弹栈（度 < k 摘除）",
+         "分配级（寄存器压力的画像）",
+         "相邻异色机器逐边校验；溢出如实报告为保守回退"},
+        {"依赖 DAG 调度", "45",
+         "指令集合 + RAW/WAR/WAW/MEM 边",
+         "关键路径优先表调度（宽度 1/2）",
+         "块内；重排不改语义",
+         "重放校验：发射序满足全部依赖（机器证人）"},
+        {"缓存局部性", "46",
+         "仿射访问（方向向量 + GCD 检验）",
+         "循环交换合法性 + 分块（块内行优先）",
+         "迭代空间级",
+         "变换合法 ⟺ 无 '<' 逆序依赖；miss 对比由模拟器对账"},
     };
     return rows;
 }
 
 std::string printSurvey() {
     std::ostringstream out;
-    out << "== static analyses in this tutorial, seen through Galois eyes ==\n";
+    out << "== static analyses and transformations in this tutorial, seen through Galois eyes ==\n";
     int i = 0;
     for (const SurveyRow &r : surveyRows()) {
-        out << "[" << ++i << "/11] " << r.name << " (ch" << r.chapters << ")\n";
+        out << "[" << ++i << "/" << surveyRows().size() << "] " << r.name
+            << " (ch" << r.chapters << ")\n";
         out << "    domain       : " << r.domain << "\n";
         out << "    direction    : " << r.direction << "\n";
         out << "    sensitivity  : " << r.sensitivity << "\n";

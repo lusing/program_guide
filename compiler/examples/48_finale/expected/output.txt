@@ -1,58 +1,103 @@
 == fold.tip ==
 frontend OK: 1 function(s) built into CFG
-== static analyses in this tutorial, seen through Galois eyes ==
-[1/11] 类型推断 (ch16-19)
+== static analyses and transformations in this tutorial, seen through Galois eyes ==
+[1/20] 类型推断 (ch16-19)
     domain       : 类型项（类型变量、函数/记录构造子）上的等价类；无高度、靠合一合并
     direction    : 约束收集后单向合一（合一不动点）
     sensitivity  : 表达式位置敏感；无格序，等价类只增不减
     soundness    : 推断类型与所有使用约束一致：替换后程序不再有类型冲突
-[2/11] 符号分析 (ch20-24)
+[2/20] 符号分析 (ch20-24)
     domain       : 五点符号格 ⊥ ⊏ −,0,+ ⊏ ⊤（每个整型变量一格）
     direction    : 前向工作表，沿 CFG 求最小不动点
     sensitivity  : 流敏感；路径与上下文均合并
     soundness    : α(C[[p]]) ⊑ A：具体值符号必在预测格点之下（第 47 章机器检验）
-[3/11] 常量传播 (ch24)
+[3/20] 常量传播 (ch24)
     domain       : 平坦常量格 ⊥ ⊏ c₁,c₂,… ⊏ ⊤
     direction    : 前向工作表，强更新 + join 合并
     sensitivity  : 流敏感；路径与上下文均合并
     soundness    : 预测为单点 c 的变量，任何具体执行取值恰为 c
-[4/11] 活跃变量 (ch25)
+[4/20] 活跃变量 (ch25)
     domain       : 2^Var 幂集格（交为 join，全集为 ⊥）
     direction    : 后向工作表：use 生成、def 清除
     sensitivity  : 流敏感；路径与上下文均合并
     soundness    : 离开程序点仍活跃的变量，其当前值沿某条后续路径会被使用
-[5/11] 可用表达式 (ch25)
+[5/20] 可用表达式 (ch25)
     domain       : 2^Expr 幂集格（交为 join，全集为 ⊥）
     direction    : 前向工作表：表达式计算生成、操作数重写清除
     sensitivity  : 流敏感；路径与上下文均合并
     soundness    : 集合中的表达式在该点必然已算出且操作数未被改写，可直接复用
-[6/11] 区间分析 (ch29-30)
+[6/20] 区间分析 (ch29-30)
     domain       : 区间格 [l,u]（无限高度，widen 加宽求收敛、narrow 收窄）
     direction    : 前向工作表，循环头处加宽
     sensitivity  : 流敏感；路径与上下文均合并
     soundness    : 具体值落在预测区间内；加宽只丢精度不丢可靠性
-[7/11] 路径敏感执行 (ch31)
+[7/20] 路径敏感执行 (ch31)
     domain       : 每条路径一个状态；合并即分离（路径条件合取约束状态）
     direction    : 前向，沿展开的路径图（exploded graph）
     sensitivity  : 路径敏感；上下文可配 call-string
     soundness    : 状态在路径条件可满足处有效；假阳性只来自路径合并，永不来自传递
-[8/11] IFDS 可达事实 (ch39)
+[8/20] IFDS 可达事实 (ch39)
     domain       : 有限事实域 D ∪ {零事实}，D 上幂集
     direction    : 超级图前向 tabulation（路径边制表）
     sensitivity  : 过程间全路径；流函数可分配 ⇒ 完全
     soundness    : 事实沿有效路径可达 ⟺ 表格含该路径边（无假阳性无假阴性）
-[9/11] IDE 值流动 (ch40)
+[9/20] IDE 值流动 (ch40)
     domain       : 事实 × 环境格 L（边缘函数 λ:L→L，常量/恒等/复合闭包）
     direction    : 超级图前向 tabulation，边缘函数沿边复合
     sensitivity  : 过程间全路径 + 事实携带值
     soundness    : 边缘函数求值 ⊒ 真实值变换（三值常量格上机器检验）
-[10/11] 0-CFA 闭包流 (ch41)
+[10/20] 0-CFA 闭包流 (ch41)
     domain       : loc → 函数名集合（幂集），缓存即抽象堆
     direction    : 约束系统单调增长（立方工作表）
     sensitivity  : 流不敏感、上下文不敏感（k=0）
     soundness    : 每个调用点的真实 callee 集合 ⊆ 预测集合
-[11/11] Andersen 指针 (ch42)
+[11/20] Andersen 指针 (ch42)
     domain       : 变量 → 分配点集合（包含约束的幂集解）
     direction    : 子集约束闭包（最坏 O(n³) 工作表）
     sensitivity  : 流不敏感；语句顺序无关
     soundness    : 真实指向集合 ⊆ 预测集合；Steensgaard 合并只会更大不会不可靠
+[12/20] 到达定值 (ch26)
+    domain       : 定值集合（TAC 行号标识）
+    direction    : 前向工作表（may：并合并）
+    sensitivity  : 流敏感；路径与上下文均合并
+    soundness    : ud 链必含真实到达者：可能多报、永不漏报
+[13/20] 非常忙表达式 (ch26)
+    domain       : 表达式键集合（空格分界）
+    direction    : 后向工作表（must：交合并）
+    sensitivity  : 流敏感；路径与上下文均合并
+    soundness    : 集合中的表达式沿每条路径必在操作数改写前被使用
+[14/20] 数据流框架 (ch28)
+    domain       : 任意半格 + 单调转移函数（may/must/常量三口径）
+    direction    : 轮转迭代到最大不动点（MFP）
+    sensitivity  : 由实例自定（四大经典全部齐备）
+    soundness    : MFP ⊑ MOP：分配性（gen/kill）取等，常量传播严格粗（菱形反例机器检验）
+[15/20] 基本块 DAG (ch34)
+    domain       : 值图：运算结点 + 名字标签（结点即值）
+    direction    : 单遍贪心登记（恒等式折叠 + 交换律规范键）
+    sensitivity  : 块内（局部）；不跨块
+    soundness    : 多名一结点 = 公共子表达式；恒等式按整数语义逐条成立
+[16/20] 循环不变式 (ch35)
+    domain       : 指令集合（循环内/外二分）
+    direction    : 自然循环识别 + 三判据外提（迭代两轮）
+    sensitivity  : 循环级；preheader 为唯一落点
+    soundness    : steps 下降 + outputs 不变（解释器对账）；判据缺一即语义翻车
+[17/20] 部分冗余消除 (ch36)
+    domain       : 表达式集合 × 六个方程（antic/avail/earliest/post/used/latest）
+    direction    : 三向方程联立（前向 must + 后向 must + 后向 may）
+    sensitivity  : 流敏感；分支几何即优化几何
+    soundness    : latest 落点保证安全（操作数必已定值）且至多一算（复用区间）
+[18/20] 干涉图着色 (ch43)
+    domain       : 变量集合上的干涉图（边 = 活跃重叠）
+    direction    : Chaitin–Briggs 压弹栈（度 < k 摘除）
+    sensitivity  : 分配级（寄存器压力的画像）
+    soundness    : 相邻异色机器逐边校验；溢出如实报告为保守回退
+[19/20] 依赖 DAG 调度 (ch45)
+    domain       : 指令集合 + RAW/WAR/WAW/MEM 边
+    direction    : 关键路径优先表调度（宽度 1/2）
+    sensitivity  : 块内；重排不改语义
+    soundness    : 重放校验：发射序满足全部依赖（机器证人）
+[20/20] 缓存局部性 (ch46)
+    domain       : 仿射访问（方向向量 + GCD 检验）
+    direction    : 循环交换合法性 + 分块（块内行优先）
+    sensitivity  : 迭代空间级
+    soundness    : 变换合法 ⟺ 无 '<' 逆序依赖；miss 对比由模拟器对账
