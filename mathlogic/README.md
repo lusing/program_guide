@@ -5,8 +5,9 @@
 [PLAN.md](./PLAN.md)），横跨 **Coq / Agda / Lean 4 / Isabelle/HOL /
 HOL4 / Coq-HoTT** 六种实现机器验证。
 
-**施工中**：01–24 章已交付（全部通道绿）；总蓝图 26 章见
-[PLAN.md](./PLAN.md) 的章节表。
+**已完结**：26 章全部交付，78 个验证单元全绿（零公理或显式
+公理记账）；速查表见 [CHEATSheet.md](./CHEATSheet.md)，蓝图与
+状态表见 [PLAN.md](./PLAN.md)。
 
 > 核心理念：**逻辑 = 语法 + 证明演算 + 语义**，而证明助手把三者
 > 全部变成可执行的程序。全书四条暗线：构造/经典的账本对照、
@@ -17,7 +18,7 @@ HOL4 / Coq-HoTT** 六种实现机器验证。
 
 ```text
 mathlogic/
-├── README.md / PLAN.md / build.ps1 / CHEATSheet.md(终章交付)
+├── README.md / PLAN.md / CHEATSheet.md / build.ps1
 ├── docs/               分章文档（每章末坑位速记）
 ├── examples/           章号=示例号；examples/ROOT 为 Isabelle 会话表
 └── tools/              HoTT/HOL4 全量构建脚本（断点续编）
@@ -52,6 +53,7 @@ mathlogic/
 | [23 完备性 Henkin](docs/23-completeness.md) | 构造七步+紧致性推论（文档章） | 文档 |
 | [24 CTL 模型检查](docs/24-temporal.md) | AG/EG 展开等价+不动点构件 | C/L |
 | [25 霍尔逻辑](docs/25-hoare.md) | while 规则五通道对照+别名前提+倒数程序 | C/A/L/I/H4 |
+| [26 收官](docs/26-wrapup.md) | SAT→SMT→MC→ITP 图景+总坑位+八书导读 | 文档 |
 
 ## 工具链（本机实测）
 
@@ -73,7 +75,10 @@ pwsh -NoProfile -Command '& ./build.ps1 -All'
 
 - 可靠性/演绎定理类元定理：Coq 通道最完整（06 章九规则归纳）；
   Lean/Agda/Isabelle 相应章节立演算与示例，完整归纳证明按章注记。
-- HOL4 采用浅嵌入（05 章对照点）；深嵌入的元定理工程不在本书范围。
+- HOL4 采用浅嵌入（05 章对照点）；25 章霍尔逻辑的 HOL4 版止步
+  于单步不变式引理（exec 双重反演的实例级联污染，见该章速记）。
 - 中译本 Huth&Ryan 是扫描件（引用时以英文 2e 为准）；
   Mints 书公式层缺失（引用需按页核对版面）。
+- 22/23 两章（不完备性/完备性）为文档章——机器化需要 PA 编码
+  与 Henkin 构造的大工程，正文献先例索引。
 - 其他版本（Coq 9/Agda 3/Lean 4.3x）未测。

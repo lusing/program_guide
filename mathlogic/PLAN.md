@@ -55,7 +55,7 @@
 | 23 | 完备性 Henkin（构造七步+紧致性/LS 推论+先例索引） | 文档 | ✅ |
 | 24 | CTL 语义+AG/EG 展开等价+不动点构件 | C/L | ✅ |
 | 25 | 霍尔逻辑程序验证（while 规则五通道对照+别名前提+截断减法绕行） | C/A/L/I/H4 | ✅ |
-| 26 | 收官：SAT→SMT→MC→ITP 图景 + 总坑位清单 + 八书导读 | 文档 | ⬜ |
+| 26 | 收官：SAT→SMT→MC→ITP 图景 + 总坑位清单 + 八书导读（+CHEATSheet） | 文档 | ✅ |
 
 章号=示例号；`docs/NN-*.md` 每章坑位速记；ROOTS 随章追加 Isabelle session。
 
