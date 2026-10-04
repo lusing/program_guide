@@ -62,14 +62,14 @@
 |---|---|---|---|
 | 19 | [docs/19-b-tree.md](docs/19-b-tree.md) | ch.18 | B 树 |
 | 20 | [docs/20-fibonacci-heap.md](docs/20-fibonacci-heap.md) | ch.19 | 斐波那契堆 |
-| 21 | （待交付） | ch.20 | van Emde Boas 树 |
-| 22 | （待交付） | ch.21 | 不相交集（并查集） |
+| 21 | [docs/21-veb-tree.md](docs/21-veb-tree.md) | ch.20 | van Emde Boas 树 |
+| 22 | [docs/22-disjoint-set.md](docs/22-disjoint-set.md) | ch.21 | 不相交集（并查集） |
 
 **第六部分 图算法（CLRS Part VI）**
 
 | 章 | 文档 | CLRS | 主题 |
 |---|---|---|---|
-| 23 | （待交付） | ch.22 | 图表示、BFS、DFS、拓扑排序、强连通分量 |
+| 23 | [docs/23-graphs-basics.md](docs/23-graphs-basics.md) | ch.22 | 图表示、BFS、DFS、拓扑排序、强连通分量 |
 | 24 | （待交付） | ch.23 | 最小生成树：Kruskal/Prim |
 | 25 | （待交付） | ch.24 | 单源最短路：Bellman-Ford/Dijkstra |
 | 26 | （待交付） | ch.25 | 全源最短路：Floyd-Warshall/Johnson |
