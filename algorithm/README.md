@@ -42,9 +42,9 @@
 | 章 | 文档 | CLRS | 主题 |
 |---|---|---|---|
 | 10 | [docs/10-elementary-structures.md](docs/10-elementary-structures.md) | ch.10 | 栈/队列/链表/有根树的对象与指针表示 |
-| 11 | （待交付） | ch.11 | 散列表：链址、开地址、全域散列 |
-| 12 | （待交付） | ch.12 | 二叉搜索树 |
-| 13 | （待交付） | ch.13 | 红黑树 |
+| 11 | [docs/11-hashing.md](docs/11-hashing.md) | ch.11 | 散列表：链址、开地址、全域散列 |
+| 12 | [docs/12-bst.md](docs/12-bst.md) | ch.12 | 二叉搜索树 |
+| 13 | [docs/13-rb-tree.md](docs/13-rb-tree.md) | ch.13 | 红黑树 |
 | 14 | （待交付） | ch.14 | 数据结构扩张：顺序统计树、区间树 |
 
 **第四部分 高级设计与分析技术（CLRS Part IV）**
