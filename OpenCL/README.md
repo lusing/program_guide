@@ -1,10 +1,10 @@
 # OpenCL Windows 平台开发教程（3.0）
 
-面向**会 C/C++、初学 GPU 异构计算**的读者：从环境搭建教到实战优化——主机端八步、设备端并行思维、事件流水线、五大经典算法（归约/矩阵乘法/双调排序/卷积/直方图/FFT）、多设备并行与图形互操作。每章"读讲解 → 跑示例 → 改代码再跑"，全部 30 个示例在本机双平台实测（编译 + 运行 + 数值断言，末尾必须 `PASS`）。
+面向**会 C/C++、初学 GPU 异构计算**的读者：从环境搭建教到实战优化——主机端八步、设备端并行思维、事件流水线、五大经典算法（归约/矩阵乘法/双调排序/卷积/直方图/FFT）、多设备并行与图形互操作。每章"读讲解 → 跑示例 → 改代码再跑"，全部示例在本机实测（编译 + 运行 + 数值断言，末尾必须 `PASS`）；硬件档案与逐机运行结果见 [VERIFICATION.md](VERIFICATION.md)。
 
 按三本书的地图扩充（详见 [01 章](docs/01-overview.md)）：《OpenCL 异构计算》（HCL，理论+案例）、*OpenCL in Action*（OiA，API 系统教程）、*OpenCL Programming by Example*（OPE，工程细节）。三篇结构：**基础篇 02–12**（环境→主机端对象→内核语言）+ **进阶篇 13–24**（事件/剖析/图像/SPIR-V/C++/算法）+ **实战篇 25–32**（粒子模拟/多设备/扩展/调试/互操作/性能）。
 
-> 本机实测环境：**NVIDIA CUDA 平台**（RTX 3060，OpenCL 3.0 CUDA 13.3，无 SPIR-V/fp16/subgroups）+ **Intel OpenCL 平台**（i7-12700F CPU，OpenCL 3.0，SPIR-V 1.0–1.4/subgroups 全有）——两台能力互补的设备贯穿全书做活对照。所有坑位清单来自实测（如 BufferRect 的"行单位"静默越界、锁不加 volatile 丢更新、SPIR-V 里 size_t 索引卡死 Intel 运行时、NVIDIA 互操作"幽灵通告"等，详见各章）。
+> 本机（台账[机器 #1](VERIFICATION.md)，2026-10-04 验证）：**NVIDIA CUDA 平台**（RTX 2060，OpenCL 3.0 CUDA 13.3，无 SPIR-V/子组）+ **Intel 核显平台**（UHD Graphics 630，OpenCL 3.0 NEO，SPIR-V 1.2 + 子组）+ **Intel CPU 平台**（i7-9700，OpenCL 3.0 / OpenCL C 3.0，SPIR-V 1.0–1.4）——三台能力互补的设备做活对照；当日两代共 41 个示例全量通过。文中性能数字来自先前的机器 #0（RTX 3060 / i7-12700F，双平台、无核显），量级结论在本机复测不变、绝对值有漂移（如 matmul 755→970 复测为 280→441 GFLOP/s）。所有坑位清单来自实测（如 BufferRect 的"行单位"静默越界、锁不加 volatile 丢更新、SPIR-V 里 size_t 索引卡死 Intel 运行时、NVIDIA 互操作"幽灵通告"等，详见各章）。
 
 ## 目录结构
 
@@ -13,7 +13,8 @@ OpenCL/
 ├── README.md          本文件
 ├── docs/              32 章教程（01 → 32 顺序阅读）
 ├── examples/          30 个示例目录（章号 = 目录号；common/ 放共用头与 vendored opencl.hpp）
-├── build.ps1          统一构建验证脚本（须 PowerShell 7 / pwsh）
+├── build.ps1          统一构建验证脚本（pwsh 7 / Windows PowerShell 5.1 均可）
+├── VERIFICATION.md    多机验证台账（硬件档案 + 逐机运行结果）
 └── CHEATSheet.md      API 速查 + 坑位索引
 ```
 
@@ -68,16 +69,19 @@ OpenCL/
 
 ## 构建工具链
 
-要求：**PowerShell 7（pwsh）**、MSVC（VS 2022+ 的 vcvars64）、OpenCL 头与导入库（默认按 CUDA Toolkit 路径配置，可在 `build.ps1` 顶部改三行变量）。C++ 绑定头已 vendor（`examples/common/CL/opencl.hpp`，Khronos OpenCL-CLHPP）；16 章 SPIR-V 预编译需要 MSYS2 clang（找不到自动走 SKIP 分支）。
+要求：PowerShell（pwsh 7 或 Windows PowerShell 5.1）、MSVC vcvars64、OpenCL 头与导入库——三者由 `tools/opencl-sdk.ps1` 自动发现（vswhere / `D:\cuda\13.3` / `CUDA_PATH` / oneAPI，可用 `$env:OPENCL_ROOT` 覆盖），脚本内零硬编码路径。C++ 绑定头已 vendor（`examples/common/CL/opencl.hpp`，Khronos OpenCL-CLHPP）；16 章 SPIR-V 预编译用 oneAPI clang（`Find-SpirvClang`，找不到自动走 SKIP 分支）。脚本覆盖两代示例（`01-`…`11-` 现教程 + `02_`…`31_` 历史章，共 41 个），默认按源码新旧增量编译。
 
 ```powershell
-pwsh build.ps1 -All          # 编译并运行全部示例（PASS 判定）
-pwsh build.ps1 -Chapter 03   # 单章
-pwsh build.ps1 -List         # 列出全部示例
-pwsh build.ps1 -Clean        # 清理
+pwsh build.ps1                         # 编译并运行全部示例（两代，PASS 判定）
+pwsh build.ps1 -Examples 02-vector-add # 单个示例（名称或前缀）
+pwsh build.ps1 -Chapter 03             # 单章（跨两代匹配章号）
+pwsh build.ps1 -SkipRun                # 只编译不运行
+pwsh build.ps1 -Rebuild                # 强制重编（默认增量）
+pwsh build.ps1 -List                   # 列出全部示例
+pwsh build.ps1 -Clean                  # 清理
 ```
 
-验证标准：退出码 0、输出含 `PASS`、无 `FAIL` 行；日志落 `build/logs/`。
+验证标准：退出码 0、输出含 `PASS`、无显式 `[RESULT] FAIL`（逐设备 `[FAIL]` 诊断行不算失败）；日志落 `build/logs/`。多机验证记录见 [VERIFICATION.md](VERIFICATION.md)。
 
 ## 参考书目
 
