@@ -1,0 +1,6 @@
+main() {
+  var x;
+  x = 2 * 3 + 1;
+  output x;
+  return 0;
+}

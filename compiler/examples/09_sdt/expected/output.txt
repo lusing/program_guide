@@ -1,0 +1,63 @@
+== decl.tip ==
+== tokens ==
+  VAR('var') IDENT('x') COMMA(',') IDENT('y') COMMA(',') IDENT('pz') SEMI(';')
+== annotated tree ==
+decls  size=12
+  VAR('var')  lexeme=var  lexval=var
+  idlist  inh=0  next=12
+    IDENT('x')  lexeme=x  lexval=x  offset=0
+    idlist'  inh=4  next=12
+      COMMA(',')  lexeme=,  lexval=,
+      IDENT('y')  lexeme=y  lexval=y  offset=4
+      idlist'  inh=8  next=12
+        COMMA(',')  lexeme=,  lexval=,
+        IDENT('pz')  lexeme=pz  lexval=pz  offset=8
+        idlist'  inh=12  next=12
+  SEMI(';')  lexeme=;  lexval=;
+== dependency ==
+  attrs = 12
+  edges = 11
+  topo = 12
+== results ==
+  x @ offset 0
+  y @ offset 4
+  pz @ offset 8
+  size = 12 = 4 * 3 : yes
+== circular demo ==
+  A -> B ; A.s = B.i ; B.i = A.s + 1
+  acyclic = no (attrs=2 edges=2 topo=0)
+  stuck: A.s
+  stuck: B.i
+== expr.tip ==
+== tokens ==
+  INT('3') STAR('*') INT('5') PLUS('+') INT('4')
+== annotated tree ==
+expr  post=3 5 * 4 +  val=19
+  term  post=3 5 *  val=15
+    factor  post=3  val=3
+      INT('3')  lexeme=3  lexval=3
+    term'  postInh=3  postSyn=3 5 *  valInh=3  valSyn=15
+      STAR('*')  lexeme=*  lexval=*
+      factor  post=5  val=5
+        INT('5')  lexeme=5  lexval=5
+      term'  postInh=3 5  postSyn=3 5  valInh=15  valSyn=15
+  expr'  postInh=3 5 *  postSyn=3 5 * 4 +  valInh=15  valSyn=19
+    PLUS('+')  lexeme=+  lexval=+
+    term  post=4  val=4
+      factor  post=4  val=4
+        INT('4')  lexeme=4  lexval=4
+      term'  postInh=4  postSyn=4  valInh=4  valSyn=4
+    expr'  postInh=3 5 * 4  postSyn=3 5 * 4  valInh=19  valSyn=19
+== dependency ==
+  attrs = 38
+  edges = 36
+  topo = 38
+== results ==
+  val  = 19
+  post = 3 5 * 4 +
+  evalPostfix(post) == val : yes
+== circular demo ==
+  A -> B ; A.s = B.i ; B.i = A.s + 1
+  acyclic = no (attrs=2 edges=2 topo=0)
+  stuck: A.s
+  stuck: B.i

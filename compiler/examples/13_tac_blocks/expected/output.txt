@@ -1,0 +1,98 @@
+== flow.tip ==
+== TAC ==
+  0: t1 = 5
+  1: a = t1
+  2: t2 = 3
+  3: if a > t2 goto L5
+  4: goto L8
+  5: t3 = 1
+  6: b = t3
+  7: goto L10
+  8: t4 = 0
+  9: b = t4
+  10: t5 = 0
+  11: if a > t5 goto L13
+  12: goto L17
+  13: t6 = 1
+  14: t7 = a - t6
+  15: a = t7
+  16: goto L10
+  17: t8 = b + a
+  18: output t8
+  19: t9 = 0
+  20: return t9
+== blocks ==
+  B0 [0,4) succs: 4 5
+  B1 [4,5) succs: 8
+  B2 [5,8) succs: 10
+  B3 [8,10) succs: 10
+  B4 [10,12) succs: 12 13
+  B5 [12,13) succs: 17
+  B6 [13,17) succs: 10
+  B7 [17,21) succs:
+== next-use ==
+  B0:
+    0: t1 = 5  | t1 next@1
+    1: a = t1  | a next@3  | t1 next@-
+    2: t2 = 3  | t2 next@3
+    3: if a > t2 goto L5  | a next@-  | t2 next@-
+  B1:
+    4: goto L8  | -
+  B2:
+    5: t3 = 1  | t3 next@6
+    6: b = t3  | b next@-  | t3 next@-
+    7: goto L10  | -
+  B3:
+    8: t4 = 0  | t4 next@9
+    9: b = t4  | b next@-  | t4 next@-
+  B4:
+    10: t5 = 0  | t5 next@11
+    11: if a > t5 goto L13  | a next@-  | t5 next@-
+  B5:
+    12: goto L17  | -
+  B6:
+    13: t6 = 1  | t6 next@14
+    14: t7 = a - t6  | a next@-  | t6 next@-  | t7 next@15
+    15: a = t7  | a next@-  | t7 next@-
+    16: goto L10  | -
+  B7:
+    17: t8 = b + a  | a next@-  | b next@-  | t8 next@18
+    18: output t8  | t8 next@-
+    19: t9 = 0  | t9 next@20
+    20: return t9  | t9 next@-
+== interp ==
+  outputs: 1 ; steps = 44
+== jit ==
+  outputs: 1
+== 对账 ==
+  interp==jit: yes
+== fold.tip ==
+== TAC ==
+  0: t1 = 2
+  1: t2 = 3
+  2: t3 = t1 * t2
+  3: t4 = 1
+  4: t5 = t3 + t4
+  5: x = t5
+  6: output x
+  7: t6 = 0
+  8: return t6
+== blocks ==
+  B0 [0,9) succs:
+== next-use ==
+  B0:
+    0: t1 = 2  | t1 next@2
+    1: t2 = 3  | t2 next@2
+    2: t3 = t1 * t2  | t1 next@-  | t2 next@-  | t3 next@4
+    3: t4 = 1  | t4 next@4
+    4: t5 = t3 + t4  | t3 next@-  | t4 next@-  | t5 next@5
+    5: x = t5  | t5 next@-  | x next@6
+    6: output x  | x next@-
+    7: t6 = 0  | t6 next@8
+    8: return t6  | t6 next@-
+== interp ==
+  outputs: 7 ; steps = 9
+== jit ==
+  outputs: 7
+== 对账 ==
+  interp==jit: yes

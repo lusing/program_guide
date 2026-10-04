@@ -1,0 +1,11 @@
+fact(n) {
+  var r;
+  if (n > 1) r = n * fact(n - 1); else r = 1;
+  return r;
+}
+main() {
+  var x;
+  x = fact(4);
+  output x;
+  return 0;
+}

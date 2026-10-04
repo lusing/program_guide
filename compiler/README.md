@@ -19,15 +19,15 @@
 - [06 LL 分析](docs/06-ll-parsing.md) —— FIRST/FOLLOW、LL(1) 表与预测分析器、左递归消除、悬挂 else 冲突（`examples/06_ll_parsing`）
 - [07 LR 分析](docs/07-lr-parsing.md) —— LR(0) 项集、SLR 造表、移进-归约、冲突与 prefer-shift（`examples/07_lr_parsing`）
 - [08 AST](docs/08-ast.md) —— 访问者模式把语法树变成类型安全的内存（`examples/08_ast`）
-- 09 语法制导翻译（扩充中）—— 综合/继承属性、依赖图、S-/L-属性、翻译方案
+- [09 语法制导翻译](docs/09-sdt.md) —— 属性文法、依赖图与拓扑求值、S-/L-属性两子类、翻译方案（`examples/09_sdt`）
 - [10 作用域](docs/10-scopes.md) —— 名字解析与绑定；每个变量属于谁（`examples/10_scopes`）
 
 ### 第三篇　中间表示与运行时（11–15）
 
 - [11 控制流图](docs/11-cfg.md) —— 树摊成图，循环与分支才可谈；两遍构造与稳定编号（`examples/11_cfg`）
 - [12 LLVM 执行台](docs/12-llvm-run.md) —— ORC JIT：让"具体语义"有证人（`examples/12_llvm_run`）
-- 13 三地址码与基本块（扩充中）—— 四元组、leader、next-use、TAC 解释器
-- 14 栈与活动记录（扩充中）—— 活动树、调用序列、访问链与 display
+- [13 三地址码与基本块](docs/13-tac-blocks.md) —— 四元组 TAC、leader 三规则、next-use、解释器与 JIT 对账（`examples/13_tac_blocks`）
+- [14 栈与活动记录](docs/14-activation-records.md) —— 活动树、帧布局、调用/返回序列、访问链与 display（`examples/14_activation_records`）
 - 15 垃圾回收（扩充中）—— 可达性、引用计数与环、标记清除、Cheney 复制、分代
 
 ### 第四篇　类型推断（16–19）
@@ -86,6 +86,6 @@
 
 ## 验证状态
 
-现有 33/48 章三层对账全绿（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
+现有 36/48 章三层对账全绿（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
 
 每章 = `docs/NN-<slug>.md` + `examples/NN_<slug>/`（章号=示例号）。LLVM 示例的运行需要 MSYS2 UCRT64 工具链在 PATH（`run-all.sh` 自动处理；`tools/example_build.sh <examples/NN_slug> "$(pwd)"` 单独构建一个示例）。
