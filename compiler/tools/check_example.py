@@ -7,7 +7,7 @@
 #                  期望退出码非零；expected/run、expected/soundness、expected/opt 按需对账
 import pathlib, subprocess, sys
 
-MSYS_BASH = r"G:\scoop\apps\msys2\current\usr\bash.exe"
+MSYS_BASH = r"G:\scoop\apps\msys2\current\usr\bin\bash.exe"
 
 def run(cmd, stdin=None):
     p = subprocess.run(cmd, input=stdin, capture_output=True, text=True, encoding="utf-8")

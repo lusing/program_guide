@@ -1,0 +1,10 @@
+== widen.tip ==
+== interval lattice, widening (cap 50 rounds) then narrowing ==
+widening point: loop head node 3
+iter 0: x=[0,0]
+iter 1: x=[0,1]
+iter 2: x=[0,+inf]
+iter 3: x=[0,+inf]
+CONVERGED after 4 rounds (with widening)
+after WIDEN : head x=[0,+inf]  output x=[10,+inf]
+after NARROW: head x=[0,10]  output x=[10,10]

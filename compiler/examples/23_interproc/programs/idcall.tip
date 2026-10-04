@@ -1,0 +1,11 @@
+id(n) {
+  return n;
+}
+main() {
+  var a, b;
+  a = id(1);
+  b = id(0 - 5);
+  output a;
+  output b;
+  return 0;
+}

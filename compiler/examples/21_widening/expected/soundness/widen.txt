@@ -1,0 +1,4 @@
+run 1: outputs 10 ; predicted [10,10] ; membership OK
+run 2: outputs 10 ; predicted [10,10] ; membership OK
+run 3: outputs 10 ; predicted [10,10] ; membership OK
+SOUND 3 runs, 3 observations

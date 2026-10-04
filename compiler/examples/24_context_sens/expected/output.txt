@@ -1,0 +1,10 @@
+== ctx.tip ==
+== call-string sensitivity: same program, four k ==
+k=0          : inc×1 main×1 pick×1 twice×1
+  main outputs: TOP TOP TOP TOP
+k=1          : inc×2 main×1 pick×2 twice×2
+  main outputs: TOP TOP 7 8
+k=2          : inc×4 main×1 pick×2 twice×2
+  main outputs: 2 102 7 8
+k=unbounded  : inc×4 main×1 pick×2 twice×2
+  main outputs: 2 102 7 8

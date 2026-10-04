@@ -1,0 +1,30 @@
+== idcall.tip ==
+== call graph ==
+main -> id
+acyclic: yes
+== constants, context-insensitive (every call = TOP) ==
+-- id --
+  1: n=TOP
+  2 return n ;: n=TOP
+  3: n=TOP
+-- main --
+  1:
+  2 a = (call id 1) ;: a=TOP
+  3 b = (call id (- 0 5)) ;: a=TOP b=TOP
+  4 output a ;: a=TOP b=TOP
+  5 output b ;: a=TOP b=TOP
+  6 return 0 ;: a=TOP b=TOP
+  7: a=TOP b=TOP
+== constants, inline expansion (straight-line pure callees) ==
+-- id --
+  1: n=TOP
+  2 return n ;: n=TOP
+  3: n=TOP
+-- main --
+  1:
+  2 a = (call id 1) ;: a=1
+  3 b = (call id (- 0 5)) ;: a=1 b=-5
+  4 output a ;: a=1 b=-5
+  5 output b ;: a=1 b=-5
+  6 return 0 ;: a=1 b=-5
+  7: a=1 b=-5

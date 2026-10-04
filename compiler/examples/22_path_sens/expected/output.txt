@@ -1,0 +1,18 @@
+== branch.tip ==
+== interval analysis: flow-insensitive vs path-refined ==
+FLOW-INSENSITIVE (no edge refinement):
+  output node 4: x in [-inf,+inf]
+  output node 5: (- 0 x) in [-2147483647,+inf]
+  div-zero: (none)
+PATH-REFINED (condition refinement on branch edges):
+  output node 4: x in [1,+inf]
+  output node 5: (- 0 x) in [0,+inf]
+  div-zero: (none)
+== div.tip ==
+== interval analysis: flow-insensitive vs path-refined ==
+FLOW-INSENSITIVE (no edge refinement):
+  output node 4: (/ 100 x) in [-inf,+inf]
+  div-zero: node 4: divisor x in [-inf,+inf] contains 0 — possible division by zero
+PATH-REFINED (condition refinement on branch edges):
+  output node 4: (/ 100 x) in [0,16]
+  div-zero: (none)

@@ -1,0 +1,10 @@
+main() {
+  var x;
+  x = input;
+  if (x > 0) {
+    output x;
+  } else {
+    output 0 - x;
+  }
+  return 0;
+}

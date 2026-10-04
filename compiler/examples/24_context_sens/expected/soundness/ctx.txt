@@ -1,0 +1,16 @@
+run 1: outputs 2 102 7 8
+  0: TOP TOP TOP TOP OK
+  1: TOP TOP 7 8 OK
+  2: 2 102 7 8 OK
+  functional: 2 102 7 8 OK
+run 2: outputs 2 102 7 8
+  0: TOP TOP TOP TOP OK
+  1: TOP TOP 7 8 OK
+  2: 2 102 7 8 OK
+  functional: 2 102 7 8 OK
+run 3: outputs 2 102 7 8
+  0: TOP TOP TOP TOP OK
+  1: TOP TOP 7 8 OK
+  2: 2 102 7 8 OK
+  functional: 2 102 7 8 OK
+SOUND 3 runs, 30 observations

@@ -1,0 +1,8 @@
+main() {
+  var x;
+  x = input;
+  if (x > 5) {
+    output 100 / x;
+  }
+  return 0;
+}

@@ -1,0 +1,28 @@
+pick(x) {
+  var y;
+  y = x;
+  return y;
+}
+inc(x) {
+  var y;
+  y = x + 1;
+  return y;
+}
+twice(x) {
+  var t, u;
+  t = inc(x);
+  u = inc(t);
+  return u;
+}
+main() {
+  var a, b, c, d;
+  a = twice(0);
+  b = twice(100);
+  c = pick(7);
+  d = pick(8);
+  output a;
+  output b;
+  output c;
+  output d;
+  return 0;
+}
