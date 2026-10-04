@@ -1,0 +1,10 @@
+main() {
+  var x, i;
+  x = input;
+  i = 0;
+  while (x > i) {
+    i = i + 1;
+  }
+  output i;
+  return 0;
+}

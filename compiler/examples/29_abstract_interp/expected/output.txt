@@ -1,0 +1,116 @@
+== branch.tip ==
+== collecting semantics: environments per program point ==
+concrete input streams expanded: 3
+-- main --
+  1: 1 environment
+      {x=0, y=0}
+  2 x = input ;: 1 environment
+      {x=0, y=0}
+  3 if ((> x 0))
+  {
+    y = 1 ;
+  }
+else
+  {
+    y = 0 ;
+  }: 3 environments
+      {x=-1, y=0}
+      {x=0, y=0}
+      {x=1, y=0}
+  4 y = 1 ;: 1 environment
+      {x=1, y=0}
+  5 y = 0 ;: 2 environments
+      {x=-1, y=0}
+      {x=0, y=0}
+  6 output y ;: 3 environments
+      {x=-1, y=0}
+      {x=0, y=0}
+      {x=1, y=1}
+  7 return 0 ;: 3 environments
+      {x=-1, y=0}
+      {x=0, y=0}
+      {x=1, y=1}
+  8: 3 environments
+      {x=-1, y=0}
+      {x=0, y=0}
+      {x=1, y=1}
+== abstraction alpha of the collected states ==
+  main:1 x=0 y=0
+  main:2 x=0 y=0
+  main:3 x=⊤ y=0
+  main:4 x=+ y=0
+  main:5 x=⊤ y=0
+  main:6 x=⊤ y=⊤
+  main:7 x=⊤ y=⊤
+  main:8 x=⊤ y=⊤
+== monotone sign analysis A (entry = alpha of initial state) ==
+  main:1 x=0 y=0
+  main:2 x=0 y=0
+  main:3 x=⊤ y=0
+  main:4 x=⊤ y=0
+  main:5 x=⊤ y=0
+  main:6 x=⊤ y=⊤
+  main:7 x=⊤ y=⊤
+  main:8 x=⊤ y=⊤
+== soundness theorem: alpha(C[[p]]) is below A ==
+  8 points compared; theorem HOLDS
+== Galois roundtrip: S is contained in gamma(alpha(S)) ==
+  17/17 collected environments reproduced on the representative domain
+== concrete JIT cross-check (LLVM ORC) ==
+  inputs [1] -> outputs [1]
+  inputs [-1] -> outputs [0]
+  inputs [0] -> outputs [0]
+== loop.tip ==
+== collecting semantics: environments per program point ==
+concrete input streams expanded: 2
+-- main --
+  1: 1 environment
+      {i=0, x=0}
+  2 x = input ;: 1 environment
+      {i=0, x=0}
+  3 i = 0 ;: 2 environments
+      {i=0, x=0}
+      {i=0, x=1}
+  4 while ((> x i))
+  {
+    i = (+ i 1) ;
+  }: 3 environments
+      {i=0, x=0}
+      {i=0, x=1}
+      {i=1, x=1}
+  5 i = (+ i 1) ;: 1 environment
+      {i=0, x=1}
+  6 output i ;: 2 environments
+      {i=0, x=0}
+      {i=1, x=1}
+  7 return 0 ;: 2 environments
+      {i=0, x=0}
+      {i=1, x=1}
+  8: 2 environments
+      {i=0, x=0}
+      {i=1, x=1}
+== abstraction alpha of the collected states ==
+  main:1 i=0 x=0
+  main:2 i=0 x=0
+  main:3 i=0 x=⊤
+  main:4 i=⊤ x=⊤
+  main:5 i=0 x=+
+  main:6 i=⊤ x=⊤
+  main:7 i=⊤ x=⊤
+  main:8 i=⊤ x=⊤
+== monotone sign analysis A (entry = alpha of initial state) ==
+  main:1 i=0 x=0
+  main:2 i=0 x=0
+  main:3 i=0 x=⊤
+  main:4 i=⊤ x=⊤
+  main:5 i=⊤ x=⊤
+  main:6 i=⊤ x=⊤
+  main:7 i=⊤ x=⊤
+  main:8 i=⊤ x=⊤
+== soundness theorem: alpha(C[[p]]) is below A ==
+  8 points compared; theorem HOLDS
+== Galois roundtrip: S is contained in gamma(alpha(S)) ==
+  14/14 collected environments reproduced on the representative domain
+== concrete JIT cross-check (LLVM ORC) ==
+  inputs [1] -> outputs [1]
+  inputs [0] -> outputs [0]

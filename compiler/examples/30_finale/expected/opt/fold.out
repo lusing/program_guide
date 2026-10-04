@@ -1,0 +1,6 @@
+; *** IR Dump After PromotePass on tip_main ***
+; *** IR Dump After SCCPPass on tip_main ***
+; *** IR Dump After SimplifyCFGPass on tip_main ***
+; *** IR Dump After PromotePass on tip_entry ***
+; *** IR Dump After SCCPPass on tip_entry ***
+; *** IR Dump After SimplifyCFGPass on tip_entry ***
