@@ -1,0 +1,16 @@
+absval(x) {
+  var r;
+  if (x > 0) {
+    r = x;
+  } else {
+    r = 0 - x;
+  }
+  return r;
+}
+
+main(x) {
+  var a;
+  a = absval(x);
+  output a;
+  return a;
+}

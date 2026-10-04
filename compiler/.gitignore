@@ -1,0 +1,7 @@
+build/
+*.exe
+*.o
+*.obj
+*.ll
+*.s
+gcm.cache/

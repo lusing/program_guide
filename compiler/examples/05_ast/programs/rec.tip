@@ -1,0 +1,6 @@
+main() {
+  var x, y;
+  x = {f: 1, g: 2};
+  y = x.f;
+  return y;
+}
