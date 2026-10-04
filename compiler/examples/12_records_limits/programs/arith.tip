@@ -1,0 +1,10 @@
+main() {
+  var x;
+  x = 3 + 4 * 2;
+  if (x > 10) output x; else output 0;
+  return add1(x);
+}
+
+add1(n) {
+  return n + 1;
+}

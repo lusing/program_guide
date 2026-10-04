@@ -1,0 +1,6 @@
+main() {
+  var p;
+  p = alloc 1;
+  output p + 1;
+  return 0;
+}

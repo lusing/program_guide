@@ -1,0 +1,55 @@
+== arith.tip ==
+solution:
+t1 -> int
+t2 -> int
+t3 -> int
+t4 -> int
+t5 -> int
+t6 -> int
+t7 -> int
+t8 -> int
+t9 -> int
+t10 -> int
+t11 -> int
+t12 -> int
+t13 -> int
+t14 -> int
+t15 -> int
+t16 -> int
+t17 -> (int) -> int
+t18 -> int
+t19 -> int
+t20 -> int
+t21 -> int
+== ptr.tip ==
+solution:
+t1 -> int
+t2 -> ptr(int)
+t3 -> ptr(ptr(int))
+t4 -> ptr(int)
+t5 -> int
+t6 -> ptr(int)
+t7 -> ptr(ptr(int))
+t8 -> ptr(ptr(int))
+t9 -> int
+t10 -> int
+t11 -> ptr(int)
+t12 -> int
+t13 -> ptr(int)
+t14 -> int
+t15 -> ptr(int)
+t16 -> ptr(ptr(int))
+== rec.tip ==
+solution:
+t1 -> int
+t2 -> {x: int, y: int}
+t3 -> {x: int, y: int}
+t4 -> int
+t5 -> int
+t6 -> {x: int, y: int}
+t7 -> int
+t8 -> {x: int, y: int}
+t9 -> int
+t10 -> int
+t11 -> {x: int, y: int}
+t12 -> int

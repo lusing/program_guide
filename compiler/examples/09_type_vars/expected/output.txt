@@ -1,0 +1,18 @@
+== ite.tip ==
+-- type structures --
+int
+ptr(int)
+(int) -> int
+{x: int}
+t1
+t2
+t3
+== outputs.tip ==
+-- type structures --
+int
+ptr(int)
+(int) -> int
+{x: int}
+t1
+t2
+t3

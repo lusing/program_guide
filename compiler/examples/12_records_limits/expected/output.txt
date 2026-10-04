@@ -1,0 +1,51 @@
+== arith.tip ==
+types:
+t5: (+ 3 (* 4 2)) : int
+t6: 3 : int
+t7: (* 4 2) : int
+t8: 4 : int
+t9: 2 : int
+t10: x : int
+t11: (> x 10) : int
+t12: x : int
+t13: 10 : int
+t14: x : int
+t15: 0 : int
+t16: (call add1 x) : int
+t17: add1 : (int) -> int
+t18: x : int
+t19: (+ n 1) : int
+t20: n : int
+t21: 1 : int
+functions:
+main : () -> int
+add1 : (int) -> int
+== ptr.tip ==
+types:
+t4: (alloc 5) : ptr(int)
+t5: 5 : int
+t6: p : ptr(int)
+t7: (& p) : ptr(ptr(int))
+t8: q : ptr(ptr(int))
+t9: 1 : int
+t10: (* p) : int
+t11: p : ptr(int)
+t12: (* p) : int
+t13: p : ptr(int)
+t14: (* (* q)) : int
+t15: (* q) : ptr(int)
+t16: q : ptr(ptr(int))
+functions:
+main : () -> int
+== rec.tip ==
+types:
+t3: {x: 1, y: 2} : {x: int, y: int}
+t4: 1 : int
+t5: 2 : int
+t6: r : {x: int, y: int}
+t7: (. r x) : int
+t8: r : {x: int, y: int}
+t10: (. r y) : int
+t11: r : {x: int, y: int}
+functions:
+main : () -> int

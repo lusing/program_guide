@@ -1,0 +1,66 @@
+== arith.tip ==
+constraints: 31
+t6 == int   ; 整数字面量
+t8 == int   ; 整数字面量
+t9 == int   ; 整数字面量
+t8 == int   ; 二元运算左操作数为 int
+t9 == int   ; 二元运算右操作数为 int
+t7 == int   ; 算术结果为 int
+t6 == int   ; 二元运算左操作数为 int
+t7 == int   ; 二元运算右操作数为 int
+t5 == int   ; 算术结果为 int
+t10 == t2   ; 变量使用
+t10 == t5   ; 赋值左右类型相同
+t12 == t2   ; 变量使用
+t13 == int   ; 整数字面量
+t12 == int   ; 二元运算左操作数为 int
+t13 == int   ; 二元运算右操作数为 int
+t11 == int   ; 比较结果为 int(0/1)
+t11 == int   ; if 条件是 int
+t14 == t2   ; 变量使用
+t14 == int   ; output 的值是 int
+t15 == int   ; 整数字面量
+t15 == int   ; output 的值是 int
+t17 == (t3) -> t4   ; 变量使用
+t18 == t2   ; 变量使用
+t17 == (t18) -> t16   ; 被调表达式须为接受这些实参、返回 τ 的函数
+t1 == t16   ; return 表达式确定返回类型
+t20 == t3   ; 变量使用
+t21 == int   ; 整数字面量
+t20 == int   ; 二元运算左操作数为 int
+t21 == int   ; 二元运算右操作数为 int
+t19 == int   ; 算术结果为 int
+t4 == t19   ; return 表达式确定返回类型
+== ptr.tip ==
+constraints: 18
+t5 == int   ; 整数字面量
+t4 == ptr(t5)   ; alloc E 的类型是 ptr(τ(E))
+t6 == t2   ; 变量使用
+t6 == t4   ; 赋值左右类型相同
+t7 == ptr(t2)   ; &Id 的类型是 ptr(声明类型)
+t8 == t3   ; 变量使用
+t8 == t7   ; 赋值左右类型相同
+t9 == int   ; 整数字面量
+t11 == t2   ; 变量使用
+t11 == ptr(t10)   ; 对 *E：τ(E)=ptr(τ)
+t10 == t9   ; 赋值左右类型相同
+t13 == t2   ; 变量使用
+t13 == ptr(t12)   ; 对 *E：τ(E)=ptr(τ)
+t12 == int   ; output 的值是 int
+t16 == t3   ; 变量使用
+t16 == ptr(t15)   ; 对 *E：τ(E)=ptr(τ)
+t15 == ptr(t14)   ; 对 *E：τ(E)=ptr(τ)
+t1 == t14   ; return 表达式确定返回类型
+== rec.tip ==
+constraints: 11
+t4 == int   ; 整数字面量
+t5 == int   ; 整数字面量
+t3 == {x: t4, y: t5}   ; 记录构造的字段逐个对应
+t6 == t2   ; 变量使用
+t6 == t3   ; 赋值左右类型相同
+t8 == t2   ; 变量使用
+t8 == {y: t9, x: t7}   ; 字段访问：记录须含 x
+t7 == int   ; output 的值是 int
+t11 == t2   ; 变量使用
+t11 == {y: t10, x: t12}   ; 字段访问：记录须含 y
+t1 == t10   ; return 表达式确定返回类型

@@ -1,0 +1,6 @@
+main() {
+  var r;
+  r = {x: 1};
+  output r.z;
+  return 0;
+}

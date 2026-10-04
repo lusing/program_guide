@@ -1,0 +1,1 @@
+type error: arity mismatch: (t2) -> t3 vs (t6, t7) -> t4
