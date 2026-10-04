@@ -34,14 +34,14 @@
 |---|---|---|---|
 | 06 | [docs/06-heapsort.md](docs/06-heapsort.md) | ch.6 | 堆、堆排序、优先队列 |
 | 07 | [docs/07-quicksort.md](docs/07-quicksort.md) | ch.7 | 快速排序与期望分析 |
-| 08 | （待交付） | ch.8 | 决策树下界、计数/基数/桶排序 |
-| 09 | （待交付） | ch.9 | 顺序统计量、中位数的中位数选择 |
+| 08 | [docs/08-linear-sorting.md](docs/08-linear-sorting.md) | ch.8 | 决策树下界、计数/基数/桶排序 |
+| 09 | [docs/09-selection.md](docs/09-selection.md) | ch.9 | 顺序统计量、中位数的中位数选择 |
 
 **第三部分 数据结构（CLRS Part III）**
 
 | 章 | 文档 | CLRS | 主题 |
 |---|---|---|---|
-| 10 | （待交付） | ch.10 | 栈/队列/链表/有根树的对象与指针表示 |
+| 10 | [docs/10-elementary-structures.md](docs/10-elementary-structures.md) | ch.10 | 栈/队列/链表/有根树的对象与指针表示 |
 | 11 | （待交付） | ch.11 | 散列表：链址、开地址、全域散列 |
 | 12 | （待交付） | ch.12 | 二叉搜索树 |
 | 13 | （待交付） | ch.13 | 红黑树 |
