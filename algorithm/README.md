@@ -26,14 +26,14 @@
 | 02 | [docs/02-getting-started.md](docs/02-getting-started.md) | ch.2 | 插入排序、循环不变式、算法分析、归并排序 |
 | 03 | [docs/03-growth-of-functions.md](docs/03-growth-of-functions.md) | ch.3 | 渐近记号 O/Ω/Θ/o/ω、常用函数 |
 | 04 | [docs/04-divide-and-conquer.md](docs/04-divide-and-conquer.md) | ch.4 | 分治、最大子数组、Strassen、主定理 |
-| 05 | （待交付） | ch.5 | 概率分析、指示器随机变量、随机化算法 |
+| 05 | [docs/05-probabilistic.md](docs/05-probabilistic.md) | ch.5 | 概率分析、指示器随机变量、随机化算法 |
 
 **第二部分 排序与顺序统计量（CLRS Part II）**
 
 | 章 | 文档 | CLRS | 主题 |
 |---|---|---|---|
-| 06 | （待交付） | ch.6 | 堆、堆排序、优先队列 |
-| 07 | （待交付） | ch.7 | 快速排序与期望分析 |
+| 06 | [docs/06-heapsort.md](docs/06-heapsort.md) | ch.6 | 堆、堆排序、优先队列 |
+| 07 | [docs/07-quicksort.md](docs/07-quicksort.md) | ch.7 | 快速排序与期望分析 |
 | 08 | （待交付） | ch.8 | 决策树下界、计数/基数/桶排序 |
 | 09 | （待交付） | ch.9 | 顺序统计量、中位数的中位数选择 |
 
