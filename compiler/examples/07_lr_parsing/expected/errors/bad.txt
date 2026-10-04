@@ -1,0 +1,96 @@
+== tokens ==
+INT('1') PLUS('+') STAR('*') INT('2') $
+== grammar: 左递归表达式文法（绿龙 6.1 的 TIP 化身）==
+  [1] expr -> expr PLUS term
+  [2] expr -> term
+  [3] term -> term STAR factor
+  [4] term -> factor
+  [5] factor -> INT
+  [6] factor -> IDENT
+  [7] factor -> INPUT
+  [8] factor -> LPAREN expr RPAREN
+== canonical LR(0) collection ==
+  I0:
+    expr' -> · expr
+    expr -> · expr PLUS term
+    expr -> · term
+    term -> · term STAR factor
+    term -> · factor
+    factor -> · INT
+    factor -> · IDENT
+    factor -> · INPUT
+    factor -> · LPAREN expr RPAREN
+  I1:
+    factor -> INT ·
+  I2:
+    factor -> IDENT ·
+  I3:
+    factor -> INPUT ·
+  I4:
+    expr -> · expr PLUS term
+    expr -> · term
+    term -> · term STAR factor
+    term -> · factor
+    factor -> · INT
+    factor -> · IDENT
+    factor -> · INPUT
+    factor -> · LPAREN expr RPAREN
+    factor -> LPAREN · expr RPAREN
+  I5:
+    expr' -> expr ·
+    expr -> expr · PLUS term
+  I6:
+    expr -> term ·
+    term -> term · STAR factor
+  I7:
+    term -> factor ·
+  I8:
+    expr -> expr · PLUS term
+    factor -> LPAREN expr · RPAREN
+  I9:
+    expr -> expr PLUS · term
+    term -> · term STAR factor
+    term -> · factor
+    factor -> · INT
+    factor -> · IDENT
+    factor -> · INPUT
+    factor -> · LPAREN expr RPAREN
+  I10:
+    term -> term STAR · factor
+    factor -> · INT
+    factor -> · IDENT
+    factor -> · INPUT
+    factor -> · LPAREN expr RPAREN
+  I11:
+    factor -> LPAREN expr RPAREN ·
+  I12:
+    expr -> expr PLUS term ·
+    term -> term · STAR factor
+  I13:
+    term -> term STAR factor ·
+== SLR table ==
+  state	INT	IDENT	INPUT	LPAREN	RPAREN	PLUS	STAR	$	expr	term	factor
+  0	s1	s2	s3	s4	.	.	.	.	5	6	7
+  1	.	.	.	.	r5	r5	r5	r5	.	.	.
+  2	.	.	.	.	r6	r6	r6	r6	.	.	.
+  3	.	.	.	.	r7	r7	r7	r7	.	.	.
+  4	s1	s2	s3	s4	.	.	.	.	8	6	7
+  5	.	.	.	.	.	s9	.	acc	.	.	.
+  6	.	.	.	.	r2	r2	s10	r2	.	.	.
+  7	.	.	.	.	r4	r4	r4	r4	.	.	.
+  8	.	.	.	.	s11	s9	.	.	.	.	.
+  9	s1	s2	s3	s4	.	.	.	.	.	12	7
+  10	s1	s2	s3	s4	.	.	.	.	.	.	13
+  11	.	.	.	.	r8	r8	r8	r8	.	.	.
+  12	.	.	.	.	r1	r1	s10	r1	.	.	.
+  13	.	.	.	.	r3	r3	r3	r3	.	.	.
+== conflicts ==
+  none
+== moves ==
+(1) 0 | INT PLUS STAR INT $ | shift 1
+(2) 0 INT 1 | PLUS STAR INT $ | reduce factor -> INT
+(3) 0 factor 7 | PLUS STAR INT $ | reduce term -> factor
+(4) 0 term 6 | PLUS STAR INT $ | reduce expr -> term
+(5) 0 expr 5 | PLUS STAR INT $ | shift 9
+(6) 0 expr 5 PLUS 9 | STAR INT $ | error
+syntax error: 状态 9 遇到 STAR 无动作

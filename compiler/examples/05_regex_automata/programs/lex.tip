@@ -1,0 +1,4 @@
+if (x <= 42) { y = x*2 + 1; } else { while (y >= 0) y = y - 1; }
+record point { px, pz }
+alloc point
+output px + input() * pz,

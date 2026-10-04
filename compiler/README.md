@@ -15,9 +15,9 @@
 
 - [03 TIP 导览](docs/03-tip-tour.md) —— 教学语言的全貌：整数、函数、闭包、指针、记录（`examples/03_tip_tour`）
 - [04 ANTLR 文法](docs/04-antlr-grammar.md) —— 从产生式到词法/语法分析器；文法是分析器的第一份合同（`examples/04_antlr_grammar`）
-- 05 正则与自动机（扩充中）—— 正则式、NFA/DFA、Thompson 构造、子集构造、DFA 最小化
-- 06 LL 分析（扩充中）—— FIRST/FOLLOW、LL(1) 表、预测分析、左递归消除
-- 07 LR 分析（扩充中）—— 项集、SLR 表、冲突、悬挂 else、LALR 概览
+- [05 正则与自动机](docs/05-regex-automata.md) —— Thompson 构造、子集构造、最小化；多模式 scanner 与最长匹配（`examples/05_regex_automata`）
+- [06 LL 分析](docs/06-ll-parsing.md) —— FIRST/FOLLOW、LL(1) 表与预测分析器、左递归消除、悬挂 else 冲突（`examples/06_ll_parsing`）
+- [07 LR 分析](docs/07-lr-parsing.md) —— LR(0) 项集、SLR 造表、移进-归约、冲突与 prefer-shift（`examples/07_lr_parsing`）
 - [08 AST](docs/08-ast.md) —— 访问者模式把语法树变成类型安全的内存（`examples/08_ast`）
 - 09 语法制导翻译（扩充中）—— 综合/继承属性、依赖图、S-/L-属性、翻译方案
 - [10 作用域](docs/10-scopes.md) —— 名字解析与绑定；每个变量属于谁（`examples/10_scopes`）
@@ -86,6 +86,6 @@
 
 ## 验证状态
 
-现有 30/30 示例三层对账全绿（`build → check_example → check_docs`）；18 个新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
+现有 33/48 章三层对账全绿（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
 
 每章 = `docs/NN-<slug>.md` + `examples/NN_<slug>/`（章号=示例号）。LLVM 示例的运行需要 MSYS2 UCRT64 工具链在 PATH（`run-all.sh` 自动处理；`tools/example_build.sh <examples/NN_slug> "$(pwd)"` 单独构建一个示例）。

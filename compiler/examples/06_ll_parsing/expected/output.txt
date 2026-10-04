@@ -1,0 +1,104 @@
+== add.tip ==
+== tokens ==
+IDENT('x') PLUS('+') INT('21') STAR('*') IDENT('y') $
+== grammar: 表达式文法（绿龙 5.9 的 TIP 化身）==
+  [1] expr -> term expr'
+  [2] expr' -> PLUS term expr'
+  [3] expr' -> ε
+  [4] term -> factor term'
+  [5] term' -> STAR factor term'
+  [6] term' -> ε
+  [7] factor -> INT
+  [8] factor -> IDENT
+  [9] factor -> INPUT
+  [10] factor -> LPAREN expr RPAREN
+== FIRST ==
+  expr: {IDENT, INPUT, INT, LPAREN}
+  expr': {PLUS, ε}
+  term: {IDENT, INPUT, INT, LPAREN}
+  term': {STAR, ε}
+  factor: {IDENT, INPUT, INT, LPAREN}
+== FOLLOW ==
+  expr: {$, RPAREN}
+  expr': {$, RPAREN}
+  term: {$, PLUS, RPAREN}
+  term': {$, PLUS, RPAREN}
+  factor: {$, PLUS, RPAREN, STAR}
+== table ==
+  	INT	IDENT	INPUT	LPAREN	RPAREN	PLUS	STAR	$
+  expr	1	1	1	1	.	.	.	.
+  expr'	.	.	.	.	3	2	.	3
+  term	4	4	4	4	.	.	.	.
+  term'	.	.	.	.	6	6	5	6
+  factor	7	8	9	10	.	.	.	.
+== conflicts ==
+  none
+== parse ==
+  leftmost derivation: 1 4 8 6 2 4 7 5 8 6 3
+  result: accept
+== grammar: 悬挂 else 文法（绿龙 5.11 的 TIP 化身）==
+  [1] stmt -> IF LPAREN IDENT RPAREN stmt stmt'
+  [2] stmt -> IDENT
+  [3] stmt' -> ELSE stmt
+  [4] stmt' -> ε
+== table ==
+  	IF	LPAREN	IDENT	RPAREN	ELSE	$
+  stmt	1	.	2	.	.	.
+  stmt'	.	.	.	.	3	4
+== conflicts ==
+  M[stmt', ELSE]: 候选 {3, 4} -> 取 [3]（最近 else 策略）
+== parse: if (a) if (b) c else d ==
+  leftmost derivation: 1 1 2 3 2 4
+  result: accept（else 归属最内层 then）
+== paren.tip ==
+== tokens ==
+LPAREN('(') IDENT('a') PLUS('+') IDENT('b') RPAREN(')') STAR('*') LPAREN('(') IDENT('c') PLUS('+') INPUT('input') RPAREN(')') $
+== grammar: 表达式文法（绿龙 5.9 的 TIP 化身）==
+  [1] expr -> term expr'
+  [2] expr' -> PLUS term expr'
+  [3] expr' -> ε
+  [4] term -> factor term'
+  [5] term' -> STAR factor term'
+  [6] term' -> ε
+  [7] factor -> INT
+  [8] factor -> IDENT
+  [9] factor -> INPUT
+  [10] factor -> LPAREN expr RPAREN
+== FIRST ==
+  expr: {IDENT, INPUT, INT, LPAREN}
+  expr': {PLUS, ε}
+  term: {IDENT, INPUT, INT, LPAREN}
+  term': {STAR, ε}
+  factor: {IDENT, INPUT, INT, LPAREN}
+== FOLLOW ==
+  expr: {$, RPAREN}
+  expr': {$, RPAREN}
+  term: {$, PLUS, RPAREN}
+  term': {$, PLUS, RPAREN}
+  factor: {$, PLUS, RPAREN, STAR}
+== table ==
+  	INT	IDENT	INPUT	LPAREN	RPAREN	PLUS	STAR	$
+  expr	1	1	1	1	.	.	.	.
+  expr'	.	.	.	.	3	2	.	3
+  term	4	4	4	4	.	.	.	.
+  term'	.	.	.	.	6	6	5	6
+  factor	7	8	9	10	.	.	.	.
+== conflicts ==
+  none
+== parse ==
+  leftmost derivation: 1 4 10 1 4 8 6 2 4 8 6 3 5 10 1 4 8 6 2 4 9 6 3 6 3
+  result: accept
+== grammar: 悬挂 else 文法（绿龙 5.11 的 TIP 化身）==
+  [1] stmt -> IF LPAREN IDENT RPAREN stmt stmt'
+  [2] stmt -> IDENT
+  [3] stmt' -> ELSE stmt
+  [4] stmt' -> ε
+== table ==
+  	IF	LPAREN	IDENT	RPAREN	ELSE	$
+  stmt	1	.	2	.	.	.
+  stmt'	.	.	.	.	3	4
+== conflicts ==
+  M[stmt', ELSE]: 候选 {3, 4} -> 取 [3]（最近 else 策略）
+== parse: if (a) if (b) c else d ==
+  leftmost derivation: 1 1 2 3 2 4
+  result: accept（else 归属最内层 then）

@@ -1,0 +1,293 @@
+== add.tip ==
+== tokens ==
+IDENT('x') PLUS('+') INT('21') STAR('*') IDENT('y') $
+== grammar: 左递归表达式文法（绿龙 6.1 的 TIP 化身）==
+  [1] expr -> expr PLUS term
+  [2] expr -> term
+  [3] term -> term STAR factor
+  [4] term -> factor
+  [5] factor -> INT
+  [6] factor -> IDENT
+  [7] factor -> INPUT
+  [8] factor -> LPAREN expr RPAREN
+== canonical LR(0) collection ==
+  I0:
+    expr' -> · expr
+    expr -> · expr PLUS term
+    expr -> · term
+    term -> · term STAR factor
+    term -> · factor
+    factor -> · INT
+    factor -> · IDENT
+    factor -> · INPUT
+    factor -> · LPAREN expr RPAREN
+  I1:
+    factor -> INT ·
+  I2:
+    factor -> IDENT ·
+  I3:
+    factor -> INPUT ·
+  I4:
+    expr -> · expr PLUS term
+    expr -> · term
+    term -> · term STAR factor
+    term -> · factor
+    factor -> · INT
+    factor -> · IDENT
+    factor -> · INPUT
+    factor -> · LPAREN expr RPAREN
+    factor -> LPAREN · expr RPAREN
+  I5:
+    expr' -> expr ·
+    expr -> expr · PLUS term
+  I6:
+    expr -> term ·
+    term -> term · STAR factor
+  I7:
+    term -> factor ·
+  I8:
+    expr -> expr · PLUS term
+    factor -> LPAREN expr · RPAREN
+  I9:
+    expr -> expr PLUS · term
+    term -> · term STAR factor
+    term -> · factor
+    factor -> · INT
+    factor -> · IDENT
+    factor -> · INPUT
+    factor -> · LPAREN expr RPAREN
+  I10:
+    term -> term STAR · factor
+    factor -> · INT
+    factor -> · IDENT
+    factor -> · INPUT
+    factor -> · LPAREN expr RPAREN
+  I11:
+    factor -> LPAREN expr RPAREN ·
+  I12:
+    expr -> expr PLUS term ·
+    term -> term · STAR factor
+  I13:
+    term -> term STAR factor ·
+== SLR table ==
+  state	INT	IDENT	INPUT	LPAREN	RPAREN	PLUS	STAR	$	expr	term	factor
+  0	s1	s2	s3	s4	.	.	.	.	5	6	7
+  1	.	.	.	.	r5	r5	r5	r5	.	.	.
+  2	.	.	.	.	r6	r6	r6	r6	.	.	.
+  3	.	.	.	.	r7	r7	r7	r7	.	.	.
+  4	s1	s2	s3	s4	.	.	.	.	8	6	7
+  5	.	.	.	.	.	s9	.	acc	.	.	.
+  6	.	.	.	.	r2	r2	s10	r2	.	.	.
+  7	.	.	.	.	r4	r4	r4	r4	.	.	.
+  8	.	.	.	.	s11	s9	.	.	.	.	.
+  9	s1	s2	s3	s4	.	.	.	.	.	12	7
+  10	s1	s2	s3	s4	.	.	.	.	.	.	13
+  11	.	.	.	.	r8	r8	r8	r8	.	.	.
+  12	.	.	.	.	r1	r1	s10	r1	.	.	.
+  13	.	.	.	.	r3	r3	r3	r3	.	.	.
+== conflicts ==
+  none
+== moves ==
+(1) 0 | IDENT PLUS INT STAR IDENT $ | shift 2
+(2) 0 IDENT 2 | PLUS INT STAR IDENT $ | reduce factor -> IDENT
+(3) 0 factor 7 | PLUS INT STAR IDENT $ | reduce term -> factor
+(4) 0 term 6 | PLUS INT STAR IDENT $ | reduce expr -> term
+(5) 0 expr 5 | PLUS INT STAR IDENT $ | shift 9
+(6) 0 expr 5 PLUS 9 | INT STAR IDENT $ | shift 1
+(7) 0 expr 5 PLUS 9 INT 1 | STAR IDENT $ | reduce factor -> INT
+(8) 0 expr 5 PLUS 9 factor 7 | STAR IDENT $ | reduce term -> factor
+(9) 0 expr 5 PLUS 9 term 12 | STAR IDENT $ | shift 10
+(10) 0 expr 5 PLUS 9 term 12 STAR 10 | IDENT $ | shift 2
+(11) 0 expr 5 PLUS 9 term 12 STAR 10 IDENT 2 | $ | reduce factor -> IDENT
+(12) 0 expr 5 PLUS 9 term 12 STAR 10 factor 13 | $ | reduce term -> term STAR factor
+(13) 0 expr 5 PLUS 9 term 12 | $ | reduce expr -> expr PLUS term
+(14) 0 expr 5 | $ | accept
+== grammar: 悬挂 else 文法 ==
+  [1] stmt -> IF LPAREN IDENT RPAREN stmt
+  [2] stmt -> IF LPAREN IDENT RPAREN stmt ELSE stmt
+  [3] stmt -> IDENT
+== SLR table ==
+  state	IF	LPAREN	IDENT	RPAREN	ELSE	$	stmt
+  0	s1	.	s2	.	.	.	3
+  1	.	s4	.	.	.	.	.
+  2	.	.	.	.	r3	r3	.
+  3	.	.	.	.	.	acc	.
+  4	.	.	s5	.	.	.	.
+  5	.	.	.	s6	.	.	.
+  6	s1	.	s2	.	.	.	7
+  7	.	.	.	.	s8	r1	.
+  8	s1	.	s2	.	.	.	9
+  9	.	.	.	.	r2	r2	.
+== conflicts ==
+  action[7, ELSE]: shift-reduce（移进 8 vs 归约 [1]）-> prefer-shift（最近 else）
+== moves: if (a) if (b) c else d ==
+(1) 0 | IF LPAREN IDENT RPAREN IF LPAREN IDENT RPAREN IDENT ELSE IDENT $ | shift 1
+(2) 0 IF 1 | LPAREN IDENT RPAREN IF LPAREN IDENT RPAREN IDENT ELSE IDENT $ | shift 4
+(3) 0 IF 1 LPAREN 4 | IDENT RPAREN IF LPAREN IDENT RPAREN IDENT ELSE IDENT $ | shift 5
+(4) 0 IF 1 LPAREN 4 IDENT 5 | RPAREN IF LPAREN IDENT RPAREN IDENT ELSE IDENT $ | shift 6
+(5) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 | IF LPAREN IDENT RPAREN IDENT ELSE IDENT $ | shift 1
+(6) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 | LPAREN IDENT RPAREN IDENT ELSE IDENT $ | shift 4
+(7) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 LPAREN 4 | IDENT RPAREN IDENT ELSE IDENT $ | shift 5
+(8) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 LPAREN 4 IDENT 5 | RPAREN IDENT ELSE IDENT $ | shift 6
+(9) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 LPAREN 4 IDENT 5 RPAREN 6 | IDENT ELSE IDENT $ | shift 2
+(10) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IDENT 2 | ELSE IDENT $ | reduce stmt -> IDENT
+(11) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 LPAREN 4 IDENT 5 RPAREN 6 stmt 7 | ELSE IDENT $ | shift 8
+(12) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 LPAREN 4 IDENT 5 RPAREN 6 stmt 7 ELSE 8 | IDENT $ | shift 2
+(13) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 LPAREN 4 IDENT 5 RPAREN 6 stmt 7 ELSE 8 IDENT 2 | $ | reduce stmt -> IDENT
+(14) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 LPAREN 4 IDENT 5 RPAREN 6 stmt 7 ELSE 8 stmt 9 | $ | reduce stmt -> IF LPAREN IDENT RPAREN stmt ELSE stmt
+(15) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 stmt 7 | $ | reduce stmt -> IF LPAREN IDENT RPAREN stmt
+(16) 0 stmt 3 | $ | accept
+== paren.tip ==
+== tokens ==
+LPAREN('(') IDENT('a') PLUS('+') IDENT('b') RPAREN(')') STAR('*') LPAREN('(') IDENT('c') PLUS('+') INPUT('input') RPAREN(')') $
+== grammar: 左递归表达式文法（绿龙 6.1 的 TIP 化身）==
+  [1] expr -> expr PLUS term
+  [2] expr -> term
+  [3] term -> term STAR factor
+  [4] term -> factor
+  [5] factor -> INT
+  [6] factor -> IDENT
+  [7] factor -> INPUT
+  [8] factor -> LPAREN expr RPAREN
+== canonical LR(0) collection ==
+  I0:
+    expr' -> · expr
+    expr -> · expr PLUS term
+    expr -> · term
+    term -> · term STAR factor
+    term -> · factor
+    factor -> · INT
+    factor -> · IDENT
+    factor -> · INPUT
+    factor -> · LPAREN expr RPAREN
+  I1:
+    factor -> INT ·
+  I2:
+    factor -> IDENT ·
+  I3:
+    factor -> INPUT ·
+  I4:
+    expr -> · expr PLUS term
+    expr -> · term
+    term -> · term STAR factor
+    term -> · factor
+    factor -> · INT
+    factor -> · IDENT
+    factor -> · INPUT
+    factor -> · LPAREN expr RPAREN
+    factor -> LPAREN · expr RPAREN
+  I5:
+    expr' -> expr ·
+    expr -> expr · PLUS term
+  I6:
+    expr -> term ·
+    term -> term · STAR factor
+  I7:
+    term -> factor ·
+  I8:
+    expr -> expr · PLUS term
+    factor -> LPAREN expr · RPAREN
+  I9:
+    expr -> expr PLUS · term
+    term -> · term STAR factor
+    term -> · factor
+    factor -> · INT
+    factor -> · IDENT
+    factor -> · INPUT
+    factor -> · LPAREN expr RPAREN
+  I10:
+    term -> term STAR · factor
+    factor -> · INT
+    factor -> · IDENT
+    factor -> · INPUT
+    factor -> · LPAREN expr RPAREN
+  I11:
+    factor -> LPAREN expr RPAREN ·
+  I12:
+    expr -> expr PLUS term ·
+    term -> term · STAR factor
+  I13:
+    term -> term STAR factor ·
+== SLR table ==
+  state	INT	IDENT	INPUT	LPAREN	RPAREN	PLUS	STAR	$	expr	term	factor
+  0	s1	s2	s3	s4	.	.	.	.	5	6	7
+  1	.	.	.	.	r5	r5	r5	r5	.	.	.
+  2	.	.	.	.	r6	r6	r6	r6	.	.	.
+  3	.	.	.	.	r7	r7	r7	r7	.	.	.
+  4	s1	s2	s3	s4	.	.	.	.	8	6	7
+  5	.	.	.	.	.	s9	.	acc	.	.	.
+  6	.	.	.	.	r2	r2	s10	r2	.	.	.
+  7	.	.	.	.	r4	r4	r4	r4	.	.	.
+  8	.	.	.	.	s11	s9	.	.	.	.	.
+  9	s1	s2	s3	s4	.	.	.	.	.	12	7
+  10	s1	s2	s3	s4	.	.	.	.	.	.	13
+  11	.	.	.	.	r8	r8	r8	r8	.	.	.
+  12	.	.	.	.	r1	r1	s10	r1	.	.	.
+  13	.	.	.	.	r3	r3	r3	r3	.	.	.
+== conflicts ==
+  none
+== moves ==
+(1) 0 | LPAREN IDENT PLUS IDENT RPAREN STAR LPAREN IDENT PLUS INPUT RPAREN $ | shift 4
+(2) 0 LPAREN 4 | IDENT PLUS IDENT RPAREN STAR LPAREN IDENT PLUS INPUT RPAREN $ | shift 2
+(3) 0 LPAREN 4 IDENT 2 | PLUS IDENT RPAREN STAR LPAREN IDENT PLUS INPUT RPAREN $ | reduce factor -> IDENT
+(4) 0 LPAREN 4 factor 7 | PLUS IDENT RPAREN STAR LPAREN IDENT PLUS INPUT RPAREN $ | reduce term -> factor
+(5) 0 LPAREN 4 term 6 | PLUS IDENT RPAREN STAR LPAREN IDENT PLUS INPUT RPAREN $ | reduce expr -> term
+(6) 0 LPAREN 4 expr 8 | PLUS IDENT RPAREN STAR LPAREN IDENT PLUS INPUT RPAREN $ | shift 9
+(7) 0 LPAREN 4 expr 8 PLUS 9 | IDENT RPAREN STAR LPAREN IDENT PLUS INPUT RPAREN $ | shift 2
+(8) 0 LPAREN 4 expr 8 PLUS 9 IDENT 2 | RPAREN STAR LPAREN IDENT PLUS INPUT RPAREN $ | reduce factor -> IDENT
+(9) 0 LPAREN 4 expr 8 PLUS 9 factor 7 | RPAREN STAR LPAREN IDENT PLUS INPUT RPAREN $ | reduce term -> factor
+(10) 0 LPAREN 4 expr 8 PLUS 9 term 12 | RPAREN STAR LPAREN IDENT PLUS INPUT RPAREN $ | reduce expr -> expr PLUS term
+(11) 0 LPAREN 4 expr 8 | RPAREN STAR LPAREN IDENT PLUS INPUT RPAREN $ | shift 11
+(12) 0 LPAREN 4 expr 8 RPAREN 11 | STAR LPAREN IDENT PLUS INPUT RPAREN $ | reduce factor -> LPAREN expr RPAREN
+(13) 0 factor 7 | STAR LPAREN IDENT PLUS INPUT RPAREN $ | reduce term -> factor
+(14) 0 term 6 | STAR LPAREN IDENT PLUS INPUT RPAREN $ | shift 10
+(15) 0 term 6 STAR 10 | LPAREN IDENT PLUS INPUT RPAREN $ | shift 4
+(16) 0 term 6 STAR 10 LPAREN 4 | IDENT PLUS INPUT RPAREN $ | shift 2
+(17) 0 term 6 STAR 10 LPAREN 4 IDENT 2 | PLUS INPUT RPAREN $ | reduce factor -> IDENT
+(18) 0 term 6 STAR 10 LPAREN 4 factor 7 | PLUS INPUT RPAREN $ | reduce term -> factor
+(19) 0 term 6 STAR 10 LPAREN 4 term 6 | PLUS INPUT RPAREN $ | reduce expr -> term
+(20) 0 term 6 STAR 10 LPAREN 4 expr 8 | PLUS INPUT RPAREN $ | shift 9
+(21) 0 term 6 STAR 10 LPAREN 4 expr 8 PLUS 9 | INPUT RPAREN $ | shift 3
+(22) 0 term 6 STAR 10 LPAREN 4 expr 8 PLUS 9 INPUT 3 | RPAREN $ | reduce factor -> INPUT
+(23) 0 term 6 STAR 10 LPAREN 4 expr 8 PLUS 9 factor 7 | RPAREN $ | reduce term -> factor
+(24) 0 term 6 STAR 10 LPAREN 4 expr 8 PLUS 9 term 12 | RPAREN $ | reduce expr -> expr PLUS term
+(25) 0 term 6 STAR 10 LPAREN 4 expr 8 | RPAREN $ | shift 11
+(26) 0 term 6 STAR 10 LPAREN 4 expr 8 RPAREN 11 | $ | reduce factor -> LPAREN expr RPAREN
+(27) 0 term 6 STAR 10 factor 13 | $ | reduce term -> term STAR factor
+(28) 0 term 6 | $ | reduce expr -> term
+(29) 0 expr 5 | $ | accept
+== grammar: 悬挂 else 文法 ==
+  [1] stmt -> IF LPAREN IDENT RPAREN stmt
+  [2] stmt -> IF LPAREN IDENT RPAREN stmt ELSE stmt
+  [3] stmt -> IDENT
+== SLR table ==
+  state	IF	LPAREN	IDENT	RPAREN	ELSE	$	stmt
+  0	s1	.	s2	.	.	.	3
+  1	.	s4	.	.	.	.	.
+  2	.	.	.	.	r3	r3	.
+  3	.	.	.	.	.	acc	.
+  4	.	.	s5	.	.	.	.
+  5	.	.	.	s6	.	.	.
+  6	s1	.	s2	.	.	.	7
+  7	.	.	.	.	s8	r1	.
+  8	s1	.	s2	.	.	.	9
+  9	.	.	.	.	r2	r2	.
+== conflicts ==
+  action[7, ELSE]: shift-reduce（移进 8 vs 归约 [1]）-> prefer-shift（最近 else）
+== moves: if (a) if (b) c else d ==
+(1) 0 | IF LPAREN IDENT RPAREN IF LPAREN IDENT RPAREN IDENT ELSE IDENT $ | shift 1
+(2) 0 IF 1 | LPAREN IDENT RPAREN IF LPAREN IDENT RPAREN IDENT ELSE IDENT $ | shift 4
+(3) 0 IF 1 LPAREN 4 | IDENT RPAREN IF LPAREN IDENT RPAREN IDENT ELSE IDENT $ | shift 5
+(4) 0 IF 1 LPAREN 4 IDENT 5 | RPAREN IF LPAREN IDENT RPAREN IDENT ELSE IDENT $ | shift 6
+(5) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 | IF LPAREN IDENT RPAREN IDENT ELSE IDENT $ | shift 1
+(6) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 | LPAREN IDENT RPAREN IDENT ELSE IDENT $ | shift 4
+(7) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 LPAREN 4 | IDENT RPAREN IDENT ELSE IDENT $ | shift 5
+(8) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 LPAREN 4 IDENT 5 | RPAREN IDENT ELSE IDENT $ | shift 6
+(9) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 LPAREN 4 IDENT 5 RPAREN 6 | IDENT ELSE IDENT $ | shift 2
+(10) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IDENT 2 | ELSE IDENT $ | reduce stmt -> IDENT
+(11) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 LPAREN 4 IDENT 5 RPAREN 6 stmt 7 | ELSE IDENT $ | shift 8
+(12) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 LPAREN 4 IDENT 5 RPAREN 6 stmt 7 ELSE 8 | IDENT $ | shift 2
+(13) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 LPAREN 4 IDENT 5 RPAREN 6 stmt 7 ELSE 8 IDENT 2 | $ | reduce stmt -> IDENT
+(14) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 IF 1 LPAREN 4 IDENT 5 RPAREN 6 stmt 7 ELSE 8 stmt 9 | $ | reduce stmt -> IF LPAREN IDENT RPAREN stmt ELSE stmt
+(15) 0 IF 1 LPAREN 4 IDENT 5 RPAREN 6 stmt 7 | $ | reduce stmt -> IF LPAREN IDENT RPAREN stmt
+(16) 0 stmt 3 | $ | accept
