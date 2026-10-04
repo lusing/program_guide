@@ -87,13 +87,13 @@
 | 33 | [docs/33-string-matching.md](docs/33-string-matching.md) | ch.32 | 字符串匹配：Rabin-Karp/KMP |
 | 34 | [docs/34-geometry.md](docs/34-geometry.md) | ch.33 | 计算几何：凸包、最近点对 |
 | 35 | [docs/35-np-completeness.md](docs/35-np-completeness.md) | ch.34 | NP 完全性 |
-| 36 | （待交付） | ch.35 | 近似算法 |
+| 36 | [docs/36-approximation.md](docs/36-approximation.md) | ch.35 | 近似算法 |
 
 **收束**
 
 | 章 | 文档 | CLRS | 主题 |
 |---|---|---|---|
-| 37 | （待交付） | 附录 A–D | 数学背景速览、全书收束 |
+| 37 | [docs/37-math-background.md](docs/37-math-background.md) | 附录 A–D | 数学背景速览、全书收束 |
 
 ## 快速开始
 
@@ -113,8 +113,9 @@ pwsh ./build.ps1 -Docs           # 只跑文档五关
   （x86_64-pc-windows-msvc，共享 MSVC STL、独立前端，交叉核对通道）；scoop MinGW
   g++ 15.2（独立 libstdc++，机会型通道——其 `<print>` 链接缺终端符号，探针会自动
   降级到 `-DALGO_NO_PRINT` 垫片，见 build.ps1 两级探针）。
-- 交付进度：**批次一（工程骨架）+ 批次二（01–04 章：角色与工具链 / 插入归并
-  排序与循环不变式 / 渐近记号 / 分治与主定理）已全绿，共 4 示例 × 3 通道。**
+- 交付进度：**全部 37 章已交付（15 个批次）。37 示例 × 3 通道 = 111 个
+  验证单元全绿；文档五关（含 --expect 37 终验）全过；CHEATSheet 收录
+  68 条实测坑位 + 37 章复杂度总表。**
 
 ## 写作约定
 
