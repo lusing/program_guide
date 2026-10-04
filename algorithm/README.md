@@ -73,13 +73,13 @@
 | 24 | [docs/24-mst.md](docs/24-mst.md) | ch.23 | 最小生成树：Kruskal/Prim |
 | 25 | [docs/25-sssp.md](docs/25-sssp.md) | ch.24 | 单源最短路：Bellman-Ford/Dijkstra |
 | 26 | [docs/26-apsp.md](docs/26-apsp.md) | ch.25 | 全源最短路：Floyd-Warshall/Johnson |
-| 27 | （待交付） | ch.26 | 最大流：Ford-Fulkerson/推送-重贴标签 |
+| 27 | [docs/27-max-flow.md](docs/27-max-flow.md) | ch.26 | 最大流：Ford-Fulkerson/推送-重贴标签 |
 
 **第七部分 专题选讲（CLRS Part VII）**
 
 | 章 | 文档 | CLRS | 主题 |
 |---|---|---|---|
-| 28 | （待交付） | ch.27 | 多线程算法 → C++23 jthread/async 适配 |
+| 28 | [docs/28-parallel.md](docs/28-parallel.md) | ch.27 | 多线程算法 → C++23 jthread/async 适配 |
 | 29 | （待交付） | ch.28 | 矩阵运算：LUP 分解、求逆 |
 | 30 | （待交付） | ch.29 | 线性规划与单纯形法 |
 | 31 | （待交付） | ch.30 | 多项式与 FFT |
