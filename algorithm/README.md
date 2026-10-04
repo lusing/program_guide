@@ -45,13 +45,13 @@
 | 11 | [docs/11-hashing.md](docs/11-hashing.md) | ch.11 | 散列表：链址、开地址、全域散列 |
 | 12 | [docs/12-bst.md](docs/12-bst.md) | ch.12 | 二叉搜索树 |
 | 13 | [docs/13-rb-tree.md](docs/13-rb-tree.md) | ch.13 | 红黑树 |
-| 14 | （待交付） | ch.14 | 数据结构扩张：顺序统计树、区间树 |
+| 14 | [docs/14-augmentation.md](docs/14-augmentation.md) | ch.14 | 数据结构扩张：顺序统计树、区间树 |
 
 **第四部分 高级设计与分析技术（CLRS Part IV）**
 
 | 章 | 文档 | CLRS | 主题 |
 |---|---|---|---|
-| 15 | （待交付） | ch.15.1–15.3 | 动态规划（上）：钢条切割、矩阵链、方法论 |
+| 15 | [docs/15-dp-foundations.md](docs/15-dp-foundations.md) | ch.15.1–15.3 | 动态规划（上）：钢条切割、矩阵链、方法论 |
 | 16 | （待交付） | ch.15.4–15.5 | 动态规划（下）：LCS、最优 BST |
 | 17 | （待交付） | ch.16 | 贪心算法、Huffman、拟阵 |
 | 18 | （待交付） | ch.17 | 摊还分析：聚合/记账/势能三法 |
