@@ -1,0 +1,10 @@
+== sign1.tip ==
+sign analysis equations (monotone; solved in chapter 16):
+-- main --
+v1 = entry boundary (params = ⊤)
+v2 = join(v1,v4)
+v3 = v2[y := 1]
+v4 = v3[x := (+ y 1)]
+v5 = v2
+v6 = v5
+v7 = v6

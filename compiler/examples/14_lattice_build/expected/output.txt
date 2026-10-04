@@ -1,0 +1,7 @@
+== sign1.tip ==
+lattice constructors over the sign domain (fixed join examples):
+lift(sign): join(⊥,+) = +
+lift(sign): join(0,−) = ⊤
+product(sign,sign): join((0,+),(+,−)) = (⊤,⊤)
+maps{x,y}->sign: join({x=0,y=⊥},{x=+,y=+}) = {x=⊤,y=+}
+powerset: join({a},{b}) = {a,b}

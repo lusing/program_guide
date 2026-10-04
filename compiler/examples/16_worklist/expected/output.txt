@@ -1,0 +1,10 @@
+== sign1.tip ==
+worklist fixpoint sign analysis (least fixpoint):
+-- main --
+  1 entry: x=⊥ y=⊥
+  2 branch  while (> input 0): x=+ y=+
+  3 assign  y = 1 ;: x=+ y=+
+  4 assign  x = (+ y 1) ;: x=+ y=+
+  5 output  output x ;: x=+ y=+
+  6 return  return 0 ;: x=+ y=+
+  7 exit: x=+ y=+
