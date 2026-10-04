@@ -1,0 +1,10 @@
+main() {
+  var a, b, x, y, z;
+  a = input;
+  b = input;
+  if (a > b) x = a * b; else x = 0;
+  y = a * b;
+  z = a * b + 1;
+  output x + y + z;
+  return 0;
+}

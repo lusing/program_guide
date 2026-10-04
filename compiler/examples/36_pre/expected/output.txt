@@ -1,0 +1,96 @@
+== partial.tip ==
+== TAC ==
+  0: t1 = input
+  1: a = t1
+  2: t2 = input
+  3: b = t2
+  4: if a > b goto L6
+  5: goto L9
+  6: t3 = a * b
+  7: x = t3
+  8: goto L11
+  9: t4 = 0
+  10: x = t4
+  11: t5 = a * b
+  12: y = t5
+  13: t6 = a * b
+  14: t7 = 1
+  15: t8 = t6 + t7
+  16: z = t8
+  17: t9 = x + y
+  18: t10 = t9 + z
+  19: output t10
+  20: t11 = 0
+  21: return t11
+== blocks ==
+  B0 [0,5) succs: 5 6
+  B1 [5,6) succs: 9
+  B2 [6,9) succs: 11
+  B3 [9,11) succs: 11
+  B4 [11,22) succs:
+== 六方程 ==
+  B0:
+    antic.in  {}
+    avail.in  {}
+    earliest  {}
+    post.out  {}
+    used.in   {}
+    latest    {}
+  B1:
+    antic.in  {a * b}
+    avail.in  {}
+    earliest  {a * b}
+    post.out  {a * b}
+    used.in   {a * b}
+    latest    {}
+  B2:
+    antic.in  {a * b}
+    avail.in  {}
+    earliest  {a * b}
+    post.out  {}
+    used.in   {a * b}
+    latest    {a * b}
+  B3:
+    antic.in  {a * b}
+    avail.in  {}
+    earliest  {a * b}
+    post.out  {}
+    used.in   {a * b}
+    latest    {}
+  B4:
+    antic.in  {a * b}
+    avail.in  {}
+    earliest  {a * b}
+    post.out  {}
+    used.in   {a * b}
+    latest    {a * b}
+== after PRE（块内去重）==
+  0: t1 = input
+  1: a = t1
+  2: t2 = input
+  3: b = t2
+  4: if a > b goto L6
+  5: goto L10
+  6: pe1 = a * b
+  7: t3 = pe1
+  8: x = t3
+  9: goto L12
+  10: t4 = 0
+  11: x = t4
+  12: pe2 = a * b
+  13: t5 = pe2
+  14: y = t5
+  15: t6 = pe2
+  16: t7 = 1
+  17: t8 = t6 + t7
+  18: z = t8
+  19: t9 = x + y
+  20: t10 = t9 + z
+  21: output t10
+  22: t11 = 0
+  23: return t11
+  stats: inserted=2 replaced=1
+== 对账 ==
+  steps: 19 -> 21
+  outputs: 46
+  outputs preserved: yes

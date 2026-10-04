@@ -1,0 +1,13 @@
+main() {
+  var c, i, s, t;
+  c = input;
+  s = 0;
+  i = 0;
+  while (5 > i) {
+    t = c * 2;
+    s = s + t;
+    i = i + 1;
+  }
+  output s;
+  return 0;
+}
