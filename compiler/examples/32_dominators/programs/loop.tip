@@ -1,0 +1,11 @@
+main() {
+  var a, s;
+  a = 3;
+  s = 0;
+  while (a > 0) {
+    if (a > 1) s = s + a; else s = s + 1;
+    a = a - 1;
+  }
+  output s;
+  return 0;
+}

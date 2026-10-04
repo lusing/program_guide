@@ -1,0 +1,2 @@
+%s.0 = phi i32 [ 0, %entry ], [ %3, %wh.body ]
+%i.0 = phi i32 [ 0, %entry ], [ %4, %wh.body ]

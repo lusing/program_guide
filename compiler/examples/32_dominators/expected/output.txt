@@ -1,0 +1,86 @@
+== loop.tip ==
+== TAC blocks ==
+  B0 [0,4) succs: 4
+  B1 [4,6) succs: 6 7
+  B2 [6,7) succs: 20
+  B3 [7,9) succs: 9 10
+  B4 [9,10) succs: 13
+  B5 [10,13) succs: 16
+  B6 [13,16) succs: 16
+  B7 [16,20) succs: 4
+  B8 [20,23) succs:
+== 程序块图 ==
+  B0 -> 1
+  B1 -> 2 3
+  B2 -> 8
+  B3 -> 4 5
+  B4 -> 6
+  B5 -> 7
+  B6 -> 7
+  B7 -> 1
+  B8 ->
+== dominators ==
+  dom(B0) = {0}  idom=-1
+  dom(B1) = {0,1}  idom=0
+  dom(B2) = {0,1,2}  idom=1
+  dom(B3) = {0,1,3}  idom=1
+  dom(B4) = {0,1,3,4}  idom=3
+  dom(B5) = {0,1,3,5}  idom=3
+  dom(B6) = {0,1,3,4,6}  idom=4
+  dom(B7) = {0,1,3,7}  idom=3
+  dom(B8) = {0,1,2,8}  idom=2
+== dom tree ==
+  B0 : B1
+  B1 : B2 B3
+  B2 : B8
+  B3 : B4 B5 B7
+  B4 : B6
+  domTreeCheck: yes
+== DFS ==
+  B0 d=0 f=17
+  B1 d=1 f=16
+  B2 d=2 f=5
+  B3 d=6 f=15
+  B4 d=7 f=12
+  B5 d=13 f=14
+  B6 d=8 f=11
+  B7 d=9 f=10
+  B8 d=3 f=4
+  edge 0->1 : tree
+  edge 1->2 : tree
+  edge 2->8 : tree
+  edge 1->3 : tree
+  edge 3->4 : tree
+  edge 4->6 : tree
+  edge 6->7 : tree
+  edge 7->1 : back
+  edge 3->5 : tree
+  edge 5->7 : cross
+== natural loops ==
+  back 7->1 header=1 body={1,3,4,5,6,7}
+== reducible ==
+  yes
+== 不可归约演示 ==
+== 内置块图 ==
+  B0 -> 1 2
+  B1 -> 2
+  B2 -> 1
+== dominators ==
+  dom(B0) = {0}  idom=-1
+  dom(B1) = {0,1}  idom=0
+  dom(B2) = {0,2}  idom=0
+== dom tree ==
+  B0 : B1 B2
+  domTreeCheck: yes
+== DFS ==
+  B0 d=0 f=5
+  B1 d=1 f=4
+  B2 d=2 f=3
+  edge 0->1 : tree
+  edge 1->2 : tree
+  edge 2->1 : back
+  edge 0->2 : forward
+== natural loops ==
+  back 2->1 header=1 body={0,1,2}
+== reducible ==
+  no

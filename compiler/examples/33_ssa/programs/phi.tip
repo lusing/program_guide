@@ -1,0 +1,11 @@
+main() {
+  var i, s;
+  i = 0;
+  s = 0;
+  while (5 > i) {
+    s = s + i;
+    i = i + 1;
+  }
+  output s;
+  return 0;
+}

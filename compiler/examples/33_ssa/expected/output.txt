@@ -1,0 +1,109 @@
+== if.tip ==
+== TAC ==
+  0: t1 = 7
+  1: a = t1
+  2: t2 = 3
+  3: if a > t2 goto L5
+  4: goto L8
+  5: t3 = 1
+  6: b = t3
+  7: goto L10
+  8: t4 = 2
+  9: b = t4
+  10: t5 = b + a
+  11: output t5
+  12: t6 = 0
+  13: return t6
+== dominance frontiers ==
+  DF(B0) = {}
+  DF(B1) = {4}
+  DF(B2) = {4}
+  DF(B3) = {4}
+  DF(B4) = {}
+== SSA ==
+  B0:
+    t10 = 7
+    a0 = t10
+    t20 = 3
+    if a0 > t20 goto B2
+  B1:
+    goto B3
+  B2:
+    t30 = 1
+    b1 = t30
+    goto B4
+  B3:
+    t40 = 2
+    b0 = t40
+  B4:
+    b2 = phi(b1, b0)
+    t31 = phi(t30, t3u)
+    t41 = phi(t4u, t40)
+    t50 = b2 + a0
+    output t50
+    t60 = 0
+    return t60
+== 单定值自检 ==
+  single-def: yes
+== 对账 ==
+  tac outputs: 8
+  ssa outputs: 8
+  tac==ssa: yes
+== phi.tip ==
+== TAC ==
+  0: t1 = 0
+  1: i = t1
+  2: t2 = 0
+  3: s = t2
+  4: t3 = 5
+  5: if t3 > i goto L7
+  6: goto L13
+  7: t4 = s + i
+  8: s = t4
+  9: t5 = 1
+  10: t6 = i + t5
+  11: i = t6
+  12: goto L4
+  13: output s
+  14: t7 = 0
+  15: return t7
+== dominance frontiers ==
+  DF(B0) = {}
+  DF(B1) = {1}
+  DF(B2) = {}
+  DF(B3) = {1}
+  DF(B4) = {}
+== SSA ==
+  B0:
+    t10 = 0
+    i0 = t10
+    t20 = 0
+    s0 = t20
+  B1:
+    i1 = phi(i0, i2)
+    s1 = phi(s0, s2)
+    t30 = phi(t3u, t31)
+    t40 = phi(t4u, t41)
+    t50 = phi(t5u, t51)
+    t60 = phi(t6u, t61)
+    t31 = 5
+    if t31 > i1 goto B3
+  B2:
+    goto B4
+  B3:
+    t41 = s1 + i1
+    s2 = t41
+    t51 = 1
+    t61 = i1 + t51
+    i2 = t61
+    goto B1
+  B4:
+    output s1
+    t70 = 0
+    return t70
+== 单定值自检 ==
+  single-def: yes
+== 对账 ==
+  tac outputs: 10
+  ssa outputs: 10
+  tac==ssa: yes

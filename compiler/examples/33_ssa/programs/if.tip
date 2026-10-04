@@ -1,0 +1,7 @@
+main() {
+  var a, b;
+  a = 7;
+  if (a > 3) b = 1; else b = 2;
+  output b + a;
+  return 0;
+}
