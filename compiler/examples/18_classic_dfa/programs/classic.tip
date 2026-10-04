@@ -1,0 +1,18 @@
+main() {
+  var a, b, c, s;
+  a = input;
+  b = input;
+  c = 0;
+  if (a > 0) {
+    s = a + b;
+  } else {
+    s = a + b;
+  }
+  while (s > 0) {
+    s = s - 1;
+    a = a + b;
+  }
+  output a + b;
+  output c;
+  return 0;
+}

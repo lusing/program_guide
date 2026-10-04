@@ -1,0 +1,65 @@
+== classic.tip ==
+== live variables (backward, may) ==
+-- main --
+  1: {input}
+  2 a = input ;: {input}
+  3 b = input ;: {a,input}
+  4 c = 0 ;: {a,b}
+  5 branch  if (> a 0): {a,b,c}
+  6 s = (+ a b) ;: {a,b,c}
+  7 s = (+ a b) ;: {a,b,c}
+  8 branch  while (> s 0): {a,b,c,s}
+  9 s = (- s 1) ;: {a,b,c,s}
+  10 a = (+ a b) ;: {a,b,c,s}
+  11 output (+ a b) ;: {a,b,c}
+  12 output c ;: {c}
+  13 return 0 ;: {}
+  14: {}
+== reaching definitions (forward, may) ==
+-- main --
+  1: {}
+  2 a = input ;: {d1(a@main:2)}
+  3 b = input ;: {d1(a@main:2),d2(b@main:3)}
+  4 c = 0 ;: {d1(a@main:2),d2(b@main:3),d3(c@main:4)}
+  5 branch  if (> a 0): {d1(a@main:2),d2(b@main:3),d3(c@main:4)}
+  6 s = (+ a b) ;: {d1(a@main:2),d2(b@main:3),d3(c@main:4),d4(s@main:6)}
+  7 s = (+ a b) ;: {d1(a@main:2),d2(b@main:3),d3(c@main:4),d5(s@main:7)}
+  8 branch  while (> s 0): {d1(a@main:2),d2(b@main:3),d3(c@main:4),d4(s@main:6),d5(s@main:7),d6(s@main:9),d7(a@main:10)}
+  9 s = (- s 1) ;: {d1(a@main:2),d2(b@main:3),d3(c@main:4),d6(s@main:9),d7(a@main:10)}
+  10 a = (+ a b) ;: {d2(b@main:3),d3(c@main:4),d6(s@main:9),d7(a@main:10)}
+  11 output (+ a b) ;: {d1(a@main:2),d2(b@main:3),d3(c@main:4),d4(s@main:6),d5(s@main:7),d6(s@main:9),d7(a@main:10)}
+  12 output c ;: {d1(a@main:2),d2(b@main:3),d3(c@main:4),d4(s@main:6),d5(s@main:7),d6(s@main:9),d7(a@main:10)}
+  13 return 0 ;: {d1(a@main:2),d2(b@main:3),d3(c@main:4),d4(s@main:6),d5(s@main:7),d6(s@main:9),d7(a@main:10)}
+  14: {d1(a@main:2),d2(b@main:3),d3(c@main:4),d4(s@main:6),d5(s@main:7),d6(s@main:9),d7(a@main:10)}
+== available expressions (forward, must) ==
+-- main --
+  1: {}
+  2 a = input ;: {}
+  3 b = input ;: {}
+  4 c = 0 ;: {}
+  5 branch  if (> a 0): {(a>0)}
+  6 s = (+ a b) ;: {(a+b),(a>0)}
+  7 s = (+ a b) ;: {(a+b),(a>0)}
+  8 branch  while (> s 0): {(a+b),(s>0)}
+  9 s = (- s 1) ;: {(a+b),(s-1)}
+  10 a = (+ a b) ;: {(a+b),(s-1)}
+  11 output (+ a b) ;: {(a+b),(s>0)}
+  12 output c ;: {(a+b),(s>0)}
+  13 return 0 ;: {(a+b),(s>0)}
+  14: {(a+b),(s>0)}
+== very busy expressions (backward, must) ==
+-- main --
+  1: {}
+  2 a = input ;: {}
+  3 b = input ;: {(a>0)}
+  4 c = 0 ;: {(a+b),(a>0)}
+  5 branch  if (> a 0): {(a+b),(a>0)}
+  6 s = (+ a b) ;: {(a+b)}
+  7 s = (+ a b) ;: {(a+b)}
+  8 branch  while (> s 0): {(a+b),(s>0)}
+  9 s = (- s 1) ;: {(a+b),(s-1)}
+  10 a = (+ a b) ;: {(a+b),(s>0)}
+  11 output (+ a b) ;: {(a+b)}
+  12 output c ;: {}
+  13 return 0 ;: {}
+  14: {}

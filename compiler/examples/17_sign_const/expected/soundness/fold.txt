@@ -1,0 +1,4 @@
+run 1: outputs 11, 29 ; membership OK
+run 2: outputs 11, 17 ; membership OK
+run 3: outputs 11, 22 ; membership OK
+SOUND 3 runs, 9 observations

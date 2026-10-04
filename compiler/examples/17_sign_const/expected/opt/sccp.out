@@ -1,0 +1,31 @@
+; ModuleID = '<stdin>'
+source_filename = "tip"
+
+declare i32 @tip_input()
+
+declare void @tip_output(i32)
+
+define i32 @tip_main() {
+entry:
+  %a = alloca i32, align 4
+  store i32 0, ptr %a, align 4
+  %b = alloca i32, align 4
+  store i32 0, ptr %b, align 4
+  store i32 11, ptr %a, align 4
+  %a1 = load i32, ptr %a, align 4
+  %0 = mul i32 %a1, 2
+  %1 = call i32 @tip_input()
+  %2 = add i32 %0, %1
+  store i32 %2, ptr %b, align 4
+  %a2 = load i32, ptr %a, align 4
+  call void @tip_output(i32 %a2)
+  %b3 = load i32, ptr %b, align 4
+  call void @tip_output(i32 %b3)
+  ret i32 0
+}
+
+define i32 @tip_entry() {
+entry:
+  %0 = call i32 @tip_main()
+  ret i32 %0
+}

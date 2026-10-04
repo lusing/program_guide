@@ -1,0 +1,40 @@
+== init.tip ==
+== possibly-uninitialized (forward, may) ==
+-- main --
+  1: in {a,b,c} out {a,b,c}
+  2 a = input ;: in {a,b,c} out {b,c}
+  3 if ((> a 0))
+  {
+    b = 1 ;
+  }: in {b,c} out {b,c}
+  4 b = 1 ;: in {b,c} out {c}
+  5 output a ;: in {b,c} out {b,c}
+  6 output b ;: in {b,c} out {b,c}
+  7 c = b ;: in {b,c} out {b,c}
+  8 output c ;: in {b,c} out {b,c}
+  9 return 0 ;: in {b,c} out {b,c}
+  10: in {b,c} out {b,c}
+-- warnings --
+  node 6: output b ;  possibly uninitialized: b
+  node 7: c = b ;  possibly uninitialized: b
+  node 8: output c ;  possibly uninitialized: c
+-- monotone framework (five-tuple), possibly-uninitialized --
+  lattice  : powerset of program variables, order = subset,
+             join = union, bottom = {}
+  direction: forward
+  boundary : entry(f) = declared vars \ params (params arrive initialized)
+  init     : every other point starts at bottom {}
+  transfer : x = e  ->  (S \ {x}) plus {x} if e reads a variable in S
+             others ->  S
+  theorem  : all transfer functions are monotone, so the worklist least
+             fixpoint approximates merge-over-paths; every reported
+             use-before-init occurs on at least one real execution path.
+== monotone framework classification (chapters 16-19) ==
+analysis         direction merge boundary            transfer
+sign lattice     forward   join  entry: params=TOP   abstract arith tables
+constant (flat)  forward   join  entry: params=TOP   constant folding
+live variables   backward  union exit: {}            gen/kill
+reaching defs    forward   union entry: {}           gen/kill
+available exprs  forward   inter entry: {}           gen/kill
+very busy exprs  backward  inter exit: {}            gen/kill
+possibly-uninit  forward   union entry: decls\params state-dependent

@@ -1,0 +1,12 @@
+main() {
+  var a, b, c;
+  a = input;
+  if (a > 0) {
+    b = 1;
+  }
+  output a;
+  output b;
+  c = b;
+  output c;
+  return 0;
+}
