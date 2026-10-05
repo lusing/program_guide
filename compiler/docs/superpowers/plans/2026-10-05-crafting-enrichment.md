@@ -206,8 +206,8 @@ uint32_t fnv1a(const std::string&);  // FNV-1a 32 位
 4. 散列表语义：插入 N=200 项后逐一 get 全中；删除一半后剩余仍全中（墓碑生效）；重插被删键成功（墓碑可复用探测链）；扩容触发后墓碑清零（表内 key=false 计数=0）。
 5. FNV-1a 已知向量：`""→0x811c9dc5`、`"a"→0xe40c292c` 等标准测试值对账。
 
-- [ ] src（value/table + 断言）→ expected → 正文（五节）→ 三层绿
-- [ ] Commit: `feat(compiler): 批次四十五——56 值表示：NaN 装箱与驻留`
+- [x] src（value/table + 断言）→ expected → 正文（五节）→ 三层绿
+- [x] Commit: `feat(compiler): 批次四十五——56 值表示：NaN 装箱与驻留`
 
 ### Task 7: 新 57 章 上值：虚拟机里的闭包（批四十六）
 
