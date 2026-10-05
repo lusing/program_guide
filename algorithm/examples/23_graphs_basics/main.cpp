@@ -1,6 +1,7 @@
 // 23 基本图算法（CLRS 第 22 章）。结构：23.1 邻接表表示与度统计 /
 // 23.2 BFS（图 22.3：距离与 BFS 树）/ 23.3 DFS 时间戳与边分类
-//（图 22.4/22.5）/ 23.4 拓扑排序（DAG）/ 23.5 强连通分量（图 22.9）。
+//（图 22.4/22.5）/ 23.4 拓扑排序（DAG）/ 23.5 强连通分量（图 22.9）……
+// 23.13 图的两个计数问题：握手定理判谎（1-9）、状态空间 BFS（1-6）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -1310,6 +1311,156 @@ static void bridge_watch_demo() {
     assert(bridgesOnPath(w, 0, 5) == 1);
 }
 
+// ═══ 23.13 图的两个计数问题 ═══
+
+// ── 问题 1-9 聚会游戏：握手定理判谎 ──
+// N 人聚会（含主持人 Robin），各报认识的人数（认识互相）。把人当顶点、
+// 认识当边：Σd(v) = 2|E| 必为**偶数**（握手定理）。有人报的度数之和为奇
+// ⟹ 必有说谎。Robin 认识所有人 ⟹ 他的度恰为 N−1（并要求其余各人 ≥ 1）。
+// 奇偶只是**必要**条件：偶和的度序列也可能不可图——此时只能说「Maybe
+// truth」。Havel–Hakimi 贪心消解可以补上充分性判定（小 n 可行）。
+static bool havel_hakimi(std::vector<int> d) {
+    while (!d.empty() && d.back() == 0) { d.pop_back(); }
+    while (!d.empty()) {
+        std::ranges::sort(d, std::ranges::greater{});
+        const int x = d.front();          // 取最大度数
+        d.erase(d.begin());
+        if (x > static_cast<int>(d.size())) { return false; }   // 连不完
+        for (int i = 0; i < x; ++i) {
+            if (--d[static_cast<std::size_t>(i)] < 0) { return false; }
+        }
+        while (!d.empty() && d.back() == 0) { d.pop_back(); }
+    }
+    return true;
+}
+
+static void party_game_demo() {
+    println("");
+    println("=== 23.13a 聚会游戏（1-9）：握手定理判谎 ===");
+    struct Case { std::vector<int> reports; const char* expect; };
+    const Case cases[]{
+        {{5, 4, 2, 3, 2, 5}, "Lie absolutely"},
+        {{3, 4, 2, 2, 2, 3}, "Maybe truth"},
+    };
+    for (const Case& tc : cases) {
+        const std::size_t n = tc.reports.size() + 1;      // + 主持人
+        const int robin = static_cast<int>(n) - 1;        // Robin 认识所有人
+        long long sum = robin;
+        for (int d : tc.reports) { sum += d; }
+        const bool parityOk = sum % 2 == 0;
+        std::vector<int> seq(tc.reports);
+        seq.push_back(robin);
+        const bool graphical = parityOk && havel_hakimi(seq);
+        print("  N={}：报到 ", n);
+        for (int d : tc.reports) { print("{} ", d); }
+        println("+ 主持人 {} ⟹ Σ度 = {}（{}）⟹ {}", robin, sum,
+                parityOk ? "偶" : "奇",
+                parityOk ? (graphical ? "Maybe truth（Havel–Hakimi 可图）"
+                                      : "Lie absolutely")
+                         : "Lie absolutely");
+        assert(sum % 2 == 1 || graphical);
+    }
+    // 偶和也可能不可图：{2,2,0,0} —— 奇偶只是必要条件
+    {
+        const std::vector<int> seq{2, 2, 0, 0};
+        const long long sum = std::accumulate(seq.begin(), seq.end(), 0LL);
+        println("  偶和不可图例 {}：Σ度 = {}（偶）但 Havel–Hakimi 可图 = {}",
+                "{2,2,0,0}", sum, havel_hakimi(seq) ? 1 : 0);
+        assert(sum % 2 == 0 && !havel_hakimi(seq));
+    }
+}
+
+// ── 问题 1-6 找到牛妞：BFS 的一般化——状态空间不止网格 ──
+// 农夫在数轴点 N，牛在点 K（0..100000）。每分钟可走 ±1 或飞跃 ×2。
+// 把「位置」当顶点、三种移动当边（隐式建图，不存边表），BFS 一遍即最少
+// 分钟数。状态空间不一定是网格或显式图——**任何**「状态 + 转移」都行。
+static std::pair<int, std::vector<int>> bfs_cow(int n, int k) {
+    constexpr int kMaxP = 100000;
+    std::vector<int> dist(static_cast<std::size_t>(kMaxP) + 1, -1);
+    std::vector<int> par(static_cast<std::size_t>(kMaxP) + 1, -1);
+    std::vector<int> queue;
+    queue.reserve(static_cast<std::size_t>(kMaxP) + 1);
+    dist[static_cast<std::size_t>(n)] = 0;
+    queue.push_back(n);
+    for (std::size_t head = 0; head < queue.size(); ++head) {
+        const int u = queue[head];
+        if (u == k) { break; }
+        const int nexts[3] = {u - 1, u + 1, u * 2};
+        for (int w : nexts) {
+            if (w < 0 || w > kMaxP) { continue; }
+            if (dist[static_cast<std::size_t>(w)] == -1) {
+                dist[static_cast<std::size_t>(w)] =
+                    dist[static_cast<std::size_t>(u)] + 1;
+                par[static_cast<std::size_t>(w)] = u;
+                queue.push_back(w);
+            }
+        }
+    }
+    std::vector<int> path;                       // 回溯父指针得路径
+    for (int v = k; v != -1; v = par[static_cast<std::size_t>(v)]) {
+        path.push_back(v);
+    }
+    std::ranges::reverse(path);
+    return {dist[static_cast<std::size_t>(k)], path};
+}
+
+// 原书的六方案数学法：走到 2^t / 2^{t+1}，飞到 2^p / 2^{p+1} 附近，共 6 式取最小
+static long long cow_formula(long long n, long long k) {
+    if (n >= k) { return n - k; }                // 只能倒着走
+    long long q = 0;
+    while ((1LL << (q + 1)) * n <= k) { ++q; }   // 2^q·n ≤ k < 2^{q+1}·n
+    if ((1LL << q) * n == k) { return q; }       // 恰好飞到
+    long long t = 0;
+    while ((1LL << (t + 1)) <= n) { ++t; }       // 2^t ≤ n
+    long long p = 0;
+    while ((1LL << (p + 1)) <= k) { ++p; }       // 2^p ≤ k
+    const long long a = q + k - (1LL << q) * n;
+    const long long b = q + 1 + (1LL << (q + 1)) * n - k;
+    const long long c = (n - (1LL << t)) + (p - t) + (k - (1LL << p));
+    const long long d = (n - (1LL << t)) + (p - t + 1) + ((1LL << (p + 1)) - k);
+    const long long e = ((1LL << (t + 1)) - n) + (p - t + 1) + (k - (1LL << p));
+    const long long f = ((1LL << (t + 1)) - n) + (p - t) + ((1LL << (p + 1)) - k);
+    return std::min({a, b, c, d, e, f});
+}
+
+static void catch_cow_demo() {
+    println("");
+    println("=== 23.13b 找到牛妞（1-6）：状态空间 BFS ===");
+    const auto [d1, p1] = bfs_cow(5, 17);
+    const auto [d2, p2] = bfs_cow(3, 21);
+    auto printPath = [](const std::vector<int>& p) {
+        for (std::size_t i = 0; i < p.size(); ++i) {
+            print("{}{}", i == 0 ? "" : "→", p[i]);
+        }
+    };
+    print("  N=5 → K=17：{} 分钟（", d1); printPath(p1);
+    println("：先走回 4=2² 再飞）");
+    assert(d1 == 4);
+    print("  N=3 → K=21：{} 分钟（", d2); printPath(p2);
+    println("：走两步到 5 再连飞两次）");
+    println("    —— 原书样例给 6，是六方案公式的值：它数不出这条「任意点起飞」路");
+    assert(d2 == 5);
+    // 六方案数学法 vs BFS 全对账
+    long long mismatches = 0;
+    for (int n = 1; n <= 150; ++n) {
+        for (int k = 0; k <= 150; ++k) {
+            const int truth = bfs_cow(n, k).first;
+            if (cow_formula(n, k) != truth) { ++mismatches; }
+        }
+    }
+    println("  书式六方案 vs BFS（1≤N≤150, 0≤K≤150 全对账）：不一致 {} 组",
+            mismatches);
+    // 经典反例：先走回 13（非 2 的幂）再起飞
+    {
+        const auto [d, p] = bfs_cow(15, 100);
+        print("  反例 N=15, K=100：BFS = {} 分钟（", d); printPath(p);
+        println("），书式 = {} —— 六方案漏了「走回任意点再起飞」", cow_formula(15, 100));
+        assert(d == 6 && cow_formula(15, 100) == 23);
+    }
+    println("  ⟹ 构造式数学法的方案枚举未必齐全；BFS 的「穷举所有状态」");
+    println("     恰是它的对照组——先把 BFS 写对，数学法拿 BFS 当裁判。");
+}
+
 int main() {
     representation_demo();
     bfs_demo();
@@ -1323,6 +1474,8 @@ int main() {
     topo_app_demo();
     sep_pair_demo();
     bridge_watch_demo();
+    party_game_demo();
+    catch_cow_demo();
     println("自检通过");
     return 0;
 }

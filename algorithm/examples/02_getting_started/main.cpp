@@ -1,7 +1,7 @@
 // 02 入门：插入排序、循环不变式与归并排序（CLRS 第 2 章）。结构：
 // 02.1 插入排序逐步追踪（图 2.2）/ 02.2 循环不变式机器检查 /
 // 02.3 最好/最坏/平均的分析实验 / 02.4 MERGE 过程追踪（图 2.3）与递归归并 /
-// 02.5 归并排序递归树（图 2.4）。
+// 02.5 归并排序递归树（图 2.4）/ 02.6 计数问题两例（累积计数、周期取模）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -160,6 +160,65 @@ static void recursion_tree(int n) {
     assert(std::ranges::is_sorted(v));
 }
 
+// ═══ 02.6 两个计数问题：累积计数与周期取模 ═══
+// 问题 1-1 骑士的金币：第 1 天 1 枚，接下来 2 天每天 2 枚，接下来 3 天每天
+// 3 枚……问第 N 天累计多少枚。这是「累积计数」的原型：一个计数器走天数，
+// 一个计数器攒金币，循环不变式是「days 天时 coins = 已到期各段贡献之和」。
+static long long golden_coins(long long n) {
+    long long coins = 0, k = 1, days = 0;
+    while (days + k <= n) {          // 还装得下一整个「k 枚段」
+        coins += k * k;              // 该段 k 天、每天 k 枚
+        days += k;
+        ++k;
+    }
+    coins += k * (n - days);         // 尾段：剩 n−days 天，每天 k 枚
+    return coins;
+}
+
+// 问题 1-7 公交调度：每路车按给定的间隔序列**循环**发车，周期 T = Σ间隔。
+// 到达时刻 arrival 与「圈内的哪一班车最近」只通过 arrival mod T 有关——
+// 取模把无穷时间轴压回一个周期内；再用前缀和找到圈内第一个 ≥ R 的发车点。
+static void counting_problems() {
+    println("金币问题（1-1）：连续 k 天每天 k 枚，天数与金币总数：");
+    const long long cases[]{10, 6, 7, 11, 100, 10000};
+    for (long long n : cases) {
+        const long long coins = golden_coins(n);
+        // 闭式对账：找 k 使 k(k+1)/2 ≤ n，则金币 = Σ_{i≤k} i² + (k+1)·j，
+        // 其中 j = n − k(k+1)/2；Σi² 的闭式是 k(k+1)(2k+1)/6。
+        long long k = 0, tri = 0;    // tri = k(k+1)/2
+        while (tri + k + 1 <= n) { ++k; tri += k; }
+        const long long j = n - tri;
+        const long long closed = k * (k + 1) * (2 * k + 1) / 6 + (k + 1) * j;
+        assert(coins == closed);
+        println("  N={:5}：金币 {:6}（= Σi^2 闭式 k(k+1)(2k+1)/6 + (k+1)·{}）",
+                n, coins, j);
+    }
+
+    println("公交调度（1-7）：周期取模 + 前缀和扫描：");
+    // 三路车，发车间隔构成循环周期；乘客 arrival=1000 时刻到站
+    const std::vector<std::vector<long long>> routes{
+        {100, 200, 300}, {400, 500, 600}, {700, 800, 900}};
+    const long long arrival = 1000;
+    long long best = -1;
+    for (std::size_t i = 0; i < routes.size(); ++i) {
+        long long period = 0;                       // T = 一圈的总时长
+        for (long long d : routes[i]) { period += d; }
+        const long long r = arrival % period;       // 本周期内已过的时刻
+        long long wait = period - r;                // 最坏：等到下一圈头一班车
+        long long prefix = 0;                       // 前缀和 = 圈内发车时刻
+        for (long long d : routes[i]) {
+            prefix += d;
+            if (prefix >= r) { wait = prefix - r; break; }  // 第一班 ≥ r
+        }
+        println("  第 {} 路：周期 T={}，arrival mod T = {} ⟹ 等待 {}",
+                i + 1, period, r, wait);
+        if (best < 0 || wait < best) { best = wait; }
+    }
+    println("  最短等待 = {}（arrival={} 取模后只需看圈内的第 {} 个时间单位）",
+            best, arrival, arrival % 600);
+    assert(best == 200);
+}
+
 int main() {
     // 02.1 图 2.2 的数组：逐步追踪
     std::vector<int> fig22{5, 2, 4, 6, 1, 3};
@@ -200,6 +259,9 @@ int main() {
 
     // 02.5 递归树
     recursion_tree(8);
+
+    // 02.6 计数问题两例
+    counting_problems();
 
     println("自检通过");
     return 0;
