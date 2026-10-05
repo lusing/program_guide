@@ -5,3 +5,5 @@ build/
 *.ll
 *.s
 gcm.cache/
+.scratch/
+tools/__pycache__/
