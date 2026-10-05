@@ -66,6 +66,11 @@
   outputs: 1
 == 对账 ==
   interp==jit: yes
+== 内存模型（可寄存器判定）==
+  粗: *p 波及: a, b
+  粗: ambiguous={a,b} unambiguous={c,s}
+  精(pointees={a}): ambiguous={a} ← b 复归可寄存器（别名分析的精度直接换寄存器）
+  粗杀 a+b、精只杀 a: yes
 == fold.tip ==
 == TAC ==
   0: t1 = 2
@@ -96,3 +101,8 @@
   outputs: 7
 == 对账 ==
   interp==jit: yes
+== 内存模型（可寄存器判定）==
+  粗: *p 波及: a, b
+  粗: ambiguous={a,b} unambiguous={c,s}
+  精(pointees={a}): ambiguous={a} ← b 复归可寄存器（别名分析的精度直接换寄存器）
+  粗杀 a+b、精只杀 a: yes

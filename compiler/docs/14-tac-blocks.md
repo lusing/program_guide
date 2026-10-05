@@ -434,6 +434,205 @@ output 收集进向量。
 异常路径留给
 错误样例去踩。
 
+## 14.6b 内存模型：值住哪，谁说了算
+
+三地址码
+假设
+"名字
+即
+位置"，
+但
+**不是
+每个
+值
+都
+配
+拥有
+独占的
+位置**。
+鲸书
+§5.4.3
+把
+值
+二分：
+
+- **unambiguous**
+  （明确
+  值）：
+  编译器
+  能
+  把
+  它
+  孤立
+  到
+  唯一
+  内存
+  位置——
+  普通
+  局部
+  标量；
+  **可以
+  长住
+  寄存器**
+  （第 52 章
+  分配器
+  的
+  服务
+  对象）；
+- **ambiguous**
+  （含混
+  值）：
+  可能
+  被
+  间接
+  引用——
+  被
+  指针
+  指着的
+  变量、
+  数组
+  元素、
+  身份
+  待定的
+  对象
+  字段。
+  每次
+  定义
+  都
+  可能
+  被
+  别处
+  读走，
+  于是
+  每次
+  定义
+  都要
+  考虑
+  **回落
+  内存**。
+
+判定的
+要害
+是
+**间接写
+的
+受害
+名单**：
+`*p
+=
+x`
+杀掉
+哪些
+名字？
+答案
+= 
+pointees[p]
+（p 可能
+指向的
+名字
+集合）——
+而这
+正是
+第 49 章
+指针
+分析
+的
+产物。
+名单
+越
+粗
+（"p
+可能
+指向
+任何人"），
+被迫
+回落
+内存的
+值
+越多；
+名单
+越
+精，
+越多
+值
+留在
+寄存器。
+**别名
+分析的
+精度
+直接
+兑换
+寄存器**——
+这是
+两章
+之间
+最
+实惠的
+一条
+供应链。
+
+本示例
+的
+`memmodel`
+模块
+把
+这个
+判定
+做成了
+两档
+对照：
+粗
+信息
+（p 可能
+指向
+a 或 b）
+下
+`*p
+=
+0`
+把
+a、b
+双双
+打成
+含混；
+精
+信息
+（p 只
+指向 a）
+下
+b 复归
+明确。
+数组
+元素
+天然
+含混
+（`a[i]
+=
+0`
+当
+i 非常量
+时
+等同
+于
+改写
+"任意
+元素"），
+ whale 书
+的
+口径：
+数组
+下标
+分析
+（第 57 章
+GCD
+检验
+一脉）
+就是
+数组
+版的
+pointees
+精化。
+
 ## 14.7 期望输出解读
 
 **fold.tip 段**。
@@ -597,6 +796,87 @@ LLVM IR 是
   忠实，不是快。
 
 ## 14.10 本章配套文件
+
+
+### 14.10.0 补件：memmodel.hpp 与 memmodel.cpp
+
+内存模型判定（值的二分法）：粗/精两档 pointees 的受害名单对照。
+
+```cpp
+// file: src/memmodel.hpp
+// file: src/memmodel.hpp
+// 第 14 章补：内存模型——值的二分法（鲸书 §5.4.3）。
+// unambiguous：编译器能把它孤立到唯一内存位置 ⇒ 可长住寄存器；
+// ambiguous：可能被间接引用（指针、数组元素、身份不明的对象）⇒ 每次定义
+// 都要考虑回落内存。间接写 *p = x 的"受害名单"= pointees[p] 全体。
+#ifndef TIP_MEMMODEL_HPP
+#define TIP_MEMMODEL_HPP
+
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
+
+namespace tip {
+
+struct MemModelReport {
+    std::set<std::string> unambiguous;
+    std::set<std::string> ambiguous;
+    std::vector<std::string> notes;   // 每次间接写的受害名单流水
+};
+
+// names：标量名单；pointees：每个指针可能指向的名字集合（别名分析的产物，
+// 第 49 章）；indirectStores：形如 "*p = x" 的指针名序列。
+MemModelReport memoryModel(const std::vector<std::string> &names,
+                           const std::map<std::string, std::set<std::string>> &pointees,
+                           const std::vector<std::string> &indirectStores);
+
+}  // namespace tip
+
+#endif  // TIP_MEMMODEL_HPP
+```
+
+```cpp
+// file: src/memmodel.cpp
+// file: src/memmodel.cpp
+// 第 14 章补：内存模型的实现（鲸书 §5.4.3）。
+#include "memmodel.hpp"
+
+namespace tip {
+
+MemModelReport memoryModel(const std::vector<std::string> &names,
+                           const std::map<std::string, std::set<std::string>> &pointees,
+                           const std::vector<std::string> &indirectStores) {
+    MemModelReport r;
+    for (const auto &n : names) r.unambiguous.insert(n);
+    for (const auto &p : indirectStores) {
+        auto it = pointees.find(p);
+        std::string victims = "*";
+        victims += p;
+        victims += " 波及:";
+        if (it == pointees.end() || it->second.empty()) {
+            // 指针去向不明：保守口径——全体标量都是潜在受害者
+            for (const auto &n : names) {
+                if (n == p) continue;
+                r.ambiguous.insert(n);
+                r.unambiguous.erase(n);
+                victims += " " + n + ",";
+            }
+            r.notes.push_back(victims + "（去向不明：全员）");
+            continue;
+        }
+        for (const auto &n : it->second) {
+            r.ambiguous.insert(n);
+            r.unambiguous.erase(n);
+            victims += " " + n + ",";
+        }
+        r.notes.push_back(victims.substr(0, victims.size() - 1));
+    }
+    return r;
+}
+
+}  // namespace tip
+```
 
 ### 14.10.1 文法 TIP.g4
 
@@ -1119,6 +1399,7 @@ JIT → 对账。
 //   TAC 解释器执行 → LLVM JIT 执行 → interp==jit 对账。
 #include "tacgen.hpp"
 #include "tacblocks.hpp"
+#include "memmodel.hpp"
 #include "tacinterp.hpp"
 
 #include "antlr4-runtime.h"
@@ -1245,7 +1526,31 @@ int main(int argc, char **argv) {
 
     std::cout << "== 对账 ==\n";
     std::cout << "  interp==jit: " << (run.outputs == jout ? "yes" : "NO") << '\n';
-    return run.outputs == jout ? 0 : 1;
+
+    // ---------- 内存模型：值的二分法（鲸书 §5.4.3）----------
+    std::cout << "== 内存模型（可寄存器判定）==\n";
+    std::vector<std::string> names = {"a", "b", "c", "s"};
+    // 粗别名信息：p 与 q 的去向（第 49 章的指针分析负责提供成色）
+    std::map<std::string, std::set<std::string>> coarse = {{"p", {"a", "b"}}};
+    std::map<std::string, std::set<std::string>> fine = {{"p", {"a"}}};
+    tip::MemModelReport m1 = tip::memoryModel(names, coarse, {"p"});
+    tip::MemModelReport m2 = tip::memoryModel(names, fine, {"p"});
+    for (const auto &s : m1.notes) std::cout << "  粗: " << s << "\n";
+    std::cout << "  粗: ambiguous={";
+    bool first = true;
+    for (const auto &v : m1.ambiguous) { std::cout << (first ? "" : ",") << v; first = false; }
+    std::cout << "} unambiguous={";
+    first = true;
+    for (const auto &v : m1.unambiguous) { std::cout << (first ? "" : ",") << v; first = false; }
+    std::cout << "}\n";
+    std::cout << "  精(pointees={a}): ambiguous={";
+    first = true;
+    for (const auto &v : m2.ambiguous) { std::cout << (first ? "" : ",") << v; first = false; }
+    std::cout << "} ← b 复归可寄存器（别名分析的精度直接换寄存器）\n";
+    bool mmOk = m1.ambiguous.count("a") && m1.ambiguous.count("b")
+                && m2.ambiguous.count("a") && m2.unambiguous.count("b");
+    std::cout << "  粗杀 a+b、精只杀 a: " << (mmOk ? "yes" : "NO") << "\n";
+    return (run.outputs == jout && mmOk) ? 0 : 1;
 }
 ```
 
@@ -2209,6 +2514,11 @@ main() {
   outputs: 1
 == 对账 ==
   interp==jit: yes
+== 内存模型（可寄存器判定）==
+  粗: *p 波及: a, b
+  粗: ambiguous={a,b} unambiguous={c,s}
+  精(pointees={a}): ambiguous={a} ← b 复归可寄存器（别名分析的精度直接换寄存器）
+  粗杀 a+b、精只杀 a: yes
 == fold.tip ==
 == TAC ==
   0: t1 = 2
@@ -2239,6 +2549,11 @@ main() {
   outputs: 7
 == 对账 ==
   interp==jit: yes
+== 内存模型（可寄存器判定）==
+  粗: *p 波及: a, b
+  粗: ambiguous={a,b} unambiguous={c,s}
+  精(pointees={a}): ambiguous={a} ← b 复归可寄存器（别名分析的精度直接换寄存器）
+  粗杀 a+b、精只杀 a: yes
 ```
 
 ## 14.11 小结与练习

@@ -4,6 +4,7 @@
 //   TAC 解释器执行 → LLVM JIT 执行 → interp==jit 对账。
 #include "tacgen.hpp"
 #include "tacblocks.hpp"
+#include "memmodel.hpp"
 #include "tacinterp.hpp"
 
 #include "antlr4-runtime.h"
@@ -130,5 +131,29 @@ int main(int argc, char **argv) {
 
     std::cout << "== 对账 ==\n";
     std::cout << "  interp==jit: " << (run.outputs == jout ? "yes" : "NO") << '\n';
-    return run.outputs == jout ? 0 : 1;
+
+    // ---------- 内存模型：值的二分法（鲸书 §5.4.3）----------
+    std::cout << "== 内存模型（可寄存器判定）==\n";
+    std::vector<std::string> names = {"a", "b", "c", "s"};
+    // 粗别名信息：p 与 q 的去向（第 49 章的指针分析负责提供成色）
+    std::map<std::string, std::set<std::string>> coarse = {{"p", {"a", "b"}}};
+    std::map<std::string, std::set<std::string>> fine = {{"p", {"a"}}};
+    tip::MemModelReport m1 = tip::memoryModel(names, coarse, {"p"});
+    tip::MemModelReport m2 = tip::memoryModel(names, fine, {"p"});
+    for (const auto &s : m1.notes) std::cout << "  粗: " << s << "\n";
+    std::cout << "  粗: ambiguous={";
+    bool first = true;
+    for (const auto &v : m1.ambiguous) { std::cout << (first ? "" : ",") << v; first = false; }
+    std::cout << "} unambiguous={";
+    first = true;
+    for (const auto &v : m1.unambiguous) { std::cout << (first ? "" : ",") << v; first = false; }
+    std::cout << "}\n";
+    std::cout << "  精(pointees={a}): ambiguous={";
+    first = true;
+    for (const auto &v : m2.ambiguous) { std::cout << (first ? "" : ",") << v; first = false; }
+    std::cout << "} ← b 复归可寄存器（别名分析的精度直接换寄存器）\n";
+    bool mmOk = m1.ambiguous.count("a") && m1.ambiguous.count("b")
+                && m2.ambiguous.count("a") && m2.unambiguous.count("b");
+    std::cout << "  粗杀 a+b、精只杀 a: " << (mmOk ? "yes" : "NO") << "\n";
+    return (run.outputs == jout && mmOk) ? 0 : 1;
 }
