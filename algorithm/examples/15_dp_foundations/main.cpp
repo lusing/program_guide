@@ -1,7 +1,8 @@
 // 15 动态规划（上）：钢条切割与矩阵链（CLRS §15.1–15.2 + §15.3 方法论）。
 // 结构：15.1 钢条切割三版本（朴素递归/备忘录/自底向上，调用计数对比）/
 // 15.2 解的重构（EXTENDED-BOTTOM-UP-CUT-ROD）/ 15.3 矩阵链乘（m/s 表 +
-// 最优括号化）/ 15.4 子问题图与重叠子问题的量化。
+// 最优括号化）/ 15.4 子问题图与重叠子问题的量化 /
+// 15.7 数字三角形：自底向上滚动数组 + 路径重构（备忘录/暴力枚举对账）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -21,8 +22,15 @@ using std::println;
 #include <cassert>
 #include <cstdint>
 #include <limits>
+#include <random>
 #include <string>
 #include <vector>
+
+// 可移植随机：乘法折半取 [0,n)，不用 uniform_int_distribution
+static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
+    return static_cast<std::uint32_t>(
+        (static_cast<std::uint64_t>(rng()) * n) >> 32);
+}
 
 // CLRS 图 15.1 的价格表（长度 1..10 英寸）
 static const std::vector<int> kPrice{0, 1, 5, 8, 9, 10, 17, 17, 20, 24, 30};
@@ -665,6 +673,142 @@ static void reachability_ladder_demo() {
     }
 }
 
+// ═══ 15.7 数字三角形 ═══
+// tri[i] 为第 i 层（0 基，长度 i+1）。每步从 (i,j) 可走到
+// (i+1,j)（左下）或 (i+1,j+1)（右下）。求顶点到底层的最大路径和。
+
+// 自底向上：dp[j] 滚动保存到达当前行第 j 格的最佳和；逆序更新，
+// dp[j−1] 仍是上一行的旧值。时间 Θ(N²)、空间 O(N)。
+static int triangle_best_sum(const std::vector<std::vector<int>>& tri) {
+    const int n = static_cast<int>(tri.size());
+    std::vector<int> dp(static_cast<std::size_t>(n), 0);
+    dp[0] = tri[0][0];
+    for (int i = 1; i < n; ++i) {
+        for (int j = i; j >= 0; --j) {
+            int best = std::numeric_limits<int>::min();
+            if (j < i)             { best = std::max(best, dp[static_cast<std::size_t>(j)]); }
+            if (j > 0)             { best = std::max(best, dp[static_cast<std::size_t>(j - 1)]); }
+            dp[static_cast<std::size_t>(j)] = tri[static_cast<std::size_t>(i)]
+                                                  [static_cast<std::size_t>(j)] + best;
+        }
+    }
+    return *std::max_element(dp.begin(), dp.end());
+}
+
+// 带路径重构：choice[i][j] 记录前驱来自左上（j−1）还是正上（j）。
+// 从最佳底格逐层回溯，再反转为自上而下的列号序列。
+static std::vector<int> triangle_best_path(const std::vector<std::vector<int>>& tri) {
+    const int n = static_cast<int>(tri.size());
+    std::vector<std::vector<char>> choice(
+        static_cast<std::size_t>(n),
+        std::vector<char>(static_cast<std::size_t>(n), 0));
+    std::vector<int> dp(static_cast<std::size_t>(n), 0);
+    dp[0] = tri[0][0];
+    for (int i = 1; i < n; ++i) {
+        for (int j = i; j >= 0; --j) {
+            const int up      = (j < i) ? dp[static_cast<std::size_t>(j)]
+                                        : std::numeric_limits<int>::min();
+            const int up_left = (j > 0) ? dp[static_cast<std::size_t>(j - 1)]
+                                        : std::numeric_limits<int>::min();
+            choice[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] =
+                (up_left > up) ? 1 : 0;      // 1：来自左上
+            dp[static_cast<std::size_t>(j)] = tri[static_cast<std::size_t>(i)]
+                                                  [static_cast<std::size_t>(j)]
+                                            + std::max(up, up_left);
+        }
+    }
+    int col = 0;
+    for (int j = 1; j < n; ++j) {
+        if (dp[static_cast<std::size_t>(j)] > dp[static_cast<std::size_t>(col)]) { col = j; }
+    }
+    std::vector<int> columns(static_cast<std::size_t>(n));
+    for (int i = n - 1; i >= 0; --i) {
+        columns[static_cast<std::size_t>(i)] = col;
+        if (i > 0 && choice[static_cast<std::size_t>(i)][static_cast<std::size_t>(col)] == 1) {
+            --col;
+        }
+    }
+    return columns;
+}
+
+// 备忘录版（自顶向下）：每个格子一个状态
+static int triangle_memo(const std::vector<std::vector<int>>& tri, int i, int j,
+                         std::vector<std::vector<int>>& memo) {
+    if (i == 0) { return tri[0][0]; }
+    int& m = memo[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)];
+    if (m != std::numeric_limits<int>::min()) { return m; }
+    int best = std::numeric_limits<int>::min();
+    if (j < i) { best = std::max(best, triangle_memo(tri, i - 1, j, memo)); }
+    if (j > 0) { best = std::max(best, triangle_memo(tri, i - 1, j - 1, memo)); }
+    return m = tri[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] + best;
+}
+
+static int triangle_memo_sum(const std::vector<std::vector<int>>& tri) {
+    const int n = static_cast<int>(tri.size());
+    std::vector<std::vector<int>> memo(
+        static_cast<std::size_t>(n),
+        std::vector<int>(static_cast<std::size_t>(n),
+                         std::numeric_limits<int>::min()));
+    int best = std::numeric_limits<int>::min();
+    for (int j = 0; j < n; ++j) {
+        best = std::max(best, triangle_memo(tri, n - 1, j, memo));
+    }
+    return best;
+}
+
+// 暴力枚举：2^(N−1) 条路径全部展开。位 1 = 右下，位 0 = 左下。
+static int triangle_brute(const std::vector<std::vector<int>>& tri) {
+    const int n = static_cast<int>(tri.size());
+    int best = std::numeric_limits<int>::min();
+    for (int mask = 0; mask < (1 << (n - 1)); ++mask) {
+        int col = 0, sum = tri[0][0];
+        for (int i = 1; i < n; ++i) {
+            if (mask & (1 << (i - 1))) { ++col; }
+            sum += tri[static_cast<std::size_t>(i)][static_cast<std::size_t>(col)];
+        }
+        best = std::max(best, sum);
+    }
+    return best;
+}
+
+static void triangle_demo() {
+    println("数字三角形（自底向上滚动数组 Θ(N²)、路径重构；备忘录/暴力对账）：");
+    const std::vector<std::vector<int>> tri = {
+        {7}, {3, 8}, {8, 1, 0}, {2, 7, 4, 4}, {4, 5, 2, 6, 5}};
+    const int best = triangle_best_sum(tri);
+    println("  最大路径和 = {}（样例答案 30）", best);
+    const std::vector<int> path = triangle_best_path(tri);
+    print("  最优路径列号：");
+    for (int c : path) { print("{} ", c); }
+    int check_sum = 0;
+    for (int i = 0; i < static_cast<int>(tri.size()); ++i) {
+        check_sum += tri[static_cast<std::size_t>(i)]
+                        [static_cast<std::size_t>(path[static_cast<std::size_t>(i)])];
+    }
+    println("（沿途数值求和 = {}）", check_sum);
+    assert(best == 30 && check_sum == 30);
+    assert(triangle_memo_sum(tri) == 30 && triangle_brute(tri) == 30);
+
+    std::mt19937 rng{5489};
+    int trials = 2000, mismatches = 0;
+    for (int t = 0; t < trials; ++t) {
+        const int n = 1 + static_cast<int>(rand_below(rng, 11));
+        std::vector<std::vector<int>> rnd(static_cast<std::size_t>(n));
+        for (int i = 0; i < n; ++i) {
+            rnd[static_cast<std::size_t>(i)].resize(static_cast<std::size_t>(i + 1));
+            for (int j = 0; j <= i; ++j) {
+                rnd[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] =
+                    static_cast<int>(rand_below(rng, 100));
+            }
+        }
+        const int a = triangle_best_sum(rnd);
+        if (a != triangle_memo_sum(rnd) || a != triangle_brute(rnd)) { ++mismatches; }
+    }
+    println("  随机 {} 个三角形（N≤11）：自底向上 vs 备忘录 vs 暴力枚举 不一致 {} 例",
+            trials, mismatches);
+    assert(mismatches == 0);
+}
+
 int main() {
     rod_cutting_demo();
     reconstruction_demo();
@@ -672,6 +816,7 @@ int main() {
     overlap_demo();
     fibonacci_demo();
     reachability_ladder_demo();
+    triangle_demo();
     println("自检通过");
     return 0;
 }

@@ -1,6 +1,7 @@
 // 17 贪心算法（CLRS 第 16 章）。结构：17.1 活动选择（贪心 vs DP 对账，
 // 图 16.1 数据）/ 17.2 Huffman（图 16.3 频率，前缀码与平均码长）/
-// 17.3 拟阵：单位时间任务调度（图 16.19? 用 16.5 节数据，贪得总收益 230）。
+// 17.3 拟阵：单位时间任务调度（图 16.19? 用 16.5 节数据，贪得总收益 230）/
+// 17.6 渡河：两人船、两种送慢人策略取小（状态空间 Dijkstra 对账）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -22,8 +23,15 @@ using std::println;
 #include <functional>
 #include <numeric>
 #include <queue>
+#include <random>
 #include <string>
 #include <vector>
+
+// 可移植随机：乘法折半取 [0,n)，不用 uniform_int_distribution
+static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
+    return static_cast<std::uint32_t>(
+        (static_cast<std::uint64_t>(rng()) * n) >> 32);
+}
 
 // ═══ 17.1 活动选择问题 ═══
 // n 个活动各有 [sᵢ, fᵢ)，选两两不冲突的最大子集。
@@ -540,12 +548,122 @@ static void stable_marriage_demo() {
     }
 }
 
+// ═══ 17.6 渡河 ═══
+// N 个人渡河时间各异，唯一的船最多载 2 人，两人同船以慢者为准。
+// 所有人和船起初在近岸，目标全部到对岸。
+
+// 贪婪（times 已升序）：每轮把最慢的两人送过去，有两种等价送法，取
+// 用时少的那个；问题归约为少 2 人，直至剩 1/2/3 人收尾。O(N log N)
+// （主要是排序）。
+//
+// 送法一（最快者来回摆渡）：
+//   a0 送 a_{n−1} 过去（a_{n−1}），a0 回来（a0）；
+//   a0 送 a_{n−2} 过去（a_{n−2}），a0 回来（a0）
+//   ⇒ 2·a0 + a_{n−2} + a_{n−1}
+// 送法二（两个慢人结伴、次快去回）：
+//   a0,a1 过去（a1），a0 回来（a0）；
+//   a_{n−2},a_{n−1} 过去（a_{n−1}），a1 回来（a1）
+//   ⇒ a0 + 2·a1 + a_{n−1}
+static int crossing_river(std::vector<int> times) {
+    std::sort(times.begin(), times.end());
+    int n = static_cast<int>(times.size());
+    int total = 0;
+    while (n >= 4) {
+        const int plan_a = 2 * times[0] + times[n - 2] + times[n - 1];
+        const int plan_b = times[0] + 2 * times[1] + times[n - 1];
+        total += std::min(plan_a, plan_b);
+        n -= 2;
+    }
+    if (n == 3) { total += times[0] + times[1] + times[2]; }
+    else        { total += times[n - 1]; }     // 2 人取慢者；1 人即自己
+    return total;
+}
+
+// 状态空间最短路（对账用）：状态 (mask, side)，mask 的 bit=1 表示人在
+// 对岸，side=0 船在近岸、side=1 在对岸。每次选与船同岸的 1～2 人划
+// 船，费用为其中最慢者。Dijkstra 求到 ((1<<n)−1, 1) 的最短时间。
+static int crossing_river_dijkstra(const std::vector<int>& times) {
+    const int n = static_cast<int>(times.size());
+    const int states = (1 << n) * 2;
+    const std::size_t target =
+        (((std::size_t{1} << n) - 1) << 1) | 1u;
+    std::vector<int> dist(static_cast<std::size_t>(states), INT32_MAX);
+    using Node = std::pair<int, std::size_t>;
+    std::priority_queue<Node, std::vector<Node>, std::greater<Node>> pq;
+    dist[0] = 0;
+    pq.emplace(0, 0);
+    while (!pq.empty()) {
+        const auto [d, state] = pq.top();
+        pq.pop();
+        if (d != dist[state]) { continue; }
+        if (state == target) { return d; }
+        const std::size_t mask = state >> 1;
+        const int side = static_cast<int>(state & 1u);
+        // 候选渡河者：与船同岸的人
+        std::vector<int> pool;
+        for (int i = 0; i < n; ++i) {
+            const bool on_far = (mask & (std::size_t{1} << i)) != 0;
+            if (side == 1 ? on_far : !on_far) { pool.push_back(i); }
+        }
+        for (std::size_t a = 0; a < pool.size(); ++a) {
+            for (std::size_t b = a; b < pool.size(); ++b) {
+                const int i = pool[a];
+                const int j = pool[b];           // a==b：单人过河
+                std::size_t next_mask = mask;
+                next_mask ^= (std::size_t{1} << i);
+                if (j != i) { next_mask ^= (std::size_t{1} << j); }
+                const int cost = std::max(times[static_cast<std::size_t>(i)],
+                                          times[static_cast<std::size_t>(j)]);
+                const std::size_t next_state = (next_mask << 1) | (side ^ 1);
+                if (d + cost < dist[next_state]) {
+                    dist[next_state] = d + cost;
+                    pq.emplace(d + cost, next_state);
+                }
+            }
+        }
+    }
+    return -1;
+}
+
+static void crossing_river_demo() {
+    println("渡河（两人船；两种送慢人策略取小，状态空间 Dijkstra 对账）：");
+    struct Case { std::vector<int> times; int answer; };
+    const std::vector<Case> cases = {
+        {{1, 2, 5, 10}, 17},
+        {{4, 3}, 4},
+        {{5}, 5},
+        {{5, 2, 8, 4, 7, 3, 6, 1}, 35}};
+    for (std::size_t c = 0; c < cases.size(); ++c) {
+        const int greedy = crossing_river(cases[c].times);
+        const int exact  = crossing_river_dijkstra(cases[c].times);
+        println("  案例{}（{} 人）：贪婪 = {}，Dijkstra = {}（样例答案 {}）",
+                c + 1, cases[c].times.size(), greedy, exact, cases[c].answer);
+        assert(greedy == cases[c].answer && exact == cases[c].answer);
+    }
+    std::mt19937 rng{5489};
+    int trials = 3000, mismatches = 0;
+    for (int t = 0; t < trials; ++t) {
+        const int n = 1 + static_cast<int>(rand_below(rng, 10));
+        std::vector<int> times(static_cast<std::size_t>(n));
+        for (int& x : times) {
+            x = 1 + static_cast<int>(rand_below(rng, 99));
+        }
+        if (crossing_river(times) != crossing_river_dijkstra(times)) {
+            ++mismatches;
+        }
+    }
+    println("  随机 {} 个案例（N≤9）：贪婪 vs 状态空间最短路 不一致 {} 例",
+            trials, mismatches);
+    assert(mismatches == 0);
+}
+
 int main() {
     activity_demo();
     huffman_demo();
     matroid_demo();
     delta_topk_demo();
     stable_marriage_demo();
+    crossing_river_demo();
     println("自检通过");
     return 0;
 }

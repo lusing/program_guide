@@ -4,7 +4,8 @@
 // 10.5 单链表上的经典算法（反转·倒数第 k·原地删除·归并·逆向输出）/
 // 10.6 用两个栈实现队列（摊还 O(1)）与镜像的「两队列实现栈」/
 // 10.7 数组上的经典问题（二维有序矩阵查找·原地替换空格）/
-// 10.10 占用数组：花园种花（下标即坑号的集合表示 + 等差数列）。
+// 10.10 占用数组：花园种花（下标即坑号的集合表示 + 等差数列）/
+// 10.11 RPN 求值与终态周期序列（首次出现表 vs Floyd 判圈）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -1440,6 +1441,157 @@ static void flower_garden_demo() {
     assert(mismatches == 0);
 }
 
+// ═══ 10.11 后缀表达式（RPN）与终态周期序列 ═══
+// 函数 f: {0…N} → {0…N} 以后缀式给出；从 n 出发不断迭代 f，轨道有限
+// ⟹ 必落入一个循环，求该循环（周期部分）的长度。
+
+// 按空格切词。
+static std::vector<std::string> split_tokens(const std::string& s) {
+    std::vector<std::string> tokens;
+    std::size_t i = 0;
+    while (i < s.size()) {
+        while (i < s.size() && s[i] == ' ') { ++i; }
+        const std::size_t j = i;
+        while (i < s.size() && s[i] != ' ') { ++i; }
+        if (i > j) { tokens.push_back(s.substr(j, i - j)); }
+    }
+    return tokens;
+}
+
+// RPN 求值：栈式计算。中间积可能超过 64 位（如取模前连乘多项），用
+// __int128 兜底；返回值因末尾 %N 而落在 0..N−1。
+static long long rpn_calculate(long long N, long long x,
+                               const std::vector<std::string>& tokens) {
+    // 唯一的 % 在末尾，取模前的中间值用 unsigned long long：N ≤ 1.1·10⁶
+    // 时三因子连乘约 1.3·10¹⁸，装得下；表达式项数更多时需换大整数。
+    std::vector<unsigned long long> st;
+    for (const std::string& t : tokens) {
+        if (t == "+" || t == "*" || t == "%") {
+            const unsigned long long op2 = st.back(); st.pop_back();
+            const unsigned long long op1 = st.back(); st.pop_back();
+            unsigned long long r = 0;
+            if (t == "+") { r = op1 + op2; }
+            else if (t == "*") { r = op1 * op2; }
+            else { r = op1 % op2; }
+            st.push_back(r);
+        } else if (t == "x") {
+            st.push_back(static_cast<unsigned long long>(x));
+        } else if (t == "N") {
+            st.push_back(static_cast<unsigned long long>(N));
+        } else {
+            st.push_back(static_cast<unsigned long long>(std::stoll(t)));
+        }
+    }
+    return static_cast<long long>(st.back());
+}
+
+// 周期算法一（首次出现表）：first[v] = 值 v 第一次出现的迭代序号，-1 为
+// 未见。重复时周期 = 当前序号 − 首次序号。O(N+1) 时间与空间。
+template <class F>
+static int period_by_first_occurrence(long long N, long long start, const F& f) {
+    std::vector<int> first(static_cast<std::size_t>(N) + 1, -1);
+    long long x = start;
+    int k = 0;
+    while (first[static_cast<std::size_t>(x)] == -1) {
+        first[static_cast<std::size_t>(x)] = k++;
+        x = f(x);
+    }
+    return k - first[static_cast<std::size_t>(x)];
+}
+
+// 周期算法二（Floyd 判圈，对账用）：快慢指针同步前进，相遇后再用其中
+// 一个指针走一圈计数。O(1) 额外空间，不依赖任何下标表。
+template <class F>
+static int period_by_floyd(long long start, const F& f) {
+    long long tortoise = f(start);
+    long long hare = f(f(start));
+    while (tortoise != hare) {
+        tortoise = f(tortoise);
+        hare = f(f(hare));
+    }
+    int period = 1;
+    hare = f(tortoise);
+    while (tortoise != hare) {
+        hare = f(hare);
+        ++period;
+    }
+    return period;
+}
+
+static void periodic_sequence_demo() {
+    println("=== 10.11 后缀表达式（RPN）与终态周期序列 ===");
+    struct Case {
+        long long N, n;
+        std::string rpn;
+        int answer;
+    };
+    const std::vector<Case> cases = {
+        {10, 1, "x N %", 1},
+        {11, 1, "x x 1 + * N %", 3},
+        {1728, 1, "x x 1 + * x 2 + * N %", 6},
+        {1728, 1, "x x 1 + x 2 + * * N %", 6},
+        {100003, 1, "x x 123 + * x 12345 + * N %", 369}};
+    for (const Case& c : cases) {
+        const std::vector<std::string> tokens = split_tokens(c.rpn);
+        auto f = [&](long long x) { return rpn_calculate(c.N, x, tokens); };
+        const int p1 = period_by_first_occurrence(c.N, c.n, f);
+        const int p2 = period_by_floyd(c.n, f);
+        println("  N={} n={} RPN=\"{}\"：首次出现表 {}，Floyd {}（答案 {}）",
+                c.N, c.n, c.rpn, p1, p2, c.answer);
+        assert(p1 == c.answer && p2 == c.answer);
+    }
+    // 样例 2 的轨道展示：1 → 2 → 6 → 9 → 2…
+    {
+        const std::vector<std::string> tokens = split_tokens("x x 1 + * N %");
+        print("  样例2 轨道展示：1");
+        long long x = 1;
+        for (int k = 0; k < 4; ++k) {
+            x = rpn_calculate(11, x, tokens);
+            print(" → {}", x);
+        }
+        println(" …（2,6,9 周而复始 ⟹ 周期 3）");
+    }
+    std::mt19937 rng{5489};
+    // 随机仿射 RPN：(x*a + b) % N，两种周期算法对账。
+    int rpn_trials = 3000, rpn_bad = 0;
+    for (int t = 0; t < rpn_trials; ++t) {
+        const long long N = 1 + static_cast<long long>(rand_below(rng, 2000));
+        const long long start = static_cast<long long>(rand_below(
+            rng, static_cast<std::uint32_t>(N)));
+        const long long a = static_cast<long long>(rand_below(
+            rng, static_cast<std::uint32_t>(N)));
+        const long long b = static_cast<long long>(rand_below(
+            rng, static_cast<std::uint32_t>(N)));
+        const std::string rpn =
+            "x " + std::to_string(a) + " * " + std::to_string(b) + " + N %";
+        const std::vector<std::string> tokens = split_tokens(rpn);
+        auto f = [&](long long x) { return rpn_calculate(N, x, tokens); };
+        if (period_by_first_occurrence(N, start, f) !=
+            period_by_floyd(start, f)) { ++rpn_bad; }
+    }
+    println("  随机 {} 个仿射 RPN 案例：首次表 vs Floyd 不一致 {} 例",
+            rpn_trials, rpn_bad);
+    assert(rpn_bad == 0);
+    // 随机映射表：完全任意的 f，两种周期算法对账（不含 RPN，纯判圈）。
+    int map_trials = 1000, map_bad = 0;
+    for (int t = 0; t < map_trials; ++t) {
+        const long long N = 1 + static_cast<long long>(rand_below(rng, 2000));
+        std::vector<long long> table(static_cast<std::size_t>(N));
+        for (long long& y : table) {
+            y = static_cast<long long>(rand_below(
+                rng, static_cast<std::uint32_t>(N)));
+        }
+        auto f = [&](long long x) { return table[static_cast<std::size_t>(x)]; };
+        const long long start = static_cast<long long>(rand_below(
+            rng, static_cast<std::uint32_t>(N)));
+        if (period_by_first_occurrence(N, start, f) !=
+            period_by_floyd(start, f)) { ++map_bad; }
+    }
+    println("  随机 {} 个任意映射：首次表 vs Floyd 不一致 {} 例",
+            map_trials, map_bad);
+    assert(map_bad == 0);
+}
+
 int main() {
     stack_queue_demo();
     linked_list_demo();
@@ -1451,6 +1603,7 @@ int main() {
     expression_demo();
     derivative_demo();
     flower_garden_demo();
+    periodic_sequence_demo();
     println("自检通过");
     return 0;
 }
