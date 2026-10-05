@@ -1,6 +1,6 @@
 // 13 红黑树（CLRS 第 13 章）。结构：13.1 性质与验证器 / 13.2 旋转与哨兵 /
 // 13.3 插入修复（图 13.4 序列）/ 13.4 删除修复 / 13.5 有序输入的 RB vs BST
-// 高度对照 / 13.6 随机操作压力对账。
+// 高度对照 / 13.6 随机操作压力对账 / 13.7 树堆（递归划分 vs 降序插入）。
 // 实现要点：用 CLRS 原书的「真实哨兵节点」方案——nil 槽位有真实的
 // color/parent 字段并随旋转/移植更新，删除修复才能与伪代码逐行对应。
 #ifdef ALGO_NO_PRINT
@@ -19,6 +19,7 @@ using std::println;
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+#include <numeric>
 #include <random>
 #include <string>
 #include <vector>
@@ -367,11 +368,191 @@ static void stress_test() {
             expect.size());
 }
 
+// ═══ 13.7 树堆（treap）：标签成 BST、优先级成最大堆 ═══
+struct TreapNode {
+    std::string label;
+    int priority = 0;
+};
+
+struct Treap {
+    std::vector<std::string> label;
+    std::vector<int> priority;
+    std::vector<std::size_t> left, right;
+    std::size_t root = NIL;
+
+    Treap() {
+        label.emplace_back();                    // 0 号哨兵槽（与 RbTree 同纪律）
+        priority.push_back(0);
+        left.push_back(NIL);
+        right.push_back(NIL);
+    }
+
+    std::size_t alloc(const std::string& l, int p) {
+        label.push_back(l);
+        priority.push_back(p);
+        left.push_back(NIL);
+        right.push_back(NIL);
+        return label.size() - 1;
+    }
+
+    // 构造法一（递归划分）：nodes 已按标签排序。区间 [lo,hi) 内优先级
+    // 最高者必为根（堆性质）；标签比它小的递归成左子树、大的成右子树
+    //（BST 性质）。
+    std::size_t build(const std::vector<TreapNode>& nodes,
+                      std::size_t lo, std::size_t hi) {
+        if (lo >= hi) { return NIL; }
+        std::size_t best = lo;
+        for (std::size_t k = lo + 1; k < hi; ++k) {
+            if (nodes[k].priority > nodes[best].priority) { best = k; }
+        }
+        const std::size_t x = alloc(nodes[best].label, nodes[best].priority);
+        left[x]  = build(nodes, lo, best);
+        right[x] = build(nodes, best + 1, hi);
+        return x;
+    }
+
+    // 序列化：( 左子堆 label/priority 右子堆 )，空树为空串。
+    std::string serialize() const {
+        std::string out;
+        serialize_into(root, out);
+        return out;
+    }
+
+    void serialize_into(std::size_t x, std::string& out) const {
+        if (x == NIL) { return; }
+        out.push_back('(');
+        serialize_into(left[x], out);
+        out += label[x];
+        out.push_back('/');
+        out += std::to_string(priority[x]);
+        serialize_into(right[x], out);
+        out.push_back(')');
+    }
+
+    // 中序标签（应为标签升序——BST 性质的直接检验）。
+    std::vector<std::string> inorder() const {
+        std::vector<std::string> out;
+        inorder_into(root, out);
+        return out;
+    }
+
+    void inorder_into(std::size_t x, std::vector<std::string>& out) const {
+        if (x == NIL) { return; }
+        inorder_into(left[x], out);
+        out.push_back(label[x]);
+        inorder_into(right[x], out);
+    }
+
+    // 堆性质检验：每个内点优先级严格高于孩子。
+    bool heap_ordered() const { return heap_check(root); }
+
+    bool heap_check(std::size_t x) const {
+        if (x == NIL) { return true; }
+        for (const std::size_t c : {left[x], right[x]}) {
+            if (c != NIL && (priority[x] <= priority[c] || !heap_check(c))) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+// 构造法二（对账用）：按优先级**降序**逐个做普通 BST 插入。最先插入
+// 的最高优先级者成为根；后插入者只能落在叶上，而叶的父节点都是更早
+//（更高优先级）插入的 ⟹ 堆性质自动成立，BST 性质由插入保证。
+static Treap treap_by_descending_insertion(std::vector<TreapNode> nodes) {
+    std::sort(nodes.begin(), nodes.end(),
+              [](const TreapNode& a, const TreapNode& b) {
+                  return a.priority > b.priority;
+              });
+    Treap t;
+    for (const TreapNode& nd : nodes) {
+        std::size_t y = NIL;
+        std::size_t x = t.root;
+        while (x != NIL) {
+            y = x;
+            x = (nd.label < t.label[x]) ? t.left[x] : t.right[x];
+        }
+        const std::size_t z = t.alloc(nd.label, nd.priority);
+        if (y == NIL) { t.root = z; }
+        else if (nd.label < t.label[y]) { t.left[y] = z; }
+        else { t.right[y] = z; }
+    }
+    return t;
+}
+
+static Treap treap_from_nodes(std::vector<TreapNode> nodes) {
+    std::sort(nodes.begin(), nodes.end(),
+              [](const TreapNode& a, const TreapNode& b) {
+                  return a.label < b.label;
+              });
+    Treap t;
+    t.root = t.build(nodes, 0, nodes.size());
+    return t;
+}
+
+static void treap_demo() {
+    println("=== 13.7 树堆：标签成 BST、优先级成最大堆 ===");
+    struct Sample {
+        std::vector<TreapNode> nodes;
+        std::string expected;
+    };
+    const std::vector<Sample> samples = {
+        {{ {"a",7}, {"b",6}, {"c",5}, {"d",4}, {"e",3}, {"f",2}, {"g",1} },
+         "(a/7(b/6(c/5(d/4(e/3(f/2(g/1)))))))"},
+        {{ {"a",1}, {"b",2}, {"c",3}, {"d",4}, {"e",5}, {"f",6}, {"g",7} },
+         "(((((((a/1)b/2)c/3)d/4)e/5)f/6)g/7)"},
+        {{ {"a",3}, {"b",6}, {"c",4}, {"d",7}, {"e",2}, {"f",5}, {"g",1} },
+         "(((a/3)b/6(c/4))d/7((e/2)f/5(g/1)))"}};
+    for (std::size_t s = 0; s < samples.size(); ++s) {
+        const Treap t = treap_from_nodes(samples[s].nodes);
+        const std::string got = t.serialize();
+        println("  样例{}：{}", s + 1, got);
+        assert(got == samples[s].expected);
+        assert(t.heap_ordered());
+    }
+    std::mt19937 rng{5489};
+    int trials = 3000, shape_mismatch = 0, property_bad = 0;
+    for (int tc = 0; tc < trials; ++tc) {
+        const std::uint32_t n = 1 + rand_below(rng, 26);
+        // 26 个字母的排列取前 n 个当标签；优先级取 1..n 的排列。
+        std::vector<std::uint32_t> letters(26);
+        std::iota(letters.begin(), letters.end(), 0u);
+        for (std::uint32_t i = static_cast<std::uint32_t>(letters.size()) - 1;
+             i > 0; --i) {
+            const std::uint32_t j = rand_below(rng, i + 1);
+            std::swap(letters[i], letters[j]);
+        }
+        std::vector<TreapNode> nodes(n);
+        for (std::uint32_t i = 0; i < n; ++i) {
+            nodes[static_cast<std::size_t>(i)].label =
+                std::string(1, static_cast<char>('a' + letters[i]));
+            nodes[static_cast<std::size_t>(i)].priority =
+                static_cast<int>(i + 1);
+        }
+        for (std::uint32_t i = n - 1; i > 0; --i) {
+            const std::uint32_t j = rand_below(rng, i + 1);
+            std::swap(nodes[i], nodes[j]);
+        }
+        const Treap a = treap_from_nodes(nodes);
+        const Treap b = treap_by_descending_insertion(nodes);
+        if (a.serialize() != b.serialize()) { ++shape_mismatch; }
+        std::vector<std::string> sorted_labels;
+        for (const TreapNode& nd : nodes) { sorted_labels.push_back(nd.label); }
+        std::sort(sorted_labels.begin(), sorted_labels.end());
+        if (!a.heap_ordered() || a.inorder() != sorted_labels) { ++property_bad; }
+    }
+    println("  随机 {} 例（n≤26）：递归划分 vs 降序 BST 插入 形状不一致 {} 例；"
+            "BST/堆性质违背 {} 例", trials, shape_mismatch, property_bad);
+    assert(shape_mismatch == 0 && property_bad == 0);
+}
+
 int main() {
     insert_trace_demo();
     delete_demo();
     height_comparison();
     stress_test();
+    treap_demo();
     println("自检通过");
     return 0;
 }

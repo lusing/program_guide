@@ -1,6 +1,7 @@
 // 14 数据结构扩张（CLRS 第 14 章）。结构：14.1 扩张方法论三步 /
 // 14.2 顺序统计树（size 扩张的 BST：OS-SELECT/OS-RANK 追踪与对账）/
-// 14.3 区间树（max 扩张：INTERVAL-SEARCH 与暴力对账）。
+// 14.3 区间树（max 扩张：INTERVAL-SEARCH 与暴力对账）/
+// 14.4 三维 Fenwick：点更新 O(lg³n)、盒求和（前缀容差八顶点）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -17,8 +18,15 @@ using std::println;
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+#include <random>
 #include <utility>
 #include <vector>
+
+// 可移植随机（docs/01 的纪律：不用 uniform_int_distribution）
+static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
+    std::uint64_t m = static_cast<std::uint64_t>(rng()) * n;
+    return static_cast<std::uint32_t>(m >> 32);
+}
 
 // ═══ 14.2 顺序统计树：size 扩张的 BST ═══
 // 教学取舍：底座用朴素 BST（随机固定输入下健康）——扩张的维护规则
@@ -193,9 +201,123 @@ static void interval_demo() {
     assert(allOk);
 }
 
+// ═══ 14.4 三维 Fenwick：点更新与盒求和 ═══
+// 一维 Fenwick 的每个下标管一段「lowbit 区间」；前缀和沿 i−=i&−i 收拢。
+// 三维就是三套下标各走各的 lowbit：点更新影响 O(lg³n) 个格子，
+// 前缀和同样 O(lg³n)。任意盒 [x1..x2]×[y1..y2]×[z1..z2] 的和由八个
+// 前缀容差得到（0 坐标的前缀天然为 0，循环不执行）。
+struct Fenwick3D {
+    int side;                       // n
+    int stride;                     // n+1：行/层跨度（下标从 1 起）
+    std::vector<long long> tree;
+
+    explicit Fenwick3D(int n) : side(n), stride(n + 1) {
+        tree.assign(static_cast<std::size_t>(stride) * stride * stride, 0);
+    }
+    std::size_t at(int i, int j, int k) const {
+        return (static_cast<std::size_t>(i) * stride + j) * stride + k;
+    }
+
+    void add(int x, int y, int z, long long delta) {
+        for (int i = x; i <= side; i += i & -i)
+            for (int j = y; j <= side; j += j & -j)
+                for (int k = z; k <= side; k += k & -k) {
+                    tree[at(i, j, k)] += delta;
+                }
+    }
+
+    // [1..x]×[1..y]×[1..z] 的和；含 0 的坐标直接贡献空区间
+    long long prefix(int x, int y, int z) const {
+        long long sum = 0;
+        for (int i = x; i > 0; i -= i & -i)
+            for (int j = y; j > 0; j -= j & -j)
+                for (int k = z; k > 0; k -= k & -k) {
+                    sum += tree[at(i, j, k)];
+                }
+        return sum;
+    }
+
+    long long box(int x1, int y1, int z1, int x2, int y2, int z2) const {
+        // 八顶点容差：奇数次 (−1) 前缀取负，偶数次取正
+        return prefix(x2, y2, z2)
+             - prefix(x1 - 1, y2, z2) - prefix(x2, y1 - 1, z2)
+             - prefix(x2, y2, z1 - 1)
+             + prefix(x1 - 1, y1 - 1, z2) + prefix(x1 - 1, y2, z1 - 1)
+             + prefix(x2, y1 - 1, z1 - 1)
+             - prefix(x1 - 1, y1 - 1, z1 - 1);
+    }
+};
+
+// 稠密 3D 数组暴力版（只用于小 n 对账）
+struct Dense3D {
+    int side;
+    std::vector<long long> a;
+    explicit Dense3D(int n) : side(n),
+        a(static_cast<std::size_t>(n + 1) * (n + 1) * (n + 1), 0) {}
+    long long& at(int i, int j, int k) {
+        return a[(static_cast<std::size_t>(i) * (side + 1) + j) *
+                 (side + 1) + k];
+    }
+    void add(int x, int y, int z, long long d) { at(x, y, z) += d; }
+    long long box(int x1, int y1, int z1, int x2, int y2, int z2) {
+        long long s = 0;
+        for (int i = x1; i <= x2; ++i)
+            for (int j = y1; j <= y2; ++j)
+                for (int k = z1; k <= z2; ++k) { s += at(i, j, k); }
+        return s;
+    }
+};
+
+static void fenwick3d_demo() {
+    println("三维 Fenwick（2-2）：点更新 O(lg^3 n)，盒求和八顶点容差：");
+    Fenwick3D fw(10);
+    // 书内样例的指令流
+    fw.add(1, 1, 4, 5);
+    fw.add(2, 5, 4, 5);
+    long long q1 = fw.box(1, 1, 1, 10, 10, 10);
+    fw.add(3, 4, 5, -34);
+    long long q2 = fw.box(1, 1, 1, 10, 10, 10);
+    println("  两次加法后整盒：{}；再减 34 后：{}（样例答案 10、-24）", q1, q2);
+    assert(q1 == 10 && q2 == -24);
+
+    // 随机对账：小立方体上的稠密版 vs Fenwick
+    std::mt19937 rng{5489};
+    const int n = 14;
+    Fenwick3D fast(n);
+    Dense3D brute(n);
+    int mismatches = 0;
+    for (int t = 0; t < 3000; ++t) {
+        const bool isUpdate = rand_below(rng, 2) == 0;
+        if (isUpdate) {
+            const int x = 1 + static_cast<int>(rand_below(rng, n));
+            const int y = 1 + static_cast<int>(rand_below(rng, n));
+            const int z = 1 + static_cast<int>(rand_below(rng, n));
+            const long long d =
+                static_cast<long long>(rand_below(rng, 21)) - 10;
+            fast.add(x, y, z, d);
+            brute.add(x, y, z, d);
+        } else {
+            int x1 = 1 + static_cast<int>(rand_below(rng, n));
+            int y1 = 1 + static_cast<int>(rand_below(rng, n));
+            int z1 = 1 + static_cast<int>(rand_below(rng, n));
+            int x2 = 1 + static_cast<int>(rand_below(rng, n));
+            int y2 = 1 + static_cast<int>(rand_below(rng, n));
+            int z2 = 1 + static_cast<int>(rand_below(rng, n));
+            if (x1 > x2) { std::swap(x1, x2); }
+            if (y1 > y2) { std::swap(y1, y2); }
+            if (z1 > z2) { std::swap(z1, z2); }
+            if (fast.box(x1, y1, z1, x2, y2, z2) !=
+                brute.box(x1, y1, z1, x2, y2, z2)) { ++mismatches; }
+        }
+    }
+    println("  随机 3000 操作（更新/盒查询混合）对账：不一致 {} 例", mismatches);
+    assert(mismatches == 0);
+}
+
 int main() {
     os_tree_demo();
     interval_demo();
+    fenwick3d_demo();
     println("自检通过");
     return 0;
 }

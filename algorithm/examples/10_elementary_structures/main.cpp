@@ -3,7 +3,11 @@
 // 10.4 有根树的两种数组表示与遍历 /
 // 10.5 单链表上的经典算法（反转·倒数第 k·原地删除·归并·逆向输出）/
 // 10.6 用两个栈实现队列（摊还 O(1)）与镜像的「两队列实现栈」/
-// 10.7 数组上的经典问题（二维有序矩阵查找·原地替换空格）。
+// 10.7 数组上的经典问题（二维有序矩阵查找·原地替换空格）/
+// 10.10 占用数组：花园种花（下标即坑号的集合表示 + 等差数列）/
+// 10.11 RPN 求值与终态周期序列（首次出现表 vs Floyd 判圈）/
+// 10.12 反转数相加（内置整数版 vs 任意长度数字串版）/
+// 10.13 Web 导航（后退栈 + 前进栈，对照「单历史 + 游标」模型）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -17,13 +21,22 @@ using std::print;
 using std::println;
 #endif
 
+#include <algorithm>
 #include <array>
 #include <cassert>
+#include <cmath>
 #include <cstdint>
 #include <queue>
+#include <random>
 #include <stack>
 #include <string>
 #include <vector>
+
+// 可移植随机（docs/01 的纪律：不用 uniform_int_distribution）
+static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
+    std::uint64_t m = static_cast<std::uint64_t>(rng()) * n;
+    return static_cast<std::uint32_t>(m >> 32);
+}
 
 // ═══ 10.1 数组栈与循环队列 ═══
 // 栈：S.top 指向栈顶（0 基：top = 元素个数）。下溢/上溢都用 assert 拦。
@@ -784,6 +797,1031 @@ static void replace_blank_demo() {
     }
 }
 
+// ═══ 10.8 表达式：中缀 / 前缀 / 后缀的互转与求值 ═══
+//
+// 二元表达式树：二元运算符为父节点，左右孩子为两个运算数。三种遍历与三种
+// 表达式**一一对应**：
+//     前序（根-左-右） = 前缀式
+//     中序（左-根-右） = 中缀式
+//     后序（左-右-根） = 后缀式（逆波兰式 RPN）
+// 三者各访问每个节点一次，都 Θ(n)。
+//
+// ★ 关键结论（决定了一道题该给什么输入）：
+//   **前缀式与后缀式无需括号即可唯一确定运算顺序** ⟹ 可由前缀/后缀
+//   **唯一重建表达式树**（逆序扫描 + 栈）；
+//   而**无括号的中缀式有歧义**（"x*y+z"既可读成 x*(y+z) 也可读成
+//   (x*y)+z）⟹ 不能仅凭无括号中缀式建树。
+//
+// ── 一元负号的统一化 ──
+// 一元 -u 让「孩子数」从 2 变成 1，会打乱所有二元规则的统一性。标准做法：
+// 把一元 -u **归一成 0-u**，于是整个系统只需一套二元规则。归一化在**词法
+// 分析阶段**做：`-` 若出现在串首、或前一 token 是运算符 / 左括号，
+// 就是一元负号，插入一个 0。
+
+// 节点：kind 区分原子(0) / 一元(1) / 二元(2)；原子用 text 承载字面量
+// （**原样透传**，不转 double——避免 -45.78 变成 -45.780000 或丢精度）。
+struct ExprNode {
+    std::string text;
+    int kind = 0;                     // 0 = 原子, 1 = 一元, 2 = 二元
+    std::ptrdiff_t l = -1, r = -1;
+};
+
+class ExprForest {
+public:
+    std::vector<ExprNode> node;
+
+    std::ptrdiff_t add_atom(const std::string& t) {
+        node.push_back({t, 0, -1, -1});
+        return static_cast<std::ptrdiff_t>(node.size()) - 1;
+    }
+    std::ptrdiff_t add_unary(const std::string& t, std::ptrdiff_t a) {
+        node.push_back({t, 1, a, -1});
+        return static_cast<std::ptrdiff_t>(node.size()) - 1;
+    }
+    std::ptrdiff_t add_binary(const std::string& t, std::ptrdiff_t a,
+                              std::ptrdiff_t b) {
+        node.push_back({t, 2, a, b});
+        return static_cast<std::ptrdiff_t>(node.size()) - 1;
+    }
+    // 把 src 的整棵树深拷贝进本森林，返回新根下标。求导时需要**复用原式**
+    // 的子树（如商法则的分母 v^2），不能只存指针。
+    std::ptrdiff_t graft(const ExprForest& src, std::ptrdiff_t i) {
+        if (i == -1) { return -1; }
+        const ExprNode& nd = src.node[static_cast<std::size_t>(i)];
+        const std::ptrdiff_t l = graft(src, nd.l);
+        const std::ptrdiff_t r = graft(src, nd.r);
+        node.push_back({nd.text, nd.kind, l, r});
+        return static_cast<std::ptrdiff_t>(node.size()) - 1;
+    }
+};
+
+// 优先级（数字越大越紧）。`ln` 是本节唯一的一元函数；`^` 最紧。
+static int priority(const std::string& op) {
+    if (op == "^") { return 6; }
+    if (op == "ln") { return 5; }
+    if (op == "*" || op == "/") { return 4; }
+    if (op == "+" || op == "-") { return 3; }
+    return 0;                                    // 原子
+}
+static bool isOperator(const std::string& t) { return priority(t) != 0; }
+
+// 词法分析 + **一元负号归一化**：切成 token 流，遇一元 minus 补一个 0。
+static std::vector<std::string> tokenize(const std::string& s) {
+    std::vector<std::string> out;
+    const std::size_t n = s.size();
+    for (std::size_t i = 0; i < n;) {
+        const char ch = s[i];
+        if (ch == ' ') { ++i; continue; }
+        if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^'
+            || ch == '(' || ch == ')') {
+            // 一元负号判据：`-` 出现在串首，或前一个 token 是运算符 / 左括号
+            const bool atStart = out.empty();
+            const std::string prev = atStart ? std::string() : out.back();
+            const bool afterOperandish = prev == "+" || prev == "-" || prev == "*"
+                || prev == "/" || prev == "^" || prev == "(";
+            if (ch == '-' && (atStart || afterOperandish)) {
+                out.push_back("0");// ★ 归一：一元 -u ⟹ 0-u
+            }
+            out.emplace_back(1, ch);
+            ++i;
+            continue;
+        }
+        if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
+            // 函数名 ln（后面必跟左括号）；其余单字母是变量
+            if (ch == 'l' && i + 1 < n && s[i + 1] == 'n'
+                && i + 2 < n && s[i + 2] == '(') {
+                out.push_back("ln");
+                i += 2;
+                continue;
+            }
+            out.emplace_back(1, ch);
+            ++i;
+            continue;
+        }
+        std::size_t j = i;              // 数字（含小数点）
+        while (j < n && ((s[j] >= '0' && s[j] <= '9') || s[j] == '.')) { ++j; }
+        out.push_back(s.substr(i, j - i));
+        i = j;
+    }
+    return out;
+}
+
+// 中缀 → 表达式树：**Shunting-yard**（运算符栈 + 运算数栈）。
+// 遇原子：进数栈；遇运算符：先把栈顶优先级 ≥ 当前（且左结合）的运算符
+// **弹栈消解**再 push；遇 `(` 直接 push；遇 `)` 弹到 `(` 为止。
+// 消解时弹 a、弹 b，以该运算符为根合并 —— 注意**弹栈顺序先右后左**。
+static std::ptrdiff_t build_from_infix(const std::vector<std::string>& tok,
+                                       ExprForest& f) {
+    std::vector<std::ptrdiff_t> val;
+    std::vector<std::string> op;
+    auto reduce = [&]() {
+        const std::string o = op.back();
+        op.pop_back();
+        if (o == "ln") {                    // 一元：只有一个操作数
+            const auto a = val.back(); val.pop_back();
+            val.push_back(f.add_unary(o, a));
+            return;
+        }
+        const auto b = val.back(); val.pop_back();   // 先弹出的是右孩子
+        const auto a = val.back(); val.pop_back();
+        val.push_back(f.add_binary(o, a, b));
+    };
+    for (const std::string& t : tok) {
+        if (t == "(") {
+            op.push_back(t);
+        } else if (t == ")") {
+            while (!op.empty() && op.back() != "(") { reduce(); }
+            if (!op.empty()) { op.pop_back(); }        // 弹掉 `(`
+            if (!op.empty() && op.back() == "ln") { reduce(); }  // ln(...)
+        } else if (isOperator(t)) {
+            // 左结合 ⟹ 优先级**相等也弹**（关键：(a-b)-c 不能弹成 a-(b-c)）
+            while (!op.empty() && op.back() != "("
+                   && priority(op.back()) >= priority(t)) {
+                reduce();
+            }
+            op.push_back(t);
+        } else {
+            val.push_back(f.add_atom(t));
+        }
+    }
+    while (!op.empty()) { reduce(); }
+    return val.back();
+}
+
+// 前向声明：带括号的中序输出在10.9 定义（括号规则那一节），这里先借用它
+// 来展示「同一棵树，中序遍历加不加括号是两种信息量」。
+static void emit_infix(const ExprForest& f, std::ptrdiff_t i, int parentPri,
+                       bool isRightChild, std::string& out);
+
+// 三种遍历 → 三种表达式。各 Θ(n)。
+static void preorder(const ExprForest& f, std::ptrdiff_t i, std::string& out) {
+    if (i == -1) { return; }
+    if (!out.empty()) { out += ' '; }
+    out += f.node[static_cast<std::size_t>(i)].text;
+    preorder(f, f.node[static_cast<std::size_t>(i)].l, out);
+    preorder(f, f.node[static_cast<std::size_t>(i)].r, out);
+}
+static void inorder(const ExprForest& f, std::ptrdiff_t i, std::string& out) {
+    if (i == -1) { return; }
+    const ExprNode& nd = f.node[static_cast<std::size_t>(i)];
+    if (nd.kind == 2) {
+        inorder(f, nd.l, out);
+        if (!out.empty()) { out += ' '; }
+        out += nd.text;
+        inorder(f, nd.r, out);
+    } else {
+        if (!out.empty()) { out += ' '; }
+        out += nd.text;                     // 原子 / 一元运算符：函数名自带括号
+    }
+}
+static void postorder(const ExprForest& f, std::ptrdiff_t i, std::string& out) {
+    if (i == -1) { return; }
+    const ExprNode& nd = f.node[static_cast<std::size_t>(i)];
+    postorder(f, nd.l, out);
+    postorder(f, nd.r, out);
+    if (!out.empty()) { out += ' '; }
+    out += nd.text;
+}
+
+// 前缀式 → 表达式树：**逆序扫描 + 栈**。
+// 前缀是「根-左-右」，从右往左读就变成「右-左-根」—— 右子树先完整读完，
+// 于是可以「弹两棵已建好的子树、自底向上合并」。扫完栈顶即根。
+// **必须逆序**：正序扫描时左右子树都还没读完，无从合并。
+//
+// ★ 弹栈顺序与 Shunting-yard **恰好相反**，这是本节最容易写反的一行：
+//   · Shunting-yard（中缀建树）从左往右扫，先弹的是**右**操作数（最近入栈）；
+//   · 本函数从右往左扫，先弹的是**左**子树（离当前运算符更近的那个）。
+// 记法：右往左扫时，「先读到的是右儿子」但「先弹的是左儿子」。
+static std::ptrdiff_t build_from_prefix(const std::vector<std::string>& tok,
+                                        ExprForest& f) {
+    std::vector<std::ptrdiff_t> stk;
+    for (std::size_t i = tok.size(); i-- > 0;) {
+        const std::string& t = tok[i];
+        if (!isOperator(t)) {
+            stk.push_back(f.add_atom(t));
+        } else if (t == "ln") {
+            const auto a = stk.back(); stk.pop_back();
+            stk.push_back(f.add_unary(t, a));
+        } else {
+            const auto l = stk.back(); stk.pop_back();   // ★ 先弹的是左子树
+            const auto r = stk.back(); stk.pop_back();   // 后弹的是右子树
+            stk.push_back(f.add_binary(t, l, r));
+        }
+    }
+    return stk.empty() ? -1 : stk.back();
+}
+
+// 后缀式求值：单栈，遇原子 push，遇运算符弹所需个数、算完 push。Θ(n)。
+static double eval_rpn(const std::vector<std::string>& tok) {
+    std::vector<double> stk;
+    for (const std::string& t : tok) {
+        if (!isOperator(t)) {
+            stk.push_back(std::stod(t));
+        } else if (t == "ln") {
+            stk.back() = std::log(stk.back());
+        } else {
+            const double b = stk.back(); stk.pop_back();
+            const double a = stk.back(); stk.pop_back();
+            if (t == "+") { stk.push_back(a + b); }
+            else if (t == "-") { stk.push_back(a - b); }
+            else if (t == "*") { stk.push_back(a * b); }
+            else if (t == "/") { stk.push_back(a / b); }
+            else { stk.push_back(std::pow(a, b)); }
+        }
+    }
+    return stk.back();
+}
+
+static void expression_demo() {
+    println("");
+    println("=== 10.8 表达式：中缀 / 前缀 / 后缀的互转与求值 ===");
+    struct Case { const char* infix; const char* prefix; };
+    const Case cases[] = {
+        {"x + y",       "+ x y"},
+        {"x * y + z",   "+ * x y z"},
+        {"(x * y) + z", "+ * x y z"},
+        {"x * (y + z)", "* x + y z"},
+        {"x - y - z",   "- - x y z"},
+    };
+    println("三种遍历 ⟷ 三种表达式（一一对应，各 Θ(n)）：");
+    for (const Case& c : cases) {
+        const std::vector<std::string> tok = tokenize(c.infix);
+        ExprForest f;
+        const auto root = build_from_infix(tok, f);
+        std::string pre, in, post;
+        preorder(f, root, pre);
+        inorder(f, root, in);
+        postorder(f, root, post);
+        println("  中缀输入 {:<12} → 前缀 {:<12} 后缀 {}", c.infix, pre, post);
+        assert(pre == c.prefix);
+    }
+    println("");
+    println("  注意第 2、3 行：输入的中缀**不同**（有无括号），但因代数上");
+    println("  x*y+z 本就该加括号，前缀相同；第 4 行才是真正不同的结构。");
+
+    // ★ 无括号中缀式的歧义：**同一个中缀串**对应两棵不同的树
+    {
+        ExprForest f1;
+        const auto z1 = f1.add_atom("z");
+        const auto y1 = f1.add_atom("y");
+        const auto s1 = f1.add_binary("+", y1, z1);
+        const auto x1 = f1.add_atom("x");
+        const auto t1 = f1.add_binary("*", x1, s1);       // 树 A = x*(y+z)
+        ExprForest f2;
+        const auto z2 = f2.add_atom("z");
+        const auto x2 = f2.add_atom("x");
+        const auto y2 = f2.add_atom("y");
+        const auto p2 = f2.add_binary("*", x2, y2);
+        const auto t2 = f2.add_binary("+", p2, z2);       // 树 B = (x*y)+z
+        std::string pre1, pre2, bare1, bare2;
+        preorder(f1, t1, pre1);
+        preorder(f2, t2, pre2);
+        inorder(f1, t1, bare1);
+        inorder(f2, t2, bare2);
+        println("");
+        println("★ 无括号中缀式的歧义（为什么中缀不能唯一重建树）：");
+        println("    树 A = x*(y+z)   去括号中序 = {}   先序 = {}", bare1, pre1);
+        println("    树 B = (x*y)+z   去括号中序 = {}   先序 = {}", bare2, pre2);
+        println("    两棵树的**去括号中序串完全相同**（x * y + z），而先序**不同**——");
+        println("    ⟹ 前缀/后缀式能唯一确定运算顺序，中缀式不能（除非给优先级");
+        println("       或加括号）。这正是「前缀式可唯一重建、中缀式不可逆」。");
+        assert(bare1 == bare2);
+        assert(bare1 == "x * y + z");
+        assert(pre1 != pre2);
+        assert(pre1 == "* x + y z");
+        assert(pre2 == "+ * x y z");
+    }
+
+    // ★ 前缀式 → 树 → 三种表达式（重建的唯一性）
+    {
+        const std::vector<std::string> pre{"*", "x", "-", "y", "z"};
+        ExprForest f;
+        const auto root = build_from_prefix(pre, f);
+        std::string p, in, post, paren;
+        preorder(f, root, p);
+        inorder(f, root, in);
+        postorder(f, root, post);
+        emit_infix(f, root, 0, false, paren);
+        println("");
+        println("前缀式 → 树（逆序扫描 + 栈）→ 三种表达式：");
+        println("    前缀输入: * x - y z");
+        println("    重建后先序: {}（与输入逐字相同 ⟹ 重建唯一）", p);
+        println("    重建后中序: {}", in);
+        println("    重建后后序: {}", post);
+        println("    中序**加括号**后: {}", paren);
+        println("    ⟹ 中序遍历本身不恢复括号，必须靠优先级规则「补」回来（见 10.9）。");
+        assert(p == "* x - y z");
+        assert(in == "x * y - z");
+        assert(post == "x y z - *");
+        assert(paren == "x * (y - z)");
+        // 逆序扫描时「先弹的是左子树」——与 Shunting-yard 相反（见函数注释）
+        assert(f.node[static_cast<std::size_t>(root)].text == "*");
+        assert(f.node[static_cast<std::size_t>(root)].r
+               == static_cast<std::ptrdiff_t>(2));   // 右孩子是 `- y z`
+    }
+
+    // 一元负号归一化：`-x*y` ⟹ `0-x*y`，从而只需一套二元规则
+    {
+        const std::vector<std::string> tok = tokenize("-x*y");
+        std::string s;
+        for (const std::string& t : tok) { s += (s.empty() ? "" : " ") + t; }
+        ExprForest f;
+        const auto root = build_from_infix(tok, f);
+        std::string pre;
+        preorder(f, root, pre);
+        println("");
+        println("一元负号归一化（`-u` ⟹ `0-u`，只需一套二元规则）：");
+        println("    输入 -x*y 的 token 流: {}", s);
+        println("    建树后先序: {}", pre);
+        println("    ⟹ 树里只有二元 `-` 节点，一元的处理逻辑完全消失。");
+        println("    （归一后 -x*y 成了 0-(x*y)：与 (0-x)*y 数值相同，");
+        println("      但树形由优先级决定——补的0 是二元 `-` 的左孩子。）");
+        assert(pre == "- 0 * x y");
+        assert(f.node[static_cast<std::size_t>(root)].kind == 2);
+        assert(f.node[static_cast<std::size_t>(root)].text == "-");
+        // 负常量同理：-45.78 ⟹ 0-45.78，字面量原样透传
+        const std::vector<std::string> neg = tokenize("-45.78");
+        std::string ns;
+        for (const std::string& t : neg) { ns += (ns.empty() ? "" : " ") + t; }
+        println("    负常量 -45.78 的 token 流: {}（字面量原样保留，不转 double）", ns);
+        assert(ns == "0 - 45.78");
+    }
+
+    // 后缀求值（单栈）
+    {
+        println("");
+        println("后缀式求值（单栈，Θ(n)）：");
+        struct EV { const char* postfix; double want; };
+        const EV evs[] = {
+            {"3 4 +", 7.0},
+            {"3 4 2 * + 5 -", 6.0},        // (3 + 4*2) - 5 = 6
+            {"5 2 ^", 25.0},
+            {"2 3 ^ 4 +", 12.0},
+            {"8 5 /", 1.6},
+            {"2 3 + 4 *", 20.0},
+        };
+        for (const EV& e : evs) {
+            std::vector<std::string> tok;
+            for (char c : std::string(e.postfix)) {
+                if (c != ' ') { tok.emplace_back(1, c); }
+            }
+            const double v = eval_rpn(tok);
+            println("    {:<18} = {:<8g}（期望 {:g}）", e.postfix, v, e.want);
+            assert(v == e.want);
+        }
+    }
+
+    println("");
+    println("  Θ(n) 与栈深：三种表达式各访问每节点一次 ⟹ 互转都是 Θ(n)；");
+    println("  后缀求值的栈深度 = 表达式嵌套深度，与串长无关。");
+}
+
+// ═══ 10.9 表达式树求导：结构归纳与优先级括号规则 ═══
+//
+// 求导公式（本节的核心内容，必须写准）：
+//     (u+v)' = u' + v'
+//     (u-v)' = u' - v'
+//     (uv)'  = u'v + uv'← 乘积法则
+//     (u/v)' = (u'v - uv') / v^2  ← 商法则，写成 v^2（不是 v*v）
+//     ln(u)' = u' / u← 分子是导数、分母是原式
+//     x' = 1,  c' = 0（c 为常数）
+//
+// 输出中缀式时的**括号规则是本节的核心**。设父节点优先级 p、孩子子树
+// 根的优先级 c：
+//   · 左孩子：子树根**不是原子**且 c <  p ⟹ 加括号
+//   · 右孩子：子树根**不是原子**且 c ≤ p ⟹ 加括号（是 ≤ 不是 <！）
+//
+// ★ 为什么右孩子用「≤」：+ - * / 都是**左结合**运算。
+//   a-(b-c) 的括号**必须保留** —— 去掉就成 a-b-c = (a-b)-c，值变了。
+//   而 (a-b)-c 写成 a-b-c 恰好是对的⟹ 左孩子同优先级**不能**加括号。
+// 所以「前严格、后相等」不是笔误，是左结合在括号规则上的镜像。
+
+// 求导：递归生成新树（**不化简**，允许 0*x、1*x）。Θ(n)——
+// 每个原节点生成常数个新节点（乘法法则最多 5 个）。
+static std::ptrdiff_t differentiate(const ExprForest& f, std::ptrdiff_t i,
+                                    ExprForest& out) {
+    if (i == -1) { return -1; }
+    const ExprNode& nd = f.node[static_cast<std::size_t>(i)];
+    if (nd.kind == 0) {                          // 叶子：x'=1，常数'=0
+        return out.add_atom(nd.text == "x" ? "1" : "0");
+    }
+    if (nd.kind == 1) {                          // 一元：ln(u)' = u'/u
+        const auto num = differentiate(f, nd.l, out);      // u'
+        const auto den = out.graft(f, nd.l);              // u（原式，不求导）
+        return out.add_binary("/", num, den);
+    }
+    // 二元：先递归求两个孩子（结构归纳假设：它们正确）
+    const std::string& op = nd.text;
+    if (op == "+" || op == "-") {
+        const auto a = differentiate(f, nd.l, out);        // u'
+        const auto b = differentiate(f, nd.r, out);        // v'
+        return out.add_binary(op, a, b);
+    }
+    if (op == "*") {                             // u'v + uv'
+        const auto up = differentiate(f, nd.l, out);
+        const auto v = out.graft(f, nd.r);
+        const auto term1 = out.add_binary("*", up, v);      // u'·v
+        const auto u = out.graft(f, nd.l);
+        const auto vp = differentiate(f, nd.r, out);
+        const auto term2 = out.add_binary("*", u, vp);      // u·v'
+        return out.add_binary("+", term1, term2);
+    }
+    if (op == "/") {                             // (u'v - uv') / v^2
+        const auto up = differentiate(f, nd.l, out);
+        const auto v1 = out.graft(f, nd.r);
+        const auto t1 = out.add_binary("*", up, v1);       // u'·v
+        const auto u1 = out.graft(f, nd.l);
+        const auto vp = differentiate(f, nd.r, out);
+        const auto t2 = out.add_binary("*", u1, vp);       // u·v'
+        const auto num = out.add_binary("-", t1, t2);
+        const auto v2 = out.graft(f, nd.r);
+        const auto two = out.add_atom("2");
+        const auto den = out.add_binary("^", v2, two);     // v^2，不是 v*v
+        return out.add_binary("/", num, den);
+    }
+    if (op == "ln") {                             // 兜底：kind==1 已处理
+        const auto a = differentiate(f, nd.l, out);
+        return out.add_unary("ln", a);
+    }
+    // 未知运算符：原样透传，不静默出错
+    const auto a = differentiate(f, nd.l, out);
+    const auto b = differentiate(f, nd.r, out);
+    return out.add_binary(op, a, b);
+}
+
+// 树 → 中缀式，按优先级加括号。**流式 append + 预留容量**，
+// 不用 `s = s + ...` 反复拼接（那是 Θ(n²)）。
+static void emit_infix(const ExprForest& f, std::ptrdiff_t i, int parentPri,
+                       bool isRightChild, std::string& out) {
+    if (i == -1) { return; }
+    const ExprNode& nd = f.node[static_cast<std::size_t>(i)];
+    const int p = priority(nd.text);
+    const bool atomic = (nd.kind == 0);
+    // ★ 括号规则：左孩子判严格小于、右孩子判小于等于（左结合）
+    const bool need = !atomic && (isRightChild ? (p <= parentPri) : (p < parentPri));
+    if (need) { out += '('; }
+    if (nd.kind == 2) {
+        emit_infix(f, nd.l, p, false, out);
+        out += ' ';
+        out += nd.text;
+        out += ' ';
+        emit_infix(f, nd.r, p, true, out);
+    } else if (nd.kind == 1) {
+        out += nd.text;
+        out += '(';
+        emit_infix(f, nd.l, 0, false, out);
+        out += ')';
+    } else {
+        out += nd.text;
+    }
+    if (need) { out += ')'; }
+}
+
+static std::string derivative_to_string(const std::string& infix) {
+    const std::vector<std::string> tok = tokenize(infix);
+    ExprForest f;
+    const auto root = build_from_infix(tok, f);
+    ExprForest d;
+    const auto droot = differentiate(f, root, d);   // ★ 必须用返回的根下标
+    std::string out;
+    out.reserve(256);                 // 预留容量 ⟹ append 不重分配 ⟹ Θ(n + L)
+    emit_infix(d, droot, 0, false, out);
+    return out;
+}
+
+static void derivative_demo() {
+    println("");
+    println("=== 10.9 表达式树求导：结构归纳与优先级括号规则 ===");
+    struct Case { const char* expr; const char* want; };
+    const Case cases[] = {
+        {"x*x",    "1 * x + x * 1"},
+        {"x+x",    "1 + 1"},
+        {"x-x",    "1 - 1"},
+        {"x/x",    "(1 * x - x * 1) / x ^ 2"},
+        {"x/3",    "(1 * 3 - x * 0) / 3 ^ 2"},
+        {"x+x*x",  "1 + (1 * x + x * 1)"},
+        {"ln(x)",  "1 / x"},
+        {"-x",     "0 - 1"},
+    };
+    println("求导（不化简，允许 0*x、1*x；幂写成 v^2）：");
+    for (const Case& c : cases) {
+        const std::string got = derivative_to_string(c.expr);
+        println("  {:<8} ⟹ {:<30}", c.expr, got);
+        assert(got == c.want);
+    }
+
+    // ★ 括号规则的钥匙：x*x/x
+    println("");
+    println("★ 括号规则的钥匙 x*x/x（根是 `/`，左孩子是同优先级的 `*`）：");
+    {
+        const std::string got = derivative_to_string("x*x/x");
+        println("  x*x/x  ⟹ {}", got);
+        assert(got == "((1 * x + x * 1) * x - x * x * 1) / x ^ 2");
+        println("    根 `/`（p=4），左孩子子树根是 `*`（c=4，同优先级）——");
+        println("    左孩子判**严格小于** ⟹ 不加括号 ⟹ `(...) * x` 而非 `(...) * (x)`。");
+        println("    右孩子是 x^2（c=6 > 4）⟹ 也不加括号。");
+        println("    若左孩子也用 ≤，会多出一层无谓括号（值虽同，形态不对）。");
+    }
+
+    // ★ 右孩子为什么必须用 ≤：a-(b-c) 必须保留括号
+    println("");
+    println("★ 右孩子为什么必须用「≤」（左结合的镜像）：");
+    {
+        const Case rightAssoc[] = {
+            {"x-(x-x)", "1 - (1 - 1)"},
+            {"x-(x*x)", "1 - (1 * x + x * 1)"},
+            {"x*(x+x)", "1 * (x + x) + x * (1 + 1)"},
+        };
+        for (const Case& c : rightAssoc) {
+            const std::string got = derivative_to_string(c.expr);
+            println("  {:<10} ⟹ {:<30}（括号必须保留）", c.expr, got);
+            assert(got == c.want);
+        }
+        println("    若右孩子也只用「<」，x-(x-x) 会输出成 1-1-1 =");
+        println("    (1-1)-1 = -1，而正确值是 1-(1-1) = 1 —— 值直接错了。");
+        println("    左孩子同优先级**不能**加括号：(x-x)-x 输出 x-x-x 恰好正确。");
+    }
+
+    // ln 的求导：分子是导数、分母是原式
+    println("");
+    println("ln(u)' = u'/u（分子是**导数**、分母是**原式**，别写反）：");
+    {
+        const std::string g1 = derivative_to_string("ln(x)");
+        const std::string g2 = derivative_to_string("ln(x*x)");
+        const std::string g3 = derivative_to_string("ln(2*x)");
+        println("  {:<10} ⟹ {:<22}（u=x, u'=1 ⟹ 1/x）", "ln(x)", g1);
+        println("  {:<10} ⟹ {:<22}（u=x*x, u'=1*x+x*1）", "ln(x*x)", g2);
+        println("  {:<10} ⟹ {:<22}（u=2*x, u'=0*x+2*1）", "ln(2*x)", g3);
+        assert(g1 == "1 / x");
+        assert(g2 == "(1 * x + x * 1) / (x * x)");
+        assert(g3 == "(0 * x + 2 * 1) / (2 * x)");
+        println("    ⟹ 分母是**原式 u**（未求导）；u 的根若是 `*`（c=4 ≤ 4）");
+        println("       则右孩子必须加括号 —— 这正是 ≤ 规则的第二个用武之地。");
+    }
+
+    // 结构归纳的三个层次
+    println("");
+    println("正确性（结构归纳，对树的每个节点分三种情形）：");
+    println("  叶子  ：x'=1、c'=0，符合导数定义。");
+    println("  一元  ：ln(u)' = u'/u，由归纳假设 u' 正确即得。");
+    println("  二元  ：按 + − * / 四个法则组合两个孩子（归纳假设保证孩子正确）。");
+    println("  输出  ：括号规则只做「保持语义」的机械变换 ⟹ 中缀式与树等价。");
+
+    // 输出规模：流式 vs 反复拼接
+    println("");
+    println("输出拼接方式（连乘 x*x*... 不化简时导数会膨胀）：");
+    {
+        std::string expr = "x";
+        for (int i = 1; i < 8; ++i) { expr = "(" + expr + "*x)"; }
+        const std::string got = derivative_to_string(expr);
+        println("  输入串长度 {}，导数串长度 {}", expr.size(), got.size());
+        println("  流式 append（先 reserve(256)）Θ(n + L)；");
+        println("  反复 `out = out + ...`（每次重新分配）Θ(n · L)。");
+        println("  ⟹ 输出长度 L 本身可能指数增长（不化简的固有代价，见坑位），");
+        println("     但**拼接方式**不该再给它加一层平方。");
+    }
+}
+
+// ═══ 10.10 占用数组：花园种花 ═══
+// F 个坑一字排开；第 j 种花从坑 L[j] 起每隔 I[j]−1 坑一株，即占据等差数列
+// L[j], L[j]+I[j], L[j]+2I[j], …。用一个 vector<char> 当「占用位图」：
+// 下标 = 坑号−1，值 = 是否被占。这是集合最朴素的表示——成员检测 O(1)，
+// 最后数一遍 0 的个数即可。
+static int flower_garden_empty(int f, const std::vector<int>& starts,
+                               const std::vector<int>& intervals) {
+    std::vector<char> occupied(static_cast<std::size_t>(f), 0);
+    for (std::size_t j = 0; j < starts.size(); ++j) {
+        for (int p = starts[j]; p <= f; p += intervals[j]) {
+            occupied[static_cast<std::size_t>(p - 1)] = 1;   // 坑号 1 基
+        }
+    }
+    int empty = 0;
+    for (char x : occupied) { empty += (x == 0); }
+    return empty;
+}
+
+// 逐坑核对版：坑 i 被花 j 占据 ⟺ (i − L[j]) mod I[j] == 0。
+// （写成 (i−1) mod I[j] == (L[j]−1) mod I[j] 也对——右边必须是 L[j]−1，
+// 写成 L[j] 就整体错位一格，一株都种不上。）
+static int flower_garden_check(int f, const std::vector<int>& starts,
+                               const std::vector<int>& intervals) {
+    int empty = 0;
+    for (int i = 1; i <= f; ++i) {
+        bool planted = false;
+        for (std::size_t j = 0; j < starts.size(); ++j) {
+            if (i >= starts[j] &&
+                (i - starts[j]) % intervals[j] == 0) { planted = true; break; }
+        }
+        if (!planted) { ++empty; }
+    }
+    return empty;
+}
+
+static void flower_garden_demo() {
+    println("美丽的花园（1-4）：占用数组 + 等差数列：");
+    const std::vector<int> l{1, 3, 1}, iv{3, 7, 4};
+    const int empty = flower_garden_empty(30, l, iv);
+    const int check = flower_garden_check(30, l, iv);
+    println("  F=30，玫瑰 L1/I3、秋海棠 L3/I7、雏菊 L1/I4");
+    println("  占用数组版空坑 {}，逐坑核对版 {}（答案 13）", empty, check);
+    assert(empty == 13 && check == 13);
+
+    std::mt19937 rng{5489};
+    int mismatches = 0;
+    for (int t = 0; t < 2000; ++t) {
+        const int f = 1 + static_cast<int>(rand_below(rng, 200));
+        const int k = 1 + static_cast<int>(rand_below(rng, 6));
+        std::vector<int> ls, is;
+        for (int j = 0; j < k; ++j) {
+            ls.push_back(1 + static_cast<int>(rand_below(rng,
+                                    static_cast<std::uint32_t>(f))));
+            is.push_back(1 + static_cast<int>(rand_below(rng, 10)));
+        }
+        if (flower_garden_empty(f, ls, is) !=
+            flower_garden_check(f, ls, is)) { ++mismatches; }
+    }
+    println("  随机 {} 例两版对账：不一致 {} 例", 2000, mismatches);
+    assert(mismatches == 0);
+}
+
+// ═══ 10.11 后缀表达式（RPN）与终态周期序列 ═══
+// 函数 f: {0…N} → {0…N} 以后缀式给出；从 n 出发不断迭代 f，轨道有限
+// ⟹ 必落入一个循环，求该循环（周期部分）的长度。
+
+// 按空格切词。
+static std::vector<std::string> split_tokens(const std::string& s) {
+    std::vector<std::string> tokens;
+    std::size_t i = 0;
+    while (i < s.size()) {
+        while (i < s.size() && s[i] == ' ') { ++i; }
+        const std::size_t j = i;
+        while (i < s.size() && s[i] != ' ') { ++i; }
+        if (i > j) { tokens.push_back(s.substr(j, i - j)); }
+    }
+    return tokens;
+}
+
+// RPN 求值：栈式计算。中间积可能超过 64 位（如取模前连乘多项），用
+// __int128 兜底；返回值因末尾 %N 而落在 0..N−1。
+static long long rpn_calculate(long long N, long long x,
+                               const std::vector<std::string>& tokens) {
+    // 唯一的 % 在末尾，取模前的中间值用 unsigned long long：N ≤ 1.1·10⁶
+    // 时三因子连乘约 1.3·10¹⁸，装得下；表达式项数更多时需换大整数。
+    std::vector<unsigned long long> st;
+    for (const std::string& t : tokens) {
+        if (t == "+" || t == "*" || t == "%") {
+            const unsigned long long op2 = st.back(); st.pop_back();
+            const unsigned long long op1 = st.back(); st.pop_back();
+            unsigned long long r = 0;
+            if (t == "+") { r = op1 + op2; }
+            else if (t == "*") { r = op1 * op2; }
+            else { r = op1 % op2; }
+            st.push_back(r);
+        } else if (t == "x") {
+            st.push_back(static_cast<unsigned long long>(x));
+        } else if (t == "N") {
+            st.push_back(static_cast<unsigned long long>(N));
+        } else {
+            st.push_back(static_cast<unsigned long long>(std::stoll(t)));
+        }
+    }
+    return static_cast<long long>(st.back());
+}
+
+// 周期算法一（首次出现表）：first[v] = 值 v 第一次出现的迭代序号，-1 为
+// 未见。重复时周期 = 当前序号 − 首次序号。O(N+1) 时间与空间。
+template <class F>
+static int period_by_first_occurrence(long long N, long long start, const F& f) {
+    std::vector<int> first(static_cast<std::size_t>(N) + 1, -1);
+    long long x = start;
+    int k = 0;
+    while (first[static_cast<std::size_t>(x)] == -1) {
+        first[static_cast<std::size_t>(x)] = k++;
+        x = f(x);
+    }
+    return k - first[static_cast<std::size_t>(x)];
+}
+
+// 周期算法二（Floyd 判圈，对账用）：快慢指针同步前进，相遇后再用其中
+// 一个指针走一圈计数。O(1) 额外空间，不依赖任何下标表。
+template <class F>
+static int period_by_floyd(long long start, const F& f) {
+    long long tortoise = f(start);
+    long long hare = f(f(start));
+    while (tortoise != hare) {
+        tortoise = f(tortoise);
+        hare = f(f(hare));
+    }
+    int period = 1;
+    hare = f(tortoise);
+    while (tortoise != hare) {
+        hare = f(hare);
+        ++period;
+    }
+    return period;
+}
+
+static void periodic_sequence_demo() {
+    println("=== 10.11 后缀表达式（RPN）与终态周期序列 ===");
+    struct Case {
+        long long N, n;
+        std::string rpn;
+        int answer;
+    };
+    const std::vector<Case> cases = {
+        {10, 1, "x N %", 1},
+        {11, 1, "x x 1 + * N %", 3},
+        {1728, 1, "x x 1 + * x 2 + * N %", 6},
+        {1728, 1, "x x 1 + x 2 + * * N %", 6},
+        {100003, 1, "x x 123 + * x 12345 + * N %", 369}};
+    for (const Case& c : cases) {
+        const std::vector<std::string> tokens = split_tokens(c.rpn);
+        auto f = [&](long long x) { return rpn_calculate(c.N, x, tokens); };
+        const int p1 = period_by_first_occurrence(c.N, c.n, f);
+        const int p2 = period_by_floyd(c.n, f);
+        println("  N={} n={} RPN=\"{}\"：首次出现表 {}，Floyd {}（答案 {}）",
+                c.N, c.n, c.rpn, p1, p2, c.answer);
+        assert(p1 == c.answer && p2 == c.answer);
+    }
+    // 样例 2 的轨道展示：1 → 2 → 6 → 9 → 2…
+    {
+        const std::vector<std::string> tokens = split_tokens("x x 1 + * N %");
+        print("  样例2 轨道展示：1");
+        long long x = 1;
+        for (int k = 0; k < 4; ++k) {
+            x = rpn_calculate(11, x, tokens);
+            print(" → {}", x);
+        }
+        println(" …（2,6,9 周而复始 ⟹ 周期 3）");
+    }
+    std::mt19937 rng{5489};
+    // 随机仿射 RPN：(x*a + b) % N，两种周期算法对账。
+    int rpn_trials = 3000, rpn_bad = 0;
+    for (int t = 0; t < rpn_trials; ++t) {
+        const long long N = 1 + static_cast<long long>(rand_below(rng, 2000));
+        const long long start = static_cast<long long>(rand_below(
+            rng, static_cast<std::uint32_t>(N)));
+        const long long a = static_cast<long long>(rand_below(
+            rng, static_cast<std::uint32_t>(N)));
+        const long long b = static_cast<long long>(rand_below(
+            rng, static_cast<std::uint32_t>(N)));
+        const std::string rpn =
+            "x " + std::to_string(a) + " * " + std::to_string(b) + " + N %";
+        const std::vector<std::string> tokens = split_tokens(rpn);
+        auto f = [&](long long x) { return rpn_calculate(N, x, tokens); };
+        if (period_by_first_occurrence(N, start, f) !=
+            period_by_floyd(start, f)) { ++rpn_bad; }
+    }
+    println("  随机 {} 个仿射 RPN 案例：首次表 vs Floyd 不一致 {} 例",
+            rpn_trials, rpn_bad);
+    assert(rpn_bad == 0);
+    // 随机映射表：完全任意的 f，两种周期算法对账（不含 RPN，纯判圈）。
+    int map_trials = 1000, map_bad = 0;
+    for (int t = 0; t < map_trials; ++t) {
+        const long long N = 1 + static_cast<long long>(rand_below(rng, 2000));
+        std::vector<long long> table(static_cast<std::size_t>(N));
+        for (long long& y : table) {
+            y = static_cast<long long>(rand_below(
+                rng, static_cast<std::uint32_t>(N)));
+        }
+        auto f = [&](long long x) { return table[static_cast<std::size_t>(x)]; };
+        const long long start = static_cast<long long>(rand_below(
+            rng, static_cast<std::uint32_t>(N)));
+        if (period_by_first_occurrence(N, start, f) !=
+            period_by_floyd(start, f)) { ++map_bad; }
+    }
+    println("  随机 {} 个任意映射：首次表 vs Floyd 不一致 {} 例",
+            map_trials, map_bad);
+    assert(map_bad == 0);
+}
+
+// ═══ 10.12 反转数相加 ═══
+// 数的反转数：十进制位顺序颠倒，末尾 0 变前导 0 被丢弃（1200→21）。
+// 任务：把两个数各自反转、相加、再把和反转，输出时剥掉前导零。
+
+// 内置整数版（位数受 64 位限制）：逐位 x%10 拼进 r。
+static unsigned long long reverse_number(unsigned long long x) {
+    unsigned long long r = 0;
+    while (x > 0) {
+        r = r * 10 + x % 10;
+        x /= 10;
+    }
+    return r;
+}
+
+static unsigned long long add_reversed(unsigned long long x,
+                                       unsigned long long y,
+                                       unsigned long long& middle_sum) {
+    middle_sum = reverse_number(x) + reverse_number(y);
+    return reverse_number(middle_sum);
+}
+
+// 任意长度数字串版（原始输入位数不受内置整数限制）：
+// 先反转两串，按十进制列从低位相加得 z'（普通写法），再把 z' 反转成 z，
+// 最后剥前导零。
+static std::string add_reversed_digits(std::string x, std::string y) {
+    std::reverse(x.begin(), x.end());        // x、y 现在是反转数
+    std::reverse(y.begin(), y.end());
+    std::string cols;                        // 列输出按低位→高位 push
+    int carry = 0;
+    int i = static_cast<int>(x.size()) - 1;
+    int j = static_cast<int>(y.size()) - 1;
+    while (i >= 0 || j >= 0 || carry > 0) {
+        int d = carry;
+        if (i >= 0) { d += x[static_cast<std::size_t>(i--)] - '0'; }
+        if (j >= 0) { d += y[static_cast<std::size_t>(j--)] - '0'; }
+        cols.push_back(static_cast<char>('0' + d % 10));
+        carry = d / 10;
+    }
+    std::reverse(cols.begin(), cols.end());  // → z' 的普通写法
+    std::string z(cols.rbegin(), cols.rend()); // z = 反转 z'
+    std::size_t p = 0;
+    while (p + 1 < z.size() && z[p] == '0') { ++p; }
+    return z.substr(p);
+}
+
+static void reversed_addition_demo() {
+    println("=== 10.12 反转数相加：反转、求和、再反转 ===");
+    struct Case {
+        unsigned long long x, y;
+        std::string sx, sy, answer;
+    };
+    const std::vector<Case> cases = {
+        {24, 1, "24", "1", "34"},
+        {4358, 754, "4358", "754", "1998"},
+        {305, 794, "305", "794", "1"}};
+    for (const Case& c : cases) {
+        unsigned long long middle = 0;
+        const unsigned long long r = add_reversed(c.x, c.y, middle);
+        const std::string rs = add_reversed_digits(c.sx, c.sy);
+        println("    {} + {}：反转数之和 {}，再反转 {}；数字串版 {}（答案 {}）",
+                c.sx, c.sy, middle, r, rs, c.answer);
+        assert(std::to_string(r) == c.answer && rs == c.answer);
+    }
+    // 超长输入：20 个 9 与 1。原始输入与反转和都塞不进 64 位整数，
+    // 但数字串版照常：99..9 + 1 = 1 后接 20 个 0，再反转剥零得 1。
+    const std::string big(20, '9');
+    const std::string rbig = add_reversed_digits(big, "1");
+    println("  超长案例：20 位 9 + 1 ⟹ {}（数字串版，不依赖内置整数宽度）", rbig);
+    assert(rbig == "1");
+
+    std::mt19937 rng{5489};
+    int trials = 3000, mismatches = 0;
+    for (int t = 0; t < trials; ++t) {
+        // ≤8 位保证反转数 ≤ 10⁸、和 ≤ 2·10⁸，内置整数版安全。
+        const int digits = 1 + static_cast<int>(rand_below(rng, 8));
+        unsigned long long x = 1 + rand_below(rng, 9);   // 首位非零
+        unsigned long long y = 1 + rand_below(rng, 9);
+        for (int k = 1; k < digits; ++k) {
+            // 末位取 1..9（反转不丢零的题设）；其余位任意。
+            const std::uint32_t top = (k + 1 == digits ? 9u : 10u);
+            x = x * 10 + (k + 1 == digits ? 1 + rand_below(rng, 9)
+                                         : rand_below(rng, top));
+            y = y * 10 + (k + 1 == digits ? 1 + rand_below(rng, 9)
+                                         : rand_below(rng, top));
+        }
+        unsigned long long middle = 0;
+        const unsigned long long r1 = add_reversed(x, y, middle);
+        const std::string r2 = add_reversed_digits(std::to_string(x),
+                                                   std::to_string(y));
+        if (std::to_string(r1) != r2) { ++mismatches; }
+    }
+    println("  随机 {} 例（≤8 位）：整数版 vs 数字串版 不一致 {} 例",
+            trials, mismatches);
+    assert(mismatches == 0);
+}
+
+// ═══ 10.13 Web 导航：两个栈模拟浏览器 ═══
+// 不变量：back_ 栈顶是「当前页的前一页」，forward_ 栈顶是「当前页的后一页」；
+// 当前页本身不在任何一个栈里。
+class Browser {
+    std::stack<std::string> back_;
+    std::stack<std::string> forward_;
+    std::string current_ = "http://www.acm.org/";
+public:
+    // 三个操作都返回「当前页」；back/forward 返回 bool 表示命令是否被忽略。
+    bool back() {
+        if (back_.empty()) { return false; }       // 忽略
+        forward_.push(current_);
+        current_ = back_.top();
+        back_.pop();
+        return true;
+    }
+    bool forward() {
+        if (forward_.empty()) { return false; }    // 忽略
+        back_.push(current_);
+        current_ = forward_.top();
+        forward_.pop();
+        return true;
+    }
+    void visit(std::string url) {
+        back_.push(current_);
+        current_ = std::move(url);
+        // 新访问会「分叉」：旧的前进链全部作废。
+        while (!forward_.empty()) { forward_.pop(); }
+    }
+    const std::string& current() const { return current_; }
+};
+
+// 参照实现：一条历史记录 + 游标。BACK 移游标、FORWARD 移游标、
+// VISIT 砍掉游标之后的尾巴再追加。与双栈结构完全不同，用来对账。
+struct BrowserReference {
+    std::vector<std::string> history = {"http://www.acm.org/"};
+    int pos = 0;
+    std::string execute(const std::string& cmd, const std::string& url) {
+        if (cmd == "BACK") {
+            if (pos == 0) { return "Ignored"; }
+            --pos;
+        } else if (cmd == "FORWARD") {
+            if (pos + 1 == static_cast<int>(history.size())) {
+                return "Ignored";
+            }
+            ++pos;
+        } else {
+            history.resize(static_cast<std::size_t>(pos + 1));
+            history.push_back(url);
+            ++pos;
+        }
+        return history[static_cast<std::size_t>(pos)];
+    }
+};
+
+static void web_navigation_demo() {
+    println("=== 10.13 Web 导航：后退栈 + 前进栈 ===");
+    // 命令编码成 (指令, 参数)；BACK/FORWARD 的参数为空串。
+    struct Command {
+        std::string cmd;
+        std::string url;
+    };
+    const std::vector<Command> script = {
+        {"VISIT", "http://acm.ashland.edu/"},
+        {"VISIT", "http://acm.baylor.edu/acmicpc/"},
+        {"BACK", ""},
+        {"BACK", ""},
+        {"BACK", ""},
+        {"FORWARD", ""},
+        {"VISIT", "http://www.ibm.com/"},
+        {"BACK", ""},
+        {"BACK", ""},
+        {"FORWARD", ""},
+        {"FORWARD", ""},
+        {"FORWARD", ""}};
+    Browser browser;
+    BrowserReference reference;
+    println("  样例命令流（命令 ⟹ 响应）：");
+    int mismatches = 0;
+    for (const Command& c : script) {
+        std::string shown = c.cmd;
+        if (c.cmd == "VISIT") { shown += " " + c.url; }
+        std::string response;
+        if (c.cmd == "BACK") {
+            response = browser.back() ? browser.current() : "Ignored";
+        } else if (c.cmd == "FORWARD") {
+            response = browser.forward() ? browser.current() : "Ignored";
+        } else {
+            browser.visit(c.url);
+            response = browser.current();
+        }
+        const std::string expected = reference.execute(c.cmd, c.url);
+        if (response != expected) { ++mismatches; }
+        println("    {} ⟹ {}", shown, response);
+    }
+    assert(mismatches == 0);
+
+    // 随机命令流：VISIT/BACK/FORWARD 按 4:3:3 混合，URL 从固定池取。
+    std::mt19937 rng{5489};
+    std::vector<std::string> pool;
+    for (int i = 0; i < 64; ++i) {
+        pool.push_back("https://example.test/p" +
+                       std::format("{:04}", i) + ".html");
+    }
+    Browser browser2;
+    BrowserReference reference2;
+    const int trials = 3000;
+    for (int t = 0; t < trials; ++t) {
+        const std::uint32_t kind = rand_below(rng, 10);
+        const std::string cmd =
+            kind < 4 ? "VISIT" : kind < 7 ? "BACK" : "FORWARD";
+        const std::string url =
+            cmd == "VISIT" ? pool[rand_below(rng,
+                                             static_cast<std::uint32_t>(pool.size()))]
+                           : std::string{};
+        std::string response;
+        if (cmd == "BACK") {
+            response = browser2.back() ? browser2.current() : "Ignored";
+        } else if (cmd == "FORWARD") {
+            response = browser2.forward() ? browser2.current() : "Ignored";
+        } else {
+            browser2.visit(url);
+            response = browser2.current();
+        }
+        if (response != reference2.execute(cmd, url)) { ++mismatches; }
+    }
+    println("  随机 {} 条命令：双栈模型 vs 单历史+游标模型 不一致 {} 例",
+            trials, mismatches);
+    assert(mismatches == 0);
+}
+
 int main() {
     stack_queue_demo();
     linked_list_demo();
@@ -792,6 +1830,12 @@ int main() {
     two_stack_queue_demo();
     sorted_matrix_demo();
     replace_blank_demo();
+    expression_demo();
+    derivative_demo();
+    flower_garden_demo();
+    periodic_sequence_demo();
+    reversed_addition_demo();
+    web_navigation_demo();
     println("自检通过");
     return 0;
 }

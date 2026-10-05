@@ -19,7 +19,13 @@ using std::println;
 #include <cassert>
 #include <cstdint>
 #include <numeric>
+#include <random>
 #include <vector>
+
+static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
+    std::uint64_t m = static_cast<std::uint64_t>(rng()) * n;
+    return static_cast<std::uint32_t>(m >> 32);
+}
 
 // CLRS 图 23.1 的无向带权图：9 顶点 14 边
 struct Edge { int u, v, w; };
@@ -112,6 +118,111 @@ static bool is_spanning_tree(const std::vector<Edge>& tree) {
     return d.find(0) == d.find(8);   // 连通代表
 }
 
+// ═══ 24.5 物以类聚：MST 边权序列上的分组阈值 ═══
+// N 个点（属性 a,b），距离 = 曼哈顿距离。要分成 K 组，使每个组内的
+// 成员（除组内唯一者外）至少有一个「距离不超过 X」的伙伴；求最小 X。
+struct ClusterPoint {
+    int a = 0, b = 0;
+};
+
+static int manhattan(const ClusterPoint& p, const ClusterPoint& q) {
+    return std::abs(p.a - q.a) + std::abs(p.b - q.b);
+}
+
+// 阈值直接判定法：保留权 ≤ X 的边，DSU 分量数 ≤ K 即可行。
+// （分量 ≥2 者每人都有 ≤X 的伙伴；孤立分量自成一组，条件真空成立。）
+static int cluster_threshold_brute(const std::vector<ClusterPoint>& pts, int k) {
+    const int n = static_cast<int>(pts.size());
+    std::vector<Edge> edges;
+    for (int i = 0; i < n; ++i)
+        for (int j = i + 1; j < n; ++j)
+            edges.push_back({i, j, manhattan(pts[static_cast<std::size_t>(i)],
+                                             pts[static_cast<std::size_t>(j)])});
+    std::ranges::sort(edges, {}, &Edge::w);
+    std::vector<int> weights;
+    for (const Edge& e : edges) {
+        if (weights.empty() || weights.back() != e.w) { weights.push_back(e.w); }
+    }
+    for (const int x : weights) {
+        Dsu dsu(n);
+        for (const Edge& e : edges) {
+            if (e.w > x) { break; }
+            dsu.unite(e.u, e.v);
+        }
+        int components = 0;
+        for (int i = 0; i < n; ++i)
+            if (dsu.find(i) == i) { ++components; }
+        if (components <= k) { return x; }
+    }
+    return -1;
+}
+
+// MST 法：Kruskal 接受边的权序列升序，第 N−K 次合并（0 基下标 N−K−1）
+// 使分量数首次降到 K，该边权即最小阈值。
+static int cluster_threshold_mst(const std::vector<ClusterPoint>& pts, int k) {
+    const int n = static_cast<int>(pts.size());
+    std::vector<Edge> edges;
+    for (int i = 0; i < n; ++i)
+        for (int j = i + 1; j < n; ++j)
+            edges.push_back({i, j, manhattan(pts[static_cast<std::size_t>(i)],
+                                             pts[static_cast<std::size_t>(j)])});
+    std::ranges::sort(edges, {}, &Edge::w);
+    Dsu dsu(n);
+    int components = n;
+    std::vector<int> tree_weights;
+    for (const Edge& e : edges) {
+        if (dsu.unite(e.u, e.v)) {
+            tree_weights.push_back(e.w);
+            if (--components == k) { return e.w; }
+        }
+    }
+    return tree_weights[static_cast<std::size_t>(n - k - 1)]; // k==1
+}
+
+static void clustering_demo() {
+    println("物以类聚（曼哈顿距离完全图；MST 边权序列上的分组阈值）：");
+    const std::vector<ClusterPoint> sample{
+        {1, 2}, {2, 3}, {2, 2}, {3, 4}, {4, 3}, {3, 1}};
+    const int k = 2;
+    const int by_mst = cluster_threshold_mst(sample, k);
+    const int by_enum = cluster_threshold_brute(sample, k);
+    // 打印样例 MST 边权升序（5 条：1 1 2 2 2）。
+    std::vector<Edge> edges;
+    for (std::size_t i = 0; i < sample.size(); ++i)
+        for (std::size_t j = i + 1; j < sample.size(); ++j)
+            edges.push_back({static_cast<int>(i), static_cast<int>(j),
+                            manhattan(sample[i], sample[j])});
+    std::ranges::sort(edges, {}, &Edge::w);
+    Dsu dsu(static_cast<int>(sample.size()));
+    std::vector<int> tree_weights;
+    for (const Edge& e : edges)
+        if (dsu.unite(e.u, e.v)) { tree_weights.push_back(e.w); }
+    print("  6 点的 MST 边权升序：");
+    for (int w : tree_weights) { print("{} ", w); }
+    println("");
+    println("  分 {} 组：MST 法阈值 {}（首次降到 {} 个分量），逐阈值枚举 {}（样例答案 2）",
+            k, by_mst, k, by_enum);
+    assert(by_mst == 2 && by_enum == 2);
+
+    std::mt19937 rng{5489};
+    int trials = 1500, mismatches = 0;
+    for (int t = 0; t < trials; ++t) {
+        const int n = 2 + static_cast<int>(rand_below(rng, 11));
+        std::vector<ClusterPoint> pts(static_cast<std::size_t>(n));
+        for (ClusterPoint& p : pts) {
+            p.a = static_cast<int>(rand_below(rng, 20));
+            p.b = static_cast<int>(rand_below(rng, 20));
+        }
+        const int kk = 1 + static_cast<int>(rand_below(
+            rng, static_cast<std::uint32_t>(n - 1)));
+        if (cluster_threshold_mst(pts, kk) !=
+            cluster_threshold_brute(pts, kk)) { ++mismatches; }
+    }
+    println("  随机 {} 例（N≤12，坐标 ≤19）：MST 法 vs 逐阈值枚举 不一致 {} 例",
+            trials, mismatches);
+    assert(mismatches == 0);
+}
+
 int main() {
     println("最小生成树（图 23.1 的 9 顶点 14 边无向带权图）：");
     // Kruskal
@@ -133,6 +244,7 @@ int main() {
     // 双解对账
     assert(is_spanning_tree(t1) && is_spanning_tree(t2));
     println("  两解都是 8 条边的连通生成树，总权同为 37（与 CLRS 图 23.4 的 MST 一致）");
+    clustering_demo();
     println("自检通过");
     return 0;
 }

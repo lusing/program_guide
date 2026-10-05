@@ -1,7 +1,9 @@
 // 02 入门：插入排序、循环不变式与归并排序（CLRS 第 2 章）。结构：
 // 02.1 插入排序逐步追踪（图 2.2）/ 02.2 循环不变式机器检查 /
 // 02.3 最好/最坏/平均的分析实验 / 02.4 MERGE 过程追踪（图 2.3）与递归归并 /
-// 02.5 归并排序递归树（图 2.4）。
+// 02.5 归并排序递归树（图 2.4）/ 02.6 计数问题两例（累积计数、周期取模）/
+// 02.7 能量转换（带「不前进」检测与溢出预判的模拟）/
+// 02.8 对称排序（偶数位升序 + 奇数位降序；链表移动过程对账）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -19,8 +21,11 @@ using std::println;
 #include <cassert>
 #include <cstdint>
 #include <format>
+#include <iterator>
+#include <list>
 #include <random>
 #include <span>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -160,6 +165,223 @@ static void recursion_tree(int n) {
     assert(std::ranges::is_sorted(v));
 }
 
+// ═══ 02.6 两个计数问题：累积计数与周期取模 ═══
+// 问题 1-1 骑士的金币：第 1 天 1 枚，接下来 2 天每天 2 枚，接下来 3 天每天
+// 3 枚……问第 N 天累计多少枚。这是「累积计数」的原型：一个计数器走天数，
+// 一个计数器攒金币，循环不变式是「days 天时 coins = 已到期各段贡献之和」。
+static long long golden_coins(long long n) {
+    long long coins = 0, k = 1, days = 0;
+    while (days + k <= n) {          // 还装得下一整个「k 枚段」
+        coins += k * k;              // 该段 k 天、每天 k 枚
+        days += k;
+        ++k;
+    }
+    coins += k * (n - days);         // 尾段：剩 n−days 天，每天 k 枚
+    return coins;
+}
+
+// 问题 1-7 公交调度：每路车按给定的间隔序列**循环**发车，周期 T = Σ间隔。
+// 到达时刻 arrival 与「圈内的哪一班车最近」只通过 arrival mod T 有关——
+// 取模把无穷时间轴压回一个周期内；再用前缀和找到圈内第一个 ≥ R 的发车点。
+static void counting_problems() {
+    println("金币问题（1-1）：连续 k 天每天 k 枚，天数与金币总数：");
+    const long long cases[]{10, 6, 7, 11, 100, 10000};
+    for (long long n : cases) {
+        const long long coins = golden_coins(n);
+        // 闭式对账：找 k 使 k(k+1)/2 ≤ n，则金币 = Σ_{i≤k} i² + (k+1)·j，
+        // 其中 j = n − k(k+1)/2；Σi² 的闭式是 k(k+1)(2k+1)/6。
+        long long k = 0, tri = 0;    // tri = k(k+1)/2
+        while (tri + k + 1 <= n) { ++k; tri += k; }
+        const long long j = n - tri;
+        const long long closed = k * (k + 1) * (2 * k + 1) / 6 + (k + 1) * j;
+        assert(coins == closed);
+        println("  N={:5}：金币 {:6}（= Σi^2 闭式 k(k+1)(2k+1)/6 + (k+1)·{}）",
+                n, coins, j);
+    }
+
+    println("公交调度（1-7）：周期取模 + 前缀和扫描：");
+    // 三路车，发车间隔构成循环周期；乘客 arrival=1000 时刻到站
+    const std::vector<std::vector<long long>> routes{
+        {100, 200, 300}, {400, 500, 600}, {700, 800, 900}};
+    const long long arrival = 1000;
+    long long best = -1;
+    for (std::size_t i = 0; i < routes.size(); ++i) {
+        long long period = 0;                       // T = 一圈的总时长
+        for (long long d : routes[i]) { period += d; }
+        const long long r = arrival % period;       // 本周期内已过的时刻
+        long long wait = period - r;                // 最坏：等到下一圈头一班车
+        long long prefix = 0;                       // 前缀和 = 圈内发车时刻
+        for (long long d : routes[i]) {
+            prefix += d;
+            if (prefix >= r) { wait = prefix - r; break; }  // 第一班 ≥ r
+        }
+        println("  第 {} 路：周期 T={}，arrival mod T = {} ⟹ 等待 {}",
+                i + 1, period, r, wait);
+        if (best < 0 || wait < best) { best = wait; }
+    }
+    println("  最短等待 = {}（arrival={} 取模后只需看圈内的第 {} 个时间单位）",
+            best, arrival, arrival % 600);
+    assert(best == 200);
+}
+
+// ═══ 02.7 能量转换：先预判、后乘法的模拟 ═══
+// 转换规则 A ← (A−V)·K。三类失败：① M≥N 不用转；② M<V 连一次都做不了；
+// ③ 转换不增（(A−V)·K ≤ A，K=1（V=0 时持平）/ K=0 / 能量太低时都可能）。
+// 关键纪律：**先判断乘积是否已达标，达标就直接返回，不做乘法**——
+// 因为一旦 (A−V)·K ≥ N 这一步就是答案；而不提前返回时乘积严格小于 N，
+// 全程算术被 N（题面 ≤1e8）钳住，根本不存在溢出。
+static long long energy_conversions(long long n, long long m, long long v,
+                                    long long k) {
+    if (m >= n) { return 0; }                    // ①
+    if (m < v) { return -1; }                    // ②
+    long long a = m, count = 0;
+    while (true) {
+        const long long gain = a - v;
+        // 「这一步就够」等价于 gain·k ≥ n；不做乘法的判法：
+        // gain ≥ ⌈n/k⌉，k=0 时右边无意义（必然不前进，交给下面的判定）。
+        if (k > 0 && gain >= (n + k - 1) / k) { return count + 1; }
+        const long long next = gain * k;         // 此处必有 next < n，安全
+        if (next <= a) { return -1; }            // ③ 不前进：永远没戏
+        a = next;
+        ++count;
+    }
+}
+
+// BFS 对账（小值域）：把能量值 0..N 当状态，转换是有向边；跳跃 ≥N 即开门。
+// 与模拟版的区别是它不依赖「贪心每次必转」的直觉——本题转换唯一，
+// BFS 只是给模拟的正确性背书。
+static long long energy_conversions_bfs(long long n, long long m, long long v,
+                                        long long k) {
+    if (m >= n) { return 0; }
+    std::vector<int> dist(static_cast<std::size_t>(n), -1);
+    std::vector<long long> q;
+    q.push_back(m);
+    dist[static_cast<std::size_t>(m)] = 0;
+    for (std::size_t head = 0; head < q.size(); ++head) {
+        const long long a = q[head];
+        if (a < v) { continue; }
+        const long long b = (a - v) * k;
+        if (b >= n) { return dist[static_cast<std::size_t>(a)] + 1; }
+        if (dist[static_cast<std::size_t>(b)] < 0) {
+            dist[static_cast<std::size_t>(b)] =
+                dist[static_cast<std::size_t>(a)] + 1;
+            q.push_back(b);
+        }
+    }
+    return -1;
+}
+
+static void energy_conversion_demo() {
+    println("能量转换（1-3）：A ← (A−V)·K，求最少转换次数：");
+    struct Case { long long n, m, v, k, want; };
+    const Case cases[]{{10, 3, 1, 2, 3}, {10, 2, 1, 2, -1},
+                       {10, 9, 7, 3, -1}, {10, 10, 10000, 0, 0}};
+    for (const Case& c : cases) {
+        const long long r = energy_conversions(c.n, c.m, c.v, c.k);
+        println("  N={} M={} V={} K={} ⟹ {} 次", c.n, c.m, c.v, c.k, r);
+        assert(r == c.want);
+        assert(r == energy_conversions_bfs(c.n, c.m, c.v, c.k));
+    }
+    // 大值域：一次跳满。先预判的写法全程不出现 ≥N 的中间积。
+    const long long big = energy_conversions(100000000, 2, 1, 100000000);
+    println("  N=1e8 M=2 V=1 K=1e8 ⟹ {} 次（预判命中，无中间乘积）", big);
+    assert(big == 1);
+
+    // 随机小例：模拟版 vs BFS 版，全一致才算对。
+    std::mt19937 rng{5489};
+    int mismatches = 0;
+    for (int t = 0; t < 3000; ++t) {
+        const long long n = 1 + rand_below(rng, 60);
+        const long long m = rand_below(rng, static_cast<std::uint32_t>(n) + 1);
+        const long long v = rand_below(rng, 10);
+        const long long k = rand_below(rng, 5);
+        const long long r1 = energy_conversions(n, m, v, k);
+        const long long r2 = energy_conversions_bfs(n, m, v, k);
+        if (r1 != r2) { ++mismatches; }
+    }
+    println("  随机 {} 例模拟 vs BFS：不一致 {} 例", 3000, mismatches);
+    assert(mismatches == 0);
+}
+
+// ═══ 02.8 对称排序：长度序列「两头短、中间长」 ═══
+// 输入已按串长非降序。逐对 (0,1),(2,3),…：每对的前者按顺序进前段、
+// 后者逆序进后段。输出的原下标结构为 0,2,4,… 再接 …,5,3,1。
+static std::vector<std::string> symmetric_order(std::vector<std::string> names) {
+    const int n = static_cast<int>(names.size());
+    std::vector<std::string> out;
+    out.reserve(names.size());
+    for (int i = 0; i < n; i += 2) {
+        out.push_back(names[static_cast<std::size_t>(i)]);
+    }
+    // 最大的奇数下标：n 偶为 n−1，n 奇为 n−2（n=1 时为 −1，跳过）。
+    for (int i = (n % 2 == 0 ? n - 1 : n - 2); i >= 1; i -= 2) {
+        out.push_back(names[static_cast<std::size_t>(i)]);
+    }
+    return out;
+}
+
+// 对账：字面执行「移到指定位置之前」的过程（链表版）。1 基位置 i=2、
+// j=n+1，把当前位置 i 的元素移到当前位置 j 之前，++i、−−j 直至 i>m。
+static std::vector<std::string> symmetric_order_by_moves(
+    std::vector<std::string> names) {
+    const int n = static_cast<int>(names.size());
+    const int m = (n % 2 == 0 ? n / 2 : n / 2 + 1);
+    std::list<std::string> l(names.begin(), names.end());
+    for (int i = 2, j = n + 1; i <= m; ++i, --j) {
+        auto src = std::next(l.begin(), i - 1);
+        // j=n+1 即「队尾之后」；其余为 1 基位置 j。
+        auto dst = (j <= static_cast<int>(l.size()))
+                       ? std::next(l.begin(), j - 1)
+                       : l.end();
+        const std::string value = *src;
+        l.erase(src);                        // list 擦除不影响其他迭代器
+        l.insert(dst, value);
+    }
+    return std::vector<std::string>(l.begin(), l.end());
+}
+
+static void symmetric_order_demo() {
+    println("对称排序（3-1）：长度排好序的名单逐对处理，前者进首部、后者进尾部：");
+    const std::vector<std::vector<std::string>> sets = {
+        {"Bo", "Pat", "Jean", "Kevin", "Claude", "William", "Marybeth"},
+        {"Jim", "Ben", "Zoe", "Joey", "Frederick", "Annabelle"},
+        {"John", "Bill", "Fran", "Stan", "Cece"}};
+    for (std::size_t s = 0; s < sets.size(); ++s) {
+        const std::vector<std::string> ordered = symmetric_order(sets[s]);
+        assert(ordered == symmetric_order_by_moves(sets[s]));
+        println("SET {}", s + 1);
+        for (const std::string& nm : ordered) { println("{}", nm); }
+    }
+    // 随机对账：长度非降的名字串（固定宽度后缀保证总长度随 len 单调）。
+    std::mt19937 rng{5489};
+    int mismatches = 0, bad_shape = 0;
+    for (int t = 0; t < 3000; ++t) {
+        const int n = 1 + static_cast<int>(rand_below(rng, 15));
+        std::vector<std::string> names;
+        int len = 1;
+        for (int i = 0; i < n; ++i) {
+            len += static_cast<int>(rand_below(rng, 3));
+            names.push_back(
+                std::string(static_cast<std::size_t>(len), 'x') +
+                std::format("#{:04}", i));
+        }
+        const std::vector<std::string> ordered = symmetric_order(names);
+        if (ordered != symmetric_order_by_moves(names)) { ++mismatches; }
+        // 形状性质：长度先非降、过峰后非增（对称感的精确陈述）。
+        bool past_peak = false;
+        for (std::size_t k = 1; k < ordered.size(); ++k) {
+            if (ordered[k].size() < ordered[k - 1].size()) {
+                past_peak = true;
+            } else if (past_peak && ordered[k].size() > ordered[k - 1].size()) {
+                ++bad_shape;
+            }
+        }
+    }
+    println("  随机 {} 例直接构造 vs 链表移动：不一致 {} 例；形状破坏 {} 例",
+            3000, mismatches, bad_shape);
+    assert(mismatches == 0 && bad_shape == 0);
+}
+
 int main() {
     // 02.1 图 2.2 的数组：逐步追踪
     std::vector<int> fig22{5, 2, 4, 6, 1, 3};
@@ -200,6 +422,15 @@ int main() {
 
     // 02.5 递归树
     recursion_tree(8);
+
+    // 02.6 计数问题两例
+    counting_problems();
+
+    // 02.7 能量转换
+    energy_conversion_demo();
+
+    // 02.8 对称排序
+    symmetric_order_demo();
 
     println("自检通过");
     return 0;

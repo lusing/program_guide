@@ -1,7 +1,8 @@
 // 15 动态规划（上）：钢条切割与矩阵链（CLRS §15.1–15.2 + §15.3 方法论）。
 // 结构：15.1 钢条切割三版本（朴素递归/备忘录/自底向上，调用计数对比）/
 // 15.2 解的重构（EXTENDED-BOTTOM-UP-CUT-ROD）/ 15.3 矩阵链乘（m/s 表 +
-// 最优括号化）/ 15.4 子问题图与重叠子问题的量化。
+// 最优括号化）/ 15.4 子问题图与重叠子问题的量化 /
+// 15.7 数字三角形：自底向上滚动数组 + 路径重构（备忘录/暴力枚举对账）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -15,11 +16,21 @@ using std::print;
 using std::println;
 #endif
 
+#include <algorithm>
+#include <bit>
+#include <bitset>
 #include <cassert>
 #include <cstdint>
 #include <limits>
+#include <random>
 #include <string>
 #include <vector>
+
+// 可移植随机：乘法折半取 [0,n)，不用 uniform_int_distribution
+static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
+    return static_cast<std::uint32_t>(
+        (static_cast<std::uint64_t>(rng()) * n) >> 32);
+}
 
 // CLRS 图 15.1 的价格表（长度 1..10 英寸）
 static const std::vector<int> kPrice{0, 1, 5, 8, 9, 10, 17, 17, 20, 24, 30};
@@ -379,12 +390,433 @@ static void fibonacci_demo() {
     println("  → 需要 F(100) 以上的精确值就得用大数（第 32 章的高精度）。");
 }
 
+// ═══ 15.6 从指数到状态压缩：可达性 DP 的三级下沉 ═══
+//
+// 「把 n 件行李分成重量和尽量接近的两份」：设 W = Σw，C = ⌊W/2⌋，则答案
+// 等于「≤ C 的最大可达子集和」。目标只是**能否达到**，所以状态不必记
+// 「和等于多少种方案」，只要一个布尔集合。三级下沉：
+//
+//   第一级  Θ(2^n)   枚举 2^n 个子集，每个子集 O(n) 求和
+//   第二级  Θ(nC)    值维度换成布尔：reach[s] = 和 s 是否可达（0-1 背包）
+//   第三级  Θ(nC/w)  把 C+1 个布尔塞进机器字，shift-or 一条语句做一轮转移
+//
+// 关键等式（第三级的全部秘密）：`bs |= bs << w`
+//   ├─ bs      贡献「不取 w」的分支（和 s 仍可达）
+//   └─ bs << w 贡献「取 w」的分支（和 s 的可达性搬到 s+w）
+// 复合赋值先求值右侧 ⟹ 右侧整体来自**更新前**的 bs ⟹ 同一轮不会重复取 w。
+// 移出去的位自动丢弃 ⟹ 「和 > C」的状态被天然截断（相当于值域裁剪）。
+
+static constexpr std::size_t kSubBits = 256;   // 子集和位宽（编译期常量）
+static constexpr std::size_t kModBits = 100;   // 模 K 位宽（K ≤ 100）
+
+// ── 变长位集：std::bitset 的宽度是编译期常量，容量真要运行时才知道时
+//    只能自己拿 std::vector<std::uint64_t> 手写移位-或。──
+static void mask_high(std::vector<std::uint64_t>& bs, std::size_t bits) {
+    const std::size_t r = bits % 64;
+    if (r != 0 && !bs.empty()) { bs.back() &= (~std::uint64_t{0}) >> (64 - r); }
+}
+
+static bool bit_at(const std::vector<std::uint64_t>& bs, std::size_t i) {
+    return ((bs[i / 64] >> (i % 64)) & std::uint64_t{1}) != 0;
+}
+
+// bs |= bs << w  —— 一轮 0-1 背包转移（w 可以 ≥ 64，跨字处理）
+static void or_shift_left(std::vector<std::uint64_t>& bs, std::size_t w, std::size_t bits) {
+    const std::size_t ws = w / 64;
+    const unsigned bt = static_cast<unsigned>(w % 64);
+    for (std::size_t i = bs.size(); i-- > 0;) {   // 高位→低位：读到的都是旧值
+        std::uint64_t v = 0;
+        if (i >= ws) {
+            v = bs[i - ws] << bt;
+            if (bt != 0 && i > ws) { v |= bs[i - ws - 1] >> (64 - bt); }
+        }
+        bs[i] |= v;
+    }
+    mask_high(bs, bits);                          // 移出位宽的高位（等价于值域裁剪）
+}
+
+// ── 第一级：Θ(2^n) 枚举子集 ──
+static std::vector<char> subset_reach_naive(const std::vector<int>& w, int cap,
+                                            long long& visited) {
+    const std::size_t n = w.size();
+    std::vector<char> seen(static_cast<std::size_t>(cap) + 1, 0);
+    seen[0] = 1;
+    visited = 0;
+    for (std::uint64_t mask = 0; mask < (std::uint64_t{1} << n); ++mask) {
+        int s = 0;
+        for (std::size_t i = 0; i < n; ++i) {
+            if (((mask >> i) & 1U) != 0U) { s += w[i]; }
+        }
+        ++visited;
+        if (s <= cap) { seen[static_cast<std::size_t>(s)] = 1; }
+    }
+    return seen;
+}
+
+// ── 第二级：Θ(nC) 布尔可达性（0-1 背包的可达性变体，j 必须倒序）──
+static std::vector<char> subset_reach_bool(const std::vector<int>& w, int cap,
+                                           long long& cellOps) {
+    std::vector<char> reach(static_cast<std::size_t>(cap) + 1, 0);
+    reach[0] = 1;
+    cellOps = 0;
+    for (int x : w) {
+        for (int s = cap; s >= x; --s) {          // 倒序：同一件行李只用一次
+            ++cellOps;
+            if (reach[static_cast<std::size_t>(s - x)] != 0) {
+                reach[static_cast<std::size_t>(s)] = 1;
+            }
+        }
+    }
+    return reach;
+}
+
+// ── 第三级 (a)：Θ(nC/w) 位并行，编译期宽度用 std::bitset ──
+static std::bitset<kSubBits> subset_reach_bitset(const std::vector<int>& w, int cap,
+                                                 long long& wordOps) {
+    std::bitset<kSubBits> bs;
+    bs[0] = 1;
+    wordOps = 0;
+    for (int x : w) {
+        if (x > cap) { continue; }
+        bs |= (bs << x);                         // ← 一条语句一轮 0-1 背包
+        wordOps += static_cast<long long>((kSubBits + 63) / 64);
+    }
+    return bs;
+}
+
+// ── 第三级 (b)：Θ(nC/w) 位并行，运行时才知道 C ⟹ 手写变长位集 ──
+static std::vector<std::uint64_t> subset_reach_dyn(const std::vector<int>& w, int cap,
+                                                    long long& wordOps) {
+    const std::size_t bits = static_cast<std::size_t>(cap) + 1;
+    std::vector<std::uint64_t> bs((bits + 63) / 64, 0);
+    bs[0] = 1;                                   // 和 0 可达
+    wordOps = 0;
+    for (int x : w) {
+        if (x > cap) { continue; }
+        or_shift_left(bs, static_cast<std::size_t>(x), bits);
+        wordOps += static_cast<long long>(bs.size());
+    }
+    return bs;
+}
+
+static void reachability_ladder_demo() {
+    // 18 件行李，Σw = 490，C = ⌊490/2⌋ = 245
+    const std::vector<int> w{23, 41, 17, 8, 35, 29, 12, 50, 6, 33, 19, 44, 27, 11, 38, 52, 15, 30};
+    int total = 0;
+    for (int x : w) { total += x; }
+    const int cap = total / 2;
+    assert(total == 490 && cap == 245);
+    assert(kSubBits > static_cast<std::size_t>(cap));
+
+    println("=== 15.6 可达性 DP 的三级下沉（{} 件行李，Σw = {}，C = ⌊W/2⌋ = {}）===",
+            w.size(), total, cap);
+
+    // ── 三级 ──
+    long long naiveOps = 0, boolOps = 0, bsOps = 0, dynOps = 0;
+    const std::vector<char> rNaive = subset_reach_naive(w, cap, naiveOps);
+    const std::vector<char> rBool = subset_reach_bool(w, cap, boolOps);
+    const std::bitset<kSubBits> rBits = subset_reach_bitset(w, cap, bsOps);
+    std::vector<std::uint64_t> rDyn = subset_reach_dyn(w, cap, dynOps);
+
+    int bestNaive = 0, bestBool = 0;
+    for (int s = 0; s <= cap; ++s) {
+        if (rNaive[static_cast<std::size_t>(s)] != 0) { bestNaive = s; }
+        if (rBool[static_cast<std::size_t>(s)] != 0) { bestBool = s; }
+    }
+    int bestBits = 0;
+    for (int s = 0; s <= cap; ++s) {
+        if (rBits[static_cast<std::size_t>(s)]) { bestBits = s; }
+    }
+    int bestDyn = 0;
+    for (int s = 0; s <= cap; ++s) {
+        if (bit_at(rDyn, static_cast<std::size_t>(s))) { bestDyn = s; }
+    }
+
+    // 对账：四级两两一致
+    assert(bestNaive == bestBool && bestBool == bestBits && bestBits == bestDyn);
+    for (int s = 0; s <= cap; ++s) {
+        const bool a = rNaive[static_cast<std::size_t>(s)] != 0;
+        const bool b = rBool[static_cast<std::size_t>(s)] != 0;
+        const bool c = rBits[static_cast<std::size_t>(s)];
+        const bool d = bit_at(rDyn, static_cast<std::size_t>(s));
+        assert(a == b && b == c && c == d);
+    }
+    const int reachCnt = static_cast<int>(std::count(rBool.begin(), rBool.end(), char{1}));
+    println("  第一级 Θ(2^n)  枚举子集 {} 次（2^{}）⟹ 可达和 {} 个，最优 {}",
+            naiveOps, w.size(), reachCnt, bestNaive);
+    println("  第二级 Θ(nC)   布尔背包单元操作 {} 次 ⟹ 可达和 {} 个，最优 {}",
+            boolOps, reachCnt, bestBool);
+    println("  第三级 Θ(nC/w) bitset 64 位运算 {} 次（宽度 {} 位 = {} 字）⟹ 最优 {}",
+            bsOps, kSubBits, (kSubBits + 63) / 64, bestBits);
+    println("  第三级 变长位集（手写移位-或）64 位运算 {} 次（宽度 {} 位 = {} 字）⟹ 最优 {}",
+            dynOps, cap + 1, (static_cast<std::size_t>(cap) + 1 + 63) / 64, bestDyn);
+    println("  位并行相对布尔 DP 提速 {:.1f} 倍（≈ 64 / 每单元代价）",
+            static_cast<double>(boolOps) / static_cast<double>(dynOps));
+    println("  四种实现两两对账一致（逐位比对 0..{} 的可达性）= 1", cap);
+    println("  最优分堆：较轻一份 = {}，较重一份 = {}（差 {}）", cap, total - cap, total - 2 * cap);
+
+    // ── 模 K 可达性：a₁ ± a₂ ± … ± a_N 能否被 K 整除 ──
+    // 状态充分性：expr mod K 之后的贡献只与余数有关 ⟹ (expr ± a_{i+1} ± …) mod K
+    // 只依赖 expr mod K，与 expr 具体取值无关。这正是 2^N → N·K 的依据。
+    // 转移 r ↦ r + x 与 r ↦ r − x 都是「模 K 循环移位」，故一轮
+    //   bs |= (bs << x) | (bs >> (K − x))
+    // 就把 K 个余数的双向转移全部做完 ⟹ Θ(N·K/w)。
+    const std::vector<int> a{23, 41, 17, 8, 35, 29, 12, 50, 6, 33};
+    for (int K : {7, 100}) {
+        std::bitset<kModBits> bs, mask;
+        for (int r = 0; r < K; ++r) { mask[static_cast<std::size_t>(r)] = 1; }
+        // 第一项固定取正（题目语义：运算符只插在项与项之间）
+        bs[static_cast<std::size_t>(((a[0] % K) + K) % K)] = 1;
+        long long modWordOps = 0;
+        for (std::size_t i = 1; i < a.size(); ++i) {
+            const std::size_t x = static_cast<std::size_t>(((a[i] % K) + K) % K);
+            if (x == 0) { continue; }
+            // 双向转移要 4 项而不是 2 项：+x 方向 = (bs << x) | (bs >> (K−x))，
+            // −x 方向 = (bs >> x) | (bs << (K−x))。少一半就只剩单向。
+            // 注意这里是**赋值**不是 `|=`：± 问题里每一项都必须领一个符号，
+            // 没有「不取这一项」这个分支——`|=` 会把上一轮的结果额外并进来。
+            const std::bitset<kModBits> src = bs;
+            bs = (((src << x) | (src >> (K - static_cast<int>(x))))
+                  | ((src >> x) | (src << (K - static_cast<int>(x))))) & mask;
+            modWordOps += static_cast<long long>((kModBits + 63) / 64) * 4;
+        }
+        // 布尔版对账
+        std::vector<char> cur(static_cast<std::size_t>(K), 0), nxt(static_cast<std::size_t>(K), 0);
+        cur[static_cast<std::size_t>(((a[0] % K) + K) % K)] = 1;
+        long long modBoolOps = 0;
+        for (std::size_t i = 1; i < a.size(); ++i) {
+            const int x = ((a[i] % K) + K) % K;
+            std::fill(nxt.begin(), nxt.end(), char{0});
+            for (int r = 0; r < K; ++r) {
+                if (cur[static_cast<std::size_t>(r)] == 0) { continue; }
+                nxt[static_cast<std::size_t>((r + x) % K)] = 1;
+                nxt[static_cast<std::size_t>(((r - x) % K + K) % K)] = 1;
+                modBoolOps += 2;
+            }
+            cur.swap(nxt);
+        }
+        bool same = true;
+        for (int r = 0; r < K; ++r) {
+            if ((cur[static_cast<std::size_t>(r)] != 0)
+                != bs[static_cast<std::size_t>(r)]) { same = false; }
+        }
+        assert(same);
+        println("  模 K = {}：a₁ ± … ± a₁₀ 可被 {} 整除 = {}（布尔 {} 次单元 vs 位并行 {} 次字运算，"
+                "逐余数对账 = {}）",
+                K, K, bs[0] ? 1 : 0, modBoolOps, modWordOps, same ? 1 : 0);
+    }
+
+    // ── 选 K 个数使和能被 K 整除：模 K 可达性 + 计数维 ──
+    // dp[j][r] = 「已扫过的数里恰选 j 个、和 ≡ r (mod K)」是否可能。
+    // j 必须倒序扫（同一数只用一次）；r 这一维可以整体压成一条 K 位位集，
+    // 转移 dp[j] |= rot_K(dp[j−1], a_i)，Θ(n·K²/w) —— 又是同一个 shift-or。
+    const std::vector<int> pi{3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 2, 3, 8, 4, 6, 2, 6, 4};
+    for (int K : {4, 8, 12, 16}) {
+        // 布尔版 Θ(n·K²)
+        std::vector<std::vector<char>> dp(static_cast<std::size_t>(K) + 1,
+                                          std::vector<char>(static_cast<std::size_t>(K), 0));
+        dp[0][0] = 1;
+        long long cellOps = 0;
+        for (int v : pi) {
+            const int x = ((v % K) + K) % K;
+            for (int j = K; j >= 1; --j) {         // 倒序：数只用一次
+                for (int r = 0; r < K; ++r) {
+                    ++cellOps;
+                    if (dp[static_cast<std::size_t>(j - 1)][static_cast<std::size_t>(r)] != 0) {
+                        dp[static_cast<std::size_t>(j)][static_cast<std::size_t>((r + x) % K)] = 1;
+                    }
+                }
+            }
+        }
+        // 位集版 Θ(n·K²/w)：dp[j] 是一条 K 位位集，转移是一次模 K 循环移位。
+        // 这里 `|=` 是对的（与 15.6 的子集和同理）：不取 v 的分支就是 dp[j] 自身。
+        std::vector<std::bitset<kModBits>> dbs(static_cast<std::size_t>(K) + 1);
+        std::bitset<kModBits> kmask;
+        for (int r = 0; r < K; ++r) { kmask[static_cast<std::size_t>(r)] = 1; }
+        dbs[0][0] = 1;
+        // 理论字操作数按实际位宽 ⌈K/64⌉ 计；std::bitset<100> 的固定宽度会多算
+        // （K=4 时仍占 2 字），这个「定宽-padding 浪费」本身就是位集版的代价之一。
+        const long long wordsPerRow = (K + 63) / 64;
+        const long long paddedWords = (static_cast<long long>(kModBits) + 63) / 64;
+        long long wordOps = 0, paddedOps = 0;
+        for (int v : pi) {
+            const std::size_t x = static_cast<std::size_t>(((v % K) + K) % K);
+            for (int j = K; j >= 1; --j) {
+                dbs[static_cast<std::size_t>(j)] |=
+                    (((dbs[static_cast<std::size_t>(j - 1)] << x)
+                      | (dbs[static_cast<std::size_t>(j - 1)] >> (K - static_cast<int>(x))))
+                     & kmask);
+                wordOps += wordsPerRow * 2;
+                paddedOps += paddedWords * 2;
+            }
+        }
+        // 暴力对账：枚举全部 2^n 个子集，筛出恰含 K 个且和被 K 整除的
+        bool brute = false;
+        {
+            const std::size_t n = pi.size();
+            for (std::uint64_t mask = 0; mask < (std::uint64_t{1} << n) && !brute; ++mask) {
+                if (static_cast<int>(std::popcount(mask)) != K) { continue; }
+                int s = 0;
+                for (std::size_t i = 0; i < n; ++i) {
+                    if (((mask >> i) & 1U) != 0U) { s += pi[i]; }
+                }
+                if (s % K == 0) { brute = true; }
+            }
+        }
+        const bool boolAns = dp[static_cast<std::size_t>(K)][0] != 0;
+        const bool bitAns = dbs[static_cast<std::size_t>(K)][0];
+        assert(boolAns == bitAns && boolAns == brute);
+        println("  选 {} 个数使和被 {} 整除：可行 = {}（暴力 2²⁴ 子集对账 = {}；布尔 {} 次单元"
+                " → 位并行 {} 次字运算，提速 {:.1f} 倍；std::bitset<100> 定宽 padding 到 {} 次）",
+                K, K, boolAns ? 1 : 0, brute ? 1 : 0, cellOps, wordOps,
+                static_cast<double>(cellOps) / static_cast<double>(wordOps), paddedOps);
+    }
+}
+
+// ═══ 15.7 数字三角形 ═══
+// tri[i] 为第 i 层（0 基，长度 i+1）。每步从 (i,j) 可走到
+// (i+1,j)（左下）或 (i+1,j+1)（右下）。求顶点到底层的最大路径和。
+
+// 自底向上：dp[j] 滚动保存到达当前行第 j 格的最佳和；逆序更新，
+// dp[j−1] 仍是上一行的旧值。时间 Θ(N²)、空间 O(N)。
+static int triangle_best_sum(const std::vector<std::vector<int>>& tri) {
+    const int n = static_cast<int>(tri.size());
+    std::vector<int> dp(static_cast<std::size_t>(n), 0);
+    dp[0] = tri[0][0];
+    for (int i = 1; i < n; ++i) {
+        for (int j = i; j >= 0; --j) {
+            int best = std::numeric_limits<int>::min();
+            if (j < i)             { best = std::max(best, dp[static_cast<std::size_t>(j)]); }
+            if (j > 0)             { best = std::max(best, dp[static_cast<std::size_t>(j - 1)]); }
+            dp[static_cast<std::size_t>(j)] = tri[static_cast<std::size_t>(i)]
+                                                  [static_cast<std::size_t>(j)] + best;
+        }
+    }
+    return *std::max_element(dp.begin(), dp.end());
+}
+
+// 带路径重构：choice[i][j] 记录前驱来自左上（j−1）还是正上（j）。
+// 从最佳底格逐层回溯，再反转为自上而下的列号序列。
+static std::vector<int> triangle_best_path(const std::vector<std::vector<int>>& tri) {
+    const int n = static_cast<int>(tri.size());
+    std::vector<std::vector<char>> choice(
+        static_cast<std::size_t>(n),
+        std::vector<char>(static_cast<std::size_t>(n), 0));
+    std::vector<int> dp(static_cast<std::size_t>(n), 0);
+    dp[0] = tri[0][0];
+    for (int i = 1; i < n; ++i) {
+        for (int j = i; j >= 0; --j) {
+            const int up      = (j < i) ? dp[static_cast<std::size_t>(j)]
+                                        : std::numeric_limits<int>::min();
+            const int up_left = (j > 0) ? dp[static_cast<std::size_t>(j - 1)]
+                                        : std::numeric_limits<int>::min();
+            choice[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] =
+                (up_left > up) ? 1 : 0;      // 1：来自左上
+            dp[static_cast<std::size_t>(j)] = tri[static_cast<std::size_t>(i)]
+                                                  [static_cast<std::size_t>(j)]
+                                            + std::max(up, up_left);
+        }
+    }
+    int col = 0;
+    for (int j = 1; j < n; ++j) {
+        if (dp[static_cast<std::size_t>(j)] > dp[static_cast<std::size_t>(col)]) { col = j; }
+    }
+    std::vector<int> columns(static_cast<std::size_t>(n));
+    for (int i = n - 1; i >= 0; --i) {
+        columns[static_cast<std::size_t>(i)] = col;
+        if (i > 0 && choice[static_cast<std::size_t>(i)][static_cast<std::size_t>(col)] == 1) {
+            --col;
+        }
+    }
+    return columns;
+}
+
+// 备忘录版（自顶向下）：每个格子一个状态
+static int triangle_memo(const std::vector<std::vector<int>>& tri, int i, int j,
+                         std::vector<std::vector<int>>& memo) {
+    if (i == 0) { return tri[0][0]; }
+    int& m = memo[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)];
+    if (m != std::numeric_limits<int>::min()) { return m; }
+    int best = std::numeric_limits<int>::min();
+    if (j < i) { best = std::max(best, triangle_memo(tri, i - 1, j, memo)); }
+    if (j > 0) { best = std::max(best, triangle_memo(tri, i - 1, j - 1, memo)); }
+    return m = tri[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] + best;
+}
+
+static int triangle_memo_sum(const std::vector<std::vector<int>>& tri) {
+    const int n = static_cast<int>(tri.size());
+    std::vector<std::vector<int>> memo(
+        static_cast<std::size_t>(n),
+        std::vector<int>(static_cast<std::size_t>(n),
+                         std::numeric_limits<int>::min()));
+    int best = std::numeric_limits<int>::min();
+    for (int j = 0; j < n; ++j) {
+        best = std::max(best, triangle_memo(tri, n - 1, j, memo));
+    }
+    return best;
+}
+
+// 暴力枚举：2^(N−1) 条路径全部展开。位 1 = 右下，位 0 = 左下。
+static int triangle_brute(const std::vector<std::vector<int>>& tri) {
+    const int n = static_cast<int>(tri.size());
+    int best = std::numeric_limits<int>::min();
+    for (int mask = 0; mask < (1 << (n - 1)); ++mask) {
+        int col = 0, sum = tri[0][0];
+        for (int i = 1; i < n; ++i) {
+            if (mask & (1 << (i - 1))) { ++col; }
+            sum += tri[static_cast<std::size_t>(i)][static_cast<std::size_t>(col)];
+        }
+        best = std::max(best, sum);
+    }
+    return best;
+}
+
+static void triangle_demo() {
+    println("数字三角形（自底向上滚动数组 Θ(N²)、路径重构；备忘录/暴力对账）：");
+    const std::vector<std::vector<int>> tri = {
+        {7}, {3, 8}, {8, 1, 0}, {2, 7, 4, 4}, {4, 5, 2, 6, 5}};
+    const int best = triangle_best_sum(tri);
+    println("  最大路径和 = {}（样例答案 30）", best);
+    const std::vector<int> path = triangle_best_path(tri);
+    print("  最优路径列号：");
+    for (int c : path) { print("{} ", c); }
+    int check_sum = 0;
+    for (int i = 0; i < static_cast<int>(tri.size()); ++i) {
+        check_sum += tri[static_cast<std::size_t>(i)]
+                        [static_cast<std::size_t>(path[static_cast<std::size_t>(i)])];
+    }
+    println("（沿途数值求和 = {}）", check_sum);
+    assert(best == 30 && check_sum == 30);
+    assert(triangle_memo_sum(tri) == 30 && triangle_brute(tri) == 30);
+
+    std::mt19937 rng{5489};
+    int trials = 2000, mismatches = 0;
+    for (int t = 0; t < trials; ++t) {
+        const int n = 1 + static_cast<int>(rand_below(rng, 11));
+        std::vector<std::vector<int>> rnd(static_cast<std::size_t>(n));
+        for (int i = 0; i < n; ++i) {
+            rnd[static_cast<std::size_t>(i)].resize(static_cast<std::size_t>(i + 1));
+            for (int j = 0; j <= i; ++j) {
+                rnd[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] =
+                    static_cast<int>(rand_below(rng, 100));
+            }
+        }
+        const int a = triangle_best_sum(rnd);
+        if (a != triangle_memo_sum(rnd) || a != triangle_brute(rnd)) { ++mismatches; }
+    }
+    println("  随机 {} 个三角形（N≤11）：自底向上 vs 备忘录 vs 暴力枚举 不一致 {} 例",
+            trials, mismatches);
+    assert(mismatches == 0);
+}
+
 int main() {
     rod_cutting_demo();
     reconstruction_demo();
     matrix_chain_demo();
     overlap_demo();
     fibonacci_demo();
+    reachability_ladder_demo();
+    triangle_demo();
     println("自检通过");
     return 0;
 }

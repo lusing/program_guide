@@ -1,6 +1,7 @@
 // 03 函数的增长（CLRS 第 3 章）。结构：03.1 Θ/O/Ω 定义的机器检验 /
 // 03.2 常用函数恒等式（取整/对数/斐波那契/调和级数）/ 03.3 增长速度实测
-//（复用第 2 章排序的比较计数）/ 03.4 溢出与时间估算表。
+//（复用第 2 章排序的比较计数）/ 03.4 溢出与时间估算表 /
+// 03.5-03.6 增长反演两例（调和级数悬挂、尾数计数的除法数学）。
 // 纪律：全整数运算 + 有理数除法（IEEE 确定性），不用 log/pow——
 // 它们的尾数跨标准库实现可能不同。
 #ifdef ALGO_NO_PRINT
@@ -214,11 +215,126 @@ static void overflow_and_time_table() {
             100000000.0 * 27 / 1e9, 1e16 / 1e9 / 86400.0);
 }
 
+// ═══ 03.5 扑克牌魔术：c = Θ(lg n) 的反演 n = Θ(2^c) ═══
+// 问题 1-2：n 张牌悬挂桌边的最大总长 = 1/2 + 1/3 + … + 1/(n+1) = H_{n+1} − 1。
+// 给定目标悬挂长度 c，求最少牌数 n：即最小的 n 使 H_{n+1} ≥ c + 1。
+// 调和级数 H_n ~ ln n ⟹ c ~ ln n，即 c = Θ(lg n)，反演 n = Θ(2^c)：
+// **c 每加 1，n 大约乘 e**——指数爆炸方向与「多项式 vs 指数」是同一件事。
+// c 以「百分之一」为单位读入（题面保证两位小数），比较用 IEEE 双精度：
+// 逐项 1.0/k 固定顺序累加，三通道逐字节一致（与 03.2 的 H_n 同一纪律）。
+static int hangover_cards(double c) {
+    int n = 0;                 // 牌数
+    double length = 0.0;       // 悬挂总长 = H_{n+1} − 1
+    while (length < c) {
+        ++n;
+        length += 1.0 / (n + 1);
+    }
+    return n;
+}
+
+static void hangover_demo() {
+    println("扑克牌魔术（1-2）：悬挂长度 = 1/2+1/3+…+1/(n+1)，最少牌数：");
+    struct Case { double c; int expect; const char* note; };
+    const Case cases[]{
+        {0.04, 1, "1/2 = 0.5 ≥ 0.04"},
+        {1.00, 3, "1/2+1/3+1/4 = 1.083333 ≥ 1.00（1.00 本身不够：H_3-1 = 0.833333）"},
+        {3.71, 61, "H_62 - 1 = 3.712393 ≥ 3.71，而 H_61 - 1 = 3.696264 不够"},
+        {5.19, 273, "H_274 - 1 = 6.192168 ≥ 5.19"},
+    };
+    for (const Case& tc : cases) {
+        const int n = hangover_cards(tc.c);
+        assert(n == tc.expect);
+        println("  c={:.2f} → {:>3} 张（{}）", tc.c, n, tc.note);
+    }
+    println("c 每加 1，最少牌数约 ×e —— n = Θ(2^c) 的实证：");
+    int prev = 0;
+    for (int c = 1; c <= 5; ++c) {
+        const int n = hangover_cards(static_cast<double>(c));
+        if (prev > 0) {
+            println("  c={} → {:>3} 张（/上一点 = {:.2f}）", c, n,
+                    static_cast<double>(n) / prev);
+        } else {
+            println("  c={} → {:>3} 张", c, n);
+        }
+        prev = n;
+    }
+}
+
+// ═══ 03.6 尾数计数：用除法代替枚举 ═══
+// 问题 1-5：求 [a, b] 内十进制表示以 x 结尾的整数个数（x、a、b ≤ 10^18）。
+// 枚举 Θ(b−a) 在 10^18 面前毫无意义；数学只消 Θ(lg x)：
+// 设 m = 10^{x 的位数}，「以 x 结尾」⟺ i mod m = x。令 aq = a/m、ar = a mod m
+//（b 同理）。[a,b] 的模 m 余 x 的数构成公差 m 的等差数列，个数 =
+// ⌊(b − x)/m⌋ − ⌈(a − x)/m⌉ + 1，整理成书上的形式：
+//   ar > x 则 ++aq（a 所在的剩余类已越过 x）、br < x 则 --bq，
+//   答案 = max(0, bq − aq + 1)。
+// 坑：x 可达 10^18（19 位），m = 10^19 已超 int64 上限 9.22×10^18——
+// 必须升 unsigned long long（上限 1.84×10^19）。
+static unsigned long long modulus_of(unsigned long long x) {
+    // m = 10^{x 的位数}；x=0 按 1 位算 ⟹ m=10（「以 0 结尾」⟺ mod 10 = 0）
+    if (x == 0) { return 10ull; }
+    unsigned long long m = 1;
+    while (m <= x) { m *= 10ull; }
+    return m;
+}
+
+static long long gift_count(unsigned long long x, unsigned long long a,
+                            unsigned long long b) {
+    const unsigned long long m = modulus_of(x);
+    const unsigned long long aq = a / m, ar = a % m;
+    const unsigned long long bq = b / m, br = b % m;
+    const unsigned long long lo = aq + (ar > x ? 1ull : 0ull);
+    unsigned long long hi = bq;
+    if (br < x && hi > 0ull) { --hi; } else if (br < x) { return 0; }
+    return (hi >= lo) ? static_cast<long long>(hi - lo + 1) : 0;
+}
+
+static void gift_demo() {
+    println("尾数计数（1-5）：[a,b] 内以 x 结尾的整数个数，除法版 vs 枚举版：");
+    // 书上的例子：x=36, a=237, b=893 → 336,436,…,836 共 6 个
+    {
+        const long long fast = gift_count(36, 237, 893);
+        long long slow = 0;
+        for (unsigned long long i = 237; i <= 893; ++i) {
+            if (i % 100 == 36) { ++slow; }
+        }
+        assert(fast == slow && fast == 6);
+        println("  x=36, a=237, b=893：除法版 {} = 枚举版 {}（336,436,…,836）",
+                fast, slow);
+    }
+    // 随机小数据对账：除法版必须与枚举版逐一相等
+    std::mt19937 rng{5489};
+    long long mismatches = 0;
+    for (int trial = 0; trial < 1000; ++trial) {
+        const unsigned long long x = rand_below(rng, 100000);
+        const unsigned long long a = rand_below(rng, 100000);
+        const unsigned long long b = a + rand_below(rng, 100000);
+        long long slow = 0;
+        const unsigned long long m = modulus_of(x);
+        for (unsigned long long i = a; i <= b; ++i) {
+            if (i % m == x) { ++slow; }
+        }
+        if (gift_count(x, a, b) != slow) { ++mismatches; }
+    }
+    println("  随机 1000 组小数据：除法版 ≠ 枚举版 的组数 = {}", mismatches);
+    assert(mismatches == 0);
+    // 边界：x = 10^18 时 m = 10^19 > INT64_MAX —— unsigned 才装得下
+    {
+        const unsigned long long big = 1000000000000000000ull;
+        const long long one = gift_count(big, big, big);
+        println("  x=a=b=10^18：m=10^19 已超 int64 上限 9.22e18，"
+                "unsigned 才装得下 ⟹ 计数 = {}", one);
+        assert(one == 1);
+    }
+}
+
 int main() {
     theta_definition_check();
     function_identities();
     growth_experiment();
     overflow_and_time_table();
+    hangover_demo();
+    gift_demo();
     println("自检通过");
     return 0;
 }

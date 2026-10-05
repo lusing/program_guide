@@ -1,7 +1,10 @@
 // 27 最大流（CLRS 第 26 章）。结构：27.1 流网络与残量网络 /
 // 27.2 Edmonds-Karp（BFS 增广路径逐条追踪，图 26.1 数据）/
 // 27.3 流的合法性验证（容量约束 + 流量守恒）/ 27.4 最小割验证（最大流
-// 最小割定理）/ 27.5 推送-重贴标签对照。
+// 最小割定理）/ 27.5 推送-重贴标签对照 /
+// 27.6 二部图匹配与最小点覆盖（König 定理；Kuhn 增广路）/
+// 27.7 女孩与男孩：二部图最大独立集（染色取大 vs König；暴力对账）/
+// 27.8 午餐：牛妞拆 in/out 两点的三方独占流（食物-饮料直接匹配的误报对照）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -17,10 +20,20 @@ using std::println;
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cassert>
 #include <cstdint>
 #include <deque>
+#include <numeric>
+#include <random>
+#include <utility>
 #include <vector>
+
+// 确定性伪随机：[0,n) 内均匀取一值。用乘法折半而非
+// uniform_int_distribution——后者在各标准库实现下取值序列不同。
+static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
+    return static_cast<std::uint32_t>((static_cast<std::uint64_t>(rng()) * n) >> 32);
+}
 
 // 自造 6 顶点流网络（CLRS 图 26.1 的图内数字不在 PDF 文本层，无法可靠
 // 转写——改用本网络，最大流 = 最小割 = 23，可手算验证）：
@@ -45,7 +58,8 @@ struct MaxFlowResult {
 // Edmonds-Karp：BFS 找最短增广路径（残量 > 0），沿路增广。
 // 定理 26.9? 26.8：O(V·E²)——最短路径长度单调不降，每条关键边至多
 // V/2 次饱和。
-static MaxFlowResult edmonds_karp(std::vector<std::vector<int>> cap, int s, int t) {
+static MaxFlowResult edmonds_karp(std::vector<std::vector<int>> cap, int s, int t,
+                                  bool verbose = true) {
     const int n = static_cast<int>(cap.size());
     std::vector<std::vector<int>> flow(static_cast<std::size_t>(n),
                                        std::vector<int>(static_cast<std::size_t>(n), 0));
@@ -87,14 +101,16 @@ static MaxFlowResult edmonds_karp(std::vector<std::vector<int>> cap, int s, int 
             v = u;
         }
         total += bottleneck;
-        print("  增广路径 #{}（瓶颈 {}）: ", bfs, bottleneck);
-        std::vector<int> path;
-        for (int v = t; v != s; ) { path.push_back(v); v = parent[static_cast<std::size_t>(v)]; }
-        path.push_back(s);
-        for (std::size_t i = path.size(); i-- > 0;) {
-            print("{}{}", kNode[static_cast<std::size_t>(path[i])], i == 0 ? "" : "→");
+        if (verbose) {
+            print("  增广路径 #{}（瓶颈 {}）: ", bfs, bottleneck);
+            std::vector<int> path;
+            for (int v = t; v != s; ) { path.push_back(v); v = parent[static_cast<std::size_t>(v)]; }
+            path.push_back(s);
+            for (std::size_t i = path.size(); i-- > 0;) {
+                print("{}{}", kNode[static_cast<std::size_t>(path[i])], i == 0 ? "" : "→");
+            }
+            println("（累计流 {}）", total);
         }
-        println("（累计流 {}）", total);
     }
     return {flow, total, bfs};
 }
@@ -243,9 +259,661 @@ static void push_relabel_demo() {
     assert(f == 23);
 }
 
+// ═══ 27.6 二部图最大匹配与最小点覆盖（König 定理）═══
+// 二部图 G = (L∪R, E)。匹配：两两不共端点的边集。点覆盖：与每条边都
+// 相接的顶点子集。König 定理：二部图中 最大匹配边数 = 最小点覆盖点数。
+struct BipartiteGraph {
+    int nl = 0, nr = 0;
+    std::vector<std::vector<int>> adj;             // adj[u]：u∈L 的邻点
+    BipartiteGraph(int l, int r) : nl(l), nr(r),
+        adj(static_cast<std::size_t>(l)) {}
+    void add_edge(int u, int v) { adj[static_cast<std::size_t>(u)].push_back(v); }
+};
+
+// Kuhn 增广路：从 u 出发，DFS 试找一条「非匹配边/匹配边」交替、终点为
+// 未匹配 R 点的路；找到则沿路翻转、匹配数 +1。seen 用时间戳，每次搜索
+// 一个新 token，免去反复清空数组。
+static bool kuhn_augment(const BipartiteGraph& g, int u, int token,
+                         std::vector<int>& seen, std::vector<int>& match_r) {
+    for (int v : g.adj[static_cast<std::size_t>(u)]) {
+        if (seen[static_cast<std::size_t>(v)] == token) { continue; }
+        seen[static_cast<std::size_t>(v)] = token;
+        if (match_r[static_cast<std::size_t>(v)] < 0 ||
+            kuhn_augment(g, match_r[static_cast<std::size_t>(v)], token, seen, match_r)) {
+            match_r[static_cast<std::size_t>(v)] = u;
+            return true;
+        }
+    }
+    return false;
+}
+
+static int bipartite_max_matching(const BipartiteGraph& g, std::vector<int>& match_r) {
+    match_r.assign(static_cast<std::size_t>(g.nr), -1);
+    std::vector<int> seen(static_cast<std::size_t>(g.nr), 0);
+    int size = 0, token = 0;
+    for (int u = 0; u < g.nl; ++u) {
+        ++token;
+        if (kuhn_augment(g, u, token, seen, match_r)) { ++size; }
+    }
+    return size;
+}
+
+static int bipartite_max_matching(const BipartiteGraph& g) {
+    std::vector<int> match_r;
+    return bipartite_max_matching(g, match_r);
+}
+
+static std::vector<std::pair<int, int>> collect_edges(const BipartiteGraph& g) {
+    std::vector<std::pair<int, int>> edges;
+    for (int u = 0; u < g.nl; ++u) {
+        for (int v : g.adj[static_cast<std::size_t>(u)]) { edges.emplace_back(u, v); }
+    }
+    return edges;
+}
+
+// 最大度贪婪点覆盖：每轮选当前度数最大的顶点（L、R 一起比），删其边。
+// 只是一个可行覆盖，大小无最优保证——反例见 machine_schedule_demo。
+static int greedy_vertex_cover(const BipartiteGraph& g) {
+    std::vector<std::pair<int, int>> edges = collect_edges(g);
+    int cover = 0;
+    while (!edges.empty()) {
+        std::vector<int> deg(static_cast<std::size_t>(g.nl + g.nr), 0);
+        for (auto [u, v] : edges) {
+            ++deg[static_cast<std::size_t>(u)];
+            ++deg[static_cast<std::size_t>(g.nl + v)];
+        }
+        int best = 0;
+        for (int z = 1; z < g.nl + g.nr; ++z) {
+            if (deg[static_cast<std::size_t>(z)] > deg[static_cast<std::size_t>(best)]) {
+                best = z;
+            }
+        }
+        edges.erase(std::remove_if(edges.begin(), edges.end(),
+            [&](const std::pair<int, int>& e) {
+                return best < g.nl ? e.first == best
+                                   : e.second == best - g.nl;
+            }), edges.end());
+        ++cover;
+    }
+    return cover;
+}
+
+// 暴力最小点覆盖：枚举至多 2^(nl+nr) 个顶点子集（仅供小图对账）
+static int brute_vertex_cover(const BipartiteGraph& g) {
+    const std::vector<std::pair<int, int>> edges = collect_edges(g);
+    if (edges.empty()) { return 0; }
+    const int vertices = g.nl + g.nr;
+    int best = vertices;
+    for (int mask = 1; mask < (1 << vertices); ++mask) {
+        bool covers_all = true;
+        for (auto [u, v] : edges) {
+            if ((mask & (1 << u)) == 0 &&
+                (mask & (1 << (g.nl + v))) == 0) { covers_all = false; break; }
+        }
+        if (covers_all) { best = std::min(best, std::popcount(static_cast<unsigned>(mask))); }
+    }
+    return best;
+}
+
+// ── 机器调度问题 ──
+struct ScheduleJob {
+    int id = 0, x = 0, y = 0;      // 可在 A 的 mode_x 或 B 的 mode_y 处理
+};
+
+// 最优解：两台机器开机即处于 mode_0，所以 x=0 或 y=0 的任务零重启完成；
+// 其余任务在 L={A 的 mode_1..n−1}、R={B 的 mode_1..m−1} 间构成二部图，
+// 选哪些模式开机 = 选点覆盖所有任务边。由 König 定理，最少重启数
+// = 最小点覆盖 = 最大匹配。
+static int machine_schedule_optimal(int n, int m,
+                                    const std::vector<ScheduleJob>& jobs) {
+    BipartiteGraph g(n - 1, m - 1);
+    for (const ScheduleJob& j : jobs) {
+        if (j.x == 0 || j.y == 0) { continue; }
+        g.add_edge(j.x - 1, j.y - 1);
+    }
+    return bipartite_max_matching(g);
+}
+
+// 最大度贪婪版本：把每个模式看成任务集合，每轮在当前基数最大的模式开机。
+// 注意它把第一轮的 mode_0 也计入重启——而机器本来就从 mode_0 开始。
+static int machine_schedule_greedy(int n, int m,
+                                   const std::vector<ScheduleJob>& jobs) {
+    const int k = static_cast<int>(jobs.size());
+    // in_mode[mode][j]：任务 j 是否属于该模式；A 模式下标 0..n−1，
+    // B 模式下标 n..n+m−1
+    std::vector<std::vector<char>> in_mode(
+        static_cast<std::size_t>(n + m),
+        std::vector<char>(static_cast<std::size_t>(k), 0));
+    for (int j = 0; j < k; ++j) {
+        in_mode[static_cast<std::size_t>(jobs[static_cast<std::size_t>(j)].x)]
+               [static_cast<std::size_t>(j)] = 1;
+        in_mode[static_cast<std::size_t>(n + jobs[static_cast<std::size_t>(j)].y)]
+               [static_cast<std::size_t>(j)] = 1;
+    }
+    std::vector<char> done(static_cast<std::size_t>(k), 0);
+    auto count_mode = [&](int mode) {
+        int c = 0;
+        for (int j = 0; j < k; ++j) {
+            if (in_mode[static_cast<std::size_t>(mode)][static_cast<std::size_t>(j)] &&
+                !done[static_cast<std::size_t>(j)]) { ++c; }
+        }
+        return c;
+    };
+    // 第一轮：mode[0] 与 mode[n]（两台机器各自的初始模式）取基数大者
+    int chosen = count_mode(n) > count_mode(0) ? n : 0;
+    int reboots = 0, remaining = k;
+    while (remaining > 0) {
+        ++reboots;
+        for (int j = 0; j < k; ++j) {
+            if (in_mode[static_cast<std::size_t>(chosen)][static_cast<std::size_t>(j)] &&
+                !done[static_cast<std::size_t>(j)]) {
+                done[static_cast<std::size_t>(j)] = 1;
+                --remaining;
+            }
+        }
+        if (remaining == 0) { break; }
+        int best = 0, best_count = -1;
+        for (int mode = 0; mode < n + m; ++mode) {
+            const int c = count_mode(mode);
+            if (c > best_count) { best_count = c; best = mode; }
+        }
+        chosen = best;
+    }
+    return reboots;
+}
+
+static void machine_schedule_demo() {
+    println("二部图最大匹配与最小点覆盖（Kuhn 增广路；König 定理）：");
+    const std::vector<ScheduleJob> jobs = {
+        {0,0,0}, {1,0,1}, {2,0,2}, {3,0,3}, {4,1,0},
+        {5,1,1}, {6,1,2}, {7,1,3}, {8,2,2}, {9,3,2}};
+    int free_jobs = 0;
+    for (const ScheduleJob& j : jobs) {
+        if (j.x == 0 || j.y == 0) { ++free_jobs; }
+    }
+    const int optimal = machine_schedule_optimal(5, 5, jobs);
+    const int greedy = machine_schedule_greedy(5, 5, jobs);
+    println("  机器调度 10 个任务：x=0 或 y=0、开机即可处理的 {} 个", free_jobs);
+    println("  剩余边 A1-B1,A1-B2,A1-B3,A2-B2,A3-B2；最大匹配"
+            "（= 最小重启）= {}", optimal);
+    println("  可行排法：开机先做 0..4；A 切 mode_1 做 5,6,7；"
+            "B 切 mode_2 做 8,9 ⇒ 共 2 次重启");
+    println("  最大度贪婪计数 = {}（把初始 mode_0 也算作一次重启，多 1 次）", greedy);
+    assert(free_jobs == 5 && optimal == 2 && greedy == 3);
+
+    // 贪婪点覆盖的通用反例（全枚举得到的最小图之一）：
+    // L0 连 R0,R1；L1 连 R1；L2 连 R0。
+    BipartiteGraph g3(3, 3);
+    g3.add_edge(0, 0);
+    g3.add_edge(0, 1);
+    g3.add_edge(1, 1);
+    g3.add_edge(2, 0);
+    const int m3 = bipartite_max_matching(g3);
+    const int c3 = greedy_vertex_cover(g3);
+    println("  3×3 反例（L0:R0,R1；L1:R1；L2:R0）：最小覆盖 = {}，"
+            "最大度贪婪 = {}", m3, c3);
+    assert(m3 == 2 && c3 == 3);
+
+    // 随机小图三方对账：匹配 vs 暴力覆盖必须相等；贪婪只统计其失败频率
+    std::mt19937 rng{5489};
+    int trials = 3000, mismatches = 0, greedy_losses = 0;
+    for (int t = 0; t < trials; ++t) {
+        const int nl = 1 + static_cast<int>(rand_below(rng, 4));
+        const int nr = 1 + static_cast<int>(rand_below(rng, 4));
+        BipartiteGraph g(nl, nr);
+        for (int u = 0; u < nl; ++u) {
+            for (int v = 0; v < nr; ++v) {
+                if (rng() & 1u) { g.add_edge(u, v); }
+            }
+        }
+        const int match = bipartite_max_matching(g);
+        if (match != brute_vertex_cover(g)) { ++mismatches; }
+        if (greedy_vertex_cover(g) > match) { ++greedy_losses; }
+    }
+    println("  随机 {} 个小二部图：匹配 vs 暴力最小覆盖 不一致 {} 例；"
+            "贪婪严格更差 {} 例", trials, mismatches, greedy_losses);
+    assert(mismatches == 0 && greedy_losses > 0);
+}
+
+// ═══ 27.7 女孩与男孩：二部图最大独立集 ═══
+// 关系只存在于两性之间 ⟹ 图是二部图。求「两两无关系」的最大人数
+// = 最大独立集。两种解法对账，再加 2ⁿ 暴力第三方法。
+
+// 解法一（2-染色分量取大）：每个连通分量二染色，取人数较多的一色
+//——同色者之间无边；各分量独立选取，求和。
+static int independent_set_by_coloring(const std::vector<std::vector<int>>& adj) {
+    const int n = static_cast<int>(adj.size());
+    std::vector<int> color(static_cast<std::size_t>(n), -1);
+    int answer = 0;
+    for (int s = 0; s < n; ++s) {
+        if (color[static_cast<std::size_t>(s)] != -1) { continue; }
+        std::vector<int> cnt{0, 0};
+        std::vector<int> q;
+        q.push_back(s);
+        color[static_cast<std::size_t>(s)] = 0;
+        for (std::size_t qi = 0; qi < q.size(); ++qi) {
+            const int u = q[qi];
+            ++cnt[static_cast<std::size_t>(color[static_cast<std::size_t>(u)])];
+            for (int v : adj[static_cast<std::size_t>(u)]) {
+                if (color[static_cast<std::size_t>(v)] == -1) {
+                    color[static_cast<std::size_t>(v)] =
+                        color[static_cast<std::size_t>(u)] ^ 1;
+                    q.push_back(v);
+                }
+            }
+        }
+        answer += std::max(cnt[0], cnt[1]);
+    }
+    return answer;
+}
+
+// 同一染色过程，额外返回颜色表（供解法二构造二部图）。
+static int color_graph(const std::vector<std::vector<int>>& adj,
+                       std::vector<int>& color) {
+    const int n = static_cast<int>(adj.size());
+    color.assign(static_cast<std::size_t>(n), -1);
+    int answer = 0;
+    for (int s = 0; s < n; ++s) {
+        if (color[static_cast<std::size_t>(s)] != -1) { continue; }
+        std::vector<int> cnt{0, 0};
+        std::vector<int> q;
+        q.push_back(s);
+        color[static_cast<std::size_t>(s)] = 0;
+        for (std::size_t qi = 0; qi < q.size(); ++qi) {
+            const int u = q[qi];
+            ++cnt[static_cast<std::size_t>(color[static_cast<std::size_t>(u)])];
+            for (int v : adj[static_cast<std::size_t>(u)]) {
+                if (color[static_cast<std::size_t>(v)] == -1) {
+                    color[static_cast<std::size_t>(v)] =
+                        color[static_cast<std::size_t>(u)] ^ 1;
+                    q.push_back(v);
+                }
+            }
+        }
+        answer += std::max(cnt[0], cnt[1]);
+    }
+    return answer;
+}
+
+// 解法二（König）：α = n − τ = n − ν，ν 为最大匹配。
+// 染色后把 color0 当左部、color1 当右部，边定向，跑 Kuhn。
+static int independent_set_by_konig(const std::vector<std::vector<int>>& adj,
+                                    int& matching_out) {
+    const int n = static_cast<int>(adj.size());
+    std::vector<int> color;
+    color_graph(adj, color);
+    std::vector<int> local(static_cast<std::size_t>(n), -1);
+    int nl = 0, nr = 0;
+    for (int u = 0; u < n; ++u) {
+        if (color[static_cast<std::size_t>(u)] == 0) {
+            local[static_cast<std::size_t>(u)] = nl++;
+        } else {
+            local[static_cast<std::size_t>(u)] = nr++;
+        }
+    }
+    BipartiteGraph g(nl, nr);
+    for (int u = 0; u < n; ++u) {
+        if (color[static_cast<std::size_t>(u)] != 0) { continue; }
+        for (int v : adj[static_cast<std::size_t>(u)]) {
+            g.add_edge(local[static_cast<std::size_t>(u)],
+                       local[static_cast<std::size_t>(v)]);
+        }
+    }
+    matching_out = bipartite_max_matching(g);
+    return n - matching_out;
+}
+
+// 暴力最大独立集：枚举 2ⁿ 个顶点子集，子集内无两端同选的边。
+static int independent_set_brute(const std::vector<std::vector<int>>& adj) {
+    const int n = static_cast<int>(adj.size());
+    std::vector<std::pair<int, int>> edges;
+    for (int u = 0; u < n; ++u)
+        for (int v : adj[static_cast<std::size_t>(u)])
+            if (u < v) { edges.emplace_back(u, v); }
+    int best = 0;
+    for (int mask = 0; mask < (1 << n); ++mask) {
+        bool ok = true;
+        for (auto [u, v] : edges) {
+            if ((mask & (1 << u)) && (mask & (1 << v))) { ok = false; break; }
+        }
+        if (ok) { best = std::max(best, std::popcount(static_cast<unsigned>(mask))); }
+    }
+    return best;
+}
+
+static void girls_boys_demo() {
+    println("女孩与男孩（二部图最大独立集：König n−匹配为正解，染色取大对照，暴力对账）：");
+    struct Case {
+        int n;
+        std::vector<std::pair<int, int>> edges;
+        int color_answer;     // 染色取大法给出的数（可能偏小）
+        int optimum;          // 正确答案
+    };
+    const std::vector<Case> cases = {
+        // 前两个是题面样例：两法恰好一致。
+        {7, {{0,4},{0,5},{0,6},{1,4},{1,6}}, 5, 5},
+        {3, {{0,1},{0,2}}, 2, 2},
+        // Hall 反例（左 4 右 3，全连通但匹配只有 2）：
+        // R0 与全部 4 个左点相邻，R1、R2 只与 L0 相邻。
+        // 染色取大只给 4，最优独立集 {L1,L2,L3,R1,R2} 有 5 人。
+        {7, {{0,4},{1,4},{2,4},{3,4},{0,5},{0,6}}, 4, 5}};
+    for (std::size_t c = 0; c < cases.size(); ++c) {
+        std::vector<std::vector<int>> adj(static_cast<std::size_t>(cases[c].n));
+        for (auto [u, v] : cases[c].edges) {
+            adj[static_cast<std::size_t>(u)].push_back(v);
+            adj[static_cast<std::size_t>(v)].push_back(u);
+        }
+        const int by_color = independent_set_by_coloring(adj);
+        int matching = 0;
+        const int by_konig = independent_set_by_konig(adj, matching);
+        const int brute = independent_set_brute(adj);
+        println("  案例{}（{} 人）：染色取大 {}，König {}（{}−匹配 {}），暴力 {}",
+                c + 1, cases[c].n, by_color, by_konig, cases[c].n, matching, brute);
+        assert(by_color == cases[c].color_answer &&
+               by_konig == cases[c].optimum && brute == cases[c].optimum);
+    }
+    // 随机二部图（左右顶点随机连边后整体随机重编号）：König 与暴力必须
+    // 完全一致；染色取大只允许偏小，统计它偏小的频率。
+    std::mt19937 rng{5489};
+    int trials = 2000, mismatches = 0, color_losses = 0;
+    for (int t = 0; t < trials; ++t) {
+        const int nleft = 1 + static_cast<int>(rand_below(rng, 6));
+        const int nright = 1 + static_cast<int>(rand_below(rng, 6));
+        std::vector<std::pair<int, int>> raw;
+        for (int i = 0; i < nleft; ++i)
+            for (int j = 0; j < nright; ++j)
+                if (rng() & 1u) { raw.emplace_back(i, nleft + j); }
+        const int n = nleft + nright;
+        std::vector<int> perm(static_cast<std::size_t>(n));
+        std::iota(perm.begin(), perm.end(), 0);
+        for (int i = n - 1; i > 0; --i) {
+            const int j = static_cast<int>(rand_below(
+                rng, static_cast<std::uint32_t>(i + 1)));
+            std::swap(perm[static_cast<std::size_t>(i)],
+                      perm[static_cast<std::size_t>(j)]);
+        }
+        std::vector<std::vector<int>> adj(static_cast<std::size_t>(n));
+        for (auto [u, v] : raw) {
+            const int uu = perm[static_cast<std::size_t>(u)];
+            const int vv = perm[static_cast<std::size_t>(v)];
+            adj[static_cast<std::size_t>(uu)].push_back(vv);
+            adj[static_cast<std::size_t>(vv)].push_back(uu);   // 无向边两个方向都入表
+        }
+        const int a = independent_set_by_coloring(adj);
+        int matching = 0;
+        const int b = independent_set_by_konig(adj, matching);
+        const int c = independent_set_brute(adj);
+        if (b != c) { ++mismatches; }
+        if (a < b) { ++color_losses; }
+    }
+    println("  随机 {} 例（n≤12，顶点随机重编号）：König vs 暴力 不一致 {} 例；"
+            "染色取大严格偏小 {} 例", trials, mismatches, color_losses);
+    assert(mismatches == 0 && color_losses > 0);
+}
+
+// ═══ 27.8 午餐：食物—牛妞—饮料的「双方独占」如何用流表达 ═══
+struct DiningCase {
+    int n = 0, f = 0, d = 0;
+    std::vector<std::vector<int>> foods;    // 每头牛妞喜欢的食物（0 基）
+    std::vector<std::vector<int>> drinks;   // 每头牛妞喜欢的饮料（0 基）
+    int answer = 0;
+};
+
+// 节点布局：s | F 个食物 | 每头牛妞 in/out 两点 | D 个饮料 | t。
+struct DiningNetwork {
+    std::vector<std::vector<int>> cap;
+    int s = 0, t = 0;
+};
+
+static DiningNetwork build_dining_network(const DiningCase& c) {
+    const int nodes = 1 + c.f + 2 * c.n + c.d + 1;
+    DiningNetwork net;
+    net.s = 0;
+    net.t = nodes - 1;
+    net.cap.assign(static_cast<std::size_t>(nodes),
+                   std::vector<int>(static_cast<std::size_t>(nodes), 0));
+    const int food0 = 1;
+    const int cow0 = food0 + c.f;
+    const int drink0 = cow0 + 2 * c.n;
+    auto add = [&](int u, int v, int w) {
+        net.cap[static_cast<std::size_t>(u)][static_cast<std::size_t>(v)] = w;
+    };
+    for (int x = 0; x < c.f; ++x) { add(net.s, food0 + x, 1); }       // 食物唯一
+    for (int i = 0; i < c.n; ++i) {
+        const int cin = cow0 + 2 * i;
+        const int cout = cin + 1;
+        add(cin, cout, 1);                                            // 牛妞唯一
+        for (int x : c.foods[static_cast<std::size_t>(i)]) {
+            add(food0 + x, cin, 1);
+        }
+        for (int x : c.drinks[static_cast<std::size_t>(i)]) {
+            add(cout, drink0 + x, 1);
+        }
+    }
+    for (int x = 0; x < c.d; ++x) { add(drink0 + x, net.t, 1); }      // 饮料唯一
+    return net;
+}
+
+// 贪心对照：按牛妞编号处理，能配出一对空闲的（食物，饮料）就占下。
+// 贪心永远是可行分配，故其值 ≤ 最优值。
+static int dining_greedy(const DiningCase& c) {
+    std::vector<char> used_food(static_cast<std::size_t>(c.f), 0);
+    std::vector<char> used_drink(static_cast<std::size_t>(c.d), 0);
+    int satisfied = 0;
+    for (int i = 0; i < c.n; ++i) {
+        bool got = false;
+        for (int fi : c.foods[static_cast<std::size_t>(i)]) {
+            if (used_food[static_cast<std::size_t>(fi)]) { continue; }
+            for (int di : c.drinks[static_cast<std::size_t>(i)]) {
+                if (used_drink[static_cast<std::size_t>(di)]) { continue; }
+                used_food[static_cast<std::size_t>(fi)] = 1;
+                used_drink[static_cast<std::size_t>(di)] = 1;
+                got = true;
+                ++satisfied;
+                break;
+            }
+            if (got) { break; }
+        }
+    }
+    return satisfied;
+}
+
+// 暴力对账：每头牛妞的选项为「不满意」或 (喜欢的食物 × 喜欢的饮料)，
+// 混合进制枚举全部组合，检查食物/饮料冲突后取最大满意数。仅用于小例。
+static int dining_brute(const DiningCase& c) {
+    std::vector<long long> radix(static_cast<std::size_t>(c.n));
+    long long total = 1;
+    for (int i = 0; i < c.n; ++i) {
+        radix[static_cast<std::size_t>(i)] =
+            1 + static_cast<long long>(c.foods[static_cast<std::size_t>(i)].size()) *
+                    c.drinks[static_cast<std::size_t>(i)].size();
+        total *= radix[static_cast<std::size_t>(i)];
+    }
+    int best = 0;
+    for (long long code = 0; code < total; ++code) {
+        long long rest = code;
+        std::vector<char> used_food(static_cast<std::size_t>(c.f), 0);
+        std::vector<char> used_drink(static_cast<std::size_t>(c.d), 0);
+        int satisfied = 0;
+        bool valid = true;
+        for (int i = 0; i < c.n && valid; ++i) {
+            const long long digit = rest % radix[static_cast<std::size_t>(i)];
+            rest /= radix[static_cast<std::size_t>(i)];
+            if (digit == 0) { continue; }    // 该牛妞放弃
+            const long long pick = digit - 1;
+            const int fi = c.foods[static_cast<std::size_t>(i)][
+                static_cast<std::size_t>(pick / static_cast<long long>(
+                    c.drinks[static_cast<std::size_t>(i)].size()))];
+            const int di = c.drinks[static_cast<std::size_t>(i)][
+                static_cast<std::size_t>(pick % static_cast<long long>(
+                    c.drinks[static_cast<std::size_t>(i)].size()))];
+            if (used_food[static_cast<std::size_t>(fi)] ||
+                used_drink[static_cast<std::size_t>(di)]) {
+                valid = false;
+                break;
+            }
+            used_food[static_cast<std::size_t>(fi)] = 1;
+            used_drink[static_cast<std::size_t>(di)] = 1;
+            ++satisfied;
+        }
+        if (valid) { best = std::max(best, satisfied); }
+    }
+    return best;
+}
+
+// 错误模型的对照值：把食物与饮料直接当二部图两边、牛妞喜欢的搭配当边，
+// 求最大匹配。它不约束「同一条牛妞不能被用两次」，故可能偏大。
+static int food_drink_matching(const DiningCase& c) {
+    // Kuhn 增广：左侧食物 → 右侧饮料。
+    std::vector<std::vector<int>> adj(static_cast<std::size_t>(c.f));
+    std::vector<char> edge_seen(static_cast<std::size_t>(c.f * c.d), 0);
+    for (int i = 0; i < c.n; ++i) {
+        for (int fi : c.foods[static_cast<std::size_t>(i)]) {
+            for (int di : c.drinks[static_cast<std::size_t>(i)]) {
+                const int key = fi * c.d + di;
+                if (!edge_seen[static_cast<std::size_t>(key)]) {
+                    edge_seen[static_cast<std::size_t>(key)] = 1;
+                    adj[static_cast<std::size_t>(fi)].push_back(di);
+                }
+            }
+        }
+    }
+    std::vector<int> match(static_cast<std::size_t>(c.d), -1);
+    int size = 0;
+    for (int u = 0; u < c.f; ++u) {
+        std::vector<char> seen(static_cast<std::size_t>(c.d), 0);
+        auto augment = [&](this auto&& self, int x) -> bool {
+            for (int v : adj[static_cast<std::size_t>(x)]) {
+                if (seen[static_cast<std::size_t>(v)]) { continue; }
+                seen[static_cast<std::size_t>(v)] = 1;
+                if (match[static_cast<std::size_t>(v)] == -1 ||
+                    self(match[static_cast<std::size_t>(v)])) {
+                    match[static_cast<std::size_t>(v)] = x;
+                    return true;
+                }
+            }
+            return false;
+        };
+        if (augment(u)) { ++size; }
+    }
+    return size;
+}
+
+static void dining_demo() {
+    println("=== 27.8 午餐：食物—牛妞—饮料压进一条流路 ===");
+    const std::vector<DiningCase> cases = {
+        // 样例（4 牛妞 / 3 食物 / 3 饮料）。
+        {4, 3, 3,
+         {{0, 1}, {1, 2}, {0, 2}, {0, 2}},
+         {{2, 0}, {0, 1}, {0, 1}, {2}},
+         3},
+        // 一头牛妞喜欢全部：食物-饮料直接匹配会数出 4 个配对。
+        {1, 2, 2, {{0, 1}}, {{0, 1}}, 1},
+        // 两头牛妞只接受同一对：谁先拿到谁满意。
+        {2, 1, 1, {{0}, {0}}, {{0}, {0}}, 1}};
+    int case_no = 0;
+    for (const DiningCase& c : cases) {
+        ++case_no;
+        const DiningNetwork net = build_dining_network(c);
+        const MaxFlowResult r =
+            edmonds_karp(net.cap, net.s, net.t, /*verbose=*/false);
+        const bool legal =
+            validate_flow(net.cap, r.flow, net.s, net.t, r.value);
+        const int greedy = dining_greedy(c);
+        println("  案例{}（{} 牛妞 / {} 食物 / {} 饮料）：最大流 {}，贪心 {}，流合法 {}",
+                case_no, c.n, c.f, c.d, r.value, greedy, legal);
+        assert(r.value == c.answer && legal);
+        assert(greedy <= r.value);
+        if (case_no == 2) {
+            const int wrong = food_drink_matching(c);
+            println("    食物-饮料直接匹配误报 {}（两个配对同属一头牛妞，正解 {}）",
+                    wrong, c.answer);
+            assert(wrong == 2 && wrong > c.answer);
+        }
+    }
+
+    std::mt19937 rng{5489};
+    // 随机小例：最大流 vs 暴力枚举。
+    const int small_trials = 2000;
+    int mismatches = 0;
+    for (int t = 0; t < small_trials; ++t) {
+        DiningCase c;
+        c.n = 1 + static_cast<int>(rand_below(rng, 4));
+        c.f = 1 + static_cast<int>(rand_below(rng, 3));
+        c.d = 1 + static_cast<int>(rand_below(rng, 3));
+        c.foods.resize(static_cast<std::size_t>(c.n));
+        c.drinks.resize(static_cast<std::size_t>(c.n));
+        for (int i = 0; i < c.n; ++i) {
+            for (int x = 0; x < c.f; ++x) {
+                if (rand_below(rng, 2) != 0) {
+                    c.foods[static_cast<std::size_t>(i)].push_back(x);
+                }
+            }
+            if (c.foods[static_cast<std::size_t>(i)].empty()) {
+                c.foods[static_cast<std::size_t>(i)].push_back(
+                    static_cast<int>(rand_below(rng, static_cast<std::uint32_t>(c.f))));
+            }
+            for (int x = 0; x < c.d; ++x) {
+                if (rand_below(rng, 2) != 0) {
+                    c.drinks[static_cast<std::size_t>(i)].push_back(x);
+                }
+            }
+            if (c.drinks[static_cast<std::size_t>(i)].empty()) {
+                c.drinks[static_cast<std::size_t>(i)].push_back(
+                    static_cast<int>(rand_below(rng, static_cast<std::uint32_t>(c.d))));
+            }
+        }
+        const DiningNetwork net = build_dining_network(c);
+        const int flow = edmonds_karp(net.cap, net.s, net.t, false).value;
+        const int brute = dining_brute(c);
+        if (flow != brute) { ++mismatches; }
+    }
+    println("  随机 {} 小例（n≤4，F,D≤3）：最大流 vs 暴力 不一致 {} 例",
+            small_trials, mismatches);
+    assert(mismatches == 0);
+
+    // 随机大例：跑得起、答案有界、贪心不越界。
+    const int big_trials = 300;
+    int bound_violations = 0;
+    int greedy_violations = 0;
+    for (int t = 0; t < big_trials; ++t) {
+        DiningCase c;
+        c.n = 1 + static_cast<int>(rand_below(rng, 100));
+        c.f = 1 + static_cast<int>(rand_below(rng, 100));
+        c.d = 1 + static_cast<int>(rand_below(rng, 100));
+        c.foods.resize(static_cast<std::size_t>(c.n));
+        c.drinks.resize(static_cast<std::size_t>(c.n));
+        for (int i = 0; i < c.n; ++i) {
+            const int nf = 1 + static_cast<int>(rand_below(rng, 4));
+            for (int k = 0; k < nf; ++k) {
+                c.foods[static_cast<std::size_t>(i)].push_back(
+                    static_cast<int>(rand_below(rng,
+                                                static_cast<std::uint32_t>(c.f))));
+            }
+            const int nd = 1 + static_cast<int>(rand_below(rng, 4));
+            for (int k = 0; k < nd; ++k) {
+                c.drinks[static_cast<std::size_t>(i)].push_back(
+                    static_cast<int>(rand_below(rng,
+                                                static_cast<std::uint32_t>(c.d))));
+            }
+        }
+        const DiningNetwork net = build_dining_network(c);
+        const int flow = edmonds_karp(net.cap, net.s, net.t, false).value;
+        const int greedy = dining_greedy(c);
+        if (flow > std::min({c.n, c.f, c.d})) { ++bound_violations; }
+        if (greedy > flow) { ++greedy_violations; }
+    }
+    println("  随机 {} 大例（n,F,D≤100）：答案上界违反 {} 次；贪心>最优违反 {} 次",
+            big_trials, bound_violations, greedy_violations);
+    assert(bound_violations == 0 && greedy_violations == 0);
+}
+
 int main() {
     edmonds_karp_demo();
     push_relabel_demo();
+    machine_schedule_demo();
+    girls_boys_demo();
+    dining_demo();
     println("自检通过");
     return 0;
 }
