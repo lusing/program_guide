@@ -1,0 +1,32 @@
+== 布局（单继承前缀法）==
+  Animal [0:name]
+  Dog [0:name 1:barkHz]
+  Puppy [0:name 1:barkHz 2:cute]
+  RoboDog [0:name 1:barkHz 2:firmware]  (第二父 Robot 子对象偏移 2)
+  Robot [0:serial]
+== vtable ==
+  Animal: [0]speak->Animal::speak 
+  Dog: [0]speak->Dog::speak [1]fetch->Dog::fetch 
+  Puppy: [0]speak->Dog::speak [1]fetch->Dog::fetch 
+  RoboDog: 
+  Robot: [0]speak->Robot::speak 
+== 静态派发 ==
+  Puppy.kind  = Animal::kind
+  Dog.kind    = Animal::kind
+== 虚派发（沿 vtable）==
+  Animal.speak = Animal::speak
+  Dog.speak    = Dog::speak
+  Puppy.speak  = Dog::speak
+  Puppy.fetch  = Dog::fetch
+== 类成员测试（display 上行）==
+  Puppy instanceof Animal : yes (深度 2, 途经 {Puppy->Dog})
+  RoboDog instanceof Robot : yes (深度 1, 途经 {RoboDog->Dog->Animal})
+  Robot instanceof Animal : no
+== 虚调用的 0-CFA 目标集 ==
+  静态类型 Animal.speak() 可能调用: {Animal::speak Dog::speak}
+  静态类型 Dog.speak() 可能调用: {Dog::speak}
+== 对账 ==
+  前缀法偏移（name@0 barkHz@1 cute@2）: yes
+  Puppy.speak 命中 Dog 覆写槽: yes
+  Animal 引用的目标集恰 2 个: yes
+  多继承成员测试可达第二父: yes
