@@ -16,9 +16,11 @@ using std::println;
 #endif
 
 #include <algorithm>
+#include <bit>
 #include <cassert>
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 // ═══ 16.1 最长公共子序列 ═══
@@ -169,10 +171,301 @@ static void edit_distance_demo() {
     assert(indel == static_cast<int>(x.size() + y.size()) - 2 * r.length);
 }
 
+// ═══ 16.5 最长不升子序列：二分尾替换与 LCS 归约 ═══
+// LNIS（允许相等接续）是「后一支箭高度不超过前一支」这类约束的模型。
+// 三条路线，本示例逐一对账：
+//   (a) Θ(n²) DP：f[i] = 1 + max{ f[j] : j < i, h[j] >= h[i] }
+//   (b) Θ(n log n) 尾替换 + 二分：LNIS(h) = LNDS(−h)，用 upper_bound
+//   (c) Θ(n²) 归约：LNIS(h) = LCS(h, sort_desc(h))
+
+// (a) 参考实现：Θ(n²) DP，同时可还原序列
+static std::vector<int> lnis_dp(const std::vector<int>& h) {
+    const std::size_t n = h.size();
+    std::vector<int> f(n, 1);
+    std::vector<std::size_t> pre(n, static_cast<std::size_t>(-1));
+    for (std::size_t i = 1; i < n; ++i) {
+        for (std::size_t j = 0; j < i; ++j) {
+            if (h[j] >= h[i] && f[j] + 1 > f[i]) {   // >= 而非 > ：不升允许相等
+                f[i] = f[j] + 1;
+                pre[i] = j;
+            }
+        }
+    }
+    // 还原：从末尾值最大的下标回溯
+    std::size_t best = 0;
+    for (std::size_t i = 1; i < n; ++i) {
+        if (f[i] > f[best]) { best = i; }
+    }
+    std::vector<int> seq;
+    for (std::size_t k = best; k != static_cast<std::size_t>(-1); k = pre[k]) {
+        seq.push_back(h[k]);
+    }
+    std::reverse(seq.begin(), seq.end());
+    return seq;
+}
+
+// (b) Θ(n lg n) 尾替换 + 二分。**必须 upper_bound**。
+// 不变式：d[k] = 长度为 k+1 的不降子序列的最小可能末尾值（对 b = −h）。
+// 用 lower_bound 会返回第一个 d[p] >= b[i] 的位置，把相等元素截断在更靠前的
+// 槽位 ⟹ 丢��「相等接续」的能力 ⟹ 答案偏小。
+static std::vector<int> lnds_negated(const std::vector<int>& h, bool useUpper) {
+    const std::size_t n = h.size();
+    std::vector<int> b(n), d, tailIdx;
+    std::vector<std::size_t> pre(n, static_cast<std::size_t>(-1));
+    for (std::size_t i = 0; i < n; ++i) {
+        b[i] = -h[i];
+        const auto it = useUpper
+            ? std::upper_bound(d.begin(), d.end(), b[i])
+            : std::lower_bound(d.begin(), d.end(), b[i]);
+        const std::size_t p = static_cast<std::size_t>(it - d.begin());
+        if (p > 0) { pre[i] = tailIdx[p - 1]; }    // 前驱 = 长度 p 的最优末尾下标
+        if (p == d.size()) {
+            d.push_back(b[i]);
+            tailIdx.push_back(static_cast<int>(i));   // size_t → int 显式收窄
+        } else {
+            d[p] = b[i];
+            tailIdx[p] = static_cast<int>(i);         // 同上（/W4 会抓隐式）
+        }
+    }
+    // 回溯：d 的下标是「长度」，pre 存的是「元素下标」，靠 tailIdx 桥接
+    std::vector<int> seq;
+    if (!tailIdx.empty()) {
+        for (std::size_t k = tailIdx.back(); k != static_cast<std::size_t>(-1); k = pre[k]) {
+            seq.push_back(h[k]);
+        }
+    }
+    std::reverse(seq.begin(), seq.end());
+    return seq;
+}
+
+// (c) Θ(n²) 归约：LNIS(h) = LCS(h, sort_desc(h))。用 16.1 的 LCS + 重构。
+static std::vector<int> lnis_via_lcs(const std::vector<int>& h) {
+    std::vector<int> desc(h);
+    std::ranges::sort(desc, std::ranges::greater{});
+    // 高度值当字符用（本例高度 ≤ 127）；int→char 必须显式转换，
+    // 否则 string 迭代器构造在 MSVC /W4 下报 C4244。
+    std::string x;
+    x.reserve(h.size());
+    for (int v : h) {
+        x.push_back(static_cast<char>(v));
+    }
+    std::string y;
+    y.reserve(desc.size());
+    for (int v : desc) {
+        y.push_back(static_cast<char>(v));
+    }
+    const LcsResult r = lcs(x, y);
+    const std::string z = lcs_reconstruct(r, x, x.size(), y.size());
+    // 还原成原始高度值：LCS 存的是字符，用 desc 的字符做双射不唯一，
+    // 竞赛里通常只需长度；这里用「LCS 串在 h 中贪心匹配」还原高度序列。
+    std::vector<int> seq;
+    std::size_t p = 0;
+    for (int v : h) {
+        if (p < z.size() && static_cast<char>(v) == z[p]) {
+            seq.push_back(v);
+            ++p;
+        }
+    }
+    return seq;
+}
+
+static void lnis_demo() {
+    // 8 只鹰的高度（"后一支不超过前一支" ⟹ 取最长的不升子序列）
+    const std::vector<int> h{389, 207, 155, 300, 299, 170, 158, 65};
+    const std::vector<int> a = lnis_dp(h);
+    const std::vector<int> b = lnds_negated(h, true);
+    const std::vector<int> c = lnis_via_lcs(h);
+
+    println("=== 16.5 最长不升子序列（LNIS）：二分尾替换 vs LCS 归约 ===");
+    print("  高度序列 h = [");
+    for (std::size_t i = 0; i < h.size(); ++i) {
+        print("{}{}", h[i], i + 1 == h.size() ? "" : ", ");
+    }
+    println("]");
+    print("  (a) Θ(n²) DP        LNIS = {}，序列 = [", a.size());
+    for (std::size_t i = 0; i < a.size(); ++i) { print("{}{}", a[i], i + 1 == a.size() ? "" : ", "); }
+    println("]");
+    print("  (b) Θ(n lg n) 尾替换 LNIS = {}，序列 = [", b.size());
+    for (std::size_t i = 0; i < b.size(); ++i) { print("{}{}", b[i], i + 1 == b.size() ? "" : ", "); }
+    println("]");
+    print("  (c) Θ(n²) LCS 归约   LNIS = {}，序列 = [", c.size());
+    for (std::size_t i = 0; i < c.size(); ++i) { print("{}{}", c[i], i + 1 == c.size() ? "" : ", "); }
+    println("]");
+    assert(a.size() == b.size() && b.size() == c.size());
+    // 三条路线还原出的序列都必须是不升的子序列
+    const auto check = [&](const std::vector<int>& s) {
+        std::size_t p = 0;
+        for (int v : h) {
+            if (p < s.size() && v == s[p]) { ++p; }
+        }
+        if (p != s.size()) { return false; }
+        for (std::size_t i = 1; i < s.size(); ++i) {
+            if (s[i - 1] < s[i]) { return false; }   // 必须 s[i-1] >= s[i]
+        }
+        return true;
+    };
+    assert(check(a) && check(b) && check(c));
+    println("  三法长度一致 = 1，三条序列都通过「是 h 的子序列且不升」双向断言 = 1");
+
+    // upper_bound vs lower_bound：h 全相等时给出最小反例
+    const std::vector<int> flat{5, 5, 5};
+    const std::size_t up = lnds_negated(flat, true).size();
+    const std::size_t lo = lnds_negated(flat, false).size();
+    println("  反例 h = [5,5,5]：upper_bound 得 {}（正确，3 个 5 互相接续），"
+            "lower_bound 只得 {}（错，截断了相等接续）", up, lo);
+    assert(up == 3 && lo == 1);
+
+    // 归约的边界：LCS(A, reverse A) **不是** LNIS，那是最长回文子序列
+    const std::vector<int> g{2, 1, 3};
+    std::vector<int> rev(g.rbegin(), g.rend());
+    // 同上：int→char 显式转换，避免 string 迭代器构造触发 C4244
+    std::string gs, rs;
+    gs.reserve(g.size());
+    rs.reserve(rev.size());
+    for (int v : g) gs.push_back(static_cast<char>(v));
+    for (int v : rev) rs.push_back(static_cast<char>(v));
+    const int lcsRev = lcs(gs, rs).length;
+    const std::size_t lnisG = lnis_dp(g).size();
+    println("  边界：LCS(A, reverse A) 是**最长回文子序列**不是 LNIS——"
+            "A = [2,1,3]：LNIS = {}（[2,1]），而 LCS(A, rev A) = {}（[1] 或 [2]）", lnisG, lcsRev);
+    assert(lnisG == 2 && lcsRev == 1);
+}
+
+// ═══ 16.6 反链与最小覆盖：偏序集上的 Dilworth ═══
+// 网格偏序：(a,b) ⪯ (c,d) ⟺ a ≤ c 且 b ≤ d。
+//   一条单调（只右/下）路径上的格子集合 = 一个**链** ⟹ 「用最少的机器人
+//   清完所有垃圾」= 把 S 划分成最少的链 = 最小链覆盖数。
+//   由 Dilworth：最小链覆盖数 = 最大反链大小 = |S| − 二分图最大匹配。
+//   而「最大反链」有个 Θ(n lg n) 的显式刻画：按 (i 升, j 降) 排序后，
+//   j 序列的**最长严格下降**子序列长度就是最大反链。
+
+struct Cell { int i, j; };
+
+// 最长严格下降子序列长度（对 −j 求严格上升 ⟺ 对 j 求严格下降），用 lower_bound
+static std::size_t strict_lds(const std::vector<int>& js) {
+    std::vector<int> t;
+    for (int j : js) {
+        const int v = -j;
+        const auto it = std::lower_bound(t.begin(), t.end(), v);  // 严格上升 ⟹ lower_bound
+        if (it == t.end()) { t.push_back(v); } else { *it = v; }
+    }
+    return t.size();
+}
+
+// 二分图最大匹配（Kuhn 增广路，Θ(V·E)），图是传递闭包：u ⪯ v 且 u ≠ v 则连边。
+// 增广写成显式递归（深度 ≤ |S|，本例 7；大实例换 Hopcroft–Karp）。
+static bool augment(std::size_t u, const std::vector<std::vector<std::size_t>>& adj,
+                    std::vector<int>& matchR, std::vector<char>& seen) {
+    for (std::size_t y : adj[u]) {
+        if (seen[y]) { continue; }
+        seen[y] = 1;
+        if (matchR[y] == -1 || augment(static_cast<std::size_t>(matchR[y]), adj, matchR, seen)) {
+            matchR[y] = static_cast<int>(u);
+            return true;
+        }
+    }
+    return false;
+}
+
+static std::size_t max_matching(const std::vector<Cell>& s) {
+    const std::size_t n = s.size();
+    std::vector<std::vector<std::size_t>> adj(n);
+    for (std::size_t u = 0; u < n; ++u) {
+        for (std::size_t v = 0; v < n; ++v) {
+            if (u != v && s[u].i <= s[v].i && s[u].j <= s[v].j) {
+                adj[u].push_back(v);
+            }
+        }
+    }
+    std::vector<int> matchR(n, -1);
+    std::vector<char> seen(n, 0);
+    std::size_t cnt = 0;
+    for (std::size_t u = 0; u < n; ++u) {
+        std::fill(seen.begin(), seen.end(), static_cast<char>(0));   // /W4: int→char 显式收窄
+        if (augment(u, adj, matchR, seen)) { ++cnt; }
+    }
+    return cnt;
+}
+
+// 暴力求最大反链（枚举全部子集判两两不可比），只用于小规模对账
+static std::size_t max_antichain_brute(const std::vector<Cell>& s) {
+    const std::size_t n = s.size();
+    std::size_t best = 0;
+    for (std::uint64_t mask = 1; mask < (std::uint64_t{1} << n); ++mask) {
+        bool ok = true;
+        for (std::size_t a = 0; a < n && ok; ++a) {
+            if (((mask >> a) & 1U) == 0U) { continue; }
+            for (std::size_t b = a + 1; b < n; ++b) {
+                if (((mask >> b) & 1U) == 0U) { continue; }
+                // 可比 = (i_a ≤ i_b 且 j_a ≤ j_b) 或 (i_b ≤ i_a 且 j_b ≤ j_a)
+                const bool ab = s[a].i <= s[b].i && s[a].j <= s[b].j;
+                const bool ba = s[b].i <= s[a].i && s[b].j <= s[a].j;
+                if (ab || ba) { ok = false; break; }
+            }
+        }
+        if (ok) { best = std::max(best, static_cast<std::size_t>(std::popcount(mask))); }
+    }
+    return best;
+}
+
+static void antichain_demo() {
+    // 7 个垃圾格（行优先输入，同行内 j 升序 —— 必须重排成 j 降序）
+    const std::vector<Cell> trash{{1, 2}, {1, 4}, {2, 4}, {2, 6}, {4, 4}, {4, 7}, {6, 6}};
+    std::vector<Cell> s = trash;
+    std::ranges::sort(s, [](const Cell& x, const Cell& y) { return x.i != y.i ? x.i < y.i : x.j > y.j; });
+
+    println("=== 16.6 最小单调路径覆盖 = 最大反链 = |S| − 二分图最大匹配 ===");
+    print("  垃圾格 S = [");
+    for (std::size_t i = 0; i < trash.size(); ++i) {
+        print("({},{}){}", trash[i].i, trash[i].j, i + 1 == trash.size() ? "" : ", ");
+    }
+    println("]");
+    print("  按 (i 升, j 降) 重排后 j 序列 = [");
+    std::vector<int> js;
+    for (std::size_t i = 0; i < s.size(); ++i) {
+        js.push_back(s[i].j);
+        print("{}{}", s[i].j, i + 1 == s.size() ? "" : ", ");
+    }
+    println("]");
+
+    const std::size_t lds = strict_lds(js);
+    const std::size_t anti = max_antichain_brute(s);
+    const std::size_t mm = max_matching(s);
+    println("  LDS（j 的最长严格下降子序列）= {}", lds);
+    println("  暴力最大反链（枚举 2^7 子集）= {}", anti);
+    println("  二分图最大匹配（传递闭包 + 增广路）= {} ⟹ |S| − 匹配 = {} − {} = {}",
+            mm, s.size(), mm, s.size() - mm);
+    println("  三者一致 ⟹ 最少机器人 = {} 个（三步链条：链划分 → Dilworth → 反链 → LDS）",
+            lds);
+    assert(lds == 2 && anti == 2 && mm == 5 && s.size() - mm == 2);
+
+    // 第二组：一条单调路径就够
+    const std::vector<Cell> chain{{1, 1}, {2, 2}, {4, 4}};
+    std::vector<Cell> c2 = chain;
+    std::ranges::sort(c2, [](const Cell& x, const Cell& y) { return x.i != y.i ? x.i < y.i : x.j > y.j; });
+    std::vector<int> js2;
+    for (const Cell& c : c2) { js2.push_back(c.j); }
+    const std::size_t lds2 = strict_lds(js2);
+    const std::size_t mm2 = max_matching(c2);
+    println("  对照 S = [(1,1),(2,2),(4,4)]：j 序列 = [1,2,4] 全升 ⟹ LDS = {}，"
+            "最大匹配 = {} ⟹ |S| − 匹配 = {}（一条单调路径清完）",
+            lds2, mm2, c2.size() - mm2);
+    assert(lds2 == 1 && mm2 == 2);
+
+    // 第三组：空网格
+    const std::vector<Cell> none;
+    std::vector<Cell> e = none;
+    println("  空网格 S = []：LDS = {}，最大匹配 = {} ⟹ 最少机器人 = {} 个",
+            strict_lds({}), max_matching(e), 0);
+    assert(strict_lds({}) == 0 && max_matching(e) == 0);
+}
+
 int main() {
     lcs_demo();
     optimal_bst_demo();
     edit_distance_demo();
+    lnis_demo();
+    antichain_demo();
     println("自检通过");
     return 0;
 }

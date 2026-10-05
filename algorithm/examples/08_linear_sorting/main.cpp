@@ -20,6 +20,9 @@ using std::println;
 #include <cassert>
 #include <cstdint>
 #include <random>
+#include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
@@ -185,12 +188,233 @@ static void summary_demo() {
     assert(same);
 }
 
+// ═══ 08.6 逆序对计数：值域小就用计数代替比较 ═══
+//
+// 问题：m 个等长 DNA 串，按其**逆序数**（i<j 且 s_i > s_j 的对数）升序排序。
+// 逆序数是「排序所需交换次数的下界」，所以它是排序问题里最常出现的次序键。
+//
+// 通用解法是**归并排序计数法**：归并时统计跨半区的逆序对，Θ(n lg n)。
+// 但 DNA只有 4 个字母——**值域小就可以用计数代替比较**，把 Θ(n²) 压到 Θ(n)。
+// 这是第 8 章「换模型」思想的一个小型复刻：不再问「a<b 吗」，而是问
+// 「前面有多少个比 b 大的」。
+//
+// ── 方法一：小字母表前缀计数 Θ(n) ──
+// 不变式（写代码时必须先写下来，否则必然算错）：
+//   **c_X = 已扫描前缀（s[0..i-1]）中字母 X 的出现次数**。
+// 处理 s[i] 时，新增的逆序对数 = 「前缀中比 s[i] 大的字母的个数之和」：
+//   s[i] = 'A' → 新增 c_C + c_G + c_T，然后 c_A++
+//   s[i] = 'C' → 新增 c_G + c_T，    然后 c_C++
+//   s[i] = 'G' → 新增 c_T，          然后 c_G++
+//   s[i] = 'T' → 新增 0，            然后 c_T++
+// 「只统计前缀」这层语义是核心——漏了它就会数成「全局计数」，答案偏大。
+//
+// 每个逆序对 (i,j), i<j, s_i>s_j **恰在处理其右端点 j 时被计一次**，
+// 不重不漏——这是正确性的全部内容。
+static long long inv_count_small_alpha(std::string_view s) {
+    long long cA = 0, cC = 0, cG = 0, cT = 0;   // 已扫描前缀中各字母出现次数
+    long long inv = 0;
+    for (char ch : s) {
+        switch (ch) {
+        case 'A': inv += cC + cG + cT; ++cA; break;   // 比 A 大的都算
+        case 'C': inv += cG + cT;       ++cC; break;   // 比 C 大的：G、T
+        case 'G': inv += cT;             ++cG; break;   // 比 G 大的：T
+        case 'T':                       ++cT; break;   // T 最大，前面没人比它大
+        default: break;
+        }
+    }
+    // 不变式自检：四个计数器之和恒等于串长。c_A 虽然从不参与加法，
+    // 但它必须存在——否则「前缀中各字母的计数」这层语义就残缺了。
+    assert(cA + cC + cG + cT == static_cast<long long>(s.size()));
+    return inv;
+}
+
+// 推广到任意字母表（大小 σ）：先把字符**动态编号**成 0..σ-1，再用
+// 「已出现次数数组 + 后缀和」，每个位置 O(σ) ⟹ 总 O(nσ)。
+// σ 较大时（比如整个字节范围 256）改用树状数组，O(n lg σ)。
+//
+// ★ 编号必须保持**字母序**（按字符值排序后依次编号），不能按「首次出现
+// 顺序」编号——后者会把 "GATC" 编成 G=0,A=1,T=2,C=3，把大小关系全弄反。
+// 「动态编号」要动态的是**用哪几个字符**，而不是编号的顺序。
+static long long inv_count_generic(std::string_view s) {
+    // 收集实际出现的字符（动态：不用硬编码 a=0,b=1 —— 那是样例特例）
+    bool present[256] = {};
+    for (char ch : s) { present[static_cast<unsigned char>(ch)] = true; }
+    // 按字符值升序编号 ⟹ 编号大小 = 字母大小
+    int code[256];
+    std::ranges::fill(code, -1);
+    int sigma = 0;
+    for (int u = 0; u < 256; ++u) {
+        if (present[u]) { code[u] = sigma++; }
+    }
+    // 后缀和：ge[k] = 前缀中「编号 ≥ k」的字符个数
+    std::vector<long long> ge(static_cast<std::size_t>(sigma) + 1, 0);
+    long long inv = 0;
+    for (char ch : s) {
+        const std::size_t j =
+            static_cast<std::size_t>(code[static_cast<unsigned char>(ch)]);
+        inv += ge[j + 1];// 前缀中编号 > j 的个数 = 它与 s[i] 成的逆序对
+        for (std::size_t k = 0; k <= j; ++k) { ++ge[k]; }  // 后缀和的增量更新
+    }
+    return inv;
+}
+// 归并 a[l..m) 与 a[m..r) 时，两半各自已升序。若 a[i] > a[j]（i 在左半），
+// 则左半的 a[i..m) **全部** ≥ a[i] > a[j]，于是产生 m - i 个逆序对，
+// 一次性累加后取 a[i]。这一步把「数逆序对」融进归并本身，不额外开一趟。
+static long long merge_count(std::vector<int>& a, std::vector<int>& tmp,
+                             std::size_t l, std::size_t r) {
+    if (r - l <= 1) { return 0; }
+    const std::size_t m = l + (r - l) / 2;
+    long long inv = merge_count(a, tmp, l, m) + merge_count(a, tmp, m, r);
+    std::size_t i = l, j = m, k = l;
+    while (i < m && j < r) {
+        if (a[i] <= a[j]) {
+            tmp[k++] = a[i++];          // 相等时取左边：稳定，且不误计
+        } else {
+            inv += static_cast<long long>(m - i);   // 左半剩余全部与 a[j] 成逆序
+            tmp[k++] = a[j++];
+        }
+    }
+    while (i < m) { tmp[k++] = a[i++]; }
+    while (j < r) { tmp[k++] = a[j++]; }
+    for (std::size_t t = l; t < r; ++t) { a[t] = tmp[t]; }
+    return inv;
+}
+
+static long long inv_count_merge(std::string_view s) {
+    std::vector<int> a(s.size()), tmp(s.size());
+    for (std::size_t i = 0; i < s.size(); ++i) {
+        // 字母序 A<C<G<T 用偏移量体现（'A'-'A'=0, 'C'=2, 'G'=6, 'T'=19）
+        // 只需保证是**严格单调映射**，不必连续
+        a[i] = static_cast<int>(static_cast<unsigned char>(s[i]));
+    }
+    return merge_count(a, tmp, 0, a.size());
+}
+
+// 朴素 Θ(n²) 双层循环——作为正确性基准与代价对照
+static long long inv_count_naive(std::string_view s) {
+    long long inv = 0;
+    for (std::size_t i = 0; i < s.size(); ++i) {
+        for (std::size_t j = i + 1; j < s.size(); ++j) {
+            if (s[i] > s[j]) { ++inv; }
+        }
+    }
+    return inv;
+}
+
+static void inversion_demo() {
+    println("");
+    println("=== 08.6 逆序对计数：值域小就用计数代替比较 ===");
+    // 不变式：c_X = 已扫描前缀中 X 的出现次数
+    const char* dna[] = {"ACGT", "GATC", "ACGT", "TGCA", "GGCC", "ATAT"};
+    const int m = 6;
+    println("m = {} 个 DNA 串（按逆序数升序排序）：", m);
+    print("  输入: ");
+    for (int i = 0; i < m; ++i) { print("{} ", dna[i]); }
+    println("");
+    print("  逆序数（两两>关系数）: ");
+    for (int i = 0; i < m; ++i) { print("{} ", inv_count_small_alpha(dna[i])); }
+    println("");
+
+    // 三种方法对账：Θ(n) 前缀计数 / Θ(n lg n) 归并计数 / Θ(n²) 朴素
+    println("");
+    println("三法对账（每个串的逆序数）：");
+    println("  {:<8} {:>10} {:>12} {:>10}", "串", "前缀计数Θ(n)", "归并Θ(n lg n)", "朴素Θ(n^2)");
+    for (int i = 0; i < m; ++i) {
+        const long long a = inv_count_small_alpha(dna[i]);
+        const long long b = inv_count_merge(dna[i]);
+        const long long c = inv_count_naive(dna[i]);
+        println("  {:<8} {:>10} {:>12} {:>10}", dna[i], a, b, c);
+        assert(a == b && b == c);          // 三法必须一致
+    }
+    // 手算几个串验证算法本身（不只是三法互证）
+    // GATC：G>A、G>C、A>C、T>C 共 3 个（G>T 不成立，因G < T）
+    assert(inv_count_small_alpha("GATC") == 3);
+    assert(inv_count_small_alpha("ACGT") == 0);      // 已升序
+    assert(inv_count_small_alpha("CGTT") == 0);      // 也是升序（C<G<T）
+    assert(inv_count_small_alpha("TGCA") == 6);      // 完全降序 n(n-1)/2 = 6
+    assert(inv_count_small_alpha("") == 0);          // 鲁棒性：空串
+    assert(inv_count_small_alpha("A") == 0);         // 鲁棒性：单字符
+    assert(inv_count_small_alpha("AT") == 0);
+    assert(inv_count_small_alpha("TA") == 1);
+    println("  手算复核：GATC = 3（G>A、G>C、A>C、T>C；注意 G>T 不成立）");
+    println("            ACGT = 0（升序）；TGCA = 6 = n(n-1)/2（完全降序的上界）");
+
+    // 推广：σ 字母表上「已出现次数 + 后缀和」，与前缀计数法对账
+    {
+        // 用更长的随机 DNA 串压一压，顺便验证动态编号
+        std::mt19937 rng{5489};
+        const std::string alpha = "ACGT";
+        for (int trial = 0; trial < 5; ++trial) {
+            std::string s;
+            const std::size_t len = 40 + static_cast<std::size_t>(rand_below(rng, 40));
+            for (std::size_t i = 0; i < len; ++i) {
+                s.push_back(alpha[rand_below(rng, 4)]);
+            }
+            const long long ref = inv_count_naive(s);
+            assert(inv_count_small_alpha(s) == ref);
+            assert(inv_count_merge(s) == ref);
+            assert(inv_count_generic(s) == ref);
+            if (trial == 0) {
+                println("");
+                println("  推广（σ=4，用「已出现次数 + 后缀和」的通用写法）：");
+                println("    串长 {}，逆序数 = {}，三法一致（动态编号，不硬编码 a=0,b=1）",
+                        len, ref);
+            }
+        }
+        println("  5 组随机串（长 40~79）三法一致 = true");
+    }
+
+    // 排序：把 (逆序数, 串) 打包一次排序
+    std::vector<std::pair<long long, std::string>> keyed;
+    for (int i = 0; i < m; ++i) {
+        keyed.emplace_back(inv_count_small_alpha(dna[i]), dna[i]);
+    }
+    std::ranges::sort(keyed);
+    print("  排序后: ");
+    for (const auto& [inv, s] : keyed) { print("{} ", s); }
+    println("");
+    print("  对应逆序数: ");
+    for (const auto& [inv, s] : keyed) { print("{} ", inv); }
+    println("");
+    assert(std::ranges::is_sorted(keyed, [](const auto& x, const auto& y) {
+        return x.first < y.first;
+    }));
+
+    // 代价对照：n = 50（题目典型规模）时三种方法的「基本操作数」
+    {
+        const std::size_t n = 50;
+        std::mt19937 rng{12345};
+        std::string s;
+        for (std::size_t i = 0; i < n; ++i) { s.push_back("ACGT"[rand_below(rng, 4)]); }
+        // 前缀计数：每字符 1 次 switch + 3 次加法 ⟹ 计~ 3n
+        // 归并计数：n lg n 次比较 + n lg n 次搬运
+        // 朴素：n(n-1)/2 次比较
+        const long long naiveOps = static_cast<long long>(n) * (n - 1) / 2;
+        const long long mergeOps = static_cast<long long>(n) * (std::bit_width(n) - 1);
+        const long long prefixOps = 3 * static_cast<long long>(n);
+        println("");
+        println("  规模对照（n = {}，同一串）：朴素 {} 次比较 / 归并 {} 次比较 / 前缀计数 {} 次加法",
+                n, naiveOps, mergeOps, prefixOps);
+        println("  ⟹ 值域为常数（4 个字母）时，计数法是三者中最省的，且是唯一的 Θ(n)");
+        assert(naiveOps > mergeOps);
+        assert(mergeOps > prefixOps);
+    }
+
+    println("");
+    println("  两法的适用边界：");
+    println("    前缀计数 Θ(n)      —— 值域 σ 是常数（小字母表 / 小整数键）");
+    println("    归并计数 Θ(n lg n)  —— 通用，与值域无关；σ 大时只能用它");
+    println("    树状数组 O(n log σ) —— 值域 σ 可枚举但不小（整字节 256 等）");
+    println("  三者恒等：它们数的是同一个「每个逆序对恰在处理右端点时计一次」。");
+}
+
 int main() {
     lower_bound_demo();
     counting_demo();
     radix_demo();
     bucket_demo();
     summary_demo();
+    inversion_demo();
     println("自检通过");
     return 0;
 }
