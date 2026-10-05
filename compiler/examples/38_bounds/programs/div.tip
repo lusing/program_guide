@@ -1,0 +1,12 @@
+main() {
+  var n, i, s;
+  n = input;
+  i = 0;
+  s = 0;
+  while (n > i) {
+    s = s + 100 / n;
+    i = i + 1;
+  }
+  output s;
+  return 0;
+}
