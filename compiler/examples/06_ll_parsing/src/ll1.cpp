@@ -10,7 +10,7 @@ LL1::LL1(const Grammar &g) : g(g) {}
 
 // ---------- FIRST ----------
 // 绿龙的口径：对每个非终结符反复套用三条规则，直到没有任何集合再变大。
-// 这是“从下界出发、单调上升、有限高度”的迭代——第 27 章的不动点骨架。
+// 这是“从下界出发、单调上升、有限高度”的迭代——第 30 章的不动点骨架。
 std::set<std::string> LL1::firstOf(const std::vector<std::string> &beta) const {
     std::set<std::string> out;
     bool allEps = true;
