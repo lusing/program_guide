@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- 每章正文 ≥200 行且**文字行多于代码行**（fence 翻转计数，新章从严）。
+- 每章正文 ≥200 行且**文字行多于本章新写代码行**（**新代码口径**：旧章冻结副本不计入代码侧——用户 2026-10-06 裁定，09 章起生效）。
 - 示例的 `src/*.cpp|hpp`、`expected/output.txt` 全部以 `// file:` / `; expected:` 围栏**字节级内嵌**进正文；改码后跑 `python .scratch/renumber5.py embed` 重生成（幂等，全量重嵌）。
 - 三层对账：`export PATH=/g/scoop/apps/msys2/current/ucrt64/bin:$PATH`，然后 `bash tools/example_build.sh examples/NN_slug .` → `python tools/check_example.py G:/code/guide/compiler/examples/NN_slug`（绝对路径）→ `python tools/check_docs.py` 全绿后才提交。
 - 提交只 stage `compiler/` 路径；消息 `feat(compiler): 批次N——…`，尾注 `Co-Authored-By: Claude Code <noreply@anthropic.com>`；`.scratch/`、`tools/__pycache__/` 永不入库。

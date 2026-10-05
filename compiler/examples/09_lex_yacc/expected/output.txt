@@ -1,0 +1,56 @@
+== S2 mini-lex ==
+[stats] rules=15 alphabet=47 dfa_states=20
+[longest match]
+  ID('a') <=('<=') ID('b') ==('==') ID('c') =('=') ID('d') <('<') ID('e1') ID('x9y') NUM('42') 
+[tie: keyword first -> print is KW]
+  print('print') ID('printx') 
+[tie: ID first -> print is ID]
+  ID('print') ID('printx') 
+== S3 value-stack parse ==
+[eval 1] 14
+[eval 2] 20
+[eval 3] 512
+[eval 4] -9
+[eval 5] 5
+[eval 6] 2.5
+[eval 7] 26
+[eval 8] 1
+[eval 9] 7
+[eval 10] 14
+[eval 11] 256
+[eval 12] 9
+[eval 13] 5
+[eval 14] 12
+[eval 15] 19
+[eval 16] 4
+[eval 17] 8
+[eval 18] 1
+[reduce log: x = 2+3*4;]
+  12: expr → NUM
+  12: expr → NUM
+  12: expr → NUM
+  7: expr → expr * expr
+  5: expr → expr + expr
+  3: stmt → ID = expr ;
+  2: prog → stmt
+[oracle parity]
+  match  accept=1/1 steps=21/21  [x = 2+3*4; print x;]
+  match  accept=1/1 steps=17/17  [print (1+2)*3;]
+  match  accept=1/1 steps=19/19  [x = -3^2; print x;]
+  match  accept=0/0 steps=2/2  [x = ;]
+  match  accept=0/0 steps=4/4  [print 2+;]
+  match  accept=0/0 steps=3/3  [x = 2]
+  match  accept=0/0 steps=0/0  [(x = 4);]
+[oracle] 7/7 matched
+== S5 embedded action rewrite ==
+[rewrite] embedded markers -> 2 epsilon rules
+[auto  B] log: #chk1-after-ID #chk2-after-expr stmt2-done #chk1-after-ID #chk2-after-expr stmt2-done  x=12 y=13
+[hand  C] log: #chk1-after-ID #chk2-after-expr stmt2-done #chk1-after-ID #chk2-after-expr stmt2-done  x=12 y=13
+[equiv] B == C : 1
+== S6 precedence arbitration ==
+[no-decl ] raw=90 byPrec=0 byAssoc=0 defaultShift=30 ruleOrder=0 unresolved=0
+[standard] raw=90 byPrec=19 byAssoc=11 defaultShift=0 ruleOrder=0 unresolved=0
+[10-3-2] no-decl=9  standard=5
+[2^3^2 ] standard=512  caret-left=64
+[-3^2  ] standard=-9  uminus-high=9
+[2+3*4 ] no-decl=14  standard=14

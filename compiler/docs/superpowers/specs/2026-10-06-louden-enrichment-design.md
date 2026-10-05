@@ -98,7 +98,7 @@
 
 ## 五、全局约束
 
-- 每章正文 ≥200 行且**文字行多于代码行**（fence 翻转计数，新章从严）。
+- 每章正文 ≥200 行且**文字行多于本章新写代码行**（fence 翻转计数；**新代码口径**——从旧章复制的冻结副本不计入代码侧，因其已在原章逐行讲授、本章正文另有走读。用户 2026-10-06 裁定：重副本章按此口径，避免为凑原始行数注水）。
 - 示例 src、文法（如有）、expected 文本以 `// file:` / `; expected:` 围栏**字节级内嵌**进正文（check_docs.py 校验，改码后必须同步重生成内嵌）。
 - 三层对账全绿后才提交：`tools/example_build.sh` → `tools/check_example.py` → `tools/check_docs.py`。
 - 提交只 stage `compiler/` 路径；消息 `feat(compiler): 批次N——…`，尾注 `Co-Authored-By: Claude Code <noreply@anthropic.com>`；`.scratch/`、`tools/__pycache__/` 永不入库。
