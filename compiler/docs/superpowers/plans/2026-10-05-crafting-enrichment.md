@@ -44,10 +44,10 @@
 - Modify: `docs/NN-*.md` ×59（重写引用+改名）、`examples/NN_*/` ×59、`README.md`、`docs/60-finale.md`→`66-finale.md`
 - Create: `.scratch/renumber4.py`（复制 `renumber3.py` 骨架换 MAP）
 
-- [ ] 换 MAP 为上表（旧→新 60 项；9/13/54–57 不在 MAP——留给新章）；核对 `rw_paren_range` 的 survey 行守卫与 `"54_finale"` 路径守卫按当前 `60_finale` 实况改为 `66_finale`（renumber3 里有鲸轮遗留的过时守卫，先读 `examples/60_finale/expected/output.txt` 的真实行式再改）
-- [ ] 跑 `rewrite`（计数多重集一致）→ `rename`（两阶段 git mv）→ 全量三层回归基线 60 章仍绿（此时新章未建、README 暂列 66 目标口径）
-- [ ] 重建 66_finale 二进制并**重生成 expected**（从新二进制跑出落盘，不手改）；`python .scratch/renumber4.py embed` 全量重嵌；`check_docs` 绿
-- [ ] Commit: `feat(compiler): 批次四十——60→66 重编号腾位（匠书轮开工）`
+- [x] 换 MAP 为上表（旧→新 60 项；9/13/54–57 不在 MAP——留给新章）；核对 `rw_paren_range` 的 survey 行守卫与 `"54_finale"` 路径守卫按当前 `60_finale` 实况改为 `66_finale`（renumber3 里有鲸轮遗留的过时守卫，先读 `examples/60_finale/expected/output.txt` 的真实行式再改）
+- [x] 跑 `rewrite`（计数多重集一致）→ `rename`（两阶段 git mv）→ 全量三层回归基线 60 章仍绿（此时新章未建、README 暂列 66 目标口径）
+- [x] 重建 66_finale 二进制并**重生成 expected**（从新二进制跑出落盘，不手改）；`python .scratch/renumber4.py embed` 全量重嵌；`check_docs` 绿
+- [x] Commit: `feat(compiler): 批次四十——60→66 重编号腾位（匠书轮开工）`
 
 ### Task 2: 新 09 章 Pratt 分析（批四十一）
 
@@ -71,9 +71,9 @@
 3. `(2^3)^2 = 64` vs `2^(3^2) = 512`——Pratt 按 `^` 右结合取 512。
 4. 故意把 `*` 写成右结合的「坏表」版本跑 `2-3-4` 得 -9（正确左结合为 -5），坏表被检测并打印对照（同一构造两版求值不同）。
 
-- [ ] 写 src（Pratt + LL 参考 + 语料）→ 跑通断言 → expected 落盘
-- [ ] 写正文（五节、全部代码内嵌、期望输出逐行解读、练习）
-- [ ] 三层对账绿 → Commit: `feat(compiler): 批次四十一——09 Pratt 分析`
+- [x] 写 src（Pratt + LL 参考 + 语料）→ 跑通断言 → expected 落盘
+- [x] 写正文（五节、全部代码内嵌、期望输出逐行解读、练习）
+- [x] 三层对账绿 → Commit: `feat(compiler): 批次四十一——09 Pratt 分析`
 
 ### Task 3: 新 13 章 树遍历解释器与环境链（批四十二）
 
@@ -98,8 +98,8 @@
 3. 四陷阱各一条违规程序：静态检查拒绝、打印诊断行号、**不进入求值**。
 4. 赋值沿链写回：内层闭包改外层变量后外层 `output` 读到新值。
 
-- [ ] 复制 12 章文件 + 写 interp → UCRT64 壳构建 → 断言 → expected
-- [ ] 正文（五节、内嵌、期望解读、练习）→ 三层绿 → Commit: `feat(compiler): 批次四十二——13 树遍历解释器与环境链`
+- [x] 复制 12 章文件 + 写 interp → UCRT64 壳构建 → 断言 → expected
+- [x] 正文（五节、内嵌、期望解读、练习）→ 三层绿 → Commit: `feat(compiler): 批次四十二——13 树遍历解释器与环境链`
 
 ### Task 4: 新 54 章 字节码与栈式虚拟机（批四十三）
 
