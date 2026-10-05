@@ -1,0 +1,153 @@
+== cfg.tip ==
+== TAC ==
+  0: t1 = input
+  1: a = t1
+  2: t2 = 3
+  3: if a > t2 goto L5
+  4: goto L9
+  5: t3 = 2
+  6: t4 = a * t3
+  7: b = t4
+  8: goto L12
+  9: t5 = 1
+  10: t6 = a + t5
+  11: b = t6
+  12: t7 = 0
+  13: if a > t7 goto L15
+  14: goto L19
+  15: t8 = 1
+  16: t9 = a - t8
+  17: a = t9
+  18: goto L12
+  19: t10 = b + a
+  20: output t10
+  21: t11 = 0
+  22: return t11
+== blocks ==
+  B0 succs: 1 2
+  B1 succs: 3
+  B2 succs: 4
+  B3 succs: 4
+  B4 succs: 5 6
+  B5 succs: 7
+  B6 succs: 4
+  B7 succs:
+== 后支配 ==
+  pdom(B0) = {0,4,5,7}  ipdom=4
+  pdom(B1) = {1,3,4,5,7}  ipdom=3
+  pdom(B2) = {2,4,5,7}  ipdom=4
+  pdom(B3) = {3,4,5,7}  ipdom=4
+  pdom(B4) = {4,5,7}  ipdom=5
+  pdom(B5) = {5,7}  ipdom=7
+  pdom(B6) = {4,5,6,7}  ipdom=4
+  pdom(B7) = {7}  ipdom=-1
+== 控制依赖图 ==
+  B1 依赖 B0
+  B2 依赖 B0
+  B3 依赖 B0
+  B6 依赖 B4
+== SSA ==
+  B0:
+    t10 = input
+    a0 = t10
+    t20 = 3
+    if a0 > t20 goto B2
+  B1:
+    goto B3
+  B2:
+    t30 = 2
+    t40 = a0 * t30
+    b1 = t40
+    goto B4
+  B3:
+    t50 = 1
+    t60 = a0 + t50
+    b0 = t60
+  B4:
+    a1 = phi(a0, a0, a2)
+    b2 = phi(b1, b0, b2)
+    t31 = phi(t30, t3u, t31)
+    t41 = phi(t40, t4u, t41)
+    t51 = phi(t5u, t50, t51)
+    t61 = phi(t6u, t60, t61)
+    t70 = phi(t7u, t7u, t71)
+    t80 = phi(t8u, t8u, t81)
+    t90 = phi(t9u, t9u, t91)
+    t71 = 0
+    if a1 > t71 goto B6
+  B5:
+    goto B7
+  B6:
+    t81 = 1
+    t91 = a1 - t81
+    a2 = t91
+    goto B4
+  B7:
+    t100 = b2 + a1
+    output t100
+    t110 = 0
+    return t110
+== SSA 退出 ==
+  0: t10 = input
+  1: a0 = t10
+  2: t20 = 3
+  3: if a0 > t20 goto L5
+  4: goto L18
+  5: t30 = 2
+  6: t40 = a0 * t30
+  7: b1 = t40
+  8: a1 = a0
+  9: b2 = b1
+  10: t31 = t30
+  11: t41 = t40
+  12: t51 = 0
+  13: t61 = 0
+  14: t70 = 0
+  15: t80 = 0
+  16: t90 = 0
+  17: goto L30
+  18: t50 = 1
+  19: t60 = a0 + t50
+  20: b0 = t60
+  21: a1 = a0
+  22: b2 = b0
+  23: t31 = 0
+  24: t41 = 0
+  25: t51 = t50
+  26: t61 = t60
+  27: t70 = 0
+  28: t80 = 0
+  29: t90 = 0
+  30: t71 = 0
+  31: if a1 > t71 goto L33
+  32: goto L51
+  33: t81 = 1
+  34: t91 = a1 - t81
+  35: a2 = t91
+  36: sb1_b2 = b2
+  37: sb1_t31 = t31
+  38: sb1_t41 = t41
+  39: sb1_t51 = t51
+  40: sb1_t61 = t61
+  41: a1 = a2
+  42: b2 = sb1_b2
+  43: t31 = sb1_t31
+  44: t41 = sb1_t41
+  45: t51 = sb1_t51
+  46: t61 = sb1_t61
+  47: t70 = t71
+  48: t80 = t81
+  49: t90 = t91
+  50: goto L30
+  51: t100 = b2 + a1
+  52: output t100
+  53: t110 = 0
+  54: return t110
+  copies = 27  swaps = 1
+== 对账 ==
+  tac   : 10
+  ssa   : 10
+  back  : 10
+  tac==ssa==back: yes
+[main entered]
+[parsed]

@@ -59,7 +59,7 @@
 
 ### 第七篇　控制流的结构与变换（33–39）
 
-- 35 控制依赖与 SSA 往返（扩充中）—— 后支配、控制依赖图、φ 拆解回 TAC
+- [35 控制依赖与 SSA 往返](docs/35-cdg.md) —— 后支配、FOW 控制依赖图、φ 拆解与三方对账（`examples/35_cdg`）
 - 38 边界检查与循环展开（扩充中）—— 归纳变量驱动的检查消除、展开收益
 
 - [32 支配者与自然循环](docs/33-dominators.md) —— 支配集/支配树、DFS 四类边、自然循环、可归约性（`examples/33_dominators`）
@@ -98,6 +98,6 @@
 
 ## 验证状态
 
-49/54 章三层对账全绿；5 个虎书新章扩充中（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
+50/54 章三层对账全绿；4 个虎书新章扩充中（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
 
 每章 = `docs/NN-<slug>.md` + `examples/NN_<slug>/`（章号=示例号）。LLVM 示例的运行需要 MSYS2 UCRT64 工具链在 PATH（`run-all.sh` 自动处理；`tools/example_build.sh <examples/NN_slug> "$(pwd)"` 单独构建一个示例）。
