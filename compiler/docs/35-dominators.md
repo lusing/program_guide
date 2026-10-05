@@ -325,6 +325,217 @@ reducible: no
 要么退回
 保守算法。
 
+## 35.5b CHK 快支配与稀疏集：把集合换成一条链
+
+迭代法
+抱着
+**支配集**
+做
+交集，
+每个
+节点
+一个
+集合、
+每轮
+全量
+重算——
+鲸书
+§9.5.2
+指出
+这里
+有一间
+可以
+搬空的
+储藏室：
+支配集
+的全部
+信息
+其实
+压缩在
+**idom**
+（直接
+支配者）
+一条
+链上：
+
+- dom(b)
+  =
+  idom 链
+  从 b
+  一路
+  上行
+  到根的
+  节点
+  序列——
+  **集合
+  读自
+  树**；
+- 两个
+  支配集
+  的
+  交集
+  =
+  两条
+  idom 链
+  的
+  **公共
+  后缀**。
+  公共
+  后缀
+  怎么
+  找？
+  给节点
+  编上
+  **RPO 号**
+  （逆
+  后序），
+  两个
+  指针
+  沿
+  链
+  上行，
+  谁的
+  RPO 号
+  大谁
+  走——
+  大者
+  离根
+  更远——
+  相遇处
+  即
+  交。
+
+于是
+方程
+变成：
+按
+RPO 序
+扫块，
+`idom[b] =
+intersect(各
+已编号
+前驱)`，
+扫到
+不动点。
+这就是
+Cooper–
+Harvey–
+Kennedy
+的
+"简单
+快速
+支配
+算法"
+（CHK）：
+内存
+从
+O(n²)
+的
+集合
+跌回
+O(n)
+的
+父指针
+数组，
+轮数
+经验上
+2~4
+（期望
+输出：
+两个
+图都
+"迭代
+2 轮
+vs
+CHK
+2 轮，
+支配集
+一致"——
+小图
+打平，
+大图
+的
+每轮
+成本
+差
+才是
+主场）。
+
+配套
+登场的
+还有
+鲸书
+附录
+B.2.3 的
+**稀疏集**
+（sparse
+set）：
+dense/
+sparse
+双数组
+加
+游标。
+clear
+只把
+游标
+归零
+（O(1)，
+数组
+不碰）；
+成员
+测试
+靠
+"双向
+互指"
+（`dense[sparse[i]]
+==
+i`
+且
+游标
+之内）；
+遍历
+沿
+dense
+走
+O(|S|)
+而非
+位向量的
+O(|U|)。
+CHK 的
+DFS
+编号
+集、
+第 58 章
+布局的
+工作表
+去重、
+寄存器
+分配的
+节点
+标记——
+编译器
+里
+"反复
+建集、
+整批
+清空"
+的
+场景
+都
+是
+它的
+主场；
+CHK
+论文
+当年
+的
+卖点
+之一
+就是
+用它
+装
+工作表。
+
 ## 35.6 示例落地
 
 三个文件的分工：
@@ -535,6 +746,7 @@ struct DomInfo {
     std::vector<std::set<int>> dom;      // 每块（块号）的支配集
     std::vector<int> idom;               // 直接支配者（-1 = 无/入口）
     std::vector<std::vector<int>> children;   // 支配树孩子表
+    int sweeps = 0;                      // 全图扫描轮数（对照 CHK 用）
 };
 
 // 前驱表（邻接表反推）。
@@ -544,6 +756,33 @@ DomInfo dominators(const std::vector<std::vector<int>> &adj);
 
 // 自检：由支配树推导的支配集 == 迭代解（idom 唯一性的机器验证）。
 bool domTreeCheck(const DomInfo &di);
+
+// ---------- 稀疏集（鲸书附录 B.2.3）----------
+// dense/sparse 双数组 + 游标：clear 是 O(1)（游标归零，不必清数组）；
+// 成员测试靠"双向互指"：0 ≤ sparse[i] < next 且 dense[sparse[i]] == i。
+// 建在 |U| 已知的离线场景（编译器的节点全集恰是）；遍历 O(|S|) 而非 O(|U|)。
+class SparseSet {
+public:
+    explicit SparseSet(int universe);
+    void clear();
+    bool insert(int i);
+    bool contains(int i) const;
+    std::vector<int> items() const;
+    int size() const { return next_; }
+
+private:
+    std::vector<int> sparse_, dense_;
+    int next_ = 0;
+};
+
+// ---------- CHK 快支配（鲸书 §9.5.2）----------
+// 只存 idom（不存支配集），交运算 = 沿 idom 链上行到 RPO 号相同处
+// （两链的公共后缀就是交集）；按 RPO 序扫描，通常 2~4 轮收敛。
+struct FastDomResult {
+    DomInfo di;
+    int passes = 0;
+};
+FastDomResult fastDominators(const std::vector<std::vector<int>> &adj);
 
 }  // namespace tip
 
@@ -555,6 +794,8 @@ bool domTreeCheck(const DomInfo &di);
 // file: src/dom.cpp
 // 第 35 章配套：支配者实现。
 #include "dom.hpp"
+
+#include <functional>
 
 namespace tip {
 
@@ -578,6 +819,7 @@ DomInfo dominators(const std::vector<std::vector<int>> &adj) {
     bool changed = true;
     while (changed) {
         changed = false;
+        ++di.sweeps;
         for (size_t b = 1; b < n; ++b) {
             std::set<int> acc = all;
             bool hasPred = false;
@@ -633,6 +875,102 @@ bool domTreeCheck(const DomInfo &di) {
     for (size_t b = 0; b < n; ++b)
         if (fromTree[b] != di.dom[b]) return false;
     return true;
+}
+
+// ---------- 稀疏集（鲸书附录 B.2.3） ----------
+
+SparseSet::SparseSet(int universe) : sparse_(universe, 0), dense_(universe, 0) {}
+
+void SparseSet::clear() { next_ = 0; }   // O(1)：数组不碰，旧数据靠互指校验失效
+
+bool SparseSet::insert(int i) {
+    if (contains(i)) return false;
+    sparse_[i] = next_;
+    dense_[next_++] = i;
+    return true;
+}
+
+bool SparseSet::contains(int i) const {
+    return i >= 0 && i < static_cast<int>(sparse_.size()) &&
+           sparse_[i] >= 0 && sparse_[i] < next_ && dense_[sparse_[i]] == i;
+}
+
+std::vector<int> SparseSet::items() const {
+    return std::vector<int>(dense_.begin(), dense_.begin() + next_);
+}
+
+// ---------- CHK 快支配（鲸书 §9.5.2） ----------
+
+FastDomResult fastDominators(const std::vector<std::vector<int>> &adj) {
+    size_t n = adj.size();
+    FastDomResult fr;
+    if (n == 0) return fr;
+    // 1) RPO：DFS 后序的逆（visited 用稀疏集——clear 后可整批复用）
+    SparseSet visited(static_cast<int>(n));
+    std::vector<int> postorder;
+    std::function<void(int)> dfs = [&](int u) {
+        visited.insert(u);
+        for (int s : adj[u])
+            if (!visited.contains(s)) dfs(s);
+        postorder.push_back(u);
+    };
+    dfs(0);
+    std::vector<int> rpo(postorder.rbegin(), postorder.rend());
+    std::vector<int> rpoNo(n, -1);
+    for (size_t i = 0; i < rpo.size(); ++i) rpoNo[rpo[i]] = static_cast<int>(i);
+    // 2) idom 迭代：交 = 沿 idom 链上行到 RPO 号相等的公共节点
+    auto preds = predsOf(adj);
+    std::vector<int> idom(n, -1);
+    idom[0] = 0;
+    auto intersect = [&](int b1, int b2) {
+        int f1 = b1, f2 = b2;
+        while (f1 != f2) {
+            while (rpoNo[f1] > rpoNo[f2]) f1 = idom[f1];
+            while (rpoNo[f2] > rpoNo[f1]) f2 = idom[f2];
+        }
+        return f1;
+    };
+    int passes = 0;
+    for (bool changed = true; changed;) {
+        changed = false;
+        ++passes;
+        for (int b : rpo) {
+            if (b == 0) continue;
+            int newIdom = -1;
+            for (int p : preds[b]) {
+                if (idom[p] < 0) continue;   // 前驱未编号（不可达/未处理）
+                newIdom = (newIdom < 0) ? p : intersect(p, newIdom);
+            }
+            if (newIdom >= 0 && idom[b] != newIdom) {
+                idom[b] = newIdom;
+                changed = true;
+            }
+        }
+    }
+    // 3) 组装 DomInfo：支配集由 idom 链读出（树到集合）
+    DomInfo &di = fr.di;
+    di.idom = idom;
+    di.sweeps = passes;
+    di.dom.assign(n, {});
+    for (size_t b = 0; b < n; ++b) {
+        if (idom[b] < 0) {   // 入口或不可达：只支配自己
+            di.dom[b] = {static_cast<int>(b)};
+            continue;
+        }
+        std::set<int> s = {static_cast<int>(b)};
+        int cur = idom[b];
+        while (cur >= 0 && cur != static_cast<int>(b)) {
+            s.insert(cur);
+            cur = (cur == 0) ? -1 : idom[cur];
+        }
+        di.dom[b] = s;
+    }
+    di.children.assign(n, {});
+    for (size_t b = 1; b < n; ++b)
+        if (idom[b] > 0) di.children[idom[b]].push_back(static_cast<int>(b));
+        else if (idom[b] == 0 && b != 0) di.children[0].push_back(static_cast<int>(b));
+    fr.passes = passes;
+    return fr;
 }
 
 }  // namespace tip
@@ -878,6 +1216,11 @@ void runGraph(const std::vector<std::vector<int>> &adj, const std::string &title
             std::cout << '\n';
         }
     std::cout << "  domTreeCheck: " << (tip::domTreeCheck(di) ? "yes" : "NO") << '\n';
+    tip::FastDomResult fd = tip::fastDominators(adj);
+    bool same = fd.di.dom == di.dom;
+    std::cout << "== fast dominators (CHK) ==\n";
+    std::cout << "  迭代法扫描 " << di.sweeps << " 轮 vs CHK " << fd.passes
+              << " 轮；支配集一致: " << (same ? "yes" : "NO") << '\n';
     tip::DfsInfo df = tip::dfsClassify(adj);
     std::cout << "== DFS ==\n";
     for (size_t b = 0; b < adj.size(); ++b)
@@ -917,6 +1260,23 @@ int main(int argc, char **argv) {
         for (int s : b.succs) std::cout << ' ' << s;
         std::cout << '\n';
     }
+    // ---------- 稀疏集自测（鲸书附录 B.2.3） ----------
+    std::cout << "== sparse set ==\n";
+    tip::SparseSet ss(1000);
+    ss.insert(3);
+    ss.insert(500);
+    ss.insert(999);
+    std::cout << "  插入 {3,500,999} 后 size=" << ss.size()
+              << " 含 500: " << (ss.contains(500) ? "yes" : "no")
+              << " 含 501: " << (ss.contains(501) ? "yes" : "no") << '\n';
+    ss.clear();   // O(1)：游标归零，数组不碰
+    std::cout << "  clear 后 size=" << ss.size()
+              << " 含 3: " << (ss.contains(3) ? "yes" : "no") << '\n';
+    ss.insert(7);
+    std::cout << "  复用后遍历:";
+    for (int v : ss.items()) std::cout << ' ' << v;
+    std::cout << '\n';
+
     runGraph(adjOf(blocks), "程序块图");
 
     // 不可归约经典图：两个入口互相跳进对方的“环”。
@@ -1741,6 +2101,10 @@ main() {
   B6 [13,16) succs: 16
   B7 [16,20) succs: 4
   B8 [20,23) succs:
+== sparse set ==
+  插入 {3,500,999} 后 size=3 含 500: yes 含 501: no
+  clear 后 size=0 含 3: no
+  复用后遍历: 7
 == 程序块图 ==
   B0 -> 1
   B1 -> 2 3
@@ -1768,6 +2132,8 @@ main() {
   B3 : B4 B5 B7
   B4 : B6
   domTreeCheck: yes
+== fast dominators (CHK) ==
+  迭代法扫描 2 轮 vs CHK 2 轮；支配集一致: yes
 == DFS ==
   B0 d=0 f=17
   B1 d=1 f=16
@@ -1804,6 +2170,8 @@ main() {
 == dom tree ==
   B0 : B1 B2
   domTreeCheck: yes
+== fast dominators (CHK) ==
+  迭代法扫描 2 轮 vs CHK 2 轮；支配集一致: yes
 == DFS ==
   B0 d=0 f=5
   B1 d=1 f=4

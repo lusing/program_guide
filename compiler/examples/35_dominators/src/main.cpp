@@ -90,6 +90,11 @@ void runGraph(const std::vector<std::vector<int>> &adj, const std::string &title
             std::cout << '\n';
         }
     std::cout << "  domTreeCheck: " << (tip::domTreeCheck(di) ? "yes" : "NO") << '\n';
+    tip::FastDomResult fd = tip::fastDominators(adj);
+    bool same = fd.di.dom == di.dom;
+    std::cout << "== fast dominators (CHK) ==\n";
+    std::cout << "  迭代法扫描 " << di.sweeps << " 轮 vs CHK " << fd.passes
+              << " 轮；支配集一致: " << (same ? "yes" : "NO") << '\n';
     tip::DfsInfo df = tip::dfsClassify(adj);
     std::cout << "== DFS ==\n";
     for (size_t b = 0; b < adj.size(); ++b)
@@ -129,6 +134,23 @@ int main(int argc, char **argv) {
         for (int s : b.succs) std::cout << ' ' << s;
         std::cout << '\n';
     }
+    // ---------- 稀疏集自测（鲸书附录 B.2.3） ----------
+    std::cout << "== sparse set ==\n";
+    tip::SparseSet ss(1000);
+    ss.insert(3);
+    ss.insert(500);
+    ss.insert(999);
+    std::cout << "  插入 {3,500,999} 后 size=" << ss.size()
+              << " 含 500: " << (ss.contains(500) ? "yes" : "no")
+              << " 含 501: " << (ss.contains(501) ? "yes" : "no") << '\n';
+    ss.clear();   // O(1)：游标归零，数组不碰
+    std::cout << "  clear 后 size=" << ss.size()
+              << " 含 3: " << (ss.contains(3) ? "yes" : "no") << '\n';
+    ss.insert(7);
+    std::cout << "  复用后遍历:";
+    for (int v : ss.items()) std::cout << ' ' << v;
+    std::cout << '\n';
+
     runGraph(adjOf(blocks), "程序块图");
 
     // 不可归约经典图：两个入口互相跳进对方的“环”。

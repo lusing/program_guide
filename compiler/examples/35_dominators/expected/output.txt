@@ -9,6 +9,10 @@
   B6 [13,16) succs: 16
   B7 [16,20) succs: 4
   B8 [20,23) succs:
+== sparse set ==
+  插入 {3,500,999} 后 size=3 含 500: yes 含 501: no
+  clear 后 size=0 含 3: no
+  复用后遍历: 7
 == 程序块图 ==
   B0 -> 1
   B1 -> 2 3
@@ -36,6 +40,8 @@
   B3 : B4 B5 B7
   B4 : B6
   domTreeCheck: yes
+== fast dominators (CHK) ==
+  迭代法扫描 2 轮 vs CHK 2 轮；支配集一致: yes
 == DFS ==
   B0 d=0 f=17
   B1 d=1 f=16
@@ -72,6 +78,8 @@
 == dom tree ==
   B0 : B1 B2
   domTreeCheck: yes
+== fast dominators (CHK) ==
+  迭代法扫描 2 轮 vs CHK 2 轮；支配集一致: yes
 == DFS ==
   B0 d=0 f=5
   B1 d=1 f=4
