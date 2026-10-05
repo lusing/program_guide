@@ -2,7 +2,8 @@
 // 27.2 Edmonds-Karp（BFS 增广路径逐条追踪，图 26.1 数据）/
 // 27.3 流的合法性验证（容量约束 + 流量守恒）/ 27.4 最小割验证（最大流
 // 最小割定理）/ 27.5 推送-重贴标签对照 /
-// 27.6 二部图匹配与最小点覆盖（König 定理；Kuhn 增广路）。
+// 27.6 二部图匹配与最小点覆盖（König 定理；Kuhn 增广路）/
+// 27.7 女孩与男孩：二部图最大独立集（染色取大 vs König；暴力对账）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -22,6 +23,7 @@ using std::println;
 #include <cassert>
 #include <cstdint>
 #include <deque>
+#include <numeric>
 #include <random>
 #include <utility>
 #include <vector>
@@ -469,10 +471,187 @@ static void machine_schedule_demo() {
     assert(mismatches == 0 && greedy_losses > 0);
 }
 
+// ═══ 27.7 女孩与男孩：二部图最大独立集 ═══
+// 关系只存在于两性之间 ⟹ 图是二部图。求「两两无关系」的最大人数
+// = 最大独立集。两种解法对账，再加 2ⁿ 暴力第三方法。
+
+// 解法一（2-染色分量取大）：每个连通分量二染色，取人数较多的一色
+//——同色者之间无边；各分量独立选取，求和。
+static int independent_set_by_coloring(const std::vector<std::vector<int>>& adj) {
+    const int n = static_cast<int>(adj.size());
+    std::vector<int> color(static_cast<std::size_t>(n), -1);
+    int answer = 0;
+    for (int s = 0; s < n; ++s) {
+        if (color[static_cast<std::size_t>(s)] != -1) { continue; }
+        std::vector<int> cnt{0, 0};
+        std::vector<int> q;
+        q.push_back(s);
+        color[static_cast<std::size_t>(s)] = 0;
+        for (std::size_t qi = 0; qi < q.size(); ++qi) {
+            const int u = q[qi];
+            ++cnt[static_cast<std::size_t>(color[static_cast<std::size_t>(u)])];
+            for (int v : adj[static_cast<std::size_t>(u)]) {
+                if (color[static_cast<std::size_t>(v)] == -1) {
+                    color[static_cast<std::size_t>(v)] =
+                        color[static_cast<std::size_t>(u)] ^ 1;
+                    q.push_back(v);
+                }
+            }
+        }
+        answer += std::max(cnt[0], cnt[1]);
+    }
+    return answer;
+}
+
+// 同一染色过程，额外返回颜色表（供解法二构造二部图）。
+static int color_graph(const std::vector<std::vector<int>>& adj,
+                       std::vector<int>& color) {
+    const int n = static_cast<int>(adj.size());
+    color.assign(static_cast<std::size_t>(n), -1);
+    int answer = 0;
+    for (int s = 0; s < n; ++s) {
+        if (color[static_cast<std::size_t>(s)] != -1) { continue; }
+        std::vector<int> cnt{0, 0};
+        std::vector<int> q;
+        q.push_back(s);
+        color[static_cast<std::size_t>(s)] = 0;
+        for (std::size_t qi = 0; qi < q.size(); ++qi) {
+            const int u = q[qi];
+            ++cnt[static_cast<std::size_t>(color[static_cast<std::size_t>(u)])];
+            for (int v : adj[static_cast<std::size_t>(u)]) {
+                if (color[static_cast<std::size_t>(v)] == -1) {
+                    color[static_cast<std::size_t>(v)] =
+                        color[static_cast<std::size_t>(u)] ^ 1;
+                    q.push_back(v);
+                }
+            }
+        }
+        answer += std::max(cnt[0], cnt[1]);
+    }
+    return answer;
+}
+
+// 解法二（König）：α = n − τ = n − ν，ν 为最大匹配。
+// 染色后把 color0 当左部、color1 当右部，边定向，跑 Kuhn。
+static int independent_set_by_konig(const std::vector<std::vector<int>>& adj,
+                                    int& matching_out) {
+    const int n = static_cast<int>(adj.size());
+    std::vector<int> color;
+    color_graph(adj, color);
+    std::vector<int> local(static_cast<std::size_t>(n), -1);
+    int nl = 0, nr = 0;
+    for (int u = 0; u < n; ++u) {
+        if (color[static_cast<std::size_t>(u)] == 0) {
+            local[static_cast<std::size_t>(u)] = nl++;
+        } else {
+            local[static_cast<std::size_t>(u)] = nr++;
+        }
+    }
+    BipartiteGraph g(nl, nr);
+    for (int u = 0; u < n; ++u) {
+        if (color[static_cast<std::size_t>(u)] != 0) { continue; }
+        for (int v : adj[static_cast<std::size_t>(u)]) {
+            g.add_edge(local[static_cast<std::size_t>(u)],
+                       local[static_cast<std::size_t>(v)]);
+        }
+    }
+    matching_out = bipartite_max_matching(g);
+    return n - matching_out;
+}
+
+// 暴力最大独立集：枚举 2ⁿ 个顶点子集，子集内无两端同选的边。
+static int independent_set_brute(const std::vector<std::vector<int>>& adj) {
+    const int n = static_cast<int>(adj.size());
+    std::vector<std::pair<int, int>> edges;
+    for (int u = 0; u < n; ++u)
+        for (int v : adj[static_cast<std::size_t>(u)])
+            if (u < v) { edges.emplace_back(u, v); }
+    int best = 0;
+    for (int mask = 0; mask < (1 << n); ++mask) {
+        bool ok = true;
+        for (auto [u, v] : edges) {
+            if ((mask & (1 << u)) && (mask & (1 << v))) { ok = false; break; }
+        }
+        if (ok) { best = std::max(best, std::popcount(static_cast<unsigned>(mask))); }
+    }
+    return best;
+}
+
+static void girls_boys_demo() {
+    println("女孩与男孩（二部图最大独立集：König n−匹配为正解，染色取大对照，暴力对账）：");
+    struct Case {
+        int n;
+        std::vector<std::pair<int, int>> edges;
+        int color_answer;     // 染色取大法给出的数（可能偏小）
+        int optimum;          // 正确答案
+    };
+    const std::vector<Case> cases = {
+        // 前两个是题面样例：两法恰好一致。
+        {7, {{0,4},{0,5},{0,6},{1,4},{1,6}}, 5, 5},
+        {3, {{0,1},{0,2}}, 2, 2},
+        // Hall 反例（左 4 右 3，全连通但匹配只有 2）：
+        // R0 与全部 4 个左点相邻，R1、R2 只与 L0 相邻。
+        // 染色取大只给 4，最优独立集 {L1,L2,L3,R1,R2} 有 5 人。
+        {7, {{0,4},{1,4},{2,4},{3,4},{0,5},{0,6}}, 4, 5}};
+    for (std::size_t c = 0; c < cases.size(); ++c) {
+        std::vector<std::vector<int>> adj(static_cast<std::size_t>(cases[c].n));
+        for (auto [u, v] : cases[c].edges) {
+            adj[static_cast<std::size_t>(u)].push_back(v);
+            adj[static_cast<std::size_t>(v)].push_back(u);
+        }
+        const int by_color = independent_set_by_coloring(adj);
+        int matching = 0;
+        const int by_konig = independent_set_by_konig(adj, matching);
+        const int brute = independent_set_brute(adj);
+        println("  案例{}（{} 人）：染色取大 {}，König {}（{}−匹配 {}），暴力 {}",
+                c + 1, cases[c].n, by_color, by_konig, cases[c].n, matching, brute);
+        assert(by_color == cases[c].color_answer &&
+               by_konig == cases[c].optimum && brute == cases[c].optimum);
+    }
+    // 随机二部图（左右顶点随机连边后整体随机重编号）：König 与暴力必须
+    // 完全一致；染色取大只允许偏小，统计它偏小的频率。
+    std::mt19937 rng{5489};
+    int trials = 2000, mismatches = 0, color_losses = 0;
+    for (int t = 0; t < trials; ++t) {
+        const int nleft = 1 + static_cast<int>(rand_below(rng, 6));
+        const int nright = 1 + static_cast<int>(rand_below(rng, 6));
+        std::vector<std::pair<int, int>> raw;
+        for (int i = 0; i < nleft; ++i)
+            for (int j = 0; j < nright; ++j)
+                if (rng() & 1u) { raw.emplace_back(i, nleft + j); }
+        const int n = nleft + nright;
+        std::vector<int> perm(static_cast<std::size_t>(n));
+        std::iota(perm.begin(), perm.end(), 0);
+        for (int i = n - 1; i > 0; --i) {
+            const int j = static_cast<int>(rand_below(
+                rng, static_cast<std::uint32_t>(i + 1)));
+            std::swap(perm[static_cast<std::size_t>(i)],
+                      perm[static_cast<std::size_t>(j)]);
+        }
+        std::vector<std::vector<int>> adj(static_cast<std::size_t>(n));
+        for (auto [u, v] : raw) {
+            const int uu = perm[static_cast<std::size_t>(u)];
+            const int vv = perm[static_cast<std::size_t>(v)];
+            adj[static_cast<std::size_t>(uu)].push_back(vv);
+            adj[static_cast<std::size_t>(vv)].push_back(uu);   // 无向边两个方向都入表
+        }
+        const int a = independent_set_by_coloring(adj);
+        int matching = 0;
+        const int b = independent_set_by_konig(adj, matching);
+        const int c = independent_set_brute(adj);
+        if (b != c) { ++mismatches; }
+        if (a < b) { ++color_losses; }
+    }
+    println("  随机 {} 例（n≤12，顶点随机重编号）：König vs 暴力 不一致 {} 例；"
+            "染色取大严格偏小 {} 例", trials, mismatches, color_losses);
+    assert(mismatches == 0 && color_losses > 0);
+}
+
 int main() {
     edmonds_karp_demo();
     push_relabel_demo();
     machine_schedule_demo();
+    girls_boys_demo();
     println("自检通过");
     return 0;
 }

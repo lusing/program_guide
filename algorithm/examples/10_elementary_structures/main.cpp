@@ -5,7 +5,8 @@
 // 10.6 用两个栈实现队列（摊还 O(1)）与镜像的「两队列实现栈」/
 // 10.7 数组上的经典问题（二维有序矩阵查找·原地替换空格）/
 // 10.10 占用数组：花园种花（下标即坑号的集合表示 + 等差数列）/
-// 10.11 RPN 求值与终态周期序列（首次出现表 vs Floyd 判圈）。
+// 10.11 RPN 求值与终态周期序列（首次出现表 vs Floyd 判圈）/
+// 10.12 反转数相加（内置整数版 vs 任意长度数字串版）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -19,6 +20,7 @@ using std::print;
 using std::println;
 #endif
 
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <cmath>
@@ -1592,6 +1594,102 @@ static void periodic_sequence_demo() {
     assert(map_bad == 0);
 }
 
+// ═══ 10.12 反转数相加 ═══
+// 数的反转数：十进制位顺序颠倒，末尾 0 变前导 0 被丢弃（1200→21）。
+// 任务：把两个数各自反转、相加、再把和反转，输出时剥掉前导零。
+
+// 内置整数版（位数受 64 位限制）：逐位 x%10 拼进 r。
+static unsigned long long reverse_number(unsigned long long x) {
+    unsigned long long r = 0;
+    while (x > 0) {
+        r = r * 10 + x % 10;
+        x /= 10;
+    }
+    return r;
+}
+
+static unsigned long long add_reversed(unsigned long long x,
+                                       unsigned long long y,
+                                       unsigned long long& middle_sum) {
+    middle_sum = reverse_number(x) + reverse_number(y);
+    return reverse_number(middle_sum);
+}
+
+// 任意长度数字串版（原始输入位数不受内置整数限制）：
+// 先反转两串，按十进制列从低位相加得 z'（普通写法），再把 z' 反转成 z，
+// 最后剥前导零。
+static std::string add_reversed_digits(std::string x, std::string y) {
+    std::reverse(x.begin(), x.end());        // x、y 现在是反转数
+    std::reverse(y.begin(), y.end());
+    std::string cols;                        // 列输出按低位→高位 push
+    int carry = 0;
+    int i = static_cast<int>(x.size()) - 1;
+    int j = static_cast<int>(y.size()) - 1;
+    while (i >= 0 || j >= 0 || carry > 0) {
+        int d = carry;
+        if (i >= 0) { d += x[static_cast<std::size_t>(i--)] - '0'; }
+        if (j >= 0) { d += y[static_cast<std::size_t>(j--)] - '0'; }
+        cols.push_back(static_cast<char>('0' + d % 10));
+        carry = d / 10;
+    }
+    std::reverse(cols.begin(), cols.end());  // → z' 的普通写法
+    std::string z(cols.rbegin(), cols.rend()); // z = 反转 z'
+    std::size_t p = 0;
+    while (p + 1 < z.size() && z[p] == '0') { ++p; }
+    return z.substr(p);
+}
+
+static void reversed_addition_demo() {
+    println("=== 10.12 反转数相加：反转、求和、再反转 ===");
+    struct Case {
+        unsigned long long x, y;
+        std::string sx, sy, answer;
+    };
+    const std::vector<Case> cases = {
+        {24, 1, "24", "1", "34"},
+        {4358, 754, "4358", "754", "1998"},
+        {305, 794, "305", "794", "1"}};
+    for (const Case& c : cases) {
+        unsigned long long middle = 0;
+        const unsigned long long r = add_reversed(c.x, c.y, middle);
+        const std::string rs = add_reversed_digits(c.sx, c.sy);
+        println("    {} + {}：反转数之和 {}，再反转 {}；数字串版 {}（答案 {}）",
+                c.sx, c.sy, middle, r, rs, c.answer);
+        assert(std::to_string(r) == c.answer && rs == c.answer);
+    }
+    // 超长输入：20 个 9 与 1。原始输入与反转和都塞不进 64 位整数，
+    // 但数字串版照常：99..9 + 1 = 1 后接 20 个 0，再反转剥零得 1。
+    const std::string big(20, '9');
+    const std::string rbig = add_reversed_digits(big, "1");
+    println("  超长案例：20 位 9 + 1 ⟹ {}（数字串版，不依赖内置整数宽度）", rbig);
+    assert(rbig == "1");
+
+    std::mt19937 rng{5489};
+    int trials = 3000, mismatches = 0;
+    for (int t = 0; t < trials; ++t) {
+        // ≤8 位保证反转数 ≤ 10⁸、和 ≤ 2·10⁸，内置整数版安全。
+        const int digits = 1 + static_cast<int>(rand_below(rng, 8));
+        unsigned long long x = 1 + rand_below(rng, 9);   // 首位非零
+        unsigned long long y = 1 + rand_below(rng, 9);
+        for (int k = 1; k < digits; ++k) {
+            // 末位取 1..9（反转不丢零的题设）；其余位任意。
+            const std::uint32_t top = (k + 1 == digits ? 9u : 10u);
+            x = x * 10 + (k + 1 == digits ? 1 + rand_below(rng, 9)
+                                         : rand_below(rng, top));
+            y = y * 10 + (k + 1 == digits ? 1 + rand_below(rng, 9)
+                                         : rand_below(rng, top));
+        }
+        unsigned long long middle = 0;
+        const unsigned long long r1 = add_reversed(x, y, middle);
+        const std::string r2 = add_reversed_digits(std::to_string(x),
+                                                   std::to_string(y));
+        if (std::to_string(r1) != r2) { ++mismatches; }
+    }
+    println("  随机 {} 例（≤8 位）：整数版 vs 数字串版 不一致 {} 例",
+            trials, mismatches);
+    assert(mismatches == 0);
+}
+
 int main() {
     stack_queue_demo();
     linked_list_demo();
@@ -1604,6 +1702,7 @@ int main() {
     derivative_demo();
     flower_garden_demo();
     periodic_sequence_demo();
+    reversed_addition_demo();
     println("自检通过");
     return 0;
 }

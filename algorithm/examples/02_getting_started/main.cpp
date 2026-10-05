@@ -2,7 +2,8 @@
 // 02.1 插入排序逐步追踪（图 2.2）/ 02.2 循环不变式机器检查 /
 // 02.3 最好/最坏/平均的分析实验 / 02.4 MERGE 过程追踪（图 2.3）与递归归并 /
 // 02.5 归并排序递归树（图 2.4）/ 02.6 计数问题两例（累积计数、周期取模）/
-// 02.7 能量转换（带「不前进」检测与溢出预判的模拟）。
+// 02.7 能量转换（带「不前进」检测与溢出预判的模拟）/
+// 02.8 对称排序（偶数位升序 + 奇数位降序；链表移动过程对账）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -20,8 +21,11 @@ using std::println;
 #include <cassert>
 #include <cstdint>
 #include <format>
+#include <iterator>
+#include <list>
 #include <random>
 #include <span>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -299,6 +303,85 @@ static void energy_conversion_demo() {
     assert(mismatches == 0);
 }
 
+// ═══ 02.8 对称排序：长度序列「两头短、中间长」 ═══
+// 输入已按串长非降序。逐对 (0,1),(2,3),…：每对的前者按顺序进前段、
+// 后者逆序进后段。输出的原下标结构为 0,2,4,… 再接 …,5,3,1。
+static std::vector<std::string> symmetric_order(std::vector<std::string> names) {
+    const int n = static_cast<int>(names.size());
+    std::vector<std::string> out;
+    out.reserve(names.size());
+    for (int i = 0; i < n; i += 2) {
+        out.push_back(names[static_cast<std::size_t>(i)]);
+    }
+    // 最大的奇数下标：n 偶为 n−1，n 奇为 n−2（n=1 时为 −1，跳过）。
+    for (int i = (n % 2 == 0 ? n - 1 : n - 2); i >= 1; i -= 2) {
+        out.push_back(names[static_cast<std::size_t>(i)]);
+    }
+    return out;
+}
+
+// 对账：字面执行「移到指定位置之前」的过程（链表版）。1 基位置 i=2、
+// j=n+1，把当前位置 i 的元素移到当前位置 j 之前，++i、−−j 直至 i>m。
+static std::vector<std::string> symmetric_order_by_moves(
+    std::vector<std::string> names) {
+    const int n = static_cast<int>(names.size());
+    const int m = (n % 2 == 0 ? n / 2 : n / 2 + 1);
+    std::list<std::string> l(names.begin(), names.end());
+    for (int i = 2, j = n + 1; i <= m; ++i, --j) {
+        auto src = std::next(l.begin(), i - 1);
+        // j=n+1 即「队尾之后」；其余为 1 基位置 j。
+        auto dst = (j <= static_cast<int>(l.size()))
+                       ? std::next(l.begin(), j - 1)
+                       : l.end();
+        const std::string value = *src;
+        l.erase(src);                        // list 擦除不影响其他迭代器
+        l.insert(dst, value);
+    }
+    return std::vector<std::string>(l.begin(), l.end());
+}
+
+static void symmetric_order_demo() {
+    println("对称排序（3-1）：长度排好序的名单逐对处理，前者进首部、后者进尾部：");
+    const std::vector<std::vector<std::string>> sets = {
+        {"Bo", "Pat", "Jean", "Kevin", "Claude", "William", "Marybeth"},
+        {"Jim", "Ben", "Zoe", "Joey", "Frederick", "Annabelle"},
+        {"John", "Bill", "Fran", "Stan", "Cece"}};
+    for (std::size_t s = 0; s < sets.size(); ++s) {
+        const std::vector<std::string> ordered = symmetric_order(sets[s]);
+        assert(ordered == symmetric_order_by_moves(sets[s]));
+        println("SET {}", s + 1);
+        for (const std::string& nm : ordered) { println("{}", nm); }
+    }
+    // 随机对账：长度非降的名字串（固定宽度后缀保证总长度随 len 单调）。
+    std::mt19937 rng{5489};
+    int mismatches = 0, bad_shape = 0;
+    for (int t = 0; t < 3000; ++t) {
+        const int n = 1 + static_cast<int>(rand_below(rng, 15));
+        std::vector<std::string> names;
+        int len = 1;
+        for (int i = 0; i < n; ++i) {
+            len += static_cast<int>(rand_below(rng, 3));
+            names.push_back(
+                std::string(static_cast<std::size_t>(len), 'x') +
+                std::format("#{:04}", i));
+        }
+        const std::vector<std::string> ordered = symmetric_order(names);
+        if (ordered != symmetric_order_by_moves(names)) { ++mismatches; }
+        // 形状性质：长度先非降、过峰后非增（对称感的精确陈述）。
+        bool past_peak = false;
+        for (std::size_t k = 1; k < ordered.size(); ++k) {
+            if (ordered[k].size() < ordered[k - 1].size()) {
+                past_peak = true;
+            } else if (past_peak && ordered[k].size() > ordered[k - 1].size()) {
+                ++bad_shape;
+            }
+        }
+    }
+    println("  随机 {} 例直接构造 vs 链表移动：不一致 {} 例；形状破坏 {} 例",
+            3000, mismatches, bad_shape);
+    assert(mismatches == 0 && bad_shape == 0);
+}
+
 int main() {
     // 02.1 图 2.2 的数组：逐步追踪
     std::vector<int> fig22{5, 2, 4, 6, 1, 3};
@@ -345,6 +428,9 @@ int main() {
 
     // 02.7 能量转换
     energy_conversion_demo();
+
+    // 02.8 对称排序
+    symmetric_order_demo();
 
     println("自检通过");
     return 0;
