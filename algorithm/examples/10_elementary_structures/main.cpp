@@ -3,7 +3,8 @@
 // 10.4 有根树的两种数组表示与遍历 /
 // 10.5 单链表上的经典算法（反转·倒数第 k·原地删除·归并·逆向输出）/
 // 10.6 用两个栈实现队列（摊还 O(1)）与镜像的「两队列实现栈」/
-// 10.7 数组上的经典问题（二维有序矩阵查找·原地替换空格）。
+// 10.7 数组上的经典问题（二维有序矩阵查找·原地替换空格）/
+// 10.10 占用数组：花园种花（下标即坑号的集合表示 + 等差数列）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -22,9 +23,16 @@ using std::println;
 #include <cmath>
 #include <cstdint>
 #include <queue>
+#include <random>
 #include <stack>
 #include <string>
 #include <vector>
+
+// 可移植随机（docs/01 的纪律：不用 uniform_int_distribution）
+static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
+    std::uint64_t m = static_cast<std::uint64_t>(rng()) * n;
+    return static_cast<std::uint32_t>(m >> 32);
+}
 
 // ═══ 10.1 数组栈与循环队列 ═══
 // 栈：S.top 指向栈顶（0 基：top = 元素个数）。下溢/上溢都用 assert 拦。
@@ -1370,6 +1378,68 @@ static void derivative_demo() {
     }
 }
 
+// ═══ 10.10 占用数组：花园种花 ═══
+// F 个坑一字排开；第 j 种花从坑 L[j] 起每隔 I[j]−1 坑一株，即占据等差数列
+// L[j], L[j]+I[j], L[j]+2I[j], …。用一个 vector<char> 当「占用位图」：
+// 下标 = 坑号−1，值 = 是否被占。这是集合最朴素的表示——成员检测 O(1)，
+// 最后数一遍 0 的个数即可。
+static int flower_garden_empty(int f, const std::vector<int>& starts,
+                               const std::vector<int>& intervals) {
+    std::vector<char> occupied(static_cast<std::size_t>(f), 0);
+    for (std::size_t j = 0; j < starts.size(); ++j) {
+        for (int p = starts[j]; p <= f; p += intervals[j]) {
+            occupied[static_cast<std::size_t>(p - 1)] = 1;   // 坑号 1 基
+        }
+    }
+    int empty = 0;
+    for (char x : occupied) { empty += (x == 0); }
+    return empty;
+}
+
+// 逐坑核对版：坑 i 被花 j 占据 ⟺ (i − L[j]) mod I[j] == 0。
+// （写成 (i−1) mod I[j] == (L[j]−1) mod I[j] 也对——右边必须是 L[j]−1，
+// 写成 L[j] 就整体错位一格，一株都种不上。）
+static int flower_garden_check(int f, const std::vector<int>& starts,
+                               const std::vector<int>& intervals) {
+    int empty = 0;
+    for (int i = 1; i <= f; ++i) {
+        bool planted = false;
+        for (std::size_t j = 0; j < starts.size(); ++j) {
+            if (i >= starts[j] &&
+                (i - starts[j]) % intervals[j] == 0) { planted = true; break; }
+        }
+        if (!planted) { ++empty; }
+    }
+    return empty;
+}
+
+static void flower_garden_demo() {
+    println("美丽的花园（1-4）：占用数组 + 等差数列：");
+    const std::vector<int> l{1, 3, 1}, iv{3, 7, 4};
+    const int empty = flower_garden_empty(30, l, iv);
+    const int check = flower_garden_check(30, l, iv);
+    println("  F=30，玫瑰 L1/I3、秋海棠 L3/I7、雏菊 L1/I4");
+    println("  占用数组版空坑 {}，逐坑核对版 {}（答案 13）", empty, check);
+    assert(empty == 13 && check == 13);
+
+    std::mt19937 rng{5489};
+    int mismatches = 0;
+    for (int t = 0; t < 2000; ++t) {
+        const int f = 1 + static_cast<int>(rand_below(rng, 200));
+        const int k = 1 + static_cast<int>(rand_below(rng, 6));
+        std::vector<int> ls, is;
+        for (int j = 0; j < k; ++j) {
+            ls.push_back(1 + static_cast<int>(rand_below(rng,
+                                    static_cast<std::uint32_t>(f))));
+            is.push_back(1 + static_cast<int>(rand_below(rng, 10)));
+        }
+        if (flower_garden_empty(f, ls, is) !=
+            flower_garden_check(f, ls, is)) { ++mismatches; }
+    }
+    println("  随机 {} 例两版对账：不一致 {} 例", 2000, mismatches);
+    assert(mismatches == 0);
+}
+
 int main() {
     stack_queue_demo();
     linked_list_demo();
@@ -1380,6 +1450,7 @@ int main() {
     replace_blank_demo();
     expression_demo();
     derivative_demo();
+    flower_garden_demo();
     println("自检通过");
     return 0;
 }

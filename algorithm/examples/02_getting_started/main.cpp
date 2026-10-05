@@ -1,7 +1,8 @@
 // 02 入门：插入排序、循环不变式与归并排序（CLRS 第 2 章）。结构：
 // 02.1 插入排序逐步追踪（图 2.2）/ 02.2 循环不变式机器检查 /
 // 02.3 最好/最坏/平均的分析实验 / 02.4 MERGE 过程追踪（图 2.3）与递归归并 /
-// 02.5 归并排序递归树（图 2.4）/ 02.6 计数问题两例（累积计数、周期取模）。
+// 02.5 归并排序递归树（图 2.4）/ 02.6 计数问题两例（累积计数、周期取模）/
+// 02.7 能量转换（带「不前进」检测与溢出预判的模拟）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -219,6 +220,85 @@ static void counting_problems() {
     assert(best == 200);
 }
 
+// ═══ 02.7 能量转换：先预判、后乘法的模拟 ═══
+// 转换规则 A ← (A−V)·K。三类失败：① M≥N 不用转；② M<V 连一次都做不了；
+// ③ 转换不增（(A−V)·K ≤ A，K=1（V=0 时持平）/ K=0 / 能量太低时都可能）。
+// 关键纪律：**先判断乘积是否已达标，达标就直接返回，不做乘法**——
+// 因为一旦 (A−V)·K ≥ N 这一步就是答案；而不提前返回时乘积严格小于 N，
+// 全程算术被 N（题面 ≤1e8）钳住，根本不存在溢出。
+static long long energy_conversions(long long n, long long m, long long v,
+                                    long long k) {
+    if (m >= n) { return 0; }                    // ①
+    if (m < v) { return -1; }                    // ②
+    long long a = m, count = 0;
+    while (true) {
+        const long long gain = a - v;
+        // 「这一步就够」等价于 gain·k ≥ n；不做乘法的判法：
+        // gain ≥ ⌈n/k⌉，k=0 时右边无意义（必然不前进，交给下面的判定）。
+        if (k > 0 && gain >= (n + k - 1) / k) { return count + 1; }
+        const long long next = gain * k;         // 此处必有 next < n，安全
+        if (next <= a) { return -1; }            // ③ 不前进：永远没戏
+        a = next;
+        ++count;
+    }
+}
+
+// BFS 对账（小值域）：把能量值 0..N 当状态，转换是有向边；跳跃 ≥N 即开门。
+// 与模拟版的区别是它不依赖「贪心每次必转」的直觉——本题转换唯一，
+// BFS 只是给模拟的正确性背书。
+static long long energy_conversions_bfs(long long n, long long m, long long v,
+                                        long long k) {
+    if (m >= n) { return 0; }
+    std::vector<int> dist(static_cast<std::size_t>(n), -1);
+    std::vector<long long> q;
+    q.push_back(m);
+    dist[static_cast<std::size_t>(m)] = 0;
+    for (std::size_t head = 0; head < q.size(); ++head) {
+        const long long a = q[head];
+        if (a < v) { continue; }
+        const long long b = (a - v) * k;
+        if (b >= n) { return dist[static_cast<std::size_t>(a)] + 1; }
+        if (dist[static_cast<std::size_t>(b)] < 0) {
+            dist[static_cast<std::size_t>(b)] =
+                dist[static_cast<std::size_t>(a)] + 1;
+            q.push_back(b);
+        }
+    }
+    return -1;
+}
+
+static void energy_conversion_demo() {
+    println("能量转换（1-3）：A ← (A−V)·K，求最少转换次数：");
+    struct Case { long long n, m, v, k, want; };
+    const Case cases[]{{10, 3, 1, 2, 3}, {10, 2, 1, 2, -1},
+                       {10, 9, 7, 3, -1}, {10, 10, 10000, 0, 0}};
+    for (const Case& c : cases) {
+        const long long r = energy_conversions(c.n, c.m, c.v, c.k);
+        println("  N={} M={} V={} K={} ⟹ {} 次", c.n, c.m, c.v, c.k, r);
+        assert(r == c.want);
+        assert(r == energy_conversions_bfs(c.n, c.m, c.v, c.k));
+    }
+    // 大值域：一次跳满。先预判的写法全程不出现 ≥N 的中间积。
+    const long long big = energy_conversions(100000000, 2, 1, 100000000);
+    println("  N=1e8 M=2 V=1 K=1e8 ⟹ {} 次（预判命中，无中间乘积）", big);
+    assert(big == 1);
+
+    // 随机小例：模拟版 vs BFS 版，全一致才算对。
+    std::mt19937 rng{5489};
+    int mismatches = 0;
+    for (int t = 0; t < 3000; ++t) {
+        const long long n = 1 + rand_below(rng, 60);
+        const long long m = rand_below(rng, static_cast<std::uint32_t>(n) + 1);
+        const long long v = rand_below(rng, 10);
+        const long long k = rand_below(rng, 5);
+        const long long r1 = energy_conversions(n, m, v, k);
+        const long long r2 = energy_conversions_bfs(n, m, v, k);
+        if (r1 != r2) { ++mismatches; }
+    }
+    println("  随机 {} 例模拟 vs BFS：不一致 {} 例", 3000, mismatches);
+    assert(mismatches == 0);
+}
+
 int main() {
     // 02.1 图 2.2 的数组：逐步追踪
     std::vector<int> fig22{5, 2, 4, 6, 1, 3};
@@ -262,6 +342,9 @@ int main() {
 
     // 02.6 计数问题两例
     counting_problems();
+
+    // 02.7 能量转换
+    energy_conversion_demo();
 
     println("自检通过");
     return 0;

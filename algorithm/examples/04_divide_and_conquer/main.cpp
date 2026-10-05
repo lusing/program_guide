@@ -1,7 +1,8 @@
 // 04 分治策略（CLRS 第 4 章）。结构：04.1 最大子数组（暴力/分治/Kadane）/
 // 04.2 Strassen 矩阵乘（S/P 全表 + 三种口径的乘/加计数对比）/ 04.3 递归树打印 /
 // 04.4 主定理应用器 + 递归式精确值的经验验证 /
-// 04.5 二分查找：分治的极端形态（f(n)=Θ(1)）+ 边界不变式 + 旋转最小值。
+// 04.5 二分查找：分治的极端形态（f(n)=Θ(1)）+ 边界不变式 + 旋转最小值 /
+// 04.7 逆序数：归并排序的副产物（一趟归并顺手记账）+ DNA 串排序。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -22,6 +23,7 @@ using std::println;
 #include <random>
 #include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 
 static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
@@ -869,6 +871,113 @@ static void fractional_bisect_demo() {
     }
 }
 
+// ═══ 04.7 逆序数：归并排序的副产物 ═══
+// 逆序对 = i<j 且 a[i]>a[j]。暴力双重循环 O(n²)；分治视角：归并两个有序
+// 子段时，每当**右段**元素 x 出列，左段还没出列的每个元素都比 x 大——
+// 贡献 mid−i。排序与计数一趟完成，总代价 O(n lg n)。
+template <class T>
+static void inversion_merge(std::span<T> a, std::span<T> buf, long long& inv) {
+    if (a.size() < 2) { return; }
+    const std::size_t mid = a.size() / 2;
+    inversion_merge(a.first(mid), buf.first(mid), inv);
+    inversion_merge(a.subspan(mid), buf.subspan(mid), inv);
+    std::copy(a.begin(), a.end(), buf.begin());
+    std::size_t i = 0, j = mid, k = 0;
+    while (i < mid && j < a.size()) {
+        if (buf[i] <= buf[j]) {            // ≤：相等元素不算逆序
+            a[k++] = buf[i++];
+        } else {
+            a[k++] = buf[j++];
+            inv += static_cast<long long>(mid - i);
+        }
+    }
+    while (i < mid)      { a[k++] = buf[i++]; }
+    while (j < a.size()) { a[k++] = buf[j++]; }
+}
+
+template <class T>
+static long long inversion_count(const std::vector<T>& input) {
+    std::vector<T> a = input, buf(a.size());
+    long long inv = 0;
+    inversion_merge(std::span<T>(a), std::span<T>(buf), inv);
+    assert(std::ranges::is_sorted(a));
+    return inv;
+}
+
+// 字母表只有 4 个符号时的 O(n) 扫一遍：各计数器记住「之前有几个 C/G/T」，
+// 读到 A/C/G 时直接查表累加。这是线性时间，但依赖字母表小且已知。
+static long long dna_inversions_linear(std::string_view s) {
+    long long count = 0, cc = 0, cg = 0, ct = 0;
+    for (char ch : s) {
+        if (ch == 'A') {
+            count += cc + cg + ct;
+        } else if (ch == 'C') {
+            count += cg + ct;
+            ++cc;
+        } else if (ch == 'G') {
+            count += ct;
+            ++cg;
+        } else {
+            ++ct;
+        }
+    }
+    return count;
+}
+
+static long long inversions_brute(std::string_view s) {
+    long long c = 0;
+    for (std::size_t i = 0; i < s.size(); ++i) {
+        for (std::size_t j = i + 1; j < s.size(); ++j) { c += s[i] > s[j]; }
+    }
+    return c;
+}
+
+static void dna_sort_demo() {
+    println("DNA 排序（2-7）：按逆序数升序排列串：");
+    const std::vector<std::string> dnas{
+        "AACATGAAGG", "TTTTGGCCAA", "TTTGGCCAAA", "GATCAGATTT",
+        "CCCGGGGGGA", "ATCGATGCAT"};
+    struct Item { std::string s; long long inv; std::size_t idx; };
+    std::vector<Item> items;
+    for (std::size_t i = 0; i < dnas.size(); ++i) {
+        std::vector<char> cv(dnas[i].begin(), dnas[i].end());
+        const long long inv = inversion_count(cv);
+        // 三种口径必须一致：分治归并 / 字母计数 / 暴力
+        assert(inv == dna_inversions_linear(dnas[i]));
+        assert(inv == inversions_brute(dnas[i]));
+        items.push_back({dnas[i], inv, i});
+    }
+    std::ranges::sort(items, [](const Item& a, const Item& b) {
+        return a.inv != b.inv ? a.inv < b.inv : a.idx < b.idx;
+    });
+    for (const Item& it : items) {
+        println("  逆序 {:2}：{}", it.inv, it.s);
+    }
+    // 逆序数序列与排序后的串顺序
+    const std::vector<long long> ordered{9, 10, 11, 17, 36, 37};
+    std::vector<long long> got;
+    for (const Item& it : items) { got.push_back(it.inv); }
+    assert(got == ordered);
+    assert(items[0].s == "CCCGGGGGGA" && items[5].s == "TTTGGCCAAA");
+
+    // 随机 DNA 串：三种口径对账
+    std::mt19937 rng{5489};
+    static const char letters[] = "ACGT";
+    int mismatches = 0;
+    for (int t = 0; t < 2000; ++t) {
+        const std::size_t n = 1 + rand_below(rng, 30);
+        std::string s;
+        for (std::size_t i = 0; i < n; ++i) {
+            s.push_back(letters[rand_below(rng, 4)]);
+        }
+        std::vector<char> cv(s.begin(), s.end());
+        if (inversion_count(cv) != inversions_brute(s) ||
+            dna_inversions_linear(s) != inversions_brute(s)) { ++mismatches; }
+    }
+    println("  随机 {} 个 DNA 串三口径对账：不一致 {}", 2000, mismatches);
+    assert(mismatches == 0);
+}
+
 int main() {
     max_subarray_demo();
     strassen_demo();
@@ -876,6 +985,7 @@ int main() {
     master_theorem();
     binary_search_demo();
     fractional_bisect_demo();
+    dna_sort_demo();
     println("自检通过");
     return 0;
 }
