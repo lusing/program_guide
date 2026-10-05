@@ -40,8 +40,12 @@ foreach ($dir in $dirs) {
     foreach ($name in $Engines) {
         $exe = $engineMap[$name]
         $logFile = Join-Path $logDir "$($dir.Name).$name.log"
+        # 让子引擎使用自身默认模块搜索路径（父进程 pwsh 的 PSModulePath 会盖掉 5.1 的用户模块目录）
+        $savedModulePath = $env:PSModulePath
+        Remove-Item Env:\PSModulePath -ErrorAction SilentlyContinue
         & $exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File (Join-Path $dir.FullName 'run.ps1') *> $logFile
         $code = $LASTEXITCODE
+        if ($null -ne $savedModulePath) { $env:PSModulePath = $savedModulePath }
         $reportFile = Join-Path $dir.FullName 'report.txt'
         $reportText = if (Test-Path $reportFile) { ([System.IO.File]::ReadAllText($reportFile) -replace "`r`n", "`n").Trim() } else { '' }
         # 剥离通道专属行（[ch7-only]/[ch51-only]）与环境依赖行（[env]）后存档对账
