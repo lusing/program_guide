@@ -6,7 +6,8 @@
 // 10.7 数组上的经典问题（二维有序矩阵查找·原地替换空格）/
 // 10.10 占用数组：花园种花（下标即坑号的集合表示 + 等差数列）/
 // 10.11 RPN 求值与终态周期序列（首次出现表 vs Floyd 判圈）/
-// 10.12 反转数相加（内置整数版 vs 任意长度数字串版）。
+// 10.12 反转数相加（内置整数版 vs 任意长度数字串版）/
+// 10.13 Web 导航（后退栈 + 前进栈，对照「单历史 + 游标」模型）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -1690,6 +1691,137 @@ static void reversed_addition_demo() {
     assert(mismatches == 0);
 }
 
+// ═══ 10.13 Web 导航：两个栈模拟浏览器 ═══
+// 不变量：back_ 栈顶是「当前页的前一页」，forward_ 栈顶是「当前页的后一页」；
+// 当前页本身不在任何一个栈里。
+class Browser {
+    std::stack<std::string> back_;
+    std::stack<std::string> forward_;
+    std::string current_ = "http://www.acm.org/";
+public:
+    // 三个操作都返回「当前页」；back/forward 返回 bool 表示命令是否被忽略。
+    bool back() {
+        if (back_.empty()) { return false; }       // 忽略
+        forward_.push(current_);
+        current_ = back_.top();
+        back_.pop();
+        return true;
+    }
+    bool forward() {
+        if (forward_.empty()) { return false; }    // 忽略
+        back_.push(current_);
+        current_ = forward_.top();
+        forward_.pop();
+        return true;
+    }
+    void visit(std::string url) {
+        back_.push(current_);
+        current_ = std::move(url);
+        // 新访问会「分叉」：旧的前进链全部作废。
+        while (!forward_.empty()) { forward_.pop(); }
+    }
+    const std::string& current() const { return current_; }
+};
+
+// 参照实现：一条历史记录 + 游标。BACK 移游标、FORWARD 移游标、
+// VISIT 砍掉游标之后的尾巴再追加。与双栈结构完全不同，用来对账。
+struct BrowserReference {
+    std::vector<std::string> history = {"http://www.acm.org/"};
+    int pos = 0;
+    std::string execute(const std::string& cmd, const std::string& url) {
+        if (cmd == "BACK") {
+            if (pos == 0) { return "Ignored"; }
+            --pos;
+        } else if (cmd == "FORWARD") {
+            if (pos + 1 == static_cast<int>(history.size())) {
+                return "Ignored";
+            }
+            ++pos;
+        } else {
+            history.resize(static_cast<std::size_t>(pos + 1));
+            history.push_back(url);
+            ++pos;
+        }
+        return history[static_cast<std::size_t>(pos)];
+    }
+};
+
+static void web_navigation_demo() {
+    println("=== 10.13 Web 导航：后退栈 + 前进栈 ===");
+    // 命令编码成 (指令, 参数)；BACK/FORWARD 的参数为空串。
+    struct Command {
+        std::string cmd;
+        std::string url;
+    };
+    const std::vector<Command> script = {
+        {"VISIT", "http://acm.ashland.edu/"},
+        {"VISIT", "http://acm.baylor.edu/acmicpc/"},
+        {"BACK", ""},
+        {"BACK", ""},
+        {"BACK", ""},
+        {"FORWARD", ""},
+        {"VISIT", "http://www.ibm.com/"},
+        {"BACK", ""},
+        {"BACK", ""},
+        {"FORWARD", ""},
+        {"FORWARD", ""},
+        {"FORWARD", ""}};
+    Browser browser;
+    BrowserReference reference;
+    println("  样例命令流（命令 ⟹ 响应）：");
+    int mismatches = 0;
+    for (const Command& c : script) {
+        std::string shown = c.cmd;
+        if (c.cmd == "VISIT") { shown += " " + c.url; }
+        std::string response;
+        if (c.cmd == "BACK") {
+            response = browser.back() ? browser.current() : "Ignored";
+        } else if (c.cmd == "FORWARD") {
+            response = browser.forward() ? browser.current() : "Ignored";
+        } else {
+            browser.visit(c.url);
+            response = browser.current();
+        }
+        const std::string expected = reference.execute(c.cmd, c.url);
+        if (response != expected) { ++mismatches; }
+        println("    {} ⟹ {}", shown, response);
+    }
+    assert(mismatches == 0);
+
+    // 随机命令流：VISIT/BACK/FORWARD 按 4:3:3 混合，URL 从固定池取。
+    std::mt19937 rng{5489};
+    std::vector<std::string> pool;
+    for (int i = 0; i < 64; ++i) {
+        pool.push_back("https://example.test/p" +
+                       std::format("{:04}", i) + ".html");
+    }
+    Browser browser2;
+    BrowserReference reference2;
+    const int trials = 3000;
+    for (int t = 0; t < trials; ++t) {
+        const std::uint32_t kind = rand_below(rng, 10);
+        const std::string cmd =
+            kind < 4 ? "VISIT" : kind < 7 ? "BACK" : "FORWARD";
+        const std::string url =
+            cmd == "VISIT" ? pool[rand_below(rng,
+                                             static_cast<std::uint32_t>(pool.size()))]
+                           : std::string{};
+        std::string response;
+        if (cmd == "BACK") {
+            response = browser2.back() ? browser2.current() : "Ignored";
+        } else if (cmd == "FORWARD") {
+            response = browser2.forward() ? browser2.current() : "Ignored";
+        } else {
+            browser2.visit(url);
+            response = browser2.current();
+        }
+        if (response != reference2.execute(cmd, url)) { ++mismatches; }
+    }
+    println("  随机 {} 条命令：双栈模型 vs 单历史+游标模型 不一致 {} 例",
+            trials, mismatches);
+    assert(mismatches == 0);
+}
+
 int main() {
     stack_queue_demo();
     linked_list_demo();
@@ -1703,6 +1835,7 @@ int main() {
     flower_garden_demo();
     periodic_sequence_demo();
     reversed_addition_demo();
+    web_navigation_demo();
     println("自检通过");
     return 0;
 }

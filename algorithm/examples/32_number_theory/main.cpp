@@ -7,7 +7,8 @@
 // 32.8 线性同余方程 ax ≡ b (mod n)（判定 + 最小解 + 青蛙约会 + CRT 雏形）/
 // 32.9 博弈 + 辗转相除：Euclid 游戏的必胜态（修正「双方都贪心」的错误模型）/
 // 32.10 筛法的正确复杂度 Θ(n log log n) 与区间统计（前缀和 / 无序对去重）/
-// 32.11 整数 n 次根：二分 + 饱和快速幂（对比「指数整除」数论判据）。
+// 32.11 整数 n 次根：二分 + 饱和快速幂（对比「指数整除」数论判据）/
+// 32.12 数制转换：2～62 进制任意精度（十进制串中转 + 直接取余编码对账）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -30,8 +31,16 @@ using std::println;
 #include <cassert>
 #include <cstdint>
 #include <numeric>
+#include <random>
+#include <string>
 #include <utility>
 #include <vector>
+
+// 可移植随机（docs/01 的纪律：不用 uniform_int_distribution）
+static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
+    return static_cast<std::uint32_t>(
+        (static_cast<std::uint64_t>(rng()) * n) >> 32);
+}
 
 // 十进制位数（只为打印用；纯除法循环，与高精度无关）
 static int digits_of(long long v) {
@@ -959,6 +968,173 @@ static void nth_root_demo() {
     assert(cmp > 0);
 }
 
+// ═══ 32.12 数制转换：2～62 进制之间的任意精度转换 ═══
+// 数字字符 0-9 A-Z a-z 依次表示值 0..61。
+static int digit_value(char c) {
+    if (c >= '0' && c <= '9') { return c - '0'; }
+    if (c >= 'A' && c <= 'Z') { return c - 'A' + 10; }
+    return c - 'a' + 36;
+}
+
+static char digit_symbol(int v) {
+    if (v < 10) { return static_cast<char>('0' + v); }
+    if (v < 36) { return static_cast<char>('A' + v - 10); }
+    return static_cast<char>('a' + v - 36);
+}
+
+// 十进制数字符串（高位在前）乘小整数 k。
+static std::string dec_mul_small(std::string x, int k) {
+    int carry = 0;
+    for (std::size_t i = x.size(); i-- > 0;) {
+        const int v = (x[i] - '0') * k + carry;
+        x[i] = static_cast<char>('0' + v % 10);
+        carry = v / 10;
+    }
+    while (carry > 0) {
+        x.insert(x.begin(), static_cast<char>('0' + carry % 10));
+        carry /= 10;
+    }
+    return x;
+}
+
+// 十进制数字符串加小整数 a（a < 100）。
+static std::string dec_add_small(std::string x, int a) {
+    int carry = a;
+    for (std::size_t i = x.size(); i-- > 0 && carry > 0;) {
+        const int v = x[i] - '0' + carry;
+        x[i] = static_cast<char>('0' + v % 10);
+        carry = v / 10;
+    }
+    while (carry > 0) {
+        x.insert(x.begin(), static_cast<char>('0' + carry % 10));
+        carry /= 10;
+    }
+    return x;
+}
+
+// 十进制数字符串除以小整数 k：长除法，返回商、rem 为余数。
+static std::string dec_div_small(const std::string& x, int k, int& rem) {
+    std::string q;
+    int cur = 0;
+    bool started = false;
+    for (char c : x) {
+        cur = cur * 10 + (c - '0');
+        const int d = cur / k;
+        cur %= k;
+        if (d != 0 || started) {
+            q.push_back(static_cast<char>('0' + d));
+            started = true;
+        }
+    }
+    if (q.empty()) { q = "0"; }
+    rem = cur;
+    return q;
+}
+
+// 主转换：B1 数字串 → 十进制 → B2 数字串。
+static std::string convert_base(const std::string& number, int b1, int b2) {
+    // 剥前导零（"000" ⟹ "0"）。
+    std::size_t p = 0;
+    while (p + 1 < number.size() && number[p] == '0') { ++p; }
+    const std::string input = number.substr(p);
+    // B1 → 十进制（Horner：v = v·B1 + 当前位）。
+    std::string dec = "0";
+    for (char c : input) {
+        dec = dec_mul_small(dec, b1);
+        dec = dec_add_small(dec, digit_value(c));
+    }
+    // 十进制 → B2：反复带余除，先得到的是低位。
+    std::string digits;
+    int rem = 0;
+    while (dec != "0") {
+        dec = dec_div_small(dec, b2, rem);
+        digits.push_back(digit_symbol(rem));
+    }
+    if (digits.empty()) { return "0"; }
+    std::ranges::reverse(digits);
+    return digits;
+}
+
+// 小整数的独立编码（v 装得进 uint64）：直接反复取余，不走十进制中转。
+static std::string encode_small(std::uint64_t v, int base) {
+    std::string digits;
+    if (v == 0) { return "0"; }
+    while (v > 0) {
+        digits.push_back(digit_symbol(static_cast<int>(v % base)));
+        v /= base;
+    }
+    std::ranges::reverse(digits);
+    return digits;
+}
+
+static void base_conversion_demo() {
+    println("=== 32.12 数制转换：2～62 进制任意精度 ===");
+    struct Case {
+        int b1, b2;
+        std::string number;
+    };
+    const std::vector<Case> cases = {
+        {10, 2, "13"},
+        {16, 10, "FF"},
+        {2, 62, "1101"},
+        {10, 2, "0"},
+        {62, 2, "abcdefghiz"},
+        {10, 16, "1234567890123456789012345678901234567890"},
+        {5, 10, "42104444441001414401221302402201233340311104212022133030"}};
+    for (const Case& c : cases) {
+        const std::string result = convert_base(c.number, c.b1, c.b2);
+        println("    {} {}", c.b1, c.number);
+        println("    {} {}", c.b2, result);
+        println("");
+    }
+    // 小整数四个案例与直接取余编码逐字对账。
+    assert(convert_base("13", 10, 2) == "1101");
+    assert(convert_base("FF", 16, 10) == "255");
+    assert(convert_base("1101", 2, 62) == "D");
+    assert(convert_base("0", 10, 2) == "0");
+
+    // 随机：先造一个十进制大数字符串（1..30 位），编码进 B1，再转 B2，
+    // 最后解码回十进制——闭环对账；值 ≤ 10⁹ 时再与直接取余编码核对。
+    std::mt19937 rng{5489};
+    const int trials = 2000;
+    int mismatches = 0;
+    int small_checks = 0;
+    for (int t = 0; t < trials; ++t) {
+        const int len = 1 + static_cast<int>(rand_below(rng, 30));
+        std::string value;
+        value.push_back(static_cast<char>('1' + rand_below(rng, 9)));
+        for (int k = 1; k < len; ++k) {
+            value.push_back(static_cast<char>('0' + rand_below(rng, 10)));
+        }
+        const int b1 = 2 + static_cast<int>(rand_below(rng, 61));
+        const int b2 = 2 + static_cast<int>(rand_below(rng, 61));
+        // value（十进制）→ B1：逐次除以 B1，余数低位先收集。
+        std::string in_b1;
+        std::string rest = value;
+        int rem = 0;
+        while (rest != "0") {
+            rest = dec_div_small(rest, b1, rem);
+            in_b1.push_back(digit_symbol(rem));
+        }
+        std::ranges::reverse(in_b1);
+        const std::string in_b2 = convert_base(in_b1, b1, b2);
+        // B2 → 十进制：B2 表示当输入、目标基 10。
+        const std::string back = convert_base(in_b2, b2, 10);
+        if (back != value) { ++mismatches; }
+        // 转回 B1 也应一致（往返）。
+        if (convert_base(in_b2, b2, b1) != in_b1) { ++mismatches; }
+        if (len <= 9) {
+            std::uint64_t v = 0;
+            for (char c : value) { v = v * 10 + (c - '0'); }
+            if (encode_small(v, b2) != in_b2) { ++mismatches; }
+            ++small_checks;
+        }
+    }
+    println("  随机 {} 例（十进制 1..30 位，基 2..62）：闭环不一致 {} 例（其中 {} 例与直接取余编码对账）",
+            trials, mismatches, small_checks);
+    assert(mismatches == 0);
+}
+
 int main() {
     gcd_demo();
     modular_demo();
@@ -971,6 +1147,7 @@ int main() {
     euclid_game_demo();
     sieve_demo();
     nth_root_demo();
+    base_conversion_demo();
     println("自检通过");
     return 0;
 }

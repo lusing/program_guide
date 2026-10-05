@@ -27,7 +27,10 @@
 10. 会用栈对后缀式求值，并能在有限状态轨道上用「首次出现表」求周期、
     用 Floyd 快慢指针做 O(1) 空间对账；
 11. 会做「反转—相加—再反转」的数位操作（反转数相加），并能在数字串
-    层面做列加法，使输入位数不受内置整数宽度限制。
+    层面做列加法，使输入位数不受内置整数宽度限制；
+12. 会用**两个栈 + 一个当前页**模拟浏览器的 BACK/FORWARD/VISIT，
+    说清「当前页不属于任何栈」的不变量，以及 VISIT 为什么必须清空
+    前进栈。
 
 ## 栈与队列（§10.1）
 
@@ -694,6 +697,81 @@ answer = reverse_number(middle);
 相加（两者都塞不进 64 位整数），数字串版给出 `1`；3000 个随机
 ≤8 位案例（首位、末位都非零）两版 0 例不一致。
 
+## Web 导航：两个栈模拟浏览器历史
+
+### 问题
+
+浏览器有后退、前进两个按钮，还能在地址栏输入新网址。需要支持四条
+命令：
+
+- **BACK**：回到上一个页面。没有可回的页面时忽略本命令；
+- **FORWARD**：前进到后退前所在页面。没有可前进的页面时忽略；
+- **VISIT url**：直接访问 url；
+- **QUIT**：结束，不产生输出。
+
+浏览器启动时当前页固定为 `http://www.acm.org/`。每条被执行的
+命令输出执行后的当前 URL；被忽略的命令输出 `Ignored`。
+
+### 状态与不变量
+
+状态只有三样东西：当前页 `current`、**后退栈** `back`、**前进栈**
+`forward`。核心不变量是：
+
+> **当前页不属于任何一个栈。** 后退栈顶是「当前页的前一页」，
+> 前进栈顶是「当前页的后一页」。
+
+于是三个操作只是栈顶搬运，每一步都先把当前页推到目标栈，再把
+新当前页从来源栈弹出：
+
+```
+BACK（back 空 ⟹ Ignored）：
+    forward.push(current)           ← 当前页变成「未来」
+    current = back.top(); back.pop() ← 栈顶变成「现在」
+
+FORWARD（forward 空 ⟹ Ignored）：
+    back.push(current)
+    current = forward.top(); forward.pop()
+
+VISIT url：
+    back.push(current)
+    current = url
+    forward 清空                     ← 关键
+```
+
+在样例上走前六步（初始页记为 ACM）：
+
+```
+VISIT ashland   back=[ACM]              current=ashland  forward=[]
+VISIT baylor    back=[ACM,ashland]      current=baylor
+BACK            back=[ACM]  forward=[baylor]  current=ashland
+BACK            back=[]     forward=[baylor,ashland] current=ACM
+BACK            back 为空 ⟹ Ignored（什么都不动）
+FORWARD         back=[ACM]  forward=[baylor] current=ashland
+```
+
+### 为什么 VISIT 必须清空前进栈
+
+历史在 VISIT 的一刻**分叉**：旧的前进链是「沿旧历史继续走」的产物，
+新页面之后再按 FORWARD，没有任何理由到达旧链上的页面。若不
+清空，样例第七步 VISIT ibm 后，前进栈里还躺着 baylor，一次
+FORWARD 就会把用户带到一个与新历史毫无关系的地址。真实浏览器
+在这一点上行为完全一致。
+
+### 复杂度
+
+BACK/FORWARD 都是 O(1)。VISIT 的清栈看起来要 Θ(|forward|)，
+但每个被弹出的页面都对应之前的一次 push，**整段命令流里 push
+总次数等于 pop 总次数**，故 n 条命令总耗时 O(n)。
+
+### 对账：单历史 + 游标模型
+
+另一种等价实现根本不用栈：一条 `history` 数组保存访问过的全部
+页面，`pos` 是当前页下标。BACK 把游标 −1，FORWARD 把游标 +1，
+VISIT **砍掉游标之后的尾巴**再追加新页。两种结构错法完全不同
+（一个错在栈顶搬运顺序，一个错在游标与截断），示例让它们逐条
+命令对账：12 条样例命令 + 3000 条随机命令（VISIT/BACK/FORWARD
+按 4:3:3 混合），0 例不一致。
+
 ## C++23 语言点
 
 - **递归 lambda（显式对象形参）**：`[&](this auto&& self, auto… args)`
@@ -840,6 +918,23 @@ answer = reverse_number(middle);
     反转串开头的 0 是已丢弃的尾零，不是有效列；对策：数字串实现
     右端对齐列加、列上只加有效数字，并保留一个超长（20 位）案例
     专门走字符串版验证。）
+22. **栈顶搬运的先后写反或漏推当前页**
+    （现象：BACK 后旧当前页从历史里消失、或新当前页与旧页重复；
+    原因：正确顺序是**先把 current 推入目标栈，再从来源栈弹出新
+    current**——两步缺一不可、次序不可换；对策：按「当前页不属于
+    任何栈」的不变量写完后逐条断言：任一页面在两栈与 current 中
+    恰好出现一次（在其存活期内）。）
+23. **VISIT 不清空前进栈**
+    （现象：FORWARD 能到达分叉前的旧页面，历史出现「穿越」；
+    原因：旧前进链依附于旧历史，新 URL 处历史已经分叉；对策：
+    VISIT 末尾 while 弹空 forward，并保留样例第七步这种
+    「VISIT 后再 BACK/FORWARD」的命令序列专门验证。）
+24. **被忽略的命令仍然输出当前 URL**
+    （现象：初始页连续 BACK，第二行起输出一堆
+    http://www.acm.org/ 而不是 Ignored；原因：来源栈为空时命令
+    必须**整体无副作用**、输出固定为 Ignored——既不动栈也不
+    报当前页；对策：back()/forward() 返回 bool，调用处按
+    返回值二选一输出。）
 
 ## 练习
 
@@ -875,6 +970,14 @@ answer = reverse_number(middle);
 14. （本教程）把「两个反转数相加」推广为「三个及任意多个反转数
     相加」（所有加数同时参与列加法）；再思考「反转数相减」的列
     借位要怎么处理，构造一个中间和含连续借位的案例手算验证。
+15. （本教程）给出双栈模型与单历史模型之间的状态映射：
+    `history = reverse(back) + current + forward`，证明每条命令
+    执行后映射保持。据此写一个从双栈状态重建 history 的函数，
+    在随机命令流上与原生 history 模型逐元素对账。
+16. （本教程）若浏览器把后退历史限制为最多保留 N 个页面
+    （BACK 栈满时新元素挤掉栈底最老页面），最先变得无法到达的
+    是哪些页面？给出这个「有界后退」版本的实现，并用
+    「随机长命令流 + 期望不可达页清单」验证你的结论。
 
 ## 示例说明与运行输出
 
@@ -890,7 +993,8 @@ answer = reverse_number(middle);
 周期序列（栈式 RPN 求值 + 首次出现表测周期 + Floyd 判圈对账：5 个样例
 答案 1/3/6/6/369，3000+1000 随机案例 0 不一致）、10.12 反转数相加
 （内置整数版 + 任意长度数字串列加法版：3 样例 + 20 位超长案例 +
-3000 随机对账）。
+3000 随机对账）、10.13 Web 导航（双栈浏览器：12 条样例命令 +
+3000 条随机命令，与单历史+游标模型逐条对账 0 不一致）。
 
 运行输出：
 
@@ -1065,6 +1169,21 @@ ln(u)' = u'/u（分子是**导数**、分母是**原式**，别写反）：
     305 + 794：反转数之和 1000，再反转 1；数字串版 1（答案 1）
   超长案例：20 位 9 + 1 ⟹ 1（数字串版，不依赖内置整数宽度）
   随机 3000 例（≤8 位）：整数版 vs 数字串版 不一致 0 例
+=== 10.13 Web 导航：后退栈 + 前进栈 ===
+  样例命令流（命令 ⟹ 响应）：
+    VISIT http://acm.ashland.edu/ ⟹ http://acm.ashland.edu/
+    VISIT http://acm.baylor.edu/acmicpc/ ⟹ http://acm.baylor.edu/acmicpc/
+    BACK ⟹ http://acm.ashland.edu/
+    BACK ⟹ http://www.acm.org/
+    BACK ⟹ Ignored
+    FORWARD ⟹ http://acm.ashland.edu/
+    VISIT http://www.ibm.com/ ⟹ http://www.ibm.com/
+    BACK ⟹ http://acm.ashland.edu/
+    BACK ⟹ http://www.acm.org/
+    FORWARD ⟹ http://acm.ashland.edu/
+    FORWARD ⟹ http://www.ibm.com/
+    FORWARD ⟹ Ignored
+  随机 3000 条命令：双栈模型 vs 单历史+游标模型 不一致 0 例
 自检通过
 ```
 

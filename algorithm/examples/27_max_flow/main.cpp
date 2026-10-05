@@ -3,7 +3,8 @@
 // 27.3 流的合法性验证（容量约束 + 流量守恒）/ 27.4 最小割验证（最大流
 // 最小割定理）/ 27.5 推送-重贴标签对照 /
 // 27.6 二部图匹配与最小点覆盖（König 定理；Kuhn 增广路）/
-// 27.7 女孩与男孩：二部图最大独立集（染色取大 vs König；暴力对账）。
+// 27.7 女孩与男孩：二部图最大独立集（染色取大 vs König；暴力对账）/
+// 27.8 午餐：牛妞拆 in/out 两点的三方独占流（食物-饮料直接匹配的误报对照）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -57,7 +58,8 @@ struct MaxFlowResult {
 // Edmonds-Karp：BFS 找最短增广路径（残量 > 0），沿路增广。
 // 定理 26.9? 26.8：O(V·E²)——最短路径长度单调不降，每条关键边至多
 // V/2 次饱和。
-static MaxFlowResult edmonds_karp(std::vector<std::vector<int>> cap, int s, int t) {
+static MaxFlowResult edmonds_karp(std::vector<std::vector<int>> cap, int s, int t,
+                                  bool verbose = true) {
     const int n = static_cast<int>(cap.size());
     std::vector<std::vector<int>> flow(static_cast<std::size_t>(n),
                                        std::vector<int>(static_cast<std::size_t>(n), 0));
@@ -99,14 +101,16 @@ static MaxFlowResult edmonds_karp(std::vector<std::vector<int>> cap, int s, int 
             v = u;
         }
         total += bottleneck;
-        print("  增广路径 #{}（瓶颈 {}）: ", bfs, bottleneck);
-        std::vector<int> path;
-        for (int v = t; v != s; ) { path.push_back(v); v = parent[static_cast<std::size_t>(v)]; }
-        path.push_back(s);
-        for (std::size_t i = path.size(); i-- > 0;) {
-            print("{}{}", kNode[static_cast<std::size_t>(path[i])], i == 0 ? "" : "→");
+        if (verbose) {
+            print("  增广路径 #{}（瓶颈 {}）: ", bfs, bottleneck);
+            std::vector<int> path;
+            for (int v = t; v != s; ) { path.push_back(v); v = parent[static_cast<std::size_t>(v)]; }
+            path.push_back(s);
+            for (std::size_t i = path.size(); i-- > 0;) {
+                print("{}{}", kNode[static_cast<std::size_t>(path[i])], i == 0 ? "" : "→");
+            }
+            println("（累计流 {}）", total);
         }
-        println("（累计流 {}）", total);
     }
     return {flow, total, bfs};
 }
@@ -647,11 +651,269 @@ static void girls_boys_demo() {
     assert(mismatches == 0 && color_losses > 0);
 }
 
+// ═══ 27.8 午餐：食物—牛妞—饮料的「双方独占」如何用流表达 ═══
+struct DiningCase {
+    int n = 0, f = 0, d = 0;
+    std::vector<std::vector<int>> foods;    // 每头牛妞喜欢的食物（0 基）
+    std::vector<std::vector<int>> drinks;   // 每头牛妞喜欢的饮料（0 基）
+    int answer = 0;
+};
+
+// 节点布局：s | F 个食物 | 每头牛妞 in/out 两点 | D 个饮料 | t。
+struct DiningNetwork {
+    std::vector<std::vector<int>> cap;
+    int s = 0, t = 0;
+};
+
+static DiningNetwork build_dining_network(const DiningCase& c) {
+    const int nodes = 1 + c.f + 2 * c.n + c.d + 1;
+    DiningNetwork net;
+    net.s = 0;
+    net.t = nodes - 1;
+    net.cap.assign(static_cast<std::size_t>(nodes),
+                   std::vector<int>(static_cast<std::size_t>(nodes), 0));
+    const int food0 = 1;
+    const int cow0 = food0 + c.f;
+    const int drink0 = cow0 + 2 * c.n;
+    auto add = [&](int u, int v, int w) {
+        net.cap[static_cast<std::size_t>(u)][static_cast<std::size_t>(v)] = w;
+    };
+    for (int x = 0; x < c.f; ++x) { add(net.s, food0 + x, 1); }       // 食物唯一
+    for (int i = 0; i < c.n; ++i) {
+        const int cin = cow0 + 2 * i;
+        const int cout = cin + 1;
+        add(cin, cout, 1);                                            // 牛妞唯一
+        for (int x : c.foods[static_cast<std::size_t>(i)]) {
+            add(food0 + x, cin, 1);
+        }
+        for (int x : c.drinks[static_cast<std::size_t>(i)]) {
+            add(cout, drink0 + x, 1);
+        }
+    }
+    for (int x = 0; x < c.d; ++x) { add(drink0 + x, net.t, 1); }      // 饮料唯一
+    return net;
+}
+
+// 贪心对照：按牛妞编号处理，能配出一对空闲的（食物，饮料）就占下。
+// 贪心永远是可行分配，故其值 ≤ 最优值。
+static int dining_greedy(const DiningCase& c) {
+    std::vector<char> used_food(static_cast<std::size_t>(c.f), 0);
+    std::vector<char> used_drink(static_cast<std::size_t>(c.d), 0);
+    int satisfied = 0;
+    for (int i = 0; i < c.n; ++i) {
+        bool got = false;
+        for (int fi : c.foods[static_cast<std::size_t>(i)]) {
+            if (used_food[static_cast<std::size_t>(fi)]) { continue; }
+            for (int di : c.drinks[static_cast<std::size_t>(i)]) {
+                if (used_drink[static_cast<std::size_t>(di)]) { continue; }
+                used_food[static_cast<std::size_t>(fi)] = 1;
+                used_drink[static_cast<std::size_t>(di)] = 1;
+                got = true;
+                ++satisfied;
+                break;
+            }
+            if (got) { break; }
+        }
+    }
+    return satisfied;
+}
+
+// 暴力对账：每头牛妞的选项为「不满意」或 (喜欢的食物 × 喜欢的饮料)，
+// 混合进制枚举全部组合，检查食物/饮料冲突后取最大满意数。仅用于小例。
+static int dining_brute(const DiningCase& c) {
+    std::vector<long long> radix(static_cast<std::size_t>(c.n));
+    long long total = 1;
+    for (int i = 0; i < c.n; ++i) {
+        radix[static_cast<std::size_t>(i)] =
+            1 + static_cast<long long>(c.foods[static_cast<std::size_t>(i)].size()) *
+                    c.drinks[static_cast<std::size_t>(i)].size();
+        total *= radix[static_cast<std::size_t>(i)];
+    }
+    int best = 0;
+    for (long long code = 0; code < total; ++code) {
+        long long rest = code;
+        std::vector<char> used_food(static_cast<std::size_t>(c.f), 0);
+        std::vector<char> used_drink(static_cast<std::size_t>(c.d), 0);
+        int satisfied = 0;
+        bool valid = true;
+        for (int i = 0; i < c.n && valid; ++i) {
+            const long long digit = rest % radix[static_cast<std::size_t>(i)];
+            rest /= radix[static_cast<std::size_t>(i)];
+            if (digit == 0) { continue; }    // 该牛妞放弃
+            const long long pick = digit - 1;
+            const int fi = c.foods[static_cast<std::size_t>(i)][
+                static_cast<std::size_t>(pick / static_cast<long long>(
+                    c.drinks[static_cast<std::size_t>(i)].size()))];
+            const int di = c.drinks[static_cast<std::size_t>(i)][
+                static_cast<std::size_t>(pick % static_cast<long long>(
+                    c.drinks[static_cast<std::size_t>(i)].size()))];
+            if (used_food[static_cast<std::size_t>(fi)] ||
+                used_drink[static_cast<std::size_t>(di)]) {
+                valid = false;
+                break;
+            }
+            used_food[static_cast<std::size_t>(fi)] = 1;
+            used_drink[static_cast<std::size_t>(di)] = 1;
+            ++satisfied;
+        }
+        if (valid) { best = std::max(best, satisfied); }
+    }
+    return best;
+}
+
+// 错误模型的对照值：把食物与饮料直接当二部图两边、牛妞喜欢的搭配当边，
+// 求最大匹配。它不约束「同一条牛妞不能被用两次」，故可能偏大。
+static int food_drink_matching(const DiningCase& c) {
+    // Kuhn 增广：左侧食物 → 右侧饮料。
+    std::vector<std::vector<int>> adj(static_cast<std::size_t>(c.f));
+    std::vector<char> edge_seen(static_cast<std::size_t>(c.f * c.d), 0);
+    for (int i = 0; i < c.n; ++i) {
+        for (int fi : c.foods[static_cast<std::size_t>(i)]) {
+            for (int di : c.drinks[static_cast<std::size_t>(i)]) {
+                const int key = fi * c.d + di;
+                if (!edge_seen[static_cast<std::size_t>(key)]) {
+                    edge_seen[static_cast<std::size_t>(key)] = 1;
+                    adj[static_cast<std::size_t>(fi)].push_back(di);
+                }
+            }
+        }
+    }
+    std::vector<int> match(static_cast<std::size_t>(c.d), -1);
+    int size = 0;
+    for (int u = 0; u < c.f; ++u) {
+        std::vector<char> seen(static_cast<std::size_t>(c.d), 0);
+        auto augment = [&](this auto&& self, int x) -> bool {
+            for (int v : adj[static_cast<std::size_t>(x)]) {
+                if (seen[static_cast<std::size_t>(v)]) { continue; }
+                seen[static_cast<std::size_t>(v)] = 1;
+                if (match[static_cast<std::size_t>(v)] == -1 ||
+                    self(match[static_cast<std::size_t>(v)])) {
+                    match[static_cast<std::size_t>(v)] = x;
+                    return true;
+                }
+            }
+            return false;
+        };
+        if (augment(u)) { ++size; }
+    }
+    return size;
+}
+
+static void dining_demo() {
+    println("=== 27.8 午餐：食物—牛妞—饮料压进一条流路 ===");
+    const std::vector<DiningCase> cases = {
+        // 样例（4 牛妞 / 3 食物 / 3 饮料）。
+        {4, 3, 3,
+         {{0, 1}, {1, 2}, {0, 2}, {0, 2}},
+         {{2, 0}, {0, 1}, {0, 1}, {2}},
+         3},
+        // 一头牛妞喜欢全部：食物-饮料直接匹配会数出 4 个配对。
+        {1, 2, 2, {{0, 1}}, {{0, 1}}, 1},
+        // 两头牛妞只接受同一对：谁先拿到谁满意。
+        {2, 1, 1, {{0}, {0}}, {{0}, {0}}, 1}};
+    int case_no = 0;
+    for (const DiningCase& c : cases) {
+        ++case_no;
+        const DiningNetwork net = build_dining_network(c);
+        const MaxFlowResult r =
+            edmonds_karp(net.cap, net.s, net.t, /*verbose=*/false);
+        const bool legal =
+            validate_flow(net.cap, r.flow, net.s, net.t, r.value);
+        const int greedy = dining_greedy(c);
+        println("  案例{}（{} 牛妞 / {} 食物 / {} 饮料）：最大流 {}，贪心 {}，流合法 {}",
+                case_no, c.n, c.f, c.d, r.value, greedy, legal);
+        assert(r.value == c.answer && legal);
+        assert(greedy <= r.value);
+        if (case_no == 2) {
+            const int wrong = food_drink_matching(c);
+            println("    食物-饮料直接匹配误报 {}（两个配对同属一头牛妞，正解 {}）",
+                    wrong, c.answer);
+            assert(wrong == 2 && wrong > c.answer);
+        }
+    }
+
+    std::mt19937 rng{5489};
+    // 随机小例：最大流 vs 暴力枚举。
+    const int small_trials = 2000;
+    int mismatches = 0;
+    for (int t = 0; t < small_trials; ++t) {
+        DiningCase c;
+        c.n = 1 + static_cast<int>(rand_below(rng, 4));
+        c.f = 1 + static_cast<int>(rand_below(rng, 3));
+        c.d = 1 + static_cast<int>(rand_below(rng, 3));
+        c.foods.resize(static_cast<std::size_t>(c.n));
+        c.drinks.resize(static_cast<std::size_t>(c.n));
+        for (int i = 0; i < c.n; ++i) {
+            for (int x = 0; x < c.f; ++x) {
+                if (rand_below(rng, 2) != 0) {
+                    c.foods[static_cast<std::size_t>(i)].push_back(x);
+                }
+            }
+            if (c.foods[static_cast<std::size_t>(i)].empty()) {
+                c.foods[static_cast<std::size_t>(i)].push_back(
+                    static_cast<int>(rand_below(rng, static_cast<std::uint32_t>(c.f))));
+            }
+            for (int x = 0; x < c.d; ++x) {
+                if (rand_below(rng, 2) != 0) {
+                    c.drinks[static_cast<std::size_t>(i)].push_back(x);
+                }
+            }
+            if (c.drinks[static_cast<std::size_t>(i)].empty()) {
+                c.drinks[static_cast<std::size_t>(i)].push_back(
+                    static_cast<int>(rand_below(rng, static_cast<std::uint32_t>(c.d))));
+            }
+        }
+        const DiningNetwork net = build_dining_network(c);
+        const int flow = edmonds_karp(net.cap, net.s, net.t, false).value;
+        const int brute = dining_brute(c);
+        if (flow != brute) { ++mismatches; }
+    }
+    println("  随机 {} 小例（n≤4，F,D≤3）：最大流 vs 暴力 不一致 {} 例",
+            small_trials, mismatches);
+    assert(mismatches == 0);
+
+    // 随机大例：跑得起、答案有界、贪心不越界。
+    const int big_trials = 300;
+    int bound_violations = 0;
+    int greedy_violations = 0;
+    for (int t = 0; t < big_trials; ++t) {
+        DiningCase c;
+        c.n = 1 + static_cast<int>(rand_below(rng, 100));
+        c.f = 1 + static_cast<int>(rand_below(rng, 100));
+        c.d = 1 + static_cast<int>(rand_below(rng, 100));
+        c.foods.resize(static_cast<std::size_t>(c.n));
+        c.drinks.resize(static_cast<std::size_t>(c.n));
+        for (int i = 0; i < c.n; ++i) {
+            const int nf = 1 + static_cast<int>(rand_below(rng, 4));
+            for (int k = 0; k < nf; ++k) {
+                c.foods[static_cast<std::size_t>(i)].push_back(
+                    static_cast<int>(rand_below(rng,
+                                                static_cast<std::uint32_t>(c.f))));
+            }
+            const int nd = 1 + static_cast<int>(rand_below(rng, 4));
+            for (int k = 0; k < nd; ++k) {
+                c.drinks[static_cast<std::size_t>(i)].push_back(
+                    static_cast<int>(rand_below(rng,
+                                                static_cast<std::uint32_t>(c.d))));
+            }
+        }
+        const DiningNetwork net = build_dining_network(c);
+        const int flow = edmonds_karp(net.cap, net.s, net.t, false).value;
+        const int greedy = dining_greedy(c);
+        if (flow > std::min({c.n, c.f, c.d})) { ++bound_violations; }
+        if (greedy > flow) { ++greedy_violations; }
+    }
+    println("  随机 {} 大例（n,F,D≤100）：答案上界违反 {} 次；贪心>最优违反 {} 次",
+            big_trials, bound_violations, greedy_violations);
+    assert(bound_violations == 0 && greedy_violations == 0);
+}
+
 int main() {
     edmonds_karp_demo();
     push_relabel_demo();
     machine_schedule_demo();
     girls_boys_demo();
+    dining_demo();
     println("自检通过");
     return 0;
 }

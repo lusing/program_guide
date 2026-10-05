@@ -1,7 +1,9 @@
 // 23 基本图算法（CLRS 第 22 章）。结构：23.1 邻接表表示与度统计 /
 // 23.2 BFS（图 22.3：距离与 BFS 树）/ 23.3 DFS 时间戳与边分类
 //（图 22.4/22.5）/ 23.4 拓扑排序（DAG）/ 23.5 强连通分量（图 22.9）……
-// 23.13 图的两个计数问题：握手定理判谎（1-9）、状态空间 BFS（1-6）。
+// 23.13 图的两个计数问题：握手定理判谎（1-9）、状态空间 BFS（1-6）/
+// 23.14 旅程（树上 2W−最远目标距离，就近贪心对照）/
+// 23.15 循序（全体拓扑序字典序枚举，位置区间误法对照）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -22,9 +24,17 @@ using std::println;
 #include <deque>
 #include <functional>
 #include <numeric>
+#include <queue>
+#include <random>
 #include <string>
 #include <utility>
 #include <vector>
+
+// 可移植随机（docs/01 的纪律：不用 uniform_int_distribution）
+static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
+    return static_cast<std::uint32_t>(
+        (static_cast<std::uint64_t>(rng()) * n) >> 32);
+}
 
 // 图 22.3 的无向图：顶点 r s t u v w x y（映射为 0..7）
 // 边：r-s r-v s-v s-w w-t w-x t-x t-u u-x u-y x-y
@@ -1461,6 +1471,450 @@ static void catch_cow_demo() {
     println("     恰是它的对照组——先把 BFS 写对，数学法拿 BFS 当裁判。");
 }
 
+// ════════════════════════════════════════════════════════════════════
+// 23.14 旅程：树上覆盖目标点的最短步行
+// ════════════════════════════════════════════════════════════════════
+struct WeightedEdge {
+    int to = 0;
+    int weight = 0;
+};
+
+struct JourneyStats {
+    long long subtree_weight = 0;   // 连接 k 与全部目标的最小子树边权和 W
+    long long farthest = 0;         // k 到最远目标的距离
+    long long answer = 0;           // 2W − farthest
+};
+
+// 根树（k）→ 父节点/父边权/k-距离/遍历序；逆序判定 needed 子树并累计 W。
+static JourneyStats shortest_journey(
+    const std::vector<std::vector<WeightedEdge>>& adj, int k,
+    const std::vector<char>& target) {
+    const int n = static_cast<int>(adj.size());
+    std::vector<int> parent(static_cast<std::size_t>(n), -1);
+    std::vector<long long> parent_w(static_cast<std::size_t>(n), 0);
+    std::vector<long long> dist(static_cast<std::size_t>(n), 0);
+    std::vector<int> order;
+    order.reserve(static_cast<std::size_t>(n));
+    std::deque<int> q;
+    q.push_back(k);
+    parent[static_cast<std::size_t>(k)] = k;
+    while (!q.empty()) {
+        const int u = q.front();
+        q.pop_front();
+        order.push_back(u);
+        for (const WeightedEdge& e : adj[static_cast<std::size_t>(u)]) {
+            if (e.to == parent[static_cast<std::size_t>(u)]) { continue; }
+            parent[static_cast<std::size_t>(e.to)] = u;
+            parent_w[static_cast<std::size_t>(e.to)] = e.weight;
+            dist[static_cast<std::size_t>(e.to)] =
+                dist[static_cast<std::size_t>(u)] + e.weight;
+            q.push_back(e.to);
+        }
+    }
+    std::vector<char> needed = target;
+    long long weight = 0;
+    for (std::size_t i = order.size(); i-- > 0;) {
+        const int v = order[i];
+        if (v == k || !needed[static_cast<std::size_t>(v)]) { continue; }
+        needed[static_cast<std::size_t>(parent[static_cast<std::size_t>(v)])] = 1;
+        weight += parent_w[static_cast<std::size_t>(v)];
+    }
+    long long farthest = 0;
+    for (int v = 0; v < n; ++v) {
+        if (target[static_cast<std::size_t>(v)]) {
+            farthest = std::max(farthest, dist[static_cast<std::size_t>(v)]);
+        }
+    }
+    return {weight, farthest, 2 * weight - farthest};
+}
+
+// 就近贪心对照：从当前位置每次走到（树上）最近的未访问目标。
+static long long nearest_target_greedy(
+    const std::vector<std::vector<WeightedEdge>>& adj, int k,
+    std::vector<char> remaining) {
+    const int n = static_cast<int>(adj.size());
+    int pos = k;
+    long long total = 0;
+    int left = 0;
+    for (char x : remaining) { left += x ? 1 : 0; }
+    while (left > 0) {
+        // 从 pos 做树上 BFS 求各点距离，取编号最小的最近未访问目标。
+        std::vector<long long> dist(static_cast<std::size_t>(n), -1);
+        std::deque<int> q;
+        q.push_back(pos);
+        dist[static_cast<std::size_t>(pos)] = 0;
+        int nearest = -1;
+        while (!q.empty()) {
+            const int u = q.front();
+            q.pop_front();
+            if (remaining[static_cast<std::size_t>(u)] && u != pos) {
+                if (nearest == -1 ||
+                    dist[static_cast<std::size_t>(u)] <
+                        dist[static_cast<std::size_t>(nearest)]) {
+                    nearest = u;
+                }
+            }
+            for (const WeightedEdge& e :
+                 adj[static_cast<std::size_t>(u)]) {
+                if (dist[static_cast<std::size_t>(e.to)] != -1) { continue; }
+                dist[static_cast<std::size_t>(e.to)] =
+                    dist[static_cast<std::size_t>(u)] + e.weight;
+                q.push_back(e.to);
+            }
+        }
+        assert(nearest != -1);
+        total += dist[static_cast<std::size_t>(nearest)];
+        remaining[static_cast<std::size_t>(nearest)] = 0;
+        pos = nearest;
+        --left;
+    }
+    return total;
+}
+
+// 暴力对账：状态 (位置, 目标掩码) 上按边转移，Dijkstra 求最短步行长度。
+// 掩码只增不减，但距离仍要按权松弛——这就是带权状态空间最短路。
+static long long journey_brute(
+    const std::vector<std::vector<WeightedEdge>>& adj, int k,
+    const std::vector<int>& targets) {
+    const int n = static_cast<int>(adj.size());
+    const int j = static_cast<int>(targets.size());
+    const int masks = 1 << j;
+    const long long inf = (1LL << 62);
+    std::vector<long long> d(static_cast<std::size_t>(n * masks), inf);
+    d[static_cast<std::size_t>(k * masks)] = 0;
+    using State = std::pair<long long, int>;   // (距离, u*masks+m)
+    std::priority_queue<State, std::vector<State>, std::greater<State>> pq;
+    pq.push({0, k * masks});
+    while (!pq.empty()) {
+        const auto [du, code] = pq.top();
+        pq.pop();
+        if (du != d[static_cast<std::size_t>(code)]) { continue; }
+        const int u = code / masks;
+        const int m = code % masks;
+        for (const WeightedEdge& e :
+             adj[static_cast<std::size_t>(u)]) {
+            int nm = m;
+            for (int t = 0; t < j; ++t) {
+                if (targets[static_cast<std::size_t>(t)] == e.to) {
+                    nm |= (1 << t);
+                }
+            }
+            const int ncode = e.to * masks + nm;
+            if (du + e.weight < d[static_cast<std::size_t>(ncode)]) {
+                d[static_cast<std::size_t>(ncode)] = du + e.weight;
+                pq.push({du + e.weight, ncode});
+            }
+        }
+    }
+    long long best = inf;
+    for (int u = 0; u < n; ++u) {
+        best = std::min(best,
+                        d[static_cast<std::size_t>(u * masks + masks - 1)]);
+    }
+    return best;
+}
+
+static void journey_demo() {
+    println("");
+    println("=== 23.14 旅程：2×连接子树 − 最远目标距离 ===");
+    struct Case {
+        int n, k;
+        std::vector<std::tuple<int, int, int>> edges;
+        std::vector<int> targets;
+        int answer;
+    };
+    const std::vector<Case> cases = {
+        {4, 1,
+         {{0, 1, 1}, {3, 1, 2}, {1, 2, 3}},
+         {0, 2}, 5},
+        {9, 0,
+         {{0, 1, 3}, {1, 2, 1}, {2, 3, 1}, {2, 4, 1}, {1, 5, 1},
+          {5, 6, 1}, {6, 7, 1}, {5, 8, 1}},
+         {6, 7, 8}, 8},
+        {5, 0,
+         {{0, 1, 1}, {0, 2, 2}, {2, 3, 1}, {3, 4, 2}},
+         {2, 3}, 3}};
+    int case_no = 0;
+    for (const Case& c : cases) {
+        ++case_no;
+        std::vector<std::vector<WeightedEdge>> adj(
+            static_cast<std::size_t>(c.n));
+        for (auto [u, v, w] : c.edges) {
+            adj[static_cast<std::size_t>(u)].push_back({v, w});
+            adj[static_cast<std::size_t>(v)].push_back({u, w});
+        }
+        std::vector<char> target(static_cast<std::size_t>(c.n), 0);
+        for (int v : c.targets) { target[static_cast<std::size_t>(v)] = 1; }
+        const JourneyStats s = shortest_journey(adj, c.k, target);
+        const long long greedy = nearest_target_greedy(adj, c.k, target);
+        println("  案例{}（{} 城，起点 {}，{} 目标）：W={}，最远 {} ⟹ 2·{}−{} = {}；就近贪心 {}",
+                case_no, c.n, c.k + 1, static_cast<int>(c.targets.size()),
+                s.subtree_weight, s.farthest, s.subtree_weight,
+                s.farthest, s.answer, greedy);
+        assert(s.answer == c.answer);
+        assert(greedy >= s.answer);
+    }
+    // 就近贪心的反例：k 处分叉——A 支干 a1 距 2、纵深 a2 距 100；B 支 b 距 3。
+    {
+        const int n = 4, k = 0;
+        std::vector<std::vector<WeightedEdge>> adj(
+            static_cast<std::size_t>(n));
+        auto add_edge = [&](int u, int v, int w) {
+            adj[static_cast<std::size_t>(u)].push_back({v, w});
+            adj[static_cast<std::size_t>(v)].push_back({u, w});
+        };
+        add_edge(0, 1, 2);     // a1
+        add_edge(1, 2, 98);    // a2：距 k 为 100
+        add_edge(0, 3, 3);     // b
+        std::vector<char> target{0, 1, 1, 1};
+        const JourneyStats s = shortest_journey(adj, k, target);
+        const long long greedy = nearest_target_greedy(adj, k, target);
+        println("  就近贪心反例（a1=2、a2=100、b=3，目标 {{a1,a2,b}}）：公式 {}，就近贪心 {}",
+                s.answer, greedy);
+        assert(s.answer == 106 && greedy == 110);
+    }
+
+    std::mt19937 rng{5489};
+    // 随机小例：公式 vs 状态图最短路。
+    const int small_trials = 3000;
+    int mismatches = 0;
+    for (int t = 0; t < small_trials; ++t) {
+        const int n = 2 + static_cast<int>(rand_below(rng, 7));
+        std::vector<std::vector<WeightedEdge>> adj(
+            static_cast<std::size_t>(n));
+        for (int v = 1; v < n; ++v) {
+            const int u = static_cast<int>(rand_below(
+                rng, static_cast<std::uint32_t>(v)));
+            const int w = 1 + static_cast<int>(rand_below(rng, 10));
+            adj[static_cast<std::size_t>(u)].push_back({v, w});
+            adj[static_cast<std::size_t>(v)].push_back({u, w});
+        }
+        const int k = static_cast<int>(rand_below(
+            rng, static_cast<std::uint32_t>(n)));
+        const int jmax = std::min(5, n - 1);
+        const int j = 1 + static_cast<int>(rand_below(
+            rng, static_cast<std::uint32_t>(jmax)));
+        std::vector<int> pool;
+        for (int v = 0; v < n; ++v) { if (v != k) pool.push_back(v); }
+        // Fisher 洗牌后取前 j：保证目标互不相同。
+        for (std::size_t i = pool.size(); i-- > 1;) {
+            const std::size_t p = static_cast<std::size_t>(rand_below(
+                rng, static_cast<std::uint32_t>(i + 1)));
+            std::swap(pool[i], pool[p]);
+        }
+        std::vector<int> targets(pool.begin(),
+                                 pool.begin() + j);
+        std::vector<char> mask_target(static_cast<std::size_t>(n), 0);
+        for (int v : targets) { mask_target[static_cast<std::size_t>(v)] = 1; }
+        const long long formula = shortest_journey(adj, k, mask_target).answer;
+        const long long brute = journey_brute(adj, k, targets);
+        if (formula != brute) { ++mismatches; }
+    }
+    println("  随机 {} 小例（n≤8）：公式 vs 状态图最短路 不一致 {} 例",
+            small_trials, mismatches);
+    assert(mismatches == 0);
+
+    // 随机大例：公式可算且答案落在 [W, 2W]。
+    const int big_trials = 200;
+    int bound_violations = 0;
+    for (int t = 0; t < big_trials; ++t) {
+        const int n = 1000 + static_cast<int>(rand_below(rng, 49001));
+        std::vector<std::vector<WeightedEdge>> adj(
+            static_cast<std::size_t>(n));
+        for (int v = 1; v < n; ++v) {
+            const int u = static_cast<int>(rand_below(
+                rng, static_cast<std::uint32_t>(v)));
+            const int w = 1 + static_cast<int>(rand_below(rng, 1000));
+            adj[static_cast<std::size_t>(u)].push_back({v, w});
+            adj[static_cast<std::size_t>(v)].push_back({u, w});
+        }
+        const int k = static_cast<int>(rand_below(
+            rng, static_cast<std::uint32_t>(n)));
+        std::vector<char> target(static_cast<std::size_t>(n), 0);
+        for (int v = 0; v < n; ++v) {
+            if (v != k && rand_below(rng, 10) == 0) {
+                target[static_cast<std::size_t>(v)] = 1;
+            }
+        }
+        if (std::find(target.begin(), target.end(), 1) == target.end()) {
+            target[static_cast<std::size_t>((k + 1) % n)] = 1;
+        }
+        const JourneyStats s = shortest_journey(adj, k, target);
+        if (s.answer < s.subtree_weight || s.answer > 2 * s.subtree_weight) {
+            ++bound_violations;
+        }
+    }
+    println("  随机 {} 大例（n≤50000）：W ≤ 答案 ≤ 2W 违反 {} 次",
+            big_trials, bound_violations);
+    assert(bound_violations == 0);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 23.15 循序：全体拓扑序按字典序输出
+// ════════════════════════════════════════════════════════════════════
+
+// 错误对照：用「直接入度/出度计数」划定每变量允许的位置区间，回溯时
+// 只查重复、不查约束。直接计数连传递闭包都不是，会产出违例序列。
+static std::vector<std::string> bound_orders_no_check(
+    const std::string& vars,
+    const std::vector<std::pair<int, int>>& edges) {
+    const int n = static_cast<int>(vars.size());
+    std::vector<int> before(static_cast<std::size_t>(n), 0);
+    std::vector<int> after(static_cast<std::size_t>(n), 0);
+    for (auto [a, b] : edges) {
+        ++before[static_cast<std::size_t>(b)];
+        ++after[static_cast<std::size_t>(a)];
+    }
+    // cand[pos]：位置 pos 可放哪些变量。
+    std::vector<std::vector<int>> cand(static_cast<std::size_t>(n));
+    for (int i = 0; i < n; ++i) {
+        for (int pos = before[static_cast<std::size_t>(i)];
+             pos <= n - 1 - after[static_cast<std::size_t>(i)]; ++pos) {
+            cand[static_cast<std::size_t>(pos)].push_back(i);
+        }
+    }
+    std::vector<std::string> out;
+    std::string placed(static_cast<std::size_t>(n), '?');
+    std::function<void(int)> dfs = [&](int pos) {
+        if (pos == n) { out.push_back(placed); return; }
+        for (int i : cand[static_cast<std::size_t>(pos)]) {
+            bool duplicate = false;
+            for (int p = 0; p < pos; ++p) {
+                if (placed[static_cast<std::size_t>(p)] ==
+                    vars[static_cast<std::size_t>(i)]) {
+                    duplicate = true;
+                }
+            }
+            if (duplicate) { continue; }
+            placed[static_cast<std::size_t>(pos)] =
+                vars[static_cast<std::size_t>(i)];
+            dfs(pos + 1);
+        }
+    };
+    dfs(0);
+    return out;
+}
+
+// 全排列过滤：小例的第三方裁判（与位掩码 DFS 算法不同、只依赖约束检查）。
+static int count_orders_by_permutations(
+    int n, const std::vector<std::pair<int, int>>& edges) {
+    std::vector<int> p(static_cast<std::size_t>(n));
+    std::iota(p.begin(), p.end(), 0);
+    int count = 0;
+    do {
+        std::vector<int> at(static_cast<std::size_t>(n));
+        for (int i = 0; i < n; ++i) {
+            at[static_cast<std::size_t>(p[static_cast<std::size_t>(i)])] = i;
+        }
+        bool ok = true;
+        for (auto [a, b] : edges) {
+            if (at[static_cast<std::size_t>(a)] >
+                at[static_cast<std::size_t>(b)]) {
+                ok = false;
+            }
+        }
+        if (ok) { ++count; }
+    } while (std::ranges::next_permutation(p).found);
+    return count;
+}
+
+static void following_orders_demo() {
+    println("");
+    println("=== 23.15 循序：全体拓扑序按字典序输出 ===");
+    struct Case {
+        std::string vars;                                  // 已排序
+        std::vector<std::pair<int, int>> edges;
+        std::vector<std::string> expected;
+    };
+    const std::vector<Case> cases = {
+        {"abfg", {{0, 1}, {1, 2}},
+         {"abfg", "abgf", "agbf", "gabf"}},
+        {"vwxyz", {{0, 3}, {2, 0}, {4, 0}, {1, 0}},
+         {"wxzvy", "wzxvy", "xwzvy", "xzwvy", "zwxvy", "zxwvy"}}};
+    int case_no = 0;
+    for (const Case& c : cases) {
+        ++case_no;
+        const std::vector<std::vector<int>> orders =
+            allTopoOrders(static_cast<int>(c.vars.size()), c.edges);
+        std::vector<std::string> joined;
+        joined.reserve(orders.size());
+        for (const auto& o : orders) {
+            std::string s;
+            for (int v : o) {
+                s.push_back(c.vars[static_cast<std::size_t>(v)]);
+            }
+            joined.push_back(s);
+        }
+        println("  案例{}（变量 {}，{} 条约束）：共 {} 个拓扑序",
+                case_no, c.vars, c.edges.size(), joined.size());
+        for (const std::string& s : joined) {
+            println("    {}", s);
+        }
+        assert(joined == c.expected);
+        assert(std::ranges::is_sorted(joined));
+
+        // 直接计数、无终检的位置区间法：在链 a<b<c<d 上会吐出违例序列。
+        if (case_no == 1) {
+            const std::string chain = "abcd";
+            const std::vector<std::pair<int, int>> chain_edges{
+                {0, 1}, {1, 2}, {2, 3}};
+            const std::vector<std::string> bad =
+                bound_orders_no_check(chain, chain_edges);
+            print("    对照（链 a<b<c<d，直接计数位置区间、无终检）给出 ");
+            for (std::size_t i = 0; i < bad.size(); ++i) {
+                print("{}{}", bad[i], i + 1 == bad.size() ? "" : " ");
+            }
+            println("：acbd 违反 b<c——该法不可用");
+            assert(bad == (std::vector<std::string>{"abcd", "acbd"}));
+        }
+    }
+
+    // 随机：变量为字母表任意子集，约束只从小编号指向大编号（保证无圈）。
+    std::mt19937 rng{5489};
+    const int trials = 2000;
+    int mismatches = 0;
+    for (int t = 0; t < trials; ++t) {
+        // 先选字母子集，再在子集内部按索引连边。
+        const int alphabet = 26;
+        const int n = 2 + static_cast<int>(rand_below(rng, 7));
+        std::vector<int> letters(static_cast<std::size_t>(alphabet));
+        std::iota(letters.begin(), letters.end(), 0);
+        for (std::size_t i = letters.size(); i-- > 1;) {
+            const std::size_t p = static_cast<std::size_t>(rand_below(
+                rng, static_cast<std::uint32_t>(i + 1)));
+            std::swap(letters[i], letters[p]);
+        }
+        letters.resize(static_cast<std::size_t>(n));
+        std::ranges::sort(letters);
+        std::string vars;
+        for (int x : letters) {
+            vars.push_back(static_cast<char>('a' + x));
+        }
+        std::vector<std::pair<int, int>> edges;
+        for (int a = 0; a < n; ++a) {
+            for (int b = a + 1; b < n; ++b) {
+                if (rand_below(rng, 3) == 0) {
+                    edges.push_back({a, b});
+                }
+            }
+        }
+        if (edges.empty()) { edges.push_back({0, 1}); }
+        const std::vector<std::vector<int>> orders = allTopoOrders(n, edges);
+        const int brute = count_orders_by_permutations(n, edges);
+        if (static_cast<int>(orders.size()) != brute) { ++mismatches; }
+        for (const auto& o : orders) {
+            for (auto [a, b] : edges) {
+                const auto ia = std::ranges::find(o, a);
+                const auto ib = std::ranges::find(o, b);
+                assert(ia < ib);
+            }
+        }
+    }
+    println("  随机 {} 例（变量≤8）：位掩码 DFS vs 全排列过滤 不一致 {} 例",
+            trials, mismatches);
+    assert(mismatches == 0);
+}
+
 int main() {
     representation_demo();
     bfs_demo();
@@ -1476,6 +1930,8 @@ int main() {
     bridge_watch_demo();
     party_game_demo();
     catch_cow_demo();
+    journey_demo();
+    following_orders_demo();
     println("自检通过");
     return 0;
 }
