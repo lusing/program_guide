@@ -166,8 +166,8 @@ struct VM { Value run(const Chunk&); };           // 55/57 复制的核心；栈
 4. 短路求值：右操作数含副作用函数调用，短路路径下调用计数=0（VM 内计数器断言）。
 5. 嵌套块 `{var x; {var x; ...}}` 编译期槽位峰值=2、出块后复用=1（编译器内计数断言）。
 
-- [ ] src（scanner/compiler/vm 副本+扩展）→ 断言 → expected → 正文（六节）→ 三层绿
-- [ ] Commit: `feat(compiler): 批次四十四——55 单遍编译与跳转回填`
+- [x] src（scanner/compiler/vm 副本+扩展）→ 断言 → expected → 正文（六节）→ 三层绿
+- [x] Commit: `feat(compiler): 批次四十四——55 单遍编译与跳转回填`
 
 ### Task 6: 新 56 章 值表示：NaN 装箱、驻留与散列表（批四十五）
 

@@ -1,0 +1,90 @@
+== 一、编译诊断（单遍：错误即终止）==
+ok   D1 缺分号 = 编译错误[行1] 期望 ';'，但看到 'x'
+ok   D2 同层重复声明 = 编译错误[行1] 同层重复声明：x
+ok   D3 意外字符 = 编译错误[行1] 意外字符 '$'
+
+== 二、程序输出对账 ==
+ok   P1 判定 = 通过
+ok   P1 输出 = 120
+ret 0
+ok   P2 判定 = 通过
+ok   P2 输出 = 55
+ret 0
+ok   P2 槽位峰值（槽0+i+s） = 3
+ok   P3 判定 = 通过
+ok   P3 输出（内 2 外 1） = 2
+1
+ret 0
+ok   P3 槽位峰值（回收前 3） = 3
+ok   P4 判定 = 通过
+ok   P4 输出（短路：7、8 缺席） = 0
+1
+9
+1
+10
+1
+ret 0
+ok   P5 判定 = 通过
+ok   P5 前向引用输出 = ret 20
+
+== 三、反汇编对账（P2 的 main）==
+== main ==
+0000   2 CONSTANT 0  ; 0
+0002    | CONSTANT 0  ; 0
+0004   3 CONSTANT 1  ; 1
+0006    | SET_LOCAL 1
+0008    | POP
+0009   4 CONSTANT 0  ; 0
+0011    | SET_LOCAL 2
+0013    | POP
+0014   5 GET_LOCAL 1
+0016    | CONSTANT 2  ; 10
+0018    | LE
+0019    | JUMP_IF_FALSE -> 41
+0022    | GET_LOCAL 2
+0024    | GET_LOCAL 1
+0026    | ADD
+0027    | SET_LOCAL 2
+0029    | POP
+0030    | GET_LOCAL 1
+0032    | CONSTANT 1  ; 1
+0034    | ADD
+0035    | SET_LOCAL 1
+0037    | POP
+0038    | LOOP -> 14
+0041   6 GET_LOCAL 2
+0043    | PRINT
+0044   7 CONSTANT 0  ; 0
+0046    | RETURN
+ok   反汇编逐行（回填终态） = == main ==
+0000   2 CONSTANT 0  ; 0
+0002    | CONSTANT 0  ; 0
+0004   3 CONSTANT 1  ; 1
+0006    | SET_LOCAL 1
+0008    | POP
+0009   4 CONSTANT 0  ; 0
+0011    | SET_LOCAL 2
+0013    | POP
+0014   5 GET_LOCAL 1
+0016    | CONSTANT 2  ; 10
+0018    | LE
+0019    | JUMP_IF_FALSE -> 41
+0022    | GET_LOCAL 2
+0024    | GET_LOCAL 1
+0026    | ADD
+0027    | SET_LOCAL 2
+0029    | POP
+0030    | GET_LOCAL 1
+0032    | CONSTANT 1  ; 1
+0034    | ADD
+0035    | SET_LOCAL 1
+0037    | POP
+0038    | LOOP -> 14
+0041   6 GET_LOCAL 2
+0043    | PRINT
+0044   7 CONSTANT 0  ; 0
+0046    | RETURN
+
+
+== 四、断言汇总 ==
+全部通过（16 项）
