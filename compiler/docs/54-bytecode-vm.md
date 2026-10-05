@@ -277,7 +277,7 @@ int disassembleInstruction(const Chunk &c, size_t off, std::ostream &os) {
         case Op::JumpIfFalse: case Op::Jump: case Op::Loop: {
             uint16_t x = uint16_t(c.code[off + 1]) << 8 | c.code[off + 2];
             // 前向跳转打印目标地址、后向（Loop）打印起点，与匠书同款
-            if (op == Op::Loop) os << opName(op) << " -> " << (off - x) << "\n";
+            if (op == Op::Loop) os << opName(op) << " -> " << (off + 3 - x) << "\n";
             else os << opName(op) << " -> " << (off + 3 + x) << "\n";
             return 3;
         }
