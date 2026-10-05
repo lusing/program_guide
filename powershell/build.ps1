@@ -15,8 +15,8 @@ $reportDir = Join-Path $root 'build\reports'
 $logDir = Join-Path $root 'build\logs'
 foreach ($d in $reportDir, $logDir) { New-Item -ItemType Directory -Force -Path $d | Out-Null }
 
-# 0) BOM 自检：examples/ 与 tools/ 下 .ps1/.psd1 必须 UTF-8 BOM（5.1 硬要求），缺则自动补
-foreach ($f in Get-ChildItem -Path $examplesRoot, (Join-Path $root 'tools') -Recurse -Include *.ps1, *.psd1 -File -ErrorAction SilentlyContinue) {
+# 0) BOM 自检：examples/ 与 tools/ 下 .ps1/.psd1/.psm1 必须 UTF-8 BOM（5.1 硬要求），缺则自动补
+foreach ($f in Get-ChildItem -Path $examplesRoot, (Join-Path $root 'tools') -Recurse -Include *.ps1, *.psd1, *.psm1 -File -ErrorAction SilentlyContinue) {
     $bytes = [System.IO.File]::ReadAllBytes($f.FullName)
     if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) { continue }
     [System.IO.File]::WriteAllBytes($f.FullName, [byte[]](0xEF, 0xBB, 0xBF) + $bytes)

@@ -16,8 +16,9 @@ $paths = $env:PSModulePath -split ';'
 Check ($paths.Count -ge 2) 'PSModulePath 含多个搜索目录'
 Check (@($paths | Where-Object { $_ -match 'PowerShell' }).Count -ge 1) '模块路径包含 PowerShell 目录字样'
 
-# —— 2) 已加载模块与常用模块的命令 ——
-Check (@(Get-Module).Count -ge 1) '已有模块处于加载状态'
+# —— 2) 已加载模块与常用模块的命令（显式导入保证两引擎确定性） ——
+Import-Module Microsoft.PowerShell.Utility -ErrorAction SilentlyContinue
+Check (@(Get-Module).Count -ge 1) '显式导入后模块处于加载状态'
 Check (@(Get-Command -Module Microsoft.PowerShell.Utility).Count -gt 5) 'Utility 模块贡献大量命令'
 
 # —— 3) 自动加载实证：未加载模块的命令一跑就加载（NetAdapter 按需加载） ——
