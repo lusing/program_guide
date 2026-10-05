@@ -4,7 +4,7 @@
 
 构建：`pwsh ./build.ps1`（Windows）或 `./run-all.sh`（Git Bash 自动进入 UCRT64）。首次使用先在 UCRT64 shell 内运行 `bash tools/bootstrap.sh`。
 
-## 66 章导航（十二篇·匠书轮扩充中）
+## 66 章导航（十二篇全部落成）
 
 ### 第一篇　地基（1–2）
 
@@ -111,6 +111,6 @@
 
 ## 验证状态
 
-60/60 基线全绿；匠书轮扩充至 66 章进行中（`build → check_example → check_docs`）。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
+66/66 全绿（`build → check_example → check_docs`）。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
 
 每章 = `docs/NN-<slug>.md` + `examples/NN_<slug>/`（章号=示例号）。LLVM 示例的运行需要 MSYS2 UCRT64 工具链在 PATH（`run-all.sh` 自动处理；`tools/example_build.sh <examples/NN_slug> "$(pwd)"` 单独构建一个示例）。

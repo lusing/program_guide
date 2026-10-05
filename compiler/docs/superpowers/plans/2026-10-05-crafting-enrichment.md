@@ -270,11 +270,11 @@ uint32_t fnv1a(const std::string&);  // FNV-1a 32 位
 - Modify: `examples/66_finale/src/survey.cpp` + expected（survey 扩 6 行：Pratt/树遍历/字节码 VM/单遍编译/值表示/上值——若 6 新家族可归并为 4 行家族口径，按 survey 现有行式定，读 `66-finale` 现状后定稿）、`docs/66-finale.md`（内嵌重生成、每章一句话 66 句、口径 60→66、延伸阅读补匠书）、`README.md`（五书口径：SPA 骨架 + 绿龙/紫龙/虎/鲸/匠、十二篇导航、验证状态 66/66）
 - Modify: 记忆 `G:\xulun\.claude\projects\G--code-guide\memory\compiler-tutorial-build.md` + `MEMORY.md`（匠书轮结构、批次、新坑）
 
-- [ ] survey 扩行 + expected 从新二进制重生成 + embed 全量重嵌
-- [ ] 每章一句话 66 句、README 五书十二篇定稿
-- [ ] 全量三层回归 66/66 exit 0（`bash run-all.sh`）
-- [ ] Commit: `feat(compiler): 批次四十九——66 章收官更新与 README 定稿（匠书扩充完成）`
-- [ ] 更新记忆文件与 MEMORY.md 索引
+- [x] survey 扩行 + expected 从新二进制重生成 + embed 全量重嵌
+- [x] 每章一句话 66 句、README 五书十二篇定稿
+- [x] 全量三层回归 66/66 exit 0（`bash run-all.sh`）
+- [x] Commit: `feat(compiler): 批次四十九——66 章收官更新与 README 定稿（匠书扩充完成）`
+- [x] 更新记忆文件与 MEMORY.md 索引
 
 ## Self-Review
 
