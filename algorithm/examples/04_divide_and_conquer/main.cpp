@@ -1,6 +1,7 @@
 // 04 分治策略（CLRS 第 4 章）。结构：04.1 最大子数组（暴力/分治/Kadane）/
 // 04.2 Strassen 矩阵乘（S/P 全表 + 三种口径的乘/加计数对比）/ 04.3 递归树打印 /
-// 04.4 主定理应用器 + 递归式精确值的经验验证。
+// 04.4 主定理应用器 + 递归式精确值的经验验证 /
+// 04.5 二分查找：分治的极端形态（f(n)=Θ(1)）+ 边界不变式 + 旋转最小值。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -19,6 +20,7 @@ using std::println;
 #include <cstdint>
 #include <limits>
 #include <random>
+#include <span>
 #include <vector>
 
 static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
@@ -332,11 +334,239 @@ static void master_theorem() {
     }
 }
 
+// ═══ 04.5 二分查找：分治的极端形态 ═══
+// 分治三步曲在二分查找上的样子：
+//   分解：把 n 折半（不是切 a 份，是**只留一半**）
+//   解决：规模为 1 时直接判定
+//   合并：**无合并步骤**——f(n) = Θ(1)
+// 于是 T(n) = T(n/2) + Θ(1) = Θ(lg n)。它是最纯粹的「缩半」型分治：
+// 每层只做一个节点，递归树的「宽」是 1、高是 lg n。
+//
+// 正确性的全部重量压在**边界不变式**上。选「左闭右开 [lo, hi)���，
+// 不变式是：答案若存在，必落在 [lo, hi) 内。三行代码各守一条：
+//   mid = lo + (hi − lo) / 2   —— 防溢出写��，不是 lo + hi
+//   a[mid] <  target → lo = mid + 1    —— mid 本身已排除，所以 +1 不是 mid
+//   a[mid] >  target → hi = mid        —— 右开，所以 mid 本身就是新边界
+// 写成 [lo, hi] 闭区间时两条都要改成 mid±1，是最常见的 off-by-one 源头。
+static long long bin_search(std::span<const int> a, int target,
+                             long long& steps) {
+    std::ptrdiff_t lo = 0;
+    std::ptrdiff_t hi = static_cast<std::ptrdiff_t>(a.size());  // 右开
+    while (lo < hi) {
+        const std::ptrdiff_t mid = lo + (hi - lo) / 2;
+        ++steps;
+        if (a[static_cast<std::size_t>(mid)] == target) {
+            return mid;
+        }
+        if (a[static_cast<std::size_t>(mid)] < target) {
+            lo = mid + 1;      // mid 已排除 → +1（左闭）
+        } else {
+            hi = mid;          // 右开 → mid 本身（新边界不含 mid）
+        }
+    }
+    return -1;
+}
+
+// lower_bound：第一个 >= target 的位置（不存在则返回 size()）。
+// 它是「边界二分」的典型写法——循环不设「找到就返回」的出口，
+// 而是把区间**缩到一个点**为止。那个点就是答案，天然处理重复元素。
+static std::ptrdiff_t lower_bound_idx(std::span<const int> a, int target) {
+    std::ptrdiff_t lo = 0;
+    std::ptrdiff_t hi = static_cast<std::ptrdiff_t>(a.size());
+    while (lo < hi) {
+        const std::ptrdiff_t mid = lo + (hi - lo) / 2;
+        if (a[static_cast<std::size_t>(mid)] < target) { lo = mid + 1; }
+        else { hi = mid; }
+    }
+    return lo;
+}
+
+// upper_bound：第一个 > target 的位置。
+static std::ptrdiff_t upper_bound_idx(std::span<const int> a, int target) {
+    std::ptrdiff_t lo = 0;
+    std::ptrdiff_t hi = static_cast<std::ptrdiff_t>(a.size());
+    while (lo < hi) {
+        const std::ptrdiff_t mid = lo + (hi - lo) / 2;
+        if (a[static_cast<std::size_t>(mid)] <= target) { lo = mid + 1; }
+        else { hi = mid; }
+    }
+    return lo;
+}
+
+// 旋转有序数组的最小值：二分查找的「判定条件被旋转打断」版本。
+//
+// 前提：数组由两段各自递增的区间拼成（旋转点任意），例如
+//   [4,5,6,7,0,1,2]  =  [0..7] 旋转而来；  [3,4,5,1,2]  也是。
+// 朴素 Θ(n) 扫一遍就够，但我们要 Θ(lg n)——难点在于：**比较结果不再唯一
+// 决定方向**。以**右端点**为基准可以破局（每条分支都严格收缩）：
+//   a[mid] >  a[hi]  → mid 在旋转点**前**那段，最小值在 (mid, hi] → lo = mid+1
+//   a[mid] <  a[hi]  → mid 在旋转点**后**那段（或根本没旋转），
+//                      最小值在 [lo, mid]          → hi = mid
+//   a[mid] == a[hi]  → 无法判定方向，**收缩右端**（有重复值时才出现）→ hi--
+// 第三条分支是防重复值的：没有它，带重复的输入会永远在两个相等的端点间
+// 反复横跳。
+static int rotated_min(std::span<const int> a, long long& steps) {
+    if (a.empty()) { return 0; }               // 鲁棒性：空数组
+    std::ptrdiff_t lo = 0;
+    std::ptrdiff_t hi = static_cast<std::ptrdiff_t>(a.size()) - 1;
+    while (lo < hi) {
+        const std::ptrdiff_t mid = lo + (hi - lo) / 2;
+        ++steps;
+        if (a[static_cast<std::size_t>(mid)] > a[static_cast<std::size_t>(hi)]) {
+            lo = mid + 1;      // 严格收缩：lo 一定前进
+        } else if (a[static_cast<std::size_t>(mid)] < a[static_cast<std::size_t>(hi)]) {
+            hi = mid;          // 严格收缩：hi 一定后退（mid < hi 因 lo<hi）
+        } else {
+            --hi;              // 相等时无法判方向，只能缩右端
+        }
+    }
+    return a[static_cast<std::size_t>(lo)];
+}
+
+static void binary_search_demo() {
+    println("");
+    println("=== 04.5 二分查找：分治的极端形态 ===");
+    const std::vector<int> a{1, 3, 5, 7, 9, 11, 13, 15, 17, 19};
+    println("有序数组（10 个元素）：");
+    print("  "); for (int v : a) { print("{} ", v); }
+    println("");
+
+    // 命中 + 未命中 + 边界
+    long long steps = 0;
+    const auto i7 = bin_search(a, 7, steps);
+    println("查找 7：下标 {}，{} 次比较（⌈lg 10⌉ = {}）", i7, steps, 4);
+    assert(i7 == 3);
+    steps = 0;
+    assert(bin_search(a, 4, steps) == -1);
+    println("查找 4（不存在）  ：{} 次比较后区间缩空", steps);
+    steps = 0;
+    assert(bin_search(a, 1, steps) == 0);
+    steps = 0;
+    assert(bin_search(a, 19, steps) == 9);
+    println("两端命中 1 / 19   ：闭区间端点是最容易漏的边界，都命中");
+    steps = 0;
+    assert(bin_search(std::span<const int>{}, 5, steps) == -1);
+    assert(steps == 0);
+    println("空数组            ：0 次比较直接返回 -1（不进入循环）");
+
+    // 与线性查找对比：比较次数
+    println("");
+    println("与线性查找的比较次数对比（n=1023，固定 42 个查询）：");
+    std::vector<int> big(1023);
+    for (std::size_t k = 0; k < big.size(); ++k) {
+        big[k] = static_cast<int>(2 * k);
+    }
+    long long bin_total = 0;
+    long long lin_total = 0;
+    for (int q = 0; q < 42; ++q) {
+        long long s = 0;
+        const int target = 2 * (q * 24);            // 均匀落在数组内
+        (void)bin_search(big, target, s);
+        bin_total += s;
+        // 线性查找：逐个比较
+        for (std::size_t k = 0; k < big.size(); ++k) {
+            ++lin_total;
+            if (big[k] == target) { break; }
+        }
+    }
+    println("  二分：平均每次 {:.1f} 次；线性：平均每次 {:.1f} 次（比值 {:.0f}×）",
+            static_cast<double>(bin_total) / 42.0,
+            static_cast<double>(lin_total) / 42.0,
+            (static_cast<double>(lin_total) / 42.0) /
+            (static_cast<double>(bin_total) / 42.0));
+    assert(bin_total < 42 * 11);
+    assert(lin_total > 42 * 100);
+
+    // lower_bound / upper_bound：重复元素的区间定位
+    println("");
+    println("重复元素的区间定位（[2,4,4,4,7,7,9] 找 4）：");
+    const std::vector<int> dup{2, 4, 4, 4, 7, 7, 9};
+    const auto lb = lower_bound_idx(dup, 4);
+    const auto ub = upper_bound_idx(dup, 4);
+    print("  数组 "); for (int v : dup) { print("{} ", v); }
+    println("");
+    println("  lower_bound(4) = {}（第一个 >= 4）  upper_bound(4) = {}（第一个 > 4）",
+            lb, ub);
+    println("  于是「4 出现的区间」= [{}, {})，出现 {} 次", lb, ub, ub - lb);
+    assert(lb == 1 && ub == 4 && ub - lb == 3);
+    // 关键性质：lower_bound <= upper_bound 恒成立，target 不存在时二者相等
+    assert(lower_bound_idx(dup, 5) == upper_bound_idx(dup, 5));
+    println("  target=5（不存在）时 lower == upper = {} → 区间为空，判定「无此元素」",
+            lower_bound_idx(dup, 5));
+    // 越界目标
+    assert(lower_bound_idx(dup, 0) == 0);
+    assert(upper_bound_idx(dup, 100) == 7);
+    println("  越界：lower_bound(0) = {}（= 0，全在前），upper_bound(100) = {}（= size）",
+            lower_bound_idx(dup, 0), upper_bound_idx(dup, 100));
+    // 与 STL 对账
+    assert(lb == std::lower_bound(dup.begin(), dup.end(), 4) - dup.begin());
+    assert(ub == std::upper_bound(dup.begin(), dup.end(), 4) - dup.begin());
+    println("  与 std::lower_bound / std::upper_bound 结果一致（示例已断言对账）");
+
+    // 旋转有序数组的最小值
+    println("");
+    println("旋转有序数组的最小值（Θ(lg n) 而非 Θ(n)）：");
+    struct Case { const char* desc; std::vector<int> arr; };
+    const Case cases[] = {
+        {"[4,5,6,7,0,1,2]（在尾部之后旋转）", {4, 5, 6, 7, 0, 1, 2}},
+        {"[3,4,5,1,2]（旋转点在中间）", {3, 4, 5, 1, 2}},
+        {"[2,3,4,5]（根本没旋转）", {2, 3, 4, 5}},
+        {"[1,2,3]（单元素递增）", {1, 2, 3}},
+        {"[2,1]（两元素交换）", {2, 1}},
+        {"[1]（单元素）", {1}},
+    };
+    for (const Case& c : cases) {
+        long long s = 0;
+        const int got = rotated_min(c.arr, s);
+        // 对照组：线性扫描的答案
+        const int want = *std::ranges::min_element(c.arr);
+        println("  {:<32} 最小值 = {}，{} 次比较（线性扫是 {} 次）",
+                c.desc, got, s, c.arr.size());
+        assert(got == want);
+        assert(s <= static_cast<long long>(c.arr.size()));
+    }
+    // 带重复值：走「a[mid] == a[hi] → 缩右端」这条分支。
+    // 若没有这条分支，两个相等的端点会让区间永远不收缩 → 死循环。
+    for (const std::vector<int>& dup :
+         {std::vector<int>{2, 2, 2, 0, 1}, std::vector<int>{1, 1, 1, 1},
+          std::vector<int>{3, 3, 1, 3}, std::vector<int>{1, 3, 3},
+          std::vector<int>{5, 5, 5, 1, 5, 5}}) {
+        long long s = 0;
+        const int got = rotated_min(dup, s);
+        const int want = *std::ranges::min_element(dup);
+        print("  带重复值 "); for (int v : dup) { print("{} ", v); }
+        println("→ 最小值 = {}（期望 {}），{} 次比较", got, want, s);
+        assert(got == want);
+        assert(s <= static_cast<long long>(dup.size()));
+    }
+    long long s0 = 0;
+    assert(rotated_min(std::span<const int>{}, s0) == 0);   // 鲁棒性：空
+    assert(s0 == 0);
+    println("  空数组：返回 0（调用者须自行约定语义），0 次比较");
+
+    // 为什么不能直接对旋转数组用普通二分？
+    // 旋转打断了「比较结果唯一决定方向」：a[mid] < target 时，mid 可能在
+    // 前段也可能在后段，无法判断该往哪边缩。示例把「若强行用普通二分会
+    // 出错」的最小区间摆出来——那正是旋转点附近的元素。
+    println("");
+    println("为什么普通二分不能直接用：");
+    const std::vector<int> rot{3, 4, 5, 1, 2};
+    println("  旋转数组 [3,4,5,1,2] 查 1：");
+    print("    "); for (int v : rot) { print("{} ", v); }
+    println("");
+    long long bad = 0;
+    const auto wrong = bin_search(rot, 1, bad);
+    println("    普通二分返回 {}（= 未找到），而正确答案在 下标 3；", wrong);
+    println("    mid=2 落到 a[2]=5 > 1，区间缩到 [0,2)，真正的答案 1 被排除在外。");
+    assert(wrong != 3);
+}
+
 int main() {
     max_subarray_demo();
     strassen_demo();
     recursion_trees();
     master_theorem();
+    binary_search_demo();
     println("自检通过");
     return 0;
 }

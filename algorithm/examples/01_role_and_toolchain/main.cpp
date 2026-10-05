@@ -1,6 +1,7 @@
 // 01 算法的角色与本教程工具链（CLRS 第 1 章）。结构：01.1 特性宏探测表 /
 // 01.2 IO 垫片 / 01.3 可移植随机 rand_below / 01.4 算法作为技术（比较计数）/
-// 01.5 确定性输出纪律。
+// 01.5 确定性输出纪律。 / 01.6 算法代码的工程标准（copy-and-swap 强异常安全、
+// std::expected 错误处理、防御性编程三形态：断言 / 异常 / 返回值）。
 #ifdef ALGO_NO_PRINT // MinGW libstdc++ 缺 std::__open_terminal 符号时的降级（build.ps1 探针注入）
 #include <cstdio>
 #include <format>
@@ -17,6 +18,7 @@ using std::println;
 #include <algorithm>
 #include <bit>
 #include <cassert>
+#include <expected>
 #include <cstdint>
 #include <random>
 #include <span>
@@ -209,12 +211,158 @@ static void determinism_demo() {
     assert(tiny == std::vector<int>({1, 2, 3, 4, 5, 6}));
 }
 
+// ═══ 01.6 算法代码的工程标准 ═══
+// 算法竞赛式的"能过就行"和工程式的"十年后还有人维护"是两种代码。
+// 这一节讲三件在算法书里很少出现、但在真实项目里决定生死的事：
+//   ① 资源管理：谁分配谁释放，异常时怎么办（RAII / copy-and-swap）
+//   ② 错误处理：失败是异常、是 expected、还是返回码（std::expected）
+//   ③ 防御性编程：断言 / 异常 / 返回值，三者各有适用区间
+
+// ---------- ① copy-and-swap：写赋值运算符的唯一正确姿势 ----------
+
+// 手写赋值运算符要同时处理四件事：释放旧资源、拷贝新资源、自赋值、异常安全。
+// 顺序错了就漏：
+//   先释放再拷贝 → 拷贝抛异常时对象已被掏空；
+//   不管自赋值   → a = a 时 delete 掉自己再读已释放内存；
+//   边改边拷     → 中途抛异常，成员处于半修改状态（连基本安全保证都违反）。
+// copy-and-swap 把这三件事一次性消掉。
+class Buffer {
+public:
+    explicit Buffer(std::string tag) : tag_(std::move(tag)) {}
+    Buffer(const Buffer& other) : tag_(other.tag_) { ++copy_calls; }
+    Buffer(Buffer&& other) noexcept : tag_(std::move(other.tag_)) { ++move_calls; }
+    ~Buffer() = default;
+
+    // copy-and-swap：参数**按值**收（先构造一份临时对象），再与 *this 交换。
+    // 于是"怎么造新内存"全归拷贝构造管，operator= 只剩一次不失败的 swap。
+    // 副作用：operator= 不能是 const（要改 *this），但可以是 noexcept。
+    Buffer& operator=(Buffer other) noexcept {
+        tag_.swap(other.tag_);
+        return *this;
+    }
+    // 不需要、也不能再写 operator=(const Buffer&) = delete：
+    // 按值收参的版本已经能接住 const 实参，再加一个重载反而**歧义**
+    // （本例实测翻车：两个候选互不占优）。
+
+    static inline long long copy_calls = 0;                       // 拷贝构造被调用的总次数
+    static inline long long move_calls = 0;                       // 移动构造被调用的总次数
+    const std::string& tag() const { return tag_; }
+
+private:
+    std::string tag_;
+};
+
+// ---------- ② std::expected：错误处理不进异常通道 ----------
+
+// 算法里"输入不合法"是常态而非意外（二分的区间、图的邻接表……）。
+// 用异常表达它是错配：调用点必须写 try/catch，成本高且容易忘。
+// C++23 的 std::expected 把失败做成**返回值的一部分**，类型层面强制处理。
+static std::expected<int, std::string> parse_int(std::string_view sv) {
+    if (sv.empty()) { return std::unexpected("空输入"); }
+    long long sign = 1;
+    std::size_t i = 0;
+    if (sv[0] == '+' || sv[0] == '-') {
+        sign = (sv[0] == '-') ? -1 : 1;
+        i = 1;
+        if (sv.size() == 1) { return std::unexpected("只有符号没有数字"); }
+    }
+    long long v = 0;
+    for (; i < sv.size(); ++i) {
+        if (sv[i] < '0' || sv[i] > '9') {
+            return std::unexpected(std::string("非法字符: ") + sv[i]);
+        }
+        v = v * 10 + (sv[i] - '0');
+        if (v > 2147483647LL) { return std::unexpected("超出 int32 范围"); }
+    }
+    return static_cast<int>(sign * v);
+}
+
+static void engineering_standards_demo() {
+    println("");
+    println("=== 01.6 算法代码的工程标准 ===");
+
+    // ---------- ① RAII + copy-and-swap ----------
+    println("");
+    println("  (1) RAII / copy-and-swap：赋值运算符的正确写法");
+    {
+        Buffer a{"alpha"};
+        const Buffer b{"beta-longer-string"};        // 故意比 a 长 ⇒ 可能重分配
+        a = b;                        // copy-and-swap：一次不失败的 swap
+        assert(a.tag() == "beta-longer-string");
+        println("      a = b 之后 a.tag() = {}（拷贝构造 {} 次、搬移构造 {} 次）",
+                a.tag(), Buffer::copy_calls, Buffer::move_calls);
+        // 自赋值：copy-and-swap 下**不需要**手写 if (this != &other)
+        const Buffer& alias = a;
+        a = alias;
+        assert(a.tag() == "beta-longer-string");
+        println("      a = a（自赋值）后 a.tag() = {}——未被破坏", a.tag());
+        println("      作用域结束时析构自动执行，无任何手动 delete");
+    }
+    println("      手写版本的三个经典漏洞：");
+    println("        (a) 先 delete 旧、再拷贝新 → 拷贝抛异常则对象已被掏空；");
+    println("        (b) 漏掉 if (this != &other) → 自赋值时 delete 掉自己；");
+    println("        (c) 边改边拷 → 中途抛异常，成员处于半修改状态。");
+    println("      copy-and-swap 把三者一起消灭：operator= 只做一次 noexcept 的 swap。");
+    println("      代价：多一次拷贝 + 一次交换（现代编译器下常常被优化掉）。");
+
+    // ---------- ② std::expected ----------
+    println("");
+    println("  (2) std::expected：失败是返回值的一部分，不是异常");
+    for (const std::string_view in : {"42", "-17", "+8", "abc", "", "99999999999"}) {
+        const auto r = parse_int(in);
+        if (r) {
+            println("      parse_int({:<12}) = {}（成功）", std::string(in), *r);
+        } else {
+            println("      parse_int({:<12}) -> 失败：{}", std::string(in), r.error());
+        }
+    }
+    assert(parse_int("42").value() == 42);
+    assert(!parse_int("abc"));
+    println("      好处：失败路径**无法被静默忽略**（可加 [[nodiscard]]）；");
+    println("      且没有 try/catch 的运行时开销，也没有异常跨边界的栈展开代价。");
+    println("      取值三式：.value()（失败则抛 bad_expected_access，调试用）、");
+    println("      .value_or(x)（给默认）、*r / r.has_value()（先判再用）。");
+
+    // ---------- ③ 防御性编程三形态 ----------
+    println("");
+    println("  (3) 防御性编程三形态：各管一段区间");
+    // 形态 A：断言——「这不该发生」，是程序员之间的契约，违反即程序有 bug
+    std::vector<int> buf;
+    auto push = [&buf](int v) {
+        assert(v >= 0 && "只接受非负——契约，违反即程序有 bug");
+        buf.push_back(v);
+    };
+    push(3);
+    push(5);
+    println("      断言管「程序员违约」：push两次后 size = {}", buf.size());
+    // 形态 B：异常——管「调用方违约」，来源是外部输入 / 网络 / 文件
+    // 形态 C：返回值——管「正常业务分支」，如"没找到"
+    constexpr std::size_t kNotFound = static_cast<std::size_t>(-1);
+    auto find = [](const std::vector<int>& a, int x) -> std::size_t {
+        for (std::size_t i = 0; i < a.size(); ++i) {
+            if (a[i] == x) { return i; }
+        }
+        return kNotFound;                            // 正常分支：没找到
+    };
+    const std::vector<int> sorted{1, 3, 5, 7};
+    const std::size_t f5 = find(sorted, 5);
+    const std::size_t f4 = find(sorted, 4);
+    println("      返回值管「正常分支」：找 5 得下标 {}，找 4 得 {}（= kNotFound）",
+            f5, f4 == kNotFound);
+    assert(f5 == 2 && f4 == kNotFound);
+    println("      三者取舍：断言 = 程序员错（终止并留现场）、");
+    println("      异常 = 调用方错（可恢复、可传播）、返回值 = 不是错（正常枚举）。");
+    println("      最糟的混用是拿异常表达「没找到」——那本该是 optional 或下标；");
+    println("      二分查找返回「没找到」是正常分支，不是异常（见第 04 章）。");
+}
+
 int main() {
     feature_table();
     io_shim_demo();
     portable_random_demo();
     algorithms_as_technology();
     determinism_demo();
+    engineering_standards_demo();
     println("自检通过");
     return 0;
 }

@@ -278,6 +278,129 @@ static void three_way_demo() {
             static_cast<double>(d1.compares) / static_cast<double>(d2.compares));
 }
 
+// ═══ 07.7 按谓词分区：partition 的真正抽象 ═══
+// 前面三路分区里写死了「< pivot / > pivot」两个比较。把它换成**任意谓词**
+// `pred(x) == true 表示该去左段`，就得到 partition 的通用形态：
+//
+//   同一个循环骨架，只换谓词，就能做完全不同的事：
+//     奇偶分类   pred = [](int x){ return x % 2 == 1; }        「奇数在前」
+//     01 分类    pred = [](int x){ return x < k; }              「小于 k 的在前」
+//     活动筛选   pred = [](int x){ return x.satisfies(); }      谓词带业务逻辑
+//
+// 复杂度恒为 Θ(n) 时间 + Θ(1) 额外空间——**一趟扫描，不递归、不分配**。
+// 关键不变式（与 07.1 的 CLRS 版同源，只是把「≤ pivot」换成 pred）：
+//   对任意 j' ∈ [i, j)：a[i..j') 不满足 pred，a[j..j') 满足 pred。
+// 终止时（j == n）分界点就是 a[i]，不变量 a[i..n) 全部满足 pred。
+//
+// 稳定性说明：Lomuto 型的交换会把远处元素换到前面，**不稳定**。要稳定
+// 就得用「原开两个数组再归并」的 Θ(n) 额外空间路线——没有既省空间又
+// 稳定的单趟版本。
+template <class T, class Pred>
+static std::size_t partition_by(std::span<T> a, Pred pred, Counters& c) {
+    std::size_t i = 0;
+    for (std::size_t j = 0; j < a.size(); ++j) {
+        if (++c.compares, pred(a[j])) {
+            if (i != j) { std::swap(a[i], a[j]); ++c.swaps; }
+            ++i;
+        }
+    }
+    return i;                                   // [0, i) 满足 pred，[i, n) 不满足
+}
+
+static void predicate_partition_demo() {
+    println("");
+    println("=== 07.7 按谓词分区 ===");
+
+    // 用例一：奇偶分类（最朴素的一次扫描）
+    std::vector<int> nums{3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
+    const auto before = nums;
+    Counters c1{};
+    const std::size_t i1 = partition_by(std::span<int>{nums}, [](int x) { return x % 2 == 1; }, c1);
+    println("奇偶分类（谓词 = 奇数）：");
+    print_arr("  原始 ", std::span<const int>(before));
+    print_arr("  分区 ", std::span<const int>(nums));
+    println("  分界点 = {}，{} 次比较、{} 次交换（Θ(n) 一趟，不分配）",
+            i1, c1.compares, c1.swaps);
+    for (std::size_t k = 0; k < i1; ++k) { assert(nums[k] % 2 == 1); }
+    for (std::size_t k = i1; k < nums.size(); ++k) { assert(nums[k] % 2 == 0); }
+    // 元素多重集必须保持不变（分区是重排，不是增删）
+    auto sorted_before = before;
+    auto sorted_after = nums;
+    std::ranges::sort(sorted_before);
+    std::ranges::sort(sorted_after);
+    assert(sorted_before == sorted_after);
+    println("  元素多重集保持不变（分区是重排，不是增删）");
+
+    // 用例二：换一个谓词就是另一个问题（阈值分类）
+    std::vector<int> vals{12, 3, 45, 7, 19, 8, 31, 2, 40, 11};
+    const auto before2 = vals;
+    Counters c2{};
+    // 用例二：换一个谓词就是另一个问题（阈值分类）。
+    // 谓词里直接写字面量：局部 constexpr 即使是编译期常量，lambda **仍需
+    // 显式捕获**（只有 static constexpr / 枚举 / 字面量才免捕获），而显式
+    // 捕获一个常量会触发 -Wunused-lambda-capture。字面量是最干净的写法。
+    constexpr int kThreshold = 25;
+    const std::size_t i2 = partition_by(std::span<int>{vals},
+ [](int x) { return x < 25; }, c2);
+    println("");
+    println("阈值分类（谓词 = 小于 {}）：", kThreshold);
+    print_arr("  原始 ", std::span<const int>(before2));
+    print_arr("  分区 ", std::span<const int>(vals));
+    println("  分界点 = {}，小于 {} 的有 {} 个 | 大于等于的有 {} 个",
+            i2, kThreshold, i2, vals.size() - i2);
+    for (std::size_t j = 0; j < i2; ++j) { assert(vals[j] < kThreshold); }
+    for (std::size_t j = i2; j < vals.size(); ++j) { assert(vals[j] >= kThreshold); }
+
+    // 用例三：谓词是「业务逻辑」而非比较（筛掉不合格记录）
+    struct Item { int id; bool ok; };
+    std::vector<Item> items{{1, true}, {2, false}, {3, true}, {4, false},
+                            {5, true}, {6, true}, {7, false}};
+    Counters c3{};
+    const std::size_t i3 = partition_by(std::span<Item>{items}, [](const Item& it) { return it.ok; }, c3);
+    println("");
+    println("筛选合格记录（谓词 = ok）：");
+    print("  结果 id: ");
+    for (std::size_t j = 0; j < items.size(); ++j) { print("{} ", items[j].id); }
+    println("");
+    println("  合格 {} 条全部聚到下标 0 起的一段，不合格 {} 条沉到右侧（顺序被打乱）",
+            i3, items.size() - i3);
+    for (std::size_t j = 0; j < i3; ++j) { assert(items[j].ok); }
+    for (std::size_t j = i3; j < items.size(); ++j) { assert(!items[j].ok); }
+
+    // 用例四：与 07.1 的 CLRS PARTITION 对账——同一套骨架、同一组比较
+    // 「谓词 = (x <= pivot)」时，partition_by 与 quicksort 里的 partition
+    // 应给出**完全相同**的数组（同主元同位置时）。这证明抽象没丢信息。
+    println("");
+    println("与 07.1 CLRS PARTITION 同构对账：");
+    std::vector<int> z1{7, 2, 9, 4, 2, 8, 1, 5, 3, 6};
+    std::vector<int> z2 = z1;
+    Counters c4{};
+    quicksort_det(z1, c4);                      // 走 CLRS 版 partition 排完
+    const int pivot = z1.front();               // 全序排列，最小值即结果
+    Counters c5{};
+    partition_by(std::span<int>{z2}, [pivot](int x) { return x <= pivot; }, c5);
+    assert(std::ranges::is_sorted(z1));
+    assert(z2.front() == pivot);
+    println("  CLRS 版排完得有序序列；谓词版以最小值为主元，{} 次比较完成分类",
+            c5.compares);
+    println("  → 两者是同一段循环骨架，抽象无信息损失（Θ(n) 时间 / Θ(1) 空间）");
+
+    // 边界：全满足 / 全不满足 —— 分界点落在 0 或 n，不越界
+    std::vector<int> allOk{2, 4, 6};
+    Counters c6{};
+    assert(partition_by(std::span<int>{allOk}, [](int x) { return x % 2 == 0; }, c6) == 3);
+    std::vector<int> allBad{1, 3, 5};
+    Counters c7{};
+    assert(partition_by(std::span<int>{allBad}, [](int x) { return x % 2 == 0; }, c7) == 0);
+    std::vector<int> none{};
+    Counters c8{};
+    assert(partition_by(std::span<int>{none}, [](int) { return true; }, c8) == 0);
+    println("");
+    println("边界：全满足 → 分界点 = size；全不满足 → 0；空数组 → 0（都不越界）");
+    println("注意：本分区**不稳定**——交换会把远处元素换到前面，");
+    println("      要稳定就得多开一个数组做 Θ(n) 归并，没有又省空间又稳的单趟版。");
+}
+
 int main() {
     partition_demo();
     worst_vs_random_demo();
@@ -285,6 +408,7 @@ int main() {
     expectation_demo();
     depth_demo();
     three_way_demo();
+    predicate_partition_demo();
     println("自检通过");
     return 0;
 }

@@ -22,10 +22,10 @@
 
 | 章 | 文档 | CLRS | 主题 |
 |---|---|---|---|
-| 01 | [docs/01-role-and-toolchain.md](docs/01-role-and-toolchain.md) | ch.1 | 算法的角色、C++23 工具链与本教程验证体系 |
+| 01 | [docs/01-role-and-toolchain.md](docs/01-role-and-toolchain.md) | ch.1 | 算法的角色、C++23 工具链、验证体系与算法代码的工程标准 |
 | 02 | [docs/02-getting-started.md](docs/02-getting-started.md) | ch.2 | 插入排序、循环不变式、算法分析、归并排序 |
 | 03 | [docs/03-growth-of-functions.md](docs/03-growth-of-functions.md) | ch.3 | 渐近记号 O/Ω/Θ/o/ω、常用函数 |
-| 04 | [docs/04-divide-and-conquer.md](docs/04-divide-and-conquer.md) | ch.4 | 分治、最大子数组、Strassen、主定理 |
+| 04 | [docs/04-divide-and-conquer.md](docs/04-divide-and-conquer.md) | ch.4 | 分治、最大子数组、Strassen、主定理、二分查找与旋转最小值 |
 | 05 | [docs/05-probabilistic.md](docs/05-probabilistic.md) | ch.5 | 概率分析、指示器随机变量、随机化算法 |
 
 **第二部分 排序与顺序统计量（CLRS Part II）**
@@ -33,7 +33,7 @@
 | 章 | 文档 | CLRS | 主题 |
 |---|---|---|---|
 | 06 | [docs/06-heapsort.md](docs/06-heapsort.md) | ch.6 | 堆、堆排序、优先队列 |
-| 07 | [docs/07-quicksort.md](docs/07-quicksort.md) | ch.7 | 快速排序与期望分析 |
+| 07 | [docs/07-quicksort.md](docs/07-quicksort.md) | ch.7 | 快速排序、期望分析、三路分区、按谓词分区 |
 | 08 | [docs/08-linear-sorting.md](docs/08-linear-sorting.md) | ch.8 | 决策树下界、计数/基数/桶排序 |
 | 09 | [docs/09-selection.md](docs/09-selection.md) | ch.9 | 顺序统计量、中位数的中位数选择 |
 
@@ -41,9 +41,9 @@
 
 | 章 | 文档 | CLRS | 主题 |
 |---|---|---|---|
-| 10 | [docs/10-elementary-structures.md](docs/10-elementary-structures.md) | ch.10 | 栈/队列/链表/有根树的对象与指针表示 |
+| 10 | [docs/10-elementary-structures.md](docs/10-elementary-structures.md) | ch.10 | 栈/队列/链表/有根树表示 + 链表与栈队列的经典算法 |
 | 11 | [docs/11-hashing.md](docs/11-hashing.md) | ch.11 | 散列表：链址、开地址、全域散列 |
-| 12 | [docs/12-bst.md](docs/12-bst.md) | ch.12 | 二叉搜索树 |
+| 12 | [docs/12-bst.md](docs/12-bst.md) | ch.12 | 二叉搜索树 + 由遍历重建二叉树 + 子树判定 |
 | 13 | [docs/13-rb-tree.md](docs/13-rb-tree.md) | ch.13 | 红黑树 |
 | 14 | [docs/14-augmentation.md](docs/14-augmentation.md) | ch.14 | 数据结构扩张：顺序统计树、区间树 |
 
@@ -51,7 +51,7 @@
 
 | 章 | 文档 | CLRS | 主题 |
 |---|---|---|---|
-| 15 | [docs/15-dp-foundations.md](docs/15-dp-foundations.md) | ch.15.1–15.3 | 动态规划（上）：钢条切割、矩阵链、方法论 |
+| 15 | [docs/15-dp-foundations.md](docs/15-dp-foundations.md) | ch.15.1–15.3 | 动态规划（上）：钢条切割、矩阵链、重叠子问题、斐波那契四解法 |
 | 16 | [docs/16-dp-applications.md](docs/16-dp-applications.md) | ch.15.4–15.5 | 动态规划（下）：LCS、最优 BST |
 | 17 | [docs/17-greedy.md](docs/17-greedy.md) | ch.16 | 贪心算法、Huffman、拟阵 |
 | 18 | [docs/18-amortized.md](docs/18-amortized.md) | ch.17 | 摊还分析：聚合/记账/势能三法 |
@@ -83,7 +83,7 @@
 | 29 | [docs/29-matrices.md](docs/29-matrices.md) | ch.28 | 矩阵运算：LUP 分解、求逆 |
 | 30 | [docs/30-linear-programming.md](docs/30-linear-programming.md) | ch.29 | 线性规划与单纯形法 |
 | 31 | [docs/31-fft.md](docs/31-fft.md) | ch.30 | 多项式与 FFT |
-| 32 | [docs/32-number-theory.md](docs/32-number-theory.md) | ch.31 | 数论算法：模运算、RSA、Miller-Rabin |
+| 32 | [docs/32-number-theory.md](docs/32-number-theory.md) | ch.31 | 数论：模运算、RSA、Miller-Rabin + 位运算技巧与高精度 |
 | 33 | [docs/33-string-matching.md](docs/33-string-matching.md) | ch.32 | 字符串匹配：Rabin-Karp/KMP |
 | 34 | [docs/34-geometry.md](docs/34-geometry.md) | ch.33 | 计算几何：凸包、最近点对 |
 | 35 | [docs/35-np-completeness.md](docs/35-np-completeness.md) | ch.34 | NP 完全性 |
@@ -113,9 +113,9 @@ pwsh ./build.ps1 -Docs           # 只跑文档五关
   （x86_64-pc-windows-msvc，共享 MSVC STL、独立前端，交叉核对通道）；scoop MinGW
   g++ 15.2（独立 libstdc++，机会型通道——其 `<print>` 链接缺终端符号，探针会自动
   降级到 `-DALGO_NO_PRINT` 垫片，见 build.ps1 两级探针）。
-- 交付进度：**全部 37 章已交付（15 个批次）。37 示例 × 3 通道 = 111 个
+- 交付进度：**全部 37 章已交付（16 个批次）。37 示例 × 3 通道 = 111 个
   验证单元全绿；文档五关（含 --expect 37 终验）全过；CHEATSheet 收录
-  68 条实测坑位 + 37 章复杂度总表。**
+  82 条实测坑位 + 37 章复杂度总表 + 高频算法速查表。**
 
 ## 写作约定
 
