@@ -490,7 +490,7 @@ while 栈非空:
 ```
 
 眼熟的读者会心一笑：
-这就是第 23 章工作表算法
+这就是第 24 章工作表算法
 在图搜索上的袖珍版——
 "发现新东西就记账，
 账清了就停"。
@@ -634,10 +634,10 @@ B 经 bb 到终态 E）。
 要么严格增加，
 上界是状态数——
 单调有界必终止。
-这论证与第 22 章
+这论证与第 23 章
 "格高度 × 单调 ⇒ 有限步收敛"
 是同一个骨架，
-第 28 章会把整个数据流家族
+第 29 章会把整个数据流家族
 统一到这个骨架上。
 
 为什么正确？
@@ -1301,7 +1301,7 @@ NFA thompson(const RE &re) {
 // ---------- ε 闭包与子集构造（Algorithm 3.1） ----------
 namespace {
 // ε-CLOSURE(T)：从 T 出发只沿 ε 边可达的状态集（含 T 自身）。
-// 绿龙 Fig 3.9 的栈式搜索——它就是第 23 章工作表算法的袖珍版。
+// 绿龙 Fig 3.9 的栈式搜索——它就是第 24 章工作表算法的袖珍版。
 std::set<int> epsClosure(const NFA &n, const std::set<int> &t) {
     std::set<int> got = t;
     std::vector<int> stack(t.begin(), t.end());
@@ -1385,7 +1385,7 @@ DFA minimize(const DFA &d, const std::set<char> &alphabet) {
     }
     // 反复按“全部输入符号都落进同一组”细化，直到组数不再增长。
     // 签名以旧组号开头，因此每轮只会分裂、不会合并——
-    // 单调有界，循环必然停止（与第 22 章不动点的终止论证同型）。
+    // 单调有界，循环必然停止（与第 23 章不动点的终止论证同型）。
     while (true) {
         std::map<std::pair<int, std::vector<std::pair<char, int>>>, int> sigToGroup;
         std::vector<int> next(d.states());

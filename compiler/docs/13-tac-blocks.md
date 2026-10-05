@@ -40,11 +40,11 @@
 后者是本教程后半部
 所有代码变换的
 "具体语义证人"：
-第 26 章的复制传播、
-第 34 章的局部公共子表达式、
-第 35 章的循环优化、
-第 36 章的部分冗余消除、
-第 43 章的寄存器分配，
+第 27 章的复制传播、
+第 36 章的局部公共子表达式、
+第 37 章的循环优化、
+第 39 章的部分冗余消除、
+第 48 章的寄存器分配，
 每一个都靠它
 证明"变换前后行为不变"。
 
@@ -109,7 +109,7 @@ t4 = 1 ; t5 = t3+t4 ; x = t5`——
 "每指令一次运算"
 才真正不破。
 （代价是看起来啰嗦；
-第 34 章的 DAG
+第 36 章的 DAG
 会把这份啰嗦
 连同真正的冗余
 一起收走。）
@@ -256,8 +256,8 @@ L_end:
 任何满足依赖的
 重排都不改语义。
 这个性质是
-第 34 章（块内 DAG）、
-第 45 章（指令调度）
+第 36 章（块内 DAG）、
+第 50 章（指令调度）
 的立身之本。
 
 划分算法
@@ -298,7 +298,7 @@ B6 的后继是 10
 而不是 B7：
 **回边**第一次
 以裸数据出现。
-第 32 章
+第 33 章
 （支配者与自然循环）
 将从这里出发
 把"循环"变成
@@ -373,7 +373,7 @@ t1、t2、t3 里
 next-use 是**局部**信息
 （只看块内）：
 跨块的信息要等
-第 25 章
+第 26 章
 （活跃变量分析）
 的全局版。
 局部版先出场
@@ -474,7 +474,7 @@ next-use 只在
 看不见块外"的
 直观展示，
 也是全局活跃分析
-（第 25 章）
+（第 26 章）
 的动机预告。
 interp 输出 1
 （b=1、a 循环到 0）、
@@ -499,7 +499,7 @@ LLVM IR，
    的 `%3`
    就是"指令即值"
    ——SSA 的影子
-   （第 33 章）；
+   （第 34 章）；
 2. **变量**：
    TAC 的 a 在
    循环里被反复
@@ -509,7 +509,7 @@ LLVM IR，
    a 是一个 alloca 槽，
    load/store 访问
    ——`mem2reg`
-   （第 33 章对照）
+   （第 34 章对照）
    会把它变成 φ；
 3. **控制流**：
    TAC 的标签是下标、
@@ -546,7 +546,7 @@ LLVM IR 是
   （减少名字压力），
   但那要在
   生命周期分析
-  之后（第 43 章）。
+  之后（第 48 章）。
 - **布尔短路**。
   TIP 的比较
   只出现在
@@ -583,7 +583,7 @@ LLVM IR 是
   频繁做块级算法，
   可再包一层
   块号视图
-  （第 32 章会这么做）。
+  （第 33 章会这么做）。
 - **解释器的分工**。
   它不是给用户跑程序的
   （那是 JIT 的事），
@@ -1718,7 +1718,7 @@ JIT 为对账线服务。
 // file: src/irgen.hpp
 // LLVM IR 生成：把 AST 翻译成 LLVM Module。
 // 本章只覆盖整数核心：算术、比较、input/output、if/while、直接函数调用；
-// 指针、记录、间接调用在第 41 章以后扩展，遇到时直接报错。
+// 指针、记录、间接调用在第 44 章以后扩展，遇到时直接报错。
 #pragma once
 
 #include <map>
@@ -1888,24 +1888,24 @@ Value *IRGen::expr(const Expr *e) {
     if (const auto *x = dynamic_cast<const CallE *>(e)) {
         const auto *nameUse = dynamic_cast<const VarRef *>(x->callee.get());
         if (!nameUse)
-            throw std::runtime_error("ch12: 间接调用留待第 41 章");
+            throw std::runtime_error("ch12: 间接调用留待第 44 章");
         const Symbol *s = bindings->uses.at(nameUse);
         if (s->kind != Symbol::Fun)
-            throw std::runtime_error("ch12: 间接调用留待第 41 章");
+            throw std::runtime_error("ch12: 间接调用留待第 44 章");
         auto *callee = mod->getFunction(emitName(s->name));
         std::vector<Value *> args;
         for (const auto &a : x->args) args.push_back(expr(a.get()));
         return b->CreateCall(callee, args);
     }
 
-    throw std::runtime_error("ch12: 指针与记录构造留待第 41 章");
+    throw std::runtime_error("ch12: 指针与记录构造留待第 44 章");
 }
 
 void IRGen::stmt(const Stmt *s) {
     if (const auto *x = dynamic_cast<const AssignS *>(s)) {
         const auto *target = dynamic_cast<const VarRef *>(x->target.get());
         if (!target)
-            throw std::runtime_error("ch12: 经指针/字段写入留待第 41 章");
+            throw std::runtime_error("ch12: 经指针/字段写入留待第 44 章");
         const Symbol *sym = bindings->uses.at(target);
         b->CreateStore(expr(x->value.get()), locals.at(sym));
         return;
@@ -2268,8 +2268,8 @@ main() {
 
 数据流分析的
 经典四大分析
-（第 25 章两个、
-第 26 章两个）
+（第 26 章两个、
+第 27 章两个）
 都将在这层 TAC 上
 展开；
 在那之前，

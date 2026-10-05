@@ -118,24 +118,24 @@ Value *IRGen::expr(const Expr *e) {
     if (const auto *x = dynamic_cast<const CallE *>(e)) {
         const auto *nameUse = dynamic_cast<const VarRef *>(x->callee.get());
         if (!nameUse)
-            throw std::runtime_error("ch12: 间接调用留待第 41 章");
+            throw std::runtime_error("ch12: 间接调用留待第 44 章");
         const Symbol *s = bindings->uses.at(nameUse);
         if (s->kind != Symbol::Fun)
-            throw std::runtime_error("ch12: 间接调用留待第 41 章");
+            throw std::runtime_error("ch12: 间接调用留待第 44 章");
         auto *callee = mod->getFunction(emitName(s->name));
         std::vector<Value *> args;
         for (const auto &a : x->args) args.push_back(expr(a.get()));
         return b->CreateCall(callee, args);
     }
 
-    throw std::runtime_error("ch12: 指针与记录构造留待第 41 章");
+    throw std::runtime_error("ch12: 指针与记录构造留待第 44 章");
 }
 
 void IRGen::stmt(const Stmt *s) {
     if (const auto *x = dynamic_cast<const AssignS *>(s)) {
         const auto *target = dynamic_cast<const VarRef *>(x->target.get());
         if (!target)
-            throw std::runtime_error("ch12: 经指针/字段写入留待第 41 章");
+            throw std::runtime_error("ch12: 经指针/字段写入留待第 44 章");
         const Symbol *sym = bindings->uses.at(target);
         b->CreateStore(expr(x->value.get()), locals.at(sym));
         return;

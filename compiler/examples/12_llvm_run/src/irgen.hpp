@@ -1,6 +1,6 @@
 // LLVM IR 生成：把 AST 翻译成 LLVM Module。
 // 本章只覆盖整数核心：算术、比较、input/output、if/while、直接函数调用；
-// 指针、记录、间接调用在第 41 章以后扩展，遇到时直接报错。
+// 指针、记录、间接调用在第 44 章以后扩展，遇到时直接报错。
 #pragma once
 
 #include <map>
