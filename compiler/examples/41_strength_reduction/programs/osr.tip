@@ -1,0 +1,20 @@
+main() {
+  var i, s, u, j, n, k;
+  n = 100;
+  j = 7;
+  s = 0;
+  u = 0;
+  i = 1;
+  k = 1;
+  while (n > i) {
+    s = s + i * 4;
+    i = i + 1;
+  }
+  while (n > k) {
+    u = u + k * s;
+    k = k + 1;
+  }
+  output s;
+  output u;
+  return 0;
+}

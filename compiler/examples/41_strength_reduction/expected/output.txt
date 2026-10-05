@@ -1,0 +1,109 @@
+== osr.tip ==
+== SSA（削减前）==
+  B0:
+    t10 = 100
+    n0 = t10
+    t20 = 7
+    j0 = t20
+    t30 = 0
+    s0 = t30
+    t40 = 0
+    u0 = t40
+    t50 = 1
+    i0 = t50
+    t60 = 1
+    k0 = t60
+  B1:
+    i1 = phi(i0, i2)
+    s1 = phi(s0, s2)
+    t100 = phi(t10u, t101)
+    t110 = phi(t11u, t111)
+    t70 = phi(t7u, t71)
+    t80 = phi(t8u, t81)
+    t90 = phi(t9u, t91)
+    if n0 > i1 goto B3
+  B2:
+    goto B4
+  B3:
+    t71 = 4
+    t81 = i1 * t71
+    t91 = s1 + t81
+    s2 = t91
+    t101 = 1
+    t111 = i1 + t101
+    i2 = t111
+    goto B1
+  B4:
+    k1 = phi(k0, k2)
+    t120 = phi(t12u, t121)
+    t130 = phi(t13u, t131)
+    t140 = phi(t14u, t141)
+    t150 = phi(t15u, t151)
+    u1 = phi(u0, u2)
+    if n0 > k1 goto B6
+  B5:
+    goto B7
+  B6:
+    t121 = k1 * s1
+    t131 = u1 + t121
+    u2 = t131
+    t141 = 1
+    t151 = k1 + t141
+    k2 = t151
+    goto B4
+  B7:
+    output s1
+    output u1
+    t160 = 0
+    return t160
+== 归纳变量（SSA 图 SCC）==
+  链头 φ: i1
+  链头 φ: k1
+== 削减 ==
+  t81 × 4 → t81#sr（初值乘一次，步长 4）
+== LFTR ==
+  i1 与 100 的测试 → t81#sr 与 400（界 ×4）
+== DCE ==
+  清走死指令 12 条
+== SSA（削减后）==
+  B0:
+    t81#sr0 = 4
+  B1:
+    s1 = phi(0, s2)
+    t81#sr = phi(t81#sr0, t81#sr1)
+    if 400 > t81#sr goto B3
+  B2:
+    goto B4
+  B3:
+    t91 = s1 + t81#sr
+    s2 = t91
+    t81#sr1 = t81#sr + 4
+    goto B1
+  B4:
+    k1 = phi(1, k2)
+    u1 = phi(0, u2)
+    if 100 > k1 goto B6
+  B5:
+    goto B7
+  B6:
+    t121 = k1 * s1
+    t131 = u1 + t121
+    u2 = t131
+    t151 = k1 + 1
+    k2 = t151
+    goto B4
+  B7:
+    output s1
+    output u1
+    return 0
+== 乘法账 ==
+  循环一乘法：削减前 1 → 削减后 0
+  循环二乘法（k×j，j 非字面量）：保持 1
+== 对账 ==
+  削减前 outputs: 19800 98010000
+  削减后 outputs: 19800 98010000
+  前后一致: yes
+  循环一乘法 1→0: yes
+  outputs 相等: yes
+  非候选（j 非字面量）原样保留: yes
+  削减与 LFTR 都发生: yes
