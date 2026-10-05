@@ -24,7 +24,7 @@
 
 ### 第三篇　中间表示与运行时（11–16）
 
-- 14 规范化与跟踪（扩充中）—— canonical IR、贪心跟踪线性化、顺直链消跳转
+- [14 规范化与跟踪](docs/14-traces.md) —— 贪心跟踪线性化、终结符四规则、顺直链消跳转（`examples/14_traces`）
 
 - [11 控制流图](docs/11-cfg.md) —— 树摊成图，循环与分支才可谈；两遍构造与稳定编号（`examples/11_cfg`）
 - [12 LLVM 执行台](docs/12-llvm-run.md) —— ORC JIT：让"具体语义"有证人（`examples/12_llvm_run`）
@@ -98,6 +98,6 @@
 
 ## 验证状态
 
-48/54 章三层对账全绿；6 个虎书新章扩充中（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
+49/54 章三层对账全绿；5 个虎书新章扩充中（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
 
 每章 = `docs/NN-<slug>.md` + `examples/NN_<slug>/`（章号=示例号）。LLVM 示例的运行需要 MSYS2 UCRT64 工具链在 PATH（`run-all.sh` 自动处理；`tools/example_build.sh <examples/NN_slug> "$(pwd)"` 单独构建一个示例）。
