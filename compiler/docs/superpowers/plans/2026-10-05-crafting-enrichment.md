@@ -137,8 +137,8 @@ struct VM { Value run(const Chunk&); };           // 55/57 复制的核心；栈
 3. 阶乘：手编函数 chunk + Call，`fact(5)` 帧数=6（含顶层）断言（VM 内计数器）。
 4. 每指令边界栈深 = 手推值（DEBUG 栈深校验数组断言）。
 
-- [ ] src（chunk/vm/disasm + 手编程序）→ 断言 → expected → 正文（六节）→ 三层绿
-- [ ] Commit: `feat(compiler): 批次四十三——54 字节码与栈式虚拟机`
+- [x] src（chunk/vm/disasm + 手编程序）→ 断言 → expected → 正文（六节）→ 三层绿
+- [x] Commit: `feat(compiler): 批次四十三——54 字节码与栈式虚拟机`
 
 ### Task 5: 新 55 章 单遍编译与跳转回填（批四十四）
 

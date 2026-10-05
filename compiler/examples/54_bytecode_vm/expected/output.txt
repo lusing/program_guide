@@ -1,0 +1,44 @@
+== 一、反汇编即文档 ==
+== expr ==
+0000   1 CONSTANT 0  ; 3
+0002    | CONSTANT 1  ; 4
+0004    | ADD
+0005    | NEGATE
+0006    | CONSTANT 2  ; 2
+0008    | MUL
+0009    | PRINT
+0010    | CONSTANT 3  ; 0
+0012    | RETURN
+ok   反汇编逐行 = == expr ==
+0000   1 CONSTANT 0  ; 3
+0002    | CONSTANT 1  ; 4
+0004    | ADD
+0005    | NEGATE
+0006    | CONSTANT 2  ; 2
+0008    | MUL
+0009    | PRINT
+0010    | CONSTANT 3  ; 0
+0012    | RETURN
+
+
+== 二、栈式求值 ==
+ok   -(3+4)*2 = -14
+
+ok   脚本返回值 = 0
+
+== 三、每指令栈深账 ==
+ok   栈深轨迹 = 2 3 2 2 3 2 1 2 
+
+== 四、调用帧 ==
+ok   fact(5) = 120
+
+ok   帧深峰值（脚本 + 6 层递归） = 7
+ok   fib(10) = 55
+
+
+== 五、原生函数旁路 ==
+ok   input()+40+2 = 42
+
+
+== 六、断言汇总 ==
+全部通过（7 项）
