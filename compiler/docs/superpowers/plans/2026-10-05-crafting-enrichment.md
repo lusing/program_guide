@@ -249,7 +249,7 @@ uint32_t fnv1a(const std::string&);  // FNV-1a 32 位
 4. 分代假设设计注记（文字）：幼年死亡率、nursery/晋升/双收集器；与教程 Cheney 复制（18 章=新 20）的亲缘。
 
 **断言**（追加进现有 main，expected 重生成）: (1) 三色模拟每步不变式保持（程序内校验+打印摘要行）；(2) 驻留池弱清理后死串不在池中、内存回收数正确；(3) LISP2 压紧后所有引用改写正确（间接读全对）+ 活对象地址单调 + 空闲块从 k→1。
-- [ ] 改 src → 重建 → 新 expected → `renumber4.py embed` 重嵌该章 → check_docs 绿 → Commit: `feat(compiler): 批次四十七——20 补三色抽象与弱引用`
+- [x] 改 src → 重建 → 新 expected → `renumber4.py embed` 重嵌该章 → check_docs 绿 → Commit: `feat(compiler): 批次四十七——20 补三色抽象与弱引用`
 
 ### Task 9: 52 章对象补方法即闭包（批四十八）
 

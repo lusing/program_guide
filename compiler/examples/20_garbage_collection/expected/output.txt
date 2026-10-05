@@ -35,3 +35,26 @@
 == 对账 ==
   survivors(ms) == copied(cheney) : yes
   rc_freed = 1 < ms_freed = 4：差额正是环
+== tri-color abstraction（§26.3）==
+  step 0: gray={A,B} white={C,D,E,F,G,H} invariant=held
+  step 1: gray={B,C} blacken=A white={D,E,F,G,H} invariant=held
+  step 2: gray={C,D} blacken=B white={E,F,G,H} invariant=held
+  step 3: gray={D} blacken=C white={E,F,G,H} invariant=held
+  step 4: gray={} blacken=D white={E,F,G,H} invariant=held
+  final white = 终态白集（垃圾）: E F G H
+  violations = 0（黑不指白全程保持）
+  final_white == ms_freed : yes
+== weak references & string pool（§26.4）==
+  pooled_before = 5
+  evicted（弱表清除的死串）: H
+  pooled_after = 4
+  freed_objects = 4
+  若池当强根将误保活 = 1 个（缓存变语义根）
+== LISP2 mark-compact（练习引申）==
+  moved: A->0 B->1 C->2 D->3
+  cell0 = [cell1 cell2]
+  cell1 = [cell3]
+  cell2 = [cell3]
+  cell3 = []
+  holes_before = 2（清除视角的碎片）→ holes_after = 1（活对象成前缀）
+  lisp2_alive == ms_survived : yes

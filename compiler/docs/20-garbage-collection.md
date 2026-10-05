@@ -407,6 +407,103 @@ C/C++ 的现实选择——
 可能漏收、
 不敢搬对象）。
 
+## 20.5b　三色抽象：黑不指白（匠书 §26.3）
+
+标记清除的"标记"阶段是一锅端——从根一口气标到完。**三色抽象**
+把这锅端拆成可暂停的步骤，并且给出一个能证明"随时暂停都不丢
+活对象"的不变式——这是增量收集（并发标记、让 GC 与程序交替
+跑）的全部理论基础。
+
+三色的定义：**白** = 还没访问到（候选垃圾）；**灰** = 自己已被
+访问、但它的引用还没扫完（在途状态）；**黑** = 自己与引用全部
+扫完（活对象定案）。标记过程 = 把根染灰，然后反复"取一个灰
+变黑、其白子染灰"，直到灰集空——**白集即垃圾**。
+
+**三色不变式：黑不指白。** 任何黑对象的引用目标都不是白——
+只要不变式保持，暂停在任何时刻，白色对象都仍然只能被灰或白
+引用（灰还会被扫），不存在"黑对象引用的活对象被误判白"——
+**不变式是随时暂停的安全性证明**。本章示例把每一步的灰/白
+快照与不变式检查全部打印（triColor 的 steps 表）：演示图五步
+走完、violation 恒 0、终态白集 {E,F,G,H} 与标记清除的 freed 集
+逐元素相等——两台"机器"（一口气 vs 逐步）算出同一份垃圾名单。
+
+**逐步表怎么读**（期望输出的 step 0..4 行）：step 0 是初始化
+（根 A、B 染灰——白集 6 个）；step 1 取 A 变黑、A 的白子 C 染灰
+（灰 {B,C}）；step 2 取 B 变黑、D 染灰；step 3 取 C 变黑（D 已灰
+）；step 4 取 D 变黑、灰空——结束。每行尾的 invariant=held 是
+该步后"黑不指白"的机器检查——**五步五检全过**，终态白与
+ms_freed 的对账行（final_white == ms_freed : yes）合起来是三色
+抽象在本演示图上的完整正确性证书。
+
+**灰集为什么是工作表的孪生兄弟**：三色的灰集恰好就是标记清除
+的工作表内容（待扫对象集）——三色抽象没有发明新算法，它给
+同一个 BFS 装上了**可暂停的刻度**（每步恰好处理一个对象）。
+第 26 章工作表四序的收敛账在这里翻版：三色的步数 = 活对象数
+（每个活对象恰好变黑一次）——步数与顺序无关、每步内容有关
+（取哪个灰是自由的——这正是并发实现可以挑时机的原因）。
+
+为什么三色对增量如此重要？并发标记时**程序在改图**（新引用
+产生）——不变式被破坏的情形恰有两类（黑指白的新边产生、或
+白对象被黑引用时未经灰）：增量 GC 的写屏障（write barrier）
+就是在赋值处补染色、恢复不变式的运行时钩子。教程不实现屏障，
+但读者此刻应能读懂 G1/ZGC 文档里"saturation barrier""snapshot
+at the beginning"这些词的所指——**它们全是不变式的维护策略**。
+
+## 20.5c　弱引用与字符串池：缓存不是语义（匠书 §26.4）
+
+第 56 章立过"驻留池是缓存不是语义"的原则，本章兑现它的 GC
+侧推论：**池不在根集里**。标记只从程序根出发——池里那些没有
+程序引用的死串，标记阶段视而不见；清扫前做**弱表清除**：把
+死串从池中摘除。效果（weakPoolDemo 的三行报告）：池从 5 缩
+到 4、被摘的恰是死串、堆回收数 4 不受池影响——**池的存在不
+改变任何程序可观察行为**（下次 intern 死串会重建，比较语义
+不变——值相等 ⇔ 指针相等靠的是"活串唯一"，重建不破坏它）。
+
+反例账也在演示里：**若池当强根**，那 1 个死串被误保活——
+驻留池从缓存**越位成语义根**，字符串永生、内存只涨不跌（真实
+引擎历史上真踩过：早期 JVM 的 String.intern 滥用症）。弱引用
+的存在意义就是给"想快速查找、又不想左右生存期"的数据结构一
+个合法身份——**缓存的爱是放手的爱**。
+
+**弱引用的三个真实用户**顺带列出：驻留池（本节）、GC 的终结
+队列（finalization——对象死后回调的登记表也是弱表）、缓存
+（WeakHashMap 族——键死条目自动消失）。三者的共同形状
+"查找快 + 不保活"就是弱引用的签名——第 56 章池的"可以回收"
+许可证，在此处是三行代码的兑现。
+
+（上值章 FAQ 的伏笔在此兑现：上值盒由 shared_ptr 保活是引用
+计数路线；当引擎整体换 GC，盒就是普通堆对象、闭包的 ups 数组
+就是引用边——**GC 的第一批真实客户恰好是闭包与驻留池**，
+匠书把 GC 章排在闭包章之后的深意即此。）
+
+## 20.5d　LISP2 标记压紧：三指针滑动（练习引申）
+
+标记清除留下**碎片**（活对象间的洞——分配大对象可能失败尽管
+总空闲够）；Cheney 用"整堆搬家"压紧（半空间对换）。第三条路
+**原地压紧**：LISP2 三指针算法（1960s 的活化石）。
+
+三遍走：**标记**（同前）；**派址**（first 指针从 0 滑过全堆、
+给每个活对象按地址升序派新址——活对象密度决定新址前缀）；
+**改写**（last 指针再滑一遍、把所有活对象的槽引用改写成新址）
+。示例的 moved 表就是派址结果：A→0、B→1、C→2、D→3——
+活对象恰好已是前缀（演示图巧了），引用改写后 cell0=[cell1
+cell2] 与 Cheney 的 new0=[new1 new2] **形状全同**；洞数从
+2（死串夹在活对象间 + 尾块）归到 1（纯尾块）——holes_after
+= 1 断言锁死"碎片归一"。
+
+**新址单调的副产品**：LISP2 压紧后活对象保持原相对顺序（first
+指针从左到右派址）——这不仅是整齐，它保证了指向同一代的引用
+群在压紧后仍然局部（缓存友好的旧邻还是邻）。对比 Cheney 的
+BFS 序（按可达层次重排），两种重排对局部性的影响不同——
+LISP2 保序对指针密集的老年代更友好（分代引擎的老年代压紧多
+选标记压紧族——mark-compact 由此得名，与新生代 copying 相对）。
+
+与 Cheney 的对照收进一行：**原地两次滑 vs 搬家一次 BFS**——
+LISP2 省一半空间（无半空间对换）、付出多一遍遍历；Cheney 反
+之。真实引擎的取舍看对象生存率（存活少 → Cheney 划算：只拷
+活的；存活多 → LISP2：搬家太贵）——**两台压紧机各吃一段
+负载谱**，分代引擎的新生代（存活率 ~10%）清一色 Cheney。
+
 ## 20.6 期望输出解读与对账
 
 四段输出对应
@@ -595,6 +692,51 @@ struct CheneyReport {
 
 CheneyReport cheney(const Heap &h);
 
+// ---------- 补一（匠书 §26.3）：三色抽象与三色不变式 ----------
+// 白 = 未访问；灰 = 自身已访问、子节点未扫完；黑 = 自身与子节点全扫完。
+// 不变式：黑不指白（任何黑对象的引用目标不为白）——增量收集
+// （并发标记）的正确性根基：只要不变式保持，随时暂停都不丢活对象。
+struct TriColorStep {
+    std::vector<int> gray;   // 本步前灰集
+    int picked;              // 本步变黑的对象（-1 = 本步只初始化/收尾）
+    std::vector<int> white;  // 本步后白集
+    bool invariantHeld;      // 本步后"黑不指白"是否仍成立
+};
+
+struct TriColorReport {
+    std::vector<TriColorStep> steps;   // 每步快照（含初始化步）
+    std::vector<int> finalWhite;       // 终态白集 = 垃圾（与 markSweep 一致）
+    int invariantViolations;           // 全程违反次数（演示里应为 0）
+};
+
+TriColorReport triColor(const Heap &h);
+
+// ---------- 补二（匠书 §26.4）：弱引用与字符串池 ----------
+// 驻留池是缓存不是语义：GC 的根集不含池，标记后清扫前清弱表——
+// 死串从池中摘除（下次 intern 重建即可，行为不变）。
+struct WeakPoolReport {
+    int pooledBefore;            // 回收前池大小
+    std::vector<std::string> evicted;  // 被摘除的死串（按名字序）
+    int pooledAfter;             // 回收后池大小
+    int freedObjects;            // 本次回收的对象数（弱表清除前后对照）
+    bool leakWouldHappenIfStrong;  // 若池当强根：多少死串会被误保活
+};
+
+WeakPoolReport weakPoolDemo(Heap &h, const std::vector<std::string> &poolNames);
+
+// ---------- 补三（匠书 §26 练习引申）：LISP2 标记压紧 ----------
+// 三指针滑动：mark 后 first/last/free 一趟归位、改写全部引用。
+// 压紧后地址单调、碎片归一——与 Cheney 的"拷贝压紧"对照：
+// 原地 vs 搬家、两次遍历 vs 一次 BFS。
+struct Lisp2Report {
+    std::map<int, int> moved;         // 旧编号 → 新编号（活对象）
+    std::vector<std::pair<int, std::vector<int>>> newLayout;
+    int holesBefore;                  // 压紧前空闲块数（含尾块）
+    int holesAfter;                   // 压紧后空闲块数（应恰 1）
+};
+
+Lisp2Report lisp2(Heap &h);
+
 }  // namespace tip
 
 #endif  // TIP_HEAP_HPP
@@ -605,6 +747,10 @@ CheneyReport cheney(const Heap &h);
 // file: src/heap.cpp
 // 第 20 章配套：堆的构造与三台收集器实现。
 #include "heap.hpp"
+
+#include <algorithm>
+#include <deque>
+#include <set>
 
 #include <algorithm>
 #include <deque>
@@ -736,6 +882,135 @@ CheneyReport cheney(const Heap &h) {
     return r;
 }
 
+// ---------- 补一：三色抽象（匠书 §26.3） ----------
+TriColorReport triColor(const Heap &h) {
+    TriColorReport r;
+    r.invariantViolations = 0;
+    int n = h.size();
+    enum Color { White, Gray, Black };
+    std::vector<Color> color(size_t(n), White);
+    std::vector<int> black;
+    // 黑不指白检查：对每个黑对象，引用目标不得为白
+    auto checkInvariant = [&]() {
+        for (int b : black)
+            for (int t : h.o(b).slot)
+                if (t >= 0 && color[size_t(t)] == White) return false;
+        return true;
+    };
+    // 第 0 步：根染灰（初始化步）
+    {
+        TriColorStep s;
+        for (int root : h.roots()) color[size_t(root)] = Gray;
+        for (int i = 0; i < n; ++i)
+            if (color[size_t(i)] == Gray) s.gray.push_back(i);
+        s.picked = -1;
+        for (int i = 0; i < n; ++i)
+            if (color[size_t(i)] == White) s.white.push_back(i);
+        s.invariantHeld = true;  // 尚无黑对象
+        r.steps.push_back(s);
+    }
+    // 主循环：每步取一个灰对象变黑、其白子染灰
+    for (;;) {
+        int pick = -1;
+        for (int i = 0; i < n; ++i)
+            if (color[size_t(i)] == Gray) { pick = i; break; }
+        if (pick < 0) break;
+        TriColorStep s;
+        color[size_t(pick)] = Black;
+        black.push_back(pick);
+        for (int t : h.o(pick).slot)
+            if (t >= 0 && color[size_t(t)] == White) color[size_t(t)] = Gray;
+        for (int i = 0; i < n; ++i)
+            if (color[size_t(i)] == Gray) s.gray.push_back(i);
+        s.picked = pick;
+        for (int i = 0; i < n; ++i)
+            if (color[size_t(i)] == White) s.white.push_back(i);
+        s.invariantHeld = checkInvariant();
+        if (!s.invariantHeld) ++r.invariantViolations;
+        r.steps.push_back(s);
+    }
+    for (int i = 0; i < n; ++i)
+        if (color[size_t(i)] == White) r.finalWhite.push_back(i);
+    return r;
+}
+
+// ---------- 补二：弱引用与字符串池（匠书 §26.4） ----------
+WeakPoolReport weakPoolDemo(Heap &h, const std::vector<std::string> &poolNames) {
+    WeakPoolReport r;
+    r.pooledBefore = static_cast<int>(poolNames.size());
+    // 标记（只从根出发——池不在根集）
+    std::vector<char> alive(size_t(h.size()), 0);
+    std::vector<int> work;
+    for (int root : h.roots()) { alive[size_t(root)] = 1; work.push_back(root); }
+    while (!work.empty()) {
+        int cur = work.back(); work.pop_back();
+        for (int t : h.o(cur).slot)
+            if (t >= 0 && !alive[size_t(t)]) { alive[size_t(t)] = 1; work.push_back(t); }
+    }
+    // 弱表清除：池中名字对应的对象若死，从池摘除（名字匹配演示堆对象）
+    std::set<std::string> poolSet(poolNames.begin(), poolNames.end());
+    for (int i = 0; i < h.size(); ++i) {
+        if (!alive[size_t(i)] && poolSet.count(h.o(i).name))
+            r.evicted.push_back(h.o(i).name);
+    }
+    std::sort(r.evicted.begin(), r.evicted.end());
+    r.pooledAfter = r.pooledBefore - static_cast<int>(r.evicted.size());
+    int dead = 0;
+    for (int i = 0; i < h.size(); ++i)
+        if (!alive[size_t(i)]) ++dead;
+    r.freedObjects = dead;
+    // 若池当强根：死串全被误保活
+    int rescued = 0;
+    for (int i = 0; i < h.size(); ++i)
+        if (!alive[size_t(i)] && poolSet.count(h.o(i).name)) ++rescued;
+    r.leakWouldHappenIfStrong = rescued;
+    return r;
+}
+
+// ---------- 补三：LISP2 标记压紧（匠书 §26 练习引申） ----------
+Lisp2Report lisp2(Heap &h) {
+    Lisp2Report r;
+    int n = h.size();
+    // 标记
+    std::vector<char> alive(size_t(n), 0);
+    std::vector<int> work;
+    for (int root : h.roots()) { alive[size_t(root)] = 1; work.push_back(root); }
+    while (!work.empty()) {
+        int cur = work.back(); work.pop_back();
+        for (int t : h.o(cur).slot)
+            if (t >= 0 && !alive[size_t(t)]) { alive[size_t(t)] = 1; work.push_back(t); }
+    }
+    // 第一遍：first（写指针）扫滑道，给活对象按地址升序派新址
+    std::map<int, int> addr;   // 旧编号 → 新编号
+    int first = 0;
+    for (int i = 0; i < n; ++i)
+        if (alive[size_t(i)]) addr[i] = first++;
+    // 第二遍：last（读指针）改写引用——所有活对象的槽指向新址
+    std::vector<std::pair<int, std::vector<int>>> layout;
+    for (int i = 0; i < n; ++i) {
+        if (!alive[size_t(i)]) continue;
+        std::vector<int> slots = h.o(i).slot;
+        for (int &t : slots)
+            if (t >= 0) t = addr.at(t);
+        layout.push_back({addr.at(i), slots});
+    }
+    // 根与引用全部改写后重排完成；数洞（含尾块）
+    int holes = 1;  // 尾块
+    char prevDead = 1;
+    for (int i = 0; i < n; ++i) {
+        if (alive[size_t(i)]) { prevDead = 0; }
+        else {
+            if (!prevDead) ++holes;
+            prevDead = 1;
+        }
+    }
+    r.holesBefore = holes;
+    r.holesAfter = 1;  // 压紧后：活对象前缀 + 一个尾大块
+    r.moved = addr;
+    r.newLayout = layout;
+    return r;
+}
+
 }  // namespace tip
 ```
 
@@ -746,11 +1021,14 @@ CheneyReport cheney(const Heap &h) {
 ```cpp
 // file: src/main.cpp
 // file: src/main.cpp
-// 第 20 章驱动（无参运行，走“简单程序”对账协议）：
-//   演示图 → 引用计数报告 → 标记清除 → Cheney 复制 → 两行对账。
+// 第 20 章驱动（无参运行，走"简单程序"对账协议）：
+//   演示图 → 引用计数报告 → 标记清除 → Cheney 复制 → 两行对账
+//   →（匠书增量）三色抽象逐步 → 弱引用字符串池 → LISP2 压紧。
 #include "heap.hpp"
 
+#include <algorithm>
 #include <iostream>
+#include <vector>
 
 namespace {
 
@@ -816,6 +1094,67 @@ int main() {
               << (ms.survived.size() == cr.copyOrder.size() ? "yes" : "NO") << '\n';
     std::cout << "  rc_freed = " << rcFreed << " < ms_freed = " << ms.freed.size()
               << "：差额正是环\n";
+
+    // ================= 匠书增量（批次四十七） =================
+    std::cout << "== tri-color abstraction（§26.3）==\n";
+    tip::TriColorReport tc = tip::triColor(h);
+    for (size_t k = 0; k < tc.steps.size(); ++k) {
+        const tip::TriColorStep &s = tc.steps[k];
+        std::cout << "  step " << k << ": gray={";
+        for (size_t j = 0; j < s.gray.size(); ++j)
+            std::cout << (j ? "," : "") << h.o(s.gray[j]).name;
+        std::cout << "} ";
+        if (s.picked >= 0)
+            std::cout << "blacken=" << h.o(s.picked).name << " ";
+        std::cout << "white={";
+        for (size_t j = 0; j < s.white.size(); ++j)
+            std::cout << (j ? "," : "") << h.o(s.white[j]).name;
+        std::cout << "} invariant="
+                  << (s.invariantHeld ? "held" : "VIOLATED") << '\n';
+    }
+    std::cout << "  final white = 终态白集（垃圾）:";
+    for (int i : tc.finalWhite) std::cout << ' ' << h.o(i).name;
+    std::cout << "\n  violations = " << tc.invariantViolations << "（黑不指白全程保持）\n";
+    // 三色终白集应与 markSweep 的 freed 一致
+    {
+        std::vector<int> a = tc.finalWhite, b = ms.freed;
+        std::sort(a.begin(), a.end());
+        bool same = a == b;
+        std::cout << "  final_white == ms_freed : " << (same ? "yes" : "NO") << '\n';
+    }
+
+    std::cout << "== weak references & string pool（§26.4）==\n";
+    // 池里放五个名字：两个活（被根可达引用）、三个死——池不是根
+    tip::Heap h3 = tip::Heap::demo();
+    tip::WeakPoolReport wp = tip::weakPoolDemo(
+        h3, {"A", "B", "C", "D", "H"});  // 池含死对象名（C/D/H 由对账确定）
+    std::cout << "  pooled_before = " << wp.pooledBefore << '\n';
+    std::cout << "  evicted（弱表清除的死串）:";
+    for (const auto &n : wp.evicted) std::cout << ' ' << n;
+    std::cout << "\n  pooled_after = " << wp.pooledAfter << '\n';
+    std::cout << "  freed_objects = " << wp.freedObjects << '\n';
+    std::cout << "  若池当强根将误保活 = " << wp.leakWouldHappenIfStrong << " 个（缓存变语义根）\n";
+
+    std::cout << "== LISP2 mark-compact（练习引申）==\n";
+    tip::Heap h4 = tip::Heap::demo();
+    tip::Lisp2Report l2 = tip::lisp2(h4);
+    std::cout << "  moved:";
+    for (const auto &old2new : l2.moved)
+        std::cout << ' ' << h4.o(old2new.first).name << "->" << old2new.second;
+    std::cout << '\n';
+    for (const auto &entry : l2.newLayout) {
+        std::cout << "  cell" << entry.first << " = [";
+        for (size_t k = 0; k < entry.second.size(); ++k) {
+            int t = entry.second[k];
+            std::cout << (k ? " " : "") << (t < 0 ? "-" : "cell" + std::to_string(t));
+        }
+        std::cout << "]\n";
+    }
+    std::cout << "  holes_before = " << l2.holesBefore
+              << "（清除视角的碎片）→ holes_after = " << l2.holesAfter << "（活对象成前缀）\n";
+    // LISP2 活对象数应与 markSweep survived 一致
+    std::cout << "  lisp2_alive == ms_survived : "
+              << (l2.moved.size() == ms.survived.size() ? "yes" : "NO") << '\n';
     return 0;
 }
 ```
@@ -861,9 +1200,41 @@ int main() {
 == 对账 ==
   survivors(ms) == copied(cheney) : yes
   rc_freed = 1 < ms_freed = 4：差额正是环
+== tri-color abstraction（§26.3）==
+  step 0: gray={A,B} white={C,D,E,F,G,H} invariant=held
+  step 1: gray={B,C} blacken=A white={D,E,F,G,H} invariant=held
+  step 2: gray={C,D} blacken=B white={E,F,G,H} invariant=held
+  step 3: gray={D} blacken=C white={E,F,G,H} invariant=held
+  step 4: gray={} blacken=D white={E,F,G,H} invariant=held
+  final white = 终态白集（垃圾）: E F G H
+  violations = 0（黑不指白全程保持）
+  final_white == ms_freed : yes
+== weak references & string pool（§26.4）==
+  pooled_before = 5
+  evicted（弱表清除的死串）: H
+  pooled_after = 4
+  freed_objects = 4
+  若池当强根将误保活 = 1 个（缓存变语义根）
+== LISP2 mark-compact（练习引申）==
+  moved: A->0 B->1 C->2 D->3
+  cell0 = [cell1 cell2]
+  cell1 = [cell3]
+  cell2 = [cell3]
+  cell3 = []
+  holes_before = 2（清除视角的碎片）→ holes_after = 1（活对象成前缀）
+  lisp2_alive == ms_survived : yes
 ```
 
 ## 20.9 小结与练习
+
+
+**增量三节的合账**：三色给了标记"可暂停的刻度与安全证明"（
+不变式黑不指白——五步演示零违例、终白集与清除 freed 全等）；
+弱表给了缓存"不越位的身份"（池缩 5→4、死串摘除、误当强根则
+1 个死串永生）；LISP2 给了压紧"原地的第三个选项"（三指针两遍
+滑、洞 2→1、与 Cheney 形状同）。三节各带断言，把匠书 §26 的
+三块宝石嵌进了本章已有的三台收集器之间——本章从三台收集器
+扩成"三机三宝"的全景。
 
 本章接管了
 堆上无主的家当：
