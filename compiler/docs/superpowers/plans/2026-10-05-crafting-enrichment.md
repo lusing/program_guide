@@ -234,8 +234,8 @@ uint32_t fnv1a(const std::string&);  // FNV-1a 32 位
 4. 同一变量被两个闭包捕获：一写一读共享（输出证明共享同一 upvalue）。
 5. 结构断言：close 后 openUpvalues 链表为空（VM 内校验打印）；开放期间两闭包的 upvalue 指针相同（共享）。
 
-- [ ] src（55 副本+扩展）→ 断言 → expected → 正文（五节）→ 三层绿
-- [ ] Commit: `feat(compiler): 批次四十六——57 上值与闭包`
+- [x] src（55 副本+扩展）→ 断言 → expected → 正文（五节）→ 三层绿
+- [x] Commit: `feat(compiler): 批次四十六——57 上值与闭包`
 
 ### Task 8: 20 章 GC 补三色抽象与弱引用（批四十七）
 
