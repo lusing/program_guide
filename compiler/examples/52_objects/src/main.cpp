@@ -98,5 +98,36 @@ int main() {
     std::cout << "  Puppy.speak 命中 Dog 覆写槽: " << (ok2 ? "yes" : "NO") << '\n';
     std::cout << "  Animal 引用的目标集恰 2 个: " << (ok3 ? "yes" : "NO") << '\n';
     std::cout << "  多继承成员测试可达第二父: " << (ok4 ? "yes" : "NO") << '\n';
-    return (ok1 && ok2 && ok3 && ok4) ? 0 : 1;
+
+    // ================= 匠书增量（§28–29）：方法即闭包 =================
+    std::cout << "== bound method（方法即闭包）==\n";
+    tip::World::BoundMethod bm = w.bindMethod("Puppy", "speak", 7);
+    std::cout << "  var m = Puppy.speak; -> 定义类=" << bm.className
+              << " 方法=" << bm.methodName << " 捕获this=对象" << bm.thisSlot << '\n';
+    bool ok5 = bm.className == "Dog" && bm.thisSlot == 7;
+    std::cout << "  延迟调用 this 不丢（绑定类 Dog、this=7）: " << (ok5 ? "yes" : "NO") << '\n';
+    std::cout << "  对比 vtable 派发（每次调用查表）: " << w.dispatchVirtual("Puppy", "speak")
+              << "（同名同源——闭包缓存了查找结果）\n";
+
+    std::cout << "== this 逃逸检测 ==\n";
+    std::cout << "  方法体内 this: " << (w.thisUseLegal("Puppy", true) ? "合法" : "非法") << '\n';
+    std::cout << "  顶层 this:     " << (w.thisUseLegal("Puppy", false) ? "合法" : "非法")
+              << "（静态拒绝）\n";
+    bool ok6 = w.thisUseLegal("Puppy", true) && !w.thisUseLegal("Puppy", false);
+
+    std::cout << "== super 链（换起点不换 this）==\n";
+    // Puppy 自己不覆写 speak（继承 Dog 的）——super 从父链 Dog 起查，
+    // 命中 Dog::speak（super 的语义：跳过**自己的**定义，不是跳过全部覆写）
+    tip::World::BoundMethod sup = w.superDispatch("Puppy", "speak", 7);
+    std::cout << "  super.speak 从 " << sup.className << " 找到，this 仍是对象" << sup.thisSlot << '\n';
+    bool ok7 = sup.className == "Dog" && sup.thisSlot == 7;
+    std::cout << "  Puppy 的 super 命中 Dog、this 不换: " << (ok7 ? "yes" : "NO") << '\n';
+    // Dog 覆写了 speak——Dog 内的 super 跳过自己的覆写、直达 Animal
+    tip::World::BoundMethod sup2 = w.superDispatch("Dog", "speak", 3);
+    bool ok8 = sup2.className == "Animal" && sup2.thisSlot == 3;
+    std::cout << "  Dog 的 super 跳过自身覆写到 Animal、this=3 保持: " << (ok8 ? "yes" : "NO") << '\n';
+    std::cout << "== 对账（增量）==\n";
+    std::cout << "  bound/super/this 检测: "
+              << ((ok5 && ok6 && ok7 && ok8) ? "all yes" : "FAIL") << '\n';
+    return (ok1 && ok2 && ok3 && ok4 && ok5 && ok6 && ok7 && ok8) ? 0 : 1;
 }

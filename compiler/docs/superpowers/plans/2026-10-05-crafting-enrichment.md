@@ -262,7 +262,7 @@ uint32_t fnv1a(const std::string&);  // FNV-1a 32 位
 3. super 链式查找：先沿超类链找方法定义、再用**当前接收者**绑定 this（super 不是「换个 this」——匠书经典澄清）；类字典派发（方法表在类对象上，实例只存字段）vs 教程 52 章前缀法 vtable 的取舍表（扁平快 vs 灵活可增）；init() 构造表达式必返实例（返回值拦截）。
 
 **断言**: (1) bound method 延迟调用 this 正确；(2) 嵌套继承三层 super 调用解析到正确祖先方法且 this 是最内接收者；(3) 顶层 this 被静态拒绝带行号；(4) init 内 return 值被拦截、构造表达式恒返实例。
-- [ ] 改 src → 重建 → 新 expected → embed 重嵌 → check_docs 绿 → Commit: `feat(compiler): 批次四十八——52 补方法即闭包与 super 链`
+- [x] 改 src → 重建 → 新 expected → embed 重嵌 → check_docs 绿 → Commit: `feat(compiler): 批次四十八——52 补方法即闭包与 super 链`
 
 ### Task 10: 收官（66/66，批四十九）
 

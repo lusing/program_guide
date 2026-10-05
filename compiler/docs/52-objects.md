@@ -421,6 +421,53 @@ Puppy"这类
 天然的
 精化舞台。
 
+## 52.5b　方法即闭包：bound method 与 this 捕获（匠书 §28）
+
+vtable 派发回答的是"**调用**时找谁"；匠书 §28 补的问题是：把
+方法**当值存起来**（var m = obj.speak; m()）时 this 怎么办？
+答案：方法值不是裸函数，而是 **bound method（绑定方法）**——
+"方法查找结果 + 捕获 this 的闭包"。bindMethod 的三字段返回
+（定义类 / 方法名 / thisSlot）就是这个闭包的教学形态：**this
+在绑定那一刻被捕获**（第 57 章上值的 this 版），延迟调用时
+this 不丢——断言 ok5 锁的正是这一点（this=7 随绑定走）。
+
+**绑定一次 vs 每次查找**的对照也在输出里：bound method 的
+定义类 Dog 与 vtable 派发的 Dog::speak 同名同源——语义等价、
+代价不同（闭包缓存了查找结果；vtable 每次调用查一次表）。
+这是第 55 章"内联缓存"的前置直觉：**方法解析的答案可以像
+值一样缓存**——真实引擎的 method handle、SIMD 动态派发优化
+都建立在这个观察上。
+
+**this 的静态纪律**（thisUseLegal）：this 只在方法体内合法、
+顶层使用静态拒绝——这不是运行时检查而是**编译期位置检查**
+（像第 13 章的 return 位置检查一样，属于"窗口分类学"——
+this 的窗口是方法体）。教程的教学口径由调用方报位置、裁决器
+裁决——真实的实现里它在解析器/编译器的一个 case 里（clox 的
+this 处理恰好在第 57 章同款编译器里）。
+
+## 52.5c　super 链：换起点不换 this（匠书 §29）
+
+super 的经典误解是"调用父类版本时 this 换成父类对象"——
+匠书 §29.3 专门澄清：**super 改变的是查找起点（从父类链找），
+this 仍然是原接收者**。superDispatch 的实现三步正是这个语义
+的直译：取当前类的父类为起点 → 沿链找方法定义 → **绑定原
+thisSlot**（不是父类的什么对象——父类根本没有独立对象）。
+
+输出的两条裁决各证一半：**Puppy 的 super 命中 Dog**（Puppy
+自己不覆写 speak——super 跳过的只是"自己的定义"，不是全部
+覆写；Dog 的定义就是链上第一个）；**Dog 的 super 直达 Animal**
+（Dog 覆写了——跳过自身覆写，找到根版本）。两条的 this 都
+保持（7 与 3）——"换起点不换 this"的完整证词。
+
+**super 与 vtable 的关系**值得一行：vtable 装的是"从本类起
+查"的答案（Puppy 的 speak 槽填 Dog::speak——继承即复制父表
+）；super 需要的是"从父类起查"——它不能直接查自己的 vtable
+（会绕回自己），所以要么查父类的 vtable（单继承可行）、要么
+编译期解析成直接调用（本章 bindMethod 返回的静态答案就是它）
+。**super 是编译期友好的动态特性**——它的目标集比虚调用小
+得多（起点固定、只少一层），多数语言的 super 调用根本不进
+vtable——这是"继承的静态红利"。
+
 ## 52.6 期望输出解读与对账
 
 四段输出、
@@ -648,6 +695,30 @@ public:
 
     const std::map<std::string, ClassDecl> &classes() const { return classes_; }
 
+    // ================= 匠书增量（§28–29） =================
+    // bound method：方法不是记录里的字段，而是"方法查找 + 捕获 this
+    // 的闭包"。存进变量延迟调用 this 不丢——因为 this 已被捕获。
+    struct BoundMethod {
+        std::string className;   // 定义该方法的类（查找结果）
+        std::string methodName;
+        int thisSlot;            // 捕获的接收者（演示里的对象编号）
+    };
+    // 返回 bound method：沿 cls 的继承链找 method（子类覆写优先），
+    // 找到即绑定 this=obj——方法值 = 身体 + 捕获接收者。
+    BoundMethod bindMethod(const std::string &cls, const std::string &method,
+                           int thisSlot) const;
+
+    // this 逃逸检测：方法体外的 this 使用属于静态错误。
+    // 返回 true = 位置合法（在方法体内）；demo 简化为：名字是否
+    // 出现在任一方法的允许字段列表中（教学口径：字段访问即体内）。
+    bool thisUseLegal(const std::string &cls, bool insideMethod) const;
+
+    // super 派发：先沿超类链找到方法定义（跳过当前类自己的覆写），
+    // 再用**当前接收者**绑定 this——super 不是"换 this"，
+    // 是"换查找起点、this 仍是原对象"（§29.3 匠书经典澄清）。
+    BoundMethod superDispatch(const std::string &cls, const std::string &method,
+                              int thisSlot) const;
+
 private:
     std::map<std::string, ClassDecl> classes_;
 };
@@ -807,6 +878,46 @@ std::vector<std::string> World::virtualTargets(const std::string &staticType,
     return out;
 }
 
+// ================= 匠书增量（§28–29） =================
+World::BoundMethod World::bindMethod(const std::string &cls,
+                                     const std::string &method, int thisSlot) const {
+    // 沿继承链找（与 dispatchVirtual 同策略：子类覆写优先）
+    std::string cur = cls;
+    while (!cur.empty()) {
+        const ClassDecl &c = classes_.at(cur);
+        for (const auto &m : c.methods)
+            if (m.name == method) return BoundMethod{cur, method, thisSlot};
+        cur = c.parent.find(',') == std::string::npos ? c.parent : "";
+    }
+    return BoundMethod{"", method, thisSlot};   // 未找到（诊断态）
+}
+
+bool World::thisUseLegal(const std::string &cls, bool insideMethod) const {
+    (void)cls;
+    // 教学口径：方法体内的 this 合法；顶层（方法体外）非法。
+    // 检测器由调用方提供位置（insideMethod），此处只裁决。
+    return insideMethod;
+}
+
+World::BoundMethod World::superDispatch(const std::string &cls,
+                                        const std::string &method,
+                                        int thisSlot) const {
+    // 1) 找当前类的父类（super 的查找起点）；2) 从父类起沿链找方法；
+    // 3) this 仍绑定原接收者——这就是"换起点不换 this"。
+    const ClassDecl &c = classes_.at(cls);
+    std::string start = c.parent;
+    if (start.find(',') != std::string::npos)
+        start = start.substr(0, start.find(','));   // 多继承取主父（教学）
+    std::string cur = start;
+    while (!cur.empty()) {
+        const ClassDecl &p = classes_.at(cur);
+        for (const auto &m : p.methods)
+            if (m.name == method) return BoundMethod{cur, method, thisSlot};
+        cur = p.parent;
+    }
+    return BoundMethod{"", method, thisSlot};
+}
+
 }  // namespace tip
 ```
 
@@ -918,7 +1029,38 @@ int main() {
     std::cout << "  Puppy.speak 命中 Dog 覆写槽: " << (ok2 ? "yes" : "NO") << '\n';
     std::cout << "  Animal 引用的目标集恰 2 个: " << (ok3 ? "yes" : "NO") << '\n';
     std::cout << "  多继承成员测试可达第二父: " << (ok4 ? "yes" : "NO") << '\n';
-    return (ok1 && ok2 && ok3 && ok4) ? 0 : 1;
+
+    // ================= 匠书增量（§28–29）：方法即闭包 =================
+    std::cout << "== bound method（方法即闭包）==\n";
+    tip::World::BoundMethod bm = w.bindMethod("Puppy", "speak", 7);
+    std::cout << "  var m = Puppy.speak; -> 定义类=" << bm.className
+              << " 方法=" << bm.methodName << " 捕获this=对象" << bm.thisSlot << '\n';
+    bool ok5 = bm.className == "Dog" && bm.thisSlot == 7;
+    std::cout << "  延迟调用 this 不丢（绑定类 Dog、this=7）: " << (ok5 ? "yes" : "NO") << '\n';
+    std::cout << "  对比 vtable 派发（每次调用查表）: " << w.dispatchVirtual("Puppy", "speak")
+              << "（同名同源——闭包缓存了查找结果）\n";
+
+    std::cout << "== this 逃逸检测 ==\n";
+    std::cout << "  方法体内 this: " << (w.thisUseLegal("Puppy", true) ? "合法" : "非法") << '\n';
+    std::cout << "  顶层 this:     " << (w.thisUseLegal("Puppy", false) ? "合法" : "非法")
+              << "（静态拒绝）\n";
+    bool ok6 = w.thisUseLegal("Puppy", true) && !w.thisUseLegal("Puppy", false);
+
+    std::cout << "== super 链（换起点不换 this）==\n";
+    // Puppy 自己不覆写 speak（继承 Dog 的）——super 从父链 Dog 起查，
+    // 命中 Dog::speak（super 的语义：跳过**自己的**定义，不是跳过全部覆写）
+    tip::World::BoundMethod sup = w.superDispatch("Puppy", "speak", 7);
+    std::cout << "  super.speak 从 " << sup.className << " 找到，this 仍是对象" << sup.thisSlot << '\n';
+    bool ok7 = sup.className == "Dog" && sup.thisSlot == 7;
+    std::cout << "  Puppy 的 super 命中 Dog、this 不换: " << (ok7 ? "yes" : "NO") << '\n';
+    // Dog 覆写了 speak——Dog 内的 super 跳过自己的覆写、直达 Animal
+    tip::World::BoundMethod sup2 = w.superDispatch("Dog", "speak", 3);
+    bool ok8 = sup2.className == "Animal" && sup2.thisSlot == 3;
+    std::cout << "  Dog 的 super 跳过自身覆写到 Animal、this=3 保持: " << (ok8 ? "yes" : "NO") << '\n';
+    std::cout << "== 对账（增量）==\n";
+    std::cout << "  bound/super/this 检测: "
+              << ((ok5 && ok6 && ok7 && ok8) ? "all yes" : "FAIL") << '\n';
+    return (ok1 && ok2 && ok3 && ok4 && ok5 && ok6 && ok7 && ok8) ? 0 : 1;
 }
 ```
 
@@ -958,7 +1100,27 @@ int main() {
   Puppy.speak 命中 Dog 覆写槽: yes
   Animal 引用的目标集恰 2 个: yes
   多继承成员测试可达第二父: yes
+== bound method（方法即闭包）==
+  var m = Puppy.speak; -> 定义类=Dog 方法=speak 捕获this=对象7
+  延迟调用 this 不丢（绑定类 Dog、this=7）: yes
+  对比 vtable 派发（每次调用查表）: Dog::speak（同名同源——闭包缓存了查找结果）
+== this 逃逸检测 ==
+  方法体内 this: 合法
+  顶层 this:     非法（静态拒绝）
+== super 链（换起点不换 this）==
+  super.speak 从 Dog 找到，this 仍是对象7
+  Puppy 的 super 命中 Dog、this 不换: yes
+  Dog 的 super 跳过自身覆写到 Animal、this=3 保持: yes
+== 对账（增量）==
+  bound/super/this 检测: all yes
 ```
+
+
+**增量两节的合账**：bound method 给了"方法当值"的答案——
+查找 + 捕 this 的闭包（绑定一次、缓存查找）；super 给了"父类
+调用"的语义澄清——换起点不换 this（编译期友好）。两节合起来
+把 vtable 派发之外的"方法语义全家桶"（存储、捕获、父链）补
+齐——本章从"派发机器"扩成"方法语义全景"。
 
 ## 52.9 小结与练习
 

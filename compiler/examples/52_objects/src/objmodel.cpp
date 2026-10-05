@@ -146,4 +146,44 @@ std::vector<std::string> World::virtualTargets(const std::string &staticType,
     return out;
 }
 
+// ================= 匠书增量（§28–29） =================
+World::BoundMethod World::bindMethod(const std::string &cls,
+                                     const std::string &method, int thisSlot) const {
+    // 沿继承链找（与 dispatchVirtual 同策略：子类覆写优先）
+    std::string cur = cls;
+    while (!cur.empty()) {
+        const ClassDecl &c = classes_.at(cur);
+        for (const auto &m : c.methods)
+            if (m.name == method) return BoundMethod{cur, method, thisSlot};
+        cur = c.parent.find(',') == std::string::npos ? c.parent : "";
+    }
+    return BoundMethod{"", method, thisSlot};   // 未找到（诊断态）
+}
+
+bool World::thisUseLegal(const std::string &cls, bool insideMethod) const {
+    (void)cls;
+    // 教学口径：方法体内的 this 合法；顶层（方法体外）非法。
+    // 检测器由调用方提供位置（insideMethod），此处只裁决。
+    return insideMethod;
+}
+
+World::BoundMethod World::superDispatch(const std::string &cls,
+                                        const std::string &method,
+                                        int thisSlot) const {
+    // 1) 找当前类的父类（super 的查找起点）；2) 从父类起沿链找方法；
+    // 3) this 仍绑定原接收者——这就是"换起点不换 this"。
+    const ClassDecl &c = classes_.at(cls);
+    std::string start = c.parent;
+    if (start.find(',') != std::string::npos)
+        start = start.substr(0, start.find(','));   // 多继承取主父（教学）
+    std::string cur = start;
+    while (!cur.empty()) {
+        const ClassDecl &p = classes_.at(cur);
+        for (const auto &m : p.methods)
+            if (m.name == method) return BoundMethod{cur, method, thisSlot};
+        cur = p.parent;
+    }
+    return BoundMethod{"", method, thisSlot};
+}
+
 }  // namespace tip

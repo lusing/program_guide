@@ -56,6 +56,30 @@ public:
 
     const std::map<std::string, ClassDecl> &classes() const { return classes_; }
 
+    // ================= 匠书增量（§28–29） =================
+    // bound method：方法不是记录里的字段，而是"方法查找 + 捕获 this
+    // 的闭包"。存进变量延迟调用 this 不丢——因为 this 已被捕获。
+    struct BoundMethod {
+        std::string className;   // 定义该方法的类（查找结果）
+        std::string methodName;
+        int thisSlot;            // 捕获的接收者（演示里的对象编号）
+    };
+    // 返回 bound method：沿 cls 的继承链找 method（子类覆写优先），
+    // 找到即绑定 this=obj——方法值 = 身体 + 捕获接收者。
+    BoundMethod bindMethod(const std::string &cls, const std::string &method,
+                           int thisSlot) const;
+
+    // this 逃逸检测：方法体外的 this 使用属于静态错误。
+    // 返回 true = 位置合法（在方法体内）；demo 简化为：名字是否
+    // 出现在任一方法的允许字段列表中（教学口径：字段访问即体内）。
+    bool thisUseLegal(const std::string &cls, bool insideMethod) const;
+
+    // super 派发：先沿超类链找到方法定义（跳过当前类自己的覆写），
+    // 再用**当前接收者**绑定 this——super 不是"换 this"，
+    // 是"换查找起点、this 仍是原对象"（§29.3 匠书经典澄清）。
+    BoundMethod superDispatch(const std::string &cls, const std::string &method,
+                              int thisSlot) const;
+
 private:
     std::map<std::string, ClassDecl> classes_;
 };

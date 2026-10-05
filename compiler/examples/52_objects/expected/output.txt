@@ -30,3 +30,16 @@
   Puppy.speak 命中 Dog 覆写槽: yes
   Animal 引用的目标集恰 2 个: yes
   多继承成员测试可达第二父: yes
+== bound method（方法即闭包）==
+  var m = Puppy.speak; -> 定义类=Dog 方法=speak 捕获this=对象7
+  延迟调用 this 不丢（绑定类 Dog、this=7）: yes
+  对比 vtable 派发（每次调用查表）: Dog::speak（同名同源——闭包缓存了查找结果）
+== this 逃逸检测 ==
+  方法体内 this: 合法
+  顶层 this:     非法（静态拒绝）
+== super 链（换起点不换 this）==
+  super.speak 从 Dog 找到，this 仍是对象7
+  Puppy 的 super 命中 Dog、this 不换: yes
+  Dog 的 super 跳过自身覆写到 Animal、this=3 保持: yes
+== 对账（增量）==
+  bound/super/this 检测: all yes
