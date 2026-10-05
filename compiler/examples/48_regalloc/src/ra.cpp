@@ -96,10 +96,57 @@ ColorResult colorGraph(const InterfGraph &g, int k) {
     r.ok = false;
     std::set<std::string> nodes;
     for (const auto &kv : g.adj) nodes.insert(kv.first);
+
+    // ---------- Briggs 安全合并（虎书 §11.2）----------
+    // move 边 (a,b) 合并条件：合并后 a 的邻居中度 < k 的个数
+    // 不少于 a、b 两邻居集（去掉对方）中度 < k 的个数——
+    // 保证合并后的图仍可被 simplify 化简（保守不伤着色性）。
+    std::map<std::string, std::set<std::string>> adj = g.adj;
+    // deg 用 find 不用 operator[]——后者会给已删除的节点“复活”出空邻接表！
+    auto deg = [&](const std::string &v) {
+        auto it = adj.find(v);
+        return it == adj.end() ? 0 : static_cast<int>(it->second.size());
+    };
+    for (int round = 0; round < 10; ++round) {   // 合并到不动点（上限保险）
+        bool merged = false;
+        for (const auto &pr : g.moveEdges) {
+            const std::string &a = pr.first, &b = pr.second;
+            if (deg(a) == 0 || deg(b) == 0) continue;
+            if (!adj.count(a) || !adj.count(b)) continue;
+            if (adj[a].count(b)) continue;   // 已干涉，不可合并
+            // Briggs 准则
+            std::set<std::string> unionN;
+            unionN.insert(adj[a].begin(), adj[a].end());
+            unionN.insert(adj[b].begin(), adj[b].end());
+            unionN.erase(a);
+            unionN.erase(b);
+            int significant = 0;
+            for (const auto &n : unionN)
+                if (deg(n) >= k) ++significant;
+            if (significant >= k) continue;   // 合并会产生度 ≥ k 的显著邻居过多
+            // 执行合并：b 并入 a
+            for (const auto &n : adj[b]) {
+                if (n == a) continue;
+                adj[n].erase(b);
+                adj[n].insert(a);
+                adj[a].insert(n);
+            }
+            adj.erase(b);
+            ++r.coalesced;
+            merged = true;
+            break;   // 一轮一合并（教学清晰；工作表版整轮扫）
+        }
+        if (!merged) break;
+    }
+
+    fprintf(stderr, "[coalesce done] keys:");
+    for (const auto &kv : adj) fprintf(stderr, " %s", kv.first.c_str());
+    fprintf(stderr, "\n");
     // simplify：反复把度 < k 的点压栈（从图上摘下）；
     // 摘不掉且还有点 → 记溢出候选（度最大者）并继续。
-    std::map<std::string, std::set<std::string>> adj = g.adj;
-    std::set<std::string> remaining = nodes;
+    std::map<std::string, std::set<std::string>> adjMerge = adj;   // select 用合并图
+    std::set<std::string> remaining;
+    for (const auto &kv : adj) remaining.insert(kv.first);
     while (!remaining.empty()) {
         bool progressed = false;
         for (const auto &v : remaining) {
@@ -130,7 +177,7 @@ ColorResult colorGraph(const InterfGraph &g, int k) {
     for (auto it = r.stackOrder.rbegin(); it != r.stackOrder.rend(); ++it) {
         const std::string &v = *it;
         std::set<int> used;
-        for (const auto &u : g.adj.at(v)) {
+        for (const auto &u : adjMerge.at(v)) {
             auto cit = r.color.find(u);
             if (cit != r.color.end()) used.insert(cit->second);
         }

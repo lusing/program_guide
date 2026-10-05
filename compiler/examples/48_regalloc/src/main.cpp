@@ -105,6 +105,7 @@ int main(int argc, char **argv) {
         std::cout << "（溢出改写留作练习；本表未含溢出者）\n";
     }
     std::cout << "  spill-free: " << (cr.ok ? "yes" : "no") << '\n';
+    std::cout << "  coalesced = " << cr.coalesced << '\n';
 
     std::cout << "== 校验 ==\n";
     // 两种正确结局：无溢出且合法着色；或有溢出（如实报告、改写留作练习）。

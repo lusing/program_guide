@@ -84,7 +84,7 @@
 
 ### 第十篇　代码生成与并行（48–52）
 
-- 51 分支预测与预取（扩充中）—— 二位饱和预测、预取距离、对齐消冲突
+- [51 分支预测与预取](docs/51-predict.md) —— 二位饱和机、静态启发式、预取距离⌈延迟/迭代⌉、对齐消冲突（`examples/51_predict`）
 
 - [43 寄存器分配](docs/48-regalloc.md) —— 干涉图、Chaitin–Briggs 着色、溢出与相邻异色校验（`examples/48_regalloc`）
 - [44 指令选择与窥孔](docs/49-isel-peephole.md) —— 树重建、Ershov 标号、maximal munch、窥孔清扫（`examples/49_isel_peephole`）
@@ -98,6 +98,6 @@
 
 ## 验证状态
 
-53/54 章三层对账全绿；1 个虎书新章扩充中（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
+54/54 全绿（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
 
 每章 = `docs/NN-<slug>.md` + `examples/NN_<slug>/`（章号=示例号）。LLVM 示例的运行需要 MSYS2 UCRT64 工具链在 PATH（`run-all.sh` 自动处理；`tools/example_build.sh <examples/NN_slug> "$(pwd)"` 单独构建一个示例）。

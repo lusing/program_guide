@@ -41,6 +41,7 @@ struct ColorResult {
     std::map<std::string, int> color;      // 变量 → 色（0..k-1）
     std::vector<std::string> stackOrder;   // simplify 出栈序
     std::vector<std::string> spilled;      // 溢出候选
+    int coalesced = 0;                     // Briggs 安全合并次数
 };
 
 ColorResult colorGraph(const InterfGraph &g, int k);
