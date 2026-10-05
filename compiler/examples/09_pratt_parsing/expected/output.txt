@@ -1,0 +1,73 @@
+== 一、Pratt 语料求值 ==
+ok   1+2*3 = 7
+ok   (1+2)*3 = 9
+ok   10-3-2 = 5
+ok   100/10/5 = 2
+ok   2*3/4 = 1
+ok   1+2==3 = 1
+ok   4-1>1+0 = 1
+ok   3>=3 = 1
+ok   2<=1 = 0
+ok   1!=2 = 1
+ok   -3+5 = 2
+ok   -(2-5) = 3
+ok   x+y*2 = 10
+ok   a-b-1 = 7
+ok   abs(3-8)*2 = 10
+ok   max(2,7)+1 = 8
+ok   gcd(12,18)+2 = 8
+ok   2^3^2 = 512
+ok   (2^3)^2 = 64
+ok   -2^2 = 4
+
+== 二、陷阱构造的 AST 形状 ==
+ok   -r.f = (- (. r f))
+ok   *p.f = (* (. p f))
+ok   (*p).f = (. (* p) f)
+ok   *p+1 = (+ (* p) 1)
+ok   &x = (& x)
+ok   f(1)(2) = (call (call f 1) 2)
+ok   -f(3) = (- (call f 3))
+ok   --x = (- (- x))
+
+== 三、与 LL(1) 分层法对账（共同语料）==
+ok   1+2*3（pratt=ll 值） = 7
+ok   1+2*3（pratt=ll 形状） = (+ 1 (* 2 3))
+ok   (1+2)*3（pratt=ll 值） = 9
+ok   (1+2)*3（pratt=ll 形状） = (* (+ 1 2) 3)
+ok   10-3-2（pratt=ll 值） = 5
+ok   10-3-2（pratt=ll 形状） = (- (- 10 3) 2)
+ok   100/10/5（pratt=ll 值） = 2
+ok   100/10/5（pratt=ll 形状） = (/ (/ 100 10) 5)
+ok   2*3/4（pratt=ll 值） = 1
+ok   2*3/4（pratt=ll 形状） = (/ (* 2 3) 4)
+ok   1+2==3（pratt=ll 值） = 1
+ok   1+2==3（pratt=ll 形状） = (== (+ 1 2) 3)
+ok   4-1>1+0（pratt=ll 值） = 1
+ok   4-1>1+0（pratt=ll 形状） = (> (- 4 1) (+ 1 0))
+ok   3>=3（pratt=ll 值） = 1
+ok   3>=3（pratt=ll 形状） = (>= 3 3)
+ok   2<=1（pratt=ll 值） = 0
+ok   2<=1（pratt=ll 形状） = (<= 2 1)
+ok   1!=2（pratt=ll 值） = 1
+ok   1!=2（pratt=ll 形状） = (!= 1 2)
+ok   -3+5（pratt=ll 值） = 2
+ok   -3+5（pratt=ll 形状） = (+ (- 3) 5)
+ok   -(2-5)（pratt=ll 值） = 3
+ok   -(2-5)（pratt=ll 形状） = (- (- 2 5))
+ok   x+y*2（pratt=ll 值） = 10
+ok   x+y*2（pratt=ll 形状） = (+ x (* y 2))
+ok   a-b-1（pratt=ll 值） = 7
+ok   a-b-1（pratt=ll 形状） = (- (- a b) 1)
+ok   --x（pratt=ll 值） = 4
+ok   --x（pratt=ll 形状） = (- (- x))
+
+== 四、结合性实验 ==
+ok   2-3-4 左结合 = -5
+ok   2-3-4 右结合（坏表） = 3
+ok   坏表形状 = (- 2 (- 3 4))
+ok   2^3^2 右结合 = 512
+ok   (2^3)^2 括号强制 = 64
+
+== 五、断言汇总 ==
+全部通过（63 项）
