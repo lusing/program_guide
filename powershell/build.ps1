@@ -44,8 +44,8 @@ foreach ($dir in $dirs) {
         $code = $LASTEXITCODE
         $reportFile = Join-Path $dir.FullName 'report.txt'
         $reportText = if (Test-Path $reportFile) { ([System.IO.File]::ReadAllText($reportFile) -replace "`r`n", "`n").Trim() } else { '' }
-        # 剥离通道专属行（[ch7-only]/[ch51-only] 结尾）后存档
-        $normalized = (@($reportText -split "`n") | Where-Object { $_ -notmatch '\[(ch7-only|ch51-only)\]\s*$' }) -join "`n"
+        # 剥离通道专属行（[ch7-only]/[ch51-only]）与环境依赖行（[env]）后存档对账
+        $normalized = (@($reportText -split "`n") | Where-Object { $_ -notmatch '\[(ch7-only|ch51-only|env)\]\s*$' }) -join "`n"
         [System.IO.File]::WriteAllText((Join-Path $reportDir "$($dir.Name).$name.txt"), $normalized)
         $hasFail = @(@($reportText -split "`n") | Where-Object { $_ -like 'FAIL:*' }).Count -gt 0
         if ($code -ne 0 -or $hasFail) { $row[$name] = 'FAIL' }
