@@ -3,6 +3,7 @@
 #include "re.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <sstream>
 
@@ -435,6 +436,102 @@ std::string Scanner::stats() const {
     os << "rules=" << rules_.size() << " alphabet=" << alpha_.size()
        << " dfa_states=" << dfa_.states();
     return os.str();
+}
+
+// ---------- Brzozowski 最小化（鲸书 §2.6.2） ----------
+
+namespace {
+
+// 广义 NFA：边表表示（逆转后的状态出度无界，三元组装不下）。
+// 多起点：starts 是起点的 ε-闭包种子；stateColor 给出各态接受类（0 = 非接受）。
+struct GenNFA {
+    std::vector<std::array<int, 3>> edges;   // (from, '\0' 表示 ε, to)
+    int n = 0;
+    std::set<int> starts;
+    std::vector<int> stateColor;
+};
+
+GenNFA reverseOf(const NFA &m) {
+    GenNFA g;
+    g.n = static_cast<int>(m.st.size());
+    for (int s = 0; s < g.n; ++s) {
+        if (m.st[s].to1 >= 0) g.edges.push_back({m.st[s].to1, m.st[s].sym1, s});
+        if (m.st[s].to2 >= 0) g.edges.push_back({m.st[s].to2, m.st[s].sym2, s});
+    }
+    g.stateColor.assign(g.n, 0);
+    g.stateColor[m.start] = 1;          // 逆转后：原起点成为（唯一的）接受态
+    g.starts.insert(m.finish);          // 原接受态（Thompson 单一出口）成为起点种子
+    return g;
+}
+
+GenNFA reverseOf(const DFA &d) {
+    GenNFA g;
+    g.n = d.states();
+    for (int s = 0; s < d.states(); ++s)
+        for (const auto &[c, t] : d.trans[s])
+            if (t >= 0) g.edges.push_back({t, c, s});
+    g.stateColor.assign(g.n, 0);
+    g.stateColor[d.start] = 1;          // 原起点成为接受态
+    for (int s = 0; s < d.states(); ++s)
+        if (d.color[s] > 0) g.starts.insert(s);   // 原接受态全体成为起点
+    return g;
+}
+
+// 多起点 ε-闭包子集构造：BFS；子集的接受类 = 集内最小非零类（沿用 scanner 口径）
+DFA subsetGen(const GenNFA &g, const std::set<char> &alphabet) {
+    std::multimap<int, std::pair<char, int>> out;
+    for (const auto &e : g.edges) out.insert({e[0], {static_cast<char>(e[1]), e[2]}});
+    auto closure = [&](std::set<int> s) {
+        std::vector<int> st(s.begin(), s.end());
+        for (size_t i = 0; i < st.size(); ++i)
+            for (auto [it, end] = out.equal_range(st[i]); it != end; ++it)
+                if (it->second.first == '\0' && !s.count(it->second.second)) {
+                    s.insert(it->second.second);
+                    st.push_back(it->second.second);
+                }
+        return s;
+    };
+    DFA d;
+    std::map<std::set<int>, int> index;
+    std::vector<std::set<int>> work{closure(g.starts)};
+    index[work[0]] = 0;
+    d.trans.push_back({});
+    d.color.push_back(0);
+    for (const auto &s0 : work[0])
+        if (g.stateColor[s0] > 0) d.color[0] = d.color[0] == 0 ? g.stateColor[s0]
+                                                               : std::min(d.color[0], g.stateColor[s0]);
+    for (size_t wi = 0; wi < work.size(); ++wi) {
+        for (char c : alphabet) {
+            std::set<int> nxt;
+            for (int s : work[wi])
+                for (auto [it, end] = out.equal_range(s); it != end; ++it)
+                    if (it->second.first == c) nxt.insert(it->second.second);
+            if (nxt.empty()) continue;
+            std::set<int> cl = closure(nxt);
+            if (!index.count(cl)) {
+                index[cl] = static_cast<int>(work.size());
+                work.push_back(cl);
+                d.trans.push_back({});
+                d.color.push_back(0);
+                for (const auto &s : cl)
+                    if (g.stateColor[s] > 0)
+                        d.color.back() = d.color.back() == 0
+                                             ? g.stateColor[s]
+                                             : std::min(d.color.back(), g.stateColor[s]);
+            }
+            d.trans[wi][c] = index[cl];
+        }
+    }
+    return d;
+}
+
+}  // namespace
+
+DFA brzozowski(const NFA &n, const std::set<char> &alphabet) {
+    // 内层：逆转 + 子集构造 ⇒ 消重复后缀；外层再来一遍 ⇒ 消重复前缀 ⇒ 最小
+    DFA d1 = subsetGen(reverseOf(n), alphabet);
+    DFA d2 = subsetGen(reverseOf(d1), alphabet);
+    return d2;
 }
 
 }  // namespace tip

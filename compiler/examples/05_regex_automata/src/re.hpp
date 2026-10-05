@@ -76,6 +76,14 @@ DFA subset(const NFA &n, const std::set<char> &alphabet,
 // 不同优先级的接受态即使行为相同也不可合并（scanner 语义依赖优先级）。
 DFA minimize(const DFA &d, const std::set<char> &alphabet);
 
+// Brzozowski 最小化（鲸书 §2.6.2）：
+//   reachable(subset(reverse(reachable(subset(reverse(n))))))
+// 逆转把 DFA 变 NFA（出度不再受三元组限制），多起点 ε-闭包子集构造照跑。
+// 内层"逆转+子集"消重复后缀，外层再来一遍消重复前缀——产物即最小 DFA，
+// 全程不需要任何分割。代价：子集构造跑两遍（最坏指数），故工程上多用于
+// 小自动机与教学。
+DFA brzozowski(const NFA &n, const std::set<char> &alphabet);
+
 // ---------- 多模式 scanner ----------
 struct TokenRule { std::string name, pat; };
 

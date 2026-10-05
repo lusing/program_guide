@@ -13,6 +13,9 @@ accepts "abba": no
 accepts "ab": no
 accepts "": no
 accepts "babbabb": yes
+== demo: brzozowski ==
+partition(minimize)=4 brzozowski=4
+两法识别一致: yes
 == patterns ==
 IDENT: nfa=205 dfa=53 minimized=2
 NUMBER: nfa=77 dfa=21 minimized=2

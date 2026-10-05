@@ -728,6 +728,239 @@ k > 0 = 第 k 优先级的接受。
 改动只有初始分割一处，
 5.7 节马上用到。
 
+## 5.6b Brzozowski：逆转两次，不分割
+
+分割式
+最小化
+（上面的
+Algorithm
+3.3 与
+工程上的
+Hopcroft）
+是
+主流，
+但
+鲸书
+§2.6.2
+收了
+一颗
+1960
+年代
+的
+遗珠——
+**Brzozowski
+算法**：
+完全
+不做
+分割，
+靠
+**逆转
+两次**
+直接
+构造出
+最小
+DFA：
+
+> reachable
+> (
+> subset
+> (
+> reverse
+> (
+> reachable
+> (
+> subset
+> (
+> reverse
+> (n)
+> )
+> )
+> )
+> )
+> )
+
+直觉
+两步：
+
+- **子集
+  构造
+  消灭
+  重复
+  前缀**：
+  从
+  同一
+  起点
+  出发
+  的
+  不可
+  区分
+  状态，
+  在
+  子集
+  构造
+  里
+  永远
+  被
+  并进
+  同一
+  子集
+  （它们
+  此后
+  行为
+  相同）；
+- **逆转
+  把
+  后缀
+  变
+  前缀**：
+  逆着
+  走，
+  "到达
+  同一
+  接受态
+  的
+  重复
+  后缀"
+  变成
+  "从
+  同一
+  起点
+  出发
+  的
+  重复
+  前缀"——
+  一遍
+  逆转+
+  子集
+  消
+  后缀，
+  再
+  逆回
+  来
+  一遍
+  消
+  前缀，
+  前后
+  都
+  干净
+  =
+  最小。
+
+实现
+上有
+一个
+形状
+坎：
+逆转
+后的
+自动机
+出度
+无界
+（原
+入度
+无界），
+三元组
+NFA
+装
+不下，
+得换
+**边表
+表示**
+（GenNFA）
++
+**多起点**
+ε-闭包
+子集
+构造——
+起点
+种子
+就是
+原
+接受态
+集合。
+这
+恰好
+把
+第
+5.4 节
+的
+子集
+构造
+推广
+了
+一步：
+单
+起点
+是
+多
+起点
+的
+特例。
+
+代价
+也
+明码：
+子集
+构造
+跑
+两遍，
+最坏
+仍是
+指数
+（逆转
+后的
+NFA
+可能
+爆炸）。
+鲸书
+的
+评语
+很
+公道：
+实测
+性能
+不差
+（词法
+器
+规模
+的
+自动机
+很小），
+且
+从
+软件
+工程
+角度，
+**实现
+reverse
++
+subset
+比
+调试
+分割
+算法
+容易**——
+复用
+已有
+的
+子集
+构造
+即可。
+期望
+输出
+的
+对照：
+分割式
+4 态，
+Brzozowski
+4 态，
+七个
+测试
+串
+识别
+全部
+一致。
+
 ## 5.7 多模式 scanner：并联、最长匹配与保留字
 
 ### 5.7.1 并联
@@ -836,6 +1069,31 @@ IDENT 的初版
 正则的"乘法高于加法"
 在 authoring 时
 比看上去更容易咬人。
+
+### 5.6c 与 Brzozowski 段的对账
+
+`demo:
+brzozowski`
+段：两
+法
+状态数
+相等
+（4
+==
+4）、
+七个
+测试
+串
+识别
+一致——
+"逆转
+两次"
+与
+"分割
+到
+不动点"
+殊途
+同归。
 
 ## 5.8 期望输出解读
 
@@ -1052,6 +1310,14 @@ DFA subset(const NFA &n, const std::set<char> &alphabet,
 // 不同优先级的接受态即使行为相同也不可合并（scanner 语义依赖优先级）。
 DFA minimize(const DFA &d, const std::set<char> &alphabet);
 
+// Brzozowski 最小化（鲸书 §2.6.2）：
+//   reachable(subset(reverse(reachable(subset(reverse(n))))))
+// 逆转把 DFA 变 NFA（出度不再受三元组限制），多起点 ε-闭包子集构造照跑。
+// 内层"逆转+子集"消重复后缀，外层再来一遍消重复前缀——产物即最小 DFA，
+// 全程不需要任何分割。代价：子集构造跑两遍（最坏指数），故工程上多用于
+// 小自动机与教学。
+DFA brzozowski(const NFA &n, const std::set<char> &alphabet);
+
 // ---------- 多模式 scanner ----------
 struct TokenRule { std::string name, pat; };
 
@@ -1090,6 +1356,7 @@ private:
 #include "re.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <sstream>
 
@@ -1524,6 +1791,102 @@ std::string Scanner::stats() const {
     return os.str();
 }
 
+// ---------- Brzozowski 最小化（鲸书 §2.6.2） ----------
+
+namespace {
+
+// 广义 NFA：边表表示（逆转后的状态出度无界，三元组装不下）。
+// 多起点：starts 是起点的 ε-闭包种子；stateColor 给出各态接受类（0 = 非接受）。
+struct GenNFA {
+    std::vector<std::array<int, 3>> edges;   // (from, '\0' 表示 ε, to)
+    int n = 0;
+    std::set<int> starts;
+    std::vector<int> stateColor;
+};
+
+GenNFA reverseOf(const NFA &m) {
+    GenNFA g;
+    g.n = static_cast<int>(m.st.size());
+    for (int s = 0; s < g.n; ++s) {
+        if (m.st[s].to1 >= 0) g.edges.push_back({m.st[s].to1, m.st[s].sym1, s});
+        if (m.st[s].to2 >= 0) g.edges.push_back({m.st[s].to2, m.st[s].sym2, s});
+    }
+    g.stateColor.assign(g.n, 0);
+    g.stateColor[m.start] = 1;          // 逆转后：原起点成为（唯一的）接受态
+    g.starts.insert(m.finish);          // 原接受态（Thompson 单一出口）成为起点种子
+    return g;
+}
+
+GenNFA reverseOf(const DFA &d) {
+    GenNFA g;
+    g.n = d.states();
+    for (int s = 0; s < d.states(); ++s)
+        for (const auto &[c, t] : d.trans[s])
+            if (t >= 0) g.edges.push_back({t, c, s});
+    g.stateColor.assign(g.n, 0);
+    g.stateColor[d.start] = 1;          // 原起点成为接受态
+    for (int s = 0; s < d.states(); ++s)
+        if (d.color[s] > 0) g.starts.insert(s);   // 原接受态全体成为起点
+    return g;
+}
+
+// 多起点 ε-闭包子集构造：BFS；子集的接受类 = 集内最小非零类（沿用 scanner 口径）
+DFA subsetGen(const GenNFA &g, const std::set<char> &alphabet) {
+    std::multimap<int, std::pair<char, int>> out;
+    for (const auto &e : g.edges) out.insert({e[0], {static_cast<char>(e[1]), e[2]}});
+    auto closure = [&](std::set<int> s) {
+        std::vector<int> st(s.begin(), s.end());
+        for (size_t i = 0; i < st.size(); ++i)
+            for (auto [it, end] = out.equal_range(st[i]); it != end; ++it)
+                if (it->second.first == '\0' && !s.count(it->second.second)) {
+                    s.insert(it->second.second);
+                    st.push_back(it->second.second);
+                }
+        return s;
+    };
+    DFA d;
+    std::map<std::set<int>, int> index;
+    std::vector<std::set<int>> work{closure(g.starts)};
+    index[work[0]] = 0;
+    d.trans.push_back({});
+    d.color.push_back(0);
+    for (const auto &s0 : work[0])
+        if (g.stateColor[s0] > 0) d.color[0] = d.color[0] == 0 ? g.stateColor[s0]
+                                                               : std::min(d.color[0], g.stateColor[s0]);
+    for (size_t wi = 0; wi < work.size(); ++wi) {
+        for (char c : alphabet) {
+            std::set<int> nxt;
+            for (int s : work[wi])
+                for (auto [it, end] = out.equal_range(s); it != end; ++it)
+                    if (it->second.first == c) nxt.insert(it->second.second);
+            if (nxt.empty()) continue;
+            std::set<int> cl = closure(nxt);
+            if (!index.count(cl)) {
+                index[cl] = static_cast<int>(work.size());
+                work.push_back(cl);
+                d.trans.push_back({});
+                d.color.push_back(0);
+                for (const auto &s : cl)
+                    if (g.stateColor[s] > 0)
+                        d.color.back() = d.color.back() == 0
+                                             ? g.stateColor[s]
+                                             : std::min(d.color.back(), g.stateColor[s]);
+            }
+            d.trans[wi][c] = index[cl];
+        }
+    }
+    return d;
+}
+
+}  // namespace
+
+DFA brzozowski(const NFA &n, const std::set<char> &alphabet) {
+    // 内层：逆转 + 子集构造 ⇒ 消重复后缀；外层再来一遍 ⇒ 消重复前缀 ⇒ 最小
+    DFA d1 = subsetGen(reverseOf(n), alphabet);
+    DFA d2 = subsetGen(reverseOf(d1), alphabet);
+    return d2;
+}
+
 }  // namespace tip
 ```
 
@@ -1608,6 +1971,16 @@ int main(int argc, char **argv) {
     printTable(mini, ab);
     for (const char *s : {"abb", "aabb", "babb", "abba", "ab", "", "babbabb"})
         std::cout << "accepts \"" << s << "\": " << (accepts(mini, s) ? "yes" : "no") << '\n';
+
+    // ---------- 演示一之二：Brzozowski 逆转两次（鲸书 §2.6.2）----------
+    std::cout << "== demo: brzozowski ==\n";
+    tip::DFA bz = tip::brzozowski(nfa, ab);
+    std::cout << "partition(minimize)=" << mini.states()
+              << " brzozowski=" << bz.states() << '\n';
+    bool agree = true;
+    for (const char *s : {"abb", "aabb", "babb", "abba", "ab", "", "babbabb"})
+        if (accepts(mini, s) != accepts(bz, s)) agree = false;
+    std::cout << "两法识别一致: " << (agree && mini.states() == bz.states() ? "yes" : "NO") << '\n';
 
     // ---------- 演示二：TIP token 模式的状态数 ----------
     std::cout << "== patterns ==\n";
@@ -1703,6 +2076,9 @@ accepts "abba": no
 accepts "ab": no
 accepts "": no
 accepts "babbabb": yes
+== demo: brzozowski ==
+partition(minimize)=4 brzozowski=4
+两法识别一致: yes
 == patterns ==
 IDENT: nfa=205 dfa=53 minimized=2
 NUMBER: nfa=77 dfa=21 minimized=2

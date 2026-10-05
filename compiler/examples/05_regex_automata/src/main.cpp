@@ -71,6 +71,16 @@ int main(int argc, char **argv) {
     for (const char *s : {"abb", "aabb", "babb", "abba", "ab", "", "babbabb"})
         std::cout << "accepts \"" << s << "\": " << (accepts(mini, s) ? "yes" : "no") << '\n';
 
+    // ---------- 演示一之二：Brzozowski 逆转两次（鲸书 §2.6.2）----------
+    std::cout << "== demo: brzozowski ==\n";
+    tip::DFA bz = tip::brzozowski(nfa, ab);
+    std::cout << "partition(minimize)=" << mini.states()
+              << " brzozowski=" << bz.states() << '\n';
+    bool agree = true;
+    for (const char *s : {"abb", "aabb", "babb", "abba", "ab", "", "babbabb"})
+        if (accepts(mini, s) != accepts(bz, s)) agree = false;
+    std::cout << "两法识别一致: " << (agree && mini.states() == bz.states() ? "yes" : "NO") << '\n';
+
     // ---------- 演示二：TIP token 模式的状态数 ----------
     std::cout << "== patterns ==\n";
     struct P { const char *name, *pat; std::set<char> alpha; };
