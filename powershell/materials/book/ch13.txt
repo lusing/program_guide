@@ -1,0 +1,541 @@
+
+
+  
+    第13章 远程处理：一对一及一对多
+  
+  
+第13章　远程处理：一对一及一对多 
+
+当首次使用PowerShell（第1版）时，我们最先接触的是Get-Service命令，检查后发现该命令包含一个-ComputerName参数。这是否意味着它也可以读取其他计算机上的服务名称？经过一些简单的测试之后，我们发现的确如此。我们感到很惊喜，同时也查看其他有-ComputerName参数的Cmdlet。令人失望的是，包含该参数的Cmdlet非常少。但在PowerShell（第2版）（新增一系列的命令）后，包含-ComputerName参数的命令数目远远多于不包含该参数的命令数目。 
+
+从那时起，我们意识到PowerShell的开发者有点懒惰——其实，这是好事。因为他们不希望每个Cmdlet都带上-Computer参数，所以他们创建了一个Shell级别的系统，命名为远程处理（Remoting）。该系统使得你可以在一个远程计算机上运行任何Cmdlet。甚至当本地计算机没有包含某些命令时，你也可以直接运行远程计算机上已存在的这些命令（也就是说，你不需要在本地计算机上安装任何管理性质的Cmdlet）。远程处理系统的功能非常强大，它提供了大量有趣的管理功能。 
+
+注意： 
+ 
+ 
+　 
+ 
+远程处理是非常庞大和复杂的一门技术。在本章中，我们会介绍该项技术，同时会覆盖到日常工作中大概80%～90%的场景。正因为我们没有覆盖到全部知识点，所以在本章最后的“进一步探讨”小节中，我们会列出一些学习远程处理全部配置选项的资源。 
+ 
+
+13.1　PowerShell远程处理的原理 
+
+在一定程度上讲，PowerShell的远程处理类似于Telnet或者其他一些老旧的远程处理技术。当键入该命令时，它会在远程计算机上运行。只有该命令的运行结果会返回本地计算机。与Telnet和Secure Shell（SSH）不一样的是，PowerShell采用一种新的通信协议，我们称之为针对管理的Web服务（Web Services for Management，WS-MAN）。 
+
+WS-MAN完全基于HTTP或者HTTPS进行工作，这样保证在需要的情况下，能轻易透过防火墙进行作业（因为每种协议都使用唯一的端口进行通信）。微软对WS-MAN的实现主要基于一个后台服务：Windows远程管理组件（WinRM）。在安装PowerShell（第2版）的时候会同时安装WinRM，在服务器版操作系统（比如Windows Server 2008 R2）中默认开启该服务。Windows 7操作系统默认安装该服务，但该服务处于禁用状态。该服务还被包含在PowerShell v3以及更新版本中，在Windows 2012以及更新版本的Windows中默认处于启用状态（通常来说，在服务器操作系统处于启用状态，在客户端操作系统处于禁用状态）。 
+
+基于SSH的远程处理 
+ 
+ 
+　 
+ 
+在本书即将刊印时，微软宣布远程处理技术除了WS-MAN之外，还可以基于SSH协议。这对那些已经熟悉SSH而不熟悉WS-MAN与WinRM的公司来说是一个好消息。从用户角度讲，如何使用远程处理技术并无区别，底层协议的区别对你来说应该是透明的。 
+ 
+我们敦促你在对SSH协议的支持发布后阅读Invoke-Command与New-PSSession Option的文档。只需要知道本版书的本章，仅仅专注于WS-MAN与WinRm的方式实现远程处理。 
+ 
+
+到目前为止，你已经知道Windows PowerShell的Cmdlet会产生一些对象作为输出结果。当你运行一个远程命令时，它会将输出结果放入一个特定形式的包中，之后通过网络中的HTTP（或者HTTPS）协议传回本地计算机。XML已经被证明是针对该问题的优秀解决方案，所以PowerShell会将输出对象序列化到XML中。下一步，XML文件会通过网络进行传输。当到达本地计算机之后，该XML会反序列化为PowerShell可以处理的对象。序列化和反序列化仅仅是一种格式转换的形式：从对象转化为XML称为序列化，从XML转为对象则为反序列化。 
+
+为什么你需要关注输出结果返回的方式？因为这些序列化和反序列化的对象只是各种快照而已，它们并不会随着后续状态的变化而自我更新。例如，如果你获得代表远程计算机上运行进程的对象时，这些对象只能反映对象被产生时刻的状态。例如，对象包含的内存使用数据或者CPU使用率数据并不会随着后续的变化而变化。另外，你无法对反序列化对象下达任何指令（例如，你无法下达停止的指令）。 
+
+这些都是针对远程处理的一些比较基本的限制，但是却无法阻止操作者通过其他方法实现一些神奇的功能。实际上，完全可以下达指令让远程处理自行停止，但是我们需要更加聪明一些。本章后续部分会展示该场景。 
+
+要保证远程处理可以正常工作，需要满足下面两个条件。 
+ 
+ 
+本机计算机和远程计算机（需要运行命令的计算机）至少需要第2版或者更新版本的PowerShell。Windows XP是PowerShell v2支持的最老版本操作系统，所以它也是能实现远程处理功能最老版本的操作系统。 
+ 
+理论上，两台计算机需要在同一域或者可信域中。如果计算机不在域中，远程处理也可以正常工作，但配置会有些麻烦。本章不会讲到这一点。如果你想了解该类场景，请在PowerShell中运行Help About_Remote_Troubleshooting。 
+ 
+
+动手实验： 
+ 
+ 
+　 
+ 
+希望你可以模拟本章中的示例。为了完成这些实验，理论上，你需要第二台计算机（当然，也可以是一个虚拟机），并且这两台计算机需要在同一个域中。远程计算机可以运行在已经安装第2版或者更新版本PowerShell的任意操作系统上。当然，如果无法找到第二台计算机或者虚拟机，也可以使用localhost创建到当前计算机的伪远程连接，但是无法像真实远程处理远程计算机那样让人兴奋。 
+ 
+
+13.2　WinRM概述 
+
+首先我们会讲到WinRM，因为在使用远程处理之前，我们必须配置该服务。再次申明，你只需要在接收远程命令的计算机上配置WinRM以及PowerShell远程处理即可。在我们大部分工作环境中，Windows管理员都会开启每台Windows环境计算机上的远程服务（请记住，从Windows XP开始，所有操作系统均支持PowerShell和远程服务）。这样做能保证你可以使用后台远程连接到客户端计算机或者笔记本电脑（也就是说，这些计算机的用户根本不知道你远程连接到该计算机）。对我们来说，该项功能非常有用。 
+
+并非只有PowerShell能使用WinRM服务。实际上，微软在越来越多的管理程序中开始使用WinRM服务——甚至包含已经使用了其他协议的那些程序。基于这一思想，微软保证WinRM可以将流量导入至多种管理程序——不仅仅是PowerShell。WinRM类似一个调度器：当有新的流量进来后，WinRM会决定由哪种程序来处理这部分流量。所有WinRM流量都标记了接收应用程序的名称，同时这些应用程序都必须在WinRM中创建各自的端点，这样WinRM才能侦听这些主体的流量。这也就意味着，你们不只需要启用WinRM服务，也需要在WinRM中将PowerShell注册为一个端点。图13.1说明了这些组件如何组合在一起。 
+
+如图13.1所示，在你的系统中可以有几十个甚至上百个WinRM端点（PowerShell称它们为会话配置选项）。每一个端点都指向一种应用程序，甚至你可以将多个端点指向同一个应用程序，但是每个端点提供不同的权限以及功能。例如，你可以在环境中创建一个PowerShell端点，该端点仅允许特定用户运行一个或者两个命令。在本章中不会深入讲解远程处理，但是我们会在第23章中再深入探讨该服务。 
+
+图13.1也阐述了WinRM侦听器部分，在图中属于HTTP种类中的一种。一个侦听器会为WinRM等待网络流量的进入——有点像Web服务器侦听传入请求。尽管由Enable-PSRemoting创建的默认侦听器会侦听本地所有IP地址的某个端口，但是一个侦听器仅会侦听从特定IP地址的特定端口发出的请求。 
+
+侦听器会连接到已定义的端点。我们可以采用下面的方法创建一个端点：新开一个PowerShell窗口——需要以管理员权限运行PowerShell，之后运行Enable-PSRemoting命令。有些时候你可能会看到另外一个相关的命令Set-WSManQuickConfig。但是根本没必要手动运行该命令，Enable-PSRemoting命令会自动调用该命令。另外，Enable-PSRemoting命令也会运行一些其他步骤完成开启远程处理服务。总体来说，该Cmdlet会启用WinRM服务，配置该服务为自动启动模式，然后在WinRM中为PowerShell注册一个端口，甚至会在Windows防火墙中针对传入的WinRM流量创建例外条件。 
+
+ 
+
+图13.1　WinRM、WS-MAN、端点和PowerShell之间的关系 
+
+动手实验： 
+ 
+ 
+　 
+ 
+该实验环节需要你在第二台计算机（如果你只有一台计算机的话，那么请在当前计算机启用）上启用远程处理服务。请确保你是在管理员权限下运行PowerShell（PowerShell的窗口边框上显示了“管理员”字样）。如果不是，那么请关闭当前窗口，然后右键单击开始菜单中的PowerShell按钮，选择“以管理员身份运行”。如果在启用远程处理时返回了一些错误信息，那么请暂停并解决该问题。只有当Enable-PSRemoting正确无误运行时，才能继续后面的步骤。 
+ 
+
+图13.2中显示了当运行Enable-PSRemoting命令时经常会遇到的一个错误。 
+
+图13.2中的错误一般只会出现在客户端计算机上，并且如果你深入研究这个错误信息，你可以看到导致这个错误的原因。我们设置至少一个网卡为“公用网络”类型。请记住，在Windows Vista以及之后版本的操作系统中，对每一个网卡都会设置一个网络类型（家庭网络、工作网络或者公用网络）。类型为“公用网络”的网卡中无法设置Windows防火墙例外，所以当我们运行Enable-PSRemoting命令尝试创建一个防火墙例外时，就会失败。唯一的解决办法是进入Windows中，修改该网卡的类型为“工作网络”或者“家庭网络”。但是，如果你是连接到一个公用网络（比如一个公用的网络热点），请不要这样做，因为这将关闭一些重要的安全保护功能。 
+
+ 
+
+图13.2　在客户端计算机启用远程处理时容易出现的一个错误信息 
+
+注意： 
+ 
+ 
+　 
+ 
+如果运行的是服务器版的操作系统，你没必要担心这个错误，因为在该版本操作系统中并没有这个限制。 
+ 
+
+如果你对需要到每台计算机上去开启远程处理服务感到很厌烦，没关系，你也可以通过组策略对象（GPO）实现。这些必要的GPO设置选项已经内置到Windows Server 2008 R2（以及后续版本操作系统）的域控制器计算机中（如果是老版本操作系统的域控制器计算机，那么需要去网站http://download.microsoft.com上下载一个ADM（Administrative Templates）模板，之后添加这些GPO选项）。打开一个GPO对象，之后查看路径“计算机配置”>“管理模板”>“Windows组件”下的对象。在该列表的中间部分，你可以看到“Windows远程Shell”（Windows Remote Shell）和“Windows远程管理”（WinRM）。现在，我们假定你将会在希望配置的那些计算机上运行Enable-PSRemoting命令，因为当前你可能只有一台或者两台虚拟机。 
+
+注意： 
+ 
+ 
+　 
+ 
+PowerShell的About_Remote_TroubleShooting帮助主题中包含了更多关于如何使用GPO对象的内容。你可以查找该帮助信息中的“如何启用企业中的远程处理”和“如何通过使用组策略启用侦听器”部分。 
+ 
+
+第2版的WinRM服务（第二版以及后续版本的PowerShell使用的WinRM版本）默认会使用TCP端口5985侦听HTTP，使用5986端口侦听HTTPS。这样的端口号保证了不会与本地安装的任意Web服务器使用的端口号（一般使用80～443之间的端口号）冲突。使用Enable-PSRemoting创建的远程处理默认仅对5985端口创建非加密的HTTP侦听器。当然，你也可以配置WinRM使用其他端口，但是我们不建议这样做。如果我们采用默认值，所有的PowerShell远程处理命令都可以正常运行。假如我们修改了端口号，在我们输入远程处理命令时，我们必须指定端口号，这样也就意味着我们要键入更多的字符。 
+
+如果你确定要修改端口号，可以通过下面的命令实现。 
+
+WinRM Set WinRM/Config/Listener?Address=*+Transport=HTTP 
+➥@{Port="1234"} 
+
+在该示例中，1234是你希望使用的端口号。如果将其中的HTTP修改为HTTPS，则该命令可用作修改HTTPS的侦听端口。 
+
+别动手实验： 
+ 
+ 
+　 
+ 
+尽管在生产环境中可能需要修改该端口，但是请不要在测试计算机上进行修改。保留WinRM默认配置选项，这样本章后面的示例才可以正常运行（不需要你再做额外的修改）。 
+ 
+
+其实还有另外一个方法，可以修改客户端计算机上的WinRM的默认端口。这样当我们在运行命令的时候，就不需要再指定修改之后的默认端口。但是在本书中，我们仍然使用微软提供的默认配置选项。同时，你可以针对WinRM创建多个侦听器（比如一个针对HTTP流量，一个针对加密的HTTPS流量，或者其他一些针对不同的IP地址）。这些侦听器会将流量导入至计算机上配置的端点。 
+
+注意： 
+ 
+ 
+　 
+ 
+如果你查看Windows远程Shell（Remote Shell）的组策略对象设置选项，你或许注意到下面几个可更改的选项：一个远程处理进程在被计算机自动杀掉之前处于打开状态的最长时间；允许并行运行远程处理进程的最大用户数；每个远程Shell可使用的最大内存以及最大进程数；每个用户可打开远程Shell的最大数目等。针对健忘的管理员来说，这些配置选项都是确保服务器不会过度消耗资源很好的方法。默认情况下，只有管理员才能使用远程处理，所以没有必要担心普通用户会导致服务器资源用尽。 
+ 
+
+13.3　一对一场景的Enter-PSSession和Exit-PSSession 
+
+PowerShell可以通过两种方法实现远程处理，第一种称为一对一或者1:1远程处理（第二种称为一对多，或者1 : n远程处理，在下一节中会讲到一对多场景）。当使用一对一远程处理时，实际上是在单台远程计算机上调用了一个Shell命令窗口。输入的任何命令都会直接在该计算机上运行，然后在远程处理窗口中返回输出结果。该机制非常类似于远程桌面连接（Remote Desktop Connection），只是Windows PowerShell采用的是命令行环境。相对于远程桌面连接，这种远程处理技术只需要使用很少的资源，所以对服务器来讲，开销会小很多。 
+
+如果需要针对一台远程计算机建立一对一的远程处理进程，请运行下面的命令。 
+
+Enter-PSSession –ComputerName Server-R2 
+
+（你需要使用正确的计算机名称来替代Server-R2。） 
+
+假如在远程计算机上已经启用了远程处理，两台计算机在同一个域中，并且网络质量良好，那么你应该可以得到一个连接。如果Shell命令窗口变为下面的格式，那么也就说明该连接成功建立。 
+
+[Sever-R2] PS C:\> 
+
+该Shell命令框表示你所运行的任何语句都是在Server-R2（或者说是你连接到的计算机）上运行。你可以在该命令框中运行任意命令，甚至可以在远程计算机上导入已存在的任意模块或者添加任意PSSnapIn。 
+
+动手实验： 
+ 
+ 
+　 
+ 
+现在请尝试建立一个到第二台计算机或者虚拟机的远程连接。如果你从来没有这样测试过，那么你需要在尝试连接远程计算机之前，在该机器上启用远程处理功能。另外要注意的是，你需要知道远程计算机的真实名称，WinRM默认不允许使用IP地址或者DNS中的别名去进行远程处理。 
+ 
+
+你的权限以及特权在远程连接中也会继续保持。你运行的PowerShell副本会带有其运行的安全令牌（该过程通过Kerberos实现，所以并不会通过网络传递用户名以及密码到远程计算机）。你在远程计算机上运行的任何命令都依赖于你的凭据，所以你能实现你权限范围之内的任意操作。该过程类似于你通过远程桌面连接到对应的远程计算机，然后在该计算机上运行本地的PowerShell。 
+
+下面介绍两个不同点。 
+ 
+ 
+即使远程计算机上PowerShell存在一个Profile脚本，当使用远程处理时，该脚本也不会运行。我们还没有讲到Profile脚本部分（在25章中会涉及该部分知识），但是这里可以大概提一下，Profile脚本是指当我们打开Shell时会自动运行的一批命令。人们经常使用Profile脚本来自动载入一些Shell扩展程序以及模块等。我们必须要明白，当我们通过远程处理连接到某台计算机时，对应的Profile脚本不会自动运行。 
+ 
+远程计算机的运行策略会限制某些脚本的运行。假如本地计算机的策略设置为RemoteSigned，也就意味着可以运行本地未签名的脚本。如果远程计算机的策略设置为默认（严格），当使用远程处理连接到该计算机时，并不是所有脚本都可以运行。 
+ 
+
+了解这两个不同之处之后，可以继续后面的学习了。但是等等——当在远程计算机上运行命令结束之后，还要运行什么命令呢？很多PowerShell的Cmdlet都是以成对形式出现，一个Cmdlet做一件事情，另一个Cmdlet就会做相反的事情。在这个场景中，如果Enter-PSSession可以对其他计算机运行远程处理，你能猜到什么命令可以退出该进程吗？如果你猜到是Exit-PSSession，那么请给你自己一个奖励。该命令不需要其他任何参数；运行之后，Shell命令窗口会变回正常，远程连接会被自动关闭。 
+
+动手实验： 
+ 
+ 
+　 
+ 
+如果已经开启远程处理进程，运行Exit-PSSession命令并退出远程连接进程。 
+ 
+
+如果你忘记运行Exit-PSSession而是直接关闭PowerShell的窗口，会有什么后果呢？别担心。PowerShell和WinRM足够智能，它们能识别你的行为，然后自行关闭远程连接。 
+
+有个要点需要注意：当你使用远程处理连接到另一台计算机时，除非完全理解你所做的操作，否则不要在该命令窗口中再次运行Enter-PSSession。假如你的本地计算机为Computer A，使用Windows 7操作系统，之后使用远程处理连接到Server-R2。此时，在PowerShell命令框中，运行下面的语句。 
+
+[Server-R2] PS C:\>Enter-PSSession Server-DC4 
+
+该语句会在Server-R2上维护一个到Server-DC4的远程连接，也就是会建立一个“远程处理链”。“远程处理链”非常难以追踪，同时会增加计算机中不必要的系统开销。在某些场景下，可能只能采取这种方式来实现——比如Server-DC4处于防火墙中，无法被直接访问，所以需要Server-R2作为中转服务器，使得可以访问到Server-DC4。但是，一般情况下，请不要使用远程处理链。 
+
+警告： 
+ 
+ 
+　 
+ 
+在某些人看来，远程处理链类似于“二连跳”，同时可以算作PowerShell的一个缺点。简单提示一下：如果PowerShell的命令行窗口已经显示了一个计算机的名称，那么请到此结束。除非你退出该进程回到本地计算机命令（PowerShell命令行窗口中不包含计算机名称）时，你才能再次运行一些远程控制的命令。我们会在第23章中讨论启用多层远程处理的相关问题。 
+ 
+
+当你使用一对一的远程处理时，你不需要担心被序列化和反序列化的对象。就你个人而言，其实等效于直接在远程计算机的控制台中键入命令。如果你获取了一个进程，并通过管道传递给Stop-Process命令，正如我们期待的那样，该进程会停止运行。 
+
+13.4　一对多场景的Invoke-Command 
+
+下面讲的是Windows PowerShell最酷的功能之一，也就是将一个命令同时传递给多台远程计算机。是的，就是这样，也可称之为全面的分布式计算。每台计算机都独立运行发送的命令，然后将结果集返回给你。PowerShell利用Invoke-Command命令来实现该功能，称之为一对多或者1 : n远程处理。 
+
+该命令类似下面的语句。 
+
+Invoke-Command –ComputerName Server-R2,Server-DC4,Server12 
+➥–Command {Get-EventLog Security –Newest 200 | 
+➥Where {$_.EventID –eq 1212 }} 
+
+动手实验： 
+ 
+ 
+　 
+ 
+尝试运行上面的脚本，请使用你自己的远程计算机的名字来替换上面的三个计算机名称。 
+ 
+
+最外层{}中包含的全部命令都会传递到3台远程计算机。默认情况下，PowerShell最多一次与32台远程计算机通信。如果超过32台，那么会将计算机信息存放到一个队列中。如果命令在一台远程计算机上运行完毕，队列中的下一台计算机会立即开始运行。当然，如果网络足够良好，并且计算机足够强劲，那么我们可以通过Invoke-Command的-ThrottleLimit参数来指定更多数量的计算机（如果需要了解更多的信息，请查阅该命令的帮助文档）。 
+
+注意标点符号 
+ 
+ 
+　 
+ 
+我们需要注意一对多远程处理示例的语法，因为PowerShell的标点符号在某种场景下会让我们感到很困惑。当我们在输入这些命令时，这些困惑可能让PowerShell实现一些意料之外的功能。 
+ 
+比如，考虑下面的示例。 
+ 
+Invoke-Command –ComputerName Server-R2,Server-DC4,Server12 
+➥-Command {Get-EventLog Security –Newest 200 | 
+➥Where { $_.EventID –EQ 1212 }} 
+ 
+在该示例中，有两个命令使用了大括号：Invoke-Command和Where（是Where-Object命令的别名）。Where命令完整嵌套在最外层的大括号中。最外层的大括号中包含的命令就是我们需要传递到远程计算机上运行的命令，也就是下面这段命令。 
+ 
+Get-EventLog Security –Newest 200 | Where {$_.EventID –EQ 1212} 
+ 
+可能很难去照搬这些嵌套的命令，特别是本书中这种示例，由于每页的宽度限制，必须使用多行文字来展示该命令。 
+ 
+你必须确保你知道传递给远程计算机的命令到底是什么，同时要理解每一组大括号的功能。 
+ 
+
+另外，需要告知你的是，在Invoke-Command的帮助信息中找不到-Command参数，但是我们确认上面示例中的命令可以正常运行。实际上，-Command参数是帮助文档中-ScriptBlock参数（可以在Invoke-Command帮助文档中找到该参数的信息）的一个别名或者昵称。由于-Command命令更容易记住，所以我们往往使用-Command，而不会使用-ScriptCommand。但是实际上，它们的作用相同。 
+
+如果你认真查阅了Invoke-Command的帮助文档，你应该会注意到其中一个参数，该参数允许我们指定一个脚本文件，而不是一个命令。该参数可以将本地的完整脚本传递到远程计算机——意味着你可以自动化一些复杂的任务，让每一台计算机完成各自对应的部分。 
+
+动手实验： 
+ 
+ 
+　 
+ 
+确保你在Invoke-Command的帮助文档中找到了-ScriptBlock参数，同时能找到允许指定一个文件路径以及名称的参数（-FilePath）（并不是一段脚本）。 
+ 
+
+现在让我们回到本章开始提到的-ComputerName参数。当我们首次使用Invoke- Command时，我们键入了一串以逗号分隔的计算机名称，比如前面的示例。但是真实环境中可能存在大量的计算机，因此我们并不想每次都手动键入这些计算机名称。我们可以将所有的计算机按照对应的种类，比如Web服务器和域控制器，放入到各自的文本文档中。文本文档的每行代表一个计算机名称——不需要使用逗号、引号。通过PowerShell，我们可以很轻易地使用这些文本文档中的内容。 
+
+Invoke-Command –Command {dir} 
+➥–ComputerName (Get-Content WebServers.txt) 
+
+上面命令中的圆括号使得PowerShell优先运行Get-Content命令——和数学中的圆括号功能一样。之后Get-命令的结果集被传递给-ComputerName参数，然后括号中的命令就可以在文件中罗列的计算机上运行。 
+
+有些时候我们会遇到更棘手的问题，比如从活动目录中获取计算机的名称。我们可以使用Get-ADComputer命令（来自于活动目录模块；Windows 7的远程服务器管理工具（RSAT）/Windows Server 2008 R2或者之后版本的操作系统的域控制器服务器中均存在该模块）来获取计算机信息，但是我们无法将该命令放入圆括号中（类似上面的Get-Content命令）。为什么不行呢？因为Get-Content命令产生的对象类型为-C``o``mputer参数可接受的简单文本String类型。但是Get-ADComputer会输出完整的计算机对象，-ComputerName参数不知道应该如何处理这部分数据。 
+
+如果我们要使用Get-ADComputer命令，那么我们需要找到一个方法去获取这些计算机对象名称属性的值。比如下面的命令。 
+
+Invoke-Command –Command {dir} –ComputerName (
+➥Get-ADComputer –Filter * -SearchBase "OU=Sales,DC=Company,DC=pri" | 
+➥Select-Object –Expand Name) 
+
+动手实验： 
+ 
+ 
+　 
+ 
+如果你是在Windows Server 2008 R2的域控制器服务器或者安装了远程服务器管理工具（RSAT）的Windows 7（或更新版本）计算机上运行PowerShell，那么你可以运行Import-Module ActiveDirectory，之后再运行上面的命令。如果你的测试域环境中并没有包含计算机账户的Sales OU，那么你需要将OU=Sales修改为OU=Domain Controllers，同时需要根据你本地实际域情况修改Company和Pri为正确的值（比如，你的域名为mycompany.org，那么你需要使用mycompany替换company，使用org替换pri）。 
+ 
+
+通过使用圆括号，我们将产生的计算机对象通过管道传递给Select-Object，然后选择其中的-Expand参数。我们会告诉该命令去获取对应值的Name属性——在这个示例中，也就是这些计算机对象。圆括号中命令的运行结果是一串计算机名称，而不是计算机对象，正好-ComputerName参数能处理的对象就是计算机名称。 
+
+注意： 
+ 
+ 
+　 
+ 
+我们希望前面对-Expand参数的讨论能让你有种似曾相识的感觉：你应该是在第9章中第一次看到该参数。如果需要，请回到第9章对应小节以便加深印象。 
+ 
+
+如果需要深入了解，那么我们需要查看每个参数代表的意义。Get-ADComputer的-Filter参数指定所有的计算机都应该包含在这个命令的输出列表中；-SearchBase参数指定我们要从哪个地方开始运行这个命令——在这个示例中，是指Company.Pri域的Sales OU。再次说明，Get-ADComputer仅在Windows Server 2008 R2（及之后版本操作系统）的域控制器服务器上以及安装远程服务器管理工具（RSAT）Windows 7（及之后版本操作系统）的客户端电脑上才存在。 
+
+13.5　远程命令和本地命令之间的差异 
+
+在这里，我们会解释使用Invoke-Command命令远程运行和在本地运行相同命令之间的差异，也会涉及使用远程处理以及使用其他形式远程连接之间的差异。我们会使用下面的命令作为演示差异的示例。 
+
+Invoke-Command –ComputerName Server-R2,Server-DC4,Server12  
+➥-Command {Get-EventLog Security –Newest 200 |  
+➥Where {$_.EventID –EQ 1212}} 
+
+之后我们再看一些其他命令，然后确认为什么它们会不一样。 
+
+13.5.1　Invoke-Command和–ComputerName对比 
+
+下面是实现相同目的的另外一种方法。 
+
+Get-EventLog Security –Newest 200  
+➥–ComputerName Server-R2,Server-DC4,Server12 |  
+➥Where {$_.EventID -EQ 1212} 
+
+在该示例中，我们使用Get-EventLog命令的-ComputerName参数，而不是远程调用整个命令。我们会得到类似的结果，但是在该命令运行的方式上存在很大的不同。 
+ 
+ 
+提及的计算机会按照顺序被串行访问，而不会采用并行方式，也就意味着命令会运行更久的时间。 
+ 
+该命令的输出结果中不会包含PSComputerName属性，也就意味着我们很难判别某个结果是从哪台计算机得出的。 
+ 
+该连接并不会使用WinRM实现，而会使用.Net FrameWork决定的底层协议。我们不知道到底是哪种协议，同时有可能由于该协议无法在本地和远程计算机之间顺利通过防火墙而无法建立连接。 
+ 
+我们会从3台计算机上查询200条记录，然后通过它们找到eventid为1212的事件。这也就意味着，可能会返回一些我们不需要的结果。 
+ 
+我们得到的是功能全面的事件日志对象。 
+ 
+
+对带有-ComputerName参数的Cmdlet而言都存在这些差异。一般来讲，使用Invoke-Command命令比Cmdlet的-ComputerName参数更有效率，更有用。 
+
+如果我们采用之前的Invoke-Command命令，就会是下面这样。 
+ 
+ 
+计算机会被并发地访问，也就意味着，命令运行更有效率。 
+ 
+命令的输出结果中包含PSComputerName属性，也就使得我们能轻易看到哪个结果来自于哪台计算机。 
+ 
+通过WinRM来建立连接，WinRM会使用一个预定义的端口，使得命令可以更轻易地穿过任何防火墙。 
+ 
+每台计算机都会查询200条记录，然后在本地就做筛选。通过网络传递回来的数据是经过筛选之后的结果，也就是说，这些记录都是我们希望得到的有效数据。 
+ 
+在传递结果之前，每台计算机都会将输出结果序列化为XML。本地计算机收到该XML之后，会反序列化为一些类似对象的结果。但是它们并不是真正的事件日志对象，这也就限制了本地计算机处理这些对象的方式。 
+ 
+
+最后一点是使用-ComputerName参数和Invoke-Command命令之间很大的一个差异点。下面会讨论到这一点。 
+
+13.5.2　本地处理和远程处理对比 
+
+再次引用之前的示例。 
+
+Invoke-Command–ComputerName Server-R2,Sever-DC4,Server12  
+➥-Command {Get-EventLog Security –Newest 200 |  
+➥Where {$_.EventID –EQ 1212}} 
+
+然后和下面的命令对比一下。 
+
+Invoke-Command –ComputerName Server-R2,Server-DC4,Server12  
+➥-Command {Get-EventLog Security –Newest 200 } |  
+➥Where {$_.EventID –EQ 1212} 
+
+看起来差异很小。唯一的不同点是，我们移动了一个大括号的位置。 
+
+在第二个命令中，只有Get-EventLog命令被远程调用。Get-EventLog命令产生的所有结果都被序列化，之后发送到本地计算机，最后在本机反序列化为对象，再通过管道传递给Where做筛选。相对而言，第二个版本的命令效率更为低下，因为会有大量不必要的数据通过网络传输，然后在本地计算机上筛选来自3台计算机的返回结果，而并不是在3台计算机上筛选好结果之后再发送给本地计算机。所以采用第二个版本的命令是一个非常糟糕的主意。 
+
+让我们看看其他命令的两个版本，如下面的命令。 
+
+Invoke-Command –ComputerName Server-R2  
+➥-Command {Get-Process –Name Notepad}|
+➥Stop-Process 
+
+然后看另外一个版本。 
+
+Invoke-Command –ComputerName Server-R2  
+➥-Command {Get-Process –Name NotePad |
+➥Stop-Process} 
+
+和上面一样，这里唯一的差异是一个大括号的位置不同。但是在本示例中，第一个版本的命令根本无法运行。 
+
+仔细对比：我们将Get-Process-Name NotePad命令发送到远程计算机。远程计算机会获取特定的进程，然后将其序列化到XML，最后通过网络传递给本机。本地计算机收到该XML后，反序列为一个对象，然后通过管道传递给Stop-Process。此时问题出现了，本地计算机上被反序列的XML文件中并没有信息表明该进程来自于远程计算机。相反，本地计算机会尝试关闭本地运行的NotePad进程，但是这根本就不是我们所期望的结果。 
+
+这个故事告诉我们，我们需要在远程计算机上完成尽量多的工作。我们唯一需要注意的是如何处理Invoke-Command命令的结果，要么显示，要么将结果存储为一个报表或者一个数据文件等。第二个版的脚本正是采用了该思想：发送给远程计算机的命令是Get-Process-Name Notepad | Stop-Process，所以整个命令（包含获取进程以及停止进程）都是在远程计算机上运行。因为Stop-Process命令不会产生任何运行结果，并没有任何对象需要序列化传递给我们，所以在我们本地的控制台中无法看到任何信息。但是该命令正好达到我们的目的：停止远程计算机的NotePad进程，而不是停止本地计算机上的Notepad。 
+
+当我们使用Invoke-Command命令时，我们总会看到后面跟着一些命令。如果这些命令是用作格式化或者导出数据，那没问题，因为PowerShell可以这样处理Invoke- Command的输出结果。但是如果Invoke-Command后面跟着操作类型的Cmdlet（比如开启、停止、设置或者修改等其他操作），我们需要好好想想我们在做什么。理想情况下，我们希望所有的操作都是运行在远程计算机，而不是本地计算机上。 
+
+13.5.3　反序列化对象 
+
+远程处理的另一个需要注意的事项是返回给本地计算机的对象可能会缺失部分功能。在大部分情况中，由于它们不再需要关联到可用软件，它们都会缺少对应的方法（Method）。 
+
+比如，在你本地计算机上运行下面的命令，你会发现存在关联到Service- Controller对象的多个方法。 
+
+PS C:\>Get-Service | Get-Member 
+
+    TypeName: System.ServiceProcess.ServiceController 
+Name                      MemberType    Definition 
+----                      ----------    ---------- 
+Name                      AliasProperty Name = ServiceName 
+RequiredServices          AliasProperty RequiredServices = ServicesDep 
+Disposed                  Event         System.EventHandler Disposed(S 
+Close                     Method        System.Void Close() 
+Continue                  Method        System.Void Continue() 
+CreateObjRef              Method        System.Runtime.Remoting.ObjRef 
+Dispose                   Method        System.Void Dispose() 
+Equals                    Method        bool Equals(System.Object obj) 
+ExecuteCommand            Method        System.Void ExecuteCommand(int 
+GetHashCode               Method        int GetHashCode() 
+GetLifetimeService        Method        System.Object GetLifetimeServi 
+GetType                   Method        type GetType() 
+InitializeLifetimeService Method        System.Object InitializeLifeti 
+Pause                     Method        System.Void Pause() 
+Refresh                   Method        System.Void Refresh() 
+Start                     Method        System.Void Start(), System.Vo 
+Stop                      Method        System.Void Stop() 
+WaitForStatus             Method        System.Void WaitForStatus(Syst 
+CanPauseAndContinue       Property      bool CanPauseAndContinue {get; 
+CanShutdown               Property      bool CanShutdown {get;} 
+CanStop                   Property      bool CanStop {get;} 
+Container                 Property      System.ComponentModel.IContain 
+DependentServices         Property      System.ServiceProcess.ServiceC 
+
+现在通过远程处理获取类似的对象。 
+
+PS C:\> Invoke-Command -ScriptBlock { Get-Service } -ComputerName 
+     WCMIS034 | Get-Member 
+   TypeName: Deserialized.System.ServiceProcess.ServiceController 
+Name                MemberType   Definition 
+----                ----------   ---------- 
+ToString            Method       string ToString(), string ToString(string
+     format, System.I 
+Name                NoteProperty System.String Name=AeLookupSvc 
+PSComputerName      NoteProperty System.String  PSComputerName=WCMIS034 
+PSShowComputerName  NoteProperty System.Boolean PSShowComputerName=True 
+RequiredServices    NoteProperty 
+     Deserialized.System.ServiceProcess.ServiceController[] Req 
+RunspaceId          NoteProperty System.Guid RunspaceId=6dc9e130-f7b2-4db4- 
+     8b0d-3863033d7df 
+CanPauseAndContinue Property     System.Boolean {get;set;} 
+CanShutdown         Property     System.Boolean {get;set;} 
+CanStop             Property     System.Boolean {get;set;} 
+Container           Property      {get;set;} 
+DependentServices   Property 
+     Deserialized.System.ServiceProcess.ServiceController[] {ge 
+DisplayName         Property     System.String {get;set;} 
+MachineName         Property     System.String {get;set;} 
+ServiceHandle       Property     System.String {get;set;} 
+ServiceName         Property     System.String {get;set;} 
+ServicesDependedOn  Property 
+     Deserialized.System.ServiceProcess.ServiceController[] {ge 
+ServiceType         Property     System.String {get;set;} 
+Site                Property      {get;set;} 
+Status              Property     System.String {get;set;} 
+
+查看上面返回的结果，你会发现，除了每个对象都拥有的普通ToString()方法外，其他的方法都不在了。返回的结果只是对象的一些副本，你无法让它完成停止、暂停、恢复等操作。所以如果希望对返回的结果运行一些操作，那么这部分命令都应该包含在发送给远程计算机的脚本中；只有这样，这些对象才是可用的，并且会仍然保留它们包含的方法。 
+
+13.6　深入探讨 
+
+前面的示例都是采用即席远程连接，也就是说，每次都需要我们指定计算机名称。如果你需要在很短时间内多次重复连接到相同的远程计算机，那么你可以创建可重用的持久性连接。我们会在第20章中讲解该技术。 
+
+当然，我们也承认并不是每家公司都允许开启PowerShell的远程处理机制，至少当前不是。比如，那些拥有非常严格安全策略的公司在所有的客户端和服务器计算机上都会开启防火墙，这将阻止PowerShell远程处理的连接。如果你所在的公司也是这样，那么你需要确认一下在防火墙中是否有针对远程桌面协议（RDP）设置一个例外。我们可以发现，在大部分公司总是会存在该例外，因为管理员总是需要不定时远程连接到某些服务器。如果RDP是允许使用的，那么也请尝试对PowerShell的远程处理设置类似例外。因为远程处理连接可以被审核到（它们类似于网络账号，就像访问一个共享文件会在审计日志中出现对应日志），所以它们默认情况下被限制为仅管理员可以连接。在安全风险方面，PowerShell的远程处理和RDP没多大差别，并且相对于RDP，PowerShell的远程处理在远程计算机上占用更少的开销。 
+
+13.7　远程处理的配置选项 
+
+通过阅读帮助文档，可以看到Invoke-Command和Enter-PSSession命令都有一个-SessionOption参数（该参数能处理PSSessionOption类型对象）。该参数有什么功能呢？ 
+
+正如我们刚才解释的，这两个命令在运行时都会初始化一个新的PowerShell连接或者会话。它们完成对应的工作后，会自动关闭该会话。一个会话选项（Session Option）是指你可以用来改变建立会话方式的一组选项。我们使用New-PSSessionOption命令实现该功能。你可以使用该命令实现下面的功能。 
+ 
+ 
+打开、取消和空闲超时。 
+ 
+取消正常数据流的压缩或者加密功能。 
+ 
+通过代理服务器传递网络流量时，也可以设置一些代理相关的选项。 
+ 
+忽略远程机器的SSL证书、名称以及其他安全特性。 
+ 
+
+比如，通过下面的命令可以忽略机器名称检查，然后打开一个会话。 
+
+PS C:\> Enter-PSSession –ComputerName Wcmis034 
+➥–SessionOption (New-PSSessionOption –SkipCNCheck)  
+[WCMIS034] : PS C:\Users\wh42\Documents> 
+
+重新查看New-PSSessionOption命令的帮助信息，确认该命令可实现的功能；在第20章中，我们会使用一些选项来完成某些进阶的远程处理任务。 
+
+13.8　常见误区 
+
+我们在教学课程中讲解远程处理时，总会看到一些常见的问题。 
+ 
+ 
+默认情况下，只有指定远程计算机的真实名称时，远程处理才能正常工作。不能使用DNS的别名或者IP地址。在第23章中，我们会讨论该限制的背景，同时会给出解决该问题的方案。 
+ 
+设计远程处理功能的目的主要是解决域中自动化配置的事情。如果涉及的计算机以及所使用的用户账号都属于同一个域或者可信任的域中，那么一切都可以很轻易地实现。如果不是这种情况，那么需要详细查看About_Remote_ TroubleShooting的帮助文档。一个需要确认的情形是你是否跨域进行远程处理。如果确认如此，那么你必须修改一些配置选项使得PowerShell可以正常运行，帮助文档中详细描述了该场景。 
+ 
+当调用一个命令时，远程计算机会发起一个PowerShell会话。运行你键入的命令，之后关闭PowerShell会话。当你在相同计算机上运行下一条命令时，又会重复该步骤（第一次调用过程中运行的任何结果或者命令都不再有效）。如果你需要运行一系列关联的命令，那么你需要将它们放入相同的调用进程中。 
+ 
+确保你以管理员身份运行PowerShell，特别是对于开启用户账户控制（UAC）功能的计算机。如果你使用的账号在远程计算机上没有管理员权限，那么你需要使用Enter-PSSession或者Invoke-Command命令的-Credential参数去指定另外一个拥有管理员权限的账号。 
+ 
+如果你使用的不是Windows防火墙，而是第三方防火墙产品，Enable- PSRemoting不会建立特定的防火墙例外。那么你需要手动来完成该项设置。如果远程连接需要穿过一个部署在路由器或者代理服务器上的普通防火墙，那么也需要针对远程流量手动设置一个例外。 
+ 
+请不要忘记一点规则，在组策略对象（GPO）中的配置选项会覆盖本地配置的选项。我们经常会看到管理员会花费几小时来使得远程处理可以正常工作，最后才发现一个GPO对象覆盖他们设置的选项。在某些情况下，可能一些好心的同事很久之前设置了一些GPO对象，但是后来忘记了。所以请不要想当然以为没有GPO影响到你的设置，你需要去检查一下，以便确认。 
+ 
+
+13.9　动手实验 
+
+注意： 
+ 
+ 
+　 
+ 
+在该动手实验环境中，你仍然需要基于Windows运行PowerShell v3或者之后版本的计算机。理论上，你需要在同一活动目录中的两台计算机。但是如果只有一台计算机可以用来进行实验，那么也没关系。 
+ 
+
+现在，我们需要把本章学到的关于远程处理的知识和前面章节学习到的内容关联起来。你可以尝试是否能完成下面的任务。 
+
+1． 创建针对一台远程计算机一对一的连接（如果只有一台计算机，请使用localhost模拟）。打开NotePad.exe，发生了什么？ 
+
+2．使用Invoke-Command命令获取一台或者两台远程计算机上尚未开启的服务列表（如果仅有一台计算机，也可以两次使用localhost模拟）。将结果集格式化为一个较宽的列表（提示：也可以在远程计算机上获取结果之后，在本地计算机格式化结果集——也就是说，不要将Format- Cmdlet放入到发送给远程计算机的命令中）。 
+
+3．按照虚拟内存使用排列，使用Invoke-Command命令去获取消耗虚拟内存最高的10个进程。如果可以的话，在一台或者两台远程计算机上运行该命令；如果只有一台计算机，那么在localhost上运行两次。 
+
+4．创建一个文本文件，其中每一行代表一个计算机名称，共 3 行数据。如果你只能访问到本地计算机，那么每一行可以是相同的计算机名称或者localhost。然后在文本文件中列出的计算机上运行Invoke-Command命令去获取最新的100条应用程序的事件日志。 
+
+5．使用Invoke-Command，查询一个或多个远程计算机，从而显示来自注册表键（HKEY_Local_Machine\SOFTWARE\Microsoft\Windows NT\CurrentVersion）的ProductName、EditionID、CurrentVersion这 3 个属性（提示：这需要你获得一个项（item）的属性）。 
+
+13.10　进一步学习 
+
+其实在该书中，我们本可以讲解更多关于PowerShell远程处理的知识，但是这样需要你花费更长的时间（一个月甚至更多）来完成阅读学习。但不幸的是，一些比较棘手的问题都没有得到很好的记录。我们建议你访问网站http://PowerShell.org 的e-book资源，这里Don和MVP Tobias Weltner博士一起写了一本全面探究PowerShell远程处理原理的一本迷你电子书（也是完全免费）。该电子书中会重讲本章中所学的一些基础知识，但是内容主要集中关于如何配置各种远程处理场景的Step-by-step详细说明（同时配有彩色截图）。该指南深入探索协议与故障排查，甚至还有一小节是关于如何说服公司的安全人员同意启用远程处理，同时，该电子书也会定期更新，所以你需要每隔几个月就检查一遍，以便确认获取的版本为当前最新的版本。当然，你也别忘了，可以通过网站PowerShell.org的论坛向Don咨询一些问题。 
+
+13.11　动手实验答案 
+
+1．Enter-PSSession Server01 
+
+[Server01] PS C:\Users\Administrator\Documents&gt; Notepad 
+
+记事本进程将会启动，但无论是本地还是远程都不会有任何交互式进程。实际上，以这种方式运行，提示符在记事本进程结束前都不会返回结果——虽然有一个替代命令可以实现同样的功能。 
+
+Start-Process Notepad. 
+
+2．Invoke-Command –scriptblock {get-service | where {$_.status -eq "stopped"}} -computername Server01,Server02 | format-wide -Column 4 
+
+3．Invoke-Command -scriptblock {get-process | sort VM -Descending | Select-first 10} –computername Server01,Server02 
+
+4．Invoke-Command -scriptblock {get-eventlog -LogName Application - Newest 100} -ComputerName (Get-Content computers.txt) 
+
+5．invoke-command –scriptblock{get-itemproperty 
+
+'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\' | Select 
+
+ProductName,EditionID,CurrentVersion} -computername Server01, 
+
+Server02 
+

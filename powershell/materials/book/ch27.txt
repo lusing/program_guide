@@ -1,0 +1,92 @@
+
+
+  
+    第27章 学无止境
+  
+  
+第27章　学无止境 
+
+你基本上完成了对本书的学习，但是请不要停止对PowerShell的进一步学习。其实，在PowerShell中还有更多值得学习的东西。基于我们在本书中学到的知识，你在以后可以进行更多的自学。本章是一个小章节，但是本章会给你指出一些正确的学习方向。 
+
+27.1　进一步学习的思想 
+
+本书真正聚焦于希望成为高效的PowerShell用户所需掌握的技能与技术。换句话说，无论你的需求是关于Windows、Exchange、SharePoint还是其他产品，你都应该能使用PowerShell数以千计的命令完成这些任务。 
+
+下一步需要完成的步骤是将多个命令结合在一起构成一个包含多个步骤的自动化流程，例如针对第三方用户打包一个只读且随时可用的工具。我们称之为工具制作（ToolMaking）。如果要详细描述该过程，需要我们自己一整本书的篇幅来介绍（Learn PowerShell Toolmaking in AMonth of Lunches(Manning,2010)）。即使本书中所学的知识也足够你编写参数化的脚本，在这个脚本中你可以包含任意个命令完成所需任务——其实，这也就是工具制作的初级阶段。 
+
+如果需要完成工具制作，需要包含哪些东西呢？ 
+ 
+ 
+PowerShell的简化编程语言。 
+ 
+作用域。 
+ 
+功能，以及将多个工具整合到单个脚本文件的能力。 
+ 
+错误处理。 
+ 
+帮助文档的编写。 
+ 
+调试。 
+ 
+自定义显示格式。 
+ 
+自定义类型扩展。 
+ 
+脚本与清单模块。 
+ 
+使用数据库。 
+ 
+工作流。 
+ 
+管道排错。 
+ 
+复杂的对象层次结构。 
+ 
+全局对象与本地对象。 
+ 
+代理功能。 
+ 
+受限的远程处理与委托管理。 
+ 
+.Net的使用。 
+ 
+
+其实还有更多。如果你有兴趣并且掌握适当的技能，你甚至可以成为PowerShell生态圈的一部分——也就是软件开发者。有一整套围绕开发PowerShell的工具以及在开发过程中使用PowerShell的技巧和技术。这是一个伟大的产品！ 
+
+27.2　既然已经阅读了本书，那么我要从哪里开始呢 
+
+现在最应该做的就是选择一个任务。选取真实环境中一些重复性的工作，然后利用PowerShell工具使得该部分工作自动化。你肯定会遇到一些不知该如何实现的功能，这就是开始学习的最好的切入点。 
+
+下面是我们看到的其他管理员遇到的一些事情。 
+ 
+ 
+编写一段脚本修改某服务登录账号的密码，并且将该脚本发送到运行该服务的多台计算机上（可以使用单行命令实现）。 
+ 
+编写一段脚本，用来实现新用户配置的自动化处理，包含新建用户账号、用户邮箱以及根目录等。通过PowerShell配置NTFS权限会稍微麻烦点，所以请考虑使用基于PowerShell脚本开发的Cacls.exe或者Xcacls.exe，而不要使用PowerShell的Get-ACL以及Set-ACL命令（这两个命令使用起来都比较复杂）。 
+ 
+编写管理Exchange邮箱的脚本——比如获取占据空间最多邮箱的报表或者针对邮箱大小创建一个报表。 
+ 
+通过包含在Windows Server 2008 R2以及之后操作系统中的WebAdministration模块实现IIS中自动化发布新站点（如果是Windows Server 2008中采用IIS7，也可实现）。 
+ 
+
+记住，最重要的一点是“不要考虑太多”。Don曾经遇到一个管理员，该管理员花费好几个星期编写了一段PowerShell脚本实现了强大的文件拷贝功能，这样他就可以通过Web Server进行发布。Don问道：“为什么不直接使用XCopy或者RoboCopy呢？”该管理员盯着Don看了一会儿，然后笑了。其实，该管理员陷入了一个误区：“仅使用PowerShell实现。”他忘记了“PowerShell可以直接调用那些强大的现有组件”。 
+
+27.3　你会喜欢的其他资源 
+
+我们花费了大量的时间使用PowerShell，编写PowerShell方面的书籍以及进行PowerShell相关的教学工作。不信可以询问我们的家人——有时甚至我们只有在吃饭的时候才不谈论PowerShell。这就意味着，我们积累了很多的在线资源——包含日常工作中使用的，以及给学生建议的。希望这些资源也能给你提供一个很好的学习出发点。 
+ 
+ 
+http://PowerShell.org——这应该是你的第一站，你将会发现包含Q&A论坛、免费的电子书、免费的在线视频以及直播等。该网站是PowerShell资源汇集的中心地点，还包含了已经持续数年的podcast。 
+ 
+http://youtube.com/powershellorg以及http://youtube.com/powershelldon——分别是powershell.org的YouTube频道以及Don的Youtube频道，这里有大量的免费PowerShell视频，包括在PowerShell + DevOps全球峰会的录像。 
+ 
+http://jdhitsolutions.com——这是Jeff的发布通用脚本以及PowerShell相关文章的博客站点。 
+ 
+http://donjones.com——这是Don的个人博客，包含PowerShell相关的内容。 
+ 
+http://devopscollective.org——这是PowerShell.org 的父组织，专注于以DevOps方式实现IT管理的大局。 
+ 
+
+很多学生经常问：是否还有其他一些推荐的书籍？有两本，分别为Learn PowerShell Toolmaking in A Month of Lunches以及PowerShell in Depth（这两本书都是Manning出版），我们是这两本书的作者或合著者，如果你喜欢本书，那上面两本也会同样适用于你。我们还推荐PowerShell Deep Dives（Manning,2013），该书是PowerShell MVP撰写的深入技术文章的集合（本书的获利会捐赠给儿童慈善机构，所以请多买几本吧）。最后，如果你喜欢视频教学，我们两个在http://Pluralsight.com都有视频教学，该网站还包含了数以千计IT相关的视频。 
+

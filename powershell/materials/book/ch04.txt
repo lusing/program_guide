@@ -1,0 +1,416 @@
+
+
+  
+    第4章 运行命令
+  
+  
+第4章　运行命令 
+
+当开始在互联网上查看PowerShell示例时，很容易觉得PowerShell是某种基于.NET Framework的脚本或编程语言。我们的伙伴微软最有价值专家（MVP）奖项获得者，以及大量其他PowerShell用户都是一本正经的极客（Geek）。我们乐于深入挖掘Shell的潜力并发挥它的最大价值。但几乎我们所有人都是以本章标题那样开始：运行命令。这也是本章我们将要做的：没有脚本、没有编程语言，仅仅是运行命令和命令行工具。 
+
+4.1　无需脚本，仅仅是运行命令 
+
+PowerShell，如其名称所示，是一个Shell。它和你之前可能使用过的Cmd.exe命令行Shell类似，甚至更像是与20世纪80年代第一台PC一起发布的MS-DOS。它与UNIX的Shell也十分类似，比如说20世纪80年代后期的Bash，甚至是20世纪70年代面世的最原始的UNIX Bourne Shell。虽然PowerShell更加现代，但最终，PowerShell并不是一个类似VBScript或KiXtart的脚本语言。 
+
+这些语言和大多数编程语言一样，你在文本编辑器（即使是Windows记事本）中键入大量关键字形成脚本。当脚本完成保存为文件后，可能还需要双击该文件进行测试。PowerShell能够以这种方式工作，但这并不是PowerShell的主要工作模式，尤其是当你开始学习PowerShell时。使用PowerShell，你输入一个命令，然后通过添加一些参数来定制化命令行为，单击返回，立刻就能看到结果。 
+
+最终，你会厌倦一遍遍输入同样的命令（和参数），然后你会将其复制粘贴到一个文本文件中，并将文件的扩展名更名为.PS1，然后你瞬间就拥有了一个“PowerShell脚本”。现在，你不再需要一遍遍输入命令，而是直接执行该文件中的脚本。这也和你在Cmd.exe Shell中使用的批处理文件是同一种模式，但相较于脚本或编程而言却要简单许多。实际上，这与UNIX管理员使用多年的模式很类似。通用UNIX/Linux shell，比如Bash，也是类似的方式：运行命令，直到你获得正确的结果，然后将这些命令粘贴到一个文本文件中，并称之为脚本。 
+
+别理解错我们的意思：你可以将PowerShell用得极其复杂。实际上，PowerShell支持与VBScript和其他脚本或编程语言同一种使用模式。PowerShell拥有能够访问整个.Net Framework底层的能力（虽然在非Windows操作系统中，只是整个Framework的子集），我们也看到PowerShell“脚本”实际上与通过Visual Studio编写的C#语言使用模式也十分类似。PowerShell支持这两种不同的使用模式，是因为其设计目标是为了拥有更广阔的使用场景。关键是，不能仅仅是由于PowerShell可以实现得非常复杂，就意味着你也必须将PowerShell使用到这种程度，也并不意味着你不能以更简单的方式实现非常高效的结果。 
+
+来看这样一个类比：你或许有一辆车，如果你和我们一样，或许换机油是你对车做过的最复杂的机械性工作。我们并不是汽车专家，也不能重建一个引擎。我们也不能完成如你在电影中所见的非常酷的漂移。你从未见过我们在汽车广告中的封闭赛道开车，虽然Jeff的梦想就是这么做（他看了太多的Top Gear（译者注：一档由英国BBC电视台出品的汽车节目））。虽然我们并不是专业的赛车手，但是并不会阻挡我们在日常中以更低的复杂度高效驾驶。如果某天我们决定来一场特技驾驶（我们的保险公司会被吓死的），这时或许多学一点汽车工作的原理并掌握一些新的技巧才更有帮助。留给我们进阶的选择一直就在那儿。但目前为止，我们对完成普通驾驶就非常满意了。 
+
+目前为止，我们依然是一位普通的“PowerShell驾驶员”，以比较简单的方式操纵Shell。无论你是否相信，在该阶段的用户才是PowerShell的主要目标用户。你会发现，在这个阶段，你就能够完成很多难以置信的工作。你仅需要掌握如何在Shell中运行命令即可。 
+
+4.2　剖析一个命令 
+
+图4.1展示了对复杂PowerShell命令的一个基本剖析。我们称之为一个命令的完整语法形式。我们尝试使用一个有点复杂的命令，这样你就能看到可能出现的所有部分。 
+
+ 
+
+图4.1　剖析一个PowerShell命令 
+
+为了确保你能够完全熟悉PowerShell的规则，下面更详细地阐述上图中的每一部分。 
+ 
+ 
+名称为Get-EventLog的Cmdlet。PowerShell Cmdlet总是以这种动词-名词形式命名。我们在下一章关于Cmdlet的章节会进一步解释。 
+ 
+第一个参数名称为-LogName，并赋值为Security。由于参数值中并不包含任何空格或标点符号，因此并不需要用引号括起来。 
+ 
+第二个参数名称为-ComputerName，以逗号分隔列表的形式赋了两个值：Win8和Server1。由于这两个参数中都不包含空格或标点符号，因此这两个参数都不需要用引号括起来。 
+ 
+最后一个参数是-Verbose，是一个开关参数。这意味着该参数无须赋值，仅仅指定参数即可。 
+ 
+注意：在命令名称和第一个参数之间必须有空格。 
+ 
+参数名称总是以英文短横线（-）开头。 
+ 
+参数名称之间必须有空格，多个参数值之间也必须有空格。 
+ 
+无论参数名称之前的破折号，还是参数值本身包含的破折号，都不需要加空格。 
+ 
+PowerShell不区分大小写。 
+ 
+
+请逐渐习惯这些规则，并开始对这种精确、优雅的输入方式敏感。多注意空格、破折号和其他部分可以最大程度减少PowerShell报低级错误的机会。 
+
+4.3　Cmdlet命名惯例 
+
+首先，让我们以讨论一些术语开始。据目前我们所知，只有我们在每天的对话中使用这些术语。但为了确保对术语理解的统一性，我们还需要详细解释一下。 
+ 
+ 
+Cmdlet是一个原生的PowerShell命令行工具。该术语仅仅存在于PowerShell和类似C#的.Net Framework语言中。Cmdlet仅仅出现在PowerShell中，所以当你在Google或Bing搜索该关键字时，返回结果主要是关于PowerShell的。该术语读音为“command-let”。 
+ 
+函数和Cmdlet类似，但不是以.Net语言编写，而是以PowerShell自己的脚本语言编写。 
+ 
+工作流是嵌入PowerShell的工作流执行系统的一类特殊函数。 
+ 
+应用程序是任意类型的外部可执行程序，包括类似PING、Ipconfig等命令行工具。 
+ 
+命令是一个通用的术语，用于代表任何或所有上面提到的术语。 
+ 
+
+微软已经为Cmdlet建了一个命名惯例。因此同样的命名规则也应该被用于函数和工作流。虽然微软并没有强制要求，但开发人员应该遵循该惯例。 
+
+规则应该以标准的动词开始，比如Get、Set、New或Pause。你可以运行Get-Verb查看允许使用的动词列表（虽然只有少部分是常用的，但你大概会看到100个左右）。在动词之后紧接着一个破折号，然后是一个单数形式的名词，比如Service或Process或EventLog。由于PowerShell允许开发人员自己命名名词，因此并没有一个“Get-Noun”的Cmdlet来显示所有名词。 
+
+这个规则的妙处在哪里？假设我们告诉你如下几个Cmdlet名称：New-Service、Get-Service、Get-Process、Set-Service等。你是否能够猜出哪一个命令可以创建一个新的Exchange邮箱？哪一个命令可以修改活动目录用户？如果你猜是“Get-Mailbox”，那么第一个就猜对了。如果你猜“Set-User”，那么第二个就非常接近了。实际上是Set-ADUser，你可以在活动目录模块的域控制器中找到该用户。重点是，通过一致的命名规则以及有限的动词集合，猜测命令名称变为可能，在此之后才是使用帮助或“Get-Command”加通配符验证猜想。估计你所需要的命令名称会变得更加简单，而无须每次都去搜索Google或Bing。 
+
+注意： 
+ 
+ 
+　 
+ 
+并不是所有所谓的动词都是动词。虽然微软官方使用术语“动词-名词命名规范”，你仍然能看到类似New、Where等“动词”，请逐渐习惯吧。 
+ 
+
+4.4　别名：命令的昵称 
+
+虽然PowerShell命令名称足够好，并具有良好的一致性，但仍然可能很长。类似Set-WinDefaultInputMethodOverride的命令名称，即使有Tab键补全，对于输入来说也是太长。虽然命令名称非常清晰——看到名称就能大概猜到其功能，但对于输入来说还是太长。 
+
+这也是为什么需要PowerShell别名。别名仅仅是命令的昵称。厌倦了输入Get-Service？尝试下面的代码。 
+
+PS C:\> get-alias -Definition "Get-Service" 
+Capability      Name  
+----------      ----  
+Cmdlet          gsv -> Get-Service 
+
+现在你知道Gsv是Get-Service的别名了。 
+
+无论是否使用别名，命令的工作方式不会变。参数还是原来的参数，其他部分也不会有任何改变——仅仅是命令名称变得更短。如果你习惯使用UNIX或Linux，就会知道别名也可以包含一些参数，只是记住PowerShell并不是以这种方式工作。 
+
+如果你看到一个别名（网上的一些家伙倾向于使用别名，就好像我们都能够记住所有150个内置别名）而不知道其含义，请查阅帮助。 
+
+PS C:\> help gsv  
+NAME  
+    Get-Service  
+SYNOPSIS  
+    Gets the services on a local or remote computer.  
+
+SYNTAX  
+    Get-Service [[-Name] <String[]>] [-ComputerName <String[]>] 
+    [-DependentServices [<SwitchParameter>]] [-Exclude <String[]>] 
+    [-Include <String[]>] [-RequiredServices [<SwitchParameter>]]  
+    [<CommonParameters>]  
+    Get-Service [-ComputerName <String[]>] [-DependentServices  
+    [<SwitchParameter>]] [-Exclude <String[]>] [-Include <String[]>] 
+    [-RequiredServices [<SwitchParameter>]] -DisplayName <String[]> 
+    [<CommonParameters>]  
+    Get-Service [-ComputerName <String[]>] [-DependentServices  
+    [<SwitchParameter>]] [-Exclude <String[]>] [-Include <String[]>] 
+    [-InputObject <ServiceController[]>] [-RequiredServices  
+    [<SwitchParameter>]] [<CommonParameters>] 
+
+在根据别名查阅帮助时，帮助系统将会显示完整命令的帮助，其中也会包含命令的完整名称。 
+
+补充说明 
+ 
+ 
+　 
+ 
+你可以使用New-Alias创建自定义别名，使用Export-Alias导出别名列表。当创建一个别名时，其生命周期只能持续到当前的Shell会话结束。一旦关闭窗口，别名就会不复存在。这也是你需要导出别名的原因，以便后续重新导入。 
+ 
+我们通常会避免创建和使用自定义别名，因为这些别名除我们之外的别人无法使用。如果某个用户无法查到xtd的含义，这会导致混淆。 
+ 
+xtd仅仅是我们编造的一个假的别名，不会做任何工作。 
+ 
+
+我们必须指出，由于现在PowerShell可以在非Windows系统中可用，因此别名的意义会根据环境的不同有所区别，比如说，Linux。在Linux中，别名可以作为一种运行一个包含一堆参数的命令的快捷方式。PowerShell却非如此。一个别名仅仅是命令名称的一个昵称，别名无法包含任何预定义的参数。 
+
+4.5　使用快捷方式 
+
+这也是PowerShell奇妙的地方。之前提到过PowerShell唯一的方式就是我们之前给你展示的那样，但实际上我们撒谎了。如果你希望在网络上“偷取”（或者再利用）其他人的示例代码，那首先需要懂得如何看懂它。 
+
+除了作为快捷方式的命令的别名之外，参数也同样可以使用别名。总共有三种方式可以实现这一点，每一种都可能造成混淆。 
+
+4.5.1　简化参数名称 
+
+PowerShell并不强制要求输入完整的参数名称。例如，你可以通过输入-comp代替-ComputerName，简化的规则是必须输入足够的字母让PowerShell可以识别不同参数。如果既存在-composite参数，也存在-computerName以及-common参数，你至少要输入-compu、-commo和-compo。这是由于上述值是唯一识别参数所需要输入的最少部分。 
+
+如果你很希望使用简便方式，那上面就是一个不错的选择。如果你在输入最少部分的参数之后记得按Tab键，PowerShell会帮你自动完成余下的输入。 
+
+4.5.2　参数名称别名 
+
+尽管参数的别名不在帮助文件或任何方便查阅的地方而难以识别，但参数也拥有别名。比如说，Get-EventLog命令有-ComputerName参数。可以运行下述命令，查阅该参数别名。 
+
+PS C:\> (get-command get-eventlog | select -ExpandProperty parameters)
+     . computername.aliases 
+
+上述命令已经用粗体标出命令和参数名称。你可以用任意你希望了解的命令和参数名称进行替换。在本例中，数据结果展示了-Cn是-computerName的别名，所以你可以运行下述命令。 
+
+PS C:\> Get-EventLog -LogName Security -Cn SERVER2 -Newest 10 
+
+Tab键补全将会展示出-Cn这个别名。如果你输入Get-EventLog –C并开始按Tab键，该别名将会出现。但是命令的帮助并不会显示关于-Cn的任何信息，且Tab键补全并不会显示-Cn和-ComputerName实际上是同一个命令。 
+
+4.5.3　位置参数 
+
+当你在帮助文件中查看命令语法时，你可以很容易认出位置参数。 
+
+SYNTAX  
+    Get-ChildItem [[-Path] <String[]>] [[-Filter] <String>] [-Exclude  
+    <String[]>] [-Force [<SwitchParameter>]] [-Include <String[]>] [-Name  
+    [<SwitchParameter>]] [-Recurse [<SwitchParameter>]] [-UseTransaction  
+    [<SwitchParameter>]] [<CommonParameters>] 
+
+在上述语法中，-Path和-Filter参数是位置参数，这是由于参数名称被中括号给括了起来。在完整的帮助文档（本例是help Get-ChildItem -Full）中会有更清晰的解释，如下： 
+
+-Path <String[]> 
+    Specifies a path to one or more locations. Wildcards are  
+    permitted. The default location is the current directory (.). 
+    Required?                    false  
+    Position?                    1  
+    Default value                Current directory  
+    Accept pipeline input?       true (ByValue, ByPropertyName)  
+    Accept wildcard characters?  True 
+
+上述帮助明显解释了-Path参数在位置1。对于位置参数来说，你无须输入参数名　称——仅需要在正确的位置提供参数值，例如： 
+
+PS C:\> Get-ChildItem c:\users  
+    Directory: C:\users  
+Mode                LastWriteTime     Length Name   
+-----               -------------     ------ ----
+d----         3/27/2012  11:20 AM            donjones  
+d-r--         2/18/2012   2:06 AM            Public 
+
+和下述命令完全相同。 
+
+PS C:\> Get-ChildItem -path c:\users  
+    Directory: C:\users  
+Mode                LastWriteTime      Length Name  
+-----               -------------      ------ ----
+d----         3/27/2012  11:20 AM             donjones  
+d-r--         2/18/2012   2:06 AM             Public 
+
+位置参数的一个弊端是你必须记住每一个位置所代表的参数。你还必须首先按照正确的顺序输入位置参数，然后才能输入命名（非位置）参数。如果你将位置参数的顺序搞混，命令则会失败。对于你可能已经使用多年的简单DIR命令来说，如果提供-Path参数将会变得很怪异，没有人会这么做。但对于更复杂的命令来说，比如一行包含3至4个位置参数的命令，将难以记住每一个位置所代表的参数。 
+
+比如说，下面命令将会难以阅读和理解。 
+
+PS C:\> move file.txt users\donjones\ 
+
+下面的版本显式指定了参数名称，将会更容易理解。 
+
+PS C:\> move -Path c:\file.txt -Destination \users\donjones\ 
+
+下面的版本将参数调换顺序，只有在指定参数名称时才允许这么做。 
+
+PS C:\> move -Destination \users\donjones\ -Path c:\file.txt 
+
+我们倾向于不推荐使用位置（也就是不指定参数名）参数，除非你仅仅是即时输入一个命令并不会带来任何后续影响。任何将命令长期保存的方式，包括在批处理文件中或是写入博客中，都要把所有的参数名称带上。我们在本书中尽量不使用不指定参数名称的方式，只有在少数示例中由于命令过长影响到排版时，我们才会使用。 
+
+4.6　小小作弊一下：Show-Command 
+
+尽管我们拥有多年使用PowerShell的经验，但命令语法的复杂度有时依然会让我们抓狂。PowerShell v3（以及更新版本，虽然不包含非Windows操作系统）提供的一个非常棒的特性是Show-Command commlet。如果你在命令语法方面遇到困难，包括空格、破折号、逗号、引号或是其他方面，Show-Command将成为你的助手。该命令允许你指定你无法用对的命令名称，并以图形化的方式将命令的参数名称展示出来。如图4.2所示，参数集分布于不同的选项卡（在前一章学到的），因此不同参数集之间的参数不会搞混——选择一个选项卡并仅一次只使用一个选项卡。注意该功能无法在没有安装GUI的服务器操作系统上生效。 
+
+ 
+
+图4.2　Show-Command命令使用图形提示帮助填写命令参数 
+
+当完成后，你可以单击运行执行命令，或使用我更喜欢的选项——单击复制将完成后的命令复制到剪贴板，返回Shell，将命令粘贴（右击控制台，或是在ISE中使用Ctrl+V组合键）到Shell中进行查看。这也是自学PowerShell语法最好的方式，如图4.3所示。你每次都能获得正确的语法。 
+
+ 
+
+图4.3　基于初始条目对话框，Show-Command生成合适的命令行语法 
+
+以这种方式产生的命令，总会是命令的完整形式。完整的命令名称，完整的参数名称，所有的参数名称都显式输入（即不会出现位置参数）。因此，这种方式可以说是使用PowerShell最完美、被推荐并符合最佳实践的方式。 
+
+不幸的是，Show-Command一次只能展示一个命令。因此，当希望了解多个命令时，只能逐个使用该命令。 
+
+4.7　对扩展命令的支持 
+
+目前为止，你所有在Shell中运行的命令（至少是我们建议你运行的命令）都是内置Cmdlet。大约400个Cmdlet被集成到Windows客户端操作系统中，上千个被集成到Windows服务器版本的操作系统中，并且你还能添加更多——类似Exchange Server、Sharepoint Server和SQL Server都包含数以百计的额外Cmdlet。 
+
+但是你并不会被局限在仅仅使用随PowerShell一同发行的Cmdlet——你还可以使用一些或许你已经使用多年的外置命令行工具，包括Ping、Nslookup、Ipconfig、Net等。由于这些都不是原生PowerShell Cmdlet，因此你可以按照原来使用这些命令的方法继续使用这些命令。PowerShell将会在后台启动Cmd.exe。由于PowerShell知道如何运行扩展命令，因此返回的结果都会被显示在PowerShell窗口。请尝试运行一些你已经熟悉的CMD命令。我们经常会被问到如何使用PowerShell关联一个普通的网络驱动器——你可以在对象资源管理器中看到那个。我们经常使用的Net Use命令在PowerShell中也能正常工作。 
+
+在非Windows操作系统中也是如此：你可以使用grep、bash、sed、awk、ping以及任何可用的命令行工具。这些命令可以正常执行，PowerShell能够以传统shell（例如Bash）同样的方式展示输出结果。 
+
+动手实验： 
+ 
+ 
+　 
+ 
+在PowerShell中运行一些之前你熟知的外部命令行工具。是否能够正常工作？哪些命令会执行失败？ 
+ 
+
+Net Use示例传递出一个重要信息：使用PowerShell，微软并不是说“你必须重新来过，重新学习所有的一切”，而是说“如果你已经知道了如何完成工作，请继续保持。我们会提供更好、更完整的工具帮助你，但你之前所学依然可用”。PowerShell中不存在“Map-Drive”命令的一个原因是Net Use已经可以很好地完成工作，那为什么不继续使用该命令呢？ 
+
+注意： 
+ 
+ 
+　 
+ 
+我们已经使用Net Use多年，甚至是PowerShell v1发行之前，该命令依然是非常好的命令。但PowerShell v3证实微软开始寻找合适的时机推出PowerShell风格的方式来完成这些传统任务。从PowerShell v3开始，现在你可以发现New-PSDrive命令多了一个-Persisit参数，该参数决定是否启用文件系统提供程序。这样一来，新的磁盘将会在文件资源管理器中被查看到。 
+ 
+
+有一些确定的例子说明微软已经为一些已经存在的老的命令提供了一些更好的替代工具。比如说，原生的Test-ConnectionCmdlet相比之前的提供了更多选项和更灵活的输出方式。还有外部的Ping命令，如果你知道如何使用Ping命令，它可以解决你的所有需求，请立刻使用它。Ping命令在PowerShell中可以正常工作。 
+
+综合上面，我们必须透漏出一个严酷的事实：并不是所有的外部命令都可以流畅地运行在PowerShell中，至少如果你不做一些调整是不行的。这是由于PowerShell解析　 器——Shell的该部分读取你输入的内容并尝试解析出你希望Shell执行什么——并不是每次都能猜对。有时你输入一个外部命令，就会导致PowerShell产生混乱，输出错误信息，因此命令不会生效。 
+
+比如说，当一个外部命令拥有很多参数时，事情就变得很难办。这也是PowerShell在大多数场景下无法工作的情形。我们深入其不能正常工作的细节，但可以提供下面的命令，从而确保运行一个命令且其参数可以准确无误。 
+
+$exe = "C:\Vmware\vcbMounter.exe"  
+$host = "server"  
+$user = "joe"  
+$password = "password"  
+$machine = "somepc"  
+$location = "somelocation"  
+$backupType = "incremental"  
+
+& $exe -h $host -u $user -p $password -s "name:$machine" -r $location -t  
+$backupType 
+
+假设你有一个名为vcbMounter.exe的外部命令（这是一个由某些VMWare虚拟化产品所提供的真实命令；如果你从未使用或安装过该命令，没有关系——大多数传统的命令行工具都以同样的方式工作，所以这依然是一个很好的教学案例），该命令接受6个参数。 
+ 
+ 
+-h用于指定主机名称。 
+ 
+-u用于指定用户名。 
+ 
+-p用于指定密码。 
+ 
+-s用于指定服务器名称。 
+ 
+-r用于指定区域。 
+ 
+-t用于指定备份类型。 
+ 
+
+我们所做的是将不同的元素——可执行路径和名称，以及所有的参数值放入容器。这部分操作以$开始。这使得PowerShell将这些值当作一个单元，而不是尝试对其进行解析来发现是否包含命令或特殊字符等。然后我们使用调用操作符（&amp;），将可执行程序的名称以及所有参数名称与参数值传递给该操作符。任何可以在PowerShell中运行的命令行工具，都可以使用这种方式在PowerShell中调用。 
+
+听上去很复杂？好吧，我们有一些好消息：在PowerShell v3或更新版本中，你不必再如此纠结，仅需要在外部命令名称之后加两个破折号。如果你这么做，PowerShell甚至不会解析该命令，仅仅是将该命令传递到Cmd.exe中。这意味着你基本上可以使用Cmd.exe的语法在PowerShell中运行任何命令，而不用担心该命令在PowerShell中解析的实现细节。说得更清楚些，这意味着你不能将变量作为参数传递。 
+
+下面是一个示例展示什么情况下会失败。 
+
+PS C:\> $n = "bits"
+PS C:\> C:\windows\system32\sc.exe --% qc $n
+[SC] OpenService FAILED 1060: 
+
+我们尝试运行命令行工具sc.exe查询一个服务。但如果我们显式声明我们所需的，PowerShell将会将所有参数传递给底层命令，而不做任何处理。 
+
+PS C:\> C:\windows\system32\sc.exe --% qc bits
+[SC] QueryServiceConfig SUCCESS
+
+SERVICE_NAME: bits
+        TYPE              : 20 WIN32_SHARE_PROCESS
+        START_TYPE        : 2 AUTO_START (DELAYED)
+       ERROR_CONTROL      : 1 NORMAL
+       BINARY_PATH_NAME   : C:\windows\System32\svchost.exe -k netsvcs
+       LOAD_ORDER_GROUP   :
+       TAG                : 0
+       DISPLAY_NAME       : Background Intelligent Transfer Service
+       DEPENDENCIES       : RpcSs
+                          : EventSystem
+       SERVICE_START_NAME : LocalSystem
+PS C:\> 
+
+希望这并不是你经常遇到的需求。 
+
+4.8　处理错误 
+
+在刚开始使用PowerShell时无可避免地会遇见丑陋的红色文本提示，在不同水平阶段依然可以遇到，甚至当你成为专家级的Shell用户时也避免不了。我们都能遇到，但不要让红字把你逼疯。 
+
+先不管用于警告目的的红字，PowerShell的错误信息的目的是用于帮助。例如，如图4.4所示，红字尝试展示给你PowerShell错误的地方。 
+
+ 
+
+图4.4　解释PowerShell的错误信息 
+
+错误信息几乎总是会包括PowerShell认为有歧义地方的行数和字符数。在图4.4中，是第一行，字符1——就是命令开始部分。其表达的意思为“你输入了‘get’，我不知道该词的意思”。这是由于我们输错了命令，正确应该是Get-Command，而不是Get Command。那么图4.5是什么情况? 
+
+ 
+
+图4.5 “第二路径片段”是什么？ 
+
+图4.5中所示的错误信息“第二路径不得为驱动器或UNC名称”让人感到困惑，什么第二路径？我们并没有输入第二路径。我们输入了一个路径c:\windows和一个命令行参数/s，不是吗？ 
+
+当然不是。解决该类问题最简便的方式就是阅读帮助，并完整输入命令。如果你输入Get-ChildItem -path C:\Windows，就会发现/s并不是正确的语法。我们希望该值对应的参数是-recurse。有时，错误信息并不一定很有帮助，就好像你和PowerShell说的不是同一种语言。当然，PowerShell不可能改变其语言，那么只能是你错了，所以你得去改变。通过咨询帮助并拼写出完整的命令和参数，通常都是解决问题的最快方式。还有不要忘了使用Show-Command找出正确语法。 
+
+4.9　常见误区 
+
+当合适时，我们会在一章中安排一个简短的小节，包含我们在教学过程中存在的一些常见误区。这样做的目的是帮助其他像你一样的管理员，从而避免该类问题——或是至少在你开始使用Shell时对这些问题找到解决办法。 
+
+4.9.1　输入Cmdlet名称 
+
+首先是输入Cmdlet名称。该名称永远是动词-名词形式，比如说Get-Content。下面是我看到的一些新手尝试输入的命令，但显然难以奏效。 
+ 
+ 
+Get Content 
+ 
+GetContent 
+ 
+Get=Content 
+ 
+Get_Content 
+ 
+
+其中一些问题是由于输入错误（比如说“=”，而不是“-”），还有一些是省略破折号。我们都会将命令读成“Get Content”，省略了破折号。但输入时必须输入破折号。 
+
+4.9.2　输入参数 
+
+参数同样需要正确书写。参数可以不赋值，比如说-recurse，在参数名称之前加上破折号。但必须在Cmdlet名称和参数之间加空格，参数之间也需要空格。下述命令都正确。 
+ 
+ 
+Dir –rec（可以使用参数名称的简写） 
+ 
+New-PSDrive -name DEMO-psprovider FileSystem -root \\Server\Share 
+ 
+但下述写法不正确。 
+ 
+Dir-rec（在名称和参数之间没有空格） 
+ 
+New-PSDrive –nameDEMO（参数和值之间没有空格） 
+ 
+New-PSDrive -name DEMO-psprovider FileSystem（在第一个参数值和第二个参数名之间没有空格） 
+ 
+
+PowerShell并不会挑剔大小写问题，也就是说dir和DIR并无不同，RECURSE、-recurse和-Recurse也是如此。但PowerShell会挑剔空格和破折号的写法。 
+
+4.10　动手实验 
+
+注意： 
+ 
+ 
+　 
+ 
+对于本次实验，你需要Windows 8（或更新版本）或Windows 2012（或更新版本）的计算机来运行PowerShell v3或更新版本。 
+ 
+
+请使用在本章以及之前关于帮助系统章节所学的内容，使用PowerShell完成下述任务。 
+
+1．显示正在运行的进程列表。 
+
+2．显示最新的100个应用程序日志（请不要使用Get-WinEvent，我们已经为你展示过完成该任务的另一个命令），任务仅限于Windows操作系统。 
+
+3．显示所有类型为“Cmdlet”的命令（我们已经展示了Get-Command，你还需要阅读帮助文档，从而找出缩小该列表范围，正如本次动手实验所要求的）。 
+
+4．显示所有的别名。 
+
+5．创建一个新的别名。使用该别名，你可以运行“np”从PowerShell提示符中启动一个记事本。该任务仅限于Windows操作系统，除非你在Linux系统上安装了wine。 
+
+6．显示以字母M开头的服务名称。同样，你需要阅读帮助文档找出所需的命令。请不要忘了星号（*），这是PowerShell中通用的通配符。该任务仅限于Windows操作系统。 
+
+7．显示所有的Windows防火墙规则，你需要使用Help或Get-Command找出所需的Cmdlet。该任务仅限于Windows操作系统。 
+
+8．显示所有Windows防火墙的入站规则。可以使用和之前任务同样的Cmdlet，但你需要阅读帮助文档找出所需的参数以及可选值。该任务仅限于Windows操作系统。 
+
+我们希望上述任务对你来说很直白。如果是这样，那就太好了。你已经利用现有的命令行技巧来使得PowerShell帮助你完成实际的工作。如果你是命令行世界的新手，那么上述任务将会是你学习本书其他章节的敲门砖。 
+

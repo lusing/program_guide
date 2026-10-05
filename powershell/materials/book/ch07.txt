@@ -1,0 +1,427 @@
+
+
+  
+    第7章 扩展命令
+  
+  
+第7章　扩展命令 
+
+可扩展性是PowerShell的一个主要优势。随着微软对PowerShell的持续投入，它为Exchange Server、SharePoint Server、System Center系列、SQL Server等产品开发了越来越多的命令。通常，当你安装这些产品的管理工具时，还会安装一个或多个Windows PowerShell扩展的图形化管理控制台。 
+
+7.1　如何让一个Shell完成所有事情 
+
+我们知道你可能熟悉图形化的微软管理控制台（MMC），这就是为什么我们将使用它作为例子阐述PowerShell的工作机制。它们涉及的可扩展的工作原理并无不同，部分原因是MMC和PowerShell由微软同一个管理框架下的团队研发。 
+
+当你打开一个新的空白MMC控制台，在很大程度上，它的功能有限。因为MMC的内置功能很少，所以它基本上做不了什么事情。如果想让它强大一些，你需要在文件菜单中使用添加/删除管理单元。在MMC中，一个管理单元就是一个工具，这类似于活动目录用户和计算机、DNS管理、DHCP管理等。你可以在MMC中添加多个你喜欢的管理单元，也可以保存生成控制台，这使得下次重新打开同一套管理单元更加方便。 
+
+这些管理单元从何而来？一旦你安装了类似Exchange Server、Forefront或者System Center产品的相关管理工具，就会在MMC的添加、删除管理单元的对话框里面列出这些产品的管理单元。大多数产品也会安装自己的预配置MMC控制台文件，安装过程仅是加载了基本的MMC和预加载一个或两个管理单元。你没有必要必须使用这些预配置控制台，因为你总能打开一个空白的MMC控制台，并加载你需要的管理单元。例如，预配置的Exchange Server MMC控制台不包括活动目录站点和服务的管理单元，但你可以很容易地创建一个包括Exchange以及站点和服务的MMC控制台。 
+
+PowerShell的工作原理几乎与MMC完全一致。安装一个给定产品的管理工具（安装管理工具的选项通常包含在产品的安装菜单中。如果你在Windows 7上安装类似Exchange Server的产品，该安装会仅安装管理工具）。这样做会为你提供PowerShell的相关扩展，它甚至可能会创建该产品特定的Shell管理程序。 
+
+7.2　关于产品的“管理Shell” 
+
+这些管理特定产品的Shell程序的来源很混乱。我们必须澄清：只有一个Windows PowerShell。并不存在Exchange PowerShell和活动目录PowerShell，只有一个Shell。 
+
+以活动目录为例，在Windows Server 2008 R2域控制器的开始菜单、管理工具下，你会发现一个关于活动目录组件的Windows PowerShell。如果在这一项单击右键，然后从上下文菜单中选择属性，第一眼就可以看到类似如下的目标域。 
+
+%windir%\system32\WindowsPowerShell\v1.0\powerShell.exe  
+➥-noexit -command import-module ActiveDirectory 
+
+该命令运行标准的PowerShell.exe应用程序，并指定命令行参数运行特定命令：Import-Module ActiveDirectory。执行的效果是可以预加载活动目录。你仍然可以打开一个“标准”的PowerShell并执行相同的命令，从而得到相同的功能。 
+
+你可以找到同样适用于几乎所有特定于产品的“管理Shell”：Exchange、SharePoint等。查看这些产品开始菜单快捷方式的属性，你会发现，它们都是打开标准的PowerShell.exe，并以传递一个命令行参数的方式添加一个模块、增加一个管理单元或者加载一个预配置控制台文件（该控制台文件是一个包含需要自动加载管理单元的简单列表）。 
+
+SQL Server 2008 和SQL Server 2008 R2却是例外。它们“产品相关”的Shell叫作Sqlps。它是一个经过特殊编译专门运行SQL Server扩展的PowerShell。通常称之为mini-Shell。微软第一次在SQL Server中尝试这种方法。但这种方法已经不流行了，并且微软不会再使用这种方法了：SQL Server 2012 使用的是PowerShell。 
+
+你不只局限于使用预先设定的扩展。当你打开Exchange的管理Shell程序，你可以运行Import-Module ActiveDirectory并假设该活动目录模块已经存在于你的电脑，添加活动目录功能到Shell中。你也可以打开标准的PowerShell控制台并手动添加你想要的扩展。 
+
+正如这一节前面提到的，这是一个让人感到非常困惑的知识点，包括有些人认为存在多个版本的PowerShell，却不能交叉利用彼此的功能。多年前，Don甚至在他的博客（http://windowsitpro.com/go/DonJonesPowerShell）中进行了讨论。PowerShell团队成员介入并支持他，所以，请相信我们：你可以在一个Shell中包含所有你想要的功能，而在开始菜单中，特定产品的快捷方式不会以任何方式限制或暗示你这些产品存在特殊版本的PowerShell。 
+
+7.3　扩展：找到并添加插件 
+
+PowerShell存在两种类型的扩展：模块和管理单元。首先讲述管理单元。 
+
+一个适合管理单元PowerShell的名字是PSSnapin，用于区别这些来自管理单元的图形MMS。PSSnapins在PowerShell v1版本的时候就已经存在。一个PSSnapin通常包含一个或多个DLL文件，同时包含配置XML文件和帮助文档。PSSnapins必须先安装和注册，然后PowerShell才能识别它的存在。 
+
+注意： 
+ 
+ 
+　 
+ 
+PSSnapin的概念逐步被微软移除了，将来可能会越来越少出现。在内部，微软的重点是提供扩展模块。 
+ 
+
+你可以通过在PowerShell中运行Get-PSSnapin -registered命令获取到一个可用的管理单元列表。由于我在域控制机器上安装了SQL Server 2008，所以执行命令的返回结果如下。 
+
+PS C:\> get-pssnapin -registered
+
+Name        : SqlServerCmdletSnapin100
+PSVersion   : 2.0
+Description : This is a PowerShell snap-in that includes various SQL
+              Server Cmdlets.
+Name        : SqlServerProviderSnapin100
+PSVersion   : 2.0
+Description : SQL Server Provider 
+
+上面的信息说明我的机器上安装了两个可用的管理单元，但是并没有加载。你可以通过运行Get-PSSnapin命令查看已加载的列表。该列表包含所有的核心，包含PowerShell中的本机功能的自动加载管理单元。 
+
+通过运行Add-PSSnapin并指定管理单元名称的方式加载某一个管理单元。 
+
+PS C:\> add-pssnapin sqlserverCmdletsnapin100 
+
+类似常用的PowerShell命令，你不必担心大小写是否正确，Shell会忽略大小写。 
+
+当一个管理单元加载成功了，你可能想知道Shell到底增加了什么功能。PSSnapin可以增加Cmdlets命令、提供PSDrive，或者两者都增加。使用Get-Command（或者别名：Gcm）命令找出已增加的Cmdlets命令。 
+
+PS C:\> gcm -pssnapin sqlserverCmdletsnapin100
+
+CommandType     Name                       Definition
+-----------     ----                       ----------
+Cmdlet          Invoke-PolicyEvaluation    Invoke-PolicyEvaluation...
+Cmdlet          Invoke-Sqlcmd              Invoke-Sqlcmd [[-Query]... 
+
+我们在这里必须指出，输出的结果中只包含了SqlServerCmdletSnapin100这个管理单元，并且只有两行记录。是的，这就是SQL Server在管理单元中增加的所有内容，而且只有一个可以执行Transact-SQL(T-SQL)的命令。因为你可以通过T-SQL命令在SQL Server上实现几乎所有的操作，Invoke-Sqlcmd这个Cmdlet命令同样可以完成所有的操作。 
+
+运行Get-PSProvider可以查看一个管理单元是否成功加载新的PSDrive，你不能在该Cmdlet命令中指定某个管理单元，所以你必须熟悉哪些提供程序已经存在，并通过查看列表方式发现新增内容。下面是返回结果。 
+
+PS C:\> get-psprovider  
+
+Name                 Capabilities             Drives  
+----                 ------------             ------  
+WSMan                Credentials              {WSMan}  
+Alias                ShouldProcess            {Alias}  
+Environment          ShouldProcess            {Env}  
+FileSystem           Filter, ShouldProcess    {C, A, D}  
+Function             ShouldProcess            {Function}  
+Registry             ShouldProcess, Transa... {HKLM, HKCU}  
+Variable             ShouldProcess            {Variable}  
+Certificate          ShouldProcess            {cert} 
+
+看起来没有任何新增内容。我们并不感到惊讶，这是由于我们所加载的Snap-in名称为SqlServerCmdletSnapin100。如果你回忆一下，我们的可用管理单元同样包含了SqlServerProviderSnapin100，这意味着微软出于某些原因，把它的Cmdlets命令和PSDrive分开打包。让我们尝试添加第二个。 
+
+PS C:\> add-pssnapin sqlserverprovidersnapin100
+PS C:\> get-psprovider  
+
+Name                 Capabilities              Drives
+----                 ------------              ------
+WSMan                Credentials              {WSMan}
+Alias                ShouldProcess            {Alias}
+Environment          ShouldProcess            {Env}
+FileSystem           Filter, ShouldProcess    {C, A, D}
+Function             ShouldProcess            {Function}
+Registry             ShouldProcess, Transa... {HKLM, HKCU}
+Variable             ShouldProcess            {Variable}
+Certificate          ShouldProcess            {cert}
+SqlServer            Credentials              {SQLSERVER} 
+
+回顾一下之前的输出结果，可以发现SQL Server驱动器已经被添加到我们的Shell当中，由SQL Server的PSDrive提供驱动。新增的该驱动意味着可以运行命令：cd SQL server切换到SQL Server驱动器，接着可以开始探索数据库。 
+
+7.4　扩展：找到并添加模块 
+
+PowerShell v3（以及v2）提供的第二种扩展方式称为模块。模块被设计得更加独立，因此更加容易分发，但是它的工作原理类似于PSSnapins。但是，你需对它们有更多了解，这样才能找到和使用它们。 
+
+模块不需要复杂的注册。PowerShell会自动在一个特定的目录下查找模块。PSModulePath这个环境变量定义了PowerShell期望存放模块的路径。 
+
+PS C:\> get-content env:psmodulepath  
+➥C:\Users\Administrator\Documents\WindowsPowerShell\Modules;C:\Windows  
+➥\system32\WindowsPowerShell\v1.0\Modules\ 
+
+在前面的例子中可以发现，路径中包含了两个默认的位置：其中一个是存放系统模块的操作系统目录，另外一个是存放个人模块的文档目录。如果你使用的是更新版本的PowerShell，你或许可以发现微软额外使用了另一个位置，只要你知道一个模块的完整路径，你就可以从任何其他的位置添加模块。 
+
+注意： 
+ 
+ 
+　 
+ 
+PSModulePath并不能在PowerShell中修改，它是你操作系统环境变量的一部分。你可以在系统控制面板中对它进行修改，或者通过组策略修改。一些微软或第三方产品可能会修改该变量。 
+ 
+
+在PowerShell v3中，该路径很重要。如果你有位于其他位置的模块，你应该把模块所在的路径加入到PSModulePath这个环境变量中。图7.1展示了如何通过系统控制面板而不是PowerShell去修改该环境变量。 
+
+为什么PSModulePath这个环境变量的路径如此重要？因为通过它，PowerShell可以自动加载位于你计算机上的所有模块。PowerShell会自动发现这些模块。它看起来好像是所有的模块都已被加载了。查看一个模块的帮助，会发现你不需要手动加载它。运行任何的命令，PowerShell都会自动加载该命令相关的模块。PowerShell的Update-Help命令同样使用PSModulePath发现已存在的任何模块，然后针对每个模块搜索需要更新的帮助文档。 
+
+例如，运行Get-Module | Remove-Module移除所有加载的模块。接着运行下面的命令（你返回的结果可能会有细微的差异，这取决于你所使用的Windows版本）。 
+
+PS C:\> help *network*  
+
+Name                            Category     Module  
+----                            --------     ------  
+Get-BCNetworkConfiguration      Function     BranchCache  
+Get-DtcNetworkSetting           Function     MsDtc  
+Set-DtcNetworkSetting           Function     MsDtc  
+Get-SmbServerNetworkInterface   Function     SmbShare  
+Get-SmbClientNetworkInterface   Function     SmbShare 
+
+ 
+
+图7.1　修改Windows下的PSModulePath环境变量 
+
+正如你所看到的，PowerShell发现了几个命令名称中包含“network”关键字的命令（在函数分类里）。即使你没有加载该模块，你也可以查看其中任何一个模块的帮助信息。 
+
+PS C:\> help Get-SmbServerNetworkInterface  
+
+名称
+    Get-SmbServerNetworkInterface  
+语法
+    Get-SmbServerNetworkInterface [-CimSession <CimSession[]>] 
+    [-ThrottleLimit <int>] [-AsJob] [<CommonParameters>] 
+
+如果你想，你甚至可以运行该命令，PowerShell确保会自动为你加载该模块。这个自动发现和自动加载的功能非常有用，甚至帮你发现和使用你在启动Shell时没有出现的命令。 
+
+提示： 
+ 
+ 
+　 
+ 
+你也可以使用Get-Module命令检索一个远程服务器的可用模块列表，还可以使用Import-Module加载一个远程模块到当前PowerShell会话。你将在第13章中的远程控制中学习到如何使用该功能。 
+ 
+
+即使在模块还没有显式加载到内存的情况下，PowerShell依然可以自动发现模块从而使得Shell完成命令名称自动补全（在控制台使用Tab按钮，或者使用ISE的智能提醒）、显示帮助和运行命令。该特性使得保持PSModulePath环境变量的完整和最新很有必要。 
+
+如果一个模块不在被PSModulePath引用的任何一个目录下，你应该使用Import- Module命令并指定模块的完整路径，如C:\MyPrograms\Something\MyModule。 
+
+如果在开始菜单中有一个特定产品Shell的快捷方式，比如说Share Point Server，而你却不知道该产品安装PowerShell模块的路径，打开快捷方式图标的属性，像本章之前教你的方法一样，在快捷方式的目标属性中会包含使用Import-Module命令需要的模块名和路径。 
+
+模块还可以添加PSDrive提供程序。你必须使用与PSSnapins中相同的技巧确定有哪些新的提供程序：运行Get-PSProvider命令。 
+
+7.5　命令冲突和移除扩展 
+
+仔细看看我们为SQL Server和活动目录增加的命令。注意到什么特别的命令名称了吗？ 
+
+大多数的PowerShell扩展（Exchange Server是一个明显的例外）都在它们命令名的名词部分增加了一个短的前缀，如Get-ADUser和Invoke-SqlCmd。这些前缀看起来有些多余，但是它们可以防止命令名称的冲突。 
+
+例如，假设你加载的两个模块中都包含了Get-User这个Cmdlet命令。这样两个命令名称相同，且被同时加载。你运行Get-User时，PowerShell应该执行哪个呢？事实上是执行最后一个加载模块的命令。但是另外一个名称相同的命令却无法再被访问。为了明确所需运行的具体命令，你需要使用看起来有点多余的命名规则，它包括管理单元名称和命令名称。如果Get-User来自一个叫作MyCoolPowerShellSnapin的模块单元，你需要使用下面的方式运行。 
+
+MyCoolPowerShellSnapin\Get-User 
+
+这需要输入很多内容，这就是为什么微软建议添加特定产品前缀，如在每个命令的名词中加入AD或者SQL。增加前缀可以防止冲突，并且使命令更容易识别和使用。 
+
+如果你已经对冲突不厌其烦，你可以随时选择删除冲突的扩展名。你需要运行Remove-PSSnapin或Remove-Module，并指定管理模块或模块命令的名称，从而卸载某个扩展。 
+
+7.6　在非Windows操作系统 
+
+如果你正在使用Linux或macOS，同样的注意事项也适用于上面的讨论。一方面，PSModulePath环境变量虽然不存在，但会指向其他位置。确保检查你的电脑所寻找模块的位置。 
+
+除此之外，大量已存在的模块无法运行。可能是这些模块依赖的某个功能（例如，WMI）在你的计算机上不存在，或者这些模块有底层依赖（比如活动目录的连通性），这些依赖在你的计算机上不可用。但这种依赖不仅限于依赖Windows：你可能会发现一些PowerShell模块无法在Windows下正常工作，这些模块依赖Linux或macOS的功能。这也强调了PowerShell作为一个产品以及PowerShell所能“接触”的功能。 
+
+7.7　玩转一个新的模块 
+
+让我们开始对刚刚学习到的新知识加以实践。假设你使用最新版本的Windows系统（不是macOS或Linux），并希望能跟随我们目前在本节的命令。更重要的是，我们希望你跟随该过程并思考我们将要解释的内容，因为这是我们自学如何使用遇到的新命令而不是冲出去为每个单独的产品和功能买一本新书的方法。在本章的后面的动手实验，我们会让你自己重复该过程从而学习一个全新的命令集。 
+
+我们的目标是清除我们计算机上的DNS名称解析缓存。我们还不知道PowerShell是否能做到这一点，所以我们先要在帮助系统中寻找一些线索。 
+
+PS C:\> help *dns* 
+
+Name                           Category       Module 
+----                           --------       ------ 
+dnsn                           Alias 
+Resolve-DnsName                Cmdlet         DnsClient 
+Clear-DnsClientCache           Function       DnsClient 
+Get-DnsClient                  Function       DnsClient 
+Get-DnsClientCache             Function       DnsClient 
+Get-DnsClientGlobalSetting     Function       DnsClient 
+Get-DnsClientServerAddress     Function       DnsClient 
+Register-DnsClient             Function       DnsClient 
+Set-DnsClient                  Function       DnsClient 
+Set-DnsClientGlobalSetting     Function       DnsClient 
+Set-DnsClientServerAddress     Function       DnsClient 
+Add-DnsClientNrptRule          Function       DnsClient 
+Get-DnsClientNrptPolicy        Function       DnsClient 
+Get-DnsClientNrptGlobal        Function       DnsClient 
+Get-DnsClientNrptRule          Function       DnsClient 
+Remove-DnsClientNrptRule       Function       DnsClient 
+Set-DnsClientNrptGlobal        Function       DnsClient 
+Set-DnsClientNrptRule          Function       DnsClient 
+
+是的！正如你看到的，这就是我们计算机上所有的DnsClient模块。前面的列表中显示了Clear-DnsClientCache命令，但是我们好奇还有其他哪个命令可用。为了找出该命令，我们手动加载该模块并列出所有命令。 
+
+动手实验： 
+ 
+ 
+　 
+ 
+继续跟随我们运行这些命令。如果在你的计算机上没有DnsClient这个模块，那是因为你使用了一个较旧的Windows版本。请考虑获取一个新的版本，甚至是在你的虚拟机里运行一个实验版本，直到可以运行下述命令。 
+ 
+
+PS C:\> import-module -Name DnsClient 
+PS C:\> get-command -Module DnsClient 
+
+Capability      Name 
+----------      ---- 
+CIM             Add-DnsClientNrptRule 
+CIM             Clear-DnsClientCache 
+CIM             Get-DnsClient 
+CIM             Get-DnsClientCache 
+CIM             Get-DnsClientGlobalSetting 
+CIM             Get-DnsClientNrptGlobal 
+CIM             Get-DnsClientNrptPolicy 
+CIM             Get-DnsClientNrptRule 
+CIM             Get-DnsClientServerAddress 
+CIM             Register-DnsClient 
+CIM             Remove-DnsClientNrptRule 
+CIM             Set-DnsClient 
+CIM             Set-DnsClientGlobalSetting 
+CIM             Set-DnsClientNrptGlobal 
+CIM             Set-DnsClientNrptRule 
+CIM             Set-DnsClientServerAddress 
+Cmdlet          Resolve-DnsName 
+
+注意： 
+ 
+ 
+　 
+ 
+可以查看关于Clear-DnsClientCache的帮助，或者甚至直接运行命令。PowerShell会在后台为我们加载DnsClient模块。因为我们正处于探索阶段，这种方法可以查看到该模块的完整命令列表。 
+ 
+
+该命令列表看起来跟我们之前的列表或多或少有些相似。好的，让我们来看看Clear-DnsClientCache命令。 
+
+PS C:\> help Clear-DnsClientCache 
+
+名称
+    Clear-DnsClientCache  
+语法
+    Clear-DnsClientCache [-CimSession <CimSession[]>] [-ThrottleLimit  
+    <int>] [-AsJob] [-WhatIf] [-Confirm] [<CommonParameters>] 
+
+看起来已经很明确了，我们没有发现任何必要参数。让我们尝试运行命令。 
+
+PS C:\> Clear-DnsClientCache 
+
+好的，通常来说，没有消息就是最好的消息。尽管如此，我们更愿意看到该命令所完成的工作。尝试使用下面的命令。 
+
+PS C:\> Clear-DnsClientCache -verbose  
+详细信息: The specified name resolution records cached on this machine will be removed.
+Subsequent name resolutions may return up-to-date information. 
+
+所有的命令都有-verbose开关参数，但并不是所有命令都会实现该参数。在该示例中，我们得到一个指示发生了什么事情的信息，这让我们知道这个命令已经成功运行。 
+
+7.8　配置脚本：在启动Shell时预加载扩展 
+
+假设你已经打开了PowerShell，并且你已经加载了几个你最为喜欢的管理单元和模块。如果你接受这种方式，每加载一个snap-in或模块就需要执行一个命令。如果你需要装载几个模块，这需要花费几分钟输入命令。当你不想使用Shell并关闭窗口之后，下次重新打开Shell窗口，之前加载的管理单元和模块都不复存在了，而你需要运行命令重新加载它们。这是件多么可怕的事情。肯定有一个更好的方式可以解决该问题。 
+
+我们给你介绍3种更好的方式。第一个涉及创建一个控制台文件。这只能记录已经加载的PSSnapins，而无法加载模块。首先加载所有你想要的管理单元，接着运行下面的命令。 
+
+Export-Console c:\myShell.psc 
+
+运行该命令，可以把你在Shell中加载的管理单元列表保存到一个很小的XML文件。 
+
+接下来，你希望在某些地方创建一个新的PowerShell快捷方式，快捷方式的目标应该是： 
+
+%windir%\system32\WindowsPowerShell\v1.0\powerShell.exe  
+➥-noexit -psconsolefile c:\myShell.psc 
+
+当使用该快捷方式打开一个新的PowerShell窗口，这将加载控制台，并且该Shell会自动加载控制台文件内的所有管理单元。再次提醒，不能包括模块。如果同时需要加载管理单元和模块或者你只想加载其中某些模块，这种情况下你应该怎么做呢？ 
+
+提示： 
+ 
+ 
+　 
+ 
+请记住，PowerShell会自动加载PSModulePath环境变量的其中一个路径中的模块。如果你想预加载模块，你只需要考虑该模块是否位于PSModulePath环境变量所包含的路径中。 
+ 
+
+答案就是使用配置脚本。我们在前面提到，这将在本书的第25章进行详细的讨论。现在按照下面的步骤来学习如何使用它们。 
+
+1．在你的文档目录创建一个名为WindowsPowerShell（在文件夹名中不要包含空格，在非Windows操作系统中不同，但你可以在Shell中运行$profile得到正确路径）的新文件夹。 
+
+2．在上面创建的文件夹中使用记事本创建一个名为profile.ps1的新文件。当你使用记事本保存该文件时，需要确保文件名称在双引号内（“profile.ps1”）。使用引号是为了防止记事本在文件名称后加上.txt的文件扩展名。如果加上了.txt扩展名，该方法则不生效。 
+
+3．在刚刚创建的文本文件中输入Add-PSSnapin和Import-Module命令，以一行一个命令的格式加载管理单元和模块。 
+
+4．回到PowerShell中，你需要启用脚本的执行功能，这在默认情况下处于禁用状态。我们将会在第17章讨论如此操作带来的安全隐患，但是现在我们假设你是在一个单独的虚拟机或者是单独的测试机上做该操作，这样安全性就不再是问题。在该脚本中，运行Set-ExecutionPolicy RemoteSigned命令。需要注意的是，该命令只有在以管理员身份运行Shell的时候才会执行。也可以使用组策略对象（GPO）覆盖该设置。如果是这样做，你会得到一个警告消息。 
+
+5．假设到目前为止你没有收到任何错误或者警告。关闭并重启Shell，这将会自动加载profile.ps1文件，执行里面的命令，为你加载喜欢的管理单元和模块。 
+
+动手实验： 
+ 
+ 
+　 
+ 
+如果你没有找到一个喜欢的管理单元或模块，创建上面这个简单的配置文件将是一个很好的练习。如果实在不知道输入什么，可以在配置脚本输入“cd \”，这样你每次打开Shell的时候就会跳转到系统盘的根目录。但不要在你生产环境中的机器上执行上面的操作，因为我们还没有解决所有的安全隐患。 
+ 
+
+7.9　从Internet获取模块 
+
+微软引入了一个名称为PowerShellGet的模块，这使得从在线仓库中搜索、下载、安装、升级模块变得容易了。PowerShellGet很像Linux管理员喜爱的包管理器-RPM、YUM、apt-get等。微软甚至还维护一个在线源，称为PowerShell Gallery（http:// powershellgallery.com）。 
+
+警告： 
+ 
+ 
+　 
+ 
+微软维护并不意味着微软生产、验证与支持。PowerShell Gallery包含社区贡献的代码，在你的环境执行别人的代码需要小心。 
+ 
+
+PowerShellGet随着PowerShell v5以及更新版本一起发行（虽然该模块在非Windows系统不可用），如果你使用的是v5版本（检查$PSVersionTable），你就拥有了该模块。http://PowerShellGallery.com包含指向PowerShellGet模块的链接，从而可以在Windows 7 SP1以及之后版本，Windows 2008 R2以及之后版本上安装。你还需要安装特定的.NET Framework版本，下载页包含.NET以及其他系统需要的组件。 
+
+使用PowerShellGet非常简单，甚至有趣。 
+ 
+ 
+运行Register-PSRepository添加一个源的URL。http://PowerShellGallery. com通常是默认设置，但也可以添加自用的“gallery”，并利用Register- PSRepository指向该地址。 
+ 
+使用Find-Module在源中查找模块。你可以在名称、特定标签等列中使用通配符缩小搜索结果。 
+ 
+找到所需的模块后，使用Install-Module下载与安装一个模块。 
+ 
+使用Update-Module确保你的模块的副本是最新的，如果不是，下载最新版本并安装。 
+ 
+
+PowerShellGet包含一系列其他命令（http://PowerShellGallery.com 有指向文档的链接），但上面命令是你开始所需使用的。例如，尝试安装PowerShellGet（如果使用的不是PowerShell v5），该安装不会包含EnhancedHTML2（在http://PowerShell.org 中有一本免费的电子书“Creating HTML Reports in PowerShell”阐述该模块）或来自PowerShell Gallery由Jeff编写的ISEScriptingGeek模块。 
+
+7.10　常见误区 
+
+使用PowerShell的新手，当他们开始操作模块和管理单元时经常会做一件错误的事情：他们不阅读帮助文档。特别是，他们在查看帮助的时候不使用-example或者-full开关。 
+
+坦白说，查看内建的示例是学习使用一个命令的最好方式。是的，滚动数以百计的命令列表可能是有点吓人（如Exchange Server，新增的命令大大超过了400个），但是通过在命令Help和Get-Command基础上加通配符应该可以更容易缩小列表的范围。因此，阅读帮助文档吧！ 
+
+7.11　动手实验 
+
+注意： 
+ 
+ 
+　 
+ 
+在本实验中，你需要一个Windows 7、Windows Server 2008 R2或者是更高版本的操作系统来运行PowerShell v3甚至是更高的版本。 
+ 
+
+通常，我们假设在你的计算机或者虚拟机上的操作系统为最新版本（客户端或者服务器版本）运行测试。 
+
+在本实验中，你只有一个任务：运行网络故障诊断包。当你成功做到了，你需要寻找“实例ID”敲入回车键，运行Web连接测试，并且从一个指定的页面中寻求帮助。使用http://videotraining.interfacett.com作为你的测试地址。我们希望你获取的返回信息是“没有发现问题”，这意味着你成功地运行了该检查。 
+
+为了完成该任务，你需要找到一个可以获取到故障诊断包的命令，并且需要一个可以执行故障诊断包的命令。你还需要找到这些包所处的位置和它们的名称。你需要知道的所有内容都在PowerShell里，帮助系统将为你找到它们。 
+
+这是你得到的所有帮助！ 
+
+7.12　动手实验答案 
+
+下面是一种实现方式。 
+ 
+ 
+get-module *trouble* -list 
+ 
+import-module TroubleShootingPack 
+ 
+get-command -Module TroubleShootingPack 
+ 
+help get-troubleshootingpack –full 
+ 
+help Invoke-TroubleshootingPack -full 
+ 
+dir C:\windows\diagnostics\system 
+ 
+$pack=get-troubleshootingpack 
+ 
+C:\windows\diagnostics\system\Networking 
+ 
+Invoke-TroubleshootingPack $pack 
+ 
+按回车键 
+ 
+1 
+ 
+2 
+ 
+https://www.pluralsight.com/browse/it-ops 
+ 
+
