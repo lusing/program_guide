@@ -1,0 +1,25 @@
+main() {
+  var a, b, c, d, m, n, u, q, r, t, v, z;
+  a = 11;
+  b = 4;
+  c = 9;
+  d = 2;
+  m = a + b;
+  n = a + b;
+  u = c + d;
+  if (a > b) {
+    r = c + d;
+    t = a + b;
+    output n;
+  } else {
+    q = a + b;
+    t = a + b;
+    output q;
+  }
+  v = a + b;
+  z = c + d;
+  output v;
+  output z;
+  output t;
+  return 0;
+}

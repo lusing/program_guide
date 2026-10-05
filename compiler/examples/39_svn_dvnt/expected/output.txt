@@ -1,0 +1,112 @@
+== vn.tip ==
+== SSA（输入）==
+  B0:
+    t10 = 11
+    a0 = t10
+    t20 = 4
+    b0 = t20
+    t30 = 9
+    c0 = t30
+    t40 = 2
+    d0 = t40
+    t50 = a0 + b0
+    m0 = t50
+    t60 = a0 + b0
+    n0 = t60
+    t70 = c0 + d0
+    u0 = t70
+    if a0 > b0 goto B2
+  B1:
+    goto B3
+  B2:
+    t80 = c0 + d0
+    r0 = t80
+    t90 = a0 + b0
+    t1 = t90
+    output n0
+    goto B4
+  B3:
+    t100 = a0 + b0
+    q0 = t100
+    t110 = a0 + b0
+    t0 = t110
+    output q0
+  B4:
+    q1 = phi(qu, q0)
+    r1 = phi(r0, ru)
+    t2 = phi(t1, t0)
+    t101 = phi(t10u, t100)
+    t111 = phi(t11u, t110)
+    t81 = phi(t80, t8u)
+    t91 = phi(t90, t9u)
+    t120 = a0 + b0
+    v0 = t120
+    t130 = c0 + d0
+    z0 = t130
+    output v0
+    output z0
+    output t2
+    t140 = 0
+    return t140
+== 三档成绩 ==
+  LVN（块内）  : 消除 2 条冗余
+  SVN（EBB）   : 消除 5 条冗余
+  DVNT（支配树）: 消除 7 条冗余 + 1 个无义/重复 φ（2 轮扫描）
+== DVNT 流水 ==
+  B0: t60 复用 t50
+  B3: t100 复用 t50
+  B3: t110 复用 t50
+  B2: t80 复用 t70
+  B2: t90 复用 t50
+  B4: t2 = φ(...) 无义，并入 t50
+  B4: t120 复用 t50
+  B4: t130 复用 t70
+== DVNT 优化后 ==
+  B0:
+    t10 = 11
+    a0 = 11
+    t20 = 4
+    b0 = 4
+    t30 = 9
+    c0 = 9
+    t40 = 2
+    d0 = 2
+    t50 = 11 + 4
+    m0 = t50
+    n0 = t50
+    t70 = 9 + 2
+    u0 = t70
+    if 11 > 4 goto B2
+  B1:
+    goto B3
+  B2:
+    r0 = t70
+    t1 = t50
+    output t50
+    goto B4
+  B3:
+    q0 = t50
+    t0 = t50
+    output t50
+  B4:
+    q1 = phi(qu, t50)
+    r1 = phi(t70, ru)
+    t101 = phi(t10u, t50)
+    t111 = phi(t11u, t50)
+    t81 = phi(t70, t8u)
+    t91 = phi(t50, t9u)
+    v0 = t50
+    z0 = t70
+    output t50
+    output t70
+    output t50
+    t140 = 0
+    return 0
+== 对账 ==
+  原始 outputs: 15 15 11 15
+  优化 outputs: 15 15 11 15
+  前后一致: yes
+  SVN 比 LVN 多抓跨块冗余: yes
+  DVNT 比 SVN 多抓连接块与 φ: yes
+  优化前后 outputs 相等: yes
+  无义 φ 被删（≥2 轮扫描）: yes
