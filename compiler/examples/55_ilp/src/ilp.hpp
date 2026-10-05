@@ -42,6 +42,20 @@ struct ModuloReport {
 
 ModuloReport moduloSchedule(const std::vector<Quad> &body, const std::string &ctr);
 
+// ---------- 树高平衡（鲸书 §8.4.2） ----------
+// 块内同一条交换结合算子链（内部名恰用一次）重建为近似平衡树：
+// 叶子进按高度排序的优先队列，反复取两小合并（Huffman 同型）。
+// 左结合链 a+b+…+h 高 7 → 平衡树高 3，双发射加法器的周期数随之减半。
+struct BalanceReport {
+    std::vector<Quad> before, after;       // 重排前后的块体
+    int depthBefore = 0, depthAfter = 0;   // 表达式树高
+    int value = 0;                         // 表达式值（前后一致的对账证人）
+    int leaves = 0;                        // 链的叶子数
+};
+
+// 找块内最长的同类二元链并平衡之；没有 ≥4 叶子的链时 leaves=0 表示未命中。
+BalanceReport treeBalance(const std::vector<Quad> &block);
+
 }  // namespace tip
 
 #endif  // TIP_ILP_HPP

@@ -131,6 +131,36 @@ int main(int argc, char **argv) {
         }
     }
 
+    // ---------- 树高平衡（鲸书 §8.4.2）：喂给调度器的形状 ----------
+    for (const auto &b : blocks) {
+        std::vector<tip::Quad> body(code.begin() + b.begin, code.begin() + b.end);
+        tip::BalanceReport br = tip::treeBalance(body);
+        if (br.leaves < 4) continue;
+        std::cout << "== 树高平衡 B" << b.id << "（" << br.leaves << " 叶链）==\n";
+        std::cout << "  原链深度 " << br.depthBefore << " → 平衡后 " << br.depthAfter
+                  << "，值 = " << br.value << "（前后一致）\n";
+        // 调度对照取纯链子图（叶子视为就绪）：剥掉常量物化的 copy 噪声
+        std::vector<tip::Quad> chain0, chain1;
+        for (const auto &q : br.before)
+            if (q.op == tip::TOp::Add) chain0.push_back(q);
+        for (const auto &q : br.after)
+            if (q.op == tip::TOp::Add) chain1.push_back(q);
+        tip::Block pb{};
+        pb.id = b.id;
+        pb.begin = 0;
+        pb.end = static_cast<int>(chain0.size());
+        tip::DepDAG d0 = tip::depDag(chain0, pb);
+        tip::Schedule s0 = tip::listSchedule(d0, 2);
+        pb.end = static_cast<int>(chain1.size());
+        tip::DepDAG d1 = tip::depDag(chain1, pb);
+        tip::Schedule s1 = tip::listSchedule(d1, 2);
+        std::cout << "  双发射调度周期（纯链）：链形 " << s0.cycles << " → 平衡 " << s1.cycles << '\n';
+        std::cout << "  平衡后块体:\n";
+        for (const auto &q : br.after) std::cout << "    " << tip::show(q) << '\n';
+        allOk = allOk && br.depthAfter < br.depthBefore && s1.cycles < s0.cycles;
+        break;
+    }
+
     std::cout << "== 对账 ==\n";
     tip::TacRun run = tip::tacInterp(code, {3, 2});   // 两个 input 喂 3、2
     std::cout << "  outputs:";

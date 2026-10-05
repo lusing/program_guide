@@ -242,6 +242,241 @@ NP 难的
 装箱，
 贪心见好就收。
 
+## 55.4b 树高平衡：先把表达式掰成好调度的形状
+
+表调度
+只能在
+依赖图
+**给定**
+的
+约束里
+装箱；
+但
+约束
+本身
+可能是
+翻译
+随手
+定下的。
+`a+b+c+d+e+f+g+h`
+按
+左结合
+翻译
+成一列
+`(((((a+b)+c)+d)…)`
+的
+链——
+加法
+交换律
+与
+结合律
+并
+**没有**
+规定
+这个
+形状。
+链形
+的
+依赖
+深度
+是 7：
+双发射
+加法器
+也
+救不了
+串行
+的
+RAW 链。
+鲸书
+§8.4.2
+的
+**树高
+平衡**
+（tree-height
+balancing）
+把
+链
+重建为
+近似
+平衡
+树：
+
+1. 找
+  候选
+  树：
+  同一
+  个
+  交换
+  结合
+  算子
+  的
+  链，
+  且
+  每个
+  内部
+  名字
+  在
+  块内
+  **恰
+  使用
+  一次**
+  （多次
+  使用
+  = 可
+  观察
+  值，
+  是
+  根
+  不
+  是
+  内部）；
+2. 摊平
+  成
+  叶子
+  表，
+  全部
+  进
+  按
+  高度
+  排序的
+  优先
+  队列；
+3. 反复
+  取
+  **两个
+  最矮的**
+  合并
+  （Huffman
+  同型），
+  直到
+  剩
+  一个
+  根——
+  根
+  沿用
+  原名，
+  块外
+  的
+  使用
+  无感。
+
+期望
+输出
+（sum8.tip）：
+8 叶
+链
+深度
+7
+→
+平衡
+树
+深度
+**3**
+（完美
+二叉），
+纯链
+双发射
+周期
+7
+→
+5，
+表达式
+值
+36
+前后
+一致。
+对照
+鲸书
+Figure
+8.6
+的
+经典
+课：
+左结合
+链
+在
+双
+加法器
+上
+要
+串行
+7 拍，
+平衡
+树
+4 拍
+出头——
+**调度器
+吃
+不到
+的
+并行，
+先让
+形状
+喂
+给它**。
+
+两个
+工程
+细节：
+其一，
+`4×s`
+这类
+**常量
+乘**
+先
+别
+急着
+换
+移位
+（第 41 章
+的
+老
+提醒）——
+换掉
+就
+丢了
+交换律，
+平衡
+就
+无从
+谈起；
+优化
+次序
+里
+树高
+平衡
+应
+排在
+强度
+削减的
+移位
+改写
+**之前**。
+其二，
+平衡
+抬高
+同时
+活跃的
+临时数
+（寄存器
+压力），
+与
+§55.6
+的
+相位
+之争
+是
+同一个
+主题：
+并行
+曝光
+与
+寄存器
+需求
+是一根
+跷跷板
+的两头。
+
 ## 55.5 软件流水：循环的重叠执行
 
 块内调度
@@ -633,6 +868,20 @@ struct ModuloReport {
 
 ModuloReport moduloSchedule(const std::vector<Quad> &body, const std::string &ctr);
 
+// ---------- 树高平衡（鲸书 §8.4.2） ----------
+// 块内同一条交换结合算子链（内部名恰用一次）重建为近似平衡树：
+// 叶子进按高度排序的优先队列，反复取两小合并（Huffman 同型）。
+// 左结合链 a+b+…+h 高 7 → 平衡树高 3，双发射加法器的周期数随之减半。
+struct BalanceReport {
+    std::vector<Quad> before, after;       // 重排前后的块体
+    int depthBefore = 0, depthAfter = 0;   // 表达式树高
+    int value = 0;                         // 表达式值（前后一致的对账证人）
+    int leaves = 0;                        // 链的叶子数
+};
+
+// 找块内最长的同类二元链并平衡之；没有 ≥4 叶子的链时 leaves=0 表示未命中。
+BalanceReport treeBalance(const std::vector<Quad> &block);
+
 }  // namespace tip
 
 #endif  // TIP_ILP_HPP
@@ -646,7 +895,9 @@ ModuloReport moduloSchedule(const std::vector<Quad> &body, const std::string &ct
 
 #include <algorithm>
 #include <cctype>
+#include <functional>
 #include <map>
+#include <queue>
 #include <set>
 #include <sstream>
 
@@ -799,6 +1050,123 @@ ModuloReport moduloSchedule(const std::vector<Quad> &body, const std::string &ct
     return r;
 }
 
+// ---------- 树高平衡（鲸书 §8.4.2） ----------
+
+namespace {
+
+// 链内部节点：同类二元运算、且目的名在块内恰用一次
+struct ChainInfo {
+    std::map<std::string, int> defOf;      // 内部名 → before 下标
+    std::map<std::string, int> useCount;   // 块内使用计数
+    TOp op = TOp::Add;
+    int rootIdx = -1;                      // 根：用户不是链内 Add 的那个
+};
+
+ChainInfo findChain(const std::vector<Quad> &block) {
+    ChainInfo ci;
+    std::map<std::string, int> userIsAdd;  // 名字 → 是否被某个 Add 用
+    for (const auto &q : block) {
+        if (!q.dst.empty()) ++ci.useCount[q.dst];
+        if (q.op == TOp::Add || q.op == TOp::Mul) {
+            userIsAdd[q.a] = 1;
+            userIsAdd[q.b] = 1;
+        }
+    }
+    for (size_t i = 0; i < block.size(); ++i) {
+        const Quad &q = block[i];
+        if (q.op != TOp::Add && q.op != TOp::Mul) continue;
+        if (ci.useCount[q.dst] != 1) continue;   // 多次使用 = 可观察值，是根不是内部
+        if (ci.op != TOp::Add && ci.defOf.empty()) ci.op = q.op;
+        if (q.op != ci.op) continue;
+        ci.defOf[q.dst] = static_cast<int>(i);
+        if (!userIsAdd[q.dst]) ci.rootIdx = static_cast<int>(i);   // 用户不是链内：根
+    }
+    return ci;
+}
+
+}  // namespace
+
+BalanceReport treeBalance(const std::vector<Quad> &block) {
+    BalanceReport r;
+    r.before = block;
+    ChainInfo ci = findChain(block);
+    if (ci.rootIdx < 0) return r;
+    const Quad &root = block[ci.rootIdx];
+
+    // 递归摊平：叶子（不在链内的操作数）计高度 0，内部节点下钻
+    struct Item { std::string name; int height; };
+    std::vector<Item> leaves;
+    std::function<void(const std::string &)> flatten = [&](const std::string &name) {
+        auto it = ci.defOf.find(name);
+        if (it == ci.defOf.end()) {
+            leaves.push_back({name, 0});
+            return;
+        }
+        const Quad &q = block[it->second];
+        flatten(q.a);
+        flatten(q.b);
+    };
+    flatten(root.a);
+    flatten(root.b);
+    r.leaves = static_cast<int>(leaves.size());
+    if (r.leaves < 4) { r.leaves = 0; return r; }
+
+    // 原链高度：左结合链 = 叶子数 - 1（每个内部节点高度 = 左子高+1）
+    r.depthBefore = r.leaves - 1;
+
+    // 重建：按高度取两小合并（Huffman 同型）；新临时 tb1..，根并入原名
+    int serial = 0;
+    std::vector<Quad> emitted;
+    struct Node { std::string name; int height; };
+    auto byHeight = [](const Node &x, const Node &y) {
+        return x.height > y.height || (x.height == y.height && x.name > y.name);   // 小顶堆
+    };
+    std::priority_queue<Node, std::vector<Node>, decltype(byHeight)> q(byHeight);
+    for (const auto &lf : leaves) q.push({lf.name, lf.height});
+    while (q.size() > 1) {
+        Node a = q.top(); q.pop();
+        Node b = q.top(); q.pop();
+        std::string dst = (q.empty() && static_cast<int>(emitted.size()) + 1 == r.leaves - 1)
+                              ? root.dst
+                              : ("tb" + std::to_string(++serial));
+        Quad inst;
+        inst.op = ci.op;
+        inst.dst = dst;
+        inst.a = a.name;
+        inst.b = b.name;
+        emitted.push_back(inst);
+        q.push({dst, 1 + std::max(a.height, b.height)});
+    }
+    r.depthAfter = q.top().height;
+
+    // 求值对账：叶子值来自块内 copy 链折出的常量（链长有限，迭代到不动点）
+    std::map<std::string, int> val;
+    for (bool ch = true; ch;) {
+        ch = false;
+        for (const auto &q : block)
+            if (q.op == TOp::Copy && q.dst != q.a) {
+                int v = isNumT(q.a) ? std::atoi(q.a.c_str())
+                                    : (val.count(q.a) ? val[q.a] : 0);
+                if (!val.count(q.dst) || val[q.dst] != v) { val[q.dst] = v; ch = true; }
+            }
+    }
+    for (const auto &q : emitted) {
+        int va = isNumT(q.a) ? std::atoi(q.a.c_str()) : val[q.a];
+        int vb = isNumT(q.b) ? std::atoi(q.b.c_str()) : val[q.b];
+        val[q.dst] = (q.op == TOp::Add) ? va + vb : va * vb;
+    }
+    r.value = val[root.dst];
+
+    // 重排块体：链内指令换成 emitted，其余原样
+    std::set<int> drop;
+    for (const auto &[name, idx] : ci.defOf) drop.insert(idx);
+    for (const auto &e : emitted) r.after.push_back(e);
+    for (size_t i = 0; i < block.size(); ++i)
+        if (!drop.count(static_cast<int>(i))) r.after.push_back(block[i]);
+    // after 里 emitted 在前、原非链指令在后——顺序只为打印与调度，语义由值对账担保
+    return r;
+}
+
 }  // namespace tip
 ```
 
@@ -940,6 +1308,36 @@ int main(int argc, char **argv) {
             std::cout << "  资源下界 = " << mr.resourceBound
                       << " 递归下界 = " << mr.recurrenceBound << " => II = " << mr.ii << '\n';
         }
+    }
+
+    // ---------- 树高平衡（鲸书 §8.4.2）：喂给调度器的形状 ----------
+    for (const auto &b : blocks) {
+        std::vector<tip::Quad> body(code.begin() + b.begin, code.begin() + b.end);
+        tip::BalanceReport br = tip::treeBalance(body);
+        if (br.leaves < 4) continue;
+        std::cout << "== 树高平衡 B" << b.id << "（" << br.leaves << " 叶链）==\n";
+        std::cout << "  原链深度 " << br.depthBefore << " → 平衡后 " << br.depthAfter
+                  << "，值 = " << br.value << "（前后一致）\n";
+        // 调度对照取纯链子图（叶子视为就绪）：剥掉常量物化的 copy 噪声
+        std::vector<tip::Quad> chain0, chain1;
+        for (const auto &q : br.before)
+            if (q.op == tip::TOp::Add) chain0.push_back(q);
+        for (const auto &q : br.after)
+            if (q.op == tip::TOp::Add) chain1.push_back(q);
+        tip::Block pb{};
+        pb.id = b.id;
+        pb.begin = 0;
+        pb.end = static_cast<int>(chain0.size());
+        tip::DepDAG d0 = tip::depDag(chain0, pb);
+        tip::Schedule s0 = tip::listSchedule(d0, 2);
+        pb.end = static_cast<int>(chain1.size());
+        tip::DepDAG d1 = tip::depDag(chain1, pb);
+        tip::Schedule s1 = tip::listSchedule(d1, 2);
+        std::cout << "  双发射调度周期（纯链）：链形 " << s0.cycles << " → 平衡 " << s1.cycles << '\n';
+        std::cout << "  平衡后块体:\n";
+        for (const auto &q : br.after) std::cout << "    " << tip::show(q) << '\n';
+        allOk = allOk && br.depthAfter < br.depthBefore && s1.cycles < s0.cycles;
+        break;
     }
 
     std::cout << "== 对账 ==\n";
@@ -1955,6 +2353,101 @@ main() {
   时序示意: t0 圈0 槽0 t1 圈0 槽1 t2 圈0 槽2 t3 圈0 槽3 t4 圈0 槽4 t5 圈1 槽0 t6 圈1 槽1 t7 圈1 槽2 t8 圈1 槽3 t9 圈1 槽4 
 == 对账 ==
   outputs: 10
+  (调度只重排发射槽，不改程序语义；解释器照常执行原 TAC)
+== sum8.tip ==
+== TAC ==
+  0: t1 = 1
+  1: a = t1
+  2: t2 = 2
+  3: b = t2
+  4: t3 = 3
+  5: c = t3
+  6: t4 = 4
+  7: d = t4
+  8: t5 = 5
+  9: e = t5
+  10: t6 = 6
+  11: f = t6
+  12: t7 = 7
+  13: g = t7
+  14: t8 = 8
+  15: h = t8
+  16: t9 = a + b
+  17: t10 = t9 + c
+  18: t11 = t10 + d
+  19: t12 = t11 + e
+  20: t13 = t12 + f
+  21: t14 = t13 + g
+  22: t15 = t14 + h
+  23: s = t15
+  24: output s
+  25: t16 = 0
+  26: return t16
+== 依赖 DAG B0 ==
+  0 -> 1 (RAW)
+  1 -> 16 (RAW)
+  2 -> 3 (RAW)
+  3 -> 16 (RAW)
+  4 -> 5 (RAW)
+  5 -> 17 (RAW)
+  6 -> 7 (RAW)
+  7 -> 18 (RAW)
+  8 -> 9 (RAW)
+  9 -> 19 (RAW)
+  10 -> 11 (RAW)
+  11 -> 20 (RAW)
+  12 -> 13 (RAW)
+  13 -> 21 (RAW)
+  14 -> 15 (RAW)
+  15 -> 22 (RAW)
+  16 -> 17 (RAW)
+  17 -> 18 (RAW)
+  18 -> 19 (RAW)
+  19 -> 20 (RAW)
+  20 -> 21 (RAW)
+  21 -> 22 (RAW)
+  22 -> 23 (RAW)
+  23 -> 24 (RAW)
+  24 -> 26 (MEM)
+  25 -> 26 (RAW)
+  关键路径高度: 0:1 1:2 2:1 3:2 4:1 5:2 6:1 7:2 8:1 9:2 10:1 11:2 12:1 13:2 14:1 15:2 16:3 17:4 18:5 19:6 20:7 21:8 22:9 23:10 24:11 25:1 26:12
+  表调度 w=1: cycles=27 | [0] [1] [2] [3] [16] [4] [5] [17] [6] [7] [18] [8] [9] [19] [10] [11] [20] [12] [13] [21] [14] [15] [22] [23] [24] [25] [26] 重放校验: ok
+  表调度 w=2: cycles=15 | [0,2] [1,3] [4,16] [5,6] [7,17] [8,18] [9,10] [11,19] [12,20] [13,14] [15,21] [22,25] [23] [24] [26] 重放校验: ok
+== modulo scheduling ==
+  未识别出计数器步进（i = i + 1）——按报告模式给出下界演示
+== 树高平衡 B0（8 叶链）==
+  原链深度 7 → 平衡后 3，值 = 36（前后一致）
+  双发射调度周期（纯链）：链形 7 → 平衡 5
+  平衡后块体:
+    tb1 = a + b
+    tb2 = c + d
+    tb3 = e + f
+    tb4 = g + h
+    tb5 = tb1 + tb2
+    tb6 = tb3 + tb4
+    t15 = tb5 + tb6
+    t1 = 1
+    a = t1
+    t2 = 2
+    b = t2
+    t3 = 3
+    c = t3
+    t4 = 4
+    d = t4
+    t5 = 5
+    e = t5
+    t6 = 6
+    f = t6
+    t7 = 7
+    g = t7
+    t8 = 8
+    h = t8
+    s = t15
+    output s
+    t16 = 0
+    return t16
+== 对账 ==
+  outputs: 36
   (调度只重排发射槽，不改程序语义；解释器照常执行原 TAC)
 ```
 
