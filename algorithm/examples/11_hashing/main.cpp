@@ -1,6 +1,7 @@
 // 11 散列表（CLRS 第 11 章）。结构：11.1 链址法（图 11.3 数据 + 探查计数）/
 // 11.2 开地址三法（线性/二次/双重）与表状态 / 11.3 装填因子实验（α→1 的
-// 探查爆炸）/ 11.4 全域散列（碰撞对数 vs 朴素取模）。
+// 探查爆炸）/ 11.4 全域散列（碰撞对数 vs 朴素取模）/
+// 11.6 散列表流式聚合：开源项目签到（去重 + 跨项目报名取消资格）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -21,6 +22,7 @@ using std::println;
 #include <random>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
@@ -462,12 +464,146 @@ static void radix_code_demo() {
     }
 }
 
+// ═══ 11.6 散列表流式聚合：开源项目签到 ═══
+struct SignupRow {
+    std::string project;
+    int members = 0;
+};
+
+// lines 为一个案例的全部行：大写字母开头的是项目名行（开启新项目），
+// 小写字母开头的是学生标识行。两条计数规则：同一项目内重复签名只算
+// 一次；一旦同一学生出现在两个不同项目下，他在所有项目中都不计入。
+// 一趟扫描、两张散列表完成，期望 O(L)。
+static std::vector<SignupRow> open_source_signups(
+        const std::vector<std::string>& lines) {
+    std::unordered_map<std::string, int> count;   // 项目 -> 当前有效人数
+    struct StudentInfo {
+        std::string first_project;
+        bool disqualified = false;
+    };
+    std::unordered_map<std::string, StudentInfo> student;
+    std::string current;
+    for (const std::string& line : lines) {
+        if (line[0] >= 'A' && line[0] <= 'Z') {    // 项目名行
+            current = line;
+            if (!count.contains(current)) { count.emplace(current, 0); }
+        } else {                                    // 学生签名行
+            auto [it, inserted] =
+                student.emplace(line, StudentInfo{current, false});
+            if (inserted) {
+                ++count[current];                  // 首次出现：先记上
+            } else if (!it->second.disqualified &&
+                       it->second.first_project != current) {
+                --count[it->second.first_project]; // 跨项目首次被抓：撤回
+                it->second.disqualified = true;
+            }
+            // 同项目重复签名，或已取消资格后又在别处签名：忽略
+        }
+    }
+    std::vector<SignupRow> rows;
+    for (const auto& [project, members] : count) {
+        rows.push_back({project, members});
+    }
+    // 人数降序；人数相同按项目名字典序升序
+    std::sort(rows.begin(), rows.end(),
+        [](const SignupRow& a, const SignupRow& b) {
+            if (a.members != b.members) { return a.members > b.members; }
+            return a.project < b.project;
+        });
+    return rows;
+}
+
+// 集合重算版（对账用）：先收集每个学生签过的【不同】项目集合，只在
+// 恰好一个项目下出现的学生才算该项目的有效报名。
+static std::vector<SignupRow> open_source_brute(
+        const std::vector<std::string>& lines) {
+    std::unordered_map<std::string, std::vector<std::string>> signed_at;
+    std::unordered_map<std::string, char> all_projects;
+    std::string current;
+    for (const std::string& line : lines) {
+        if (line[0] >= 'A' && line[0] <= 'Z') {
+            current = line;
+            all_projects.emplace(current, '\1');
+        } else {
+            std::vector<std::string>& ps = signed_at[line];
+            if (std::find(ps.begin(), ps.end(), current) == ps.end()) {
+                ps.push_back(current);
+            }
+        }
+    }
+    std::unordered_map<std::string, int> count;
+    for (const auto& [project, dummy] : all_projects) { count.emplace(project, 0); }
+    for (const auto& [who, ps] : signed_at) {
+        if (ps.size() == 1) { ++count[ps[0]]; }
+    }
+    std::vector<SignupRow> rows;
+    for (const auto& [project, members] : count) {
+        rows.push_back({project, members});
+    }
+    std::sort(rows.begin(), rows.end(),
+        [](const SignupRow& a, const SignupRow& b) {
+            if (a.members != b.members) { return a.members > b.members; }
+            return a.project < b.project;
+        });
+    return rows;
+}
+
+static bool rows_equal(const std::vector<SignupRow>& a,
+                       const std::vector<SignupRow>& b) {
+    if (a.size() != b.size()) { return false; }
+    for (std::size_t i = 0; i < a.size(); ++i) {
+        if (a[i].project != b[i].project || a[i].members != b[i].members) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static void open_source_demo() {
+    println("散列表流式聚合：开源项目签到（重复签名去重、跨项目报名取消资格）：");
+    const std::vector<std::string> lines = {
+        "UBQTS TXT", "tthumb",
+        "LIVESPACE BLOGJAM", "hilton", "paeinstein",
+        "YOUBOOK", "j97lee", "sswxyzy", "j97lee", "paeinstein",
+        "SKINUX"};
+    const std::vector<SignupRow> rows = open_source_signups(lines);
+    for (const SignupRow& r : rows) { println("  {} {}", r.project, r.members); }
+    const std::vector<SignupRow> expected = {
+        {"YOUBOOK", 2}, {"LIVESPACE BLOGJAM", 1},
+        {"UBQTS TXT", 1}, {"SKINUX", 0}};
+    assert(rows_equal(rows, expected));
+    assert(rows_equal(rows, open_source_brute(lines)));
+
+    std::mt19937 rng{5489};
+    static const char* kNames[5] = {
+        "ALPHA", "BRAVO", "CHARLIE", "DELTA", "ECHO"};
+    int trials = 3000, mismatches = 0;
+    for (int t = 0; t < trials; ++t) {
+        const int projects = 1 + static_cast<int>(rand_below(rng, 5));
+        const int students = 1 + static_cast<int>(rand_below(rng, 8));
+        std::vector<std::string> generated;
+        for (int p = 0; p < projects; ++p) {
+            generated.push_back(kNames[p]);
+            int signers = static_cast<int>(rand_below(rng, students + 1));
+            for (int s = 0; s < signers; ++s) {
+                generated.push_back("s" + std::to_string(rand_below(rng, students)));
+            }
+        }
+        if (!rows_equal(open_source_signups(generated),
+                        open_source_brute(generated))) { ++mismatches; }
+    }
+    println("  随机 {} 个案例：流式聚合 vs 集合重算 不一致 {} 例",
+            trials, mismatches);
+    assert(mismatches == 0);
+}
+
 int main() {
     chaining_demo();
     open_addressing_demo();
     load_factor_demo();
     universal_demo();
     radix_code_demo();
+    open_source_demo();
     println("自检通过");
     return 0;
 }

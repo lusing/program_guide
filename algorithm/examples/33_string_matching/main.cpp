@@ -1,7 +1,8 @@
 // 33 字符串匹配（CLRS 第 32 章）。结构：33.1 朴素匹配的比较计数 /
 // 33.2 Rabin-Karp（滚动哈希）/ 33.3 有限自动机匹配器（转移表）/
 // 33.4 KMP（前缀函数与匹配追踪）/ 四解对账 / 33.5 Aho-Corasick 自动机
-// （trie + fail 指针 + 输出传播掩码，多模式一趟扫描）。
+// （trie + fail 指针 + 输出传播掩码，多模式一趟扫描）/
+// 33.6 压缩符 [qx] 的展开与病毒扫描（模式或其逆向为子串）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -20,9 +21,16 @@ using std::println;
 #include <bit>
 #include <cassert>
 #include <cstdint>
+#include <random>
 #include <string>
 #include <string_view>
 #include <vector>
+
+// 可移植随机：乘法折半取 [0,n)，不用 uniform_int_distribution
+static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
+    return static_cast<std::uint32_t>(
+        (static_cast<std::uint64_t>(rng()) * n) >> 32);
+}
 
 static const std::string kText = "abababacabaababac";
 static const std::string kPat  = "ababac";
@@ -355,6 +363,142 @@ static void aho_corasick_demo() {
     println("    直接吃到 stdlib 的 twoway 优化 —— 这就是「够用即最优」的边界。");
 }
 
+// ═══ 33.6 压缩符展开与病毒扫描 ═══
+// 程序串由 A–Z 与压缩符 [qx] 组成：[qx] 表示 q 个连续字母 x，q 为
+// 十进制正整数。'['、']' 只充当标记，故单遍状态机即可解析。
+
+// 与解析同构的 dry-run，算出展开长度用于 reserve
+static long long expanded_length(std::string_view s) {
+    long long len = 0;
+    for (std::size_t i = 0; i < s.size();) {
+        if (s[i] != '[') { ++len; ++i; continue; }
+        ++i;
+        long long q = 0;
+        while (s[i] >= '0' && s[i] <= '9') { q = q * 10 + (s[i] - '0'); ++i; }
+        len += q;       // s[i] 是字母 x，s[i+1] 是 ']'
+        i += 2;
+    }
+    return len;
+}
+
+static std::string decompress(std::string_view s) {
+    std::string out;
+    out.reserve(static_cast<std::size_t>(expanded_length(s)));
+    for (std::size_t i = 0; i < s.size();) {
+        if (s[i] != '[') { out.push_back(s[i]); ++i; continue; }
+        ++i;
+        long long q = 0;
+        while (s[i] >= '0' && s[i] <= '9') { q = q * 10 + (s[i] - '0'); ++i; }
+        out.append(static_cast<std::size_t>(q), s[i]);
+        i += 2;         // 跳过字母与 ']'
+    }
+    return out;
+}
+
+// 手写朴素包含判定（仅供对账，不用标准库 find）
+static bool naive_contains(std::string_view text, std::string_view pat) {
+    if (pat.size() > text.size()) { return false; }
+    for (std::size_t i = 0; i + pat.size() <= text.size(); ++i) {
+        bool ok = true;
+        for (std::size_t j = 0; j < pat.size(); ++j) {
+            if (text[i + j] != pat[j]) { ok = false; break; }
+        }
+        if (ok) { return true; }
+    }
+    return false;
+}
+
+// 病毒计数：模式 v 或其逆向是展开程序的子串即计一种（逆向模式命中
+// 等价于模式命中程序的逆向串）。
+template <class ContainsFn>
+static int virus_count_with(const std::vector<std::string>& viruses,
+                            const std::string& program, ContainsFn contains) {
+    const std::string text = decompress(program);
+    int count = 0;
+    for (const std::string& v : viruses) {
+        const std::string rv(v.rbegin(), v.rend());
+        if (contains(text, std::string_view(v)) ||
+            contains(text, std::string_view(rv))) { ++count; }
+    }
+    return count;
+}
+
+static int virus_count(const std::vector<std::string>& viruses,
+                       const std::string& program) {
+    return virus_count_with(viruses, program,
+        [](std::string_view text, std::string_view pat) {
+            return text.find(pat) != std::string_view::npos;
+        });
+}
+
+static void virus_scan_demo() {
+    println("压缩符展开 [qx] 与病毒扫描（模式或其逆向为子串）：");
+    const std::string sample = "AB[2D]E[7K]G";
+    println("  {} 展开 = {}", sample, decompress(sample));
+    assert(decompress(sample) == "ABDDEKKKKKKKG");
+
+    struct Case {
+        std::vector<std::string> viruses;
+        std::string program;
+        int answer;
+    };
+    const std::vector<Case> cases = {
+        {{"AB", "DCB"}, "DACB", 0},
+        {{"ABC", "CDE", "GHI"}, "ABCCDEFIHG", 3},
+        {{"ABB", "ACDEE", "BBB", "FEEE"}, "A[2B]CD[4E]F", 2}};
+    for (std::size_t c = 0; c < cases.size(); ++c) {
+        const int got = virus_count(cases[c].viruses, cases[c].program);
+        println("  案例{}（{} 个病毒，{}）：感染 {} 种",
+                c + 1, cases[c].viruses.size(), cases[c].program, got);
+        assert(got == cases[c].answer);
+    }
+
+    // 解析器对账：压缩串由「普通字母 / [qX]」随机拼成，逐段参考构造
+    std::mt19937 rng{5489};
+    int trials = 3000, parse_mismatches = 0, count_mismatches = 0;
+    for (int t = 0; t < trials; ++t) {
+        std::string compressed, reference;
+        const int tokens = 1 + static_cast<int>(rand_below(rng, 6));
+        for (int z = 0; z < tokens; ++z) {
+            const char x = static_cast<char>('A' + rand_below(rng, 3));
+            if (rng() & 1u) {
+                compressed.push_back(x);
+                reference.push_back(x);
+            } else {
+                const int q = 1 + static_cast<int>(rand_below(rng, 999));
+                compressed += "[" + std::to_string(q) + x + "]";
+                reference.append(static_cast<std::size_t>(q), x);
+            }
+        }
+        if (decompress(compressed) != reference) { ++parse_mismatches; }
+
+        // 病毒计数对账：随机短程序 + 随机模式集，find 版 vs 手写朴素版
+        const int plen = 1 + static_cast<int>(rand_below(rng, 12));
+        std::string prog;
+        for (int i = 0; i < plen; ++i) {
+            prog.push_back(static_cast<char>('A' + rand_below(rng, 3)));
+        }
+        std::vector<std::string> viruses;
+        const int nv = 1 + static_cast<int>(rand_below(rng, 5));
+        for (int i = 0; i < nv; ++i) {
+            std::string v;
+            const int vlen = 1 + static_cast<int>(rand_below(rng, 4));
+            for (int j = 0; j < vlen; ++j) {
+                v.push_back(static_cast<char>('A' + rand_below(rng, 3)));
+            }
+            viruses.push_back(v);
+        }
+        const int a = virus_count(viruses, prog);
+        const int b = virus_count_with(viruses, prog, naive_contains);
+        if (a != b) { ++count_mismatches; }
+    }
+    println("  随机 {} 个压缩串：展开 vs 逐段参考构造 不一致 {} 例",
+            trials, parse_mismatches);
+    println("  随机 {} 个程序×模式：find 计数 vs 手写朴素匹配 不一致 {} 例",
+            trials, count_mismatches);
+    assert(parse_mismatches == 0 && count_mismatches == 0);
+}
+
 int main() {
     println("字符串匹配（T = \"{}\"，P = \"{}\"，|T|={} |P|={}）：", kText, kPat,
             kText.size(), kPat.size());
@@ -393,6 +537,7 @@ int main() {
     assert(ck <= 2 * static_cast<long long>(kText.size()));   // KMP ≤ 2n 的界
 
     aho_corasick_demo();
+    virus_scan_demo();
     println("自检通过");
     return 0;
 }
