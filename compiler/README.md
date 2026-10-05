@@ -80,7 +80,7 @@
 ### 第九篇　语言范式的编译（46–47）
 
 - [46 对象与类](docs/46-objects.md) —— 前缀法布局、vtable 槽表、成员测试、0-CFA 目标集（`examples/46_objects`）
-- 47 闭包与函数式（扩充中）—— 闭包转换、尾递归、惰性求值、装箱表示
+- [47 闭包与函数式](docs/47-functional.md) —— 闭包转换装箱单、尾调用检测、thunk 惰性求值对账（`examples/47_functional`）
 
 ### 第十篇　代码生成与并行（48–52）
 
@@ -98,6 +98,6 @@
 
 ## 验证状态
 
-52/54 章三层对账全绿；2 个虎书新章扩充中（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
+53/54 章三层对账全绿；1 个虎书新章扩充中（`build → check_example → check_docs`）；其余新章按上述槽位扩充中。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
 
 每章 = `docs/NN-<slug>.md` + `examples/NN_<slug>/`（章号=示例号）。LLVM 示例的运行需要 MSYS2 UCRT64 工具链在 PATH（`run-all.sh` 自动处理；`tools/example_build.sh <examples/NN_slug> "$(pwd)"` 单独构建一个示例）。
