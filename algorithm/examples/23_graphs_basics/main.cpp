@@ -2630,6 +2630,220 @@ static void map_color_demo() {
     assert(valid && big3.colors.size() == n);
 }
 
+// ═══ 23.20 点双连通分支：Tarjan 边栈 ═══
+// 点双连通分支（vertex-biconnected component，BCC）：边的极大集合，
+// 其中任意两条边都共处于某个简单环上。结构性质：各 BCC 之间至多共享
+// 一个顶点，共享点恰为割点；单独一条边的 BCC 恰是桥。
+struct VertexBcc {
+    std::vector<std::vector<int>> components;   // 每个 BCC 的有序顶点集
+    std::vector<std::vector<int>> edge_ids;    // 每个 BCC 的边 id 集
+};
+
+// 迭代 DFS + 边 id 栈（与 tarjanBcc 同骨架但独立实现，方便互校）：
+// ①树边入栈；②指向祖先的回边入栈（只从子孙侧入一次）；
+// ③孩子 u 回溯且 low[u]≥d[p]：弹到 parentEdge[u] 为止＝一个 BCC。
+static VertexBcc vertex_bcc_decomp(const MGraph& g) {
+    const std::size_t n = static_cast<std::size_t>(g.n);
+    std::vector<int> d(n, 0), low(n, 0), parentEdge(n, -1);
+    std::vector<std::size_t> cur(n, 0);
+    std::vector<int> vstack, estack;
+    vstack.reserve(g.n);
+    estack.reserve(g.ends.size());
+    VertexBcc vb;
+    int timer = 0;
+
+    auto flush_bcc = [&](int stop_eid) {
+        std::vector<int> verts, eids;
+        while (true) {
+            const int eid = estack.back();
+            estack.pop_back();
+            eids.push_back(eid);
+            verts.push_back(g.ends[static_cast<std::size_t>(eid)].first);
+            verts.push_back(g.ends[static_cast<std::size_t>(eid)].second);
+            if (eid == stop_eid) { break; }
+        }
+        std::ranges::sort(verts);
+        verts.erase(std::ranges::unique(verts).begin(), verts.end());
+        std::ranges::sort(eids);
+        vb.components.push_back(std::move(verts));
+        vb.edge_ids.push_back(std::move(eids));
+    };
+
+    for (int s = 0; s < g.n; ++s) {
+        if (d[static_cast<std::size_t>(s)] != 0) { continue; }
+        d[static_cast<std::size_t>(s)] = low[static_cast<std::size_t>(s)] = ++timer;
+        vstack.push_back(s);
+        while (!vstack.empty()) {
+            const int u = vstack.back();
+            const std::size_t su = static_cast<std::size_t>(u);
+            if (cur[su] < g.adj[su].size()) {
+                const auto [v, eid] = g.adj[su][cur[su]++];
+                const std::size_t sv = static_cast<std::size_t>(v);
+                if (eid == parentEdge[su]) { continue; }
+                if (d[sv] == 0) {                        // 树边：入栈、下潜
+                    parentEdge[sv] = eid;
+                    estack.push_back(eid);
+                    d[sv] = low[sv] = ++timer;
+                    vstack.push_back(v);
+                } else if (d[sv] < d[su]) {              // 指向祖先的回边：入栈
+                    low[su] = std::min(low[su], d[sv]);
+                    estack.push_back(eid);
+                }
+            } else {                                     // 回溯
+                vstack.pop_back();
+                if (parentEdge[su] != -1) {
+                    const int pe = parentEdge[su];
+                    const int p = (g.ends[static_cast<std::size_t>(pe)].first == u)
+                        ? g.ends[static_cast<std::size_t>(pe)].second
+                        : g.ends[static_cast<std::size_t>(pe)].first;
+                    low[static_cast<std::size_t>(p)] =
+                        std::min(low[static_cast<std::size_t>(p)], low[su]);
+                    if (low[su] >= d[static_cast<std::size_t>(p)]) {
+                        flush_bcc(pe);
+                    }
+                } else if (!estack.empty()) {            // 根收尾：残余边成 BCC
+                    int stop = estack.front();
+                    flush_bcc(stop);
+                }
+            }
+        }
+    }
+    // 让输出确定：按 BCC 最小顶点排序
+    std::vector<std::size_t> order(vb.components.size());
+    std::iota(order.begin(), order.end(), 0);
+    std::ranges::sort(order, [&](std::size_t a, std::size_t b) {
+        return vb.components[a] < vb.components[b];
+    });
+    VertexBcc sorted;
+    for (std::size_t k : order) {
+        sorted.components.push_back(vb.components[k]);
+        sorted.edge_ids.push_back(vb.edge_ids[k]);
+    }
+    return sorted;
+}
+
+static void vertex_bcc_demo() {
+    println("");
+    println("=== 23.20 点双连通分支：Tarjan 边栈（BCC 共享点即割点）===");
+    // 固定例（11 顶点、12 边）：BCC = {a,b}、{b,c,f,g}、{c,d}、
+    // {e,f}、{a,h,i,j,k}；割点 a,b,c,f。
+    std::vector<std::pair<int, int>> es;
+    es.push_back({0, 1});                              // a-b
+    for (auto [u, v] : {std::pair{1, 2}, {2, 5},
+                        {5, 6}, {6, 1}}) {             // b-c-f-g-b
+        es.push_back({u, v});
+    }
+    es.push_back({2, 3});                              // c-d
+    es.push_back({4, 5});                              // e-f
+    for (auto [u, v] : {std::pair{0, 7}, {7, 8}, {8, 9},
+                        {9, 10}, {10, 0}}) {           // a-h-i-j-k-a
+        es.push_back({u, v});
+    }
+    const MGraph g(11, es);
+    const VertexBcc vb = vertex_bcc_decomp(g);
+    print("  共 {} 个 BCC：", vb.components.size());
+    for (const auto& c : vb.components) {
+        print("{{");
+        for (std::size_t i = 0; i < c.size(); ++i) {
+            print("{}{}", i == 0 ? "" : ",",
+                  static_cast<char>('a' + c[i]));
+        }
+        print("}} ");
+    }
+    println("");
+    const std::vector<std::vector<int>> expected{
+        {0, 1}, {0, 7, 8, 9, 10}, {1, 2, 5, 6}, {2, 3}, {4, 5}};
+    assert(vb.components == expected);
+
+    // 三条结构对账（独立实现 tarjanBcc 是 23.6 的代码）
+    const BccResult tb = tarjanBcc(g);
+    // (1) 边恰好被分进一个 BCC
+    std::vector<int> edge_seen(g.ends.size(), 0);
+    for (const auto& eids : vb.edge_ids) {
+        for (int e : eids) { ++edge_seen[static_cast<std::size_t>(e)]; }
+    }
+    assert(std::ranges::count(edge_seen, 1) ==
+           static_cast<int>(g.ends.size()));
+    // (2) 属于 ≥2 个 BCC 的顶点恰为割点
+    std::vector<int> membership(g.n, 0);
+    for (const auto& c : vb.components) {
+        for (int v : c) { ++membership[static_cast<std::size_t>(v)]; }
+    }
+    for (int v = 0; v < g.n; ++v) {
+        assert((membership[static_cast<std::size_t>(v)] >= 2) ==
+               static_cast<bool>(tb.isArt[static_cast<std::size_t>(v)]));
+    }
+    // (3) 单边 BCC 恰为桥
+    for (std::size_t k = 0; k < vb.components.size(); ++k) {
+        const bool single = vb.edge_ids[k].size() == 1;
+        if (single) {
+            assert(tb.isBridge[static_cast<std::size_t>(vb.edge_ids[k][0])]);
+        }
+    }
+    int single_bcc = 0;
+    for (const auto& eids : vb.edge_ids) {
+        if (eids.size() == 1) { ++single_bcc; }
+    }
+    assert(single_bcc == tb.bridges);
+    println("  结构对账：每条边恰入一个 BCC；共享点集＝割点 {{a,b,c,f}}；"
+            "单边 BCC 数 {} ＝桥数", single_bcc);
+
+    // 随机 300 个图（n≤13，允许不连通/重边）：三条结构性质全程对账
+    std::mt19937 rng{5489};
+    int bad = 0;
+    for (int t = 0; t < 300; ++t) {
+        const int n = 1 + static_cast<int>(rand_below(rng, 13));
+        std::vector<std::pair<int, int>> re;
+        const int tries = static_cast<int>(rand_below(rng, 25));
+        for (int k = 0; k < tries; ++k) {
+            int u = static_cast<int>(rand_below(rng, n));
+            int v = static_cast<int>(rand_below(rng, n));
+            if (u == v) { continue; }
+            re.push_back({u, v});
+        }
+        const MGraph rg(n, re);
+        const VertexBcc rv = vertex_bcc_decomp(rg);
+        const BccResult rt = tarjanBcc(rg);
+        std::vector<int> seen(rg.ends.size(), 0);
+        for (const auto& eids : rv.edge_ids) {
+            for (int e : eids) { ++seen[static_cast<std::size_t>(e)]; }
+        }
+        if (std::ranges::count(seen, 1) !=
+            static_cast<int>(rg.ends.size())) { ++bad; continue; }
+        std::vector<int> mem(n, 0);
+        for (const auto& c : rv.components) {
+            for (int v : c) { ++mem[static_cast<std::size_t>(v)]; }
+        }
+        for (int v = 0; v < n; ++v) {
+            if ((mem[static_cast<std::size_t>(v)] >= 2) !=
+                static_cast<bool>(rt.isArt[static_cast<std::size_t>(v)])) { ++bad; }
+        }
+        int sb = 0;
+        for (const auto& eids : rv.edge_ids) {
+            if (eids.size() == 1) {
+                ++sb;
+                if (!rt.isBridge[static_cast<std::size_t>(eids[0])]) { ++bad; }
+            }
+        }
+        if (sb != rt.bridges) { ++bad; }
+    }
+    println("  随机 300 个图（含不连通/重边）：结构对账失败 {} 例", bad);
+    assert(bad == 0);
+
+    // 大例：50000 顶点单环——全体边同属一个 BCC（边栈在堆上）
+    std::vector<std::pair<int, int>> ce;
+    for (int i = 0; i < 50000; ++i) {
+        ce.push_back({i, (i + 1) % 50000});
+    }
+    const MGraph cg(50000, ce);
+    const VertexBcc cv = vertex_bcc_decomp(cg);
+    println("  大例（50000 点单环）：BCC {} 个、含边 {} 条；割点/桥应为 0",
+            cv.components.size(), cv.edge_ids[0].size());
+    assert(cv.components.size() == 1 &&
+           cv.edge_ids[0].size() == 50000);
+    assert(std::ranges::count(tarjanBcc(cg).isArt, '\0') == 50000);
+}
+
 int main() {
     representation_demo();
     bfs_demo();
@@ -2637,6 +2851,7 @@ int main() {
     topo_demo();
     scc_demo();
     tarjan_demo();
+    vertex_bcc_demo();
     euler_demo();
     semidirected_demo();
     floodfill_demo();
