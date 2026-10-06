@@ -1,7 +1,8 @@
 // 17 贪心算法（CLRS 第 16 章）。结构：17.1 活动选择（贪心 vs DP 对账，
 // 图 16.1 数据）/ 17.2 Huffman（图 16.3 频率，前缀码与平均码长）/
 // 17.3 拟阵：单位时间任务调度（图 16.19? 用 16.5 节数据，贪得总收益 230）/
-// 17.6 渡河：两人船、两种送慢人策略取小（状态空间 Dijkstra 对账）。
+// 17.6 渡河：两人船、两种送慢人策略取小（状态空间 Dijkstra 对账）/
+// 17.7 机器零件加工：两机流水车间的 Johnson 规则（排列枚举对账）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -657,6 +658,136 @@ static void crossing_river_demo() {
     assert(mismatches == 0);
 }
 
+// ═══ 17.7 机器零件加工：两机流水车间与 Johnson 规则 ═══
+// n 个零件都必须先走机器 1（工时 aᵢ）再走机器 2（工时 bᵢ）。两台机器
+// 同一时刻各只能处理一个零件；求一个加工顺序（排列），使从零件 1 开机
+// 到最后一个零件在机器 2 完工的总时间（makespan）最短。
+//
+// 给定顺序，完工时间可以一遍模拟：机器 1 的下线时刻 f1 只会累加；机器 2
+// 必须同时等到「零件在机器 1 下线」与「机器 2 自己空闲」，故
+//   f1 = f1 + aᵢ；  f2 = max(f1, f2) + bᵢ
+struct ShopJob { int a, b, id; };
+
+static int shop_makespan(const std::vector<ShopJob>& jobs,
+                         const std::vector<int>& order) {
+    int f1 = 0, f2 = 0;
+    for (int idx : order) {
+        f1 += jobs[static_cast<std::size_t>(idx)].a;
+        f2 = std::max(f1, f2) + jobs[static_cast<std::size_t>(idx)].b;
+    }
+    return f2;
+}
+
+// Johnson 规则（贪心）：
+//   N1 = { i : aᵢ < bᵢ }，按 aᵢ 非递减排序 —— 越早能腾出机器 1 越好；
+//   N2 = { i : aᵢ ≥ bᵢ }，按 bᵢ 非递增排序 —— 机器 2 上干得久的越靠后越糟；
+//   顺序 = N1 拼接 N2。
+static std::vector<int> johnson_order(const std::vector<ShopJob>& jobs) {
+    std::vector<int> n1, n2;
+    for (const ShopJob& j : jobs) {
+        (j.a < j.b ? n1 : n2).push_back(j.id);
+    }
+    std::ranges::sort(n1, [&](int x, int y) {
+        const auto& jx = jobs[static_cast<std::size_t>(x)];
+        const auto& jy = jobs[static_cast<std::size_t>(y)];
+        if (jx.a != jy.a) { return jx.a < jy.a; }
+        return jx.b > jy.b;                    // a 相同时 b 大的更急
+    });
+    std::ranges::sort(n2, [&](int x, int y) {
+        const auto& jx = jobs[static_cast<std::size_t>(x)];
+        const auto& jy = jobs[static_cast<std::size_t>(y)];
+        if (jx.b != jy.b) { return jx.b > jy.b; }
+        return jx.a < jy.a;                    // b 相同时 a 小的靠前
+    });
+    std::vector<int> order;
+    order.reserve(jobs.size());
+    for (int x : n1) { order.push_back(x); }
+    for (int x : n2) { order.push_back(x); }
+    return order;
+}
+
+// 暴力对账：枚举全部 n! 个排列取最小 makespan（仅用于小例）。
+static int shop_brute(const std::vector<ShopJob>& jobs) {
+    const int n = static_cast<int>(jobs.size());
+    std::vector<int> perm(static_cast<std::size_t>(n));
+    std::iota(perm.begin(), perm.end(), 0);
+    int best = INT32_MAX;
+    do {
+        best = std::min(best, shop_makespan(jobs, perm));
+    } while (std::next_permutation(perm.begin(), perm.end()));
+    return best;
+}
+
+static void machine_shop_demo() {
+    println("=== 17.7 机器零件加工：Johnson 规则（两机流水车间）===");
+    // 3 零件小例：直觉顺序 1,2,3 给 17；Johnson 给出 1,3,2 给 13。
+    std::vector<ShopJob> jobs{{2, 3, 0}, {5, 1, 1}, {4, 6, 2}};
+    const std::vector<int> naive{0, 1, 2};
+    const std::vector<int> order = johnson_order(jobs);
+    println("  3 零件 (a,b) = (2,3)(5,1)(4,6)：顺序 1,2,3 的 makespan = {}，"
+            "Johnson 顺序", shop_makespan(jobs, naive));
+    print("    ");
+    for (std::size_t i = 0; i < order.size(); ++i) {
+        print("J{}{}", order[static_cast<std::size_t>(i)] + 1,
+              i + 1 == order.size() ? "" : ",");
+    }
+    println(" 的 makespan = {}（暴力枚举 6 个排列的最小值 {}）",
+            shop_makespan(jobs, order), shop_brute(jobs));
+    assert(shop_makespan(jobs, naive) == 17);
+    assert(shop_makespan(jobs, order) == 13);
+    assert(shop_makespan(jobs, order) == shop_brute(jobs));
+
+    // 6 零件例：最优 makespan 28，最优顺序可能不唯一。
+    const std::vector<ShopJob> big{
+        {5, 7, 0}, {1, 2, 1}, {8, 2, 2}, {5, 4, 3},
+        {3, 7, 4}, {4, 4, 5}};
+    const std::vector<int> border = johnson_order(big);
+    print("  6 零件：Johnson 顺序 ");
+    for (std::size_t i = 0; i < border.size(); ++i) {
+        print("{}{}", border[static_cast<std::size_t>(i)] + 1,
+              i + 1 == border.size() ? "" : " ");
+    }
+    println("，makespan = {}（另一个最优顺序 2 5 4 1 6 3 同样得 28）",
+            shop_makespan(big, border));
+    assert(shop_makespan(big, border) == 28);
+
+    // 随机对账：2000 个 n≤7 的实例，Johnson 必须等于全排列最优。
+    std::mt19937 rng{5489};
+    const int trials = 2000;
+    int mismatches = 0;
+    for (int t = 0; t < trials; ++t) {
+        const int n = 1 + static_cast<int>(rand_below(rng, 7));
+        std::vector<ShopJob> js;
+        js.reserve(static_cast<std::size_t>(n));
+        for (int i = 0; i < n; ++i) {
+            js.push_back({1 + static_cast<int>(rand_below(rng, 20)),
+                          1 + static_cast<int>(rand_below(rng, 20)), i});
+        }
+        const int greedy = shop_makespan(js, johnson_order(js));
+        if (greedy != shop_brute(js)) { ++mismatches; }
+    }
+    println("  随机 {} 例（n≤7）：Johnson vs 全排列枚举 不一致 {} 例",
+            trials, mismatches);
+    assert(mismatches == 0);
+
+    // 大例：n=2000，O(n log n) 排序即可完成；makespan 不小于
+    // max(Σa, Σb) —— 两台机器各自总工时的平凡下界。
+    const int nbig = 2000;
+    std::vector<ShopJob> large;
+    large.reserve(static_cast<std::size_t>(nbig));
+    long long suma = 0, sumb = 0;
+    for (int i = 0; i < nbig; ++i) {
+        const int a = 1 + static_cast<int>(rand_below(rng, 99));
+        const int b = 1 + static_cast<int>(rand_below(rng, 99));
+        suma += a; sumb += b;
+        large.push_back({a, b, i});
+    }
+    const int span = shop_makespan(large, johnson_order(large));
+    println("  大例（{} 零件）：makespan {}，平凡下界 max(Σa,Σb) = {}",
+            nbig, span, std::max(suma, sumb));
+    assert(span >= std::max(suma, sumb));
+}
+
 int main() {
     activity_demo();
     huffman_demo();
@@ -664,6 +795,7 @@ int main() {
     delta_topk_demo();
     stable_marriage_demo();
     crossing_river_demo();
+    machine_shop_demo();
     println("自检通过");
     return 0;
 }

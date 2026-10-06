@@ -3,7 +3,8 @@
 //（图 22.4/22.5）/ 23.4 拓扑排序（DAG）/ 23.5 强连通分量（图 22.9）……
 // 23.13 图的两个计数问题：握手定理判谎（1-9）、状态空间 BFS（1-6）/
 // 23.14 旅程（树上 2W−最远目标距离，就近贪心对照）/
-// 23.15 循序（全体拓扑序字典序枚举，位置区间误法对照）。
+// 23.15 循序（全体拓扑序字典序枚举，位置区间误法对照）/
+// 23.16 最优工程布线（网格 BFS、围墙技巧与路径逆向重建）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -1915,6 +1916,238 @@ static void following_orders_demo() {
     assert(mismatches == 0);
 }
 
+// ════════════════════════════════════════════════════════════════════
+// 23.16 最优工程布线：网格图上的 BFS
+// ════════════════════════════════════════════════════════════════════
+// m×n 方格，'#' 格被封锁，只能沿上下左右走，求 s 到 e 经过格子最少的
+// 布线。每个格子是一个顶点，可通行的相邻格之间连边，边权全为 1 —— 无权
+// 最短路，BFS 一遍求出。围墙技巧：网格四周补一圈封锁格，扩展邻居时永远
+// 不会踏出数组，省掉全部边界判断。距离表 dist：-2 封锁、-1 未访问、
+// ≥0 距起点的格子数。
+struct WirePos { int x, y; };
+
+static std::vector<WirePos> wire_route(const std::vector<std::string>& board,
+                                       WirePos s, WirePos e) {
+    const int m = static_cast<int>(board.size());
+    const int n = static_cast<int>(board[0].size());
+    // (m+2)×(n+2)：下标 0、m+1 为围墙；真实格 (x,y) 存在 (x+1,y+1)。
+    std::vector<std::vector<int>> dist(
+        static_cast<std::size_t>(m) + 2,
+        std::vector<int>(static_cast<std::size_t>(n) + 2, -1));
+    for (std::size_t x = 0; x < dist.size(); ++x) {
+        dist[x][0] = -2;
+        dist[x][static_cast<std::size_t>(n) + 1] = -2;
+    }
+    for (std::size_t y = 0; y < dist[0].size(); ++y) {
+        dist[0][y] = -2;
+        dist[static_cast<std::size_t>(m) + 1][y] = -2;
+    }
+    for (int x = 0; x < m; ++x) {
+        for (int y = 0; y < n; ++y) {
+            if (board[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)] == '#') {
+                dist[static_cast<std::size_t>(x) + 1][static_cast<std::size_t>(y) + 1] = -2;
+            }
+        }
+    }
+    static const int dx[4]{0, 1, 0, -1};   // 右、下、左、上
+    static const int dy[4]{1, 0, -1, 0};
+    std::deque<WirePos> q;
+    dist[static_cast<std::size_t>(s.x) + 1][static_cast<std::size_t>(s.y) + 1] = 0;
+    q.push_back(s);
+    while (!q.empty()) {
+        const WirePos cur = q.front();
+        q.pop_front();
+        if (cur.x == e.x && cur.y == e.y) { break; }
+        for (int d = 0; d < 4; ++d) {
+            const int nx = cur.x + dx[d], ny = cur.y + dy[d];
+            int& cell = dist[static_cast<std::size_t>(nx) + 1][static_cast<std::size_t>(ny) + 1];
+            if (cell == -1) {                 // 未访问的可通行格
+                cell = dist[static_cast<std::size_t>(cur.x) + 1][static_cast<std::size_t>(cur.y) + 1] + 1;
+                q.push_back({nx, ny});
+            }
+        }
+    }
+    const int target =
+        dist[static_cast<std::size_t>(e.x) + 1][static_cast<std::size_t>(e.y) + 1];
+    if (target < 0) { return {}; }            // 不可达
+    // 逆向重建：从 e 反复走向「距离恰小 1」的邻居，直到 s。
+    std::vector<WirePos> path;
+    WirePos cur = e;
+    path.push_back(cur);
+    while (cur.x != s.x || cur.y != s.y) {
+        const int dcur =
+            dist[static_cast<std::size_t>(cur.x) + 1][static_cast<std::size_t>(cur.y) + 1];
+        for (int d = 0; d < 4; ++d) {
+            const int nx = cur.x + dx[d], ny = cur.y + dy[d];
+            if (dist[static_cast<std::size_t>(nx) + 1][static_cast<std::size_t>(ny) + 1] == dcur - 1) {
+                cur = {nx, ny};
+                path.push_back(cur);
+                break;
+            }
+        }
+    }
+    std::reverse(path.begin(), path.end());
+    return path;
+}
+
+// Floyd-Warshall 对账：把可通行格当一般加权图（边权 1），全源最短路
+// O(V³)。与 BFS 代码路径完全独立，仅用于小棋盘。
+static int wire_floyd(const std::vector<std::string>& board,
+                      WirePos s, WirePos e) {
+    const int m = static_cast<int>(board.size());
+    const int n = static_cast<int>(board[0].size());
+    const int v = m * n;
+    std::vector<std::vector<int>> d(static_cast<std::size_t>(v),
+        std::vector<int>(static_cast<std::size_t>(v), INT32_MAX / 4));
+    for (int x = 0; x < m; ++x) {
+        for (int y = 0; y < n; ++y) {
+            if (board[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)] == '#') { continue; }
+            d[static_cast<std::size_t>(x * n + y)][static_cast<std::size_t>(x * n + y)] = 0;
+            static const int dx[4]{0, 1, 0, -1};
+            static const int dy[4]{1, 0, -1, 0};
+            for (int k = 0; k < 4; ++k) {
+                const int nx = x + dx[k], ny = y + dy[k];
+                if (nx < 0 || nx >= m || ny < 0 || ny >= n) { continue; }
+                if (board[static_cast<std::size_t>(nx)][static_cast<std::size_t>(ny)] == '#') { continue; }
+                d[static_cast<std::size_t>(x * n + y)][static_cast<std::size_t>(nx * n + ny)] = 1;
+            }
+        }
+    }
+    for (int k = 0; k < v; ++k)
+        for (int i = 0; i < v; ++i)
+            for (int j = 0; j < v; ++j) {
+                if (d[static_cast<std::size_t>(i)][static_cast<std::size_t>(k)] +
+                    d[static_cast<std::size_t>(k)][static_cast<std::size_t>(j)] <
+                    d[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)]) {
+                    d[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] =
+                        d[static_cast<std::size_t>(i)][static_cast<std::size_t>(k)] +
+                        d[static_cast<std::size_t>(k)][static_cast<std::size_t>(j)];
+                }
+            }
+    return d[static_cast<std::size_t>(s.x * n + s.y)]
+            [static_cast<std::size_t>(e.x * n + e.y)];
+}
+
+static void wiring_demo() {
+    println("");
+    println("=== 23.16 最优工程布线：网格 BFS（围墙技巧，逆向重建路径）===");
+    struct Case {
+        std::vector<std::string> board;
+        WirePos s, e;
+        bool reachable;
+    };
+    const std::vector<Case> cases = {
+        {{// 5×6 带障碍板
+           ".....#",
+           ".###..",
+           "..#...",
+           "#..##.",
+           "...#.."},
+          {0, 0}, {4, 5}, true},
+        {{// 四角全被封住：不可达
+           ".#",
+           "#."},
+          {0, 0}, {1, 1}, false},
+        {{// 起点即终点：长度 0
+           "..."},
+          {0, 0}, {0, 0}, true}};
+    int case_no = 0;
+    for (const Case& c : cases) {
+        ++case_no;
+        const std::vector<WirePos> path = wire_route(c.board, c.s, c.e);
+        const int floyd = wire_floyd(c.board, c.s, c.e);
+        if (c.reachable) {
+            // 在板上把路径覆盖成 *
+            std::vector<std::string> overlay = c.board;
+            for (WirePos p : path) {
+                overlay[static_cast<std::size_t>(p.x)][static_cast<std::size_t>(p.y)] = '*';
+            }
+            println("  案例{}（{}×{}）：最短布线经过 {} 个格子（Floyd-Warshall 对账 {}）",
+                    case_no, c.board.size(), c.board[0].size(), path.size(),
+                    floyd == INT32_MAX / 4 ? -1 : floyd + 1);
+            for (const std::string& row : overlay) { println("    {}", row); }
+            assert(static_cast<int>(path.size()) == floyd + 1);
+            // 路径必须从 s 连续走到 e
+            assert(path.front().x == c.s.x && path.front().y == c.s.y);
+            assert(path.back().x == c.e.x && path.back().y == c.e.y);
+            for (std::size_t i = 1; i < path.size(); ++i) {
+                const int manhattan =
+                    std::abs(path[static_cast<std::size_t>(i)].x - path[i - 1].x) +
+                    std::abs(path[static_cast<std::size_t>(i)].y - path[i - 1].y);
+                assert(manhattan == 1);
+            }
+        } else {
+            println("  案例{}（{}×{}）：不可达，布线 {}；Floyd-Warshall 距离 = {}",
+                    case_no, c.board.size(), c.board[0].size(),
+                    path.empty() ? "为空" : "非空", floyd);
+            assert(path.empty() && floyd == INT32_MAX / 4);
+        }
+    }
+
+    // 随机对账：4×4 以内随机障碍板，BFS 路径长度 vs Floyd-Warshall。
+    std::mt19937 rng{5489};
+    const int trials = 3000;
+    int mismatches = 0;
+    for (int t = 0; t < trials; ++t) {
+        const int m = 2 + static_cast<int>(rand_below(rng, 3));
+        const int n = 2 + static_cast<int>(rand_below(rng, 3));
+        std::vector<std::string> board(static_cast<std::size_t>(m),
+                                      std::string(static_cast<std::size_t>(n), '.'));
+        for (int x = 0; x < m; ++x) {
+            for (int y = 0; y < n; ++y) {
+                if (rand_below(rng, 4) == 0) {
+                    board[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)] = '#';
+                }
+            }
+        }
+        // 在可通行格中选两个不同的点
+        std::vector<WirePos> open;
+        for (int x = 0; x < m; ++x) {
+            for (int y = 0; y < n; ++y) {
+                if (board[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)] == '.') {
+                    open.push_back({x, y});
+                }
+            }
+        }
+        if (open.size() < 2) { continue; }
+        const WirePos s = open[static_cast<std::size_t>(rand_below(
+            rng, static_cast<std::uint32_t>(open.size())))];
+        WirePos e = s;
+        for (int guard = 0; guard < 10 && e.x == s.x && e.y == s.y; ++guard) {
+            e = open[static_cast<std::size_t>(rand_below(
+                rng, static_cast<std::uint32_t>(open.size())))];
+        }
+        if (e.x == s.x && e.y == s.y) { continue; }
+        const std::vector<WirePos> path = wire_route(board, s, e);
+        const int floyd = wire_floyd(board, s, e);
+        const bool agree = floyd == INT32_MAX / 4
+            ? path.empty()
+            : static_cast<int>(path.size()) == floyd + 1;
+        if (!agree) { ++mismatches; }
+    }
+    println("  随机 {} 例（≤4×4 随机障碍）：BFS vs Floyd-Warshall 不一致 {} 例",
+            trials, mismatches);
+    assert(mismatches == 0);
+
+    // 大例：100×100 随机障碍板，BFS 仍然瞬时。
+    const int big = 100;
+    std::vector<std::string> board(static_cast<std::size_t>(big),
+                                  std::string(static_cast<std::size_t>(big), '.'));
+    for (int x = 0; x < big; ++x) {
+        for (int y = 0; y < big; ++y) {
+            if (rand_below(rng, 5) == 0) {
+                board[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)] = '#';
+            }
+        }
+    }
+    board[0][0] = '.';
+    board[big - 1][big - 1] = '.';
+    const std::vector<WirePos> path =
+        wire_route(board, {0, 0}, {big - 1, big - 1});
+    println("  大例（100×100，20% 障碍）：对角最短布线 {} 个格子；无障碍下界 {}，不可达则为 0",
+            path.size(), 2 * big - 1);
+}
+
 int main() {
     representation_demo();
     bfs_demo();
@@ -1932,6 +2165,7 @@ int main() {
     catch_cow_demo();
     journey_demo();
     following_orders_demo();
+    wiring_demo();
     println("自检通过");
     return 0;
 }
