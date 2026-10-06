@@ -485,12 +485,81 @@ static void kcenter_demo() {
     assert(bg.radius == worst);
 }
 
+// ═══ 36.6 传感器覆盖部署：网格上界 + 点阵下界 ═══
+// 用半径 r 的圆盘覆盖 k×k 正方形，求最少盘数。
+// 上界（构造）：整数格边 c = ⌊√(2r²)⌋，m = ⌈k/c⌉，盘放格中心——
+// 格内最远点是角，w²+h² ≤ 2c² ≤ 4r²（整数精确判定，无浮点）。
+// 下界（点阵）：在方形里摆间距 2r+1 的点阵 (⌊k/(2r+1)⌋+1)² 个点，
+// 两两距离 > 2r ⟹ 一盘至多盖一点。
+// 两界相等 ⟹ 精确最优。
+struct CoverBounds { long long c; int cells, m, lb; bool covered; };
+
+static CoverBounds square_cover(int k, int r) {
+    long long c = 0;
+    while ((c + 1) * (c + 1) <= 2LL * r * r) { ++c; }   // c = ⌊√(2r²)⌋
+    const int m = static_cast<int>((k + c - 1) / c);
+    bool ok = true;
+    for (int i = 0; i < m && ok; ++i) {
+        for (int j = 0; j < m && ok; ++j) {
+            const long long w = std::min((i + 1) * c, static_cast<long long>(k)) - i * c;
+            const long long h = std::min((j + 1) * c, static_cast<long long>(k)) - j * c;
+            if (w * w + h * h > 4LL * r * r) { ok = false; }   // 角距离 > r
+        }
+    }
+    const int pts = static_cast<int>(k / (2 * r + 1)) + 1;
+    return CoverBounds{c, m * m, m, pts * pts, ok};
+}
+
+static void sensor_cover_demo() {
+    println("");
+    println("=== 36.6 传感器覆盖部署：网格上界 + 点阵下界（k×k 方形、半径 r）===");
+    const CoverBounds f = square_cover(10, 4);
+    println("  固定例（k=10, r=4）：{}×{} 网格 = {} 个盘，逐格精确核验覆盖 = {}；下界 {} ⟹ 恰为最优",
+            f.m, f.m, f.cells, f.covered ? 1 : 0, f.lb);
+    assert(f.covered && f.cells == 4 && f.lb == 4);
+
+    println("  {:>4} {:>3} {:>4} {:>6} {:>6}   说明", "k", "r", "格边", "上界", "下界");
+    int exact = 0, rows = 0;
+    for (auto [k, r] : {std::pair<int, int>{10, 4}, {20, 4}, {10, 2},
+                        {100, 10}, {13, 3}, {7, 5}}) {
+        const CoverBounds b = square_cover(k, r);
+        assert(b.covered && b.lb <= b.cells);
+        println("  {:>4} {:>3} {:>4} {:>6} {:>6}   {}",
+                k, r, b.c, b.cells, b.lb,
+                b.cells == b.lb ? "上下界相等（精确）" : "留有间隙");
+        ++rows;
+        exact += b.cells == b.lb;
+    }
+    assert(rows == 6 && exact == 2);   // 表内恰 (10,4) 与 (7,5) 精确
+
+    // 随机 200 组（k≤60, r≤15）：覆盖恒真、下界 ≤ 上界，统计精确命中
+    std::mt19937 rng{5489};
+    int bad = 0, hit = 0;
+    for (int t = 0; t < 200; ++t) {
+        const int k = 1 + static_cast<int>(rand_below(rng, 60));
+        const int r = 1 + static_cast<int>(rand_below(rng, 15));
+        const CoverBounds b = square_cover(k, r);
+        if (!b.covered || b.lb > b.cells) { ++bad; }
+        if (b.cells == b.lb) { ++hit; }
+    }
+    println("  随机 200 组（k≤60, r≤15）：覆盖失败/下界越界 {} 例；上下界相等 {} 例",
+            bad, hit);
+    assert(bad == 0);
+
+    // 大例：k=1000, r=10——72×72 网格
+    const CoverBounds big = square_cover(1000, 10);
+    println("  大例（k=1000, r=10）：{}×{} 网格 = {} 个盘（逐格核验 = 1），下界 {}",
+            big.m, big.m, big.cells, big.lb);
+    assert(big.covered && big.cells == 72 * 72);
+}
+
 int main() {
     vertex_cover_demo();
     tsp_demo();
     set_cover_demo();
     bin_packing_demo();
     kcenter_demo();
+    sensor_cover_demo();
     println("自检通过");
     return 0;
 }
