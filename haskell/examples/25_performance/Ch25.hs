@@ -2,9 +2,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Ch25
-    ( fibNaive, fibAcc
-    , sumLazy, sumStrict
+    ( fibNaive, fibAcc, fibPair
+    , sumLazy, sumStrict, sumLen
     , concatSlow, concatBuilder
+    , reverseSlow, revcat
+    , subseqsSlow, subseqsShared
+    , partitionT
     , timed
     ) where
 
@@ -43,7 +46,50 @@ concatSlow n = T.pack (foldl (++) "" (replicate n "ab"))        -- 反面教材
 concatBuilder :: Int -> T.Text
 concatBuilder n = TL.toStrict (B.toLazyText (mconcat (replicate n (B.fromText "ab"))))
 
--- ═══ 19.4 计时方法论：deepseq 把结果算完才停表（否则测的是"造 thunk"的时间）
+-- ═══ 19.5 书7.6 元组：fib2 一次递推带出相邻两项（指数 → 线性）
+fibPair :: Int -> Integer
+fibPair n = fst (go n)
+  where
+    go 0 = (0, 1)
+    go k = (b, a + b)
+      where
+        (a, b) = go (k - 1)
+
+-- ═══ 19.6 书7.5 累积参数：reverse 的 O(n²) 版 vs revcat 线性版
+reverseSlow :: [a] -> [a] -- 每步把元素追加到尾部：T(n) = T(n-1) + Θ(n)
+reverseSlow [] = []
+reverseSlow (x : xs) = reverseSlow xs ++ [x]
+
+revcat :: [a] -> [a] -> [a] -- 书 7.5 计算出的定义：revcat xs ys = reverse xs ++ ys
+revcat [] ys = ys
+revcat (x : xs) ys = revcat xs (x : ys) -- 累积参数把"追加"变"压头"
+
+-- ═══ 19.7 书7.1 共享：subseqs 两版同值，一版重复计算、一版共享（但滞留空间）
+subseqsSlow :: [a] -> [[a]]
+subseqsSlow [] = [[]]
+subseqsSlow (x : xs) = subseqsSlow xs ++ map (x :) (subseqsSlow xs) -- 递归出现两次：算两次
+
+subseqsShared :: [a] -> [[a]]
+subseqsShared [] = [[]]
+subseqsShared (x : xs) = xss ++ map (x :) xss -- where 绑名共享：算一次
+  where
+    xss = subseqsShared xs
+
+-- ═══ 19.8 书7.6/7.7 元组定律：partition 一趟两分（foldr 元组定律的特例）
+partitionT :: (a -> Bool) -> [a] -> ([a], [a])
+partitionT p = foldr op ([], [])
+  where
+    op x (ys, zs)
+        | p x = (x : ys, zs)
+        | otherwise = (ys, x : zs)
+
+-- ═══ 19.9 书7.2 mean 的最终形态：sumlen 元组化 + seq 深入到分量
+sumLen :: [Double] -> (Double, Int)
+sumLen = foldl' step (0, 0)
+  where
+    step (s, n) x = s `seq` n `seq` (s + x, n + 1) -- 只 seq 到首范式不够：(s+x,n+1) 本来就是首范式
+
+-- ═══ 19.10 计时方法论：deepseq 把结果算完才停表（否则测的是"造 thunk"的时间）
 timed :: NFData a => IO a -> IO (Double, a)
 timed act = do
     t0 <- getMonotonicTime

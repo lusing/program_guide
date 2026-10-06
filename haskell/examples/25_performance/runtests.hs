@@ -40,5 +40,16 @@ main = do
         , expectEq "同值" (concatSlow 100) (concatBuilder 100)
         , expectEq "内容" (concatBuilder 3) (T.pack "ababab")
         ]
-    unless (s1 && s2 && s3) exitFailure
+    s4 <- runSuite "书7 兵器（累积参数/元组/共享）"
+        [ expectEq "fibPair 与 fibAcc 一致" (fibPair 90) (fibAcc 90)
+        , expectEq "reverse 两版同值" (reverseSlow [1 .. 500]) (revcat [1 .. 500] [])
+        , expectEq "revcat 空" (revcat ([] :: [Int]) [7]) [7]
+        , expectEq "subseqs 两版同值" (subseqsSlow [1 .. 10]) (subseqsShared [1 .. 10])
+        , expectEq "subseqs 数量 2^n" (length (subseqsShared [1 .. 8])) 256
+        , expectEq "partition 一趟两分" (partitionT even [1 .. 8]) ([2, 4, 6, 8], [1, 3, 5, 7])
+        , expectEq "partition 空表" (partitionT even ([] :: [Int])) ([], [])
+        , expectEq "sumLen 元组化" (sumLen [1 .. 100 :: Double]) (5050.0, 100)
+        , expectEq "sumLen 空表" (sumLen ([] :: [Double])) (0.0, 0)
+        ]
+    unless (s1 && s2 && s3 && s4) exitFailure
     putStrLn "==== 25 结束 ===="
