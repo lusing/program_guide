@@ -89,6 +89,9 @@ mathlogic 教程已完结 26 章（78/78 验证单元全绿，六通道：Coq/Ag
 
 ## 验证协议
 
+- **工具链变更（2026-10-06 用户指令）**：coq 通道从 coqc 8.20.1 迁到 Rocq Platform 9.1
+  （`G:\rocq\Rocq-Platform~9.1~2026.01\bin\coqc.exe`，与 HoTT 通道同二进制）。
+  迁移作为先行任务完成并全量复跑 78 单元后再开工批次一。
 - 每批交付后跑 `pwsh -NoProfile -Command '& ./build.ps1 -All'`，既有 78 单元**零回归**，
   新章单元按通道登记进 build.ps1 与 examples/ROOT（Isabelle session MLNN 随章追加）。
 - 判定口径沿用六通道既有标准（exit 0 / 无 error / [OK] 标记，详见 PLAN.md）。
