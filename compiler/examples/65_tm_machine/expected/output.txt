@@ -1,0 +1,38 @@
+== S1 tier-None runs ==
+[fact in=5,] steps=113 out=120
+[gcd in=36,24,] steps=62 out=12
+[gcd in=1071,462,] steps=89 out=21
+[branch in=7,] steps=28 out=14 21
+[branch in=25,] steps=32 out=115 140
+[nest in=3,9,] steps=68 out=6
+[nest in=9,4,] steps=83 out=8
+== S2 tier instruction counts ==
+[fact] None =31/mem16 Temps=27/mem10 Vars =27/mem1 Test =23/mem1
+[gcd] None =37/mem22 Temps=33/mem14 Vars =33/mem3 Test =29/mem3
+[branch] None =40/mem20 Temps=32/mem10 Vars =32/mem1 Test =28/mem1
+[nest] None =44/mem22 Temps=40/mem14 Vars =40/mem7 Test =32/mem7
+[monotone] 1
+== S3 trace gcd(None) first 12 steps ==
+    1 0 LDC 5,511(0) 0 0 0 0 0 511 0
+    2 1 ST 0,0(0) 0 0 0 0 0 511 0
+    3 2 IN 0,0,0 36 0 0 0 0 511 0
+    4 3 ST 0,0(6) 36 0 0 0 0 511 0
+    5 4 IN 0,0,0 24 0 0 0 0 511 0
+    6 5 ST 0,1(6) 24 0 0 0 0 511 0
+    7 6 LD 0,1(6) 24 0 0 0 0 511 0
+    8 7 ST 0,2(6) 24 0 0 0 0 511 0
+    9 8 LD 0,0(6) 36 0 0 0 0 511 0
+    10 9 ST 0,0(5) 36 0 0 0 0 511 0
+    11 10 LD 0,0(6) 36 0 0 0 0 511 0
+    12 11 ST 0,-1(5) 36 0 0 0 0 511 0
+== S4 hand .tm error codes ==
+[dmemerr] err=DMEM_ERR steps=2 pc=2
+[zerodiv] err=ZERO_DIV steps=3 pc=2
+[imemerr] err=IMEM_ERR steps=2 pc=51
+== S5 tier-Test == tier-None outputs ==
+[equal] 7/7
+== S6 resident vars (tier Vars) ==
+[fact] n->r3 fact->r4
+[gcd] v->r3 u->r4
+[branch] x->r3 y->r4
+[nest] d->r3 a->r4
