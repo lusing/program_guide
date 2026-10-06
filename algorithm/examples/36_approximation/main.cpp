@@ -1,6 +1,7 @@
 // 36 近似算法（CLRS 第 35 章）。结构：36.1 顶点覆盖的 2-近似
 //（极大匹配贪心 vs 暴力最优）/ 36.2 度量 TSP 的 2-近似（MST 先行序
-// vs 暴力最优）/ 36.3 集合覆盖的贪心（ln 近似的实测比值）。
+// vs 暴力最优）/ 36.3 集合覆盖的贪心（ln 近似的实测比值）/
+// 36.4 装箱：First-Fit / FFD / Best-Fit（与 DFS 精确最优对账）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -20,7 +21,14 @@ using std::println;
 #include <cassert>
 #include <cstdint>
 #include <numeric>
+#include <random>
+#include <set>
 #include <vector>
+
+static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
+    return static_cast<std::uint32_t>(
+        (static_cast<std::uint64_t>(rng()) * n) >> 32);
+}
 
 // ═══ 36.1 顶点覆盖 2-近似 ═══
 // APPROX-VERTEX-COVER：反复任取一条未覆盖边，把两端都放进覆盖。
@@ -218,10 +226,134 @@ static void set_cover_demo() {
     assert(static_cast<int>(chosen.size()) <= opt * 245 / 100);   // ln 界的整化
 }
 
+// ═══ 36.4 装箱 ═══
+// n 件物品（尺寸 1..C），容量 C 的箱子，求最少箱子数。NP 难——本节给
+// 三个在线/离线贪心和一个小规模精确解。
+static constexpr int kCap = 100;
+
+// First-Fit（原序）：线性扫描已有箱子，第一个放得下就放；都放不下开新箱。
+static int first_fit(const std::vector<int>& items, std::vector<int>& bins) {
+    std::vector<int> rem;                 // 每箱剩余容量
+    bins.assign(1, -1);                   // 每箱首件（演示用）
+    for (int s : items) {
+        std::size_t b = 0;
+        for (; b < rem.size(); ++b) { if (rem[b] >= s) { break; } }
+        if (b == rem.size()) { rem.push_back(kCap - s); bins.push_back(s); }
+        else { rem[b] -= s; }
+    }
+    return static_cast<int>(rem.size());
+}
+
+// FFD：降序后 First-Fit。经典保证 FFD ≤ (11/9)OPT + 6/9。
+static int first_fit_decreasing(std::vector<int> items) {
+    std::ranges::sort(items, std::greater<int>{});
+    std::vector<int> bins;
+    return first_fit(items, bins);
+}
+
+// Best-Fit：放进「剩余容量最小但放得下」的箱子——multiset 对剩余容量
+// lower_bound(s)，O(log 箱数) 一次，整体 O(n log n)。
+static int best_fit(const std::vector<int>& items) {
+    std::multiset<int> rem;
+    for (int s : items) {
+        auto it = rem.lower_bound(s);
+        if (it == rem.end()) { rem.insert(kCap - s); }
+        else {
+            const int left = *it - s;
+            rem.erase(it);
+            rem.insert(left);
+        }
+    }
+    return static_cast<int>(rem.size());
+}
+
+// 精确解：箱子数下界 k0=⌈Σ/C⌉ 起逐个试，DFS 把物品分进 k 个箱子。
+// 对称破缺：新物品优先放进已有箱子，空箱只试第一个。n≤12 足够快。
+static bool pack_dfs(const std::vector<int>& items, int k, int idx,
+                     std::vector<int>& rem) {
+    if (idx == static_cast<int>(items.size())) { return true; }
+    const int s = items[static_cast<std::size_t>(idx)];
+    int prev_rem = -1;                    // 相同剩余容量的箱子只试一次
+    for (int b = 0; b < k; ++b) {
+        if (rem[b] < s || rem[b] == prev_rem) { continue; }
+        prev_rem = rem[b];
+        rem[b] -= s;
+        if (pack_dfs(items, k, idx + 1, rem)) { return true; }
+        rem[b] += s;
+        if (rem[b] == kCap) { break; }    // 空箱放过就别再试后面的空箱
+    }
+    return false;
+}
+
+static int bin_packing_optimal(const std::vector<int>& items) {
+    int total = 0;
+    for (int s : items) { total += s; }
+    int k = (total + kCap - 1) / kCap;
+    while (true) {
+        std::vector<int> rem(k, kCap);
+        if (pack_dfs(items, k, 0, rem)) { return k; }
+        ++k;
+    }
+}
+
+static void bin_packing_demo() {
+    println("=== 36.4 装箱：FF / FFD / Best-Fit 与精确最优 ===");
+    // 固定例：原序让 FF 浪费一箱（40 与 50 先挤一箱导致 30 落单）
+    const std::vector<int> items{40, 50, 60, 30, 20};
+    std::vector<int> bins;
+    const int ff = first_fit(items, bins);
+    const int ffd = first_fit_decreasing(items);
+    const int bf = best_fit(items);
+    const int opt = bin_packing_optimal(items);
+    println("  物品 40/50/60/30/20（容量 100）：FF {} 箱，FFD {} 箱，"
+            "Best-Fit {} 箱（先 40+50 挤成碎片），精确最优 {} 箱",
+            ff, ffd, bf, opt);
+    assert(ff == 3 && ffd == 2 && bf == 3 && opt == 2);
+
+    // 随机 1500 例（n≤12，尺寸 15..85）：三贪心与精确解对账
+    std::mt19937 rng{5489};
+    int mismatches = 0, ratio_violations = 0;
+    for (int t = 0; t < 1500; ++t) {
+        const int n = 2 + static_cast<int>(rand_below(rng, 11));
+        std::vector<int> g;
+        g.reserve(n);
+        for (int i = 0; i < n; ++i) {
+            g.push_back(15 + static_cast<int>(rand_below(rng, 71)));
+        }
+        const int o = bin_packing_optimal(g);
+        const int a = first_fit_decreasing(g);
+        if (a != o && a != o + 1) { ++mismatches; }   // 实测至多差 1
+        // 定理：FFD·9 ≤ 11·OPT + 6
+        if (9 * a > 11 * o + 6) { ++ratio_violations; }
+        assert(a >= o && best_fit(g) >= o);
+    }
+    println("  随机 {} 例（n≤12）：FFD 超出最优 1 箱以上的 {} 例；"
+            "11/9+6/9 定理违反 {} 例", 1500, mismatches, ratio_violations);
+    assert(mismatches == 0 && ratio_violations == 0);
+
+    // 大例：10 万件 1..100——Best-Fit multiset 版；下界 ⌈总量/100⌉
+    std::vector<int> big;
+    big.reserve(100000);
+    long long total = 0;
+    for (int i = 0; i < 100000; ++i) {
+        const int s = 1 + static_cast<int>(rand_below(rng, 100));
+        big.push_back(s);
+        total += s;
+    }
+    const int used = best_fit(big);
+    const long long lb = (total + kCap - 1) / kCap;
+    println("  大例（10 万件，容量 100）：Best-Fit {} 箱，总量下界 {}，"
+            "比值 {:.3}（碎片分摊后略高于下界）", used, lb,
+            static_cast<double>(used) / static_cast<double>(lb));
+    assert(used >= lb);
+    assert(static_cast<long long>(used) * 100 <= lb * 120);  // 经验比值 ≤1.20
+}
+
 int main() {
     vertex_cover_demo();
     tsp_demo();
     set_cover_demo();
+    bin_packing_demo();
     println("自检通过");
     return 0;
 }

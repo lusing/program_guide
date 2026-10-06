@@ -2,7 +2,8 @@
 // 结构：15.1 钢条切割三版本（朴素递归/备忘录/自底向上，调用计数对比）/
 // 15.2 解的重构（EXTENDED-BOTTOM-UP-CUT-ROD）/ 15.3 矩阵链乘（m/s 表 +
 // 最优括号化）/ 15.4 子问题图与重叠子问题的量化 /
-// 15.7 数字三角形：自底向上滚动数组 + 路径重构（备忘录/暴力枚举对账）。
+// 15.7 数字三角形：自底向上滚动数组 + 路径重构（备忘录/暴力枚举对账）/
+// 15.8 换零钱：完全背包型 DP（最少枚数含重构 + 组合数，贪心对照与 BFS 对账）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -809,6 +810,161 @@ static void triangle_demo() {
     assert(mismatches == 0);
 }
 
+// ═══ 15.8 换零钱：完全背包型 DP ═══
+// 面值集合 coins（含 1，故任意金额可达）、每种硬币数量无限。两个问题：
+// ① 凑出金额 A 最少需要多少枚；② 凑出 A 的组合方式有多少种。
+struct ChangePlan { int coins; std::vector<int> used; };  // used：每面值用几枚
+
+// 最少枚数：dp[a] = 1 + min_{c≤a} dp[a−c]，dp[0]=0；choice 记录末枚硬币。
+static ChangePlan change_min(const std::vector<int>& coins, int A) {
+    const int k = static_cast<int>(coins.size());
+    std::vector<int> dp(A + 1, -1), choice(A + 1, -1);
+    dp[0] = 0;
+    for (int a = 1; a <= A; ++a) {
+        for (int i = 0; i < k; ++i) {
+            const int c = coins[static_cast<std::size_t>(i)];
+            if (c <= a && dp[a - c] >= 0 &&
+                (dp[a] < 0 || dp[a - c] + 1 < dp[a])) {
+                dp[a] = dp[a - c] + 1;
+                choice[a] = i;
+            }
+        }
+    }
+    std::vector<int> used(k, 0);
+    int a = A;
+    while (a > 0) {
+        const int i = choice[a];
+        ++used[static_cast<std::size_t>(i)];
+        a -= coins[static_cast<std::size_t>(i)];
+    }
+    return {dp[A], used};
+}
+
+// 贪心口径：从大到小，能拿多少拿多少。规范币制下最优，一般情况下不最优。
+static int change_greedy(const std::vector<int>& coins, int A) {
+    int n = 0, a = A;
+    for (int i = static_cast<int>(coins.size()) - 1; i >= 0; --i) {
+        const int c = coins[static_cast<std::size_t>(i)];
+        n += a / c;
+        a %= c;
+    }
+    return n;
+}
+
+// 独立口径：在金额图上做 BFS（节点 0..A，边 a→a+c），首次抵达 A 的距离
+// 即最少枚数——不维护递推表，与 DP 零共享逻辑。
+static int change_bfs(const std::vector<int>& coins, int A) {
+    std::vector<int> dist(A + 1, -1);
+    std::vector<int> q;
+    q.reserve(A + 1);
+    q.push_back(0);
+    dist[0] = 0;
+    for (std::size_t qi = 0; qi < q.size(); ++qi) {
+        const int a = q[qi];
+        if (a == A) { return dist[a]; }
+        for (int c : coins) {
+            if (a + c <= A && dist[a + c] < 0) {
+                dist[a + c] = dist[a] + 1;
+                q.push_back(a + c);
+            }
+        }
+    }
+    return dist[A];
+}
+
+// 组合数（不计先后）：硬币作外层循环——ways[a] += ways[a−c]。这样每种
+// 组合按面值大小顺序唯一生成一次；金额作外层则数的是有序找零序列。
+static long long change_ways(const std::vector<int>& coins, int A) {
+    std::vector<long long> ways(A + 1, 0);
+    ways[0] = 1;
+    for (int c : coins) {
+        for (int a = c; a <= A; ++a) { ways[a] += ways[a - c]; }
+    }
+    return ways[A];
+}
+
+// 独立口径：带「第 i 种硬币用几枚」的递归枚举，小金额组合数真值。
+static long long change_ways_rec(const std::vector<int>& coins, int i, int A) {
+    if (A == 0) { return 1; }
+    if (i == static_cast<int>(coins.size())) { return 0; }
+    long long total = 0;
+    for (int use = 0; use * coins[static_cast<std::size_t>(i)] <= A; ++use) {
+        total += change_ways_rec(coins, i + 1,
+                                 A - use * coins[static_cast<std::size_t>(i)]);
+    }
+    return total;
+}
+
+static void coin_change_demo() {
+    println("=== 15.8 换零钱：最少枚数与组合数（完全背包 DP）===");
+    // 规范币制：贪心与 DP 一致
+    const std::vector<int> canonical{1, 5, 10, 25};
+    const ChangePlan p63 = change_min(canonical, 63);
+    println("  币制 1/5/10/25，63 美分：DP {} 枚（25×{} 10×{} 5×{} 1×{}），"
+            "贪心 {} 枚", p63.coins, p63.used[3], p63.used[2], p63.used[1],
+            p63.used[0], change_greedy(canonical, 63));
+    assert(p63.coins == 6 && change_greedy(canonical, 63) == 6);
+    assert(p63.coins == change_bfs(canonical, 63));
+
+    // 非规范币制：贪心在 6 处翻车（4+1+1 三枚，DP 给 3+3 两枚）
+    const std::vector<int> weird{1, 3, 4};
+    print("  币制 1/3/4：金额 ");
+    for (int A = 2; A <= 12; ++A) { print("{:4}", A); }
+    println("");
+    print("    DP 枚数  ");
+    for (int A = 2; A <= 12; ++A) { print("{:4}", change_min(weird, A).coins); }
+    println("");
+    print("    贪心枚数 ");
+    for (int A = 2; A <= 12; ++A) { print("{:4}", change_greedy(weird, A)); }
+    println("");
+    int greedy_fails = 0;
+    for (int A = 1; A <= 60; ++A) {
+        if (change_min(weird, A).coins != change_greedy(weird, A)) { ++greedy_fails; }
+    }
+    println("  贪心在 A≤60 上共 {} 个金额非最优（首个：A=6）", greedy_fails);
+    assert(change_min(weird, 6).coins == 2 && change_greedy(weird, 6) == 3);
+
+    // 组合数：1/2/5 的不计先后组合
+    const std::vector<int> cs{1, 2, 5};
+    print("  1/2/5 组合数：金额 ");
+    for (int A = 0; A <= 10; ++A) { print("{:4}", A); }
+    println("");
+    print("    方式数       ");
+    for (int A = 0; A <= 10; ++A) { print("{:4}", change_ways(cs, A)); }
+    println("");
+    for (int A = 0; A <= 25; ++A) {
+        assert(change_ways(cs, A) == change_ways_rec(cs, 0, A));
+    }
+    println("  A≤25 组合数与逐面值递归枚举一致（A=10 有 4 种：5+5/5+2+2+1/"
+            "5+2+1+1+1/2×5）");
+
+    // 随机对账：含 1 的随机币制（面值≤25），A≤60
+    std::mt19937 rng{5489};
+    int mismatches = 0;
+    for (int t = 0; t < 2000; ++t) {
+        const int k = 2 + static_cast<int>(rand_below(rng, 4));
+        std::vector<int> g{1};
+        while (static_cast<int>(g.size()) < k) {
+            const int c = 2 + static_cast<int>(rand_below(rng, 24));
+            if (std::ranges::find(g, c) == g.end()) { g.push_back(c); }
+        }
+        std::ranges::sort(g);
+        const int A = 1 + static_cast<int>(rand_below(rng, 60));
+        if (change_min(g, A).coins != change_bfs(g, A) ||
+            change_ways(g, A) != change_ways_rec(g, 0, A)) { ++mismatches; }
+    }
+    println("  随机 {} 个币制（k=2..5，A≤60）：DP vs BFS / 组合数 vs 递归 "
+            "不一致 {} 例", 2000, mismatches);
+    assert(mismatches == 0);
+
+    // 大例：A=10⁶，全用 25 面值——40000 枚
+    const ChangePlan big = change_min(canonical, 1000000);
+    println("  大例 A=10⁶：最少 {} 枚（25×{}），贪心一致 = {}",
+            big.coins, big.used[3],
+            change_greedy(canonical, 1000000) == big.coins);
+    assert(big.coins == 40000 && big.used[3] == 40000);
+}
+
 int main() {
     rod_cutting_demo();
     reconstruction_demo();
@@ -817,6 +973,7 @@ int main() {
     fibonacci_demo();
     reachability_ladder_demo();
     triangle_demo();
+    coin_change_demo();
     println("自检通过");
     return 0;
 }
