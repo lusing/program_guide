@@ -734,6 +734,156 @@ static void tsp_bb_demo() {
     assert(b.cost == n && b.nodes < 500);
 }
 
+// ═══ 35.9 哈密尔顿回路：回溯 + Held-Karp 状压 DP 对账 ═══
+// 经过每个顶点恰一次并回到起点的环。NP 完全（判定版）。
+// 口径一：回溯——固定起点 0（环的旋转对称），逐位试未访问邻点，
+// 最后要求能与 0 闭合成环。口径二：Held-Karp DP——
+// dp[S][v] = 从 0 出发恰访问 S（含 0、v）且止于 v 的路径存在；
+// 答案 = 存在 v 使 dp[全集][v] ∧ adj[v][0]。O(n²·2ⁿ)。
+struct HamResult { bool exists; std::vector<int> cycle; };
+
+static HamResult hamiltonian_backtrack(const std::vector<std::vector<char>>& adj) {
+    const int n = static_cast<int>(adj.size());
+    HamResult out;
+    std::vector<int> path{0};                            // 起点固定 0
+    std::vector<char> used(static_cast<std::size_t>(n), 0);
+    used[0] = 1;
+    // lambda 递归：从顶点 cur 继续（path 已含 k 个点）
+    auto dfs = [&](this auto&& self, int cur, int k) -> bool {
+        if (k == n) {
+            if (adj[static_cast<std::size_t>(cur)][0]) {
+                out.cycle = path;
+                return true;
+            }
+            return false;
+        }
+        for (int v = 0; v < n; ++v) {
+            if (used[static_cast<std::size_t>(v)]) { continue; }
+            if (!adj[static_cast<std::size_t>(cur)][static_cast<std::size_t>(v)]) { continue; }
+            used[static_cast<std::size_t>(v)] = 1;
+            path.push_back(v);
+            if (self(v, k + 1)) { return true; }
+            path.pop_back();
+            used[static_cast<std::size_t>(v)] = 0;
+        }
+        return false;
+    };
+    out.exists = dfs(0, 1);
+    return out;
+}
+
+static bool hamiltonian_held_karp(const std::vector<std::vector<char>>& adj) {
+    const int n = static_cast<int>(adj.size());
+    const int full = 1 << n;
+    std::vector<std::vector<char>> dp(
+        static_cast<std::size_t>(full),
+        std::vector<char>(static_cast<std::size_t>(n), 0));
+    dp[1][0] = 1;                                        // 只含 0、止于 0
+    for (int S = 1; S < full; ++S) {
+        if (!(S & 1)) { continue; }                       // 0 必在 S
+        for (int v = 0; v < n; ++v) {
+            if (!dp[static_cast<std::size_t>(S)][static_cast<std::size_t>(v)]) { continue; }
+            for (int w = 0; w < n; ++w) {
+                if (S >> w & 1) { continue; }
+                if (adj[static_cast<std::size_t>(v)][static_cast<std::size_t>(w)]) {
+                    dp[static_cast<std::size_t>(S | (1 << w))][static_cast<std::size_t>(w)] = 1;
+                }
+            }
+        }
+    }
+    for (int v = 1; v < n; ++v) {
+        if (dp[static_cast<std::size_t>(full - 1)][static_cast<std::size_t>(v)] &&
+            adj[static_cast<std::size_t>(v)][0]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static void hamiltonian_demo() {
+    println("");
+    println("=== 35.9 哈密尔顿回路：回溯 vs Held-Karp 状压 DP ===");
+    // 固定例：5 顶点 7 边，回路 1→2→3→5→4→1（0-based：0→1→2→4→3→0）
+    const std::vector<std::vector<char>> adj5{
+        {0, 1, 0, 1, 0},
+        {1, 0, 1, 1, 0},
+        {0, 1, 0, 1, 1},
+        {1, 1, 1, 0, 1},
+        {0, 0, 1, 1, 0},
+    };
+    const HamResult hb = hamiltonian_backtrack(adj5);
+    print("  固定例（5 点 7 边）：回溯给出回路 ");
+    for (int v : hb.cycle) { print("{}→", v + 1); }
+    println("1（闭合）；Held-Karp 判存在 = {}", hamiltonian_held_karp(adj5) ? 1 : 0);
+    assert(hb.exists && hamiltonian_held_karp(adj5));
+    // 回路逐点验证：每条相邻边（含闭合）都存在、顶点恰一次
+    for (std::size_t i = 0; i < hb.cycle.size(); ++i) {
+        const int u = hb.cycle[i];
+        const int v = hb.cycle[(i + 1) % hb.cycle.size()];
+        assert(adj5[static_cast<std::size_t>(u)][static_cast<std::size_t>(v)]);
+    }
+    assert(static_cast<int>(hb.cycle.size()) == 5);
+
+    // 反例：加一个孤立点（6 号），哈密尔顿回路不存在
+    std::vector<std::vector<char>> adj6(6, std::vector<char>(6, 0));
+    for (int i = 0; i < 5; ++i) {
+        for (int j = 0; j < 5; ++j) {
+            adj6[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] =
+                adj5[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)];
+        }
+    }
+    assert(!hamiltonian_backtrack(adj6).exists);
+    assert(!hamiltonian_held_karp(adj6));
+    println("  挂一个孤立点：两口径同判「无回路」= 1");
+
+    // 随机 300 例（n ≤ 9，边概率 25%..60%）：两口径一致
+    std::mt19937 rng{5489};
+    int bad = 0, yes = 0;
+    for (int t = 0; t < 300; ++t) {
+        const int n = 3 + static_cast<int>(rand_below(rng, 7));
+        const int pct = 25 + static_cast<int>(rand_below(rng, 36));
+        std::vector<std::vector<char>> adj(
+            static_cast<std::size_t>(n), std::vector<char>(n, 0));
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (static_cast<int>(rand_below(rng, 100)) < pct) {
+                    adj[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] = 1;
+                    adj[static_cast<std::size_t>(j)][static_cast<std::size_t>(i)] = 1;
+                }
+            }
+        }
+        const bool a = hamiltonian_backtrack(adj).exists;
+        const bool b = hamiltonian_held_karp(adj);
+        if (a != b) { ++bad; }
+        yes += a;
+    }
+    println("  随机 300 例（n≤9）：两口径不一致 {} 例（有回路的 {} 例）", bad, yes);
+    assert(bad == 0);
+
+    // 大例：18 顶点随机图，只跑 Held-Karp（2¹⁸·18² ≈ 8500 万步，瞬时）
+    const int N = 18;
+    std::vector<std::vector<char>> big(
+        static_cast<std::size_t>(N), std::vector<char>(N, 0));
+    for (int i = 0; i < N; ++i) {
+        for (int j = i + 1; j < N; ++j) {
+            if (rand_below(rng, 100) < 45) {
+                big[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] = 1;
+                big[static_cast<std::size_t>(j)][static_cast<std::size_t>(i)] = 1;
+            }
+        }
+    }
+    println("  大例（18 顶点、边概率 45%）：Held-Karp 判存在 = {}",
+            hamiltonian_held_karp(big) ? 1 : 0);
+    // 顶点度数下界核验：任何度为 0/1 的点必无回路（必要条件旁证）
+    int deg01 = 0;
+    for (int i = 0; i < N; ++i) {
+        int d = 0;
+        for (int j = 0; j < N; ++j) { d += big[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)]; }
+        deg01 += d <= 1;
+    }
+    assert(deg01 == 0 || !hamiltonian_held_karp(big));
+}
+
 int main() {
     println("NP 完全性的可执行归约（实例：4 子句 3-SAT，4 变量）：");
     println("  公式 = (x1∨¬x2∨x3)∧(¬x1∨x2∨x4)∧(¬x2∨¬x3∨x4)∧(x1∨x2∨¬x4)");
@@ -780,6 +930,7 @@ int main() {
     chromatic_demo();
     triangular_queens_demo();
     tsp_bb_demo();
+    hamiltonian_demo();
     println("自检通过");
     return 0;
 }

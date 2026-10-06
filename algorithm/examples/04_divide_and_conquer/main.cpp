@@ -1284,6 +1284,202 @@ static void josephus_demo() {
     assert(josephus_bit(n3) == 4053);
 }
 
+// ═══ 04.11 好人坏人约瑟夫：搜索步长 m ═══
+// 2n 人围圈（0..n−1 好人，n..2n−1 坏人），从 0 起报数到 m 者出列、
+// 从下一人重新报 1。找最小 m 使**前 n 次出列全是坏人**。
+// 剪枝：出列者的下标 pos = (上一出列位置 + m − 1) % 存活数——
+// 每一步都要求 pos ≥ n（落在坏人段）。存活表用 vector 模拟删除。
+static int josephus_bad_first_m(int n) {
+    for (int m = n + 1;; ++m) {              // m ≤ n 时首个出列必是好人
+        std::vector<int> alive(2 * n);
+        for (int i = 0; i < 2 * n; ++i) { alive[static_cast<std::size_t>(i)] = i; }
+        int pos = 0;                          // 从 alive[0] 起报 1
+        bool ok = true;
+        for (int step = 0; step < n && ok; ++step) {
+            pos = (pos + m - 1) % static_cast<int>(alive.size());
+            if (alive[static_cast<std::size_t>(pos)] < n) { ok = false; break; }
+            alive.erase(alive.begin() + pos);
+        }
+        if (ok) { return m; }
+    }
+}
+
+static void josephus_variant_demo() {
+    println("");
+    println("=== 04.11 好人坏人约瑟夫：最小 m（前 n 次出列全是坏人）===");
+    print("  n:  ");
+    for (int n = 1; n <= 9; ++n) { print("{:5}", n); }
+    println("");
+    print("  m:  ");
+    for (int n = 1; n <= 9; ++n) {
+        print("{:5}", josephus_bad_first_m(n));
+    }
+    println("");
+    assert(josephus_bad_first_m(1) == 2);
+    assert(josephus_bad_first_m(3) == 5);
+
+    // 独立验证：n=3、m=5 的完整出列序（全模拟、好人一个不少）
+    {
+        std::vector<int> alive{0, 1, 2, 3, 4, 5};
+        std::vector<int> order;
+        int pos = 0;
+        for (int step = 0; step < 3; ++step) {
+            pos = (pos + 5 - 1) % static_cast<int>(alive.size());
+            order.push_back(alive[static_cast<std::size_t>(pos)]);
+            alive.erase(alive.begin() + pos);
+        }
+        println("  n=3、m=5 的前三次出列：{} {} {}（全是坏人段 3..5）",
+                order[0], order[1], order[2]);
+        assert(order[0] >= 3 && order[1] >= 3 && order[2] >= 3);
+        // m=4 反例：首出列 (4−1)%6 = 3（坏人）但第二次 (3+3)%5 = 1（好人）
+        std::vector<int> alive2{0, 1, 2, 3, 4, 5};
+        int p = (4 - 1) % 6;
+        alive2.erase(alive2.begin() + p);
+        p = (p + 4 - 1) % 5;
+        println("  m=4 反例：第二出列 = {}（好人段 0..2，m=4 不合格）", alive2[static_cast<std::size_t>(p)]);
+        assert(alive2[static_cast<std::size_t>(p)] < 3);
+    }
+
+    // 对账：n=1..9 的每个 m 再跑一遍独立全模拟（含后 n 步），确认
+    // 前 n 步出列确实全在坏人段——与搜索口径完全独立
+    int bad = 0;
+    for (int n = 1; n <= 9; ++n) {
+        const int m = josephus_bad_first_m(n);
+        std::vector<int> alive(2 * n);
+        for (int i = 0; i < 2 * n; ++i) { alive[static_cast<std::size_t>(i)] = i; }
+        int pos = 0;
+        for (int step = 0; step < n; ++step) {
+            pos = (pos + m - 1) % static_cast<int>(alive.size());
+            if (alive[static_cast<std::size_t>(pos)] < n) { ++bad; break; }
+            alive.erase(alive.begin() + pos);
+        }
+    }
+    println("  n=1..9 全量复检：前 n 步混入好人的 {} 例", bad);
+    assert(bad == 0);
+}
+
+// ═══ 04.12 线段包含的极点归约 ═══
+// 同一条直线上的闭线段 s=(l,r)：t 包含 s ⟺ l_t < l_s 且 r_s < r_t
+// （左右端点两两互异的一般位置）。映射 p(s) = (−l, r)：
+//   t 包含 s ⟺ p(t) 支配 p(s)（严格双坐标，与 04.9 的支配同款）
+// ⟹ 「不被任何线段包含」的线段 ⟺ 映像点的极点——分治极点直接复用。
+struct Seg { int l, r; };
+
+static std::vector<char> uncontained_brute(const std::vector<Seg>& segs) {
+    const int n = static_cast<int>(segs.size());
+    std::vector<char> out(static_cast<std::size_t>(n), 1);
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n && out[static_cast<std::size_t>(i)]; ++j) {
+            if (i == j) { continue; }
+            if (segs[static_cast<std::size_t>(j)].l < segs[static_cast<std::size_t>(i)].l &&
+                segs[static_cast<std::size_t>(i)].r < segs[static_cast<std::size_t>(j)].r) {
+                out[static_cast<std::size_t>(i)] = 0;
+            }
+        }
+    }
+    return out;
+}
+
+static std::vector<char> uncontained_via_maxima(const std::vector<Seg>& segs) {
+    std::vector<MaxPoint> pts;
+    pts.reserve(segs.size());
+    for (const Seg& s : segs) { pts.push_back({-s.l, s.r}); }
+    const std::vector<MaxPoint> mx = maxima_divide_conquer(pts);
+    std::vector<char> out(static_cast<std::size_t>(segs.size()), 0);
+    for (const MaxPoint& p : mx) {
+        for (std::size_t i = 0; i < segs.size(); ++i) {
+            if (-segs[i].l == p.x && segs[i].r == p.y) {
+                out[i] = 1;
+            }
+        }
+    }
+    return out;
+}
+
+static void segment_containment_demo() {
+    println("");
+    println("=== 04.12 线段包含 → 二维极点：映射 (l,r) ↦ (−l,r) ===");
+    const std::vector<Seg> fixed{{4, 6}, {1, 10}, {3, 8}, {5, 20}};
+    // 手算：a(4,6) 被 b、c、d 包含；c(3,8) 被 b 包含；b、d 互不包含
+    const std::vector<char> fb = uncontained_brute(fixed);
+    const std::vector<char> fm = uncontained_via_maxima(fixed);
+    print("  固定例（a,b,c,d = [4,6],[1,10],[3,8],[5,20]）：不被包含的是 ");
+    const char* names = "abcd";
+    for (std::size_t i = 0; i < fixed.size(); ++i) {
+        if (fb[i]) { print("{}", names[i]); }
+    }
+    println("（暴力与极点归约一致 = {}）",
+            fb == fm ? 1 : 0);
+    assert(fb == fm);
+    assert(fb == std::vector<char>({0, 1, 0, 1}));
+
+    // 随机 300 例（端点两两互异）：归约 vs 暴力 O(n²)
+    std::mt19937 rng{5489};
+    int bad = 0;
+    for (int t = 0; t < 300; ++t) {
+        const int n = 1 + static_cast<int>(rand_below(rng, 20));
+        std::vector<int> ls(n), rs(n);
+        for (int i = 0; i < n; ++i) {
+            ls[static_cast<std::size_t>(i)] =
+                static_cast<int>(rand_below(rng, 1000));   // 采样后 unique
+            rs[static_cast<std::size_t>(i)] =
+                1000 + static_cast<int>(rand_below(rng, 1000));
+        }
+        std::ranges::sort(ls);
+        ls.erase(std::ranges::unique(ls).begin(), ls.end());
+        std::ranges::sort(rs);
+        rs.erase(std::ranges::unique(rs).begin(), rs.end());
+        const int m = static_cast<int>(std::min(ls.size(), rs.size()));
+        std::vector<Seg> segs;
+        segs.reserve(static_cast<std::size_t>(m));
+        for (int i = 0; i < m; ++i) {
+            segs.push_back({ls[static_cast<std::size_t>(i)],
+                            rs[static_cast<std::size_t>(i)]});
+        }
+        if (uncontained_brute(segs) != uncontained_via_maxima(segs)) { ++bad; }
+    }
+    println("  随机 300 例（端点互异，n≤20）：归约 vs 暴力不一致 {} 例", bad);
+    assert(bad == 0);
+
+    // 大例：10 万条线段，分治 O(n lg n) vs 暴力 O(n²) 只跑分治侧 +
+    // 抽样验证（对归约输出的每个极点，任取 500 条线段核对不被包含）
+    std::vector<Seg> big;
+    big.reserve(100000);
+    std::vector<int> bl(static_cast<std::size_t>(100000)),
+        br(static_cast<std::size_t>(100000));
+    for (int i = 0; i < 100000; ++i) {
+        bl[static_cast<std::size_t>(i)] = i;                       // l 互异
+        br[static_cast<std::size_t>(i)] = 200000 + static_cast<int>(
+            rand_below(rng, 400000));
+    }
+    std::ranges::sort(br);
+    br.erase(std::ranges::unique(br).begin(), br.end());
+    for (std::size_t i = br.size(); i > 1; --i) {          // 洗乱配对，
+        const std::size_t j = static_cast<std::size_t>(    // 产生真实包含
+            rand_below(rng, static_cast<std::uint32_t>(i)));
+        std::swap(br[i - 1], br[j]);
+    }
+    const int bn = static_cast<int>(br.size());
+    for (int i = 0; i < bn; ++i) {
+        big.push_back({i, br[static_cast<std::size_t>(i)]});
+    }
+    const std::vector<char> bm = uncontained_via_maxima(big);
+    int total = 0;
+    for (char c : bm) { total += c; }
+    int spot_bad = 0;
+    for (std::size_t i = 0; i < big.size(); ++i) {
+        if (!bm[i]) { continue; }
+        for (int k = 0; k < 500; ++k) {
+            const std::size_t j = static_cast<std::size_t>(rand_below(rng, bn));
+            if (j != i &&
+                big[j].l < big[i].l && big[i].r < big[j].r) { ++spot_bad; }
+        }
+    }
+    println("  大例（{} 条线段）：不被包含 {} 条；抽样 500×极点复核失败 {} 例",
+            bn, total, spot_bad);
+    assert(spot_bad == 0 && total > 0);
+}
+
 int main() {
     max_subarray_demo();
     strassen_demo();
@@ -1295,6 +1491,8 @@ int main() {
     hanoi_demo();
     maxima_demo();
     josephus_demo();
+    josephus_variant_demo();
+    segment_containment_demo();
     println("自检通过");
     return 0;
 }

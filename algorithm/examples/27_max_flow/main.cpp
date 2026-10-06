@@ -1362,6 +1362,145 @@ static void grid_pick_demo() {
     assert(big_ans.value >= black_sum && big_ans.value <= big_total);
 }
 
+// ═══ 27.11 慈善捐款：运输问题的最大流建模 ═══
+// n 位捐款人、k 家孤儿院：人 i 总额上限 d_i、对院 j 的指定上限 c_ij、
+// 院 j 接受总额上限 o_j，最大化总捐款。
+// 建网：S→人（d_i）、人→院（c_ij）、院→T（o_j），最大流即答案。
+// 「公平上限」天然由容量表达——这正是流的母语。
+struct DonationCase {
+    int n = 0, k = 0;
+    std::vector<int> donor_cap, home_cap;
+    std::vector<std::vector<int>> pair_cap;
+};
+
+static std::vector<std::vector<int>> donation_network(const DonationCase& c) {
+    const int N = c.n + c.k + 2;
+    std::vector<std::vector<int>> cap(
+        static_cast<std::size_t>(N), std::vector<int>(static_cast<std::size_t>(N), 0));
+    for (int i = 0; i < c.n; ++i) {
+        cap[0][1 + i] = c.donor_cap[static_cast<std::size_t>(i)];
+    }
+    for (int i = 0; i < c.n; ++i) {
+        for (int j = 0; j < c.k; ++j) {
+            cap[1 + i][1 + c.n + j] =
+                c.pair_cap[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)];
+        }
+    }
+    for (int j = 0; j < c.k; ++j) {
+        cap[1 + c.n + j][N - 1] = c.home_cap[static_cast<std::size_t>(j)];
+    }
+    return cap;
+}
+
+// 独立对账：枚举全部 S-T 割（中间点二分为源侧/汇侧），最小割 ==
+// 最大流（定理 26.6? max-flow min-cut）。中间点 ≤ 12 可行。
+static int donation_min_cut_brute(const DonationCase& c) {
+    const int mid = c.n + c.k;
+    int best = INT32_MAX;
+    for (int mask = 0; mask < (1 << mid); ++mask) {
+        int cut = 0;
+        for (int i = 0; i < c.n; ++i) {
+            if (!(mask >> i & 1)) { cut += c.donor_cap[static_cast<std::size_t>(i)]; }
+        }
+        for (int j = 0; j < c.k; ++j) {
+            if (mask >> (c.n + j) & 1) { cut += c.home_cap[static_cast<std::size_t>(j)]; }
+        }
+        for (int i = 0; i < c.n; ++i) {
+            if (!(mask >> i & 1)) { continue; }
+            for (int j = 0; j < c.k; ++j) {
+                if (!(mask >> (c.n + j) & 1)) {
+                    cut += c.pair_cap[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)];
+                }
+            }
+        }
+        best = std::min(best, cut);
+    }
+    return best;
+}
+
+static void donation_demo() {
+    println("");
+    println("=== 27.11 慈善捐款：运输问题的最大流（S→人→院→T）===");
+    const DonationCase fx{
+        3, 2,
+        {10, 10, 10},                       // 三人各至多捐 10
+        {8, 12},                            // 两院各至多收 8 / 12
+        {{6, 4}, {0, 8}, {5, 0}},           // 指定上限：甲只肯给两院 6/4 …
+    };
+    const auto net = donation_network(fx);
+    const MaxFlowResult r = edmonds_karp(net, 0, fx.n + fx.k + 1, false);
+    println("  固定例（3 人 2 院，人额 10×3、院额 8+12）：最大总捐款 {}（= 两院饱和）",
+            r.value);
+    assert(r.value == 20);
+    assert(validate_flow(net, r.flow, 0, fx.n + fx.k + 1, r.value));
+    println("  分配方案（人→院 : 额度）：");
+    for (int i = 0; i < fx.n; ++i) {
+        for (int j = 0; j < fx.k; ++j) {
+            const int f = r.flow[static_cast<std::size_t>(1 + i)][static_cast<std::size_t>(1 + fx.n + j)];
+            if (f > 0) { println("    人{}→院{} : {}", i + 1, j + 1, f); }
+        }
+    }
+    println("  （容量/守恒/反对称合法性 = 1；逐人不超额、逐院不超额见下）");
+    // 逐人、逐院额度复核（守恒之外的口径检查）
+    for (int i = 0; i < fx.n; ++i) {
+        int gave = 0;
+        for (int j = 0; j < fx.k; ++j) {
+            gave += std::max(0, r.flow[static_cast<std::size_t>(1 + i)][static_cast<std::size_t>(1 + fx.n + j)]);
+        }
+        assert(gave <= fx.donor_cap[static_cast<std::size_t>(i)]);
+    }
+    for (int j = 0; j < fx.k; ++j) {
+        int got = 0;
+        for (int i = 0; i < fx.n; ++i) {
+            got += std::max(0, r.flow[static_cast<std::size_t>(1 + i)][static_cast<std::size_t>(1 + fx.n + j)]);
+        }
+        assert(got <= fx.home_cap[static_cast<std::size_t>(j)]);
+    }
+
+    // 随机 200 例（n,k ≤ 4）：最大流 vs 最小割枚举（定理互证）
+    std::mt19937 rng{5489};
+    int bad = 0;
+    for (int t = 0; t < 200; ++t) {
+        const int n = 1 + static_cast<int>(rand_below(rng, 4));
+        const int k = 1 + static_cast<int>(rand_below(rng, 4));
+        DonationCase c;
+        c.n = n; c.k = k;
+        c.donor_cap.assign(static_cast<std::size_t>(n), 0);
+        c.home_cap.assign(static_cast<std::size_t>(k), 0);
+        c.pair_cap.assign(static_cast<std::size_t>(n),
+                          std::vector<int>(static_cast<std::size_t>(k), 0));
+        for (int& d : c.donor_cap) { d = static_cast<int>(rand_below(rng, 10)); }
+        for (int& o : c.home_cap) { o = static_cast<int>(rand_below(rng, 10)); }
+        for (auto& row : c.pair_cap) {
+            for (int& v : row) { v = static_cast<int>(rand_below(rng, 8)); }
+        }
+        const auto nn = donation_network(c);
+        const MaxFlowResult rr = edmonds_karp(nn, 0, n + k + 1, false);
+        if (rr.value != donation_min_cut_brute(c)) { ++bad; }
+    }
+    println("  随机 200 例（n,k≤4）：最大流 vs 最小割枚举不一致 {} 例", bad);
+    assert(bad == 0);
+
+    // 大例：60 人 40 院，只跑 EK + 合法性 + 上下界
+    DonationCase big;
+    big.n = 60; big.k = 40;
+    big.donor_cap.assign(60, 0);
+    big.home_cap.assign(40, 0);
+    big.pair_cap.assign(60, std::vector<int>(40, 0));
+    long long sum_d = 0, sum_o = 0;
+    for (int& d : big.donor_cap) { d = 1 + static_cast<int>(rand_below(rng, 50)); sum_d += d; }
+    for (int& o : big.home_cap) { o = 1 + static_cast<int>(rand_below(rng, 60)); sum_o += o; }
+    for (auto& row : big.pair_cap) {
+        for (int& v : row) { v = static_cast<int>(rand_below(rng, 30)); }
+    }
+    const auto bn = donation_network(big);
+    const MaxFlowResult br = edmonds_karp(bn, 0, 101, false);
+    println("  大例（60 人 40 院）：最大总捐款 {}（供 {} 需 {}，上界 {}）",
+            br.value, sum_d, sum_o, std::min(sum_d, sum_o));
+    assert(br.value <= std::min(sum_d, sum_o));
+    assert(validate_flow(bn, br.flow, 0, 101, br.value));
+}
+
 int main() {
     edmonds_karp_demo();
     push_relabel_demo();
@@ -1370,6 +1509,7 @@ int main() {
     dining_demo();
     min_cost_flow_demo();
     grid_pick_demo();
+    donation_demo();
     println("自检通过");
     return 0;
 }

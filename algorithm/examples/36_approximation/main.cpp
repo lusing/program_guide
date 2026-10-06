@@ -312,7 +312,7 @@ static void bin_packing_demo() {
 
     // 随机 1500 例（n≤12，尺寸 15..85）：三贪心与精确解对账
     std::mt19937 rng{5489};
-    int mismatches = 0, ratio_violations = 0;
+    int mismatches = 0, ratio_violations = 0, ff_violations = 0;
     for (int t = 0; t < 1500; ++t) {
         const int n = 2 + static_cast<int>(rand_below(rng, 11));
         std::vector<int> g;
@@ -325,11 +325,15 @@ static void bin_packing_demo() {
         if (a != o && a != o + 1) { ++mismatches; }   // 实测至多差 1
         // 定理：FFD·9 ≤ 11·OPT + 6
         if (9 * a > 11 * o + 6) { ++ratio_violations; }
+        // 在线定理：FF ≤ 2·OPT（任意两箱容量和 > C 的配对论证）
+        std::vector<int> ignored;
+        if (first_fit(g, ignored) > 2 * o) { ++ff_violations; }
         assert(a >= o && best_fit(g) >= o);
     }
     println("  随机 {} 例（n≤12）：FFD 超出最优 1 箱以上的 {} 例；"
-            "11/9+6/9 定理违反 {} 例", 1500, mismatches, ratio_violations);
-    assert(mismatches == 0 && ratio_violations == 0);
+            "11/9+6/9 定理违反 {} 例；在线 FF 超出 2·OPT 的 {} 例",
+            1500, mismatches, ratio_violations, ff_violations);
+    assert(mismatches == 0 && ratio_violations == 0 && ff_violations == 0);
 
     // 大例：10 万件 1..100——Best-Fit multiset 版；下界 ⌈总量/100⌉
     std::vector<int> big;
