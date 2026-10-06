@@ -1,7 +1,8 @@
 // 05 概率分析与随机化算法（CLRS 第 5 章 + 附录 C 串联）。结构：
 // 05.1 指示器随机变量（伯努利数组的期望） / 05.2 雇佣问题（期望雇佣数 = H_n）/
 // 05.3 生日悖论（精确概率 + 指示器期望 + 模拟）/ 05.4 最长连续正面 /
-// 05.5 RANDOMIZE-IN-PLACE 均匀性检验 vs 错误洗牌的偏倚。
+// 05.5 RANDOMIZE-IN-PLACE 均匀性检验 vs 错误洗牌的偏倚 /
+// 05.6 最小割：随机收缩（Karger，多次试验取最小，最大流精确对账）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -19,6 +20,7 @@ using std::println;
 #include <array>
 #include <cassert>
 #include <cstdint>
+#include <limits>
 #include <numeric>
 #include <random>
 #include <vector>
@@ -195,12 +197,216 @@ static void shuffle_uniformity_demo() {
     assert(hi - lo > trials / 100); // 至少 1% 的显著偏倚
 }
 
+// ═══ 05.6 最小割：随机收缩（Karger 算法）═══
+// 边割：删掉后使图不连通的边集；全局最小割 = 边数最少的那个。
+struct KargerEdge { int u, v; };      // 多图：平行边允许重复出现
+
+struct KCutResult {
+    int size;                         // 割含有的边数
+    std::vector<int> side;            // side[i]：原顶点 i 属于哪一侧（0/1）
+};
+
+// 一次试验：随机挑边、把边的两端点收缩成一个（平行边全部保留），直到只剩两个
+// 超顶点；它们之间的边就是一个割。每条当前边被选中的概率相等。
+static KCutResult karger_trial(const std::vector<KargerEdge>& input, int n,
+                               std::mt19937& rng) {
+    std::vector<KargerEdge> edges = input;
+    std::vector<int> parent(n);
+    std::iota(parent.begin(), parent.end(), 0);
+    auto find = [&](int x) {
+        while (parent[static_cast<std::size_t>(x)] != x) {
+            parent[static_cast<std::size_t>(x)] =
+                parent[static_cast<std::size_t>(parent[static_cast<std::size_t>(x)])];
+            x = parent[static_cast<std::size_t>(x)];
+        }
+        return x;
+    };
+    int alive = n;
+    while (alive > 2) {
+        if (edges.empty()) { break; }   // 图本来就不连通
+        const std::size_t pick = rand_below(
+            rng, static_cast<std::uint32_t>(edges.size()));
+        const int ru = find(edges[pick].u);
+        const int rv = find(edges[pick].v);
+        if (ru == rv) {                 // 自环：标准算法中直接丢弃，重抽
+            edges[pick] = edges.back();
+            edges.pop_back();
+            continue;
+        }
+        parent[static_cast<std::size_t>(rv)] = ru;   // 收缩：ru 吸收 rv
+        --alive;
+    }
+    // 统计两个超顶点之间的边（丢弃残余自环），并给原顶点标侧号
+    int cut = 0;
+    for (const KargerEdge& e : edges) {
+        if (find(e.u) != find(e.v)) { ++cut; }
+    }
+    std::vector<int> side(n);
+    std::vector<int> root_label(n, -1);
+    int label = 0;
+    for (int i = 0; i < n; ++i) {
+        const int r = find(i);
+        if (root_label[static_cast<std::size_t>(r)] == -1) {
+            root_label[static_cast<std::size_t>(r)] = label++;
+        }
+        side[static_cast<std::size_t>(i)] = root_label[static_cast<std::size_t>(r)];
+    }
+    return {cut, std::move(side)};
+}
+
+// 全局最小割的精确值（小图对账用）：固定 s=0，最小割必把 s 与某个 t 分开，
+// 故 min_{t≠0} 最大流(0,t) 就是答案。无向边按两条容量 1 的有向弧建模；平行
+// 边各自计数。
+struct EkArc { int to, rev, cap; };
+
+static void ek_add(std::vector<std::vector<EkArc>>& g, int from, int to, int cap) {
+    const int ri = static_cast<int>(g[static_cast<std::size_t>(to)].size());
+    const int fi = static_cast<int>(g[static_cast<std::size_t>(from)].size());
+    g[static_cast<std::size_t>(from)].push_back({to, ri, cap});
+    g[static_cast<std::size_t>(to)].push_back({from, fi, 0});
+}
+
+static int edmonds_karp(std::vector<std::vector<EkArc>> g, int s, int t) {
+    int flow = 0;
+    const std::size_t n = g.size();
+    for (;;) {
+        std::vector<int> pv(n, -1), pe(n, -1);
+        std::vector<int> queue(n);
+        std::size_t head = 0, tail = 0;
+        queue[tail++] = s;
+        pv[static_cast<std::size_t>(s)] = s;
+        while (head < tail && pv[static_cast<std::size_t>(t)] == -1) {
+            const int u = queue[head++];
+            for (std::size_t i = 0; i < g[static_cast<std::size_t>(u)].size(); ++i) {
+                const EkArc& a = g[static_cast<std::size_t>(u)][i];
+                if (a.cap > 0 && pv[static_cast<std::size_t>(a.to)] == -1) {
+                    pv[static_cast<std::size_t>(a.to)] = u;
+                    pe[static_cast<std::size_t>(a.to)] = static_cast<int>(i);
+                    queue[tail++] = a.to;
+                }
+            }
+        }
+        if (pv[static_cast<std::size_t>(t)] == -1) { break; }
+        int add = std::numeric_limits<int>::max();
+        for (int v = t; v != s; v = pv[static_cast<std::size_t>(v)]) {
+            add = std::min(add,
+                g[static_cast<std::size_t>(pv[static_cast<std::size_t>(v)])]
+                 [static_cast<std::size_t>(pe[static_cast<std::size_t>(v)])].cap);
+        }
+        for (int v = t; v != s; v = pv[static_cast<std::size_t>(v)]) {
+            EkArc& a = g[static_cast<std::size_t>(pv[static_cast<std::size_t>(v)])]
+                         [static_cast<std::size_t>(pe[static_cast<std::size_t>(v)])];
+            a.cap -= add;
+            g[static_cast<std::size_t>(v)][static_cast<std::size_t>(a.rev)].cap += add;
+        }
+        flow += add;
+    }
+    return flow;
+}
+
+static int exact_global_cut(const std::vector<KargerEdge>& edges, int n) {
+    int best = std::numeric_limits<int>::max();
+    for (int t = 1; t < n; ++t) {
+        std::vector<std::vector<EkArc>> g(static_cast<std::size_t>(n));
+        for (const KargerEdge& e : edges) {       // 无向边：正反两条容量 1 的弧
+            ek_add(g, e.u, e.v, 1);
+            ek_add(g, e.v, e.u, 1);
+        }
+        best = std::min(best, edmonds_karp(std::move(g), 0, t));
+    }
+    return best;
+}
+
+static void karger_demo() {
+    println("=== 05.6 最小割：随机收缩（多次试验取最小）===");
+    // 固定例：两个 4 顶点团用恰好 2 条边相连，最小割 = 2
+    std::vector<KargerEdge> fixed;
+    static const int left4[4]{0, 1, 2, 3};
+    static const int right4[4]{4, 5, 6, 7};
+    for (int i = 0; i < 4; ++i) {
+        for (int j = i + 1; j < 4; ++j) {
+            fixed.push_back({left4[i], left4[j]});
+            fixed.push_back({right4[i], right4[j]});
+        }
+    }
+    fixed.push_back({3, 4});
+    fixed.push_back({1, 5});
+    const int fixed_exact = exact_global_cut(fixed, 8);
+    std::mt19937 rng{5489};
+    int fixed_best = std::numeric_limits<int>::max();
+    const int fixed_trials = 800;
+    for (int i = 0; i < fixed_trials; ++i) {
+        KCutResult r = karger_trial(fixed, 8, rng);
+        fixed_best = std::min(fixed_best, r.size);
+    }
+    println("  固定例（双 K4 团 + 2 条桥接边）：{} 次试验最小割 {}，最大流精确值 {}",
+            fixed_trials, fixed_best, fixed_exact);
+    assert(fixed_best == fixed_exact && fixed_exact == 2);
+
+    // 随机 600 个小图（n=4..8，按概率 p 加边，含不连通图）：每图 n² 次试验，
+    // 逐图与精确值对账；同时统计「单次试验直接命中」的经验比例。
+    int graph_mismatches = 0;
+    long long total_trials = 0, hit_trials = 0;
+    for (int gi = 0; gi < 600; ++gi) {
+        const int n = 4 + static_cast<int>(rand_below(rng, 5));
+        const int pct = 20 + static_cast<int>(rand_below(rng, 45));  // 边概率 20%~64%
+        std::vector<KargerEdge> edges;
+        for (int u = 0; u < n; ++u) {
+            for (int v = u + 1; v < n; ++v) {
+                if (static_cast<int>(rand_below(rng, 100)) < pct) {
+                    edges.push_back({u, v});
+                }
+            }
+        }
+        const int exact = exact_global_cut(edges, n);
+        const int trials = n * n;
+        int best = std::numeric_limits<int>::max();
+        for (int i = 0; i < trials; ++i) {
+            KCutResult r = karger_trial(edges, n, rng);
+            best = std::min(best, r.size);
+            ++total_trials;
+            hit_trials += (r.size == exact);
+        }
+        if (best != exact) { ++graph_mismatches; }
+    }
+    println("  随机 {} 个小图（n=4..8，每图 n² 次试验）：最佳值 vs 精确值不一致 {} 图",
+            600, graph_mismatches);
+    println("  单次试验命中率（经验）= {}/{} ≈ {:.4f}（理论下界 2/n²≈0.031~0.125）",
+            hit_trials, total_trials,
+            static_cast<double>(hit_trials) / static_cast<double>(total_trials));
+    assert(graph_mismatches == 0);
+
+    // 大例：n=60，两个 30 顶点完全图（半侧内部任何割都 ≥29 条边）之间只放
+    // 3 条跨边，保证全局最小割恰好是植入的 3。
+    const int n = 60;
+    std::vector<KargerEdge> big;
+    for (int u = 0; u < n; ++u) {
+        for (int v = u + 1; v < n; ++v) {
+            if ((u < 30) == (v < 30)) { big.push_back({u, v}); }
+        }
+    }
+    big.push_back({10, 40});
+    big.push_back({20, 50});
+    big.push_back({29, 30});
+    const int big_exact = exact_global_cut(big, n);
+    const int big_trials = 4 * n * n;                     // 14400 次，理论失误 ≤ e⁻⁸
+    int big_best = std::numeric_limits<int>::max();
+    for (int i = 0; i < big_trials; ++i) {
+        KCutResult r = karger_trial(big, n, rng);
+        big_best = std::min(big_best, r.size);
+    }
+    println("  大例（n=60，m={}，植入割 3）：{} 次试验最小割 {}，精确值 {}",
+            big.size(), big_trials, big_best, big_exact);
+    assert(big_best == big_exact && big_exact == 3);
+}
+
 int main() {
     indicator_demo();
     hiring_demo();
     birthday_demo();
     streaks_demo();
     shuffle_uniformity_demo();
+    karger_demo();
     println("自检通过");
     return 0;
 }

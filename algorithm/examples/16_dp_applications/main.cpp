@@ -2,7 +2,8 @@
 // 结构：16.1 LCS（c/b 表 + 重构，图 15.8 数据）/ 16.2 前缀码性质与
 // 多重对账 / 16.3 最优 BST（图 15.10 数据，期望代价 2.75）/
 // 16.4 编辑距离（LCS 的变体，C++ 实战延伸）/
-// 16.7 石子合并：区间 DP（直线/圆环、最小/最大，合并树重构）。
+// 16.7 石子合并：区间 DP（直线/圆环、最小/最大，合并树重构）/
+// 16.8 安排公司聚会：树上的 DP（最大权独立集，参加/不参加两状态）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -674,6 +675,147 @@ static void stone_merge_demo() {
     assert(cb.mn <= tb.mn[0][nbig - 1]);   // 圆环缝口自由，不会比直线差
 }
 
+// ═══ 16.8 安排公司聚会：树上的 DP ═══
+// 公司组织是一棵有根树，员工 v 的快乐值 happy[v]（允许负数）。规则：直属上下级
+// 不能同时参加。目标：让参加者的快乐值总和最大。这就是树上的最大权独立集。
+struct PartyResult {
+    long long fun;                        // 最大快乐总和
+    std::vector<int> guests;              // 参加者编号（升序）
+};
+
+// 自底向上的两状态 DP（children[v] 给出孩子列表，根固定为 0）：
+//   yes[v]：v 参加时，v 这棵子树的最优值 ⟹ 所有孩子都不能参加：
+//           yes[v] = happy[v] + Σ no[c]
+//   no[v] ：v 不参加 ⟹ 每个孩子各自取更优：
+//           no[v] = Σ max(yes[c], no[c])
+// 大树（20 万节点）不能用递归 DFS——调用栈会溢出。这里先生成父→子的遍历序，
+// 逆序处理即等价于后序，全程无递归。
+static PartyResult party_plan(const std::vector<std::vector<int>>& children,
+                              const std::vector<int>& happy) {
+    const int n = static_cast<int>(children.size());
+    std::vector<int> order;
+    order.reserve(n);
+    order.push_back(0);
+    for (std::size_t i = 0; i < order.size(); ++i) {
+        for (int c : children[static_cast<std::size_t>(order[i])]) {
+            order.push_back(c);
+        }
+    }
+    std::vector<long long> yes(n), no(n);
+    for (int idx = n - 1; idx >= 0; --idx) {
+        const int v = order[static_cast<std::size_t>(idx)];
+        yes[v] = happy[static_cast<std::size_t>(v)];
+        no[v] = 0;
+        for (int c : children[static_cast<std::size_t>(v)]) {
+            yes[v] += no[static_cast<std::size_t>(c)];
+            no[v] += std::max(yes[static_cast<std::size_t>(c)],
+                              no[static_cast<std::size_t>(c)]);
+        }
+    }
+    // 方案还原：从根开始；v 不参加则孩子各自比较决定，v 参加则孩子一律不参加。
+    std::vector<char> take(n, 0);
+    take[0] = yes[0] >= no[0] ? 1 : 0;
+    for (int v : order) {
+        for (int c : children[static_cast<std::size_t>(v)]) {
+            take[static_cast<std::size_t>(c)] =
+                (!take[static_cast<std::size_t>(v)] &&
+                 yes[static_cast<std::size_t>(c)] >= no[static_cast<std::size_t>(c)])
+                ? 1 : 0;
+        }
+    }
+    std::vector<int> guests;
+    long long check_sum = 0;
+    for (int v = 0; v < n; ++v) {
+        if (take[static_cast<std::size_t>(v)]) {
+            guests.push_back(v);
+            check_sum += happy[static_cast<std::size_t>(v)];
+        }
+    }
+    const long long fun = std::max(yes[0], no[0]);
+    assert(check_sum == fun);              // 名单重算的总和必须等于 DP 值
+    return {fun, std::move(guests)};
+}
+
+// 暴力真值：枚举全部 2ⁿ 个参加/不参加子集，凡有父子同时在列即非法，取最大总和。
+static long long party_brute(const std::vector<std::vector<int>>& children,
+                             const std::vector<int>& happy) {
+    const int n = static_cast<int>(children.size());
+    long long best = 0;                   // 空集：一个人都不请，总和 0
+    for (int mask = 0; mask < (1 << n); ++mask) {
+        bool valid = true;
+        long long sum = 0;
+        for (int v = 0; v < n && valid; ++v) {
+            if (!(mask & (1 << v))) { continue; }
+            sum += happy[static_cast<std::size_t>(v)];
+            for (int c : children[static_cast<std::size_t>(v)]) {
+                if (mask & (1 << c)) { valid = false; break; }
+            }
+        }
+        if (valid) { best = std::max(best, sum); }
+    }
+    return best;
+}
+
+static void party_demo() {
+    println("=== 16.8 安排公司聚会：树上 DP（直属上下级不同时参加）===");
+    // 固定组织（10 人）：0 为董事长；快乐值含负数，验证 DP 不是“正数照单全收”
+    std::vector<std::vector<int>> children(10);
+    children[0] = {1, 2, 3};
+    children[1] = {4, 5};
+    children[2] = {6};
+    children[3] = {7, 9};
+    children[6] = {8};
+    const std::vector<int> happy{15, 25, 10, 35, -10, 5, 40, 12, 20, 8};
+    const PartyResult r = party_plan(children, happy);
+    const long long truth = party_brute(children, happy);
+    println("  10 人组织（2¹⁰ 子集枚举 = {}）：最大快乐总和 {}", truth, r.fun);
+    print("  参加名单：");
+    for (int v : r.guests) { print(" {}号({})", v, happy[static_cast<std::size_t>(v)]); }
+    println("");
+    // 合法性：名单中任意两人都不是父子
+    for (int v : r.guests) {
+        for (int c : children[static_cast<std::size_t>(v)]) {
+            assert(std::ranges::find(r.guests, c) == r.guests.end());
+        }
+    }
+    assert(r.fun == truth);
+
+    // 随机 2000 棵树（n≤12，每节点父亲在更早节点中随机；快乐值 −25..99）
+    std::mt19937 rng{5489};
+    int mismatches = 0;
+    for (int t = 0; t < 2000; ++t) {
+        const int n = 1 + static_cast<int>(stone_rand_below(rng, 12));
+        std::vector<std::vector<int>> ch(n);
+        std::vector<int> hp(n);
+        for (int v = 0; v < n; ++v) {
+            hp[static_cast<std::size_t>(v)] =
+                static_cast<int>(stone_rand_below(rng, 125)) - 25;
+            if (v > 0) {
+                const int p = static_cast<int>(stone_rand_below(
+                    rng, static_cast<std::uint32_t>(v)));
+                ch[static_cast<std::size_t>(p)].push_back(v);
+            }
+        }
+        const PartyResult pr = party_plan(ch, hp);
+        if (pr.fun != party_brute(ch, hp)) { ++mismatches; }
+    }
+    println("  随机 {} 棵树（n≤12，快乐值 −25..99）：树 DP vs 子集枚举 不一致 {} 例",
+            2000, mismatches);
+    assert(mismatches == 0);
+
+    // 大例：20 万节点的链（深度 20 万，递归必栈溢出），快乐值 100/−20 交替
+    const int n = 200000;
+    std::vector<std::vector<int>> big_ch(n);
+    std::vector<int> big_hp(n);
+    for (int v = 1; v < n; ++v) { big_ch[static_cast<std::size_t>(v - 1)].push_back(v); }
+    for (int v = 0; v < n; ++v) { big_hp[static_cast<std::size_t>(v)] = v % 2 == 0 ? 100 : -20; }
+    const PartyResult big = party_plan(big_ch, big_hp);
+    println("  大例（20 万节点的链，100/−20 交替）：最大快乐 {}，参加 {} 人",
+            big.fun, big.guests.size());
+    assert(big.fun == 100000LL * 100);          // 恰取所有正快乐节点
+    assert(static_cast<int>(big.guests.size()) == 100000);
+}
+
 int main() {
     lcs_demo();
     optimal_bst_demo();
@@ -681,6 +823,7 @@ int main() {
     lnis_demo();
     antichain_demo();
     stone_merge_demo();
+    party_demo();
     println("自检通过");
     return 0;
 }
