@@ -992,6 +992,133 @@ static void common_substring_demo() {
     assert(got == planted);
 }
 
+// ═══ 16.10 最大子矩阵和：列对压缩 + 一维 Kadane ═══
+// 给定 R×C 整数矩阵，求元素总和最大的非空子矩形。朴素枚举四角
+// O(R²C²)；压缩法固定列对 [l,r]：colsum[i]=Σ_{j=l..r} a[i][j]，
+// 子矩形在该行向和上恰是一个连续段 ⟹ 一维最大子段（Kadane）。
+struct SubRect {
+    int sum = 0, r0 = 0, r1 = -1, c0 = 0, c1 = -1;
+};
+
+static SubRect max_subrectangle(const std::vector<std::vector<int>>& a) {
+    const int R = static_cast<int>(a.size());
+    const int C = R == 0 ? 0 : static_cast<int>(a[0].size());
+    SubRect best;
+    best.sum = a[0][0];
+    for (int l = 0; l < C; ++l) {
+        std::vector<int> colsum(static_cast<std::size_t>(R), 0);
+        for (int r = l; r < C; ++r) {
+            for (int i = 0; i < R; ++i) {
+                colsum[static_cast<std::size_t>(i)] += a[static_cast<std::size_t>(i)][static_cast<std::size_t>(r)];
+            }
+            // Kadane：非空段；cur 负值即重置（从下一个单元素重启）
+            int cur = colsum[0];
+            int start = 0;
+            if (cur > best.sum) {
+                best = {cur, 0, 0, l, r};
+            }
+            for (int i = 1; i < R; ++i) {
+                if (cur < 0) { cur = colsum[static_cast<std::size_t>(i)]; start = i; }
+                else { cur += colsum[static_cast<std::size_t>(i)]; }
+                if (cur > best.sum) {
+                    best = {cur, start, i, l, r};
+                }
+            }
+        }
+    }
+    return best;
+}
+
+// 独立真值：二维前缀和枚举全部矩形 O(R²C²)
+static SubRect max_subrectangle_brute(const std::vector<std::vector<int>>& a) {
+    const int R = static_cast<int>(a.size());
+    const int C = R == 0 ? 0 : static_cast<int>(a[0].size());
+    std::vector<std::vector<int>> ps(
+        static_cast<std::size_t>(R + 1), std::vector<int>(C + 1, 0));
+    for (int i = 0; i < R; ++i) {
+        for (int j = 0; j < C; ++j) {
+            ps[static_cast<std::size_t>(i + 1)][static_cast<std::size_t>(j + 1)] =
+                ps[static_cast<std::size_t>(i)][static_cast<std::size_t>(j + 1)] +
+                ps[static_cast<std::size_t>(i + 1)][static_cast<std::size_t>(j)] -
+                ps[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] +
+                a[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)];
+        }
+    }
+    SubRect best;
+    best.sum = a[0][0];
+    for (int r0 = 0; r0 < R; ++r0) {
+        for (int r1 = r0; r1 < R; ++r1) {
+            for (int c0 = 0; c0 < C; ++c0) {
+                for (int c1 = c0; c1 < C; ++c1) {
+                    const int s =
+                        ps[static_cast<std::size_t>(r1 + 1)][static_cast<std::size_t>(c1 + 1)] -
+                        ps[static_cast<std::size_t>(r0)][static_cast<std::size_t>(c1 + 1)] -
+                        ps[static_cast<std::size_t>(r1 + 1)][static_cast<std::size_t>(c0)] +
+                        ps[static_cast<std::size_t>(r0)][static_cast<std::size_t>(c0)];
+                    if (s > best.sum) { best = {s, r0, r1, c0, c1}; }
+                }
+            }
+        }
+    }
+    return best;
+}
+
+static void max_subrect_demo() {
+    println("");
+    println("=== 16.10 最大子矩阵和：列对压缩 + 一维 Kadane（O(n³)）===");
+    const std::vector<std::vector<int>> fixed{
+        {-1, 0, -9}, {-2, 3, 14}, {-2, 4, 20}};
+    const SubRect fr = max_subrectangle(fixed);
+    println("  固定例（3×3）：最大和 {}，子矩阵 行[{},{}]×列[{},{}]（1-based）",
+            fr.sum, fr.r0 + 1, fr.r1 + 1, fr.c0 + 1, fr.c1 + 1);
+    assert(fr.sum == 41 && fr.r0 == 1 && fr.r1 == 2 && fr.c0 == 1 && fr.c1 == 2);
+
+    // 全负矩阵：非空口径下答案＝最大单元素
+    const std::vector<std::vector<int>> neg{{-5, -3, -8}, {-2, -9, -1}};
+    const SubRect nr = max_subrectangle(neg);
+    println("  全负矩阵：最大和 {}（不允许空矩形，取最大单元素）", nr.sum);
+    assert(nr.sum == -1);
+
+    // 随机 300 个小矩阵（R,C ≤ 6，值 −15..15）两法对账
+    std::mt19937 rng{5489};
+    int bad = 0;
+    for (int t = 0; t < 300; ++t) {
+        const int R = 1 + static_cast<int>(stone_rand_below(rng, 6));
+        const int C = 1 + static_cast<int>(stone_rand_below(rng, 6));
+        std::vector<std::vector<int>> m(
+            static_cast<std::size_t>(R), std::vector<int>(C));
+        for (auto& row : m) {
+            for (int& v : row) {
+                v = static_cast<int>(stone_rand_below(rng, 31)) - 15;
+            }
+        }
+        if (max_subrectangle(m).sum != max_subrectangle_brute(m).sum) { ++bad; }
+    }
+    println("  随机 300 个（R,C≤6）：压缩法 vs 前缀暴力不一致 {} 例", bad);
+    assert(bad == 0);
+
+    // 大例 100×120：O(C²R) ≈ 1.4×10^6，瞬时；独立回代子矩阵和
+    const int R = 100, C = 120;
+    std::vector<std::vector<int>> big(
+        static_cast<std::size_t>(R), std::vector<int>(C));
+    for (auto& row : big) {
+        for (int& v : row) {
+            v = static_cast<int>(stone_rand_below(rng, 41)) - 15;  // -15..25
+        }
+    }
+    const SubRect br = max_subrectangle(big);
+    long long check = 0;
+    for (int i = br.r0; i <= br.r1; ++i) {
+        for (int j = br.c0; j <= br.c1; ++j) {
+            check += big[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)];
+        }
+    }
+    println("  大例（100×120，值−15..25）：最大和 {}，尺寸 {}×{}，回代和一致",
+            br.sum, br.r1 - br.r0 + 1, br.c1 - br.c0 + 1);
+    assert(check == br.sum);
+    assert(br.r0 >= 0 && br.r1 < R && br.c0 >= 0 && br.c1 < C);
+}
+
 int main() {
     lcs_demo();
     optimal_bst_demo();
@@ -1001,6 +1128,7 @@ int main() {
     stone_merge_demo();
     party_demo();
     common_substring_demo();
+    max_subrect_demo();
     println("自检通过");
     return 0;
 }

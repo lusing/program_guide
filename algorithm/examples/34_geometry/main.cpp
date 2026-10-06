@@ -17,13 +17,23 @@ using std::println;
 #endif
 
 #include <algorithm>
+#include <array>
+#include <bit>
 #include <cassert>
+#include <cmath>
 #include <cstdint>
+#include <cstdlib>
 #include <random>
 #include <set>
 #include <vector>
 
 struct Pt { long long x, y; };
+
+// 文件级可移植取整（Lemire；各 demo 各自建 rng）
+static std::uint32_t geo_rand_below(std::mt19937& rng, std::uint32_t n) {
+    return static_cast<std::uint32_t>(
+        (static_cast<std::uint64_t>(rng()) * n) >> 32);
+}
 
 // 叉积 (p2−p1) × (p3−p1)：>0 左转（逆时针）、<0 右转、=0 共线
 static long long cross(Pt p1, Pt p2, Pt p3) {
@@ -609,6 +619,468 @@ static void line_region_demo() {
            static_cast<long long>(crosses.size()) == 1LL * n * (n - 1) / 2);
 }
 
+// ═══ 34.8 最小包围圆：Welzl 随机增量法 ═══
+// 期望线性：随机打乱后逐个加点；点在当前圆内则什么都不做，否则它必在
+// 新圆边界上——带着至多 3 个边界支撑点递归。
+struct Circle {
+    double cx = 0, cy = 0;
+    double r = -1.0;                        // r<0 ⟺ 空圆
+};
+
+static bool in_circle(const Circle& d, const Pt& p, double eps = 1e-9) {
+    if (d.r < 0) { return false; }
+    const double dx = static_cast<double>(p.x) - d.cx;
+    const double dy = static_cast<double>(p.y) - d.cy;
+    return dx * dx + dy * dy <= d.r * d.r + eps;
+}
+
+static double pt_dist(const Pt& a, const Pt& b) {
+    const double dx = static_cast<double>(a.x - b.x);
+    const double dy = static_cast<double>(a.y - b.y);
+    return std::sqrt(dx * dx + dy * dy);
+}
+
+// 1～3 个边界点定圆
+static Circle trivial_circle(const Pt* s, int ns) {
+    if (ns == 0) { return {}; }
+    if (ns == 1) {
+        return {static_cast<double>(s[0].x), static_cast<double>(s[0].y), 0.0};
+    }
+    if (ns == 2) {
+        return {(static_cast<double>(s[0].x) + s[1].x) / 2,
+                (static_cast<double>(s[0].y) + s[1].y) / 2,
+                pt_dist(s[0], s[1]) / 2};
+    }
+    // 三点外接圆（垂直平分线交点）
+    const double ax = static_cast<double>(s[0].x);
+    const double ay = static_cast<double>(s[0].y);
+    const double bx = static_cast<double>(s[1].x);
+    const double by = static_cast<double>(s[1].y);
+    const double qx = static_cast<double>(s[2].x);
+    const double qy = static_cast<double>(s[2].y);
+    const double d = 2.0 * (ax * (by - qy) + bx * (qy - ay) +
+                            qx * (ay - by));
+    if (d == 0.0) {
+        // 共线退化（正常流程不会出现）：取三对直径圆中覆盖三点的最小者
+        Circle best{};
+        bool have = false;
+        for (int i = 0; i < 3; ++i) {
+            for (int j = i + 1; j < 3; ++j) {
+                const Pt pair[2] = {s[i], s[j]};
+                const Circle cand = trivial_circle(pair, 2);
+                bool covers = true;
+                for (int k = 0; k < 3; ++k) {
+                    if (!in_circle(cand, s[k], 1e-7)) { covers = false; }
+                }
+                if (covers && (!have || cand.r < best.r)) {
+                    best = cand; have = true;
+                }
+            }
+        }
+        return best;
+    }
+    const double a2 = ax * ax + ay * ay;
+    const double b2 = bx * bx + by * by;
+    const double c2 = qx * qx + qy * qy;
+    const double ux = (a2 * (by - qy) + b2 * (qy - ay) +
+                       c2 * (ay - by)) / d;
+    const double uy = (a2 * (qx - bx) + b2 * (ax - qx) +
+                       c2 * (bx - ax)) / d;
+    return {ux, uy, std::sqrt((ax - ux) * (ax - ux) +
+                              (ay - uy) * (ay - uy))};
+}
+
+// Welzl 主体：p 已随机打乱；处理前 n 个点，sup 为已知必在边界的支撑点。
+// 外层用循环走前缀（经典写法的无条件递归尾链在 n=2 万时会撑爆 1MB 栈），
+// 只有「q 跑到圆外」才带着新支撑点递归——递归深度 ≤ ns+1 ≤ 4。
+static Circle welzl(const std::vector<Pt>& p, int n,
+                    std::array<Pt, 3> sup, int ns) {
+    Circle d = trivial_circle(sup.data(), ns);
+    for (int i = 0; i < n; ++i) {
+        const Pt q = p[static_cast<std::size_t>(i)];
+        if (in_circle(d, q)) { continue; }
+        sup[static_cast<std::size_t>(ns)] = q;
+        d = welzl(p, i, sup, ns + 1);       // 前缀 [0,i)，q 在边界
+    }
+    return d;
+}
+
+static Circle minimum_enclosing_circle(std::vector<Pt> p) {
+    // 确定性洗牌（固定种子的 Fisher-Yates；不用 std::shuffle 只是为了让
+    // 随机序列在本文件里显式可见）
+    std::mt19937 rng{5489};
+    for (int i = static_cast<int>(p.size()) - 1; i > 0; --i) {
+        const int j = static_cast<int>(
+            (static_cast<std::uint64_t>(rng()) * (i + 1)) >> 32);
+        std::swap(p[static_cast<std::size_t>(i)],
+                  p[static_cast<std::size_t>(j)]);
+    }
+    return welzl(p, static_cast<int>(p.size()), {}, 0);
+}
+
+// 独立口径（小规模暴力真值）：候选圆 = 任一点（r=0）、任两点直径、
+// 任三点外接圆；覆盖全部点者取最小半径。
+static Circle mec_brute(const std::vector<Pt>& p) {
+    const int n = static_cast<int>(p.size());
+    Circle best{};
+    bool have = false;
+    auto consider = [&](const Circle& d) {
+        for (const Pt& q : p) {
+            if (!in_circle(d, q, 1e-7)) { return; }
+        }
+        if (!have || d.r < best.r) { best = d; have = true; }
+    };
+    for (int i = 0; i < n; ++i) {
+        consider(trivial_circle(&p[static_cast<std::size_t>(i)], 1));
+        for (int j = i + 1; j < n; ++j) {
+            const Pt pair[2] = {p[static_cast<std::size_t>(i)],
+                                p[static_cast<std::size_t>(j)]};
+            consider(trivial_circle(pair, 2));
+            for (int k = j + 1; k < n; ++k) {
+                const Pt tri[3] = {p[static_cast<std::size_t>(i)],
+                                   p[static_cast<std::size_t>(j)],
+                                   p[static_cast<std::size_t>(k)]};
+                consider(trivial_circle(tri, 3));
+            }
+        }
+    }
+    return best;
+}
+
+static void mec_demo() {
+    println("");
+    println("=== 34.8 最小包围圆：Welzl 随机增量（期望 O(n)）===");
+    // 边界结构例
+    const Circle one = minimum_enclosing_circle({{3, 7}});
+    assert(one.r == 0 && one.cx == 3 && one.cy == 7);
+    const Circle two = minimum_enclosing_circle({{0, 0}, {4, 3}});
+    assert(std::fabs(two.r - 2.5) < 1e-9 &&
+           std::fabs(two.cx - 2) < 1e-9 && std::fabs(two.cy - 1.5) < 1e-9);
+    // 共线点：直径圆由两端点决定
+    const Circle line = minimum_enclosing_circle(
+        {{0, 0}, {2, 0}, {5, 0}, {1, 0}});
+    assert(std::fabs(line.r - 2.5) < 1e-9);
+    println("  结构例：单点 r=0；两点 (0,0)(4,3) 直径 r=2.5；"
+            "共线 4 点 r=2.5");
+
+    // 正方形 4 顶点：圆心 (1.5,1.5)、r=√4.5
+    const Circle sq = minimum_enclosing_circle(
+        {{0, 0}, {3, 0}, {3, 3}, {0, 3}});
+    assert(std::fabs(sq.cx - 1.5) < 1e-9 &&
+           std::fabs(sq.r - std::sqrt(4.5)) < 1e-9);
+    println("  正方形 4 顶点：圆心 (1.5,1.5)，r={:.6f}", sq.r);
+
+    // 随机 200 组（n≤9，坐标 −15..15）：Welzl vs 暴力
+    std::mt19937 rng{5489};
+    int bad = 0;
+    for (int t = 0; t < 200; ++t) {
+        const int n = 2 + static_cast<int>(geo_rand_below(rng, 8));
+        std::vector<Pt> pts;
+        for (int k = 0; k < n; ++k) {
+            pts.push_back({
+                static_cast<long long>(geo_rand_below(rng, 31)) - 15,
+                static_cast<long long>(geo_rand_below(rng, 31)) - 15});
+        }
+        const Circle a = minimum_enclosing_circle(pts);
+        const Circle b = mec_brute(pts);
+        // 每个点都在 Welzl 圆内
+        for (const Pt& q : pts) { assert(in_circle(a, q, 1e-7)); }
+        if (std::fabs(a.r - b.r) > 1e-7) { ++bad; }
+    }
+    println("  随机 200 组（n≤9）：Welzl 与暴力半径不一致 {} 例", bad);
+    assert(bad == 0);
+
+    // 大例 n=20000：期望线性时间；逐点复核全部在圆内
+    const int n = 20000;
+    std::vector<Pt> big;
+    big.reserve(n);
+    for (int k = 0; k < n; ++k) {
+        big.push_back({
+            static_cast<long long>(geo_rand_below(rng, 200001)) - 100000,
+            static_cast<long long>(geo_rand_below(rng, 200001)) - 100000});
+    }
+    const Circle d = minimum_enclosing_circle(big);
+    int outside = 0;
+    double farthest = 0;
+    for (const Pt& q : big) {
+        const double dx = static_cast<double>(q.x) - d.cx;
+        const double dy = static_cast<double>(q.y) - d.cy;
+        const double e = std::sqrt(dx * dx + dy * dy);
+        farthest = std::max(farthest, e);
+        if (e > d.r + 1e-6) { ++outside; }
+    }
+    println("  大例（2 万点，坐标 ±10 万）：圆心 ({:.2f},{:.2f})，"
+            "r={:.4f}（最远点 {}，越界 {} 个）",
+            d.cx, d.cy, d.r, farthest, outside);
+    assert(outside == 0 && farthest <= d.r + 1e-6);
+    // 半径不可能超过包围盒外接圆的一半量级
+    assert(d.r < 150000);
+}
+
+// ═══ 34.9 冗余传感器：正方形覆盖的矩形并 ═══
+// 每个传感器的监控范围是以自身为中心、边长 2h（h 为半边长）的轴对齐
+// 正方形。邻居关系有方向：A 是 C 的邻居当且仅当 C 的中心落在 A 的
+// 正方形内（|Δx|、|Δy| 均 ≤ h）。C 冗余 ⟺ C 的正方形被所有邻居
+// 正方形的并完全覆盖。
+struct Sensor { long long x, y; };
+struct IRect { long long x0, y0, x1, y1; };   // [x0,x1)×[y0,y1)
+
+// 取各邻居正方形与 C 正方形的交（交为空则跳过）
+static std::vector<IRect> neighbor_clips(
+        const std::vector<Sensor>& ss, int c, long long h) {
+    std::vector<IRect> rs;
+    const Sensor me = ss[static_cast<std::size_t>(c)];
+    for (std::size_t k = 0; k < ss.size(); ++k) {
+        if (static_cast<int>(k) == c) { continue; }
+        const Sensor a = ss[k];
+        if (std::llabs(a.x - me.x) > h || std::llabs(a.y - me.y) > h) {
+            continue;                               // C 不在 A 正方形内
+        }
+        IRect r{a.x - h, a.y - h, a.x + h, a.y + h};
+        r.x0 = std::max(r.x0, me.x - h);
+        r.y0 = std::max(r.y0, me.y - h);
+        r.x1 = std::min(r.x1, me.x + h);
+        r.y1 = std::min(r.y1, me.y + h);
+        if (r.x0 < r.x1 && r.y0 < r.y1) { rs.push_back(r); }
+    }
+    return rs;
+}
+
+// 矩形并面积：x 边切条，条内合并 y 区间。O(k² log k)，全程整数。
+static long long union_area(const std::vector<IRect>& rs) {
+    std::vector<long long> xs;
+    for (const IRect& r : rs) { xs.push_back(r.x0); xs.push_back(r.x1); }
+    std::ranges::sort(xs);
+    xs.erase(std::ranges::unique(xs).begin(), xs.end());
+    long long area = 0;
+    for (std::size_t i = 0; i + 1 < xs.size(); ++i) {
+        const long long xlo = xs[i], xhi = xs[i + 1];
+        std::vector<std::pair<long long, long long>> ys;
+        for (const IRect& r : rs) {
+            if (r.x0 <= xlo && r.x1 >= xhi) {
+                ys.push_back({r.y0, r.y1});
+            }
+        }
+        std::ranges::sort(ys);
+        long long covered_h = 0, cur = 0;
+        bool started = false;
+        for (auto [y0, y1] : ys) {
+            if (!started) { cur = y1; covered_h = y1 - y0; started = true; }
+            else if (y0 > cur) { covered_h += y1 - y0; cur = y1; }
+            else if (y1 > cur) { covered_h += y1 - cur; cur = y1; }
+        }
+        area += (xhi - xlo) * covered_h;
+    }
+    return area;
+}
+
+// 独立口径：逐单位格子判定（仅小坐标场景）——与切条合并零共享
+static long long covered_cells(const std::vector<IRect>& rs) {
+    std::set<std::pair<long long, long long>> cells;
+    for (const IRect& r : rs) {
+        for (long long x = r.x0; x < r.x1; ++x) {
+            for (long long y = r.y0; y < r.y1; ++y) {
+                cells.insert({x, y});
+            }
+        }
+    }
+    return static_cast<long long>(cells.size());
+}
+
+static bool sensor_redundant(const std::vector<Sensor>& ss, int c, long long h) {
+    return union_area(neighbor_clips(ss, c, h)) == 4 * h * h;
+}
+
+static void sensor_demo() {
+    println("");
+    println("=== 34.9 冗余传感器：C 正方形 ⊆ 邻居正方形之并 ===");
+    const long long h = 4;
+    // 植入例 1：四角各一邻居（中心偏移 ±h），四个象限正方形恰好铺满
+    const std::vector<Sensor> planted{
+        {0, 0}, {h, h}, {h, -h}, {-h, h}, {-h, -h}};
+    const auto clips = neighbor_clips(planted, 0, h);
+    assert(union_area(clips) == 4 * h * h);
+    assert(covered_cells(clips) == 4 * h * h);
+    println("  植入例（4 邻居铺满）：切条并面积 {}＝4h²，格子口径 {}，冗余",
+            union_area(clips), covered_cells(clips));
+
+    // 植入例 2：抽掉一个邻居，一个象限缺 16 格 → 不冗余
+    const std::vector<Sensor> hole{
+        {0, 0}, {h, h}, {h, -h}, {-h, h}};
+    const auto hclips = neighbor_clips(hole, 0, h);
+    assert(union_area(hclips) == 3 * h * h);
+    assert(covered_cells(hclips) == 3 * h * h);
+    println("  植入例（缺 1 邻居）：覆盖 {}/{} 格，不冗余",
+            union_area(hclips), 4 * h * h);
+    assert(!sensor_redundant(hole, 0, h));
+
+    // 随机 200 个小传感器场（h=5，坐标 0..20）：每个传感器都用切条 vs
+    // 单位格子两口径对账
+    std::mt19937 rng{5489};
+    int bad = 0, redundant = 0;
+    for (int t = 0; t < 200; ++t) {
+        const int n = 2 + static_cast<int>(geo_rand_below(rng, 10));
+        std::vector<Sensor> ss;
+        for (int k = 0; k < n; ++k) {
+            ss.push_back({
+                static_cast<long long>(geo_rand_below(rng, 21)),
+                static_cast<long long>(geo_rand_below(rng, 21))});
+        }
+        for (int c = 0; c < n; ++c) {
+            const auto rs = neighbor_clips(ss, c, 5);
+            const long long a = union_area(rs);
+            const long long b = covered_cells(rs);
+            if (a != b) { ++bad; }
+            if (a == 100) { ++redundant; }
+        }
+    }
+    println("  随机 200 个小场：切条 vs 格子口径不一致 {} 例；冗余传感器共 {} 个",
+            bad, redundant);
+    assert(bad == 0);
+
+    // 大例：L×L 格点阵列，间距恰为 h ⟹ 恰有内部 (L−2)² 个冗余
+    const int L = 30;
+    std::vector<Sensor> grid;
+    grid.reserve(L * L);
+    for (int i = 0; i < L; ++i) {
+        for (int j = 0; j < L; ++j) {
+            grid.push_back({1LL * i * h, 1LL * j * h});
+        }
+    }
+    // 阵列里只有 4 个角不冗余（角区 [cx−h,cx)×[cy−h,cy) 无任何邻居
+    // 覆盖）；边中点由两个轴向邻居覆盖、内部由四角邻居覆盖。
+    int nred = 0;
+    const int corner_idx[4] = {0, L - 1, L * (L - 1), L * L - 1};
+    for (int c : corner_idx) { assert(!sensor_redundant(grid, c, h)); }
+    for (int c = 0; c < static_cast<int>(grid.size()); ++c) {
+        if (sensor_redundant(grid, c, h)) { ++nred; }
+    }
+    println("  大例（{}×{} 阵列，间距 h）：冗余 {} 个（四角均不冗余），"
+            "期望恰为 L²−4 = {}", L, L, nred, L * L - 4);
+    assert(nred == L * L - 4);
+}
+
+// ═══ 34.10 隐藏节点：单位圆盘图上的「V 形三元组」 ═══
+// 设备 i,j 可通信 ⟺ 距离² ≤ R²。隐藏节点集合＝三元组 {a,b,c}：
+// a,b 不可通信，但二者都与 c 通信（诱导子图恰为两条共点边）。
+static std::vector<std::vector<char>>
+disk_adjacency(const std::vector<Pt>& ps, long long R) {
+    const int n = static_cast<int>(ps.size());
+    std::vector<std::vector<char>> adj(
+        static_cast<std::size_t>(n), std::vector<char>(n, 0));
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            const long long dx = ps[static_cast<std::size_t>(i)].x -
+                                 ps[static_cast<std::size_t>(j)].x;
+            const long long dy = ps[static_cast<std::size_t>(i)].y -
+                                 ps[static_cast<std::size_t>(j)].y;
+            if (dx * dx + dy * dy <= R * R) {
+                adj[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] = 1;
+                adj[static_cast<std::size_t>(j)][static_cast<std::size_t>(i)] = 1;
+            }
+        }
+    }
+    return adj;
+}
+
+// 暴力 O(n³)：枚举三元组、统计恰有两条边
+static long long hidden_triples_brute(const std::vector<std::vector<char>>& adj) {
+    const int n = static_cast<int>(adj.size());
+    long long cnt = 0;
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            if (adj[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)]) { continue; }
+            for (int k = 0; k < n; ++k) {     // 中心可在任一下标，须遍历全表
+                if (k == i || k == j) { continue; }
+                const int e =
+                    adj[static_cast<std::size_t>(i)][static_cast<std::size_t>(k)] +
+                    adj[static_cast<std::size_t>(j)][static_cast<std::size_t>(k)];
+                if (e == 2) { ++cnt; }
+            }
+        }
+    }
+    return cnt;
+}
+
+// 位行口径 O(n³/64)：对每条非边 (i,j)，公共邻数＝popcount(bits[i]&bits[j])
+static long long hidden_triples_bits(const std::vector<std::vector<char>>& adj) {
+    const int n = static_cast<int>(adj.size());
+    const int words = (n + 63) / 64;
+    std::vector<std::vector<unsigned long long>> bits(
+        static_cast<std::size_t>(n),
+        std::vector<unsigned long long>(static_cast<std::size_t>(words), 0));
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (adj[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)]) {
+                bits[static_cast<std::size_t>(i)][static_cast<std::size_t>(j / 64)] |=
+                    1ULL << (j % 64);
+            }
+        }
+    }
+    long long cnt = 0;
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            if (adj[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)]) { continue; }
+            long long common = 0;
+            for (int w = 0; w < words; ++w) {
+                common += std::popcount(
+                    bits[static_cast<std::size_t>(i)][static_cast<std::size_t>(w)] &
+                    bits[static_cast<std::size_t>(j)][static_cast<std::size_t>(w)]);
+            }
+            cnt += common;
+        }
+    }
+    return cnt;
+}
+
+static void hidden_terminal_demo() {
+    println("");
+    println("=== 34.10 隐藏节点：圆盘图「V 形三元组」（暴力 O(n³) vs 位行 O(n³/64)）===");
+    const std::vector<Pt> square{{0, 0}, {0, 1}, {1, 0}, {1, 1}};
+    const auto sadj = disk_adjacency(square, 1);
+    const long long s1 = hidden_triples_brute(sadj);
+    const long long s2 = hidden_triples_bits(sadj);
+    println("  固定例（单位正方形 4 点，R=1）：隐藏集合 {} 组（两口径一致 = 1）", s1);
+    assert(s1 == 4 && s2 == 4);
+
+    // 全连通/无边圆盘：均无隐藏三元组
+    std::vector<Pt> cluster{{0, 0}, {1, 0}, {0, 1}};
+    assert(hidden_triples_brute(disk_adjacency(cluster, 2)) == 0);
+    assert(hidden_triples_bits(disk_adjacency(cluster, 0)) == 0);
+
+    // 随机 300 个小场（n≤12）：两口径一致
+    std::mt19937 rng{5489};
+    int bad = 0;
+    for (int t = 0; t < 300; ++t) {
+        const int n = 2 + static_cast<int>(geo_rand_below(rng, 11));
+        std::vector<Pt> ps;
+        ps.reserve(static_cast<std::size_t>(n));
+        for (int i = 0; i < n; ++i) {
+            ps.push_back({
+                static_cast<long long>(geo_rand_below(rng, 12)),
+                static_cast<long long>(geo_rand_below(rng, 12))});
+        }
+        const long long R = static_cast<long long>(geo_rand_below(rng, 8));
+        const auto a = disk_adjacency(ps, R);
+        if (hidden_triples_brute(a) != hidden_triples_bits(a)) { ++bad; }
+    }
+    println("  随机 300 个小场（n≤12）：暴力三元组 vs 位行公共邻不一致 {} 例", bad);
+    assert(bad == 0);
+
+    // 大例：60×50 网格点、间距 1、R=1（n=3000），位行法
+    std::vector<Pt> grid;
+    grid.reserve(3000);
+    for (int y = 0; y < 50; ++y) {
+        for (int x = 0; x < 60; ++x) { grid.push_back({x, y}); }
+    }
+    const auto gadj = disk_adjacency(grid, 1);
+    const long long gc = hidden_triples_bits(gadj);
+    // 每个单位网格的四个角各给出一组 V（独立的结构下界）
+    println("  大例（60×50 网格 3000 点，R=1）：隐藏集合 {} 组（≥ 4×格子数 {}）",
+            gc, 59 * 49 * 4);
+    assert(gc >= 59LL * 49 * 4);
+}
+
 int main() {
     cross_demo();
     segments_demo();
@@ -617,6 +1089,9 @@ int main() {
     polygon_demo();
     skyline_demo();
     line_region_demo();
+    mec_demo();
+    sensor_demo();
+    hidden_terminal_demo();
     println("自检通过");
     return 0;
 }

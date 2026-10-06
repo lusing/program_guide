@@ -1135,6 +1135,116 @@ static void base_conversion_demo() {
     assert(mismatches == 0);
 }
 
+// ═══ 32.13 冬瓜糖砖包装：因数三元组最小化表面积 ═══
+// N 块单位立方砖排成 x·y·z=N 的长方体，表面积（单位＝砖一个面的面积）
+// S=2(xy+yz+zx)；求整数三元组使 S 最小。
+struct PackPlan {
+    long long x, y, z, surface;
+};
+
+static std::vector<long long> all_divisors(long long n) {
+    std::vector<long long> ds;
+    for (long long d = 1; d * d <= n; ++d) {
+        if (n % d == 0) {
+            ds.push_back(d);
+            if (d * d != n) { ds.push_back(n / d); }
+        }
+    }
+    std::ranges::sort(ds);
+    return ds;
+}
+
+// 枚举有序三元组 x≤y≤z（O(τ(n)²)，τ＝因数个数）
+static PackPlan pack_optimal(long long n) {
+    const std::vector<long long> ds = all_divisors(n);
+    PackPlan best{1, 1, n, 4 * n + 2};
+    for (long long x : ds) {
+        if (x * x * x > n) { break; }
+        for (long long y : ds) {
+            if (y < x) { continue; }
+            if (y * y > n / x) { break; }
+            const long long xy = x * y;
+            if (n % xy != 0) { continue; }
+            const long long z = n / xy;
+            if (z < y) { continue; }
+            const long long s = 2 * (xy + y * z + z * x);
+            if (s < best.surface) { best = {x, y, z, s}; }
+        }
+    }
+    return best;
+}
+
+// 独立口径：x 逐一遍历 1..cbrt，只认整除（与因数表写法无共享逻辑）
+static PackPlan pack_scan(long long n) {
+    PackPlan best{1, 1, n, 4 * n + 2};
+    for (long long x = 1; x * x * x <= n; ++x) {
+        if (n % x != 0) { continue; }
+        for (long long y = x; y * y <= n / x; ++y) {
+            if ((n / x) % y != 0) { continue; }
+            const long long z = n / (x * y);
+            const long long s = 2 * (x * y + y * z + z * x);
+            if (s < best.surface) { best = {x, y, z, s}; }
+        }
+    }
+    return best;
+}
+
+static void packing_paper_demo() {
+    println("");
+    println("=== 32.13 N 块单位砖打包：min 2(xy+yz+zx)，xyz=N ===");
+    // 小表 N=1..18：因数三元组穷举的最优
+    print("  N:     ");
+    for (int n = 1; n <= 18; ++n) { print("{:4}", n); }
+    println("");
+    print("  S:     ");
+    for (int n = 1; n <= 18; ++n) {
+        print("{:4}", pack_optimal(n).surface);
+    }
+    println("");
+
+    // 细讲 N=12：四种排法，2×2×3 的 S=32 最优
+    const std::pair<int, int> cases12[] = {
+        {1, 12}, {2, 6}, {3, 4}};        // 1×y×z，yz=12
+    print("  N=12 的排法: ");
+    for (auto [y, z] : cases12) {
+        print("1×{}×{}→{}  ", y, z, 2 * (y + y * z + z));
+    }
+    print("2×2×3→{}", 2 * (4 + 6 + 6));
+    println("");
+    const PackPlan p12 = pack_optimal(12);
+    assert((p12.x == 2 && p12.y == 2 && p12.z == 3 && p12.surface == 32));
+    assert(pack_scan(12).surface == 32);
+
+    // 质数 N：只能 1×1×N，S=4N+2
+    const long long prime = 1000003;
+    const PackPlan pp = pack_optimal(prime);
+    assert((pp.x == 1 && pp.y == 1 && pp.z == prime &&
+            pp.surface == 4 * prime + 2));
+
+    // 两口径在 N≤2000 全程一致
+    int bad = 0;
+    for (int n = 1; n <= 2000; ++n) {
+        const PackPlan a = pack_optimal(n), b = pack_scan(n);
+        if (a.surface != b.surface) { ++bad; }
+    }
+    println("  N≤2000：因数表法 vs 扫描法不一致 {} 例", bad);
+    assert(bad == 0);
+
+    // 大例 N=720720=2⁴·3²·5·7·11·13（τ=240）：两法一致
+    const long long N = 720720;
+    const PackPlan big = pack_optimal(N);
+    assert(pack_scan(N).surface == big.surface &&
+           big.x * big.y * big.z == N);
+    // 与 AM-GM 下界 6·N^{2/3} 对照（最优排法应很接近）
+    const double lb = 6.0 * std::pow(static_cast<double>(N), 2.0 / 3.0);
+    println("  大例 N={}：{}×{}×{}，S={}（单位面）；AM-GM 下界 {:.0f}",
+            N, big.x, big.y, big.z, big.surface, lb);
+    // 每块砖边长 10 cm：单位面＝100 cm²
+    println("  砖边长 10 cm：最少包装纸 {} cm²", big.surface * 100);
+    // cbrt(720720)≈89.7：最优三维都在 90 附近（如 88×90×91＝720720）
+    assert(big.x >= 80 && big.z <= 100);
+}
+
 int main() {
     gcd_demo();
     modular_demo();
@@ -1148,6 +1258,7 @@ int main() {
     sieve_demo();
     nth_root_demo();
     base_conversion_demo();
+    packing_paper_demo();
     println("自检通过");
     return 0;
 }
