@@ -55,6 +55,31 @@ Proof. intros P Q HP HQ. exact HP. Qed.
 Print Assumptions and_comm.  (* Closed *)
 Print Assumptions de_morgan_2. (* Closed *)
 
+(* ---------- 派生规则第二组：¬¬i / PBC / LEM 使用演示（H&R §1.2.2） ---------- *)
+
+(* nn_i 是纯构造派生规则：P 的证据能挡住任何「P 证伪器」（01 章 nn_intro 同形） *)
+Theorem nn_i : forall P : Prop, P -> ~ ~ P.
+Proof. intros P HP HNP. exact (HNP HP). Qed.
+
+From Stdlib Require Import Classical_Prop.
+
+(* PBC（反证法，§1.2.5）：从 ¬P → ⊥ 得 P——经典派生规则，账本记 classic。
+   ~P -> False 展开就是 ~~P，NNPP 直接收。 *)
+Theorem pbc : forall P : Prop, (~ P -> False) -> P.
+Proof. intros P H. apply NNPP. exact H. Qed.
+
+(* LEM 作为派生规则的分情况使用：P 成立给 Q、¬P 成立也给 Q，则 Q *)
+Theorem lem_use : forall P Q : Prop, (P -> Q) -> (~ P -> Q) -> Q.
+Proof.
+  intros P Q HPQ HNQ. destruct (classic P) as [HP | HNP].
+  - exact (HPQ HP).
+  - exact (HNQ HNP).
+Qed.
+
+Print Assumptions nn_i.    (* Closed *)
+Print Assumptions pbc.     (* 依赖 classic *)
+Print Assumptions lem_use. (* 依赖 classic *)
+
 (* 坑位速记（Coq 侧）：
    - intros [HP | HQ] 直接做 ∨E；split 即 ∧I；
    - 全部定理 Print Assumptions 均 Closed——NJp 片段零公理；
