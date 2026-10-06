@@ -144,6 +144,114 @@ Proof. reflexivity. Qed.
 Example xor_bdd : bsize (applyd xorb (mkvar 0) (mkvar 1)) = 7.
 Proof. reflexivity. Qed.
 
+
+(* ---------- restrict / exists：H&R §6.2.3-6.2.4 ---------- *)
+
+(* 赋值在变元 v 处的更新 *)
+Definition upd (e : nat -> bool) (v : nat) (b : bool) : nat -> bool :=
+  fun n => if Nat.eqb n v then b else e n.
+
+(* teval 只逐点依赖赋值——一致性的 dtree 版（02 章 agree 的亲戚） *)
+Lemma teval_ext : forall t e1 e2,
+  (forall n, e1 n = e2 n) -> teval e1 t = teval e2 t.
+Proof.
+  induction t as [c|lo IHlo hi IHhi]; intros e1 e2 H; simpl.
+  - reflexivity.
+  - rewrite (H 0). destruct (e2 0).
+    + apply IHhi. intros n. apply H.
+    + apply IHlo. intros n. apply H.
+Qed.
+
+(* lift：把子树垫回一层——变量整体保持绝对编号。
+   teval e (lift t) = teval (eshift e) t：垫回的顶节点测试 e 0，
+   而两个分支同树，测试结果无关紧要。 *)
+Definition lift (t : dtree) : dtree := DNode t t.
+
+Lemma teval_lift : forall t e, teval e (lift t) = teval (eshift e) t.
+Proof. intros t e. simpl. destruct (e 0); reflexivity. Qed.
+
+(* restrict v b t：把变元 v 钉为 b——H&R §6.2.3 的「重定向入边到
+   选定分支」。深度编码下 v=离根层数：递归 v 层后剪枝，剪完必须
+   lift 垫回（否则子树变量错位——见本章坑位速记的坍缩事故）。
+   树形表示无共享，垫回的 DNode 让 restrict 只保语义不缩尺寸——
+   尺寸收益属于 DAG 共享（正文讨论）。 *)
+Fixpoint restrict (v : nat) (b : bool) (t : dtree) : dtree :=
+  match t with
+  | DLeaf _ => t
+  | DNode lo hi =>
+      match v with
+      | 0 => lift (if b then hi else lo)
+      | S v' => DNode (restrict v' b lo) (restrict v' b hi)
+      end
+  end.
+
+Lemma upd_tail_0 : forall e b n, upd e 0 b (S n) = e (S n).
+Proof. intros e b n. unfold upd. simpl. reflexivity. Qed.
+
+Lemma upd_head_S : forall e v b, upd e (S v) b 0 = e 0.
+Proof. intros e v b. unfold upd. simpl. reflexivity. Qed.
+
+Lemma eshift_upd_S : forall e v b n,
+  eshift (upd e (S v) b) n = upd (eshift e) v b n.
+Proof. intros e v b n. unfold eshift, upd. simpl. reflexivity. Qed.
+
+Theorem restrict_correct : forall t v b e,
+  teval e (restrict v b t) = teval (upd e v b) t.
+Proof.
+  induction t as [c|lo IHlo hi IHhi]; intros v b e.
+  - destruct v; reflexivity.
+  - destruct v as [|v'].
+    + change (restrict 0 b (DNode lo hi)) with (lift (if b then hi else lo)).
+      rewrite teval_lift. simpl. destruct b.
+      * assert (Hs : forall n, eshift (upd e 0 true) n = eshift e n).
+        { intros n. unfold eshift. rewrite upd_tail_0. reflexivity. }
+        rewrite (teval_ext hi _ _ Hs). reflexivity.
+      * assert (Hs : forall n, eshift (upd e 0 false) n = eshift e n).
+        { intros n. unfold eshift. rewrite upd_tail_0. reflexivity. }
+        rewrite (teval_ext lo _ _ Hs). reflexivity.
+    + change (restrict (S v') b (DNode lo hi))
+        with (DNode (restrict v' b lo) (restrict v' b hi)).
+      simpl. rewrite upd_head_S. destruct (e 0).
+      * rewrite (IHhi v' b (eshift e)).
+        assert (Hs : forall n, eshift (upd e (S v') b) n = upd (eshift e) v' b n).
+        { apply eshift_upd_S. }
+        rewrite (teval_ext hi _ _ Hs). reflexivity.
+      * rewrite (IHlo v' b (eshift e)).
+        assert (Hs : forall n, eshift (upd e (S v') b) n = upd (eshift e) v' b n).
+        { apply eshift_upd_S. }
+        rewrite (teval_ext lo _ _ Hs). reflexivity.
+Qed.
+
+(* exists：H&R 式 (6.3)——∃x. f := f[0/x] + f[1/x]，用 apply 组装 *)
+Definition exb (v : nat) (t : dtree) : dtree :=
+  applyd orb (restrict v false t) (restrict v true t).
+
+Theorem exb_correct : forall t v e,
+  teval e (exb v t) =
+  orb (teval (upd e v false) t) (teval (upd e v true) t).
+Proof.
+  intros t v e. unfold exb.
+  rewrite apply_correct.
+  rewrite (restrict_correct t v false), (restrict_correct t v true).
+  reflexivity.
+Qed.
+
+(* 现场两枚：
+   ∃x₀. x₀ 恒真（单变量树剪两刀后 or 装配出常真叶）；
+   (x₀ ∧ x₁)[x₁:=true] 语义恰为 x₀（restriction 的最小现场） *)
+Example exb_mkvar : forall e, teval e (exb 0 (mkvar 0)) = true.
+Proof. intros e. simpl. destruct (e 0); reflexivity. Qed.
+
+Example restrict_and_demo :
+  forall e, teval e (restrict 1 true (mk (FAnd (FVar 0) (FVar 1)))) = e 0.
+Proof.
+  intros e. rewrite restrict_correct, mk_correct. unfold upd. simpl.
+  destruct (e 0); reflexivity.
+Qed.
+
+Print Assumptions restrict_correct.  (* Closed *)
+Print Assumptions exb_correct.       (* Closed *)
+
 (* 坑位速记（Coq 侧）：
    - 深度编码变量时，「坍缩 hi=lo 返回子树」会让变量错位
      （子树在下一层，语义配 eshift e）——正确坍缩须配 lift 垫回，
