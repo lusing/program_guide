@@ -1336,6 +1336,76 @@ static void factorization_demo() {
     println("  2^40 = 2^40（单一因子、指数聚合到底）");
 }
 
+// ═══ 32.15 欧拉函数 φ(n)：与 n 互素的个数 ═══
+// 乘积公式：n = Π p^e ⟹ φ(n) = Π p^{e−1}(p−1)。直观推导：p^k 内与
+// n 不互素的恰是 p 的倍数（p^k − p^{k−1} 个），互素比例 (p−1)/p，
+// 各素幂独立相乘（中国剩余定理保证独立性）。
+static long long euler_phi(long long n) {
+    long long out = 1;
+    for (const PrimeFactor& f : factorize(n)) {
+        long long pk = 1;
+        for (int i = 1; i < f.e; ++i) { pk *= f.p; }
+        out *= pk * (f.p - 1);
+    }
+    return out;
+}
+
+// 独立口径：数 gcd(i, n) == 1（1..n）
+static long long euler_phi_brute(long long n) {
+    long long out = 0;
+    for (long long i = 1; i <= n; ++i) {
+        if (std::gcd(i, n) == 1) { ++out; }
+    }
+    return out;
+}
+
+static void euler_phi_demo() {
+    println("");
+    println("=== 32.15 欧拉函数 φ(n)：乘积公式 vs 逐个 gcd ===");
+    // 手算表：φ(1..10) = 1 1 2 2 4 2 6 4 6 4（欧拉的序列）
+    print("  n:   ");
+    for (int n = 1; n <= 10; ++n) { print("{:3}", n); }
+    println("");
+    print("  φ:   ");
+    for (int n = 1; n <= 10; ++n) {
+        print("{:3}", euler_phi(n));
+    }
+    println("");
+    assert(euler_phi(1) == 1 && euler_phi(6) == 2 && euler_phi(10) == 4);
+    assert(euler_phi(13) == 12 && euler_phi(8) == 4);   // 素数 n−1；2^k 的一半
+
+    // 随机 400 例（n≤10⁵）：两口径一致
+    std::mt19937 rng{5489};
+    int bad = 0;
+    for (int t = 0; t < 400; ++t) {
+        const long long n = 1 + static_cast<long long>(rand_below(rng, 100000));
+        if (euler_phi(n) != euler_phi_brute(n)) { ++bad; }
+    }
+    println("  随机 400 例（n≤10⁵）：乘积公式 vs 逐个 gcd 不一致 {} 例", bad);
+    assert(bad == 0);
+
+    // 积性：gcd(a,b)=1 ⟹ φ(ab)=φ(a)φ(b)（CRT 独立性）
+    int mult_bad = 0;
+    for (int t = 0; t < 200; ++t) {
+        const long long a = 1 + static_cast<long long>(rand_below(rng, 60));
+        const long long b = 1 + static_cast<long long>(rand_below(rng, 60));
+        if (std::gcd(a, b) == 1 && euler_phi(a * b) != euler_phi(a) * euler_phi(b)) {
+            ++mult_bad;
+        }
+    }
+    println("  积性检验（200 对互素 a,b≤60）：φ(ab)=φ(a)φ(b) 违例 {} 例", mult_bad);
+    assert(mult_bad == 0);
+
+    // 大例：2^40 的一半；10¹² 级合数（复用 32.14 的分解）
+    const long long b1 = 1LL << 40;
+    const long long b2 = 999999999988LL;
+    println("  大例：φ(2⁴⁰) = {}（恰为一半）；φ(999999999988) = {}",
+            euler_phi(b1), euler_phi(b2));
+    assert(euler_phi(b1) == (1LL << 39));
+    assert(euler_phi(b2) ==
+           2LL * 10LL * 124846LL * 182040LL);   // 2²·11·124847·182041
+}
+
 int main() {
     gcd_demo();
     modular_demo();
@@ -1351,6 +1421,7 @@ int main() {
     base_conversion_demo();
     packing_paper_demo();
     factorization_demo();
+    euler_phi_demo();
     println("自检通过");
     return 0;
 }
