@@ -14,8 +14,7 @@ DOCS = os.path.join(ROOT, 'docs')
 README = os.path.join(ROOT, 'README.md')
 
 # 尚未落地的章节（写作批次中，链接允许暂时悬空）
-PENDING = {'10-sudoku.md', '11-proofs.md', '13-infinite.md', '18-st.md',
-           '21-miniparser.md', '23-calculator.md', '26-pretty.md'}  # TODO 收官时清空
+PENDING = set()  # 收官：31 章全部落地
 
 
 def main():

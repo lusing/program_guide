@@ -2,8 +2,9 @@
 
 纯函数式 · 强静态类型 · 惰性求值——从零教到能写解释器的程度。
 以 Richard Bird《Haskell函数式程序设计》（*Thinking Functionally with Haskell* 中译本）
-12 章为纲：数独、等式证明、无穷列表、优美打印、手写解析器组合子、交互式计算器、State/ST
-等"函数式思维"核心全部自包含提炼（不要求翻原书）；工程线（Stack/TH/并发/FFI/测试）为现代扩充。
+12 章为纲：数独、证明与归纳、无穷列表、State/ST、手写解析器组合子、**等式计算器**、
+优美打印等"函数式思维"核心全部自包含提炼（不要求翻原书，每章附精选练习）；
+工程线（Stack/TH/并发/FFI/测试）为现代扩充。
 定位：**会编程（C++/Python 背景最佳）、初学 Haskell**；所有示例在 Windows 11 + GHC 9.14.1
 （scoop）+ stack 3.11.1（清华镜像），以及 macOS 14 + GHC 9.14.1（MacPorts）+ stack 3.11.1
 实测通过。主线只用 GHC 自带 boot 库（mtl/parsec/text/stm/containers…），离线可验证。
@@ -41,26 +42,26 @@ haskell/
 | [08 类型类](docs/08-typeclasses.md) | 类型类与 deriving | ⭐ | |
 | **二 列表与推理** | | | |
 | [09 列表与折叠](docs/09-lists.md) | 语法糖、原语族、经典定义、折叠 | ⭐ | 书4 |
-| [10 数独解题器](docs/10-sudoku.md) | 实战：矩阵建模、剪枝搜索 | ⭐ | 书5（本轮新增） |
-| [11 证明与归纳](docs/11-proofs.md) | 等式推理、归纳法、融合律 | ⭐ | 书6（本轮新增） |
+| [10 数独解题器](docs/10-sudoku.md) | 实战：矩阵建模、剪枝搜索 | ⭐ | 书5 |
+| [11 证明与归纳](docs/11-proofs.md) | 等式推理、归纳法、融合律 | ⭐ | 书6 |
 | [12 惰性求值](docs/12-laziness.md) | thunk、空间泄漏、严格性 | ⭐ | |
-| [13 无穷列表](docs/13-infinite.md) | 循环结构、筛法、流式策略 | ⭐ | 书9（本轮新增） |
+| [13 无穷列表](docs/13-infinite.md) | 循环结构、筛法、流式策略 | ⭐ | 书9 |
 | [14 容器](docs/14-containers.md) | Map/Set/Foldable/Traversable | | |
 | [15 字符串](docs/15-strings.md) | String/Text/ByteString 三件套 | ⭐ | |
 | **三 单子与结构** | | | |
 | [16 函子·应用·单子](docs/16-fam.md) | 三部曲 + 手写 State | ⭐ | |
 | [17 单子变换器](docs/17-mtl.md) | mtl 风格 + 手写 xorshift | ⭐ | |
-| [18 命令式函数式：State 与 ST](docs/18-st.md) | ST 单子、STRef/STArray、runST | ⭐ | 书10（本轮新增） |
+| [18 命令式函数式：State 与 ST](docs/18-st.md) | ST 单子、STRef/STArray、runST | ⭐ | 书10 |
 | [19 文件](docs/19-files.md) | 读写、句柄坑、目录、临时文件 | | |
 | [20 错误处理](docs/20-errors.md) | Either/异常/bracket | | |
 | **四 解析与实战** | | | |
-| [21 手写解析器组合子](docs/21-miniparser.md) | 从零实现 Parser 与表达式文法 | ⭐ | 书11（本轮新增） |
+| [21 手写解析器组合子](docs/21-miniparser.md) | 从零实现 Parser 与表达式文法 | ⭐ | 书11 |
 | [22 parsec](docs/22-parsec.md) | 库用法：try/lexeme/buildExpressionParser | ⭐ | |
-| [23 交互式计算器](docs/23-calculator.md) | 实战：文法→求值→REPL 回放 | ⭐ | 书12（本轮新增） |
+| [23 等式计算器](docs/23-calculator.md) | 实战：点自由定律的自动证明器 | ⭐ | 书12 |
 | **五 工程与性能** | | | |
 | [24 Template Haskell](docs/24-th.md) | 引号/reify/GHC.Generics | ⭐ | |
 | [25 性能](docs/25-performance.md) | 惰性代价、累积参数、元组化、profiling | ⭐ | 书7 |
-| [26 优美打印](docs/26-pretty.md) | 实战：Doc 代数与高效布局 | ⭐ | 书8（本轮新增） |
+| [26 优美打印](docs/26-pretty.md) | 实战：Doc 代数与高效布局 | ⭐ | 书8 |
 | [27 Stack 工程](docs/27-stack.md) | 工程与生态（镜像链路实测） | ⭐ | |
 | [28 测试](docs/28-testing.md) | 自制框架 + mini-QuickCheck | | |
 | [29 并发与 STM](docs/29-concurrency.md) | 线程/MVar/STM | ⭐ | |

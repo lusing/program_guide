@@ -85,16 +85,40 @@ maybe def f m   either l r e   fromMaybe def   mapM_   traverse
 | 30 | threadDelay 是微秒 | 22 |
 | 31 | FFI 跨平台：Win 直链 msvcrt/kernel32；macOS/Linux libc 符号无库名段 + nanosleep（POSIX 无毫秒 sleep） | 23 |
 | 32 | mtl 2.3 不转出口 throwE → throwError；transformers 隐藏包须显式依赖 | 24 |
+| 33 | stack 钉 compiler 换机即失效（9.12.1→9.14.1）：No compiler found；改 compiler 行即可（global-hints 已含 9.14.1） | 27 |
+| 34 | `boxs.boxs=id` 只在 n²×n² 形状成立；3×3 反例实测不回归 | 10 |
+| 35 | `Digit=Char` 时字面量忘引号 → No instance Num Digit | 10 |
+| 36 | `minimum []` 是 ⊥：expand1 依赖"非完全矩阵"结构前提 | 10 |
+| 37 | 算术定律止于实例：`(x*y)*z` 在 Float 上实测不等 | 11 |
+| 38 | `approx n xs` 尾部是 ⊥：直接 == 撞异常，机器对账用 take k | 13 |
+| 39 | `foldr1 f (x:⊥)=⊥`：无穷表归并须手写 xmerge（先吐左边再看右边） | 13 |
+| 40 | 循环定义要有起点：primes 显式写 `2 :` 否则死循环 | 13 |
+| 41 | `System.Random` 非 boot：确定性哈希替代，对局可复现可断言 | 13 |
+| 42 | `newListArray` 多态歧义：单态签名辅助函数钉死 STArray（或 ScopedTypeVariables） | 18 |
+| 43 | `runST`/`ST` 在 Control.Monad.ST；Data.STRef 只带引用三件套 | 18 |
+| 44 | `writeSTRef b $! x+y` 别忘 $!：不然堆 thunk、常数空间变线性 | 18 |
+| 45 | `<|>` 分支遮蔽：短前缀在前饿死长分支；提取公共前缀+累积参数 | 21 |
+| 46 | 左递归文法直译死循环：改写 `term (op term)*` 星号形再直译 | 21 |
+| 47 | deriving Show 与手写 instance 打架（Overlapping）：手写时删 deriving | 21/23 |
+| 48 | `parts n []` 语义：写成总揽 `parts _ []=[[]]` 会产"零段划分"→空对齐→幽灵匹配（等式计算器实测大坑） | 23 |
+| 49 | `parse = fst.head` 部分函数：安全版返回 Either | 23 |
+| 50 | OCR 式歧义用语义裁决：`one . f`（复合，[f x]）vs `one f`（应用，[f]）选错则证明打 gap | 23 |
+| 51 | `seq` 只到首范式：元组分量要 `s `seq` n `seq`` 逐个强制（mean 终修） | 25 |
+| 52 | CAF 永久共享也永久占内存；局部 where 绑"每次应用"层——绑哪层共享到哪层 | 25 |
+| 53 | 列表概括内层递归按外层次数重算：`where yss = cp xss` 提出来 | 25 |
+| 54 | pretty 的 better 须用当前剩余宽度 r 判 fits：拿全局 w 会"越权装得下"（实测 39 字符破 30 宽） | 26 |
+| 55 | `fits` 惰性是义务：多看一个字符最坏退化指数 | 26 |
+| 56 | flatten line = 空格（含尾随空格）：浅嵌入 flatten 分配律失效的根源 | 26 |
 
 ## 验证命令
 
 ```bash
 cd haskell
-pwsh ./build.ps1 -All                # 23 示例 × 两层（六条判定）
+pwsh ./build.ps1 -All                # 30 示例 × 两层（六条判定）
 pwsh ./build.ps1 -Example 09_lists   # 单个示例
 bash run-all.sh                      # bash 版双入口
 pwsh ./build.ps1 -Clean              # 清理 build/
 ```
 
 六条判定：编译退出码 0 / 运行退出码 0 / stderr 空 / stdout 非空且无控制字符 /
-含 `==== NN 结束 ====` / 无 GHC 诊断字样。20/24 走 stack 分支（宽松判定 stack 噪音）。
+含 `==== NN 结束 ====` / 无 GHC 诊断字样。27/31 走 stack 分支（宽松判定 stack 噪音）。书章源：书1→01/书2→02/书3→03/书4→09/书5→10/书6→11/书7→25/书8→26/书9→13/书10→18/书11→21/书12→23。
