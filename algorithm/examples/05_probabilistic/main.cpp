@@ -19,10 +19,12 @@ using std::println;
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cmath>
 #include <cstdint>
 #include <limits>
 #include <numeric>
 #include <random>
+#include <string>
 #include <vector>
 
 // 可移植随机（docs/01 纪律：mt19937 引擎可移植，分布算法不可移植）
@@ -400,6 +402,144 @@ static void karger_demo() {
     assert(big_best == big_exact && big_exact == 3);
 }
 
+// ═══ 05.7 蒙特卡罗投点：用随机实验估算 π ═══
+// 单位正方形内均匀投点，落入四分之一圆（x²+y²≤1）的比例 = 圆面积/方形
+// 面积 = π/4 ⟹ π̂ = 4·命中/总数。每个点是一次独立伯努利试验。
+static double rand_unit(std::mt19937& rng) {
+    return std::ldexp(static_cast<double>(rng()), -32);   // [0,1)
+}
+
+static std::pair<long long, double> pi_trial(std::mt19937& rng, long long n) {
+    long long hit = 0;
+    for (long long i = 0; i < n; ++i) {
+        const double x = rand_unit(rng), y = rand_unit(rng);
+        if (x * x + y * y <= 1.0) { ++hit; }
+    }
+    return {hit, 4.0 * static_cast<double>(hit) / static_cast<double>(n)};
+}
+
+static void monte_carlo_pi_demo() {
+    std::mt19937 rng{5489};
+    println("蒙特卡罗投点估 π（单位方形内 1/4 圆）：");
+    double prev_err = 0;
+    const long long counts[] = {100, 10000, 1000000};
+    for (long long n : counts) {
+        const auto [hit, est] = pi_trial(rng, n);
+        const double err = std::fabs(est - std::acos(-1.0));
+        const double se = 1.6416 / std::sqrt(static_cast<double>(n)); // 理论标准误
+        println("  n={:>8}：命中 {}，π̂ = {:.6f}，误差 {:.6f}（标准误 ≈ {:.6f}）",
+                n, hit, est, err, se);
+        if (prev_err != 0) {
+            println("    点数 ×{}，误差 ÷{:.1f}（理论上 1/√n ⟹ 应 ÷10）",
+                    n / (n / 100), prev_err / err);
+        }
+        prev_err = err;
+    }
+    // 独立估计的平均更准：4 个独立 25 万点估计的均值 vs 单个 25 万
+    double sum = 0, single = 0;
+    for (int k = 0; k < 4; ++k) {
+        const auto [hit, est] = pi_trial(rng, 250000);
+        sum += est;
+        if (k == 0) { single = est; }
+    }
+    const double avg = sum / 4;
+    println("  4 个独立 25 万点估计：单个 {:.6f}（误差 {:.5f}），"
+            "均值 {:.6f}（误差 {:.5f}，平均的标准误减半）",
+            single, std::fabs(single - std::acos(-1.0)),
+            avg, std::fabs(avg - std::acos(-1.0)));
+    assert(std::fabs(std::fabs(avg - std::acos(-1.0))) < 0.005);
+}
+
+// ═══ 05.8 排列的编号：Lehmer 码（阶乘进位制）═══
+// n 个互异元素按字母序的排列，编号 0..n!−1。第 i 位的 Lehmer 数字 =
+// 剩余元素中比当前元素小的个数；编号 = Σ cᵢ·(n−1−i)!。
+static std::vector<long long> factorial_table(int n) {
+    std::vector<long long> f(static_cast<std::size_t>(n) + 1);
+    f[0] = 1;
+    for (int k = 1; k <= n; ++k) { f[k] = f[k - 1] * k; }
+    return f;
+}
+
+static long long perm_rank(const std::string& p) {
+    const int n = static_cast<int>(p.size());
+    const auto fact = factorial_table(n);
+    long long rank = 0;
+    for (int i = 0; i < n; ++i) {
+        int smaller = 0;
+        for (int j = i + 1; j < n; ++j) { if (p[j] < p[i]) { ++smaller; } }
+        rank += static_cast<long long>(smaller) * fact[n - 1 - i];
+    }
+    return rank;
+}
+
+static std::string perm_unrank(long long rank, const std::string& sorted) {
+    const int n = static_cast<int>(sorted.size());
+    const auto fact = factorial_table(n);
+    std::string avail = sorted;                 // 剩余元素（保持字母序）
+    std::string out;
+    out.reserve(n);
+    for (int i = 0; i < n; ++i) {
+        const long long f = fact[n - 1 - i];
+        const auto pick = static_cast<std::size_t>(rank / f);
+        rank %= f;
+        out.push_back(avail[pick]);
+        avail.erase(pick, 1);
+    }
+    return out;
+}
+
+static void lehmer_demo() {
+    const std::string alpha = "abc";
+    println("Lehmer 排列编号（abc 的 3!=6 个排列）：");
+    for (long long k = 0; k < 6; ++k) {
+        const std::string p = perm_unrank(k, alpha);
+        println("  {:>2}  {}  （rank 反查 {}）", k, p, perm_rank(p));
+        assert(perm_rank(p) == k);
+    }
+
+    // n≤8：全部 n! 个编号做 rank∘unrank / unrank∘rank 恒等检验
+    for (int n = 1; n <= 8; ++n) {
+        std::string sorted;
+        for (int i = 0; i < n; ++i) { sorted.push_back(static_cast<char>('a' + i)); }
+        const auto fact = factorial_table(n);
+        for (long long k = 0; k < fact[n]; ++k) {
+            const std::string p = perm_unrank(k, sorted);
+            assert(perm_rank(p) == k);
+        }
+    }
+    // n=9..12（12!=4.79×10⁹ 仍在 uint64 内）：2000 个随机排列对账
+    std::mt19937 rng{5489};
+    int bad = 0;
+    for (int t = 0; t < 2000; ++t) {
+        const int n = 9 + static_cast<int>(rand_below(rng, 4));
+        std::string sorted;
+        for (int i = 0; i < n; ++i) { sorted.push_back(static_cast<char>('a' + i)); }
+        const auto fact = factorial_table(n);
+        const long long k = static_cast<long long>(rand_below(
+            rng, static_cast<std::uint32_t>(fact[n])));
+        const std::string p = perm_unrank(k, sorted);
+        if (perm_rank(p) != k) { ++bad; }
+    }
+    println("  n≤8 全编号 + n=9..12 随机 2000 例：恒等检验失败 {} 例", bad);
+    assert(bad == 0);
+
+    // 用「无偏随机编号」生成均匀随机排列：rand_below(n!) 拒绝法取编号
+    // （直接 rng()%n! 有取模偏倚——n=4 时 2³² 不被 24 整除，各排列概率不等）。
+    const int n = 4;
+    const auto fact = factorial_table(n);
+    std::array<long long, 24> counts{};
+    for (int t = 0; t < 240000; ++t) {
+        const long long k = static_cast<long long>(rand_below(
+            rng, static_cast<std::uint32_t>(fact[n])));
+        ++counts[static_cast<std::size_t>(k)];
+    }
+    long long lo = counts[0], hi = counts[0];
+    for (long long c : counts) { lo = std::min(lo, c); hi = std::max(hi, c); }
+    println("  无偏编号生成 n=4 排列 24 万次：最稀 {} 次、最频 {} 次"
+            "（期望各 1 万，波动 <2%）", lo, hi);
+    assert(hi - lo < 400);
+}
+
 int main() {
     indicator_demo();
     hiring_demo();
@@ -407,6 +547,8 @@ int main() {
     streaks_demo();
     shuffle_uniformity_demo();
     karger_demo();
+    monte_carlo_pi_demo();
+    lehmer_demo();
     println("自检通过");
     return 0;
 }

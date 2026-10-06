@@ -1212,6 +1212,78 @@ static void maxima_demo() {
     assert(big_dc == big_sw);
 }
 
+// ═══ 04.10 约瑟夫问题：删半归约与二进制循环左移 ═══
+// n 个人顺时针围坐，编号 1..n；从 1 号开始报数，数到 2 的人出局，下一个人
+// 重新从 1 报起，直到剩下一人。J(n) = 最后存活者的编号。
+// 模拟真值：每轮扫描找下一名存活者，O(n²)，只用于小 n 对账。
+static int josephus_sim(int n) {
+    std::vector<char> alive(n + 1, 1);
+    int count = n, cur = 1;
+    while (count > 1) {
+        // cur 报 1：找到下一个存活者报 2、出局
+        do { cur = cur == n ? 1 : cur + 1; } while (!alive[cur]);
+        alive[cur] = 0;
+        --count;
+        if (count == 1) { break; }
+        do { cur = cur == n ? 1 : cur + 1; } while (!alive[cur]);
+    }
+    for (int i = 1; i <= n; ++i) { if (alive[i]) { return i; } }
+    return -1;
+}
+
+// 递推（第一圈偶数号全部出局）：
+//   n=2k：剩 1,3,...,2k−1 共 k 人，重新编号 i ↔ 旧号 2i−1
+//         J(2k) = 2J(k) − 1
+//   n=2k+1：偶数号出局后，编号 1 在新一轮第一个报 2 也出局，剩下
+//         3,5,...,2k+1 共 k 人，新编号 i ↔ 旧号 2i+1
+//         J(2k+1) = 2J(k) + 1
+// 基例 J(1) = 1。
+static int josephus_rec(int n) {
+    if (n == 1) { return 1; }
+    const int sub = josephus_rec(n / 2);
+    return n % 2 == 0 ? 2 * sub - 1 : 2 * sub + 1;
+}
+
+// 位运算直接式：n = 2ᵐ + l（0 ≤ l < 2ᵐ）时 J(n) = 2l + 1。
+// 即把 n 的二进制最高位的 1 移到最右边（其余位整体左移一格）。
+static long long josephus_bit(long long n) {
+    const int msb = 63 - std::countl_zero(static_cast<std::uint64_t>(n));
+    const long long l = n - (1LL << msb);
+    return 2 * l + 1;
+}
+
+static void josephus_demo() {
+    println("=== 04.10 约瑟夫问题：删半递推 / 二进制循环左移 ===");
+    // 小例表 n=1..16：三种口径一致；观察 1,2,4,8,16 时 J=1
+    print("  n:  ");
+    for (int n = 1; n <= 16; ++n) { print("{:3}", n); }
+    println("");
+    print("  J:  ");
+    for (int n = 1; n <= 16; ++n) {
+        const int j = josephus_rec(n);
+        assert(j == josephus_sim(n));
+        assert(j == josephus_bit(n));
+        print("{:3}", j);
+    }
+    println("");
+    // n=1..200000：递推 vs 位式一致（模拟 O(n²) 退场）
+    int mismatches = 0;
+    for (int n = 1; n <= 200000; ++n) {
+        if (josephus_rec(n) != josephus_bit(n)) { ++mismatches; }
+    }
+    println("  n=1..200000：递推 vs 位式不一致 {} 例", mismatches);
+    // 大例（位式 O(1)，递推的 O(log n) 递归深度也够）：
+    //   2⁴⁰ ⟹ J=1；10¹⁸ 与 (2⁵⁹+2026) 给出公式 2l+1
+    const long long n1 = 1LL << 40;
+    const long long n2 = 1000000000000000000LL;
+    const long long n3 = (1LL << 59) + 2026;
+    println("  大例：J(2⁴⁰) = {}；J(10¹⁸) = {}；J(2⁵⁹+2026) = {}（=2×2026+1）",
+            josephus_bit(n1), josephus_bit(n2), josephus_bit(n3));
+    assert(mismatches == 0);
+    assert(josephus_bit(n1) == 1);
+    assert(josephus_bit(n3) == 4053);
+}
+
 int main() {
     max_subarray_demo();
     strassen_demo();
@@ -1222,6 +1294,7 @@ int main() {
     dna_sort_demo();
     hanoi_demo();
     maxima_demo();
+    josephus_demo();
     println("自检通过");
     return 0;
 }

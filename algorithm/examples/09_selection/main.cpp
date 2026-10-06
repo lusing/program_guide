@@ -1,6 +1,7 @@
 // 09 中位数与顺序统计量（CLRS 第 9 章）。结构：09.1 同时取最小最大
 //（成对处理 3⌈n/2⌉−2）/ 09.2 RANDOMIZED-SELECT 期望线性 /
-// 09.3 BFPRT（中位数的中位数）确定性线性 + 分组可视化 + 期望的经验验证。
+// 09.3 BFPRT（中位数的中位数）确定性线性 + 分组可视化 + 期望的经验验证 /
+// 09.4 找坏蛋：天平上的修剪与搜索（书式二分 vs 三分最优）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -16,6 +17,7 @@ using std::println;
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <cstdint>
 #include <random>
 #include <span>
@@ -207,10 +209,214 @@ static void bfprt_demo() {
     assert(c < 22 * n); // 理论常数级；实测通常 ~5-6n，这里给宽松上界
 }
 
+// ═══ 09.4 找坏蛋：天平上的修剪与搜索 ═══
+// n 颗蛋中恰有一颗坏蛋（较轻），天平只能比较两盘等数蛋，结果三态：
+// 左盘轻（坏蛋在左）/ 右盘轻 / 平衡（坏蛋在未上秤的余组）。
+enum class PanTilt { LeftLight, RightLight, Balanced };
+struct EggHunt { int weighings; int found; };
+
+// 一次称量的模拟：候选段 [offset, offset+s)，两盘各取 a 颗（左盘
+// [0,a)、右盘 [a,2a)），目标坏蛋绝对编号 target。
+static PanTilt egg_weigh(int offset, int s, int a, int target) {
+    (void)s;
+    if (target < offset + a) { return PanTilt::LeftLight; }
+    if (target < offset + 2 * a) { return PanTilt::RightLight; }
+    return PanTilt::Balanced;
+}
+
+// 书式策略（迭代版）：每轮对半，a = ⌊s/2⌋；奇数时余组恰 1 颗——平衡即
+// 坏蛋。最坏称量数满足 W(1)=0、W(s)=1+W(⌊s/2⌋) = ⌊log₂ s⌋。
+static EggHunt find_bad_half(int n, int target, bool trace) {
+    int lo = 0, s = n, w = 0;
+    while (s > 1) {
+        const int a = s / 2;
+        const PanTilt r = egg_weigh(lo, s, a, target);
+        if (trace) {
+            static const char* tn[] = {"左盘轻", "右盘轻", "平衡"};
+            println("  第 {} 次：候选 {} 颗，称 {} vs {}（余 {}）→ {}",
+                    w + 1, s, a, a, s - 2 * a, tn[static_cast<int>(r)]);
+        }
+        ++w;
+        if (r == PanTilt::LeftLight) { /* lo 不变 */ }
+        else if (r == PanTilt::RightLight) { lo += a; }
+        else { lo += 2 * a; }
+        s = (r == PanTilt::Balanced) ? (s - 2 * a) : a;
+    }
+    return {w, lo};
+}
+
+// 三分策略（独立递归实现）：两盘各 a = ⌈s/3⌉ = (s+1)/3 颗，余组 b=s−2a。
+// 三态各把候选缩到约 1/3；最坏 W(1)=0、W(s)=1+W(⌈s/3⌉) = ⌈log₃ s⌉，
+// 达到「三态天平 k 次至多区分 3ᵏ 颗」的信息论下界。
+static EggHunt find_bad_third(int s, int offset, int target) {
+    if (s == 1) { return {0, offset}; }
+    const int a = (s + 1) / 3;
+    const PanTilt r = egg_weigh(offset, s, a, target);
+    EggHunt sub;
+    if (r == PanTilt::LeftLight) {
+        sub = find_bad_third(a, offset, target);
+    } else if (r == PanTilt::RightLight) {
+        sub = find_bad_third(a, offset + a, target);
+    } else {
+        sub = find_bad_third(s - 2 * a, offset + 2 * a, target);
+    }
+    return {1 + sub.weighings, sub.found};
+}
+
+static int ceil_log3(long long n) {
+    int k = 0;
+    long long p = 1;                    // 3^k
+    while (p < n) { p *= 3; ++k; }
+    return k;
+}
+
+static void bad_egg_demo() {
+    println("=== 09.4 找坏蛋：天平上的修剪与搜索 ===");
+    // 固定例 n=10，打印书式二分称量轨迹（坏蛋固定在第 8 号，0 基 7）
+    println("  n=10，坏蛋在第 8 颗（1 基）——对半策略称量过程：");
+    const EggHunt h10 = find_bad_half(10, 7, true);
+    const EggHunt t10 = find_bad_third(10, 0, 7);
+    println("  对半：{} 次称出第 {} 颗；三分：{} 次", h10.weighings,
+            h10.found + 1, t10.weighings);
+    assert(h10.found == 7 && t10.found == 7);
+
+    // 全量对账：n=1..80，坏蛋遍历每个位置；两策略都必须找对
+    int checked = 0;
+    for (int n = 1; n <= 80; ++n) {
+        int worst_h = 0, worst_t = 0;
+        for (int target = 0; target < n; ++target) {
+            const EggHunt h = find_bad_half(n, target, false);
+            const EggHunt t = find_bad_third(n, 0, target);
+            assert(h.found == target && t.found == target);
+            // 实际称量数不超过最坏情况闭式：⌊log₂ n⌋ 与 ⌈log₃ n⌉
+            // （坏蛋恰在余组时当轮即可锁定，用次数会少于最坏值）
+            int lb2 = 0; { int p = 1; while (p * 2 <= n) { p *= 2; ++lb2; } }
+            assert(h.weighings <= lb2 && t.weighings <= ceil_log3(n));
+            worst_h = std::max(worst_h, h.weighings);
+            worst_t = std::max(worst_t, t.weighings);
+            ++checked;
+        }
+        // 最坏位置上的计数必须恰好顶到闭式（公式是紧的）
+        int lb2 = 0; { int p = 1; while (p * 2 <= n) { p *= 2; ++lb2; } }
+        assert(worst_h == lb2 && worst_t == ceil_log3(n));
+    }
+    println("  全量核对 n≤80、坏蛋遍历全部位置（共 {} 例）：两策略全部找对；"
+            "最坏计数恰为闭式", checked);
+
+    // 最坏称量数对照表 n=3..20（具体目标可能更少）
+    print("  n:            ");
+    for (int n = 3; n <= 20; ++n) { print("{:4}", n); }
+    println("");
+    print("  对半 ⌊log₂n⌋: ");
+    for (int n = 3; n <= 20; ++n) {
+        int lb2 = 0; { int p = 1; while (p * 2 <= n) { p *= 2; ++lb2; } }
+        print("{:4}", lb2);
+    }
+    println("");
+    print("  三分 ⌈log₃n⌉: ");
+    for (int n = 3; n <= 20; ++n) { print("{:4}", ceil_log3(n)); }
+    println("");
+
+    // 大例：n=10¹⁸——只维护候选区间大小与偏移，无需真造蛋
+    const long long big_n = 1000000000000000000LL;
+    const long long target = 123456789012345678LL;
+    // 大 n 下对半策略递归口径相同，直接按闭式报数
+    int lb2 = 0; { long long p = 1; while (p <= big_n / 2) { p *= 2; ++lb2; } }
+    println("  大例 n=10¹⁸：对半最坏 {} 次，三分最坏 {} 次（⌈log₃ 10¹⁸⌉）",
+            lb2, ceil_log3(big_n));
+    // 用小步模拟验证三分在大 n 上的可执行性（区间计数版）
+    long long s = big_n, lo = 0, w = 0;
+    while (s > 1) {
+        const long long a = (s + 1) / 3;
+        ++w;
+        if (target < lo + a) { s = a; }
+        else if (target < lo + 2 * a) { lo += a; s = a; }
+        else { lo += 2 * a; s -= 2 * a; }
+    }
+    println("  三分区间模拟：{} 次称出，坏蛋位置与设定一致 = {}", w, lo == target);
+    assert(lo == target && w == ceil_log3(big_n));
+}
+
+// ═══ 09.5 猜数字：范围中点二分 ═══
+// 目标 ∈[1,n]，每次猜 g，反馈只有「太高/太低/猜中」——猜中即终止，
+// 未猜中只有两条分支（与天平三结果不同）。
+static int guess_number(long long n, long long target, bool trace) {
+    long long lo = 1, hi = n;
+    int tries = 0;
+    while (lo <= hi) {
+        const long long g = lo + (hi - lo) / 2;
+        ++tries;
+        if (trace) {
+            println("  第 {} 次：猜 {}（范围 {}..{}）", tries, g, lo, hi);
+        }
+        if (g == target) { return tries; }
+        if (target < g) { hi = g - 1; }
+        else { lo = g + 1; }
+    }
+    return tries;
+}
+
+static int ceil_log2_plus1(long long n) {
+    int k = 0;
+    long long p = 1;                    // 2ᵏ
+    while (p < n + 1) { p <<= 1; ++k; }
+    return k;
+}
+
+static void guess_number_demo() {
+    println("");
+    println("=== 09.5 猜数字：范围中点二分（最坏 ⌈log₂(n+1)⌉）===");
+    println("  n=100，目标 27：");
+    const int got = guess_number(100, 27, true);
+    println("  {} 次猜中（目标 27 恰好落在最坏位置）", got);
+    assert(got == 7);
+
+    // 全目标穷举 n≤200：实际次数 ≤ 最坏闭式，且最坏位置上恰等于闭式
+    int prev_worst = 0;
+    for (int n = 1; n <= 200; ++n) {
+        int worst = 0;
+        long long sum = 0;
+        for (int t = 1; t <= n; ++t) {
+            const int k = guess_number(n, t, false);
+            worst = std::max(worst, k);
+            sum += k;
+        }
+        assert(worst == ceil_log2_plus1(n));
+        if (n == 100) {
+            println("  n=100：全目标平均 {:.3} 次（log₂n = {:.2f}），最坏 {} 次",
+                    static_cast<double>(sum) / n,
+                    std::log2(100.0), worst);
+            prev_worst = worst;
+        }
+    }
+    assert(prev_worst == 7);            // ⌈log₂101⌉ = 7
+
+    // 小表：最坏计数 vs 闭式
+    print("  n:      ");
+    for (int n = 1; n <= 8; ++n) { print("{:5}", n); }
+    println("");
+    print("  最坏:   ");
+    for (int n = 1; n <= 8; ++n) { print("{:5}", ceil_log2_plus1(n)); }
+    println("");
+
+    // 大例 n=10¹⁸：中点二分最坏 60 次
+    const long long big = 1000000000000000000LL;
+    const int worst_big = ceil_log2_plus1(big);
+    const int actual_big = guess_number(big, 1000000000000000000LL, false);
+    println("  大例 n=10¹⁸：最坏 {} 次；猜角落目标 10¹⁸ 实际 {} 次",
+            worst_big, actual_big);
+    assert(worst_big == 60 && actual_big == 60);
+
+    // 下界论证：判定树内部节点两叉、n 个键都要能落在某节点 ⟹
+    // 深度 k 的树至多容纳 2ᵏ−1 个不同的键 ⟹ k ≥ ⌈log₂(n+1)⌉，中点法取到。
+}
+
 int main() {
     minmax_demo();
     randomized_select_demo();
     bfprt_demo();
+    bad_egg_demo();
+    guess_number_demo();
     println("自检通过");
     return 0;
 }

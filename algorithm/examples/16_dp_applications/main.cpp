@@ -3,7 +3,8 @@
 // 多重对账 / 16.3 最优 BST（图 15.10 数据，期望代价 2.75）/
 // 16.4 编辑距离（LCS 的变体，C++ 实战延伸）/
 // 16.7 石子合并：区间 DP（直线/圆环、最小/最大，合并树重构）/
-// 16.8 安排公司聚会：树上的 DP（最大权独立集，参加/不参加两状态）。
+// 16.8 安排公司聚会：树上的 DP（最大权独立集，参加/不参加两状态）/
+// 16.9 最长相同子串：公共后缀表（连续！与子序列对照），大例滚动哈希二分。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -816,6 +817,181 @@ static void party_demo() {
     assert(static_cast<int>(big.guests.size()) == 100000);
 }
 
+// ═══ 16.9 最长相同子串（要求连续）═══
+// 与 16.1 的子序列一字之差：公共字符必须连成一段。
+// L[i][j] = 以 x[i−1]、y[j−1] 结尾的公共后缀长度：
+//   相等：L[i][j] = L[i−1][j−1] + 1；不等：0（公共后缀在此中断）。
+struct SubStr { int length; int end_x; std::string text; };
+
+static SubStr common_substring_dp(const std::string& x, const std::string& y) {
+    const int m = static_cast<int>(x.size()), n = static_cast<int>(y.size());
+    std::vector<std::vector<int>> L(m + 1, std::vector<int>(n + 1, 0));
+    int best = 0, end = 0;
+    for (int i = 1; i <= m; ++i) {
+        for (int j = 1; j <= n; ++j) {
+            if (x[i - 1] == y[j - 1]) {
+                L[i][j] = L[i - 1][j - 1] + 1;
+                if (L[i][j] > best) { best = L[i][j]; end = i; }
+            }
+        }
+    }
+    return {best, end, x.substr(end - best, best)};
+}
+
+// 同口径滚动一行：L[i][j] 只依赖上一行 j−1，左上角用变量暂存。
+static int common_substring_row(const std::string& x, const std::string& y) {
+    const int m = static_cast<int>(x.size()), n = static_cast<int>(y.size());
+    std::vector<int> L(n + 1, 0);
+    int best = 0;
+    for (int i = 1; i <= m; ++i) {
+        int prev_diag = 0;                // 上一行 j−1 位置的值
+        for (int j = 1; j <= n; ++j) {
+            const int saved = L[j];       // 它是下一格的「左上」
+            if (x[i - 1] == y[j - 1]) {
+                L[j] = prev_diag + 1;
+                best = std::max(best, L[j]);
+            } else { L[j] = 0; }
+            prev_diag = saved;
+        }
+    }
+    return best;
+}
+
+// 独立口径：枚举所有起点对 (i,j)，字符相同就直接逐字符延伸。无任何 DP 表。
+static int common_substring_naive(const std::string& x, const std::string& y) {
+    int best = 0;
+    for (int i = 0; i < static_cast<int>(x.size()); ++i) {
+        for (int j = 0; j < static_cast<int>(y.size()); ++j) {
+            int k = 0;
+            while (i + k < static_cast<int>(x.size()) &&
+                   j + k < static_cast<int>(y.size()) &&
+                   x[i + k] == y[j + k]) { ++k; }
+            best = std::max(best, k);
+        }
+    }
+    return best;
+}
+
+// 大例口径：长度上二分 + Rabin-Karp 哈希。长度 L 可行 ⟺ 两串各有一个长 L
+// 子串相等；可行长度构成前缀（L 可行则更短都可行），故可二分。哈希只负责
+// 找候选——命中后必须逐字符实比，假碰撞当场作废，另找候选，保证精确。
+static bool length_possible(const std::string& x, const std::string& y, int L) {
+    if (L == 0) { return true; }
+    static constexpr std::uint64_t kBase = 1000003;
+    std::uint64_t powL = 1;
+    for (int i = 0; i < L; ++i) { powL *= kBase; }
+    auto rolling = [&](const std::string& s) {
+        std::uint64_t h = 0;
+        for (int i = 0; i < L; ++i) { h = h * kBase + static_cast<unsigned char>(s[i]); }
+        std::vector<std::pair<std::uint64_t, int>> out;
+        out.push_back({h, 0});
+        for (int i = L; i < static_cast<int>(s.size()); ++i) {
+            h = h * kBase + static_cast<unsigned char>(s[i]) -
+                powL * static_cast<unsigned char>(s[i - L]);
+            out.push_back({h, i - L + 1});
+        }
+        return out;
+    };
+    // 建 y 的哈希→起点表（排序后按哈希二分）
+    const auto hy = rolling(y);
+    std::vector<std::pair<std::uint64_t, int>> ys = hy;
+    std::sort(ys.begin(), ys.end());
+    const auto hx = rolling(x);
+    for (const auto& [h, pos] : hx) {
+        auto it = std::lower_bound(
+            ys.begin(), ys.end(), std::pair<std::uint64_t, int>{h, -1});
+        for (; it != ys.end() && it->first == h; ++it) {
+            if (x.compare(pos, L, y, it->second, L) == 0) { return true; }
+        }
+    }
+    return false;
+}
+
+static int common_substring_hash(const std::string& x, const std::string& y) {
+    int lo = 0, hi = static_cast<int>(std::min(x.size(), y.size()));
+    while (lo < hi) {
+        const int mid = lo + (hi - lo + 1) / 2;
+        if (length_possible(x, y, mid)) { lo = mid; } else { hi = mid - 1; }
+    }
+    return lo;
+}
+
+static void common_substring_demo() {
+    println("=== 16.9 最长相同子串（连续，与子序列对照）===");
+    // 固定例：子序列长达 5，连续公共部分只有 4
+    const std::string x = "ABABC", y = "BABCA";
+    const SubStr r = common_substring_dp(x, y);
+    println("  x={}, y={}：最长相同子串 \"{}\"（{}），滚动行 {}，直接延伸 {}",
+            x, y, r.text, r.length, common_substring_row(x, y),
+            common_substring_naive(x, y));
+    assert(r.length == 4 && r.text == "BABC");
+    assert(common_substring_row(x, y) == 4 && common_substring_naive(x, y) == 4);
+
+    // 随机三口径对账（小字母表，公共段丰富）
+    std::mt19937 rng{5489};
+    int mismatches = 0;
+    for (int t = 0; t < 2000; ++t) {
+        const int m = 1 + static_cast<int>(stone_rand_below(rng, 30));
+        const int n = 1 + static_cast<int>(stone_rand_below(rng, 30));
+        const int alpha = 2 + static_cast<int>(stone_rand_below(rng, 4));
+        auto gen = [&](int len) {
+            std::string s;
+            s.reserve(len);
+            for (int i = 0; i < len; ++i) {
+                s.push_back(static_cast<char>('a' + stone_rand_below(
+                    rng, static_cast<std::uint32_t>(alpha))));
+            }
+            return s;
+        };
+        const std::string a = gen(m), b = gen(n);
+        const int dp = common_substring_dp(a, b).length;
+        if (dp != common_substring_row(a, b) ||
+            dp != common_substring_naive(a, b) ||
+            dp != common_substring_hash(a, b)) { ++mismatches; }
+    }
+    println("  随机 {} 对字符串（长度≤29，字母表 2..5）：矩阵/滚动行/直接延伸/"
+            "哈希二分 不一致 {} 例", 2000, mismatches);
+    assert(mismatches == 0);
+
+    // 中例：2×8000 字符植入 1200 相同段——O(mn) 的滚动行在这里仍可跑
+    // （6400 万格），给哈希答案当独立裁判。
+    const int M = 8000, planted_m = 1200;
+    auto make_pair = [&](int N, int planted, int ia, int ib) {
+        std::string a, b;
+        a.reserve(N); b.reserve(N);
+        for (int i = 0; i < N; ++i) {
+            a.push_back(static_cast<char>('a' + stone_rand_below(rng, 10)));
+            b.push_back(static_cast<char>('a' + stone_rand_below(rng, 10)));
+        }
+        for (int k = 0; k < planted; ++k) {
+            a[ia + k] = static_cast<char>('z' - (k % 3));
+            b[ib + k] = a[ia + k];
+        }
+        // 两端守卫：随机字符在 a..j、植入字符在 x..z。两串同位置必须放
+        // **不同的**守卫字符——若都放 w，w 本身又是一格公共匹配，长度反而
+        // 变成 1201（本例真实翻车两轮）。
+        a[ia - 1] = 'w'; b[ib - 1] = 'v';
+        a[ia + planted] = 'v'; b[ib + planted] = 'w';
+        return std::pair{std::move(a), std::move(b)};
+    };
+    auto [ma, mb] = make_pair(M, planted_m, 1000, 5000);
+    const int got_m = common_substring_hash(ma, mb);
+    const int row_m = common_substring_row(ma, mb);
+    println("  中例（2×8000，植入 {}）：哈希 {}，滚动行 O(mn) 核对 = {}",
+            planted_m, got_m, row_m);
+    assert(got_m == planted_m && row_m == planted_m);
+
+    // 大例：20 万字符植入 5000——O(mn) 口径（400 亿格）在此规模不可运行，
+    // 只跑 O((m+n)log n) 的哈希二分；植入构造保证答案至多 5000，哈希找到
+    // 5000 即证明恰为 5000（更短不可能超过植入段）。
+    const int N = 200000, planted = 5000;
+    auto [a, b] = make_pair(N, planted, 30000, 120000);
+    const int got = common_substring_hash(a, b);
+    println("  大例（2×20 万字符，植入 {} 连续相同）：哈希二分给出 {}"
+            "（O(mn) 口径在 400 亿格规模不运行）", planted, got);
+    assert(got == planted);
+}
+
 int main() {
     lcs_demo();
     optimal_bst_demo();
@@ -824,6 +1000,7 @@ int main() {
     antichain_demo();
     stone_merge_demo();
     party_demo();
+    common_substring_demo();
     println("自检通过");
     return 0;
 }

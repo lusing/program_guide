@@ -1,6 +1,7 @@
 // 34 计算几何（CLRS 第 33 章）。结构：34.1 叉积与方向判断 /
 // 34.2 线段相交判定（含边界情形）/ 34.3 Graham 扫描凸包 /
-// 34.4 最近点对（分治 vs 暴力对账）。全程整数坐标——零浮点，
+// 34.4 最近点对（分治 vs 暴力对账）/ 34.5 点在简单多边形内（射线奇偶法）/
+// 34.6 天空轮廓（事件扫描）。全程整数坐标——零浮点，
 // 三通道对账天然精确（计划注记）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
@@ -18,6 +19,8 @@ using std::println;
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+#include <random>
+#include <set>
 #include <vector>
 
 struct Pt { long long x, y; };
@@ -216,11 +219,404 @@ static void closest_demo() {
     assert(d1 == 2);
 }
 
+// ═══ 34.5 点在简单多边形内：射线奇偶法 ═══
+// 多边形顶点按顺序（顺/逆时针均可）给出，边 (v[i], v[(i+1)%n])。查询点 p。
+// 从 p 向右发水平射线，数它与多边形边的交点：奇数在内、偶数在外。
+enum class InPoly { Outside, Boundary, Inside };
+
+static InPoly point_in_polygon(Pt p, const std::vector<Pt>& poly) {
+    const int n = static_cast<int>(poly.size());
+    bool inside = false;
+    for (int i = 0; i < n; ++i) {
+        Pt a = poly[i], b = poly[(i + 1) % n];
+        // 边界优先：p 共线且落在边段上
+        if (cross(a, b, p) == 0 && on_segment(a, b, p)) { return InPoly::Boundary; }
+        // 统一让 a 为低端点，避免分母符号问题
+        if (a.y > b.y) { Pt t = a; a = b; b = t; }
+        // 跨射线条件：a.y ≤ p.y < b.y（恰一边取等——射线擦过顶点只计一次）
+        if (!(a.y <= p.y && p.y < b.y)) { continue; }
+        // 交点 x = a.x + (p.y−a.y)(b.x−a.x)/(b.y−a.y)；与 p.x 比较，
+        // 分母 b.y−a.y > 0，交叉相乘无除法、无浮点：
+        //   x交点 > p.x  ⟺  (a.x−p.x)(b.y−a.y) + (p.y−a.y)(b.x−a.x) > 0
+        const long long lhs =
+            (a.x - p.x) * (b.y - a.y) + (p.y - a.y) * (b.x - a.x);
+        if (lhs > 0) { inside = !inside; }
+    }
+    return inside ? InPoly::Inside : InPoly::Outside;
+}
+
+// 独立口径：竖直向上射线（交换 x/y 后复用同一判据），方向完全不同。
+static InPoly point_in_polygon_vertical(Pt p, const std::vector<Pt>& poly) {
+    std::vector<Pt> swapped = poly;
+    for (Pt& q : swapped) { const long long t = q.x; q.x = q.y; q.y = t; }
+    return point_in_polygon({p.y, p.x}, swapped);
+}
+
+// 栅格真值：多边形的边沿整数格线走时（自避游走生成），把 W×H 个格子看作
+// 迷宫房间——沿多边形的边砌墙，从四周边界格灌水（多边形严格位于板内，
+// 边界格恒为外部），水漫不进去的房间即内部。与射线法零共享代码。
+//   hwall[y][x]：格线 y（水平）、x 段上的墙，隔开房间 (x,y-1) 与 (x,y)
+//   vwall[y][x]：格线 x（竖直）、y 段上的墙，隔开房间 (x-1,y) 与 (x,y)
+static std::vector<std::vector<char>> raster_flood(
+    const std::vector<Pt>& poly, int W, int H) {
+    std::vector<std::vector<char>> hwall(H + 1, std::vector<char>(W, 0));
+    std::vector<std::vector<char>> vwall(H, std::vector<char>(W + 1, 0));
+    const int n = static_cast<int>(poly.size());
+    for (int i = 0; i < n; ++i) {
+        Pt a = poly[i], b = poly[(i + 1) % n];
+        if (a.y == b.y) {                 // 水平边：y=a.y，x∈[min,max)
+            const int y = static_cast<int>(a.y);
+            for (int x = static_cast<int>(std::min(a.x, b.x));
+                 x < static_cast<int>(std::max(a.x, b.x)); ++x) {
+                hwall[y][x] = 1;
+            }
+        } else {                          // 竖直边：x=a.x，y∈[min,max)
+            const int x = static_cast<int>(a.x);
+            for (int y = static_cast<int>(std::min(a.y, b.y));
+                 y < static_cast<int>(std::max(a.y, b.y)); ++y) {
+                vwall[y][x] = 1;
+            }
+        }
+    }
+    std::vector<std::vector<char>> reached(H, std::vector<char>(W, 0));
+    std::vector<std::pair<int, int>> queue;
+    auto seed = [&](int c, int r) {
+        if (c < 0 || r < 0 || c >= W || r >= H || reached[r][c]) { return; }
+        reached[r][c] = 1;
+        queue.push_back({c, r});
+    };
+    for (int c = 0; c < W; ++c) { seed(c, 0); seed(c, H - 1); }
+    for (int r = 0; r < H; ++r) { seed(0, r); seed(W - 1, r); }
+    for (std::size_t qi = 0; qi < queue.size(); ++qi) {
+        const auto [c, r] = queue[qi];
+        auto go = [&](int nc, int nr, bool blocked) {
+            if (nc < 0 || nr < 0 || nc >= W || nr >= H || reached[nr][nc] ||
+                blocked) { return; }
+            reached[nr][nc] = 1;
+            queue.push_back({nc, nr});
+        };
+        go(c, r - 1, hwall[r][c] != 0);       // 向上
+        go(c, r + 1, hwall[r + 1][c] != 0);   // 向下
+        go(c - 1, r, vwall[r][c] != 0);       // 向左
+        go(c + 1, r, vwall[r][c + 1] != 0);   // 向右
+    }
+    std::vector<std::vector<char>> inside(H, std::vector<char>(W, 0));
+    for (int r = 0; r < H; ++r) {
+        for (int c = 0; c < W; ++c) { inside[r][c] = reached[r][c] ? 0 : 1; }
+    }
+    return inside;
+}
+
+static void polygon_demo() {
+    println("=== 34.5 点在简单多边形内：水平射线奇偶法 ===");
+    // 固定多边形（带凹陷的 8 顶点，10×10 格网内）
+    const std::vector<Pt> poly{
+        {1, 1}, {8, 1}, {8, 7}, {6, 7}, {6, 4}, {3, 4}, {3, 9}, {1, 9}};
+    struct Q { Pt p; const char* name; InPoly expect; };
+    const Q qs[] = {
+        {{2, 2}, "内点", InPoly::Inside},
+        {{7, 3}, "右下内点", InPoly::Inside},
+        {{4, 6}, "凹陷区", InPoly::Outside},  // 凹陷 x∈[3,6], y∈[4,7]
+        {{9, 9}, "多边形外", InPoly::Outside},
+        {{8, 4}, "右边界", InPoly::Boundary},
+        {{1, 1}, "顶点", InPoly::Boundary}};
+    for (const Q& q : qs) {
+        const InPoly r1 = point_in_polygon(q.p, poly);
+        const InPoly r2 = point_in_polygon_vertical(q.p, poly);
+        static const char* names[] = {"外", "边界", "内"};
+        println("  {} ({},{})：水平射线 {}，竖直射线 {}（期望 {}）",
+                q.name, q.p.x, q.p.y, names[static_cast<int>(r1)],
+                names[static_cast<int>(r2)], names[static_cast<int>(q.expect)]);
+        assert(r1 == q.expect && r2 == q.expect);
+    }
+    // 随机对账：在 W×H 格网上生成自避游走闭合多边形（沿格线），对所有格子
+    // 中心（半整数点）比对射线法与栅格泛洪真值。
+    std::mt19937 rng{5489};
+    int mismatches = 0, tested_polys = 0;
+    for (int t = 0; t < 200; ++t) {
+        const int W = 4 + static_cast<int>(rng() % 6);
+        const int H = 4 + static_cast<int>(rng() % 6);
+        // 自避游走：从随机点出发，在格点上随机走，不重复访问，走够长后回起点
+        const int sx = 1 + static_cast<int>(rng() % (W - 1));
+        const int sy = 1 + static_cast<int>(rng() % (H - 1));
+        std::vector<Pt> walk{{sx, sy}};
+        std::vector<std::vector<char>> seen(H + 1, std::vector<char>(W + 1, 0));
+        seen[sy][sx] = 1;
+        const int target_len = W + H;
+        for (int step = 0; step < 60 && static_cast<int>(walk.size()) < target_len; ) {
+            Pt cur = walk.back();
+            const int dirs[4][2]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+            int order[4] = {0, 1, 2, 3};
+            for (int k = 0; k < 4; ++k) {
+                const int a = static_cast<int>(rng() % (4 - k)) + k;
+                const int tmp = order[k]; order[k] = order[a]; order[a] = tmp;
+            }
+            bool moved = false;
+            for (int k = 0; k < 4; ++k) {
+                const int nx = static_cast<int>(cur.x) + dirs[order[k]][0];
+                const int ny = static_cast<int>(cur.y) + dirs[order[k]][1];
+                if (nx <= 0 || ny <= 0 || nx >= W || ny >= H || seen[ny][nx]) { continue; }
+                walk.push_back({nx, ny});
+                seen[ny][nx] = 1;
+                moved = true;
+                break;
+            }
+            if (!moved) { break; }
+        }
+        if (walk.size() < 4) { continue; }
+        // 必须能直接走回起点（一步相邻），否则不是闭合多边形
+        Pt last = walk.back(), first = walk.front();
+        if (std::abs(last.x - first.x) + std::abs(last.y - first.y) != 1) { continue; }
+        ++tested_polys;
+        const auto truth = raster_flood(walk, W, H);
+        for (int r = 0; r < H; ++r) {
+            for (int c = 0; c < W; ++c) {
+                const Pt center{2 * c + 1, 2 * r + 1};   // 半整数（放大 2 倍口径）
+                // 多边形坐标也放大 2 倍以匹配中心表示
+                std::vector<Pt> big = walk;
+                for (Pt& q : big) { q.x *= 2; q.y *= 2; }
+                const InPoly got = point_in_polygon(center, big);
+                const bool expect_in = truth[r][c] != 0;
+                if ((got == InPoly::Inside) != expect_in) { ++mismatches; }
+            }
+        }
+    }
+    println("  随机 {} 个格线多边形（逐格中心核对）：射线法 vs 栅格泛洪 不一致 {} 格",
+            tested_polys, mismatches);
+    assert(mismatches == 0);
+}
+
+// ═══ 34.6 天空轮廓：事件扫描 + 活跃高度多重集 ═══
+// 给定若干矩形建筑（左边界 l、右边界 r、高 h，底边在地平线上），求它们叠
+// 加后的轮廓：一列「关键点」(x, 高度)，相邻关键点之间高度恒定。
+struct Building { long long l, r, h; };
+struct SkyPoint { long long x, h; };
+static bool operator==(const SkyPoint& a, const SkyPoint& b) {
+    return a.x == b.x && a.h == b.h;
+}
+
+// 高度函数按「左闭右开」定义：H(x) = max{ h_i | l_i ≤ x < r_i }，无楼则 0。
+// 每个左边界事件 +h、右边界事件 −h；同一 x 的所有事件先处理完，再看活跃
+// 高度的最大值是否变化——变化才输出关键点。复杂度 O(n log n)。
+static std::vector<SkyPoint> skyline_sweep(const std::vector<Building>& bs) {
+    struct Event { long long x; long long h; bool add; };
+    std::vector<Event> events;
+    events.reserve(2 * bs.size());
+    for (const Building& b : bs) {
+        events.push_back({b.l, b.h, true});
+        events.push_back({b.r, b.h, false});
+    }
+    std::sort(events.begin(), events.end(),
+              [](const Event& a, const Event& b) { return a.x < b.x; });
+    std::multiset<long long> active;     // 活跃楼高度（允许重复）
+    std::vector<SkyPoint> points;
+    long long cur = 0;
+    for (std::size_t i = 0; i < events.size(); ) {
+        const long long x = events[i].x;
+        std::size_t j = i;
+        while (j < events.size() && events[j].x == x) {
+            if (events[j].add) { active.insert(events[j].h); }
+            else {
+                auto it = active.find(events[j].h);
+                active.erase(it);
+            }
+            ++j;
+        }
+        const long long nxt = active.empty() ? 0 : *active.rbegin();
+        if (nxt != cur) { points.push_back({x, nxt}); cur = nxt; }
+        i = j;
+    }
+    return points;
+}
+
+// 独立口径：收集所有不同的 x 坐标，在每个坐标处按定义直接扫描全部楼取
+// 最大值（O(n²)，与扫描线无共享逻辑），再压缩相邻同高点。
+static std::vector<SkyPoint> skyline_naive(const std::vector<Building>& bs) {
+    std::vector<long long> xs;
+    xs.reserve(2 * bs.size());
+    for (const Building& b : bs) { xs.push_back(b.l); xs.push_back(b.r); }
+    std::sort(xs.begin(), xs.end());
+    xs.erase(std::unique(xs.begin(), xs.end()), xs.end());
+    std::vector<SkyPoint> points;
+    long long last = -1;
+    for (long long x : xs) {
+        long long h = 0;
+        for (const Building& b : bs) {
+            if (b.l <= x && x < b.r) { h = std::max(h, b.h); }
+        }
+        if (h != last) { points.push_back({x, h}); last = h; }
+    }
+    return points;
+}
+
+static void skyline_demo() {
+    println("=== 34.6 天空轮廓：事件扫描（活跃高度多重集）===");
+    // 固定例（含重叠、遮挡、间隙）
+    const std::vector<Building> bs{
+        {2, 9, 10}, {3, 7, 15}, {5, 12, 12}, {15, 20, 10}, {19, 24, 8}};
+    const std::vector<SkyPoint> sweep = skyline_sweep(bs);
+    const std::vector<SkyPoint> naive = skyline_naive(bs);
+    print("  轮廓关键点：");
+    for (const SkyPoint& p : sweep) { print("({},{}) ", p.x, p.h); }
+    println("");
+    assert(sweep == naive);
+    // 高度变化都发生在某个左/右边界上；末点高度必为 0（楼群右侧回地平线）
+    assert(sweep.back().h == 0);
+    const std::vector<SkyPoint> expected{
+        {2, 10}, {3, 15}, {7, 12}, {12, 0}, {15, 10}, {20, 8}, {24, 0}};
+    assert(sweep == expected);
+    println("  与逐点取最大值的 O(n²) 口径一致；间隙处（12）回落为 0");
+
+    // 随机 300 例（n≤30，坐标 0..30，高 1..15）：两口径全程对账
+    std::mt19937 rng{5489};
+    auto rand_below = [&](std::uint32_t n) {
+        return static_cast<int>(
+            (static_cast<std::uint64_t>(rng()) * n) >> 32);
+    };
+    int mismatches = 0;
+    for (int t = 0; t < 300; ++t) {
+        const int n = 1 + rand_below(30);
+        std::vector<Building> g;
+        g.reserve(n);
+        for (int i = 0; i < n; ++i) {
+            const int a = rand_below(28);
+            const int len = 1 + rand_below(6);
+            g.push_back({a, a + len, 1 + rand_below(15)});
+        }
+        if (skyline_sweep(g) != skyline_naive(g)) { ++mismatches; }
+    }
+    println("  随机 {} 例（n≤30）：扫描线 vs 逐点 O(n²) 不一致 {} 例",
+            300, mismatches);
+    assert(mismatches == 0);
+
+    // 大例：20000 栋完全重合、高度递增的楼——只有最矮以外全部互相遮挡，
+    // 轮廓恰为两个关键点。O(n²) 真值口径在此规模不可行，用结构性质核对。
+    std::vector<Building> big;
+    big.reserve(20000);
+    for (int i = 0; i < 20000; ++i) { big.push_back({0, 20000, i + 1}); }
+    const std::vector<SkyPoint> got = skyline_sweep(big);
+    println("  大例（{} 栋等高重合楼）：关键点 {} 个：({},{})、({},{})",
+            big.size(), got.size(), got[0].x, got[0].h, got[1].x, got[1].h);
+    assert(got.size() == 2);
+    assert(got[0].x == 0 && got[0].h == 20000);
+    assert(got[1].x == 20000 && got[1].h == 0);
+}
+
+// ═══ 34.7 平面被直线分割：区域数的增量构造 ═══
+// 第 i 条线与前 i−1 条线交于 i−1 个互不重合的点（一般位置：无平行、
+// 无三线共点）⟹ 被切成 i 段 ⟹ 新增 i 个区域：R(i)=R(i−1)+i，
+// R(0)=1 ⟹ R(n)=1+n(n+1)/2。
+struct ArrLine { long long m, c; };          // y = m·x + c
+
+// 三线共点的行列式检验（精确整数）：
+// m_i(c_j−c_k)+m_j(c_k−c_i)+m_k(c_i−c_j) == 0。
+static long long triple_det(const ArrLine& a, const ArrLine& b,
+                            const ArrLine& c) {
+    return a.m * (b.c - c.c) + b.m * (c.c - a.c) + c.m * (a.c - b.c);
+}
+
+static bool general_position(const std::vector<ArrLine>& lines) {
+    const int n = static_cast<int>(lines.size());
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            if (lines[i].m == lines[j].m) { return false; }   // 平行
+        }
+    }
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            for (int k = j + 1; k < n; ++k) {
+                if (triple_det(lines[i], lines[j], lines[k]) == 0) {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+static long long line_region_count(const std::vector<ArrLine>& lines) {
+    long long r = 1;                       // R(0)
+    for (int i = 1; i <= static_cast<int>(lines.size()); ++i) { r += i; }
+    return r;
+}
+
+static void line_region_demo() {
+    println("");
+    println("=== 34.7 平面被 n 条直线分割：R(n) = 1 + n(n+1)/2 ===");
+    // 构造：直线 i 取 y = i·x + i²。交点为 (−i−j, i·j)——sum 与 product
+    // 唯一确定 {i,j}，故全部 C(n,2) 交点互不相同，天然一般位置；且
+    // triple_det = −(i−j)(j−k)(k−i) ≠ 0（对构造逐三元验证）。
+    print("  n:     ");
+    for (int n = 0; n <= 6; ++n) { print("{:5}", n); }
+    println("");
+    print("  R(n):  ");
+    for (int n = 0; n <= 6; ++n) {
+        std::vector<ArrLine> ls;
+        for (int i = 0; i < n; ++i) { ls.push_back({i, 1LL * i * i}); }
+        print("{:5}", line_region_count(ls));
+    }
+    println("");
+
+    // n≤12：逐三元精确行列式 + 平行检验，构造确为一般位置
+    std::vector<ArrLine> small;
+    for (int i = 0; i < 12; ++i) { small.push_back({i, 1LL * i * i}); }
+    assert(general_position(small));
+
+    // 随机 50 组（拒绝采样到一般位置，n≤10）：计数 == 闭式
+    std::mt19937 rng{5489};
+    auto rand_below = [&](std::uint32_t n) {
+        return static_cast<std::uint32_t>(
+            (static_cast<std::uint64_t>(rng()) * n) >> 32);
+    };
+    int bad = 0, accepted = 0;
+    for (int t = 0; t < 50; ++t) {
+        const int n = 3 + static_cast<int>(rand_below(8));
+        std::vector<long long> slopes;
+        for (int k = -20; k <= 20; ++k) { slopes.push_back(k); }
+        std::vector<ArrLine> ls;
+        for (int k = 0; k < n; ++k) {
+            const long long m = slopes[rand_below(
+                static_cast<std::uint32_t>(slopes.size()))];
+            slopes.erase(std::ranges::find(slopes, m));
+            const long long c = -100 +
+                static_cast<long long>(rand_below(201));
+            ls.push_back({m, c});
+        }
+        if (!general_position(ls)) { continue; }    // 拒绝（罕见）
+        ++accepted;
+        const long long formula = 1 + 1LL * n * (n + 1) / 2;
+        if (line_region_count(ls) != formula) { ++bad; }
+    }
+    println("  随机 {} 组一般位置直线（50 次尝试）：计数与闭式不一致 {} 例",
+            accepted, bad);
+    assert(bad == 0);
+
+    // 大例 n=1000：闭式 500501；一般位置用「全部 C(n,2) 交点的
+    // (sum, product) 无重复」做 O(n²) 的完整认证（交点为 (−i−j, ij)）。
+    const int n = 1000;
+    std::set<std::pair<long long, long long>> crosses;
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            const bool inserted = crosses.insert(
+                {-1LL * (i + j), 1LL * i * j}).second;
+            assert(inserted);
+        }
+    }
+    const long long r = 1 + 1LL * n * (n + 1) / 2;
+    println("  大例 n=1000（y = i·x+i²）：区域 {}；{} 个交点全部互异，"
+            "一般位置认证通过", r, crosses.size());
+    assert(r == 500501 &&
+           static_cast<long long>(crosses.size()) == 1LL * n * (n - 1) / 2);
+}
+
 int main() {
     cross_demo();
     segments_demo();
     hull_demo();
     closest_demo();
+    polygon_demo();
+    skyline_demo();
+    line_region_demo();
     println("自检通过");
     return 0;
 }

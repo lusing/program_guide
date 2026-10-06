@@ -5,7 +5,9 @@
 // 23.14 旅程（树上 2W−最远目标距离，就近贪心对照）/
 // 23.15 循序（全体拓扑序字典序枚举，位置区间误法对照）/
 // 23.16 最优工程布线（网格 BFS、围墙技巧与路径逆向重建）/
-// 23.17 八数字谜题：隐式图 BFS（状态编码、逆序对可解性、IDA* 对账）。
+// 23.17 八数字谜题：隐式图 BFS（状态编码、逆序对可解性、IDA* 对账）/
+// 23.18 n 皇后（逐行回溯，列/双对角三集合，n! 排列枚举对账）/
+// 23.19 地图着色（按顶点回溯，kⁿ 全枚举对账，色多项式抽查）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -2402,6 +2404,232 @@ static void puzzle_demo() {
     assert(hr.explored == 181440);
 }
 
+// ═══ 23.18 n 皇后：逐行回溯 ═══
+// n×n 棋盘放 n 个皇后，任两个不同列、不同主对角线（r−c）、不同副对角线
+// （r+c）。逐行放置——每行恰好一个皇后，行冲突天然不存在，只需检查三个集合。
+struct QueensResult {
+    long long solutions;                  // 合法摆法数
+    long long nodes;                      // 回溯访问的「部分摆法」节点数
+    std::vector<int> first;               // 第一个解：第 r 行皇后所在列
+};
+
+static QueensResult nqueens_solve(int n, bool stop_at_first) {
+    std::vector<char> used_col(n, 0);
+    std::vector<char> used_d1(2 * n - 1, 0);   // r−c + n−1
+    std::vector<char> used_d2(2 * n - 1, 0);   // r+c
+    std::vector<int> place(n, -1);
+    QueensResult r{0, 0, {}};
+    auto dfs = [&](this auto&& self, int row) -> void {
+        if (stop_at_first && r.solutions > 0) { return; }
+        if (row == n) {                   // 完整摆法
+            ++r.solutions;
+            if (r.first.empty()) { r.first = place; }
+            return;
+        }
+        ++r.nodes;
+        for (int c = 0; c < n; ++c) {
+            if (used_col[c] || used_d1[row - c + n - 1] || used_d2[row + c]) {
+                continue;
+            }
+            place[row] = c;
+            used_col[c] = used_d1[row - c + n - 1] = used_d2[row + c] = 1;
+            self(row + 1);
+            used_col[c] = used_d1[row - c + n - 1] = used_d2[row + c] = 0;
+            place[row] = -1;
+            if (stop_at_first && r.solutions > 0) { return; }
+        }
+    };
+    dfs(0);
+    return r;
+}
+
+// 独立口径：枚举列号的全部 n! 个排列（每行皇后的列号），逐对检查对角线。
+// 与回溯法代码路径完全不同——不维护任何增量冲突集合。
+static long long nqueens_perm(int n) {
+    std::vector<int> perm(n);
+    for (int i = 0; i < n; ++i) { perm[i] = i; }
+    long long count = 0;
+    do {
+        bool ok = true;
+        for (int i = 0; i < n && ok; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (std::abs(perm[i] - perm[j]) == j - i) { ok = false; break; }
+            }
+        }
+        count += ok;
+    } while (std::next_permutation(perm.begin(), perm.end()));
+    return count;
+}
+
+static void nqueens_demo() {
+    println("=== 23.18 n 皇后：逐行回溯（列/主对角/副对角三集合）===");
+    // n=1..10 的解数；n≤8 同时与 n! 排列枚举对账
+    print("  n:      ");
+    for (int n = 1; n <= 10; ++n) { print("{:6}", n); }
+    println("");
+    print("  解数:   ");
+    for (int n = 1; n <= 10; ++n) {
+        const QueensResult r = nqueens_solve(n, false);
+        if (n <= 8) { assert(r.solutions == nqueens_perm(n)); }
+        print("{:6}", r.solutions);
+    }
+    println("");
+    // n=8 的节点数与第一个解（经典解之一）
+    const QueensResult r8 = nqueens_solve(8, false);
+    println("  n=8：回溯访问 {} 个部分摆法节点（排列空间 8! = 40320 的约 1/20）",
+            r8.nodes);
+    print("  第一个解：");
+    for (int row = 0; row < 8; ++row) { print("{} ", r8.first[row] + 1); }
+    println("（列号，1 基）");
+    // 打印第一个解的棋盘，直观核对无攻击
+    for (int row = 0; row < 8; ++row) {
+        print("    ");
+        for (int c = 0; c < 8; ++c) { print("{}", c == r8.first[row] ? 'Q' : '.'); }
+        println("");
+    }
+    // n=2、3 无解：解数 0、首解为空
+    assert(nqueens_solve(2, false).solutions == 0);
+    assert(nqueens_solve(3, false).solutions == 0);
+    // 大例：n=24 只找第一个解；校验合法性（列互不相同 + 对角）
+    const QueensResult big = nqueens_solve(24, true);
+    bool valid = true;
+    for (int i = 0; i < 24; ++i) {
+        for (int j = i + 1; j < 24; ++j) {
+            if (big.first[i] == big.first[j] ||
+                std::abs(big.first[i] - big.first[j]) == j - i) { valid = false; }
+        }
+    }
+    println("  大例 n=24：只找一解，访问 {} 节点，方案合法 = {}", big.nodes, valid);
+    assert(valid);
+}
+
+// ═══ 23.19 地图着色：按顶点回溯 ═══
+// 给定无向图与 k 种颜色，求合法着色（相邻顶点异色），并统计着色方案总数。
+struct ColorResult {
+    long long count;                      // 合法 k-着色数；0 表示不可着
+    long long nodes;                      // 回溯节点数
+    std::vector<int> colors;              // 第一个合法着色（找不到为空）
+};
+
+static ColorResult color_backtrack(const std::vector<std::vector<int>>& adj,
+                                   int k, bool stop_at_first = false) {
+    const int n = static_cast<int>(adj.size());
+    std::vector<int> colors(n, -1);
+    ColorResult r{0, 0, {}};
+    auto dfs = [&](this auto&& self, int v) -> void {
+        if (stop_at_first && r.count > 0) { return; }
+        if (v == n) {
+            ++r.count;
+            if (r.colors.empty()) { r.colors = colors; }
+            return;
+        }
+        ++r.nodes;
+        for (int c = 0; c < k; ++c) {
+            bool clash = false;
+            for (int u : adj[v]) {
+                if (colors[u] == c) { clash = true; break; }
+            }
+            if (clash) { continue; }
+            colors[v] = c;
+            self(v + 1);
+            colors[v] = -1;
+            if (stop_at_first && r.count > 0) { return; }
+        }
+    };
+    dfs(0);
+    return r;
+}
+
+// 独立口径：kⁿ 个颜色串全枚举，逐个顶点对检查。小图真值来源。
+static long long color_brute(const std::vector<std::vector<int>>& adj, int k) {
+    const int n = static_cast<int>(adj.size());
+    long long count = 0;
+    const long long total = [&] { long long t = 1; for (int i = 0; i < n; ++i) { t *= k; } return t; }();
+    for (long long code = 0; code < total; ++code) {
+        std::vector<int> colors(n);
+        long long x = code;
+        for (int i = 0; i < n; ++i) { colors[i] = static_cast<int>(x % k); x /= k; }
+        bool ok = true;
+        for (int u = 0; u < n && ok; ++u) {
+            for (int v : adj[u]) {
+                if (colors[u] == colors[v]) { ok = false; break; }
+            }
+        }
+        count += ok;
+    }
+    return count;
+}
+
+static void map_color_demo() {
+    println("=== 23.19 地图着色：按顶点回溯（相邻顶点异色）===");
+    // 固定图：三角形 0-1-2 加挂节点 3；2 色不可着、3 色可着
+    std::vector<std::vector<int>> adj(4);
+    adj[0] = {1, 2};
+    adj[1] = {0, 2, 3};
+    adj[2] = {0, 1};
+    adj[3] = {1};
+    const ColorResult two = color_backtrack(adj, 2);
+    const ColorResult three = color_backtrack(adj, 3);
+    println("  三角+挂点（4 顶点）：2 色方案 {} 个（不可着），3 色方案 {} 个",
+            two.count, three.count);
+    // 三角形的 k 色方案恰为 k(k−1)(k−2)（挂点再乘 k−1）
+    assert(two.count == 0);
+    assert(three.count == 3LL * 2 * 1 * 2);
+    assert(three.colors.size() == 4);
+    print("  第一个 3 色着色：");
+    for (int c : three.colors) { print("{} ", c + 1); }
+    println("（颜色号，1 基）");
+
+    // 随机 1500 个小图（n=2..8，边概率 20%~70%，k=2..4）：回溯 vs kⁿ 枚举
+    std::mt19937 rng{5489};
+    int mismatches = 0;
+    for (int t = 0; t < 1500; ++t) {
+        const int n = 2 + static_cast<int>(rand_below(rng, 7));
+        const int pct = 20 + static_cast<int>(rand_below(rng, 51));
+        const int k = 2 + static_cast<int>(rand_below(rng, 3));
+        std::vector<std::vector<int>> g(n);
+        for (int u = 0; u < n; ++u) {
+            for (int v = u + 1; v < n; ++v) {
+                if (static_cast<int>(rand_below(rng, 100)) < pct) {
+                    g[u].push_back(v);
+                    g[v].push_back(u);
+                }
+            }
+        }
+        if (color_backtrack(g, k).count != color_brute(g, k)) { ++mismatches; }
+    }
+    println("  随机 {} 个小图（n≤8，k=2..4）：回溯 vs kⁿ 枚举 不一致 {} 例",
+            1500, mismatches);
+    assert(mismatches == 0);
+
+    // 大例：120 个顶点的环——2 色恰好可着；回溯节点数体现「无解时早早
+    // 剪枝 vs 有解一路到底」
+    const int n = 120;
+    std::vector<std::vector<int>> big(n);
+    for (int i = 0; i < n; ++i) {
+        const int a = i, b = (i + 1) % n;
+        big[a].push_back(b);
+        big[b].push_back(a);
+    }
+    const ColorResult big2 = color_backtrack(big, 2);
+    const ColorResult big3 = color_backtrack(big, 3, true);  // 只取首方案
+    println("  大例（{} 顶点环）：2 色方案 {} 个（环偶恰可着），回溯 {} 节点；"
+            "3 色只取首方案（回溯 {} 节点）", n, big2.count, big2.nodes,
+            big3.nodes);
+    assert(big2.count == 2);
+    // 环的 k 色方案数为 (k−1)ⁿ + (−1)ⁿ(k−1)：3 色时约 2¹²⁰，既数不完也
+    // 超出 long long，大例只核对首方案合法性（精确计数已在随机小例暴力对账）。
+    bool valid = true;
+    for (int u = 0; u < n; ++u) {
+        for (int v : big[u]) {
+            if (big3.colors[u] == big3.colors[v]) { valid = false; }
+        }
+    }
+    println("  3 色首方案合法性 = {}（精确总数 2¹²⁰+2 超 long long，不参与计数断言）",
+            valid);
+    assert(valid && big3.colors.size() == n);
+}
+
 int main() {
     representation_demo();
     bfs_demo();
@@ -2421,6 +2649,8 @@ int main() {
     following_orders_demo();
     wiring_demo();
     puzzle_demo();
+    nqueens_demo();
+    map_color_demo();
     println("自检通过");
     return 0;
 }

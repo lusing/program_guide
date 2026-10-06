@@ -3,7 +3,8 @@
 // 35.3 CLIQUE → VERTEX-COVER（补图变换）/ 35.4 满足解 ↔ 团 ↔ 覆盖的
 // 三方对账（暴力真值枚举当裁判）/ 35.5 回溯三框架与剪枝清单（排列树必须 swap
 // 还原、剪枝量化）/ 35.6 状压 DP 精确求图色数 χ(G)（O(3ⁿ)，含完整正确性证明）/
-// 35.7 三角 N-后：三重求和证上界 ⌊(2N+1)/3⌋ + 奇偶两段 O(N) 构造。
+// 35.7 三角 N-后：三重求和证上界 ⌊(2N+1)/3⌋ + 奇偶两段 O(N) 构造 /
+// 35.8 TSP 分支限界：归约矩阵下界 + include/exclude 二叉分支。
 // 文档重章、示例轻量——理论细节见 docs/35。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
@@ -21,9 +22,16 @@ using std::println;
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+#include <limits>
 #include <numeric>
+#include <random>
 #include <string>
 #include <vector>
+
+static std::uint32_t rand_below(std::mt19937& rng, std::uint32_t n) {
+    return static_cast<std::uint32_t>(
+        (static_cast<std::uint64_t>(rng()) * n) >> 32);
+}
 
 // ═══ 35.2 实例：3-SAT ═══
 // (x1 ∨ ¬x2 ∨ x3) ∧ (¬x1 ∨ x2 ∨ x4) ∧ (¬x2 ∨ ¬x3 ∨ x4) ∧ (x1 ∨ x2 ∨ ¬x4)
@@ -564,6 +572,168 @@ static void triangular_queens_demo() {
     println("  这里连 2ⁿ 都不能搜 —— **同样是 NP 问题，判定规模决定用搜索还是用构造**。");
 }
 
+// ═══ 35.8 TSP 分支限界：归约矩阵下界 ═══
+// 完全有向图，权矩阵 w（对角 INF）。每条旅游恰从每行选一格、每列选一格。
+static constexpr int kInfEdge = 1000000000;
+
+// 归约：每个存活行减去行内最小值（不产生负数），列同样；返回减去的常数和。
+// 常数和是「任何与已定前缀相容的旅游都至少要付」的成本——下界。
+static long long reduce_tsp_matrix(
+    std::vector<std::vector<int>>& a,
+    const std::vector<char>& dead_row, const std::vector<char>& dead_col) {
+    const int n = static_cast<int>(a.size());
+    long long cut = 0;
+    for (int i = 0; i < n; ++i) {
+        if (dead_row[i]) { continue; }
+        int m = kInfEdge;
+        for (int j = 0; j < n; ++j) {
+            if (!dead_col[j]) { m = std::min(m, a[i][j]); }
+        }
+        if (0 < m && m < kInfEdge) {
+            cut += m;
+            for (int j = 0; j < n; ++j) {
+                if (!dead_col[j] && a[i][j] < kInfEdge) { a[i][j] -= m; }
+            }
+        }
+    }
+    for (int j = 0; j < n; ++j) {
+        if (dead_col[j]) { continue; }
+        int m = kInfEdge;
+        for (int i = 0; i < n; ++i) {
+            if (!dead_row[i]) { m = std::min(m, a[i][j]); }
+        }
+        if (0 < m && m < kInfEdge) {
+            cut += m;
+            for (int i = 0; i < n; ++i) {
+                if (!dead_row[i] && a[i][j] < kInfEdge) { a[i][j] -= m; }
+            }
+        }
+    }
+    return cut;
+}
+
+struct TspAnswer { long long cost; long long nodes; std::vector<int> tour; };
+
+static TspAnswer tsp_branch_bound(const std::vector<std::vector<int>>& w) {
+    const int n = static_cast<int>(w.size());
+    std::vector<std::vector<int>> root = w;
+    for (int i = 0; i < n; ++i) { root[i][i] = kInfEdge; }
+    const long long root_lb = reduce_tsp_matrix(
+        root, std::vector<char>(n, 0), std::vector<char>(n, 0));
+
+    TspAnswer ans{std::numeric_limits<long long>::max(), 0, {}};
+    // 状态：归约矩阵、下界、已定前缀（从 0 出发的顶点序）、死行/死列。
+    auto dfs = [&](this auto&& self, std::vector<std::vector<int>> a, long long lb,
+                   std::vector<int> path, std::vector<char> dr,
+                   std::vector<char> dc, int depth) -> void {
+        ++ans.nodes;
+        if (lb >= ans.cost) { return; }          // 下界已不优于现行解
+        if (depth == n - 1) {                    // 前缀含全部顶点，闭合回 0
+            long long cost = 0;
+            for (int k = 0; k < n - 1; ++k) {
+                cost += w[path[k]][path[k + 1]];
+            }
+            cost += w[path[n - 1]][0];           // 用原矩阵算真实代价
+            if (cost < ans.cost) { ans.cost = cost; ans.tour = path; }
+            return;
+        }
+        const int end = path.back();
+        int jstar = -1;
+        for (int j = 0; j < n; ++j) {
+            if (!dc[j] && a[end][j] == 0) { jstar = j; break; }
+        }
+        if (jstar == -1) { return; }             // 无可行出边：前缀死路
+        // 包含支：定边 end→jstar——死行 end、死列 jstar，追加顶点
+        {
+            auto ca = a;
+            auto cdr = dr, cdc = dc;
+            cdr[end] = 1; cdc[jstar] = 1;
+            // 防子回路：禁掉 jstar 直接回起点 0——前缀未含全部顶点时闭合
+            // 就会形成短环（其余行只能自相成环）。最后一条边不设，留给叶闭合。
+            if (depth + 1 < n - 1) { ca[jstar][0] = kInfEdge; }
+            const long long extra = reduce_tsp_matrix(ca, cdr, cdc);
+            auto cp = path; cp.push_back(jstar);
+            self(std::move(ca), lb + extra, std::move(cp), cdr, cdc,
+                 depth + 1);
+        }
+        // 排除支：end→jstar 禁用，重新归约（下界可能抬高）
+        {
+            auto ca = a;
+            ca[end][jstar] = kInfEdge;
+            const long long extra = reduce_tsp_matrix(ca, dr, dc);
+            self(std::move(ca), lb + extra, path, dr, dc, depth);
+        }
+    };
+    dfs(std::move(root), root_lb, {0}, std::vector<char>(n, 0),
+        std::vector<char>(n, 0), 0);
+    return ans;
+}
+
+// 独立口径：枚举 (n−1)! 条旅游。
+static long long tsp_brute(const std::vector<std::vector<int>>& w) {
+    const int n = static_cast<int>(w.size());
+    std::vector<int> perm;
+    for (int i = 1; i < n; ++i) { perm.push_back(i); }
+    long long best = std::numeric_limits<long long>::max();
+    do {
+        long long cost = w[0][perm[0]];
+        for (int k = 0; k + 1 < n - 1; ++k) { cost += w[perm[k]][perm[k + 1]]; }
+        cost += w[perm[n - 2]][0];
+        best = std::min(best, cost);
+    } while (std::next_permutation(perm.begin(), perm.end()));
+    return best;
+}
+
+static void tsp_bb_demo() {
+    println("");
+    println("=== 35.8 TSP 分支限界：归约矩阵下界 + 包含/排除分支 ===");
+    // 固定 5 顶点矩阵
+    std::vector<std::vector<int>> w{
+        {0, 5, 8, 6, 7},
+        {6, 0, 9, 4, 3},
+        {8, 2, 0, 5, 6},
+        {5, 7, 3, 0, 9},
+        {4, 8, 6, 2, 0}};
+    const TspAnswer r = tsp_branch_bound(w);
+    const long long truth = tsp_brute(w);
+    print("  5 顶点：B&B 最优代价 {}，路径 0", r.cost);
+    for (int v : r.tour) { if (v != 0) { print("→{}", v); } }
+    println("→0；暴力 (n−1)!=24 枚举 {}；访问 {} 节点", truth, r.nodes);
+    assert(r.cost == truth);
+
+    // 随机 300 个 n=4..8 矩阵（权 1..40）：与暴力对账
+    std::mt19937 rng{5489};
+    long long total_nodes = 0;
+    int mismatches = 0;
+    for (int t = 0; t < 300; ++t) {
+        const int n = 4 + static_cast<int>(rand_below(rng, 5));
+        std::vector<std::vector<int>> g(n, std::vector<int>(n, 0));
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                g[i][j] = (i == j) ? 0 : 1 + static_cast<int>(rand_below(rng, 40));
+            }
+        }
+        const TspAnswer a = tsp_branch_bound(g);
+        total_nodes += a.nodes;
+        if (a.cost != tsp_brute(g)) { ++mismatches; }
+    }
+    println("  随机 {} 个矩阵（n=4..8）：与 (n−1)! 暴力不一致 {} 例；"
+            "平均访问 {:.1f} 节点", 300, mismatches,
+            static_cast<double>(total_nodes) / 300);
+    assert(mismatches == 0);
+
+    // 大例：n=24，植入环游边权 1、其余边 100——最优必为植入环（代价 24）
+    const int n = 24;
+    std::vector<std::vector<int>> big(n, std::vector<int>(n, 100));
+    for (int i = 0; i < n; ++i) { big[i][(i + 1) % n] = 1; }
+    const TspAnswer b = tsp_branch_bound(big);
+    double f24 = 1;                    // 23! ≈ 2.585×10²² 超出 long long
+    for (int k = 2; k <= n - 1; ++k) { f24 *= k; }
+    println("  大例 n=24（植入环权 1、其余 100）：代价 {}，{} 节点（暴力需枚举 "
+            "(n−1)! ≈ {:.4g} 条）", b.cost, b.nodes, f24);
+    assert(b.cost == n && b.nodes < 500);
+}
+
 int main() {
     println("NP 完全性的可执行归约（实例：4 子句 3-SAT，4 变量）：");
     println("  公式 = (x1∨¬x2∨x3)∧(¬x1∨x2∨x4)∧(¬x2∨¬x3∨x4)∧(x1∨x2∨¬x4)");
@@ -609,6 +779,7 @@ int main() {
     backtrack_frameworks_demo();
     chromatic_demo();
     triangular_queens_demo();
+    tsp_bb_demo();
     println("自检通过");
     return 0;
 }
