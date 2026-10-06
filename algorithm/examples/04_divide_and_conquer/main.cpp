@@ -17,6 +17,7 @@ using std::println;
 #endif
 
 #include <algorithm>
+#include <bit>
 #include <cassert>
 #include <cstdint>
 #include <limits>
@@ -978,6 +979,239 @@ static void dna_sort_demo() {
     assert(mismatches == 0);
 }
 
+// ═══ 04.8 汉诺塔：递归与非递归（观察小例得到规律）═══
+// 三根柱 0（起点）、1（中转）、2（目标），n 个盘子从小到大编号 1..n。
+// 规则：一次搬一个；只能动柱顶；大盘不能压小盘。目标是把整塔从 0 移到 2。
+struct HanoiMove { int disk; int from; int to; };
+
+static bool operator==(const HanoiMove& a, const HanoiMove& b) {
+    return a.disk == b.disk && a.from == b.from && a.to == b.to;
+}
+
+// 递归：把 n 个盘 from→to（via 中转）。先把上面 n−1 个移到 via，再搬最大的，
+// 最后把 n−1 个从 via 移到 to。搬运次数 T(n)=2T(n−1)+1，T(0)=0 ⟹ T(n)=2ⁿ−1。
+static void hanoi_rec(int n, int from, int via, int to,
+                      std::vector<HanoiMove>& moves) {
+    if (n == 0) { return; }
+    hanoi_rec(n - 1, from, to, via, moves);
+    moves.push_back({n, from, to});
+    hanoi_rec(n - 1, via, from, to, moves);
+}
+
+// 非递归。观察 3、4 个盘子的完整搬运记录可得两条规律：
+//  规律一（搬谁）：第 i 步搬的盘子号 = i 中因子 2 的最高幂次 +1，即
+//      i = 2ᵏ·奇数 ⟹ 搬 k+1 号盘。换句话说 1 号盘隔 1 步动一次，2 号盘隔
+//      3 步（每 4 步）动一次，3 号盘每 8 步动一次……
+//  规律二（方向）：每个盘子沿一根固定的三柱循环移动。n+d 为偶数时
+//      0→2→1→0；n+d 为奇数时 0→1→2→0。奇号盘与偶号盘方向相反；n 的奇偶
+//      翻转会把所有盘子的方向整体翻转（与小例记录一致）。
+static std::vector<HanoiMove> hanoi_iter(int n) {
+    std::vector<HanoiMove> moves;
+    moves.reserve(static_cast<std::size_t>((1LL << n) - 1));
+    std::vector<int> pos(n + 1, 0);       // pos[d]：d 号盘当前所在柱
+    // peg_stack[p]：p 柱上的盘子，back() 为柱顶；初始时 n..1 全在 0 号柱。
+    std::vector<std::vector<int>> peg_stack(3);
+    for (int d = n; d >= 1; --d) { peg_stack[0].push_back(d); }
+    const long long total = (1LL << n) - 1;
+    for (long long step = 1; step <= total; ++step) {
+        // countr_zero：step 末尾 0 的个数 = 因子 2 的幂次
+        const int d = std::countr_zero(static_cast<std::uint64_t>(step)) + 1;
+        const int from = pos[d];
+        int to;
+        if ((n + d) % 2 == 0) {           // 循环 0→2→1→0
+            to = from == 0 ? 2 : from == 2 ? 1 : 0;
+        } else {                          // 循环 0→1→2→0
+            to = from == 2 ? 0 : from + 1;
+        }
+        // 合法性自检：d 必须是出发柱柱顶；目标柱为空或柱顶盘更大。
+        assert(peg_stack[from].back() == d);
+        assert(peg_stack[to].empty() || peg_stack[to].back() > d);
+        peg_stack[from].pop_back();
+        pos[d] = to;
+        peg_stack[to].push_back(d);
+        moves.push_back({d, from, to});
+    }
+    return moves;
+}
+
+static void hanoi_demo() {
+    println("=== 04.8 汉诺塔：递归与非递归（2ⁿ−1 次搬动）===");
+    // 小例：3 个盘子，打印全部 7 步，逐步验证合法性
+    std::vector<HanoiMove> rec3;
+    hanoi_rec(3, 0, 1, 2, rec3);
+    const std::vector<HanoiMove> iter3 = hanoi_iter(3);
+    println("  3 个盘子（递归给出的全部 {} 步）：", rec3.size());
+    static const char peg_name[] = {'A', 'B', 'C'};
+    for (std::size_t i = 0; i < rec3.size(); ++i) {
+        const HanoiMove& m = rec3[i];
+        println("    步{}：{} 号盘 {}→{}", i + 1, m.disk,
+                peg_name[m.from], peg_name[m.to]);
+        assert(rec3[i].disk == iter3[i].disk);
+        assert(rec3[i].from == iter3[i].from);
+        assert(rec3[i].to == iter3[i].to);
+    }
+    // n=1..16：递归与非递归逐步完全一致；步数恰为 2ⁿ−1
+    int mismatches = 0;
+    for (int n = 1; n <= 16; ++n) {
+        std::vector<HanoiMove> r;
+        hanoi_rec(n, 0, 1, 2, r);
+        const std::vector<HanoiMove> it = hanoi_iter(n);
+        if (r != it || static_cast<long long>(r.size()) != (1LL << n) - 1) {
+            ++mismatches;
+        }
+    }
+    println("  n=1..16：递归 vs 非递归逐步不一致 {} 例；步数均为 2ⁿ−1", mismatches);
+    // 大例：n=24 只生成非递归序列（1677 万步），核对首步、末步与步数
+    const int big = 24;
+    const std::vector<HanoiMove> big_moves = hanoi_iter(big);
+    println("  大例 n={}：共 {} 步；首步 {} 号盘 {}→{}，末步 {} 号盘 {}→{}",
+            big, big_moves.size(),
+            big_moves.front().disk, peg_name[big_moves.front().from],
+            peg_name[big_moves.front().to],
+            big_moves.back().disk, peg_name[big_moves.back().from],
+            peg_name[big_moves.back().to]);
+    assert(mismatches == 0);
+    assert(big_moves.size() == static_cast<std::size_t>((1LL << big) - 1));
+    assert(big_moves.front().disk == 1 && big_moves.front().from == 0);
+    assert(big_moves.back().disk == 1 && big_moves.back().to == 2);
+}
+
+// ═══ 04.9 二维极点：分治法 ═══
+// 点 p 支配 q ⟺ p.x>q.x 且 p.y>q.y（严格大于）。极点 = 没有被任何点支配的点，
+// 即右上方没有点的点。注意定义严格：坐标相同的两个点互不支配。
+struct MaxPoint { int x, y; };
+
+static bool operator==(const MaxPoint& a, const MaxPoint& b) {
+    return a.x == b.x && a.y == b.y;
+}
+
+// 暴力：每对点比一次，O(n²)。小实例的真值来源。
+static std::vector<MaxPoint> maxima_brute(const std::vector<MaxPoint>& pts) {
+    std::vector<MaxPoint> out;
+    for (const MaxPoint& p : pts) {
+        bool dominated = false;
+        for (const MaxPoint& q : pts) {
+            if (q.x > p.x && q.y > p.y) { dominated = true; break; }
+        }
+        if (!dominated) { out.push_back(p); }
+    }
+    std::ranges::sort(out, {}, [](const MaxPoint& p) {
+        return static_cast<long long>(p.x) * 100000 + p.y; });
+    return out;
+}
+
+// 分治：pts 已按 x 升序（允许相等）。从中间竖切，左右各递归求极点。
+// 合并：右侧任何点的 x 都 ≥ 左侧点的 x，所以一个左侧极点被淘汰 ⟺ 存在右侧
+// 点 y 比它高（取等不支配，保留）。右侧全体最大高度 h = 右侧极点的最大 y
+// （全局最高的点不可能被支配），于是左侧极点里 y ≥ h 的全部保留。
+static std::vector<MaxPoint> maxima_dc_rec(const std::vector<MaxPoint>& pts,
+                                           std::size_t lo, std::size_t hi) {
+    if (hi - lo == 1) { return {pts[lo]}; }
+    // 整段 x 相同：点之间互不支配，全部是本段子问题的极点。
+    if (pts[lo].x == pts[hi - 1].x) {
+        return std::vector<MaxPoint>(pts.begin() + static_cast<std::ptrdiff_t>(lo),
+                                     pts.begin() + static_cast<std::ptrdiff_t>(hi));
+    }
+    // 切分点必须落在 x 组的边界上：把 mid 推到与其左侧点 x 相等的整组之后，
+    // 否则同 x 的两个点分居两侧时，左点会被「同 x 但更高 y」的右点误淘汰
+    // （同 x 根本不构成支配）。
+    std::size_t mid = lo + (hi - lo) / 2;
+    while (mid < hi && pts[mid - 1].x == pts[mid].x) { ++mid; }
+    if (mid == hi) {                 // 后缀全是同一 x 组：改向左找边界
+        mid = lo + (hi - lo) / 2;
+        while (mid > lo && pts[mid - 1].x == pts[mid].x) { --mid; }
+    }
+    std::vector<MaxPoint> left = maxima_dc_rec(pts, lo, mid);
+    std::vector<MaxPoint> right = maxima_dc_rec(pts, mid, hi);
+    int h = std::numeric_limits<int>::min();
+    for (const MaxPoint& p : right) { h = std::max(h, p.y); }
+    std::vector<MaxPoint> merged = std::move(right);
+    for (const MaxPoint& p : left) {
+        if (p.y >= h) { merged.push_back(p); }
+    }
+    return merged;
+}
+
+static std::vector<MaxPoint> maxima_divide_conquer(std::vector<MaxPoint> pts) {
+    std::ranges::sort(pts, {}, &MaxPoint::x);
+    std::vector<MaxPoint> out = maxima_dc_rec(pts, 0, pts.size());
+    std::ranges::sort(out, {}, [](const MaxPoint& p) {
+        return static_cast<long long>(p.x) * 100000 + p.y; });
+    return out;
+}
+
+// 第三种口径（扫描法，同 O(n lg n)）：x 降序扫，维护「已扫描点」（严格更靠右）
+// 的最高 y；当前点 y ≥ 该高度就是极点。x 相等的点要成组处理，因为同组点互不
+// 支配，组内的高点不能用来淘汰组内的低点。
+static std::vector<MaxPoint> maxima_sweep(std::vector<MaxPoint> pts) {
+    std::ranges::sort(pts, std::ranges::greater{}, &MaxPoint::x);
+    std::vector<MaxPoint> out;
+    int best = std::numeric_limits<int>::min();
+    for (std::size_t i = 0; i < pts.size();) {
+        std::size_t j = i;
+        int group_best = best;
+        while (j < pts.size() && pts[j].x == pts[i].x) {
+            if (pts[j].y >= best) { out.push_back(pts[j]); }
+            group_best = std::max(group_best, pts[j].y);
+            ++j;
+        }
+        best = group_best;
+        i = j;
+    }
+    std::ranges::sort(out, {}, [](const MaxPoint& p) {
+        return static_cast<long long>(p.x) * 100000 + p.y; });
+    return out;
+}
+
+static void maxima_demo() {
+    println("=== 04.9 二维极点：分治合并（右侧最高 h 淘汰左侧）===");
+    const std::vector<MaxPoint> pts{
+        {2, 1}, {4, 3}, {4, 7}, {6, 4}, {8, 2},
+        {9, 9}, {10, 6}, {12, 1}, {15, 7}, {15, 10}};
+    const std::vector<MaxPoint> truth = maxima_brute(pts);
+    const std::vector<MaxPoint> dc = maxima_divide_conquer(pts);
+    const std::vector<MaxPoint> sw = maxima_sweep(pts);
+    println("  共 {} 个点，极点 {} 个：", pts.size(), truth.size());
+    for (const MaxPoint& p : truth) { print(" ({},{})", p.x, p.y); }
+    println("");
+    // 三种口径一致；并核对「极点的右上方确实没有点」
+    assert(dc == truth && sw == truth);
+    for (const MaxPoint& p : truth) {
+        for (const MaxPoint& q : pts) {
+            assert(!(q.x > p.x && q.y > p.y));
+        }
+    }
+    // 随机 3000 例（n≤14，坐标 0..7，允许重复）：三口径对账
+    std::mt19937 rng{5489};
+    int mismatches = 0;
+    for (int t = 0; t < 3000; ++t) {
+        const int n = 1 + rand_below(rng, 14);
+        std::vector<MaxPoint> r;
+        r.reserve(n);
+        for (int i = 0; i < n; ++i) {
+            r.push_back({static_cast<int>(rand_below(rng, 8)),
+                         static_cast<int>(rand_below(rng, 8))});
+        }
+        if (maxima_brute(r) != maxima_divide_conquer(r) ||
+            maxima_brute(r) != maxima_sweep(r)) { ++mismatches; }
+    }
+    println("  随机 {} 例（坐标 0..7，允许重复）：暴力/分治/扫描 不一致 {} 例",
+            3000, mismatches);
+    // 大例：10 万个点，分治与扫描一致（暴力 O(n²) 不再参与）
+    std::vector<MaxPoint> big;
+    big.reserve(100000);
+    for (int i = 0; i < 100000; ++i) {
+        big.push_back({static_cast<int>(rand_below(rng, 1000000)),
+                       static_cast<int>(rand_below(rng, 1000000))});
+    }
+    const std::vector<MaxPoint> big_dc = maxima_divide_conquer(big);
+    const std::vector<MaxPoint> big_sw = maxima_sweep(big);
+    println("  大例（10 万点）：极点 {} 个；分治 vs 扫描一致 = {}",
+            big_dc.size(), big_dc == big_sw);
+    assert(mismatches == 0);
+    assert(big_dc == big_sw);
+}
+
 int main() {
     max_subarray_demo();
     strassen_demo();
@@ -986,6 +1220,8 @@ int main() {
     binary_search_demo();
     fractional_bisect_demo();
     dna_sort_demo();
+    hanoi_demo();
+    maxima_demo();
     println("自检通过");
     return 0;
 }

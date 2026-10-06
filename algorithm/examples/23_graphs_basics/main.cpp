@@ -4,7 +4,8 @@
 // 23.13 图的两个计数问题：握手定理判谎（1-9）、状态空间 BFS（1-6）/
 // 23.14 旅程（树上 2W−最远目标距离，就近贪心对照）/
 // 23.15 循序（全体拓扑序字典序枚举，位置区间误法对照）/
-// 23.16 最优工程布线（网格 BFS、围墙技巧与路径逆向重建）。
+// 23.16 最优工程布线（网格 BFS、围墙技巧与路径逆向重建）/
+// 23.17 八数字谜题：隐式图 BFS（状态编码、逆序对可解性、IDA* 对账）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -22,12 +23,16 @@ using std::println;
 #include <array>
 #include <cassert>
 #include <cstdint>
+#include <cmath>
+#include <cstdlib>
 #include <deque>
 #include <functional>
+#include <limits>
 #include <numeric>
 #include <queue>
 #include <random>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -2148,6 +2153,255 @@ static void wiring_demo() {
             path.size(), 2 * big - 1);
 }
 
+// ═══ 23.17 八数字谜题：隐式图上的 BFS ═══
+// 3×3 棋盘上有数字 1..8 和一个空格（用 0 表示）；一步 = 空格与上下左右相邻数字
+// 交换。给定初态，求到达目标态
+//   1 2 3
+//   4 5 6
+//   7 8 _
+// 的最少步数。棋盘格局是「顶点」，一次合法交换是「边」——问题就是隐式图上的 BFS。
+using PuzzleCode = std::uint64_t;
+
+static PuzzleCode puzzle_encode(const std::array<int, 9>& t) {
+    PuzzleCode code = 0;
+    for (int i = 0; i < 9; ++i) { code |= static_cast<PuzzleCode>(t[static_cast<std::size_t>(i)]) << (4 * i); }
+    return code;
+}
+
+static std::array<int, 9> puzzle_decode(PuzzleCode code) {
+    std::array<int, 9> t{};
+    for (int i = 0; i < 9; ++i) { t[static_cast<std::size_t>(i)] = static_cast<int>((code >> (4 * i)) & 0xF); }
+    return t;
+}
+
+static const PuzzleCode kPuzzleGoal = [] {
+    std::array<int, 9> g{1, 2, 3, 4, 5, 6, 7, 8, 0};
+    return puzzle_encode(g);
+}();
+
+// 空格相邻位置：行/列都相邻（pos 线性下标 0..8）
+static std::array<int, 4> puzzle_neighbors(int pos, int& count) {
+    std::array<int, 4> nb{-1, -1, -1, -1};
+    count = 0;
+    const int r = pos / 3, c = pos % 3;
+    static const int dr[4]{-1, 1, 0, 0}, dc[4]{0, 0, -1, 1};
+    for (int k = 0; k < 4; ++k) {
+        const int nr = r + dr[k], nc = c + dc[k];
+        if (0 <= nr && nr < 3 && 0 <= nc && nc < 3) {
+            nb[static_cast<std::size_t>(count++)] = nr * 3 + nc;
+        }
+    }
+    return nb;
+}
+
+struct PuzzleResult {
+    int moves;
+    long long explored;                   // BFS 登记进 visited 的格局数
+    std::vector<PuzzleCode> path;         // 初态 → 目标态
+};
+
+static PuzzleResult puzzle_bfs(PuzzleCode start) {
+    std::unordered_map<PuzzleCode, PuzzleCode> parent;
+    parent.reserve(200000);
+    std::deque<PuzzleCode> queue;
+    queue.push_back(start);
+    parent.emplace(start, start);
+    while (!queue.empty()) {
+        const PuzzleCode cur = queue.front();
+        queue.pop_front();
+        if (cur == kPuzzleGoal) { break; }
+        const std::array<int, 9> t = puzzle_decode(cur);
+        int blank = 0;
+        while (t[static_cast<std::size_t>(blank)] != 0) { ++blank; }
+        int cnt = 0;
+        const std::array<int, 4> nb = puzzle_neighbors(blank, cnt);
+        for (int k = 0; k < cnt; ++k) {
+            std::array<int, 9> nt = t;
+            std::swap(nt[static_cast<std::size_t>(blank)],
+                      nt[static_cast<std::size_t>(nb[static_cast<std::size_t>(k)])]);
+            if (const PuzzleCode nc = puzzle_encode(nt);
+                parent.emplace(nc, cur).second) {
+                queue.push_back(nc);
+            }
+        }
+    }
+    // 重建：从目标沿 parent 回到初态，再反转
+    std::vector<PuzzleCode> path;
+    if (!parent.contains(kPuzzleGoal)) { return {-1, static_cast<long long>(parent.size()), path}; }
+    for (PuzzleCode c = kPuzzleGoal;; c = parent[c]) {
+        path.push_back(c);
+        if (c == start) { break; }
+    }
+    std::ranges::reverse(path);
+    return {static_cast<int>(path.size()) - 1, static_cast<long long>(parent.size()),
+            std::move(path)};
+}
+
+// 可解性：把九格按行展开、去掉空格后数逆序对。每次水平/竖直交换都会让逆序对数
+// 的奇偶保持不变（竖直交换等价于数字跨两位移动，逆序对改变数为偶数），而目标
+// 态逆序对数为 0（偶数）——逆序对为奇数的初态永远不可解。
+static bool puzzle_solvable(const std::array<int, 9>& t) {
+    int inv = 0;
+    for (int i = 0; i < 9; ++i) {
+        if (t[static_cast<std::size_t>(i)] == 0) { continue; }
+        for (int j = i + 1; j < 9; ++j) {
+            if (t[static_cast<std::size_t>(j)] != 0 &&
+                t[static_cast<std::size_t>(j)] < t[static_cast<std::size_t>(i)]) { ++inv; }
+        }
+    }
+    return inv % 2 == 0;
+}
+
+// 独立对账：IDA* —— 曼哈顿距离之和是可采纳启发式（每步每个数字至多接近目标格
+// 1，故实际步数 ≥ h）。迭代加深搜索第一次到达目标的深度就是最短步数；算法与
+// BFS 完全独立，结果必须一致。
+static int puzzle_manhattan(const std::array<int, 9>& t) {
+    int h = 0;
+    for (int i = 0; i < 9; ++i) {
+        const int tile = t[static_cast<std::size_t>(i)];
+        if (tile == 0) { continue; }
+        const int goal_pos = tile - 1;
+        h += std::abs(i / 3 - goal_pos / 3) + std::abs(i % 3 - goal_pos % 3);
+    }
+    return h;
+}
+
+static int ida_dfs(std::array<int, 9> t, int blank, int g, int bound,
+                   long long& nodes) {
+    ++nodes;
+    const int f = g + puzzle_manhattan(t);
+    if (f > bound) { return f; }
+    if (puzzle_manhattan(t) == 0) { return -1; }   // 到达目标
+    int smallest = std::numeric_limits<int>::max();
+    int cnt = 0;
+    const std::array<int, 4> nb = puzzle_neighbors(blank, cnt);
+    for (int k = 0; k < cnt; ++k) {
+        const int nbp = nb[static_cast<std::size_t>(k)];
+        std::swap(t[static_cast<std::size_t>(blank)],
+                  t[static_cast<std::size_t>(nbp)]);
+        const int r = ida_dfs(t, nbp, g + 1, bound, nodes);
+        if (r == -1) { return -1; }
+        smallest = std::min(smallest, r);
+        std::swap(t[static_cast<std::size_t>(blank)],
+                  t[static_cast<std::size_t>(nbp)]);
+    }
+    return smallest;
+}
+
+static int ida_star(PuzzleCode start, long long& nodes) {
+    std::array<int, 9> t = puzzle_decode(start);
+    int blank = 0;
+    while (t[static_cast<std::size_t>(blank)] != 0) { ++blank; }
+    int bound = puzzle_manhattan(t);
+    nodes = 0;
+    for (;;) {
+        const int r = ida_dfs(t, blank, 0, bound, nodes);
+        if (r == -1) { return bound; }
+        bound = r;
+    }
+}
+
+static void print_puzzle_board(const std::array<int, 9>& t) {
+    for (int r = 0; r < 3; ++r) {
+        print("    ");
+        for (int c = 0; c < 3; ++c) {
+            const int v = t[static_cast<std::size_t>(r * 3 + c)];
+            if (v == 0) { print("_ "); } else { print("{} ", v); }
+        }
+        println("");
+    }
+}
+
+static void puzzle_demo() {
+    println("=== 23.17 八数字谜题：隐式图 BFS（最少步数 + 路径重建）===");
+    // 从目标态做 6 次随机「退步」构造一个确定的、保证可解的初态
+    std::mt19937 rng{5489};
+    std::array<int, 9> t{1, 2, 3, 4, 5, 6, 7, 8, 0};
+    int blank = 8;
+    int prev = -1;
+    for (int s = 0; s < 6; ++s) {
+        int cnt = 0;
+        std::array<int, 4> nb = puzzle_neighbors(blank, cnt);
+        int choices[4], nch = 0;
+        for (int k = 0; k < cnt; ++k) {
+            if (nb[static_cast<std::size_t>(k)] != prev) { choices[nch++] = nb[k]; }
+        }
+        const int pick = choices[rand_below(rng, static_cast<std::uint32_t>(nch))];
+        std::swap(t[static_cast<std::size_t>(blank)], t[static_cast<std::size_t>(pick)]);
+        prev = blank;
+        blank = pick;
+    }
+    const PuzzleCode start = puzzle_encode(t);
+    const PuzzleResult r = puzzle_bfs(start);
+    long long ida_nodes = 0;
+    const int ida_dist = ida_star(start, ida_nodes);
+    println("  案例：随机退步 6 步的初态，BFS 最少 {} 步，IDA* = {} 步", r.moves, ida_dist);
+    assert(r.moves == ida_dist && r.moves <= 6);
+    // 打印完整解路径；逐步核对：相邻格局恰差一次合法交换
+    for (std::size_t i = 0; i < r.path.size(); ++i) {
+        println("  第 {} 步：", i);
+        print_puzzle_board(puzzle_decode(r.path[i]));
+        if (i > 0) {
+            const std::array<int, 9> a = puzzle_decode(r.path[i - 1]);
+            const std::array<int, 9> b = puzzle_decode(r.path[i]);
+            int diff = 0, blankswap = 0;
+            for (int k = 0; k < 9; ++k) {
+                if (a[static_cast<std::size_t>(k)] != b[static_cast<std::size_t>(k)]) {
+                    ++diff;
+                    blankswap += (a[static_cast<std::size_t>(k)] == 0 ||
+                                  b[static_cast<std::size_t>(k)] == 0);
+                }
+            }
+            assert(diff == 2 && blankswap == 2);
+        }
+    }
+    assert(r.path.front() == start && r.path.back() == kPuzzleGoal);
+
+    // 不可解案例：把目标态的 1 和 2 对调，逆序对 = 1（奇数）
+    const std::array<int, 9> unsolvable{2, 1, 3, 4, 5, 6, 7, 8, 0};
+    println("  不可解初态（1/2 对调）：逆序对判据可解 = {}，不发起搜索",
+            puzzle_solvable(unsolvable));
+    assert(!puzzle_solvable(unsolvable));
+
+    // 随机 500 例：从目标退步 1..22 步，BFS 距离必须等于 IDA* 距离，且不超过
+    // 退步长度（退步路径是可行解，最优只会更短）。
+    int mismatches = 0;
+    for (int gi = 0; gi < 500; ++gi) {
+        const int walk = 1 + static_cast<int>(rand_below(rng, 22));
+        std::array<int, 9> st{1, 2, 3, 4, 5, 6, 7, 8, 0};
+        int bl = 8, pv = -1;
+        for (int s = 0; s < walk; ++s) {
+            int cnt = 0;
+            const std::array<int, 4> nb = puzzle_neighbors(bl, cnt);
+            int choices[4], nch = 0;
+            for (int k = 0; k < cnt; ++k) {
+                if (nb[static_cast<std::size_t>(k)] != pv) { choices[nch++] = nb[k]; }
+            }
+            const int pick = choices[rand_below(rng, static_cast<std::uint32_t>(nch))];
+            std::swap(st[static_cast<std::size_t>(bl)], st[static_cast<std::size_t>(pick)]);
+            pv = bl;
+            bl = pick;
+        }
+        const PuzzleCode code = puzzle_encode(st);
+        const PuzzleResult pr = puzzle_bfs(code);
+        long long nodes = 0;
+        if (pr.moves != ida_star(code, nodes) || pr.moves > walk) { ++mismatches; }
+    }
+    println("  随机 {} 例（退步 1..22 步）：BFS vs IDA* 距离不一致 / 超过可行上界 {} 例",
+            500, mismatches);
+    assert(mismatches == 0);
+
+    // 大例：已知最远格局之一（31 步），从它做整层 BFS：可达格局恰为
+    // 9!/2 = 181440 个，BFS 层数直径 31。
+    const std::array<int, 9> hard{8, 6, 7, 2, 5, 4, 3, 0, 1};
+    assert(puzzle_solvable(hard));
+    const PuzzleResult hr = puzzle_bfs(puzzle_encode(hard));
+    println("  大例（最远格局之一）：最少 {} 步；BFS 共登记 {} 个可达格局（= 9!/2）",
+            hr.moves, hr.explored);
+    assert(hr.moves == 31);
+    assert(hr.explored == 181440);
+}
+
 int main() {
     representation_demo();
     bfs_demo();
@@ -2166,6 +2420,7 @@ int main() {
     journey_demo();
     following_orders_demo();
     wiring_demo();
+    puzzle_demo();
     println("自检通过");
     return 0;
 }
