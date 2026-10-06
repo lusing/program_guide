@@ -38,7 +38,18 @@ main = do
     print (doubleIt 2.5 :: Double)
     print (doubleIt (10 ^ 25 :: Integer))
 
-    -- ═══ 03.6 自检
+    -- ═══ 03.6 until 与两版 floor（书 3.3）：线性 vs 二分，与 Prelude floor 对账
+    putStrLn ("until (>100) (*7) 1 = " ++ show (until (> 100) (* 7) 1))
+    putStrLn ("floorNaive 17.3 = " ++ show (floorNaive 17.3) ++ "   floorBin 17.3 = " ++ show (floorBin 17.3))
+    putStrLn ("floorNaive (-3.1) = " ++ show (floorNaive (-3.1)) ++ "   floorBin (-3.1) = " ++ show (floorBin (-3.1)))
+
+    -- ═══ 03.7 Nat 归纳数（书 3.4）：一进制数系 + 非完整数 + 无穷数
+    putStrLn ("Nat 3 + 4 = " ++ show (fromInteger 3 + fromInteger 4 :: Nat))
+    putStrLn ("natToInt (Nat 5 * 6) = " ++ show (natToInt (fromInteger 5 * fromInteger 6 :: Nat)))
+    putStrLn ("Zero == Succ undefined = " ++ show (Zero == Succ undefined)) -- False：构造子分出胜负
+    putStrLn ("Zero == natInf = " ++ show (Zero == natInf))                 -- False：无穷数也参与比较
+
+    -- ═══ 03.8 自检
     check "factInt 20 为正" (factInt 20 > 0) True
     check "factInt 21 溢出为负" (factInt 21 < 0) True
     check "divMod (-7) 2" (divMod (-7) 2) (-4, 1)
@@ -47,8 +58,22 @@ main = do
     check "safeRead 好输入" (safeRead "42") (Just 42)
     check "safeRead 坏输入" (safeRead "4x") Nothing
     check "Rational 精确和" half (1 % 2)
+    check "floorNaive 17.3" (floorNaive 17.3) 17
+    check "floorNaive (-3.1)" (floorNaive (-3.1)) (-4)
+    check "floorBin 17.3" (floorBin 17.3) 17
+    check "floorBin (-3.1)" (floorBin (-3.1)) (-4)
+    check "两版 floor 与 Prelude 一致"
+        (and [floorNaive x == floor x && floorBin x == floor x | x <- samples])
+        True
+    check "Nat 加法" (natToInt (fromInteger 3 + fromInteger 4)) 7
+    check "Nat 乘法" (natToInt (fromInteger 5 * fromInteger 6)) 30
+    check "Nat 截断减法" (natToInt (fromInteger 3 - fromInteger 5)) 0
 
     putStrLn "==== 03 结束 ===="
+
+-- floor 对账样本（两版与 Prelude 三方一致）
+samples :: [Float]
+samples = [-17.3, -3.1, -0.5, 0, 0.5, 3.9, 17.3]
 
 check :: (Eq a, Show a) => String -> a -> a -> IO ()
 check label actual expected

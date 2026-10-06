@@ -52,5 +52,17 @@ main = do
         , expectEq "字面量多态 Int" (doubleIt 21 :: Int) 42
         , expectEq "字面量多态 Double" (doubleIt 2.5 :: Double) 5.0
         ]
-    unless (s1 && s2 && s3) exitFailure
+    s4 <- runSuite "floor 与 Nat（书3）"
+        [ expectEq "floorNaive 17.3" (floorNaive 17.3) 17
+        , expectEq "floorNaive (-3.1)" (floorNaive (-3.1)) (-4)
+        , expectEq "floorBin 17.3" (floorBin 17.3) 17
+        , expectEq "floorBin (-3.1)" (floorBin (-3.1)) (-4)
+        , expectTrue "floorBin 与 Prelude 全样本一致"
+            (and [floorBin x == floor x | x <- [-17.3, -3.1, -0.5, 0, 0.5, 3.9, 17.3]])
+        , expectEq "Nat 加法" (natToInt (fromInteger 3 + fromInteger 4)) 7
+        , expectEq "Nat 乘法" (natToInt (fromInteger 5 * fromInteger 6)) 30
+        , expectEq "Nat 截断减法" (natToInt (fromInteger 3 - fromInteger 5)) 0
+        , expectEq "零与无穷不等" (Zero == natInf) False
+        ]
+    unless (s1 && s2 && s3 && s4) exitFailure
     putStrLn "==== 03 结束 ===="
