@@ -1245,6 +1245,97 @@ static void packing_paper_demo() {
     assert(big.x >= 80 && big.z <= 100);
 }
 
+// ═══ 32.14 质因数分解：试除 + 指数聚合 ═══
+// n = p₁^e₁ · p₂^e₂ ⋯ p_k^e_k（p 升序）。试除到 √n：每命中一个素因子
+// 就整除到底（指数聚合），剩下的 >1 尾巴必是素数——因为 √n 内已无因子。
+struct PrimeFactor { long long p; int e; };
+static bool operator==(const PrimeFactor& a, const PrimeFactor& b) {
+    return a.p == b.p && a.e == b.e;
+}
+
+static std::vector<PrimeFactor> factorize(long long n) {
+    std::vector<PrimeFactor> out;
+    for (long long d = 2; d * d <= n; ++d) {
+        if (n % d != 0) { continue; }
+        int e = 0;
+        while (n % d == 0) { n /= d; ++e; }
+        out.push_back({d, e});
+    }
+    if (n > 1) { out.push_back({n, 1}); }
+    return out;
+}
+
+// 规范打印：2^3×5×7×11（指数 1 省略）
+static std::string factor_string(const std::vector<PrimeFactor>& fs) {
+    std::string s;
+    for (std::size_t i = 0; i < fs.size(); ++i) {
+        if (i > 0) { s += "×"; }
+        s += std::to_string(fs[i].p);
+        if (fs[i].e > 1) { s += "^" + std::to_string(fs[i].e); }
+    }
+    return s;
+}
+
+static void factorization_demo() {
+    println("");
+    println("=== 32.14 质因数分解：试除 + 指数聚合 ===");
+    for (long long n : {1LL, 2LL, 3080LL, 720720LL}) {
+        const std::vector<PrimeFactor> fs = factorize(n);
+        long long back = 1;
+        for (const auto& f : fs) {
+            for (int i = 0; i < f.e; ++i) { back *= f.p; }
+        }
+        println("  {} = {}（回代乘积一致 = {}）", n,
+                n == 1 ? std::string("1（空乘积）") : factor_string(fs),
+                back == n ? 1 : 0);
+        assert(back == n);
+    }
+    assert(factorize(3080) ==
+           std::vector<PrimeFactor>({{2, 3}, {5, 1}, {7, 1}, {11, 1}}));
+
+    // 结构对账：因子两两互素（p 都是素数）+ 与 32.13 的因数表接口挂钩
+    const std::vector<PrimeFactor> f720 = factorize(720720);
+    const std::vector<long long> divs = all_divisors(720720);   // 32.13
+    long long tau = 1;                       // τ(n) = Π(eᵢ+1)
+    for (const auto& f : f720) { tau *= f.e + 1; }
+    println("  720720：{} 个素因子、τ={} 与因数表大小一致 = {}",
+            f720.size(), tau,
+            tau == static_cast<long long>(divs.size()) ? 1 : 0);
+    assert(tau == static_cast<long long>(divs.size()));
+
+    // 随机 400 例（n ≤ 10⁶）：分解回代 + 每个因子确实是素（试除证素）
+    std::mt19937 rng{5489};
+    int bad = 0;
+    for (int t = 0; t < 400; ++t) {
+        const long long n = 1 + static_cast<long long>(rand_below(rng, 1000000));
+        const std::vector<PrimeFactor> fs = factorize(n);
+        long long back = 1;
+        for (const auto& f : fs) {
+            for (long long d = 2; d * d <= f.p; ++d) {
+                if (f.p % d == 0) { ++bad; break; }        // 「素因子」非素
+            }
+            for (int i = 0; i < f.e; ++i) { back *= f.p; }
+        }
+        if (back != n) { ++bad; }
+    }
+    println("  随机 400 例（n≤10⁶）：回代失败或伪素因子 {} 例", bad);
+    assert(bad == 0);
+
+    // 大例：接近 10¹² 的数（√n ≈ 10⁶ 次试除，瞬时）
+    const long long big = 999999999989LL - 1;   // = 999999999988
+    const std::vector<PrimeFactor> fb = factorize(big);
+    println("  大例 {} = {}（{} 个因子）", big, factor_string(fb), fb.size());
+    long long backb = 1;
+    for (const auto& f : fb) {
+        for (int i = 0; i < f.e; ++i) { backb *= f.p; }
+    }
+    assert(backb == big);
+    // 2^40：单一因子聚合到底
+    const std::vector<PrimeFactor> fp2 = factorize(1LL << 40);
+    assert(fp2.size() == 1 && fp2[0].p == 2 && fp2[0].e == 40);
+    println("  2^40 = 2^40（单一因子、指数聚合到底）");
+}
+
 int main() {
     gcd_demo();
     modular_demo();
@@ -1259,6 +1350,7 @@ int main() {
     nth_root_demo();
     base_conversion_demo();
     packing_paper_demo();
+    factorization_demo();
     println("自检通过");
     return 0;
 }

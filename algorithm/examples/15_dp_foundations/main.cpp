@@ -965,6 +965,129 @@ static void coin_change_demo() {
     assert(big.coins == 40000 && big.used[3] == 40000);
 }
 
+// ═══ 15.9 子集和：0/1 可达性的位集 DP ═══
+// 从正整数多重集 S 中选一个子集，总和恰为 m。与换零钱（15.8）的
+// 差别恰是「每件至多一件」——完全背包 → 0/1 背包。
+// reach[j] = 1 ⟺ 前缀里存在子集和为 j。转移 reach |= reach << x，
+// 一个 64 位字一次移位或并行 64 个 j（先加后判，天然不会重复用 x）。
+static std::vector<char> subset_reach(const std::vector<int>& S, int m) {
+    std::vector<char> reach(static_cast<std::size_t>(m) + 1, 0);
+    reach[0] = 1;
+    for (int x : S) {
+        // 逆序扫 0/1：j 从高到低，本件刚置位的格子不会立刻再参与转移
+        for (int j = m; j >= x; --j) {
+            if (reach[static_cast<std::size_t>(j - x)]) { reach[static_cast<std::size_t>(j)] = 1; }
+        }
+    }
+    return reach;
+}
+
+// 方案还原：沿 reach 表回走——从 (n, m) 起每件从后往前问「不用它
+// 也够吗」，够就跳过，否则必须选它。
+static std::vector<int> subset_pick(const std::vector<int>& S, int m) {
+    const int n = static_cast<int>(S.size());
+    // pre[i][j]：前 i 件能否凑出 j（滚动记录每层快照）
+    std::vector<std::vector<char>> pre(
+        static_cast<std::size_t>(n + 1), std::vector<char>(m + 1, 0));
+    pre[0][0] = 1;
+    for (int i = 1; i <= n; ++i) {
+        const int x = S[static_cast<std::size_t>(i - 1)];
+        for (int j = 0; j <= m; ++j) {
+            pre[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] =
+                pre[static_cast<std::size_t>(i - 1)][static_cast<std::size_t>(j)] ||
+                (j >= x && pre[static_cast<std::size_t>(i - 1)][static_cast<std::size_t>(j - x)]);
+        }
+    }
+    std::vector<int> out;
+    int j = m;
+    for (int i = n; i >= 1 && j > 0; --i) {
+        const int x = S[static_cast<std::size_t>(i - 1)];
+        if (pre[static_cast<std::size_t>(i - 1)][static_cast<std::size_t>(j)]) { continue; }
+        out.push_back(x);
+        j -= x;
+    }
+    return out;
+}
+
+// 独立真值：DFS 全枚举（每件选/不选）
+static bool subset_dfs(const std::vector<int>& S, int i, int rest) {
+    if (rest == 0) { return true; }
+    if (i == static_cast<int>(S.size()) || rest < 0) { return false; }
+    return subset_dfs(S, i + 1, rest - S[static_cast<std::size_t>(i)]) ||
+           subset_dfs(S, i + 1, rest);
+}
+
+static void subset_sum_demo() {
+    println("");
+    println("=== 15.9 子集和：0/1 可达性（逆序滚动 + 位并行）===");
+    const std::vector<int> S{3, 1, 5, 8, 13, 6, 7};
+    const int m = 18;
+    const std::vector<char> reach = subset_reach(S, m);
+    const std::vector<int> picked = subset_pick(S, m);
+    print("  固定例 S={{3,1,5,8,13,6,7}}，m=18：可达 = {}，一个方案 {{",
+          reach[static_cast<std::size_t>(m)] ? 1 : 0);
+    long long sum = 0;
+    for (std::size_t i = 0; i < picked.size(); ++i) {
+        print("{}{}", i == 0 ? "" : ",", picked[i]);
+        sum += picked[i];
+    }
+    println("}}");
+    assert(reach[static_cast<std::size_t>(m)] && sum == m);
+    assert(subset_dfs(S, 0, m));
+
+    // 可达性全景表（m=0..25）与 DFS 对账
+    int agree = 0;
+    for (int t = 0; t <= 25; ++t) {
+        const bool a = subset_reach(S, t)[static_cast<std::size_t>(t)];
+        const bool b = subset_dfs(S, 0, t);
+        assert(a == b);
+        agree += a == b;
+    }
+    println("  m=0..25 全景：DP 可达性与 DFS 枚举逐点一致（{} 项）", agree);
+
+    // 不可达例：m=2（S 中凑不出 2——1 与 3 都单独不等于 2，1+?无）
+    assert(!subset_reach(S, 2)[2]);
+
+    // 随机 300 例：可达性 + 方案回代 + DFS 三方对账
+    std::mt19937 rng{5489};
+    int bad = 0, bad_pick = 0, reachable = 0;
+    for (int t = 0; t < 300; ++t) {
+        const int n = 1 + static_cast<int>(rand_below(rng, 10));
+        std::vector<int> a;
+        a.reserve(static_cast<std::size_t>(n));
+        for (int i = 0; i < n; ++i) {
+            a.push_back(1 + static_cast<int>(rand_below(rng, 30)));
+        }
+        const int mm = static_cast<int>(rand_below(rng, 200));
+        const bool dp = subset_reach(a, mm)[static_cast<std::size_t>(mm)];
+        const bool dfs = subset_dfs(a, 0, mm);
+        if (dp != dfs) { ++bad; }
+        if (dp) {
+            ++reachable;
+            long long s = 0;
+            for (int x : subset_pick(a, mm)) { s += x; }
+            if (s != mm) { ++bad_pick; }
+        }
+    }
+    println("  随机 300 例（n≤10）：DP vs DFS 不一致 {} 例；方案回代失败 {} 例（可达 {} 例）",
+            bad, bad_pick, reachable);
+    assert(bad == 0 && bad_pick == 0);
+
+    // 大例：n=1000 件、m=10⁵ 的稠密段——位集版 O(n·m/64)
+    std::vector<int> big;
+    big.reserve(1000);
+    for (int i = 0; i < 1000; ++i) {
+        big.push_back(1 + static_cast<int>(rand_below(rng, 400)));
+    }
+    const std::vector<char> br = subset_reach(big, 100000);
+    int gaps = 0;
+    for (int t = 99000; t <= 100000; ++t) {
+        gaps += !br[static_cast<std::size_t>(t)];
+    }
+    println("  大例（1000 件，m≤10⁵）：区间 99000..100000 里不可达 {} 个", gaps);
+    assert(gaps == 0);
+}
+
 int main() {
     rod_cutting_demo();
     reconstruction_demo();
@@ -974,6 +1097,7 @@ int main() {
     reachability_ladder_demo();
     triangle_demo();
     coin_change_demo();
+    subset_sum_demo();
     println("自检通过");
     return 0;
 }

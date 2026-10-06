@@ -25,6 +25,7 @@ using std::println;
 #include <numeric>
 #include <queue>
 #include <random>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -788,6 +789,162 @@ static void machine_shop_demo() {
     assert(span >= std::max(suma, sumb));
 }
 
+// ═══ 17.9 磁带最优存储：按长度升序（交换论证）═══
+// n 个程序存一条磁带，第 i 次读取都从带首扫起（等概率读取）。
+// 顺序 π 的平均读取时间 ∝ Σ_i (n−i+1)·L_{π(i)} / n——排在前面的程序
+// 被每个后来者重复扫描。交换论证：相邻逆序（长在前）交换不减总代价。
+static long long tape_total(const std::vector<int>& order) {
+    long long cost = 0;
+    for (std::size_t i = 0; i < order.size(); ++i) {
+        cost += static_cast<long long>(order.size() - i) *
+                order[i];      // 排第 i 位（1-based i+1）被扫描 (n−i) 次 + 自身
+    }
+    return cost;
+}
+
+static void tape_storage_demo() {
+    println("");
+    println("=== 17.9 磁带最优存储：短程序在前（交换论证）===");
+    const std::vector<int> L{5, 3, 1};
+    std::vector<int> sorted = L;
+    std::ranges::sort(sorted);
+    println("  固定例（3 程序 5,3,1）：最优顺序 1 3 5，总扫描代价 {} vs 原序 {}",
+            tape_total(sorted), tape_total(L));
+    assert(tape_total(sorted) == 14 && tape_total(L) == 22);
+
+    // 独立真值：全排列枚举（n≤7）
+    std::mt19937 rng{5489};
+    int bad = 0;
+    for (int t = 0; t < 300; ++t) {
+        const int n = 1 + static_cast<int>(rand_below(rng, 7));
+        std::vector<int> a;
+        a.reserve(static_cast<std::size_t>(n));
+        for (int i = 0; i < n; ++i) {
+            a.push_back(1 + static_cast<int>(rand_below(rng, 50)));
+        }
+        std::vector<int> s = a;
+        std::ranges::sort(s);
+        std::vector<int> perm = a;
+        std::ranges::sort(perm);
+        long long best = tape_total(perm);
+        while (std::next_permutation(perm.begin(), perm.end())) {
+            best = std::min(best, tape_total(perm));
+        }
+        if (tape_total(s) != best) { ++bad; }
+    }
+    println("  随机 300 例（n≤7）：升序排序 vs 全排列最优不一致 {} 例", bad);
+    assert(bad == 0);
+
+    // 大例：1 万个程序，升序总代价与「配对求和」闭式对账
+    std::vector<int> big;
+    big.reserve(10000);
+    for (int i = 0; i < 10000; ++i) {
+        big.push_back(1 + static_cast<int>(rand_below(rng, 1000)));
+    }
+    std::ranges::sort(big);
+    const long long cost = tape_total(big);
+    // 闭式：Σ_i (n−i+1)·L_i；也等于 Σ_j (前缀和到 j)——每个程序的长度
+    // 被自己与后来者各扫一次
+    long long pref = 0, alt = 0;
+    for (std::size_t i = 0; i < big.size(); ++i) {
+        pref += big[i];
+        alt += pref;                       // L_i 被后缀（含自身）累计
+    }
+    println("  大例（1 万程序）：升序总代价 {}（= 逐位前缀和 {}）", cost, alt);
+    assert(cost == alt);
+}
+
+// ═══ 17.10 最优二路合并：哈夫曼树的合并版 ═══
+// n 个有序文件两两合并成一个大文件，合并长度 a+b 的代价是 a+b。
+// 最优合并模式 = 以文件长度为权重的哈夫曼树：每轮取最小两个合并。
+// 总代价 = Σ 内部节点权重（每个元素每参与一次合并计一次）。
+static long long merge_cost_huffman(std::vector<int> lens) {
+    std::multiset<int> pq(lens.begin(), lens.end());
+    long long total = 0;
+    while (pq.size() > 1) {
+        const int a = *pq.begin();
+        pq.erase(pq.begin());
+        const int b = *pq.begin();
+        pq.erase(pq.begin());
+        total += a + b;
+        pq.insert(a + b);
+    }
+    return total;
+}
+
+// 独立真值：子集 DP——f(S) = 合并 S 中全体文件的最小总代价
+// f(S) = 0（|S|≤1），否则 min_{∅≠T⊏S} f(T)+f(S∖T)+sum(S)；O(3ⁿ)。
+static long long merge_cost_dp(const std::vector<int>& lens) {
+    const int n = static_cast<int>(lens.size());
+    const int full = 1 << n;
+    std::vector<long long> sum(static_cast<std::size_t>(full), 0), f(
+        static_cast<std::size_t>(full), 0);
+    for (int mask = 1; mask < full; ++mask) {
+        const int low = mask & -mask;
+        sum[static_cast<std::size_t>(mask)] =
+            sum[static_cast<std::size_t>(mask ^ low)] +
+            lens[static_cast<std::size_t>(std::countr_zero(
+                static_cast<unsigned>(low)))];
+    }
+    for (int mask = 2; mask < full; ++mask) {
+        if ((mask & (mask - 1)) == 0) { continue; }   // 单文件：0
+        long long best = INT64_MAX;
+        for (int sub = (mask - 1) & mask; sub > 0; sub = (sub - 1) & mask) {
+            const long long c = f[static_cast<std::size_t>(sub)] +
+                                f[static_cast<std::size_t>(mask ^ sub)] +
+                                sum[static_cast<std::size_t>(mask)];
+            if (c < best) { best = c; }
+        }
+        f[static_cast<std::size_t>(mask)] = best;
+    }
+    return f[static_cast<std::size_t>(full - 1)];
+}
+
+static void merge_pattern_demo() {
+    println("");
+    println("=== 17.10 最优二路合并：哈夫曼两两取最小 ===");
+    const std::vector<int> lens{20, 30, 10, 5, 30};
+    const long long cost = merge_cost_huffman(lens);
+    println("  固定例（20,30,10,5,30）：最少比较/搬运代价 {}", cost);
+    assert(cost == 205);
+
+    // 手工合并顺序：(5,10)→15；(15,20)→35；(30,30)→60；(35,60)→95
+    println("  合并顺序：(5,10)→15，(15,20)→35，(30,30)→60，(35,60)→95，合计 15+35+60+95 = {}",
+            15 + 35 + 60 + 95);
+
+    // 随机 200 例（n≤12）：哈夫曼 vs 子集 DP
+    std::mt19937 rng{5489};
+    int bad = 0;
+    for (int t = 0; t < 200; ++t) {
+        const int n = 1 + static_cast<int>(rand_below(rng, 12));
+        std::vector<int> a;
+        a.reserve(static_cast<std::size_t>(n));
+        for (int i = 0; i < n; ++i) {
+            a.push_back(1 + static_cast<int>(rand_below(rng, 50)));
+        }
+        if (merge_cost_huffman(a) != merge_cost_dp(a)) { ++bad; }
+    }
+    println("  随机 200 例（n≤12）：哈夫曼 vs 子集 DP 不一致 {} 例", bad);
+    assert(bad == 0);
+
+    // 大例：10 万个 1..100 的长度，哈夫曼瞬时
+    std::vector<int> big;
+    big.reserve(100000);
+    for (int i = 0; i < 100000; ++i) {
+        big.push_back(1 + static_cast<int>(rand_below(rng, 100)));
+    }
+    const long long hc = merge_cost_huffman(big);
+    // 顺次合并（最坏策略）：第 i 次把下一个文件并进滚动累计
+    long long seq = 0, acc = big[0];
+    for (std::size_t i = 1; i < big.size(); ++i) {
+        acc += big[static_cast<std::size_t>(i)];
+        seq += acc;
+    }
+    println("  大例（10 万文件）：哈夫曼 {} vs 顺次合并 {}（哈夫曼不劣 = 1）",
+            hc, seq);
+    assert(hc <= seq);
+}
+
 int main() {
     activity_demo();
     huffman_demo();
@@ -796,6 +953,8 @@ int main() {
     stable_marriage_demo();
     crossing_river_demo();
     machine_shop_demo();
+    tape_storage_demo();
+    merge_pattern_demo();
     println("自检通过");
     return 0;
 }
