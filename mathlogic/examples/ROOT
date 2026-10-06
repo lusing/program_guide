@@ -57,3 +57,8 @@ session ML25 in "25_hoare" = HOL +
   options [document = false]
   theories
     ex25_hoare
+
+session ML30 in "30_totalcorrect" = HOL +
+  options [document = false]
+  theories
+    ex30_totalcorrect
