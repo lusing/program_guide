@@ -5,6 +5,6 @@
 #   stack build --system-ghc --compiler=ghc-$(ghc --numeric-version)
 # run-all.sh 已自动用系统 GHC 版本覆盖，无需手改本文件
 resolver: lts-24.59
-compiler: ghc-9.12.1
+compiler: ghc-9.14.1
 system-ghc: true
 install-ghc: false
