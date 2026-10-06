@@ -185,8 +185,8 @@ class Interp {
 4. ref 的表达式实参临时格地址稳定（打印格地址两次相同）。
 5. valres 双写回按声明序：`p(valres x, valres y)` 传入同一变量两别名时终值与手推一致（写回序 x 先 y 后）。
 
-- [ ] 写 src（前端+解释器四机制+静态模式）→ 断言 → expected → 正文（七节）→ 三层绿
-- [ ] Commit: `feat(compiler): 批次五十三——22 参数传递的四种机制`
+- [x] 写 src（前端+解释器四机制+静态模式）→ 断言 → expected → 正文（七节）→ 三层绿
+- [x] Commit: `feat(compiler): 批次五十三——22 参数传递的四种机制`
 
 ### Task 5: 新 64 章 真机实地：两个商用编译器的代码生成（批五十四）
 
@@ -218,8 +218,8 @@ std::vector<FuncReport> checkAll(const std::vector<std::string>& funcs,
 2. 同函数 -O0 vs -O1 指令条数两档入 expected（下降）。
 3. 书内 Borland/SPARC 清单的行数与关键指令计数与正文讲解账一致（讲解性核对，正文表格）。
 
-- [ ] 写 src（snippets + asmcheck + 驱动）→ 本机 gcc 生成 expected → 正文（六节、书内清单全量入正文）→ 三层绿
-- [ ] Commit: `feat(compiler): 批次五十四——64 真机实地：两个商用编译器`
+- [x] 写 src（snippets + asmcheck + 驱动）→ 本机 gcc 生成 expected → 正文（六节、书内清单全量入正文）→ 三层绿
+- [x] Commit: `feat(compiler): 批次五十四——64 真机实地：两个商用编译器`
 
 ### Task 6: 新 65 章 TM 目标机器与 TINY 代码生成（批五十五）
 
@@ -259,8 +259,8 @@ std::string genTm(const Program&, Opt);                    // 产 .tm 文本（�
 4. DMEM_ERR（ST 越界语料）/ZERO_DIV（除零语料）触发错误码与步数正确。
 5. 全语料档 3 与档 0 输出全等（语义不变证人）。
 
-- [ ] 写 src（前端/汇编器/模拟器/cgen 四档）→ 断言 → expected → 正文（七节）→ 三层绿
-- [ ] Commit: `feat(compiler): 批次五十五——65 TM 目标机器与 TINY 代码生成`
+- [x] 写 src（前端/汇编器/模拟器/cgen 四档）→ 断言 → expected → 正文（七节）→ 三层绿
+- [x] Commit: `feat(compiler): 批次五十五——65 TM 目标机器与 TINY 代码生成`
 
 ### Task 7: 补 57 章（原 54）P-代码谱系（批五十六）
 
@@ -273,8 +273,8 @@ std::string genTm(const Program&, Opt);                    // 产 .tm 文本（�
 3. P-码作为合成属性：pcode 属性文法（§8.1 表 8-1）——字符串拼接式代码生成，与 13 章 SDD 互参（「把代码当属性算」的谱系）。
 
 **断言**（追加进 main，expected 重生成）: (1) 书内示例表达式集生成 P-码文本与正文手推逐行一致；(2) ~60 行 P-机器解释循环执行这些 P-码，结果与 chunk-VM 等价字节码程序全等。
-- [ ] 加 pcode.{hpp,cpp} + main 扩 → 重建 → 新 expected → `renumber5.py embed` 重嵌该章 → check_docs 绿
-- [ ] Commit: `feat(compiler): 批次五十六——57 补 P-代码谱系`
+- [x] 加 pcode.{hpp,cpp} + main 扩 → 重建 → 新 expected → `renumber5.py embed` 重嵌该章 → check_docs 绿
+- [x] Commit: `feat(compiler): 批次五十六——57 补 P-代码谱系`
 
 ### Task 8: 补 27 章（原 24）类型等价（批五十七）
 
@@ -287,8 +287,8 @@ std::string genTm(const Program&, Opt);                    // 产 .tm 文本（�
 3. 与 25 章合一的关系：结构等价是无方向的结构合一——推断式语言把「检查等价」泛化成「求解等式」；27 章记录行的边界讨论在此补上「等价判定的语言设计维度」。
 
 **断言**（追加进 main，expected 重生成）: (1) 两模式判定器对语料集（递归别名 `t = record{t next}`、字段序反例、匿名 vs 命名、var 参数匹配）输出各异且与手推全等；(2) 环处理对自引用类型不发散（步数上限打印）。
-- [ ] 加 typeequiv.{hpp,cpp} + main 扩 → 重建 → 新 expected → embed 重嵌 → check_docs 绿
-- [ ] Commit: `feat(compiler): 批次五十七——27 补类型等价`
+- [x] 加 typeequiv.{hpp,cpp} + main 扩 → 重建 → 新 expected → embed 重嵌 → check_docs 绿
+- [x] Commit: `feat(compiler): 批次五十七——27 补类型等价`
 
 ### Task 9: 收官（71/71，批五十八）
 
@@ -297,11 +297,11 @@ std::string genTm(const Program&, Opt);                    // 产 .tm 文本（�
 - Modify: `docs/71-finale.md`（每章一句话 71 句、口径 66→71、延伸阅读补 Louden）、`README.md`（六书口径：SPA 骨架 + 绿龙/紫龙/虎/鲸/匠/L；十二篇导航：第二篇 3–14、第三篇 15–23、第十一篇 61–69；验证状态 71/71）
 - Modify: 记忆 `G:\xulun\.claude\projects\G--code-guide\memory\compiler-tutorial-build.md` + `MEMORY.md`
 
-- [ ] survey 扩行 + expected 从新二进制重生成 + embed 全量重嵌
-- [ ] 每章一句话 71 句、README 六书十二篇定稿
-- [ ] 全量三层回归 71/71 exit 0（`bash run-all.sh`）
-- [ ] Commit: `feat(compiler): 批次五十八——71 章收官更新与 README 定稿（Louden 扩充完成）`
-- [ ] 更新记忆文件与 MEMORY.md 索引
+- [x] survey 扩行 + expected 从新二进制重生成 + embed 全量重嵌
+- [x] 每章一句话 71 句、README 六书十二篇定稿
+- [x] 全量三层回归 71/71 exit 0（`bash run-all.sh`）
+- [x] Commit: `feat(compiler): 批次五十八——71 章收官更新与 README 定稿（Louden 扩充完成）`
+- [x] 更新记忆文件与 MEMORY.md 索引
 
 ## Self-Review
 
