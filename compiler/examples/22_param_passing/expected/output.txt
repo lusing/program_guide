@@ -1,0 +1,26 @@
+== S1 fully static env ==
+[static  ] ok=1 out= 3
+[stacked ] ok=1 out= 1
+[rec-static] ok=0 err=recursion rejected (static env): fact depth=2 out=
+[rec-stack ] ok=1 out= 6
+== S2 call by value ==
+[inc2-val] ok=1 out= 5
+== S3 call by reference ==
+[inc2-ref] ok=1 out= 7
+[expr-arg] ok=1 out= 42
+    g 第1参 表达式实参 -> 临时格 #0 (值 5)
+    g 第1参 表达式实参 -> 临时格 #1 (值 5)
+== S4 call by value-result ==
+[p(a,a) valres] ok=1 out= 2
+[writeback-order] ok=1 out= 11
+== S5 call by name ==
+[p(a,a) name] ok=1 out= 3
+[swap-ref] ok=1 out= 5 2 0
+[swap-name] ok=1 out= 5 5 2
+[jensen] ok=1 out= 12 2
+    thunk evals = 3 (i 与 term 的重求值次数)
+== S6 four modes on p(a,a) ==
+  val: a = 1
+  valres: a = 2
+  ref: a = 3
+  name: a = 3

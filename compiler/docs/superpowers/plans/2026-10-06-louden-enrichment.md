@@ -60,9 +60,9 @@
 - Modify: `docs/NN-*.md` ×59（重写引用）、`examples/NN_*/` ×59（git mv）、`README.md`、`docs/66-finale.md`→`71-finale.md`
 - Create: `.scratch/renumber5.py`（复制 `renumber4.py` 骨架换 MAP）
 
-- [ ] 换 MAP 为上表（09–19:+2、20–63:+3、64–66:+5；五个新号 09/10/22/64/65 不在 MAP——留给新章）；核对 renumber4 遗留守卫：output.txt 守卫 `"60_finale"` 按当前实况改 `"66_finale"`（rewrite 阶段还是旧名 66）；survey 行守卫已是通用 `^\[\d+/\d+\]` 勿动；`rw_quoted_range` 对 survey.cpp 字符串 `"NN-MM"`/`"NN"` 的重写核对五处新插入不误伤（9、10、22、64、65 是新号，旧文档里 9/10/22/64/65 会被 +2/+3/+5 平移——映射表已覆盖）
-- [ ] 跑 `python .scratch/renumber5.py rewrite`（计数多重集前后一致）→ `rename`（两阶段 git mv）→ 重建 71_finale 二进制并**重生成 expected**（从新二进制跑出落盘，不手改；survey 输出行 `[n/32]` 的章号引用已被 rw_paren_range 平移）→ `python .scratch/renumber5.py embed` 全量重嵌 → 三层全量回归 66 项仍绿（此时新章未建、README 暂列 71 目标口径）
-- [ ] Commit: `feat(compiler): 批次五十——66→71 重编号腾位（Louden 轮开工）`
+- [x] 换 MAP 为上表（09–19:+2、20–63:+3、64–66:+5；五个新号 09/10/22/64/65 不在 MAP——留给新章）；核对 renumber4 遗留守卫：output.txt 守卫 `"60_finale"` 按当前实况改 `"66_finale"`（rewrite 阶段还是旧名 66）；survey 行守卫已是通用 `^\[\d+/\d+\]` 勿动；`rw_quoted_range` 对 survey.cpp 字符串 `"NN-MM"`/`"NN"` 的重写核对五处新插入不误伤（9、10、22、64、65 是新号，旧文档里 9/10/22/64/65 会被 +2/+3/+5 平移——映射表已覆盖）
+- [x] 跑 `python .scratch/renumber5.py rewrite`（计数多重集前后一致）→ `rename`（两阶段 git mv）→ 重建 71_finale 二进制并**重生成 expected**（从新二进制跑出落盘，不手改；survey 输出行 `[n/32]` 的章号引用已被 rw_paren_range 平移）→ `python .scratch/renumber5.py embed` 全量重嵌 → 三层全量回归 66 项仍绿（此时新章未建、README 暂列 71 目标口径）
+- [x] Commit: `feat(compiler): 批次五十——66→71 重编号腾位（Louden 轮开工）`
 
 ### Task 2: 新 09 章 Lex 与 Yacc 的心脏（批五十一）
 
@@ -108,9 +108,9 @@ std::vector<Tok> miniLex(const std::vector<LexRule>&, const std::string& src);
 4. 优先级翻转：无声明版（冲突计数>0，缺省 shift）与声明版结果对照入 expected。
 5. 最长匹配语料（`<=`/`<`/`==`/`=` 混排）token 流正确。
 
-- [ ] 写 src（05/08 副本 + yacc/demo + 语料）→ 三层对账 → expected 落盘
-- [ ] 写正文（七节、全部代码内嵌、期望输出逐行解读、练习；文字行多于代码行）
-- [ ] 三层绿 → Commit: `feat(compiler): 批次五十一——09 Lex 与 Yacc 的心脏`
+- [x] 写 src（05/08 副本 + yacc/demo + 语料）→ 三层对账 → expected 落盘
+- [x] 写正文（七节、全部代码内嵌、期望输出逐行解读、练习；文字行多于代码行）
+- [x] 三层绿 → Commit: `feat(compiler): 批次五十一——09 Lex 与 Yacc 的心脏`
 
 ### Task 3: 新 10 章 语法错误的恢复与校正（批五十二）
 
@@ -145,8 +145,8 @@ ParseResult lrParse(const MiniYacc&, const std::vector<Tok>&, Recover mode,
 4. 抖动语料在 Phrase 模式下步数有上界（守卫生效，上限常数打印）。
 5. Panic 恢复后无错前缀可求值（输出前缀表达式结果）。
 
-- [ ] 副本 + llrec/yacc 恢复扩展 → 断言 → expected → 正文（六节）→ 三层绿
-- [ ] Commit: `feat(compiler): 批次五十二——10 语法错误的恢复与校正`
+- [x] 副本 + llrec/yacc 恢复扩展 → 断言 → expected → 正文（六节）→ 三层绿
+- [x] Commit: `feat(compiler): 批次五十二——10 语法错误的恢复与校正`
 
 ### Task 4: 新 22 章 参数传递的四种机制（批五十三）
 
