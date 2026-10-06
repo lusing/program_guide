@@ -349,11 +349,148 @@ static void bin_packing_demo() {
     assert(static_cast<long long>(used) * 100 <= lb * 120);  // 经验比值 ≤1.20
 }
 
+// ═══ 36.5 k-中心：最远点贪心（最远优先遍历，2-近似）═══
+// 选 k 个中心（须为输入点），最小化所有点到最近中心的距离。
+// 贪心：任取起点，此后每轮加入「距已选中心集最远」的点。
+// 2-近似证明：贪心停止时全体点距中心 ≤ r_g；若 r_g > 2r*，取第 k+1
+// 轮的最远点 p（距 k 个中心均 > 2r*）——已选的 k 个中心与 p 共 k+1
+// 个点两两距 > 2r*？只需：p 与每个中心 > 2r*（成立）；OPT 的 k 个
+// 中心由鸽笼必同时覆盖其中两点，而任一 OPT 中心到其覆盖点 ≤ r*，
+// 三角不等式给出这两点距 ≤ 2r*，矛盾。
+struct KCenResult { std::vector<int> centers; long long radius; };
+
+static long long kcenter_cost(const std::vector<Pt>& pts,
+                              const std::vector<int>& centers) {
+    long long worst = 0;
+    for (const Pt& p : pts) {
+        long long best = INT64_MAX;
+        for (int c : centers) {
+            best = std::min(best, d2(p, pts[static_cast<std::size_t>(c)]));
+        }
+        worst = std::max(worst, best);
+    }
+    return worst;
+}
+
+static KCenResult farthest_first(const std::vector<Pt>& pts, int k) {
+    const int n = static_cast<int>(pts.size());
+    std::vector<char> chosen(static_cast<std::size_t>(n), 0);
+    std::vector<long long> dist(static_cast<std::size_t>(n), INT64_MAX);
+    KCenResult res;
+    res.centers.push_back(0);
+    chosen[0] = 1;
+    for (int i = 0; i < n; ++i) {
+        dist[static_cast<std::size_t>(i)] =
+            d2(pts[static_cast<std::size_t>(i)], pts[0]);
+    }
+    while (static_cast<int>(res.centers.size()) < k) {
+        int far = -1;
+        for (int i = 0; i < n; ++i) {
+            if (!chosen[static_cast<std::size_t>(i)] &&
+                (far == -1 ||
+                 dist[static_cast<std::size_t>(i)] >
+                     dist[static_cast<std::size_t>(far)])) {
+                far = i;
+            }
+        }
+        if (far == -1) { break; }               // k > n：全体已选
+        res.centers.push_back(far);
+        chosen[static_cast<std::size_t>(far)] = 1;
+        for (int i = 0; i < n; ++i) {
+            dist[static_cast<std::size_t>(i)] =
+                std::min(dist[static_cast<std::size_t>(i)],
+                         d2(pts[static_cast<std::size_t>(i)],
+                            pts[static_cast<std::size_t>(far)]));
+        }
+    }
+    res.radius = kcenter_cost(pts, res.centers);
+    return res;
+}
+
+// 独立真值：C(n,k) 枚举全部中心子集（n≤9 时瞬时）
+static KCenResult kcenter_brute(const std::vector<Pt>& pts, int k) {
+    const int n = static_cast<int>(pts.size());
+    std::vector<int> mask(static_cast<std::size_t>(n), 0);
+    for (int i = n - k; i < n; ++i) { mask[static_cast<std::size_t>(i)] = 1; }
+    KCenResult best;
+    best.radius = INT64_MAX;
+    do {
+        std::vector<int> centers;
+        for (int i = 0; i < n; ++i) {
+            if (mask[static_cast<std::size_t>(i)]) { centers.push_back(i); }
+        }
+        const long long r = kcenter_cost(pts, centers);
+        if (r < best.radius) { best.radius = r; best.centers = centers; }
+    } while (std::next_permutation(mask.begin(), mask.end()));
+    return best;
+}
+
+static void kcenter_demo() {
+    println("");
+    println("=== 36.5 k-中心：最远点贪心 2-近似（曼哈顿口径）===");
+    const std::vector<Pt> sq{{0, 0}, {0, 2}, {2, 0}, {2, 2}};
+    const KCenResult sq1 = kcenter_brute(sq, 1);
+    const KCenResult sq2g = farthest_first(sq, 2);
+    const KCenResult sq2 = kcenter_brute(sq, 2);
+    println("  正方形 4 点：k=1 最优半径 {}；k=2 贪心 {} vs 最优 {}（对角两点即最优）",
+            sq1.radius, sq2g.radius, sq2.radius);
+    assert(sq1.radius == 4 && sq2.radius == 2 && sq2g.radius == 2);
+
+    const std::vector<Pt> line{{0, 0}, {1, 0}, {2, 0}, {3, 0}, {10, 0}};
+    const KCenResult lg = farthest_first(line, 2);
+    const KCenResult lb = kcenter_brute(line, 2);
+    println("  数线例（0,1,2,3,10，k=2）：贪心半径 {}（中心 0 与 10），最优 {}，比值 {:.2f}（≤ 2 保证）",
+            lg.radius, lb.radius,
+            static_cast<double>(lg.radius) / static_cast<double>(lb.radius));
+    assert(lg.radius == 3 && lb.radius == 2);
+
+    // 随机 300 例：贪心 vs 精确最优——定理界与命中率
+    std::mt19937 rng{5489};
+    int bad = 0, hit = 0;
+    for (int t = 0; t < 300; ++t) {
+        const int n = 4 + static_cast<int>(rand_below(rng, 6));   // 4..9
+        std::vector<Pt> pts;
+        pts.reserve(static_cast<std::size_t>(n));
+        for (int i = 0; i < n; ++i) {
+            pts.push_back({static_cast<long long>(rand_below(rng, 20)),
+                           static_cast<long long>(rand_below(rng, 20))});
+        }
+        const int k = 1 + static_cast<int>(rand_below(rng, 3));   // 1..3
+        const KCenResult g = farthest_first(pts, k);
+        const KCenResult b = kcenter_brute(pts, k);
+        if (g.radius > 2 * b.radius) { ++bad; }
+        if (g.radius == b.radius) { ++hit; }
+    }
+    println("  随机 300 例（n≤9，k≤3）：贪心命中最优 {} 例；比值 > 2 的 {} 例", hit, bad);
+    assert(bad == 0);
+
+    // 大例：2000 点、k=25；独立全量复算半径一致
+    std::vector<Pt> big;
+    big.reserve(2000);
+    for (int i = 0; i < 2000; ++i) {
+        big.push_back({static_cast<long long>(rand_below(rng, 1000)),
+                       static_cast<long long>(rand_below(rng, 1000))});
+    }
+    const KCenResult bg = farthest_first(big, 25);
+    long long worst = 0;
+    for (const Pt& p : big) {
+        long long best = INT64_MAX;
+        for (int c : bg.centers) {
+            best = std::min(best, d2(p, big[static_cast<std::size_t>(c)]));
+        }
+        worst = std::max(worst, best);
+    }
+    println("  大例（2000 点，k=25）：贪心半径 {}（独立全量复算一致 = 1）",
+            bg.radius);
+    assert(bg.radius == worst);
+}
+
 int main() {
     vertex_cover_demo();
     tsp_demo();
     set_cover_demo();
     bin_packing_demo();
+    kcenter_demo();
     println("自检通过");
     return 0;
 }

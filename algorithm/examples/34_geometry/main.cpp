@@ -18,6 +18,7 @@ using std::println;
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cassert>
 #include <cmath>
 #include <cstdint>
@@ -959,6 +960,127 @@ static void sensor_demo() {
     assert(nred == L * L - 4);
 }
 
+// ═══ 34.10 隐藏节点：单位圆盘图上的「V 形三元组」 ═══
+// 设备 i,j 可通信 ⟺ 距离² ≤ R²。隐藏节点集合＝三元组 {a,b,c}：
+// a,b 不可通信，但二者都与 c 通信（诱导子图恰为两条共点边）。
+static std::vector<std::vector<char>>
+disk_adjacency(const std::vector<Pt>& ps, long long R) {
+    const int n = static_cast<int>(ps.size());
+    std::vector<std::vector<char>> adj(
+        static_cast<std::size_t>(n), std::vector<char>(n, 0));
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            const long long dx = ps[static_cast<std::size_t>(i)].x -
+                                 ps[static_cast<std::size_t>(j)].x;
+            const long long dy = ps[static_cast<std::size_t>(i)].y -
+                                 ps[static_cast<std::size_t>(j)].y;
+            if (dx * dx + dy * dy <= R * R) {
+                adj[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] = 1;
+                adj[static_cast<std::size_t>(j)][static_cast<std::size_t>(i)] = 1;
+            }
+        }
+    }
+    return adj;
+}
+
+// 暴力 O(n³)：枚举三元组、统计恰有两条边
+static long long hidden_triples_brute(const std::vector<std::vector<char>>& adj) {
+    const int n = static_cast<int>(adj.size());
+    long long cnt = 0;
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            if (adj[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)]) { continue; }
+            for (int k = 0; k < n; ++k) {     // 中心可在任一下标，须遍历全表
+                if (k == i || k == j) { continue; }
+                const int e =
+                    adj[static_cast<std::size_t>(i)][static_cast<std::size_t>(k)] +
+                    adj[static_cast<std::size_t>(j)][static_cast<std::size_t>(k)];
+                if (e == 2) { ++cnt; }
+            }
+        }
+    }
+    return cnt;
+}
+
+// 位行口径 O(n³/64)：对每条非边 (i,j)，公共邻数＝popcount(bits[i]&bits[j])
+static long long hidden_triples_bits(const std::vector<std::vector<char>>& adj) {
+    const int n = static_cast<int>(adj.size());
+    const int words = (n + 63) / 64;
+    std::vector<std::vector<unsigned long long>> bits(
+        static_cast<std::size_t>(n),
+        std::vector<unsigned long long>(static_cast<std::size_t>(words), 0));
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (adj[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)]) {
+                bits[static_cast<std::size_t>(i)][static_cast<std::size_t>(j / 64)] |=
+                    1ULL << (j % 64);
+            }
+        }
+    }
+    long long cnt = 0;
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            if (adj[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)]) { continue; }
+            long long common = 0;
+            for (int w = 0; w < words; ++w) {
+                common += std::popcount(
+                    bits[static_cast<std::size_t>(i)][static_cast<std::size_t>(w)] &
+                    bits[static_cast<std::size_t>(j)][static_cast<std::size_t>(w)]);
+            }
+            cnt += common;
+        }
+    }
+    return cnt;
+}
+
+static void hidden_terminal_demo() {
+    println("");
+    println("=== 34.10 隐藏节点：圆盘图「V 形三元组」（暴力 O(n³) vs 位行 O(n³/64)）===");
+    const std::vector<Pt> square{{0, 0}, {0, 1}, {1, 0}, {1, 1}};
+    const auto sadj = disk_adjacency(square, 1);
+    const long long s1 = hidden_triples_brute(sadj);
+    const long long s2 = hidden_triples_bits(sadj);
+    println("  固定例（单位正方形 4 点，R=1）：隐藏集合 {} 组（两口径一致 = 1）", s1);
+    assert(s1 == 4 && s2 == 4);
+
+    // 全连通/无边圆盘：均无隐藏三元组
+    std::vector<Pt> cluster{{0, 0}, {1, 0}, {0, 1}};
+    assert(hidden_triples_brute(disk_adjacency(cluster, 2)) == 0);
+    assert(hidden_triples_bits(disk_adjacency(cluster, 0)) == 0);
+
+    // 随机 300 个小场（n≤12）：两口径一致
+    std::mt19937 rng{5489};
+    int bad = 0;
+    for (int t = 0; t < 300; ++t) {
+        const int n = 2 + static_cast<int>(geo_rand_below(rng, 11));
+        std::vector<Pt> ps;
+        ps.reserve(static_cast<std::size_t>(n));
+        for (int i = 0; i < n; ++i) {
+            ps.push_back({
+                static_cast<long long>(geo_rand_below(rng, 12)),
+                static_cast<long long>(geo_rand_below(rng, 12))});
+        }
+        const long long R = static_cast<long long>(geo_rand_below(rng, 8));
+        const auto a = disk_adjacency(ps, R);
+        if (hidden_triples_brute(a) != hidden_triples_bits(a)) { ++bad; }
+    }
+    println("  随机 300 个小场（n≤12）：暴力三元组 vs 位行公共邻不一致 {} 例", bad);
+    assert(bad == 0);
+
+    // 大例：60×50 网格点、间距 1、R=1（n=3000），位行法
+    std::vector<Pt> grid;
+    grid.reserve(3000);
+    for (int y = 0; y < 50; ++y) {
+        for (int x = 0; x < 60; ++x) { grid.push_back({x, y}); }
+    }
+    const auto gadj = disk_adjacency(grid, 1);
+    const long long gc = hidden_triples_bits(gadj);
+    // 每个单位网格的四个角各给出一组 V（独立的结构下界）
+    println("  大例（60×50 网格 3000 点，R=1）：隐藏集合 {} 组（≥ 4×格子数 {}）",
+            gc, 59 * 49 * 4);
+    assert(gc >= 59LL * 49 * 4);
+}
+
 int main() {
     cross_demo();
     segments_demo();
@@ -969,6 +1091,7 @@ int main() {
     line_region_demo();
     mec_demo();
     sensor_demo();
+    hidden_terminal_demo();
     println("自检通过");
     return 0;
 }

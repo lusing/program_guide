@@ -441,11 +441,200 @@ static void center_demo() {
             br, ncenters);
 }
 
+// ═══ 26.6 收集器：有向圆盘通信图上「可达于全体」的顶点 ═══
+// 传感器 i 可直发 j ⟺ (xi−xj)²+(yi−yj)² ≤ rᵢ²（按发送方半径，有向）。
+// v 可当收集器 ⟺ 每个节点都能（可多跳）把数据送到 v。
+struct NetNode { long long x, y, r; };
+
+static std::vector<std::vector<int>>
+build_disk_digraph(const std::vector<NetNode>& ns) {
+    const int n = static_cast<int>(ns.size());
+    std::vector<std::vector<int>> adj(static_cast<std::size_t>(n));
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (i == j) { continue; }
+            const long long dx = ns[static_cast<std::size_t>(i)].x -
+                                 ns[static_cast<std::size_t>(j)].x;
+            const long long dy = ns[static_cast<std::size_t>(i)].y -
+                                 ns[static_cast<std::size_t>(j)].y;
+            const long long rr = ns[static_cast<std::size_t>(i)].r;
+            if (dx * dx + dy * dy <= rr * rr) {
+                adj[static_cast<std::size_t>(i)].push_back(j);
+            }
+        }
+    }
+    return adj;
+}
+
+// 口径一（定义直算）：在反图上从 v 做 BFS，能遍历全体即可当收集器
+static std::vector<int>
+collectors_by_reverse_bfs(const std::vector<std::vector<int>>& adj) {
+    const int n = static_cast<int>(adj.size());
+    std::vector<std::vector<int>> radj(static_cast<std::size_t>(n));
+    for (int u = 0; u < n; ++u) {
+        for (int v : adj[static_cast<std::size_t>(u)]) {
+            radj[static_cast<std::size_t>(v)].push_back(u);
+        }
+    }
+    std::vector<int> out;
+    for (int s = 0; s < n; ++s) {
+        std::vector<char> seen(static_cast<std::size_t>(n), 0);
+        std::queue<int> q;
+        seen[static_cast<std::size_t>(s)] = 1;
+        q.push(s);
+        int reached = 1;
+        while (!q.empty()) {
+            const int u = q.front();
+            q.pop();
+            for (int v : radj[static_cast<std::size_t>(u)]) {
+                if (!seen[static_cast<std::size_t>(v)]) {
+                    seen[static_cast<std::size_t>(v)] = 1;
+                    ++reached;
+                    q.push(v);
+                }
+            }
+        }
+        if (reached == n) { out.push_back(s); }
+    }
+    return out;
+}
+
+// 口径二（线性）：Kosaraju 求 SCC → 缩点 DAG 上统计汇点 SCC；
+// 汇点唯一时该 SCC 全体即收集器（DAG 唯一汇点必被每个节点到达），
+// 否则无收集器。
+static std::vector<int>
+collectors_by_scc(const std::vector<std::vector<int>>& adj) {
+    const int n = static_cast<int>(adj.size());
+    std::vector<std::vector<int>> radj(static_cast<std::size_t>(n));
+    for (int u = 0; u < n; ++u) {
+        for (int v : adj[static_cast<std::size_t>(u)]) {
+            radj[static_cast<std::size_t>(v)].push_back(u);
+        }
+    }
+    // 第一遍：迭代 DFS 记录完成序
+    std::vector<char> seen(static_cast<std::size_t>(n), 0);
+    std::vector<int> order;
+    for (int s = 0; s < n; ++s) {
+        if (seen[static_cast<std::size_t>(s)]) { continue; }
+        std::vector<std::pair<int, std::size_t>> stk;
+        stk.push_back({s, 0});
+        seen[static_cast<std::size_t>(s)] = 1;
+        while (!stk.empty()) {
+            auto& [u, k] = stk.back();
+            if (k < adj[static_cast<std::size_t>(u)].size()) {
+                const int v = adj[static_cast<std::size_t>(u)][k++];
+                if (!seen[static_cast<std::size_t>(v)]) {
+                    seen[static_cast<std::size_t>(v)] = 1;
+                    stk.push_back({v, 0});
+                }
+            } else {
+                order.push_back(u);
+                stk.pop_back();
+            }
+        }
+    }
+    // 第二遍：反图按完成序逆序标号
+    std::vector<int> comp(static_cast<std::size_t>(n), -1);
+    int nc = 0;
+    for (std::size_t k = order.size(); k-- > 0; ) {
+        const int s = order[k];
+        if (comp[static_cast<std::size_t>(s)] != -1) { continue; }
+        std::queue<int> q;
+        q.push(s);
+        comp[static_cast<std::size_t>(s)] = nc;
+        while (!q.empty()) {
+            const int u = q.front();
+            q.pop();
+            for (int v : radj[static_cast<std::size_t>(u)]) {
+                if (comp[static_cast<std::size_t>(v)] == -1) {
+                    comp[static_cast<std::size_t>(v)] = nc;
+                    q.push(v);
+                }
+            }
+        }
+        ++nc;
+    }
+    std::vector<char> has_out(static_cast<std::size_t>(nc), 0);
+    for (int u = 0; u < n; ++u) {
+        for (int v : adj[static_cast<std::size_t>(u)]) {
+            if (comp[static_cast<std::size_t>(u)] != comp[static_cast<std::size_t>(v)]) {
+                has_out[static_cast<std::size_t>(comp[static_cast<std::size_t>(u)])] = 1;
+            }
+        }
+    }
+    int sinks = 0;
+    int sink_comp = -1;
+    for (int c = 0; c < nc; ++c) {
+        if (!has_out[static_cast<std::size_t>(c)]) { ++sinks; sink_comp = c; }
+    }
+    std::vector<int> out;
+    if (sinks == 1) {
+        for (int v = 0; v < n; ++v) {
+            if (comp[static_cast<std::size_t>(v)] == sink_comp) { out.push_back(v); }
+        }
+    }
+    return out;
+}
+
+static void collector_demo() {
+    println("");
+    println("=== 26.6 收集器：有向圆盘图上「可达于全体」（反图 BFS vs 唯一汇 SCC）===");
+    const std::vector<NetNode> fixed{
+        {1, 6, 4}, {4, 6, 4}, {7, 8, 4}, {8, 8, 4}};
+    const auto adj = build_disk_digraph(fixed);
+    const auto c1 = collectors_by_reverse_bfs(adj);
+    const auto c2 = collectors_by_scc(adj);
+    println("  固定例（4 节点）：收集器 {} 个（全体即收集器）；两口径一致 = 1",
+            c1.size());
+    assert(c1 == c2 && c1.size() == 4);
+
+    // 退化：两点不连通 → 无收集器；单点 → 自身
+    std::vector<NetNode> iso{{0, 0, 1}, {10, 10, 1}};
+    assert(collectors_by_reverse_bfs(build_disk_digraph(iso)).empty());
+    assert(collectors_by_scc(build_disk_digraph(iso)).empty());
+    assert(collectors_by_scc(build_disk_digraph({{0, 0, 1}})) ==
+           std::vector<int>({0}));
+
+    // 随机 300 个有向圆盘网络：两口径逐点一致
+    std::mt19937 rng{5489};
+    int bad = 0;
+    for (int t = 0; t < 300; ++t) {
+        const int n = 1 + static_cast<int>(center_rand(rng, 12));
+        std::vector<NetNode> ns;
+        ns.reserve(static_cast<std::size_t>(n));
+        for (int i = 0; i < n; ++i) {
+            ns.push_back({
+                static_cast<long long>(center_rand(rng, 20)),
+                static_cast<long long>(center_rand(rng, 20)),
+                1 + static_cast<long long>(center_rand(rng, 6))});
+        }
+        const auto a = build_disk_digraph(ns);
+        if (collectors_by_reverse_bfs(a) != collectors_by_scc(a)) { ++bad; }
+    }
+    println("  随机 300 个有向圆盘网络：两口径不一致 {} 例", bad);
+    assert(bad == 0);
+
+    // 大例 n=5000 单向链：间距递减（gap_i=5000−i）、r_i=gap_i，
+    // 则 i 只够到达 i+1（回边距离 gap_{i−1} > r_i）；唯一汇＝链尾
+    std::vector<NetNode> chain;
+    chain.reserve(5000);
+    long long x = 0;
+    for (int i = 0; i < 5000; ++i) {
+        const long long r = 5000 - i;
+        chain.push_back({x, 0, r});
+        x += r;
+    }
+    const auto ca = collectors_by_scc(build_disk_digraph(chain));
+    println("  大例（5000 点单向链）：收集器 {} 个（唯一点＝链尾 4999）", ca.size());
+    assert(ca == std::vector<int>({4999}));
+}
+
 int main() {
     fw_demo();
     closure_demo();
     vs_dijkstra_demo();
     center_demo();
+    collector_demo();
     println("自检通过");
     return 0;
 }

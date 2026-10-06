@@ -2844,6 +2844,147 @@ static void vertex_bcc_demo() {
     assert(std::ranges::count(tarjanBcc(cg).isArt, '\0') == 50000);
 }
 
+// ═══ 23.21 色多项式：删边–收缩递推（P(G,k)=P(G−e,k)−P(G/e,k)）═══
+// P(G,k)＝合法 k 着色方案数，它是 k 的多项式。对任一边 e=(u,v)：
+// G−e 的着色按「u,v 是否同色」分两类——异色者＝G 的着色；同色者
+// 与 G/e（把 u,v 合并）的着色一一对应。
+using Poly = std::vector<long long>;   // 系数，下标＝次数
+
+struct PolyGraph {
+    int n = 0;
+    std::vector<std::pair<int, int>> edges;   // 简单图、已排序
+    std::string key() const {
+        std::string s = std::to_string(n) + ";";
+        for (auto [u, v] : edges) {
+            s += std::to_string(u) + "," + std::to_string(v) + ";";
+        }
+        return s;
+    }
+};
+
+static Poly poly_sub(Poly a, const Poly& b) {
+    if (a.size() < b.size()) { a.resize(b.size(), 0); }
+    for (std::size_t i = 0; i < b.size(); ++i) { a[i] -= b[i]; }
+    return a;
+}
+
+static long long poly_eval(const Poly& p, int k) {
+    long long v = 0;
+    for (std::size_t i = p.size(); i-- > 0; ) { v = v * k + p[i]; }
+    return v;
+}
+
+static Poly chromatic_poly(const PolyGraph& g,
+                           std::unordered_map<std::string, Poly>& memo) {
+    if (auto it = memo.find(g.key()); it != memo.end()) { return it->second; }
+    Poly ans;
+    if (g.edges.empty()) {
+        ans.assign(static_cast<std::size_t>(g.n) + 1, 0);
+        ans[static_cast<std::size_t>(g.n)] = 1;        // 无边 n 点：kⁿ
+    } else {
+        const auto [u, v] = g.edges.back();
+        PolyGraph del = g;
+        del.edges.pop_back();                          // G−e
+        PolyGraph con;                                 // G/e：并入 u、删 v
+        con.n = g.n - 1;
+        for (auto [a, b] : g.edges) {
+            int x = (a == v) ? u : a;
+            int y = (b == v) ? u : b;
+            if (x == y) { continue; }                 // 自环＝合并产生
+            // 压缩死去的下标 v（v>u 不一定；先归一 v 为被删者）
+            x -= (x > v);
+            y -= (y > v);
+            if (x > y) { std::swap(x, y); }
+            con.edges.push_back({x, y});
+        }
+        std::ranges::sort(con.edges);
+        con.edges.erase(std::ranges::unique(con.edges).begin(), con.edges.end());
+        ans = poly_sub(chromatic_poly(del, memo), chromatic_poly(con, memo));
+    }
+    memo.emplace(g.key(), ans);
+    return ans;
+}
+
+static Poly chromatic_poly_top(const PolyGraph& g) {
+    std::unordered_map<std::string, Poly> memo;
+    return chromatic_poly(g, memo);
+}
+
+static PolyGraph make_poly_graph(int n, std::vector<std::pair<int, int>> es) {
+    for (auto& [u, v] : es) { if (u > v) { std::swap(u, v); } }
+    std::ranges::sort(es);
+    es.erase(std::ranges::unique(es).begin(), es.end());
+    return PolyGraph{n, std::move(es)};
+}
+
+static void print_poly_high(const Poly& p) {
+    for (std::size_t i = p.size(); i-- > 0; ) {
+        print("{}{}", i == p.size() - 1 ? "" : " ", p[i]);
+    }
+    println("");
+}
+
+static void chromatic_poly_demo() {
+    println("");
+    println("=== 23.21 色多项式：删边–收缩（系数自高次向低次）===");
+    // 3 点 1 边：k³−k²
+    const PolyGraph g1 = make_poly_graph(3, {{0, 1}});
+    const Poly p1 = chromatic_poly_top(g1);
+    print("  3 点 1 边（k³−k²）：");
+    print_poly_high(p1);
+    assert(p1 == Poly({0, 0, -1, 1}));
+
+    // 三角形：k(k−1)(k−2)=k³−3k²+2k
+    const Poly p2 = chromatic_poly_top(make_poly_graph(
+        3, {{0, 1}, {0, 2}, {1, 2}}));
+    print("  三角形（k³−3k²+2k）：");
+    print_poly_high(p2);
+    assert(p2 == Poly({0, 2, -3, 1}));
+
+    // 4 环：(k−1)⁴+(k−1) = k⁴−4k³+6k²−3k
+    const Poly p3 = chromatic_poly_top(make_poly_graph(
+        4, {{0, 1}, {1, 2}, {2, 3}, {3, 0}}));
+    print("  4 环（k⁴−4k³+6k²−3k）：");
+    print_poly_high(p3);
+    assert(p3 == Poly({0, -3, 6, -4, 1}));
+
+    // 随机 200 个小图：多项式在 k=0..5 的值 vs kⁿ 暴力计数
+    std::mt19937 rng{5489};
+    int bad = 0;
+    for (int t = 0; t < 200; ++t) {
+        const int n = 1 + static_cast<int>(rand_below(rng, 7));
+        std::vector<std::pair<int, int>> es;
+        const int tries = static_cast<int>(rand_below(rng, 12));
+        for (int k = 0; k < tries; ++k) {
+            int u = static_cast<int>(rand_below(rng, n));
+            int v = static_cast<int>(rand_below(rng, n));
+            if (u != v) { es.push_back({u, v}); }
+        }
+        const PolyGraph pg = make_poly_graph(n, es);
+        const Poly p = chromatic_poly_top(pg);
+        std::vector<std::vector<int>> adj(
+            static_cast<std::size_t>(n));
+        for (auto [u, v] : pg.edges) {
+            adj[static_cast<std::size_t>(u)].push_back(v);
+            adj[static_cast<std::size_t>(v)].push_back(u);
+        }
+        for (int k = 0; k <= 5; ++k) {
+            if (poly_eval(p, k) != color_brute(adj, k)) { ++bad; }
+        }
+    }
+    println("  随机 200 个小图：k=0..5 多项式求值 vs 暴力计数不一致 {} 例", bad);
+    assert(bad == 0);
+
+    // 树状大例（n=40）：记忆化使递推沿树走；P=k(k−1)^(n−1)
+    std::vector<std::pair<int, int>> te;
+    for (int i = 1; i < 40; ++i) { te.push_back({i - 1, i}); }
+    const Poly p4 = chromatic_poly_top(make_poly_graph(40, te));
+    println("  40 点路径树：首项 1、次项 −(n−1)=−39；k=2 求值 {}（树恰 2 种 2 色）",
+            poly_eval(p4, 2));
+    assert(p4[40] == 1 && p4[39] == -39 && poly_eval(p4, 2) == 2);
+    assert(p4[0] == 0);
+}
+
 int main() {
     representation_demo();
     bfs_demo();
@@ -2852,6 +2993,7 @@ int main() {
     scc_demo();
     tarjan_demo();
     vertex_bcc_demo();
+    chromatic_poly_demo();
     euler_demo();
     semidirected_demo();
     floodfill_demo();
