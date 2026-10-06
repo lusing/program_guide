@@ -5,7 +5,10 @@
 //   三、每指令栈深账：depthTrace 与手推数组逐项对账；
 //   四、调用帧：fact(5) 帧深峰值 = 脚本 + 6 层递归 = 7；fib(10) 同型；
 //   五、原生函数旁路：input 桩（恒 0）经 Call 调用；
+//   七、P-码谱系：书内原例的 P-码文本 + P-机器 + 与 chunk-VM 对账；
 //   六、断言汇总。
+#include "pcode.hpp"
+
 #include <iostream>
 #include <memory>
 #include <sstream>
@@ -13,6 +16,7 @@
 #include <vector>
 
 #include "chunk.hpp"
+#include "pcode.hpp"
 #include "vm.hpp"
 
 namespace {
@@ -235,9 +239,56 @@ int main() {
         check("input()+40+2", os.str(), "42\n");
     }
 
+    // ---------- 七、P-码谱系（L 书 §8.1.3）：本章字节码的曾祖父 ----------
+    {
+        std::cout << "\n== 七、P-码谱系 ==\n";
+        // 语料一：2*a + (b-3) —— P-码文本与手推逐行对账
+        std::cout << "[P-code] 2*a+(b-3)\n";
+        for (const auto &i : pcode::exprCorpus()) std::cout << "    " << pcode::show(i) << "\n";
+        pcode::PMachine pm;
+        pm.var("a", 5);
+        pm.var("b", 9);
+        double pv = pm.run(pcode::exprCorpus());
+        std::cout << "[P-machine] a=5 b=9 -> " << pv << "\n";
+        // 等价 chunk 程序：2*5 + (9-3)（常量直接烤进码，语义同构）
+        auto equiv = makeFn("equiv", 0);
+        {
+            Emit e{equiv->code.get()};
+            e.konst(tip::Value::num(2), 20);
+            e.konst(tip::Value::num(5), 20);
+            e.op(tip::Op::Mul, 20);
+            e.konst(tip::Value::num(9), 20);
+            e.konst(tip::Value::num(3), 20);
+            e.op(tip::Op::Sub, 20);
+            e.op(tip::Op::Add, 20);
+            e.op(tip::Op::Print, 20);
+            e.konst(tip::Value::num(0), 20);
+            e.op(tip::Op::Return, 20);
+        }
+        std::ostringstream os;
+        tip::VM vm(os);
+        vm.run(equiv);
+        double cv = std::stod(os.str());
+        std::cout << "[chunk-VM] 2*5+(9-3) -> " << cv << "\n";
+        check("P-码与 chunk 等价", std::to_string(pv == cv ? 1 : 0), "1");
+
+        // 语料二：x := y + 1 —— lda 压地址 + sro 存回的赋值形
+        std::cout << "[P-code] x := y+1\n";
+        for (const auto &i : pcode::assignCorpus()) std::cout << "    " << pcode::show(i) << "\n";
+        pcode::PMachine pm2;
+        pm2.var("y", 41);
+        pm2.run(pcode::assignCorpus());
+        std::cout << "[P-machine] y=41 -> x=" << pm2.get("x") << "\n";
+        check("P-码赋值", std::to_string(static_cast<long long>(pm2.get("x"))), "42");
+
+        // 对照表：P-码 ↔ clox 字节码（栈效应同构）
+        std::cout << "[对照] ldc↔Constant lod↔GetLocal lda↔(无：clox 用槽位) adi↔Add"
+                     " sbi↔Sub mpi↔Mul dvi↔Div sro↔SetLocal\n";
+    }
+
     std::cout << "\n== 六、断言汇总 ==\n";
     if (g_failures == 0) {
-        std::cout << "全部通过（7 项）\n";
+        std::cout << "全部通过（9 项）\n";
         return 0;
     }
     std::cout << g_failures << " 项失败\n";

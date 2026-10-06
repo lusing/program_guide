@@ -985,6 +985,192 @@ Ignition/Lua VM（当代）。家谱的共同主题是**后缀序免语法分析
 第 5 章（正则）见过"自动机免回溯"，此处再见"免分析"——**把困难
 前移到编译期**是整个编译领域的母题。
 
+## 57.6a　P-码谱系：本章字节码的曾祖父（L 书 §8.1.3）
+
+### 57.6a.1　P-机器与 P-码的史
+
+70 年代的 Pascal 编译器把"可移植性"做成了这个形状：**前端写一次（产 P-码），后端每平台只写一个解释器**——P-码（P-code，P 指 Pascal/伪码双关）在 CDC/IBM/PDP 各种机器上被解释执行。这个策略的谱系沿三支传下来：
+
+- UCSD Pascal 的 P-系统（商业最成功的 P-码实现）；
+- JVM 与 CLR（字节码 + 每平台一台 VM 的工业终极版）；
+- WebAssembly（栈式编码 + 流式验证的现代回摆）。
+
+本章的 clox 风格字节码（隐式值栈、弹二压一、常量池）在这个家谱里是 P-码的直系后代——本节把曾祖父请来与曾孙并排坐，**同构性眼见为实**。
+
+### 57.6a.2　书内原例的 P-码与逐行账
+
+`2*a + (b-3)` 的 P-码（驱动第七节的原样输出）：
+
+- `ldc 2`——压常量 2；
+- `lod a`——压变量 a 的值；
+- `mpi`——弹二压一（整数乘）；
+- `lod b`、`ldc 3`、`sbi`——右子树 b−3；
+- `adi`——左积加右差，栈顶即结果。
+
+七条指令、每个二元节点恰好"两压一算"——**与本章 chunk 字节码的栈效应逐条同构**：ldc↔Constant、lod↔GetLocal、mpi↔Mul、sbi↔Sub、adi↔Add。唯一没有对应物的是 `lda`（取地址）——clox 用编译期槽位替代了运行期地址（第 58 章局部变量的"槽位编译期分配"正是 P-码 lda 的死刑判决书）。
+
+赋值 `x := y+1` 的 P-码是另一种形：`lda x` 先把**地址**压栈（栈上混住值与地址！），`lod y; ldc 1; adi` 算出值，`sro` 弹值弹地址、存回——**赋值 = 取址 + 求值 + 存回**的三段式。P-机的栈因此有两个角色（值栈兼地址栈），这是 P-码最"复古"的地方——现代栈机（含 clox）用类型分离或槽位把地址赶出了值栈。
+
+### 57.6a.3　P-机器：60 行解释循环与对账
+
+P-机器（pcode.cpp 的 PMachine）与本章 VM 的循环对照：
+
+- 取指：向量下标 vs ip+switch；
+- 操作数：全部隐式（栈）vs clox 的常量池索引/槽位号（半显式）；
+- 指令集大小：8 条 vs 17 条——**P-码更小，因为没有调用帧与控制流**（书 §8.1.3 只给表达式与赋值的抽象版）。
+
+对账实验（驱动第七节）：P-机跑 `a=5, b=9` 得 16；chunk-VM 跑等价程序 `2*5+(9-3)` 打印 16——**曾祖父与曾孙算出同一个数**。这个对账的必要性：P-码的栈效应若实现有误（如 sbi 弹序颠倒），单看文本对不出来——**跨实现对账是语义的最终证人**（第 22 章四机制对账的同款方法论）。
+
+### 57.6a.4　pcode 作为合成属性（L 书表 8-1 的视角）
+
+L 书 §8.1.3 的压轴是"pcode 属性文法"——产生式带语义规则 `exp.pcode = ... || exp1.pcode || exp2.pcode || "adi"`（字符串拼接式代码生成）。这是第 13 章 SDD 的代码生成版：**code 是文法节点的综合属性、子节点的码串接父节点的算符**。本章（以及第 58 章）的树遍历发码是它的过程式直译——`genExp(lhs); emit(op)` 就是 `lhs.pcode || op` 的执行序写法。**属性文法给"怎么算"，树遍历给"怎么跑"**——两代规格技术在同一台机器上会师。
+
+```cpp
+// file: src/pcode.hpp
+// file: src/pcode.hpp
+// P-码（L 书 §8.1.3）：70 年代 Pascal 编译器的标准目标码——隐式操作数栈的中间码，
+// 本章字节码（clox 风格）的曾祖父。三条教学线：
+//   1. 同一表达式的 P-码与本章 chunk 字节码逐条对照（栈效应同构）；
+//   2. ~60 行 P-机器解释循环把它跑起来，与 chunk-VM 等价程序对账；
+//   3. pcode 是"合成属性"的属性文法产物（字符串拼接式代码生成，L 书表 8-1）。
+#ifndef TIP_PCODE_HPP
+#define TIP_PCODE_HPP
+
+#include <map>
+#include <string>
+#include <vector>
+
+namespace pcode {
+
+// 简化 P-码指令集（书 §8.1.3 的抽象版）：op 名 + 可选数值/符号操作数。
+struct Ins {
+    const char *op = "";     // ldc/lod/lda/adi/sbi/mpi/dvi/sro
+    double num = 0;          // ldc 的常量
+    const char *sym = "";    // lod/lda 的变量名（教学版用字符串，真实实现用帧偏移）
+};
+
+// 语料一的 P-码：2*a + (b-3)（书内原例）
+std::vector<Ins> exprCorpus();
+// 语料二的 P-码：x := y + 1（书内原例——lda 压地址 + sro 存回）
+std::vector<Ins> assignCorpus();
+
+// 一行反汇编（对照表与正文引用的锚文本）。
+std::string show(const Ins &i);
+
+// P-机器：隐式值栈的解释循环。栈效应——
+//   ldc/lod 压一；adi/sbi/mpi/dvi 弹二压一；lda 压"地址"；sro 弹值弹地址、存变量。
+class PMachine {
+public:
+    void var(const std::string &name, double v) { vars_[name] = v; }
+    double get(const std::string &name) { return vars_[name]; }
+    double run(const std::vector<Ins> &code);
+
+private:
+    std::vector<double> stack_;          // 值栈（lda 压的是 vars_ 的"地址下标"）
+    std::map<std::string, double> vars_;
+};
+
+}  // namespace pcode
+
+#endif  // TIP_PCODE_HPP
+```
+
+```cpp
+// file: src/pcode.cpp
+// file: src/pcode.cpp
+#include "pcode.hpp"
+
+#include <stdexcept>
+
+namespace pcode {
+
+std::vector<Ins> exprCorpus() {
+    // 书内原例的 P-码（§8.1.3 首例）：
+    //   ldc 2 ; lod a ; mpi ; lod b ; ldc 3 ; sbi ; adi
+    return {
+        {"ldc", 2, ""},
+        {"lod", 0, "a"},
+        {"mpi"},
+        {"lod", 0, "b"},
+        {"ldc", 3, ""},
+        {"sbi"},
+        {"adi"},
+    };
+}
+
+std::vector<Ins> assignCorpus() {
+    // x := y + 1（书内赋值例）：lda x 压地址、算值、sro 存回。
+    return {
+        {"lda", 0, "x"},
+        {"lod", 0, "y"},
+        {"ldc", 1, ""},
+        {"adi"},
+        {"sro"},
+    };
+}
+
+std::string show(const Ins &i) {
+    std::string s = i.op;
+    if (i.op == std::string("ldc")) s += " " + std::to_string(static_cast<int>(i.num));
+    else if (i.sym && *i.sym) s += std::string(" ") + i.sym;
+    return s;
+}
+
+double PMachine::run(const std::vector<Ins> &code) {
+    stack_.clear();
+    std::string pendingAddr;   // lda 压的"地址"（教学版：变量名）
+    for (const Ins &i : code) {
+        if (i.op == std::string("ldc")) {
+            stack_.push_back(i.num);
+        } else if (i.op == std::string("lod")) {
+            auto it = vars_.find(i.sym);
+            if (it == vars_.end()) throw std::runtime_error("undefined var: " + std::string(i.sym));
+            stack_.push_back(it->second);
+        } else if (i.op == std::string("lda")) {
+            pendingAddr = i.sym;   // 地址入栈（教学版单槽——栈效应与真实版一致）
+        } else if (i.op == std::string("sro")) {
+            if (stack_.size() < 1 || pendingAddr.empty())
+                throw std::runtime_error("sro: 栈下溢");
+            vars_[pendingAddr] = stack_.back();
+            stack_.pop_back();
+            pendingAddr.clear();
+        } else {
+            // 弹二压一的算术族：adi/sbi/mpi/dvi
+            if (stack_.size() < 2) throw std::runtime_error("算术: 栈下溢");
+            double b = stack_.back();
+            stack_.pop_back();
+            double a = stack_.back();
+            stack_.pop_back();
+            if (i.op == std::string("adi")) stack_.push_back(a + b);
+            else if (i.op == std::string("sbi")) stack_.push_back(a - b);
+            else if (i.op == std::string("mpi")) stack_.push_back(a * b);
+            else if (i.op == std::string("dvi")) stack_.push_back(a / b);
+            else throw std::runtime_error("unknown op: " + std::string(i.op));
+        }
+    }
+    // 表达式语料终态栈深 1（值留下）；赋值语料 sro 存回后终态栈深 0——两者都合法。
+    if (stack_.size() > 1) throw std::runtime_error("结束时栈深应为 0 或 1");
+    return stack_.empty() ? 0 : stack_.back();
+}
+
+}  // namespace pcode
+```
+
+pcode.cpp 走读要点：
+
+- 两条语料的 P-码是**手工按属性文法推出来再落表**的——正文逐行账的对照面；
+- PMachine 的 `pendingAddr` 单槽是教学简化（真实 P-机地址在栈上、可嵌套）——**栈效应（压一/弹一）与真实版一致，实现从简**；
+- 终态断言"栈深 0 或 1"：表达式留值（1）、赋值存回后净（0）——两种语料的合法终态。
+
+### 57.6a.5　驱动第七节的解读
+
+- `[P-code]` 七行——§57.6a.2 的逐行账对号；
+- `[P-machine] a=5 b=9 -> 16` 与 `[chunk-VM] -> 16`——跨代对账；
+- `[P-code] x := y+1` 五行 + `y=41 -> x=42`——取址存回的赋值形；
+- `[对照]` 一行——八个助记符的映射表（正文 §57.6a.2 的单行版）；
+- 两条 check 进断言汇总（7 项 → 9 项）。
+
+
 ## 57.7　驱动、语料与期望输出解读
 
 ```cpp
@@ -996,7 +1182,10 @@ Ignition/Lua VM（当代）。家谱的共同主题是**后缀序免语法分析
 //   三、每指令栈深账：depthTrace 与手推数组逐项对账；
 //   四、调用帧：fact(5) 帧深峰值 = 脚本 + 6 层递归 = 7；fib(10) 同型；
 //   五、原生函数旁路：input 桩（恒 0）经 Call 调用；
+//   七、P-码谱系：书内原例的 P-码文本 + P-机器 + 与 chunk-VM 对账；
 //   六、断言汇总。
+#include "pcode.hpp"
+
 #include <iostream>
 #include <memory>
 #include <sstream>
@@ -1004,6 +1193,7 @@ Ignition/Lua VM（当代）。家谱的共同主题是**后缀序免语法分析
 #include <vector>
 
 #include "chunk.hpp"
+#include "pcode.hpp"
 #include "vm.hpp"
 
 namespace {
@@ -1226,9 +1416,56 @@ int main() {
         check("input()+40+2", os.str(), "42\n");
     }
 
+    // ---------- 七、P-码谱系（L 书 §8.1.3）：本章字节码的曾祖父 ----------
+    {
+        std::cout << "\n== 七、P-码谱系 ==\n";
+        // 语料一：2*a + (b-3) —— P-码文本与手推逐行对账
+        std::cout << "[P-code] 2*a+(b-3)\n";
+        for (const auto &i : pcode::exprCorpus()) std::cout << "    " << pcode::show(i) << "\n";
+        pcode::PMachine pm;
+        pm.var("a", 5);
+        pm.var("b", 9);
+        double pv = pm.run(pcode::exprCorpus());
+        std::cout << "[P-machine] a=5 b=9 -> " << pv << "\n";
+        // 等价 chunk 程序：2*5 + (9-3)（常量直接烤进码，语义同构）
+        auto equiv = makeFn("equiv", 0);
+        {
+            Emit e{equiv->code.get()};
+            e.konst(tip::Value::num(2), 20);
+            e.konst(tip::Value::num(5), 20);
+            e.op(tip::Op::Mul, 20);
+            e.konst(tip::Value::num(9), 20);
+            e.konst(tip::Value::num(3), 20);
+            e.op(tip::Op::Sub, 20);
+            e.op(tip::Op::Add, 20);
+            e.op(tip::Op::Print, 20);
+            e.konst(tip::Value::num(0), 20);
+            e.op(tip::Op::Return, 20);
+        }
+        std::ostringstream os;
+        tip::VM vm(os);
+        vm.run(equiv);
+        double cv = std::stod(os.str());
+        std::cout << "[chunk-VM] 2*5+(9-3) -> " << cv << "\n";
+        check("P-码与 chunk 等价", std::to_string(pv == cv ? 1 : 0), "1");
+
+        // 语料二：x := y + 1 —— lda 压地址 + sro 存回的赋值形
+        std::cout << "[P-code] x := y+1\n";
+        for (const auto &i : pcode::assignCorpus()) std::cout << "    " << pcode::show(i) << "\n";
+        pcode::PMachine pm2;
+        pm2.var("y", 41);
+        pm2.run(pcode::assignCorpus());
+        std::cout << "[P-machine] y=41 -> x=" << pm2.get("x") << "\n";
+        check("P-码赋值", std::to_string(static_cast<long long>(pm2.get("x"))), "42");
+
+        // 对照表：P-码 ↔ clox 字节码（栈效应同构）
+        std::cout << "[对照] ldc↔Constant lod↔GetLocal lda↔(无：clox 用槽位) adi↔Add"
+                     " sbi↔Sub mpi↔Mul dvi↔Div sro↔SetLocal\n";
+    }
+
     std::cout << "\n== 六、断言汇总 ==\n";
     if (g_failures == 0) {
-        std::cout << "全部通过（7 项）\n";
+        std::cout << "全部通过（9 项）\n";
         return 0;
     }
     std::cout << g_failures << " 项失败\n";
@@ -1363,8 +1600,30 @@ ok   fib(10) = 55
 ok   input()+40+2 = 42
 
 
+== 七、P-码谱系 ==
+[P-code] 2*a+(b-3)
+    ldc 2
+    lod a
+    mpi
+    lod b
+    ldc 3
+    sbi
+    adi
+[P-machine] a=5 b=9 -> 16
+[chunk-VM] 2*5+(9-3) -> 16
+ok   P-码与 chunk 等价 = 1
+[P-code] x := y+1
+    lda x
+    lod y
+    ldc 1
+    adi
+    sro
+[P-machine] y=41 -> x=42
+ok   P-码赋值 = 42
+[对照] ldc↔Constant lod↔GetLocal lda↔(无：clox 用槽位) adi↔Add sbi↔Sub mpi↔Mul dvi↔Div sro↔SetLocal
+
 == 六、断言汇总 ==
-全部通过（7 项）
+全部通过（9 项）
 ```
 
 ## 57.8　FAQ、小结与练习

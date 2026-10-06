@@ -40,5 +40,27 @@ ok   fib(10) = 55
 ok   input()+40+2 = 42
 
 
+== 七、P-码谱系 ==
+[P-code] 2*a+(b-3)
+    ldc 2
+    lod a
+    mpi
+    lod b
+    ldc 3
+    sbi
+    adi
+[P-machine] a=5 b=9 -> 16
+[chunk-VM] 2*5+(9-3) -> 16
+ok   P-码与 chunk 等价 = 1
+[P-code] x := y+1
+    lda x
+    lod y
+    ldc 1
+    adi
+    sro
+[P-machine] y=41 -> x=42
+ok   P-码赋值 = 42
+[对照] ldc↔Constant lod↔GetLocal lda↔(无：clox 用槽位) adi↔Add sbi↔Sub mpi↔Mul dvi↔Div sro↔SetLocal
+
 == 六、断言汇总 ==
-全部通过（7 项）
+全部通过（9 项）
