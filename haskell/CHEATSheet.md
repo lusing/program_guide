@@ -1,4 +1,4 @@
-# Haskell 速查表（GHC 9.12.1 Win / 9.14.1 macOS 实测版）
+# Haskell 速查表（GHC 9.14.1（Win/macOS 双机）实测版）
 
 ## 运行与工具
 

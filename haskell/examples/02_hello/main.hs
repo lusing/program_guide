@@ -8,7 +8,7 @@ import System.IO (hSetEncoding, stderr, stdout, utf8)
 
 main :: IO ()
 main = do
-    -- Windows 坑（实测，9.12.1）：stdout 默认走 ANSI 代码页（本机 GBK），中文重定向即乱码；
+    -- Windows 坑（实测，9.12–9.14）：stdout 默认走 ANSI 代码页（本机 GBK），中文重定向即乱码；
     -- GHC_CHARENC=UTF-8 环境变量实测不生效——代码内 hSetEncoding 是唯一可靠修复。
     -- 本教程每个示例的第一件事都是它。
     hSetEncoding stdout utf8

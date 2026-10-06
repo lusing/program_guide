@@ -23,13 +23,13 @@ commercialhaskell，实测 404 才知道）。
 
 ```yaml
 resolver: lts-24.59      # 快照：三千余包的版本组合（自带 GHC 9.10.3）
-compiler: ghc-9.12.1     # 覆盖：本机系统 GHC（lts 没有 9.12.1 的配套）
+compiler: ghc-9.14.1     # 覆盖：本机系统 GHC（lts 没有 9.14.1 的配套）
 system-ghc: true         # 用 PATH 上的 ghc，别自己装
 install-ghc: false       # 绝不让 stack 下载 GHC
 ```
 
 **版本错位是现实**：镜像上 latest LTS（24.59）配 GHC 9.10.3、nightly 配 9.12.4——都没有
-9.12.1。`compiler:` 覆盖 + `system-ghc` 是"scoop GHC + stack 构建"共存的正解（实测可编）。
+9.14.1。`compiler:` 覆盖 + `system-ghc` 是"scoop GHC + stack 构建"共存的正解（实测可编）。
 
 ## 27.3 cabal 文件：三件套
 
