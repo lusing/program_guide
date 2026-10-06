@@ -2,6 +2,9 @@
 
 > 本章对应原书第 14 章"Windows 管理规范"（WMI）。WMI 是微软给管理员的最强工具之一，也是最容易把人绕晕的技术之一——原书开篇就承认"一直期望但又害怕写这一章"。本章按现代口径讲：**用 CIM 命令访问 WMI 仓库**，并讲清老 WMI 命令与新 CIM 命令的分界。
 
+> **平台提示**：CIM/WMI 是 **Windows 专属技术栈**（底层是 COM/DCOM），pwsh 7 的 macOS/Linux 版**不带** `Get-CimInstance`/`Get-CimClass`/`Invoke-CimMethod`/`Get-WmiObject` 这四个命令。本章内容在非 Windows 平台上整章不可演示，示例会按能力探测全部 SKIP（标记 `[platform]`）——这不是示例写错了。跨平台的等价取数手段是 `Get-PSDrive`/`Get-Process`（见第 12 章），但 WQL 方言与 `Win32_*` 类在 Unix 上没有对应物，本章不伪造替身。
+
+
 PowerShell 内置命令再丰富，也盖不住一个事实：**Windows 数以万计的系统信息（硬件、BIOS、磁盘、服务、补丁、网络……）存在一个独立于 PowerShell 的仓库里**——WMI（Windows Management Instrumentation）。PowerShell 只是这个仓库的查询接口。学会它，"查这台机器的出厂信息/装了哪些补丁/内存条几根"都变成一行命令。
 
 ## 14.1 仓库的结构：命名空间 → 类 → 实例
@@ -158,6 +161,7 @@ Get-CimAssociatedInstance -InputObject ($disk…) -ResultClassName Win32_DiskDri
 | 结果里一堆 `__GENUS` 噪音 | 系统属性被 `*` 放出 | `Select-Object` 明确列属性，别用 `*` |
 | pwsh 7 报"找不到 Get-WmiObject" | WMI 命令族已被移除 | 全部改 CIM 命令（本表第 1 行链接 14.2） |
 | `Win32_Product` 越查越慢/弹安装 | MSI 自检修复副作用 | 改用注册表 Uninstall 键（第 05 章案例二） |
+| 在 macOS/Linux 上整章跑不起来 | CIM/WMI 是 Windows 的 COM/DCOM 技术栈，pwsh 7 的 Unix 版连 `Get-CimInstance` 都没有 | 探针门控整章 SKIP 带 `[platform]` 理由；**别伪造 WQL/Win32 替身**，那等于教错知识 |
 
 ## 14.8 本章要点
 

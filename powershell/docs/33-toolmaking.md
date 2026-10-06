@@ -163,6 +163,8 @@ run.ps1                         # 装配线：临时目录组装模块 → 全�
 - 取数与导出分命令=可组合性；分母防御与异常降级=健壮性的两个小钉子。
 - 六行的调度脚本装下全部复杂度——**模块吃复杂度，脚本做装配**，这就是 Toolmaking 的本质。
 - 复盘表=33 章的使用索引；下一站按真实痛点选（DSC/JEA/云/Secret），工作流已废弃。
+- **平台差异**：本项目的取数层在 Windows 上走 `Get-CimInstance Win32_LogicalDisk`，在 macOS/Linux 上走 `Get-PSDrive -PSProvider FileSystem`——但**两条路吐出的对象字段完全一致**（`Machine`/`Drive`/`FreeRatio`/`Low`），下游导出、断言、调度脚本一行都不用改。这是「模块吃复杂度」的最好例证：平台差异被关在取数函数内部。
+  另注意 `$IsWindows` 这类平台变量是 pwsh 6+ 才有的，**Windows PowerShell 5.1 里未定义**——要判平台请用 `Get-Command Get-CimInstance` 这类能力探测。
 
 ## 33.8 全教程的最后一图：能力地图
 

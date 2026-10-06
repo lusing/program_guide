@@ -133,6 +133,7 @@ PowerShell 团队把使用者分为三类，本教程按同样的顺序覆盖：
 - **先当 Shell 用户，再当脚本作者**——脚本只是命令的存档，第 20 章之前请忍住不写 .ps1。
 - PowerShell 传递**对象**而非文本；整形数据靠选属性，不靠切字符串。
 - 版本二分：5.1（`powershell.exe`，内置、维护模式）与 7+（`pwsh`，跨平台、活跃开发）；`$PSVersionTable` 是身份证明。
+- **平台差异**：`Get-Service` 这类 cmdlet 是 Windows-only——macOS 上系统服务由 launchd 管，pwsh 7 的 Unix 版干脆不带这个 cmdlet。同理还有 `Get-CimInstance` 等 CIM 命令、注册表提供程序。所以「一条命令枚举一个系统集合」这个教学点在 macOS 上改用 `Get-Process`：断言的是**结构化查询这件事**，不是某个 Windows 专有命令。
 
 两个坑先记下，后面章节会展开：**中文 Windows 的控制台默认代码页是 GBK**，与工具链交换 UTF-8 文本时要显式设置编码（第 05 章起会看到处理办法）；**含中文的 .ps1 文件必须存成 UTF-8 带 BOM**，否则 5.1 会按 ANSI 解析出乱码甚至语法错误（第 17 章专题）。
 

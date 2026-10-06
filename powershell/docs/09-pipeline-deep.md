@@ -158,6 +158,7 @@ Get-Service -ComputerName (Get-ADComputer -Filter * | Select-Object -ExpandPrope
 | 属性名差一点绑不上 | 名字不完全相等 | 计算属性改名 `@{n='参数名';e={$_.属性}}` |
 | 括号里命令慢、内存高 | 圆括号一次性全量求值，非流式 | 大数据源优先管道绑定 |
 | 老脚本报"找不到参数 ComputerName" | pwsh 7 移除了部分 5.1 参数（Get-Service 等） | 改用 Invoke-Command/CIM（13/14 章） |
+| 元数据说 `ByValue=True`，实喂裸字符串却报 "cannot be bound" | Unix 版 `Get-Process` 的 `-Name` 参数集**只实现 ByPropertyName**，元数据声明与实现不符 | 别拿参数元数据当实现证明；换一个真跑通的锚点（如 `ForEach-Object -Process`）演示 ByValue |
 
 ## 9.9 本章要点
 

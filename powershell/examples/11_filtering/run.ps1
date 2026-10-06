@@ -39,20 +39,40 @@ Check (((5 -gt 10) -or (10 -lt 100)) -eq $true) '-or 有一真即真'
 Check ((-not $true) -eq $false) '-not 取反'
 
 # —— 7) 两种 Where 等价 ——
-$simple = @(Get-Service | Where-Object Status -eq 'Running')
-$block = @(Get-Service | Where-Object { $_.Status -eq 'Running' })
-Check ($simple.Count -eq $block.Count -and $simple.Count -gt 0) '简化式与脚本块结果一致'
-Check (@(Get-Service | Where-Object { $_.Status -eq 'Running' -and $_.Name -like 'W*' }).Count -ge 0) '多条件须回脚本块'
+# 原书用服务集合（Status='Running'）；Unix 上 Get-Service 不存在，改用进程集合。
+# 简化式与脚本块等价是**引擎行为**，与集合来自哪里无关。
+if (Get-Command Get-Service -ErrorAction SilentlyContinue) {
+    $simple = @(Get-Service | Where-Object Status -eq 'Running')
+    $block = @(Get-Service | Where-Object { $_.Status -eq 'Running' })
+    Check ($simple.Count -eq $block.Count -and $simple.Count -gt 0) '简化式与脚本块结果一致'
+    Check (@(Get-Service | Where-Object { $_.Status -eq 'Running' -and $_.Name -like 'W*' }).Count -ge 0) '多条件须回脚本块'
+}
+else {
+    $simple2 = @(Get-Process | Where-Object Name -eq 'kernel_task')
+    $block2 = @(Get-Process | Where-Object { $_.Name -eq 'kernel_task' })
+    Check ($simple2.Count -eq $block2.Count) '简化式与脚本块结果一致（进程集合，-eq 对不存在的值两侧同为 0）'
+    # 取一个确实存在的进程名再比一次，避免"两侧都空"这种退化的真
+    $live = (Get-Process | Where-Object { $_.Name } | Select-Object -First 1).Name
+    $s3 = @(Get-Process | Where-Object Name -eq $live)
+    $b3 = @(Get-Process | Where-Object { $_.Name -eq $live })
+    Check ($s3.Count -eq $b3.Count -and $s3.Count -ge 1) '简化式与脚本块在非空结果上仍一致'
+    Check (@(Get-Process | Where-Object { $_.Id -gt 0 -and $_.Name -like '*' }).Count -ge 1) '多条件须回脚本块'
+}
 
 # —— 8) 数值过滤的确定性验证 ——
 Check (@(1..100 | Where-Object { $_ % 15 -eq 0 }).Count -eq 6) '100 内 15 的倍数恰 6 个'
 
-# —— 9) 左过滤与客户端过滤等价（CIM 仓库端 vs Where） ——
-$left = @(Get-CimInstance -ClassName Win32_Process -Filter "Name='explorer.exe'")
-$right = @(Get-CimInstance -ClassName Win32_Process | Where-Object Name -eq 'explorer.exe')
-Check ($left.Count -eq $right.Count) '左过滤与客户端过滤计数一致'
-if ($left.Count -ge 1) { Check ($true) 'explorer 在运行（左过滤非空实证） [env]' }
-else { Skip 'explorer 未运行（服务器核心环境） [env]' }
+# —— 9) 左过滤与客户端过滤等价（仓库端 -Filter vs 客户端 Where） ——
+# 原书用 CIM：Win32_Process 是 Windows 的 WMI 类，Unix 上没有 CIM/WMI 栈。
+# 跨平台用 Get-Process 自己的 -Name 参数做"仓库端过滤"，与客户端 Where-Object 比对——
+# 教学点（两种过滤位置结果一致）不变，只是数据源不同。
+$liveName = (Get-Process | Where-Object { $_.Name } | Select-Object -First 1).Name
+$left = @(Get-Process -Name $liveName)
+$right = @(Get-Process | Where-Object Name -eq $liveName)
+Check ($left.Count -eq $right.Count -and $left.Count -ge 1) '左过滤（-Name 参数）与客户端过滤计数一致'
+$missLeft = @(Get-Process -Name 'no-such-proc-xyz')
+$missRight = @(Get-Process | Where-Object Name -eq 'no-such-proc-xyz')
+Check ($missLeft.Count -eq $missRight.Count -and $missLeft.Count -eq 0) '两侧都无匹配时计数同为 0'
 
 $script:Report | Out-File -FilePath (Join-Path $PSScriptRoot 'report.txt') -Encoding utf8
 if ($script:Failed) { exit 1 } else { exit 0 }

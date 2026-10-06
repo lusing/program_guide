@@ -44,8 +44,11 @@ Get-DnsClientCache        # 第一次运行：引擎自动加载 DnsClient 模�
 魔法背后的机关是一个环境变量——**`$env:PSModulePath`**：
 
 ```powershell
-$env:PSModulePath -split ';'
+# 注意分隔符：Windows 是 ';'，macOS/Linux 是 ':'。写死 ';' 在 macOS 上等于没切。
+$env:PSModulePath -split [regex]::Escape([System.IO.Path]::PathSeparator)
 ```
+
+> **别写死分隔符。** `PSModulePath`（以及 `PATH`）是**平台相关的路径列表**：Windows 用分号 `;`，macOS/Linux 用冒号 `:`。在 macOS 上跑 `-split ';'` 会把整串当成一个目录，`$paths.Count` 恒为 1，看起来像"只有一个搜索路径"。要平台无关就用 `[System.IO.Path]::PathSeparator`——它是 .NET 提供的常量，两平台分别给出 `;` 和 `:`。
 
 它是一串目录（Windows 系统模块目录、用户文档下的模块目录、pwsh 安装目录……），引擎在这些目录里找模块。两引擎的路径列表**不同**（5.1 有 `WindowsPowerShell` 目录，7 有 `PowerShell` 目录），所以"某模块装完两个引擎都看得见"的前提是装进了各自的路径——这是双引擎环境的经典坑（第 27 章开发模块时还会遇到）。模块不在路径里也不难：`Import-Module C:\SomePath\MyModule` 给全路径即可。
 
@@ -160,6 +163,7 @@ Split-Path $m.Path -Parent  # 模块目录
 | 提示"无法解析别名/找不到命令"但模块明明在 | 模块不完整或清单损坏 | `Import-Module 模块名 -Verbose` 看加载过程报错 |
 | 同名命令行为和文档不一致 | 被后加载模块的同名命令遮蔽 | `Get-Command 命令名 | Select-Object Name, Module, Version` 验明正身 |
 | 启动明显变慢 | profile 里 Import 一堆不常用模块 | 精简 profile，依赖自动加载 |
+| `PSModulePath` 按 `;` 切分只得到 1 项 | 分隔符是**平台相关**的：Windows `;`、macOS/Linux `:`，写死等于没切 | 用 `[System.IO.Path]::PathSeparator` + `-split [regex]::Escape(...)` |
 
 第四条对策里的 `Get-Command 命令名`（不带通配符）能显示命令的**真实来源模块与版本**——"这命令到底是谁家的"一查便知，排错时极常用。
 

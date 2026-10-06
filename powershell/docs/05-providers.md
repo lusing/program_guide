@@ -169,10 +169,15 @@ Remove-PSDrive Tut
 **案例一：审计 PATH 里的可疑目录**。环境变量的每个条目都是路径，看看有哪些包含"tmp"：
 
 ```powershell
-$env:PATH -split ';' | Where-Object { $_ -match 'tmp' }
+# PATH 的分隔符是平台相关的：Windows ';'、macOS/Linux ':'。
+# 写死 ';' 在 macOS 上等于没切，整串会被当成一个目录。
+$env:PATH -split [regex]::Escape([System.IO.Path]::PathSeparator) |
+    Where-Object { $_ -match 'tmp' }
 ```
 
-做了什么：`-split ';'` 把一整条 PATH 切成数组（第 20 章的字符串运算符），`Where-Object` 逐条匹配（第 11 章）。不需要提供程序知识——但如果你想把整个环境变量表导出来审计，`Get-ChildItem Env: | Export-Csv env-audit.csv` 就是提供程序的贡献。
+做了什么：`-split` 把一整条 PATH 切成数组（第 20 章的字符串运算符），`Where-Object` 逐条匹配（第 11 章）。**分隔符一定要用 `[System.IO.Path]::PathSeparator` 取，别硬编码**——这是跨平台脚本最常见的低级错误之一，症状很隐蔽：在 macOS 上 `$parts.Count` 恒为 1，你会以为 PATH 里只有一个目录。不需要提供程序知识——但如果你想把整个环境变量表导出来审计，`Get-ChildItem Env: | Export-Csv env-audit.csv` 就是提供程序的贡献。
+
+> **顺带一个能力差异**：不是所有提供程序都实现了同一套接口。`FileSystem:`（`C:\`、`/usr`）实现了属性接口，所以 `Set-ItemProperty -Path a.txt -Name IsReadOnly -Value $true` 可用——但**属性名由提供程序自己定义**，你不能拿它当通用键值存储（写 `-Name Foo` 会报 "The property int Foo=… does not exist"）。而 `Env:` 和 `Variable:` 连属性接口都没实现（报 "The IPropertyCmdletProvider interface is not supported by this provider"）。要存任意键值对，用文件系统或注册表。
 
 **案例二：查一台机器装没装某软件**。多数应用会在"卸载"注册表键下挂号：
 

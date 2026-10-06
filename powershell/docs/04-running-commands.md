@@ -190,6 +190,8 @@ PowerShell 给 cmd 老用户准备了别名级兼容，同时每个 cmd 命令�
 - 外部命令照常可用；解析打架时用 `& $exe 参数` 或 `--%`（Windows，之后不展开变量）。
 - 红字读位置、查帮助、检查是否带了 cmd/Unix 口音。
 
+- **平台差异**：`gsv` 是 `Get-Service` 的别名，而 `Get-Service` 只在 Windows 上存在——**别名随它的目标 cmdlet 一起消失**，所以 macOS 上 `gsv` 查不到不是 bug。跨平台验证时改用 `gci`（`Get-ChildItem`）这类两平台都有的别名。另注意 `mkdir`：Windows 上它是 PowerShell **函数**（在 `Function:` 驱动器里），macOS 上它是 `/bin/mkdir` 这个**外部程序**（`CommandType` 是 `Application`）——命令解析优先序 Function > Alias > Cmdlet > Application，两平台都成立。
+
 **动手实验**：① 用 `Get-Command -Verb Export` 数数有几个导出类命令；② 查出 `gsv`、`gps`、`gal` 各是谁的别名；③ 用**位置参数**列 `C:\Windows` 下前 3 项；④ 同一条命令分别用缩写参数与全参数各写一遍对比可读性；⑤ 体验 `Show-Command Get-Process`（Windows）；⑥ 故意输 `Get Service` 和 `Get-ChildItem C:\ /s`，读两条红字，用帮助改对。
 
 对应示例（可选）：`examples/04_running_commands/`——断言批准动词表、别名解析、位置绑定、参数缩写、`-WhatIf` 干跑、大小写无关与外部命令调用。

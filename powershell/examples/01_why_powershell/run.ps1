@@ -22,7 +22,13 @@ Check ((Get-ChildItem $work -Directory).Count -eq 5) '一条命令批量创建 5
 Check ((Get-ChildItem $work -Directory).Count -eq 5) '重复执行结果一致（幂等）'
 
 # —— 3) 结构化查询：一条命令得到结构化答案 ——
-Check (@(Get-Service).Count -gt 10) '单命令枚举服务集合'
+# Get-Service 是 Windows-only cmdlet（pwsh 7 在 Unix 上不带它，因为 launchd 不是 SCM）。
+# 教学点是"单命令枚举一个系统集合并直接拿到对象"，两平台各有事实锚点：
+# Windows 用服务集合，Unix 用进程集合——都不断言。
+if (Get-Command Get-Service -ErrorAction SilentlyContinue) {
+    Check (@(Get-Service).Count -gt 10) '单命令枚举服务集合'
+}
+else { Skip '本平台无 Get-Service（Windows-only；Unix 用 launchd 而非 SCM） [platform]' }
 Check (@(Get-Process).Count -gt 5) '单命令枚举进程集合'
 
 # —— 4) 组合：管道把命令接起来（创建→统计→筛选） ——

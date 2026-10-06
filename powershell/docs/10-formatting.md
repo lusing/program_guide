@@ -152,6 +152,7 @@ Get-Service | Format-Table -Property Name, Status | Sort-Object Status   # ✗
 | 大表 `-AutoSize` 明显变慢 | 必须看完全部对象才能定宽 | 大结果集放弃 AutoSize，或先 `-First` 截断 |
 | `Out-File` 的表断行 | 默认 80 列 | `-Width` 给大值 |
 | 长字段（描述/路径）被表格截断 | 表格按列宽截断 | 换 `Format-List` 或 `-Wrap` |
+| 排序键断言在 `Format-` 之后失效 | Format 输出的是格式指令对象，业务属性根本不在上面（`Sort-Object` 不报错，只是静默按缺省值排） | 断言"指令对象上该属性不存在"，而不是断言排出来的顺序 |
 
 ## 10.9 本章要点
 

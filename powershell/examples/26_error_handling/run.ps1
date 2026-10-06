@@ -70,8 +70,23 @@ function Assert-TutPath {
 $threw = $false
 try { Assert-TutPath -Path 'Z:\nowhere' } catch { $threw = ($_.Exception.Message -match 'Z:\\nowhere') }
 Check ($threw) 'throw 对内抛出（携带消息）'
-$probe = Start-Process -FilePath pwsh -ArgumentList '-NoProfile', '-Command', 'try { throw } catch { exit 7 }' -Wait -PassThru -WindowStyle Hidden
-Check ($probe.ExitCode -eq 7) 'exit 对外汇报（子进程退出码 7 直通）'
+
+# 子进程用**当前引擎自身**（两通道里 5.1 与 pwsh 7 的可执行名不同，写死 'pwsh' 在 5.1 侧会找不到）。
+# -WindowStyle 只在 Windows 版受支持：参数**在参数表里存在**（ContainsKey 为真），
+# 但非 Windows 版调用时抛 "not supported ... on this edition of PowerShell"——
+# 所以只能按"实际调用是否抛错"这个事实条件分支，不能按参数表判断（CHEATSheet 26a）。
+$engineExe = (Get-Process -Id $PID).Path
+$exitArgs = @('-NoProfile', '-Command', 'try { throw } catch { exit 7 }')
+$probe = $null
+try {
+    $probe = Start-Process -FilePath $engineExe -ArgumentList $exitArgs -Wait -PassThru -WindowStyle Hidden
+    Check ($probe.ExitCode -eq 7) 'exit 对外汇报（子进程退出码 7 直通，-WindowStyle Hidden 生效）'
+}
+catch {
+    # 本 edition 不支持 -WindowStyle：去掉它语义不变，退出码仍应直通
+    $probe = Start-Process -FilePath $engineExe -ArgumentList $exitArgs -Wait -PassThru
+    Check ($probe.ExitCode -eq 7) 'exit 对外汇报（子进程退出码 7 直通；本 edition 不支持 -WindowStyle） [platform]'
+}
 
 # —— 7) $Error 仓库 ——
 $Error.Clear()

@@ -56,7 +56,7 @@
 | 现算一列 | `Select @{n='名';e={ 表达式 }}` | 08 |
 | 出表/存档 | `\| Format-Table -Auto`（屏幕）；`\| Export-Csv -NoTypeInformation`（数据） | 06/10 |
 | 出 HTML | `\| ConvertTo-Html \| Out-File` | 06 |
-| 比 two 份快照 | `Export-Clixml` 基线 → `Compare-Object -Property 身份列` | 06 |
+| 比对两份快照 | `Export-Clixml` 基线 → `Compare-Object -Property 身份列` | 06 |
 | 查系统信息 | `Get-CimInstance -ClassName Win32_*` | 14 |
 | 多机扇出 | `Invoke-Command -ComputerName 清单 {}` | 13 |
 | 后台跑 | `Start-Job {}` / `Invoke-Command -AsJob` | 15 |
@@ -90,7 +90,7 @@ Test-WSMan -ErrorAction SilentlyContinue; Get-Command ssh -ErrorAction SilentlyC
 
 ## 34.4 入门者十大高频坑（全教程收束）
 
-每条都是各章"坑位表"的冠军条目，值得贴在显示器上：
+每条都是各章"本章高频坑位"的冠军条目，值得贴在显示器上：
 
 1. **`./` 前缀**：运行当前目录脚本必须 `.\s.ps1`（防劫持设计）——22 章；
 2. **双引号展开**：单引号字面、双引号才展开 `$`；属性要 `$()`——20 章；
@@ -121,7 +121,7 @@ Test-WSMan -ErrorAction SilentlyContinue; Get-Command ssh -ErrorAction SilentlyC
 | Pester 内置 | 3.4（v3 语法） | 不内置（自装 v5+） | 32 |
 | enum 前缀缩写绑定 | 接受 | 接受（相同） | 31 |
 
-## 34.5.1 帮助主题速查：about_* 的索引
+## 34.6 帮助主题速查：about_* 的索引
 
 34.3 查"怎么做"，`about_*` 主题查"为什么/全部规则"——按主题归队的常用索引（`help about_X` 直达）：
 
@@ -137,13 +137,15 @@ Test-WSMan -ErrorAction SilentlyContinue; Get-Command ssh -ErrorAction SilentlyC
 | `about_Redirection` / `about_Streams` | 六条流与重定向 |
 | `about_Execution_Policies` / `about_Signing` | 执行策略与签名 |
 | `about_Remoting*` 系列（FAQ/Troubleshooting/Requirements） | 远程全家桶 |
-| `about_Modules` / `about_Script_Analysis`?（→ 官方 ScriptAnalyzer 文档） | 模块与体检 |
-| `about_Classes` / `about_Enum` / `about_Joins`?（→ 34.3 的任务表） | 类型系统 |
-| `about_Comment_Based_Help` / `about_Profiles` / `about_Transcripts` | 帮助/profile/转录 |
+| `about_Modules` / `about_Module_Manifests` / `about_Requires` | 模块、打包与 `#Requires` 声明 |
+| `about_Classes` / `about_Enum` / `about_Join` | 类型系统与拼接 |
+| `about_Comment_Based_Help` / `about_Profiles` / `about_PowerShell_Config` | 帮助注释、profile 与配置 |
 
 记不住名字时：`help about_*` 全列表 + 关键词通配（`help about_*array*`）。**"手册在 Shell 里"** 是 PowerShell 生态最被低估的福利——本教程 34 章教的所有内容，官方都有对应 about 主题做深水区。
 
-## 34.5.2 键盘与效率速查
+> **主题名对不上就查 `Get-Help`**：官方主题名多为**单数**（`about_Join` 不是 `about_Joins`）、目录类用**复数**（`about_Module_Manifests`）。写错名字时 `Get-Help` 只会提示 "Searching Help for..." 而不报错，容易以为主题不存在。转录（transcript）本身**没有**独立 about 主题，规则在 `about_Redirection` 与 `Start-Transcript`/`Stop-Transcript` 的帮助里。
+
+## 34.7 键盘与效率速查
 
 每天敲几千行的手值得一张效率表（PSReadLine，02 章的浓缩版）：
 
@@ -160,15 +162,15 @@ Test-WSMan -ErrorAction SilentlyContinue; Get-Command ssh -ErrorAction SilentlyC
 
 三条敲命令的省字习惯（都不违反"脚本里写全名"的纪律）：**参数名缩到唯一**（`-comp`）；**开关参数配 Tab**（敲前缀再 Tab）；**机器清单进文本文件**再 `(Get-Content f.txt)` 喂参数（第 03/09 章的模式）——三招叠加，日常命令能省三分之一击键。
 
-## 34.6 本章要点
+## 34.8 本章要点
 
-- 三张总表（标点/运算符/任务一行流）是"先翻这里"的第一站；每条标注详解章，顺藤摸瓜。
+- 六张速查表（标点 34.1／运算符 34.2／任务一行流 34.3／双引擎差异 34.5／about 主题 34.6／键盘效率 34.7）是"先翻这里"的第一站；每条标注详解章，顺藤摸瓜。
 - 十大坑=全教程教训的浓缩版；**双引擎表**是迁移与排错的对照词典。
 - 本教程 34 章至此收官：**使用者（1–19）→ 语言核心（20–23）→ 工具作者（24–33）→ 速查（34）**——需要更深时，33.6 的下一站地图指路。
 
 **动手实验**：① 把 34.1 表里每个符号都在命令行敲一遍验证含义（约 15 分钟，值得）；② 用 34.3 的一行流拼一个"本机巡检三件套"（磁盘/服务/补丁各一行）；③ 给 34.4 的十条各想一个"症状复现"命令；④ 把 34.5 表与你的工作环境对照，标出会影响你的三行。
 
-对应示例（可选）：`examples/34_cheatsheet/`——34.1 每个标点一条确定性断言、34.2 每族运算符一条样例、十大坑各一条"症状复现"，全表可执行化。
+对应示例（可选）：`examples/34_cheatsheet/`——把速查表里**可确定性验证的那部分**做成了断言，实测 macOS / pwsh 7.6.6 上 **28 条全过**（Windows 侧另有一条 `[ch7-only]` 的 `PSEdition` 断言，属引擎差异行）：标点区 13 条（转义、数组/哈希字面量、here-string、成员与静态访问、切片与子表达式）、运算符区 7 条（`-eq`/`-ceq` 大小写、`-replace`、数组 `-match` 过滤、`-in`/`-contains` 方向、`-as`、`-f`、管道排序）、坑区 8 条症状复现（挑的是坑 2/3/7/8/11 等有确定可测行为的，不是十条全做）。34.1 表里 `;` `,` `#` 这类"没有独立可测行为"的符号，以及 34.6/34.7 两张偏查阅性质的表，**未做断言**——动手实验①的"每个符号敲一遍"正是补这部分。
 
 ---
 

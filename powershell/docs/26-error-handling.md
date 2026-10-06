@@ -140,6 +140,7 @@ if ($missed) {
 | 外部程序失败脚本还 exit 0 | exe 的失败不抛异常，只设退出码 | `$LASTEXITCODE` 检查 |
 | throw 字符串类型太宽 | 都是 RuntimeException | 要分流就抛类型化异常 |
 | `$Error` 越积越多 | 会话级仓库不自动清 | 排错前 `$Error.Clear()`，取 `$Error[0]` |
+| `Start-Process -WindowStyle Hidden` 抛"参数在此 edition 上不支持" | 该参数**在参数表里存在**（`ContainsKey` 为真），但非 Windows 版调用即抛——不能按参数表判断支持度 | 按"实际调用是否抛错"这个事实条件 try/catch，catch 里去掉该参数重试 |
 
 ## 26.7.1 处置决策树：拿到错误往哪走
 

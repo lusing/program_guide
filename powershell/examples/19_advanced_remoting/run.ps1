@@ -23,9 +23,21 @@ if ((Get-Command New-PSSession).Parameters.ContainsKey('HostName')) {
 else { Skip '5.1 无 -HostName（SSH 腿为 pwsh 7 独享） [ch7-only]' }
 
 # —— 3) 会话选项对象：连接高级面板（不建连接即可构造） ——
-$opt = New-PSSessionOption -IdleTimeout 600000 -OpenTimeout 15000
-Check ($opt.IdleTimeout.TotalMinutes -eq 10) 'SessionOption 空闲超时=10 分钟（TimeSpan）'
-Check ($opt.OpenTimeout.TotalSeconds -eq 15) 'SessionOption 连接超时=15 秒（TimeSpan）'
+# 会话选项里的超时项（-IdleTimeout/-OpenTimeout 等）是 **WSMan 传输的参数**。
+# pwsh 7 的 Unix 版把 WSMan 整条腿剔除了，New-PSSessionOption 只剩两个 SSL 证书校验开关
+# （SkipCACheck/SkipCNCheck）——因为 Unix 上的 pwsh 远程只走 SSH，没有 WSMan。
+# 所以判据是"这些参数在参数表里吗"，不是平台宏。
+$optCmd = Get-Command New-PSSessionOption
+if ($optCmd.Parameters.ContainsKey('IdleTimeout')) {
+    $opt = New-PSSessionOption -IdleTimeout 600000 -OpenTimeout 15000
+    Check ($opt.IdleTimeout.TotalMinutes -eq 10) 'SessionOption 空闲超时=10 分钟（TimeSpan）'
+    Check ($opt.OpenTimeout.TotalSeconds -eq 15) 'SessionOption 连接超时=15 秒（TimeSpan）'
+}
+else {
+    $opt = New-PSSessionOption -SkipCACheck
+    Check ($null -ne $opt) 'SessionOption 可构造（本平台只余 SSL 校验开关）'
+    Skip '本平台 New-PSSessionOption 无 WSMan 超时参数（-IdleTimeout/-OpenTimeout 不在参数表；Unix 远程只走 SSH） [platform]'
+}
 
 # —— 4) 端点清单与 WSMan 配置：只读门控（需 WinRM 服务） ——
 $wsmanOk = $false

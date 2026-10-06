@@ -13,10 +13,24 @@ function Skip([string]$Reason) { $script:Report.Add("SKIP: $Reason") }
 # —— 1) Get-Member：类型名与成员类型 ——
 $gmStr = 'abc' | Get-Member
 Check (@($gmStr | Where-Object Name -eq 'ToUpper').Count -eq 1) '字符串对象有 ToUpper 方法'
-$gmSvc = Get-Service | Get-Member
-Check ($gmSvc[0].TypeName -match 'ServiceController') '服务对象的 TypeName 含 ServiceController'
-Check (@($gmSvc | Where-Object MemberType -eq 'Property').Count -gt 2) '服务对象有多个属性'
-Check (@($gmSvc | Where-Object MemberType -eq 'Method').Count -gt 2) '服务对象有多个方法'
+# 教学点是「管道对象带真实 .NET 类型，Get-Member 列出它的属性与方法」。
+# Windows 上锚在 ServiceController（Get-Service），Unix 上 Get-Service 不存在（launchd 不是 SCM），
+# 改锚在 FileSystemInfo——同样是"一条命令枚举出来的真实系统对象"，成员形状对断言等价。
+if (Get-Command Get-Service -ErrorAction SilentlyContinue) {
+    $gmSvc = Get-Service | Get-Member
+    Check ($gmSvc[0].TypeName -match 'ServiceController') '服务对象的 TypeName 含 ServiceController'
+}
+else {
+    # 目录的运行时类型是 System.IO.DirectoryInfo、文件是 System.IO.FileInfo，
+    # 共同基类才是 FileSystemInfo。Get-Member 的 TypeName 给的是**运行时类型名**，
+    # 所以别拿 'FileSystemInfo' 去 match 字符串（DirectoryInfo 里根本没这几个字）——
+    # 用 -is 走继承链判定（实测踩过，见 CHEATSheet 8a）。
+    $fsObj = Get-ChildItem -Path ([System.IO.Path]::GetTempPath()) | Select-Object -First 1
+    $gmSvc = $fsObj | Get-Member
+    Check ($fsObj -is [System.IO.FileSystemInfo]) "文件系统对象归属 FileSystemInfo 家族（运行时类型 $($fsObj.GetType().Name)，基类 $($fsObj.GetType().BaseType.Name)） [platform]"
+}
+Check (@($gmSvc | Where-Object MemberType -eq 'Property').Count -gt 2) '系统对象有多个属性'
+Check (@($gmSvc | Where-Object MemberType -eq 'Method').Count -gt 2) '系统对象有多个方法'
 
 # —— 2) Select-Object 两种取法：对象 vs 裸值 ——
 $sample = [pscustomobject]@{ Name = 'alpha'; Score = 3 },

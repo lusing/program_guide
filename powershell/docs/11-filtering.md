@@ -161,6 +161,7 @@ Get-ChildItem -Path 'C:\Some\Logs' -Directory |
 | `-Filter` 里写 `-eq` 报错 | WQL/AD 方言不认 PowerShell 运算符（WQL 用 `=`；AD 的 `-Filter` 反而认 `-eq/-like`） | 查该命令帮助的示例；两套方言列表见第 14 章 |
 | 简化式 Where 多条件失效 | `Where A -eq 1 -and B -eq 2` 不是合法简化式 | 多条件回脚本块 |
 | 大结果集过滤慢 | 全量拉回客户端筛 | 左过滤优先；远程场景叠加 `-Filter + Where` |
+| CIM `-Filter` 左过滤在 macOS 上跑不了 | 无 CIM 栈 | 改用 `Get-Process -Name` 参数做"仓库端过滤"，与客户端 `Where-Object` 比对 |
 
 ## 11.9 性能小实验：亲眼看一次左过滤的赢面
 

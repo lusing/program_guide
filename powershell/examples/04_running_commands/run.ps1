@@ -16,7 +16,14 @@ Check (@($verbs).Count -ge 90) '批准动词表约百个'
 Check (@($verbs | Where-Object Verb -in 'Get', 'Set', 'New', 'Remove').Count -eq 4) 'Get/Set/New/Remove 均在批准表'
 
 # —— 2) 别名是纯昵称：解析回全名，参数不变 ——
-Check ((Get-Alias -Name gsv).Definition -eq 'Get-Service') 'gsv 解析到 Get-Service'
+# gsv 指向 Get-Service，而 Get-Service 只在 Windows 上存在（Unix 用 launchd）。
+# 教学点是「别名解析到全名、且能按需选一个两平台都有的别名来断言」，
+# 所以 gsv 在缺 cmdlet 的平台上降级为 SKIP，另用 gci/gps 这类跨平台别名做实证。
+if (Get-Command Get-Service -ErrorAction SilentlyContinue) {
+    Check ((Get-Alias -Name gsv).Definition -eq 'Get-Service') 'gsv 解析到 Get-Service'
+}
+else { Skip '本平台无 Get-Service，故无 gsv 别名（别名随其目标 cmdlet 一起缺失） [platform]' }
+Check ((Get-Alias -Name gci).Definition -eq 'Get-ChildItem') 'gci 解析到 Get-ChildItem（跨平台别名）'
 Check ((Get-Alias -Name gps).Definition -eq 'Get-Process') 'gps 解析到 Get-Process'
 
 # —— 3) 位置参数与命名参数等价（在受控临时目录里做） ——
@@ -28,7 +35,9 @@ Check (@(Get-ChildItem -Path $dir).Count -eq 1) '命名参数显式等价'
 Check (@(Get-ChildItem -Path $dir -Fi '*.txt').Count -eq 1) '参数名可缩写（-Fi 唯一匹配 -Filter）'
 
 # —— 4) 大小写无关 ——
-Check ((gET-cOMMAND get-sERVICE).Name -eq 'Get-Service') '命令与参数大小写无关'
+# 用 Get-ChildItem 而不是 Get-Service：命令名大小写无关是引擎行为，与 cmdlet 平台无关。
+Check ((gET-cOMMAND get-cHILDITEM).Name -eq 'Get-ChildItem') '命令与参数大小写无关'
+Check ((Get-ChildItem -pATH $dir -fILter '*.txt').Count -eq 1) '参数名大小写同样无关'
 
 # —— 5) -WhatIf 风险缓解参数：干跑不落盘 ——
 $target = Join-Path $dir 'a.txt'

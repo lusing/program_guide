@@ -11,10 +11,13 @@ function Check([bool]$Condition, [string]$Label) {
 function Skip([string]$Reason) { $script:Report.Add("SKIP: $Reason") }
 
 # —— 1) 弹药库与搜索路径 ——
+# PSModulePath 是**平台相关的路径列表**：Windows 用 ';' 分隔，Unix/macOS 用 ':'。
+# 写死 ';' 在 macOS 上会把整串当成一个目录——这是本示例实测踩到的坑（见 CHEATSheet 7a）。
 Check (@(Get-Module -ListAvailable).Count -gt 0) '本机有已安装模块'
-$paths = $env:PSModulePath -split ';'
-Check ($paths.Count -ge 2) 'PSModulePath 含多个搜索目录'
-Check (@($paths | Where-Object { $_ -match 'PowerShell' }).Count -ge 1) '模块路径包含 PowerShell 目录字样'
+$sep = [System.IO.Path]::PathSeparator
+$paths = @($env:PSModulePath -split [regex]::Escape($sep) | Where-Object { $_ })
+Check ($paths.Count -ge 2) "PSModulePath 含多个搜索目录（分隔符 '$sep'）"
+Check (@($paths | Where-Object { $_ -match 'powershell' }).Count -ge 1) '模块路径包含 PowerShell 目录字样'
 
 # —— 2) 已加载模块与常用模块的命令（显式导入保证两引擎确定性） ——
 Import-Module Microsoft.PowerShell.Utility -ErrorAction SilentlyContinue

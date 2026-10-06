@@ -151,6 +151,7 @@ $proc.Kill()                         # 杀掉这个进程 —— 慎用
 | 计算属性里 `$_` 用错层 | 嵌套管道里 `$_` 指内层当前对象 | 内层用 `$PSItem` 同义但易读；或先存变量 |
 | 对 `Import-Csv` 的行调方法报错 | CSV 行是快照 PSCustomObject | 方法类操作先还原成活对象 |
 | `$p.Length` 报错 | 单个对象没有 Length（那是集合/字符串的） | 集合计数用 `@($x).Count`（第 20 章单元素陷阱） |
+| 拿 `'FileSystemInfo'` match 目录的 `TypeName` 断言失败 | `Get-Member` 的 `TypeName` 给的是**运行时类型名**（`DirectoryInfo`/`FileInfo`），基类名压根不在这串里 | 判类型归属用 `-is [System.IO.FileSystemInfo]` 走继承链，别 match 字符串 |
 
 最后一条先埋个种子：**`@(...)` 包裹再 `.Count`** 是 PowerShell 里最稳的计数姿势，原因第 20 章揭晓。
 

@@ -2,6 +2,9 @@
 
 > 本章对应原书第 17 章"安全警报"。PowerShell 越强大，"它会不会成为风险"就越值得正面回答。本章讲清 PowerShell 的安全设计原则、执行策略的正确理解（**它不是安全边界**）、文件来源标记，以及管理员真正该做的防护。
 
+> **平台提示**：本章三项机制在 macOS/Linux 上**都不存在**——执行策略（Unix 上恒 `Unrestricted` 且任何作用域都不可设）、NTFS 备用数据流（`Zone.Identifier` / MOTW 依赖文件系统，APFS 没有）、Authenticode 签名（`Get-AuthenticodeSignature` 是 Windows-only cmdlet）。示例按能力探测走 SKIP（标记 `[platform]`）。
+
+
 ## 17.0 开篇：先把三个流行疑问答掉
 
 安全话题流行偏见多，开篇先答三个最常被问的（依据都是 17.1 的三条原则）：
@@ -154,6 +157,7 @@ Stop-Transcript
 | CI 里跑脚本被策略卡 | 默认策略随环境 | 启动参数 `-ExecutionPolicy Bypass`（进程级，最干净的自动化姿势） |
 | ADS 操作报错 | 目标文件系统不支持流（FAT32/exFAT） | MOTW 依赖 NTFS；移动文件时标记可能丢失 |
 | "策略明明是 RemoteSigned 还是挡我" | 文件带 MOTW 且未签名 | `Unblock-File`（确认内容可信后）或签名 |
+| `Set-ExecutionPolicy` 抛 "Operation is not supported on this platform" | 执行策略是 **Windows 专属机制**，Unix 上恒 `Unrestricted` 且任何作用域都不可设 | try/catch 后按"生效值是否真变成 Bypass"分支，否则 SKIP `[platform]` |
 
 再补一个高频追问：**"从网络共享（UNC 路径）运行的脚本算下载来的吗？"**——UNC 路径运行通常被视为"远程位置"（RemoteSigned 下要求签名），这是文件服务器上放脚本的团队最常踩的一条。规避方式有三：签名（正解）、把脚本分发到本地再跑、或对内网文件服务器场景评估后用 GPO 设 `Bypass`（不推荐作为长期方案）。判断"我这份文件为什么被挡"的通用口诀：`Get-ExecutionPolicy -List` 看策略层，`Get-Item 文件 -Stream *` 看来源标记，两查定位 90% 的策略问题。
 

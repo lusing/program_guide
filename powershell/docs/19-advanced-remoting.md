@@ -2,6 +2,9 @@
 
 > 本章对应原书第 23 章"高级远程控制配置"，并把 pwsh 7 的 **SSH 远程处理**正式收进来。第 13/18 章覆盖了日常 80%～90% 的场景；本章是"剩下的 10%"——但每人迟早都会撞上一次。
 
+> **平台提示**：本章的端点、TrustedHosts、`WSMan:` 驱动器都建立在 **WinRM** 上，那是 Windows 服务。macOS/Linux 上 pwsh 7 把整条 WSMan 腿剔除了——`New-PSSessionOption` 只剩两个 SSL 校验开关，连超时参数都不在参数表里；但 **SSH 腿（`-HostName`）在 Unix 上可用**，那才是非 Windows 平台的远程通道。
+
+
 原书对本章内容的定位很诚实：不是所有配置都会用到，但**每个人都应该知道这些选项存在**——遇到时知道往哪查。本章所有"动系统"的操作（注册端点、改 TrustedHosts）只讲清步骤与后果，示例一律探针只读。
 
 ## 19.1 端点深潜：会话配置
@@ -148,6 +151,7 @@ SSH 腿的认证用公钥最顺手（`ssh-keygen` 生成、公钥放进远端 `a
 | pwsh 7 连过去发现是 5.1 | 默认端点是 5.1 | `-ConfigurationName PowerShell.7` |
 | SSH 连接报 subsystem 错 | 目标 sshd 未配 PowerShell 子系统 | 按官方文档配 `sshd_config` 的 subsystem 行 |
 | 会话空闲几分钟就断 | IdleTimeout 到点 | `-SessionOption (New-PSSessionOption -IdleTimeout …)` |
+| `New-PSSessionOption -IdleTimeout` 报找不到参数 | WSMan 超时参数是 **WSMan 传输专用**；Unix 版把整条 WSMan 腿剔除了，只剩两个 SSL 校验开关 | 按 `Parameters.ContainsKey('IdleTimeout')` 探测，不按平台宏 |
 
 ## 19.7 本章要点
 

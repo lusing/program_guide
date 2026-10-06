@@ -17,19 +17,52 @@
 
 ## 验证
 
+本教程**在 Windows 与 macOS 两平台实测通过**。两个平台的可用引擎不同，验证入口也分两个：
+
 ```powershell
-pwsh -File build.ps1                 # 全量：34 示例 × 双引擎（pwsh 7 + powershell 5.1）
+# Windows：双通道（pwsh 7 主线 + Windows PowerShell 5.1 差异通道）
+pwsh -File build.ps1                 # 全量：34 示例 × 双引擎
 pwsh -File build.ps1 -Only '09*'     # 单示例
 ```
 
-- **34/34 双通道全绿**；远程/SSH/Pester/ScriptAnalyzer 等按**探针门控**（环境不备则带理由 SKIP，不失败、不改系统状态）。
-- 每示例自校验写 `report.txt`，双通道**对账剥离后逐字节一致**（`[ch7-only]/[ch51-only]/[env]` 行除外）。
-- 实测坑位汇总：[CHEATSheet.md](CHEATSheet.md)（18 条构建期亲历坑 + 协议速查）。
+```bash
+# macOS/Linux：单引擎（Windows PowerShell 5.1 只存在于 Windows）
+./run-all.sh              # 全量：34 示例
+./run-all.sh 09 14        # 只跑指定章号
+./run-all.sh -v           # 附带每个示例的完整输出
+```
+
+- **Windows：34/34 双通道全绿**；**macOS 14.8.9 + pwsh 7.6.6：34/34 全绿**（370 条 `OK:` 断言、23 条带理由 SKIP、0 FAIL）。
+- 远程/SSH/Pester/ScriptAnalyzer/CIM 等按**探针门控**（环境不备则带理由 SKIP，不失败、不改系统状态）。
+- 每示例自校验写 `report.txt`，双通道**对账剥离后逐字节一致**（`[ch7-only]/[ch51-only]/[platform]/[env]` 行除外）；
+  macOS 单引擎侧改用**同命令连跑两遍、report 逐字节一致**的确定性纪律。
+- macOS 侧另有一条**零断言告警**：某示例 report 里一条 `OK:` 都没有（全 SKIP）时单独点名——「没失败」不等于「验证到了东西」。
+- 实测坑位汇总：[CHEATSheet.md](CHEATSheet.md)（18 条 Windows 构建期亲历坑 + 8 条 macOS 校验新增坑 + 协议与平台差异速查）。
+
+### 平台差异速查
+
+Windows-only 能力在 macOS 上**确实不存在**，示例一律走带 `[platform]` 标记的 SKIP（**不按平台宏 `#ifdef` 放宽判据**），并给出跨平台等价锚点：
+
+| Windows 能力 | macOS 现状 | 受影响章 | 替代锚点 |
+|---|---|---|---|
+| `Get-Service` | 无（launchd 不是 SCM） | 01 03 04 08 09 10 11 | `Get-Process` / `Get-ChildItem` |
+| CIM / WMI（`Get-CimInstance` 等 4 个） | 无（Windows COM/DCOM 技术栈） | 11 12 14 33 | `Get-PSDrive -PSProvider FileSystem` |
+| `Registry::` 提供程序 | 无 | 05 | `FileSystem:` 的 `IsReadOnly` |
+| `Get-AuthenticodeSignature` | 无 | 17 | — |
+| NTFS ADS / `Zone.Identifier` / MOTW | 无（`-Stream` 不在参数表） | 17 | — |
+| 执行策略可设置 | 恒 `Unrestricted`，设置抛"不支持" | 17 | — |
+| `New-PSSessionOption` 的 WSMan 超时参数 | 被剔除，只剩 SSL 校验开关 | 19 | — |
+| WinRM / `WSMan:` / 端点 | 无此服务 | 19 | SSH 腿（Unix 上 `-HostName` 可用） |
+
+反过来的坑：`Get-PSDrive` **没有 `Size` 字段**（只有 `Used`/`Free`），总量要自己 `Used+Free` 算——与 CIM 分支的 `Size`/`FreeSpace` 写法不同，这是 12 章两条轨的真实差异。
+
+**无法在 macOS 上验证的结论**（只在 Windows 成立，由 `build.ps1` 双通道覆盖）：CIM/WQL 方言、WSMan 端点与 WinRM、NTFS ADS/MOTW、Authenticode 签名状态、执行策略五作用域的真实拦截效果。macOS 侧只验证了"这些能力缺失时能正确降级"。
 
 ## 目录说明
 
 - `docs/`——34 章分章文档（每章 ≥200 行、文字多于代码、自包含不要求翻原书）；
 - `examples/NN_slug/run.ps1`——章号=示例号的自校验脚本（UTF-8 带 BOM，`build.ps1` 自动补）；
+- `run-all.sh`——macOS/Linux 验证入口（单引擎 + 连跑两遍确定性对账）；
 - `materials/book/ch01..28.txt`——原书文本提取（`tools/extract-epub.ps1` 可复现），仅写作查证用；
 - `tools/`——提取与冒烟脚本。
 
