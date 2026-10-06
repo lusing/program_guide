@@ -46,11 +46,11 @@
 | 14 | FOL 语法与代入（fv 条款含 In x 条件教训；同型不挡混淆实录） | C/A/L | ✅ 扩写✅ |
 | 15 | FOL 语义（一致性+完整代入交换+locale/结构理论） | C/A/L/I | ✅ 扩写✅ |
 | 16 | FOL 自然演绎（Drinker 悖论三旗舰；Agda 构造边界实录） | C/A/L/I/H4 | ✅ 扩写✅ |
-| 17 | FOL Hilbert 与 Gen 侧条件演绎定理（GenMove 公理；Lean 三连坑实录） | C/L | ✅ |
-| 18 | 前束范式构件（量词穿越四条零公理；侧条件不对称实录） | C/L | ✅ |
-| 19 | 合一与归结（occurs check 结构锚+归结可靠性侧条件版） | C/L/I | ✅ |
-| 20 | Herbrand 与 SLD（T_P 单调+头原子；Knaster-Tarski 边界） | C/L | ✅ |
-| 21 | 可判定性与 SMT（presburger 现场+Decidable 机器面；Church 文档） | I/L | ✅ |
+| 17 | FOL Hilbert 与 Gen 侧条件演绎定理（GenMove 公理；Lean 三连坑实录） | C/L | ✅ 扩写✅ |
+| 18 | 前束范式构件（量词穿越四条零公理；侧条件不对称实录） | C/L | ✅ 扩写✅ |
+| 19 | 合一与归结（occurs check 结构锚+归结可靠性侧条件版） | C/L/I | ✅ 扩写✅ |
+| 20 | Herbrand 与 SLD（T_P 单调+头原子；Knaster-Tarski 边界） | C/L | ✅ 扩写✅ |
+| 21 | 可判定性与 SMT（presburger 现场+Decidable 机器面；Church 文档） | I/L | ✅ 扩写✅ |
 | 22 | 哥德尔不完备（三步证明+机器化先例索引） | 文档 | ✅ |
 | 23 | 完备性 Henkin（构造七步+紧致性/LS 推论+先例索引） | 文档 | ✅ |
 | 24 | CTL 语义+AG/EG 展开等价+不动点构件 | C/L | ✅ |
