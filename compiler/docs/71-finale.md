@@ -464,7 +464,7 @@ TOPLAS 承接
 
 ## 71.5.3 每章一句话
 
-六十六章各一句话（含匠书轮六新章），
+七十一章各一句话（含 Louden 轮五新章：9/10/22/64/65），
 作为回顾的最小粒度——
 读者可用它自测
 （每句话能否展开成
@@ -494,6 +494,12 @@ TOPLAS 承接
 发到此情此景，
 同心合并
 省回半张表。
+第 9 章：状态栈旁边
+再压一条值栈，
+归约顺便完成计算。
+第 10 章：跌倒之后
+怎么爬起来——
+四档火力与级联账。
 第 11 章：一张中缀表
 让递归下降
 不再每层一个函数。
@@ -523,6 +529,9 @@ TOPLAS 承接
 有账可查的优化。
 第 21 章：活动记录
 给函数调用安家。
+第 22 章：同一个调用，
+四种机制四个答案，
+别名是唯一的分辨器。
 第 23 章：可达性
 让垃圾回收
 只丢无主之物。
@@ -632,6 +641,12 @@ vtable 是
 第 63 章：树覆盖与
 窥孔走完
 到汇编的最后一级。
+第 64 章：两台真机
+站在 CISC 与 RISC
+的两极教你选指令。
+第 65 章：16 条指令
+撑起一台无栈无帧的
+机器与四档优化。
 第 64 章：依赖划界，
 调度填槽。
 第 65 章：猜分支、
@@ -825,7 +840,7 @@ fold.out 大概率红
 
 ## 71.4 延伸阅读地图
 
-### 71.4.1 三本主教材
+### 71.4.1 六本主教材
 
 教程的骨架书 spa
 （Møller & Schwartzbach
@@ -866,14 +881,35 @@ Analysis》：
 在它那里是
 四章的前置结论。
 
-三本的读法顺序
+Louden《编译原理及实践》
+（L 书，1997 中译本）：
+"一本书装下整个编译器"
+的极简派——TINY 语言、
+TM 机器、从扫描器到
+模拟器的全链路。
+教程 Louden 轮五新章
+（9 Lex/Yacc、10 错误恢复、
+22 参数传递、64 真机实地、
+65 TM）取材于此；
+读法：
+拿第 65 章的机器
+对照书内附录 B/C 的
+C 列表——
+"规格与实现"的
+两种文风都见过，
+才算读全。
+
+六本的读法顺序
 建议：
 回头补基础选 Dragon、
 向优化工程走选 Cooper、
-向理论深处走选 NNA——
-三条路都从
+向理论深处走选 NNA、
+向"一台完整机器"走选
+Nystrom 或 Louden——
+四条路都从
 本教程的某个终点出发，
 没有一条要你重来。
+
 
 ### 71.4.2 两份在线资源
 
@@ -934,52 +970,73 @@ Andersen 1994
 
 ## 71.5 全书回顾：七篇三十章
 
-### 71.5.1 七篇的划分与递进
+### 71.5.1 七大段位的划分与递进（十二篇的合并视图）
 
-第一篇（1–2 章）
+七十一章按学习段位
+合并成七个大台阶
+（篇号按现行十二篇映射）：
+
+第一段（第一篇 1–2 章）
 立地基：
 不可判定性划定
 静态分析的能力边界——
 一切"保守"的总开关。
-第二篇（3–8 章）
-造机器：
+第二段（第二篇 3–14 章）
+造前端：
 TIP 语言、ANTLR 文法、
-AST、作用域、CFG、
-LLVM 执行台——
-六个可独立运行的台阶。
-第三篇（9–12 章）
+自动机、LL/LR 家族、
+Lex 与 Yacc 心脏、
+错误恢复、Pratt、AST、
+语法制导翻译、作用域——
+手写与生成器两条路线
+在此合流。
+第三段（第三篇 15–23 章）
+中间表示与运行时：
+树遍历解释器、CFG、
+LLVM 执行台、TAC、
+代码形状、跟踪、
+活动记录、参数传递
+四机制、垃圾回收。
+第四段（第四篇 24–27 章）
 第一类分析：
 类型推断——
-不靠格的合一世界。
-第四篇（28–35 章）
+不靠格的合一世界，
+类型等价两学说收尾。
+第五段（第五、六篇 28–39 章）
 格分析的全套：
 域、构造、不动点、
 工作表、符号、常量、
-经典双向流、
-转移函数系统。
-第五篇（37–39 章）
-精度的深水：
+经典双向流、框架定理，
+再入精度的深水：
 区间、加宽收窄、
 路径敏感。
-第六篇（49–54 章）
-跨函数的世界：
-过程间、上下文、
-制表双档、
-约束双支。
-第七篇（70–71 章）
-收束：
-定理与对照表。
+第六段（第七、八篇 40–54 章）
+控制流的结构与变换
+（支配者、SSA、DAG、
+循环优化、强度削减、
+部分冗余消除）
+与跨函数的世界
+（过程间、上下文、
+制表双档、约束双支）。
+第七段（第九至十二篇 55–71 章）
+范式与机器：
+函数式与对象的编译、
+字节码解释器四重奏、
+目标代码全家
+（寄存器分配、真机实地、
+TM 与四档优化、
+指令级并行、预测、
+局部性、放置），
+最后回到抽象解释
+与这张总表。
 
-七篇的递进逻辑是
-"从能算什么到算得多好"：
-先把分析器造出来
-（二到四篇），
-再谈精度的代价
-（五篇），
-再谈跨函数的扩展
-（六篇），
-最后回到"一切分析
-共通的是什么"（七篇）。
+七个段位、
+三十八台机器、
+四列答案——
+教程的全部赌注：
+每个论点都要
+跑得起来、
+对得上账。
 
 ### 71.5.2 每篇的"一台机器"
 
@@ -1753,6 +1810,31 @@ const std::vector<SurveyRow> &surveyRows() {
          "CLOSURE 按表捕获；close 在块尾与返回两处先关后拆",
          "编译期捕获表（isLocal 二相）+ 运行期开放表查重",
          "计数器盒子 2 对环境节点 7；循环各捕各的 0 1 2"},
+        {"Lex/Yacc 心脏", "9",
+         "LALR 表 + 值栈双栈平行（$$/$n 伪变量）",
+         "归约时执行动作；优先级声明仲裁冲突（投票四规则）",
+         "字符串符号文法；冲突账本按唯一格去重计数",
+         "oracle 步数对账 7/7；嵌入动作 B≡C；四组优先级翻转"},
+        {"语法错误恢复", "10",
+         "四档火力（删/恐慌/短语/error 记号）双驱动器",
+         "级联抑制：TokenDel 3 条 → Panic 1 条（input-first）",
+         "error 伪终结符进表即得协议；FOLLOW 同步集",
+         "检测点 LL/LR 10/10 等位；恢复后续行 tail match"},
+        {"参数传递四机制", "22",
+         "值/引用/值结果/名字——Slot 五字段四角分立",
+         "绑定 switch 一处分派；valres 声明序写回（未指定条款）",
+         "thunk = 表达式+调用方帧（闭包最小形态）；静态帧 SAVE",
+         "p(a,a) 四答案 1/2/3/3；swap 槽位错乱 5 5 2；Jensen 12"},
+        {"真机代码生成", "64",
+         "Borland/80×86 与 Sun/SPARC 的指令选择两极",
+         "CISC 选指令（lea/shl 拼地址）vs RISC 排指令（sll/nop）",
+         "模式表协议（帧建立/比例寻址/传参寄存器）跨版本稳",
+         "三十年三不变量三变量；六判词全 1（gcc -O0/-O1 对账）"},
+        {"TM 目标机器", "65",
+         "16 指令两格式（a=d+reg[s] 一式四用）无栈无帧",
+         "软件临时栈 tmpOffset；布尔化五指令；回填 d=addr-(pc+1)",
+         "四档累进：叶直发/权重驻留/补条件直转",
+         "双账单调 31/16→23/1；四档输出 7/7 全等；trace 逐行"},
     };
     return rows;
 }
@@ -3019,196 +3101,221 @@ std::string printStmtLine(const Stmt &stmt) {
 == fold.tip ==
 frontend OK: 1 function(s) built into CFG
 == static analyses and transformations in this tutorial, seen through Galois eyes ==
-[1/38] 类型推断 (ch24-27)
+[1/43] 类型推断 (ch24-27)
     domain       : 类型项（类型变量、函数/记录构造子）上的等价类；无高度、靠合一合并
     direction    : 约束收集后单向合一（合一不动点）
     sensitivity  : 表达式位置敏感；无格序，等价类只增不减
     soundness    : 推断类型与所有使用约束一致：替换后程序不再有类型冲突
-[2/38] 符号分析 (ch28-32)
+[2/43] 符号分析 (ch28-32)
     domain       : 五点符号格 ⊥ ⊏ −,0,+ ⊏ ⊤（每个整型变量一格）
     direction    : 前向工作表，沿 CFG 求最小不动点
     sensitivity  : 流敏感；路径与上下文均合并
     soundness    : α(C[[p]]) ⊑ A：具体值符号必在预测格点之下（第 70 章机器检验）
-[3/38] 常量传播 (ch32)
+[3/43] 常量传播 (ch32)
     domain       : 平坦常量格 ⊥ ⊏ c₁,c₂,… ⊏ ⊤
     direction    : 前向工作表，强更新 + join 合并
     sensitivity  : 流敏感；路径与上下文均合并
     soundness    : 预测为单点 c 的变量，任何具体执行取值恰为 c
-[4/38] 活跃变量 (ch33)
+[4/43] 活跃变量 (ch33)
     domain       : 2^Var 幂集格（交为 join，全集为 ⊥）
     direction    : 后向工作表：use 生成、def 清除
     sensitivity  : 流敏感；路径与上下文均合并
     soundness    : 离开程序点仍活跃的变量，其当前值沿某条后续路径会被使用
-[5/38] 可用表达式 (ch33)
+[5/43] 可用表达式 (ch33)
     domain       : 2^Expr 幂集格（交为 join，全集为 ⊥）
     direction    : 前向工作表：表达式计算生成、操作数重写清除
     sensitivity  : 流敏感；路径与上下文均合并
     soundness    : 集合中的表达式在该点必然已算出且操作数未被改写，可直接复用
-[6/38] 区间分析 (ch37-38)
+[6/43] 区间分析 (ch37-38)
     domain       : 区间格 [l,u]（无限高度，widen 加宽求收敛、narrow 收窄）
     direction    : 前向工作表，循环头处加宽
     sensitivity  : 流敏感；路径与上下文均合并
     soundness    : 具体值落在预测区间内；加宽只丢精度不丢可靠性
-[7/38] 路径敏感执行 (ch39)
+[7/43] 路径敏感执行 (ch39)
     domain       : 每条路径一个状态；合并即分离（路径条件合取约束状态）
     direction    : 前向，沿展开的路径图（exploded graph）
     sensitivity  : 路径敏感；上下文可配 call-string
     soundness    : 状态在路径条件可满足处有效；假阳性只来自路径合并，永不来自传递
-[8/38] IFDS 可达事实 (ch51)
+[8/43] IFDS 可达事实 (ch51)
     domain       : 有限事实域 D ∪ {零事实}，D 上幂集
     direction    : 超级图前向 tabulation（路径边制表）
     sensitivity  : 过程间全路径；流函数可分配 ⇒ 完全
     soundness    : 事实沿有效路径可达 ⟺ 表格含该路径边（无假阳性无假阴性）
-[9/38] IDE 值流动 (ch52)
+[9/43] IDE 值流动 (ch52)
     domain       : 事实 × 环境格 L（边缘函数 λ:L→L，常量/恒等/复合闭包）
     direction    : 超级图前向 tabulation，边缘函数沿边复合
     sensitivity  : 过程间全路径 + 事实携带值
     soundness    : 边缘函数求值 ⊒ 真实值变换（三值常量格上机器检验）
-[10/38] 0-CFA 闭包流 (ch53)
+[10/43] 0-CFA 闭包流 (ch53)
     domain       : loc → 函数名集合（幂集），缓存即抽象堆
     direction    : 约束系统单调增长（立方工作表）
     sensitivity  : 流不敏感、上下文不敏感（k=0）
     soundness    : 每个调用点的真实 callee 集合 ⊆ 预测集合
-[11/38] Andersen 指针 (ch54)
+[11/43] Andersen 指针 (ch54)
     domain       : 变量 → 分配点集合（包含约束的幂集解）
     direction    : 子集约束闭包（最坏 O(n³) 工作表）
     sensitivity  : 流不敏感；语句顺序无关
     soundness    : 真实指向集合 ⊆ 预测集合；Steensgaard 合并只会更大不会不可靠
-[12/38] 到达定值 (ch34)
+[12/43] 到达定值 (ch34)
     domain       : 定值集合（TAC 行号标识）
     direction    : 前向工作表（may：并合并）
     sensitivity  : 流敏感；路径与上下文均合并
     soundness    : ud 链必含真实到达者：可能多报、永不漏报
-[13/38] 非常忙表达式 (ch34)
+[13/43] 非常忙表达式 (ch34)
     domain       : 表达式键集合（空格分界）
     direction    : 后向工作表（must：交合并）
     sensitivity  : 流敏感；路径与上下文均合并
     soundness    : 集合中的表达式沿每条路径必在操作数改写前被使用
-[14/38] 数据流框架 (ch36)
+[14/43] 数据流框架 (ch36)
     domain       : 任意半格 + 单调转移函数（may/must/常量三口径）
     direction    : 轮转迭代到最大不动点（MFP）
     sensitivity  : 由实例自定（四大经典全部齐备）
     soundness    : MFP ⊑ MOP：分配性（gen/kill）取等，常量传播严格粗（菱形反例机器检验）
-[15/38] 基本块 DAG (ch43)
+[15/43] 基本块 DAG (ch43)
     domain       : 值图：运算结点 + 名字标签（结点即值）
     direction    : 单遍贪心登记（恒等式折叠 + 交换律规范键）
     sensitivity  : 块内（局部）；不跨块
     soundness    : 多名一结点 = 公共子表达式；恒等式按整数语义逐条成立
-[16/38] 循环不变式 (ch45)
+[16/43] 循环不变式 (ch45)
     domain       : 指令集合（循环内/外二分）
     direction    : 自然循环识别 + 三判据外提（迭代两轮）
     sensitivity  : 循环级；preheader 为唯一落点
     soundness    : steps 下降 + outputs 不变（解释器对账）；判据缺一即语义翻车
-[17/38] 部分冗余消除 (ch48)
+[17/43] 部分冗余消除 (ch48)
     domain       : 表达式集合 × 六个方程（antic/avail/earliest/post/used/latest）
     direction    : 三向方程联立（前向 must + 后向 must + 后向 may）
     sensitivity  : 流敏感；分支几何即优化几何
     soundness    : latest 落点保证安全（操作数必已定值）且至多一算（复用区间）
-[18/38] 干涉图着色 (ch61)
+[18/43] 干涉图着色 (ch61)
     domain       : 变量集合上的干涉图（边 = 活跃重叠）
     direction    : Chaitin–Briggs 压弹栈（度 < k 摘除）
     sensitivity  : 分配级（寄存器压力的画像）
     soundness    : 相邻异色机器逐边校验；溢出如实报告为保守回退
-[19/38] 依赖 DAG 调度 (ch64)
+[19/43] 依赖 DAG 调度 (ch64)
     domain       : 指令集合 + RAW/WAR/WAW/MEM 边
     direction    : 关键路径优先表调度（宽度 1/2）
     sensitivity  : 块内；重排不改语义
     soundness    : 重放校验：发射序满足全部依赖（机器证人）
-[20/38] 跟踪线性化 (ch20)
+[20/43] 跟踪线性化 (ch20)
     domain       : 块覆盖序（贪心 Algorithm 8.3）
     direction    : 终结符四规则处置（删跳/翻转/补跳）
     sensitivity  : 布局级（块序即布局）
     soundness    : gotos 下降 + outputs 不变（跳转计数与解释器双证人）
-[21/38] 控制依赖图 (ch42)
+[21/43] 控制依赖图 (ch42)
     domain       : 后支配集（逆图支配迭代）
     direction    : FOW 沿后支配树上行
     sensitivity  : 分岔结构（与支配边界对偶）
     soundness    : SSA 三方对账 tac==ssa==back（构造与拆解双向背书）
-[22/38] guard 消除 (ch47)
+[22/43] guard 消除 (ch47)
     domain       : 分母的循环不变性/归纳单调性
     direction    : 两规则删 guard（区间推理是完全体）
     sensitivity  : 循环级
     soundness    : guards 下降 + outputs 不变（插入-删除往返无损）
-[23/38] 对象派发 (ch55)
+[23/43] 对象派发 (ch55)
     domain       : 类层级 + vtable 槽表（前缀法布局）
     direction    : 虚调用沿 vtable 取槽；静态沿链直呼
     sensitivity  : 0-CFA 口径的静态类型收敛
     soundness    : 目标集 = 全部子类实现（去虚化即收缩）
-[24/38] 闭包转换 (ch56)
+[24/43] 闭包转换 (ch56)
     domain       : λ 的自由变量集（相对自身参数）
     direction    : 装箱清单 = 捕获集（env 记录上堆）
     sensitivity  : 词法作用域（不可变让抄即共享）
     soundness    : 尾调用栈不增长；need ≤ value 求值计数对账
-[25/38] 分支预测/预取 (ch65)
+[25/43] 分支预测/预取 (ch65)
     domain       : 二位饱和状态机 / ⌈延迟/迭代⌉ 距离
     direction    : 静态启发式（后向 taken）；软件预取指令
     sensitivity  : 控制流历史 / 访存流水
     soundness    : 循环命中率 > 乱序（状态序列逐事件可验）
-[26/38] 缓存局部性 (ch66)
+[26/43] 缓存局部性 (ch66)
     domain       : 仿射访问（方向向量 + GCD 检验）
     direction    : 循环交换合法性 + 分块（块内行优先）
     sensitivity  : 迭代空间级
     soundness    : 变换合法 ⟺ 无 '<' 逆序依赖；miss 对比由模拟器对账
-[27/38] LR(1)/LALR 造表 (ch8)
+[27/43] LR(1)/LALR 造表 (ch8)
     domain       : LR(1) 项 [A→α·β,a]（lookahead 即归约许可证）
     direction    : FIRST(βa) 闭包传播；同心合并求并
     sensitivity  : 路径上下文（lookahead 随路径精确）
     soundness    : SLR 冲突文法照收；与 LALR 接受性一致
-[28/38] 代码形状 (ch19)
+[28/43] 代码形状 (ch19)
     domain       : 行主序地址多项式与假零基址 @A0
     direction    : 密度择策的跳转表/二分/线性分派
     sensitivity  : 数据形状级（编译期已知 vs dope 运行期）
     soundness    : 多项式=假零=枚举直查三方对账
-[29/38] SVN/DVNT 值编号 (ch44)
+[29/43] SVN/DVNT 值编号 (ch44)
     domain       : 值号表（操作数规范名 + 算子）按作用域开合
     direction    : EBB 携带 / 支配树先序 + φ 三判
     sensitivity  : 支配界定（汇合点由支配者背书）
     soundness    : 三档阶梯 2/5/7+φ；outputs 前后相等
-[30/38] 强度削减 (ch46)
+[30/43] 强度削减 (ch46)
     domain       : 归纳变量 = SSA 图上四类合法更新的 SCC
     direction    : 克隆加法链（初值乘一次 + 步长×c）+ LFTR 换界
     sensitivity  : 循环级（region constant 支配判定）
     soundness    : 循环乘法 1→0；outputs 相等
-[31/38] SSA 弦图分配 (ch62)
+[31/43] SSA 弦图分配 (ch62)
     domain       : SSA 名字干涉图（φ 与实参免边）
     direction    : MCS 找 PEO 后贪心着色 = 最优
     sensitivity  : 单定值口径（区间被 φ 切短）
     soundness    : 色数 == 团数；≤ Briggs 启发式
-[32/38] 代码放置 (ch69)
+[32/43] 代码放置 (ch69)
     domain       : 边频度（profile 或静态估计）
     direction    : 热路径链尾-头拼接 / 调用图贪心缩点
     sensitivity  : 全局块序 / 程序级相对序
     soundness    : taken 频度与加权距离双降
-[33/38] Pratt 分析 (ch11)
+[33/43] Pratt 分析 (ch11)
     domain       : 运算符 → (前缀/中缀回调, 优先级, 结合性) 规则表
     direction    : 前缀起步 + 按表滚中缀环（递归即文法）
     sensitivity  : 无分析（纯解析）；表驱动替代分层函数
     soundness    : 与 LL(1) 分层法同语料求值全等；结合性翻表可实验
-[34/38] 树遍历解释 (ch15)
+[34/43] 树遍历解释 (ch15)
     domain       : 值宇宙（整数+闭包）；环境链节点
     direction    : eval/exec 深度优先；赋值沿链写回定义处
     sensitivity  : 无分析（语义基准）；静态检查在求值前独立遍历
     soundness    : 计数器语料与字节码 VM 输出全等（四路会师）
-[35/38] 字节码栈机 (ch57)
+[35/43] 字节码栈机 (ch57)
     domain       : 64 位值 + 值栈 + 帧栈（fn/ip/base 三字段）
     direction    : FETCH-DECODE-EXECUTE；后缀序即求值序
     sensitivity  : 无分析（执行）；每指令栈效应静态可算（验证器基础）
     soundness    : 手编与机器编的反汇编逐行同构；帧深=递归链长
-[36/38] 单遍编译 (ch58)
+[36/43] 单遍编译 (ch58)
     domain       : token 流 →（无 AST）字节码；槽位表/名字表/常量池
     direction    : 即取即用扫描 + Pratt 发码 + 跳转回填（占位与兑现）
     sensitivity  : 编译期一次定死（局部槽位）；全局迟绑定到运行期
     soundness    : fact 语料与第 13/15/16 章执行路径输出全等
-[37/38] 值表示与驻留 (ch59)
+[37/43] 值表示与驻留 (ch59)
     domain       : NaN 装箱 64 位（数/单例/对象）；开放定址散列表
     direction    : 位运算判定；FNV-1a + 线性探测 + 墓碑
     sensitivity  : 无分析；掩码即 ABI（往返断言锁位型）
     soundness    : 千随机数位级往返；等值串同指针；扩容墓碑清零
-[38/38] 上值闭包 (ch60)
+[38/43] 上值闭包 (ch60)
     domain       : 上值两态（开放指栈格/关闭进盒）+ 捕获表
     direction    : CLOSURE 按表捕获；close 在块尾与返回两处先关后拆
     sensitivity  : 编译期捕获表（isLocal 二相）+ 运行期开放表查重
     soundness    : 计数器盒子 2 对环境节点 7；循环各捕各的 0 1 2
+[39/43] Lex/Yacc 心脏 (ch9)
+    domain       : LALR 表 + 值栈双栈平行（$$/$n 伪变量）
+    direction    : 归约时执行动作；优先级声明仲裁冲突（投票四规则）
+    sensitivity  : 字符串符号文法；冲突账本按唯一格去重计数
+    soundness    : oracle 步数对账 7/7；嵌入动作 B≡C；四组优先级翻转
+[40/43] 语法错误恢复 (ch10)
+    domain       : 四档火力（删/恐慌/短语/error 记号）双驱动器
+    direction    : 级联抑制：TokenDel 3 条 → Panic 1 条（input-first）
+    sensitivity  : error 伪终结符进表即得协议；FOLLOW 同步集
+    soundness    : 检测点 LL/LR 10/10 等位；恢复后续行 tail match
+[41/43] 参数传递四机制 (ch22)
+    domain       : 值/引用/值结果/名字——Slot 五字段四角分立
+    direction    : 绑定 switch 一处分派；valres 声明序写回（未指定条款）
+    sensitivity  : thunk = 表达式+调用方帧（闭包最小形态）；静态帧 SAVE
+    soundness    : p(a,a) 四答案 1/2/3/3；swap 槽位错乱 5 5 2；Jensen 12
+[42/43] 真机代码生成 (ch64)
+    domain       : Borland/80×86 与 Sun/SPARC 的指令选择两极
+    direction    : CISC 选指令（lea/shl 拼地址）vs RISC 排指令（sll/nop）
+    sensitivity  : 模式表协议（帧建立/比例寻址/传参寄存器）跨版本稳
+    soundness    : 三十年三不变量三变量；六判词全 1（gcc -O0/-O1 对账）
+[43/43] TM 目标机器 (ch65)
+    domain       : 16 指令两格式（a=d+reg[s] 一式四用）无栈无帧
+    direction    : 软件临时栈 tmpOffset；布尔化五指令；回填 d=addr-(pc+1)
+    sensitivity  : 四档累进：叶直发/权重驻留/补条件直转
+    soundness    : 双账单调 31/16→23/1；四档输出 7/7 全等；trace 逐行
 ```
 
 ### 71.9.11 opt 对账 expected/opt/fold.out

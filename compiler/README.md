@@ -1,17 +1,17 @@
 # 静态分析教程（ANTLR4 + LLVM）
 
-以 Anders Møller & Michael I. Schwartzbach《Static Program Analysis》为骨架，Aho & Ullman《Principles of Compiler Design》（绿龙 1977）、Aho/Lam/Sethi/Ullman《Compilers》（紫龙 2006）、Appel/Ginsburg《Modern Compiler Implementation in C》（虎书 1998）、Cooper/Torczon《Engineering a Compiler》（鲸书 2e 2012）与 Robert Nystrom《Crafting Interpreters》（匠书 2021）五本经典为扩充取材（五书核心内容全部自包含蒸馏进正文），在 TIP 语言上系统实现类型分析、格与不动点数据流、widening、上下文敏感、IFDS/IDE、控制流与指针分析、抽象解释，并补全前端原理（自动机/LL/LR(1)/LALR/Pratt/语法制导翻译）、经典优化（三地址码、四大数据流分析、框架定理、支配者、SSA、值编号三档、强度削减、DAG、循环优化、部分冗余消除）、代码形状（数组/字符串/case）、解释器工程（树遍历环境链、字节码栈机、单遍编译与回填、NaN 装箱与驻留、上值闭包）与目标代码（寄存器分配、局部与 SSA 弦图分配、指令选择、指令级并行与树高平衡、分支预测、局部性、代码放置）。ANTLR4 构建前端，LLVM（ORC JIT）让程序真实运行以检验分析结论。
+以 Anders Møller & Michael I. Schwartzbach《Static Program Analysis》为骨架，Aho & Ullman《Principles of Compiler Design》（绿龙 1977）、Aho/Lam/Sethi/Ullman《Compilers》（紫龙 2006）、Appel/Ginsburg《Modern Compiler Implementation in C》（虎书 1998）、Cooper/Torczon《Engineering a Compiler》（鲸书 2e 2012）、Robert Nystrom《Crafting Interpreters》（匠书 2021）与 Kenneth C. Louden《编译原理及实践》（L 书 1997 中译本）六本经典为扩充取材（六书核心内容全部自包含蒸馏进正文），在 TIP 语言上系统实现类型分析、格与不动点数据流、widening、上下文敏感、IFDS/IDE、控制流与指针分析、抽象解释，并补全前端原理（自动机/LL/LR(1)/LALR/Pratt/语法制导翻译/Lex 与 Yacc 心脏/错误恢复与校正）、经典优化（三地址码、四大数据流分析、框架定理、支配者、SSA、值编号三档、强度削减、DAG、循环优化、部分冗余消除）、代码形状（数组/字符串/case）、参数传递四机制（值/引用/值结果/名字与完全静态环境）、解释器工程（树遍历环境链、字节码栈机、单遍编译与回填、NaN 装箱与驻留、上值闭包）与目标代码（寄存器分配、局部与 SSA 弦图分配、指令选择、真机实地对照、TM 目标机器与四档优化、指令级并行与树高平衡、分支预测、局部性、代码放置）。ANTLR4 构建前端，LLVM（ORC JIT）让程序真实运行以检验分析结论。
 
 构建：`pwsh ./build.ps1`（Windows）或 `./run-all.sh`（Git Bash 自动进入 UCRT64）。首次使用先在 UCRT64 shell 内运行 `bash tools/bootstrap.sh`。
 
-## 66 章导航（十二篇全部落成）
+## 71 章导航（十二篇全部落成）
 
 ### 第一篇　地基（1–2）
 
 - [01 概览](docs/01-overview.md) —— 静态分析是什么、为什么必须保守；本教程的路线图与验证方法（示例 `examples/01_overview`）
 - [02 不可判定性](docs/02-undecidability.md) —— Rice 定理与归约机：保守性的总开关从哪来（`examples/02_undecidability`）
 
-### 第二篇　前端的原理（3–12）
+### 第二篇　前端的原理（3–14）
 
 - [03 TIP 导览](docs/03-tip-tour.md) —— 教学语言的全貌：整数、函数、闭包、指针、记录（`examples/03_tip_tour`）
 - [04 ANTLR 文法](docs/04-antlr-grammar.md) —— 从产生式到词法/语法分析器；文法是分析器的第一份合同（`examples/04_antlr_grammar`）
@@ -19,6 +19,8 @@
 - [06 LL 分析](docs/06-ll-parsing.md) —— FIRST/FOLLOW、LL(1) 表与预测分析器、左递归消除、悬挂 else 冲突（`examples/06_ll_parsing`）
 - [07 LR 分析](docs/07-lr-parsing.md) —— LR(0) 项集、SLR 造表、移进-归约、冲突与 prefer-shift（`examples/07_lr_parsing`）
 - [08 LR(1) 与 LALR](docs/08-lr1-lalr.md) —— lookahead 把归约许可证发到此情此景；同心合并省回半张表（`examples/08_lr1_lalr`）
+- [09 Lex 与 Yacc 心脏](docs/09-lex-yacc.md) —— 值栈与生成器时代：双栈平行、$$/$n、优先级仲裁、嵌入动作改写（`examples/09_lex_yacc`）
+- [10 错误恢复与校正](docs/10-error-recovery.md) —— 四档火力（删除/恐慌/短语级/error 记号）、级联抑制、恢复后续行（`examples/10_error_recovery`）
 - [11 Pratt 分析](docs/11-pratt-parsing.md) —— 运算符优先级爬升：一张中缀表让递归下降不再每层一个函数；结合性由递归层级控制（`examples/11_pratt_parsing`）
 - [12 AST](docs/12-ast.md) —— 访问者模式把语法树变成类型安全的内存（`examples/12_ast`）
 - [13 语法制导翻译](docs/13-sdt.md) —— 属性文法、依赖图与拓扑求值、S-/L-属性两子类、翻译方案（`examples/13_sdt`）
@@ -34,6 +36,7 @@
 - [19 代码形状](docs/19-code-shape.md) —— 行主序地址多项式与假零、dope vector、字符串三表示、case 三策略（`examples/19_code_shape`）
 - [20 规范化与跟踪](docs/20-traces.md) —— 贪心跟踪线性化、终结符四规则、顺直链消跳转（`examples/20_traces`）
 - [21 栈与活动记录](docs/21-activation-records.md) —— 活动树、帧布局、调用/返回序列、访问链与 display（`examples/21_activation_records`）
+- [22 参数传递四机制](docs/22-param-passing.md) —— 值/引用/值结果/名字：同一调用四个答案；别名是分辨器（`examples/22_param_passing`）
 - [23 垃圾回收](docs/23-garbage-collection.md) —— 可达性闭包、引用计数与环、标记清除、Cheney 复制（`examples/23_garbage_collection`）
 
 ### 第四篇　类型推断（24–27）
@@ -99,9 +102,11 @@
 - [61 寄存器分配](docs/61-regalloc.md) —— 干涉图、Chaitin–Briggs 着色、溢出与合并、相邻异色校验（`examples/61_regalloc`）
 - [62 局部分配与 SSA 弦图](docs/62-ssa-alloc.md) —— 频率计数 vs farthest-use；MCS/PEO 最优着色与 Briggs 对照（`examples/62_ssa_alloc`）
 - [63 指令选择与窥孔](docs/63-isel-peephole.md) —— 树重建、Ershov 标号、maximal munch、窥孔清扫（`examples/63_isel_peephole`）
-- [64 指令级并行](docs/64-ilp.md) —— 依赖三类、关键路径、表调度、树高平衡、modulo 双下界（`examples/64_ilp`）
-- [65 分支预测与预取](docs/65-predict.md) —— 二位饱和机、静态启发式、预取距离⌈延迟/迭代⌉、对齐消冲突（`examples/65_predict`）
-- [66 并行与局部性](docs/66-parallel-locality.md) —— 方向向量、GCD 检验、交换合法性、缓存模拟三序对比（`examples/66_parallel_locality`）
+- [64 真机实地](docs/64-real-codegen.md) —— Borland/80×86 与 Sun/SPARC 案例全程走读；gcc -O0/-O1 三十年对账与模式表（`examples/64_real_codegen`）
+- [65 TM 目标机器](docs/65-tm-machine.md) —— 16 指令两遍汇编器模拟器 + TINY 手写前端 + 四档优化双账（`examples/65_tm_machine`）
+- [66 指令级并行](docs/66-ilp.md) —— 依赖三类、关键路径、表调度、树高平衡、modulo 双下界（`examples/66_ilp`）
+- [67 分支预测与预取](docs/67-predict.md) —— 二位饱和机、静态启发式、预取距离⌈延迟/迭代⌉、对齐消冲突（`examples/67_predict`）
+- [68 并行与局部性](docs/68-parallel-locality.md) —— 方向向量、GCD 检验、交换合法性、缓存模拟三序对比（`examples/68_parallel_locality`）
 - [69 代码放置](docs/69-placement.md) —— 热路径链构造、过程贪心聚簇、频度与地理（`examples/69_placement`）
 
 ### 第十二篇　收束（70–71）
@@ -111,6 +116,6 @@
 
 ## 验证状态
 
-66/66 全绿（`build → check_example → check_docs`）。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
+71/71 全绿（`build → check_example → check_docs`）。`python tools/check_docs.py` 校验每章正文内嵌的全部源码、文法与期望输出与仓库字节一致；正文行数不少于 200 且文字多于代码。
 
 每章 = `docs/NN-<slug>.md` + `examples/NN_<slug>/`（章号=示例号）。LLVM 示例的运行需要 MSYS2 UCRT64 工具链在 PATH（`run-all.sh` 自动处理；`tools/example_build.sh <examples/NN_slug> "$(pwd)"` 单独构建一个示例）。

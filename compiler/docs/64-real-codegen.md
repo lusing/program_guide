@@ -613,7 +613,8 @@ fs::path prepare() {
 
 int main() {
     fs::path dir = prepare();
-    std::cout << "[workdir] " << dir.string() << "\n";
+    // 只打目录名——完整路径随系统 TMP 而变（跨环境对账会炸），目录名恒为 rcgen。
+    std::cout << "[workdir] " << dir.filename().string() << "\n";
     std::vector<std::string> funcs;
     for (const auto &s : rc::snippets()) funcs.push_back(s.name);
     auto pats = rc::defaultPatterns();
@@ -686,7 +687,7 @@ int main() {
 
 ```text
 ; expected: expected/output.txt
-[workdir] F:\temp\rcgen
+[workdir] rcgen
 == S1 pattern table (gcc -O0) ==
 [e1] insns=12 frame-push=1 frame-mov=1 rbp-loc=4 lea=0 scale-addr=0 call=0 ret=1 argreg=2
 [e2] insns=24 frame-push=1 frame-mov=1 rbp-loc=8 lea=0 scale-addr=3 call=0 ret=1 argreg=6

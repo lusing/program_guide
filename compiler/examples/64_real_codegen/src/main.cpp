@@ -30,7 +30,8 @@ fs::path prepare() {
 
 int main() {
     fs::path dir = prepare();
-    std::cout << "[workdir] " << dir.string() << "\n";
+    // 只打目录名——完整路径随系统 TMP 而变（跨环境对账会炸），目录名恒为 rcgen。
+    std::cout << "[workdir] " << dir.filename().string() << "\n";
     std::vector<std::string> funcs;
     for (const auto &s : rc::snippets()) funcs.push_back(s.name);
     auto pats = rc::defaultPatterns();
