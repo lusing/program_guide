@@ -2,6 +2,7 @@
 module Main (main) where
 
 import Ch09
+import qualified Data.List
 import Control.Monad (unless)
 import System.Exit (exitFailure)
 import System.IO (hSetEncoding, stderr, stdout, utf8)
@@ -53,5 +54,19 @@ main = do
         , expectEq "zipWith 截断" (zipWith (*) [1, 2, 3, 4] [2]) [2]
         , expectEq "zip 配对" (zip "ab" [1, 2, 3]) [('a', 1), ('b', 2)]
         ]
-    unless (s1 && s2 && s3 && s4) exitFailure
+    s5 <- runSuite "书4：span/msort/triads/commonWords"
+        [ expectEq "span 前缀切分" (mySpan (< 3) [1, 2, 4, 1]) ([1, 2], [4, 1])
+        , expectEq "countRuns 连续段" (countRuns ["a", "a", "b"]) [(2, "a"), (1, "b")]
+        , expectTrue "msort 与库 sort 一致" (msort [5, 3, 8, 1, 9, 2, 7, 2] == Data.List.sort [5, 3, 8, 1, 9, 2, 7, 2])
+        , expectEq "nondec 真" (nondec [1, 2, 2, 5 :: Int]) True
+        , expectEq "nondec 假" (nondec [3, 1 :: Int]) False
+        , expectEq "position 命中" (position 'b' "abc") 1
+        , expectEq "position 未命中" (position 'z' "abc") (-1)
+        , expectEq "triads 数量" (length (triads 20)) 3
+        , expectTrue "triads 含 (3,4,5)" ((3, 4, 5) `elem` triads 20)
+        , expectEq "commonWords 书版" (commonWords 3 "to be or not to be") (unlines ["to: 2", "be: 2", "or: 1"])
+        , expectEq "disjoint 有交" (disjoint [1, 3, 5] [2, 3, 4]) False
+        , expectEq "disjoint 无交" (disjoint [1, 3, 5] [2, 4, 6]) True
+        ]
+    unless (s1 && s2 && s3 && s4 && s5) exitFailure
     putStrLn "==== 09 结束 ===="
