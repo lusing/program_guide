@@ -1,0 +1,835 @@
+
+===== PDF 23 =====
+1第2章
+Thinking Functionally with Haskell
+表达式、类型和值
+Haskell的每个合式（well-formed）表达式根据其定义都有一个合式类型，并且每个合
+式表达式根据其定义都有一个值（value）。对一个给定表达式求值时，步骤如下：
+GHCi检查该表达式在语法上是否正确，即表达式是否符合Haskell的语法规则。
+·如果表达式语法正确，CHCi推导出该表达式的类型，或者检查程序员指定的类型
+是否正确。
+如果表达式类型正确，GHCi对表达式求值：将表达式化简为最简单形式，即为其
+值。如果该值可打印，GHCi将其显示在终端。
+本章将仔细研究Haskell的求值过程。
+2.1GHCi会话
+检查一个表达式是否为合式的方法当然是使用GHCi。GHCi有一个命令：typeexpr，
+如果表达式expr是合式，则命令返回其类型。以下是一个GHCi会话（对某些CHCi返
+回信息做了简化）：
+ghci> 3 +4)
+<interactive>:1:5:parse error on input )
+GHCi在抱怨第1行第5个字符不符合系统的要求，换句话说，该表达式在语法上是
+错误的。
+22
+ghci>:type 3+4
+3+4::Numa=>a
+GHCi推断3+4的类型是一个数值类型。稍后将对此做进一步解释。
+ghci>:type if 1==0 then "a'else"a"
+<interactive>:1:23:
+Inthe expression:"a"
+In the expression:if1=  then'a'else"a"
+在一个条件表达式中：
+if testthen expr1 else expr2
+GHCi要求expr1和expr2的类型必须是相同的。但是，一个字符不是字符的列表。所
+以，尽管该条件语句符合Haskell语法，但它不是合式。
+ghci> sinsin 0.5
+<interactive>:1:l:
+Noinstancefor (Floating (ao ->ao))
+arising from a use of 'sin!
+Possible fix: add an instance declaration for
+(Floating(ao->ao))
+In the expression:sin sin 0.5
+Inanequationforit':it=sinsino.5
+
+===== PDF 24 =====
+第2章
+GHCi返回一个很模糊的错误信息，说明该表达式不是合式。
+ghci> sin (sin 0.5)
+.4612695550331807
+啊哈，GHCi对这个表达式很满意。
+ghci>;type map
+[q] <- [] <- (q <- e) : de
+GHCi返回该函数的类型。
+ghci>map
+<interactive>:1:1:
+arising from a use ofprint'
+Possible fix:
+23
+add an instancedeclarationfor
+In a stmt of an interactive GHCi command: print it
+GHCi表示不知道如何打印一个函数。
+ghci>:type1"div"0
+CHCi表示1div0的类型是整型数。因此，1div0是合式，并有一个值。
+ghci>1div0
+*** Exception:divide by zero
+GHCi返回一个错误信息。那么1div的值是什么？答案是，这是一个很特殊的
+值，数学上记作工，读作“bottom”。实际上，Haskell给这个值提供了名称，不过不是
+bottom，而是undefined。
+ghci> :type undefined
+undefined : a
+ghci> undefined
+***Exception:Prelude.undefined
+Haskell不会显示工这个值。它可能返回一个错误信息，也可能在计算无限循环，因
+而一直保持沉默，直至用户中断该无穷计算过程。这种计算也可能引起GHCi崩溃。是的，
+没错。
+ghci>x*xwhere×=3
+<interactive>:1:5:parse error on inputwhere'
+ghci>let x=3 in x*x
+在Haskell中一个where子句不构成一个表达式，一个定义的等号右边的整个式子才
+是一个表达式。所以，以上第一个式子不是合式表达式。另一方面，在一个1et表达
+式中：
+let <defs> in<expr>
+假定<defs>中的定义是合式，而且<expr>是合式，那么该let表达式是合式。Let
+24
+表达式在后面使用不多，但有的时候这种表达式很有用。
+
+===== PDF 25 =====
+表达式、类型和值
+17°
+2.2名称和运算符
+如前所讲，一个脚本是一些名称及其定义的集合。函数和值的名以小写字母开头，但
+是数据构造器（稍后介绍）以大写字母开头。类型名（如Int）、类族名（如Num）和模
+块名（如Prelude和Data.Char）也以大写字母开头。
+一个运算符是一种出现在参数中间的特殊函数名，如x+中的+、xs++Ys中的
+++。运算符以符号开头。任何（非符号）二元函数都可以用反引号将其括起来，从而转
+换成一个运算符，而且任何运算符用括号括起来就变成了前缀名。例如：
+3+4
+等同于
+(+)34
+等同于
+div34
+3div4
+运算符有不同的优先级（结合力）。例如：
+3*4+2
+等同于（3*4）+2
+xs++yss！！3等同于xs++(yss！！3)
+如有疑问，可使用括号消除歧义。另外，可以使用读者喜欢的任何名称来命名列表，包
+括x、Y、goodylist，等等。但是，一个便于记忆的简单规则是，用x表示对象，
+xs表示对象的列表，xSs表示对象列表的列表。这也就解释了上面最后一行使用YSS
+的原因。
+优先级相同的运算符通常有一定的结合顺序，左结合或者右结合。例如，普通的算术
+运算是左结合的：
+3-42
+2等同于（3-4）2
+3-4+2等同于（3-4)+2
+3／4*5等同于（3／4）*5
+函数应用运算具有最高优先级，而且是左结合的：
+eee bah gum
+等同于（eeebah）gum
+eeebahgum*2等同于（（eeebah）gum）*2
+有些运算是右结合的：
+25
+(a->b)->[a] ->[b]等同于(a->b)->([a] ->[b])
+x"y"z
+等同于x(y~z)
+等同于
+eee.bah.:gum
+eee.(bah.gum)
+当然，如果一个运算满足结合律，如函数复合，那么结合的不同顺序对结果没有影响
+（值是一样的）。同样，仍然可以用括号消除可能产生的歧义。
+也可以定义新的运算符，例如：
+x+++y=if evenxthenyelsex+y
+条件表达式具有较低的优先级，所以，上述表达式等同于下列表达式：
+if even xtheny else (x+y)
+而不是（ifevenxthenyelsex）+Y。同样，仍然可以用括号表达不同的组合。
+如果需要，也可以说明（+++）的优先级和结合顺序，但是这里不做介绍。
+
+===== PDF 26 =====
+18
+第2章
+部分运算与兰姆达表达式
+尽管这仅是一种风格，但是，大体来讲，人们更喜欢将所有辅助函数写在脚本中并显
+式命名。比如，如果需要给一个数加1的函数，或者将一个数加倍的函数，那么可以如下
+显式命名这些函数：
+succ,double::Integer->Integer
+succn=n+1
+double n= 2*n
+不过，Haskell提供了命名这两个函数的其他方法，即（+1）和（2＊）。这种机制称为部分
+运算（section）。部分运算中包括了运算符和部分参数。例如：
+(+1) n =n+1
+(0<) n = 0<n
+(<0)n=n<0
+26
+(1/)x=1/x
+部分运算无疑是命名简单辅助函数的好方法，所以将其列入适量使用的好东西目录
+关于部分运算有一点重要附加说明：虽然（+1）表示加1的部分运算，但是（-1）并
+不是减1的部分运算，它只表示数值一1。Haskell用减号既表示二元减法运算，也表示取
+反的前缀运算。
+假设欲定义一个函数：先将一个数加倍，然后在此基础上加1。这个函数可以用两个
+部分运算的复合表示为（+1）：（*2）。但是，这个结果并不令人满意，因为表达式看起
+来太神秘，看到这个式子的读者必须停顿下来思考其含义。另一种方法似乎需要命名这个
+函数，但是，什么样的名合适呢？想出一个有意义的名称真难。
+一种解决方法是使用兰姆达表达式（lambdaexpression）-n->2*n+1。在数学上
+这个函数写成入n.2n+1，故称为兰姆达表达式。该表达式读作“n的函数，其返回值是
+2n+1”。例如：
+ghci>map(In->2*n+1)[1..5]
+[3,5,7,9,11]
+有时兰姆达表达式似乎是描述一个函数的最好方法，但也仅仅是在某些不多的场合才
+使用这种表达式。
+2.3求值
+Haskell对一个表达式的求值过程是将其化简为最简形式，然后显示结果。例如，假
+设如下定义：
+sqr ::Integer -> Integer
+sqrx=x*x
+基本上有两种方法将表达式Sgr（3+4）化简为最简形式，即49。或者先对3+4求值，
+或者先使用sqr的定义：
+sqr (3+4)
+sqr (3+4)
+= sqr 7
+=letx=3+4inx*x
+=letx=7inx*x
+=letx=7inx*x
+=7*7
+= 7*7
+27
+=49
+=49
+
+===== PDF 27 =====
+表达式、类型和值
+两种方法的化简步数一样，但是化简的顺序稍有区别。左边的方法称为最内优先化简
+（innermostreduction），又称勤奋求值（eagerevaluation）；右边的方法称为最外优先化简
+（outermostreduction）或者惰性求值（lazyevluation）。使用勤奋求值方法，总是先对参数
+求值，然后再应用函数。使用惰性求值方法，总是先带入函数定义，函数的参数求值只有
+在必要时才进行。
+这两种方法是不是看似没多大区别？但是，考虑下面（稍做了简化）关于函数fst
+的求值过程，其中fst返回一个二元组的第一个分量，即fst（x，y）=x。
+fst(sqr1,sqr2)
+fst (sqr 1,sqr 2)
+=fst(1*1,sqr2)
+=let=(sqr1,sqr2)
+=fst (1,sqr 2)
+infstp
+=fst(1,2*2)
+= sqr 1
+=fst (1,4)
+= 1*1
+=1
+需要注意到的关键区别是，勤奋求值方法对表达式sgr2求值，但是情性求值不需要
+该表达式参与，因此不会对其求值。
+假设再给出下列定义：
+infinity :: Integer
+infinity= 1 + infinity
+three :: Integer -> Integer
+threex=3
+对infinity求值时，GHCi将尝试计算1+（1+（1+（1+（1+.：，因此陷
+人长久沉默，直至系统耗尽内存返回一个错误信息。这里infinity的值是工。
+对threeinfinity求值同样有两种方法：
+three infinity
+three infinity
+= three (1+infinity)
+=letx=infinityin3
+=three(1+(i+infinity))
+在这里勤奋求值陷入试图对infinity求值的死循环中，但是惰性求值立即返回答案3，
+求得结果3并不需要对three的参数求值。
+另一个求值例子是阶乘函数的一种定义：
+28
+factorial ::Integer ->Integer
+factorialn=fact(n,1)
+fact ::(Integer,Integer)->Integer
+fact(x,y)=ifx==othenyelsefact(x-1,x*y)
+这是另一个递归定义（recursivedefninition）的例子（函数infinity的定义以及第1章
+函数song的定义也都是递归的）。涉及递归函数的表达式的求值方法与其他函数的求值
+方法相同。
+下面显示两种求值方法的化简步骤序列（为了说明问题，下面省略了条件表达式的化
+简步骤）：
+
+===== PDF 28 =====
+第2章
+factorial 3
+factorial 3
+=fact (3,1)
+=fact(3,1)
+=fact(3-1,3*1)
+=fact(3-1,3*1)
+=fact(2,3)
+=fact(2-1,2*(3*1))
+=fact(2-1,2*3)
+=fact（1-1,1*(2*(3*1)))
+=fact(1,6)
+=1*(2*(3*1))
+=fact(1-1,1*6)
+=1*(2*3)
+=fact(0,6)
+=1*6
+=6
+这里想说明的要点是，虽然两钟方法的化简步骤基本相同，但是惰性求值为了得到答案需
+要更大的空间，表达式1*（2*（3*1））在被求值前需要先在内存中构造起来。
+情性求值的优点是，只要任何一种化简顺序终止，情性求值就会终止；它的化简步骤
+数永远小于勤奋求值步骤数，而且有时是及其地小。情性求值的缺点是，它需要更多的空
+间，而且难于理解化简的准确次序。
+Haskell使用惰性求值。ML（另一种流行的函数语言）使用勤奋求值。习题D讨论为
+什么情性计算是优点。第7章将进一步讨论情性求值。
+如果一个Haskell函数f满足fundefined=undefined，则称f是严格的
+（strict），否则称为非严格的（non-strict）。函数three是非严格的，而（+）对于两个参
+数都是严格的。因为Haskell使用惰性求值，所以可以定义非严格的函数。这也是为什么
+29
+Haskell被称为一种非严格的函数语言。
+2.4类型和类族
+Haskell定义了内置（或者初始）类型，如Int、Float和Char。布尔值的类型
+Bool在标准引导库中定义：
+data Bool =FalselTrue
+这是一个数据声明（datadeclaration）的例子。这里声明了类型Bool有两个数据构造函
+数：False与True。实际上类型Bool有3个值（而不是两个）：False、True和
+undefined：：Bool。为什么需要第三个值呢？考虑下列函数：
+to:Bool->Bool
+tob=not(tob)
+引导库中not的定义如下：
+not::Bool ->Bool
+not True =False
+not False = True
+函数to的定义是完整的，但是对toTrue求值导致GHCi陷人无限循环，所以其值
+为类型Boo1的工。关于数据的声明，今后的章节会有更多介绍。
+Haskell包含内置的复合类型，例如：
+[Int]
+元素类型为Int的列表
+(Int,Char)
+一个Int和一个Char的序对
+(Int,Char,Bool)
+多元组类型
+零元组类型
+Int -> Int
+一个由Int到Int的函数
+
+===== PDF 29 =====
+表达式、类型和值
+类型（)的唯一元素也用（）表示。实际上，类型（）还有第二个元素，即undefined：：（）。
+现在明白了，每个类型都包含了值工。
+如前所讲，在定义一个值或者函数时，好的习惯是同时在定义中说明它们的类型。
+考虑下一个函数taken，其作用是将列表的前n个元素构成的列表返回。该函数在
+第1章曾出现过。例如：
+take3[1,2,3,4,5]=[1,2,3]
+take 3"category"="cat"
+take 3 [sin,cos]= [sin,cos]
+30
+应该给take赋予什么样的类型呢？该函数并不关心列表的元素类型是什么，所以函
+数take称为多态（polymorphic）函数，其类型记作
+take : Int -> [a] -> [a]
+其中a是一个类型变量（typevariable）。类型变量用小写字母开头。类型变量可以用任何
+类型替换。
+类似的多态函数还有：
+(++) :: [a] -> [a] -> [a]
+[q]-[] -(q-)dem
+( <- ) <- (q <- ) <- ( <- q)()
+最后一行是函数复合运算的多态类型声明。
+那么运算（+）的类型是什么呢？以下是其类型的一些建议：
+(+)::Float->Float->Float
+(+) a->a->a
+前两个类型似乎太局限，而最后一个又显得过于一般。例如，两个函数不可以相加，两个
+字符或者两个布尔值也不可相加，至少没有明显的相加方法。
+解决这个问题的方法是引人类族（typeclass）：
+这个声明断言（+）的类型为a->a->a，其中a是任意数值类型。一个类族，如
+Num，包含了一些命名的方法，如（+），这些方法在类族的不同实例上可以有不同的定
+义。因此，类族提供了重载（overloaded）的函数，即同一个函数名在不同类型上可以有
+不同的定义。重载是另一种多态。
+数值类型相当复杂，将会在第3章详细讨论，所以在这里介绍一个比较简单的类族：
+class Eq a where
+(==),(/=) :: a -> a -> Bool
+x/=y
+=not(x=y)
+这个定义引入了类族Equality，该类族的成员可以使用它的方法，即同一个相等测试
+（==）和不相等测试（/=）。类族给出（/=）的缺省（default）定义，所以用户只需要给出
+（==）的定义。
+31
+一个类型要成为类族Eq的成员，必须定义一个实例（instance）。例如：
+
+===== PDF 30 =====
+22
+第2章
+instance Eq Bool where
+x=y= if x theny else noty
+instance Eq Person where
+x=y=(pinx==piny)
+如果pin：：Person->Pin，那么后一个实例的正确性需要Eq Pin。当然，并非
+必须将Person定义成Equality俱乐部的成员，也可以使用下面的定义：
+samePerson :: Person ->Person -> Bool
+samePersonxy=(pinx==piny)
+但是，在程序中便不能用（==）代替samePerson，除非定义Person是Eg的实例。
+下面是另外两个类族ord和show的简化定义：
+class (Eq a) => Ord a. where
+TOOH<- <-  : (<)(=<)"(=>)(>)
+x<y
+= not (x>= y)
+x<y
+X >=
+x=yllx>y
+x>y
+= not (x<=y)
+class Show a where
+show :: a-> String
+布尔运算（ll）表示析取allb为真，仅当a和b中至少有一个为真。这个运算可以如
+下定义：
+(ll):Bool ->Bool,->Bool
+all b=if a then Trueelse b
+类族Ord中方法的缺省定义相互依赖，所以，在定义该类族的任何实例时，必须至
+少给出一种方法的具体定义才可以打破这种循环依赖（不同的是，Eq中只有（/=）有缺省
+定义）。类族Ord需要Eq作为它的超类族（superclass），因为它的4个比较方法的缺省定
+义使用了（==）。
+类族Show用于显示结果。如果一个结果的类型不是Show的成员，那么Haskell不能
+32
+显示这种计算结果。2.5节将进一步解释这个类族。
+2.5打印值
+先看一个谜题：
+"Hello\nyoung\nlovers"
+噢，我们想要的是
+Hello
+young
+lovers
+为什么Haskell没有打印出这个结果？其原因是，Haskell对一个合式表达式求值后，将
+show应用于该值，生成一个可以在终端打印的字符串。将show应用于一个值v生成一
+个字符串，该字符串打印时看上去恰好像V。例如：
+
+===== PDF 31 =====
+表达式、类型和值
+show 42
+="42"
+show 42.3
+="42.3"
+show 'a'
+= "latn
+show"helloln"="\"hellolln\""
+打印结果需要使用一个Haskell命令：
+putstrLn::String->I0()
+类型IOa是一个表示输入和输出计算的特殊类型，当这种类型的命令被执行时，Haskell
+与外部世界发生交互，最后返回类型为a的值。如果返回值不重要，如putstrLn，则使
+用零元组的值（）。
+所以，Haskell统一使用生成和输出（show-and-put）的策略打印值。因为前面的谜题
+中，要打印的值已经是一个串，所以可以省略生成步骤，直接打印输出：
+Hello
+young
+lovers
+Haskell提供许多其他的输人和输出命令，如读写文件命令、显示图形命令，等等。
+33
+这些命令的顺序必须正确书写，为此Haskell提供了一种特殊的记号，称为do记法。命令
+的内容是第10章的主题，下面仅介绍一点粗浅知识。
+作为一个例子，考虑第1章的高频词问题，其中曾定义了函数：
+使得commonwordsn可应用于一个文本串，然后返回文本中n个出现最多的词表，并用一
+个串表示之。下列程序从一个文件读出文本，然后将结果写人另一个文件。类型Fi1ePath
+是字符列表的另一个同义词：
+cwordsn infileoutfile
+doftext<-readFileinfile;
+writeFileoutfile(commonWordsntext);
+putStrLn"cwords done!"}
+例如，对下列式子求值：
+ghci> cwords 100"c:llWarAndPeace""c:\lResults"
+在一个Windows平台上的结果是读出文件c：IWarAndPeace，然后结果写入c：lRe
+sults。程序还在终端打印一个信息。
+以上定义中的两个分函数具有下列类型：
+readFile ::FilePath -> I0 String
+writeFile ::FilePath->String ->I0()
+假设不想用交互的方式调用cwords，而是想作为一个独立程序运行。方法是定义一个类
+型为Io（），标识为main的值。下面是这样的一个程序：
+main
+= do (putStrLn"Take text from where:";
+infile<-getLine;
+putStrLn"Howmany words:";
+
+===== PDF 32 =====
+第2章
+n<-getLine;
+putStrLn "Put results where:";
+outfile<-getLine;
+text <- readFile infile;
+writeFileoutfile(commonwWords(readn)text);
+34
+putStrLn"cwords done!"}
+关于read的解释参见习题H。假设高频词程序脚本存储在文件cwords.lhs中。
+现在可以用GHC，即格拉斯哥Haskell编译器（GlasgowHaskellCompiler）进行编译：
+$ ghc cwords.ihs
+编译后的程序存储在文件cwords。exe中。在Windows下运行程序，可键人：
+$ cwords
+然后遵照程序提示进行。
+2.6模块
+假设函数commonwords非常有用，我们想在其他脚本中也能够使用它。为此，需要
+将高频词脚本转变成一个模块（module）。首先，将脚本如下改写：
+moduleCommonWords(commonWords)where
+import Data.Char (toLower)
+import Data.List (sort,words)
+模块声明关键字module后接模块名，而且模块名必须以大写字母开头。此外，该脚
+本必须存储在名为CommonWords。1hs的文件中，以便Haskell能够找到该模块（至少在
+使用文学编程的情况下，否则要命名为CommonWords.hs）。模块名后是一个出口
+（export，或称输出）的列表，这些出口包括该模块输出给其他脚本的函数、类型和其他
+值。出口列表必须用圆括号括起来。这个例子中只输出一个函数commonWords给其他脚
+本。一个模块中的出口是该模块在其他模块中唯一可见的对象。如果省略出口列表和圆括
+号，那么模块中的所有对象都成为出口。
+定义模块后，使用下面的声明可以将模块输入到其他脚本，然后用GHC编译模块。
+import CommonWords (commonWords)
+组，形成独立模块，从而可以将脚本组织成适当大小的块。另一个优点是在编译模块中的
+函数被编译成了特定的机器代码，从而使得表达式化简更顺畅，所以函数的求值要快得
+多。GHCi是一个解释器（interpreter），不是编译器；解释器对更接近于源语言Haskell的
+表达式内部形式求值。
+2.7Haskell版面
+do记法的例子使用了花括号（（）和分号（；），这些符号是显式版面（explicitlayout）
+的例子。花括号和分号只是用来控制版面，除此之外在Haskell表达式中没有其他意义。
+
+===== PDF 33 =====
+表达式、类型和值
+这些符号也可以用于其他位置：
+roots::(Float,Float,Float)->(Float,Float)
+roots(a,b,c)
+=error "not quadratic"
+I disc<o
+=error"complexroots"
+Iotherwise
+=((-b-r)/e，(-b+r)/e)
+where [disc = b*b - 4*a*c; r = sqrt disc; e = 2*a]
+这里的where子句显式地使用了花括号和分号，没有使用Haskell的版面规则。使用
+版面规则可以如下书写：
+wheredisc=b*b-4*a*c
+=sqrt disc
+=2*a
+但是，不可以这样书写：
+wheredisc=b*b-4*a*c
+r =sqrt disc
+e=2*a
+每当关键字where或者do（以及let）后的左花括号被省略时，版面（或者越位
+（offside））规则便起作用了。此时，关键字后的式子，无论是在同一行还是下一行，其位
+置被系统记下。对于后面的每一行，如果进一步缩进，则认为是前一式子的延续；如果缩
+进相同，则认为是一个新表达式的开始；如果缩进比记下的更少，则这部分版面结束。至
+少越位规则天致如此。
+越位规则说明了类族和实例声明中的缩进原因：
+36
+class Foo a-where
+我是类族声明的一部分
+我也是
+现在类族声明结束。
+如果对规则存疑，总是可以使用花括号和分号代替规则。事实上，越位规则在do记
+法中仍然可能引起混淆。所以，建议使用安全带，即花括号和分号。
+确实，足球场上的越位规则是复杂的。
+2.8习题
+习题A这是关于优先级的问题，来自英国卫报的ChrisMaslanka的谜题版：
+“2加2的一半等于2还是等于3？”
+习题B下面的表达式中有些是语法不正确的；有些是语法正确的，但是不具有合理
+的类型。有些是合式。请识别出它们。如果是合式表达式，请给出适当的类型。假设
+double：：Int->Int。建议读者不使用计算机查看答案，但是如果使用的话，会看
+到一些奇怪的错误信息。
+这些表达式如下：
+[0,1]
+double -3
+double(-3)
+double double O
+
+===== PDF 34 =====
+第2章
+if1==0then2==1
+#+u++u+u==#++u
+[(+),(-)]
+concat［"tea","for"，"2']
+37
+concat["tea","for","2"]
+习题C在过去美好的日子里，作者写论文可以用这样的标题：
+" The morphology of prex-an essay in meta-algorithmics"
+但是，现在的杂志希望所有词用大写开头：
+"The Morphology Of Prex-An Essay In Meta-algorithmics”
+请设计一个函数modernise：：String->String，确保论文标题满足如上要
+求。下面先回答一些有帮助的问题：
+1.函数toLower：：Char->Char是将字母转换为小写的函数。你认为标准引导
+库中将字母转换为大写的函数名是什么？
+2.函数word：：String->［Word]曾在第1章使用过。你认为下列引导库函数的
+作用是什么？
+unwords ::[Word] ->String
+提示：如果下列方程中有一个成立的话，哪个成立？
+words.unwords =id
+unwords.words =id
+3.函数head：：【a]】->a返回非空列表的第一个元素，tail：：【a］->【a]返
+回一个列表去除第一个元素后的尾部列表。如果已知一个列表的第一个元素是x，尾部是
+XS，如何构造该列表？
+习题DBeaver是勤奋求值器，Susan是情性求值器。如果xs是长度为n的列表，
+在计算head.（mapfxs）时Beaver会计算f多少次？Susan会计算多少次？Beaver更喜欢
+head.mapf的哪种形式?
+函数filterp对一个列表过滤，返回满足布尔条件测试p的元素构成的列表。
+filter的类型为
+Susan喜欢用函数head.filterp找出列表中第一个满足p的元素。为什么Berver
+38
+不用同样的表达式？相反，Beaver可能定义这样的函数：
+firstpxsInull xs
+=error"Empty list"
+I otherwise = ...
+where x = head xs
+函数nul对于空列表返回True，非空列表返回False。对Beaver的函数求值时，
+表达式errormessage终止求值过程，并在终端打印串message，所以结果是。请
+完成Beaver定义中右边部分。
+如果读者不清楚这里的含义，请谷歌“lazysusan”查看其含义。
+
+===== PDF 35 =====
+表达式、类型和值
+Beaver可能更喜欢head.filterp.mapf的哪种形式?
+习题E类型Maybe在标准引导库中定义如下：
+data Maybe a = Nothing I Just a
+deriving (Eq, Drd)
+该定义使用了一个deriving（导出）子句。对于某些数据声明，Haskell可以为它
+们自动生成一些标准类族的实例。对于目前的例子，导出子句意味着程序员无需键人下列
+穴繁的定义：
+instance (Eqa)=>Eq (Maybe a)
+Nothing  Nothing = True
+Nothing  Just y False
+Just x = Nothing
+=False
+Just x==Justy
+= (x = y)
+instance (Ord a)=>Ord (Maybe a)
+Nothing <=Nothing = True
+Nothing<- Just y = True
+Just x<= Nothing =False
+Justx<=Justy
+= (x<y)
+定义中Nothing小于Justy的原因只是因为在Maybe的数据声明中，构造函数
+Nothing写在Just之前。
+Maybe类型提供了处理失败的系统方法，所以这个类型非常有用。再考虑前面习题
+中的函数：
+39
+first p=head .filter P
+勤奋的Beaver和懒散的Susan都有该函数各自的版本，而且当把firstp应用于一
+个空列表时都终止执行，并返回一个错误信息。这个结果并不圆满。更好的方法是定义：
+现在如果列表中没有元素满足测试条件，可以通过返回Nothing很圆满地处理失败
+的情况。
+请给出这个first版本的定义。
+最后，计算Haskell中类型为Maybea->Maybea的函数个数。
+习题F下面是一个计算x的n次方的函数，其中n≥0。
+expxnln==o=1
+In1=x
+I otherwise =x*exp x (n-1)
+请问计算expxn需要做多少次乘法？
+一个聪明的程序员Dick声称他可以用次数少得多的方法计算expxn：
+expxnln=o=1
+In1
+even n
+I odd n
+请完成定义，并计算用Dick的方法对表达式expxn求值需要做多少次乘法，这里
+
+===== PDF 36 =====
+28
+第2章
+假定2°≤n<2P+1
+习题G
+假设日期用3个整数表示成（day，month，year）。请定义一个函数
+showDate：：Date->String使得日期能够像下面例子一样显示：
+showDate(10,12,2013)="10thDecember，2013"
+showDate (21,11,2020)="21st November,2020"
+40
+读者应该明白Int是类族show的实例，所以shown生成十进制整数n的串表示。
+习题H信用卡公司Foxy发行卡号（CIN）为10位数字的信用卡，前8位是任意的，
+但是最后两位表示的整数是前8位数字之和的验证码。例如，“6324513428”是一个合法
+的CIN，因为前8位数字之和是28。
+请构造一个函数addSum：：CIN->CIN，它将8位数字组成的串转换为包含其验
+证码的10位数字的串。因此，CIN是String的同义词，不过字符限制为数字。注意，
+Haskell类型同义词不能强制这样的类型约束。读者需要实现一个数字字符和对应数值之
+间的转换。其中一个方向的转换很简单：只需使用show。另一个方向的转换也很简单：
+getDigit ::Char->Int
+getDigit c =read [c]
+函数read是类族Read的方法，其类型为
+read : Read a => String -> a
+类族Read是Show的对偶，read也是show的对偶。例如：
+ghci> read"123"::Int
+123
+ghci>read"123":：Float
+123.0
+使用函数reaa时必须提供结果的类型。任何时候都可以用这种方法给表达式添加类
+型注释（typeannotation）。
+现在请构造一个函数valid：：CIN=>Bool检查一个卡号是否合法。函数take
+在这里可能有帮助。
+习题丨根据定义，一个回文（palindrome）是这样的字符串：如果忽略标点符号、空
+格和字母的大小写，那么正念和反念结果是一样的。请设计一个交互式程序：
+palindrome:10 ()
+运行该程序将引导出一个交互会话，例如：
+ghci> palindrome
+41
+Enter a string:
+Madam,I'm Adam
+Yes!
+ghci> palindrome
+Enter a string:
+A Man, a plan, a canal - Suez!
+No!
+ghci> palindrome
+Enter a string:
+Doc, note I dissent.A fast never prevents a fatness.
+I diet on cod.
+Yes!
+
+===== PDF 37 =====
+表达式、类型和值
+其中函数isAlpha：：Char->Bool检测一个字符是否为字母，函数reverse：：
+[a］->【a］将列表反转。函数reverse在标准引导库中定义，函数isAlpha可以从库
+Data.Char中输人。
+2.9答案
+习题A答案Maslanka谜题的答案是“可能等于2也可能等于3”。这个小谜题难倒
+了不少杰出的计算机科学家。
+习题B答案GHCi会话显示（附加解释）：
+ghci>:type[0,1]
+<interactive>:1:5:parse error on input)
+虽然GHCi没有聪明地指出应该使用］，但是它明白）是错误的。
+ghci> :type double -3
+<interactive>:1:9:
+No instance for (Num (Int->Int))
+arising from the literal3'
+Possiblefix:add an instance declaration for
+(Num(Int->Int))
+In the second argument of(-)',namely'3i
+In the expression: double-3
+错误信息解释说，数值减法（-）的类型是Numa=>a->a。若要使得double-3
+是合法表达式（题目中写的是double-3，但是空格在这里不重要），double必须是
+一个数，所以需要类族实例Num（Int=>Int）。但是，不存在这样的实例定义，所以
+一个函数减去一个数无意义。
+ghci> double (-3)
+-6
+ghci> double double 0
+<interactive>:1:1:
+In the expression:double double 0
+In an equation forit':it =double double O
+大多GHCi错误信息的含义是清楚的。
+ghci> if 1==0 then 2==1
+<interactive>:1:18:
+parse error (possibly incorrect indentation)
+条件表达式缺少else子句，因此不完整。
+u+u ++ n+n == u++u <o8
+True
+两边都是合式表达式，而且表示同一个列表。
+ghci>[(+),(-)]
+<interactive>:1:1:
+No instance for(Show (ao ->ao->ao))
+arisingfrom a use ofprint
+
+===== PDF 38 =====
+30
+第2章
+Possible fix:
+add an instance declaration for
+(Show(ao->ao->ao))
+In a stmt of an interactive GHCi command:print it
+要显示值［（+），（－）］，首先要能够显示其元素。但是，不存在显示函数的方法。
+43
+ghci>:type[,[],[]]
+为了解释这个类型，先假定主列表的类型是[b］。主列表的第一个元素是列表，所以
+b=［c］；第二个元素是列表的列表，故c=［d]；第三个元素是列表的列表的列表，故
+d=[a]o
+ghci>concat ["tea","for","2"]
+<interactive>:1:21:
+Couldn't match expected type[Char]!
+with actual type 'Char'
+In the expression:2'
+In the first argument of"concat',
+namely"["tea","for","2']
+In the expression: concat ["tea","for","2']
+列表的前两个元素具有类型［char］，但是最后一个元素的类型是char，所以这种
+列表是不合法的。
+ghci> concat ["tea","for","2"]
+"teafor2"
+习题C答案
+1.当然是toUpper
+2.将词串接，并在词之间加一个空格。另外，word．unword=id成立，但是
+unword..word = id不成立。
+3. [x] ++ xSo
+modernise :: String -> String
+modernise =unwordsmap capitalise:words
+capitalise :: Word -> Word
+capitalise xs=[toUpper(headxs)]++tail xs
+第4章将给出capitalise的另一种定义。
+习题D答案使用勤奋求值方法计算head（mapfxs）需要对f计算n次，但是使
+44
+用情性求值只需对f计算一次。Beaver必须使用恒等式head：mapf=f：head。
+Beaver不使用定义firstp=head：filterp，而是可能定义：
+first :(a ->Bool)->[a] ->a
+IPX
+=X
+I otherwise=first p (tail xs)
+where x = head xs
+Beaver不使用定义first pf=head：filterp：mapf，而是可能定义：
+first p f xsI null xs
+=error "Empty list"
+
+===== PDF 39 =====
+表达式、类型和值
+31
+Ipx
+I otherwise =first p f (tail xs)
+wherex=f(headxs)
+问题的关键是，用勤奋求值策略时，大多数函数必须用显式递归定义，而不是利用像
+map和filter这样的函数定义。
+习题E答案懒散的Susan可能会定义：
+first p xs = if null ys then Nothing
+else Just (head ys)
+where ys = filter p xs
+类型为Maybea->Maybea的函数共有4个：
+f2x=casex of Justv->Justv
+f3x=casexofNothing->Justundefined;Justv->Justv
+f4x=Just(casexofNothing->undefined;Justv->v)
+习题F答案对expxn求值需要n-1次乘法。Dick的方法是利用恒等式x2m=
+（）"和2m+1=（）"得到递归定义：
+ux dxe
+In=0
+=1
+In1
+I evenn
+=exp(x*x)m
+Ioddn
+=x*exp（x*x）m
+where m
+n'div2
+45
+这是分治法（divideandconquer）算法的一个例子。使用Dick的方法计算expxn最
+多需要2Llogn」次乘法，其中Lx」表示一个数的底，即不大于该数的最大整数。第3章将
+进一步讨论取底函数。
+习题G答案
+showDate :: Date -> String
+showDate(d,m,y)=showd++suffixd++"
+++
+months!!(m-1)++"
+++ show y
+函数suffix计算数字的右后缀：
+suffixd=if d==1Il d==21Il d==31 then"st"else
+if d==2Il d==22then"nd"else
+if d==3 Il d==23 then "rd" else
+"th"
+months["January",.....]
+如果读者乐于找到suffix的聪明计算法，那么读者应该明白：有时候简单的解就是
+最好的解。
+习题H答案一个解是
+addSum::CIN->CIN
+addSumcin=
+wheren =sum (map fromDigit cin)
+valid ::CIN->Bool
+valid cin=cin==addSum (take8cin)
+
+===== PDF 40 =====
+32
+第2章
+fromDigit ::Char ->Int
+fromDigitc=read[c]
+函数fromDigit返回一个字符的对应数字。
+46
+习题1答案下面是一个解：
+import Data.Char (toLower,isAlpha)
+palindrome ::I0()
+palindrome
+xs<-getLine;
+if isPalindrome xs then putStrLn "Yes!"
+else putStrLn"No!"}
+isPalindrome :: String ->Bool
+isPalindromexs = (ys ==reverse ys)
+where ys =map toLower (filter isAlpha xs)
+2.10注记
+型、类族、函数和值。关于标准引导库的完整说明，请参看Haskell报告第8章；或者访
+问下列链接：
+www.haskell.org/onlinereport/standard-prelude.html
+关于函数程序语言，特别是Haskell的实现，更多信息参看www.haskell.org。早期由
+SimonPeytonJones编写的《TheImplementation ofFunctionalProgramminglanguages》（Pren-
+ticeHall，1987）一书已经不再版，但是可以从下列链接找到在线版：
+research. microsoft. com/~ simonpj/papers/slpj-book-1987
+除GHC外，Haskell还有其他保持维护的编译器，包括UHC（UtrechtHaskellCompiler），
+参见官网cs.uu.nl/wiki/UHC。
+关于勤奋求值和惰性求值的比较，请参考BobHarper的博客文章“Thepointoflazi-
+ness”，可以在下列链接找到：
+existentialtype.wordpress.com/2011/04/24/
+在博文中Harper列举了他偏爱严格语言的一些理由。也请阅读LennartAugustsson的
+回复。Augustsson的主要观点是，如习题D中所强调，在严格求值策略下，为了提高效
+47
+率，大部分函数必须用显式递归的方式定义，这样便失去了使用简单标准函数定义新函数
+的能力。这样削弱了使用组成函数的通用定律对函数进行推理的能力。
+BobHarper是《TheDefinitionofStandardML（Revised）》（MITPress，1989）的作者
+之一。ML是一种严格语言。读者可以在下列链接找到有关ML的介绍：
+www.cs.cmu.edu/~rwh/smlbook/book.pdf
+另一种越来越受欢迎的语言是Agda，它既是一种依存类型函数语言，也是一个证明
+辅助器，请参见Agda官网：
+wiki. portal. chalmers. se/agda/pmwiki. php
+48
+ChrisMaslanka是英国《卫报》的周六版专栏作家。

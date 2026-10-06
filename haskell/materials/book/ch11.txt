@@ -1,0 +1,662 @@
+
+===== PDF 192 =====
+第11章1
+Thinking Functionally with Haskell
+句法分析
+一个句法分析器（parser）是对一个文本进行分析以确定其逻辑结构的函数。文本是
+描述人们感兴趣值的一个字符串，如算术表达式、一首诗或者一个数据表。句法分析器的
+结果是对该值的一种表示，如算术表达式的分析结果是某种树，一首诗的分析结果是诗行
+的列表，数据表的分析结果可能是更复杂的表示。许多程序设计任务涉及对输入用某种方
+法进行分析，所以句法分析是计算机程序设计中普遍的组成部分。本章描述单子式的句法
+分析，主要设计各种表达式的简单句法分析器。本章也介绍一点将分析结果编码为串的逆
+过程，换言之，介绍关于Show的更多内容。这些内容将在最后一章用到。
+11.1单子句法分析器
+句法分析器根据需要返回不同的值，所以，可以先把句法分析器看作一个函数输入是
+串，结果是某种类型的值：
+type Parser a=String ->a
+这个类型基本上是标准引导库函数read的类型：
+read :: Read a => String -> a
+确实，read就是一个句法分析器，只是它不够灵活。一个原因是它的所有输入必须全部
+消耗掉。因此，有
+ghci>read"123"::Int
+276
+123
+ghci>read"123+51"::Int
+***Exception:Prelude.read:noparse
+使用read没有明显的方法完成相继读两个或者更多的输入。例如，可能需要算术表
+达式的分析器在输入中先找出一个数值，然后是一个运算符，接着是另一个数值。分析数
+值的第一个分析器将消耗输入的某个前缀，分析运算符的第二个分析器消耗剩余输入的一
+个前缀，第三个分析器再消耗更多的输入。一个更好的想法是将分析器看作一个函数，该
+函数消耗输入的一个前缀，并返回一个期望的值和未消耗的输入：
+typeParsera=String->(a,String)
+这个类型还不够周到。一个分析器可能在某些输入上失败。构造可能失败的分析器不
+是一个错误。例如，对于算术表达式的分析器，我们可能想找一个数值或者一个左括号。
+一个分析器或者辅助分析器中的一个将会失败。失败不应该看成一个错误，并终止分析进
+程，而是应该看成一个在两种可能性间的选择运算的单位元。更一般地，一个分析器可能
+找到对输入的某个前缀的不同分析结果。失败因此对应于分析结果是空序列的情况。为了
+处理这些不同的可能性，我们将定义再次改为：
+
+===== PDF 193 =====
+句法分析
+185
+type Parser a= String -> [(a,String)]
+标准引导库恰好提供了这个类型同义词，只是在那里这个类型称为Reads，不是Parser。
+而且，引导库提供了一个函数：
+reads : Read a => Reads a
+作为类族Read的辅助方法。例如：
+ghci>reads "-123+51"::[(Int,String)]
+［（-123,"+51")]
+ghci> reads "+51" :: [(Int,String)]
+同函数read一样，使用reads时需要说明期望的类型。上面的第二个例子失败，
+返回空的分析结果，因为一个Haskell整数前面可以冠以一个负号，但是不可以冠以加号。
+根据定义，如果一个分析器对于所有的可能情况返回空或者单个结果的列表，则称为确定
+的（deterministic）分析器。特别是，reads的特例应该是确定的分析器。
+277
+必须对Parser的定义做进一步的修改。我们想把这个类型设置成类族Monad的实
+例，但是目前不可行。原因是Parser声明为类型同义词，而类型同义词不可以设置成任
+何类族的成员，它们只能继承该类型所声明的任何实例。类型同义词只是为了改进类型声
+明的可读性，这里没有任何新类型的创建，因而不能为本质上一样的类型构造两个不同的
+类族实例。
+一种构造新类型的方法是使用数据声明：
+data Parser a = Parser (String -> [(a,String)j)
+右边的标识符Parser是一个构造函数，左边是新类型的名。多数人喜欢这种双关语，也
+有一些人会用其他标识符命名构造函数，如MkParser或者只用P。
+为Parser构造一个新类型的更好方法是利用newtype声明：
+newtype Parser a = Parser (String -> [(a,String)])
+到目前为止，还没有遇到需要newtype的情况，所以现在先对此做些解释。利用
+data声明Parser类型的代价是查看分析器的运行必须经常用构造函数Parser打包和
+拆包，由此增加分析器的运行时间。另外，还存在一个无用的Parser元素，即Parser
+undefined。换言之，Parsera与String->［（a，Sring）是不同构（isomorphic）
+的类型。认识到这一点后，Haskell允许用newtype声明用单个构造函数和单个参数构造
+的类型。它与类型同义词类型的不同在于，newtype构造了一个真正的新类型，其元素
+必须用Parser打包。这些强制转换虽然必须出现在程序中，但是并没有增加程序的运行
+时间，因为编译器在求值前先消去了包装。新类型的值被系统地用底层的类型值代替。因
+此，Parsera与string->［（a，String）］描述了同构的类型，而且Parserunde-
+fined与undefined是使用同一个表示的同构值。不同于同义词类型的新类型可以说明
+为类族的成员，而且定义方法可不同于底层的类型。
+无论使用哪种类型声明，都必须提供应用分析函数的方法，故定义：
+apply ::Parser a->String->[(a,String)]
+apply (Parser p) s =p s:
+278
+
+===== PDF 194 =====
+第11章
+186
+函数apply和函数Parser是互逆的，而且是同构映射。
+也可定义：
+parse :: Parser a -> String -> a
+parse p=fsthead. apply p
+函数pasep返回第一次分析的第一个结果，如果分析器p失败，则引起错误。这也是
+唯一可能发生错误的地方。
+现在可以定义：
+instance Monad Parser where
+return x =Parser (\s -> [(x,s))
+(rsk) <- s) 1ested = b =<< d
+I (x,s') <- apply p s,
+(y,st*)<-apply (qx)s'l)
+在p>>=q的定义中，首先分析器p被应用于输人串，生成可能的分析结果与对应未消
+耗输人二元组列表；然后分析器g被应用于P的每个分析结果，生成可能结果列表，并将
+这些列表串联在一起形成最后结果。可以证明，3个单子律成立。证明留作练习。
+11.2
+基本分析器
+或许最简单的分析器是
+getc :: Parser Char
+getc = Parser f
+where f
+f (c:cs) = [(c,cs)]
+如果输入不空，这个分析器返回输入的第一个字符。它的作用恰如第10章输入一输出单
+子的getChar。
+下一个分析器识别满足给定条件的一个字符：
+sat p=dofc<-getc;
+if Pcthenreturn
+279
+else fail)
+其中fail定义如下：
+fail.=Parser (ls ->[)
+分析器fai1是另一个不返回结果的基本分析器。分析器satp读一个字符，如果该字符
+满足条件p，则返回该字符作为结果。sat的定义可以利用一个称为guard的小组合器
+写得更简洁：
+sat p=do fc<-getc; guard (p c); return c)
+guard :: Bool -> Parser ()
+guard True = return ()
+guard False = fail
+要检验这两定义是一致的，注意如果PC不真，则有
+guard (p c)>> return c =fail >>return c= fail
+
+===== PDF 195 =====
+句法分析
+187
+注意定律fail>p=fail的应用，其证明留作练习。如果pc为真，则有
+guard (p c) >>return c
+return>>returnc
+=returnc
+利用sat可以定义其他分析器，例如：
+char :: Char -> Parser ()
+char x=do {c <-sat(==x);return ())
+string ::String->Parser ()
+string 
+=return
+string(x:xs)=do(charx;stringxs;return()
+lower ::Parser Char
+lower =sat isLower
+digit::Parser Int
+digit=dofd<-satisDigit;return(cvt d))
+wherecvtd=fromEnumd-fromEnumo
+分析器charx在输串中查找特定的字符x，分析器stringxs查找特定的串，如
+果成功，两个分析器均返回（）。例如：
+280
+ghci>apply(string"hell")"hello"
+[(0,"0")]
+分析器digit查找一个数字字符，并在成功的情况下返回对应的整数。分析器lower
+查找一个小写字母，如果成功，则返回这样的字符。
+11.3元
+选择与重复
+为了定义更复杂的分析器，需要在多种可能间选择分析器的运算和重复一个分析器的
+运算。一种这样的选择运算（<I>）定义为
+p<[>q=Parser f
+wherefs=letps=applypsin
+ifnullpsthenapplyqs
+else ps
+因此p<l>q返回p的分析结果，除非p失败。对于p失败的情况，则返回g的分析结
+果。如果p和g都是确定的，那么p<l>q也是确定的。对于<l>的其他选择，参见习
+题。可以断言，<l>满足结合律，单位元为fai1，其证明也放在习题中。
+下面是识别一串小写字母的分析器：
+lowers::ParserString
+lowers=do(c<-lower;cs<-lowers;return(c:cs))
+<[>return""
+要理解这个分析器如何工作，假定输人是串“Upper”。此时<l>左边的分析器失败，因
+为“u”不是小写字母。但是，右边的分析器成功，所以有
+ghci>apply lowers"Upper"
+[("","Upper")]
+
+===== PDF 196 =====
+第11章
+对于输入“isUpper”，左边分析器成功，故有
+ghci> apply lowers "isUpper"
+281
+[("is""Upper")]
+选择操作符<1>的使用需要谨慎。例如，考虑一个非常简单的算术表达式，表达式或
+者是一位数字，或者是一个数字后接一个加号，再接另一个数字。下面是一个可能的分
+析器：
+wrong::Parser Int
+wrong=digit<>addition
+addition::ParserInt
+addition=do(m<-digit;char+';n<-digit;
+return(m+n))
+有下列结果：
+ghci>apply wrong"1+2"
+[(1,"+2")]
+分析器digit成功，故addition没有执行。但是，我们真正想要的是返回
+【（3，""）］，以得到尽可能多的输人。纠正wrong的一种方法是重写定义如下：
+better=addition<[>digit
+此时对于输人1+2，分析器addition成功，返回了我们想要的结果。better存在的
+问题是它的效率低：将分析器应用于输入1时分析数字成功，但是如果没有找到后续的加
+号，所以分析器addition失败。结果是digit被激活，输入又一次被从头开始分析。
+这对一位数字不是问题，但是如果要对一个可能包含很多位的数值进行分析，那么重复的
+工作量会很大。
+最好的解决方法是将两个分析器分量中的数字分析器提取出来：
+best=digit>>=rest
+rest m=dochar"+;n<-digit;return(m+n))
+<[> return m
+rest的参数仅仅是一个累积参数。这个方法基本上是第8章介绍的方法。提取分析器得
+到一个公共前缀是改进效率的好主意。
+推广1owers的定义，可以定义一个分析器组合器，用于重复一个分析器0次或者
+多次：
+many :: Parser a -> Parser [a]
+manyp=do(x<-p;xs<-manyp;return(x:xs))
+282
+<>none
+none=return
+值none不同于fail（为什么？）。现在可以定义：
+lowers=many lower
+在许多应用中，所谓的空白（whitespace）（空格序列、换行符和制表符）可以出现
+在标记（tokens）（标识符、数值、左括号和右括号等）之间以增强文本的可读性。分析
+器space用于识别空白：
+
+===== PDF 197 =====
+句法分析
+189
+space ::Parser ()
+space = many (sat isSpace)>>return ()
+函数isSpace定义在Data.Char中。下列函数在识别一个给定串前忽略空白：
+symbol ::String -> Parser (0)
+symbol xs = space>> string xs
+更一般地，可以定义在激活一个分析器前忽略空白：
+token ::Parser a-> Parser a
+token p = space >>p
+注意到
+token p<]>token q=token(p<>q)
+但是右边的分析器更高效，因为如果第一个分析器失败时，它不会重复查找空白。
+有时需要重复一个分析器一次或者多次，而不是0次或者多次。这个功能可以利用称为
+some（有的分析库称之为many1）的组合器实现：
+some :: Parser a -> Parser [a]
+somep= do {x<-p; xs<-manyp; return (x:xs))
+some定义many:
+many :: Parser a -> Parser [a]
+many p= optional (some p)
+optional ::Parser [a] -> Parser [a]
+283
+现在分析器some和many是相互递归的。
+下面是一个自然数分析器，允许数字前面有空白：
+natural : Parser Int
+natural = token nat
+nat =do {ds <-some digit;
+return (foldli shiftl ds))
+whereshiftlmn=1O*m+n
+辅助的分析器nat不允许数字前面有空白。
+现在考虑如何定义一个整数分析器，根据定义整数是一个非空数字串，前面可能有负
+号。读者可能设想下面的分析器可行：
+int :: Parser Int
+int =do (symbol "-";n <-natural;return (-n))
+<|>natural
+但是其效率低（见习题H），而且或许结果不是我们期望的。例如：
+ghci>apply int"-34"
+[(-34,"")]
+ghci>applyint"-34"
+[(-34,"")]
+数字前的空白没有任何问题，但是我们不希望在一个数字和它的负号中间有空白。如
+
+===== PDF 198 =====
+190
+第11章
+果是这样，以上分析器便有问题。容易修改int的定义以给出我们希望的定义：
+int::Parser Int
+int=do (symbol";n<-nat;return(-n))
+<|>natural
+这个分析器仍然是低效的，更好的方法是定义：
+int ::Parser Int
+int=do(space;f<-minus;n<-nat;return(fn))
+where
+minus=(char-1>>return negate)|>return id
+分析器minus返回一个函数，如果第一个符号是负号，则该函数是negate，否则是恒
+284
+等函数。
+下面再识别中间用逗号分隔，两边用方括号围起来的一个整数列表。假设每个逗号和
+括号前后都允许有空白，当然一个整数的数字中间不可有空白。以下是一个简短定义：
+ints :: Parser [Int]
+ints=bracket (manywith (symbol ",")int)
+辅助分析器bracket用来处理括号：
+bracket :: Parser a-> Parser a
+bracket p=dofsymbol "[";
+x <- P;
+symbol"j";
+return x)
+函数manywithsepp有些像manyp，不同之处在于p的实例是由sep的实例分隔
+的，后者的结果被忽略。其定义如下：
+manywith q p = optional (somewith qp)
+somewith qp=do fx<-p;
+xs<-many (q>>p);
+return(x:xs))
+例如：
+ghci>applyints"[2,-3,4]"
+[（[2,-3,4],"")]
+ghci>applyints"[2,-3,+4]"
+ghci>apply ints""
+整数前面不能冠以加号，所以第二个表达式的解析失败。
+11.4
+语法与表达式
+285
+到目前为止，所介绍的组合运算足以将所要求的结构描述翻译成函数分析器。这种结
+构描述用一个语法（grammar）提供。下面将通过各种算术表达式的分析器来展示一些典
+型的语法。
+首先构建下面定义的类型Expr的分析器：
+
+===== PDF 199 =====
+句法分析
+191
+data Expr=ConIntIBin Op Expr Expr
+data Op=PlusI Minus
+下面是一个完全使用括号的语法，用所谓的巴科斯一诺尔范式（Backus-Naurform），
+简称BNF：
+expr::=natI"(expropexpr")"
+op
+nat
+:={digit}+
+digit t:= tot  i' 1 ... [ 'g'
+这个语法定义了4个语法范畴（syntacticcategories）。引号中的符号称为终结（terminal）
+符，而且符号本身是自描述的。这些符号是实际出现在文本中的符号。数字符号有10种
+可能，一个nat定义为一个或者多个数字的序列。元符号「-］+描述一个语法范畴的非
+零次重复。注意，这里不允许在数字序列前出现可选的负号，所以，常数是自然数，不是
+任意整数。语法表明，一个表达式或者是一个自然数，或者是一个复合表达式，其构成是
+左括号后接一个表达式，然后是一个加号或者减号，接着是另一个表达式，最后是右括
+号。对描述的隐含理解为终结符之间的空白可以忽略，但是一个数的数字间的空格不能忽
+略。这个语法可以直接翻译成表达式的分析器：
+expr :Parser Expr
+expr =token (constant<[>paren binary)
+constant=do(n<-nat;return(Conn))
+binary = do ei <- expr;
+p <- op;
+e2 <- expr;
+return (Bin p el e2))
+op=(symbol"+">>return Plus)<[>
+(symbol "_">>return Minus)
+为了增加可读性，引入辅助分析器binary。分析器paren的定义留作练习。
+假定需要一个能够识别省略括号的表达式，如6-2-3、6-（2=3）和（6-2）-3
+286
+等。此时，表达式中的（+）和（－）应该左结合，就像普通的算术表达式一样。用
+BNF表达这种语法的一种方法如下：
+expr::=expr optermterm
+term := nat I "(" expr ")"
+这个语法表示，一个表达式是一个项或者项之间用运算符分隔的多个项的序列。一个项或
+者是一个数，或者是一个用括号包围的表达式。特别是，6-2一3将被分析成表达式6一2
+后接一个减号，然后再接项3。换句话说，结果等同于（6－2）－3，这也是我们要求的。
+这个语法也可以直接翻译成一个分析器：
+expr =token (binary<l>term)
+binary= do lei,<-expr;
+P <- op;
+e2<-term;
+return (Bin p el e2))
+term = token (constant <}>paren expr)
+但是，这个分析器有一个致命问题：它会陷人无穷循环。分析器expr的第一个动作首先
+忽略空白，然后调用binary，而binary的第一个动作又是调用expr。糟糕！
+
+===== PDF 200 =====
+192
+第11章
+另外，如下定义expr是不可行的。
+expr =token (term<|>binary)
+因为，例如：
+Main*>apply expr"3+4"
+[(Con3,"+4")]
+只有第一个项被识别。这种问题称为左递归（leftrecursion）问题，而且是所有递归分析
+器会遇到的问题，包括函数式的以及其他的分析器
+一个解决方法是用下列等价形式重写语法：
+expr::=termfopterm)*
+其中的元符号－*表示一个语法范畴被重复0次或者多次。此时新的分析器具有下列
+形式：
+expr=token(term>>=rest)
+rest ei=do (p<-op;
+e2<-term;
+287
+rest (Binpe1 e2)}<l>return e1
+分析器rest对应于范畴{opterm)*，而且它有一个参数（累积参数），其值是当前分
+析的结果。
+最后，设计一个算术表达式的分析器，表达式可以包含乘法和除法，并如下修改Op
+的定义：
+data Op=PlusI MinusIMulIDiv
+采用普通的运算规则，乘法和除法优先级高于加法和减法的优先级，相同优先级的运算向
+左结合。下面是语法：
+expr ::=term [addop term)*
+term:=factor (mulopfactor)*
+factor ::=nat I( expr )
+I + =:: doppe
+其分析器如下：
+expr =token (term>>=rest)
+rest el = do fp <- addop;
+e2 <- term;
+rest(Binpele2))
+<[> return el
+term =token (factor>>=more)
+more el =dofp<-mulop;
+e2 <- factor;
+more(Binpel e2))
+<[>return e1
+factor=token(constant<l>parenexpr)
+分析器addop和mulop的定义留作习题K。
+11.5显示表达式
+最后一个问题是，如何将Expr设置成类族Show的成员，使得函数show成为语法
+
+===== PDF 201 =====
+句法分析
+193
+分析的逆函数？更确切地说，定义show使得
+parse expr (show e)=e
+注意，parsep抽取由applyp返回的第一个分析结果。
+288
+作为热身准备，下面是Expr作为show的实例定义，假定expr是只包含加减运算
+及完全括号表达式的分析器：
+instance Show Expr where
+show(Conn)=shown
+show (Bin op el e2)=
+"("++show el ++
+"" ++ showop op.++
+""++ show e2 ++")"
+showop Plus="+"
+showop Minus ="_"
+定义很清楚，但是效率有问题。因为（++）的运行时间是其左边参数的线性函数，所
+以，在最坏情况下show的求值运行时间是表达式规模的二次方函数。
+解决方法仍然是使用累积参数。Haskell提供了一个类型别名ShowS：
+type Shows = String -> String
+以及下列辅助函数：
+showChar::Char ->Shows
+showString :: String -> Shows
+showParen::Bool ->Shows ->Shows
+这些函数定义如下：
+showChar
+=()
+showString
+= (++)
+showParenbp=if bthen
+showChar"(".p. showChar ")*
+else p
+现在可以给出表达式的show函数如下：
+show e= shows e
+where
+shows (Con n)= showString(show n)
+shows (Bin op el e2)
+= showParen True (shows el : showSpace:
+showsop op . showSpace. shows e2)
+showsop Plus = showChar'+"
+showsop Minus = showChar I_i
+289
+showSpace
+= showChar！!
+这个版本没有显式使用串联运算，运行时间是表达式规模的线性函数。
+假如现在要显示省略括号的表达式。左边表达式的括号可以省略，但是右边表达式的
+括号则不能省略。由此得到
+show = shows False e w
+where
+showsb(Conn)=showString(shown)
+showsb(Binop e1e2)
+showParenb(shows Falseel:showSpace
+showsop op. showSpace. shows True e2)
+
+===== PDF 202 =====
+194
+第11章
+这个定义没有考虑到结合性，例如，1+（2+3）的显示结果不是1+2+3。
+最后，考虑包含所有4种运算的表达式。这里的区别在于：
+1.对于表达式e1+e2或者e1-e2，无需在e1周围加括号（同上面情况一样），
+如果e2是一个以乘法或除法为根运算的复合表达式，那么e2周围也不需要加括号。
+2.另一方面，对于表达式e1*e2或者e1／e2，如果el是根运算为加法或者减法
+的表达式，需要在e1周围加括号，而且e2周围总是需要加括号。
+对这些规则编码的一种方法是引入优先级（另一种方法见习题L）。定义：
+prec::Op->Int
+prec Mul
+prec Div
+prec Plus = 1
+prec Minus = 1
+现在考虑如何定义下列类型的函数showsPrec：
+使得showsPrecpe能够显示表达式e，假定e的父结点是优先级为p的运算的复合表
+290
+达式。然后函数show可以定义为
+show e =showsPrec o e
+使得围绕e的上下文（context）是一个假想优先级O的运算。马上可以定义：
+showsPrec p(Conn)=showString (shown)
+因为常数永远不需要括号。有趣的是复合表达式的情况，这里先给出定义，然后再
+解释：
+showsPrecp(Binopele2)
+=showParen(p>q)(showsPrecqel:showSpace:
+showsop opshowSpace.showsPrec (q+1)e2)
+whereq=prec op
+如果父运算符的优先级高于当前运算优先级，则在一个表达式周围加括号。要显示表达式
+e1，只需将当前优先级作为新的父优先级传递下去。但是，如果e2的根运算优先级低于
+或者等于g，则在e2周围需要加括号，所以在第二次调用中对q加1。
+不可否认的是，showsPrec的以上定义需要一些思考，但这也是值得的。类族
+show有第二个方法，即showsPrec。而且，show的缺省定义正是如上的定义。所以，
+将表达式作为show的成员，只需给出showsPrec的定义即可。
+11.6习题
+习题A考虑类型同义词：
+typeAngle=Float
+假设在Angle上定义的相等为模2π的某个倍数相等。请问为什么不能用（==）进行这
+样的测试？再考虑：
+newtypeAngle=AngleFloat
+291
+请定义Angle为Eq的成员，使得（==）可用来判断两个Angle元素是否相等。
+
+===== PDF 203 =====
+句法分析
+195
+习题B可以定义：
+newtype Parser a = Parser (String -> Maybe (a,String))
+请给出这种分析器的单子实例定义。
+习题Ci
+证明fail >>p=fail。
+习题D
+可否如下定义<I>？
+在什么情况下结果是一个确定的分析器？请定义一个函数：
+limit::Parsera ->Parser a
+使得即使p和q不是确定的，limit（p<l>q）也是一个确定的分析器。
+习题E分析器不仅是单子的实例，也可以是之前介绍的、更局限的称为Monad-
+Plus类族的实例。它们基本上是支持选择和失败的单子。Haskell定义为
+class Monad m => MonadPlus mwhere
+mzero:ma
+例如，列表类型构造函数［]和Maybe都可以定义为MonadPlus的实例：
+instanceMonadPlus where
+mzero=
+mplus = (++)
+instance MonadPlus Maybe where
+mzero = Nothing
+Nothing"mplus'y=y
+请将Parser定义为MonadPlus的实例。
+292
+习题F接着习题E，新的方法mzero和mplus应该满足一些等式定律，就像通常
+一个类族的方法一样。但是，目前Haskell设计者对于这些方法应该满足的确切定律没有
+一致意见。没有争议的定律是mplus具有单位元mzero，并且满足结合律。由此得到3
+条定律。另一条合理的定律是左零元（left-zero）律：
+mzero>>=f=mzero
+相应的右零元（right-zero）律也应该满足：
+p>>mzero = mzero
+请问列表单子作为MonadPlus的实例满足这5条定律吗？
+最后，真正有争议的定律是下面的等式：
+(=<)Sndu.(=<<d)==<<(bnTdm、d)
+这条定律称为左分配（left-distribution）律。如果要求满足左分配律，那么Maybe为什么
+不能成为Monadplus的成员？
+习题G设计一个识别Haskell浮点数的分析器。记住，.314不是合法的数字（小数
+点前没有数字），而且3.4也是不合法的（小数点前后不允许空白）。
+习题H对比int的3个定义，为什么本书中int的第一个定义和第二个定义是低
+
+===== PDF 204 =====
+196
+第11章
+习题
+请问“（3）”是括号完全的表达式吗？它是省略括号的表达式吗？Haskell允许
+常数带括号：
+ghci>(3)+4
+293
+请设计一个括号完全的表达式分析器，而且允许在常数周围加括号
+习题J考虑语法expr：：=term【opterm】*。请定义pair和shunt使得下
+列分析器是合理的：
+expr = do le1<-term;
+pes<-many(pair opterm);
+return(foldl shunt el pes))
+习题K
+请给出addop和mulop的定义。
+习题L再考虑包含4种算术运算的表达式的显示问题。使用括号的规则：在表达式
+elope2中，如果op是乘法运算符，而且el的根不是乘法运算符，则在el周围需要
+括号。对偶地，如果op是乘法运算符，或者e2的根不是乘法运算符，那么e2周围需要
+括号。定义：
+isMulop Mul =True
+isMulop Div= True
+isMulop-= False
+请构造show的另一个定义，并使用下列辅助函数：
+showsF::(Op->Bool)->Expr->Shows
+11.7
+答案
+习题A答案因为（==）是浮点数上的相等测试，不同的浮点数不相等。
+instance Eq Angle where
+Anglex==Angley=reducexreducey
+where
+reducexIx<o=reduce(x+r)
+Ix>r=reduce (x-r)
+Iotherwise=x
+294
+where r=2*pi
+习题B答案
+instance Monad Parser where
+returnx=Parser(ls->Just(x,s))
+Nothing->apply qs
+Just(x,s)->Just(x,s))
+习题C答案
+fail >> P
+= fail >>= const P
+= fail
+根据fail的定义和p>>=q的定义立即可以得出fail>>= p=fail的事实。
+
+===== PDF 205 =====
+句法分析
+习题D答案是的，可以，但是只有当p或者q是fai1时，结果才是确定的。函数
+limit可以如下定义：
+limit P = Parser (take 1. apply p)
+习题E答案
+mzero = fail
+mplus = (</>)
+习题F答案
+是的，列表单子和Maybe单子均满足这5条定律。例如，对于列表
+单子：
+mzero>>=f=concat(mapf=[=mzero
+对于Maybe，左分配律不成立。因为
+= Just x >>= (Ix ->Nothing)
+= Nothing
+但是
+295
+(q>>=\x-> Nothing)
+两个结果表达式不相等（takeq=undefined）。
+习题G答案
+float : Parser Float
+float = do fds <- some digit;
+char ".";
+fs <-some digit;
+return(foldl shiftl ods+
+foldrshiftr0 fs))
+where shiftl n d=1O*n +fromIntegral d
+shiftr f x =(fromIntegral f+x)/10
+分析器digit返回一个nt，这个Int必须转换成一个数（在这里是Float）。
+习题H答案
+空白被分析了两次。例如，用int1和int3分别表示第一个和第三个
+版本，则有
+[(3,"")]
+(1.40secs，216871916bytes)
+[(3,"")]
+(2.68secs，427751932bytes)
+习题I答案不是，根据expr的第一个语法，只有二元表达式可以用括号。是的，
+根据第二个定义，任何表达式都可以用括号围起来。
+修改后的语法是
+expr::=terml"(expropexpr")
+term ::=nat"(expr")t
+
+===== PDF 206 =====
+198
+第11章
+296]
+相应的分析器是
+expr =token (term<|>paren binary)
+where
+term =token (constant<|>paren expr)
+binary=do lel<- expr;
+p <- op;
+e2<-expr;
+return(Bin p e1 e2))
+习题J答案
+pairpq=dox<-p;y<-q;return(x,y))
+shunt e1 (p,e2)=Bin pele2
+习题K答案
+addop=(symbol"+">>return Plus)<>
+(symbol #_#>>returnMinus)
+mulop=(symbol "*">>returnMul)<[>
+(symbol "/">>return Div)
+习题L答案
+show e= showsF(constFalse)e n
+where
+showsFf (Conn)=showString(shown)
+showsFf(Bin opel e2)
+=showParen(fop)(showsFf1e1.showSpace
+showsop op:showSpace.showsF f2 e2)
+wheref1x=isMulOpop&&not(isMulopx)
+f2×=isMul0popllnot(isMul0px)
+11.8
+注记
+用单子方式设计函数式语法分析器一直以来都是很受欢迎的函数式程序设计的应用。
+本章的内容沿用GrahamHutton和Erik Meijer的“Monadic parsing inHaskell”，参见the
+297
+Journal of Functional Programming8(4)，437-144,1998。

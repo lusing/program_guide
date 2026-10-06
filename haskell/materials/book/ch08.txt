@@ -1,0 +1,916 @@
+
+===== PDF 129 =====
+1第8章
+Thinking Functionally with Haskell
+精美打印
+本章介绍在Haskell中如何构建一个小函数库的例子。库是由一些特定类型和函数构
+成的集合，它们可供用户完成某种任务。这里选择的任务是精美打印（pretty-printing），
+即将文本用多行显示，使得内容更容易阅读和理解。这里将忽略许多改进可阅读性的特
+性，如颜色或者字号，而只是将关注点放在每一行的换行位置以及缩进量上。该库不能用
+于数学内容的格式布置，但是可以帮助展示树状信息，或将词的列表显示为段落。
+8.1问题背景
+首先考虑条件表达式的显示问题。本书使用了三种方式显示这种表达式：
+if pthen exprielse expr2
+if p then expri
+else expr2
+if p
+then expr1
+else expr2
+这三种格式分别占用一行、两行和三行，都是可以接受的，但是下列两种不可接受：
+181
+if p then
+expr1elseexpr2
+ifp
+then expr1 elseexpr2
+至于哪种格式可接受、哪种格式不可接受，这是由作者决定的。用户或许不同意作者
+的选择（有的用户同意），而且一个灵活的库应该充许用户自已规定可接受的格式。总之，
+有两个问题需要回答。第一，如何描述可接受的格式，拒绝不可接受的格式？第二，如何
+在可接受的格式中进行选择？
+对于第二个问题的简单回答是，可以根据所充许的宽度做出选择。例如，用户可能选
+择占最少行的格式，条件是每行能够在给定的宽度内显示。后面会进一步讨论这个问题。
+至于第一个问题，一种答案是写出所有可接受的格式。这需要大量的书写工作。一个
+更好的方法是给用户提供一种适当的格式描述语言（layoutdescriptionlanguage）。大致的
+想法如下：
+ifp<0>thenexpr1(<0>+<i>)elseexpr2+
+if p<1> then expr1 <i> else expr2
+其中<0>表示一个空格，<1>表示换行，+表示“或者”。以上表达式可以生成上述看
+到的三种可接受的格式。但是，为用户提供这种不受约束的选择权的问题是，如果不进一
+步查看每个选择，就很难决定最好的格式，而查看每个选择需要花很多时间。
+
+===== PDF 130 =====
+122
+第8章
+另一种方法是让用户只能使用一个函数库提供的某些函数和运算描述格式，因此只允
+许受限制的格式。例如，考虑下面的描述：
+group (group (if p<1>then expr1)<><1>else expr2)
+其中group在一组格式基础上填加另一组格式，它将一组格式中的每个<1>用<o>替
+换，由此使得每个格式只占一行，（<>）表示将串联提升到格式集合的连接。例如：
+group (if p<1i>then expr1)
+182
+= {if p <0> then expr1,if p <1>then expr1]
+group(ifp<1>thenexpr1)<><1>elseexpr2
+= {if p<0> then expr1 <1> else expr2,
+if p<1>then expr1<1>else expr2}
+group (group(if p<1>then expr1)<><1>else expr2)
+={ifp<0>thenexpr1 <0>elseexpr2,
+if p <0>then expr1 <1>else.expr2,
+if p<1>thenexpr1<1>elseexpr2)
+因此，使用两个group就可以表达以上三种可接受的格式。
+显示条件表达式格式问题还有另一个方面需要考虑。如果expr1和expr2本身是条
+件表达式怎么办？或许可充许如下的格式：
+if p
+then if q
+then expr1
+elseexpr2
+elseexpr3
+关键是在描述语言中应该允许缩进（indentation）。缩进指每个换行后添加适当数目的
+空格。这个想法可以通过一个函数nest实现，使得nestix表示在格式x中每个换行
+后添加i个空格。
+8.2文档
+为了统一名词，把表示一段文本的可能格式集合的对象称作文档（document）。文档
+将作为稍后定义的类型Doc的元素。另一方面，一种格式仅仅是一个串：
+type Layout =String
+在这里对于文档到底是什么有意含糊其词，因为今后将给出DoC的两种定义。目前
+只集中考虑格式打印库应该提供文档上的哪些运算。
+第一个运算是一个函数：
+183
+其参数是一个给定的行宽和一个文档，返回最好的格式。如何给这个函数一个高效的定义
+正是本章的主要内容。
+第二个运算是函数：
+layouts :: Doc ->[Layout]
+它用一个列表返回一个文档的可能格式的集合。为什么有了函数pretty还需要这个函数
+呢？原因是，找出描述用户认为可接受的格式定义需要一些实验。实验的方法是先给出一
+
+===== PDF 131 =====
+精美打印
+123
+个初始定义，然后通过查看定义在一些例子上的结果格式再对定义进行修正。通过这种方
+法，可以看出应该排除哪些格式，应该添加哪些格式。所以，无论文档的最终表示如何，
+layouts都将为用户提供一个格式诊断工具。
+剩余的运算用于构建文档。首先是将两个文档串联成一个新文档的运算：
+文档串联运算显然应该满足结合律，所以对任何文档X、Y和Z，<>的实现应满足
+下面等式：
+(x <> y) <>z) =x<> (y <>z)
+每当有满足结合律的运算时，通常需要有一个单位元，所以需要提供一个空文档：
+nil::Doc
+使得对于任意文档x，nil<>x=x和x<>nil=x成立。
+下一个运算是函数：
+text::String->Doc
+它将一个不含换行符的串转换为一个文档。为了提供多行的文档，函数库提供另一个基本文档：
+line:Doc
+例如：
+text"Hello"<>line<>text"World!"
+184
+是由两行构成的单一格式文档。你可能觉得1ine在这里不必要，因为可以充许在文本串
+中加入换行符，但是，如果将一个文档缩进，就必须查看每个文本的内容。更好的方法是
+提供一个显式的换行文档，这样就可以选择在哪里换行了。
+下一个运算是提供文档嵌套的函数：
+nest::Int->Doc->Doc
+其中nesti在每个换行后面插人i个空格，从而实现文档缩进。需要强调的是，缩进不
+是在文档的开始位置完成的，除非文档以换行开始。后面将解释这种选择的原因。
+最后，提供下列函数，从而完成一个含8个运算的格式打印库：
+group::Doc->Doc
+这是提供多种格式的函数。函数group在其参数文档上添加一个额外格式，该格式不含
+换行，仅由一个文本行构成。
+前面已经给出8个命名的运算，并给出它们的非正式描述，但是，能否对它们满足的
+性质以及它们之间的关系给出更精确的描述呢？更基本的问题是，这些运算是否足够灵
+活，能否提供一组合理的格式。
+首先考虑我们希望什么样的定律成立，找到这些定律能够增强我们对集成工具箱的信
+心，相信该工具箱是合理的、自然的集成，而且没有漏掉某个关键的工具。这些定律也会
+影响运算的含义，指导运算的实现。前面已经断定运算（<>）应该具有单位元ni1，而
+且满足结合律，但是还需要其他定律吗？
+是的，对于text需要下面性质成立：
+text(s++t)=texts<>textt
+text"n
+=nil
+
+===== PDF 132 =====
+124
+第8章
+用数学语言来说，这个性质说明七ext是串的串联运算到文档串联运算的同态。对于
+这么简单的事情来讲，这是一个令人印象深刻（也许同时令人生畏）的名词。注意，串的
+185
+串联满足结合律意味着文档串联也满足结合律，至少对于text是这样的。
+对于nest，需要下面的等式成立：
+nesti(x<>y)
+nestix<>nestiy
+nest inil
+= nil
+nest i (text s)
+=text s
+nest i line
+=line <>text (replicate i *)
+nesti(nestjx)=nest(i+j)x
+nest0x
+nesti(groupx)=group(nestix)
+所有这些等式（可能最后一个除外）都很合理，有些可以冠以数学的术语（nesti
+对于串联可分配，nest是数值加法到函数复合的同态，并且nesti与group可交换）。
+假如nest是在文档的开始缩进，则第三条定律不成立；如果允许文本串包含换行符，这
+条定律也不成立。最后一条定律成立的原因是分组添加了没有换行的格式，而且nest对
+这种格式没有任何影响。更详细的说明参见习题D。
+对于格式的性质，要求：
+layouts (x <>y)
+layoutsnil
+=[""]
+layouts (text s)
+=[s]
+layouts line
+=["\"]
+layouts (nest ix)=map (nestl i)(layoutsx)
+layouts(groupx)
+=layouts(flattenx)++layoutsx
+其中运算（<++>）是提升的串联：
+xss <++> yss = [xs ++ ys  xs <- xss, ys <- yss]
+函数nestl：：Int->Layout->Layout的定义如下：
+nestliconcat.map(indenti)
+indentic=ifc=='n'thenc:replicateiielse[c]
+最后，flatten：：Doc->Doc是将一个文档中的换行及其相关的缩进用一个空格代
+替后得到的单一格式文档。该函数不在文档库的公共接口中出现，但是在库内部需要用到该
+函数。完成代数定律的描述需要该函数，可以说在这个意义下该函数是不可缺失的工具。
+186
+函数flatten（扁平化）需要满足下列条件：
+flatten (x<>y)
+=flatten x<>flatteny
+flatten nil
+= nil
+flatten(texts)
+=text s
+flatten line
+=text""
+flatten (nest i x)=flattenx
+flatten(groupx)=flattenx
+现在一共有24条定律（关于<>1条，ni1和text各2条，关于nest有7条，
+layouts和flatten各6条）。许多定律看起来像包含nil、text等构造函数的数据
+类型上的Haskell函数定义。更多详情参加8.6节。
+8个运算似乎足矣，但是，这些运算是否足以灵活地描述用户想要的格式？布丁做得
+好不好，尝尝才知道。所以，我们马上要考虑3个例子。在此之前，不管是好是坏，需要
+
+===== PDF 133 =====
+精美打印
+125
+实现文档以便测试这些例子。
+8.3一种直接实现
+文档表示的一种显然选择是将文档等同于它的格式列表：
+type Doc=[Layout]
+这种表示称为浅嵌入（shallowembedding）。对于浅嵌入，库函数直接用相关的值（这里
+是layouts）实现。稍后我们将舍弃这种表示，选择一种更结构化的方法，但就目前来
+讲，这是显然的尝试。
+下面是库函数的实现（pretty的实现稍后再讲）：
+layouts
+= id
+x<>y
+= x <++> y
+nil
+"[""]
+line
+=["\n"]
+text s
+=[s] 
+nesti
+=map (nestl i)
+group x
+= flatten x ++ x
+flattenx=[flattenl(headx)]
+我们已经定义了nestl，flattenl的定义如下：
+187
+flattenl ::Layout ->Layout
+flattenl=
+flattenl (c:cs)
+Ic=='Nn'=!:flattenl (dropWhile (==！)cs)
+I otherwise = c:flattenl cs
+这个实现满足前面的24条定律吗？我们来挨个检查一遍。提升的串联<++>具有单
+位元]］，并满足结合律，所以前3条定律成立。容易验证关于text的两条定律，关
+于layouts的6条定律也显然成立。关于nest的定律除两条外都成立。这两条例外是
+nesti.nest j=nest (i+j)
+nest i.group=groupnesti
+验证它们需要下一点功夫（见习题C和习题D）。剩下的是flatten，其中3条容易说
+明，并且稍花点时间就可以证明（见习题E和习题F）：
+flatten.nesti=flatten
+flattengroup= flatten
+但困难的是下面的定律：
+flatten(x<>y)=flatten x<>flatten y
+这条定律不成立。如果取x=line，y=text"hello"，那么
+flatten(x<>y)=["hello"]
+flattenx<>flatteny=["hello"]
+可见这两个结果不同。其原因是flatten去除了嵌套的影响，但是如果在非嵌套文档中
+换行后有空格，flatten并没有删除这些空格。另一方面，flattenl删除文档中每个
+换行后的空格。
+我们不准备修正这个缺陷，而是接受这个不太完美的实现，继续向前。可以证明，一
+
+===== PDF 134 =====
+126
+第8章
+个文档的所有格式扁平化为相同的串（见习题E答案）。浅嵌人还有另外一个性质，稍后
+在pretty的定义中讨论。为了认识这个性质，考虑返回一个格式的形状的函数shape：
+shape =map length:lines
+引导库函数1ines将一个串在换行符位置拆分，返回没有换行符的串的列表。所以，
+188
+一个格式的形状是组成格式的行的长度列表。Layouts的关键性质是一个文档的格式形
+状列表是按照字典序递减排列的。例如，8.4节中描述的一个文档有13种可能的格式，其
+形状如下：
+[[94],[50,43],[50,28,19]，[50,15,17,19],[10,39,43]，
+[10,39,28,19],[10,39,15,17,19],[10,28,15,43]，
+[10,28,15,28,19],[10,28,15,15,17,19],[10,13,19,15,43],
+[10,13,19,15,28,19],[10,13,19,15,15,17,19]]
+这个列表是按照字典序递减排列的。这个性质成立的原因是layouts（groupx）将扁平
+化的格式置于文档x的格式列表的前面，而且一个扁平化的格式只有一行。更多细节见习
+题G。
+8.4例子
+第一个例子是处理条件表达式的格式。就目前的目的，一个条件表达式可以表示成数
+据类型cExpr的元素，其中：
+data CExpr =Expr StringI If String CExpr CExpr
+下面的函数cexpr说明本章开始描述的可接受格式：
+cexpr ::CExpr ->Doc
+cexpr(Exprp)=textp
+cexpr(Ifpxy)
+line<>text"then"<>
+nest5(cexprx))<>
+line<>text"else"<>
+nest5 (cexpry))
+这个定义类似于前面的版本，只是子表达式的嵌套例外。
+例如，下面显示一个特定表达式的13种可能格式的两种：
+if wealthy
+then if happythen luckyyouelse tough
+189
+else if in love then content else miserable
+if wealthy
+then if happy
+then lucky you
+else tough
+else ifin love
+then content
+elsemiserable
+从最后一个表达式可以看出，为什么缩进量选择了5个空格。这个特定的条件表达式
+的13种可能格式的形状已在前一节展示了。
+第二个例子有关如何显示一般的树，假定子树数目是任意的：
+
+===== PDF 135 =====
+精美打印
+127
+data GenTree a =Node a [GenTree a]
+下面是一个树的例子，使用了两种不同的方式显示：
+Node 1
+[Node 2
+[Node 7 ,
+Node 8 ],
+Node 3
+[Node 9
+[Node 10 ,
+Node11[],
+Node 4 ,
+Node 5
+[Node6]]
+Node 1.
+[Node 2
+[Node7,Node8],
+Node 3
+[Node9[Node 10 ,Node11]],
+Node 4
+Node5[Node6[]]
+生成这些树（碰巧，以上格式也是13种可能格式的两种）的函数gtree定义
+如下：
+gtree :: Show a => GenTree a -> Doc
+gtree (Node x [)
+=text("Nodei"++showx++"")
+190
+gtree (Node x ts)
+=text("Node"++showx)<>
+group (nest 2 (line <> bracket ts))
+定义的第一个子句表示，没有子树的树总是单行显示；第二个子句表示，至少有一棵子树
+的树或者单行显示，或者将每棵子树显示在新的一行，并缩进2个单位。函数bracket
+定义如下：
+bracket :: Show a=>[GenTree a]->Doc
+gtrees [t]
+=gtreet
+老实说，给出以上定义（对该定义函数1ayouts是不可或缺的）花了一点时间和实验，
+而且这个结果一定不是显示树的唯一方法。
+最后，这里展示一种将一段文本（一个含空格和换行的串，不是文档text）显示为
+一个段落的方法：
+para::String->Doc
+para=cvt.map text.words
+cvt =nil
+cvt(x:xs)
+=×<>foldr(<>)nil[group(line<>x)/ x<-xs]
+首先，使用标准库函数words计算文本中的词，该函数以前曾多次见到；然后，使
+用text将每个词转换成文档；最后，除第一个词外，每个词显示在同一行或者新的一
+
+===== PDF 136 =====
+128
+第8章
+行。如果文本中有n+1个词，因此有n个分隔词的空格，以上代码描述了2”种可能格
+式。在计算适合给定行宽的条件下，我们当然不想查看所有这些格式。
+8.5最佳格式
+如上所述，最佳格式与最大允许行宽有关。这是一个简单的决定，但不是唯一的决
+191
+定。一般地，一个嵌套文档的美观格式表现为一条文本带婉蜓跨越页面，而且有理由相信
+在选择最好格式时应该考虑带的宽度，即一行中除缩进外最多的字符数。总之，在一个无
+穷宽的页面上的最好格式表现为所有文本都在一行吗？不过，为简单起见，我们将忽略这
+个非常合理的改进，只把行宽作为决定因素。
+还需要做出另外一个决定。假设根据某个标准，在所有满足行宽要求的格式中选择最
+好格式。如果至少存在一个这样的格式，那么选择没有问题，但是假如不存在怎么办？两
+个选择是，或者放弃格式化过程，返回一个错误信息，或者尽可能做出最好的选择，接受
+行宽超出限制。
+从心理方面和实用方面讲，第二个选择似乎更好，所以我们将探讨这个选择的结
+果。下面从比较两个格式的第一行e和开始。判断e，比e2好的条件：（i）两行都
+在行宽w范围内，而且比2长；（i）e满足行宽要求，但是不满足；（通）两
+行均不在行宽w范围内，而且，比e2短。这个决定是合理的，因为这个方法可以用贪
+心策略实现：在不超出行宽的条件下尽可能填满第一行；如果不可行，那么一旦超出行
+宽立即停止。
+在两行长度相等的情况下，以上比较测试不能确定下一步如何进行。但是，因为所有
+格式扁平化为同一个串，如果第一行长度相等，则它们是同一行。因此，第一行已经确
+定，接着比较两个格式的第二行，如此反复下去。
+关于形状按照字典序递减排列的性质也可用于简化比较测试，因为如果在格式列表中
+格式lx排在格式ly之前，那么lx的第一行长度大于等于ly第一行的长度。如果这两行长
+度相等，那么前一陈述句对第二行以及以后各行都是成立的。
+对于以上给出的文档浅嵌人，下面是查找最优格式函数pretty的一个简单实现：
+pretty ::Int->Doc->Layout
+pretty w= fst . foldr1 choose. map augment
+where
+augmentlx=(1x,shapelx)
+choose alx aly
+=ifbetter(sndalx)(sndaly)thenalxelsealy
+192
+better ks
+- True
+better js 
+= False
+better(j:js)(k:ks)/j==k=betterjsks
+otherwise=(j<=w)
+每种格式附上其形状信息用于指引格式的选择，这可用一个简单查找来完成。测试函
+数better实现以上描述的比较运算。最后，形状信息被丢弃。
+函数pretty的这个定义是极度低效的，因为它要计算和查看每种格式。假如对
+于是否换行有n种可能的选择，那么需要检查2”种格式，pretty的运行将会极其
+慢。例如：
+
+===== PDF 137 =====
+精美打印
+129
+ghci>putStrLn $pretty30$parapg
+This is a fairly short
+paragraph with just twenty-two
+words. Theproblem is that
+pretty-printing it takes time,
+in fact 31.32seconds.
+(31.32secs，17650013284bytes)
+天哪！更糟的是，格式打印更长的段落会使得GHCi崩溃，给出信息“内存耗尽”。任何
+指数时间和空间的算法都是不可接受的。
+需要pretty算法最多查看w个字符便可确定第一行的选择。算法还应该是有效的，
+运行时间对于所处理文档大小是线性的。理想情况下运行时间不应该依赖于W，但是如果
+更快的算法也意味着更复杂的程序，那么运算时间依赖于W也是可接受的。
+8.6项表示
+将文档等同于它的可能格式列表的问题是结构信息的丢失。实际上将这个所有可能格
+式的列表隐藏得越深越好，而不应该把它提到最顶层。例如，考虑一个文档的以下两种表
+达式：
+A<0>B<0>D+A<0>B<1>D+A<1>C<0>E+A<1>C<1>E
+A(<0>B(<0>D +<1>D) +<1>C(<0>E+<1>E))
+193
+同前一样，<0>表示单个空格，<1>表示一个换行。其中5个字母表示5个非空文
+本。因为所有4种方法必须扁平化为同一个文档，故要求B<0>D=C<0>E。在第
+一个表达式（基本上是用格式列表来表示文档）中有4个格式需要比较。在第二个式子
+中比较可以简化。例如，如果已知公共前缀A超过给定的行宽，那么前两个格式可以舍
+弃，无需进一步的比较。更进一步，如果从最内到最外选择，只需比较格式的第一行即
+可。例如，如果首先在C<O>E和C<1>E之间选择较好的，那么这个选择不会被以
+后的选择更改。
+维护文档结构的方法是把文档表达成一棵树：
+data Doc = Nil
+ILine
+I Text String
+I Nest Int Doc
+IGroup Doc
+I Doc :<>: Doc
+注意最后一行使用了中缀构造函数。Haskell允许中缀运算符作为构造函数，但必须用冒
+号开始。结尾不必也用冒号，但是用冒号结尾显得更自然。这种树称为抽象语法树（ab-
+stractsyntaxtree），打印库的每个运算用一个构造函数表示。使用抽象语法树的实现便是
+所谓的深嵌入（deepembedding）。
+打印库将为用户只提供数据类型DoC的名，不提供其他细节。为了说明这样做的原
+因，这里有必要就Haskell数据类型另外做一点说明。在Haskell中数据声明的作用是引入
+一个新的数据类型，方法是说明这个类型的值是如何构造的。每个值可以用仅由数据类型
+的构造函数构建的表达式命名，换句话说，每个值可用一个项（term）表示。而且，不同
+的项表示不同的值（只要不存在严格标志）。数据类型上的函数可以用构造函数上的模式
+
+===== PDF 138 =====
+130
+第8章
+匹配定义。因此，无需说明数据类型上的运算是什么，只需给出定义即可。如果只描述类
+型的值，不描述类型的运算，这样的类型称为具体类型（concretetype）。
+这种情况正好和抽象（abstract）数据类型相反。对于抽象数据类型，运算被命名，
+194
+但是对如何构造类型的值不做说明，至少没有公开给用户。例如，F1oat是抽象数据类
+型，该类型提供了基本算术运算和比较运算的名，以及如何显示浮点数，但是并没有说明
+这些数是如何实际表示的。用户不可以用模式匹配的方法定义浮点数上的函数，只能用给
+定的运算定义其他函数。可以而且应该公开给用户的是这些运算的实际含义和代数性质。
+不过，Haskell只提供非正式的注释，没有其他的说明方法。
+如Doc所示，它是一个具体类型。但就我们对该类型的理解，不同的项并不表示不
+同的值。例如，每个构造函数的原意是代替相应的运算。因此，有
+nil
+= Nil
+line
+- Line
+texts
+=Text S
+nestix=Nestix
+group x
+Group x
+x<>y
+=x:<>: y
+这些运算的代数性质也应该保持，如下面的等式应该成立：
+(x :<>: y) :<>: z = x <>: (y :<>: z)
+Nesti(Nestjx)=Nest(i+j)x
+但是这些等式当然不成立。解决问题的方法是利用模块结构把DoC的构造函数对用户隐
+藏起来，而且只认为这些定律是“观察上”正确的。例如，要求
+layouts ((x :<>:y):<>: z)=layouts (x:<>:(y :<>: z))
+观察文档的唯一方法是通过1ayouts。从用户的角度看，如果两个文档生成同一个格式，
+那么它们基本上是相同的文档。
+现在返回到程序设计上来。下面是layouts的一种定义。该定义是先前看到的lay-
+outs满足的定律，只是现在表达成了适当的Haskell定义：
+layouts:Doc->[Layout]
+layouts (x :<>: y) = layouts × <++> layouts y
+layouts Nil
+[.] -
+layouts Line
+=["\n"]
+layouts(Text s)=[s]
+layouts(Nestix)=map(nestli)(layoutsx)
+195
+layouts(Groupx)=layouts(flattenx)++layoutsx
+函数flatten的定义类似：
+flatten::Doc->Doc
+flatten(x:<>y)=flattenx:<>:flatteny
+flatten Nil
+= Nil
+flatten Line
+= Text""
+flatten(Texts)
+=Texts
+flatten(Nest ix)=flatten x
+flatten (Groupx)=flattenx
+对于这些定义，24条定律或者按照定义成立，或者在以上所述意义下观察正确。
+函数1ayouts的定义非常简单，但是也包含不必要的低效。这里给出两个独立的理
+
+===== PDF 139 =====
+精美打印
+131
+由说明造成问题的原因。首先，考虑函数egotist的定义：
+egotist::Int ->Doc
+egotistnIn==0
+=nii
+Iotherwise=egotist(n-1)<>text"me"
+文档egotistn是非常枯燥的，而且它的唯一格式是由n个重复的me构成的串。
+顺便说明的是，可以使用Ni1、（：<>：）和Text来给出定义，但是，如前所讲，这些构
+造函数对用户不是公开的。如现在的情况，egotist可能是打印库的用户定义的。总之，
+再返回讨论的问题，运算（<>）是左结合的，这使得计算它的格式需要③（n²）步。运算
+（++）被堆积到左面。这种情况完全类似于concat用foldl定义比用foldr定义效率
+低一个级别。
+低效的第二个来源与嵌套有关。例如，考虑如下定义的函数egoist：
+egoist ::Int->Doc
+egoistnIn==0
+=nil
+Iotherwise=nest1(text"me"<>egoist(n-1))
+定义中看不到换行，所以egoistn与egotistn表示同一个枯燥的文档。但是，尽管
+串联是右结合的，构造格式仍然需要二次方的运行时间。因为每个嵌套运算需要穿过整个
+文档才能完成。试试看。
+196
+解决第一个问题的方法是延迟串联，将一个串联的文档用其成分文档的列表表示。解
+决第二个问题的方法是延迟嵌套，嵌套文档用必要的缩进量和文档的二元组来表示。结合
+这两种解决方法，一个文档表示为缩进量和文档的二元组列表。特别地，考虑以下定义的
+函数toDoc：
+toDoc：:[(Int,Doc)]->Doc
+toDocids=foldr(:<>:)Nil[Nestixl(i,x)<-ids]
+现在可以给出函数layr的定义：
+layr=layouts:toDoc
+然后基于layr给出layouts的新定义。该定义细节留作练习，这里只给出结果：
+layoutsx=layr[(o,x)]
+layr
+[""]
+layr ((i,x :<>:y):ids)=layr ((i,x):(i,y):ids)
+layr((i,Nil):ids)
+= layr ids
+layr((i,Line):ids)
+=['n':replicate i"++ls
+Ils<-layrids]
+layr((i,Text s):ids)
+=[s++lsls<-layrids]
+layr((i,Nestjx):ids)=layr((i+j,x):ids)
+layr ((i,Group x):ids)
+=layr((i,flattenx):ids)++
+layr ((i,x):ids)
+这个定义对每个格式的运行时间是线性的。同样的模板用于选择单个最优格式函
+数pretty:
+prettywx=bestw[(o,x)]
+where
+bestr
+bestr((i,x:<>:y):ids)=bestr((i,x):(i,y):ids)
+
+===== PDF 140 =====
+132
+第8章
+best r ((i,Nii):ids)
+=best r ids
+best r ((i,Line):ids)
+n':replicate i '"++
+best(w-i)ids
+best r ((i,Text s):ids)
+=s++best(r-lengths)ids
+best r((i,Nestjx):ids)=best r((i+j,x):ids)
+best r ((i,Group x):ids)
+=betterr
+(best r ((i,flatten x):ids))
+197
+(bestr((i,x):ids))
+函数best的第一个参数是当前行剩余可用空间。该函数局部于函数pretty的定义以避
+免best附带最大行宽作为额外参数。
+剩下的问题是计算betterr1xly。可以利用lx的第一行长度一定不小于ly的第
+一行长度的事实。因此，只要比较1x第一行长度与r的大小即可。如果前者小于等于后
+者，则选择1X，否则选择1Y。因此可以定义：
+betterrIxly=iffitsrIxthenlxelsely
+但是，我们不希望计算1×第一行整行长度，因为这样查看得太多。一种节俭的方
+法是
+fits r-I r<0 =False
+fitsr
+= True
+fits r (c:cs)=if c  n' then True
+else fits(r-1) cs
+基于同样的原因，better的第二个和第三个参数使用情性计算策略是很重要的，也
+就是说，两种格式的求值只需能够确定哪个更好即可，不需要计算更多。
+再回过来看看有问题的段落：
+ghci>putstrLn$pretty 30 $parapg
+This is a fairly short
+paragraph with just twenty-two
+words. The problem is that
+pretty-printing it takes time,
+in fact 31.32 seconds.
+(0.00 secs,1602992 bytes)
+现在看起来好多了。习题L讨论pretty的运行时间。
+最后一个任务是将这个小函数库组织成一个模块。下面是主要的声明部分：
+module Pretty
+(Doc, Layout,
+nil,line,text,
+nest,(<>), group,
+198
+layouts,pretty,layout)where
+模块名是Pretty，而且包含这些声明和库函数定义的文件必须命名为Pretty.1hs。
+Pretty模块输出11个对象。首先是抽象数据类型的名DoC，该类型的构造函数没有输
+出。（顺便指出，如果确实想输出所有的构造函数，那么在输出列表中需要写DoC（··）；
+如果只需要输出部分构造函数，如Ni1和Text，则需要写成Doc（Nil，Text）。）然后
+是名Layout，它是String的同义词。接下来是上面定义的8个常量和函数。最后的函
+数layout用于打印输出格式：
+
+===== PDF 141 =====
+精美打印
+133
+layout;Layout->I0()
+layout =putStrLn
+现在格式打印库构建完成了。当然，对于一个真正实用的库，还需要另外提供一些组
+合函数。例如，可以提供：
+x<+>y =×<>text""<>y
+x<l>y=x<>line<>y
+spread,stack : [Doc] -> Doc
+spread = foldr (<+>) nil
+stack=foldr(<l>)nil
+读者无疑可以想出许多其他的组合函数。
+8.7
+习题
+习题A
+该库的一个挑剔用户只想要某个文档的3种格式：
+ABC
+AB
+BC
+该用户能用库中输出的函数完成这个任务吗？
+习题B一个文档的格式用一个列表给出。但是它们都各不相同吗？请给出证明，或
+者给出反例。另外，由定律是否可以明显地看出每个文档有一组非空的格式集。
+199
+习题C接下来的4个习题涉及8.3节的浅嵌人。用等式推理证明：
+nesti.nestj=nest(i+j)
+这里可能需要有关nest1的辅助性质，但是不必证明。
+习题D接着习题C，用等式推理（在点层）证明：
+nesti(groupx)=group(nestix)
+这里同样需要一个辅助结果。
+习题E接前习题D，证明flatten．group=flatten。这里也需要一个辅助
+结果。
+习题F
+最后一个定律是flatten：nesti=flatten。猜对了，这里也需要一
+个辅助结果。
+习题G前面曾讲过，引导库函数1ines将一个串按照换行符分成多个串。实际上，
+lines把换行符看作终止字符，所以lines"hello"和lines"hellon"返回相同的
+结果。一个更好的定义是将换行符看作分隔符（separator），这是有道理的，这样一来，
+行数总是比换行符多1。请定义这样的函数1ines，以下将需要这个新的定义。
+现在可以按下列步骤证明：将mapshape应用于一个文档的格式返回一个按照字典
+序逆序排列的整数序列。首先，定义：
+msl=map shapelayouts
+shape =map lengthlines
+200
+其中1ines是以上重写定义的函数。需要证明ms1在任何文档上返回一个递减序列。为
+此，需要定义函数nesty和groupy使得
+
+===== PDF 142 =====
+134
+第8章
+nestyi.msl=msl.nesti
+groupy.msl=msl,group
+另外定义运算<+>使得
+mslx<+>msly=msl (x<>y)
+（正是这个等式需要1ines的新定义。）最后证明如果xs和ys是递减的，那么nestyi
+xs和groupyxs以及xs<+>ys都是递减的，由此完成证明。不过，本题只要求给
+出nesty、groupy和<+>的定义。
+习题H定义一个函数doc：：DoC->DoC，该函数描述如何设置Doc元素的格
+式，其中Doc是8.6节的抽象语法树表示。
+习题！考虑一个函数prettybad，该函数从列表layouts中选择一个最好格式，
+其方法是选取所有行都适合给定行宽的第一个格式，如果不可行，则取最后一个。
+：Prettybad是否总是计算出与pretty相同的结果？（提示：考虑文章的段落。）
+习题J使用Doc构造函数的代数性质，计算layouts的高效定义。
+习题K所设计的prettyw是最优的选择，也就是说，如有可能，则选择断行避免
+行超出给定行宽。prettyw还是有界的，也就是说，无需查看输入的w字符即可选择下
+一行的断行位置。根据这些条件，判断下列GHCi命令的输出是什么？
+layout $pretty5$parapg
+layout $pretty1o $ cexpr ce
+201
+其中
+Pg = "Hello World!" ++ undefined
+习题L没有文档规模的定义就难以将prettywx用x表达。下面是一个合理的规
+模定义：
+size:Doc ->Int
+size Nil
+= 1
+size Line
+size(Text s)
+=1
+size (Nest ix)
+=1+ size x
+size(x:<>:y)
+=1+sizex+sizey
+size (Group x)
+=1+ size x
+按照这个定义，以下两个文档的规模都是2。
+nest 20(line<>text"!")
+nest 40 (line<>text"|")
+但是，生成第二个格式的时间是生成第一个的2倍，所以pretty的代价不可能是文
+档规模的线性函数。
+替代pretty生成最后格式即一个串的方法是，引入一个表示格式的数据类型：
+data Layout = Empty
+I String String Layout
+I Break Int Layout
+并定义layout：：Layout->String如下：
+
+===== PDF 143 =====
+精美打印
+layout Empty
+layout(String$x)=s++layoutx
+layout(Breakix)="n':replicatei++layoutx
+则有下列等式：
+prettywlayout.prettyl w
+其中新的函数prettyl生成一个Layout，而不是一个串。请定义prettyl。
+一个更合理的问题是，prettylwx是否关于x是线性的？
+202
+8.8答案
+习题A答案
+不能。不可能允许A<0>B<1>C和A<1>B<0>C而不允许
+A<0>B<0>和A<1>B<1>C。这4种格式由下式给出：
+习题B答案一个文档的格式不一定都不一样。例如：
+layouts(group(text"hello"))=["hello","hello"]
+是的，显然每个文档都有一个非空格式集。观察有关1ayouts的定律，基本文档有
+个非空格式列表，而且这个性质在其他运算下保持不变。
+习题C答案计算过程如下：
+nesti.nestj
+【nest的定义]
+map(nestli)map(nestlj)
+【map的函子律】
+map(nestlinestlj)
+【辅助性质]
+map(nestl(i+j))
+=【nest的定义]
+nest (i+j)
+辅助性质是nestli，nestl=nestl（i+j），可以根据下列等式做简单计算：
+indent (i+j)= concat.map (indent i).indentj
+其证明省略。
+203
+习题D答案推理如下：
+nesti(groupx)
+（group的定义】
+nesti(flattenx++x)
+【因为nesti=map(nestli))
+nesti(flattenx)++nestix
+=【辅助性质】
+flatten (nest ix)++nest ix
+【group的定义】
+group (nest i x)
+需要的辅助性质为
+
+===== PDF 144 =====
+136
+第8章
+nest i. flatten
+【因为fiattenx中不含换行】
+flatten
+【因为flattennesti=flatten（习题F))
+flatten:nest i
+习题E答案推理如下：
+flatten .group
+=【flatten和group的定义]
+oneflattenl:flatteni head
+=【辅助性质}
+one.flattenl.head
+[flatten的定义]
+flatten
+辅助性质是flattenl满足幂等律：
+flattenlflattenl=flattenl
+204
+这是因为flattenl返回不含换行的格式。
+另外，正是flattenl的幂等律保证一个文档扁平化为同一个串。唯一引人多个格
+式的函数是group，其定义为
+group x=flatten x++ x
+因此，必须证明对列表的第一个元素扁平化后得到的串等于对第二个元素扁平化后得
+到的串。故需要证明：
+flattenl.head.flatten =flattenl.head
+这个等式可以用flatten的定义和函数flattenl的幂等律推出。
+习题F答案推理如下：
+flatten .nest i
+=[定义}
+one.flattenl .head.map (nestl i)
+[因为head.map f=f.head)
+one.flattenl:nestlihead
+【辅助性质】
+one.flattenl.head
+【flatten的定义】
+flatten
+需要的辅助性质是flattenl：nestli=flattenl。
+习题G答案可以定义：
+lines xs = if null zs then [ys]
+else ys:lines (tail zs)
+where (ys,zs)=break (='n)xs
+函数groupy定义如下：
+groupy(xs:xss)=[sum xs+lengthxs-1]:xs:xss
+
+===== PDF 145 =====
+精美打印
+137
+函数nesty定义如下：
+205
+nestyi=map (addi)
+where add i (x:xs) = x:[i+x l x<- xs]
+函数（<+>）定义如下：
+[[[[[[(+>)
+xss<+>yss=[gluexsys xs<-xss,ys<-yss]
+where glue xsys=initxs++[lastxs+headys]++
+tail ys
+习题H答案
+一种定义如下，当然可以对其改进：
+doc ::Doc->Doc
+doc Nil
+= text "Nil"
+doc Line
+= text "Line"
+doc (Text s)
+=text("Text"++show s)
+doc(Nestix)=text("Nest"++showi)<>
+group (nest2(line<>paren (doc x)))
+doc(x:<>:y)=docx<>text"<>:"<>
+group (line <> nest 3 (doc y))
+doc (Group x)=text"Group"<>
+group (nest 2 (line <> paren (doc x))
+paren x=text "("<>nest1 x<>text ")"
+习题I答案不是。考虑这样的段落，其中最长的词比行宽多一个字符。prettybad
+将把每个词放在单独一行，而pretty仍然可以将段落中适合行宽的一组词填入一行。
+例如：
+ghci>putstrLn $pretty11 $para pg4
+A lost and
+lonely
+hippopotamus
+went into a
+206
+bar.
+习题J答案
+首先证明layoutsx=layr【（0，x）]：
+layr [(0,x)]
+=[layr的定义]
+layouts(toDoc[(o,x)])
+=[toDoc的定义]
+layouts(Nest o x:<>:Nil)
+【有关Doc的定律】
+layoutsx
+仍然需要给出1ayr的归纳定义。这里只给出两个子句：
+toDoc ((i,Nestjx):ids)
+【toDoc的定义】
+Nesti(Nestjx):<>:toDocids
+【定律】
+Nest (i+j)x :<>:toDoc ids
+【toDoc的定义]
+toDoc ((i+jx):ids)
+
+===== PDF 146 =====
+138
+第8章
+所以有layr（（i，Nestjx）：ids）=layr（（i+jx）：ids）。然后有
+toDoc ((i,x:<>:y):ids)
+【toDoc的定义]
+Nesti(x(<>:y)<>toDoc ids
+=【定律}
+Nestix:<>:Nest iy:<>:toDoc ids
+【toDoc的定义]
+toDoc ((i,x):(i,y):ids)
+因此,layr（(i,x:<>:y):ids)=layr（(i,x):(i,y):ids)。
+习题K答案
+ghci> layout $ pretty 5 $ para Pg
+Hello
+207
+Worldl***Exception:Prelude.undefined
+ghci>layout $pretty 10 $ cexpr ce
+if happy
+then great
+else *** Exception:Prelude.undefined
+习题L答案函数prettyl的定义是
+prettylwx=bestw[(o,x)]
+where
+bestr
+=Empty
+best r ((i,Nil):ids)
+=best r ids
+best r((i,Line):ids)
+=Break i(best (w-i)ids)
+bestr ((i,Text s):ids)
+=String s (best (r-length s)ids)
+bestr((i,Nestjx):ids)=bestr((i+j,x):ids)
+bestr((i,x:<>:y):ids)=bestr((i,x):(i,y):ids)
+bestr((i,Groupx):ids)
+=betterr
+(best r((i,flattenx):ids))
+(best r((i,x):ids))
+其中better定义改为
+计算betterr需要的化简步数正比于r，因此最多是w。
+现在如果best是线性的，那么prettyl运行时间是线性的。best的第二个参数
+是缩进和文档二元组列表，可以定义这个列表的规模为
+isizeids=sum[sizex|(i,x)<-ids]
+对于best定义中间5个子句的每一个来说，其规模都减小了1。例如：
+isize ((i,x :<>:y):ids)
+=size(x:<>y)+isizeids
+=1+sizex+sizey+isizeids
+=1+isize((i,x):(i,y):ids)
+由此推出，如果用Ts）表示bestr在规模为s的输入上的运行时间，那么由best
+208
+的第一个子句得出T（0）=④（1），对于中间5个子句有T（s+1）=①（1）+T（s），而且对最
+后一个子句有
+T(s +1) = @(w) + maximum[T(k) + T(s - k) I k[1..s-1]]
+
+===== PDF 147 =====
+精美打印
+139
+现在可以推出T（s）=?（ws）。
+总之，尽管算法pretty依赖于w，但它是线性的。
+8.9注记
+我们把美观打印库称为一个库，但是它的另一个名称是嵌入式领域专用语言（Embed-
+dedDomainSpecificLanguage，EDSL）。这是一种嵌入Haskell用于美观打印文档的语言。
+许多人认为Haskell的不断成功来自于它很便于作为各种EDSL的宿主语言。
+本章的详细内容主要基于PhilipWadler的工作，参见《TheFunofProgramminginCor-
+nerstonesof ComputingSeries》（PalgraveMacMillan，2003）中的第11章“Aprettierprint-
+er”。主要区别是，Wadler在Doc的项表示中使用了显式的选择算子（不过对用户是隐藏
+的），而不是构造函数Group。JeremyGibbons建议后者更适合深嵌人。
+更早的函数式美观打印库是JohnHughes设计的“Thedesignofapretty-printerlibrary”，
+该库基于一组不同的组合算子，参见JohanJeuring和ErikMeijer等编辑的AdvancedFunc-
+tionalProgramming，volume925ofLNCS,Springer，1995。SimonPeytonJones对Hughes的
+库做了改造，并作为一个Haskell库安装为Text.PrettyPrint.HughesPJ。
+printing"，参见ACMTransactions on Programming Languagesand Systems 2（4），465-483,
+1980，而且该库是广泛用于多种语言美观打印的基础。最近，OlafChitil提出了高效的函
+数式美观打印算法，参见Prettyprintingwithlazydequeues，ACMTransactionsonProgram-
+mingLanguagesandSystems271），163-184，2005，以及Olaf Chitil、Doaitse和Swierstra的
+Linear,bounded,functional pretty-printing,Journal of Functional Programming19(1),1-16,
+2009。与本书介绍的算法相比，这些算法相当复杂。
+209

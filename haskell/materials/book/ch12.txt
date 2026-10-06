@@ -1,0 +1,1341 @@
+
+===== PDF 207 =====
+1第12章
+Thinking Functionally with Haskell
+一个简单的等式计算器
+最后一章介绍一个程序设计项目，设计并实现一个执行点自由等式证明的简单计算
+器。尽管计算器只提供一个自动证明辅助器中部分的功能，并在许多方面很局限，但
+是，这个计算器足以证明之前描述的许多点自由定律，当然，只要我们准备好在必要的
+时候在正确的方向上助其一臂之力。本项目也是使用模块系统的实例。计算器的每个组
+成部分，相关类型和函数，都定义在一个适当的模块中，并通过显式的输人和输出关联
+模块。
+12.1基本思想
+基本想法是设想具有下列类型的函数calculate：
+calculate ::[Law] -> Expr -> Calculation
+函数calculate的第一个参数是可能应用的定律列表。每个定律由一个描述性的名
+称和一个方程组成。第二个参数是一个表达式，结果是一个计算。一个计算由一个开始表
+达式和一系列步骤构成。每一步由一个定律的名和将该定律左边应用于当前表达式得到的
+表达式构成。当没有定律可用时，计算结束，最后的表达式便是计算的结果。整个过程是
+自动的，无需用户参与。
+298
+定律、表达式和计算都是将在下面几节定义的适当数据类型的元素。不过，现在先插
+入一个例子，说明心目中的框架。
+下面是几个定律（使用小字体避免断行）：
+definitionfilter:
+filterp=concat.map(boxp)
+definition box:
+boxp=ifponenil
+if after dot:
+ifpfg.h=if(p.h)(fh)(gh)
+dot after if:
+h.ifpfg=ifp (h.f)(h.g)
+nil constant:
+nil.f=nil
+map after nil:
+mapf.nil=nil
+map after one:
+mapf.one=onef
+map after concat:
+mapf.concat=concat.map(mapf)
+map functor:
+mapf.mapg=map(f.g)
+map functor:
+mapid=id
+每个定律由一个名和一个等式构成。定律的名用冒号表示结束，一个等式由两个表达
+式中间用等号分隔表示。每个表达式描述一个函数，计算器只用于简化这些函数表达式
+（是的，是点自由计算器）。表达式由常数（如one和map）和变量（如f和g）构成。
+确切的语法将在适当的时候说明。注意，没有条件定律，即只有在某些辅助条件满足的条
+件下成立的等式。这将限制计算器所能做的工作，但是，这个计算器仍然是非常有趣的。
+假如要简化表达式filterp.mapf。以下是一种可能的计算：
+
+===== PDF 208 =====
+200
+第12章
+filterp.mapf
+(definition filter]
+concat.map(boxp):mapf
+(map functor)
+concat.map(boxp.f)
+[definitionbox]
+concatmap(ifponenilf)
+={ifafterdot]
+concat.map(if(pf)(one.f)(nil.f))
+(nil constant)
+concat.map(if(p.f)(one.f)nii)
+299
+计算步骤用常规方式显示，所使用的定律写在括号中，并放在它应用的表达式之间。
+没有定律可以应用于最后的表达式，该表达式就是计算的结果。显然，结果不比开始要化
+简的表达式简单。
+计算器有可能以不同的顺序应用某些定律。例如，box的定义可以在第二步使用，而
+不是在第三步使用。但是，最后的结果是相同的。也有可能，尽管不是这组定律，一个表
+达式用不同的计算得到不同的结果。但是，从一开始我们就决定calculate返回一个结
+果，而不是所有可能计算组成的树。
+注意每一步计算在发生什么。某个定律的左边与当前表达式的某个子表达式进行匹
+配。如果匹配成功，那么结果是定律中变量的代换（substitution）。例如，在第二步中，子
+表达式map（boxp）mapf与第一个map函子律成功匹配，结果是一个代换，其中
+map函子律中的变量f绑定到boxp，变量g绑定到f。这一步的结果是重写子表达式，
+首先将定律右式中的变量用其绑定的表达式代换，然后用代换后的右式代替子表达式。匹
+配、代换和重写都是计算器的基本组成部分。
+现在假定使用以上同一组定律化简表达式mapf：filter（p.f）。下面是计算
+过程：
+mapf:filter(p:f)
+(definition fiiter]
+mapf.concat.map(box(pf))
+(map after concat)
+concat:map(mapf).map(box(pf))
+(map functor)
+concat.map (mapf.box (p.f))
+(definitionbox]
+concat.map(mapf.if(p.f)onenii)
+(dot after if}
+concat.map(if(p.f)(mapfone)(mapf.nil))
+(map afternil)
+concat:map(if(pf)(mapf.one)nil)
+(map after one]
+concat.map (if (p.f)(one.f)nil)
+同样，某些定律有可能按照不同的次序应用。对最后的表达式没有可用的定律，所以
+成为计算的结果。
+300
+这里要说明的重点是，两个计算的最后表达式是一样的，所以证明了
+filterp.map f =mapf.filter (p,f)
+这就是将要进行的等式证明的方法，将两边简化为同一个结论。代之以将两个计算一个接
+一个显示出来，另一种方法是将两个计算结果粘在一起，先记录第一个计算过程，然后附
+上第二个计算的逆过程。这种方法的主要优点是简单，为了达到期望的目标，不必发明一
+种新的证明形式，也不一定要按照从右到左的方式使用定律。所以，我们还将定义一个证
+
+===== PDF 209 =====
+一个简单的等式计算器
+201
+明等式的函数：
+prove ::[Law]->Equation ->Calculation
+进一步的考虑
+计算器的一个基本约束是定律只能从一个方向应用，即从左至右应用定律。这个约束
+主要是为了避免计算陷入循环。如果允许在两个方向应用定律，那么计算器可能在一个方
+向应用一个定律，然后立即从反方向应用该定律，从而来回摆动。
+即使规定从左到右的规则，有些定律仍然可能导致无限的计算。典型的情况是递归函
+数定义的定律。例如，考虑iterate的定义：
+defniterate:iteratef=cons.forkid(iteratef.f)
+这是点自由形式的iterate定义。函数cons和fork定义如下：
+cons(x,xs)=x:xs
+forkfgx=(fxgx)
+forkfg。以下的定义都采用卡瑞式。项iteratef在定律两边出现的形式表示，如果
+一个计算可以使用iterate的定义一次，那也意味着这个定义可以潜在地被使用无限次。
+但是，这种事也不是必然的。下面的计算（计算器生成的）就避免了无穷次的回归：
+head.iterate f
+(defn iterate)
+301
+head.cons.forkid(iteratef.f)
+(head after cons)
+fst.fork id(iterateff)
+(fstafterfork)
+id
+这个计算使用了下面两个定律：
+head after cons:head.cons=fst
+fst afterfork:fst.fork f g=f
+这个计算能够避免无穷计算的原因是这两个定律有比定义高的优先级，后面将会进一步说
+明这个技巧。
+为了说明计算器的能力，能做什么，不能做什么，下面是另一个将递归定义翻译成点
+自由形式的例子。考虑串联的定义：
+ ++ ys
+= ys
+(x:xs) ++ ys = x:(xs ++ ys)
+下面将用cat表示（++）。另外还需要nil、cons和函数cross（f，g），并用
+f*g表示后者。因此，有
+(f*g) (x,y)= (fx, gy)
+最后，还需要一个组合子assocr（associate-right的简写），其定义为
+assocr ((x,y),z)= (x,(y,z))
+下面是cat两个定义方程的点自由式翻译：
+cat(nil*id)=snd
+cat(cons*id)=cons.(id*cat):assocr
+
+===== PDF 210 =====
+202
+第12章
+不能用这里的计算器证明cat满足结合律，因为证明涉及归纳证明，但是，可以将
+其陈述为一个定律：
+catassociative:cat.(cat*id)=cat.(id *cat),assocr
+继续深入这个例子，下面是（*）的两个双函子定律：
+bifunctor*:
+id*id=id
+bifunctor*:
+(f*g).(h*k)=(f.h)*(gk)
+下面是关于assocr的定律：
+302
+assocrlaw:assocr：（(f*g)*h)=i(f*(g*h))：assocr
+对于这个例子，计算器不能完成下列的合法计算：
+cat.((cat(f*g))*h)
+(identity law,in backwards direction]
+cat:((cat.(f*g))*(id.h))
+(bifunctor *,in backwards direction)
+cat.(cat*id).((f*g)*h)
+(catassociative)
+cat.(id*cat).assocr.((f*g)*h)
+(assoc law)
+cat：(id*cat)(f*(g*h))：assocr
+{bifunctor*}
+cat..((id.f)*(cat.(g*h))).assocr
+=(identitylaw)
+cat.(f*(cat(g*h))).assocr
+问题在于恒等律和双函子律必须在两个方向使用，但是计算器不能完成这样的工作。
+注意到证明的本质在于下列表达式的两种不同简化：
+cat：(id*cat):assocr：((f*g)*h)
+一种使用cat的结合律，其表现形式为
+cat associative:cat.(id*cat).assocr=cat(cat*id)
+另一种使用assocr定律。即使推广calculate使其返回所有可能计算构成的树，但从
+哪个表达式开始可以得到以上计算仍然不是明显的，所以禁止了计算器返回一棵树。
+不只是函子律有时需要从两个方向使用，例子见12.8节。这个问题有时可以避免，
+比如使用比实际要求更通用的定律，或者通过分析，然而有时还是完全不能避免。如一开
+始所讲，计算器能力是有限的。
+我们设计的自动计算只有两个自由度：选择应用的定律和选择化简的子表达式。第一
+个自由度可以包含在这些定律在计算器中排列的顺序中：如果有两个不同定律可应用，那
+么选择前一个定律。
+显然有些定律应该在另一些定律之前应用，先应用的应该是可以降低中间表达式复杂
+度的定律。很好的例子是定律fid=f和id：f=王。复杂度的简单定义是右边的复
+303
+合比左边的少。这些定律一且有机会就使用不会有错误。事实上，id是复合的单位元，
+而且将被写进计算器，这样两个单位元律将被自动应用。类似地，及早应用如ni1：f=
+nil和mapf.nil=nil这样的定律（确实是iterate计算中使用的两个定律）将降
+低复合次数，有助于降低中间表达式的规模。为了明确起见，称这些定律为简单定律。
+另一方面，某些定律只是到最后才使用。典型的是定义，如filter或者iterate
+的定义。例如，在下列表达式中：
+
+===== PDF 211 =====
+一个简单的等式计算器
+203
+mapf.concat.map(filterp)
+不想太早使用filter的定义；而且在concat定律后先使用map，只有在后面必要的时
+候再使用fi1ter的定义。不说别的，中间表达式将会更短。
+综上所述，看起来合理的方法是将定律按照“简单定律、非简单也非定义的定律、定
+义”的顺序应用。
+第二个自由度用给定表达式中子表达式作为定律应用特例的顺序表达：如果定律可应
+用于两个不同的表达式，那么先选列在前面的子表达式。
+现在仍然没有决定使用定律和子表达式的优先次序。是先选一个子表达式，然后轮流
+检查每个定律是否可用于该子表达式，还是先选一个定律，然后检查这个定律可用于哪个
+子表达式？或许将某个定律应用于一个表达式后，下一个利用的定律很可能是“旁边的”
+某个子表达式，但是如何表达这种附近的概念不是很清楚，从计算时间或者结果的长度上
+讲，这样做是否会提高计算的效率也不清楚。
+12.2表达式
+计算器的核心是表达式的数据类型Expr。计算器的许多配件都需要通过各种方式分
+析和处理表达式。表达式是由（函数）变量和常量构成的，函数复合运算是基本的组合形
+304
+式。变量没有参数，但是常量可以有任意多参数，这些参数本身也是表达式。假定所有函
+数是卡瑞式的，没有多元组参数，如写pairfg，而不写pair（f，g）。没有特别的理
+由避免使用多元组，只是本书讨论的大多数函数都是卡瑞式的，没有必要两种形式都
+使用。
+为了补偿，允许使用中缀二元运算，如写f*g，而不写crossfg。除函数复合运
+算外，对二元运算的优先级或结合性不做任何假设，当表达式包含这些运算时全部使用括
+号。这里仍然没有回答的问题是，f*g.h表示（f*g）．h还是f＊（g．h）？Haskell
+但是，我们会永远使用括号以避免歧义。
+下面是表达式的BNF语法：
+expr::=simpleopsimple]
+simple :!=term ('.term)*
+term
+::=varIcon【arg}*(expr)"
+arg
+::=var/con(expr)*
+var
+::=letter{digit}
+con
+::=letterletter(letter|digit}*
+op
+::=(symbol]+
+变量名由单个字母表示，也可以后接一位数字。所以，f和f1都是合法的变量名。常量
+名由两个以上字母数字序列构成，用两个字母开始，如map和1hs2tex，而运算名用非
+字母数字序列表示，如*和<+>。语法的第一行表示，一个表达式是一个简单表达式，
+可以后接一个运算符和另一个简单表达式。简单表达式是项的组合。相信剩余的行是容易
+理解的。
+下面是要使用的Expr的定义：
+
+===== PDF 212 =====
+204
+第12章
+newtype Expr=Compose [Atom] deriving Eq
+data Atom
+ Var VarName I Con ConName [Expr]
+deriving Eq
+type VarName = String
+305
+type ConName =String
+表达式和原子声明为类族Eq的成员，因为需要测试表达式是否相等。稍后将定义Expr
+为类族Show的实例，以便将表达式打印在终端。
+以下是一些表达式及其表示的例子：
+f.g.h
+id.
+=>Compose 
+fst
+=>Compose [Con"fst"]
+fst.f
+=>Compose [Con"fst",Var"f"]
+(f *g),h =>Compose [Con"*"[Compose [Var"f"],Compose [Var"g"]],Var"h"]
+f*g.h
+=>Compose [Con"*"[Compose [Var"f"],
+Compose [Var"g",Var"h"J]]
+函数复合运算满足结合律的性质已经定义在Expr中。特殊的常数id保留，并总是
+解释为复合的单位元。
+前面描述的语法分析组合运算使我们得以分析表达式。根据BNF定义，首先有
+expr::Parser Expr
+expr=simple>>=rest
+where
+rest s1 =dofop<-operator;
+s2<-simple;
+return(Compose [Con op[s1,s2]])]
+<1>return s1
+一个运算符是一个或者多个运算符号的序列，只要不含复合运算符和等号：
+operator ::Parser String
+operator=do(op<-token(some(sat symbolic));
+Parsing.guard(op/=","&&op/="=");
+return op)
+symbolic=(elemopsymbols)
+opsymbols ="!@#$%&*+./<=>?|/~l:-~"
+函数Parsing.guard是一个受限（qualified）名的例子。Haskell的引导库Prelude
+也提供了一个名为guard的函数，但是这里需要的是包含所有语法分析函数的模块
+306
+Parsing的同名函数。一个受限名由一个模块名后接一个句点，再后接受限值的名构成
+一个简单表达式由一个或者多个项的序列构成，项之间用复合运算符分隔：
+simple ::Parser Expr
+simple=do(es<-somewith（symbol",")term;
+return(Compose (concatMap deCompose es)))
+函数concatMapf是concat·mapf的替代函数，由标准引导库提供，而deCom-
+pose如下定义：
+deCompose (Compose as)= as
+接下来，一个项是表示变量或者常量的标识符，常量可以带参数，或者是加括号的表
+达式：
+
+===== PDF 213 =====
+一个简单的等式计算器
+205
+term :: Parser Expr
+term = ident args <l> paren expr
+args =many (ident none <>paren expr)
+分析器ident输人一个表达式列表的分析器，返回表达式的一个分析器：
+ident :: Parser [Expr] -> Parser Expr
+identargs
+=do(x<-token (some(sat isAlphaNum));
+Parsing-guard (isAlpha (head x));
+if isVar x
+then return, (Compose [Var x])
+else if (x =="id")
+then return (Compose )
+else
+do las <- args;
+return (Compose [Con x as])H)
+测试是否合理变量的函数如下定义：
+isVar [x] True
+isVar [x,d] = isDigit d
+isVar-
+=False
+注意，任何完全由字母数字组成，而且由字母开始又不是变量的标识符是常量。
+接下来将Expr和Atom定义成Show的实例。如前所述，我们将通过给每个类型定
+307
+义函数showsPrecp来完成。稍加思考便可发现，p需要3个值：
+顶层无需括号。例如，所有这些式子mapf．mapg，foo*baz和bar bie
+do11都不需要括号。将p=0赋予这种情况。
+当一个表达式是项的复合，或者运算符表达式，并且是一个常量的参数时，需要
+将表达式括起来。例如，在下列表达式中需要括号：
+map(fg).foo f g.(bar*bar)
+但是，中间项无需括号。将p=1赋予这种情况。
+最后，P=2表示应该给项的复合加括号，给运算符表达式以及至少有一个参数的
+卡瑞函数加括号。例如：
+map(fg)foo(foldr f e)g·(bar*bar)
+下面给出实例定义。先定义：
+instance Show Expr where
+showsPrec P (Compose ) = showString"id"
+showsPrec p (Compose [al) = showsPrec p a
+showsPrec p (Compose as)
+=showParen(p>0)(showSep""(showsPrec 1)as)
+最后一行使用了如下定义的函数showsep：
+showSepsepf
+=compose-intersperse(showstring sep)map f
+工具函数compose 定义为 compose =foldr（.）id。函数intersperse ：：
+a->[a］->［a]可以在Data.List中找到，用于将第一个参数插入到第二个参数元素
+
+===== PDF 214 =====
+206
+第12章
+之间。例如：
+intersperse ",""abcde"=-"a,b,c,d,e"
+showsPrec的后两个子句中右边showsPrec的两次出现表示原子上的相应函数：
+instance Show Atom where
+showsPrecp (Var v)
+=showStringy
+showsPrecp(Con f)=showStringf
+308
+showsPrec p (Con f [e1,e2])
+IisOpf=showParen(p>o)(showsPrec 1e1showSpace
+showString f.showSpace.showsPrec 1 e2)
+showsPrec p (Con f es)
+=showParen(p>i)(showStringf:showSpace:
+showSep"(showsPrec 2)es)
+isop f =all symbolic f
+p=2在最后一个子句中用到，因为我们想在如foo（barbie）dol1中加括号。变
+量和零元常量无需括号。
+一个模块结构
+最后一步是将这些定义，或许还有另外的定义，放置在一个模块中。这个模块将包含
+所有与表达式有关的函数。
+构建这样的模块还不能马上完成，因为不清楚在其他模块（如处理定律和计算等模
+块）中，可能需要表达式的另外哪些函数。但是，目前可以如下声明：
+module Expressions
+(Expr(Compose)，Atom(Var,Con),
+VarName,ConName,deCompose,expr)
+where
+import Parsing
+import Data.List (intersperse)
+import Utilities (compose)
+import Data.Char (isAlphaNum,isAlpha,isDigit)
+模块Expressions必须存储在文件Expressions.lhs中，使得Haskell可以找到
+这个模块的位置。该模块输出类型Expr和Atom以及它们的构造函数，还输出类型同义
+词varName和conName，以及函数decompose和expr，所有这些都可能在处理定律
+的模块中用到。稍后可能在输出列表中添加更多的函数。
+接下来是输入。我们输人了语法分析函数的模块Parsing，以及模块Data.List
+309
+和Data.Char中的一些函数。我们还将设置一个模块Utilities，放置通用工具函数。
+一个好的工具函数例子是上面定义的compose，这个函数不是特定于表达式的，可能在
+其他地方用到，所以将其放在工具模块中。
+12.3定律
+用下列方法定义定律：
+data Law
+= Law LawName Equation
+type LawName = String
+type Equation =(Expr,Expr)
+一个定律由一个描述名和一个等式构成。分析定律的分析器定义为
+
+===== PDF 215 =====
+一个简单的等式计算器
+207
+law :: Parser Law
+law=do(name<-upto":";
+eqn <- equation;
+return (Law name eqn))
+语法分析函数uptoc返回直到c但不包含c的串，然后丢弃c，如果找到c的话。
+该函数不含在第11章的分析器函数中，但是为了不破坏分析器的抽象性，将其置于模块
+Parsing之中。一种定义方法是
+upto :: Char -> Parser String
+upto c
+= Parser (ls ->
+let(xs,ys)=break(==c)sin
+if null ys then 
+else [(xs,tail ys)])
+分析器equation定义如下：
+equation :Parser Equation
+equation = do fe1 <-expr;
+symbol "=";
+e2<-expr;
+return(el,e2))
+或许不需要显示定律，不过下面是其定义：
+instance Show Law where
+showsPrec-(Lawname(el,e2))
+= showString name
+310
+showstring":"
+showsel.
+showString"="
+shows e2
+优先级数在showsPrec的定义中不需要，故使用了不在意模式。回顾shows的输
+人是一个可打印值，在这里是一个表达式，然后返回一个类型ShowS的函数，即类型
+String ->String的同义词。
+最后对定律排序：
+sortLaws :[Law]->[Law]
+sortLawslaws=simple++others++defns
+where
+(simple,nonsimple)=partition isSimple laws
+(defns,others)
+=partition isDefn nonsimple
+这个定义利用Data.List的列表划分函数partition：
+partitionpxs=(filterpxs,filter(not.p)xs)
+各种测试函数定义如下：
+isSimple(Law-(Composeas1,Composeas2))
+=length as1>lengthas2
+isDefn(Law(Compose[Con f esl,_))
+=all isVar es
+isDefn-=False
+isVar(Compose[Var_J)=True
+isVar
+=False
+
+===== PDF 216 =====
+第12章
+测试isVar也出现在模块Expressions中，但是定义不同。不过这不是问题，因
+为该函数没有从表达式模块输出。
+下面是定律模块的声明：
+module Laws
+(Law (Law),LawName,law,sortLaws,
+Equation,equation)
+where
+import Expressions
+import Parsing
+311
+import Data.List (partition)
+完成如何分析和打印表达式及定律后，现在可以定义两个函数，一个是calculate
+的一个版本，但是它不消耗定律和表达式，而是消耗串：
+simplify strings string
+=let laws=map (parse law)strings
+e =parse expr string
+in calculate laws e
+类似地，可定义：
+prove ::[String] ->String->Calculation
+prove strings string
+=let laws=map(parselaw)strings
+(el,e2)=parse equation string
+in paste (calculate laws ei)(calculate laws e2)
+这两个函数可以放置在模块Main中。将paste和calculate放置在只与计算相关的
+模块中，这是12.4节的内容。
+12.4计算
+计算的定义如下：
+data Calculation  Calc Expr [Step]
+type Step
+=(LawName,Expr)
+先从计算器的关键定义开始，即calculate的定义：
+calculate::[Law]->Expr->Calculation
+calculatelawseCalc e (manySteprws e)
+where rws e =[(name,e')
+I Lawnameeqn<-sortedlaws,
+ei<-rewrites eqn e,
+et/= e]
+sortedlaws=sortLaws laws
+式的所有可能结果的列表，该函数将在另一个模块定义。一个表达式可能被重写为表达式本
+312
+身（见习题H)，但是这样的可能导致无穷计算的重写是不允许的。函数rws：：Expr->
+[Step】返回以所有可能方式使用定律得到新表达式的单步计算列表，该列表通过轮流使用
+定律生成所有可能结果得到。这表示在计算中，定律的应用优先于子表达式，由此也解决了
+12.1节提出的担心的问题。只有实验能证明我们的选择是否正确。
+
+===== PDF 217 =====
+一个简单的等式计算器
+209
+函数manyStep使用rws构建尽可能多的步骤：
+manyStep rws e
+=if null steps then
+else step :manyStep rws (snd step)
+where steps= rws e
+step =head steps
+当rswe是空列表时，计算结束；否则，列表的第一个元素用于继续计算。
+计算模块的其他函数处理显示和粘贴计算。一个计算的显示如下定义：
+instanceShowCalculationwhere
+showsPrec-(Calc esteps)
+=showString"n"
+showse
+showChar"n'
+compose (map showStep steps)
+每个步骤显示如下：
+showStep ::Step -> Shows
+showStep (why,e)
+= showstring"=
+showstring why .
+showString"n"
+shows e.
+showCharn'
+为了把两个计算粘贴在一起，必须将一个计算的步骤取逆。例如，计算：
+Calc.e0[(why1,e1),(why2,e2),(why3,e3)]
+313
+被转换成
+Calce3[(why3,e2),(why2,e1),(why1,e0)]
+特别是，一个计算的结论是取逆后的第一个表达式。下面表示如何将一个计算取逆：
+reverseCalc::Calculation->Calculation
+reverseCalc (Calc e steps)
+=foldl shunt (Calc e ) steps
+where shunt (Calc e1 steps) (why,e2)
+=Calc e2((why,e1):steps)
+为了粘贴两个计算，首先检查两个计算的结论是否相同。如果不相同，则继续粘贴两
+个计算，并附带一个失败的标示：
+conc1
+- {... ???...
+conc2
+如果两个结论相同，还可以做得更聪明一点，而不是仅仅将两个计算粘在一起。如果一个
+计算的倒数第二个结论与另一个计算的倒数第二个结论匹配，那么可以将最后一步剪掉。
+下面是如何粘贴两个计算：
+paste :: Calculation -> Calculation -> Calculation
+paste calc1@(Calc el steps1) calc2
+=ifconc1==conc2
+then Calc el (pruneconcirsteps1.rsteps2)
+elseCalc e1 (steps1 ++(gap,conc2):rsteps2)
+
+===== PDF 218 =====
+210
+第12章
+whereCalcconcirstepsi=reverseCalc calci
+Calc conc2 rsteps2= reverseCalc calc2
+gap = "... ??? ..."
+函数prune定义如下：
+prune e((,e1):steps1)((_,e2):steps2)
+I e1==e2=prunee1 steps1.steps2
+prune e steps1 steps2 = rsteps ++ steps2
+where Calc - rsteps = reverseCalc (Calc e steps1)
+最后是模块Calculations的声明：
+moduleCalculations
+314
+(Calculation (Calc),Step,calculate,paste)
+where
+import Expressions
+import Laws
+import Rewrites
+importUtilities (compose)
+模块输出了在主模块中定义simplify和prove需要的那些类型和函数。
+12.5重写
+模块Rewrites的唯一目的是提供函数rewrites的定义，该函数出现在calculate
+定义中。回顾表达式rewriteseqne，它返回所有这些表达式的列表：将e中与eqn的
+左表达式匹配的某个子表达式用ecm的右表达式的适当特例替换。
+有趣的是找出rewrites的定义。假如构造了一个表达式的所有子表达式的列表，
+可以用给定等式与列表的每个元素匹配，计算出构成匹配的替换（可能没有，也可能有一
+个或者多个，见12.6节关于匹配的内容），然后计算出代换后的新表达式。但是，如何在
+原表达式中用一个新的表达式代换一个子表达式？简单的回答是，没有办法，至少在没有
+确定每个子表达式在原表达式中的上下文或者位置之前是不可行的。若能确定子表达式的
+位置，则可将新子表达式插入这个位置。
+方法不是显式地引人上下文，而是采取另一种途径。想法是钻进一个表达式中，在某
+个时刻对某个表达式应用重写，然后在爬出洞时构建重写的表达式。将需要一个工具函数
+anyone，其输入是能够生成一系列选择的函数，以及一个列表，然后为列表中一个元素
+设置一种选择。其定义如下：
+[[]] - [] -([] -) : e
+anyOnef
+anynef(x:xs)=[x:xsI x"<-fx]++
+[x:xsIxs<-anyOnefxs]
+或者为列表的第一个元素设置了一个选择，或者为第二个元素设置了一个选择，但不会为
+两个元素同时设置选择。例如，如果f1=［-1，-2］和f2=［-3，-4]，则有
+315
+any0nef[1,2]=[[-1,2],[-2,2],[1,-3],[1,-4]]
+以下是rewrites的定义：
+
+===== PDF 219 =====
+一个简单的等式计算器
+211
+rewrites eqn(Compose as)=map Compose(
+rewritesSeg eqn as ++ anyOne (rewritesA eqn) as)
+rewritesA eqn(Var v)=
+rewritesA eqn (Con k es)
+=map (Con k)(anyOne(rewrites eqn)es)
+定义的第一行表示，将当前表达式一段（segment）的重写与任意适当子表达式的重
+写串联。只有有参数的常数有子表达式。注意，anyone的两个应用具有不同的类型，一
+个应用于原子列表，一个应用于表达式列表。
+接下来定义rewritesSeg：
+rewritesSeg :: Equation -> [Atom] -> [[Atom]]
+rewritesSeg (el,e2)as
+= [as1 ++ deCompose (apply sub e2)++ as3
+I (as1,as2,as3) <- segments as,
+sub<-match(el,Composeas2)]
+函数segmants将列表化分成段：
+segments as = [(as1,as2,as3)
+I (as1,bs) <- splits as,
+(as2,as3)<-splitsbsj
+工具函数splits用各种可能方法拆分一个列表：
+splits :: [a] -> [([a],[a]]]
+splits门
+=[(口,口)]
+splits (a:as) = [(,a:as)] ++
+[(a:as1,as2) I (as1,as2) <- splits as]
+例如：
+ghci> splits"abc"
+[("","abc"),("a","bc"),("ab","c"),("abc","")]
+剩下的函数apply和match具有下列类型：
+316
+match ::(Expr,Expr)->[Subst]
+这两个函数分别定义在它们的模块Substitutions和Matchings中。最后是Rewrites
+的模块声明：
+module Rewrites (rewrites)
+where
+import Expressions
+import Laws (Equation)
+import Matchings (match)
+import Substitutions (apply)
+import Utilities (anyne;segments)
+12.6
+模块Matching的唯一目的是定义函数match。该函数输入两个表达式，返回一个
+代换列表，在这些代换下第一个表达式可以转换为第二个表达式。如果两个表达式不匹
+配，则匹配不生成代换，但是，如果匹配成功，则可能生成多个代换。考虑匹配表达式
+
+===== PDF 220 =====
+212
+第12章
+foo（·g）与foo（a：b：c）。将f绑定下列4个表达式中任何一个，将g绑定相应
+的另一个，都可以使以上两个表达式匹配成功：
+id,a,a.b,a.b.c
+尽管计算器每一步选择一个代换，但是在得到合法匹配过程中考虑多种代换很重要。例如，
+在匹配foo（f.g）.barg和foo（a.b.c）.barc时，子表达式f.g与a.b.
+c匹配，给出4种可能的代换。只有当barg与barc匹配时，其中的3个代换被拒绝。
+过早对第一次匹配的单个代换的承诺有可能导致错失一个成功匹配。
+最直接定义match（e1，e2）的方法是将e1原子和e2原子的划分并排排列，第一个
+原子对应第一个划分段，第二个原子对应第二个划分段，等等。函数alignments具有
+下列类型：
+alignments::(Expr,Expr)->[[(Atom,Expr)]]
+317
+并完成这种排列对应。定义这个函数需要将一个列表划分为给定段数的函数parts：
+parts :: Int -> [a] -> [[[a]]]
+partso=[]
+parts 0a
+as
+parts  as = [bs:bss
+I (bs,cs)<- splits as,
+bss<-parts(n-1)cs)
+有趣的是前两个子句：将空列表划分为0段有一种划分，即空划分，但是将非空列表划分
+为0段的划分不存在。例如：
+ghci>parts 3"ab"
+[["","","ab"],["","a","b"],["","ab","],
+["a","","b"],["a","b",""],["ab","",""]]
+现在可以定义：
+alignments (Compose as,Compose bs)
+[zipas(mapComposebss)bss<-partsnbs]
+wheren=length as
+将每个原子和一个子表达式配对后，可以定义原子与表达式的匹配matchA：
+matchA::(Atom,Expr)->[Subst]
+matchA(VarV,e)=[unitSube]
+matchA (Conk1 es1,Compose [Con k2 es2])
+Ik1==k2=combine (mapmatch (zip es1 es2))
+matchA-=
+匹配变量永远成功，并给出单个代换。匹配两个常量时，只有常量名相同时匹配才成功。
+对于其他情况，matchA返回代换空列表。函数matchA依赖于match，该函数现在可以
+定义如下：
+match::(Expr,Expr)->[Subst]
+match=concatMap(combine:mapmatchA)alignments
+最后的配件是函数combine：：［【Subst］］->【Subst］。combine的参数中每
+个代换列表代表可能的选择，所以combine必须用所有可能的方法在每个代换列表中选
+择一个代换，然后进行归一运算得到结果。下面将在代换模块中讨论这个函数。这样便完
+
+===== PDF 221 =====
+一个简单的等式计算器
+213
+成了matches的定义。模块的声明如下：
+318
+module Matchings(match)
+where
+import Expressions
+importSubstitutions(Subst,unitSub,combine)
+import Utilities (parts)
+函数parts被放在工具模块中，因为它不是特定于表达式的。
+12.7代换
+一个代换是变量到表达式的有穷映射。关联列表是代换的一个简单表示：
+typeSubst=[(VarName,Expr)]
+空代换和单个代换定义为：
+emptySub
+unitSub v e= [(v,e)]
+将一个代换应用于一个表达式可以得到另一个表达式：
+apply :: Subst ->Expr ->Expr
+apply sub (Composeas)
+=Compose (concatMap (applyA sub) as)
+applyAsub (Varv)=deCompose(binding subv)
+applyAsub(Conk es)=[Conk(map(apply sub)es)]
+函数binding在一个非空代换中查找一个变量的绑定值：
+binding::Subst ->VarName ->Expr
+binding subv=fromJust (lookupsub)
+函数lookup在Haskell引导库Prelude中定义，如果没有绑定值，则返回Nothing，
+如果v的绑定值是e，则返回Juste。函数fromJust在库Data.Maybe中定义，其功能
+是去掉包装Just。
+接下来解决combine。该函数必须用所有可能的方法组合选择代换：在每个组成列
+表中选择一个代换，然后对这样的代换列表进行合一：
+combine=concatMap unifyAll. cp
+319
+工具函数cp已经见过多次，它计算一个列表的列表的笛卡儿积。
+函数unifyAl1将一个代换列表合一。为定义这个函数，首先看如何将两个代换合
+一。如果两个代换相容，则合一结果是两个代换的并；如果两个代换不相容，则合一结果
+失败。为了处理失败的情况，可以使用Maybe类型，或者简单地用空列表或单元素列表。
+选择后者，只是因为12.8节将给出计算器的另一个定义，最简单的方法是统一使用基于
+列表的函数：
+unify::Subst->Subst->[Subst]
+unify sub1 sub2=if compatible sub1 sub2
+then [union sub1 sub2]
+else 
+为定义compatible和union，假定代换按照变量名的字典序表示。如果两个代换
+用同一个变量名与不同的表达式关联，则它们是不相容的：
+
+===== PDF 222 =====
+214
+第12章
+compatible  sub2= True
+compatible subi  = True
+compatiblesub1@((v1,e1):sub1)sub2@((v2,e2):sub2)
+Iv1<v2=compatiblesub1'sub2
+Iv1==v2=ife1==e2thencompatiblesub1!sub2
+else False
+Iv1>v2=compatiblesub1sub2
+并运算用同样的方式定义：
+unionsub2=sub2
+unionsubisubi
+unionsub1@((v1,e1):sub1)sub2@((v2,e2):sub2)
+Iv1<v2=(v1,e1):unionsub1tsub2
+Iv1==v2=(v1,e1):unionsubi!sub2!
+Iv1>v2=(v2,e2):unionsub1sub2t
+函数unifyAl1返回一个空列表或者单元素列表：
+unifyAli :[Subst] ->[Subst]
+unifyAll =foldr f [emptySub]
+wherefsub subs=concatMap(unifysub)subs
+320
+现在已经完成了所需要的所有定义。下面是模块声明：
+module Substitutions
+(Subst,unitSub,combine,apply)
+where
+import Expressions
+import Utilities (cp)
+import Data.Maybe (fromJust)
+这样，计算器总共由9个模块构成。
+12.8测试计算器
+计算器的实用性如何呢？回答这个问题的唯一方法是在一些例子上试用计算器。这里
+将展示两个计算例子。第一个是第5章做过的关于数独中选择矩阵裁剪的计算。实际上是
+想证明：
+filter (all nodups.boxs).expand.pruneByboxs
+=filter(all nodups.boxs).expand
+可以使用的定律如下：
+defn pruneBy:
+pruneBy f=f.map pruneRow,f
+expand after boxs:
+expand.boxs=mapboxs.expand
+filter with boxs:
+filter(p.boxs)
+=mapboxs.filterpmapboxs
+boxs involution:
+boxs.boxs=id
+map functor:
+mapf:mapg=map (f.g)
+map functor:
+mapid=id
+defn expand:
+expand=cpmapcp
+filter after cp:
+fiiter (alip).cp=cp.map (filterp)
+law of pruneRow:
+filter nodups.cp.pruneRow
+=filter nodups, cp
+下面的计算完全是由计算器完成的，只是为了显示的方便，把某些表达式写成两个，
+这个任务应该由精美打印工具完成。无需研究细节，只要注意接近结尾的计算：
+filter(all nodups:boxs)expand.pruneByboxs
+(filter with boxs]
+
+===== PDF 223 =====
+一个简单的等式计算器
+215
+map boxs.filter (all nodups).map boxs.expand.
+pruneBy boxs
+(defn pruneBy]
+map boxs.filter(all nodups).map boxsi.expand,
+boxs.mappruneRow.boxs
+lexpand after boxs)
+321
+mapboxs:filter(allnodups).mapboxs.mapboxs
+expand.mappruneRow.boxs
+(map functor)
+mapboxs:filter(all nodups):map (boxs.boxs)expand.
+mappruneRowboxs
+(boxs involution]
+mapboxs..filter(all nodups).map id.expand.
+map pruneRow.boxs
+(map functor)
+map boxs.filter(all nodups).expandmap pruneRow.boxs
+(defnexpand)
+mapboxs filter (all nodups). cp.map cpmap pruneRow.boxs
+(map functor]
+map boxs.filter(all nodups),cpmap(cppruneRow).boxs
+{filter after cp]
+(map functor)
+mapboxs.cp.map(filter nodupscppruneRow).boxs
+(law of pruneRow)
+mapboxs.cpmap(filternodups.cp)boxs
+ ??? .
+mapboxsfilter (all nodups)map boxs.cp.map cp
+(defn expand)
+map boxsfilter(all nodups).mapboxs :expand
+(fiiterwith boxs]
+filter(all nodups:boxs).expand
+是的，计算失败了。原因不难看出，需要在两个方向使用下列定律：
+expand after boxs:
+expand . boxs = map boxs . expand
+但是，计算器做不到。
+解决方法是进行人工分析，添加一个额外的定律：
+hack:
+soqdodeudadodeudosxoqde
+这个定律正是左右调换的expandafterboxes定律，其中expand替换成了定义。这
+样一来计算器非常满意，生成了预期的结论：
+mapboxs.cp.map(filternodups.cp).boxs
+(mapfunctor)
+map boxs:cpmap(filter nodups).map cp.boxs
+(filter after cp)
+mapboxs.filter(all nodups).cp:map cp.boxs
+(hack]
+mapboxs.filter(all nodups).mapboxs..cp.mapcp
+[defn expand]
+map boxs.filter(all nodups)mapboxsexpand
+322
+(filter with boxs]
+filter(allnodups.boxs).expand
+两种情况的计算都在几分之一秒内完成，所以效率似乎不是问题。除了那个人工分析
+以外，计算符合要求，几乎可以达到一个好的人工计算器的能力。
+改进计算器
+第二个例子更是雄心勃勃：使用计算器导出计算器的另一个版本。再次细看match
+的定义，定义依赖于combine，后者涉及复杂的两个代换的合一，附带配套的相容性测
+试和并的计算。一个更好的想法是，只有当两个代换中有一个是单位代换时才计算两个代
+
+===== PDF 224 =====
+216
+第12章
+换的并。然后一切变得更简单，或者更快。什么技术可以描述这种优化呢？是的，这是另
+一个累积参数的例子。就像累积参数可以避免使用昂贵的运算++一样，在此希望避免使
+用昂贵的运算unify。
+首先，下面是match的定义，使用了几个新的辅助函数：
+match =concatMap matchesA.alignments
+matchesA = combine.map matchA
+matchA (Var v,e)=[unitSub v e]
+matchA (Con k1 es1,Compose [Con k2 es2])
+[k1==k2=matches(zipes1es2)
+matchA-=
+matches = combine.map match
+注意，这些函数的依赖关系呈环形：
+这4个函数推广如下：
+xmatch sub
+=concatMap(unify sub).match
+xmatchA sub=concatMap (unify sub).matchA
+xmatches subconcatMap (unify sub)-matches
+xmatchesA sub = concatMap (unify sub).matchesA
+323
+每个函数中新加的参数是一个累积参数。目的是找到这些函数的新定义，其环状依赖关系
+同前。
+对于第一个计算，希望用xmatch重写match，由此建立两组定义间的联系。为节
+省笔墨，将concatMap简记作cmap。需要的3个定律是
+defn xmatch:
+xmatch s=cmap(unifys)match
+unify of empty:unify emptySub = one
+cmap of one:
+cmap one = id
+在第一个定律中必须写s而不写sub（为什么？）；第二个定律是下列事实的点自由
+版本：
+unify emptySub sub=[sub]
+cmap one xs= concat [[x]I x<-xs] =xs
+计算器不费力气便给出：
+xmatch emptySub
+(defnxmatch]
+cmap(unifyemptySub).match
+{unifyof empty]
+cmap one.match
+=(cmapofone}
+match
+下面再来处理xmatchA。由于matchA定义中笨拙的模式匹配方式，因此仅仅给出
+一个简单的（人工）计算结果：
+xmatchAsub(Varv,e)=concat[unifysub(unitSub ve)]
+xmatchA sub(Conk1es1,Compose [Con k2 es2])
+lk1==k2=xmatchessub(zipes1es2)
+xmatchA-=]
+如果引人：
+extend subve=concat [unify sub (unitSub ve)]
+
+===== PDF 225 =====
+一个简单的等式计算器
+217
+则容易导出：
+extendsubve
+= case lookup  sub of
+Juste'->if e==e'then[sub]
+else
+324
+这里没有复杂的相容性测试，也没有两个代换的通用并。如上所承诺的，只有代换与
+单位代换的合一。
+处理好xmatchA后，下面集中处理4个函数中的其他3个。就像用xmatches定义
+xmatchA一样，xmatch可以用xmatchesA定义。特别地，想证明：
+xmatch s = cmap (xmatchesA s) :alignments
+下面是需要的定律：
+defn match:
+match= cmap matchesA.alignments
+defn xmatch:
+xmatchs=cmap(unifys).match
+defn xmatchesA:xmatchesA s cmap(unify s).matchesA
+cmapaftercmap:cmapfcmapg=cmap(cmapf,g)
+最后一个纯粹的组合定律是新的，定律的验证留作练习。计算器生成下列计算：
+xmatchs
+(defn xmatch)
+cmap(unify s).match
+[defnmatch]
+cmap(unifys).cmapmatchesAalignments
+[cmapafter cmap]
+cmap(cmap(unifys)..matchesA).alignments
+(defn xmatchesA)
+cmap (xmatchesA s)alignments
+到目前为止，一切顺利。现在4个函数中还有两个没有定义，即xmatches和xmat-
+chesA。我们希望每个函数得到一个递归定义，而且不涉及unify。这两个函数的定义
+及其相像，很有可能任何一个函数的计算可立即用于另一个函数。当然，这种元计算思想
+是这种计算器不可及的。
+现在集中注意力于xmatchesA。首先将xmatchesA转换为点自由式，删除上面定
+义中的参数S。修改后的定义是：
+xmatchesA ::(Subst,[(Atom,Expr)J)->Subst
+xmatchesA=cup(one *matchesA)
+cup=cmapunify.cpp
+其中组合函子定义为：
+cpp (xs,ys) = [(x,y) I x <- xs, y <- ys]
+因此，有
+325
+xmatchesA(sub,aes)
+=cup ([sub],aes)
+= concat [unify (s,ae) I s<- [sub],ae<- matchesA aes]
+=concat [unify (sub,ae)I ae<-matchesA aes]
+除了假定unify现在是非卡瑞函数外，这是xmatchesA定义的忠实点自由式翻译。
+新的函数cup具有类型［Subst］->［Sbust］->［Subst]。后面将说明cup满
+足结合律，这是unify永远不会具有的性质（为什么不会？）。如在第7章所述，累积参
+
+===== PDF 226 =====
+218
+第12章
+数技术需要所关心的运算具有结合性。
+首先需要检查对于新的定义，前面的计算仍然是正确的。假定给出下面定律：
+defn match:
+matchi=cmapmatchesA.alignments
+defn xmatch:
+xmatch=cup..(one*match)
+defn xmatchesA:
+xmatchesA =cup, (one * matchesA)
+计算器便可生成
+xmatch
+(defn xmatch)
+cup.(one*match)
+{defn match]
+cup.(one*(cmapmatchesAalignments))
+..??..
+cmap(cup.(one *matchesA)).cpp.(one*alignments)
+{defn xmatchesA]
+cmap xmatchesA.cpp(one *alignments)
+啊，计算通不过。细看计算中的缺口，似乎既需要＊的双函子律，也需要关于cmap
+和cup的下面断言：
+crossbifunctor:(f*g).(h*k)=(f.h)*(g.k)
+cmap-cup:cmap(cup(one*g)).cpp=cup.(id*cmapg)
+现在计算器很满意，给出下列计算：
+xmatch
+{defn xmatch)
+cup.(one*match)
+{defn match)
+cup:(one*(cmap matchesA..alignments))
+(crossbifunctor]
+cup.,(id * cmap matchesA).(one *alignments)
+(cmap-cup]
+cmap(cup(one*matchesA)).cpp:(one*alignments)
+326
+(defn xmatchesA)
+cmap xmatchesA..cpp .. (one * alignments)
+接下来需要考虑刚才的断言，除了它让计算器给出期望的结果外，没有其他理由支持
+其正确性。但是，可以使用另一个并非特定于匹配的定律，让计算器证明断言。这个证明
+留作习题M。定义另外两个定律：
+defn cup:
+cup=cmapunify.cpp
+cmap-cpp:cmap(cpp.(one*f)).cpp=cpp.(id*cmapf)
+然后计算器生成下列计算：
+cmap(cup(one*g)).cpp
+(defn cup)
+[cmap after cmap]
+[cmap-cpp]
+cmapunify.cpp(id*cmap g)
+(defn cup)
+cup . (id * cmap g)
+现在可以了。看起来cmap-cup定律是正确的，而且今后还会用到这个定律。现在回
+到主要任务，即将xmatchesA递归地用下列形式的两个等式表示：
+xmatchesA.(id*nil)=
+xmatchesA(id*cons)=
+希望这种定义不涉及unify。
+
+===== PDF 227 =====
+一个简单的等式计算器
+219
+为了达到这个目的，还不清楚需要什么样的定律。下面将写出想到的可能有用的定
+律。第一组由4个主要定义构成：
+defn match:
+match =cmap matchesA alignments
+defn matchesA:
+matchesA =combinemap matchA
+defn xmatch:
+xmatch
+=cup.(one*match)
+defn xmatchesA:
+xmatchesA = cup
+(one*matchesA)
+defn xmatchA:
+xmatchA
+=cup(one*matchA)
+defn combine:
+combine = cmap unifyAllcp
+第二组是关于cmap的一些新定律：
+cmap after map:
+cmap f.mapg= cmap (f g)
+cmapafterconcat:cmapf.concat=cmap(cmapf)
+cmap after nil:
+cmapf:nil=nil
+cmap after one:
+cmapf.one=f
+第三组是关于map的一些新定律：
+327
+map after nil:mapf.nil =nil
+map afterone:mapf.one=onef
+mapafter cons:mapf.cons=cons.(f*mapf)
+map after concat:mapf.concat =concat:map (map f)
+第四组是关于cup的定律：
+cup assoc:cup . (id * cup)= cup.(cup *id).assocl
+cup ident:cup.(f * (one.nil))=f.fst
+cup ident: cup :((one . nil) *g) =g,
+assocl:assocl.(f*(g*h))=((f*
+*h)assocl
+最后，加上下列定义和定律：
+crossbifunctor:(f*g).(h*k)=(f.h)*(g.k)
+cross bifunctor:(id *id)=id
+defn cp:cp.nil=one.nil
+defn cp:cp.cons=mapconscpp.(id*cp)
+defn unifyAil:unifyAll.nil = one.nil
+defn unifyAll: unifyAll  cons = cup . (one *unifyAll)
+unify after nil:unify(id *nil)=one.fst
+以上总共列出了30个定律（包括没有重复列出的定律：map的2个函子律和cmap
+的3个定律）。下面祈祷并希望：
+xmatchesA.(id *nil)
+(defnxmatchesA}
+cup，(one*matchesA)(id*nil)
+(crossbifunctor)
+cup.(one * (matchesA.nil))
+(defn matchesA]
+cup.(one*(combinemapmatchAnii))
+(map afternil]
+cup.(one *(combine.nil))
+[defn combine]
+cup.(one *(cmap unifyAllcp:nil))
+(defncp
+cup.(one* (cmap unifyAll.one.nil))
+Icmap after onej
+cup.(one *(unifyAllnil))
+(defnunifyAli]
+cup.(one*(one.nil))
+fcupident}
+one.fst
+结果令人满意。前面已经证明了xmatchesAsub［］=［sub]。但是，递归情况不
+容易建立起来。为此，必须猜想结果，并设法证明。下面是期望的结果，首先用点式表
+示，然后用点自由式表示：
+
+===== PDF 228 =====
+220
+第12章
+328
+xmatchesA sub (ae:aes)
+=concat [xmatchesA sub"aesI sub<-xmatchA sub ae]
+xmatchesA，(id*cons)
+=cmapxmatchesA.cpp:(xmatchA*one).assocl
+可以对右式进行简化（暂时从laws2中去掉xmatchA和matchesA的定义）：
+cmap xmatchesA.cpp.(xmatchA*one).assocl
+(defn xmatchesA}
+cmap(cup.(one*matchesA)).cpp.(xmatchA*one).assocl
+(cmap-cup)
+cup.(id*cmapmatchesA):(xmatchA*one).assocl
+(crossbifunctor]
+cup:(xmatchA *(cmap matchesA.one)).assocl
+(cmapafter one}
+cup，(xmatchA*matchesA):assocl
+现在希望证明：
+xmatchesA.(id * cons)
+=cup.(xmatchA * matchesA).assocl
+但是，不幸的是计算器做不到这点。缺口在这里：
+cup，((cup·(one*matchA))*matchesA)
+...???.
+cup.(one*(cup.(matchA*matchesA))).assocl
+这个缺口很容易手动消除：
+cup((cup.(one*matchA))*matchesA)
+(cross bifunctor (backwards))
+cup.(cup*id)，((one *matchA)*matchesA)
+(cupassoc]
+cup.(id*cup)：assocl:((one*matchA)*matchesA)
+(assocl)
+cup,(id*cup).(one *(matchA*matchesA)).assocl
+{cross bifunctor]
+cup.(one: *(cup.(matchA *matchesA))).assocl
+又一次看到，不能双向应用定律是问题的起因。在这里加上了注释“手工完成的作
+品！”，而没有设法强迫定律写成计算器可以接受的形式。
+为了结束这个例子，下面给出计算出的程序：
+match = xmatch emptySub
+xmatch sub(el,e2)
+329
+=concat[xmatchesAsubaesaes<-alignments(el,e2)]
+xmatchesAsub =[sub]
+xmatchesA sub (ae:aes)
+= concat [xmatchesA sub' aes I sub' <- xmatchA sub ae]
+xmatchA sub (Varv,e)=extend sub ve
+xmatchA sub(Con k1 es1,Compose[Conk2es2])
+Ik1==k2=xmatchessub(zipes1es2)
+xmatchA-=
+缺席的定义是xmatches。不过，处理xmatchesA的过程完全适用于处理mat-
+ches，最后得到
+xmatchessub=[sub]
+xmatchessub((el,e2):es)
+= concat [xmatches sub'es | sub'<- xmatch sub (el,e2)]
+
+===== PDF 229 =====
+一个简单的等式计算器
+221
+结论
+这两个练习的正面结论是，计算器确实可以用来辅助构建形式证明。但是，在这个过
+程中需要大量的人工输入，设置合适的定律，识别辅助断言和控制计算进行的次序。主要
+的负面结论是，计算器不能双向应用定律是一个大的缺陷。函子律是问题的主要来源，但
+是其他定律也有类似问题（参见习题中的例子）。计算器可以从几个方面改进，但是进一
+步改进讨论将放在习题中。
+关于这个计算器还有3个方面值得提出。第一，完整的计算器只有450行Haskell代
+码，改进的版本更短。仅这一点已经证明了函数式程序设计的表达能力。第二，将定律表
+达为纯函数等式，然后使用等式逻辑做证明似乎是切实可行的方法。为此，必须花些时间
+将定义表达成点自由形式，但是，一旦这个工作完成，等式逻辑计算变得非常高效。
+第三，除语法分析外，单子没有出现在计算器中。实际上，计算器较早的版本确实使
+用了单子，但是，它们渐渐被淘汰了。一个原因是，我们发现没有单子的代码更简单，效
+率也没有很大的损失；另一个原因是我们想为习题中计算器的改进留出空间。单子对于涉
+330
+及与外界交互的许多应用是绝对必要的，但是在纯函数方式已经很有效时，单子的使用可
+能变得多余。
+用以上几点结论结束本章。
+12.9
+9.习题
+习题A
+假如我们想让calculate返回所有可能计算构成的树。使用什么样的树合适？
+习题B
+为什么下列定律永远不被使用，至少如果定律用下列形式给出的话？
+map(f.g)=mapf.mapg
+ dem deo=() deo
+习题C以下是计算器给出的一个计算：
+mapf.mapgh
+=(mapfunctor)
+map (f. g)
+请解释这种奇怪、明显没意义的结果。对计算器做怎样的简单改动可以避免这种不合
+理计算的问题？
+习题D与习题C类似的问题，对于计算器的严肃批评指出，错误信息是完全不透明
+的。例如：
+这两个计算都引发神秘的错误信息。请问是什么错误信息？在一个计算中使用下列定律的
+效果是什么？
+331
+同样，如何修改计算器使其避免接受这种定律？
+习题E原子的showsPrec定义使用了之前没有用到的Haskell的一个事实。同样的
+
+===== PDF 230 =====
+222
+第12章
+机制后来在计算器的混合模式匹配与条件等式的函数中用到。这种机制是什么？
+习题F定义：
+el =foo (f.g).g
+e2=barf.bazg
+请列出当rewrites（el，e2）应用于表达式foo（a.b：c）.c时所生成的表达
+式。请问计算器会选择哪一个？
+习题G计算器能够成功地将foof.foof与下列表达式匹配吗？
+foo (bar gh).foo (bar(daza)b)?
+习题H书中曾称这是可能的：应用一个完全合法的非平凡定律将使得某些表达式不
+变。请给出一个这样的定律和一个表达式，将定律应用于表达式重写成自身。
+习题I书中rewrites定义中的函数anyOne设置单个选择，但是为什么不使用
+everyone同时设置每一个选择？因此，如果f1=【-1，-2］，f2=【-3，-4]，
+那么
+every0ne f [1,2] =[[-1,-3],[-1,-4],[-2,-3],[-3,-4]]
+使用everyone而不是anyone意味着每个重写将被应用于匹配一个定律的每个可
+332
+能的表达式。请给出everyOne的定义。
+习题J长度为n的列表有多少个段？rewritesSeq的定义是低效的，因为在长度
+为n的列表的分段中，空段作为中间分段出现n+1次。这表示与id的匹配进行了n+1
+次，而不是一次。如何重写segments来消除这些重复工作？
+习题K证明cmapf.cmapg=(cmap（cmapf.g）。需要的定律如下：
+defn cmap:
+cmapf=concat.mapf
+map functor:
+map f . map g = map (f-g)
+map after concat:mapf.concat=concat.map (mapf)
+concat twice:
+concat，concatconcatmapconcat
+习题L定律cmap-cpp如下：
+cmap(cpp.(one*f)).cpp=cpp.(id*cmapf)
+请利用下列定律证明cmap-cpp。
+cmapafter cmap:cmap f.map gcmap (f.g)
+crossbifunctor:(f*g)(h*k)=(f.h)*(gk)
+mapaftercpp:
+defn cmap:
+cmap f=concat,map f
+concat after id: concat.map one = id
+计算器能够完成这个证明吗？
+12.10答案
+习题A答案
+用表达式作为结点的标记，定律名作为边的标记。由此得到
+type Calculation = Tree Expr LawName
+333
+data Tree a b
+=Node a [(b,Tree a b)]
+习题B答案
+这样会使得计算器陷入无穷计算。例如：
+
+===== PDF 231 =====
+一个简单的等式计算器
+223
+map foo
+=(mapfunctor)
+map foo:map id
+=(mapfunctor)
+mapfoo.mapid.mapid
+等等。
+习题C答案根据语法规则，表达式mapf．mapgh是完全合法的，但是，当然不
+应该。计算器不会限制每个常量和同一个常量的每次出现都具有相同个数的参数。函子律
+可以成功匹配该表达式的原因是，在matchA的定义中，函数zip将第二个map的两个
+参数截短为一个。一个更好的计算器应该检查每个常量具有固定数目的参数。
+习题D答案神秘的信息是“空列表的第一个元素”。第一个分析失败，因为定律缺
+少名，第二个缺少等号。使用奇怪的定律将引发计算器产生错误信息，因为与左边模式匹
+配后h没有绑定任何表达式，当系统需要h的绑定值时弓起错误。为了避免这种问题，计
+算器应该检查一个定律右边的每个变量都在左边出现
+习题E答案showsPrec的定义如下：
+showsPrec p (Con f [e,e2])
+I isopf=expression1 e1 e2
+showsPrec p (Con f es)
+=expression2 es
+一个更数学化的定义是
+showsPrec p (Con f [el,e2])
+Iispf=expressioniei e2
+Iotherwise=expression2[e1,e2]
+334
+showsPrecp (Conf es)=expression2es
+要点是，在一个子句中，如果模式与参数不匹配，或者模式与参数匹配，但是条件不成
+立，则本子句被禁止，继续选择后面的子句。
+习题F答案有两个重写，不是一个：
+bar(a.b.c).bazid.c
+bar(a.b).bazc
+计算器将选择匹配的第一个子表达式，这也表示第一个重写被选中。或者更好的方法
+是让rewritesseg先应用于长段，后应用于较短的段。
+习题G答案不能，用给出的match定义不行。只有当g绑定daza，h绑定b
+时，将f绑定表达式bar（daza）b可以匹配，但是给出的match定义不能进行完全
+合一。
+习题H答案有许多例子，这里只是一个例子。考虑下列定律：
+ifpfg.h=if(p.h)(f.h)(g.h)
+左边匹配ifabc，其中h绑定id，而且结果还是同一个表达式。
+习题1答案可能的诱惑是定义：
+everyOne f = cp  map f
+但是，如果王不返回任何选择，则该定义不可行。必须定义：
+
+===== PDF 232 =====
+224
+第12章
+everyOne f=cp.map (possiblyf)
+possiblyfx=ifnullxsthen[x] elsexs
+where xs =fx
+335
+在这个定义中，f返回选择的非空列表。
+习题J答案长度为n的列表有（n+1）（n+2）/2个段。改进的定义如下：
+segments xs =[(,,xs] ++
+[(as,bs,cs)
+I (as,ys)<- splits xs,
+(bs,cs)<-tail (splitsys))
+习题K答案计算器输出：
+cmapf.cmapg
+(defn cmap)
+concat.map f.cmapg
+(defncmap)
+concat.map f.concat.mapg
+(mapafter concat)
+concat . concat . map (map f) . map g
+(map functor)
+concat.concat.map (mapf.g)
+(concat after concat)
+concat.mapconcat,map(mapfg)
+(map functor)
+concat.map (concat.map f.g)
+(defn cmap)
+concat.map(cmapfg)
+(defn cmap)
+cmap (cmap f.g)
+习题L答案人工证明如下：
+cmap(cpp.(one*g)）cpp
+(cmap after cmap (backwards))
+cmapcpp..map(one*g).cpp
+(map after cpp)
+(cmap after cpp)
+cpp.(concat*concat)(map one *map g)
+(cross bifunctor]
+cpp.((concat:map one)*concat (map g))
+(defncmap(backwards))
+cpp:((concat.map one)*cmap g)
+(concat after id)
+cpp. (id * cmap g)
+不能，这个计算不能自动完成。定律cmapaftercmap反向写会引起计算器陷人循
+环（见习题B）。
+12.11-注记
+本章的计算器基于我的牛津同事MikeSpivey未公开的一个定理证明器。伦敦城市大
+336
+学的RossPaterson设计了具有内置的可以双向应用的函子定律的版本。
+337
+一个最先进的证明辅助器是Cog，参见http：//coq.inria.fr/。

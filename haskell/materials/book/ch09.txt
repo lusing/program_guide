@@ -1,0 +1,845 @@
+
+===== PDF 148 =====
+第9章|
+Thinking Functionally with Haskell
+无穷列表
+我们在第4章已经遇到了无穷列表，而且在第6章给出了无穷列表上的归纳证明原
+理。但是，我们还没有真正认识无穷列表的作用。本章将详细解释什么是无穷列表，如何
+用循环（cyclic）结构表示它们。本章还将解释无穷列表上另一个有用的推理方法，并讨
+论一些有趣的例子，其中使用无穷列表和循环结构取得了很好的效果。
+9.1复习
+回顾【m..］表示m之后所有整数的列表：
+ghci> [1..]
+[1,2,3,4,5,6,7,{Interrupted]
+ghci> zip [i..] "hallo"
+[(1,h),（2,a),（3,1)，（4,1),（5,o)]
+输出[1：，］需要无穷的时间，所以这里中断了第一个例子的计算。第二个例子表达了无穷
+列表的一个简单但是很典型的应用。
+在Haskell中，算术表达式［m..］被翻译成enumFromm，其中enumFrom是类族
+Enum的一个方法，定义为
+enumFrom :: Integer ->[Integer]
+210
+enumFromm=m:enumFrom(m+1)
+因此，【m，]是递归定义函数的一个特例。因为（：）对第二个参数是非严格的，所以
+计算得以。
+需要记住的是，无穷列表的计算与数学上无穷集合的计算不同。例如，在集合论中有
+(x| xe1,2,3,..) ,x<10
+表示集合（1，2，3，但是
+ghci>[x | ×-[1..],×*x<10]
+[1,2,3
+输出前三个值后，计算机不停地寻找3之后下一个平方小于10的数，因此陷入无限
+循环。上述表达式的值是非完整列表1：2：3：undefined。
+构造无穷列表的无穷列表也是可行的。例如，下列表达式是无穷列表的无穷列表：
+multiples=[map(n*)[1..]n<-[2..J]
+其中前三个是
+[2,4,6,8,.][3,6,9,12,..][4,8,12,16,..]
+假如我们想知道以上列表的列表是否可以归并为一个列表，即[2．］。归并两个无穷
+列表没有问题：
+
+===== PDF 149 =====
+无穷列表
+141
+[][][]
+merge(x:xs)(y:ys)/ x<y=x:mergexs(y:ys)
+I x==y = x:merge xs ys
+I x>y = y:merge (x:xs) ys
+以上merge删除了重复出现的元素：如果两个列表严格递增，那么结果也是严格递
+增的。注意merge没有一个子句说明空列表的情况。现在，如果定义
+mergeAll = foldr1 merge
+看似mergeAllmultiples将返回无穷列表[2.]。但是，事情不是这样的。结果是计
+算机陷入尝试计算结果的第一个元素的无限循环中，即
+minimum (mapheadmultiples)
+很简单，在一个无穷列表中求最小元是不可能的。所以，必须使用mapheadmul-
+tiples是严格递增的事实，并定义
+211
+mergeAll =foldr1 xmerge
+xmerge (x:xs)ys =x:mergexs ys
+利用这个定义，mergeAllmultiples确实可以输出[2..]。
+最后，回顾第6章描述的无穷列表上的归纳原理。只要P是一个链完全的性质，要证
+明P（xs）对于所有的无穷列表xs成立，只要证明：（i）P（undefined）成立；（i）
+如果P（xs）成立，那么Px：xs）对于所有x和xs成立。利用这个原则，我们在第6
+章证明了对于所有无穷列表xs，xs++Ys=xs成立。但是，并不是很清楚如何用归纳
+法证明如下等式：
+mapfact[o..]=scanl(*)1[1..]
+明显地应该证明
+mapfact[0.n]=scanl (*)1 [1..n]
+对于所有n成立，但是，这样能够断定第一个等式成立吗？
+9.2行
+循环列表
+像函数一样，数据结构也可以递归定义。例如：
+ones::[Int]
+ones =1:ones
+这是循环（cyclic）列表即递归定义的列表的一个例子。将这个定义与ones=repeat1
+比较，其中：
+repeat x=x:repeatx
+ones的这个定义构造了一个无穷列表，但不是一个循环列表。可以定义：
+repeat x= xswhere xs=x:xs
+现在函数repeat是用循环列表定义的。第二个定义（称为repeat2）的计算比第一个
+（称为repeat1）快，因为开销更少：
+
+===== PDF 150 =====
+142
+第9章
+ghci> last $ take 10000000 $ repeat1 1
+(2.95 secs,800443676 bytes)
+ghci> last $ take 10000000 $ repeat21
+212]
+1.
+(0.11secs280465164bytes)
+再看一个例子。考虑标准引导库函数iterate的下列三个定义：
+iteratel f x = x:iteratel f (f x)
+iterate2fx=xswherexs=x:mapfxs
+iterate3fx=x:mapf(iterate3fx)
+三个定义的类型均为（a->a）->a ->［a]，而且结果都是反复应用f于x的无穷列
+表。三个函数是相等的，但是早前的归纳原理似乎不能用来证明这个命题，因为找不到能
+够进行归纳的变量。后面会对此做进一步讨论。第一个定义是标准引导库的定义，但是这
+里并没有构造任何循环列表。第二个定义构造了循环列表，第三个定义只是在第二个定义
+中消去了where子句。假定fx可以用常数时间计算，第一个定义需要@（n）步计算前n
+个元素，但是第三个定义需要①（n²）步：
+iterate3（2*）1
+=1:map（2*)(iterate3(2*)1)
+=：1:2:map(2*）(map（2*）(iterate3（2*）1))
+=1:2:4:map（2*）（map（2*）（map（2*）(iterate3（2*）1)))
+其中计算第n个元素需要（2*）的n次应用，所以生成前n个元素总共需要@（n²）步。
+现在剩下第二个定义了。第二个定义需要线性时间还是二次方时间？表达式
+iterate2（2*）1的求值过程如下：
+xs
+where xs =1:map (2*)xs
+= 1:ys
+where ys =map (2*)(1:ys)
+= 1:2:zs
+where zs =map (2*)(2:zs)
+=1:2:4:tswhere ts=map(2*)(4:ts)
+生成结果的每个元素需要常数时间，所以iterate2（2*）1输出n个元素需要@（n）
+时间。
+现在构造一个循环列表，以生成所有素数的无穷列表。开始先定义：
+primes
+=[2..]composites
+composites = mergeAll multiples
+213
+multiples=[map(n*[n..]In<-[2.J]
+其中（1V）从一个严格递增的列表中减去另一个严格递增的列表：
+((SA:)SX):X=A>X1(SA:)(SX:X)
+I x==y =xs  ys
+I x>y= (x:xs) l ys
+这里multiples的构成是，从4开始的所有2的倍数构成的列表，从9开始的所有
+3的倍数构成的列表，从16开始的所有4的倍数构成的列表，等等。合并这些列表得到所
+有的合数构成的列表，然后关于[2。]取补得到所有素数。mergeAl1的定义在9.1节已
+给出。
+到目前为止，一切顺利。但是，如果注意到太多的倍数被合并到合数中，那么算法通
+
+===== PDF 151 =====
+无穷列表
+143
+过改进可以快许多倍。例如，已经构造了2的倍数，没必要再构造4的倍数，或者6的倍
+数等。我们真正想构造的是素数的倍数，由此导出“打一个递归结”的思想，定义：
+primes =[2..]composites
+where
+composites=mergeAll[map(p*)[p..]IP<-primes]
+以上是primes的一个循环定义。定义看起来不错，但是可行吗？不幸的是，答案是
+否定的：primes生成无定义列表。为了确定primes的第一个元素，计算过程需要得到
+composites的第一个元素，后者又需要primes的第一个元素。所以计算陷人无限循
+环中。要解决这个问题，必须显式给出第一个素数，从而从计算中抽出素数！因此需要如
+下改写定义：
+primes =2:([3..] 1 composites)
+where
+composites =mergeAll [map(p*)[p..JIp<-primes]
+但是这个定义仍然不能输出素数！原因是细微的，而且不易发现。这和下面的定义有关：
+mergeAll = foldr1 xmerge
+肇事者是foldr1的定义。回顾它的Haskell定义：
+ - [] - (e - <- e) :: tipto
+foldrif[x]
+foldr1f(xixs)=fx(foldr1xs)
+214
+定义的两个等式顺序很关键。特别是
+foldrl f (x:undefined)= undefined
+因为列表参数首先与x：［]匹配，由此导致结果为undefined。这表示
+mergeAll[map(p*)[p..J1p<-2:undefined]=undefined
+真正需要的是
+mergeAll [map(p*)[p..]Ip<-2:undefined]=4:undefined
+为了得到这个效果，需要给mergeAl1不同的定义：
+mergeAll (xs:xss)=xmerge xs (mergeAll xss)
+现在有
+mergeAll[map(p*)[p..]p<-2:undefined]
+=xmerge(map(2*)[2..J)undefined
+=xmerge（4:map(2*）[3..J)undefined
+=4:merge(map(2*)[3..J)undefined
+= 4:undefined
+这个mergeAl1定义在有穷列表上的表现不同于前一个定义。为什么？
+做了最后的修改后，可以说primes真正进人正轨了。但是如何证明这个结论呢？回
+答这个问题需要了解Haskell中关于递归定义的函数和值的语义，以及无穷列表如何定义
+为它们的非完整列表逼近的极限。
+9.3作为极限的无穷列表
+在数学上某些值定义为更简单值的无限逼近序列的极限（limit）。例如，无理数
+
+===== PDF 152 =====
+144
+第9章
+T=3.14159265358979323846..
+可以定义为下列有理数无穷序列的极限：
+215
+3，3.1，3.14，3.141，3.1415，
+第一个元素3是T的非常粗的逼近，下一个元素3.1是好一点的逼近，3.14是更好的逼
+近，等等。
+类似地，一个无穷列表也可以看成一个逼近序列的极限。例如，无穷列表［1·］是下
+列非完整列表的极限：
+1，1:1，1:2:1，1:2:3:1，
+同样，序列是极限值越来越好的逼近。第一项工是无定义的元素，因此是非常粗的逼
+近：它没有极限的任何信息。下一个元素1：工要好一点：它说明极限是一个列表，其第一
+个元素是1，但是关于列表的尾部则没有任何信息。接下来的项1：2：工更好一点，等等。
+每个更好的后续逼近都用另一个有定义的值代替工，因此给出极限的更多信息。
+下面是另一个逼近序列，其极限是[1，.］：
+1，1:2:1，1:2:3:4:1，1:2:3:4:5:6:1,...
+该序列是前一个序列的子序列，但是它也收敛于同样的极限。
+下面是一个不收敛于任何极限的逼近序列：
+121:12:1:1232:1:1，..
+这个序列的问题在于它给出的信息是矛盾的：第二项说明极限的第一个元素是1，但是，
+第三项说明极限的首元素是2，第四项又说明极限的首元素是3，等等。没有一个逼近说
+明它们的极限是什么，所以该序列不收敛。
+不应该认为一个列表序列的极限必须是无穷的。例如，下列序列：
+1，1:1,1.[],1.[],...
+其中从第三项开始的每个元素都是「1]，这是完全合理的序列，其极限为「1」。类似地，
+11:1,1:2:1,1:21,
+是以1：2：工为极限的序列。有穷列表和非完整列表是只包含有穷个不同的元素序列的
+极限。
+形式上表达非完整列表的无穷序列收敛于一个极限的方法是在每个类型的元素上引人
+216
+逼近序（approximationordering）二的概念。断言x二y表示x是y的一个逼近。序二是自反
+的（α）、传递的（如果αy并且z，那么xz）和反对称的（如果αy并且y二，
+那么x=y）。但是，该序并不要求每一对元素关于二可比较。因此，二称为偏序（partial
+ordering）。注意，二是一个数学符号（如=），并不是一个返回布尔值的Haskell运算符。
+数值、布尔、字符和任意其他枚举类型上的逼近序定义如下：
+xEy=(α=1)V(x=y)
+第一个子句表示工是所有元素的逼近。换言之，工是该序的底部（bottom）元素，简称底
+元。这也解释了为什么工读作“底部（bottom）”。值是任何类型上逼近序二的底元。上
+面定义的序是平坦的（flat）。对于平坦序，我们或者知道一个值的一切信息，或者没有任
+何信息。
+类型（a，6）上的序定义为工二（α，y），而且
+
+===== PDF 153 =====
+无穷列表
+145
+(x,y)E(x,y')=(xEx')A(yEy")
+右边的出现分别指类型α和类型b上的逼近序。类型（a，b）上的序不是平坦的，即使
+其分类型上的逼近序是平坦的。例如，在类型（Boo1，Boo1）上有下列不同元素间的链：
+lE(l,l)E(l,False)E(True,False)
+注意在Haskell中二元组（工，1）不同于工：
+ghci>let f (a,b)=1
+ghci> f (undefined,undefined)
+ghci> f undefined
+***Exception:Prelude.undefined
+类型【a】上的序定义为1二xs，（x：xs）［]，而且
+EXS=XS=
+(x:xs)E(y:ys)=(xEy)A(xsEys)
+这些等式应该看作一个数学断言的归纳定义，而不是Haskell定义。第二个条件表示只
+是自已的逼近，第三个条件表示（x：xs）是（y：ys）的逼近当且仅当x是y的逼近，而且
+217
+xS是Ys的逼近。定义右边二的第一次出现表示类型a上的逼近序。
+以下是两个逼近的例子：
+[1,1,3][1,2,3]
+1:2:1[1,2,3]
+但是，1：2：1和[1，1，3］关于不可比较。
+每个类型T上的逼近序除以上描述的性质外，还有另外一个性质：每个逼近链
+（chain）α三α，三必须在T中具有一个极限。用limα表示的该极限由下列两个条件
+定义：
+1.x，二limx，对于所有的n成立。这个条件表示极限是逼近序列的上界（upperbound）。
+2.如果对于所有的n有x,二y，那么limx二y。这个条件表示极限是最小上界。
+逼近链的极限定义适用于任何类型。具有这种性质的偏序称为完全的（complete），而
+且每个Haskell类型是一个完全偏序（CompletePartialOrdering，CPO）。特别是，第6章引
+入的P的链完全性质断言现在可以描述为
+(Vn:P(n)) =P(limxn)
+换句话说，如果P对于极限的每个逼近成立，那么P对于极限成立。
+Haskell有一个关于列表的有用函数approx，该函数生成一个给定列表的逼近。其定
+义如下：
+approxnIn>o=
+approxn(x:xs)n>0=x:approx(n-1)xs
+函数approx的这个定义非常类似于take，区别在于分情况定义，对于任意xs，有
+approx0 xs = undefined。例如:
+approx 0 [1] = undefined
+approx 1 [1] = 1:undefined
+approx2[1]=1:
+
+===== PDF 154 =====
+146
+第9章
+approx最关键的性质是
+218
+limapprox n xs = xs
+对于任意列表xS，包括有穷、非完整和无穷列表都成立。证明可以在xS上归纳进行，留
+作练习。
+由此得出，如果approxnxs=approxnys对于所有的自然数n都成立，那么
+XS=YS。因此可以通过证明
+对于所有的自然数n成立来证明
+iterate f x= x:map f (iterate f x)
+当然，前一个等式的证明可以对自然数进行归纳。证明留给读者作为练习。
+再来看一个例子，考虑9.2节定义的primes。假如定义：
+prsn=approxnprimes
+要想证明prsn=pi：P2：Pn：工，其中p,是第个素数，则需证明：
+prs n=approxn(2:([3..Jcrs n))
+crsn=mergeAll[map(p*)[p..JIp<-prsn]
+利用这些条件，可以证明crsn=Ci：C2：Cm：工，其中c是第j个合数（如c=4）而
+且m=p。然后可以利用不等式Pn+1<p,完成证明，只是这个不等式是数论中的一个非平
+凡结论。详情见习题。
+可计算函数与递归定义
+我们可以描述许多数学函数，但是只有一部分是可计算的。可计算函数有两个性质是
+其他函数不具有的。第一，一个可计算函数关于逼近序是单调的（monotonic）。用符号来
+表示，对于所有的x和y，有
+xEy=f(x)Ef(y)
+粗略地讲，单调性表示对于参数提供的信息越多，得到的结果的信息也越多。第二，一个
+可计算函数是连续的（continuous），也就是说
+219
+f(limxn）=limf(xn)
+对于所有的逼近链x。二，二成立。连续性大致表示，如果参数有极限，那么结果也有
+极限。
+连续性看似与链完全性相似，但是它们在两方面不同。一方面，P的链完全性并不意
+味着如果P对于所有逼近不成立，则P对其极限也不成立。换言之，它并不能推出一P是
+链完全的。另一方面，P是一个数学命题，不是返回布尔值的Haskell函数。
+这里不加证明但给出一个结果：每个单调且连续的函数f具有一个最小不动点（least
+fixedpoint）。一个函数f的不动点是使得f(x）=x的值x。称x是最小不动点，如果对于所
+有的其他不动点y有x三y。一个单调连续函数f的不动点由极限limx给出，其中xo=工，
+xn+1=f（x,）。在函数式程序设计中，递归定义被解释为最小不动点。
+下面是三个例子。第一个例子考虑定义ones=1：ones，该定义表示ones是函数
+
+===== PDF 155 =====
+无穷列表
+(1：）的一个不动点。Haskell将其解释为最小不动点，所以ones=limonesn，其中
+oneso=工，onesn+1=l：onesn。容易看出，onesn是n个1构成的非完整列表，所以
+其极限确实是无穷个1的列表。
+第二个例子考虑阶乘函数：
+factn =if n==o then1else n*fact(n-1)
+可以将该函数改写为下面的等价形式
+fact=(Ifn->ifn==othen1elsen*f(n-1))fact
+同样，这个函数说明fact是一个函数的不动点。对这个例子，有
+facton=l
+factin=if n==0 then 1 else
+fact2n=if n<=1 then1 elsel
+等等。如果n小于k，那么factn的值是n的阶乘，否则是工。
+第三个例子再次考虑列表primes。对这个例子，有
+primeso= |
+primesn+1 = 2:([3..J /l
+mergeAli[map(p*)[p..]Ip<-primes,])
+220
+这里并不是指primes,=approxnprimes。事实上，有
+primes =2:1
+primes2=2:3:1
+primes3=2:3:5:7:1
+primes4=2:3:5:7:-:47:1
+非完整列表primes2生成小于4的所有素数，primes3生成小于9的所有素数，
+primes4生成小于49的所有素数，等等。
+9.4石头-剪刀-布
+下一个无穷列表的例子可谓寓教于乐。这个例子不仅介绍使用潜在无穷列表来表示两
+个进程间的交互序列的思想，而且提供了另一个说明做形式化分析必要性的具体例子。
+石头一剪刀一布游戏是妇孺皆知的游戏，只是不同的地方它的名称可能不同。游戏在两
+个玩家之间面对面进行，每个玩家在自已背后做出形如石头（紧握的拳头）或者布（伸
+展的手掌）或者剪刀（两个伸开的手指）的手势，在约定的时刻同时亮出藏在背后的手
+势。输赢规则为“布包石头，石头钝剪刀，剪刀剪布”。因此，如果玩家1伸出石头，玩
+家2伸出剪刀，那么玩家1赢，因为石头可以钝剪刀。如果两个玩家伸出同一种手势，那
+么结果是平局，没有赢家。游戏以这种方式连续进行事先约定数目的回合。
+本节的目标是设计一个玩这种游戏并记录分数的程序。首先从引人类型开始：
+data Move =Paper I Rock I Scissors
+type Round = (Move,Move)
+给一个回合计分，定义：
+
+===== PDF 156 =====
+148
+第9章
+score ::Round-> (Int,Int)
+score (x,y) | xbeatsy= (1,0)
+I y"beatsx= (o,1)
+Iotherwise
+= (0,0)
+221
+其中：
+PaperbeatsRock
+= True
+Rockbeats'Scissors=True
+Scissors beatsPaper True
+= False
+游戏的每个玩家将被表示成某种策略。例如，一种简单策略是，在第一个回合后每次
+选择对手上一个回合的出手。这个策略称为copy。另一策略基于一定的分析和计算做出
+回应，称为smart，其方法是通过分析对手已经做出的每种出手的次数，基于一定的概
+率计算适当的下一次出手。
+稍后将考虑特定策略的细节，以及这些策略如何表示。目前先假定类型Strategy
+用某种方式给出。引入函数：
+rounds:(Strategy,Strategy)->[Round]
+对于一对策略，该函数返回当每个玩家根据其策略出手时的无穷回合列表。下列函数决定
+给定轮次猜拳后的成绩：
+matchn=total,mapscore.taken:rounds
+wheretotal rs=(sum(mapfstrs),sum(mapsndrs))
+该游戏中具有教育意义的是如何表示策略。考虑两种表示方式，分别称为Strat
+edyl和strategy2。最明显的想法是定义：
+type Strategy1 = [Move] -> Move
+这里策略表示成一个函数，该函数的输入是对手到目前为止的出手（有穷）列表，返回值
+是下一轮的出手。为了处理列表方便，假定出手的列表用逆序列出，即最后的出手是列表
+的第一个元素。
+例如，策略copy1是如下实现的：
+copy1::Strategy1
+copy1 ms=if null ms then Rock else head ms
+222
+第一个出手是随意选择的Rock，第二个策略smart1如下定义：
+smart1::Strategy1
+smarti ms= if null ms then Rock
+elsepick (foldr count(o,o,o)ms)
+count::Move->(Int,Int,Int)->(Int,Int,Int)
+countPaper(p,r,s)=(p+1,r,s)
+countRock(p,r,s)-=(p,r+i,s)
+countScissors(p,r,s)=(p,r,s+1)
+pick ::(Int,Int,Int)->Move
+pick (p,r,s)
+Im<p
+=Scissors
+I m<p+r=Paper
+I otherwise=Rock
+where m = rand (p+r+s)
+
+===== PDF 157 =====
+无穷列表
+149
+这个策略首先计算每种手势出现的次数，然后根据这个结果选择一种手势。Rand应用于
+n返回一个整数m，而且0≤m<n。（注意rand永远不会应用于同一个整数。）所以，最
+后做出的选择依赖于㎡落人下面三个区间中哪一个：
+0≤m<p或者p≤m<p+r或者.p+r≤m<p+r+s
+例如，如果p很大，那么Scissors被选中的概率很大（因为剪刀剪布）；如果r很大，
+那么Paper被选中的概率大（因为布包石头）；等等。
+为定义rand，利用库System.Random的两个函数：
+rand:Int ->Int
+randn=fst$randomR(o,n-1)(mkstdGenn)
+函数mkStdGen输入一个整数，返回一个随机数生成器，不同的整数可能得到不同的生成
+器。mkstdGen的参数选择是任意的，这里简单取n。函数randomR取一个区间（a，b）
+与一个随机数生成器，返回区间α≤r≤b上的一个伪随机数r和一个新的随机数生成器，
+现在可以定义roundsl：
+rounds1:(Strategy1,Strategy1)->[Round]
+rounds1 (p1,p2)
+=maphead $tail $iterate(extend(p1,p2))[
+extend(p1,p2)rs=(p1-(mapsndrs),p2(mapfstrs)):rs
+223
+函数extend在现有回合列表前添加一对新的出手，rounds1在初始的空回合列表上不
+断添加新的回合，从而生成无穷的回合列表。在列表前添加元素比在尾部添加元素更高
+效，这是回合列表用逆序表示的原因。
+不过rounds1的效率不高。假设一个策略需要正比于其输入长度的时间计算下一个
+出手。由此得出extend需要@（n）步用一个新回合更新n个回合的游戏。因此，计算N
+个回合的游戏需要（N）步。
+为了进行比较，考虑另一个策略的合理表示。这次定义：
+type Strategy2 = [Move] ->[Move]
+在新的表示中，策略是一个函数，函数的输入是对手的出手潜在无穷列表，输出是回应对
+手的潜在出手无穷列表。例如，copy策略现在可以这样实现：
+copy2::Strategy2
+copy2ms=Rock:ms
+该策略首次返回Rock，以后每次都返回对手前一回合的出手。smart策略如下
+实现：
+smart2 ::Strategy2
+smart2 ms = Rock:map pick (stats ms)
+where stats =tail .scanl (flip count) (o,0,0)
+其中函数stats计算3种手势出现的次数。像copy2一样，这个策略也是高效的，它可
+以在常数时间返回每个后续的出手。
+使用新的策略模型，函数rounds可以重定义如下：
+rounds2::(Strategy2,Strategy2)->[Round]
+rounds2(p1,p2)=zipxsys
+where xs=p1 ys
+ys = p2 xs
+
+===== PDF 158 =====
+150
+第9章
+这里XS是第一个玩家根据列表ys计算出的应对出手列表，而YS是第二个玩家根据
+列表xs计算出的应对出手列表。因此，rounds2是用两个循环列表定义的，并且
+224
+必须说明该函数确实生成良好定义的回合的无穷列表。这点稍后再做说明。如果两个
+玩家真正使用合法的策略，每个玩家用常数时间计算出下一次出手，那么rounds2
+用?（n）步计算出游戏的前n个回合出手。因此，使用策略的第二个模型得到更高效
+的程序。
+不幸的是，策略的第二种表示存在严重缺陷：它没有提供防欺骗的方法！考虑下面的
+策略：
+cheat ms= map trump ms
+trump Paper
+=Scissors
+trump Rock
+=Paper
+trump Scissors =Rock
+cheat的第一次回应是确保打赢对手第一次出手的手势，随后的出手也类似。为了看清
+楚不能阻止cheat毁掉游戏，考虑它与策略copy2的比赛，并令xs=cheatys，
+ys=copy2xs。列表xs和ys分别是两个链（xsnl≤n和1ysl0≤n的极限，
+其中xS。=l，xsn+1=cheatySn，ySo=1，ySn+1=copy2xsno现在有
+cheat l
+copy21
+ys1
+= Rock: 
+cheat (Rock:1)
+XS2
+= Paper:1
+copy21
+y82
+= Rock:l
+cheat(Rock:1)
+XS3
+= Paper:1
+copy2(Paper:1)
+ys3
+=Rock:Paper:l
+按照这种方式重复下去，可以看出这些序列的极限确实是良好定义的出手列表的极限。而
+且，cheat总是赢。另一种欺骗方法如下：
+devious ::Int -> Strategy2
+devious nms =take n (copy2ms)++ cheat (drop nms)
+这个策略前n个出手像拷贝，然后开始欺骗。
+是否可以找到一种防止欺骗的方法？要回答这个问题，需要仔细看看什么是诚实策
+略。非正式地讲，如果一个策略在计算其第一出手时没有使用对手第一次出手的任何信
+息，计算第二次出手时也没有使用对手第二次出手的任何信息，等等，那么这个策略是诚
+实的。而且，假定对手的出手是良好定义的，那么每次出手都是良好定义的。更确切地
+225
+说，假设用wdf（n，ms）表示出手列表ms（可能非完整）的前n个元素是良好定义的。如
+果对于所有n和ms都有下列命题成立：
+wdf(n,ms)=wdf(n+1,f(ms))
+则称策略f是诚实的。容易证明，copy2是诚实的。另一方面，因为wdf(O，1）真，但
+是wdf（l，cheat）不真，所以cheat是不诚实的。再看策略dozy：
+dozy ms = repeat undefined
+尽管该策略不存在欺骗，但是根据定义它是不诚实的。
+找到不合法或者无意义行为的根源后，能否确保只有诚实的策略才可以玩游戏？答
+
+===== PDF 159 =====
+无穷列表
+151
+案是有条件的“是”：尽管一个机械的计算器不可能识别欺骗（同样不能识别或者一
+个策略是否返回良好定义的出手），但是可以定义一个函数police，使得如果p是一
+个诚实的玩家，ms是良好定义的出手无穷序列，那么policepms=pms。另一方
+面，如果P在某时刻是不诚实的，那么游戏在该时刻以工终止。从操作语义上讲，
+police强迫p在它得到其输入前返回其输出的第一个（良好定义的）元素，对于其他
+元素也类似地进行。其定义如下：
+policepms=msiwherems!=p (synchmsms')
+回顾第7章xsey的求值，在返回y的值之前需要先对x求值。证明这个定义满足
+其规格说明需要很大的投入，故不在此详述。从上面的分析可以得出，要避免欺骗必须重
+新改写rounds2的定义如下：
+rounds2(pl,p2)=zipxsys
+where xs =police pi ys
+ys=police p2xs
+9.5基于流的交互
+在石头一剪刀一布游戏中，使用了一个输入为出手的无穷列表并返回类似列表的函数表
+示交互。同样的思想可用于建立输入一输出交互的简单模型，称为基于流（stream-based）
+的交互，因为无穷列表也称为流。Haskell提供了一个与外界交互的函数：
+interact::([Char]->[Char]->I0
+226
+interact的参数是一个函数，其输入是来自标准输入的潜在无穷的字符列表，并返回打
+印在标准输出的一个潜在无穷的字符列表。例如：
+ghci> import Data.Char
+ghci>interact (map toUpper)
+hello world!
+HELLO WORLD!
+Goodbye, cruel world!
+GOODBYE,CRUELWORLD!
+(Interrupted)
+首先输入库Data.Char以便可以使用toUpper，然后创建一个将每个字符转换为大写
+的交互。每次输入一行（重复出现在显示器上），交互程序输出全部大写的输人行。该进
+程连续运行直至用户中断它。
+也可以设计一个终止的交互。例如：
+interact (map toUpper.takewhile (/=,))
+该程序实现类似于以上的交互，而且当输入行键入句点后立即终止：
+ghci>interact(maptoUpper.takeWhile(/='."))
+Goodbye.Forever
+GOODBYE
+下面是一个能够独立运行的程序，它读取一个Haskell文学型程序作为输人，然后返
+回将首字符不是>的非空行删除，其余行的首字符>被删除的文件。所以结果是一个合法
+
+===== PDF 160 =====
+152
+第9章
+的.hs文件（非文学型的Haskell脚本）：
+main
+=interactreplace
+replace=unlines-map cleanup.filtericode.lines
+code xs =null xs ll head xs==">!
+cleanupxs=if null xs then  else tail xs
+该程序是与标识符main相关联的计算，而且任何程序如果要进行编译，必须给出main
+的定义。函数lines将文本分解成行，unlines在这些行间添加换行符后重新将其合成
+227
+文本。如果将程序存储为1hs2hs.1hs，那么可以将其编译，然后运行：
+$ ghc lhs2hs.lhs
+$ lhs2hs <myscript.1hs >myscript.hs
+其中第二行的输入来自myscript.1hs，输出重定向到myscript.hs。
+在Haskell早期版本中，基于流的交互是与外界交互的主要方法。但是，以上解释的
+模型对于大多数实际程序设计来说过于简单。在更实际的应用中，需要比从键盘读字符和
+在屏幕上写字符更多的交互。例如，需要打开文件并读文件、写文件，或者删除文件，总
+之需要与一个函数语言范围之外的所有设备和机制交互。交互是实时发生的，程序员必须
+正确地处理交互事件发生的次序。在基于流的模型中，事件的次序用列表中元素的次序表
+示。换言之，次序在数据中表达，基本没有反映在程序编写的方式上。第10章将考虑另
+一种交互的方法
+一一种能真正用于控制事件序列顺序程序的通用方法。使用这种方法
+时，事件的次序显式地反映在程序的编写方式中。
+9.6双向链表
+下面用循环列表的另一个应用结束本章。设想阅读由页的非空列表组成的一本书。在
+书中浏览时，需要有移到下一页或者翻到前一页的方法。其他的浏览工具也是有用的，不
+过这里只考虑这两种方法。下面是与一本无聊的只由3页构成的书的交互过程：
+ghci> start book
+"Page 1".
+ghci> next it
+"Page 2"
+ghct> prev it
+"Page 1"
+ghci> next it
+"Page 2"
+ghci> next it
+228
+"Page 3
+在GHCi中变量it被绑定到刚刚在提示符后键人的表达式上。展开一本书时，打印出来
+的是第一页。翻到下一页，然后返回前一页。有趣的问题是，当我们已经在最后一页时，
+翻到下一页应该如何处理？浏览程序应该报错，仍然停留在最后一页，还是转到第一页？
+假如选择后者，最后一页的下一页是第一页，第一页的前一页是最后一页。换言之，书是
+循环双链表（cyclicdoubly-linkedlist）的一个例子。
+下面是有关数据类型的声明：
+dataDLista=Cons a(DList a)(DLista)
+elem::DLista->a
+
+===== PDF 161 =====
+无穷列表
+153
+elem (Cons apn)=a
+prev,next :: DList a -> DList a
+prev (Cons a p n) = p
+next(Consapn)=n
+打印双链表通过显示当前元素来完成：
+instanceShowa=>Show(DList.a)
+whereshow d=show(elemd)
+这样一来，上面提到的书就是一个3页列表[p1，p2，p3］，其中：
+p1=Cons"page 1"p3p2
+p2=Cons"Page 2"p1p3
+p3=Cons"Page.3"p2p1
+这个例子表明将一个（非空）列表as转换为双链表的函数mkcDList：：【a］->
+DLista可以说明为一个双链表的有穷列表xs的第一个元素，并且满足下列3个性质：
+map elem xs = as
+mapprevxs=rotrxs
+mapnextxs=rotlxs
+其中rotr和rotl（分别是右转rotateright和左转rotateleft的简写）定义如下：
+rotrxs=[lastxs]++initxs
+rotl xs = tail xs ++ [head xs]
+229
+注意现在对于任意双链表的列表xS，有
+xs=zipWith3Cons
+(mapelemxs)(map prevxs)(mapnextxs)
+其中zipwith3的功能如zipwith，只是现在它需要取3个列表，而不是2个列表。标
+准引导库的定义为
+zipwith3f(x:xs)(y:ys)(z:zs)
+=fxyz:zipwith3fxsyszs
+zipwith3------
+稍后将看到另一个定义。可以用归纳法证明前面的断言，对于无定义值和空列表显然成
+立。对于归纳情况，推理如下：
+【因为xs是双链表】
+Cons(elemx)(prevx)(nextx):xs
+=【归纳假设]
+Cons(elemx)(prevx)(nextx):
+(zipWith3Cons
+(map elemxs)(map prevxs)(map next xs))
+=【zipWith3和map的定义】
+zipwith3 Cons
+(mapelem(x:xs))(mapprev(x:xs))(mapnext(x:xs)
+结合这个结果与双链表的说明，得到
+mkCDListas=headxs
+wherexs=zipwith3Consas(rotrxs)(rotlxs)
+
+===== PDF 162 =====
+154
+第9章
+这个定义涉及一个循环列表XS。这样可行吗？答案是“不可行”。原因是如上定义的
+zipwith3太勤奋。需要使它懒一点，当另外两个列表不是真正需要时不对它们
+求值：
+zipwith3f(x:xs)yszs
+=f x (head ys) (head zs):
+zipWith3fxs(tailys)(tail zs)
+230
+zipwith3----=
+定义这个函数的一个等价方法是利用Haskell的无争辩模式（irrefutablepattern）：
+(:)(:)(S:)
+=fxyzzipWith3fxsyszs
+zipwith3- ---=
+无争辩模式用一个波浪号表示，～（x：xS）的匹配是惰性的，即匹配是在x或者xs
+被需要时才进行。
+为了确保以上使用zipwith3修改版的mkcDList定义确实取得进展，令xso=士，
+并且令
+xs+i=zipwith3Cons"A"(rotrxs.)(rotlxs.)
+然后xS,如下：
+zipwith3Cons"A"ll
+[Cons"A'II]
+XS2如下：
+zipWith3Cons"A"
+[ConsA'II][ConsA'II]
+等等。
+9.7
+习题
+习题A给定3个严格递增的列表xS、Ys和ZS，则有
+因此，merge满足结合律。另外假定xs、ys和zs的第一个元素是严格递增的，那么
+由此是否可以推出表达式foldrlxmergemultiples中的foldrl可以用foldl1
+231
+习题B标准引导库函数cycle：：【a］->【a]取一个列表xs，返回xs元素的无
+穷次重复列表。如果xs是空列表，那么cycle［1返回错误信息。例如：
+cycle"hallo"="hallohallohallo...
+请使用一个循环列表定义cycle，确保该定义在空列表、有穷列表和无穷列表上都
+可行。
+
+===== PDF 163 =====
+无穷列表
+155
+习题C
+斐波那契函数定义如下：
+fib 0=0
+fib 1=1
+fibn=fib(n-1)+fib(n-2)
+请用一行定义写出能够生成斐波那契数列的无穷列表fibs。
+习题D一个源于数学家W.R.Hamming的有名问题是设计一个程序，该程序能够生
+成一个数的无穷列表，并且满足性质：（i）列表严格递增；（i）列表从1开始；
+（i）如果列表包含数α，那么列表也包含2x、3x和5α；（iv）列表不含其他数。因此，
+列表以下列这些数开始：
+1,2,3,4,5,6,8,9,10,12,15,16,...
+请给出生成这个列表hamming的定义。
+习题E证明approxnxs三xs对于所有的n都成立。然后证明如果approxnxs
+ys对所有的n成立，那么xs二yS。因此可以得出如下结论：
+lim approxn xs = xs
+习题F
+给出断言的反例：如果对于所有的n有xs！！n.=ys！！n，那么xs=ys。
+232
+习题G
+证明iteratefx=x:mapf(iteratefx)o
+习题H
+在primes的循环列表定义中，是否可以用定义
+mergeAll =foldr xmerge
+来替代书中的定义？
+习题回顾定义：
+prsn=approxn(2:([3.]crsn))
+crs n = mergeAli [map(p*)[p.] I p<-prs n]
+假定prsn=Pi：P2：：Pn：I，其中P,是第j个素数，请说明如何证明crsn=
+Ci：C2："：Cm：工，其中c,是第j个合数（如ci=4），而且m=pn²。给出证明梗概即可。
+由此证明primes确实可以生成素数的无穷列表。
+9.3节曾经讲过，primes的第n个逼近primesn不等于approxnprimes。事实
+上，有
+primes4=2:3:5:7..:47:1
+请问primess生成什么？
+习题J另一种生成素数的方法是所谓的Sundaram筛法，是数学家S.P.Sundaram在
+1934年发现的：
+primes=2:[2*n+1I n <-[1.] isundaram]
+sundaram = mergeAll [[i+j+2*i*j I j <- [i..J] I i<- [1..J]
+要证明primes定义中的列表概括恰好生成奇素数，只需证明2n+1永远不是合数，
+也就是说它永远不会分解成（2i+1）（2j+1），其中i和j是正整数。为什么？
+习题K定义函数f（工）=0，如果x≠工，则f（α）=1，这样定义的函数f是可计算的
+吗？如果定义一个函数对于所有有穷列表和非完整列表返回工，对于所有无穷列表返回1，
+这样的函数可计算吗？
+233
+
+===== PDF 164 =====
+156
+第9章
+习题L一个圆环（torus）是一个双循环的双向双链表。它在左右方向是循环双链
+表，而且上下方向也是循环双链表。将矩阵表示为一个长度为㎡的列表，列表的每个元素
+又都是长度为n的列表，构造下列定义：
+mkTorus ::Matrix a-> Torus a
+其中：
+data Torus a = Cell a (Torus a) (Torus a)
+(Torus a) (Torus a)
+elem
+(Cell
+audlr)
+(Celi
+up
+down
+(Cell
+dlr)
+left
+(Cell
+audlr)
+right (Cellau dlr)=r
+定义看似复杂，但是答案简短得令人惊奇。
+9.8答案
+习题A答案
+不可以，因为对于任意无穷列表xs，foldl1fxs=undefined。
+习题B答案
+定义是
+cycle  =error "empty list"
+cycle xs=yswhereys=xs++ys
+注意，如果xs无穷，那么xs++ys=xs，所以cycle是无穷列表上的恒等
+函数。
+习题C答案单行定义是
+fibs :[Integer]
+234
+fibs=O:l:zipWith(+)fibs(tailfibs)
+习题D答案
+hamming::[Integer]
+hamming=1:merge (map (2*)hamming)
+(merge(map(3*）hamming)
+(map(5*)hamming))
+习题E答案对n用归纳法证明approxnxs三xs。基本情况容易验证，但是归纳
+情况需要进一步对xS做子归纳。子归纳的基情况（空列表和无定义列表）容易验证，归
+纳步骤如下：
+approx (n+1)(x:xs)
+= [定义]
+x:approxnxs
+二【(x：）的单调性和归纳假设】
+X:xs.
+下面命题的证明可以对xs归纳。
+(Vn:approxnxsys)→xsys
+对于无定义和空列表是显然的，对于归纳情况，根据approx的定义和列表上的逼近序有
+
+===== PDF 165 =====
+无穷列表
+157
+(Vn:approxn(x:xs)Eys)
+>xsheadysA(Vnapproxnxstailys)
+根据归纳假设有
+x:xshead ys:tail ys=ys
+由此根据极限的定义得到
+lim approx n xs = xs
+习题F答案两个列表repeatundefined和undefined不相等，但是
+(repeat undefined)!!n = undefined!In
+对于所有n成立，因为两边都是工。
+235
+习题G答案必须证明对于所有的自然数n有下列等式：
+approxn(iteratefx)=approxn(x:mapf(iteratefx))
+这个断言可以由下列等式推出：
+approxn (iterate f(fx))
+=approx n (map f (iterate f x))
+该等式可以对n归纳证明。对于归纳情况，化简两边。
+对于左边的化简：
+approx (n+1)(iteratef (f x))
+【iterate的定义】
+approx(n+1)(fx:iteratef(f(fx)))
+【approx的定义］
+fx:approxn(iteratef(f(fx)))
+=【归纳假设】
+f x: approx n (map f (iterate f (f x)))
+对于右边的化简：
+approx (n+1) (map f (iterate f x))
+【iterate和map的定义］
+approx (n+1)(fx:mapf (iteratef(fx)))
+=【approx的定义】
+f x:approxn (map f (iteratef (fx)))
+习题H答案是的，因为
+foldr xmerge  (xs:undefined) = xmerge xs undefined
+而且右边以xS的第一个元素开始。
+习题I答案证明用归纳法。必须首先证明crs（n+1）是ci：C2：.：Cm：1与Pn+1
+236
+的倍数无穷列表Pn+1Pn+1，Pn+1（Pa+1+1），-归并的结果，其中m=p。由此给出了直至
+部分列表primes生成所有小于2209=47×47的素数。
+习题J答案因为奇整数具有2n+1的形式，其中n形如i+i+2，那么该数被排除
+在最后列表之外。但是
+
+===== PDF 166 =====
+158
+第9章
+2(i+j+2ü)+1=（2i+1)(2j+1)
+习题K答案不是，不是单调的：1三1，但是f（1）f（1）。对于第二个函数（称
+为g），有xs二ys意味着g（xs)二g（ys），所以g是单调的。但g不是连续的，故不可
+计算。
+习题L答案定义为
+mkTorusass=head(head xss)
+where xss=zipwith5(zipwith5Cell)
+ass(rotrxss)(rotlxss)
+(maprotrxss)(maprotlxss)
+其中rotr和rotl对矩阵的行做旋转，maprotr和maprotl对矩阵的列做旋转。函
+数zipwith5的定义必须对于后4个参数是严格的。
+9.9注记
+MelissaO'Neill撰写了有关生成素数的好文章，参见“ThegenuinesieveofEra-
+tosthenes”，JournalofFunctionalProgramming19（1），95-106，2009。BenSijtsma的博士论
+文 Verification and derivation of infinite-list programs (University of Groningen,the Netherlands,
+1988）研究无穷列表程序的各种特性，而且给出对这种程序进行推理的技术，其中有一章
+介绍石头一剪刀一布的公平性证明。
+我的论文“Onbuildingcyclicand shareddatastructuresinHaskell”包含更多关于无穷
+列表和循环列表应用的例子，参见FormalAspectsofComputing24（4-6），609-621，July
+2012。也请在下列链接参阅文章“打结”（Tyingtheknot）
+237
+haskell.org/haskellwiki/Tying_the_Knot
+238
+Hamming问题在函数式程序设计早期一直用于循环程序的展示。

@@ -1,0 +1,451 @@
+
+===== PDF 71 =====
+一个简单的数独求解器
+63
+group :: [a] -> [[a]]
+94
+group
+函数upgroup将分组的列表转换为不分组列表：
+ungroup :: [[a]] -> [a]
+ungroup = concat
+在4×4的情况下，group将列表两两一组划分而不是3个一组时，函数boxes的作
+用如下图所示。
+ab
+cd
+gh
+mn
+op
+ab
+ef
+cd
+gh
+mn
+可以看出，分组生成一个矩阵列表，转置其中每个矩阵，然后合并分组生成2×2块，
+其中矩阵行是原矩阵中的2×2块。
+5.2合法程序的构造
+请注意，代之以用下标表示矩阵，通过计算下标确定行、列和块，这里定义的函数均
+把矩阵本身作为一个整体来处理。这种风格被形象地称为全麦面粉程序设计（wholemeal
+programming）。全麦面粉程序设计对健康有益，它帮助人们避免一种称为过度下标的疾病，
+并且鼓励合法程序的构造。
+例如，下面是数独棋盘上成立的3个定律：
+rows.rows =id
+cols.cols=id
+boxs.boxs=id
+换句话说，3个函数都是对合。前两个等式对于任意矩阵成立，第三个等式对于任意
+n²×n²阶矩阵成立（只要将group的定义改为按照n进行分组）。这里有两个等式的证明
+95
+简单，但是有一个证明比较难。难证的不是读者想象的关于boxs的定律，而是关于
+cols的对合性质。尽管直观上对矩阵两次转置得到原矩阵是显然的，但是根据cols的
+定义来证明有点难度，这里不给出证明的细节，主要原因是目前还没有讨论完成这个证明
+的工具。
+相比之下，下面是boxs的对合性质证明。证明可以通过简单的等式推理完成。证明
+中使用了各种定律，包括map的函子定律，id是复合的单位元，以及下列事实：
+ungroup-group=id
+groupungroup =id
+
+===== PDF 72 =====
+64
+第5章
+第二个等式只有在分组列表上成立，但这将是下面计算所满足的条件。
+下面将叙述证明过程，不再给出证明的每个细节。出发点是用boxs的定义重写
+boxs . boxs:
+map ungroup.ungroup.map cols.group.map group
+利用map的函子律和group与ungroup互逆的性质，中间的表达式mapgroup，map
+ungroup化简为id。由此得到
+mapungroup.ungroupmapcolsgroup
+ungroup:map colsgroup.mapgroup
+使用group.ungroup =id得到
+mapcols.group:mapgroup
+由map的函子律和cols的对合性质得到
+再利用ungroup·group=id两次即可完成证明。可以看出，这是一个很简单的计算。
+下面是在N?×N?选择矩阵上成立的另外3个定律：
+maprows.expand=expand.rows
+96
+map colsexpand =expand.cols
+map boxs.expand=expand.boxs
+稍后会用到这些定律。
+最后，下面是关于cp的两个定律：
+( dem) deu · do =da  ( dem) dem
+filter(allp).cp=cp.map(filterp)
+第一个定律（自然律）是由cp的类型蕴涵的，在第4章也出现过类似的定律。第二个定
+律表示，对一个列表的列表做笛卡儿积，然后保留所有元素满足性质P的列表，实现这一
+过程的另一种方法是，首先过滤原列表，只保留满足性质P的元素，然后做笛卡儿积。如
+前面句子所示，一个等式胜过千言万语。
+5.3修剪选择矩阵
+总结现在的成果，有
+solve ::Grid ->[Grid]
+solve= filter valid. expand. choices
+虽然理论上是可运行的，但是solve的这个定义是不现实的。假如81格中有20个已经
+填充，那么共有9°个格子，或者
+ghci> 9~61
+16173092699229880893718618465586445357583280647840659957609
+需要查看这么多格子！所以需要更好的方法。
+为了得到更有效的求解器，显然的想法是去除一个格子的那些选择c，这些选择c已
+经作为单元素填充出现在该格子所在的行、列和块中。一个单元素填充对应于一个已经确
+
+===== PDF 73 =====
+一个简单的数独求解器
+65
+定的选择。因此需要寻找一个函数：
+prune::Matrix [Digit] ->Matrix[Digit]
+使得
+filter valid . expand =filter valid. expand.prune
+如何定义函数prune呢？因为一个矩阵是行的列表，所以，先对行裁剪是好的开端。
+函数pruneRow定义如下：
+pruneRow ::Row [Digit] -> Row [Digit]
+pruneRow row =map (remove fixed) row
+97
+where fixed =[d I [d]<-row]
+确定的选择是每行中的单元素选择。其中fixed的定义使用了包含模式的列表概括：
+row的元素如果不是单元素模式则被丢弃。
+函数remove从未确定的选择中删除了已确定的选择：
+removeds[x]=[x]
+remove ds xs=filter(notElem'ds)xs
+标准引导库函数notElem定义如下：
+notElemxxs=all(/=x)xs
+下面是函数pruneRow应用的几个例子：
+ghci>pruneRow[[6],[1,2],[3],[1,3,4],[5,6]]
+[[6],[1,2],[3],[1,4],[5]]
+ghci>pruneRow[[6],[3,6],[3],[1,3,4],[4]]
+[[6],,[3],[1],[4]]
+在第一个例子中，【6]和[3］是已确定的选择，删除这些选择后使得最后一个格子变
+成了确定选择。在第二个例子中，删除确定选择使得第二个填充变成空选择列表。
+函数pruneRow满足等式：
+filter nodups.cp=filter nodups.cp.pruneRow
+换句话说，这个等式表示裁剪一行不会舍弃不含重复元素的列表。稍后会用到这个性质。
+现在几乎可以进行确定函数prune的定义了。几乎是，但不完全是，因为还需要另
+外两个性质：如果f：f=id，那么
+filter(pf)=mapf.filterp.mapf
+filter(p.f).map f=mapf.filterp
+98
+第二个可由第一个推出（为什么？）。下面是第一个性质的证明：
+mapf.filterp.mapf
+【第4章证明了
+filter p,mapf=mapf.filter (p.f))
+mapf.mapf.filter(p.f)
+【map的算子律以及f，f=id]
+filter (p.f)
+
+===== PDF 74 =====
+66
+第5章
+现在进行主要部分计算。出发点是使用valid的定义重写表达式filter：valia
+expand:
+filter valid . expand
+=filter(allnodups.boxs)
+filter(all nodups.cols).
+filter (all nodups.rows):expand
+过滤器在右边出现的顺序不重要。解决的方案是将每个过滤器送到与expand的战斗中。
+例如，在块的情况中可以计算：
+filter (all nodups.boxs).expand
+【根据上面filter的定律，因为boxsboxs=id)
+mapboxsfilter(allnodups).mapboxsexpand
+【因为mapboxs.expand=expand.boxs]
+mapboxs.filter (allnodups).expand.boxs
+[expand的定义]
+mapboxs.filter(all nodups).cp.map cp.boxs
+因为filter(allp）.cp=cp.map(filterp))
+“【map的函子律］】
+现在可以使用性质：
+filter nodupscp =filter nodups.cp.pruneRow
+然后重写最后的表达式：
+99
+mapboxs.cpmap(filternodups.cppruneRow).boxs
+余下的步骤基本上重复以上计算，不过用相反的次序：
+map boxs.cp.map (filter nodupscppruneRow)
+boxs
+【map的函子律】
+map(cp.pruneRow):boxs
+【因为cpmap(filterp)=filter(allp).cp)
+map boxs.filter (all nodups).cp.
+map(cp.pruneRow).boxs
+【map的函子律］
+map boxs .filter (all nodups).
+cpmap cpmappruneRow.boxs
+= [expand 的定义]
+map boxs.filter (all nodups)
+expand-map pruneRow . boxs
+【filter的定律，因为boxsboxs=id]
+filter(all nodups.boxs),map boxs:
+expand. map pruneRow.boxs
+[因为mapboxs.expandexpandboxs]
+filter(allnodupsboxs):expand:
+boxs.map pruneRowboxs
+[引入pruneByf=f.pruneRow.f}
+filter(all nodups.boxs):expand.pruneByboxs
+
+===== PDF 75 =====
+一个简单的数独求解器
+67
+我们已经证明了：
+filter(all nodups-boxs).expand
+=filter(all nodups.boxs)expandpruneBy boxs
+其中pruneByf=fmappruneRow．f。重复对行和列的计算，可以得到
+filter valid .expand = filter valid .expand.prune
+其中：
+100
+总结起来，solve先前的定义可以用以下新定义代替：
+solve =filter validexpand.prune.choices
+事实上，裁剪不仅做一次，而是可以根据需要做很多次。这样做是合理的，因为一轮
+裁剪后有些选择可能变成了单元素选择，再一轮裁剪又删除了更多不可能的选择。
+所以，可以定义：
+- -(-)( a) uem
+manyfx= ifx=ythen xelsemany fy
+wherey=fx
+然后再次重定义solve为
+solve = filter valid. expand many prune  choices
+最简单的数独问题的解决方法是不停地裁剪选择矩阵，直至最后只剩下单元素选择。
+5.4格子的扩展
+manyprunechoices的结果是选择的矩阵，可以分成下列三类：
+1．一个完全的矩阵，其中每个元素都是单个选择。在这种情况下，expand将抽取一
+个棋盘用于检查其有效性。
+2．一个含元素为空选择列表的矩阵。在这种情况下expand将生成空列表。
+3.一个不含空选择列表的矩阵，但是某些元素包含两个以上的选择。
+问题是如何处理第三类矩阵。另一种合理方法是不进行完全扩展，而是在仅对矩阵的
+一个元素做了扩展的矩阵上进行裁剪。希望单格扩展与裁剪的混合能够产生一个更快的
+解。因此，自的是构造一个只对单格扩展的部分函数：
+101
+该函数只对不完全矩阵返回确定的结果，而且在这些矩阵上满足
+expand = concat . map expand . expandi
+事实上这个列表间的等式过强。人们希望保证部分扩展不会失掉可能的选择，但是并不真
+正关心等式两边生成结果的次序。所以，将以上等式解释为两边在进行置换后相等。
+应该在哪个格子上进行扩展呢？简单的方法是从矩阵的第一个非单选择元素开始。设
+想一个矩阵rows分解成如下形式：
+rows =rows1 ++[row] ++rows2
+row=row1++[cs]++row2
+
+===== PDF 76 =====
+第5章
+其中格子cs是row中的非单元素选择列表，而row又是矩阵rows中的一行。
+那么可以定义：
+expandi::Matrix[Digit]->[Matrix[Digit]]
+expandi rows
+=[rows1++[row1++[c]:row2]++rows2|c<-cs]
+为了将矩阵分解成以上形式，使用引导库函数break：
+breakp=span(not.p)
+其中函数span在4.8节定义。例如：
+ghci>break even [1,3,7,6,2,3,5]
+([1,3,7],[6,2,3,5])
+还需要标准引导库函数any，其定义为
+any ::(a -> Bool)-> [a] ->Bool
+anyp=or.mapp
+其中or的参数是一个布尔值列表，如果列表中任何元素为True，则返回True，否则返
+回False:
+or :: [Bool] -> Bool
+or门
+=False
+102
+or(x:xs)=xllorxs
+最后，测试single的定义（使用不关心模式）为
+single ::[a] ->Bool
+single []=True
+single -= False
+现在可以定义：
+expandi :: Matrix [Digit] -> [Matrix [Digit]]
+expand1 rows
+=[rows1++[row1++[c]:row2]++rows2| c<-cs]
+where
+(rowsl,row:rows2)=break(any(not.single))rows
+(rowl,cs:row2)
+=break(not.single)row
+第一个where子句将矩阵拆分成两个行的列表，第二个列表的第一个元素是包含非单选
+择列表的行，第二个break再将该行拆分成两个列表，其中第二个列表的第一个元素是
+第一个非单选择元素。如果矩阵只包含单选择元素，则
+break(any(not:single))rows=[rows,]
+而且expand1的运行返回一个错误信息。
+函数expand1的定义的问题是它可能引起无用的工作。如果这样找到的第一个非单
+选择元素恰好是空列表，那么expand1将会返回空列表，但是，假如这个列表在矩阵中
+藏得很深，那么expand1将会做许多无意义的计算，企图找到一个根本不存在的解。合
+理的、更好的选择扩展格子的方法是找出具有最少选择（当然不是1）的格子。一个没有
+选择的格子意味着这个谜题不可解，所以，尽快找出这些格子是一个好想法。在expandl
+中实现这个想法的定义如下：
+
+===== PDF 77 =====
+一个简单的数独求解器
+69
+expand]:Matrix[Digit]->[Matrix[Digit]]
+expand1rows
+=[rows1++[row1++[c]:row2]++rows21c<-cs]
+where
+(rows1,row:rows2)=break(anysmallest)rows
+(rowl,cs:row2)
+=break smallest row
+smallest cs
+= length cs == n
+=minimum (counts rows)
+103
+函数counts定义为
+counts=filter (/=1).map length.concat
+值n是选择矩阵中不等于1的最小选择数。函数minimum的定义将留作练习。如果
+矩阵中包含任何选择为空的元素，那么n将会是0，此时expand1将返回一个空列表。
+另一方面，如果矩阵只含单个选择元素，那么Ⅱ将是空列表的最小值，这是无定义值工，
+此时expandl也将返回工，所以最好确保expandl被应用于非完全矩阵。如果一个矩
+阵不满足complete，则是非完全的：
+complete ::Matrix [Digit] ->Bool
+complete =all (all single)
+也可以将valid推广到选择矩阵上的测试。假定如下定义safe：
+safe::Matrix[Digit]->Bool
+safem=allok(rowsm)&&
+allok(colsm）&&
+allok(boxsm)
+okrow=nodups[xI[x]<-row]
+如果一个矩阵的任何行、列和块中的单选择都不重复，则称矩阵是安全的（safe）。
+但是，一个矩阵可能包含非单选择列表元素。裁剪可以使得安全矩阵变为不安全矩阵，但
+是如果一个矩阵裁剪后是安全的，那么裁剪前一定是安全的，用公式表示为safe：
+prune=safe。一个完全而且安全的矩阵便是数独谜题的一个解，而且这个解可以用简
+化的expand抽取：
+extract :Matrix [Digit] ->Grid
+extract = map (map head)
+因此，在安全与完全的矩阵m上有
+filter valid (expand m)=[extract m]
+在安全但不完全的矩阵上有
+filter valid. expand
+=filter valid.concatmap expand.expandi
+在两边进行置换的情况下等号成立。因为
+104
+filter p.concat =concat.map (filterp)
+因此filtervalid.expand化简为
+concat.map(filter p.expand)..expandi
+现在可以插入一个裁剪，得到
+
+===== PDF 78 =====
+70
+第5章
+concat.map (filter P.expand.prune).expandi
+因此，引人下列函数：
+search =filter valid.expand.prune
+在安全但不完全的矩阵上有
+search = concat. map search  expand1. prune
+现在可以用下面的第三个版本代替solve：
+solve=searchchoices
+search cm
+Inot(safepm)=
+I completepm=[extract pm]
+Iotherwise
+=concat(map search(expand1 pm))
+wherepmprune cm
+这是最终的数独简单求解器。可以在最后一行将prune用manyprune代替，有时多次
+裁剪比一次裁剪快，有时则不然。注意到第一次安全检查是紧跟在扩展选择的一轮裁剪
+后，因此有问题的输入会很快被发现。
+5.5
+习题
+习题A
+如何在整数矩阵上给每个元素加1？如何求一个矩阵所有元素之和？函数
+zipwith（+）将两行相加，那么什么函数可以将两个矩阵相加？如何定义矩阵乘积？
+习题B
+请问矩阵［，［门】的维数是什么？矩阵［]呢？
+105
+函数cols（这里重命名为transpose）的定义是
+transpose::[[a]]->[[a]]
+transpose [xs]
+= [[x]I x<- xs]
+transpose(xs:xss)=zipwith (:)xs (transpose xss)
+请填写下面的省略部分，然后可用它作为上面定义的第一个子句。
+transpose 
+以上定义的transpose按行进行。下面是按列进行转置的部分定义：
+请完成该定义。
+习题C下列哪些等式成立（不必证明）：
+anyp=not.all (notp)
+any null = null . cp
+习题D
+给定一个列表排序函数sort：：（Orda）=>【a］->【a］，请给出下列
+函数的定义。
+习题E
+个版本见模块Data.List）。请给出nub的定义。假定结果中元素的次序不重要，请
+定义：
+
+===== PDF 79 =====
+一个简单的数独求解器
+71
+[e]-[e]=(ep1oqn
+使得该函数更高效。
+习题F函数takewhile和dropwhile满足下列等式：
+span pxs (takeWhilep xs,dropWhile pxs)
+请使用直接递归定义takewhile和dropwhile。
+106
+符）还是可见字符，请给出下列函数的定义。
+words :: String -> [Word]
+该函数将一个串拆分成词的列表。
+习题G
+请定义minimum::Ord a =>[a] ->a。
+习题H
+为什么没有如下定义solve？
+solve=search.choices
+searchm
+I not(safem)=
+Icompletem
+=[extractm]
+Iotherwise
+=processm
+where process = concat, map search. expandi . prune
+5.6答案
+习题A答案
+给矩阵每个元素加1可定义为map（map（+1））。
+对矩阵元素求和可以用sum：mapsum实现，其中sum对数的列表求和。另一种方
+法是用sum.concat。
+矩阵相加定义为zipwith（zipwith（+））。
+对于矩阵乘积，可以先定义：
+scalarMult xs ys =sum (zipwith (*)xs ys)
+然后定义：
+matMult :Num a =>Matrix a->Matrix a->Matrixa
+matMultmamb=[map(scalarMultrow)mbtIrow<-ma]
+where mbt=transposemb
+107
+习题B答案矩阵［［]，[]]的维数是2×0。矩阵[]的维数是0×n，n是任意整数。
+这种矩阵的转置必须具有维数nx0，n是任意整数。唯一的可能是令n为无穷大：
+transpose :: [[a]] -> [[a]]
+transpose 
+=repeat□
+transpose (xs:xss)=zipwith (:)xs (transpose xss)
+其中repeatx返回x的无穷次重复列表。注意到
+transpose [xs] =zipwith (:)xs (repeat [)
+=[[x] I x<-x]
+另一种定义是
+
+===== PDF 80 =====
+72
+第5章
+transpose(:xss)=[
+第一行的假设是，如果第一行是空的，那么所有行是空的，因此转置是空矩阵。
+习题C答案
+两个等式均成立。
+习题D答案
+nodups xs =and (zipwith (/=) ys (tail ys))
+where ys = sort xs
+习题E答案
+[] -[] <= (e ba)  qnu
+nub
+nub(x:xs)=x:nub(filter(/=x)xs)
+nub =remdups.sort
+remdups 
+remdups(x:xs)=x:remdups(dropWhile(==x)xs)
+108
+函数dropwhile在习题F中定义。
+习题F答案
+takewhile,dropWhile :(a->Bool)->[a]->[a]
+takewhile p
+takeWhile p (x:xs)
+=if pxthenx:takewhilepxs else
+dropWhilep=
+dropWhile p (x:xs)
+=ifpxthen dropWhilepxs elsex:xs
+函数words的定义是
+words :: String -> [Word]
+wordsxsI nullys=
+I otherwise = w:words zs
+where ys = dropWhile whiteSpace xs
+(w,zs) = break whiteSpace ys
+习题G答案
+minimum ::Ord a =>[a] -> a
+minimum[x]
+=X
+minimum(x:xs)=xminminimumxs
+注意空列表的最小值无定义。
+习题H答案如果一次裁剪后矩阵是完全的，那么solve的这个定义将返回无定义值。
+5.7
+注记
+《卫报》不再使用本章开端关于数独的说明。本章内容来自我的《Pearlsof Functional
+AlgorithmDesign》（Cambridge，2010）。以下网页包含大约20个数独的Haskell实现：
+haskell.org/haskellwiki/Sudoku
+109
+许多实现使用数组或者单子。我们将在第10章讨论数组和单子。

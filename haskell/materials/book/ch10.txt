@@ -1,0 +1,1101 @@
+
+===== PDF 167 =====
+1第10章
+Thinking Functionally with Haskell
+命令式函数式程序设计
+第2章描述了函数putStrLn是一个Haskell命令（command），Ioa是与外界交互
+的输入一输出计算的类型，并返回一个类型a的值，还提到一个表示命令顺序执行的语
+法，称为do语法（do-notation）。本章详细解释这些术语的含义，并介绍一种新的程序设
+计方法，称为单子（monadic）程序设计。单子程序提供了与外界交互的简单且颇具吸引
+力的方法，而且这种程序的能力远不止于此：它提供了解决一类问题的简单顺序机制，包
+括异常处理、破坏性数组更新、语法分析和基于状态的计算。单子式程序使得人们能够用
+函数程序实现诸如Python和C等命令式程序，具有非常实用的意义。
+10.110单子
+类型IOa是第2章所述的一个抽象数据类型，所以不知道它的称为动作（action）或
+者命令的值是如何表示的。但是，可以将这个类型想象成
+type I0 a = World -> (a,World)
+因此，一个动作是一个函数，其输入是一个世界，输出是一个类型a的值以及一个新
+的世界。然后这个新的世界可以作为下一个动作的输入。因为输入一输出动作改变着当前
+世界，所以不能返回到旧世界，也不能重复这个世界或者查看其组成。所能做的只有用给
+定的原始动作在世界上进行操作，将这些动作用某种顺序组合起来。
+239
+一个原始动作是打印一个字符：
+putChar ::Char -> 10 ()
+当该动作被执行时，一个字符被打印在标准输出上，通常是计算机屏幕。例如：
+ghci>putChar"x'
+xghci>
+字符x被打印在屏幕上，没有别的事情发生，所以GHCi的下一个提示符紧接在x后
+面，没有空格，也没有换行。执行这个动作不产生有价值的值，所以返回值是零元组（）。
+另一个原始动作是done：：Io（），该命令不做任何事情，它不改变当前世界，并返
+回零元组（）。
+顺序组合动作的一个简单运算是（>>），其类型是
+O<OI<-OI(<<)
+给定动作p和q，动作p>>g首先完成动作p，然后完成动作q。例如：
+ghci>
+这次在x之后打印了换行。利用（>>）可以定义函数putStrLn：
+
+===== PDF 168 =====
+160
+第10章
+putStrLn ::String->I0()
+putChar"n'
+该动作打印一个串的所有字符，然后用一个换行符结束。注意mapputcharxs是一个
+动作列表。我们仍然在函数式程序设计的世界，它的所有表达能力，包括map和foldr
+都是可以使用的。
+下面是另一个原始动作：
+getChar :: 10 Char
+这个动作被执行时，从标准输人设备读取一个字符。标准输入设备的输入是用户在键盘上
+240
+键人的字符，所以getchar返回用户键入的第一个字符。例如：
+ghci> getChar
+键人getChat，再按回车后，GHCi等待用户建人一个字符。键入"x：（键入时该字符同
+时显示出来），然后该字符被读取，接着打印出来。
+done的推广是不做任何事情，并返回一个给定值的动作：
+return a ->10 a
+特别是，done=return（）。（>>）的推广具有下列类型：
+给定动作p和q，动作p>>q先完成动作p，丢弃该动作返回的值，然后完成动作
+qo例如：
+ghci>return 1>>return 2
+显然，这个动作只能用于对P返回的值不感兴趣的情况，因为g没有办法依赖于这个值。
+人们真正需要的是一个更通用的具有如下类型的运算（>=）：
+使用该运算得到的组合p>>=f是一个动作：该动作被执行时，首先完成P，返回类型a
+的值×，然后完成动作fx，最后返回一个类型b的值Y。很容易用（>>=）定义（>>），
+将此留作练习。运算（>>=）通常称为绑定（bind），不过也将其读作“然后应用”。
+利用（>>=）可以定义一个函数getLine，用于读取一行输人，更确切地说，读取一
+个字符列表，直至第一个换行符，但不包括该换行符：
+getLine :: I0 String
+getLine = getChar >>= f
+wherefx=ifxn'then return 
+else getLine>>=g
+where g xs = return (x:xs)
+这个定义的含义很直观：取得第一个字符x，如果X是换行符，则返回空列表；否则取得该
+241
+行的其他字符，然后将x添加在其前面。尽管解读很直接，但是定义中嵌套where子句的
+使用有点难懂。一种改进定义可读性的方法是使用匿名兰姆达表达式写成：
+
+===== PDF 169 =====
+命令式函数式程序设计
+161
+ifxn!
+then return 
+else getLine >>= \xs ->
+return (x:xs)
+另一种更好的方法是使用do记法：
+ifxn'
+then return 
+else do xs<-getLine
+return(x:xs)
+定义右边使用了Haskell格式惯例。特别要注意条件表达式的缩进，而且最后一个return的
+缩进表示它属于最里那个do的动作。用程序设计者的观点来说，最好使用花括号和分号明
+确标示格式：
+getLine = do fx <- getChar;
+ifxn'
+thenreturn
+elsedo{xs<-getLine;
+return(x:xs))
+后面还会讨论do记法。
+Haskell库System.Io提供了putChar和getChar之外的许多其他动作，包括打开
+文件和读文件、写文件和关闭文件、各种方式的缓存输出，等等。本书不介绍这些动作的详
+情。但是，或许有两点需要解释。第一点，不存在类型IOa->a的函数。一旦进人完成
+输入一输出动作的世界，必须呆在这个世界里，不能出来。为了说明必须这样规定的原因，
+假设有函数runIo，并考虑下列定义：
+int::Int
+int=x-y
+where x =runIo readInt
+y=runIo readInt
+242
+readInt=do (xs<-getLine; return(readxs::Int))
+动作readInt读取一行输入，只要输入只含数字，就将其解释为一个整数。那么，现
+在int的值是什么？答案完全取决于x和y哪个先得到求值。Haskell没有预先规定在表达
+式×-Y中x是否在Y之前先求值。换句话说，输人-输出动作必须用确定的方式顺序进
+行，而且Haskell是情性函数语言，很难确定其中事情发生的次序。当然，表达式如x-Y是
+一个非常简单的例子（在命令式语言中同样不期望的事情也会出现），但是可以想象提供这
+样的函数runIo将带来的混乱。
+第二点，或许是应该讲给那些对于如下表达式漫不经心的读者：
+undefined>>returno::IoInt
+这个代码引起错误还是返回0？答案是“一个错误”。O在下列意义下是严格的：IO动作是
+按照顺序完成的，即使后续的动作可能不在意前面动作的返回值。
+实际上存在这样的函数，称为unsafePerformIo，但它是一个很不安全的函数。
+
+===== PDF 170 =====
+162
+第10章
+返回本节主题，总结一下。类型IOa是一个抽象数据类型，在该类型上至少可以使用
+下列运算：
+return::a->10a
+( ) (=)
+putChar :: Char -> 10 ()
+getChar ::10 Char
+后两个函数是特定于输入和输出的，但是前两个函数则不然。实际上它们是刻画单子类族的
+通用顺序运算：
+class Monad m where
+return::a->ma
+两个单子运算需要满足某些定律，将会在适当的时候说明是哪些定律。至于名称“单
+子”的来源，它是从哲学中偷来的，或者说是从莱布尼兹那里偷来的，而莱布尼兹是从希腊
+243
+哲学中借来的。请勿深究这个名词。
+10.2更多的单子
+如果单子仅仅要求这些，是否一定有很多单子？是的，确实如此。特别是，谦逊的列表
+类型是一个单子：
+instance Monad  where
+returnx=[x]
+xs>>=f=concat(mapfxs)
+当然，还不清楚单子运算应该满足什么定律，所以也许这个实例定义不正确（是正确
+的），但是，至少运算的类型是正确的。因为do记法可用于任何单子，所以，可以用新的语
+法定义函数，如笛卡儿积函数cp：：【［a］］->［[a]］（参见7.3节）：
+=return
+cp (xs:xss) = do (x<- xs;
+ys <- cp xss;
+return (x:ys))
+比较第二个子句的右边与下列列表概括：
+[x:ys  x <- xs, ys <- cp xss]
+可以看出，这两个写法非常相似，唯一的真正区别是在do记法中结果出现在最后，而
+不是在开始。如果在列表概括前引入了单子和do记法，也许后者的列表概括就不需
+要了。
+下面是另一个例子。类型Maybe是一个单子：
+instance Monad Maybe where
+return x
+=Justx
+Nothing >>= f = Nothing
+Justx>>=f=f x
+为了欣赏这个单子带来的便利，考虑Haskell库函数：
+
+===== PDF 171 =====
+命令式函数式程序设计
+163
+如果（x，y）是列表alist中第一个分量为x的二元组的首次出现，那么lookupxalist
+的值是Justy；如果不存在这样的二元组，则其值为Nothing。设想在列表alist中
+查找x，然后在第二个列表blist中查找结果y，接着继续在第三个列表clist中查找
+[244
+结果z。如果这些查找中任何一个查找返回Nothing，那么最后结果是Nothing。定义
+这个函数，必须用类似下面的式子来表达：
+case lookup x alist of
+Nothing -> Nothing
+Justy->case lookupyblist of
+Nothing -> Nothing
+Just z->lookup z clist
+利用单子，可以如下定义：
+do Ly<- lookup x alist;
+z<-lookupyblist;
+lookupz clist}
+代之以显式地写出计算链，而且每个计算可能返回Nothing，并将Nothing显式地在计
+算链中传递，可以把定义写成简单的单子表达式，其中Nothing的处理是在单子中隐式
+地进行的。
+do记法
+就像列表概括可以翻译成map和concat的表达式，do表达式也可以翻译成用
+return和绑定表示的表达式。三个主要翻译规则如下：
+do (p)
+do(p;stmts)
+=p>>do(stmts)
+在这些规则中P表示一个动作，所以第一个规则表示单个动作旁的do可以去掉。第二个
+和第三个规则中的stmts是一个语句的非空序列，其中每个语句或者是一个动作，或者
+是一个形如x<－P的语句。后者不是一个动作，所以下面的表达式不是语法正确的：
+do {x<-getChar)
+顺便说明的是，空的do表达式do也不是语法正确的。一个do表达式的最后一个语
+句必须是一个动作。
+另一方面，下面两个表达式都是正确的：
+do(putstrLn"hello";name<-getLine;putstrLnname)
+do fputStrLn"hello"; getLine; putStrLn"there"}
+245
+第一个例子打印一个问候，然后读取一个名，并完成问候。第二个例子打印一个问候，读
+取一个名，但是即刻忘记该名，然后用“there”结束问候。两个例子有点像生活中一
+个人被介绍给另一个人的情景。
+最后，由以上的翻译规则，可以证明以下两个规则：
+do（do(stmts=do（stmts
+do(stmts1;do(stmts2)}=do（stmts1;stmts2)
+但是，对于嵌套的do必须小心：
+
+===== PDF 172 =====
+164
+第10章
+do {stmts1;
+ifp
+thendo(stmts2)
+elsedo(stmts3]]
+如果stmts2和stmts3包含不止一个动作，则这里的do是必须的。
+单子定律
+单子定律表述的仅仅是关于return和（>>=）的表达式的简化，也正如我们所期
+待的一样。定律共有三条，我们将用三种不同的方式来叙述它们。第一条定律表示re-
+turn是（>>=）的右单位元：
+(p >>= return) = p
+这个定律用do记法表示为
+do(x<-p;returnx}=do(p)
+第二条定律表示return也是一种左单位元：
+(returne>>=f)=fe
+该定律用do记法表示为
+do(x<-returne;fx)=do(fe)
+第三条定律表示（>>=）是某种意义上可结合的：
+((BX)-)(B(d))
+246
+该定律用do记法表示为
+do(y<-do(x<-;fx);gy)
+=do(x<-p;doty<-fx;gy)
+= do (x <- p; y <- f x; g y)
+最后一行利用了do记法的消去嵌套性质。
+对于第三种表示单子定律的方法，考虑如下定义的运算（>=>）：
+()
+这个运算像函数复合，只是复合的函数都具有类型x->mY，其中x和y是某些适当的
+类型，而且复合的顺序是从左至右，而不是从右向左。该运算（左到右）称为Kleisli复
+合，在Haskell库Control.Monad中定义。也可以定义对偶的（右到左）Kleisli复合：
+其定义留作练习。
+这里想表达的重点是（>>=）可以用（>=>）定义：
+d ( << T)  ( << d)
+更简短的可表示为（>>=)=flip（id>=>）。另外还有蛙跳（leapfrog）规则：
+  ()  (  )
+证明留作练习。
+
+===== PDF 173 =====
+命令式函数式程序设计
+用（>=>）来叙述的单子定律仅仅表示（=>）有单位元return，而且满足结合
+律。一个集合与具有单位元的且满足结合律的二元运算称为一个么半群（monoid），“单子
+（monad）”一词可能来自于么半群的双关语。即使如此，这确实是表述单子定律的最简短
+方法。
+另一种表述单子定律且有指导意义的方法在习题中考虑
+10.3状态单子
+如果不是因为如何解决输人一输出动作的正确顺序进行，或许单子不会出现在Haskell
+247
+中。但是，一旦人们理解了单子的作用，各种单子应用很快接而来。已经看到应用
+Maybe单子的运算如何简化涉及在一系列计算中传递备份信息的计算链。单子的另一种
+基本应用是处理可变（mutable）结构，如数组，出于效率的考虑，需要能够修改其值，
+因而在这个过程中破坏了它的原始结构。
+可变结构通过状态线程单子STs引人，该单子将在10.4节介绍。在介绍这个单子的
+性质之前，先考虑一个简单的单子，称为StateS，该单子用于处理显式状态s。可以将
+类型statesa看作下面的函数：
+type State s a= s-> (a,s)
+具有类型Statesa的动作输人一个初始状态，返回一个类型a的值和一个新的状态。
+但是，想把工oa看作StateWorlda的同义词是错误的。Statesa中的状态成分s
+可以暴露，也可以被处理，但是不能暴露和处理这个世界。
+特别是，除了单子的两个运算return和（>>=）之外，状态单子还有另外5个运算：
+put
+: s ->State s ()
+get
+::State ss
+state
+:(s->(a,s))->Statesa
+runstate::State s a->(s ->(a,s))
+evalstate ::State s a->s ->a
+函数put将状态置入一个给定的配置中，而get返回当前状态。这两个函数都可以用
+state来定义：
+put s = state (l- -> ((),s))
+get=state (\s -> (s,s))
+另一方面，state也可以用put和get定义：
+state f = do (s <-get;let (a,s')= f s;
+put s'; return a}
+Haskell允许在do表达式中简写1et表达式（在列表概括中也可简写）。简写规则是
+do[letdecls;stmts=letdeclsindo(stmts]
+函数runState是函数state的逆：它取得一个动作和一个初始状态，然后返回动
+248
+作完成后的最终值和最终状态（这是工o单子难以完成的）。函数evalstate定义为
+evalState m s =fst (runstatem s)
+而且只返回某个状态下计算出来的值。
+
+===== PDF 174 =====
+166
+第10章
+下面是State的一个应用例子。在7.6节定义了由一个非空列表构造一个二叉树的
+下列程序：
+build :: [al -> BinTree a
+build xs=fst(build2(lengthxs)xs)
+build2 1 xs = (Leaf (head xs),tail xs)
+build2nxs=(Forkuv,xsi)
+where (u,xs)=build2mxs
+(v,xs")=build2(n-m)xs
+=ndiv2
+要注意的是，build2基本上是一个处理类型［a］的状态的函数，并返回BinTreea的
+元素作为结果。另一种定义build的方法如下：
+buildxs=evalstate(build2(lengthxs))xs
+build2 :: Int ->State [a] (BinTree a)
+build2 1= do {x:xs<-get;
+put xs;
+return(Leafx))
+build2 n = do lu<-build2 m;
+v<-build2 (n-m);
+return(Fork u v))
+wherem=ndiv2
+显式处理状态的所有工作是在建立叶结点时完成的。先读取状态，将第一个元素用Lea王
+标识，剩余的列表便作为新的状态。如果说bui1d2n的第一个版本将状态显式地串联起
+来，那么第二个版本将这些线程隐藏到了单子的面具下面。
+注意build2的第一行是一个命令x：xs<-get，其中左边使用了一个模式而不是
+一个简单变量。如果当前状态碰巧是空列表，那么这个动作失败，并给出一个适当的错误
+信息。例如：
+249
+ghci> runState (do x:xs <- get; return x))""
+*** Exception:Pattern match failure in do expression *
+当然，这种情况对于bui1d21不会出现，因为该定义只适用于状态为单元素列表的
+情况。把build.［]会出现什么情况留作练习。
+另一个例子是生成某个区间的伪随机数问题。设想有如下函数：
+random:(Int,Int)->Seed->(Int,Seed)
+该函数输入一对整数作为指定的区间，再输人一个种子，然后计算一个随机数和一个新
+的种子。新的种子用于获取后面的随机数。与其显式地说明什么是种子，假定下列
+函数：
+mkSeed :: Int -> Seed
+该函数用给定的整数制作一个种子。现在如果想抛一对殷子，可以定义函数：
+diceRoll :: Int ->(Int,Int)
+diceRolln=(x,y)
+where(x,s1)=random(1,6)(mkSeed n)
+(y,s2)=random (1,6)s1
+但是，也可以定义函数：
+
+===== PDF 175 =====
+命令式函数式程序设计
+diceRolln=evalstate(
+dox<-randoms(1,6);
+y <- randoms (1,6);
+return(x,y))
+)(mkSeedn)
+where randomS= state.random
+作。diceRo11的第二个定义比第一个稍长一点，但是也更容易书写。设想不是抛两个般
+子，而是5个般子，如大话殷（liardice）。此时第一个定义方法需要一系列where子句
+表达5个值和5个种子间的串联，很容易写错，但是，第二个定义方法却很容易扩展，又
+很难写错。
+最后一点，考虑：
+evalState(doundefined;returnO)1
+这个会引发异常，还是返回o？换言之，单子state像单子Io是严格的，还是情性的？答
+250
+案是两种都可能。状态单子有两种版本，一种是惰性的，另一种是严格的，区别在于如何实
+现运算（>>=）。Haskell提供惰性的缺省实现，在Control.Monad.State.Lazy中定
+义，但是用户也可以选择Control.Monad.State.Strict中的严格定义。
+10.4ST单子
+状态线程单子在库control.Monad.sT中定义，它与状态单子完全不同，尽管两者
+看上去貌似一样。像Statesa一样，可以把状态线程单子看作如下类型：
+typeSTsa=s->(a,s)
+但其中一个非常重要的区别是，类型变量s不能初始化为特定的状态，如Seed或者
+[Int］，它在这里的作用只是命名状态。把s想象成一个标签，用于表示一个特定的状态
+线程，所有的可变类型都用这个线程标记，因此动作只能在它们自已的状态线程中影响可
+变值。
+一种可变值是程序变量（programvarable）。命令式程序语言中的程序变量不同于
+Haskell中的变量，或者数学中的变量。程序变量可以看作其他值的引用，在Haskell中是
+类型STRefsa的对象。这里的s表示引用局部于状态线程s（没有其他），这里的a是
+被引用值的类型。在Data.STRef中定义了创建引用、读写引用的运算：
+newSTRef::a->STs(STRefsa)
+readSTRef::STRefsa->STsa
+writeSTRef::STRef sa->a->STs()
+下面是一个例子。回顾7.6节，给出斐波那契函数的下列定义：
+fib::Int ->Integer
+fibn=fst(fib2n)
+fib20=(0,1)
+fib2n=(b,a+b)where(a,b)=fib2(n-1)
+251
+对fib求值运行时间是线性的，但是所使用的空间不是常数（即使忽略任意大的整数不
+能在常数空间存储的事实）：每个递归调用都涉及新变量a和b。对比之下，下面是命令
+
+===== PDF 176 =====
+168
+第10章
+式语言Python中fib的定义：
+def fib (n):
+a,b =0,1
+for i in range (o,n):
+a,b =b,a+b
+return a
+定义处理两个程序变量a和b，运行空间是常数（至少对于小整数）。几乎可以直接把
+Python代码翻译成Haskell代码：
+fibsT::Int->ST sInteger
+fibST n=dofa<-newSTRef O;
+b<-newSTRef 1;
+repeatFor n
+(do Ix <- readSTRef a;
+y<-readSTRef b;
+writeSTRef a y;
+writeSTRef b $!(x+y));
+readSTRef a)
+注意严格函数应用运算符（）的使用强制对和求值。动作repeatFor重复一个动作给
+定的次数：
+repeatForn=foldr(>>)done:replicaten
+一切工作正常，但是最后得到的是一个动作ST s工nteger，而我们想要的是一个整
+数。如何脱离单子回到Haskell值的世界？答案是提供一个类似于状态单子的runstate
+的函数，下面是它的类型：
+runsT ::(forall $.ST s a)-> a
+这个类型不同于以前看到的其他Haskell类型，它被称为二阶多态类型（rank2polymorphic
+252
+type），过去所有的多态类型是一阶的。这里表达的是，runsST的参数对s必须是一致的，
+所以它不能依赖于S名称之外的任何信息。特别是，动作中每个STRef的声明必须带上
+同一个线程名S。
+为了进一步说明二阶类型，考虑下列两种列表之间的区别：
+listl :: forali a.[a -> a]
+list2 :: [forall a.a -> al
+类型1ist1只是我们熟悉的类型【a->a]，因为对一阶类型假定了在最外围有全称量词对
+类型变量的约束。例如，将1ist1的类型变量a初始化为类型Float，则Isin，cos，
+tan]是1ist1的可能值。但是，只有两个函数可以成为1ist2的元素，即id和无定义函
+数undefine，因为只有这两个函数具有类型foralla.a->a。如果给出类型a的一个
+元素x，但对类型a没有任何其他信息，那么返回类型a的一个值只有两种选择，x或
+为什么runST需要二阶类型呢？嗯，这样可以避免定义下面的式子：
+let v= runST (newSTRef True)
+in runST (readSTRef )
+这样的代码不是类型正确的，因为
+
+===== PDF 177 =====
+命令式函数式程序设计
+newSTRefTrue::STs(STrefs Bool)
+而且在表达式runST（newSTRefTrue）中，Haskell类型检测器不能将STRef sa与
+runST期望的结果类型a匹配。类型sTRefsa的值不能从STa输出，只有不依赖于s
+的类型的对象可以输出。如果运行这样的代码，那么在第一个runST中分配的引用在第
+二个runST内也可以使用。这样就使得一个线程的读也可用于另一个线程，因此结果依
+赖于执行这些线程的次序，从而导致混乱和困惑。这也正是在工O单子中极力避免发生的
+问题。
+但是，可以安全地定义：
+fib::Int ->Integer
+fibn=runST(fibST n)
+这个fib定义的运行时间是线性的。
+对用户来说，ST单子的主要应用在于它处理可变数组的能力。数组的整个问题值得
+用一节讨论。
+253
+10.5可变数组
+函数式程序设计中重点的基本数据结构是列表，而不是数组，这点有时让第一次遇到
+函数式程序设计的命令式程序员感到吃惊。原因是数组的大多数使用（尽管不是全部）效
+率依赖于它们的修改是破坏性的。一旦修改了数组在某个下标处的值，那么旧数组便丢失
+了。但是，在函数式程序设计中，数据结构是持久的（persistent），而且任何命名的结构
+会持续存在。例如，insertxt可能在树t中插人一个元素x，但是t仍然表示原树，
+所以最好不要覆盖。
+在Haskell中一个可变数组是类型sTArraysie的对象。这里s表示状态线程，i
+表示索引类型，e是元素类型。并非任何类型都可以做索引类型，合法的索引是类族x
+的成员。这个类族的成员包括Int和char，能够映射到整数的某个连续区域的对象。
+像STRefs一样，存在创建、读和写数组的运算。下面将用一个简洁的例子说明这些
+运算。回顾7.7节的快速排序：
+[] - [ = ( p0 : 1osb
+qsort(xxs)=qsort [yI y<-xs,y<x] ++[x]++
+qsort [y 」 y <- xs,x <= y]
+当时就说，快速排序是用数组实现的，而不是用列表；划分可以原地（inplace）完
+成，而不需要额外空间。现在具备了实现这种算法的工具。首先给出如下定义：
+[] - [] = (e p10) : 41osb
+qsort xs=runsT $
+do(xa<-newListArray(o,n-1)xs;
+qsortsT xa (o,n);
+getElems xa
+where n= length xs
+首先创建一个具有边界（O，n-1）的可变数组，并用xs的元素填充；然后数组上的
+排序由动作gsortSTxs（O，n）完成；最后返回有序数组元素构成的列表。上面代码中，
+
+===== PDF 178 =====
+170
+第10章
+动作newListArray具有类型：
+254
+Ixi=>(i,i)->[e]->STs(STArraysie)
+而且getElems具有类型：
+Ixi=>STArraysie->ST s [e]
+第一个动作用一个列表构造一个可变数组，第二个返回一个可变数组中元素的列表。
+qsortsTxa（a，b）的目标是将xa在区间（a，b）上的子数组排序，根据定义这个区
+间包含下界，但不包含上界，换句话说是区间［a：·b-1］。选择左闭右开区间几乎总是
+处理数组的最好选择。下面是qsortST的定义：
+qsortsT :Drda =>STArray s Int a ->
+(Int,Int)->ST s ()
+qsortsT xa (a,b)
+Ia=b=return0
+I otherwise = do (m <-partition xa (a,b);
+qsortsT xa (a,m);
+qsortsTxa(m+1,b))
+如果a=b，则区间为空，无需做任何工作；否则，将数组元素重写排列，使得对于某个
+适当的x，在区间（a，m）的所有元素都小于x，在区间（m+1，b）上的所有元素都大于或
+者等于x，元素x本身存放在位置m处，然后对两个子区间排序，从而结束排序。
+接下来的工作是定义partition。寻找合适定义的唯一方法是利用前置条件、后置
+条件和循环不变量进行形式化的开发。但是，本书是关于函数式程序设计的，不是命令式
+程序的形式化开发，所以这里仅仅给出一种定义：
+partition xa (a,b)
+= do x <- readArray xa a;
+let loop (j,k)
+= if j-=k
+then do fswap xa a (k-1);
+return(k-1))
+elsedo(y<-readArrayxaj;
+ify<xthenloop(j+i,k)
+else dofswap xaj(k-1);
+loop(j,k-1))
+255
+inloop(a+1,b))
+动作swap的定义如下：
+swap xa ij=do fv<-readArray xa i;
+w <- readArray xa j;
+writeArray xa i w;
+writeArray xa j vl
+下面解释partition是如何进行划分的，这种解释简洁但一定不够充分。用第一个
+元素作为枢纽，然后进入循环处理剩余的区间（a+1，b），直至区间为空时停止。跳过小
+于x的元素，区间左边界右移。当遇到大于x的元素y时，将其与区间最右元素交换，
+右边界左移。当区间为空时，将枢纽放在它的最终位置上，并将这个位置作为结果返回。
+注意1oop是单子中的一个局部过程，也可以将其定义为一个全局过程，这样便需要
+增加3个参数，即数组xa、枢纽x和开始位置a。
+
+===== PDF 179 =====
+命令式函数式程序设计
+171
+哈希表
+纯函数式快速排序与基于可变数组的快速排序具有相同的渐进时间性能，但是在个别
+场合可变数组似乎对于获得渐进更快的算法起到关键的作用。一种情况是哈希表中集合的
+有效表示。
+下面用一个特殊问题说明哈希表的应用。考虑用两个有限集定义的典型谜题，一个位
+置（position）集合和一个移动（move）集合。以下是给定的函数：
+moves::Position->[Move]
+move
+::Position->Move->Position
+solved::Position->Bool
+函数moves描述在一个给定位置可以进行移动的集合，solved确定构成谜题解的
+位置。解谜题就是找到一个从给定开始位置到解位置的移动序列，最好是最短序列：
+256
+solve::Position->Maybe [Move]
+如果不存在从位置p到一个解位置的移动序列，那么值solvep是Nothing，否则
+是Justms，满足：
+solved(foldlmovePms)
+下面将通过宽度优先（breadthfirst）搜索实现solve。宽度优先搜索指先检查从开始
+位置一次移动能够到达的所有位置，然后检查两次移动能到达的所有位置，等等。因此，
+如果存在解，那么宽度优先搜索将找到最短解。为实现宽度优先搜索，需要下列类型：
+typePath
+=（[Move],Position)
+type Frontier =[Path]
+一条路径由一个从开始位置的移动序列（按照逆序表示）和这些移动到达的最后位置构
+成。前沿（frontier）是一个有待扩展成更长路径的列表。宽度优先搜索于是可以如下定义：
+solvep=bfs[(,p)]
+bfs ::[Position] ->Frontier ->Maybe [Move]
+bfs ps=Nothing
+bfs ps ((ms,p):mps)
+I solvedp=Just (reversems)
+Iotherwise=bfs(p:ps)(mps++succs(ms,p))
+succs ::Path->[Path]
+succs(ms,p)=[(m:ms,movepm)Im<-movesp]
+函数bfs的第一个参数ps表示已经访问位置的集合。第二个参数是前沿，并使用队
+列处理，以保证相同长度的路径处理后再处理它们的扩展。检查一个路径时；如果其最后
+位置是解位置，则接受该路径；如果其最后位置已经访问过，则拒绝该路径，否则在前沿
+后面添加后继移动扩展路径。成功路径的移动序列在作为结果返回前先置逆，这是为了
+succs在添加后继时可以将后继加在列表的前面，而不是加在列表尾部，以提高效率。
+函数bfs中影响效率的主要来源有两个，一个是（++）的使用，另一个有关elem。
+257
+首先，前沿的规模可能呈指数式增长，所以在前沿的尾部添加后继很慢。最好的方法是如
+下定义bfs：
+
+===== PDF 180 =====
+172
+第10章
+bfs :: [Position] -> Frontier ->Frontier ->
+Maybe[Move]
+bfsps=Nothing
+bfspsmqs=bfspsmqs
+bfsps((ms,p):mps)mqs
+I solved p=Just (reverse ms)
+Iotherwise=bfs(p:ps)mps(succs(ms,p)++mqs)
+附加的参数是临时前沿，用于存储后继。当第一个前沿已耗尽为空时，临时前沿成为新的
+前沿。在临时前沿前面添加后继需要的时间正比于后继的个数，而不是前沿的规模，所以
+算法运行更快。另一方面，新的bfs不同于旧的定义，因为后续的前沿交替地从左到右
+与从右到左遍历。不过，只要存在解，那么最短解仍将被找到。
+第二个低效来源是成员测试。用列表存储已经访问过的位置效率低，因为成员测试花
+费的时间可能正比于当前访问过的位置数。如果位置用区间【0..n-1］的整数表示，那
+么问题会好得多，因为此时可以用边界为（0，n-1）的布尔数组标记访问过的位置，成员
+测试只需要在单个数组上进行查找。
+可以设想将位置用整数编码，但并不是用自然数的某个初始段。例如，数独位置（见
+第5章）可以表示成81位整数。所以，假设有将位置用整数编码的函数：
+encode ::Position ->Integer
+为了缩小表示区间，对于某个适当的n：：Int，定义：
+hash::Position ->Int
+函数hash的结果是区间[0：.n-1]中的一个整数。
+258
+一个问题，也是最大的问题：不同的位置可能哈希到同一个整数。解决这个问题时，
+我们不使用布尔数组，而使用位置列表数组。数组下标k处存储哈希值为k的列表。虽然
+并不能保证在最坏情况下能够改进算法效率，但是，如果n取适当大的整数，而且哈希函
+数相对均匀地将整数赋给位置，那么成员测试的复杂度可以减小为原来的1/n。
+使用哈希方法，修改后的solve定义如下：
+solve :Maybe [Move]
+solve =runST $
+do(pa<-newArray(o,n-1);
+bfspa[(,start)]}
+Frontier->STs(Maybe[Move])
+bfs pa   =return Nothing
+bfspamqs=bfs pamqs
+bfspa((ms,p):mps)mqs
+=if solved p thenreturn (Just(reverse ms))
+elsedo(ps<-readArraypak;
+if pelem'ps
+then bfs pa mps mqs
+else
+do(writeArray pa k (p:ps);
+bfspamps(succs(ms,p)++mqs))
+where k=hash p
+
+===== PDF 181 =====
+命令式函数式程序设计
+173
+10.6
+不变数组
+讲到数组，必须指出Haskell提供了一个很好的库Data.Array，该库提供了不变数
+组上的纯函数式运算。运算用可变数组实现，但接口是纯函数式的。
+类型Arrayie是数组的抽象类型，其中i是下标类型，e是元素类型。构造数组
+的基本运算是
+259
+函数的第一个输人是一对边界，即数组的最小下标和最大下标；第二个参数是下标和元素
+对的联合列表，说明数组在各个下标处的元素；结果是给定边界和元素的数组。在联合列
+表中没有说明元素值的数组元素将是无定义值。如果两个元素有相同的下标，或者其中一
+个下标越界，则结果是无定义的数组。因为有了这些测试，数组的构造对于下标是严格
+的，但是对于元素则是情性的。构造数组的时间复杂度与元素个数呈线性关系。
+一个简单的array特例是1istArray，其输入中只需说明元素列表：
+listArray::Ixi=>(i,i)->[e]->Arrayie
+listArray(l,r)xs=array(l,r)(zip[l..r]xs)
+另外一种构造数组的方法称为accumArray，其类型看上去有些吓人：
+第一个参数是“累积函数”，用于将数组元素和新值转换为新的数组元素；第二个参数是
+每个数组元素的初始值；第三个参数是一对上下界；第四个也就是最后一个参数是下标和
+值的联合列表；结果是一个数组。构造方法是将累积函数应用于初始值与联合列表的每个
+元素，得到数组相应位置的新元素。如果假定累积函数是常数时间的，那么构造过程的运
+行时间线性于联合列表的长度。
+以上是用语言描述的accumArray的功能，用符号表示如下：
+elems(accumArrayfe(l,r)ivs)
+[foldlfe[vl(i,v)<-ivs,i=j]j<-[l..r]]
+其中elems按照数组下标顺序返回数组的元素列表。不过，以上等式不完全正确：对于
+ivS需要添加约束条件，即每个下标应该介于指定的区间。如果这个条件不满足，那么左
+边返回错误，而右边则不然。
+函数accumArray看似复杂，但它是解决某类问题的一个非常有用的工具。这里
+给出两个例子。第一，考虑有向图的表示。有向图往往在数学上描述为一个结点（ver-
+tex）集和一个边（edge）集。一条边是一个结点有序对（j，k），表示该边由结点j指
+向结点k，称结点k邻接于结点j。以下假设用1到n的整数表示结点，n是某个整数。
+因此，有
+type Vertex=Int
+260
+type Edge= (Vertex,Vertex)
+type Graph=([Vertex],[Edge])
+vertices g=fst g
+edges g
+= snd g
+
+===== PDF 182 =====
+174
+第10章
+在程序设计中，有向图经常用邻接表表示：
+adjs :: Graph -> Vertex -> [Vertex]
+adjs g v = [k I (j,k) <- edges g, j==v]
+这种adjs定义的问题在于计算任何特定结点的邻接表需要的时间与边数成正比。更好的
+方法是用数组实现adjs：
+adjArray :: Graph -> Array Vertex [Vertex]
+因此有
+adjs gy =(adjArray g)!v
+其中（！）表示数组下标索引运算。对于相对合理规模的数组，该运算是常数时
+间的。
+下面是adjArray的说明：
+elems (adjArray g)
+= [k I (j,k) <- edges g, j==v] I v <- vertices g]
+利用这个说明可以直接计算adjArray的定义。为了缩短代码行，将edges g简记为
+es，verticesg简记为vs，则有
+elems (adjArray g) = [[k I (j,k) <- es, j==v] I <- vs]
+关注等式右边，第一步用定律foldr（：）［】=id重写。由此给出下列表达式：
+[foldr (:) [ [k I (j,k)<- es,j==v] I <-vs]
+下一步利用定律foldrfexs=folal（flipf）e（reversexs），其中xs是
+任意有穷列表。简写flip（：）为（@），得到
+[foldi (@) [ (reverse [k I (j,k) <- es, j==v]) I v <- vs]
+将reverse分配后得到表达式：
+[foldl (@) [ [k I (j,k) <- reverse es, j==v] I v <- vs]
+[261
+下一步利用 swap（j,k）=（k,j）得到
+[foldl (o)  [j I (k,j) <- es', j==v] I v<- vs]
+其中es=map swap（reverse es)。最后，利用n =lengh vs 和accumArray的
+说明得到
+elems (adjArray g)
+=elems(accumArray(flip(:))(1,n)es)
+这表明可以定义：
+adjArrayg=accumArray(fiip（:))[(i,n)es
+where n = length (vertices g)
+es =map swap (reverse (edges g))
+这个adjArrayg的定义可以用正比于边数的时间计算后继。
+下面是accumArray的第二个应用例子。假设给定n个整数的列表，所有整数在区
+间（0，m）中，m是某个整数。可以通过计算每个元素出现的次数，用④（m+n）步对
+
+===== PDF 183 =====
+命令式函数式程序设计
+175
+这个列表排序：
+countxs=accumArray(+)0(,m)(zipxs(repeat1))
+其中repeat1是无穷个1的列表。计数需要④（n）步。计数完成后，可以如下排序：
+sortxs=concat[replicate cx
+I (x,c)<- assocs(count xa))
+函数assocs也是一个库函数，它返回一个数组中所有下标和元素对构成的列表，并按照
+下标顺序排列，排序可以在（㎡）步完成。
+除以上几个运算外，库Data.Array还包含一两个其他运算，包括更新运算（//）：
+(//)::Ixi=>Arrayie->[(i,e)]->Arrayie
+例如，如果xa是nxn矩阵，那么
+xa//[((i,i),o)|i<-[1..n]]
+表示同一个矩阵，只是对角线元素都变成了0。运算（//）的缺点是它的运行时间与数组
+的长度成正比，即便只更新一个元素也如此。原因是旧的数组xa依旧存在，所以必须构
+建一个全新的数组。
+在本章结尾又回到了纯函数式程序设计世界，在这个世界中等式推理既可以用来计算
+262
+定义，也可以优化定义。尽管单子式程序对于习惯于命令式程序设计的程序员很有吸引
+力，但是对于如何对单子式程序进行推理是一个问题。当然，等式推理可应用于一定的场
+合（见习题F的例子），但是等式推理不能像在纯函数式程序设计中那么广泛应用（快速
+排序的正确性见证了这点）。命令式程序员也有同样的问题，他们的解决方法（如果他们
+愿意这样做的话）是利用谓词演算、前置条件、后置条件和循环不变量。如何对单子式代
+码进行推理仍然是当前的研究课题。
+笔者的建议是，保守使用单子式程序，而且只有确实有用时使用；否则，函数式程序
+设计最重要的特色，即对代码进行数学推理的能力便失去了。
+10.7习题
+习题A回顾定义：
+putstr =foldr (>>) done :map putChar
+请问下列代码的功能是什么？
+foldl(>>)done.mapputChar
+请将（>>）用（>>=）代替，然后用单子律证明得到的结论。
+习题B使用模式匹配的方法定义下面的函数：
+该函数将3个数相加，如果存在的话
+现在用单子Maybe重写定义add3。
+习题C10.1节中cp的定义仍然是低效的。更好的方法可能是定义：
+263
+
+===== PDF 184 =====
+176
+第10章
+cp (xsixss) = do fys <- cp xssi
+x<-xS;
+return(x:ys))
+根据定义，一个单子是可交换的，如果下面等式成立：
+dox-p;y<-qifxy)
+= do fy- qi <- p; fxy
+IO单子显然不是可交换的，然而有的单子是可交换的。请问单子Maybe是可交换
+的吗？
+习题D每个单子是一个函子。请完成下列定义：
+instance Monad m =>Functor mwhere
+fmapf=...
+目前Haskell不要求类族Monad必须是类族Functor的子类族，但是在将来发行的
+版本中有改变这种情况的计划。目前Haskell为单子提供了一个等价于fmap的函数
+liftM。请用return和>>=给出liftM的定义。
+函数join：m（ma）->ma将双层单子结构扁平化为单层。请用>>=定义
+join。对于列表单子，join和liftM给出哪些熟悉的函数?
+最后，使用join和liftM定义（>>=）。由此得出，定义单子时也可以不用
+return和>>=，而使用return、liftM和join。
+习题E几个有用的单子函数定义在库Control.Monad中。例如：
+sequence_::Monad m=>[m al->m ()
+sequence_=foldr (>>)done
+（在Haskell中有些地方习惯用下划线表示动作的结果是单位元类型。）定义相关的函数：
+sequence :: Monad m=> [ma] ->m [a]
+264
+请利用这两个函数定义下列函数：
+-> [a]
+mapM_Monad m =>(a->mb)
+->m (
+[b]
+另外，请定义：
+在本书中曾用到函数repeatForn重复一个动作n次。请将该函数推广为下列
+函数：
+习题F下面是单子式等式推理的练习。考虑函数：
+add ::Int ->State Int (
+add n=do (m<-get; put (m+n))
+任务是证明：
+sequence_  map add =- add . sum
+其中sequence_是习题E中定义的函数，sum求一个整数列表的累加和。证明需要
+
+===== PDF 185 =====
+命令式函数式程序设计
+foldr的融合律、put和get的简单定律，以及单子律：
+dostmts1]>>do[stmts2]=do（stmts1;stmts2]
+这个定律成立的条件是stmts1和stmts2不相交。
+习题G证明蛙跳规则：（f>=>g）.h=（f。h）>=>g。然后使用这条规则证
+明(return.h)>=>g=g.h。
+习题H
+请证明：
+liftMf=id>=>(return:f)
+join
+=id>=> id
+描述单子律的第四种方法是使用习题D的两个函数1iftM和join。关于这两个函
+数有7条定律，每一条看上去都眼熟：
+265
+liftM id
+=id
+liftM(f.g)=liftMf.liftMg
+liftMf.return=return.f
+liftMf.join=join.liftM(liftMf)
+join.return
+= id
+join.liftMreturn= id
+join:liftMjoin=join.join
+请证明第四条定律。
+习题！请问build【］的作用是什么（见10.3节）？
+习题J编写一个玩猜单词游戏hangman的交互程序。一个交互过程如下：
+ghci>hangman
+I am thinking of aword:
+Try and guess it.
+guess: break
+guess: parties
+Wrong number of letters!
+guess: party
+-appy
+guess: happy
+You got it!
+Play again? (yes or no)
+Bye!
+假设秘密词的列表存储在名为Words的文件中，所以，动作xs<-readFile
+"Words"将文件作为一个字符列表读出。另外，readFile是惰性的，即它根据需要读
+取内容。
+习题K
+请使用一次STRef的一个fibST定义fib的另一个版本。
+266
+习题L
+定义两个正整数的最大公约数的一种方法如下：
+gcd（x,y)/x=y=x
+I x<y = gcd (x,y-x)
+I x>y = gcd (x-y,y)
+
+===== PDF 186 =====
+178
+第10章
+将该定义翻译成两个程序，一个使用单子State，另一个使用单子sT。
+习题M这里是一个具体的谜题，可以用宽度优先搜索来解决。SamLoyd的著名
+15数字推盘游戏的一个简单版本是8数字推盘游戏。给出一个3×3的阵列，包含了标
+有数字1～8的方块，另有一个空位。可以将一个方块推入临近的空位。根据空位所在
+位置，可以将标有数字的方块上移、下移、左移或者右移。游戏开始时空位在左上角，
+其他方块按照1～8有序排列。游戏结束时，空位在右下角，其他方块依然按照1～8有
+序排列。
+如果愿意接受挑战的话，任务是给出位置和移动的合适表示，并定义函数moves、
+move、solved和encode。
+10.8答案
+习题A答案
+断言（>>）：：IO（）->IO（）->IO（）满足结合律，并有单位元
+done。这表明对于所有有穷串xs有
+下面重点给出结合律的证明。首先，对于工O（）中的动作有
+267
+其中constxy=x。现在可以做如下推理：
+(p>>q) >> r
+=[(>>)的定义}
+(p>>=constq)>>=constr
+【第三个单子律}
+p >>= const (q >>= const r)
+[(>>)的定义}
+p >>= const (q >> r)
+=[(>>)的定义}
+p>> (q>>r)
+习题B答案
+直接的定义使用了有通配符的模式匹配：
+add3 Nothing-
+= Nothing
+add3(Justx)Nothing-
+= Nothing
+add3(Justx)(Just y)Nothing=Nothing
+add3(Justx)(Justy)(Justz)=Just(x+y+z)
+这个定义保证addNothingundefined=Nothing。
+单子式定义如下：
+add3mxmymz
+=dofx<-mx;y<-my;z<-mz;
+return (x+y+z))
+习题C答案是的。交换律如下：
+   <- =<  -  < d
+对于单子Maybe，需要验证4种可能的情况。例如，如果p=Nothing，q=JustY，
+
+===== PDF 187 =====
+命令式函数式程序设计
+那么两边都简化为Nothing。其他情况的验证类似。
+习题D答案定义为
+268
+fmap fp=p>>= (return.f)
+  d - d ro
+对于列表单子，有liftM=map和join=concat。
+另一个方向的定义为
+p>>=f= join (liftMf p)
+习题E答案函数sequence的定义为
+sequence=foldr k (return )
+wherekpq=do(x<-p;xs<-q;return(x:xs))
+两个新的映射函数定为
+mapM_f=sequence..mapf
+mapM f=sequence.map f
+函数foldM定义为
+q-[]-q
+foldMfeD
+=returne
+foldMfe(xixs)=do(y<-fex;foldMfyxs)
+注意foldM类似于foldl，从左到右进行。最后，for=flipmapM_。
+习题F答案首先注意到，利用6.3节给出的foldr和map的融合律得到
+sequence_. map add
+foldr (>>) done map add
+=foldr((>>).add)done
+此外，有
+((>>)  add) n p = add n >> p
+因为sum=foldr（+）o，这表明我们必须证明：
+269
+这个式子看上去像foldr融合律的一种特例。因此，需要证明add是严格的（是的），
+而且有
+add 0 = done
+add(n+n')=addn>>addn"
+下面是证明：
+add 0
+= [定义}
+do(m<-get;put (m+0))
+= [算术]
+do (m<-get; putm)
+(put和get的简单定律
+done
+
+===== PDF 188 =====
+180
+第10章
+由此结束第一个等式的证明。对于第二个等式，从较复杂一边开始推理：
+add n >> add n'
+= [定义]
+do [1 <- get; put (1 + n) } >>
+do(m<-get;put(m+n'))
+【单子律］
+do(1<-get;put(1+n);m<-get;put(m+n'))
+【put和get的简单定律】
+do [1 <- get; put ((1 + n) + n'))
+{(+)的结合律；add的定义}
+add (n+n)
+习题G答案
+推理如下：
+(f >=> g) (h x)
+=(>=>)的定义}
+f (h x) >>= g
+(>=>)的定义}
+270
+(f. h>=>g) x
+对于第二部分：
+(return . h) >=> g
+【蛙跳规则］
+(return >=>g).h
+【单子律］
+g.h
+习题H答案
+简化第四条规则的两边。对于左边的化简：
+liftMf.join
+= 【定义}
+(id>=>(return.f))(id >=>id)
+【蛙跳规则及id-f=f]
+(id >=>id)>=>(return .f)
+对于右边的化简：
+join.iiftM (liftMf)
+=【定义]
+(id>=>id).(id>=>return(id>=>(return.f)))
+【蛙跳规则及(>=>)的结合律}
+id >=>(return.(id >=>(return.f)))>=> id
+[因为(return.h)>=>g=g.h)
+id >=>id>=>(return.f)
+因为（>=>）满足结合律，所以两边相等。
+习题答案
+Build［]引起无穷循环，所以其值为工。
+习题J答案
+主函数定义如下：
+hangman ::10()
+hangman=do fxs <-readFileWords";
+271
+play (words xs))
+
+===== PDF 189 =====
+命令式函数式程序设计
+181
+函数play对文件中的不同词玩任意多次（假定总是有足够的词）：
+play (w:ws)
+=do fputStrLn"I am thinking of aword:";
+putStrLn (replicate (length w) -");
+putstrLn "Try and guess it.";
+guess w ws)
+函数guess处理一次猜测，并将剩余的词留作后续的游戏：
+guess w ws
+= do (putstr "guess:",
+w' <- getLine;
+if length w'/=length wthen
+do (putStrLn "Wrong number of letters!";
+guess w ws)
+else if wi =w
+then
+do putstrLn "You got it!";
+putStrLn "play again? (yes or no)";
+ans <-getLine;
+if ans  "yes"
+then play ws
+else putstrLn"Bye!"}
+else do (putstrLn (match wi w);
+guess w ws
+最后定义match：
+matchww= map checkw
+where
+checkx=if xelemw!then x elsei-
+习题K答案
+下面程序正确，但是运行空间不是常数空间：
+fibn=fst $runST(fibSTn)
+fibsT :: Int -> ST s (Integer,Integer)
+fibSTn=dofab<-newSTRef(O,1);
+272
+repeatFor n
+(do{(a,b)<-readsTRef ab;
+writesTRef ab $!(b,a+b));
+readSTRef ab)
+原因是（b，a+b）已经是首范式，所以严格应用不起作用。为了迫使分量的运算，倒数第
+二行需要修改为
+bseq(a+b)"seqwritesTRef ab (b,a+b)
+习题L答案使用单子State的定义：
+gcd (x,y)=fst $ runstate loop (x,y)
+Ioop::State(Int,Int)Int
+loop = do f(x,y) <- get;
+ifxy
+then return x
+elseif x<y
+then do (put (x,y-x); loop)
+else do Iput (x-y,y); looph)
+
+===== PDF 190 =====
+182
+第10章
+使用单子ST的定义：
+gcd (x,y) = runsT $
+do fa<- newSTRef x;
+b<-newSTRef y;
+loopab)
+loopab
+= do {x <- readSTRef a;
+y<-readSTRef b;
+if x==y
+then return x
+elseif x<y
+then do (writesTRef b (y-x);loop ab)
+273
+else do(writesTRef a (x-y);loop a b))
+习题M答案当然有许多答案。下面选择的是用9个数字的列表[0：.8］表示方块的
+阵列，其中0表示空位。为了避免重复计算，一个位置用一个二元组（i，ks）表示，其中
+j是空位在ks中的位置，ks是[0..8]的置换。因此，有
+type Position = (Int,[Int])
+data Move
+=UpI DownI LeftI Right
+encode ::Position -> Integer
+encode(j,ks)=foldl opo ks
+whereopxd=1o*x+fromIntegrald
+start :: Position
+start =(0,[0..8])
+函数moves可以定义为
+moves::Position->[Move]
+moves (j,ks)
+[Up
+1jnotElem'[6,7,8]]++
+[Down
+|j"notElem[o,1,2]]++
+[Left|jnotElem"[2,5,8]]++
+[Rightj"notElem"[0,3,6]]
+定义说明，如果空位不在最底行，则允许上移；如果空位不在最顶行，则可以下移；如果
+空位不在最右列，则可以左移；如果空位不在最左列，则可以右移。
+函数move可以如下定义：
+move ::Position ->Move ->Position
+move (j,ks) Up= (j+3,swap (j,j+3) ks)
+move
+(j,ks)Dowm=(j-3,swap (j-3,j)ks)
+move
+(j,ks)Left=(j+1,swap (j,j+1)ks)
+move
+(j,ks)Right=(j-1,swap(j-1,j)ks)
+swap(j,k)ks=ks1++y:ks3++x:ks4
+where (ksl,x:ks2)= splitAt jks
+(ks3,y:ks4)=splitAt (k-j-1)ks2
+274
+最后定义：
+solved::Position->Bool
+solved p=p==(8,[1,2,3,4,5,6,7,8,0])
+
+===== PDF 191 =====
+命令式函数式程序设计
+183
+我的计算机生成如下结果：
+ghci> solve start
+Just[Left,Up,Right,Up,Left,Left,Down,
+Right,Right,Up,Left,Down,Down,Left,
+Up,Up,Right,Right,Down,Left,Left,Up
+(4.84secs,599740496bytes)
+10.9注记
+请阅读《Haskell的历史》（TheHistoryofHaskell）了解单子如何成为Haskell不可分
+割的组成部分，以及为什么单子思想对于Haskell实际应用的扩展意义重大。编译器的每
+个阶段都使用单子记录信息。例如，类型检测器使用单子结合状态（维护当前代换）、名
+称供应（新的类型变量名）和异常。
+do记法优先于（>=>）的使用是由JohnLaunchbury在1993年提出的建议，并由
+MarkJones第一次在Gofer中实现。
+过去几年关于单子的介绍资料不断增加，下面链接给出比较全面的有关文章列表：
+haskell.org/haskellwiki/Monad_tutorials
+单子等式推理的例子（习题F）参见JeremyGibbons的论文“Unifyingtheoriesofpro-
+grammingwithmonads”（UTPSymposium，August2012）。更多有关单子等式推理的资料参
+见JeremyGibbons和Ralf Hinze的论文“Justdo it：simplemonadic equational reasoning”，该
+论文刊登在2011年函数式程序设计国际会议（2011InternationalConferenceofFunctional
+Programming）论文集中。两篇论文均可在下列链接找到：
+www.cs,ox.ac.uk/people/jeremy.gibbons/publications/
+275

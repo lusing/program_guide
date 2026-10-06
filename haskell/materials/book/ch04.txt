@@ -1,0 +1,939 @@
+
+===== PDF 50 =====
+第4章1
+Thinking Functionally with Haskell
+列表
+列表是函数式程序设计的引擎。函数之间的数据获取和传递可用列表完成。列表可以
+拆分、重组或者与其他列表结合形成新的列表。数的列表可以求和或者求积，字符列表可
+以被读写，等等。总之，列表上的有用运算可以列出很多。本章描述一些常用的列表运
+算，不过，有一类特别重要的运算将在第6章讨论。
+4.1列表记法
+如前所讲，类型【a]表示元素为a的列表。空列表用【]表示。用户可以构造任何类型
+的列表，但是在同一个列表中不可以包含不同类型的元素。例如：
+[undefined,undefined]::[a]
+[sin,cos,tan]
+:: Floating a =>[a->a]
+[[1,2,3],[4,5]]
+::Num a=>[[a]]
+["tea","for",2]
+not valid
+列表记法，如[1，2，31实际上是下面更基本记法的简写：
+1:2:3:
+运算（：）：：a->［a］->［a］，读作“cons”，是列表的构造函数。因为该运算是
+右结合的，所以上面的表达式无需圆括号。该运算没有相关联的定义，所以称为构造函
+63
+数。换言之，不存在化简诸如1：2：1的表达式的规则。运算（：）对于两个参数都是非严
+格的，更确切地说，它是非严格的，并返回非严格的函数。表达式
+undefined：undefined
+可能不是很有趣，但是，可以确定的是，它不是空列表。事实上，这也是我们对该列表知
+道的唯一信息。注意，表达式中两个undefined具有不同的类型。
+空列表[]也是列表的一个构造函数。在Haskell中作为数据类型的列表具有下列说明：
+data Lista =Nil I Cons a (List a)
+唯一的区别是Lista写成了【a]，Nil写成了［]，Cons写成了（：）。
+根据以上说明，类型为【a］的每个列表具有下列三种形式之一：
+无定义的列表undefined：：【a]
+空列表[]：：[a];
+.形如x：xs的列表，其中x：:a，xs：：[a]。
+由此得出列表有三种：
+。利用（：）和[]构造的有穷（finite）列表，如1：2：3：[]。
+·利用（：）和undefined构造的非完整（partial）列表或者部分列表，如列表
+filter（<4）［1：]是非完整列表1：2：3：undefined。我们知道在3之后不
+存在小于4的整数，但是Haskell只是一个计算器，不是定理证明器，所以Haskell
+继续一直向后检查，而且没有找到满足条件的数字。
+
+===== PDF 51 =====
+列表
+43
+。只用（：）构造的无穷（infinite）列表，如［1。，］是非负整数的无穷列表。
+三种列表都会出现在日常程序设计中。第9章将探讨无穷列表及其应用。例如，预定
+义函数iterate返回一个无穷列表：
+iteratefx=x:iteratef(fx)
+特别是，iterate（+1）1是正整数的无穷列表，该列表也可写成［1..］（参见4.2节）。
+另一个例子是
+64
+head (filter perfect [1..J)
+whereperfectn=(n==sum (divisorsn))
+它返回第一个完全数，即6，只是目前没人知道filterperfect［1..］是一个无穷列
+表还是非完整列表。
+最后，可以定义：
+until p f =head.filter p.iterate f
+在第3章中函数unti1用于计算取底函数。这个例子也说明，在程序设计中看似简单的
+函数通常可以用更简单函数的复合表示。这有些像质子和夸克。
+4.2枚举
+Haskell提供枚举整数列表的有用记法。如果m和n是整数，并且m<n，则可以用下
+列记法：
+[m..n]表示列表【m，m+1，，n]
+[m..］表示无穷列表［m，m+1，m+2，]
+[m,n..p]表示列表[m，m+（n-m)，m+2(n-m)，，m+a(n-m)]，其中a
+是满足m+a(n-m）≤p的最大整数。
+[m,n..]表示无穷列表【m，m+（n-m），m+2（n-m），]
+前两种记法在实际应用中经常出现，后两种出现不太多。例如：
+ghci>[0,2..11]
+[0,2,4,6,8,10]
+ghci> [1,3..]
+[1,3,5,7,9,11{Interrupted]
+第一个例子列表止于10，这是因为11不是偶数。在第二个例子中，很快中断了无穷
+列表的计算。
+事实上，枚举不限于整数，而是类族Enum的任何类型都可以使用枚举。这里不再赞
+述类族Enum，只说明类型char是Enum的成员：
+ghci>['a'..'z']
+"abcdefghijklmnopqrstuvwxyz"
+65
+4.32
+列表概括
+Haskell提供了另外一种非常有用而且特具魅力的列表记法，称为列表概括（listcom-
+prehension），可用其他列表构造列表。下面列举几个例子：
+
+===== PDF 52 =====
+44
+第4章
+ghci>[x*x | x<- [1..5]]
+[1,4,9,16,25]
+ghci>[x*x| x<-[1..5],isPrimex]
+[4,9,25]
+ghci>[(i,j)|i<-[1..5],even i,j<-[i..5]]
+[(2,2),(2,3),(2,4),(2,5),(4,4),(4,5)
+ghci>[x1 xs<-[[(3,4)],[(5,4),(3,2)]]，(3,x)<-xs]
+[4,2]
+再举一例。假设要生成某个范围的所有毕达哥拉斯三元数，即对于某个给定的n，使
+得x²+y²=z而且1≤x，y，z≤n的三元组（x，y，z）。可以定义：
+triads ::Int->[(Int,Int,Int)]
+triadsn=[(x,y,z)Ix<-[1..n],y<-[1..n],
+z<-[1..n]，x*x+y*y==z*z]
+因此
+ghci> triads 15
+[(3,4,5),(4,3,5),(5,12,13),(6,8,10),
+(8,6,10),（9,12,15)，（12,5,13)，（12,9,15)
+或许这并非我们想要的结果：每个本质上不一样的三元组用两种不同的方法生成。而且，
+列表中包括基本三元组的穴余。
+为了改进triad的定义，可以限制x和y使得x<y，而且x和y互素，即它们没有
+公共因子。数学家知道2x²不可能是一个数的平方，所以第一个限制是正确的。一个数的
+因子可以如下计算：
+divisorsx=[d1d<-[2..x-1],xmod*d==o]
+因此有
+coprime x y =disjoint (divisors x) (divisors y)
+66
+这里disjoint的定义留作练习。
+根据以上讨论，现在可以定义：
+triads n = [(x,y,z) I x<-[1..n], y<-[x+1..n],
+coprime x y,
+z<-[y+1..n],x*x+y*y==z*z]
+这个定义好于前一个定义，不过还可以尝试让函数运行更快一点，主要目的是说明一个思
+triads n = [(x,y,z) I x<-[1..m],y<-[x+1..n],
+coprime xy,
+z<-[y+1..n]，x*x+y*y==z*z]
+wherem=floor(n/sqrt2)
+但是，m的表达式是不正确的：n的类型是Int，整数不能做除法。这里需要一个显式的
+转换函数，应该使用函数fromntegral（注意不是fromInteger，因为n是Int，
+而不是Integer）。需要将m定义为m=floor（fromIntegraln/sqrt2）。再次
+强调，必须注意所处理的数的类型，并且了解不同类型数之间的转换函数。
+列表概括可用于定义列表上的某些常用函数。例如：
+
+===== PDF 53 =====
+列表
+45
+mapfxs
+=[fxx<-xs]
+filterpxs=[xIx<-xs,px]
+concatxss=[xxs<-xss,x<-xs]
+实际上，在Haskell中情况正好相反：列表概括被翻译成使用map和concat的等价
+定义。翻译规则如下：
+[e ITrue]
+= [e]
+[eI q]
+= [e I q, True]
+[eI b, Q]
+if bthen [eI Q] else
+[eI p-xs,Qletokp=[eI Q]
+ok-=
+in concat(mapokxs)
+第四条规则中ok的定义使用了不关心（don'tcare）模式（或者不介意模式），也称为通
+配符。第四条规则中的p是一个模式，并且ok的定义说明，对于任何不满足模式p的参
+数，其返回值是空列表。
+另一个有用的规则是
+67
+[eIQ1,Q2]=concat[[e/Q2]1Q1]
+4.4一些基本运算
+列表函数可以通过模式匹配定义。例如：
+null ::[a] ->Bool
+nuli
+=True
+null(x:xs)=False
+模式［]和x：xs不同，而且它们涵盖了所有可能情况，所以，以上nul1定义的两个
+等式以任何顺序书写都可以。函数nul1是严格的，因为Haskell必须通过对参数求值，
+至少算到可以判断参数是否为空列表，才能决定使用定义的哪个等式。（一个问题是为什
+么不使用简单的定义null=（==）？）以上定义也可以写成
+null = True
+null -= False
+这个定义使用了不关心模式。
+下面是使用模式匹配的另外两个定义：
+head :: [a] -> a
+head(x:xs)=x
+tail :[a]->[a]
+tail (x:xs)=xs
+以上定义中不包含模式为［的等式，所以，如果对head［]或者tai1【门求值，则
+Haskell报错。
+在模式中也可以用【x]表示x：门]：
+last :[a]->a
+last[x]
+last(x:y:ys)=last(y:ys)
+第一个等式中的模式匹配单元素列表，第二个等式中的模式匹配至少有两个元素的列表。
+
+===== PDF 54 =====
+46
+第4章
+标准引导函数库的1ast定义稍有区别：
+last[x]
+68
+last(_ixs)=lastxs
+定义中使用了不关心模式。两个等式必须按照这种顺序书写，因为x：门与两个模式均
+匹配。
+4.5串联
+下面是串联运算（++）的定义：
+(++) ::[a] ->[a] -> [a]
+□ ++ ys
+(x:xs) ++ ys =x:(xs ++ ys)
+定义在第一个参数上，而不是第二个参数上使用了模式匹配。第二个等式很简洁，需
+要一点思考来理解，但是，一旦理解后，读者会对函数程序中列表如何运作豁然大悟。下
+面是一个简单的求值过程：
+[1,2]++[3,4,5]
+【表示法】
+（1:（2:门））++（3:（4:（5:门)））
+【++的第二个等式}
+1:（(2:□）++（3:（4:(5:□))))
+= 【同前}
+1:(2:（门++（3:（4:(5:门)))))
+【++的第一个等式】
+1:(2:(3:（4:(5:))))
+【表示法】
+[1,2,3,4,5]
+如该例所示，对xs++ys求值的代价与xs的长度成正比，其中长度定义为
+length::[a]->Int
+length=0
+length(x:xs)=1+lengthxs
+同时注意下面的列表：
+undefined ++ [1,2] =undefined
+69
+[1,2]++undefined=1:2:undefined
+对第一个列表一无所知，但是，知道第二个列表的开始元素是1，下一个元素是2。
+串联是满足结合律的运算，所以对于任意列表xS、Ys和zs下列等式成立：
+(SZ ++ SA) ++ X = SZ ++ (SA ++ SX)
+第6章将讨论如何证明这样的断言。
+4.6
+函数cancat、map和filter
+读者已经看到列表上的3个最有用的运算：concat、map和fi1ter。下面是这些
+函数利用模式匹配的定义：
+
+===== PDF 55 =====
+列表
+47
+concat : [[a]] -> [a]
+concat 
+concat(xs:xss)=xs ++concat xss
+[q] -[e] - (q <- e) : dew
+mapf
+-.= ~
+mapf(x:xs)=fx:mapfxs
+filterp
+filterp(x:xs)=ifpxthenx:filterpxs
+else filter p xs
+这些定义中包含一个共同的主题，将会在第6章进一步探讨。函数filter的另一种
+定义是
+filter p= concat . map (test p)
+testpx=ifpxthen [x]else[]
+在这个定义中，filterp首先将列表中满足条件p的每个元素转换为单元素列表，
+不满足条件P的转换为空列表，然后将这些列表串联。
+函数map的两个基本性质是
+mapid
+=id
+map(f.g)=mapf.mapg
+70
+第一个等式表示将恒等函数应用于列表的每个元素，结果与原列表相同。这个定律中等式
+两边的id有不同的类型：左边的id类型是a->a，而右边的id类型是［a］->［a]。
+第二个等式表示将g应用于一个列表的每个元素，然后将王应用于前面结果的每个元素，
+最后结果等同于将王：g应用于原列表的每个元素。如果将第二个等式从右向左读，该等
+式表示对一个列表的两次遍历可以用一次遍历代替，其好处是效率更高。
+以上两个等式称为map的函子（functor）定律。这个术语来自一个数学分支一一范畴
+论。实际上，Haskell提供了一个类族Functor，其定义如下：
+class Functor f where
+方法fmap应该与map一样满足同样的定律。定义这个类族的原因是，将函数应用于列表
+的思想可以推广到将函数应用于任意数据结构，如各种树形结构。例如，考虑下列叶结点
+带标记的二叉树类型：
+data Tree a= Tip aI Fork (Tree a) (Treea)
+具有树状结构的数据会在许多场合出现，如各种表达式的语法具有树状结构。在树上
+也可以定义函数的映射，不叫mapTree，而是只要将树定义为类族Functor的成员，就
+可以称之为fmap：
+instance Functor Tree where
+fmapf(Tipx)=Tip(fx)
+fmapf(Forkuv)=Fork(fmapfu)(fmapfv)
+事实上，列表作为类族Functor实例，map只是fmap的同义词：
+ghci>fmap（+1)[2,3,4]
+[3,4,5]
+
+===== PDF 56 =====
+48
+第4章
+前面曾讲过，定义类族Functor的主要目的是实现可以映射到列表上的函数也可以
+映射到其他数据结构上，Haskell已经实现了这一点，并且引人了一个合适的类族。在今
+后的章节，特别是第12章，读者将看到map的函子定律出现在许多计算中。
+71
+函数map还满足另外一组定律，并且具有相同的主题。考虑下面的等式：
+f.head
+head.mapf
+mapf.tail=tailmapf
+mapf.concat=concat.map(mapf)
+第一个等式仅当f是严格函数时成立，但是另外两个等式对于任何函数f都成立。如果将
+第一个等式两边均应用于空列表，则有
+f(head)=head(mapf)=head
+因为空列表的首元素是无定义的，故只有王是严格函数时该等式才成立。
+以上每个定律都有简单的解释。对于每种情况，可以先把运算（head、tail等）
+应用于一个列表，然后改变每个元素，或者先改变每个元素，然后应用这些运算。这些共
+同点源于这些运算的类型是
+head
+::[al->a
+tail:[a]->[a]
+concat[[a]]->[a]
+这些运算的关键点是不依赖于列表的特性，它们只是在列表上移动、舍弃或者提取元
+素的简单函数。所以它们的类型是多态的。而且，具有多态类型的函数均满足定律：可以
+先修改值再应用这个函数，也可以先应用函数再修改值。在数学上这种函数称为自然变换
+（naturaltransformation），相关的定律称为自然律（naturallaw）。
+再看一个例子。因为reverse：：【a］->［a]，所以期望下列等式成立：
+mapf.reverse=reverse.map f
+情况确实如此。当然，该自然律还有待证明。
+另一个定律是
+concat:mapconcat=concat.concat
+这个定律表示，等式两边串联由列表的列表构成的列表的两种方式的结果是一样的（或者
+先进行内部串联，或者先做外部的串联）。
+最后是filter的一个性质：
+72
+filter p.map f=map f.filter (p.f)
+可以用等式推导的方式证明这个定律：
+filterp,mapf
+=【filter的第二个定义]
+concat.map(testp).mapf
+=[map 的函子性质]
+concat.map(testp.f)
+=(因为testp.f=mapftest(p.f))
+concat.map (mapf.test (p.f))
+=【map的函子性质]
+
+===== PDF 57 =====
+列表
+49
+concat.map(mapf)map(test(pf))
+【concat的自然律】
+mapf.concat.map (test(p.f))
+【filter的第二个定义】
+mapf.filter(p.f)
+上面这些定律不仅在学术上有价值，而且可用于发现新的、更好的表达定义的方法。
+这就是为什么函数式程序设计是有史以来最好的程序设计方法。
+4.7 -E
+函数zip和zipWith
+最后，为了给出一个完整简单的常用运算的工具箱，再来考虑函数zip和zipwith。
+它们在标准引导库中的定义如下：
+zip :: [a] -> [b] -> [(a,b)]
+zip(x:xs)(y:ys)=(x,y):zipxsys
+zip-
+[[[
+zipwithf(x:xs)(y:ys)=fxy:zipwithfxsys
+zipwith f.-
+细心的程序员（不喜欢“不关心”模式的程序员）可能给出如下定义：
+zipys
+zip(x:xs)
+zip (x:xs)(y:ys)=(x,y):zip xs ys
+两个定义均使用在两个参数上的模式匹配。必须明白的是，模式匹配的次序是从上到
+下，自左到右。因此，根据定义有
+zip  undefined=
+zip undefined  = undefined
+函数zip的定义可以用另一种方式表达：
+zip=zipWith()
+这里的运算（，）是二元组的一个构造函数：（，）ab=（a，b）。
+下面是使用zipwith的一个例子。假定要检查一个列表元素是否呈非递减序。一种
+直接定义方法可能是
+nondec
+= True
+nondec[x]
+= True
+nondec(x:y:xs)=(x<=y)&&nondec(y:xs)
+但是，另一种等价而且更简短的定义是
+nondec xs =and(zipwith(<=)xs (tail xs))
+函数and是另一个常用的标准引导库函数。如果一个布尔值列表的所有元素均为
+True，则该函数返回True，否则返回False：
+and :[Bool] ->Bool
+and
+=True
+and(x:xs)=x&&andxs
+
+===== PDF 58 =====
+50
+第4章
+再来看最后一个例子。考虑定义一个函数position，对于一个值x和一个有穷列表
+xS，该函数返回x在列表中出现的第一个位置（位置从O开始计算）。如果x在xS中不
+出现，则返回一1。该函数可以如下定义：
+positionxxs
+=head([jI(j,y)<-zip[o.Jxs,y=x]++[-1])
+表达式zip[0.：］xs将xs的每个元素与其在xs中的位置配对。尽管第一个参数
+是无穷列表，但是，如果xS是有穷的，那么结果也是有穷列表。注意以上的解决方法是，
+74
+首先计算×出现的所有位置列表，然后取第一个元素。根据惰性计算策略，计算一个列表
+的第一个元素不必构造列表的所有元素，所以，这种解法在效率上并无损失。可以看出，
+这种用所有的查找结果来表达一个查找结果是多么简单！
+4.8
+高频词的完整解
+现在给出1.3节函数commonwords的完整定义。已经定义了：
+commonwords :Int ->[Char]->[Char]
+commonwordsn=concat.mapshowRun.taken
+sortRuns.countRuns.sortWords.
+words: map toLower
+需要进一步给出定义的是下列函数：
+showRun
+sortRuns
+countRuns
+其他函数，包括words，是标准Haskell库函数。
+第一个函数定义简单：
+showRun::(Int,Word)->[Char]
+showRun(n,w)=w++":"++shown++"n"
+第二个函数可以如下定义：
+countRuns :: [Word] -> [(Int,Word)]
+countRuns 
+countRuns (w:ws)=(1+length us,w):countRuns vs
+where (us,vs)= span (=-w)ws
+其中引导库函数spanp将列表拆分为两个列表，第一个是列表中的最大前缀，其所有元
+素都满足性质P，第二个列表是剩余的后缀。下面是定义：
+([e][e]) <- [e] <- (Toog <- e) : veds
+dueds
+= (口,口)
+spanp(x:xs)=ifpxthen(x:ys,zs)
+else(,x:xs)
+where(ys,zs)=spanpxs
+现在余下sortRuns和sortwords尚未定义。可以使用下列命令从模块Data。
+75
+List输入函数sort：
+import Data.List (sort)
+因为 sort的类型为 sort ：：（orda）=>［a］->［a]，所以定义：
+
+===== PDF 59 =====
+列表
+51
+sortWords[Word]->[Word]
+sortwords=sort
+sortRuns::[(Int,Word)]->[(Int,Word)]
+sortRuns=reverse.sort
+理解第二个定义需要明白Haskell在二元组上自动定义了比较运算（<=）：
+(x1,y1)<=(x2,y2)=(x1<x2)l(x1==x2&&y1<=y2)
+此外，还需要明白sort将元素按照递增序排列。因为需要按照词频数递减序排列，
+所以先按照词频数递增序排列，然后对列表取逆序。顺便说明，这也是为什么把词频数放
+在词前，而不是放在词后的原因。
+用户也可以定义自已的排序函数，代替使用库排序函数。一种好方法是使用分治
+（divideandconquer）策略：如果列表最多有一个元素，那么它已经有序；否则将列表分
+为等长的两个列表，分别递归地对每个小列表排序，然后把两个有序列表合并。由此给出
+下列定义：
+sort:
+(Ord a) => [a] -> [a]
+sort口
+sort
+[x] = [x]
+sort xs
+merge (sort ys) (sort zs)
+where(ys,zs)=halvexs
+halvexs=(takenxs,dropnxs)
+wheren=lengthxs'div2
+剩下的任务是定义merge，将两个有序列表归并为一个有序列表：
+[][[]
+merge ys=ys
+mergexs=xs
+merge(x:xs)(y:ys)
+I x<=y=ximerge xs (y:ys)
+76
+I otherwise = y:merge (x:xs) ys
+实际上，许多Haskell程序员不会完全这样书写merge定义的最后一个子句。他们会
+如下书写：
+mergexs'@(x:xs)ys@(y:ys)
+I x<=y=x:mergexsys"
+I otherwise = y:merge xs' ys
+这个定义使用了等同模式（as-pattern）。可以看出其意义：代之以将列表分解，然后再重
+构（廉价但并非无代价的运算）的更好方法是，重用匹配的值。的确如此，不过这也使得
+简单的数学等式变得有些模糊，在本书将非常保守地使用这种模式。
+函数sort和merge都是递归定义的，值得说明的是，这两个递归均会终止。对于
+merge来说，每次递归调用的两个参数中必有一个参数在变小。因此，有穷步后必能划
+归到其中的一个递归基。对于sort来说，必须注意到如果xs的长度至少为2，那么ys和
+zs的长度均严格地小于xs的长度，所以同样会终止。但是，如果省略子句sort【x】=
+[x]会出现什么情况。因为1div2=0，故有
+sort[x]=merge(sort)(sort[x])
+
+===== PDF 60 =====
+第4章
+52
+这表示sort【x】的求值需要对sort【x】求值，所以，对于非空列表情况，sort的整个
+定义陷人一个无穷循环之中。定义递归函数时，其中最重要的一部分是检查定义已包含了
+所有必需的基本情况。
+4.9习题
+习题A下列等式哪些对所有的xS成立，哪些不成立？
+:xs=[,xs]
+XS:=XS
+xs: = [xs]
+xsixs=[xs,xs]
+++XS = XS
+++xs=[,xs]
+77
+++[xs]=[,xs]
+[xs] ++  =[xs]
+另外，为什么没有定义nul=（==）？
+习题B假设要列出自然数的所有不同数对（x，y）。列出数对的顺序不重要，只要
+能够列出所有数对即可。请问下面的定义是否可行？
+aliPairs=[(x,y) x<-[o.],y<-[o.]]
+如果认为该定义不能完成这项任务，请给出一种定义。
+习题C定义下列函数：
+该函数检查两个递减序列表是否有公共元素。
+习题D在什么条件下，以下定义给出相同的结果？
+[e  x <- xs, p x, y <- ys]
+[e I x <- xs, y <- ys, p x]
+比较对两个表达式求值的代价。
+习题E当伟大的印度数学家SrinivasanRamanujan因病在伦敦住院时，英国数学家
+G.H.Hardy去探望他。Hardy试图找个话题，就说他是乘出租车来的，车号是1729，一个
+对他来说很平凡的数字。Ramanujan立即回答说，不然，这是第一个能够用两种本质不同
+的方式表示成两个数的立方和的数：13+123=93+103=1729。请写一个程序，并计算出
+第二个这样的数。
+事实上，定义一个返回范围在0<a，b，c，d≤n，满足α+b=c²+d’的所有本质上
+78
+不同的四元组（a，b，c，d）的函数，建议使用列表概括，但是必须仔细想清楚两个四元
+组本质不同的含义。总之，α²+63=c3+d有8种不同的写法。
+习题F构造列表的对偶方法是在列表的尾部添加元素：
+data Lista=NilI Snoc (List a)a
+当然，Snoc是Cons的反写。利用这种方式，列表［1，2，3］可表示成
+Snoc(Snoc(SnocNil1)2)3
+
+===== PDF 61 =====
+列表
+53
+两种不同的观点提供了完全相同的信息，但是组织方式不同。请给出Snoc观点的函
+数head和1ast的定义，并定义下列两个在两种观点之间转换的函数：
+toList ::[a] ->List a
+fromList::Lista->[a]
+（提示：reverse是有效的，翻转一个列表是线性时间。）
+习题G对lengthxs求值需要多长时间？考虑length的另一种定义：
+length :: [a] -> Int
+lengthxs=loop(o,xs)
+whereloop(n,)=n
+loop(n,x:xs)=loop(n+1,xs)
+需要的空间有变化吗？如果转用勤奋求值空间有变化吗？这些问题将在第7章详细讨论。
+习题H引导库函数taken取得一个列表的前n个元素，函数dropn舍弃前n个
+元素。请给出这些函数的递归定义。根据给出的定义，下列表达式的值是什么？
+take 0 undefined
+take undefined 
+一个更难的问题是，能否给出一个定义，使得以上表达式的值均为[]？如果不能，为
+什么？
+79
+下列等式中哪些对于所有整数㎡和n都成立？不必说明理由，只要设法理解表达式的
+含义即可。
+takenxs++dropnxs=xs
+takem.dropn=
+drop n. take (m+n)
+takemtaken=take(mminn)
+dropmdropn=drop (m+n)
+标准引导库函数splitAtn可以如下定义：
+splitAt nxs= (take nxs,dropnxs)
+不过，显然以上定义效率比较低，因为这里需要遍历列表xs两次。请给出只需要遍
+历xs一次的splitAt的定义。
+习题！对于等式：
+(sx  dem)  deu = sx (8 : ) deu
+下列命题中，同意哪些，不同意哪些（同意无需给出理由）？
+1.等式并非对所有xs成立，命题的真假依赖于xs是否是有穷列表。
+2.等式并非对所有f和g成立，命题的真假依赖于f和g是否是严格函数。
+3.等式对于所有列表，包括有穷、非完整和无穷列表，以及对于所有合适类型的函
+数f和g都成立。事实上，map（f.g）=mapf：mapg是更简洁的表达方式。
+4.等式看似正确，但是需要根据map和函数复合的定义证明。
+5.从左至右来看等式，它表达了一种程序优化：对一个列表的两次遍历可以用一次
+遍历完成。
+6.在惰性求值策略下并不是优化，因为mapf求值没有开始前，mapgxs不会被完
+全计算。
+7.等式右边无论是分部计算还是整体计算，中间都会产生一个中间列表，但是等式
+
+===== PDF 62 =====
+54
+第4章
+80
+左边则不会。所有，即使在惰性求值策略下，该等式也表示一种程序优化。
+习题J下面列出的等式中至少有一个是错误的。请识别哪些成立，哪些不成立。同
+样，无需说明理由，目的是理解等式的含义。
+mapf.taken
+=taken.mapf
+mapf.reverse
+=reverse.mapf
+mapf.sort
+=sort.mapf
+map f.filterp
+=mapfst.filtersnd.map(fork(f,p))
+filter (p.g)
+=map(invertg).filter p.mapg
+reverse.concat
+= concat.reverse. map reverse
+filter p.concat =concat.map (filter p)
+在第五个等式中假定invertg满足invertg，g=id。第四个等式中的函数
+fork定义如下：
+fork(f,g)x=(fx,gx)
+习题K定义函数unzip和cross如下：
+unzip=fork (map fst,mapsnd)
+cross(f,g)=fork(f:fst,gsnd)
+这些函数的类型是什么？
+利用简单的等式推理证明下列等式：
+cross(mapf,mapg).unzip=unzip.map(cross(f,g))
+证明可以使用map的函子律和下列规则：
+cross (f,g).fork(h,k)=fork(f.h,g.k)
+fork(f,g).h
+=fork (f.h,g.h)
+fst.cross(f,g)
+=f.fst
+snd.cross (f,g)
+=g- snd
+习题L接着上一个习题，证明
+81
+cross(f,g).cross(h,k)=cross(f.h,g.k)
+还有cross（id，id）=id（为什么？）。所以，cross除了参数是一个二元组外，
+看似具有函子的性质。是的，cross是一个双函子（bifunctor）。这也提示可以给出下列
+推广：
+class Bifunctor p where
+其中bimap的参数是并列的，而不是一个二元组。请用类型Pair的Bifunctor实例
+bimap表示cross，其中：
+type Pair ab= (a,b)
+现在考虑数据类型：
+data Either a b =Left al Right b
+请将Either作为Bifunctor的实例，给出实例定义。
+
+===== PDF 63 =====
+列 表
+55
+4.10
+答案
+习题A答案
+只有下列3个等式成立：
+xs:=[xs]
+[]++[xs] =[],xs]
+[xs] ++  = [xs]
+如果定义nul1=（==［门），那么它的类型会有限制：
+null :: (Eq a) => [al ->Bool
+这意味着，只有列表中元素类型可比较相等时，列表才可以比较相等。当然，空列表
+不含任何元素，所以不需要（==）。
+习题B答案答案是否定的，al1Pairs生成下列无穷列表：
+allPairs[(o,y)I y<-[o.,J]
+一种方法是使用下列定义，按照二元组之和递增的顺序列出所有二元组。
+aliPairs =[(x,d-xI d<-[o..],x<-[o..d]]
+82
+习题C答案定义如下：
+disjoint xs   True
+disjoint  ys = True
+disjoint xs'@(x:xs) ys@(y:ys)
+I xydisjoint xs ys'
+Ixy=False
+I x>y =disjoint xs'ys
+为了使得定义更聪明，这里使用了等同模式。
+习题D答案只有YS是有穷列表时，它们的结果才相同：
+ghci> [1 I x <- [i,3], even x, y <- undefined]
+ghci>[1 ×<-[1,3],y<-undefined,even x]
+***Exception:Prelude.undefined
+ghci>[1  x<-[1,3],even x,y<-[1.]]
+Prelude>[1| x<-[1,3],y<-[1..],even x]
+{Interrupted)
+当它们结果相同时，前者更高效。
+习题E答案一种生成本质不同的四元组方法是限制四元组（a，b，c，d）满足条件
+a≤b、c≤d以及a<c。因此
+quads n = [(a,b,c,d) I a<-[1..n], b <- [a..n],
+c<-[a+1..n],d <-[c..n],
+第二个这样的数是4104=23+163=93+153
+习题F答案
+head : List a ->a
+head(SnocNil x)=x
+head(Snoc xsx)=head xs
+83
+
+===== PDF 64 =====
+第4章
+last::List a->a
+last(Snocixsx)=X
+toList :: [a] ->List a
+toList=convertreverse
+where convert 
+= Nil
+convert(x:xs)=Snoc(convertxs)x
+fromList :: List a -> [a]
+fromList = reverse .convert
+where convert Nil
+convert (Snoc xs x)= xconvert xs
+习题G答案因为在内存中需要构建下列表达式，故所需的空间是线性的。
+1+(1+(1+..(1+0)))
+在惰性求值策略下，1ength的第二个定义的空间需求不变，因为在内存中需要构建
+下列表达式：
+1oop ((((0 +1) +1) +1 ... +1),)
+但是在勤奋求值策略下，一个列表的长度可以使用额外的常数空间计算出来。
+习题H答案
+taken门
+taken (x:xs)=if n==o then  else x:take(n-1)xs
+drop n
+dropn(x:xs)=ifn==othenx:xselsedrop(n-1)xs
+按照take的这个定义则有
+take undefined=
+take 0 undefined = undefined
+利用take的另外定义：
+take n xs I n=0
+I null xs=[
+I otherwise =head xs:take(n-1)(tailxs)
+84
+则有
+take undefined J = undefined
+take  undefined = 
+对这个复杂问题的答案是否定的。参数n或者参数xs必须被检查，无论哪个在先，
+如果该参数的结果是工，则最后结果是工。
+无论哪个定义，所有4个等式对于所有列表xs和所有m、n都成立，其中m、
+函数splitAtn可以定义如下：
+splitAtn=(,)
+splitAt n(x:xs)=if n==othen (,x:xs)else(x:ys,zs)
+where(ys,zs) = splitAt (n-1)xs
+习题|答案
+同意3、4、5和7。
+习题J答案
+唯一错误的等式是mapf，sort=sort.mapf，该等式只有在f保
+
+===== PDF 65 =====
+列表
+57
+序的情况下成立，即α≤y=fx≤fy。
+习题K答案
+unzip ::[(a,b)]->([a],[b])
+计算过程如下：
+cross(mapf,mapg).unzip
+{unzip的定义]
+cross(mapf,mapg)fork (mapfst,mapsnd)
+[cross和fork的定律]
+fork (mapf.mapfst,mapg.mapsnd)
+=[map的定律
+fork (map(f.fst),map(gsnd))
+85
+看似卡住了，因为没有规则可用。再尝试计算等式右边：
+unzip.map (cross (f,g))
+[unzip的定义]
+fork(mapfst,mapsnd).map(cross(f,g))
+【fork定律］
+fork(mapfst.map(cross(f,g)),
+map snd.map (cross (f,g)))
+=【map定律】
+fork(map(fstcross (f,g)),
+map(snd.cross (f,g)))
+[fst和snd的定律]
+fork(map(f.fst),map(g.snd))
+好啊，等式两边都化简到了同一个表达式。这也是常用的计算方法：等式的一边并不
+总是很容易化简成另一边，但是两边可以化简到同一个式子。
+目前看到的计算都是在函数层进行的。这种风格的定义和证明称为点自由的（point-
+free，也有人戏称为无意义的（pointless））。第12章的自动计算器产生点自由证明。点自
+由风格非常灵活，但是这种风格必须使用各种管道套结组合子（plumbingcombinator）为
+函数传递参数，如fork和cross。套结组合子可以推送值，重复它们，甚至删除它们。
+最后一种组合子的例子如：
+constxy=x
+这个组合子在标准引导库中有定义，有时非常有用。
+标准引导库中定义的另外两个套结组合子是curry和uncurry：
+curryfxy=f(x,y)
+-(q)-():on
+uncurry f (x,y)=fxy
+一个卡瑞化（curried）的函数每次取得一个参数，而非卡瑞化（non-curried）的函数
+86
+一次取得用多元组表示的参数。卡瑞化函数的主要优点是函数可以部分应用（partiallyap-
+
+===== PDF 66 =====
+第4章
+58
+plied）。例如，taken本身是完全合理的函数，mapf同样是一个函数。这也是一开始就
+使用卡瑞化函数的原因。
+顺便说明的是，卡瑞化函数是以美国逻辑学家Haskell B.Curry命名的。是的，Haskell
+也是这样命名的。
+习题L答案
+cross (f,g) : cross (h,k)
+(definitionof cross]
+cross(f,g).fork(h.fst,k.snd)
+[law of cross andfork]
+fork (f.h.fst,g.k.snd)
+[definitionofcross]
+cross (f.h, g.k)
+另有cross=uncurrybimap，其中uncurry如习题K答案中定义。
+下面是Either的实例定义：
+instance Bifunctor Either where
+bimapfg(Leftx)=Left(fx)
+bimapfg(Righty)=Right(gy)
+4.11
+注记
+本章介绍的大多数函数都可以在Haskell标准引导库中找到。函子、双函子以及自然
+变换的解释可以在有关范畴论书中找到，这里列出两本：BenjaminPierce编著的《Basic
+Category Theory for Computer Scientists》（MITPress，1991）、Richard Bird和 Oege de Moor 编
+著的《The Algebra of Programming》（Prentice Hall，1997)。
+关于定律内容，请参见PhilWadler的著名文章“Theoremforfree!”，可在下列链接
+找到：
+homepages. inf. ed. ac. uk/wadler/papers/free/
+87
+数学上的所谓的士数taxicab（n）是能够用n种方法表示成两个正整数立方和的最小
+88
+数，如1729是taxicab（2）。关于士数的更多信息请搜索“taxicabnumbers”
+
+===== PDF 67 =====
+1第5章
+Thinking Functionally with Haskell
+一个简单的数独求解器
+数独玩法：在一个9×9的棋盘上填写数字1～9使得每一行、每一列和每个3×3的
+方格都包含1～~9。解决这个谜题无需数学知识，但是需要推理和逻辑知识。
+一摘自《独立报》“玩数独的建议”
+本章主题是一个扩展练习：使用列表解决问题，使用等式推理对程序推理，并改进其
+性能。
+数独游戏在9×9棋盘上玩，不过其他规格的棋盘也可以
+玩。给定一个矩阵，如图5-1所示，解法是用数字1~9填充
+空格，使得每一行、每一列和每个3×3的方格都包含1~9。
+一般来讲，一个数独可能有许多解，但是一个好的数独谜题应
+该总是有唯一解。本章的目的是设计一个解数独的程序。特别
+地，将定义一个函数solve用于计算完成一个给定谜题的所
+有可能填充方法的列表。如果只需要一个解，那么只要取列表
+的第一个元素即可。对于惰性计算，这也意味着只计算出第一
+个结果。
+图5-1数独棋盘
+下面先从问题的说明开始，然后使用等式推理计算更有效的解。这里无需数学，只需
+要推理和逻辑。
+5.11
+问题说明
+下面是相关的基本数据类型，首先是矩阵：
+type Matrix a = [Row a]
+89
+type Row a= [a]
+两个类型同义词仅仅说明，Matrixa是［［a]］的同义词。但是，说明的方法强调了
+一个矩阵是行的列表，更准确地说，一个m×n矩阵是m个行的列表，每行均是长度为n
+的列表。Haskell类型同义词不能强加这些约束，但是能够表达这种约束的语言，称为依
+存类型（dependent-typed）语言。
+一个棋盘是一个9×9的数字矩阵：
+type GridMatrix Digit
+type Digit = Char
+合法的数字是19，0表示空白：
+digits::[Char]
+digits=["1".."9"]
+blank::Digit->Bool
+blank=(-=*o")
+
+===== PDF 68 =====
+60
+第5章
+注意Char也是类族Enum的实例，所以【"1：．"9］是合法表达式，且表示非零
+数字列表。
+为简单起见，假定棋盘只包含数字和空白，这样就无需检查棋盘是否有意义。但是，
+是否需要假定非空白格的数字在每行、每列或者每个方格中不会重复？如果有重复，那么
+90
+这样的谜题无解。现在暂时抛开这个问题，待看到解决问题的算法如何展开后再做决定。
+先看问题说明。目标是写出最简单而且最清晰的说明，先不考虑结果的效率。这是函
+数式程序设计与其他形式程序设计的关键区别：总是可以从一个清晰而且简单，尽管可能
+效率极低的so1ve定义开始，然后应用函数式程序设计中的定律修改计算，使其满足时
+间和空间上的要求。
+一种方法是首先构造一个包含所有正确填充棋盘的列表，该列表可能相当长，但依然
+是有穷的，然后将给定的棋盘与列表中每个棋盘对照，找出与给定棋盘非空白格上数字一
+致的棋盘。显然，这种方法已将非有效说明用到极致。另一种合理的方法是在给定的棋盘
+上给每个空白填写所有可能的数字，结果是一个填满的棋盘列表，然后可以在此列表中过
+滤出那些每行、每列和每块都不含重复数字的棋盘。这种说明的实现方法如下：
+solve : Grid ->[Grid]
+solve =filter valid.completions
+其中的辅助函数具有下列类型：
+completions：Grid->[Grid]
+valid:Grid->Bool
+首先考虑completions，然后考虑valid。一种定义completions的方法是采用
+两步过程：
+completions = expand.choices
+其中：
+choices :Grid ->Matrix [Digit]
+expand::Matrix [Digit]->[Grid]
+函数choices为每个棋盘位置安放了可能的数字：
+choices=map (mapchoice)
+choice d=if blank d then digits else[d]
+如果一个位置是空白，那么所有的数字都作为可用选择；否则只有一个选择，故返回
+单元素列表。如果想把函数f应用于矩阵的每个元素，需要使用的函数是map（mapf），
+因为一个矩阵只是一个列表的列表。
+应用choices后获得一个矩阵，矩阵的每个元素是一个数字列表。接下来要做的是
+91
+定义一个函数expand，通过用所有可能的方式填写棋盘，将该矩阵转换为棋盘列表。这
+个任务看似难以想象，所以先考虑一个更简单的问题，这里不是9×9的矩阵，而是一个
+长度为3的列表。假设要把下列列表：
+[[1,2,3],[2],[1,3]]
+转换为列表：
+[[1,2,1],[1,2,3],[2,2,1],[2,2,3],[3,2,1],[3,2,3]]
+
+===== PDF 69 =====
+一个简单的数独求解器
+61
+第二个列表中每个列表产生的方法：用各种可能的方法在第一个列表中取一个元素，
+在第二个列表中取一个元素，在第三个列表中取一个元素。假设用cp（笛卡儿积的简写，
+以上列表也是数学家所称的笛卡儿积）表示这样的函数。似乎看不出使用其他函数计算
+Cp的聪明方法，所以仍然使用惯用的方法，即将参数分为两种可能的情况，一种是空列
+表[]，另一种是非空列表xs：xss。如果先猜想cp［的定义，或许会搞错，最好是先考
+虑第二种非空列表的定义。假设有
+cp[[2],[1,3]]=[[2,1],[2,3]]
+如何将这个定义扩充到cp（[1,2,3］：［[2］，[13]］]？答案是将1置于cp［[2］，
+[1，3］］的每个元素之前，然后将2置于该列表的每个元素之前，最后将3置于同一个列
+表的每个元素之前。这个过程可以用列表概括清晰地表达出来：
+cp(xs:xss)=[x:ys/x<-xs,ys<-cpxss]
+换言之，将xs的每个元素置于cpxss的每个元素之前。
+如果读者对低效率有很敏锐的觉，则会发现这样用一行来表达不是最好的方法，事
+情确实如此。7.3节将对此进行深入讨论，不过现在可以给出一种更高效的定义：
+cp (xs:xss) = [x:ys I x <- xs, ys <- yss]
+where yss=cp xss
+这种定义确保cpXSs只计算一次。
+再返回来看，如何定义cp［]呢？答案并非[]，而是［［]]。为了看清楚为什么［]是
+错误的，考虑下列计算：
+cp[xs]=cp(xs:)
+=[x:ys  x<-xs, ys <-cp ]
+92
+= [x:ys  x<-xs, ys<-]
+事实上，如果cp［］=［]，那么可以证明对于所有列表xss都有cpxss=［[]。
+所以，第一个定义显然是错误的。读者可以验证第二个答案［［]]确实能给出正确的答案
+综上所述，现在可以将cp定义为
+cp :: [[a]] -> [[a]]
+cp (xs:xss) = [x:ys  x <- xs, ys <-yss]
+where yss =cp xss
+例如：
+ghci>cp[[1],[2],[3]]
+[[1,2,3]]
+ghci>cp[[1,2],],[4,5]]
+对于第二个例子，因为在中间的列表中没有可选元素，所以结果是空列表。
+但是如何处理矩阵和矩阵上类似于cp的函数expand呢？读者需要思考一下，然后
+才能弄清楚expand需要完成的是
+
+===== PDF 70 =====
+62
+第5章
+expand:Matrix[Digit]->[Grid]
+expand = cp. map cp
+这看起来有点神秘，但是mapcp返回每行所有可能选择的列表。因此，在此结果上应用
+cp之后得到棋盘的所有可能选择。定义右边的一般类型是
+而expand声明的类型只是一般类型的一种限制版本。注意，如果任意一行的任何元素是
+空列表，那么expand返回空列表。
+最后，一个合理的棋局是所有行、列或者块都没有重复数字出现：
+valid:Grid->Bool
+validg=allnodups(rowsg)&&
+allnodups(colsg)&&
+93
+all nodups (boxs g)
+引导库函数al1有如下定义：
+allp=and.mapp
+将allp应用于一个有穷列表xs时，如果列表中所有元素满足p，则结果是True，
+否则结果是False。函数nodups可以如下定义：
+nodups=True
+sxsdnpou2$x(x=/)1Te=(sx:x)sdnpou
+将nodups应用于长度为n的列表所花费的时间与n成正比。另一种方法是将列表
+排序，然后检查有序列表严格递增。排序可以在nlogn的常数倍时间完成。看起来后一种
+方法比前一种方法大大节省了时间。但是，对于几=9的情况使用有效的排序是否值得，
+答案并不清楚。问题是，2n²步和100nlog2n步哪个更好？
+剩余的任务是定义函数rows、cols和boxs。如果一个矩阵用行的列表表示，那么
+rows只是矩阵上的恒等函数：
+rows ::Matrix a->Matrix a
+rows =id
+函数cols计算矩阵的转置。所以，如果一个矩阵有m行，每行长度为n，那么转置
+矩阵有n行，每行长度为m。假设m和n均不为0，则可定义：
+cols::Matrix a->Matrixa
+cols [xs]
+[Ssx -> x []] =
+cols(xs:xss)=zipwith(:)xs(colsxss)
+通常在矩阵代数中假设矩阵非空，以上定义足以满足这里的应用。但是，有趣的是m
+或者n为0时会出现什么情况。该问题将在习题中考虑。
+函数boxs的定义更有趣。下面先给出定义，然后再解释。
+boxs::Matrix a ->Matrix a
+mapcols
+groupmapgroup
+其中函数group将列表以3个元素为一组划分为组的列表：

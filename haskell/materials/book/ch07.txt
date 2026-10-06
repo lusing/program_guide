@@ -1,0 +1,1071 @@
+
+===== PDF 105 =====
+1第7章
+Thinking Functionally with Haskell
+效率
+效率是一直潜伏在最近讨论中的问题，现在是让这个重要问题浮上水面的时候了。获
+得效率的最好方法当然是找到解决问题的好算法。算法设计是一个很广阔的领域，不是本
+书的基本目的。不过，将在今后接触一些基本概念。本章集中在一个更基本的问题上：函
+数程序允许人们构造优美的表达式和定义，但是，人们是否知道对其求值的代价呢？美国
+的一位计算机科学家AlanPerlis曾经篡改奥斯卡·王尔德关于愤世嫉俗的人的名言：函数
+式程序设计员知道所有东西的价值，但是不知道它们的价格。
+7.1情性求值
+如第2章所讲，使用惰性求值时，诸如下面的表达式：
+sqr(sqr（3+4))
+其中sqrx=x*x，被由外向里化简为最简单的形式。这表示函数sqr的定义首先被调
+用，其参数在需要时才被求值。下列求值序列遵循以上规则，但并不是惰性求值：
+sqr(sqr(3+4))
+=sqr（3+4）*sqr（3+4)
+=（（3+4）*（3+4））*（（3+4）*（3+4））
+=2401
+145
+倒数第2行省略号隐藏了3+4和7*7不少于4次的求值。显然，简单地将参数表达式代
+入函数定义表达式是一个非常低效的化简方法。
+但是，惰性求值保证，如果需要参数的值，那么对参数的求值只进行一次。使用情性
+求值时，化简序列大致如下：
+sqr(sqr(3+4))
+=letx=sqr(3+4)inx*x
+=let y = 3+4 in
+letx=y*yinx*x
+=lety7in
+letx=y*yinx*x
+=letx=49inx*x
+=2401
+对表达式3+4的求值只有一次（7*7的求值也只有一次）。这里使用了1et将名称×和
+y约束为表达式，但是在Haskell实现中这些名称是指向表达式的指针。当一个表达式被
+化简为一个值时，该指针指向这个值，该值便可以被共享（shared）。
+即便如此，“使用情性求值时，参数只有在需要时被求值，而且只求值一次！”，这个
+标题并没有导出所有真相。考虑sqr（headxs）的求值。为了对sqr求值，必须对其参
+数求值，但是对headxs求值并不需要对xs的所有元素求值，只需计算到形如y：ys的
+
+===== PDF 106 =====
+第7章
+表达式即可。此时，headxs返回y，sqr（headxs）返回y*y。更一般地，如果一个
+表达式是函数或者是数据构造函数（如（：））应用于它的参数形式，则称表达式是首范式
+（headnormalform）。每个范式（完全化简的式子）是首范式，但反过来不一定。例如，
+（el，e2）是首范式（因为它等价于（，）ele2，其中（，）是二元组的构造函数），但是，
+只有当e1和e2均为范式时，该表达式才是范式。当然，对于数值和布尔值，范式和首
+范式没有区别。
+“使用惰性求值时，参数只有在需要时被求值，并且只求值一次，而且此时只计
+算到首范式”，这种叙述虽然不如前面的叙述容易记忆，但是它的确是惰性求值更好
+的描述。
+146
+下面考虑函数subsegs归纳情况的两个定义，该函数返回一个列表的所有子序列：
+(sxsbasqns)(:x)deu++sxsbesqns=(sx:x)sbesqns
+subseqs(x:xs)=xss++map(x:)xss
+where xss = subseqs xs
+在第一个定义中，表达式subsegsxs在等式右边出现了两次，所以，当求一个列表的子
+序列时，它被求值两次。在第二个定义中，程序员察觉到这种重复工作，并用where子
+句确保subseqsxs只被求值一次（也可以使用1et表达式）。
+重要的是，作为程序员，可以控制使用哪个定义。让Haskell识别表达式的重复出现，
+并使用与内部1et表达式等价的式子将其代替，这种方法是可行的。这就是众所周知的
+公共子表达式消去（commonsubexpressionelemination）技术。但是，Haskell没有这样做，
+而且有其道理：这样做可能引起空间泄漏（spaceleak）。subseqs（x：xs）第二个定义存
+在的问题：列表subseqsxs只构造一次，但是因为它的值被再次使用，即在第二个表达
+式map（x；）xss中，所以它在内存一直保存着。
+对比以上两个定义：第一个定义花的时间长，因为其中有重复的计算；第二个定义更
+快（尽管仍然是指数阶的），但是可能很快会耗尽内存。这是因为，长度为n的列表有2
+个子序列。在程序设计中永远不能避开一分为二的原则：要避免重复的工作，必须用空间
+将一次计算的结果存储起来。
+下面是一个相关的例子。考虑一个脚本中的下列两个定义：
+fooin=sum(takenprimes)
+where
+primes
+=[x|x<-[2..],divisorsx==[x]]
+divisorsx=[dI d<-[2..x],xmod'd==o]
+foo2n=sum(takenprimes)
+primes
+=[xI x<-[2..],divisorsx#=[x]]
+divisorsx=[dI d<-[2..x],x'mod'd==o]
+编写fool的程序员将primes和divisors的定义局限于fool的定义，因为预计
+这两个定义不会在脚本的其他定义中用到。编写foo2的程序员将这两个辅助函数的定义
+147
+作为全局定义或者顶层（top-level）定义。读者或许认为两种定义的效率没有区别，但是
+考虑下列与GHCi的交互。（命令：Set+s开启一些统计功能，在表达式求值后打印这些
+数据。）
+
+===== PDF 107 =====
+效率
+ghci> iset +s
+ghci> fo01 1000
+3682913
+(4.52secs，648420808 bytes)
+ghci> fo01 1000
+3682913
+(4.52secs，648412468bytes)
+ghci>fo02 1000
+3682913
+(4.51secs，647565772bytes)
+ghci> fo02 1000
+3682913
+(0.02secs,1616096bytes)
+为什么fo021000的第二次求值比第一次快得多，但是fo011000的两次求值花的
+时间一样多？答案是foo2的定义需要列表primes的前1000个元素，所以求值后
+算这些素数。在系统内部，脚本运行的空间已经增长，因为primes至少占据了1000个
+单位的内存。
+第三个程序员选择如下定义foo：
+foo3=In->sum(takenprimes)
+where
+primes
+=[xIx<-[2..],divisorsx[x]]
+divisorsx=[dId<-[2..x],x"mod'd==o]
+这里使用了兰姆达表达式在函数层表示foo3，除表示方法外实质上与foo1完全一样。
+下列定义同样可行：
+foo3= sum.flip take primes
+但是稍显模糊。现在可以进行求值：
+ghci>fo031000
+3682913
+(3.49secs,501381112bytes)
+148
+ghci> fo03 1000
+3682913
+(0.02secs,1612136bytes)
+同样，第二次求值比第一次快得多。这是为什么呢？
+为了看清问题，可以将两个函数重写成下面形式：
+foo1n =letprimes=...in
+sum (taken primes)
+foo3
+= let primes = ..in
+In -> sum (take n primes)
+现在可以看出，每次对fool1ooo求值都需要对primes重新求值，因为primes
+是绑定在函数foo1的应用中，而不是绑定在该函数本身。理论上可以使第一个定义中的
+局部函数定义依赖于n，这样的局部定义对于每个n均需要重新求值。在第二个定义中，
+局部函数定义绑定于函数本身（而且不可能依赖于函数的任何参数），结果是它们只需求
+值一次。当然，对foo31000求值后，primes的局部定义将扩展成1000个元素的显式
+列表，接着是如何继续求值的方法。
+
+===== PDF 108 =====
+100
+第7章
+7.2
+空间的控制
+假设将sum定义为sum=foldl（+）0。使用惰性求值策略，表达式sum[1..100o]
+的化简过程如下：
+sum[1..1000]
+=foldl(+)0[1..1000]
+=fo1dl（+)(0+1)[2..1000]
+=fo1dl（+)（(0+1)+2)[3..1000]
+=fo1dl(+)（..((0+1)+2)+.+1000)
+=(..((0+1)+2)+..+1000)
+=500500
+求值过程中首先需要1000个单位空间来构造前1000个数之和的算术表达式，然后再
+对其求值。
+149
+更好的方法是混合使用情性和勤奋求值：
+sum [1..1000]
+=foldl(+)0[1..1000]
+=fo1dl(+)(0+1)[2..1000]
+=foldl(+)1[2..1000]
+=foldl
+(+)（1+2)[3..1000]
+=foldl
+(+)3[3.1000]
+=fo1dl（+)500500
+=500500
+这里列表表达式[1：.1000]的求值是惰性的，但是fo1d1的第二个参数累加和求值是勤
+奋的。交叉使用惰性求值和勤奋求值的结果是，求值过程使用的内存空间是常数。
+上例表示，控制化简的次序将是有益的。提供这种方法的原始函数是seq，类型为
+q-q-:bes
+对xseqy求值的次序是，先对x求值（到首范式），然后返回对y求值的结果。如果
+对x的求值不终止，x"seqy的求值也不终止。在Haskell中不能定义seg，因此
+Haskell将该函数定义为原始函数。
+现在考虑foldl的下列版本foldl"，该函数对第二个参数是严格的：
+q-[e]-q-(q--q)::pto
+foldi'feD
+foldlfe(x:xs)=yseqfoldlfyxs
+wherey=f ex
+Haskell在标准引导库中提供了该函数（而且使用了这个乏味的名）。现在可以定义sum=
+foldl'（+）0，结果是求值使用常数空间。事实上，sum是一个引导库函数，而且基本
+上是这样定义的。
+是不是函数foldl现在变得多余，可以被foldl'替代呢？在实际中是的，但是在理
+论上不是。可以构造f、e和xs使得
+foldlfexs+foldlifexs
+
+===== PDF 109 =====
+效率
+101
+但是，如果f是严格的（如果f工=工，则称f是严格的），则以上两个表达式返回相同的
+结果。具体细节将在习题中讨论。
+150
+取平均值
+有了以上准备工作，现在考虑一个很能说明问题的例子：如何计算一个数值列表的平均
+值（mean）。当然问题很简单，读者可能会想，只需将列表元素之和除以列表长度即可：
+mean::[Float] ->Float
+meanxs=sumxs/lengthxs
+这个定义有许多错误：不单单是右边的式子不是类型正确的！函数1ength在Haskell的
+类型是［a］=>工nt，不进行类型显式转换不可以做Float和工nt的除法。
+在标准引导库中存在完成这种转换的函数：
+fromIntegral::(Integrala,Numb)=>a->b
+fromIntegral= fromInteger.toInteger
+注意到在第3章有两个转换函数：
+第一个将任何整型转换为整数，第二个将整数转换为一个数值。它们的复合将一个整型
+数，如Int，转换为更一般的数，如Float。
+现在可以重写mean如下：
+mean::[Float]->Float
+mean xs = sum xs /fromIntegral (length xs)
+这个定义的第二个问题是，定义默默地忽略了空列表的情况。如何处理0/0？或者用
+错误信息的方式说明这种失败的情况，或者采用惯例说明空列表的均值是0：
+mean =o
+mean xs =sum xs /fromIntegral (length xs)
+现在可以仔细检查mean真正有什么问题：它会引起空间泄漏。计算mean[1..10o0]
+将会使得列表扩展，并在求和后继续保留在内存，因为在计算其长度时有指向列表的第二
+个指针。
+151]
+可以使用所谓的元组（tupling）策略优化，用列表的一次遍历代替两次遍历。对本例
+来说方法很简单，定义函数sumlen：
+sumlen ::[Float]->(Float,Int)
+sumlemxs=(sumxs,lengthxs)
+然后给出避免两次遍历的另一种定义。其中的计算容易实现，这里只给出结果：
+sumlen]
+= (0,0)
+sumlen(x:xs）=(s+x,n+1)where(s,n)=sumlenxs
+函数sumlen定义的模式应该是熟悉的。另一种定义是
+sumlen=foldrf(o,)wherefx(s,n)=(s+x,n+1)
+甚至更好的方法是用foldlg代替foldrf，其中：
+
+===== PDF 110 =====
+第7章
+102
+g (s,n)x=(s+x,n+1)
+这样做的理由是第6章的定律：
+foldr f e xs =foldl ge xs
+对于所有列表xS成立，只要满足条件：
+fx(gyz)=g(fxy)z
+fxe=gex
+这两个条件的验证留作练习。
+这也表明，可以用foldl'定义：
+sumlen=foldlg(,o)whereg(s,n)x=(s+x,n+1)
+现在可以用下列定义代替备受批评的mean定义：
+mean=0
+mean xs=s/fromIntegral n
+where(s,n) = sumlen xs
+现在确实达到了使用常数空间计算mean的目的了吗？很不幸，没有。问题在
+152
+sumlen中，而且不容易发现。将定义稍稍展开，可以发现
+where y = (s+x,n+1)
+哇，但是yseq'z将y化简成首范式，而且（s+x，n=1）已经是首范式。两个分量在
+这个计算完成前不会得到求值。这表示需要进一步深人seq，并将sumlen重写如下：
+sumlen =foldl'f (o,o)
+where f (s,n) x = s seq' n 'seq (s+x,n+1)
+最后，一切圆满，均值的计算在常数空间完成。
+另外两个函数应用运算
+函数应用是唯一不使用显式符号表示的运算。但是，Haskell提供另外两个应用运算
+符，即（$）和（$！）：
+infixro$,$!
+q<- <- (q <-e) :: (i$)"($)
+f$xfx
+f$!x=x'seqfx
+函数应用fx和f$！x的唯一区别是，在第二个表达式中，将f应用于参数x之前
+先计算x的值。函数应用fx和f$×的唯一区别是（$）（还有（$！））被说明具有最
+低的优先级0，而且是右结合的。这也恰恰是前面第一行优先级提供的声明。为什么需要
+这些运算呢？答案是，现在可以编写形如下面的式子：
+process1 $ process2 $ process3 input
+否则，需要如下表达：
+process1 (process2 (process3 x))
+(process1：process2.process3)x
+不可否认的是（$）在某些场合是很有用的，特别是在提交GHCi计算表达式时，所以
+
+===== PDF 111 =====
+效率
+103
+该运算符值得一提。根据以上讨论，严格应用运算符（$！）也是很有用的。
+153
+7.3运行时间的控制
+可以看出，在仪表盘上设置一个“勤奋”按钮是控制计算占用空间的一种最简单方
+法，但是如何控制运行时间呢？不幸的是，没有类似的能够加速计算的按钮，不过我们必
+须理解哪些会无意中降低计算速度。Haskell平台编译器GHC附带文档中包含如何使得程
+序运行更快的有用建议。文档中有3个关键建议：
+。使用GHC的性能分析（profiling）工具。分析程序的运行时间和使用的空间是不
+可替代的。本书不讨论性能分析工具，但是有必要说明这些工具的存在。
+改进程序性能的最好方法是使用更好的算法。本章开篇就提到这点。
+使用库函数要比使用用户自已的函数好得多，因为这些库函数是由其他人认真设
+计和细心测试过的。用户可以设计一个比库Data.List提供的排序（sort）更
+好的排序函数，但是这会花费比写下importData：List（sort）长得多的时
+间。使用GHCi时情况更是如此，因为GHCi会调用标准库中函数的编译版本。编
+译版本通常比解释版本快一个数量级。
+GHC文档提供的建议细节超出了本书范围，但是这里可以解释两个窍门。第一个，
+惰性求值的管理比勤奋求值的管理需要更多的开销，所以，如果知道一个函数的值会被用
+到，那么最好按下勤奋键。如文档所讲：“严格函数是你的好朋友”。
+第二个建议有关类型。首先，工nt上的算术运算快于工nteger上的算术，因为
+Haskell在处理潜在的大数时需要完成更多的工作。所以，在确保安全的条件下使用Int，
+不使用Integer。其次，如果将函数类型说明为所需要的具体类型，Haskell便可以减少
+开支。例如，考虑7.1节定义的函数foo1的类型，在定义函数时没有说明其类型（实际
+上其他相关函数也没有说明类型），这是错误的，可以看出它的类型是
+154
+如果真正感兴趣的是前n个素数之和，最好声明foo1的类型。例如：
+foo1 ::Int ->Integer
+有了这个更具体的定义，Haskell无需随身携带类族工ntegral的方法和实例字典，
+因此减轻了负担。
+这些建议可以减去常量的运行时间，但是不会影响渐进时间复杂度，即时间复杂度函
+数的阶。但是，人们有时会无意写出比预期渐进复杂度差的函数。考虑第5章讨论的笛卡
+儿积函数cp：
+-= [0]
+cp(xs:xss)=[x:ys I x<-xs,ys<-cp xss]
+定义看似优雅、清晰，但是与下列定义对比一下：
+cp"=foldrop[]
+whereopxsyss=[x:ysI x<-xs,ys<-yss]
+第一个定义使用了直接递归，而第二个定义使用fo1dr来表达递归。两个“算法”是相
+同的，是不是？不过，有
+
+===== PDF 112 =====
+104
+第7章
+ghci>sum$mapsum$cp[[1..10]1j<-[1..6]]
+33000000
+（12.11secs，815874256bytes）
+ghci>sum$mapsum$cp'[[1..10]j<-[1..6]]
+33000000
+(4.54secs，369640332bytes)
+表达式sum$mapsum主要是为了强迫笛卡儿积进行完全求值。为什么第一个计算的速
+度只有第二个计算的1/3？答案是，检查第一个定义中消去列表概括的表示：
+cP=[]
+cp(xs:xss)=concat(mapfxs)
+where fx=[x:ysI ys<-cpxss]
+155
+可以看出，每次f应用于xs的元素时，cpxss都要求值一次。也就是，cp在第一个例
+子中的计算次数远远多于它在第二个例子中的计算次数。自前难以给出更精确的数字，但
+是下面会引入估算运行时间的演算。不过，问题已经很清楚：cP的简单递归定义无意导
+致了计算量大于预期。
+更有效的笛卡儿积定义如下：
+cp
+cp (xs:xss)  [x:ys / x<- xs, ys -yss]
+where yss = cp xss
+该定义的性能与使用王o1d的定义性能相同。这单得到的经验是，看似简单的列表概括
+可能掩盖了有些表达式尽管只写了一次，但是会计算多次的事实。
+7.4时间分析
+给定一个函数f的定义，用T（f）（n）表示将f应用于“规模”为n的参数时，求值过
+程中化简步数在最坏情况下的渐进估计。为了稍后解释的原因，假定T的定义中使用的求
+值方法是勤奋求值，而不是情性求值。
+对于T的定义需要一些澄清。第一，T（f）表示的一个给定定义的复杂度。时间复
+杂度是一个表达式的性质，而不是表达式值的性质。
+第二，化简步数不完全等同于提交表达式求值和求得结果期间逝去的时间。对于较长
+且复杂的表达式化简，定义并没有考虑寻找下一个要化简的子表达式所需要的时间。基于
+这个原因，GHCi的统计工具没有计算化简步数，只是输出逝去的时间。
+第三，没有给规模的概念下定义，因为不同的场合有不同的规模度量。例如，对
+xs++ys求值时，最好用两个列表的长度二元组（m，n）表示规模。对concatxss求
+值时，可以用concatxss的长度作为规模，而当xss是长度为m的列表，其中每个元
+素又都是长度为n的列表时，用（m，n）作为规模可能更合理。
+156
+第四，也是最重要的一点，T(f)（n）是在勤奋求值模型下估算出来的。原因很简单，
+计算惰性求值中的化简步数很困难。例如，考虑定义minimum=head.sort。在勤奋
+求值模型下，使用该定义对个元素列表求最小值的时间复杂度是
+T(minimum)(n)=T(sort)(n)+T(head)(n)
+换句话说，必须将长度为n的列表完全排序，然后取排序结果的第一个元素（应该是常数
+
+===== PDF 113 =====
+效率
+105
+时间的运算）。这个等式对于惰性求值不成立，因为找到sortxs的第一个元素所需要的
+化简步数只需要将sortxs化简为首范式即可。这个过程需要多少步依赖于sort所使
+用的算法。在勤奋求值模型下，时间的分析要简单得多，因为分析是可组合的（composi-
+tional）。因为情性求值所需步数总是少于勤奋求值步数，所以T（f）（n）的任何上界也是
+惰性求值步数的上界，而且在许多场合，一个下界也是惰性求值的下界。
+为了举例分析时间复杂度，需要先介绍一点有关阶的表示。在讨论效率时一直在使用
+“步数正比于”这样的词语。现在是引人更简洁记法的时候了。给定两个自然数上的函数于
+和g，如果存在大于0的常数C和Cz以及一个自然数no使得对于所有n>no，Cig（n）≤
+f(n）≤C2g（n）成立，则称f是g阶的，记作f=（g）。换句话说，对充分大的n，f的下
+界和上界都是g的常数倍。
+这种记号被滥用到人们通常写得很简洁，如写成f（n）=④（n²），而不是写成正确的形
+式f（n）=（入n.n）。类似地，人们写成f（n）=①（n），而不写f（n）=①（id）。使用①记
+号主要是隐藏常数，例如，可以写
+J=1
+在这里人们不在意忽略的常数。
+虑concat的两个定义：
+concatxssfoldr(++)xss
+concatxss=foldl(++)xss
+如果xss是有穷列表，那么这两个定义是等价的。假定xSs是长度为m的列表，其
+157
+中每个元素都是长度为n的列表，那么第一个定义给出：
+T(concat)(m,n)=T(foldr(++)[)(m,n)
+T(foldr(++)[])(0,n)= @(1)
+T(foldr(++)[J)(m+1,n)=T(++)(n,mn)+T(foldr(++)[J)(m,n)
+其中估算式T（++）（n，mn）来自将长度为n的列表与长度为mn的列表串联的工作。因
+为T（++）（n，m）=?（n），由此得到
+T(foldr(++)[)(m,n)=
+Z0(n) = 0(mn)
+k=0
+对于concat的第二个定义，有
+T(concat')(m,n) = T(foldl(++))(0,m,n)
+T(foldl(++))(k,0,n)= @(1)
+T(foldl(++))(k,m+l,n)=T(++)(k,n)+T(foldl(++))(k+n,m,n)
+其中附加参数k表示fold1的第二个参数累积列表的长度。由此得到
+m-1
+T(foldl(++))(k,m,n) = Zo(h +jn) = 0(h +mn)
+j=0
+因此T（concat'）（m，n）=（mn）。结论是第6章所预测的，在concat定义中使
+用foldr而不使用foldl可以得到渐进运行更快的程序。
+第二个例子计算7.1节讨论的subseqs的两个程序的运行时间，该函数的两个可能
+
+===== PDF 114 =====
+106
+第7章
+的定义是
+(sxsbesqns)(:x)dem++sxsbasqns=(sx:x)sbesqns
+subseqs(x:xs)=xss++map(x:)xss
+where xss=subseqs'xs
+需要记住：（i）如果xs的长度为n，那么subsegsxs的长度是2"；（ii）串联和
+应用map（x：）的时间是（2"），两个运行时间分析给出：
+T(subseqs)(n +1) = 2T(subseqs)(n) + @(2")
+158
+T(subseqs')(n +1) = T(subseqs')(n) + @(2")
+另外有T（subseqs）（O）=（1）。下面仅给出两个解（可以用简单归纳法证明）：
+T(subseqs)(n) = @(n2")
+T(subseqs')(n) = @(2")
+可见，后者比前者在渐进时间复杂度上快一个对数因子。
+第三个例子计算本节开始讨论的cp的两个程序的运行时间。第一个定义是
+cp 
+= []
+cp (xs:xss)= [x:ys  x<-xs,ys<-cp xss]
+再次假定xss是长度为m的列表，列表的每个元素又都是长度为n的列表。这样
+cpxss的长度是n"。由此得到
+T(cp)(0,n) = @(1)
+T(cp)(m +1,n) = nT(cp)(m,n) +0(n")
+这是因为应用（x：）于每个子序列需要（n"）步。最后得到的解是
+T(cp)(m,n) = 0(mn")
+另一方面，用foldr定义的cp给出：
+T(cp)(0,n) = @(1)
+T(cp)(m + 1,n) = T(cp)(m,n) +@(n")
+其解为T（cp）（m，n）=④（n"）。因此，第二个定义渐进更快，同样快一个对数因子。
+7.5
+累积参数
+有时可以通过给函数增加一个额外参数，称为累积参数（accumulatingparameter），从
+而改进计算的运行时间。典型的例子是函数reverse：
+reverse
+reverse (x:xs)= reverse xs ++[x]
+159
+对于这个定义，T(reverse）（n）=①（n²）。为了找到线性时间的程序，假如定义：
+revcat ::[a] ->[a] ->[a]
+revcat xs ys =reverse xs ++ ys
+显然，reversexs=revcatxs[，所以，如果能够得到revcat的高效定义，
+那么也可以得到reverse的高效定义。为此，下面计算revcat的递归定义。基本情况
+revcat[］ys=ys留作练习，归纳情况如下：
+
+===== PDF 115 =====
+效率
+107
+revcat (x:xs) ys
+【revcat的定义】
+reverse (x:xs)++ ys
+【reverse的定义】
+(reverse xs ++ [x])++ys
+=[(++)满足结合率)
+reverse xs ++ ([x] ++ ys)
+【(:)的定义)
+reverse xs ++ (x:ys)
+【revcat的定义]
+revcat xs (x:ys)
+因此，有
+revcatys
+= ys
+revcat (x:xs)ys=revcat xs (x:ys)
+对于运行时间，T（revcat）（m，n）=@（m）。特别是
+T(reverse(n) = T(revcat(n,0) = @(n)
+由此得到一个线性时间的列表求逆程序。
+下面是另一个例子。函数1ength定义如下：
+length ::[a]->Int
+length=0
+length (x:xs)=length xs+1
+有T（1ength）（n）=（n），所以，计算另一个定义不会在运行时间上有所收获。不过，
+如下定义函数lenplus：
+lenplusxsn=lengthxs+n
+160
+如果对lenplus完全重复以上对revcat进行的计算过程，则可得到
+lenplusn
+lenplus (x:xs)n=lenplus xs (1+n)
+计算过程可行的原因是（+）像（++）一样也满足结合律。现在如下定义1ength：
+lengthxs=lenplusxs0=foldl(lnx->1+n)0xs
+这个定义的优点是，通过foldl'代替foldl，一个列表的长度可以在常数空间算出来。
+确实，这也是Haskell引导库函数length的定义。
+敏锐的读者可能已经注意到，没有必要进行上面的计算。事实上，两个例子都是第6
+章描述的一个定律的特例，即
+foldr(<>)exs=foldl()exs
+只要下列条件成立：
+x<> (y @z)=(x<>y) @z
+x<>e=e@x
+这两个特例是
+
+===== PDF 116 =====
+108
+第7章
+foldr(lxn->n+1)0xs=foldl(lnx->1+n)oxs
+foldr（Ixxs->xs++[x])xs
+=foldl（Ixsx->[x]++xs)xs
+这两个等式验证的细节留作练习。
+作为累积参数的最后一个例子，我们从列表转向树。考虑下列数据声明：
+data GenTree a = Node a [GenTree a]
+这个类型的元素由一个带标记的结点和一些子树的列表构成。这种树出现在用状态和
+转移描述的问题中。一个结点的标记说明当前状态，子树的数目表示在当前状态下可能的
+转移数目。每棵子树都有一个标记说明该转移后的新状态，其子树描述在新状态下可以进
+行的转移，等等。
+161
+下面是计算一棵树中标记列表的函数：
+labels ::GenTree a ->[a]
+labels(Nodexts)=x:concat(maplabelsts)
+方法很简单：计算每棵子树的标记，将这些结果连接在一起，并将树的标记放在最后列表
+的前面。
+现在分析这个程序在树t上的运行时间。为简单起见，假定t是高度为h的完美（per
+fect）k-元树。也就是说，如果h=1，那么t没有子树；如果h>1，那么t恰好有k棵子树，
+每棵子树的高度是h-1。这种树上的标记数s（h，k）满足
+s(1,t) = 1
+s(h +l,k)= 1+ks(h,k)
+由此得到解s（h，k）=@（k"）。现在有
+T(labels)(1,k) = @(1)
+T(labels)(h +1,k)= @(1) + T(concat)(k,s) + T(map labels)(h,k)
+其中s=s（h，k）。表达式T（maplabels）（h，k）估算将maplabels应用于高度均为
+h的树构成的长度为k的列表的运行时间。一般地，给定一个长度为k的列表，其中列表
+元素的规模都是n，那么
+T(map f)(k,n) =kT(f)(n) +@(k)
+因为T(concat）k，s）=@(ks）=@(kh+）。所以，有
+T(labels)(h +1,k) = @(hh+) +kT(labels)(h,k)
+这是因为①（1）+①（k）=①（k）。最后的解是
+T(labels)(h,k)=@(hk)=@(slogs)
+换句话说，利用以上定义计算树的标记的运行时间渐进地比树的规模大一个对数
+因子。
+下面看一个累积参数能带来什么。定义labcat：
+labcat ::[GenTree a]->[a]->[a]
+labcattsxs=concat(maplabelsts)++xs
+除了添加一个列表参数xS外，将第一个参数由一棵树推广到树的列表。此时
+labelst=labcat【t】[，所以，对labcat的任何改进将导致对labels的改进。
+
+===== PDF 117 =====
+109
+现在可以合成labcat的另一个定义。对于基本情况有
+labcatxs=xs
+162
+对于归纳情况有如下推理：
+labcat (Node x us:vs) xs
+= 定义]
+concat (maplabels (Node xus:vs))++xs
+labels(Node x us)++ concat (map labels vs)++xs
+x:concat(maplabels us)++concat(maplabelsvs)++xs
+【labcat的定义］
+x:concat (map labels us) ++ labcat vs xs
+【也是labcat的定义】
+x:labcat us (labcat vs xs)
+以上计算的结果是下列的labels程序：
+labelstlabcat[t][
+labcatxs
+labcat(Nodexus:vs)=x:labcatus(labcatvsxs)
+对于时间复杂度的分析，令T（labcat）（h，k，n）表示labcattsxs的运行时间，其
+中ts是长度为n的树的列表，每棵树是高度为h的完美k-元树（忽略了xs的规模，因
+为它不影响时间的估算）。那么
+T(labcat)(h,k,0) = @(1)
+T(labcat)(1,k,n+1)=@(1)+T(labcat)(l,k,n))
+T(labcat)(h +1,k,n +1)= @(1) +T(labcat)(h,k,k) +T(labcat)(h +l,k,n)
+解前两个方程得到T（labcat）（1，k，n）=（n），利用归纳法得到T（labcat）
+（h，k，n）=@（khn）。因此
+T(labels)(h,k) = T(labcat)(h,k,1) = @(h) = @(s)
+这表示可以用正比于树的规模的时间计算一棵树的标记，相对第一个版本改进了一个对数
+因子。
+163
+7.6
+元组
+在讨论函数mean时提到了两个函数的元组。元组是累积参数的某种对偶：推广一个
+函数时给输出添加一个额外的结果，而不是添加额外的输入参数。
+展示元组魅力的典型例子是斐波那契函数：
+fib:: Int ->Integer
+fibo=o
+fib1=1
+fibn=fib(n-1)+fib(n-2)
+用这3个方程求fib的时间由下列式子估算：
+T(fib)(0) = @(1)
+T(fib)(1) = @(1)
+
+===== PDF 118 =====
+110
+第7章
+T(fib)(n)=T(fib)(n-1)+T(fib)(n-2)+@(1)
+因此，时间函数满足的方程非常类似于fib方程本身。事实上，T（fib）（n）=①（Φ"），
+其中Φ是黄金比Φ=（1+5）/2。这表示对fib在输人为n的求值运行时间是n的指数
+函数。
+现在考虑如下定义的fib2：
+fib2n=(fibn,fib(n+1))
+显然fibn=fst（fib2n）。合成fib2的直接递归定义后得到
+fib20=(0,1)
+fib2n=(b,a+b)where(a,b)=fib2(n-1)
+这个程序的运行时间是线性的。在这个例子中，元组的策略导致了戏剧性的改进，由指数
+时间降至线性时间。
+利用一般定律刻画效率的改进是很有趣的。一个这样的定律有关下列计算：
+(foldrf axs,foldrgb xs)
+如上式所示，两个fo1dr的应用涉及xs的两次遍历。所以，设计一个只遍历列表一
+次的定义不仅在时间上有收获，而且可能在空间性能上也有收获。事实上，有
+164
+(foldrfaxs,foldrgbxs)=foldrh(a,b)xs
+其中：
+hx(y,z)=(fxy,gxz)
+结果可以用归纳法证明，将此留作习题。
+作为另一个例子，再次由列表转向树。不过这次的树有些不同，它是标记叶的三叉树
+(leaf-labelled binary tree) :
+data BinTree a  Leaf a I Fork (BinTree a) (BinTree a)
+不同于以上讨论的GenTree，一棵BinTree是一个有标记的叶，或者由两棵二叉子树构
+成的二叉树。
+假如要用一个给定的标记列表构建一棵二叉树。更确切地说，我们想定义一个函数
+build，而且对于任意非空列表xs满足
+labels (build xs)=xs
+其中labels返回一棵二叉树的标记：
+labels :: BinTree a->[a]
+labels (Leaf x)=[x]
+labels(Forkuv)=labelsu ++labelsv
+我们感兴趣的是可能的优化，而且1abels的定义表示可以用累积参数改进定义。尽
+管如此，但这并非主要目的，这种优化留作习题。
+一种构建树的方法是将列表的一半元素用于构建左子树，另一半元素构建右子树：
+build ::[a] -> BinTree a
+build [x]=Leaf x
+buildxs=Fork (build ys)(build zs)
+where (ys,zs)=halve xs
+
+===== PDF 119 =====
+效率
+111
+函数halve在4.8节出现过：
+halvexs= (takemxs,dropmxs)
+wherem=lengthxsdiv2
+可见，halve将一个列表拆分为两个基本相等的列表。Halve的定义涉及列表的遍历以
+便求出列表的长度，另外的两个（部分）遍历求出两个子列表。因此，应用元组方法是得
+到更好定义的首要选择。但是，对于1abels暂时不考虑这个特定的优化，也不考虑
+165
+build的定义满足其规格说明的证明。所以，已有3个计算留作习题，我们专注于第四
+个问题。
+现在计算build的时间：
+T(build)(1) = @(1)
+T(buila)(n)=T(build)(m)+T(build)(n=m)+@(n)
+wherem=n div 2
+将长度为n的列表拆分需要（n）步，然后分别用长度为m和长度为n-m的列表递归地
+构建两棵子树。方程的解是
+T(build)(n) = @(n log n)
+换句话说，使用以上方法构建一棵树更为耗时，其时间是列表长度的一个对数因子。
+有了这个结果后，再来定义build2：
+build2 ::Int ->[a]->(BinTreea,[a])
+build2nxs=(build (takenxs),dropnxs)
+这个定义用列表的前n个元素构建一棵树，同时把剩余的列表作为结果返回。此时有
+buildxs=fst(build2(length xs)xs)
+所以，原函数可以用元组定义的函数表示。
+现在的目的是构造bui1d2的直接递归定义。首先，显然有
+build2 1 xs = (Leaf (head xs),tail xs)
+对于递归情况，由下式开始：
+build2nxs=(Fork(build(takem(takenxs)))
+(build(dropm(takenxs))),
+drop nxs)wherem=n'div2
+该等式是将build代人递归步骤得来的。这也表示下一步需要使用take和drop的性
+质。它们是，如果m<=n，那么
+takem.taken = take m
+dropm.taken=take(n-m).dropm
+由此得到
+166
+build2nxs=(Fork(build(takemxs))
+(build(take(n-m)(dropmxs))),
+dropnxs)wherem=ndiv2
+利用build2的定义，可以将上式重写如下：
+
+===== PDF 120 =====
+112
+第7章
+build2nxs=(ForkuV,dropnxs)
+where(u,xs)=build2mxs
+(v,xs)=build2(n-m)xs
+=n"div2
+但是，作为最后一步，注意到
+xs=drop(n-m)xs
+=drop(n-m)(dropmxs)
+=dropnxs
+因此，现在可以再次将build2重写为
+build21xs=(Leaf(head xs),tailxs)
+build2n xs=(Fork u ,xsi")
+where(u,xs)=build2mxs
+(v,xs*)=build2(n-m)xs
+= n"div' 2
+估算其运行时间得到
+T(build2)(1) = @(1)
+T(build2)(n)= T(build2)(m)+T(build2)(n-m)+@(1)
+其解为T（buila2）（n）=（n）。因此，利用build2作为辅助函数，build的运行时间
+改进了一个对数因子。
+7.7排序
+排序是一个内容广泛的话题，人们可以花上很多愉快的时光讨论不同的算法。Knuth
+在他的系列专著《The.ArtofComputerProgramming》第三卷中用了400页讨论这一话题。
+即便如此，在纯函数式的背景下，某些排序的结论仍然需要重新陈述。本节对两个排序算
+167
+法进行简短讨论，并时刻关注对算法的可能优化。
+归并排序
+归并排序（Mergesort）在4.8节有定义：
+[] -[] = (0) o
+sort 
+sort[x] =[x]
+sort xs
+=merge (sort ys) (sort zs)
+where (ys,zs)=halve xs
+halve xs = (take m xs,drop m xs)
+where m=length xsdiv2
+实际上通过归并的排序有多种版本，标准引导库的函数sor七使用的定义不同于这里
+的定义。
+如前所述，halve的定义看似相当低效，因为它需要对参数进行多次遍历。一种改
+进方法是利用标准引导库函数splitAt，其说明如下：
+splitAtnxs=(takenxs,dropnxs)
+该函数的引导库定义使用了元组转换：
+
+===== PDF 121 =====
+效率
+splitAtoxs
+=(U,xs)
+splitAt n
+=(0,0)
+splitAt n (x:xs) = (x:ys,zs)
+where (ys,zs)=splitAt (n-1)xs
+很容易使用下面两个事实计算halve的定义：对于任意0<n有
+take n (x:xs) =x:take (n-1)xs
+dropn(x:xs)=drop(n-1)xs
+现在可以定义：
+halvexs=splitAt(lengthxsdiv2)xs
+当然，这里仍然有两次遍历。
+另一种改进sort的方法是定义：
+sort2nxs=(sort(takenxs),dropnxs)
+有sortxs=fst（sort2（lengthxs）xs），所以原来的排序函数可以在通用的排序
+中抽取。通过与前面的sort几乎完全一样的计算可以得到
+168
+sort20xs=(,xs)
+sort2 1 xs = ([head xsl,tail xs)
+sort2n xs =(mergeys zs,xst)
+where(ys,xs')=sort2mxs
+(zs,xs/)=sort2(n-m)xs
+=n'div2
+利用这个定义，不需要计算长度，也没有对xS的多次遍历。
+另一种优化halve的方法是意识到，如果必须手工将一个列表分成两部分，不会如
+上这样做。如果要求将一个列表分成两部分，一定会用如下方法将列表元素分成两堆：
+halve 
+=(0,0)
+halve[x]
+=([x,)
+halve(x:y:xs)=(x:ys,yizs)
+where (ys,zs) = halve xs
+当然，这个定义返回的结果不同于前一定义的结果，如果拆分后的结果要排序，那么
+拆分后两个列表的元素顺序没有关系，重要的是所有元素都在某一子列表中。
+现在已经总共有3种改进sort性能的方法，但结果是没有一个方法对sort总的运
+行时间有很大的改进。或许改进了几个百分点，但是没有实质的改进。而且，如果使用
+CHCi做函数求值器，没有一种定义在性能上比得过库函数sort，因为这个函数是用编译
+的形式提供给用户的，而且编译后的函数通常运行会快十倍。当然，我们总是可以用GHC
+编译函数。
+快速排序
+第二个排序算法是有名的快速排序（Quicksort）。这个排序只需要两行Haskell代码
+描述：
+sort门
+sort(x:xs)=sort[yI y<-xs,y<x]++[x]++
+[yIy<-xs,x<=y]
+169
+sort
+
+===== PDF 122 =====
+114
+第7章
+这个定义非常优美，也是Haskell表现力的证明。但是，优美也是有代价的：程序在空间
+开销方面可能非常低效。情况与前面mean的程序一样。
+在讨论如何优化代码之前，先来计算T（sort）。假设要对长度为n+1的列表排序。
+第一个列表概括可能返回任何长度介于0和n之间的列表，因此第二个列表概括结果的长
+度是n-k。因为运行时间函数是最后运行时间的估计，所以需要取这些可能性中最大者：
+T(sort)(n+1) = max[T(sort)(k) +T(sort)(n-k)I k-[0.. n]] +@(n)
+其中③（n）项表示计算两个列表概括和完成列表串联的运行时间。顺便指出，以上列表概
+括是在数学表达式中的应用，而不是Haskell表达式中的应用。如果列表概括在程序设计
+中是有用的记号，那么它们在数学中一样是有用的。
+最坏的情况在k=0或者k=n时发生，尽管不是很明显。因此，有
+T(sort)(0) = @(1)
+T(sort)(n+l)= T(sort)(n) +@(n)
+由此得到解T（sort）=?（n²）。所以，快速排序在最坏情况下是平方阶的算法。这是算
+法本身的特点，无关Haskell的表达方式。快速排序的名望来自两个原因，但是两者在纯
+函数程序情况下都不成立。第一，当快速排序用数组实现，而不是用列表时，划分过程可
+以原地（inplace）完成，无需更多额外空间。第二，在对输人的一些合理假设下，快速
+排序的平均情况性能是（nlogn），而且其中的常数很小。在函数式程序设计情况下，这个
+常数不是很小，而且有比快速排序更好的排序方法。
+有了这些分析，让我们看看在不做实质性改变的情况（不是一个完全不同的排序算
+法）下如何改进算法。为了避免划分时做两次遍历，定义：
+partition pxs = (filter p xs,filter (not.p) xs)
+这是另一个将两个定义作为二元组以节约一次遍历的例子。因为filterp可以表示成
+170
+foldr的一个特例，故可利用foldr的元组定律得到
+partitionp=foldrop(,)
+whereopx(ys,zs)Ipx
+=(x:ys,zs)
+ otherwise = (ys,x:zs)
+现在可以定义：
+sort
+sort(x:xs)=sortys++[x]++sort zs
+where(ys,zs)=partition(<x)xs
+不过这个定义仍然有空间泄漏问题。为了解释原因，将递归情况写成如下等价形式：
+sort(x:xs)=sort(fstp)++[x]++sort(sndp)
+where p = partition (<x) xs
+假如x：xS的长度为n+1，而且列表元素是严格递减的，那么x是列表的最大元素，
+p是长度分别为n和0的列表二元组。显示第一个递归调用结果引发对p的求值，但是p
+的第一个分量占用的空间不能释放，因为在第二个递归调用中有指向p的引用。在第二个
+递归调用中间，有更多的列表二元组生成并保留在内存。总之，对长度为n+1的严格递
+减列表进行排序需要的总空间是（n²）单位。这意味着现实中对于大输人的排序会因为
+没有足够空间而退出。
+
+===== PDF 123 =====
+效率
+115
+解决方法是强制partition的求值，同样重要的是，绑定ys和zs到二元组的分
+量，而不是p本身。
+一种得到满意结果的方法是引人两个累积参数，如下定义sortp：
+sortpxxsusvs=sort(us++ys)++[x]++
+sort(vs++zs)
+where(ys,zs)partition(<x)xs
+这样便有
+sort(x:xs)=sortpxxs
+现在可以为sortp合成一个直接递归定义。基本情况定义为
+sortpxusvs=sortus++[x]++sortvs
+171
+对于归纳情况y：xs，假设y<x。那么
+sortpx(y:xs)usvs
+=【sortp的定义以及(ys,zs）=partition（<x）xs)
+sort(us++y:ys)++[x]++sort(vs++zs)
+【见以下的断言】
+sort (yius ++ ys) ++ [x] ++ sort (vs ++ zs)
+【sortp的定义］
+sortp x(y:us)vs
+其中的断言是，如果as是bs的一个置换，那么sortas和sortbs返回同一个结果。
+断言直观上是显然的：对一个列表排序，结果不依赖于输人元素的排列次序，只依赖于列
+表中的元素。形式证明略去。
+对于x<=y的情况再进行类似的计算，并使sortp局部于sort的定义，得到最
+后的程序：
+sort
+sort(x:xs)=sortpxs
+where
+sortpusvs
+sortp(y:xs)usvs=ify<x
+then sortp xs (y:us)vs
+else sortp xs us (y:vs)
+尽管程序看上去没有以前那么漂亮，但是至少空间复杂度是（n）。
+7.8
+习题
+习题A
+函数sort的一个简单定义是
+sort 
+sort(x:xs)=insertx(sortxs)
+insertx=[x]
+insert x (y:ys)
+if x<-y then xiy:ys else y:insert x ys
+这种排序方法称为插入排序（insertionsort）。请用情性求值将sort[3，4，2，1]化为
+172
+首范式。然后回答下列问题：（i）将head：sort应用于长度为n的列表时，对该表达
+式求值需要多长时间（作为n的函数）？（i）使用勤奋求值又需要多长时间？（ii）使用
+
+===== PDF 124 =====
+116
+第7章
+惰性求值时，插人排序完成的比较序列是否与下列选择排序（selection sort）完成的比较
+序列一样？
+sort=
+sort xs = yisort ys where (y,ys) = select xs
+select [x]
+= (x,[)
+select (x:xs) I x <=y= (x,y:ys)
+I otherwise=(y,x:ys)
+where (y,ys)= select xs
+习题B
+请给出1ength的一个定义，其求值可用常数空间完成。写出length的第
+二个定义，其求值在常数空间完成，但是不使用原始运算seg（直接地或者间接地）。
+习题C
+请给出f、e和xs使得
+foldl fexs+ foldl'f exs
+习题D
+如果如下定义cp：
+=[]
+cp (xs:xss) = [x:ys  ys <- cp xss, x <- xs]
+请问这样定义cp是不是像使用foldr定义的cp一样高效？是，不是，还是也许？
+下面做一个计算。使用foldr的融合律计算下列函数的高效定义：
+fcp =filter nondec.cp
+173
+关于nondec的定义参见4.7节。
+习题E假设对于n≥2有下列递推式：
+T(1) = @(1)
+T(n) = T(n div 2) + T(n - n div 2) + @(n)
+请证明T(2"）=@（2*k）。由此证明T(n）=①（nlogn）。
+习题F证明：
+foldr(lxn->n+1)oxs=foldl(Inx->1+n)0xs
+foldr (Ixxs->xs++[x])[xs
+=foldl（Ixs x->[x]++xs)xs
+习题G证明：如果hx（y，z）=（f,gxz），则对于所有有穷列表xs有
+(foldrfaxs,foldrgbxs)=foldrh(a,b)xs
+一个复杂的问题是：这个结果对于所有的列表xS成立吗？
+再定义一个函数h使得
+(foldlfaxs,foldlgbxs)=foldlh(a,b)xs
+习题H回顾定义：
+partition p xs = (filter p xs, filter (not.p) xs)
+请将两个分量表示成foldr的两个特例。由此利用习题G的结果计算partition
+的另一个定义。
+定义：
+part p xs us vs = (filter p xs ++us,
+fiiter (not:p)xs++vs)
+
+===== PDF 125 =====
+效率
+117
+请计算partition的另一个定义，并使用part作为局部定义。
+习题！回顾定义：
+174
+labels ::BinTree a,->[a]
+labels(Leafx)=[x]
+labels(Forkuv)=labelsu++labelsv
+计算T（1abels）（n），其中n是树中叶的个数。请利用累积参数技术给出快速计算
+labels的方法。
+证明labels（buildxs）=xs对于所有有穷非空列表成立。
+习题J定义selectk=（！！k），sort，其中sort是最初给出的快速排序。所
+以，selectk选择非空有穷列表中第k最小元素。第0最小元素是最小的元素，第1最
+小元素是下一个最小元素，等等。请给出Selcet的一个更高效定义，并估算其运行
+时间。
+7.9答案
+习题A答案
+sort[3,4,1,2]
+=insert3(sort[4,1,2])
+=insert3(insert4(insert1(insert2)))
+=insert3(insert4(insert1(2:)))
+=insert3(insert4(1:2:))
+=insert3(1:insert4(2:))
+=1:insert3(insert4(2:))
+将head：sort应用于长度为n的列表的求值需要（n）步。使用勤奋求值大约需
+要n²步。对于（），答案是“是的”。你可能会想，我们定义了插人排序，但是，在惰
+性求值策略下它是选择排序。这里得到的经验是，在惰性求值策略下，事情并不总是我们
+所想象的那样。
+习题B答案对于第一部分，下面的定义满足要求：
+length=foldl(nx->n+1)0
+对于第二部分，一个解如下：
+175
+length
+= length2 0
+length2n
+=n
+length2n(x:xs)=ifn==0thenlength21xs
+else length2(n+1)xs
+测试n==0迫使对第一个参数求值。
+习题C答案定义fnx=ifx==0thenundefinedelseo，则有
+foldlfo[o,2]=0
+foldltfo[o,2]=undefined
+习题D答案答案是，也许！尽管给出的cp定义是高效的，但是，它返回列表的列
+表元素的排序次序不同于书中其他任何定义的结果。如果只关心结果的集合，那么次序关
+系不大，但是对那些要查找一个满足一定性质的列表的程序，该定义对程序的运行时间和
+
+===== PDF 126 =====
+118
+第7章
+结果可能会有影响。
+根据融合律，必须定义一个函数使得
+filter nondec (f xs yss)=g xs (filter nondec yss)
+其中 f xsyss =[x:ys I×<- xs,ys <-yss]。这样便有
+filter nondec.cp
+= filter nondec foldr f []
+=foldrg[]
+现在有
+nondec (x:ys)=null ys Il (x <=head ys && nondec ys)
+由此得到
+g xs [[]] = [[x] I x <- xs]
+g xs yss
+= [x:ys I x<-xs, ys -yss, x<=head ys]
+习题E答案对于第一部分，有
+176
+T(2*) = 2T(2k-1) + 0(2*)
+根据归纳法，可以证明T(2）=0(2"）。归纳步骤如下：
+=0
+T(2*) = 2 Z 0(2k-1) + @(2h)
+1=0
+h-1
+①(2*) + 0(2*)
+10
+0(2*)
+因此，T(n）=（k2"）。现在假定2"≤n<2*+1，那么
+0(k2*) = T(2*) ≤ T(n) ≤ T(2*+1) = @((k +1)2k+1) = 0(k2*)
+所以，T(n)=@(k2")=@(nlogn)。
+习题F答案定义x<>=n+1以及n@=1+n，则有
+(x<>n)@y=1+(n+1)=(1+n)+1 =×<>(n@y)
+第二个证明类似。
+习题G答案归纳步骤如下：
+(foldr fa (x:xs),foldrgb(x:xs)
+=(f x (foldr f a xs),gx (foldr gb xs))
+=hx (foldr f axs,foldrg bxs)
+=hx(foldrh(a,b)xs
+=foldrh(a,b)(xixs)
+对于复杂问题的回答：不是。因为在Haskell中（工，）和是不同的值。例如，
+假设定义foo（x,）=1，则有
+foo undefined =undefined
+foo (undefined,undefined) = 1
+对于最后一部分，定义h如下：
+
+===== PDF 127 =====
+效率
+119
+h (yz)x= (fyx,gzx)
+习题H答案我们有filterp=foldr（opp）［]，其中：
+177
+oppxxs=ifpxthenx:xselsexs
+现在有
+(oppxys,op (not:p)xzs)
+=ifpxthen (x:ys,zs) else (ys,xizs)
+因此，有
+partitionpxs=foldrf(,)xs
+wherefx(ys,zs)=ifpx
+then (x:ys,zs)
+else (ys,x:zs)
+对最后一个问题，有
+partitionpxs=partpxs
+part p  ys zs= (ys,zs)
+partp(x:xs)yszs=ifpx
+thenpart pxs (x:ys)zs
+else part p xs ys (zizs)
+习题I答案记着T表示最坏情况时间复杂度。对于1abels的最坏情况是树的每棵
+右子树都是一个叶。因此，有
+T(labels)(n)=T(labels)(n-l)+@(n)
+其中（n）表示将长度为n－1的列表与长度为1的列表串联的运行时间。因此，有
+T(labels)(n) =oj=o@(j) = @(n)
+使用累积参数方法得到
+labelst
+=labels2 t 
+labels2 (Leaf x)xs= x:xs
+labels2(Forkuv)xs=labels2u(labels2vxs)
+并且T（labels2）（n）=（n）。这个定义将labels的运行时间由二次方改进为线性。
+对于证明labels（buildxs）=xs，其中的归纳假设为对于所有长度严格小于xs
+178
+长度的列表该等式成立。归纳步骤如下：
+labels (build xs)
+【设xs的长度至少为2
+并令(ys,zs）=halvexs)
+labels(Fork (buildys)(build zs))
+【labels的定义】
+labels(buildys)++labels(buildzs)
+归纳假设，因为ys和zs的长度严格小于xs的长度
+ys ++ zs
+[halvexs的定义]
+这里使用了一般归纳（generalinduction）。要证明P（xs）对于所有有穷列表xs成立，
+只要证明：（i）P（［）成立；（i）在假设性质P对于所有长度严格小于xs长度列表
+成立的前提下，P（xs）也成立。
+
+===== PDF 128 =====
+120
+第7章
+习题J答案一一个关键性质是
+(xs++[x]++ys)!!kIk<n=xs!!k
+1 k==n
+Ik>ni
+=ys!!(n-k)
+where n = length xs
+另一个关键性质是，对一个列表排序不改变列表的长度。因此，有
+selectk[]
+= error"list too short"
+selectk(x:xs)Ik<n
+=select kys
+1k==n
+=X
+Iotherwise=select:(n-k)zs
+whereys=[yIy<-xs,y<x]
+z=[zz<-x,X=z]
+=lengthys
+对于长度为n的列表，最坏情况运行时间是当k=0并且ys的长度为n-1时，即
+x：xs是严格递减的。因此，有
+T(select)(0,n) = T(select)(0,n-1) + @(n)
+其解为T（select）（O，n）=（n²）。但是，假定排序结果的任何排列都等可能成为排序
+的输人，那么T(select）（h，n）=(n）。
+7.10注记
+算法设计方面的书有很多，不过有两本书关注于函数式程序设计方面的算法设计：由
+FethiRabbi和GuyLapalme编著的《AFunctionalProgrammingApproach》（secondedition）
+（Addison-Wesley，1999），以及由我编著的《Pearls ofFunctionalAlgorithmDesign》（Cam-
+bridge,2010)。
+性能分析工具的信息包含在Haskell平台文档中。排序算法的参考资料见DonKnuth的
+179
+《The Art of Computer Programming, Volume 3:Sorting and Searching》（second edition)(Ad-
+180
+dison-Wesley，1998)。

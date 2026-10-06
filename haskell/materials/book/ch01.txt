@@ -1,0 +1,609 @@
+
+===== PDF 9 =====
+1第1章
+Thinking Functionally with Haskell
+何谓函数式程序设计
+简而言之：
+·函数式程序设计是一种构造程序的方法，它强调的是函数和函数的应用，而非命
+令及其运行。
+函数式程序设计使用简单的数学语言，使得问题的描述更清晰也更简洁。
+函数式程序设计的数学基础简单，而且支持对函数的性质进行推理。
+本书的目的是使用一种称为Haskell的函数语言展示以上3个特性。
+1.1
+函数和类型
+本书将使用Haskell的如下记法：
+f:X->Y
+它表示f是一个函数，其参数类型是X，返回值的类型是Y。例如：
+sin
+::Float ->Float
+age
+::Person->Int
+add
+logBase::Float->(Float->Float)
+F1oat表示像3..14159等浮点数类型；工nt表示有限精度整数类型，即满足-229≤
+n<22的整数n；工nteger表示无精度限制整数类型。在第3章将会看到，Haskell包含了
+各种数值类型。
+数学上用f（）表示将函数f应用于其参数x。但是，也使用如sino来表示sin（）。在
+Haskell中可以始终使用fx表示将f应用于参数x。函数的应用运算用一个空格表示。如
+果不使用括号，那么必须用空格避免多字母名可能引起的混淆：1atex是一个名，但是
+latex表示函数late应用于参数x。
+例如，sin3.14、sin（3.14）或sin(3.14）是函数sin应用于3.14的3种合法
+表示。
+类似地，logBase210、（1ogBase2）10或（logBase2）（10）都是以2为底10
+的对数的正确表示。但是，表达式1ogBase（210）是错误的。式子add（3，4）表示3
+与4之和，其中的括号是必需的，因为add的参数类型是一对整数，而且数对需要用括号
+和逗号表示。
+再看看1ogBase的类型，其参数是一个浮点数，返回值是一个函数。初看起来可能
+有些奇怪，但再细看则不然：这里的logBase2和logBasee恰好表示了数学函数log2
+和 loge
+数学上有形如logsinx的表达式。对于数学家来讲，该式子表示log（sinx），
+因为（1ogsin）x没有意义。但是在Haskell中，必须说明一个式子的含义，而且必须将
+
+===== PDF 10 =====
+第1章
+该式子写成log（sinx），因为Haskell将logsinx解释为（logsin）x。在Haskell
+表达式中函数应用是左结合的，而且具有最高的优先级。（此外，log是logBasee在
+Haskell中的简写。）
+下面是另一个例子。在三角函数中，sin29=2sinocoso。在Haskell中该式子写成
+sin(2*theta)=2*sin theta*costheta
+我们不仅要显式地表示乘法，而且要使用括号表达确切含义。上式也可以添加更多括
+号，写成
+sin(2*theta)=2*(sintheta)*(costheta)
+但是，多加的括号不是必需的，因为函数应用的优先级比乘法的优先级高。
+1. 2
+函数复合
+假设f：：Y->Z和g：：X->Y是两个函数，可以将这两个函数复合成一个新的
+函数：
+f.g::x->z
+该函数将g应用于类型X的参数，得到类型Y的结果，然后将f应用于这个结果，最后
+得到类型乙的结果。我们将始终使用这样的术语：函数输入参数，返回结果。事实上，有
+(f.g)x=f(gx)
+复合的顺序是从右到左，这是因为我们把函数写在其应用的参数左边。英语的“green
+pig”中形容词“green”解释为函数，它应用于名词短语，得到名词短语。当然，在法语
+中情况相反。
+1.3例子：高频词
+下面通过解决一个问题来说明函数复合的重要性。《战争与和平》中出现最多的100
+个词是哪些？《爱的徒劳》中出现最多的50个词是什么？下面将设计一个函数程序求得答
+案。不过，尽管现在还没到编写一个完整程序的时候，但是，可以通过构造足够的成分来
+展示函数式程序设计的精髓。
+给定的输入是什么？答：一个文本，可视作由字符构成的一个列表。这里的字符既包含
+可见字符如"B和"，，也包含空白字符（blankcharacter），如空格和换行符（：和An）。
+注意，单个字符用单引号表示。例如，·f是一个字符，而f是一个名。Haskell用char
+表示字符类型，元素类型为char的列表类型用［char1表示。这种记法不只适用于字符，
+例如，【Int］表示整数列表，【Float->Float】表示函数列表。
+期待的输出是什么？答：如下形式的数据。
+the:154
+of:50
+a: 18
+and: 12
+in: 11
+以上显示也是一个字符列表，事实上可看成如下列表：
+
+===== PDF 11 =====
+何谓函数式程序设计
+#the:154nof:50\na:18/nand:12/nin:11/n
+字符的列表用双引号表示。更多列表知识参见习题。所以，我们需要设计一个函数，
+不妨称为commonwords，其类型为
+commonWords:Int->[Char]->[char]
+函数commonwordsn获得一个字符列表作为输人，返回该列表中n个出现最多的词
+构成的串（字符列表的别名），形如前面所述列表。commonwords的类型没有使用括号，
+当然也可以写成
+commonWords::Int->([Char]->[Char])
+序恰恰相反。因此，A->B->C表示A->（B->C)。如果想表示类型（A->B）->C，
+那么必须使用括号。更多相关知识参见第2章。
+明白了给定的输人和期待的输出后，不同的人有不同的解法，对问题的关注点也不尽
+相同。例如，什么是一个“词”？如何将字符列表转换为词的列表？"Hello"、"hello"以
+及"He11o！"是不同的词还是相同的词？如何计算词的数自？需要统计所有的词数，还是
+只要计算最常出现的词数？等等。有些人觉得这些过多的细节使人望而却步，大多数人似
+乎认为在计算过程中，某个时刻必须获得词与其出现频率的列表，但是如何由该列表实现
+最终目标呢？是扫描该列表几次，每次找出下一个出现次数最多的词，还是有其他更好的
+方法？
+首先考虑词的概念，并简单地假定一个词是不含空格和换行符的最大字符序列。这样
+的定义允许把诸如"Hello！""3*4"和"Thelma&Louise"等看作词，但是这没关系。
+在一个文本中，一个词是有空白字符包围的字符序列，如"ThelmaandLouise"包含3
+个词。
+我们不准备考虑如何将一个文本分解成其组成元素（即词的列表），而是假定存在具
+有这种功能的函数：
+words::[Char]->[[Char]]
+诸如［[Char]]这样的类型显得难以记忆，不过在Haskell中总是可以引人类型同义词
+(type synonyms):
+typeText=[Char]
+typeWord=[Char]
+现在可以这样表达类型words：：Text->［word]，使其更便于记忆。当然，一
+个文本有别于一个词，前者可以包含空白字符，后者则不然，但是Haskell的类型同义词
+不能表达这种细微的区别。事实上，words是Haskell的库函数，因此不必自定义。
+另外一个问题是"The"和the"是否表示同一个词。它们实际上是同一个词，解决这
+个问题的一种方法是将文本中的所有字母都转换成小写，其他字符不变。为此，需要一个
+函数toLower：：Char->Char，该函数将大写字母转换成小写字母，其他字符保持
+不变。为了将该函数应用于文本的每个字符，需要下面的通用函数：
+[q]-[-(q-)de
+
+===== PDF 12 =====
+第1章
+使得mapf应用于一个列表时，f被应用于列表的每个元素。这样，将每个字母转换为小
+写由下列函数完成：
+map toLower ::Text ->Text
+好了，现在得到了将文本转换为小写字母词的列表函数wordsmaptoLower。下
+一个任务是计算每个词出现的次数。可以扫描词的列表，检查下一个词是第一次出现还是
+已经出现过，相应地开始新词的计数或者给对应词的计数器加1。不过，另一种更简单的
+想法是对词的列表按照字典序排序，结果是所有重复出现的词排在了一起。人工操作时不
+会这样做，但是通过排序获得信息的思想或许是计算过程中最重要的算法思想。所以，假
+设存在一个函数：
+sortWords::[Word] -> [Word]
+该函数将词的列表按照字典序排序。例如：
+sortwords["to","be","or","not","to","be"]
+"["be","be","not","or","to","to"]
+下一步需要计算在有序列表中每个词连续出现的次数。假定已有计算词数的函数：
+countRuns::[Word]->[(Int,Word)]
+例如：
+countRuns["be","be","not","or","to","to"]
+=[(2,"be"),(1,"not"),(1,"or"),(2,"to")]
+其结果是按字典序排列的词及其出现次数的列表。
+现在来考虑关键的思想：希望数据按照词的出现次数从大到小排列，而不是按照词的
+字典序排列。可以看出，这就是一种排序，无需设计其他更聪明的方法。如前所述，排序
+确实是程序设计中非常有用的方法。因此，假定已有函数：
+sortRuns :[(Int,Word)]-> [(Int,Word)]
+该函数将词及其出现次数按照出现次数（列表元素的第一个分量）递减排序。例如：
+sortRuns[(2,"be"),(1,"not"),(1,"or"),(2,"to")]
+=[(2,"be"),(2,"to"),(1,"not"),(1,"or")]
+接下来只需取出结果列表中的前n个元素。为此，需要下列函数：
+take :: Int -> [a] ->[a]
+该函数使得taken取得一个列表的前n个元素。函数take并不关心列表中的元素是什
+么类型，这就是take的类型签名中出现了a，而不是（工nt，Word）的原因。第2章将解
+释这种思想。
+最后的步骤仅仅是整理格式。首先将每个元素转换成一个串，例如，将（2，"be"）转
+换为"be 2n"。将该函数称为
+showRun :: (Int,Word)-> String
+类型String是Haskell的预定义类型，实际上是［Char]的类型同义词。因此，下列函数
+将词及其次数列表转换为串列表：
+
+===== PDF 13 =====
+何谓函数式程序设计
+mapshowRun::[(Int,Word)]->[String]
+最后一步需要使用下列函数：
+concat :[[a]]->[a]
+该函数将元素的列表的列表串联成一个列表。同样，函数concat并不关心这里串联的是
+什么“元素”，这也是类型中出现a的原因。
+下面定义函数：
+commonWords n=concat.map showRun.take n.
+sortRuns.countRuns.sortWords.
+words.map toLower
+函数commonwords定义中使用了8个分函数，并用函数复合将它们管道式粘合起来。并
+非每个问题都可以这样直接地分解成一系列子问题，但是，如果可行的话，最后的程序将
+是简单、迷人而且有效的。
+需要注意的是分解问题的过程是如何在辅助函数的类型指导下进行的。第二个经验
+（第一个经验是函数复合的重要性）是，确定一个函数的类型是找到该函数合适定义的第
+一步。
+本节的目的是设计一个解决高频词问题的程序。结果是利用辅助函数给出了common-
+Words的函数定义，这些辅助函数或者可以直接定义，或者由某个Haskell函数库提供。
+脚本（script）是一些定义的集合，所以，我们实际上构造了一个脚本。脚本中函数定义
+的顺序并不重要。函数commonwords的定义完全可以放在最前面，然后再定义辅助函
+数，或者先定义辅助函数，最后给出主要函数的定义。换言之，程序员可以在脚本中用任
+何顺序叙述故事。稍后将解释如何用脚本进行计算。
+1.4例子：数字转换为词
+本节讨论另一个例子，并给出完整解。这个例子展示了求解问题的另一个基本方面，
+即解决一个复杂问题的好方法，首先是简化问题，然后考虑如何解决更简单的问题。
+有时需要把数字写成词。例如：
+What is functional programming?
+convert3080oo="three hundred andeightthousand"
+convert 369027 = "three hundred and sixty-nine thousand and
+twenty-seven"
+convert 369401="three hundred andsixty-ninethousand
+four hundred and one"
+我们的目标是设计这样一个函数：
+convert ::Int ->String
+即对于一个给定的不超过100万的非负数，函数返回用词表示的数字。如上所述，
+String是Haskell预定义的类型[Char]的同义词。
+这里需要其中各个数字的名称。一种方法是用串的列表表示它们：
+>units,teens,tens::[String]
+>units=["zero","one","two","three","four","five",
+
+===== PDF 14 =====
+第1章
+"six","seven","eight","nine"]
+>teens=["ten","eleven","twelve","thirteen","fourteen",
+"fifteen","sixteen","seventeen","eighteen",
+"nineteen"]
+>tens=["twenty","thirty","forty","fifty","sixty",
+"seventy","eighty","ninety"]
+以上每行开始的字符>表示什么？答案是，在一个脚本中，该字符表示一行Haskell
+代码，而不是注释。用.1hs做扩展名的Haskell文件称为Haskell文学脚本（Literate
+HaskellScript），习惯上脚本的每一行都是注释，除非出现符号>，该符号表示随后的是
+Haskell代码行。Haskell不充许代码行和注释紧邻，所以代码行和注释之间至少应该有一
+行空白。事实上，你正在阅读的本章就是一个合法的.1hs文件，完全可以将该文件载入
+Haskell系统并交互运行。在今后的章节将不再延续这种传统（除此之外，我们被迫用不
+同的名表示一个函数的不同定义），但是，本章展示的文学编程充许使用任何顺序讨论和
+书写函数的定义。
+对于当前的任务，解决复杂问题的一个好方法是先解决一个更简单的问题。该问题的
+最简单情况是给定的数字只有一位数，即0≤n<10。假定用convert1解决这种简单情
+况。现在马上可以定义：
+>converti ::Int ->String
+>converti n=units!!n
+这个定义使用了列表索引运算（！！）。对于给定的列表xs和下标n，表达式xs！！n返回
+xs中位置为n的元素，其中位置从o开始计算。特别地，units！!o="zero"。而且，
+units！！10确实无定义，因为units只有10个元素，下标是0～9。一般地，在一个脚
+本中定义的函数是部分函数或不完全函数，即并非对每个参数返回确切定义的结果。
+这个问题的下一个最简单情况是数字n最多有两位数，即0≤n<100。假定
+convert2用于处理这种情况。因为需要知道每位数字是什么，所以首先定义：
+>digits2 ::Int->(Int,Int)
+>digits2n=(divn10,modn10)
+数字divnk是n被k除的整数商，modnk是余数。也可以写成
+digits2n=(ndiv10,n~mod10)
+其中运算'div和mod'是div和mod的中缀形式，即运算写在运算数的中间，而不是
+写在运算数之前。这种形式非常便于改善可读性。例如，数学家会用xdivy和αmody表
+示这些表达式。注意，反引号（）不同于表示单个字符的单引号（）。
+现在可以定义：
+>convert2 ::Int ->String
+>convert2=combine2digits2
+函数combine2的定义使用Haskell的条件等式（guardedequation）：
+>combine2::(Int,Int)->String
+combine2(t,u)
+I t==0
+=units!!u
+I t==1
+= teens!!u
+I2<=t&&u==0=tens!!(t-2)
+I2<=t&&u/=o=tens!!(t-2)++"-++units!!u
+
+===== PDF 15 =====
+何谓函数式程序设计
+欲理解这段代码，需要知道Haskell表达等式和比较测试的如下符号：
+==（等于）
+/=（不等于）
+<=（小于等于）
+这些函数具有确切的类型，这将在稍后解释。
+我们还需要知道两个测试的合取用&&表示。因此，如果a和b都是True，那么a
+&&b返回布尔值True，否则返回False。实际上，有
+（&&::Bool ->Bool->Bool
+第2章将进一步介绍类型Bool。
+最后，（++）表示两个列表串联的运算。该运算不关心列表的元素类型，所以
+[]<-[]<-[](++)
+例如，下列等式将两个函数（函数类型均为Float->Float）列表串联：
+[sin,cos]++[tan]=[sin,cos,tan]
+也可以串联两个字符列表：
+"sin cos#++"tan"="sin cos tan"
+函数combine2的定义是在仔细考虑了所有可能的情况后得到的。稍加思考后可以
+看出，这里有3种主要情况，即十位数为0、1或者大于1的3种情况。对于前两种情况，
+答案是直接的，但是第3种情况需要划分为两种情况，即个位数是0或者非0。这些情况
+的书写先后顺序，也就是这些条件等式的先后顺序并不重要，因为这些条件互不相交（两
+种情况不会同时为真），并且覆盖了所有的情况，
+也可以定义：
+combine2::(Int,Int)->String
+combine2(t,u)
+Tt==0
+=units!!u
+It==1
+= teens!!u
+==0
+=tens!!(t-2)
+I otherwise =tens!!(t-2)++ "_"++units!!u
+10
+但是，这里书写等式的顺序很重要。条件的计算是自上而下的，并将第一个计算为True
+的条件对应的等式右边作为函数定义的结果。标识符otherwise是True的同义词，所
+以它涵盖了所有其他情况。
+定义convert2的另一种方法：
+convert2 ::Int->String
+convert2n
+1t==0
+units!!u
+I t==1
+ teens!!u
+=tens!!(t-2)
+I otherwise = tens!!(t-2) ++ "_" ++units!!u
+where(t,u)=(ndiv10,nmod10)
+这里使用了where子句。这种子句引人了局部定义，其上下文或辖域是convert2定义
+的所有等式右边部分。这种局部定义对于定义的组织并使得定义可读性更强是非常重要
+
+===== PDF 16 =====
+第1章
+的。对于本例来说，where子句避免了显式地定义函数digits2。
+以上定义相对简单。现在考虑函数convert3，其参数n满足0≤n<1000，即n最多
+有3位数。其定义如下：
+>convert3::Int->String
+>convert3n
+I h==0
+=convert2t
+I t==0
+=units!!h ++"hundred"
+I otherwise =units!!h ++"hundred and "++ convert2 t
+where(h,t)=(ndiv100,nmod100)
+使用这样的方式将数字分解，是因为可以使用convert2处理小于100的数字。
+现在假定n满足0≤n<1000000，即n可以有6位数。沿用以上的模式，可以给出如
+下定义：
+> convert6 ::Int ->String
+convert6n
+I m==0
+=convert3h
+I t==0
+= convert3 m ++ "thousand"
+I otherwise= convert3m ++ " thousand"++ link h ++
+convert3h
+对于0<m且0<h<100，表示m的词与表示h的词之间需要一个连接词“and”，所
+以定义：
+>linkh=ifh<100then#and"
+else"
+该定义使用了条件表达式：
+if <test> then <expr1> else <expr2>
+也可以使用条件等式：
+1inkhIh<100
+I otherwise = "
+根据不同情况，有时一种表达式可读性较强，有时另一种可读性更强。这里的i、
+then和else，以及其他的一些词，称为Haskell保留字，这也意味着程序员不可以使用
+这些词做其他定义的名称。
+注意函数convert6是如何使用简单的函数convert3来定义的，同时注意
+convert3是如何用更简单的函数convert2来定义的。这是函数定义的一般方法。在本
+例中，简单情况的考虑都派上了用场，因为最后函数的定义使用了简单情况的定义。
+另外一点，把所求的函数命名为convert6，但是开始时称该函数为convert。没
+关系，可以定义：
+> convert :: Int -> String
+>convert = convert6
+下面需要做的是将函数convert应用于一些输人参数。怎么做呢？
+1.5Haskell平台
+访问网页www.haskell.org可以看到如何下载Haskell平台（HaskellPlatform）。该平台
+
+===== PDF 17 =====
+何谓函数式程序设计
+是可用于运行Haskell脚本的工具和包的集合。平台包括支持Windows、Mac和Linux的3
+种版本，本书只介绍Windows版本，因为其他版本的用法相似。
+平台中的一种工具是交互式计算器，称为GHCi。它是GlasgowHaskellCompilerInter-
+preter的简称。计算器有Windows版本，称为WinGHCi。打开该窗口将会看到下列信息：
+12
+GHCi,version7.6.3:http://www.haske11..org/ghc/:?forhelp
+Loading package ghc-prim... linking ... done.
+Loading package integer-gmp .linking.done.
+Loading package base .... linking .... done.
+Prelude>
+这里的提示符Prelude>表示包含预定义的函数、类型和其他值的标准库已经载入
+系统，现在GHCi可以用作超级计算器：
+Prelude> 3-5
+Prelude>import Data.Char
+Prelude Data.Char> map toLower"HELLO WORLD!"
+"hello world!"
+Prelude Data.Char>
+函数toLower在库Data.char中定义。将该库输入后，用户便可以使用库中定义
+的函数了。注意提示符的变化，它显示了已经输入的库。这样的提示符很快会变得很长。
+但是，用户任何时候都可以修改提示符：
+Prelude> :set prompt ghci>
+ghci>
+为简洁起见，本书将使用这种简单提示符。
+用户可以输入一个脚本，如包含函数convert定义的Numbers2Words：
+ghci> :load "Numbers2Words.lhs"
+[1 of 1] Compiling Main(Numbers2Words.lhs,interpreted)
+Ok, modules loaded: Main.
+ghci>
+第2章将介绍模块的概念。例如，现在可以键入：
+ghci>convert 301123
+"three hundred and one thousand one hundred and twenty-three"
+ghci>
+13
+本章最后以习题结束。这些习题包括其他有趣的知识，应该视为本章内容的有机组成
+部分。这也适用于后续的章节，所以，即使你不打算回答这些问题，也请阅读问题。习题
+答案附在习题后面。
+1.6习题
+习题A考虑将一个整数加倍的函数：
+double :: Integer -> Integer
+doublex=2*x
+下列表达式的值是什么？
+mapdouble[1,4,4,3]
+map(doubledouble)[1,4,4,3]
+map double 
+
+===== PDF 18 =====
+10
+第1章
+假设sum：：【Integer］->Integer是对一个整数列表求和的函数。下列哪些等
+式成立？为什么？
+sum.mapdouble=doublesum
+sum.mapsum
+=sum.concat
+sum.sort
+=sum
+读者需要回顾函数concat的功能。函数sort将一个数的列表按照递增顺序排序。
+习题B在Haskell中，函数应用的优先级高于其他任何运算，所以，double3+4
+等同于（double3）+4，而不是double（3+4）。下列哪些式子是sine在Haskell中的
+表示？（Haskell的幂用“^”表示。）
+sin2 theta
+sin theta'2
+(sin theta)*2
+如何用Haskell合式表达式表示sin26/2㎡？
+习题C如前所见，一个字符，即类型为Char的元素，用单引号表示；一个串用双
+14
+引号表示。特别是，串"HelloWorld！"不过是下面列表的简短表示。
+一般的列表用中括号和逗号表示。（顺便说明，小括号是圆形的，中括号是方形的，
+大括号是花的。）因此，1H和"H”具有不同的类型。它们的类型是什么？2001和
+"2001"的区别是什么？
+运算++将两个列表串联。请化简下列式子：
+[1,2,3]++[3,2,1]
+"Hello"++"World!"
+[1,2,3]++
+"Hello"++"#++"World!#
+习题D
+在高频词一例中，首先每个字母被转换为小写，然后计算文本中的词。另一
+种方法是反过来，先计算文本中的词，然后将每个词中的每个字母转换为小写。第一种方
+法可以表示为words.maptoLower，请给出第二种方法的类似表达式。
+习题E如果一个运算④满足x④（y④z）=（x④y）④z，则称它是可结合的（associa-
+tive）。数的加法是可结合的吗？列表的串联可结合吗？函数的复合可结合吗？请给出一个
+不可结合的数的运算的例子。
+如果一个元素e满足：等式x④e=e④x=x对所有的x成立，则称e为④的单位元
+（identityelement）。请问加法、串联运算和函数复合的单位元各是什么？
+习题F我妻子有一本书，书名为《EHTCDOORRSSWAAAGMNRACDINORTY》，
+书中包含下面这样的列表：
+6-letterwords
+eginor;ignore,region
+eginrr: ringer
+eginrs:resign,signer,singer
+没错，这是一本易位构词词典。易位构词的字母被排序，并将这些结果按照字典序存储。
+与每个易位构词相关的是用这些字母构成的英文单词。请描述如何设计一个函数：
+
+===== PDF 19 =====
+何谓函数式程序设计
+使得anagramn可以从一个按照字典序排列的英文单词列表中恰好抽取出n个字母的词，
+并生成一个串，当串被显示时，结果是几个字母词的易位构词列表。不需要定义各种函
+数，只要给出这些函数的名和类型，并描述每个函数的功能即可。
+习题G用一首歌结束本节习题：
+One man went to mow
+Went to mow a meadow
+Dne man and his dog
+Went to mow a meadow
+Two men went to mow
+Went toi
+mow a meadow
+Two men,
+one man and his dog
+Went to
+mow a meadow
+Three men went to mow
+Wentto mow a meadow
+Three men, two men, one man and his dog
+Went to mow a meadow
+的歌词。假设n<10。
+要打印这首歌，可以键人：
+ghci> putStrLn (song 5)
+函数putStrLn将在第2章介绍。建议这样开始：
+songn=ifn==o then"
+else song (n-1)++"n"++verse n
+verse n =line1 n ++line2 n ++line3 n ++line4 n
+这样可以用递归定义song。
+1. 7
+答案
+习题A答案
+map double [1,4,4,3]
+=[2,8,8,6]
+map(double:double)[1,4,4,3]=[4,16,16,12]
+map double
+由此可知，［]表示空列表。
+以下所有等式成立：
+sum.mapdouble=double.sum
+sum.mapsum
+=sum.concat
+sum.sort
+=sum
+事实上，3个等式中每个均是以下3个更简单定律的结论。
+a*(x+y) = a*x + a*y
+x+(y+z) =(x+y)+z
+x+y
+= y+x
+当然，现在还不清楚如何证明这些等式成立。（此外，为了避免混乱，使用打字机体
+
+===== PDF 20 =====
+12
+第1章
+符号=表示两个表达式的相等。但是，数学符号=用于如sin2e=2sinocoso的等式。）
+习题B答案，表达式sintheta^2和（sintheta）^2都正确，但是sin^2theta
+是错误的。sin20/2π在Haskell中的表示为
+sin(2*theta)/(2*pi)
+注意，如果写成
+sin（2*theta)/2*pi=（sin（2*theta）/2)*pi
+则不符合要求。原因是/和＊这样的运算具有同样的优先级，并且是左结合的。第2章将
+17
+进一步讨论这些问题。
+习题C答案
+:: Char
+"H"
+::[Char]
+2001::Integer
+"2001"::[Char]
+此外，·表示转义字符，所以·n表示换行符，，\t表示制表符（tab字符）。同
+样，表示反斜杠，"\n"表示反斜杠和字母n这两个字符构成的列表。所以，文件路
+径C：firefoxlstuff用Haskell字符串表示成"C：Iifirefox\lstuff"。
+[1,2,3]++[3,2,1]
+=[1,2,3,3,2,1]
+"Hello"++"World!#
+="Hello World!"
+[1,2,3]++
+=[1,2,3]
+"Hello"++"++"World!"="HelloWorld!"
+如果你的最后两个答案正确，那么你就理解了［]表示任何对象的空列表，""表示字符
+的空列表。
+习题D答案
+“将每个词中的每个字母转换为小写”包含了答案的线索。将一个词
+中每个字母转换为小写可表示成maptoLower，所以这个问题的答案是map（map
+toLower）。这也表示下列等式成立：
+words.maptoLower=map(maptoLower)-.words
+习题E答案数值加法、列表串联和函数复合都是可结合的。当然，数的减法不可结
+合，幂运算也不可结合。加法的单位元是0，串联的单位元是空列表，函数复合的单位元
+是下面定义的恒等函数：
+id::a->a
+idx=x
+习题F答案这个习题可仿照3.1节来解。一种定义函数anagramsn的方法如下：
+1.使用下列函数，抽取长度为n的词：
+18
+getWords ::Int -> [Word] -> [Word]
+2.给每个词添加一个标签。标签包含构成该词的字母，并按照字母序排列。例如，
+word变成了标签和词的二元组（"dorw"，"word"）。下列函数可以完成添加标签：
+addLabel : Word -> (Label,Word)
+其中：
+
+===== PDF 21 =====
+何谓函数式程序设计
+13
+type Label = [Char]
+3.将标签词列表按照标签的字典序排序，该函数具有下列类型：
+sortLabels::[(Label,Word)]->[(Label,Word)]
+4.将每组标签相同的连续相邻标签和词的二元组用一个新的二元组代替，这个新的
+二元组的第一个分量是它们的共同标签，第二个分量是具有这个相同标签的词的列表。该
+函数定义为
+groupByLabel :: [(Label,Word)] ->[(Label,[Word])]
+5.利用下列函数将前面得到的每个二元组替换，并将结果串联在一起：
+showEntry :: (Label,[Word]) -> String
+最后得到
+anagrams n= concat.map showEntry.groupByLabel
+sortLabels.mapaddLabel.getwordsn
+习题G答案一种可能解是
+song n = if n==o then un
+else song (n-1)++"n"++verse n
+versen=iline1n++line2n++line3n++line4n
+lineln=ifn==1 then
+#One man went to mowln
+else
+numbers!!(n-2)++"men went tomowln"
+line2n ="Went to mow a meadown"
+line3n =if n==1 then
+"One man and his dog n"
+19
+else
+numbers!!(n-2)++"men,++count(n-2)
+++"one man and his dogln"
+line4 n="Went to mowa meadownln"
+count n =if n==o then "n
+else
+numbs!!(n-1)++"men,++count(n-1)
+numbers=["Two","Three","Four","Five","Six",
+"Seven","Eight","Nine"]
+numbs
+"seven","eight"]
+注意，脚本中省略了辅助函数和值的类型。尽管Haskell可以推导出所有函数和值的
+正确类型，但是，好的习惯是在脚本中说明它们的类型，即使这些类型很简单也要说明。
+脚本中明确的类型签名使得脚本更容易阅读，而且对于检查定义的合理性也很有帮助。
+1.8注记
+如果读者对Haskell的起源感兴趣，那么一定要阅读《Haskell的历史》（TheHistoryof
+Haskell），可以从下列链接得到文章的拷贝：
+research. microsoft. com/~ simonpj/papers/history-of-haskell
+
+===== PDF 22 =====
+14
+第1章
+Haskell的一个永恒的优势是它没有设计成一种封闭的语言，并鼓励研究人员通过扩
+展语言或者添加函数库尝试新的程序设计思想和技术。所以，Haskell是一种大规模语言，
+读者可以找到关于Haskell各个方面的大量书籍、辅导教程和论文，包括最近由Simon
+Marlow（O"Reilly，2013）编写的《Haskell并行与并发程序设计》（ParallelandConcurrent
+ProgramminginHaskell)。
+网页www.haskell.org包含大量有关资料的链接指引。不过，我在撰写本书时，桌上
+告》（Haskell98，LanguagesandLibraries，TheRevisedReport）（剑桥大学出版社，2003）。
+报告对于理解Haskell第一标准版Haskell98的本质是必不可少的。报告的在线版可以
+从下列链接获得：
+www.haskell.org/onlinereport
+本书大部分内容遵循标准版本，但是无论如何并未涵盖整个语言。
+之后一个新版本Haskell2010已经发布，参见
+haskell.org/onlinereport/haskell2010/
+其中的一个变化是模块名使用层次结构，例如，使用列表工具时调用模块Data.List，
+而不是简单地写List。
+另外两本书是由BryanOSullivan、JohnGoeerzen和DonStewart编写的《真实世界的
+Haskell》（RealWorldHaskell）（O'Reilly，2009），以及由GrahamHutton编写的《Haskell
+程序设计》（剑桥大学出版社，2007）。一如其名，前一本书主要介绍非常实际的应用，
+后一本书是入门教程。GrahamHutton曾笑着建议我将本书命名为《象牙塔Haskeli》。
+关于高频词问题的历史非常有趣。JonBentley曾请一位程序员DonKnuth编写一个高
+频词的文学WEB程序，然后请另一位程序员DougMcllroy给程序一个文学评论，结果刊
+登在Bentley所撰写的文章“ProgrammingPearls”，见CommunicationsoftheACM.vol29，
+21
+no.6（June1986)。

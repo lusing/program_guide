@@ -1,0 +1,1116 @@
+
+===== PDF 81 =====
+1第6章
+Thinking Functionally with Haskell
+证明
+我们已经在前两章看到许多定律，尽管“定律”这个词有点不恰当，因为它意味着它
+们是从天上来的，无需证明。不过至少简短是这个词的优点。自前遇到的定律均断言两个
+函数表达式的相等（可能在某些附加条件下），换句话说，定律的形式是函数之间的等式
+或者恒等式（identity），并且计算是点自由式的计算（关于点自由式计算参见第4章及其
+习题K的答案）。给定适当的定律，可以利用等式推理证明其他定律。等式逻辑是函数式
+程序设计中简单且有效的工具，因为它能引导人们找到已构造的函数或者值的新的而且更
+有效的定义。效率是第7章的主题。本章是关于等式推理的另一方面，即归纳证明。本章
+还将引入能够描述计算的共同特征的高阶（higherorder）函数，说明如何用高阶函数简化
+证明。可以证明这些高阶函数的一般性质，然后将其应用于其他函数，而不必对相似的函
+数性质一次次重复证明。
+6.1自然数上的归纳法
+考虑下面的幂函数定义：
+expxZero=1
+expx(Succn)=x*expxn
+以前的定义可能是
+110
+expxo
+expx(n+1)=x*expxn
+但是目前Haskell的标准版本Haskell2010中不再允许使用这种（n+1）模式的定义。
+无论如何定义，下列等式对任意m和n都应该成立。
+因为数学等式x+n=x"x"是成立的。但是如何证明这个定律呢？答案当然是归纳法
+（induction）。每个自然数或者是Zero或者形如Succn，其中n是某个自然数。这也正
+是数据类型Nat的定义描述的：
+data Nat ZeroISuccNat
+所以，要证明P（n）对于任意自然数n成立，只要证明：
+1.P(0）成立;
+2.对于任意自然数n，假定P（n）成立，则P（n+1）成立。
+这里已经恢复使用0表示zero，n+1表示Succn，今后也将沿用这种记法。在第
+二个证明中，可以假定P（n）成立，并在证明P（n+1）时使用该假设。
+作为例子，证明对于所有x、m和n下列等式成立。
+
+===== PDF 82 =====
+第6章
+expx(m+n)=expxm*expxn
+现在是对㎡归纳，也可以对n归纳，但是证明会更复杂。以下是证明。
+0的情况
+exp x (o+n)
+=【因为o+n=n)
+= [exp.1]
+u x dxe
+1*expxn
+因为1*x=x)
+111
+expxn
+m+1的情况
+exp x ((m+ 1) +n)
+expx(m+1)*expxn
+【算术运算】
+[exp.2]
+expx((m+n)+ 1))
+(x*expxm)*expxn
+[exp.2]
+【因为*满足结合律］】
+x*expx(m+n)
+x*(expxm*expxn)
+=【归纳假设］
+x*(expxm*expxn)
+以上证明格式将会用于归纳证明。证明分两种情况：基本情况（basecase）O和归纳
+情况（inductioncase）n.+1。每种情况分两列，一列对应等式左边，另一列对应等式右
+边。（若两列太宽写不下时，则一列接一列写。）化简等式每边表达式，直至两边化简到同
+一个表达式，即可完成证明的每种情况。括号中的理由exp.1和exp.2表示exp定义
+中的第一个和第二个等式。
+最后，注意到证明应用了3个定律，即
+(m+1)+n=(m+n)+1
+1*x
+(x*y)*z=x*(y*z)
+如果从零开始重建算术一
+一非常长的过程，那么这些定律也需要证明。事实上，只有第
+一个定律可以证明，因为它只涉及自然数，而且已定义了加法运算。后两个定律依赖于
+Haskell中类族Num的各种实例中乘法的实现。
+实际上，结合律最终转换为浮点数的结合律：
+ghci>(9.9e10*0.5e-10)*0.1e-10::Float
+4.95e-11
+ghci>9.9e10*(0.5e-10 *0.1e-10)::Float
+4.9499998e-11
+回顾科学记法的9.9e10表示9.9×101°。所以，尽管证明在数学上正确，但是其中
+112
+的一个等式至少在Haskell 中是不正确的。
+6.2列表归纳法
+每个有穷列表或者是空列表［，或者形如x：XS，其中xS是一个有穷列表。所以，
+要证明P（xs）对于所有有穷列表xs成立，需要证明：
+1.P（［）成立;
+2.对于任意x和任意有穷列表xs，假设P（xs）成立，则P（x：xs）成立。
+
+===== PDF 83 =====
+证明
+75
+作为例子，回顾串联（++）的定义：
+□ ++ ys
+=ys
+(x:xs) ++ ys =x : (xs ++ ys)
+现在证明++满足分配律，即对于所有有穷列表xS，所有列表ys和zS（注意不要
+求后两个列表是有穷的），下列等式成立。
+(Sz ++ S) ++ SX = SZ ++ (sA ++ $X)
+证明对xs使用归纳法：
+[]的情况
+Sz ++ (sA ++ )
+ ++ (ys ++ zs)
+={++.1]
+{++.1]
+ys ++ zs
+ys ++ z8
+x:xs的情况
+((xixs) ++ ys) ++ zs
+(x:xs)++ (ys ++ zs)
+[++.2]
+{++2]
+(x:(xs ++ ys)) ++ zs
+x:(xs ++ (ys ++ zs))
+-[++.2]
+【归纳假设】
+x:((xs ++ ys) ++ zs)
+x: ((xs ++ ys) ++ zs)
+再看一个例子。给定下列定义：
+reverse 
+reverse (x:xs) =reverse xs ++ [x]
+证明reverse是一个对合，即对于所有有穷列表xs下列等式成立。
+reverse (reverse xs)= xs
+递归的基本情况简单，容易验证。归纳情况证明如下：
+113
+X:Xs的情况
+reverse(reverse(x:xs))
+[reverse.2]
+reverse (reverse xs++[x])
+x:reverse (reverse xs)
+【归纳假设】
+等式右边的化简省略了，因为它本身就是x：xS。但是上面的证明过程中间被卡住了。
+这里需要一个辅助结果，即对于任意有穷列表ys下列等式成立。
+reverse (ys ++ [x]) = x:reverse ys
+这个辅助命题也可以用归纳法证明：
+[]的情况
+reverse (++ [x])
+x:reverse
+-{++.1]
+[reverse.1]
+reverse [x]
+[x] 
+=[reverse.2]
+
+===== PDF 84 =====
+第6章
+reverse  ++ [x]
+{reverse.1and++.1]
+[x]
+y:Ys的情况
+reverse((y:ys)++[x])
+x:reverse (y:ys)
+{++.2]
+[reverse.2]
+reverse (y:(ys ++ [x]))
+x:(reverse ys ++ [y])
+[reverse.2]
+[]++([]++)00
+【归纳假设】
+(x:reverse ys) ++ [y]
+= [++.2]
+114
+x: (reverse ys ++ [y])
+这就证明了辅助命题成立，所以主命题成立。
+非完整列表上的归纳
+非完整列表或者是无定义列表，或者形如x：xs，其中xS是非完整列表。因此，要
+证明P（xs）对于所有非完整列表成立，需要证明：
+1.P(undefined）成立;
+2.对于任意x和任意非完整列表xs，假定P（xs）成立，则P（x：xs）成立。
+作为例子，下面证明对于任意非完整列表xs和任意列表ys下列等式成立。
+xs++ys=xs
+undefined的情况
+undefined ++ ys
+{++.0]
+undefined
+x：xs的情况
+(x:xs) ++ ys
+{++.2]
+x:(xs ++ ys)
+=【归纳假设}
+每种情况中省略了等式右边的平凡化简。理由（++.0）表示（++）定义中失败的
+子句：因为串联是对左边参数模式匹配定义的，如果该参数无定义，则结果也无定义。
+无穷列表上的归纳
+115
+证明无穷列表的某个性质需要今后几章的内容做基础。无穷列表基本上可以理解为一
+个非完整列表序列的极限。例如，[0．.]是下面序列的极限。
+undefined,O:undefined,0:1:undefined,O:1:2:undefined,
+如果一个性质P满足，对于任意以xs为极限的序列xso，xs，…，当P（xsn）成立
+
+===== PDF 85 =====
+证明
+（对于所有n）时P（xs）也成立，则称性质P为链完全的（chaincomplete）。
+换句话说，如果P是链完全的性质，而且对于所有非完整列表（也可能包含所有有穷
+列表）成立，则性质P对所有无穷列表成立。
+许多性质是链完全的，例如：
+·所有等式el=e2是链完全的，其中el和e2是包含受全称量词约束自由变量的
+Haskell表达式；
+·如果P和Q都是链完全的，那么它们的合取PΛQ是链完全的。
+但是，不等式el≠e2不一定是链完全的，同样存在量词表示的性质也不一定是链完
+全的。例如，考虑断言：存在某个整数使得
+drop n xs =undefined
+这个性质对于所有的非完整列表显然是成立的，对于无穷列表显然不成立。
+下面是一个证明的例子。前面曾证明了对于所有的有穷列表xs和所有列表yS和
+zS，下列等式成立。
+(SZ++SA)++SX=Sz++(SA++SX)
+可以证明，这个链完全的性质可以推广到所有的列表xS。
+undefined的情况
+(undefined ++ys)++zs
+undefined ++ (ys ++ zs)
+-{++.0]
+-{++,0]
+undefined ++ zs
+undefined
+[0'++}  =
+undefined
+所以，++是列表上真正的可结合运算，不论列表是有穷的、非完整的还是无穷的。
+不过推广性质要格外小心。前面曾经证明了对于所有有穷列表有
+116
+reverse(reverse xs)=xs
+通过证明下面的额外情况，能否将等式推广到所有列表？
+undefined的情况
+reverse (reverse undefined)
+[reverse.0]
+undefined
+这种情况证明通过，但是等式仍然有问题，对于任意非完整列表xs，得到Haskell
+等式：
+reverse(reverse xs)=undefined
+是哪里出了问题？答案是，证明reverse的对合性用到了对于任意有穷列表ys的下列
+辅助结果：
+reverse (ys ++ [x]) =x:reverse ys
+这个等式并不是对所有列表成立，而且对于非完整列表ys确实不成立。
+由此得出reverse不是列表上的恒等函数。列表上的函数等式f=g表示对于所有
+
+===== PDF 86 =====
+78
+第6章
+列表xS，即有穷、非完整和无穷列表，等式fxs=gxs都成立。如果等式仅对有穷列
+表成立，则必须明确说明。
+6.3函数foldr
+下面的函数都有一个共同的模式：
+sum
+(x:xs)=x+sumxs
+concat
+concat (xs:xss)=xs ++ concat xss
+filterp
+filterp(xxs)=ifpxthenx:filterpxs
+117
+elsefilter p xs
+mapf]
+mapf(x:xs)=fx:mapfxs
+类似地，下列定律的归纳证明都有一个共同的模式：
+sum(xs++ys)
+=sumxs+sumys
+concat (xss ++yss)= concat xss ++ concat yss
+filterp(xs++ys)=filterpxs++filterpys
+map f (xs++ys)
+=mapfxs++mapfys
+难道不能将以上函数定义为一个更通用函数的特例，同样将以上定律定义为一个通用
+定律的特例？这样将会节省大量的重复劳动。
+函数foldr（从右边折叠）定义如下：
+q-[] -q-(q-q -) :: pto
+foldrfe
+foldrfe(x:xs)=fx(foldrfexs)
+为理解定义，考虑下例：
+foldr(@)e[x,y,z]=x@(y@(z@e))
+[x,y,z] = x : (y : (z : ))
+换句话说，foldr（@）e应用于一个列表的结果是将空列表用e代替，将（：）用（@）代
+替，然后对表达式求值。括号是右结合的，如函数名所指。
+由此即得，foldr（：）［]是列表上的恒等函数。更多的结果如下：
+sum
+=foldr(+)0
+concat
+=foldr(++)
+filterp=foldr(lxxs->ifpxthenx:xselsexs)
+mapf
+=foldr（().f)
+下列事实抓住了前面提到的各种等式：
+foldrfe(xs++ys)=foldrfexs@foldrfeys
+其中（@）是某个满足不同性质的运算。下面对xS进行归纳证明该等式。在证明过程中可
+118
+以发现f、e和（@）需要满足的性质。
+
+===== PDF 87 =====
+证明
+79
+[]的情况
+foldrf e(++ys)
+foldrf e@foldrf eys
+= [++,1]
+=[{foldr.1]
+foldr f eys
+e@foldr f e ys
+所以，需要的条件是，对于任意x，等式e@x=x成立。
+X:xs的情况
+foldr f e ((x:xs)++ys)
+= {++,2]
+foldr f e (x: (xs ++ ys)
+={foldr.2]
+fx (foldr fe(xs ++ys))
+归纳假设}
+fx(foldrfexs@foldrfeys)
+这种情况的右边简化为
+fx(foldrfexs)@foldrfeys
+所以，总的来说，需要下列等式：
+e@x
+fx(y@z)=fxy@z
+对于任意x、y和z成立。特别是，如果f=（@）并且（@）是与单位元e结合的，那么以
+上要求即可满足。由此即可证明：
+sum(xs++ys)
+=sumxs+sumys
+concat (xss ++ yss) = concat xss ++ concat yss
+对于map的定律，需要下面等式：
+$X = $x ++ 
+f x:(xs ++ ys) = (f x:xs)++ys
+这两个等式可以根据串联定义立即证明。
+对于filter的定律需要满足
+ifpxthenx:(ys++zs)elseys++zs
+(if pxthen x:ys elseys)++zs
+119
+根据串联和条件表达式定义，以上等式也成立。
+融合
+函数foldr最重要的性质是融合定律（fusionlaw）：
+f.foldrga=foldrhb
+只要其中的元素满足一定的性质。下面是两个简单的例子：
+doublesum=foldr((+)double)0
+lengthconcat=foldr((+)length)0
+实际上，已看到的许多定律是foldr融合律的特例。总之，融合律是列表上归纳法
+的预制包。
+
+===== PDF 88 =====
+80
+第6章
+至于融合律中需要什么条件，可以在融合律的归纳证明过程中发现。融合律是一个函
+数等式，所以需要证明等式对于所有有穷列表和非完整列表成立。
+undefine的情况
+f (foldrg aundefined)
+foldrhb undefined
+=(foldr.0]
+{foldr.0]
+f undefined
+undefined
+所以，第一个条件是，f必须是严格的。
+[]的情况
+f (foldrga)
+foldrhb
+={foldr.1]
+ (foldr.1]
+fa
+第二个条件是fa=b。
+X:Xs的情况
+f (foldrga (x:xs))
+foldrhb(x:xs)
+(foldr.2]
+[foldr.2]
+f (gx (foldrgaxs))
+hx(foldrhbxs)
+=【归纳假设】
+120
+hx(f (foldrgaxs))
+第三个条件是f（gxy）=hx（fy）对任意x和y成立。
+现在利用融合律来证明下列等式：
+foldrfa.mapg=foldrha
+注意到mapf=foldr（（：）：g）。检查融合律的条件，有下列等式：
+foldr f a undefined = undefined
+foldrfa
+所以，前两个融合条件满足。第三个条件是
+foldrfa(gx:xs)=hx(foldrfaxs)
+左边化简为
+f (g x) (foldr f a xs)
+所以，定义hxy=f（gx）Y，更简洁的表示是h=f．g。因此，得到有用的规则：
+foldrfa.mapg=foldr(f.g)a
+特别是
+double.sum =sum.map double
+=foldr((+).double)0
+length.concat=sum.map length
+=foldr((+)length)0
+融合律的其他简单结论将在习题中讨论。
+一种变形
+有时候处理列表是很头疼的事。例如，空列表的最小元素是什么？为此，Haskell提
+
+===== PDF 89 =====
+证明
+供了foldr的另一种形式，称为foldrl，该函数仅定义在非空列表上。函数foldr1
+的Haskell定义如下：
+- [e] - ( <-  - ) :: Tpto]
+foldri f [x]
+=X
+foldri f (x:xs)=f x (foldr1 f xs)
+121
+因此，可以定义：
+minimum,maximum :: Drd a =>
+[a] -> a
+minimum =foldrl min
+maximum=foldr1 max
+而且避免了两个显式递归。事实上，这里fo1dr1的定义不是它的最通用定义，这个问题
+留在习题中讨论。
+6.4-函数foldl
+回顾等式
+foldr(@)e[w,x,y,z] =w@(x@(y@(z@e)))
+有时候对右边更方便的模式是
+(((e @w) @ x) @y) @z
+这种计算模式由函数foldl（从左边折叠）概括如下：
+q-[]-q(q--):
+foldlfe
+foldlfe(x:xs)=foldlf(fex)xs
+例如，假定已知一个串，如表示一个实数1234.567的串，需要求出它的整数部分和
+小数部分。可以定义：
+ipart ::String->Integer
+ipart xs=read (takewhile (/=.)xs)::Integer
+fpart :String ->Float
+fpartxs=read("o":dropWhile(/=,xs)::Float
+其中使用了类族Read的方法read。顺便指出，.567不是Haskell的合式文字。为了避免
+与函数复合运算符混淆，在小数点前后都至少应该有一个数字。例如：
+ghci>:t3.4
+另外一种定义是
+122
+parts :: String -> (Integer,Float)
+parts ds = (ipart es,fpart fs)
+where (es,d:fs)=break (==,)ds
+ipart
+=foldl shiftl o.maptoDigit
+whereshiftl n d=n*io+d
+fpart
+=foldr shiftr omap toDigit
+whereshiftrdx=(d+x)/10
+toDigitd=fromIntegral(fromEnumd-fromEnumo')
+因为
+
+===== PDF 90 =====
+82
+第6章
+1234=1×1000+2×100+3×10+4
+=(((0×10+1)×10+2)×10+3)×10+4
+0.567=5/10+6/100+7/1000
+=(5+(6+(7+0)/10)/10)/10
+所以，使用foldl取得整数部分和使用foldr得到小数部分都得到了展示。
+再如，函数reverse由如下等式定义：
+reverse
+reverse (x:xs)= reverse xs ++ [x]
+我们现在学到了更聪明的方法，可以定义：
+reverse = foldr snoc 
+where snocxxs=xs++[x]
+但是，一知半解是危险的：reverse的两个定义都很糟，因为求长度为n的列表的
+逆均需要n²步。更好的定义是
+reverse=foldl(flip（:))
+其中f1ipfx=fx。现在列表求逆的新定义是线性的：
+foldl（flip（:))[1,2,3]
+=foldl(flip（:))（1:)[2,3]
+=foldl（fiip（:)）（2:1:[）[3]
+=foldl(flip（:)）（3:2:1:□)
+=3:2:1:
+123
+计算过程似乎有点复杂，但是这个新定义涉及一个完整的工作原理，将在第7章介绍。
+如本例所示，函数foldr和foldl具有下列关系，对于任意有穷列表xs有
+foldlfexs=foldr(flipf)e(reversexs)
+foldr f e xs=foldl (flip f) e (reverse xs)
+证明留作习题。注意对有穷列表的限制，当xS为工时，等式两边均为工。这也表明，证
+明必须依赖于一个只对有穷列表成立的辅助性质。
+下面是函数foldr和foldl的另一种关系：对任意有穷列表xs，如果
+(x<>y) @z=x<> (y @z)
+e@x
+则有
+foldi ()exs =foldr(<>)exs
+证明留作习题。作为这个定律的应用演示，假定（<>）=（@），而且（@）与单位元e可
+结合。那么两个条件都成立，所以可以断言：对于任意有穷列表，如果（@）与单位元e可
+结合，那么
+foldr(@)exs=foldl(@)exs
+特别是，对于任意有穷列表xsS，下列等式成立：
+concat xss=foldr(++)xss=foldl(++)xss
+如果xSS是无穷列表，那么两个定义是不同的：
+
+===== PDF 91 =====
+证明
+83
+ghci>foldl（++)[[i]
+Interrupted.
+ghci>foldr (++) [[i] | i<- [1..]]
+[1,2,3,4,{Interrupted]
+对于第一个表达式，GHCi陷人长久沉默，计算被“终止程序运行”键中断。对于第二个
+表达式，GHCi开始输出一个无穷列表。所以，使用fo1dr的定义在无穷列表上可行，但
+是另一个不可行。但是，或许使用foldl定义的concat在所有列表有穷时效率更高。
+为了回答这个问题，观察下面的计算：
+foldr(++)[xs,ys,us,vs]
+((( ++ SA) ++ Sn) ++ SA) ++ SX =
+124
+foldl(++)[xs,ys,us,vs]
+= (((( ++ xs) ++ ys) ++ us) ++ vs)
+假设以上计算中每个列表的长度都是几，那么右边的第一个表达式需要4n步完成所有
+串联，而第二个表达式需要0+n+（n+n）+（n+n+n）=6n步才能完成所有串联。这足
+以说明问题，至少到目前为止。
+6.5
+函数scanl
+函数scanlfe将foldlfe应用于一个列表的每个前缀。例如：
+ghci> scanl (+)0 [1..10]
+[0,1,3,6,10,15,21,28,36,45,55]
+该表达式计算列表前10个正整数的流动和（runningsum）：
+[0，0+1，（0+1)+2，（(0+1)+2)+3，（((0+1)+2)+3)+4，.J
+函数scanl的说明是
+[q]-[]-q-(q--):ueo
+scanl f emap(foldl f e).inits
+inits ::[a]->[[a]]
+initsD
+inits(x:xs)=:map(x:)(initsxs)
+例如：
+ghci> inits "barbara"
+["","b","ba","bar","barb","barba","barbar","barbara"]
+函数inits在模块Data.List中定义。
+但是，在长度为n的列表上，scanlf的这个定义计算f的次数是
+0+1+2+...+n=n(n+1)/n
+能给出更好的定义吗？是的，通过某种归纳证明可以找到一种更好的定义，只是不清楚要
+证明的是什么！
+125
+[]的情况
+scanlfe
+= 【定义]
+map(foldlf e)(inits)
+-(inits.1]
+map (foldl f e)[
+
+===== PDF 92 =====
+第6章
+(map.1和map.2]
+[foldife]
+= {foldl.1]
+[e]
+因此，已经证明了scanlfe［]=［e]。
+X：XS的情况
+scanl f e (x:xs)
+ [定义]
+map(foldl fe)(inits(x:xs))
+[inits.2]
+map(foldlfe)(:map(x:)(initsxs))
+【map.1和map.2]
+foldlfe:map(foldlfe(x:))(initsxs)
+[foldl.1]
+e:map(foldlfe.(x:))(initsxs)
+【要求：foldlfe.(x:)=foldlf(fex))
+e:map(foldl f(fex))(initsxs)
+=[scanl的定义]
+e:scanlf(fex)xs
+证明中要求的条件是fold1的显然结论。因此，总结起来，已经证明了：
+scanlfe 
+= [e]
+scanl f e (xixs)=e:scanl f (f e x) xs
+126
+这个定义只需要计算线性次数的士。
+以上所做的是通过程序计算（programcalculation）优化函数的一个例子。Haskell令人
+兴奋的一点就是完全可以完成这样的任务，而不必另外引人一种不同的逻辑语言对程序
+推理。
+不过，引导库中scanl的定义稍有不同：
+scanlfexs=e:(casexsof
+x:xs -> scanl f (f e x)xs)
+在我们的定义中scanlfeundefined=undefined，而对于引导库函数定义有
+scanl f e undefined = e:undefined.
+原因是在定义中，两个子句的右边都是e开始的列表，对这个事实无需知道左边是什么，
+而且惰性计算令人无需多问。
+库函数定义还使用了case表达式。本书极少用这种表达式，故不做详细介绍。
+Haskell允许用许多方法表达同一件事。
+6.6最大连续段和问题
+下面是另一个程序计算的例子。最大段和（maximumsegmentsum）问题是一个有名
+的问题，其历史在J.Bentley的《ProgrammingPearls》（1987）中有描述。给定一个整数序
+列，要求计算序列中所有段（segment）的和的最大值。一个段也称为一个连续子序列
+
+===== PDF 93 =====
+证明
+85
+（contiguous subsequence）。例如，对序列［-1，2，-3，5，-2，1，3，-2，-2，-3,
+6]，其最大段和是7，它是［5，-2，1，3］的和。另一方面，序列［-1，-2，-3］的
+最大段和是0，因为空序列是每个列表的段，其和是0。由此可得，最大段和总是非负的。
+这个问题可以如下说明：
+mss::[Int]->Int
+127
+其中segments返回一个列表的所有段构成的列表。这个函数有多种定义方法，包括：
+segments=concat.map inits.tails
+其中tails是inits的对偶，它返回一个列表的所有尾段：
+tails[a]->[[a]
+tails
+tails(x:xs)=(x:xs):tailsxs
+segments的定义描述了取得所有尾段的首段的过程。例如：
+ghci> segments"abc!
+["","a","ab","abc","","b","bc","","c",""]
+其中空列表出现了4次，对每个尾段出现一次。
+在长度为n的列表上直接计算mss需要的步数正比于n。因为总共有n²个段，每个
+段求和需要n步，所有总共需要n3步。求解这个问题是否可以做得比三次方更好，没有
+明显的答案。
+但是，看看程序计算会给出什么样的指引。首先安装segments的定义：
+maximum.mapsum.concat.map inits.tails
+查看可以使用的定律，发现
+mapf,concat=concat.map (map f)
+可以应用到中间的项mapsum：concat。由此得到
+maximum.concat:map(map sum).map inits.tails
+现在可以使用定律mapf。mapg=map（f．g），得到
+maximum，concat:map(mapsum:inits).tails
+对了，还可以使用定律：
+maximum.concat=maximum.mapmaximum
+是不是？不是的，除非concat的参数是非空列表的非空列表，因为空列表的最大值是没
+有定义的。对于目前的例子，这个定律成立，因为inits和tails均返回非空列表。由
+此得到
+128
+maximum.map(maximum.mapsuminits).tails
+下一步将使用6.5节描述的scan1的性质，即
+map sum:inits=scanl(+)0
+由此得到
+
+===== PDF 94 =====
+86
+第6章
+maximum.map(maximum.scanl(+)o),tails
+现在我们已经将n算法简化到n²算法，所以已经取得了进展。现在看似卡住了，因
+为在我们的兵器库里没有定律可用。
+下一步明显地有关maximum：scanl（+）0。所以，先来看看对下列式子能证明
+什么。
+foldr1 max.scanl (+)0
+这个式子看起来像融合律，但是scanl（+）O能够用foldr表达吗？是的，例如：
+scanl(+)0[x,y,z]
+=[0,0+x,(0+x)+y,((0+x)+y)+z]
+=[0,x,x+y,x+y+z]
+= O:map (x+)[0,y,y+z]
+=O:map(x+)(scanl(+)0[y,z])
+这些计算显示了（+）的结合律以及0是（+）的单位元。更一般地，这些结果提示我们只
+要（@）是可结合的，有单位元e，那么
+scanl (@) e=foldrf [e]
+wherefxxs=e:map(x@)xs
+让我们承认这个定律，继续寻找使得下式成立的条件：
+foldr1(<>)foldrf[e]=foldrhb
+wheref xxs=e:map(x@)xs
+显然foldrl（<>）是严格的，而且foldrl（<>）［e］=e，故有b=e。接下来需
+要检查融合律的第三个条件是否满足：对所有x和所有xs，需要h满足
+foldr1(<>)(e:map(x@)xs)=hx(foldr1(<>)xs)
+129
+等式的左边化简为
+e<>(foldr1(<>)(map(x@)xs))
+取单元素的情况xs=［y]，发现
+hxy=e<>(x@y)
+这个结果给出h的定义，但是仍然需要检查下列等式是否成立。
+foldr1(<>)(e:map(x@)xs)=e<>(x@foldr1(<>)xs)
+将等式两边化简，该等式成立的条件是
+foldr1(<>).map(x@)=(x@).foldr1(<>)
+最后一个等式成立的条件是（@）对于（<>）可分配，也就是
+x@(y<>z)=(x@y)<>(x@z)
+证明留作习题。
+加法对（二元）取最大运算可分配吗？是的：
+(z+x)xeu(4+x)=(zxeu)+x
+(+)(+)=(Z)+
+再返回到最大段和问题。已经得到了
+
+===== PDF 95 =====
+证明
+87
+maximum.map(foldr(@)o).tails
+wherex@y=omax(x+y)
+得到的这个结果看似很像6.5节scan1定律的一个特例，只是这里使用了foldr而不是
+foldl，还使用了tails，而不是inits。但是，进行与scanl类似的计算显示
+map (foldr f e).tails = scanr f e
+其中：
+[q] - [e - q-(q - q-   ues
+scanrfe
+=[e]
+scanr f e (x:xs)=f x (head ys):ys
+where ys = scanr f e xs
+函数scanr在标准引导库也有定义。总之，有
+mss=maximumscanr()0
+wherex@y=o"max(x+y)
+该结果是求最大段和的线性时间解。
+130
+6.7
+习题
+习题A第3章定义了自然数乘法。下面是稍有区别的定义：
+mult ::Nat ->Nat ->Nat
+mult Zero y=Zero
+mult(Succx)y=mult xy+y
+请证明mult（x+y）z=multxz+multyz。证明只能利用x+o=x和（+）满足
+结合律的事实。所以，需要好好考虑，3个变量X、Y和z中，在哪个变量上归纳最好。
+习题B证明：对于所有的有穷列表xS和YS，有
+reverse (xs ++ ys) = reverse ys ++ reverse xs
+可以假设（++）满足结合律。
+习题C还记得在第2章习题D中出现的朋友EagerBeaver和LazySusan吗？Susan喜
+欢使用head：mapf，而Beaver更中意f.head。等一等！这两个表达式相等吗？请用
+归纳证明验证。
+习题D回顾第5章的笛卡儿积函数cp：：［［a]］->［［a］]。用适当的f和e给
+出形如cp=foldrfe的定义。如果读者愿意的话，可以使用列表概括表示函数f。
+本习题接下来的任务有关下面恒等式的证明：
+length .. cp =product . map length
+其中product返回一个数值列表元素的乘积。
+1.使用融合定律将1ength：cp表示成foldr的特例。
+2.将maplength表示成foldr的特例。
+131
+3.再一次利用融合定律将product，maplength表达成foldr的特例。
+4.检查两个结果应是相等的。如果不相等，那么cp定义有错误
+习题Efoldr的前两个参数是列表的两个构造函数的替代物：
+
+===== PDF 96 =====
+88
+第6章
+(:)  a -> [a] -> [a]
+~ [a]
+折叠函数可以在任何数据类型上定义：只需将数据类型的构造函数用参数代替即可。例
+如，考虑下面的数据类型：
+data Either a b =Lefta IRight b
+要定义折叠函数，需要替换下列构造函数：
+Left::a->Eitherab
+Right ::b ->Either ab
+由此得到定义：
+foldEfg(Leftx)=fx
+foldE f g (Right x)=gx
+类型Either不是递归类型，所以foldE也不是递归函数。事实上，foldE是一个标准
+引导库函数，只是函数名为either，不是foldE。
+接着为下列类型定义折叠函数。
+data Nat = ZeroISuccNat
+data NEList aOne al Cons a (NEList a)
+第二个定义引人非空列表。
+请问Haskell的foldr1有什么问题？
+习题F证明：对于任意有穷列表xS，下列等式成立。
+foldl f e xs =foldr (flip f) e (reverse xs)
+132
+再证明，如果下列条件成立：
+(x<>y)@z=x<>(y@z)
+e@x
+=x<>e
+那么对于所有有穷列表xs下面等式成立：
+foldl(@)exs=foldr(<>)exs
+习题G
+利用等式：
+foldl fe(xs++ys)=foldl f (foldl f e xs)ys
+foldrfe(xs++ys)=foldrf(foldrfeys)xs
+证明下列等式：
+foldl fe.concat=foldl(foldl f)e
+foldr f e.concat=foldr(flip(foldrf))e
+习题H在数学上，下列式子的值是什么？
+sum(scanl(/)1[1..)
+习题I由下面的说明计算scanr的有效定义。
+scanr fe=map(foldrfe):tails
+习题J考虑下面的计算问题：
+
+===== PDF 97 =====
+89
+mss::[Int]->Int
+mss=maximum.map sum,subseqs
+其中subsegs返回一个列表的所有子序列，包括它本身：
+subseqs::[a]->[[a]]
+subseqs
+[]=
+subseqs(x:xs)=xss++map(x:)xss
+wherexss=subseqsxs
+求mss的更高效定义。
+133
+习题K本习题的问题比较零散。
+1.函数takePrefixp应用于列表xs，返回xs的满足p的最长前缀。因此
+请问下列表达式的值是什么？
+takePrefixnondec[1,3,7,6,8,9]
+takePrefix(alleven)[2,4,7,8]
+请完成下列等式右边部分。
+takePrefix(all p)=:.
+请用标准函数，包括inits给出takePrefix的定义。
+本题最后将会讨论takePrefix。
+2.函数one和ones由下列方程定义：
+one x=[x]
+nonex=
+请完成下列恒等式的右边部分。
+none.f
+mapf,none=
+mapf.one
+3.回顾定义fork（f，g）×=（fx，gx），完成下面恒等式。
+fst.fork(f,g)=
+snd.fork (f,g) =
+fork(f,g).h
+4.定义：
+testp(f,g)x=ifpxthenfxelsegx
+请完成下列式子右边部分。
+testp(f,g).h
+h.testp(f,g)
+函数filter可以定义为
+134
+filterp=concat.map(testp(one,none))
+使用以上恒等式以及其他标准恒等式，利用等式推理证明下列等式。
+filterp=mapfst.filter snd.map (fork(id,p))
+（提示：像常见的计算一样，从较复杂的一边开始。）
+
+===== PDF 98 =====
+第6章
+90
+5.回顾第4章习题K答案中标准引导库函数curry和uncurry的定义：
+ - q-  - ( - (q')) :: 
+curryfxy=f (x,y)
+uncurryf(x,y)=fxy
+请完成下式右边部分。
+map(fork(f,g))=uncurryzip:(??)
+6.再返回takePrefix，请利用等式推理计算下列表达式的有效程序。
+takePrefix (p :foldl f e)
+要求的应用次数是线性的。
+6.8答案
+习题A答案
+证明对y进行归纳：
+0的情况
+mult (x+0) z
+multxz+multoz
+【因为x+0=x}
+{mult.1]
+multxz
+multxz+o
+[因为×+0=x)
+135
+multxz
++1的情况
+mult(x+(y+1))z
+multxz+mult(y+1)z
+【因为(+)满足结合律}
+[mult.2]
+mult ((x+y)+1)z
+multxiz+(multyz+z)
+mult.2]
+【因为(+)满足结合律)
+mult (x+y)z+ z
+(multxz+multyz)+z
+[归纳假设】
+(multxz+multyz)+z
+习题B答案
+证明对xs归纳：
+[]的情况
+reverse (++ys)
+reverse ys ++ reverse 
+{++.1]
+[reverse.1]
+reverse ys
+reverse ys ++ 
+【因为xs ++[ =xs]
+reverse ys
+x:xs的情况
+reverse ((x:xs)++ys)
+={++.2]
+reverse (x: (xs++ys))
+=[reverse.2]
+reverse (xs++ys)++ [x]
+【归纳假设】
+(reverse ys ++ reverse xs) ++ [x]
+
+===== PDF 99 =====
+证明
+91
+另一边的化简：
+reverse ys ++ reverse (x:xs)
+[reverse.2]
+reverse ys ++ (reverse xs ++ [x])
+【根据（++)的结合律)
+(reverse ys ++ reverse xs) ++ [x]
+136
+习题C答案
+我们必须证明对于所有的列表（有穷、非完整和无穷列表）都有下列
+等式成立。
+head (mapfxs)=f(head xs)
+对于undefined的情况和归纳情况x：xs容易验证，但是对于［]的情况，得到
+head (map f)=head=undefined
+f(head)
+=f undefined
+因此，该定律只有当f是严格函数时成立。EagerBeaver不介意这个问题，因为它只构造
+严格函数。
+习题D答案
+可定义：
+cp=foldrop[]
+whereopxsxss=[x:ysx<-xs,ys<-xss]
+l.length：cp=foldrhb成立的条件是length是严格的（是的），而且下列
+等式成立。
+length[]=b
+length(opxsxss)=hxs(lengthxss)
+由第一个等式得出b=1，因为
+length(opxsxss)=lengthxs*lengthxss
+由第二个等式得出h=（*）．length。
+2.maplength=foldrf[l，其中fxsns=lengthxs:ns。更短的定义是
+f =(:).length。
+3.product.maplength=foldrhb，只要product是严格的（是的）而且
+下列等式成立。
+product =b
+product (length xs:ns)=h xs (product ns)
+由第一个等式得出b=1，因为
+product (length xs:ns) =length xs *product ns
+由第二个等式得出h=（*）：1ength。
+4.h和b的定义是一样的。
+137
+习题E答案
+foldaN的定义是直接的：
+ -4en -  -( - ) :: npto
+foldN f eZero
+=e
+foldNfe(Succn)=f(foldNfen)
+
+===== PDF 100 =====
+第6章
+特别是
+m+n=foldNSuccmn
+m*n=foldN(+m)Zeron
+mn=foldN(*m)(SuccZero)n
+对于非空列表，foldNE的定义是
+foldNE fg (Onex)
+=gx
+foldNE fg (Consxxs)=fx (foldNE fg xs)
+作为非空列表上的合理折叠，foldr1的正确定义应该是
+q-[e] -(q-e)-(q-q-e)Tapto
+foldr1 f g [x]
+=gx
+foldrifg(x:xs)=fx(foldrifgxs)
+Haskell的foldr1定义限制g为恒等函数。
+习题F答案为简洁起见，记g=f1ipf。采用归纳法证明，对于任意的有穷列表
+xs 有
+foldl fexs =foldrg e (reverse xs)
+[]的情况
+foldl f e
+foldr ge (reverse )
+{foldi.1]
+[reverse.1]
+foldr g e 
+={foldr.1]
+138
+x：xs的情况
+foldl f e (x:xs)
+={foldl.2]
+foldlf(fex)xs
+【归纳假设】
+foldr g (f e x) (reverse xs)
+另一边的化简：
+foldr g e (reverse (x:xs))
+[reverse.2]
+foidr g e (reverse xs ++ [xl)
+【需要的条件见下
+foldr g (foldr g e [xl) (reverse ixs)
+[因为foldr (flipfe[x]=fex)
+foldr g (f e x) (reverse xs)
+需要的条件是
+foldrfe(xs++ys)=foldrf(foldrfeys)xs
+证明留给读者做练习。另外，一个相伴的结果是
+foldlfe(xs++ys)=foldlf(foldlfexs)ys
+
+===== PDF 101 =====
+证明
+93
+证明也留作练习。
+采用归纳法证明，对于任意有穷列表xS，下列等式成立。
+foldl(@)exs=foldr(<>)exs
+基本情况的证明容易。归纳情况的证明如下：
+x:xs的情况
+foldl(@)e(x:xs)
+foldr(<>)e(x:xs)
+{foldl.2]
+{foldr.2]
+foldl(@)(e @x)xs
+x <> foldr(<>) e xs
+[假定e@x=x<>e}
+=【归纳假设】
+foldi(@)(x<>e)xs
+x<>foldl.(@)exs
+139
+两边化简结果不同。需要另一个归纳假设：
+foldl(@)(x<>y)xs=x<>foldl(@)yxs
+基本情况的证明简单。归纳情况的证明如下：
+z:zs的情况
+foldl (@)(x <> y)(z:zs)
+={foldl.2]
+foldl (@) ((x<> y)
+@ z)
+zs
+[因为（x<>
+(y @ z))
+foldl (@)
+(y
+z))
+(x
+【归纳假设]
+x<>foldl (@)
+(y @ z)
+另一边的化简：
+x<>foldi(@)y(z:zs)
+{foldl.2]
+x<>foldl(@)(y@z)zs
+习题G答案用归纳法证明。基本情况的证明简单。归纳情况的证明如下：
+foldl f e (concat(xs:xss))
+[concat的定义]
+foldlfe (xs++concatxss)
+[foldl的给定性质]
+foldlf(foldlfexs)(concatxss)
+=【归纳假设】
+foldl (foldlf)(foldifexs)xss
+[(foldl 的定义]
+140
+foldl (foldi f)e(xs:xss)
+另一边的化简：
+foldrfe(concat(xs:xss))
+=[concat的定义]
+foldrf e (xs++ concat xss)
+{foldr的给定性质]
+foldrf (foldr f e (concatxss))
+【使用flip】
+
+===== PDF 102 =====
+94
+第6章
+flip(foldrf)xs (foldrf e(concatxss))
+【归纳假设】
+flip (foldr f)xs (foldr(flip(foldrf))exss)
+[foldr的定义]
+foldr(flip(foldrf))e(xs:xss)
+习题H答案
+数学上表达为
+sum(scanl(/)1[i..J)=e
+因为1/n！=e。从计算的角度讲，用有穷列表[1..n]代替[1..]给出e的一个逼近。
+n=0
+例如：
+ghci>sum (scanl (/) 1 [1..20])
+2.7182818284590455
+ghci> exp 1
+2.718281828459045
+标准引导库函数exp的输人为一个数x，返回值为e。此外，引导库函数1og的输
+入为一个数x，返回值为log.x。如果需要其他底的对数，使用函数1ogBase，其类型为
+习题1答案分情况合成一个更高效的定义。基本情况是
+141
+scanr f e  = [e]
+归纳情况x：xs是
+scanrfe(x:xs)
+【根据说明】
+map (foldr f e)(tails (x:xs))
+{tails.2]
+map (foldr f e)((x:xs):tails xs)
+【map的定义
+foldr f e (x:xs):map (foldr f e)(tails xs)
+[foldr.2以及说明]
+f x (foldr fexs):scan f e xs
+=(要求:foldrf exs=head(scanrfexs))
+fx (head ys):ys where ys scanrf e xs
+习题J答案首先，有
+subseqs =foldr op []
+whereopXxss=xss++map(x:)xss
+利用融合定律得到
+map sumsubseqs=foldr op [o]
+whereopxxs=xs++map(x+)xs
+再利用融合定律得到
+maximum.mapsum.subseqs=foldrop0
+这个定义效率不错。当然，sum：filter（>o）也可给出结果。
+
+===== PDF 103 =====
+证明
+95
+习题K答案
+1．表达式的值是
+takePrefixnondec[1,3,7,6,8,9]=[1,3,7]
+takePrefix(all even)[2,4,7,8]=[2,4]
+恒等式为
+takePrefix (all p)takewhilep
+142
+说明为
+takePrefix p=last.filter p.inits
+2.恒等式为
+none.f
+= none
+mapfnone=none
+mapf.one
+one.f
+3.恒等式为
+fst..fork (f,g)=f
+snd.fork(f,g)=g
+fork(f,g).h
+=fork (f.h,g.h)
+4.等式为
+testp(f,g).h=test(p.h)(f.h,g.h)
+h.testp(f,g)=testp(h.f,h.g)
+推理如下：
+mapfst.filter snd.map(fork(id,p))
+【filter的定义]
+map fst.concat.map(test snd(one,none))
+map(fork(id,p))
+{因为mapf.concat=concat.map(mapf))
+concat.map(mapfst..testsnd(one,none)
+fork(id,p))
+【test的第二条定律；one和none的定律］
+concatmap(test snd (one.fst,none)
+fork(id,p))
+【test的第一条定律；fork的定律】
+concatmap(testp(one.id,none.fork(id,p)))
+[id和none的定律]
+concat,map (testp(one,none))
+[filter的定义]
+filter p
+143
+5.等式为
+map (fork (f,g))
+=uncurryzip.fork(mapf,mapg)
+6.推理如下：
+filter(p.foldl f e)inits
+[filter的导出定律]
+
+===== PDF 104 =====
+96
+第6章
+mapfst.filtersnd.
+map(fork(id,p.foldlfe)).inits
+=【zip的定律】
+map fst.filter snd.uncurryzip.
+fork(id,map(pfoldlfe)).inits
+=fork的定律］
+map fst.filter snd.uncurry zip.
+fork(inits,map (p.foldl f e)inits)
+（scan引理]
+map fst.filter snd.uncurry zip.
+fork (inits,mapp.scanl f e)
+因此
+takePrefix (p.foldl f e)
+=fst.last.filtersnd.uncurry zip
+fork(inits,mapp,scanlfe)
+6.9
+注记
+Gofer是较早由MarkJones设计的一个Haskell版本，命名来自于GOodForEquational
+Reasoning。HUGS（TheHaskellUsersGoferSystem）是GHCi的早期版本，也是本书第2版
+使用的系统，但是目前系统已不再维护。
+许多人对于理解函数程序中的定律做出了贡献，不好一一列出。下列Haskellwiki网页
+含等式推理的例子和有关的讨论链接：
+haskell. org/haskellwiki/Equational_reasoning_examples
+关于最大段和问题的有趣历史的讨论，参考Bentley编写的《ProgrammingPearls》
+144
+(second edition）（Addison-Wesley，2000)。

@@ -1,0 +1,396 @@
+
+===== PDF 41 =====
+1第3章
+Thinking Functionally with Haskell
+Haskell中的数比较复杂，因为Haskell世界有许多不同类型的数，包括：
+Int
+有限精度整数，至少包含范围［-229，229），整数溢出不被检测
+Integer
+任意精度整数
+Rational
+任意精度有理数
+Float
+单精度浮点数
+Double
+双精度浮点数
+Complex
+复数（定义在Data.Complex中）
+大多数程序以各种方式使用数，所以必须理解Haskell提供了哪些数，以及这些不同
+类型的数如何转换。这便是本章讨论的内容。
+3.1
+类族Num
+Haskell的所有数都是类族Num的实例：
+class(Eqa,Showa)=>Numawhere
+(+),(-),(*) :: a -> a -> a
+negate
+B a->a
+abs,signum ::a->a
+fromInteger::Integer->a
+类族Num是类族E和Show的子类族。这表示每个数都可以被打印，任意两个数都
+可以比较是否相等，任意数都可以与另一个数值相加、相减和相乘，任意数都可以取反。
+49
+Haskell允许用-x表示negatex，这也是Haskell中唯一的一个前缀运算符。
+函数abs和signum返回一个数的绝对值和符号。如果允许在Num中有次序运算
+（实际上在Num中没有次序运算，因为复数不能排序），那么就可以定义：
+absx=ifx<othen-xelsex
+signumx|x<0=-1
+1x0=0
+1x>0=1
+函数fromInteger是一个转换函数。一个整数值如42表示fromInteger在类型
+Integer的一个适当值上的应用，所以这样的数字具有类型Numa=>a。待下面介绍
+了数的其他类族和类族之间的转换后再来介绍这种选择
+3.2其他数值类族
+类族Num有两个子类族
+实数和分数：
+class(Num a,Orda)=>Real awhere
+toRational ::a ->Rational
+
+===== PDF 42 =====
+第3章
+class (Num a)=>Fractional a where
+(/)a->a->a
+fromRational :: Rational ->a
+实数可以比较大小。类族Real除了从超类族Ord继承的比较运算外，只有一个新的
+方法，即该类族元素到Rational元素的转换函数。类型Rational本质上是整数对的
+同义词。实数π不是有理数，所以toRational只能将其转换成一个近似的有理数：
+ghci>toRational pi
+884279719003555%281474976710656
+50
+并不像22%7那样好记，但是更精确。符号%用来分离一个有理数的分子和分母。
+分数是定义了除法的数的集合。一个复数不可能是实数，但可以是分数。一个浮点数
+如3.149表示fromRationa1在某个适当的有理数上的应用。所以
+3.149::Fractional a =>a
+这个类型和前面的42的类型Numa=>a解释了为什么可以构造像42+3.149这样一
+个整数和一个浮点数相加的合法表达式。两个类型都是类族Num的成员，而且所有的数
+都可以相加。考虑
+ghci>:type42+3.149
+42+3.149::Fractionala=>a
+这表示相加的结果还是一个分数。
+实数的一个子类族是整型数，该类族的简化定义如下：
+class (Real a, Enum a) => Integral a where
+divMod ::a -> a->(a,a)
+toInteger :: a -> Integer
+类族Integral是Enum的一个子类族，而Enum的类型是其元素可以顺序枚举的类
+型。每个整型数可以用toInteger转换为一个Integer。这也说明可以用两步将一个
+整型数转换为任意其他类型：
+fromIntegral ::(Integral a,Num b)=>a ->b
+fromIntegral =fromInteger .toInteger
+运算divMod返回两个值：
+xdivy=fst(xdivMody)
+标准引导库函数fst和snd返回一个二元组的第一个分量和第二个分量：
+fst ::(a,b)->a
+fst(x,y)=x
+snd::(a,b)->b
+51
+snd (x,y)=y
+数学上，xdivy=Lx/y。将在3.3节看到如何计算LxJ。xmody的定义如下：
+x=(xdivy)*y+xmody
+对于整数α和y，有o<=×'mod'<。
+回顾第1章的函数digits2，当时定义了
+
+===== PDF 43 =====
+35
+digits2n=(ndiv10,nmod10)
+更高效的定义是digits2n=ndivMod1o，因为这里只需要执行一次divMod运
+算。更简洁点，可以利用部分运算，写成digits2=（divMod1o）。
+Haskell还有其他的数值类族，包括Frational的子类族Floating，其中包含对数
+函数和三角函数。但是，这些已经够用了。
+3.3取底函数的计算
+值Lx表示x的底（floor），定义为满足m≤x的最大整数m。定义一个函数f1loor：：
+Float->Integer计算数的底。Haskell在标准引导库中提供了这个函数，不过给出我
+们自己的定义有指导意义。
+一个叫CleverDick（聪明的迪克）的学生拿到问题后给出下面的解：
+floor ::Float -> Integer
+floor =read.takewhile (/=.").show
+用语言来叙述：将输入的数显示成串，截取小数点前的字串，然后将结果读成一个整数。
+我们还没有遇到takeWhile，显然CleverDick知道这个函数。CleverDick的解在一些情
+况下是错的，习题D要求读者列出这些情况。
+我们将借用一个显式的查找求一个数的底，为此需要一个循环：
+untilpfx=ifpxthenxelseuntilpf(fx)
+函数unti1也是由标准引导库提供的。下面是一个例子：
+52
+ghci>until (>100)(*7)1
+343
+本质上untilfpx计算下列无穷列表中满足py=True的第一个元素：
+[x,fx,f(fx),f(f(fx)),.]
+关于until的精确解释参见第4章。
+现在考虑f1oor的设计，不禁想分情况考虑，区别x<0和x≥0两种情况。对于
+x<0，需要在序列-1，-2，.中找到满足m≤x的第一个整数m。由此得到参数为负数
+时的定义：
+floorx=until(leqx)(subtract1)(-1)
+wheremleqx=fromIntegerm<=X
+这个定义中有几点需要注意。第一，引导库函数subtract的使用，其定义为
+subtractxy=y-x
+必须使用subtract1，因为（=1）不是部分应用，而是数-1（until的第三个参数）。
+第二，为什么使用了1eq而没有使用看似完全适合的（<=）？答案是（<=）具有下
+列类型：
+TOOg -  -  <=  1O :: (=>)
+特别是，（<=）的两个参数具有相同的类型。但是想要的是
+
+===== PDF 44 =====
+36
+第3章
+leq ::Integer ->Float ->Bool
+其中两个参数具有不同的数值类型。因此，需要使用fromInteger将整数转换为浮点
+数。搞懂在某些情况下需要转换函数是理解Haskell算术的关键点。
+第三，注意（leqx）与（leqx）不同：
+(leqx)y=leqxy
+(leqx)y=y"leqx=leqyx
+这里容易出错。
+如果不喜欢辅助定义，那么总是可以写成
+floorx=until((<=x)，fromInteger)(subtract1)(-1)
+在这个定义中将（leqx）定义为内联（inlined）。
+接下来需要处理x0的情况。对于这种情况，需要找出满足x<n+1的第一个整数
+可以先求出满足x<n的第一个整数n，然后再减去1。由此得到定义：
+floorx=until(x-lt)(+i)1-1
+wherexlt'n=x<fromIntegern
+将两个定义合在一起，得到
+floorx=ifx<o
+then until(leqx)(subtract 1)(-1)
+elseuntil(xlt)(+1)1-1
+（问题：为什么在第一行不必写成x<fromIntegero？）这个定义除了难看的分情况以
+及两种情况不对称外，真正的问题是效率很低：计算结果大致需要|α|步（「x是absx
+的数学表示）。
+二分查找
+计算floor的更好方法是首先找到满足m≤x<n的整数m和n，然后将区间（m，
+n）缩减成包含α的单位区间（满足㎡+1=n的区间）。此时，返回区间的左边界作为结
+果。由此得到
+floor ::Float-> Integer
+floorx=fst(untilunit(shrinkx)(boundx))
+where unit(m,n)=(m+1==n)
+其中的值boundx是满足m≤x<n的一个二元组（m，n）。如果区间（m，n）不是单位
+区间，则shrinkx（m，n）返回一个严格小于原区间并仍然包含x的新区间。
+首先考虑如何缩减一个包含x的非单位区间，即m≤x<n。假设p是满足m<p<n的
+任意整数。这样的p一定存在，因为（m，n）不是单位区间。然后定义：
+type Interval = (Integer,Integer)
+54
+shrinkx(m,n)=ifpleqxthen(p,n)else(m,p)
+where p = choose (m,n)
+如何定义choose呢？两种选择是choose（m，n）=m+1和choose（m，n）=n-1，
+
+===== PDF 45 =====
+因为两者都减小区间长度。但是，更好的选择是
+choose ::Interval -> Integer
+choose(m,n)=(m+n)div2
+使用这个选择，每一步区间的长度减半，而不是减1。但是，需要检查在㎡+1≠n的情况
+下m<（m+n）div2<n成立。推理如下：
+m<(m+n)div2<n
+三整数的序关系】
+m+1≤(m+n)div2<n
+=因为（m+n）div2=L（m+n）/2』)
+m+1≤(m+n)/2<n
+u>uvuz+u
+m+l<n
+最后，如何定义bound呢？可以先定义：
+bound ::Float -> Interval
+boundx=(lowerx,upperx)
+其中值lowerx是小于或者等于x的某个整数，upperx是大于x的某个整数。比通过
+线性搜索查找这些值更好的搜索方法是
+lower::Float -> Integer
+lowerx=until（leqx)(*2)(-1)
+upper :: Float -> Integer
+55
+为了使得bound高效，更好的方法是每步加倍，而不是仅加1或者减1。例如，对于x=
+17.3，仅需要7次比较即可找到包围区间（-1，32），然后用5步缩减到（17，18）。实
+际上，计算上界和下界总共需要的步数正比于log|x1，整个算法最多两倍于这个时间。
+一个对数时间算法比线性时间算法要快得多。
+标准引导库用下列方法定义f1oor：
+floorx=ifr<othenn-1elsen
+where(n,r)=properFractionx
+其中函数properFraction是类族RealFrac（目前还没有讨论过的类族，其方法处理
+数的舍入）的一个方法，它将一个数x分解为整数部分n和小数部分r，使得x=n+r。现
+在大家明白了。
+3.4-自然数
+Haskell没有提供自然数的类型，即非负整数的类型。但是，我们自已可以定义这样
+的类型：
+data Nat= ZeroI Succ Nat
+
+===== PDF 46 =====
+38
+第3章
+这是一个数据声明（datadeclaraion）的例子。声明表示，Zero是Nat的一个值，而且当
+n是Nat的一个值时，Succn也是Nat的值。Zero和Succ都称为数据构造器（data
+constructor）或构造函数，而且要用大写字母开头。Zero的类型是Nat，Succ的类型是
+Nat->Nat。因此，下列每一个元素都是Nat的元素：
+Zero,Succ Zero,Succ (Succ Zero),Succ (Succ (Succ Zero))
+下面考虑如何通过将Nat设置为类族Num的成员来进行算术运算编程。首先，需要
+将Nat设置为Eq和Show的实例：
+instance Eq Nat where
+Zero s Zero
+= True
+ZeroSucc n
+= False
+Succm==Zero
+= False
+56
+SuccmSuccn=(mn)
+instance Show Nat where
+show Zero
+-"Zero"
+show(SuccZero)
+="SuccZero"
+show(Succ(Succn))="Succ("++show(Succ n)++")"
+这些定义使用了模式匹配（patternmatching）。特别是，show的定义利用了3个模式：
+zero、Succzero和Succ（Succn）。这些模式互不相同，而且覆盖了Nat除l之外
+的所有元素。
+或者，也可以使用下列方法达到同样目的：
+data Nat = Zero I Succ Nat deriving (Eq,Ord,Show)
+如第2章习题E所讲，聪明的Haskell可以自动生成某些标准类族的实例，包括Eq、Ord
+和Show。
+现在可以定义Nat为数值类型：
+instance Num Nat where
+m+ Zero
+Succ n
+m+$
+=Succ(m+n)
+m*Zero
+= Zero
+m*
+(Succ n)
+n+m
+abs n
+signum Zero
+= Zero
+signum (Succ n)Succ Zero
+m-Zero
+Zero- Succ n
+=Zero
+Succm-Sucen
+fromInteger x
+1x<=0
+=Zero
+Iotherwise=Succ(fromInteger(x-1))
+我们定义了减法运算：如果m≤n，则m-n=0。当然，Nat上的算术运算极其慢，而且
+每个数都占用很大的空间。
+非完整数
+每个类型都包含值。因此，对于所有类型a有undefined：：a。根据定义Succ
+
+===== PDF 47 =====
+39
+是一个非严格函数，下列这些值互不相同，而且都是Nat的元素：
+undefined, Succ undefined, Succ (Succ undefined),.
+老实说，这些非完整数不是很有用，但是它们确实存在。可以把Succundefined理解
+为这样的数，只知道这个数至少是1：
+ghci> Zero == Succ undefined
+False
+ghci> Succ Zero ==Succ undefined
+*** Exception:Prelude.undefined
+Nat还有另外一个数：
+infinity;:Nat
+infinity = Succ infinity
+因此
+ghci> Zero == infinity
+False
+ghci> Succ Zero =- infinity
+False
+等等。
+总之，Nat的元素构成包括有穷数、非完整数和无穷数（只有一个）。对于其他数据
+类型有同样的结论：该类型包含有穷元素、非完整元素和无穷元素。
+也可以选择Succ为严格的，通过下列方式达到目的：
+data Nat =Zero ISucc INat
+其中标记！称为严格标志（strictnessflag）。对于这样的声明，有如下结果：
+ghci> Zero == Succ undefined
+***Exception:Prelude.undefined
+58
+这次对等式测试求值迫使两边求值，对Succundefined求值引起错误信息。定义
+Succ为严格的构造函数使得自然数只包含有穷数和一个无定义数。
+3.5习题
+习题A以下哪些表达式表示1？
+-2+3,3+-2,3+(-2),subtract23,2+subtract3
+标准引导库中有一个函数f1ip，定义为
+flipfxy=fyx
+请用flip表示subtract。
+习题BHaskell至少有3种定义求幂的方法：
+(**) :: (Floating a) => a -> a -> a
+运算（^）表示任意数的非负整数次方；运算（^^）表示任意数的任意整数（包括负整
+数）次方；运算（**）的两个参数都是分数。运算（^）的定义基本上使用第2章Dick的方
+
+===== PDF 48 =====
+40
+第3章
+法（见第2章习题F）。请问如何定义（^^）？
+习题C能够使用下列方法定义div吗？
+divxy=floor(x/y)
+习题D再考虑CleverDick给floor的定义：
+floor::Float->Integer
+59
+floor=read.(takewhile(/=.").show
+为什么这个定义不可行？
+考虑下列与GHCi的微交互：
+ghci>12345678.0::Float
+1.2345678e7
+Haskell允许使用所谓的科学计数法（scientificnotation），也称幂计数法（exponent
+notation）表示某些浮点数。例如，上面的数表示1.2345678×107。当浮点数的位数很多时，
+Haskell用这种形式打印数。请给出另一个理由，说明为什么CleverDick的定义不可行。
+习题E函数isqrt：：Float->Integer返回一个（非负）数的平方根的底。
+仿照3.3节的方法构造isqrtx，使其运行时间正比于logx步。
+习题FHaskell提供一个函数sqrt：：Floatinga=>a->a，它给出一个（非
+负）数的平方根的合理近似值。不过，让我们来自已定义这个函数。如果是/x的近似
+值，那么x/y也是/x的近似值。而且，或者y≤/≤x/y，或者x/y≤/α≤y。比y和x/y更
+好的/x的近似值是什么？（是的，你正在重新发现求平方根的牛顿方法。）
+剩下唯一的问题是决定近似值什么时候就足够好了。一种可能的测试是「y²-α|<8，
+其中|x|表示x的绝对值，8是一个适当小的数。这个测试保证绝对误差不超过8。另一
+种测试是|y?-α|<εx，保证相对误差不超过8。假定类型Float的数只精确到6位有效
+数字，请问两种测试中哪一种更合理？ε的合理值是多少？
+请由此给出sqrt的定义。
+习题G请给出Nat作为类族Ord实例的显式定义。由此给出下列方法的一个定义：
+divMod::Nat->Nat ->(Nat,Nat)
+3.6答案
+习题A答案除3+-2和2+subtract3之外，而且这两个式子都不是合式表达
+式。定义subtract=flip（-）。
+习题B答案
+x"n=ifo<=nthenxnelse1/(x"(negaten))
+习题C答案不能。需要写成
+div xy =floor (fromIntegral x /fromIntegral y)
+习题D答案（
+CleverDick的函数给出f1oor（-3.1）=-3，而正确答案是-4。
+
+===== PDF 49 =====
+41
+如果在结果是负数的情况下通过减1设法修改他的定义，那么f1oor（-3.0）=－4，
+但是正确答案是-3。也不行！
+另外，CleverDick的解给出f1oor12345678.0=1，因为参数显示为1.2345678e7。
+习题E答案
+isqrt ::Float ->Integer
+isqrtx=fst(untilunit(shrinkx)(boundx))
+where unit(m,n)=(m+1 ==n)
+shrinkx(m,n)=if(p*p)leqxthen(p,n)else(m,p)
+wherep=(m+n)div"2
+bound ::Float-> Interval
+bound x=(o,until above(*2)1)
+whereaboven=xlt'(n*n)
+函数leq和lt在3.3节有定义。注意表达式（p*p）leqx和xlt（n*n）
+中的括号。这里没有说明1eg和1t的结合次序，所以如果没有括号的话，两个表达
+61
+式会被解释成病态的表达式p*（pleqx）和（x1tn）*n。（实际上我第一次输人
+本答案时犯了这个错误。）
+习题F答案比y和x/y更好的/x的近似值是（y+x/y）/2。相对误差更合理，而且
+程序如下：
+sqrt ::Float -> Float
+sqrt x= until goodenough improve x
+wheregoodenoughy=abs(y*y-x)<eps*x
+improve y= (y+x/y)/2
+sde
+=0.000001
+习题G答案
+只要定义（<）即可：
+instance Ord Nat where
+Zero<Zero
+= False
+Zero<Succn
+= True
+Succm<Zero
+= False
+Succm<Succn=(m<n)
+现在可以定义：
+divMod::Nat->Nat->(Nat,Nat)
+divModxy=ifx<ythen(Zero,x)
+else (Succ q,r)
+where (q,r)=divMod (x-y)y
+3.7
+注记
+关于计算机算术的最基本参考资料是DonKnuth的《TheArtof ComputerProgramming，
+Volume2：Semi-numericalAlgorithms》（Addison-Wesley，1998）。取底和其他简单数值函数
+的深人研究参见DonKnuth、RonaldGraham和OrenPatashnik所著的《ConcreteMathemat-
+ics》（Addison-Wesley，1989)。
+62
