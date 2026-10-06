@@ -1,0 +1,47 @@
+[workdir] F:\temp\rcgen
+== S1 pattern table (gcc -O0) ==
+[e1] insns=12 frame-push=1 frame-mov=1 rbp-loc=4 lea=0 scale-addr=0 call=0 ret=1 argreg=2
+[e2] insns=24 frame-push=1 frame-mov=1 rbp-loc=8 lea=0 scale-addr=3 call=0 ret=1 argreg=6
+[c1] insns=17 frame-push=1 frame-mov=1 rbp-loc=8 lea=0 scale-addr=0 call=0 ret=1 argreg=2
+[w1] insns=15 frame-push=1 frame-mov=1 rbp-loc=7 lea=0 scale-addr=0 call=0 ret=1 argreg=0
+[f1] insns=10 frame-push=1 frame-mov=1 rbp-loc=0 lea=0 scale-addr=0 call=0 ret=1 argreg=4
+[cf] insns=10 frame-push=1 frame-mov=1 rbp-loc=0 lea=0 scale-addr=0 call=1 ret=1 argreg=2
+== S2 -O0 vs -O1 ==
+[e1] O0=12  O1=2  (O1/O0 = 0.166667)
+[e2] O0=24  O1=2  (O1/O0 = 0.0833333)
+[c1] O0=17  O1=2  (O1/O0 = 0.117647)
+[w1] O0=15  O1=2  (O1/O0 = 0.133333)
+[f1] O0=10  O1=2  (O1/O0 = 0.2)
+[cf] O0=10  O1=7  (O1/O0 = 0.7)
+== S3 key lines (O0) ==
+-- e1 --
+    [frame-push] 	pushq	%rbp
+    [frame-mov] 	movq	%rsp, %rbp
+    [argreg] 	leal	4(%rax), %edx
+-- e2 --
+    [frame-push] 	pushq	%rbp
+    [frame-mov] 	movq	%rsp, %rbp
+    [scale-addr] 	movl	$2, -48(%rbp,%rdx,4)
+    [argreg] 	movslq	%eax, %rdx
+-- c1 --
+    [frame-push] 	pushq	%rbp
+    [frame-mov] 	movq	%rsp, %rbp
+    [argreg] 	movl	-4(%rbp), %edx
+-- w1 --
+    [frame-push] 	pushq	%rbp
+    [frame-mov] 	movq	%rsp, %rbp
+-- f1 --
+    [frame-push] 	pushq	%rbp
+    [frame-mov] 	movq	%rsp, %rbp
+    [argreg] 	movl	%ecx, 16(%rbp)
+-- cf --
+    [frame-push] 	pushq	%rbp
+    [frame-mov] 	movq	%rsp, %rbp
+    [argreg] 	movl	$4, %edx
+== S4 verdicts ==
+[frame] e1 O0 push+mov >= 1 : 1
+[rbp-loc] e2 O0 rbp 寻址 > 0 : 1
+[scale] e2 O0 比例寻址 > 0 : 1
+[call/ret] cf O0 调用=1 返回=2 : 1
+[argreg] cf O0 Win64 寄存器传参 > 0 : 1
+[opt] 全部函数 O1 <= O0 : 1
