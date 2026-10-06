@@ -1,7 +1,7 @@
 -- 02 测试套件：自制迷你框架（分组 + 统计 + 失败明细 + exitFailure；28 章正文化）
 module Main (main) where
 
-import Ch02 (banner, greet, shout)
+import Ch02 (banner, greet, shout, three)
 import Control.Monad (unless)
 import System.Exit (exitFailure)
 import System.IO (hSetEncoding, stderr, stdout, utf8)
@@ -39,5 +39,10 @@ main = do
         , expectTrue "banner 以 ==[ 开头" (take 3 (banner "x") == "==[")
         , expectTrue "shout 长度加一" (length (shout "abc") == 4)
         ]
-    unless (s1 && s2) exitFailure
+    s3 <- runSuite "read/three（书2）"
+        [ expectEq "read 注释 Int" (read "123" :: Int) 123
+        , expectEq "read 注释 Double" (read "123" :: Double) 123.0
+        , expectEq "three 吃 bottom 仍是 3" (three undefined) 3
+        ]
+    unless (s1 && s2 && s3) exitFailure
     putStrLn "==== 02 结束 ===="

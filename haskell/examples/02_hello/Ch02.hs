@@ -1,5 +1,5 @@
 -- Ch02 库模块：02 章全部纯函数（main.hs 与 runtests.hs 共同复用）
-module Ch02 (banner, greet, shout) where
+module Ch02 (banner, greet, shout, three) where
 
 import Data.List (intercalate)
 
@@ -11,6 +11,11 @@ greet names = "你好，" ++ intercalate "、" names ++ "！"   -- 多参数：�
 -- ═══ 02.2 字符串加工：演示 ++ 与函数组合的最小样例
 shout :: String -> String
 shout s = s ++ "!"
+
+-- ═══ 02.3 非严格性第一例（书 2.4 的 three）：参数不被用到就不求值
+-- three undefined == 3 —— 勤奋求值器会先算 undefined 而 ⊥ 掉，惰性不会（12 章展开）。
+three :: Integer -> Integer
+three _ = 3
 
 banner :: String -> String
 banner title = "==[ " ++ title ++ " ]=="

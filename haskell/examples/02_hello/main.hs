@@ -2,7 +2,7 @@
 -- 运行：ghc -v0 --make main.hs -o 02.exe && ./02.exe [名字…]
 module Main (main) where
 
-import Ch02 (banner, greet, shout)
+import Ch02 (banner, greet, shout, three)
 import System.Environment (getArgs)
 import System.IO (hSetEncoding, stderr, stdout, utf8)
 
@@ -20,6 +20,8 @@ main = do
     print (shout "print 走 show 加引号")  -- print 走 show：源码字面量，非 ASCII 转十进制转义（中文坑）
     print (42 :: Int)                     -- print 对任意 Show 类型都行
     print (3.14 :: Double)
+    print (read "123" :: Int)             -- read 是 show 的对偶：结果类型必须可知（注释）
+    print (three undefined)               -- 非严格性第一例：参数没被用到，⊥ 也不求值（12 章）
 
     -- ═══ 02.2 命令行参数：getArgs :: IO [String]，可能为空
     args <- getArgs
