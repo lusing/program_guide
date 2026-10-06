@@ -17,6 +17,7 @@ using std::println;
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <cstdint>
 #include <random>
 #include <span>
@@ -336,11 +337,86 @@ static void bad_egg_demo() {
     assert(lo == target && w == ceil_log3(big_n));
 }
 
+// ═══ 09.5 猜数字：范围中点二分 ═══
+// 目标 ∈[1,n]，每次猜 g，反馈只有「太高/太低/猜中」——猜中即终止，
+// 未猜中只有两条分支（与天平三结果不同）。
+static int guess_number(long long n, long long target, bool trace) {
+    long long lo = 1, hi = n;
+    int tries = 0;
+    while (lo <= hi) {
+        const long long g = lo + (hi - lo) / 2;
+        ++tries;
+        if (trace) {
+            println("  第 {} 次：猜 {}（范围 {}..{}）", tries, g, lo, hi);
+        }
+        if (g == target) { return tries; }
+        if (target < g) { hi = g - 1; }
+        else { lo = g + 1; }
+    }
+    return tries;
+}
+
+static int ceil_log2_plus1(long long n) {
+    int k = 0;
+    long long p = 1;                    // 2ᵏ
+    while (p < n + 1) { p <<= 1; ++k; }
+    return k;
+}
+
+static void guess_number_demo() {
+    println("");
+    println("=== 09.5 猜数字：范围中点二分（最坏 ⌈log₂(n+1)⌉）===");
+    println("  n=100，目标 27：");
+    const int got = guess_number(100, 27, true);
+    println("  {} 次猜中（目标 27 恰好落在最坏位置）", got);
+    assert(got == 7);
+
+    // 全目标穷举 n≤200：实际次数 ≤ 最坏闭式，且最坏位置上恰等于闭式
+    int prev_worst = 0;
+    for (int n = 1; n <= 200; ++n) {
+        int worst = 0;
+        long long sum = 0;
+        for (int t = 1; t <= n; ++t) {
+            const int k = guess_number(n, t, false);
+            worst = std::max(worst, k);
+            sum += k;
+        }
+        assert(worst == ceil_log2_plus1(n));
+        if (n == 100) {
+            println("  n=100：全目标平均 {:.3} 次（log₂n = {:.2f}），最坏 {} 次",
+                    static_cast<double>(sum) / n,
+                    std::log2(100.0), worst);
+            prev_worst = worst;
+        }
+    }
+    assert(prev_worst == 7);            // ⌈log₂101⌉ = 7
+
+    // 小表：最坏计数 vs 闭式
+    print("  n:      ");
+    for (int n = 1; n <= 8; ++n) { print("{:5}", n); }
+    println("");
+    print("  最坏:   ");
+    for (int n = 1; n <= 8; ++n) { print("{:5}", ceil_log2_plus1(n)); }
+    println("");
+
+    // 大例 n=10¹⁸：中点二分最坏 60 次
+    const long long big = 1000000000000000000LL;
+    const int worst_big = ceil_log2_plus1(big);
+    const int actual_big = guess_number(big, 1000000000000000000LL, false);
+    println("  大例 n=10¹⁸：最坏 {} 次；猜角落目标 10¹⁸ 实际 {} 次",
+            worst_big, actual_big);
+    assert(worst_big == 60 && actual_big == 60);
+
+    // 下界论证：判定树内部节点两叉、n 个键都要能落在某节点 ⟹
+    // 深度 k 的树至多容纳 2ᵏ−1 个不同的键 ⟹ k ≥ ⌈log₂(n+1)⌉，中点法取到。
+}
+
 int main() {
     minmax_demo();
     randomized_select_demo();
     bfprt_demo();
     bad_egg_demo();
+    guess_number_demo();
     println("自检通过");
     return 0;
 }

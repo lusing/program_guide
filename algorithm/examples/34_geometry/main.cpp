@@ -502,6 +502,113 @@ static void skyline_demo() {
     assert(got[1].x == 20000 && got[1].h == 0);
 }
 
+// ═══ 34.7 平面被直线分割：区域数的增量构造 ═══
+// 第 i 条线与前 i−1 条线交于 i−1 个互不重合的点（一般位置：无平行、
+// 无三线共点）⟹ 被切成 i 段 ⟹ 新增 i 个区域：R(i)=R(i−1)+i，
+// R(0)=1 ⟹ R(n)=1+n(n+1)/2。
+struct ArrLine { long long m, c; };          // y = m·x + c
+
+// 三线共点的行列式检验（精确整数）：
+// m_i(c_j−c_k)+m_j(c_k−c_i)+m_k(c_i−c_j) == 0。
+static long long triple_det(const ArrLine& a, const ArrLine& b,
+                            const ArrLine& c) {
+    return a.m * (b.c - c.c) + b.m * (c.c - a.c) + c.m * (a.c - b.c);
+}
+
+static bool general_position(const std::vector<ArrLine>& lines) {
+    const int n = static_cast<int>(lines.size());
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            if (lines[i].m == lines[j].m) { return false; }   // 平行
+        }
+    }
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            for (int k = j + 1; k < n; ++k) {
+                if (triple_det(lines[i], lines[j], lines[k]) == 0) {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+static long long line_region_count(const std::vector<ArrLine>& lines) {
+    long long r = 1;                       // R(0)
+    for (int i = 1; i <= static_cast<int>(lines.size()); ++i) { r += i; }
+    return r;
+}
+
+static void line_region_demo() {
+    println("");
+    println("=== 34.7 平面被 n 条直线分割：R(n) = 1 + n(n+1)/2 ===");
+    // 构造：直线 i 取 y = i·x + i²。交点为 (−i−j, i·j)——sum 与 product
+    // 唯一确定 {i,j}，故全部 C(n,2) 交点互不相同，天然一般位置；且
+    // triple_det = −(i−j)(j−k)(k−i) ≠ 0（对构造逐三元验证）。
+    print("  n:     ");
+    for (int n = 0; n <= 6; ++n) { print("{:5}", n); }
+    println("");
+    print("  R(n):  ");
+    for (int n = 0; n <= 6; ++n) {
+        std::vector<ArrLine> ls;
+        for (int i = 0; i < n; ++i) { ls.push_back({i, 1LL * i * i}); }
+        print("{:5}", line_region_count(ls));
+    }
+    println("");
+
+    // n≤12：逐三元精确行列式 + 平行检验，构造确为一般位置
+    std::vector<ArrLine> small;
+    for (int i = 0; i < 12; ++i) { small.push_back({i, 1LL * i * i}); }
+    assert(general_position(small));
+
+    // 随机 50 组（拒绝采样到一般位置，n≤10）：计数 == 闭式
+    std::mt19937 rng{5489};
+    auto rand_below = [&](std::uint32_t n) {
+        return static_cast<std::uint32_t>(
+            (static_cast<std::uint64_t>(rng()) * n) >> 32);
+    };
+    int bad = 0, accepted = 0;
+    for (int t = 0; t < 50; ++t) {
+        const int n = 3 + static_cast<int>(rand_below(8));
+        std::vector<long long> slopes;
+        for (int k = -20; k <= 20; ++k) { slopes.push_back(k); }
+        std::vector<ArrLine> ls;
+        for (int k = 0; k < n; ++k) {
+            const long long m = slopes[rand_below(
+                static_cast<std::uint32_t>(slopes.size()))];
+            slopes.erase(std::ranges::find(slopes, m));
+            const long long c = -100 +
+                static_cast<long long>(rand_below(201));
+            ls.push_back({m, c});
+        }
+        if (!general_position(ls)) { continue; }    // 拒绝（罕见）
+        ++accepted;
+        const long long formula = 1 + 1LL * n * (n + 1) / 2;
+        if (line_region_count(ls) != formula) { ++bad; }
+    }
+    println("  随机 {} 组一般位置直线（50 次尝试）：计数与闭式不一致 {} 例",
+            accepted, bad);
+    assert(bad == 0);
+
+    // 大例 n=1000：闭式 500501；一般位置用「全部 C(n,2) 交点的
+    // (sum, product) 无重复」做 O(n²) 的完整认证（交点为 (−i−j, ij)）。
+    const int n = 1000;
+    std::set<std::pair<long long, long long>> crosses;
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            const bool inserted = crosses.insert(
+                {-1LL * (i + j), 1LL * i * j}).second;
+            assert(inserted);
+        }
+    }
+    const long long r = 1 + 1LL * n * (n + 1) / 2;
+    println("  大例 n=1000（y = i·x+i²）：区域 {}；{} 个交点全部互异，"
+            "一般位置认证通过", r, crosses.size());
+    assert(r == 500501 &&
+           static_cast<long long>(crosses.size()) == 1LL * n * (n - 1) / 2);
+}
+
 int main() {
     cross_demo();
     segments_demo();
@@ -509,6 +616,7 @@ int main() {
     closest_demo();
     polygon_demo();
     skyline_demo();
+    line_region_demo();
     println("自检通过");
     return 0;
 }
