@@ -6,7 +6,7 @@
 ghc -v0 -O0 --make -o app main.hs && ./app   # 编译执行（验证/CI 走这条）
 ghci                                          # 交互：:t 类型 / :i 实例 / :r 重载 / :kind
 runghc main.hs                                # 脚本（Windows 实测 ~41s，仅小试）
-stack build / test / run / exec / ghci        # 工程三连（20 章）
+stack build / test / run / exec / ghci        # 工程三连（27 章）
 ./app +RTS -s                                 # 运行时统计；+RTS -N4 多核（需 -threaded）
 ```
 

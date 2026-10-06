@@ -19,7 +19,7 @@ runghc main.hs                  # 脚本直跑（本机实测 ~41s，仅适合�
   runtests.hs  测试入口（module Main，断言失败 exitFailure）
 ```
 
-这就是 20 章 stack 工程的雏形：库 + 可执行 + 测试三件套。
+这就是 27 章 stack 工程的雏形：库 + 可执行 + 测试三件套。
 
 ## 2.2 main 与编码开场
 
@@ -109,5 +109,9 @@ stdout 非空 / 无控制字符 / 有结束标记 / 无 GHC 诊断字样。
 2. **show 转义非 ASCII**：`print "中文"` 输出十进制转义——给人看的输出用 `putStrLn`（2.3）。
 3. **runghc ~41s**（本机实测）：GHCi 链接器加载包慢，脚本验证走编译执行（1.4、01 章实测表）。
 4. **未捕获异常的消息按代码页输出**：`error "中文"` 的 stderr 是 GBK 字节（hSetEncoding stderr
-   也拦不住——顶层异常处理器绕过 Handle 编码；要控制输出就自己 catch 后打印，17 章）。
-5. **putStrLn 输出 CRLF**：Windows 文本模式把 `\n` 翻成 `\r\n`——读回来时记得归一化（16 章）。
+   也拦不住——顶层异常处理器绕过 Handle 编码；要控制输出就自己 catch 后打印，20 章）。
+5. **putStrLn 输出 CRLF**：Windows 文本模式把 `\n` 翻成 `\r\n`——读回来时记得归一化（19 章）。
+
+---
+
+上一章：[01 全景](01-overview.md) ｜ 下一章：[03 数值](03-numbers.md) ｜ 返回：[README](../README.md)

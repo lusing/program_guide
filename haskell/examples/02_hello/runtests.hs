@@ -1,4 +1,4 @@
--- 02 测试套件：自制迷你框架（分组 + 统计 + 失败明细 + exitFailure；21 章正文化）
+-- 02 测试套件：自制迷你框架（分组 + 统计 + 失败明细 + exitFailure；28 章正文化）
 module Main (main) where
 
 import Ch02 (banner, greet, shout)

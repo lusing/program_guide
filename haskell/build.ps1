@@ -171,7 +171,7 @@ function Invoke-GhcMain {
     $objDir = Join-Path $buildDir "$name.$ExeName.obj"
     $exe    = Join-Path $buildDir "$name.$ExeName.exe"
     $src    = Join-Path $Dir $Source
-    # -v0 关掉 GHC 自己的进度输出；-O0 编译快（验证不测性能，19 章正文另讲 -O2）
+    # -v0 关掉 GHC 自己的进度输出；-O0 编译快（验证不测性能，25 章正文另讲 -O2）
     $args = @("-v0", "-O0", "--make", "-i$Dir", "-outputdir", $objDir, $src, "-o", $exe) + $ExtraFlags
     $rc = Invoke-Proc -FileName $ghcExe -ArgList $args `
                       -OutPath (Join-Path $buildDir "$name.$ExeName.c.out") `
@@ -205,7 +205,7 @@ function Test-One {
     Write-Host "==== $name ====" -ForegroundColor Cyan
 
     # ---- stack 工程（20/24）：build + test + exec，不走 ghc 直编 ----
-    if ($name -eq "20_stackenv" -or $name -eq "24_capstone") {
+    if ($name -eq "27_stackenv" -or $name -eq "31_capstone") {
         # 兜底：PATH 上的 strip 若是坏 shim（指向已卸载目录），Cabal 的 copy 阶段会静默失败。
         # 探测一个能真跑起来的 strip 目录前置到 PATH。
         foreach ($d in ($env:PATH -split ';' | Where-Object { $_ })) {
@@ -231,8 +231,8 @@ function Test-One {
                           -ErrPath (Join-Path $buildDir "$name.test.err") -WorkDir $Dir
         Invoke-Check -Tag "test     $name (stack test)" -OutPath (Join-Path $buildDir "$name.test.out") `
                      -ErrPath (Join-Path $buildDir "$name.test.err") -ExitCode $rc -Marker $marker -Relaxed
-        $exeName = if ($name -eq "20_stackenv") { "stackenv" } else { "minilang" }
-        $runArgs = if ($name -eq "24_capstone") { @("exec", $exeName, "--", "demo") } else { @("exec", $exeName) }
+        $exeName = if ($name -eq "27_stackenv") { "stackenv" } else { "minilang" }
+        $runArgs = if ($name -eq "31_capstone") { @("exec", $exeName, "--", "demo") } else { @("exec", $exeName) }
         $rc = Invoke-Proc -FileName "stack" -ArgList $runArgs `
                           -OutPath (Join-Path $buildDir "$name.run.out") `
                           -ErrPath (Join-Path $buildDir "$name.run.err") -WorkDir $Dir

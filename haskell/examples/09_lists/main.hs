@@ -10,7 +10,7 @@ main = do
     hSetEncoding stdout utf8
     hSetEncoding stderr utf8
 
-    -- ═══ 09.1 三种折叠同一结果，代价不同（10 章给内存实测）
+    -- ═══ 09.1 三种折叠同一结果，代价不同（12 章给内存实测）
     putStrLn "==[ 09 · 列表与折叠 ]=="
     let xs = [1 .. 100] :: [Int]
     putStrLn ("sum/map/filter: " ++ show (sum xs, map (* 2) [1, 2, 3], filter odd [1 .. 6]))

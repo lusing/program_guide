@@ -40,7 +40,7 @@ data Tag = A | B deriving (Show, Eq)
 instance Labeled Tag                           -- 空实例：全吃默认
 ```
 
-标准库的实例链就是这套：`Num → Real → Fractional`、`Functor → Applicative → Monad`（13 章）。
+标准库的实例链就是这套：`Num → Real → Fractional`、`Functor → Applicative → Monad`（16 章）。
 
 ## 8.3 MINIMAL：实例的最低要求
 
@@ -92,7 +92,7 @@ halfOf (1 :: Rational)   -- 1 % 2
 
 类型也有"类型之类型"（kind）：`Int :: Type`、`Maybe :: Type -> Type`。
 `Functor` 的 kind 是 `(Type -> Type) -> Constraint`——所以 `Int` 当不了 Functor、`Maybe` 可以
-（13 章）。GHCi 里 `:kind Maybe` 自查。
+（16 章）。GHCi 里 `:kind Maybe` 自查。
 
 ## 8.7 孤儿实例
 
@@ -106,3 +106,7 @@ halfOf (1 :: Rational)   -- 1 % 2
 3. **孤儿实例**：类型与类都不在你手里的 instance 放进库里会污染全局（8.7）。
 4. **方法默认实现可以互相调用**：MINIMAL 没写全会在"使用"时炸出 `No explicit implementation`（8.3）。
 5. **Kind 不匹配是常见编译错**：`instance Functor Int` 不成立——`Int :: Type` 不是 `Type -> Type`（8.6）。
+
+---
+
+上一章：[07 代数数据类型](07-adt.md) ｜ 下一章：[09 列表与折叠](09-lists.md) ｜ 返回：[README](../README.md)

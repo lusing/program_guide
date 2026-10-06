@@ -12,7 +12,7 @@ import Data.List (foldl', unfoldr)
 -- ═══ 09.1 fold 家族：foldr 从右（惰性友好）、foldl 从左（惰性陷阱）、foldl' 严格
 mySumR, mySumL, mySumL' :: [Int] -> Int
 mySumR  = foldr (+) 0        -- (x1 + (x2 + … + 0))
-mySumL  = foldl (+) 0        -- ((((0 + x1) + x2) + … )——堆 thunk（10 章实测）
+mySumL  = foldl (+) 0        -- ((((0 + x1) + x2) + … )——堆 thunk（12 章实测）
 mySumL' = foldl' (+) 0       -- 每步强制求值——大列表唯一正确姿势
 
 -- foldr 的独门能力：短路（foldl 做不到，它必须走完全表）
