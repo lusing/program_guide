@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "typeequiv.hpp"
+
 #include "TIPLexer.h"
 #include "TIPParser.h"
 #include "antlr4-runtime.h"
@@ -158,6 +160,41 @@ int main(int argc, char **argv) {
             for (size_t i = 0; i < outputs.size(); ++i)
                 std::cout << (i ? ", " : " ") << outputs[i];
             std::cout << '\n';
+        }
+        return 0;
+    }
+
+    // ---------- 类型等价两学说（L 书 §6.4.3 补章）：--typeequiv ----------
+    if (argc >= 2 && std::string(argv[1]) == "--typeequiv") {
+        teq::Graph g;
+        int iInt = g.addInt();
+        g.addNamed("T");                              // 1：声明名 T
+        int recAnon = g.addRecord({{"v", iInt}});     // 2：匿名 record{v:int}
+        g.addNamed("U");                              // 3：异名声明
+        // 4/5：两份独立定义的递归类型 t = record{v:int; next:t}
+        int t1 = g.addRecord({{"v", iInt}});
+        g.nodes[t1].fields.push_back({"next", t1});
+        int t2 = g.addRecord({{"v", iInt}});
+        g.nodes[t2].fields.push_back({"next", t2});
+        // 6/7：字段序反例（同字段名、不同序）
+        int r1 = g.addRecord({{"x", iInt}, {"y", iInt}});
+        int r2 = g.addRecord({{"y", iInt}, {"x", iInt}});
+        int f1 = g.addArrow(iInt, iInt);
+
+        struct Row { const char *label; int a, b; };
+        for (const Row &r : std::vector<Row>{
+                 {"int,int", iInt, iInt},
+                 {"recAnon,recAnon", recAnon, recAnon},
+                 {"t1,t2(recursive-x2)", t1, t2},
+                 {"r1,r2(field-order)", r1, r2},
+                 {"T,U(diff-names)", 1, 3},
+                 {"f1,f1(arrow)", f1, f1},
+                 {"f1,int(kind-mismatch)", f1, iInt},
+             }) {
+            long long steps = 0;
+            bool se = teq::structEq(g, r.a, r.b, &steps);
+            std::cout << "[" << r.label << "] name=" << (teq::nameEq(r.a, r.b) ? 1 : 0)
+                      << " struct=" << (se ? 1 : 0) << " steps=" << steps << "\n";
         }
         return 0;
     }

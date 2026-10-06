@@ -2826,6 +2826,8 @@ std::vector<int> runJit(IRGen gen, const std::vector<int> &inputs) {
 #include <string>
 #include <vector>
 
+#include "typeequiv.hpp"
+
 #include "TIPLexer.h"
 #include "TIPParser.h"
 #include "antlr4-runtime.h"
@@ -2974,6 +2976,41 @@ int main(int argc, char **argv) {
             for (size_t i = 0; i < outputs.size(); ++i)
                 std::cout << (i ? ", " : " ") << outputs[i];
             std::cout << '\n';
+        }
+        return 0;
+    }
+
+    // ---------- 类型等价两学说（L 书 §6.4.3 补章）：--typeequiv ----------
+    if (argc >= 2 && std::string(argv[1]) == "--typeequiv") {
+        teq::Graph g;
+        int iInt = g.addInt();
+        g.addNamed("T");                              // 1：声明名 T
+        int recAnon = g.addRecord({{"v", iInt}});     // 2：匿名 record{v:int}
+        g.addNamed("U");                              // 3：异名声明
+        // 4/5：两份独立定义的递归类型 t = record{v:int; next:t}
+        int t1 = g.addRecord({{"v", iInt}});
+        g.nodes[t1].fields.push_back({"next", t1});
+        int t2 = g.addRecord({{"v", iInt}});
+        g.nodes[t2].fields.push_back({"next", t2});
+        // 6/7：字段序反例（同字段名、不同序）
+        int r1 = g.addRecord({{"x", iInt}, {"y", iInt}});
+        int r2 = g.addRecord({{"y", iInt}, {"x", iInt}});
+        int f1 = g.addArrow(iInt, iInt);
+
+        struct Row { const char *label; int a, b; };
+        for (const Row &r : std::vector<Row>{
+                 {"int,int", iInt, iInt},
+                 {"recAnon,recAnon", recAnon, recAnon},
+                 {"t1,t2(recursive-x2)", t1, t2},
+                 {"r1,r2(field-order)", r1, r2},
+                 {"T,U(diff-names)", 1, 3},
+                 {"f1,f1(arrow)", f1, f1},
+                 {"f1,int(kind-mismatch)", f1, iInt},
+             }) {
+            long long steps = 0;
+            bool se = teq::structEq(g, r.a, r.b, &steps);
+            std::cout << "[" << r.label << "] name=" << (teq::nameEq(r.a, r.b) ? 1 : 0)
+                      << " struct=" << (se ? 1 : 0) << " steps=" << steps << "\n";
         }
         return 0;
     }
@@ -3471,6 +3508,177 @@ type error: occurs check: t2 occurs in ptr(t2)
 见 12.2、normalize 见 12.3.2、两遍收集见 12.3.7、退出码语义见
 12.4），而不是把清单本身当作知识。这也是本书一以贯之的写法：
 **正文讲道理，清单只索引**。
+
+## 27.16　类型等价的两学说（L 书 §6.4.3 补章）
+
+### 27.16.1　学说对照：结构等价与名字等价
+
+"两个类型何时相等"是类型检查的地基，两大学说分庭：
+
+- **结构等价（structural）**：形状同构即等——`record{v:int}` 与另一个 `record{v:int}` 相等（不管谁声明的）。C 对 struct 的处理接近此说（匿名/逐处声明的结构处处等价）；
+- **名字等价（nominal）**：同一声明才等——typedef 出来的两个名字互不相等。Pascal 的 `var` 参数与记录声明持此说，Ada 更进一步（子类型也是名字的属性）。
+
+| 维度 | 结构等价 | 名字等价 |
+|---|---|---|
+| 判定算法 | 递归同构（+ 环处理） | 指针/下标比较 |
+| 匿名类型 | 天然支持 | 需要"每个表达式一个新名"的补丁 |
+| 递归类型 | 环处理（假设集） | 天然支持（名字就是不动点） |
+| 表达力 | "长得像就行" | "是谁才算" |
+| 代表 | C（struct）、ML（透明等价） | Pascal、Ada、Java、Rust |
+
+两说各自的病：结构等价在**递归类型**上要处理环（不处理就死循环）；名字等价在**匿名类型**上要发明名字（编译器内部造名）。教学驱动 `--typeequiv` 把两说做成同一张图上的两个判定器，七对语料并排对账。
+
+### 27.16.2　实测七行（expected/opt/typeequiv.out）
+
+- `[int,int] name=1 struct=1`——基准：同一节点两说皆等（**名字等价是结构等价的子集**：同节点 ⇒ 同形状）；
+- `[t1,t2(recursive-x2)] name=0 struct=1 steps=3`——**本节的明星行**：两份独立定义的 `t = record{v:int; next:t}`，名字不等（两个声明）；结构等价经三步判等——
+  - 第 1 步：eq(t1,t2)——假设 (t1,t2) 相等、逐字段查；
+  - 第 2 步：v 对 v（int 同构）；
+  - 第 3 步：next 对 next——又回到 (t1,t2)——**假设集命中，环闭合**：这一对的等价正在证明中，重逢即视等（coinduction 的操作面：取"合理假设"的最大不动点）；
+- `[r1,r2(field-order)] name=0 struct=0`——同字段不同序：结构等价也不认（**字段序参与同构**——C 的确如此；ML 的记录配行多态则可无序——学说的再分裂）；
+- `[T,U(diff-names)] name=0 struct=0`——教学口径：Named 不展开、名字即身份（真实结构等价实现会透传别名——练习 3）；
+- `[f1,f1] / [f1,int]`——箭头基准与跨类拒绝。
+
+### 27.16.3　与本章合一算法的关系
+
+第 26 章的合一也是"类型相等"——但方向相反：
+
+- 类型等价（本节）：**判定**两个既成类型是否相等——双向同构；
+- 合一（26 章）：**求解**让两个含变量的类型相等——单向代入。
+
+结构等价是"无变量、无方向的合一"——合一的算法骨架（递归配对、环上的 occurs 检查）与本节的假设集同构：**occurs 检查防非法环、假设集认合法环**——一体两面。推断式语言把"检查等价"泛化成"求解等式"——本教程类型线的完整轨迹：**学说（本节）→ 变量（24）→ 约束（25）→ 合一（26）→ 边界（27）**——补上本节，五章成环。
+
+```cpp
+// file: src/typeequiv.hpp
+// file: src/typeequiv.hpp
+// 类型等价的两大学说（L 书 §6.4.3）：结构等价（树同构）与名字等价（声明身份）。
+// 自带迷你类型图（含递归类型）——不依赖本章其余件，正文按对照面讲解。
+#ifndef TIP_TYPEEQUIV_HPP
+#define TIP_TYPEEQUIV_HPP
+
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
+namespace teq {
+
+// 类型图：节点池 + 下标引用。递归类型（record 里引用自己）靠下标成环。
+struct Graph {
+    struct Node {
+        enum class Kind { Int, Named, Record, Arrow } kind = Kind::Int;
+        std::string name;                              // Named 的声明名
+        std::vector<std::pair<std::string, int>> fields;   // Record: 字段名 → 类型下标
+        int from = -1, to = -1;                        // Arrow 的两腿
+    };
+    std::vector<Node> nodes;
+    int addInt() {
+        Node nd;
+        nd.kind = Node::Kind::Int;
+        nodes.push_back(nd);
+        return (int)nodes.size() - 1;
+    }
+    int addNamed(const std::string &n) {
+        Node nd;
+        nd.kind = Node::Kind::Named;
+        nd.name = n;
+        nodes.push_back(nd);
+        return (int)nodes.size() - 1;
+    }
+    int addRecord(std::vector<std::pair<std::string, int>> fs) {
+        Node nd;
+        nd.kind = Node::Kind::Record;
+        nd.fields = std::move(fs);
+        nodes.push_back(std::move(nd));
+        return (int)nodes.size() - 1;
+    }
+    int addArrow(int a, int b) {
+        Node nd;
+        nd.kind = Node::Kind::Arrow;
+        nd.from = a;
+        nd.to = b;
+        nodes.push_back(std::move(nd));
+        return (int)nodes.size() - 1;
+    }
+};
+
+// 名字等价：同一声明（同一节点）才算等——别名传递性依实现而异，本版"同节点即等"。
+bool nameEq(int a, int b);
+
+// 结构等价：树同构递归；环用假设集（coinduction 的操作面）——
+// (a,b) 进栈时先假设相等，回到同一对即判等（步数计数供正文对账）。
+bool structEq(const Graph &g, int a, int b, long long *steps = nullptr);
+
+}  // namespace teq
+
+#endif  // TIP_TYPEEQUIV_HPP
+```
+
+```cpp
+// file: src/typeequiv.cpp
+// file: src/typeequiv.cpp
+#include "typeequiv.hpp"
+
+namespace teq {
+
+bool nameEq(int a, int b) { return a == b; }
+
+namespace {
+
+// 递归辅助：assume 是"正在假设相等"的对集——环上的重逢即等。
+bool eq(const Graph &g, int a, int b, std::set<std::pair<int, int>> &assume,
+        long long *steps) {
+    if (++*steps > 10000) return false;   // 保险丝（正文的有界断言）
+    if (a == b) return true;              // 名字等价是结构等价的子集
+    if (g.nodes[a].kind != g.nodes[b].kind) return false;
+    auto key = std::make_pair(a, b);
+    if (assume.count(key)) return true;   // 环闭合：这对在途中已假设相等
+    assume.insert(key);
+    switch (g.nodes[a].kind) {
+    case Graph::Node::Kind::Int:
+        return true;                       // 两个 Int 节点：结构同构
+    case Graph::Node::Kind::Named:
+        // 名字不同的声明：结构等价看展开后的形状（本实现：名字即形状的根——
+        // 结构等价下"别名"应当透传；教学版按"名字不同即不等"处理并注明口径，
+        // 真实实现需要展开指向（Named 持 def 下标）——练习 3 的扩展点）
+        return false;
+    case Graph::Node::Kind::Record: {
+        const auto &fa = g.nodes[a].fields, &fb = g.nodes[b].fields;
+        if (fa.size() != fb.size()) return false;
+        for (size_t k = 0; k < fa.size(); ++k) {
+            if (fa[k].first != fb[k].first) return false;   // 字段名参与同构（含序）
+            if (!eq(g, fa[k].second, fb[k].second, assume, steps)) return false;
+        }
+        return true;
+    }
+    case Graph::Node::Kind::Arrow:
+        return eq(g, g.nodes[a].from, g.nodes[b].from, assume, steps) &&
+               eq(g, g.nodes[a].to, g.nodes[b].to, assume, steps);
+    }
+    return false;
+    }
+
+}  // namespace
+
+bool structEq(const Graph &g, int a, int b, long long *steps) {
+    long long dummy = 0;
+    if (!steps) steps = &dummy;
+    std::set<std::pair<int, int>> assume;
+    return eq(g, a, b, assume, steps);
+}
+
+}  // namespace teq
+```
+
+typeequiv.cpp 走读要点：
+
+- `eq()` 的三步防环序：**先查同节点**（a==b 短路——名字等价的内核）、**再查假设集**（环闭合）、**最后才展开**（递归同构）——次序换一下，环类型要么死循环要么误判；
+- 假设集是"证明中"的对集——返回时**不撤销**（coinductive 语义：证毕的对留在集里无害；归纳式实现才需撤销——练习 4 的对照点）；
+- 保险丝（steps > 10000）在有界性之外兜底——第 10 章单调性论证的机器版；
+- 字段序参与同构是 C 口径——ML 的无序记录是学说的另一支（表已列）。
+
+对账通道注记：本补章走 `expected/opt` 的 cmd/out 协议（`--typeequiv` 独立模式，不与 --check 语料混流）——**多种输出通道共存而不互扰**，programs 型示例扩断言的正规姿势。
+
 
 ## 27.15 小结：类型分析收官，格的世界在望
 

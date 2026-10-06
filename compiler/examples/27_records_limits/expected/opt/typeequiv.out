@@ -1,0 +1,7 @@
+[int,int] name=1 struct=1 steps=1
+[recAnon,recAnon] name=1 struct=1 steps=1
+[t1,t2(recursive-x2)] name=0 struct=1 steps=3
+[r1,r2(field-order)] name=0 struct=0 steps=1
+[T,U(diff-names)] name=0 struct=0 steps=1
+[f1,f1(arrow)] name=1 struct=1 steps=1
+[f1,int(kind-mismatch)] name=0 struct=0 steps=1
