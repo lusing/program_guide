@@ -12,7 +12,7 @@
      AG φ 的展开等价（AG φ ↔ φ ∧ AX AG φ）
      不动点迭代的单调收敛（有限状态版） *)
 
-Require Import List Bool Arith.
+From Stdlib Require Import List Bool Arith.
 Import ListNotations.
 
 (* ---------- CTL 语法 ---------- *)

@@ -6,7 +6,7 @@
    Γ∪{A} ⊢ B ⟹ Γ ⊢ A→B。侧条件不可省的经典反例入册：
    A ⊢ ∀x.A 但 ⊬ A → ∀x.A（当 x ∈ FV(A)）。 *)
 
-Require Import List Bool Arith.
+From Stdlib Require Import List Bool Arith.
 Import ListNotations.
 
 Inductive fterm : Type :=

@@ -4,7 +4,7 @@
    矢列 Γ ⊢ Δ 读作「Γ 全真 ⟹ Δ 至少一真」。G 的九条规则
    在引入联结词时保持这个读法——可靠性定理对推导归纳。 *)
 
-Require Import List Bool Arith.
+From Stdlib Require Import List Bool Arith.
 Import ListNotations.
 
 (* ---------- 语言与语义 ---------- *)

@@ -4,7 +4,7 @@
    演算本身成为研究对象：推导用归纳定义（hyp/ax/mp 三构造子），
    演绎定理对推导结构归纳——「元定理」的机器证法范本。 *)
 
-Require Import List.
+From Stdlib Require Import List.
 Import ListNotations.
 
 (* ---------- 语言：极小命题片段（var/imp/neg） ---------- *)

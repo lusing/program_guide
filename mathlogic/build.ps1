@@ -11,8 +11,10 @@
       pwsh -NoProfile -Command '& ./build.ps1 -Clean'         清理产物
 
     通道判定:
-      coq      : 拷贝到 build/coq/ex_*.v 后 `coqc -q`（8.20 不收数字开头模块名），
-                 退出码 0 且无 Error。
+      coq      : Rocq Platform 9.1（G:\rocq\Rocq-Platform~9.1~2026.01\bin\coqc.exe，
+                 原 scoop coqc 8.20 已弃用）拷贝到 build/coq/ex_*.v 后 `coqc -q`
+                 （数字开头模块名不收，故加 ex_ 前缀），退出码 0 且无 Error；
+                 deprecated 类 Warning 容忍。
       hott     : Rocq Platform 9.1 coqc，旗标 -q -noinit -indices-matter
                  -R G:\github\misc\Coq-HoTT\theories HoTT（依赖后台全量构建的 .vo）；
                  退出码 0 且无 Error。库未构建时整通道 SKIP。
@@ -123,7 +125,7 @@ foreach ($u in $units) {
             'coq' {
                 $target = Join-Path $coqBuild ('ex_' + $u.Name)
                 Copy-Item -LiteralPath $u.Path -Destination $target -Force
-                $out = & coqc -q $target 2>&1 | Out-String
+                $out = & 'G:\rocq\Rocq-Platform~9.1~2026.01\bin\coqc.exe' -q $target 2>&1 | Out-String
                 $ok = ($LASTEXITCODE -eq 0) -and -not ($out -match '(?m)^Error')
                 if (-not $ok) { $detail = $out }
             }

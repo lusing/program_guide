@@ -1,4 +1,4 @@
-Require Import Classical.
+From Stdlib Require Import Classical.
 
 (* ex16 —— FOL 自然演绎：量词规则、侧条件与 Drinker 悖论
    对书：Huth&Ryan §2.3 / Ben-Ari 3e Ch8 / EFT IV / Mints ch13
@@ -37,7 +37,7 @@ Qed.
 
 (* ---------- (2) Drinker 悖论（经典） ---------- *)
 
-Require Import Classical.
+From Stdlib Require Import Classical.
 
 (* ∃x.(Px → ∀y.Py)——任何酒吧里都有一个人：如果他喝，人人都喝 *)
 Theorem drinker : forall (P : nat -> Prop),

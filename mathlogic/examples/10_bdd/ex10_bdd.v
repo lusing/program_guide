@@ -9,7 +9,7 @@
      mk_correct      teval e (mk f) = eval e f  ——公式到 BDD 编译保语义
    化简的规模红利在 Lean 通道现场（mknode 坍缩两分支相同节点）。 *)
 
-Require Import List Bool Arith Lia.
+From Stdlib Require Import List Bool Arith Lia.
 Import ListNotations.
 
 Inductive form : Type :=

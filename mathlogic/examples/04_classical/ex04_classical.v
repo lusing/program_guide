@@ -68,7 +68,7 @@ Print Assumptions peirce_to_dne. (* Closed *)
 
 (* ---------- 原理本体：构造内核下证不出，公理化后记账 ---------- *)
 
-Require Import Classical_Prop.
+From Stdlib Require Import Classical_Prop.
 
 Theorem classical_dne : forall P : Prop, ~ ~ P -> P.
 Proof. intros P H. apply NNPP. exact H. Qed.

@@ -14,7 +14,7 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 25_hoare'    # 单章
 
 | 通道 | 入口 | 判定 |
 |---|---|---|
-| Coq 8.20.1 | coqc（拷 ex_ 前缀防重名） | exit 0 |
+| Rocq 9.1 | `G:\rocq\Rocq-Platform~9.1~2026.01\bin\coqc.exe`（拷 ex_ 前缀防重名；deprecated 警告容忍） | exit 0 |
 | HoTT | Rocq 9.1 + `tools/build-hott.ps1`（597 .vo 断点续编） | exit 0 |
 | Agda 2.8 | WSL Ubuntu-26.04，`-i /usr/share/agda-stdlib/src` | 无 error/warning |
 | Lean 4.25 | bare core（无 Mathlib！） | 无 error:/warning: |

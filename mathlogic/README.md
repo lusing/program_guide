@@ -59,7 +59,7 @@ mathlogic/
 
 | 通道 | 工具 | 判定 |
 |---|---|---|
-| Coq | coqc 8.20.1 | exit 0 + 无 Error |
+| Coq | Rocq 9.1 coqc.exe | exit 0 + 无 Error |
 | HoTT | Rocq 9.1 + 本地 Coq-HoTT（597 .vo 全量构建） | 同上 |
 | Agda | WSL Ubuntu-26.04 agda 2.8.0 + stdlib 2.3 | 无 error/warning |
 | Lean | lean 4.25.0 | 无 error:/warning: |

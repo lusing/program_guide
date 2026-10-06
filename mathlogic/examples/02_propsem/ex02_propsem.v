@@ -6,7 +6,7 @@
    旗舰两条：check f = true → f 语义有效；check f = false → 反赋值存在。
    桥梁是「满足一致性引理」：eval 只看 f 中出现的变元。 *)
 
-Require Import List Bool Arith.
+From Stdlib Require Import List Bool Arith.
 Import ListNotations.
 
 (* ---------- 语法 ---------- *)

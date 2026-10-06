@@ -9,7 +9,7 @@
      subst_comm         公式代入与语义代入交换（∀ 带 y ∉ fv s 侧条件）
      irrefl_trans       严格偏序的传递性推出无环——理论内推理样例 *)
 
-Require Import List Bool Arith.
+From Stdlib Require Import List Bool Arith.
 Import ListNotations.
 
 Inductive term : Type :=

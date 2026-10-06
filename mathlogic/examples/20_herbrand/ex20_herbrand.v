@@ -9,7 +9,7 @@
      sld_resolvent_sat    SLD 归结式保持满足（Horn 方向）
      immediate_conseq     T_P 算子的直接结论算子（定点语义） *)
 
-Require Import List Bool Arith.
+From Stdlib Require Import List Bool Arith.
 Import ListNotations.
 
 (* ---------- Horn 子句：atom ⊃ atom list ---------- *)

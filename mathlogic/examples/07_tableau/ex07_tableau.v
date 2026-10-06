@@ -7,7 +7,7 @@
      tsearch_complete 有模型必找到（fuel 充分时）
      tsearch_decides  搜索报 None ⟺ 公式有效（判定程序正确性） *)
 
-Require Import List Bool Arith Lia.
+From Stdlib Require Import List Bool Arith Lia.
 Import ListNotations.
 
 Inductive form : Type :=

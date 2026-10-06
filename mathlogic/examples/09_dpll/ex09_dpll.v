@@ -11,7 +11,7 @@
      dpll_sound    报 Some e 则 e 真满足
      dpll_complete 有模型且 fuel 充分则不报 None *)
 
-Require Import List Bool Arith Lia.
+From Stdlib Require Import List Bool Arith Lia.
 Import ListNotations.
 
 Definition lit : Type := (bool * nat)%type.

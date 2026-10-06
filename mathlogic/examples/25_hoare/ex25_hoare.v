@@ -7,7 +7,7 @@
      hoare_while     循环规则（不变式）
      countdown       具体程序：倒数计数的完全验证 *)
 
-Require Import List Bool Arith Lia.
+From Stdlib Require Import List Bool Arith Lia.
 Import ListNotations.
 
 (* ---------- while 语言 ---------- *)

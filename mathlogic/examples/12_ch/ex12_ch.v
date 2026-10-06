@@ -11,7 +11,7 @@
    值 = λ / inl / inr；闭中性项不存在（头部变元在空环境无类型）。
    全部零公理。 *)
 
-Require Import List Arith.
+From Stdlib Require Import List Arith.
 Import ListNotations.
 
 Inductive ty : Type :=

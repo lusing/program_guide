@@ -7,7 +7,7 @@
    dist 的 fuel=0 兜底返回未分配的 FOr——语义仍对，
    所以正确性证明完全不需要尺寸条件。 *)
 
-Require Import List Bool Arith.
+From Stdlib Require Import List Bool Arith.
 Import ListNotations.
 
 Inductive form : Type :=

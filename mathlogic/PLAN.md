@@ -19,7 +19,7 @@
 
 | 通道 | 工具链 | 入口 | 判定 |
 |---|---|---|---|
-| coq | coqc 8.20.1（Windows） | build.ps1 | 拷 ex_ 前缀 + exit 0 |
+| coq | Rocq 9.1（`G:\rocq\Rocq-Platform~9.1~2026.01\bin\coqc.exe`，原 8.20 弃用） | build.ps1 | 拷 ex_ 前缀 + exit 0 |
 | agda | WSL Ubuntu-26.04 agda 2.8.0 + stdlib 2.3 | build.ps1 | -i stdlib，无 error/warning |
 | lean | lean 4.25.0 | build.ps1 | 无 error:/warning: |
 | isabelle | G:\xulun3\Isabelle2025-2（Cygwin，HOL heap 预构建） | build.ps1 → examples/ROOT 每章 session MLNN | build exit 0 |

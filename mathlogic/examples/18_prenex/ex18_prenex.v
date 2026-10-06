@@ -13,7 +13,7 @@
    完整 PNF 算法（变元标准化+量词逐层前移+¬/→ 的经典改写）
    作为文档——四条构件正是其循环不变式的核心。 *)
 
-Require Import List Bool Arith.
+From Stdlib Require Import List Bool Arith.
 Import ListNotations.
 
 Inductive pform : Type :=

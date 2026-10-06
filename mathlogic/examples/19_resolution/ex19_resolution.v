@@ -9,7 +9,7 @@
      resolve_preserve   归结保留满足性（消去原子外的文字）
      resolution_sound   命题归结可靠性（前提满足 ⟹ 剩余满足） *)
 
-Require Import List Bool Arith.
+From Stdlib Require Import List Bool Arith.
 Import ListNotations.
 
 (* ---------- 项与代换 ---------- *)

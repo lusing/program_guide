@@ -32,7 +32,7 @@ Print Assumptions nn_intro.  (* Closed *)
 Lemma nn_elim : forall P : Prop, ~ ~ P -> P.
 Proof. intros P H. (* 卡在这里：没有信息把否定翻成肯定 *) Abort. *)
 
-Require Import Classical_Prop.
+From Stdlib Require Import Classical_Prop.
 
 Lemma nn_elim : forall P : Prop, ~ ~ P -> P.
 Proof. intros P H. apply NNPP. exact H. Qed.

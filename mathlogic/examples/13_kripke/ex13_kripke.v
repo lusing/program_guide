@@ -9,7 +9,7 @@
      monotone      w ≤ w' ⟹ (w ⊩ f → w' ⊩ f)
      lem_counter   世界 0 不强制 p ∨ ¬p —— LEM 在直觉逻辑无效 *)
 
-Require Import List Bool Arith Lia.
+From Stdlib Require Import List Bool Arith Lia.
 Import ListNotations.
 
 Inductive form : Type :=

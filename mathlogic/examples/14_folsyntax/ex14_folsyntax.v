@@ -8,7 +8,7 @@
      fv_subst_clause   fv(subst t x s) 的特征条款
      subst_comm        公式代入与语义代入交换（∀ 带 y ∉ fv s 侧条件） *)
 
-Require Import List Bool Arith.
+From Stdlib Require Import List Bool Arith.
 Import ListNotations.
 
 (* ---------- 语法 ---------- *)
