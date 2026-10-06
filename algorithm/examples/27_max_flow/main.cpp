@@ -4,7 +4,9 @@
 // 最小割定理）/ 27.5 推送-重贴标签对照 /
 // 27.6 二部图匹配与最小点覆盖（König 定理；Kuhn 增广路）/
 // 27.7 女孩与男孩：二部图最大独立集（染色取大 vs König；暴力对账）/
-// 27.8 午餐：牛妞拆 in/out 两点的三方独占流（食物-饮料直接匹配的误报对照）。
+// 27.8 午餐：牛妞拆 in/out 两点的三方独占流（食物-饮料直接匹配的误报对照）/
+// 27.9 最小费用最大流（残量边带单位费用，SPFA 逐次最短路，反向边费用取负）/
+// 27.10 方格取数：棋盘染色构造最大权独立集（总权 − 最大流，残量可达性还原方案）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -23,6 +25,7 @@ using std::println;
 #include <bit>
 #include <cassert>
 #include <cstdint>
+#include <cstdlib>
 #include <deque>
 #include <numeric>
 #include <random>
@@ -908,12 +911,465 @@ static void dining_demo() {
     assert(bound_violations == 0 && greedy_violations == 0);
 }
 
+// ════════════════════════════════════════════════════════════════════
+// 27.9 最小费用最大流
+// ════════════════════════════════════════════════════════════════════
+// 每条边除容量外还有单位费用 cost：送 1 单位流经过它要付 cost。目标：
+// 在流量达到最大值（或指定值 limit）的前提下总费用最小。
+// 邻接表存边；反向残量边的容量为 0、费用为 −cost——退流时把之前付的
+// 钱退回来，因此残量网络里会出现负权边，但永远没有负环（原始费用非负
+// 时逐次最短路成立）。
+struct McfEdge {
+    int to;       // 终点
+    int rev;      // 反向边在 g[to] 中的下标
+    int cap;      // 残量容量
+    int cost;     // 单位费用（反向边为负）
+};
+
+static void mcf_add_edge(std::vector<std::vector<McfEdge>>& g,
+                         int from, int to, int cap, int cost) {
+    const int rev_index = static_cast<int>(g[static_cast<std::size_t>(to)].size());
+    const int fwd_index = static_cast<int>(g[static_cast<std::size_t>(from)].size());
+    g[static_cast<std::size_t>(from)].push_back({to, rev_index, cap, cost});
+    g[static_cast<std::size_t>(to)].push_back({from, fwd_index, 0, -cost});
+}
+
+struct McfResult {
+    int flow;
+    long long cost;
+    long long rounds;      // SPFA 轮数（含最后一轮检测）
+};
+
+// 逐次最短路：每轮在残量网络上找 s→t 费用最小的增广路，尽量增广。
+// SPFA = 队列化 Bellman-Ford，容忍反向边的负权。
+static McfResult min_cost_flow(std::vector<std::vector<McfEdge>> g,
+                               int s, int t, int limit, bool verbose) {
+    const int n = static_cast<int>(g.size());
+    int flow = 0;
+    long long cost = 0;
+    long long rounds = 0;
+    while (flow < limit) {
+        const long long INF = (1LL << 60);
+        std::vector<long long> dist(static_cast<std::size_t>(n), INF);
+        std::vector<int> prev_v(static_cast<std::size_t>(n), -1);
+        std::vector<int> prev_e(static_cast<std::size_t>(n), -1);
+        std::vector<char> in_queue(static_cast<std::size_t>(n), 0);
+        std::deque<int> q;
+        dist[static_cast<std::size_t>(s)] = 0;
+        q.push_back(s);
+        in_queue[static_cast<std::size_t>(s)] = 1;
+        while (!q.empty()) {
+            const int u = q.front();
+            q.pop_front();
+            in_queue[static_cast<std::size_t>(u)] = 0;
+            for (int i = 0; i < static_cast<int>(g[static_cast<std::size_t>(u)].size()); ++i) {
+                const McfEdge& e = g[static_cast<std::size_t>(u)][static_cast<std::size_t>(i)];
+                if (e.cap > 0 &&
+                    dist[static_cast<std::size_t>(u)] + e.cost <
+                        dist[static_cast<std::size_t>(e.to)]) {
+                    dist[static_cast<std::size_t>(e.to)] =
+                        dist[static_cast<std::size_t>(u)] + e.cost;
+                    prev_v[static_cast<std::size_t>(e.to)] = u;
+                    prev_e[static_cast<std::size_t>(e.to)] = i;
+                    if (!in_queue[static_cast<std::size_t>(e.to)]) {
+                        in_queue[static_cast<std::size_t>(e.to)] = 1;
+                        q.push_back(e.to);
+                    }
+                }
+            }
+        }
+        ++rounds;
+        if (dist[static_cast<std::size_t>(t)] == INF) { break; }  // 已达最大流
+        int add = limit - flow;
+        for (int v = t; v != s; v = prev_v[static_cast<std::size_t>(v)]) {
+            add = std::min(add,
+                g[static_cast<std::size_t>(prev_v[static_cast<std::size_t>(v)])]
+                 [static_cast<std::size_t>(prev_e[static_cast<std::size_t>(v)])].cap);
+        }
+        if (verbose) {
+            std::vector<int> path;
+            for (int v = t; v != s; v = prev_v[static_cast<std::size_t>(v)]) {
+                path.push_back(v);
+            }
+            path.push_back(s);
+            print("    增广路 #{}（瓶颈 {}，单位费用 {}）: ", rounds, add, dist[t]);
+            for (std::size_t i = path.size(); i-- > 0;) {
+                print("{}{}", path[i], i == 0 ? "" : "→");
+            }
+            println("（本轮费用 {}）", add * dist[t]);
+        }
+        for (int v = t; v != s; v = prev_v[static_cast<std::size_t>(v)]) {
+            McfEdge& e = g[static_cast<std::size_t>(prev_v[static_cast<std::size_t>(v)])]
+                          [static_cast<std::size_t>(prev_e[static_cast<std::size_t>(v)])];
+            e.cap -= add;
+            g[static_cast<std::size_t>(v)][static_cast<std::size_t>(e.rev)].cap += add;
+        }
+        flow += add;
+        cost += add * dist[static_cast<std::size_t>(t)];
+    }
+    return {flow, cost, rounds};
+}
+
+// 独立对账：把每条正向边的流量当整数变量直接枚举（0..cap），叶端检查
+// 流量守恒，记录每个流量值 F 的最小费用。与逐次最短路完全独立。
+struct McfBruteEdge { int u, v, cap, cost; };
+
+static void mcf_brute_rec(const std::vector<McfBruteEdge>& edges, int idx,
+                          std::vector<int>& net, long long spent,
+                          int s, int t, std::vector<long long>& best) {
+    if (idx == static_cast<int>(edges.size())) {
+        for (int v = 0; v < static_cast<int>(net.size()); ++v) {
+            if (v == s || v == t) { continue; }
+            if (net[static_cast<std::size_t>(v)] != 0) { return; }
+        }
+        if (net[static_cast<std::size_t>(s)] > 0 ||
+            net[static_cast<std::size_t>(t)] < 0 ||
+            net[static_cast<std::size_t>(s)] + net[static_cast<std::size_t>(t)] != 0) {
+            return;
+        }
+        const int f = -net[static_cast<std::size_t>(s)];
+        best[static_cast<std::size_t>(f)] =
+            std::min(best[static_cast<std::size_t>(f)], spent);
+        return;
+    }
+    const McfBruteEdge& e = edges[static_cast<std::size_t>(idx)];
+    for (int f = 0; f <= e.cap; ++f) {
+        net[static_cast<std::size_t>(e.u)] -= f;
+        net[static_cast<std::size_t>(e.v)] += f;
+        mcf_brute_rec(edges, idx + 1, net, spent + 1LL * f * e.cost, s, t, best);
+        net[static_cast<std::size_t>(e.u)] += f;
+        net[static_cast<std::size_t>(e.v)] -= f;
+    }
+}
+
+static std::vector<long long> mcf_brute(
+        const std::vector<McfBruteEdge>& edges, int n, int s, int t, int max_f) {
+    std::vector<int> net(static_cast<std::size_t>(n), 0);
+    std::vector<long long> best(static_cast<std::size_t>(max_f) + 1, (1LL << 60));
+    best[0] = 0;
+    mcf_brute_rec(edges, 0, net, 0, s, t, best);
+    return best;
+}
+
+static void min_cost_flow_demo() {
+    println("");
+    println("=== 27.9 最小费用最大流：残量网络逐次最短路（SPFA）===");
+    // 案例 1：节点 0=s,1=a,2=b,3=t。两条独立路线：
+    //   s→a cap3 cost4，a→t cap7 cost4（单位费用 8）
+    //   s→b cap4 cost8，b→t cap4 cost8（单位费用 16）
+    // 先推满便宜路线 3 个，再走贵路线 4 个。
+    {
+        const int n = 4, s = 0, t = 3;
+        std::vector<std::vector<McfEdge>> g(static_cast<std::size_t>(n));
+        mcf_add_edge(g, 0, 1, 3, 4);
+        mcf_add_edge(g, 1, 3, 7, 4);
+        mcf_add_edge(g, 0, 2, 4, 8);
+        mcf_add_edge(g, 2, 3, 4, 8);
+        println("  案例1（两条独立路线，便宜路 s→a→t 单位 8/容量 3，贵路单位 16/容量 4）：");
+        const McfResult r = min_cost_flow(g, s, t, INT32_MAX, true);
+        println("    结果：流量 {}，最小费用 {}（手算 3×8 + 4×16 = 88）", r.flow, r.cost);
+        assert(r.flow == 7 && r.cost == 88 && r.rounds == 3);
+    }
+    // 案例 2：退流改道。s→1(1,费用1)，s→2(1,费用4)，1→2(1,费用1)，
+    // 1→t(1,费用100)，2→t(1,费用2)。
+    // 第 1 单位走 s→1→2→t（费用 4），把 2→t 占满；第 2 单位只能
+    // s→2，再沿反向边 2→1（费用 −1）退流改道，让先前那单位改走 1→t：
+    // 费用 4−1+100 = 103。等价于最优分配 s→1→t(101) + s→2→t(6) = 107。
+    {
+        const int n = 4, s = 0, t = 3;
+        std::vector<std::vector<McfEdge>> g(static_cast<std::size_t>(n));
+        mcf_add_edge(g, 0, 1, 1, 1);
+        mcf_add_edge(g, 0, 2, 1, 4);
+        mcf_add_edge(g, 1, 2, 1, 1);
+        mcf_add_edge(g, 1, 3, 1, 100);
+        mcf_add_edge(g, 2, 3, 1, 2);
+        println("  案例2（退流改道：反向边费用 −1 把先前支付的费用退回）：");
+        const McfResult r = min_cost_flow(g, s, t, INT32_MAX, true);
+        println("    结果：流量 {}，最小费用 {}（手算 101 + 6 = 107）", r.flow, r.cost);
+        assert(r.flow == 2 && r.cost == 107);
+    }
+
+    // 随机对账：4 个节点（s、2 中间点、t），随机边/容量/费用。
+    std::mt19937 rng{5489};
+    const int trials = 2000;
+    int mismatches = 0;
+    for (int trial = 0; trial < trials; ++trial) {
+        const int n = 4, s = 0, t = 3;
+        std::vector<std::vector<int>> cap(static_cast<std::size_t>(n),
+            std::vector<int>(static_cast<std::size_t>(n), 0));
+        std::vector<std::vector<int>> cost(static_cast<std::size_t>(n),
+            std::vector<int>(static_cast<std::size_t>(n), 0));
+        std::vector<McfBruteEdge> edges;
+        for (int u = 0; u < n; ++u) {
+            for (int v = u + 1; v < n; ++v) {
+                if (u != s && rand_below(rng, 2) == 0) { continue; }
+                if (rand_below(rng, 2) == 0) {
+                    const int c = 1 + static_cast<int>(rand_below(rng, 4));
+                    const int w = static_cast<int>(rand_below(rng, 10));
+                    cap[static_cast<std::size_t>(u)][static_cast<std::size_t>(v)] = c;
+                    cost[static_cast<std::size_t>(u)][static_cast<std::size_t>(v)] = w;
+                    edges.push_back({u, v, c, w});
+                }
+            }
+        }
+        const int fmax = edmonds_karp(cap, s, t, false).value;
+        if (fmax == 0) { continue; }
+        std::vector<std::vector<McfEdge>> g(static_cast<std::size_t>(n));
+        for (const McfBruteEdge& e : edges) {
+            mcf_add_edge(g, e.u, e.v, e.cap, e.cost);
+        }
+        const std::vector<long long> best = mcf_brute(edges, n, s, t, fmax);
+        // 对每个目标流量 F 分别求最小费用，逐点对账。
+        for (int f = 1; f <= fmax; ++f) {
+            const McfResult r = min_cost_flow(g, s, t, f, false);
+            if (r.flow != f || r.cost != best[static_cast<std::size_t>(f)]) {
+                ++mismatches;
+            }
+        }
+    }
+    println("  随机 {} 例（4 节点）：逐流量 SPFA vs 边流量枚举 不一致 {} 例",
+            trials, mismatches);
+    assert(mismatches == 0);
+
+    // 大例：50 节点随机费用网络，SPFA 增广仍然很快。
+    {
+        const int n = 50, s = 0, t = n - 1;
+        std::vector<std::vector<McfEdge>> g(static_cast<std::size_t>(n));
+        int edges_added = 0;
+        for (int u = 0; u < n; ++u) {
+            for (int v = u + 1; v < n; ++v) {
+                if (rand_below(rng, 3) == 0) {
+                    mcf_add_edge(g, u, v, 1 + static_cast<int>(rand_below(rng, 20)),
+                                 static_cast<int>(rand_below(rng, 50)));
+                    ++edges_added;
+                }
+            }
+        }
+        const McfResult r = min_cost_flow(g, s, t, INT32_MAX, false);
+        // 无费用约束时的最大流（对账流量值）：
+        std::vector<std::vector<int>> cap(static_cast<std::size_t>(n),
+            std::vector<int>(static_cast<std::size_t>(n), 0));
+        for (int u = 0; u < n; ++u) {
+            for (const McfEdge& e : g[static_cast<std::size_t>(u)]) {
+                if (e.cost >= 0) {   // 只数正向边
+                    cap[static_cast<std::size_t>(u)][static_cast<std::size_t>(e.to)] = e.cap;
+                }
+            }
+        }
+        const int fmax = edmonds_karp(cap, s, t, false).value;
+        println("  大例（50 节点 / {} 正向边）：最大流 {}，最小费用 {}；流量与无费用最大流一致 = {}",
+                edges_added, r.flow, r.cost, r.flow == fmax);
+        assert(r.flow == fmax);
+    }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 27.10 方格取数：最大权独立集
+// ════════════════════════════════════════════════════════════════════
+// m×n 方格每格有一个权值，选若干格使任意两个被选格不共边（上/下/左/右
+// 相邻），求权值和最大。棋盘天然二部：(x+y) 偶的格染黑、奇的染白，每条
+// 共边关系都跨颜色。构造流网络：源→黑格容量=该格权值；白格→汇容量=权
+// 值；黑格→每个相邻白格容量=∞。任何割都不会切断 ∞ 边（割容 ≤ 总权），
+// 所以割两侧的取法恰好给出一个合法方案：
+//   割容 = 被弃黑格的权 + 被选白格的权？—— 直接用 总权−最大流 = 最优权。
+// 方案还原：残量网络中从源可达的黑格入选；不可达的白格入选。
+struct GridChoice {
+    int value;
+    std::vector<std::pair<int, int>> cells;
+};
+
+static GridChoice grid_select(const std::vector<std::vector<int>>& w) {
+    const int rows = static_cast<int>(w.size());
+    const int cols = static_cast<int>(w[0].size());
+    const int cells_n = rows * cols;
+    const int s = cells_n, t = cells_n + 1, total_nodes = cells_n + 2;
+    int total = 0;
+    for (const auto& row : w) {
+        for (int v : row) { total += v; }
+    }
+    std::vector<std::vector<int>> cap(static_cast<std::size_t>(total_nodes),
+        std::vector<int>(static_cast<std::size_t>(total_nodes), 0));
+    auto id = [cols](int x, int y) { return x * cols + y; };
+    static const int dx[4]{0, 1, 0, -1};
+    static const int dy[4]{1, 0, -1, 0};
+    const int INF = total + 1;   // 任何有限割都 ≤ total，∞ 边必不被切
+    for (int x = 0; x < rows; ++x) {
+        for (int y = 0; y < cols; ++y) {
+            const int u = id(x, y);
+            if ((x + y) % 2 == 0) {
+                cap[static_cast<std::size_t>(s)][static_cast<std::size_t>(u)] =
+                    w[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
+                for (int d = 0; d < 4; ++d) {
+                    const int nx = x + dx[d], ny = y + dy[d];
+                    if (0 <= nx && nx < rows && 0 <= ny && ny < cols) {
+                        cap[static_cast<std::size_t>(u)]
+                           [static_cast<std::size_t>(id(nx, ny))] = INF;
+                    }
+                }
+            } else {
+                cap[static_cast<std::size_t>(u)][static_cast<std::size_t>(t)] =
+                    w[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
+            }
+        }
+    }
+    const MaxFlowResult r = edmonds_karp(cap, s, t, false);
+    // 残量可达性
+    std::vector<char> reach(static_cast<std::size_t>(total_nodes), 0);
+    std::deque<int> q;
+    reach[static_cast<std::size_t>(s)] = 1;
+    q.push_back(s);
+    while (!q.empty()) {
+        const int u = q.front();
+        q.pop_front();
+        for (int v = 0; v < total_nodes; ++v) {
+            if (!reach[static_cast<std::size_t>(v)] &&
+                cap[static_cast<std::size_t>(u)][static_cast<std::size_t>(v)] -
+                    r.flow[static_cast<std::size_t>(u)][static_cast<std::size_t>(v)] > 0) {
+                reach[static_cast<std::size_t>(v)] = 1;
+                q.push_back(v);
+            }
+        }
+    }
+    GridChoice ans;
+    ans.value = total - r.value;
+    for (int x = 0; x < rows; ++x) {
+        for (int y = 0; y < cols; ++y) {
+            const bool chosen = (x + y) % 2 == 0
+                ? reach[static_cast<std::size_t>(id(x, y))] != 0
+                : reach[static_cast<std::size_t>(id(x, y))] == 0;
+            if (chosen) { ans.cells.push_back({x, y}); }
+        }
+    }
+    return ans;
+}
+
+// 暴力：枚举全部 2^N 个子集，过滤相邻冲突。
+static int grid_brute(const std::vector<std::vector<int>>& w) {
+    const int rows = static_cast<int>(w.size());
+    const int cols = static_cast<int>(w[0].size());
+    const int n = rows * cols;
+    int best = 0;
+    for (int mask = 0; mask < (1 << n); ++mask) {
+        bool ok = true;
+        int sum = 0;
+        for (int x = 0; x < rows && ok; ++x) {
+            for (int y = 0; y < cols; ++y) {
+                const int bit = x * cols + y;
+                if ((mask & (1 << bit)) == 0) { continue; }
+                sum += w[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
+                if (y + 1 < cols && (mask & (1 << (x * cols + y + 1)))) { ok = false; }
+                if (x + 1 < rows && (mask & (1 << ((x + 1) * cols + y)))) { ok = false; }
+            }
+        }
+        if (ok) { best = std::max(best, sum); }
+    }
+    return best;
+}
+
+static void grid_pick_demo() {
+    println("");
+    println("=== 27.10 方格取数：棋盘染色 + 最小割（总权 − 最大流）===");
+    // 3×3 例：
+    //    75 250  21
+    //    34  70   5
+    //    75  15  58
+    std::vector<std::vector<int>> w = {
+        {75, 250, 21},
+        {34, 70, 5},
+        {75, 15, 58}};
+    const GridChoice ans = grid_select(w);
+    const int brute = grid_brute(w);
+    int total = 0;
+    for (const auto& row : w) {
+        for (int v : row) { total += v; }
+    }
+    println("  3×3 方格（总权 {}）：最大权 = {}（2^9 子集枚举 {}），选中格子：",
+            total, ans.value, brute);
+    std::vector<std::string> overlay = {
+        std::string(3, '.'), std::string(3, '.'), std::string(3, '.')};
+    for (auto [x, y] : ans.cells) {
+        overlay[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)] = '*';
+    }
+    for (const std::string& row : overlay) { println("    {}", row); }
+    int picked_sum = 0;
+    for (auto [x, y] : ans.cells) {
+        picked_sum += w[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
+    }
+    println("    选中格权值核对 = {}；方案合法性（无共边对）见随机对账", picked_sum);
+    assert(ans.value == 383 && brute == 383 && picked_sum == 383);
+    assert(ans.cells.size() == 3);
+
+    // 随机对账：≤9 格的随机棋盘，流构造 vs 全子集枚举；同时核验方案。
+    std::mt19937 rng{5489};
+    const int trials = 2000;
+    int value_mismatches = 0;
+    int invalid_schemes = 0;
+    for (int trial = 0; trial < trials; ++trial) {
+        const int rows = 2 + static_cast<int>(rand_below(rng, 2));
+        const int cols = 2 + static_cast<int>(rand_below(rng, 2));
+        std::vector<std::vector<int>> a(static_cast<std::size_t>(rows),
+            std::vector<int>(static_cast<std::size_t>(cols)));
+        for (int x = 0; x < rows; ++x) {
+            for (int y = 0; y < cols; ++y) {
+                a[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)] =
+                    1 + static_cast<int>(rand_below(rng, 99));
+            }
+        }
+        const GridChoice got = grid_select(a);
+        const int expect = grid_brute(a);
+        if (got.value != expect) { ++value_mismatches; }
+        int sum = 0;
+        bool valid = true;
+        for (std::size_t i = 0; i < got.cells.size(); ++i) {
+            auto [x1, y1] = got.cells[i];
+            sum += a[static_cast<std::size_t>(x1)][static_cast<std::size_t>(y1)];
+            for (std::size_t j = i + 1; j < got.cells.size(); ++j) {
+                auto [x2, y2] = got.cells[j];
+                if (std::abs(x1 - x2) + std::abs(y1 - y2) == 1) { valid = false; }
+            }
+        }
+        if (!valid || sum != got.value) { ++invalid_schemes; }
+    }
+    println("  随机 {} 例（2~3 行 × 2~3 列）：最优值不一致 {} 例；方案非法/权值不符 {} 例",
+            trials, value_mismatches, invalid_schemes);
+    assert(value_mismatches == 0 && invalid_schemes == 0);
+
+    // 大例：40×40，用推送-重贴标签求流（Edmonds-Karp 对该规模偏慢）。
+    // 这里只验证规模可解性与答案上下界。
+    const int rows = 40, cols = 40;
+    std::vector<std::vector<int>> big(static_cast<std::size_t>(rows),
+        std::vector<int>(static_cast<std::size_t>(cols)));
+    int big_total = 0;
+    for (int x = 0; x < rows; ++x) {
+        for (int y = 0; y < cols; ++y) {
+            big[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)] =
+                1 + static_cast<int>(rand_below(rng, 999));
+            big_total += big[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
+        }
+    }
+    const GridChoice big_ans = grid_select(big);
+    // 合法方案必然满足 0 ≤ 答案 ≤ 总权；另一个可行解：所有黑格。
+    int black_sum = 0;
+    for (int x = 0; x < rows; ++x) {
+        for (int y = 0; y < cols; ++y) {
+            if ((x + y) % 2 == 0) {
+                black_sum += big[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
+            }
+        }
+    }
+    println("  大例（40×40，总权 {}）：最大权 {}，≥ 单色可行解 {}，方案格数 {}",
+            big_total, big_ans.value, black_sum, big_ans.cells.size());
+    assert(big_ans.value >= black_sum && big_ans.value <= big_total);
+}
+
 int main() {
     edmonds_karp_demo();
     push_relabel_demo();
     machine_schedule_demo();
     girls_boys_demo();
     dining_demo();
+    min_cost_flow_demo();
+    grid_pick_demo();
     println("自检通过");
     return 0;
 }

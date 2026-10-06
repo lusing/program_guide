@@ -1,7 +1,8 @@
 // 16 动态规划（下）：LCS、最优 BST 与编辑距离（CLRS §15.4–15.5）。
 // 结构：16.1 LCS（c/b 表 + 重构，图 15.8 数据）/ 16.2 前缀码性质与
 // 多重对账 / 16.3 最优 BST（图 15.10 数据，期望代价 2.75）/
-// 16.4 编辑距离（LCS 的变体，C++ 实战延伸）。
+// 16.4 编辑距离（LCS 的变体，C++ 实战延伸）/
+// 16.7 石子合并：区间 DP（直线/圆环、最小/最大，合并树重构）。
 #ifdef ALGO_NO_PRINT
 #include <cstdio>
 #include <format>
@@ -19,6 +20,7 @@ using std::println;
 #include <bit>
 #include <cassert>
 #include <cstdint>
+#include <random>
 #include <string>
 #include <utility>
 #include <vector>
@@ -460,12 +462,225 @@ static void antichain_demo() {
     assert(strict_lds({}) == 0 && max_matching(e) == 0);
 }
 
+// ═══ 16.7 石子合并：区间 DP（直线 / 圆环，最小 / 最大）═══
+// n 堆石子排成一线（或圆环），每次只能合并**相邻**两堆，花费 = 新堆的
+// 石子数。关键观察：无论按什么顺序合并，最后一次一定在某个「缝」k 处把
+// 区间 [i,j] 分成左右两段，而最后一次的花费恒为整段石子总数 w(i,j)。
+//   mn[i][j] = min_{i≤k<j}(mn[i][k] + mn[k+1][j]) + w(i,j)
+//   mx[i][j] = max_{i≤k<j}(mx[i][k] + mx[k+1][j]) + w(i,j)
+// 单堆 mn[i][i] = mx[i][i] = 0。w(i,j) 用前缀和 O(1) 查表。
+// 圆环：复制成 a,a[0..n−2] 共 2n−1 堆的直线，在所有长度 n 的窗口里取极值。
+
+static std::uint32_t stone_rand_below(std::mt19937& rng, std::uint32_t n) {
+    return static_cast<std::uint32_t>(
+        (static_cast<std::uint64_t>(rng()) * n) >> 32);
+}
+
+struct StoneTables {
+    std::vector<std::vector<int>> mn;    // mn[i][j]：合并第 i..j 堆的最小花费
+    std::vector<std::vector<int>> mx;
+    std::vector<std::vector<int>> cut;   // 取得最小值的分割缝（重构合并树）
+};
+
+static StoneTables stone_build(const std::vector<int>& a) {
+    const int m = static_cast<int>(a.size());
+    std::vector<long long> pref(static_cast<std::size_t>(m) + 1, 0);
+    for (int i = 0; i < m; ++i) {
+        pref[static_cast<std::size_t>(i) + 1] =
+            pref[static_cast<std::size_t>(i)] + a[static_cast<std::size_t>(i)];
+    }
+    StoneTables t;
+    t.mn.assign(static_cast<std::size_t>(m),
+                std::vector<int>(static_cast<std::size_t>(m), 0));
+    t.mx.assign(static_cast<std::size_t>(m),
+                std::vector<int>(static_cast<std::size_t>(m), 0));
+    t.cut.assign(static_cast<std::size_t>(m),
+                 std::vector<int>(static_cast<std::size_t>(m), 0));
+    for (int i = 0; i < m; ++i) { t.cut[static_cast<std::size_t>(i)][static_cast<std::size_t>(i)] = i; }
+    // 按区间长度自小到大：算 [i,j] 时所有更短的子区间都已就绪。
+    for (int width = 2; width <= m; ++width) {
+        for (int i = 0; i + width <= m; ++i) {
+            const int j = i + width - 1;
+            const int total =
+                static_cast<int>(pref[static_cast<std::size_t>(j) + 1]
+                                 - pref[static_cast<std::size_t>(i)]);
+            int lo = INT32_MAX, hi = INT32_MIN, bestk = i;
+            for (int k = i; k < j; ++k) {
+                const int vl = t.mn[static_cast<std::size_t>(i)][static_cast<std::size_t>(k)]
+                             + t.mn[static_cast<std::size_t>(k) + 1][static_cast<std::size_t>(j)] + total;
+                const int vh = t.mx[static_cast<std::size_t>(i)][static_cast<std::size_t>(k)]
+                             + t.mx[static_cast<std::size_t>(k) + 1][static_cast<std::size_t>(j)] + total;
+                if (vl < lo) { lo = vl; bestk = k; }
+                if (vh > hi) { hi = vh; }
+            }
+            t.mn[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] = lo;
+            t.mx[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] = hi;
+            t.cut[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] = bestk;
+        }
+    }
+    return t;
+}
+
+// 圆环：在 2n−1 的复制序列上做一次直线 DP，扫描 n 个长度 n 的窗口。
+struct CircleAnswer { int mn, mx; };
+
+static CircleAnswer stone_circle(const std::vector<int>& a) {
+    const int n = static_cast<int>(a.size());
+    std::vector<int> b;
+    b.reserve(static_cast<std::size_t>(2 * n - 1));
+    b = a;
+    for (int i = 0; i < n - 1; ++i) {
+        b.push_back(a[static_cast<std::size_t>(i)]);
+    }
+    const StoneTables t = stone_build(b);
+    int lo = 0, hi = 0;
+    if (n >= 1) {
+        lo = t.mn[0][static_cast<std::size_t>(n) - 1];
+        hi = t.mx[0][static_cast<std::size_t>(n) - 1];
+    }
+    for (int i = 1; i < n; ++i) {
+        lo = std::min(lo, t.mn[static_cast<std::size_t>(i)]
+                                  [static_cast<std::size_t>(i + n) - 1]);
+        hi = std::max(hi, t.mx[static_cast<std::size_t>(i)]
+                                  [static_cast<std::size_t>(i + n) - 1]);
+    }
+    return {lo, hi};
+}
+
+// 按 cut 表把最小花费的合并树写成括号式，直接读就能得到合并顺序。
+static std::string stone_scheme(const std::vector<int>& a,
+                                const StoneTables& t, int i, int j) {
+    if (i == j) { return std::to_string(a[static_cast<std::size_t>(i)]); }
+    const int k = t.cut[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)];
+    return "(" + stone_scheme(a, t, i, k) + " " +
+           stone_scheme(a, t, k + 1, j) + ")";
+}
+
+// 暴力对账：在可变堆列表上真实枚举每个相邻合并。直线的对数 = m−1；
+// 圆环还有首尾对，对数 = m。与 DP 的代码路径完全独立。
+static void stone_brute_rec(const std::vector<int>& piles, bool circle,
+                            int spent, int& lo, int& hi) {
+    const int m = static_cast<int>(piles.size());
+    if (m == 1) {
+        lo = std::min(lo, spent);
+        hi = std::max(hi, spent);
+        return;
+    }
+    const int pairs = circle ? m : m - 1;
+    for (int p = 0; p < pairs; ++p) {
+        const int q = (p + 1) % m;
+        const int merged = piles[static_cast<std::size_t>(p)]
+                         + piles[static_cast<std::size_t>(q)];
+        std::vector<int> next;
+        next.reserve(static_cast<std::size_t>(m - 1));
+        for (int z = 0; z < m; ++z) {
+            if (z == q) { continue; }
+            next.push_back(z == p ? merged : piles[static_cast<std::size_t>(z)]);
+        }
+        stone_brute_rec(next, circle, spent + merged, lo, hi);
+    }
+}
+
+static void stone_brute(const std::vector<int>& a, bool circle,
+                        int& out_lo, int& out_hi) {
+    out_lo = INT32_MAX;
+    out_hi = INT32_MIN;
+    stone_brute_rec(a, circle, 0, out_lo, out_hi);
+}
+
+static void stone_merge_demo() {
+    println("=== 16.7 石子合并：区间 DP（直线 / 圆环）===");
+    const std::vector<int> a{5, 8, 6, 9, 2, 3};
+    const StoneTables t = stone_build(a);
+    const CircleAnswer c = stone_circle(a);
+    const std::string scheme = stone_scheme(a, t, 0,
+                                           static_cast<int>(a.size()) - 1);
+    println("  6 堆 [5,8,6,9,2,3]：直线最小 {}、最大 {}；圆环最小 {}、最大 {}",
+            t.mn[0][5], t.mx[0][5], c.mn, c.mx);
+    assert(t.mn[0][5] == 84 && t.mx[0][5] == 129);
+    assert(c.mn == 81 && c.mx == 130);
+    println("  最小花费的合并树（括号式，内层先合并）：{}", scheme);
+    // 同一合并树在「直线最小」上的总花费必须自洽：逐对内层和 = 84。
+    // 与暴力枚举（直线、圆环分别全枚举）对账。
+    int brute_lmn = 0, brute_lmx = 0, brute_cmn = 0, brute_cmx = 0;
+    stone_brute(a, false, brute_lmn, brute_lmx);
+    stone_brute(a, true, brute_cmn, brute_cmx);
+    println("  暴力枚举全部合并历史：直线 {}/{}，圆环 {}/{}（与 DP 完全一致 = 1）",
+            brute_lmn, brute_lmx, brute_cmn, brute_cmx);
+    assert(brute_lmn == 84 && brute_lmx == 129);
+    assert(brute_cmn == 81 && brute_cmx == 130);
+
+    // 随机小例四向对账：直线/圆环 × DP/暴力；顺带验证「最大值在端点」性质：
+    //   mx[i][j] = max(mx[i][j−1], mx[i+1][j]) + w(i,j)
+    std::mt19937 rng{5489};
+    const int trials = 3000;
+    int mismatches = 0, endpoint_violations = 0;
+    for (int s = 0; s < trials; ++s) {
+        const int n = 1 + static_cast<int>(stone_rand_below(rng, 6));
+        std::vector<int> piles(static_cast<std::size_t>(n));
+        for (int& v : piles) {
+            v = 1 + static_cast<int>(stone_rand_below(rng, 9));
+        }
+        const StoneTables tl = stone_build(piles);
+        const CircleAnswer cc = stone_circle(piles);
+        int blmn = 0, blmx = 0, bcmn = 0, bcmx = 0;
+        stone_brute(piles, false, blmn, blmx);
+        stone_brute(piles, true, bcmn, bcmx);
+        if (tl.mn[0][static_cast<std::size_t>(n) - 1] != blmn ||
+            tl.mx[0][static_cast<std::size_t>(n) - 1] != blmx ||
+            cc.mn != bcmn || cc.mx != bcmx) { ++mismatches; }
+        // 端点性质（n≥2 才有意义）
+        if (n >= 2) {
+            std::vector<long long> prefix(static_cast<std::size_t>(n) + 1, 0);
+            for (int z = 0; z < n; ++z) {
+                prefix[static_cast<std::size_t>(z) + 1] =
+                    prefix[static_cast<std::size_t>(z)] +
+                    piles[static_cast<std::size_t>(z)];
+            }
+            for (int width = 2; width <= n; ++width) {
+                for (int i = 0; i + width <= n; ++i) {
+                    const int j = i + width - 1;
+                    const int wsum = static_cast<int>(
+                        prefix[static_cast<std::size_t>(j) + 1]
+                        - prefix[static_cast<std::size_t>(i)]);
+                    const int endpoint =
+                        std::max(tl.mx[static_cast<std::size_t>(i)][static_cast<std::size_t>(j) - 1],
+                                 tl.mx[static_cast<std::size_t>(i) + 1][static_cast<std::size_t>(j)]) + wsum;
+                    if (endpoint != tl.mx[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)]) {
+                        ++endpoint_violations;
+                    }
+                }
+            }
+        }
+    }
+    println("  随机 {} 小例（n≤6）：四向对账不一致 {} 例；最大值端点性质违反 {} 例",
+            trials, mismatches, endpoint_violations);
+    assert(mismatches == 0 && endpoint_violations == 0);
+
+    // 大例：n=300 也能瞬间完成，直/环答案都有合理上下界。
+    const int nbig = 300;
+    std::vector<int> big(static_cast<std::size_t>(nbig));
+    std::mt19937 big_rng{5489};
+    long long total = 0;
+    for (int& v : big) {
+        v = 1 + static_cast<int>(stone_rand_below(big_rng, 99));
+        total += v;
+    }
+    const StoneTables tb = stone_build(big);
+    const CircleAnswer cb = stone_circle(big);
+    println("  大例（{} 堆，每堆 ≤99）：直线最小 {}，圆环最小 {}（单趟总和 {} ⇒ 答案≥总和）",
+            nbig, tb.mn[0][nbig - 1], cb.mn, total);
+    assert(tb.mn[0][nbig - 1] >= total);
+    assert(cb.mn <= tb.mn[0][nbig - 1]);   // 圆环缝口自由，不会比直线差
+}
+
 int main() {
     lcs_demo();
     optimal_bst_demo();
     edit_distance_demo();
     lnis_demo();
     antichain_demo();
+    stone_merge_demo();
     println("自检通过");
     return 0;
 }
