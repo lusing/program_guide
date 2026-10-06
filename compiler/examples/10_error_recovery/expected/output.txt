@@ -1,0 +1,44 @@
+[lex] rules=15 alphabet=47 dfa_states=20
+== S2 detection points ==
+  ll@2 lr@2  ==  [x = ;]
+  ll@3 lr@3  ==  [print 2+;]
+  ll@3 lr@3  ==  [x = 2]
+  ll@0 lr@0  ==  [(x = 4);]
+  ll@5 lr@5  ==  [x = (2+;]
+  ll@2 lr@2  ==  [x = )2(; ]
+  ll@4 lr@4  ==  [x = 2+*3;]
+  ll@1 lr@1  ==  [print;]
+  ll@3 lr@3  ==  [x = 2 3;]
+  ll@2 lr@2  ==  [print 4 5;]
+[stats] total=10 equal=10 lr-earlier=0 ll-earlier=0
+== S3 cascade ==
+[LR TokenDel] diags=3 accept=1
+    @7 no action [la=ID]
+    @8 no action [la==]
+    @9 no action [la=NUM]
+[LR Panic   ] diags=1 accept=1
+    @7 no action [la=ID]
+[LL TokenDel] diags=3 accept=1
+[LL Panic   ] diags=1 accept=1
+== S4 error production ==
+[accept] 1 diags=1
+    @6 no action [la=print]
+[reductions after recovery]
+    14: stmt → error ;
+    1: prog → prog stmt
+    12: expr → NUM
+    3: stmt → ID = expr ;
+    1: prog → prog stmt
+    13: expr → ID
+    4: stmt → print expr ;
+    1: prog → prog stmt
+[printed] 3
+[tail match] 1
+== S5 panic salvage ==
+[accept] 1 diags=1
+[printed] 1 4
+[expect match] 1
+== S6 phrase bounded ==
+[phrase on 'print ((();'] diags=3 steps=28 accept=1
+[phrase on deep parens] diags=17 steps=67 accept=1
+[bounded] 1
