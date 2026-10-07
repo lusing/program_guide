@@ -78,3 +78,7 @@ End Sub
 4. 找 exe 旁边的资源用 `ExePath()`，`CurDir()` 是用户运行时的目录——两者经常不同。
 5. `Dir()` 是**游标式**遍历：第一次带模式，后续空参取下一个；中途改遍历别的模式会丢游标。
 6. **用户名变量平台不同**：Windows `USERNAME` 恒有；Linux/macOS 是 `USER`（`USERNAME` 常为空）——跨平台程序两都得试或 `#ifdef` 分支。
+
+---
+
+上一章：[20 ⭐C 互操作](20-cinterop.md) · 下一章：[22 ⭐方言模式](22-dialects.md)

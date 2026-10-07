@@ -88,3 +88,7 @@ This.limit_ = limit_
 4. `For/Step/Next` 三件套都在成员侧；无 Step 子句时调无参 `Step()`。
 5. **字段与形参同名 → 自赋值静默通过**——`This.` 前缀保平安（亲踩，断言抓获）。
 6. 重载 `=` 要的是 `Operator = (a, b) As Boolean`（比较），不是赋值——赋值是 `Let`（成员）。
+
+---
+
+上一章：[13 OOP II](13-oop2.md) · 下一章：[15 错误处理](15-errors.md)

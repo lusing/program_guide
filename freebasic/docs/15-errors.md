@@ -78,3 +78,7 @@ fbc -w all -g -exx app.bas -x app.exe    # 断言 + 数组边界 + 空指针检�
 3. `Resume Next` 在 `-lang fb` 编译错误（仅 qb/fblite/deprecated）。
 4. 断言失败退出码 1；`-exx` 越界/空指针退出码 = 错误号（如 6）——脚本判定用退出码非零即可。
 5. `Assert(cond)` 只收一个参数，不能像 C 那样带消息字符串。
+
+---
+
+上一章：[14 运算符重载](14-operators.md) · 下一章：[16 文件 IO](16-files.md)

@@ -99,3 +99,7 @@ End Function
 5. 无内建 `Split/Replace/Join`——手写（本章有现成实现）。
 6. `Mid/InStr` 下标**从 1 起**，不是 0。
 7. `String * N` 定长串的 `Len` 恒等于 N（右侧空格补齐），要"有效长度"自己 RTrim。
+
+---
+
+上一章：[06 数组](06-arrays.md) · 下一章：[08 用户定义类型](08-udt.md)

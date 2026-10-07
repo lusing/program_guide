@@ -80,3 +80,7 @@ fbc -w all main.bas mod_counter.bas mod_math.bas -x app.exe
 3. `.bi` 首句 `#Include Once "自己.bi"` 做自包含守卫。
 4. `Using` 放文件头部会全局污染前缀；放在需要的作用域里。
 5. Namespace 内私有状态用 `Dim`（不带 Shared）；`Dim Shared` 是"全局变量"逃生门，能不用就不用。
+
+---
+
+上一章：[10 预处理器与宏](10-preprocessor.md) · 下一章：[12 OOP I](12-oop1.md)

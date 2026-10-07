@@ -98,3 +98,7 @@ Close #h
 4. 常量名撞内建函数：`Const BIN = ...` 撞 `Bin()`（二进制串函数）直接"Duplicated definition"——`HEX/OCT/VAL/STR` 同理小心。
 5. `Print Using` 的 `_` 是"下一字符字面量"转义，不是空格（QB 语义）。
 6. 示例跑完要 `Kill` 自产文件——仓库干净，验证可重复。
+
+---
+
+上一章：[15 错误处理](15-errors.md) · 下一章：[17 时间与随机](17-time-random.md)

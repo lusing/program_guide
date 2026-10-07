@@ -90,3 +90,7 @@ MultiKey(SC_LEFT)    ' 查询键按下状态（做连续移动，如贪吃蛇）
 6. 文件号从 `FreeFile()` 拿——`Dim h As Integer`（值 0）直接 `As #h` = runtime error 1。
 7. `Sleep ms` 到点**或按键**即返回；纯限时不想被按键打断的场景自己记起止时间。
 8. **Linux 上 gfxlib2 走 X11**（`DISPLAY` 必须有效；WSL2 需 WSLg，headless CI 用 `xvfb-run` 包一层）——WSLg 实测开窗/像素读写全过。
+
+---
+
+上一章：[17 时间与随机](17-time-random.md) · 下一章：[19 ⭐多线程](19-threads.md)

@@ -115,3 +115,7 @@ Var ms = (t1.tv_sec - t0.tv_sec) * 1000.0 + (t1.tv_nsec - t0.tv_nsec) / 1000000.
 5. 老教程的 `#Include "windows.bi"`（无 Once）多次包含会重复定义——永远 `Once`。
 6. **Linux 的 `crt/*.bi` 只 Declare 函数不导出宏**：`_SC_*`（84/85/30）、`CLOCK_MONOTONIC`（1）等 glibc ABI 值要手写 `#define`（示例 20 有全套）。
 7. `Print Using` 格式串里 `_` 是转义前缀——想在格式串里印出下划线要么写 `__`，要么换词（实测 "clock_gettime" 被吃成 "clockgettime"）。
+
+---
+
+上一章：[19 ⭐多线程](19-threads.md) · 下一章：[21 命令行程序](21-cli.md)
