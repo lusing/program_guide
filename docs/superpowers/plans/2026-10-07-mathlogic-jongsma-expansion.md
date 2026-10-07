@@ -18,14 +18,14 @@
 
 ## Batches
 
-- [ ] 批次零：环境冒烟（build.ps1 -Chapter 42 抽验 coq/lean 通道活；Prolog swipl 活）
-- [ ] 批次一：43 数学归纳与递归（读 ch3_induction.txt §3.1–3.2 部分；C/L）
-- [ ] 批次二：44 递推、结构归纳与 Peano 算术（§3.3–3.4；C/L）
-- [ ] 批次三：45 整除性与初等数论（§3.5；C/L）
-- [ ] 批次四：46 集合、幂集与计数（ch4_sets；C/L）
-- [ ] 批次五：47 无穷集合与停机问题（ch5_infinity；C/L）
-- [ ] 批次六：48 函数与等价关系（ch6_functions；C/L）
-- [ ] 批次七：49 偏序与格（ch7_boolean §7.1–7.2；C/L）
+- [x] 批次零：环境冒烟（build.ps1 -Chapter 42 抽验 coq/lean 通道活；Prolog swipl 活）
+- [x] 批次一：43 数学归纳与递归（读 ch3_induction.txt §3.1–3.2 部分；C/L）
+- [x] 批次二：44 递推、结构归纳与 Peano 算术（§3.3–3.4；C/L）
+- [x] 批次三：45 整除性与初等数论（§3.5；C/L）
+- [x] 批次四：46 集合、幂集与计数（ch4_sets；C/L）
+- [x] 批次五：47 无穷集合与停机问题（ch5_infinity；C/L）
+- [x] 批次六：48 函数与等价关系（ch6_functions；C/L）
+- [x] 批次七：49 偏序与格（ch7_boolean §7.1–7.2；C/L）
 - [ ] 批次八：50 Boole 代数与逻辑电路（§7.3–7.6；C/L/P）
 - [ ] 批次九：51 图论专题（ch8_graphs；C/L/P）
 - [ ] 批次十：对账收官——42 章导航接 43；26 收官章补 Jongsma 导读+账本更新（140 单元）；README（标题域+章节表+计数）；PLAN.md（九书+新章行）；CHEATSheet 43–51 坑位节；全量 -All 回归；commit
