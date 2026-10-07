@@ -1,6 +1,6 @@
-# 第 66 章　并行与局部性：迭代空间、循环交换与分块
+# 第 68 章　并行与局部性：迭代空间、循环交换与分块
 
-## 66.1 问题：缓存不是内存的廉价化妆
+## 68.1 问题：缓存不是内存的廉价化妆
 
 处理器每秒
 吞吐几十亿条
@@ -61,7 +61,7 @@ transformations，
    三种顺序的
    miss 机器对账。
 
-## 66.2 迭代空间与仿射访问
+## 68.2 迭代空间与仿射访问
 
 完美嵌套循环的
 **迭代空间**：
@@ -101,7 +101,7 @@ a[2*i][3*j+1]  下标 (2i, 3j+1)
 ——整数解的
 存在问题。
 
-## 66.3 方向向量与 GCD 检验
+## 68.3 方向向量与 GCD 检验
 
 **方向向量**
 （direction
@@ -200,7 +200,7 @@ a[i][j] 跨行。
 行优先，
 邻居回家。
 
-## 66.4 分块：把复用装进缓存窗口
+## 68.4 分块：把复用装进缓存窗口
 
 交换救得了
 **空间局部性**
@@ -253,7 +253,7 @@ a[i-1][j]
 思想的
 完全体。
 
-## 66.5 期望输出解读
+## 68.5 期望输出解读
 
 缓存模拟段
 （N=16、
@@ -326,7 +326,7 @@ stencil 的
 空间，
 分块管时间**。
 
-## 66.6 工程注意点
+## 68.6 工程注意点
 
 - **GCD 检验
   是保守的**。
@@ -388,7 +388,7 @@ stencil 的
   无依赖的
   迭代
   可以并行
-  （第 64 章
+  （第 66 章
     的 ILP
     是指令级，
     这里是
@@ -401,7 +401,7 @@ stencil 的
   编在一起
   不是偶然。
 
-## 66.7 本章配套文件
+## 68.7 本章配套文件
 
 本示例无
 ANTLR、
@@ -412,7 +412,7 @@ ANTLR、
 走"简单程序"
 对账协议。
 
-### 66.7.1 loc.hpp 与 loc.cpp
+### 68.7.1 loc.hpp 与 loc.cpp
 
 GCD 检验、
 方向向量、
@@ -424,7 +424,7 @@ GCD 检验、
 ```cpp
 // file: src/loc.hpp
 // file: src/loc.hpp
-// 第 66 章配套：仿射循环变换的合法性与缓存收益。
+// 第 68 章配套：仿射循环变换的合法性与缓存收益。
 #ifndef TIP_LOC_HPP
 #define TIP_LOC_HPP
 
@@ -465,7 +465,7 @@ CacheReport cacheSim(int N, Order ord, int lineSize, int cacheLines);
 ```cpp
 // file: src/loc.cpp
 // file: src/loc.cpp
-// 第 66 章配套：仿射访问分析（方向向量 + GCD 检验）、循环交换合法性、
+// 第 68 章配套：仿射访问分析（方向向量 + GCD 检验）、循环交换合法性、
 // 直接映射缓存模拟（原序/交换/分块三种顺序的 miss 对比）。
 #include "loc.hpp"
 
@@ -561,7 +561,7 @@ CacheReport cacheSim(int N, Order ord, int lineSize, int cacheLines) {
 }  // namespace tip
 ```
 
-### 66.7.2 驱动 main.cpp
+### 68.7.2 驱动 main.cpp
 
 依赖检验 +
 反例 +
@@ -571,7 +571,7 @@ CacheReport cacheSim(int N, Order ord, int lineSize, int cacheLines) {
 ```cpp
 // file: src/main.cpp
 // file: src/main.cpp
-// 第 66 章驱动（无参运行，走“简单程序”对账协议）：
+// 第 68 章驱动（无参运行，走“简单程序”对账协议）：
 //   依赖检验（GCD + 方向向量）→ 交换合法性 → 三种顺序的缓存 miss 对比。
 #include "loc.hpp"
 
@@ -612,7 +612,7 @@ int main() {
 }
 ```
 
-### 66.7.3 期望输出 expected/output.txt
+### 68.7.3 期望输出 expected/output.txt
 
 ```text
 ; expected: expected/output.txt
@@ -629,7 +629,7 @@ int main() {
   tiled 摊 miss 最低（时间局部性入袋）
 ```
 
-## 66.8 小结与练习
+## 68.8 小结与练习
 
 龙书之行
 最后一块

@@ -1,5 +1,5 @@
 // file: src/ilp.hpp
-// 第 64 章配套：块内依赖 DAG、关键路径表调度、modulo scheduling 报告。
+// 第 66 章配套：块内依赖 DAG、关键路径表调度、modulo scheduling 报告。
 #ifndef TIP_ILP_HPP
 #define TIP_ILP_HPP
 

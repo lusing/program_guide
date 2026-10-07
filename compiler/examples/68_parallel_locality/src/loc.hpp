@@ -1,5 +1,5 @@
 // file: src/loc.hpp
-// 第 66 章配套：仿射循环变换的合法性与缓存收益。
+// 第 68 章配套：仿射循环变换的合法性与缓存收益。
 #ifndef TIP_LOC_HPP
 #define TIP_LOC_HPP
 

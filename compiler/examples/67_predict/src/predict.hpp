@@ -1,5 +1,5 @@
 // file: src/predict.hpp
-// 第 65 章配套：分支预测与存储预取的模拟（虎书 §20.3 + §21.2–21.3）。
+// 第 67 章配套：分支预测与存储预取的模拟（虎书 §20.3 + §21.2–21.3）。
 #ifndef TIP_PREDICT_HPP
 #define TIP_PREDICT_HPP
 

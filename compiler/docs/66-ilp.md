@@ -1,6 +1,6 @@
-# 第 64 章　指令级并行：依赖 DAG 与指令调度
+# 第 66 章　指令级并行：依赖 DAG 与指令调度
 
-## 64.1 问题：顺序是写在纸上，不是写在芯片里
+## 66.1 问题：顺序是写在纸上，不是写在芯片里
 
 第 63 章结束时的
 指令流是
@@ -42,7 +42,7 @@ scheduling，
   II 双下界。
 
 配套示例
-`examples/64_ilp`：
+`examples/66_ilp`：
 依赖 DAG
 （带边类标注）、
 宽度 1/2 两档
@@ -56,7 +56,7 @@ scheduling，
 循环体的
 modulo 报告。
 
-## 64.2 依赖三分法与内存保守
+## 66.2 依赖三分法与内存保守
 
 两条指令
 对同一变量
@@ -121,7 +121,7 @@ input/output
 这类边
 就是它们。
 
-## 64.3 依赖 DAG 与关键路径
+## 66.3 依赖 DAG 与关键路径
 
 把块内每条指令
 当结点，
@@ -163,7 +163,7 @@ DAG 的最大 h
 也要至少
 11 周期。
 
-## 64.4 表调度：贪心装箱
+## 66.4 表调度：贪心装箱
 
 **表调度**
 （list
@@ -242,7 +242,7 @@ NP 难的
 装箱，
 贪心见好就收。
 
-## 64.4b 树高平衡：先把表达式掰成好调度的形状
+## 66.4b 树高平衡：先把表达式掰成好调度的形状
 
 表调度
 只能在
@@ -477,7 +477,7 @@ Figure
 跷跷板
 的两头。
 
-## 64.5 软件流水：循环的重叠执行
+## 66.5 软件流水：循环的重叠执行
 
 块内调度
 救不了循环：
@@ -582,7 +582,7 @@ modulo 算法
 其余留给
 延伸阅读。
 
-## 64.6 寄存器压力：调度与分配的相位之争
+## 66.6 寄存器压力：调度与分配的相位之争
 
 调度提前
 执行指令
@@ -629,7 +629,7 @@ load/store
 互相拉扯的
 力场**。
 
-## 64.7 期望输出解读
+## 66.7 期望输出解读
 
 **block.tip 段**
 （直线代码）：
@@ -680,7 +680,7 @@ modulo 段
 outputs
 保持。
 
-## 64.8 工程注意点
+## 66.8 工程注意点
 
 - **DAG 的
   内存边是
@@ -740,9 +740,9 @@ outputs
   要查
   指令表。
 
-## 64.9 本章配套文件
+## 66.9 本章配套文件
 
-### 64.9.1 文法 TIP.g4
+### 66.9.1 文法 TIP.g4
 
 与第 4 章相同。
 
@@ -812,7 +812,7 @@ LBRACE     : '{' ; RBRACE : '}' ;
 SEMI       : ';' ; COMMA : ',' ; DOT : '.' ; COLON : ':' ;
 ```
 
-### 64.9.2 新件：ilp.hpp 与 ilp.cpp
+### 66.9.2 新件：ilp.hpp 与 ilp.cpp
 
 依赖 DAG
 （RAW/WAR/WAW/MEM
@@ -825,7 +825,7 @@ modulo 报告。
 ```cpp
 // file: src/ilp.hpp
 // file: src/ilp.hpp
-// 第 64 章配套：块内依赖 DAG、关键路径表调度、modulo scheduling 报告。
+// 第 66 章配套：块内依赖 DAG、关键路径表调度、modulo scheduling 报告。
 #ifndef TIP_ILP_HPP
 #define TIP_ILP_HPP
 
@@ -890,7 +890,7 @@ BalanceReport treeBalance(const std::vector<Quad> &block);
 ```cpp
 // file: src/ilp.cpp
 // file: src/ilp.cpp
-// 第 64 章配套：依赖 DAG、关键路径表调度、modulo scheduling。
+// 第 66 章配套：依赖 DAG、关键路径表调度、modulo scheduling。
 #include "ilp.hpp"
 
 #include <algorithm>
@@ -1170,7 +1170,7 @@ BalanceReport treeBalance(const std::vector<Quad> &block) {
 }  // namespace tip
 ```
 
-### 64.9.3 驱动 main.cpp
+### 66.9.3 驱动 main.cpp
 
 DAG、两档调度、
 modulo、对账。
@@ -1178,7 +1178,7 @@ modulo、对账。
 ```cpp
 // file: src/main.cpp
 // file: src/main.cpp
-// 第 64 章驱动：--check FILE
+// 第 66 章驱动：--check FILE
 //   TAC → 逐块依赖 DAG（三类数据依赖 + 内存保守边）→
 //   宽度 1/2 两档表调度（关键路径优先）→ 重放校验 →
 //   循环体的 modulo scheduling 报告（II 双下界）。
@@ -1349,7 +1349,7 @@ int main(int argc, char **argv) {
 }
 ```
 
-### 64.9.4 TAC 基座与前端（第 13、8、10 章）
+### 66.9.4 TAC 基座与前端（第 13、8、10 章）
 
 ```cpp
 // file: src/tacgen.hpp
@@ -2218,7 +2218,7 @@ Bindings resolveNames(ProgramA &program) {
 }  // namespace tip
 ```
 
-### 64.9.5 程序与期望输出
+### 66.9.5 程序与期望输出
 
 ```text
 // file: programs/block.tip
@@ -2451,7 +2451,7 @@ main() {
   (调度只重排发射槽，不改程序语义；解释器照常执行原 TAC)
 ```
 
-## 64.10 小结与练习
+## 66.10 小结与练习
 
 本章把
 "顺序"

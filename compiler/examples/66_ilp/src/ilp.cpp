@@ -1,5 +1,5 @@
 // file: src/ilp.cpp
-// 第 64 章配套：依赖 DAG、关键路径表调度、modulo scheduling。
+// 第 66 章配套：依赖 DAG、关键路径表调度、modulo scheduling。
 #include "ilp.hpp"
 
 #include <algorithm>

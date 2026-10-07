@@ -1,5 +1,5 @@
 // file: src/main.cpp
-// 第 64 章驱动：--check FILE
+// 第 66 章驱动：--check FILE
 //   TAC → 逐块依赖 DAG（三类数据依赖 + 内存保守边）→
 //   宽度 1/2 两档表调度（关键路径优先）→ 重放校验 →
 //   循环体的 modulo scheduling 报告（II 双下界）。
