@@ -100,3 +100,7 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 02_hello   # 等价入口�
 3. **字符串拼接是 `*` 不是 `+`**：`"a" + "b"` 抛 MethodError（12 章有提示信息原文）。
 4. **脚本里 `@code_typed` 等" REPL 自动物"不存在**：InteractiveUtils 只在 REPL 自动加载，脚本要 `using InteractiveUtils`（16 章实测坑）。
 5. **结束标记约定**：本教程示例末行打印 `==== NN 结束 ====`，两个入口靠它确认输出完整——改示例别删这行。
+
+---
+
+上一章：[01 全景](01-overview.md) · 下一章：[03 数值类型与数值稳定](03-numbers.md)

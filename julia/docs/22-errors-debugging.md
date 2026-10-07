@@ -161,3 +161,7 @@ find_first_negative(xs) = (for (i, x) in enumerate(xs); x < 0 && return i; end; 
 4. **`@show` 打到 stdout**：无法 sprint 捕获——要捕获用 redirect_stdout 或改 println（22.6 实测）。
 5. **`@assert` 不保证常开**：优化下可被剥离——生产校验用 throw（22.10）。
 6. **`@allocated f(rand(...))` 把参数构造也算进去**：参数在测量外造好（22.7 实测）。
+
+---
+
+上一章：[21 ⭐随机与统计](21-randomstats.md) · 下一章：[23 C 互操作](23-ccall.md)

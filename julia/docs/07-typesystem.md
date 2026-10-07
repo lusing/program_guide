@@ -125,3 +125,7 @@ isbitstype(Packed24) # true
 3. **单成员 Union 坍缩**：`Union{Int}` === `Int`；`typeof` 单成员 Union 拿到的是 DataType 不是 Union（7.3）。
 4. **Bool 是 Integer**：`true isa Integer` 为 true——写 `::Integer` 方法时布尔会溜进来（6 章坑位重现）。
 5. **具体类型不能继承**：想特化 `Int` 的行为请写新类型 + 方法，别试图 `struct MyInt <: Int`（语法错误）。
+
+---
+
+上一章：[06 ⭐多重派发](06-dispatch.md) · 下一章：[08 结构体](08-structs.md)

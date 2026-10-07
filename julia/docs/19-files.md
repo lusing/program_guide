@@ -105,3 +105,7 @@ stderr 重定向日志、readline() 读 stdin（交互程序用）
 5. **路径断言有两个平台维度**：① 分隔符（`joinpath`/`relpath` 产 `\`）——期望值同样用 `joinpath` 构造；
    ② 绝对路径的写法（Windows `"G:\\x"`、Unix `"/x"`）——按 `Sys.iswindows()` 取例子，别写死（19.6）。
 6. **文件写完不 flush/close 就读**：do 块保证 close；手写 `io = open(...)` 别忘 close——异常路径漏关是老 bug 高发区。
+
+---
+
+上一章：[18 测试](18-testing.md) · 下一章：[20 并发与并行](20-concurrency.md)

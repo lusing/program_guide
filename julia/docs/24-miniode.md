@@ -203,3 +203,7 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 24_miniode   # 等价入�
 - dense output（步内插值）与绘制（Plots.jl/Makie.jl）；
 - 性能：与 DifferentialEquations.jl 的 Tsit5 对比步数/耗时（16 章方法）；
 - 包装成微分方程之外的同类问题：`solve(QuadratureProblem(...), GaussKronrod())`——三件套架构的复用边界。
+
+---
+
+上一章：[23 C 互操作](23-ccall.md) · 下一章：（完）

@@ -146,3 +146,7 @@ Channel 内部自带锁——只共享"通道"不共享"状态"。
 4. **`@spawn` 吞 for**：推导式里写 `Threads.@spawn(f(x))`（20.9 实测）；`shuffle` 在 Random、`lock` 是 Base 函数。
 5. **`Ref`/裸变量累加丢更新**：实测两次两个数——分块/锁/原子三选一（20.8）。
 6. **@threads 体内异常聚合抛出**：调试先去掉 @threads 跑通再加并行（"先对后快"纪律，16 章 @inbounds 同款）。
+
+---
+
+上一章：[19 文件与 IO](19-files.md) · 下一章：[21 ⭐随机与统计](21-randomstats.md)

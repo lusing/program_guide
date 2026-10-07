@@ -103,3 +103,7 @@ comprehension vs generator：前者立刻分配容器、后者按需产出——
 4. **`cycle`/`rest` 等不在 Base 裸导出**：用 `Iterators.` 前缀（11.5 实测）。
 5. **`Iterators.product` 的 collect 是矩阵**：形状是笛卡尔积、顺序列主序——别当平面向量用（11.5 实测）。
 6. **空 zip 是 MethodError**：`collect(zip())` 报错（无限迭代器无法 collect）；空请用 `zip(1:0, ...)`。
+
+---
+
+上一章：[10 ⭐广播](10-broadcast.md) · 下一章：[12 字符串](12-strings.md)

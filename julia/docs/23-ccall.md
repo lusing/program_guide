@@ -111,3 +111,7 @@ wrapped = unsafe_wrap(Array, p, 3)      # [7, 8, 9]
 4. **unsafe_wrap 的生命周期**：包装的 C 内存 GC 不管——谁 malloc 谁 free，或 `finalizer` 兜底（23.6）。
 5. **回调必须保活**：`@cfunction` 结果在 C 侧使用期间，Julia 侧要有引用（局部变量即可），否则回调被回收（23.5）。
 6. **库名别 hardcoded**：写死 `"msvcrt"` 的代码在 macOS 上报 `could not load library "msvcrt"`；`libm`/`libc`/`libSystem` 三个名字在 macOS 上都指向 libSystem（实测：五个符号 strlen/atoi/fabs/abs/malloc 全部可用），Windows 上只有 msvcrt。统一走 `const CLIB = ...`（23.2）。
+
+---
+
+上一章：[22 错误与调试](22-errors-debugging.md) · 下一章：[24 实战：迷你 ODE 求解器](24-miniode.md)

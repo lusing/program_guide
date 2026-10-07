@@ -102,3 +102,7 @@ fillall(zeros(2, 2), 5)               # Matrix——eachindex 通吃任意维
 3. **实现 AbstractVector 别忘 `setindex!`**：只要读就 size+getindex；要写（fillall 这类）还得加 `Base.setindex!(v, x, i)`（15.5/15.6）。
 4. **`AbstractVector{<:Real}` 也要 Vector 适配**：约束签名排除了复数/字符串向量——写约束前想清楚要不要放进来（15.4）。
 5. **协变匹配用 `{<:T}`**：`[1,2,3] isa AbstractVector{<:Integer}` 为 true、`isa AbstractVector{Integer}` 为 false（07 章不变性在方法签名里的化身）。
+
+---
+
+上一章：[14 ⭐元编程](14-macros.md) · 下一章：[16 ⭐性能](16-performance.md)

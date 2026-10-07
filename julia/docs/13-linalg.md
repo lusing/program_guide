@@ -81,3 +81,7 @@ BLAS.set_num_threads(k)         # 可调（与 @threads 争核时要有意识地
 4. **Cholesky 只吃正定**：对称不够——`isposdef` 先查，否则 PosDefException（13.1）。
 5. **BLAS 线程独立于 `-t`**：`BLAS.get_num_threads()` 另算一份核——与 Julia 线程混跑要显式调配（13.5）。
 6. **稀疏矩阵切西瓜要小心**：`S[i, :]` 取行比取列贵（CSC 按列存）——热路径取列视图/转置布局。
+
+---
+
+上一章：[12 字符串](12-strings.md) · 下一章：[14 ⭐元编程](14-macros.md)

@@ -119,3 +119,7 @@ Matrix{Float64}(I, 2, 2)     # 单位阵（I 是 UniformScaling）
 4. **切片拷贝、@view 引用**：`b = a[1:2]` 后改 b 不影响 a；要共享用 `@view`（9.4）。
 5. **`undef` 数组是垃圾值**：`Vector{Int}(undef, 3)` 内容未定义——先填再用；读未初始化内存是未定义行为（`--check-bounds` 也查不到）。
 6. **`A \ b` 优先于 `inv(A) * b`**：速度与数值稳定性双杀（9.6）。
+
+---
+
+上一章：[08 结构体](08-structs.md) · 下一章：[10 ⭐广播](10-broadcast.md)

@@ -103,3 +103,7 @@ sprint(show, Circle(2.5))        # "⚪(r=2.5)"——sprint 把 show 输出收�
 3. **`.sig` 是声明类型**：`which(...).sig` 给 `Integer` 不是调用时的 `Int`——内省时别混淆"声明"与"实参"（6.3）。
 4. **show 的 io 参数别丢**：`Base.show(io::IO, c::Circle)` 必须往 io 打印，`print(io, ...)`；忘了 io 会递归触发 show 死循环。
 5. **不隐式转换找方法**：`1.5` 不会转成 `Integer` 去命中方法——泛型兜底 `(a, b)` 才是 Float 的去处（6.1）。
+
+---
+
+上一章：[05 函数](05-functions.md) · 下一章：[07 ⭐类型系统](07-typesystem.md)

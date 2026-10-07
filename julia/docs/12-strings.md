@@ -108,3 +108,7 @@ big = """
 4. **三引号里嵌 `"""`**：直接 ParseError——转义或改写（12.6 实测）。
 5. **`strip(s, 'x')` 剥两端**：单侧用 lstrip/rstrip——"xxhix" 剥 'x' 得 "hi" 不是 "hix"（12.3 实测）。
 6. **`match` 返回 nothing 而非 false**：判定存在用 `!== nothing` 或 `occursin`；`if match(...)` 会因 nothing 非 Bool 报错。
+
+---
+
+上一章：[11 集合](11-collections.md) · 下一章：[13 ⭐线性代数与稀疏矩阵](13-linalg.md)

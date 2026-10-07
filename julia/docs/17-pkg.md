@@ -107,3 +107,7 @@ julia --project=env runtests.jl                                       # 在环�
    只依赖路径包 + stdlib 的工程**根本不需要 instantiate**：`env/Manifest.toml` 已入库，
    `julia --project=env main.jl` 直接就能跑——两个入口都已改成「Manifest 缺失才 instantiate」。
    手工 `instantiate` 时设 `JULIA_PKG_OFFLINE=true` 能省掉联网动作，但省不掉 registry 解压。
+
+---
+
+上一章：[16 ⭐性能](16-performance.md) · 下一章：[18 测试](18-testing.md)
