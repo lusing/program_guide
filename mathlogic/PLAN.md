@@ -66,6 +66,7 @@
 | 34 | 符号模型检查与关系 μ 演算 | C/L | ✅ 批次十一 |
 | 35 | FOL 语义表列（γ/δ 规则+tclo 推导对象+7.42 完整证明） | C/L | ✅ Ben-Ari 批次一 |
 | 36 | LTL 语义表列（lasso+兑现检查+fulfill_ok_sound） | C/L | ✅ Ben-Ari 批次二 |
+| 37 | 时态演绎系统 L（lth+lth_sound+14.2/14.4 推导） | C/L | ✅ Ben-Ari 批次三 |
 | 26 | 收官：SAT→SMT→MC→ITP 图景 + 总坑位清单 + 八书导读+H&R 映射 | 文档 | ✅ 扩写✅ |
 
 章号=示例号；`docs/NN-*.md` 每章坑位速记；ROOTS 随章追加 Isabelle session。
