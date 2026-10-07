@@ -138,3 +138,7 @@ auto view = safe_cast<BindingList<Order^>^>(_source->DataSource);   // 漏 ^ 报
 3. 为什么 CellFormatting 里要拿 `DataBoundItem` 而不是用行索引查列表？
 4. 组合框列的候选值从哪来？和 06 章的 ComboBox 有什么异同？
 5. BindingList 的 Filter 缺失，本章的替代方案是什么？
+
+---
+
+上一章：[14 数据绑定](14-binding.md) · 下一章：[16 UI 线程模型](16-threading.md)

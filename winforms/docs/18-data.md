@@ -125,3 +125,7 @@ cmd.Parameters.AddWithValue("@kw", pattern) |> ignore
 3. 三种 Execute 各自的返回与场景？
 4. `DataTable.Load(reader)` 替你做了什么？
 5. C++/CLI 的混合方案里，NuGet 包为什么要在 host 上声明两次？（链路原因）
+
+---
+
+上一章：[17 文件 IO 与加密](17-io-crypto.md) · 下一章：[19 发布与部署](19-publish.md)

@@ -148,3 +148,7 @@ DoWork 里检查 `worker->CancellationPending` 并 `e->Cancel = true`；结果�
 3. await 之后为什么能直接改控件？
 4. 取消是"立即生效"吗？靠什么机制？
 5. C++/CLI 没有 await，它的正统替代是谁？三个事件分别跑在哪个线程？
+
+---
+
+上一章：[15 DataGridView](15-datagridview.md) · 下一章：[17 文件 IO 与加密](17-io-crypto.md)

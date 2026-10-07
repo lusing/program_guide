@@ -152,3 +152,7 @@ g->DrawLine(%pen, 20, 20, 180, 60);     // 句柄化的 this 用 % 取
 3. 双缓冲四开关分别治什么病？
 4. `Brushes.Red` 与 `new SolidBrush(Color.Red)` 在生命周期上的区别？
 5. Invalidate 之后 OnPaint 一定立刻执行吗？
+
+---
+
+上一章：[11 事件与委托](11-events.md) · 下一章：[13 GDI+ 应用](13-gdi-apps.md)

@@ -140,3 +140,7 @@ delete dlg;
 3. 三按钮退出确认里"保存被取消"这个分支为什么必须 `e.Cancel = true`？
 4. 颜色对话框的 `FullOpen` 与 `Color` 初始值分别有什么用？
 5. C++/CLI 里 `using var` 的等价物是什么？
+
+---
+
+上一章：[08 菜单工具栏](08-menus.md) · 下一章：[10 SDI 与 MDI](10-mdi.md)

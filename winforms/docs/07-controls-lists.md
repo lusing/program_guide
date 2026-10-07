@@ -132,3 +132,7 @@ void OnPanelButton(Object^ s, EventArgs^ e)
 3. `SystemIcons` 技巧为什么能让教程免带资源文件？
 4. C# 与 F# 的循环变量捕获行为差异？
 5. SplitContainer 的两个面板分别叫什么？
+
+---
+
+上一章：[06 选择类控件](06-controls-selection.md) · 下一章：[08 菜单工具栏](08-menus.md)

@@ -103,3 +103,7 @@ VS 里的"发布向导"（项目属性 → 发布）生成 ClickOnce 部署：�
 3. 单文件 exe 的 `AppContext.BaseDirectory` 指向哪？（19 示例实测看）
 4. C++/CLI 部署比纯托管多带什么文件？为什么？
 5. ClickOnce 相比 MSI 的核心优势？
+
+---
+
+上一章：[18 SQLite 与三层雏形](18-data.md) · 下一章：[20 实战：客房管理系统](20-project.md)

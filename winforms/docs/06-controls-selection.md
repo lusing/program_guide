@@ -140,3 +140,7 @@ for each (Object^ o in _hobbies->CheckedItems) { … }
 3. `Scroll` 与 `ValueChanged`（TrackBar）触发时机的差别？
 4. `CheckedIndices` 和 `CheckedItems` 各返回什么？
 5. `CheckedChanged` 里不判 `Checked` 会看到什么现象？
+
+---
+
+上一章：[05 文本类控件](05-controls-text.md) · 下一章：[07 容器与列表](07-controls-lists.md)

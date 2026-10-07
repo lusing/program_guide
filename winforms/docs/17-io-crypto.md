@@ -121,3 +121,7 @@ Task::Run(gcnew Action(job, &DecryptJob::Run));
 3. 口令错误时异常从哪一步抛出？异常类型？
 4. `[盐][IV][密文]` 布局中，解密端前 32 字节的读取为什么必须"读满"？
 5. C++/CLI 版为什么需要 DecryptJob 这个类？它替代了 C# 的什么语法？
+
+---
+
+上一章：[16 UI 线程模型](16-threading.md) · 下一章：[18 SQLite 与三层雏形](18-data.md)

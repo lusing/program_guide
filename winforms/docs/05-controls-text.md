@@ -116,3 +116,7 @@ login->Controls->AddRange(gcnew array<Control^> { userLabel, _user, pwdLabel, _p
 3. RichTextBox 追加指定颜色文本的套路是什么？（口述四步）
 4. `Process.Start` 打开 URL 需要哪个属性？（.NET 10 默认值又是什么）
 5. F# 里 `$"{p}%"` 为什么报错？两种修法？
+
+---
+
+上一章：[04 布局](04-layout.md) · 下一章：[06 选择类控件](06-controls-selection.md)

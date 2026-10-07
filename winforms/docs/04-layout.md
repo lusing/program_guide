@@ -107,3 +107,7 @@ table->Padding = System::Windows::Forms::Padding(12);               // Padding �
 3. TableLayoutPanel 的 `ColumnStyle` 三种 SizeType 分别适用什么场景？
 4. `Padding` 与 `Margin` 分别作用于谁？
 5. 为什么推荐 `AutoScaleMode.Font` 而不是 `None`？
+
+---
+
+上一章：[03 窗体与生命周期](03-forms.md) · 下一章：[05 文本类控件](05-controls-text.md)

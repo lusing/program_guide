@@ -121,3 +121,7 @@ winforms/
 3. C++/CLI 在 .NET 10 上能直接产出 exe 吗？本教程用什么结构绕过？
 4. vcxproj 里裸写 `<Reference Include="System.Windows.Forms"/>` 会发生什么？正确写法？
 5. 为什么 `Padding` 要引 `System.Windows.Forms.Primitives`？
+
+---
+
+下一章：[02 第一个程序](02-hello.md)

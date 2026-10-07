@@ -131,3 +131,7 @@ public:
 3. `BindingSource` 在绑定架构里扮演什么角色？`Position` 是什么？
 4. BindingNavigator 一行代码给了你哪些功能？
 5. Format 与 Parse 各自处理哪个方向的数据流？
+
+---
+
+上一章：[13 GDI+ 应用](13-gdi-apps.md) · 下一章：[15 DataGridView](15-datagridview.md)

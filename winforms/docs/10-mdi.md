@@ -119,3 +119,7 @@ void OnLayoutClick(Object^ s, EventArgs^ e)
 3. 子窗体清单为什么"白送"？它挂在哪个属性上？
 4. `MdiChildren` 与 `ActiveMdiChild` 的类型与可空性？
 5. 为什么说页签（07 章）在现代应用里常替代 MDI？
+
+---
+
+上一章：[09 对话框](09-dialogs.md) · 下一章：[11 事件与委托](11-events.md)

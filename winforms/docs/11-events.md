@@ -134,3 +134,7 @@ type Thermometer(seed: int) as this =
 3. C# 的 `-=` 靠什么认出"当初那个"委托？C++/CLI 缺什么？
 4. F# 的 `Observable.filter` 在 C# 里对应什么写法？
 5. 短命订阅者挂长命源，规矩是什么？
+
+---
+
+上一章：[10 SDI 与 MDI](10-mdi.md) · 下一章：[12 GDI+ 基础](12-gdi-basics.md)

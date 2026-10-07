@@ -142,3 +142,7 @@ decimal bill = MainForm.Db.CheckOut(tag.Id);      // 结账在 DAL：一锤子�
 3. 退房业务为什么必须在一个 DAL 方法里改两张表？
 4. 本项目的单例（`MainForm.Db`）有什么教学取舍？正式做法？
 5. F#/C++/CLI 各自接手这个项目时的最佳切入点？
+
+---
+
+上一章：[19 发布与部署](19-publish.md) · 下一章：（完）

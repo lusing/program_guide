@@ -148,3 +148,7 @@ auto size = g->MeasureString(one, %font);     // %：栈语义对象传给要句
 3. `Graphics.FromImage` 与 `e.Graphics` 的来源区别？
 4. 变换矩阵为什么是"状态"？忘记复位会怎样？
 5. 高频动画场景位图的生命周期规矩？
+
+---
+
+上一章：[12 GDI+ 基础](12-gdi-basics.md) · 下一章：[14 数据绑定](14-binding.md)

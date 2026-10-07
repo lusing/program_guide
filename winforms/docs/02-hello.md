@@ -206,3 +206,7 @@ pwsh -ExecutionPolicy Bypass -File smoke.ps1        # OK 三个 exe
 3. F# 版为什么把两个 Application 调用放最前？报错的异常类型是什么？
 4. C++/CLI 版的 exe 入口在哪？它如何进入 `HelloCpp.App.Run()`？
 5. `DockStyle.Top` 和 `DockStyle.Bottom` 同时用在本例里，控件上下位置为什么不会重叠？
+
+---
+
+上一章：[01 全景与三语言路线](01-overview.md) · 下一章：[03 窗体与生命周期](03-forms.md)
