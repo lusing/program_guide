@@ -5,9 +5,9 @@
 [PLAN.md](./PLAN.md)），横跨 **Coq / Agda / Lean 4 / Isabelle/HOL /
 HOL4 / Coq-HoTT** 六种实现机器验证。
 
-**已完结**：26 章全部交付，78 个验证单元全绿（零公理或显式
-公理记账）；速查表见 [CHEATSheet.md](./CHEATSheet.md)，蓝图与
-状态表见 [PLAN.md](./PLAN.md)。
+**已完结**：34 章全部交付（H&R 全谱扩充），109 个验证单元全绿
+（零公理或显式公理记账）；速查表见 [CHEATSheet.md](./CHEATSheet.md)，
+蓝图与状态表见 [PLAN.md](./PLAN.md)。
 
 > 核心理念：**逻辑 = 语法 + 证明演算 + 语义**，而证明助手把三者
 > 全部变成可执行的程序。全书四条暗线：构造/经典的账本对照、
@@ -53,7 +53,15 @@ mathlogic/
 | [23 完备性 Henkin](docs/23-completeness.md) | 构造七步+紧致性推论（文档章） | 文档 |
 | [24 CTL 模型检查](docs/24-temporal.md) | AG/EG 展开等价+不动点构件 | C/L |
 | [25 霍尔逻辑](docs/25-hoare.md) | while 规则五通道对照+别名前提+倒数程序 | C/A/L/I/H4 |
-| [26 收官](docs/26-wrapup.md) | SAT→SMT→MC→ITP 图景+总坑位+八书导读 | 文档 |
+| [26 收官](docs/26-wrapup.md) | SAT→SMT→MC→ITP 图景+总坑位+八书导读+H&R 映射 | 文档 |
+| [27 LTL](docs/27-ltl.md) | 路径语义+等价族六件+adequate sets | C/L |
+| [28 MC 算法与公平性](docs/28-mcalgo.md) | 互斥全程+饥饿路径+公平性微观模型 | C/L |
+| [29 CTL*](docs/29-ctlstar.md) | 两层语法+三组分离现场（表达能力天梯） | C/L |
+| [30 完全正确性](docs/30-totalcorrect.md) | 变体方法+minsum 案例+契约式设计 | C/L/I |
+| [31 模态 K](docs/31-modal.md) | Kripke 语义+K/必然化+T/4 反例 | C/L |
+| [32 对应理论](docs/32-correspondence.md) | 五条正向+T 的逆（探针赋值） | C/L |
+| [33 模态 ND 与 KT45n](docs/33-modalnd.md) | □i 严格性+泥孩子三轮 decide | C/L |
+| [34 符号 MC 与 μ 演算](docs/34-symbolicmc.md) | preE 前像+μ/ν 编码 CTL（合流点） | C/L |
 
 ## 工具链（本机实测）
 
@@ -77,7 +85,8 @@ pwsh -NoProfile -Command '& ./build.ps1 -All'
   Lean/Agda/Isabelle 相应章节立演算与示例，完整归纳证明按章注记。
 - HOL4 采用浅嵌入（05 章对照点）；25 章霍尔逻辑的 HOL4 版止步
   于单步不变式引理（exec 双重反演的实例级联污染，见该章速记）。
-- 中译本 Huth&Ryan 是扫描件（引用时以英文 2e 为准）；
+- 中译本 Huth&Ryan 是扫描件（引用以英文 2e 为准；术语对照表
+  在 CHEATSheet）；
   Mints 书公式层缺失（引用需按页核对版面）。
 - 22/23 两章（不完备性/完备性）为文档章——机器化需要 PA 编码
   与 Henkin 构造的大工程，正文献先例索引。

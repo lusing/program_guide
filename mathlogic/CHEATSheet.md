@@ -85,3 +85,69 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 25_hoare'    # 单章
 2. **PS 后台目录**：不持久，显式 cd 进 mathlogic
 3. **build.ps1**：switch($true) 里 $_ 是被匹配值；/cygdrive
    路径拼接 Substring(2)
+
+
+## 27-34 章新坑（H&R 全谱扩充）
+
+### Coq（Rocq 9.1）
+
+- 否定进归纳谓词（27 章 lsat）→ 非严格正性——语义改**公式结构
+  Fixpoint**（递归在子公式，位置不动）
+- Notation 定义的总公式**不能 unfold**——`Cannot coerce to an
+  evaluable reference`（29 章 EFP）；全走 simpl
+- F 见证的 destruct 是对 `(∃j, ≤ ∧ …)`——`[j [_ Hj]]` 两层
+  拆（29 章）
+- `discriminate` 裸调不收「假等式目标」（0 = 2）——要
+  `discriminate H` 或 lia（29 章）
+- `apply Htr with (y := v)` 的隐式 unify 岔开——全参显式
+  `apply (Htr w v u)`（32 章）
+- 探针赋值的双 eqb match：`Nat.eqb_neq` 的 proj2 提供
+  `(v =? w) = false`，外层 match 对 false 直接 iota（32 章）
+- 迭代同构引理不能 reflexivity——两个 Fixpoint 对**轮次归纳**
+  （34 章）
+- `F [] = B` 的种子步：app_nil_r 前先 unfold unionL（34 章）
+
+### Lean（bare core）
+
+- `cases h : starve k` 目标含 starve (k+1) 报 free variables
+  ——**generalize hs : starve k = s** 先抽象（28 章）
+- `decide` 只收闭目标；含自由变量的成员判定换 simp 方程引理
+  （28 章）
+- `Nat × Nat × Nat` 是**右嵌套**（Coq 左嵌套相反）——投影
+  s.1 / s.2.1 / s.2.2（28 章）
+- `simp [模型] at hs` 常把成员命题收成**单个反向等式**——
+  `first | exact hs | exact hs.symm` 直收（29 章）
+- 列表字面量是**逗号**不是分号（29 章）
+- 守卫三连坑：`(s x == 0) = false` 是 Prop；`!(s x == 0)`
+  elaborate 成 `!decide …`；正解 `decide (s x ≠ 0)` +
+  `of_decide_eq_true`（30 章）
+- `Nat.eqb_neq` 不存在——`cases hb : Nat.beq …` + `Nat.beq_eq`
+  手工组装（32 章）
+- match 表达式内**不用 end**（32 章 T_converse 的探针赋值）
+- `by_contra` 非 core——`by_cases h : P` 替代（32 章）
+
+### Isabelle
+
+- exec 的 inductive 规则默认入 intro 集——blast/auto/force 在
+  含 exec 的目标沿 eWhileT **无限展开**（600s+ 假死）——纪律：
+  exec 目标一律 **metis**（只吃给定事实）或定向 rule（30 章）
+- `of` 属性按命题**首次出现序**（15 章坑在 total correctness
+  的 V 前缀上复现——30 章）
+- 四层闭合括号少一层 = cwhile 第三参数（错误 `at ""` 的真义）
+- 会话级 sqlite 冲突：中断后必须删 ML30.db 再 build（30 章）
+
+## 中译本术语对照（哈斯/瑞安版）
+
+| 英文（2e） | 中译本 | 教程现行 |
+|---|---|---|
+| soundness | 合理性 | 可靠性 |
+| semantic entailment | 语义推导 | 语义蕴含 |
+| model checking | 模型检测 | 模型检查 |
+| proof tableaux | 证明布景 | 竖式证明表 |
+| minimal-sum section | 最小和截段 | 最小和段 |
+| programming by contract | 合同编程 | 契约式设计 |
+| modal logics and agents | 模态逻辑与代理 | 模态逻辑与主体 |
+| binary decision diagrams | 二叉判定图 | 二叉决策图 |
+| reduced OBDD | 简约 OBDD | 约简 OBDD |
+| declarative sentences | 判断语句 | 判断/宣言句 |
+| substitution | 代换 | 代入 |
