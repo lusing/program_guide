@@ -203,4 +203,4 @@ Definition LEM_hprop :=
 
 ---
 
-上一章：[03 自然演绎 NJp](03-njp.md) · 下一章：[05 Hilbert 系统](05-hilbert.md)
+上一章：[03 自然演绎 NJp：每条规则都是一个程序](docs/03-njp.md) · 下一章：[05 Hilbert 系统与演绎定理](docs/05-hilbert.md)

@@ -8,8 +8,8 @@
 ```powershell
 cd mathlogic
 pwsh -NoProfile -Command '& ./build.ps1 -All'            # 全量 78 单元
-pwsh -NoProfile -Command '& ./build.ps1 -File ex25_hoare.v'   # 单文件
-pwsh -NoProfile -Command '& ./build.ps1 -Chapter 25_hoare'    # 单章
+pwsh -NoProfile -Command '& ./build.ps1 -File ex46_hoare.v'   # 单文件
+pwsh -NoProfile -Command '& ./build.ps1 -Chapter 46_hoare'    # 单章
 ```
 
 | 通道 | 入口 | 判定 |
@@ -71,7 +71,7 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 25_hoare'    # 单章
 ## 语义嵌入模式（横评结论）
 
 - **深嵌入**（本章主流）：语法自建归纳类型，语义/推导全是引理
-  ——25 章的 cmd/exec/hoare 全是这个形状
+  ——46 章的 cmd/exec/hoare 全是这个形状
 - **浅嵌入**（05 章 Hilbert 示范）：宿主 Prop 当对象逻辑的
   Prop，推导规则变成定理持续器——代码量小但受限
 - 布尔截面：`nat -> bool` 表示谓词（09 DPLL）vs Prop 值语义
@@ -87,54 +87,54 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 25_hoare'    # 单章
    路径拼接 Substring(2)
 
 
-## 27-34 章新坑（H&R 全谱扩充）
+## H&R 扩充新坑（时态·模态·符号 MC——新号 35-48）
 
 ### Coq（Rocq 9.1）
 
-- 否定进归纳谓词（27 章 lsat）→ 非严格正性——语义改**公式结构
+- 否定进归纳谓词（36 章 lsat）→ 非严格正性——语义改**公式结构
   Fixpoint**（递归在子公式，位置不动）
 - Notation 定义的总公式**不能 unfold**——`Cannot coerce to an
-  evaluable reference`（29 章 EFP）；全走 simpl
+  evaluable reference`（38 章 EFP）；全走 simpl
 - F 见证的 destruct 是对 `(∃j, ≤ ∧ …)`——`[j [_ Hj]]` 两层
-  拆（29 章）
+  拆（38 章）
 - `discriminate` 裸调不收「假等式目标」（0 = 2）——要
-  `discriminate H` 或 lia（29 章）
+  `discriminate H` 或 lia（38 章）
 - `apply Htr with (y := v)` 的隐式 unify 岔开——全参显式
-  `apply (Htr w v u)`（32 章）
+  `apply (Htr w v u)`（44 章）
 - 探针赋值的双 eqb match：`Nat.eqb_neq` 的 proj2 提供
-  `(v =? w) = false`，外层 match 对 false 直接 iota（32 章）
+  `(v =? w) = false`，外层 match 对 false 直接 iota（44 章）
 - 迭代同构引理不能 reflexivity——两个 Fixpoint 对**轮次归纳**
-  （34 章）
-- `F [] = B` 的种子步：app_nil_r 前先 unfold unionL（34 章）
+  （42 章）
+- `F [] = B` 的种子步：app_nil_r 前先 unfold unionL（42 章）
 
 ### Lean（bare core）
 
 - `cases h : starve k` 目标含 starve (k+1) 报 free variables
-  ——**generalize hs : starve k = s** 先抽象（28 章）
+  ——**generalize hs : starve k = s** 先抽象（37 章）
 - `decide` 只收闭目标；含自由变量的成员判定换 simp 方程引理
-  （28 章）
+  （37 章）
 - `Nat × Nat × Nat` 是**右嵌套**（Coq 左嵌套相反）——投影
-  s.1 / s.2.1 / s.2.2（28 章）
+  s.1 / s.2.1 / s.2.2（37 章）
 - `simp [模型] at hs` 常把成员命题收成**单个反向等式**——
-  `first | exact hs | exact hs.symm` 直收（29 章）
-- 列表字面量是**逗号**不是分号（29 章）
+  `first | exact hs | exact hs.symm` 直收（38 章）
+- 列表字面量是**逗号**不是分号（38 章）
 - 守卫三连坑：`(s x == 0) = false` 是 Prop；`!(s x == 0)`
   elaborate 成 `!decide …`；正解 `decide (s x ≠ 0)` +
-  `of_decide_eq_true`（30 章）
+  `of_decide_eq_true`（47 章）
 - `Nat.eqb_neq` 不存在——`cases hb : Nat.beq …` + `Nat.beq_eq`
-  手工组装（32 章）
-- match 表达式内**不用 end**（32 章 T_converse 的探针赋值）
-- `by_contra` 非 core——`by_cases h : P` 替代（32 章）
+  手工组装（44 章）
+- match 表达式内**不用 end**（44 章 T_converse 的探针赋值）
+- `by_contra` 非 core——`by_cases h : P` 替代（44 章）
 
 ### Isabelle
 
 - exec 的 inductive 规则默认入 intro 集——blast/auto/force 在
   含 exec 的目标沿 eWhileT **无限展开**（600s+ 假死）——纪律：
-  exec 目标一律 **metis**（只吃给定事实）或定向 rule（30 章）
+  exec 目标一律 **metis**（只吃给定事实）或定向 rule（47 章）
 - `of` 属性按命题**首次出现序**（15 章坑在 total correctness
-  的 V 前缀上复现——30 章）
+  的 V 前缀上复现——47 章）
 - 四层闭合括号少一层 = cwhile 第三参数（错误 `at ""` 的真义）
-- 会话级 sqlite 冲突：中断后必须删 ML30.db 再 build（30 章）
+- 会话级 sqlite 冲突：中断后必须删 ML47.db 再 build（47 章）
 
 ## 中译本术语对照（哈斯/瑞安版）
 
@@ -152,14 +152,14 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 25_hoare'    # 单章
 | declarative sentences | 判断语句 | 判断/宣言句 |
 | substitution | 代换 | 代入 |
 
-## 35-42 章新坑（Ben-Ari 全谱扩充）+ Prolog 通道
+## Ben-Ari 扩充新坑（新号 19/26-31/33/34/39-41/48）+ Prolog 通道
 
 ### Prolog 通道（SWI 10，本机 scoop）
 - `:- encoding(utf8).` 必须是**物理首行**（前面连注释都不行，否则 UTF-8 注释按 GBK 报 Illegal multibyte）；
 - 运行期输出纯 ASCII（`START/END` 标记）；`format/1` 是 SWI 简写、gprolog 无——统一 `format/2`；
 - 原子名不能带撇号（`succK'` 撞引号语法）；`call(P, X, Y)` 元调用切模型；
 - clpfd 要 `:- use_module(library(clpfd)).`；零子句谓词要 `:- dynamic p/2.` 否则 findall 报 Unknown procedure；
-- `\+` 带自由变元 = 存在式否定——NAF 演示用定人查询（40 章）。
+- `\+` 带自由变元 = 存在式否定——NAF 演示用定人查询（30 章）。
 
 ### 35-42 各章最重坑（详见各章速记）
 - **35**：记录域参数化（`interp (D:Type)`+`Arguments iasg {D}`）；隐式 {D} 三处坑（陈述悬空/intros 吞名/IH 显式）；as 模式必须含前提槽位（`a Hp IH` 三槽）；proj1/proj2 方向反是最高频翻车；`apply` 不展开 satE 要先 unfold；Compute 探针校准期望值；
@@ -175,11 +175,11 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 25_hoare'    # 单章
 - 2e OCR 公式区不可靠——公式一律以 3e 文本层为准；2e 仅取 §8.3（cut/NAF/CWA 叙述）与 §8.5（CLP 概念）；Z 记号章跳过（裁决）；
 - 3e 页偏移（PDF=书页+Δ，Δ 按章 6-13 跳变——数字版删了章间空白页）：提取时按章实测。
 
-## 43-51 章新坑（Jongsma 全谱扩充）
+## Jongsma 扩充新坑（离散底座——新号 49-57）
 
 **数学先于战术**（三连：43/49/51）——目标为假时 lia 的
-"Cannot find witness" 是**正确判断**：49 章 `2*2 ≤ (k₁'+1)(k₂'+1)`
-不真（应证乘积=1）；51 章 filter 口径的度数引理在自环 (v,v)
+"Cannot find witness" 是**正确判断**：55 章 `2*2 ≤ (k₁'+1)(k₂'+1)`
+不真（应证乘积=1）；57 章 filter 口径的度数引理在自环 (v,v)
 上是假命题（改多重图递归口径后成定义方程）。写证明前先验算。
 
 **PDF 文本层丢上杠**（50）——§7.3 命题的补运算排印在提取文本

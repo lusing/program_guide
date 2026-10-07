@@ -273,4 +273,4 @@ sanity 现场。
 
 ---
 
-上一章：[15 FOL 语义](15-folsem.md) · 下一章：[17 FOL Hilbert](17-folhilbert.md)
+上一章：[15 FOL 语义：模型、一致性引理与代入交换](docs/15-folsem.md) · 下一章：[17 FOL Hilbert 系统：Gen 侧条件的演绎定理](docs/17-folhilbert.md)

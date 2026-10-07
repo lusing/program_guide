@@ -139,7 +139,7 @@ Qed.
 
 (* ---------- 现场：真值表语义是经典的 ---------- *)
 
-(* Peirce 律在语义层恒真——但第 04 章会看到它在构造证明里不可达。 *)
+(* Peirce 律在语义层恒真——但第 4 章会看到它在构造证明里不可达。 *)
 Example peirce_sem_valid :
   check (FImp (FImp (FImp (FVar 0) (FVar 1)) (FVar 0)) (FVar 0)) = true.
 Proof. reflexivity. Qed.
