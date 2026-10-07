@@ -211,3 +211,7 @@ N−K 次合并处切开树状图（dendrogram），得到 K 个单链簇。MST 
 ```
 
 *可运行示例见 examples/24_mst/。*
+
+---
+
+上一章：[23 基本图算法：BFS、DFS、拓扑排序与强连通分量](23-graphs-basics.md) · 下一章：[25 单源最短路径](25-sssp.md)

@@ -852,3 +852,7 @@ Huffman（频率 a45 b13 c12 d16 e9 f5）：
 ```
 
 *可运行示例见 examples/17_greedy/。*
+
+---
+
+上一章：[16 动态规划（下）：LCS、最优 BST 与编辑距离](16-dp-applications.md) · 下一章：[18 摊还分析](18-amortized.md)

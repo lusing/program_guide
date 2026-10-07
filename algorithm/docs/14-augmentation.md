@@ -232,3 +232,7 @@ OS-SELECT 追踪与全量对账）、14.3 区间树（max 沿路维护 + 图 14.
 ```
 
 *可运行示例见 examples/14_augmentation/。*
+
+---
+
+上一章：[13 红黑树](13-rb-tree.md) · 下一章：[15 动态规划（上）：钢条切割、矩阵链与方法论](15-dp-foundations.md)

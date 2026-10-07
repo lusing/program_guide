@@ -147,3 +147,7 @@ C 按秩 + 路径压缩       ：find 总步数 7397（摊还 O(α(n))，α(5000
 ```
 
 *可运行示例见 examples/22_disjoint_set/。*
+
+---
+
+上一章：[21 van Emde Boas 树](21-veb-tree.md) · 下一章：[23 基本图算法：BFS、DFS、拓扑排序与强连通分量](23-graphs-basics.md)

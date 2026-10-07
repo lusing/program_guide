@@ -817,3 +817,7 @@ LCS（图 15.8 数据 X=ABCBDAB, Y=BDCABA）：
 ```
 
 *可运行示例见 examples/16_dp_applications/。*
+
+---
+
+上一章：[15 动态规划（上）：钢条切割、矩阵链与方法论](15-dp-foundations.md) · 下一章：[17 贪心算法](17-greedy.md)

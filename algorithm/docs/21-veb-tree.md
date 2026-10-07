@@ -133,3 +133,7 @@ van Emde Boas 树（u=16，插入 2 3 4 5 7 14 15）：
 ```
 
 *可运行示例见 examples/21_veb_tree/。*
+
+---
+
+上一章：[20 斐波那契堆](20-fibonacci-heap.md) · 下一章：[22 不相交集（并查集）](22-disjoint-set.md)

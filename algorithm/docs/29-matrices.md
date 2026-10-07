@@ -127,3 +127,7 @@ LUP 分解（部分主元）：P·A = L·U
 ```
 
 *可运行示例见 examples/29_matrices/。*
+
+---
+
+上一章：[28 多线程算法：CLRS 模型的 C++23 适配](28-parallel.md) · 下一章：[30 线性规划与单纯形法](30-linear-programming.md)

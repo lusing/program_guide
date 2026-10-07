@@ -630,3 +630,7 @@ Bill
 ```
 
 *可运行示例见 examples/02_getting_started/。*
+
+---
+
+上一章：[01 算法的角色与本教程工具链](01-role-and-toolchain.md) · 下一章：[03 函数的增长：渐近记号](03-growth-of-functions.md)

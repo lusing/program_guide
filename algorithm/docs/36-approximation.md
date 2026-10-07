@@ -365,3 +365,7 @@ PTAS（除非 P=NP）——「问题的可近似性」是 NPC 内部的第二层
 ```
 
 *可运行示例见 examples/36_approximation/。*
+
+---
+
+上一章：[35 NP 完全性](35-np-completeness.md) · 下一章：[37 数学背景速览与全书收束](37-math-background.md)

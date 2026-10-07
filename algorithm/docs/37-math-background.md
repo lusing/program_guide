@@ -155,3 +155,7 @@
 ```
 
 *可运行示例见 examples/37_math_background/。*
+
+---
+
+上一章：[36 近似算法](36-approximation.md) · 下一章：（完）

@@ -1188,3 +1188,7 @@ ln(u)' = u'/u（分子是**导数**、分母是**原式**，别写反）：
 ```
 
 *可运行示例见 examples/10_elementary_structures/。*
+
+---
+
+上一章：[09 中位数与顺序统计量](09-selection.md) · 下一章：[11 散列表](11-hashing.md)

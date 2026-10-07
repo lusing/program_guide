@@ -836,3 +836,7 @@ long long 能装下的最大斐波那契数：F(92) = 7540113804746346429
 ```
 
 *可运行示例见 examples/15_dp_foundations/。*
+
+---
+
+上一章：[14 数据结构扩张：顺序统计树与区间树](14-augmentation.md) · 下一章：[16 动态规划（下）：LCS、最优 BST 与编辑距离](16-dp-applications.md)

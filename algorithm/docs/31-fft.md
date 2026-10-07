@@ -162,3 +162,7 @@ DFT（A(x)=1+2x+3x² 的 4 点值表示）：
 ```
 
 *可运行示例见 examples/31_fft/。*
+
+---
+
+上一章：[30 线性规划与单纯形法](30-linear-programming.md) · 下一章：[32 数论与位运算](32-number-theory.md)

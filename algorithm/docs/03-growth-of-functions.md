@@ -347,3 +347,7 @@ c 每加 1，最少牌数约 ×e —— n = Θ(2^c) 的实证：
 ```
 
 *可运行示例见 examples/03_growth_of_functions/。*
+
+---
+
+上一章：[02 入门：插入排序、循环不变式与归并排序](02-getting-started.md) · 下一章：[04 分治策略：最大子数组、Strassen 与主定理](04-divide-and-conquer.md)

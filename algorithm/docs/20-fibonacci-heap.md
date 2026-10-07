@@ -171,3 +171,7 @@ decrease-key(52→2) 后 min = 2（新键上浮到根表）
 ```
 
 *可运行示例见 examples/20_fibonacci_heap/。*
+
+---
+
+上一章：[19 B 树](19-b-tree.md) · 下一章：[21 van Emde Boas 树](21-veb-tree.md)

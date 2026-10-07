@@ -238,3 +238,7 @@ increase-key(值 8 → 20) 后堆顶 = 20（20 上浮）
 ```
 
 *可运行示例见 examples/06_heapsort/。*
+
+---
+
+上一章：[05 概率分析与随机化算法](05-probabilistic.md) · 下一章：[07 快速排序](07-quicksort.md)

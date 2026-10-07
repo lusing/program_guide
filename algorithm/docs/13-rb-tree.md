@@ -304,3 +304,7 @@ arena）、header 哨兵（begin/end 迭代器的锚）、以及**删除的实�
 ```
 
 *可运行示例见 examples/13_rb_tree/。*
+
+---
+
+上一章：[12 二叉搜索树](12-bst.md) · 下一章：[14 数据结构扩张：顺序统计树与区间树](14-augmentation.md)

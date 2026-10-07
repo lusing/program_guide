@@ -726,3 +726,7 @@ Edmonds-Karp（自造 6 顶点网络，BFS 最短增广路径）：
 ```
 
 *可运行示例见 examples/27_max_flow/。*
+
+---
+
+上一章：[26 所有顶点对最短路径](26-apsp.md) · 下一章：[28 多线程算法：CLRS 模型的 C++23 适配](28-parallel.md)

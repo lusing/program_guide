@@ -462,3 +462,7 @@ Lehmer 排列编号（abc 的 3!=6 个排列）：
 ```
 
 *可运行示例见 examples/05_probabilistic/。*
+
+---
+
+上一章：[04 分治策略：最大子数组、Strassen 与主定理](04-divide-and-conquer.md) · 下一章：[06 堆与堆排序](06-heapsort.md)

@@ -721,3 +721,7 @@ NP 完全性的可执行归约（实例：4 子句 3-SAT，4 变量）：
 ```
 
 *可运行示例见 examples/35_np_completeness/。*
+
+---
+
+上一章：[34 计算几何](34-geometry.md) · 下一章：[36 近似算法](36-approximation.md)

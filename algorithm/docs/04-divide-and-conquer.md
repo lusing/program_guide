@@ -1207,3 +1207,7 @@ DNA 排序（2-7）：按逆序数升序排列串：
 ```
 
 *可运行示例见 examples/04_divide_and_conquer/。*
+
+---
+
+上一章：[03 函数的增长：渐近记号](03-growth-of-functions.md) · 下一章：[05 概率分析与随机化算法](05-probabilistic.md)

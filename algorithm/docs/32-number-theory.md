@@ -1120,3 +1120,7 @@ Brian Kernighan 经典题：造 1010…1010（偶数位为 1）
 ```
 
 *可运行示例见 examples/32_number_theory/。*
+
+---
+
+上一章：[31 多项式与快速傅里叶变换](31-fft.md) · 下一章：[33 字符串匹配](33-string-matching.md)

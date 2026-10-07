@@ -597,3 +597,7 @@ Graham 凸包（7 点 = 4 角 + 3 内点）：顶点序 (0,0) (4,0) (4,3) (0,3)
 ```
 
 *可运行示例见 examples/34_geometry/。*
+
+---
+
+上一章：[33 字符串匹配](33-string-matching.md) · 下一章：[35 NP 完全性](35-np-completeness.md)

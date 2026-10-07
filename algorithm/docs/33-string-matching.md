@@ -433,3 +433,7 @@ AC 仍是 30 步 + 建树 416 步（开始占优）。**分界线就在 k ≈ 5 
 ```
 
 *可运行示例见 examples/33_string_matching/。*
+
+---
+
+上一章：[32 数论与位运算](32-number-theory.md) · 下一章：[34 计算几何](34-geometry.md)

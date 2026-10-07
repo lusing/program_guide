@@ -530,3 +530,7 @@ m = 6 个 DNA 串（按逆序数升序排序）：
 ```
 
 *可运行示例见 examples/08_linear_sorting/。*
+
+---
+
+上一章：[07 快速排序](07-quicksort.md) · 下一章：[09 中位数与顺序统计量](09-selection.md)

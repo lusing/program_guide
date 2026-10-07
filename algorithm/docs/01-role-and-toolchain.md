@@ -428,3 +428,7 @@ CLRS 图 2.2 数组排序后: 1 2 3 4 5 6（比较 12 次）
 ```
 
 *可运行示例见 examples/01_role_and_toolchain/。*
+
+---
+
+下一章：[02 入门：插入排序、循环不变式与归并排序](02-getting-started.md)

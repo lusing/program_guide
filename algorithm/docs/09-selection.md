@@ -312,3 +312,7 @@ BFPRT n=10001 找中位数 = 505334（与排序对账一致），比较 89684 �
 ```
 
 *可运行示例见 examples/09_selection/。*
+
+---
+
+上一章：[08 线性时间排序](08-linear-sorting.md) · 下一章：[10 基本数据结构：栈、队列、链表与有根树](10-elementary-structures.md)

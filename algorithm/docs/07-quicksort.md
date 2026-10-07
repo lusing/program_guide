@@ -327,3 +327,7 @@ Hoare 分区 vs CLRS(Lomuto) 分区（n=512 同一随机排列）：
 ```
 
 *可运行示例见 examples/07_quicksort/。*
+
+---
+
+上一章：[06 堆与堆排序](06-heapsort.md) · 下一章：[08 线性时间排序](08-linear-sorting.md)
