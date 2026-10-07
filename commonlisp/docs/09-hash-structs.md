@@ -134,3 +134,7 @@
 | 程序两次运行输出顺序不同 | 遍历顺序不确定（两实现也不同） | 输出前排序 |
 | `(equal s1 s2)` 结构体是 NIL | equal 不比结构体内容 | `equalp` |
 | 词频计数代码又长又乱 | 手工 gethash/setf | `(incf (gethash k ht 0))` 一行 |
+
+---
+
+上一章：[08 数组与序列](08-arrays-sequences.md) · 下一章：[10 变量与作用域](10-variables.md)

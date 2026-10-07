@@ -101,3 +101,7 @@ bordeaux-threads/cffi），将来换实现的成本就控制住了。
 2. `(eq "a" "a")` 两实现可能不同——这不是 bug，是「未规定」；用 `equal`；
 3. CLISP 忘 `-E UTF-8` 就地报错（01 章），验证脚本已内置；
 4. 差异总账里的 27 条都有对应章节——写代码遇到诡异差异先查这张表。
+
+---
+
+上一章：[21 工程化](21-engineering.md) · 下一章：[23 SBCL 扩展 I](23-sbcl-extensions.md)

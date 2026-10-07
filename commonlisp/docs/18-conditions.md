@@ -153,3 +153,7 @@ warning 就进 stderr（验证判定失败）。要演示运行期报错，把�
 | `(signal 'my-error)` 进调试器 | 它继承自 error | 只通知就继承 condition |
 | CLISP 加载时告警 restart 缺 :interactive | 带参 restart 必须配 | 加 `:interactive` |
 | no-error 子句 CLISP 上报 too many arguments | 身体的全部返回值都要接 | `(:no-error (v &rest rest))` |
+
+---
+
+上一章：[17 流与文件](17-io.md) · 下一章：[19 CLOS I](19-clos.md)

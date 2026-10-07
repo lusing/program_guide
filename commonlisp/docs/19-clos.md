@@ -159,3 +159,7 @@ WARNING 到 stderr（SBCL 无此检查）——方法定义放在第一次调用
 | CLISP 告警 Adding method to called function | 调用后追加方法 | 定义先于调用 |
 | equal 两个实例是 NIL | CLOS 实例默认比身份 | 自定义打印+比较，或用 defstruct（09 章） |
 | 打印输出带地址，测试不稳 | 默认打印含地址 | print-object + `:identity nil` |
+
+---
+
+上一章：[18 条件系统](18-conditions.md) · 下一章：[20 CLOS II](20-clos-advanced.md)

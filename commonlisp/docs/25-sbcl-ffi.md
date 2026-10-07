@@ -105,3 +105,7 @@ sb-alien 的价值：零依赖、与 SBCL 编译器深度配合（26 章性能�
 | 回调崩溃 | GC/线程上下文 | 避免 sb-alien 回调或极小心 |
 | 共享库加载失败 | 库名/路径平台不同 | `#+` 分发（示例 25 的写法） |
 | 换 CLISP 跑不了 | sb-alien 是 SBCL 专有 | CFFI |
+
+---
+
+上一章：[24 SBCL 扩展 II：线程](24-sbcl-threads.md) · 下一章：[26 性能优化](26-performance.md)

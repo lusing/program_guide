@@ -116,4 +116,5 @@ naive 版能用，但整个 `check` 的返回值是**最后一个表达式的值
 4. `restart-case` 挂在 report-result 里、`handler-bind` 挂在 deftest 里——为什么不能反过来？
 
 ---
-上一章：[28 简易 CD 数据库](28-pcl-db.md) ｜ 下一章：[30 可移植路径名库](30-pcl-pathname.md)
+
+上一章：[28 简易 CD 数据库](28-pcl-db.md) · 下一章：[30 可移植路径名库](30-pcl-pathname.md)

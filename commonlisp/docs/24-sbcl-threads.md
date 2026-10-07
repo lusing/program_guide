@@ -157,3 +157,7 @@ API 面不同，又一例「并发代码走可移植层」的理由。
 | 屏障后结果不全 | sleep 赌时序 | 收集句柄统一 join |
 | 计数偶发偏小 | 读-改-写没加锁 | 互斥锁或 atomic-incf |
 | 直接打印线程对象 | tid/状态每次不同 | 打 `(type-of th)` 等稳定字段 |
+
+---
+
+上一章：[23 SBCL 扩展 I](23-sbcl-extensions.md) · 下一章：[25 SBCL 扩展 III：FFI](25-sbcl-ffi.md)

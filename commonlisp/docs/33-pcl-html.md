@@ -106,4 +106,5 @@
 4. 为什么两版能共用 `escape-string`？DSL 的语义定义在哪个组件里？
 
 ---
-上一章：[32 二进制与 ID3](32-pcl-binary.md) ｜ [返回目录](../README.md)
+
+上一章：[32 二进制与 ID3](32-pcl-binary.md) · 下一章：（完）

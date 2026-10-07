@@ -126,3 +126,7 @@ CLISP 是 `CLOS`），可移植代码只用 ANSI 面：
 | no-next-method 报错 | 链尾还调 call-next-method | 先 `next-method-p` |
 | 用了 SB-MOP 换实现就崩 | MOP 包名不跨实现 | ANSI 子集或 closer-mop |
 | 共享槽「串数据」 | :allocation :class 全实例共享 | 默认 :instance |
+
+---
+
+上一章：[19 CLOS I](19-clos.md) · 下一章：[21 工程化](21-engineering.md)

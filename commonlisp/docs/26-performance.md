@@ -143,3 +143,7 @@ SBCL 的编译器**免费送你一半**：它自己做类型推理（`type-of` �
 | 尾递归突然爆栈 | debug 3 关了 TCO | 调优组合别开 debug 3 |
 | `REQUIRE SB-SPROF` 没报错但 SB-PROFILE 报 | 后者在核心里 | 分清核心/contrib（23 章） |
 | 微基准忽快忽慢 | 单次计时噪音 | 多轮取中位数 |
+
+---
+
+上一章：[25 SBCL 扩展 III：FFI](25-sbcl-ffi.md) · 下一章：[27 实战：迷你 Lisp 解释器](27-minilisp.md)

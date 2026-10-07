@@ -132,3 +132,7 @@
 | 宏体里 gensym 调了两次 | 每次调用都给新符号 | 一次生成、存进 let 变量 |
 | `eval-when` 没按预期执行 | `--load` 不触发 `:compile-toplevel` | `(:compile-toplevel :load-toplevel :execute)` 三态全开 |
 | 展开 `#:G123` 出现在输出里 | gensym 编号随会话/实现变 | 别打印 gensym 名（示例 06 的规矩） |
+
+---
+
+上一章：[13 类型系统](13-types.md) · 下一章：[15 宏 II](15-macros-advanced.md)

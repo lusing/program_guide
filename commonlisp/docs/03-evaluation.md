@@ -197,3 +197,7 @@ nil       ; => NIL       ← 假，也是空表
    CLISP 给 `(SIMPLE-BASE-STRING 2)`。做类型判断用 `typep`（13 章），别比对 type-of。
 5. **读取期 vs 求值期**：`#+`、引号、`#\`、`,@` 全是读取期的；`if`/`let` 是求值期的。
    报「no such package」基本是把读取期的东西放到了求值期。
+
+---
+
+上一章：[02 第一个程序](02-hello.md) · 下一章：[04 数字](04-numbers.md)

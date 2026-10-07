@@ -114,4 +114,5 @@
 4. save/load 往返靠哪两个函数对咬？`with-standard-io-syntax` 包的是哪一侧？
 
 ---
-上一章：[27 迷你 Lisp 解释器](27-minilisp.md) ｜ 下一章：[29 单元测试框架](29-pcl-testfw.md)
+
+上一章：[27 实战：迷你 Lisp 解释器](27-minilisp.md) · 下一章：[29 单元测试框架](29-pcl-testfw.md)

@@ -186,3 +186,7 @@ CLISP 可能「碰巧」改成功（这正是不可移植代码的典型样本�
 | `#\Space` 打印两实现不一致 | SBCL 用 `#\ `、CLISP 用 `#\Space` | 打 `(char-name #\Space)` |
 | `(string 42)` 报错 | `string` 只接受字符/符号/字符串 | 数字用 `write-to-string` |
 | CLISP 下中文报 Invalid byte | 默认编码跟 locale 走 | 启动加 `-E UTF-8` |
+
+---
+
+上一章：[04 数字](04-numbers.md) · 下一章：[06 符号与包](06-symbols-packages.md)

@@ -190,3 +190,7 @@ Lock on package COMMON-LISP violated ...
 | 用了 `pkg::sym` 换机器就崩 | 依赖了别人的内部符号 | 只用导出符号 |
 | `CLISP` 加载报「Adding method to already called generic function」 | 给已调用过的泛型追加方法（19 章） | 方法定义放在第一次调用之前 |
 | 打印符号带了实现私有包前缀 | 条件类名如 `SB-INT:SIMPLE-PARSE-ERROR` vs `SYSTEM::SIMPLE-PARSE-ERROR` | 打 `(symbol-name ...)`（18 章） |
+
+---
+
+上一章：[05 字符与字符串](05-strings.md) · 下一章：[07 列表与相等](07-lists.md)

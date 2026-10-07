@@ -140,3 +140,7 @@ CAS 返回**旧值**——判断成败靠比较返回值与期望值（示例 23
 | `:output :string` 报错 | 不支持 | 给流（with-output-to-string） |
 | POSIX 上跑 `cmd /c` | 平台写死 | `#+win32` 分发 |
 | save-lisp-and-die 后代码没执行 | 它不返回 | 放最后一条 |
+
+---
+
+上一章：[22 实现对比与可移植性](22-implementations.md) · 下一章：[24 SBCL 扩展 II：线程](24-sbcl-threads.md)

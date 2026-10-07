@@ -151,3 +151,7 @@ cd commonlisp
 5. **SBCL 的 style-warning 也算 stderr 非空**：哪怕程序逻辑对，编译警告（未用变量、
    未定义函数引用）都会让「stderr 为空」判定失败——示例代码必须干净到零警告
    （这条逼出来的好习惯，21 章细讲）。
+
+---
+
+上一章：[01 全景](01-overview.md) · 下一章：[03 求值模型](03-evaluation.md)

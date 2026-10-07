@@ -186,3 +186,7 @@ python3 verify-guide.py          # 核验 docs/*.md 全部代码块（SBCL 通�
 | CLISP require asdf 得 NIL | 本构建不带 ASDF | load asdf.lisp / 装 Quicklisp |
 | save-lisp-and-die 后的代码没跑 | 它不返回 | 放最后一条 |
 | 「通过」但其实没执行 | --script 与 --non-interactive 连用 | --load（02 章） |
+
+---
+
+上一章：[20 CLOS II](20-clos-advanced.md) · 下一章：[22 实现对比与可移植性](22-implementations.md)

@@ -115,3 +115,7 @@ CLISP 主要解释执行、收益有限——性能代码看实现（22/26 章�
 | `(the fixnum …)` 结果悄悄错了 | the 是承诺不是检查 | safety 高档下才检查（26 章） |
 | 两实现 type-of 输出不同 | 形态是实现自由 | 判断用 typep |
 | satisfies 的谓词写了 lambda | satisfies 只接受符号 | defun 一个具名谓词 |
+
+---
+
+上一章：[12 控制流与迭代](12-control.md) · 下一章：[14 宏 I](14-macros.md)

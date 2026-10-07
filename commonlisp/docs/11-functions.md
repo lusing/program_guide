@@ -163,3 +163,7 @@ calls, or a tail call that SBCL cannot or has not optimized away.
 | 传了不认识的关键字报 illegal keyword | 有 `&key` 就会校验 | `&allow-other-keys` 或纯 `&rest` |
 | flet 遮蔽 `1+` 被包锁拦 | SBCL 锁 COMMON-LISP 包 | 只遮蔽自己包的名字 |
 | 多值「丢了一个」 | 单值上下文静默丢弃 | `multiple-value-bind` 接 |
+
+---
+
+上一章：[10 变量与作用域](10-variables.md) · 下一章：[12 控制流与迭代](12-control.md)

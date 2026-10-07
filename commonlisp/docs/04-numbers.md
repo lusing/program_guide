@@ -265,3 +265,7 @@ CLISP 提供开关 `ext:*floating-point-contagion-ansi*` 置 `t` 后遵循 ANSI�
 | `(round 2.5)` 得 2 不是 3 | 银行家舍入 | 传统舍入写 `(floor (+ x 1/2))` |
 | `(sqrt 4)` 得浮点 | `sqrt` 一律返回浮点（精确输入时 CLISP 例外） | 要整数用 `isqrt` |
 | `type-of` 结果不是预期类名 | 返回精确区间且形态随实现 | 判断用 `integerp` / `typep` |
+
+---
+
+上一章：[03 求值模型](03-evaluation.md) · 下一章：[05 字符与字符串](05-strings.md)

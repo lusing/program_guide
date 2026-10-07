@@ -177,3 +177,7 @@
 > **死循环的真实代价（实测）**：漏写 `to` 的 `(loop for i downfrom 3 collect i)`
 > 在 SBCL 上以**进程级致命错误**收场：`Heap exhausted, game over`——
 > 这**不是**可捕获的 condition，handler-case 拦不住，进程直接没了。
+
+---
+
+上一章：[11 函数](11-functions.md) · 下一章：[13 类型系统](13-types.md)

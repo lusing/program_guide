@@ -114,3 +114,7 @@ body 整个多包一层——`(let ((x 2)) x)` 的 body 变成 `((X))`，`X` 被
 | 递归函数「未定义」 | define 先于闭包存入的顺序 | 全局帧可变，define 先存 |
 | CLISP 告警 FOR 子句顺序 | `until` 混在两个 for 之间 | FOR 放最前，别用 for-v-finally |
 | 报错文本两实现不同 | 条件对象带实现措辞 | 只断言「是否报错」 |
+
+---
+
+上一章：[26 性能优化](26-performance.md) · 下一章：[28 简易 CD 数据库](28-pcl-db.md)

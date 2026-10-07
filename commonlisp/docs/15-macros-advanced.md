@@ -147,3 +147,7 @@ once-only 的手工实现：先求值一次存进 gensym，再引用 gensym：
 | CLISP 加载告警 `with-gensyms` 重定义 | EXT 包里自带同名宏 | 改名或用 alexandria |
 | `setf` 符号宏报「not a symbol」 | 替换结果是表达式不是位置 | 用可 setf 的位置（gethash 等） |
 | 编译期「宏未定义」 | 宏定义没到 :compile-toplevel | eval-when 三态全开 |
+
+---
+
+上一章：[14 宏 I](14-macros.md) · 下一章：[16 format](16-format.md)

@@ -140,4 +140,5 @@ SBCL 的 sort 重排后原列表头不再是结果头；CLISP 的 sort 恰好没
 4. 特征选择的平手规则为什么必须存在？（提示：`sort` 的稳定性）
 
 ---
-上一章：[30 可移植路径名库](30-pcl-pathname.md) ｜ 下一章：[32 二进制与 ID3](32-pcl-binary.md)
+
+上一章：[30 可移植路径名库](30-pcl-pathname.md) · 下一章：[32 二进制与 ID3](32-pcl-binary.md)
