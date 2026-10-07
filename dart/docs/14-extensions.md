@@ -120,3 +120,7 @@ typedef 是纯别名（不造新类型，与 extension type 相反），两大�
 - **扩展在 null 上的行为取决于 on 的类型**：`on String` 的扩展不能对 null 隐式调用；要收 null 就声明 `on String?`。
 - **extension type 没有运行时身份**：`Meters(5) is double` 为 true——需要运行时类型隔离就回到包装类。
 - **typedef 不产生新类型**：`IntList` 与 `List<int>` 完全等价，防不了"装错货"——那是 extension type 的活。
+
+---
+
+上一章：[13 记录与模式匹配](13-records-patterns.md) · 下一章：[15 Future](15-async.md)

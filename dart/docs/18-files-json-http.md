@@ -110,3 +110,7 @@ dart:io 自带 HTTP 服务器与客户端，一个"自测型"示例收尾——*
 - **HttpServer 不 close**：进程挂着不退出；本教程构建脚本跑示例时就会当场暴露。
 - **忘设 Content-Type**：客户端拿到的就是纯文本；JSON 接口必设 `ContentType.json`。
 - **路径分隔符**：Dart 的 `dart:io` 在三个平台都认 `/`，拼接路径统一用 `/` 即可（或 `package:path` 的 `p.join`）。仅 Windows 上展示给用户时留意 `Platform.pathSeparator` 是 `\`。
+
+---
+
+上一章：[17 Isolate](17-isolates.md) · 下一章：[19 测试](19-testing.md)

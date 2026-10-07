@@ -123,3 +123,7 @@ Stream<double> sensor() {
 - **忘 close controller**：await for 永挂（本教程 build 脚本的运行验证会当场暴露）；广播 controller 同理要 close。
 - **广播流不回放**：订阅前已发出的事件拿不到——"先 connect 后 subscribe"要自己缓存。
 - **listen 与 await for 别混用同一流**：单订阅流一个监听者，混用直接炸；同一份数据两个消费者请转广播。
+
+---
+
+上一章：[15 Future](15-async.md) · 下一章：[17 Isolate](17-isolates.md)

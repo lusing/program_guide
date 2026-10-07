@@ -110,3 +110,7 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -Test
 - **`dart run` 首次较慢**：会先做依赖解析与 JIT 预热，不是卡死；AOT 后的程序没有这个延迟。
 - **别用 `dart file.dart` 直接跑带 package 依赖的文件**：依赖解析需要 `dart run` 的工程上下文（本教程 02–18 章示例零依赖，两种方式等价，但习惯统一用 `dart run`）。
 - **`dart analyze` 比 IDE 更严**：本教程标准是零告警，命令行以它为准。
+
+---
+
+下一章：[02 第一个程序](02-hello.md)

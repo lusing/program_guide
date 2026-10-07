@@ -105,3 +105,7 @@ await 语法（ES2017 时代引入 Dart）之前，异步全靠 `then/catchError
 - **忘 await 的 Future 静默吞错**：`fetch(); // 没接住` 异常无人认领；确定不关心也要 `unawaited(fetch())` 把意图写明。
 - **async 函数的 return 类型**：写 `String` 会是编译错（async 必须 Future/Stream/void），初学常在重构时忘改。
 - **`Future.value(x)` 不是"立即执行"**：它创建即完成，但回调仍要走一轮 microtask——输出顺序相关的测试别想当然。
+
+---
+
+上一章：[14 扩展](14-extensions.md) · 下一章：[16 Stream](16-streams.md)

@@ -199,3 +199,7 @@ parser 组测纯函数的正反例；task 操作组测 nextId/toggle 抛 TaskNot
 - **JSON 里没有 DateTime**：jsonEncode 不会自动序列化 DateTime，存储前先 `toIso8601String()`，读取再 parse。
 - **exit 立即终止进程**：exit 后 stdout 缓冲可能没刷完，关键输出先 await 完成再 exit。
 - **测试用真实临时目录后要清理**：`dir.deleteSync(recursive: true)` 放在用例尾部；泄漏的临时目录会在 CI 磁盘上堆积。
+
+---
+
+上一章：[19 测试](19-testing.md) · 下一章：（完）

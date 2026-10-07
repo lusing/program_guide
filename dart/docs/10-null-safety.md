@@ -114,3 +114,7 @@ String greet(String? who) => '你好，${who ?? '游客'}';
 - **`??` 的优先级错觉**：`a ?? b ?? c` 从左到右取第一个非空，别与 `?:` 混写进复杂表达式而不加括号。
 - **late 忘初始化就访问**：抛 `LateInitializationError`，且在 release 模式同样会抛——它不是调试期专用检查。
 - **`?` 只能标在类型上**：`String? s` 合法；局部 `var s? = …` 不存在这种语法。
+
+---
+
+上一章：[09 Mixin 与类修饰符](09-mixins-modifiers.md) · 下一章：[11 泛型](11-generics.md)

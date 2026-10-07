@@ -96,3 +96,7 @@ dart create -t console my_tool   # 脚手架：新建一个 console 工程
 - **插值花括号忘了写**：`'$user.name'` 解析成 `$user` + 文本 `.name`，要 `'${user.name}'`；凡是取成员/调用方法，一律 `${}`。
 - **退出码不是 `return` 出来的**：`main` 返回 `void`；要设置进程退出码用 `exit(64)`（dart:io），第 20 章 有完整示范。
 - **Windows 控制台中文乱码（仅 Windows）**：那是终端编码问题（`chcp 65001` 可解），不是 Dart 把字打错了。macOS/Linux 终端默认 UTF-8，无此问题。
+
+---
+
+上一章：[01 平台全景](01-overview.md) · 下一章：[03 变量与内置类型](03-values.md)

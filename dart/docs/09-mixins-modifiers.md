@@ -120,3 +120,7 @@ interface class InterfaceModel {
 - **sealed 子类必须同库**：跨文件 extends sealed 类是编译错误；反过来，同文件内它可以被正常 extends/implements。
 - **base 类跨库 implements 是编译错**：限制跨库生效；同库内不受约束。
 - **`class X with M` 要求 M 是 mixin（或类）**：普通类也可以被 with（拿实现），但官方风格是 mixin 声明 mixin；拿不准就声明成 mixin。
+
+---
+
+上一章：[08 继承与接口](08-inheritance.md) · 下一章：[10 空安全](10-null-safety.md)

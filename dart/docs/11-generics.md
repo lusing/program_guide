@@ -97,3 +97,7 @@ Java 的泛型是编译期擦除（运行时没有 `List<int>` 这个类型，�
 - **`List<dynamic>` 不是万金油**：读出元素全是 dynamic，用之前还得 cast/判型；能写具体类型参数就写。
 - **无约束 T 上调用方法**：`T t; t.toString()` 之外几乎啥都不能干——需要能力就加 `extends` 约束。
 - **`is T` 对 null 的语义**：`null is int` 为 false；判可空用 `is int?` 或先判 null。
+
+---
+
+上一章：[10 空安全](10-null-safety.md) · 下一章：[12 异常](12-exceptions.md)

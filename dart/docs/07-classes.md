@@ -125,3 +125,7 @@ getter 是"长得像字段的计算属性"：调用方写 `p.distanceFromOrigin`
 - **初始化列表里不能用 this**：`: this.x = …` 非法；列表阶段对象还没"出生"，只能给字段直接赋值。
 - **factory 里访问不了实例成员**：factory 运行时还没有实例，只能用 static 成员（缓存表正是 static）。
 - **私有是库级**：`_x` 挡不住同文件的邻居类；想隔离就拆文件。
+
+---
+
+上一章：[06 集合](06-collections.md) · 下一章：[08 继承与接口](08-inheritance.md)

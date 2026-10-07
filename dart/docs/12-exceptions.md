@@ -122,3 +122,7 @@ class InsufficientBalance implements Exception {
 - **`throw e` 丢栈**：往上层抛一律 `rethrow`。
 - **finally 里 return/throw**：会**覆盖** try 里原本要抛出的异常，原始错误凭空消失——finally 只做清理，别再产出新控制流。
 - **异常当流程控制**：可预期的业务分支（如"找不到该 id"）优先返回值建模（第 20 章的 ParseErr 就是"错误当值"），异常留给"穿透多层才有人管"的场景。
+
+---
+
+上一章：[11 泛型](11-generics.md) · 下一章：[13 记录与模式匹配](13-records-patterns.md)

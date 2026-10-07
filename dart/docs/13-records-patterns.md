@@ -157,3 +157,7 @@ switch (cmd) { case ('add', var title): … }  // switch 语句里的解构 case
 - **非 sealed 类型穷尽需 `_`**：对 String/Object 这类开放类型 switch，漏 `_` 直接编译错误（提醒你"没人数得清"）。
 - **`_` 丢弃不绑定**：解构时用 `_` 的位置拿不到值，要留证据就起名字。
 - **对象模式字段名要对**：`Circle(r: var r)` 的 `r:` 是字段名不是变量名——写错是编译错误（好在有编译器兜着）。
+
+---
+
+上一章：[12 异常](12-exceptions.md) · 下一章：[14 扩展](14-extensions.md)

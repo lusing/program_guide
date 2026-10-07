@@ -94,3 +94,7 @@ void main() {
 - **用例之间共享可变状态**：setUp 重建夹具正是为此；static 缓存会让用例顺序敏感（Temperature._cache 那种缓存要么注入要么清空）。
 - **throwsA 喂成了调用结果**：`expect(parse(-1), throws…)` 直接就抛了——要喂**函数** `() => parse(-1)`。
 - **测试依赖执行顺序**：单跑绿、全跑红 = 有共享状态；group 的隔离只是"语义分组"，不是沙箱。
+
+---
+
+上一章：[18 文件 JSON HTTP](18-files-json-http.md) · 下一章：[20 实战：待办管理器](20-todo.md)

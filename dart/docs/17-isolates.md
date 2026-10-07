@@ -84,3 +84,7 @@ Future<List<int>> heavySort(List<int> data) async {
 - **worker 异常会传回**：Isolate.run 里抛的异常在 await 处正常抛出（好事）；spawn 手工协议里 worker 崩了只体现为"再无消息"，需要自己加错误端口处理。
 - **改 worker 数据不影响主 isolate**：想让结果生效，必须把新值**传回来**并赋值，而不是指望"共享"。
 - **IO 密集硬上 isolate**：白付拷贝成本零收益——异步 IO 本来就不占线程。
+
+---
+
+上一章：[16 Stream](16-streams.md) · 下一章：[18 文件 JSON HTTP](18-files-json-http.md)

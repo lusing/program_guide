@@ -136,3 +136,7 @@ fold 与 reduce 的取舍：需要非元素类型的累计值（比如从 List<i
 - **sort 是原地排序**：`nums.sort()` 之后 nums 变了；要保留原序先拷贝 `[...nums]..sort()`（示例 6.5 的惯用法）。
 - **遍历时删元素**：for 循环里 remove 会跳元素，用 `removeWhere(predicate)` 一步到位。
 - **`{}` 是 Map**：空 Set 必须写 `<String>{}`，漏类型参数会得到奇怪的 Map 推断。
+
+---
+
+上一章：[05 函数](05-functions.md) · 下一章：[07 类与对象](07-classes.md)

@@ -119,3 +119,7 @@ class StorableRect extends Rect implements Storable {
 - **抽象类不能 new**：`Shape()` 编译错；但抽象类可以有工厂构造与静态成员（`Shape.fromJson(…)` 是常见出口）。
 - **多态看运行时**：`Shape s = Circle(2); s is Circle` 为 true；需要时可用模式匹配窄化（第 13 章），别用老式 as 强转。
 - **深继承别超过两三层**：Dart 生态风格偏"组合优先"，继承树一深，`super` 调用链和初始化顺序都会变成负担（第 09 章的 mixin 是出路）。
+
+---
+
+上一章：[07 类与对象](07-classes.md) · 下一章：[09 Mixin 与类修饰符](09-mixins-modifiers.md)

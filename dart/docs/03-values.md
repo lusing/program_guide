@@ -135,3 +135,7 @@ dynamic anything = 42;
 - **const 里装运行期值是编译错**：`const t = DateTime.now();` 不行，退到 final。
 - **`==` 比较字符串内容**：与 Java 不同，Dart 的 `==` 对 String 按内容比较；要判"同一实例"用 `identical(a, b)`。
 - **int/double 混算看清结果类型**：`5 / 2` 是 `2.5`（double！），要整除用 `5 ~/ 2`。
+
+---
+
+上一章：[02 第一个程序](02-hello.md) · 下一章：[04 控制流](04-control-flow.md)
