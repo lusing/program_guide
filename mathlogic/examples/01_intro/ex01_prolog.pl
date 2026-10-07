@@ -1,10 +1,10 @@
+:- encoding(utf8).
 % ex01_prolog.pl —— 第七家：Prolog（SWI-Prolog 10，本机通道）。
 %
 % 编码铁律：SWI 在 Windows 默认按本地代码页（GBK）读源文件——UTF-8
 % 中文注释的尾字节会连着换行一起被吃掉，把下一行子句吞进注释。
 % 首行必须声明 encoding(utf8)（见下）。同理，运行期输出一律纯 ASCII
 % （START/END 标记），不跟控制台代码页较劲。
-:- encoding(utf8).
 
 % hello-logic：Horn 子句即程序，合一即计算。逻辑方程由 SLD 消解
 % 求解——这正是 20 章 T_P 语义的操作化身，40 章的主角；这里只让
