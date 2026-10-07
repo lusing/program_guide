@@ -152,6 +152,12 @@ Theorem inf_primes : forall L, (forall n, In n L -> prime n) ->
 
 ## 坑位速记（本章实测，量大）
 
+> 关于 Bézout 差形式的补充：方向位 s 并非唯一的处理办法——另一种常见方案是把
+> 系数取在 ℤ 里（书正是这么做的），但那需要先构造整数（Jongsma 自己也要等到
+> §6.4 才正式定义 ℤ）。本章的「移项负系数」方案让扩展 Euclid 在 nat 里自封闭，
+> 与第 43 章 Hanoi 的「+1 = 2^n 改写」属于同一族手艺：**nat 没有减法和负数，
+> 但等式的两边可以选边站**。
+
 - **Coq：`remember` 是含字母项的安全岛**。`gcdn a b` 里含有 a、b 两个字母，
   任何对 a 或 b 的全局 `rewrite` 都会把 `gcdn a b` 内部的同名字母一起改掉
   （自我指涉爆炸）。解法：`remember (gcdn a b) as g` 把它变成不透明变量，
