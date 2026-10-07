@@ -1,6 +1,6 @@
 #Requires -Version 7
 <#
-    mathlogic 教程验证脚本：六通道 Coq / HoTT / Agda / Lean / Isabelle / HOL4。
+    mathlogic 教程验证脚本：七通道 Coq / HoTT / Agda / Lean / Isabelle / HOL4 / Prolog。
 
     用法:
       pwsh -NoProfile -Command '& ./build.ps1 -All'          全量验证
@@ -26,6 +26,12 @@
       hol4     : WSL Ubuntu-26.04 `~/hol4-src/bin/hol run 文件`（timeout 120 看门狗），
                  退出码 0 且输出含 [OK] 标记、无 uncaught exception。
                  HOL4 未构建时整通道 SKIP。
+      prolog   : 本机 SWI-Prolog 10（G:\scoop\apps\swipl\current），
+                 `swipl -q -f 文件 -g main -t halt`；退出码 0 且 stdout 含
+                 「END ====」ASCII 标记（源文件须首行 :- encoding(utf8)，
+                 运行期输出纯 ASCII——Windows 下 SWI 默认 GBK 读源/控制台
+                 代码页写出的双重坑；单引擎简化协议，WSL gprolog 留作
+                 跨引擎抽查，不进 CI）。
 
     SKIP 不是失败：等 tools/build-hol4.sh / tools/build-hott.ps1 完成后自动纳入。
 #>
@@ -66,7 +72,7 @@ if ($Clean) {
 $units = Get-ChildItem $examples -Directory | Sort-Object Name | ForEach-Object {
     $dir = $_
     Get-ChildItem $dir.FullName -File | Where-Object {
-        $_.Extension -in '.v', '.agda', '.lean', '.thy', '.sml'
+        $_.Extension -in '.v', '.agda', '.lean', '.thy', '.sml', '.pl'
     } | ForEach-Object {
         $f = $_
         $tool = if ($f.Name -like '*_hott.v') { 'hott' }
@@ -75,6 +81,7 @@ $units = Get-ChildItem $examples -Directory | Sort-Object Name | ForEach-Object 
                 elseif ($f.Extension -eq '.lean') { 'lean' }
                 elseif ($f.Extension -eq '.thy') { 'isabelle' }
                 elseif ($f.Extension -eq '.sml') { 'hol4' }
+                elseif ($f.Extension -eq '.pl') { 'prolog' }
         [PSCustomObject]@{
             Chapter = $dir.Name
             Tool    = $tool
@@ -172,6 +179,11 @@ foreach ($u in $units) {
                 $cmd = "cd '$wslDir' && timeout 120 $hol4Bin run '$($u.Name)'"
                 $out = & wsl -d $wslDistro bash -lc $cmd 2>&1 | Out-String
                 $ok = ($LASTEXITCODE -eq 0) -and ($out -match '\[OK\]') -and -not ($out -match 'uncaught exception')
+                if (-not $ok) { $detail = $out }
+            }
+            'prolog' {
+                $out = & 'G:\scoop\apps\swipl\current\bin\swipl.exe' -q -f $u.Path -g main -t halt 2>&1 | Out-String
+                $ok = ($LASTEXITCODE -eq 0) -and ($out -match 'END ====')
                 if (-not $ok) { $detail = $out }
             }
         }

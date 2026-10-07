@@ -3,7 +3,7 @@
 面向**会编程、想系统学数理逻辑**的读者。以八本读本为骨架
 （Huth&Ryan、Ben-Ari 3e、Mints、EFT、Mendelson 等详见
 [PLAN.md](./PLAN.md)），横跨 **Coq / Agda / Lean 4 / Isabelle/HOL /
-HOL4 / Coq-HoTT** 六种实现机器验证。
+HOL4 / Coq-HoTT / Prolog** 七种实现机器验证。
 
 **已完结**：34 章全部交付（H&R 全谱扩充），101 个验证单元全绿
 （零公理或显式公理记账）；速查表见 [CHEATSheet.md](./CHEATSheet.md)，
@@ -73,6 +73,7 @@ mathlogic/
 | Lean | lean 4.25.0 | 无 error:/warning: |
 | Isabelle | Isabelle2025-2（Windows 自带 Cygwin，HOL heap 预构建） | build exit 0 |
 | HOL4 | WSL ~/hol4-src（Poly/ML 5.9.2 源码全量构建 9m52s） | hol run + [OK] |
+| Prolog | SWI-Prolog 10.0.2（scoop；gprolog 1.5.0/WSL 跨引擎抽查） | exit 0 + `END ====` |
 
 ```powershell
 cd mathlogic

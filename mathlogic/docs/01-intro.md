@@ -75,7 +75,7 @@ M 是什么，φ 是什么，⊨ 怎么算（或怎么证）？」
 函数（在有限片段上）或归纳定义的谓词（在一般情形）。而内核
 （kernel）扮演裁判：任何证明必须通过类型检查才算数。
 
-## 六家谱系
+## 六家谱系（+ 第七家：Prolog）
 
 本教程横跨六家证明助手。它们不是六个并列选项，而是两个家族、
 两种哲学：
@@ -88,6 +88,33 @@ M 是什么，φ 是什么，⊨ 怎么算（或怎么证）？」
 | HoTT (Rocq 9.1) | 同伦类型论 | h-level 1 截断 | 构造 | 泛等公理（不补经典） |
 | Isabelle/HOL | 简单类型 + LCF 内核 | `bool` | **经典** | 内核自带（EFS 推理规则） |
 | HOL4 | 简单类型 + LCF 内核 | `bool` | **经典** | 内核自带（SELECT 原则） |
+
+第七家不是证明助手，而是逻辑的另一种**可执行形态**：Prolog。
+前六家回答「这个证明成立吗」，Prolog 回答「这个逻辑方程的解是
+什么」——Horn 子句当程序、合一当计算、SLD 消解当求值器。它
+与 20 章（T_P 语义）、40 章（SLD 与逻辑编程语义）签约，
+在 38 章（自动机模型检查）还出演算法的 runnable 版本。冒烟单元
+`examples/01_intro/ex01_prolog.pl` 的全部家当：
+
+```prolog
+conj(t, t, t).                          % 真值表就是事实表（02 章的远亲）
+conj(t, f, f).  conj(f, t, f).  conj(f, f, f).
+
+peano(z).                               % 递归子句即归纳数据
+peano(s(X)) :- peano(X).
+
+main :- format('==== ex01 prolog hello-logic START ====~n', []),
+        ...                             % 双引擎公共谓词 format/2
+```
+
+读三点：事实表就是真值表（`conj/3` 四行铺完命题「与」的全语义）；
+`peano(s(X)) :- peano(X)` 一条递归子句定义了整族皮亚诺数——
+归纳数据与归纳证明在这里同体；`main` 里所有输出走 `format/2`
+（SWI 与 GNU Prolog 的公共谓词，跨引擎输出才能逐行一致）。
+Prolog 的完整故事（SLD 树、计算规则、cut/NAF 对纯逻辑的偏离）
+在第 40 章展开；这里先记一个铁律：**Windows 上源文件首行必须
+`:- encoding(utf8).`，运行期输出一律纯 ASCII**——原因见本章
+坑位速记。
 
 两条分水岭：
 
@@ -152,7 +179,7 @@ Lean 的账单换了个入口（`#print axioms` 报 `Classical.choice`），
 Isabelle/HOL4 则根本没有账单——不是没有公理，而是公理在更深的
 层（内核规则与对象逻辑的焊接处），对象逻辑层面看不见。
 
-## 本机六通道（Windows + WSL 双机架）
+## 本机七通道（Windows + WSL 双机架）
 
 | 通道 | 工具 | 判定 |
 |---|---|---|
@@ -162,6 +189,7 @@ Isabelle/HOL4 则根本没有账单——不是没有公理，而是公理在更
 | lean | lean 4.25.0 | exit 0 + 无 error:/warning: |
 | isabelle | G:\xulun3\Isabelle2025-2（自带 Cygwin，HOL heap 预构建） | isabelle build exit 0 |
 | hol4 | WSL Ubuntu-26.04 ~/hol4-src（Poly/ML 5.9.2 + HOL develop 全量构建） | hol run + [OK] 标记 |
+| prolog | SWI-Prolog 10.0.2（本机 scoop；gprolog 1.5.0/WSL 跨引擎抽查） | exit 0 + `END ====` 标记 |
 
 统一入口：
 
@@ -183,7 +211,8 @@ SKIP 不是失败）。
 - 三件套=语法+演算+语义；两道缝=可靠+完备；证明助手把三者
   全部变成程序，内核当裁判。
 - 六家分两族：类型论系（构造默认，公理可记账）与 LCF 系
-  （经典长在核里）。
+  （经典长在核里）；第七家 Prolog 换赛道——逻辑方程求解器，
+  证明助手证定理，它解方程。
 
 ## 坑位速记
 
@@ -201,6 +230,14 @@ SKIP 不是失败）。
   编译零警告之外无其他迁移成本）。
 - Lean 的 `#print axioms` 对构造性定理报 "does not depend on any
   axioms"——零公理判据认准这句话。
+- **Prolog 通道编码双坑**（01 章实测）：SWI 在 Windows 默认按本地
+  代码页（GBK）读源文件——UTF-8 中文注释的 GBK 尾字节会**连着
+  换行一起吞掉**，把下一行子句吞进注释（现象：莫名「子句不存在」，
+  实测 `peano 2: FAIL` 即此）。修法=源文件**首行**
+  `:- encoding(utf8).`（gprolog 报 warning 忽略之，无害）。第二坑：
+  运行期输出含中文会撞控制台代码页解码——**输出一律纯 ASCII**
+  （START/END 标记），且 SWI 的 `format/1` 是简写、gprolog 无此
+  谓词——统一用 `format/2`。
 - pwsh 调用 build.ps1 必须 `-NoProfile` 防 profile 污染；
   WSL 通道（agda/hol4）走 `wsl -d Ubuntu-26.04 bash -lc`，
   Windows 路径要换算成 `/mnt/g/...`。

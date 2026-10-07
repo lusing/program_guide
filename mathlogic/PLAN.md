@@ -15,7 +15,7 @@
 | 《Advances in Natural Deduction》（Prawitz 纪念文集） | 证明论进阶（文档引用） |
 | 贺伟《范畴论》/《高级范畴论》 | （本轮范畴论教程已用） |
 
-## 六通道（已全部打通并实测）
+## 七通道（已全部打通并实测）
 
 | 通道 | 工具链 | 入口 | 判定 |
 |---|---|---|---|
@@ -25,6 +25,7 @@
 | isabelle | G:\xulun3\Isabelle2025-2（Cygwin，HOL heap 预构建） | build.ps1 → examples/ROOT 每章 session MLNN | build exit 0 |
 | hol4 | WSL ~/hol4-src（Poly/ML 5.9.2 源码构建，tools/build-hol4.sh） | build.ps1（hol run + [OK] 标记） | exit 0 + [OK] + 无 uncaught |
 | hott | Rocq 9.1（G:\rocq）+ 本地 Coq-HoTT 库（597 .vo，tools/build-hott.ps1） | build.ps1（`*_hott.v` 后缀路由） | exit 0 无 Error |
+| prolog | SWI-Prolog 10.0.2（G:\scoop\apps\swipl\current；gprolog 1.5.0/WSL 跨引擎抽查） | build.ps1（`exNN_*.pl` 自动路由） | exit 0 + `END ====` 标记 |
 
 ## 章节蓝图（26 章）
 
