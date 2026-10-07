@@ -228,3 +228,7 @@ cut/NAF/CLP 三现场进了 40 章（Z 记号章按裁决跳过）。
 Lean 11、Isabelle 1；经典成分逐条入账（27 章 G_dual_bwd 的
 classic、29 章 dia_dual 与 N_paths 的排中、32 章 T_converse
 的探针赋值遍历）——**账本透明是本教程六通道文化的最终形态**。
+
+---
+
+上一章：[25 霍尔逻辑](25-hoare.md) · 下一章：[27 LTL](27-ltl.md)

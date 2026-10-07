@@ -207,3 +207,7 @@ Henkin 见证扩张是同一机制的三副面孔（「见证必须有名字、
 - **Lean**：见上节三连坑；另有 fAx 的 A 字段显式
   （调用要 `fAx _ hax`）；`simp [List.not_mem_nil]` 在
   `hnil : B0 ∈ []` 上无 progress（直接 cases）。
+
+---
+
+上一章：[16 FOL 自然演绎](16-folnd.md) · 下一章：[18 前束范式](18-prenex.md)

@@ -202,3 +202,7 @@ structure 是同思想的类型论拼写。一阶理论的形式化在 22 章
 - **Isabelle**：locale 实例化后定理带前缀
   （`lt_order.no_cycle2`）；schema 变量让 `by (fact ...)` 失败——
   `of x y` 显式实例化或 nat 标注。
+
+---
+
+上一章：[14 FOL 语法](14-folsyntax.md) · 下一章：[16 FOL 自然演绎](16-folnd.md)

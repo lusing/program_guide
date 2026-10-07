@@ -201,3 +201,7 @@ H&R 给 KT45n 配了专用 ND：每条公理（K/T/4/5）配一条推演
   - 泥孩子的 `filter`+`all` 组合在 `(true,true)` 字面量上
     `rfl` 直收——教学生用 **`decide` 的表计算心法**（07 章）
     迁移到认知场景。
+
+---
+
+上一章：[32 对应理论](32-correspondence.md) · 下一章：[34 符号 MC 与 μ 演算](34-symbolicmc.md)

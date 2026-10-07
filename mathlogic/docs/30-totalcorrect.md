@@ -217,3 +217,7 @@ Ada 注解都是这个谱系——「程序验证」从定理证明走向**接�
     方向）；
   - less_induct 的 case 命名（less）与取假设的方式（fix+
     assume 在 show 内）——Isar 的块结构是强制的。
+
+---
+
+上一章：[29 CTL*](29-ctlstar.md) · 下一章：[31 模态 K](31-modal.md)

@@ -246,3 +246,7 @@ H&R 的评估小节给出复杂度全景（图 6.23）：apply/restrict 等基�
     显式换形再 cases；
   - `ihhi _ _ (fun n => h (n+1))`——eshift 族引理的 IH 调用
     要给逐点函数，方向反了用 `.symm` 翻。
+
+---
+
+上一章：[09 DPLL](09-dpll.md) · 下一章：[11 Glivenko 现象](11-glivenko.md)

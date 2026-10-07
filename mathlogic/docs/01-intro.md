@@ -241,3 +241,7 @@ SKIP 不是失败）。
 - pwsh 调用 build.ps1 必须 `-NoProfile` 防 profile 污染；
   WSL 通道（agda/hol4）走 `wsl -d Ubuntu-26.04 bash -lc`，
   Windows 路径要换算成 `/mnt/g/...`。
+
+---
+
+下一章：[02 命题语义](02-propsem.md)

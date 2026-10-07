@@ -209,3 +209,7 @@ Prolog 节正是按这个顺序展开的。本教程的取舍：语义件全
   - 零子句谓词要 `:- dynamic not_likes/2.`，否则 findall 报
     Unknown procedure（unknown 的是**过程**不是失败）；
   - `\+` 带自由变元 = 存在式否定——NAF 演示一律用定人查询。
+
+---
+
+上一章：[39 并发演绎验证](39-conc.md) · 下一章：[41 归结完备与 SAT 难例](41-rescomp.md)

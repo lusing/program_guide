@@ -256,3 +256,7 @@ Cook 定理（1978）：**相对**断言语言的可表达性，这五条规则
   hoare 黑盒/函数等式上下文）全部参数调制爆炸且 hol run 模式
   静默中止——RES_TAC 确定性消解是正解；Hol_reln 的 strongind/
   cmd_distinct/cmd_11 要 fetch；exec 反演只能一层（级联污染）。
+
+---
+
+上一章：[24 CTL 模型检查](24-temporal.md) · 下一章：[26 收官](26-wrapup.md)

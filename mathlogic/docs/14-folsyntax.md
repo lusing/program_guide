@@ -203,3 +203,7 @@ ShouldBePi 拒绝）。
   导出（自造或删引用）。
 - **Lean**：`simp [substTerm, eterm, eupd, hz]` 的 hz（z ≠ x
   事实）要进 simp 列表才能消 if。
+
+---
+
+上一章：[13 Kripke 语义](13-kripke.md) · 下一章：[15 FOL 语义](15-folsem.md)

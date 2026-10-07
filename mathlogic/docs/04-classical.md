@@ -200,3 +200,7 @@ Definition LEM_hprop :=
   手段清单）——一旦偷偷用了经典手法，「零公理」就成了假账。
   验收命令永远是 `Print Assumptions` / `#print axioms`，
   不是「看起来没引 Classical」。
+
+---
+
+上一章：[03 自然演绎 NJp](03-njp.md) · 下一章：[05 Hilbert 系统](05-hilbert.md)

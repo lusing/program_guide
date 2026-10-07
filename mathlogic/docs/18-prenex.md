@@ -201,3 +201,7 @@ x'）才能穿越——变元标准化是前束化的第 0 步。
   - `(m == y) = false` 的建立走 `cases hb : (m == y)` +
     `simpa using hb`（`Nat.eq_of_beq_eq` 在独立 Lean 不存在）；
   - iff 的所有分支 `.mp/.mpr`（17 章坑复现）。
+
+---
+
+上一章：[17 FOL Hilbert](17-folhilbert.md) · 下一章：[19 合一与归结](19-resolution.md)

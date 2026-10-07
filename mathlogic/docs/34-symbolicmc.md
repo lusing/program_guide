@@ -197,3 +197,7 @@ existsb**——本章的 `preE_In` 成员刻画在 BDD 版逐位重演。
     ——同 Coq 的 unfold 前置纪律；
   - 迭代同构归纳的 base 用 `exact mu_seed_step`——`simp
     only` 的换形链会留残目标。
+
+---
+
+上一章：[33 模态 ND 与 KT45n](33-modalnd.md) · 下一章：[35 FOL 语义表列](35-foltableau.md)

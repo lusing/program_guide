@@ -200,3 +200,7 @@ Paulson 的 Isabelle 形式化最值得细读的原因：它把「可表示性�
 - **哥德尔句的「真」**：G 在标准模型 ℕ 中真——但「真」
   是元概念（Tarski 不可定义性）；机器化时「真」只能以
   模型论方式（`ℕ ⊨ G`）表述，Isabelle AFP 的正是此路线。
+
+---
+
+上一章：[21 可判定性与 SMT](21-decidability.md) · 下一章：[23 完备性 Henkin](23-completeness.md)

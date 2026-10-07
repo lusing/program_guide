@@ -270,3 +270,7 @@ sanity 现场。
   （False 消除到任意目标）。
 - **Agda**：构造边界如实登记——「条件 Drinker」两方向是构造
   逻辑的全部；无条件 Drinker 需要量词排中。
+
+---
+
+上一章：[15 FOL 语义](15-folsem.md) · 下一章：[17 FOL Hilbert](17-folhilbert.md)

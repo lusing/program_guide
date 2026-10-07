@@ -283,3 +283,7 @@ Theorem tclo_unsat : forall B, tclo B ->
     whnf 吃得下，无需 decide 化；
   - Bool 条件的 `if` 直接可用（自动 `= true` 强制），`!` 取反
     照写。
+
+---
+
+上一章：[34 符号 MC 与 μ 演算](34-symbolicmc.md) · 下一章：[36 LTL 语义表列](36-ltltab.md)

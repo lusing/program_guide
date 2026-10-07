@@ -210,3 +210,7 @@ Scott 语义的地基）——每步推导只消费有穷信息。本章的 T_P
   at hval ⊢` 拆合取再处理；`refine ruleHead _ _ _ _` 的
   四下划线推断不出（refine 不 apply）——命名参数
   `(P := …) (a := …)` 全显式。
+
+---
+
+上一章：[19 合一与归结](19-resolution.md) · 下一章：[21 可判定性与 SMT](21-decidability.md)

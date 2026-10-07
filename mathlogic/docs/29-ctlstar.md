@@ -205,3 +205,7 @@ LTL 的可定义类（Gabbay 分离定理：过去未来混合式可等价改写
     不展开时 rewrite 找不到模式；
   - `cases j` 的 zero 支自带矛盾上界（hj1 : 1 ≤ 0）——omega
     直接收，比构造性论证便宜。
+
+---
+
+上一章：[28 MC 算法与公平性](28-mcalgo.md) · 下一章：[30 完全正确性](30-totalcorrect.md)

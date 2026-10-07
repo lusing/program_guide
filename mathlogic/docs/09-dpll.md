@@ -306,3 +306,7 @@ SAT 战线（DPLL/DP/BDD）在 34 章 μ 演算的不动点视角下统一。
 - **Lean**（DPLL）：`l.1 != s` 是 Bool 的异或语义（`≠` 是
   Prop 不能用在代码分支）；嵌套 match 的 option 层层展开
   Lean 比 Coq 温顺。
+
+---
+
+上一章：[08 范式](08-cnf.md) · 下一章：[10 BDD](10-bdd.md)

@@ -199,3 +199,7 @@ Agda 的模式匹配按参数序编译成 case tree：若某子句先约束 p �
 - **Agda**：`open ≡-Reasoning` 放模块顶层（mutual 块里的 where
   摸不到）；`nnf-correct (¬f a)` 直给 `nneg-correct e a`（目标
   LHS iota 归约到 nneg 侧）；反向才需要 not-not 链。
+
+---
+
+上一章：[07 语义表列](07-tableau.md) · 下一章：[09 DPLL](09-dpll.md)

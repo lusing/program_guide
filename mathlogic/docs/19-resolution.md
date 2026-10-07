@@ -219,3 +219,7 @@ Herbrand 定理恰好供应基层：不可满足的子句集有不可满足的
   == a)` 建立条件。
 - **Isabelle**：`definition` 里引用的函数必须在**定义之前**
   声明（latom 后置报 Extra variables on rhs）。
+
+---
+
+上一章：[18 前束范式](18-prenex.md) · 下一章：[20 Herbrand 与 SLD](20-herbrand.md)

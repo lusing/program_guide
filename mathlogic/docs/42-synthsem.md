@@ -201,3 +201,7 @@ Scott 的开创性成果——程序的「跑」与「算」在不动点上重�
   - `Nat.mul_succ`/`succ_mul` 名字按参数序区分（`b*c.succ`
     vs `b.succ*c`）——用法 `have h6 : … := Nat.succ_mul b c`
     直接做项。
+
+---
+
+上一章：[41 归结完备与 SAT 难例](41-rescomp.md) · 下一章：（完）

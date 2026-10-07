@@ -198,3 +198,7 @@ adequate set：{¬, →, □} 够用（◇ 定义为 ¬□¬）——与 08 章
   - `List.mem_cons` 的成员化简不含 mem_nil（核心库无名）；
   - 反例证明的常见形态：`hbox2`（□ 见证）按成员 rcases，
     冲突面 `Bool.noConfusion` 收。
+
+---
+
+上一章：[30 完全正确性](30-totalcorrect.md) · 下一章：[32 对应理论](32-correspondence.md)

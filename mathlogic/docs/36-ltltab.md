@@ -236,3 +236,7 @@ Example exUnsat_fulfill_fails :
     时必错（29 章同款坑复现）；
   - `mutual def nnf/nnfNeg end` 结构递归无终止警告；
   - 大计算 `rfl` 直收（lasso 30 全展开）无压力。
+
+---
+
+上一章：[35 FOL 语义表列](35-foltableau.md) · 下一章：[37 时态演绎系统 L](37-ltlded.md)

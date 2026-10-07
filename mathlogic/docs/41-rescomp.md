@@ -210,3 +210,7 @@ resproof（无策略自由归结）是它们共同的语义基线。
     成员目标也只证单侧；
   - `eq_of_beq_eq_true` 不在裸 core——simp 后直接
     `cases s <;> simp_all` 收。
+
+---
+
+上一章：[40 SLD 与 Prolog 语义](40-sldprolog.md) · 下一章：[42 合成与形式语义](42-synthsem.md)

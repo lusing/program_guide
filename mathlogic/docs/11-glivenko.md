@@ -208,3 +208,7 @@ Hauptsatz 注记）。
   点式书写的每行就是 Curry–Howard 证。
 - **Lean**：`absurd` 是 nn_dne 的直收件；nn_demorgan 的嵌套 λ
   就是 Coq assert 链的化简。
+
+---
+
+上一章：[10 BDD](10-bdd.md) · 下一章：[12 Curry–Howard](12-ch.md)
