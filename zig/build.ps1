@@ -15,7 +15,7 @@ if (-not (Test-Path -LiteralPath $zigExe)) {
     if ($fromPath) {
         $zigExe = $fromPath.Source
     } else {
-        throw "未找到 zig：$zigExe 不存在，PATH 里也没有（Linux/macOS 可运行 ./run-all.sh）"
+        throw "未找到 zig：$zigExe 不存在，PATH 里也没有。请装 Zig 0.17.0（Linux/macOS 可运行 ./run-all.sh）"
     }
 }
 [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
@@ -92,9 +92,11 @@ function Test-CrossExample {
 function Test-One {
     param([string]$Dir)
     switch (Split-Path -Leaf $Dir) {
+        # build.zig 工程。17 从 0.17 起也是工程了：@cImport 已移除，
+        # 头文件翻译只能走 b.addTranslateC，必须经构建系统（与 run-all.sh 逐项一致）
         "16_build" { Test-ProjectExample $Dir }
+        "17_cinterop" { Test-ProjectExample $Dir }
         "24_minigrep" { Test-ProjectExample $Dir }
-        "17_cinterop" { Test-PlainExample $Dir @("-lc") }
         # 32：直链系统自带的 winsqlite3.dll（LLD 可拿 DLL 当导入库；Linux 对应 -lsqlite3）
         "32_sqlite" { Test-PlainExample $Dir @("$env:SystemRoot\System32\winsqlite3.dll") }
         "18_cross" { Test-CrossExample $Dir }

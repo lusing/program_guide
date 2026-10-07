@@ -1,6 +1,9 @@
-# Zig 0.16 速查表
+# Zig 0.17 速查表
 
-语法速查 + 0.16 坑位索引。详细讲解见对应章（表中 N.M = 第 N 章 M 节）。
+语法速查 + 坑位索引。详细讲解见对应章（表中 N.M = 第 N 章 M 节）。
+>⚠️ **按 0.17.0 整理**。0.17 移除/改名了一批语法与 API（`**`、`void{}`、`@cImport`、
+>`@intFromEnum`、`b.args`、`std.meta` 等），从 0.16 迁移先看
+>[00 · 0.16 → 0.17 迁移手册](docs/00-migration-0.17.md)。
 
 ## 1. 命令速查
 
@@ -26,8 +29,9 @@ const b: u3 = 5;             // 任意位宽（0..7）
 a + b                        // 安全加（Debug 溢出 panic）
 a +%= b                      // 环绕加
 @as(T, x)                    // 类型协调
-@intCast / @truncate(无符号!) / @bitCast(同宽)
-@floatFromInt / @intFromFloat / @enumFromInt / @intFromEnum
+@intCast / @truncate(无符号!) / @bitCast(同宽，不接受裸结构体)
+@floatFromInt / @intFromFloat
+@backingInt(枚举→整数) / @fromBackingInt(@intCast(n))  // 0.17 改名，fmt 会自动改
 ```
 
 | 坑 | 解法 |
@@ -98,7 +102,7 @@ fn f(comptime T: type, v: T) {}          // comptime 参数
 const t = blk: { @setEvalBranchQuota(n); ...; break :blk val; };  // 编译期块
 inline for (tuple) |x| {}                // 无索引捕获！
 fn Container(comptime T: type) type { return struct { const Self = @This(); ... }; }
-@typeInfo(T).@"struct".fields            // 反射（须 switch）
+@typeInfo(T).@"struct".field_names/.field_types  // 0.17：三条平行数组，不再有 fields
 @field(v, "name")                        // 按名存取（编译期名字）
 ```
 
@@ -117,9 +121,9 @@ zig build -Doptimize=ReleaseFast -Dtarget=aarch64-linux
 # 接线：b.dependency("x", .{}) → x.module("x") → imports 挂载（三层缺一不可）
 ```
 
-## 9. 0.13 → 0.16 迁移坑位索引（按遇错频率排）
+## 9. 0.13 → 0.17 迁移坑位索引（按遇错频率排）
 
-| 旧写法 | 0.16 写法 | 章 |
+| 旧写法 | 0.17 写法 | 章 |
 |---|---|---|
 | `ArrayList(T).init(alloc)` | `var l: ArrayList(T) = .empty;` 方法传 alloc | 12 |
 | `std.io.getStdOut()` / `std.fs.File` | `std.Io.File.stdout().writer(io, &buf)` + flush | 02 |
@@ -142,6 +146,17 @@ zig build -Doptimize=ReleaseFast -Dtarget=aarch64-linux
 | `windows.BOOL == 0` | BOOL 是枚举：比较 `.FALSE` | 28 |
 | `DoublyLinkedList.pushFront` | `prepend` / `pop`（队尾）/ `popFirst` | 34 |
 | `extern "sqlite3" fn ...` | 去库名 + DLL 路径当对象传给 zig | 32 |
+| **`a ** b`（运算符）** | **已移除**：用 `@splat` 或 comptime 函数；`++` 拼接仍在 | 06 |
+| `const b = void{}` | `const b: void = {};` | 05 |
+| `@cImport` / `@cInclude` | **已移除**：`build.zig` 的 `b.addTranslateC` + `tc.createModule()` | 17 |
+| `callconv(.C)` | `callconv(.c)`（小写） | 17 |
+| `b.args` | `run_cmd.addPassthruArgs()` | 16/17 |
+| `@intFromEnum` / `@enumFromInt` / `@intToEnum` | `@backingInt` / `@fromBackingInt(@intCast(n))` / `@enumFromInt` | 03/08 |
+| `builtin.mode == .Debug` | `.debug`（`.ReleaseSafe` → `.safe`） | 02 |
+| `std.meta.fields(T)` | `@typeInfo(T).@"struct".field_names` | 14/25/32 |
+| `@typeInfo(E).error_set.?.names` | `.error_set.error_names`（元素是字符串，非结构体） | 09 |
+| `std.heap.stackFallback(a, &buf)` | `BufferFirstAllocator.init(&buf, a).allocator()` | 11 |
+| `@bitCast(结构体)` | `std.mem.asBytes` + `readInt(…, .little)` | 21/25 |
 
 ## 10. 格式化占位符（02）
 
@@ -178,12 +193,12 @@ zig build -Doptimize=ReleaseFast -Dtarget=aarch64-linux
 std.mem.readInt(u32, bytes, .little)        // 任意偏移解包（不要求对齐）
 std.mem.bytesToValue(Record, &raw)          // 整体 view（extern struct + align 关）
 const board: u16 = @bitCast(packed_val);    // packed struct(u16) ↔ 背板整数
-std.meta.fields(T)                          // comptime 遍历字段（wire 尺寸断言/行映射）
+@typeInfo(T).@"struct".field_types          // comptime 遍历字段（wire 尺寸断言/行映射）
 
 // 编码与流（26）
 std.fmt.bytesToHex(data, .upper) / hexToBytes(&out, &hex)
 std.base64.standard.Encoder.calcSize(n) + .encode(dst, src)
-r.readSliceShort(&chunk)                    // short read：EOF 返 0 不报错
+r.interface.fillMore() + buffered() + toss()  // 0.17：readSliceShort 是「填满或EOF」语义，不能当 recv
 const v: @Vector(32, u8) = slice[0..32].*;  // SIMD：比较→位掩码→@popCount
 
 // 文件系统（27/28）
@@ -216,15 +231,43 @@ Pratt：bindingPower 每算符一对 (left,right)——右结合 caret 是 left>
 
 | 坑 | 解 | 章 |
 |---|---|---|
-| std.Io.net TCP：Windows 数据面 recv 等不到/对端 RESET | 0.16.0 AFD 已知缺陷域；UDP 实测可用，TCP 走 ws2_32 extern | 29 |
-| extern 符号名 ≠ DLL 导出名（自造 win_ 前缀） | 没有别名机制：真名 + 内层命名空间防撞 | 29/32 |
-| `extern "库名"` 自动找导入库 | Windows 直链 DLL 时去掉库名字符串 | 32 |
-| 迭代器 entry.name 跨 next 收集 | 内部缓冲复用，必须 dupe | 27 |
-| 返回栈上缓冲切片 | 函数返回栈帧死，dupe 进调用方 | 30 |
-| 持锁 join worker | worker 拿不到锁吃不到哨兵：先解锁再 join | 31 |
-| 锁原语在 std.testing.io 上多线程挂 | 编排测试放 main(init.io)，测试只测原子/纯函数 | 31/15 |
-| doctest 书上有、0.16.0 无 | `zig test` 不编译文档示例：写显式 test 块 | 15 |
-| OPEN_MEMORY 标志误加 | 只对 :memory: 特殊文件名；加了标志文件库静默变内存库 | 32 |
-| packed struct 字段取地址 | 字段不按字节对齐：整个背板 @bitCast 出来再取 | 25 |
-| AST 字段名用 var | 关键字：改 variable | 33 |
-| u64 混合值演示求和溢出 panic | Debug 溢出即崩，用 +% | 31 |
+| 迭代器 `entry.name` 跨 `next()` 失效 | 内部缓冲复用，必须 `dupe` | 27/34 |
+| 返回栈上缓冲切片 | 函数返回栈帧死，`dupe` 进调用方 | 30 |
+| `std.Thread.Mutex/Condition/WaitGroup/Pool` 全部已移除 | 同步原语搬到 `std.Io.*`；`std.Thread` 只剩 `spawn/join/detach/yield` | 19/31/34 |
+| `Io.Condition.wait` 在 `std.testing.io` 上死锁 | 编排测试放 `main(init.io)`，test 只测原子/纯函数 | 31/15 |
+| `Future.await` 返回 `Result` 本身（不是 `!Result`） | 写 `try f.await(io)` 编译失败 | 31 |
+| `Io.Clock` 没有 `.monotonic` | 成员是 `real/awake/boot/cpu_process/cpu_thread` | 22/31/32 |
+| `Io.Duration` 有 `format` 无 `formatNumber` | `{d}` 失败，用 `{f}` | 22/31 |
+| 环绕加 `+%` 不满足结合律 | 并行归约必须用 XOR；Debug 不报错但结果差 6 个数量级 | 31 |
+| `std.io` 时代 doctest | 0.17 无此功能：`zig test` 不编译文档示例，写显式 test 块 | 15/33 |
+| packed struct 字段取地址 | 字段不按字节对齐：整个背板 `@bitCast` 出来再取 | 25 |
+| asm clobber 从字符串列表变成类型化结构体 | 写 `.{ .cc = true, .memory = true }`；**按架构分**（aarch64 只有 `.nzcv`） | 21 |
+| x86 单字母寄存器类全废 | `"=a" "=b" "=c" "=d"` 报 `couldn't allocate output register`；用 `"=r"` | 21 |
+| aarch64 内联汇编是 Intel 语序 | 不是 AT&T：`add %[a], %[o]` 报 `too few operands` | 21 |
+| Zig 的 `"m"` 不是 C 的内存操作数 | 指向"装着值的临时栈槽"，读到值副本；编译测试都过、只有数值错 | 21 |
+| x86_64 macOS 裸 `syscall` 吃 SIGSYS | 退出码 140；必须借 libc（`zig cc` 编的 C 同样 140） | 21 |
+| `@cImport` 已移除，单文件场景手写 `extern "c"` | `b.addTranslateC` 走不了（无 build.zig）；`callconv(.C)` → `.c` | 17/32 |
+| `extern fn` 参数里不许出现切片 | `[:0]const u8` 报 `slices have no guaranteed in-memory representation` | 32 |
+| `sqlite3_source_id` 在 macOS 共享缓存里没导出 | 照抄头文件会 `undefined symbol`；删掉这行声明 | 32 |
+| 变量名不能叫 `void`/`error` | `name shadows primitive`；C 侧类型加 `Raw` 前缀 | 32/33 |
+| `.()` unwrap 语法已移除 | `stmt.()` 报错；一律 `.?` | 32 |
+| `bufPrintZ` → `bufPrintSentinel(buf,fmt,args,0)` | 哨兵是 comptime 形参；`dupeZ` → `dupeSentinel(u8,src,0)` | 32 |
+| `@typeInfo(T).@"union".tag` 不存在 | 新名 `tag_type`（`?type`，须 `.?`） | 33 |
+| 结合性判据与「左严右松」相反 | `left < right` 才是左结合 | 33 |
+| `++` 不能拼接运行期切片 | `slice being concatenated must be comptime-known` | 33 |
+| `std.DoublyLinkedList` 变成非泛型侵入式 | `std.DoublyLinkedList(T)` 报 `type 'type' not a function`；塞 `Node` + `@fieldParentPtr` | 34 |
+| 它还没有 `init()/iterator()/fetchNode()/insert()` | `@hasDecl` 全 `false`；`first` 是**字段**不是方法 | 34 |
+| `StringHashMap` 没有 `putOwned`/`getOrPutOwned` | `@hasDecl` = `false`；唯一写法是**先 `dupe` 再 `put`** | 34 |
+| `insertBefore/insertAfter` 不检查「已相邻」 | 重复插相邻节点写出 `a.prev = a` 自环，遍历永不终止 | 34 |
+| `DebugAllocator.deinit()` 返回 `heap.Check` 枚举 | 不是 `void` 也不是字节数；对比 `testing.allocator` 的 `usize` | 34 |
+| `std.time.Timer` 整个类型不存在 | `std.time` 只剩 `ns_per_ms` 除数常量；计时归 `std.Io.Clock` | 34 |
+| `GeneralPurposeAllocator` → `DebugAllocator` | `@hasDecl` 实测 `false`；`.{}` 与 `.init` 都行 | 34 |
+| 切片赋值 `s = v` 已移除 | 但**数组** `var s: [8]u8` 仍可整体赋值；只有切片不行 | 34 |
+| `"x" ** 1900` 报「空格不对称」 | 报错完全看不出真相（`**` 被词法拆成两个 `*`）；改 `@memset` | 21/34 |
+| `Reader.fixed` 是单参数 | 旧双参写法报 `expected 1 argument(s), found 2` | 34 |
+| `takeDelimiterExclusive` 不消费分隔符（std bug） | 它只 `toss(result.len)` 而 result 不含分隔符 → 第二次起永远返回空片；改 `takeDelimiter`（返回 `?[]u8`）或手工 `fillMore`+`indexOfScalarPos`+`toss` | 29/30/33/34 |
+| `stream.reader(io,&self.rbuf)` 在 init 里绑定 | 值拷贝后悬垂；改懒绑定（收发前 ensureBound） | 29/30/34 |
+| `Stream.close` 不幂等 | 显式 close 后再 `defer close` → BADF panic；要全 defer 或全显式 | 34 |
+| `Server.accept` 要`*Server` | 传给 `Thread.spawn` 的参数写 `&srv`，形参也改指针 | 29 |
+| `Stream.read(io, [][]u8)` | **0.17.0 标准库自身 bug**（Io/net.zig:1286）；改走 reader/writer | 29/30 |
+

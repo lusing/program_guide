@@ -9,7 +9,7 @@ if [ -z "$ZIG_BIN" ]; then
     if command -v zig >/dev/null 2>&1; then
         ZIG_BIN="$(command -v zig)"
     else
-        echo "未找到 zig:请安装 0.16.0,或用 ZIG=/path/to/zig $0 指定" >&2
+        echo "未找到 zig:请安装 0.17.0,或用 ZIG=/path/to/zig $0 指定" >&2
         exit 1
     fi
 fi
@@ -71,8 +71,9 @@ test_cross_example() { # test_cross_example <目录>
 test_one() { # test_one <目录>
     local dir="$1"
     case "$(basename "$dir")" in
-        16_build | 24_minigrep) test_project_example "$dir" ;;
-        17_cinterop) test_plain_example "$dir" -lc ;;
+        # build.zig 工程：16 构建系统 / 17 C 互操作（0.17 起 @cImport 已移除，
+        # 头文件翻译改走 b.addTranslateC，只能经构建系统）/ 24 迷你 grep
+        16_build | 17_cinterop | 24_minigrep) test_project_example "$dir" ;;
         # 32：Linux 链系统 sqlite3（需 libsqlite3-dev）；对应 Windows 的 winsqlite3.dll 直链
         32_sqlite) test_plain_example "$dir" -lsqlite3 ;;
         18_cross) test_cross_example "$dir" ;;
