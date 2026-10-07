@@ -72,6 +72,7 @@
 | 40 | SLD 与逻辑编程语义（双计算规则独立性+cut/NAF/CLP） | C/L/P | ✅ Ben-Ari 批次六 |
 | 41 | 归结完备性与 SAT 难例（resproof+PHP+DP 消元） | C/L | ✅ Ben-Ari 批次七 |
 | 42 | 程序合成与形式语义（小步语义+读出式正确性） | C/L | ✅ Ben-Ari 批次八 |
+| 43 | 数学归纳与递归（PMI 三位一体：弱/强/良序+素因子+√2 下降+F₃ₙ） | C/L | ✅ Jongsma 批次一 |
 | 26 | 收官：SAT→SMT→MC→ITP 图景 + 总坑位清单 + 八书导读+H&R 映射 | 文档 | ✅ 扩写✅ |
 
 章号=示例号；`docs/NN-*.md` 每章坑位速记；ROOTS 随章追加 Isabelle session。
