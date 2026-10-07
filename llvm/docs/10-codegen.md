@@ -143,3 +143,7 @@ llc 也有优化级别，但和 opt 的 -O2 是**两回事**：
 | macOS 链接 .o 报 `library 'System' not found` | MacPorts 的 clang 要显式 `-isysroot $(xcrun --show-sdk-path)` |
 
 下一章是"不走 llc 也能跑"的另一半世界：ORC JIT。
+
+---
+
+上一章：[09 ⭐Value 对象模型](09-value-model.md) · 下一章：[11 ⭐ORC JIT](11-orc-jit.md)

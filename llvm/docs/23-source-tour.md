@@ -105,3 +105,7 @@ ninja -C build opt lli clang   # 只造要玩的工具，省大量时间
 - 新旧对照表是读老教材的换算器；本书 24 章踩坑清单与其互为索引。
 
 下一章收官：MiniLang v1.0 全模式回归 + 全书坑位总账。
+
+---
+
+上一章：[22 clang 工具链](22-clang-tools.md) · 下一章：[24 ⭐⭐MiniLang v1.0](24-minilang-full.md)

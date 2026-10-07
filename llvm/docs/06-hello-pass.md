@@ -171,3 +171,7 @@ static RegisterPass<Hello> X("hello", "Hello World Pass", false, false);
 | macOS 插件链静态库后符号打架 | 插件只走 `--link-shared`（一份 libLLVM 由 opt 提供） |
 
 下一章给 pass 装上"眼睛"（自定义 Analysis）和"自动驾驶"（自动接入 -O2）。
+
+---
+
+上一章：[05 优化管线](05-opt-pipeline.md) · 下一章：[07 ⭐Pass 进阶](07-pass-analysis.md)

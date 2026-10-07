@@ -118,3 +118,7 @@ minilang stats <f>      进程内统计 pass             ← 观察哨
 | 压轴程序死循环 | 检查外层循环变量是否真的在递增（mandel 第一版教训） |
 | 回归红在不认识的断言 | regr 的期望值表与 regression.mini 的 print 顺序一一对应 |
 | 想加新内置函数 | 照 print/putch 的降级模式：codegen 里特判 + 返回 double |
+
+---
+
+上一章：[23 LLVM 源码导览](23-source-tour.md) · 下一章：（完）

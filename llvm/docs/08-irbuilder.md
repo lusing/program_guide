@@ -171,3 +171,7 @@ native / nativeasmprinter    本机目标（第 11 章 JIT 出码用）
 | 打不开输出文件 | 检查 error_code，raw_fd_ostream 构造不抛异常 |
 
 下一章深入这棵对象树的根：`Value/User/Use` 与 RTTI。
+
+---
+
+上一章：[07 ⭐Pass 进阶](07-pass-analysis.md) · 下一章：[09 ⭐Value 对象模型](09-value-model.md)

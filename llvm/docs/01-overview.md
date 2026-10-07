@@ -264,3 +264,7 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 02_first_ir   # 单章
 | macOS 没有 LLVM 22，且 llvm-21 还是老头文件位置 | MacPorts 选 23：Plugins/PassPlugin.h 与 22 一致 | 1.3 |
 | MacPorts 的 llvm-2x 不装 FileCheck 可执行文件 | 用 libLLVMFileCheck 自己链驱动（tools/） | 1.3 / 21 章 |
 | MacPorts 的 clang 找不到 stdio.h / 链接报 library 'System' not found | 显式 `-isysroot $(xcrun --show-sdk-path)` | 1.3 |
+
+---
+
+下一章：[02 第一个手写 IR](02-first-ir.md)

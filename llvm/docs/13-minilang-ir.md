@@ -141,3 +141,7 @@ wrote test.ll
 | for 语义误解 | 值=最后一圈 body 值；写成文档 |
 
 下一章把执行引擎从 lli 换成内嵌 JIT——编译器变解释器。
+
+---
+
+上一章：[12 ⭐MiniLang 前端](12-minilang-front.md) · 下一章：[14 函数与原型](14-minilang-funcs.md)

@@ -107,3 +107,7 @@ if (BinOp != '=' && Prec < NextPrec) { ... }  // '=' 不参与"先结合右边"
 | 赋值目标不是变量 | dynamic_cast<VariableExprAST*> 检查后报错 |
 
 下一章开放语言的扩展性：让用户自己定义运算符。
+
+---
+
+上一章：[14 函数与原型](14-minilang-funcs.md) · 下一章：[16 运算符扩展](16-minilang-ops.md)

@@ -110,3 +110,7 @@ Triple TheTriple("aarch64-linux-gnu");   // 换个三元组即可（TargetRegist
 | 进程内 emit 的产物格式 | COFF/Mach-O/ELF 随 `getDefaultTargetTriple()`，代码不用改 |
 
 下一章补工程化短板：FileCheck 回归测试。
+
+---
+
+上一章：[19 自定义 Pass 接入](19-minilang-pass.md) · 下一章：[21 测试](21-filecheck.md)

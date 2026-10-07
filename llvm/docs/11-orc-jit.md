@@ -137,3 +137,7 @@ return ThreadSafeModule(std::move(M), std::move(Ctx));
 | 代码里写 throw | `-fno-exceptions` 下编译不过；改用 Error/Expected |
 
 至此"使用者"技能树点满。下一章开始造语言：MiniLang 前端（词法 + 语法 + AST）。
+
+---
+
+上一章：[10 代码生成](10-codegen.md) · 下一章：[12 ⭐MiniLang 前端](12-minilang-front.md)

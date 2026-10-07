@@ -204,3 +204,7 @@ hello        ; 字符串=字节数组，%s 打印
 | 老代码 `%Node = type {... %Node*}` | 换 `ptr` |
 
 下一章进入 IR 的灵魂：SSA 与 `phi`。
+
+---
+
+上一章：[02 第一个手写 IR](02-first-ir.md) · 下一章：[04 SSA 与 phi](04-ssa-phi.md)

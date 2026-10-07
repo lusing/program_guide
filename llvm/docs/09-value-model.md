@@ -156,3 +156,7 @@ wrote ...\after.ll
 | 报告打在 stderr 上看着像"没输出" | walker 用 errs()（诊断约定），重定向时别只捞 stdout |
 
 下一章从对象树降回工具层：`llc` 与目标代码生成。
+
+---
+
+上一章：[08 ⭐IRBuilder](08-irbuilder.md) · 下一章：[10 代码生成](10-codegen.md)

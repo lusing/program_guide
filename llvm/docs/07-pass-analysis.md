@@ -150,3 +150,7 @@ invalidate 返回 false（永不作废）在示例里安全吗？验证：让 pa
 | 分析结果好像过期 | 检查上游 pass 的 PreservedAnalyses 是否谎报 |
 
 下一章离开 pass 视角，进入"生产者"视角：用 IRBuilder 直接造 IR。
+
+---
+
+上一章：[06 ⭐第一个 Pass](06-hello-pass.md) · 下一章：[08 ⭐IRBuilder](08-irbuilder.md)

@@ -101,3 +101,7 @@ build 脚本把 `--stats` 的两段输出都纳入断言（before 必须有非�
 | 想在 -O2 里自动统计 | 挂 EP 或 IRTransformLayer（第 7/17 章） |
 
 下一章冲线：从 MiniLang 直接编出原生 `.exe`。
+
+---
+
+上一章：[18 控制流进阶](18-minilang-cf.md) · 下一章：[20 ⭐⭐原生编译](20-minilang-native.md)

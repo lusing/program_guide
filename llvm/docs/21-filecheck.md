@@ -94,3 +94,7 @@ $uc = 'G:\scoop\apps\msys2\current\ucrt64\bin'
 | macOS 上没有 FileCheck 可执行文件 | MacPorts 的 llvm-2x 只给 libLLVMFileCheck.a；用官方库自链驱动（tools/filecheck_main.cpp） |
 
 下一章终于给 scoop 那套"精简版 clang 23"派正经用场。
+
+---
+
+上一章：[20 ⭐⭐原生编译](20-minilang-native.md) · 下一章：[22 clang 工具链](22-clang-tools.md)

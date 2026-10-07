@@ -186,3 +186,7 @@ opt -O2 -pass-remarks-missed=inline naive.ll -S -o nul 2>&1 | Select-String 'mis
 | 向量化为啥没出现 | 数据要足量、无别名阻碍；`-pass-remarks-missed` 问原因 |
 
 下一章从"用 pass"进化到"写 pass"：亲手造一个能被 `-passes=` 点名的优化器扩展。
+
+---
+
+上一章：[04 SSA 与 phi](04-ssa-phi.md) · 下一章：[06 ⭐第一个 Pass](06-hello-pass.md)

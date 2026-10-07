@@ -138,3 +138,7 @@ static unique_ptr<ExprAST> parseBinOpRHS(int MinPrec, unique_ptr<ExprAST> LHS) {
 | AST 打印看不出结合性 | dump 用全括号 S-表达式 |
 
 下一章给每个 AST 节点装上 `codegen()`——树变成 IR。
+
+---
+
+上一章：[11 ⭐ORC JIT](11-orc-jit.md) · 下一章：[13 ⭐AST→IR](13-minilang-ir.md)

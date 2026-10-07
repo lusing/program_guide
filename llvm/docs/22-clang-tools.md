@@ -121,3 +121,7 @@ warning: statement should be inside braces [readability-braces-around-statements
 | macOS 无第二套 LLVM | run.sh 会打印"同版本，未构成跨版本验证"，不假装跨了 |
 
 下一章把 G:\github\lang\llvm-project 的现代源码树变成你的地图。
+
+---
+
+上一章：[21 测试](21-filecheck.md) · 下一章：[23 LLVM 源码导览](23-source-tour.md)

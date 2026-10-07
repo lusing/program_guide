@@ -121,3 +121,7 @@ default: {
 | 退出时崩溃丢输出 | 全局 tracker map 在 Session 死前 clear |
 
 下一章解决 v0.2 遗留的痛点：没有变量，累加只能递归。
+
+---
+
+上一章：[13 ⭐AST→IR](13-minilang-ir.md) · 下一章：[15 变量与可变状态](15-minilang-vars.md)
