@@ -144,3 +144,7 @@ MDI 下不需要这套体操：多个 `CMultiDocTemplate` 或 `OpenDocumentFile`
 2. **CFormView 模板带了 OK 按钮**：运行时按回车触发 OnOK → `EndDialog`……实际上 CFormView 没有 EndDialog 可走，行为是按钮按下没反应或直接断言；模板里干脆别放。
 3. **切换视图后不 RecalcLayout**：新视图尺寸保持旧视图的残留布局，表现为客户区错位、滚动条悬浮。
 4. **`OnUpdate` 里用 `Invalidate()` 而非 `Invalidate(FALSE)`**：闪烁明显——擦背景 + 重绘两次代价，绘制密集的视图（滚动视图画大表）尤其扎眼。
+
+---
+
+上一章：[25 实战项目：记事本+](25-notepad-plus.md) · 下一章：[27 菜单深入：动态、系统菜单、上下文菜单与 owner-draw](27-menus-advanced.md)

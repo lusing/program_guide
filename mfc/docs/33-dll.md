@@ -143,3 +143,7 @@ wchar_t buf[256] = {};
 3. **普通 DLL 导出 C++ 类**（没 extern "C" 没 AFX_EXT）：能编过，但只有同版本 MSVC 的宿主能用——名修饰 + vtable 布局都是实现细节。要跨就出 C 接口，要自家模块就老实扩展 DLL。
 4. **扩展 DLL 忘了 `new CDynLinkLibrary`**：类导出了、链接也通了，但 `CRuntimeClass::CreateObject("CEllipseShape")` 返回 null——类表没并上。示例 33 的按钮 4 专门演示这条链的验证方法。
 5. **资源 DLL 的 LoadString 传了 nullptr 当模块句柄**：取到的是 exe 自己的字符串——内容“不对”但不出错，极难察觉。
+
+---
+
+上一章：[32 UI 线程深入：自有窗口、线程间消息与竞争](32-ui-threads.md) · 下一章：[34 ODBC 数据库：CDatabase / CRecordset / RFX](34-odbc.md)

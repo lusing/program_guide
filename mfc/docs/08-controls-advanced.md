@@ -207,4 +207,5 @@ afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
    —— `SetRange32` 是 `CProgressCtrl` 的；`CSliderCtrl` 没有这个函数，用三参的 `SetRange(nMin, nMax, bRedraw = FALSE)`。
 
 ---
-上一章：[07 常用控件深入](07-controls.md) ｜ 下一章：[09 自绘控件与自定义控件](09-custom-controls.md)
+
+上一章：[07 常用控件深入](07-controls.md) · 下一章：[09 自绘控件与自定义控件](09-custom-controls.md)

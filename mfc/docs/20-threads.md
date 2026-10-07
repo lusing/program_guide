@@ -233,4 +233,5 @@ lock.Unlock();                   // 或等作用域结束自动解锁
    —— PostMessage 传栈上指针会悬空（队列未处理、栈帧已退），要传堆对象并约定接收方释放；SendMessage 跨线程是同步的，UI 线程若在等 worker 就互相等死。所以结果回传一律 PostMessage。
 
 ---
-上一章：[19 打印与打印预览](19-printing.md) ｜ 下一章：[21 调试与诊断](21-debugging.md)
+
+上一章：[19 打印与打印预览](19-printing.md) · 下一章：[21 异常处理、调试与内存诊断](21-debugging.md)

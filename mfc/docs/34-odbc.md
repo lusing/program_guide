@@ -158,3 +158,7 @@ $LASTEXITCODE    # 0 = 全绿
 3. **`GetRecordCount` 当总行数用**：见上，forwardOnly 下它是“已迭代数”。
 4. **忘了 `afxdb.h`**：`CDatabase` 未定义；链接不用操心，头文件里有 `#pragma comment(lib, "odbc32.lib")`。
 5. **32/64 位驱动**：连接失败先查位数（`odbcad32.exe` 在 System32/SysWOW64 各有一份，看到的不一样）。本机 64 位 Access Text Driver 与 x64 构建匹配，所以一切正常。
+
+---
+
+上一章：[33 DLL 编程：普通 / MFC 扩展 / 资源专用](33-dll.md) · 下一章：（完）

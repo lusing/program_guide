@@ -206,4 +206,5 @@ SetIcon(hIcon, FALSE);   // 小图标：标题栏左上角
 4. **多语言支持里，为什么字符串表能靠 `LANGUAGE` 块解决，菜单却不行？** —— 字符串是运行时按语言现取的；菜单在窗口创建时就挂上去了，只有带语言参数的 `FindResourceEx` 类 API 才能按语言取，所以菜单需要卫星 DLL + `AfxSetResourceHandle` 方案。
 
 ---
-上一章：[03 消息映射机制](03-message-map.md) ｜ 下一章：[05 窗口与框架类](05-frames.md)
+
+上一章：[03 消息映射机制](03-message-map.md) · 下一章：[05 窗口与框架类：创建、布局与生命周期](05-frames.md)

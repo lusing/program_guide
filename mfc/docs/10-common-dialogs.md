@@ -279,4 +279,5 @@ afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) {
    —— 在父窗口的 `OnCtlColor` 里（`pDC->SetTextColor(...)`，返回背景刷）。编辑框自己绘制自己的客户区，父窗口的 `OnPaint` 根本画不到它上面。
 
 ---
-上一章：[09 自绘控件与自定义控件](09-custom-controls.md) ｜ 下一章：[11 工具栏与状态栏](11-toolbars.md)
+
+上一章：[09 自绘控件与自定义控件](09-custom-controls.md) · 下一章：[11 工具栏与状态栏](11-toolbars.md)

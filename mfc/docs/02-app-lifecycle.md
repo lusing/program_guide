@@ -213,4 +213,5 @@ BOOL CLifecycleApp::OnIdle(LONG lCount) override {
 4. **`PostQuitMessage` 起什么作用？为什么它不等于强制杀进程？** —— 它往队列投一条 `WM_QUIT`，使 `Run()` 的循环条件不成立；因为是消息而非强制终止，`ExitInstance` 和全局对象析构仍会正常执行。
 
 ---
-上一章：[01 MFC 概述与开发环境](01-overview.md) ｜ 下一章：[03 消息映射机制](03-message-map.md)
+
+上一章：[01 MFC 概述与开发环境](01-overview.md) · 下一章：[03 消息映射机制](03-message-map.md)

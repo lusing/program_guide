@@ -197,4 +197,5 @@ void CRightView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint) {
    —— MDI 的外壳和文档是分开的：先 `new CMainFrame` + `LoadFrame(IDR_MAINFRAME)` + `ShowWindow` 造外壳，再 `OnFileNew()` 造第一个文档（框架按模板反射创建文档+子框架+视图）。`ProcessShellCommand` 是 SDI 单框架流程的封装。
 
 ---
-上一章：[15 Doc/View 架构](15-docview.md) ｜ 下一章：[17 序列化与文件格式](17-serialize.md)
+
+上一章：[15 Doc/View 架构](15-docview.md) · 下一章：[17 序列化深入与文档版本化](17-serialize.md)

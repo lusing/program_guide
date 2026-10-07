@@ -148,3 +148,7 @@ afx_msg void OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT pd) {
 2. **系统菜单比较不掩 `0xFFF0`**：见上文，时灵时不灵的“灵异”菜单项十有八九是这个。
 3. **TrackPopupMenu 返回后用 `CMenu` 局部对象**：对象已析构——但 `TPM_RETURNCMD` 模式下菜单在返回时销毁，`dwItemData` 不再被回调，正好安全；若你保留了菜单句柄继续用，结构生命周期要跟着菜单走。
 4. **owner-draw 菜单忘了 `WM_MEASUREITEM`**：菜单项尺寸为 0，表现为“菜单弹出但什么都看不到”。
+
+---
+
+上一章：[26 视图家族：ScrollView / FormView / ListView / RichEditView](26-views-family.md) · 下一章：[28 控制条家族：CDialogBar、CReBar 与停靠体系](28-control-bars.md)

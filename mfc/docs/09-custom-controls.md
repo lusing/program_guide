@@ -248,4 +248,5 @@ SetWindowSubclass(m_edit.GetSafeHwnd(), NumEditProc, 1, 0);
    —— 优先 `SetWindowSubclass`：可叠加多层、窗口销毁时自动摘钩、不需要对象与窗口同生命周期；`SubclassWindow` 只能一层，且对象必须先于窗口析构，容易悬空。子类过程是过滤器不是替代品，只处理关心的消息，其余必须转给 `DefSubclassProc`。
 
 ---
-上一章：[08 控件进阶：树、属性页与任务对话框](08-controls-advanced.md) ｜ 下一章：[10 通用对话框与文件 IO](10-common-dialogs.md)
+
+上一章：[08 控件进阶：树、属性页与任务对话框](08-controls-advanced.md) · 下一章：[10 通用对话框与文件 IO](10-common-dialogs.md)

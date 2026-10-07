@@ -157,3 +157,7 @@ UI 线程参与的程序，收尾自查：
 3. **`m_bAutoDelete` 在线程跑起来后改**：对象可能已自删，改的是已释放内存——`CREATE_SUSPENDED` 时改完再 Resume。
 4. **线程消息 vs 窗口消息混接**：`ON_MESSAGE` 只接窗口消息（有 hwnd），发给线程的消息（hwnd=NULL）它接不到；必须 `ON_THREAD_MESSAGE`。
 5. **等线程用对象指针而不是句柄**：`WaitForSingleObject(m_pMonitor->m_hThread)` 里 `m_pMonitor` 若已自删，读 m_hThread 就是读野内存——句柄提前抄下来（第 4 节的顺序纪律）。
+
+---
+
+上一章：[31 WinSock：CSocket、序列化通道与 UDP](31-winsock.md) · 下一章：[33 DLL 编程：普通 / MFC 扩展 / 资源专用](33-dll.md)

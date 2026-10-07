@@ -145,3 +145,7 @@ wchar_t* names = (wchar_t*)((BYTE*)df + df->pFiles);
 3. **DIB 行序/对齐错**：图像倒立或呈斜条纹——两个症状都能直接反推是哪个。
 4. **DROPFILES 的 `fWide` 忘了置 TRUE**：现代系统按 ANSI 解释路径串，中文路径立刻乱码。
 5. **`GetClipboardData` 返回的内存直接改**：它是剪贴板的，只读；要改先复制（示例 29 的 `ReadHGlobal` 就是复制语义）。
+
+---
+
+上一章：[28 控制条家族：CDialogBar、CReBar 与停靠体系](28-control-bars.md) · 下一章：[30 进程间通信：WM_COPYDATA、邮槽、命名管道、共享内存](30-ipc.md)

@@ -204,4 +204,5 @@ void CShopDoc::DeleteContents() override {
    —— 裸内存里含指针（读到的是随机地址）、含 padding、没有类型和版本信息，跨进程跨版本都不可靠。逐字段 `<<` 或实现 `Serialize` 才是正道。
 
 ---
-上一章：[16 MDI 多文档与分割窗口](16-mdi-splitter.md) ｜ 下一章：[18 GDI 绘图](18-gdi.md)
+
+上一章：[16 MDI 多文档与分割窗口](16-mdi-splitter.md) · 下一章：[18 GDI 绘图与双缓冲](18-gdi.md)

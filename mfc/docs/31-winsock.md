@@ -143,3 +143,7 @@ CAsyncSocket 的位置（不展开，知道路标即可）：`AsyncSelect(FD_REA
 3. **TCP 当有边界通道用**：连发三段当三条收——要么长度前缀，要么用第 3 节的 CArchive（它自带帧化）。
 4. **客户端不发 ShutDown**：服务端 Receive 循环不退，连接挂着占资源——单连接教学程序里表现为“第二个请求没响应”。
 5. **服务端 Accept 后用 listener 收发**：收发要用 Accept 出来的 client 对象；listener 只管接客。
+
+---
+
+上一章：[30 进程间通信：WM_COPYDATA、邮槽、命名管道、共享内存](30-ipc.md) · 下一章：[32 UI 线程深入：自有窗口、线程间消息与竞争](32-ui-threads.md)

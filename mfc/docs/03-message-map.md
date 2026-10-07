@@ -206,4 +206,5 @@ afx_msg void OnUpdateFileSave(CCmdUI* pCmdUI) {
 4. **自定义消息为什么用 `WM_APP + n` 而不是 `WM_USER + n`？** —— `WM_USER` 区间被控件内部占用，`WM_APP` 区间留给应用程序，避免撞车。
 
 ---
-上一章：[02 应用骨架与消息循环](02-app-lifecycle.md) ｜ 下一章：[04 资源文件入门](04-resources.md)
+
+上一章：[02 应用骨架与消息循环](02-app-lifecycle.md) · 下一章：[04 资源文件入门](04-resources.md)

@@ -212,4 +212,5 @@ afx_msg void OnSettingChange(UINT uFlags, LPCTSTR lpszSection) {
    —— 进程的 DPI 感知级别在第一个窗口创建时定型，之后调用返回 `FALSE` 且不改变任何行为。调晚了的症状是程序照常运行但高 DPI 下模糊，没有报错——所以必须检查返回值并尽早调用。
 
 ---
-上一章：[13 系统集成：文件系统、最近文件与配置](13-shell-integration.md) ｜ 下一章：[15 Doc/View 架构](15-docview.md)
+
+上一章：[13 系统集成：文件系统、最近文件与配置](13-shell-integration.md) · 下一章：[15 Doc/View 架构](15-docview.md)

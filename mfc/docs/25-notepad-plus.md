@@ -229,4 +229,5 @@ SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
    —— 打印：第 19 章，给视图实现 `OnPreparePrinting/OnBeginPrinting/OnPrint/OnEndPrinting`，绘制抽成 `DrawPage` 与屏幕共用；多标签/MDI：第 15、16 章，编辑区换成 Doc/View（`CSingleDocTemplate` → `CMultiDocTemplate`）。
 
 ---
-上一章：[24 MFC 与现代 C++](24-modern-cpp.md) ｜ 返回：[README](../README.md)
+
+上一章：[24 MFC 与现代 C++](24-modern-cpp.md) · 下一章：[26 视图家族：ScrollView / FormView / ListView / RichEditView](26-views-family.md)

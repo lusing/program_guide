@@ -181,4 +181,5 @@ if (_CrtMemDifference(&s3, &s1, &s2))     // ③ 返回非零 = 两点间有差�
    —— 接不住——标准异常不是 `CException`。MFC 代码的边界层加 `catch (...)` 打日志兜底，或者干脆统一自己代码的异常体系，别两套混抛。
 
 ---
-上一章：[20 多线程与后台任务](20-threads.md) ｜ 下一章：[22 现代绘图：GDI+ 与 Direct2D](22-modern-drawing.md)
+
+上一章：[20 多线程与后台任务](20-threads.md) · 下一章：[22 现代绘图：GDI+ 与 Direct2D](22-modern-drawing.md)

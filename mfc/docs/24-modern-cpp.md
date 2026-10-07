@@ -185,4 +185,5 @@ void LoadConfig() {
    —— 新代码抛标准异常（栈对象、引用捕获）；MFC 边界处捕获 `CException*`，用 `GetErrorMessage` 翻译后 `Delete()`，再 `throw` 标准异常向上传。MFC 异常被隔离在框架交界处。
 
 ---
-上一章：[23 部署与发布](23-deployment.md) ｜ 下一章：[25 实战项目：记事本+](25-notepad-plus.md)
+
+上一章：[23 部署与发布：静态/动态链接与打包](23-deployment.md) · 下一章：[25 实战项目：记事本+](25-notepad-plus.md)

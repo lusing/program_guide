@@ -221,4 +221,5 @@ afx_msg LRESULT OnInfoClosed(WPARAM, LPARAM) {   // ON_MESSAGE(WM_APP_INFO_CLOSE
 5. **为什么 `DDX_Control` 绑定的控件对象不能在构造函数里使用？** —— `DoDataExchange` 首次被调是在 `DoModal`/`Create` 过程中，构造函数执行时控件对象还没有 `HWND`，相关操作要放到 `OnInitDialog`。
 
 ---
-上一章：[05 窗口与框架类](05-frames.md) ｜ 下一章：[07 常用控件深入](07-controls.md)
+
+上一章：[05 窗口与框架类：创建、布局与生命周期](05-frames.md) · 下一章：[07 常用控件深入](07-controls.md)

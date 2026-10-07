@@ -214,4 +214,5 @@ if (::GetLastError() == ERROR_ALREADY_EXISTS) {
    —— `HKLM` 需要管理员权限；普通账户下要么失败、要么被 UAC 虚拟化写到 VirtualStore，程序自己下次都读不到。配置是每用户数据，`HKCU` 每用户独立、免管理员。
 
 ---
-上一章：[12 剪贴板与拖放](12-clipboard-dnd.md) ｜ 下一章：[14 DPI 感知与深色模式](14-dpi-darkmode.md)
+
+上一章：[12 剪贴板与拖放](12-clipboard-dnd.md) · 下一章：[14 DPI 感知与深色模式](14-dpi-darkmode.md)

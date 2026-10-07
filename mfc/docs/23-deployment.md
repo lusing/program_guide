@@ -159,4 +159,5 @@ MyApp/
    —— 它依赖调试版 CRT（`/MDd` → `mfc140ud.dll` 等），用户机器上没有，微软条款也不允许单独分发调试 CRT；而且 Debug 版没优化、体积大。发版只放 release 构建。
 
 ---
-上一章：[22 现代绘图：GDI+ 与 Direct2D](22-modern-drawing.md) ｜ 下一章：[24 MFC 与现代 C++](24-modern-cpp.md)
+
+上一章：[22 现代绘图：GDI+ 与 Direct2D](22-modern-drawing.md) · 下一章：[24 MFC 与现代 C++](24-modern-cpp.md)

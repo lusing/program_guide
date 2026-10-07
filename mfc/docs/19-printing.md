@@ -175,4 +175,5 @@ for (int i = 0; i < rowsPerPage && first + i < GetDoc()->m_rows.GetSize(); ++i)
    —— `OnBeginPrinting` 里用打印机 DC 的 `VERTRES` 和行高算出，`pInfo->SetMaxPage(n)` 设进 `CPrintInfo`。漏设默认 1 页，多页数据只打第一页。
 
 ---
-上一章：[18 GDI 绘图与双缓冲](18-gdi.md) ｜ 下一章：[20 多线程与后台任务](20-threads.md)
+
+上一章：[18 GDI 绘图与双缓冲](18-gdi.md) · 下一章：[20 多线程与后台任务](20-threads.md)

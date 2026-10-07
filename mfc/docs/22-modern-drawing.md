@@ -182,4 +182,5 @@ DWrite 的渲染质量全面好于 GDI `DrawText`：亚像素抗锯齿、ClearTy
    —— DWrite 用 DIP（设备无关像素，96 DIP = 1 英寸），渲染时按目标 DPI 自动缩放，跨 DPI 屏幕不糊；GDI 字体按目标 DC 的像素定，跨设备要自己换算（`CreatePointFont` 的磅只是缓解）。
 
 ---
-上一章：[21 异常处理、调试与内存诊断](21-debugging.md) ｜ 下一章：[23 部署与发布](23-deployment.md)
+
+上一章：[21 异常处理、调试与内存诊断](21-debugging.md) · 下一章：[23 部署与发布：静态/动态链接与打包](23-deployment.md)

@@ -224,4 +224,5 @@ Create 时序：  C++ 对象构造 → Create/OnCreate → 显示 → 使用
 4. **`GetClientRect` 和 `GetWindowRect` 的区别是什么？** —— `GetClientRect` 返回客户区坐标（左上角恒为 0,0，不含边框标题栏）；`GetWindowRect` 返回屏幕坐标的整个窗口矩形，需要 `ScreenToClient` 转换后才能用于子控件定位。
 
 ---
-上一章：[04 资源文件入门](04-resources.md) ｜ 下一章：[06 对话框](06-dialogs.md)
+
+上一章：[04 资源文件入门](04-resources.md) · 下一章：[06 对话框：模态、非模态与 DDX](06-dialogs.md)

@@ -135,3 +135,7 @@ void OnUpdateToggleDlg(CCmdUI* p) {
 3. **进了 ReBar 的条再单独 DockControlBar**：布局打架（条被拽出 ReBar 或重复停靠）——ReBar 全权代理。
 4. **显隐控制条用 ShowWindow**：客户区不回收，出现空洞；用 `ShowControlBar`。
 5. **对话条控件的通知接不到**：多半是消息映射写在对话条类里而非框架里——对话条自身不是窗口控件的宿主路由（默认路由给 frame），写到框架（或父链上任一 CCmdTarget）即可。
+
+---
+
+上一章：[27 菜单深入：动态、系统菜单、上下文菜单与 owner-draw](27-menus-advanced.md) · 下一章：[29 剪贴板深入：多格式、DIB、延迟渲染与文件列表](29-clipboard-advanced.md)
