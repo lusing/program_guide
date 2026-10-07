@@ -2231,3 +2231,7 @@ main() {
    steps 收益
    如何按
    迭代数放大。
+
+---
+
+上一章：[44 超局部与支配者值编号](44-svn-dvnt.md) · 下一章：[46 强度削减与 LFTR](46-strength-reduction.md)

@@ -2055,3 +2055,7 @@ int main() {
    消掉
    的
    copy 数。
+
+---
+
+上一章：[61 寄存器分配](61-regalloc.md) · 下一章：[63 指令选择与窥孔](63-isel-peephole.md)

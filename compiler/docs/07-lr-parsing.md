@@ -1712,3 +1712,7 @@ syntax error: 状态 9 遇到 STAR 无动作
    并解释为什么
    工程上它几乎总是
    文法写坏了。
+
+---
+
+上一章：[06 LL 分析](06-ll-parsing.md) · 下一章：[08 LR(1) 与 LALR](08-lr1-lalr.md)

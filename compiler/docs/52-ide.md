@@ -2960,3 +2960,7 @@ else
 worklist joins: 51, IDE fact updates: 146
 cross-check vs ch32 CONST: const.tip constants agree (a=11, b=TOP)
 ```
+
+---
+
+上一章：[51 IFDS](51-ifds.md) · 下一章：[53 0-CFA](53-closure-0cfa.md)

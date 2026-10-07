@@ -4340,3 +4340,7 @@ run 1: inputs 5 -> outputs 7
 run 2: inputs -2 -> outputs -1
 JIT completed 2 runs: no null-deref crash observed
 ```
+
+---
+
+上一章：[53 0-CFA](53-closure-0cfa.md) · 下一章：[55 对象与类](55-objects.md)

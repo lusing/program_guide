@@ -4430,3 +4430,7 @@ concrete input streams expanded: 2
 人肉版本，
 教程三十章的作者
 与读者在同一纪律下工作。
+
+---
+
+上一章：[69 代码放置](69-placement.md) · 下一章：[71 收官](71-finale.md)

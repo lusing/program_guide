@@ -4548,3 +4548,7 @@ worklist fixpoint sign analysis (least fixpoint):
 直到不变。"剩下的全部内容——邻接表、特判、去重、
 追踪、复杂度、变体——都是这两句话在 C++ 里、在
 sign1 上、在真实工程里的逐层投影。
+
+---
+
+上一章：[30 不动点](30-fixpoint.md) · 下一章：[32 符号与常量](32-sign-const.md)

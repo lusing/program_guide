@@ -2615,3 +2615,7 @@ std::string printStmtLine(const Stmt &stmt) {
 
 }  // namespace tip
 ```
+
+---
+
+上一章：[52 IDE](52-ide.md) · 下一章：[54 指针分析](54-pointer.md)

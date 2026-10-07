@@ -2029,3 +2029,7 @@ main() {
    比较 expr.tip
    上两版的
    指令数差。
+
+---
+
+上一章：[62 局部分配与 SSA 弦图](62-ssa-alloc.md) · 下一章：[64 真机实地](64-real-codegen.md)

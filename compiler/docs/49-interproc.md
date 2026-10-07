@@ -4122,3 +4122,7 @@ acyclic: yes
   6 return 0 ;: a=1 b=-5
   7: a=1 b=-5
 ```
+
+---
+
+上一章：[48 部分冗余消除](48-pre.md) · 下一章：[50 上下文敏感](50-context-sens.md)

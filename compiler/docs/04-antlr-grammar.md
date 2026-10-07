@@ -360,3 +360,7 @@ syntax error line 2:13 mismatched input ';' expecting {'input', 'alloc', 'null',
 输出的确定性靠自定义错误监听器保证。生成的 parse tree 保留了记号、括号、分号等全部语法细节，
 忠实但臃肿。下一章将在它之上构造抽象语法树——
 分析算法真正的工作平面。
+
+---
+
+上一章：[03 TIP 导览](03-tip-tour.md) · 下一章：[05 正则与自动机](05-regex-automata.md)

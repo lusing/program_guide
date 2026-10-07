@@ -2977,3 +2977,7 @@ main 分四节，与四个断言组一一对应：
 10. BOOL 文法的关键声明：`%right NOT`（或 %precedence）高于 `%left AND` 高于 `%left OR`；`a or b and c` 的翻转对照是 `or`/`and` 声明对调；`not a or b` 验证 NOT 的高档——`(not a) or b` 还是 `not (a or b)` 由级差决定。
 11. error 记号的三个改动点：MiniYacc 接受含 `error` 伪终结符的规则（校验放行 + terms 注册）；parse 的 Err 分支改为"弹栈到能移进 error 的状态、丢弃输入到该状态可接受的同步集"；yyerrok 对应一个动作名约定（复位后清恢复态）。做完后第 10 章的 LR 侧就是复习。
 12. 两棵树的形状差异来源：本章左递归文法天然产出**左倾斜的迭代形树**（prog 是链表状的 stmt 序列），ANTLR 的右递归版产出右倾斜——语义等价、打印不同；diff 脚本要先归一化（链表方向）再比。这个差异正是两代生成器"文法口味"在数据上的投影。
+
+---
+
+上一章：[08 LR(1) 与 LALR](08-lr1-lalr.md) · 下一章：[10 错误恢复与校正](10-error-recovery.md)

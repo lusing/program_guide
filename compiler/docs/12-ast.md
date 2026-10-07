@@ -1109,3 +1109,7 @@ syntax error line 2:13 mismatched input ';' expecting {'input', 'alloc', 'null',
 
 下一章在这棵稳定的树上做第一件语义工作：**名字解析**——
 回答每个 `VarRef` 指向函数、参数还是局部变量，并把未声明、重复声明诊断出来。
+
+---
+
+上一章：[11 Pratt 分析](11-pratt-parsing.md) · 下一章：[13 语法制导翻译](13-sdt.md)

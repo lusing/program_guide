@@ -2432,3 +2432,7 @@ main() {
    （用 13 章
     steps 计数
     对比）。
+
+---
+
+上一章：[46 强度削减与 LFTR](46-strength-reduction.md) · 下一章：[48 部分冗余消除](48-pre.md)

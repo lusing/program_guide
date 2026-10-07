@@ -3047,6 +3047,6 @@ output 前给 x 赋过值且此后要读 x，output 就是 x 的使用点，
 填进 `DfaSpec`，剩下的交给 `runDfa`。这个"先填表、再驱动"的
 动作，就是数据流分析框架化的全部要义。
 
+---
 
-
-
+上一章：[32 符号与常量](32-sign-const.md) · 下一章：[34 到达定值与非常忙](34-reaching-verybusy.md)

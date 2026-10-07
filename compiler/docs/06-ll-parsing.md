@@ -1383,3 +1383,7 @@ syntax error: 第 3 个 token 处 无 term 的产生式可匹配 STAR
    命中，弹出后继续；
    在 bad.tip 上
    展示"一次扫描多个错误"。
+
+---
+
+上一章：[05 正则与自动机](05-regex-automata.md) · 下一章：[07 LR 分析](07-lr-parsing.md)

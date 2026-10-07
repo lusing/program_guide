@@ -1580,3 +1580,7 @@ Galois
    有
    什么
    现象？
+
+---
+
+上一章：[68 并行与局部性](68-parallel-locality.md) · 下一章：[70 抽象解释](70-abstract-interp.md)

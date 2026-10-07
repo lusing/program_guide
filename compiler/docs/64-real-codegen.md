@@ -735,3 +735,7 @@ int main() {
 [argreg] cf O0 Win64 寄存器传参 > 0 : 1
 [opt] 全部函数 O1 <= O0 : 1
 ```
+
+---
+
+上一章：[63 指令选择与窥孔](63-isel-peephole.md) · 下一章：[65 TM 目标机器](65-tm-machine.md)

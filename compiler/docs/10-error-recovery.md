@@ -2834,3 +2834,7 @@ LLGrammar calcLL() {
 3. input-first 的"栈不动"为什么能保住 y=2 的赋值？
 4. 单调性论证为什么能证明 Phrase 步数有界？守卫在这论证里是什么角色？
 5. LL 与 LR 的检测点在本章语料上为何 10/10 相等？Louden"通常早于"的准确条件是什么？
+
+---
+
+上一章：[09 Lex 与 Yacc 心脏](09-lex-yacc.md) · 下一章：[11 Pratt 分析](11-pratt-parsing.md)
