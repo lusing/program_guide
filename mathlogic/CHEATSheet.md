@@ -227,3 +227,19 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 `\+ member(·, As)` 时尾部未绑定、否定全灭；K3,3 **有** Ham 圈
 （平衡 3=3），反例是 K3,4（3≠4）——书 Ex 8.2.17 判据两侧各
 有机型，勿张冠李戴。
+
+## 20 章新坑（EFT 扩充：矢列演算 S）
+
+- **Coq 嵌套归纳无元素 IH**：`fsym f (list tm)` 的 list 参数不给逐元素假设——
+  tsize 测度归纳；fold_right 是 lia 黑盒原子，配 fr_pos 正性引理。
+- **Lean 嵌套归纳类型禁 induction**：含 List 字段的归纳类型无递归子；
+  测度归纳；内层 induction ts 自动泛化依赖假设（ht 进 IH）——
+  map_self_gen（元素级假设做参数）绕开。
+- **Lean 符号项上 defeq 卡死**：substf 计算形 vs 手写形在符号 t 上不合——
+  `have h := d_all_inst …; simpa [substf, substt, mul, eg, List.map_cons,
+  List.map_nil] using h`（tactic 归一化再 rfl）；decide 卡 Decidable 实例。
+- **Coq 名字遮蔽**：自定义 `conj`（fm 缩写）遮蔽 stdlib 合取构造子——
+  tactic 级 split 造见证（mkcomp 模式）。
+- **∃A 侧条件新鲜性**：具体公式 vm_compute（Coq）/全定义 simp（Lean）。
+- **账本对照**：同一群例 Coq 零公理 vs Lean [propext, Classical.choice,
+  Quot.sound]（by_cases 经典分叉）。

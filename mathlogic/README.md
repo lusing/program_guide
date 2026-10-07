@@ -47,6 +47,7 @@ mathlogic/
 | [17 FOL Hilbert](docs/17-folhilbert.md) | Gen 侧条件演绎定理（GenMove 公理） | C/L |
 | [18 前束范式](docs/18-prenex.md) | 量词穿越四条零公理 | C/L |
 | [19 FOL 语义表列](docs/19-foltableau.md) | γ/δ 规则+tclo 推导对象+7.42 完整证明 | C/L |
+| [20 FOL 矢列与等词](docs/20-seqfol.md) | EFT 矢列演算 S 全规则+群例等式链+协调性（命题片段可靠） | C/L |
 | [22 完备性 Henkin](docs/22-completeness.md) | 构造七步+紧致性推论（文档章） | 文档 |
 | [26 合一与归结](docs/26-resolution.md) | occurs check + 归结可靠性（三通道） | C/L/I |
 | [27 Herbrand 与 SLD](docs/27-herbrand.md) | T_P 单调+头原子（Prolog 桥） | C/L |

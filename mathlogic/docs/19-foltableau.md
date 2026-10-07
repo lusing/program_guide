@@ -285,4 +285,4 @@ Theorem tclo_unsat : forall B, tclo B ->
 
 ---
 
-上一章：[18 前束范式：量词穿越的等价保持](docs/18-prenex.md) · 下一章：[22 完备性定理：Henkin 构造七步](docs/22-completeness.md)
+上一章：[18 前束范式：量词穿越的等价保持](docs/18-prenex.md) · 下一章：[20 FOL 矢列演算与等词](docs/20-seqfol.md)
