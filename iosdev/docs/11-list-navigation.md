@@ -214,3 +214,7 @@ NavigationStack（iOS16+）用 value + navigationDestination 做类型安全路�
 - iOS 16+ 用 `NavigationStack`：`NavigationLink(value:)` 压值，
   `.navigationDestination(for:)` 类型安全路由，`NavigationPath` 程序化控栈。
 - 下一章讲**绘制与动画**。
+
+---
+
+上一章：[10 布局](10-layout.md) · 下一章：[12 绘制与动画](12-drawing-animation.md)

@@ -210,3 +210,7 @@ ok   GeometryReader 填满提议尺寸
 - `padding(n)` 四边各加 n（宽高 `+2n`）；`.frame` 固定；`Spacer`/`GeometryReader` 贪婪吃满提议。
 - `alignment` 只挪位置、不改外框；`GeometryReader` 能读到真实可用尺寸。
 - `intrinsicContentSize` 让布局可以 headless 精确测量。下一章讲**列表与导航**。
+
+---
+
+上一章：[09 状态与数据流](09-state-dataflow.md) · 下一章：[11 列表与导航](11-list-navigation.md)

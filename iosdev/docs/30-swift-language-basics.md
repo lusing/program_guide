@@ -2227,3 +2227,7 @@ stderr:（空）
 （`ibtool` 编译、segue 的触发、`@IBOutlet` 装配时机），以及 MVC/MVVM、单例、依赖注入与回调三种形态
 如何在本章这套语言设施上落地。本章那些「类是蓝图」「let 锁引用」「闭包捕获变量」的账，
 到那里会变成「视图控制器之间怎么传数据」的全部依据。
+
+---
+
+上一章：[29 Quartz 2D 直接绘制](29-quartz-2d.md) · 下一章：[31 Interface Builder：故事板、XIB 与代码之间的接线](31-interface-builder.md)

@@ -975,4 +975,6 @@ arm64 上同样成立）、**`==` 那张表里的「对/错」是系统实现给
 8. **可预期的失败走 `BOOL` + `NSError **`；`@try` 只兜底，而且接不住硬件陷阱。**
 9. **头文件里的枚举一律 `NS_ENUM` / `NS_OPTIONS`**：把底类型写死，Swift 那边才翻得过去（28 章 §18/§22）。
 
-下一章：`05-objc-foundation.md` —— Foundation 的字符串、集合、数据、JSON（OC 篇）。
+---
+
+上一章：[03 生命周期与场景](03-lifecycle.md) · 下一章：[05 Foundation（OC 篇）](05-objc-foundation.md)

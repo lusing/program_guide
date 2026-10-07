@@ -199,3 +199,7 @@ Info.plist 必须有对应 NSxxxUsageDescription，否则请求即崩（不是 d
 - 下一章把这些串起来：**打包 / 签名 / 上架**——构造一个真正的 `.app` 包，
   签名、装进模拟器、启动它。本章的「只查状态不弹框」在真机上还要配上第 25 章那批
   硬件相关的 `authorizationStatus`，才是完整的权限清单。
+
+---
+
+上一章：[18 数据持久化](18-persistence.md) · 下一章：[20 打包 / 签名 / 上架](20-packaging-signing.md)

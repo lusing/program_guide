@@ -2531,3 +2531,6 @@ Child process terminated with signal 4: Illegal instruction
   不是免责声明）。三处「不生效」（§17/§24/§30）来自同一个缺失的 window，
   所以任何一条「没反应」先问这一格是不是依赖那个不存在的运行循环。
 
+---
+
+上一章：[31 Interface Builder：故事板、XIB 与代码之间的接线](31-interface-builder.md) · 下一章：[33 依赖管理：`import` 那一行背后，谁在算模块搜索路径](33-dependency-management.md)

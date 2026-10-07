@@ -840,4 +840,6 @@ id fragment = [NSJSONSerialization JSONObjectWithData:bare
    本章每一个「坑」的底层都是这句话：`length` 是码元、`NSDate` 无时区、`NSNumber` 无类型区分、
    类的真身是私有实现。
 
-下一章：`06-swift-foundation.md` —— 同一批类型的 Swift 面孔：值语义、可选、`Codable`、桥接。
+---
+
+上一章：[04 Objective-C 语言基础](04-objc-language.md) · 下一章：[06 Foundation（Swift 篇）](06-swift-foundation.md)

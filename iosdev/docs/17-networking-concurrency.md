@@ -567,3 +567,7 @@ WKWebView 活在另一个进程里：JS→Swift 传不了 function（静默丢�
 - **`WKWebView`** 在另一个进程里：JS→Swift 的 `function` 静默丢、`undefined` 给 `nil` body；
   Swift→JS 收不了 `Symbol`/`Promise`（`WKErrorDomain#5`）；数据清理是「按种类」的模型。
 - 下一章讲**数据持久化**（UserDefaults / 文件 / Codable / Keychain）。
+
+---
+
+上一章：[16 手势、触摸与响应链](16-gestures-responder.md) · 下一章：[18 数据持久化](18-persistence.md)

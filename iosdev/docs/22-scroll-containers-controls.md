@@ -821,3 +821,7 @@ adjustedContentInset = contentInset + 安全区，只有挂进窗口才有安全
 `CALayer` 与锚点、`UIView.animate`、`CABasicAnimation` / `CAKeyframeAnimation` /
 `CATransition` / `CAAnimationGroup`、3D 变换与计时函数，以及 `CATransaction`、
 `CADisplayLink` 这些控制动画节奏的机制。
+
+---
+
+上一章：[21 UIKit 布局进阶](21-uikit-layout-advanced.md) · 下一章：[23 核心动画](23-core-animation.md)

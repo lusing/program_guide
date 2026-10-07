@@ -213,3 +213,7 @@ SwiftUI 底层仍是 UIKit：渲染进 UIHostingController.view（_UIHostingView
 - 视图组合零成本，大胆把子树抽成独立 `View`。
 - SwiftUI 底层仍是 UIKit：渲染进 `UIHostingController` 的 `_UIHostingView`。下一章讲
   **状态与数据流**（`@State`/`@Binding`/`@Observable`），那才是 SwiftUI「自动刷新」的来源。
+
+---
+
+上一章：[07 OC 与 Swift 混编](07-objc-swift-mix.md) · 下一章：[09 状态与数据流](09-state-dataflow.md)

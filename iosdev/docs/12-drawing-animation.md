@@ -226,3 +226,7 @@ let trans = AnyTransition.opacity                // 视图插入/移除的过渡
 - `Animation`/`AnyTransition` 是可组合的值；真实帧调度需 run loop，headless 只测值与几何。
 - 下一章（13）讲 **SwiftUI ⇄ UIKit 互操作**，那是本教程「SwiftUI 为主、UIKit 补充」
   两条线交汇的地方。
+
+---
+
+上一章：[11 列表与导航](11-list-navigation.md) · 下一章：[13 SwiftUI ⇄ UIKit 互操作](13-swiftui-uikit-interop.md)

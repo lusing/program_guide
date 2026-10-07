@@ -271,3 +271,7 @@ swiftc -sdk "$SDK" -target $TARGET \
 - 只有 `@objc` + `NSObject` 子类能暴露给 OC；`@objc enum` 必须整型 raw value。
 - 命令行混编要自己给 `-import-objc-header` 和 `-emit-objc-header-path`，并注意
   `swiftc -c` 的 `.o` 落在 cwd 这个坑。
+
+---
+
+上一章：[06 Foundation（Swift 篇）](06-swift-foundation.md) · 下一章：[08 SwiftUI 基础](08-swiftui-basics.md)

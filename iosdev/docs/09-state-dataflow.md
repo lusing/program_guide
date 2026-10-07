@@ -248,3 +248,7 @@ struct SomeView: View {
   支持动态成员的 `Wrapper`。
 - 单一数据源：状态只有一份，`Binding` 是通往它的读写通道。
 - iOS 17 的 `@Observable`/`@Bindable` 更简洁精准，但需要 iOS 17。下一章讲**布局**。
+
+---
+
+上一章：[08 SwiftUI 基础](08-swiftui-basics.md) · 下一章：[10 布局](10-layout.md)

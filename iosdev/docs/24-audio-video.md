@@ -2034,3 +2034,7 @@ if let data = buffer.floatChannelData {
 下一章离开 AVFoundation，进入设备的另一组入口：**Core Motion 的传感器、
 Core Location 的定位与地理围栏、以及权限与硬件能力查询**（相机之外的那一半——
 加速度计、陀螺仪、高度计、GPS 与运动协调器）。
+
+---
+
+上一章：[23 核心动画](23-core-animation.md) · 下一章：[25 传感器、定位与设备能力](25-sensors-location.md)

@@ -248,3 +248,7 @@ Auto Layout = 声明约束、系统解方程算 frame；用 anchor 写约束最�
 - `intrinsicContentSize` 让控件不写宽高也能定型，是 SwiftUI 布局协商的底层之一。
 - `safeAreaInsets` 决定内容要避开的边缘。下一章讲 **UIKit 控件与列表**
   （`UITableView` / `UICollectionView` / diffable data source）。
+
+---
+
+上一章：[13 SwiftUI ⇄ UIKit 互操作](13-swiftui-uikit-interop.md) · 下一章：[15 控件与列表](15-uikit-controls-lists.md)

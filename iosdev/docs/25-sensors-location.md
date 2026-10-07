@@ -2829,3 +2829,7 @@ AVFoundation / LocalAuthentication / CoreBluetooth / MapKit 里的表达方式�
 
 下一章离开硬件，回到数据：**SQLite3 与 CoreData** —— 把第 18 章那套「文件级持久化」
 换成真正的事务、语句准备/绑定/逐步求值，以及托管对象上下文那条链路。
+
+---
+
+上一章：[24 音频与视频](24-audio-video.md) · 下一章：[26 SQLite3 与 CoreData](26-sqlite-coredata.md)

@@ -224,3 +224,7 @@ UIHostingController 能嵌套并更新」这些**确定性事实**，不去断�
 - 至此 **SwiftUI 主线（08–13）完成**。第四篇（14–16）转入 **UIKit 补充**：视图体系与
   Auto Layout、控件与列表、手势与响应链——这些是 SwiftUI 底层依赖、也是读懂老代码的
   必备功底。
+
+---
+
+上一章：[12 绘制与动画](12-drawing-animation.md) · 下一章：[14 视图体系与 Auto Layout](14-uikit-views-autolayout.md)

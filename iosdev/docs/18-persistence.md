@@ -273,3 +273,7 @@ Keychain = 唯一加密层，按 entitlement 隔离；裸 spawn 无 entitlement 
 - **Keychain**：唯一加密层，`SecItem*` 四件套；裸 spawn 无 entitlement 必返回 `-34018`，
   签名 App（第 20 章）里才 `errSecSuccess`——教程如实演示边界，不伪造成功。
 - 下一章讲**权限 / 通知 / 设备能力**（Info.plist 用途说明、`UNUserNotificationCenter`、授权状态）。
+
+---
+
+上一章：[17 网络与并发](17-networking-concurrency.md) · 下一章：[19 权限 / 通知 / 设备能力](19-permissions-notifications.md)

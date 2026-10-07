@@ -2047,3 +2047,7 @@ WeatherKitTests          modulemap=没有  swiftmodule=没有  .o=0
   书 10.2 的 API Key、10.6~10.8 的 HTTP 请求与异步回调全部归第 25 章与后续；
   `.package(url:from:)` 只用了**本地** git fixture（s08），真实网络解析、镜像（mirrors）、
   依赖冲突求解这三样本章没有证据。而 §4 那句报错里出现 `mirrors` 这个词，是本章离它们最近的一步。
+
+---
+
+上一章：[32 应用架构：MVC 三层里，状态到底住在谁的哪一次赋值里](32-app-architecture-mvc.md) · 下一章：[34 Core ML：一个 `.mlmodel` 的 46 个字节、一次断言、和一条走不通的摄像头路](34-core-ml.md)

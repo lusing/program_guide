@@ -273,3 +273,7 @@ Info.plist = 身份证+说明书：CFBundleIdentifier 唯一标识，CFBundleExe
 的正路，而 `autoresizingMask`、VFL、布局优先级、`systemLayoutSizeFitting` 反推尺寸这些
 「约束系统自己也在用的底层机制」还没动过。每一章都有可 `./run-all.sh` 一键验证的 headless 示例，
 debug/release 双配置逐字节一致。
+
+---
+
+上一章：[19 权限 / 通知 / 设备能力](19-permissions-notifications.md) · 下一章：[21 UIKit 布局进阶](21-uikit-layout-advanced.md)

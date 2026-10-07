@@ -206,4 +206,6 @@ expect(window.rootViewController != nil, "window.rootViewController 已设置")
 - 本教程 headless 验证：构造真实的 View / UIViewController / UIWindow 跑断言，
   不真的启动 App；真正的打包启动在第 20 章。
 
-下一章：`03-lifecycle.md` —— App 从启动到退后台再回来，系统按什么顺序调用谁。
+---
+
+上一章：[01 全景与工具链](01-toolchain.md) · 下一章：[03 生命周期与场景](03-lifecycle.md)

@@ -1317,3 +1317,7 @@ Child process terminated with signal 6: Abort trap
   `VNClassificationObservation` 的图像分类器**（§18 墙二把合法集合念全了），
   所以书本 15.2.4 那句 `identifier.contains("hotdog")` 在本机没有对应的模型可造 ——
   本章绕道真模型的概率字典，把「热狗判决」做成了 §14 那三条断言。
+
+---
+
+上一章：[33 依赖管理：`import` 那一行背后，谁在算模块搜索路径](33-dependency-management.md) · 下一章：（完）

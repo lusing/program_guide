@@ -247,3 +247,7 @@ UITableView（一列）/ UICollectionView（网格/自定义布局），二者�
   SwiftUI `List` 的 UIKit 对应物。
 - `UICollectionView` 模型相同，靠 layout 做网格/自定义布局。下一章讲 **手势、触摸与
   响应链**。
+
+---
+
+上一章：[14 视图体系与 Auto Layout](14-uikit-views-autolayout.md) · 下一章：[16 手势、触摸与响应链](16-gestures-responder.md)

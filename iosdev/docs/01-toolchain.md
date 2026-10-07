@@ -226,4 +226,6 @@ xcrun simctl spawn <UDID> ./app --selftest
 - **六条判定 + debug/release 逐字节比对**，示例一律 headless `--selftest`、只断言性质。
 - **部署目标是编译期契约，`#available` 是运行期检查**，两者独立，别混。
 
-下一章：`02-hello-app.md` —— 用 SwiftUI 和 UIKit 各写一个最小 App 骨架，看清两套入口。
+---
+
+下一章：[02 第一个 App](02-hello-app.md)

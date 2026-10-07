@@ -1108,3 +1108,7 @@ CADisplayLink 的 target 是强引用，必须 invalidate；帧率设置分两�
 下一章离开动画，进入 `AVFoundation`：用 `AVAudioPlayer` 播放本地音频、
 `AVAudioRecorder` 录音、`AVPlayer` + `AVPlayerLayer` 放视频、
 以及音频会话（`AVAudioSession`）的分类与打断处理。
+
+---
+
+上一章：[22 滚动视图、容器控制器与高级控件](22-scroll-containers-controls.md) · 下一章：[24 音频与视频](24-audio-video.md)

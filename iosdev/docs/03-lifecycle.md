@@ -203,3 +203,7 @@ func application(_ application: UIApplication,
   状态恢复走 `stateRestorationActivity`。
 
 下一章进入第二篇：`04-objc-language.md` —— Objective-C 语言基础（iOS 存量代码绕不开它）。
+
+---
+
+上一章：[02 第一个 App](02-hello-app.md) · 下一章：[04 Objective-C 语言基础](04-objc-language.md)

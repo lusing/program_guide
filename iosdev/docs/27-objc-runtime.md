@@ -1865,3 +1865,6 @@ Swift 的反射要么编译期就知道，要么根本不给。
 
 下一章把镜头拉回语言交界处的另一侧：**C 语言层与 Swift/OC 互操作**（书本第 4 章）。
 
+---
+
+上一章：[26 SQLite3 与 CoreData](26-sqlite-coredata.md) · 下一章：[28 C 语言层](28-c-layer.md)

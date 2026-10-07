@@ -1027,3 +1027,7 @@ VLA、位域布局、`dlopen` 与符号可见性），并且明确本章不碰�
 下一章（29）会把这些规则用在真正的框架 API 上：Quartz 2D 的 `CGContextRef`——
 一个不透明句柄（§10）、一套返回码式 API、`CGRect` 这类值类型（§7/§17），
 以及「画完之后把像素读回来」这种只有 C 层能验的断言。
+
+---
+
+上一章：[27 Objective-C 运行时](27-objc-runtime.md) · 下一章：[29 Quartz 2D 直接绘制](29-quartz-2d.md)

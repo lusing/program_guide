@@ -475,3 +475,7 @@ UIStackView：distribution 管主轴、alignment 管交叉轴；留白要看 sta
   内边距要额外开 `isLayoutMarginsRelativeArrangement`。
 
 下一章离开「怎么摆」，进入「怎么滚、怎么组织整个界面」：**滚动视图、容器控制器与高级控件**。
+
+---
+
+上一章：[20 打包 / 签名 / 上架](20-packaging-signing.md) · 下一章：[22 滚动视图、容器控制器与高级控件](22-scroll-containers-controls.md)

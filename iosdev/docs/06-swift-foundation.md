@@ -1716,3 +1716,7 @@ attr.addAttribute(.font, value: "细", range: NSRange(location: 2, length: 2))
 下一章：`07-objc-swift-mix.md` —— 同一 target 里 Swift 与 OC 互相调用：
 桥接头、`@objc` 暴露边界、`nullable` 与隐式解包可选、以及本章 §18 那批
 「跨语言容错边界」的正式讲法。
+
+---
+
+上一章：[05 Foundation（OC 篇）](05-objc-foundation.md) · 下一章：[07 OC 与 Swift 混编](07-objc-swift-mix.md)
