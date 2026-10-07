@@ -103,3 +103,7 @@ std::mt19937 gen2{rd()()};     // random_device 播种：生产用（每次不�
 5. **`uniform_int_distribution<>(1, 6)` 与 `(1, 6.0)`**：后者是 real 分布的参数错位（编译能过、语义错）；两个模板是不同工具，参数类型自查。
 6. **还在写 `rand() % n`**：偏差 + 低质量 + 32767 上限——三重罪；新代码一律 `<random>`。
 7. **多线程共用一个 mt19937**：数据竞争（UB）——`thread_local` 或加锁。
+
+---
+
+上一章：[17 一等函数](17-firstclass.md) · 下一章：[19 Ranges](19-ranges.md)

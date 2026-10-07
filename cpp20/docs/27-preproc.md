@@ -107,3 +107,7 @@ extern int visits;                        // 变量：extern 声明，定义留 
 6. **NDEBUG 的 assert 消失**：`assert(pop())` 在 Release 里不弹——assert 只放纯判断（第 10 章回锅）。
 7. **Windows.h 的 min/max 宏炸掉 std::max**：`#define NOMINMAX` 或事后 `#undef`。
 8. **模板定义藏在 .cpp**：调用方看不见定义 → 链接错——模板住头文件（或显式实例化，进阶）。
+
+---
+
+上一章：[26 模块](26-modules.md) · 下一章：[28 并发 I](28-threads.md)

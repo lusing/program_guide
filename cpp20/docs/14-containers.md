@@ -121,3 +121,7 @@ std::println("flat_map 首键 = {}", fm.begin()->first);  // a：有序
 4. **map 的值需要默认构造**：自定义类型没有默认构造函数时 `m[key]` 编译错——用 `emplace`/`insert`。
 5. **unordered 容器依赖遍历序**：哈希序不稳定，写进逻辑就是在埋雷；要序用 map。
 6. **大对象按值塞容器再改**：`v.push_back(big); v.back().field = x;` 拷贝已发生。原地构造用 `emplace_back(args...)`（在容器里直接构造，省一次搬移）。
+
+---
+
+上一章：[13 智能指针](13-smartptr.md) · 下一章：[15 算法与 lambda](15-algorithms.md)

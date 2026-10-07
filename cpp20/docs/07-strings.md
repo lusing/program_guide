@@ -126,3 +126,7 @@ for (char& ch : mixed) {
 6. **string_view 悬垂 / 隐式转 string**：view 不养数据、不自动物化；两个方向都要显式。
 7. **`size()` 当字符数**：UTF-8 下中文一字 3 字节（第 03 章老坑，字符串场景高频回归）。
 8. **循环里 `s = s + piece` 反复传值**：拼接用 `+=`/`append`，参数用 view/const 引用。
+
+---
+
+上一章：[06 函数](06-functions.md) · 下一章：[08 复合类型](08-compound.md)

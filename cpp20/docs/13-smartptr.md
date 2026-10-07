@@ -116,3 +116,7 @@ while (!backlog.empty()) {
 4. **get() 的裸指针存成成员/全局**：所有权被绕过，指针悬垂。
 5. **make_shared 与自定义删除器**：需要自定义删除（fclose 而非 delete）时 `unique_ptr<T, Deleter>`，删除器进类型——shared_ptr 则可运行期换删除器，两者分工。
 6. **对数组用错指针**：`unique_ptr<T[]>` 才是数组版（`make_unique<T[]>(n)`）；但**要数组先想 vector**（第 14 章），裸数组 new 是最后手段。
+
+---
+
+上一章：[12 运算符重载](12-opoverload.md) · 下一章：[14 容器](14-containers.md)

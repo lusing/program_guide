@@ -98,3 +98,7 @@ std::println("{}", total);    // "17.45 元" —— print 直接认识 Money 了
 5. **转换运算符不加 explicit**：静默转换引入重载歧义——一律 explicit。
 6. **手写比较忘了跟成员变动**：加字段忘补 `==` 是经典陈年 bug——能 default 就 default。
 7. **`m[r][c]` 的代理陷阱**：自定义矩阵在 C++23 直接写 `operator[](r, c)`，一步到位。
+
+---
+
+上一章：[11 类与 RAII](11-classes.md) · 下一章：[13 智能指针](13-smartptr.md)

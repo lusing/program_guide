@@ -119,3 +119,7 @@ std::println("{}", 45min);                               // 45min——自带单
 5. **`sys_days + months` 按平均月漂移**：months 是"平均月 30.44 天"的 duration，加在 sys_days 上凭空多出 07:27:18——月份加减要在 `year_month_day` 上做；日历类型加法的月末 clamp 也要检查（`January/31 + months{1}` 的结果可能不 `ok()`）。
 6. **时区显示依赖运行环境**：IANA tzdb 不在机器上 → 抛异常；跨机器跑输出前先确认数据源。
 7. **`high_resolution_clock` 想当然**：它是不是 steady 的是实现定义——写代码时直接选 steady 或 system，绕开它。
+
+---
+
+上一章：[30 协程](30-coroutines.md) · 下一章：[32 流 I/O](32-streams.md)

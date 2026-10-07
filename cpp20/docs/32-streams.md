@@ -154,3 +154,7 @@ std::ostream& operator<<(std::ostream& out, const Fraction& f) {         // ② 
 6. **流对象不可拷贝**：传参一律引用——拷贝在编译期就被删了（设计如此：状态唯一）。
 7. **`setw` 以为它粘**：只影响下一次输出，表格对齐每列都要重设。
 8. **格式操纵符忘了复原**：`hex`、`fixed`、`setprecision` 全是粘的——一处设置污染后续所有输出。
+
+---
+
+上一章：[31 时间](31-time.md) · 下一章：[33 文本与文件](33-textfiles.md)

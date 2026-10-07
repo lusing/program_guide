@@ -103,3 +103,7 @@ static_assert(Addable<std::string>);      // string 也可加（拼接）
 3. **约束了概念还是报老长错**：约束在签名上才提前爆；约束只写了 `typename T`（没概念）就还是老世界。检查是不是真的把概念写上去了。
 4. **auto 位概念的位置手滑**：`std::integral auto x`（对）与 `auto std::integral x`（错）——概念在 auto **前面**。
 5. **自定义概念过度检查**：`requires(T a, T b) { a + b; a - b; a * b; a / b; }` 全都要——约束写多一眼，适用面窄一分。只写真正需要的最小要求（接口最小主义），模板才好复用。
+
+---
+
+上一章：[20 模板基础](20-templates.md) · 下一章：[22 移动语义](22-moves.md)

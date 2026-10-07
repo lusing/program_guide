@@ -124,3 +124,7 @@ math::sqrt2;  math::square(5);  math::inner::pow4(2);
 4. **头文件里 using namespace**：模块时代之前的经典灾难——污染所有 include 者。任何组织形式下都别这么写。
 5. **忘了 #pragma once**：头文件被多路径 include → 重定义。新头文件第一行就是它。
 6. **模块与宏**：宏不穿透模块边界（这是特性），指望"import 之后能用对方宏"的代码要重构。
+
+---
+
+上一章：[25 编译期编程](25-compiletime.md) · 下一章：[27 预处理器](27-preproc.md)

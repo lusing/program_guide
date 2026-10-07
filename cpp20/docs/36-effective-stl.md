@@ -237,3 +237,7 @@ m.insert_or_assign(k, v);                    // 只更新或覆盖
 10. **排序区间算法喂了未排序区间**：binary_search/equal_range/set_*/merge 不报错、直接算错；且比较函数要与排序时用的同一个。
 11. **`try_emplace`/`insert_or_assign` 与 `operator[]` 的语义差**：[] 是"没有就默认构造"（改写已有值+可能插默认值），两者是"只添加"与"添加或覆盖"——用词选错，行为差一截。
 12. **const int 局部量在 lambda 里可免捕获**：带常量初值的 const 整型变量不需要捕获就能用（clang 的 `-Wunused-lambda-capture` 会点你名）；要演示捕获语义就用非 const。
+
+---
+
+上一章：[35 实战：迷你 grep](35-minigrep.md) · 下一章：（完）

@@ -177,3 +177,7 @@ int search_directory(const Options& opt) {
 4. **输出不锁**：两个线程的半行交错——多线程打印必须互斥（本例 print_mtx 的存在理由）。
 5. **自检造的临时目录没清理**：炸在 assert 也该清场——把 remove_all 放函数末尾的失败路径也覆盖（工程版用 RAII 目录守卫）。
 6. **路径含空格没引号**：shell 层的问题但最常被怪到工具头上——用法说明里提示用户加引号。
+
+---
+
+上一章：[34 测试与工具](34-tooling.md) · 下一章：[36 Effective STL](36-effective-stl.md)

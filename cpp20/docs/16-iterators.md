@@ -116,3 +116,7 @@ std::vector<std::string> taken{mb, me};         // 字符串被搬走而非拷�
 4. **越界迭代器解引用**：`*(v.end())`、`begin() + 10` 越界——和指针越界同罪，UB；release 版不报，调试版（MSVC 的 `_ITERATOR_DEBUG_LEVEL`）才可能抓。
 5. **range-for 里改容器结构**：插入/删除会让隐式持有的 begin/end 失效——range-for 循环体内只能改**元素值**，不能动容器结构。
 6. **ostream_iterator 的分隔符是后缀**：输出是 `1, 2, 3, `（尾巴也带）——要"前缀风格"自己拼或用 format/join 视图（第 19 章）。
+
+---
+
+上一章：[15 算法与 lambda](15-algorithms.md) · 下一章：[17 一等函数](17-firstclass.md)

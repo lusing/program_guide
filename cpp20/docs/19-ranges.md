@@ -123,3 +123,7 @@ std::ranges::sort(v, std::greater{}, &Student::score);                          
 4. **视图存下来二次使用**：不缓存 + 可能已被动过，行为难料。视图即用即弃，结果要留就物化。
 5. **filter 后改底层容器**：视图迭代器绑定底层结构，底层一改动（push_back/erase）即失效——同第 14 章迭代器失效纪律。
 6. **对 map 直接 views::sort**：map 迭代器是双向的，sort 要随机访问。要排序先物化成 vector（`map | ranges::to<std::vector>()` 拿 pair 序列）。
+
+---
+
+上一章：[18 数值与随机](18-numeric.md) · 下一章：[20 模板基础](20-templates.md)

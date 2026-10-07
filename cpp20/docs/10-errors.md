@@ -130,3 +130,7 @@ assert(amount > 0 && "金额必须为正");  // Release (NDEBUG) 下会被编译
 4. **构造函数里抛异常**：合法且安全（成员已构造的会被析构），但构造到一半的对象本身不调析构——RAII 成员是唯一正确姿势（第 11 章回扣）。
 5. **assert 里放副作用**：Release 下消失，Debug/Release 行为分叉——assert 只放纯判断。
 6. **expected 的 error 类型随手写 string**：教程演示用 string；工程上错误类型用 enum class（可穷举、可 switch）更利于编译器查漏。
+
+---
+
+上一章：[09 词汇类型](09-vocab.md) · 下一章：[11 类与 RAII](11-classes.md)

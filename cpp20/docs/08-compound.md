@@ -101,3 +101,7 @@ C 数组是历史地层（第 03 章已见过它需要编译期长度）；**新
 4. **enum class 直接 print**：`std::println("{}", f)` 编译错——没有对应 formatter；要么 `static_cast<int>`，要么给它写格式化器（进阶，第 33 章）。
 5. **string 频繁拼接 O(n²)**：循环里 `s += x` 各次追加本身没问题，但**跨函数反复传值拷贝**才是浪费大户——传 `const string&` / `string_view`。
 6. **span 空参数**：`subspan` 的 offset/count 越界是 UB（不是异常），切片前自己核对边界。
+
+---
+
+上一章：[07 字符串](07-strings.md) · 下一章：[09 词汇类型](09-vocab.md)

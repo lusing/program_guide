@@ -113,3 +113,7 @@ std::println("f(3) = {}", f(3));
 4. **比较器不严格弱序**：`<=` 或"相等返回 true"的比较器让 sort 越界崩溃。调试断言：`comp(x, x)` 必须为 false。
 5. **transform 目标空间不足**：目标容器没预留 size 就被写入→越界 UB。先 resize 或用 `std::back_inserter(dst)`。
 6. **谓词带状态**：谓词在拷贝中跑（算法可能内部拷贝 functor），**有状态谓词的行为未定义**。状态放捕获只读值，或用 lambda 外的计数器变量。（《Effective STL》第 39 条"纯谓词"的完整论证——remove_if 内部拷贝谓词导致双删的案例——见 36.7。）
+
+---
+
+上一章：[14 容器](14-containers.md) · 下一章：[16 迭代器深入](16-iterators.md)

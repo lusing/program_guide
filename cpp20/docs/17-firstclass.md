@@ -102,3 +102,7 @@ for (const auto& task : on_shutdown) task();
 5. **`std::function` 空着就调**：抛 `bad_function_call`——判空或保证初始化。
 6. **`std::function` 装 move-only 仿函数**：装不下（要求可拷贝）——C++23 用 `move_only_function`。
 7. **函数指针未初始化就调**：与裸指针同罪——`auto* op{fn};` 起步，别裸声明。
+
+---
+
+上一章：[16 迭代器深入](16-iterators.md) · 下一章：[18 数值与随机](18-numeric.md)
