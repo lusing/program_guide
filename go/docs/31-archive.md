@@ -113,3 +113,7 @@ for _, f := range zr.File {                   // zr.File 是目录清单
 7. **bzip2 找 Writer**：包里**只有 Reader**——要写 bzip2 得引第三方库。
 
 ---
+
+---
+
+上一章：[30 编码三件套](30-encoding.md) · 下一章：[32 进程与信号](32-process.md)

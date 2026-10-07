@@ -113,3 +113,7 @@ type Profile struct {
 5. **含切片字段的结构体复制是浅拷贝**：副本与本体共享底层数组——深拷贝自己写或用 `slices.Clone`。
 
 ---
+
+---
+
+上一章：[07 map](07-maps.md) · 下一章：[09 ⭐接口](09-interfaces.md)

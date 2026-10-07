@@ -91,3 +91,7 @@ Go 没有格式圣战——gofmt 输出就是唯一格式（tab 缩进、对齐�
 5. **`fmt.Println` 打指针默认给地址**：自定义类型实现 `String() string`（Stringer 接口，08 章）才有友好输出。
 
 ---
+
+---
+
+上一章：[01 全景](01-overview.md) · 下一章：[03 类型与变量](03-types.md)

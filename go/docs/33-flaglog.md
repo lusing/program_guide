@@ -112,3 +112,7 @@ expvar.Publish("uptime", expvar.Func(func() any { return time.Since(start).Secon
 8. **log 与 slog 混着配目的地**：`slog.SetDefault` 后老 `log` 输出也会走新 handler（两者打通），别在两处各配各的。
 
 ---
+
+---
+
+上一章：[32 进程与信号](32-process.md) · 下一章：[34 数据库接口](34-database.md)

@@ -81,3 +81,7 @@ UTF-16 是 Java/C#/Windows API 的内部表示，**BMP 外的字符**（多数 e
 6. **大小写转换后长度变了**：rune 级 ToUpper 单字符不变长，但 `ß`.ToUpper() 之类特例存在——strings.ToUpper 处理整串，别逐字符拼。
 
 ---
+
+---
+
+上一章：[26 正则表达式](26-regexp.md) · 下一章：[28 容器](28-container.md)

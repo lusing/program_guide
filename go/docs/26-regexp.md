@@ -97,3 +97,7 @@ regexp.MatchString(`^\d+$`, "123")                 // 一次性便捷函数（�
 7. **拿正则切空白**：`Fields` 比 `\s+` 的 Split 又快又好——能用字符串 API 就别上正则。
 
 ---
+
+---
+
+上一章：[25 文本三件套](25-strings.md) · 下一章：[27 Unicode 与 UTF-8/16](27-unicode.md)

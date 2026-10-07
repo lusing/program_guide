@@ -121,3 +121,7 @@ CI 最小集就这五条：fmt + vet + test（带 race）+ build + cover。
 6. **dlv 版本对不上**：delve 滞后于新 Go 版本会报 internal error——`go install ...@latest` 更新。
 
 ---
+
+---
+
+上一章：[22 HTTP 服务](22-http.md) · 下一章：[24 ⭐实战：迷你 grep](24-minigrep.md)

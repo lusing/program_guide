@@ -109,3 +109,7 @@ func (d MyDate) MarshalJSON() ([]byte, error) {
 6. **Unmarshal 忘传指针**：`json.Unmarshal(b, back)` 编译错（好设计），但 `&back` 写成 `back` 的地址以外的花样要自查。
 
 ---
+
+---
+
+上一章：[20 文件与 IO](20-files.md) · 下一章：[22 HTTP 服务](22-http.md)

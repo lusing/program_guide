@@ -98,3 +98,7 @@ signal.Stop(ch)                          // 注销（注意：不关 channel，�
 8. **依赖 shell 语义**：`Command("ls | wc")` 把整串当文件名——没有 shell 参与，管道通配符都不存在。
 
 ---
+
+---
+
+上一章：[31 压缩与归档](31-archive.md) · 下一章：[33 命令行与日志](33-flaglog.md)

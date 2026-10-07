@@ -105,3 +105,7 @@ rs := []rune(hello)   // string → []rune：解码复制
 6. **中文字符串 len 是字节**：显示宽度、字符数用 `utf8.RuneCountInString`；按字截断先 `[]rune`。
 
 ---
+
+---
+
+上一章：[05 函数](05-functions.md) · 下一章：[07 map](07-maps.md)

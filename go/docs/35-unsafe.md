@@ -72,3 +72,7 @@ b := unsafe.Slice(unsafe.StringData(s), len(s))
 6. **依赖它做的优化没测**：unsafe 改动必须配 benchmark（示例 35 的测试用 `testing.AllocsPerRun` 断言零拷贝真的零分配）。
 
 ---
+
+---
+
+上一章：[34 数据库接口](34-database.md) · 下一章：（完）

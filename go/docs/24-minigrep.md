@@ -139,3 +139,7 @@ go test ./internal/grep -v              # 单元：匹配/高亮/遍历/隐藏�
 5. **Windows 终端 ANSI**：Windows Terminal / VS Code 默认支持；老 conhost 要色码支持得开 VT——`-c never` 永远是安全兜底。
 
 ---
+
+---
+
+上一章：[23 工具链与调试](23-tooling.md) · 下一章：[25 文本三件套](25-strings.md)

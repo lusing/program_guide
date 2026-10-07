@@ -126,3 +126,7 @@ for v := range sq { ... }            // 消费端驱动全局
 6. **select 随机性**：同时就绪随机选——测试里别赌"肯定先走第一个 case"。
 
 ---
+
+---
+
+上一章：[16 ⭐并发 I：goroutine](16-goroutines.md) · 下一章：[18 并发 III：同步](18-sync.md)

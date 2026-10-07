@@ -116,3 +116,7 @@ func GetConfig() *Config {
 6. **race 检测不报 ≠ 没竞争**：它只抓"跑到过的路径"——测试覆盖率越高它越有用，但静态保证还得靠纪律。
 
 ---
+
+---
+
+上一章：[15 ⭐测试](15-testing.md) · 下一章：[17 ⭐并发 II：channel](17-channels.md)

@@ -96,3 +96,7 @@ go tool stringer -type=Color                   # 团队成员零配置复用
 6. **vendor 目录**：`go mod vendor` 冻结依赖副本——CI 离线环境才需要，日常别用。
 
 ---
+
+---
+
+上一章：[13 ⭐迭代器](13-iterators.md) · 下一章：[15 ⭐测试](15-testing.md)

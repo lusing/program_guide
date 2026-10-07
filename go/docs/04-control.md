@@ -96,3 +96,7 @@ Go 没有 `break 2`，标签（label）顶上。标签还能配 `continue`（跳
 5. **标签必须被引用**：`outer:` 写了没人 break/continue 它，编译错"label defined and not used"。
 
 ---
+
+---
+
+上一章：[03 类型与变量](03-types.md) · 下一章：[05 函数](05-functions.md)

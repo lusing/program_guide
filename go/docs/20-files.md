@@ -120,3 +120,7 @@ data, _ := noticeFS.ReadFile("notice.txt")
 6. **embed 路径是相对源文件**：`//go:embed ../x` 不允许越出包目录——嵌内容放本包内。
 
 ---
+
+---
+
+上一章：[19 时间](19-time.md) · 下一章：[21 JSON](21-json.md)

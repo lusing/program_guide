@@ -89,3 +89,7 @@ vals := slices.Collect(maps.Values(m))            // 迭代器 → 切片
 6. **Compact 只去相邻**：`[1,2,1]` 压完还是仨——先 Sort 再 Compact。
 
 ---
+
+---
+
+上一章：[11 ⭐泛型](11-generics.md) · 下一章：[13 ⭐迭代器](13-iterators.md)

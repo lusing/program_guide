@@ -146,3 +146,7 @@ go test -shuffle=on                     # 随机顺序（揪出测试间依赖�
 6. **断言第三方库的坑**：testify 的 assert（不中断）vs require（中断）混用导致失败后继续跑出僵尸错误——团队统一选一个。
 
 ---
+
+---
+
+上一章：[14 包与模块](14-modules.md) · 下一章：[16 ⭐并发 I：goroutine](16-goroutines.md)

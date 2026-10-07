@@ -110,3 +110,7 @@ rec.Code / rec.Body.String()
 6. **JSON 响应忘 Content-Type**：浏览器按文本渲染——`application/json; charset=utf-8` 一行省一坑。
 
 ---
+
+---
+
+上一章：[21 JSON](21-json.md) · 下一章：[23 工具链与调试](23-tooling.md)

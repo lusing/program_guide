@@ -104,3 +104,7 @@ Go 泛型用 GC shape stenciling：同"形状"（指针/直接存值分类）共
 5. **别拿泛型写抽象大词**：`Monad[T]`、`Functor[T]` 风格在 Go 水土不服——接口 + 组合才是本地哲学。
 
 ---
+
+---
+
+上一章：[10 错误处理](10-errors.md) · 下一章：[12 slices/maps 标准库](12-collections.md)

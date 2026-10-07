@@ -104,3 +104,7 @@ n := sort.Search(math.MaxInt, func(i int) bool { return i*i >= x }) // 平方根
 7. **ring.New(1-n)**：容量 0 返回 nil，下一个调用就 nil panic。
 
 ---
+
+---
+
+上一章：[27 Unicode 与 UTF-8/16](27-unicode.md) · 下一章：[29 数学计算](29-math.md)

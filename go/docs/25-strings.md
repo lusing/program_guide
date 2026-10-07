@@ -135,3 +135,7 @@ buf = strconv.AppendInt(buf[:0], n, 10)
 7. **`strings.Title`**：1.18 废弃——Unicode 场景它就是错的。
 
 ---
+
+---
+
+上一章：[24 ⭐实战：迷你 grep](24-minigrep.md) · 下一章：[26 正则表达式](26-regexp.md)
