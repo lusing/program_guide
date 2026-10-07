@@ -76,6 +76,7 @@
 | 44 | 递推、结构归纳与 Peano 算术（公理变定理+加乘律+≤ 全链） | C/L | ✅ Jongsma 批次二 |
 | 45 | 整除性与初等数论（dm2 商余+egcdf 四元组 Bézout+Euclid 引理+gcd·lcm+素数无穷） | C/L | ✅ Jongsma 批次三 |
 | 46 | 集合、幂集与计数（运算律+De Morgan 经典账本+powl/prodl+ΣC(n,k)=2^n+容斥） | C/L | ✅ Jongsma 批次四 |
+| 47 | 无穷集合与停机问题（Galileo+2^a·3^b 编码+Cantor 对角线三化身+Russell+停机公理账） | C/L | ✅ Jongsma 批次五 |
 | 26 | 收官：SAT→SMT→MC→ITP 图景 + 总坑位清单 + 八书导读+H&R 映射 | 文档 | ✅ 扩写✅ |
 
 章号=示例号；`docs/NN-*.md` 每章坑位速记；ROOTS 随章追加 Isabelle session。
