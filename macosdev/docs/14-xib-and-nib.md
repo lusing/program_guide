@@ -241,3 +241,7 @@ python3 tools/check_xib.py examples
 - `customModule` 必须等于 swiftc 的 `-module-name`，否则 outlet 静默为 nil。
 - 顶层对象不会被自动持有；nib 是模板，可以加载多次。
 - 用 `tools/check_xib.py` 在编译前把类名/模块名/连线核对一遍。
+
+---
+
+上一章：[13 富文本与 TextKit](13-attributed-text.md) · 下一章：[15 绘图](15-drawing.md)

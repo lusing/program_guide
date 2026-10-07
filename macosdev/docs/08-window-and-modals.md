@@ -267,3 +267,7 @@ panel.allowedContentTypes = [.plainText]      // macOS 12+
 - sheet 是窗口内模态，应用级模态要 `runModal()`（会阻塞主线程，别在测试里跑）。
 - `NSAlert` 的第一个按钮绑定回车。
 - macOS 12 起用 `UTType` 代替扩展名字符串。
+
+---
+
+上一章：[07 OC 与 Swift 混编](07-objc-swift-mix.md) · 下一章：[09 布局](09-layout.md)

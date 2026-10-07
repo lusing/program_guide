@@ -302,3 +302,7 @@ NS_ASSUME_NONNULL_END
 - `Data`/`String`/`Array` 是值类型，桥接到 OC 后不再是。
 - `Codable` 是新代码首选；`JSONEncoder` 要稳定输出记得 `.sortedKeys`。
 - OC 对象当集合元素要同时实现 `isEqual:` 和 `hash`。
+
+---
+
+上一章：[05 Foundation（OC 篇）](05-objc-foundation.md) · 下一章：[07 OC 与 Swift 混编](07-objc-swift-mix.md)

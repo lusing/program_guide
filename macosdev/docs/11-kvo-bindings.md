@@ -255,3 +255,7 @@ Bindings 的错误**静默且难查**（没有编译期检查，跑起来只是�
 - Cocoa Bindings 是 macOS 独有的双向同步层，绑定立刻生效。
 - 「程序改 stringValue」不回写 model —— 那条路径走 field editor。
 - `NSArrayController` 的 content 用初始化器给，别 bind 回自己。
+
+---
+
+上一章：[10 常用控件](10-controls.md) · 下一章：[12 表格与大纲](12-table-outline.md)

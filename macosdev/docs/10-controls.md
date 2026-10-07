@@ -287,3 +287,7 @@ view.frame = ...
 - `NSStepper` 的 min/max 是 Double，`intValue` 是 Int32。
 - SF Symbols 在 macOS 上可用，默认是模板图。
 - macOS 独有：`NSPopUpButton`、`NSComboBox`、`NSColorWell`、`NSDatePicker`。
+
+---
+
+上一章：[09 布局](09-layout.md) · 下一章：[11 KVC / KVO / Bindings](11-kvo-bindings.md)

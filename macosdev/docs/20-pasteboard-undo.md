@@ -274,3 +274,7 @@ NotificationCenter.default.addObserver(
 - 拖放先协商类型，数据从 `sender.draggingPasteboard` 读。
 - `UndoManager` 自测要 `groupsByEvent = false` 且所有登记/命名都在组内。
 - 分组 = 原子撤销单位；用 `disableUndoRegistration` 排除不该记录的改动。
+
+---
+
+上一章：[19 菜单、状态栏、工具栏](19-menus.md) · 下一章：（完）

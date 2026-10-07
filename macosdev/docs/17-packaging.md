@@ -230,3 +230,7 @@ xcrun stapler staple MyApp.app
 - **先铺完目录再拿 Bundle 对象**（CFBundle 缓存目录清单）。
 - 资源/本地化目录都在 `Resources/`；`.lproj` 一个语言一个。
 - 分发要 codesign（Hardened Runtime）→ notarytool → stapler。
+
+---
+
+上一章：[16 持久化](16-persistence.md) · 下一章：[18 并发](18-concurrency.md)

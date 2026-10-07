@@ -221,3 +221,7 @@ macOS 上表格还能完全用 `NSArrayController` + Bindings 驱动
 - `NSTableView` 必须装进 `NSScrollView`。
 - `NSOutlineView` 用 `item` 而不是 `row`；`row` 随展开状态变。
 - 单元格视图会被复用，每次都要重设内容。
+
+---
+
+上一章：[11 KVC / KVO / Bindings](11-kvo-bindings.md) · 下一章：[13 富文本与 TextKit](13-attributed-text.md)

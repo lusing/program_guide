@@ -251,3 +251,7 @@ let back = NSAttributedString(rtf: rtf, documentAttributes: nil)
 - 行高 = `ascender + descender + leading`，不是 `pointSize`。
 - TextKit 是 storage → layout manager → container → view 四层。
 - `boundingRect` 一定要带 `.usesLineFragmentOrigin`。
+
+---
+
+上一章：[12 表格与大纲](12-table-outline.md) · 下一章：[14 XIB 与 nib](14-xib-and-nib.md)

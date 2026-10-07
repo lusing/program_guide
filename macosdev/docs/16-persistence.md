@@ -269,3 +269,7 @@ defer { url.stopAccessingSecurityScopedResource() }
 - 读 Info.plist 用 `object(forInfoDictionaryKey:)`。
 - 格式化一定要钉 `locale`；多语言用 `%1$@` 位置参数。
 - 沙箱下用安全作用域书签持久化目录授权。
+
+---
+
+上一章：[15 绘图](15-drawing.md) · 下一章：[17 打包](17-packaging.md)

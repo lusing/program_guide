@@ -498,3 +498,7 @@ NSString *back = (__bridge_transfer NSString *)owned;  // 把释放责任交给 
 - 可预期的错误走 `NSError **`，异常只留给程序员错误。
 - ARC 自动管引用计数，但**救不了循环引用**；CF 桥接记「谁 +1 谁释放」。
 - 生产代码用 `NSLog`，自测代码用 `printf`（`NSLog` 写 stderr）。
+
+---
+
+上一章：[03 AppKit 架构](03-appkit-architecture.md) · 下一章：[05 Foundation（OC 篇）](05-objc-foundation.md)

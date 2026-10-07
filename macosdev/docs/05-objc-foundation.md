@@ -396,3 +396,7 @@ if ([parsed isKindOfClass:[NSDictionary class]]) {
 - `NSNumber` 比数值，`NSNull` 是单例空位。
 - 不可变版返回新对象、可变版就地改（`sortedArray…` vs `sortUsing…`）；遍历中别改集合。
 - 日期一定要指定 calendar + timeZone；`NSDateFormatter` 钉 `en_US_POSIX`；JSON 一定要加 sortedKeys。
+
+---
+
+上一章：[04 Objective-C 语言基础](04-objc-language.md) · 下一章：[06 Foundation（Swift 篇）](06-swift-foundation.md)

@@ -229,3 +229,7 @@ swiftc SwiftCounter.o main.o Greeter.o ObjcCaller.o -o demo \
 - OC 头文件要写轻量泛型，否则 Swift 侧集合全是 `Any`。
 - 只有 `@objc` + `NSObject` 子类能暴露给 OC；`@objc enum` 必须整型 raw value。
 - 命令行混编要自己给 `-import-objc-header` 和 `-emit-objc-header-path`。
+
+---
+
+上一章：[06 Foundation（Swift 篇）](06-swift-foundation.md) · 下一章：[08 窗口、sheet、模态](08-window-and-modals.md)

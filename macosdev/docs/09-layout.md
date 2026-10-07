@@ -227,3 +227,7 @@ scroll.hasVerticalScroller = true
 - 约束挂在**共同祖先**上；用 `NSLayoutConstraint.activate` 让系统帮你挂。
 - 线性布局优先 `NSStackView`。
 - `NSScrollView` 中间有一层 `NSClipView`；`contentSize` 是可见区尺寸。
+
+---
+
+上一章：[08 窗口、sheet、模态](08-window-and-modals.md) · 下一章：[10 常用控件](10-controls.md)

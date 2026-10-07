@@ -286,3 +286,7 @@ final class MyView: NSView {
 - 改像素写 `bitmapData`，用 `bytesPerRow` 算索引。
 - `NSImage` 是容器；`isTemplate` 用于菜单栏图标。
 - 重绘设 `needsDisplay`，绝不自己调 `draw(_:)`。
+
+---
+
+上一章：[14 XIB 与 nib](14-xib-and-nib.md) · 下一章：[16 持久化](16-persistence.md)

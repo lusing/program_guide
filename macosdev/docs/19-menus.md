@@ -253,3 +253,7 @@ toolbar.delegate = self                     // 提供 item
 - 分隔线也是 menu item，占一个位置。
 - 菜单栏图标必须 `isTemplate = true`；用完 `removeStatusItem`。
 - `NSToolbar.Identifier` 是 String，没有 `rawValue`。
+
+---
+
+上一章：[18 并发](18-concurrency.md) · 下一章：[20 剪贴板、拖放、撤销](20-pasteboard-undo.md)

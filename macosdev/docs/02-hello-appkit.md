@@ -194,3 +194,7 @@ Xcode 的 "macOS App" 模板会给你：
 - 窗口要自己 new、自己持有、自己 `makeKeyAndOrderFront`。
 - 坐标原点在左下角。
 - 示例用 `--selftest` 进入无 GUI 模式，这是全教程能自动验证的基础。
+
+---
+
+上一章：[01 工具链](01-toolchain.md) · 下一章：[03 AppKit 架构](03-appkit-architecture.md)

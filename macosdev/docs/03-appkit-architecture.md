@@ -210,3 +210,7 @@ AppDelegate（只管生命周期和全局菜单）
 - 委托 = 弱引用 + 一堆可选方法，调用可选方法前先 `responds(to:)`。
 - target-action = `target` 为 nil 时沿响应链找人，这是菜单系统能工作的原因。
 - macOS 上 `NSWindowController` 与 `NSViewController` 是分开的。
+
+---
+
+上一章：[02 第一个 AppKit 应用](02-hello-appkit.md) · 下一章：[04 Objective-C 语言基础](04-objc-language.md)

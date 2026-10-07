@@ -260,3 +260,7 @@ DispatchQueue.main.sync { ... }   // 在主线程上调用 → 立刻死锁
 - `DispatchGroup` 用 `wait` 阻塞 / `notify` 非阻塞。
 - `OperationQueue` 有依赖和取消，GCD 没有。
 - UI 只在主线程；后台算完 `DispatchQueue.main.async` 回去。
+
+---
+
+上一章：[17 打包](17-packaging.md) · 下一章：[19 菜单、状态栏、工具栏](19-menus.md)
