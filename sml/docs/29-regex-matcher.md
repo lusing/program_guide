@@ -162,3 +162,7 @@ k 换成 `fn _ => true`（前缀语义），起点枚举交给外层循环——
 - **Star 直译 `L* = 1 + L·L*` 不终止**——内层可空的表达式原地踏步（坑 44）；
 - 解析器别用 `String.index`（MLton 没有）——`pos` ref + `String.sub` 是可移植组合；
 - `andalso`/`orelse` 是短路的中止语义，别换成 `fn => bool` 装箱再拆。
+
+---
+
+上一章：[28 option、异常与续延 ⭐](28-queens.md) · 下一章：[30 规格与正确性 ⭐](30-correctness.md)

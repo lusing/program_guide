@@ -188,3 +188,7 @@ pwsh ./build.ps1 -Clean
 第 5 条有个副作用 —— 你自己的 `print` 文案里**不要写出 `error:` 或 `warning:`**，否则会被自己的脚本误判。第 17 章的示例里有一行注释专门记着这事。
 
 ---
+
+---
+
+上一章：[01 认识 Standard ML](01-overview.md) · 下一章：[03 程序结构与求值](03-structure.md)

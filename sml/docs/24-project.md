@@ -463,3 +463,7 @@ mlton -output myapp myapp.sml
 **（6）单元测试。** 用第 23 章的模式，把 `parseStudent`、`scoreOf`、`linearFit` 都测一遍。
 
 **本书到此为止的所有内容，加上这六条，就是一套完整的 SML 工程能力。**
+
+---
+
+上一章：[23 测试与断言](23-testing.md) · 下一章：[25 惰性求值与流 ⭐](25-laziness.md)

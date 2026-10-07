@@ -145,3 +145,7 @@ fun sameMultiset (xs : int list, ys : int list) = msort xs = msort ys
 - **Basis 没有随机数**——时间种子会毁掉逐字节比对；LCG + IntInf 是可移植组合（坑 45）；
 - IntInf 的乘法写 `IntInf.*` 显式点开，别赌重载；
 - 「最大」类规格的暴力版是 O(n) 扫描——只在小输入上跑，别当实现用。
+
+---
+
+上一章：[29 续延风格正则匹配 ⭐](29-regex-matcher.md) · 下一章：[31 数据抽象实战 ⭐](31-dictionary.md)

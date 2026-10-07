@@ -111,3 +111,7 @@ after qtail, head pq = 10             (* 10 还在 *)
 - **无参值绑定必须 `val` 不能 `fun`**（`fun empty = ...` 三家都报错，坑 42）；
 - **`handle` 的体必须与被包表达式同类型**——想拿到异常本身打 `exnName`，用 `exn option ref` 中转（示例第 2 节实录，坑 43）；
 - 出队空队列的 `QEmpty` 是自己的异常，别和 `List.Empty` 撞名。
+
+---
+
+上一章：[26 记忆化与递归挂起 ⭐](26-memoization.md) · 下一章：[28 option、异常与续延 ⭐](28-queens.md)

@@ -201,3 +201,7 @@ structure R2 = RunThree (FastCounter)
 这三家里谁都不接受 `fun ... (C : COUNTER)`，所以这不是方言问题，是语言的类型/签名二元划分决定的。下一章展开。
 
 ---
+
+---
+
+上一章：[13 高阶函数与闭包](13-higher-order.md) · 下一章：[15 functor](15-functors.md)

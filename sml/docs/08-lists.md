@@ -132,3 +132,7 @@ fun myMap _ [] = []
 - `null xs` 判空比 `length xs = 0` 快（O(1) vs O(n)）。
 
 ---
+
+---
+
+上一章：[07 模式匹配](07-patterns.md) · 下一章：[09 代数数据类型](09-datatypes.md)

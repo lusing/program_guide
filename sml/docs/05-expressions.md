@@ -129,3 +129,7 @@ val cmp : int * int -> order = Int.compare
 - `<>` 是不等号，不是 `!=`。
 
 ---
+
+---
+
+上一章：[04 类型系统](04-types.md) · 下一章：[06 元组与记录](06-tuples-records.md)

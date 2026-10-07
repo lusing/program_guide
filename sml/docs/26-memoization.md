@@ -180,3 +180,7 @@ val _ = rootCell := Delayed fibsKnotted    (* 回填：结打上了 *)
 - **memoize 包装不省递归**（坑 40）——这是本章最重要的单一教训；
 - **`val rec` 只收 `fn`**——循环数据用 `fun` 打函数结或 ref 回填（坑 41）；
 - 键的多态 `=` 会触发 `polyEqual` 警告，SML/NJ 上会污染 stdout——查表谓词把键钉成单态。
+
+---
+
+上一章：[25 惰性求值与流 ⭐](25-laziness.md) · 下一章：[27 持久与易失数据结构 ⭐](27-queues.md)

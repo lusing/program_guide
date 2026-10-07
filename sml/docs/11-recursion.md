@@ -145,3 +145,7 @@ fun maxOf (x :: xs) = foldl Int.max x xs
 **判断标准**：如果递归的结构就是「对列表每个元素做点事然后累积」，那就是 fold。
 
 ---
+
+---
+
+上一章：[10 字符串与字符](10-strings.md) · 下一章：[12 异常](12-exceptions.md)

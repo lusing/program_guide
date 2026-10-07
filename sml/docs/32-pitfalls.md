@@ -984,3 +984,7 @@ unexpected exception (bug?) in SML/NJ: Io [Io: openIn failed on
 | 47 | `:>` 报签名不匹配 / 抽象 key 没法打印 | 参数形状（元组 vs 柯里）逐字符对齐；打印先 `where type` 钉住 |
 
 **这张表里的每一条都对应本书某个示例里的一行注释。** 真正写代码时会遇到的大概是其中的五到八条 —— 但不知道是哪五到八条，所以值得通读一遍。
+
+---
+
+上一章：[31 数据抽象实战 ⭐](31-dictionary.md) · 下一章：[33 三实现差异清单](33-differences.md)

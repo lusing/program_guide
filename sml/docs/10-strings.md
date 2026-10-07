@@ -204,3 +204,7 @@ fun splitKV (line : string) =
 `splitKV "a=b=c"` 得到 `("a", "b=c")` —— 只切第一个分隔符，正好是配置文件的语义。
 
 ---
+
+---
+
+上一章：[09 代数数据类型](09-datatypes.md) · 下一章：[11 递归与尾递归](11-recursion.md)

@@ -185,3 +185,7 @@ type 'a stream = 'a stream! susp
 - **take/drop 的惯用写法会多 force 一格**——边界检查必须先于强制（本章实测，坑 39）；
 - **雷埋不进 `Cons` 的头**——严格语言构造格子即求值第一个分量；
 - **`datatype status` 的模式匹配不受 eqtype 限制**——匹配不是相等性比较。
+
+---
+
+上一章：[24 综合实战](24-project.md) · 下一章：[26 记忆化与递归挂起 ⭐](26-memoization.md)

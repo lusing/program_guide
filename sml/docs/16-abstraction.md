@@ -235,3 +235,7 @@ fun keys s = map (fn (k, _) => k) s
 **② 柯里化函数调用别写成三元组。** `Store.put ("x", 1, Store.empty)` 是错的 —— `put` 是柯里化的，要写 `Store.put ("x", 1) Store.empty`。报错信息是 `operator and operand do not agree`，容易误以为是类型问题。
 
 ---
+
+---
+
+上一章：[15 functor](15-functors.md) · 下一章：[17 模块的组装](17-modules.md)
