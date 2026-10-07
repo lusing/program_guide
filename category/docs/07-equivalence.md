@@ -80,3 +80,7 @@ Simmons 顺势问：那 Pfn 和 Set⊥ 是「本质相同」吗？
    —— Lean `Type (max u v v')`。
 4. 本质满的完整版要求同构数据（IsIsoD）；本教程用「有态射」的
    可扩充占位（True/sig），换完整版时证明变重但结构不变。
+
+---
+
+上一章：[06 自然变换与函子范畴](06-natural.md) · 下一章：[08 Yoneda 引理与可表函子](08-yoneda.md)

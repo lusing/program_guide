@@ -100,3 +100,7 @@ Check (fun x : fin 2 => Some x) : Hom (opposite catFin) 3 2.
    写 `.refl _` 会留 metavar 卡死 iota。
 5. Agda `suc` 双义（Level/ℕ）——`renaming (suc to lsuc)`（typetheory
    14 章老坑在此复现）；Fin 的嵌入是 `Fin.suc` 全名。
+
+---
+
+上一章：[01 认识范畴论](01-intro.md) · 下一章：[03 特殊态射与特殊对象](03-arrows.md)

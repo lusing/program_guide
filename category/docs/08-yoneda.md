@@ -102,3 +102,7 @@ Yoneda 嵌入全忠实的机器化需要同构数据在 NT 层的搬运（含 06
    yonedaTo 应用的层面。
 5. homFun 的宇宙钉死 `Category.{0,0}`/`Category 0ℓ 0ℓ`：
    Hom C a b 要当 Set 层的对象用——源范畴高一格全盘错位。
+
+---
+
+上一章：[07 范畴的等价与同构](07-equivalence.md) · 下一章：[09 积与余积](09-products.md)

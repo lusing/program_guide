@@ -131,3 +131,7 @@ destruct (g z) as [e|]; [destruct e | reflexivity].   (* 映到 fin 1 *)
 5. Agda 的 Mono/Epi 量化 `c : Obj C`（Set o）→ 结果在 `Set (o ⊔ ℓ)`；
    SplitMono 的 Σ 谓词是 Prop 值时只升到 ℓ——层级账要算清。
 6. epi ⇒ 满射需要选择：诚实边界，不硬凑构造性证明。
+
+---
+
+上一章：[02 反范畴与对偶原理](02-opposite.md) · 下一章：[04 图与交换图](04-diagrams.md)

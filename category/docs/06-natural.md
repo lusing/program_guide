@@ -108,3 +108,7 @@ revNT = record { ncomp = λ A → reverse {A = A} ; nlaw = λ f → funext (rev-
    `rw [show ... from rfl]` 先行展开再追图。
 7. Coq hcomp 追图里的复合发生在 D 层：`Fcomp H (FHom F f) (ncomp α b)`
    传两个态射（不是先复合），中间那步最易写错。
+
+---
+
+上一章：[05 函子](05-functors.md) · 下一章：[07 范畴的等价与同构](07-equivalence.md)

@@ -125,3 +125,7 @@ Agda 与 Lean 同理（η 都是定义性的）。对照幺半群范畴的 `idR`
    `NatCat.comp ... 2 3` 要写 `(2 : Nat)`。
 6. Agda `record {...}` 字面量不能挂 `where`；多个例子各自
    `open Category X` 会撞名——包 `module XxxDemo` 隔离。
+
+---
+
+下一章：[02 反范畴与对偶原理](02-opposite.md)

@@ -43,3 +43,7 @@
 | record 相等 | 分量级止步（无原始投影） | setoid（_≈NT_） | 结构 η+内核 PI 免费 |
 | funext | 公理入账 | postulate 入账 | 核心定理 |
 | 依赖家族递归 | revert+induction+Defined | 模式匹配自动 | 方程式+simp only |
+
+---
+
+上一章：[22 压轴：把书串起来](22-capstone.md) · 下一章：（完）

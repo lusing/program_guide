@@ -133,3 +133,7 @@ Simmons 2.1 的 diagram chasing 就是这种重写的图形化记法：
 5. Lean `simp only [Path.cat]` 展开方程式定义后再 rw 递归假设
    （iota 折叠下的子项 rw 看不见——typetheory 13 章老坑复现）；
    结构投影 `TyCat.comp` 不是 simp 定理，用 `change`/类型注解绕行。
+
+---
+
+上一章：[03 特殊态射与特殊对象](03-arrows.md) · 下一章：[05 函子](05-functors.md)

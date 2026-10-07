@@ -10,3 +10,7 @@ Hom(c × a, b) ≅ Hom(c, b^a)。机器内容：TyCat 的指数 = 函数类型�
 ## 坑位速记
 1. uncurry_round 要两层 funext（c 再 a）——一层留给函数相等一层留给参数。
 2. curry 的类型要 @ 钉住（Set Implicit Arguments 隐化）。
+
+---
+
+上一章：[15 伴随与极限](15-adjlimits.md) · 下一章：[17 λ 演算与演绎系统构成的范畴](17-stlc.md)

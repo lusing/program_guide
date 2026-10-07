@@ -96,3 +96,7 @@ Simmons 3.x 的每个「diagram chasing」习题背后都是这个引理。
    比函数级引理稳（函数级留 meta）。
 6. Lean 的 `F.FHom f` 点号访问投影；`funext map_id_pointwise`
    一行升级点式归纳——三家最省心的一条通道。
+
+---
+
+上一章：[04 图与交换图](04-diagrams.md) · 下一章：[06 自然变换与函子范畴](06-natural.md)

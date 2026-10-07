@@ -91,3 +91,7 @@ Agda 版止步于抽象定理 + 定义（文档说明 setoid 补全路线）—�
    subtype 的匿名构造要落在 p 槽位。
 5. Agda where 模式绑定必须搬 let；≈/链的槽位方向（⟨⟩ 里的证明
    是「当前行 ≡ 下一行」）贴错就 UnequalTerms。
+
+---
+
+上一章：[09 积与余积](09-products.md) · 下一章：[11 极限的一般理论](11-limits.md)

@@ -13,3 +13,7 @@ Kleisli/Eilenberg–Moore 范畴；**Beck 单子性定理**（贺伟 3.6）的�
 1. 「对象层单子」写不下 η·Tη（T 要作用在态射上）——Set 级单子显式携带 Tmap 最省基础设施。
 2. concat 的 A 是显式参数：map concat 里要 `concat (A:=A)` 钉实例——joinAssoc 的辅助引理先立再用。
 3. join (ret x) = x 的单元素情形要 app_nil_r 收尾（++ nil 不定义折叠）。
+
+---
+
+上一章：[17 λ 演算与演绎系统构成的范畴](17-stlc.md) · 下一章：[19 幺半范畴与富范畴](19-monoidal.md)

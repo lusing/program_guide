@@ -7,3 +7,7 @@ Hom(c, G(lim D)) ≅ Hom(Fc, lim D) ≅ lim Hom(Fc, D-) ≅ lim Hom(c, GD-)，
 Yoneda 收网 ⟹ G(lim D) 是 lim(GD)。12 章是它的二元情形；完整证明需要 11 章的一般锥机器 + 8 章 Yoneda 的联动——超出 mini 库规模，作为边界记录。
 
 **伴随函子定理**（贺伟 3.2）：Solution Set 条件 + 小性 ⟹ 伴随存在；选择公理进入。**反射子范畴**（贺伟 3.3）：全忠实 + 本质满的包含的左伴随——07 章等价理论的回收。
+
+---
+
+上一章：[14 自由与遗忘](14-free.md) · 下一章：[16 Cartesian 闭范畴](16-ccc.md)

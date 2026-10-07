@@ -9,3 +9,7 @@
 ## 坑位速记
 1. eps_nat 的形状：FGf;ε_b = ε_a;f——「自然性按分量内联」是绕开 06 章裂缝的务实路线。
 2. Lean 版用 `show` 先折叠投影链再 rw；Coq 版注意 Set Implicit Arguments 隐化的范畴参数要 @。
+
+---
+
+上一章：[12 保持极限的函子](12-continuous.md) · 下一章：[14 自由与遗忘](14-free.md)
