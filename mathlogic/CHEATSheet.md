@@ -174,3 +174,56 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 25_hoare'    # 单章
 ### 中译本/2e 取材注记
 - 2e OCR 公式区不可靠——公式一律以 3e 文本层为准；2e 仅取 §8.3（cut/NAF/CWA 叙述）与 §8.5（CLP 概念）；Z 记号章跳过（裁决）；
 - 3e 页偏移（PDF=书页+Δ，Δ 按章 6-13 跳变——数字版删了章间空白页）：提取时按章实测。
+
+## 43-51 章新坑（Jongsma 全谱扩充）
+
+**数学先于战术**（三连：43/49/51）——目标为假时 lia 的
+"Cannot find witness" 是**正确判断**：49 章 `2*2 ≤ (k₁'+1)(k₂'+1)`
+不真（应证乘积=1）；51 章 filter 口径的度数引理在自环 (v,v)
+上是假命题（改多重图递归口径后成定义方程）。写证明前先验算。
+
+**PDF 文本层丢上杠**（50）——§7.3 命题的补运算排印在提取文本
+中全部裸奔：共识律照抄是假命题（中间项必须 x̄）、冗余律
+x(x̅+y)=xy 同病。处方：涉及补的公式按数学实体校读，机器是
+唯一裁判。
+
+**Coq**：`Nat.mul_cancel_l/r` 是 iff 且非零因子在第三参（45/48/49
+三连坑）；`rw` 对含自由字母的项全局改写会自我指涉爆炸（45 的
+gcdn——remember/反向 rw/congrArg 三解）；min/max 这类条件定义
+暴力 destruct 后化简失灵——**特征引理装配范式**（49 四条
+big/sml + assert + rewrite）；`le_lt_dec` 右支是 `<` 要 `≤` 时
+用 `ltac:(lia)` 作实参；`destruct … eqn:E` 已替换 scrutinee、
+勿再 `rewrite E`；iff 引理用 `proj1/proj2` 解包；`filter_In`
+只用于成员关系，等式造成员用 `rewrite F; left; reflexivity`；
+自定义折叠（lsum）保持**折叠形纪律**——`lsum_cons` 引理 +
+`cbn [map]` 白名单，绝不全 simpl（51 的 IH 失配连坑）。
+
+**Lean 4.25 裸 core 件名录**：`Nat.leb`/`Nat.leb_le`/`Nat.decide`
+不存在——布尔比较改 Prop 级 `if x ≤ y` + `if_pos`/`if_neg`
+（负分支侧条件从三叉来）；`Bool.or_false/false_or/not_true/
+not_false/true_and/false_and/and_true/and_false` 全家可用；
+`Bool.xor` 全名是根名 `xor`；`List.mem_cons_self` 全隐参裸名
+即完整应用；`.lsum` 式点语法不存在（找 List.lsum）。
+
+**Lean omega 三律**：无非线性字面量因子的假设**被静默丢弃**
+→先纯等式链蒸馏成线性（49 的 hLin：Nat.succ_mul 展开须 have
+显式类型钉 `+1` 拼法）；直证**合取目标**拉 Classical.choice
+→拆单目标；面对**非算术目标**也拉 choice→`(by omega : False).elim`。
+
+**Lean term/match**：term 级 match 的臂是项不是 tactic（50 djn
+规格件）；变量等式 `x = 0` 不能 rfl——用见证 `p.1`；系数写在
+minterm 右侧（&&/|| 从左匹配，字面量在左死项才先归零），
+dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
+对 ≠-合取目标失灵（单边 rfl 可证也不行）→先证 rfl 步进引理
+再 `rw`（51 的 greedy_step）。
+
+**Lean stdlib 公理传递**：`List.erase` 引理族自带
+`Classical.choice`（51 鸽笼的 pick_notin 及下游账本显式记账；
+自证区间鸽笼撞加法性墙——拆两段各自 ≤ |L| 推不出和 ≤ |L|，
+需区间表强化归纳）。
+
+**Prolog**：QMC 合并参与者须**双向采集**（`U @< V` 单向让最大
+模式 111 漏网成假素蕴涵项）；着色约束须**累积器**——边建表边
+`\+ member(·, As)` 时尾部未绑定、否定全灭；K3,3 **有** Ham 圈
+（平衡 3=3），反例是 K3,4（3≠4）——书 Ex 8.2.17 判据两侧各
+有机型，勿张冠李戴。

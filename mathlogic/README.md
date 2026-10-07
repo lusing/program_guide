@@ -1,11 +1,11 @@
 # 数理逻辑指南（mathlogic）：从命题到不完备性
 
-面向**会编程、想系统学数理逻辑**的读者。以八本读本为骨架
-（Huth&Ryan、Ben-Ari 3e、Mints、EFT、Mendelson 等详见
+面向**会编程、想系统学数理逻辑**的读者。以九本读本为骨架
+（Huth&Ryan、Ben-Ari 3e、Mints、EFT、Mendelson、Jongsma 等详见
 [PLAN.md](./PLAN.md)），横跨 **Coq / Agda / Lean 4 / Isabelle/HOL /
 HOL4 / Coq-HoTT / Prolog** 七种实现机器验证。
 
-**已完结**：42 章全部交付（H&R+Ben-Ari 双谱扩充），120 个验证单元全绿（实测口径）
+**已完结**：51 章全部交付（H&R+Ben-Ari+Jongsma 三谱扩充），140 个验证单元全绿（实测口径）
 （零公理或显式公理记账）；速查表见 [CHEATSheet.md](./CHEATSheet.md)，
 蓝图与状态表见 [PLAN.md](./PLAN.md)。
 
@@ -70,6 +70,15 @@ mathlogic/
 | [40 SLD 与 Prolog 语义](docs/40-sldprolog.md) | 计算规则独立性+cut/NAF/CLP | C/L/P |
 | [41 归结完备与 SAT 难例](docs/41-rescomp.md) | resproof+PHP 反驳+DP 消元 | C/L |
 | [42 合成与形式语义](docs/42-synthsem.md) | 小步语义+读出式正确性 | C/L |
+| [43 数学归纳与递归](docs/43-induction.md) | PMI 三位一体：弱/强/良序+素因子+√2 下降 | C/L |
+| [44 递推与 Peano 算术](docs/44-pa.md) | 公理变定理+加乘律+≤ 全链 | C/L |
+| [45 整除性与初等数论](docs/45-divisibility.md) | dm2 商余+Bézout+Euclid 引理+素数无穷 | C/L |
+| [46 集合、幂集与计数](docs/46-setscount.md) | 运算律+De Morgan 经典账+容斥 | C/L |
+| [47 无穷集合与停机问题](docs/47-infinity.md) | Cantor 对角线三化身+Russell+停机公理账 | C/L |
+| [48 函数与等价关系](docs/48-funequiv.md) | 搜索左/右逆+congN 正规形+良定义 | C/L |
+| [49 偏序与格](docs/49-posetlattice.md) | 特征引理装配代数律+五点菱形反例 | C/L |
+| [50 Boole 代数与逻辑电路](docs/50-boole.md) | 十公理+加法器+minterm 定理+QMC | C/L/P |
+| [51 图论专题](docs/51-graphs.md) | 握手引理真证明+平面算术+贪心着色+搜索面 | C/L/P |
 
 ## 工具链（本机实测）
 
