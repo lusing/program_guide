@@ -127,3 +127,7 @@ fun main() {
 3. **PATH 上的 java 8**：本机默认 java 太老，先 `JAVA_HOME` 指到 JDK 17+。
 4. `println` 用平台换行（Windows 是 `\r\n`），`appendLine` 固定 `\n`——拼字符串比对时统一成 `\n`。
 5. `kotlinc-jvm.bat` 走批处理传参：含空格/分号的路径会被拆，命令行复杂时用 `@argsfile`（build.ps1 的做法）。
+
+---
+
+上一章：[01 全景](01-overview.md) · 下一章：[03 变量类型控制流](03-basics.md)

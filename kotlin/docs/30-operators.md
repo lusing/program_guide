@@ -105,3 +105,7 @@ for (i in Countdown(3)) { ... }                    // 3 2 1
 - `mod` 不是 infix：`-7 mod 4` 编译不过，写 `(-7).mod(4)`
 - 复数这类无全序类型别实现 Comparable——用 `sortedBy { 键 }`
 - `inc/dec` 必须返回自增后的值（别就地改 `this`，不可变类直接返回新实例）
+
+---
+
+上一章：[29 成员扩展](29-member-extensions.md) · 下一章：[31 ⭐实战：HTTP 服务](31-http.md)

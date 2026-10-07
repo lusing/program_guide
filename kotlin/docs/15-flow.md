@@ -126,3 +126,7 @@ val state = MutableStateFlow(0)          // 3) 用消息/状态流代替共享�
 5. **普通 Flow 不线程安全于 emit**——不要在 `flow {}` 里 launch 别的协程来 emit（用 channelFlow）。
 6. Mutex **不可重入**；`withLock` 里再 `withLock` 同一把锁 = 死锁（21 章 synchronized 是可重入的——语义相反，别混记）。
 7. SharedFlow 默认 replay=0：晚到的订阅者收不到历史——要"新订阅者也补课"就设 replay。
+
+---
+
+上一章：[14 ⭐协程基础](14-coroutines.md) · 下一章：[16 错误处理](16-errors.md)

@@ -126,3 +126,7 @@ fun operate(a: Int, b: Int, op: (Int, Int) -> Int) = op(a, b)   // 函数是参�
 4. tailrec 不改语义只改实现；写错形状（非尾调用）时是 warning 不是 error，别忽视。
 5. 位置参数 + 具名参数混用时，具名之后的不能再回位置式。
 6. vararg 参数在函数里是**数组**（`IntArray`/`Array<T>`），想要 List 自己 `.toList()`。
+
+---
+
+上一章：[04 ⭐空安全](04-nullsafety.md) · 下一章：[06 ⭐类与属性](06-classes.md)

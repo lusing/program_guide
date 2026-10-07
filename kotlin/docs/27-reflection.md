@@ -154,3 +154,7 @@ fun runTests(instance: Any): List<String> =
 - `declared*` 不含继承成员；`member*` 含——找不到方法先想是不是选错集合
 - 完整反射 API 在 `kotlin-reflect.jar`，不是 stdlib（CLI 要自己上 classpath）
 - `Box<String>::class` 挖不回 String（擦除）；实参只能经**继承链 supertypes** 找回
+
+---
+
+上一章：[26 数值与数组](26-numbers-arrays.md) · 下一章：[28 inline 进阶](28-inline.md)

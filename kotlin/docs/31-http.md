@@ -131,3 +131,7 @@ try {
 - 端口号/线程名/时间戳都别进快照——测试用临时端口，输出只谈"已启动"
 - `HttpRequest.method("POST", noBody())` 与 `POST().build()` 不等价，统一走一处封装
 - 轮询流要给 `maxPolls` 上限：没有取消时别让 `flow { while(true) }` 无限跑
+
+---
+
+上一章：[30 运算符约定](30-operators.md) · 下一章：[32 ⭐实战：MVP 聊天室](32-chat.md)

@@ -292,3 +292,7 @@ shared/
 11. **wasi 走 node 会打 ExperimentalWarning**：node:wasi 还是实验模块，快照比对前过滤（教程 build.ps1 处理了）。
 12. **WasmGC 要新运行时**：node 22+ 原生支持（本机 26 实测）；老浏览器/老 node 跑不了 wasm-js/wasi 目标产物。
 13. **PATH 上的 java 是 8**（老坑新位置）：konanc 用 `%JAVA_HOME%`，build.ps1 已钉 21——手动跑命令时别忘了。
+
+---
+
+上一章：[24 ⭐实战：ktodo](24-todo.md) · 下一章：[26 数值与数组](26-numbers-arrays.md)

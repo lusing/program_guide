@@ -105,3 +105,7 @@ class ChatPresenter(private val view: ChatView, private val api: ChatApi) {
 - 渲染 when 不写 else——密封类加事件时让编译器逼你补分支
 - 机器人禁止随机与时间——快照测试的对话必须可重放
 - 错误路径也要进 View（`showError`），别在 Presenter 里直接 println
+
+---
+
+上一章：[31 ⭐实战：HTTP 服务](31-http.md) · 下一章：[33 ⭐实战：俄罗斯方块](33-tetris.md)

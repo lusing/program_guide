@@ -118,3 +118,7 @@ fun nextAction(s: OrderState): String = when (s) {
 4. 密封子类必须在**同一模块**（2.5 之前要求同一文件，且**同一包**）——跨模块想开放扩展用普通 interface，代价是失去穷尽检查。
 5. `data object` 分支在 when 里写名字即可（`Expr.Zero ->`），写 `is Expr.Zero ->` 也行但多余。
 6. when 作**表达式**时穷尽是硬错误；作语句时非穷尽只是 warning——本教程 `-Werror` 把它升级为错误，普通工程里别靠默认设置兜底，尽量让 when 表达式化。
+
+---
+
+上一章：[07 继承与接口](07-inheritance.md) · 下一章：[09 ⭐object与委托](09-delegation.md)

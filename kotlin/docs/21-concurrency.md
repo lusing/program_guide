@@ -121,3 +121,7 @@ Java 21 的虚拟线程与协程解决同一问题（阻塞式代码的高并发
 5. 线程池 + ThreadLocal = 残留串味——finally 里 remove。
 6. 线程名（Thread-N）带全局编号——**输出进测试快照前必须显式命名**（本教程 21 章示例实测：Thread-10 每次运行不同，命名后稳定）。
 7. suspend 函数里禁止 synchronized 阻塞——挂起点持锁 = 其他协程饿死；换 Mutex。
+
+---
+
+上一章：[20 ⭐测试](20-testing.md) · 下一章：[22 函数式](22-functional.md)

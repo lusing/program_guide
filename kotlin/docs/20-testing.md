@@ -120,3 +120,7 @@ class InMemoryStore : TaskStore { ... }        // 内存假实现：不碰磁盘
 4. 共享可变状态的测试顺序依赖：测试函数之间共享的 object（如 09 章 Registry）会被上个测试改脏——测试要么自建实例要么重置。
 5. 随机不注种子的测试 = CI 定期抽风——`Random(42)` 一次解决。
 6. 断言消息别写"应该相等"——写**输入与期望**（`fizzbuzz($input) 期望 $want`）。
+
+---
+
+上一章：[19 文件与文本](19-files.md) · 下一章：[21 并发线程](21-concurrency.md)

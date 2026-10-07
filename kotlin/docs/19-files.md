@@ -164,3 +164,7 @@ val rc = p.waitFor()
 6. Windows 路径分隔符混用：展示路径前 `replace('\\', '/')` 统一（快照测试才稳定）。
 7. `copyTo(target)` 默认 **不覆盖**——同名会抛 FileAlreadyExistsException，要覆盖传 `overwrite = true`。
 8. 子进程 stdout/stderr **双管道不排空会死锁**——`redirectErrorStream(true)` 合流 + 先 `text()` 后 `waitFor()`。
+
+---
+
+上一章：[18 ⭐Java 互操作](18-javainterop.md) · 下一章：[20 ⭐测试](20-testing.md)

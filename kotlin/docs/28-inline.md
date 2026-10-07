@@ -135,3 +135,7 @@ typeName<List<Int>>()        // "List"——擦除世界里唯一能拿到实参
 - 要把 lambda 存对象/传出去 → `noinline`；要包进别的 lambda 执行 → `crossinline`
 - public inline 引 internal 成员编译错 → `@PublishedApi internal`（承诺=公开）
 - `reified` 离开 inline 不存在；`inline val` 必须无幕后字段
+
+---
+
+上一章：[27 ⭐注解与反射](27-reflection.md) · 下一章：[29 成员扩展](29-member-extensions.md)

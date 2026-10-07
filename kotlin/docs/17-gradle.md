@@ -141,3 +141,7 @@ Android/IntelliJ 新项目默认全部 Gradle。
 5. 依赖冲突（同一库两个版本）：`gradle :app:dependencies` 看树，`strictly`/`constraints` 钉版本。
 6. Daemon 占内存——机器卡时 `gradle --stop` 清掉。
 7. 首次构建要联网拉插件/依赖（本教程 17 章第一次 build 约 4 分钟，之后增量秒级）。
+
+---
+
+上一章：[16 错误处理](16-errors.md) · 下一章：[18 ⭐Java 互操作](18-javainterop.md)

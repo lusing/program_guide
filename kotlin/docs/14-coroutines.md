@@ -134,3 +134,7 @@ jobs.joinAll()
 4. 取消是**协作式**的：不检查挂起点的死循环（`while(true) { x++ }`）取消不掉——循环里要有 `delay/yield/ensureActive`。
 5. `async` 里抛的异常在 `await()` 之前就会取消兄弟（coroutineScope 语义）——想要"各自失败各自报"用 supervisorScope + async（15 章）。
 6. 顺序敏感的逻辑别默认"自动并行"：`async` 才并行，顺序调用就是顺序执行——示例 sequential 的输出顺序是确定的。
+
+---
+
+上一章：[13 ⭐扩展](13-extensions.md) · 下一章：[15 ⭐Channel与Flow](15-flow.md)

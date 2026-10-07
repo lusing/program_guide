@@ -158,3 +158,7 @@ val boxed = Array(n) { it }     // 10_000_000 个 Integer 盒子
 - `Array(5) { it * 2 }` 的 `it` 是**下标**不是元素
 - `max + 1` 静默回绕（变量）；常量表达式才在编译期报错
 - `017` 编译不过——前导零被整体禁止（八进制陷阱堵死在源头）
+
+---
+
+上一章：[25 ⭐多平台：JS/Native/Wasm](25-multiplatform.md) · 下一章：[27 ⭐注解与反射](27-reflection.md)

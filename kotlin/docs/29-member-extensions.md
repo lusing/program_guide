@@ -109,3 +109,7 @@ val hand = listOf(KING of HEARTS, ACE of SPADES)  // 读出来就是牌
 - typealias 零运行时成本也零类型隔离——别名与原类型完全互换
 - `import as` 只能作用于**声明**（类/函数/属性/枚举常量），不能作用于表达式
 - 类实现函数类型要 override 的方法是 `invoke`
+
+---
+
+上一章：[28 inline 进阶](28-inline.md) · 下一章：[30 运算符约定](30-operators.md)

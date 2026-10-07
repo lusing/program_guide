@@ -119,3 +119,7 @@ Kotlin 没有 checked exception——不强制 catch/声明。哲学：异常签
 4. `finally` 里的 return 会吃掉 try 里的异常（JVM 老坑，Kotlin 同样）——finally 只做清理。
 5. 密封异常的 `catch (e: AppError)` 分支顺序：子类在前、根在后（先具体后宽泛，与 Java 相同）。
 6. `error()`/`TODO()` 返回 Nothing——用它初始化的 val 编译过但运行必炸，别当占位值留在生产代码。
+
+---
+
+上一章：[15 ⭐Channel与Flow](15-flow.md) · 下一章：[17 工程化与 Gradle](17-gradle.md)

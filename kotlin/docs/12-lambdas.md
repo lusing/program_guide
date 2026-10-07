@@ -115,3 +115,7 @@ inline 前提下 lambda 里的裸 `return` 不只是退出 lambda。反过来：
 4. 五件套返回值方向不同：`apply/also` 返回对象、`let/run/with` 返回 lambda 值——接错变量类型会立刻暴露，但写 `val x = p.apply { ... }.let { ... }` 链时要清楚每环在传什么。
 5. 函数类型可空要括号：`() -> Int` 可空写成 `(() -> Int)?`，`() -> Int?` 是"返回可空"。
 6. 捕获 var 的 lambda 在并发/异步里 = 隐形共享状态——传出去之前想想值拷贝（`it`）是不是更稳。
+
+---
+
+上一章：[11 ⭐泛型](11-generics.md) · 下一章：[13 ⭐扩展](13-extensions.md)

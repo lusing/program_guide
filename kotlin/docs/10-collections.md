@@ -141,3 +141,7 @@ Map（独立族，不继承 Collection）
 6. `average()` 空集合返回 NaN（不抛异常）——显示前记得兜底。
 7. `Map.forEach` 的 `(k, v)` 是解构——在 lambda 里写 `it` 拿到的是 Entry，两种风格别混。
 8. `Map` 不继承 `Collection`——`map as Collection<*>` 编译不过，别在层次图里画错线。
+
+---
+
+上一章：[09 ⭐object与委托](09-delegation.md) · 下一章：[11 ⭐泛型](11-generics.md)

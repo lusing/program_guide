@@ -174,3 +174,7 @@ fun run(vararg args: String) {
 4. `when` 穷尽 + sealed Command 的红利依赖"不写 else"——忍不住写 else 就把安全网拆了（08 章坑 1 重申）。
 5. 旧版本数据的**字段兼容**要显式设计（done 缺失默认值）——测试里专门留一个"旧数据"用例。
 6. 文件读写的**父目录**要 mkdirs——`writeText` 不会替你建目录（19 章坑 4）。
+
+---
+
+上一章：[23 ⭐类型安全 DSL](23-dsl.md) · 下一章：[25 ⭐多平台：JS/Native/Wasm](25-multiplatform.md)

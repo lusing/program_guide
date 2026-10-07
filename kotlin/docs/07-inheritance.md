@@ -130,3 +130,7 @@ class Counter2 {
 4. `is` 数值分支不按继承层次匹配：`is Number` 与 `is Int` 都能匹配 42，**when 按分支顺序**取第一个——把更具体的类型放前面。
 5. Java 匿名内部类的"隐式持有外部"在 Kotlin 嵌套类里不存在——从 Java 迁移时语义对不上的高发点。
 6. `internal` 的边界是**模块**不是包：同一个 Gradle 模块里 internal 到处可见；跨模块（哪怕是同公司）就是不可见。
+
+---
+
+上一章：[06 ⭐类与属性](06-classes.md) · 下一章：[08 ⭐密封枚举 when](08-sealed-enum.md)

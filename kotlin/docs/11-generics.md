@@ -150,3 +150,7 @@ inline fun <reified T : Any> String.parseAs(): T? = parseOf(this, T::class.javaO
 6. `filterIsInstance` 内部就是 reified——别自己再写一遍。
 7. 同名重载擦除后 JVM 签名相同 → *platform declaration clash* **编译错**；`@JvmName` 区分。
 8. `out T` 类的 private var/消费位合法（不进公开契约）——想协变又想内部可变，收成 private。
+
+---
+
+上一章：[10 集合](10-collections.md) · 下一章：[12 ⭐lambda与作用域函数](12-lambdas.md)

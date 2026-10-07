@@ -142,3 +142,7 @@ fruits = mutableListOf("苹果", "梨")   // 触发（整体换引用）
 6. `lazy` 默认线程安全但也意味着**第一次访问有锁开销**；确认单线程用 NONE 模式。
 7. `notNull` 读前未赋值抛 `IllegalStateException`（不是 NPE）；基本类型属性/顶级属性用不了 lateinit，选 notNull。
 8. `observable` 只在**赋值**时回调——`list.add(...)` 静默无声；要监控内容就声明成不可变 List 并整体换引用。
+
+---
+
+上一章：[08 ⭐密封枚举 when](08-sealed-enum.md) · 下一章：[10 集合](10-collections.md)

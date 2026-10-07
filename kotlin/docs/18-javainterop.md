@@ -130,3 +130,7 @@ Java 集合进来**一律当可变 + 可空元素**处理（平台类型），�
 4. 扩展函数在 Java 里的全名是 `文件名Kt.方法$所在文件`——不加 `@file:JvmName`/`@JvmName`，Java 侧调用体验稀碎。
 5. Kotlin 的 `List` 传给 Java：Java 那边拿到的是同一个对象，能 cast 成 MutableList 去改——只读是 Kotlin 视角，不是字节码事实。
 6. 混合工程的**编译环**用两遍法（18.1）或交给 Gradle；单遍 kotlinc 编不了互相引用的 Java/Kotlin。
+
+---
+
+上一章：[17 工程化与 Gradle](17-gradle.md) · 下一章：[19 文件与文本](19-files.md)
