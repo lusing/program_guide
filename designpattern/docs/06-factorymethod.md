@@ -206,3 +206,7 @@ auto console_creator = FnLoggerCreator{[] { return std::make_unique<ConsoleLogge
 - GoF：第 3 章 3.3 节 Factory Method——**实现要点里明确警告了"构造器中不调用工厂方法"并给出 lazy initialization 替代写法**，本章陷阱 1 的原始出处；"参数化工厂方法"一节对应现代 function 版。
 
 *可选延伸：可运行示例见 examples/06_factorymethod/。*
+
+---
+
+上一章：[05 简单工厂](05-simplefactory.md) · 下一章：[07 抽象工厂](07-abstractfactory.md)

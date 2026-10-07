@@ -197,3 +197,7 @@ bool is_empty_via_size(const S& s) { return s.size() == 0; }
 - GoF：第 4 章 4.1 节 Adapter——TextShape 例子（TextView 被适配成 Shape）同时演示类/对象两版，"相关模式"节指出 Adapter 与 Bridge 的关系（两者都转发请求，Adapter 先天存在而 Bridge 是有意设计出来的）。
 
 *可选延伸：可运行示例见 examples/11_adapter/。*
+
+---
+
+上一章：[10 建造者](10-builder.md) · 下一章：[12 桥接](12-bridge.md)

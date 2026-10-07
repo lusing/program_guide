@@ -217,3 +217,7 @@ private:
 - GoF：第 5 章 5.2 节 Command——"实现"节讨论"支持取消和重做"（多级撤销需要历史表列；DeleteCommand 每次执行删的内容不同，须在执行时存储——本章 EraseCommand 捕获 `removed_` 与 GoF 原文同源）与"避免取消操作过程中的错误积累"（本章陷阱 2 的源头讨论），另列命令的四个用途（按需参数化、排队、日志、撤销）。
 
 *可选延伸：可运行示例见 examples/19_command/。*
+
+---
+
+上一章：[18 责任链](18-chainofresp.md) · 下一章：[20 解释器](20-interpreter.md)

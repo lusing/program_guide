@@ -184,3 +184,7 @@ struct Trans2 { St from; Ev ev; St to; void (*act)(); };   // act 可为 nullptr
 - GoF：第 5 章 5.8 State"实现"小节"表驱动的方法"一条——原文明确指出"用表把输入映射到状态转移"是状态模式之外的替代方案，并讨论了"表解释器需要自己的运行环境"的取舍；本章是这一小节的 C++23 兑现（constexpr 让表第一次可以被编译器执行）。
 
 *可选延伸：可运行示例见 examples/33_statemachine/。*
+
+---
+
+上一章：[32 事件总线：观察者的解耦终点](32-eventbus.md) · 下一章：[34 对象池实战：借出、归还、上限](34-objpool.md)

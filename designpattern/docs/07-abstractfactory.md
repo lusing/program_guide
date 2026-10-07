@@ -191,3 +191,7 @@ std::string t_draw_dialog(const F& f) {
 - GoF：第 3 章 3.2 节 Abstract Factory——实现节讨论"工厂作为单件""创建产品的类 vs 对象"、"为不同产品族定义可扩展的工厂"（GetExtender 打法），是本章模板版思路的先声。
 
 *可选延伸：可运行示例见 examples/07_abstractfactory/。*
+
+---
+
+上一章：[06 工厂方法](06-factorymethod.md) · 下一章：[08 单例](08-singleton.md)

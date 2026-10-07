@@ -189,3 +189,7 @@ struct GoCRTP final : GameCRTP<GoCRTP> {
 - GoF：第 5 章 5.10 节 Template Method——Application/Document 例（绘图应用/电子表格应用继承 OpenDocument 的打开→读入→处理流程），"实现"节讨论"使用 C++ 访问控制（原语操作定义为保护成员、模板方法定义为非虚成员函数——本章 run() 非虚 + 步骤 protected 的出处）、尽量减少原语操作的个数、命名约定（应重定义的操作加前缀 DoXxx 的惯例）"。
 
 *可选延伸：可运行示例见 examples/27_templatemethod/。*
+
+---
+
+上一章：[26 策略](26-strategy.md) · 下一章：[28 访问者](28-visitor.md)

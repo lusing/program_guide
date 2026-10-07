@@ -184,3 +184,7 @@ variant: 封闭集合混合容器一次 render -> sq;ci
 - GoF：第 1 章 1.6 节"继承和参数化类型的比较"——1989 年就把"用继承表达多态"与"用模板表达多态"的对立摆上了台面（Smalltalk 类 vs CLU 参数化），本章只是把这场争论接到了 C++23 的 concepts 与 variant 上；另见 5.11 节 Visitor "实现"小节对"双分派与重载在编译期/运行期解析"的讨论。
 
 *可选延伸：可运行示例见 examples/29_polymorphism/。*
+
+---
+
+上一章：[28 访问者](28-visitor.md) · 下一章：[30 类型擦除](30-typeerasure.md)

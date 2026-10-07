@@ -201,3 +201,7 @@ private:
 - GoF：第 4 章 4.3 节 Composite——Graphics 例（Line/Rect 是叶，Picture 是夹），"实现"节五问（谁管 add、父引用、删叶的内存、递归数据结构、Component 该多胖）与本章要点逐条呼应。
 
 *可选延伸：可运行示例见 examples/13_composite/。*
+
+---
+
+上一章：[12 桥接](12-bridge.md) · 下一章：[14 装饰器](14-decorator.md)

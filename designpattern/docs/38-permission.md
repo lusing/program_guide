@@ -193,3 +193,7 @@ main.cpp 六个请求钉住的合同：
 - GoF：第 5 章 5.1 Chain of Responsibility"实现"小节对"链的隐式 vs 显式引用"与"表示请求"的讨论——本例 Request/Verdict 显式成对，"why 通道"是 GoF 时代未展开的一笔；5.10 Proxy 的 Protection Proxy 小节（访问控制代理）。
 
 *可选延伸：可运行示例见 examples/38_permission/。*
+
+---
+
+上一章：[37 文档导出：桥与外观的合体](37-docexport.md) · 下一章：[39 反模式三幕](39-antipatterns.md)

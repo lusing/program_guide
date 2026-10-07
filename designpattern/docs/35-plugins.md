@@ -185,3 +185,7 @@ main.cpp 四段断言钉住的合同：
 - GoF：第 3 章创建型模式引言对"系统应该由它使用的类来参数化"的论述（Abstract Factory 一节对"注册工厂"的注记——"用一个注册表把原型/工厂按名存取"）；5.4 Prototype"实现"小节对"原型管理器（Prototype Manager）按名注册与查找"的讨论——本章 Registry 即管理器，Codec 即原型位的接口版。
 
 *可选延伸：可运行示例见 examples/35_plugins/。*
+
+---
+
+上一章：[34 对象池实战：借出、归还、上限](34-objpool.md) · 下一章：[36 表达式求值器：四模式一条流水线](36-evaluator.md)

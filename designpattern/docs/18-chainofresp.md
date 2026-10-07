@@ -186,3 +186,7 @@ private:
 - GoF：第 5 章 5.1 节 Chain of Responsibility——HelpHandler 例（帮助事件沿控件链上浮），"实现"节讨论"链的形状（线性/树/图）、谁维护后继、请求显式传参 vs 基类已知"。
 
 *可选延伸：可运行示例见 examples/18_chainofresp/。*
+
+---
+
+上一章：[17 代理](17-proxy.md) · 下一章：[19 命令](19-command.md)

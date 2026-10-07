@@ -212,3 +212,7 @@ const Stream* make_chain(const PlainStream& plain, bool want_upper, bool want_ts
 - GoF：第 4 章 4.4 节 Decorator——VisualComponent/Border/ScrollDecorator 例（窗口滚动+边框的叠加演示），"实现"节讨论"接口一致性、省略抽象装饰类、Component 该多轻"。
 
 *可选延伸：可运行示例见 examples/14_decorator/。*
+
+---
+
+上一章：[13 组合](13-composite.md) · 下一章：[15 外观](15-facade.md)

@@ -195,3 +195,7 @@
 - GoF：第 1 章 1.8 节"How Design Patterns Solve Design Problems"与书末的模式间关系图（GoF 自己画过 23 个模式的连线图——本章决策树的直系祖先）。
 
 *可选延伸：可运行示例见 examples/40_cheatsheet/。*
+
+---
+
+上一章：[39 反模式三幕](39-antipatterns.md) · 下一章：（完）

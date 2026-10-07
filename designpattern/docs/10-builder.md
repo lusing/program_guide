@@ -194,3 +194,7 @@ void send(HttpRequest req, RequestOptions opt = {});
 - GoF：第 3 章 3.2 节 Builder——与 Abstract Factory 对比（Builder 逐步造复杂对象、Abstract Factory 一步造一族；Builder 最后返回成品、AF 立即返回），实现节讨论"由谁组装/谁知道成品类型"，正是本章 Director 归属讨论的原点。
 
 *可选延伸：可运行示例见 examples/10_builder/。*
+
+---
+
+上一章：[09 原型](09-prototype.md) · 下一章：[11 适配器](11-adapter.md)

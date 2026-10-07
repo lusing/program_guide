@@ -208,3 +208,7 @@ CRP: axe -> strike=25
 - GoF：第 1 章 1.6.2 节"优先使用对象组合"（favor object composition over class inheritance，GoF 23 模式背后最重要的两句话之一，另一句是针对接口编程）。
 
 *可选延伸：可运行示例见 examples/04_isp_lod_crp/。*
+
+---
+
+上一章：[03 里氏替换与依赖倒置](03-lsp_dip.md) · 下一章：[05 简单工厂](05-simplefactory.md)

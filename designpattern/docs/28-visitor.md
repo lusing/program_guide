@@ -184,3 +184,7 @@ inline double area_of(const ShapeS& s) {
 - GoF：第 5 章 5.11 节 Visitor——Node/AST 例（编译器对语法树做多趟操作，正是本章"什么时候该用"一节的现实版），"实现"节讨论"双重分派的语言背景（CLOS 多分派 / Smalltalk double dispatching）、谁负责遍历对象结构、无抽象访问者的缺省访问"。
 
 *可选延伸：可运行示例见 examples/28_visitor/。*
+
+---
+
+上一章：[27 模板方法](27-templatemethod.md) · 下一章：[29 多态的三副面孔（虚函数/concepts/variant）](29-polymorphism.md)

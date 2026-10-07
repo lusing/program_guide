@@ -194,3 +194,7 @@ struct User {
 - GoF：第 5 章 5.5 节 Mediator——对话框例（FontDialogDirector 联动输入框与列表框，本章 GUI 一提的展开），"实现"节讨论"谁来仲裁（自行/外部）、Mediator 与 Colleague 的相互引用方式"。
 
 *可选延伸：可运行示例见 examples/22_mediator/。*
+
+---
+
+上一章：[21 迭代器](21-iterator.md) · 下一章：[23 备忘录](23-memento.md)

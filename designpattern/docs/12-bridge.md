@@ -201,3 +201,7 @@ BridgeCircle circle(*renderer, 2.0);
 - GoF：第 4 章 4.2 节 Bridge——Window 跨平台例（抽象 Window/IconWindow，实现 WindowImp/XWindowImp），"相关模式"节讨论 Bridge 与 Adapter 的分界与 Abstract Factory 配 Bridge 造实现对象。
 
 *可选延伸：可运行示例见 examples/12_bridge/。*
+
+---
+
+上一章：[11 适配器](11-adapter.md) · 下一章：[13 组合](13-composite.md)

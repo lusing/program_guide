@@ -196,3 +196,7 @@ auto c = create_typed<Circle>();   // 调用点指名道姓，零查表零字符
 - GoF：无独立章；第 3 章 3.3 节 Factory Method 的讨论覆盖其退化形；Abstract Factory 的实现要点里也谈到了用简单工厂造工厂。
 
 *可选延伸：可运行示例见 examples/05_simplefactory/。*
+
+---
+
+上一章：[04 接口隔离、迪米特与合成复用](04-isp_lod_crp.md) · 下一章：[06 工厂方法](06-factorymethod.md)

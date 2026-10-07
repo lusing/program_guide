@@ -191,3 +191,7 @@ inline std::generator<int> naturals() {
 - GoF：第 5 章 5.4 节 Iterator——List 例与"谁控制迭代（外部/内部）、谁定义遍历算法、迭代器健壮性（Robust Iterators）"，其中健壮性一节正是本章陷阱 1 的源头讨论。
 
 *可选延伸：可运行示例见 examples/21_iterator/。*
+
+---
+
+上一章：[20 解释器](20-interpreter.md) · 下一章：[22 中介者](22-mediator.md)

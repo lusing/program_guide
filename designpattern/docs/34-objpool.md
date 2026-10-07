@@ -193,3 +193,7 @@ main.cpp 四段断言对应的合同条款：
 - GoF：第 3 章"创建型模式"讨论部分（Creational Patterns 的引言提到"对象池在某些系统中是重要的创建手段"）；5.6 Flyweight"实现"小节对"管理共享对象的生命周期"（FlyweightFactory 的池语义）——本章把"池"从享元工厂的附注升级成了主角，并把归还义务交给 RAII（GoF 时代尚无此语言设施，守卫是 C++ 的贡献）。
 
 *可选延伸：可运行示例见 examples/34_objpool/。*
+
+---
+
+上一章：[33 状态机实战：一张表，两种执行](33-statemachine.md) · 下一章：[35 自注册插件框架](35-plugins.md)

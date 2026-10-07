@@ -212,3 +212,7 @@ private:
 - GoF：第 4 章 4.7 节 Proxy——ImageProxy 例（本章同源），"相关模式"节列了四个变体与 Adapter/Decorator 的辨析（Decorator 只加职责不改接口，Proxy 可以先拦后转）。
 
 *可选延伸：可运行示例见 examples/17_proxy/。*
+
+---
+
+上一章：[16 享元](16-flyweight.md) · 下一章：[18 责任链](18-chainofresp.md)

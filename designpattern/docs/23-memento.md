@@ -188,3 +188,7 @@ private:
 - GoF：第 5 章 5.6 节 Memento——Constraint Solver 例（约束求解器的增量快照，正是"状态大用增量"的现实版），"实现"节讨论"语言支持（C++ 用 friend 实现窄宽接口）、存储增量 vs 完整快照"——本章现代小节的两条分支 GoF 都已点名。
 
 *可选延伸：可运行示例见 examples/23_memento/。*
+
+---
+
+上一章：[22 中介者](22-mediator.md) · 下一章：[24 观察者](24-observer.md)

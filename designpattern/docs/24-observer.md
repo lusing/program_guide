@@ -187,3 +187,7 @@ Java 9 把 `java.util.Observable` 标记为 deprecated——GoF 原书配套的�
 - GoF：第 5 章 5.7 节 Observer——"实现"节专列了本章全部难点：谁触发更新（setChanged 语义）、对已删除目标的悬挂引用（陷阱 2）、在发出通知前确保目标状态自身一致、避免特定于观察者的更新协议（推 vs 拉——本例 `on_update(double)` 是推模型，拉模型是观察者回查主题）。
 
 *可选延伸：可运行示例见 examples/24_observer/。*
+
+---
+
+上一章：[23 备忘录](23-memento.md) · 下一章：[25 状态](25-state.md)

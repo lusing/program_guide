@@ -184,3 +184,7 @@ double pay = checkout(*policies.at("member"), 260.0);   // 虚版同理：map<st
 - GoF：第 5 章 5.9 节 Strategy——"实现"节讨论"Strategy 与 Context 的接口（Context 传多少数据给策略——胖接口 vs 窄接口+Context 自引用）、Strategy 作为模板参数（本章 concepts 版的原型）、可选的 Strategy 对象（默认策略 + 可替换）"。
 
 *可选延伸：可运行示例见 examples/26_strategy/。*
+
+---
+
+上一章：[25 状态](25-state.md) · 下一章：[27 模板方法](27-templatemethod.md)

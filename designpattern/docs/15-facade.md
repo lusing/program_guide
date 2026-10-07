@@ -195,3 +195,7 @@ std::expected<std::string, std::string> compile_checked(std::string_view src) co
 - GoF：第 4 章 4.5 节 Facade——Compiler 例（本章同款），"实现"节讨论"降低客户-子系统耦合（抽象外观类）、公共与私有子系统的划分"，GoF 明确写了"Facade 类往往需要成为 public 类，而子系统类保持 internal"——正是现代分层 API 的原型。
 
 *可选延伸：可运行示例见 examples/15_facade/。*
+
+---
+
+上一章：[14 装饰器](14-decorator.md) · 下一章：[16 享元](16-flyweight.md)

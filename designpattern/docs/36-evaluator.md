@@ -184,3 +184,7 @@ main.cpp 五段断言的覆盖面：
 - GoF：第 5 章 5.3 Interpreter——"实现"小节对"用解释器模式表达文法、TerminalExpression 与 NonterminalExpression 的分野"的完整讨论，以及 2.x 节组合模式作为解释器的基座（"Interpreter 大量使用 Composite 来表示文法树"）；本章 variant 化正是把 Terminal/Nonterminal 两个基类折叠成备选项的集合。
 
 *可选延伸：可运行示例见 examples/36_evaluator/。*
+
+---
+
+上一章：[35 自注册插件框架](35-plugins.md) · 下一章：[37 文档导出：桥与外观的合体](37-docexport.md)
