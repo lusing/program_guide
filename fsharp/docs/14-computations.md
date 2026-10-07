@@ -198,3 +198,7 @@ let retryOutcome = asyncRetry { return! flaky () } |> Async.RunSynchronously
 - **builder 命名习惯**：类型叫 XxxBuilder、实例叫小写（maybe/validate/async），全仓库一致。
 - **自定义 builder 的成员写漏语义**：`ReturnFrom` 恒等、`Delay` 直调——每个"不起眼"的成员都是语义通道，重试/日志这类横切逻辑漏一个成员就漏一条通道（14.8 的实测坑）。
 - **可读性边界**：CE 太"聪明"（隐藏大量控制流）会失去透明性——注释里写清短路语义。
+
+---
+
+上一章：[13 异步](13-async.md) · 下一章：[15 文件与 JSON](15-files-json.md)

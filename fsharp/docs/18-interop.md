@@ -125,3 +125,7 @@ let squares =
 - **null 只堵边界**：在互操作入口 ofObj 一次，内部永远 option；让 null 蔓延进核心等于白设防。
 - **事件忘退订**：长生命周期对象订阅短生命周期源会泄漏，handler 存变量 `Remove`。
 - **委托转换**：F# lambda 到 `Func`/`Action`/`Predicate` 自动转换，但**多重载方法**（第 16 章 MapGet）要显式 `Func<...>` 包装。
+
+---
+
+上一章：[17 测试](17-testing.md) · 下一章：[19 桌面 GUI](19-gui.md)

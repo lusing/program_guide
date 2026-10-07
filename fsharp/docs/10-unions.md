@@ -127,3 +127,7 @@ let state = Status.Active      // 必须写全名，裸 Active 不行
 - **enum 不是 DU**：C# enum 传进来只是 int，别指望 match 它做完备检查。
 - **序列化要额外照顾**：DU 的 JSON 形态见第 15 章，跨语言协议要先定好形态。
 - **别为两个字段建 20 个 case**：case 是"种类"，字段塞 record；扁平小 DU 最可读。
+
+---
+
+上一章：[09 记录类型](09-records.md) · 下一章：[11 OOP 在 F#](11-oop.md)

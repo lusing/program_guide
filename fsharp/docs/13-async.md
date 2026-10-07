@@ -163,3 +163,7 @@ let finalCount = counter.PostAndAsyncReply(GetCount) |> Async.RunSynchronously
 - **agent 体里抛异常默认干掉整个循环**：`Receive` 之后的处理抛了异常，agent 停摆、后续消息没人收——危险操作在循环内 try/with，或用 `MailboxProcessor.Start` 的重载传错误处理函数。
 - **`PostAndAsyncReply` 不设超时**：agent 死了（上一条坑）就永久等待——`agent.DefaultTimeout <- 5000` 或调用重载传超时毫秒数，超时抛 `TimeoutException`。
 - **agent 内再做耗时同步 IO**：串行化是把双刃剑——所有消息排队，一个慢操作堵住整条队列；耗时工作丢给 `Async.StartChild`/`Task`，agent 只做协调。
+
+---
+
+上一章：[12 泛型与度量单位](12-generics.md) · 下一章：[14 计算表达式](14-computations.md)

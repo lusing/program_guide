@@ -115,3 +115,7 @@ printfn "splitAt 3 = %A" (List.splitAt 3 ls)
 - **`[1..n]` 两端闭合**：含 n；范围反了得 `[10..-1..1]`。
 - **list/array 混用**：模块函数不通用，管道中途先统一类型。
 - **索引越界**：`arr[10]` 抛 `IndexOutOfRangeException`，取前先判长度或用 `Array.tryItem`。
+
+---
+
+上一章：[05 模式匹配](05-patterns.md) · 下一章：[07 Option](07-option.md)

@@ -99,3 +99,7 @@ printfn "struct 相等 %b，类型 %s" (p1 = p2) (p1.GetType().Name)
 - **匿名/命名不可互换**：`{| Name = "x" |}` 和 `Person` 是不同类型，边界处要么映射要么统一。
 - **struct record 装箱**：塞进 `obj` 或非泛型容器会装箱，性能反转。
 - **可变字段**：`mutable` 字段配合 `<-` 可写，但破坏值语义，仅限性能热点。
+
+---
+
+上一章：[08 Result 与异常](08-result.md) · 下一章：[10 判别联合](10-unions.md)

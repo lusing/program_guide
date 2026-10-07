@@ -127,3 +127,7 @@ macOS / Linux 上这两条会失败（`net10.0-windows` 产物无法在本机运
 - **`EnableVisualStyles` 时机**：WinForms 要在 `Application.Run` 前调，否则控件朴素难看。
 - **跨平台**：这两栈只在 Windows 运行；要跨平台桌面看 Avalonia（生态推荐，超出本书范围）。
 - **NETSDK1100**：macOS/Linux 上构建报这个错，是缺 `EnableWindowsTargeting`（见 19.2.1），不是代码问题。
+
+---
+
+上一章：[18 .NET 互操作](18-interop.md) · 下一章：[20 实战：待办管理器](20-todo.md)

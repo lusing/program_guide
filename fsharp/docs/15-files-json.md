@@ -110,3 +110,7 @@ printfn "%s" (JsonSerializer.Serialize(profiles))
 - **反序列化可空**：`Deserialize` 可能返回 null（JSON 字面 `null`），ofObj 兜底。
 - **大小写敏感**：STJ 默认属性名精确匹配；来料 camelCase 时配 `PropertyNamingPolicy = JsonNamingPolicy.CamelCase`。
 - **DU 的 JSON 形态**：内置支持有默认形态（带 Case/Fields 字段的包装对象）；对外协议要先序列化样例确认，或自定义 converter。
+
+---
+
+上一章：[14 计算表达式](14-computations.md) · 下一章：[16 Web API](16-webapi.md)

@@ -105,3 +105,7 @@ VS/Rider 里测试名旁边的运行按钮走的同一条路。失败输出会�
 - **浮点比较**：`Assert.Equal(0.1+0.2, 0.3)` 失败；用 `Assert.Equal(expected, actual, precision)` 重载。
 - **中文测试名**：源文件保持 UTF-8；个别 CI 的控制台编码会花，但运行不受影响。
 - **别测实现细节**：断言 Result 的形状而不是内部调了几次函数。
+
+---
+
+上一章：[16 Web API](16-webapi.md) · 下一章：[18 .NET 互操作](18-interop.md)

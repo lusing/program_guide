@@ -107,3 +107,7 @@ let count = animals |> List.length     // 集合处理仍交给函数式
 - **override 拼错**：拼错成员名会静默变成新成员（有告警 FS0026），盯编译输出。
 - **主构造参数不是字段**：`(name: string)` 想暴露给外部要再 `member _.Name = name`。
 - **可变状态默认私有**：`let mutable` 只有类内可见，跨类改状态需 `member val` 或方法——这是好事。
+
+---
+
+上一章：[10 判别联合](10-unions.md) · 下一章：[12 泛型与度量单位](12-generics.md)

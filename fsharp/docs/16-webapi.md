@@ -119,3 +119,7 @@ builder.Services.AddSingleton<ILogger, FileLogger>()   // 注册
 - **端口冲突**：写死端口并行测试必撞；用 `:0`。
 - **ResizeArray 并发**：见 16.2，教学库不做并发保护。
 - **`|> ignore`**：MapXxx 返回 endpoint 约定名，F# 侧不需要就 ignore 掉（每行都有，别嫌吵）。
+
+---
+
+上一章：[15 文件与 JSON](15-files-json.md) · 下一章：[17 测试](17-testing.md)

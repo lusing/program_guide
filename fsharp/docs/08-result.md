@@ -123,3 +123,7 @@ let parseOrThrow s =
 - **撞名 `Error`**：自己的错误 DU 叫 `ParseError`、`AppError`，别叫 `Error`。
 - **bind/map 混用类型错**：`bind` 的函数要返回 Result，`map` 的返回普通值；接错了编译器立刻骂人（这正是价值）。
 - **Result 打印**：`%A` 输出 `Ok 1` / `Error "boom"`，调试直观。
+
+---
+
+上一章：[07 Option](07-option.md) · 下一章：[09 记录类型](09-records.md)

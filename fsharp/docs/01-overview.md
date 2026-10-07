@@ -149,3 +149,7 @@ dotnet run
 - **pwsh 7**：跑 build.ps1 别用 Windows PowerShell 5.1（编码问题）。
 - **SDK 版本**：机器上装了多个 SDK 时，`dotnet` 默认挑版本最高的那个。要跑教程主线就靠根目录 `global.json` 钉住 10.0（`rollForward: latestFeature` 会自动选 10.0 里最新的 feature band）。
 - **示例与脚本的 obj/bin 冲突**：在示例目录直接 `dotnet run` 会就地生成 `obj/`、`bin/`，之后再跑总脚本会撞上"重复生成特性"之类的错。总脚本开跑前会自动清扫这些游离目录，所以不用手动管。
+
+---
+
+下一章：[02 第一个程序](02-hello.md)

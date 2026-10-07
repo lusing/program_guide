@@ -106,3 +106,7 @@ printfn "Option.toNullable None = %A" (Option.toNullable None)         // null
 - **判空别绕路**：`(opt = Some x)` 这种比较不如直接 match；判有无用 `Option.isSome`。
 - **`%A` 打印**：调试友好（`Some 42`），面向用户文本要自己解包格式化。
 - **值类型小优化**：热路径可用 `voption`（`ValueSome`/`ValueNone`，免装箱），API 层保持 option 即可。
+
+---
+
+上一章：[06 集合](06-collections.md) · 下一章：[08 Result 与异常](08-result.md)
