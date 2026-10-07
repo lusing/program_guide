@@ -17,7 +17,7 @@ pub fn build(b: *std.Build) void {
 
     const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(b.getInstallStep());
-    if (b.args) |args| run_cmd.addArgs(args); // zig build run -- <参数>
+    run_cmd.addPassthruArgs(); // 0.17：b.args 已移除；zig build run -- <参数> 照旧可用
     const run_step = b.step("run", "Run minigrep");
     run_step.dependOn(&run_cmd.step);
 

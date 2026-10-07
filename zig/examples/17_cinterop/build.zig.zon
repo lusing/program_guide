@@ -1,0 +1,8 @@
+.{
+    .name = .ci17,
+    .version = "0.1.0",
+    .fingerprint = 0x3131d5e3e0c82082,
+    .minimum_zig_version = "0.17.0",
+    .dependencies = .{},
+    .paths = .{ "build.zig", "build.zig.zon", "include", "csrc", "src" },
+}

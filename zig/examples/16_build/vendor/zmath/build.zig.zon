@@ -1,0 +1,15 @@
+.{
+    // .name 必须是合法标识符（枚举字面量，不能以数字开头，也不是字符串）。
+    // 它同时是包的身份，zig build 拿它算 .fingerprint。
+    .name = .zmath,
+    .version = "0.1.0",
+    // 由 `zig build` 的报错提示给出，不要自己编。
+    .fingerprint = 0xfd23d4228f5d0d1c,
+    .minimum_zig_version = "0.17.0",
+    // .paths 是「这个包包含哪些文件」，父包把它 vendoring 进自己时按它裁剪。
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

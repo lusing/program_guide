@@ -27,22 +27,34 @@ Zig 是一门**直接的、显式的、零运行时**的系统编程语言——
 | 错误处理 | `!T` 类型化 | 返回码 | 异常/expected | Result 枚举 |
 | 泛型 | comptime type 参数 | 无 | 模板 | trait + 泛型 |
 | 编译期计算 | comptime（同语言） | 预处理器 | constexpr（可选） | const fn（受限） |
-| C 互操作 | 一等公民（`@cImport`/translate-c） | 本尊 | 兼容 C 但重 | 需要 FFI 声明 |
+| C 互操作 | 一等公民（`b.addTranslateC`/translate-c） | 本尊 | 兼容 C 但重 | 需要 FFI 声明 |
 | 交叉编译 | 内置任意目标 | 要配工具链 | 要配工具链 | 一般 |
 | 学习曲线 | 低（语言小） | 低（语言小坑多） | 高 | 高 |
 | 运行时 | 零 | 零 | 有（异常/RTTI） | 接近零 |
 
-## 1.3 版本现状：0.16，黎明前
+## 1.3 版本现状：0.17，黎明前
 
-Zig 尚未到 1.0（本文写作时最新 **0.16.0**）。代价是标准库仍在破坏性演进——0.13 到 0.16 连续三次大改：
+Zig 尚未到 1.0（本文写作时最新 **0.17.0**）。代价是标准库仍在破坏性演进——
+0.14 到 0.17 连续四次大改：
 
 | 版本 | 破坏性变化（本教程直接相关） |
 |---|---|
 | 0.14 | `ArrayList` 转向 unmanaged 形态（分配器成为方法参数） |
 | 0.15 | Writer/Reader 全面重构（"Writergate"），缓冲所有权归调用者 |
-| 0.16 | `std.fs.File/Dir` 并入 `std.Io`；`Mutex/Condition` 移入 `std.Io` 且带 `io` 参数；新增 `std.process.Init` main 入口；`WaitGroup`、`BoundedArray`、`std.time` 计时函数、`c"..."` 字面量移除 |
+| 0.16 | `std.fs.File/Dir` 并入 `std.Io`；`Mutex/Condition` 移入 `std.Io` 且带 `io` 参数；新增 `std.process.Init` main 入口（"Juicy Main"）；`WaitGroup`、`BoundedArray`、`std.time` 计时函数、`c"..."` 字面量移除 |
+| **0.17** | **`**` 运算符与 `void{}` 移除**；**`@cImport` 移除**（头文件翻译改走 `b.addTranslateC`）；**`@typeInfo` 结构重写**（`fields` → `field_names`/`field_types`/`field_attrs` 三条平行数组，`error_set` → `error_names`）；`@intFromEnum`/`@enumFromInt`/`@intToEnum` 改名 `@backingInt`/`@fromBackingInt`/回收为 `@enumFromInt`；`Optimize.Debug` → `.debug`；`b.args`、`std.meta`、`std.heap.stackFallback` 移除；`callconv(.C)` → `.c`；`@bitCast` 拒绝裸结构体；**`std.Io.net` 正式接管 TCP/UDP** |
 
-**这意味着：网上多数教程/博客的代码（0.13/0.14 时代）直接照抄会编译不过**。本教程所有代码在 0.16.0 实测通过，每章末尾的"坑位清单"专门收录这些迁移差异——即使你读的是旧资料，也能对上号。
+**这意味着：网上多数教程/博客的代码（0.13/0.14 时代）直接照抄会编译不过**，
+而且**0.16 的写法在 0.17 下也大量编译不过**。本教程所有代码在 0.17.0 实测通过，
+每章末尾的"坑位清单"专门收录这些迁移差异——即使你读的是旧资料，也能对上号。
+
+如果你手上已经有 0.16 的代码，先读
+[00 · 0.16 → 0.17 迁移手册](00-migration-0.17.md)，
+那一章把上面这张表逐条展开，给出了每个变化的前后对照和替代写法。
+
+⚠️ **版本必须对上**：本教程的实测环境是官方 tarball
+`/Volumes/mac004/lang/zig-x86_64-macos-0.17.0/zig`；MacPorts 的 `/opt/local/bin/zig`
+仍是 0.16.0，**直接跑会看到一堆 0.17 才有的语法报错**。用 `ZIG=` 显式指定。
 
 ## 1.4 工具链一览
 
@@ -76,17 +88,17 @@ choco install zig
 brew install zig            # Homebrew
 sudo port install zig       # MacPorts：本教程实测环境，装到 /opt/local/bin/zig
 # Linux：官网下载解压即可（无依赖、单文件）；Arch 也可 pacman -S zig
-wget https://ziglang.org/download/0.16.0/zig-linux-x86_64-0.16.0.tar.xz
+wget https://ziglang.org/download/0.17.0/zig-linux-x86_64-0.17.0.tar.xz
 ```
 
 macOS 上 `zig` 常由包管理器软链到实际前缀（MacPorts 的真实 std 在 `/opt/local/libexec/zig-0.16/lib/zig/std`，panic 栈跟踪里出现的就是这条路径）——找本机的确切位置用 `zig env` 看 `lib_dir`。
 
-多版本管理用 **zvm**（Windows 友好）或 **zigup**：`zvm install 0.16.0 && zvm use 0.16.0`。验证：`zig version` → `0.16.0`。
+多版本管理用 **zvm**（Windows 友好）或 **zigup**：`zvm install 0.17.0 && zvm use 0.17.0`。验证：`zig version` → `0.17.0`。
 
 ## 1.6 本教程怎么学
 
 - **读者定位**：会编程（C/C++/Rust 背景最佳），从零学 Zig。不教编程本身。
-- **主线是 0.16 现代写法**：`std.Io` 新接口、`Init` 入口、unmanaged 集合从第一天就是默认姿势，旧写法只在坑位里教"认得"。
+- **主线是 0.17 现代写法**：`std.Io` 新接口、`Init` 入口、unmanaged 集合从第一天就是默认姿势，旧写法只在坑位里教"认得"。
 - **每章节奏**：读讲解 → 跑示例 → 改代码再跑。示例全在 `examples/NN_topic/`，章号 = 目录号。
 - **三层验证**：`build.ps1`（Windows）或 `run-all.sh`（Linux/macOS）对每个示例执行 `zig fmt --check`（格式）+ `zig test`（断言）+ `zig build-exe` 运行 exit 0——全部通过才收工，你手上的代码是可信的。两套脚本已在双平台全量实测。
 - 与本仓库其他教程对照：[cpp20](../cpp20/README.md)（同为系统语言主线）、[rust](../rust/README.md)、[dlang](../dlang/README.md)。
@@ -97,7 +109,7 @@ macOS 上 `zig` 常由包管理器软链到实际前缀（MacPorts 的真实 std
 2. **`zig run` 传参要 `--`**：`zig run main.zig -- arg1 arg2`，否则参数被当成文件名（报 "unrecognized file extension"）。
 3. **中文乱码**：Windows 控制台先 `chcp 65001`（本仓库 build.ps1 已代设 UTF-8）；Linux/macOS 终端原生 UTF-8，无此问题。
 4. **源文件须 UTF-8 无 BOM**：带 BOM 的 .zig 文件直接编译错。
-5. **官网文档滞后于版本**：ziglang.org 的语言手册讲语法（大体稳定），但 std 文档要看本机 `zig` 对应版本——读标准库源码（Windows 如 `G:\scoop\apps\zig\0.16.0\lib\std\`；macOS Homebrew 在 `/opt/homebrew/Cellar/zig/...`、MacPorts 在 `/opt/local/libexec/zig-0.16/lib/zig/std`）是最可靠的文档，这不是玩笑是日常。
+5. **官网文档滞后于版本**：ziglang.org 的语言手册讲语法（大体稳定），但 std 文档要看本机 `zig` 对应版本——读标准库源码（Windows 如 `G:\scoop\apps\zig\0.17.0\lib\std\`；macOS Homebrew 在 `/opt/homebrew/Cellar/zig/...`、官方 tarball 在 `.../zig-<ver>/lib/std/`）是最可靠的文档，这不是玩笑是日常。
 6. **Apple Silicon（arm64 Mac）**：Zig 原生支持，但**逐章示例里的 x86 汇编不可用**——21 章已备好 aarch64 版（`cntvct_el0` 计数器），其余 22 个示例在 arm64 上命令不变。Intel Mac 可用 `zig build-exe -target aarch64-macos` 预先验证（交叉编译只保证编译通过，运行要真机）。
 
 ---

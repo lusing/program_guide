@@ -1,11 +1,29 @@
 .{
-    .name = .build16, // 包名必须是合法标识符（不能以数字开头）
+    // ① .name 必须是**合法标识符**（写成枚举字面量 `.build16`，不是字符串）。
+    //    数字开头会报 "expected enum literal" —— 这就是为什么本工程
+    //    不能叫 `.build16` 之外还写个 `."16_build"`。
+    //    它同时是包的身份：zig build 拿 name + version + paths 等算出 fingerprint。
+    .name = .build16,
     .version = "0.1.0",
+    // ② .fingerprint 是包的**内容哈希**，作用是「防缓存串味」：
+    //    全局包里缓存的构建产物按 hash 索引，改了身份就必须换 hash，
+    //    否则会命中别的包的缓存。**不要自己编**，把 0 写上跑一次
+    //    `zig build`，报错里会给出正确值（本工程 = 0x7941b290a7f6b461）。
     .fingerprint = 0x7941b290a7f6b461,
-    .minimum_zig_version = "0.16.0",
+    // ③ 0.17 起必须写最低版本。低于它会在解析依赖时被拒。
+    .minimum_zig_version = "0.17.0",
+    // ④ 路径依赖：不写版本/URL，直接指向仓库内的另一个包。
+    //    第一层接线就在这里——build.zig 里 b.dependency("zmath", …) 找的就是它。
+    .dependencies = .{
+        .zmath = .{ .path = "vendor/zmath" },
+    },
+    // ⑤ 这个包包含哪些文件。父包 vendoring 本包时按它裁剪；
+    //    本地构建只是校验这些路径存在。
     .paths = .{
         "build.zig",
         "build.zig.zon",
         "src",
+        "csrc",
+        "vendor",
     },
 }
