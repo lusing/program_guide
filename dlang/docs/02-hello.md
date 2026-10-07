@@ -92,3 +92,7 @@ unittest {
 6. **macOS 的 `-g` 不产 dSYM**：调试信息直接进 Mach-O（`dwarfdump --uuid app` 能验到 UUID），`lldb ./app` 可断点；别按 Xcode 习惯去找 `app.dSYM`。
 
 ---
+
+---
+
+上一章：[01 全景](01-overview.md) · 下一章：[03 类型](03-types.md)

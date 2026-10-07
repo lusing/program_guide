@@ -108,3 +108,7 @@ static assert(!__traits(compiles, cfg.nope));
 7. CTFE 求值的函数里 `foreach` 没问题，但要避免 `cast` 指针运算等"运行期专属"操作，否则 CTFE 失败报错把你带回运行期。
 
 ---
+
+---
+
+上一章：[11 模板 I](11-templates1.md) · 下一章：[13 ⭐区间](13-ranges.md)

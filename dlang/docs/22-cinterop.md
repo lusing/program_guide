@@ -104,3 +104,7 @@ extern (C) int main() {                 // 必须 extern(C) int main！
 6. asm 块的 D 变量访问：编译器自动处理栈槽——但**浮点返回**要留在 XMM0，规则同 C ABI（本章整型示例刚好够用）。
 
 ---
+
+---
+
+上一章：[21 构建与 DUB](21-dub.md) · 下一章：[23 测试与工具](23-testing.md)

@@ -95,3 +95,7 @@ unittest {
 6. 找不到 `AssertError` 符号？`import core.exception;`（object 模块不再自动导出它，2.113 实测）。
 
 ---
+
+---
+
+上一章：[08 类与接口](08-classes.md) · 下一章：[10 错误 II](10-errors2.md)

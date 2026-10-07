@@ -102,3 +102,7 @@ sw.peek.total!"msecs";                  // 毫秒（还有 nsecs/usecs/seconds�
 7. ddoc 的 `Params:`/`Returns:`/`Throws:` 是约定关键字——`dmd -D` 按它们排版，写错只是排版丑不影响编译。
 
 ---
+
+---
+
+上一章：[22 ⭐C 互操作](22-cinterop.md) · 下一章：[24 实战：迷你 grep](24-minigrep.md)

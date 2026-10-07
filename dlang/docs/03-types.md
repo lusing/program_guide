@@ -95,3 +95,7 @@ static assert(!__traits(compiles, "abc".to!int + 1));  // 探测"能不能编译
 6. `char` 参与算术会提升成 int：`'a' + 1` 是 int；赋回 char 要 cast。
 
 ---
+
+---
+
+上一章：[02 第一个程序](02-hello.md) · 下一章：[04 控制流](04-control.md)

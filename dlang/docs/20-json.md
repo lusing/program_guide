@@ -84,3 +84,7 @@ string toCsv(string[][] rows) {
 6. 序列化中文默认不转义（直接 UTF-8 输出）——需要 `\uXXXX` 传 `JSONOptions.escapeNonAsciiChars`。
 
 ---
+
+---
+
+上一章：[19 格式化](19-format.md) · 下一章：[21 构建与 DUB](21-dub.md)

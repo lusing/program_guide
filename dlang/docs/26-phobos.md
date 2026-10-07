@@ -124,3 +124,7 @@ $ ./gcapp --DRT-gcopt=disable:1     # 实测：GC 整场禁用（`new` 将抛 Ou
 7. **`std.internal.*` / `std.*.internal.*` 千万别 import**：Phobos 实现内部模块，跨版本随意重构。
 
 ---
+
+---
+
+上一章：[25 工具链深入](25-dtools.md) · 下一章：（完）

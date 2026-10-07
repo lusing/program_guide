@@ -89,3 +89,7 @@ D 保留 goto（跳转不能越过变量初始化），实际代码里 foreach/�
 6. `static foreach` 里裸 `break` 非法（必须带标签）——用生成 case 时记得 `return` 或标签 break（12 章完整示例）。
 
 ---
+
+---
+
+上一章：[03 类型](03-types.md) · 下一章：[05 函数](05-functions.md)

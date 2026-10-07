@@ -112,3 +112,7 @@ D 的模板语法是 `名字(模板参数)(运行参数)`——11 章系统讲�
 6. D 的 `main` 可以是 `void main()`（默认返回 0）或 `int main()`（自定退出码）或 `void main(string[] args)`——但 BetterC 模式必须 `extern(C) int main()`（22 章）。
 
 ---
+
+---
+
+上一章：[04 控制流](04-control.md) · 下一章：[06 数组切片 AA](06-arrays.md)

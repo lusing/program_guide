@@ -89,3 +89,7 @@ Error: `write` matches conflicting symbols:
 6. File 写完是否 flush？作用域结束 close 时会——但在异常路径上想保数据，关键点手动 `f.flush()`。
 
 ---
+
+---
+
+上一章：[17 并发 II](17-parallel.md) · 下一章：[19 格式化](19-format.md)

@@ -95,3 +95,7 @@ static assert(!isRandomAccessRange!string);     // 但不是随机访问——UT
 5. 自定义区间的 `empty/front/popFront` 名字必须精确（front 不是 head/popFront 不是 next）——协议靠约定，拼错编译器不会提示"你想实现 range"。
 
 ---
+
+---
+
+上一章：[12 模板 II](12-templates2.md) · 下一章：[14 ⭐算法](14-algorithms.md)

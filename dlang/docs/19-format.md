@@ -92,3 +92,7 @@ format("%6s", zh);             // 宽度按字节算：中文对齐会歪
 7. 多个选择性 import 不能逗号串一行：`import A : x, B : y;` 语法错——分开写两条 import。
 
 ---
+
+---
+
+上一章：[18 文件与 IO](18-files.md) · 下一章：[20 JSON](20-json.md)

@@ -77,3 +77,7 @@ auto result = 100.iota
 6. **macOS 没有动态版 libphobos**：官方包只给 `osx/lib/libphobos2.a`（24 MB），`-defaultlib=libphobos2.so` **静默无效**（产物体积与静态版一致），`-defaultlib=libphobos2.dylib` 则链接报 `library 'libphobos2.dylib' not found`。26 章"瘦 30 倍"的动态链实验只在 Linux/WIN 成立。
 
 ---
+
+---
+
+下一章：[02 第一个程序](02-hello.md)

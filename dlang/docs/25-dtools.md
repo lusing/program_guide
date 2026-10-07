@@ -116,3 +116,7 @@ CI/本地统一环境的标准姿势；dfmt 配置写 `dfmt.json`（`dub run dfm
 6. **dman 只有 Windows 版随包**——Linux / macOS 查文档用 dlang.org/phobos 或装 zeal docset（`dmd2/osx/bin` 下确实没有 dman，别照 Windows 教程抄命令）。
 
 ---
+
+---
+
+上一章：[24 实战：迷你 grep](24-minigrep.md) · 下一章：[26 标准库全景](26-phobos.md)

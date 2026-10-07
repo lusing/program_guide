@@ -105,3 +105,7 @@ struct 里还能有 `invariant()`（10 章）、`unittest`（23 章）——D �
 6. postblit 在 `-w` 下未弃用（2.113 实测），但新代码建议直接写拷贝构造——未来版本可能弃用 postblit。
 
 ---
+
+---
+
+上一章：[06 数组切片 AA](06-arrays.md) · 下一章：[08 类与接口](08-classes.md)

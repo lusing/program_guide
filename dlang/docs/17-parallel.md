@@ -94,3 +94,7 @@ foreach (i, ref x; pool.parallel(files, 1)) { ... }   // 自建池用"成员形�
 7. 自建池参与 parallel 用**成员形式** `pool.parallel(r, workUnitSize)`——三参数的顶层 `parallel(r, n, pool)` 在 2.113 没有这个重载。
 
 ---
+
+---
+
+上一章：[16 ⭐并发 I](16-concurrency.md) · 下一章：[18 文件与 IO](18-files.md)

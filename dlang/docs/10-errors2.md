@@ -90,3 +90,7 @@ class BankAccount {
 6. `nothrow` 函数里想调用可能抛的函数：`assumeWontThrow(f())`（std.exception）显式担保——担保错了是 UB。
 
 ---
+
+---
+
+上一章：[09 错误 I](09-errors1.md) · 下一章：[11 模板 I](11-templates1.md)

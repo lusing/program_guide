@@ -88,3 +88,7 @@ dub add mir-core   # 加依赖（写进 dub.json + 拉包）
 7. **macOS 上 `dub` 的缓存目录可能直接起不来**：默认缓存在 `~/.dub`，而官方包的 dub 未签名，未签名进程对 `~/` 下文件 unlink 会 EPERM，症状是 `Failed to remove file ~/.dub/cache/.../__dub_write_test_XXXX: Operation not permitted`。解法：`export DUB_HOME=...` 指到非 `$HOME` 目录（build.sh 在 Darwin 上自动设成 `build/dub-home`），或对 `dmd2/osx/bin/*` 做 ad-hoc 签名（见 01 章坑位 5）。
 
 ---
+
+---
+
+上一章：[20 JSON](20-json.md) · 下一章：[22 ⭐C 互操作](22-cinterop.md)

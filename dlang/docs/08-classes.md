@@ -97,3 +97,7 @@ foreach (a; zoo) writeln(a.intro());    // 各自的 speak 被虚分发
 6. `typeid(c)` 返回 `TypeInfo_Class`（ClassInfo）——反射元数据在 12 章 `__traits` 那还有一层语言级内省。
 
 ---
+
+---
+
+上一章：[07 结构体](07-structs.md) · 下一章：[09 错误 I](09-errors1.md)
