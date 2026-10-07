@@ -101,3 +101,7 @@ var id = (int)doc.Root!.Attribute("id")!;               // XAttribute 显式转�
 3. **临时文件不清理**：示例写临时目录无妨；长期运行的服务往 temp 塞文件是磁盘慢性泄漏——`try/finally` 里 `File.Delete` 或用完即弃的命名规则。
 4. **路径硬编码 `/` 或 `\`**：Windows 上能跑、Linux 上炸（或反之）——见开头的跨平台铁律。
 5. **大文件用 ReadAllText**：几百 MB 一口气进内存；流式处理用 `File.Open` + `StreamReader` 逐行，或 JSON 的 `JsonDocument`/`DeserializeAsyncEnumerable`。
+
+---
+
+上一章：[11 错误处理](11-errors.md) · 下一章：[13 async/await](13-async.md)

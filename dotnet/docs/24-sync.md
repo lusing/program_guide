@@ -120,3 +120,7 @@ watcher.Created += (_, e) => seen.Enqueue($"created:{e.Name}");
 7. **管道读端不处理 EOF**：写端关闭后 `Read` 返回 0（不是抛异常），循环条件写成 `> 0`，忘了就是死循环读零字节。
 8. **Dataflow 忘 `Complete()` / 忘 `PropagateCompletion`**：`await collect.Completion` 永远不完成——完成不会沿链自动传（除非 `DataflowLinkOptions { PropagateCompletion = true }`），程序挂在收尾。
 9. **默认并发度误判**：`TransformBlock`/`ActionBlock` 默认一次处理一条消息——以为是并行流水线，其实每个工位单线程；要并行工位显式 `new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = N }`，要乱序加速显式 `EnsureOrdered = false`。
+
+---
+
+上一章：[23 进程与原生互操作](23-interop.md) · 下一章：（完）

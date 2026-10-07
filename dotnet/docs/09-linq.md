@@ -116,3 +116,7 @@ Console.WriteLine(q.Count());   // 2——查询在 Count 时才看数据源
 3. **`First` vs `FirstOrDefault` 语义错配**："应该有却没查到"是 bug 信号 → 用 `First` 让它抛出来；"没有是正常情况" → `FirstOrDefault` + 判空。选反要么吞掉 bug 要么误抛异常。
 4. **接口签名泄漏 `IEnumerable` 的实现细节**：公共方法返回 `IEnumerable<T>` 却指望调用方只枚举一次，容易踩多次枚举；需要快照语义就返回 `IReadOnlyList<T>`。
 5. **GroupBy 结果依赖**：组内元素的顺序在 .NET 实现里保序（默认），但拿这个当契约写在代码里是赌博——需要顺序在键选择器或后续 OrderBy 里显式表达。
+
+---
+
+上一章：[08 集合](08-collections.md) · 下一章：[10 可空引用类型](10-nullable.md)

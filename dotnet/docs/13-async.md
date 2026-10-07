@@ -89,3 +89,7 @@ static async IAsyncEnumerable<int> SequenceAsync()
 4. **循环逐个 await 该并发**（见 §3）：先 `.Select(启动)` 再 `await Task.WhenAll`。
 5. **`ConfigureAwait(false)`**：库代码里 await 后不需要回到原始上下文（UI/ASP.NET 同步上下文）时加上它，避免死锁并提速；应用程序顶层代码不用管。教程示例是控制台（无同步上下文），两种写法行为一致。
 6. **async 方法里跑 CPU 密集循环**：await 只解决 IO 等待，CPU 满载计算该找第 14 章的并行。
+
+---
+
+上一章：[12 文件与 JSON](12-files-json.md) · 下一章：[14 并行](14-parallel.md)

@@ -130,3 +130,7 @@ pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean        # 清理 build 目录
 2. **PowerShell 执行策略**：首次跑 `.ps1` 报"禁止运行脚本"——用 `pwsh -ExecutionPolicy Bypass -File build.ps1 -All`。
 3. **公司内网 NuGet 源**：restore 卡住或 401，多半走了内网代理源；`dotnet nuget list source` 检查，临时绕过可用 `--source https://api.nuget.org/v3/index.json`。
 4. **示例目录里残留 obj/bin**：先 `dotnet run` 又用 build.ps1 构建时，脚本会自动清扫游离产物；若手动构建报"特性重复"（CS0579），删掉示例目录下的 `obj/`、`bin/` 重来。
+
+---
+
+下一章：[02 第一个程序](02-hello.md)

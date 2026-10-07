@@ -112,3 +112,7 @@ dotnet ef database update          # 应用迁移到库
 3. **N+1 查询**：循环里逐个 `db.Users.First(…)` 取关联数据 → 1 次查列表 + N 次查明细；关联数据用 `Include(x => x.Orders)` 一次 JOIN 回来。
 4. **InMemory 测试通过 ≠ SQL 行为正确**：约束、事务、SQL 方言差异它全不模拟（§4）。
 5. **LINQ 里塞 C# 方法**：`Where(x => Normalize(x.Name) == …)` 的自定义方法无法翻译成 SQL——报 InvalidOperationException；能翻译的只有表达式树可表达的算子。
+
+---
+
+上一章：[16 Minimal API](16-webapi.md) · 下一章：[18 测试](18-testing.md)

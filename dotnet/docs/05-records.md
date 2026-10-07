@@ -114,3 +114,7 @@ if (FindUser("bob") is { } bob)                       // is { } x：非空才进
 3. **record 里塞可变集合**：`record Box(List<int> Items)` 的 Items 是 List，判等按引用不按内容。要值语义就 `ImmutableArray`/`ReadOnlyCollection`。
 4. **忘了 `_` 兜底**：switch 表达式必须穷尽，编译器会报 CS8511；属性模式覆盖不了所有取值范围时用 `_` 收尾。
 5. **位置属性是 init 不是 set**：构造之后赋值编译错（CS8852）——这就是"不可变"的落实，修改请走 `with`。
+
+---
+
+上一章：[04 面向对象](04-oop.md) · 下一章：[06 泛型与扩展方法](06-generics.md)

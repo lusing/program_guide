@@ -111,3 +111,7 @@ static void Bump(ref int x) => x++;
 3. **string 判等**：`==` 按值比较（运算符重载过），这是 C# 与 Java 的重要差异；但 `object` 引用下比较会退回引用语义，装箱场景用 `string.Equals(a, b)`。
 4. **`char` 与单字符 string**：`'a'` 是 char、`"a"` 是 string，`c == "a"` 直接编译错。
 5. **var 不是万能**：`var x = null;` 编译错（推断不出）；接口声明、方法参数不能用 var。
+
+---
+
+上一章：[02 第一个程序](02-hello.md) · 下一章：[04 面向对象](04-oop.md)

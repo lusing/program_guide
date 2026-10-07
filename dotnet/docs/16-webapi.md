@@ -139,3 +139,7 @@ public class Worker(ILogger<Worker> logger) : BackgroundService
 3. **忘 `app.Run()`**：程序瞬间退出"什么都没发生"——Run 是阻塞监听，示例把它放在条件分支里正是提醒它的存在。
 4. **端口占用/不确定端口**：控制台启动日志会打印实际监听地址（`http://localhost:5000` 或随机端口）；被占用时用 `--urls http://localhost:5099` 指定。
 5. **POST body 大小写**：绑定 JSON 的 `"name"` 与 record 属性 `Name` 靠 camelCase 策略匹配（第 12 章）——字段名对不上会得到 null 而不是报错。
+
+---
+
+上一章：[15 Span 与 Memory](15-span.md) · 下一章：[17 EF Core](17-efcore.md)

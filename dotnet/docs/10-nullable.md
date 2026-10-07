@@ -98,3 +98,7 @@ record 的字段同理：`record User(string Name, string? Email)`——Email �
 3. **反序列化结果未判空**：`JsonSerializer.Deserialize<T>` 返回 `T?`（第 12 章），"JSON 顶层是 null"是合法输入——拿到就解引用会在生产环境炸。
 4. **可空注解只覆盖你这一层**：旧库、动态构造的数据（`JsonDocument`、反射）不受编译器保护，边界处仍要运行时校验。
 5. **遗留代码迁移**：老工程开 NRT 会刷屏警告——按文件逐步迁移：文件头 `#nullable enable`、修完一个文件删一个；全关（`#nullable disable`）只该是过渡态。
+
+---
+
+上一章：[09 LINQ](09-linq.md) · 下一章：[11 错误处理](11-errors.md)

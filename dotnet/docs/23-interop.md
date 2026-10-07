@@ -80,3 +80,7 @@ var result = (int)t.GetMethod("Compute")!.Invoke(instance, [21])!;
 5. **字符串封送没声明**：`[LibraryImport]` 默认不封送 string（编译错提醒你选 `StringMarshalling`）；`char*` 世界还有 ANSI/UTF-16 之别，Windows API 多为 UTF-16。
 6. **路径拼接 `LoadFrom` 插件**：`Assembly.LoadFrom` 有加载上下文语义，依赖解析顺序和默认上下文不同——插件目录的依赖 DLL 解析不到是高频坑，考虑 `AssemblyDependencyResolver`。
 7. **裁剪/AOT 发布下裸反射** → 运行时 `MissingMethodException`，标注或改接口方案。
+
+---
+
+上一章：[22 网络编程](22-networking.md) · 下一章：[24 同步原语与 IPC](24-sync.md)

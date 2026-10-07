@@ -107,3 +107,7 @@ static Result<int> ParsePositive(string text) =>
 4. **异常做流程控制**：循环里靠抛异常跳出，性能（栈展开 + 构造异常对象）和可读性双输——可预期分支走返回值。
 5. **异步里的异常**：async 方法抛出的异常存在返回的 Task 里，**不 await 就看不到**（第 13 章坑位清单第 3 条）——`Task` 不是 fire-and-forget。
 6. **异常消息没上下文**：`throw new Exception("失败")` 不如带上"哪个输入、哪个环节"——异常是给未来排障的自己看的。
+
+---
+
+上一章：[10 可空引用类型](10-nullable.md) · 下一章：[12 文件与 JSON](12-files-json.md)

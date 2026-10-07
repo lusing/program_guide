@@ -78,3 +78,7 @@ catch (RegexMatchTimeoutException) { /* 放弃这次匹配 */ }
 5. **循环里 `new Regex` 同一模式**：白白重复解析，提出来复用（或上 `[GeneratedRegex]`）。
 6. **不设超时处理用户输入** → ReDoS 挂死线程池。
 7. **`Regex.Replace` 忽然变慢**：大概率是 `"$1"` 替换串里 `$` 后跟了数字/字母造成意外组引用，逐字替换用 `Regex.Escape` 或 MatchEvaluator。
+
+---
+
+上一章：[20 现代 C# 纵览](20-modern-csharp.md) · 下一章：[22 网络编程](22-networking.md)

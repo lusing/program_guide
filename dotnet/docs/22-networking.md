@@ -191,3 +191,7 @@ var result = await socket.ReceiveFromAsync(buf, SocketFlags.None, remoteEP);
 8. **每个请求 `new HttpClient()`**：每个实例占一个独立连接池，高频创建会**耗尽套接字**（TIME_WAIT 堆积，`SocketException` 貌似随机出现）。做成单例或用 `IHttpClientFactory`（16 章的 DI 容器注册它）。
 9. **`StreamWriter` 带着协议跑却传了 `Encoding.UTF8`**：首行多了 BOM，对端解析歪；行协议用无参构造（UTF-8 无 BOM）+ `NewLine="\r\n"`。
 10. **组播忘了 `DropMulticastGroup` / 忽略防火墙**：跨机组播常被防火墙或路由 TTL 拦下——先本机组验证，跨机组部署时检查 TTL（`UdpClient.Ttl`）与组播路由。
+
+---
+
+上一章：[21 正则表达式](21-regex.md) · 下一章：[23 进程与原生互操作](23-interop.md)

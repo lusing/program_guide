@@ -140,3 +140,7 @@ dotnet run
 ---
 
 **事实来源**：dotnet/core 仓库 `supported-os.md`（.NET 10 支持矩阵）、Microsoft Learn《Install .NET on Windows》（"没有任何被支持版本支持 Win7/8.1"）、.NET 支持策略页（.NET 8/9 于 2026-11-10 EOL）、devblogs.microsoft.com（.NET 6 EOS 公告）、mono-project.com（维护模式与捐赠说明）。数字会随时间变化，落笔重大决策前以官方页面为准。
+
+---
+
+上一章：[18 测试](18-testing.md) · 下一章：[20 现代 C# 纵览](20-modern-csharp.md)

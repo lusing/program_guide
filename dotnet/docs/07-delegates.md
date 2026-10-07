@@ -120,3 +120,7 @@ Console.WriteLine(string.Join(",", Filter(new[] {1, 2, 3, 4, 5}, x => x % 2 == 0
 3. **闭包改捕获变量**：lambda 里 `factor++` 改的是外部变量本体；多个 lambda 捕获同一变量时互相可见对方的修改。
 4. **循环变量捕获**：`foreach` 的迭代变量每次迭代是新变量（C# 5 起）；但 `for` 的 `int i` 是同一个——`for` 里捕获 i 且 lambda 延迟执行时，十个 lambda 看到的都是最终的 i。老坑，for 循环里先 `var copy = i;`。
 5. **事件触发时的订阅者异常**：多播 Invoke 遇到某个订阅者抛异常，后面的订阅者不执行——关键路径上逐个 try/catch（`GetInvocationList()` 遍历）。
+
+---
+
+上一章：[06 泛型与扩展方法](06-generics.md) · 下一章：[08 集合](08-collections.md)

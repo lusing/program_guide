@@ -78,3 +78,7 @@ dict[n] = sq;    // 多线程同时写，不丢不坏
 4. **lambda 里 await**：`Parallel.ForEach` 的重载不认 async lambda——异步工作回去用第 13 章的 `Task.WhenAll`。
 5. **把 lock 当万能药**：锁住大段代码把并行退化成串行，还引入死锁风险；能缩小临界区就缩小，能用 Interlocked/Concurrent 替代就替代。
 6. **并行度调优**：默认按核数就是最优起点；手动 `new ParallelOptions { MaxDegreeOfParallelism = N }` 只在 IO 混合负载（DB 连接数限制等）才有意义。
+
+---
+
+上一章：[13 async/await](13-async.md) · 下一章：[15 Span 与 Memory](15-span.md)

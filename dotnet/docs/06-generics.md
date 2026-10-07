@@ -93,3 +93,7 @@ LINQ 的全部方法（`Where/Select/OrderBy`……）都是 `System.Linq` 命�
 2. **扩展方法"不见了"**：九成是缺 `using System.Linq;`（或扩展类所在命名空间）——报错是"string 不包含 Reverse 的定义"，具有极强误导性。
 3. **运算符与泛型**：C# 11 之前泛型里写不了 `a + b`；`INumber<T>` 等静态抽象接口（.NET 7+）才解决。老代码的泛型数学全靠表达式树或各类型重载。
 4. **协变逆变别硬记**：`IEnumerable<out T>` 协变（`IEnumerable<string>` 可当 `IEnumerable<object>` 用）、`List<T>` 不变——容器"只读"才可协变，"可写"必须不变。遇到编译错 CS0266 再回来查这句。
+
+---
+
+上一章：[05 record 与模式匹配](05-records.md) · 下一章：[07 委托、lambda 与事件](07-delegates.md)

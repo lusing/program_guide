@@ -115,3 +115,7 @@ static class ListExtensions
 3. **List.Contains 当存在性集合**：万级数据 × 频繁 Contains → 换 HashSet，O(n) 变 O(1)。
 4. **迭代器多次枚举**：`IEnumerable` 每次枚举重跑一遍生成逻辑——耗时逻辑的结果要 `.ToList()` 存下来（第 09 章展开成完整一节）。
 5. **`GetValueOrDefault` vs `[]` 的语义差**：前者静默给默认值可能掩盖"键本该存在"的错误；键缺失是异常状态时用 `TryGetValue` 并显式处理。
+
+---
+
+上一章：[07 委托、lambda 与事件](07-delegates.md) · 下一章：[09 LINQ](09-linq.md)
