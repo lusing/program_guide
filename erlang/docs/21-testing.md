@@ -96,3 +96,7 @@ R = ct:run_test(Opts),    group_leader(RealGL, self()).
 8. **并行用例共享注册名/文件**：`inparallel` 会互踩——有共享资源的用 `inorder`。
 
 ---
+
+---
+
+上一章：[20 时间与定时器](20-time.md) · 下一章：[22 日志](22-logger.md)

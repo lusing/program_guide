@@ -107,3 +107,7 @@ cprof/trace 都给系统加税：**用完必须 stop**——否则「测一次�
   观察者效应要收摊：cprof:stop / trace(false) / trace_pattern(false)
   系统数字（调度器数/队列长度/内存）同理：概念懂，数值不进输出
 ```
+
+---
+
+上一章：[29 gen_event 与 gen_statem](29-gen-event-statem.md) · 下一章：[31 多核并行](31-multicore.md)

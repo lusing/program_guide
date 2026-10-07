@@ -66,3 +66,7 @@ Refs = [element(2, spawn_monitor(Job)) || Job <- Jobs],
 5. **link 了不开 trap_exit**：被链接方崩溃**传染**——测试进程全灭；示例演示了"没有 trap_exit 时链接方被带崩"。
 
 ---
+
+---
+
+上一章：[13 进程与消息](13-processes.md) · 下一章：[15 gen_server ⭐](15-gen-server.md)

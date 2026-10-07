@@ -81,3 +81,7 @@ open(Opts) ->
 6. **proplists:property/1,2 是构造器不是判定器**：`property(a, true)` 缩成裸原子 `a`；它不做合法性检查（对源码核过）。
 
 ---
+
+---
+
+上一章：[10 映射与记录](10-maps.md) · 下一章：[12 异常与错误哲学](12-errors.md)

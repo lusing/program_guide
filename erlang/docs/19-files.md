@@ -88,3 +88,7 @@ binary_to_term(Untrusted, [safe]). %% 不可信输入必须 [safe]
 8. **binary_to_term 不可信输入不加 [safe]**：原子表 DoS。
 
 ---
+
+---
+
+上一章：[18 ETS](18-ets.md) · 下一章：[20 时间与定时器](20-time.md)

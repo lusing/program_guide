@@ -64,3 +64,7 @@ erlang:convert_time_unit(X, native, millisecond).  %% 单位换算必须显式
 7. **ets_limit 当 process_limit**：默认 8192，批量建表先想清楚。
 
 ---
+
+---
+
+上一章：[19 文件 I/O](19-files.md) · 下一章：[21 测试](21-testing.md)

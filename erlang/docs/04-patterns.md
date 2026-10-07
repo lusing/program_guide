@@ -90,3 +90,7 @@ if X > 0 -> positive; X < 0 -> negative; true -> zero end.  %% true 兜底不能
 6. **map 模式的 `=>` 不参与匹配**：模式里只有 `:=` 有"键必须存在"的语义。
 
 ---
+
+---
+
+上一章：[03 数值与基本类型](03-types.md) · 下一章：[05 递归与尾调用](05-recursion.md)

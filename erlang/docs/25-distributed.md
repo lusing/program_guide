@@ -140,3 +140,7 @@ disconnect/reconnect 只对 **TCP 控制 peer** 可演示——默认 peer 的�
    （peer 要求父节点是活节点）——手工跑别忘带。
 8. **rpc 别裸奔**：`rpc:call/4` 无超时默认 5 秒挂等；长活或对端不可靠
    时显式给第 5 参。
+
+---
+
+上一章：[24 实战 mini-grep ⭐](24-minigrep.md) · 下一章：[26 套接字编程](26-sockets.md)

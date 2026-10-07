@@ -127,3 +127,7 @@ Erlang 这边无恙，新端口照常工作 = ok
    spawn_executable 的参数，false 会变成 open_port badarg。
 6. **外部程序也有状态**（echo 的序号）——「无状态服务器」是设计选择
    不是默认事实，重连不重置。
+
+---
+
+上一章：[26 套接字编程](26-sockets.md) · 下一章：[28 DETS 与 Mnesia](28-dets-mnesia.md)

@@ -77,3 +77,7 @@ png_size(<<137, 80, 78, 71, 13, 10, 26, 10,      %% 8 字节魔数直接写进�
 6. **bit_size vs byte_size**：位串不满整字节时 `byte_size` 向上取整，位级信息看 `bit_size`。
 
 ---
+
+---
+
+上一章：[07 fun 与推导式](07-funs.md) · 下一章：[09 字符串与 Unicode](09-strings.md)

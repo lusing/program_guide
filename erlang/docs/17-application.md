@@ -74,3 +74,7 @@ application:which_applications().                   %% {名, 描述, 版本}，�
 7. **terminate/2 不执行**：九成是没开 trap_exit（17.5）。
 
 ---
+
+---
+
+上一章：[16 supervisor ⭐](16-supervisor.md) · 下一章：[18 ETS](18-ets.md)

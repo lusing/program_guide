@@ -76,3 +76,7 @@ label(#person{age = A}) when A < 18 -> minor.
 6. **两个模块的 record 定义不同步**：同一 record 各处定义不一致时元组照旧匹配——共享定义放 .hrl。
 
 ---
+
+---
+
+上一章：[09 字符串与 Unicode](09-strings.md) · 下一章：[11 容器与配置结构](11-collections.md)

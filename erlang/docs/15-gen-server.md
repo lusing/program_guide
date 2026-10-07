@@ -69,3 +69,7 @@ terminate(Reason, State)      -> ok.                        %% 收尾
 6. **测试里 start_link 不开 trap_exit**：服务崩溃把测试进程一起带走（EUnit 整组 cancelled——本教程实测踩过）。
 
 ---
+
+---
+
+上一章：[14 链接与监控](14-links.md) · 下一章：[16 supervisor ⭐](16-supervisor.md)

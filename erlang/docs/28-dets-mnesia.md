@@ -109,3 +109,7 @@ Abort = fun () -> mnesia:write({kv, z, 99}), mnesia:abort(simulated_failure) end
   index_read 事务内专用，事务外 dirty_index_read
   输出纪律：错误只打标签、中文用 characters_to_binary、遍历先 sort
 ```
+
+---
+
+上一章：[27 端口与外部接口](27-ports.md) · 下一章：[29 gen_event 与 gen_statem](29-gen-event-statem.md)

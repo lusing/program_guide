@@ -106,3 +106,7 @@ erlang:function_exported(?MODULE, greet, 1).   %% 某函数是否导出
 6. **在测试模块手写 `-export`**：include eunit.hrl 后 `*_test` 已被自动导出，再手写报 already exported 警告，`-Werror` 直接拦（本次实测）。
 
 ---
+
+---
+
+上一章：[01 概述](01-overview.md) · 下一章：[03 数值与基本类型](03-types.md)

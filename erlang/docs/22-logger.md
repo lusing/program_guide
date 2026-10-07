@@ -57,3 +57,7 @@ handler 异步写，队列三道闸（默认值）：`sync_mode_qlen=10`（转�
 6. **没有 logger_disk_h**：写文件用 `logger_std_h + config#{type => {file, Name}}`。
 
 ---
+
+---
+
+上一章：[21 测试](21-testing.md) · 下一章：[23 工具链](23-tooling.md)

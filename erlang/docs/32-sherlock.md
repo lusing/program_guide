@@ -158,3 +158,7 @@ therefore 后面最常出现 = "the"
 - 分章总览与运行方法：[README](../README.md)
 
 Elixir 视角的双语言对照见[附录：Erlang ↔ Elixir](appendix-erlang-elixir.md)。
+
+---
+
+上一章：[31 多核并行](31-multicore.md) · 下一章：[附录 Erlang↔Elixir 对照](appendix-erlang-elixir.md)

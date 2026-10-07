@@ -89,3 +89,7 @@ erlang:memory().      process_info(P, current_function/reductions/memory).
 8. **sys:get_state 卡住**：目标不是 OTP 进程（不认系统消息）——proc_lib 也不行，要 gen_server。
 
 ---
+
+---
+
+上一章：[22 日志](22-logger.md) · 下一章：[24 实战 mini-grep ⭐](24-minigrep.md)

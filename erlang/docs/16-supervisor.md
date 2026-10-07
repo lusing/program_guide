@@ -57,3 +57,7 @@ supervisor:delete_child(Sup, Id).      %% 才是从清单里去掉
 6. **shutdown 是宽限不是杀死**：超时后才 brutal kill；gen_server 在宽限期内收到 shutdown → 调 terminate/2（前提 trap_exit，17 章）。
 
 ---
+
+---
+
+上一章：[15 gen_server ⭐](15-gen-server.md) · 下一章：[17 application ⭐](17-application.md)

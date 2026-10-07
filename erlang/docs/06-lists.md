@@ -73,3 +73,7 @@ lists:dropwhile(fun(X) -> X < 3 end, [1,2,3,1]).   %% [3,1]：丢前缀，后面
 6. **foldl 造列表是逆序**：保序用 foldr 或头插后 reverse。
 
 ---
+
+---
+
+上一章：[05 递归与尾调用](05-recursion.md) · 下一章：[07 fun 与推导式](07-funs.md)

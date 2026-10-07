@@ -73,3 +73,7 @@ DOWN 的 Reason：error 类 → `{Reason0, Stacktrace}`（**带栈**）；未捕
 6. **可预期失败别抛异常**：文件不存在、解析失败——返回 `{error,_}` 让调用方分支处理。
 
 ---
+
+---
+
+上一章：[11 容器与配置结构](11-collections.md) · 下一章：[13 进程与消息](13-processes.md)

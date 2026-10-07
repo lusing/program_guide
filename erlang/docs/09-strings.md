@@ -62,3 +62,7 @@ iodata = binary | 0..255 列表 | 任意嵌套。`file:write_file`、`gen_tcp:se
 6. **`io:get_line` 返回 `eof` 原子**：文件读完不是 `{error,...}` 也不是 `<<>>`，模式匹配记得接住（19 章）。
 
 ---
+
+---
+
+上一章：[08 二进制与位语法](08-binaries.md) · 下一章：[10 映射与记录](10-maps.md)

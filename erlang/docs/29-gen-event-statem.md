@@ -139,3 +139,7 @@ open(state_timeout, auto_lock, Data) -> {next_state, locked, Data}.
   state_timeout 事件类型就叫 state_timeout；{reply, From, Msg} 应答 call
   行为选择：事件解耦用 gen_event；状态爆炸用 gen_statem 换 gen_server
 ```
+
+---
+
+上一章：[28 DETS 与 Mnesia](28-dets-mnesia.md) · 下一章：[30 性能剖析与跟踪](30-profiling.md)

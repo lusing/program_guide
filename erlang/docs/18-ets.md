@@ -72,3 +72,7 @@ ets:new(tab, [named_table, public, {heir, self(), Data}]).
 6. **set 遍历顺序未定义**：与 map 同款纪律，输出前 sort。
 
 ---
+
+---
+
+上一章：[17 application ⭐](17-application.md) · 下一章：[19 文件 I/O](19-files.md)
