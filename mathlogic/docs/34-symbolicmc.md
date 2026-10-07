@@ -135,6 +135,19 @@ Theorem mu_eu_is_iterEU : forall m A B,
 迭代一轮到 {1}（0 的后继 1 在全体里，但 0 ∉ A 压掉）；EU 的
 μ 迭代 F(∅)={1} 后不动。四个 Example 全 reflexivity 直收。
 
+## BDD 接口的精确注记（10 章之约的兑现）
+
+10 章交付的 restrict/exb/apply 如何拼出本章的 preE：迁移关系
+R(x,x′) 的 OBDD 中，对 x′ 各位做存在消元——每个 x′ᵢ 位
+`restrict(R, x′ᵢ, 0) OR restrict(R, x′ᵢ, 1)`（10 章式 6.3
+的 exb）——再与目标集 χ_S(x′) 先 apply(AND) 后消元，最后
+把 x′ 位换名回 x 位。**位级实现 = list nat 上的 filter +
+existsb**——本章的 `preE_In` 成员刻画在 BDD 版逐位重演。
+教学取舍说明：带 BDD 的完整 preE 需要 10 章深度编码与变量
+序管理（x′ 位统一在 x 位之后的交错序是标准选择），工程量
+与 μ 演算主线不成比例——表版语义结构完全同构，位级版登记
+为边界（NuSMV 源码即该边界之外的工业实现）。
+
 ## 与全书的接线（收官暗线）
 
 - **10 章**：BDD 的 restrict/exb/apply——符号三件套的原语；

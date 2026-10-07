@@ -5,7 +5,7 @@
 [PLAN.md](./PLAN.md)），横跨 **Coq / Agda / Lean 4 / Isabelle/HOL /
 HOL4 / Coq-HoTT** 六种实现机器验证。
 
-**已完结**：34 章全部交付（H&R 全谱扩充），109 个验证单元全绿
+**已完结**：34 章全部交付（H&R 全谱扩充），101 个验证单元全绿
 （零公理或显式公理记账）；速查表见 [CHEATSheet.md](./CHEATSheet.md)，
 蓝图与状态表见 [PLAN.md](./PLAN.md)。
 
