@@ -78,3 +78,7 @@ Coq 的 `proof_irrelevance : forall (P : Prop) (p q : P), p = q`
 > 投靠 stdlib eq（其 UIP_refl 可证，因为 Prop 压平）；
 > ④ `Axiom funext` 的路径版本与 stdlib functional_extensionality
 > 平行——mini 库内自洽即可。
+
+---
+
+上一章：[20 泛等](20-univalence.md) · 下一章：[22 HIT](22-hit.md)

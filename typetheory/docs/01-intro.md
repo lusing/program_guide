@@ -280,3 +280,7 @@ Coq 源码里 `->` 即可，本文叙述用 Unicode 简写。
 > `0 + n = n` 反而要归纳——与 Coq/Agda（加法递归在第一参数）正相反；
 > ③ Agda 2.8 起 `Set₁` 等记号是内建语法，`Agda.Primitive` 不再导出
 > （`open import Agda.Primitive using (Set₁)` 会告警）。
+
+---
+
+下一章：[02 无类型 λ](02-lambda.md)

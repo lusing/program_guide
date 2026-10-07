@@ -69,3 +69,7 @@ decode : code x → (x == base)           —— circle_rec 按 code 走
 > 归纳步 refine 的两段组装要在 simpl 后一次拼好；
 > ③ `Print Assumptions` 是公理审计的日常工具——mini 开发
 > 每章收尾都跑一遍（本指南全五部分的惯例）。
+
+---
+
+上一章：[22 HIT](22-hit.md) · 下一章：[24 元理论](24-metatheory.md)

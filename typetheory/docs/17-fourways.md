@@ -92,3 +92,7 @@ rev-rev (x ∷ xs) =
 > 先想清楚「目标 = 中转1 ∘ 中转2」再下笔；
 > ④ Lean `simp [rev, ih]` 的前提是引理形状能被 simp 重写——
 > 方向不对就 `← ih` 或改写 `rev_append`。
+
+---
+
+上一章：[16 子集与强制](16-subtype.md) · 下一章：[18 提取与运行](18-extraction.md)

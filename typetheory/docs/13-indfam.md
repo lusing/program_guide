@@ -134,3 +134,7 @@ Nordström 第二部分（17–18 章的子集理论）与第三部分
 > 本章目录从 13_inductive 改名 13_indfam 才过；
 > ④ Coq 自造 Record 的字段访问要带参数（`sfst N (fun _ => Lst N)`
 > 式的完全应用），或 `Arguments sfst {A B}` 后简写。
+
+---
+
+上一章：[12 相等与 J](12-identity.md) · 下一章：[14 全域](14-universes.md)

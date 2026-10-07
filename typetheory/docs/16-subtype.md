@@ -98,3 +98,7 @@ instance 机制上、常要显式 ascription 触发；Agda 干脆不做
 > ⑤ Agda 里「重建证据比搬运证据省事」：模式匹配出
 > `suc k` 后 `s≤s z≤n` 直接居留（2 * suc k 定义展开即
 > suc 打头）。
+
+---
+
+上一章：[15 W 类型](15-wtypes.md) · 下一章：[17 四家对照](17-fourways.md)

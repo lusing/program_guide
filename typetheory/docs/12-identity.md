@@ -109,3 +109,7 @@ example (h : MyEq (1 + 1) 2) (v : Vec Nat 2) : Vec Nat (1 + 1) :=
 > 报 InvalidFileName）——目录/文件命名要避开；
 > ④ funext 在三家都不是 J 的推论：Lean 靠 Quot.sound（定理）、
 > Coq 可选公理、Agda 要么公理要么换路线。
+
+---
+
+上一章：[11 Π 与枚举](11-enums.md) · 下一章：[13 归纳族](13-indfam.md)

@@ -92,3 +92,7 @@ Eval compute in (concat_pV (idpath : 2 == 2)).   (* 直接给出 idpath *)
 > ⑥ Agda 的 lambda-型家庭在 `_ : subst (λ m → ...) refl refl
 > ≡ refl` 里 m 无从确定——要么 named 定理带 ∀ n，要么
 > `{x = n}` 钉住。
+
+---
+
+上一章：[18 提取与运行](18-extraction.md) · 下一章：[20 泛等](20-univalence.md)

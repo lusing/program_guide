@@ -126,3 +126,7 @@ Milner 算法 W 的 `generalize`/`instantiate` 二重奏。但要小心
 > 后），断言值要按机器输出写，与教材字母只保证 α-一致；
 > ④ 函数式代换（`Nat → Ty`）比关联表好写好证明，代价是不能
 > `deriving Repr`——但最终断言比较的是 Ty，不受影响。
+
+---
+
+上一章：[03 λ→](03-stlc.md) · 下一章：[05 Curry–Howard](05-curryhoward.md)

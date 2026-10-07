@@ -74,3 +74,7 @@ Agda/Lean 的交互孔洞正是「半可判定」的工程化身（人在环里
 > `by_cases h : j ≤ k`——`if_pos/if_neg` 要喂证据；
 > ③ `Int.toNat (Int.ofNat k + d)` 的折叠要 `have := by simp`
 > 单独提出来再 rw（塞在 if 里会僵住）。
+
+---
+
+上一章：[23 压轴](23-capstone.md) · 下一章：[25 坑位与书目](25-pitfalls.md)

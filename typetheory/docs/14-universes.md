@@ -80,3 +80,7 @@ Coq 的 Record 同型；Agda 的版本必须显式 `Set₁`。**宇宙的实践
 > 同时圈住同一个名字；
 > ⑤ Lean 的 doc 注释 `/-- -/` 挂在文件尾（后面无声明）会
 > 让整个文件报 unexpected end of input。
+
+---
+
+上一章：[13 归纳族](13-indfam.md) · 下一章：[15 W 类型](15-wtypes.md)

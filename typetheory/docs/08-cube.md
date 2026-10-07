@@ -160,3 +160,7 @@ Agda 与 Lean/Coq 的分野在此显形：Agda 走 MLTT 一系，宇宙塔
 > `Option.sort`——要 `some (.sort s)`；
 > ⑥ PTS 统一语法的红利：一台归约器同时服务项 β 和类型 β，
 > conv 无需区分层级。
+
+---
+
+上一章：[07 依赖类型](07-dependent.md) · 下一章：[09 定义 λD](09-definitions.md)

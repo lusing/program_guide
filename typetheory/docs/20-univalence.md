@@ -62,3 +62,7 @@ Axiom transport_ua : ... transport X (ua e) u == equiv_fun e u.
 > ③ Agda postulate 块里不能写 `where`——import 提前；
 > ④ `transport (fun _ => X) p u == u`（常值族搬运）是 J-定理
 > 不是定义——mini 库里要立引理再用（23 章正文展开）。
+
+---
+
+上一章：[19 路径与同伦](19-paths.md) · 下一章：[21 截断层级](21-truncation.md)

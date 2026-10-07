@@ -137,3 +137,7 @@
 | 宇宙 | Set/Type@{i}/Prop | Set ℓ | Sort u | Type |
 | 无关性 | proof_irrelevance | 无（纪律） | 内核 defeq | 截断层 |
 | 检查器 | coqc（拷贝改名） | agda（WSL） | lean | coqc |
+
+---
+
+上一章：[24 元理论](24-metatheory.md) · 下一章：（完）

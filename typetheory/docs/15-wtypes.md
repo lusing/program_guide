@@ -99,3 +99,7 @@ Nordström 第 16 章「树集合构造子的异体」预演了这些区别。
 > 省掉每次手喂；
 > ⑤ Lean 在 `match a with` 里用 `if b then ...` 而 b 的类型是
 > `arity .binary`（≠语法 Bool）时 if 失明——match on b 直接写。
+
+---
+
+上一章：[14 全域](14-universes.md) · 下一章：[16 子集与强制](16-subtype.md)

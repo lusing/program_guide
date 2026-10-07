@@ -84,3 +84,7 @@ Bool 上的依赖函数与「按构造子索引的表」是同一个数学对象
 > ③ Lean 的 `nomatch`、Agda 的 `()`、Coq 的空 `match ... with end`
 > 是同一荒谬的三种拼写；
 > ④ Lean 核心库占用 `Empty`/`Unit`/`Bool`——自定义换名避免遮蔽。
+
+---
+
+上一章：[10 判断与规则](10-judgments.md) · 下一章：[12 相等与 J](12-identity.md)

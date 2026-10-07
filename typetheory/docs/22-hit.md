@@ -84,3 +84,7 @@ Cubical 系统的意义就在这张表：**把公理变成可计算规则**
 > （两步递归的 parityF），公理用量立减；
 > ④ `Definition f (q : Q) := lift ... q` 别忘应用到 q——
 > 类型 `Q -> X` 交给 `X` 位的经典报错。
+
+---
+
+上一章：[21 截断层级](21-truncation.md) · 下一章：[23 压轴](23-capstone.md)

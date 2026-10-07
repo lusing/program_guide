@@ -155,3 +155,7 @@ Coq / Agda 版逐行同构（`even_double`）。注意三家证明里那个
 > `(x ∷ xs) ++ ys`，裸写 `x ∷ xs ++ ys` 模式解析直接失败；
 > ⑥ Coq `Check f : T` 对带隐式参数的 f 要用 `@f`；
 > ⑦ Lean `_++_` 这类 def 里的 `·` 记号要括号包裹。
+
+---
+
+上一章：[06 System F](06-systemf.md) · 下一章：[08 立方体 λC](08-cube.md)
