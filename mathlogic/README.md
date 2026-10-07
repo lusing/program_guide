@@ -5,7 +5,7 @@
 [PLAN.md](./PLAN.md)），横跨 **Coq / Agda / Lean 4 / Isabelle/HOL /
 HOL4 / Coq-HoTT / Prolog** 七种实现机器验证。
 
-**已完结**：34 章全部交付（H&R 全谱扩充），101 个验证单元全绿
+**已完结**：42 章全部交付（H&R+Ben-Ari 双谱扩充），120 个验证单元全绿（实测口径）
 （零公理或显式公理记账）；速查表见 [CHEATSheet.md](./CHEATSheet.md)，
 蓝图与状态表见 [PLAN.md](./PLAN.md)。
 
@@ -62,6 +62,14 @@ mathlogic/
 | [32 对应理论](docs/32-correspondence.md) | 五条正向+T 的逆（探针赋值） | C/L |
 | [33 模态 ND 与 KT45n](docs/33-modalnd.md) | □i 严格性+泥孩子三轮 decide | C/L |
 | [34 符号 MC 与 μ 演算](docs/34-symbolicmc.md) | preE 前像+μ/ν 编码 CTL（合流点） | C/L |
+| [35 FOL 语义表列](docs/35-foltableau.md) | γ/δ 规则+tclo 推导对象+7.42 完整证明 | C/L |
+| [36 LTL 语义表列](docs/36-ltltab.md) | lasso+兑现检查+fulfill_ok_sound | C/L |
+| [37 时态演绎系统 L](docs/37-ltlded.md) | lth+lth_sound+14.2/14.4 推导 | C/L |
+| [38 自动机与 LTL MC](docs/38-buechi.md) | baut+findLoop+loop_accept_inf | C/L/P |
+| [39 并发演绎验证](docs/39-conc.md) | 不变式族+reach_inv | C/L |
+| [40 SLD 与 Prolog 语义](docs/40-sldprolog.md) | 计算规则独立性+cut/NAF/CLP | C/L/P |
+| [41 归结完备与 SAT 难例](docs/41-rescomp.md) | resproof+PHP 反驳+DP 消元 | C/L |
+| [42 合成与形式语义](docs/42-synthsem.md) | 小步语义+读出式正确性 | C/L |
 
 ## 工具链（本机实测）
 

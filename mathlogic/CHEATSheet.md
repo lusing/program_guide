@@ -151,3 +151,26 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 25_hoare'    # 单章
 | reduced OBDD | 简约 OBDD | 约简 OBDD |
 | declarative sentences | 判断语句 | 判断/宣言句 |
 | substitution | 代换 | 代入 |
+
+## 35-42 章新坑（Ben-Ari 全谱扩充）+ Prolog 通道
+
+### Prolog 通道（SWI 10，本机 scoop）
+- `:- encoding(utf8).` 必须是**物理首行**（前面连注释都不行，否则 UTF-8 注释按 GBK 报 Illegal multibyte）；
+- 运行期输出纯 ASCII（`START/END` 标记）；`format/1` 是 SWI 简写、gprolog 无——统一 `format/2`；
+- 原子名不能带撇号（`succK'` 撞引号语法）；`call(P, X, Y)` 元调用切模型；
+- clpfd 要 `:- use_module(library(clpfd)).`；零子句谓词要 `:- dynamic p/2.` 否则 findall 报 Unknown procedure；
+- `\+` 带自由变元 = 存在式否定——NAF 演示用定人查询（40 章）。
+
+### 35-42 各章最重坑（详见各章速记）
+- **35**：记录域参数化（`interp (D:Type)`+`Arguments iasg {D}`）；隐式 {D} 三处坑（陈述悬空/intros 吞名/IH 显式）；as 模式必须含前提槽位（`a Hp IH` 三槽）；proj1/proj2 方向反是最高频翻车；`apply` 不展开 satE 要先 unfold；Compute 探针校准期望值；
+- **36**：α 优先于 β 否则指数爆炸；◇ 推迟支 `saturate k Γ' (lDia a :: next)`（Γ' 别丢）；重现检测必须集合语义（setEqL）；
+- **37**：as 模式坑第三次；lsat 的 lNext 展开用 simpl/change/exact 各显神通；Exp 的 X□A 支要 `change (forall j, S k <= j -> …)` 逐 j 喂；
+- **38**：Nat.mul_succ_l 匹配 `S n * m` 形（写错只报 no subterm）；◇ 相位枚举（bI 放全部可达起点）；Lean 的 Nat.add 在第二参递归（`0+b` 非定义归约）；`Nat.mul_succ_l/r` 在 core 叫 `Nat.succ_mul/mul_succ`；
+- **39**：守卫先自审（turn 协议正确守卫=「轮到我」+退出交牌）；Prop 不变式优于 bool（lia 吃字段算术）；`injection Hstep; subst s'` 是每案例起手式；辅助不变式是蕴含要手 specialize；可达集的 flat_map 不能 simpl（in_flat_map 认不出）；reach_inv 泛化起点再归纳；
+- **40**：Horn 子句「体变元 ⊆ 头变元」用眼睛盯（头写错=野变元+答案集错位）；答案沿链累积（`s ++ acc`）+换名链追踪（chaseX）；unifyL 双表递归改累积式；Lean 的 `Sub` 撞核心类名、`open Tm` 后裸构造子名当绑定子会撞；
+- **41**：resolvent 的 C2 段消 ¬l（`removeLit (oppl l)`）；PHP(2,2) 可满足（最小不可满足鸽笼从 PHP(3,1) 起）；match-only 函数写 Fixpoint 则 existsb 引理全 apply 不上（non-recursive 警告是线索）；existsb_exists 合取序 In 在前；iff 嵌在 `||` 下触发 setoid——先 `apply (proj2 (orb_true_iff _ _))`；Lean 的 Bool cases 顺序 false 在前；
+- **42**：赋值变换器两层混淆（`CAssn (fun s => upd 0 (s 0-1) s)` 才对）；守卫里的绑定子挡 rewrite（unfold+simpl 先行）；fuel 算术要用真算术（lia 报 Cannot find witness 先查自己）；状态序不可颠倒（B 在 A 之上）；exists 形态优于 match 形态（exact 吃定义等价）；Lean 的 `while/skip/seq` 全是关键字（构造子加 c 前缀）；`Nat.eqb_refl` 不在裸 core；`replace X = Y by omega` 不存在（用 have+rw）。
+
+### 中译本/2e 取材注记
+- 2e OCR 公式区不可靠——公式一律以 3e 文本层为准；2e 仅取 §8.3（cut/NAF/CWA 叙述）与 §8.5（CLP 概念）；Z 记号章跳过（裁决）；
+- 3e 页偏移（PDF=书页+Δ，Δ 按章 6-13 跳变——数字版删了章间空白页）：提取时按章实测。
