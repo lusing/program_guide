@@ -228,7 +228,19 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 （平衡 3=3），反例是 K3,4（3≠4）——书 Ex 8.2.17 判据两侧各
 有机型，勿张冠李戴。
 
-## 20 章新坑（EFT 扩充：矢列演算 S）
+## 20-21 章新坑（EFT 扩充）
+
+- **Lean native_decide 救 reflexivity/decide**：解释表用深 `match s, args`
+  写的有限结构求值，`by rfl`/`by decide` 卡在 Decidable 实例归约
+  （依赖 elim 阻塞）——`by native_decide`（编译 IR）一次全过。
+- **嵌套递归第三/四次撞墙**：通用词项化简翻译器、tm_eqb 结构相等
+  ——同 substt 病（fsym 挂 list tm）；示例手工内联 / 原子用 rat i []
+  化身避开相等判定。
+- **Bool 等值**：Coq 用 `Bool.eqb`（=? 是 nat 专用）；Lean 用 `==`。
+- **对账要双向**：翻译保真验一真一假两例——假方向恰好证明没丢/没引
+  入信息。
+- （20 章其余坑见上节：嵌套归纳无 IH、Lean 符号项 defeq 卡死、conj
+  遮蔽、∃A 新鲜性 compute、账本 choice 对照。）
 
 - **Coq 嵌套归纳无元素 IH**：`fsym f (list tm)` 的 list 参数不给逐元素假设——
   tsize 测度归纳；fold_right 是 lia 黑盒原子，配 fr_pos 正性引理。
