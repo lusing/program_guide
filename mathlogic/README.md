@@ -5,9 +5,11 @@
 [PLAN.md](./PLAN.md)），横跨 **Coq / Agda / Lean 4 / Isabelle/HOL /
 HOL4 / Coq-HoTT / Prolog** 七种实现机器验证。
 
-**第五轮扩充收官**：按 Mendelson 6e 完成五新章（09 完备集与独立性/
-34 图灵机/35 递归函数/36 算术化/62 NBG 集合论）+37 不完备性升级为
-机器章+原位深化五处（05/18/23/24/26），全书 73 章 163 个验证单元全绿
+**第六轮扩充收官**：按 Marker《An Invitation to Mathematical Logic》
+(GTM 301) 完成十新章（26 完备性与范畴性/27 超积与 Łoś/28 量词消去/
+29 实闭域与 o-minimal/40 通用性与不可判定/41 算术层级/42 图灵度/
+45 Hilbert 第十/46 PA 与 ε₀/47 算术的模型）+原位深化四处
+（16 嵌入/37 RAM/44 层级化/26→30 等），全书 73 章 193 个验证单元全绿
 （零公理或显式公理记账）；速查表见 [CHEATSheet.md](./CHEATSheet.md)，
 蓝图与状态表见 [PLAN.md](./PLAN.md)。
 
@@ -55,22 +57,30 @@ mathlogic/
 | [23 完备性 Henkin](docs/23-completeness.md) | 七步文档线+词项模型=合同闭包商结构（双向对账）+见证式化 | 文档/C/L |
 | [24 L-S 与紧致性](docs/24-lscompact.md) | DLO 无有限模型穷举+「有限性不可单句定义」σₙ 族+量化秩分离+Skolem 闭包 | C/L |
 | [25 EF 博弈与 Fraïssé](docs/25-efgame.md) | dup_wins 求解器（三通道一致）+线序 2^k−1 分离表+空/全关系对照+秩-轮对齐 | C/L/P |
+| [26 完备理论与范畴性](docs/26-categoricity.md) | F₃² 换基排列+x³ 有限域单满射对账（Ax 脚印）+0-1 律 n≤5 全枚举（768/1024） | C/L/P |
+| [27 超积与 Łoś 定理](docs/27-ultraproduct.md) | 256 族全枚举恰 3 个主超滤+主超滤 Łoš 完整结构归纳（零公理）+Fréchet ¬步失败现场 | C/L |
+| [28 量词消去](docs/28-quantelim.md) | DLO 区间推理消去（完备方向零公理+相邻性反例）+F₉ 扩域见证+强极小性 9 式根数表 | C/L |
+| [29 实闭域与 o-minimality](docs/29-realclosed.md) | **Motzkin SOS 分解**（ring/系数表反射）+IVT 二分 √2 精确夹逼+{<} 可定义=区间 vs 野谓词对照 | C/L |
 | [30 二阶逻辑](docs/30-secondorder.md) | soev 幂枚举求值器+偶数性交替着色+连通性否定式刻画+L_Q 退化 | C/L |
+| [31 归结原理](docs/31-resolution.md) | 矢列→子句+合一+归结反驳 | C/L |
+| [32 Herbrand 定理](docs/32-herbrand.md) | T_P 单调+头原子（Prolog 桥） | C/L |
+| [33 归结完备与 SAT 难例](docs/33-rescomp.md) | resproof+PHP 反驳+DP 消元 | C/L |
 | [34 自由模型](docs/34-freemodel.md) | 自由幺半群=表+初始性两定理（泛性质）+必需性证词 | C/L |
 | [37 寄存器机](docs/37-regmachine.md) | 五指令 RM 解释器（三通道）+书例 P₀ 奇偶对账+加法+循环不停机 | C/L/P |
 | [38 图灵机](docs/38-turing.md) | 四元组+纸带解释器（三通道）+书例四机（后继/零/加法/抹除）+Tadd 网格抓包+永不停实证 | C/L/P |
 | [39 递归函数](docs/39-recfn.md) | prf 求值器+命题 3.16 函数族全正确（步进方程法）+Ackermann 非 PR 线+限制 μ 的 Option 语义 | C/L |
+| [40 通用性与不可判定性](docs/40-undecidable.md) | 程序表宇宙+通用机 urun+停机对角双现场+Rice 影子（同语义两写法不可分）+s-m-n 影子 | C/L |
+| [41 算术层级](docs/41-hierarchy.md) | K∈Σ₁/Tot∈Π₂/Fin∈Σ₂ 前束对账+偶性 ≤ₘ K 归约样本+Kolmogorov 表宇宙版（kOf(4)=24 无描述即随机） | C/L |
+| [42 图灵度与优先法](docs/42-degrees.md) | oracle 机（roq 指令）+KP 显式击败现场+König 左极路径+FM 有穷损害阶段账本 | C/L |
 | [43 算术化](docs/43-goedel.md) | 平方配对单射+树编码 gcf 单射性+subf 代入+β-函数 CRT 双现场+自引骨架 | C/L |
-| [44 不完备性](docs/44-incompleteness.md) | 三步文档线全保留+表示性样板四真定理+有限域可判定与论域相对性（Tarski 对照） | 文档/C/L |
+| [44 不完备性](docs/44-incompleteness.md) | 三步文档线全保留+表示性样板四真定理+有限域可判定与论域相对性（Tarski 对照）+层级化强不完备（Marker 深化） | 文档/C/L |
+| [45 Hilbert 第十问题](docs/45-diophantine.md) | Pell ⊗ 范数乘法恒等式（ring 零公理）+d=2 解序列逐项验证+闭包组合子+Cassini/X-Y 序列 | C/L |
+| [46 PA 与 ε₀](docs/46-epsilon.md) | CNF 序数树+hereditary 回环全表 183 项+Goodstein 影子下降网格+G(1..3) 跑通+Hardy 层谱 | C/L |
+| [47 算术的模型](docs/47-models.md) | {c>n̄} 有限可满足+overspill 影子+R(3,3)=6 双账（K5 恰 12 染色/K6 全枚举）+PH(2,2) 机制账 | C/L/P |
 | [48 可判定性与 SMT](docs/48-decidability.md) | presburger 现场+Decidable 机器面 | I/L |
 | [49 CTL 模型检查](docs/49-temporal.md) | AG/EG 展开等价+不动点构件 | C/L |
-| [32 Herbrand 与 SLD](docs/32-herbrand.md) | T_P 单调+头原子（Prolog 桥） | C/L |
-| [33 归结完备与 SAT 难例](docs/33-rescomp.md) | resproof+PHP 反驳+DP 消元 | C/L |
 | [35 SLD 与 Prolog 语义](docs/35-sldprolog.md) | 计算规则独立性+cut/NAF/CLP | C/L/P |
 | [36 合成与形式语义](docs/36-synthsem.md) | 小步语义+读出式正确性 | C/L |
-| [48 可判定性与 SMT](docs/48-decidability.md) | presburger 现场+Decidable 机器面 | I/L |
-| [44 不完备性](docs/44-incompleteness.md) | 三步证明+先例索引（文档章） | 文档 |
-| [49 CTL 模型检查](docs/49-temporal.md) | AG/EG 展开等价+不动点构件 | C/L |
 | [50 LTL](docs/50-ltl.md) | 路径语义+等价族六件+adequate sets | C/L |
 | [51 MC 算法与公平性](docs/51-mcalgo.md) | 互斥全程+饥饿路径+公平性微观模型 | C/L |
 | [52 CTL*](docs/52-ctlstar.md) | 两层语法+三组分离现场（表达能力天梯） | C/L |
@@ -93,6 +103,7 @@ mathlogic/
 | [69 偏序与格](docs/69-posetlattice.md) | 特征引理装配代数律+五点菱形反例 | C/L |
 | [70 Boole 代数与逻辑电路](docs/70-boole.md) | 十公理+加法器+minterm 定理+QMC | C/L/P |
 | [71 图论专题](docs/71-graphs.md) | 握手引理真证明+平面算术+贪心着色+搜索面 | C/L/P |
+| [72 公理集合论 NBG 与序数](docs/72-nbg.md) | vn 典范世界+kur_char 命题 4.3+有限 AC 零公理+B1-B5 类算子 | C/L |
 | [73 收官](docs/73-wrapup.md) | SAT→SMT→MC→ITP 图景+总坑位+八书导读+H&R 映射 | 文档 |
 
 ## 工具链（本机实测）

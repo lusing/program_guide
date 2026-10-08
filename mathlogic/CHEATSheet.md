@@ -356,3 +356,50 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
   符号位是 0（<）不是 2；trueZnR 需自带 rel 参数包装；
 - 26：soInd = neg(∃X[X(0)∧封闭∧不满])；尾巴现场用 succ_rel2
   （顶部自环）+孤立点 5——soev 的 relenv 初始 `fun _ => []`。
+
+## Marker 轮新章坑位（26-29/40-42/45-47 + 16/37/44 深化）
+
+- 26：x³ 在 F₇ 单满**双失败**（像=三次剩余子群）；素数行 p≡1(mod 3)
+  才是规律、合数行散架（域公理在说话）；0-1 律频率先探后写
+  （768/1024 不是猜的 1096）；
+- 27：**Coq `induction as` 多递归参数按 (参数₁ IH₁ 参数₂ IH₂)
+  交错命名**——`p q IHp IHq` 会把 IHp 绑成第二个参数；主超滤枚举
+  的 emptyI 必须是位向量 `[f;f;f]` 不是 `[]`；函数外延公理禁用
+  ——`existsb_pointwise` 逐点改写代替；`Qed.` 不在独立行时剥块
+  正则要 `[非换行]*Qed.` 形式兜住「Proof. reflexivity. Qed.」
+  行中情形（含转义的新行字符会被 markdown 折断）；
+- 28：Coq `min_r` 是「右较小」（min_l 才是左较小）——方向记反两
+  分支全错；`nth (S i') (a::v') 0` 不自动化简——`cbn [projv nth]`
+  先做；strong_min 表先探（[1;0;2;…] 不是对称直觉值）；
+- 29：Lean `×` 右结合（Nat×Nat×Int=Nat×(Nat×Int)）——poly 层用
+  `((Nat×Nat)×Int)` 显式嵌套；Coq Q_scope 劫持 nat 模式里的数字
+  `0`（改构造子 `O`）；ZArith 的 `/` 记法劫持 Q 除法（显式 Qdiv）；
+  `2#2` = 1（不是 1/2！）；isRun「单调后缀」≠「区间并」——
+  stripF/tailF 单段检查才对；
+- 40：**cp 链 Gödel 编码在 unary nat 下随程序长度指数爆炸**（三条
+  ≈15 万、四条 ≈10⁷）——程序表索引宇宙替代+诚实记账；**「pc 不动
+  =停机」在自环跳转误判**（rife r k k）——指令级 rhalt 判据；
+  一元 nat 的 `k*k` 滤波 O(n²)、大减法陷阱（增量余数开方）；
+- 41：`Z.to_nat` 负数截断为 0（全成「解」）——判定用 Z.eqb；
+  nat 截断减法先升 Z 再算；
+- 42：oracle 分支标号方向（roq 真→l1 假→l2；PnegA 的取反分支
+  要 roq 0 2 1 不是 3 2）；KP 击败现场的期望值是输出值语义
+  （复制 false = 数值 0）；
+- 45：Coq `by` 是保留字（绑定器改名 b1 b2）；Z_scope 劫持量词
+  `∀n, 1≤n` 的 n 成 Z（标 (n : nat)+(…)%nat）；match 数字模式
+  在 Z_scope 解析为 Z 构造子（嵌套 match 写 S k）；
+- 46：**guard 拒绝「重建构造子」`cnf ra`**（olt/evalb/obase/sizeO
+  全线换燃料——第五撞）；**unary nat 撞墙三连**：expo 从 n 向下
+  搜先撞 b^n（改向上爬 expoUp）、gstep 16 2 = 3^27−1（影子网格
+  封顶 n≤15）、K6 全枚举 33s（Coq）/秒级（Lean native）；
+  单构造子 inductive 的 `destruct o as [|l]` 双分支模式**非法**
+  （单构造子用 `[l]`）；roundtrip 一般归纳的除法侧链（div_mod_eq
+  的方向、leb_le 转换、ltac 燃料）装配极长——表驱动验证+文档级
+  是诚实出路；
+- 47：**× 右结合三元组**再坑：`(i,j,k)` = `(i,(j,k))`——取分量
+  fst/fst·snd/snd·snd；边表存 (大,小) vs 查询 (min,max) 错位
+  （pos2 全 miss 默认色）；Nat.eqb 用于 Bool 比较要换 Bool.eqb；
+  K5 三角无关染色恰 12 个（Prolog 回溯计数=数学真值）；
+- 深化：16 嵌入（embed_qf_keeps 的赋值表用 `fst f :: [snd f]`）；
+  44 层级化（rep_sigma1_shadow 用 s3 赋值不是参数化公式）；
+  37 RAM（mutual fixpoint 警告——拆成两个独立 Fixpoint）。

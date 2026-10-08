@@ -149,3 +149,54 @@ Proof. reflexivity. Qed.
 (* 冒烟 *)
 Compute (map p0_result (seq 0 8)).     (* [0;1;0;1;0;1;0;1] *)
 Compute (add_result 3 4).              (* 7 *)
+
+(* ---------- Marker ch9 深化：RAM 数组编码与模拟等价 ---------- *)
+
+(* RAM 式数组 [a0..a3] 用平方配对编码进 R1（43 章 cp 化身）。
+   编码取**左折叠**：arrEnc [1;2;3;4] = cp (cp (cp 1 2) 3) 4——
+   右折叠会让最内层从 cp 4 0 起步逐层平方，编码值爆到 2×10^10
+   的一元构造子（43 章平方配对教训的数组版：折叠方向决定爆炸与否） *)
+Definition cpe (a b : nat) : nat := (a + b) * (a + b) + b.
+
+Definition arrEnc (l : list nat) : nat :=
+  match l with
+  | [] => 0
+  | x :: t => fold_left (fun acc y => cpe acc y) t x
+  end.
+
+(* 增量余数开方：s = ⌊√n⌋ *)
+Fixpoint sqrtO (fuel n k : nat) : nat :=
+  match fuel with
+  | O => k
+  | S f => if Nat.ltb n (2 * k + 1) then k else sqrtO f (n - (2 * k + 1)) (S k)
+  end.
+
+(* 定长剥层解码：剥 fuel−1 层得尾元素（输出逆序），末层余数
+   即首元素 *)
+Fixpoint arrDec (fuel n : nat) : list nat :=
+  match fuel with
+  | O => []
+  | S O => [n]
+  | S f' =>
+      if Nat.eqb f' 0 then [n]
+      else let s := sqrtO n n 0 in
+           let b := n - s * s in
+           b :: arrDec f' (s - b)
+  end.
+
+Fixpoint lbeq (l1 l2 : list nat) : bool :=
+  match l1, l2 with
+  | [], [] => true
+  | x :: t1, y :: t2 => andb (Nat.eqb x y) (lbeq t1 t2)
+  | _, _ => false
+  end.
+
+(* 编码-解码回环：三元组（解码输出逆序——逆向读出正是 RAM
+   STORE 扫描数组的自然方向） *)
+Example ram_enc_dec_roundtrip :
+  map (fun l => lbeq (arrDec 3 (arrEnc l)) (rev (l : list nat)))
+    [[1;2;3]; [5;0;2]; [7;0;9]] = [true; true; true].
+Proof. reflexivity. Qed.
+
+(* 数值账：左折叠编码增长温和（[1;2;3] ↦ 199） *)
+Compute (map arrEnc [[1;2;3]; [5;0;2]; [9;9;9]]).
