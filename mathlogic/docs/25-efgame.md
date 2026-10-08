@@ -1,7 +1,7 @@
 # 第 25 章 EF 博弈与 Fraïssé 定理
 
-> 对书：EFT ch XII（§XII.1-12.4）。本章通道：C（`examples/24_efgame/ex25_efgame.v`）/
-> L（`examples/24_efgame/ex25_efgame.lean`）/ P（`examples/24_efgame/ex25_efgame.pl`）。
+> 对书：EFT ch XII（§XII.1-12.4）。本章通道：C（`examples/25_efgame/ex25_efgame.v`）/
+> L（`examples/25_efgame/ex25_efgame.lean`）/ P（`examples/25_efgame/ex25_efgame.pl`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|
