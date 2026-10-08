@@ -856,6 +856,8 @@ argv[0] 类型=[:0]const u8 末字节=0（哨兵保证；.len 是路径长度，
 
 **每个参数的类型是 `[:0]const u8`——哨兵切片。** 这是本节最漂亮的收尾：它同时集齐了本章所有的概念——**切片**（有 `len`）、**哨兵**（`a0[a0.len] == 0` 实测成立）、**`const`**（只读）、**字节序列**（`len` 是字节数）。而且因为它是哨兵切片，**可以直接 `&arg[arg.len]` 拿到 `[*:0]const u8` 丢给 C 函数**（6.7 节）。
 
+> ⚠️ **Windows 上 `iterate()` 是编译错误**（0.17 实测：`@compileError("In Windows, use initAllocator instead.")`）——WTF-16 → WTF-8 转码需要缓冲，Windows 必须 `iterateAllocator(分配器)` 且用完 `deinit()`；产物是普通 `[]const u8`，**没有哨兵**。上面的哨兵演示是 POSIX 分支，示例源码里用 `if (builtin.os.tag == .windows)` 分了平台两支，跨平台代码照那个写法来（22 章有更完整的参数专题）。
+
 顺带印证了 6.6 节的规律：`arg_no` 是 `var` 但被 `: (arg_no += 1)` 修改，所以循环是运行期的，参数个数编译期未知——**这也意味着 `while (args.next())` 里拿到的东西在运行期才确定**，任何切片操作都要考虑这一点。
 
 ### 测试：把语义钉住

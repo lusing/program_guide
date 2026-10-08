@@ -97,8 +97,11 @@ function Test-One {
         "16_build" { Test-ProjectExample $Dir }
         "17_cinterop" { Test-ProjectExample $Dir }
         "24_minigrep" { Test-ProjectExample $Dir }
+        "35_zls" { Test-ProjectExample $Dir }
         # 32：直链系统自带的 winsqlite3.dll（LLD 可拿 DLL 当导入库；Linux 对应 -lsqlite3）
         "32_sqlite" { Test-PlainExample $Dir @("$env:SystemRoot\System32\winsqlite3.dll") }
+        # 21：21.6/21.9 用 extern "c" 的 getpid/strlen 与 libc 对账，须显式 -lc
+        "21_asm" { Test-PlainExample $Dir @("-lc") }
         "18_cross" { Test-CrossExample $Dir }
         default { Test-PlainExample $Dir }
     }

@@ -29,6 +29,11 @@
 > 本章示例的所有输出都来自 `main` 自己建的一棵**确定小树**（建在系统临时目录
 > `/tmp/zig27_tree_demo`，退出前 `deleteTree` 回收），所以**逐字节可复现**——
 > 连跑两次 `diff` 为空。仓库里不留任何临时目录。
+>
+> ⚠️ **运行输出的平台口径**：正文里的运行输出大多采集自 macOS/POSIX（`handle=-2`、
+> `nlink=2`、一次 `read` 拿 11 个……）。示例现在在 Windows 上也全绿，凡 Windows
+> 行为不同的地方（伪句柄数值、hardLink、`Permissions.fromMode`、Reader 批量大小、
+> 路径分隔符）都有 `comptime` 分平台 + 坑位清单第 19-21 条的专门说明。
 
 ---
 
@@ -1560,7 +1565,13 @@ test "27.10 statFile 的 lstat 语义；follow_symlinks 实测是 bool" {
     // ⚠️ 实测：lstat 的 inode 和 stat 的**差 1**（macOS/APFS 给符号链接自己分配 inode）
     //   ⇒ "lstat.inode == stat.inode" 这种假设在 macOS 上是错的
     try std.testing.expect(lst.inode != stt.inode);
-    try std.testing.expectEqual(lst.size, @as(u64, @intCast("target.txt".len))); // lstat 报链接串长度
+    // lstat 的 size：POSIX 报**链接串的长度**（"target.txt".len=10）；
+    // Windows 实测报 0（符号链接元数据不含目标串）
+    if (comptime @import("builtin").os.tag == .windows) {
+        try std.testing.expectEqual(@as(u64, 0), lst.size);
+    } else {
+        try std.testing.expectEqual(lst.size, @as(u64, @intCast("target.txt".len)));
+    }
 
     // readLink 拿到目标字符串
     var buf: [32]u8 = undefined;
@@ -2429,10 +2440,16 @@ test "27.14 walk + glob 组合：只统计 *.txt 的字节数" {
         // 跨两个 Dir 的四个方法：io 的位置实测
         try cwd.rename(sbox ++ "/main.zig", cwd, sbox ++ "/main2.zig", io); // io 第 4
         std.debug.print("rename(old, new_dir, new_path, io) —— **io 在第 4 位**（不是第 1 位）\n", .{});
-        try cwd.hardLink(sbox ++ "/main2.zig", cwd, sbox ++ "/main2_hard.zig", io, .{}); // io 第 5
-        const s1 = try cwd.statFile(io, sbox ++ "/main2.zig", .{});
-        const s2 = try cwd.statFile(io, sbox ++ "/main2_hard.zig", .{});
-        std.debug.print("hardLink(old, new_dir, new_path, io, opts) —— io 第 5；inode 相同={} nlink={d}\n", .{ s1.inode == s2.inode, s2.nlink });
+        // ⚠️ std 0.17 的 dirHardLink 在 Windows 上直接返 OperationUnsupported，
+        // 硬链接演示只能在 POSIX 跑
+        if (comptime @import("builtin").os.tag == .windows) {
+            std.debug.print("hardLink(old, new_dir, new_path, io, opts) —— io 第 5；⚠️ Windows 上 std 返 OperationUnsupported，跳过演示\n", .{});
+        } else {
+            try cwd.hardLink(sbox ++ "/main2.zig", cwd, sbox ++ "/main2_hard.zig", io, .{}); // io 第 5
+            const s1 = try cwd.statFile(io, sbox ++ "/main2.zig", .{});
+            const s2 = try cwd.statFile(io, sbox ++ "/main2_hard.zig", .{});
+            std.debug.print("hardLink(old, new_dir, new_path, io, opts) —— io 第 5；inode 相同={} nlink={d}\n", .{ s1.inode == s2.inode, s2.nlink });
+        }
         try cwd.copyFile(sbox ++ "/main2.zig", cwd, sbox ++ "/main2_copy.zig", io, .{}); // io 第 5
         std.debug.print("copyFile(src, dst_dir, dst_path, io, opts) —— io 第 5；副本 {d} 字节\n", .{(try cwd.statFile(io, sbox ++ "/main2_copy.zig", .{})).size});
         try cwd.symLinkAtomic(io, "main2.zig", sbox ++ "/main2_atomic", .{}); // io 第 1（例外）
@@ -2480,8 +2497,14 @@ access(不存在) → FileNotFound（比 statFile 便宜，但有 TOCTOU）
 ==== 27.15 结束 ====
 ```
 
-**`hardLink` 让 `nlink` 从 1 变 2**（实测），`inode` 不变——这就是硬链接的定义。
+**`hardLink` 让 `nlink` 从 1 变 2**（POSIX 实测），`inode` 不变——这就是硬链接的定义。
 对比符号链接：符号链接是**新 inode**（27.10.2 实测差 1），硬链接是**同 inode 多名字**。
+
+⚠️ **Windows 实测（0.17）**：`std.Io.Dir.hardLink` 在 Windows 目标上**直接返
+`error.OperationUnsupported`**——0.17 std 的 `Io/Threaded.zig` 里 `dirHardLink`
+第一行就是 `if (is_windows) return error.OperationUnsupported;`。所以示例里
+硬链接演示是 `comptime` 分平台：Windows 只打印说明、跳过调用（测试同理）。
+27.15 的其余四个方法（rename / copyFile / symLinkAtomic / updateFile）Windows 都能跑。
 
 ⚠️ **TOCTOU**（Time-Of-Check-Time-Of-Use）的老问题在遍历场景特别突出：
 
@@ -2648,7 +2671,7 @@ the next call to read or next`）。所以跨 `read` 收集还是得 `dupe`—�
 对应的测试：
 
 ```zig
-// examples/27_tree/main.zig 第 1278-1303 行
+// examples/27_tree/main.zig（Windows 实测后改成了"循环排空"版）
 test "27.16 Dir.Reader 批量读 + reset（缓冲必须 align(usize)）" {
     const io = std.testing.io;
     var tmp = std.testing.tmpDir(.{});
@@ -2671,11 +2694,24 @@ test "27.16 Dir.Reader 批量读 + reset（缓冲必须 align(usize)）" {
     }
     try std.testing.expectEqual(@as(usize, 5), total);
     rdr.reset();
-    const again = try rdr.read(io, &batch);
-    try std.testing.expectEqual(@as(usize, 5), again);
+    // ⚠️ reset 后**也要循环排空**：Windows 实测单次 read 最多吐 3 条
+    // （min 缓冲下 Windows 目录条目更大：UTF-16 名字 + 属性），POSIX 一把 5 条。
+    // reset 的语义是"从头再来"，不是"再来一把就是全部"。
+    var again_total: usize = 0;
+    while (true) {
+        const again = try rdr.read(io, &batch);
+        if (again == 0) break;
+        again_total += again;
+    }
+    try std.testing.expectEqual(@as(usize, 5), again_total);
     try std.testing.expect(!@hasDecl(std.Io.Dir, "reader")); // 没有 reader 方法
 }
 ```
+
+⚠️ **Windows 实测补充（0.17）**：`reset()` 本身两平台行为一致（3+2+0 = 5 复现），
+但**单次 `read` 的批量大小**不一样——macOS min 缓冲一把读完 11 条 / POSIX 测试目录
+一把 5 条，Windows 单次最多 3 条（Windows 目录条目带 UTF-16 名字和属性，
+同样 1048 字节装得少）。想断言"reset 后读到全部"，必须**循环排空**而不是单次 read。
 
 ## 27.17 跨平台差异
 
@@ -2862,6 +2898,25 @@ test "27.16 Dir.Reader 批量读 + reset（缓冲必须 align(usize)）" {
 18. **别把整棵树读进内存**（27.13）。只要汇总数字就用 `walk` 流式（O(1) 内存）；
     要多次查询/排序/GUI 才建树。而且 `walk` 自己的 stack 也不小——
     每个 `Iterator` 有 2048 字节内嵌缓冲，1000 层深的目录就是 2 MB。
+
+19. **⚠️ Windows 三连（0.17 实测，全量回归抓出来的）**：
+    ① `std.posix.AT.FDCWD` 在 Windows 目标**编译期不存在**
+    （`struct 'c.AT__struct_731' has no member named 'FDCWD'`），且 `Dir.handle`
+    是 `*anyopaque` 不透明句柄——`cwd()` 伪句柄的数值展示只能 `comptime` 分平台。
+    ② `Io.File.Permissions` 在 Windows 目标是 `FILE_ATTRIBUTE` 枚举，
+    **`fromMode` 是 POSIX 分支才有的方法**，引用即编译错
+    `no member named 'fromMode'`；"000 权限目录"在 Windows 上也要 ACL 才造得出来
+    ⇒ 锁目录演示只能 POSIX 跑。
+    ③ `std.Io.Dir.hardLink` 的 std 实现在 Windows 上**第一行就返
+    `error.OperationUnsupported`**（`Io/Threaded.zig` 的 `dirHardLink`）。
+    20. **`Walker` 的路径用本机分隔符**：Windows 上是 `sub\b.txt` 不是 `sub/b.txt`。
+    断言和 glob 模式都按 `/` 写的话，把 dupe 出来的路径**就地归一成 `/`** 再比
+    （本章测试的 `normalizeToSlashInPlace`）。
+    21. **`Dir.Reader` 单次 `read` 的批量大小随平台变**：macOS min 缓冲一把 11 条、
+    Windows 单次最多 3 条（Windows 条目带 UTF-16 名字 + 属性，同样 1048 字节装得少）。
+    断言"reset 后读到全部"必须**循环排空**，不能单次 read。
+    22. **`use of undeclared identifier` 是 AstGen 层的错，未选中的 comptime 分支
+    也逃不过**——平台分叉里引用的辅助函数必须真实定义出来（见 24 章坑 32）。
 
 ---
 

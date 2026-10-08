@@ -14,6 +14,11 @@
 const std = @import("std");
 const net = std.Io.net;
 
+/// Windows 与 POSIX 的网络行为差异（错误名映射、reuse 语义、UDP 截断语义）
+/// 都按这个常量做 comptime 分叉；每一处都是 0.17 本机实测（见各处注释）。
+/// 注：TCP 数据面两平台都正常（回环 echo 实测通过）。
+const is_windows = @import("builtin").os.tag == .windows;
+
 fn begin(comptime tag: []const u8) void {
     std.debug.print("==== {s} 开始 ====\n", .{tag});
 }
@@ -428,9 +433,18 @@ pub fn main(init: std.process.Init) !void {
         const peer = try net.IpAddress.parseIp4("127.0.0.1", real);
         var cli = try peer.connect(io, .{ .mode = .stream });
         var stream = try srv.accept(io);
-        p("  用读到的端口 {d} 反过来 connect → fd={d}，accept 得到 fd={d}（不同 fd）\n", .{
-            real, cli.socket.handle, stream.socket.handle,
-        });
+        // ⚠️ Windows 的 Socket.handle 是 *anyopaque（值每次运行都不同），
+        // 演示输出要逐字节可复现 → 只打印"不同 fd"这个判定
+        if (comptime @import("builtin").os.tag == .windows) {
+            p("  用读到的端口 {d} 反过来 connect、accept 拿到另一个句柄（两个句柄不同 = {s}）\n", .{
+                real,
+                if (cli.socket.handle != stream.socket.handle) "是" else "否",
+            });
+        } else {
+            p("  用读到的端口 {d} 反过来 connect → fd={d}，accept 得到 fd={d}（不同 fd）\n", .{
+                real, cli.socket.handle, stream.socket.handle,
+            });
+        }
         cli.close(io);
         stream.close(io);
         srv.deinit(io);
@@ -712,13 +726,23 @@ pub fn main(init: std.process.Init) !void {
         } else |e| {
             p("  发 70000 字节（超过 MTU）→ {s}⇒ send 会检查短写并报这个\n", .{@errorName(e)});
         }
-        // 缓冲不够 → 数据被截断但不报错
+        // 缓冲不够 → 数据被截断但不报错（POSIX 语义）
         try cli.send(io, &dest, "0123456789");
         var small: [4]u8 = undefined;
-        const r2 = try srv.receive(io, &small);
-        p("  10 字节数据报用 4 字节缓冲receive → {d} 字节，flags.trunc={}（**静默截断，不报错**）\n", .{
-            r2.data.len, r2.flags.trunc,
-        });
+        // ⚠️ Windows 实测（0.17）：recvfrom 小缓冲收大数据报给的是 WSAEMSGSIZE
+        // → std 映射成 error.MessageOversize，**拿不到截断数据**；POSIX 才静默截断
+        if (comptime @import("builtin").os.tag == .windows) {
+            if (srv.receive(io, &small)) |_| {
+                p("  10 字节数据报用 4 字节缓冲receive → 居然没报错？\n", .{});
+            } else |e| {
+                p("  10 字节数据报用 4 字节缓冲receive → {s}（Windows 语义：报错而不是截断）\n", .{@errorName(e)});
+            }
+        } else {
+            const r2 = try srv.receive(io, &small);
+            p("  10 字节数据报用 4 字节缓冲receive → {d} 字节，flags.trunc={}（**静默截断，不报错**）\n", .{
+                r2.data.len, r2.flags.trunc,
+            });
+        }
         cli.close(io);
         srv.close(io);
     }
@@ -735,7 +759,13 @@ pub fn main(init: std.process.Init) !void {
     p("  buffer 决定 fillMore 一次能拿多少（影响吞吐，不影响语义）。\n", .{});
     p("  ⚠️ Writer 有用户态缓冲，**必须 flush**；Stream.close **不会**替你 flush。\n", .{});
     p("背压：写方写太快，内核缓冲满了 → write 阻塞（可取消）。\n", .{});
-    {
+    if (is_windows) {
+        // ⚠️ Windows 实测（0.17）：缓冲写满时 std 的写**永久阻塞**而不是返回
+        // WouldBlock（POSIX 的事件模型下才会立刻报错退出循环）——这段演示在
+        // Windows 上必然挂死，只能跳过（真机实测挂死确认）。
+        p("  ⚠️ Windows 0.17：缓冲写满时 std 写永久阻塞（不给 WouldBlock），本段实测跳过——\n", .{});
+        p("     语义不变：读慢的一方通过 TCP 窗口把写方拖住（见 POSIX 输出）。\n", .{});
+    } else {
         const addr = try net.IpAddress.parseIp4("127.0.0.1", 0);
         var srv = try addr.listen(io, .{ .kernel_backlog = 1 });
         const peer = try net.IpAddress.parseIp4("127.0.0.1", srv.socket.address.getPort());
@@ -1223,17 +1253,29 @@ test "29.8 UDP 回环：send/receive + IncomingMessage 的.data 指向调用者�
     const back = try cli.receive(io, &cbuf);
     try std.testing.expectEqualStrings("hello-dgram", back.data);
 
-    // 截断：小缓冲 receive 大数据报 → 静默截断，flags.trunc=true
+    // 截断：小缓冲 receive 大数据报
+    // ⚠️ Windows 实测（0.17）：WSAEMSGSIZE → error.MessageOversize，**报错而不是截断**；
+    //    POSIX 才是静默截断 + flags.trunc=true
     try cli.send(io, &srv.address, "0123456789");
     var small: [4]u8 = undefined;
-    const trunc = try srv.receive(io, &small);
-    try std.testing.expectEqual(@as(usize, 4), trunc.data.len);
-    try std.testing.expect(trunc.flags.trunc);
+    if (is_windows) {
+        // ⚠️ Windows 实测：WSAEMSGSIZE 映射成 error.MessageOversize（名字一样、
+        //    但语义是"报错"而不是 POSIX 的"静默截断 + flags.trunc"）
+        try std.testing.expectError(error.MessageOversize, srv.receive(io, &small));
+    } else {
+        const trunc = try srv.receive(io, &small);
+        try std.testing.expectEqual(@as(usize, 4), trunc.data.len);
+        try std.testing.expect(trunc.flags.trunc);
+    }
 
-    //超 MTU → send 报 MessageOversize
+    //超 MTU → send 报 MessageOversize（POSIX）；⚠️ Windows 实测是 error.Unexpected（映射缺口）
     var huge: [70000]u8 = undefined;
     @memset(&huge, 'z');
-    try std.testing.expectError(error.MessageOversize, cli.send(io, &srv.address, huge[0..]));
+    if (is_windows) {
+        try std.testing.expectError(error.Unexpected, cli.send(io, &srv.address, huge[0..]));
+    } else {
+        try std.testing.expectError(error.MessageOversize, cli.send(io, &srv.address, huge[0..]));
+    }
 }
 
 test "29.9 半关闭：shutdown(.send) 让对端读到 EOF，但本端仍能收" {
@@ -1272,16 +1314,35 @@ test "29.10 错误分类：连接被拒 / 超时 / 地址不可用要分开" {
     const dead = try net.IpAddress.parseIp4("127.0.0.1", 1);
     try std.testing.expectError(error.ConnectionRefused, dead.connect(io, .{ .mode = .stream }));
     // 非本机地址 → AddressUnavailable
+    // ⚠️ Windows 实测（0.17）：std 没把 NTSTATUS 0xc0000207（INVALID_ADDRESS_COMPONENT）
+    //    映射成 AddressUnavailable，而是 error.Unexpected——0.17.0 的 Windows 错误映射缺口
     const alien = try net.IpAddress.parseIp4("8.8.8.8", 9);
-    try std.testing.expectError(error.AddressUnavailable, alien.listen(io, .{}));
-    try std.testing.expectError(error.AddressUnavailable, alien.bind(io, .{ .mode = .dgram }));
+    if (is_windows) {
+        try std.testing.expectError(error.Unexpected, alien.listen(io, .{}));
+        try std.testing.expectError(error.Unexpected, alien.bind(io, .{ .mode = .dgram }));
+    } else {
+        try std.testing.expectError(error.AddressUnavailable, alien.listen(io, .{}));
+        try std.testing.expectError(error.AddressUnavailable, alien.bind(io, .{ .mode = .dgram }));
+    }
     // mode 不匹配 → SocketModeUnsupported
+    // ⚠️ Windows 实测（0.17）：给的是 ProtocolUnsupportedByAddressFamily（错误映射又一处缺口）
     const loop = try net.IpAddress.parseIp4("127.0.0.1", 0);
-    try std.testing.expectError(error.SocketModeUnsupported, loop.listen(io, .{ .mode = .dgram }));
-    // 同端口重复 listen → AddressInUse（reuse_address 在 macOS 上也不放过）
+    if (is_windows) {
+        try std.testing.expectError(error.ProtocolUnsupportedByAddressFamily, loop.listen(io, .{ .mode = .dgram }));
+    } else {
+        try std.testing.expectError(error.SocketModeUnsupported, loop.listen(io, .{ .mode = .dgram }));
+    }
+    // 同端口重复 listen → AddressInUse
+    // ⚠️ Windows 实测（0.17）：std 在 Windows 上默认走 SO_REUSEADDR 语义，
+    //    重复 listen 同端口**会成功**（Windows 的 reuse 语义与 POSIX 不同）——跳过这条断言
     var srv = try loop.listen(io, .{});
     const same = try net.IpAddress.parseIp4("127.0.0.1", srv.socket.address.getPort());
-    try std.testing.expectError(error.AddressInUse, same.listen(io, .{}));
+    if (is_windows) {
+        var dup = try same.listen(io, .{});
+        dup.deinit(io);
+    } else {
+        try std.testing.expectError(error.AddressInUse, same.listen(io, .{}));
+    }
     srv.deinit(io);
     // ⚠️ **不要**给 connect 传 .timeout：POSIX 上那会@panic（0.17 未实现，见 29.10.3）
     // 断言的是 Io.Timeout 的形状本身
@@ -1312,11 +1373,17 @@ test "29.11 端口扫描必须从高位非 0 端口起，且会跳过被占的" 
     }
 
     // 正解：先占住 49421，再从 49421 扫 ⇒ 必须落到 49422
+    // ⚠️ Windows 实测（0.17）：重复 listen 被允许（std 的 Windows reuse 语义），
+    //    "跳过被占端口"的前提不成立——第一轮就"成功"，扫描落在 49421
     const base = try net.IpAddress.parseIp4("127.0.0.1", 49421);
     var occupier = try base.listen(io, .{});
     defer occupier.deinit(io);
     const skipped = try listenSomewhere(io, 49421, .{});
-    try std.testing.expectEqual(@as(u16, 49422), skipped.port);
+    if (is_windows) {
+        try std.testing.expectEqual(@as(u16, 49421), skipped.port);
+    } else {
+        try std.testing.expectEqual(@as(u16, 49422), skipped.port);
+    }
     var sk = skipped;
     sk.server.deinit(io);
 }
@@ -1338,25 +1405,27 @@ test "29.11 TCP 回环：2 连接 × 2 消息 + UDP 回环：3 数据报" {
     const io = std.testing.io;
 
     // TCP：服务线程 + 主线程客户端
-    const acquired = try listenSomewhere(io, 49421, .{ .reuse_address = true });
-    var srv = acquired.server;
-    defer srv.deinit(io);
-    var rounds: usize = 2;
-    const th = try std.Thread.spawn(.{}, tcpEchoServer, .{ io, &srv, &rounds });
-    const peer = try net.IpAddress.parseIp4("127.0.0.1", acquired.port);
-    for (0..2) |round| {
-        var conn = Conn.init(io, try peer.connect(io, .{ .mode = .stream }));
-        defer conn.close();
-        for (0..2) |k| {
-            const msg = try std.fmt.allocPrint(a, "ping-{d}-{d}", .{ round, k });
-            defer a.free(msg);
-            try conn.sendAll(msg);
-            var buf: [64]u8 = undefined;
-            const n = try conn.recvSome(&buf);
-            try std.testing.expectEqualStrings(msg, buf[0..n]);
+    {
+        const acquired = try listenSomewhere(io, 49421, .{ .reuse_address = true });
+        var srv = acquired.server;
+        defer srv.deinit(io);
+        var rounds: usize = 2;
+        const th = try std.Thread.spawn(.{}, tcpEchoServer, .{ io, &srv, &rounds });
+        const peer = try net.IpAddress.parseIp4("127.0.0.1", acquired.port);
+        for (0..2) |round| {
+            var conn = Conn.init(io, try peer.connect(io, .{ .mode = .stream }));
+            defer conn.close();
+            for (0..2) |k| {
+                const msg = try std.fmt.allocPrint(a, "ping-{d}-{d}", .{ round, k });
+                defer a.free(msg);
+                try conn.sendAll(msg);
+                var buf: [64]u8 = undefined;
+                const n = try conn.recvSome(&buf);
+                try std.testing.expectEqualStrings(msg, buf[0..n]);
+            }
         }
+        th.join(); // join 即同步：服务线程干完 rounds 条就return 了
     }
-    th.join(); // join 即同步：服务线程干完 rounds 条就return 了
 
     // UDP：服务线程 + 主线程客户端
     var rz = Rendezvous{};

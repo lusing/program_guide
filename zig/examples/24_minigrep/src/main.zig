@@ -37,6 +37,17 @@ fn end(comptime tag: []const u8) void {
 fn dprint(comptime fmt: []const u8, args: anytype) void {
     std.debug.print(fmt, args);
 }
+
+/// Windows 的 `Dir.handle` 是 `*anyopaque`（POSIX 上是整数 fd），`{d}` 打不了。
+/// 这个编译期分流两头都能过：指针走 `@intFromPtr`，整数走 `@intCast`。
+/// ⚠️ 它必须**定义出来**：`use of undeclared identifier` 是 AstGen 层面的错，
+/// 未选中的 comptime 分支也逃不过标识符解析（本地实测）。
+fn handleInt(h: anytype) usize {
+    return switch (@typeInfo(@TypeOf(h))) {
+        .pointer => @intFromPtr(h),
+        else => @intCast(h),
+    };
+}
 /// 需要真 `Writer` 的少数几处（`regex.dump` / `search.writeHighlighted`）
 /// 走的是 stderr 缓冲 Writer。它与 `dprint` 写的是**同一个 fd**。
 ///
@@ -361,9 +372,17 @@ fn walkInto(
 
 fn demo24_2(io: std.Io, gpa: std.mem.Allocator) !void {
     const cwd = std.Io.Dir.cwd();
-    std.debug.print("std.Io.Dir.cwd().handle = {d}，std.posix.AT.FDCWD = {d}，相等 = {}\n", .{
-        cwd.handle, std.posix.AT.FDCWD, cwd.handle == std.posix.AT.FDCWD,
-    });
+    // ⚠️ `std.posix.AT.FDCWD` 只在 POSIX 目标存在（Windows 上编译错
+    //    `struct 'c.AT__struct_719' has no member named 'FDCWD'`），
+    //    且 Windows 的 `Dir.handle` 是 `*anyopaque` 不透明句柄，打印 fd 没意义。
+    //    伪句柄这个事实本身是 POSIX 概念，Windows 分支只讲 panic 行为。
+    if (comptime @import("builtin").os.tag == .windows) {
+        std.debug.print("std.Io.Dir.cwd().handle 是不透明句柄（Windows 无 AT_FDCWD 概念）\n", .{});
+    } else {
+        std.debug.print("std.Io.Dir.cwd().handle = {d}，std.posix.AT.FDCWD = {d}，相等 = {}\n", .{
+            cwd.handle, std.posix.AT.FDCWD, cwd.handle == std.posix.AT.FDCWD,
+        });
+    }
     std.debug.print("⇒ cwd() 是**伪句柄**：它不是真的 fd，而是\"相对当前目录\"这个约定\n", .{});
     std.debug.print("⇒ 对它调 walk/iterate 会 panic：programmer bug caused syscall error: BADF\n", .{});
     std.debug.print("   （lseek(-2) 的 errno 被 std 判定为\"程序 bug\"直接 panic，不是返回错误）\n", .{});
@@ -395,7 +414,13 @@ fn demo24_2(io: std.Io, gpa: std.mem.Allocator) !void {
     {
         var d = try cwd.openDir(io, root, .{ .iterate = true });
         defer d.close(io);
-        std.debug.print("  openDir 拿到真句柄 handle={d}\n", .{d.handle});
+        // Windows 句柄是 *anyopaque（POSIX 是整数 fd）。指针值每次运行都不同，
+        // 演示输出要逐字节可复现，所以 Windows 不打印值、只打印判定。
+        if (comptime @import("builtin").os.tag == .windows) {
+            std.debug.print("  openDir 拿到真句柄（Windows 是不透明句柄，值不打印）\n", .{});
+        } else {
+            std.debug.print("  openDir 拿到真句柄 handle={d}\n", .{handleInt(d.handle)});
+        }
         var it = d.iterate();
         while (try it.next(io)) |e| {
             dprint("    [{s}] {s}\n", .{ @tagName(e.kind), e.name });

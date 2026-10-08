@@ -1,0 +1,7 @@
+{
+  "enable_build_on_save": true,
+  "build_on_save_args": ["check"],
+  "semantic_tokens": "partial",
+  "inlay_hints_show_variable_type_hints": true,
+  "inlay_hints_hide_redundant_param_names": true
+}

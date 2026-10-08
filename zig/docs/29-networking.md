@@ -1627,27 +1627,41 @@ if (message.data_len != data.len) return error.MessageOversize;
 所以 0.17 的 UDP send 是**"要么整包发出，要么报错"**——不会静默截断。
 这比 POSIX 的 `sendto`（返回实际发出的字节数，让你自己判断）更严格。
 
-**② 接收缓冲不够 → 静默截断，`flags.trunc = true`**：
+**② 接收缓冲不够 → 静默截断，`flags.trunc = true`**（POSIX 语义）：
 
 ```text
   10 字节数据报用 4 字节缓冲receive → 4 字节，flags.trunc=true（**静默截断，不报错**）
 ```
 
-**这个必须检查**，否则你会拿到半个数据报还以为完整。测试里断言了：
+⚠️ **Windows 实测（0.17）语义不同**：WSAEMSGSIZE 被 std 映射成
+`error.MessageOversize`——**报错而不是截断**，`receive` 直接失败。
+示例的演示和测试都是 `comptime` 分平台（详见坑位清单第 17 条）。
+
+**这个必须检查**（POSIX 上），否则你会拿到半个数据报还以为完整。测试里断言了：
 
 ```zig
-// examples/29_netecho/main.zig 第 1228-1236 行
-    // 截断：小缓冲 receive 大数据报 → 静默截断，flags.trunc=true
+// examples/29_netecho/main.zig（测试 29.8，含 Windows 分叉）
+    // 截断：小缓冲 receive 大数据报
+    // ⚠️ Windows 实测（0.17）：WSAEMSGSIZE → error.MessageOversize，**报错而不是截断**；
+    //    POSIX 才是静默截断 + flags.trunc=true
     try cli.send(io, &srv.address, "0123456789");
     var small: [4]u8 = undefined;
-    const trunc = try srv.receive(io, &small);
-    try std.testing.expectEqual(@as(usize, 4), trunc.data.len);
-    try std.testing.expect(trunc.flags.trunc);
+    if (is_windows) {
+        try std.testing.expectError(error.MessageOversize, srv.receive(io, &small));
+    } else {
+        const trunc = try srv.receive(io, &small);
+        try std.testing.expectEqual(@as(usize, 4), trunc.data.len);
+        try std.testing.expect(trunc.flags.trunc);
+    }
 
-    // 超 MTU → send 报 MessageOversize
+    //超 MTU → send 报 MessageOversize（POSIX）；⚠️ Windows 实测是 error.Unexpected（映射缺口）
     var huge: [70000]u8 = undefined;
     @memset(&huge, 'z');
-    try std.testing.expectError(error.MessageOversize, cli.send(io, &srv.address, huge[0..]));
+    if (is_windows) {
+        try std.testing.expectError(error.Unexpected, cli.send(io, &srv.address, huge[0..]));
+    } else {
+        try std.testing.expectError(error.MessageOversize, cli.send(io, &srv.address, huge[0..]));
+    }
 ```
 
 `IncomingMessage.Flags` 是 `packed struct(u8)`，5 个标志位：
@@ -2130,6 +2144,11 @@ test "29.10 错误分类：连接被拒 / 超时 / 地址不可用要分开" {
 }
 ```
 
+⚠️ **Windows 0.17 上这个测试的期望名要按平台分叉**（示例里用 `is_windows`）：
+`alien.listen/bind` → `error.Unexpected`（NTSTATUS `0xc0000207` 未映射）、
+`SocketModeUnsupported` → `error.ProtocolUnsupportedByAddressFamily`、
+重复 `listen` → **不报错**（Windows reuse 语义允许）。详见坑位清单第 17 条。
+
 ## 29.11 线程模型与端口扫描
 
 ### 29.11.1 两种模型
@@ -2319,11 +2338,17 @@ test "29.11 端口扫描必须从高位非 0 端口起，且会跳过被占的" 
     }
 
     // 正解：先占住 49421，再从 49421 扫 ⇒ 必须落到 49422
+    // ⚠️ Windows 实测（0.17）：重复 listen 被允许（std 的 Windows reuse 语义），
+    //    "跳过被占端口"的前提不成立——第一轮就"成功"，扫描落在 49421（断言按平台分叉）
     const base = try net.IpAddress.parseIp4("127.0.0.1", 49421);
     var occupier = try base.listen(io, .{});
     defer occupier.deinit(io);
     const skipped = try listenSomewhere(io, 49421, .{});
-    try std.testing.expectEqual(@as(u16, 49422), skipped.port);
+    if (is_windows) {
+        try std.testing.expectEqual(@as(u16, 49421), skipped.port);
+    } else {
+        try std.testing.expectEqual(@as(u16, 49422), skipped.port);
+    }
     var sk = skipped;
     sk.server.deinit(io);
 }
@@ -2603,6 +2628,30 @@ TCP echo 完成（2 连接）
     **`Io.Timeout` 也有配套的坑**：它是 `union(enum)` 不是 `enum`，
     没有 `.some(n)`（写 `.some(1)` 报 `union 'Io.Timeout' has no member named 'some'`），
     得写 `.{ .duration = .{ .raw = .fromSeconds(1), .clock = .awake } }`（29.10.3）。
+
+17. **⚠️ Windows 0.17 的网络行为五连差异（全部本机实测，示例用 `is_windows`
+    常量做 comptime 分叉）**：
+    ① **UDP 截断语义不同**：小缓冲 `receive` 大数据报，POSIX 静默截断
+    （`flags.trunc = true`），Windows 的 WSAEMSGSIZE 被 std 映射成
+    `error.MessageOversize`——**报错而不是截断**。
+    ② **超 MTU 的 `send`**：POSIX 报 `error.MessageOversize`，Windows 报
+    `error.Unexpected`（映射缺口）。
+    ③ **非本机地址 `listen`/`bind`**：POSIX 报 `error.AddressUnavailable`，
+    Windows 的 NTSTATUS `0xc0000207`（INVALID_ADDRESS_COMPONENT）没进映射表，
+    报 `error.Unexpected`。
+    ④ **mode 不匹配的 `listen`**：POSIX 报 `error.SocketModeUnsupported`，
+    Windows 报 `error.ProtocolUnsupportedByAddressFamily`。
+    ⑤ **重复 `listen` 同端口在 Windows 上被允许**（std 的 Windows reuse 语义
+    与 POSIX 不同）——所以"端口扫描跳过被占端口"的前提是 POSIX 专属的：
+    Windows 上第一轮就"成功"，扫描落在被占端口本身（测试断言按平台分叉）。
+
+18. **⚠️ Windows 0.17：TCP 缓冲写满时 std 的写永久阻塞（不给 WouldBlock）。**
+    29.9 的背压演示（服务端不读、客户端连写 512 KB）在 POSIX 上以
+    `error.WouldBlock` 退出循环，在 Windows 上**真机挂死**（实测确认）——
+    这是本章唯一一段只能在 POSIX 跑的演示，示例里是 `comptime` 分支。
+    注意这不等于"TCP 数据面坏"：回环 echo（29.12）在 Windows 上完全正常。
+    另外 Windows 的 `Socket.handle` 是 `*anyopaque`（值每次运行都不同），
+    演示输出要逐字节可复现就**只打印判定、不打印句柄值**（29.4 的做法）。
 
 ---
 

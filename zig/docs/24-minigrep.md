@@ -222,10 +222,23 @@ thread 2746548 panic: programmer bug caused syscall error: BADF
                 try out.append(gpa, .{ .path = full, .size = st.size });
 ```
 
-运行输出（`zig build run`）：
+运行输出（POSIX 上，`zig build run`）：
 
 ```text
 std.Io.Dir.cwd().handle = -2，std.posix.AT.FDCWD = -2，相等 = true
+⇒ cwd() 是**伪句柄**：它不是真的 fd，而是"相对当前目录"这个约定
+⇒ 对它调 walk/iterate 会 panic：programmer bug caused syscall error: BADF
+   （lseek(-2) 的 errno 被 std 判定为"程序 bug"直接 panic，不是返回错误）
+```
+
+⚠️ 这段在 Windows 上有平台分叉（示例里是 `comptime` 分支）：
+`std.posix.AT.FDCWD` 只在 POSIX 目标存在，Windows 上引用它直接编译错
+`struct 'c.AT__struct_719' has no member named 'FDCWD'`；而且 Windows 的
+`Dir.handle` 是 `*anyopaque` 不透明句柄，打印 fd 数字没有意义。
+Windows 分支只打印不透明句柄的说明，panic 行为两平台一致：
+
+```text
+std.Io.Dir.cwd().handle 是不透明句柄（Windows 无 AT_FDCWD 概念）
 ⇒ cwd() 是**伪句柄**：它不是真的 fd，而是"相对当前目录"这个约定
 ⇒ 对它调 walk/iterate 会 panic：programmer bug caused syscall error: BADF
    （lseek(-2) 的 errno 被 std 判定为"程序 bug"直接 panic，不是返回错误）
@@ -237,6 +250,8 @@ OpenDir 的 OpenOptions 字段： access_sub_paths iterate follow_symlinks
 
 [openDir + iterate]（必须先 openDir，见上面的 BADF）
   openDir 拿到真句柄 handle=5
+  （Windows 上这行是 `openDir 拿到真句柄（Windows 是不透明句柄，值不打印）`——
+   `*anyopaque` 句柄值每次运行都变，演示输出要逐字节可复现就不打印值）
     [directory] sub
     [file] a.txt
 
@@ -1601,6 +1616,7 @@ note: to discard the value, assign it to '_'
 ### 编译期就报错的（改一眼就好）
 
 1. **`std.Io.Dir.cwd().handle` 是 `AT_FDCWD == -2`（伪句柄）**，对它调 `iterate` / `walk` 会 **panic** `programmer bug caused syscall error: BADF`，**不是**返回错误。必须先 `openDir` 拿到真句柄——而且 `.iterate = true` 必须在**打开时**给（Windows 上不开就 AccessDenied）。
+   另一个平台坑：**`std.posix.AT.FDCWD` 只在 POSIX 目标存在**，Windows 上引用它编译错 `struct 'c.AT__struct_719' has no member named 'FDCWD'`；且 Windows 的 `Dir.handle` 是 `*anyopaque` 不透明句柄，打印 fd 没意义——demo24.2 的对账打印只能 `comptime` 分平台。
 
 2. **`Dir.Entry.name` 跨 `next()` 失效**（文档原话 "All `Entry.name` are invalidated with the next call to `read` or `next`"）。要存就 `dupe`。小目录下凑巧不炸，文件一多就现原形——本章用 60 个长文件名让 2048 字节的 `reader_buffer` 必然 refill，实测 `raw[0]` 已被覆写而 `owned[0]` 完好。
 
@@ -1663,6 +1679,8 @@ note: to discard the value, assign it to '_'
 30. **混用 `dprint`（直写 stderr）与缓冲 `Writer` 会输出乱序**。`dprint` 立即写、`w` 攒在用户态缓冲，两者 flush 时机不同。本章实测过三种错位：整段表格消失（还在 stdout 缓冲里没 flush）、反汇编堆到节末、行号全打印而行内容与 `\n` 堆到段尾。**一个函数里的输出要么全走 `w`，要么全走 `dprint`，不能混。**
 
 31. **`@typeInfo(T)` 对 `T.@"enum"` 不再有 `is_enum` / `is_exhaustive`**，合并成 `mode: Mode`（`Mode` 是 `enum { exhaustive, nonexhaustive }`）。照抄 `ti.@"enum".is_exhaustive` 报 `no field named 'is_exhaustive'`。
+
+32. **⚠️ `use of undeclared identifier` 是 AstGen 层面的错，未选中的 comptime 分支也逃不过**。把平台分叉写成 `if (comptime windows) ... else ... handleInt(h) ...` 时，如果 `handleInt` 整个函数没定义，编译器照样报 `undeclared identifier`——标识符解析是全模块词法的，发生在 comptime 求值之前（本地实测）。所以平台分叉里引用的辅助函数必须**真实定义出来**，不能只存在于"被选中的那个平台"里。
 
 ---
 

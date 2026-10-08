@@ -1,6 +1,6 @@
 # Zig 编程指南（0.17）
 
-面向**会编程（C/C++ 背景最佳）、初学 Zig** 的读者：从零教到 0.17 现代写法——`std.Io` 新接口、`std.process.Init` 入口、unmanaged 集合从第 02 章就是默认姿势，旧写法只在坑位清单里教"认得"。**Zig 特色全部独立成章细讲**：分配器（11）、comptime 两章（13/14）、测试（15）、构建系统与包管理（16）、C 互操作（17）、交叉编译与 zig cc（18）。**25–34 章为书本扩充的十大进阶缺口**：二进制布局、编码流处理、目录树、文件监视、网络双协议、HTTP、并发进阶、SQLite 直连、解释器、LRU 缓存服务器（取材《Systems Programming with Zig》《Learning Zig》两书，0.17 实测改写）。每章"读讲解 → 跑示例 → 改代码再跑"，全部示例三层验证通过（fmt + test + 运行 exit 0）。
+面向**会编程（C/C++ 背景最佳）、初学 Zig** 的读者：从零教到 0.17 现代写法——`std.Io` 新接口、`std.process.Init` 入口、unmanaged 集合从第 02 章就是默认姿势，旧写法只在坑位清单里教"认得"。**Zig 特色全部独立成章细讲**：分配器（11）、comptime 两章（13/14）、测试（15）、构建系统与包管理（16）、C 互操作（17）、交叉编译与 zig cc（18）。**25–37 章为书本扩充的进阶缺口**：二进制布局、编码流处理、目录树、文件监视、网络双协议、HTTP、并发进阶、SQLite 直连、解释器、LRU 缓存服务器（取材《Systems Programming with Zig》《Learning Zig》两书，0.17 实测改写）。每章"读讲解 → 跑示例 → 改代码再跑"，全部示例三层验证通过（fmt + test + 运行 exit 0）。
 
 > ⚠️ Zig 尚未 1.0：网上教程多为 0.13/0.14 语法，**0.16 的写法在 0.17 也大量编译不过**
 > （`**` 运算符、`void{}`、`@cImport`、`@intFromEnum`、`b.args`、`std.meta` 等已移除/改名）。
@@ -11,8 +11,8 @@
 ```text
 zig/
 ├── README.md       本文件
-├── docs/           35 篇文档（00 迁移手册 + 01 → 34 教程；25 起为书本扩充进阶篇）
-├── examples/       33 个示例目录（章号 = 目录号；16/17/24 为 build.zig 工程；32 链系统 sqlite3）
+├── docs/           38 篇文档（00 迁移手册 + 01 → 37 教程；25 起为书本扩充进阶篇）
+├── examples/       36 个示例目录（章号 = 目录号；16/17/24/35 为 build.zig 工程；32 链系统 sqlite3）
 ├── build.ps1       统一验证脚本（须 PowerShell 7 / pwsh 运行）
 ├── run-all.sh      同一套验证的 bash 版（Linux/macOS；ZIG= 可指定解释器）
 └── CHEATSheet.md   语法速查 + 0.17 坑位索引
@@ -57,6 +57,9 @@ zig/
 | [32 SQLite 实战](docs/32-sqlite.md) | 手写 `extern "c"` 直连 sqlite3、事务、自定义函数 | `32_sqlite`（`-lsqlite3`） |
 | [33 实战：表达式解释器](docs/33-zcalc.md) | lexer、Pratt 解析、AST、树遍求值 | `33_zcalc` |
 | [34 实战：LRU 缓存服务器](docs/34-zcache.md) | LRU、文本协议、并发客户端、zcache | `34_zcache` |
+| [35 ZLS 与编辑器工具链](docs/35-zls.md) | 版本配对铁律、0.17 断代、zls.json、check 步骤 | `35_zls`（build.zig 工程） |
+| [36 指针与内存深水区](docs/36-pointers.md) | volatile、ptrCast/alignCast、零尺寸、peer 解析、[*c]、位对齐指针 | `36_pointers` |
+| [37 实战：FileGuard 文件完整性监护](docs/37-fileguard.md) | 内容哈希、inode 移动检测、双索引、手写 glob、CLI | `37_fileguard` |
 
 ## 构建工具链
 
@@ -69,7 +72,7 @@ zig/
 
 ```powershell
 cd G:\code\guide\zig
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All                 # 全部 33 个示例：fmt+test+运行
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All                 # 全部 36 个示例：fmt+test+运行
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 12_collections   # 单个示例
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean               # 清理 build 目录
 ```
@@ -78,7 +81,7 @@ Linux/macOS 用等价的 bash 脚本（与 build.ps1 同一套三层验证）：
 
 ```bash
 cd zig
-ZIG=/Volumes/mac004/lang/zig-x86_64-macos-0.17.0/zig ./run-all.sh   # 全部 33 个示例：fmt+test+运行
+ZIG=/Volumes/mac004/lang/zig-x86_64-macos-0.17.0/zig ./run-all.sh   # 全部 36 个示例：fmt+test+运行
 ./run-all.sh 12_collections         # 单个示例
 ZIG=/path/to/zig ./run-all.sh       # 一般情况下直接 ./run-all.sh 即可
 ```

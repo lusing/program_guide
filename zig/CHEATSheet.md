@@ -186,7 +186,7 @@ zig build -Doptimize=ReleaseFast -Dtarget=aarch64-linux
 | 全量验证 | `build.ps1`（pwsh） | `./run-all.sh`（bash，`ZIG=` 可指定）；macOS 跑 ps1 版要 `pwsh -NoProfile -Command '& ./build.ps1 -All'` | — |
 | 合并重定向 `> f 2>&1` | 正常 | Zig 侧会覆盖 stderr 前部（0.16 实测），分开重定向 | 02 |
 
-## 12. 25–34 章新增速查（书本扩充篇）
+## 12. 25–37 章新增速查（书本扩充篇）
 
 ```zig
 // 二进制（25）
@@ -225,9 +225,25 @@ column_text 的借用窗口：下一次 step 前有效，出循环前 dupe
 // 解释器（33）与 LRU（34）
 Pratt：bindingPower 每算符一对 (left,right)——右结合 caret 是 left>right
 @fieldParentPtr("link", node)               // 侵入式链表节点反查宿主
+
+// ZLS（35）：Zig 0.17.0 无官方配对版——master 源码 zig build -Doptimize=ReleaseSafe
+// zls.json: enable_build_on_save + build_on_save_args=["check"]（build_on_save_step 已删）
+// build.zig check 步骤：addExecutable 不 installArtifact → 0.17 自动 -fno-emit-bin
+
+// 指针深水区（36）
+p[i]                                            // [*]T 只能下标；(p+i).* 0.17 编译错误
+@ptrFromInt(addr)                               // 安全模式当场查对齐（panic 在转换行）
+@ptrCast(@alignCast(p))                         // 重解释内存；@bitCast(x) 重解释值（同宽/可 comptime）
+std.StringHashMap(void)                         // = Set；零尺寸类型地址全是 0x1
+*align(1:0:1) u3                                // packed 字段位对齐指针（字节对齐:位偏移:宿主宽）
+
+// FileGuard（37）：双索引 StringHashMap(Metadata) + AutoHashMap(i64, []const u8)
+//   inode==0 哨兵不进索引；求差两遍扫描，inode 反查认 moved
+std.crypto.hash.sha2.Sha256.init/update/final   // 一次性 hash(data, &out, .{}) 是三参
+init.minimal.args.iterateAllocator(a)           // Windows 上 iterate() 编译错误；切片随 deinit 悬空→dupe
 ```
 
-### 25–34 实测坑位（按疼度排）
+### 25–37 实测坑位（按疼度排）
 
 | 坑 | 解 | 章 |
 |---|---|---|
@@ -246,6 +262,12 @@ Pratt：bindingPower 每算符一对 (left,right)——右结合 caret 是 left>
 | aarch64 内联汇编是 Intel 语序 | 不是 AT&T：`add %[a], %[o]` 报 `too few operands` | 21 |
 | Zig 的 `"m"` 不是 C 的内存操作数 | 指向"装着值的临时栈槽"，读到值副本；编译测试都过、只有数值错 | 21 |
 | x86_64 macOS 裸 `syscall` 吃 SIGSYS | 退出码 140；必须借 libc（`zig cc` 编的 C 同样 140） | 21 |
+| Windows 用户态没有 `syscall` 通道 | 裸 `syscall` 直接非法指令异常；win32 API 就是 ntdll 网关，走 `std.os.windows.GetCurrentProcessId()` | 21 |
+| Windows 下 `std.c.getpid()` 编译错 | 0.17 把它的返回类型映射成 `pid_t = windows.HANDLE`（`*anyopaque`），`@intCast` 报 `expected integer or vector` | 21 |
+| `-lc` 下 `extern "system"` 找不到 `system.lib` | 报 `DllImportLibraryNotFound`；win32 API 用 `std.os.windows` 现成声明 | 21 |
+| 两操作数指令 + 独立 `"=x"` 输出 = 垃圾值 | `addsd` 就地覆盖 dst（AT&T 末位）；Zig 无 `"0"` 匹配约束，输出/输入共用**显式寄存器**（`={xmm0}`/`{xmm0}`）；错法在 macOS 撞对、Windows 算出 0 | 21 |
+| `undeclared identifier` 是 AstGen 层错 | 未选中的 comptime 分支也逃不过全模块标识符解析；平台分叉引用的辅助函数必须真实定义 | 24 |
+| `std.posix.AT.FDCWD` 只在 POSIX 存在 | Windows 编译错 `no member named 'FDCWD'`；且 `Dir.handle` 是 `*anyopaque`，`{d}` 打不了 | 20/24 |
 | `@cImport` 已移除，单文件场景手写 `extern "c"` | `b.addTranslateC` 走不了（无 build.zig）；`callconv(.C)` → `.c` | 17/32 |
 | `extern fn` 参数里不许出现切片 | `[:0]const u8` 报 `slices have no guaranteed in-memory representation` | 32 |
 | `sqlite3_source_id` 在 macOS 共享缓存里没导出 | 照抄头文件会 `undefined symbol`；删掉这行声明 | 32 |

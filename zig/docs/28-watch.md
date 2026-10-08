@@ -1103,6 +1103,13 @@ fn timestampProbe(io: std.Io, dir: std.Io.Dir, name: []const u8) !void {
 161095 / 147938 纳秒——**它证明的是"本机分辨率远细于毫秒"这个量级结论**，
 而不是某个具体数字。`size=4字节` 和 `分辨率=1ns` 是确定性信息，保留原样。）
 
+⚠️ **Windows 实测（0.17，NTFS，回归机上）**：这段输出是
+`同尺寸连续改写：mtime 变了=false 增量=0ns`、`Clock.awake 分辨率=100ns`——
+两次紧邻的写落在同一个时间戳刻度上。所以"同尺寸改写靠 mtime 兜住"那条测试
+在 Windows 上放宽成了"0 或 1 条事件都算知道"（只要有事件就必须是 modified），
+这正好是把**轮询监视器的固有盲区**摆在台面上：mtime+size 都抓不住的同刻度
+同尺寸改写，只能靠内容哈希（37 章 FileGuard 的 `checksum` 字段干的就是这个）。
+
 ⚠️ **这里要诚实地说明一件事**：本机（macOS APFS）测出来**mtime 是纳秒级的**——
 同尺寸连续改写的最小可分辨增量在**十几万纳秒（0.1~0.2 毫秒）**量级，
 所以 28.3 场景 4 的"同尺寸改写"能被检测到。
@@ -1533,14 +1540,15 @@ C 里用 `FileName[1]` 占位 + `NextEntryOffset` 串成链表。**Zig 里绝不
 表现为莫名其妙的错误码）。这是异步 I/O 的"取消也要收尾"原则——
 和 `Io.Group.cancel` 之后"保证所有任务已跑完"是同一种设计哲学。
 
-⚠️ 还有一个常量要纠正：示例第 436 行把 `FILE_FLAG_OVERLAPPED`
-注释成了 `0x0200_0000`（见坑位清单第 18 条）——这行没被实际调用，属于文档里的
-错误示范，需要说明。正确值是**`0x4000_0000`**；而 `0x0200_0000` 在 `CreateFile`
-的参数位里是 `FILE_FLAG_BACKUP_SEMANTICS`。所以示例里
-`FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED` 这个组合里，
-**低位那个对、高位那个其实重复了 BACKUP 而不是 OVERLAPPED**——
-真要跑异步 I/O，flags 得改成 `FILE_FLAG_BACKUP_SEMANTICS | 0x4000_0000`。
-（它只编译不运行，所以交叉编译验证抓不到这个。）
+⚠️ **常量已修正，但这段历史值得留下**：旧版示例把 `FILE_FLAG_OVERLAPPED`
+误写成 `0x0200_0000`（与 `FILE_FLAG_BACKUP_SEMANTICS` 同一位），文档最初还
+以为"这行没被实际调用，交叉编译抓不到就算了吧"。**Windows 真机一跑立刻现形**：
+句柄其实是同步的，RDCW 配上 `OVERLAPPED` 指针照样**同步阻塞等变更**，
+演示主程序直接挂死（挂了 12 分钟以上才被强杀）。
+正确值是 **`0x4000_0000`**——示例现在是改过的，所以
+`FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED` 两个位都在、语义互不覆盖。
+教训：**"只编译不运行"的代码也会在某台真机上成为炸弹**，常量抄错这种错
+只有真跑才抓得住。
 
 **四个平台的原理速查**（示例的非 Windows 分支也打印了这段，见 `main` 第 826-849 行）：
 
@@ -2000,9 +2008,10 @@ test "RDCW 记录链解析：手工构造的缓冲区（布局解析是平台无
     必须堆分配，或保证在 `GetOverlappedResult` 返回后才离开作用域。
     而且必须 `std.mem.zeroes` 初始化（Windows 用 `Internal` 存状态）。
     `CancelIo` 之后还要 `GetOverlappedResult(..., TRUE)` 等 I/O 真正收尾。
-    （顺带：示例第 436 行把 `FILE_FLAG_OVERLAPPED` 注释成 `0x0200_0000` 是错的，
-    正确值是 `0x4000_0000`——`0x0200_0000` 在 `CreateFile` 里是
-    `FILE_FLAG_BACKUP_SEMANTICS`。这行没被调用，属于文档里的错误示范。）
+    （连带事故：旧版示例把 `FILE_FLAG_OVERLAPPED` 写成 `0x0200_0000`
+    （与 `FILE_FLAG_BACKUP_SEMANTICS` 同一位），Windows 真机上句柄其实是同步的，
+    RDCW 配 OVERLAPPED 直接**挂死演示主程序**——已修正为 `0x4000_0000`。
+    与 win32 教程"RDCW 须 FILE_FLAG_OVERLAPPED 否则同步死锁"同坑。）
 
 19. ⚠️ **`FILE_FLAG_BACKUP_SEMANTICS` 不加，`CreateFileW` 开目录报 AccessDenied**。
     而且 `dwShareMode` 要给足

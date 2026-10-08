@@ -15,6 +15,31 @@ fn end(comptime tag: []const u8) void {
     std.debug.print("==== {s} 结束 ====\n", .{tag});
 }
 
+/// Windows 的 Walker 路径用本机分隔符（`sub/b.txt`），断言/glob 都按 POSIX 的
+/// `/` 写。这个函数把**自己拥有的**切片就地归一成 `/`（仅用于测试里的 dupe 产物）。
+fn normalizeToSlashInPlace(p: []u8) void {
+    for (p) |*ch| {
+        if (ch.* == std.fs.path.sep) ch.* = '/';
+    }
+}
+
+/// 造/恢复一个"000 权限目录"。⚠️ 0.17 实测：`Io.File.Permissions` 在 Windows
+/// 目标是 FILE_ATTRIBUTE 枚举（`fromMode` 是 POSIX 分支才有的方法，引用即编译错
+/// `no member named 'fromMode'`），而且"不可遍历的目录"在 Windows 上要 ACL 才造得出来。
+/// 所以锁目录这一步只在 POSIX 有意义，Windows 上两个函数都是空操作
+/// （测试断言对两种情况都成立：顶层条目照样被统计到）。
+fn lockDirForPosix(io: std.Io, dir: std.Io.Dir, path: []const u8) !void {
+    if (comptime @import("builtin").os.tag != .windows) {
+        try dir.setFilePermissions(io, path, @as(std.Io.File.Permissions, .fromMode(0)), .{});
+    }
+}
+
+fn unlockDirForPosix(io: std.Io, dir: std.Io.Dir, path: []const u8) !void {
+    if (comptime @import("builtin").os.tag != .windows) {
+        try dir.setFilePermissions(io, path, @as(std.Io.File.Permissions, .fromMode(0o755)), .{});
+    }
+}
+
 /// 27.12 的树节点：一棵树就是"一个目录节点 + 若干子节点"。
 /// 名字**拥有**自己的内存（dupe 来的），所以树可以在迭代器之外继续活着。
 const Node = struct {
@@ -299,7 +324,13 @@ pub fn main(init: std.process.Init) !void {
         // 三层模型：Dir 是工厂、File 是句柄、Entry 是遍历产物
         var d = try cwd.openDir(io, sbox, .{ .iterate = true });
         defer d.close(io);
-        std.debug.print("Dir 是工厂：openDir 出来的是**真 fd**（handle >= 0）；Dir.cwd().handle={d} 是伪句柄（AT_FDCWD={d}）\n", .{ cwd.handle, std.posix.AT.FDCWD });
+        // Windows：`std.posix.AT.FDCWD` 编译期就不存在，且 handle 是 *anyopaque
+        //（值每次运行都变）——伪句柄的语义说明只在 POSIX 打印数值
+        if (comptime @import("builtin").os.tag == .windows) {
+            std.debug.print("Dir 是工厂：openDir 出来的是**真句柄**；Dir.cwd() 是伪句柄（Windows 无 AT_FDCWD，不打印值）\n", .{});
+        } else {
+            std.debug.print("Dir 是工厂：openDir 出来的是**真 fd**（handle >= 0）；Dir.cwd().handle={d} 是伪句柄（AT_FDCWD={d}）\n", .{ cwd.handle, std.posix.AT.FDCWD });
+        }
         std.debug.print("Entry 是遍历产物：只有 {{name, kind, inode}}，**没有大小、没有时间**（要 statFile）\n", .{});
         var it = d.iterate();
         var rows: std.ArrayList([2][]const u8) = .empty;
@@ -359,7 +390,7 @@ pub fn main(init: std.process.Init) !void {
         // 造一个 000 权限的目录（POSIX 有效）
         try cwd.createDirPath(io, sbox ++ "/locked");
         try cwd.writeFile(io, .{ .sub_path = sbox ++ "/locked/secret.txt", .data = "s3cret" });
-        try cwd.setFilePermissions(io, sbox ++ "/locked", @as(std.Io.File.Permissions, .fromMode(0)), .{});
+        try lockDirForPosix(io, cwd, sbox ++ "/locked");
 
         const EI = @typeInfo(std.Io.Dir.Iterator.Error);
         std.debug.print("Iterator.Error 的 @typeInfo tag = {s}（是错误集，不是别的）\n", .{@tagName(EI)});
@@ -410,7 +441,7 @@ pub fn main(init: std.process.Init) !void {
         std.debug.print("⇒ 27 章选A：**目录级错误降级成\"跳过\"，其它错误原样上抛**\n", .{});
 
         // 恢复权限，否则 defer 的 deleteTree 清不掉
-        try cwd.setFilePermissions(io, sbox ++ "/locked", @as(std.Io.File.Permissions, .fromMode(0o755)), .{});
+        try unlockDirForPosix(io, cwd, sbox ++ "/locked");
     }
     end("27.4");
 
@@ -589,7 +620,13 @@ pub fn main(init: std.process.Init) !void {
     // ═══ 27.9 cwd() 是伪句柄：不能 walk / stat / iterate ═══
     begin("27.9");
     {
-        std.debug.print("std.Io.Dir.cwd().handle = {d}，而 AT.FDCWD = {d} ⇒ 它**不是真正的 fd**\n", .{ cwd.handle, std.posix.AT.FDCWD });
+        // Windows：`std.posix.AT.FDCWD` 编译期不存在（且 handle 是 *anyopaque），
+        // 伪句柄的数值展示只在 POSIX 有意义
+        if (comptime @import("builtin").os.tag == .windows) {
+            std.debug.print("Dir.cwd() 是伪句柄（Windows 是不透明句柄，无 AT_FDCWD 概念）⇒ 它**不是真正打开的 fd**\n", .{});
+        } else {
+            std.debug.print("std.Io.Dir.cwd().handle = {d}，而 AT.FDCWD = {d} ⇒ 它**不是真正的 fd**\n", .{ cwd.handle, std.posix.AT.FDCWD });
+        }
         std.debug.print("源码文档原话：It is not opened with iteration capability.\n", .{});
         std.debug.print("             Iterating over the result is illegal behavior.\n", .{});
         std.debug.print("             Closing the returned `Dir` is checked illegal behavior.\n", .{});
@@ -663,7 +700,9 @@ pub fn main(init: std.process.Init) !void {
         var paths: std.ArrayList([]const u8) = .empty;
         while (try w.next(io)) |e| {
             std.debug.print("  walk: depth={d} kind={t:<9} path={s}\n", .{ e.depth(), e.kind, e.path });
-            try paths.append(a, try a.dupe(u8, e.path));
+            const owned = try a.dupe(u8, e.path);
+            normalizeToSlashInPlace(owned);
+            try paths.append(a, owned);
         }
         std.mem.sort([]const u8, paths.items, {}, lessStr);
         std.debug.print("walk 共 {d} 条（含 loop 与 link_readme / link_dead 两个链接条目）：\n", .{paths.items.len});
@@ -802,10 +841,16 @@ pub fn main(init: std.process.Init) !void {
         // 跨两个 Dir 的四个方法：io 的位置实测
         try cwd.rename(sbox ++ "/main.zig", cwd, sbox ++ "/main2.zig", io); // io 第 4
         std.debug.print("rename(old, new_dir, new_path, io) —— **io 在第 4 位**（不是第 1 位）\n", .{});
-        try cwd.hardLink(sbox ++ "/main2.zig", cwd, sbox ++ "/main2_hard.zig", io, .{}); // io 第 5
-        const s1 = try cwd.statFile(io, sbox ++ "/main2.zig", .{});
-        const s2 = try cwd.statFile(io, sbox ++ "/main2_hard.zig", .{});
-        std.debug.print("hardLink(old, new_dir, new_path, io, opts) —— io 第 5；inode 相同={} nlink={d}\n", .{ s1.inode == s2.inode, s2.nlink });
+        // ⚠️ std 0.17 的 dirHardLink 在 Windows 上直接返 OperationUnsupported，
+        // 硬链接演示只能在 POSIX 跑
+        if (comptime @import("builtin").os.tag == .windows) {
+            std.debug.print("hardLink(old, new_dir, new_path, io, opts) —— io 第 5；⚠️ Windows 上 std 返 OperationUnsupported，跳过演示\n", .{});
+        } else {
+            try cwd.hardLink(sbox ++ "/main2.zig", cwd, sbox ++ "/main2_hard.zig", io, .{}); // io 第 5
+            const s1 = try cwd.statFile(io, sbox ++ "/main2.zig", .{});
+            const s2 = try cwd.statFile(io, sbox ++ "/main2_hard.zig", .{});
+            std.debug.print("hardLink(old, new_dir, new_path, io, opts) —— io 第 5；inode 相同={} nlink={d}\n", .{ s1.inode == s2.inode, s2.nlink });
+        }
         try cwd.copyFile(sbox ++ "/main2.zig", cwd, sbox ++ "/main2_copy.zig", io, .{}); // io 第 5
         std.debug.print("copyFile(src, dst_dir, dst_path, io, opts) —— io 第 5；副本 {d} 字节\n", .{(try cwd.statFile(io, sbox ++ "/main2_copy.zig", .{})).size});
         try cwd.symLinkAtomic(io, "main2.zig", sbox ++ "/main2_atomic", .{}); // io 第 1（例外）
@@ -991,7 +1036,11 @@ test "27.5 entry.name跨 next() 失效：不 dupe 会拿到失效的名字" {
             continue;
         };
     }
-    try std.testing.expect(broken > 0);
+    // 判据 2 在 Windows 上不成立（实测 0.17：Windows 的迭代器实现里这些
+    // 失效切片居然还能 access 成功——缓冲覆写方式两平台不同），只对 POSIX 断言
+    if (comptime @import("builtin").os.tag != .windows) {
+        try std.testing.expect(broken > 0);
+    }
 
     // dupe 之后全部有效
     var good: std.ArrayList([]const u8) = .empty;
@@ -1027,7 +1076,9 @@ test "27.6 walk 返回带路径的条目，根目录本身不在结果里" {
     defer paths.deinit(a);
     var max_depth: usize = 0;
     while (try w.next(io)) |e| {
-        try paths.append(a, try a.dupe(u8, e.path));
+        const owned6 = try a.dupe(u8, e.path);
+        normalizeToSlashInPlace(owned6);
+        try paths.append(a, owned6);
         if (e.depth() > max_depth) max_depth = e.depth();
         // Walker.Entry 的 dir + basename 可以直接定位，不必拼长路径
         if (e.kind == .file) {
@@ -1089,7 +1140,9 @@ test "27.8 walkSelectively：enter 进去、leave 剪掉分支" {
     var seen: std.ArrayList([]const u8) = .empty;
     defer seen.deinit(a);
     while (try w.next(io)) |e| {
-        try seen.append(a, try a.dupe(u8, e.path));
+        const owned = try a.dupe(u8, e.path);
+        normalizeToSlashInPlace(owned);
+        try seen.append(a, owned);
         if (std.mem.eql(u8, e.basename, "x")) {
             try w.enter(io, e); // 进 x
         } else if (e.kind == .directory and e.depth() >= 2) {
@@ -1128,7 +1181,13 @@ test "27.10 statFile 的 lstat 语义；follow_symlinks 实测是 bool" {
     // ⚠️ 实测：lstat 的 inode 和 stat 的**差 1**（macOS/APFS 给符号链接自己分配 inode）
     //   ⇒ "lstat.inode == stat.inode" 这种假设在 macOS 上是错的
     try std.testing.expect(lst.inode != stt.inode);
-    try std.testing.expectEqual(lst.size, @as(u64, @intCast("target.txt".len))); // lstat 报链接串长度
+    // lstat 的 size：POSIX 报**链接串的长度**（"target.txt".len=10）；
+    // Windows 实测报 0（符号链接元数据不含目标串）
+    if (comptime @import("builtin").os.tag == .windows) {
+        try std.testing.expectEqual(@as(u64, 0), lst.size);
+    } else {
+        try std.testing.expectEqual(lst.size, @as(u64, @intCast("target.txt".len)));
+    }
 
     // readLink 拿到目标字符串
     var buf: [32]u8 = undefined;
@@ -1263,8 +1322,16 @@ test "27.14 walk + glob 组合：只统计 *.txt 的字节数" {
     var total: u64 = 0;
     while (try w.next(io)) |e| {
         if (e.kind != .file) continue;
-        if (!globMatch(e.path, "**/*.txt")) continue;
-        try hits.append(a, try a.dupe(u8, e.path));
+        // Windows 的 e.path 用反斜杠，glob 模式按 `/` 写——归一后再匹配
+        var pbuf: [4096]u8 = undefined;
+        const norm = std.fmt.bufPrint(&pbuf, "{s}", .{e.path}) catch unreachable;
+        const owned_norm = try a.dupe(u8, norm);
+        normalizeToSlashInPlace(owned_norm);
+        if (!globMatch(owned_norm, "**/*.txt")) {
+            a.free(owned_norm);
+            continue;
+        }
+        try hits.append(a, owned_norm);
         total += (try e.dir.statFile(io, e.basename, .{})).size;
     }
     std.mem.sort([]const u8, hits.items, {}, lessStr);
@@ -1297,8 +1364,16 @@ test "27.16 Dir.Reader 批量读 + reset（缓冲必须 align(usize)）" {
     }
     try std.testing.expectEqual(@as(usize, 5), total);
     rdr.reset();
-    const again = try rdr.read(io, &batch);
-    try std.testing.expectEqual(@as(usize, 5), again);
+    // ⚠️ reset 后**也要循环排空**：Windows 实测单次 read 最多吐 3 条
+    // （min 缓冲下 Windows 目录条目更大：UTF-16 名字 + 属性），POSIX 一把 5 条。
+    // reset 的语义是"从头再来"，不是"再来一把就是全部"。
+    var again_total: usize = 0;
+    while (true) {
+        const again = try rdr.read(io, &batch);
+        if (again == 0) break;
+        again_total += again;
+    }
+    try std.testing.expectEqual(@as(usize, 5), again_total);
     try std.testing.expect(!@hasDecl(std.Io.Dir, "reader")); // 没有 reader 方法
 }
 
@@ -1313,11 +1388,16 @@ test "27.15 跨 Dir 的四个方法：io 在第 4/5 位，symLinkAtomic 在第 1
     try tmp.dir.rename("d/src.txt", tmp.dir, "d/renamed.txt", io);
     try std.testing.expectError(error.FileNotFound, tmp.dir.statFile(io, "d/src.txt", .{}));
     // hardLink(old, new_dir, new_path, io, options)—— io 第 5
-    try tmp.dir.hardLink("d/renamed.txt", tmp.dir, "d/hard.txt", io, .{});
-    const s1 = try tmp.dir.statFile(io, "d/renamed.txt", .{});
-    const s2 = try tmp.dir.statFile(io, "d/hard.txt", .{});
-    try std.testing.expectEqual(s1.inode, s2.inode);
-    try std.testing.expectEqual(@as(u16, 2), s2.nlink);
+    // ⚠️ std 0.17 自己就在 Windows 上返 OperationUnsupported（Io/Threaded.zig
+    //   的 dirHardLink 第一行 `if (is_windows) return error.OperationUnsupported`），
+    //   所以硬链接三连断言只对 POSIX 跑
+    if (comptime @import("builtin").os.tag != .windows) {
+        try tmp.dir.hardLink("d/renamed.txt", tmp.dir, "d/hard.txt", io, .{});
+        const s1 = try tmp.dir.statFile(io, "d/renamed.txt", .{});
+        const s2 = try tmp.dir.statFile(io, "d/hard.txt", .{});
+        try std.testing.expectEqual(s1.inode, s2.inode);
+        try std.testing.expectEqual(@as(u16, 2), s2.nlink);
+    }
     // copyFile(src, dst_dir, dst_path, io, options)—— io 第 5
     try tmp.dir.copyFile("d/renamed.txt", tmp.dir, "d/copied.txt", io, .{});
     try std.testing.expectEqual(@as(u64, 5), (try tmp.dir.statFile(io, "d/copied.txt", .{})).size);
@@ -1342,7 +1422,7 @@ test "27.4 权限错误：受限目录被跳过后其余条目照样统计到" {
     try tmp.dir.createDirPath(io, "w/locked");
     try tmp.dir.writeFile(io, .{ .sub_path = "w/a.txt", .data = "aa" });
     try tmp.dir.writeFile(io, .{ .sub_path = "w/locked/secret.txt", .data = "ssssssss" });
-    try tmp.dir.setFilePermissions(io, "w/locked", @as(std.Io.File.Permissions, .fromMode(0)), .{});
+    try lockDirForPosix(io, tmp.dir, "w/locked");
 
     var files: std.ArrayList([]const u8) = .empty;
     defer {
@@ -1361,5 +1441,5 @@ test "27.4 权限错误：受限目录被跳过后其余条目照样统计到" {
     try std.testing.expect(has_a);
     try std.testing.expect(skipped <= 1);
 
-    try tmp.dir.setFilePermissions(io, "w/locked", @as(std.Io.File.Permissions, .fromMode(0o755)), .{});
+    try unlockDirForPosix(io, tmp.dir, "w/locked");
 }

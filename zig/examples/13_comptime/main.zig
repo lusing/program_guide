@@ -679,7 +679,8 @@ test "13.12 查表版与试除版结果一致，但成本不同" {
     const ov = @addWithOverflow(@as(u8, 250), @as(u8, 10));
     try std.testing.expectEqual(@as(u8, 4), ov[0]);
     try std.testing.expect(ov[1] == 1);
-    // undefined 在 0.17 填 0x00
+    // undefined 的内容是**未指定**：macOS 0.17 实测填 0x00，Windows 0.17.0 实测是 0x04——
+    // 只能演示不能断言（这正是"别读 undefined"的活教材）
     const u: u32 = undefined;
-    try std.testing.expectEqual(@as(u32, 0), u);
+    _ = u;
 }

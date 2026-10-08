@@ -73,9 +73,11 @@ test_one() { # test_one <目录>
     case "$(basename "$dir")" in
         # build.zig 工程：16 构建系统 / 17 C 互操作（0.17 起 @cImport 已移除，
         # 头文件翻译改走 b.addTranslateC，只能经构建系统）/ 24 迷你 grep
-        16_build | 17_cinterop | 24_minigrep) test_project_example "$dir" ;;
+        16_build | 17_cinterop | 24_minigrep | 35_zls) test_project_example "$dir" ;;
         # 32：Linux 链系统 sqlite3（需 libsqlite3-dev）；对应 Windows 的 winsqlite3.dll 直链
         32_sqlite) test_plain_example "$dir" -lsqlite3 ;;
+        # 21：21.6/21.9 用 extern "c" 的 getpid/strlen 与 libc 对账，须显式 -lc
+        21_asm) test_plain_example "$dir" -lc ;;
         18_cross) test_cross_example "$dir" ;;
         *) test_plain_example "$dir" ;;
     esac

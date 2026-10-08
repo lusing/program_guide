@@ -1,5 +1,6 @@
 //! 06 数组、切片与字符串：[N]T 的长度进类型、[]T胖指针、哨兵 [:0]、UTF-8 字节语义、指针三兄弟
 const std = @import("std");
+const builtin = @import("builtin");
 
 fn begin(comptime tag: []const u8) void {
     std.debug.print("==== {s} 开始 ====\n", .{tag});
@@ -401,20 +402,33 @@ pub fn main(init: std.process.Init) !void {
 
     // ═══ 6.12 命令行参数：真实的 []const u8 ═══
     begin("6.12");
-    var args = init.minimal.args.iterate();
-    const argv0 = args.next(); // [:0]const u8 —— 哨兵切片
-    if (argv0) |a0| {
-        // argv[0] 是可执行文件路径（长度随安装位置变化），所以只演示类型与哨兵性质
-        std.debug.print("argv[0] 类型={s} 末字节={d}（哨兵保证；.len 是路径长度，不固定）\n", .{
-            @typeName(@TypeOf(a0)), a0[a0.len],
-        });
-    }
-    var arg_no: usize = 1;
-    while (args.next()) |arg| : (arg_no += 1) {
-        // 参数是 [:0]const u8，能直接传给收 []const u8 的函数
-        std.debug.print("argv[{d}] 类型={s} len={d} 字符数={d} 首字节=0x{x:0>2}\n", .{
-            arg_no, @typeName(@TypeOf(arg)), arg.len, try codepointCount(arg), arg[0],
-        });
+    if (builtin.os.tag == .windows) {
+        // ⚠️ Windows 上 iterate() 是编译错误（WTF-16→WTF-8 转码需要缓冲），
+        // 必须 iterateAllocator + deinit；产物是普通 []const u8，**没有哨兵**
+        var args = try init.minimal.args.iterateAllocator(init.arena.allocator());
+        defer args.deinit();
+        var arg_no: usize = 0;
+        while (args.next()) |arg| : (arg_no += 1) {
+            std.debug.print("argv[{d}] 类型={s} len={d} 字符数={d}\n", .{
+                arg_no, @typeName(@TypeOf(arg)), arg.len, try codepointCount(arg),
+            });
+        }
+    } else {
+        var args = init.minimal.args.iterate();
+        const argv0 = args.next(); // [:0]const u8 —— 哨兵切片
+        if (argv0) |a0| {
+            // argv[0] 是可执行文件路径（长度随安装位置变化），所以只演示类型与哨兵性质
+            std.debug.print("argv[0] 类型={s} 末字节={d}（哨兵保证；.len 是路径长度，不固定）\n", .{
+                @typeName(@TypeOf(a0)), a0[a0.len],
+            });
+        }
+        var arg_no: usize = 1;
+        while (args.next()) |arg| : (arg_no += 1) {
+            // 参数是 [:0]const u8，能直接传给收 []const u8 的函数
+            std.debug.print("argv[{d}] 类型={s} len={d} 字符数={d} 首字节=0x{x:0>2}\n", .{
+                arg_no, @typeName(@TypeOf(arg)), arg.len, try codepointCount(arg), arg[0],
+            });
+        }
     }
     std.debug.print("（本例没传额外参数，所以只有 argv[0]）\n", .{});
     end("6.12");

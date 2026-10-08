@@ -3,6 +3,7 @@
 //! 0.16/0.17 变化：std.fs.File/Dir 并入 std.Io，几乎全部方法第一个参数是 io。
 //! 这不是风格问题——它让"I/O 从哪来"变成签名的一部分，于是可替换、可测试、可异步化。
 const std = @import("std");
+const builtin = @import("builtin");
 
 fn begin(comptime tag: []const u8) void {
     std.debug.print("==== {s} 开始 ====\n", .{tag});
@@ -10,6 +11,15 @@ fn begin(comptime tag: []const u8) void {
 
 fn end(comptime tag: []const u8) void {
     std.debug.print("==== {s} 结束 ====\n", .{tag});
+}
+
+/// 句柄转可打印整数：POSIX 的 fd 是整数，Windows 的 HANDLE 是 *anyopaque——
+/// 用 @typeInfo 在编译期分流，一种写法通吃两个平台。
+fn handleInt(h: anytype) usize {
+    return switch (@typeInfo(@TypeOf(h))) {
+        .pointer => @intFromPtr(h),
+        else => @intCast(h),
+    };
 }
 
 /// 20.11 的结构体：故意**不**在字段里存 Writer/Reader。
@@ -45,15 +55,22 @@ pub fn main(init: std.process.Init) !void {
     // ═══ 20.1 为什么每个方法都要传io：Io 是显式依赖 ═══
     begin("20.1");
     std.debug.print("std.fs.cwd 在 0.17 **不存在**了（@hasDecl = {}）\n", .{@hasDecl(std.fs, "cwd")});
-    std.debug.print("取当前目录的新名字：std.Io.Dir.cwd() → handle={d}（AT_FDCWD={d}）\n", .{ cwd.handle, std.posix.AT.FDCWD });
+    if (builtin.os.tag != .windows) {
+        std.debug.print("取当前目录的新名字：std.Io.Dir.cwd() → handle={d}（AT_FDCWD={d}）\n", .{ cwd.handle, std.posix.AT.FDCWD });
+    } else {
+        // Windows 的 posix.AT 没有 FDCWD 成员（POSIX 伪句柄概念）；
+        // cwd().handle 是 HANDLE（*anyopaque），{d} 打不了，转整数
+        std.debug.print("取当前目录的新名字：std.Io.Dir.cwd() → handle=0x{x}\n", .{handleInt(cwd.handle)});
+    }
     std.debug.print("main 拿到的 io 类型 = {s}，来自 init.io（不是全局变量）\n", .{@typeName(@TypeOf(init.io))});
     std.debug.print("Dir 是**工厂**（凭路径造File），File 是**句柄**（一个已打开的 fd）\n", .{});
     std.debug.print("⇒ 换掉 io 就换掉了整个 I/O 后端：测试传 std.testing.io，生产传 init.io\n", .{});
     std.debug.print("⇒ 这是 02 章 init.io 设计的回报，和 15 章的 testing.io 是同一件事\n", .{});
-    std.debug.print("stdio 三件套（0.17 也在 Io 下）：stdin={d} stdout={d} stderr={d}\n", .{
-        std.Io.File.stdin().handle,
-        std.Io.File.stdout().handle,
-        std.Io.File.stderr().handle,
+    // 句柄类型平台相关：POSIX 是 fd（整数），Windows 是 HANDLE（*anyopaque）——统一转整数打印
+    std.debug.print("stdio 三件套（0.17 也在 Io 下）：stdin=0x{x} stdout=0x{x} stderr=0x{x}\n", .{
+        handleInt(std.Io.File.stdin().handle),
+        handleInt(std.Io.File.stdout().handle),
+        handleInt(std.Io.File.stderr().handle),
     });
     std.debug.print("File.stdin() / stdout() / stderr() 都**不带参数**（它们是常量句柄）\n", .{});
     end("20.1");
@@ -747,7 +764,9 @@ test "20.10 std.fs.path：dirname 返回可选" {
     defer a.free(joined);
     try std.testing.expectEqualStrings("a.txt", std.fs.path.basename(joined));
     try std.testing.expectEqualStrings(".txt", std.fs.path.extension(joined));
-    try std.testing.expectEqualStrings("dir/sub", std.fs.path.dirname(joined).?);
+    // join 用**本机分隔符**：Windows 是 \，POSIX 是 /
+    const want_dir = if (builtin.os.tag == .windows) "dir\\sub" else "dir/sub";
+    try std.testing.expectEqualStrings(want_dir, std.fs.path.dirname(joined).?);
     // std.fs 搬家了，path 没搬
     try std.testing.expect(!@hasDecl(std.fs, "cwd"));
     try std.testing.expect(!@hasDecl(std.fs, "File"));

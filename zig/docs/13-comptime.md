@@ -1152,7 +1152,7 @@ All 11 tests passed.
 有两个测试特别值得注意：
 
 - **第 9 个**断言 `isPrime(247) == false` 且 `isPrime(256) == false`（表覆盖范围外不猜）。这是查表代码的关键性质——**表的边界必须有明确语义**，不能靠运气。
-- **第 11 个**用一个 12 元素的数组逐一断言 `isPrimeRuntime(n) == isPrime(n)`，保证两种实现结果一致（编译期算的表是对的）；同时断言 `@addWithOverflow` 的标志位是 `u1`（`ov[1] == 1`）和 `undefined` 填 `0x00`。
+- **第 11 个**用一个 12 元素的数组逐一断言 `isPrimeRuntime(n) == isPrime(n)`，保证两种实现结果一致（编译期算的表是对的）；同时断言 `@addWithOverflow` 的标志位是 `u1`（`ov[1] == 1`）；`undefined` 只演示不断言（内容未指定，平台各异）。
 
 ## 13.13 坑位清单
 
@@ -1186,7 +1186,7 @@ All 11 tests passed.
 
 15. **`@clamp` 已移除**：`error: invalid builtin function: '@clamp'` → 用 `@min` / `@max`。同批改名还有 `@intFromEnum` → `@backingInt`（03 章 3.9 节）。
 
-16. **`@addWithOverflow` 的溢出标志是 `u1` 不是 `bool`**：`ov[1]` 是 0 或 1，要写 `ov[1] == 1` 才能喂给 `expect(bool)`，写 `expect(ov[1])` 报 `error: expected type 'bool', found 'u1'`。另外 **`error_names` 是可空的** `?[]const [:0]const u8`，得 `if (x) |y|` 或 `.?`；元素是哨兵切片，打印写 `n[0..n.len]`，写 `n[0..8 :0]` 报 `value in memory does not match slice sentinel`。**`undefined` 在 0.17 填 `0x00`**（0.16 是 `0xaa`）。
+16. **`@addWithOverflow` 的溢出标志是 `u1` 不是 `bool`**：`ov[1]` 是 0 或 1，要写 `ov[1] == 1` 才能喂给 `expect(bool)`，写 `expect(ov[1])` 报 `error: expected type 'bool', found 'u1'`。另外 **`error_names` 是可空的** `?[]const [:0]const u8`，得 `if (x) |y|` 或 `.?`；元素是哨兵切片，打印写 `n[0..n.len]`，写 `n[0..8 :0]` 报 `value in memory does not match slice sentinel`。**`undefined` 的内容是未指定的**——macOS 0.17 实测填 `0x00`（0.16 是 `0xaa`），Windows 0.17.0 实测读出 `0x04`：只能演示不能断言，这正是"别读 undefined"的活教材。
 
 17. **⚠️【新】0.17 不许在函数体里声明 `fn`**：`fn inner(a: u32) u32 { ... }` 写在 `main` 里报 `error: expected ',' after initializer`（报错很莫名其妙，解析器把 `fn` 当成了别的东西）。需要局部函数就得放容器级。
 

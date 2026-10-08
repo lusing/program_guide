@@ -73,7 +73,8 @@ pub fn main(init: std.process.Init) !void {
     }
     std.debug.print("共 {d} 个参数（argv[0] 是程序自己的路径）\n", .{argc});
     // skip()：不取值只跳过。解析子命令时省掉 argv[0] 就靠它
-    var it2 = init.minimal.args.iterate();
+    var it2 = try init.minimal.args.iterateAllocator(arena); // Windows：iterate() 是编译错误
+    defer it2.deinit();
     std.debug.print("skip() 第一次 = {}（跳掉 argv[0]）\n", .{it2.skip()});
     var rest: usize = 0;
     while (it2.next()) |_| rest += 1;
@@ -149,7 +150,13 @@ pub fn main(init: std.process.Init) !void {
         @typeName(@TypeOf(init.minimal.environ)),
         @typeName(@TypeOf(init.minimal.environ.block)),
     });
-    std.debug.print("Environ.getPosix(\"PATH\") != null = {}\n", .{init.minimal.environ.getPosix("PATH") != null});
+    if (builtin.os.tag != .windows) {
+        std.debug.print("Environ.getPosix(\"PATH\") != null = {}\n", .{init.minimal.environ.getPosix("PATH") != null});
+    } else {
+        // ⚠️ 0.17.0 std bug：getPosix 内部走 block.view()，Windows 的 GlobalBlock 没有
+        // view()——Windows 上调 getPosix 是 std **内部**的编译错误，与你无关
+        std.debug.print("Windows：getPosix 在 0.17.0 编不过（std 内部 GlobalBlock.view 缺失），查环境用 environ_map\n", .{});
+    }
     std.debug.print("Environ.containsConstant(\"PATH\") = {}（编译期 key，零分配，comptime 展开）\n", .{init.minimal.environ.containsConstant("PATH")});
     if (init.minimal.environ.getAlloc(gpa, "ZZZ_NOT_SET_22")) |v| {
         gpa.free(v);
@@ -459,7 +466,8 @@ pub fn main(init: std.process.Init) !void {
 }
 
 test "Args.Iterator：iterate / next 的行为" {
-    // 构造一个假的 Args（POSIX 形状）来测，不依赖真实的命令行
+    // POSIX 形状的假 Args（Windows 的 vector 是 []const u16，iterate() 也是编译错误）
+    if (builtin.os.tag == .windows) return error.SkipZigTest;
     const raw = [_][*:0]const u8{ "prog", "alpha", "beta gamma" };
     const args: std.process.Args = .{ .vector = &raw };
     var it = args.iterate();
@@ -470,6 +478,7 @@ test "Args.Iterator：iterate / next 的行为" {
 }
 
 test "Args.Iterator：skip 跳过后剩下的正好是全部" {
+    if (builtin.os.tag == .windows) return error.SkipZigTest;
     const raw = [_][*:0]const u8{ "prog", "x", "y", "z" };
     const args: std.process.Args = .{ .vector = &raw };
     var it = args.iterate();
@@ -557,6 +566,8 @@ test "Environ.Map：key 里不能含 '=' 或 NUL（validateKeyForPut）" {
 }
 
 test "Environ：createMap → getPosix / containsConstant / getAlloc 的往返" {
+    // createPosixBlock 的产物是 PosixBlock；Windows 的 Environ.block 要 GlobalBlock
+    if (builtin.os.tag == .windows) return error.SkipZigTest;
     const a = std.testing.allocator;
     var src: std.process.Environ.Map = .init(a);
     defer src.deinit();
@@ -587,8 +598,11 @@ test "Child.Term：四个成员与 success() 语义" {
     //    无论 Term 写成全名还是 `const T = Term;` 的别名都一样）；写成 (Term{...}).success() 才过。
     try std.testing.expect((std.process.Child.Term{ .exited = 0 }).success());
     try std.testing.expect(!(std.process.Child.Term{ .exited = 3 }).success());
-    try std.testing.expect(!(std.process.Child.Term{ .signal = .KILL }).success());
-    try std.testing.expect(!(std.process.Child.Term{ .stopped = .TSTP }).success());
+    if (builtin.os.tag != .windows) {
+        // Windows 的 posix.SIG 是另一套枚举（没有 KILL/TSTP 成员名）
+        try std.testing.expect(!(std.process.Child.Term{ .signal = .KILL }).success());
+        try std.testing.expect(!(std.process.Child.Term{ .stopped = .TSTP }).success());
+    }
     try std.testing.expect(!(std.process.Child.Term{ .unknown = 7 }).success());
     // 格式化走的是自定义 format（{f}），不是 default formatter
     var buf: [64]u8 = undefined;
@@ -615,12 +629,14 @@ test "std.process.run：正常退出 / 非零退出 / 被信号杀死 / 程序�
     try std.testing.expect(!bad.term.success());
     try std.testing.expectEqual(@as(u8, 3), bad.term.exited);
 
-    // 被信号杀死
-    const killed = try std.process.run(gpa, io, .{ .argv = &.{ "sh", "-c", "kill -9 $$" } });
-    defer gpa.free(killed.stdout);
-    defer gpa.free(killed.stderr);
-    try std.testing.expect(!killed.term.success());
-    try std.testing.expectEqual(std.posix.SIG.KILL, killed.term.signal);
+    // 被信号杀死（POSIX 专属：Windows 无 sh，posix.SIG 也没有 KILL 成员名）
+    if (builtin.os.tag != .windows) {
+        const killed = try std.process.run(gpa, io, .{ .argv = &.{ "sh", "-c", "kill -9 $$" } });
+        defer gpa.free(killed.stdout);
+        defer gpa.free(killed.stderr);
+        try std.testing.expect(!killed.term.success());
+        try std.testing.expectEqual(std.posix.SIG.KILL, killed.term.signal);
+    }
 
     // 捕获 stdout / stderr
     const both = try std.process.run(gpa, io, .{ .argv = &.{ "sh", "-c", "echo out; echo err 1>&2" } });
@@ -691,7 +707,8 @@ test "std.process.spawn：往 stdin 写 + 读 stdout + wait" {
 
 test "std.process.spawn：kill 终止长跑子进程，且幂等" {
     const io = std.testing.io;
-    var child = try std.process.spawn(io, .{ .argv = &.{ "sleep", "30" } });
+    // sh 在 Windows（Git）与 POSIX 都有；裸 sleep 在 PowerShell 的 PATH 里没有
+    var child = try std.process.spawn(io, .{ .argv = &.{ "sh", "-c", "sleep 30" } });
     try std.testing.expect(child.id != null);
     child.kill(io);
     try std.testing.expect(child.id == null);

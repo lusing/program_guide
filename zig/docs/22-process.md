@@ -1661,7 +1661,7 @@ pub const Duration = struct {
 
 5. **`next()` 的结果是 WTF-8 不是 UTF-8**。落单的代理项编不进合法 UTF-8，Zig 用 WTF-8 的保留序列表示。不要假设能直接 `utf8ValidateSlice` 通过。
 
-6. **`std.posix.getenv` 在 0.17 不存在**（实测 `@hasDecl` = false）。跨平台读环境用 `init.environ_map.get` 或 `Environ.getAlloc`。另外 `Environ.getPosix` **只在 POSIX 存在**，Windows 上用 `getWindows`（WTF-16 key）。
+6. **`std.posix.getenv` 在 0.17 不存在**（实测 `@hasDecl` = false）。跨平台读环境用 `init.environ_map.get` 或 `Environ.getAlloc`。另外 ⚠️ **0.17.0 std bug：`Environ.getPosix` 在 Windows 上是 std 内部的编译错误**——它的实现走 `block.view()`，而 Windows 的 `GlobalBlock` 没有 `view()`（实测报错点在 `std/process/Environ.zig:632`，不是你的代码）。Windows 查环境走 `environ_map` 或 `getWindows`（WTF-16 key，且 `block.use_global` 为假时一律返回 null）。
 
 7. **`argv` 是切片数组不是命令行字符串——这是安全边界，不要自己拆掉**。本示例 22.5 用 `printf` 实测：同一个含空格和分号的字符串，走 argv 数组原样穿过，走 `sh -c` 不加引号就会被分号切开并执行后半段。套 shell 之后转义责任完全在你。
 

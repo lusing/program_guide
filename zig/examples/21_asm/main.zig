@@ -446,9 +446,12 @@ fn cmovIfGe(a: u64, b: u64) u64 {
 // 21.6 系统调用
 // ─────────────────────────────────────────────────────────────
 
-/// 21.6：手写系统调用在**两类OS 上走两条完全不同的路**。
+/// 21.6：手写系统调用在**三类OS 上走三条完全不同的路**。
 ///
 /// x86_64 Linux：`syscall` 指令直接可用（0.17 标准库 `std.os.linux` 就是这么写的）。
+/// x86_64 Windows：**用户态没有开放的 `syscall` 通道**——所有系统调用必须经过
+/// ntdll 的网关存根（win32 API 就是这些存根的薄包装），裸 `syscall` 直接吃
+/// 非法指令异常。所以 Windows 只能"借道 API"，与 macOS 借道 libc 同理。
 /// x86_64 macOS：**用户态直接 `syscall` 会吃SIGSYS**（实测退出码 140 = 128+12，
 /// 12 = SIGSYS）。macOS 要求先`csopen`/`csclose` 切到代码段，
 /// libSystem 的 `syscall()` 函数封装了这件事 —— 所以 macOS 上要借道 libc。
@@ -481,8 +484,22 @@ fn sysGetpidAarch64() u64 {
         : .{ .x8 = true, .memory = true });
 }
 
+/// 21.6：Windows 的取 pid 通道。理论上可以自己写
+/// `extern "system" fn GetCurrentProcessId() u32;`，但 0.17 实测坑位：
+/// 在 `-lc`（mingw 模式）下 `extern "system"` 会被链接器当成要找名为
+/// `system` 的 DLL 导入库（`DllImportLibraryNotFound`）——所以这里直接用
+/// `std.os.windows` 里现成的声明，它底下就是 ntdll 网关，语义完全一样：
+/// 在 Windows 用户态，win32 API **就是**合法的系统调用入口。
+fn sysGetpidViaWin32() u64 {
+    return std.os.windows.GetCurrentProcessId();
+}
+
 /// 架构无关的取pid 入口。
 fn getpidPortable() u64 {
+    // Windows 用户态裸 syscall 直接崩，必须借 win32 API（ntdll 网关）
+    if (comptime builtin.os.tag == .windows) {
+        return sysGetpidViaWin32();
+    }
     if (comptime is_x86) {
         // macOS 上不能直接 syscall（SIGSYS），必须借 libc；Linux 上才用裸汇编
         return if (builtin.os.tag == .macos)
@@ -494,8 +511,14 @@ fn getpidPortable() u64 {
     }
 }
 
-/// 21.6：让 asm 结果和 libc 对账 —— 这才是可信的验证方式。
+/// 21.6：让 asm 结果和 libc/OS API 对账 —— 这才是可信的验证方式。
+/// 0.17 坑位：Windows 下 `std.c.getpid()` 的返回类型是 `pid_t = windows.HANDLE`
+/// （`*anyopaque`，0.17 把 Windows getpid 映射成了 GetCurrentProcess 伪句柄），
+/// 编译都过不了——所以 Windows 的对照面用 `std.os.windows.GetCurrentProcessId()`。
 fn getpidMatchesLibc() bool {
+    if (comptime builtin.os.tag == .windows) {
+        return getpidPortable() == @as(u64, std.os.windows.GetCurrentProcessId());
+    }
     return getpidPortable() == @as(u64, @intCast(std.c.getpid()));
 }
 
@@ -572,17 +595,20 @@ fn cycles() u64 {
 
 const cycles_name = if (is_x86) "rdtsc" else "cntvct_el0";
 
-/// 21.7：向量寄存器上的 asm——`"=x"` 强制落到 SSE 寄存器。
+/// 21.7：向量寄存器上的 asm——结果与输入 a 显式共享 xmm0。
+/// 坑位：`addsd` 的 dst（AT&T 顺序在末尾）会被**就地覆盖**，输出必须与 a 同寄存器。
+/// Zig 没有 GCC 的 `"0"` 匹配约束，共享寄存器的写法是给输入/输出各一个操作数、
+/// 用**同名显式寄存器**约束（`std.os.linux` 的 syscall 模式：输出 `={rax}`、输入 `{rax}`）。
+/// 实测教训：写成 `var out: f64 = undefined` + 独立 `"=x"` 输出，`out` 永远不会被写——
+/// macOS 上寄存器分配恰好撞对能过，Windows 上分配不同立刻算出 0。
 /// `@Vector` 在语言层面已经够用了（见 21.10），所以这里只用来证明约束本身可用。
 fn sseAdd(a: f64, b: f64) f64 {
     if (comptime is_x86) {
-        var out: f64 = undefined;
-        asm volatile ("addsd %[b], %[a]"
-            : [out] "=x" (out),
-            : [a] "x" (a),
-              [b] "x" (b),
+        return asm ("addsd %[b], %[a]"
+            : [out] "={xmm0}" (-> f64),
+            : [a] "{xmm0}" (a),
+              [b] "{xmm1}" (b), // b 是 input-only 寄存器，用完即弃，占 xmm1 没问题
         );
-        return out;
     } else {
         // aarch64 上 fadd 要走 d 寄存器而 `"=r"` 给的是 x/w 寄存器（实测 invalid operand），
         // 要写对得手动 fmov 到 d0/d1 —— 这种地方纯 Zig 的 `a + b` 就是正解（见 21.12）。
@@ -888,12 +914,20 @@ pub fn main() !void {
     begin("21.6 系统调用");
     {
         const pid_asm = getpidPortable();
-        const pid_libc = std.c.getpid();
-        std.debug.print("裸汇编/借 libc 拿到的 pid 与 std.c.getpid() 一致？ {s}\n", .{
-            if (pid_asm == @as(u64, @intCast(pid_libc))) "是" else "否",
+        // Windows 下 std.c.getpid() 返回类型是 pid_t = HANDLE（*anyopaque），编不过；
+        // 参考实现按平台取：Windows 用 std.os.windows.GetCurrentProcessId()
+        const pid_ref: u64 = if (comptime builtin.os.tag == .windows)
+            std.os.windows.GetCurrentProcessId()
+        else
+            @intCast(std.c.getpid());
+        std.debug.print("裸汇编/借 libc 拿到的 pid 与 OS 参考实现一致？ {s}\n", .{
+            if (pid_asm == pid_ref) "是" else "否",
         });
         std.debug.print("syscall 的形状：输出 \"={{rax}}\"、输入 \"{{rax}}\"（同一个寄存器既进又出）、clobber .rcx/.r11/.memory\n", .{});
-        if (comptime is_x86) {
+        if (comptime builtin.os.tag == .windows) {
+            std.debug.print("⚠️ Windows 用户态没有开放的 `syscall` 指令通道：裸 `syscall` 直接吃非法指令异常\n", .{});
+            std.debug.print("⇒ win32 API 就是 ntdll 网关存根的薄包装，本机走 GetCurrentProcessId 通道（汇编 syscall 代码仍在，仍参与编译）\n", .{});
+        } else if (comptime is_x86) {
             std.debug.print("⚠️ x86_64 macOS 上裸 `syscall` 指令会吃 SIGSYS（实测退出码 140 = 128+12）\n", .{});
             std.debug.print("⇒ macOS 必须借 libc 的 syscall()（它内部做 csopen 切代码段）；Linux 才能裸写\n", .{});
             std.debug.print("本机是 {s}，所以 main 走的是 libc 通道（汇编 syscall 代码仍在，仍参与编译）\n", .{@tagName(builtin.os.tag)});
@@ -922,7 +956,7 @@ pub fn main() !void {
             cycles_name,
         });
         std.debug.print("sink={d}（刻意不用 tick 数本身，那是不可复现的）\n", .{sink});
-        std.debug.print("sseAdd(1.5, 2.25) = {d}（约束 \"=x\" 强制落 SSE 寄存器）\n", .{sseAdd(1.5, 2.25)});
+        std.debug.print("sseAdd(1.5, 2.25) = {d}（显式寄存器约束：输出与 a 共享 xmm0）\n", .{sseAdd(1.5, 2.25)});
     }
     end("21.7");
 

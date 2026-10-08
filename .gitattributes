@@ -10,6 +10,7 @@ go/**/*.go text eol=lf
 # Zig 源码 zig fmt 只认 LF：autocrlf=true 检出成 CRLF 后 fmt --check 整文件挂
 # （build.ps1 三层验证第一层就挂；混合行尾时只有部分行报）。统一 LF。
 zig/**/*.zig text eol=lf
+zig/**/*.zon text eol=lf
 # typetheory 的 .agda 源码在 WSL 里由 agda 直接检查：统一 LF。
 typetheory/**/*.agda text eol=lf
 # category 的 .agda 源码同理：统一 LF。

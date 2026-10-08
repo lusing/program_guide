@@ -944,6 +944,36 @@ fn sysGetpidViaLibc() c_long {
 本示例的 `getpidPortable()` 在 macOS 上走 libc、在 Linux 上走裸汇编，
 用一个 `switch (builtin.os.tag)` 编译期选路。
 
+### ⚠️ Windows：用户态根本没有 `syscall` 通道
+
+Windows 连"崩溃"的仪式感都不给你留：x86_64 Linux 和 macOS 好歹还是
+"syscall 指令可用但有条件"，Windows 则是**用户态就没有开放的 `syscall`
+通道**——所有系统调用必须经过 ntdll 的网关存根（win32 API 就是这些存根
+的薄包装），用户态裸写 `syscall` 直接吃非法指令异常。所以 Windows 的
+合法通道是"借道 API"：
+
+```zig
+fn sysGetpidViaWin32() u64 {
+    return std.os.windows.GetCurrentProcessId();
+}
+```
+
+这里有个 0.17 实测坑位：理论上可以自己写
+`extern "system" fn GetCurrentProcessId() u32;`，但在 `-lc`（mingw 模式）
+下 `extern "system"` 会被链接器当成要找名为 `system` 的 DLL 导入库，
+报 `DllImportLibraryNotFound`——所以直接用 `std.os.windows` 里现成的声明，
+它底下就是 ntdll 网关，语义完全一样。
+
+还有第二个坑：`std.c.getpid()` 在 Windows 目标上**编译都过不了**——
+0.17 里 `std.c.pid_t` 在 Windows 下是 `pid_t = windows.HANDLE`
+（`*anyopaque`，Windows 的 getpid 被映射成了 GetCurrentProcess 伪句柄），
+`@intCast` 一个指针直接报 `expected integer or vector, found '*anyopaque'`。
+所以 Windows 的对照面（"asm 结果和谁对账"）用
+`std.os.windows.GetCurrentProcessId()`。
+
+三路选路完整版在 `getpidPortable()`：Windows → win32 API、
+macOS → libc、Linux → 裸汇编，编译期各选各的。
+
 ### aarch64 又是另一套
 
 aarch64 **没有 `syscall` 指令**，是 `svc #0`；系统调用号走 **x8**、
@@ -965,14 +995,17 @@ macOS 上是 **20**，aarch64 上是 **172**——三个平台三个号，
 **asm 的成本不只是"难写"，还有"每个平台都要重测"。**
 
 
-手写 syscall 在两类 OS 上走两条完全不同的路：x86_64 Linux 的 `syscall` 指令直接可用（0.17 标准库 `std.os.linux.x86_64.syscall0` 就是这么写的）；**x86_64 macOS 上裸 `syscall` 会吃 SIGSYS**，因为 macOS 要求先 `csopen` 切代码段，只能借 libc 的 `syscall()`。aarch64 根本没有 `syscall` 指令，是 `svc #0`，号走 x8、返回值走 x0。
+手写 syscall 在三类 OS 上走三条完全不同的路：x86_64 Linux 的 `syscall` 指令直接可用（0.17 标准库 `std.os.linux.x86_64.syscall0` 就是这么写的）；**x86_64 macOS 上裸 `syscall` 会吃 SIGSYS**，因为 macOS 要求先 `csopen` 切代码段，只能借 libc 的 `syscall()`；**x86_64 Windows 用户态根本没有开放的 `syscall` 通道**，win32 API 就是 ntdll 网关存根的薄包装，只能借道 API。aarch64 根本没有 `syscall` 指令，是 `svc #0`，号走 x8、返回值走 x0。
 
 ```zig
-// examples/21_asm/main.zig 第 448-514 行
+// examples/21_asm/main.zig 第 449-533 行
 
-/// 21.6：手写系统调用在**两类OS 上走两条完全不同的路**。
+/// 21.6：手写系统调用在**三类OS 上走三条完全不同的路**。
 ///
 /// x86_64 Linux：`syscall` 指令直接可用（0.17 标准库 `std.os.linux` 就是这么写的）。
+/// x86_64 Windows：**用户态没有开放的 `syscall` 通道**——所有系统调用必须经过
+/// ntdll 的网关存根（win32 API 就是这些存根的薄包装），裸 `syscall` 直接吃
+/// 非法指令异常。所以 Windows 只能"借道 API"，与 macOS 借道 libc 同理。
 /// x86_64 macOS：**用户态直接 `syscall` 会吃SIGSYS**（实测退出码 140 = 128+12，
 /// 12 = SIGSYS）。macOS 要求先`csopen`/`csclose` 切到代码段，
 /// libSystem 的 `syscall()` 函数封装了这件事 —— 所以 macOS 上要借道 libc。
@@ -1005,8 +1038,22 @@ fn sysGetpidAarch64() u64 {
         : .{ .x8 = true, .memory = true });
 }
 
+/// 21.6：Windows 的取 pid 通道。理论上可以自己写
+/// `extern "system" fn GetCurrentProcessId() u32;`，但 0.17 实测坑位：
+/// 在 `-lc`（mingw 模式）下 `extern "system"` 会被链接器当成要找名为
+/// `system` 的 DLL 导入库（`DllImportLibraryNotFound`）——所以这里直接用
+/// `std.os.windows` 里现成的声明，它底下就是 ntdll 网关，语义完全一样：
+/// 在 Windows 用户态，win32 API **就是**合法的系统调用入口。
+fn sysGetpidViaWin32() u64 {
+    return std.os.windows.GetCurrentProcessId();
+}
+
 /// 架构无关的取pid 入口。
 fn getpidPortable() u64 {
+    // Windows 用户态裸 syscall 直接崩，必须借 win32 API（ntdll 网关）
+    if (comptime builtin.os.tag == .windows) {
+        return sysGetpidViaWin32();
+    }
     if (comptime is_x86) {
         // macOS 上不能直接 syscall（SIGSYS），必须借 libc；Linux 上才用裸汇编
         return if (builtin.os.tag == .macos)
@@ -1018,8 +1065,14 @@ fn getpidPortable() u64 {
     }
 }
 
-/// 21.6：让 asm 结果和 libc 对账 —— 这才是可信的验证方式。
+/// 21.6：让 asm 结果和 libc/OS API 对账 —— 这才是可信的验证方式。
+/// 0.17 坑位：Windows 下 `std.c.getpid()` 的返回类型是 `pid_t = windows.HANDLE`
+/// （`*anyopaque`，0.17 把 Windows getpid 映射成了 GetCurrentProcess 伪句柄），
+/// 编译都过不了——所以 Windows 的对照面用 `std.os.windows.GetCurrentProcessId()`。
 fn getpidMatchesLibc() bool {
+    if (comptime builtin.os.tag == .windows) {
+        return getpidPortable() == @as(u64, std.os.windows.GetCurrentProcessId());
+    }
     return getpidPortable() == @as(u64, @intCast(std.c.getpid()));
 }
 
@@ -1038,15 +1091,14 @@ fn stdlibSyscallShape() u64 {
 
 ```
 
-运行输出（`examples/21_asm/main.zig`）：
+运行输出（Windows 本机，`examples/21_asm/main.zig`）：
 
 ```text
 ==== 21.6 系统调用 开始 ====
-裸汇编/借 libc 拿到的 pid 与 std.c.getpid() 一致？ 是
+裸汇编/借 libc 拿到的 pid 与 OS 参考实现一致？ 是
 syscall 的形状：输出 "={rax}"、输入 "{rax}"（同一个寄存器既进又出）、clobber .rcx/.r11/.memory
-⚠️ x86_64 macOS 上裸 `syscall` 指令会吃 SIGSYS（实测退出码 140 = 128+12）
-⇒ macOS 必须借 libc 的 syscall()（它内部做 csopen 切代码段）；Linux 才能裸写
-本机是 macos，所以 main 走的是 libc 通道（汇编 syscall 代码仍在，仍参与编译）
+⚠️ Windows 用户态没有开放的 `syscall` 指令通道：裸 `syscall` 直接吃非法指令异常
+⇒ win32 API 就是 ntdll 网关存根的薄包装，本机走 GetCurrentProcessId 通道（汇编 syscall 代码仍在，仍参与编译）
 标准库自己的形状：std.os.linux.x86_64.syscall0 就是一行 asm，stdlibSyscallShape()=0
 ==== 21.6 结束 ====
 ```
@@ -1181,10 +1233,24 @@ fn constraintFamilyProbe() struct { eq_r: u64, eq_A: u64, eq_q: u64 } {
 
 ```
 
-`"=x"` 强制落 SSE 寄存器。
+### 向量寄存器：结果和输入必须**显式共享寄存器**
+
+`addsd` 这类双操作数指令的 dst（AT&T 顺序在末尾）会被**就地覆盖**，
+输出操作数必须与其中一个输入同寄存器。这里有个实测大坑：
+
+> **错误写法**：`var out: f64 = undefined` + 独立的 `"=x"` 输出。
+> `addsd` 把结果写进输入 `a` 的寄存器，`out` 是另一个寄存器、
+> **永远没有被写**——返回值是垃圾。更阴险的是这种错在 macOS 上
+> 寄存器分配恰好撞对能过，换到 Windows 上分配不同立刻算出 0
+> （本示例就栽在这里，全量回归抓出来的）。
+
+Zig **没有 GCC 的 `"0"` 匹配约束**，共享寄存器的写法是给输入/输出
+各一个操作数、用**同名显式寄存器**约束——这正是 21.6 里
+`std.os.linux` syscall 模式（输出 `={rax}`、输入 `{rax}`）的再次应用：
 
 ```zig
-// examples/21_asm/main.zig 第 568-596 行
+// examples/21_asm/main.zig 第 590-616 行
+/// 21.7：`rdtsc` 的第二个用法——绑定 eax/edx 拿到时间戳。
 /// aarch64 侧返回虚拟计数器，两边都是"单调递增的计数器"这一个语义。
 fn cycles() u64 {
     return rdtsc();
@@ -1192,23 +1258,31 @@ fn cycles() u64 {
 
 const cycles_name = if (is_x86) "rdtsc" else "cntvct_el0";
 
-/// 21.7：向量寄存器上的 asm——`"=x"` 强制落到 SSE 寄存器。
+/// 21.7：向量寄存器上的 asm——结果与输入 a 显式共享 xmm0。
+/// 坑位：`addsd` 的 dst（AT&T 顺序在末尾）会被**就地覆盖**，输出必须与 a 同寄存器。
+/// Zig 没有 GCC 的 `"0"` 匹配约束，共享寄存器的写法是给输入/输出各一个操作数、
+/// 用**同名显式寄存器**约束（`std.os.linux` 的 syscall 模式：输出 `={rax}`、输入 `{rax}`）。
+/// 实测教训：写成 `var out: f64 = undefined` + 独立 `"=x"` 输出，`out` 永远不会被写——
+/// macOS 上寄存器分配恰好撞对能过，Windows 上分配不同立刻算出 0。
 /// `@Vector` 在语言层面已经够用了（见 21.10），所以这里只用来证明约束本身可用。
 fn sseAdd(a: f64, b: f64) f64 {
     if (comptime is_x86) {
-        var out: f64 = undefined;
-        asm volatile ("addsd %[b], %[a]"
-            : [out] "=x" (out),
-            : [a] "x" (a),
-              [b] "x" (b),
+        return asm ("addsd %[b], %[a]"
+            : [out] "={xmm0}" (-> f64),
+            : [a] "{xmm0}" (a),
+              [b] "{xmm1}" (b), // b 是 input-only 寄存器，用完即弃，占 xmm1 没问题
         );
-        return out;
     } else {
         // aarch64 上 fadd 要走 d 寄存器而 `"=r"` 给的是 x/w 寄存器（实测 invalid operand），
         // 要写对得手动 fmov 到 d0/d1 —— 这种地方纯 Zig 的 `a + b` 就是正解（见 21.12）。
         return a + b;
     }
 }
+```
+
+注意这里去掉了 `volatile`：这条 asm 是纯计算、没有副作用，
+让它参与编译器的数据流分析和死代码消除才是对的（21.4 讲过"关键字无用论"
+的另一面——不是所有 asm 都该 volatile）。
 
 // ─────────────────────────────────────────────────────────────
 // 21.8 内存操作数
@@ -1216,17 +1290,17 @@ fn sseAdd(a: f64, b: f64) f64 {
 
 ```
 
-运行输出（`examples/21_asm/main.zig`）：
+运行输出（Windows 本机，`examples/21_asm/main.zig`）：
 
 ```text
 ==== 21.7 逐寄存器与通用约束 开始 ====
 =r → 11；=A → 22；=q → 33（三个在 x86_64 上都能用）
 ❌ "=a" / "=b" / "=c" / "=d" / "=S" / "=D" 在 0.17.0 上全部报 couldn't allocate output register
 ⇒ 要 rax 就写 "={rax}"（显式寄存器）或 "=A"（寄存器家族）
-cpuidMaxLeaf() = 0xd（只能逐寄存器钉死 eax/ebx/ecx/edx，通用约束在这条指令上没用）
+cpuidMaxLeaf() = 0x20（只能逐寄存器钉死 eax/ebx/ecx/edx，通用约束在这条指令上没用）
 1000 次加法：tick 数 > 0 ？ 是；计数器单调递增？ 是（rdtsc）
 sink=499500（刻意不用 tick 数本身，那是不可复现的）
-sseAdd(1.5, 2.25) = 3.75（约束 "=x" 强制落 SSE 寄存器）
+sseAdd(1.5, 2.25) = 3.75（显式寄存器约束：输出与 a 共享 xmm0）
 ==== 21.7 结束 ====
 ```
 
@@ -1435,7 +1509,7 @@ extern "c" fn strlen(s: [*:0]const u8) usize
 0.17 里 `callconv(.C)` **已经被删了**，报 `union 'lang.CallingConvention' has no member named 'C'`，只剩 `callconv(.c)`——它是 `builtin.target.cCallingConvention()` 的别名。可信验证的形状是"asm 产出、libc 消费"：写错布局或字节序会立刻暴露。
 
 ```zig
-// examples/21_asm/main.zig 第 667-695 行
+// examples/21_asm/main.zig 第 693-716 行
 /// 21.9：0.17 里 `callconv(.C)` **已经被删了**，只剩 `callconv(.c)`。
 /// `.c` 是个别名，展开成 `builtin.target.cCallingConvention()`（macOS/Linux x86_64 上是 SysV）。
 fn addOneC(x: u64) callconv(.c) u64 {
@@ -2046,6 +2120,24 @@ fn crossPlatformTable() void {
     （本示例的 `rdtsc` 只打印判定结果、`getpid` 只打印"是否相同"、
     符号地址只打印"是否等于 `&g_probe`"）。否则运行输出无法逐字节抄进文档，
     文档里的 ```text 块就会和实际产物对不上。
+
+28. **本示例必须显式 `-lc`**：21.6/21.9 用 `extern "c"` 的
+    `getpid`/`strlen` 与 libc 对账，0.17 上不链接 libc 直接编译错
+    `dependency on libc must be explicitly specified in the build command`。
+    所以构建脚本把 21_asm 单列成 `zig test main.zig -lc`
+    （Windows 对应 `build.ps1`/`run-all.sh` 里的 ExtraArgs）。
+
+29. **⚠️ Windows 下 `extern "system"` 在 `-lc`（mingw 模式）上是坑**：
+    链接器把它当成要找名为 `system` 的 DLL 导入库，报
+    `DLL import library for -lsystem not found`（`DllImportLibraryNotFound`）。
+    要调 win32 API 就用 `std.os.windows` 里现成的声明
+    （底下就是 ntdll 网关），或者单独 `extern "kernel32"` + `-lkernel32`。
+
+30. **⚠️ Windows 下 `std.c.getpid()` 编译都过不了**：0.17 里
+    `std.c.pid_t` 在 Windows 目标是 `pid_t = windows.HANDLE`（`*anyopaque`，
+    Windows 的 getpid 映射成了 GetCurrentProcess 伪句柄），
+    对它 `@intCast` 报 `expected integer or vector, found '*anyopaque'`。
+    Windows 的 pid 参考实现用 `std.os.windows.GetCurrentProcessId()`。
 
 
 ---
