@@ -1,11 +1,21 @@
 # 第 37 章 哥德尔不完备性：可表示性、算术化与对角化
 
-> 对书：Mendelson ch3（主线）/ EFT X.7 / H&R §2.5（不可判定性铺垫）
-> 通道：文档章（机器化路线图+先例索引）
+> 对书：Mendelson ch3（主线）/ EFT X.7 / H&R §2.5（不可判定性铺垫）。
+> 本章通道：文档 + C（`examples/37_incompleteness/ex37_incompleteness.v`）/
+> L（`examples/37_incompleteness/ex37_incompleteness.lean`）。
 
-数学逻辑的巅峰定理。本章为文档章——三步证明逐步讲透，机器化
-路线与各家形式化先例索引；构件预演（不动点引理的机器面）已在
-38 章的边界注记中给出。
+| 机器件 | 内容 | 通道 |
+|---|---|---|
+| mini-S 标准求值 | +,×,=,¬,⇒,∃ 语言在 ℕ 上的 teval/feval | C/L |
+| 表示性样板 | 加法图/乘法图/≤/偶性四条**标准正确性真定理** | C/L |
+| 有限域可判定 | fevalb 有界量词求值器+qf_agree 一致性定理 | C/L |
+| 论域相对性 | 同一句子在 {0..4} 真、在 {0} 假——Tarski 的对照现场 | C/L |
+
+数学逻辑的巅峰定理。本章原为纯文档章，Mendelson 轮升级出机器面：
+三步证明的文档线**全部保留**，在其骨架上加入两个可编译的侧面——
+**表示性样板**（第一步「S 能谈论递归」的最小现场）与**有限域可判定
+现场**（真谓词的有限/无穷分水岭）。编码与 β 的机器件在 36 章，
+不动点引理的全机器化仍是 Isabelle AFP 级工程（见路线图）。
 
 ## 定理在说什么（先把话语说清）
 
@@ -109,6 +119,86 @@ Rosser 加强）。但 G ↔ ¬Bew(⌜G⌝) 给出 S ⊢ G → ¬Con(S)
 「我知道 S 一致」这个知识**超出了 S 的表达能力**——一致性
 的证明总要用更强的手段（Gentzen 用超穷归纳 ε₀）。
 
+## 机器件一：表示性样板（C/L）
+
+第一步的「可表示性定理」说每个递归关系都有 S-公式双向刻画它。全定理
+的机器化要 PA 推导能力（先例索引里的 AFP 工程）；本章机器面给它的
+**标准模型面**：mini-S 语言（+,×,=,¬,⇒,∃）在 ℕ 上的求值器，加上
+四条「表示公式确实刻画了算术关系」的真定理——S ⊢ 侧是文档线，
+ℕ ⊨ 侧是机器的。
+
+```coq
+Inductive tm : Type :=
+| var (n : nat) | num (n : nat) | pls (t1 t2 : tm) | mul (t1 t2 : tm).
+
+Fixpoint teval (t : tm) (s : asn) : nat :=
+  match t with
+  | var n => s n | num n => n
+  | pls a b => teval a s + teval b s
+  | mul a b => teval a s * teval b s
+  end.
+
+Fixpoint feval (φ : fm) (s : asn) : Prop :=
+  match φ with
+  | eqt a b => teval a s = teval b s
+  | neg a => ~ feval a s
+  | imp a b => feval a s -> feval b s
+  | exq x a => exists v, feval a (upd s x v)
+  end.
+```
+
+四条样板定理（ℕ ⊨ 侧，双向都真证）：
+
+```coq
+Definition rep_add : fm := eqt (pls (var 0) (var 1)) (var 2).
+Theorem rep_add_ok : forall x y z,
+  feval rep_add (s3 x y z) <-> x + y = z.
+
+Definition rep_le : fm := exq 2 (eqt (pls (var 0) (var 2)) (var 1)).
+Theorem rep_le_ok : forall x y, feval rep_le (s2 x y) <-> x <= y.
+
+Definition rep_even : fm := exq 1 (eqt (pls (var 1) (var 1)) (var 0)).
+Theorem rep_even_ok : forall x,
+  feval rep_even (upd (fun _ => 0) 0 x) <-> exists y, y + y = x.
+```
+
+读法：加法图的公式就是 x+y=z 本身（S5/S6 在 54 章是**公理**，这里是被
+表示的**事实**）；≤ 的公式藏一个存在量词（ witnesses d=y−x 构造性给出）；
+偶性同理。「可表示」的证明侧——S ⊢ rep_add 对应 S5-S6 的定理版、
+归纳模式吃下递归行为——是 54 章 PA 机器件的反向视图（那里的分工表）。
+
+## 机器件二：有限域可判定与 Tarski 对照（C/L）
+
+第二定理侧的真谓词问题有个精确的有限对照：**有限论域上真值可判定**。
+把量词换成有界搜索：
+
+```coq
+Fixpoint fevalb (φ : fm) (K : nat) (s : asn) : bool :=
+  match φ with
+  | eqt a b => Nat.eqb (teval a s) (teval b s)
+  | neg a => negb (fevalb a K s)
+  | imp a b => implb (fevalb a K s) (fevalb b K s)
+  | exq x a => bexists K (fun v => fevalb a K (upd s x v))
+  end.
+```
+
+与命题语义的一致性对无量词式是**真定理**（qf_agree，按公式结构归纳，
+联结词各一分支）；带量词的句子则演示**论域相对性**：
+
+```coq
+Definition sen_even2 : fm := exq 0 (eqt (pls (var 0) (var 0)) (num 2)).
+Example finite_even_K5 : fevalb sen_even2 5 (fun _ => 0) = true.
+Example finite_even_K1 : fevalb sen_even2 1 (fun _ => 0) = false.
+Theorem even2_true : exists v, v + v = 2.
+```
+
+同一个句子 ∃x(x+x≡2)：论域 {0..4} 上真（x=1 在场）、论域 {0} 上假
+（证人缺席）——**有限域真是相对的**；而 ℕ 上它是定理（量词跑遍全体
+自然数，1 永远在场）——**标准模型的真是绝对的**。Tarski 不可定义定理
+说这个绝对的真在算术内部没有谓词（否则说谎者悖论合法化）——有限/
+无穷正是可判定与不可定义的分水岭，机器面把「分水岭」的有限一侧
+做成了可按 K 键调的现场。
+
 ## Rosser 加强与两条现代路线（文档注记）
 
 **Rosser 句**（1936）把前提从「一致」减弱到「ω-一致」以下：
@@ -191,7 +281,26 @@ Paulson 的 Isabelle 形式化最值得细读的原因：它把「可表示性�
   暗线在此汇合；与 38 章（外部的墙）、23 章（推理规则的
   完备）划清三把尺子的边界。
 
-## 坑位速记（文档章的「实测」）
+## 坑位速记（本轮实测）
+
+- **Lean 的 if 计算不自动**：`(upd … 2 d) 0` 的化简停在
+  `if (0 == 2) = true`——`change x + d = y at h` 让转换检查做闭式
+  iota（比 simp 可靠）；**iff 不能裸 apply**——`apply IH` 在 iff 上
+  方向歧义，用 proj1/proj2 显式取边；Coq 侧 `destruct … eqn:E` 会把
+  假设里的项一并重写（后续 exact E 失配——改 reflexivity/按新形写）。
+- **Bool↔Prop 桥**：`(!b) = true ↔ b = false`（Lean `Bool.not_eq_true'`）
+  与 `¬(b = true)` 之间要手工搭桥（`absurd`+`Bool.noConfusion`）；
+  Coq 的 `negb_true_iff/implb_true_iff` 是 iff——`rewrite` 进假设，
+  别 `apply … in`。
+- **Isabelle 归纳法与自由谓词**（38 章实录）：
+  `induction_schema` 对非自由 P 报 `dest_Free`——不完备性证明的
+  机器化需要**方案的内部归纳**（Paulson 的 Isar 证明走
+  `induct "n" arbitrary: ...` 结构化路线）；
+- **哥德尔句的「真」**：G 在标准模型 ℕ 中真——但「真」是元概念
+  （Tarski 不可定义性）；机器化时「真」只能以模型论方式（`ℕ ⊨ G`）
+  表述，Isabelle AFP 的正是此路线；
+- 账本：Coq 三件零公理；Lean repEven_ok 零公理、repLe_ok/qf_agree
+  带 [propext, Quot.sound]（simp 层）。
 
 - **Isabelle 归纳法与自由谓词**（38 章实录）：
   `induction_schema` 对非自由 P 报 `dest_Free`——不完备性

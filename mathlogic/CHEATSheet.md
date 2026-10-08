@@ -321,3 +321,16 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
   `y - 0` 转换卡（减法递归首参）——基例 simp [peval,…,itup]；
 - **(* *) 是 Coq 注释**——Lean 镜像文件用 `--`；
 - **ack 的 WF 方程不能 rfl**：have h := by simp [ack] 提取后 rw。
+
+### 36/37 章 算术化+不完备升级（C/L）
+- **指数配对炸内存**：2^a·(2b+1) 两层树 Compute OOM（nat 单仁 2^145）——
+  平方配对 (a+b)²+b 多项式增长、单射证只要 s²+s<(s+1)²；嵌套 cp 每层
+  再平方——码值预算：Coq 样本止步 n=0（1e6 单仁 kernel 栈溢出）、
+  Lean native_decide（GMP）跑 n=200；
+- **omega 不碰非线性积**：平方项作原子传给全称辅助引理（纯线性）再
+  omega——直接 omega 在未归一的乘积变体上失败；
+- **Lean if 计算不自动**（`if (0==2)=true` 卡）——`change … at h` 走
+  转换 iota；**iff 裸 apply 方向歧义**——proj1/proj2 显式；Lean
+  induction 名字顺序=参数全前、IH 全后（`| imp a b iha ihb`）；
+- **Bool↔Prop 桥**：not_eq_true'+absurd+Bool.noConfusion 手工搭；
+  Coq destruct eqn:E 会联动重写假设（exact E 失配改按新形写）。
