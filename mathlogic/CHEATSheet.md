@@ -241,6 +241,10 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
   入信息。
 - （20 章其余坑见上节：嵌套归纳无 IH、Lean 符号项 defeq 卡死、conj
   遮蔽、∃A 新鲜性 compute、账本 choice 对照。）
+- **22 章新坑**：嵌套结构相等 mutual/fuel/list-外层三连拒（fuel 单
+  Fixpoint 收）；合同闭包两炸（无界 f-提升→T4 截断；重复项→每轮
+  dedup）；canon 须统一次序+自反闭包；Lean 严格正定性拒高阶辅助谓词
+  （cong 内联 cong0/congS）；求值器 neg 穿透明量词会算错。
 
 - **Coq 嵌套归纳无元素 IH**：`fsym f (list tm)` 的 list 参数不给逐元素假设——
   tsize 测度归纳；fold_right 是 lia 黑盒原子，配 fr_pos 正性引理。

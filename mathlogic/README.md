@@ -49,6 +49,7 @@ mathlogic/
 | [19 FOL 语义表列](docs/19-foltableau.md) | γ/δ 规则+tclo 推导对象+7.42 完整证明 | C/L |
 | [20 FOL 矢列与等词](docs/20-seqfol.md) | EFT 矢列演算 S 全规则+群例等式链+协调性（命题片段可靠） | C/L |
 | [21 语法解释与范式](docs/21-interp.md) | 词项化简对账+≤定义扩张消去+⟨Φ⟩范式 DNF+ZF 公理现场 | C/L |
+| [22 完备性 Henkin](docs/22-completeness.md) | 七步文档线+词项模型=合同闭包商结构（双向对账）+见证式化 | 文档/C/L |
 | [22 完备性 Henkin](docs/22-completeness.md) | 构造七步+紧致性推论（文档章） | 文档 |
 | [26 合一与归结](docs/26-resolution.md) | occurs check + 归结可靠性（三通道） | C/L/I |
 | [27 Herbrand 与 SLD](docs/27-herbrand.md) | T_P 单调+头原子（Prolog 桥） | C/L |
