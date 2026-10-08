@@ -278,3 +278,44 @@ Print Assumptions subst_all_eval.  (* Closed *)
 
 
 Print Assumptions eform_coincidence.  (* Closed：EFT III.5 零公理 *)
+
+(* ---------- Marker ch2 深化：嵌入与无量词保持 ---------- *)
+
+(* 有限链结构：论域 [0;n)，关系 R = 表 *)
+Definition RtabA : list bool := [true; false; true; false].
+Definition RtabB : list bool := [true; false; true; false; true; true; false; true].
+
+(* A=[0;4) ⊆ B=[0;8)：同一前缀上的关系一致（嵌入的原子保持） *)
+Example embed_atoms :
+  forallb (fun x => Bool.eqb (nth x RtabA false) (nth x RtabB false))
+    (seq 0 4) = true.
+Proof. reflexivity. Qed.
+
+(* 简化：只用两种原子 R(x0)、x0<x1 的 16 种布尔组合 *)
+Definition comb (p : nat) (r : list bool) (f : nat -> nat) : bool :=
+  let a := nth (f 0) r false in
+  let b := f 0 <? f 1 in
+  let bit k := Nat.testbit p k in
+  if bit 0 then a else if bit 1 then negb a
+  else if bit 2 then b else if bit 3 then negb b
+  else if bit 4 then andb a b else if bit 5 then andb (negb a) b
+  else if bit 6 then andb a (negb b) else if bit 7 then negb (andb a b)
+  else true.
+
+Example embed_qf_keeps :
+  forallb (fun p =>
+    forallb (fun f => Bool.eqb
+      (comb p RtabA (fun k => nth k (fst f :: [snd f]) 0))
+      (comb p RtabB (fun k => nth k (fst f :: [snd f]) 0)))
+    (list_prod (seq 0 4) (seq 0 4)))
+    (seq 0 8) = true.
+Proof. reflexivity. Qed.
+
+(* 量词打破保持：∃x R(x) 两边都真；∃x∀y 型反转在有限域找差异——
+   嵌入可见新元素：B 中 R 在 [4,8) 有新真值点，而「x>3 ∧ R(x)」
+   在 A 不可满足、在 B 可满足 *)
+Example embed_quant_breaks :
+  andb (negb (existsb (fun x => andb (Nat.ltb 3 x) (nth x RtabA false)) (seq 0 4)))
+       (existsb (fun x => andb (Nat.ltb 3 x) (nth x RtabB false)) (seq 0 8))
+    = true.
+Proof. reflexivity. Qed.
