@@ -211,3 +211,23 @@ Henkin 见证扩张是同一机制的三副面孔（「见证必须有名字、
 ---
 
 上一章：[17 FOL 自然演绎：量词规则、等式规则与 Drinker 悖论](docs/17-folnd.md) · 下一章：[19 前束范式：量词穿越的等价保持](docs/19-prenex.md)
+
+## Mendelson §2.5 深化：A4/E4 可导规则（C 通道）
+
+Mendelson §2.5 给出 Hilbert 系统的两条量化规则——A4（特称化：从
+⊢∀x P(x) 得 ⊢P(t)）与 E4（推广：x 不自由时从 ⊢∀x(P→Q) 得
+⊢P→∀x Q）。机器面（`ex18_folhilbert.v` 末节）把它们做成**可导规则**：
+
+```coq
+Theorem fA4 : forall G x p t,
+  fder G (fall x (fpred p t)) -> fder G (fpred p (fsubst t x t)).
+Theorem fE4 : forall G x P Q,
+  ~ In x (fFV P) ->
+  fder G (fall x (fimp P Q)) -> fder G (fimp P (fall x Q)).
+```
+
+两条各是「一条公理模式 + MP」的一步推演——但正是这一步把「代入」与
+「量词前移」从语义操作变成语法操作。§2.6 的 **Rule C**（存在实例化：
+从 ⊢∃xP(x) 与 ⊢P(c)⊃Q（c 新）得 ⊢Q）是这两条的加强版；其**消去
+元定理**（定理 2.11：带 C 的推导可转无 C 推导）依赖 ∃ 与 ¬ 的配套——
+本片段语言只取 ∀→，Rule C 的机器化需要扩张语言后重做，记边界。

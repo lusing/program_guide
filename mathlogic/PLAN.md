@@ -38,7 +38,7 @@
 | 02 | 命题语义与蛮力判定器（一致性引理+双向可靠） | C/A/L/I | ✅ 扩写✅ |
 | 03 | 自然演绎 NJp（规则即程序；HOL4 首秀） | C/A/L/I/H4 | ✅ 扩写✅ |
 | 04 | 经典加成矩阵（六家账本对照；HoTT 首秀） | C/A/L/I/H4/T | ✅ 扩写✅ |
-| 05 | Hilbert 系统与演绎定理（推导归纳的元定理范本；批次六加 Mendelson L 对照+L1-L4） | C/A/L/I/H4 | ✅ 扩写✅ |
+| 05 | Hilbert 系统与演绎定理（推导归纳的元定理范本；Mendelson L 对照+L1-L4 文档节） | C/A/L/I/H4 | ✅ 扩写✅+Mendelson 深化✅ |
 | 06 | 矢列演算 G（九规则+可靠性旗舰；G 天生经典） | C/A/L/I | ✅ 扩写✅ |
 | 07 | 语义表列 tableau（fuel 化搜索+双向正确+判定程序） | C/L | ✅ 扩写✅ |
 | 08 | 范式 NNF/CNF（Agda 止步 NNF——case tree 互卡实录） | C/A/L | ✅ 扩写✅ |
@@ -51,15 +51,15 @@
 | 15 | FOL 语法与代入（fv 条款含 In x 条件教训；同型不挡混淆实录） | C/A/L | ✅ 扩写✅ |
 | 16 | FOL 语义（一致性+完整代入交换+locale/结构理论） | C/A/L/I | ✅ 扩写✅ |
 | 17 | FOL 自然演绎（Drinker 悖论三旗舰；Agda 构造边界实录） | C/A/L/I/H4 | ✅ 扩写✅ |
-| 18 | FOL Hilbert 与 Gen 侧条件演绎定理（GenMove 公理；批次六加 A4/E4+Rule C 机器件） | C/L | ✅ 扩写✅ |
+| 18 | FOL Hilbert 与 Gen 侧条件演绎定理（GenMove 公理；fA4/fE4 可导规则件 C） | C/L | ✅ 扩写✅+Mendelson 深化✅ |
 | 19 | 前束范式构件（量词穿越四条零公理；侧条件不对称实录） | C/L | ✅ 扩写✅ |
 | 20 | FOL 语义表列（γ/δ 规则+tclo 推导对象+7.42 完整证明） | C/L | ✅ Ben-Ari 批次一 |
 | 21 | FOL 矢列演算与等词（EFT S 全规则：∃A 侧条件+Sub+可导规则族+群例等式链+协调性） | C/L | ✅ EFT 批次一 |
 | 22 | 语法解释、范式与 ZF（词项化简对账+≤-from-< 定义扩张 E1/E2+⟨Φ⟩ DNF+ZF 公理即公式） | C/L | ✅ EFT 批次二 |
-| 23 | 完备性 Henkin（合同闭包商结构 TΦ+六探针对账+见证式化；批次六加 Lindenbaum 机器件） | 文档/C/L | ✅ EFT 批次三 |
-| 24 | L-S、紧致性与初等等价（DLO+σₙ 族+量化秩分离+Skolem 闭包；批次六加范畴性/同构⇒初等等价） | C/L | ✅ EFT 批次四 |
+| 23 | 完备性 Henkin（合同闭包商结构+六探针对账+见证式化+lin_ext/lin_cons/lin_max Lindenbaum 件 C） | 文档/C/L | ✅ EFT 批次三+Mendelson 深化✅ |
+| 24 | L-S、紧致性与初等等价（DLO+σₙ 族+量化秩分离+Skolem 闭包+同构⇒初等等价件 C） | C/L | ✅ EFT 批次四+Mendelson 深化✅ |
 | 25 | EF 博弈与 Fraïssé 定理（dup_wins 求解器三通道+(Z_n,<) 2^k−1 分离表+秩-轮对齐） | C/L/P | ✅ EFT 批次五 |
-| 26 | 二阶逻辑与弱二阶系统（soev 幂枚举求值器+偶数交替着色+连通否定式+L_Q 退化；批次六加二阶归纳范畴性） | C/L | ✅ EFT 批次六 |
+| 26 | 二阶逻辑与弱二阶系统（soev+偶数交替着色+连通否定式+L_Q 退化+soInd 二阶归纳件 C+范畴性文档线） | C/L | ✅ EFT 批次六+Mendelson 深化✅ |
 | 27 | 合一与归结（occurs check 结构锚+归结可靠性侧条件版） | C/L/I | ✅ 扩写✅ |
 | 28 | Herbrand 与 SLD（T_P 单调+头原子；Knaster-Tarski 边界） | C/L | ✅ 扩写✅ |
 | 29 | 归结完备性与 SAT 难例（resproof+PHP+DP 消元） | C/L | ✅ Ben-Ari 批次七 |

@@ -345,3 +345,14 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
   一层）——kur_char 六层链；
 - **Lean ∃ 字段记法**：`∃ c, c.length` 类型未知——显式 `∃ c : List
   Fset`；omega 不算 List.length——先 simp only [List.length_nil]。
+
+### 批次六 深化五处（18/23/24/26 为 C 通道件；Lean 镜像记边界）
+- 18：fA4/fE4 可导规则（各=一条公理模式+MP）；isAx 五分支的
+  `right. right. right. right.` 数清再下（第 5 分支要 4 个 right）；
+- 23：lin_ext 走 consistentb（16 赋值穷举 v0/v1）；lin_cons 的
+  归纳步先 `simpl` 暴露 if 分支；lin_max 的 witness 用 `fun _ => true`
+  处理「整体赋值下 sat 计算真假」；
+- 24：iso_eeq 用 `lt`（rat 0）而非 rlt——章内已定义 lt；lt_r 的
+  符号位是 0（<）不是 2；trueZnR 需自带 rel 参数包装；
+- 26：soInd = neg(∃X[X(0)∧封闭∧不满])；尾巴现场用 succ_rel2
+  （顶部自环）+孤立点 5——soev 的 relenv 初始 `fun _ => []`。

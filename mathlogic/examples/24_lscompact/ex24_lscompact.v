@@ -188,3 +188,29 @@ Compute (map (fun n => forallb (fun φ => trueZn (S n) φ) dlo_axioms) (seq 0 6)
    (* 全 false：DLO 无有限模型 *)
 Compute (map (fun φ => (trueZn 3 φ, trueZn 4 φ))
   [dense; no_left; ord_trans]).
+
+(* ---------- 8. Mendelson §2.11 深化：同构蕴含初等等价 ---------- *)
+(* π(u)=(u+1) mod 4 是 (Z4,<)→(Z4,<∘π) 的双射且 rel 在 π 下不变：
+   同构映射保持全部句子的真值——秩 0/1 句子表双列等值对账 *)
+
+Definition pir4 (a : nat) : nat := (a + 1) mod 4.
+Definition lt_r2 : interp_rel :=
+  fun s args => lt_r s (map pir4 args).
+
+Definition trueZnR (r : interp_rel) (n : nat) (φ : fm) : bool :=
+  evf fid r (Zn n) (fun _ => 0) φ.
+
+(* 同构现场：rel 在 π 下逐对不变 *)
+Example iso_check :
+  forallb (fun u => forallb (fun v =>
+    Nat.eqb (lt_r 0 [u; v]) (lt_r2 0 [u; v])) (Zn 4)) (Zn 4) = true.
+Proof. reflexivity. Qed.
+
+(* 同构后的初等等价：一列句子在两个结构上同真值 *)
+Example iso_eeq :
+  map (fun φ => (trueZnR lt_r 4 φ, trueZnR lt_r2 4 φ))
+      [exq 0 (allq 1 (neg (lt (var 0) (var 1))));
+       allq 0 (exq 1 (lt (var 0) (var 1)));
+       exq 0 (exq 1 (conj (lt (var 0) (var 1)) (lt (var 1) (var 0))))]
+  = [(false, false); (false, false); (false, false)].
+Proof. reflexivity. Qed.

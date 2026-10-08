@@ -207,3 +207,59 @@ Proof. reflexivity. Qed.
 Compute (length quotient_D).            (* 商论域大小（塌缩后 < 8） *)
 Compute (map rep_of T4).                (* 各项的类代表序列 *)
 Compute (map (fun p => (deriv_b (fst p) (snd p), holds_eq (fst p) (snd p))) probes).
+
+(* ---------- 6. Mendelson §2.7 深化：Lindenbaum 极大一致扩张 ---------- *)
+(* 一致性（命题级）：存在赋值整体满足；16 个赋值样本穷举 v0/v1 位 *)
+
+Definition consistentb (Phi : list fm) : bool :=
+  existsb (fun m => sat (fun n => Nat.testbit m n) Phi) (seq 0 16).
+
+Fixpoint lin_ext (Cand : list fm) (Phi : list fm) : list fm :=
+  match Cand with
+  | [] => Phi
+  | psi :: rest =>
+      if consistentb (psi :: Phi) then lin_ext rest (psi :: Phi)
+      else lin_ext rest Phi
+  end.
+
+Lemma consistentb_sat : forall Phi m,
+  In m (seq 0 16) -> sat (fun n => Nat.testbit m n) Phi = true ->
+  consistentb Phi = true.
+Proof.
+  intros Phi m Hin Hs. unfold consistentb.
+  apply existsb_exists. exists m. split; assumption.
+Qed.
+
+Theorem lin_cons : forall Cand Phi v,
+  sat v Phi = true ->
+  exists w, sat w (lin_ext Cand Phi) = true.
+Proof.
+  induction Cand as [|psi rest IH]; intros Phi v Hv.
+  - exists v. exact Hv.
+  - simpl. destruct (consistentb (psi :: Phi)) eqn:E.
+    + apply existsb_exists in E.
+      destruct E as [m [Hm Hs]].
+      apply (IH (psi :: Phi) (fun n => Nat.testbit m n) Hs).
+    + apply IH. exact Hv.
+Qed.
+
+Theorem lin_max : forall Cand Phi psi,
+  In psi Cand -> ~ In psi (lin_ext Cand Phi) ->
+  exists w, sat w (psi :: lin_ext Cand Phi) = false.
+Proof.
+  induction Cand as [|chi rest IH]; intros Phi psi Hin Hout.
+  - destruct Hin.
+  - simpl. destruct (consistentb (chi :: Phi)) eqn:E.
+    + apply IH.
+      * destruct Hin as [Heq | Hin]; [left; exact Heq | exact Hin].
+      * exact Hout.
+    + destruct Hin as [Heq | Hin].
+      * inversion Heq. subst chi.
+        exists (fun _ => true).
+        destruct (sat (fun _ => true) (lin_ext rest Phi)) eqn:Es.
+        { exfalso. apply consistentb_sat with (m := 0) in Es.
+          - discriminate.
+          - apply in_seq. lia. }
+        { reflexivity. }
+      * exfalso. apply Hout. simpl. rewrite E. apply IH; assumption.
+Qed.

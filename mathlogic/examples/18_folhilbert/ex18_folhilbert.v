@@ -150,3 +150,27 @@ Proof. intros G P H. apply fGen. exact H. Qed.
      二次嵌套；
    - Gen 分支的 K5 装配：∀x.(A→B) → (∀x.A → ∀x.B) 的
      两次 MP——第二次需要 Γ ⊢ ∀x.A（闭 A 从假设提升）。 *)
+
+(* ---------- Mendelson §2.5 深化：A4/E4 作为可导规则 ---------- *)
+(* 书规则 A4（特称化）：从 ⊢∀x P(x) 得 ⊢P(t)——由第三公理模式+MP 即得 *)
+Theorem fA4 : forall G x p t,
+  fder G (fall x (fpred p t)) -> fder G (fpred p (fsubst t x t)).
+Proof.
+  intros G x p t H. eapply fMP.
+  - apply fAx. right. right. left.
+    exists x, p, t. reflexivity.
+  - exact H.
+Qed.
+
+(* 书规则 E4（量词前移）：x 不在 P 自由出现时，
+   从 ⊢∀x(P→Q) 得 ⊢P→(∀x Q)——第五公理模式+MP 即得 *)
+Theorem fE4 : forall G x P Q,
+  ~ In x (fFV P) ->
+  fder G (fall x (fimp P Q)) -> fder G (fimp P (fall x Q)).
+Proof.
+  intros G x P Q HxP H.
+  eapply fMP.
+  - apply fAx. right. right. right. right.
+    exists x, P, Q. split; [exact HxP | reflexivity].
+  - exact H.
+Qed.

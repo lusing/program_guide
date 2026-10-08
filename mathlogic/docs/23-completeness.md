@@ -277,3 +277,25 @@ mathlib 的合入证明 Henkin 路线在现代类型论中可完整走通
 ---
 
 上一章：[22 语法解释、范式与 ZF](docs/22-interp.md) · 下一章：[24 L-S、紧致性与初等等价](docs/24-lscompact.md)
+
+## Mendelson §2.7 深化：Lindenbaum 极大一致扩张（C 通道）
+
+完备性证明的中枢引理：**一致理论可扩张到极大一致**。机器面
+（`ex23_completeness.v` 第 6 节）在命题片段上做构造：候选句逐个
+尝试加入，保一致则收编——
+
+```coq
+Fixpoint lin_ext (Cand : list fm) (Phi : list fm) : list fm :=
+  match Cand with
+  | [] => Phi
+  | psi :: rest =>
+      if consistentb (psi :: Phi) then lin_ext rest (psi :: Phi)
+      else lin_ext rest Phi
+  end.
+```
+
+两条定理守住构造的两端：`lin_cons`（保持一致性——真赋值一路存活）与
+`lin_max`（极大性——没进扩张的候选句与扩张不一致）。Mendelson 版
+完备性（§2.7 Lindenbaum 引理 + Henkin 常量）与 EFT 版（见证式化）
+在这里合流：两者的中枢都是「一致理论有模型」，Lindenbaum 是「把一致
+理论喂饱成极大一致」的机器化身。

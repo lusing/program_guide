@@ -173,3 +173,36 @@ Proof. reflexivity. Qed.
 (* 冒烟 *)
 Compute (map (fun n => sats n evenSO) (seq 1 8)).
    (* [f;t;f;t;f;t;f;t]——交替着色恰在偶环相容 *)
+
+(* ---------- 9. Mendelson App A 深化：二阶归纳公理 ---------- *)
+(* soInd := ¬∃X[ X(0) ∧ 封闭于 S ∧ 不满 ]——二阶量词一枚顶掉一阶的
+   可数条归纳公理。标准链上真（归纳成立）；带尾巴的形状上假
+   （X=链本身是反例）——二阶把 N 钉死的机器现场。 *)
+
+Definition Xv1 (t : tm) : fm := relv 0 [t].
+Definition SatU (u v : tm) : fm := rat 1 [u; v].
+
+Definition ind_bad : fm :=
+  soexq 0 1 (conj (Xv1 (var 0))
+    (conj (allq 1 (imp (Xv1 (var 1))
+                       (exq 2 (conj (SatU (var 1) (var 2)) (Xv1 (var 2))))))
+         (exq 1 (neg (Xv1 (var 1)))))).
+
+Definition soInd : fm := neg ind_bad.
+
+(* 标准链（环 4）：从 0 沿 S 封闭必充满——归纳成立 *)
+Example soInd_chain4 : sats 4 soInd = true.
+Proof. reflexivity. Qed.
+
+(* 带尾巴：链 {0..3}（S 顶部自环）+ 孤立点 5——X=链本身是
+   X(0)∧封闭∧不满 的见证，soInd 假 *)
+Definition succ_rel2 (a : nat) : nat := if a =? 3 then 3 else if a =? 5 then 5 else a + 1.
+Definition rel2 : interp_rel :=
+  fun s args => match s, args with
+  | 1, [a; b] => Nat.eqb (succ_rel2 a) b
+  | _, _ => false end.
+Definition D2 : list nat := [0; 1; 2; 3; 5].
+
+Example soInd_tail_false :
+  soev fid rel2 D2 (fun _ => 0) (fun _ => []) soInd = false.
+Proof. reflexivity. Qed.
