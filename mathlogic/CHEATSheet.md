@@ -309,3 +309,15 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
   simpl+exact 靠转换检查；
 - **Lean 结构字段类型**：cur 是 Nat 不是 List（cnt1 直接喂类型错）；
   Option Cfg 相等改 `.isNone = true`（Decidable 实例合成失败绕行）。
+
+### 35 章 递归函数（C/L）
+- **Lean list-comp 求值挤到良基递归**：`gs.map (fun gi => peval gi args)`
+  元素递归让 peval 的 rfl/defeq 全废——改 **comp1/comp2 双构造子**回归
+  结构归纳；Coq guard 反而收 list-comp（两通道分歧现场）；
+- **itup 只 match 计数**：成对 match (k,r) 让 stuck 的 peval g xs 阻塞
+  iota——r 作普通参数；
+- **Lean succ/pred 形态**：`x+1` 非构造子（步进引理写 Nat.succ）；
+  `(x+1).pred` 卡 HAdd——Nat.pred_succ / Nat.pred_eq_sub_one；
+  `y - 0` 转换卡（减法递归首参）——基例 simp [peval,…,itup]；
+- **(* *) 是 Coq 注释**——Lean 镜像文件用 `--`；
+- **ack 的 WF 方程不能 rfl**：have h := by simp [ack] 提取后 rw。
