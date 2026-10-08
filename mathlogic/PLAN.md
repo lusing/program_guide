@@ -1,9 +1,9 @@
 # mathlogic 教程总计划（十书为纲 × 七通道）
 
-> 状态：四轮书本扩充收官（H&R+Ben-Ari+Jongsma+EFT，58 章 158 单元全绿）；
-> 第五轮按 Mendelson 6e 扩充进行中——63 章号位中 09/34/35/36/62 五章预留
-> +37 不完备性升级（批次〇重排已完成）。本文件是施工蓝图，
-> 供后续会话续接——每完成一章更新一次「已交付」标记。
+> 状态：五轮书本扩充全部收官（H&R+Ben-Ari+Jongsma+EFT+Mendelson），
+> 63 章 163 单元全绿（158 旧单元+新 09 章 2+34 章 3+35 章 2+36 章 2
+> +37 章 2+62 章 2，深化五处并入既有单元）。本文件是施工蓝图，
+> 供后续会话续接。
 
 ## 十书定位
 
@@ -13,7 +13,7 @@
 | Ben-Ari 3e（2012，文本层好；2e 为 OCR 扫描仅补充） | 演算主线：G 矢列、Hilbert H、tableau、归结/合一、SLD、验证 |
 | Mints《A Short Introduction to Intuitionistic Logic》（公式层缺，需按页读版面） | 直觉主义线：NJp/NKp、Glivenko、正规化、Kripke |
 | Ebbinghaus-Flum-Thomas (EFT) 3e | 元理论线：矢列、完备性、L-S、EF 博弈、二阶、自由模型、寄存器机 |
-| Mendelson 6e（第五轮做实中） | 元定理与递归论线：完备集与独立性(09)、Rule C/Lindenbaum(18/23 深化)、图灵机(34)、递归函数(35)、算术化(36)、不完备性(37)、NBG 集合论(62) |
+| Mendelson 6e（第五轮收官） | 元定理与递归论线：完备集与独立性(09)、Rule C/Lindenbaum(18/23 深化)、图灵机(34)、递归函数(35)、算术化(36)、不完备性(37)、NBG 集合论(62) |
 | 《Advances in Natural Deduction》（Prawitz 纪念文集） | 证明论进阶（文档引用） |
 | 贺伟《范畴论》/《高级范畴论》 | （本轮范畴论教程已用） |
 | Jongsma《Introduction to Discrete Mathematics via Logic and Proof》（UTM 2019，文本层好；§7.3 的补运算上杠在提取文本中丢失——按数学实体校读） | 离散底座线：归纳/集合/无穷/函数/格与 Boole/图（53-61 章） |

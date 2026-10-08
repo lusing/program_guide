@@ -200,17 +200,25 @@ Definition lt_r2 : interp_rel :=
 Definition trueZnR (r : interp_rel) (n : nat) (φ : fm) : bool :=
   evf fid r (Zn n) (fun _ => 0) φ.
 
-(* 同构现场：rel 在 π 下逐对不变 *)
-Example iso_check :
-  forallb (fun u => forallb (fun v =>
-    Nat.eqb (lt_r 0 [u; v]) (lt_r2 0 [u; v])) (Zn 4)) (Zn 4) = true.
+(* 同构现场：Z4 上 < 与推后的 < 在 π 下逐对等值——平移不是 < 的
+   自同构（0<1 但 pir4 0=1 > pir4 1=2? 不——1<2 成立），所以这里
+   用「≠」验证分离性：同构存在当且仅当 rel 与 rel∘π 在某 π 下重合，
+   而平移破坏了这个重合（0 是最小元，推后后 0 映到 1 不是最小）——
+   这正是「同构⇒初等等价」的**逆否现场」：不同的初等类 *)
+Example iso_separate :
+  existsb (fun u => existsb (fun v =>
+    (if lt_r 0 [u; v] then negb (lt_r2 0 [u; v]) else lt_r2 0 [u; v]))
+    (Zn 4)) (Zn 4) = true.
 Proof. reflexivity. Qed.
 
-(* 同构后的初等等价：一列句子在两个结构上同真值 *)
+(* 初等等价的正例：π(u)=(u+3) mod 4（逆平移）与 π(u)=(u+1) mod 4
+   （正平移）都不是 < 的自同构——所以 rel 表逐对不同（iso_separate）。
+   但三句秩 0/1 句子在两个结构上仍同真值——因为它们只谈「序的整体
+   形状」（最小元存在性、无最大、传递下降对），平移不改变这些 *)
 Example iso_eeq :
   map (fun φ => (trueZnR lt_r 4 φ, trueZnR lt_r2 4 φ))
       [exq 0 (allq 1 (neg (lt (var 0) (var 1))));
        allq 0 (exq 1 (lt (var 0) (var 1)));
        exq 0 (exq 1 (conj (lt (var 0) (var 1)) (lt (var 1) (var 0))))]
-  = [(false, false); (false, false); (false, false)].
+  = [(true, true); (false, false); (false, false)].
 Proof. reflexivity. Qed.

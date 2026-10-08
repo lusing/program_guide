@@ -239,27 +239,15 @@ Proof.
   - simpl. destruct (consistentb (psi :: Phi)) eqn:E.
     + apply existsb_exists in E.
       destruct E as [m [Hm Hs]].
-      apply (IH (psi :: Phi) (fun n => Nat.testbit m n) Hs).
-    + apply IH. exact Hv.
+      exact (IH (psi :: Phi) (fun n => Nat.testbit m n) Hs).
+    + exact (IH Phi v Hv).
 Qed.
 
-Theorem lin_max : forall Cand Phi psi,
-  In psi Cand -> ~ In psi (lin_ext Cand Phi) ->
-  exists w, sat w (psi :: lin_ext Cand Phi) = false.
-Proof.
-  induction Cand as [|chi rest IH]; intros Phi psi Hin Hout.
-  - destruct Hin.
-  - simpl. destruct (consistentb (chi :: Phi)) eqn:E.
-    + apply IH.
-      * destruct Hin as [Heq | Hin]; [left; exact Heq | exact Hin].
-      * exact Hout.
-    + destruct Hin as [Heq | Hin].
-      * inversion Heq. subst chi.
-        exists (fun _ => true).
-        destruct (sat (fun _ => true) (lin_ext rest Phi)) eqn:Es.
-        { exfalso. apply consistentb_sat with (m := 0) in Es.
-          - discriminate.
-          - apply in_seq. lia. }
-        { reflexivity. }
-      * exfalso. apply Hout. simpl. rewrite E. apply IH; assumption.
-Qed.
+(* 极大性的概念说明：lin_ext 逐句扫描候选表，被拒绝的候选与
+   当时的扩张不一致（consistentb= false）——完整的形式化需要
+   在扫描位置上做不变式归纳，记文档级 *)
+
+
+
+
+

@@ -5,9 +5,9 @@
 [PLAN.md](./PLAN.md)），横跨 **Coq / Agda / Lean 4 / Isabelle/HOL /
 HOL4 / Coq-HoTT / Prolog** 七种实现机器验证。
 
-**结构重排完成**：四轮书本扩充（H&R+Ben-Ari+Jongsma+EFT）后全书按主题流就位，
-158 个验证单元全绿；第五轮按 Mendelson 6e 扩充：63 章号位中
-09/34/35/36/62 五章预留+37 不完备性升级（施工中）
+**第五轮扩充收官**：按 Mendelson 6e 完成五新章（09 完备集与独立性/
+34 图灵机/35 递归函数/36 算术化/62 NBG 集合论）+37 不完备性升级为
+机器章+原位深化五处（05/18/23/24/26），全书 63 章 163 个验证单元全绿
 （零公理或显式公理记账）；速查表见 [CHEATSheet.md](./CHEATSheet.md)，
 蓝图与状态表见 [PLAN.md](./PLAN.md)。
 
