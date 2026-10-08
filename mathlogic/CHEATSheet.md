@@ -334,3 +334,14 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
   induction 名字顺序=参数全前、IH 全后（`| imp a b iha ihb`）；
 - **Bool↔Prop 桥**：not_eq_true'+absurd+Bool.noConfusion 手工搭；
   Coq destruct eqn:E 会联动重写假设（exact E 失配改按新形写）。
+
+### 62 章 NBG 集合论（C/L）
+- **`at` 撞 Coq 关键字**（rewrite … at）——构造子改名 atom；
+- **map vn 未应用递归被 guard 拒**（第三次撞：09/35/62）——改**追加式**
+  vn (S k) = els (vn k) ++ [vn k]+els 引桥族；vn 定义体是 match——
+  一切定理走 els_vn_S 展开，别直接 simpl；
+- **injection 方程数不定**：嵌套 list 一次产 1-3 条——`injection H.
+  intros E1 E2 E3.` 稳妥；Lean injection 每层一构造子（[x]=[y] 再剥
+  一层）——kur_char 六层链；
+- **Lean ∃ 字段记法**：`∃ c, c.length` 类型未知——显式 `∃ c : List
+  Fset`；omega 不算 List.length——先 simp only [List.length_nil]。

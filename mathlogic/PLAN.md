@@ -95,7 +95,7 @@
 | 59 | 偏序与格（整除偏序三律+lub/glb 唯一性+特征引理装配代数律全家+五点菱形非分配反例） | C/L | ✅ Jongsma 批次七 |
 | 60 | Boole 代数与逻辑电路（B={0,1} 十公理+恒等式册+半/全加器+minterm 表示定理+QMC 两阶段） | C/L/P | ✅ Jongsma 批次八 |
 | 61 | 图论专题（握手引理真证明+哥尼斯堡/K5/K3,3 平面算术+Ham 检查器+贪心着色两定理+P 通道搜索面） | C/L/P | ✅ Jongsma 批次九 |
-| 62 | 公理集合论 NBG 与序数（类存在公理 B1-B7 构造算子+Kuratowski 序对+von Neumann 序数+有限 AC 零公理+MK/ZF/ST/NF 对照） | C/L | 🔨 Mendelson 批次五 |
+| 62 | 公理集合论 NBG 与序数（vn 典范世界引理族+kur_char 4.3 真定理+vn_trans 传递性+fin_ac 零公理+B1-B5 算子点式定理+系统对照表） | C/L | ✅ Mendelson 批次五 |
 | 63 | 收官：SAT→SMT→MC→ITP 图景 + 总坑位清单 + 十书导读 + 账本尾段（批次七重写） | 文档 | ✅ 扩写✅ |
 
 章号=示例号；`docs/NN-*.md` 每章坑位速记；ROOTS 随章追加 Isabelle session。
