@@ -280,3 +280,21 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 - **∃A 侧条件新鲜性**：具体公式 vm_compute（Coq）/全定义 simp（Lean）。
 - **账本对照**：同一群例 Coq 零公理 vs Lean [propext, Classical.choice,
   Quot.sound]（by_cases 经典分叉）。
+
+## 09/34/35/36/37/62 章新坑（Mendelson 扩充）
+
+### 09 章 完备集与公理独立性（C/L）
+- **↓ 是 NOR 不是 NAND**：joint denial 的 `upeval` 首版写成 `negb (andb …)`
+  被 conj 案反例当场抓包——先读原句（neither…nor）再写求值器；
+- **nat destruct 两案陷阱**：值 2 落在任意后继分支、表匹配卡死——
+  Coq 三层 `as [|[|?]]`、Lean 27 行 `match | 0,0,0 => rfl | b+2,… => rfl`
+  查表；**unfold 递归常量变裸 fix** 导致 destruct 匹配落空——让 simpl
+  做 iota、只 unfold 定义型常量（ev1）；
+- **destruct 不穿透未展开目标**（`beval (imp B C) s` 里看不见
+  `beval B s`）：先 simpl 暴露；rw ← h 全量替换 true 的风险改 have+rw；
+- **一致性陈述**：`∀f,(∀b,=b)∨(∀b,=¬b)` 才推得常真不可定义——逐点
+  弱陈述归纳也闭但推论断链；
+- Lean：`split with h` 不收（用 split+next）；`cases h : s n` 已替换目标
+  则后续 rw 删 hsn；simp 可能提前闭合（first | rfl | cases 兜底）；
+- 账本：Coq 全章零公理 vs Lean shannon_ok [propext, Quot.sound]——
+  差异全在 tactic 层。

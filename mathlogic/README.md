@@ -38,7 +38,7 @@ mathlogic/
 | [06 矢列演算 G](docs/06-sequent.md) | 九规则 + 可靠性旗舰（零公理） | C/A/L/I |
 | [07 语义表列](docs/07-tableau.md) | fuel 化搜索 + **三定理链**（sound/complete/decides，零公理） | C/L |
 | [08 范式](docs/08-cnf.md) | NNF/CNF 保语义；Agda case-tree 互卡边界实录 | C/A/L |
-| [09 完备集与公理独立性](docs/09-adequate.md) | 施工中（Mendelson 批次一）：{↑} 单连接词完备+L 三公理独立（三值矩阵） | C/L |
+| [09 完备集与公理独立性](docs/09-adequate.md) | shannon 表示定理+{¬,∧}/↓ 翻译器+Prop 1.7 骨架+三值矩阵独立性+super 擦负号 | C/L |
 | [10 DPLL](docs/10-dpll.md) | upd 复合装配模型；三定理零公理 | C/L/I |
 | [11 BDD](docs/11-bdd.md) | apply/mk 编译保语义；树形 vs DAG 现场实录 | C/L |
 | [12 Glivenko 现象](docs/12-glivenko.md) | 经典原理 ¬¬ 化全部直觉可证（零公理四通道） | C/A/L/T |

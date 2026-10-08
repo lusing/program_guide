@@ -250,8 +250,8 @@ Theorem mp_sel : forall B C, sel B -> sel (pimp B C) -> sel C.
 Proof.
   intros B C H1 H2. unfold sel in *.
   intros s. specialize (H1 s). specialize (H2 s).
-  unfold ev1, ev3 in *; simpl in H1, H2.
-  destruct (ev3 neg1 imp1 B s); destruct (ev3 neg1 imp1 C s);
+  unfold ev1 in *; simpl in H1, H2.
+  destruct (ev3 neg1 imp1 B s) as [|[|?]]; destruct (ev3 neg1 imp1 C s) as [|[|?]];
     simpl in H1, H2; try reflexivity; discriminate.
 Qed.
 
@@ -259,17 +259,17 @@ Qed.
 Theorem A2_sel : forall B C D, sel (pimp (pimp B (pimp C D))
                                       (pimp (pimp B C) (pimp B D))).
 Proof.
-  intros B C D s. unfold sel, ev1, ev3. simpl.
-  destruct (ev3 neg1 imp1 B s); destruct (ev3 neg1 imp1 C s);
-    destruct (ev3 neg1 imp1 D s); simpl; congruence.
+  intros B C D s. unfold sel, ev1. simpl.
+  destruct (ev3 neg1 imp1 B s) as [|[|?]]; destruct (ev3 neg1 imp1 C s) as [|[|?]];
+    destruct (ev3 neg1 imp1 D s) as [|[|?]]; simpl; try reflexivity.
 Qed.
 
 Theorem A3_sel : forall B C, sel (pimp (pimp (pneg B) (pneg C))
                                      (pimp (pimp (pneg B) C) B)).
 Proof.
-  intros B C s. unfold sel, ev1, ev3. simpl.
-  destruct (ev3 neg1 imp1 B s); destruct (ev3 neg1 imp1 C s);
-    simpl; congruence.
+  intros B C s. unfold sel, ev1. simpl.
+  destruct (ev3 neg1 imp1 B s) as [|[|?]]; destruct (ev3 neg1 imp1 C s) as [|[|?]];
+    simpl; try reflexivity.
 Qed.
 
 (* 反例：A1 实例不 select——A1=1、A2=2 时取值 2 *)
@@ -295,24 +295,24 @@ Theorem mp_grot : forall B C, grot B -> grot (pimp B C) -> grot C.
 Proof.
   intros B C H1 H2 s. unfold grot in H1, H2.
   specialize (H1 s). specialize (H2 s).
-  unfold ev2, ev3 in *; simpl in H1, H2.
-  destruct (ev3 neg2 imp2 B s); destruct (ev3 neg2 imp2 C s);
+  unfold ev2 in *; simpl in H1, H2.
+  destruct (ev3 neg2 imp2 B s) as [|[|?]]; destruct (ev3 neg2 imp2 C s) as [|[|?]];
     simpl in H1, H2; congruence.
 Qed.
 
 Theorem A1_grot : forall B C, grot (pimp B (pimp C B)).
 Proof.
-  intros B C s. unfold grot, ev2, ev3. simpl.
-  destruct (ev3 neg2 imp2 B s); destruct (ev3 neg2 imp2 C s);
-    simpl; congruence.
+  intros B C s. unfold grot, ev2. simpl.
+  destruct (ev3 neg2 imp2 B s) as [|[|?]]; destruct (ev3 neg2 imp2 C s) as [|[|?]];
+    simpl; try reflexivity.
 Qed.
 
 Theorem A3_grot : forall B C, grot (pimp (pimp (pneg B) (pneg C))
                                      (pimp (pimp (pneg B) C) B)).
 Proof.
-  intros B C s. unfold grot, ev2, ev3. simpl.
-  destruct (ev3 neg2 imp2 B s); destruct (ev3 neg2 imp2 C s);
-    simpl; congruence.
+  intros B C s. unfold grot, ev2. simpl.
+  destruct (ev3 neg2 imp2 B s) as [|[|?]]; destruct (ev3 neg2 imp2 C s) as [|[|?]];
+    simpl; try reflexivity.
 Qed.
 
 (* 反例：A2 实例不 grotesque——(A1,A2,A3)=(0,0,1) 时取值 2 *)
@@ -332,17 +332,17 @@ Fixpoint erase (f : pfm) : pfm :=
   end.
 
 Lemma erase_pimp : forall a b, erase (pimp a b) = pimp (erase a) (erase b).
-Proof. induction a; intros b; simpl; congruence. Qed.
+Proof. induction a; intros b; simpl; try reflexivity. Qed.
 
 (* A1/A2 是二值重言式（模式级） *)
 Lemma taut_A1 : forall X Y s, peval (pimp X (pimp Y X)) s = true.
-Proof. intros X Y s.
+Proof. intros X Y s. simpl.
   destruct (peval X s); destruct (peval Y s); reflexivity. Qed.
 
 Lemma taut_A2 : forall X Y Z s,
   peval (pimp (pimp X (pimp Y Z)) (pimp (pimp X Y) (pimp X Z))) s = true.
 Proof.
-  intros X Y Z s.
+  intros X Y Z s. simpl.
   destruct (peval X s); destruct (peval Y s); destruct (peval Z s);
     reflexivity.
 Qed.
@@ -354,7 +354,7 @@ Theorem super_MP : forall B C,
   (forall s, peval (erase C) s = true).
 Proof.
   intros B C H1 H2 s. rewrite erase_pimp in H1.
-  specialize (H1 s). specialize (H2 s).
+  specialize (H1 s). specialize (H2 s). simpl in H1.
   destruct (peval (erase B) s); destruct (peval (erase C) s);
     simpl in *; congruence.
 Qed.
@@ -377,20 +377,20 @@ Proof. reflexivity. Qed.
 (* ============ 五、L1（Hilbert–Ackermann ∨¬ 系统）四公理重言验证 ============ *)
 
 Theorem L1_ax1 : forall B s, beval (imp (disj B B) B) s = true.
-Proof. intros B s. destruct (beval B s); reflexivity. Qed.
+Proof. intros B s. simpl. destruct (beval B s); reflexivity. Qed.
 
 Theorem L1_ax2 : forall B C s, beval (imp B (disj B C)) s = true.
-Proof. intros B C s.
+Proof. intros B C s. simpl.
   destruct (beval B s); destruct (beval C s); reflexivity. Qed.
 
 Theorem L1_ax3 : forall B C s, beval (imp (disj B C) (disj C B)) s = true.
-Proof. intros B C s.
+Proof. intros B C s. simpl.
   destruct (beval B s); destruct (beval C s); reflexivity. Qed.
 
 Theorem L1_ax4 : forall B C D s,
   beval (imp (imp C D) (imp (disj B C) (disj B D))) s = true.
 Proof.
-  intros B C D s.
+  intros B C D s. simpl.
   destruct (beval B s); destruct (beval C s); destruct (beval D s);
     reflexivity.
 Qed.
