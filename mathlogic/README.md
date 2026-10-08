@@ -1,6 +1,6 @@
 # 数理逻辑指南（mathlogic）：从命题到不完备性
 
-面向**会编程、想系统学数理逻辑**的读者。以九本读本为骨架
+面向**会编程、想系统学数理逻辑**的读者。以十本读本为骨架
 （Huth&Ryan、Ben-Ari 3e、Mints、EFT、Mendelson、Jongsma 等详见
 [PLAN.md](./PLAN.md)），横跨 **Coq / Agda / Lean 4 / Isabelle/HOL /
 HOL4 / Coq-HoTT / Prolog** 七种实现机器验证。

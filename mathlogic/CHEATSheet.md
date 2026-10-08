@@ -228,7 +228,7 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 （平衡 3=3），反例是 K3,4（3≠4）——书 Ex 8.2.17 判据两侧各
 有机型，勿张冠李戴。
 
-## 20-21 章新坑（EFT 扩充）
+## 20-25/29/32 章新坑（EFT 扩充全谱）
 
 - **Lean native_decide 救 reflexivity/decide**：解释表用深 `match s, args`
   写的有限结构求值，`by rfl`/`by decide` 卡在 Decidable 实例归约
@@ -241,6 +241,7 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
   入信息。
 - （20 章其余坑见上节：嵌套归纳无 IH、Lean 符号项 defeq 卡死、conj
   遮蔽、∃A 新鲜性 compute、账本 choice 对照。）
+- **24 章新坑**（前文已录，此处归并索引）：forall 条件合取=∀。
 - **32 章新坑**：燃料预算不足（P₀ 需 3n+20——首版 n+10 被拒）；
   HALT 检测=pc 不动（注意自跳 rife r 0 0 也不停）；Prolog 变量名带
   撇号与全角注释组合解析炸（统一 Cfg2）；Example 的 kernel 归约比

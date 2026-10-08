@@ -1,4 +1,4 @@
-# mathlogic 教程总计划（九书为纲 × 六证明助手）
+# mathlogic 教程总计划（十书为纲 × 七通道）
 
 > 状态：全书主题重排完成——51 章就位新号位（原 H&R 26 章 + Ben-Ari 8 章 + Jongsma 9 章），140 单元全绿；EFT 扩充八章（新 20/21/22 深化/23/24/25/29/32）按批次写入。本文件是施工蓝图，
 > 供后续会话续接——每完成一章更新一次「已交付」标记。
@@ -28,7 +28,7 @@
 | hott | Rocq 9.1（G:\rocq）+ 本地 Coq-HoTT 库（597 .vo，tools/build-hott.ps1） | build.ps1（`*_hott.v` 后缀路由） | exit 0 无 Error |
 | prolog | SWI-Prolog 10.0.2（G:\scoop\apps\swipl\current；gprolog 1.5.0/WSL 跨引擎抽查） | build.ps1（`exNN_*.pl` 自动路由） | exit 0 + `END ====` 标记 |
 
-## 章节蓝图（58 章号位；20/21/23/24/25/29/32 为 EFT 预留）
+## 章节蓝图（58 章全部交付）
 
 | 章 | 主题 | 通道 | 状态 |
 |---|---|---|---|
