@@ -54,6 +54,7 @@ mathlogic/
 | [24 EF 博弈与 Fraïssé](docs/24-efgame.md) | dup_wins 求解器（三通道一致）+线序 2^k−1 分离表+空/全关系对照+秩-轮对齐 | C/L/P |
 | [25 二阶逻辑](docs/25-secondorder.md) | soev 幂枚举求值器+偶数性交替着色+连通性否定式刻画+L_Q 退化 | C/L |
 | [29 自由模型](docs/29-freemodel.md) | 自由幺半群=表+初始性两定理（泛性质）+必需性证词 | C/L |
+| [32 寄存器机](docs/32-regmachine.md) | 五指令 RM 解释器（三通道）+书例 P₀ 奇偶对账+加法+循环不停机 | C/L/P |
 | [22 完备性 Henkin](docs/22-completeness.md) | 构造七步+紧致性推论（文档章） | 文档 |
 | [26 合一与归结](docs/26-resolution.md) | occurs check + 归结可靠性（三通道） | C/L/I |
 | [27 Herbrand 与 SLD](docs/27-herbrand.md) | T_P 单调+头原子（Prolog 桥） | C/L |
