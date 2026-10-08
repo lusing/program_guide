@@ -159,3 +159,15 @@ Proof. exists 1. reflexivity. Qed.
 Print Assumptions rep_le_ok.
 Print Assumptions rep_even_ok.
 Print Assumptions qf_agree.
+
+(* ---------- Marker ch13 深化：表示性 ⟹ Σ₁ 片=CE ---------- *)
+
+(* rep_* 样板把递归事实翻成 Σ₁ 句；此处给「翻译一致性」的
+   有限影子：rep_add_ok 在 K=1..5 的有限域上与标准加法逐点对账 *)
+Example rep_sigma1_shadow :
+  forallb (fun K =>
+    forallb (fun xy =>
+      fevalb rep_add K (s3 (fst xy) (snd xy) (fst xy + snd xy)))
+    (list_prod (seq 0 (S K)) (seq 0 (S K))))
+    (seq 1 5) = true.
+Proof. reflexivity. Qed.
