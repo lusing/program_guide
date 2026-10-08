@@ -28,37 +28,37 @@ session ML06 in "06_sequent" = HOL +
   theories
     ex06_sequent
 
-session ML09 in "09_dpll" = HOL +
+session ML10 in "10_dpll" = HOL +
   options [document = false]
   theories
-    ex09_dpll
+    ex10_dpll
 
-session ML15 in "15_folsem" = HOL +
+session ML16 in "16_folsem" = HOL +
   options [document = false]
   theories
-    ex15_folsem
+    ex16_folsem
 
-session ML16 in "16_folnd" = HOL +
+session ML17 in "17_folnd" = HOL +
   options [document = false]
   theories
-    ex16_folnd
+    ex17_folnd
 
-session ML26 in "26_resolution" = HOL +
+session ML27 in "27_resolution" = HOL +
   options [document = false]
   theories
-    ex26_resolution
+    ex27_resolution
 
-session ML33 in "33_decidability" = HOL +
+session ML38 in "38_decidability" = HOL +
   options [document = false]
   theories
-    ex33_decidability
+    ex38_decidability
 
-session ML46 in "46_hoare" = HOL +
+session ML50 in "50_hoare" = HOL +
   options [document = false]
   theories
-    ex46_hoare
+    ex50_hoare
 
-session ML47 in "47_totalcorrect" = HOL +
+session ML51 in "51_totalcorrect" = HOL +
   options [document = false]
   theories
-    ex47_totalcorrect
+    ex51_totalcorrect

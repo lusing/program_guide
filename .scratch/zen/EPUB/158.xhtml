@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#" lang="cn" xml:lang="cn">
+  <head>
+    <title>38.2　对象池模式</title>
+  </head>
+  <body><h3 class="p3" id="sigil_toc_id_195">38.2 对象池模式</h3> 
+<p class="ziti">上周二，师兄过来找我，他负责运维一个大型新闻网站，说是网站出现性能，让我帮忙分析调优。我这几天正好闲得手痒，同时又卖个人情，何乐而不为呢。于是我们俩就到机房蹲点，追查问题。</p> 
+<h4 class="p4 sigil_not_in_toc">38.2.1 正确的池化</h4> 
+<p class="ziti">简单说明一下该系统的场景，这是一个专业的新闻追踪网站，关注的是专业新闻的深度，在行业内具有相当大的影响力。最近一段时间内出现偶发性缓慢，从监控情况上看，响应时间在2秒以上，由于最近软硬件环境都没有变更过，因此直觉判断：最快捷、直观的解决方案就是增加DB硬件设备。但由于东家是穷惯了，不同意在没有彻查问题之前而依靠增强硬件来解决问题，于是我们这些软件工程师就忙活起来了。</p> 
+<p class="ziti">网站首页内容基本都是静态的（轮询生成），唯一的动态部分是网站的激励语，比如“积一时之跬步，臻千里之遥程”、“业精于勤，荒于嬉；行成于思，毁于随”等励志语句，这是一个简单的SQL随机查询结果，表中的数量在5000条左右，而且结构简单，查询性能不是问题。示例代码如代码清单38-29所示。</p> 
+<p class="ziti">代码清单38-29 无缓存的SQL随机读取</p> 
+<pre>@Service&#13;
+public class WisdomProvider {&#13;
+        @Autowire&#13;
+        private WisdomDao wisdomDao;&#13;
+        public String getOneWord() {&#13;
+                return wisdomDao.randomOneWisdom();&#13;
+        }&#13;
+}</pre> 
+<p class="ziti">对于代码中的@Service、@Autowire注解，做过Spring开发的都懂，这是一个典型的三层架构，WisdomDao的randomOneWisdom方法是通过数据库随机函数查询一条记录。在跟踪过程中，发现高峰期数据库连接偶尔出现占满情况，而且都是查询该表（顺便说下，该数据库的随机查询算法有缺陷），问题找到了：每一次访问都会直接查询数据库，没有缓存。通常情况下，这没有问题，但是在高并发的情况下，例如在10万PV的压力下服务器基本就垮掉了，这是非常严重的问题。</p> 
+<p class="ziti">怎么解决呢？好办，引入一个对象池，把这5000条记录（根据评估最多不超过20000条记录）在启动时直接加载到内存中，在需要时再从内存中取得，以后查询不再与数据库交互。示例代码如代码清单38-30所示。</p> 
+<p class="ziti">代码清单38-30 增加缓存后的随机读取</p> 
+<pre>@Service&#13;
+public class WisdomProvider {&#13;
+        @Autowire&#13;
+        private WisdomDao wisdomDao;&#13;
+        private List&lt;String&gt; wisdoms = null;&#13;
+        @PostConstruct&#13;
+        public void init() {&#13;
+                wisdoms = wisdomDao.getAll();&#13;
+        }&#13;
+        public String getOneWord() {&#13;
+                return RandomUtils.getOne(wisdoms);&#13;
+        }&#13;
+}</pre> 
+<p class="ziti">@PostConstruct注解的作用是Spring容器在启动完毕后，直接执行init方法，一次性读取所有的数据，然后在应用运行期间不再与数据库交互，直接从List列表中获取数据。通过这样的修正，系统性能有了大幅提升，在不增加硬件的情况下，彻底解决了性能问题。这就是对象池模式。</p> 
+<h4 class="p4 sigil_not_in_toc">38.2.2 对象池模式的意图</h4> 
+<p class="ziti">对象池模式，或者称为对象池服务，其意图如下：</p> 
+<p class="ziti">通过循环使用对象，减少资源在初始化和释放时的昂贵损耗<a id="angguisunhao"><sup>[1]</sup></a>。</p> 
+<hr/> 
+<p class="ziti6"><span class="yanse">注意</span>　这里的“昂贵”可能是时间效益（如性能），也可能是空间效益（如并行处理），在大多的情况下，“昂贵”指性能。</p> 
+<hr/> 
+<p class="ziti">简单地说，在需要时，从池中提取；不用时，放回池中，等待下一个请求。典型例子是连接池和线程池，这是我们开发中经常接触到的。类图如图38-6所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0179.jpg"/></a></p> 
+<p class="middle-img">图38-6 对象池模式通用类图</p> 
+<p class="ziti">对象池提供两个公共的方法：checkOut负责从池中提取对象，checkIn负责把回收对象（当然，很多时候checkIn已经自动化处理，不需要显式声明,如连接池），对象池代码如代码清单38-31所示。</p> 
+<p class="ziti">代码清单38-31 对象池示例代码</p> 
+<pre>public abstract class ObjectPool&lt;T&gt; {&#13;
+        //容器，容纳对象&#13;
+        private Hashtable&lt;T, ObjectStatus&gt; pool = new Hashtable&lt;T, ObjectStatus&gt;();&#13;
+        //初始化时创建对象，并放入到池中&#13;
+        public ObjectPool() {&#13;
+                pool.put(create(), new ObjectStatus());&#13;
+        }&#13;
+        //从Hashtable中取出空闲元素&#13;
+        public synchronized T checkOut() {&#13;
+                //这是最简单的策略&#13;
+                for (T t : pool.keySet()) {&#13;
+                        if (pool.get(t).validate()) {&#13;
+                                pool.get(t).setUsing();&#13;
+                                return t;&#13;
+                        }&#13;
+                }&#13;
+                return null;&#13;
+        }&#13;
+        //归还对象&#13;
+        public synchronized void checkIn(T t) {&#13;
+                pool.get(t).setFree();&#13;
+        }&#13;
+        class ObjectStatus {&#13;
+                //占用&#13;
+                public void setUsing() {&#13;
+                }&#13;
+                //释放&#13;
+                public void setFree() {&#13;
+                        //注意：若T是有状态，则需要回归到初始化状态&#13;
+                }&#13;
+                //检查是否可用&#13;
+                public boolean validate() {&#13;
+                        return false;&#13;
+                }&#13;
+        }&#13;
+        //创建池化对象&#13;
+        public abstract T create();&#13;
+}</pre> 
+<p class="ziti">这是一个简单的对象池实现，在实际应用中还需要考虑池的最小值、最大值、池化对象状态（若有的话，需要重点考虑）、异常处理（如满池情况）等方面，特别是池化对象状态，若是有状态的业务对象则需要重点关注。</p> 
+<h4 class="p4 sigil_not_in_toc">38.2.3 最佳实践</h4> 
+<p class="ziti">把对象池化的本意是期望一次性初始化所有对象，减少对象在初始化上的昂贵性能开销，从而提高系统整体性能。然而池化处理本身也要付出代价，因此，并非任何情况下都适合采用对象池化。</p> 
+<p class="ziti">通常情况下，在重复生成对象的操作成为影响性能的关键因素时，才适合进行对象池化。但是若池化所能带来的性能提高并不显著或重要的话，建议放弃对象池化技术，以保持代码的简明，转而使用更好的硬件来提高性能为佳。</p> 
+<p class="ziti">对象池技术在Java领域已经非常成熟，只要做过企业级开发的人员，基本都用过C3P0、DBCP、Proxool等连接池，也配置过minPoolSize、maxPoolSize等参数，这是对象池模式的典型应用。在实际开发中若需要对象池，建议使用common-pool工具包来实现，简单、快捷、高效。</p> 
+<p class="fnote"><a id="angguisunhaozhu">[1]</a>原文是Avoid expensive acquisition and release of resources by recycling objects that are no longer in use。</p></body>
+</html>

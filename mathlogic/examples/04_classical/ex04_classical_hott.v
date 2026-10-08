@@ -7,7 +7,7 @@
 
      LEM_{-1} : forall A : Type, IsHProp A -> A + (A -> Empty)
 
-   对全集类型（LEM_∞）在泛等下不真（11/12 章再议）。 *)
+   对全集类型（LEM_∞）在泛等下不真（12/13 章再议）。 *)
 
 Require Import HoTT.HoTT.
 
@@ -41,7 +41,7 @@ Defined.
 (* 现场注记：
    - IsHProp Bool 的实例由库自动解析——布尔层经典性免费；
    - dne→lem 方向在 HoTT 里要证 IsHProp (A + ~ A)（析取的截断性），
-     涉及 sum 的 h-level 定理，留作 12 章截断主题的伏笔。 *)
+     涉及 sum 的 h-level 定理，留作 13 章截断主题的伏笔。 *)
 
 (* 坑位速记（HoTT 侧）：
    - ~ 在 HoTT.Prelude 里定义为 fun A => A -> Empty；

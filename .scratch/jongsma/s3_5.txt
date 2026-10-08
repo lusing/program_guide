@@ -1,0 +1,464 @@
+3.5 Divisibility
+
+195
+
+3.5 Divisibility
+
+The Peano Postulates and recursive deﬁnitions for addition, multiplication, and exponentiation give us an algebraic structure in which we can do ordinary arithmetic. In the last Exercise Set, we also deﬁned the order-relation ≤ and stated key results holding for it (see Exercises 3.4.20–31).
+We’ll now turn to divisibility and the related notions of greatest common divisor and least common multiple. We’ll explore some basic divisibility results, both to round out our discussion of natural number arithmetic and to provide background material for our later discussion of modular arithmetic in Section 6.4. We’ll prove these in a more informal paragraph style.
+
+3.5.1 Divisibility: Deﬁnition and Properties
+The natural number system N remains our overall context, though for some results the integers Z will be a more convenient universe of discourse (as indicated below) because subtraction is a full operation there. To be logically rigorous, we need to develop the basic theory of integer arithmetic, but we’ll postpone this until we can make use of some set-theoretic ideas introduced in Section 6.3. Any results about the integers used here are ones learned early in school. Without listing list all of them, we’ll carefully state and prove these and others after we’ve deﬁned Z in Section 6.4.
+One important result we need is the Division Algorithm, which allows us to divide one integer by another when there are remainders. This captures the ordinary process of long division. We’ll prove this theorem in Section 6.4.
+Theorem 3.5.1: Division Algorithm If an integer n is divided by a positive integer d, there results a unique quotient q and a unique remainder r such that n = qd + r with 0 ≤ r < d.
+When the remainder r is 0 in a division n ÷ d, the divisor d divides n exactly. We’ll deﬁne this relationship for all integers. Note that | denotes a relation, not an operation like ÷ .
+Deﬁnition 3.5.1: Divides; Divisor, Multiple Suppose d, m, n are integers. Then a) d divides n, denoted by d | n, if and only if n = md for some m; b) d is a divisor of n (and n is a multiple of d) if and only if d | n.
+✜ Example 3.5.1
+Show that 3 | 12, −4 | 20, and 5 | 9; does 0 | 0?
+Solution
+· 3 | 12 because 12 = 4 · 3. · −4 | 20 because 20 = −5 · −4. · 5 | 9 because no integral multiple of 5 yields 9; 9 ÷ 5 leaves remainder 4. · 0 | 0 by our deﬁnition (though you can’t divide by 0) because 0 = 1 · 0;
+in fact, d | 0 for all integers d because 0 = 0 · d.
+
+196
+
+3 Mathematical Induction and Arithmetic
+
+Divisibility satisﬁes a number of basic properties. These are listed in the next proposition, where again all the variables range over Z.
+Proposition 3.5.1: Properties of Divisibility a) 1 | a; a | 0. b) If a > 0 and c | a, then c ≤ a. c) Reﬂexivity: a | a. d) Anti-symmetry: a | b ∧ b | a → a = ±b. e) Transitivity: a | b ∧ b | c → a | c. f) Divisibility of sums and diﬀerences: a | b ∧ a | c → a | (b ± c). g) Divisibility of (scalar) products: a | b → a | mb for any m. h) Divisibility of linear combinations: a | b ∧ a | c → a | (m1b + m2c).
+Proof : We’ll prove three of these and leave the others as exercises. b) Suppose a > 0 and c | a. If c ≤ 0, then c ≤ a because 0 < a. If c > 0, then a = qc for q ≥ 1. Thus, c ≤ a. d) Suppose a | b and b | a. Then a = mb and b = na. Thus, a = mna, and so mn = 1. Either m = 1 = n, in which case a = b; or m = −1 = n, in which case a = −b. Hence, a = ±b. f) Suppose a | b ∧ a | c. Then b = m1a and c = m2a. So b ± c = m1a ± m2a = (m1 ± m2)a. Thus, a | (b ± c).
+
+3.5.2 Common Divisors and Common Multiples
+Common divisors (common multiples) and greatest common divisors (least common multiples) are deﬁned as follows. Here N is our universe of discourse.
+Deﬁnition 3.5.2: Common Divisor; Greatest Common Divisor Suppose a, b, c, d are natural numbers. a) c is a common divisor of a and b if and only if c | a ∧ c | b. b) d is the greatest common divisor of a and b (not both 0), denoted by d = gcd(a, b), if and only if d is a common divisor of a and b and whenever c is a common divisor of a and b, then c ≤ d.
+Deﬁnition 3.5.3: Common Multiple; Least Common Multiple Suppose a, b, l, m are natural numbers. a) m is a common multiple of a and b if and only if a | m ∧ b | m. b) l is the least common multiple of a and b, denoted by l = lcm(a, b), if and only if l is a common multiple of a and b and whenever m is a common multiple of a and b, then l ≤ m.
+
+3.5 Divisibility
+
+197
+
+✜ Example 3.5.2
+a) Find the common divisors of 12 and 20; of 30 and 42; of 15 and 22. b) Find the common multiples of 12 and 20; of 30 and 42; of 15 and 22. c) How are the common divisors related to gcd(a, b) for the pairs given?
+How are the common multiples related to the lcm(a, b)? d) How are gcd(a, b) and lcm(a, b) related for the pairs given?
+Solution a) The common divisors of 12 and 20 are 1, 2, 4; so gcd(12, 20) = 4. The common divisors of 30 and 42 are 1, 2, 3, 6; so gcd(30, 42) = 6. The only common divisor of 15 and 22 is 1; so gcd(15, 22) = 1. b) The common multiples of 12 and 20 are 60, 120, . . .; lcm(12, 20) = 60. The common multiples of 30 and 42 are 210, 420, . . .; lcm(30, 42) = 210. The common multiples of 15 and 22 are 330, 660, . . .; lcm(15, 22) = 330. c) From the deﬁnition we know that gcd(a, b) is the largest common divisor. But more than this seems to be true, as we can see in these examples— each common divisor divides the greatest common divisor. Similarly, all common multiples are multiples of the least common multiple. d) Clearly, it seems gcd(a, b) | lcm(a, b), but this isn’t the best we can do in relating these two. See if you can discover what more is true.
+We can easily ﬁnd common divisors and the greatest common divisor for two numbers a and b by listing their divisors separately, comparing lists, and picking out common divisors and the gcd(a, b). Finding divisors is timeconsuming, however, so we’ll introduce a more eﬃcient method.
+
+3.5.3 The Euclidean Algorithm
+Euclid put forward a procedure for calculating the greatest common divisor, now called the Euclidean Algorithm, in Propositions VII.1–2 of his Elements. The ancient Chinese used an equivalent method to help reduce common fractions to lowest form. We’ll look at both of these procedures.
+
+✜ Example 3.5.3
+The Chinese Reciprocal Subtraction Method for calculating the greatest common divisor of two numbers subtracts the smaller number from the larger until it no longer yields a positive remainder. The last remainder is then subtracted from the other number until the same thing happens. This process is repeated until the remainder equals the number being subtracted, which produces the greatest common divisor. Let’s use this to calculate gcd(36, 128) and gcd(15, 49).
+
+Solution
+
+Here is the reciprocal subtraction procedure in schematic form.
+
+1 128 → 92 → 56 → 20; 3 20 → 4 1 49 → 34 → 19 → 4; 3 4 → 1
+
+2 36 → 16; 4 16 → 12 → 8 → 4
+
+2 15 → 11 → 7 → 3; 4 3 → 2 → 1
+
+Thus, gcd(36, 128) = 4.
+
+Thus, gcd(15, 49) = 1.
+
+198
+
+3 Mathematical Induction and Arithmetic
+
+Essentially, long division is repeatedly subtracting one number from another, yielding a remainder in the end. In the last example, 128 ÷ 36 leaves remainder 20; 36 ÷ 20 leaves remainder 16; etc. The Chinese Reciprocal Subtraction Method gradually divides the larger number by the smaller, then divides the smaller number by the remainder, and so on, until the ﬁnal nonzero remainder equals the divisor. The Euclidean Algorithm does this more compactly, as illustrated below, except that we divide until the remainder is 0, the last divisor being the greatest common divisor.
+✜ Example 3.5.4
+Use the Euclidean Algorithm to calculate gcd(36, 128) and gcd(15, 49).
+Solution 128 ÷ 36 = 3, rem. 20; 36 ÷ 20 = 1, rem. 16; 20 ÷ 16 = 1, rem. 4; 16 ÷ 4 = 4, rem. 0; so gcd(36, 128) = 4.
+49 ÷ 15 = 3, rem. 4; 15 ÷ 4 = 3, rem. 3; 4 ÷ 3 = 1, rem. 1; 3 ÷ 1 = 3, rem. 0; so gcd(15, 49) = 1.
+The Chinese Reciprocal Subtraction Method and the Euclidean Algorithm seem mysterious at ﬁrst. The reason they work—the crux of the proof that these methods yield gcd(a, b)—lies in the following Lemma.
+Lemma 3.5.1: Common GCD in Stages of the Euclidean Algorithm If n = qd + r, then gcd(n, d) = gcd(d, r).
+Proof :
+· Suppose n = qd + r. [We’ll prove that every common divisor of n and d
+is a common divisor of d and r, and conversely.]
+· Let c be a common divisor of n and d. Then c | (n − qd), i.e., c | r.
+So c is a common divisor of d and r.
+· Conversely, suppose c is a common divisor of d and r.
+Then c | (qd + r), i.e., c | n. So c is a common divisor of d and n.
+· Since their sets of common divisors are the same, gcd(n, d) = gcd(d, r).
+
+Theorem 3.5.2: Euclidean Algorithm Outcome
+The Euclidean Algorithm applied to integers a and b, not both 0, produces
+gcd(a, b).
+Proof :
+· Since the Euclidean Algorithm yields strictly decreasing remainders, after a
+ﬁnite number of steps the remainder will be 0, and the preceding remainder
+will be gcd(a, b).
+· For suppose the procedure applied to a ≤ b yields, after n steps:
+b ÷ a = q1, rem. r1; a ÷ r1 = q2, rem. r2; r1 ÷ r2 = q3, rem. r3; . . . rn−1 ÷ rn = qn+1, rem. 0, a > r1 > · · · > rn > 0.
+· Then by Lemma 1, gcd(a, b) = gcd(a, r1) = gcd(r1, r2) = · · · =
+gcd(rn−1, rn) = gcd(rn, 0) = rn.
+
+3.5 Divisibility
+
+199
+
+Making substitutions in the equations associated with the Euclidean Algorithm will show that gcd(a, b) is an integer linear combination of a and b. To illustrate, we’ll follow up on the ﬁrst part of Example 4 and then prove that this relation always holds.
+
+✜ Example 3.5.5
+Find a linear combination of 36 and 128 yielding gcd(36, 128) = 4.
+
+Solution
+
+From Example 4, we can write the following sequence of equations:
+
+128 = 3 · 36 + 20; 20 = 128 − 3 · 36
+
+36 = 1 · 20 + 16; 16 = 36 − 1 · 20 = 36 − (128 − 3 · 36) = 4 · 36 − 128
+
+20 = 1 · 16 + 4;
+
+4 = 20 − 1 · 16 = (128 − 3 · 36) − (4 · 36 − 128)
+
+16 = 4 · 4 + 0.
+
+= 2 · 128 − 7 · 36 = 256 − 252.
+
+Thus, gcd(36, 128) = 4 = 2 · 128 − 7 · 36.
+
+3.5.4 Properties of the Greatest Common Divisor
+Based on how the Euclidean Algorithm works, we can conjecture the following theorem. This result probably isn’t the ﬁrst one that comes to mind when thinking about what a greatest common divisor is, but it’s a highly versatile tool for proving results that involve the greatest common divisor.
+Theorem 3.5.3: The GCD is the Least Positive Linear Combination The gcd(a, b) is the least positive linear combination ma + nb for integers m and n.
+Proof :
+· Consider all possible linear combinations of a and b. The collection of
+all such positive sums (there are many) has a least element by the WellOrdering Principle, say, d = ma + nb. We’ll show that d = gcd(a, b).
+· We ﬁrst show that d is a common divisor.
+By the Division Algorithm, a = qd + r for 0 ≤ r < d. Then r = a − qd = a − q(ma + nb), a linear combination less than d. Since d is the smallest positive linear combination, r = 0. Thus, a = qd, so d | a.
+· Similarly, d | b. So d is a common divisor of a and b. · Now let c denote any positive common divisor of a and b.
+Then c | (ma + nb), i.e., c | d, making c ≤ d. Thus, d = gcd(a, b) by the deﬁnition.
+Corollary 3.5.3.1: GCD Generates all Linear Combinations The set of multiples of d = gcd(a, b) is the same as the set of all linear combinations ma + nb of a and b.
+Proof : Linear combinations of a and b are multiples of d because d | a and d | b. By Theorem 3, all multiples of d are also linear combinations of a and b.
+
+200
+
+3 Mathematical Induction and Arithmetic
+
+A fragment of Theorem 3’s proof (stated next) is often taken as the deﬁnition of gcd(a, b), because it treats everything in terms of divisibility instead of involving the order relation ≤ . We used the more intuitive notion of greatest in our deﬁnition, leaving this characterization as a consequence.
+
+Corollary 3.5.3.2: Divisibility Characterization of GCD d = gcd(a, b) if and only if d > 0, d | a, d | b, and c | d for all common divisors c of a and b.
+Proof : The forward direction follows from the deﬁnition of gcd(a, b) and the theorem just proved, since c divides any linear combination of a and b. The backward direction follows from the deﬁnition of gcd(a, b) and the divisibility property of Proposition 1b.
+A similar divisibility characterization holds for lcm(a, b).
+Proposition 3.5.2: Divisibility Characterization of LCM l = lcm(a, b) if and only if l > 0, a | l, b | l, and l | q for all common multiples q of a and b.
+Proof : The Division Algorithm can be used to show this. See Exercise 22b.
+The last general property of greatest common divisors we’ll consider is the relationship hinted at in Example 2, part d. We’ll again use the linear combination characterization of gcd(a, b) to prove this result.
+Theorem 3.5.4: GCD × LCM = Product If a, b ≥ 1, then gcd(a, b) · lcm(a, b) = a · b.
+
+Proof :
+
+·
+
+Let
+
+d
+
+=
+
+gcd(a, b),
+
+and
+
+let
+
+l
+
+=
+
+ab .
+d
+
+We’ll
+
+show
+
+l
+
+=
+
+lcm(a,
+
+b).
+
+Since d | a and d | b, a = md and b = nd for positive integers m and n.
+
+Thus, ab = na and ab = mb, so l = ab is a multiple of both a and b.
+
+·
+
+To
+
+d show
+
+l
+
+is
+
+the
+
+d least common
+
+d multiple,
+
+let
+
+q
+
+be
+
+any
+
+positive
+
+multiple
+
+of
+
+a
+
+and b. We’ll show q
+
+≥l
+
+by
+
+proving
+
+q
+
+is
+
+a
+
+positive
+
+integer.
+
+l
+
+q qd q(sa + tb)
+
+==
+
+for d = sa + tb.
+
+l ab
+
+ab
+
+= q s + q t, which is an integer since q is a multiple of a and b.
+
+ba
+
+q
+
+But since q and l are positive, is a positive integer.
+
+Thus,
+
+q
+
+≥ 1,
+
+making
+
+q
+
+≥ l,
+
+l which
+
+implies
+
+l
+
+=
+
+lcm(a, b).
+
+l
+
+✜ Example 3.5.6
+Verify that gcd(56, 472) · lcm(56, 472) = 56 · 472.
+
+3.5 Divisibility
+
+201
+
+Solution After three divisions, the Euclidean Algorithm yields gcd(56, 472) = 8 (see Exercise 17b). Listing multiples of 472 and checking whether they are integer multiples of 56 shows that lcm(56, 472) = 3304 (see Exercise 15b). Checking: 8 · 3304 = 56 · 472 (see Exercise 23c).
+
+3.5.5 Relatively Prime Natural Numbers
+Throughout the text we’ve used prime numbers in examples and exercises, even deﬁning them in the solution of Example 3.2.5. Prime number factorizations can help determine gcd(a, b) and lcm(a, b), but showing how will be left for the exercises (see Exercise 23a).
+In the rest of this section we’ll deﬁne the relation of being relatively prime (or coprime) and prove a few results about this that follow from Theorem 3’s linear-combination characterization of gcd(a, b).
+Deﬁnition 3.5.4: Relatively Prime Numbers Positive integers a and b are relatively prime if and only if gcd(a, b) = 1.
+The relation of being relatively prime is satisﬁed by pairs of distinct primes, but it also holds for other numbers.
+✜ Example 3.5.7
+Show that the following pairs of numbers are relatively prime: {5, 17}; {18, 521}. Are 156 and 221 relatively prime?
+Solution The ﬁrst two pairs of numbers are relatively prime: gcd(5, 17) = 1 and gcd(18, 521) = 1. However, gcd(156, 221) = 13, so the last two numbers are not relatively prime (see Exercise 24).
+Proposition 3.5.3: Relatively Prime Numbers’ Linear Combination Numbers a and b are relatively prime if and only if ma + nb = 1 for some integers m and n.
+Proof :
+· If a and b are relatively prime, gcd(a, b) = 1.
+By Theorem 3, ma + nb = 1 for some integers m and n.
+· Conversely, if ma + nb = 1 for some integers m and n, this is obviously the
+smallest positive linear combination of a and b. By Theorem 3, gcd(a, b) = 1, so a and b are relatively prime.
+Being relatively prime interacts in some important ways with divisibility. For instance, if relatively prime numbers a and b both divide a number c, then so does their product (see Exercise 25a). And if d | ab while d and a are relatively prime, then d | b. This is a slight generalization of a result known as Euclid’s Lemma, which is Proposition VII.30 in Euclid’s Elements. The
+
+202
+
+3 Mathematical Induction and Arithmetic
+
+proof of this below, however, is more modern, drawing again upon the linearcombination characterization of gcd(a, b).
+Theorem 3.5.5: Euclid’s Lemma (Generalized) If d | ab but d and a are relatively prime, then d | b.
+Proof :
+· Suppose that d | ab with d and a being relatively prime. · Then ma + nd = 1 by the last proposition. · Multiplying this by b yields b = mab + nbd, which is divisible by d.
+
+Corollary 3.5.5.1: Euclid’s Lemma If p is prime and p | ab but p | a, then p | b.
+Proof : See Exercise 26.
+
+EXERCISE SET 3.5
+
+Exercises 1–3: True or False Are the following statements true or false? Explain your answer.
+3.5.1. For n > 0, gcd(n, 0) = n and lcm(n, 0) = 0. 3.5.2. For natural numbers a and b, not both 0, gcd(a, b) | lcm(a, b). 3.5.3. For natural numbers a and b, if lcm(a, b) = ab, then a and b are relatively prime.
+
+Exercises 4–8: Divisibility Properties The following problems explore the notion of divisibility.
+
+3.5.4. Division and 0
+
+a. Can d = 0 in the deﬁnition of divides?
+
+b. Why is the condition that a and b are not both 0 inserted in the deﬁnition
+
+of the greatest common divisor?
+
+3.5.5. Show the following divisibility results:
+
+a. 15 | 240
+
+b. −7 | 343
+
+c. 22 | 6712
+
+3.5.6. Verifying Proposition 1 a. Show that 7 | 112, 112 | 1904, and 7 | 1904. What property of divisibility
+
+does this illustrate? b. Show that 13 | 156 and 13 | 117. Then show that 13 | (156 ± 117). c. Show that 24 | 192 and 24 | (15 · 192). d. Show that 18 | 396 and 18 | 216. Then show that 18 | (3 · 396 ± 4 · 216).
+
+3.5.7. Proving Proposition 1 Let a, b, c and m be any integers. Prove the following properties:
+
+3.5 Divisibility
+
+203
+
+a. 1 | a; a | 0 b. a | a c. a | b ∧ b | c → a | c
+3.5.8. Divisibility and Multiples Prove that if c = 0, ac | bc ←→ a | b.
+
+d. a | b → a | mb e. a | b ∧ a | c → a | (m1b + m2c)
+
+Exercises 9–13: Divisibility Properties and Decimal Numerals
+Show that the following divisibility properties hold, where abc is the decimal numeral 100a + 10b + c and bc is 10b + c .
+3.5.9. Divisibility by 2 2 | abc if and only if 2 | c. 3.5.10. Divisibility by 3 3 | abc if and only if 3 | (a + b + c). Hint: 100 = 99 + 1, etc. 3.5.11. Divisibility by 4 4 | abc if and only if 4 | bc. 3.5.12. Divisibility by 5 5 | abc if and only if 5 | c. 3.5.13. Divisibility by 6 6 | abc if and only if 2 | abc and 3 | abc.
+3.5.14. Show that 6 | n3 − n for any integer n. Hint: factor n3 − n.
+
+Exercises 15–19: Calculating GCD and LCM
+
+Calculate the greatest common divisor and least common multiple as indicated in the following problems.
+
+3.5.15. Calculating GCD and LCM via Lists
+
+List the following numbers’ divisors and multiples and use those lists to deter-
+
+mine gcd(a, b) and lcm(a, b).
+
+a. a = 25, b = 70
+
+b. a = 56, b = 472
+
+c. a = 810, b = 2772
+
+3.5.16. Calculating GCD via the Chinese Reciprocal Subtraction Method
+
+Determine gcd(a, b) using the Chinese Reciprocal Subtraction Method.
+
+a. a = 25, b = 70
+
+b. a = 56, b = 472
+
+c. a = 810, b = 2772
+
+3.5.17. Calculating GCD via the Euclidean Algorithm
+
+Determine gcd(a, b) using the standard Euclidean Algorithm.
+
+a. a = 25, b = 70
+
+b. a = 56, b = 472
+
+c. a = 810, b = 2772
+
+3.5.18. Calculating LCM via Theorem 4
+
+Determine lcm(a, b) using the product relationship of Theorem 4.
+
+a. a = 25, b = 70
+
+b. a = 56, b = 472
+
+c. a = 810, b = 2772
+
+3.5.19. GCD is a Linear Combination
+
+Using your work from Exercise 17, determine a linear combination so that
+
+gcd(a, b) = ma + nb for the following:
+
+a. a = 25, b = 70
+
+b. a = 56, b = 472
+
+c. a = 810, b = 2772
+
+Exercises 20–22: Proofs of GCD Results Prove the following results:
+
+204
+
+3 Mathematical Induction and Arithmetic
+
+3.5.20. Theorem 3 a. Fill out the proof of Theorem 3 by showing that d | b, which was said to follow similarly to how we proved d | a. b. Show that if gcd(a, b) = ma + nb, then gcd(m, n) = 1.
+3.5.21. Factoring and the GCD a. Prove that gcd(ma, mb) = m · gcd(a, b). b. Explain how the result of part a can be used to modify the Chinese Reciprocal Subtraction Method and the Euclidean Algorithm, so that they calculate gcd(a, b) for smaller numbers than the original ones. Then illustrate this by calculating gcd(252, 462) via the Euclidean Algorithm. ab c. Prove that if gcd(a, b) = d, then gcd , = 1. dd d. Put part c in your own words and explain why you think it should be true.
+3.5.22. Corollary 3.2 and Proposition 2 a. Fill in the details for Corollary 3.2’s proof to show that if d = gcd(a, b), then d > 0 and c | d for all common divisors c of a and b. b. Prove Proposition 2.
+Exercises 23–27: Primes and Relatively Prime Numbers
+The following problems deal with primes and relatively prime numbers.
+3.5.23. Prime Factorization, GCD, and LCM a. Use that fact that each positive integer has a unique prime factorization to outline a method for calculating both gcd(a, b) and lcm(a, b). b. Using the method from part a, calculate gcd(24, 132) and lcm(24, 132). Check that gcd(24, 132) · lcm(24, 132) = 24 · 132. c. Using the method from part a, calculate gcd(56, 472) and lcm(56, 472). Check that gcd(56, 472) · lcm(56, 472) = 56 · 472.
+3.5.24. Example 7 a. Show that gcd(5, 17) = 1. b. Show that if p and q are distinct primes, then p and q are relatively prime. c. Use some method to show that gcd(18, 521) = 1; that gcd(156, 221) = 13.
+3.5.25. Relatively Prime Numbers Prove the following, using any characterization of gcd(a, b).
+a. (a | c ∧ b | c) ∧ gcd(a, b) = 1 → ab | c b. gcd(a, b) = 1 ∧ gcd(a, c) = 1 → gcd(a, bc) = 1 c. gcd(a, b) = 1 → gcd(ma, b) = gcd(m, b) d. gcd(a, b) = 1 ←→ gcd(a2, b2) = 1
+3.5.26. Prove Corollary 5.1, Euclid’s Lemma If p is prime and p | ab but p | a, then p | b.
+3.5.27. Euclid IX.30, 31 a. Prove that if an odd number divides an even number, then it divides half of that number. b. Prove that if an odd number is relatively prime with a number, then it is relatively prime with its double.
+
+Chapter 4
+Basic Set Theory and Combinatorics
+
+Chapter 3 looked at counting in a theoretical way, seeing how it formed the conceptual basis for Peano Arithmetic. This chapter continues the theme of counting, but in a more practical and less formal fashion—looking at ways to count collections of things, both ordered arrangements and combinations where order is irrelevant. Since it’s sets of things that get counted, we’ll begin with some elementary Set Theory, a topic that will be continued on a more advanced level in the next chapter. As before, we’ll occasionally comment on proof strategy as we proceed, where appropriate.
+
+4.1 Relations and Operations on Sets
+
+Set Theory’s ideas and terminology are indispensable for understanding many branches of mathematics and parts of computer science. In fact, some tout it as the ultimate foundation for all of mathematics. Here it forms the theoretical background needed for our study of Combinatorics, the subﬁeld of mathematics that deals with counting combinations of things.
+Sets arise both from aggregation (collecting things into a uniﬁed whole) and from classiﬁcation (selecting things with a common deﬁning property). We ﬁnd sets in everyday life (a set of dishes, a collection of toys) as well as in science and mathematics (a family of cats, the set of prime numbers). Nomadic tribes kept track of their herds by making one-to-one correspondences between ﬂocks of animals and objects stored in a pouch.
+Despite sets having been useful since ancient times, a theory of sets is only about 150 years old. Treating categories or collections as sets to be manipulated, as conceptual objects in their own right, was not part of mathematics until the late nineteenth century. Only then was a genuine mathematical role for sets discovered—as a tool for understanding inﬁnity. We’ll discuss this important connection as well as its historical context in Chapter 5. Here we’ll explore Set Theory as a basic foundation for topics in Discrete Mathematics.
+
+4.1.1 The Idea, Notation, and Representation of Sets
+Any deﬁnite collection of anything whatsoever forms a set. This isn’t a deﬁnition; it merely uses the synonym collection to indicate what a set is. In fact, no deﬁnition will be given. We’ll take set as a primitive term characterized by its use—formally, by the axioms that govern set relations and operations (see Section 6.3). Everyday experience helps us comprehend its core meaning, but Set Theory sharpens and extends our intuition. We can use other words as well—class, group, family, and so on—but the basic idea is the same: a set is a multiplicity of distinct objects collected into a single conceptual unit.
+
+© Springer Nature Switzerland AG 2019
+
+205
+
+C. Jongsma, Introduction to Discrete Mathematics via Logic and Proof,
+
+Undergraduate Texts in Mathematics,
+
+https://doi.org/10.1007/978-3-030-25358-5 4
+
+

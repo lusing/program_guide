@@ -1,0 +1,326 @@
+Preface
+Discrete Mathematics is both very old and very new. Counting and arithmetic go back to prehistoric times, logic to the ancient Greek period. But Mathematical Logic, Set Theory, Boolean Algebra, and Graph Theory, among other areas of Discrete Mathematics, emerged only during the past two centuries. The field has surged during the current Information Age both because of its importance for digital technology and because high-speed computers make it possible to go beyond classical topics and methods. Modern telecommunication, transportation, and commerce all depend heavily on its results. Since the early 1980s, a number of mathematicians, computer scientists, and professional organizations have promoted Discrete Mathematics as the mathematics needed for our time. Introduction to Discrete Mathematics via Logic and Proof contributes to this trend from a basic logical perspective.
+Topics Selected
+Discrete Mathematics investigates matters like integers and networks instead of real numbers and continuous functions--things that involve discrete rather than continuous entities. This means that it encompasses a large collection of somewhat disjoint subjects, including algebraic structures, algorithms, combinations and permutations, discrete probability, finite state machines, formal languages, graphs and networks, induction and recursion, logic, relations, sets, and more. A Discrete Mathematics textbook can't hope to cover all of these topics without becoming either a superficial collage or an encyclopedic handbook. My response to this profusion of riches is to weave a semester's worth of core topics into a less expansive but more integrated whole.
+We start by studying Mathematical Logic (Chapters 1­2) because it is so vital to understanding the structure and nature of mathematical proofs, one of the key goals of this text. Doing so also lays the formal groundwork for understanding mathematical developments in computer engineering. We then explore the proof techniques of mathematical and structural induction and definition by recursion (Chapter 3), topics central both to mathematics and computer science. We round out the first unit by looking at some matters connected to natural numbers and integers (Peano Arithmetic, divisibility).
+The second part of the text focuses on fundamental topics in Set Theory and Combinatorics (Chapters 4­5). Beginning with elementary set-theoretic operations and relations, we then use them to study some significant counting techniques--also topics important both for mathematics and computer science. We next discuss numerosity/cardinality and venture a bit into the realm of infinite sets. Although this topic is further removed from the practical needs of computer scientists, its relevance to theoretical computability can be seen in its connection to the Halting Problem.
+v
+
+vi
+
+Preface
+
+Assuming the framework of Set Theory, we then move into an area that is more algebraic in nature (Chapters 6­7). After looking at functions and relations in general, we investigate some algebraic structures that involve them. Equivalence relations give rise to partitions, which provide a theoretical foundation for treating both the integers and modular arithmetic using quotient structures. The theory of partial-order relations and lattices gives us the background for introducing Boolean Algebra, a topic that nicely ties together the earlier ones of Propositional Logic and Set Theory. While this material is more abstract and theoretically demanding, it also provides a satisfying conceptual basis for treating the more concrete topics of electronic circuits, Boolean functions, and K-maps.
+The final unit looks at Graph Theory (Chapter 8). Like earlier topics, this one could be expanded into a course on its own, but we restrict our attention to a few key themes initially arising out of recreational interests-- traversing edges and vertices, drawing planar graphs, and coloring maps. This concluding chapter also shows that Discrete Mathematics is a dynamic field of interest to practitioners and theoreticians alike.
+
+Intended Audiences
+Introduction to Discrete Mathematics via Logic and Proof is an outgrowth of my having regularly taught two mathematics courses on the intermediate undergraduate level--a transition course to prepare mathematics majors for proof-based upper-level courses, and a discrete mathematics course for computer science and engineering majors. At one point, given decreasing enrollments and some overlap of material, these courses were merged into one designed to meet the needs of both groups. Not finding a suitable textbook, I wrote up a set of class notes and exercises, which eventually grew to become this text. In one form or another, I've taught this content for about three decades with good success.
+My mathematics students' ability to read and write proofs improved greatly from studying the foundational material on logic, and being exposed to Set Theory, relations, and functions gave them a strong foundation for understanding and constructing arguments in their upper-level courses. Those who went on to pursue graduate-level work in mathematics were well prepared for investigating more abstract mathematics. Computer science and engineering students found that the material related to their areas gave context and grounding to topics in their respective fields.
+Over the past few years, an early edition of individual chapters of this text has been available online. In this form, tens of thousands of PDFs have been downloaded in over 150 countries, especially Chapters 6 and 7 by people interested in digital engineering and computer science. It is my hope, therefore, that this text will assist those interested in computer-related fields as well as those continuing in mathematics.
+
+Preface
+
+vii
+
+Goals and Approach
+My goals for students in writing this text, and the approach I've taken to achieve them, can be summarized as follows:
+1. To Learn How to Read and Write Proofs A principal goal of this text is to help students learn the critical skill of reading and writing proofs. There are widely divergent opinions about how best to accomplish this. Earlier, many of us learned to do proofs by the sink-or-swim method. We were thrown into an upper-level course where the content was abstract and the methodology was proof-based, and we were expected to pick up the appropriate mathematical habits and techniques by osmosis. Watching a sage-on-the-stage perform clever deductive maneuvers with complex concepts, we then tried it on our own in the homework and on the tests. Those of us who were able to wend our way through the haze and finally decipher the essentials of the logical process were deemed worthy of continuing in the field; those who didn't survive the ordeal were judged not to have had what it takes to succeed. Today's student apprentices rightly expect a more welcoming experience. Learning how to evaluate and construct proofs can still be challenging, but reflecting on the deductive process itself in the context of familiar and elementary content makes this less threatening. This is what I aim to achieve in the somewhat leisurely but systematic study of logic in the first unit of the text. It's likely that students will have already seen proofs and made some of their own, but to prepare them for creating increasingly formal and rigorous arguments, it is important to spend time learning how this is done, figuring out what makes deductions work. Because the logical approach taken in this text is somewhat unique, I'd like to say a few more words about its character and value. Mathematicians are mostly familiar with logic as the foundational system developed by Bertrand Russell around 1900, in which form it appears to be a specialized foundational study of tautologies and axiom systems. As such, it offers relatively little of interest to most practicing mathematicians. But there is a more fundamental way to conceptualize logic, better known to contemporary philosophers, that goes back to Aristotle and that was developed in a modern form by mid-twentieth-century Polish logicians. This approach takes logic as the systematic study of conclusive argumentation. Here tautologies are barely considered, the focus instead being on rules of inference that validate proofs of conclusions from premises. This makes a study of logic essential to mathematical methodology, providing students with a look under the deductive hood of mathematics, so to speak. This natural deduction approach to logic equips students to construct deductions the way mathematicians and others argue all the time. The text uses proof diagrams at the outset to help students become familiar with the various proof strategies connected to logic, but this scaffolding is gradually abandoned and proofs are written in a more standard informal
+
+viii
+
+Preface
+
+manner. Coupled with lots of practice, students internalize the techniques they're learning and begin to master the basics of proof construction and better comprehend the deductive organization that mathematics is known for. And, as they see how logic undergirds various proof techniques, students begin to enjoy doing proofs instead of being paralyzed by their fear of them. Knowing some logic gives students insight into and power over the inferential code, just as knowing proper grammar can improve writing.
+To meet this goal of understanding proofs, Introduction to Discrete Mathematics via Logic and Proof provides a more substantial treatment of logic and proof than most other texts in Discrete Mathematics, but students have found that this yields ample dividends, both for later in the course and for other courses they take. An additional benefit of studying Mathematical Logic in the first part of the book is that it supplies a solid theoretical background for discussing Boolean Algebra, combinational logic circuits, and Boolean functions in Chapter 7. 2. To Master Core Concepts and Techniques Besides logic, the text takes up a number of other core topics in Discrete Mathematics--mathematical induction and recursion, elementary Set Theory, Combinatorics, functions and relations, and Graph Theory-- exploring ideas and procedures that are foundational for many areas of mathematics and computer science. 3. To Make Connections A guiding principle behind the topics I've chosen to include in this text is that they be both central and interconnected, so that students will experience coherence in what they're studying. Covering common proof techniques in the first part of the text helps accomplish this with respect to methodology, but there are important subject-matter connections as well. The natural deduction rules used for creating proofs have formal counterparts in the main laws governing set-theoretic operations, and these eventually get abstracted as the properties postulated or proved in Boolean Algebra and physically realized in electronic circuits. And since Set Theory forms a unifying field for mathematics, its ideas and notation come up repeatedly throughout the text. In its analysis of infinity, it also makes contact with philosophy. 4. To Become Adept with Abstract Thinking and Formal Notation In addition to overcoming the hurdle of learning how to do proofs, students must become familiar with an abstract mode of thinking and formal symbolism in order to progress further in their fields of study. This is important for developing computer programs as well as for learning advanced mathematics. These ideas are introduced in Chapter 2's discussion of First-Order Logic's syntax and semantics, but they also occur in several other places--in Section 3.3 on Structural Induction, Section 3.4 on Peano Arithmetic, Section 6.4 on Integers and Modular Arithmetic,
+
+Preface
+
+ix
+
+and Section 7.3 on Boolean Algebra. Encountering an abstract formal approach in different contexts interspersed with more concrete related material helps students gradually become proficient with these contemporary practices. 5. To Value Historical Context and Foundational Issues Paying attention to historical and foundational issues can give pedagogical insight into mathematics as well as make broader connections to other areas. I've therefore included brief discussions of such things when they're germane to the matter being considered. Besides providing a historical setting for topics like Graph Theory, I touch on some foundational issues connected with Propositional Logic, First-Order Logic, Set Theory, and Peano Arithmetic.
+
+Prerequisites and Course Emphases
+The material in this text should be accessible to students regardless of major, because the content prerequisites for studying each topic are covered as needed. Nothing beyond a solid secondary mathematics preparation and a willingness and ability to think more abstractly are required to use this textbook. A prerequisites graph for chapter content is provided below.
+
+Chap 1
+
+Chap 2
+
+3.1-3.2 Chap 3
+
+3.4
+
+3.5
+
+Chap 4
+
+Chap 5 5.3
+
+Chap 6 6.4
+
+Chap 8
+
+Chap 7
+
+This text offers more than enough material for a one-semester course in Discrete Mathematics on the intermediate college level, so an instructor can choose to emphasize slightly different aspects of the material, depending on interest and clientele. Each section is intended to be used for a full 50-minute class period, though a few sections could benefit from additional time. Students may find Section 7.3, for instance, which introduces Boolean Algebra as an abstract axiomatic system, more accessible if it is covered over two periods. And Section 3.3 on recurrence relations and structural induction can
+
+x
+
+Preface
+
+be split into two parts and just one done for a more relaxed period. The Exercise Sets provide a wealth of interesting problems (there are about 2300 of them) of varying levels of difficulty, and in some cases these can be used to expand a section. Those who would like to work further with divisibility or Euler's phi function, for example, can draw from the Exercise Sets in Sections 3.1, 3.5, 4.3, and 4.5. Those wanting to develop Peano Arithmetic in the context of Set Theory can use a sequence of exercises from Exercise Set 5.3. This gives instructors some flexibility to tailor the text as they see fit.
+As noted above, this text has been used for classes containing several majors--mathematics and secondary education mathematics majors as well as computer science and engineering majors. It blends together topics of importance and interest to a wide range of students. Instructors may weight the material toward one or another of these groups, though, depending on the composition of their classes. The following guideline chart may help in this respect.
+
+Common Core Sections
+1.1­1.9 2.1, 2.3­2.4
+3.1­3.2 4.1­4.5 5.1­5.2 6.1­6.3 7.1­7.3
+
+Computer-Science-Focused Mathematics-Focused
+
+Sections
+
+Sections
+
+3.3(.2­.3), 3.5
+
+2.2 3.3(.1), 3.4, 3.5
+
+5.3(.1­.2, .13)
+7.4­7.6 8.1­8.4
+
+5.3 6.4
+8.1­8.4
+
+Those who wish to spend less time on logic may decide to combine some sections in Chapter 1 (say, covering the main ideas in Sections 1.1­1.3 in two periods), and they may choose to omit Section 2.2 and cover the key proof strategies of Sections 2.3­2.4 in one period. Classes aimed at mathematics majors might omit the material on structural induction and strings in Section 3.3 and some of the final sections in Chapter 7 on Boolean Functions. Classes aimed at computer science and engineering students might want to include those sections but omit Section 3.4 on Peano Arithmetic or Section 6.4 on The Integers and Modular Arithmetic or not delve too deeply into the transfinite Set Theory of Chapter 5. Of course, it's always valuable for students to learn about cognate ideas that lie just outside their major.
+
+For Students: Reading a Mathematics Text
+I'll end with a few words directed primarily to students. Logic helps us achieve deductive rigor and provides us with concise no-
+tation for formulating results, but I won't be using a Spartan definition-
+
+Preface
+
+xi
+
+theorem-proof style of writing. I first try to contextualize and motivate results before formulating and proving them. Proofs will be more detailed at first, but as you become familiar with the deductive process, they become more informal, though still using correct terminology and valid argumentation. A growing fluency with logical procedures and symbolism should enable you to follow the text's arguments and discussion without much difficulty.
+A mathematics text is not a novel, though, so you can't read it like a story. You should first figure out the overall drift of a section by reading the introductory and concluding material and by looking at the main headings. Then go back through the text more slowly and make sure you understand the central points. Minor details are occasionally left to be filled in; use a pencil and paper to flesh out the discussion where necessary. Examples are important for understanding ideas and procedures, but don't expect them to be templates for working all of the exercises. The more deeply you comprehend the mathematics, the better you will be able to apply it to a wide variety of situations.
+The text does require a degree of mathematical maturity on your part-- being able to follow moderately paced deductive arguments and to think somewhat abstractly--but no exceptional mathematical ability or specific college-level mathematical knowledge is presupposed, not calculus or linear algebra or any course building upon them. Even gifted first-year college students should be able to master the material, although the text is pitched at a slightly higher level than this. The material in the first unit on logic and proof should help you read (and make) proofs later in the text. Students have told me over the years that they found this material both interesting and invaluable for being able to navigate complex material in later courses.
+Like any activity worth mastering, mathematics requires genuine effort. As you've probably heard before, mathematics is not a spectator sport. You can only become competent in a mathematical topic by working a fair number of problems. Each section of the text has plenty of them for you to try. Some are rather routine, asking you to demonstrate familiarity with the basic ideas, results, and methods. Others are more challenging, requiring you to make connections or expand on what is present in the text. As you work the problems, don't get discouraged if you don't immediately see how to solve them--setbacks can be as instructive as success if you persist until you've made some progress. No one grasps everything the first time through, but with perseverance, understanding should follow. As in most areas of life, success is more a matter of persistence and learning from your mistakes than innate genius.
+I hope you come to enjoy this material as much as I do and as my students have. If you have corrections or suggestions that you'd like to share for making the textbook better, I'll be happy to hear from you. You can contact me at calvin.jongsma@dordt.edu.
+
+Acknowledgements
+
+I'd like to start by thanking John Corcoran, whose writings on the history
+
+and uses of logic first convinced me that logic is more than a specialized
+
+branch of mathematics and that it could pay large dividends for learning
+
+how to do proofs.
+
+I also want to express my appreciation to Dordt University (then Dordt
+
+College) for granting me release time to develop an early edition of this text
+
+and to the mathematics, computer science, and engineering students over the
+
+years who have given me feedback and encouragement as this text was being
+
+developed. In particular, I'd like to thank Kyle Fey, a student assistant at the
+
+time who helped me one summer to develop a number of the book's exercises.
+
+Kyle is now a coauthor with me of the Solution Manual for this text,
+
+available to instructors who adopt the text.
+
+My thanks go out as well to Jim Bos, Dordt College's computer-savvy
+
+registrar, who in the dark ages of Plain
+
+helped me puzzle out some
+
+of the mysteries behind constructing proof diagrams and truth tables, and
+
+to then-colleague Rick Faber, who transcribed my hand-drawn diagrams for
+
+functions into a form I could easily incorporate into the text.
+
+I'm indebted to the following course alumni and colleagues for reviewing
+
+portions of the text and offering suggestions for improvements, most
+
+of which I've happily accepted: James Boer, Jim Bradley, Gary De Young,
+
+Craig Disselkoen, Duane Einfeld, Rick Faber, Kyle Fey, Mike Janssen,
+
+Bonnie Jonkman, Richard Stout, Kevin Vander Meulen, Timothy Vis, Chase
+
+Viss, and Chris Wyenberg.
+
+Finally, I'd like to thank my wife, Sally, not only for her patience as I
+
+worked through numerous drafts of this text, but also for her professional
+
+editorial assistance in making the final product more readable.
+
+Sioux Center, IA, USA June 2019
+
+Calvin Jongsma
+
+xiii
+
+List of Notations
+Logical Acronyms
+Add: Introduction rule Addition for _ Assoc: Replacement rule Association for ^ or _ BE: Elimination rule Biconditional Elimination for $ BI: Introduction rule Biconditional Introduction for $ Bicndnl: Replacement rule Biconditional for $ BICon: Introduction rule BI, Contrapositive Form for $ BiTrans: Introduction/elimination rule Biconditional Transitivity for $ Cases: Elimination rule Proof by Cases for _ Cndnl: Replacement rule Conditional for ! Comm: Replacement rule Commutation for ^ or _ Conj: Introduction rule Conjunction for ^ Conpsn: Replacement rule Contraposition for ! CP: Introduction rule Conditional Proof for ! CycBI: Introduction rule Cyclic BI for $ DeM: Replacement rule De Morgan's for :^ or :_ Dist: Replacement rule Distributivity for ^ and _ DN: Replacement rule Double Negation for : DS: Elimination rule Disjunctive Syllogism for _ EG: Introduction rule Existential Generalization for 9 EI: Elimination rule Existential Instantiation for 9 EN: Replacement rule Existential Negation for :9 EO: Introduction rule Either-Or for _ Exp: Replacement rule Exportation for ! F: False FOL: First-Order Logic HS: Introduction/elimination rule Hypothetical Syllogism for ! Idem: Replacement rule Idempotence for ^ or _ Iden: Introduction rule Law of Identity for ¼ iff: if-and-only-if LEM: Law of Excluded Middle LNC: Law of Non-Contradiction Mod PMI: Modified Proof by Mathematical Induction MP: Elimination rule Modus Ponens for ! MT: Elimination rule Modus Tollens for ! NBE: Elimination rule Negative Biconditional Elimination for $ NE: Elimination rule Negation Elimination for : Neg Cndnl: Replacement rule Negative Conditional for : ! NI: Introduction rule Negation Introduction for :
+xv
+
+xvi
+
+List of Notations
+
+PL: Propositional Logic PMI: Proof by Mathematical Induction Prem: Introduction rule Premises for premises
+Reit: Introduction rule Reiteration for repeating a proposition Simp: Elimination rule Simplification for ^ Spsn: Supposition, used as a premise in a subproof Sub: Elimination rule Substitution of Equals for ¼ Sym: Introduction/elimination rule Symmetry of Equals for ¼ Trans: Introduction/elimination rule Transitivity of Equals for ¼ T: True
+UG: Introduction rule Universal Generalization for 8 UI: Elimination rule Universal Instantiation for 8 UN: Replacement rule Universal Negation for :8 Uniq Exis: Replacement rule Unique Existence for 9!
+wff, wffs: Well-formed formula(s)
+
+Logical Symbols
+
+:P not-P
+
+P ^ Q P and Q
+
+P _ Q P or Q
+
+P P
+
+_!QQ Pif ePxctluhseinveQ-or
+
+Q
+
+P $ Q P if-and-only-if Q
+
+P 4 Q P NAND Q
+
+P 5 Q P NOR Q
+
+P  Q P logically implies Q
+
+P A Q P logically implies Q relative to a theory with axioms A P Q P is logically equivalent to Q
+
+P A Q P is logically equivalent to Q relative to a theory with axioms A P ` Q P proves Q
+
+P Q P is interderivable with Q
+
+P : : Q P can be validly substituted for Q and conversely
+
+8x for all x
+
+9x there exists an x
+
+9!x there exists a unique x
+
+" the empty string
+sÁt concatenation of string s with string t
+
+Mathematical Symbols
+A set of algebraic numbers C set of complex numbers N set of natural numbers {0, 1, 2, . . .} N þ set of positive natural numbers {1, 2, . . .} Q set of rational numbers
+
+List of Notations
+
+xvii
+
+R set of real numbers Z set of integers
+
+end-of-proof symbol
+
+end-of-subproof/vepriffiffification-of-assertion symbol
+
+
+
+the golden ratio
+
+1þ 2
+
+5
+
+a j b a divides b
+
+'ðnÞ Euler's ' function
+
+gcdða; bÞ the greatest common divisor of a and b
+
+lcmða; bÞ the least common multiple of a and b
+
+x 2 S x is a member of set S fx 2 U : P ðxÞg the set of all x in U satisfying condition P ðxÞ S  T S is a subset of T S & T S is a proper subset of T S  T S is a superset of T S ' T S is a proper superset of T ; the empty set S \ T the intersection of sets S and T S [ T the union of sets S and T S À T the difference of sets S and T S È T the symmetric difference of sets S and T
+
+S the complement of set S PðSÞ the power set of S S Â T the Cartesian product of sets S and T Sn the n-fold Cartesian product of set S with itself jSj the cardinality of set S
+
+nPk nCk
+
+¼ ¼
+
+P ðn; kÞ Cðn; kÞ
+
+the number of permutations of n things k at a time
+
+¼  n
+
+the
+
+number
+
+of
+
+combinations
+
+of
+
+n
+
+things
+
+k
+
+at
+
+a
+
+k
+
+time
+
+S $ T S is equinumerous to T
+
+S " T S is less numerous than or equinumerous to T
+
+S 0 T S is less numerous than T
+
+@0 aleph nought, the cardinality of countably infinite sets 2@0 2 to the aleph nought, the cardinality of R
+f : D ! C a function f from domain D to codomain C
+
+f½S the set of images of set S under function f
+
+fÃ½V  the set of pre-images of set V under function f
+
+g  f the function composed of f followed by g
+
+f À1 the inverse function of f
+
+xRy x is related to y by relation R DomðRÞ the domain of the relation R RngðRÞ the range of the relation R Rb the converse of relation R R1  R2 the relation composed of relations R1 and R2 ½a the equivalence class containing a
+
+xviii
+a partial order on some set S \ a strict order on some set S x ^ y the meet of x and y in a lattice A x _ y the join of x and y in a lattice A x the complement of x in a complemented lattice A 0, 1 the extreme elements in a bounded lattice A B the two-element Boolean algebra f0; 1g degðvÞ the degree of vertex v Kn the complete graph on n vertices Km;n the complete bipartite graph on m þ n vertices ¢ðGÞ the maximum degree of a graph G ´ðGÞ the chromatic number of graph G
+
+List of Notations
+
+Contents
+Preface . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . v
+List of Notations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . xv
+1 Propositional Logic . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1 1.1 A Gentle Introduction to Logic and Proof . . . . . . . . . . . . . . 2 1.2 Conjunction, Disjunction, and Negation . . . . . . . . . . . . . . . 14 1.3 Argument Semantics for Propositional Logic . . . . . . . . . . . . 22 1.4 Conditional and Biconditional Sentences . . . . . . . . . . . . . . . 30 1.5 Introduction to Deduction; Rules for AND . . . . . . . . . . . . . . 42 1.6 Elimination Rules for CONDITIONALS . . . . . . . . . . . . . . . . . . . 51 1.7 Introduction Rules for CONDITIONALS . . . . . . . . . . . . . . . . . . 62 1.8 Proof by Contradiction: Rules for NOT . . . . . . . . . . . . . . . . . 75 1.9 Inference Rules for OR . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 88
+2 First-Order Logic . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 101 2.1 Symbolizing Sentences . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 101 2.2 First-Order Logic: Syntax and Semantics . . . . . . . . . . . . . . 112 2.3 Rules for Identity and Universal Quantifiers . . . . . . . . . . . . 123 2.4 Rules for Existential Quantifiers . . . . . . . . . . . . . . . . . . . . . 134
+3 Mathematical Induction and Arithmetic . . . . . . . . . . . . . . . . 149 3.1 Mathematical Induction and Recursion . . . . . . . . . . . . . . . . 149 3.2 Variations on Induction and Recursion . . . . . . . . . . . . . . . . 159 3.3 Recurrence Relations; Structural Induction . . . . . . . . . . . . . 169 3.4 Peano Arithmetic . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 183 3.5 Divisibility . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 195
+4 Basic Set Theory and Combinatorics . . . . . . . . . . . . . . . . . . . 205 4.1 Relations and Operations on Sets . . . . . . . . . . . . . . . . . . . . . 205 4.2 Collections of Sets and the Power Set . . . . . . . . . . . . . . . . . 215 4.3 Multiplicative Counting Principles . . . . . . . . . . . . . . . . . . . . 224 4.4 Combinations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 233 4.5 Additive Counting Principles . . . . . . . . . . . . . . . . . . . . . . . . 246
+5 Set Theory and Infinity . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 255 5.1 Countably Infinite Sets . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 255 5.2 Uncountably Infinite Sets . . . . . . . . . . . . . . . . . . . . . . . . . . . 270 5.3 Formal Set Theory and the Halting Problem . . . . . . . . . . . . 281
+xix
+
+

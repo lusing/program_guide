@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#" lang="cn" xml:lang="cn">
+  <head>
+    <title>11.3　建造者模式的应用</title>
+  </head>
+  <body><h3 class="p3" id="sigil_toc_id_59">11.3 建造者模式的应用</h3> 
+<h4 class="p4 sigil_not_in_toc">11.3.1 建造者模式的优点</h4> 
+<p class="ziti">● 封装性</p> 
+<p class="ziti">使用建造者模式可以使客户端不必知道产品内部组成的细节，如例子中我们就不需要关心每一个具体的模型内部是如何实现的，产生的对象类型就是CarModel。</p> 
+<p class="ziti">● 建造者独立，容易扩展</p> 
+<p class="ziti">BenzBuilder和BMWBuilder是相互独立的，对系统的扩展非常有利。</p> 
+<p class="ziti">● 便于控制细节风险</p> 
+<p class="ziti">由于具体的建造者是独立的，因此可以对建造过程逐步细化，而不对其他的模块产生任何影响。</p> 
+<h4 class="p4 sigil_not_in_toc">11.3.2 建造者模式的使用场景</h4> 
+<p class="ziti">● 相同的方法，不同的执行顺序，产生不同的事件结果时，可以采用建造者模式。</p> 
+<p class="ziti">● 多个部件或零件，都可以装配到一个对象中，但是产生的运行结果又不相同时，则可以使用该模式。</p> 
+<p class="ziti">● 产品类非常复杂，或者产品类中的调用顺序不同产生了不同的效能，这个时候使用建造者模式非常合适。</p> 
+<p class="ziti">● 在对象创建过程中会使用到系统中的一些其他对象，这些对象在产品对象的创建过程中不易得到时，也可以采用建造者模式封装该对象的创建过程。该种场景只能是一个补偿方法，因为一个对象不容易获得，而在设计阶段竟然没有发觉，而要通过创建者模式柔化创建过程，本身已经违反设计的最初目标。</p> 
+<h4 class="p4 sigil_not_in_toc">11.3.3 建造者模式的注意事项</h4> 
+<p class="ziti">建造者模式关注的是零件类型和装配工艺（顺序），这是它与工厂方法模式最大不同的地方，虽然同为创建类模式，但是注重点不同。</p></body>
+</html>

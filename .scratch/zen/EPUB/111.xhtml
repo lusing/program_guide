@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#" lang="cn" xml:lang="cn">
+  <head>
+    <title>25.2　访问者模式的定义</title>
+  </head>
+  <body><h3 class="p3" id="sigil_toc_id_139">25.2 访问者模式的定义</h3> 
+<p class="ziti">访问者模式（Visitor Pattern）是一个相对简单的模式，其定义如下：Represent an operation to be performed on the elements of an object structure. Visitor lets you define a new operation without changing the classes of the elements on which it operates. （封装一些作用于某种数据结构中的各元素的操作，它可以在不改变数据结构的前提下定义作用于这些元素的新的操作。）</p> 
+<p class="ziti">访问者模式的通用类图如图25-5所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0101.jpg"/></a></p> 
+<p class="middle-img">图25-5 访问者模式的通用类图</p> 
+<p class="ziti">看了这个通用类图，大家可能要犯迷糊了，这里怎么有一个ObjectStruture类呢？你刚刚举的例子怎么就没有呢？真没有吗？我们不是定义了一个List了吗？它中间的元素是我们一个一个手动增加上去的，这就是一个ObjectStruture，我们来看这几个角色的职责。</p> 
+<p class="ziti">● Visitor——抽象访问者</p> 
+<p class="ziti">抽象类或者接口，声明访问者可以访问哪些元素，具体到程序中就是visit方法的参数定义哪些对象是可以被访问的。</p> 
+<p class="ziti">● ConcreteVisitor——具体访问者</p> 
+<p class="ziti">它影响访问者访问到一个类后该怎么干，要做什么事情。</p> 
+<p class="ziti">● Element——抽象元素</p> 
+<p class="ziti">接口或者抽象类，声明接受哪一类访问者访问，程序上是通过accept方法中的参数来定义的。</p> 
+<p class="ziti">● ConcreteElement——具体元素</p> 
+<p class="ziti">实现accept方法，通常是visitor.visit(this)，基本上都形成了一种模式了。</p> 
+<p class="ziti">● ObjectStruture——结构对象</p> 
+<p class="ziti">元素产生者，一般容纳在多个不同类、不同接口的容器，如List、Set、Map等，在项目中，一般很少抽象出这个角色。</p> 
+<p class="ziti">大家可以这样理解访问者模式，我作为一个访客（Visitor）到朋友家（Visited Class）去拜访，朋友之间聊聊天，喝喝酒，再相互吹捧吹捧，炫耀炫耀，这都正常。聊天的时候，朋友告诉我，他今年加官晋爵了，工资也涨了30%，准备再买套房子，那我就在心里盘算（Visitor-self-method）“你这么有钱，我去年要借10万你都不借”，我根据朋友的信息，执行了自己的一个方法。</p> 
+<p class="ziti">我们来看看访问者模式的通用源码，先看抽象元素，如代码清单25-11所示。</p> 
+<p class="ziti">代码清单25-11 抽象元素</p> 
+<pre>public abstract class Element {&#13;
+     //定义业务逻辑&#13;
+     public abstract void doSomething();&#13;
+     //允许谁来访问&#13;
+     public abstract void accept(IVisitor visitor);&#13;
+}</pre> 
+<p class="ziti">抽象元素有两类方法：一是本身的业务逻辑，也就是元素作为一个业务处理单元必须完成的职责；另外一个是允许哪一个访问者来访问。我们来看具体元素，如代码清单25-12所示。</p> 
+<p class="ziti">代码清单25-12 具体元素</p> 
+<pre>public class ConcreteElement1 extends Element{&#13;
+     //完善业务逻辑&#13;
+     public void doSomething(){&#13;
+             //业务处理&#13;
+     }&#13;
+     //允许那个访问者访问&#13;
+     public void accept(IVisitor visitor){&#13;
+             visitor.visit(this);&#13;
+     }&#13;
+}&#13;
+public class ConcreteElement2 extends Element{&#13;
+     //完善业务逻辑&#13;
+     public void doSomething(){&#13;
+             //业务处理&#13;
+     }&#13;
+     //允许那个访问者访问&#13;
+     public void accept(IVisitor visitor){&#13;
+             visitor.visit(this);&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">它定义了两个具体元素，我们再来看抽象访问者，一般是有几个具体元素就有几个访问方法，如代码清单25-13所示。</p> 
+<p class="ziti">代码清单25-13 抽象访问者</p> 
+<pre>public interface IVisitor {&#13;
+     //可以访问哪些对象&#13;
+     public void visit(ConcreteElement1 el1);&#13;
+     public void visit(ConcreteElement2 el2);&#13;
+}</pre> 
+<p class="ziti">具体访问者如代码清单25-14所示。</p> 
+<p class="ziti">代码清单25-14 具体访问者</p> 
+<pre>public class Visitor implements IVisitor {&#13;
+     //访问el1元素&#13;
+     public void visit(ConcreteElement1 el1) {&#13;
+             el1.doSomething();&#13;
+     }&#13;
+     //访问el2元素&#13;
+     public void visit(ConcreteElement2 el2) {&#13;
+             el2.doSomething();&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">结构对象是产生出不同的元素对象，我们使用工厂方法模式来模拟，如代码清单25-15所示。</p> 
+<p class="ziti">代码清单25-15 结构对象</p> 
+<pre>public class ObjectStruture {&#13;
+     //对象生成器，这里通过一个工厂方法模式模拟&#13;
+     public static Element createElement(){&#13;
+             Random rand = new Random();&#13;
+             if(rand.nextInt(100) &gt; 50){&#13;
+                     return new ConcreteElement1();&#13;
+             }else{&#13;
+                     return new ConcreteElement2();&#13;
+             }&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">进入了访问者角色后，我们对所有的具体元素的访问就非常简单了，我们通过一个场景类模拟这种情况，如代码清单25-16所示。</p> 
+<p class="ziti">代码清单25-16 场景类</p> 
+<pre>public class Client {&#13;
+     public static void main(String[] args) {&#13;
+             for(int i=0;i&lt;10;i++){&#13;
+                     //获得元素对象&#13;
+                     Element el = ObjectStruture.createElement();&#13;
+                     //接受访问者访问&#13;
+                     el.accept(new Visitor());&#13;
+             }          &#13;
+     }&#13;
+}</pre> 
+<p class="ziti">通过增加访问者，只要是具体元素就非常容易访问，对元素的遍历就更加容易了，甭管它是什么对象，只要它在一个容器中，都可以通过访问者来访问，任务集中化。这就是访问者模式。</p></body>
+</html>

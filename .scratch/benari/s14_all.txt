@@ -1,0 +1,452 @@
+Chapter 14
+
+Temporal Logic: A Deductive System
+
+This chapter defines the deductive system L for linear temporal logic. We will
+prove many of the formulas presented in the previous chapter, as well as the sound-
+ness and completeness of L .
+
+14.1 Deductive System L
+
+The operators of L are the Boolean operators of propositional logic together with
+the temporal operators P and 5. The operator Q is defined as an abbreviation for
+¬ P¬ .
+
+Definition 14.1 The axioms of L are:  Any substitution instance of
+         Axiom 0 Prop
+                                      a valid propositional formula.
+Axiom 1  Distribution of P              P(A  B)  (PA  PB).
+Axiom 2  Distribution of 5              5(A  B)  (5A  5B).
+Axiom 3  Expansion of P                 PA  (A  5A  5PA).
+Axiom 4  Induction                      P(A  5A)  (A  PA).
+Axiom 5  Linearity                      5A  ¬ 5¬ A.
+
+                                                                               A
+The rules of inference are modus ponens and generalization: PA .
+
+   In order to simplify proofs of formulas in LTL, the deductive system L takes all
+substitution instances of valid formulas of propositional logic as axioms. Validity in
+propositional logic is decidable and by the completeness of H we can produce a
+proof of any valid formula if asked to do so. In fact, we will omit justifications of
+deductions in propositional logic and just write Prop if a step in a proof is justified
+by propositional reasoning.
+
+   The distributive axioms are valid in virtually all modal and temporal logics (The-
+orem 13.15). The expansion axiom expresses the basic properties of P that were
+
+M. Ben-Ari, Mathematical Logic for Computer Science,                              263
+
+DOI 10.1007/978-1-4471-4129-7_14, © Springer-Verlag London 2012
+264                                  14 Temporal Logic: A Deductive System
+
+used to construct semantic tableaux, as well as PA  5A (Theorem 13.25),
+which holds because all interpretations are infinite paths. The linearity axiom for
+5 (Theorem 13.25) captures the restriction of LTL to linear interpretations.
+
+   The induction axiom is fundamental in L : since interpretations in LTL are in-
+finite paths, proofs of non-trivial formulas usually require induction. In a proof by
+induction, the inductive step is A  5A, that is, we assume that A is true today and
+prove that A is true tomorrow. If this inductive step is always true, P(A  5A),
+then A  PA by the induction axiom. Finally, if A is true today (the base case),
+then A is always true PA.
+
+   The rules of inference are the familiar modus ponens and generalization using P,
+which is similar to generalization using  in first-order logic.
+
+Derived Rules
+
+Here are some useful derived rules:
+
+                 AB                    AB      A  5A
+               PA  PB ,              5A  5B ,  A  PA .
+
+The first is obtained by applying generalization and then the distribution axiom; the
+second is similar except that the expansion axiom is used between the generalization
+and the distribution. When using these rules, we write the justification as generaliza-
+tion. The third rule will be called induction because it is a shortcut for generalization
+followed by the induction axiom.
+
+14.2 Theorems of L
+
+The theorems and their proofs will be stated and proved for atomic propositions p
+and q although the intention is that they hold for arbitrary LTL formulas.
+
+Distributivity
+
+This subsection explores in more detail the distributivity of the temporal operators
+over proposition operators. The results will not be surprising, because P and Q be-
+have similarly to  and  in first-order logic. 5 is a special case because of linearity.
+14.2 Theorems of L                                                            265
+
+Theorem 14.2 5(p  q)  (5p  5q).                             Prop
+                                                Generalization
+Proof  (p  q)  p
+   1.  5(p  q)  5p                                          Prop
+   2.  (p  q)  q                                Generalization
+   3.  5(p  q)  5q
+   4.  5(p  q)  (5p  5q)                              2, 4, Prop
+   5.
+                                                   Distribution
+ 6. 5(p  ¬ q)  (5p  5¬ q)                                6, Prop
+ 7. ¬ (5p  5¬ q)  ¬ 5(p  ¬ q)                            7, Prop
+ 8. ¬ 5p  5¬ q  ¬ 5(p  ¬ q)
+ 9. ¬ 5p  ¬ 5q  5¬ (p  ¬ q)                        8, Linearity
+10. (5p  5q)  5(p  q)                                    9, Prop
+
+11. 5(p  q)  (5p  5q)                               5, 10, Prop
+
+By linearity, 5 is self-dual, while  is the dual of , so we immediately have
+5(p  q)  (5p  5q).
+
+Theorem 14.3 (Distribution) P(p  q)  (Pp  Pq).
+
+   The proof of the forward implication P(p  q)  (Pp  Pq) is similar to that
+of Theorem 14.2 and is left as an exercise. Before proving the converse, we need to
+prove the converse of the expansion axiom; the proof uses the forward implication
+of Theorem 14.3, which we assume that you have already proved.
+
+Theorem 14.4 (Contraction) p  5Pp  Pp.
+
+Proof  Pp  p  5Pp                               Expansion
+ 1.    5Pp  5(p  5Pp)                   1, Generalization
+ 2.    p  5Pp  5(p  5Pp)
+ 3.    p  5Pp  P(p  5Pp)                            2, Prop
+ 4.    p  5Pp  (Pp  P5Pp)                     3, Induction
+ 5.    p  5Pp  Pp                          4, Distribution
+ 6.
+                                                    5, Prop
+
+   For symmetry with the expansion axiom, 5p could have been included in the
+premise of this theorem, but it is not needed.
+
+   Now we can prove the converse of Theorem 14.3. The structure of the proof is
+typical of inductive proofs in L . An explanation of some of the more difficult steps
+of the formal proof is given at its end.
+266                                               14 Temporal Logic: A Deductive System
+
+Proof Let r = Pp  Pq  ¬ P(p  q).                      Expansion
+   1. r  (p  5Pp)  (q  5Pq)                          Contraction
+               ¬ ((p  q)  5P(p  q))
+   2. r  (p  5Pp)  (q  5Pq)                               1, Prop
+               (¬ (p  q)  ¬ 5P(p  q))
+   3. r  (p  5Pp)  (q  5Pq)  ¬ 5P(p  q)                   2, Prop
+   4. r  5Pp  5Pq  ¬ 5P(p  q)                             3, Prop
+   5. r  5Pp  5Pq  5¬ P(p  q)                        4, Linearity
+   6. r  5r                                       5, Distribution
+   7. r  Pr                                         6, Induction
+
+ 8. r  Pp  Pq                                       Def. of r, Prop
+ 9. r  p  q                                            8, Expansion
+10. Pr  P(p  q)
+11. r  P(p  q)                                    9, Generalization
+12. r  ¬ P(p  q)                                         7, 10, Prop
+13. r  false
+14. Pp  Pq  ¬ P(p  q)  false                        Def. of r, Prop
+15. Pp  Pq  P(p  q)                                     11, 12, Prop
+                                                       13, Def. of r
+                                                            14, Prop
+
+   Steps 1­7 prove that r is invariant, meaning that r is true initially and remains
+true in any interpretation. The second line of Step 1 is justified by the contrapositive
+of contraction ¬ P(p  q)  ¬ ((p  q)  5P(p  q)). Step 3 follows from Step 2
+because ¬ (p  q) is inconsistent with p and q that must be true by the expansion
+of Pp and Pq.
+
+   The operator P distributes over disjunction only in one direction. We leave the
+proof as an exercise, together with the task of showing that the converse is not valid.
+
+Theorem 14.5 (Distribution) (Pp  Pq)  P(p  q).
+
+Transitivity of P
+
+Induction is used to prove that P is transitive.
+
+Theorem 14.6 (Transitivity) PPp  Pp
+
+Proof  PPp  Pp                                     Expansion
+ 1.    Pp  5Pp                                     Expansion
+ 2.    Pp  PPp                                    2, Induction
+ 3.    PPp  Pp                                      1, 3, Prop
+ 4.
+14.2 Theorems of L                                                          267
+
+Commutativity
+
+Another expected result is that P and 5 commute:
+
+Theorem 14.7 (Commutativity) P5p  5Pp.
+
+Proof  Pp  5p                                             Expansion
+   1.  PPp  P5p                                   1, Generalization
+   2.  Pp  P5p
+   3.  Pp  p                                         2, Transitivity
+   4.  Pp  p  P5p                                         Expansion
+   5.  5Pp  5(p  P5p)                                      3, 4, Prop
+   6.  5Pp  5p  5P5p
+   7.  5Pp  P5p                                   5, Generalization
+   8.                                                6, Distribution
+                                                     7, Contraction
+
+ 9. P5p  5p  5P5p                                              Expansion
+10. p  P5p  5p  5P5p                                               9, Prop
+11. p  P5p  5(p  P5p)
+12. p  P5p  P(p  P5p)                                    10, Distribution
+13. p  P5p  Pp                                              11, Induction
+14. 5(p  P5p)  5Pp
+15. 5p  5P5p  5Pp                                 12, Distribution, Prop
+16. P5p  5Pp                                         13, Generalization
+                                                         14, Distribution
+                                                               9, 15, Prop
+
+17. P5p  5Pp                                      8, 16, Prop
+
+   P and Q commute in only one direction.
+Theorem 14.8 QPp  PQp.
+
+   We leave the proof as an exercise.
+
+Example 14.9 Consider the interpretation where si(p) = T for even i and si(p) =
+F for odd i:
+
+The formula PQp is true, since for any i, 2i |= p. Obviously, QPp is false in all
+states of the diagram, because for any i, i |= ¬ p if i is odd and i+1 |= ¬ p if i is
+even.
+268                                14 Temporal Logic: A Deductive System
+
+Dual Theorems for Q
+
+We leave it as an exercise to prove the following theorems using the duality of P
+and Q and the linearity of 5.
+
+Theorem 14.10
+
+       (a) p  Qp                   (b) 5p  Qp
+
+       (c) Pp  Qp                  (d) P(p  q)  (Qp  Qq)
+
+       (e) Q(p  q)  (Qp  Qq) (f) Q(p  q)  (Qp  Qq)
+
+       (g) Qp  p  5Qp              (h) Q5p  5Qp
+
+       (i) QQp  Qp
+
+From Theorem 14.10(d), we obtain a generalization rule for Q:
+                                           AB
+
+                                        QA  QB .
+
+Collapsing Sequences of Operators
+
+The transitivity of P (Theorem 14.6) and its dual for Q (Theorem 14.10(i)) show
+that any string of P's or Q's can be collapsed. No expressive power is gained by
+using more than two operators in sequence, as shown by the following theorem.
+
+Theorem 14.11
+                 (a) PQPp  QPp (b) QPQp  PQp.
+
+We prove (a) and then (b) follows by duality.
+
+Proof  PQPp  QPp                                       Expansion
+ 1.    Pp  5Pp                                         Expansion
+ 2.    QPp  Q5Pp                               2, Generalization
+ 3.    QPp  5QPp                               3, Commutativity
+ 4.    QPp  PQPp                                     4, Induction
+ 5.    PQPp  QPp                                        1, 5, Prop
+ 6.
+14.3 Soundness and Completeness of L *  269
+
+14.3 Soundness and Completeness of L *
+
+Soundness
+
+Theorem 14.12 (Soundness of L ) Let A be a formula of LTL. If L A then |= A.
+
+Proof We need to show that each axiom is a valid LTL formula and that the two rules
+of inference preserve validity. By definition, valid formulas of propositional logic
+are valid, and the soundness of MP was shown in Theorem 3.37. The soundness of
+Axioms 1 and 5 was shown in Theorems 13.15 and 13.25, respectively. We leave
+the soundness of Axioms 2 and 3 as an exercise and show the soundness of the
+induction axiom and the generalization rule.
+
+Axiom 4: P(A  5A)  (A  PA).
+
+   If the formula is not valid, there exists an interpretation  such that:
+
+                                |= P(A  5A)  A  ¬ PA.
+
+Since  |= A and  |= ¬ PA there exists a smallest value i > 0 such that i |= ¬ A
+and j |= A for 0  j < i. In particular, i-1 |= A. But we also have that  |=
+P(A  5A), so by definition of the P operator, i-1 |= A  5A. By MP we have
+i-1 |= 5A and thus i |= A, contradicting i |= ¬ A.
+
+Generalization: If |= A, then |= PA.
+
+   We need to show that for all interpretations  ,  |= PA. This means that for all
+i  0, it is true that i |= A. But |= A implies that for all interpretation  ,  |= A,
+in particular, this must hold for  = i .
+
+Completeness
+
+Theorem 14.13 (Completeness of L ) Let A be a formula of LTL. If |= A then
+  L A.
+
+Proof If A is valid, the construction of a semantic tableau for ¬ A will fail, either
+because it closes or because all the MSCCs are non-fulfilling and were deleted. We
+show by induction that for every node in the tableau, the disjunction of the negations
+of the formulas labeling the node is provable in L . Since the formula labeling the
+root is ¬ A, it follows that ¬ ¬ A, from which A follows by propositional logic.
+
+   The base case of the leaves and the inductive steps for the rules for - and -
+formulas follow by propositional reasoning together with the expansion axiom.
+
+   Suppose that the rule for an X-formula is used:
+
+                                 5A1, . . . , 5An, B1, . . . , Bk
+                                                 
+
+                                           A1, . . . , An
+270                         14 Temporal Logic: A Deductive System
+
+where we assume that negations are pushed inwards as justified by the linearity
+axiom. By the inductive hypothesis, ¬ A1  · · ·  ¬ An. The following deduction
+proves the formula associated with the parent node:
+
+1. ¬ A1  · · ·  ¬ An                       Inductive hypothesis
+
+2. P(¬ A1  · · ·  ¬ An)                    1, Generalization
+
+3. 5(¬ A1  · · ·  ¬ An)                    2, Expansion
+
+4. 5¬ A1  · · ·  5¬ An                     3, Distribution
+
+5. ¬ 5A1  · · ·  ¬ 5An                     4, Linearity
+
+6. ¬ 5A1  · · ·  ¬ 5An  ¬ B1  · · ·  ¬ Bk  5, Prop
+
+   There remains the case of a node that is part of a non-fulfilling MSCC. We
+demonstrate the technique on a specific example, proving Pp  5Pp by con-
+structing a semantic tableau for the negation of the formula.
+
+                         ¬ (Pp  5Pp)
+                                  
+
+                           Pp, 5Q¬ p
+                                  
+
+                      ls p, 5Pp, 5Q¬ p
+
+                                    
+                              Pp, Q¬ p
+
+                                    
+                         l p, 5Pp, Q¬ p
+
+     p, 5Pp, ¬ p            (To node ls )
+
+                         ×
+
+The crucial part of the proof is to define the invariant of the loop, that is, a formula
+A such that A  5A. The invariant will be the conjunction of the formulas Ai ,
+where 5Ai are the next formulas in the states of the SCC, as these represent what
+must be true from one state to the next. In the example, for invariant is Pp  Q¬ p.
+
+We proceed to prove that this formula is inductive.
+
+1. (Pp  Q¬ p)  (p  5Pp)  (¬ p  5Q¬ p)          Expansion
+2. (Pp  Q¬ p)  (p  5Pp  5Q¬ p)                     1, Prop
+3. (Pp  Q¬ p)  (5Pp  5Q¬ p)                        2, Prop
+4. (Pp  Q¬ p)  5(Pp  Q¬ p)
+5. (Pp  Q¬ p)  P(Pp  Q¬ p)                 3, Distribution
+                                             4, Induction
+
+   The leaf on the left of the tableau has a complementary pair of literals, so
+¬ p  ¬ 5Pp  ¬ ¬ p is an axiom. We use this formula together with formula (5)
+to prove the formula associated with l .
+14.4 Axioms for the Binary Temporal Operators *                                   271
+
+   6. ¬ p  ¬ 5Pp  ¬ ¬ p                                    Axiom 0
+   7. (p  5Pp)  ¬ ¬ p                                        6, Prop
+   8. Pp  ¬ ¬ p
+   9. (Pp  Q¬ p)  ¬ ¬ p                             7, Contraction
+ 10. P(Pp  Q¬ p)  P¬ ¬ p                                     8, Prop
+ 11. (Pp  Q¬ p)  P¬ ¬ p
+ 12. (p  5Pp  Q¬ p)  P¬ ¬ p                      9, Generalization
+ 13. (p  5Pp  Q¬ p)  ¬ Q¬ p                             5, 10, Prop
+ 14. ¬ p  ¬ 5Pp  ¬ Q¬ p
+                                                    11, Expansion
+                                                        12, Duality
+                                                           13, Prop
+
+Line 14 is the disjunction of the complements of the formulas at node l .
+
+   The method used in the proof will almost certainly not yield the shortest possible
+proof of a formula, but it is an algorithmic procedure for discovering a proof of a
+valid LTL formula.
+
+14.4 Axioms for the Binary Temporal Operators *
+
+Section 13.6 presented several binary temporal operators, any one of which can be
+chosen as a basic operator and the others defined from it. If we choose U as the
+basic operator, a complete axiom system is obtained by adding the following two
+axioms to the axioms of Definition 14.1:
+
+Axiom 6 Expansion of U  AU B  (B  (A  5(AU B))).
+Axiom 7 Eventuality     AU B  QB.
+
+U is similar to Q: Axiom 6 requires that either B is true today or A is true today
+and AU B will be true tomorrow. Axiom 7 requires that B eventually be true.
+
+14.5 Summary
+
+The deductive system L assumes that propositional reasoning can be informally
+applied. There are five axioms: the distributive and expansion axioms are straight-
+forward, while the duality axiom for 5 is essential to capture the linearity of in-
+terpretations of LTL. The central axiom of L is the induction axiom: since inter-
+pretations in LTL are infinite paths, proofs of non-trivial formulas usually require
+induction. The rules of inference are the familiar modus ponens and generalization
+using P. As usual, the proof of soundness is straightforward. Proving completeness
+is based on the existence of a non-fulfilling MSCC in a tableau. The formulas label-
+ing the nodes of the MSCC can be used to construct a formula that can be proved
+by induction.
+272                   14 Temporal Logic: A Deductive System
+
+14.6 Further Reading
+
+The deductive system L and the proof of its soundness and completeness is based
+on Ben-Ari et al. (1983), although that paper used a different system of temporal
+logic. The definitive reference for the specification and verification of concurrent
+programs using temporal logic is Manna and Pnueli (1992, 1995). The third volume
+was never completed, but a partial draft is available (Manna and Pnueli, 1996). Ax-
+ioms for the various binary temporal operators are given in Kröger and Merz (2008,
+Chap. 3).
+
+14.7 Exercises
+
+14.1 Prove P(p  q)  (Pp  Pq) (Theorem 14.3).
+14.2 Prove (Pp  Pq)  P(p  q) (Theorem 14.5) and show that the converse
+is not valid.
+
+14.3 Prove the future formulas in Theorem 14.10.
+
+14.4 Prove that Axioms 2 and 3 are valid.
+14.5 Prove QPQp  PQp (Theorem 14.11) and QPp  PQp (Theo-
+rem 14.8).
+14.6 Prove P(PQp  Qq)  (PQq  QP¬ p).
+14.7 Fill in the details of the proof of P( (p  Pq)  (Pp  q) )  (Pp  Pq).
+
+References
+
+M. Ben-Ari, Z. Manna, and A. Pnueli. The temporal logic of branching time. Acta Informatica,
+   20:207­226, 1983.
+
+F. Kröger and S. Merz. Temporal Logic and State Systems. Springer, 2008.
+Z. Manna and A. Pnueli. The Temporal Logic of Reactive and Concurrent Systems. Vol. I: Specifi-
+
+   cation. Springer, New York, NY, 1992.
+Z. Manna and A. Pnueli. The Temporal Logic of Reactive and Concurrent Systems. Vol. II: Safety.
+
+   Springer, New York, NY, 1995.
+Z. Manna and A. Pnueli. Temporal verification of reactive systems: Progress. Draft available at
+
+   http://www.cs.stanford.edu/~zm/tvors3.html, 1996.
+

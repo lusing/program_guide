@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#" lang="cn" xml:lang="cn">
+  <head>
+    <title>22.2　观察者模式的定义</title>
+  </head>
+  <body><h3 class="p3" id="sigil_toc_id_121">22.2 观察者模式的定义</h3> 
+<p class="ziti">观察者模式（Observer Pattern）也叫做发布订阅模式（Publish/subscribe）,它是一个在项目中经常使用的模式，其定义如下：</p> 
+<p class="ziti">Define a one-to-many dependency between objects so that when one object changes state,all its dependents are notified and updated automatically.（定义对象间一种一对多的依赖关系，使得每当一个对象改变状态，则所有依赖于它的对象都会得到通知并被自动更新。）</p> 
+<p class="ziti">观察者模式的通用类图，如图22-5所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0083.jpg"/></a></p> 
+<p class="middle-img">图22-5 观察者模式通用类图</p> 
+<p class="ziti">我们先来解释一下观察者模式的几个角色名称：</p> 
+<p class="ziti">● Subject被观察者</p> 
+<p class="ziti">定义被观察者必须实现的职责，它必须能够动态地增加、取消观察者。它一般是抽象类或者是实现类，仅仅完成作为被观察者必须实现的职责：管理观察者并通知观察者。</p> 
+<p class="ziti">● Observer观察者</p> 
+<p class="ziti">观察者接收到消息后，即进行update（更新方法）操作，对接收到的信息进行处理。</p> 
+<p class="ziti">● ConcreteSubject具体的被观察者</p> 
+<p class="ziti">定义被观察者自己的业务逻辑，同时定义对哪些事件进行通知。</p> 
+<p class="ziti">● ConcreteObserver具体的观察者</p> 
+<p class="ziti">每个观察在接收到消息后的处理反应是不同，各个观察者有自己的处理逻辑。</p> 
+<p class="ziti">各个名词介绍完毕，我们来看看各自的通用代码，先看被观察者角色，如代码清单22-15所示。</p> 
+<p class="ziti">代码清单22-15 被观察者</p> 
+<pre>public abstract class Subject {&#13;
+     //定义一个观察者数组&#13;
+     private Vector&lt;Observer&gt; obsVector = new Vector&lt;Observer&gt;();&#13;
+     //增加一个观察者&#13;
+     public void addObserver(Observer o){&#13;
+             this.obsVector.add(o);&#13;
+     }&#13;
+     //删除一个观察者&#13;
+     public void delObserver(Observer o){&#13;
+             this.obsVector.remove(o);&#13;
+     }&#13;
+     //通知所有观察者&#13;
+     public void notifyObservers(){&#13;
+             for(Observer o:this.obsVector){&#13;
+                     o.update();&#13;
+             }&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">被观察者的职责非常简单，就是定义谁能够观察，谁不能观察，程序中使用ArrayList和Vector没有太大的差别，ArrayList是线程异步，不安全；Vector是线程同步，安全——就这点区别。我们再来看具体的被观察者，如代码清单22-16所示。</p> 
+<p class="ziti">代码清单22-16 具体被观察者</p> 
+<pre>public class ConcreteSubject extends Subject {&#13;
+     //具体的业务&#13;
+     public void doSomething(){&#13;
+             /*&#13;
+              * do something&#13;
+              */&#13;
+             super.notifyObservers();&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">我们现在看到的是一个纯净的观察者，在具体项目中该类有很多的变种，在22.4一节中介绍。</p> 
+<p class="ziti">我们再来看观察者角色，如代码清单22-17所示。</p> 
+<p class="ziti">代码清单22-17 观察者</p> 
+<pre>public interface Observer {&#13;
+     //更新方法&#13;
+     public void update();&#13;
+}</pre> 
+<p class="ziti">观察者一般是一个接口，每一个实现该接口的实现类都是具体观察者，如代码清单22-18所示。</p> 
+<p class="ziti">代码清单22-18 具体观察者</p> 
+<pre>public class ConcreteObserver implements Observer {&#13;
+     //实现更新方法&#13;
+     public void update() {&#13;
+             System.out.println("接收到信息，并进行处理！");&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">那其他模块是怎么来调用的呢？我们编写一个Client类来描述，如代码清单22-19所示。</p> 
+<p class="ziti">代码清单22-19 场景类</p> 
+<pre>public class Client {&#13;
+     public static void main(String[] args) {&#13;
+             //创建一个被观察者&#13;
+             ConcreteSubject subject = new ConcreteSubject();&#13;
+             //定义一个观察者&#13;
+             Observer obs= new ConcreteObserver();&#13;
+             //观察者观察被观察者&#13;
+             subject.addObserver(obs);&#13;
+             //观察者开始活动了&#13;
+             subject.doSomething();&#13;
+     }&#13;
+}</pre></body>
+</html>

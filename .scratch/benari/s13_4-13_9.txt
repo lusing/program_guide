@@ -1,0 +1,982 @@
+240  13 Temporal Logic: Formulas, Models, Tableaux
+
+that vs(p) = F and vs (p) = T for all s  (s). These assignments are well-defined
+since s  (s). Then s |=I Pp  p.
+
+Proof of Theorem 13.19 Let Fi be a transitive frame, let I be an arbitrary interpre-
+tation based on Fi , and suppose that |=I PA  PPA. Then there is an s  S such
+that s |=I PA and s |=I PPA. From the latter formula, there must be an s  (s)
+such that s |=I PA, and, then, there must be an s  (s ) be such that s |=I A.
+But s |=I PA, and by transitivity, s  (s), so s |=I A, a contradiction.
+
+   Conversely, suppose that Fi is not transitive, and let s, s , s  S be states such
+that s  (s), s  (s ), but s  (s). Let I be an interpretation based on Fi
+which assigns T to p in all states in (s) and F to p in s , which is well-defined
+since s  (s). Then s |=I Pp, but s |=I PPp. If there are only two states, s
+need not be distinct from s. A one state frame is necessarily transitive, possibly
+
+vacuously if the relation is empty.
+
+We leave the proof of Theorem 13.25 as an exercise.
+
+13.4 Linear Temporal Logic
+
+In the context of programs, the natural interpretations of temporal logic formulas
+are discrete, reflexive, transitive and linear. There is another restriction that sim-
+plifies the presentation: the transition function must be total so that each state has
+exactly one next state. An interpretation for a computation that terminates in state s
+is assumed to have a transition from s to s.
+
+Definition 13.27 Linear temporal logic (LTL) is propositional temporal logic
+whose interpretations are limited to transitions which are discrete, reflexive, tran-
+sitive, linear and total.
+
+   These interpretations can be represented as infinite paths:
+
+Since there is only one transition out of each state, it need not be explicitly repre-
+sented, so interpretations in LTL are defined to be paths of states:
+
+Definition 13.28 An interpretation for an LTL formula A is a path of states:
+
+                                        = s0, s1, s2, . . . ,
+where each si is an assignment of truth values to the atomic propositions in A,
+si : P  {T , F }. Given  , i is the path that is the ith suffix of  :
+
+                                    i = si , si+1, si+2, . . . .
+v (A), the truth value of A in  , is defined by structural induction:
+13.4 Linear Temporal Logic                            241
+
+· If A is p  P, then v (A) = s0(p).
+· If A is ¬ A then v (A) = T iff v (A ) = F .
+· If A is A  A then v (A) = T iff v (A ) = T or v (A ) = T , and similarly for
+
+   the other Boolean operators.
+· If A is 5A then v (A) = T iff v1 (A ) = T .
+· If A is PA then v (A) = T iff vi (A ) = T for all i  0.
+· If A is QA then v (A) = T iff vi (A ) = T for some i  0.
+
+If v (A) = T , we write  |= A.
+
+Definition 13.29 Let A be a formula in LTL. A is satisfiable iff there is an interpre-
+tation  for A such that  |= A. A is valid iff for all interpretations  for A,  |= A.
+Notation: |= A.
+
+Definition 13.30 A formula of the form 5A or ¬ 5A is a next formula. A formula
+of the form QA or ¬ PA is a future formula.
+
+13.4.1 Equivalent Formulas in LTL
+
+This section presents LTL formulas that are equivalent because of their temporal
+properties. Since any substitution instance of a formula in propositional logic is also
+an LTL formula, the equivalences in Sect. 2.3.3 also hold.
+
+   The equivalences are expressed in terms of an atom p but the intention is that
+they hold for arbitrary LTL formulas A.
+
+   The following formulas are direct consequences of our restriction of interpreta-
+tions in LTL. The first three hold because interpretations are total, while the fourth
+holds because of linearity.
+
+Theorem 13.31  |= 5p  Qp,             |= Pp  Qp,  |= 5p  ¬ 5¬ p.
+   |= Pp  5p,
+
+Inductive
+
+The following theorem is extremely important because it provides an method for
+proving properties of LTL formulas inductively.
+
+Theorem 13.32                         |= Qp  p  5Qp.
+                      |= Pp  p  5Pp,
+
+   These formulas can be easily understood by reading them in words: For a formula
+to be always true, p must be true today and, in addition, p must be always true
+tomorrow. For a formula to be true eventually, either p is true today or it must be
+true in some future of tomorrow.
+
+   We prove the first formula; the second follows by duality.
+242  13 Temporal Logic: Formulas, Models, Tableaux
+
+Proof Let  be an arbitrary interpretation and assume that  |= Pp. By definition,
+
+i |= p for all i  0; in particular, 0 |= p. But 0 is the same as  , so  |= p. If
+ |= 5Pp, then 1 |= Pp, so for some i  1, i |= p, contradicting  |= Pp.
+
+   Conversely, assume that  |= p  5Pp. We prove by induction that i |= p 
+5Pp for all i  0. Since |= A  B  A is a valid formula of propositional logic,
+
+we can conclude that i |= p for all i  0, that is,  |= Pp.
+   The base case is immediate from the assumption since 0 =  . Assume the
+
+inductive hypothesis that i |= p  5Pp. By definition of the semantics of 5,
+i+1 |= Pp, that is, for all j  i + 1, j |= p, in particular i+1 |= p. Furthermore,
+for j  i + 2, j |= p, so i+2 |= Pp and i+1 |= 5Pp.
+
+Induction in LTL is based upon the following valid formula:
+                            |= P(p  5p)  (p  Pp).
+
+The base case is to show that p holds in a state. The inductive assumption is p
+and the inductive step is to show that p  5p. When these two steps have been
+performed, we can conclude that Pp.
+
+   Instead of proving the following equivalences semantically as in Theorem 13.32,
+we will prove them deductively in Chap. 14. By the soundness of the deductive
+system, they are valid.
+
+Distributivity
+
+The operators P and 5 distribute over conjunction:
+
+                                 |= P(p  q)  (Pp  Pq),
+                                 |= 5(p  q)  (5p  5q).
+
+The next operator also distributes over disjunction because it is self-dual, but P only
+distributes over disjunction in one direction:
+
+                                 |= (Pp  Pq)  P(p  q),
+                                 |= 5(p  q)  (5p  5q).
+
+By duality, there are similar formulas for Q:
+
+                                 |= Q(p  q)  (Qp  Qq),
+                                 |= Q(p  q)  (Qp  Qq).
+
+Similarly, P and 5 distribute over implication in one direction, while 5 distributes
+in both directions:
+
+                               |= P(p  q)  (Pp  Pq),
+                               |= (Qp  Qq)  Q(p  q),
+                               |= 5(p  q)  (5p  5q).
+13.4 Linear Temporal Logic                                       243
+
+Example 13.33 Here is a counterexample to |= (Qp  Qq)  Q(p  q):
+
+The atomic proposition p is true in even-numbered states, while q is true in odd-
+numbered states, but there is no state in which both are true.
+
+Commutativity
+
+The operator 5 commutes with P and Q, but P and Q commute only in one direc-
+tion:
+
+                                       |= P5p  5Pp,
+                                       |= Q5p  5Qp,
+                                       |= QPp  PQp.
+   Be careful to distinguish between PQp and QPp. The formula PQp means in-
+finitely often: p is not required to hold continuously, but at any state it will hold at
+some future state.
+
+The formula QPp means for all but a finite number of states: in a path  =
+
+s0, s1, s2, . . . , there is a natural number n such that p is true in all states in
+n = sn, sn+1, sn+2, . . . .
+
+Theorem 13.34 |= (QPp  PQq)  PQ(p  q).
+
+   Once p becomes always true, it will be true in the (infinite number of) states
+where q is true. We leave the proof as an exercise.
+
+   The diagram in Example 13.33 is also a counterexample to the formula: |=
+(PQp  PQq)  PQ(p  q).
+
+Collapsing
+
+In a formula without the 5 operator, no more than two temporal operators need
+appear in a sequence. A sequence of identical operators P or Q is equivalent to a
+single occurrence and a sequence of three non-identical operators collapses to a pair
+of operators:
+244                    13 Temporal Logic: Formulas, Models, Tableaux
+
+                     |= PPp  Pp,
+                     |= QQp  Qp,
+                     |= PQPp  QPp,
+                     |= QPQp  PQp.
+
+13.5 Semantic Tableaux
+
+The method of semantic tableaux is a decision procedure for satisfiability in LTL.
+The construction of a semantic tableau for a formula of LTL is more complex than
+that it is for a formula of propositional logic for two reasons:
+
+   First, to show that a formula in propositional logic is satisfiable, one need only
+find a single assignment to the atomic propositions that makes the formula evaluate
+to true. In LTL, however, there are many different assignments, one for each state.
+Therefore, we need to distinguish between ordinary nodes in the tableau used to
+decompose formulas such as p  q and p  q from nodes that represent different
+states. For example, if 5p is to be true in state s, then p must be assigned T in the
+state s that follows s, but p could be assigned either T or F in s itself.
+
+   The second complication comes from future formulas like Qp. For future for-
+mulas, it is not sufficient that they are consistent with the other subformulas; Qp
+requires that there actually exist a subsequent state where p is assigned T . This is
+similar to the case of xp(x) in first-order logic: we must demonstrate that a value
+a exists such that p(a) is true. In first-order logic, this was simple, because we just
+chose new constant symbols from a countable set. In LTL, to establish the existence
+or non-existence of a state that fulfills a future formula requires an analysis of the
+graph of states constructed when the tableau is built.
+
+13.5.1 The Tableau Rules for LTL
+
+The tableau rules for LTL consist of the rules for propositional logic shown in
+Fig. 2.8, together with the following new rules, where next formulas are called X-
+formulas:
+
+       1  2                       1  2  X  X1
+
+      PA A 5PA        QA A 5QA           5A A
+     ¬ QA ¬ A ¬ 5QA  ¬ PA ¬ A ¬ 5PA     ¬ 5A ¬ A
+13.5 Semantic Tableaux                            245
+
+The Rules for - and -Formulas
+
+The rules for the - and -formulas are based on Theorem 13.32:
+
+· If PA is true in a state s, then A is true in s and A must continue to be true in all
+   subsequent states starting at the next state s .
+
+· If QA is true in a state s, then either A is true in s or A will eventually become
+   true in some subsequent state starting at the next state s .
+
+The Rule for X-Formulas
+
+Consider now the tableau obtained for the formula A = (p  q)  5(¬ p  ¬ q)
+after applying the rules for - and -formulas:
+
+                                   (p  q)  5(¬ p  ¬ q)
+                                                 
+
+                                     p  q, 5(¬ p  ¬ q)
+
+p, 5(¬ p  ¬ q)                    q, 5(¬ p  ¬ q)
+
+In a model  for A, either v (p) = s0(p) = T or v (q) = s0(q) = T , and this is
+expressed by the two leaf nodes that contain the atomic propositions. Since no more
+rules for - and -formulas are applicable, we have complete information on the
+assignment to atomic propositions in the initial state s0. These nodes, therefore,
+define states, indicated by the frame around the node.
+
+   These nodes contain additional information: in order to satisfy the formula A, the
+formula 5(¬ p  ¬ q) must evaluate to T in 0. Therefore, the formula ¬ p  ¬ q
+must evaluate to T in 1. The application of the rule for X-formulas begins the
+construction of the new state s1:
+
+                                   (p  q)  5(¬ p  ¬ q)
+                                                 
+
+                                     p  q, 5(¬ p  ¬ q)
+
+p, 5(¬ p  ¬ q)                    q, 5(¬ p  ¬ q)
+
+                                  
+
+                        ¬p  ¬q    ¬p  ¬q
+                                      
+
+                        ¬ p, ¬ q  ¬ p, ¬ q
+
+The literals in s0 are not copied to the labels of the nodes created by the application
+of the rule for the X-formula because whatever requirements exist on the assignment
+
+in s0 are not relevant to what happens in s1.
+   On both branches, the new node is labeled by the formula ¬ p  ¬ q and an
+
+application of the rule for the propositional -formula gives {¬ p, ¬ q} as the label
+246                         13 Temporal Logic: Formulas, Models, Tableaux
+
+of the next node. Since this node no longer contains - or -formulas, it defines a
+new state s1.
+
+   The construction of the tableau is now complete and we have two open branches.
+Therefore, we can conclude that any model for A must be consistent with one of the
+following graphs:
+
+This structure is not an interpretation. First, it is not total since there is no transition
+from s1, but this is easily fixed by adding a self-loop to the final state:
+
+More importantly, we have not specified the value of the second literal in either of
+the possible states s0. However, the structures are Hintikka structures, which can be
+extended to interpretations by specifying the values of all atoms in each state.
+
+Future Formulas
+
+Consider the formula A = ¬ (P(p  q)  Pp) which is the negation of a valid
+formula. Here is a semantic tableau, where (by duality) we have implicitly changed
+¬ P to Q¬ for clarity:
+
+                                     ¬ (P(p  q)  Pp)
+                                                 
+
+                                        P(p  q), Q¬ p
+                                                 
+
+                                  p  q, 5P(p  q), Q¬ p
+                                                 
+
+                                   p, q, 5P(p  q), Q¬ p
+
+     p, q, 5P(p  q), ¬ p    p, q, 5P(p  q), 5Q¬ p
+                         ×
+
+The left-hand branch closes, while the right-hand leaf defines a state s0 in which p
+and q must be true. When rule for the X-formula is applied to this node, a new node
+is created that is labeled by {P(p  q), Q¬ p}. But this is the same set of formulas
+that labels the second node in the tableau. It is clear that the continuation of the
+construction will create an infinite structure:
+13.5 Semantic Tableaux  247
+
+Something is wrong since A is unsatisfiable and its tableau should close!
+   This structure is a Hintikka structure (no node contains clashing literals and for
+
+every -, - and X-formula, the Hintikka conditions hold). However, the structure
+cannot be extended to model for A, since the future subformula Q¬ p is not fulfilled;
+that is, the structure promises to eventually produce a state in which ¬ p is true but
+defers forever the creation of such a state.
+
+Finite Presentation of an Interpretation
+
+There are only a finite number of distinct states in an interpretation for an LTL
+formula A since every state is labeled with a subset of the atomic propositions ap-
+pearing in A and there are a finite number of such subsets. Therefore, although an
+interpretation is an infinite path, it can be finitely presented by reusing existing states
+instead of creating new ones. The infinite structure above can be finitely presented
+as follows:
+
+13.5.2 Construction of Semantic Tableaux
+
+The construction of semantic tableaux for LTL formulas and the proof of an algo-
+rithm for the decidability of satisfiability is contained in the following four sub-
+sections. First, we describe the construction of the tableau; then, we show how a
+Hintikka structure is defined by an open tableau; third, we extract a linear structure
+which can be extended to an interpretation; and finally, we show how to decide if
+future formulas are fulfilled.
+
+   The meaning of the following definition will become clear in the following sub-
+section, but it is given here so that we can use it in the algorithm for constructing a
+tableau.
+
+Definition 13.35 A state node in a tableau is a node l such that its label U (l) con-
+tains only literals and next formulas, and there are no complementary pairs of literals
+in U (l).
+
+Algorithm 13.36 (Construction of a semantic tableau)
+Input: An LTL formula A.
+Output: A semantic tableau T for A.
+248  13 Temporal Logic: Formulas, Models, Tableaux
+
+   Each node of T is labeled with a set of formulas. Initially, T consists of a single
+node, the root, labeled with the singleton set {A}. The tableau is built inductively as
+follows. Choose an unmarked leaf l labeled with a set of formulas U (l) and perform
+one of the following steps:
+
+· If there is a complementary pair of literals {p, ¬ p}  U (l), mark the leaf closed
+   ×. If U (l) is a set of literals but no pair is complementary, mark the leaf open .
+
+· If U (l) is not a set of literals, choose A  U (l) which is an -formula. Create a
+   new node l as a child of l and label l with:
+
+                                U (l ) = (U (l) - {A})  {1, 2}.
+
+   (In the case that A is ¬ ¬ A1, there is no 2.)
+· If U (l) is not a set of literals, choose A  U (l) which a -formula. Create two
+
+   new nodes l and l as children of l. Label l with:
+
+                                  U (l ) = (U (l) - {A})  {1},
+
+   and label l with:
+
+                                 U (l ) = (U (l) - {A})  {2}.
+· If l is a state node (Definition 13.35) with at least one next formula, let:
+
+                          {5A1, . . . , 5Am, ¬ 5Am+1, . . . , ¬ 5An}
+
+   be the set of next formulas in U (l). Create a new node l as a child of l and label
+   l with:
+
+                          U (l ) = {A1, . . . , Am, ¬ Am+1, . . . , ¬ An}.
+   If U (l ) = U (l ) for a state node l that already exists in the tableau, do not create
+   l ; instead connect l to l .
+
+The construction terminates when every leaf is marked × or .
+
+We leave it as an exercise to show that the construction always terminates.
+
+Definition 13.37 A tableau whose construction has terminated is a completed tab-
+leau. A completed tableau is closed if all leaves are marked closed and there are no
+cycles. Otherwise, it is open.
+13.5 Semantic Tableaux                                                   249
+
+Example 13.38 Here is a completed open semantic tableau with no leaves:
+
+                                             l0 : PQp
+                                                 
+
+                                        l1 : Qp, 5PQp
+
+l2 : p, 5PQp                          l3 : 5Qp, 5PQp
+
+                                                  
+    l4 : PQp                                l5 : Qp, PQp
+
+                                                  
+ l6 : Qp, 5PQp                              l7 : Qp, 5PQp
+
+                        To l2  To l3  To l2  To l3
+
+13.5.3 From a Semantic Tableau to a Hintikka Structure
+
+The next step is to construct a structure from an open tableau, to define the condi-
+tions for a structure to be a Hintikka structure and to prove that the structure resulting
+from the tableau satisfies those conditions. The definition of a structure is similar to
+the definition of an interpretation for PTL formulas (Definition 13.8); the difference
+is that the labels of a state are sets of formulas, not just sets of atomic propositions
+that are assigned true. To help understand the construction, you might want to re-
+fresh your memory by re-reading Sect. 2.7.2 on the definition and use of Hintikka
+structures in propositional logic.
+
+Definition 13.39 A structure H for a formula A in LTL is a pair (S , ), where
+S = {s1, . . . , sn} is a set of states each of which is labeled by a subset of formulas
+built from the atomic propositions in A and  is a binary relation on states,  
+S × S.
+
+   As before, functional notation may be used s2  (s1).
+   The states of the structure will be the state nodes of the tableau. However, the
+labels of the states must include more than the literals that label the nodes in the
+tableau. To obtain a Hintikka structure, the state in the structure must also include
+the formulas whose decomposition eventually led to each literal.
+
+Example 13.40 In Example 13.38, state node l2 will define a state in the structure
+that is labeled with p, since p must be assigned true in any interpretation contain-
+ing that state. In addition, the state in the structure must also include Qp from l1
+(because p in l2 resulted from the decomposition of Qp), as well as PQp from l0
+(because Qp in l1 resulted from the decomposition of PQp).
+250  13 Temporal Logic: Formulas, Models, Tableaux
+
+The transitions in the structure are defined by paths between state nodes.
+
+Definition 13.41 A state path is a path (l0, l1, . . . , lk-1, lk) through connected
+
+nodes in the tableau, such that l0 is a state node or the root of the tableau, lk is
+a state node, and none of {l1, . . . , lk-1} are state nodes. It is possible that l0 = lk so
+that the set {l1, . . . , lk-1} is empty.
+
+   Given a tableau, a structure can be defined by taking the state nodes as the states
+and defining the transitions by the state paths. The label of a state is the union of
+all formulas that appear on incoming state paths (not including the first state of the
+path unless it is the root). The formal definition is:
+
+Definition 13.42 Let T be an open tableau for an LTL formula A. The structure
+H constructed from T is:
+· S is the set of state nodes.
+· Let s  S . Then s = l for some node l in the tableau. Let  i = (l0i , l1i , . . . , lkii = l)
+
+   be a state path terminating in the node l and let:
+
+                                    U i = U (l1i )  · · ·  U (lkii )
+
+   or
+                                    U i = U (l0i )  · · ·  U (lkii )
+
+   if l0i is the root. Label s by the set of formulas:
+
+                                            Ui = i U i ,
+
+   where the union is taken over all i such that i is a state path terminating in l = s.
+· s  (s) iff there is a state path from s to s .
+
+   It is possible to obtain several disconnected structures from the tableau for a
+formula such as Qp  Qq, but this is no problem as the formula can be satisfiable
+if and only if at least one of the structures leads to a model.
+
+   Now that we know how the structure is constructed from the tableau, it is possible
+to optimize Algorithm 13.36. Change:
+
+    For a state node l , if U (l ) = U (l ) for a state node l that already exists in the tableau, do
+    not create l ; instead connect l to l .
+
+so that it applies to any node l in the tableau, not just to state nodes, provided that
+this doesn't create a cycle not containing a state node.
+13.5 Semantic Tableaux                                             251
+
+Fig. 13.3 Structure for
+P(Q(p  q)  Q(¬ p  q) 
+Q(p  ¬ q))
+
+Example 13.43 Here is an optimized tableau corresponding to the one in Exam-
+ple 13.38:
+
+                                             l0 : PQp
+                                                 
+
+                                        l1 : Qp, 5PQp
+
+l2 : p, 5PQp                    l3 : 5Qp, 5PQp
+
+                                
+
+                         To l0  To l1
+
+and here is the structure constructed from this semantic tableau:
+
+where s0 = l2 and s1 = l3. To save space, each state si is labeled only with the
+positive literals in Ui .
+
+Example 13.44 Let:
+
+                     A = P(Q(p  q)  Q(¬ p  q)  Q(p  ¬ q)).
+
+The construction of the tableau for A is left as an exercise. The structure obtained
+from the tableau is shown in Fig. 13.3.
+
+Definition 13.45 Let H = (S , ) be a structure for an LTL formula A. H is a
+Hintikka structure for A iff A  s0 and for all states si the following conditions hold
+for Ui , the set of formulas labeling si :
+252  13 Temporal Logic: Formulas, Models, Tableaux
+
+1. For all atomic propositions p in A, either p  Ui or ¬ p  Ui .
+2. If   Ui , then 1  Ui and 2  Ui .
+3. If   Ui , then 1  Ui or 2  Ui .
+4. If X  Ui , then for all sj  (si ), X1  Uj .
+
+Theorem 13.46 Let A be an LTL formula and suppose that the tableau T for A is
+open. Then the structure H created as described in Definition 13.42 is a Hintikka
+structure for A.
+
+Proof The structure H is created from an open tableau, so condition (1) holds.
+Rules for - and -formulas are applied before rules for next formulas, so the union
+of the formulas on every incoming state path to a state node contains all the formulas
+required by conditions (2) and (3). When the rule for a next formula 5A is applied,
+A will appear in the label of the next node (and similarly for ¬ 5A), and hence in
+every state at the end of a state path that includes this node.
+
+13.5.4 Linear Fulfilling Hintikka Structures
+
+The construction of the tableau and the Hintikka structure is quite straightforward
+given the decomposition of formulas with temporal operators. Now we turn to the
+more difficult problem of deciding if an interpretation for an LTL formula can be
+extracted from a Hintikka structure. First, we need to extract a linear structure and
+show that it is also a Hintikka structure.
+
+Definition 13.47 Let H be a Hintikka structure for an LTL formula A. H is a
+linear Hintikka structure iff  is a total function, that is, if for each si there is exactly
+one sj  (si).
+
+Lemma 13.48 Let H be a Hintikka structure for an LTL formula A and let H be
+an infinite path through H . Then H is a linear Hintikka structure.
+
+Proof Clearly, H is a linear structure. Conditions (1­3) of Definition 13.45 hold
+because they already held in H . Let s be an arbitrary state and let U be the label of
+s. If a next formula 5A occurs in U , then by condition (4) of Definition 13.45, A
+occurs in all states of (s), in particular, for the one chosen in the construction of
+H.
+
+   Next, we need to check if the linear structure fulfills all the future formulas. We
+define the concept of fulfilling and then show that a fulfilling Hintikka structure
+can be used to define a model. The algorithm for deciding if a Hintikka structure
+is fulfilling is somewhat complex and is left to the next subsection. To simplify the
+presentation, future formulas will be limited to those of the form QA. By duality,
+the same presentation is applicable to future formulas of the form ¬ PA.
+
+   Recall that  is the transitive, reflexive closure of  (Definition A.21).
+13.5 Semantic Tableaux  253
+
+Definition 13.49 Let H = (S , ) be a Hintikka structure. H is a fulfilling iff the
+following condition holds for all future formulas QA:
+
+    For all s  S , if QA  Us , then for some s  (s), A  Us .
+
+The state s is said to fulfill QA.
+
+Theorem 13.50 (Hintikka's Lemma for LTL) Let H = (S , ) be a linear fulfilling
+Hintikka structure for an LTL formula A. Then A is satisfiable.
+
+Proof An LTL interpretation is a path consisting of states labeled with atomic
+propositions (see Definition 13.28). The path is defined simply by taking the lin-
+ear Hintikka structure and restricting the labels to atomic propositions. There is thus
+a natural mapping between states of the interpretation and states of the Hintikka
+structure, so for the propositional operators and next formulas, we can use the con-
+ditions on the structure to prove that A is satisfiable using structural induction.
+
+   For future formulas, the satisfiability follows from the assumption that the Hin-
+tikka structure is fulfilling.
+
+   Consider now a formula of the form PA  Usi . We must show that vj (A) = T
+for all j  i. We generalize this for the inductive proof and show that vj (A) = T
+and vj (5PA) = T for all j  i.
+
+   The base case is j = i. But PA  Usi , so by Hintikka condition (2) A  Usi and
+5PA  Usi .
+
+   Let k  i and assume the inductive hypothesis that vk (A) = T and 5PA 
+Usk . By Hintikka condition (4), PA  Usk+1 , so using Hintikka condition (2) again,
+vk+1 (A) = T and 5PA  Usk+1 .
+
+   Here is a finite presentation of a linear fulfilling Hintikka structure constructed
+from the structure in Fig. 13.3:
+
+13.5.5 Deciding Fulfillment of Future Formulas *
+
+The last link needed to obtain a decision procedure for satisfiability in LTL is an
+algorithm that takes an arbitrary Hintikka structure, and decides if it contains a path
+that is a linear fulfilling Hintikka structure. We begin with some definitions from
+graph theory. The concepts should be familiar, though it is worthwhile giving formal
+definitions.
+
+Definition 13.51 A graph G = (V , E) consists of a set of vertices V = {v1, . . . , vn}
+and a set of edges E = {e1, . . . , em}, which are pairs of vertices ek = {vi, vj }  V .
+254                   13 Temporal Logic: Formulas, Models, Tableaux
+
+Fig. 13.4 Strongly
+connected components
+
+In a directed graph, each edge is an ordered pair, ek = (vi, vj ). A path from v to v ,
+denoted v Y v , is a sequence of edges such that the second component of one edge
+is the first component of the next:
+
+                                    e1 = (v = vi1 , vi2 ),
+                                    e2 = (vi2 , vi3 ),
+
+                                         ...
+                                  el-1 = (vil-2 , vil-1 ),
+
+                                     el = (vil-1 , vil = v ).
+
+A subgraph G = (V , E ) of a directed graph G = (V , E) is a graph such that
+V  V and E  E, provided that e = (vi, vj )  E implies {vi, vj }  V .
+
+Definition 13.52 A strongly connected component (SCC) G = (V , E ) in a di-
+rected graph G is a subgraph such that vi Y vj for all {vi, vj }  V . A maximal
+strongly connected component (MSCC) is an SCC not properly contained in an-
+other. A transient SCC is an MSCC consisting of a single vertex. A terminal SCC is
+an MSCC with no outgoing edges.
+
+Example 13.53 The directed graph in Fig. 13.4 contains three strongly connected
+components: G0 = {s0}, G1 = {s1, s2, s3}, G2 = {s4, s5, s6, s7}. G0 is transient and
+G1 is terminal.
+
+Definition 13.54 A directed graph G can be represented as a component graph,
+which is a directed graph whose vertices are the MSCCs of G and whose edges are
+edges of G pointing from a vertex of one MSCC to a vertex of another MSCC.
+
+   See Even, Sect. 3.4 for an algorithm that constructs the component graph of a
+directed graph and a proof of the following theorem.
+
+Theorem 13.55 The component graph is acyclic.
+13.5 Semantic Tableaux  255
+
+Fig. 13.5 Component graph
+
+Example 13.56 Figure 13.5 shows the graph of Fig. 13.4 with its component graph
+indicated by ovals and thick arrows.
+
+   Suppose that we have a Hintikka structure and a future formula in a terminal
+MSCC, such as G1 in Fig. 13.5. Then if the formula is going to be fulfilled at all,
+it will be fulfilled within the terminal MSCC because there are no other reachable
+nodes to which the fulfillment can be deferred. If a future formula is in a non-
+terminal MSCC such as G2, it can either be fulfilled within its own MSCC, or the
+fulfillment can be deferred to an reachable MSCC, in this case G1. This suggests an
+algorithm for checking fulfillment: start at terminal MSCCs and work backwards.
+
+   Let H = (S , ) be a Hintikka structure. H can be considered a graph G =
+(V , E), where V is S and (si, sj )  E iff sj  (si). We simplify the notation and
+write A  v for A  Ui when v = si .
+Definition 13.57 Let G = (V , E) be a SCC of H . G is self-fulfilling iff for all
+v  V and for all future formulas QA  v, A  v for some v  V .
+Lemma 13.58 Let G = (V , E)  G = (V , E ) be SCCs of a Hintikka structure. If
+G is self-fulfilling, then so is G .
+
+Fig. 13.6 An SCC is contained in an MSCC
+256  13 Temporal Logic: Formulas, Models, Tableaux
+
+Example 13.59 Let QA be an arbitrary future formula that has to be fulfilled in G
+in Fig. 13.6. If QA  si for si  G, then by the assumption that G is self-fulfilling,
+A  sj for some sj  G  G and G is also self-fulfilling.
+
+   Suppose now that QA  s7, where s7  V - V . If A  s7, then s7 itself fulfills
+QA. Otherwise, by Hintikka condition (3), 5QA  s7, so QA  s6 by Hintikka con-
+dition (4). Continuing, A  s6 or 5QA  s6; A  s4 or 5QA  s4; A  s5 or 5QA 
+s5. If A  sj for one of these vertices in V - V , we have the G is self-fulfilling.
+
+   If not, then by Hintikka condition (4), 5QA  s4 implies that QA  s1, be-
+cause condition (4) is a requirement on all immediate successors of a node. By
+
+assumption, G is self-fulfilling, so A  sj for some sj  G  G and G is also
+
+self-fulfilling.
+
+Proof of Lemma 13.58 Let QA be an arbitrary future formula in v  V - V . By
+definition of a Hintikka structure, either A  v or 5QA  v . If A  v , then A
+is fulfilled in G ; otherwise, QA  v for every v  (v ). By induction on the
+number of vertices in V - V , either A is fulfilled in V - V or QA  v for some v
+in V . But G is self-fulfilling, so QA is fulfilled in some state vA  V  V . Since
+G is an SCC, v Y vA and A is fulfilled in G .
+
+Corollary 13.60 Let G be a self-fulfilling SCC of a Hintikka structure. Then G can
+be extended to a self-fulfilling MSCC.
+
+Proof If G itself is not an MSCC, create a new graph G by adding a vertex v 
+V - V and all edges (v , v) and (v, v ), where v  V , provided that G is an SCC.
+Continue this procedure until no new SCCs can be created. By Lemma 13.58, the
+SCC is self-fulfilling and by construction it is maximal.
+
+Lemma 13.61 Let G = (V , E) be an MSCC of H and let QA  v  V be a future
+formula. If G is not self-fulfilling, QA can only be fulfilled by some v in an MSCC
+G , such that G Y G in the component graph.
+
+Proof Since G is not self-fulfilling, QA must be fulfilled by some v  V such that
+v Y v . But v Y v, otherwise v could be added to the vertices of G creating a
+larger SCC, contradicting the assumption that G is maximal. Therefore, v  G for
+a component G = G.
+
+This lemma directly gives the following corollary.
+
+Corollary 13.62 If G is a terminal MSCC and QA  v for v  V , then if QA cannot
+be fulfilled in G, it cannot be fulfilled at all.
+
+Algorithm 13.63 (Construction of a linear fulfilling structure)
+Input: A Hintikka structure H .
+Output: A linear fulfilling Hintikka structure that is a path in H , or a report that
+no such structure exists.
+
+   Construct the component graph H of H . Since H is acyclic (Theorem 13.55),
+there must be a terminal MSCC G. If G is not self-fulfilling, delete G and all its
+13.5 Semantic Tableaux                                                  257
+
+incoming edges from H . Repeat until every terminal MSCC is self-fulfilling or until
+the component graph is empty. If every terminal MSCC is self-fulfilling, the proof
+of the following theorem shows how a linear fulfilling Hintikka structure can be
+constructed. Otherwise, if the graph is empty, the algorithm reports that no linear
+fulfilling Hintikka structure exists.
+
+Theorem 13.64 Algorithm 13.63 terminates with a non-empty graph iff a linear
+fulfilling Hintikka structure can be constructed.
+
+Proof Suppose that the algorithm terminates with an non-empty component graph
+G and let G1 Y · · · Y Gn be a maximal path in G. We now define a path in H
+based upon this path in the component graph.
+
+   There must be vertices {v1, . . . , vn} in H , such that vi  Gi , vi+1  Gi+1 and
+vi Y vi+1. Furthermore, each component Gi is an SCC, so for each i there is a path
+v1i Y · · · Y vkii in H containing all the vertices in Gi .
+
+   Construct a path in H by replacing every component by a partial path and con-
+necting them by the edges vi Y vi+1:
+
+· Replace a transient component by the single vertex v1i .
+· Replace a terminal component by the closure
+
+                                 vi Y · · · Y (v1i Y · · · Y vkii ).
+
+· Replace a non-transient, non-terminal component by
+
+                   vi Y · · · Y v1i Y · · · vkii Y v1i Y · · · vkii Y · · · Y vi+1.
+
+We leave it as an exercise to prove that this path is a fulfilling linear Hintikka struc-
+ture.
+
+   Conversely, let H = (s1, . . . , . . .) be a fulfilling linear Hintikka structure in H .
+Since H is finite, some suffix of H must be composed of states which repeat
+infinitely often. These states must be contained within a self-fulfilling SCC G. By
+Corollary 13.60, G is contained in a self-fulfilling MSCC.
+
+Example 13.65 There are two maximal paths in the component graph in Fig. 13.5:
+G0 Y G1 and G0 Y G2 Y G1. The paths constructed in the underlying graphs are:
+
+                                     s0 Y (s3 Y s2 Y s1)
+
+and
+      s0 Y s4 Y s5 Y s7 Y s6 Y s4 Y s5 Y s7 Y s6 Y s4 Y (s1 Y s2 Y s3),
+
+respectively.
+
+Theorem 13.66 There is a decision procedure for satisfiability in LTL.
+
+Proof Let A be a formula in LTL. Construct a semantic tableau for A. If it closes,
+A is unsatisfiable. If there is an open branch, A is satisfiable. Otherwise, construct
+the structure from the tableau as described in Definition 13.42. By Theorem 13.46,
+258  13 Temporal Logic: Formulas, Models, Tableaux
+
+this is a Hintikka structure. Apply Algorithm 13.63 to construct a fulfilling Hintikka
+structure. If the resulting graph is empty, A is unsatisfiable. Otherwise, apply the
+construction in Theorem 13.64 to construct a linear fulfilling Hintikka structure. By
+Theorem 13.50, a model can be constructed from the structure.
+
+   The following corollary is obvious since the number of possible states in a struc-
+ture constructed for a particular formula is finite:
+
+Corollary 13.67 (Finite model property) A formula in LTL is satisfiable iff it is
+satisfiable in a finitely-presented model.
+
+13.6 Binary Temporal Operators *
+
+Consider the following correctness specification from the introduction:
+
+    The output lines maintain their values until the set-line is asserted.
+
+We cannot express this in LTL as defined above because we have no binary temporal
+operators that can connect two propositions: unchanged-output and set-asserted. To
+express such properties, a binary operator U (read until) can be added to LTL. Infix
+notation is used:
+
+                            unchanged-output U set-asserted.
+
+The semantics of the operator is defined by adding the following item to Defini-
+tion 13.28:
+· If A is A1U A2 then v (A) = T iff vi (A2) = T for some i  0 and for all
+
+   0  k < i, vk (A1) = T .
+
+Example 13.68 The formula p U q is true in the interpretation represented by the
+following path:
+
+q is true at s2 and for all previous states {s0, s1}, p is true.
+   p U q is not true in the following interpretation assuming that state s2 is repeated
+
+indefinitely:
+
+The reason is that q never becomes true.
+13.6 Binary Temporal Operators *                         259
+
+p U q is also not true in the following interpretation:
+
+because p becomes false before q becomes true.
+
+Defining the Existing Operators in Terms of U
+
+It is easy to see that:
+                                        QA  true U A.
+
+The definition of the semantics of U requires that A become true eventually just
+as in the semantics of QA. The additional requirement is that true evaluate to T in
+every previous state, but that clearly holds in every interpretation.
+
+   Since binary operators are essential for expressing correctness properties, ad-
+vanced presentations of LTL take 5 and U as the primitive operators of LTL and
+define Q as an abbreviation for the above formula, and then P as an abbreviation
+for ¬ Q¬ .
+
+Semantic Tableaux with U
+
+Constructing a semantic tableau for a formula that uses the U operator does not
+require any new concepts. The operator can be decomposed as follows:
+
+                           A1U A2  A2  (A1  5(A1U A2)).
+
+For A1U A2 to be true, either A2 is true today, or we put off to tomorrow the require-
+ment to satisfy A1U A2, while requiring that A1 be true today. The decomposition
+shows that a U -formula is a -formula very similar to QA. The similarity goes
+deeper, because A1U A2 is a future formula and must be fulfilled by having A2
+appear in a state eventually.
+
+   The construction of semantic tableau is more efficient if operators have duals.
+The dual of U is the operator R (read release), defined as:
+
+                                A1RA2  ¬ (¬ A1U ¬ A2).
+
+We leave it as an exercise to write the definition of the semantics of R.
+260                      13 Temporal Logic: Formulas, Models, Tableaux
+
+The Weak Until Operator
+
+Sometimes it is convenient to express precedence properties without actually requir-
+ing that something eventually occur. W (read weak until) is the same as the operator
+U except that it is not required that the second formula ever become true:
+
+· If A is A1W A2 then v (A) = T iff: if vi (A2) = T for some i  0, then for all
+   0  k < i, vk (A1) = T .
+
+Clearly, the following equivalence holds:
+
+                               A1W A2  (A1U A2)  PA1.
+
+We leave it as an exercise to show:
+
+                               PA  A W false,
+                    ¬ (A1W A2)  (A1  ¬ A2) U (¬ A1  ¬ A2),
+                    ¬ (A1U A2)  (A1  ¬ A2) W (¬ A1  ¬ A2),
+                    ¬ (A1U A2)  (¬ A2) W (¬ A1  ¬ A2).
+
+13.7 Summary
+
+Since the state of a computation changes over time, temporal logic is an appropriate
+formalism for expressing correctness properties of programs. The syntax of linear
+temporal logic (LTL) is that of propositional logic together with the unary temporal
+operators P, Q, 5. Interpretations are infinite sequences of states, where each state
+assigns truth values to atomic propositions. The meaning of the temporal operators
+is that some property must hold in P all subsequent states, in Q some subsequent
+state or in the 5 next state.
+
+   Satisfiability and validity of formulas in LTL are decidable. The tableau construc-
+tion for propositional logic is extended so that next formulas (of the form 5A) cause
+new states to be generated. A open tableau defines a Hintikka structure which can
+be extended to a satisfying interpretation, provided that all future formulas (of the
+form QA or ¬ PA) are fulfilled. By constructing the component graph of strongly
+connected components, the fulfillment of the future formulas can be decided.
+
+   Many important correctness properties use the binary operators U and W , which
+require that one formula hold until a second one becomes true.
+13.8 Further Reading  261
+
+13.8 Further Reading
+
+Temporal logic (also called tense logic) has a long history, but it was first applied to
+program verification by Pnueli (1977). The definitive reference for the specification
+and verification of concurrent programs using temporal logic is Manna and Pnueli
+(1992, 1995). The third volume was never completed, but a partial draft is available
+(Manna and Pnueli, 1996). Modern treatments of LTL can be found in Kröger and
+Merz (2008, Chap. 2), and Baier and Katoen (2008, Chap. 5). The tableau method
+for a different version of temporal logic first appeared in Ben-Ari et al. (1983); for
+a modern treatment see Kröger and Merz (2008, Chap. 2).
+
+13.9 Exercises
+
+13.1 Prove that in LTL every substitution instance of a valid propositional formula
+is valid.
+
+13.2 Prove |= ¬ Q¬ p  Pp (the converse direction of Theorem 13.14).
+
+13.3 Prove that a linear interpretation is characterized by 5A  ¬ 5¬ A (Theo-
+rem 13.25).
+
+13.4 * Identify the property of a reflexive relation characterized by A  PQA.
+Identify the property of a reflexive relation characterized by QA  PQA.
+
+13.5 Show that in an interpretation with a reflexive transitive relation, any formula
+(without 5) is equivalent to one whose only temporal operators are P, Q, QP, PQ,
+QPQ and PQP. If the relation is also characterized by the formula QA  PQA,
+any formula is equivalent to one with a single temporal operator.
+
+13.6 Prove Theorem 13.34: |= (QPp  PQq)  PQ(p  q).
+
+13.7 Construct a tableau and find a model for the negation of PQp  QPp.
+
+13.8 Prove that the construction of a semantic tableau terminates.
+
+13.9 Prove that the construction of the path in the proof of Theorem 13.64 gives a
+linear fulfilling Hintikka structure.
+
+13.10 Write the definition of the semantics of the operator R.
+
+13.11 Prove the equivalences on W at the end of Sect. 13.6.
+262         13 Temporal Logic: Formulas, Models, Tableaux
+
+References
+
+C. Baier and J.-P. Katoen. Principles of Model Checking. MIT Press, 2008.
+M. Ben-Ari, Z. Manna, and A. Pnueli. The temporal logic of branching time. Acta Informatica,
+
+   20:207­226, 1983.
+S. Even. Graph Algorithms. Computer Science Press, Potomac, MD, 1979.
+F. Kröger and S. Merz. Temporal Logic and State Systems. Springer, 2008.
+Z. Manna and A. Pnueli. The Temporal Logic of Reactive and Concurrent Systems. Vol. I: Specifi-
+
+   cation. Springer, New York, NY, 1992.
+Z. Manna and A. Pnueli. The Temporal Logic of Reactive and Concurrent Systems. Vol. II: Safety.
+
+   Springer, New York, NY, 1995.
+Z. Manna and A. Pnueli. Temporal verification of reactive systems: Progress. Draft available at
+
+   http://www.cs.stanford.edu/~zm/tvors3.html, 1996.
+A. Pnueli. The temporal logic of programs. In 18th IEEE Annual Symposium on Foundations of
+
+   Computer Science, pages 46­57, 1977.
+

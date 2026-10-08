@@ -1,0 +1,132 @@
+8.5 The C-Rule *                                                          163
+
+The name of a bound variable can be changed if necessary:
+
+Theorem 8.20 xA(x)  yA(y).
+
+Proof  xA(x)  A(a)                                         Axiom 4
+ 1.    y(xA(x)  A(y))                                         Gen. 1
+ 2.    xA(x)  yA(y)
+ 3.    yA(y)  xA(x)                                        Axiom 5
+ 4.    xA(x)  yA(y)                                        Similarly
+ 5.
+                                                             PC 3, 4
+
+The next theorem shows a non-obvious relation between the quantifiers.
+
+Theorem 8.21 Let B be a formula that does not have x as a free variable.
+                              x(A(x)  B)  (xA(x)  B).
+
+Proof                               Assumption
+   1. x(A(x)  B) x(A(x)  B)             Exercise
+   2. x(A(x)  B) x(¬ B  ¬ A(x))         Axiom 5
+   3. x(A(x)  B) ¬ B  x¬ A(x)               PC 3
+   4. x(A(x)  B) ¬ x¬ A(x)  B
+   5. x(A(x)  B) xA(x)  B        Definition of 
+   6. x(A(x)  B)  (xA(x)  B)          Deduction
+
+ 7. xA(x)  B xA(x)  B               Assumption
+ 8. xA(x)  B ¬ x¬ A(x)  B        Definition of 
+ 9. xA(x)  B ¬ B  x¬ A(x)
+10. xA(x)  B x(¬ B  ¬ A(x))                 PC 8
+11. xA(x)  B x(A(x)  B)          Theorem 8.19
+
+                                        Exercise
+
+12. x(A(x)  B)  (xA(x)  B)                                 PC 6, 11
+
+8.5 The C-Rule *
+
+The C-rule is a rule of inference that is useful in proofs of existentially quantified
+formulas. The rule is the formalization of the argument: if there exists an object
+satisfying a certain property, let a be that object.
+164                       8 First-Order Logic: Deductive Systems
+
+Definition 8.22 (C-Rule) The following rule may be used in a proof:
+
+      i U xA(x)          (an existentially quantified formula)
+ i + 1 U A(a)                                               C-rule
+
+provided that
+
+· The constant a is new and does not appear in steps 1, . . . , i of the proof.
+· Generalization is never applied to a free variable or constant in the formula to
+
+   which the C-rule is applied:
+
+          i  U xA(x, y)   (an existentially quantified formula)
+     i+1     U A(a, y)                                       C-rule
+             ···
+         j   U yA(a, y)                                     Illegal!
+
+For a proof that the rule is sound, see Mendelson (2009, Proposition 2.10).
+We use the C-Rule to give a more intuitive proof of Theorem 8.18.
+
+Theorem 8.23 xyA(x, y)  yxA(x, y)
+
+Proof                                Assumption
+ 1. xyA(x, y) xyA(x, y)                    C-Rule
+ 2. xyA(x, y) yA(a, y)
+ 3. xyA(x, y) A(a, b)                    Axiom 4
+ 4. xyA(x, y) xA(x, b)             Theorem 8.14
+ 5. xyA(x, y) yxA(x, y)
+ 6. xyA(x, y)  yxA(x, y)                   Gen. 4
+                                       Deduction
+
+   The conditions in the C-rule are necessary. The first condition is similar to the
+condition on the deduction rule. The second condition is needed so that a formula
+that is true for one specific constant is not generalized for all values of a variable.
+Without the condition, we could prove the converse of Theorem 8.18, which is not
+a valid formula:
+
+1. xyA(x, y) xyA(x, y)                           Assumption
+2. xyA(x, y) yA(a, y)                                Axiom 4
+3. xyA(x, y) A(a, b)                                    C-rule
+4. xyA(x, y) xA(x, b)
+5. xyA(x, y) yxA(x, y)             Generalization (illegal!)
+6. xyA(x, y)  yxA(x, y)                        Theorem 8.14
+                                                   Deduction
+8.6 Summary                                                   165
+
+8.6 Summary
+
+Gentzen and Hilbert deductive systems were defined for first-order logic. They are
+sound and complete. Be careful to distinguish between completeness and decid-
+ability. Completeness means that every valid formula has a proof. We can discover
+the proof by constructing a semantic tableau for its negation. However, we cannot
+decide if an arbitrary formula is valid and provable.
+
+8.7 Further Reading
+
+Our presentation is adapted from Smullyan (1968) and Mendelson (2009). Chap-
+ter X of (Smullyan, 1968) compares various proofs of completeness.
+
+8.8 Exercises
+
+8.1 Prove in G :
+
+                  x(p(x)  q(x))  (xp(x)  xq(x)),
+                  x(p(x)  q(x))  (xp(x)  xq(x)).
+
+8.2 Prove the soundness and completeness of G (Theorem 8.3).
+
+8.3 Prove that Axioms 4 and 5 are valid.
+
+8.4 Show that a proof in H can be simulated in G .
+
+8.5 Prove in H : x(p(x)  q)  x(¬ q  ¬ p(x)).
+
+8.6 Prove in H : x(p(x)  q(x))  (xp(x)  xq(x)).
+
+8.7 Prove the theorems of Exercise 8.1 in H .
+
+8.8 Prove Theorem 8.19 in H . Let A be a formula that does not have x as a free
+variable.
+
+                              x(A  B(x))  (A  xB(x)),
+                              x(A  B(x))  (A  xB(x)).
+
+8.9 Let A be a formula built from the quantifiers and the Boolean operators ¬ , , 
+only. A , the dual of A is obtained by exchanging  and  and exchanging  and .
+Prove that A iff ¬ A .
+

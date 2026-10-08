@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#" lang="cn" xml:lang="cn">
+  <head>
+    <title>16.2　责任链模式的定义</title>
+  </head>
+  <body><h3 class="p3" id="sigil_toc_id_88">16.2 责任链模式的定义</h3> 
+<p class="ziti">责任链模式定义如下：</p> 
+<p class="ziti">Avoid coupling the sender of a request to its receiver by giving more than one object a chance to handle the request.Chain the receiving objects and pass the request along the chain until an object handles it.（使多个对象都有机会处理请求，从而避免了请求的发送者和接受者之间的耦合关系。将这些对象连成一条链，并沿着这条链传递该请求，直到有对象处理它为止。）</p> 
+<p class="ziti">责任链模式的重点是在“链”上，由一条链去处理相似的请求在链中决定谁来处理这个请求，并返回相应的结果，其通用类图如图16-4所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0044.jpg"/></a></p> 
+<p class="middle-img">图16-4 责任链模式通用类图</p> 
+<p class="ziti">责任链模式的核心在“链”上，“链”是由多个处理者ConcreteHandler组成的，我们先来看抽象Handler类，如代码清单16-14所示。</p> 
+<p class="ziti">代码清单16-14 抽象处理者</p> 
+<pre>public abstract class Handler {&#13;
+     private Handler nextHandler;&#13;
+     //每个处理者都必须对请求做出处理&#13;
+     public final Response handleMessage(Request request){&#13;
+             Response response = null;  &#13;
+             //判断是否是自己的处理级别&#13;
+             if(this.getHandlerLevel().equals(request.getRequestLevel())){&#13;
+                    response = this.echo(request);&#13;
+             }else{  //不属于自己的处理级别&#13;
+                    //判断是否有下一个处理者&#13;
+                    if(this.nextHandler != null){&#13;
+                            response = this.nextHandler.handleMessage(request);&#13;
+                    }else{&#13;
+                            //没有适当的处理者，业务自行处理&#13;
+                    }&#13;
+             }&#13;
+             return response;&#13;
+     }&#13;
+     //设置下一个处理者是谁&#13;
+     public void setNext(Handler _handler){&#13;
+             this.nextHandler = _handler;&#13;
+     }&#13;
+     //每个处理者都有一个处理级别&#13;
+     protected abstract Level getHandlerLevel();&#13;
+     //每个处理者都必须实现处理任务&#13;
+     protected abstract Response echo(Request request);&#13;
+}</pre> 
+<p class="ziti">抽象的处理者实现三个职责：一是定义一个请求的处理方法handleMessage，唯一对外开放的方法；二是定义一个链的编排方法setNext，设置下一个处理者；三是定义了具体的请求者必须实现的两个方法：定义自己能够处理的级别getHandlerLevel和具体的处理任务echo。</p> 
+<hr/> 
+<p class="ziti6"><span class="yanse">注意</span>　在责任链模式中一个请求发送到链中后，前一节点消费部分消息，然后交由后续节点继续处理，最终可以有处理结果也可以没有处理结果，读者可以不用理会什么纯的、不纯的责任链模式。同时，请读者注意handlerMessage方法前的final关键字，可以阅读第10章的模板方法模式。</p> 
+<hr/> 
+<p class="ziti">我们定义三个具体的处理者，以便可以组成一个链，如代码清单16-15所示。</p> 
+<p class="ziti">代码清单16-15 具体处理者</p> 
+<pre>public class ConcreteHandler1 extends Handler {&#13;
+     //定义自己的处理逻辑&#13;
+     protected Response echo(Request request) {&#13;
+             //完成处理逻辑&#13;
+             return null;&#13;
+     }&#13;
+     //设置自己的处理级别&#13;
+     protected Level getHandlerLevel() {&#13;
+             //设置自己的处理级别&#13;
+             return null;&#13;
+     }&#13;
+}&#13;
+public class ConcreteHandler2 extends Handler {&#13;
+     //定义自己的处理逻辑&#13;
+     protected Response echo(Request request) {&#13;
+             //完成处理逻辑&#13;
+             return null;&#13;
+     }&#13;
+     //设置自己的处理级别&#13;
+     protected Level getHandlerLevel() {&#13;
+             //设置自己的处理级别&#13;
+             return null;&#13;
+     }&#13;
+}&#13;
+public class ConcreteHandler3 extends Handler {&#13;
+     //定义自己的处理逻辑&#13;
+     protected Response echo(Request request) {&#13;
+             //完成处理逻辑&#13;
+             return null;&#13;
+     }&#13;
+     //设置自己的处理级别&#13;
+     protected Level getHandlerLevel() {&#13;
+             //设置自己的处理级别&#13;
+             return null;&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">在处理者中涉及三个类：Level类负责定义请求和处理级别，Request类负责封装请求，Response负责封装链中返回的结果，该三个类都需要根据业务产生，读者可以在实际应用中完成相关的业务填充，其框架代码如代码清单16-16所示。</p> 
+<p class="ziti">代码清单16-16 模式中有关框架代码</p> 
+<pre>public class Level {&#13;
+     //定义一个请求和处理等级&#13;
+}&#13;
+public class Request {&#13;
+     //请求的等级&#13;
+     public Level getRequestLevel(){&#13;
+             return null;&#13;
+     }&#13;
+}&#13;
+public class Response {&#13;
+     //处理者返回的数据&#13;
+}</pre> 
+<p class="ziti">在场景类或高层模块中对链进行组装，并传递请求，返回结果，如代码清单16-17所示。</p> 
+<p class="ziti">代码清单16-17 场景类</p> 
+<pre>public class Client {&#13;
+     public static void main(String[] args) {&#13;
+             //声明所有的处理节点&#13;
+             Handler handler1 = new ConcreteHandler1();&#13;
+             Handler handler2 = new ConcreteHandler2();&#13;
+             Handler handler3 = new ConcreteHandler3();&#13;
+             //设置链中的阶段顺序1--&gt;2--&gt;3&#13;
+             handler1.setNext(handler2);&#13;
+             handler2.setNext(handler3);&#13;
+             //提交请求，返回结果&#13;
+             Response response = handler1.handlerMessage(new Request());&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">在实际应用中，一般会有一个封装类对责任模式进行封装，也就是替代Client类，直接返回链中的第一个处理者，具体链的设置不需要高层次模块关系，这样，更简化了高层次模块的调用，减少模块间的耦合，提高系统的灵活性。</p></body>
+</html>

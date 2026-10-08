@@ -30,7 +30,7 @@ Proof. intros P Q [HP | HQ].
   - right. exact HP.
   - left. exact HQ. Qed.
 
-(* de Morgan：两个方向构造性都成立（对偶方向 ¬p∨¬q→¬(p∧q) 才是 11 章的坎） *)
+(* de Morgan：两个方向构造性都成立（对偶方向 ¬p∨¬q→¬(p∧q) 才是 12 章的坎） *)
 Theorem de_morgan_1 : forall P Q : Prop, ~ (P \/ Q) -> ~ P /\ ~ Q.
 Proof. intros P Q H. split.
   - intros HP. apply H. left. exact HP.

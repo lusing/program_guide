@@ -1,0 +1,662 @@
+5.2 Basic modal logic
+
+307
+
+interacting agents are developed. Each agent may have different knowledge about the environment and also about the knowledge of other agents. In this chapter, we will look in depth at modal logics applied to reasoning about knowledge.
+Modal logic adds unary connectives to express one, or more, of these different modes of truth. The simplest modal logics just deal with one concept ­ such as knowledge, necessity, or time. More sophisticated modal logics have connectives for expressing several modes of truth in the same logic; we will see some of these towards the end of this chapter.
+We take a logic engineering approach in this chapter, in which we address the following question: given a particular mode of truth, how may we develop a logic capable of expressing and formalising that concept? To answer this question, we need to decide what properties the logic should have and what examples of reasoning it should be able to express. Our main case study will be the logic of knowledge in a multi-agent system. But first, we look at the syntax and semantics of basic modal logic.
+
+5.2 Basic modal logic
+5.2.1 Syntax The language of basic modal logic is that of propositional logic with two extra connectives, 2 and 3. Like negation (¬), they are unary connectives as they apply themselves to a single formula only. As done in Chapters 1 and 3, we write p, q, r, p3 . . . to denote atomic formulas.
+Definition 5.1 The formulas of basic modal logic  are defined by the following Backus Naur form (BNF):
+ ::=  | | p | (¬) | (  ) | (  ) | (  ) | (  ) | (2) | (3) (5.1)
+where p is any atomic formula.
+Example formulas of basic modal logic are (p  3(p  2¬r)) and 2((3q  ¬r)  2p), having the parse trees shown in Figure 5.1. The following strings are not formulas, because they cannot be constructed using the grammar in (5.1): (p2  q) and (p  3(q 3 r)).
+Convention 5.2 As done in Chapter 1, we assume that the unary connectives (¬, 2 and 3) bind most closely, followed by  and  and then followed by  and .
+
+308
+
+5 Modal logics and agents
+
+
+
+p
+
+3
+
+2
+
+
+
+p
+
+2
+
+¬
+
+
+
+
+
+2
+
+3
+
+¬
+
+p
+
+r
+
+q
+
+r
+
+Figure 5.1. Parse trees for (p  3(p  2¬r)) and 2((3q  ¬r)  2p).
+
+This convention allows us to remove many sets of brackets, retaining them only to avoid ambiguity, or to override these binding priorities. For example, 2((3q  ¬r)  2p) can be written 2(3q  ¬r  2p). We cannot omit the remaining brackets, however, for 23q  ¬r  2p has quite a different parse tree (see Figure 5.2) from the one in Figure 5.1.
+In basic modal logic, 2 and 3 are read `box' and `diamond,' but, when we apply modal logics to express various modes of truth, we may read them appropriately. For example, in the logic that studies necessity and possibility, 2 is read `necessarily' and 3 `possibly;' in the logic of agent Q's knowledge, 2 is read `agent Q knows' and 3 is read `it is consistent with agent Q's knowledge that,' or more colloquially, `for all Q knows.' We will see why these readings are appropriate later in the chapter.
+
+5.2.2 Semantics For a formula of propositional logic, a model is simply an assignment of truth values to each of the atomic formulas present in that formula ­ we called such models valuation in Chapter 1. However, this notion of model is inadequate for modal logic, since we want to distinguish between different modes, or degrees, of truth.
+
+5.2 Basic modal logic
+
+309
+
+
+
+
+
+2
+
+2
+
+¬
+
+p
+
+3
+
+r
+
+q
+Figure 5.2. The parse tree for 23q  ¬r  2p.
+Definition 5.3 A model M of basic modal logic is specified by three things:
+1. A set W , whose elements are called worlds; 2. A relation R on W (R  W × W ), called the accessibility relation; 3. A function L : W  P(Atoms), called the labelling function.
+We write R(x, y) to denote that (x, y) is in R.
+These models are often called Kripke models, in honour of S. Kripke who invented them and worked extensively in modal logic in the 1950s and 1960s. Intuitively, w  W stands for a possible world and R(w, w ) means that w is a world accessible from world w. The actual nature of that relationship depends on what we intend to model. Although the definition of models looks quite complicated, we can use an easy graphical notation to depict finite models. We illustrate the graphical notation by an example. Suppose W equals {x1, x2, x3, x4, x5, x6} and the relation R is given as follows: r R(x1, x2), R(x1, x3), R(x2, x2), R(x2, x3), R(x3, x2), R(x4, x5), R(x5, x4),
+R(x5, x6); and no other pairs are related by R.
+Suppose further that the labelling function behaves as follows:
+x x1 x2 x3 x4 x5 x6 L(x) {q} {p, q} {p} {q}  {p}
+
+310
+
+5 Modal logics and agents
+
+Then, the Kripke model is illustrated in Figure 5.3. The set W is drawn as a set of circles, with arrows between them showing the relation R. Within each circle is the value of the labelling function in that world. If you have read Chapter 3, then you might have noticed that Kripke structures are also the models for CTL, where W is S, the set of states; R is , the relation of state transitions; and L is the labelling function.
+
+Definition 5.4 Let M = (W, R, L) be a model of basic modal logic. Suppose x  W and  is a formula of (5.1). We will define when formula  is true in the world x. This is done via a satisfaction relation x  by structural induction on :
+
+x x x p iff p  L(x) x ¬ iff x  x    iff x  and x  x    iff x  , or x  x    iff x  , whenever we have x  x    iff (x  iff x ) x 2 iff, for each y  W with R(x, y), we have y  x 3 iff there is a y  W such that R(x, y) and y .
+
+When x  holds, we say `x satisfies ,' or ` is true in world x.' We write M, x  if we want to stress that x  holds in the model M.
+The first two clauses just express the fact that is always true, while  is always false. Next, we see that L(x) is the set of all the atomic formulas that are true at x. The clauses for the boolean connectives (¬, , ,  and ) should also be straightforward: they mean that we apply the usual truthtable semantics of these connectives in the current world x. The interesting cases are those for 2 and 3. For 2 to be true at x, we require that  be true in all the worlds accessible by R from x. For 3, it is required that there is at least one accessible world in which  is true. Thus, 2 and 3 are a bit like the quantifiers  and  of predicate logic, except that they do not take variables as arguments. This fact makes them conceptually much simpler than quantifiers. The modal operators 2 and 3 are also rather like AX and EX in CTL ­ see Section 3.4.1. Note that the meaning of 1  2 coincides with that of (1  2)  (2  1); we call it `if and only if.'
+
+Definition 5.5 A model M = (W, R, L) of basic modal logic is said to satisfy a formula if every state in the model satisfies it. Thus, we write M  iff, for each x  W , x .
+
+5.2 Basic modal logic
+
+311
+
+x2
+p, q
+
+x1
+q
+x4
+q
+
+p x3
+p
+x6 x5
+
+Figure 5.3. A Kripke model.
+
+Examples 5.6 Consider the Kripke model of Figure 5.3. We have:
+r x1 q, since q  L(x1). r x1 3q, for there is a world accessible from x1 (namely, x2) which satisfies q.
+In mathematical notation: R(x1, x2) and x2 q. r x1 2q, however. This is because x1 2q says that all worlds accessible from
+x1 (i.e. x2 and x3) satisfy q; but x3 does not. r x5 2p and x5 2q. Moreover, x5 2p  2q. However, x5 2(p  q).
+To see these facts, note that the worlds accessible from x5 are x4 and x6. Since x4 p, we have x5 2p; and since x6 q, we have x5 2q. Therefore, we get that x5 2p  2q. However, x5 2(p  q) holds because, in each of x4 and x6, we find p or q. r The worlds which satisfy 2p  p are x2, x3, x4, x5 and x6; for x2, x3 and x6 this is so since they already satisfy p; for x4 this is true since it does not satisfy 2p ­ we have R(x4, x5) and x5 does not satisfy p; a similar reason applies to x5. As for x1, it cannot satisfy 2p  p since it satisfies 2p but not p itself.
+Worlds like x6 that have no world accessible to them deserve special attention in modal logic. Observe that x6 3, no matter what  is, because 3 says `there is an accessible world which satisfies .' In particular, `there is an accessible world,' which in the case of x6 there is not. Even when  is
+, we have x6 3 . So, although is satisfied in every world, 3 is not necessarily. In fact, x 3 holds iff x has at least one accessible world.
+A dual situation exists for the satisfaction of 2 in worlds with no accessible world. No matter what  is, we find that x6 2 holds. That is because x6 2 says that  is true in all worlds accessible from x6. There are no such worlds, so  is vacuously true in all of them: there is simply nothing to check. This reading of `for all accessible worlds' may seem surprising, but
+it secures the de Morgan rules for the box and diamond modalities shown
+
+312
+
+5 Modal logics and agents
+
+
+
+2 
+3
+
+
+Figure 5.4. The parse tree of the formula scheme   23.
+below. Even 2 is true in x6. If you wanted to convince someone that 2 was not true in x6, you'd have to show that there is a world accessible from x6 in which  is not true; but you can't do this, for there are no worlds accessible from x6. So again, although  is false in every world, 2 might not be false. In fact, x 2 holds iff x has no accessible worlds.
+Formulas and formula schemes The grammar in (5.1) specifies exactly the formulas of basic modal logic, given a set of atomic formulas. For example, p  23p is such a formula. It is sometimes useful to talk about a whole family of formulas which have the same `shape;' these are called formula schemes. For example,   23 is a formula scheme. Any formula which has the shape of a certain formula scheme is called an instance of the scheme. For example,
+r p  23p r q  23q r (p  3q)  23(p  3q)
+are all instances of the scheme   23. An example of a formula scheme of propositional logic is     . We may think of a formula scheme as an under-specified parse tree, where certain portions of the tree still need to be supplied ­ e.g. the tree of   23 is found in Figure 5.4.
+
+5.2 Basic modal logic
+
+313
+
+Semantically, a scheme can be thought of as the conjunction of all its instances ­ since there are generally infinitely many such instances, this cannot be carried out syntactically! We say that a world/model satisfies a scheme if it satisfies all its instances. Note that an instance being satisfied in a Kripke model does not imply that the whole scheme is satisfied. For example, we may have a Kripke model in which all worlds satisfy ¬p  q, but at least one world does not satisfy ¬q  p; the scheme ¬   is not satisfied.
+
+Equivalences between modal formulas
+
+Definition 5.7 1. We say that a set of formulas  of basic modal logic semantically entails a formula  of basic modal logic if, in any world x of any model M = (W, R, L), we have x  whenever x  for all   . In that case, we say that   holds.
+2. We say that  and  are semantically equivalent if   and   hold. We denote this by   .
+
+Note that    holds iff any world in any model which satisfies one of them also satisfies the other. The definition of semantic equivalence is based on semantic entailment in the same way as the corresponding one for formulas of propositional logic. However, the underlying notion of semantic entailment for modal logic is quite different, as we will see shortly.
+Any equivalence in propositional logic is also an equivalence in modal logic. Indeed, if we take any equivalence in propositional logic and substitute the atoms uniformly for any modal logic formula, the result is also an equivalence in modal logic. For example, take the equivalent formulas p  ¬q and ¬(p  q) and now perform the substitution
+
+p  2p  (q  p) q  r  3(q  p).
+
+The result of this substitution is the pair of formulas
+
+2p  (q  p)  ¬(r  3(q  p)) ¬((2p  (q  p))  (r  3(q  p)))
+
+(5.2)
+
+which are equivalent as formulas of basic modal logic. We have already noticed that 2 is a universal quantifier on accessible
+worlds and 3 is the corresponding existential quantifier. In view of these facts, it is not surprising to find that de Morgan rules apply for 2 and 3:
+
+¬2  3¬ and ¬3  2¬.
+
+314
+
+5 Modal logics and agents
+
+Moreover, 2 distributes over  and 3 distributes over :
+
+2(  )  2  2 and 3(  )  3  3.
+
+These equivalences correspond closely to the quantifier equivalences discussed in Section 2.3.2. It is also not surprising to find that 2 does not distribute over  and 3 does not distribute over , i.e. we do not have equivalences between 2(  ) and 2  2, or between 3(  ) and 3  3. For example, in the fourth item of Example 5.6 we had x5 2(p  q) and x5 2p  2q.
+Note that 2 is equivalent to , but not to 3 , as we saw earlier. Similarly, 3   but they are not equivalent to 2.
+Another equivalence is 3  2p  3p. For suppose x 3 ­ i.e. x has an accessible world, say y ­ and suppose x 2p; then y p, so x 3p. Conversely, suppose x 2p  3p; we must show it satisfies 3 . Let us distinguish between the cases x 2p and x 2p; in the former, we get x 3p from x 2p  3p and so x must have an accessible world; and in the latter, x must again have an accessible world in order to avoid satisfying 2p. Either way, x has an accessible world, i.e. satisfies 3 . Naturally, this argument works for any formula , not just an atom p.
+
+Valid formulas
+
+Definition 5.8 A formula  of basic modal logic is said to be valid if it is true in every world of every model, i.e. iff  holds.
+
+Any propositional tautology is a valid formula and so is any substitution instance of it. A substitution instance of a formula is the result of uniformly substituting the atoms of the formula by other formulas as done in (5.2). For example, since p  ¬p is a tautology, performing the substitution p  2p  (q  p) gives us a valid formula (2p  (q  p))  ¬(2p  (q  p)).
+As we may expect from equivalences above, these formulas are valid:
+
+¬2  3¬ 2(  )  2  2 3(  )  3  3.
+
+(5.3)
+
+To prove that the first of these is valid, we reason as follows. Suppose x is a world in a model M = (W, R, L). We want to show x ¬2  3¬, i.e. that x ¬2 iff x 3¬. Well, using Definition 5.4,
+
+5.2 Basic modal logic
+
+315
+
+e
+
+d
+
+q
+
+a p, q
+
+c p, q
+
+bp
+Figure 5.5. Another Kripke model.
+x ¬2 iff it isn't the case that x 2 iff it isn't the case that, for all y such that R(x, y), y  iff there is some y such that R(x, y) and not y  iff there is some y such that R(x, y) and y ¬ iff x 3¬.
+Proofs that the other two are valid are similarly routine and left as exercises. Another important formula which can be seen to be valid is the following:
+2(  )  2  2.
+It is sometimes written in the equivalent, but slightly less intuitive, form 2(  )  (2  2). This formula scheme is called K in most books about modal logic, honouring the logician S. Kripke who, as we mentioned earlier, invented the so-called `possible worlds semantics' of Definition 5.4.
+To see that K is valid, again suppose we have some world x in some model M = (W, R, L). We have to show that x 2(  )  2  2. Again referring to Definition 5.4, we assume that x 2(  )  2 and try to prove that x 2:
+x 2(  )  2 iff x 2(  ) and x 2 iff for all y with R(x, y), we have y    and y  implies that, for all y with R(x, y), we have y  iff x 2.
+There aren't any other interesting valid formulas in basic modal logic. Later, we will see additional valid formulas in extended modal logics of interest.
+
+316
+
+5 Modal logics and agents
+
+5.3 Logic engineering
+Having looked at the framework for basic modal logic, we turn now to how one may formalise the different modes of truth discussed at the beginning of this chapter. The basic framework is quite general and can be refined in various ways to give us the properties appropriate for the intended applications. Logic engineering is the subject of engineering logics to fit new applications. It is potentially a very broad subject, drawing on all branches of logic, computer science and mathematics. In this chapter, however, we are restricting ourselves to the particular engineering of modal logics.
+We will consider how to re-engineer basic modal logic to fit the following readings of 2:
+r It is necessarily true that  r It will always be true that  r It ought to be that  r Agent Q believes that  r Agent Q knows that  r After any execution of program P,  holds.
+
+As modal logic automatically gives us the connective 3, which is equivalent to ¬2¬, we can find out what the corresponding readings of 3 in our system will be. For example, `it is not necessarily true that not ' means that it is possibly true that . You could work this out in steps:
+
+It is not necessarily true that  = it is possible that not .
+
+Therefore,
+
+It is not necessarily true that not  = it is possible that not not  = it is possible that .
+
+Let us work this out with the reading `agent Q knows ' for 2. Then, 3 is read as
+agent Q does not know not  = as far as Q's knowledge is concerned,  could be the case =  is consistent with what agent Q knows = for all agent Q knows, .
+The readings for 3 for the other modes are given in Table 5.6.
+
+5.3 Logic engineering
+
+317
+
+Table 5.6. The readings of 3 corresponding to each reading of 2.
+
+2
+It is necessarily true that  It will always be true that  It ought to be that  Agent Q believes that  Agent Q knows that  After any execution of program P,  holds
+
+3
+It is possibly true that  Sometime in the future  It is permitted to be that   is consistent with Q's beliefs For all Q knows,  After some execution of P,  holds
+
+5.3.1 The stock of valid formulas We saw in the last section some valid formulas of basic modal logic, such as instances of the axiom scheme K: 2(  )  (2  2) and of the schemes in (5.3). Many other formulas, such as r 2p  p r 2p  22p r ¬2p  2¬2p r3
+are not valid. For example, for each one of these, there is a world in the Kripke model of Figure 5.3 which does not satisfy the formula. The world x1 satisfies 2p, but it does not satisfy p, so it does not satisfy 2p  p. If we add R(x2, x1) to our model, then x1 still satisfies 2p but does not satisfy 22p. Thus, x1 fails to satisfy 2p  22p. If we change L(x4) to {p, q}, then x4 does not satisfy ¬2p  2¬2p, because it satisfies ¬2p, but it does not satisfy 2¬2p ­ the path R(x4, x5)R(x5, x4) serves as a counter example. Finally, x6 does not satisfy 3 , for this formula states that there is an accessible world satisfying , which is not the case.
+If we are to build a logic capturing the concept of necessity, however, we must surely have that 2p  p is valid; for anything which is necessarily true is also simply true. Similarly, we would expect 2p  p to be valid in the case that 2p means `agent Q knows p,' for anything which is known must also be true. We cannot know something which is false. We can, however, believe falsehoods, so in the case of a logic of belief, we would not expect 2p  p to be valid.
+Part of the job of logic engineering is to determine what formula schemes should be valid and to craft the logic in such a way that precisely those ones are valid.
+Table 5.7 shows six interesting readings for 2 and eight formula schemes. For each reading and each formula scheme, we decide whether we should expect the scheme to be valid. Notice that we should only put a tick if the
+
+318
+
+5 Modal logics and agents
+
+2 )
+
+23(
+
+2222333(23223¬2)3
+
+2 
+
+2
+It is necessarily true that  It will always be true that  It ought to be that  Agent Q believes that  Agent Q knows that  After any execut'n of prgrm P,  holds
+
+
+
+
+
+×
+
+
+
+×
+
+×
+
+×
+
+× ×
+
+ 
+
+× ×
+
+× ×
+
+× 
+
+× 
+
+ 
+
+ 
+
+× ×
+
+ 
+
+× ×
+
+×
+
+×
+
+×
+
+×
+
+×
+
+× ×
+
+
+
+× ×
+
+Table 5.7. Which formula schemes should hold for these readings of 2?
+
+formula should be valid for all cases of  and . If it could be valid for some cases, but not for others, we put a cross.
+There are many points worth noting about Table 5.7. First, observe that it is rather debatable whether to put a tick, or a cross, in some of the cells. We need to be precise about the concept of truth we are trying to formalise, in order to resolve any ambiguity.
+Necessity. When we ask ourselves whether 2  22 and 3  23 should be valid, it seems to depend on what notion of necessity we are referring to. These formulas are valid if that which is necessary is necessarily necessary. If we are dealing with physical necessity, then this amounts to: are the laws of the universe themselves physically necessary, i.e. do they entail that they should be the laws of the universe? The answer seems to be no. However, if we meant logical necessity, it seems that we should give the answer yes, for the laws of logic are meant to be those assertions whose truth cannot be denied. The row is filled on the understanding that we mean logical necessity.
+Always in the future. We must be precise about whether or not the future includes the present; this is precisely what the formula 2   states. It is a matter of convention whether the future includes the present, or not. In Chapter 3, we saw that CTL adopts the convention that it does. For variety, therefore, let us assume that the future does not include the present in this row of the table. That means that 2   fails. What about 3 ? It says that there is a future world in which is true. In particular, then, there is a future world, i.e. time has no end. Whether we regard this as true or not depends on exactly what notion of `the future' we are trying to model. We assumed the validity of 3
+
+5.3 Logic engineering
+
+319
+
+in Chapter 3 on CTL since this resulted in an easier presentation of our model-checking algorithms, but we might choose to model it otherwise, as in Table 5.7. Ought. In this case the formulas 2  22 and 3  23 state that the moral codes we adopt are themselves forced upon us by morality. This seems not to be the case; for example, we may believe that `It ought to be the case that we wear a seat-belt,' but this does not compel us to believe that `It ought to be the case that we ought to wear a seatbelt.' However, anything which ought to be so should be permitted to be so; therefore, 2  3. Belief. To decide whether 3 , let us express it as ¬2, for this is semantically equivalent. It says that agent Q does not believe any contradictions. Here we must be precise about whether we are modelling human beings, with all their foibles and often plainly contradictory beliefs, or whether we are modelling idealised agents that are logically omniscient ­ i.e. capable of working out the logical consequences of their beliefs. We opt to model the latter concept. The same issue arises when we consider, for example, 3  23, which ­ when we rewrite it as ¬2  2¬2 ­ says that, if agent Q doesn't believe something, then he believes that he doesn't believe it. Validity of the formula 2  2¬ would mean that Q has an opinion on every matter; we suppose this is unlikely. What about 3  3  3(  )? Let us rewrite it as ¬3(  )  ¬(3  3), i.e. 2(¬  ¬)  (2¬  2¬) or ­ if we subsume the negations into the  and  ­ the formula 2(  )  (2  2). This seems not to be valid, for agent Q may be in a situation in which she or he believes that there is a key in the red box, or in the green box, without believing that it is in the red box and also without believing that it is in the green box. Knowledge. It seems to differ from belief only in respect of the first formula in Table 5.7; while agent Q can have false beliefs, he can only know that which is true. In the case of knowledge, the formulas 2  22 and ¬2  2¬2 are called positive introspection and negative introspection, respectively, since they state that the agent can introspect upon her knowledge; if she knows something, she knows that she knows it; and if she does not know something, she again knows that she doesn't know it. Clearly, this represents idealised knowledge, since most humans ­ with all their hang-ups and infelicities ­ do not satisfy these properties. The formula scheme K is sometimes referred to as logical omniscience in the logic of knowledge, since it says that the agent's knowledge is closed under logical consequence. This means that the agent knows all the
+
+320
+
+5 Modal logics and agents
+
+consequences of anything he knows, which is unfortunately (or fortunately?) true only for idealised agents, not humans. Execution of programs. Not many of our formulas seem to hold in this case. The scheme 2  22 says that running the program twice is the same as running it once, which is plainly wrong in the case of a program which deducts money from your bank account. The formula 3 says that there is an execution of the program which terminates; this is false for some programs.
+
+The formula schemes 3 and 2  3 were seen to be equivalent in the preceding section and, indeed, we see that they get the same pattern of ticks and crosses. We can also show that 2   entails 3 ­ i.e. (2  )  3 is valid ­ so whenever the former gets a tick, so should the latter. This is indeed the case, as you can verify in Table 5.7.
+
+5.3.2 Important properties of the accessibility relation So far, we have been engineering logics at the level of deciding what formulas should be valid for the various readings of 2. We can also engineer logics at the level of Kripke models. For each of our six readings of 2, there is a corresponding reading of the accessibility relation R which will then suggest that R enjoys certain properties such as reflexivity or transitivity.
+Let us start with necessity. The clauses
+x 2 iff for each y  W with R(x, y) we have y  x 3 iff there is a y  W such that R(x, y) and y 
+from Definition 5.4 tell us that  is necessarily true at x if  is true in all worlds y accessible from x in a certain way; but accessible in what way? Intuitively, necessarily  is true if  is true in all possible worlds; so R(x, y) should be interpreted as meaning that y is a possible world according to the information in x.
+In the case of knowledge, we think of R(x, y) as saying: y could be the actual world according to agent Q's knowledge at x. In other words, if the actual world is x, then agent Q ­ who is not omniscient ­ cannot rule out the possibility of it being y. If we plug this definition into the clause above for x 2, we find that agent Q knows  iff  is true in all the worlds that, for all he knows, could be the actual world. The meaning of R for each of the six readings of 2 is shown in Table 5.8.
+Recall that a given binary relation R may be:
+r reflexive: if, for every x  W , we have R(x, x); r symmetric: if, for every x, y  W , we have R(x, y) implies R(y, x);
+
+5.3 Logic engineering
+
+321
+
+Table 5.8. For each reading of 2, the meaning of R is given.
+
+2 It is necessarily true that  It will always be true that  It ought to be that  Agent Q believes that  Agent Q knows that  After any execution of P,  holds
+
+R(x, y)
+y is possible world according to the information at x y is a future world of x
+y is an acceptable world according to the information at x y could be the actual world according to Q's beliefs at x y could be the actual world according to Q's knowledge at x y is a possible resulting state after execution of P at x
+
+r serial : if, for every x there is a y such that R(x, y); r transitive: if, for every x, y, z  W , we have R(x, y) and R(y, z) imply R(x, z); r Euclidean: if, for every x, y, z  W with R(x, y) and R(x, z), we have R(y, z); r functional : if, for each x there is a unique y such that R(x, y); r linear : if, for every x, y, z  W , we have that R(x, y) and R(x, z) together imply
+that R(y, z), or y equals z, or R(z, y); r total : if for every x, y  W we have R(x, y) or R(y, x); and r an equivalence relation: if it is reflexive, symmetric and transitive.
+Now, let us consider this question: according to the various readings of R, which of these properties do we expect R to have?
+Example 5.9 If 2 means `agent Q knows ,' then R(x, y) means y could be the actual world according to Q's knowledge at x.
+r Should R be reflexive? This would say: x could be the actual world according to Q's knowledge at x. In other words, Q cannot know that things are different from how they really are ­ i.e., Q cannot have false knowledge. This is a desirable property for R to have. Moreover, it seems to rest on the same intuition ­ i.e. the impossibility of false knowledge ­ as the validity of the formula 2  . Indeed, the validity of this formula and the property of reflexivity are closely related, as we see later on.
+r Should R be transitive? It would say: if y is possible according to Q's knowledge at x and z is possible according to her knowledge at y, then z is possible according to her knowledge at x. Well, this seems to be true. For suppose it was not true, i.e. at x she knew something preventing z from being the real world. Then, she would know she knew this thing at x; therefore, she would know something at y which prevented z from being the real world; which contradicts our premise.
+
+322
+
+5 Modal logics and agents
+
+In this argument, we relied on positive introspection, i.e. the formula 2  22. Again, we will shortly see that there is a close correspondence between R being transitive and the validity of this formula.
+
+5.3.3 Correspondence theory We saw in the preceding section that there appeared to be a correspondence between the validity of 2   and the property that the accessibility relation R is reflexive. The connection between them is that both relied on the intuition that anything which is known by an agent is true. Moreover, there also seemed to be a correspondence between 2  22 and R being transitive; they both seem to assert the property of positive introspection, i.e. that which is known is known to be known.
+In this section, we will see that there is a precise mathematical relationship between these formulas and properties of R. Indeed, to every formula scheme there corresponds a property of R. From the point of view of logic engineering, it is important to see this relationship, because it helps one to understand the logic being studied. For example, if you believe that a certain formula scheme should be accepted in the system of modal logic you are engineering, then it is well worth looking at the corresponding property of R and checking that this property makes sense for the application, too. Alternatively, the meaning of some formulas may seem difficult to understand, so looking at their corresponding properties of R can help.
+To state the relationship between formula schemes and their corresponding properties, we need the notion of a (modal) frame.
+Definition 5.10 A frame F = (W, R) is a set W of worlds and a binary relation R on W .
+A frame is like a Kripke model (Definition 5.3), except that it has no labelling function. From any model we can extract a frame, by just forgetting about the labelling function; for example, Figure 5.9 shows the frame extracted from the Kripke model of Figure 5.3. A frame is just a set of worlds and an accessibility relationship between them. It has no information about what atomic formulas are true at the various worlds. However, it is useful to say sometimes that the frame, as a whole, satisfies a formula. This is defined as follows.
+Definition 5.11 A frame F = (W, R) satisfies a formula of basic modal logic  if, for each labelling function L : W  P(Atoms) and each w  W ,
+
+5.3 Logic engineering
+
+323
+
+x2
+
+x1 x3
+
+x4
+
+x6
+
+x5
+
+Figure 5.9. The frame of the model in Figure 5.3.
+
+x4
+
+x6
+
+x5
+
+Figure 5.10. Another frame.
+
+the relation M, w  holds, where M = (W, R, L) ­ recall the definition of M, w  on page 310. In that case, we say that F  holds.
+One can show that, if a frame satisfies a formula, then it also satisfies every substitution instance of that formula. Conversely, if a frame satisfies an instance of a formula scheme, it satisfies the whole scheme. This contrasts markedly with models. For example, the model of Figure 5.3 satisfies p  3p  33p, but doesn't satisfy every instance of   3  33; for example, x6 does not satisfy q  3q  33q. Since frames don't contain any information about the truth or falsity of propositional atoms, they can't distinguish between different atoms; so, if a frame satisfies a formula, it also satisfies the formula scheme obtained by substituting its atoms p, q, . . . by , , . . .
+
+Examples 5.12 Consider the frame F in Figure 5.10.
+1. F satisfies the formula 2p  p. To see this, we have to consider any labelling function of the frame ­ there are eight such labelling functions, since p could be true or false in each of the three worlds ­ and show that each world satisfies the formula for each labelling. Rather than really doing this literally, let us
+
+324
+
+5 Modal logics and agents
+
+x4 p
+
+x6
+
+p
+
+x5
+
+Figure 5.11. A model.
+
+give a generic argument: let x be any world. Suppose that x 2p; we want to show x p. We know that R(x, x) because each x is accessible from itself in the diagram; so, it follows from the clause for 2 in Definition 5.4 that x p. 2. Therefore, our frame F satisfies any formula of this shape, i.e. it satisfies the formula scheme 2  . 3. The frame does not satisfy the formula 2p  22p. For suppose we take the labelling of Figure 5.11; then x4 2p, but x4 22p.
+If you think about why the frame of Figure 5.10 satisfied 2p  p and why it did not satisfy 2p  22p, you will probably guess the following:
+
+Theorem 5.13 Let F = (W, R) be a frame.
+1. The following statements are equivalent: ­ R is reflexive; ­ F satisfies 2  ; ­ F satisfies 2p  p;
+2. The following statements are equivalent: ­ R is transitive; ­ F satisfies 2  22; ­ F satisfies 2p  22p.
+PROOF: Each item 1 and 2 requires us to prove three things: (a) that, if R has the property, then the frame satisfies the formula scheme; and (b) that, if the frame satisfies the formula scheme, it satisfies the instance of it; and (c) that, if the frame satisfies a formula instance, then R has the property.
+1. (a) Suppose R is reflexive. Let L be a labelling function, so now M = (W, R, L) is a model of basic modal logic. We need to show M 2  . That means we need to show x 2   for any x  W , so pick any x. Use the clause for implication in Definition 5.4. Suppose x 2; since R(x, x), it immediately follows from the clause for 2 in Definition 5.4 that x p. Therefore, we have shown x 2  . (b) We just set  to be p.
+
+5.3 Logic engineering
+
+325
+
+Table 5.12. Properties of R corresponding to some formulas.
+
+name
+T B D 4 5
+
+formula scheme
+2     23 2  3 2  22 3  23 2  3 2(  2  )  2(  2  )
+
+property of R
+reflexive symmetric serial transitive Euclidean functional linear
+
+(c) Suppose the frame satisfies 2p  p. Take any x; we're going to show R(x, x).
+
+Take a labelling function L such that p  L(x) and p  L(y) for all worlds y
+
+except x. Proof by contradiction: Assume we don't have R(x, x). Then, x 2p,
+
+since all the worlds accessible from x satisfy p ­ this is because all the worlds
+
+except x satisfy p; but since F satisfies 2p  p, it follows that x 2p  p;
+
+therefore, putting x 2p and x 2p  p together, we get x p. This is a
+
+contradiction to the assumption that we don't have R(x, x), since we said that
+
+p  L(x). So we must have R(x, x) in our frame!
+
+2. (a) Suppose R is transitive. Let L be a labelling function and M = (W, R, L). We
+
+need to show M 2  22. That means we need to show x 2  22
+
+for any x  W . Suppose x 2; we need to show x 22. That is, using the
+
+clause for 2 in Definition 5.4, that any y such that R(x, y) satisfies 2; that is,
+
+for any y, z with R(x, y) and R(y, z), we have z .
+
+Well, suppose we did have y and z with R(x, y) and R(y, z). By the fact that R
+
+is transitive, we obtain R(x, z). But we're supposing that x 2, so from the
+
+meaning of 2 we get z , which is what we needed to prove.
+
+(b) Again, just set  to be p.
+
+(c) Suppose the frame satisfies 2p  22p. Take any x, y and z with R(x, y)
+
+and R(y, z); we are going to show R(x, z).
+
+Define a labelling function L such that p  L(z) and p  L(w) for all worlds
+
+w except z. Suppose we don't have R(x, z); then x 2p, since w p for all
+
+w = z. Using the axiom 2p  22p, it follows that x 22p. So y 2p holds
+
+since R(x, y). The latter and R(y, z) then render z p, a contradiction. Thus,
+
+we must have R(x, z).
+
+2
+
+This picture is completed in Table 5.12, which shows, for a collection of formulas, the corresponding property of R. What this table means mathematically is the following:
+
+Theorem 5.14 A frame F = (W, R) satisfies a formula scheme in Table 5.12 iff R has the corresponding property in that table.
+The names of the formulas in the left-hand column are historical, but have stuck and are still used widely in books.
+
+326
+
+5 Modal logics and agents
+
+5.3.4 Some modal logics The logic engineering approach of this section encourages us to design logics by picking and choosing a set L of formula schemes, according to the application at hand. Some examples of formula schemes that we may wish to consider for a given application are those in Tables 5.7 and 5.12.
+
+Definition 5.15 Let L be a set of formula schemes of modal logic and   {} a set of formulas of basic modal logic.
+1. The set  is closed under substitution instances iff whenever   , then any substitution instance of  is also in .
+2. Let Lc be the smallest set containing all instances of L. 3.  semantically entails  in L iff   Lc semantically entails  in basic modal
+logic. In that case, we say that  L  holds.
+Thus, we have  L  if every Kripke model and every world x satisfying   Lc therein also satisfies . Note that for L =  this definition is consistent with the one of Definition 5.7, since we then have   Lc = . For logic engineering, we require that L be
+r closed under substitution instances; otherwise, we won't be able to characterize Lc in terms of properties of the accessibility relation; and
+r consistent in that there is a frame F such that F  holds for all   L; otherwise,  L  holds for all  and ! In most applications of logic engineering, consistency is easy to establish.
+We now study a few important modal logics that extend basic modal logic with a consistent set of formula schemes L.
+
+The modal logic K The weakest modal logic doesn't have any chosen formula schemes, like those of Tables 5.7 and 5.12. So L =  and this modal logic is called K as it satisfies all instances of the formula scheme K; modal logics with this property are called normal and all modal logics we study in this text are normal.
+
+The modal logic KT45 A well-known modal logic is KT45 ­ also called S5 in the technical literature ­ where L = {T, 4, 5} with T, 4 and 5 from Table 5.12. This logic is used to reason about knowledge; 2 means that the agent Q knows . Table 5.12 tell us, respectively, that
+T. Truth: the agent Q knows only true things. 4. Positive introspection: if the agent Q knows something, then she knows
+that she knows it. 5. Negative introspection: if the agent Q doesn't know something, then
+she knows that she doesn't know it.
+
+5.3 Logic engineering
+
+327
+
+In this application, the formula scheme K means logical omniscience: the agent's knowledge is closed under logical consequence. Note that these properties represent idealisations of knowledge. Human knowledge has none of these properties! Even computer agents may not have them all. There are several attempts in the literature to define logics of knowledge that are more realistic, but we will not consider them here.
+The semantics of the logic KT45 must consider only relations R which are: reflexive (T), transitive (4) and Euclidean (5).
+
+Fact 5.16 A relation is reflexive, transitive and Euclidean iff it is reflexive, transitive and symmetric, i.e. if it is an equivalence relation.
+
+KT45 is simpler than K in the sense that it has few essentially different ways of composing modalities.
+Theorem 5.17 Any sequence of modal operators and negations in KT45 is equivalent to one of the following: -, 2, 3, ¬, ¬2 and ¬3, where - indicates the absence of any negation or modality.
+
+The modal logic KT4 The modal logic KT4, that is L equals {T, 4}, is also called S4 in the literature. Correspondence theory tells us that its models are precisely the Kripke models M = (W, R, L), where R is reflexive and transitive. Such structures are often very useful in computer science. For example, if  stands for the type of a piece of code ­  could be int × int  bool, indicating some code which expects a pair of integers as input and outputs a boolean value ­ then 2 could stand for residual code of type . Thus, in the current world x this code would not have to be executed, but could be saved (= residualised) for execution at a later computation stage. The formula scheme 2  , the axiom T, then means that code may be executed right away, whereas the formula scheme 2  22, the axiom 4, allows that residual code remain residual, i.e. we can repeatedly postpone its execution in future computation stages. Such type systems have important applications in the specialisation and partial evaluation of code. We refer the interested reader to the bibliographic notes at the end of the chapter.
+
+Theorem 5.18 Any sequence of modal operators and negations in KT4 is equivalent to one of the following: -, 2, 3, 23, 32, 232, 323, ¬, ¬2, ¬3, ¬23, ¬32, ¬232 and ¬323.
+
+Intuitionistic propositional logic In Chapter 1, we gave a natural deduction system for propositional logic which was sound and complete with
+
+328
+
+5 Modal logics and agents
+
+respect to semantic entailment based on truth tables. We also pointed out that the proof rules PBC, LEM and ¬¬e are questionable in certain computational situations. If we disallow their usage in natural deduction proofs, we obtain a logic, called intuitionistic propositional logic, together with its own proof theory. So far so good; but it is less clear what sort of semantics one could have for such a logic ­ again with soundness and completeness in mind. This is where certain models of KT4 will do the job quite nicely. Recall that correspondence theory implies that a model M = (W, R, L) of KT4 is such that R is reflexive and transitive. The only additional requirement we impose on a model for intuitionistic propositional logic is that its labelling function L be monotone in R: R(x, y) implies that L(x) is a subset of L(y). This models that the truth of atomic positive formulas persist throughout the worlds that are reachable from a given world.
+
+Definition 5.19 A model of intuitionistic propositional logic is a model M = (W, R, L) of KT4 such that R(x, y) always implies L(x)  L(y). Given a propositional logic formula as in (1.3), we define x  as in Definition 5.4 exception for the clauses  and ¬. For 1  2 we define x 1  2 iff for all y with R(x, y) we have y 2 whenever we have y 1. For ¬ we define x ¬ iff for all y with R(x, y) we have y .
+As an example, consider the model W = {x, y} with accessibility relation R = {(x, x), (x, y), (y, y)}, which is indeed reflexive and transitive. For a labelling function L with L(x) =  and L(y) = {p}, we claim that x p  ¬p. (Recall that p  ¬p is an instance of LEM which we proved in Chapter 1 with the full natural deduction calculus.) We do not have x p, for p is not in the set L(x) which is empty. Thus, Definition 5.4 for the case  implies that x p  ¬p can hold only if x ¬p holds. But x ¬p simply does not hold, since there is a world y with R(x, y) such that y p holds, for p  L(y). The availability of possible worlds in the models of KT4 together with a `modal interpretation' of  and ¬ breaks down the validity of the theorem LEM in classical logic.
+One can now define semantic entailment in the same manner as for modal logics. Then, one can prove soundness and completeness of the reduced natural deduction system with respect to this semantic entailment, but those proofs are beyond the scope of this book.
+
+5.4 Natural deduction
+Verifying semantic entailment  L  by appealing to its definition directly would be rather difficult. We would have to consider every Kripke model
+
+5.4 Natural deduction
+
+329
+
+that satisfies all formulas of  and every world in it. Fortunately, we have a much more usable approach, which is an extension, respectively adaptation, of the systems of natural deduction met in Chapters 1 and 2. Recall that we presented natural deduction proofs as linear representations of proof trees which may involve proof boxes which control the scope of assumptions, or quantifiers. The proof boxes have formulas and/or other boxes inside them. There are rules which dictate how to construct proofs. Boxes open with an assumption; when a box is closed ­ in accordance with a rule ­ we say that its assumption is discharged. Formulas may be repeated and brought into boxes, but may not be brought out of boxes. Every formula must have some justification to its right: a justification can be the name of a rule, or the word `assumption,' or an instance of the proof rule copy; see e.g. page 13.
+Natural deduction works in a very similar way for modal logic. The main difference is that we introduce a new kind of proof box, to be drawn with dashed lines. This is required for the rules for the connective 2. The dashed proof box has a completely different role from the solid one. As we saw in Chapter 1, going into a solid proof box means making an assumption. Going into a dashed box means reasoning in an arbitrary accessible world. If at any point in a proof we have 2, we could open a dashed box and put  in it. Then, we could work on this , to obtain, for example, . Now we could come out of the dashed box and, since we have shown  in an arbitrary accessible world, we may deduce 2 in the world outside the dashed box.
+Thus, the rules for bringing formulas into dashed boxes and taking formulas out of them are the following:
+
+r Wherever 2 occurs in a proof,  may be put into a subsequent dashed box. r Wherever  occurs at the end of a dashed box, 2 may be put after that dashed
+box.
+
+We have thus added two rules, 2 introduction and 2 elimination:
+
+...
+
+
+
+2
+
+2i
+
+2
+2e
+...
+ ...
+
+330
+
+5 Modal logics and agents
+
+In modal logic, natural deduction proofs contain both solid and dashed boxes, nested in any way. Note that there are no explicit rules for 3, which must be written ¬2¬ in proofs.
+
+The extra rules for KT45 The rules 2i and 2e are sufficient for capturing semantic entailment of the modal logic K. Stronger modal logics, e.g. KT45, require extra rules if one wants to capture their semantic entailment via proofs. In the case of KT45, this extra strength is expressed by rule schemes for the axioms T, 4 and 5:
+
+2 T
+
+2 22 4
+
+¬2 2¬2 5
+
+An equivalent alternative to the rules 4 and 5 would be to stipulate relaxations of the rules about moving formulas in and out of dashed boxes. Since rule 4 allows us to double-up boxes, we could instead think of it as allowing us to move formulas beginning with 2 into dashed boxes. Similarly, axiom 5 has the effect of allowing us to move formulas beginning with ¬2 into dashed boxes. Since 5 is a scheme and since  and ¬¬ are equivalent in basic modal logic, we could write ¬ instead of  throughout without changing the expressive power and meaning of that axiom.
+
+Definition 5.20 Let L be a set of formula schemes. We say that  L  is valid if  has a proof in the natural deduction system for basic modal logic extended with the axioms from L and premises from .
+
+Examples 5.21 We show that the following sequents are valid:
+
+1. |-K 2p  2q  2(p  q).
+
+1
+
+2p  2q
+
+assumption
+
+2
+
+2p
+
+3
+
+2q
+
+e1 1 e2 1
+
+4
+
+p
+
+2e 2
+
+5
+
+q
+
+2e 3
+
+6
+
+pq
+
+i 4, 5
+
+7
+
+2(p  q)
+
+2i 4-6
+
+8
+
+2p  2q  2(p  q) i 1-7
+
+

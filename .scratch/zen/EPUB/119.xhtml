@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#" lang="cn" xml:lang="cn">
+  <head>
+    <title>27.2　解释器模式的定义</title>
+  </head>
+  <body><h3 class="p3" id="sigil_toc_id_150">27.2 解释器模式的定义</h3> 
+<p class="ziti">解释器模式（Interpreter Pattern）是一种按照规定语法进行解析的方案，在现在项目中使用较少，其定义如下：Given a language, define a representation for its grammar along with an interpreter that uses the representation to interpret sentences in the language.（给定一门语言，定义它的文法的一种表示，并定义一个解释器，该解释器使用该表示来解释语言中的句子。）</p> 
+<p class="ziti">解释器模式的通用类图如图27-4所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0114.jpg"/></a></p> 
+<p class="middle-img">图27-4 解释器模式通用类图</p> 
+<p class="ziti">● AbstractExpression——抽象解释器</p> 
+<p class="ziti">具体的解释任务由各个实现类完成，具体的解释器分别由TerminalExpression和Non-terminalExpression完成。</p> 
+<p class="ziti">● TerminalExpression——终结符表达式</p> 
+<p class="ziti">实现与文法中的元素相关联的解释操作，通常一个解释器模式中只有一个终结符表达式，但有多个实例，对应不同的终结符。具体到我们例子就是VarExpression类，表达式中的每个终结符都在栈中产生了一个VarExpression对象。</p> 
+<p class="ziti">● NonterminalExpression——非终结符表达式</p> 
+<p class="ziti">文法中的每条规则对应于一个非终结表达式，具体到我们的例子就是加减法规则分别对应到AddExpression和SubExpression两个类。非终结符表达式根据逻辑的复杂程度而增加，原则上每个文法规则都对应一个非终结符表达式。</p> 
+<p class="ziti">● Context——环境角色</p> 
+<p class="ziti">具体到我们的例子中是采用HashMap代替。</p> 
+<p class="ziti">解释器是一个比较少用的模式，以下为其通用源码，可以作为参考。抽象表达式通常只有一个方法，如代码清单27-8所示。</p> 
+<p class="ziti">代码清单27-8 抽象表达式</p> 
+<pre>public abstract class Expression {&#13;
+     //每个表达式必须有一个解析任务&#13;
+     public abstract Object interpreter(Context  ctx);&#13;
+}</pre> 
+<p class="ziti">抽象表达式是生成语法集合（也叫做语法树）的关键，每个语法集合完成指定语法解析任务，它是通过递归调用的方式，最终由最小的语法单元进行解析完成。终结符表达式如代码清单27-9所示。</p> 
+<p class="ziti">代码清单27-9 终结符表达式</p> 
+<pre>public class TerminalExpression extends Expression {&#13;
+     //通常终结符表达式只有一个，但是有多个对象&#13;
+     public Object interpreter(Context ctx) {&#13;
+             return null;&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">通常，终结符表达式比较简单，主要是处理场景元素和数据的转换。</p> 
+<p class="ziti">非终结符表达式如代码清单27-10所示。</p> 
+<p class="ziti">代码清单27-10 非终结符表达式</p> 
+<pre>public class NonterminalExpression extends Expression {&#13;
+     //每个非终结符表达式都会对其他表达式产生依赖&#13;
+     public NonterminalExpression(Expression... expression){&#13;
+     }&#13;
+     &#13;
+     public Object interpreter(Context ctx) {&#13;
+             //进行文法处理&#13;
+             return null;&#13;
+     }&#13;
+}&#13;
+}</pre> 
+<p class="ziti">每个非终结符表达式都代表了一个文法规则，并且每个文法规则都只关心自己周边的文法规则的结果（注意是结果），因此这就产生了每个非终结符表达式调用自己周边的非终结符表达式，然后最终、最小的文法规则就是终结符表达式，终结符表达式的概念就是如此，不能够再参与比自己更小的文法运算了。</p> 
+<p class="ziti">客户类如代码清单27-11所示。</p> 
+<p class="ziti">代码清单27-11 客户类</p> 
+<pre>public class Client {&#13;
+     public static void main(String[] args) {&#13;
+          Context ctx = new Context();&#13;
+          //通常定一个语法容器，容纳一个具体的表达式，通常为ListArray、LinkedList、Stack等类型&#13;
+          Stack&amp;Expression&gt; stack = null; &#13;
+          for(;;){&#13;
+               //进行语法判断，并产生递归调用&#13;
+          }          &#13;
+          //产生一个完整的语法树，由各个具体的语法分析进行解析&#13;
+          Expression exp = stack.pop();&#13;
+          //具体元素进入场景&#13;
+          exp.interpreter(ctx);&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">通常Client是一个封装类，封装的结果就是传递进来一个规范语法文件，解析器分析后产生结果并返回，避免了调用者与语法解析器的耦合关系。</p></body>
+</html>

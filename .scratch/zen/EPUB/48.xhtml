@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#" lang="cn" xml:lang="cn">
+  <head>
+    <title>第12章　代理模式</title>
+  </head>
+  <body><h2 class="p2" id="sigil_toc_id_62">第12章　代理模式</h2> 
+<h3 class="p3" id="sigil_toc_id_63">12.1 我是游戏至尊</h3> 
+<p class="ziti">2007年，感觉很无聊，于是就玩了一段时间的网络游戏，游戏名就不说了，反正就是打怪、升级、砍人、被人砍，然后继续打怪、升级、打怪、升级……我花了两个月的时间升到80级，已经很有成就感了，但是还会被人杀死，高手到处都是，GM（Game Master，游戏管理员）也不管，对于咱这种非RMB玩家基本上都是懒得搭理。在这段时间我是体会到网络游戏的乐与苦，参与家族（工会）攻城，胜利后那叫一个乐呀，感觉自己真是一个“狂暴战士”，无往不胜！那苦是什么呢？就是升级，为了升一级，就要到处杀怪，做任务，那个游戏还很变态，外挂管得很严，基本上出个外挂，没两天就开始封账号，不敢用，升级基本上都要靠自己手打，累呀！我曾经的记录是连着打了23个小时，睡觉在梦中还和大BOSS在PK。有这样一段经历还是很有意思的，作为架构师是不是可以把这段经历通过架构的方式记录下来呢？当然可以了，我们把这段打游戏的过程系统化，非常简单的一个过程，如图12-1所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0018.jpg"/></a></p> 
+<p class="middle-img">图12-1 游戏过程</p> 
+<p class="ziti">太简单了，定义一个接口IGamePlayer，是所有喜爱网络游戏的玩家，然后定义一个具体的实现类GamePlayer，实现每个游戏爱好者为了玩游戏要执行的功能。代码也非常简单，我们先来看IGamePlayer，如代码清单12-1所示。</p> 
+<p class="ziti">代码清单12-1 游戏者接口</p> 
+<pre>public interface IGamePlayer {&#13;
+     //登录游戏&#13;
+     public void login(String user,String password);&#13;
+     //杀怪，网络游戏的主要特色&#13;
+     public void killBoss();&#13;
+     //升级&#13;
+     public void upgrade();&#13;
+}</pre> 
+<p class="ziti">非常简单，定义了三个方法，分别是我们在网络游戏中最常用的功能：登录游戏、杀怪和升级，其实现类如代码清单12-2所示。</p> 
+<p class="ziti">代码清单12-2 游戏者</p> 
+<pre>public class GamePlayer implements IGamePlayer {&#13;
+     private String name = "";&#13;
+     //通过构造函数传递名称&#13;
+     public GamePlayer(String _name){&#13;
+             this.name = _name;&#13;
+     }&#13;
+     //打怪，最期望的就是杀老怪&#13;
+     public void killBoss() {&#13;
+             System.out.println(this.name + "在打怪！");&#13;
+     }&#13;
+     //进游戏之前你肯定要登录吧，这是一个必要条件&#13;
+     public void login(String user, String password) {&#13;
+             System.out.println("登录名为"+user+"的用户"+this.name+"登录成功！");&#13;
+     }&#13;
+     //升级，升级有很多方法，花钱买是一种，做任务也是一种&#13;
+     public void upgrade() {&#13;
+             System.out.println(this.name + " 又升了一级！");&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">在实现类中通过构造函数传递进来玩家姓名，方便进行后期的调试工作。我们通过一个场景类来模拟这样的游戏过程，如代码清单12-3所示。</p> 
+<p class="ziti">代码清单12-3 场景类</p> 
+<pre>public class Client {&#13;
+     public static void main(String[] args) {&#13;
+             //定义一个痴迷的玩家&#13;
+             IGamePlayer player = new GamePlayer("张三");&#13;
+             //开始打游戏，记下时间戳&#13;
+             System.out.println("开始时间是：2009-8-25 10:45");&#13;
+             player.login("zhangSan", "password");&#13;
+             //开始杀怪&#13;
+             player.killBoss();&#13;
+             //升级&#13;
+             player.upgrade();&#13;
+             //记录结束游戏时间&#13;
+             System.out.println("结束时间是：2009-8-26 03:40");&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">程序记录了游戏的开始时间和结束时间，同时也记录了在游戏过程中都需要做什么事情，运行结果如下：</p> 
+<p class="ziti5">开始时间是：2009-8-25 10:45</p> 
+<p class="ziti5">登录名为zhangSan 的用户 张三登录成功！</p> 
+<p class="ziti5">张三在打怪！</p> 
+<p class="ziti5">张三 又升了一级！</p> 
+<p class="ziti5">结束时间是：2009-8-26 03:40</p> 
+<p class="ziti">运行结果也是我们想要的，记录我这段时间的网游生涯。心理学家告诉我们，人类对于苦难的记忆比对喜悦的记忆要深刻，但是人类对于喜悦是“趋利”性的，每个人都想Happy，都不想让苦难靠近，要想获得幸福，苦难也是在所难免的，我们的网游生涯也是如此。游戏打时间长了，腰酸背痛、眼睛干涩、手臂酸麻，等等，也就是网络成瘾综合症都出来了。其结果就类似吃了那个“一日丧命散”，“筋脉逆流，胡思乱想，而致走火入魔”。那怎么办呢？我们想玩游戏，但又不想碰触到游戏中的烦恼，如何解决呢？有办法，现在游戏代练的公司非常多，我把自己的账号交给代练人员，由他们去帮我升级，去打怪，非常好的想法，我们来修改一下类图，如图12-2所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0019.jpg"/></a></p> 
+<p class="middle-img">图12-2 游戏代练帮忙打怪</p> 
+<p class="ziti">在类图中增加了一个GamePlayerProxy类来代表游戏代练者，它也不能有作弊的方法呀，游戏代练者也是手动打怪呀，因此同样继承IGamePlayer接口，其实现如代码清单12-4所示。</p> 
+<p class="ziti">代码清单12-4 代练者</p> 
+<pre>public class GamePlayerProxy implements IGamePlayer {&#13;
+     private IGamePlayer gamePlayer = null;     &#13;
+     //通过构造函数传递要对谁进行代练&#13;
+     public GamePlayerProxy(IGamePlayer _gamePlayer){&#13;
+             this.gamePlayer = _gamePlayer;&#13;
+     }&#13;
+     //代练杀怪&#13;
+     public void killBoss() {&#13;
+             this.gamePlayer.killBoss();&#13;
+     }&#13;
+     //代练登录&#13;
+     public void login(String user, String password) {&#13;
+             this.gamePlayer.login(user, password);&#13;
+     }&#13;
+     //代练升级&#13;
+     public void upgrade() {&#13;
+             this.gamePlayer.upgrade();&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">很简单，首先通过构造函数说明要代谁打怪升级，然后通过手动开始代用户打怪、升级。场景类Client代码也稍作改动，如代码清单12-5所示。</p> 
+<p class="ziti">代码清单12-5 改进后的场景类</p> 
+<pre>public class Client {&#13;
+     public static void main(String[] args) {&#13;
+             //定义一个痴迷的玩家&#13;
+             IGamePlayer player = new GamePlayer("张三");&#13;
+             //然后再定义一个代练者&#13;
+             IGamePlayer proxy = new GamePlayerProxy(player);&#13;
+             //开始打游戏，记下时间戳&#13;
+             System.out.println("开始时间是：2009-8-25 10:45");&#13;
+             proxy.login("zhangSan", "password");&#13;
+             //开始杀怪&#13;
+             proxy.killBoss();&#13;
+             //升级&#13;
+             proxy.upgrade();&#13;
+             //记录结束游戏时间&#13;
+             System.out.println("结束时间是：2009-8-26 03:40");&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">运行结果也完全相同，还是张三这个用户在打怪，运行结果如下：</p> 
+<p class="ziti5">开始时间是：2009-8-25 10:45</p> 
+<p class="ziti5">登录名为zhangSan 的用户 张三登录成功！</p> 
+<p class="ziti5">张三在打怪！</p> 
+<p class="ziti5">张三 又升了一级！</p> 
+<p class="ziti5">结束时间是：2009-8-26 03:40</p> 
+<p class="ziti">是的，没有任何改变，但是你有没有发觉，你的游戏已经在升级，有人在帮你干活了！终于升级到120级，基本上在本服务区，除了GM外，这个你可惹不起！这就是代理模式。</p></body>
+</html>

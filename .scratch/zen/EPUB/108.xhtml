@@ -1,0 +1,360 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#" lang="cn" xml:lang="cn">
+  <head>
+    <title>24.4　备忘录模式的扩展</title>
+  </head>
+  <body><h3 class="p3" id="sigil_toc_id_135">24.4 备忘录模式的扩展</h3> 
+<h4 class="p4 sigil_not_in_toc">24.4.1 clone方式的备忘录</h4> 
+<p class="ziti">大家还记得在第13章中讲的原型模式吗？我们可以通过复制的方式产生一个对象的内部状态，这是一个很好的办法，发起人角色只要实现Cloneable就成，比较简单，我们来看类图，如图24-5所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0094.jpg"/></a></p> 
+<p class="middle-img">图24-5 Clone方式的备忘录</p> 
+<p class="ziti">从类图上看，发起人角色融合了发起人角色和备忘录角色，具有双重功效，如代码清单24-12所示。</p> 
+<p class="ziti">代码清单24-12 融合备忘录的发起人角色</p> 
+<pre>public class Originator implements Cloneable{&#13;
+     //内部状态&#13;
+     private String state = "";&#13;
+     &#13;
+     public String getState() {&#13;
+             return state;&#13;
+     }&#13;
+     public void setState(String state) {&#13;
+             this.state = state;&#13;
+     }&#13;
+     //创建一个备忘录&#13;
+     public Originator createMemento(){&#13;
+             return this.clone();&#13;
+     }&#13;
+     //恢复一个备忘录&#13;
+     public void restoreMemento(Originator _originator){&#13;
+             this.setState(_originator.getState());&#13;
+     }&#13;
+     //克隆当前对象&#13;
+     @Override&#13;
+     protected Originator clone(){&#13;
+             try {&#13;
+                     return (Originator)super.clone();&#13;
+             } catch (CloneNotSupportedException e) {&#13;
+                     e.printStackTrace();&#13;
+             }&#13;
+             return null;&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">增加了clone方法，产生了一个备份对象，需要使用的时候再还原，我们再来看管理员角色，如代码清单24-13所示。</p> 
+<p class="ziti">代码清单24-13 备忘录管理员角色</p> 
+<pre>public class Caretaker {&#13;
+     //发起人对象&#13;
+     private Originator originator;&#13;
+     public Originator getOriginator() {&#13;
+             return originator;&#13;
+     }&#13;
+     public void setOriginator(Originator originator) {&#13;
+             this.originator = originator;&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">没什么太大变化，只是备忘录角色转换成了发起人角色，还是一个简单的JavaBean。我们来想想这种模式是不是还可以简化？要管理员角色干什么？就是为了管理备忘录角色，现在连备忘录角色都被合并了，还留着它干吗？我们想办法把它也精简掉，如代码清单24-14所示。</p> 
+<p class="ziti">代码清单24-14 发起人自主备份和恢复</p> 
+<pre>public class Originator implements Cloneable{&#13;
+     private Originator backup;&#13;
+     //内部状态&#13;
+     private String state = "";&#13;
+     public String getState() {&#13;
+             return state;&#13;
+     }&#13;
+     public void setState(String state) {&#13;
+             this.state = state;&#13;
+     }&#13;
+     //创建一个备忘录&#13;
+     public void createMemento(){&#13;
+             this.backup = this.clone();&#13;
+     }&#13;
+     //恢复一个备忘录&#13;
+     public void restoreMemento(){&#13;
+             //在进行恢复前应该进行断言，防止空指针&#13;
+             this.setState(this.backup.getState());&#13;
+     }&#13;
+     //克隆当前对象&#13;
+     @Override&#13;
+     protected Originator clone(){&#13;
+             try {&#13;
+                     return (Originator)super.clone();&#13;
+             } catch (CloneNotSupportedException e) {&#13;
+                     e.printStackTrace();&#13;
+             }&#13;
+             return null;&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">可能你要发问了，这和备忘录模式的定义不相符，它定义是“在该对象之外保存这个状态”，而你却把这个状态保存在了发起人内部。是的，设计模式定义的诞生比Java的出世略早，它没有想到Java程序是这么有活力，有远见，而且在面向对象的设计中，即使把一个类封装在另一个类中也是可以做到的，何况一个小小的对象复制，这是它的设计模式完全没有预见到的，我们把它弥补回来。</p> 
+<p class="ziti">再来看看Client是如何调用的，如代码清单24-15所示。</p> 
+<p class="ziti">代码清单24-15 场景类</p> 
+<pre>public class Client {&#13;
+     public static void main(String[] args) {&#13;
+             //定义发起人&#13;
+             Originator originator = new Originator();&#13;
+             //建立初始状态&#13;
+             originator.setState("初始状态...");&#13;
+             System.out.println("初始状态是："+originator.getState());&#13;
+             //建立备份&#13;
+             originator.createMemento();&#13;
+             //修改状态&#13;
+             originator.setState("修改后的状态...");&#13;
+             System.out.println("修改后状态是："+originator.getState());&#13;
+             //恢复原有状态&#13;
+             originator.restoreMemento();&#13;
+             System.out.println("恢复后状态是："+originator.getState());&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">运行结果如下所示：</p> 
+<p class="ziti5">初始状态是：初始状态...</p> 
+<p class="ziti5">修改后状态是：修改后的状态...</p> 
+<p class="ziti5">恢复后状态是：初始状态...</p> 
+<p class="ziti">运行结果是我们所希望的，程序精简了很多，而且高层模块的依赖也减少了，这正是我们期望的效果。现在我们来考虑一下原型模式深拷贝和浅拷贝的问题，在复杂的场景下它会让你的程序逻辑异常混乱，出现错误也很难跟踪。因此Clone方式的备忘录模式适用于较简单的场景。</p> 
+<hr/> 
+<p class="ziti6"><span class="yanse">注意</span>　使用Clone方式的备忘录模式，可以使用在比较简单的场景或者比较单一的场景中，尽量不要与其他的对象产生严重的耦合关系。</p> 
+<hr/> 
+<h4 class="p4 sigil_not_in_toc">24.4.2 多状态的备忘录模式</h4> 
+<p class="ziti">读者应该看到我们以上讲解都是单状态的情况，在实际的开发中一个对象不可能只有一个状态，一个JavaBean有多个属性非常常见，这都是它的状态，如果照搬我们以上讲解的备忘录模式，是不是就要写一堆的状态备份、还原语句？这不是一个好办法，这种类似的非智力劳动越多，犯错误的几率越大，那我们有什么办法来处理多个状态的备份问题呢？</p> 
+<p class="ziti">下面我们来讲解一个对象全状态备份方案，它有多种处理方式，比如使用Clone的方式就可以解决，使用数据技术也可以解决（DTO回写到临时表中）等，我们要讲的方案就对备忘录模式继续扩展一下，实现一个JavaBean对象的所有状态的备份和还原，如图24-6所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0095.jpg"/></a></p> 
+<p class="middle-img">图24-6 多状态的备忘录模式</p> 
+<p class="ziti">还是比较简单的类图，增加了一个BeanUtils类，其中backupProp是把发起人的所有属性值转换到HashMap中，方便备忘录角色存储；restoreProp方法则是把HashMap中的值返回到发起人角色中。可能各位要说了，为什么要使用HashMap，直接使用Originator对象的拷贝不是一个很好的方法吗？可以这样做，你就破坏了发起人的通用性，你在做恢复动作的时候需要对该对象进行多次赋值操作，也容易产生错误。我们先来看发起人角色，如代码清单24-16所示。</p> 
+<p class="ziti">代码清单24-16 发起人角色</p> 
+<pre>public class Originator {&#13;
+     //内部状态&#13;
+     private String state1 = "";&#13;
+     private String state2 = "";&#13;
+     private String state3 = ""; &#13;
+     public String getState1() {&#13;
+             return state1;&#13;
+     }&#13;
+     public void setState1(String state1) {&#13;
+             this.state1 = state1;&#13;
+     }&#13;
+     public String getState2() {&#13;
+             return state2;&#13;
+     }&#13;
+     public void setState2(String state2) {&#13;
+             this.state2 = state2;&#13;
+     }&#13;
+     public String getState3() {&#13;
+             return state3;&#13;
+     }&#13;
+     public void setState3(String state3) {&#13;
+             this.state3 = state3;&#13;
+     }&#13;
+     //创建一个备忘录&#13;
+     public Memento createMemento(){&#13;
+             return new Memento(BeanUtils.backupProp(this));&#13;
+     }&#13;
+     //恢复一个备忘录&#13;
+     public void restoreMemento(Memento _memento){&#13;
+             BeanUtils.restoreProp(this, _memento.getStateMap());&#13;
+     }&#13;
+     //增加一个toString方法&#13;
+     @Override&#13;
+     public String toString(){&#13;
+             return "state1=" +state1+"\nstat2="+state2+"\nstate3="+state3; &#13;
+     }&#13;
+}</pre> 
+<p class="ziti">覆写toString方法是为了方便打印，可以让展示的结果更清晰。我们再来看BeanUtils工具类，如代码清单24-17所示。</p> 
+<p class="ziti">代码清单24-17 BeanUtils工具类</p> 
+<pre>public class BeanUtils {&#13;
+     //把bean的所有属性及数值放入到Hashmap中&#13;
+     public static HashMap&lt;String,Object&gt; backupProp(Object bean){&#13;
+             HashMap&lt;String,Object&gt; result = new HashMap&lt;String,Object&gt;();&#13;
+             try {&#13;
+                     //获得Bean描述&#13;
+                     BeanInfo beanInfo=Introspector.getBeanInfo(bean.getClass());&#13;
+                     //获得属性描述&#13;
+                     PropertyDescriptor[] descriptors=beanInfo.getPropertyDescriptors();&#13;
+                     //遍历所有属性&#13;
+                     for(PropertyDescriptor des:descriptors){&#13;
+                             //属性名称&#13;
+                             String fieldName = des.getName();&#13;
+                             //读取属性的方法&#13;
+                             Method getter = des.getReadMethod();&#13;
+                             //读取属性值&#13;
+                             Object fieldValue=getter.invoke(bean,new Object[]{});&#13;
+                    if(!fieldName.equalsIgnoreCase("class")){&#13;
+                             result.put(fieldName, fieldValue);&#13;
+                    }&#13;
+               }&#13;
+          } catch (Exception e) {&#13;
+               //异常处理&#13;
+          }&#13;
+          return result;&#13;
+     }&#13;
+     //把HashMap的值返回到bean中&#13;
+     public static void restoreProp(Object bean,HashMap&lt;String,Object&gt; propMap){&#13;
+          try {&#13;
+               //获得Bean描述&#13;
+               BeanInfo beanInfo = Introspector.getBeanInfo(bean.getClass());&#13;
+               //获得属性描述&#13;
+               PropertyDescriptor[] descriptors = beanInfo.getPropertyDescriptors();&#13;
+               //遍历所有属性&#13;
+               for(PropertyDescriptor des:descriptors){&#13;
+                    //属性名称&#13;
+                    String fieldName = des.getName();&#13;
+                    //如果有这个属性&#13;
+                    if(propMap.containsKey(fieldName)){&#13;
+                         //写属性的方法&#13;
+                         Method setter = des.getWriteMethod();&#13;
+                         setter.invoke(bean, new Object[]{propMap.get(fieldName)});&#13;
+                    }&#13;
+               }&#13;
+          } catch (Exception e) {&#13;
+               //异常处理&#13;
+               System.out.println("shit");&#13;
+               e.printStackTrace();&#13;
+          }&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">该类大家在项目中会经常用到，可以作为参考使用。类似的功能有很多工具已经提供，比如Spring、Apache工具集commons等，大家也可以直接使用。我们再来看备忘录角色，如代码清单24-18所示。</p> 
+<p class="ziti">代码清单24-18 备忘录角色</p> 
+<pre>public class Memento {&#13;
+     //接受HashMap作为状态&#13;
+     private HashMap&lt;String,Object&gt; stateMap;&#13;
+     //接受一个对象，建立一个备份&#13;
+     public Memento(HashMap&lt;String,Object&gt; map){&#13;
+             this.stateMap = map;&#13;
+     }&#13;
+     public HashMap&lt;String,Object&gt; getStateMap() {&#13;
+             return stateMap;&#13;
+     }&#13;
+     public void setStateMap(HashMap&lt;String,Object&gt; stateMap) {&#13;
+             this.stateMap = stateMap;&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">我们再编写一个场景类，看看我们的成果是否正确，如代码清单24-19所示。</p> 
+<p class="ziti">代码清单24-19 场景类</p> 
+<pre>public class Client {&#13;
+     public static void main(String[] args) {&#13;
+             //定义出发起人&#13;
+             Originator ori = new Originator();&#13;
+             //定义出备忘录管理员&#13;
+             Caretaker caretaker = new Caretaker();&#13;
+             //初始化&#13;
+             ori.setState1("中国");&#13;
+             ori.setState2("强盛");&#13;
+             ori.setState3("繁荣");&#13;
+             System.out.println("===初始化状态===\n"+ori);&#13;
+             //创建一个备忘录&#13;
+             caretaker.setMemento(ori.createMemento());&#13;
+             //修改状态值&#13;
+             ori.setState1("软件");&#13;
+             ori.setState2("架构");&#13;
+             ori.setState3("优秀");&#13;
+             System.out.println("\n===修改后状态===\n"+ori);&#13;
+             //恢复一个备忘录&#13;
+             ori.restoreMemento(caretaker.getMemento());&#13;
+             System.out.println("\n===恢复后状态===\n"+ori);&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">运行结果如下所示：</p> 
+<p class="ziti5">===初始化状态===</p> 
+<p class="ziti5">state1=中国</p> 
+<p class="ziti5">stat2=强盛</p> 
+<p class="ziti5">state3=繁荣</p> 
+<p class="ziti5">===修改后状态===</p> 
+<p class="ziti5">state1=软件</p> 
+<p class="ziti5">stat2=架构</p> 
+<p class="ziti5">state3=优秀</p> 
+<p class="ziti5">===恢复后状态===</p> 
+<p class="ziti5">state1=中国</p> 
+<p class="ziti5">stat2=强盛</p> 
+<p class="ziti5">state3=繁荣</p> 
+<p class="ziti">通过这种方式的改造，不管有多少状态都没有问题，直接把原有的对象所有属性都备份了一遍，想恢复当时的点数据？那太容易了！</p> 
+<hr/> 
+<p class="ziti6"><span class="yanse">注意</span>　如果要设计一个在运行期决定备份状态的框架，则建议采用AOP框架来实现，避免采用动态代理无谓地增加程序逻辑复杂性。</p> 
+<hr/> 
+<h4 class="p4 sigil_not_in_toc">24.4.3 多备份的备忘录</h4> 
+<p class="ziti">不知道你有没有做过系统级别的维护？比如Backup Administrator（备份管理员），每天负责查看系统的备份情况，所有的备份都是由自动化脚本产生的。有一天，突然有一个重要的系统说我数据库有点问题，请把上一个月末的数据拉出来恢复，那怎么办？对备份管理员来说，这很好办，直接根据时间戳找到这个备份，还原回去就成了，但是对于我们刚刚学习的备忘录模式却行不通，为什么呢？它对于一个确定的发起人，永远只有一份备份，在这种情况下，单一的备份就不能满足要求了，我们需要设计一套多备份的架构。</p> 
+<p class="ziti">我们先来说一个名词，检查点（Check Point），也就是你在备份的时候做的戳记，系统级的备份一般是时间戳，那我们程序的检查点该怎么设计呢？一般是一个有意义的字符串。</p> 
+<p class="ziti">我们只要把通用代码中的Caretaker管理员稍做修改就可以了，如代码清单24-20所示。</p> 
+<p class="ziti">代码清单24-20 备忘录管理员</p> 
+<pre>public class Caretaker {&#13;
+     //容纳备忘录的容器&#13;
+     private HashMap&lt;String,Memento&gt; memMap = new HashMap&lt;String,Memento&gt;();&#13;
+     public Memento getMemento(String idx) {&#13;
+             return memMap.get(idx);&#13;
+     }&#13;
+     public void setMemento(String idx,Memento memento) {&#13;
+             this.memMap.put(idx, memento);&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">把容纳备忘录的容器修改为Map类型就可以了，场景类也稍做改动，如代码清单24-21所示。</p> 
+<p class="ziti">代码清单24-21 场景类</p> 
+<pre>public class Client {&#13;
+     public static void main(String[] args) {&#13;
+             //定义出发起人&#13;
+             Originator originator = new Originator();&#13;
+             //定义出备忘录管理员&#13;
+             Caretaker caretaker = new Caretaker();&#13;
+             //创建两个备忘录&#13;
+             caretaker.setMemento("001",originator.createMemento());&#13;
+             caretaker.setMemento("002",originator.createMemento());&#13;
+             //恢复一个指定标记的备忘录&#13;
+             originator.restoreMemento(caretaker.getMemento("001"));&#13;
+     }&#13;
+}</pre> 
+<hr/> 
+<p class="ziti6"><span class="yanse">注意</span>　内存溢出问题，该备份一旦产生就装入内存，没有任何销毁的意向，这是非常危险的。因此，在系统设计时，要严格限定备忘录的创建，建议增加Map的上限，否则系统很容易产生内存溢出情况。</p> 
+<hr/> 
+<h4 class="p4 sigil_not_in_toc">24.4.4 封装得更好一点</h4> 
+<p class="ziti">在系统管理上，一个备份的数据是完全、绝对不能修改的，它保证数据的洁净，避免数据污染而使备份失去意义。在我们的设计领域中，也存在着同样的问题，备份是不能被篡改的，也就是说需要缩小备份出的备忘录的阅读权限，保证只能是发起人可读就成了，那怎么才能做到这一点呢？使用内置类，如图24-7所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0096.jpg"/></a></p> 
+<p class="middle-img">图24-7 使用内置类的备忘录模式</p> 
+<p class="ziti">这也是比较简单的，建立一个空接口IMemento——什么方法属性都没有的接口，然后在发起人Originator类中建立一个内置类（也叫做类中类）Memento实现IMemento接口，同时也实现自己的业务逻辑，如代码清单24-22所示。</p> 
+<p class="ziti">代码清单24-22 发起人角色</p> 
+<pre>public class Originator {&#13;
+     //内部状态&#13;
+     private String state = "";&#13;
+     public String getState() {&#13;
+             return state;&#13;
+     }&#13;
+     public void setState(String state) {&#13;
+             this.state = state;&#13;
+     }&#13;
+     //创建一个备忘录&#13;
+     public IMemento createMemento(){&#13;
+             return new Memento(this.state);&#13;
+     }&#13;
+     //恢复一个备忘录&#13;
+     public void restoreMemento(IMemento _memento){&#13;
+             this.setState(((Memento)_memento).getState());&#13;
+     }&#13;
+     //内置类&#13;
+     private class Memento implements IMemento{&#13;
+             //发起人的内部状态&#13;
+             private String state = "";&#13;
+             //构造函数传递参数&#13;
+             private Memento(String _state){&#13;
+                     this.state = _state;&#13;
+             }&#13;
+             private String getState() {&#13;
+                     return state;&#13;
+             }&#13;
+             private void setState(String state) {&#13;
+                     this.state = state;&#13;
+             }&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">内置类Memento全部是private的访问权限，也就是说除了发起人外，别人休想访问到，那如果要产生关联关系又应如何处理呢？通过接口！别忘记了我们还有一个空接口是公共的访问权限，如代码清单24-23所示。</p> 
+<p class="ziti">代码清单24-23 备忘录的空接口</p> 
+<pre>public interface IMemento {&#13;
+}</pre> 
+<p class="ziti">我们再来看管理者，如代码清单24-24所示。</p> 
+<p class="ziti">代码清单24-24 备忘录管理者</p> 
+<pre>public class Caretaker {&#13;
+     //备忘录对象&#13;
+     private IMemento memento;&#13;
+     public IMemento getMemento() {&#13;
+             return memento;&#13;
+     }&#13;
+     public void setMemento(IMemento memento) {&#13;
+             this.memento = memento;&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">全部通过接口访问，这当然没有问题，如果你想访问它的属性那是肯定不行的。但是安全是相对的，没有绝对的安全，可以使用refelect反射修改Memento的数据。</p> 
+<p class="ziti">在这里我们使用了一个新的设计方法：双接口设计，我们的一个类可以实现多个接口，在系统设计时，如果考虑对象的安全问题，则可以提供两个接口，一个是业务的正常接口，实现必要的业务逻辑，叫做宽接口；另外一个接口是一个空接口，什么方法都没有，其目的是提供给子系统外的模块访问，比如容器对象，这个叫做窄接口，由于窄接口中没有提供任何操纵数据的方法，因此相对来说比较安全。</p></body>
+</html>

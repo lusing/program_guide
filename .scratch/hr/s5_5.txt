@@ -1,0 +1,1142 @@
+5.5 Reasoning about knowledge in a multi-agent system
+
+331
+
+2. |-KT45 p  23p. 1 2
+
+p 2¬p
+
+assumption assumption
+
+3
+
+¬p
+
+T2
+
+4
+
+
+
+¬e 1, 3
+
+5
+
+¬2¬p
+
+¬i 2-4
+
+6
+
+2¬2¬p
+
+axiom 5 on line 5
+
+7
+
+p  2¬2¬p i 1-6
+
+3. |-KT45 232p  2p. 1 2 3 4 5 6 7 8 9 10
+
+2¬2¬2p
+
+assumption
+
+¬2¬2p
+
+2e 1
+
+¬2p
+
+assumption
+
+2¬2p
+
+axiom 5 on line 3
+
+
+
+¬e 4, 2
+
+¬¬2p
+
+¬i 3-5
+
+2p
+
+¬¬e 6
+
+p
+
+T7
+
+2p
+
+2i 2-8
+
+2¬2¬2p  2p i 1-9
+
+5.5 Reasoning about knowledge in a multi-agent system
+In a multi-agent system, different agents have different knowledge of the world. An agent may need to reason about its own knowledge about the world; it may also need to reason about what other agents know about the world. For example, in a bargaining situation, the seller of a car must consider what a buyer knows about the car's value. The buyer must also consider what the seller knows about what the buyer knows about that value and so on.
+Reasoning about knowledge refers to the idea that agents in a group take into account not only the facts of the world, but also the knowledge of other agents in the group. Applications of this idea include: games, economics,
+
+332
+
+5 Modal logics and agents
+
+cryptography and protocols. It is not very easy for humans to follow the thread of such nested sentences as
+Dean doesn't know whether Nixon knows that Dean knows that Nixon knows that McCord burgled O'Brien's office at Watergate.
+
+However, computer agents are better than humans in this respect.
+
+5.5.1 Some examples We start with some classic examples about reasoning in a multi-agent environment. Then, in the next section, we engineer a modal logic which allows for a formal representation of these examples via sequents and which solves them by proving them in a natural deduction system.
+The wise-men puzzle There are three wise men. It's common knowledge ­ known by everyone and known to be known by everyone, etc. ­ that there are three red hats and two white hats. The king puts a hat on each of the wise men in such a way that they are not able to see their own hat, and asks each one in turn whether they know the colour of the hat on their head. Suppose the first man says he does not know; then the second says he does not know either.
+It follows that the third man must be able to say that he knows the colour of his hat. Why is this? What colour has the third man's hat?
+To answer these questions, let us enumerate the seven possibilities which exist: they are
+
+RR R RRW RW R RWW
+
+WR R WRW WW R
+
+where, for example, R W W refers to the situation that the first, second and third men have red, white and white hats, respectively. The eighth possibility, W W W, is ruled out as there are only two white hats.
+Now let's think of it from the second and third men's point of view. When they hear the first man speak, they can rule out the possibility of the true situation being R W W, because if it were this situation, then the first man, seeing that the others were wearing white hats and knowing that there are only two white hats, would have concluded that his hat must be red. As he said that he did not know, the true situation cannot be R W W. Notice that the second and third men must be intelligent in order to perform
+
+5.5 Reasoning about knowledge in a multi-agent system
+
+333
+
+this reasoning; and they must know that the first man is intelligent and truthful as well. In the puzzle, we assume the truthfulness and intelligence and perceptiveness of the men are common knowledge ­ known by everyone and known to be known by everyone, etc.
+When the third man hears the second man speak, he can rule out the possibility of the true situation being W R W, for similar reasons: if it were that, the second man would have said that he knew his hat was red, but he did not say this. Moreover, the third man can also rule out the situation R R W when he hears the second man's answer, for this reason: if the second man had seen that the first was wearing red and the third white, he would have known that it must be R W W or R R W; but he would have known from the first man's answer that it couldn't be R W W, so he would have concluded it was R R W and that he was wearing a red hat; but he did not draw this conclusion, so, reasons the third man, it cannot be R R W.
+Having heard the first and second men speak, the third man has eliminated R W W, W R W and R R W; leaving only R R R, R W R, W R R and W W R. In all of these he is wearing a red hat, so he concludes that he must be wearing a red hat.
+Notice that the men learn a lot from hearing the other men speak. We emphasise again the importance of the assumption that they tell the truth about their state of knowledge and are perceptive and intelligent enough to come to correct conclusions. Indeed, it is not enough that the three men are truthful, perceptive and intelligent; they must be known to be so by the others and, in later examples, this fact must also be known etc. Therefore, we assume that all this is common knowledge.
+
+The muddy-children puzzle This is one of the many variations on the wise-men puzzle; a difference is that the questions are asked in parallel rather than sequentially. There is a large group of children playing in the garden ­ their perceptiveness, truthfulness and intelligence being common knowledge, it goes without saying. A certain number of children, say k  1, get mud on their foreheads. Each child can see the mud on others, but not on his own forehead. If k > 1, then each child can see another with mud on its forehead, so each one knows that at least one in the group is muddy. Consider these two scenarios:
+Scenario 1. The father repeatedly asks the question `Does any of you know whether you have mud on your own forehead?' The first time they all answer `no;' but, unlike in the wise-men example, they don't learn anything by hearing the others answer `no,' so they go on answering `no' to the father's repeated questions.
+
+334
+
+5 Modal logics and agents
+
+Scenario 2. The father first announces that at least one of them is muddy ­ which is something they know already; and then, as before, he repeatedly asks them `Does any of you know whether you have mud on your own forehead?' The first time they all answer `no.' Indeed, they go on answering `no' to the first k - 1 repetitions of that same question; but at the kth those with muddy foreheads are able to answer `yes.'
+
+At first sight, it seems rather puzzling that the two scenarios are different, given that the only difference in the events leading up to them is that in the second one the father announces something that they already know. It would be wrong, however, to conclude that the children learn nothing from this announcement. Although everyone knows the content of the announcement, the father's saying it makes it common knowledge among them, so now they all know that everyone else knows it, etc. This is the crucial difference between the two scenarios.
+To understand scenario 2, consider a few cases of k.
+
+k = 1, i.e. just one child has mud. That child is immediately able to answer `yes,' since she has heard the father and doesn't see any other child with mud. k = 2, say only the children Ramon and Candy have mud. Everyone answers `no' the first time. Now Ramon thinks: since Candy answered `no' the first time, she must see someone with mud. Well, the only person I can see with mud is Candy, so if she can see someone else it must be me. So Ramon answers `yes' the second time. Candy reasons symmetrically about Ramon and also answers `yes' the second time round. k = 3, say only the children Alice, Bob, and Charlie have mud. Everyone answers `no' the first two times. But now Alice thinks: if it was just Bob and Charlie with mud, they would have answered `yes' the second time; making the argument for k = 2 above. So there must be a third person with mud; since I can see only Bob and Charlie having mud, the third person must be me. So Alice answers `yes' the third time. For symmetrical reasons, so do Bob and Charlie. And similarly for other cases of k.
+
+To see that it was not common knowledge before the father's announcement that one of the children was muddy, consider again k = 2, with Ramon and Candy. Of course, Ramon and Candy both know someone is muddy ­ they see each other; but, for example, Ramon doesn't know that Candy knows that someone is dirty. For all Ramon knows, Candy might be the only dirty one and therefore not be able to see a dirty child.
+
+5.5 Reasoning about knowledge in a multi-agent system
+
+335
+
+5.5.2 The modal logic KT45n
+We now generalise the modal logic KT45 given in Section 5.3.4. Instead of having just one 2, it will have many, one for each agent i from a fixed set A = {1, 2, . . . , n} of agents. We write those modal connectives as Ki (for each agent i  A); the K is to emphasise the application to knowledge. We assume a collection p, q, r, . . . of atomic formulas. The formula Ki p means that agent i knows p; so, for example, K1 p  K1¬K2K1 p means that agent 1 knows p, but knows that agent 2 doesn't know he knows it.
+We also have the modal connectives EG, where G is any subset of A. The formula EG p means everyone in the group G knows p. If G = {1, 2, 3, . . . , n}, then EG p is equivalent to K1 p  K2 p  · · ·  Kn p. We assume similar binding priorities to those put forward on page 307.
+
+Convention 5.22 The binding priorities of KT45n are the ones of basic modal logic, if we think of each modality Ki, EG and CG as `being' 2.
+One might think that  could not be more widely known than everyone knowing it, but this is not the case. It could be, for example, that everyone knows , but they might not know that they all know it. If  is supposed to be a secret, it might be that you and your friend both know it, but your friend does not know that you know it and you don't know that your friend knows it. Thus, EGEG  is a state of knowledge even greater than EG  and EGEGEG  is greater still. We say that  is common knowledge among G, written CG , if everyone knows  and everyone knows that everyone knows it; and everyone knows that; and knows that etc. So we may think of CG  as an infinite conjunction
+EG   EGEG   EGEGEG   . . . .
+However, since our logics only have finite conjunctions, we cannot reduce CG to something which is already in the logic. We have to express the infinite aspect of CG via its semantics and retain it as an additional modal connective. Finally, DG  means the knowledge of  is distributed among the group G; although no-one in G may know it, they would be able to work it out if they put their heads together and combined the information distributed among them.
+
+Definition 5.23 A formula  in the multi-modal logic of KT45n is defined by the following grammar:
+ ::=  | | p | (¬) | (  ) | (  ) | (  ) | (  ) | (Ki ) | (EG ) | (CG ) | (DG )
+
+336
+
+5 Modal logics and agents
+
+x2
+p, q
+
+x1
+q
+x4
+q
+
+R1 R1, R3 R1, R2
+
+R1, R2
+
+x3
+p
+
+p
+x6 R3
+
+x5
+
+Figure 5.13. A KT45n model for n = 3.
+
+where p is any atomic formula, i  A and G  A. We simply write E, C and D without subscripts if we refer to EA, CA and DA.
+Compare this definition with Definition 5.1. Instead of 2, we have several modalities Ki and we also have EG, CG and DG for each G  A. Actually, all of these connectives will shortly be seen to be `box-like' rather than `diamond-like', in the sense that they distribute over  rather than over  ­ compare this to the discussion of equivalences on page 308. The `diamondlike' correspondents of these connectives are not explicitly in the language, but may of course be obtained using negations, i.e. ¬Ki¬, ¬CG¬ etc.
+
+Definition 5.24 A model M = (W, (Ri)iA, L) of the multi-modal logic KT45n with the set A of n agents is specified by three things:
+1. a set W of possible worlds; 2. for each i  A, an equivalence relation Ri on W (Ri  W × W ), called the
+accessibility relations; and 3. a labelling function L : W  P(Atoms).
+Compare this with Definition 5.3. The difference is that, instead of just one accessibility relation, we now have a family, one for each agent in A; and we assume the accessibility relations are equivalence relations.
+We exploit these properties of Ri in the graphical illustrations of Kripke models for KT45n. For example, a model of KT453 with set of worlds {x1, x2, x3, x4, x5, x6} is shown in Figure 5.13. The links between the worlds have to be labelled with the name of the accessibility relation, since we have several relations. For example, x1 and x2 are related by R1, whereas x4 and
+
+5.5 Reasoning about knowledge in a multi-agent system
+
+337
+
+x5 are related both by R1 and by R2. We simplify by no longer requiring arrows on the links. This is because we know that the relations are symmetric, so the links are bi-directional. Moreover, the relations are also reflexive, so there should be loops like the one on x4 in Figure 5.11 in all the worlds and for all of the relations. We can simply omit these from the diagram, since we don't need to distinguish between worlds which are self-related and those which are not.
+
+Definition 5.25 Take a model M = (W, (Ri)iA, L) of KT45n and a world x  W . We define when  is true in x via a satisfaction relation x  by induction on :
+x p iff p  L(x) x ¬ iff x  x    iff x  and x  x    iff x  or x  x    iff x  whenever we have x  x Ki  iff, for each y  W , Ri(x, y) implies y  x EG  iff, for each i  G, x Ki  x CG  iff, for each k  1, we have x EGk ,
+where EGk means EGEG . . . EG ­ k times x DG  iff, for each y  W , we have y ,
+whenever Ri(x, y) for all i  G.
+Again, we write M, x  if we want to emphasise the model M.
+
+Compare this with Definition 5.4. The cases for the boolean connectives are the same as for basic modal logic. Each Ki behaves like a 2, but refers to its own accessibility relation Ri. As already stated, there are no equivalents of 3, but we can recover them as ¬Ki¬. The connective EG is defined in terms of the Ki and CG is defined in terms of EG.
+Many of the results we had for basic modal logic with a single accessibility relation also hold in this more general setting of several accessibility relations. Summarising,
+r a frame F for KT45n (W, (Ri)iA) for the modal logic KT45n is a set W of worlds and, for each i  A, an equivalence relation Ri on W .
+r a frame F = (W, (Ri)iA) for KT45n is said to satisfy  if, for each labelling function L : W  P(Atoms) and each w  W , we have M, w  holds, where M = (W, (Ri)iA, L). In that case, we say that F  holds.
+The following theorem is useful for answering questions about formulas involving E and C. Let M = (W, (Ri)iA, L) be a model for KT45n
+
+338
+
+5 Modal logics and agents
+
+and x, y  W . We say that y is G-reachable in k steps from x if there are w1, w2, . . . , wk-1  W and i1, i2, . . . , ik in G such that
+x Ri1 w1 Ri2 w2 . . . Rik-1 wk-1 Rik y
+meaning Ri1(x, w1), Ri2(w1, w2), . . . , Rik (wk, y). We also say that y is Greachable from x if there is some k such that it is G-reachable in k steps.
+
+Theorem 5.26
+1. x EGk  iff, for all y that are G-reachable from x in k steps, we have y . 2. x CG  iff, for all y that are G-reachable from x, we have y .
+PROOF:
+1. First, suppose y  for all y G-reachable from x in k steps. We will prove that x EGk  holds. It is sufficient to show that x Ki1 Ki2 . . . Kik  for any i1, i2, . . . , ik  G. Take any i1, i2, . . . , ik  G and any w1, w2,. . . , wk-1 and y such that there is a path of the form x Ri1 w1 Ri2 w2 . . . Rik-1 wk-1 Rik y. Since y is G-reachable from x in k steps, we have y  by our assumption, so x Ki1 Ki2 . . . Kik  as required. Conversely, suppose x EGk  holds and y is G-reachable from x in k steps. We must show that y  holds. Take i1, i2, . . . , ik by G-reachability; since x EGk  implies x Ki1 Ki2 . . . Kik , we have y .
+2. This argument is similar.
+
+Some valid formulas in KT45n The formula K holds for the connectives Ki, EG, CG and DG, i.e. we have the corresponding formula schemes
+
+Ki   Ki (  )  Ki  EG   EG (  )  EG  CG   CG (  )  CG  DG   DG (  )  DG .
+
+This means that these different `levels' of knowledge are closed under log-
+
+ical consequence. For example, if certain facts are common knowledge and
+
+some other fact follows logically from them, then that fact is also common
+
+knowledge.
+
+Observe that E, C and D are `box-like' connectives, in the sense that
+
+they quantify universally over certain accessibility relations. That is to say,
+
+we may define the relations REG, RDG and RCG in terms of the relations Ri, as follows:
+
+REG(x, y) iff Ri(x, y)
+RDG(x, y) iff Ri(x, y) RCG (x, y) iff REk G(x, y)
+
+for some i  G for all i  G for each k  1.
+
+5.5 Reasoning about knowledge in a multi-agent system
+
+339
+
+It follows from this that EG, DG and CG satisfy the K formula with respect to the accessibility relations REG, RDG and RCG, respectively.
+What about other valid formulas? Since we have stipulated that the rela-
+tions Ri are equivalence relations, it follows from the multi-modal analogues of Theorem 5.13 and Table 5.12 that the following formulas are valid in KT45n for each agent i:
+
+Ki   KiKi  ¬Ki   Ki¬Ki  Ki   
+
+positive introspection negative introspection truth.
+
+These formulas also hold for DG, since RDG is also an equivalence relation, but these don't automatically generalise for EG and CG. For example, EG   EGEG  is not valid; if it were valid, it would imply that common
+knowledge was nothing more than knowledge by everybody. The scheme
+¬EG   EG¬EG  is also not valid. The failure of these formulas to be valid can be traced to the fact that REG is not necessarily an equivalence relation, even though each Ri is an equivalence relation. However, REG is reflexive, so EG    is valid, provided that G = . If G = , then EG  holds vacuously, even if  is false.
+Since RCG is an equivalence relation, the formulas T, 4 and 5 above do hold for CG, although the third one still requires the condition that G = .
+
+5.5.3 Natural deduction for KT45n The proof system for KT45 is easily extended to KT45n; but for simplicity, we omit reference to the connective D.
+1. The dashed boxes now come in different `flavours' for different modal connectives; we'll indicate the modality in the top left corner of the dashed box.
+2. The axioms T, 4 and 5 can be used for any Ki, whereas axioms 4 and 5 can be used for CG, but not for EG ­ recall the discussion in Section 5.5.2.
+3. In the rule CE, we may deduce EGk  from CG  for any k; or we could go directly to Ki1 . . . Kik  for any agents i1, . . . , ikG by using the rule CK. Strictly speaking, these rules are a whole set of such rules, one for each choice of k and i1, . . . , ik, but we refer to all of them as CE and CK respectively.
+4. Applying rule EKi, we may deduce Ki  from EG  for any i  G. From iG Ki  we may deduce EG  by virtue of rule KE. Note that the proof
+rule EKi is like a generalised and-elimination rule, whereas KE behaves like an and-introduction rule.
+The proof rules for KT45n are summarised in Figure 5.14. As before, we can think of the rules K4 and K5 and C4 and C5 as relaxations of the
+
+340
+
+5 Modal logics and agents
+
+Ki
+...
+
+EG
+...
+
+
+
+Ki
+
+Kii
+
+
+
+EG
+
+EGi
+
+CG
+...
+
+
+
+CG
+
+CGi
+
+Ki
+Kie
+Ki ...
+ ...
+
+Ki 
+
+for each EG 
+
+i
+
+
+
+G
+
+KE
+
+EG
+
+EGe
+
+EG
+
+...
+
+ ...
+
+EG  i  G Ki 
+
+EKi
+
+CG
+
+CGe
+
+CG ...
+
+ ...
+
+CG  EG . . . EG 
+
+CE
+
+CG  ij  G Ki1 . . . Kik  CK
+
+CG  CGCG 
+
+C4
+
+¬CG  CG¬CG 
+
+C5
+
+Ki  
+
+KT
+
+Ki  KiKi 
+
+K4
+
+¬Ki  Ki¬Ki 
+
+K5
+
+Figure 5.14. Natural deduction rules for KT45n.
+
+rules about moving formulas in and out of dashed proof boxes. Since rule K4 allows us to double-up Ki, we could instead think of it as allowing us to move formulas beginning with Ki into Ki-dashed boxes. Similarly, rule C5 has the effect of allowing us to move formulas beginning with ¬CG into CG-dashed boxes.
+An intuitive way of thinking about the dashed boxes is that formulas in them are known to the agent in question. When you open a Ki-dashed box, you are considering what agent i knows. It's quite intuitive that an ordinary formula  cannot be brought into such a dashed box, because the mere truth of  does not mean that agent i knows it. In particular, you can't use the rule ¬i if one of the premises of the rule is outside the dashed box you're
+working in.
+
+5.5 Reasoning about knowledge in a multi-agent system
+
+341
+
+1
+
+C(p  q)
+
+premise
+
+2
+
+K1(K2 p  K2 ¬p)
+
+premise
+
+3
+
+K1¬K2 q
+
+premise
+
+4
+
+K1K2 (p  q)
+
+5
+
+K1 K2 (p  q)
+
+CK 1 K1e 4
+
+6
+
+K2 p  K2 ¬p
+
+K1e 2
+
+7
+
+¬K2 q
+
+K1e 3
+
+8
+
+K2 p assumption
+
+K2 ¬p assumption
+
+9
+
+p
+
+axiom T 8 K2 ¬p
+
+K2e 8
+
+10
+
+p  q K2e 5
+
+11
+
+q
+
+prop 9, 10
+
+12
+
+K2 q K2i 9-11
+
+13
+
+
+
+¬e 12, 7
+
+14
+
+p
+
+e 13
+
+15
+
+p
+
+e 6, 8-14, 8-14
+
+16
+
+K1 p
+
+K1i 5-15
+
+Figure 5.15. A proof of C(p  q), K1(K2p  K2 ¬p), K1¬K2 q |- K1 p.
+
+Observe the power of C  in the premises: we can bring  into any dashed
+box by the application of the rules CK and Kie, no matter how deeply nested boxes are. The rule Ek , on the other hand, ensures that  can be brought
+into any dashed box with nesting  k. Compare this with Theorem 5.26.
+
+Example 5.27 We show that the sequent1 C(p  q), K1(K2p  K2 ¬p), K1¬K2 q |- K1 p is valid in the modal logic KT45n. That means: if it is common knowledge that p  q; and agent 1 knows that agent 2 knows whether p is the case and also knows that agent 2 doesn't know that q is true; then agent 1 knows that p is true. See Figure 5.15 for a proof. In line 12, we derived q from ¬p and p  q. Rather than show the full derivation in propo-
+sitional logic, which is not the focus here, we summarise by writing `prop'
+as the justification for an inference in propositional logic.
+
+1 In this section we simply write |- for |-KT45n , unless indicated otherwise.
+
+342
+
+5 Modal logics and agents
+
+5.5.4 Formalising the examples Now that we have set up the modal logic KT45n, we can turn our attention to the question of how to represent the wise-men and muddy-children puzzles in this logic. Unfortunately, in spite of its sophistication, our logic is too simple to capture all the nuances of those examples. Although it has connectives for representing different items of knowledge held by different agents, it does not have any temporal aspect, so it cannot directly capture the way in which the agents' knowledge changes as time proceeds. We will overcome this limitation by considering several `snapshots' during which time is fixed.
+
+The wise-men puzzle Recall that there are three wise men; and it's common knowledge that there are three red hats and two white hats. The king puts a hat on each of the wise men and asks them sequentially whether they know the colour of the hat on their head ­ they are unable to see their own hat. We suppose the first man says he does not know; then the second says he does not know. We want to prove that, whatever the distribution of hats, the third man now knows his hat is red.
+Let pi mean that man i has a red hat; so ¬pi means that man i has a white hat. Let  be the set of formulas
+{C(p1  p2  p3), C(p1  K2 p1), C(¬p1  K2 ¬p1), C(p1  K3 p1), C(¬p1  K3 ¬p1), C(p2  K1 p2), C(¬p2  K1 ¬p2), C(p2  K3 p2), C(¬p2  K3 ¬p2), C(p3  K1 p3), C(¬p3  K1 ¬p3), C(p3  K2 p3), C(¬p3  K2 ¬p3)}.
+This corresponds to the initial set-up: it is common knowledge that one of the hats must be red and that each man can see the colour of the other men's hats.
+The announcement that the first man doesn't know the colour of his hat amounts to the formula
+C(¬K1 p1  ¬K1 ¬p1)
+and similarly for the second man. A naive attempt at formalising the wise-men problem might go something
+like this: we simply prove
+, C(¬K1 p1  ¬K1 ¬p1), C(¬K2 p2  ¬K2 ¬p2) |- K3 p3
+
+5.5 Reasoning about knowledge in a multi-agent system
+
+343
+
+i.e. if  is true and the announcements are made, then the third man knows his hat is red. However, this fails to capture the fact that time passes between the announcements. The fact that C¬K1 p1 is true after the first announcement does not mean it is true after some subsequent announcement. For example, if someone announces p1, then Cp1 becomes true.
+The reason that this formalisation is incorrect is that, although knowledge accrues with time, lack of knowledge does not accrue with time. If I know , then (assuming that  doesn't change) I will know it at the next time-point; but if I do not know , it may be that I do know it at the next time point, since I may acquire more knowledge.
+To formalise the wise-men problem correctly, we need to break it into two entailments, one corresponding to each announcement. When the first man announces he does not know the colour of his hat, a certain positive formula  becomes common knowledge. Our informal reasoning explained that all men could then rule out the state RWW which, given p1  p2  p3, led them to the common knowledge of p2  p3. Thus,  is just p2  p3 and we need to prove the entailment
+
+Entailment 1. , C(¬K1 p1  ¬K1 ¬p1) |- C(p2  p3).
+
+A proof of this sequent can be found in Figure 5.16. Since p2  p3 is a positive formula, it persists with time and can be used
+in conjunction with the second announcement to prove the desired conclusion:
+
+Entailment 2. , C(p2  p3), C(¬K2 p2, ¬K2 ¬p2) |- K3 p3.
+
+This method requires some careful thought: given an announcement of negative information such as a man declaring that he does not know what the colour of his hat is, we need to work out what positive-knowledge formula can be derived from this and such new knowledge has to be sufficient to make even more progress towards solving the puzzle in the next round.
+Routine proof segments like those in lines 11­16 of Figure 5.16 may be abbreviated into one step as long as all participating proof rules are recorded. The resulting shorter representation can be seen in Figure 5.17.
+In Figure 5.16, notice that the premises in lines 2 and 5 are not used. The premises in lines 2 and 3 stand for any such formula for a given value of i and j, provided i = j; this explains the inference made in line 8. In Figure 5.18, again notice that the premises in lines 1 and 5 are not used. Observe also that axiom T in conjunction with CK allows us to infer  from any C, although we had to split this up into two separate steps in lines 16 and 17. Practical implementations would probably allow for hybrid rules which condense such reasoning into one step.
+
+344
+
+5 Modal logics and agents
+
+1
+
+C(p1  p2  p3) premise
+
+2
+
+C(pi  Kj pi) premise, (i = j)
+
+3
+
+C(¬pi  Kj ¬pi) premise, (i = j)
+
+4
+
+C¬K1 p1
+
+premise
+
+5
+
+C¬K1 ¬p1
+
+premise
+
+6
+
+C
+
+7
+
+¬p2  ¬p3
+
+assumption
+
+8
+
+¬p2  K1 ¬p2 Ce 3 (i, j) = (2, 1)
+
+9
+
+¬p3  K1 ¬p3 Ce 3 (i, j) = (3, 1)
+
+10
+
+K1 ¬p2  K1 ¬p3 prop 7, 8, 9
+
+11
+
+K1 ¬p2
+
+e1 10
+
+12
+
+K1 ¬p3
+
+e2 10
+
+13
+
+K1
+
+14
+
+¬p2
+
+K1e 11
+
+15
+
+¬p3
+
+K1e 12
+
+16
+
+¬p2  ¬p3
+
+i 14, 15
+
+17
+
+p1  p2  p3
+
+Ce 1
+
+18
+
+p1
+
+prop 16, 17
+
+19
+
+K1 p1
+
+K1i 13-18
+
+20
+
+¬K1 p1
+
+Ce 4
+
+21
+
+
+
+¬e 19, 20
+
+22
+
+¬(¬p2  ¬p3)
+
+¬i 7-21
+
+23
+
+p2  p3
+
+prop 22
+
+24
+
+C(p2  p3)
+
+Ci 6-23
+
+Figure 5.16. Proof of the sequent `Entailment 1' for the wise-men puzzle.
+
+The muddy-children puzzle Suppose there are n children. Let pi mean that the ith child has mud on its forehead. We consider Scenario 2, in which the father announces that one of the children is muddy. Similarly to the case for the wise men, it is common knowledge that each child can see the other children, so it knows whether the others have mud, or not. Thus, for example,
+
+5.5 Reasoning about knowledge in a multi-agent system
+
+345
+
+1
+
+C(p1  p2  p3) premise
+
+2
+
+C(pi  Kj pi) premise, (i = j)
+
+3
+
+C(¬pi  Kj ¬pi) premise, (i = j)
+
+4
+
+C¬K1 p1
+
+premise
+
+5
+
+C¬K1 ¬p1
+
+premise
+
+6
+
+C
+
+7
+
+¬p2  ¬p3
+
+assumption
+
+8
+
+¬p2  K1 ¬p2 Ce 3 (i, j) = (2, 1)
+
+9
+
+¬p3  K1 ¬p3 Ce 3 (i, j) = (3, 1)
+
+10
+
+K1 ¬p2  K1 ¬p3 prop 7, 8, 9
+
+11
+
+K1
+
+12
+
+¬p2  ¬p3
+
+e1, K1e, i
+
+13
+
+p1  p2  p3
+
+Ce 1
+
+14
+
+p1
+
+prop 12, 13
+
+15
+
+K1 p1
+
+K1i 11-14
+
+16
+
+¬K1 p1
+
+Ce 4
+
+17
+
+
+
+¬e 15, 16
+
+18
+
+¬(¬p2  ¬p3)
+
+¬i 7-17
+
+19
+
+p2  p3
+
+prop 18
+
+20
+
+C(p2  p3)
+
+Ci 6-19
+
+Figure 5.17. A more compact representation of the proof in Figure 5.16.
+
+we have that C(p1  K2 p1), which says that it is common knowledge that, if child 1 is muddy, then child 2 knows this and also C(¬p1  K2 ¬p1). Let  be the collection of formulas:
+C(p1  p2  · · ·  pn)
+C(pi  Kj pi)
+i=j
+C(¬pi  Kj ¬pi).
+i=j
+
+346
+
+5 Modal logics and agents
+
+1
+
+C(p1  p2  p3) premise
+
+2
+
+C(pi  Kj pi) premise, (i = j)
+
+3
+
+C(¬pi  Kj ¬pi) premise, (i = j)
+
+4
+
+C¬K2 p2
+
+premise
+
+5
+
+C¬K2 ¬p2
+
+premise
+
+6
+
+C(p2  p3)
+
+premise
+
+7
+
+K3
+
+8
+
+¬p3
+
+assumption
+
+9
+
+¬p3  K2 ¬p3 CK 3 (i, j) = (3, 2)
+
+10
+
+K2 ¬p3
+
+e 9, 8
+
+11
+
+K2
+
+12
+
+¬p3
+
+K2e 10
+
+13
+
+p2  p3
+
+Ce 6
+
+14
+
+p2
+
+prop 12, 13
+
+15
+
+K2 p2
+
+K2i 11-14
+
+16
+
+Ki ¬K2 p2
+
+CK 4, for each i
+
+17
+
+¬K2 p2
+
+KT 16
+
+18
+
+
+
+¬e 15, 17
+
+19
+
+p3
+
+PBC 8-18
+
+20
+
+K3 p3
+
+K3i 7-19
+
+Figure 5.18. Proof of the sequent `Entailment 2' for the wise-men puzzle.
+
+Note that i=j (i,j) is a shorthand for the finite conjunction of all formulas (i,j), where i is different from j. Let G be any set of children. We will
+require formulas of the form
+
+G =def pi  ¬pi.
+
+iG
+
+iG
+
+The formula G states that it is precisely the children in G that have muddy foreheads.
+
+5.5 Reasoning about knowledge in a multi-agent system
+
+347
+
+1
+
+¬p1  ¬p2  · · ·  pi  · · ·  ¬pn {i}
+
+2
+
+C(p1  · · ·  pn)
+
+in 
+
+3
+
+¬pj
+
+e 1, for each j = i
+
+4
+
+¬pj  Ki ¬pj
+
+in , for each j = i
+
+5
+
+Ki ¬pj
+
+e 4, 3, for each j = i
+
+6
+
+Ki (p1  · · ·  pn)
+
+CK 2
+
+7
+
+Ki
+
+8
+
+p1  · · ·  pn
+
+Ki e 6
+
+9
+
+¬pj
+
+Ki e 5, for each j = i
+
+10
+
+pi
+
+prop 9, 8
+
+11
+
+Ki pi
+
+Ki i
+
+Figure 5.19. Proof of the sequent `Entailment 1' for the muddy-children puzzle.
+
+Suppose now that k = 1, i.e. that one child has mud on its forehead. We would like to show that that child knows that it is the one. We prove the following entailment.
+Entailment 1. , {i} |- Ki pi. This says that, if the actual situation is one in which only one child called i has mud, then that child will know it. Our proof follows exactly the same lines as the intuition: i sees that no other children have mud, but knows that at least one has mud, so knows it must be itself who has a muddy forehead. The proof is given in Figure 5.19.
+Note that the comment `for each j = i' means that we supply this argument for any such j. Thus, we can form the conjunction of all these inferences which we left implicit in the inference on line 10.
+What if there is more than one child with mud? In this case, the children all announce in the first parallel round that they do not know whether they are muddy or not, corresponding to the formula
+A =def C(¬K1 p1  ¬K1 ¬p1)  · · ·  C(¬Kn pn  ¬Kn ¬pn).
+We saw in the wise-men example that it is dangerous to put the announcement A alongside the premises , because the truth of A, which has negative claims about the children's knowledge, cannot be guaranteed to persist with
+
+348
+
+5 Modal logics and agents
+
+time. So we seek some positive formula which represents what the children learn upon hearing the announcement. As in the wise-men example, this formula is implicit in the informal reasoning about the muddy children given in Section 5.5.1: if it is common knowledge that there are at least k muddy children, then, after an announcement of the form A, it will be common knowledge that there are at least k + 1 muddy children.
+Therefore, after the first announcement A, the set of premises is
+
+,
+
+C ¬{i} .
+
+1in
+
+This is  together with the common knowledge that the set of muddy children is not a singleton set.
+After the second announcement A, the set of premises becomes
+
+,
+
+C ¬{i} ,
+
+C ¬{i,j }
+
+1in
+
+i=j
+
+which we may write as
+
+,
+
+C ¬G .
+
+|G|2
+
+Please try carefully to understand the notation:
+
+G
+
+the set of muddy children is precisely the set G
+
+¬G
+
+the set of muddy children is some other set than G
+
+¬G
+|G|k
+
+the set of muddy children is of size greater than k.
+
+The entailment corresponding to the second round is:
+
+, C( ¬G), H |- Ki pi,
+
+|G|2
+
+iH
+
+where |H| = 3 .
+
+The entailment corresponding to the kth round is:
+
+Entailment 2. , C( |G|k ¬G), H |- iH Ki pi, where |H| = k + 1. Please try carefully to understand what this sequent is saying. `If all
+the things in  are true and if it is common knowledge that the set of muddy children is not of size less than or equal to k and if actually it is of size k + 1, then each of those k + 1 children can deduce that they are muddy.' Notice how this fits with our intuitive account given earlier in
+this text.
+
+5.5 Reasoning about knowledge in a multi-agent system
+
+349
+
+1
+
+H
+
+premise
+
+2
+
+C ¬G
+
+premise as |G|  k
+
+3
+
+pj
+
+e 1, for each j  G
+
+4
+
+¬pk
+
+e 1, for each k  H
+
+5
+
+pj  Ki pj
+
+in  for each j  G
+
+6
+
+Ki pj
+
+e 5, 4, for each j  G
+
+7
+
+¬pk  Ki ¬pk in  for each k  H
+
+8
+
+Ki ¬pk
+
+e 7, 4, for each k  H
+
+9
+
+Ki ¬G
+
+CK 2
+
+10
+
+Ki
+
+11
+
+pj
+
+Ki e 6 (j  G)
+
+12
+
+¬pk
+
+Ki e 8 (k  H)
+
+13
+
+¬pi
+
+assumption
+
+14
+
+G
+
+i 11, 12, 13
+
+15
+
+¬G
+
+Ki e 9
+
+16
+
+
+
+¬e 14, 15
+
+17
+
+¬¬pi
+
+¬i 13-16
+
+18
+
+pi
+
+¬¬e 17
+
+19 Ki pi
+
+Ki i 10-18
+
+Figure 5.20. The proof of , C(¬G), H |- Ki pi, used to prove `Entailment 2' for the muddy-children puzzle.
+
+To prove Entailment 2, take any i  H. It is sufficient to prove that
+, C( ¬G), H |- Ki pi
+|G|k
+is valid, as the repeated use of i over all values of i gives us a proof of Entailment 2. Let G be H - {i}; the proof that , C(¬G), H |- Ki pi is valid is given in Figure 5.20. Please study this proof in every detail and understand how it is just following the steps taken in the informal proof in Section 5.5.1.
+
+

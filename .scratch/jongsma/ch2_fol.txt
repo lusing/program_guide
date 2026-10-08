@@ -1,0 +1,1709 @@
+102
+
+2 First-Order Logic
+
+2.1.2 The Need For FOL: PL's Inadequacy
+
+Propositional Logic doesn't probe the logical structure of atomic sentences, so it cannot determine whether that contributes anything to the overall logical composition of a compound sentence. Consequently, inferences depending upon the logical form of the premises' most basic constituents will be missed by PL. To illustrate this, we can choose almost any mathematical argument.
+ Example 2.1.1
+Show that the following is invalid when rendered as an argument in PL: For all real numbers, x < y if and only if x+r = y for some positive number r; e < 3; therefore, e + r = 3 for some positive number r.
+Solution
+· Using PL sentence forms, we would write this as P  Q, R; therefore S.
+Statements Q and S differ, even though they are closely related.
+· This is not a valid PL argument though the given argument is valid. The
+conclusion logically follows from the premises because of their internal logical structure, as we will be able to demonstrate later. Logical connectives enter into the argument but PL is insufficient to establish its validity.
+The logical structure residing within atomic mathematical sentences comes from how equals and the quantifiers some and all are used. In order for our logical system to deal with such structure, we'll need to develop a theory of identity and a theory of logical quantifiers. We'll also have to take into account other internal structures--the more strictly linguistic components-- in order to fully symbolize the logical structure of a sentence.
+
+2.1.3 The Symbolic Vocabulary of First-Order Logic
+Compared with sentences we use every day, mathematical sentences are highly symbolic. These symbols make mathematics less accessible to some, so it's good to avoid mathematical notation when words serve as well. Nevertheless, mathematical symbolism simplifies expressions, is essential for concise exposition, and even aids reasoning. Imagine how difficult algebra would be using only words--as was done prior to the seventeenth century!
+FOL takes symbolic representation to the extreme. Transcribing a sentence into first-order notation transforms it into a string of symbols, erasing all traces of natural language. Even mathematics textbooks don't go this far, but taking this approach, for now, will help us better understand the internal logical structure of sentences, a prerequisite for making deductions with them.
+Just as in mathematics, First-Order Logic uses symbols to denote objects, operations, functions, and relations, but it also uses them for properties, such as numbers being rational, which mathematics usually states in words. FOL's alphabet also includes logical symbolism, such as connectives from PL and quantifier symbols. Punctuation is done with parentheses, just like in PL.
+We will use lowercase letters, either constants (a, b; m, n) or variables (x, y, z), to represent individual objects. Properties will be symbolized by
+
+2.1 Symbolizing Sentences
+
+103
+
+uppercase letters (A, B ; P , Q), as will relations (R, S). P a and Qx indicate that object a has property P and that x has property Q. Rab and Sxyz denote that a and b are in relation R and that x, y, z are in relation S.
+The standard symbol for the universal quantifier is , which is read for all. Think of it as an upside-down A, the first letter of All. xQx asserts that property Q holds for all objects x of a certain sort.
+The existential quantifier symbol  is a backward E (as in xists). xQx asserts the existence of an object x with property Q. It can be read as there is an x such that Qx or for some x Qx.
+A third quantifier symbol, ! , is read there exists a unique. The unique existence quantifier can be defined in terms of  and logical connectives or in terms of both  and  along with logical connectives (see Section 2.4). We could therefore eliminate it without any loss of expressive power, but we'll retain it to keep symbolic formulations of uniqueness statements simpler.
+
+2.1.4 Preparing to Read and Write FOL Sentences
+Let's now see how to read and write FOL sentences. Think of FOL as an artificial foreign language used for logically analyzing sentences. If you feel at home in algebra or catch on quickly to using a computer language, FOL syntax won't be difficult. You may write some confused-looking sentences at first, but with practice, you'll soon become fluent with first-order notation.
+To formulate propositions of a mathematical theory in a specialized firstorder language, we'll need an interpretation key to make the overall context and specific meaning of the symbols clear.
+Such a key first of all identifies the intended universe of discourse U , the non-empty set of objects being considered, along with their properties, operations, functions, and relations. Variables and quantifiers are then interpreted relative to U . Universal statements become assertions about all the objects in U ; existential statements claim the existence of an object in U .
+Second, an interpretation key assigns meaning to symbols for the various mathematical entities mentioned. It's not crucial to include symbols having a familiar meaning, but we must stipulate meanings for any nonstandard symbols. Logical connectives will always have a fixed interpretation.
+Given a universe of discourse and a key, we can combine the symbols to construct FOL sentences. Writing a sentence in a first-order format requires both an intuitive knowledge of how to compose well-formed sentences and a knack for analyzing sentences' internal logical structure. Constructing firstorder sentences that mean what we want them to say takes practice.
+It's easier to go the other way, translating FOL sentences into informal mathematical statements. Given a sentence and an interpretation key, we can first translate the sentence into a stilted literal formulation and then reformulate it in a more idiomatic natural-language equivalent. This process is similar to translating a sentence from a foreign language into one's native tongue.
+
+104
+
+2 First-Order Logic
+
+2.1.5 Reading Singly-Quantified Sentences
+
+We'll begin our study of First-Order Logic formulations by considering a few examples that involve a single quantifier.
+
+ Example 2.1.2
+
+Translate the sentence n(P n  n = 2  On) into mathematical English,
+
+using the following interpretation key:
+
+KEY : U = {1, 2, 3, . . .}
+
+P n : n is prime
+
+On : n is odd
+
+Solution
+· As an abstract first-order statement, we can read this as For all n, if P n
+and n is not equal to 2, then O n.
+· With the interpretation key, we can give this a more meaningful reading.
+The inner sentence is If n is prime and n is not equal to 2, then n is odd.
+This is being asserted in a universal way: For all positive integers n, if n is
+prime and is not equal to 2, then n is odd.
+· A more idiomatic translation of the sentence would be All prime numbers
+different from 2 are odd.
+
+ Example 2.1.3
+Translate ¬x(x = 0  x + x = x) into mathematical English, using the following interpretation key:
+KEY : U = R, the set of all real numbers
+Solution
+· All mathematical symbols here are to be taken in their usual sense. · This sentence is a negated existential sentence: It is not the case that there
+exists a real number x such that x = 0 and x + x = x.
+· To indicate that the inner sentence is governed by the existential quantifier,
+the words such that are inserted after the quantifier phrase. This wording
+is typical of existential sentences; such that is not used after a universal
+quantifier (see the last example).
+· We can push the negation further into the sentence to give it a more natural
+reading: There are no real numbers x such that x = 0 and x + x = x.
+· An even more compact idiomatic translation is No non-zero real numbers
+x satisfy x + x = x. Or, putting it completely in words, No non-zero real numbers remain unchanged when added to themselves.
+
+2.1.6 Writing Singly-Quantified Sentences
+In transcribing a sentence from mathematical English into the formal language of First-Order Logic, we'll use the following approach:
+1) Stipulate a universe of discourse for the objects under consideration. 2) Give an interpretation key for the objects, properties, operations, func-
+tions, and relations mentioned.
+
+2.1 Symbolizing Sentences
+
+105
+
+3) Determine the logical structure of the sentence and write it in a way that clearly indicates its logical structure.
+4) Translate the sentence into the symbolism of FOL.
+
+The next two examples illustrate this procedure.
+
+ Example 2.1.4
+Analyze the logical structure of the sentence If a function is differentiable,
+then it is continuous. Then symbolize it with FOL notation.
+
+Solution
+· This sentence is less complex than the last example, though it may seem
+more difficult since we're now translating into logical symbolism.
+· We need to tease out the underlying logical structure of this sentence. · We'll first specify a domain of discourse. Since this sentence usually occurs
+in an introductory calculus course, we'll assume that context. The objects
+under consideration, then, are real-valued functions of a real variable.
+· Two properties of functions are mentioned: being differentiable and being
+continuous. These could be spelled out by definitions involving limits, but
+that's not needed here. We'll simply choose one-place predicate letters to
+stand for these properties.
+
+KEY : U = the set of all real-valued functions of a real variable
+
+Df : f is differentiable
+
+Cf : f is continuous
+
+· Although the proposition seems to refer to a single function, its obvious
+
+intent is more general, namely, Every differentiable function is continuous.
+
+This makes the universal quantifier explicit, but it still hides the condi-
+
+tional nature of the inner sentence. A formulation that makes both aspects
+
+apparent is the wordier For every real-valued function f of a real variable,
+
+if f is differentiable, then f is continuous.
+· This now makes the logical structure clear.
+
+FORMULATION : f (Df  Cf )
+
+The key to transcribing sentences into FOL symbolism, as this example illustrates, is to recognize the underlying logical form of the sentence. Mathematical propositions formulated in ordinary English often leave some logical structure implicit. If you analyze and retranslate the sentence, verbally or mentally, into a form that better reveals its logical deep structure, you're more than half-way done. This is an art that improves with practice.
+ Example 2.1.5
+Transcribe the second premise and the conclusion of Example 1 into FOL notation: e < 3, and there is a positive real number r such that e + r = 3.
+Solution
+· Writing the second premise is trivial: it's just as given: e < 3. · A universe of discourse compatible with Example 1's conclusion is the set
+of positive real numbers, R+. This U , however, makes it impossible to formulate the argument's first premise, which refers to all real numbers.
+
+106
+
+2 First-Order Logic
+
+· So we'll choose R as our universe of discourse and restrict our attention
+to positive real numbers manually, as it were, with standard symbolism inside the sentence. Our interpretation key, therefore, consists of simply stipulating a universe of discourse.
+KEY : U = R, the set of real numbers
+· The conclusion claims the existence of a real number that is positive and
+whose sum with e is 3. Both of these must hold, so we conjoin them.
+· The two sentences are thus written as follows, using standard notation:
+FORMULATION : Premise: e < 3; Conclusion: r(r > 0  e + r = 3)
+
+2.1.7 Using Restricted Quantifiers
+Mathematicians rarely stipulate a universe of discourse. Sometimes U is understood from the context, but often the type of objects being considered is symbolized within the sentence itself, much like we did in the last example to specify a positive addend. As this leads to longer, more cumbersome sentences, we can use restricted quantifiers to simplify our formulations. For example, instead of r(r > 0  e + r = 3), we can write (r > 0)(e + r = 3), where r > 0 can be read as there is a positive real number r. Restrictedquantifier notation is especially useful when mathematical sentences involve multiple quantifiers (see Example 10 and Exercise 18).
+A restricted quantifier could have been used in Example 4, too. Its formulation would be (f  D) Cf , where Cf still means f is continuous, D stands for the set of differentiable real-valued functions, and f  D means for all functions in the set D.
+Let's generalize the last examples. A universal sentence that asserts P (x)1 for all objects x in a set S is of the form ( x  S)P (x), while an existential sentence that says some x in S satisfies P (x) is of the form ( x  S)P (x). Put into expanded form, the two inner sentences are quite different. The universal sentence becomes the quantified conditional x(x  S  P (x)), while the existential sentence becomes the quantified conjunction x(x  S  P (x)).
+This is typical. Universal sentences usually contain the connective  while existential sentences involve  . It is important to keep these two straight and not interchange the two main interior connectives in the expanded format.
+Using a restricted quantifier avoids the problem of choosing a connective, because none is present--it gets submerged in the restricted quantifier. There may be times, though, when you'll need to expand a restricted quantifier in order to work further with the given sentence. Knowing how to treat these two different cases will help you take advantage of the convenient notation of restricted quantification while being aware of the logical structure of the sentences they abbreviate.
+
+1 We will use P (x), with parentheses, to symbolize a statement, possibly complex. P (x) might indicate that x has a property P , but it need not--that can be symbolized as P x.
+
+2.1 Symbolizing Sentences
+
+107
+
+2.1.8 Multiply-Quantified Sentences
+So far our examples have contained only a single quantifier, but mathematical sentences typically have more than one. When all the quantifiers are the same, there is little problem translating them, but when both universal and existential quantifiers occur, the potential for confusion increases.
+ Example 2.1.6
+Translate xy(x · y = 0  x = 0  y = 0) into mathematical English. Let the universe of discourse be R, the set of real numbers.
+Solution Since there are two universal quantifiers, x and y are completely general. In words, this sentence says the product of two real numbers is zero if and only if at least one of them is zero.
+
+ Example 2.1.7
+Translate n(On  k(n = 2k + 1)) into mathematical English. KEY : U = {0, 1, 2, . . .} = N, the set of natural numbers On: n is odd
+Solution
+· This universally quantified biconditional could be taken as the definition
+of being odd. A literal translation is for all natural numbers n, n is odd if and only if there is some natural number k such that n is equal to 2k + 1.
+· Putting this into more idiomatic English: a natural number is odd if and
+only if it is one more than an even number.
+The two different quantifiers in the last example were fairly easy to parse correctly, but this is not always the case.
+ Example 2.1.8
+Translate xx¯(x + x¯ = 0 = x¯ + x) into mathematical English. KEY : U = R, the set of real numbers
+Solution
+· The key only identifies a universe of discourse. All symbols should thus be
+taken in their usual sense relative to real-number arithmetic. The double equation abbreviates the conjunction (x + x¯ = 0)  (0 = x¯ + x).
+· Read literally, this sentence says For every real number x there is a real
+number x¯ such that x + x¯ = 0 and 0 = x¯ + x.
+· The key to putting this into good mathematical English is properly placing
+the quantifiers. To abbreviate the inner sentence, using standard terminology, let's call x¯ an additive inverse of x, since their sum in either order yields the additive identity 0.
+· Do we now translate the sentence as Every real number has an additive
+inverse, or as There is an additive inverse for every real number?
+
+108
+
+2 First-Order Logic
+
+· These two options may seem to say the same thing, but there's an
+important difference. The first sentence says that any real number x has some associated x¯ as its additive inverse. Strictly interpreted, the second sentence says some real number x¯ is the additive inverse for every real number x. In the first case, x¯ may change, depending on x; but in the second case x¯ is the same for all x. The second sentence thus translates x¯x(x + x¯ = 0 = x¯ + x), where the quantifiers have been interchanged.
+· The correct formulation for the given sentence, therefore, is Every real
+number x has an additive inverse x¯.
+Our final examples illustrate the reverse process of translating from informal mathematical English into the formalism of First-Order Logic. Again, this is more complicated when multiple quantifiers are involved. To check your work, carefully translate your answer back into an informal statement.
+ Example 2.1.9
+Give a formal definition of the number-theoretic relation divides: d divides a, denoted by d | a, if and only if a is a multiple of d.
+
+Solution
+· This definition is intended to hold for all integers, not only for two numbers,
+so our FOL sentence will begin da, followed by the defining clause.
+· The definition says d | a if and only if a is a multiple of d. Rather than use
+a special symbol to denote the relation is a multiple of, this time we'll spell it out: a is a multiple of d if and only if a = m · d for some m.
+· Proceeding further, the phrase for some m indicates an existential quanti-
+fier. We know from arithmetic that this m is unique (when d = 0), but since uniqueness isn't being asserted, we'll use an ordinary existential quantifier. The position and scope of m are not difficult to determine: m governs the equation a = m · d.
+· Putting all these things together, we obtain the following:
+KEY : U = Z, the set of integers
+FORMULATION : da(d | a  m(a = m · d))
+
+Our final example is the famous parallel postulate of Euclidean geometry, in the version made popular by John Playfair around 1800. This example also introduces the idea of variables of different sorts.
+
+ Example 2.1.10
+Put into FOL notation: Given a line and a point not on the line, there is a
+unique line passing through the given point parallel to the given line.
+
+Solution
+· There are two sorts of objects here: points and lines. To simplify matters,
+lowercase letters like l and m will stand for lines, and uppercase letters like
+P will denote points. Quantified variables are then restricted by their case
+instead of by using a restricted quantifier or a predicate qualifier.
+
+2.1 Symbolizing Sentences
+
+109
+
+· The universe of discourse contains two sub-universes or sorts of objects--
+points and lines. Since Playfair's Postulate is part of plane geometry, we'll
+take U to be all points and lines in some unspecified plane.
+· Some lines are in the binary relation is parallel to, which we'll symbolize
+using the suggestive notation . Some points and lines are in the binary
+relation lies on. Thinking of lines as sets of points, we'll use the set-theoretic notation P  l to indicate that point P lies on line l. Point P does not lie on line l is then symbolized by P / l.
+· The sentence needs quantifiers. The original sentence mentions a line and
+a point, but the obvious intent is to state something about any line and any point, so it will contain the universal quantifier  twice. It also claims the existence of a unique line, so we'll use the quantifier ! .
+· And the postulate needs some logical connectives. The phrase not on ob-
+viously involves negation. An and is present in the original sentence, but
+this merely indicates that two universal quantifiers are being successively asserted; it does not signify a genuine propositional connective.2 We simply write one quantifier after the other, as l P .
+· The sentence does involve a conjunction, though it is not indicated by and.
+The unique line must satisfy two properties simultaneously--it must pass
+through the given point, and it must be parallel to the given line.
+· One more connective could appear in our formal version, because we still
+need to restrict point P to those not on line l. This is done for universal quantifiers, as noted earlier, by means of a conditional sentence with the
+restriction occurring in its antecedent. Alternatively, we can use a restricted
+quantifier to shorten our formulation.
+· We're now ready to make a formal translation. Note the type and order of
+the quantifiers, and convince yourself that this is what's needed.
+KEY : U = {x : x is a point or x is a line in some common plane} P  l: point P lies on line l m l: line m is parallel to line l
+RESTRICTED FORMULATION : l (P / l)!m(P  m  m l)
+EXPANDED FORMULATION : l P (P / l  !m(P  m  m l))
+
+The examples in this section begin to indicate the logical complexity of mathematical statements. The FOL versions we've seen look more complex than their corresponding English formulations, and they certainly appear more artificial. This is no doubt because you are more familiar with English, but it is also because of the logical complexity that informal sentences typically conceal. A sentence's logical structure does not become explicit until the sentence is fully analyzed and symbolized as we have done, using the tools of First-Order Logic. You will have to learn to live, at least temporarily, with the linguistic complexity that arises from using first-order formulations.
+2 And will indicate a logical connective, however, if the properties being a point and being a line are symbolized using a qualifying predicate letter. See Exercise 45.
+
+110
+
+2 First-Order Logic
+
+EXERCISE SET 2.1
+
+Exercises 1­4: Translating Singly-Quantified Sentences
+
+Translate each of the following sentences into informal mathematical English.
+
+Then tell whether it is true or false under the given interpretation.
+
+SYMBOLISM AND KEYS: N is the set of natural numbers; Z is the set of integers; Q is the set of rational numbers; and R is the set of real numbers.
+
+2.1.1. x(x + 0 = x) Key: U = R
+2.1.2. x(0 ÷ x = 0) Key: U = Q
+
+2.1.3. (x = 3)(|x - 2| = 1)
+Key: U = Z 2.1.4. x(x > x2)
+Key: U = N
+
+Exercises 5­18: Translating Multiply-Quantified Sentences Translate each of the following sentences into informal mathematical English. Then tell whether it is true or false under the given interpretation.
+SYMBOLISM AND KEYS: N, Z, Q, and R are as for Exercises 1­4. The symbol  denotes set membership: x  S means x belongs to set S.
+
+2.1.5. xyz(x + z = y)
+
+2.1.9. xy(y  x)
+
+Key: U = Z
+
+Key: U = N
+
+2.1.6. x(x = 0  y(x · y = 1))
+
+2.1.10. yx(y  x)
+
+Key: U = Q
+
+Key: U = N
+
+2.1.7. xyz(x·(y +z) = x·y +x·z) 2.1.11. xy(y > x)
+
+Key: U = R
+
+Key: U = N
+
+2.1.8. xyz(x < y  x · z < y · z) 2.1.12. yx(y > x)
+
+Key: U = R
+
+Key: U = N
+
+2.1.13. xy(x / Q  y / Q  x · y / Q)
+
+Key: U = R
+
+2.1.14. p(P p  mn(p = m · n  m = 1  n = 1)) Key: U = N; P n: n is prime
+2.1.15. abp(P p  p | ab  p | a  p | b) Key: U = N; P n: n is prime; x | y: x divides y
+2.1.16. P Q(P = Q  ! l(P  l  Q  l)) Key: see Example 10
+
+2.1.17. l m(l m  ¬P (P  l  P  m)) Key: see Example 10
+
+2.1.18. L = lim f (x)  ( > 0)( > 0)(x)(0 < |x-a| <   |f (x)-L| < )
+xa
+Key: U = R
+
+Exercises 19­31: Writing Singly-Quantified Sentences Determine whether each of the following sentences is true or false. Then translate it from mathematical English into FOL notation. For each sentence, choose a universe of discourse and interpret any nonstandard symbols.
+2.1.19. All equilateral triangles are equiangular.
+
+2.1 Symbolizing Sentences
+
+111
+
+2.1.20. No scalene triangle is isosceles. 2.1.21. Some rectangles are squares. 2.1.22. Some rectangles are not squares. 2.1.23. Not all triangles are congruent. 2.1.24. No odd number is composite. 2.1.25. Some prime numbers are even. 2.1.26. All isosceles right triangles are equilateral. 2.1.27. No real number satisfies the equation x2 + 1 = 0. 2.1.28. Some real numbers do not satisfy the inequality a2 < a. 2.1.29. Every natural number is either even or odd. 2.1.30. All natural numbers are both integers and rational numbers. 2.1.31. There is exactly one even prime number.
+Exercises 32­33: True or False Are the following statements true or false? Explain your answer.
+2.1.32. Any consequence that logically follows from a set of premises can be proved from them using Propositional Logic's inference rules. 2.1.33. Universal sentences typically contain an inner conjunction when formulated with the machinery of First-Order Logic.
+Exercises 34­44: Multiply-Quantified Mathematical Sentences Determine whether each of the following sentences is true or false. Then translate it from mathematical English into FOL notation. For each sentence, choose a universe of discourse and interpret any nonstandard symbols.
+2.1.34. Real numbers multiplied together in either order give the same result. 2.1.35. For any two positive real numbers a and b, there is a natural number n such that na > b. 2.1.36. The sum of two rational numbers is rational. 2.1.37. All positive integers can be factored into a product of two primes. 2.1.38. Every natural number is smaller than some other natural number. 2.1.39. There is an integer that is less than all other integers. 2.1.40. Between any two distinct real numbers there is a rational number. 2.1.41. For integers a, b, and c, if a = 0, then ab = ac if and only if b = c. 2.1.42. A function f is monotone increasing on the set of real numbers if and only if whenever x1 < x2, f (x1) < f (x2). 2.1.43. If 0  an  bn for all n, then an converges if bn does. 2.1.44. There are exactly two real solutions to x2 - 1 = 0.
+2.1.45. Formulate Playfair's Parallel Postulate (see Example 10) using symbols to stand for the properties of being a point and being a line, qualifying the variables inside the sentence. Compare your result with the formulations given earlier, which used variables of different sorts.
+
+112
+
+2 First-Order Logic
+
+2.2 First-Order Logic: Syntax and Semantics
+
+First-Order Logic intensifies the mathematical mode of expression you've probably used for years, making sentences fully symbolic. Summarizing the general structure of the sentences we've encountered so far, we can say:
+Mathematical sentences affirm or deny that properties or relations hold of or among some or all objects of certain types. We could explore FOL's syntactic formation rules in detail,3 but we'll only lay the basic groundwork needed to explain First-Order Logic's significance for mathematical proof construction.
+
+2.2.1 FOL Syntax: Open and Closed Sentences
+FOL sentences come in two varieties--open or closed, depending on how variables appear in them. A variable is free if and only if it does not lie within the scope of a quantifier; otherwise it is bound. Open sentences are ones that have a free variable. All occurrences of x in x(x+x = x) are bound. In z(z + z¯ = 0), z is bound, but z¯ is free. As written, nP n  n = 2  On has one bound occurrence of n and two free occurrences. To quantify more occurrences, we must use parentheses. For example, n(P n  n = 2  On) is the universally quantified sentence of Example 2.1.2.
+A closed sentence is one that is not open: it has no free variables. It makes a claim that is either true or false when its nonlogical symbols are assigned meanings by an interpretation key. Open sentences generally have no definite truth value, even after being interpreted.
+Calling both open and closed formulas sentences is a conscious departure from earlier usage. According to Section 1.2's definition, only closed sentences count as sentences, since only they are true or false. However, in order to use PL's inference rules for open as well as closed sentences (in keeping with mathematical practice), we must stretch the meaning of a sentence to this new case. Open sentences are complete, if indefinite, statements.
+ Example 2.2.1
+Give examples of closed and open sentences and tell whether they're true.
+Solution
+· xx¯(x + x¯ = 0 = x¯ + x) of Example 2.1.8 is a closed formula. It is true for
+ordinary addition when R is the universe of discourse, but it is false if N is the universe of discourse, for 1 has no natural number additive inverse.
+· The subformulas x¯(x + x¯ = 0 = x¯ + x) and x + x¯ = 0 = x¯ + x are
+both open sentences, having free variable occurrences. Neither one is true or false if either R or N is the universe of discourse and + is ordinary addition. However, if U = {0} and + is ordinary addition, both are true.
+· This example shows that truth values for sentences are interpretation-
+dependent, something that's beneficial for logic, as we'll see next.
+
+3 We do this for the simpler system of PL in Section 3.3, where we look at String Theory.
+
+2.2 First-Order Syntax and Semantics
+
+113
+
+2.2.2 FOL Semantics: Interpretations and Truth Values
+
+Closed first-order sentences have an abstract generic meaning that only becomes concrete when we create an interpretation key. This may seem like a liability when symbolizing mathematical sentences, but it's actually an asset, both for logic and mathematics. Having multiple interpretations is important for FOL's semantics; it's also a feature of contemporary branches of mathematics, such as modern geometry, abstract algebra, and advanced analysis.
+To probe FOL sentences' logical connections, we can't use truth tables, as we did for PL, assigning truth values to atomic sentences without regard for what they say. We now need to consider what the atomic components of sentences assert relative to one another. There may be logical relations among sentences that depend upon their internal logical structure, so some truthvalue assignments may not be possible. For example, if x(0  x) is true, then 0  a must also be true for any constant a, regardless of the intended meaning of  or the value of a. Similarly, if x(x = 0) is true, x(x = 0) must be false, because these atomic sentences contradict one another.
+In assigning truth values to first-order sentences, then, we must know what the atomic sentences abstractly assert about a potential universe of discourse. We'll have to delve more deeply into sentence semantics than before, using interpretations, as we did at the outset (see Section 1.1).
+
+2.2.3 Interpreting Closed Sentences of FOL
+To define properties such as logical truth or relations such as logical implication, we'll consider all well-formed formulas as uninterpreted--sentences abstracted from all particular nonlogical meaning.
+There are several phases to interpreting first-order sentences. First, we choose a non-empty universe of discourse U . We then assign meanings to symbols in a way that respects their category types--constants as distinguished objects in U , property symbols as properties of U 's members, predicate symbols as relations, n-ary function symbols as functions of n variables, and so on. Logical symbols have a fixed meaning: , , ¬, , and  signify standard truth-functional connectives; = denotes the identity relation; and quantifiers , , and ! are assigned their usual meaning relative to U .
+Given this process, any closed sentence will have a unique truth value--it's true if and only if what it asserts is the case for that interpretation.
+ Example 2.2.2
+Give interpretations, with their truth values, for the following sentences: 0 < 1; 1 < (1 + 1); 1 · 1 = 1; x(x · x < x); x(x = 0  0 < x).
+Solution
+· These are statements of ordinary arithmetic. To interpret them, we'll spec-
+ify a universe of discourse and assign meanings to 0, 1, +, · , and < .
+· The usual meaning of these sentences is the following:
+
+114
+
+2 First-Order Logic
+
+KEY : U = N = {0, 1, 2, . . . }
+
+0 : zero
+
+1 : one
+
++: addition
+
+· : multiplication
+
+< : less-than
+
+· We can abbreviate this by saying Let the symbols have their usual meaning.
+
+Writing everything out, though, highlights the fact that symbols do not
+
+have inherent meaning--they must be interpreted to communicate their
+
+intended meaning. That some symbols have a fixed meaning due to long
+
+and familiar usage should not obscure this point.
+
+· Under this interpretation, sentence four is false, while the others are true.
+
+· For a second interpretation, change the universe of discourse to R, the set
+
+of all real numbers, and interpret the symbols as before, relative to R.
+
+· Now the first four sentences are true and the last one is false. The first
+
+three
+
+are
+
+obviously
+
+true,
+
+and
+
+the
+
+fourth
+
+is
+
+true
+
+because
+
+1 2
+
+·
+
+1 2
+
+<
+
+1 2
+
+.
+
+A
+
+counterexample showing that the fifth sentence is false is given by letting
+
+x = -1: -1 is not zero, and -1 is also not greater than 0.
+
+The next example illustrates the potent technique of finite-universe interpretation. Here we take a finite universe and specify which abstract properties and relations we want to consider true. The final result may look contrived (it is), but artificial constructions like this reveal important logical relationships.
+ Example 2.2.3
+Give a finite-universe interpretation for Example 2's sentences (repeated below) that makes the second one false and the others true.
+0 < 1; 1 < (1 + 1); 1 · 1 = 1; x(x · x < x); x(x = 0  0 < x).
+
+Solution
+· Since the only constants are 0 and 1, we'll construct an interpretation
+whose universe of discourse contains only two elements. We need at least
+two distinct elements denoted by 0 and 1, otherwise the second sentence
+will necessarily be true if the first one is.
+· We'll now stipulate what we want to be true about 0 and 1 regarding < ,
++ , and · so that all sentences will have the desired truth values.
+· We want the first and third sentences to be true about 0 and 1. If 0 < 1,
+this satisfies the last sentence as well, since U only contains 0 and 1.
+· To make the fourth sentence true, we must either take 0 · 0 < 0 or 1 < 1.
+Let's do the latter. Then to falsify the second sentence, we must choose
+1 + 1 = 0 and take 1 < 0.
+· Putting all of this together gives us the following:
+KEY : U = {0, 1}
+< : Let 0 < 1, 1 < 1 define the wedge-relation < . Thus, 1 < 0.
++ : Let 0 + 0 = 0, 0 + 1 = 0, 1 + 0 = 0, and 1 + 1 = 0 define + .
+[Think of + as always producing the smallest element in U , i.e., 0]. · : Let 0 · 0 = 0, 0 · 1 = 1, 1 · 0 = 1, and 1 · 1 = 1 define operation · .
+[Think of · as always giving the larger of the two elements].
+· This makes the second sentence false, since 1 < 0, but the others are true.
+
+2.2 First-Order Syntax and Semantics
+
+115
+
+2.2.4 Interpreting Open Sentences of FOL
+
+One issue we must address is how to work with open sentences. As noted above, open sentences are typically neither true nor false--free variables have no assigned meaning. This is not a limitation of the interpretation process-- free variables are supposed to be indeterminate.
+But this puts us in a predicament: we need to assign truth values to open sentences in order for them to participate in FOL's semantics (implication, equivalence) and derivations. To resolve this issue, we'll introduce the idea of an extended interpretation, which makes open sentences determinate.
+Suppose P (x) is an open sentence with free variable x. Beginning as before, we choose a universe of discourse and assign meanings to the various symbols. This interpretation leaves P (x) indeterminate because it has an uninterpreted variable x. So we'll next extend the interpretation by assigning x some object in the universe of discourse. This extended interpretation gives the sentence a definite meaning, so its truth can now be determined.
+More generally, an extended interpretation of an FOL sentence is an interpretation of the sentence together with a meaning assignment to all of its free variables. Ordinarily, some of these extensions will yield true statements about the structure, while others will be false. An extended interpretation that makes an open sentence true is said to satisfy the sentence.
+ Example 2.2.4
+Discuss the truth values of the following sentences in the ordinary theory of natural number arithmetic under different extended interpretations:
+0 < 1; w < (w + w); 1 · x = 1; y · y < y; z = 0  0 < z.
+Solution Here we're assuming the intended interpretation of Example 2 as our base. Let's see what effect different extensions of this interpretation have. 1) 0 < 1 is true under any extension of this interpretation: there are no free variables to assign a meaning. 2) The truth value of w < (w + w) is indefinite: it is false if w is interpreted as 0, but is true otherwise. 3) 1 · x = 1 also has an indefinite truth value: it is true if and only if x is assigned the value 1. 4) y · y < y, though open, is always false: no natural number value can be assigned to y that will satisfy this sentence. 5) z = 0  0 < z, on the other hand, is always true: 0 is the smallest natural number, so every extended interpretation here satisfies this sentence.
+
+2.2.5 Truth and Falsehood in FOL
+Using extended interpretations, we can now discuss FOL's semantics. The central notions of true and false for FOL sentences are defined as follows:
+
+116
+
+2 First-Order Logic
+
+Definition 2.2.1: Truth Values for FOL Sentences a) A sentence is true under an interpretation if and only if it is true under every possible extension of the interpretation. b) A sentence is false under an interpretation if and only if it is false under every possible extension of the given interpretation. c) A sentence is indeterminate under an interpretation if and only if it is true under one extension and false under another.
+
+This definition merely sharpens our earlier notion of being true under an interpretation. For closed sentences, nothing new is added--they remain either true or false under an extended interpretation. But we now have a way to talk about open sentences being true or false relative to an interpretation.
+When a sentence is true under an interpretation, the mathematical structure involved is called a model4 for that sentence.
+
+Definition 2.2.2: Logically True/False, Logically Indeterminate A sentence is logically . . . a) true if and only if it's true under all interpretations. b) false if and only if it's false under all interpretations. c) indeterminate otherwise.
+
+Intuitively, a sentence is logically true/false if and only if it is true/false irrespective of the meaning of its nonlogical terms. Thus, any extended interpretation always gives a sentence that is true/false. To decide whether a sentence is logically true/false, though, we do not have to examine all possible structures and interpretations. We only need to argue in some way that it must be true/false of all structures under all extended interpretations.
+
+ Example 2.2.5
+
+Determine the logical status of the following sentences.
+
+a) P x  ¬P x
+
+c) xP x  xP x
+
+b) xP x  ¬P a
+
+d) xyP xy.
+
+Solution a) Any extended interpretation of P x  ¬P x yields an instance of LEM, which is a tautology, so this sentence is logically true. Its universal closure x(P x  ¬P x) is logically true for the same reason. b) xP x  ¬P a is logically false. If everything in universe U has property P , whatever that is, then any element a in U must also have property P . But since a doesn't have property P , not all elements do. c) xP x  xP x is logically true. To show this, we must argue that xP x is true whenever xP x is. If xP x is true, then all members of universe U have property P , however P is interpreted. Certainly, then, some member of U has property P , i.e., xP x is true. (This depends upon the
+
+4 Unfortunately, logical usage of the term model is at odds with how applied mathematicians use this term. In logic a model is the mathematical structure satisfying the theory; in applied mathematics, the theory is the model for the situation.
+
+2.2 First-Order Syntax and Semantics
+
+117
+
+fact, unstressed until now, that only non-empty sets are accepted--by convention--as bona fide universes of discourse.) d) xyP xy is logically indeterminate: we can give it two interpretations, one making it true, and another making it false. Let U = {2, 3, 4, . . . } for both cases. If P xy means x is a prime factor of y, the sentence is false. Integers greater than 1 do have prime factors, but not the same one, i.e., while yxP xy is true, xyP xy is not. The sentence xyP xy becomes true, however, if we take P xy to mean x  y, for 2 is less than or equal to all members of U .
+
+2.2.6 Logical Implication in FOL
+In Section 1.1 we said that an argument is valid if and only if every interpretation making its premises true also makes its conclusion true. This continues to hold in First-Order Logic for closed sentences, but to admit open sentences into our arguments, we must assume our broader sense of interpretation.
+Definition 2.2.3: Logical Implication for FOL Sentences A set of sentences P logically implies sentence Q, written P = Q, if and only if every interpretation making P true also makes Q true.
+As before, we do not have to consider all possible extended interpretations to demonstrate logical implication. We can use a generic argument.
+ Example 2.2.6
+Justify the following implication claims, involving only closed sentences. a) x(P x  Qx), xP x = xQx b) yx(x < y) = x(x = 0  0 < x)
+Solution These are closed sentences, so we only need to consider non-extended interpretations. a) Suppose x(P x  Qx) and xP x are both true for some universe of discourse U and some properties P and Q. Then some element a in U has property P (premise 2): P a is true. Furthermore, since any element of U having property P also has property Q (premise 1), this holds for a: P a  Qa is true. Hence (by Modus Ponens) a must have property Q: Qa is true. So, the conclusion xQx is true whenever the premises are true. b) To show that this is invalid, we will construct a counterargument. Let U = Z, and take the usual meaning for the various symbols. Then the first sentence is true, because for any integer y there is an integer x less than it (e.g., x = y - 1). But the second sentence is false, because -1 is different from 0 but not greater than 0. The following finite-universe interpretation gives an alternative counterargument: take U = {0, 1}, and let 0 < 0 and 1 < 1 be the only order relations. Then the premise is true while the conclusion is false.
+
+118
+
+2 First-Order Logic
+
+The next example presents an argument containing open sentences, something that occurs frequently in mathematical reasoning.
+ Example 2.2.7
+Show that x = 1  x = -1, x = 1 = x = -1.
+Solution Suppose the two premises are true when x is assigned to some a in U . Then, a = 1  a = -1 (interpreting the first premise). But a = 1 (similarly interpreting the second premise). By process of elimination (by Disjunctive Syllogism), a = -1. So x = -1 is true under any extended interpretation that makes both premises true, which means the argument is valid.
+
+The last two examples show that demonstrating validity has two parts: interpreting FOL symbolism and variables, and using PL reasoning on the interpreted statements. The reasoning used here with respect to quantifiers will be formalized in Sections 2.3 and 2.4.
+
+2.2.7 Logical Equivalence for FOL
+
+Logical equivalence can also be defined using extended interpretations, making P = Q if and only if P = Q and Q = P, as it was for PL.
+Definition 2.2.4: Logical Equivalence for FOL Sentences Sentences P and Q are logically equivalent, written P = Q, if and only if every interpretation satisfying P satisfies Q, and conversely.
+
+The next example illustrates this idea. The first equivalence is trivial but points out that the variables used to write quantified sentences are irrelevant. The second one introduces something we'll explore further in Section 2.4.
+
+ Example 2.2.8
+
+Determine the truth of the following equivalence claims.
+
+a) xP x = yP y
+
+b) ¬xQx = x¬Qx
+
+Solution a) Since both xP x and yP y assert that every object in a universe of discourse has property P , they are alike true or false. Thus, these sentences are are logically equivalent . b) ¬xQx and x¬Qx are not logically equivalent, though people often talk as if they were. Moving the negation sign changes a sentence's meaning. Not all numbers are odd does not mean All numbers are not odd. If U = N and Qx means x is odd, the first sentence is true while the second is false. So ¬xQx = x¬Qx, making ¬xQx = x¬Qx, too. The second sentence does imply the first, however. If everything in universe of discourse U lacks property Q, then no members of U have that property. So x¬Qx = ¬xQx.
+
+2.2 First-Order Syntax and Semantics
+
+119
+
+2.2.8 Multiple Interpretations and Foundations
+
+As noted, the key semantic ideas of First-Order Logic require an abstract point of view. Formulas must be able to have different meanings in order to deal with their truth and consequences. This formal approach is also important for contemporary foundations of mathematics, where multiple interpretations have clarified the logical structure of mathematical theories. To investigate logical relationships among the axioms of a theory, we must be able to vary the interpretation.
+The concepts of logical consistency, logical independence, and theory completeness were defined for Propositional Logic in Section 1.3, but these apply to First-Order Logic as well: here they're based on the truth of interpretations instead of truth tables. A simple example will illustrate their usefulness.
+ Example 2.2.9
+Investigate the notions of logical implication, consistency, and independence for the sentences in Example 2, again repeated for easy reference.
+0 < 1; 1 < (1 + 1); 1 · 1 = 1; x(x · x < x); x(x = 0  0 < x).
+Solution
+· The usual number-theoretic interpretation satisfies all but the fourth sen-
+tence. Thus, the fourth sentence is not a logical consequence of the rest. In fact, it is logically independent of the other four since there is also an interpretation that makes all of them true (see Exercise 7).
+· Example 2's second interpretation made all of the sentences true except the
+last, so the first four do not imply the fifth. And, since all five sentences are logically consistent, the fifth is logically independent of the rest.
+· Example 3 demonstrated that the second sentence doesn't follow from the
+rest; it, too, is logically independent of them.
+· Other interpretations show that the first and third sentences are logically
+independent of the rest (see Exercise 49), making these sentences a completely independent set. While it may seem that the first sentence logically follows from the fifth one, an interpretation in which 0 and 1 denote the same object blocks such an inference.
+
+2.2.9 Abstract Formalism in Mathematics
+While logic and foundations benefit from an abstract viewpoint, does mathematics itself gain anything from such a perspective?
+Let's first consider this philosophically. One might take mathematical sentences as intrinsically meaningless formulas. According to this outlook, called formalism, mathematicians merely play games with strings of symbols according to prescribed rules, much like one does in moving chess pieces.
+The ideas of David Hilbert early in the twentieth century, introduced for developing proof theory, tended to encourage such an outlook. But most practicing mathematicians reject this view. Mathematics is more than manipulating symbols according to the rules of logic. Even in very abstract areas,
+
+120
+
+2 First-Order Logic
+
+research is directed both by general (though often abstract) mathematical intuitions and by knowledge of specific concrete models.
+Nevertheless, there are mathematical reasons for allowing formulas to have multiple interpretations and for treating them at times as uninterpreted sentences. By noting similar results in different settings, mathematicians can abstract from the particularities of each structure and develop a general theory for the common features of all such structures. This approach makes economy of thought possible, because proving an abstract result demonstrates that it holds for all the interpretations or models of the theory.
+This approach also makes mathematics more rigorous. By ignoring the specific meaning of a particular interpretation, mathematicians can guard against smuggling unwarranted assumptions into a proof. In fact, it was concern for deductive rigor that led mathematicians to adopt an abstract viewpoint in the late nineteenth century. After more than 2000 years, overlooked properties of the betweenness relation were recognized by Pasch, Hilbert, and others and were explicitly incorporated into modern axiomatic geometry.
+If you proceed further in mathematics, you'll meet this abstract approach again and again. The theory of vector spaces (linear algebra), for example, applies to a wide variety of structures. The objects may be matrices or functions or n-tuples of numbers, and their operations may be quite different. Vector spaces vary greatly, yet they share a common vector space structure. We'll see a similar thing in Chapter 7 when we look at Boolean algebras.
+
+EXERCISE SET 2.2
+
+Exercises 1­6: FOL Syntax
+
+In the problems below, interpret all standard symbols in the usual way, with
+
+letters from the front of the alphabet as constants. Then if the symbol strings
+
+are formulas, identify them as open or closed sentences and explain why.
+
+2.2.1. x(x2 < 0)
+
+2.2.4. a3 + 1 = 0  a = -1
+
+2.2.2. y = 0  x(x < y) 2.2.3. |x| = x  -x
+
+2.2.5. xyz(x | y  x | yz) 2.2.6. sin(/2) = 2
+
+2.2.7. Give an interpretation for the sentences of Example 2, repeated here, that will make them all true. Thus, these sentences are logically consistent.
+0 < 1; 1 < (1 + 1); 1 · 1 = 1; x(x · x < x); x(x = 0  0 < x).
+
+Exercises 8­10: True or False Are the following statements true or false? Explain your answer.
+2.2.8. Truth tables aren't useful for deciding the truth and consequences of FOL sentences. 2.2.9. A closed FOL sentence can be either true or false, depending on its interpretation. 2.2.10. Multiple interpretations are useful in mathematics as well as logic.
+
+2.2 First-Order Syntax and Semantics
+
+121
+
+Exercises 11­17: Interpretations and Truth Values for Arithmetic Determine the truth values of the following sentences for each interpretation. Let 0 have its usual meaning, and take s (the first letter of successor) as a one-place function symbol. N and Z stand for the set of natural numbers and the set of integers respectively.
+a. x(s(x) = 0) b. xy(s(x) = s(y)  x = y) c. y(y = 0  x(y = s(x)))
+
+2.2.11. U = N; 2.2.12. U = Z; 2.2.13. U = N;
+2.2.17. U = N;
+
+s(x) = x + 1
+s(x) = x + 1
+s(x) = 2x x + 1 :
+s(x) =  x + 1 : 2
+
+2.2.14. U = Z; 2.2.15. U = N; 2.2.16. U = Z; if x is even
+if x is odd
+
+s(x) = 2x + 1 s(x) = x2 s(x) = x2 + 1
+
+Exercises 18­24: Geometric Interpretations and Truth Values Determine the truth values of the following sentences for each interpretation. The terms `point' and `line' refer to objects of different sorts. Assume universe U contains all possible (interpreted) points and lines of some (Euclidean) plane, and that `passes through' has the ordinary meaning of "contains."
+a. At least one line passes through each pair of distinct points. b. At most one line passes through each pair of distinct points. c. Each line passes through at least two distinct points. d. Each line misses (does not pass through) at least one point.
+
+2.2.18. Point: point Line: line
+2.2.19. Point: point on the x-axis Line: x-axis 2.2.20. Point: point with integer coordinates (integral lattice points) Line: line
+2.2.21. Point: point with integer coordinates (integral lattice points) Line: line passing through the origin
+2.2.22. Point: point with integer coordinates (integral lattice points) Line: line passing through the origin with slope a rational number
+2.2.23. Point: point with integer coordinates (integral lattice points) Line: rectangle with sides parallel to the axes, integral lattice point vertices
+2.2.24. Point: point with non-zero integer coordinates Line: circle centered at the origin, passing through some point, with radius length a positive whole number
+
+Exercises 25­31: Algebraic Interpretations and Truth Values
+
+Determine the truth value of the following four sentences for each interpre-
+
+tation. Let e denote a constant and  a binary operation. N and Q stand for
+
+the set of natural numbers and the set of rational numbers respectively.
+
+a. xyz((x  y)  z = x  (y  z)) b. x(e  x = x = x  e)
+
+c. xy(x  y = e = y  x)
+
+d. xy(x  y = y  x)
+
+122
+
+2 First-Order Logic
+
+2.2.25. U = N
+
+2.2.28. U = Q
+
+e = 0; a  b = a + b
+
+2.2.26. U = N
+
+e = 0; a  b = min{a, b}
+
+2.2.27. U = Q
+
+e = 0;
+
+ab
+
+=
+
+a+b 2
+
+e = 1; a  b = a · b 2.2.29. U = N
+e = 0; a  b = |a - b|
+
+2.2.30. U = N e = 0; a  b =
+
+a:
+
+a=0
+
+b: a=0
+
+2.2.31. U = all six rotations and flips of an equilateral triangle onto itself e = 360 rotation; a  b = motion a followed by motion b
+
+Exercises 32­35: Truth Values for Abstract FOL Sentences Determine whether the following sentences are logically true, logically false, or logically indeterminate. Explain your answers, using the notions of interpretations and models (finite or infinite).
+
+2.2.32. xy(P xy  P yx) 2.2.33. x(P x  ¬P x)
+
+2.2.34. x[P x¬Qx  ¬(P x  Qx)] 2.2.35. x(P xQx)  xP xxQx
+
+Exercises 36­41: Truth Values for Mathematical FOL Sentences Determine whether the following mathematical sentences are logically true, logically false, or logically indeterminate. Explain your answers, using the notions of interpretations and models (finite or infinite). Note: do not assume that familiar symbols/words have their usual meanings!
+
+2.2.36. 1 < 2 2.2.37. x = 1  x2 = 1
+2.2.38. x = 0  x = 1  0 = 1
+
+2.2.39. x(x = 0  x = 0) 2.2.40. x(x2 - 2 = 0)
+2.2.41. No right angles are angles.
+
+Exercises 42­44: Aristotelian Logic and Logical Implication Show that the following syllogistic argument forms are valid using arbitrary interpretations and PL forms of reasoning.
+2.2.42. x(Px  Qx), x(Qx  Rx) = x(Px  Rx) 2.2.43. x(Px  Qx), x(Rx  ¬Qx) = x(Px  ¬Rx) 2.2.44. x(Px  Qx), x(Rx  ¬Qx) = x(Px  ¬Rx)
+
+Exercises 45­47: Implication and Equivalence for FOL Sentences Show that the following implications and equivalences hold using arbitrary interpretations and PL forms of reasoning.
+
+2.2.45. x(Px  Qx), x(¬Qx) = x(¬Px) 2.2.46. x(Px  Qx) = xPx  xQx 2.2.47. x(Px  Qx  Rx) = x[(Px  Qx)  (Px  Rx)]
+
+2.2.48. Order of Quantifiers
+
+a. Determine the truth value of xy(y  x) and yx(y  x) for the
+
+following interpretations. Interpret  as usual.
+
+i. U = N
+
+ii. U = Z
+
+iii. U = Q
+
+iv. U = R
+
+b. Given your answers to part a, which formula makes a stronger claim,
+
+yxPxy or xyPxy? Explain.
+
+2.3 Inference Rules for Identity and Universal Quantifiers
+
+123
+
+Exercises 49­50: Logical Independence The following problems deal with logical independence and consistency.
+2.2.49. Independence of Example 2's Sentences a. Show that the first sentence of Example 2 is independent of the others. b. Show that the third sentence of Example 2 is independent of the others.
+2.2.50. Consistency and Independence a. Are the three arithmetic sentences given prior to Exercises 11­17 consistent? Are they independent of one another? Cite any relevant results from your work on those problems. b. Are the four geometric sentences given prior to Exercises 18­24 consistent? Are they independent of one another? Cite any relevant results from your work on those problems. c. Are the four algebraic sentences given prior to Exercises 25­31 consistent? Are they independent of one another? Cite any relevant results from your work on those problems.
+
+2.3 Rules for Identity and Universal Quantifiers
+First-Order Logic's Natural Deduction System will modify and extend that of Propositional Logic. All earlier rules remain in force, except that now they'll apply to both open and closed sentences. This allows us to make normal mathematical arguments, such as the following: x = 1  x = -1, x < 0, -1 < 0 ; therefore x = 1 (see Exercise 1).
+In addition, we'll have rules governing the identity relation = and the quantifiers , , and  ! . As before, our main rules will be Int-Elim Rules, but we'll also have some Replacement Rules for negating quantified sentences.
+In this section we'll look at the inference rules for identity and the universal quantifier. The rules for existential sentences and the Replacement Rules will be covered in the next section.
+2.3.1 Rules of Inference For Identity: Substitution
+Logic for mathematics should include rules for identity. In elementary settings, an equation5 says two expressions represent the same quantity, but equals is important in advanced fields as well. Identity also occurs in nonmathematical contexts, so we'll treat the theory of identity as part of FirstOrder Logic and will always interpret = to mean is identical to.
+Intuitively, objects are identical if and only if they can't be distinguished, i.e., if and only if they have exactly the same features. This characterization is known as Leibniz's Law of Indiscernibility. More precisely, we can say that if t1 and t2 are terms denoting objects in a universe of discourse, then t1 = t2
+5 Mathematicians distinguish between an equation and a mathematical identity. The former is what logic calls an identity. The latter is an equation that holds for all values in a certain domain, i.e., an equation's universal closure.
+
+124
+
+2 First-Order Logic
+
+if and only if given any formula P(· x ·), P(· t2·) holds whenever P(· t1·) does, and conversely. Here, as before, P(· x ·) represents an FOL statement, and · x · indicates an occurrence of x in the statement; this occurrence is replaced by t1 and t2 in the formulas P(· t1·) and P(· t2·) .
+
+Definition 2.3.1: Leibniz's Law of Indiscernibility for Identity t1 = t2 if and only if P(· t1·) = P(· t2·) for all statements P.
+
+In theory, this definition enables us to determine when two terms denote the same object. In practice, though, we'll usually use an Introduction Rule based upon this law. And in some cases (for example, in Set Theory), equality will be asserted by means of an axiom or a theorem that gives an independent mathematical criterion for when two objects are identical.
+Leibniz's Law of Indiscernibility can also be used for drawing conclusions from an identity. If you know P(· t1·) and t1 = t2, you may conclude P(· t2·). In fact, you may substitute t2 for t1 as often as you wish. This rule, which we'll call Substitution of Equals (Sub), is schematized as follows:
+
+P(· t1·)
+
+Sub
+
+t1 = t2
+
+P(· t2·)
+
+2.3.2 Equivalence Properties of Identity
+Substitution of Equals is the main Elimination Rule for identity. In addition, there is an Introduction Rule and two other Int-Elim Rules. These three rules are convenient for making deductions, though they do not characterize identity to the same extent that Leibniz's Law of Indiscernibility does. Many other relations, known as equivalence relations, also satisfy these three properties.
+The Law of Identity (Iden) is based on the reflexive property of = . Since each object is identical with itself, you may write t = t on any line of a deduction. No premises are needed for this conclusion. This law's soundness should be clear, but it may also be demonstrated by appealing to Leibniz's Law of Indiscernibility (see Exercise 10a).
+Schematically, this rule of inference is as follows:
+
+Iden
+
+t = t [t any term]
+
+The Law of Identity is seldom used in mathematics, though there are a few occasions where it seems indispensable. Its most important use in elementary mathematics is to create rigorous arguments proving mathematical identities.6 To show tan2 x + 1 = sec2 x, for instance, we ordinarily begin
+6 Here the more specialized mathematical sense of identity is meant. See note 5.
+
+2.3 Inference Rules for Identity and Universal Quantifiers
+
+125
+
+with one side of the identity and generate a sequence of algebraically equivalent expressions until we arrive at the other side (see below). Arguments are composed of sentences, however, not a list of identical terms. This standard approach can be made rigorous by beginning with an identity via Iden and repeatedly using Sub to change one side of the equation into the next expression.
+Besides being reflexive, all equivalence relations share two additional properties: symmetry, and transitivity (see Exercise 1.3.10). Transitivity of Identity (Trans) concludes t1 = t3 from t1 = t2 and t2 = t3. This can be considered a special case of Sub (see Exercise 8b).
+Schematically, we have:
+
+t1 = t2 t2 = t3
+
+Trans
+
+t1 = t3
+
+The soundness of this rule is obvious: if one object is denoted by both t1 and t2 and another one by t2 and t3, then these objects are identical since t2 names them both. Hence t1 and t3 name the same object: t1 = t3. This rule can be derived via Leibniz's Law of Indiscernibility (see Exercise 10c).
+The inference rule Symmetry of Identity (Sym) concludes t2 = t1 from t1 = t2. Like Trans, it is both an Introduction and Elimination Rule.
+Schematically, we have:
+
+t1 = t2 t2 = t1
+
+Sym
+
+This rule's soundness is also obvious, but it can be demonstrated using Leibniz's Law of Indiscernibility (Exercise 10b) or Sub (Exercise 8a).
+While = is clearly symmetrical, at times it gets treated as if it means yields or produces, which converts it into a one-directional relation. The distributive law a(b + c) = ab + ac is often thought to signify something different from its reversed form, ab + ac = a(b + c). Moving from left to right, the first is an expansion rule, while the latter is a rule for factoring. The legitimacy of these reverse procedures is captured by the symmetry of equality.
+Sym can be used to generalize Sub, so you can substitute a term for its equal no matter how equality is asserted. Trans can also be generalized: if t1 and t2 appear in either order on line i while t2 and t3 appear in either order on line j, you may conclude t1 = t3 on line k (see Exercise 9a). This can be used to justify Euclid's first axiom, for instance, which says that things equal to the same thing are equal to each other (see also Exercise 6.3.39). When arguing your deductions in these generalized ways, you may simply cite Sub or Trans, though strictly speaking, you should transform the identity using Sym before applying Sub or Trans to obtain the conclusion.
+
+126
+
+2 First-Order Logic
+
+2.3.3 Using Equations in Mathematical Proofs
+The rules for identity underlie the way we string equations together in an argument. We'll look at how to do this and what to avoid.
+ Example 2.3.1
+Expand the polynomial (x + 2)(x + 3) in a step-by-step fashion.
+Solution We can multiply these binomials as follows: (x + 2)(x + 3) = x(x + 3) + 2(x + 3) = x2 + 3x + 2x + 6 = x2 + 5x + 6.
+The equations in this example could have been written all on one line, as (x + 2)(x + 3) = x(x + 3) + 2(x + 3) = x2 + 3x + 2x + 6 = x2 + 5x + 6, but doing so fails to highlight that (x + 2)(x + 3) = x2 + 5x + 6. Stringing equations together vertically indicates the same sequence of equalities but better shows that the top-left expression equals the bottom-right one. A formal argument would use Trans repeatedly (see Exercise 9b).
+This example illustrates the proper way to prove an equation. Begin with the expression on one side, transform it into an equal expression, and continue until you arrive at the final expression on the other side of the equation.
+Unfortunately, a bad proof strategy that violates this advice is sometimes picked up in elementary algebra and trigonometry. That approach begins with the identity to be proved and works with both sides at once until arriving at an equation known to be true. Such a (bad!) argument might look like:
+tan2 x + 1 = sec2 x sin2 x/ cos2 x + 1 = 1/ cos2 x
+sin2 x + cos2 x = 1.
+This approach is misleading even when all the individual equations are true, because it is no longer clear what's given, what's been proved, and what still needs to be argued. In fact, it starts by asserting the very thing that needs proof! Such a procedure easily leads to invalid arguments. Here's a cute "proof" that 1 = 2, argued in the same way:
+1 = 2 [identity to be proved]
+0 = 0 [multiply by 0--a legitimate operation]
+Getting a true final conclusion doesn't qualify as a valid demonstration of the original statement. The sequence of equations generated must be reversible for it to be conclusive, in which case the reversed sequence is the proof.
+A modified version of this approach is acceptable, however. If you keep the forward and backward directions separate, you can work with both sides of an equation, though not by creating a sequence of transformed equations. Start with one side of the equation in the top-left corner and with the other side in the bottom-right corner. Then, finding values equal to the first side,
+
+2.3 Inference Rules for Identity and Universal Quantifiers
+
+127
+
+list them downwards. List values equal to the other side upwards. Once you
+
+reach a common value, you have a proof. Taking the above example:
+
+tan2 x + 1 = (sin2 x/ cos2 x) + 1
+
+ = (sin2 x + cos2 x)/ cos2 x [add fractions]
+
+= 1/ cos2 x
+
+[substitute sin2 x + cos2 x = 1]
+
+...
+
+ = 1/ cos2 x = sec2 x
+
+[substitute the definition for sec x]
+
+This dual approach is legitimate. In fact, since you may not know at the outset which side of an equation will be easier to work with, it makes sense to use both a forward and backward approach to generate your proof. But still, don't organize your argument as a sequence of transformed equations starting with what you want to prove!
+
+2.3.4 Universal Instantiation:  Elimination
+
+xP(x) asserts that P(x) holds for every object x in the universe of discourse U . If t denotes an object in U , P(t), obtained by substituting t for x everywhere in P(x), must be true if xP(x) is. The Elimination Rule that justifies this inference is Universal Instantiation. Schematically, we have:
+
+xP(x) UI
+
+P(t)
+
+[t any term]
+
+Such a rule is sound: it's valid to instantiate xP(x) to t, obtaining P(t). Think of xP(x) as asserting a grand conjunction, with one conjunct P(t)
+for every t in U . According to the inference rule Simp, generalized to handle any number of conjuncts, we can conclude any P(t), no matter what t denotes. UI is thus an FOL version of Simp.
+UI only applies to whole sentences, not sub-sentences. For instance, it is invalid to conclude ¬P a from ¬xP x. Even if not every object has property P , we have no reason to conclude that a particular object a fails to have it.
+
+2.3.5 The Role of UI in Mathematical Proof s
+UI is used repeatedly in mathematics, though it is usually not made explicit. To prove that a result holds for some object a, we typically instantiate previous results, known to hold universally for a certain class of objects, to that object, because a belongs to the class being considered.
+For example, to prove that ABC = A B C , we take a congruency criterion such as SAS and apply it to the instance being considered. Similarly, if a is an odd number, we can conclude that a2 is also odd because all odd numbers have odd squares.
+Two simple formal mathematical arguments illustrate how UI gets used, along with some earlier rules for identity.
+
+128
+
+2 First-Order Logic
+
+ Example 2.3.2
+Show that x(s(x) > 0), 1 = s(0) - 1 > 0. Here s might denote the
+successor function, which takes each natural number to the next one; 0 the
+number zero; and 1 the number s(0).
+
+Solution The following proof diagram establishes the claim. Note that step 4 could be omitted by using a generalized version of Sub.
+
+1 x(s(x) > 0) 2 1 = s(0)
+
+Prem Prem
+
+3 s(0) > 0 4 s(0) = 1 5 1>0
+
+UI 1 Sym 2 Sub 3, 4
+
+ Example 2.3.3
+Show that x(x  e = x), x(x-1  x = e) - e-1 = e, where e is a constant,  is a binary operation, and ( )-1 denotes a function that assigns (an inverse) a-1 to each element a in the universe of discourse.
+
+Solution The following proof diagram establishes the claim. This time we'll give an abridged demonstration, using generalized versions of our inference rules for =. Constructing a longer proof is left as an exercise (see Exercise 13).
+
+1 x(x  e = x) 2 x(x-1  x = e)
+3 e-1  e = e 4 e-1  e = e-1 5 e-1 = e
+
+Prem Prem
+UI 2 UI 1 Trans 3, 4
+
+2.3.6 Universal Generalization:  Introduction
+Many mathematical theorems are law-like statements that hold for entire classes of objects. To prove them we must be able to deduce sentences of the form xP(x). To demonstrate that P(x) holds for all x in some universe U, we must show that x belonging to U entails P(x). If U is small enough, it might be possible to do this for each member individually. But in most cases, this is hopeless or impossible--mathematical theories usually have infinite models. Hence the time-worn adage, you can't prove a result with examples.
+The problem with using specific cases to argue the truth of a universal proposition is that each such argument may depend upon the particularities of the object chosen and so not be valid for other members of the universe. On the other hand, if it were possible to find an object a that was completely representative--a typical generic element of U, as it were--then an argument given for this object should work in general and be considered a proof.
+
+2.3 Inference Rules for Identity and Universal Quantifiers
+
+129
+
+In reality, there are no generic brand-x objects. Every object has features that distinguish it from others. Nevertheless, if an argument uses only results that are true of everything in U, it would be a proof by generic example. This proof strategy is captured by the rule Universal Generalization (UG).
+This inference rule says that if a sentence P(a) can be shown to hold for an arbitrary representative individual a, where nothing is asserted of a except what follows from its being a member of U, then we may conclude xP(x).
+Schematically, we have:
+
+P(a) xP(x)
+
+[a an arbitrary constant] UG
+
+A proof by UG requires a to be an arbitrary element of U, but we can't say this inside FOL. Using a as a constant automatically means, according to FOL's semantics, that a is a member of U . We can guarantee that a denotes an arbitrary member by surveying the written argument to make sure nothing has been asserted about a that can't be said about every member of U.
+Informal arguments using UG, though, do start by saying something like let a be an element of U. This signifies that a is intended to be perfectly general. There is nothing special about the letter a, of course. In practice you'll probably use whatever letter helps you remember the sort of object you're considering. Mathematical proofs often use x in a dual role, both as the arbitrary individual to be argued about and as the replacing variable. In formal proofs, though, we'll distinguish these two roles with separate letters.
+ Example 2.3.4
+Show that x(Px  Qx), xPx - xQx.
+Solution This is established by the following proof diagram. Note that in line 3 we instantiate line 1 to an arbitrary element a of the universe of discourse, so that line 6 can generalize on it.
+
+1 x(Px  Qx) 2 xPx
+
+Prem Prem
+
+3 Pa  Qa 4 Pa 5 Qa 6 xQx
+
+UI 1 UI 2 MP 3, 4 UG 5
+
+The next example instantiates more than one universally quantified variable at a time, something that would officially require several applications of UI to legitimize. We can also universally generalize more than one variable at a time, which will shorten other deductions. Informal mathematical arguments use these abbreviation maneuvers frequently.
+
+130
+
+2 First-Order Logic
+
+ Example 2.3.5
+Show that xy(x + y = y + x), x(x + 0 = x) - x(0 + x = x).
+Solution This claim is established by the following proof diagram.
+
+1 xy(x + y = y + x) 2 x(x + 0 = x)
+
+Prem Prem
+
+3 a+0=a 4 a+0=0+a 5 0+a=a 6 x(0 + x = x)
+
+UI 2 UI 1 (twice) Sub 3, 4 UG 5
+
+The soundness of UG should be intuitively clear. If we know that a typical element a of the universe of discourse U satisfies statement P(x), then this is true of all elements in U .
+Here, again, it may help to think of xP(x) as a grand conjunction. Having shown by a generic argument that each conjunct holds, we can conjoin them to obtain the universal statement. UG is thus the FOL counterpart of Conj.
+
+2.3.7 The Role of UG in Mathematical Proofs
+Like other inference rules, UG is often tacitly assumed. It can be helpful to keep it in mind, however, when constructing proofs of mathematical propositions in the form xP(x). Begin by supposing that a is an object of the sort being considered. Draw a diagram to visualize the situation, and assess what you know about such objects. As you do these things, you're overcoming the psychological barrier of getting started. To continue your proof, use a Backward-Forward proof analysis. Analyze how to prove P(a), given the logical form of the sentence. Take stock of what you know and what you still want to show. If it's possible to split the domain into several types of objects, try proof by Cases to generate the result for each type of object before generalizing.
+UG is also useful when the statement to be proved is a restricted universal sentence, i.e., when it makes a claim about some subset of the universe of discourse. The following example illustrates how to proceed in such a case.
+ Example 2.3.6
+Analyze the beginning and overall proof strategy to use in proving the proposition All positive real numbers have real square roots.
+Solution
+· Assuming that this is a result in real-number arithmetic, the appropriate
+universe of discourse is U = R, the set of real numbers. Asserting that numbers have square roots is equivalent to saying they are squares of numbers.
+· Two slightly different formal proof strategies are available to us here, depend-
+ing on whether we use a restricted quantifier to formulate the sentence.
+
+2.3 Inference Rules for Identity and Universal Quantifiers
+
+131
+
+a) In expanded form, this sentence is x(x > 0  y(y2 = x)).
+To start a proof of this, we would assume that r is an arbitrary real number (for UG) and then prove (via CP) that r > 0  y(y2 = r). b) Using a restricted quantifier, this sentence is (x > 0)(y)(y2 = x).
+To prove this, using a version of UG, we would suppose that r is
+an arbitrary positive real number, and we would then try to deduce y(y2 = r).
+· In either case, having proved the inner sub-sentence, we would universally
+generalize via UG to complete the proof.
+· An informal proof follows the second strategy. We would compress the two
+suppositions and say, without using a new letter for the instance, Suppose
+x is a positive real number. After showing that x has a square root, the
+proof would be considered complete, implicitly applying UG.
+
+EXERCISE SET 2.3
+2.3.1. Give a formal deduction for the following argument, citing any PL rules of inference used: (x = 1)  (x = -1), x < 0, -1 < 0 - x = 1.
+Exercises 2­3: True or False Are the following statements true or false? Explain your answer.
+2.3.2. To prove an identity, you manipulate both sides of the equation until a true identity results. 2.3.3. To prove xP (x), you show P (a) holds for all instances a.
+Exercises 4­5: Completing Deductions Fill in the reasons for the following deductions. 2.3.4. a = c, b = d - Rab  Rcd
+1 a=c 2 b=d
+3 Rab
+4 a=c 5 Rcb 6 b=d 7 Rcd
+8 Rcd
+9 a=c 10 Rad 11 b = d 12 Rab
+13 Rab  Rcd
+
+132
+
+2 First-Order Logic
+
+2.3.5. x(P x  Qx), x(¬Qx  Rx) - x(P x  Rx) 1 x(P x  Qx) 2 x(¬Qx  Rx)
+3 ¬P a
+4 x(P x  Qx) 5 P a  Qa 6 Qa 7 x(¬Qx  Rx) 8 ¬Qa  Ra 9 Ra
+10 P a  Ra 11 x(P x  Rx)
+
+Exercises 6­7: Logical Implication and Conclusive Deductions Determine whether the following implication claims are true. Then determine whether the deductions given are conclusive. Carefully point out where and how a rule of inference is being misused.
+
+2.3.6. xP x  yQy, ¬Qb = ¬xP x
+
+1 xP x  yQy
+
+Prem
+
+2 ¬Qb
+
+Prem
+
+3 P a  Qb
+
+UI 1
+
+4 ¬P a
+
+MT 3, 2
+
+5 ¬xP x
+
+UG 4
+
+2.3.7. xy(x = y  P xy), xy(x = y  Qxy) = xy(¬P xy  Qxy)
+
+1 xy(x = y  P xy)
+
+Prem
+
+2 xy(x = y  Qxy)
+
+Prem
+
+3 ¬P xy
+
+Spsn for CP
+
+4 xy(x = y  P xy) 5 ¬(x = y) 6 x=y 7 xy(x = y  Qxy) 8 Qxy
+9 ¬P xy  Qxy 10 xy(¬P xy  Qxy)
+
+Reit 1 MT 4, 3 DN 5 Reit 2 MP 7, 6
+CP 3-8 UG 9
+
+Exercises 8­13: Rules for Identity The following problems explore properties of inference rules for identity.
+2.3.8. Prove the following properties of identity using Substitution of Equals and the Law of Identity.
+a. Symmetry: t1 = t2 - t2 = t1 b. Transitivity: t1 = t2, t2 = t3 - t1 = t3
+
+2.3 Inference Rules for Identity and Universal Quantifiers
+
+133
+
+2.3.9. Generalized Transitivity of Identity a. How many different generalized forms of Trans are there? Pick one other than the official version and derive it, using Trans along with Sym. b. Use Trans to show the following: x1 = x2, x2 = x3, x3 = x4 - x1 = x4.
+2.3.10. Identity is an Equivalence Relation Using Leibniz's Law of Indiscernibility, show that identity is an equivalence relation. That is, show:
+a. Reflexive Law: t = t b. Symmetric Law: t1 = t2 - t2 = t1 c. Transitive Law: t1 = t2, t2 = t3 - t1 = t3
+2.3.11. Distinguishing Objects a. Prove, using rules for identity, that two objects are distinct if some property P distinguishes them, i.e., show P a, ¬P b - a = b. b. Conversely, using Leibniz's Law of Indiscernibility, determine what follows when a = b.
+2.3.12. Prove that P x, x = a  x = b - P a  P b.
+2.3.13. Construct an expanded version of the proof given in Example 3, using the rules of inference precisely as given.
+
+Exercises 14­18: Proving Mathematical Identities
+
+Prove the following identities in algebra and trigonometry, handling equations
+
+in the proper way. You may assume the rules of arithmetic, definitions of trigonometric functions, and the basic identity sin2 x + cos2 x = 1.
+
+2.3.14. (a - b)(a + b) = a2 - b2 2.3.15. tan x/ sin x = sec x
+
+2.3.16. (x+y)3 = x3 +3x2y+3xy2 +y3 2.3.17. cot2 x = csc2 x - 1
+
+2.3.18. Symbolically formulate and then prove: The difference between two
+
+consecutive squares of integers is the sum of these integers.
+
+Exercises 19­20: Deducing Logical Truths Using the rules of inference for identity and the universal quantifier, deduce the following logical truths.
+2.3.21. xyz(x = y  x = z  y = z) 2.3.22. xyz(x = z  x = y  y = z)
+
+Exercises 21­22: Aristotelian Logic and Derivations Deduce the following arguments, which represent certain syllogistic forms from Aristotelian Logic, using FOL's inference rules for universal sentences.
+2.3.21. x(Px  Qx), x(Qx  Rx) - x(Px  Rx) 2.3.22. x(Px  Qx), x(Rx  ¬Qx) - x(Px  ¬Rx)
+
+Exercises 23­28: Deductions Deduce the following, using FOL's inference rules for universal sentences.
+2.3.23. x(P x  Qx), ¬Qa - ¬P a 2.3.24. x(P x  Qx) - x(P x  Rx  Qx) 2.3.25. x(¬(P x  Qx)), xP x - x(¬Qx)
+
+134
+
+2 First-Order Logic
+
+2.3.26. x(P x  Qx), x(P x  ¬Rx) - x(Rx  Qx) 2.3.27. xP x  xQx - x(P x  Qx) 2.3.28. x(P x  Qx) - xP x  xQx
+Exercises 29­30: Interderivability Show the following interderivability results, using FOL's inference rules. 2.3.29. x(P x  Qx) - xP x  xQx 2.3.30. x(P x  Qx  Rx) - x((P x  Qx)  (P x  Rx))
+
+Exercises 31­35: Mathematical Deductions Prove the following, using FOL's inference rules.
+2.3.31. Show that if  denotes a binary operation, then the following general results hold. Thus, if  stands for addition or subtraction, we obtain Euclid's second and third axioms Equals added to/subtracted from equals are equal.
+a. a = b - a  c = b  c b. a = b  c = d - a  c = b  d
+2.3.32. Show that a < b  a + c < b + c for any real numbers a, b, and c. You may use the results of Exercise 31 as well as the definition of less than [x < y  x + z = y for some z > 0], associativity of addition [(x + y) + z = x + (y + z)], and commutativity of addition [x + y = y + x].
+2.3.33. Show that xy(x  y  y  x), xyz(x  y  y  z  x  z), a  b, a  c - c  b.
+2.3.34. Show that xyz(x  (y  z) = (x  y)  (x  z)), x(x  0 = x), x(x  x = 1), x(x  1 = x), x(x  x = 0) - x(x  x = x), where 0 and 1 are constants,  and  are binary operations, and ( ) is a unary operation or function.
+2.3.35. Show that x(min x  y(x  y)), xy(x  y y  x  x = y) - min a  min b  a = b. In words, if a set has a minimum for a relation  that is antisymmetric (i.e., satisfies the second premise), it must be unique.
+
+2.4 Rules for Existential Quantifiers
+This section gives Int-Elim Rules for  as well as some Replacement Rules. We'll also briefly digress to consider a related technique, the Method of Analysis. With this, FOL's Natural Deduction System will be complete.
+2.4.1 Existential Generalization
+Section 2.3 cautioned you not to prove results using examples. Nevertheless, UG is, in a sense, proof by generic example, so we need to qualify that advice. And, for the case at hand, we need to reject it altogether. To prove an existential sentence xP(x), our main proof strategy is precisely to use an example. If P(t) holds for some instance t, we may then conclude xP(x). This mode of inference is called Existential Generalization (EG).
+
+2.4 Inference Rules for Existential Quantifiers
+
+135
+
+Schematically, we have:
+
+P(t)
+
+[t any term]
+
+EG xP(x)
+
+To apply EG, we must do two things--locate a candidate t, and show that t satisfies P(x). We may then conclude xP(x). This is a sound rule of inference. If P(t) is true for some t in the universe of discourse, then xP(x) is certainly true, given the meaning of .
+Just as it helps to think of a universal sentence as a grand conjunction, so it helps to think of an existential sentence xP(x) as a generalized disjunction. Saying that there is an object x satisfying P(x) is like asserting that object a satisfies P(x), or object b does, or . . . object t does, etc. EG is the FOL version of Add, i.e., if one of the disjuncts is the case, so is the full disjunction.
+ Example 2.4.1
+Show how EG is used in Geometry and Number Theory.
+Solution
+· To prove in Geometry that there is a line m parallel to a given line l and
+passing through a point P off l, we construct such a line by means of congruent, alternate interior angles. This proves the existential claim.
+· To deduce that an odd number m times an odd number n is odd, we must
+show that there is an integer k such that mn = 2k + 1. If m = 2i + 1 and n = 2j + 1, then mn = (2i + 1)(2j + 1) = 2(2ij + i + j) + 1, so k = 2ij + i + j is the number needed.
+· In each case, EG validates the existential result, though it usually remains
+below the surface.
+The following example uses EG in a formal setting. It also illustrates an important point about EG that is easily misunderstood. In passing from P(t) to xP(x), you do not need to replace every occurrence of t in P(t) by x. In fact, doing so may not yield the sentence xP(x) you want to prove, for P(x) may already contain an occurrence of t. EG allows you to existentially generalize from a formula containing t to one where t has been replaced by x any number of times. If you use the Backward Method of Proof Analysis and remember what needs proving, you'll be able to identify the appropriate sentence P(x) and see how to apply EG.
+ Example 2.4.2
+Show that x(x < s(x)) - x(x < s(0)). Here 0 is a constant, < is a binary relation, and s is a (successor) function.
+Solution
+· The following short proof diagram gives our argument.
+To prove x(x < s(0)) via EG, we take P (x) to be x < s(0), not 0 < s(x) or x < s(x). In step 3, then, we only replace the first occurrence of 0 by x.
+
+136
+
+2 First-Order Logic
+
+· Note: we could also conclude x(0 < s(x)) or x(x < s(x)) in step 3, but
+we don't, because that's not what we want. This highlights the value of the
+Backward Method of Proof Analysis! Generalize to what you need.
+
+1 x(x < s(x))
+
+Prem
+
+2 0 < s(0) 3 x(x < s(0))
+
+UI 1 EG 2
+
+2.4.2 EG and the Method of Analysis
+Existential Generalization proofs often require some ingenuity. Sometimes an instance t is easy to find; at other times it may be extremely difficult. The existence of everywhere-continuous, nowhere-differentiable functions is a case in point. Before Weierstrass constructed such functions in 1872, mathematicians thought continuous functions were nearly everywhere differentiable.
+Often, most of the work in developing a proof by EG consists of figuring out which object is a viable candidate, even though that isn't strictly part of the deduction. An argument that fails to explain how one arrived at the particular instance being used is pedagogically unsatisfying.
+ Example 2.4.3
+Analyze the method of showing that 2x2 + x - 6 = 0 has a positive solution.
+Solution
+· The usual process of showing that 2x2 + x - 6 = 0 has a positive solution
+is interesting from a logical viewpoint. Essentially, we assume there is a solution (denoted by x) and then argue in a logically forward direction from the equation to determine its value.
+· F232(in32ad)c2tinu+gal(l32ys-aiys,6ba=ysof0al.ucTttoihorenin--lgo)wwtleyhascuthbxesct=kitiu23st,ewwh23eattinhpteornotvthueesrntehqaeruoaeutxniiosdnteanantndidaslhccaollwaciumtlha.atet
+This procedure--assume what needs to be proved and argue forward to what follows from it--is known as the Method of Analysis. It seems completely wrong. Why would we assume the proposition we want to prove? But remember, the resulting conclusion of such an argument is only a necessary condition for the proposition. Analysis is a fruitful tool of mathematical discovery, but it does not produce a proof. The Method of Analysis must be followed by the method of synthesis, i.e., by a deductive proof of the proposition. This might occur merely by reversing the argument, showing that the necessary condition is also sufficient; or it might use the conclusion in some other way, as in the above example, to show that the proposition is satisfied.
+The Method of Analysis has a long and distinguished history. It was first used in ancient Greek geometry, but it was later reinterpreted and made the basis of elementary algebra by Vi`ete (1591), Descartes (1637), and others in their theory of equations. We'll see shortly that it is important for unique existence proofs as well as existence proofs.
+
+2.4 Inference Rules for Existential Quantifiers
+
+137
+
+2.4.3 Existential Instantiation
+
+Existential Instantiation (EI ), the Elimination Rule for , is the most complex quantifier Int-Elim Rule. It proceeds as follows. If xP(x) is true, then some object satisfies P(x), though we don't know which one. Temporarily using an unassigned constant a to name this object, we prove a sentence Q that does not depend on which name was used. Q then follows from xP(x).
+Schematically, we have:
+
+xP(x)
+
+P(a) [a an arbitrary constant]
+
+Q
+
+[a not in Q]
+
+EI
+
+Q
+To use EI , make sure that no unwarranted results about a are assumed in the argument and that the conclusion Q does not mention the name a. Then Q may be exported one proof-level out as a conclusion of xP(x).
+We can gain a more intuitive understanding of EI by again considering existential sentences as disjunctions. Doing so turns EI into the FOL version of Cases. Starting with the grand disjunction xP(x), if we can deduce Q from a generic disjunct P(a), we can then conclude Q in the main argument.
+Like Cases, EI is a sound rule, though demonstrating this is complicated, since it's a suppositional FOL rule.
+ Example 2.4.4
+Illustrate EI 's use in the Number Theory argument of Example 1.
+Solution
+· Example 1 looked at part of a proof that the product of odd numbers is
+odd. According to the definition, n is odd  i(n = 2i + 1). So if n is odd, i(n = 2i + 1) by BE. We can next let i0 name the integer asserted to exist and argue in terms of that: suppose n = 2i0 + 1. Any conclusion Q following from this then also follows by EI from i(n = 2i + 1).
+· Informal mathematical arguments don't bother to introduce i0--they use
+the symbol i both as a variable and as the name of the instance, essentially dropping the existential quantifier as the argument continues. A more formal approach uses i for the variable and i0 for the arbitrary constant denoting the instance, but the proof procedure is roughly the same.
+The next example argues an immediate inference from Aristotelian Logic (see Example 2.2.6a) to illustrate the formal use of EI. Note that when a premise set includes both an existential and a universal sentence, you should first instantiate the existential sentence so that you know what value to instantiate the universal sentence to. This is good advice for creating informal proofs as well.
+
+138
+
+ Example 2.4.5
+Show that x(P x  Qx), xP x - xQx.
+
+Solution The following proof diagram establishes this claim.
+
+1 x(P x  Qx) 2 xP x
+
+Prem Prem
+
+3 Pa
+4 x(P x  Qx) 5 P a  Qa 6 Qa 7 xQx
+8 xQx
+
+Spsn for EI
+Reit 1 UI 4 MP 5, 3 EG 6
+EI 2, 3-7
+
+2 First-Order Logic
+
+2.4.4 Simplifying Negated Quantified Sentences
+
+UG and EG are direct ways to prove universal and existential sentences. An indirect proof strategy--Proof by Contradiction--is also available. We assume the quantified sentence's negation and deduce contradictory sentences.
+To use negated quantified sentences as suppositions, we need to be able to draw conclusions from them. Two Replacement Rules cover this.
+If ¬xP(x) is true, then not all elements of U satisfy P(x), i.e., at least one does not satisfy P(x). Thus, x(¬P(x)) is true. The converse also holds. If x(¬P(x)) is true, then some object of U fails to satisfy P(x), and so ¬xP(x) is true. This shows that ¬xP(x) = x(¬P(x)), which gives us Universal Negation (UN ), the rule for negating universal statements.
+Existential Negation (EN ) tells how to negate existential sentences. An argument like that just given shows ¬xP(x) = x(¬(P(x)) (see Exercise 9).
+We thus have the following negation Replacement Rules:
+
+UN
+
+¬xP(x) : : x(¬P(x))
+
+EN
+
+¬xP(x) : : x(¬P(x))
+
+The soundness of these Replacement Rules can be demonstrated by deducing each equivalent from its mate using only Int-Elim Rules for quantified sentences and Proof by Contradiction (see Exercise 10). We could leave them out of FOL's Natural Deduction System with no loss of deductive power, but we'll include them since they make it easier to work with negated sentences.
+Another way to think about these rules is to consider quantified sentences as generalized conjunctions and disjunctions. Then UN and EN are the FOL counterparts of the DeM Replacement Rules. Both rules treat negated quantifiers in the same way: move ¬ past the quantifier and change the quantifier. To simplify the result further, you apply PL Negation Replacement Rules to the negated inner sentence. The next two examples illustrate this process.
+
+2.4 Inference Rules for Existential Quantifiers
+
+139
+
+ Example 2.4.6
+a) Negate x(P x  Qx) and simplify the result.
+b) Negate (x  P)Qx, the restricted-quantifier formulation of part a.
+
+Solution a) By UN, ¬x(P x  Qx) simplifies to x(¬(P x  Qx)). Using Neg Cndnl to simplify this further gives x(P x  ¬Qx). b) ¬(x  P)Qx is equivalent to (x  P)(¬Qx), for if not all x in P have property Q, then some x in P must fail to have property Q. Note that we do not negate the quantifier restriction x  P. We instead negate the additional properties x has. Restricted quantifiers are thus negated in the same way as ordinary quantifiers (see also Exercise 33). Our final result is a restricted-quantifier form of part a's conclusion: (x  P)(¬Qx) abbreviates x(P x  ¬Qx).
+
+ Example 2.4.7
+Negate and simplify Playfair's Euclidean Parallel Postulate: for any line l
+and any point P not on l there is a line m through P that is parallel to l.
+
+Solution
+· The negated sentence is symbolized as follows (see Example 2.1.10):
+¬lP (P / l  m(P  m  m l))
+· We can now pass to the following logical equivalents, moving ¬ inward:
+
+lP (¬(P / l  m(P  m  m l)))
+
+via UN, twice
+
+lP (P / l  ¬m(P  m  m l))
+
+via Neg Cndnl
+
+· Translating this sentence back into mathematical English, we have:
+
+there is a line l and a point P not on l such that no line m passing through
+
+P is parallel to l.
+· We have transformed the negation somewhat, but we can go further:
+
+lP (P / l  m(¬(P  m  m l)))
+
+via EN
+
+lP (P / l  m(P / m  m l))
+
+via DeM
+
+lP (P / l  m(P  m  m l))
+
+via Cndnl
+
+· Translating this final sentence back into mathematical English gives us the
+
+following final form for the negation of Playfair's Postulate:
+
+there is a line l and a point P not on l such that all lines m passing through
+
+P are not parallel to l.
+
+The last example illustrates the issue of deciding which sentence is the simplest negation of the original. Generally, the most natural form of an existential sentence is a quantified conjunction, and the most natural form of a universal sentence is a quantified conditional (see Section 2.1).
+In mathematics, you'll usually negate a sentence without going through a series of equivalent sentences--the problem of which negation to choose among several may not arise. Instead, you may face a different problem. How can you be sure that your negation is correct? If there's any uncertainty, you should carefully formalize the sentence and negate it as done above.
+
+140
+
+2 First-Order Logic
+
+2.4.5 Deductions Using Replacement Rules
+
+We'll now look at two examples that use UN and EN in formal deductions. These will also involve the Int-Elim Rules for existential sentences. Note in the first one that EI is once again used prior to UI.
+
+ Example 2.4.8
+Show that x(P x  Qx), ¬x(P x  Rx) - ¬x(P x  Rx).
+
+Solution The following proof diagram establishes this claim.
+
+1 x(P x  Qx) 2 ¬x(P x  Rx)
+
+Prem Prem
+
+3 x(¬(P x  Rx) 4 ¬(P a  Ra)
+
+UN 2 Spsn for EI
+
+5 ¬P a  ¬Ra 6 x(P x  Qx) 7 P a  Qa 8 Pa 9 ¬Ra 10 P a  ¬Ra 11 x(P x  ¬Rx) 12 x(¬(P x  Rx)) 13 ¬x(P x  Rx)
+14 ¬x(P x  Rx)
+
+DeM 4 Reit 1 UI 6 Simp 7 DS 5, 8 Conj 8, 9 EG 10 Neg Cndnl 11 UN 12
+EI 3, 4-13
+
+The last example used a counterexample to prove its conclusion, as does the next one. However, each of these could have been proved instead using Proof by Contradiction (see Exercise 14).
+
+ Example 2.4.9
+Show that x(0 = s(x)) - ¬yx(y = s(x)), where s is a function.
+
+Solution
+· To prove the conclusion, we'll deduce its equivalent, yx(y = s(x)).
+This is an existential sentence, so we need an a to make x(a = s(x)) true.
+But this is immediate, given the premise: take a = 0.
+· This yields the following formal proof diagram.
+
+1 x(0 = s(x))
+
+Prem
+
+2 yx(y = s(x)) 3 y(¬x(y = s(x))) 4 ¬yx(y = s(x))
+
+EG 1 UN 2 EN 3
+
+2.4 Inference Rules for Existential Quantifiers
+
+141
+
+2.4.6 Uniqueness Assertions in Deductions
+To prove a sentence of the form ! xP(x), we need to find an instance t that satisfies P(x) and show that t is the only object that does. This gives us our final Replacement Rule, which we'll call Unique Existence (Uniq Exis).
+!xP(x) : : xP(x)  xy(P(x)  P(y)  x = y) Uniq Exis
+The elimination procedure for ! is much like that for . Given !xP(x), you first conclude xP(x) by means of Uniq Exis and Simp. Then, using EI, you suppose that a is the (unique) instance and argue in terms of it. In informal proofs, though, you will go directly from the unique existence claim to supposing that a is the unique instance satisfying P(x). Whatever is properly proved from P(a) then follows from !xP(x).
+To prove !xP(x), you deduce xP(x) and xy(P(x)  P(y)  x = y) separately and then conjoin them, i.e., you show that some object x satisfies P(-) and that if x and y denote any objects satisfying P(-), then x = y.
+Although we can prove these conjuncts in either order, the most intuitive approach is to show that there is such an object before proving it is unique. Nevertheless, this common-sense approach is often the less fruitful course of action. By instead supposing that x and y satisfy P(-) (usually without supposing that they're distinct), we may not only find that there is at most one object, but also what that object must be.
+At times, by supposing only that x satisfies P(-) (the Method of Analysis), you may be able to determine what the object must be--say, that x = t. This proves uniqueness (the second conjunct), but it also gives you an instance t to check for satisfying the existence clause.
+ Example 2.4.10
+Prove that the additive identity for real-number arithmetic is unique, i.e., show that !zx(x + z = x  z + x = x) (see also Exercise 34a).
+Solution Let's begin with existence. 0 is an identity because x + 0 = x = 0 + x. To prove uniqueness, suppose z1 and z2 each satisfy the identity equations. Then z1 = z1 + z2 = z2, and so z1 = z2.
+This sort of argument occurs repeatedly in mathematics for identities. Proofs for the uniqueness of inverses proceed similarly (see Exercise 34b).
+
+2.4.7 Formal vs. Informal Proofs
+We'll close this lesson with an example that illustrates the striking difference between an informal proof and a formal one.
+ Example 2.4.11
+Prove the transitive law if a < b and b < c, then a < c, given the laws for arithmetic and the definition x < y if and only if there is a positive real number z such that x + z = y.
+
+142
+
+2 First-Order Logic
+
+Solution
+Suppose a < b and b < c. Then there are positive real numbers p1 and p2 such that a + p1 = b and b + p2 = c. Substituting, we get (a + p1) + p2 = c. This gives us a + (p1 + p2) = c. Since p1 + p2 is positive, a < c.
+
+ Example 2.4.12
+Rework the last example using a formal proof diagram.
+
+Solution
+· The formal proof goes as follows:
+1 xy(x < y  z(z > 0  x + z = y)) 2 xy(x > 0  y > 0  x + y > 0) 3 xyz((x + y) + z = x + (y + z))
+
+Prem Prem Prem
+
+4 a<b  b<c
+
+Spsn for CP
+
+5 a<b
+
+Simp 4
+
+6 xy(x < y  z(z > 0  x + z = y)) Reit 1
+
+7 a < b  z(z > 0  a + z = b)
+
+UI 6 (2×)
+
+8 z(z > 0  a + z = b)
+
+BE 7, 5
+
+9 b<c
+
+Simp 4
+
+10 b < c  z(z > 0  b + z = c)
+
+UI 6 (2×)
+
+11 z(z > 0  b + z = c)
+
+BE 10, 9
+
+12
+
+z1 > 0  a + z1 = b
+
+13
+
+z2 > 0  b + z2 = c
+
+Spsn for EI Spsn for EI
+
+14
+
+z1 > 0
+
+15
+
+z2 > 0
+
+16
+
+z1 > 0  z2 > 0
+
+17
+
+xy(x > 0  y > 0  x + y > 0)
+
+18
+
+z1 > 0  z2 > 0  z1 + z2 > 0
+
+19
+
+z1 + z2 > 0
+
+20
+
+a + z1 = b
+
+21
+
+b + z2 = c
+
+22
+
+(a + z1) + z2 = c
+
+23
+
+xyz((x + y) + z = x + (y + z))
+
+24
+
+(a + z1) + z2 = a + (z1 + z2)
+
+25
+
+a + (z1 + z2) = c
+
+26
+
+z1 + z2 > 0  a + (z1 + z2) = c
+
+27
+
+z(z > 0  a + z = c)
+
+28 z(z > 0  a + z = c) 29 a < c  z(z > 0  a + z = c) 30 a < c
+
+31 a < b  b < c  a < c 32 xyz(x < y  y < z  x < z)
+
+Simp 12 Simp 13 Conj 14, 15 Reit 2 UI 17 (2×) MP 18, 16 Simp 12 Simp 13 Sub 20, 21 Reit 3 UI 23 (2×) Sub 22, 24 Conj 19, 25 EG 26
+EI 8, 11, 12-27 UI 6 (2×) BE 29, 28
+CP 4-30 UG 31 (3×)
+
+2.4 Inference Rules for Existential Quantifiers
+
+143
+
+· Our premises include the definition of < (line 1); the fact that the sum of
+positive numbers is positive (line 2); and the associative law for addition
+(line 3). These turn out to be sufficient.
+· Although this deduction is long, it has been shortened by combining mul-
+tiple universal instantiations (steps 7, 10, 18, 24, 29), the two existential
+instantiation subproofs (steps 12-28), and the multiple universal general-
+izations (step 32). Despite its length, your knowledge of logic should enable
+you to follow this proof without difficulty.
+
+2.4.8 Logic's Contribution to Mathematics
+We've explored Propositional Logic and First-Order Logic in a partly formal fashion, using symbols for sentences, connectives, predicates, quantifiers, and so on, both to formulate inference rules and to work examples and exercises.
+There are good reasons for this degree of formality. The first is that logic needs to focus on logical form in order to analyze patterns of valid inference and construct conclusive deductions.
+A second reason is that most mathematical arguments are too complex to logically analyze and formalize until you're familiar with all the connectives, quantifiers, and inference rules. But with FOL's full deduction system at our disposal, we're finally able to tackle genuine mathematical arguments. As you saw from the last example, however, even a simple mathematical argument becomes unbearably long and complicated when its full logical detail is disclosed. Informal proofs take for granted many details that go beyond what's needed to communicate their key ideas.
+On the other hand, logic helps us see that it is possible in principle to make deductions logically rigorous. Over the past century and a half, logic has progressed to where mathematical logicians now believe that FOL can formalize any mathematical proof (though some advocate extending FOL to a higher order logic, where one can quantify over subsets of the universe of discourse as well as its elements). While this significant achievement is still underappreciated by many, current theorem-proving software programs have taken advantage of these developments. The use and value of computers for constructing proofs will undoubtedly only increase as time goes on.
+But to return to an earlier point, the fact that rigor can be attained does not mean that it should be. A high degree of rigor is important for some foundational concerns and for developing automated deduction systems, but at some point in everyday mathematical arguments there is a trade-off between logical rigor and clarity. Constructing natural deduction proofs with component subproofs helps to exhibit the main parts of a deduction, but the accumulation of logical details eventually obscures the argument for humans.
+The main benefit of having studied Propositional Logic and First-Order Logic is that you now know the inference rules underlying proof techniques used all the time in mathematics and other fields. Being familiar with these inference rules, with the overall strategy of the Backward-Forward Method of
+
+144
+
+2 First-Order Logic
+
+Proof Analysis, and with using subproofs to obtain key results as intermediate steps should help you decide what proof strategies might be fruitful.
+Using these tools effectively will still take lots of practice. The logic you've learned should function unobtrusively below the surface as you study other areas of discrete mathematics. You'll eventually forget what terms like Modus Tollens and Existential Instantiation refer to, and you may not be able to create formal proofs on the spot. But having absorbed the key ideas of logic, you should be well equipped to follow the inferential maneuvers in proofs constructed by others and to map out a strategy for making your own proofs.
+
+EXERCISE SET 2.4
+Exercises 1­2: Completing Deductions Fill in the reasons for the following deductions.
+2.4.1. xP x, x(Qx  ¬P x) - ¬xQx 1 xP x 2 x(Qx  ¬P x)
+3 Pa
+4 x(Qx  ¬P x) 5 Qa  ¬P a 6 ¬Qa 7 x(¬Qx) 8 ¬xQx
+9 ¬xQx 2.4.2. ¬x(P x  Qx), x(Rx  Qx) - ¬x(Rx  P x)
+1 ¬x(P x  Qx) 2 x(Rx  Qx)
+3 Ra  Qa
+4 ¬x(P x  Qx) 5 x(¬(P x  Qx)) 6 ¬(P a  Qa) 7 ¬P a  ¬Qa 8 Qa 9 ¬P a 10 Ra 11 Ra  ¬P a 12 x(Rx  ¬P x)
+13 x(Rx  ¬P x) 14 x(¬(Rx  P x)) 15 ¬x(Rx  P x)
+
+2.4 Inference Rules for Existential Quantifiers
+
+145
+
+Exercises 3­4: Logical Implication and Conclusive Deductions Determine whether the following implication claims are true. Then determine whether the deductions given are conclusive. Carefully point out where and how a rule of inference is being misused.
+
+2.4.3. xP x  yQy, ¬yQy = x(¬P x)
+
+1 xP x  yQy 2 ¬yQy
+
+Prem Prem
+
+3 P a  yQy 4 P a  Qb
+
+UI 1 Spsn for EI
+
+5 ¬yQy 6 ¬Qb 7 ¬P a 8 ¬xP x
+
+Reit 2 UI 5 MT 4, 6 EG 7
+
+9 ¬xP x 10 x(¬P x)
+
+EI 3, 4­8 EN 9
+
+2.4.4. xP x, y(P y  Qy) = ¬yQy
+
+1 xP x
+
+Prem
+
+2 y(P y  Qy)
+
+Prem
+
+3 Pa 4 P a  Qa 5 ¬Qa 6 y(¬Qy) 7 ¬yQy
+
+EI 1 UI 2 DS 4, 3 EG 5 UN 6
+
+Exercises 5­8: True or False Are the following statements true or false? Explain your answer.
+2.4.5. You can never prove anything with examples. 2.4.6. Int-Elim Rules for  and  are counterparts to PL rules for  and . 2.4.7. The Method of Analysis is used to prove that the numbers found in solving an equation satisfy the equation. 2.4.8. FOL provides the tools for making mathematical arguments rigorous.
+
+Exercises 9­10: Soundness of UN and EN Work the following problems related to the Replacement Rules UN and EN.
+
+2.4.9. Show the soundness of EN by explaining why the two sentence forms involved are logically equivalent.
+
+2.4.10. Show the following without using UN or EN :
+
+a. ¬xP x - x(¬P x)
+
+b. ¬xP x - x(¬P x)
+
+Exercises 11­15: Deductions Deduce the following, using FOL's inference rules.
+
+146
+
+2 First-Order Logic
+
+2.4.11. x(P x  Qx), x(¬P x) - xQx 2.4.12. x(¬(P x  Qx)), xP x - x(¬Qx) 2.4.13. x(P x  Qx) - xP x  xQx 2.4.14. x(P x  Qx), ¬x(P x  Rx) - ¬x(P x  Rx) Prove this using NI. 2.4.15. xP x, x(P x  x = b  x = c) - P b  P c
+
+Exercises 16­17: Aristotelian Logic and Derivations Deduce the following, which represent syllogistic forms of argument.
+2.4.16. x(Px  Qx), x(Qx  Rx) - x(Px  Rx) 2.4.17. x(Px  Qx), x(Rx  ¬Qx) - x(Px  ¬Rx)
+
+Exercises 18­19: Interderivability Deduce the following interderivability results.
+2.4.18. x(P x  Qx) - xP x  xQx 2.4.19. x(P x  Qx) - xP x  xQx
+
+2.4.20. Argue for the validity of the following equivalences. Thus, each quan-
+
+tifier can be defined in terms of the other one and negation, if so desired.
+
+a. xPx = ¬x(¬Px)
+
+b. xPx = ¬x(¬Px)
+
+Exercises 21­26: Logical Equivalences and Negations
+
+Determine logical equivalents for the following negations. Simplify the results
+
+using Replacement Rules from PL to put them in their most natural form.
+
+2.4.21. ¬x(P x  Qx)
+
+2.4.24. ¬x(P x  Qx)
+
+2.4.22. ¬x(P x  Qx)
+
+2.4.25. ¬xyz(x + z = y)
+
+2.4.23. ¬x(P x  Qx)
+
+2.4.26. ¬xym(N (m)  mx > y)
+
+Exercises 27­30: Negating Formal Definitions
+
+On the supposition that the antecedent of each biconditional does not hold,
+
+explain what can be concluded (via NBE); that is, negate the defining condi-
+
+tion (the clause following the double arrow). Fully simplify your answer.
+
+2.4.27. E(a)  k(a = 2k)
+
+2.4.29. x < y  z(z > 0x+z = y)
+
+2.4.28. a | b  m(a = mb)
+
+2.4.30. S  T  x(x  S  x  T )
+
+Exercises 31­32: Negating Informal Definitions Formulate the following definitions, identifying a universe of discourse and nonstandard symbols. Then negate the defining condition and simplify.
+2.4.31. A positive integer greater than 1 is prime if and only if it has no positive integer factors except itself and 1.
+2.4.32. {xn} is a Cauchy Sequence if and only if for every positive real number there is a natural number N such that the absolute difference |xm - xn| is
+less than for all m and n greater than N .
+2.4.33. Negating Restricted and Unrestricted Existentials a. Formulate (x  P)Qx without using a restricted quantifier. b. Negate and simplify both sentences in part a. Then tell why these represent the same sentence.
+
+2.4 Inference Rules for Existential Quantifiers
+
+147
+
+Exercises 34­36: Formal and Informal Deductions Construct deductions for the following mathematical results, as instructed. Take Examples 11 and 12 as models for how much logical detail to supply.
+2.4.34. Identities and Inverses a. Give a formal proof to show that the additive identity for arithmetic is unique, i.e., deduce !zx(x + z = x  z + x = x) (see Example 11). b. Give an informal argument to show that the additive inverse of any real number is unique.
+2.4.35. Prove the following argument in two ways, first by giving an informal argument, and second by giving a formal argument: All rational numbers are algebraic. All transcendental numbers are not algebraic. Some real numbers are transcendental. Therefore, some real numbers are irrational.
+2.4.36. Using the definition for being odd, x(Ox  y(x = 2y + 1)), plus any laws of algebra, construct a formal proof of the fact that the product of two odd numbers is odd. The argument is sketched in Examples 1 and 4.
+
+Chapter 3
+Mathematical Induction and Arithmetic
+
+3.1 Mathematical Induction and Recursion
+First-Order Logic supplies two methods for proving universal sentences--the direct method of Universal Generalization and the indirect method of Proof by Contradiction. Proof by Mathematical Induction (PMI ) is a strategy that can be used when the universal quantifier ranges over the set of natural numbers. This is a proof technique found throughout mathematics, though it originates in natural number arithmetic.
+Our focus in this section is on the most basic form of mathematical induction. We'll explain its overall strategy, give an intuitive argument for its soundness, illustrate it with examples from various fields of mathematics, and show how it's related to Recursive Definition. Later sections look at some variations and extensions of PMI, investigate its theoretical basis in Peano Arithmetic, and explore the notion of divisibility for the natural numbers.
+
+3.1.1 Introduction to Mathematical Induction
+
+To introduce Proof by Mathematical Induction,
+
+we'll analyze the Tower of Hanoi (Figure 3.1),
+
+a favorite game of mathematicians, computer
+
+scientists, and neuro-psychologists because of
+
+the thought process involved. This one-person game1 is played by moving discs, one at a time,
+
+from a starting peg to a terminal peg, using a
+
+third peg for temporary holding, never placing
+
+a larger disc on top of a smaller one.
+
+Fig. 3.1 Tower of Hanoi
+
+Playing the game isn't difficult when there are only a few discs, but it be-
+
+comes harder with a large number of discs. And determining the least number
+
+of moves needed to complete the game in general may seem impossible.
+
+We'll show that the game can be played, and we'll determine the optimal
+
+number of moves, regardless of how many discs are used. Before you read the
+
+analysis below, try the game yourself with three or four discs. If you don't
+
+have the game at hand, play it online or with different sized coins, using dots
+
+on a piece of paper to represent the pegs.
+
+Game Analysis 1) For one disc, the game takes one move.
+
+1 Invented by mathematician and Fibonacci aficionado E. Lucas in 1883, versions of this game and a discussion of its history can be found on numerous web sites.
+
+© Springer Nature Switzerland AG 2019
+
+149
+
+C. Jongsma, Introduction to Discrete Mathematics via Logic and Proof,
+
+Undergraduate Texts in Mathematics,
+
+https://doi.org/10.1007/978-3-030-25358-5 3
+
+

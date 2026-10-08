@@ -1,4 +1,4 @@
-# 04 经典加成：等价矩阵与六家账本
+# 第 04 章 经典加成：等价矩阵与六家账本
 
 > 对书：Mints §2.9 / §3（Glivenko 预告）/ Huth&Ryan §1.2.5 / Mendelson §1.2
 > 通道：C/A/L/I/H4/T（HoTT 首秀）
@@ -88,7 +88,7 @@ Qed.
 注入成 P∨¬P 喂 h 得矛盾——于是 `inr` 把这个 ¬P 注入成 P∨¬P
 再喂 h，矛盾收工。**自指喂食**：证伪器两次吃到由它自己担保
 存在的析取。这是「经典性的半个事实」——LEM 的双重否定在构造
-世界免费，去掉双重否定才收费（DNE）。11 章 Glivenko 定理
+世界免费，去掉双重否定才收费（DNE）。12 章 Glivenko 定理
 把这个观察推广成定律：命题逻辑里，每个经典可证式的 ¬¬ 化都
 直觉可证。
 
@@ -137,7 +137,7 @@ Print Assumptions classical_dne.           (* classic *)
 ```
 
 矩阵零公理，本体记 classic——**「等价」是构造事实，「成立」是
-经典特权**。13 章将给出反方向的封顶：构造内核下这些本体**真的**
+经典特权**。14 章将给出反方向的封顶：构造内核下这些本体**真的**
 证不出来（Kripke 两世界反模型）。
 
 ## 六家账本对照
@@ -147,7 +147,7 @@ Print Assumptions classical_dne.           (* classic *)
 | Rocq | Closed（Section Variable） | `From Stdlib Require Classical_Prop` 后可证 | `Print Assumptions` 列 `classic` |
 | Agda | 零公理 | **写不出来** | 无公理机制（只能 postulate，本章不引） |
 | Lean | 零公理（原理作参数） | `by_cases`/`Classical.em` | `#print axioms` 列 `Classical.choice, propext, Quot.sound` |
-| HoTT | 零公理 | 形态修正：LEM 只对 `IsHProp` | 同 Rocq（泛等公理另册，11/12 章） |
+| HoTT | 零公理 | 形态修正：LEM 只对 `IsHProp` | 同 Rocq（泛等公理另册，12/13 章） |
 | Isabelle | blast 直证 | **内核白送，零额外公理** | 无账单（经典性在内核） |
 | HOL4 | PROVE_TAC 直证 | **内核白送** | 无账单 |
 
@@ -171,7 +171,7 @@ Definition LEM_hprop :=
 
 截断是 HoTT 给「哪些类型配叫命题」的精确回答。`dne→lem` 桥
 在 HoTT 里还要多证一步 `IsHProp (A + ¬A)`（析取的截断性）——
-12 章收这条伏笔。
+13 章收这条伏笔。
 
 ## 本章小结
 
@@ -180,7 +180,7 @@ Definition LEM_hprop :=
 - 等价矩阵的每条边都是**构造性**证明（Section Variable 手法）；
   原理本体才需要经典公理。等价≠成立。
 - `¬¬(P∨¬P)` 的自指喂食是全场最漂亮的构造步，也是 Glivenko
-  现象（11 章）的预演。
+  现象（12 章）的预演。
 - 六家三种记账文化：显式公理（Coq/Lean/HoTT）、无公理设施
   （Agda）、内核白送（Isabelle/HOL4）。
 - HoTT 给 LEM 加了形态条件：只有 mere proposition 配排中。

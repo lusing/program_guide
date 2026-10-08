@@ -6,7 +6,7 @@ module ex01_intro where
 open import Data.Empty using (⊥)
 open import Relation.Nullary using (¬_)
 
--- 命题层先用 Set 一层（教学取舍；深水区在第 11 章再谈层级）
+-- 命题层先用 Set 一层（教学取舍；深水区在第 12 章再谈层级）
 
 mp : {P Q : Set} → (P → Q) → P → Q
 mp = λ f p → f p
@@ -19,7 +19,7 @@ imp-trans f g p = g (f p)
 
 -- 经典哨兵：¬ ¬ P → P。
 -- Agda 的正确姿势是「声明不可证」而不是 postulate——
--- 用反模型说话（第 13 章 Kripke 两世界框架）；
+-- 用反模型说话（第 14 章 Kripke 两世界框架）；
 -- 这里先立一个可以证的邻居：Peirce 的「弱化版」也证不出，见 04 章。
 
 -- 坑位速记（Agda 侧）：

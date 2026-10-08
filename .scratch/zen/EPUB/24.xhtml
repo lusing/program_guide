@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#" lang="cn" xml:lang="cn">
+  <head>
+    <title>第7章　单例模式</title>
+  </head>
+  <body><h2 class="p2" id="sigil_toc_id_33">第7章　单例模式</h2> 
+<h3 class="p3" id="sigil_toc_id_34">7.1 我是皇帝我独苗</h3> 
+<p class="ziti">自从秦始皇确立了皇帝这个位置以后，同一时期基本上就只有一个人孤零零地坐在这个位置。这种情况下臣民们也好处理，大家叩拜、谈论的时候只要提及皇帝，每个人都知道指的是谁，而不用在皇帝前面加上特定的称呼，如张皇帝、李皇帝。这一个过程反应到设计领域就是，要求一个类只能生成一个对象（皇帝），所有对象对它的依赖都是相同的，因为只有一个对象，大家对它的脾气和习性都非常了解，建立健壮稳固的关系，我们把皇帝这种特殊职业通过程序来实现。</p> 
+<p class="ziti">皇帝每天要上朝接待臣子、处理政务，臣子每天要叩拜皇帝，皇帝只能有一个，也就是一个类只能产生一个对象，该怎么实现呢？对象产生是通过new关键字完成的（当然也有其他方式，比如对象复制、反射等），这个怎么控制呀，但是大家别忘记了构造函数，使用new关键字创建对象时，都会根据输入的参数调用相应的构造函数，如果我们把构造函数设置为private私有访问权限不就可以禁止外部创建对象了吗？臣子叩拜唯一皇帝的过程类图如图7-1所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0195.jpg"/></a></p> 
+<p class="middle-img">图7-1 臣子叩拜皇帝类图</p> 
+<p class="ziti">只有两个类，Emperor代表皇帝类，Minister代表臣子类，关联到皇帝类非常简单。Emperor如代码清单7-1所示。</p> 
+<p class="ziti">代码清单7-1 皇帝类</p> 
+<pre>public class Emperor {&#13;
+     private static final Emperor emperor =new Emperor();  //初始化一个皇帝&#13;
+     private Emperor(){&#13;
+             //世俗和道德约束你，目的就是不希望产生第二个皇帝&#13;
+     }&#13;
+     public static Emperor getInstance(){&#13;
+             return emperor;&#13;
+     }&#13;
+     //皇帝发话了&#13;
+     public static void say(){&#13;
+             System.out.println("我就是皇帝某某某....");&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">通过定义一个私有访问权限的构造函数，避免被其他类new出来一个对象，而Emperor自己则可以new一个对象出来，其他类对该类的访问都可以通过getInstance获得同一个对象。</p> 
+<p class="ziti">皇帝有了，臣子要出场，其类如代码清单7-2所示。</p> 
+<p class="ziti">代码清单7-2 臣子类</p> 
+<pre>public class Minister {&#13;
+     public static void main(String[] args) {&#13;
+             for(int day=0;day&lt;3;day++){&#13;
+                     Emperor  emperor=Emperor.getInstance();&#13;
+                     emperor.say();  &#13;
+             }&#13;
+             //三天见的皇帝都是同一个人，荣幸吧！&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">臣子参拜皇帝的运行结果如下所示。</p> 
+<p class="ziti5">我就是皇帝某某某....</p> 
+<p class="ziti5">我就是皇帝某某某....</p> 
+<p class="ziti5">我就是皇帝某某某....</p> 
+<p class="ziti">臣子天天要上朝参见皇帝，今天参拜的皇帝应该和昨天、前天的一样（过渡期的不考虑，别找茬哦），大臣磕完头，抬头一看，嗨，还是昨天那个皇帝，老熟人了，容易讲话，这就是单例模式。</p></body>
+</html>

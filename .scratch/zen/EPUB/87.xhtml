@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#" lang="cn" xml:lang="cn">
+  <head>
+    <title>20.2　迭代器模式的定义</title>
+  </head>
+  <body><h3 class="p3" id="sigil_toc_id_110">20.2 迭代器模式的定义</h3> 
+<p class="ziti">迭代器模式（Iterator Pattern）目前已经是一个没落的模式，基本上没人会单独写一个迭代器，除非是产品性质的开发，其定义如下：</p> 
+<p class="ziti">Provide a way to access the elements of an aggregate object sequentially without exposing its underlying representation.（它提供一种方法访问一个容器对象中各个元素，而又不需暴露该对象的内部细节。）</p> 
+<p class="ziti">迭代器是为容器服务的，那什么是容器呢？ 能容纳对象的所有类型都可以称之为容器，例如Collection集合类型、Set类型等，迭代器模式就是为解决遍历这些容器中的元素而诞生的。其通用类图，如图20-3所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0069.jpg"/></a></p> 
+<p class="middle-img">图20-3 迭代器模式的通用类图</p> 
+<p class="ziti">迭代器模式提供了遍历容器的方便性，容器只要管理增减元素就可以了，需要遍历时交由迭代器进行。迭代器模式正是由于使用得太频繁，所以大家才会忽略，我们来看看迭代器模式中的各个角色：</p> 
+<p class="ziti">● Iterator抽象迭代器</p> 
+<p class="ziti">抽象迭代器负责定义访问和遍历元素的接口，而且基本上是有固定的3个方法：first()获得第一个元素，next()访问下一个元素，isDone()是否已经访问到底部（Java叫做hasNext()方法）。</p> 
+<p class="ziti">● ConcreteIterator具体迭代器</p> 
+<p class="ziti">具体迭代器角色要实现迭代器接口，完成容器元素的遍历。</p> 
+<p class="ziti">● Aggregate抽象容器</p> 
+<p class="ziti">容器角色负责提供创建具体迭代器角色的接口，必然提供一个类似createIterator()这样的方法，在Java中一般是iterator()方法。</p> 
+<p class="ziti">● Concrete Aggregate具体容器</p> 
+<p class="ziti">具体容器实现容器接口定义的方法，创建出容纳迭代器的对象。</p> 
+<p class="ziti">我们来看迭代器模式的通用源代码，先看抽象迭代器Iterator，如代码清单20-9所示。</p> 
+<p class="ziti">代码清单20-9 抽象迭代器</p> 
+<pre>public interface Iterator {&#13;
+     //遍历到下一个元素&#13;
+     public Object next();&#13;
+     //是否已经遍历到尾部&#13;
+     public boolean hasNext();&#13;
+     //删除当前指向的元素&#13;
+     public boolean remove();&#13;
+}</pre> 
+<p class="ziti">具体迭代器如代码清单20-10所示。</p> 
+<p class="ziti">代码清单20-10 具体迭代器</p> 
+<pre>public class ConcreteIterator implements Iterator {&#13;
+     private Vector vector = new Vector();&#13;
+     //定义当前游标&#13;
+     public int cursor = 0;&#13;
+     @SuppressWarnings("unchecked")&#13;
+     public ConcreteIterator(Vector _vector){&#13;
+             this.vector = _vector;&#13;
+     }&#13;
+     //判断是否到达尾部&#13;
+     public boolean hasNext() {&#13;
+             if(this.cursor == this.vector.size()){&#13;
+                    return false;&#13;
+             }else{&#13;
+                    return true;&#13;
+             }&#13;
+     }&#13;
+     //返回下一个元素&#13;
+     public Object next() {&#13;
+             Object result = null;&#13;
+             if(this.hasNext()){&#13;
+                    result = this.vector.get(this.cursor++);&#13;
+             }else{&#13;
+                    result = null;&#13;
+             }&#13;
+             return result;&#13;
+     }&#13;
+     //删除当前元素&#13;
+     public boolean remove() {&#13;
+             this.vector.remove(this.cursor);&#13;
+             return true;&#13;
+     }&#13;
+}</pre> 
+<hr/> 
+<p class="ziti6"><span class="yanse">注意</span>　开发系统时，迭代器的删除方法应该完成两个逻辑：一是删除当前元素，二是当前游标指向下一个元素。</p> 
+<hr/> 
+<p class="ziti">抽象容器如代码清单20-11所示。</p> 
+<p class="ziti">代码清单20-11 抽象容器</p> 
+<pre>public interface Aggregate {&#13;
+     //是容器必然有元素的增加&#13;
+     public void add(Object object);&#13;
+     //减少元素&#13;
+     public void remove(Object object);&#13;
+     //由迭代器来遍历所有的元素&#13;
+     public Iterator iterator();&#13;
+}</pre> 
+<p class="ziti">具体容器如代码清单20-12所示。</p> 
+<p class="ziti">代码清单20-12 具体容器</p> 
+<pre>public class ConcreteAggregate implements Aggregate {&#13;
+     //容纳对象的容器&#13;
+     private Vector vector = new Vector();&#13;
+     //增加一个元素&#13;
+     public void add(Object object) {&#13;
+             this.vector.add(object);&#13;
+     }&#13;
+     //返回迭代器对象&#13;
+     public Iterator iterator() {&#13;
+             return new ConcreteIterator(this.vector);&#13;
+     }&#13;
+     //删除一个元素&#13;
+     public void remove(Object object) {&#13;
+             this.remove(object);&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">场景类如代码清单20-13所示。</p> 
+<p class="ziti">代码清单20-13 场景类</p> 
+<pre>public class Client {&#13;
+     public static void main(String[] args) {&#13;
+             //声明出容器&#13;
+             Aggregate agg = new ConcreteAggregate();&#13;
+             //产生对象数据放进去&#13;
+             agg.add("abc");&#13;
+             agg.add("aaa");&#13;
+             agg.add("1234");     &#13;
+             //遍历一下&#13;
+             Iterator iterator = agg.iterator();&#13;
+             while(iterator.hasNext()){&#13;
+                     System.out.println(iterator.next());&#13;
+             }&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">简单地说，迭代器就类似于一个数据库中的游标，可以在一个容器内上下翻滚，遍历所有它需要查看的元素。</p></body>
+</html>

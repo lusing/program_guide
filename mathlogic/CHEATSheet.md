@@ -8,8 +8,8 @@
 ```powershell
 cd mathlogic
 pwsh -NoProfile -Command '& ./build.ps1 -All'            # 全量 78 单元
-pwsh -NoProfile -Command '& ./build.ps1 -File ex46_hoare.v'   # 单文件
-pwsh -NoProfile -Command '& ./build.ps1 -Chapter 46_hoare'    # 单章
+pwsh -NoProfile -Command '& ./build.ps1 -File ex50_hoare.v'   # 单文件
+pwsh -NoProfile -Command '& ./build.ps1 -Chapter 50_hoare'    # 单章
 ```
 
 | 通道 | 入口 | 判定 |
@@ -71,7 +71,7 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 46_hoare'    # 单章
 ## 语义嵌入模式（横评结论）
 
 - **深嵌入**（本章主流）：语法自建归纳类型，语义/推导全是引理
-  ——46 章的 cmd/exec/hoare 全是这个形状
+  ——50 章的 cmd/exec/hoare 全是这个形状
 - **浅嵌入**（05 章 Hilbert 示范）：宿主 Prop 当对象逻辑的
   Prop，推导规则变成定理持续器——代码量小但受限
 - 布尔截面：`nat -> bool` 表示谓词（09 DPLL）vs Prop 值语义
@@ -87,54 +87,54 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 46_hoare'    # 单章
    路径拼接 Substring(2)
 
 
-## H&R 扩充新坑（时态·模态·符号 MC——新号 35-48）
+## H&R 扩充新坑（时态·模态·符号 MC——新号 39-49）
 
 ### Coq（Rocq 9.1）
 
-- 否定进归纳谓词（36 章 lsat）→ 非严格正性——语义改**公式结构
+- 否定进归纳谓词（40 章 lsat）→ 非严格正性——语义改**公式结构
   Fixpoint**（递归在子公式，位置不动）
 - Notation 定义的总公式**不能 unfold**——`Cannot coerce to an
-  evaluable reference`（38 章 EFP）；全走 simpl
+  evaluable reference`（42 章 EFP）；全走 simpl
 - F 见证的 destruct 是对 `(∃j, ≤ ∧ …)`——`[j [_ Hj]]` 两层
-  拆（38 章）
+  拆（42 章）
 - `discriminate` 裸调不收「假等式目标」（0 = 2）——要
-  `discriminate H` 或 lia（38 章）
+  `discriminate H` 或 lia（42 章）
 - `apply Htr with (y := v)` 的隐式 unify 岔开——全参显式
-  `apply (Htr w v u)`（44 章）
+  `apply (Htr w v u)`（48 章）
 - 探针赋值的双 eqb match：`Nat.eqb_neq` 的 proj2 提供
-  `(v =? w) = false`，外层 match 对 false 直接 iota（44 章）
+  `(v =? w) = false`，外层 match 对 false 直接 iota（48 章）
 - 迭代同构引理不能 reflexivity——两个 Fixpoint 对**轮次归纳**
-  （42 章）
-- `F [] = B` 的种子步：app_nil_r 前先 unfold unionL（42 章）
+  （46 章）
+- `F [] = B` 的种子步：app_nil_r 前先 unfold unionL（46 章）
 
 ### Lean（bare core）
 
 - `cases h : starve k` 目标含 starve (k+1) 报 free variables
-  ——**generalize hs : starve k = s** 先抽象（37 章）
+  ——**generalize hs : starve k = s** 先抽象（41 章）
 - `decide` 只收闭目标；含自由变量的成员判定换 simp 方程引理
-  （37 章）
+  （41 章）
 - `Nat × Nat × Nat` 是**右嵌套**（Coq 左嵌套相反）——投影
-  s.1 / s.2.1 / s.2.2（37 章）
+  s.1 / s.2.1 / s.2.2（41 章）
 - `simp [模型] at hs` 常把成员命题收成**单个反向等式**——
-  `first | exact hs | exact hs.symm` 直收（38 章）
-- 列表字面量是**逗号**不是分号（38 章）
+  `first | exact hs | exact hs.symm` 直收（42 章）
+- 列表字面量是**逗号**不是分号（42 章）
 - 守卫三连坑：`(s x == 0) = false` 是 Prop；`!(s x == 0)`
   elaborate 成 `!decide …`；正解 `decide (s x ≠ 0)` +
-  `of_decide_eq_true`（47 章）
+  `of_decide_eq_true`（51 章）
 - `Nat.eqb_neq` 不存在——`cases hb : Nat.beq …` + `Nat.beq_eq`
-  手工组装（44 章）
-- match 表达式内**不用 end**（44 章 T_converse 的探针赋值）
-- `by_contra` 非 core——`by_cases h : P` 替代（44 章）
+  手工组装（48 章）
+- match 表达式内**不用 end**（48 章 T_converse 的探针赋值）
+- `by_contra` 非 core——`by_cases h : P` 替代（48 章）
 
 ### Isabelle
 
 - exec 的 inductive 规则默认入 intro 集——blast/auto/force 在
   含 exec 的目标沿 eWhileT **无限展开**（600s+ 假死）——纪律：
-  exec 目标一律 **metis**（只吃给定事实）或定向 rule（47 章）
-- `of` 属性按命题**首次出现序**（15 章坑在 total correctness
-  的 V 前缀上复现——47 章）
+  exec 目标一律 **metis**（只吃给定事实）或定向 rule（51 章）
+- `of` 属性按命题**首次出现序**（16 章坑在 total correctness
+  的 V 前缀上复现——51 章）
 - 四层闭合括号少一层 = cwhile 第三参数（错误 `at ""` 的真义）
-- 会话级 sqlite 冲突：中断后必须删 ML47.db 再 build（47 章）
+- 会话级 sqlite 冲突：中断后必须删 ML51.db 再 build（51 章）
 
 ## 中译本术语对照（哈斯/瑞安版）
 
@@ -152,34 +152,34 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 46_hoare'    # 单章
 | declarative sentences | 判断语句 | 判断/宣言句 |
 | substitution | 代换 | 代入 |
 
-## Ben-Ari 扩充新坑（新号 19/26-31/33/34/39-41/48）+ Prolog 通道
+## Ben-Ari 扩充新坑（新号 20/27-32/37-38/43-45/52）+ Prolog 通道
 
 ### Prolog 通道（SWI 10，本机 scoop）
 - `:- encoding(utf8).` 必须是**物理首行**（前面连注释都不行，否则 UTF-8 注释按 GBK 报 Illegal multibyte）；
 - 运行期输出纯 ASCII（`START/END` 标记）；`format/1` 是 SWI 简写、gprolog 无——统一 `format/2`；
 - 原子名不能带撇号（`succK'` 撞引号语法）；`call(P, X, Y)` 元调用切模型；
 - clpfd 要 `:- use_module(library(clpfd)).`；零子句谓词要 `:- dynamic p/2.` 否则 findall 报 Unknown procedure；
-- `\+` 带自由变元 = 存在式否定——NAF 演示用定人查询（30 章）。
+- `\+` 带自由变元 = 存在式否定——NAF 演示用定人查询（31 章）。
 
-### 35-42 各章最重坑（详见各章速记）
-- **35**：记录域参数化（`interp (D:Type)`+`Arguments iasg {D}`）；隐式 {D} 三处坑（陈述悬空/intros 吞名/IH 显式）；as 模式必须含前提槽位（`a Hp IH` 三槽）；proj1/proj2 方向反是最高频翻车；`apply` 不展开 satE 要先 unfold；Compute 探针校准期望值；
-- **36**：α 优先于 β 否则指数爆炸；◇ 推迟支 `saturate k Γ' (lDia a :: next)`（Γ' 别丢）；重现检测必须集合语义（setEqL）；
-- **37**：as 模式坑第三次；lsat 的 lNext 展开用 simpl/change/exact 各显神通；Exp 的 X□A 支要 `change (forall j, S k <= j -> …)` 逐 j 喂；
-- **38**：Nat.mul_succ_l 匹配 `S n * m` 形（写错只报 no subterm）；◇ 相位枚举（bI 放全部可达起点）；Lean 的 Nat.add 在第二参递归（`0+b` 非定义归约）；`Nat.mul_succ_l/r` 在 core 叫 `Nat.succ_mul/mul_succ`；
-- **39**：守卫先自审（turn 协议正确守卫=「轮到我」+退出交牌）；Prop 不变式优于 bool（lia 吃字段算术）；`injection Hstep; subst s'` 是每案例起手式；辅助不变式是蕴含要手 specialize；可达集的 flat_map 不能 simpl（in_flat_map 认不出）；reach_inv 泛化起点再归纳；
-- **40**：Horn 子句「体变元 ⊆ 头变元」用眼睛盯（头写错=野变元+答案集错位）；答案沿链累积（`s ++ acc`）+换名链追踪（chaseX）；unifyL 双表递归改累积式；Lean 的 `Sub` 撞核心类名、`open Tm` 后裸构造子名当绑定子会撞；
-- **41**：resolvent 的 C2 段消 ¬l（`removeLit (oppl l)`）；PHP(2,2) 可满足（最小不可满足鸽笼从 PHP(3,1) 起）；match-only 函数写 Fixpoint 则 existsb 引理全 apply 不上（non-recursive 警告是线索）；existsb_exists 合取序 In 在前；iff 嵌在 `||` 下触发 setoid——先 `apply (proj2 (orb_true_iff _ _))`；Lean 的 Bool cases 顺序 false 在前；
-- **42**：赋值变换器两层混淆（`CAssn (fun s => upd 0 (s 0-1) s)` 才对）；守卫里的绑定子挡 rewrite（unfold+simpl 先行）；fuel 算术要用真算术（lia 报 Cannot find witness 先查自己）；状态序不可颠倒（B 在 A 之上）；exists 形态优于 match 形态（exact 吃定义等价）；Lean 的 `while/skip/seq` 全是关键字（构造子加 c 前缀）；`Nat.eqb_refl` 不在裸 core；`replace X = Y by omega` 不存在（用 have+rw）。
+### Ben-Ari 八章最重坑（新号 20/29/31/32/43-45/52，详见各章速记）
+- **20**：记录域参数化（`interp (D:Type)`+`Arguments iasg {D}`）；隐式 {D} 三处坑（陈述悬空/intros 吞名/IH 显式）；as 模式必须含前提槽位（`a Hp IH` 三槽）；proj1/proj2 方向反是最高频翻车；`apply` 不展开 satE 要先 unfold；Compute 探针校准期望值；
+- **43**：α 优先于 β 否则指数爆炸；◇ 推迟支 `saturate k Γ' (lDia a :: next)`（Γ' 别丢）；重现检测必须集合语义（setEqL）；
+- **44**：as 模式坑第三次；lsat 的 lNext 展开用 simpl/change/exact 各显神通；Exp 的 X□A 支要 `change (forall j, S k <= j -> …)` 逐 j 喂；
+- **45**：Nat.mul_succ_l 匹配 `S n * m` 形（写错只报 no subterm）；◇ 相位枚举（bI 放全部可达起点）；Lean 的 Nat.add 在第二参递归（`0+b` 非定义归约）；`Nat.mul_succ_l/r` 在 core 叫 `Nat.succ_mul/mul_succ`；
+- **52**：守卫先自审（turn 协议正确守卫=「轮到我」+退出交牌）；Prop 不变式优于 bool（lia 吃字段算术）；`injection Hstep; subst s'` 是每案例起手式；辅助不变式是蕴含要手 specialize；可达集的 flat_map 不能 simpl（in_flat_map 认不出）；reach_inv 泛化起点再归纳；
+- **31**：Horn 子句「体变元 ⊆ 头变元」用眼睛盯（头写错=野变元+答案集错位）；答案沿链累积（`s ++ acc`）+换名链追踪（chaseX）；unifyL 双表递归改累积式；Lean 的 `Sub` 撞核心类名、`open Tm` 后裸构造子名当绑定子会撞；
+- **29**：resolvent 的 C2 段消 ¬l（`removeLit (oppl l)`）；PHP(2,2) 可满足（最小不可满足鸽笼从 PHP(3,1) 起）；match-only 函数写 Fixpoint 则 existsb 引理全 apply 不上（non-recursive 警告是线索）；existsb_exists 合取序 In 在前；iff 嵌在 `||` 下触发 setoid——先 `apply (proj2 (orb_true_iff _ _))`；Lean 的 Bool cases 顺序 false 在前；
+- **32**：赋值变换器两层混淆（`CAssn (fun s => upd 0 (s 0-1) s)` 才对）；守卫里的绑定子挡 rewrite（unfold+simpl 先行）；fuel 算术要用真算术（lia 报 Cannot find witness 先查自己）；状态序不可颠倒（B 在 A 之上）；exists 形态优于 match 形态（exact 吃定义等价）；Lean 的 `while/skip/seq` 全是关键字（构造子加 c 前缀）；`Nat.eqb_refl` 不在裸 core；`replace X = Y by omega` 不存在（用 have+rw）。
 
 ### 中译本/2e 取材注记
 - 2e OCR 公式区不可靠——公式一律以 3e 文本层为准；2e 仅取 §8.3（cut/NAF/CWA 叙述）与 §8.5（CLP 概念）；Z 记号章跳过（裁决）；
 - 3e 页偏移（PDF=书页+Δ，Δ 按章 6-13 跳变——数字版删了章间空白页）：提取时按章实测。
 
-## Jongsma 扩充新坑（离散底座——新号 49-57）
+## Jongsma 扩充新坑（离散底座——新号 53-61）
 
-**数学先于战术**（三连：43/49/51）——目标为假时 lia 的
+**数学先于战术**（三连：53/55/61）——目标为假时 lia 的
 "Cannot find witness" 是**正确判断**：55 章 `2*2 ≤ (k₁'+1)(k₂'+1)`
-不真（应证乘积=1）；57 章 filter 口径的度数引理在自环 (v,v)
+不真（应证乘积=1）；61 章 filter 口径的度数引理在自环 (v,v)
 上是假命题（改多重图递归口径后成定义方程）。写证明前先验算。
 
 **PDF 文本层丢上杠**（50）——§7.3 命题的补运算排印在提取文本
@@ -187,16 +187,16 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 46_hoare'    # 单章
 x(x̅+y)=xy 同病。处方：涉及补的公式按数学实体校读，机器是
 唯一裁判。
 
-**Coq**：`Nat.mul_cancel_l/r` 是 iff 且非零因子在第三参（45/48/49
-三连坑）；`rw` 对含自由字母的项全局改写会自我指涉爆炸（45 的
+**Coq**：`Nat.mul_cancel_l/r` 是 iff 且非零因子在第三参（55/58/59
+三连坑）；`rw` 对含自由字母的项全局改写会自我指涉爆炸（55 的
 gcdn——remember/反向 rw/congrArg 三解）；min/max 这类条件定义
-暴力 destruct 后化简失灵——**特征引理装配范式**（49 四条
+暴力 destruct 后化简失灵——**特征引理装配范式**（59 四条
 big/sml + assert + rewrite）；`le_lt_dec` 右支是 `<` 要 `≤` 时
 用 `ltac:(lia)` 作实参；`destruct … eqn:E` 已替换 scrutinee、
 勿再 `rewrite E`；iff 引理用 `proj1/proj2` 解包；`filter_In`
 只用于成员关系，等式造成员用 `rewrite F; left; reflexivity`；
 自定义折叠（lsum）保持**折叠形纪律**——`lsum_cons` 引理 +
-`cbn [map]` 白名单，绝不全 simpl（51 的 IH 失配连坑）。
+`cbn [map]` 白名单，绝不全 simpl（61 的 IH 失配连坑）。
 
 **Lean 4.25 裸 core 件名录**：`Nat.leb`/`Nat.leb_le`/`Nat.decide`
 不存在——布尔比较改 Prop 级 `if x ≤ y` + `if_pos`/`if_neg`
@@ -206,19 +206,19 @@ not_false/true_and/false_and/and_true/and_false` 全家可用；
 即完整应用；`.lsum` 式点语法不存在（找 List.lsum）。
 
 **Lean omega 三律**：无非线性字面量因子的假设**被静默丢弃**
-→先纯等式链蒸馏成线性（49 的 hLin：Nat.succ_mul 展开须 have
+→先纯等式链蒸馏成线性（59 的 hLin：Nat.succ_mul 展开须 have
 显式类型钉 `+1` 拼法）；直证**合取目标**拉 Classical.choice
 →拆单目标；面对**非算术目标**也拉 choice→`(by omega : False).elim`。
 
-**Lean term/match**：term 级 match 的臂是项不是 tactic（50 djn
+**Lean term/match**：term 级 match 的臂是项不是 tactic（60 djn
 规格件）；变量等式 `x = 0` 不能 rfl——用见证 `p.1`；系数写在
 minterm 右侧（&&/|| 从左匹配，字面量在左死项才先归零），
 dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 对 ≠-合取目标失灵（单边 rfl 可证也不行）→先证 rfl 步进引理
-再 `rw`（51 的 greedy_step）。
+再 `rw`（61 的 greedy_step）。
 
 **Lean stdlib 公理传递**：`List.erase` 引理族自带
-`Classical.choice`（51 鸽笼的 pick_notin 及下游账本显式记账；
+`Classical.choice`（61 鸽笼的 pick_notin 及下游账本显式记账；
 自证区间鸽笼撞加法性墙——拆两段各自 ≤ |L| 推不出和 ≤ |L|，
 需区间表强化归纳）。
 
@@ -228,7 +228,7 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 （平衡 3=3），反例是 K3,4（3≠4）——书 Ex 8.2.17 判据两侧各
 有机型，勿张冠李戴。
 
-## 20-25/29/32 章新坑（EFT 扩充全谱）
+## 21-26/30/33 章新坑（EFT 扩充全谱）
 
 - **Lean native_decide 救 reflexivity/decide**：解释表用深 `match s, args`
   写的有限结构求值，`by rfl`/`by decide` 卡在 Decidable 实例归约
@@ -239,30 +239,30 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 - **Bool 等值**：Coq 用 `Bool.eqb`（=? 是 nat 专用）；Lean 用 `==`。
 - **对账要双向**：翻译保真验一真一假两例——假方向恰好证明没丢/没引
   入信息。
-- （20 章其余坑见上节：嵌套归纳无 IH、Lean 符号项 defeq 卡死、conj
+- （21 章其余坑见上节：嵌套归纳无 IH、Lean 符号项 defeq 卡死、conj
   遮蔽、∃A 新鲜性 compute、账本 choice 对照。）
-- **24 章新坑**（前文已录，此处归并索引）：forall 条件合取=∀。
-- **32 章新坑**：燃料预算不足（P₀ 需 3n+20——首版 n+10 被拒）；
+- **25 章新坑**（前文已录，此处归并索引）：forall 条件合取=∀。
+- **33 章新坑**：燃料预算不足（P₀ 需 3n+20——首版 n+10 被拒）；
   HALT 检测=pc 不动（注意自跳 rife r 0 0 也不停）；Prolog 变量名带
   撇号与全角注释组合解析炸（统一 Cfg2）；Example 的 kernel 归约比
   Compute 慢一个量级（对账数值小则无碍）。
-- **29 章新坑**：泛性质首版少生成元约定（无条件唯一是假命题——
+- **30 章新坑**：泛性质首版少生成元约定（无条件唯一是假命题——
   机器拒证即抓包）；Lean `a = b && c` 解析成 `(a = b) && c`（= 级
   50 高于 && 35——布尔等式 RHS 必加括号）；foldr 累加器交换自证
   （核心库不带）；Coq andb 族在 Stdlib.Bool。
-- **25 章新坑**：连通式平凡满足（正向 ∃ 全关系——必须否定式）；
+- **26 章新坑**：连通式平凡满足（正向 ∃ 全关系——必须否定式）；
   chain 边写漏（结构自检先于断言）；函词混关系（fid 无解释——改
   S(x,y) 关系式）；Lean 公式上 ! 不可用（iff 用 conj/imp 组合）；
   嵌套 conj 括号连错四次（单行参数+程序平衡检查收场）。
-- **24 章新坑**：手推让位于穷举（Z₂/Z₃ 分离轮数手推 3 实为 2——
+- **25 章新坑**：手推让位于穷举（Z₂/Z₃ 分离轮数手推 3 实为 2——
   以机器真值修断言）；Prolog forall 条件合取=∀、动作合取才是 ∃
   （回溯供存在量词——胜负全反的源头）；负结果 if-else 标签易反；
   规模×轮数组合防爆（8 元×5 轮≈百万叶）。
-- **23 章新坑**：数学先于战术×2（有限线序永不稠密——机器拒证是
+- **24 章新坑**：数学先于战术×2（有限线序永不稠密——机器拒证是
   对的；「不可有限公理化」的对象是有限性而非 DLO）；空真陷阱（稠密
   在单点域空真，穷举从 n≥2 起）；σₙ 嵌套括号程序生成；Lean 草稿
   sorry/where 残留要清。
-- **22 章新坑**：嵌套结构相等 mutual/fuel/list-外层三连拒（fuel 单
+- **23 章新坑**：嵌套结构相等 mutual/fuel/list-外层三连拒（fuel 单
   Fixpoint 收）；合同闭包两炸（无界 f-提升→T4 截断；重复项→每轮
   dedup）；canon 须统一次序+自反闭包；Lean 严格正定性拒高阶辅助谓词
   （cong 内联 cong0/congS）；求值器 neg 穿透明量词会算错。

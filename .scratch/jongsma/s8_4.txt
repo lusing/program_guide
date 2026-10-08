@@ -1,0 +1,823 @@
+8.4 Coloring Graphs
+
+455
+
+8.4 Coloring Graphs
+
+We’ve now looked at two diﬀerent ways to do walks through a graph, and we’ve explored when graphs can be drawn without crossings. For our ﬁnal section, we’ll look at the topic of coloring a graph, which was initially linked to planarity. Once again, this has an interesting history.
+
+8.4.1 Origin of the Four-Color Problem
+
+In 1852, one of Augustus De Morgan’s students asked him whether one can always color a map using only four colors, if regions sharing a border receive diﬀerent colors. His brother, the student said, had drawn this conclusion while coloring the map of England (see Figure 8.5).
+De Morgan was intrigued by the question. Failing to answer it, he tried to enlist Hamilton’s assistance, noting that “it is tricky work, and I am not sure of the convolutions.” Hamilton replied by return mail: “I am not likely to attempt your Fig. 8.5 Map of England “quaternion” of colours very soon.”
+De Morgan continued to work on the problem and mentioned the result in a book review he wrote in 1860 for a literary magazine. It took nearly 20 years, though, before it received broader attention and interest from the mathematical community. Arthur Cayley commented on it at the 1878 London Mathematical Society meeting. The sticking point in solving it, he later pointed out, is that one can’t always extend a four-coloring for n regions of a map to the next region—the new region might enclose all n areas, so one might need to backtrack and alter the earlier coloring.
+
+✜ Example 8.4.1
+Show that the exhibited simple map requires 4 colors, and illustrate Cayley’s point about what could happen if it were part of a larger map.
+
+Solution If we color the central region red, the three surrounding sectors will need colors like blue, green, and yellow, since they each share a boundary with the other three. If more rings are placed around this map, one might start coloring them as indicated, but that runs into trouble with the outer ring, if only four colors can be used. Backtracking, this impasse can be avoided by more judiciously choosing colors for the second ring, as shown. Now four colors are suﬃcient.
+
+R BY G
+R BY G ?
+R BY G
+R BY R G
+
+456
+
+8 Topics in Graph Theory
+
+One year after Cayley publicized the problem, Alfred Kempe, who had been his student earlier at Cambridge, published a proof in the American Journal of Mathematics that four colors did, in fact, suﬃce.3 His argument purported to show that if regions with four or fewer colors surrounded a region yet to be colored, then these colors could in all instances be reduced to three by appropriately shifting reds and greens or blues and yellows along chains of neighboring regions, freeing up a fourth color for the inner region.
+
+8.4.2 Kempe Chains and the Four-Color Problem
+
+Near the end of his paper, Kempe noted that one can conceptualize maps as linkages, now called graphs. Points would represent regions, and points of neighboring regions would be connected by an edge (see Exercise 8). Properly coloring a map, then, would translate into coloring/labeling the vertices of a planar graph so that adjacent vertices have diﬀerent colors/labels. Using this graph-theoretic interpretation, we’ll sketch Kempe’s argument for the case when a central region is surrounded by four other regions.
+
+✜ Example 8.4.2
+Prove that if a map is four-colorable except for a region surrounded by four
+other regions, then the entire map can be colored with four colors.
+
+P· rLoeotf
+
+: G
+
+be
+
+a
+
+planar
+
+graph
+
+representing
+
+such
+
+a
+
+map,
+
+and
+
+let
+
+u be a vertex that is adjacent to four other vertices, as
+
+pictured.
+
+Y
+
+G
+
+If the surrounding vertices are colored with fewer than
+
+u
+
+four colors, the interior vertex u can be colored with one R B
+
+of the remaining colors, making this conﬁguration—and
+
+thus the entire graph—four-colorable.
+· Now suppose the surrounding vertices are colored red, blue, green, and
+
+yellow, in counterclockwise order. Label these vertices R, B, G, Y . We’ll
+
+consider two possibilities for the four-colorable subgraph G that omits u.
+· First, suppose G contains no walk of alternating red-green vertices con-
+
+necting R and G. We can then interchange colors for all red and green
+
+vertices along such walks connected to R, freeing up the color red for u and
+
+making G four-colorable.
+· Otherwise there will be a walk of alternating red-green vertices in G (dot-
+
+ted) from R to G.
+· Since G is planar, no alternating blue-yellow walk in G will connect B to
+
+Y , being blocked by the red-green walk.
+· Thus, we can interchange blue and yellow in any such walks connected to B
+
+and then color u blue, again making the given conﬁguration and the entire
+
+graph G four-colorable.
+
+3 Robin Wilson’s Four Colors Suﬃce (Princeton University Press, 2013) gives a fascinating and very readable account of the entire history of the four-color problem.
+
+8.4 Coloring Graphs
+
+457
+
+8.4.3 Demise of Kempe’s Four-Color Theorem
+
+Kempe’s overall proof strategy for map coloring was to select a region adjacent to at most ﬁve regions—guaranteed by the Five Neighbors Theorem (see Exercise 8.3.18)—and ﬁrst color the rest of the map in a valid way. To ﬁnish, then, he had only to show how this chosen region and its neighbors could be colored with at most four colors, even if it was adjacent to ﬁve regions. Using an alternating-color chain argument, he showed that this conﬁguration, too, could be recolored so that it and therefore the entire graph would be four-colored. Or so he and everyone else thought at the time.
+Kempe’s proof of his Four-Color Theorem stood for a decade. Then in 1890, Percy Heawood published an article giving a counterexample of 28 regions that invalidated Kempe’s argument. Later, mathematicians discovered simpler counterexamples to Kempe’s method of proof.
+
+✜ Example 8.4.3
+Show that Kempe’s argument fails for a graph with fewer than 28 vertices.
+
+Solution
+· A colored nine-point planar graph that can’t be recolored using Kempe’s
+
+method of color exchanges along a chain of alternating colors is given below.4 Here the uncolored vertex u is surrounded by a pentagon of ﬁve
+
+points colored red, blue, green, yellow, and blue in counterclockwise order.
+· This graph has an alternating red-green walk connecting
+
+the pentagon’s red and green vertices, but interchanging
+
+Y
+
+these colors won’t make either of them available for u. B
+
+G
+
+· And, unlike Kempe’s argument for the case in which a
+
+u
+
+central vertex is surrounded by four vertices, the exis- R
+
+B
+
+tence of this red-green walk doesn’t show that no blue-
+
+Y
+
+yellow walk connects vertices on the pentagon. Inter- G
+
+R
+
+changing blue and yellow won’t free up a color for u.
+
+· The same conclusion follows if we begin with red and yellow: neither blue
+
+nor green is freed up for u (see Exercise 9ab).
+· Thus, the vertex u will in all cases remain attached to vertices having four
+
+colors.
+· Hence, Kempe’s argument using color interchanges along an alternating
+
+two-color chain fails for this graph.
+
+Having a counterexample to Kempe’s argument doesn’t mean, of course, that this graph can’t be four-colored, only that a diﬀerent color assignment is needed if it can (see Exercise 9c). So the Four-Color Theorem itself might still be true. As a modest step toward that result, we’ll show that ﬁve colors suﬃce. Kempe’s chain method still works here, as Heawood showed.
+
+4 This is Alexander Soifer’s minimal counterexample. See The Mathematical Coloring Book (Springer, 2009), p. 182. The Fritsch Graph provides another counterexample on nine vertices.
+
+458
+
+8 Topics in Graph Theory
+
+Theorem 8.4.1: The Five-Color Theorem Every planar graph can be colored with at most ﬁve colors.
+
+Proof :
+· We’ll ﬁrst prove this using induction on the number of vertices. · Obviously, any graph with ﬁve or fewer vertices can be colored with ﬁve or
+
+fewer colors.
+· Now suppose that all planar graphs containing k vertices can be colored
+
+with at most ﬁve colors, and let G be a planar graph with k + 1 vertices.
+
+Since G is planar, it has a vertex u with deg u ≤ 5.
+· Let G denote the subgraph of G with u and its edges deleted.
+
+By our induction hypothesis, G can be colored with ﬁve or fewer colors.
+· If less than ﬁve colors are used for the vertices adjacent to u, color u with
+
+an unused color, and G will be colored with at most ﬁve colors.
+· If ﬁve colors are used, suppose the ﬁve vertices R, B, G, Y, W surrounding
+
+u counterclockwise have the colors red, blue, green, yellow, and white.
+· As in Example 2, we have two cases to consider. · First, if there is no walk of alternating red-green vertices in G connecting
+
+R and G, interchange all red and green vertices connected by such walks
+
+to R and then color u red.
+
+· Else there is such a walk (shown as dotted) of alternating
+
+red-green vertices in G from R to G.
+
+W
+
+· In this case, since G is planar, no alternating blue-yellow
+
+Y u
+G
+
+walk in G connects B to Y , so we can interchange blue R
+
+and yellow in any such chains connected to B and then
+
+B
+
+color u blue.
+· Thus, any planar graph can be colored with at most ﬁve colors.
+
+· This theorem can also be proved by contradiction. Later proofs follow this
+
+basic approach, so we’ll sketch it out.
+· If a planar graph exists that requires six colors, then by the Well-Ordering
+
+Principle there must be minimal-order graph like this, i.e., a graph such
+
+that all graphs with fewer vertices are ﬁve-colorable.
+· Choosing a vertex in this graph of degree less than or equal to ﬁve, it and
+
+its neighbors can in all cases be colored with ﬁve colors, and in such a way
+
+that the original graph can be as well—a contradiction.
+· Fleshing out this argument is left as an exercise (see Exercise 11).
+
+8.4.4 Progress and Success on the Four-Color Theorem
+After 1890 the four-color problem was once again open. Is the Four-Color Theorem true, or might there be a counterexample to the result itself?
+The ﬁrst decades of the twentieth century saw renewed interest in the problem, and several American mathematicians made progress by using new ideas. Although we won’t go into these developments, a brief description will give a general idea of how the problem was tackled and eventually resolved.
+
+8.4 Coloring Graphs
+
+459
+
+The overall approach taken was indirect, as we just described. Suppose there were a counterexample of minimal size. If such a map must contain one of a set of unavoidable conﬁgurations, one which at the same time permits the original map to be recolored with four colors (as in Example 2), called a reducible conﬁguration, then no such minimal counterexample can exist.
+Determining an unavoidable set of reducible conﬁgurations proved to be a long and arduous task, requiring many maps to be checked. How could one shrink a promising set of unavoidable conﬁgurations down to a manageable size and show they were all reducible? Or, how could one take a large set of reducible conﬁgurations and select some to constitute an unavoidable set? People tried both approaches, inventing new ideas for generating and evaluating such conﬁgurations.
+It would be interesting to know how many fruitless hours (even on a honeymoon!) mathematicians spent trying to prove or disprove the Four-Color Theorem— drawing, coloring, and analyzing graphs. Many undoubtedly shared Hamilton’s view that the result wasn’t tempting enough to spend much time on it. But some were addicted, and the longer the problem went unsolved, the more challenging it became and the more fame it promised whoever would solve it. And, once computers became available in the 1960s and ’70s, mathematicians had a powerful resource never before available.
+In the April 1975 issue of the Scientiﬁc American, the eminent mathematical puzzler Martin Gardner announced a breakthrough on the fourcolor problem by exhibiting a map of 110 regions that he claimed required ﬁve colors. This created a brief buzz of excitement and thousands of hours of coloring by mathematics aﬁcionados, until people realized they had been pranked by an April Fool’s jokester and that the map could be colored with only four colors.5
+About a year later, Wolfgang Haken and Kenneth Appel announced that they had a computer-assisted proof of the Four-Color Theorem. By the early 1970s, a number of mathematicians had already begun to suspect that success might be imminent. Haken, who had been working on the problem for almost a decade, decided to ﬁrst construct promising unavoidable sets of conﬁgurations and test them for reducibility later. At one point he was ready to postpone further work on the problem because it looked like the job would be beyond a computer’s capability at the time, but then Appel oﬀered his expert assistance with the project’s computer programming. Together they and a few assistants eventually came up with an unavoidable set of about 2000 conﬁgurations, which were then checked for reducibility. Using 1200 hours of computer time and hours of human checking for components of the work, on July 22, 1976 they ﬁnally announced to their colleagues and the world that the problem had been solved—as the University of Illinois’ postage meter proudly proclaimed: four colors suﬃce!
+
+5 For more information on Gardner’s map and its four-coloring, see the Wolfram MathWorld posting on the Four-Color Theorem at http://mathworld.wolfram.com/FourColorTheorem.html.
+
+460
+
+8 Topics in Graph Theory
+
+The immediate reception was mixed. Several mathematicians, close to solving the problem themselves, conﬁrmed substantial parts of the proof. A few minor problems were found, but these were soon rectiﬁed. Many mathematicians were excited about the solution to a famous 125-year-old problem. But others were lukewarm or even antagonistic. The issue was whether a theorem could be considered proved if a computer was an essential collaborator. How could one know for sure that there were no bugs in the computer code and that all possible cases had been properly considered? Should an argument be accepted as a proof if it couldn’t be surveyed or veriﬁed by human experts?
+In 1996, four mathematicians presented a simpliﬁed proof of the theorem, involving fewer conﬁgurations and a smaller set of rules for proving unavoidability. This time, the computer was used for all aspects of the argument, because it was now judged to be more reliable than checking them by hand.
+About a decade later, a proof for the Four-Color Theorem was formalized using Coq, a reputable interactive computer proof checker. Gradually, most mathematicians have come to accept the legitimacy of some computer assistance in their work. To date, though, no humanly surveyable proof of the Four-Color Theorem has been found. If such exists, it will likely require completely new ideas and developments.
+
+8.4.5 Graph Coloring Equivalents
+Nothing about coloring a graph requires it to be planar—that connection arose because the original focus was on planar maps. We can ask the same question of any graph: how many colors suﬃce? That number is the chromatic number of the graph.
+
+Deﬁnition 8.4.1: Chromatic Number of a Graph
+The chromatic number χ(G) of a graph G is the least number of colors
+required to color G so that adjacent vertices have diﬀerent colors.
+
+Some natural questions that arise in this connection are: Given graphs having such and such properties, what can we say about their chromatic number? Or, given a numerical value, how can we characterize graphs having that chromatic number? Let’s ﬁrst look at an example and then generalize.
+
+✜ Example 8.4.4
+Find the chromatic number of K3,4 .
+
+Solution
+
+· K3,4 is a bipartite graph.
+
+B
+
+B
+
+B
+
+· Since the vertices in each disjoint part are not adja-
+
+cent to one another, they form a color class—they
+
+can all be colored with the same color.
+· Thus χ(K3,4) = 2, as indicated.
+
+RRRR
+
+8.4 Coloring Graphs
+
+461
+
+The same result holds for any bipartite graph: two colors suﬃce. In fact, the converse is also true. And we can also say something about the sorts of cycles in such graphs. First, a deﬁnition to lay down some terminology.
+Deﬁnition 8.4.2: Colorable Graphs
+a) A graph G is k-colorable if and only if χ(G) ≤ k. b) A graph G is k-chromatic if and only if χ(G) = k.
+
+Theorem 8.4.2: 2-Chromatic Graphs The following are logically equivalent for nontrivial connected graphs G: a) G is 2-chromatic. b) G is bipartite. c) G has no cycle of odd length.
+
+Proof :
+· Note: for nontrivial connected graphs (ones with at least two adjacent ver-
+
+tices), being 2-chromatic and being 2-colorable are the same thing: each
+
+pair of points connected by an edge requires two diﬀerent colors.
+· The following proof links two equivalence arguments. · First suppose G is 2-chromatic.
+
+Then we can separate G into two parts—the non-empty color classes.
+
+As adjacent vertices have diﬀerent colors, the only edges joining vertices
+
+are those connecting a vertex in one color class to a vertex in the other.
+
+Thus, G is bipartite.
+· Furthermore, G can’t have an odd cycle, for such cycles require 3 colors
+
+(see Exercise 16a).
+· Now suppose G is bipartite.
+
+Then we can color all the vertices in one part with one color and those in
+
+the other part with another.
+
+Thus G is 2-chromatic.
+· Finally, suppose G has only even cycles, as in the solid-lined diagram below.
+
+We’ll show that G is 2-chromatic by outlining a coloring procedure.
+
+Stage 1: Choose some vertex [1 in the diagram] and color it red.
+
+Stage 2: Color all vertices adjacent to the initial ver-
+
+R3 5
+
+tex blue [2 and 6]. None of these are adjacent, else B2 6 G would have a cycle of length three created by two
+
+of these and the ﬁrst vertex [2–6–1].
+
+4 3 R3
+
+Stage 3: Color red all uncolored vertices, if any, adja-
+
+7 R3
+
+2
+
+cent to those colored blue in stage two.
+
+1 R1
+
+B2
+
+These will not be adjacent to those colored in stage 1 [such as 3 to 1] or
+
+to one another [such as 3 to 5] because that would create an odd cycle of
+
+length three [3–1–2] or ﬁve [3–5–6–1–2].
+
+We can continue in this way, alternating blue and red, until all vertices
+
+have been properly colored (see Exercise 14a).
+
+Thus, G is 2-chromatic.
+
+462
+
+8 Topics in Graph Theory
+
+✜ Example 8.4.5
+Find the chromatic number of the exhibited Petersen graph.
+Solution
+· The Petersen graph has an odd cycle (1–2–3–4–5),
+so it’s not 2-chromatic.
+· It is 3-chromatic, though: we can color {1, 4, 8, 9}
+red, {2, 6, 7} blue, and {3, 5, 10} green.
+
+4
+
+10
+
+5
+
+3
+
+6
+
+9
+
+78
+
+1
+
+2
+
+R
+
+G
+
+G
+
+G
+
+B
+
+R
+
+BR
+
+R
+
+B
+
+We’ve characterized connected graphs that are 2-colorable; can we do the same thing for graphs that are 3-colorable or k-colorable? The answer to this seems to be “no”—it’s diﬃcult to decide which graphs can be k-colored for k ≥ 3. Maybe the best we can do is to say something about an upper bound on the chromatic number of a graph.
+
+8.4.6 Calculating Chromatic Numbers for Graphs
+A rather obvious upper bound on χ(G) is the number of vertices in G. And for complete graphs, χ(Kn) = n (see Exercise 13bc). Typically, though, a
+graph’s chromatic number is quite a bit less than the number of its vertices. Its value depends in some way on how many vertices are adjacent to one another, something that’s captured by the vertices’ degrees. For a complete
+graph, χ(G) is one more than its maximum degree. The following theorem says this is an upper bound for χ(G) in general.
+
+Deﬁnition 8.4.3: Maximum Degree of a Graph
+
+The maximum degree of a graph G is Δ(G) = max (deg(v)), taken over
+
+all vertices v in G.
+
+v∈G
+
+Theorem 8.4.3: Maximum Degree Bound for Chromatic Number
+χ(G) ≤ Δ(G) + 1
+Proof :
+· We’ll use a Greedy Coloring Algorithm to prove this result. · List the vertices in reverse order of degree, a largest-degree vertex ﬁrst, and
+so on, choosing any order among vertices having the same degree.
+· Assign color 1 to the ﬁrst vertex and to every later vertex that can be so
+colored after earlier vertices have been colored or bypassed.
+· Assign color 2 in the same way to those vertices that remain uncolored. · Continue coloring vertices like this until all vertices are colored. · When ﬁnal color m is used to color a vertex v, there will have been at least
+m − 1 vertices adjacent to v colored with other colors, so deg(v) ≥ m − 1, i.e., m ≤ deg(v) + 1.
+· But χ(G) ≤ m and deg(v) ≤ Δ(G). · Combining these inequalities, we have χ(G) ≤ Δ(G) + 1.
+
+8.4 Coloring Graphs
+
+463
+
+Because vertices may be listed in a number of diﬀerent orders when the Greedy Coloring Algorithm is used, the number of colors m produced by this procedure is not invariant, and it may not even give a good estimate for
+χ(G). We know that χ(G) ≤ m ≤ Δ(G) + 1, but we can’t say anything more
+
+deﬁnitive than this. The next example illustrates both extremes for m.
+
+✜ Example 8.4.6
+
+5678
+
+Use the Greedy Coloring Algorithm to calculate a
+color-bound m for χ(G) for the graph shown.
+
+1234
+Solution
+· As this is a bipartite graph with Δ(G) = 3, we know from the last theorem
+that the Greedy Coloring Algorithm gives 2 = χ(G) ≤ m ≤ Δ(G) + 1 = 4.
+· There are lots of order choices here—all vertices have degree 3. · Ordering vertices numerically, we get the bipartite 2-coloring—we can color
+the bottom vertices red, and the top blue. Here m = χ(G) = 2.
+· Ordering them as 1, 5; 2, 6; 3, 7; 4, 8 (bottom to top; left to right) yields a
+4-coloring: color vertices 1 and 5 red; 2 and 6 blue; 3 and 7 green; 4 and 8 yellow. In this case, m = Δ(G) + 1 = 4.
+A slight improvement on this bound for χ(G) holds for most graphs.
+Brooks’ Theorem (1941) says that if a connected graph is neither an odd
+cycle nor a complete graph, then χ(G) ≤ Δ(G). Its proof is beyond this text.
+
+8.4.7 Coloring Graphs: a Productive Diversion
+We’ve seen that some key topics in Graph Theory emerged from recreational interests—solving a puzzle, playing a game, coloring a map. Thoughtprovoking problems attract mathematical eﬀort, regardless of origin. Solutions to problems beget more diﬃcult problems, and the cycle continues. As mathematicians searched for solutions to coloring a graph, they gradually developed a network of new ideas and results in Graph Theory whose ramiﬁcations extended far beyond the original problem (which seems in any case not to have been of genuine interest to cartographers). Ideas arising in recreational contexts often turn out to have important implications for real-world problems. We’ll close this chapter by illustrating this sort of connection.
+✜ Example 8.4.7
+Explain how graph coloring can model and solve scheduling problems.
+Solution
+· Suppose one wants to schedule a number of events (track and ﬁeld events,
+academic classes, business tasks) so that people can participate in as many of them as they need or want to attend over some time period.
+· Events can be considered vertices joined by edges (somewhat counterintu-
+itively) if they need to be oﬀered at diﬀerent times, i.e., if they involve the same participants.
+
+464
+
+8 Topics in Graph Theory
+
+· Coloring such a graph will then partition the events into color classes of
+vertices that are not adjacent to one another, and so events in each class
+can be scheduled at the same time. The chromatic number of the graph
+gives the minimum number of time periods needed for the events.
+
+EXERCISE SET 8.4
+Exercises 1–6: True or False Are the following statements true or false? Explain your answer.
+8.4.1. If four regions of a planar map all border each other, one of them must be enclosed by the other three. 8.4.2. No planar map has ﬁve countries mutually adjacent to one another. 8.4.3. The outer bounded regions of a planar map are three-colorable. 8.4.4. An Eulerian graph is 2-colorable. 8.4.5. Every 2-colorable graph is Hamiltonian. 8.4.6. Every 2-colorable graph with more than 5 vertices is nonplanar.
+Exercises 7–12: Coloring Planar Maps The following problems focus on coloring planar maps and their graphs.
+8.4.7. Mo¨bius’ Five Kingdoms Puzzle a. A ruler wants to pass his kingdom on to his ﬁve heirs so that each (simply connected) region borders all the others. Can this be done? Explain. b. Would a positive solution to this puzzle prove that a planar map requires ﬁve colors? Explain. c. Would a negative solution to this puzzle show that a planar map can always be colored with four colors, as some have thought? Explain.
+8.4.8. Map Coloring and Planar Graphs a. Carefully explain how planar maps can be transformed into planar graphs. b. Transform the ﬁnal map of Example 1 into a planar graph, and color it as that map eventually was.
+8.4.9. Kempe’s Alternating-Color Chain Argument a. Show for Example 3 that if one begins by focusing on the vertices R and Y, a similar conclusion can be drawn that Kempe’s chain method fails. b. Show that any other color swap in Example 3 fails to free up a color for the central vertex u. c. Assign colors to the graph in Example 3 to show that it’s four-colored.
+8.4.10. The Six-Color Theorem Without citing the Four- or Five-Color Theorems, prove the Six-Color Theorem (any planar map can be colored with at most six colors) as follows:
+a. Using mathematical induction, as in the proof of the Five-Color Theorem. b. Using proof by contradiction, as suggested in the remarks following the
+proof of the Five-Color Theorem.
+
+8.4 Coloring Graphs
+
+465
+
+8.4.11. The Five-Color Theorem Prove the Five-Color Theorem using proof by contradiction, as suggested in the remarks following its proof in the text.
+8.4.12. Three-Dimensional Maps A three-dimensional map is a set of connected solid regions without holes. Adjacent regions are ones that share a connected two-dimensional surface. De Morgan’s student Frederick Guthrie asked the following: Does some minimum number of colors suﬃce to color all three-dimensional maps? Show that three-dimensional maps exist that require any given number of colors.
+
+Exercises 13–17: Chromatic Number The following problems explore the chromatic number of a graph.
+8.4.13. Prove or disprove:
+a. If H is a subgraph of G, then χ(H) ≤ χ(G). b. If χ(G) = n for a graph G on n vertices, then G = Kn. c. If G contains a complete subgraph on m of its vertices, then χ(G) ≥ m.
+8.4.14. Theorem 2 a. Explain why the procedure outlined in the ﬁnal part of Theorem 2’s proof will never lead to two adjacent red or blue vertices. b. Schematically indicate with PL symbolism how the proof of Theorem 2 demonstrates that all three of its claims are logically equivalent.
+8.4.15. Brooks’ Theorem Verify Brooks’ Theorem for the following graphs:
+a. The ﬂattened graph of the octahedron (see Section 8.3.1). b. The ﬂattened graph of the icosahedron (see Section 8.3.1).
+8.4.16. Coloring Cycles a. Prove that a cycle is 3-colorable. When is it 2-chromatic and when is it 3-chromatic?
+b. Explain why the conclusion of Brooks’ Theorem—χ(G) ≤ Δ(G)—fails
+when G is an odd cycle.
+8.4.17. Coloring Cubic Graphs A cubic graph is one in which each vertex has degree 3.
+a. Tell why a cubic graph can be colored with at most four colors. b. Characterize cubic graphs that are 3-chromatic. Are any 2-chromatic?
+8.4.18. Graph Coloring for Computers In compiling a program, variables are assigned to available registers. Variables can be assigned to a shared register if they are not in use at the same time. Given a limited number of registers, an optimal allocation will assign as many variables to the same register as possible. Interpret this task as a graphtheoretic coloring procedure.
+
+Exercises 19–21: Graph Coloring Color or determine the chromatic number of the following graphs.
+
+466
+
+8 Topics in Graph Theory
+
+8.4.19. Graph Coloring
+
+Color the following graphs with at most Δ(G) colors. Explain whether the
+number of colors you used is χ(G).
+
+a. 4
+
+3
+
+b. 4
+
+3
+
+c. 4
+
+3
+
+8
+
+7
+
+7
+
+6
+
+8
+
+8
+
+7
+
+5 1
+d.
+
+6 2
+
+5
+
+1
+
+2
+
+R
+
+e.
+
+5 1
+
+f.
+
+6
+
+6 2
+5
+
+4
+
+5
+
+6
+
+Q
+
+W
+
+Z
+
+P
+
+S
+
+X H
+
+BC GD
+F
+
+N M
+
+1
+
+2
+
+3
+
+J
+
+K
+
+L
+
+V
+
+T
+
+7
+
+14 13
+
+4
+
+15
+
+12
+
+16
+
+11
+
+8
+
+9 10
+
+3
+
+1
+
+2
+
+8.4.20. Bipartite Graphs
+
+Are the following graphs bipartite? Explain. Find the chromatic number of
+
+each graph.
+
+a.
+
+4
+
+b. 5
+
+4
+
+c.
+
+5
+
+5
+
+10
+
+3
+
+6 11 4
+
+879
+
+6
+
+2
+
+67
+
+93
+
+8
+
+7 12 13 10 3 892
+
+1
+
+1
+
+2
+
+1
+
+8.4.21. The Greedy Coloring Algorithm and Chromatic Number
+Use the Greedy Coloring Algorithm to determine a bound on χ(G) for the following graphs. Did your procedure produce χ(G)? Explain.
+
+a.
+
+4
+
+b. 4
+
+3
+
+c.
+
+6
+
+5
+
+5
+
+10
+
+3
+
+11
+
+9
+
+8
+
+7
+
+7
+
+4
+
+12
+
+8
+
+6
+
+7
+
+2
+
+5
+
+6
+
+9
+
+8
+
+3
+
+1
+
+d.
+
+4
+
+5
+
+3
+
+1
+e.
+
+2 4
+
+1
+
+2
+
+10
+
+9
+
+f.
+
+5 10 11 8 3
+
+8
+
+9
+
+6
+
+2
+
+1
+
+6
+
+7
+
+1
+
+2
+
+5
+
+6
+
+7
+
+1
+
+2
+
+3
+
+4
+
+Image Credits
+
+Page 2: Bust of Aristotle, Ludovisi Collection, photograph by Marie-Lan Nguyen, accessed at https://commons.wikimedia.org/wiki/File:Aristotle Altemps Inv8575.jpg/ Public domain
+Page 3: Portrait of George Boole, The Illustrated London News, 21 January 1865, accessed at https://commons.wikimedia.org/w/index.php?curid=39762976/Public domain
+Page 3: Image of Claude Shannon posing in front of bookshelf, accessed at https://s3.amazonaws.com/bell-labs-microsite-news/news/2001/february/ 26/shannon2 lg.jpeg/Reused with permission of Nokia Corporation
+Page 10: Alfred Tarski, 1968. Author: George M. Bergman. Source: Archives of the Mathematisches Forschungsinstitut Oberwolfach. Reproduced and modiﬁed with permission
+Page 184: Giuseppe Peano, School of Mathematics and Statistics, University of St Andrews, Scotland, accessed at https://commons.wikimedia.org/wiki/File:Giuseppe Peano.jpg/Public domain
+Page 255: Georg Cantor, accessed at https://commons.wikimedia.org/wiki/File:Georg Cantor2.jpg/Public domain
+Page 266: Richard Dedekind, accessed at https://commons.wikimedia.org/wiki/File:Dedekind.jpeg/Public domain
+Page 278: Kurt Go¨del, accessed at https://en.wikipedia.org/wiki/File:Kurt g%C3%B6del.jpg/Public domain
+Page 282: Ernst Zermelo, accessed at https://commons.wikimedia.org/wiki/File:Ernst Zermelo 1900s.jpg/ Public domain
+Page 283: Bertrand Russell, accessed at https://commons.wikimedia.org/wiki/File:Russell1907-2.jpg/Public domain
+Page 291: Passport photo of Alan Turing at age 16, accessed at https://commons.wikimedia.org/w/index.php?curid=22828488/Public domain
+
+© Springer Nature Switzerland AG 2019
+
+467
+
+C. Jongsma, Introduction to Discrete Mathematics via Logic and Proof,
+
+Undergraduate Texts in Mathematics,
+
+https://doi.org/10.1007/978-3-030-25358-5
+
+

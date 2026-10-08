@@ -1,0 +1,701 @@
+DIGEST 2e9a38008ed5344b4d2d9e5e2f18dae3
+Fex09_adequate_draft
+R581:584 Stdlib.Bool.Bool <> <> lib
+R586:590 Stdlib.Arith.Arith <> <> lib
+R592:594 Stdlib.micromega.Lia <> <> lib
+R596:599 Stdlib.Lists.List <> <> lib
+R601:608 Stdlib.Arith.PeanoNat <> <> lib
+R618:630 Stdlib.Lists.List ListNotations <> mod
+ind 738:739 <> fm
+constr 753:753 <> v
+constr 770:772 <> neg
+constr 786:788 <> imp
+constr 804:807 <> conj
+constr 822:825 <> disj
+R763:765 Corelib.Init.Datatypes <> nat ind
+binder 759:759 <> n:3
+R780:781 ex09_adequate_draft <> fm:1 ind
+binder 776:776 <> a:4
+R798:799 ex09_adequate_draft <> fm:1 ind
+binder 792:792 <> a:5
+binder 794:794 <> b:6
+R816:817 ex09_adequate_draft <> fm:1 ind
+binder 810:810 <> a:7
+binder 812:812 <> b:8
+R834:835 ex09_adequate_draft <> fm:1 ind
+binder 828:828 <> a:9
+binder 830:830 <> b:10
+scheme 738:739 <> fm_rect
+scheme 738:739 <> fm_ind
+scheme 738:739 <> fm_rec
+scheme 738:739 <> fm_sind
+def 851:853 <> asn
+R861:864 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R858:860 Corelib.Init.Datatypes <> nat ind
+R865:868 Corelib.Init.Datatypes <> bool ind
+def 881:885 <> beval
+R892:893 ex09_adequate_draft <> fm ind
+binder 888:888 <> f:11
+R901:903 ex09_adequate_draft <> asn def
+binder 897:897 <> s:12
+R908:911 Corelib.Init.Datatypes <> bool ind
+R924:924 ex09_adequate_draft <> f:11 var
+R935:935 ex09_adequate_draft <> v constr
+R942:942 ex09_adequate_draft <> s:12 var
+R950:952 ex09_adequate_draft <> neg constr
+R959:962 Corelib.Init.Datatypes <> negb def
+R965:969 ex09_adequate_draft <> beval:13 def
+R973:973 ex09_adequate_draft <> s:12 var
+R980:982 ex09_adequate_draft <> imp constr
+R991:995 Corelib.Init.Datatypes <> implb def
+R1010:1014 ex09_adequate_draft <> beval:13 def
+R1018:1018 ex09_adequate_draft <> s:12 var
+R998:1002 ex09_adequate_draft <> beval:13 def
+R1006:1006 ex09_adequate_draft <> s:12 var
+R1025:1028 ex09_adequate_draft <> conj constr
+R1037:1040 Corelib.Init.Datatypes <> andb def
+R1055:1059 ex09_adequate_draft <> beval:13 def
+R1063:1063 ex09_adequate_draft <> s:12 var
+R1043:1047 ex09_adequate_draft <> beval:13 def
+R1051:1051 ex09_adequate_draft <> s:12 var
+R1070:1073 ex09_adequate_draft <> disj constr
+R1082:1084 Corelib.Init.Datatypes <> orb def
+R1099:1103 ex09_adequate_draft <> beval:13 def
+R1107:1107 ex09_adequate_draft <> s:12 var
+R1087:1091 ex09_adequate_draft <> beval:13 def
+R1095:1095 ex09_adequate_draft <> s:12 var
+def 1129:1131 <> upd
+R1138:1140 ex09_adequate_draft <> asn def
+binder 1134:1134 <> s:15
+R1148:1150 Corelib.Init.Datatypes <> nat ind
+binder 1144:1144 <> n:16
+R1158:1161 Corelib.Init.Datatypes <> bool ind
+binder 1154:1154 <> b:17
+R1166:1168 ex09_adequate_draft <> asn def
+binder 1179:1179 <> i:18
+R1187:1193 Stdlib.Arith.PeanoNat Nat eqb def
+R1195:1195 ex09_adequate_draft <> i:18 var
+R1197:1197 ex09_adequate_draft <> n:16 var
+R1211:1211 ex09_adequate_draft <> s:15 var
+R1213:1213 ex09_adequate_draft <> i:18 var
+R1204:1204 ex09_adequate_draft <> b:17 var
+def 1324:1328 <> fTrue
+R1333:1334 ex09_adequate_draft <> fm ind
+R1339:1341 ex09_adequate_draft <> imp constr
+R1344:1344 ex09_adequate_draft <> v constr
+R1350:1350 ex09_adequate_draft <> v constr
+def 1367:1372 <> fFalse
+R1376:1377 ex09_adequate_draft <> fm ind
+R1382:1384 ex09_adequate_draft <> neg constr
+R1387:1389 ex09_adequate_draft <> imp constr
+R1392:1392 ex09_adequate_draft <> v constr
+R1398:1398 ex09_adequate_draft <> v constr
+def 1415:1421 <> shannon
+R1428:1430 Corelib.Init.Datatypes <> nat ind
+binder 1424:1424 <> n:19
+R1441:1444 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1438:1440 ex09_adequate_draft <> asn def
+R1445:1448 Corelib.Init.Datatypes <> bool ind
+binder 1434:1434 <> f:20
+R1453:1454 ex09_adequate_draft <> fm ind
+R1467:1467 ex09_adequate_draft <> n:19 var
+R1478:1478 Corelib.Init.Datatypes <> O constr
+R1486:1486 ex09_adequate_draft <> f:20 var
+R1498:1502 Corelib.Init.Datatypes <> false constr
+R1521:1526 ex09_adequate_draft <> fFalse def
+R1510:1514 ex09_adequate_draft <> fTrue def
+R1532:1532 Corelib.Init.Datatypes <> S constr
+R1540:1543 ex09_adequate_draft <> disj constr
+R1546:1549 ex09_adequate_draft <> conj constr
+R1552:1552 ex09_adequate_draft <> v constr
+R1562:1568 ex09_adequate_draft <> shannon:21 def
+binder 1578:1578 <> s:23
+R1583:1583 ex09_adequate_draft <> f:20 var
+R1586:1588 ex09_adequate_draft <> upd def
+R1590:1590 ex09_adequate_draft <> s:23 var
+R1595:1598 Corelib.Init.Datatypes <> true constr
+R1622:1625 ex09_adequate_draft <> conj constr
+R1628:1630 ex09_adequate_draft <> neg constr
+R1633:1633 ex09_adequate_draft <> v constr
+R1641:1647 ex09_adequate_draft <> shannon:21 def
+binder 1657:1657 <> s:24
+R1662:1662 ex09_adequate_draft <> f:20 var
+R1665:1667 ex09_adequate_draft <> upd def
+R1669:1669 ex09_adequate_draft <> s:24 var
+R1674:1678 Corelib.Init.Datatypes <> false constr
+def 1703:1712 <> agree_upto
+R1719:1721 Corelib.Init.Datatypes <> nat ind
+binder 1715:1715 <> n:25
+R1733:1735 ex09_adequate_draft <> asn def
+binder 1725:1726 <> s1:26
+binder 1728:1729 <> s2:27
+binder 1757:1757 <> i:28
+R1765:1768 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1761:1763 Corelib.Init.Peano <> ::nat_scope:x_'<'_x not
+R1760:1760 ex09_adequate_draft <> i:28 var
+R1764:1764 ex09_adequate_draft <> n:25 var
+R1773:1775 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R1769:1770 ex09_adequate_draft <> s1:26 var
+R1772:1772 ex09_adequate_draft <> i:28 var
+R1776:1777 ex09_adequate_draft <> s2:27 var
+R1779:1779 ex09_adequate_draft <> i:28 var
+prf 1789:1799 <> beval_fTrue
+binder 1811:1811 <> s:29
+R1827:1829 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R1814:1818 ex09_adequate_draft <> beval def
+R1820:1824 ex09_adequate_draft <> fTrue def
+R1826:1826 ex09_adequate_draft <> s:29 var
+R1830:1833 Corelib.Init.Datatypes <> true constr
+R1860:1864 ex09_adequate_draft <> fTrue def
+prf 1914:1925 <> beval_fFalse
+binder 1936:1936 <> s:30
+R1953:1955 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R1939:1943 ex09_adequate_draft <> beval def
+R1945:1950 ex09_adequate_draft <> fFalse def
+R1952:1952 ex09_adequate_draft <> s:30 var
+R1956:1960 Corelib.Init.Datatypes <> false constr
+R1987:1992 ex09_adequate_draft <> fFalse def
+R1995:1999 ex09_adequate_draft <> fTrue def
+prf 2052:2061 <> shannon_ok
+binder 2072:2072 <> n:31
+R2082:2085 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R2079:2081 ex09_adequate_draft <> asn def
+R2086:2089 Corelib.Init.Datatypes <> bool ind
+binder 2075:2075 <> f:32
+binder 2092:2092 <> s:33
+R2097:2097 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R2145:2151 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+binder 2105:2106 <> s1:34
+binder 2108:2109 <> s2:35
+R2130:2133 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R2112:2121 ex09_adequate_draft <> agree_upto def
+R2123:2123 ex09_adequate_draft <> n:31 var
+R2125:2126 ex09_adequate_draft <> s1:34 var
+R2128:2129 ex09_adequate_draft <> s2:35 var
+R2138:2140 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R2134:2134 ex09_adequate_draft <> f:32 var
+R2136:2137 ex09_adequate_draft <> s1:34 var
+R2141:2141 ex09_adequate_draft <> f:32 var
+R2143:2144 ex09_adequate_draft <> s2:35 var
+R2173:2175 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R2152:2156 ex09_adequate_draft <> beval def
+R2159:2165 ex09_adequate_draft <> shannon def
+R2167:2167 ex09_adequate_draft <> n:31 var
+R2169:2169 ex09_adequate_draft <> f:32 var
+R2172:2172 ex09_adequate_draft <> s:33 var
+R2176:2176 ex09_adequate_draft <> f:32 var
+R2178:2178 ex09_adequate_draft <> s:33 var
+R2264:2268 Corelib.Init.Datatypes <> false constr
+R2264:2268 Corelib.Init.Datatypes <> false constr
+R2293:2303 ex09_adequate_draft <> beval_fTrue thm
+R2293:2303 ex09_adequate_draft <> beval_fTrue thm
+R2293:2303 ex09_adequate_draft <> beval_fTrue thm
+R2334:2338 Corelib.Init.Datatypes <> false constr
+R2334:2338 Corelib.Init.Datatypes <> false constr
+R2380:2391 ex09_adequate_draft <> beval_fFalse thm
+R2380:2391 ex09_adequate_draft <> beval_fFalse thm
+R2380:2391 ex09_adequate_draft <> beval_fFalse thm
+R2422:2426 Corelib.Init.Datatypes <> false constr
+R2422:2426 Corelib.Init.Datatypes <> false constr
+R2564:2585 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R2515:2519 ex09_adequate_draft <> beval def
+R2522:2528 ex09_adequate_draft <> shannon def
+binder 2537:2538 <> s0:36
+R2546:2548 ex09_adequate_draft <> upd def
+R2550:2551 ex09_adequate_draft <> s0:36 var
+R2555:2558 Corelib.Init.Datatypes <> true constr
+R2589:2591 ex09_adequate_draft <> upd def
+R2597:2600 Corelib.Init.Datatypes <> true constr
+R2564:2585 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R2515:2519 ex09_adequate_draft <> beval def
+R2522:2528 ex09_adequate_draft <> shannon def
+binder 2537:2538 <> s0:37
+R2546:2548 ex09_adequate_draft <> upd def
+R2550:2551 ex09_adequate_draft <> s0:37 var
+R2555:2558 Corelib.Init.Datatypes <> true constr
+R2589:2591 ex09_adequate_draft <> upd def
+R2597:2600 Corelib.Init.Datatypes <> true constr
+binder 2628:2629 <> s0:38
+R2637:2639 ex09_adequate_draft <> upd def
+R2641:2642 ex09_adequate_draft <> s0:38 var
+R2646:2649 Corelib.Init.Datatypes <> true constr
+binder 2628:2629 <> s0:39
+R2637:2639 ex09_adequate_draft <> upd def
+R2641:2642 ex09_adequate_draft <> s0:39 var
+R2646:2649 Corelib.Init.Datatypes <> true constr
+R2731:2733 ex09_adequate_draft <> upd def
+R2754:2765 Stdlib.Arith.PeanoNat Nat eqb_spec thm
+R2754:2765 Stdlib.Arith.PeanoNat Nat eqb_spec thm
+R2906:2908 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R2893:2895 ex09_adequate_draft <> upd def
+R2901:2904 Corelib.Init.Datatypes <> true constr
+R2906:2908 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R2893:2895 ex09_adequate_draft <> upd def
+R2901:2904 Corelib.Init.Datatypes <> true constr
+R2955:2957 ex09_adequate_draft <> upd def
+R2978:2989 Stdlib.Arith.PeanoNat Nat eqb_spec thm
+R2978:2989 Stdlib.Arith.PeanoNat Nat eqb_spec thm
+R3186:3207 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R3136:3140 ex09_adequate_draft <> beval def
+R3143:3149 ex09_adequate_draft <> shannon def
+binder 3158:3159 <> s0:40
+R3167:3169 ex09_adequate_draft <> upd def
+R3171:3172 ex09_adequate_draft <> s0:40 var
+R3176:3180 Corelib.Init.Datatypes <> false constr
+R3211:3213 ex09_adequate_draft <> upd def
+R3219:3223 Corelib.Init.Datatypes <> false constr
+R3186:3207 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R3136:3140 ex09_adequate_draft <> beval def
+R3143:3149 ex09_adequate_draft <> shannon def
+binder 3158:3159 <> s0:41
+R3167:3169 ex09_adequate_draft <> upd def
+R3171:3172 ex09_adequate_draft <> s0:41 var
+R3176:3180 Corelib.Init.Datatypes <> false constr
+R3211:3213 ex09_adequate_draft <> upd def
+R3219:3223 Corelib.Init.Datatypes <> false constr
+binder 3251:3252 <> s0:42
+R3260:3262 ex09_adequate_draft <> upd def
+R3264:3265 ex09_adequate_draft <> s0:42 var
+R3269:3273 Corelib.Init.Datatypes <> false constr
+binder 3251:3252 <> s0:43
+R3260:3262 ex09_adequate_draft <> upd def
+R3264:3265 ex09_adequate_draft <> s0:43 var
+R3269:3273 Corelib.Init.Datatypes <> false constr
+R3355:3357 ex09_adequate_draft <> upd def
+R3378:3389 Stdlib.Arith.PeanoNat Nat eqb_spec thm
+R3378:3389 Stdlib.Arith.PeanoNat Nat eqb_spec thm
+R3531:3533 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R3517:3519 ex09_adequate_draft <> upd def
+R3525:3529 Corelib.Init.Datatypes <> false constr
+R3531:3533 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R3517:3519 ex09_adequate_draft <> upd def
+R3525:3529 Corelib.Init.Datatypes <> false constr
+R3580:3582 ex09_adequate_draft <> upd def
+R3603:3614 Stdlib.Arith.PeanoNat Nat eqb_spec thm
+R3603:3614 Stdlib.Arith.PeanoNat Nat eqb_spec thm
+def 3821:3824 <> tAND
+R3831:3832 ex09_adequate_draft <> fm ind
+binder 3827:3827 <> f:44
+R3837:3838 ex09_adequate_draft <> fm ind
+R3851:3851 ex09_adequate_draft <> f:44 var
+R3862:3862 ex09_adequate_draft <> v constr
+R3869:3869 ex09_adequate_draft <> v constr
+R3877:3879 ex09_adequate_draft <> neg constr
+R3886:3888 ex09_adequate_draft <> neg constr
+R3891:3894 ex09_adequate_draft <> tAND:45 def
+R3903:3905 ex09_adequate_draft <> imp constr
+R3914:3916 ex09_adequate_draft <> neg constr
+R3919:3922 ex09_adequate_draft <> conj constr
+R3925:3928 ex09_adequate_draft <> tAND:45 def
+R3934:3936 ex09_adequate_draft <> neg constr
+R3939:3942 ex09_adequate_draft <> tAND:45 def
+R3953:3956 ex09_adequate_draft <> conj constr
+R3965:3968 ex09_adequate_draft <> conj constr
+R3971:3974 ex09_adequate_draft <> tAND:45 def
+R3980:3983 ex09_adequate_draft <> tAND:45 def
+R3992:3995 ex09_adequate_draft <> disj constr
+R4004:4006 ex09_adequate_draft <> neg constr
+R4009:4012 ex09_adequate_draft <> conj constr
+R4015:4017 ex09_adequate_draft <> neg constr
+R4020:4023 ex09_adequate_draft <> tAND:45 def
+R4030:4032 ex09_adequate_draft <> neg constr
+R4035:4038 ex09_adequate_draft <> tAND:45 def
+prf 4061:4067 <> tAND_ok
+binder 4078:4078 <> f:47
+binder 4080:4080 <> s:48
+R4099:4101 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R4083:4087 ex09_adequate_draft <> beval def
+R4090:4093 ex09_adequate_draft <> tAND def
+R4095:4095 ex09_adequate_draft <> f:47 var
+R4098:4098 ex09_adequate_draft <> s:48 var
+R4102:4106 ex09_adequate_draft <> beval def
+R4108:4108 ex09_adequate_draft <> f:47 var
+R4110:4110 ex09_adequate_draft <> s:48 var
+R4293:4297 ex09_adequate_draft <> beval def
+R4293:4297 ex09_adequate_draft <> beval def
+R4350:4354 ex09_adequate_draft <> beval def
+R4363:4367 ex09_adequate_draft <> beval def
+R4350:4354 ex09_adequate_draft <> beval def
+R4363:4367 ex09_adequate_draft <> beval def
+R4363:4367 ex09_adequate_draft <> beval def
+R4420:4424 ex09_adequate_draft <> beval def
+R4433:4437 ex09_adequate_draft <> beval def
+R4420:4424 ex09_adequate_draft <> beval def
+R4433:4437 ex09_adequate_draft <> beval def
+R4433:4437 ex09_adequate_draft <> beval def
+R4490:4494 ex09_adequate_draft <> beval def
+R4503:4507 ex09_adequate_draft <> beval def
+R4490:4494 ex09_adequate_draft <> beval def
+R4503:4507 ex09_adequate_draft <> beval def
+R4503:4507 ex09_adequate_draft <> beval def
+ind 4640:4643 <> upfm
+constr 4655:4656 <> uv
+constr 4670:4671 <> up
+R4663:4665 Corelib.Init.Datatypes <> nat ind
+binder 4659:4659 <> n:51
+R4680:4683 ex09_adequate_draft <> upfm:49 ind
+binder 4674:4674 <> a:52
+binder 4676:4676 <> b:53
+scheme 4640:4643 <> upfm_rect
+scheme 4640:4643 <> upfm_ind
+scheme 4640:4643 <> upfm_rec
+scheme 4640:4643 <> upfm_sind
+def 4697:4702 <> upeval
+R4709:4712 ex09_adequate_draft <> upfm ind
+binder 4705:4705 <> f:54
+R4720:4722 ex09_adequate_draft <> asn def
+binder 4716:4716 <> s:55
+R4727:4730 Corelib.Init.Datatypes <> bool ind
+R4743:4743 ex09_adequate_draft <> f:54 var
+R4754:4755 ex09_adequate_draft <> uv constr
+R4762:4762 ex09_adequate_draft <> s:55 var
+R4770:4771 ex09_adequate_draft <> up constr
+R4780:4783 Corelib.Init.Datatypes <> negb def
+R4786:4788 Corelib.Init.Datatypes <> orb def
+R4804:4809 ex09_adequate_draft <> upeval:56 def
+R4813:4813 ex09_adequate_draft <> s:55 var
+R4791:4796 ex09_adequate_draft <> upeval:56 def
+R4800:4800 ex09_adequate_draft <> s:55 var
+def 4968:4973 <> toDown
+R4980:4981 ex09_adequate_draft <> fm ind
+binder 4976:4976 <> f:58
+R4986:4989 ex09_adequate_draft <> upfm ind
+R5002:5002 ex09_adequate_draft <> f:58 var
+R5013:5013 ex09_adequate_draft <> v constr
+R5020:5021 ex09_adequate_draft <> uv constr
+R5029:5031 ex09_adequate_draft <> neg constr
+R5038:5039 ex09_adequate_draft <> up constr
+R5042:5047 ex09_adequate_draft <> toDown:59 def
+R5053:5058 ex09_adequate_draft <> toDown:59 def
+R5067:5069 ex09_adequate_draft <> imp constr
+R5088:5089 ex09_adequate_draft <> up constr
+R5092:5097 ex09_adequate_draft <> toDown:59 def
+R5103:5108 ex09_adequate_draft <> toDown:59 def
+binder 5082:5083 <> na:61
+R5131:5132 ex09_adequate_draft <> up constr
+R5135:5136 ex09_adequate_draft <> up constr
+R5138:5139 ex09_adequate_draft <> na:61 var
+R5142:5147 ex09_adequate_draft <> toDown:59 def
+R5154:5155 ex09_adequate_draft <> up constr
+R5157:5158 ex09_adequate_draft <> na:61 var
+R5161:5166 ex09_adequate_draft <> toDown:59 def
+R5176:5179 ex09_adequate_draft <> conj constr
+R5188:5189 ex09_adequate_draft <> up constr
+R5192:5193 ex09_adequate_draft <> up constr
+R5196:5201 ex09_adequate_draft <> toDown:59 def
+R5207:5212 ex09_adequate_draft <> toDown:59 def
+R5219:5220 ex09_adequate_draft <> up constr
+R5223:5228 ex09_adequate_draft <> toDown:59 def
+R5234:5239 ex09_adequate_draft <> toDown:59 def
+R5249:5252 ex09_adequate_draft <> disj constr
+R5261:5262 ex09_adequate_draft <> up constr
+R5265:5266 ex09_adequate_draft <> up constr
+R5269:5274 ex09_adequate_draft <> toDown:59 def
+R5280:5285 ex09_adequate_draft <> toDown:59 def
+R5292:5293 ex09_adequate_draft <> up constr
+R5296:5301 ex09_adequate_draft <> toDown:59 def
+R5307:5312 ex09_adequate_draft <> toDown:59 def
+prf 5334:5342 <> toDown_ok
+binder 5353:5353 <> f:62
+binder 5355:5355 <> s:63
+R5377:5379 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R5358:5363 ex09_adequate_draft <> upeval def
+R5366:5371 ex09_adequate_draft <> toDown def
+R5373:5373 ex09_adequate_draft <> f:62 var
+R5376:5376 ex09_adequate_draft <> s:63 var
+R5380:5384 ex09_adequate_draft <> beval def
+R5386:5386 ex09_adequate_draft <> f:62 var
+R5388:5388 ex09_adequate_draft <> s:63 var
+R5571:5575 ex09_adequate_draft <> beval def
+R5571:5575 ex09_adequate_draft <> beval def
+R5628:5632 ex09_adequate_draft <> beval def
+R5641:5645 ex09_adequate_draft <> beval def
+R5628:5632 ex09_adequate_draft <> beval def
+R5641:5645 ex09_adequate_draft <> beval def
+R5641:5645 ex09_adequate_draft <> beval def
+R5698:5702 ex09_adequate_draft <> beval def
+R5711:5715 ex09_adequate_draft <> beval def
+R5698:5702 ex09_adequate_draft <> beval def
+R5711:5715 ex09_adequate_draft <> beval def
+R5711:5715 ex09_adequate_draft <> beval def
+R5768:5772 ex09_adequate_draft <> beval def
+R5781:5785 ex09_adequate_draft <> beval def
+R5768:5772 ex09_adequate_draft <> beval def
+R5781:5785 ex09_adequate_draft <> beval def
+R5781:5785 ex09_adequate_draft <> beval def
+ind 5955:5957 <> hfm
+constr 5969:5970 <> hv
+constr 5984:5986 <> hap
+R5977:5979 Corelib.Init.Datatypes <> nat ind
+binder 5973:5973 <> n:66
+R5995:5997 ex09_adequate_draft <> hfm:64 ind
+binder 5989:5989 <> a:67
+binder 5991:5991 <> b:68
+scheme 5955:5957 <> hfm_rect
+scheme 5955:5957 <> hfm_ind
+scheme 5955:5957 <> hfm_rec
+scheme 5955:5957 <> hfm_sind
+sec 6010:6014 <> HConn
+var 6026:6026 HConn h
+R6034:6037 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R6030:6033 Corelib.Init.Datatypes <> bool ind
+R6042:6045 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R6038:6041 Corelib.Init.Datatypes <> bool ind
+R6046:6049 Corelib.Init.Datatypes <> bool ind
+def 6062:6066 <> heval
+R6073:6075 ex09_adequate_draft <> hfm ind
+binder 6069:6069 <> f:71
+R6083:6085 ex09_adequate_draft <> asn def
+binder 6079:6079 <> s:72
+R6090:6093 Corelib.Init.Datatypes <> bool ind
+R6106:6106 ex09_adequate_draft <> f:71 var
+R6117:6118 ex09_adequate_draft <> hv constr
+R6125:6125 ex09_adequate_draft <> s:72 var
+R6133:6135 ex09_adequate_draft <> hap constr
+R6144:6144 ex09_adequate_draft <> HConn.h var
+R6147:6151 ex09_adequate_draft <> heval:73 def
+R6155:6155 ex09_adequate_draft <> s:72 var
+R6159:6163 ex09_adequate_draft <> heval:73 def
+R6167:6167 ex09_adequate_draft <> s:72 var
+def 6189:6195 <> allTrue
+R6202:6204 ex09_adequate_draft <> asn def
+binder 6198:6198 <> s:75
+binder 6224:6224 <> n:76
+R6230:6232 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R6227:6227 ex09_adequate_draft <> s:75 var
+R6229:6229 ex09_adequate_draft <> n:76 var
+R6233:6236 Corelib.Init.Datatypes <> true constr
+prf 6248:6262 <> h_TT_propagates
+R6284:6289 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R6277:6279 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R6266:6266 ex09_adequate_draft <> HConn.h var
+R6268:6271 Corelib.Init.Datatypes <> true constr
+R6273:6276 Corelib.Init.Datatypes <> true constr
+R6280:6283 Corelib.Init.Datatypes <> true constr
+binder 6297:6297 <> f:77
+binder 6299:6299 <> s:78
+R6311:6314 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R6302:6308 ex09_adequate_draft <> allTrue def
+R6310:6310 ex09_adequate_draft <> s:78 var
+R6324:6326 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R6315:6319 ex09_adequate_draft <> heval def
+R6321:6321 ex09_adequate_draft <> f:77 var
+R6323:6323 ex09_adequate_draft <> s:78 var
+R6327:6330 Corelib.Init.Datatypes <> true constr
+prf 6539:6547 <> undef_neg
+R6569:6574 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R6562:6564 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R6551:6551 ex09_adequate_draft <> HConn.h var
+R6553:6556 Corelib.Init.Datatypes <> true constr
+R6558:6561 Corelib.Init.Datatypes <> true constr
+R6565:6568 Corelib.Init.Datatypes <> true constr
+binder 6582:6582 <> f:79
+R6585:6587 Corelib.Init.Logic <> ::type_scope:'~'_x not
+R6620:6620 Corelib.Init.Logic <> ::type_scope:'~'_x not
+binder 6595:6595 <> s:80
+R6607:6609 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R6598:6602 ex09_adequate_draft <> heval def
+R6604:6604 ex09_adequate_draft <> f:79 var
+R6606:6606 ex09_adequate_draft <> s:80 var
+R6610:6613 Corelib.Init.Datatypes <> negb def
+R6616:6616 ex09_adequate_draft <> s:80 var
+R6679:6682 Corelib.Init.Datatypes <> true constr
+R6679:6682 Corelib.Init.Datatypes <> true constr
+R6726:6728 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R6703:6707 ex09_adequate_draft <> heval def
+R6721:6724 Corelib.Init.Datatypes <> true constr
+R6729:6732 Corelib.Init.Datatypes <> true constr
+R6726:6728 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R6703:6707 ex09_adequate_draft <> heval def
+R6721:6724 Corelib.Init.Datatypes <> true constr
+R6729:6732 Corelib.Init.Datatypes <> true constr
+R6747:6761 ex09_adequate_draft <> h_TT_propagates thm
+R6747:6761 ex09_adequate_draft <> h_TT_propagates thm
+R6840:6844 ex09_adequate_draft HConn <> sec
+ind 6943:6945 <> nfm
+constr 6957:6958 <> nv
+constr 6962:6965 <> nneg
+R6972:6974 ex09_adequate_draft <> nfm:81 ind
+binder 6968:6968 <> a:83
+scheme 6943:6945 <> nfm_rect
+scheme 6943:6945 <> nfm_ind
+scheme 6943:6945 <> nfm_rec
+scheme 6943:6945 <> nfm_sind
+def 6988:6992 <> neval
+R6999:7001 ex09_adequate_draft <> nfm ind
+binder 6995:6995 <> f:84
+R7009:7012 Corelib.Init.Datatypes <> bool ind
+binder 7005:7005 <> b:85
+R7017:7020 Corelib.Init.Datatypes <> bool ind
+R7033:7033 ex09_adequate_draft <> f:84 var
+R7040:7041 ex09_adequate_draft <> nv constr
+R7046:7046 ex09_adequate_draft <> b:85 var
+R7050:7053 ex09_adequate_draft <> nneg constr
+R7060:7063 Corelib.Init.Datatypes <> negb def
+R7066:7070 ex09_adequate_draft <> neval:86 def
+R7074:7074 ex09_adequate_draft <> b:85 var
+prf 7091:7102 <> neg_only_two
+binder 7113:7113 <> f:88
+R7118:7118 Corelib.Init.Logic <> ::type_scope:x_'\/'_x not
+R7142:7147 Corelib.Init.Logic <> ::type_scope:x_'\/'_x not
+R7176:7176 Corelib.Init.Logic <> ::type_scope:x_'\/'_x not
+binder 7126:7126 <> b:89
+R7138:7140 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R7129:7133 ex09_adequate_draft <> neval def
+R7135:7135 ex09_adequate_draft <> f:88 var
+R7137:7137 ex09_adequate_draft <> b:89 var
+R7141:7141 ex09_adequate_draft <> b:89 var
+binder 7155:7155 <> b:90
+R7167:7169 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R7158:7162 ex09_adequate_draft <> neval def
+R7164:7164 ex09_adequate_draft <> f:88 var
+R7166:7166 ex09_adequate_draft <> b:90 var
+R7170:7173 Corelib.Init.Datatypes <> negb def
+R7175:7175 ex09_adequate_draft <> b:90 var
+prf 7430:7441 <> undef_constT
+R7445:7446 Corelib.Init.Logic <> ::type_scope:'~'_x not
+R7447:7453 Corelib.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+R7455:7456 Corelib.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+binder 7454:7454 <> f:91
+binder 7464:7464 <> b:92
+R7476:7478 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R7467:7471 ex09_adequate_draft <> neval def
+R7473:7473 ex09_adequate_draft <> f:91 var
+R7475:7475 ex09_adequate_draft <> b:92 var
+R7479:7482 Corelib.Init.Datatypes <> true constr
+R7519:7530 ex09_adequate_draft <> neg_only_two thm
+R7519:7530 ex09_adequate_draft <> neg_only_two thm
+R7564:7568 Corelib.Init.Datatypes <> false constr
+R7564:7568 Corelib.Init.Datatypes <> false constr
+R7622:7625 Corelib.Init.Datatypes <> true constr
+R7622:7625 Corelib.Init.Datatypes <> true constr
+ind 7838:7840 <> pfm
+constr 7852:7853 <> pv
+constr 7867:7870 <> pneg
+constr 7884:7887 <> pimp
+R7860:7862 Corelib.Init.Datatypes <> nat ind
+binder 7856:7856 <> n:95
+R7877:7879 ex09_adequate_draft <> pfm:93 ind
+binder 7873:7873 <> a:96
+R7896:7898 ex09_adequate_draft <> pfm:93 ind
+binder 7890:7890 <> a:97
+binder 7892:7892 <> b:98
+scheme 7838:7840 <> pfm_rect
+scheme 7838:7840 <> pfm_ind
+scheme 7838:7840 <> pfm_rec
+scheme 7838:7840 <> pfm_sind
+def 7970:7972 <> ev3
+R7983:7986 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R7980:7982 Corelib.Init.Datatypes <> nat ind
+R7987:7989 Corelib.Init.Datatypes <> nat ind
+binder 7975:7976 <> ng:99
+R8001:8004 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R7998:8000 Corelib.Init.Datatypes <> nat ind
+R8008:8011 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R8005:8007 Corelib.Init.Datatypes <> nat ind
+R8012:8014 Corelib.Init.Datatypes <> nat ind
+binder 7993:7994 <> im:100
+R8035:8037 ex09_adequate_draft <> pfm ind
+binder 8031:8031 <> f:101
+R8048:8051 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R8045:8047 Corelib.Init.Datatypes <> nat ind
+R8052:8054 Corelib.Init.Datatypes <> nat ind
+binder 8041:8041 <> s:102
+R8059:8061 Corelib.Init.Datatypes <> nat ind
+R8074:8074 ex09_adequate_draft <> f:101 var
+R8085:8086 ex09_adequate_draft <> pv constr
+R8093:8093 ex09_adequate_draft <> s:102 var
+R8101:8104 ex09_adequate_draft <> pneg constr
+R8111:8112 ex09_adequate_draft <> ng:99 var
+R8115:8117 ex09_adequate_draft <> ev3:103 def
+R8127:8127 ex09_adequate_draft <> s:102 var
+R8122:8123 ex09_adequate_draft <> im:100 var
+R8119:8120 ex09_adequate_draft <> ng:99 var
+R8134:8137 ex09_adequate_draft <> pimp constr
+R8146:8147 ex09_adequate_draft <> im:100 var
+R8166:8168 ex09_adequate_draft <> ev3:103 def
+R8178:8178 ex09_adequate_draft <> s:102 var
+R8173:8174 ex09_adequate_draft <> im:100 var
+R8170:8171 ex09_adequate_draft <> ng:99 var
+R8150:8152 ex09_adequate_draft <> ev3:103 def
+R8162:8162 ex09_adequate_draft <> s:102 var
+R8157:8158 ex09_adequate_draft <> im:100 var
+R8154:8155 ex09_adequate_draft <> ng:99 var
+def 8236:8240 <> peval
+R8247:8249 ex09_adequate_draft <> pfm ind
+binder 8243:8243 <> f:105
+R8257:8259 ex09_adequate_draft <> asn def
+binder 8253:8253 <> s:106
+R8264:8267 Corelib.Init.Datatypes <> bool ind
+R8280:8280 ex09_adequate_draft <> f:105 var
+R8291:8292 ex09_adequate_draft <> pv constr
+R8299:8299 ex09_adequate_draft <> s:106 var
+R8307:8310 ex09_adequate_draft <> pneg constr
+R8317:8320 Corelib.Init.Datatypes <> negb def
+R8323:8327 ex09_adequate_draft <> peval:107 def
+R8331:8331 ex09_adequate_draft <> s:106 var
+R8338:8341 ex09_adequate_draft <> pimp constr
+R8350:8354 Corelib.Init.Datatypes <> implb def
+R8369:8373 ex09_adequate_draft <> peval:107 def
+R8377:8377 ex09_adequate_draft <> s:106 var
+R8357:8361 ex09_adequate_draft <> peval:107 def
+R8365:8365 ex09_adequate_draft <> s:106 var
+def 8525:8528 <> neg1
+R8535:8537 Corelib.Init.Datatypes <> nat ind
+binder 8531:8531 <> a:109
+R8542:8544 Corelib.Init.Datatypes <> nat ind
+R8557:8557 ex09_adequate_draft <> a:109 var
+R8564:8564 Corelib.Init.Datatypes <> O constr
+R8573:8573 Corelib.Init.Datatypes <> S constr
+R8575:8575 Corelib.Init.Datatypes <> O constr
+def 8608:8611 <> imp1
+R8620:8622 Corelib.Init.Datatypes <> nat ind
+binder 8614:8614 <> a:111
+binder 8616:8616 <> b:112
+R8627:8629 Corelib.Init.Datatypes <> nat ind
+R8642:8642 ex09_adequate_draft <> a:111 var
+R8653:8653 Corelib.Init.Datatypes <> O constr
+R8664:8664 ex09_adequate_draft <> b:112 var
+R8671:8671 Corelib.Init.Datatypes <> O constr
+R8680:8680 Corelib.Init.Datatypes <> S constr
+R8682:8682 Corelib.Init.Datatypes <> O constr
+R8706:8706 Corelib.Init.Datatypes <> S constr
+R8708:8708 Corelib.Init.Datatypes <> O constr
+R8719:8719 ex09_adequate_draft <> b:112 var
+R8726:8726 Corelib.Init.Datatypes <> O constr
+R8735:8735 Corelib.Init.Datatypes <> S constr
+R8737:8737 Corelib.Init.Datatypes <> O constr
+def 8787:8789 <> ev1
+R8796:8798 ex09_adequate_draft <> pfm ind
+binder 8792:8792 <> f:116
+R8809:8812 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R8806:8808 Corelib.Init.Datatypes <> nat ind
+R8813:8815 Corelib.Init.Datatypes <> nat ind
+binder 8802:8802 <> s:117
+R8820:8822 Corelib.Init.Datatypes <> nat ind
+R8827:8829 ex09_adequate_draft <> ev3 def
+R8831:8834 ex09_adequate_draft <> neg1 def
+R8836:8839 ex09_adequate_draft <> imp1 def
+R8841:8841 ex09_adequate_draft <> f:116 var
+R8843:8843 ex09_adequate_draft <> s:117 var
+def 8857:8859 <> sel
+R8866:8868 ex09_adequate_draft <> pfm ind
+binder 8862:8862 <> f:118
+binder 8888:8888 <> s:119
+R8898:8900 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R8891:8893 ex09_adequate_draft <> ev1 def
+R8895:8895 ex09_adequate_draft <> f:118 var
+R8897:8897 ex09_adequate_draft <> s:119 var
+prf 8940:8945 <> mp_sel
+binder 8956:8956 <> B:120
+binder 8958:8958 <> C:121
+R8966:8969 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R8961:8963 ex09_adequate_draft <> sel def
+R8965:8965 ex09_adequate_draft <> B:120 var
+R8984:8987 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R8970:8972 ex09_adequate_draft <> sel def
+R8975:8978 ex09_adequate_draft <> pimp constr
+R8980:8980 ex09_adequate_draft <> B:120 var
+R8982:8982 ex09_adequate_draft <> C:121 var
+R8988:8990 ex09_adequate_draft <> sel def
+R8992:8992 ex09_adequate_draft <> C:121 var

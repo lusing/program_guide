@@ -1,0 +1,427 @@
+3.4 Peano Arithmetic
+
+183
+
+3.4 Peano Arithmetic
+
+Proof by Mathematical Induction is an inductive proof strategy designed for the natural number structure N. Elementary mathematics merely assumes the existence of the natural number system, focusing on how calculations are made. More advanced branches of mathematics take the procedures and facts of arithmetic for granted, as we have, too, up to this point. But in order to delve into the connection between mathematical induction and the natural number system, we must explore arithmetic more theoretically.
+We have two options here. We can either accept arithmetic as foundational and look for axioms to characterize it as fully as possible, or we can take arithmetic as a theory that depends upon something even more basic, such as logic or set theory. We’ll look at a version of the second alternative in Section 5.3; here we’ll develop the ﬁrst option.
+
+3.4.1 N as an Inductive Structure
+Let’s begin by brieﬂy analyzing what it means for N to be an inductive structure. This will give us some background for axiomatizing arithmetic.
+✜ Example 3.4.1
+Exhibit N as an inductive structure.
+Solution
+· Natural numbers answer the question “how many?” Since 0 can be an
+answer to this (though it took millennia for this to be recognized), we’ll include it as a natural number. For us, N = {0, 1, 2, . . .}.
+· Natural numbers also have an intimate connection to one another, indicated
+by their position in the order used for counting: each number after 0 is one more than the preceding number in the counting sequence. Let’s use S(n) to denote the number n + 1 that succeeds n in the list.
+· This gives us a recursive way to present N, where S is a successor operator:
+1) Base case: 0 is a natural number; [i.e., 0 is a member of N] 2) Recursion step: if n is a natural number, then so is S(n); and 3) Closure clause: if n is a natural number, then it can be obtained by
+applying S a ﬁnite number of times (n, actually), starting with 0.
+This example gives us an informal description of N, but it lacks rigor because the concept of a natural number seems already embedded in the idea of repeatedly applying the successor operator S to 0. The axiomatization given below will help us avoid this circularity in the closure clause.
+
+3.4.2 Historical Context of Axiomatic Arithmetic
+Axiomatic arithmetic probably sounds like an oxymoron. After all, arithmetic deals with applying computational algorithms like long division to numbers expressed in our base-ten place-value system. Where are the axioms and deﬁnitions and proofs in all this?
+
+184
+
+3 Mathematical Induction and Arithmetic
+
+If this is your response, it’s understandable. Arithmetic is taught with lit-
+
+tle concern for proof because young children don’t need (and can’t follow)
+
+deductive arguments when they ﬁrst learn computational techniques. Most
+
+civilizations have treated arithmetic as a collection of specialized calculation
+
+procedures. Algorithmic mathematics became part of theoretical mathemat-
+
+ics only about 150 years ago when mathematicians began investigating the
+
+nature of number systems in more depth and organizing them deductively.
+
+In the nineteenth century, for a variety of technical and educational rea-
+
+sons, mathematicians became concerned with the axiomatic basis and deduc-
+
+tive structure of their discipline. In attempting to establish a rigorous foun-
+
+dation for calculus, they also reconsidered the foundations of algebra and
+
+arithmetic. Leading mathematicians mounted an arithmetization program in
+
+analysis to banish informal ideas coming from geometry and physics. In the
+
+end, they deﬁned real numbers in terms of set theory and rational numbers,
+
+rational numbers in terms of set theory and integers, and integers in terms
+
+of set theory and natural numbers. Some mathematicians went even further
+
+and grounded the natural numbers in set theory. Others accepted the natural
+
+numbers as an appropriate starting point and axiomatized them instead.
+
+Two mathematicians who investigated the natu-
+
+ral number system were Richard Dedekind, who in
+
+1888 used ideas from set theory as a foundation, and,
+
+independently, Giuseppe Peano, who in 1889 took the
+
+natural numbers as primitive and formulated a list
+
+of axioms for them. Now known as the Peano Pos-
+
+tulates, they might better be called the Dedekind-
+
+Peano Postulates, since Dedekind was the ﬁrst person
+
+to isolate the key properties of the natural numbers.
+
+Peano, pictured in Figure 3.3, developed arithmetic
+
+Fig. 3.3 G. Peano
+
+deductively as well, something Dedekind did not do,
+
+so natural number arithmetic is appropriately called Peano Arithmetic.
+
+3.4.3 Postulates for Peano Arithmetic
+Very young children learn to count by reciting number words in a certain order, touching or pointing to the objects they’re counting. They may not know how the numbers relate to one another nor what they mean about the quantity of objects being counted, but they learn to start with one and continue with a deﬁnite progression of words, almost like a nursery rhyme. The purpose of counting becomes clearer to them over time.
+Children also learn that the sequence of counting numbers never stops, that by counting long enough and using new unit names like thousand, they can keep counting forever. They learn, too, how to use counting (at ﬁrst on their ﬁngers) to do simple arithmetic: adding is done by counting forward, subtracting by counting backward. Because other operations build on addition and subtraction, counting forms the ultimate basis for all of arithmetic.
+
+3.4 Peano Arithmetic
+
+185
+
+Peano’s approach to arithmetic parallels this way of learning about numbers and computation. He takes the notion of the natural numbers occurring in ordered succession as the basis for developing arithmetic into a deductive theory. Surprisingly, he found that four simple postulates, stating some obvious properties of the natural numbers, together with a ﬁfth closure postulate, formed a suﬃcient axiomatic foundation for arithmetic.
+We’ll state these postulates in ordinary mathematical English and then write them formally using logical symbolism. When we formalize the Peano Postulates as axioms, our list of postulates shrinks to three axioms, because two of them are covered by the way FOL expresses sentences.6
+
+1) 0 is a natural number. 2) Every natural number has a unique successor. 3) 0 is not the successor of any natural number. 4) Distinct natural numbers have distinct successors. 5) Axiom of Mathematical Induction (Closure Axiom)
+
+Peano Postulates
+
+The natural numbers are thus 0 and all its successors, each number after 0 having both a unique successor and a unique predecessor.
+
+Note that the language for Peano Arithmetic has two non-logical symbols: the constant 0 denotes the least natural number,7 and S represents the
+successor function. S(x), which we’ll abbreviate as Sx, signiﬁes the unique successor of x in the usual ordering of N.8 These are the only primitive notions
+we need; other ideas will be introduced via deﬁnitions.
+
+Using this ﬁrst-order language, we can formalize the ﬁrst four Peano Postulates. The ﬁrst postulate—0 is a natural number—disappears, because this is presupposed by FOL notational conventions. The constant symbol 0 necessarily stands for some distinguished member of N, our universe of discourse.
+
+The second postulate, that successors are unique, is also unnecessary. If S represents a (successor) function, then Sx is deﬁned for all x and this output is unique. Thus, this postulate is also omitted in a formal listing of the Peano Postulates.
+
+The third postulate, that 0 is not the successor of any natural number, does need to be postulated. It can be formulated by either of the following:
+
+¬∃n(Sn = 0) or ∀n(Sn = 0) .
+
+We’ll choose the latter because it is a universal sentence, but the former immediately follows from it.
+
+Axiom 3.4.1: Successors Are Non-Zero ∀n(Sn = 0)
+
+6 When arithmetic is developed within set theory, all ﬁve postulates come into play.
+7 There is no unanimity among mathematicians about whether N should include 0 or
+start with 1. Even Peano waﬄed on this. We’re including 0 for reasons already mentioned. We’ll use N + to represent the set of positive natural numbers. 8 We’re consciously avoiding the notation x + 1 (or even x+) for the successor of x since we’ve yet to deﬁne addition, which will be done in terms of the successor function S.
+
+186
+
+3 Mathematical Induction and Arithmetic
+
+The fourth postulate, which says that distinct numbers have distinct successors, can be formulated by either of the following logical equivalents:
+∀m∀n(m = n → Sm = Sn) or ∀m∀n(Sm = Sn → m = n) . We’ll choose the second positive formulation as our axiom, which says that predecessors of successors are unique.
+Axiom 3.4.2: Predecessors of Successors Are Unique ∀m∀n(Sm = Sn → m = n)
+
+3.4.4 The Axiom of Mathematical Induction
+The ﬁfth Peano Postulate is a closure axiom for N, considered as an inductive structure. As noted above, the Axiom of Mathematical Induction says that all natural numbers are generated by starting with 0 and repeatedly applying the successor function, i.e., by counting on from 0. Put in terms of sets, if P is the subset of natural numbers that contains 0 and contains the successor Sk of every number k it contains, then P = N.
+We can express the Axiom of Mathematical Induction in ﬁrst-order notation (which doesn’t contain symbols for the universe N or any subset P) by letting P (n) stand for the proposition n belongs to P. The postulate then becomes if P (0) holds, and if P (Sk) holds whenever P (k) does, then P (n) holds for all natural numbers n.
+More formally, here is the oﬃcial version of the Induction Axiom:
+Axiom 3.4.3: Axiom of Mathematical Induction P (0) ∧ ∀k(P (k) → P (Sk)) → ∀nP (n)
+Since this is intended to hold for any formula P (n) in the language of arithmetic, we actually have a collection of axioms, called an axiom schema, instead of a single axiom. Moreover, since the successor of natural number k is k + 1 (as it will be oﬃcially, once we deﬁne addition), we’ll eventually replace Sk by k + 1 in our formulation, yielding the following more familiar version of the axiom:
+Induction Axiom, Additive Form: P (0) ∧ ∀k(P (k) → P (k + 1)) → ∀nP (n).
+We’ll use this more familiar form of the axiom to explain its relation to Proof by Mathematical Induction below, but we’ll revert to using the oﬃcial form when we begin rigorously developing Peano Arithmetic.
+The truth of the Axiom of Induction isn’t hard to see. Suppose the antecedent of the axiom. Then P (0) holds. But so does P (1) = P (0 + 1), because P (k + 1) holds whenever P (k) does. Similarly, since P (1) holds, so does P (2); and so on. P (n) must therefore hold for every natural number n.
+Given this argument, shouldn’t we consider the Axiom of Mathematical Induction a theorem? This way of thinking, while understandable, is ﬂawed. Here’s why. Axiomatizing Peano Arithmetic delineates its models. Prior to Axiom 3, we’ve only established that a model N for Peano Arithmetic contains
+
+3.4 Peano Arithmetic
+
+187
+
+a non-successor element 0 and that predecessors of successors are unique. We still don’t know, for example, whether all non-zero numbers are successors, nor, if they are, whether they are eventual successors of 0 or something else.
+As a matter of fact, the results just mentioned don’t follow from the ﬁrst two axioms. It’s relatively easy to concoct interpretations in which Axiom 1 and Axiom 2 are true but these fail, and so Axiom 3 is false of these models (see Exercise 32). Thus, while we can show that any number of successors of 0 are natural numbers, we can’t claim that this process generates all of N.
+To make our above argument rigorous, we might try to use Proof by Mathematical Induction. But keep in mind that we’re now developing Peano Arithmetic deductively from an axiomatic basis, so we can only use FOL’s inference rules and the axioms of the theory. As noted in Section 3.1, Proof by Mathematical Induction is not a rule of inference from logic. It still needs justiﬁcation, which we’ll do shortly by appealing to the Axiom of Mathematical Induction. So we can’t use it to prove the axiom that justiﬁes it. Since Axiom 3 is nevertheless true of N, we’re adopting it as an axiom.
+
+3.4.5 Proof by Mathematical Induction Revisited
+
+To understand the connection between Proof by Mathematical Induction and the Axiom of Mathematical Induction, let’s diagram how induction proceeds.
+
+n1 P (0)
+
+n2
+
+P (k)
+
+··· Spsn for CP
+
+...
+
+n3 P (k + 1)
+n4 P (k) → P (k + 1) n5 ∀k(P (k) → P (k + 1))
+...
+? ∀nP (n)
+
+··· CP n2-n3 UG n4
+???
+
+The base case (we’re starting at 0 to line up with N) is line n1, and the induction step occurs in lines n2–n3. This allows us to conclude ﬁrst the conditional P (k) → P (k + 1) in line n4 and then its universal generalization ∀k(P (k) → P (k+1)) in line n5. But that doesn’t yield the conclusion ∀nP (n).
+As argued above, we could continue by instantiating to k = 0, which via
+MP will prove P (1), then P (2), etc. Repeating this process k0 times, we can prove P (k0) for any natural number k0. However, we’ll never be able to prove P (n) for every natural number n in this way—it would require an inﬁnitely
+long proof. Nor will we be able to generalize to get ∀nP (n), since all P (k0) are particular cases. So, we’re at an impasse with this approach.
+A second way to continue our proof is to conjoin sentences n1 and n5 to get P (0) ∧ ∀k(P (k) → P (k + 1)) (line n6). This still won’t yield ∀nP (n), though, unless we can somehow combine this conjunction with another proposition
+
+188
+
+3 Mathematical Induction and Arithmetic
+
+to produce it. But this is just what the Axiom of Mathematical Induction gives us: [P (0) ∧ ∀k(P (k) → P (k + 1))] → ∀nP (n) (line n7). By asserting this axiom and applying MP, we can now conclude what’s wanted (line n8).
+
+n1 P (0)
+
+···
+
+...
+
+n5 ∀k(P (k) → P (k + 1)) n6 P (0) ∧ ∀k(P (k) → P (k + 1)) n7 [P (0) ∧ ∀k(P (k) → P (k + 1))] → ∀nP (n) n8 ∀nP (n)
+
+UG n4 Conj n1, n5 Ax Indn
+MP n7, n6
+
+The three-step mathematical-induction proof technique thus ﬁnds its justiﬁcation in FOL’s Inference Rules and in the Axiom of Mathematical Induction. Having shown this, we may legitimately use mathematical induction to deduce propositions in Peano Arithmetic. This makes induction proofs more manageable than if we were to use Axiom 3 directly.
+All the variations on mathematical induction—PMI, Mod PMI, and Strong PMI —can be justiﬁed by the Axiom of Mathematical Induction (see Exercise 35), so we may use any form of Proof by Mathematical Induction in Peano Arithmetic’s deductions.
+
+3.4.6 Peano Arithmetic: Addition
+We’ll now demonstrate how Peano Arithmetic can be rigorously developed from its axiomatic foundation. You may ﬁnd this both frustrating and exhilarating, because you have little to work with at the outset—only the Peano Postulates and First-Order Logic. You’ll have to continually check that what you’re using in your proofs is justiﬁed by what you’ve already proved, rather than by what you know from earlier courses. But achieving each new goal can give you a sense of deductive accomplishment—it’s like developing a computer method for doing complicated computations starting with machine level manipulations of 0s and 1s.
+Let’s start by once again listing the three Peano Postulates, including a successor version of mathematical induction.
+Axiom 3.4.1: Zero is not a Successor ∀n(Sn = 0)
+Axiom 3.4.2: Predecessors of Successors Are Unique ∀m∀n(Sm = Sn → m = n)
+Axiom 3.4.3: Axiom of Mathematical Induction P (0) ∧ ∀k(P (k) → P (Sk) → ∀nP (n)
+Proof Technique: Mathematical Induction (Successor Version) From P (0) and a deduction of P (Sk) from P (k) for an arbitrary natural number k, conclude ∀nP (n).
+
+3.4 Peano Arithmetic
+
+189
+
+Amazingly, the Peano Postulates are all that’s needed to prove the laws supporting computational arithmetic—the Commutative Laws, Associative Laws, Distributive Laws, and Cancellation Laws that govern the ordinary binary operations of addition and multiplication.
+The successor function is thus the ultimate basis of Peano Arithmetic. We’ll deﬁne addition recursively in terms of it and prove that addition has the properties we know. We’ll then use addition and the successor function to deﬁne multiplication. Other operations and relations can also be deﬁned, building on what’s available up to that point (see Exercises 20–31).
+We can prove a few things about simple successors (see Exercises 3 and 5), but we’ll introduce addition so we can prove and use Sm = m + 1. Note in the results below that all relevant leading universal quantiﬁers have been left oﬀ to simplify the formulations for readability.
+
+Deﬁnition 3.4.1: Addition of Natural Numbers (Successor Version) a) m + 0 = m b) m + Sk = S(m + k) for any natural number k
+
+In this deﬁnition, equation a deﬁnes adding 0 to a number, while equation b says that adding a successor of a number is the successor of an earlier sum. These two equations give the oﬃcial deﬁnition of addition. To put the second equation in a more recognizable form, we’ll deﬁne 1 and prove an elementary proposition that does not require mathematical induction.
+
+Deﬁnition 3.4.2: Deﬁnition of 1 1 = S0
+
+Proposition 3.4.1: Successors as Sums Sm = m + 1
+
+Proof : Sm = S(m + 0)
+= m + S0
+=m+1
+
+Defn of Addn, Eqn a; Sub Defn of Addn, Eqn b Defn of 1; Sub
+
+This simple result allows us to rewrite the recursive deﬁnition for addition in the following more standard formulation. We’ll label this a deﬁnition, though it’s really a proposition following from Deﬁnition 1 and Proposition 1.
+Deﬁnition 3.4.3: Addition of Natural Numbers (Standard Version) a) m + 0 = m b) m + (k + 1) = (m + k) + 1
+Note in the second equation that we do not write m + k + 1 without parentheses. Addition is a binary operation, so only two numbers can be combined at a time. Only after a sum is obtained can it be added to another number. As we proceed in Peano Arithmetic, we must be very picky about the
+
+190
+
+3 Mathematical Induction and Arithmetic
+
+use of parentheses so we don’t assume a result that hasn’t yet been proved. Be on your guard against smuggling results into your arguments that aren’t warranted by the premises. Ironically, developing deductive arguments for arithmetic can be diﬃcult for advanced mathematics students, because they know too much!
+Having the result of Proposition 1, we can put the Axiom of Induction and its counterpart Proof by Mathematical Induction into its usual additive format (see above). This is the form we’ll mostly use from this point on.
+We can now prove some key propositions about addition. We’ll work some results here and leave others for the exercises (see Exercises 11–13).
+
+Proposition 3.4.2: 0 is an Additive Identity m+0=m=0+m
+
+Proof :
+
+We know from the deﬁnition of addition that m + 0 = m, so all we need to
+
+prove is 0 + m = m.
+
+1) Base case
+
+0 + 0 = 0.
+
+Defn of Addn, Eqn a
+
+2) Induction step
+
+Suppose 0 + k = k .
+
+Indn Hyp
+
+Then 0 + (k + 1) = (0 + k) + 1
+
+Defn of Addn, Eqn b
+
+= k + 1.
+
+Sub
+
+3) Conclusion
+
+Thus, 0 + m = m for all m.
+
+Indn
+
+We actually know more than that 0 is an identity for addition of natural numbers. In Example 2.4.11 we showed that there was at most one additive identity for ordinary arithmetic, using an argument requiring nothing more than the rules for identity. Our argument here proves that there is at least one additive identity. Together they demonstrate that 0 is the unique additive identity for Peano Arithmetic.
+Looking at the last proposition in a slightly diﬀerent light, we can say that 0 commutes with all natural numbers. Showing that any two natural numbers commute will be left as an exercise (see Exercise 11). As a second step toward getting that result, though, we’ll show that 1 also commutes with everything. This result is needed to prove the general case.
+
+Proposition 3.4.3: Commutativity of 1 1+m=m+1
+
+Proof : We’ll again argue by mathematical induction. 1) Base case 1 + 0 = 1 = 0 + 1. 2) Induction step Suppose 1 + k = k + 1 .
+
+Propn 2, UI (m = 1) Indn Hyp
+
+3.4 Peano Arithmetic
+
+191
+
+Then 1 + (k + 1) = (1 + k) + 1
+
+= (k + 1) + 1.
+
+3) Conclusion
+
+Thus,
+
+1 + m = m + 1 for all m .
+
+Defn of Addn, Eqn b Sub
+Indn
+
+These last two propositions begin to show how recursive deﬁnitions and mathematical induction work together to prove the fundamental computational laws of arithmetic. This is less trivial than it looks. In developing an axiomatic theory from scratch, the subject matter doesn’t tell you when you have to prove what, nor which results you should take as axiomatic. It may be that in trying to prove a certain result, you get stuck and need to prove another result ﬁrst so you can use it in your proof. This is what would have happened if we had tried to deduce Proposition 3 before Proposition 2. This sort of thing can happen when you know a number of true results in a given theory and you want to organize them deductively into a series of propositions. For instance, if we were to try to prove the Commutative Law, having already done two special cases in the above propositions, we would discover that our proof could use other results that haven’t been proved (see Exercise 11b).
+As you construct proofs on your own, you’ll quickly sense that the laws of arithmetic are logically intertwined and that the order in which you prove them may make a diﬀerence. Once someone ﬁnds a way to organize them, proofs become more straightforward. Whenever this is the case, you should suspect that serious work went on behind the scenes to arrange the results so that they could be readily demonstrated one after the other.
+
+We’ll ﬁnish exploring addition by proving the Associative Law—which, as our proof makes clear, could have been done before Proposition 2. Equation b in the recursive deﬁnition of addition is a special instance of this law.
+
+Proposition 3.4.4: Associative Law for Addition (l + m) + n = l + (m + n)
+
+Proof :
+
+We’ll use induction on n and generalize on the ﬁrst two variables.
+
+1) Base case
+
+(l + m) + 0 = l + m
+
+Defn Addn Eqn a
+
+= l + (m + 0).
+
+Defn Addn Eqn a
+
+2) Induction step
+
+Suppose (l + m) + k = l + (m + k).
+
+Indn Hyp
+
+Then (l + m) + (k + 1) = ((l + m) + k) + 1
+
+Defn Addn Eqn b
+
+= (l + (m + k)) + 1
+
+Sub
+
+= l + ((m + k) + 1)
+
+Defn Addn Eqn b
+
+= l + (m + (k + 1)).
+
+Defn Addn Eqn b
+
+3) Conclusion
+
+Hence, (l + m) + n = l + (m + n) for all n . Indn
+
+Generalizing, we can conclude (l + m) + n = l + (m + n) .
+
+192
+
+3 Mathematical Induction and Arithmetic
+
+3.4.7 Peano Arithmetic: Multiplication
+
+Having seen how to treat addition, we can be brief in introducing multiplication. Like addition, multiplication is deﬁned recursively. And once multiplication is available, we can go further and introduce exponentiation. We already did this in a rigorous fashion in Sections 3.1 and 3.2 to illustrate Mathematical Induction proofs, so we won’t repeat it here.
+
+Deﬁnition 3.4.4: Multiplication (Standard Version) a) m · 0 = 0 b) m · (k + 1) = m · k + m
+
+Based on this deﬁnition, the recursive deﬁnition of addition, the deﬁnition of 1, and the above propositions for addition, results analogous to the ones argued for addition can be proved for multiplication; for example,
+
+m · 0 = 0 = 0 · m,
+
+and
+
+m · 1 = m = 1 · m.
+
+Having just proved propositions similar to these, the proofs for these and other results involving multiplication will be left for Exercises 14–19.
+
+EXERCISE SET 3.4
+Note: In proving propositions of Peano Arithmetic, be sure not to use a result unless it is a Peano Postulate, a deﬁnition, or something previously proved. Put your proof in a two-column format as in the text, using parentheses around sums and products. Quantiﬁers are speciﬁed for clarity.
+Exercises 1–2: Baby-Steps Arithmetic Prove the following basic arithmetic results.
+3.4.1. Using the deﬁnitions 2 = SS0 and 4 = SSSS0 along with the recursive deﬁnition for addition, show that 2 + 2 = 4. 3.4.2. Using the above deﬁnitions and Exercise 1 along with properties for addition and the recursive deﬁnition for multiplication, show that 2 · 2 = 4.
+Exercises 3–7: Natural Numbers, Successors, and Sums Use the Peano Postulates, the Successor Version of Proof by Mathematical Induction, and the Deﬁnition of Addition to prove the following.
+3.4.3. ∀n(Sn = n) 3.4.4. ∀m∀n(m + n = n → m = 0) Hint: use induction on n and generalize on m. 3.4.5. ∀n(n = 0 ∨ ∃!m(n = Sm)) 3.4.6. ∀l∀m∀n(l + n = m + n → l = m) Hint: use induction on n and generalize on m and l. 3.4.7. ∀m∀n(m + n = 0 → m = 0 ∧ n = 0) Hint: start by using Exercise 5 to show n = 0.
+
+3.4 Peano Arithmetic
+
+193
+
+Exercises 8–10: True or False Are the following statements true or false? Explain your answer. 3.4.8. Arithmetic was axiomatized already in ancient times by the Greeks. 3.4.9. The Axiom of Induction is needed to justify Proof by Mathematical Induction. 3.4.10. The Peano Postulates were demonstrated by Dedekind before Peano formulated them as postulates for arithmetic.
+
+Exercises 11–13: Properties of Addition
+Prove the following propositions for addition.
+3.4.11. Commutative Law for Addition a. Using any results from the section, prove that addition is commutative: ∀m∀n(m + n = n + m). Hint: use induction on n and generalize on m. b. Examine your proof in part a. Did you use the Associative Law? Can the Commutative Law be proved prior to Proposition 4? Note: a degree of associativity is already present in the recursive deﬁnition of addition.
+3.4.12. Cancellation Laws for Addition Prove the following, using any results mentioned up to this point (do not subtract equals). Did you use commutativity of addition for your proof?
+a. ∀l∀m∀n(l + n = m + n → l = m) b. ∀l∀m∀n(l + m = l + n → m = n)
+3.4.13. Dichotomy Law ∀m∀n∃d(m + d = n ∨ n + d = m)
+
+Exercises 14–19: Properties of Multiplication
+
+Prove the following propositions for multiplication.
+
+3.4.14. Multiplicative Properties of 0
+
+a. ∀m(m · 0 = 0 = 0 · m)
+
+b. ∀m∀n(m·n = 0 → m = 0 ∨ n = 0)
+
+3.4.15. Identity Property for Multiplication ∀m(1 · m = m = m · 1) 3.4.16. Distributive Laws a. ∀l ∀m∀n(l · (m + n) = l · m + l · n) b. ∀l ∀m∀n((l + m) · n = l · n + m · n)
+
+3.4.17. Associative Law for Multiplication ∀l ∀m∀n((l · m) · n = l · (m · n))
+3.4.18. Commutative Law for Multiplication ∀m∀n(m · n = n · m)
+3.4.19. Cancellation Laws for Multiplication a. ∀l ∀m∀n(l = 0 ∧ l·m = l·n → m = n) b. ∀l ∀m∀n(l = 0 ∧ m·l = n·l → m = n)
+
+Exercises 20–31: Order Properties of the Natural Numbers The order-relation ≤ is deﬁned for N by ∀m∀n(m ≤ n ←→ ∃d(m + d = n)). Prove the following results for ≤. 3.4.20. ∀m(m ≤ m)
+
+194
+
+3 Mathematical Induction and Arithmetic
+
+3.4.21. ∀l ∀m∀n(l ≤ m ∧ m ≤ n → l ≤ n) 3.4.22. ∀m(m ≤ m + 1) 3.4.23. ∀n(0 ≤ n) 3.4.24. ∀n(n ≤ 0 → n = 0) 3.4.25. ∀m∀n(m ≤ n ∧ n ≤ m → m = n) 3.4.26. ∀m∀n(m ≤ n ∨ n ≤ m) 3.4.27. ∀n(n ≤ 1 → n = 0 ∨ n = 1) 3.4.28. ∀m∀n(m ≤ n ≤ m + 1 → n = m ∨ n = m + 1) 3.4.29. ∀m∀n(m ≤ n + 1 ←→ m ≤ n ∨ m = n + 1) 3.4.30. ∀l ∀m∀n(l ≤ m → l + n ≤ m + n) 3.4.31. ∀l ∀m∀n(l ≤ m → l · n ≤ m · n)
+Exercises 32–33: Metalogical Exploration of Peano Arithmetic
+The following problems explore how the Peano Postulates restricts its models.
+3.4.32. Models of Peano Arithmetic’s Axioms 1 and 2 a. Find a model N of the ﬁrst two axioms of Peano Arithmetic in which there are numbers besides 0 that are not successors of another number. b. Find a model N of the ﬁrst two axioms of Peano Arithmetic in which all numbers except 0 are successors of some number but in which not every number is an eventual successor of 0. c. Find a model N of the ﬁrst two axioms of Peano Arithmetic that has a subset P containing 0 as well as the successor of every element it contains, yet which is not N . What does this say about Axiom 3’s relation to Axioms 1 and 2? d. Can a ﬁnite set be a model of the ﬁrst two axioms of Peano Arithmetic? Why or why not?
+3.4.33. Logical Independence of Peano Postulates a. Using the method of models, show that Axiom 1 is not logically implied by Axioms 2 and 3. Thus, Axiom 1 is independent of Axioms 2 and 3. b. Using the method of models, show that Axiom 2 is not logically implied by Axioms 1 and 3. Thus, Axiom 2 is independent of Axioms 1 and 3.
+3.4.34. Mathematical Induction and Well-Ordering The Well-Ordering Principle (every non-empty subset S of the natural numbers N has a least element) was proved in Section 3.3 using Strong Mathematical Induction. Assuming the Well-Ordering Principle prove the Axiom of Mathematical Induction (without using induction, of course). Thus, the Well-Ordering Principle is logically equivalent to the Axiom of Induction.
+3.4.35. Variants of Mathematical Induction Formulate and prove the following, using the Axiom of Induction:
+a. A Modiﬁed Axiom of Induction b. A Strong Axiom of Induction
+
+

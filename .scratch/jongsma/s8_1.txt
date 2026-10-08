@@ -1,0 +1,464 @@
+, C, D represent the various regions, and
+suppose that the eight bridges are positioned as
+described. Then a complete tour is represented by a
+nine-letter word. To determine whether such a tour
+is possible, Euler created a chart like the one shown.
+
+Bridges
+A5 B∗ 4 C∗ 4 D3
+
+Visits
+3 2 2 2
+
+· The ﬁrst column represents the regions, the second column gives the num-
+
+bers of their connecting bridges, and the third column shows how many
+
+times the regions should be visited/listed in a tour sequence.
+· B and C have an asterisk because they are even regions. If one of these is
+
+chosen as a starting point, we must add 1 to the last entry in its row.
+· Since the ﬁnal column adds up to 9, as needed, there is a possible tour,
+
+but we can’t start at either B or C. One tour sequence from A to D, with
+
+bridges inserted to make the walk deﬁnite, is AaBbAcCdAeDf BhCgD.
+
+Euler claimed that his method always works for determining whether a complete tour of bridges is possible, but then he oﬀered a simpler criterion based on some elementary observations. The ﬁrst of these is often called the Handshake Lemma (see Exercise 5a).
+
+Proposition 8.1.1: The Handshake Lemma The sum of the number of bridge connections to all regions is twice the total number of bridges.
+
+422
+
+8 Topics in Graph Theory
+
+Proof : See Exercise 5b.
+Euler observed, as a corollary, that there can’t be an odd number of odd regions (see Exercise 5c), but he also noted that there can’t be more than two odd regions if there’s a legitimate tour of bridges. For, if n denotes the number of bridge connections to a region, a tour sequence must visit an odd region (n + 1)/2 times and an even region n/2 times. Two odd regions will give a visit total of one more than the number of bridges, which still satisﬁes the condition for creating a tour sequence, but if there are four or more odd regions, we’d have to visit these regions too many times to satisfy the condition for a bona ﬁde tour sequence (see Exercise 2c). Also, according to Euler, if there are no odd regions, a tour can be created starting anywhere.
+Euler conclusively argued that if a tour is possible, then the setup must satisfy this condition about the total number of odd regions (equivalently, if this condition is violated, then a tour is impossible). He also asserted that this necessary condition is suﬃcient for undertaking a bridge tour, but he did not give a proof—he only suggested that deleting all [redundant] pairs of bridges joining the same regions would make it easier to determine such a tour. This advice doesn’t provide a method for ﬁnding a tour, however.
+There is an algorithm that completes Euler’s analysis and establishes his claim, but we’ll introduce some standard Graph Theory terminology ﬁrst. As a lead-in, let’s revisit the Ko¨nigsberg Bridge Problem, once again using Euler’s reasoning but now with a diﬀerent diagram.
+
+✜ Example 8.1.2
+Analyze the Ko¨nigsberg Bridge Problem using a graph-theoretic diagram.
+
+Solution
+· We’ll represent Ko¨nigsberg landmasses A – D as ver-
+
+tices and bridges a – g as solid-line connecting edges.
+
+C
+
+This sort of diagram only came into use toward the
+
+end of the nineteenth century (and is not found in
+
+c dg
+
+Euler, contrary to what some say).
+
+hA
+
+e
+
+D
+
+· Euler’s reasoning tells us that the edges cannot be
+
+a bf
+
+traversed exactly once because four vertices have odd
+
+degrees—A has degree 5 (ﬁve edges attached to it),
+
+B
+
+and B, C, and D have degree 3.
+
+· More simply, we can see that if all edges of a connected graph are traversed
+
+once, then the only vertices that can have an odd degree are the walk’s
+
+endpoints. All others will be visited by going in and coming out, making
+
+their degrees even. So the Ko¨nigsberg Bridge Problem is unsolvable.
+
+· If we were to modify the solid-line Ko¨nigsberg graph by adding the dashed
+
+edge h between B and C, we’d obtain a graph whose edges can be traversed
+
+in the required way, as shown in Example 1: AaBbAcCdAeDf BhCgD.
+
+8.1 Eulerian Trails
+
+423
+
+8.1.3 Basic Deﬁnitions of Graph Theory
+Let’s now sharpen the meaning of terms we’ve been using informally.
+Deﬁnition 8.1.1: Graphs, Vertices, and Edges a) A graph G of order n consists of a ﬁnite non-empty set V of vertices with |V | = n and a set E of edges (two-element subsets of V ). An edge e = uv connects distinct vertices u and v as endpoints. A subgraph is a subset of a graph; a supergraph is a superset of a graph. b) Two vertices are adjacent if and only if they are connected by an edge. c) A vertex is isolated if and only if it isn’t connected to another vertex. d) The degree of a vertex v, denoted deg(v), is the number of edges connected to it. An even/odd vertex is one of even/odd degree.
+Unfortunately, graph-theoretic terms (of which there are many) haven’t been completely standardized. Graphs, as deﬁned above, have at most one edge for any two vertices. Thus, our diagram in Example 2 isn’t a graph because, for example, A and B are connected by two edges—such structures are called multigraphs. And edge endpoints must be distinct—if the two vertices are the same, the “edge” is called a loop, and graphs that allow both multiple edges and loops are called pseudographs. We also associate edges with pairs of vertices rather than ordered pairs, so uv = vu. If order is important, the edges are drawn using arrows, giving what’s called a directed graph.
+
+Deﬁnition 8.1.2: Walks, Trails, Paths, Connected Graphs a) A walk of length n with endpoints v0 and vn is a sequence of n edges ei = vi−1vi connecting a sequence of vertices v0, v1, . . . , vn. b) A walk is closed (open) if and only if vn = v0 (vn = v0). c) A trail is a walk whose edges are distinct; a circuit is a closed trail. d) A path is a walk whose vertices are distinct; a cycle is a closed path. e) An Eulerian trail (circuit) is a trail (circuit) that includes all edges of the graph once. f) An Eulerian graph is a graph containing an Eulerian circuit. g) A graph is connected if and only if every pair of vertices is connected by a walk.
+
+Once again, a warning: not all graph theorists use the same terminology. Walks, trails, circuits, paths, cycles—all of these refer to related concepts, but they’re not used in the same way by everyone. Always refer back to the deﬁnition in force if you need clarity on how a graph-theoretic term is being used in a discussion. We’ll try to minimize the number of technical terms to avoid adding to the confusion.
+
+✜ Example 8.1.3
+
+B
+
+F
+
+Can a simple barbell graph be traced without lift-
+
+ing your pencil oﬀ the page? Does it have an
+
+CD
+
+Eulerian trail? An Eulerian circuit?
+
+A
+
+E
+
+424
+
+8 Topics in Graph Theory
+
+Solution
+· CABCDEF D is an Eulerian trail that you can use to trace the graph.
+Such a trail must start and end at either C or D. Note that while a trail
+never repeats an edge, vertices may be visited more than once.
+· There is no Eulerian circuit, however; both C and D are odd vertices.
+
+8.1.4 Eulerian Trails: A Necessary Condition
+Let’s now prove Euler’s necessary condition, for connected graphs.
+Theorem 8.1.1: Necessary Condition for Eulerian Circuits & Trails a) If a connected graph has an Eulerian circuit, then all vertices are even. b) If a connected graph has an Eulerian trail that is not a circuit, then exactly two vertices are odd, the trail’s initial and terminal endpoints.
+
+Proof :
+· The reasoning used toward the end of Example 2 works here, too.
+Note that in a connected graph, an Eulerian trail must contain every vertex.
+· If a vertex is odd, at some point a trail will enter it and not leave or will
+leave it and not return. An Eulerian trail can contain only two of these—the
+initial vertex and the terminal vertex. All other vertices must be even.
+· If an Eulerian trail ends where it started (i.e., is an Eulerian circuit), all
+vertices are even.
+
+✜ Example 8.1.4
+
+Do the following graphs have Eulerian trails or circuits?
+
+a) 1
+
+b) 1
+
+c) 1
+
+2
+
+3
+
+2
+
+3
+
+2
+
+3
+
+7
+
+4
+
+5
+
+4
+
+5
+
+4
+
+5
+
+6
+
+6
+
+Solution
+a) Two vertices are odd in this graph, so there is no Eulerian circuit. But it
+has an Eulerian trail, starting and ending at an odd vertex: 421352345.
+· Note that while the diagram has intersecting diagonals, their point of
+intersection is not a vertex of the graph.
+b) No Eulerian trail can be found in this graph since it has four odd vertices.
+c) Adding two diagonals with their intersection point to the second graph
+gives this ﬁnal graph an Eulerian circuit: 1237427546531. Such a circuit
+can start anywhere.
+· If edge 23 in this graph were dropped, it wouldn’t have an Eulerian
+circuit, but an Eulerian trail would still exist: 213564572473.
+
+8.1 Eulerian Trails
+
+425
+
+8.1.5 Eulerian Trails: A Suﬃcient Condition
+
+We’ll now show that Euler’s necessary condition is also suﬃcient.
+
+✜ Example 8.1.5
+
+3
+
+5
+
+Systematically construct an Eulerian cir-
+
+7
+
+cuit through the graph shown, which has 1
+
+6
+
+only even vertices.
+
+2
+
+4
+
+Solution
+· It’s easy to ﬁnd an Eulerian circuit in a graph this small, as we showed in
+
+Example 4c, but here we will outline a uniform least-ﬁrst procedure that
+
+can be used for any (labeled) graph. At each vertex we’ll choose the open
+
+edge going to the vertex with the least label until a circuit is completed.
+· For this graph, stage 1 gives the circuit 1231. · Vertex 2 has the ﬁrst unused attached edge, so we’ll circle around from
+
+there and break out at the end, creating the next circuit: 2312 45372.
+· This new circuit has an unused edge at 4, so we’ll again reorder the circuit
+
+and continue from there, generating 453723124 6574—an Eulerian circuit.
+· We can schematize this process, reordering the circuit and breaking out to
+
+expand it, as follows:
+
+1231 2312 45372
+
+3
+
+5
+
+7
+
+1
+
+6
+
+453723124 6574
+
+2
+
+4
+
+· If this graph had been missing edge 37, making 3 and 7 odd vertices, we
+
+would temporarily add it in, develop the above circuit, and then rearrange it
+
+to start at the ﬁrst 7 and end at 3, yielding the Eulerian trail 723124657453.
+
+We can generalize the procedure just used to prove that Euler’s necessary condition is also suﬃcient. This was ﬁrst proved (much in the way we will) about a century and a half after Euler ﬁrst asserted it.
+Theorem 8.1.2: Suﬃcient Condition for Eulerian Circuits & Trails a) If all vertices in a connected graph are even, then the graph has an Eulerian circuit, starting at any vertex. b) If all vertices except two in a connected graph are even, then the graph has an Eulerian trail starting and ending at the odd vertices.
+Proof :
+· We’ll prove the ﬁrst part using a breakout-expansion procedure that will
+produce an Eulerian circuit in any graph satisfying the condition.
+· Let G be a connected graph with even vertices. Choose any vertex v and
+move along a trail of unused edges until there is no exit from a vertex. This must be v, because every other vertex entered along the trail can also be departed, having an even degree. This trail is thus a circuit, which can be circumnavigated from any of its vertices.
+
+426
+
+8 Topics in Graph Theory
+
+· If a vertex u in the circuit has an unused edge, circle around the circuit
+from u and then break out along this new edge. Continue on to create an
+expanded circuit with edges not used earlier, starting and ending at u.
+· Repeat this process as long as the expanding circuit has a protruding
+unused edge. Eventually (since G is ﬁnite), the circuit won’t be further
+expandable. This ﬁnal circuit C will be an Eulerian circuit.
+· To see this, let e be any edge in G and let w be one of its endpoints.
+Because G is connected, there is a trail v0v1 · · · vn from v = v0 to vn = w (see Exercise 19). The ﬁrst edge v0v1 of this trail must be in C because C has no protruding edges at v0. Similarly, every successive edge out to w along this trail must be in C, and so C passes through w. Since C has no
+protruding edges, e must be in C.
+· To handle the case where there are two odd vertices, ﬁrst note that the
+argument just made holds for multigraphs as well as graphs.
+· So, connect the two odd vertices by a temporary edge, which may create
+a multigraph. Then an Eulerian circuit exists starting at either of these
+vertices. Since this temporary edge is in the circuit, we can use it as the
+ﬁnal edge in the circuit. Removing this temporary edge, our Eulerian circuit
+becomes an Eulerian trail through the original graph.
+
+EXERCISE SET 8.1
+Exercises 1–3: K¨onigsberg Bridge Problem The following relate to Euler’s solution of the Ko¨nigsberg Bridge Problem.
+8.1.1. Counting Possible Tours Let landmasses be denoted by A, B, C, D, and connecting bridges by a, b, c, d, e, f, g, as in Euler’s solution of the Ko¨nigsberg Bridge Problem.
+a. A 7-bridge tour can be represented by a 15-letter word, 8 capital letters alternating with 7 lowercase letters. How many such words are there?
+b. A 7-bridge tour can also be denoted by an 8-letter word with all capital letters. How many such words are there?
+8.1.2. Bridge Tours with Even and Odd Regions a. Prove Euler’s claim that if a region X has 2n + 1 connecting bridges that are crossed exactly once, then a tour sequence of capital letters representing regions contains n + 1 occurrences of X. b. Prove Euler’s claim that if a region X has 2n connecting bridges that are crossed exactly once, then a tour sequence of capital letters representing regions contains n occurrences of X, unless it is a starting region, in which case it is n + 1. c. Explain why a bridge tour must visit one more region than the number of bridges, and then tell why having more than two odd regions means that no bridge tour is possible.
+
+8.1 Eulerian Trails
+
+427
+
+8.1.3. Ko¨nigsberg Bridge Problem Extension a. How many new bridges must be added to the Ko¨nigsberg setting to make a complete bridge-crossing circuit possible? Where should the new bridges be placed? Illustrate your solution with a multigraph like in Example 2. b. Euler also considered the bridge setup in Figure 8.3 in his 1736 paper.
+
+Fig. 8.3 Euler’s new bridge setup
+Can this set of 15 bridges {a, b, c, d, e, f, g, h, i, k, l, m, n, o, p} connecting regions A, B, C, D, E, F be traversed without repetition? Develop a multigraph chart and diagram like in Examples 1 and 2 to support your answer. c. To verify your answer in part b, modify the algorithm presented in Example 5 to develop a trail/circuit over the edges of your multigraph.
+8.1.4. Shared Degrees in a Graph a. Prove that every graph with two or more vertices has at least two vertices that share the same degree. b. Apply part a to numbers of handshakes made by guests at a party.
+8.1.5. The Handshake Lemma a. Reformulate the Handshake Lemma (Proposition 1) for graphs with vertices and edges instead of for landmasses and bridges. How do you think this lemma got its name? (See Exercise 4b.) b. Prove your graph-theoretic formulation of the Handshake Lemma. c. Explain why the Handshake Lemma implies that there are an even number of odd vertices in a graph.
+Exercises 6–8: True or False Are the following statements true or false? Explain your answer.
+8.1.6. Euler’s method of determining whether a tour of bridges is possible or not (see Example 1) is conclusive. 8.1.7. All cycles are circuits. 8.1.8. A maximal trail through a connected graph is an Eulerian trail.
+Exercises 9–12: Graph-Theoretic Models The following problems explore using graphs to model real-life situations.
+8.1.9. Traversing City Streets Snowville has had a winter storm and sent its snowplow out at midnight to clear both sides of each street in the town. Discuss what following an eﬃcient
+
+428
+
+8 Topics in Graph Theory
+
+plowing route is in terms of graph theory, identifying what the vertices and edges are as well as the potential routes.
+8.1.10. Round-Robin Letters A group of six friends keeps in touch by each sending news of themselves to the next person, removing any letter they previously sent and adding a new one. Model this phenomenon with a graph, explaining what the vertices and edges represent. How many essentially diﬀerent round-robin setups are possible?
+8.1.11. Running the Bases A baseball ﬁeld is outlined as shown. How should the team mascots run the bases and along the foul lines and warning track in one pass, without retracing their steps? Can they ﬁnish at home plate?
+8.1.12. Chalking a Tennis Court The outline of a tennis court is shown with a dashed line where the net will be placed. Can the outline be chalked without stopping and starting at diﬀerent points? Explain how you would chalk the court to have the fewest stops and starts.
+
+Exercises 13–19: Edges, Trails, Paths, and Cycles The following explore relations between edges, trails, and cycles in graphs.
+8.1.13. Constructing a Graph from Given Conditions Draw a graph G satisfying the following conditions, if possible. If none exist, explain why not.
+a. 4 vertices with degrees 2, 2, 1, and 1. b. 4 vertices with degrees 3, 2, 2, and 1. c. 5 vertices and 8 edges. d. 5 vertices and 11 edges. e. 5 vertices with degrees 4, 3, 2, 2, and 1. f. 5 vertices with degrees 4, 3, 3, 2, and 1. g. 5 vertices with degrees 4, 3, 2, 1, and 0.
+8.1.14. Trails and Paths a. Prove that every path is a trail. b. Prove that every walk between two vertices can be converted into a path. c. Prove that any two vertices in a connected graph with n vertices can be connected by a path of length less than n.
+8.1.15. Trees A graph is a tree if and only if there is exactly one path joining each pair of vertices. A spanning tree of a graph G is a tree subgraph of G containing all of G’s vertices and some of its edges.
+a. Prove that a connected graph is a tree if and only if it contains no cycles. b. Prove that a tree has at least two vertices of degree one. c. Prove that a connected graph always contains a spanning tree. Illustrate
+this with Exercise 12’s graph.
+
+8.1 Eulerian Trails
+
+429
+
+8.1.16. Cycles in an Eulerian Graph Prove that a connected graph is Eulerian if and only if it can be partitioned into cycles.
+8.1.17. Number of Cycles in a Connected Order-4 Graph Consider cycles identical if and only if they produce the same loop, in either direction. Construct connected graphs G on 4 vertices satisfying the following:
+a. G has exactly one cycle. b. G has exactly three cycles. c. G has no cycles. d. How many distinct cycles does G have if all pairs of vertices are adjacent,
+i.e., is a complete graph?
+8.1.18. Number of Cycles in a Connected Order-5 Graph Let G be a connected graph with 5 vertices.
+a. Show that G must have at least 4 edges. b. Show that G has no cycles if it has exactly 4 edges. c. Show that G has at least one cycle if it has more than 4 edges.
+8.1.19. Number of Cycles in a Connected Graph Let G be a connected graph with n vertices and m edges. Prove the following:
+a. m ≥ n − 1. b. m < n (i.e., m = n − 1) if and only if G contains no cycle, i.e., is acyclic. c. If m = n then G contains exactly one cycle. d. If m > n then G contains more than one cycle. e. Explain why the converses of c and d are also true.
+
+Exercises 20–22: Trails and Circuits The following problems explore trails and circuits in graphs.
+
+8.1.20. Maximal Trails and Circuits
+
+List a maximal trail for each of the following graphs. Is your trail Eulerian?
+
+Is it a circuit?
+
+a.
+
+b.
+
+4
+
+3
+
+5
+
+4
+
+c.
+
+5
+
+4
+
+d. 4
+
+3
+
+58
+
+3
+
+3
+
+67
+
+1
+
+2
+
+1
+
+2
+
+1
+
+2
+
+1
+
+2
+
+8.1.21. Eulerian Trails and Circuits
+
+Decide for each of the following graphs whether it contains an Eulerian circuit
+
+or an Eulerian trail. If it does, use the algorithm of Example 5 to determine
+
+it. If it doesn’t, tell why not.
+10
+
+a.
+
+4
+
+5
+
+6
+
+b.
+
+4
+
+5
+
+6
+
+c.
+
+8
+
+9
+
+1
+
+2
+
+3
+
+1
+
+2
+
+3
+
+5
+
+6
+
+7
+
+1
+
+2
+
+3
+
+4
+
+430
+
+8 Topics in Graph Theory
+
+8.1.22. Fleury’s Algorithm produces an Eulerian circuit/trail as follows: Begin at any vertex (at an odd vertex if two such are present) and proceed to a connected vertex along an existing edge, removing it as you proceed. Choose an edge so that the next vertex in the trail has an outgoing edge, until this is not possible. Show that this procedure produces an Eulerian circuit/trail for the following graphs. Compare your trail with what was found earlier.
+a. The graph of Example 5. b. The graph of Exercise 21.b. c. The graph of Exercise 21.c.
+

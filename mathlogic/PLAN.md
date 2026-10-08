@@ -1,20 +1,22 @@
 # mathlogic 教程总计划（十书为纲 × 七通道）
 
-> 状态：全书主题重排完成——51 章就位新号位（原 H&R 26 章 + Ben-Ari 8 章 + Jongsma 9 章），140 单元全绿；EFT 扩充八章（新 20/21/22 深化/23/24/25/29/32）按批次写入。本文件是施工蓝图，
+> 状态：四轮书本扩充收官（H&R+Ben-Ari+Jongsma+EFT，58 章 158 单元全绿）；
+> 第五轮按 Mendelson 6e 扩充进行中——63 章号位中 09/34/35/36/62 五章预留
+> +37 不完备性升级（批次〇重排已完成）。本文件是施工蓝图，
 > 供后续会话续接——每完成一章更新一次「已交付」标记。
 
-## 九书定位
+## 十书定位
 
 | 书 | 角色 |
 |---|---|
 | Huth & Ryan《Logic in Computer Science》2e（英文文本层好；中译本=同书 OCR 扫描） | CS 主线：ND→SAT→FOL→模型检测→霍尔逻辑→模态→BDD |
 | Ben-Ari 3e（2012，文本层好；2e 为 OCR 扫描仅补充） | 演算主线：G 矢列、Hilbert H、tableau、归结/合一、SLD、验证 |
 | Mints《A Short Introduction to Intuitionistic Logic》（公式层缺，需按页读版面） | 直觉主义线：NJp/NKp、Glivenko、正规化、Kripke |
-| Ebbinghaus-Flum-Thomas (EFT) 3e | 元理论线：矢列、完备性、L-S、不可判定、Lindström |
-| Mendelson 6e | Hilbert 系统与元定理线：L 系统、完备性 2.7、形式算术 S、递归函数 |
+| Ebbinghaus-Flum-Thomas (EFT) 3e | 元理论线：矢列、完备性、L-S、EF 博弈、二阶、自由模型、寄存器机 |
+| Mendelson 6e（第五轮做实中） | 元定理与递归论线：完备集与独立性(09)、Rule C/Lindenbaum(18/23 深化)、图灵机(34)、递归函数(35)、算术化(36)、不完备性(37)、NBG 集合论(62) |
 | 《Advances in Natural Deduction》（Prawitz 纪念文集） | 证明论进阶（文档引用） |
 | 贺伟《范畴论》/《高级范畴论》 | （本轮范畴论教程已用） |
-| Jongsma《Introduction to Discrete Mathematics via Logic and Proof》（UTM 2019，文本层好；§7.3 的补运算上杠在提取文本中丢失——按数学实体校读） | 离散底座线：归纳/集合/无穷/函数/格与 Boole/图（49-57 章） |
+| Jongsma《Introduction to Discrete Mathematics via Logic and Proof》（UTM 2019，文本层好；§7.3 的补运算上杠在提取文本中丢失——按数学实体校读） | 离散底座线：归纳/集合/无穷/函数/格与 Boole/图（53-61 章） |
 
 ## 七通道（已全部打通并实测）
 
@@ -28,7 +30,7 @@
 | hott | Rocq 9.1（G:\rocq）+ 本地 Coq-HoTT 库（597 .vo，tools/build-hott.ps1） | build.ps1（`*_hott.v` 后缀路由） | exit 0 无 Error |
 | prolog | SWI-Prolog 10.0.2（G:\scoop\apps\swipl\current；gprolog 1.5.0/WSL 跨引擎抽查） | build.ps1（`exNN_*.pl` 自动路由） | exit 0 + `END ====` 标记 |
 
-## 章节蓝图（58 章全部交付）
+## 章节蓝图（63 章号位：58 交付 + 5 预留）
 
 | 章 | 主题 | 通道 | 状态 |
 |---|---|---|---|
@@ -36,61 +38,65 @@
 | 02 | 命题语义与蛮力判定器（一致性引理+双向可靠） | C/A/L/I | ✅ 扩写✅ |
 | 03 | 自然演绎 NJp（规则即程序；HOL4 首秀） | C/A/L/I/H4 | ✅ 扩写✅ |
 | 04 | 经典加成矩阵（六家账本对照；HoTT 首秀） | C/A/L/I/H4/T | ✅ 扩写✅ |
-| 05 | Hilbert 系统与演绎定理（推导归纳的元定理范本） | C/A/L/I/H4 | ✅ 扩写✅ |
+| 05 | Hilbert 系统与演绎定理（推导归纳的元定理范本；批次六加 Mendelson L 对照+L1-L4） | C/A/L/I/H4 | ✅ 扩写✅ |
 | 06 | 矢列演算 G（九规则+可靠性旗舰；G 天生经典） | C/A/L/I | ✅ 扩写✅ |
 | 07 | 语义表列 tableau（fuel 化搜索+双向正确+判定程序） | C/L | ✅ 扩写✅ |
 | 08 | 范式 NNF/CNF（Agda 止步 NNF——case tree 互卡实录） | C/A/L | ✅ 扩写✅ |
-| 09 | DPLL 与 SAT（upd 复合装配模型；三定理零公理；Isabelle 边界实录） | C/L/I | ✅ 扩写✅ |
-| 10 | BDD（深度编码+apply 三旗舰；坍缩与深度编码相克实录；树形 vs DAG） | C/L | ✅ 扩写✅ |
-| 11 | Glivenko 现象（经典原理 ¬¬ 化全部直觉可证；四通道零公理） | C/A/L/T | ✅ 扩写✅ |
-| 12 | Curry–Howard 与析取性质（双 canonical 零公理；截断丢标签的 HoTT 观点） | C/A/L/T | ✅ 扩写✅ |
-| 13 | Kripke 语义（两世界 LEM 反例零公理；DNE 空真认知修正） | C/A/L | ✅ 扩写✅ |
-| 14 | FOL 语法与代入（fv 条款含 In x 条件教训；同型不挡混淆实录） | C/A/L | ✅ 扩写✅ |
-| 15 | FOL 语义（一致性+完整代入交换+locale/结构理论） | C/A/L/I | ✅ 扩写✅ |
-| 16 | FOL 自然演绎（Drinker 悖论三旗舰；Agda 构造边界实录） | C/A/L/I/H4 | ✅ 扩写✅ |
-| 17 | FOL Hilbert 与 Gen 侧条件演绎定理（GenMove 公理；Lean 三连坑实录） | C/L | ✅ 扩写✅ |
-| 18 | 前束范式构件（量词穿越四条零公理；侧条件不对称实录） | C/L | ✅ 扩写✅ |
-| 19 || FOL 语义表列（γ/δ 规则+tclo 推导对象+7.42 完整证明） | C/L | ✅ Ben-Ari 批次一 |
-| 20 | FOL 矢列演算与等词（EFT S 全规则：∃A 侧条件+Sub+可导规则族+群例等式链+协调性） | C/L | ✅ EFT 批次一 |
-| 21 | 语法解释、范式与 ZF（词项化简对账+≤-from-< 定义扩张 E1/E2+⟨Φ⟩ DNF+ZF 公理即公式） | C/L | ✅ EFT 批次二 |
-| 22 | 完备性 Henkin（原 23 文档线全保留+合同闭包商结构 TΦ+六探针对账+见证式化） | 文档/C/L | ✅ EFT 批次三 |
-| 23 | L-S、紧致性与初等等价（DLO 无有限模型+σₙ 族「有限性不可单句定义」+量化秩分离+Skolem 闭包） | C/L | ✅ EFT 批次四 |
-| 24 | EF 博弈与 Fraïssé 定理（pi_ok+dup_wins/efg 求解器三通道+(Z_n,<) 2^k−1 分离表+空/全关系对照+秩-轮对齐） | C/L/P | ✅ EFT 批次五 |
-| 25 | 二阶逻辑与弱二阶系统（soev 幂枚举求值器+偶数交替着色+连通否定式+L_Q 退化+元定理倒塌文档线） | C/L | ✅ EFT 批次六 |
-| 29 | 自由模型与逻辑编程的代数（自由幺半群=表+初始性存在唯一同态+必需性+归结族分工表） | C/L | ✅ EFT 批次七 |
-| 32 | 寄存器机与可计算性（五指令 RM 解释器三通道+P₀ 奇偶对账+加法+循环+停机/不可判定链文档线） | C/L/P | ✅ EFT 批次八 |
-| 22 || 完备性 Henkin（构造七步+紧致性/LS 推论+先例索引） | 文档 | ✅ 扩写✅ |
-| 26 || 合一与归结（occurs check 结构锚+归结可靠性侧条件版） | C/L/I | ✅ 扩写✅ |
-| 27 || Herbrand 与 SLD（T_P 单调+头原子；Knaster-Tarski 边界） | C/L | ✅ 扩写✅ |
-| 28 || 归结完备性与 SAT 难例（resproof+PHP+DP 消元） | C/L | ✅ Ben-Ari 批次七 |
-| 30 || SLD 与逻辑编程语义（双计算规则独立性+cut/NAF/CLP） | C/L/P | ✅ Ben-Ari 批次六 |
-| 31 || 程序合成与形式语义（小步语义+读出式正确性） | C/L | ✅ Ben-Ari 批次八 |
-| 33 || 可判定性与 SMT（presburger 现场+Decidable 机器面；Church 文档） | I/L | ✅ 扩写✅ |
-| 34 || 哥德尔不完备（三步证明+机器化先例索引） | 文档 | ✅ 扩写✅ |
-| 35 || CTL 语义+AG/EG 展开等价+不动点构件 | C/L | ✅ 扩写✅ |
-| 36 || LTL 线性时态逻辑（等价族六件） | C/L | ✅ 批次九 |
-| 37 || 模型检查算法与公平性（互斥+饥饿+公平微观模型） | C/L | ✅ 批次九 |
-| 38 || CTL* 与表达能力天梯（三组分离现场） | C/L | ✅ 批次九 |
-| 39 || LTL 语义表列（lasso+兑现检查+fulfill_ok_sound） | C/L | ✅ Ben-Ari 批次二 |
-| 40 || 时态演绎系统 L（lth+lth_sound+14.2/14.4 推导） | C/L | ✅ Ben-Ari 批次三 |
-| 41 || 自动机与 LTL 模型检查（baut+findLoop+loop_accept_inf） | C/L/P | ✅ Ben-Ari 批次四 |
-| 42 || 符号模型检查与关系 μ 演算 | C/L | ✅ 批次十一 |
-| 43 || 模态逻辑 K（K_valid/nec/T 与 4 反例） | C/L | ✅ 批次十 |
-| 44 || 对应理论（五条正向+T 的逆） | C/L | ✅ 批次十 |
-| 45 || 模态 ND 与 KT45n 泥孩子 | C/L | ✅ 批次十 |
-| 46 || 霍尔逻辑程序验证（while 规则五通道对照+别名前提+截断减法绕行） | C/A/L/I/H4 | ✅ 扩写✅ |
-| 47 || 完全正确性与契约（变体方法+minsum 案例） | C/L/I | ✅ 批次八 |
-| 48 || 并发程序演绎验证（不变式族+reach_inv） | C/L | ✅ Ben-Ari 批次五 |
-| 49 || 数学归纳与递归（PMI 三位一体：弱/强/良序+素因子+√2 下降+F₃ₙ） | C/L | ✅ Jongsma 批次一 |
-| 50 || 递推、结构归纳与 Peano 算术（公理变定理+加乘律+≤ 全链） | C/L | ✅ Jongsma 批次二 |
-| 51 || 整除性与初等数论（dm2 商余+egcdf 四元组 Bézout+Euclid 引理+gcd·lcm+素数无穷） | C/L | ✅ Jongsma 批次三 |
-| 52 || 集合、幂集与计数（运算律+De Morgan 经典账本+powl/prodl+ΣC(n,k)=2^n+容斥） | C/L | ✅ Jongsma 批次四 |
-| 53 || 无穷集合与停机问题（Galileo+2^a·3^b 编码+Cantor 对角线三化身+Russell+停机公理账） | C/L | ✅ Jongsma 批次五 |
-| 54 || 函数与等价关系（复合保持+搜索左/右逆+congN 全加形态正规形+良定义） | C/L | ✅ Jongsma 批次六 |
-| 55 || 偏序与格（整除偏序三律+lub/glb 唯一性+特征引理装配代数律全家+五点菱形非分配反例） | C/L | ✅ Jongsma 批次七 |
-| 56 || Boole 代数与逻辑电路（B={0,1} 十公理+恒等式册+半/全加器+minterm 表示定理+QMC 两阶段） | C/L/P | ✅ Jongsma 批次八 |
-| 57 || 图论专题（握手引理真证明+哥尼斯堡/K5/K3,3 平面算术+Ham 检查器+贪心着色两定理+P 通道搜索面） | C/L/P | ✅ Jongsma 批次九 |
-| 58 || 收官：SAT→SMT→MC→ITP 图景 + 总坑位清单 + 八书导读+H&R 映射 | 文档 | ✅ 扩写✅ |
+| 09 | 完备连接词集与公理独立性（{¬,∧}/{↑} 完备+L 三公理独立三值矩阵+super 擦负号） | C/L | 🔨 Mendelson 批次一 |
+| 10 | DPLL 与 SAT（upd 复合装配模型；三定理零公理；Isabelle 边界实录） | C/L/I | ✅ 扩写✅ |
+| 11 | BDD（深度编码+apply 三旗舰；坍缩与深度编码相克实录；树形 vs DAG） | C/L | ✅ 扩写✅ |
+| 12 | Glivenko 现象（经典原理 ¬¬ 化全部直觉可证；四通道零公理） | C/A/L/T | ✅ 扩写✅ |
+| 13 | Curry–Howard 与析取性质（双 canonical 零公理；截断丢标签的 HoTT 观点） | C/A/L/T | ✅ 扩写✅ |
+| 14 | Kripke 语义（两世界 LEM 反例零公理；DNE 空真认知修正） | C/A/L | ✅ 扩写✅ |
+| 15 | FOL 语法与代入（fv 条款含 In x 条件教训；同型不挡混淆实录） | C/A/L | ✅ 扩写✅ |
+| 16 | FOL 语义（一致性+完整代入交换+locale/结构理论） | C/A/L/I | ✅ 扩写✅ |
+| 17 | FOL 自然演绎（Drinker 悖论三旗舰；Agda 构造边界实录） | C/A/L/I/H4 | ✅ 扩写✅ |
+| 18 | FOL Hilbert 与 Gen 侧条件演绎定理（GenMove 公理；批次六加 A4/E4+Rule C 机器件） | C/L | ✅ 扩写✅ |
+| 19 | 前束范式构件（量词穿越四条零公理；侧条件不对称实录） | C/L | ✅ 扩写✅ |
+| 20 | FOL 语义表列（γ/δ 规则+tclo 推导对象+7.42 完整证明） | C/L | ✅ Ben-Ari 批次一 |
+| 21 | FOL 矢列演算与等词（EFT S 全规则：∃A 侧条件+Sub+可导规则族+群例等式链+协调性） | C/L | ✅ EFT 批次一 |
+| 22 | 语法解释、范式与 ZF（词项化简对账+≤-from-< 定义扩张 E1/E2+⟨Φ⟩ DNF+ZF 公理即公式） | C/L | ✅ EFT 批次二 |
+| 23 | 完备性 Henkin（合同闭包商结构 TΦ+六探针对账+见证式化；批次六加 Lindenbaum 机器件） | 文档/C/L | ✅ EFT 批次三 |
+| 24 | L-S、紧致性与初等等价（DLO+σₙ 族+量化秩分离+Skolem 闭包；批次六加范畴性/同构⇒初等等价） | C/L | ✅ EFT 批次四 |
+| 25 | EF 博弈与 Fraïssé 定理（dup_wins 求解器三通道+(Z_n,<) 2^k−1 分离表+秩-轮对齐） | C/L/P | ✅ EFT 批次五 |
+| 26 | 二阶逻辑与弱二阶系统（soev 幂枚举求值器+偶数交替着色+连通否定式+L_Q 退化；批次六加二阶归纳范畴性） | C/L | ✅ EFT 批次六 |
+| 27 | 合一与归结（occurs check 结构锚+归结可靠性侧条件版） | C/L/I | ✅ 扩写✅ |
+| 28 | Herbrand 与 SLD（T_P 单调+头原子；Knaster-Tarski 边界） | C/L | ✅ 扩写✅ |
+| 29 | 归结完备性与 SAT 难例（resproof+PHP+DP 消元） | C/L | ✅ Ben-Ari 批次七 |
+| 30 | 自由模型与逻辑编程的代数（自由幺半群=表+初始性存在唯一同态+必需性+归结族分工表） | C/L | ✅ EFT 批次七 |
+| 31 | SLD 与逻辑编程语义（双计算规则独立性+cut/NAF/CLP） | C/L/P | ✅ Ben-Ari 批次六 |
+| 32 | 程序合成与形式语义（小步语义+读出式正确性） | C/L | ✅ Ben-Ari 批次八 |
+| 33 | 寄存器机与可计算性（五指令 RM 解释器三通道+P₀ 奇偶对账+加法+循环+停机/不可判定链文档线） | C/L/P | ✅ EFT 批次八 |
+| 34 | 图灵机（四元组+纸带双向表+书例程序逐输入对账+不停机对+RM 对照表） | C/L/P | 🔨 Mendelson 批次二 |
+| 35 | 递归函数与部分递归（PR 闭包构造子+add/mul 真证+Ackermann+μ 有界搜索+r.e. 文档线） | C/L | 🔨 Mendelson 批次三 |
+| 36 | 算术化与哥德尔编码（素数幂编码单射+β-函数 CRT+编码层代换+不动点现场） | C/L | 🔨 Mendelson 批次四 |
+| 37 | 哥德尔不完备（原文档线全保留+表示性样板+Tarski 风格对角+Church 归约链） | 文档/C/L | 🔨 批次四升级 |
+| 38 | 可判定性与 SMT（presburger 现场+Decidable 机器面；Church 文档） | I/L | ✅ 扩写✅ |
+| 39 | CTL 语义+AG/EG 展开等价+不动点构件 | C/L | ✅ 扩写✅ |
+| 40 | LTL 线性时态逻辑（等价族六件） | C/L | ✅ 批次九 |
+| 41 | 模型检查算法与公平性（互斥+饥饿+公平微观模型） | C/L | ✅ 批次九 |
+| 42 | CTL* 与表达能力天梯（三组分离现场） | C/L | ✅ 批次九 |
+| 43 | LTL 语义表列（lasso+兑现检查+fulfill_ok_sound） | C/L | ✅ Ben-Ari 批次二 |
+| 44 | 时态演绎系统 L（lth+lth_sound+14.2/14.4 推导） | C/L | ✅ Ben-Ari 批次三 |
+| 45 | 自动机与 LTL 模型检查（baut+findLoop+loop_accept_inf） | C/L/P | ✅ Ben-Ari 批次四 |
+| 46 | 符号模型检查与关系 μ 演算 | C/L | ✅ 批次十一 |
+| 47 | 模态逻辑 K（K_valid/nec/T 与 4 反例） | C/L | ✅ 批次十 |
+| 48 | 对应理论（五条正向+T 的逆） | C/L | ✅ 批次十 |
+| 49 | 模态 ND 与 KT45n 泥孩子 | C/L | ✅ 批次十 |
+| 50 | 霍尔逻辑程序验证（while 规则五通道对照+别名前提+截断减法绕行） | C/A/L/I/H4 | ✅ 扩写✅ |
+| 51 | 完全正确性与契约（变体方法+minsum 案例） | C/L/I | ✅ 批次八 |
+| 52 | 并发程序演绎验证（不变式族+reach_inv） | C/L | ✅ Ben-Ari 批次五 |
+| 53 | 数学归纳与递归（PMI 三位一体：弱/强/良序+素因子+√2 下降+F₃ₙ） | C/L | ✅ Jongsma 批次一 |
+| 54 | 递推、结构归纳与 Peano 算术（公理变定理+加乘律+≤ 全链） | C/L | ✅ Jongsma 批次二 |
+| 55 | 整除性与初等数论（dm2 商余+egcdf 四元组 Bézout+Euclid 引理+gcd·lcm+素数无穷） | C/L | ✅ Jongsma 批次三 |
+| 56 | 集合、幂集与计数（运算律+De Morgan 经典账本+powl/prodl+ΣC(n,k)=2^n+容斥） | C/L | ✅ Jongsma 批次四 |
+| 57 | 无穷集合与停机问题（Galileo+2^a·3^b 编码+Cantor 对角线三化身+Russell+停机公理账） | C/L | ✅ Jongsma 批次五 |
+| 58 | 函数与等价关系（复合保持+搜索左/右逆+congN 全加形态正规形+良定义） | C/L | ✅ Jongsma 批次六 |
+| 59 | 偏序与格（整除偏序三律+lub/glb 唯一性+特征引理装配代数律全家+五点菱形非分配反例） | C/L | ✅ Jongsma 批次七 |
+| 60 | Boole 代数与逻辑电路（B={0,1} 十公理+恒等式册+半/全加器+minterm 表示定理+QMC 两阶段） | C/L/P | ✅ Jongsma 批次八 |
+| 61 | 图论专题（握手引理真证明+哥尼斯堡/K5/K3,3 平面算术+Ham 检查器+贪心着色两定理+P 通道搜索面） | C/L/P | ✅ Jongsma 批次九 |
+| 62 | 公理集合论 NBG 与序数（类存在公理 B1-B7 构造算子+Kuratowski 序对+von Neumann 序数+有限 AC 零公理+MK/ZF/ST/NF 对照） | C/L | 🔨 Mendelson 批次五 |
+| 63 | 收官：SAT→SMT→MC→ITP 图景 + 总坑位清单 + 十书导读 + 账本尾段（批次七重写） | 文档 | ✅ 扩写✅ |
 
 章号=示例号；`docs/NN-*.md` 每章坑位速记；ROOTS 随章追加 Isabelle session。
 
@@ -98,15 +104,15 @@
 
 1. **构造/经典账本**：每章末 `Print Assumptions`/`#print axioms` 记账，
    LCF 两家「无账单」本身要交代；
-2. **演算作为数据**：05/06 章的归纳推导 → 26 章归结 → 22 章完备性
+2. **演算作为数据**：05/06 章的归纳推导 → 27 章归结 → 23 章完备性
    全是同一招「对推导/证明结构归纳」；
-3. **语义与证毕的缝**：02（判定器双向）→06（G 可靠）→23（完备）；
+3. **语义与证毕的缝**：02（判定器双向）→06（G 可靠）→24（完备）；
 4. **深浅嵌入**：05 章深（derives 归纳）vs HOL4 浅（DISCH 白送）。
 
 ## 已沉淀的跨章配方
 
 - Isabelle 每章：examples/ROOT 加 `session MLNN in "NN_dir" = HOL +`；
-- HOL4 脚本头：`Feedback.set_trace` 两条 + `open HolKernel boolLib bossLib Parse` +
+- HOL4 脚本头：`Feedback.setTrace` 两条 + `open HolKernel boolLib bossLib Parse` +
   `new_theory "ExNN…"` + 尾部 `[OK]` 标记 + `export_theory()`；
 - HoTT 文件名 `exNN_*_hott.v`；`Require Import HoTT.HoTT`（顶层无 Prelude）；
 - Coq 公理记账三入口：Print Assumptions / #print axioms / Print Assumptions on klassical。

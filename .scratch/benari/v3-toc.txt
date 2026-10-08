@@ -1,0 +1,304 @@
+For Anita
+Preface
+
+Students of science and engineering are required to study mathematics during their
+first years at a university. Traditionally, they concentrate on calculus, linear algebra
+and differential equations, but in computer science and engineering, logic, combi-
+natorics and discrete mathematics are more appropriate. Logic is particularly im-
+portant because it is the mathematical basis of software: it is used to formalize the
+semantics of programming languages and the specification of programs, and to ver-
+ify the correctness of programs.
+
+   Mathematical Logic for Computer Science is a mathematics textbook, just as a
+first-year calculus text is a mathematics textbook. A scientist or engineer needs more
+than just a facility for manipulating formulas and a firm foundation in mathematics
+is an excellent defense against technological obsolescence. Tempering this require-
+ment for mathematical competence is the realization that applications use only a
+fraction of the theoretical results. Just as the theory of calculus can be taught to
+students of engineering without the full generality of measure theory, students of
+computer science need not be taught the full generality of uncountable structures.
+Fortunately (as shown by Raymond M. Smullyan), tableaux provide an elegant way
+to teach mathematical logic that is both theoretically sound and yet sufficiently ele-
+mentary for the undergraduate.
+
+Audience
+
+The book is intended for undergraduate computer science students. No specific
+mathematical knowledge is assumed aside from informal set theory which is sum-
+marized in an appendix, but elementary knowledge of concepts from computer sci-
+ence (graphs, languages, programs) is used.
+
+                                                                                                                   vii
+viii          Preface
+
+Organization
+
+The book can be divided into four parts. Within each part the chapters should be
+read sequentially; the prerequisites between the parts are described here.
+
+Propositional Logic: Chapter 2 is on the syntax and semantics of propositional
+logic. It introduces the method of semantic tableaux as a decision procedure for
+the logic. This chapter is an essential prerequisite for reading the rest of the book.
+Chapter 3 introduces deductive systems (axiomatic proof systems). The next three
+chapters present techniques that are used in practice for tasks such as automatic
+theorem proving and program verification: Chap. 4 on resolution, Chap. 5 on binary
+decision diagrams and Chap. 6 on SAT solvers.
+
+First-Order Logic: The same progression is followed for first-order logic. There
+are two chapters on the basic theory of the logic: Chap. 7 on syntax, semantics and
+semantic tableaux, followed by Chap. 8 on deductive systems. Important applica-
+tion of first-order logic are automatic theorem proving using resolution (Chap. 10)
+and logic programming (Chap. 11). These are preceded by Chap. 9 which intro-
+duces an essential extension of the logic to terms and functions. Chapter 12 surveys
+fundamental theoretical results in first-order logic. The chapters on first-order logic
+assume as prerequisites the corresponding chapters on propositional logic; for ex-
+ample, you should read Chap. 4 on resolution in the propositional logic before the
+corresponding Chap. 10 in first-order logic.
+
+Temporal Logic: Again, the same progression is followed: Chap. 13 on syntax,
+semantics and semantic tableaux, followed by Chap. 14 on deductive systems. The
+prerequisites are the corresponding chapters on propositional logic since first-order
+temporal logic is not discussed.
+
+Program Verification: One of the most important applications of mathematical
+logic in computer science is in the field of program verification. Chapter 15 presents
+a deductive system for the verification of sequential programs; the reader should
+have mastered Chap. 3 on deductive systems in propositional logic before reading
+this chapter. Chapter 16 is highly dependent on earlier chapters: it includes deduc-
+tive proofs, the use of temporal logic, and implementations using binary decision
+diagrams and satisfiability solvers.
+
+Supplementary Materials
+
+Slides of the diagrams and tables in the book (in both PDF and LATEX) can be down-
+loaded from http://www.springer.com/978-1-4471-4128-0, which also contains in-
+structions for obtaining the answers to the exercises (qualified instructors only). The
+source code and documentation of Prolog programs for most of the algorithms in the
+book can be downloaded from http://code.google.com/p/mlcs/.
+Preface          ix
+
+Third Edition
+
+The third edition has been totally rewritten for clarity and accuracy. In addition, the
+following major changes have been made to the content:
+
+· The discussion of logic programming has been shortened somewhat and the Pro-
+   log programs and their documentation have been removed to a freely available
+   archive.
+
+· The chapter on the Z notation has been removed because it was difficult to do
+   justice to this important topic in a single chapter.
+
+· The discussion of model checking in Chap. 16 has been significantly expanded
+   since model checking has become a widely used technique for program verifica-
+   tion.
+
+· Chapter 6 has been added to reflect the growing importance of SAT solvers in all
+   areas of computer science.
+
+Notation
+
+If and only if is abbreviated iff. Definitions by convention use iff to emphasize that
+the definition is restrictive. For example: A natural number is even iff it can be
+expressed as 2k for some natural number k. In the definition, iff means that numbers
+expressed as 2k are even and these are the only even numbers.
+
+   Definitions, theorems and examples are consecutively numbered within each
+chapter to make them easy to locate. The end of a definition, example or proof
+is denoted by .
+
+   Advanced topics and exercises, as well as topics outside the mainstream of the
+book, are marked with an asterisk.
+
+Acknowledgments
+
+I am indebted to Jørgen Villadsen for his extensive comments on the second edition
+which materially improved the text. I would like to thank Joost-Pieter Katoen and
+Doron Peled for reviewing parts of the manuscript. I would also like to thank Helen
+Desmond, Ben Bishop and Beverley Ford of Springer for facilitating the publication
+of the book.
+
+Rehovot, Israel  Mordechai (Moti) Ben-Ari
+Contents
+
+1 Introduction . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+      1.1 The Origins of Mathematical Logic . . . . . . . . . . . . . . . . 1
+      1.2 Propositional Logic . . . . . . . . . . . . . . . . . . . . . . . . 2
+      1.3 First-Order Logic . . . . . . . . . . . . . . . . . . . . . . . . . 3
+      1.4 Modal and Temporal Logics . . . . . . . . . . . . . . . . . . . . 4
+      1.5 Program Verification . . . . . . . . . . . . . . . . . . . . . . . . 5
+      1.6 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+      1.7 Further Reading . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+      1.8 Exercise . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+      References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+
+2 Propositional Logic: Formulas, Models, Tableaux . . . . . . . . . . . 7
+      2.1 Propositional Formulas . . . . . . . . . . . . . . . . . . . . . . 7
+      2.2 Interpretations . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+      2.3 Logical Equivalence . . . . . . . . . . . . . . . . . . . . . . . . 21
+      2.4 Sets of Boolean Operators * . . . . . . . . . . . . . . . . . . . . 26
+      2.5 Satisfiability, Validity and Consequence . . . . . . . . . . . . . . 29
+      2.6 Semantic Tableaux . . . . . . . . . . . . . . . . . . . . . . . . . 33
+      2.7 Soundness and Completeness . . . . . . . . . . . . . . . . . . . 39
+      2.8 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 44
+      2.9 Further Reading . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+      2.10 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+      References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+
+3 Propositional Logic: Deductive Systems . . . . . . . . . . . . . . . . 49
+      3.1 Why Deductive Proofs? . . . . . . . . . . . . . . . . . . . . . . 49
+      3.2 Gentzen System G . . . . . . . . . . . . . . . . . . . . . . . . . 51
+      3.3 Hilbert System H . . . . . . . . . . . . . . . . . . . . . . . . . 55
+      3.4 Derived Rules in H . . . . . . . . . . . . . . . . . . . . . . . . 58
+      3.5 Theorems for Other Operators . . . . . . . . . . . . . . . . . . . 62
+      3.6 Soundness and Completeness of H . . . . . . . . . . . . . . . . 64
+
+                                                                                                                    xi
+xii  Contents
+
+      3.7 Consistency . . . . . . . . . . . . . . . . . . . . . . . . . . . . 66
+      3.8 Strong Completeness and Compactness * . . . . . . . . . . . . . 67
+      3.9 Variant Forms of the Deductive Systems * . . . . . . . . . . . . 68
+      3.10 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 71
+      3.11 Further Reading . . . . . . . . . . . . . . . . . . . . . . . . . . 71
+      3.12 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+      References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 73
+
+4 Propositional Logic: Resolution . . . . . . . . . . . . . . . . . . . . . 75
+      4.1 Conjunctive Normal Form . . . . . . . . . . . . . . . . . . . . . 75
+      4.2 Clausal Form . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+      4.3 Resolution Rule . . . . . . . . . . . . . . . . . . . . . . . . . . 80
+      4.4 Soundness and Completeness of Resolution * . . . . . . . . . . 82
+      4.5 Hard Examples for Resolution * . . . . . . . . . . . . . . . . . . 88
+      4.6 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 92
+      4.7 Further Reading . . . . . . . . . . . . . . . . . . . . . . . . . . 92
+      4.8 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 92
+      References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 93
+
+5 Propositional Logic: Binary Decision Diagrams . . . . . . . . . . . . 95
+      5.1 Motivation Through Truth Tables . . . . . . . . . . . . . . . . . 95
+      5.2 Definition of Binary Decision Diagrams . . . . . . . . . . . . . 97
+      5.3 Reduced Binary Decision Diagrams . . . . . . . . . . . . . . . . 98
+      5.4 Ordered Binary Decision Diagrams . . . . . . . . . . . . . . . . 102
+      5.5 Applying Operators to BDDs . . . . . . . . . . . . . . . . . . . 104
+      5.6 Restriction and Quantification * . . . . . . . . . . . . . . . . . . 107
+      5.7 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 109
+      5.8 Further Reading . . . . . . . . . . . . . . . . . . . . . . . . . . 110
+      5.9 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 110
+      References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 110
+
+6 Propositional Logic: SAT Solvers . . . . . . . . . . . . . . . . . . . . 111
+      6.1 Properties of Clausal Form . . . . . . . . . . . . . . . . . . . . 111
+      6.2 Davis-Putnam Algorithm . . . . . . . . . . . . . . . . . . . . . 115
+      6.3 DPLL Algorithm . . . . . . . . . . . . . . . . . . . . . . . . . . 116
+      6.4 An Extended Example of the DPLL Algorithm . . . . . . . . . . 117
+      6.5 Improving the DPLL Algorithm . . . . . . . . . . . . . . . . . . 122
+      6.6 Stochastic Algorithms . . . . . . . . . . . . . . . . . . . . . . . 125
+      6.7 Complexity of SAT * . . . . . . . . . . . . . . . . . . . . . . . 126
+      6.8 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 128
+      6.9 Further Reading . . . . . . . . . . . . . . . . . . . . . . . . . . 128
+      6.10 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 128
+      References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 129
+
+7 First-Order Logic: Formulas, Models, Tableaux . . . . . . . . . . . . 131
+      7.1 Relations and Predicates . . . . . . . . . . . . . . . . . . . . . . 131
+      7.2 Formulas in First-Order Logic . . . . . . . . . . . . . . . . . . . 133
+Contents  xiii
+
+      7.3 Interpretations . . . . . . . . . . . . . . . . . . . . . . . . . . . 136
+      7.4 Logical Equivalence . . . . . . . . . . . . . . . . . . . . . . . . 140
+      7.5 Semantic Tableaux . . . . . . . . . . . . . . . . . . . . . . . . . 143
+      7.6 Soundness and Completion of Semantic Tableaux . . . . . . . . 150
+      7.7 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 153
+      7.8 Further Reading . . . . . . . . . . . . . . . . . . . . . . . . . . 153
+      7.9 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 153
+      References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 154
+
+8 First-Order Logic: Deductive Systems . . . . . . . . . . . . . . . . . 155
+      8.1 Gentzen System G . . . . . . . . . . . . . . . . . . . . . . . . . 155
+      8.2 Hilbert System H . . . . . . . . . . . . . . . . . . . . . . . . . 158
+      8.3 Equivalence of H and G . . . . . . . . . . . . . . . . . . . . . 160
+      8.4 Proofs of Theorems in H . . . . . . . . . . . . . . . . . . . . . 161
+      8.5 The C-Rule * . . . . . . . . . . . . . . . . . . . . . . . . . . . . 163
+      8.6 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 165
+      8.7 Further Reading . . . . . . . . . . . . . . . . . . . . . . . . . . 165
+      8.8 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 165
+      References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 166
+
+9 First-Order Logic: Terms and Normal Forms . . . . . . . . . . . . . 167
+      9.1 First-Order Logic with Functions . . . . . . . . . . . . . . . . . 167
+      9.2 PCNF and Clausal Form . . . . . . . . . . . . . . . . . . . . . . 172
+      9.3 Herbrand Models . . . . . . . . . . . . . . . . . . . . . . . . . 177
+      9.4 Herbrand's Theorem * . . . . . . . . . . . . . . . . . . . . . . . 180
+      9.5 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 182
+      9.6 Further Reading . . . . . . . . . . . . . . . . . . . . . . . . . . 182
+      9.7 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 182
+      References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 183
+
+10 First-Order Logic: Resolution . . . . . . . . . . . . . . . . . . . . . . 185
+      10.1 Ground Resolution . . . . . . . . . . . . . . . . . . . . . . . . . 185
+      10.2 Substitution . . . . . . . . . . . . . . . . . . . . . . . . . . . . 187
+      10.3 Unification . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 189
+      10.4 General Resolution . . . . . . . . . . . . . . . . . . . . . . . . . 195
+      10.5 Soundness and Completeness of General Resolution * . . . . . . 198
+      10.6 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 202
+      10.7 Further Reading . . . . . . . . . . . . . . . . . . . . . . . . . . 202
+      10.8 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 202
+      References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 203
+
+11 First-Order Logic: Logic Programming . . . . . . . . . . . . . . . . 205
+      11.1 From Formulas in Logic to Logic Programming . . . . . . . . . 205
+      11.2 Horn Clauses and SLD-Resolution . . . . . . . . . . . . . . . . 209
+      11.3 Search Rules in SLD-Resolution . . . . . . . . . . . . . . . . . 213
+      11.4 Prolog . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 216
+      11.5 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 220
+xiv  Contents
+
+      11.6 Further Reading . . . . . . . . . . . . . . . . . . . . . . . . . . 221
+      11.7 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 221
+      References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 222
+
+12 First-Order Logic: Undecidability and Model Theory * . . . . . . . 223
+      12.1 Undecidability of First-Order Logic . . . . . . . . . . . . . . . . 223
+      12.2 Decidable Cases of First-Order Logic . . . . . . . . . . . . . . . 226
+      12.3 Finite and Infinite Models . . . . . . . . . . . . . . . . . . . . . 227
+      12.4 Complete and Incomplete Theories . . . . . . . . . . . . . . . . 228
+      12.5 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 229
+      12.6 Further Reading . . . . . . . . . . . . . . . . . . . . . . . . . . 229
+      12.7 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 230
+      References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 230
+
+13 Temporal Logic: Formulas, Models, Tableaux . . . . . . . . . . . . . 231
+      13.1 Introduction . . . . . . . . . . . . . . . . . . . . . . . . . . . . 231
+      13.2 Syntax and Semantics . . . . . . . . . . . . . . . . . . . . . . . 233
+      13.3 Models of Time . . . . . . . . . . . . . . . . . . . . . . . . . . 237
+      13.4 Linear Temporal Logic . . . . . . . . . . . . . . . . . . . . . . 240
+      13.5 Semantic Tableaux . . . . . . . . . . . . . . . . . . . . . . . . . 244
+      13.6 Binary Temporal Operators * . . . . . . . . . . . . . . . . . . . 258
+      13.7 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 260
+      13.8 Further Reading . . . . . . . . . . . . . . . . . . . . . . . . . . 261
+      13.9 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 261
+      References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 262
+
+14 Temporal Logic: A Deductive System . . . . . . . . . . . . . . . . . . 263
+      14.1 Deductive System L . . . . . . . . . . . . . . . . . . . . . . . 263
+      14.2 Theorems of L . . . . . . . . . . . . . . . . . . . . . . . . . . 264
+      14.3 Soundness and Completeness of L * . . . . . . . . . . . . . . . 269
+      14.4 Axioms for the Binary Temporal Operators * . . . . . . . . . . . 271
+      14.5 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 271
+      14.6 Further Reading . . . . . . . . . . . . . . . . . . . . . . . . . . 272
+      14.7 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 272
+      References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 272
+
+15 Verification of Sequential Programs . . . . . . . . . . . . . . . . . . . 273
+      15.1 Correctness Formulas . . . . . . . . . . . . . . . . . . . . . . . 274
+      15.2 Deductive System H L . . . . . . . . . . . . . . . . . . . . . . 275
+      15.3 Program Verification . . . . . . . . . . . . . . . . . . . . . . . . 277
+      15.4 Program Synthesis . . . . . . . . . . . . . . . . . . . . . . . . . 279
+      15.5 Formal Semantics of Programs * . . . . . . . . . . . . . . . . . 283
+      15.6 Soundness and Completeness of H L * . . . . . . . . . . . . . 289
+      15.7 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 293
+      15.8 Further Reading . . . . . . . . . . . . . . . . . . . . . . . . . . 293
+      15.9 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 293
+      References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 295
+

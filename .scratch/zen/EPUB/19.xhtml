@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#" lang="cn" xml:lang="cn">
+  <head>
+    <title>6.2　开闭原则的庐山真面目</title>
+  </head>
+  <body><h3 class="p3" id="sigil_toc_id_28">6.2 开闭原则的庐山真面目</h3> 
+<p class="ziti">开闭原则的定义已经非常明确地告诉我们：软件实体应该对扩展开放，对修改关闭，其含义是说一个软件实体应该通过扩展来实现变化，而不是通过修改已有的代码来实现变化。那什么又是软件实体呢？软件实体包括以下几个部分：</p> 
+<p class="ziti">● 项目或软件产品中按照一定的逻辑规则划分的模块。</p> 
+<p class="ziti">● 抽象和类。</p> 
+<p class="ziti">● 方法。</p> 
+<p class="ziti">一个软件产品只要在生命期内，都会发生变化，既然变化是一个既定的事实，我们就应该在设计时尽量适应这些变化，以提高项目的稳定性和灵活性，真正实现“拥抱变化”。开闭原则告诉我们应尽量通过扩展软件实体的行为来实现变化，而不是通过修改已有的代码来完成变化，它是为软件实体的未来事件而制定的对现行开发设计进行约束的一个原则。我们举例说明什么是开闭原则，以书店销售书籍为例，其类图如图6-1所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0192.jpg"/></a></p> 
+<p class="middle-img">图6-1 书店售书类图</p> 
+<p class="ziti">IBook定义了数据的三个属性：名称、价格和作者。小说类NovelBook是一个具体的实现类，是所有小说书籍的总称，BookStore指的是书店，IBook接口如代码清单6-1所示。</p> 
+<p class="ziti">代码清单6-1 书籍接口</p> 
+<pre>public interface IBook {   &#13;
+     //书籍有名称&#13;
+     public String getName();&#13;
+     //书籍有售价&#13;
+     public int getPrice();&#13;
+     //书籍有作者&#13;
+     public String getAuthor();&#13;
+}</pre> 
+<p class="ziti">目前书店只出售小说类书籍，小说类如代码清单6-2所示。</p> 
+<p class="ziti">代码清单6-2 小说类</p> 
+<pre>public class NovelBook implements IBook {&#13;
+     //书籍名称&#13;
+     private String name;       &#13;
+     //书籍的价格&#13;
+     private int price; &#13;
+     //书籍的作者&#13;
+     private String author;             &#13;
+     //通过构造函数传递书籍数据&#13;
+     public NovelBook(String _name,int _price,String _author){&#13;
+             this.name = _name;&#13;
+             this.price = _price;&#13;
+             this.author = _author;&#13;
+     }  &#13;
+     //获得作者是谁&#13;
+     public String getAuthor() {&#13;
+             return this.author;&#13;
+     }&#13;
+     //书籍叫什么名字&#13;
+     public String getName() {&#13;
+             return this.name;&#13;
+     }&#13;
+     //获得书籍的价格&#13;
+     public int getPrice() {&#13;
+             return this.price;&#13;
+     }&#13;
+}</pre> 
+<hr/> 
+<p class="ziti6"><span class="yanse">注意</span>　我们把价格定义为int类型并不是错误，在非金融类项目中对货币处理时，一般取2位精度，通常的设计方法是在运算过程中扩大100倍，在需要展示时再缩小100倍，减少精度带来的误差。</p> 
+<hr/> 
+<p class="ziti">书店售书的过程如代码清单6-3所示。</p> 
+<p class="ziti">代码清单6-3 书店售书类</p> 
+<pre>public class BookStore {&#13;
+     private final static ArrayList&lt;IBook&gt; bookList = new ArrayList&lt;IBook&gt;();&#13;
+     //static静态模块初始化数据，实际项目中一般是由持久层完成&#13;
+     static{&#13;
+             bookList.add(new NovelBook("天龙八部",3200,"金庸"));&#13;
+             bookList.add(new NovelBook("巴黎圣母院",5600,"雨果"));&#13;
+             bookList.add(new NovelBook("悲惨世界",3500,"雨果"));&#13;
+             bookList.add(new NovelBook("金瓶梅",4300,"兰陵笑笑生"));&#13;
+     }&#13;
+     //模拟书店买书&#13;
+     public static void main(String[] args) {&#13;
+             NumberFormat formatter = NumberFormat.getCurrencyInstance();&#13;
+             formatter.setMaximumFractionDigits(2);&#13;
+             System.out.println("-----------书店卖出去的书籍记录如下：-----------");&#13;
+             for(IBook book:bookList){&#13;
+                     System.out.println("书籍名称：" + book.getName()+"\t书籍作者：" +&#13;
+        book.getAuthor()+"\t书籍价格："+ formatter.format (book.getPrice()/&#13;
+        100.0)+"元");&#13;
+             }&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">在BookStore中声明了一个静态模块，实现了数据的初始化，这部分应该是从持久层产生的，由持久层框架进行管理，运行结果如下：</p> 
+<p class="ziti5">-----------------书店卖出去的书籍记录如下：--------------</p> 
+<p class="ziti5">书籍名称：天龙八部　　书籍作者：金庸　　　　书籍价格：￥25.60元</p> 
+<p class="ziti5">书籍名称：巴黎圣母院　书籍作者：雨果　　　　书籍价格：￥50.40元</p> 
+<p class="ziti5">书籍名称：悲惨世界　　书籍作者：雨果　　　　书籍价格：￥28.00元</p> 
+<p class="ziti5">书籍名称：金瓶梅 　　　书籍作者：兰陵笑笑生　书籍价格：￥38.70元</p> 
+<p class="ziti">项目投产了，书籍正常销售出去，书店也赢利了。从2008年开始，全球经济开始下滑，对零售业影响比较大，书店为了生存开始打折销售：所有40元以上的书籍9折销售，其他的8折销售。对已经投产的项目来说，这就是一个变化，我们应该如何应对这样一个需求变化？有如下三种方法可以解决这个问题：</p> 
+<p class="ziti">● 修改接口</p> 
+<p class="ziti">在IBook上新增加一个方法getOffPrice()，专门用于进行打折处理，所有的实现类实现该方法。但是这样修改的后果就是，实现类NovelBook要修改，BookStore中的main方法也修改，同时IBook作为接口应该是稳定且可靠的，不应该经常发生变化，否则接口作为契约的作用就失去了效能。因此，该方案否定。</p> 
+<p class="ziti">● 修改实现类</p> 
+<p class="ziti">修改NovelBook类中的方法，直接在getPrice()中实现打折处理，好办法，我相信大家在项目中经常使用的就是这样的办法，通过class文件替换的方式可以完成部分业务变化（或是缺陷修复）。该方法在项目有明确的章程（团队内约束）或优良的架构设计时，是一个非常优秀的方法，但是该方法还是有缺陷的。例如采购书籍人员也是要看价格的，由于该方法已经实现了打折处理价格，因此采购人员看到的也是打折后的价格，会因信息不对称而出现决策失误的情况。因此，该方案也不是一个最优的方案。</p> 
+<p class="ziti">● 通过扩展实现变化</p> 
+<p class="ziti">增加一个子类OffNovelBook，覆写getPrice方法，高层次的模块（也就是static静态模块区）通过OffNovelBook类产生新的对象，完成业务变化对系统的最小化开发。好办法，修改也少，风险也小，修改后的类图如图6-2所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0193.jpg"/></a></p> 
+<p class="middle-img">图6-2 扩展后的书店售书类图</p> 
+<p class="ziti">OffNovelBook类继承了NovelBook，并覆写了getPrice方法，不修改原有的代码。新增加的子类OffNovelBook如代码清单6-4所示。</p> 
+<p class="ziti">代码清单6-4 打折销售的小说类</p> 
+<pre>public class OffNovelBook extends NovelBook {&#13;
+     public OffNovelBook(String _name,int _price,String _author){&#13;
+             super(_name,_price,_author);&#13;
+     }&#13;
+     //覆写销售价格&#13;
+     @Override&#13;
+     public int getPrice(){&#13;
+             //原价&#13;
+             int selfPrice = super.getPrice();&#13;
+             int offPrice=0;&#13;
+             if(selfPrice&gt;4000){  //原价大于40元，则打9折&#13;
+                     offPrice = selfPrice * 90 /100;&#13;
+             }else{&#13;
+                     offPrice = selfPrice * 80 /100;&#13;
+             }&#13;
+             return offPrice;&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">很简单，仅仅覆写了getPrice方法，通过扩展完成了新增加的业务。书店类BookStore需要依赖子类，代码稍作修改，如代码清单6-5所示。</p> 
+<p class="ziti">代码清单6-5 书店打折销售类</p> 
+<pre>public class BookStore {&#13;
+     private final static ArrayList&lt;IBook&gt; bookList = new ArrayList&lt;IBook&gt;();&#13;
+     //static静态模块初始化数据，实际项目中一般是由持久层完成&#13;
+     static{&#13;
+             bookList.add(new OffNovelBook("天龙八部",3200,"金庸"));&#13;
+             bookList.add(new OffNovelBook("巴黎圣母院",5600,"雨果"));&#13;
+             bookList.add(new OffNovelBook("悲惨世界",3500,"雨果"));&#13;
+             bookList.add(new OffNovelBook("金瓶梅",4300,"兰陵笑笑生"));&#13;
+     }  &#13;
+     //模拟书店买书&#13;
+     public static void main(String[] args) {&#13;
+             NumberFormat formatter = NumberFormat.getCurrencyInstance();&#13;
+             formatter.setMaximumFractionDigits(2);&#13;
+             System.out.println("-----------书店卖出去的书籍记录如下：-----------");&#13;
+             for(IBook book:bookList){&#13;
+                      System.out.println("书籍名称：" + book.getName()+"\t书籍作者：" + book.getAuthor()+ "\t书籍价格：" + formatter.format (book.getPrice()/100.0)+"元");&#13;
+             }&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">我们只修改了粗体部分，其他的部分没有任何改动，运行结果如下所示。</p> 
+<p class="ziti5 yanse">----------------------书店卖出去的书籍记录如下：---------------------</p> 
+<p class="ziti5 yanse">书籍名称：天龙八部　　书籍作者：金庸　　　　书籍价格：￥25.60元</p> 
+<p class="ziti5 yanse">书籍名称：巴黎圣母院　书籍作者：雨果　　　　书籍价格：￥50.40元</p> 
+<p class="ziti5 yanse">书籍名称：悲惨世界　　书籍作者：雨果　　　　书籍价格：￥28.00元</p> 
+<p class="ziti5 yanse">书籍名称：金瓶梅　　　书籍作者：兰陵笑笑生　书籍价格：￥38.70元</p> 
+<p class="ziti">OK，打折销售开发完成了。看到这里，各位可能有想法了：增加了一个OffNoveBook类后，你的业务逻辑还是修改了，你修改了static静态模块区域。这部分确实修改了，该部分属于高层次的模块，是由持久层产生的，在业务规则改变的情况下高层模块必须有部分改变以适应新业务，改变要尽量地少，防止变化风险的扩散。</p> 
+<hr/> 
+<p class="ziti6"><span class="yanse">注意</span>　开闭原则对扩展开放，对修改关闭，并不意味着不做任何修改，低层模块的变更，必然要有高层模块进行耦合，否则就是一个孤立无意义的代码片段。</p> 
+<hr/> 
+<p class="ziti">我们可以把变化归纳为以下三种类型：</p> 
+<p class="ziti">● 逻辑变化</p> 
+<p class="ziti">只变化一个逻辑，而不涉及其他模块，比如原有的一个算法是a*b+c，现在需要修改为a*b*c，可以通过修改原有类中的方法的方式来完成，前提条件是所有依赖或关联类都按照相同的逻辑处理。</p> 
+<p class="ziti">● 子模块变化</p> 
+<p class="ziti">一个模块变化，会对其他的模块产生影响，特别是一个低层次的模块变化必然引起高层模块的变化，因此在通过扩展完成变化时，高层次的模块修改是必然的，刚刚的书籍打折处理就是类似的处理模块，该部分的变化甚至会引起界面的变化。</p> 
+<p class="ziti">● 可见视图变化</p> 
+<p class="ziti">可见视图是提供给客户使用的界面，如JSP程序、Swing界面等，该部分的变化一般会引起连锁反应（特别是在国内做项目，做欧美的外包项目一般不会影响太大）。如果仅仅是界面上按钮、文字的重新排布倒是简单，最司空见惯的是业务耦合变化，什么意思呢？一个展示数据的列表，按照原有的需求是6列，突然有一天要增加1列，而且这一列要跨N张表，处理M个逻辑才能展现出来，这样的变化是比较恐怖的，但还是可以通过扩展来完成变化，这就要看我们原有的设计是否灵活。</p> 
+<p class="ziti">我们再来回顾一下书店销售书籍的程序，首先是我们有一个还算灵活的设计（不灵活是什么样子？BookStore中所有使用到IBook的地方全部修改为实现类，然后再扩展一个ComputerBook书籍，你就知道什么是不灵活了）；然后有一个需求变化，我们通过扩展一个子类拥抱了变化；最后把子类投入运行环境中，新逻辑正式投产。通过分析，我们发现并没有修改原有的模块代码，IBook接口没有改变，NovelBook类没有改变，这属于已有的业务代码，我们保持了历史的纯洁性。放弃修改历史的想法吧，一个项目的基本路径应该是这样的：项目开发、重构、测试、投产、运维，其中的重构可以对原有的设计和代码进行修改，运维尽量减少对原有代码的修改，保持历史代码的纯洁性，提高系统的稳定性。</p></body>
+</html>

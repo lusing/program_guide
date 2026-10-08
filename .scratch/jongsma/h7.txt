@@ -1,0 +1,252 @@
+7.1 Partially Ordered Sets
+7.1.2 Strict and Partial Orders
+7.1 Partially Ordered Sets
+7.1.3 Partial Orders on Cartesian Products and Strings
+7.1.4 Extreme Elements in Posets
+7.1 Partially Ordered Sets
+7.1.5 Constructing Total Orders from Partial Orders
+7.1.1. Divisors of 39 a. Draw and describe the Hasse diagram for the divisors of
+7.1.2. Divisors of 343 a. Draw and describe the Hasse diagram for the divisors o
+7.1.3. Divisors of 153 a. Draw and describe the Hasse diagram for the divisors o
+7.1.4. Divisors of 385 a. Draw and describe the Hasse diagram for the divisors o
+7.1.5. Divisors of 84 a. Draw and describe the Hasse diagram for the divisors of
+7.1.6. Hasse Diagrams and Prime Factorization a. Based on Exercises 1–5, conject
+7.1.7. Show that the divisibility relation is not a partial order on the set of 
+7.1 Partially Ordered Sets
+7.1.8. Draw a baseball diamond: connect home plate (4) to ﬁrst base (1) to secon
+7.1.12. Let D be the divisor poset for 60 (see Example 7a). a. Explain why P = D
+7.1.13. Let S = {0, 1, 2, 3} and P(S) be its power set. a. Let U = {R ⊆ S : {0, 
+7.1.14. Let S be any set, P(S) its power set, and C a collection of S’s subsets.
+7.1.15. Any elements x, y in a poset can be compared: either x ≤ y or y ≤ x. 7.1
+7.1.19. Prove or disprove: Every relation that’s symmetric and antisymmetric is 
+7.1.20. Determine a necessary and suﬃcient condition for an equivalence relation
+7.1.21. Poset Duals Prove that if A is a poset under ≤, it also forms a poset un
+7.1.22. Properties of Strict Orders a. Prove that if < is a strict order, then i
+7.1.23. Transitive Properties of Strict and Partial Orders a. Prove that if x < 
+7.1.24. Proposition 1 a. Prove Proposition 1b: If < is a strict order on A, then
+7.1.25. Maximal and Minimal Elements a. Show that maximal and minimal elements o
+7.1.26. Maximum and Minimum Elements a. Show that S need not have either a maxim
+7.1.27. Extremal Elements in Totally Ordered Sets Suppose A, ≤ is totally ordere
+7.1 Partially Ordered Sets
+7.1.28. Proposition 2
+7.1.29. Product Order vs. Dictionary Order Dixie Nary thinks the dictionary orde
+7.1.30. Strict Dictionary Order on Ordered Pairs
+7.1.31. Dictionary Order on Triples
+7.1.32. Dictionary Order on Strings Let A be the English alphabet, with letters 
+7.1.33. Totally Ordered Strings Prove that the order relation deﬁned on A∗, the 
+7.1.34. Binary Strings Let Bn denote the set of all length-n strings of 0’s and 
+7.1.35. Extend the partial order for P({0, 1, 2}) (see Example 4b) in two diﬀere
+7.1.36. Extend the partial order for the poset of divisors of 84 (see Exercise 5
+7.1.37. If a poset is inﬁnite, can it be embedded in a totally ordered set? (Thi
+7.1.38. Is N under the usual ≤ ordering a well-ordered set? Is Z? Explain.
+7.1.39. Is (0, 1), the set of all real numbers between 0 and 1, well ordered und
+7.1.40. Is every totally ordered set with a least element well ordered?
+7.1.41. Let N be ordered by the ordinary ≤ order. Show that N × N is well ordere
+7.1.42. Prove that the following Principle of Induction holds for any wellordere
+7.1.43. Let A be the set of all initial segments of N, i.e., the collection of s
+7.2 Lattices
+7.2 Lattices
+7.2.1 Deﬁnition of a Lattice
+7.2.2 Basic Properties of Meet and Join
+7.2 Lattices
+7.2.3 Distributive Lattices
+7.2 Lattices
+7.2.4 Bounded and Complemented Lattices
+7.2.5 Boolean Lattices: Deﬁnition and Properties
+7.2 Lattices
+7.2.1. Show that in a poset A, ≤ , x ∧ y and x ∨ y are unique, if they exist.
+7.2.2. Let D12, | denote the poset of all divisors of 12. a. Show that D12 is a 
+7.2.3. Let D30, | denote the poset of all divisors of 30. a. Show that D30 is a 
+7.2.4. Let Dn, | denote the poset of all divisors of a positive integer n. a. Pr
+7.2 Lattices
+7.2.5. Complements are unique in a complemented lattice. 7.2.6. There are no tot
+7.2.7. Small Lattices
+7.2.8. Lattice Paths Between Points a. Prove or disprove: A Hasse diagram for a 
+7.2.9. Proposition 1: Order Properties a. x ≤ y if and only if x ∧ y = x. b. x ≤
+7.2.10. Proposition 2: Operational Properties a. Complete the proof of the ﬁrst 
+7.2.11. Dual Lattices Let A, ≤ be a lattice, and let ≥ denote the converse relat
+7.2.12. Lattice Characterization of Set Complements Show for any S ⊆ U whose com
+7.2.13. Power Sets Are Boolean Lattices a. Prove that all power set posets P(U )
+7.2.14. Complements for Example 2 a. Find all complements, when they exist, for 
+7.2.15. Complements for Exercise 21. a. Find all complements, when they exist, f
+7.2.16. Proposition 3: Extreme Element Laws a. Prove Proposition 3a: 0 ∨ x = x =
+7.2.17. Prove the following. a. A is a lattice. b. What is the meet and join of 
+7.2.18. Prove that if A has more than two elements, then it’s not a complemented
+7.2.19. Prove that the distributive laws hold when the three elements x, y, and 
+7.2 Lattices
+7.2.20. Explain, based on Exercise 19, why in determining whether a lattice A is
+7.2.21. Are the following lattices distributive or not? Explain.
+7.2.22. Distributive Laws for Example 2 a. Show that the second distributive law
+7.2.23. Explain why the calculation given in the text right after Example 2 for 
+7.2.24. Show that the following semi-distributive laws hold in any lattice.
+7.2.25. Show that the following distributive laws hold in a distributive lattice
+7.2.26. Proposition 5b: De Morgan’s Law a. If A, ≤ , , 0, 1 is a Boolean lattice
+7.2.27. Equivalent Formulations for Boolean Partial Order
+7.2.28. Redundancy Laws a. x ∧ (x ∨ y) = x ∧ y
+7.2.29. Finite Boolean Lattices a. Show that there are no Boolean lattices with 
+7.3 From Boolean Lattices to Boolean Algebra
+7.3.1 Finite Boolean Lattices
+7.3 From Boolean Lattices to Boolean Algebra
+7.3.2 Boolean Lattices Are Boolean Algebras
+7.3 From Boolean Lattices to Boolean Algebra
+7.3.3 Boolean Algebra as an Axiomatic Theory
+7.3 From Boolean Lattices to Boolean Algebra
+7.3.4 Boolean Algebra and Logic
+7.3 From Boolean Lattices to Boolean Algebra
+7.3.5 Boolean Algebras Generate Boolean Lattices
+7.3.1. Write out the addition and multiplication tables for B, putting ﬁrst elem
+7.3 From Boolean Lattices to Boolean Algebra
+7.3.7. Every ﬁnite Boolean lattice with two or more elements has atoms.
+7.3.8. All atoms in a Boolean lattice lie directly above 0.
+7.3.9. Every non-zero element in a ﬁnite Boolean lattice is above some atom. 7.3
+7.3.11. Each non-zero element of a ﬁnite Boolean lattice can be expressed as the
+7.3.12. Atomic join representations of non-zero elements in a ﬁnite Boolean latt
+7.3.13. Using the results of the last two problems, explain why a Boolean lattic
+7.3.14. No lattice with 10 elements is a complemented distributive lattice. 7.3.
+7.3.18. Proposition 1: Uniqueness Laws for Identities and Complements
+7.3.19. Proposition 2: Complements of Elements Laws
+7.3.20. Proposition 3: Idempotence Laws
+7.3.21. Proposition 4: Annihilation and Absorption Laws
+7.3.22. Proposition 5: De Morgan’s Laws
+7.3.23. Proposition 6: Operation Linkage Laws
+7.3.24. Proposition 7: Redundancy Laws
+7.3.25. Proposition 8: Consensus Laws
+7.3.26. Proposition 9: Cancellation Law a. If xy = xz and x + y = x + z, then y 
+7.3.27. Other Boolean Cancellation Laws Prove or disprove the following Cancella
+7.3.28. Duality Principles for Boolean Algebra a. True or False: Every Boolean l
+7.3.29. Deducing LNC from LEM Algebraically a. Fill in the details of Example 5’
+7.3.30. Deducing Aristotelian Syllogisms and Conditional Arguments a. Formulate 
+7.3 From Boolean Lattices to Boolean Algebra
+7.3.31. Identity Laws
+7.3.32. Complementation Laws
+7.3.33. Uniqueness Laws
+7.3.34. Alternative Characterization of Finite Boolean Lattices Let Bn denote th
+7.3.35. The Product Order and Finite Boolean Algebras Bn a. Explain why when the
+7.3.36. Theorem 2
+7.3.37. Boolean Conversions Undo One Another a. Suppose A , ≤ , , 0 , 1 is a Boo
+7.3.38. Let U be an inﬁnite set. a. Show that the collection A of all ﬁnite subs
+7.3.39. Independence Exploration a. Show that the Associative Law can be proved 
+7.4 Boolean Functions and Logic Circuits
+7.4 Boolean Functions and Logic Circuits
+7.4.1 Two -Valued Boolean Algebras
+7.4.2 Boolean Functions
+7.4.3 Boolean Algebra and Propositional Logic
+7.4 Boolean Functions and Logic Circuits
+7.4.4 Historical Aside: From Boole to Shannon
+7.4.5 Boolean Algebra and Switching Circuits
+7.4 Boolean Functions and Logic Circuits
+7.4.6 Boolean Algebra and Circuits from Logic Gates
+7.4 Boolean Functions and Logic Circuits
+7.4.7 Computation Performed Via Logic Circuits
+7.4 Boolean Functions and Logic Circuits
+7.4.1. AND (x1, x2) = (x1 ∧ x2)
+7.4.3. NOR (x1, x2) = ¬(x1 ∨ x2)
+7.4.2. NAND (x1, x2) = ¬(x1 ∧ x2) 7.4.4. FALSE (x) = x ∧ ¬x.
+7.4.5. XOR (x1, x2) = (x1 ∨ x2) ∧ ¬(x1 ∧ x2) = (x1 ∧ ¬x2) ∨ (¬x1 ∧ x2)
+7.4.6. XNOR (x1, x2) = (x1 ∧ x2) ∨ (¬x1 ∧ ¬x2). What other name does this
+7.4.7. Every PL sentence has a corresponding Boolean function. 7.4.8. Distinct B
+7.4.11. >
+7.4.12. >
+7.4.13.
+7.4.14. (x + y ) xy 7.4.15. xy + xy + x y
+7.4.16. xyz + y z + x yz 7.4.17. (x + y)(x + z)(y + z)
+7.4.18. Develop a Boolean function table, with rationale, and a switching circui
+7.4.19. Four naval oﬃcers in a submarine have suﬃcient rank to authorize ﬁring a
+7.4.20. x 2
+7.4.21. x 2
+7.4.22. x2
+7.4.23. x 1
+7.4 Boolean Functions and Logic Circuits
+7.4.24. x y + (x + y )
+7.4.26. (xy + y )(x + x y )
+7.4.25. xy + xy + x y
+7.4.27. xyz + x y z + x yz + xyz
+7.4.28. f (x, y, z) = 1 if and only if y = 1 and x = z.
+7.4.29. f (x, y, z) is given by the following table: x y z f (x, y, z)
+7.4.30. NAND 7.4.31. NOR
+7.4.32. XOR 7.4.33. XNOR
+7.4.34. Show how AND can be simulated using only NOT and OR gates.
+7.4.35. Show how OR can be simulated using only NOT and AND gates.
+7.4.36. Can NOT be simulated using only AND and OR gates? Explain.
+7.4.37. Is there a basic logic gate corresponding to the logical connective →? c
+7.4.38. How many distinct Boolean functions of a single variable are there? Writ
+7.4.39. How many distinct Boolean functions of two variables are there? Write do
+7.4.40. NAND -Gate Simulations: a NAND Gate is Universal a. Show how NOT can be 
+7.4.41. Need for Full Adders Explain why a half adder is inadequate for adding t
+7.4.42. Half Adder Diagrams a. Provide an alternative circuit diagram for a half
+7.4.43. Full Adders from Half Adders a. By knowing what is needed to add three b
+7.4.44. Addition of Three-Bit Numbers a. Show how one half adder and two full ad
+7.4.45. Ordinary Multiplication using Logic Circuits a. Create a function table 
+7.5 Representing Boolean Functions
+7.4.46. Ordering Numbers in Binary Notation
+7.5 Representing Boolean Functions
+7.5.1 Boolean Functions and Boolean Expressions
+7.5 Representing Boolean Functions
+7.5.2 Minterm Expansion Representations
+7.5 Representing Boolean Functions
+7.5.3 Minterm Expansions for Boolean Expressions
+7.5 Representing Boolean Functions
+7.5.4 Minterm Expansions and Boolean Algebra
+7.5 Representing Boolean Functions
+7.5.5 Normal Form Representation for Propositions
+7.5 Representing Boolean Functions
+7.5.1. Example 2 a. Explain why there are four functions from B to B, and verify
+7.5.2. Boolean Functions of Several Variables
+7.5.3. Sum-of-Products Boolean Expressions
+7.5.4. Explain why f + g, f · g, and f are Boolean functions from B n to B.
+7.5.5. Prove that if f (x1, x2, . . . , xn) = E(x1, x2, . . . , xn) for Boolean 
+7.5.6. Prove or disprove the following conditions, where 0 and 1 denote the
+7.5.7. Does the set of all Boolean functions f : B n → B form a Boolean
+7.5.8. A sum of Boolean expressions is 1 if and only if some summand is 1.
+7.5.9. Truth tables can be used to verify set-theoretic identities.
+7.5.10. Any result that is true of the Boolean algebra B = {0, 1} is also true o
+7.5.11. Proposition 1: Acceptance for Boolean Operations a. Complements: x = 1 i
+7.5.12. Rejection for Boolean Operations a. Complements: x = 0 if and only if x 
+7.5.13. Develop minterm expansions for the following Boolean expressions:
+7.5.14. Find minterm expansions that accept the following input strings.
+7.5.15. Counting Minterm Expansions a. How many distinct minterms in x1, x2, . .
+7.5.16. Minterms and Boolean Functions a. How many distinct input strings are ac
+7.5 Representing Boolean Functions
+7.5.17. Minterm Expansions for Complements of Functions
+7.5.18. Maxterm Expansions for Boolean Functions and Expressions
+7.5.19. Conjunctive Normal Forms for PL Formulas
+7.5.20. Proposition 7.3.2: Complements of Elements Laws
+7.5.21. Proposition 7.3.3: Annihilation and Absorption Laws
+7.5.22. Proposition 7.3.4: Idempotence Laws
+7.5.23. Proposition 7.3.5: De Morgan’s Laws
+7.5.24. Proposition 7.3.7: Redundancy Laws
+7.5.25. Proposition 7.3.8: Consensus Laws (x + y)(x + z)(y + z) = (x + y)(x + z)
+7.5.26. Are the following equations Boolean identities? Explain.
+7.5.27. Proposition 4.1.7: Associative Laws
+7.5.28. Proposition 4.1.8: Distributive Laws a. R ∩ (S ∪ T ) = (R ∩ S) ∪ (R ∩ T 
+7.5.29. Proposition 4.1.10: De Morgan’s Laws S ∩ T = S ∪ T (see also Example 9)
+7.5.30. Proposition 4.1.9: Absorption Laws
+7.5.31. Example 10 a. Beginning with P ∨ Q = (P ∨ Q) ∧ ¬(P ∧ Q), transform this 
+7.5.32. Determine disjunctive normal forms for the following formulas.
+7.5.33. Determine disjunctive normal forms for the following:
+7.6 Simplifying Boolean Functions
+7.6 Simplifying Boolean Functions
+7.6.1 Algebraic Ways to Simplify Boolean Expressions
+7.6.2 K-Maps for Two-Variable Boolean Functions
+7.6.3 K-Maps for Three-Variable Boolean Functions
+7.6 Simplifying Boolean Functions
+7.6 Simplifying Boolean Functions
+7.6.4 K-Maps for Boolean Functions of Four Variables
+7.6.5 The Quine-McCluskey Method
+7.6 Simplifying Boolean Functions
+7.6 Simplifying Boolean Functions
+7.6.6 Boolean Algebra: Theory and Practice
+7.6.1. f (x, y) = xy + x y 7.6.2. f (x, y) = xy + xy + x y 7.6.3. f (x, y, z) = 
+7.6 Simplifying Boolean Functions
+7.6.7. The minterm expansion for a Boolean function yields a simpliﬁed expressio
+7.6.12.
+7.6.13.
+7.6.14.
+7.6.19. f (x, y) = xy + x 7.6.20. f (x, y) = xy + xy + x y 7.6.21. f (x, y, z) =
+7.6.37. Boolean Expressions for Blocks in a Three-Variable K-map. a. Explain why
+7.6.38. Boolean Expressions for Blocks in a Four-Variable K-map. a. Explain why 
+7.6 Simplifying Boolean Functions
+7.6.39. Boolean Expressions for Blocks in an N-Variable K-map.
+7.6.40. Implicants Claim: if a function’s implicant equals 1, then the function 
+7.6.41. Maximal Blocks and Implicants a. Explain why maximal blocks in a K-map c
+7.6.42. The Quine-McCluskey Method and Prime Implicants Explain why all products
