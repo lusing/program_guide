@@ -7,7 +7,7 @@ HOL4 / Coq-HoTT / Prolog** 七种实现机器验证。
 
 **第五轮扩充收官**：按 Mendelson 6e 完成五新章（09 完备集与独立性/
 34 图灵机/35 递归函数/36 算术化/62 NBG 集合论）+37 不完备性升级为
-机器章+原位深化五处（05/18/23/24/26），全书 63 章 163 个验证单元全绿
+机器章+原位深化五处（05/18/23/24/26），全书 73 章 163 个验证单元全绿
 （零公理或显式公理记账）；速查表见 [CHEATSheet.md](./CHEATSheet.md)，
 蓝图与状态表见 [PLAN.md](./PLAN.md)。
 
@@ -55,45 +55,45 @@ mathlogic/
 | [23 完备性 Henkin](docs/23-completeness.md) | 七步文档线+词项模型=合同闭包商结构（双向对账）+见证式化 | 文档/C/L |
 | [24 L-S 与紧致性](docs/24-lscompact.md) | DLO 无有限模型穷举+「有限性不可单句定义」σₙ 族+量化秩分离+Skolem 闭包 | C/L |
 | [25 EF 博弈与 Fraïssé](docs/25-efgame.md) | dup_wins 求解器（三通道一致）+线序 2^k−1 分离表+空/全关系对照+秩-轮对齐 | C/L/P |
-| [26 二阶逻辑](docs/26-secondorder.md) | soev 幂枚举求值器+偶数性交替着色+连通性否定式刻画+L_Q 退化 | C/L |
-| [30 自由模型](docs/30-freemodel.md) | 自由幺半群=表+初始性两定理（泛性质）+必需性证词 | C/L |
-| [33 寄存器机](docs/33-regmachine.md) | 五指令 RM 解释器（三通道）+书例 P₀ 奇偶对账+加法+循环不停机 | C/L/P |
-| [34 图灵机](docs/34-turing.md) | 四元组+纸带解释器（三通道）+书例四机（后继/零/加法/抹除）+Tadd 网格抓包+永不停实证 | C/L/P |
-| [35 递归函数](docs/35-recfn.md) | prf 求值器+命题 3.16 函数族全正确（步进方程法）+Ackermann 非 PR 线+限制 μ 的 Option 语义 | C/L |
-| [36 算术化](docs/36-goedel.md) | 平方配对单射+树编码 gcf 单射性+subf 代入+β-函数 CRT 双现场+自引骨架 | C/L |
-| [37 不完备性](docs/37-incompleteness.md) | 三步文档线全保留+表示性样板四真定理+有限域可判定与论域相对性（Tarski 对照） | 文档/C/L |
-| [38 可判定性与 SMT](docs/38-decidability.md) | presburger 现场+Decidable 机器面 | I/L |
-| [39 CTL 模型检查](docs/39-temporal.md) | AG/EG 展开等价+不动点构件 | C/L |
-| [28 Herbrand 与 SLD](docs/28-herbrand.md) | T_P 单调+头原子（Prolog 桥） | C/L |
-| [29 归结完备与 SAT 难例](docs/29-rescomp.md) | resproof+PHP 反驳+DP 消元 | C/L |
-| [31 SLD 与 Prolog 语义](docs/31-sldprolog.md) | 计算规则独立性+cut/NAF/CLP | C/L/P |
-| [32 合成与形式语义](docs/32-synthsem.md) | 小步语义+读出式正确性 | C/L |
-| [38 可判定性与 SMT](docs/38-decidability.md) | presburger 现场+Decidable 机器面 | I/L |
-| [37 不完备性](docs/37-incompleteness.md) | 三步证明+先例索引（文档章） | 文档 |
-| [39 CTL 模型检查](docs/39-temporal.md) | AG/EG 展开等价+不动点构件 | C/L |
-| [40 LTL](docs/40-ltl.md) | 路径语义+等价族六件+adequate sets | C/L |
-| [41 MC 算法与公平性](docs/41-mcalgo.md) | 互斥全程+饥饿路径+公平性微观模型 | C/L |
-| [42 CTL*](docs/42-ctlstar.md) | 两层语法+三组分离现场（表达能力天梯） | C/L |
-| [43 LTL 语义表列](docs/43-ltltab.md) | lasso+兑现检查+fulfill_ok_sound | C/L |
-| [44 时态演绎系统 L](docs/44-ltlded.md) | lth+lth_sound+14.2/14.4 推导 | C/L |
-| [45 自动机与 LTL MC](docs/45-buechi.md) | baut+findLoop+loop_accept_inf | C/L/P |
-| [46 符号 MC 与 μ 演算](docs/46-symbolicmc.md) | preE 前像+μ/ν 编码 CTL（合流点） | C/L |
-| [47 模态 K](docs/47-modal.md) | Kripke 语义+K/必然化+T/4 反例 | C/L |
-| [48 对应理论](docs/48-correspondence.md) | 五条正向+T 的逆（探针赋值） | C/L |
-| [49 模态 ND 与 KT45n](docs/49-modalnd.md) | □i 严格性+泥孩子三轮 decide | C/L |
-| [50 霍尔逻辑](docs/50-hoare.md) | while 规则五通道对照+别名前提+倒数程序 | C/A/L/I/H4 |
-| [51 完全正确性](docs/51-totalcorrect.md) | 变体方法+minsum 案例+契约式设计 | C/L/I |
-| [52 并发演绎验证](docs/52-conc.md) | 不变式族+reach_inv | C/L |
-| [53 数学归纳与递归](docs/53-induction.md) | PMI 三位一体：弱/强/良序+素因子+√2 下降 | C/L |
-| [54 递推与 Peano 算术](docs/54-pa.md) | 公理变定理+加乘律+≤ 全链 | C/L |
-| [55 整除性与初等数论](docs/55-divisibility.md) | dm2 商余+Bézout+Euclid 引理+素数无穷 | C/L |
-| [56 集合、幂集与计数](docs/56-setscount.md) | 运算律+De Morgan 经典账+容斥 | C/L |
-| [57 无穷集合与停机问题](docs/57-infinity.md) | Cantor 对角线三化身+Russell+停机公理账 | C/L |
-| [58 函数与等价关系](docs/58-funequiv.md) | 搜索左/右逆+congN 正规形+良定义 | C/L |
-| [59 偏序与格](docs/59-posetlattice.md) | 特征引理装配代数律+五点菱形反例 | C/L |
-| [60 Boole 代数与逻辑电路](docs/60-boole.md) | 十公理+加法器+minterm 定理+QMC | C/L/P |
-| [61 图论专题](docs/61-graphs.md) | 握手引理真证明+平面算术+贪心着色+搜索面 | C/L/P |
-| [63 收官](docs/63-wrapup.md) | SAT→SMT→MC→ITP 图景+总坑位+八书导读+H&R 映射 | 文档 |
+| [30 二阶逻辑](docs/30-secondorder.md) | soev 幂枚举求值器+偶数性交替着色+连通性否定式刻画+L_Q 退化 | C/L |
+| [34 自由模型](docs/34-freemodel.md) | 自由幺半群=表+初始性两定理（泛性质）+必需性证词 | C/L |
+| [37 寄存器机](docs/37-regmachine.md) | 五指令 RM 解释器（三通道）+书例 P₀ 奇偶对账+加法+循环不停机 | C/L/P |
+| [38 图灵机](docs/38-turing.md) | 四元组+纸带解释器（三通道）+书例四机（后继/零/加法/抹除）+Tadd 网格抓包+永不停实证 | C/L/P |
+| [39 递归函数](docs/39-recfn.md) | prf 求值器+命题 3.16 函数族全正确（步进方程法）+Ackermann 非 PR 线+限制 μ 的 Option 语义 | C/L |
+| [43 算术化](docs/43-goedel.md) | 平方配对单射+树编码 gcf 单射性+subf 代入+β-函数 CRT 双现场+自引骨架 | C/L |
+| [44 不完备性](docs/44-incompleteness.md) | 三步文档线全保留+表示性样板四真定理+有限域可判定与论域相对性（Tarski 对照） | 文档/C/L |
+| [48 可判定性与 SMT](docs/48-decidability.md) | presburger 现场+Decidable 机器面 | I/L |
+| [49 CTL 模型检查](docs/49-temporal.md) | AG/EG 展开等价+不动点构件 | C/L |
+| [32 Herbrand 与 SLD](docs/32-herbrand.md) | T_P 单调+头原子（Prolog 桥） | C/L |
+| [33 归结完备与 SAT 难例](docs/33-rescomp.md) | resproof+PHP 反驳+DP 消元 | C/L |
+| [35 SLD 与 Prolog 语义](docs/35-sldprolog.md) | 计算规则独立性+cut/NAF/CLP | C/L/P |
+| [36 合成与形式语义](docs/36-synthsem.md) | 小步语义+读出式正确性 | C/L |
+| [48 可判定性与 SMT](docs/48-decidability.md) | presburger 现场+Decidable 机器面 | I/L |
+| [44 不完备性](docs/44-incompleteness.md) | 三步证明+先例索引（文档章） | 文档 |
+| [49 CTL 模型检查](docs/49-temporal.md) | AG/EG 展开等价+不动点构件 | C/L |
+| [50 LTL](docs/50-ltl.md) | 路径语义+等价族六件+adequate sets | C/L |
+| [51 MC 算法与公平性](docs/51-mcalgo.md) | 互斥全程+饥饿路径+公平性微观模型 | C/L |
+| [52 CTL*](docs/52-ctlstar.md) | 两层语法+三组分离现场（表达能力天梯） | C/L |
+| [53 LTL 语义表列](docs/53-ltltab.md) | lasso+兑现检查+fulfill_ok_sound | C/L |
+| [54 时态演绎系统 L](docs/54-ltlded.md) | lth+lth_sound+14.2/14.4 推导 | C/L |
+| [55 自动机与 LTL MC](docs/55-buechi.md) | baut+findLoop+loop_accept_inf | C/L/P |
+| [56 符号 MC 与 μ 演算](docs/56-symbolicmc.md) | preE 前像+μ/ν 编码 CTL（合流点） | C/L |
+| [57 模态 K](docs/57-modal.md) | Kripke 语义+K/必然化+T/4 反例 | C/L |
+| [58 对应理论](docs/58-correspondence.md) | 五条正向+T 的逆（探针赋值） | C/L |
+| [59 模态 ND 与 KT45n](docs/59-modalnd.md) | □i 严格性+泥孩子三轮 decide | C/L |
+| [60 霍尔逻辑](docs/60-hoare.md) | while 规则五通道对照+别名前提+倒数程序 | C/A/L/I/H4 |
+| [61 完全正确性](docs/61-totalcorrect.md) | 变体方法+minsum 案例+契约式设计 | C/L/I |
+| [62 并发演绎验证](docs/62-conc.md) | 不变式族+reach_inv | C/L |
+| [63 数学归纳与递归](docs/63-induction.md) | PMI 三位一体：弱/强/良序+素因子+√2 下降 | C/L |
+| [64 递推与 Peano 算术](docs/64-pa.md) | 公理变定理+加乘律+≤ 全链 | C/L |
+| [65 整除性与初等数论](docs/65-divisibility.md) | dm2 商余+Bézout+Euclid 引理+素数无穷 | C/L |
+| [66 集合、幂集与计数](docs/66-setscount.md) | 运算律+De Morgan 经典账+容斥 | C/L |
+| [67 无穷集合与停机问题](docs/67-infinity.md) | Cantor 对角线三化身+Russell+停机公理账 | C/L |
+| [68 函数与等价关系](docs/68-funequiv.md) | 搜索左/右逆+congN 正规形+良定义 | C/L |
+| [69 偏序与格](docs/69-posetlattice.md) | 特征引理装配代数律+五点菱形反例 | C/L |
+| [70 Boole 代数与逻辑电路](docs/70-boole.md) | 十公理+加法器+minterm 定理+QMC | C/L/P |
+| [71 图论专题](docs/71-graphs.md) | 握手引理真证明+平面算术+贪心着色+搜索面 | C/L/P |
+| [73 收官](docs/73-wrapup.md) | SAT→SMT→MC→ITP 图景+总坑位+八书导读+H&R 映射 | 文档 |
 
 ## 工具链（本机实测）
 
@@ -116,12 +116,12 @@ pwsh -NoProfile -Command '& ./build.ps1 -All'
 
 - 可靠性/演绎定理类元定理：Coq 通道最完整（06 章九规则归纳）；
   Lean/Agda/Isabelle 相应章节立演算与示例，完整归纳证明按章注记。
-- HOL4 采用浅嵌入（05 章对照点）；50 章霍尔逻辑的 HOL4 版止步
+- HOL4 采用浅嵌入（05 章对照点）；60 章霍尔逻辑的 HOL4 版止步
   于单步不变式引理（exec 双重反演的实例级联污染，见该章速记）。
 - 中译本 Huth&Ryan 是扫描件（引用以英文 2e 为准；术语对照表
   在 CHEATSheet）；
   Mints 书公式层缺失（引用需按页核对版面）。
-- 37 章（不完备性）现为文档章——Mendelson 批次四将升级为机器章
+- 44 章（不完备性）现为文档章——Mendelson 批次四将升级为机器章
   （表示性样板+对角现场；S 完整推导仍文档级）；23 章完备性已有
   C/L 机器件（合同闭包商结构）。
 - 其他版本（Coq 9/Agda 3/Lean 4.3x）未测。

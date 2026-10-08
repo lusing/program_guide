@@ -1,4 +1,4 @@
-# 第 09 章 完备连接词集与公理独立性
+# 第 9 章 完备连接词集与公理独立性
 
 > 对书：Mendelson 6e §1.3（完备集）、§1.5（独立性：多值矩阵）、§1.6（其他公理化）。
 > 本章通道：C（`examples/09_adequate/ex09_adequate.v`）/
@@ -117,7 +117,7 @@ Theorem toDown_ok : forall f s, upeval (toDown f) s = beval f s.
 X=true、Y=false 时 NAND 翻译给出 true 而合取应为 false。回看原文
 「A↓B is true when and only when **neither** A nor B is true」——joint
 denial 是 NOR 不是 NAND。改回 `negb (orb …)` 后全绿。「数学先于战术」
-在 55/61 章（旧号）出现过三次，本轮第四次：**先读清语义再写求值器**，
+在 65/71 章（旧号）出现过三次，本轮第四次：**先读清语义再写求值器**，
 编译器的拒证就是正确判断。
 
 另一侧的 **alternative denial** |（NAND，A|B 恰在两者不全真时为真）同样
@@ -308,4 +308,4 @@ B∨C⊃C∨B、(C⊃D)⊃(B∨C⊃B∨D)——每个都是 2^k 布尔分案 rfl
 
 ---
 
-上一章：[08 范式：NNF 与 CNF](docs/08-cnf.md) · 下一章：[10 DPLL 与 SAT：从通用回溯到 Horn 线性求解](docs/10-dpll.md)
+上一章：[08 cnf](docs/08-cnf.md) · 下一章：[10 DPLL 与 SAT：从通用回溯到 Horn 线性求解](docs/10-dpll.md)

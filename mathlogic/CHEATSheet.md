@@ -8,8 +8,8 @@
 ```powershell
 cd mathlogic
 pwsh -NoProfile -Command '& ./build.ps1 -All'            # 全量 78 单元
-pwsh -NoProfile -Command '& ./build.ps1 -File ex50_hoare.v'   # 单文件
-pwsh -NoProfile -Command '& ./build.ps1 -Chapter 50_hoare'    # 单章
+pwsh -NoProfile -Command '& ./build.ps1 -File ex60_hoare.v'   # 单文件
+pwsh -NoProfile -Command '& ./build.ps1 -Chapter 60_hoare'    # 单章
 ```
 
 | 通道 | 入口 | 判定 |
@@ -71,7 +71,7 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 50_hoare'    # 单章
 ## 语义嵌入模式（横评结论）
 
 - **深嵌入**（本章主流）：语法自建归纳类型，语义/推导全是引理
-  ——50 章的 cmd/exec/hoare 全是这个形状
+  ——60 章的 cmd/exec/hoare 全是这个形状
 - **浅嵌入**（05 章 Hilbert 示范）：宿主 Prop 当对象逻辑的
   Prop，推导规则变成定理持续器——代码量小但受限
 - 布尔截面：`nat -> bool` 表示谓词（09 DPLL）vs Prop 值语义
@@ -91,50 +91,50 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 50_hoare'    # 单章
 
 ### Coq（Rocq 9.1）
 
-- 否定进归纳谓词（40 章 lsat）→ 非严格正性——语义改**公式结构
+- 否定进归纳谓词（50 章 lsat）→ 非严格正性——语义改**公式结构
   Fixpoint**（递归在子公式，位置不动）
 - Notation 定义的总公式**不能 unfold**——`Cannot coerce to an
-  evaluable reference`（42 章 EFP）；全走 simpl
+  evaluable reference`（52 章 EFP）；全走 simpl
 - F 见证的 destruct 是对 `(∃j, ≤ ∧ …)`——`[j [_ Hj]]` 两层
-  拆（42 章）
+  拆（52 章）
 - `discriminate` 裸调不收「假等式目标」（0 = 2）——要
-  `discriminate H` 或 lia（42 章）
+  `discriminate H` 或 lia（52 章）
 - `apply Htr with (y := v)` 的隐式 unify 岔开——全参显式
-  `apply (Htr w v u)`（48 章）
+  `apply (Htr w v u)`（58 章）
 - 探针赋值的双 eqb match：`Nat.eqb_neq` 的 proj2 提供
-  `(v =? w) = false`，外层 match 对 false 直接 iota（48 章）
+  `(v =? w) = false`，外层 match 对 false 直接 iota（58 章）
 - 迭代同构引理不能 reflexivity——两个 Fixpoint 对**轮次归纳**
-  （46 章）
-- `F [] = B` 的种子步：app_nil_r 前先 unfold unionL（46 章）
+  （56 章）
+- `F [] = B` 的种子步：app_nil_r 前先 unfold unionL（56 章）
 
 ### Lean（bare core）
 
 - `cases h : starve k` 目标含 starve (k+1) 报 free variables
-  ——**generalize hs : starve k = s** 先抽象（41 章）
+  ——**generalize hs : starve k = s** 先抽象（51 章）
 - `decide` 只收闭目标；含自由变量的成员判定换 simp 方程引理
-  （41 章）
+  （51 章）
 - `Nat × Nat × Nat` 是**右嵌套**（Coq 左嵌套相反）——投影
-  s.1 / s.2.1 / s.2.2（41 章）
+  s.1 / s.2.1 / s.2.2（51 章）
 - `simp [模型] at hs` 常把成员命题收成**单个反向等式**——
-  `first | exact hs | exact hs.symm` 直收（42 章）
-- 列表字面量是**逗号**不是分号（42 章）
+  `first | exact hs | exact hs.symm` 直收（52 章）
+- 列表字面量是**逗号**不是分号（52 章）
 - 守卫三连坑：`(s x == 0) = false` 是 Prop；`!(s x == 0)`
   elaborate 成 `!decide …`；正解 `decide (s x ≠ 0)` +
-  `of_decide_eq_true`（51 章）
+  `of_decide_eq_true`（61 章）
 - `Nat.eqb_neq` 不存在——`cases hb : Nat.beq …` + `Nat.beq_eq`
-  手工组装（48 章）
-- match 表达式内**不用 end**（48 章 T_converse 的探针赋值）
-- `by_contra` 非 core——`by_cases h : P` 替代（48 章）
+  手工组装（58 章）
+- match 表达式内**不用 end**（58 章 T_converse 的探针赋值）
+- `by_contra` 非 core——`by_cases h : P` 替代（58 章）
 
 ### Isabelle
 
 - exec 的 inductive 规则默认入 intro 集——blast/auto/force 在
   含 exec 的目标沿 eWhileT **无限展开**（600s+ 假死）——纪律：
-  exec 目标一律 **metis**（只吃给定事实）或定向 rule（51 章）
+  exec 目标一律 **metis**（只吃给定事实）或定向 rule（61 章）
 - `of` 属性按命题**首次出现序**（16 章坑在 total correctness
-  的 V 前缀上复现——51 章）
+  的 V 前缀上复现——61 章）
 - 四层闭合括号少一层 = cwhile 第三参数（错误 `at ""` 的真义）
-- 会话级 sqlite 冲突：中断后必须删 ML51.db 再 build（51 章）
+- 会话级 sqlite 冲突：中断后必须删 ML61.db 再 build（61 章）
 
 ## 中译本术语对照（哈斯/瑞安版）
 
@@ -159,7 +159,7 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 50_hoare'    # 单章
 - 运行期输出纯 ASCII（`START/END` 标记）；`format/1` 是 SWI 简写、gprolog 无——统一 `format/2`；
 - 原子名不能带撇号（`succK'` 撞引号语法）；`call(P, X, Y)` 元调用切模型；
 - clpfd 要 `:- use_module(library(clpfd)).`；零子句谓词要 `:- dynamic p/2.` 否则 findall 报 Unknown procedure；
-- `\+` 带自由变元 = 存在式否定——NAF 演示用定人查询（31 章）。
+- `\+` 带自由变元 = 存在式否定——NAF 演示用定人查询（35 章）。
 
 ### Ben-Ari 八章最重坑（新号 20/29/31/32/43-45/52，详见各章速记）
 - **20**：记录域参数化（`interp (D:Type)`+`Arguments iasg {D}`）；隐式 {D} 三处坑（陈述悬空/intros 吞名/IH 显式）；as 模式必须含前提槽位（`a Hp IH` 三槽）；proj1/proj2 方向反是最高频翻车；`apply` 不展开 satE 要先 unfold；Compute 探针校准期望值；
@@ -178,8 +178,8 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 50_hoare'    # 单章
 ## Jongsma 扩充新坑（离散底座——新号 53-61）
 
 **数学先于战术**（三连：53/55/61）——目标为假时 lia 的
-"Cannot find witness" 是**正确判断**：55 章 `2*2 ≤ (k₁'+1)(k₂'+1)`
-不真（应证乘积=1）；61 章 filter 口径的度数引理在自环 (v,v)
+"Cannot find witness" 是**正确判断**：65 章 `2*2 ≤ (k₁'+1)(k₂'+1)`
+不真（应证乘积=1）；71 章 filter 口径的度数引理在自环 (v,v)
 上是假命题（改多重图递归口径后成定义方程）。写证明前先验算。
 
 **PDF 文本层丢上杠**（50）——§7.3 命题的补运算排印在提取文本
@@ -228,7 +228,7 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 （平衡 3=3），反例是 K3,4（3≠4）——书 Ex 8.2.17 判据两侧各
 有机型，勿张冠李戴。
 
-## 21-26/30/33 章新坑（EFT 扩充全谱）
+## 21-30/34/37 章新坑（EFT 扩充全谱）
 
 - **Lean native_decide 救 reflexivity/decide**：解释表用深 `match s, args`
   写的有限结构求值，`by rfl`/`by decide` 卡在 Decidable 实例归约
@@ -242,15 +242,15 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 - （21 章其余坑见上节：嵌套归纳无 IH、Lean 符号项 defeq 卡死、conj
   遮蔽、∃A 新鲜性 compute、账本 choice 对照。）
 - **25 章新坑**（前文已录，此处归并索引）：forall 条件合取=∀。
-- **33 章新坑**：燃料预算不足（P₀ 需 3n+20——首版 n+10 被拒）；
+- **37 章新坑**：燃料预算不足（P₀ 需 3n+20——首版 n+10 被拒）；
   HALT 检测=pc 不动（注意自跳 rife r 0 0 也不停）；Prolog 变量名带
   撇号与全角注释组合解析炸（统一 Cfg2）；Example 的 kernel 归约比
   Compute 慢一个量级（对账数值小则无碍）。
-- **30 章新坑**：泛性质首版少生成元约定（无条件唯一是假命题——
+- **34 章新坑**：泛性质首版少生成元约定（无条件唯一是假命题——
   机器拒证即抓包）；Lean `a = b && c` 解析成 `(a = b) && c`（= 级
   50 高于 && 35——布尔等式 RHS 必加括号）；foldr 累加器交换自证
   （核心库不带）；Coq andb 族在 Stdlib.Bool。
-- **26 章新坑**：连通式平凡满足（正向 ∃ 全关系——必须否定式）；
+- **30 章新坑**：连通式平凡满足（正向 ∃ 全关系——必须否定式）；
   chain 边写漏（结构自检先于断言）；函词混关系（fid 无解释——改
   S(x,y) 关系式）；Lean 公式上 ! 不可用（iff 用 conj/imp 组合）；
   嵌套 conj 括号连错四次（单行参数+程序平衡检查收场）。
@@ -281,7 +281,7 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 - **账本对照**：同一群例 Coq 零公理 vs Lean [propext, Classical.choice,
   Quot.sound]（by_cases 经典分叉）。
 
-## 09/34/35/36/37/62 章新坑（Mendelson 扩充）
+## 09/38/39/43/44/72 章新坑（Mendelson 扩充）
 
 ### 09 章 完备集与公理独立性（C/L）
 - **↓ 是 NOR 不是 NAND**：joint denial 的 `upeval` 首版写成 `negb (andb …)`
@@ -299,7 +299,7 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 - 账本：Coq 全章零公理 vs Lean shannon_ok [propext, Quot.sound]——
   差异全在 tactic 层。
 
-### 34 章 图灵机（C/L/P）
+### 38 章 图灵机（C/L/P）
 - **Tadd 首版只擦一笔**：隔板改笔净加一格，5x5 网格全体 +1 被抓——写机器前
   先算格子账（输入 (m+1)+1+(n+1) 格 vs 目标 m+n+1 笔）；
 - **Lean 转换剥不动符号乘法**：`2*m+4` 燃料在 exact/rfl 转换检查里无法归约
@@ -310,7 +310,7 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 - **Lean 结构字段类型**：cur 是 Nat 不是 List（cnt1 直接喂类型错）；
   Option Cfg 相等改 `.isNone = true`（Decidable 实例合成失败绕行）。
 
-### 35 章 递归函数（C/L）
+### 39 章 递归函数（C/L）
 - **Lean list-comp 求值挤到良基递归**：`gs.map (fun gi => peval gi args)`
   元素递归让 peval 的 rfl/defeq 全废——改 **comp1/comp2 双构造子**回归
   结构归纳；Coq guard 反而收 list-comp（两通道分歧现场）；
@@ -322,7 +322,7 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 - **(* *) 是 Coq 注释**——Lean 镜像文件用 `--`；
 - **ack 的 WF 方程不能 rfl**：have h := by simp [ack] 提取后 rw。
 
-### 36/37 章 算术化+不完备升级（C/L）
+### 43/44 章 算术化+不完备升级（C/L）
 - **指数配对炸内存**：2^a·(2b+1) 两层树 Compute OOM（nat 单仁 2^145）——
   平方配对 (a+b)²+b 多项式增长、单射证只要 s²+s<(s+1)²；嵌套 cp 每层
   再平方——码值预算：Coq 样本止步 n=0（1e6 单仁 kernel 栈溢出）、
@@ -335,7 +335,7 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 - **Bool↔Prop 桥**：not_eq_true'+absurd+Bool.noConfusion 手工搭；
   Coq destruct eqn:E 会联动重写假设（exact E 失配改按新形写）。
 
-### 62 章 NBG 集合论（C/L）
+### 72 章 NBG 集合论（C/L）
 - **`at` 撞 Coq 关键字**（rewrite … at）——构造子改名 atom；
 - **map vn 未应用递归被 guard 拒**（第三次撞：09/35/62）——改**追加式**
   vn (S k) = els (vn k) ++ [vn k]+els 引桥族；vn 定义体是 match——

@@ -1,4 +1,4 @@
-# 第 03 章 自然演绎 NJp：每条规则都是一个程序
+# 第 3 章 自然演绎 NJp：每条规则都是一个程序
 
 > 对书：Huth&Ryan §1.2 / Mints §2.2 / Ben-Ari 3e Ch3（对照用）/ Mendelson §1.4（Hilbert 对照）
 > 通道：C/A/L/I/H4（HOL4 首秀）
@@ -259,4 +259,4 @@ Qed.
 
 ---
 
-上一章：[02 命题逻辑：语法、语义与蛮力判定器](docs/02-propsem.md) · 下一章：[04 经典加成：等价矩阵与六家账本](docs/04-classical.md)
+上一章：[02 propsem](docs/02-propsem.md) · 下一章：[04 classical](docs/04-classical.md)

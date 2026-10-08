@@ -1,4 +1,4 @@
-# 第 04 章 经典加成：等价矩阵与六家账本
+# 第 4 章 经典加成：等价矩阵与六家账本
 
 > 对书：Mints §2.9 / §3（Glivenko 预告）/ Huth&Ryan §1.2.5 / Mendelson §1.2
 > 通道：C/A/L/I/H4/T（HoTT 首秀）
@@ -203,4 +203,4 @@ Definition LEM_hprop :=
 
 ---
 
-上一章：[03 自然演绎 NJp：每条规则都是一个程序](docs/03-njp.md) · 下一章：[05 Hilbert 系统与演绎定理](docs/05-hilbert.md)
+上一章：[03 njp](docs/03-njp.md) · 下一章：[05 hilbert](docs/05-hilbert.md)

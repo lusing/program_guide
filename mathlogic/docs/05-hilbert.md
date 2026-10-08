@@ -1,4 +1,4 @@
-# 第 05 章 Hilbert 系统与演绎定理
+# 第 5 章 Hilbert 系统与演绎定理
 
 > 对书：Mendelson §1.4 / Ben-Ari 3e §3.3 / H&R §1.4.3-1.4.4（可靠完备对照）
 > 通道：C/A/L/I/H4（深浅嵌入对照点）
@@ -205,7 +205,7 @@ Hilbert 只有三分支；但 ND 的演绎定理免费、Hilbert 要先补票。
 
 ---
 
-上一章：[04 经典加成：等价矩阵与六家账本](docs/04-classical.md) · 下一章：[06 矢列演算 G：双向上下文与经典性](docs/06-sequent.md)
+上一章：[04 classical](docs/04-classical.md) · 下一章：[06 sequent](docs/06-sequent.md)
 
 ## Mendelson 对照：L 系统与公理化动物园（§1.4/1.6）
 

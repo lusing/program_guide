@@ -118,4 +118,4 @@ L-S）在那里成片倒塌。
 
 ---
 
-上一章：[24 L-S、紧致性与初等等价](docs/24-lscompact.md) · 下一章：[26 二阶逻辑与弱二阶系统](docs/26-secondorder.md)
+上一章：[24 L-S、紧致性与初等等价](docs/24-lscompact.md) · 下一章：[26 完备理论与范畴性：Vaught 测试与 Ax 定理](docs/26-categoricity.md)

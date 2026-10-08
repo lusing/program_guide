@@ -1,8 +1,8 @@
 # mathlogic 教程总计划（十书为纲 × 七通道）
 
 > 状态：五轮书本扩充全部收官（H&R+Ben-Ari+Jongsma+EFT+Mendelson），
-> 63 章 163 单元全绿（158 旧单元+新 09 章 2+34 章 3+35 章 2+36 章 2
-> +37 章 2+62 章 2，深化五处并入既有单元）。本文件是施工蓝图，
+> 73 章 163 单元全绿（158 旧单元+新 09 章 2+38 章 3+39 章 2+43 章 2
+> +44 章 2+72 章 2，深化五处并入既有单元）。本文件是施工蓝图，
 > 供后续会话续接。
 
 ## 十书定位
@@ -16,7 +16,7 @@
 | Mendelson 6e（第五轮收官） | 元定理与递归论线：完备集与独立性(09)、Rule C/Lindenbaum(18/23 深化)、图灵机(34)、递归函数(35)、算术化(36)、不完备性(37)、NBG 集合论(62) |
 | 《Advances in Natural Deduction》（Prawitz 纪念文集） | 证明论进阶（文档引用） |
 | 贺伟《范畴论》/《高级范畴论》 | （本轮范畴论教程已用） |
-| Jongsma《Introduction to Discrete Mathematics via Logic and Proof》（UTM 2019，文本层好；§7.3 的补运算上杠在提取文本中丢失——按数学实体校读） | 离散底座线：归纳/集合/无穷/函数/格与 Boole/图（53-61 章） |
+| Jongsma《Introduction to Discrete Mathematics via Logic and Proof》（UTM 2019，文本层好；§7.3 的补运算上杠在提取文本中丢失——按数学实体校读） | 离散底座线：归纳/集合/无穷/函数/格与 Boole/图（63-71 章） |
 
 ## 七通道（已全部打通并实测）
 
@@ -30,7 +30,7 @@
 | hott | Rocq 9.1（G:\rocq）+ 本地 Coq-HoTT 库（597 .vo，tools/build-hott.ps1） | build.ps1（`*_hott.v` 后缀路由） | exit 0 无 Error |
 | prolog | SWI-Prolog 10.0.2（G:\scoop\apps\swipl\current；gprolog 1.5.0/WSL 跨引擎抽查） | build.ps1（`exNN_*.pl` 自动路由） | exit 0 + `END ====` 标记 |
 
-## 章节蓝图（63 章号位：58 交付 + 5 预留）
+## 章节蓝图（73 章号位：58 交付 + 5 预留）
 
 | 章 | 主题 | 通道 | 状态 |
 |---|---|---|---|
@@ -104,7 +104,7 @@
 
 1. **构造/经典账本**：每章末 `Print Assumptions`/`#print axioms` 记账，
    LCF 两家「无账单」本身要交代；
-2. **演算作为数据**：05/06 章的归纳推导 → 27 章归结 → 23 章完备性
+2. **演算作为数据**：05/06 章的归纳推导 → 31 章归结 → 23 章完备性
    全是同一招「对推导/证明结构归纳」；
 3. **语义与证毕的缝**：02（判定器双向）→06（G 可靠）→24（完备）；
 4. **深浅嵌入**：05 章深（derives 归纳）vs HOL4 浅（DISCH 白送）。
