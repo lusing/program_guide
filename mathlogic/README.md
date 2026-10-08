@@ -58,7 +58,7 @@ mathlogic/
 | [26 二阶逻辑](docs/26-secondorder.md) | soev 幂枚举求值器+偶数性交替着色+连通性否定式刻画+L_Q 退化 | C/L |
 | [30 自由模型](docs/30-freemodel.md) | 自由幺半群=表+初始性两定理（泛性质）+必需性证词 | C/L |
 | [33 寄存器机](docs/33-regmachine.md) | 五指令 RM 解释器（三通道）+书例 P₀ 奇偶对账+加法+循环不停机 | C/L/P |
-| [34 图灵机](docs/34-turing.md) | 施工中（Mendelson 批次二）：四元组+纸带+书例程序+RM 对照 | C/L/P |
+| [34 图灵机](docs/34-turing.md) | 四元组+纸带解释器（三通道）+书例四机（后继/零/加法/抹除）+Tadd 网格抓包+永不停实证 | C/L/P |
 | [35 递归函数](docs/35-recfn.md) | 施工中（Mendelson 批次三）：PR 闭包+Ackermann+μ+r.e. | C/L |
 | [36 算术化](docs/36-goedel.md) | 施工中（Mendelson 批次四）：素数幂编码+β-函数+代换+不动点 | C/L |
 | [37 不完备性](docs/37-incompleteness.md) | 升级中（批次四）：文档线保留+表示性样板+对角现场 | 文档/C/L |

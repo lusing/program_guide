@@ -298,3 +298,14 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
   则后续 rw 删 hsn；simp 可能提前闭合（first | rfl | cases 兜底）；
 - 账本：Coq 全章零公理 vs Lean shannon_ok [propext, Quot.sound]——
   差异全在 tactic 层。
+
+### 34 章 图灵机（C/L/P）
+- **Tadd 首版只擦一笔**：隔板改笔净加一格，5x5 网格全体 +1 被抓——写机器前
+  先算格子账（输入 (m+1)+1+(n+1) 格 vs 目标 m+n+1 笔）；
+- **Lean 转换剥不动符号乘法**：`2*m+4` 燃料在 exact/rfl 转换检查里无法归约
+  succ——构造子递归 `tfuel |0=>4|m+1=>succ succ` + tfuel_eq/omega 桥接；
+- **run_mono 的 IH 广义化 c**（revert c 后归纳才能吃 step 的新配置）；
+  Coq `unfold step at 1 2` 在 simpl 之后报 Invalid occurrence——改
+  simpl+exact 靠转换检查；
+- **Lean 结构字段类型**：cur 是 Nat 不是 List（cnt1 直接喂类型错）；
+  Option Cfg 相等改 `.isNone = true`（Decidable 实例合成失败绕行）。
