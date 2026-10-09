@@ -209,6 +209,10 @@ Hauptsatz 注记）。
 - **Lean**：`absurd` 是 nn_dne 的直收件；nn_demorgan 的嵌套 λ
   就是 Coq assert 链的化简。
 
+**后向连接**：本章的 ¬¬ 化是命题级的；FOL 级推广（量词+谓词，
+含 (∃xφ)ⁿ=¬∀x¬φⁿ 的 Gödel–Gentzen 七行翻译与 DPA=HA 一致性）
+见 49 章「构造性与 Heyting 语义」。
+
 ---
 
 上一章：[11 BDD：布尔函数的图表示与三算法](docs/11-bdd.md) · 下一章：[13 Curry–Howard 对应与析取性质](docs/13-ch.md)
