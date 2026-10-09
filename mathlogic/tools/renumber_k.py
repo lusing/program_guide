@@ -1,43 +1,47 @@
 # -*- coding: utf-8 -*-
-"""mathlogic 第七轮（Müller-Stach 轮）全书重编号（批次〇，一次性）：73→80。
+"""mathlogic 第八轮（张寅生轮）全书重编号（批次〇，一次性）：80→86。
 目录改名 + 目录内文件改名（.agda/.thy 模块名=文件名硬约束）+ docs 文件改名
 + 单遍映射替换 + PLAN 章表表行 + 页脚导航全量重生成。用法：
 python -I tools/renumber_k.py [--apply]    # 默认 dry-run
 
-上轮三教训的根治（Marker 轮实测）：
-1) docs 目录改名必须做（本轮 rename_docs）；
+历轮教训全带上（第七轮定稿）：
+1) docs 目录改名必须做（rename_docs）；
 2) 双重改名 bug——文件改名必须先于目录改名（文件在旧号目录内查旧号 MAP；
    若目录先改，新号本身也在 MAP 里会被二次改）；
-3) PLAN 章表 `| NN |` 行格式（本轮表行模式）。
+3) PLAN 章表 `| NN |` 行格式（表行模式）；
+4) verify 残留=未映射章合法页脚互报——过滤 n∈MAP 后真残留必须=0。
 """
 import os, re, sys, glob
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-MAP = {  # 旧章号 -> 新章号（01-42 恒等不列；全部单调增）
-    43:45, 44:46,                                   # 算术化/不完备：+2（让位 43 复杂度/44 字问题）
-    45:50, 46:51, 47:52, 48:53,                     # H10/ε₀/模型/SMT：+5（让位 47 Gödel II/48 真理/49 构造性）
-    49:54, 50:55, 51:56, 52:57, 53:58, 54:59,       # 时态块：+5
-    55:60, 56:61, 57:62, 58:63, 59:64, 60:65, 61:66, 62:67,
-    63:68, 64:69, 65:70,                             # 归纳/PA/整除性：+5
-    66:72, 67:73, 68:74, 69:75, 70:76, 71:77, 72:78,# 离散块：+6（让位 71 密码）
-    73:80,                                           # 收官：+7（让位 79 同一性）
+MAP = {  # 旧章号 -> 新章号（01-14 恒等不列；全部单调增）
+    15:16, 16:17, 17:18, 18:19,                   # FOL 块头：+1（让位 15 三段论）
+    19:21, 20:22, 21:23, 22:24, 23:25, 24:26, 25:27,
+    26:28, 27:29, 28:30, 29:31, 30:32, 31:33, 32:34, 33:35,
+    34:36, 35:37, 36:38, 37:39, 38:40, 39:41, 40:42, 41:43,
+    42:44, 43:45, 44:46, 45:47, 46:48, 47:49, 48:50, 49:51,
+    50:52, 51:53,                                   # 前半全书：+2（让位 15/20）
+    52:55, 53:56, 54:57, 55:58, 56:59, 57:60, 58:61, 59:62,
+    60:64, 61:65, 62:66, 63:67, 64:68, 65:69, 66:70, 67:71,
+    68:72, 69:73, 70:74, 71:75, 72:76, 73:77,       # 中段：+3/+4（让位 54 截消/63 自动机）
+    74:79, 75:80, 76:81, 77:82, 78:83,              # 离散块尾：+5（让位 78 悖论）
+    79:85, 80:86,                                   # 同一性/收官：+6（让位 84 算术几何）
 }
-GAPS = {43, 44, 47, 48, 49, 71, 79}   # 本轮新建章（重排后应为空位）
-NEW_TITLES = {                         # 空位章的页脚标题
-    43: ('complexity',   '复杂度：P 与 NP'),
-    44: ('wordproblem',  '字问题与重写：Thue 系统与 Tseytin 半群'),
-    47: ('goedel2',      'Gödel 第二不完备与一致性扩张'),
-    48: ('truth',        '真理理论：Tarski 不可定义与 Kripke 不动点'),
-    49: ('constructive', '构造性与 Heyting 语义'),
-    71: ('crypto',       '密码与信任机器'),
-    79: ('identity',     '同一性与结构主义'),
+GAPS = {15, 20, 54, 63, 78, 84}   # 本轮新建章（重排后应为空位）
+NEW_TITLES = {                     # 空位章的页脚标题
+    15: ('syllogism',  '三段论与传统逻辑'),
+    20: ('historical', '历史形式系统考古：Frege、PM 与 Hilbert'),
+    54: ('cutelim',    '截消定理与序数分析'),
+    63: ('automata',   '自动机与形式语言：Chomsky 层级'),
+    78: ('paradox',    '悖论的结构与解悖理论'),
+    84: ('axioms',     '算术与几何的公理系统'),
 }
 APPLY = '--apply' in sys.argv
 
 # ---------- 1. 目录内文件改名（先于目录改名！目录此刻还是旧号）----------
-DIR_PAT = re.compile(r'^(\d{2})([_-])([a-z]+)$')
-FILE_PAT = re.compile(r'^ex(\d{2})_([a-z]+)\.(\w+)$')
+DIR_PAT = re.compile(r'^(\d{2})([_-])([a-z][a-z0-9]*)$')
+FILE_PAT = re.compile(r'^ex(\d{2})_([a-z][a-z0-9]*)\.(\w+)$')
 STALE_EXT = {'.agdai', '.vo', '.vok', '.vos', '.glob', '.aux', '.hammer',
              '.ival', '.o', '.hi'}
 
@@ -85,7 +89,7 @@ def rename_dirs():
         os.rename(os.path.join(exdir, name), os.path.join(exdir, new))
 
 # ---------- 3. docs 文件改名（NN-slug.md；按旧号降序）----------
-DOC_PAT = re.compile(r'^(\d{2})-([a-z]+)\.md$')
+DOC_PAT = re.compile(r'^(\d{2})-([a-z][a-z0-9]*)\.md$')
 
 def rename_docs():
     ddir = os.path.join(ROOT, 'docs')
@@ -129,11 +133,11 @@ PATTERNS = [
         lambda m: f"| {sub_mapped_num(m.group(1))} |"),
     ('ex路径', re.compile(r'(?<!\w)examples/(\d{2})_'),     # examples/NN_ 路径形态
         lambda m: f"examples/{sub_mapped_num(m.group(1))}_"),
-    ('doc文件', re.compile(r'(?<!\d)(\d{2})-([a-z]+)(?![\w-])'),
+    ('doc文件', re.compile(r'(?<!\d)(\d{2})-([a-z][a-z0-9]*)(?![\w-])'),
         lambda m: f"{sub_mapped_num(m.group(1))}-{m.group(2)}"),
-    ('ex文件', re.compile(r'(?<!\w)ex(\d{2})_([a-z]+)'),
+    ('ex文件', re.compile(r'(?<!\w)ex(\d{2})_([a-z][a-z0-9]*)'),
         lambda m: f"ex{sub_mapped_num(m.group(1))}_{m.group(2)}"),
-    ('目录名', re.compile(r'(?<![\w/])(\d{2})_([a-z]+)'),
+    ('目录名', re.compile(r'(?<![\w/])(\d{2})_([a-z][a-z0-9]*)'),
         lambda m: f"{sub_mapped_num(m.group(1))}_{m.group(2)}"),
     ('session', re.compile(r'\bML(\d{2})\b'),
         lambda m: f"ML{sub_mapped_num(m.group(1))}"),
@@ -171,7 +175,7 @@ def replace_texts():
 def chapter_table():
     tabs = {}
     for p in glob.glob(os.path.join(ROOT, 'docs', '*.md')):
-        m = re.match(r'^(\d{2})-([a-z]+)\.md$', os.path.basename(p))
+        m = re.match(r'^(\d{2})-([a-z][a-z0-9]*)\.md$', os.path.basename(p))
         if not m: continue
         num, slug = int(m.group(1)), m.group(2)
         head = open(p, 'rb').read().decode('utf-8').split('\n', 1)[0]
@@ -185,7 +189,7 @@ def regen_footers():
     tabs = chapter_table()
     order = sorted(tabs)
     for p in glob.glob(os.path.join(ROOT, 'docs', '*.md')):
-        m = re.match(r'^(\d{2})-[a-z]+\.md$', os.path.basename(p))
+        m = re.match(r'^(\d{2})-[a-z][a-z0-9]*\.md$', os.path.basename(p))
         if not m: continue
         num = int(m.group(1))
         if num not in tabs: continue
@@ -212,10 +216,10 @@ def scan_pairs():
     """重命名前收集旧 (号,slug) 对（docs 与 examples 两界）。"""
     pairs = set()
     for d in os.listdir(os.path.join(ROOT, 'docs')):
-        m = re.match(r'^(\d{2})-([a-z]+)\.md$', d)
+        m = re.match(r'^(\d{2})-([a-z][a-z0-9]*)\.md$', d)
         if m: pairs.add((int(m.group(1)), m.group(2)))
     for d in os.listdir(os.path.join(ROOT, 'examples')):
-        m = re.match(r'^(\d{2})_([a-z]+)$', d)
+        m = re.match(r'^(\d{2})_([a-z][a-z0-9]*)$', d)
         if m: pairs.add((int(m.group(1)), m.group(2)))
     return pairs
 
@@ -225,15 +229,15 @@ def verify(oldpairs):
     nums = [int(d[:2]) for d in docs]
     assert len(nums) == len(set(nums)), 'docs 章号重复！'
     print(f'docs 数 {len(nums)}，号位 min/max {min(nums)}/{max(nums)}')
-    expect = set(range(1, 81)) - GAPS
+    expect = set(range(1, 87)) - GAPS
     assert set(nums) == expect, f'号位差集: 缺 {sorted(expect - set(nums))[:8]} / 多 {sorted(set(nums) - expect)[:8]}'
     print(f'新章号位 {sorted(GAPS)} 预留确认；docs 连续 01-80 除空位')
     bad = []
     for p in text_files():
         t = open(p, 'rb').read().decode('utf-8', errors='ignore')
-        for m in re.finditer(r'(?<!\d)(\d{2})-([a-z]+)(?![\w-])', t):
+        for m in re.finditer(r'(?<!\d)(\d{2})-([a-z][a-z0-9]*)(?![\w-])', t):
             if (int(m.group(1)), m.group(2)) in oldpairs: bad.append((p, m.group(0)))
-        for m in re.finditer(r'(?<![\w/])(\d{2})_([a-z]+)', t):
+        for m in re.finditer(r'(?<![\w/])(\d{2})_([a-z][a-z0-9]*)', t):
             if (int(m.group(1)), m.group(2)) in oldpairs: bad.append((p, m.group(0)))
     print('残留旧对:', bad[:10] if bad else '0')
     assert not bad, '残留旧对必须为 0'
