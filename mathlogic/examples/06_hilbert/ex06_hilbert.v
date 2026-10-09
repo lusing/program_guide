@@ -94,3 +94,64 @@ Qed.
      上下文 (p :: G) 在 IH 中原样保留；
    - dMP 构造子先给 (p → A) 再给 p——eapply 的子目标顺序别反；
    - 演绎定理的 MP 分支是 A2 的「柯里化分配」——两步 MP 接力。 *)
+
+(* ---------- 马明辉轮深化：HK 十公理全真账+HJ=HK−A10（书 1.1-1.2） ---------- *)
+(* 马明辉的 HK 用 {⊥,∧,∨,→} 语言（定义 1.5），与本章 Mendelson 三
+   公理的 {→,¬} 片段互补。自含小块：kform+求值器+十公理表。
+   HJ = HK − A10（书 1.2：直觉主义公理恰是 A1-A9）；A10 排中律是
+   唯一的经典增量——3 章 FJ/FK 的分隔线在公理侧的化身。 *)
+
+Inductive kform : Type :=
+| KVar : nat -> kform
+| KBot : kform
+| KAnd : kform -> kform -> kform
+| KOr  : kform -> kform -> kform
+| KImp : kform -> kform -> kform.
+
+Fixpoint kev (e : nat -> bool) (a : kform) : bool :=
+  match a with
+  | KVar n => e n
+  | KBot => false
+  | KAnd x y => andb (kev e x) (kev e y)
+  | KOr x y => orb (kev e x) (kev e y)
+  | KImp x y => implb (kev e x) (kev e y)
+  end.
+
+Definition ktaut (a : kform) : bool :=
+  forallb (fun b1 =>
+    forallb (fun b2 =>
+      forallb (fun b3 =>
+        kev (fun n => match n with
+                      | 0 => b1 | 1 => b2 | _ => b3
+                      end) a)
+        [true; false]) [true; false]) [true; false].
+
+Definition p0 := KVar 0.
+Definition p1 := KVar 1.
+Definition p2 := KVar 2.
+Definition kneg (a : kform) : kform := KImp a KBot.
+
+(* HK 十公理（定义 1.5 原文形状） *)
+Definition hkAxioms : list kform :=
+  [ KImp p0 (KImp p1 p0)                                   (* A1 *)
+  ; KImp (KImp p0 p1) (KImp (KImp p0 (KImp p1 p2))
+                             (KImp p0 p2))                  (* A2 *)
+  ; KImp (KAnd p0 p1) p0                                   (* A3 *)
+  ; KImp (KAnd p0 p1) p1                                   (* A4 *)
+  ; KImp p0 (KImp p1 (KAnd p0 p1))                         (* A5 *)
+  ; KImp p0 (KOr p0 p1)                                    (* A6 *)
+  ; KImp p1 (KOr p0 p1)                                    (* A7 *)
+  ; KImp (KImp p0 p1) (KImp (KImp p0 (kneg p1)) (kneg p0)) (* A8 *)
+  ; KImp KBot p0                                           (* A9 *)
+  ; KOr p0 (kneg p0) ].                                    (* A10 *)
+
+Example hk_axioms_taut : forallb ktaut hkAxioms = true.
+Proof. reflexivity. Qed.
+
+(* HJ 九公理（= HK − A10）同样全真；A10 是唯一的「经典增量」——
+   它当然也是重言式，但直觉主义证明系（NJ/FJ/G3ip）收不下它 *)
+Example hj_axioms_taut : forallb ktaut (firstn 9 hkAxioms) = true.
+Proof. reflexivity. Qed.
+
+(* 定理 2.1 的公理装载账：A1-A9 已在 NJ 可证（04 章深化件），A10
+   需要 FK 的 ¬E/G3ipEa 的 (Ea)（3 章/57 章）——两侧的分隔线。 *)

@@ -257,6 +257,26 @@ Qed.
 - 可证等价（⊣⊢）≠ 语义等价（≡）：演算层与模型层，27 章缝合。
 - 反证法 aside 是构造/经典暗线的第一关隘。
 
+## 马明辉轮深化：HJ 公理在 NJ 的装载（定理 2.1）
+
+马明辉书 2.4 节的完全性走翻译路线：**NJ 推导逐规则翻译成 Hilbert 推
+导**（定理 2.5 的五个模板），反向则是**HJ 的公理逐条在 NJ 装载**（定
+理 2.1）。本轮补上后者的机器账（`examples/04_njp/ex04_njp.v` 的
+`mmh_A1..A9`）：马明辉 HJ 的九公理（A1 K 公理、A2 三段论、A3-A5 合取、
+A9 爆炸）每条都是本章 ND 组合子的直接组合——
+
+```coq
+Theorem mmh_A2 : forall P Q R : Prop,
+  (P -> Q) -> ((P -> (Q -> R)) -> (P -> R)).
+Proof.
+  intros P Q R HPQ HPQR HP.
+  apply HPQR; [exact HP | apply HPQ; exact HP].
+Qed.
+```
+
+A10（排中律）**不在其中**——它是 FK 的 ¬E 专属（3 章费奇侧同一分隔
+线）。两侧合起来就是推论 2.4：NJ 与 HJ 互译等价、NK 与 HK 互译等价。
+
 ---
 
 上一章：[03 费奇式自然演绎](docs/03-fitch.md) · 下一章：[05 classical](docs/05-classical.md)

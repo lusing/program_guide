@@ -69,3 +69,44 @@ example (p q r : HForm) : Derives [] (himp (himp p (himp q r)) (himp p (himp q r
    - 模式匹配 def 写不了「三模式析取」——公理模式用 ∃ 显式展开最稳。 -/
 
 end Ex06
+
+/- ---------- 马明辉轮深化：HK 十公理全真账+HJ=HK−A10 ---------- -/
+inductive Kform where
+  | KVar (n : Nat)
+  | KBot
+  | KAnd (a b : Kform)
+  | KOr (a b : Kform)
+  | KImp (a b : Kform)
+
+def kev (e : Nat → Bool) : Kform → Bool
+  | .KVar n => e n
+  | .KBot => false
+  | .KAnd x y => kev e x && kev e y
+  | .KOr x y => kev e x || kev e y
+  | .KImp x y => !kev e x || kev e y
+
+def ktaut (a : Kform) : Bool :=
+  [true, false].all (fun b1 =>
+    [true, false].all (fun b2 =>
+      [true, false].all (fun b3 =>
+        kev (fun n => (match n with | 0 => b1 | 1 => b2 | _ => b3)) a)))
+
+def kp0 : Kform := .KVar 0
+def kp1 : Kform := .KVar 1
+def kp2 : Kform := .KVar 2
+def kneg (a : Kform) : Kform := .KImp a .KBot
+
+def hkAxioms : List Kform :=
+  [ .KImp kp0 (.KImp kp1 kp0)
+  , .KImp (.KImp kp0 kp1) (.KImp (.KImp kp0 (.KImp kp1 kp2)) (.KImp kp0 kp2))
+  , .KImp (.KAnd kp0 kp1) kp0
+  , .KImp (.KAnd kp0 kp1) kp1
+  , .KImp kp0 (.KImp kp1 (.KAnd kp0 kp1))
+  , .KImp kp0 (.KOr kp0 kp1)
+  , .KImp kp1 (.KOr kp0 kp1)
+  , .KImp (.KImp kp0 kp1) (.KImp (.KImp kp0 (kneg kp1)) (kneg kp0))
+  , .KImp .KBot kp0
+  , .KOr kp0 (kneg kp0) ]
+
+example : hkAxioms.all ktaut = true := by native_decide
+example : (hkAxioms.take 9).all ktaut = true := by native_decide

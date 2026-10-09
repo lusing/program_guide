@@ -105,3 +105,30 @@ Print Assumptions lem_var0.  (* Closed *)
    - Himp 1 ... 的世界 1 证据：le_S 0 0 (le_n 0) 构造 0≤1；
      le_n/lia 组合即可；
    - val 的世界 1 对一切 n 都 true（简化：只关心 p(0)）。 *)
+
+(* ---------- 马明辉轮深化：例 1.4 反例组+Glivenko 影子（书 1.2） ---------- *)
+(* 例 1.4(1) 的两分量见下方 mmh_nn_p / mmh_not_p *)
+
+(* 上面手工展开较繁——换语义等价的小算：forces 0 ¬¬p 成立（世界 0
+   的 ¬p 因世界 1 有 p 而失败），forces 0 p 失败（val 0 0=false）。
+   直接给两个分量再合成： *)
+Lemma mmh_nn_p : forces 0 (FImp (FImp (FVar 0) FBot) FBot).
+Proof.
+  intros w' [Hw1 Hw2] Hnp.
+  destruct w' as [|[|w'']].
+  - apply (Hnp 1 (conj (Nat.le_0_l 1) (Nat.le_refl 1))). reflexivity.
+  - apply (Hnp 1 (conj (Nat.le_refl 1) (Nat.le_refl 1))). reflexivity.
+  - exfalso. lia.
+Qed.
+
+Lemma mmh_not_p : ~ forces 0 (FVar 0).
+Proof. simpl. discriminate. Qed.
+
+(* ¬¬(p∨¬p) 两世界皆被强制——Glivenko 的 Kripke 侧影子（13/57 章） *)
+Example mmh_glivenko_shadow :
+  forces 0 (FImp (FImp (FOr (FVar 0) (FImp (FVar 0) FBot)) FBot) FBot).
+Proof.
+  intros w' [Hw1 Hw2] Habs.
+  apply (Habs 1 (conj Hw2 (Nat.le_refl 1))).
+  left. reflexivity.
+Qed.

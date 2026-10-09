@@ -84,3 +84,37 @@ Print Assumptions lem_use. (* 依赖 classic *)
    - intros [HP | HQ] 直接做 ∨E；split 即 ∧I；
    - 全部定理 Print Assumptions 均 Closed——NJp 片段零公理；
    - 注意 de_morgan_2 依赖 pattern matching 位置双分支的缩进深度。 *)
+
+(* ---------- 马明辉轮深化：HJ 公理在 NJ 的可证性（书 2.4 定理 2.1） ---------- *)
+(* 马明辉 HJ=HK−A10（九公理，1.2 节）：每条都能用 NJ 组合子直接证出。
+   这正是定理 2.1（Γ⊢HJ α ⟹ Γ⊢NJ α）的机器面：公理逐条装载，
+   (mp) 用 impE 拼接。A10（排中律）在此不出现——它是 FK 的 ¬E 专属
+   （3 章费奇侧同一分隔）。 *)
+
+Theorem mmh_A1 : forall P Q : Prop, P -> (Q -> P).
+Proof. intros P Q HP HQ. exact HP. Qed.
+
+Theorem mmh_A2 : forall P Q R : Prop,
+  (P -> Q) -> ((P -> (Q -> R)) -> (P -> R)).
+Proof.
+  intros P Q R HPQ HPQR HP.
+  apply HPQR; [exact HP | apply HPQ; exact HP].
+Qed.
+
+Theorem mmh_A3 : forall P Q : Prop, P /\ Q -> P.
+Proof. intros P Q [HP _]. exact HP. Qed.
+
+Theorem mmh_A4 : forall P Q : Prop, P /\ Q -> Q.
+Proof. intros P Q [_ HQ]. exact HQ. Qed.
+
+Theorem mmh_A5 : forall P Q : Prop, P -> (Q -> P /\ Q).
+Proof. intros P Q HP HQ. split; [exact HP | exact HQ]. Qed.
+
+Theorem mmh_A9 : forall P : Prop, False -> P.
+Proof. intros P HF. destruct HF. Qed.
+
+(* 组合样例：三段论链（书例 2.2(2) 的 Prop 化身）——A2 的直接使用 *)
+Example mmh_syll : forall P Q R : Prop, (P -> Q) -> ((Q -> R) -> (P -> R)).
+Proof.
+  intros P Q R HPQ HQR HP. apply HQR. apply HPQ. exact HP.
+Qed.

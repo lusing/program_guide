@@ -171,3 +171,66 @@ Qed.
      classic 入账与 62 章 G_dual_bwd 同款口径；
    - 反例框架的世界有限列举使 □ 展开是**有限全称**——
      逐可达世界手工核（In 表 + rel match 双重 simpl）。 *)
+
+(* ---------- 马明辉轮深化：模态词计数+对应样本（书 6.1） ---------- *)
+(* S5 恰 6 个模态词 / S4 恰 14 个（书 p196-198，图 6-4/6-5）。
+   机器账：在 2-世界全域框架（等价关系=S5 框架）上验证 S5 坍缩：
+   □◇p ≡ ◇p、◇□p ≡ □p——七种 S4 模态词坍缩到三类。 *)
+
+Definition s5f : frame := {|
+  worlds := [0; 1];
+  rel := fun a b => true;                (* 全域：等价关系的 S5 框架 *)
+  val := fun w p => match w, p with
+                   | 1, 0 => true
+                   | _, _ => false
+                   end |}.
+
+(* S5 坍缩账：□◇p → ◇p（另一半 ◇p→□◇p 是 5-公理方向，对称可证） *)
+Theorem s5_collapse_1 : forall w,
+  In w (worlds s5f) -> msat s5f w (mImp (mBox (mDia (mAtom 0))) (mDia (mAtom 0))).
+Proof.
+  intros w Hw HBD.
+  (* □◇p 在 w：所有可达世界都有 ◇p 的见证——全域框架下取见证 v=1 即可 *)
+  specialize (HBD 1 (or_intror (or_introl eq_refl)) eq_refl).
+  (* HBD : msat s5f 1 (Dia p)——且 1 对 w 可达 ⟹ ◇p 在 w 直接成立 *)
+  destruct HBD as [v [Hv [Hrel Hp]]].
+  exists v. split; [exact Hv | split; [exact Hrel | exact Hp]].
+Qed.
+
+(* K 的模态词无穷（书：m≠n 时 ⊬_K □ᵐp→□ⁿp）：三点链上 □□p ≰ □p *)
+Definition chain3 : frame := {|
+  worlds := [0; 1; 2];
+  rel := fun a b => match a, b with
+                   | 0, 1 | 1, 2 => true
+                   | _, _ => false
+                   end;
+  val := fun w p => match w, p with
+                   | 2, 0 => true
+                   | _, _ => false
+                   end |}.
+
+(* 反例账：世界 2 有 p、世界 1 无 p 且 1→2 可达 ⟹ 世界 0 的
+   □□p 成立（0→1→2 链上 2 有 p，1 的后继 2 有 p），而 □p 失败
+   （0 的后继 1 无 p）——□²p → □p 在 K 失效（传递性缺失现场，
+   对照 (4) 公理的对应条件，命题 6.8）。 *)
+Lemma chain3_boxbox : msat chain3 0 (mBox (mBox (mAtom 0))).
+Proof.
+  intros v Hv Hrel.
+  destruct v as [|[|v]].
+  - simpl in Hrel. discriminate.
+  - intros u Hu Hrel2. destruct u as [|[|u]].
+    + simpl in Hrel2. discriminate.
+    + simpl in Hrel2. discriminate.
+    + destruct u as [|u'].
+      * reflexivity.
+      * simpl in Hrel2. discriminate.
+  - simpl in Hrel. discriminate.
+Qed.
+
+Lemma chain3_not_box : ~ msat chain3 0 (mBox (mAtom 0)).
+Proof.
+  intro H.
+  assert (Hp : msat chain3 1 (mAtom 0)).
+  { apply H; [right; left; reflexivity | reflexivity]. }
+  simpl in Hp. discriminate.
+Qed.

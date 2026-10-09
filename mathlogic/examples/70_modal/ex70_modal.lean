@@ -132,4 +132,46 @@ example : ¬ msat fnoTrans 2 (mImp (mBox (mAtom 0)) (mBox (mBox (mAtom 0)))) := 
   simp only [fnoTrans] at hbad
   exact Bool.noConfusion hbad
 
+
+/- ---------- 马明辉轮深化：S5 坍缩+K 模态词无穷（书 6.1） ---------- -/
+def s5f : Frame where
+  worlds := [0, 1]
+  rel := fun _ _ => true
+  val := fun w p => (w == 1 && p == 0)
+
+theorem s5_collapse_1 : ∀ w,
+    msat s5f w (.mImp (.mBox (.mDia (.mAtom 0))) (.mDia (.mAtom 0))) := by
+  intro w hbd
+  exact hbd 1 (by decide) (by simp [s5f])
+
+def chain3 : Frame where
+  worlds := [0, 1, 2]
+  rel := fun a b => (a == 0 && b == 1) || (a == 1 && b == 2)
+  val := fun w p => (w == 2 && p == 0)
+
+example : msat chain3 0 (.mBox (.mBox (.mAtom 0))) := by
+  intro v _ hv
+  cases v with
+  | zero => simp [chain3] at hv
+  | succ m =>
+    cases m with
+    | zero =>
+      intro u _ hu
+      cases u with
+      | zero => simp [chain3] at hu
+      | succ n =>
+        cases n with
+        | zero => simp [chain3] at hu
+        | succ k =>
+          cases k with
+          | zero => rfl
+          | succ j => simp [chain3] at hu
+    | succ m' => simp [chain3] at hv
+
+example : ¬ msat chain3 0 (.mBox (.mAtom 0)) := by
+  intro h
+  have h1 : msat chain3 1 (.mAtom 0) := h 1 (by decide) (by simp [chain3])
+  simp only [chain3] at h1
+  exact Bool.noConfusion h1
+
 end Ex70

@@ -57,3 +57,17 @@ theorem lemUse {p q : Prop} (hpq : p → q) (hnpq : ¬p → q) : q := by
    - fun ⟨hp, hq⟩ => ... 的 λ 模式匹配在 Lean 4 完全合法。 -/
 
 end Ex04
+
+/- ---------- 马明辉轮深化：HJ 公理在 NJ 的可证性（书定理 2.1） ---------- -/
+theorem mmh_A1 : ∀ P Q : Prop, P → (Q → P) := fun _ _ hp _ => hp
+
+theorem mmh_A2 : ∀ P Q R : Prop,
+    (P → Q) → ((P → (Q → R)) → (P → R)) :=
+  fun _ _ _ hpq hpqr hp => hpqr hp (hpq hp)
+
+theorem mmh_A3 : ∀ P Q : Prop, P ∧ Q → P := fun _ _ h => h.1
+theorem mmh_A4 : ∀ P Q : Prop, P ∧ Q → Q := fun _ _ h => h.2
+theorem mmh_A5 : ∀ P Q : Prop, P → (Q → P ∧ Q) := fun _ _ hp hq => ⟨hp, hq⟩
+
+example : ∀ P Q R : Prop, (P → Q) → ((Q → R) → (P → R)) :=
+  fun _ _ _ hpq hqr hp => hqr (hpq hp)

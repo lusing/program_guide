@@ -203,6 +203,21 @@ Hilbert 只有三分支；但 ND 的演绎定理免费、Hilbert 要先补票。
 - **通用**：演绎定理 MP 分支的 A2 实例化方向——
   `(p → (r → A)) → ((p → r) → (p → A))`，p 是被剥离的假设。
 
+## 马明辉轮深化：HK 十公理与 HJ=HK−A10（定义 1.5）
+
+马明辉的 HK 用 {⊥,∧,∨,→} 全语言给出十条公理（本章 Mendelson 三公
+理是它的 {→,¬} 子语言版）。本轮补上自含机器件（`examples/06_hilbert/
+ex06_hilbert.v` 的 `hkAxioms`）：十公理 512 组赋值全真账——
+
+```coq
+Example hk_axioms_taut : forallb ktaut hkAxioms = true.
+Example hj_axioms_taut : forallb ktaut (firstn 9 hkAxioms) = true.
+```
+
+第二条正是 **HJ = HK − A10** 的机器化身：直觉主义公理恰是前九条，
+第十条 p∨¬p 是唯一的「经典增量」。它与 3 章 FJ/FK 的 ¬E 分隔线、13
+章 Glivenko、57 章 (Ea) 规则构成同一现象的四个侧面。
+
 ---
 
 上一章：[05 classical](docs/05-classical.md) · 下一章：[07 sequent](docs/07-sequent.md)
