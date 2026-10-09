@@ -48,17 +48,17 @@ session ML31 in "31_resolution" = HOL +
   theories
     ex31_resolution
 
-session ML48 in "48_decidability" = HOL +
+session ML53 in "53_decidability" = HOL +
   options [document = false]
   theories
-    ex48_decidability
+    ex53_decidability
 
-session ML60 in "60_hoare" = HOL +
+session ML65 in "65_hoare" = HOL +
   options [document = false]
   theories
-    ex60_hoare
+    ex65_hoare
 
-session ML61 in "61_totalcorrect" = HOL +
+session ML66 in "66_totalcorrect" = HOL +
   options [document = false]
   theories
-    ex61_totalcorrect
+    ex66_totalcorrect

@@ -92,4 +92,4 @@ A ≰_T B、B ≰_T A。与 Kleene–Post 的差别：没有 0′-oracle 发牌�
 
 ---
 
-上一章：[41 可枚举集与算术层级：Kolmogorov 随机性](docs/41-hierarchy.md) · 下一章：[43 算术化与哥德尔编码](docs/43-goedel.md)
+上一章：[41 可枚举集与算术层级：Kolmogorov 随机性](docs/41-hierarchy.md) · 下一章：[43 复杂度：P 与 NP](docs/43-complexity.md)

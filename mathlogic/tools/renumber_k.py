@@ -1,56 +1,42 @@
 # -*- coding: utf-8 -*-
-"""mathlogic Marker 轮全书重编号（批次〇，一次性）：63→73。
-目录改名 + **目录内文件改名**（.agda/.thy 模块名=文件名硬约束）+
-单遍映射替换 + 页脚导航全量重生成。用法：
+"""mathlogic 第七轮（Müller-Stach 轮）全书重编号（批次〇，一次性）：73→80。
+目录改名 + 目录内文件改名（.agda/.thy 模块名=文件名硬约束）+ docs 文件改名
++ 单遍映射替换 + PLAN 章表表行 + 页脚导航全量重生成。用法：
 python -I tools/renumber_k.py [--apply]    # 默认 dry-run
+
+上轮三教训的根治（Marker 轮实测）：
+1) docs 目录改名必须做（本轮 rename_docs）；
+2) 双重改名 bug——文件改名必须先于目录改名（文件在旧号目录内查旧号 MAP；
+   若目录先改，新号本身也在 MAP 里会被二次改）；
+3) PLAN 章表 `| NN |` 行格式（本轮表行模式）。
 """
 import os, re, sys, glob
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-MAP = {  # 旧章号 -> 新章号（01-25 恒等不列；全部单调增）
-    26:30, 27:31, 28:32, 29:33, 30:34, 31:35, 32:36,
-    33:37, 34:38, 35:39,                      # 旧 26-35：+4 / +7 分段
-    36:43, 37:44, 38:48,                      # 算术化/不完备/SMT
-    39:49, 40:50, 41:51, 42:52, 43:53, 44:54, 45:55, 46:56,
-    47:57, 48:58, 49:59, 50:60, 51:61, 52:62, 53:63, 54:64,
-    55:65, 56:66, 57:67, 58:68, 59:69, 60:70, 61:71, 62:72, 63:73,
+MAP = {  # 旧章号 -> 新章号（01-42 恒等不列；全部单调增）
+    43:45, 44:46,                                   # 算术化/不完备：+2（让位 43 复杂度/44 字问题）
+    45:50, 46:51, 47:52, 48:53,                     # H10/ε₀/模型/SMT：+5（让位 47 Gödel II/48 真理/49 构造性）
+    49:54, 50:55, 51:56, 52:57, 53:58, 54:59,       # 时态块：+5
+    55:60, 56:61, 57:62, 58:63, 59:64, 60:65, 61:66, 62:67,
+    63:68, 64:69, 65:70,                             # 归纳/PA/整除性：+5
+    66:72, 67:73, 68:74, 69:75, 70:76, 71:77, 72:78,# 离散块：+6（让位 71 密码）
+    73:80,                                           # 收官：+7（让位 79 同一性）
 }
-GAPS = {26, 27, 28, 29, 40, 41, 42, 45, 46, 47}   # 本轮新建章（重排后应为空位）
-NEW_TITLES = {                                     # 空位章的页脚标题
-    26: ('categoricity', '完备理论与范畴性：Vaught 测试与 Ax 定理'),
-    27: ('ultraproduct', '超积与 Łoś 定理'),
-    28: ('quantelim', '量词消去：从 DLO 到代数闭域'),
-    29: ('realclosed', '实闭域与 o-minimality'),
-    40: ('undecidable', '通用性与不可判定性：停机、Rice 与递归定理'),
-    41: ('hierarchy', '可枚举集与算术层级：Kolmogorov 随机性'),
-    42: ('degrees', '图灵度与优先法'),
-    45: ('diophantine', 'Hilbert 第十问题：Pell 与 DPRM'),
-    46: ('epsilon', 'PA 与 ε₀：Hardy 层谱与 Goodstein'),
-    47: ('models', '算术的模型：overspill 与 Paris–Harrington'),
+GAPS = {43, 44, 47, 48, 49, 71, 79}   # 本轮新建章（重排后应为空位）
+NEW_TITLES = {                         # 空位章的页脚标题
+    43: ('complexity',   '复杂度：P 与 NP'),
+    44: ('wordproblem',  '字问题与重写：Thue 系统与 Tseytin 半群'),
+    47: ('goedel2',      'Gödel 第二不完备与一致性扩张'),
+    48: ('truth',        '真理理论：Tarski 不可定义与 Kripke 不动点'),
+    49: ('constructive', '构造性与 Heyting 语义'),
+    71: ('crypto',       '密码与信任机器'),
+    79: ('identity',     '同一性与结构主义'),
 }
 APPLY = '--apply' in sys.argv
 
-# ---------- 1. 目录改名（两阶段 .tmp~；按旧号降序防链式）----------
+# ---------- 1. 目录内文件改名（先于目录改名！目录此刻还是旧号）----------
 DIR_PAT = re.compile(r'^(\d{2})([_-])([a-z]+)$')
-
-def rename_dirs():
-    exdir = os.path.join(ROOT, 'examples')
-    entries = []
-    for name in os.listdir(exdir):
-        m = DIR_PAT.match(name)
-        if m and int(m.group(1)) in MAP:
-            entries.append((int(m.group(1)), name))
-    entries.sort(reverse=True)                       # 降序：63→73 最先
-    print(f'[dirs] 待改名 {len(entries)}（降序执行）')
-    for n, name in entries:
-        new = f"{MAP[n]:02d}{name[2:]}"
-        if not APPLY:
-            print('  ', name, '->', new); continue
-        assert not os.path.exists(os.path.join(exdir, new)), new
-        os.rename(os.path.join(exdir, name), os.path.join(exdir, new))
-
-# ---------- 2. 目录内文件改名（exNN_slug.ext → exMM_slug.ext）----------
 FILE_PAT = re.compile(r'^ex(\d{2})_([a-z]+)\.(\w+)$')
 STALE_EXT = {'.agdai', '.vo', '.vok', '.vos', '.glob', '.aux', '.hammer',
              '.ival', '.o', '.hi'}
@@ -81,7 +67,43 @@ def rename_files():
                 total += 1
     print(f'[files] 章内文件改名 {total}（含模块名=文件名的 .agda/.thy）')
 
-# ---------- 3. 单遍文本替换（模式有序，输出不被后续重匹配）----------
+# ---------- 2. examples 目录改名（两阶段 .tmp~；按旧号降序防链式）----------
+def rename_dirs():
+    exdir = os.path.join(ROOT, 'examples')
+    entries = []
+    for name in os.listdir(exdir):
+        m = DIR_PAT.match(name)
+        if m and int(m.group(1)) in MAP:
+            entries.append((int(m.group(1)), name))
+    entries.sort(reverse=True)                       # 降序：73→80 最先
+    print(f'[dirs] 待改名 {len(entries)}（降序执行）')
+    for n, name in entries:
+        new = f"{MAP[n]:02d}{name[2:]}"
+        if not APPLY:
+            print('  ', name, '->', new); continue
+        assert not os.path.exists(os.path.join(exdir, new)), new
+        os.rename(os.path.join(exdir, name), os.path.join(exdir, new))
+
+# ---------- 3. docs 文件改名（NN-slug.md；按旧号降序）----------
+DOC_PAT = re.compile(r'^(\d{2})-([a-z]+)\.md$')
+
+def rename_docs():
+    ddir = os.path.join(ROOT, 'docs')
+    entries = []
+    for name in os.listdir(ddir):
+        m = DOC_PAT.match(name)
+        if m and int(m.group(1)) in MAP:
+            entries.append((int(m.group(1)), name))
+    entries.sort(reverse=True)
+    print(f'[docs] 待改名 {len(entries)}（降序执行）')
+    for n, name in entries:
+        new = f"{MAP[n]:02d}-{name[3:]}"
+        if not APPLY:
+            print('  ', name, '->', new); continue
+        assert not os.path.exists(os.path.join(ddir, new)), new
+        os.rename(os.path.join(ddir, name), os.path.join(ddir, new))
+
+# ---------- 4. 单遍文本替换（模式有序，输出不被后续重匹配）----------
 def sub_mapped_num(num_str):
     n = int(num_str)
     return f"{MAP[n]:02d}" if n in MAP else num_str
@@ -103,6 +125,8 @@ PATTERNS = [
     ('zh章组', re.compile(r'第\s*((?:\d{1,2}\s*[/-]\s*){1,4}\d{1,2})\s*章'), _zh_group),
     ('zh章',   re.compile(r'第\s*(\d{1,2})\s*章'), _zh),
     ('enum章', re.compile(r'(?<!第 )(?<!\d)((?:\d{1,2}[/-]){0,4}\d{1,2})\s*章'), _enum_ch),
+    ('表行',   re.compile(r'(?m)^\| (\d{2}) \|'),          # PLAN/README 章表行首
+        lambda m: f"| {sub_mapped_num(m.group(1))} |"),
     ('ex路径', re.compile(r'(?<!\w)examples/(\d{2})_'),     # examples/NN_ 路径形态
         lambda m: f"examples/{sub_mapped_num(m.group(1))}_"),
     ('doc文件', re.compile(r'(?<!\d)(\d{2})-([a-z]+)(?![\w-])'),
@@ -143,7 +167,7 @@ def replace_texts():
             open(path, 'wb').write(text.encode('utf-8'))
     print('替换统计:', stats)
 
-# ---------- 4. 页脚导航全量重生成（按 73 章新序，空位章用预留标题）----------
+# ---------- 5. 页脚导航全量重生成（按 80 章新序，空位章用预留标题）----------
 def chapter_table():
     tabs = {}
     for p in glob.glob(os.path.join(ROOT, 'docs', '*.md')):
@@ -164,6 +188,7 @@ def regen_footers():
         m = re.match(r'^(\d{2})-[a-z]+\.md$', os.path.basename(p))
         if not m: continue
         num = int(m.group(1))
+        if num not in tabs: continue
         idx = order.index(num)
         link = lambda k: f"[{k:02d} {tabs[k][1]}](docs/{k:02d}-{tabs[k][0]}.md)"
         if idx == 0:
@@ -182,7 +207,7 @@ def regen_footers():
             open(p, 'wb').write(new_text.encode('utf-8'))
     print(f'页脚重生成完成（{len(order)} 序）')
 
-# ---------- 5. 校验 ----------
+# ---------- 6. 校验 ----------
 def scan_pairs():
     """重命名前收集旧 (号,slug) 对（docs 与 examples 两界）。"""
     pairs = set()
@@ -200,9 +225,9 @@ def verify(oldpairs):
     nums = [int(d[:2]) for d in docs]
     assert len(nums) == len(set(nums)), 'docs 章号重复！'
     print(f'docs 数 {len(nums)}，号位 min/max {min(nums)}/{max(nums)}')
-    expect = set(range(1, 74)) - GAPS
+    expect = set(range(1, 81)) - GAPS
     assert set(nums) == expect, f'号位差集: 缺 {sorted(expect - set(nums))[:8]} / 多 {sorted(set(nums) - expect)[:8]}'
-    print(f'新章号位 {sorted(GAPS)} 预留确认；docs 连续 01-73 除空位')
+    print(f'新章号位 {sorted(GAPS)} 预留确认；docs 连续 01-80 除空位')
     bad = []
     for p in text_files():
         t = open(p, 'rb').read().decode('utf-8', errors='ignore')
@@ -214,8 +239,9 @@ def verify(oldpairs):
     assert not bad, '残留旧对必须为 0'
 
 OLDPAIRS = scan_pairs()
-rename_dirs()
-rename_files()
+rename_files()      # 先文件（目录尚为旧号——根治双重改名）
+rename_dirs()       # 再目录
+rename_docs()       # docs 文件名
 replace_texts()
 if APPLY:
     regen_footers()
