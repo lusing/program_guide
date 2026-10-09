@@ -76,7 +76,7 @@ mathlogic/
 | [33 超积与 Łoś 定理](docs/33-ultraproduct.md) | 256 族全枚举恰 3 个主超滤+主超滤 Łoš 完整结构归纳（零公理）+Fréchet ¬步失败现场 | C/L |
 | [34 量词消去](docs/34-quantelim.md) | DLO 区间推理消去（完备方向零公理+相邻性反例）+F₉ 扩域见证+强极小性 9 式根数表 | C/L |
 | [35 实闭域与 o-minimality](docs/35-realclosed.md) | **Motzkin SOS 分解**（ring/系数表反射）+IVT 二分 √2 精确夹逼+{<} 可定义=区间 vs 野谓词对照 | C/L |
-| [38 二阶逻辑](docs/38-secondorder.md) | soev 幂枚举求值器+偶数性交替着色+连通性否定式刻画+L_Q 退化 | C/L |
+| [38 二阶逻辑](docs/36-secondorder.md) | soev 幂枚举求值器+偶数性交替着色+连通性否定式刻画+L_Q 退化 | C/L |
 | [39 归结原理](docs/39-resolution.md) | 矢列→子句+合一+归结反驳 | C/L |
 | [40 Herbrand 定理](docs/40-herbrand.md) | T_P 单调+头原子（Prolog 桥） | C/L |
 | [41 归结完备与 SAT 难例](docs/41-rescomp.md) | resproof+PHP 反驳+DP 消元 | C/L |

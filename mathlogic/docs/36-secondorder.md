@@ -1,7 +1,7 @@
-# 第 38 章 二阶逻辑与弱二阶系统
+# 第 36 章 二阶逻辑与弱二阶系统
 
-> 对书：EFT ch IX（§IX.1-9.3）+ §X.5 的伏笔。本章通道：C（`examples/31_secondorder/ex38_secondorder.v`）/
-> L（`examples/31_secondorder/ex38_secondorder.lean`）。
+> 对书：EFT ch IX（§IX.1-9.3）+ §X.5 的伏笔。本章通道：C（`examples/31_secondorder/ex36_secondorder.v`）/
+> L（`examples/31_secondorder/ex36_secondorder.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|
@@ -221,12 +221,12 @@ Lindström 定理要精确化的边界：「一阶之外，紧致性与 L-S 不�
 
 ---
 
-上一章：[37 无穷逻辑与决定逻辑](docs/37-inflogic.md) · 下一章：[39 合一与归结：自动定理证明的引擎](docs/39-resolution.md)
+上一章：[35 实闭域与 o-minimality](docs/35-realclosed.md) · 下一章：[37 二阶算术的证明论](docs/37-sopt.md)
 
 ## Mendelson App A 深化：二阶归纳公理（C 通道）
 
 一阶 PA 的归纳是**模式**（可数条实例）；二阶逻辑里它是一条公理——
-∃X 的否定式（`ex38_secondorder.v` 第 9 节）：
+∃X 的否定式（`ex36_secondorder.v` 第 9 节）：
 
 ```coq
 Definition soInd : fm := neg ind_bad.

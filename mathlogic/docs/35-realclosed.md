@@ -135,4 +135,4 @@ Kleene 递归定理，wild 的那一半从可计算性侧开演。
 
 ---
 
-上一章：[34 量词消去：从 DLO 到代数闭域](docs/34-quantelim.md) · 下一章：[36 二阶算术的证明论：comprehension 谱系与相对化](docs/36-sopt.md)
+上一章：[34 量词消去：从 DLO 到代数闭域](docs/34-quantelim.md) · 下一章：[36 二阶逻辑与弱二阶系统](docs/36-secondorder.md)

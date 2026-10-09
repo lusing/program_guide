@@ -222,4 +222,4 @@ Herbrand 定理恰好供应基层：不可满足的子句集有不可满足的
 
 ---
 
-上一章：[38 二阶逻辑与弱二阶系统](docs/38-secondorder.md) · 下一章：[40 Herbrand 与 SLD：T_P 算子与 Horn 语义](docs/40-herbrand.md)
+上一章：[38 二阶逻辑与弱二阶系统](docs/36-secondorder.md) · 下一章：[40 Herbrand 与 SLD：T_P 算子与 Horn 语义](docs/40-herbrand.md)
