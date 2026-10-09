@@ -131,7 +131,7 @@ spoiler 与 duplicator 的 n 轮对局，赢策略的可计算判定——Fraïs
 
 ---
 
-上一章：[29 完备性定理：Henkin 构造](docs/29-completeness.md) · 下一章：[31 EF 博弈与 Fraïssé 定理](docs/31-efgame.md)
+上一章：[29 完备性定理：Henkin 构造](docs/28-completeness.md) · 下一章：[31 EF 博弈与 Fraïssé 定理](docs/31-efgame.md)
 
 ## Mendelson §2.11 深化：同构蕴含初等等价（C 通道）
 

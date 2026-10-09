@@ -1,8 +1,8 @@
-# 第 29 章 完备性定理：Henkin 构造
+# 第 28 章 完备性定理：Henkin 构造
 
 > 对书：EFT ch V（§V.1-5.4）+ H&R §3.2 的七步骨架。本章通道：文档 +
-> C（`examples/27_completeness/ex29_completeness.v`）/
-> L（`examples/27_completeness/ex29_completeness.lean`）。
+> C（`examples/27_completeness/ex28_completeness.v`）/
+> L（`examples/27_completeness/ex28_completeness.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|
@@ -276,12 +276,12 @@ mathlib 的合入证明 Henkin 路线在现代类型论中可完整走通
 
 ---
 
-上一章：[28 归约树：完备性的证明论路线](docs/28-redtree.md) · 下一章：[30 L-S、紧致性与初等等价](docs/30-lscompact.md)
+上一章：[27 语法解释、范式与 ZF](docs/27-interp.md) · 下一章：[29 归约树：完备性的证明论路线](docs/29-redtree.md)
 
 ## Mendelson §2.7 深化：Lindenbaum 极大一致扩张（C 通道）
 
 完备性证明的中枢引理：**一致理论可扩张到极大一致**。机器面
-（`ex29_completeness.v` 第 6 节）在命题片段上做构造：候选句逐个
+（`ex28_completeness.v` 第 6 节）在命题片段上做构造：候选句逐个
 尝试加入，保一致则收编——
 
 ```coq

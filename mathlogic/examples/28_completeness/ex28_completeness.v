@@ -1,4 +1,4 @@
-(* ex29_completeness.v —— 完备性：Henkin 构造的机器面（EFT ch V）
+(* ex28_completeness.v —— 完备性：Henkin 构造的机器面（EFT ch V）
    机器件：基项的合同闭包（fuel 迭代）= 词项解释 IΦ 的商结构；
    Φ 的方程在 TΦ 上成立；「原子式可导 ⟺ 在 TΦ 真」双向对账；
    见证式 Henkin 化的可满足性保持。 *)

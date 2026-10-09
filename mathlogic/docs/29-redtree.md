@@ -1,9 +1,9 @@
-# 第 28 章 归约树：完备性的证明论路线
+# 第 29 章 归约树：完备性的证明论路线
 
 > 对书：Takeuti《Proof Theory》2e §8（p40-52）：Def 8.1 结构与满足、Lemma 8.3
 > 归约树（13 阶段循环归约）、Thm 8.2 完备与可靠；Feferman 多种类插值与
 > Łoś-Tarski 保持定理（Prob 8.4/Cor 8.6，文档线）。本章通道：C（`examples/
-> 28_redtree/ex28_redtree.v`）/ L（`examples/28_redtree/ex28_redtree.lean`）。
+> 28_redtree/ex29_redtree.v`）/ L（`examples/28_redtree/ex29_redtree.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|
@@ -187,4 +187,4 @@ Prob 8.4（Feferman 多种类插值）把 Craig 插值推广到多种类语言�
 
 ---
 
-上一章：[27 完备性定理：Henkin 构造](docs/27-completeness.md) · 下一章：[29 L-S、紧致性与初等等价](docs/29-lscompact.md)
+上一章：[28 完备性定理：Henkin 构造](docs/28-completeness.md) · 下一章：[30 L-S、紧致性与初等等价](docs/30-lscompact.md)

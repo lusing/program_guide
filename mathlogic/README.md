@@ -69,7 +69,7 @@ mathlogic/
 | [25 FOL 语义表列](docs/25-foltableau.md) | γ/δ 规则+tclo 推导对象+7.42 完整证明 | C/L |
 | [26 FOL 矢列与等词](docs/26-seqfol.md) | EFT 矢列演算 S 全规则+群例等式链+协调性（命题片段可靠） | C/L |
 | [27 语法解释与范式](docs/27-interp.md) | 词项化简对账+≤定义扩张消去+⟨Φ⟩范式 DNF+ZF 公理现场 | C/L |
-| [29 完备性 Henkin](docs/29-completeness.md) | 七步文档线+词项模型=合同闭包商结构（双向对账）+见证式化 | 文档/C/L |
+| [29 完备性 Henkin](docs/28-completeness.md) | 七步文档线+词项模型=合同闭包商结构（双向对账）+见证式化 | 文档/C/L |
 | [30 L-S 与紧致性](docs/30-lscompact.md) | DLO 无有限模型穷举+「有限性不可单句定义」σₙ 族+量化秩分离+Skolem 闭包 | C/L |
 | [31 EF 博弈与 Fraïssé](docs/31-efgame.md) | dup_wins 求解器（三通道一致）+线序 2^k−1 分离表+空/全关系对照+秩-轮对齐 | C/L/P |
 | [32 完备理论与范畴性](docs/32-categoricity.md) | F₃² 换基排列+x³ 有限域单满射对账（Ax 脚印）+0-1 律 n≤5 全枚举（768/1024） | C/L/P |

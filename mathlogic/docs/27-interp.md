@@ -147,4 +147,4 @@ member3）都与自己的 DNF 在全部 8 个赋值下同值。这就是 4.2 的
 
 ---
 
-上一章：[26 FOL 矢列演算与等词](docs/26-seqfol.md) · 下一章：[28 归约树：完备性的证明论路线](docs/28-redtree.md)
+上一章：[26 FOL 矢列演算与等词](docs/26-seqfol.md) · 下一章：[28 完备性定理：Henkin 构造](docs/28-completeness.md)

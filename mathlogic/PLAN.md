@@ -64,7 +64,7 @@
 | 25 | FOL 语义表列（γ/δ 规则+tclo 推导对象+7.42 完整证明） | C/L | ✅ Ben-Ari 批次一 |
 | 26 | FOL 矢列演算与等词（EFT S 全规则：∃A 侧条件+Sub+可导规则族+群例等式链+协调性） | C/L | ✅ EFT 批次一 |
 | 27 | 语法解释、范式与 ZF（词项化简对账+≤-from-< 定义扩张 E1/E2+⟨Φ⟩ DNF+ZF 公理即公式） | C/L | ✅ EFT 批次二 |
-| 29 | 完备性 Henkin（合同闭包商结构+六探针对账+见证式化+lin_ext/lin_cons/lin_max Lindenbaum 件 C） | 文档/C/L | ✅ EFT 批次三+Mendelson 深化✅ |
+| 28 | 完备性 Henkin（合同闭包商结构+六探针对账+见证式化+lin_ext/lin_cons/lin_max Lindenbaum 件 C） | 文档/C/L | ✅ EFT 批次三+Mendelson 深化✅ |
 | 30 | L-S、紧致性与初等等价（DLO+σₙ 族+量化秩分离+Skolem 闭包+同构⇒初等等价件 C） | C/L | ✅ EFT 批次四+Mendelson 深化✅ |
 | 31 | EF 博弈与 Fraïssé 定理（dup_wins 求解器三通道+(Z_n,<) 2^k−1 分离表+秩-轮对齐） | C/L/P | ✅ EFT 批次五 |
 | 32 | 完备理论与范畴性（F₃² 换基排列+x³ 单满射对账 Ax 脚印+0-1 律 768/1024 三通道） | C/L/P | ✅ Marker 批次一 |
