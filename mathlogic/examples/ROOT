@@ -8,57 +8,57 @@ session ML02 in "02_propsem" = HOL +
   theories
     ex02_propsem
 
-session ML03 in "03_njp" = HOL +
+session ML04 in "04_njp" = HOL +
   options [document = false]
   theories
-    ex03_njp
+    ex04_njp
 
-session ML04 in "04_classical" = HOL +
+session ML05 in "05_classical" = HOL +
   options [document = false]
   theories
-    ex04_classical
+    ex05_classical
 
-session ML05 in "05_hilbert" = HOL +
+session ML06 in "06_hilbert" = HOL +
   options [document = false]
   theories
-    ex05_hilbert
+    ex06_hilbert
 
-session ML06 in "06_sequent" = HOL +
+session ML07 in "07_sequent" = HOL +
   options [document = false]
   theories
-    ex06_sequent
+    ex07_sequent
 
-session ML10 in "10_dpll" = HOL +
+session ML11 in "11_dpll" = HOL +
   options [document = false]
   theories
-    ex10_dpll
+    ex11_dpll
 
-session ML17 in "17_folsem" = HOL +
+session ML19 in "19_folsem" = HOL +
   options [document = false]
   theories
-    ex17_folsem
+    ex19_folsem
 
-session ML18 in "18_folnd" = HOL +
+session ML20 in "20_folnd" = HOL +
   options [document = false]
   theories
-    ex18_folnd
+    ex20_folnd
 
-session ML33 in "33_resolution" = HOL +
+session ML35 in "35_resolution" = HOL +
   options [document = false]
   theories
-    ex33_resolution
+    ex35_resolution
 
-session ML56 in "56_decidability" = HOL +
+session ML60 in "60_decidability" = HOL +
   options [document = false]
   theories
-    ex56_decidability
+    ex60_decidability
 
-session ML69 in "69_hoare" = HOL +
+session ML74 in "74_hoare" = HOL +
   options [document = false]
   theories
-    ex69_hoare
+    ex74_hoare
 
-session ML70 in "70_totalcorrect" = HOL +
+session ML75 in "75_totalcorrect" = HOL +
   options [document = false]
   theories
-    ex70_totalcorrect
+    ex75_totalcorrect

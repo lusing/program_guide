@@ -5,7 +5,7 @@
    语义（公式什么时候为真）。证明助手把「推」交给内核当裁判。
 
    本章四条：mp（肯定前件）、蕴涵传递、¬¬引入（构造性白送）、
-   经典哨兵 ¬¬P→P（构造内核不可证——第 4 章展开矩阵）。 *)
+   经典哨兵 ¬¬P→P（构造内核不可证——第 5 章展开矩阵）。 *)
 
 (* ---------- 三条构造性定理：全部零公理 ---------- *)
 
@@ -39,7 +39,7 @@ Proof. intros P H. apply NNPP. exact H. Qed.
 
 Print Assumptions nn_elim.   (* 依赖 classic 公理——账本记上了 *)
 
-(* 对比预告（04 章矩阵）：
+(* 对比预告（05 章矩阵）：
    Agda：同一条要 postulate；
    Lean：是定理（Classical.em），但 #print axioms 记 Classical.choice；
    Isabelle/HOL4：内核经典，blast 直接证，零额外公理。 *)
