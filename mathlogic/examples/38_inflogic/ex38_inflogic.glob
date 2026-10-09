@@ -1,0 +1,428 @@
+DIGEST 694b1cca0a6ca634dc44834856d59a2c
+Fex38_inflogic
+R807:810 Stdlib.Lists.List <> <> lib
+R820:832 Stdlib.Lists.List ListNotations <> mod
+def 845:851 <> forallb
+binder 854:854 <> A:1
+R863:866 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R862:862 ex38_inflogic <> A:1 var
+R867:870 Corelib.Init.Datatypes <> bool ind
+binder 858:858 <> f:2
+R878:881 Corelib.Init.Datatypes <> list ind
+R883:883 ex38_inflogic <> A:1 var
+binder 874:874 <> l:3
+R888:891 Corelib.Init.Datatypes <> bool ind
+R904:904 ex38_inflogic <> l:3 var
+R911:912 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R917:920 Corelib.Init.Datatypes <> true constr
+R925:928 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R934:937 Corelib.Init.Datatypes <> andb def
+R946:952 ex38_inflogic <> forallb:4 def
+R954:954 ex38_inflogic <> f:2 var
+R940:940 ex38_inflogic <> f:2 var
+def 973:980 <> existsb'
+binder 983:983 <> A:6
+R992:995 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R991:991 ex38_inflogic <> A:6 var
+R996:999 Corelib.Init.Datatypes <> bool ind
+binder 987:987 <> f:7
+R1007:1010 Corelib.Init.Datatypes <> list ind
+R1012:1012 ex38_inflogic <> A:6 var
+binder 1003:1003 <> l:8
+R1017:1020 Corelib.Init.Datatypes <> bool ind
+R1033:1033 ex38_inflogic <> l:8 var
+R1040:1041 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R1046:1050 Corelib.Init.Datatypes <> false constr
+R1055:1058 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R1064:1066 Corelib.Init.Datatypes <> orb def
+R1075:1082 ex38_inflogic <> existsb':9 def
+R1084:1084 ex38_inflogic <> f:7 var
+R1069:1069 ex38_inflogic <> f:7 var
+def 1398:1410 <> packAndSample
+R1414:1417 Corelib.Init.Datatypes <> bool ind
+R1620:1620 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1635:1636 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1645:1645 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1621:1621 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1624:1625 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1628:1629 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1631:1632 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1634:1634 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1637:1637 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1640:1641 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1644:1644 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1603:1603 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1611:1612 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1617:1617 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1604:1604 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1606:1607 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1610:1610 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1613:1613 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1616:1616 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1586:1586 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1594:1595 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1600:1600 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1587:1587 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1589:1590 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1593:1593 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1596:1596 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1599:1599 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1656:1656 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1659:1660 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1663:1663 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1666:1666 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1669:1670 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1673:1673 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1676:1676 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1678:1679 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1681:1681 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1692:1695 Corelib.Init.Datatypes <> andb def
+R1772:1775 Corelib.Init.Datatypes <> andb def
+R1852:1855 Corelib.Init.Datatypes <> andb def
+R1936:1942 ex38_inflogic <> forallb def
+binder 1949:1949 <> x:11
+R1954:1961 ex38_inflogic <> existsb' def
+R1978:1981 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R1964:1970 Corelib.Init.Nat <> eqb def
+R1972:1972 ex38_inflogic <> x:11 var
+R1858:1864 ex38_inflogic <> forallb def
+binder 1871:1871 <> x:12
+R1876:1883 ex38_inflogic <> existsb' def
+R1900:1903 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R1886:1892 Corelib.Init.Nat <> eqb def
+R1894:1894 ex38_inflogic <> x:12 var
+R1778:1785 ex38_inflogic <> existsb' def
+R1788:1794 Corelib.Init.Nat <> eqb def
+R1698:1705 ex38_inflogic <> existsb' def
+R1708:1714 Corelib.Init.Nat <> eqb def
+def 2012:2022 <> packAndAcct
+R2039:2041 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R2026:2038 ex38_inflogic <> packAndSample def
+R2042:2045 Corelib.Init.Datatypes <> true constr
+def 2168:2182 <> singleAndSample
+R2186:2189 Corelib.Init.Datatypes <> bool ind
+R2219:2219 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2227:2228 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2233:2233 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2220:2220 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2223:2224 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2226:2226 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2229:2229 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R2232:2232 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R2202:2202 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2210:2211 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2216:2216 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2203:2203 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2205:2206 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2209:2209 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2212:2212 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R2215:2215 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R2244:2244 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2247:2248 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2251:2251 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2254:2254 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2256:2257 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2259:2259 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2270:2273 Corelib.Init.Datatypes <> andb def
+R2301:2307 ex38_inflogic <> forallb def
+binder 2314:2314 <> x:13
+R2319:2326 ex38_inflogic <> existsb' def
+R2329:2335 Corelib.Init.Nat <> eqb def
+R2337:2337 ex38_inflogic <> x:13 var
+R2276:2283 ex38_inflogic <> existsb' def
+R2286:2292 Corelib.Init.Nat <> eqb def
+def 2367:2379 <> singleAndAcct
+R2398:2400 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R2383:2397 ex38_inflogic <> singleAndSample def
+R2401:2404 Corelib.Init.Datatypes <> true constr
+def 2720:2723 <> hDep
+R2730:2732 Corelib.Init.Datatypes <> nat ind
+binder 2726:2726 <> m:14
+R2737:2739 Corelib.Init.Datatypes <> nat ind
+R2744:2744 ex38_inflogic <> m:14 var
+def 2888:2901 <> heightOkSample
+R2905:2908 Corelib.Init.Datatypes <> bool ind
+R3004:3010 ex38_inflogic <> forallb def
+R3049:3049 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R3051:3052 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R3054:3055 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R3057:3057 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+binder 3017:3017 <> m:15
+R3022:3028 Corelib.Init.Nat <> ltb def
+R3031:3034 ex38_inflogic <> hDep def
+R3040:3043 ex38_inflogic <> hDep def
+R3045:3045 ex38_inflogic <> m:15 var
+def 3069:3078 <> heightAcct
+R3096:3098 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R3082:3095 ex38_inflogic <> heightOkSample def
+R3099:3102 Corelib.Init.Datatypes <> true constr
+def 3241:3255 <> eigenConsistent
+R3259:3262 Corelib.Init.Datatypes <> bool ind
+R3269:3272 Corelib.Init.Datatypes <> andb def
+R3296:3302 Corelib.Init.Nat <> eqb def
+R3305:3308 ex38_inflogic <> hDep def
+R3275:3281 Corelib.Init.Nat <> eqb def
+R3284:3287 ex38_inflogic <> hDep def
+def 3326:3334 <> eigenAcct
+R3353:3355 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R3338:3352 ex38_inflogic <> eigenConsistent def
+R3356:3359 Corelib.Init.Datatypes <> true constr
+def 3914:3919 <> winSet
+R3931:3934 Corelib.Init.Datatypes <> list ind
+R3936:3939 Corelib.Init.Datatypes <> bool ind
+binder 3922:3927 <> prefix:16
+R3944:3949 Corelib.Init.Datatypes <> option ind
+R3951:3954 Corelib.Init.Datatypes <> bool ind
+R4065:4070 ex38_inflogic <> prefix:16 var
+R4085:4088 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R4081:4084 Corelib.Init.Datatypes <> true constr
+R4090:4093 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R4098:4101 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R4094:4097 Corelib.Init.Datatypes <> true constr
+R4107:4110 Corelib.Init.Datatypes <> Some constr
+R4112:4115 Corelib.Init.Datatypes <> true constr
+R4126:4129 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R4121:4125 Corelib.Init.Datatypes <> false constr
+R4135:4138 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R4130:4134 Corelib.Init.Datatypes <> false constr
+R4144:4147 Corelib.Init.Datatypes <> Some constr
+R4149:4153 Corelib.Init.Datatypes <> false constr
+R4164:4167 Corelib.Init.Datatypes <> None constr
+def 4224:4233 <> option_eqb
+R4240:4245 Corelib.Init.Datatypes <> option ind
+R4247:4250 Corelib.Init.Datatypes <> bool ind
+binder 4236:4236 <> o:18
+R4255:4257 Corelib.Init.Datatypes <> nat ind
+R4270:4270 ex38_inflogic <> o:18 var
+R4277:4280 Corelib.Init.Datatypes <> Some constr
+R4282:4285 Corelib.Init.Datatypes <> true constr
+R4294:4297 Corelib.Init.Datatypes <> Some constr
+R4299:4303 Corelib.Init.Datatypes <> false constr
+R4312:4315 Corelib.Init.Datatypes <> None constr
+def 4425:4430 <> gsEval
+R4441:4443 Corelib.Init.Datatypes <> nat ind
+binder 4433:4437 <> depth:20
+R4456:4458 Corelib.Init.Datatypes <> nat ind
+binder 4447:4452 <> player:21
+R4468:4471 Corelib.Init.Datatypes <> list ind
+R4473:4476 Corelib.Init.Datatypes <> bool ind
+binder 4462:4464 <> pos:22
+R4481:4486 Corelib.Init.Datatypes <> option ind
+R4488:4491 Corelib.Init.Datatypes <> bool ind
+R4504:4508 ex38_inflogic <> depth:20 var
+R4530:4535 ex38_inflogic <> winSet def
+R4537:4539 ex38_inflogic <> pos:22 var
+R4546:4549 Corelib.Init.Datatypes <> Some constr
+R4556:4559 Corelib.Init.Datatypes <> Some constr
+R4565:4568 Corelib.Init.Datatypes <> None constr
+R4573:4576 Corelib.Init.Datatypes <> Some constr
+R4578:4582 Corelib.Init.Datatypes <> false constr
+R4667:4667 Corelib.Init.Datatypes <> S constr
+R4686:4691 ex38_inflogic <> winSet def
+R4693:4695 ex38_inflogic <> pos:22 var
+R4710:4713 Corelib.Init.Datatypes <> Some constr
+R4720:4723 Corelib.Init.Datatypes <> Some constr
+R4778:4781 Corelib.Init.Datatypes <> None constr
+R4882:4887 ex38_inflogic <> gsEval:23 def
+R4925:4928 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R4920:4924 Corelib.Init.Datatypes <> false constr
+R4929:4931 ex38_inflogic <> pos:22 var
+R4892:4901 Corelib.Init.Nat <> modulo def
+R4910:4912 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R4904:4909 ex38_inflogic <> player:21 var
+binder 4876:4877 <> b0:25
+R4957:4962 ex38_inflogic <> gsEval:23 def
+R4999:5002 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R4995:4998 Corelib.Init.Datatypes <> true constr
+R5003:5005 ex38_inflogic <> pos:22 var
+R4967:4976 Corelib.Init.Nat <> modulo def
+R4985:4987 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R4979:4984 ex38_inflogic <> player:21 var
+binder 4951:4952 <> b1:26
+R5027:5032 ex38_inflogic <> player:21 var
+R5153:5159 Corelib.Init.Nat <> eqb def
+R5162:5171 ex38_inflogic <> option_eqb def
+R5173:5174 ex38_inflogic <> b1:26 var
+R5216:5222 Corelib.Init.Nat <> eqb def
+R5225:5234 ex38_inflogic <> option_eqb def
+R5236:5237 ex38_inflogic <> b0:25 var
+R5279:5285 Corelib.Init.Nat <> eqb def
+R5288:5294 Corelib.Init.Nat <> min def
+R5297:5306 ex38_inflogic <> option_eqb def
+R5308:5309 ex38_inflogic <> b0:25 var
+R5313:5322 ex38_inflogic <> option_eqb def
+R5324:5325 ex38_inflogic <> b1:26 var
+R5360:5363 Corelib.Init.Datatypes <> Some constr
+R5365:5369 Corelib.Init.Datatypes <> false constr
+R5336:5339 Corelib.Init.Datatypes <> None constr
+R5247:5250 Corelib.Init.Datatypes <> Some constr
+R5252:5255 Corelib.Init.Datatypes <> true constr
+R5184:5187 Corelib.Init.Datatypes <> Some constr
+R5189:5192 Corelib.Init.Datatypes <> true constr
+R5446:5452 Corelib.Init.Nat <> eqb def
+R5455:5464 ex38_inflogic <> option_eqb def
+R5466:5467 ex38_inflogic <> b1:26 var
+R5510:5516 Corelib.Init.Nat <> eqb def
+R5519:5528 ex38_inflogic <> option_eqb def
+R5530:5531 ex38_inflogic <> b0:25 var
+R5574:5580 Corelib.Init.Nat <> eqb def
+R5583:5589 Corelib.Init.Nat <> min def
+R5592:5601 ex38_inflogic <> option_eqb def
+R5603:5604 ex38_inflogic <> b0:25 var
+R5608:5617 ex38_inflogic <> option_eqb def
+R5619:5620 ex38_inflogic <> b1:26 var
+R5655:5658 Corelib.Init.Datatypes <> Some constr
+R5660:5663 Corelib.Init.Datatypes <> true constr
+R5631:5634 Corelib.Init.Datatypes <> None constr
+R5541:5544 Corelib.Init.Datatypes <> Some constr
+R5546:5550 Corelib.Init.Datatypes <> false constr
+R5477:5480 Corelib.Init.Datatypes <> Some constr
+R5482:5486 Corelib.Init.Datatypes <> false constr
+def 5792:5802 <> gsFirstWins
+R5819:5821 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R5806:5811 ex38_inflogic <> gsEval def
+R5817:5818 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R5822:5825 Corelib.Init.Datatypes <> Some constr
+R5827:5830 Corelib.Init.Datatypes <> true constr
+def 5966:5972 <> winSet2
+R5984:5987 Corelib.Init.Datatypes <> list ind
+R5989:5992 Corelib.Init.Datatypes <> bool ind
+binder 5975:5980 <> prefix:28
+R5997:6002 Corelib.Init.Datatypes <> option ind
+R6004:6007 Corelib.Init.Datatypes <> bool ind
+R6020:6025 ex38_inflogic <> prefix:28 var
+R6040:6043 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R6036:6039 Corelib.Init.Datatypes <> true constr
+R6048:6051 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R6044:6047 Corelib.Init.Datatypes <> true constr
+R6057:6060 Corelib.Init.Datatypes <> Some constr
+R6062:6066 Corelib.Init.Datatypes <> false constr
+R6108:6111 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R6103:6107 Corelib.Init.Datatypes <> false constr
+R6117:6120 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R6112:6116 Corelib.Init.Datatypes <> false constr
+R6126:6129 Corelib.Init.Datatypes <> Some constr
+R6131:6134 Corelib.Init.Datatypes <> true constr
+R6176:6179 Corelib.Init.Datatypes <> None constr
+def 6198:6204 <> gsEval2
+R6215:6217 Corelib.Init.Datatypes <> nat ind
+binder 6207:6211 <> depth:30
+R6230:6232 Corelib.Init.Datatypes <> nat ind
+binder 6221:6226 <> player:31
+R6242:6245 Corelib.Init.Datatypes <> list ind
+R6247:6250 Corelib.Init.Datatypes <> bool ind
+binder 6236:6238 <> pos:32
+R6255:6260 Corelib.Init.Datatypes <> option ind
+R6262:6265 Corelib.Init.Datatypes <> bool ind
+R6278:6282 ex38_inflogic <> depth:30 var
+R6304:6310 ex38_inflogic <> winSet2 def
+R6312:6314 ex38_inflogic <> pos:32 var
+R6321:6324 Corelib.Init.Datatypes <> Some constr
+R6331:6334 Corelib.Init.Datatypes <> Some constr
+R6340:6343 Corelib.Init.Datatypes <> None constr
+R6348:6351 Corelib.Init.Datatypes <> Some constr
+R6353:6357 Corelib.Init.Datatypes <> false constr
+R6367:6367 Corelib.Init.Datatypes <> S constr
+R6386:6392 ex38_inflogic <> winSet2 def
+R6394:6396 ex38_inflogic <> pos:32 var
+R6411:6414 Corelib.Init.Datatypes <> Some constr
+R6421:6424 Corelib.Init.Datatypes <> Some constr
+R6436:6439 Corelib.Init.Datatypes <> None constr
+R6464:6470 ex38_inflogic <> gsEval2:33 def
+R6508:6511 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R6503:6507 Corelib.Init.Datatypes <> false constr
+R6512:6514 ex38_inflogic <> pos:32 var
+R6475:6484 Corelib.Init.Nat <> modulo def
+R6493:6495 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R6487:6492 ex38_inflogic <> player:31 var
+binder 6458:6459 <> b0:35
+R6540:6546 ex38_inflogic <> gsEval2:33 def
+R6583:6586 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R6579:6582 Corelib.Init.Datatypes <> true constr
+R6587:6589 ex38_inflogic <> pos:32 var
+R6551:6560 Corelib.Init.Nat <> modulo def
+R6569:6571 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R6563:6568 ex38_inflogic <> player:31 var
+binder 6534:6535 <> b1:36
+R6611:6616 ex38_inflogic <> player:31 var
+R6643:6649 Corelib.Init.Nat <> eqb def
+R6652:6661 ex38_inflogic <> option_eqb def
+R6663:6664 ex38_inflogic <> b1:36 var
+R6709:6715 Corelib.Init.Nat <> eqb def
+R6718:6727 ex38_inflogic <> option_eqb def
+R6729:6730 ex38_inflogic <> b0:35 var
+R6775:6778 Corelib.Init.Datatypes <> andb def
+R6809:6815 Corelib.Init.Nat <> eqb def
+R6818:6827 ex38_inflogic <> option_eqb def
+R6829:6830 ex38_inflogic <> b1:36 var
+R6781:6787 Corelib.Init.Nat <> eqb def
+R6790:6799 ex38_inflogic <> option_eqb def
+R6801:6802 ex38_inflogic <> b0:35 var
+R6868:6871 Corelib.Init.Datatypes <> Some constr
+R6873:6877 Corelib.Init.Datatypes <> false constr
+R6841:6844 Corelib.Init.Datatypes <> None constr
+R6740:6743 Corelib.Init.Datatypes <> Some constr
+R6745:6748 Corelib.Init.Datatypes <> true constr
+R6674:6677 Corelib.Init.Datatypes <> Some constr
+R6679:6682 Corelib.Init.Datatypes <> true constr
+R6899:6905 Corelib.Init.Nat <> eqb def
+R6908:6917 ex38_inflogic <> option_eqb def
+R6919:6920 ex38_inflogic <> b1:36 var
+R6966:6972 Corelib.Init.Nat <> eqb def
+R6975:6984 ex38_inflogic <> option_eqb def
+R6986:6987 ex38_inflogic <> b0:35 var
+R7033:7036 Corelib.Init.Datatypes <> andb def
+R7067:7073 Corelib.Init.Nat <> eqb def
+R7076:7085 ex38_inflogic <> option_eqb def
+R7087:7088 ex38_inflogic <> b1:36 var
+R7039:7045 Corelib.Init.Nat <> eqb def
+R7048:7057 ex38_inflogic <> option_eqb def
+R7059:7060 ex38_inflogic <> b0:35 var
+R7126:7129 Corelib.Init.Datatypes <> Some constr
+R7131:7134 Corelib.Init.Datatypes <> true constr
+R7099:7102 Corelib.Init.Datatypes <> None constr
+R6997:7000 Corelib.Init.Datatypes <> Some constr
+R7002:7006 Corelib.Init.Datatypes <> false constr
+R6930:6933 Corelib.Init.Datatypes <> Some constr
+R6935:6939 Corelib.Init.Datatypes <> false constr
+def 7251:7262 <> gsSecondWins
+R7280:7282 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R7266:7272 ex38_inflogic <> gsEval2 def
+R7278:7279 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R7283:7286 Corelib.Init.Datatypes <> Some constr
+R7288:7292 Corelib.Init.Datatypes <> false constr
+def 7442:7453 <> zermeloTotal
+R7595:7597 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R7459:7462 Corelib.Init.Datatypes <> andb def
+R7540:7546 ex38_inflogic <> gsEval2 def
+R7552:7553 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R7560:7563 Corelib.Init.Datatypes <> Some constr
+R7570:7573 Corelib.Init.Datatypes <> true constr
+R7577:7580 Corelib.Init.Datatypes <> None constr
+R7585:7589 Corelib.Init.Datatypes <> false constr
+R7471:7476 ex38_inflogic <> gsEval def
+R7482:7483 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R7490:7493 Corelib.Init.Datatypes <> Some constr
+R7500:7503 Corelib.Init.Datatypes <> true constr
+R7507:7510 Corelib.Init.Datatypes <> None constr
+R7515:7519 Corelib.Init.Datatypes <> false constr
+R7598:7601 Corelib.Init.Datatypes <> true constr
+def 7888:7894 <> adShape
+R7898:7901 Corelib.Init.Datatypes <> bool ind
+R8010:8010 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R8012:8012 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+binder 8004:8005 <> D1:38
+R8027:8027 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R8029:8029 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+binder 8021:8022 <> D2:39
+R8036:8039 Corelib.Init.Datatypes <> andb def
+R8064:8070 Corelib.Init.Nat <> eqb def
+R8073:8074 Stdlib.Lists.List <> hd def
+R8078:8079 ex38_inflogic <> D2:39 var
+R8042:8048 Corelib.Init.Nat <> eqb def
+R8051:8052 Stdlib.Lists.List <> hd def
+R8056:8057 ex38_inflogic <> D1:38 var
+def 8095:8105 <> adShapeAcct
+R8116:8118 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R8109:8115 ex38_inflogic <> adShape def
+R8119:8122 Corelib.Init.Datatypes <> true constr
