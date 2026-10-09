@@ -59,3 +59,35 @@ example : TP [hfact 0, hrule 1 [0]] (fun a => a == 0) 1 = true := by
     simp
 
 end Ex34
+
+/- ---------- 张寅生轮深化：H 域逐层+语义树（书 10.1） ---------- -/
+
+def fsym (t : Nat) : Nat := t + 1
+
+def hLayer : Nat → List Nat
+  | 0 => [0]
+  | k + 1 => hLayer k ++ (hLayer k).map fsym
+
+example : (List.range 4).map hLayer = [[0],[0,1],[0,1,1,2],[0,1,1,2,1,2,2,3]] := by
+  native_decide
+
+example : (List.range 4).all (fun i =>
+    (hLayer i).eraseDups == List.range (i + 1)) = true := by native_decide
+
+/- 语义树（例 10.7）：S={P(a), ¬P(a)∨P(f a), ¬P(f a)} 的封闭树 -/
+def branchVal (branch k : Nat) : Bool := branch >>> k &&& 1 != 0
+
+def litFalse (branch atomId : Nat) (pol : Bool) : Bool :=
+  !((branchVal branch atomId) == pol)
+
+def clauseFails (branch : Nat) (c : List (Nat × Bool)) : Bool :=
+  c.all (fun l => litFalse branch l.1 l.2)
+
+def cls1 : List (Nat × Bool) := [ (1, true) ]
+def cls2 : List (Nat × Bool) := [ (1, false), (2, true) ]
+def cls3 : List (Nat × Bool) := [ (2, false) ]
+
+/-- 封闭语义树：4 枝全部失败——S 不可满足（图 10.2 可执行版） -/
+example : (List.range 4).all (fun branch =>
+    [cls1, cls2, cls3].any (clauseFails branch)) = true := by
+  native_decide

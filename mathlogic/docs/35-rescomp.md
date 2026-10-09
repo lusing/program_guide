@@ -211,6 +211,32 @@ resproof（无策略自由归结）是它们共同的语义基线。
   - `eq_of_beq_eq_true` 不在裸 core——simp 后直接
     `cases s <;> simp_all` 收。
 
+
+## 张寅生轮深化：Rⁿ 归结闭包算子（书 10.2 定义 10.16）
+
+张书的归结定理（Robinson 第一定理）用**闭包迭代**陈述：R(S)=S∪
+{r(C,D)}，R⁰=S，Rⁿ⁺¹=R(Rⁿ)——□∈Rⁿ(S) 当且仅当 S 不可满足。
+机器件把迭代做出来：
+
+```coq
+Fixpoint Rn (S : list pcl) (n : nat) : list pcl :=
+  match n with
+  | 0 => S
+  | S k => dedupP (Rstep (Rn S k))
+  end.
+
+Definition s1 : list pcl :=
+  [ [(0,true)]; [(0,false);(1,false)]; [(1,true)] ].
+
+Example r1_step :
+  [ length (Rn s1 0); length (Rn s1 1); length (Rn s1 2) ] = [3; 5; 6].
+```
+
+S={P, ¬P∨¬Q, Q}：R¹ 新收 ¬Q 与 ¬P、R² 收 □——`robinson_shadow`
+验证空子句两步进闭包。这与本章反驳树视角互补：**闭包=广度优先的
+饱和搜索**，反驳树=深度优先的定向搜索——Robinson 两定理的分层
+（基础归结的命题级完备+提升引理的 Herbrand 桥）在两个视角下同体。
+
 ---
 
 上一章：[34 Herbrand 与 SLD：T_P 算子与 Horn 语义](docs/34-herbrand.md) · 下一章：[36 自由模型与逻辑编程的代数](docs/36-freemodel.md)

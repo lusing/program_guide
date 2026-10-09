@@ -279,3 +279,69 @@ theorem congN_mul_wd : ∀ n a b a' b',
 #print axioms congN_eqrel
 #print axioms congN_add_wd
 #print axioms congN_mul_wd
+
+/- ---------- 张寅生轮深化：关系运算与传递闭包（书第 3 章） ---------- -/
+
+abbrev RelM := List (List Bool)
+
+def rowCol (row : List Bool) (b : RelM) (j : Nat) : Bool :=
+  (List.range row.length).any (fun i => row[i]! && b[i]![j]!)
+
+def mMul (a b : RelM) : RelM :=
+  a.map (fun row => (List.range b.length).map (fun j => rowCol row b j))
+
+def transpose (m : RelM) : RelM :=
+  (List.range m.length).map (fun j =>
+    (List.range m.length).map (fun i => m[i]![j]!))
+
+def mEqb (a b : RelM) : Bool := a == b
+
+def mSub (a b : RelM) : Bool :=
+  (List.range a.length).all (fun i =>
+    (List.range a.length).all (fun j => !a[i]![j]! || b[i]![j]!))
+
+def isReflexive (m : RelM) : Bool :=
+  (List.range m.length).all (fun i => m[i]![i]!)
+
+def isSymmetric (m : RelM) : Bool := mEqb m (transpose m)
+
+def isTransitive (m : RelM) : Bool := mSub (mMul m m) m
+
+def isAntisymmetric (m : RelM) : Bool :=
+  (List.range m.length).all (fun i =>
+    (List.range m.length).all (fun j =>
+      !(m[i]![j]! && m[j]![i]!) || i == j))
+
+def mOr : RelM → RelM → RelM
+  | [], _ => []
+  | _, [] => []
+  | ra :: ta, rb :: tb =>
+      (List.zipWith (fun x y => x || y) ra rb) :: mOr ta tb
+
+def tclose : RelM → Nat → RelM
+  | m, 0 => m
+  | m, k + 1 => mOr (mMul (tclose m k) m) (tclose m k)
+
+def r012 : RelM :=
+  [ [false,true,false,false]
+  , [false,false,true,false]
+  , [false,false,false,false]
+  , [false,false,false,false] ]
+
+example : [isReflexive r012, isSymmetric r012, isTransitive r012]
+    = [false, false, false] := by native_decide
+
+example : [ mSub r012 (tclose r012 2)
+           , mSub (tclose r012 2) (tclose r012 3)
+           , mEqb (tclose r012 2) (tclose r012 3)
+           , (tclose r012 2)[0]![2]! ]
+    = [true, true, true, true] := by native_decide
+
+/- 定理 3.2 同步对偶选样：对称∪对称=对称 -/
+def rSym1 : RelM :=
+  [ [false,true,false,false]
+  , [true,false,false,false]
+  , [false,false,false,false]
+  , [false,false,false,false] ]
+
+example : isSymmetric (mOr rSym1 rSym1) = true := by native_decide

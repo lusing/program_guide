@@ -184,6 +184,41 @@ rmod 是「反复减 n 直到不够减」的燃料版，`rem a n := rmod (a+n) a
 的对偶原理同样是「换代表不改变结果」的验证。下一章：偏序、格与
 Boole 代数——76 章的集合运算律将在那里获得代数身份。
 
+
+## 张寅生轮深化：关系运算与传递闭包（书第 3 章）
+
+张书第 3 章把「证明」下放给关系运算（定理 3.1-3.5：蕴涵即证明、
+项与谓词同步运算、真假值即命题的证明）。补两件。**五性质判定器**
+（定义 3.2-3.6：自反/对称/传递/反自反/反对称）——关系编码为布尔
+方阵后全部成为可判定账：
+
+```coq
+Definition isTransitive (m : relM) : bool := mSub (mMul m m) m.
+
+Example r012_props :
+  [ isReflexive r012; isSymmetric r012; isTransitive r012 ]
+  = [false; false; false].
+```
+
+**传递闭包**（例 3.2 的 R*）：R∪R²∪… 的不动点迭代：
+
+```coq
+Fixpoint tclose (m : relM) (k : nat) : relM :=
+  match k with
+  | 0 => m
+  | S d => mOr (mMul (tclose m d) m) (tclose m d)
+  end.
+
+Example r012_tclose :
+  [ mSub r012 (tclose r012 1); ...; nth 2 (nth 0 (tclose r012 2) []) false ]
+  = [true; true; true; true].
+```
+
+R={0→1,1→2} 两步迭代到不动点（0→2 进入）——单调、含 R、稳定三
+账齐全。定理 3.2 的「集运算 ∩∪−⊕ 与联结词 ∧∨→⊻ 一一同步」在布尔
+矩阵表示下成为字面事实（矩阵逐位布尔运算=集合运算、矩阵乘=关系
+复合）——`sync_and_symmetric` 选样。
+
 ---
 
 上一章：[78 悖论的结构与解悖理论](docs/78-paradox.md) · 下一章：[80 偏序与格](docs/80-posetlattice.md)

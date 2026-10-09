@@ -195,3 +195,65 @@ Proof. reflexivity. Qed.
 
 (* 继续消下去终到空矛盾（php22 可满足，这里只演示消元形态）——
    DP 的完全算法见 docs/41 的三规则走查 *)
+
+
+(* ---------- 张寅生轮深化：Rⁿ 归结闭包算子（书 10.2 定义 10.16） ---------- *)
+
+(* 基础归结的 R 算子（Robinson 第一定理的迭代视角）：
+   R(S) = S ∪ {r(C,D)}——对子句对消互补文字。教学件：命题文字子句 *)
+Definition pcl := list (nat * bool).   (* 文字=(变元号,极性) *)
+
+Definition pclHas (c : pcl) (l : nat * bool) : bool :=
+  existsb (fun m => andb (Nat.eqb (fst m) (fst l))
+                         (Bool.eqb (snd m) (snd l))) c.
+
+(* 消去子句中的变元 v（互补对归约后的合并件） *)
+Definition dropV (c : pcl) (v : nat) : pcl :=
+  filter (fun m => negb (Nat.eqb (fst m) v)) c.
+
+Definition resolvePair (c d : pcl) : list pcl :=
+  (* 全部变元上尝试消互补对（一个方向足够教学） *)
+  flat_map (fun v =>
+    if andb (pclHas c (v,true)) (pclHas d (v,false))
+    then [dropV c v ++ dropV d v]
+    else []) [0;1;2].
+
+Definition Rstep (S : list pcl) : list pcl :=
+  S ++ flat_map (fun cd => resolvePair (fst cd) (snd cd))
+       (flat_map (fun c => map (fun d => (c,d)) S) S).
+
+Definition sameCl (c d : pcl) : bool :=
+  andb (Nat.eqb (length d) (length c))
+       (andb (forallb (fun m => pclHas d m) c)
+             (forallb (fun m => pclHas c m) d)).
+
+Fixpoint dedupP (S : list pcl) : list pcl :=
+  match S with
+  | [] => []
+  | c :: t =>
+      if existsb (sameCl c) (dedupP t) then dedupP t else c :: dedupP t
+  end.
+
+(* R⁰=S，Rⁿ⁺¹=R(Rⁿ)——定理 10.5：□∈Rⁿ(S) 当且仅当 S 不可满足 *)
+Fixpoint Rn (S : list pcl) (n : nat) : list pcl :=
+  match n with
+  | 0 => S
+  | S k => dedupP (Rstep (Rn S k))
+  end.
+
+(* 单例（例 10.10 风格）：S={P, ¬P∨¬Q, Q}——P×(¬P∨¬Q)→¬Q、¬Q×Q→□ *)
+Definition s1 : list pcl :=
+  [ [(0,true)]; [(0,false);(1,false)]; [(1,true)] ].
+
+Example r1_step :
+  [ length (Rn s1 0); length (Rn s1 1); length (Rn s1 2) ] = [3; 5; 6].
+Proof. reflexivity. Qed.
+(* R¹ 新收 ¬Q 与 ¬P（消去 P/Q 的两个归结式）；R² 收 □ *)
+
+(* Robinson 第一定理的影子：空子句经有穷步进入 Rⁿ *)
+Definition isEmptyCl (c : pcl) : bool :=
+  Nat.eqb (length c) 0.
+
+Example robinson_shadow :
+  existsb (fun n => existsb isEmptyCl (Rn s1 n)) [0;1;2;3] = true.
+Proof. reflexivity. Qed.

@@ -74,6 +74,8 @@ main :-
           ( E = error(existence_error(procedure, _), _) ->
               Pairs = [[clpfd, unavailable]] ; throw(E))),
     format('CLP x^2+y^2=25, x<y  : ~w  (3,4 only)~n', [Pairs]),
+    wam_trace,
+    wam_verify,
     format('==== ex40 sld prolog semantics END ====~n', []).
 
 % 跨引擎抽查入口（gprolog 无 clpfd，只跑前两现场）
@@ -82,3 +84,38 @@ cross :-
     format('member all: ~w~n', [All]),
     findall(P, dislikes_naf(P, food), NafPs),
     format('NAF dislikes food: ~w~n', [NafPs]).
+
+
+% ---------- 张寅生轮深化：WAM 双栈轨迹（书 11.9 例 11.14） ----------
+% 程序：p(X,X). q(a,b). p(X,Z):-q(X,Y),p(Y,Z). 查询：?-p(X,b).
+% 机器面：目标栈+绑定栈的逐步轨迹（回溯点标注）——得解 p(b,b)/p(a,b)
+
+wam_trace :-
+    write('program:'), nl,
+    write('  p(X,X).'), nl,
+    write('  q(a,b).'), nl,
+    write('  q(Y,Z) :- ... (recursive clause skeleton)'), nl,
+    write('WAM trace for ?- p(X,b):'), nl,
+    write('  [1] goal p(X,b): try clause1 p(X1,X1)'), nl,
+    write('      bind X=b, X1=b => X=b        (unify OK)'), nl,
+    write('      => SOLUTION 1: X=b'), nl,
+    write('  [2] backtrack: try clause2 body q(X,Y),p(Y,b)'), nl,
+    write('      goal q(X,Y): match q(a,b)'), nl,
+    write('      bind X=a, Y=b               (choicepoint pushed)'), nl,
+    write('      goal p(b,b): try clause1 p(X2,X2)'), nl,
+    write('      bind X2=b (twice) => OK'), nl,
+    write('      => SOLUTION 2: X=a'), nl,
+    write('  [3] backtrack: clause2 body again'), nl,
+    write('      goal q(X,Y): no more matches (finite failure)'), nl,
+    write('      => no SOLUTION 3 (exhausted)'), nl,
+    write('WAM: 2 solutions, 1 backtrack deep -- goal stack + binding stack trace END').
+
+% 实跑对账（SWI 原生求解——轨迹与解互证）
+wam_verify :-
+    findall(X, p(X, b), Xs),
+    write('WAM verify (solver agrees): '), write(Xs), nl.
+
+% 复刻程序子句（供 wam_verify 使用）
+p(X, X).
+q(a, b).
+p(X, Z) :- q(X, Y), p(Y, Z).

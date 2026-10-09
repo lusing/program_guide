@@ -1,12 +1,12 @@
-# mathlogic 教程总计划（十一书为纲 × 七通道）
+# mathlogic 教程总计划（十二书为纲 × 七通道）
 
-> 状态：七轮书本扩充全部收官（H&R+Ben-Ari+Jongsma+EFT+Mendelson+
-> **Marker GTM 301**+**Müller-Stach《The Code of Mathematics》**），
-> 86 章 **208** 单元全绿（193 旧单元+第七轮新十五单元：43×2/44×2/
-> 47×2/48×2/49×2/71×3/79×2；80 收官改写为七轮合拢）。本文件是
-> 施工蓝图，供后续会话续接。
+> 状态：八轮书本扩充全部收官（H&R+Ben-Ari+Jongsma+EFT+Mendelson+
+> Marker GTM 301+Müller-Stach+**张寅生《证明方法与理论》**），
+> 86 章 **222** 单元全绿（208 旧单元+第八轮新十四单元：15×3/20×2/
+> 54×2/63×3/78×2/84×2——五深化扩展既有单元不加新账；86 收官改写
+> 为八轮合拢）。本文件是施工蓝图，供后续会话续接。
 
-## 十书定位
+## 十二书定位
 
 | 书 | 角色 |
 |---|---|
@@ -17,6 +17,7 @@
 | Mendelson 6e（第五轮收官） | 元定理与递归论线：完备集与独立性(09)、Rule C/Lindenbaum(18/23 深化)、图灵机(34)、递归函数(35)、算术化(36)、不完备性(37)、NBG 集合论(62) |
 | **Marker《An Invitation to Mathematical Logic》GTM 301**（第六轮收官） | 模型论与高阶递归论线：完备性与范畴性/Ax(26)、超积与 Łoś(27)、量词消去(28)、实闭域与 o-minimal/Hilbert 17(29)、嵌入与图方法(16 深化)、RAM(37 深化)、通用机/Rice/递归定理(40)、算术层级/Kolmogorov(41)、图灵度/优先法(42)、层级化不完备(46 深化)、H10/Pell(50)、ε₀/Goodstein(51)、PA 模型/Paris–Harrington(52) |
 | **Müller-Stach《The Code of Mathematics: Proof and Truth》**（第七轮收官，思想全景书） | 真理理论与应用线：复杂度 P/NP(43)、字问题/Tseytin 半群(44)、Gödel II 一致性扩张(47)、Tarski 不可定义+Kripke 不动点(48)、构造性/Heyting 语义(49)、密码与信任机器(71)、同一性与结构主义(79)、收官七轮合拢(80)；范畴论/类型论主体文档线桥接独立指南 |
+| **张寅生《证明方法与理论》**（第八轮收官，中文证明论教材） | 方法与理论双线：三段论与传统逻辑(15)、历史形式系统考古 Frege/PM/Hilbert(20)、截消定理与序数分析(54)、自动机与 Chomsky 层级(63)、悖论的结构与解悖理论(78)、算术与几何的公理系统(84)；五深化（34 语义树/35 Rⁿ 闭包/37 WAM/40 表格式 TM/79 关系闭包）+两注记（48 EFA/42 CTT） |
 | 《Advances in Natural Deduction》（Prawitz 纪念文集） | 证明论进阶（文档引用） |
 | 贺伟《范畴论》/《高级范畴论》 | （本轮范畴论教程已用） |
 | Jongsma《Introduction to Discrete Mathematics via Logic and Proof》（UTM 2019，文本层好；§7.3 的补运算上杠在提取文本中丢失——按数学实体校读） | 离散底座线：归纳/集合/无穷/函数/格与 Boole/图（72-82 章） |
@@ -116,7 +117,7 @@
 | 82 | 图论专题（握手引理真证明+哥尼斯堡/K5/K3,3 平面算术+Ham 检查器+贪心着色两定理+P 通道搜索面） | C/L/P | ✅ Jongsma 批次九 |
 | 83 | 公理集合论 NBG 与序数（vn 典范世界引理族+kur_char 4.3 真定理+vn_trans 传递性+fin_ac 零公理+B1-B5 算子点式定理+系统对照表） | C/L | ✅ Mendelson 批次五 |
 | 85 | 同一性与结构主义（Leibniz 等词零公理+Hume 基数分块+ℕ 三化身+Fermat 数另证+F₅ 分解+Z 商构造+对偶数环） | C/L | ✅ Müller-Stach 批次四 |
-| 86 | 收官：七轮合拢（频谱编号清零+43/71 入谱+七轮总坑位+十一书导读+Müller-Stach 九章对账+Lingua Universalis 时间线+三基础圆环） | 文档 | ✅ Müller-Stach 批次四改写 |
+| 86 | 收官：八轮合拢（频谱补自动机位+八轮总坑位+十二书导读+张寅生十五章对账+Lingua Universalis 时间线+三基础圆环） | 文档 | ✅ 张寅生 批次四改写 |
 
 章号=示例号；`docs/NN-*.md` 每章坑位速记；ROOTS 随章追加 Isabelle session。
 

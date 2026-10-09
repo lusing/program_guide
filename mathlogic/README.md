@@ -1,17 +1,19 @@
 # 数理逻辑指南（mathlogic）：从命题到不完备性
 
-面向**会编程、想系统学数理逻辑**的读者。以十本读本为骨架
-（Huth&Ryan、Ben-Ari 3e、Mints、EFT、Mendelson、Jongsma 等详见
+面向**会编程、想系统学数理逻辑**的读者。以十二本读本为骨架
+（Huth&Ryan、Ben-Ari 3e、Mints、EFT、Mendelson、Jongsma、Marker、
+Müller-Stach、张寅生等详见
 [PLAN.md](./PLAN.md)），横跨 **Coq / Agda / Lean 4 / Isabelle/HOL /
 HOL4 / Coq-HoTT / Prolog** 七种实现机器验证。
 
-**第六轮扩充收官**：按 Marker《An Invitation to Mathematical Logic》
-(GTM 301) 完成十新章（26 完备性与范畴性/27 超积与 Łoś/28 量词消去/
-29 实闭域与 o-minimal/40 通用性与不可判定/41 算术层级/42 图灵度/
-45 Hilbert 第十/46 PA 与 ε₀/47 算术的模型）+原位深化四处
-（16 嵌入/37 RAM/44 层级化/26→30 等），全书 86 章 193 个验证单元全绿
-（零公理或显式公理记账）；速查表见 [CHEATSheet.md](./CHEATSheet.md)，
-蓝图与状态表见 [PLAN.md](./PLAN.md)。
+**第八轮扩充收官**：按张寅生《证明方法与理论》（国防工业出版社
+2015）完成六新章（15 三段论与传统逻辑/20 历史形式系统考古：Frege、
+PM 与 Hilbert/54 截消定理与序数分析/63 自动机与形式语言：Chomsky
+层级/78 悖论的结构与解悖理论/84 算术与几何的公理系统）+五处深化
+（34 H 域与语义树/35 Rⁿ 归结闭包/37 WAM 双栈轨迹/40 表格式图灵机/
+79 关系运算与传递闭包）+两注记（48 EFA 下界/42 CTT 公理化），全书
+86 章 222 个验证单元全绿（零公理或显式公理记账）；速查表见
+[CHEATSheet.md](./CHEATSheet.md)，蓝图与状态表见 [PLAN.md](./PLAN.md)。
 
 > 核心理念：**逻辑 = 语法 + 证明演算 + 语义**，而证明助手把三者
 > 全部变成可执行的程序。全书四条暗线：构造/经典的账本对照、
@@ -46,10 +48,12 @@ mathlogic/
 | [12 Glivenko 现象](docs/12-glivenko.md) | 经典原理 ¬¬ 化全部直觉可证（零公理四通道） | C/A/L/T |
 | [13 Curry–Howard](docs/13-ch.md) | 闭值 canonical forms + 析取性质（零公理四通道） | C/A/L/T |
 | [14 Kripke 语义](docs/14-kripke.md) | 两世界 LEM 反例（零公理三通道） | C/A/L |
+| [15 三段论](docs/15-syllogism.md) | 对当方阵 64 对枚举（存在导入暴露）+256 格式判定→15/24 双账+四格代表式 FOL 证明+量化扩展 PT/格岗空间+ND(SOA) 生成器 | C/L/P |
 | [16 FOL 语法](docs/16-folsyntax.md) | 自由变元+代入交换（零公理三通道） | C/A/L |
 | [17 FOL 语义](docs/17-folsem.md) | 一致性引理+完整代入交换+locale 理论 | C/A/L/I |
 | [18 FOL 自然演绎](docs/18-folnd.md) | Drinker 悖论三旗舰（五通道） | C/A/L/I/H4 |
 | [19 FOL Hilbert](docs/19-folhilbert.md) | Gen 侧条件演绎定理（GenMove 公理） | C/L |
+| [20 历史系统考古](docs/20-historical.md) | Frege 九公理永真抽查+例 9.5 条件证明账+PM 2.07→2.08 四步链重演+Hilbert 17 公理全真+互导与血缘账 | C/L |
 | [21 前束范式](docs/21-prenex.md) | 量词穿越四条零公理 | C/L |
 | [22 FOL 语义表列](docs/22-foltableau.md) | γ/δ 规则+tclo 推导对象+7.42 完整证明 | C/L |
 | [23 FOL 矢列与等词](docs/23-seqfol.md) | EFT 矢列演算 S 全规则+群例等式链+协调性（命题片段可靠） | C/L |
@@ -81,6 +85,7 @@ mathlogic/
 | [51 构造性与 Heyting 语义](docs/51-constructive.md) | Gödel–Gentzen 双否定 FOL 翻译器（七行）+经典等价账+零经典公理直觉样本+Sierpinski 开集格三账（¬¬U≠U/等式降级/同格对照）+四平方见证工厂 | C/L |
 | [52 Hilbert 第十问题](docs/52-diophantine.md) | Pell ⊗ 范数乘法恒等式（ring 零公理）+d=2 解序列逐项验证+闭包组合子+Cassini/X-Y 序列 | C/L |
 | [53 PA 与 ε₀](docs/53-epsilon.md) | CNF 序数树+hereditary 回环全表 183 项+Goodstein 影子下降网格+G(1..3) 跑通+Hardy 层谱 | C/L |
+| [54 截消与序数](docs/54-cutelim.md) | 反演定理八规则账+例 9.15 七步链+cut 插入演例+情形 3 级下降+CNF 序数指派降序（3<ω³+2）+TI 有限影子+相容性层级表 | C/L |
 | [55 算术的模型](docs/55-models.md) | {c>n̄} 有限可满足+overspill 影子+R(3,3)=6 双账（K5 恰 12 染色/K6 全枚举）+PH(2,2) 机制账 | C/L/P |
 | [56 可判定性与 SMT](docs/56-decidability.md) | presburger 现场+Decidable 机器面 | I/L |
 | [57 CTL 模型检查](docs/57-temporal.md) | AG/EG 展开等价+不动点构件 | C/L |
@@ -91,6 +96,7 @@ mathlogic/
 | [60 CTL*](docs/60-ctlstar.md) | 两层语法+三组分离现场（表达能力天梯） | C/L |
 | [61 LTL 语义表列](docs/61-ltltab.md) | lasso+兑现检查+fulfill_ok_sound | C/L |
 | [62 时态演绎系统 L](docs/62-ltlded.md) | lth+lth_sound+14.2/14.4 推导 | C/L |
+| [63 自动机](docs/63-automata.md) | DFA 运行器（熊猫/1+1=2+sink 教训）+NFA 子集构造构造化+PDA aⁿbⁿ+LBA 影子+3 型文法↔DFA 互译 | C/L/P |
 | [64 自动机与 LTL MC](docs/64-buechi.md) | baut+findLoop+loop_accept_inf | C/L/P |
 | [65 符号 MC 与 μ 演算](docs/65-symbolicmc.md) | preE 前像+μ/ν 编码 CTL（合流点） | C/L |
 | [66 模态 K](docs/66-modal.md) | Kripke 语义+K/必然化+T/4 反例 | C/L |
@@ -105,13 +111,15 @@ mathlogic/
 | [75 密码与信任机器](docs/75-crypto.md) | RSA 九消息回环（含 gcd≠1 边界）+Shamir 三趟四步开箱+哈希链篡改级联+纠缠锥+感知器 XOR 枚举无解+DLP 双基表与生成元 | C/L/P |
 | [76 集合、幂集与计数](docs/76-setscount.md) | 运算律+De Morgan 经典账+容斥 | C/L |
 | [77 无穷集合与停机问题](docs/77-infinity.md) | Cantor 对角线三化身+Russell+停机公理账 | C/L |
+| [78 悖论解悖](docs/78-paradox.md) | Smullyan 对角集不可表示全枚举+类型阶检查器（罗素无类型现场）+ZFC 分离现场+NF 层化求解器+情境序列交替 | C/L |
 | [79 函数与等价关系](docs/79-funequiv.md) | 搜索左/右逆+congN 正规形+良定义 | C/L |
 | [80 偏序与格](docs/80-posetlattice.md) | 特征引理装配代数律+五点菱形反例 | C/L |
 | [81 Boole 代数与逻辑电路](docs/81-boole.md) | 十公理+加法器+minterm 定理+QMC | C/L/P |
 | [82 图论专题](docs/82-graphs.md) | 握手引理真证明+平面算术+贪心着色+搜索面 | C/L/P |
 | [83 公理集合论 NBG 与序数](docs/83-nbg.md) | vn 典范世界+kur_char 命题 4.3+有限 AC 零公理+B1-B5 类算子 | C/L |
+| [84 算术几何公理](docs/84-axioms.md) | log 同构 Z₇*≅Z₆+解释函子保真+PA 1889 对照+ACA₀ 概括+欧几里得依赖链+希尔伯特关联公理 F₃² 模型（9 点 12 线） | C/L |
 | [85 同一性与结构主义](docs/85-identity.md) | Leibniz 等词零公理双向+Hume 原理基数分块 1,3,3,1+ℕ 三化身（Zermelo 树编码）+Fermat 数互素与 F₅ 分解+Z 商构造良定义+对偶数 d²=0 | C/L |
-| [86 收官](docs/86-wrapup.md) | SAT→SMT→MC→ITP 图景（频谱编号清零）+七轮总坑位+十一书导读+Müller-Stach 九章对账+Lingua Universalis 时间线+三基础圆环 | 文档 |
+| [86 收官](docs/86-wrapup.md) | SAT→SMT→MC→ITP 图景（频谱补自动机位）+八轮总坑位+十二书导读+张寅生十五章对账+Lingua Universalis 时间线+三基础圆环 | 文档 |
 
 ## 工具链（本机实测）
 

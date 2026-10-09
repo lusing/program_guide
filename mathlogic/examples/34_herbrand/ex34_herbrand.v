@@ -117,3 +117,67 @@ Qed.
      单调性证明里两向都用；
    - rule_head 是 SLD 的「规则头」构件——body 的 forallb
      直接取自假设；fact_head 是其 body=[] 的特例化。 *)
+
+
+(* ---------- 张寅生轮深化：H 域逐层生成+语义树（书 10.1） ---------- *)
+
+(* H 域（定义 10.9）：H0={a}（无常元补哑常量），H_{i+1}=H_i ∪ F(H_i)
+   ——函数符闭包。教学件：一元函数符 f（编号+1）的 H 域 *)
+Definition hterm := nat.                (* 项编号：0=a，k+1=f(k) *)
+Definition fsym (t : hterm) : hterm := S t.
+
+Fixpoint hLayer (i : nat) : list hterm :=
+  match i with
+  | 0 => [0]
+  | S k => hLayer k ++ map fsym (hLayer k)
+  end.
+
+(* H 域逐层账：H0={a}、H1={a,f a}、H2 加 {f²a,f³a}——单调增长 *)
+Example h_layers :
+  map hLayer [0;1;2;3]
+  = [ [0]; [0;1]; [0;1;1;2]; [0;1;1;2;1;2;2;3] ].
+Proof. reflexivity. Qed.
+(* 列表层账有重复元素（f 已见项再指一层）——H 域按集合读：
+   |H_k|=2^k（去重后恰 [0..2^k-1]）。 *)
+Example h_layers_dedup :
+  map (fun i => nodup Nat.eq_dec (hLayer i)) [0;1;2;3]
+  = [ [0]; [0;1]; [0;1;2]; [0;1;2;3] ].
+Proof. reflexivity. Qed.
+
+(* 单调性：H_i ⊆ H_{i+1}（H 域的可数超穷构造——书 p128 例 10.2） *)
+Example h_monotone_sample :
+  forallb (fun t => existsb (Nat.eqb t) (hLayer 2)) (hLayer 1)
+  = true.
+Proof. reflexivity. Qed.
+
+(* 语义树（例 10.7，图 10.1/10.2 的可执行版）：基原子逐个二叉分叉
+   （真假赋值），失败节点=某子句基例在该枝上全文字被否定——剪枝。
+   教学件：子句集 S={P(a), ¬P(a)∨P(f a), ¬P(f a)} 的语义树封闭 *)
+Definition atoms3 : list nat := [1; 2].   (* 1=P(a)，2=P(f a) *)
+
+(* 一条枝=对全部基原子的真值指派（bitmask：bit k 对 atoms3 的第 k 个） *)
+Definition branchVal (branch : nat) (k : nat) : bool :=
+  Nat.ltb 0 (Nat.land branch (Nat.pow 2 k)).
+
+(* 子句在枝上「失败」=所有文字在该枝赋值下为假 *)
+Definition litFalse (branch : nat) (atomId : nat) (pol : bool) : bool :=
+  negb (Bool.eqb (branchVal branch atomId) pol).
+
+(* S 的三个子句（文字表 (原子号,极性)） *)
+Definition cls1 := [ (1, true) ].            (* P(a) *)
+Definition cls2 := [ (1,false); (2,true) ].  (* ¬P(a)∨P(f a) *)
+Definition cls3 := [ (2, false) ].           (* ¬P(f a) *)
+
+Definition clauseFails (branch : nat) (c : list (nat * bool)) : bool :=
+  forallb (fun l => litFalse branch (fst l) (snd l)) c.
+
+(* 封闭语义树：每条枝上至少一个子句失败——S 不可满足的语义树证据 *)
+Example sem_tree_closed :
+  forallb (fun branch =>
+    existsb (clauseFails branch) [cls1; cls2; cls3])
+    (seq 0 4) = true.
+Proof. reflexivity. Qed.
+(* Herbrand 定理（定理 10.4）的语义树版：S 不可满足 ⟺ 存在有限的
+   封闭语义树。上面 4 条枝全部失败——S={P(a),¬P(a)∨P(f a),¬P(f a)}
+   不可满足的最小语义树证据（枝 00：P(a) 假→cls1 败；枝 11：P(f a)
+   真→cls3 败；等等）。图 10.2「封闭树」的可执行化。 *)

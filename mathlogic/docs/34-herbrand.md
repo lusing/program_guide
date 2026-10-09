@@ -210,6 +210,42 @@ Scott 语义的地基）——每步推导只消费有穷信息。本章的 T_P
   四下划线推断不出（refine 不 apply）——命名参数
   `(P := …) (a := …)` 全显式。
 
+
+## 张寅生轮深化：H 域逐层与语义树（书 10.1）
+
+张寅生书 10.1 节的 Herbrand 理论补两件。**H 域逐层生成器**（定义
+10.9）：H₀={a}（无常元补哑常量）、H_{i+1}=H_i∪F(H_i)——函数符闭包
+的层账：
+
+```coq
+Fixpoint hLayer (i : nat) : list hterm :=
+  match i with
+  | 0 => [0]
+  | S k => hLayer k ++ map fsym (hLayer k)
+  end.
+
+Example h_layers :
+  map hLayer [0;1;2;3]
+  = [ [0]; [0;1]; [0;1;1;2]; [0;1;1;2;1;2;2;3] ].
+```
+
+（列表层账有重复元素——H 域按集合读，去重后恰 [0..k]，即深度 ≤k
+的全部项 f^d(a)。）**语义树**（例 10.7，图 10.1/10.2 的可执行版）：
+基原子逐个二叉分叉（真/假赋值），失败节点=某子句基例在该枝上全
+文字被否定——剪枝：
+
+```coq
+Example sem_tree_closed :
+  forallb (fun branch =>
+    existsb (clauseFails branch) [cls1; cls2; cls3])
+    (seq 0 4) = true.
+```
+
+S={P(a), ¬P(a)∨P(f a), ¬P(f a)} 的 4 条枝全部失败——**封闭语义树**
+=不可满足的最小证据（Herbrand 定理的语义树版：S 不可满足 ⟺ 存在
+有限封闭树）。两条件（H 域的函数符闭包+语义树的赋值枚举）合起来
+正是 Herbrand 定理通往机器的方向盘。
+
 ---
 
 上一章：[33 合一与归结：自动定理证明的引擎](docs/33-resolution.md) · 下一章：[35 归结完备性与 SAT 难例](docs/35-rescomp.md)

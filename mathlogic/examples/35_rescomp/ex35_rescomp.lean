@@ -134,3 +134,42 @@ example : dpElim 0 php22 = [[pos 2, pos 3], [negp 1, negp 3], [pos 1, negp 2]] :
   rfl
 
 #print axioms resolvent_sound
+
+/- ---------- 张寅生轮深化：Rⁿ 归结闭包（书 10.2） ---------- -/
+
+abbrev PCl := List (Nat × Bool)
+
+def pclHas (c : PCl) (l : Nat × Bool) : Bool := c.contains l
+
+def dropV (c : PCl) (v : Nat) : PCl := c.filter (fun m => m.1 != v)
+
+def resolvePair (c d : PCl) : List PCl :=
+  [0,1,2].flatMap (fun v =>
+    if pclHas c (v, true) && pclHas d (v, false) then
+      [dropV c v ++ dropV d v] else [])
+
+def sameCl (c d : PCl) : Bool :=
+  d.length == c.length && c.all (pclHas d ·) && d.all (pclHas c ·)
+
+def dedupP : List PCl → List PCl
+  | [] => []
+  | c :: t => if (dedupP t).any (sameCl c) then dedupP t else c :: dedupP t
+
+def Rstep (S : List PCl) : List PCl :=
+  S ++ (S.flatMap (fun c => S.map (fun d => (c, d)))).flatMap
+       (fun cd => resolvePair cd.1 cd.2)
+
+def Rn : List PCl → Nat → List PCl
+  | S, 0 => S
+  | S, k + 1 => dedupP (Rstep (Rn S k))
+
+def s1 : List PCl := [ [(0,true)], [(0,false),(1,false)], [(1,true)] ]
+
+example : (List.range 3).map (fun n => (Rn s1 n).length) = [3, 5, 6] := by
+  native_decide
+
+def isEmptyCl (c : PCl) : Bool := c.length == 0
+
+/-- Robinson 第一定理影子：□ 经两步进入闭包 -/
+example : (List.range 4).any (fun n => (Rn s1 n).any isEmptyCl) = true := by
+  native_decide

@@ -180,3 +180,69 @@ Print Assumptions tsucc_correct.
 Print Assumptions tzero_correct.
 Print Assumptions tadd_grid.
 Print Assumptions terase_nohalt.
+
+
+(* ---------- 张寅生轮深化：表格式五元组 TM 对照（书 11.2 例 11.1/11.2） ---------- *)
+
+(* 张书的 6 元组表格式：每格（读符,写符,移动,次态）——与本章四元组
+   解释器的指令编码互译。例 11.2 一进制加法器 B111B111B→111111：
+   q1: 读 1 写 1 右移 q2；q2: 读 1 右移 q2；q2: 读 B 写 B 左移 q3… *)
+Inductive tsym := B | One.                 (* 空白/一 *)
+
+(* 表格式指令：(状态, 读符) → (写符, 移动, 次态) *)
+(* 书表 11.3 的机制骨架：q1 扫左段、间隔 B 改写 1（3+3 并成 7 个 1）、
+   q2 扫右段到尾、q3 抹最后一个 1（补回 6 个）、q4 读 1 无规则=停机 *)
+Definition ttab : list (nat * tsym * tsym * bool * nat) :=
+  [ (1, One, One, true, 1)                 (* q1 扫过左段的 1 *)
+  ; (1, B, One, true, 2)                   (* q1 间隔 B → 写 1 右移 q2 *)
+  ; (2, One, One, true, 2)                 (* q2 扫过右段的 1 *)
+  ; (2, B, B, false, 3)                    (* q2 读尾 B → 左移 q3 *)
+  ; (3, One, B, false, 4) ].               (* q3 抹最后一个 1 → q4 停 *)
+
+Fixpoint tstep (tab : list (nat * tsym * tsym * bool * nat)) (st : nat) (s : tsym) : option (tsym * bool * nat) :=
+  match tab with
+  | [] => None
+  | (q, r, w, mv, q2) :: t =>
+      if andb (Nat.eqb st q)
+               (match s, r with B,B => true | One,One => true | _,_ => false end)
+      then Some (w, mv, q2) else tstep t st s
+  end.
+
+(* 纸带=符号表+读写头位置；一步=查表+写+移（tape 名避撞，用 ttape） *)
+Definition ttape : Type := (list tsym * nat)%type.
+
+Definition doStep (tp : ttape) (st : nat) : option ((ttape * nat)%type) :=
+  let '(lst, pos) := tp in
+  let cur := match nth_error lst pos with Some x => x | None => B end in
+  match tstep ttab st cur with
+  | None => None
+  | Some (w, mv, q2) =>
+      let lst2 := firstn pos lst ++ w :: skipn (S pos) lst in
+      let pos2 := if mv then S pos else pred pos in
+      Some ((lst2, pos2), q2)
+  end.
+
+(* 跑 n 步（None 即停） *)
+Fixpoint tRun (tp : ttape) (st : nat) (n : nat) : option ((ttape * nat)%type) :=
+  match n with
+  | 0 => Some (tp, st)
+  | S k => match doStep tp st with
+           | None => Some (tp, st)
+           | Some (tp2, st2) => tRun tp2 st2 k
+           end
+  end.
+
+(* 例 11.2 对账：B111B111B（间隔版 3+3）→ 间隔被 q1 跳过后并成
+   1111 11——q3 抹一个 1 后 6 个 1 相连 *)
+Definition t0 : ttape := ([B;One;One;One;B;One;One;One;B], 1).
+
+Example tm_tab_add :
+  match tRun t0 1 40 with
+  | Some ((lst, _), _) =>
+      Nat.eqb (length (filter (fun s => match s with One => true | B => false end) lst)) 6
+  | None => false
+  end = true.
+Proof. reflexivity. Qed.
+(* 账：纸带上 1 的总数经加法运行后恰 6（3+3）——表格式六元组编码与
+   本章四元组解释器同构（写/移/态三联 vs 四元组拆分）。例 11.1 的
+   2^x 机（七状态表 11.1）同法可译——文档线。 *)

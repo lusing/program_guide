@@ -169,3 +169,58 @@ example : (run Terase ⟨0, ⟨[], 0, []⟩⟩ 50).isNone = true := by native_de
 
 #print axioms tsucc_correct
 #print axioms tzero_correct
+
+/- ---------- 张寅生轮深化：表格式五元组 TM（书 11.2 例 11.2） ---------- -/
+
+inductive TSym where
+  | blank | one
+deriving Repr, DecidableEq
+
+abbrev TTab := List (Nat × TSym × TSym × Bool × Nat)
+
+def ttab : TTab :=
+  [ (1, .one, .one, true, 1)          -- q1 扫过左段的 1
+  , (1, .blank, .one, true, 2)        -- q1 间隔 B → 写 1 右移 q2
+  , (2, .one, .one, true, 2)          -- q2 扫过右段的 1
+  , (2, .blank, .blank, false, 3)     -- q2 读尾 B → 左移 q3
+  , (3, .one, .blank, false, 4) ]     -- q3 抹最后一个 1 → q4 停
+
+def symEq : TSym → TSym → Bool
+  | .blank, .blank | .one, .one => true
+  | _, _ => false
+
+def tstep : TTab → Nat → TSym → Option (TSym × Bool × Nat)
+  | [], _, _ => none
+  | (q, r, w, mv, q2) :: t, st, s =>
+      if st == q && symEq s r then some (w, mv, q2)
+      else tstep t st s
+
+def doStep (tp : List TSym × Nat) (st : Nat) : Option ((List TSym × Nat) × Nat) :=
+  let (lst, pos) := tp
+  match lst[pos]? with
+  | none => none
+  | some cur =>
+      match tstep ttab st cur with
+      | none => none
+      | some (w, mv, q2) =>
+          let lst2 := (lst.take pos) ++ [w] ++ (lst.drop (pos + 1))
+          let pos2 := if mv then pos + 1 else max 0 (pos - 1)
+          some ((lst2, pos2), q2)
+
+def tRun : (List TSym × Nat) → Nat → Nat → Option ((List TSym × Nat) × Nat)
+  | tp, 0, st => some (tp, st)
+  | tp, n + 1, st =>
+      match doStep tp st with
+      | none => some (tp, st)
+      | some (tp2, st2) => tRun tp2 n st2
+
+def t0 : List TSym × Nat :=
+  ([.blank, .one, .one, .one, .blank, .one, .one, .one, .blank], 1)
+
+/-- B111B111B（3+3）→ 6 个 1：表格式加法器（例 11.2 对账） -/
+def countOnes : Option ((List TSym × Nat) × Nat) → Bool
+  | some ((lst, _), _) =>
+      (lst.filter (fun s => match s with | .one => true | .blank => false)).length == 6
+  | none => false
+
+example : countOnes (tRun t0 40 1) = true := by native_decide

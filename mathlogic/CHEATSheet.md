@@ -441,3 +441,28 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 - **80 改写**：`coqc | tail` 管道退出码是 tail 的——失败假绿
   （用输出文件判定）；python `str.replace` 未命中静默返回原串
   （校验替换计数再写盘）。
+
+## 张寅生轮新章坑位（15/20/54/63/78/84 + 34/35/37/40/79 深化）
+
+- **Coq `&&`/`||` 记号缺**（15/63 章）：From Stdlib List Arith 语境
+  不可用——andb/orb 显式前缀；`Nat.pow2`→`Nat.pow 2 n`；`map2` 不在
+  （手写 zip 递归）；`at` 是关键字（78 章 lambda 撞名）；`seq` 自定
+  义类型撞 List.seq（54 章 gseq）；`dedup`→`nodup Nat.eq_dec`
+- **三元组左结合**（15 章）：`(a,b,c)`=(a,b),c——清单全部显式
+  `(a,(b,(c,d)))`；Lean 列表字面量首元素全限定（`.pvar` 推不出类型）
+- **DFA 缺省转移=自环是语义 bug**（63 章）：越轨词免费跳一个符号
+  ——缺省必须 sink（99）；**字母表必须覆盖终态字符**（Coq 侧因漏
+  e 符号「空对空」假绿——Prolog 对账抓获）
+- **Smullyan 对角编码要带对角公理**（78 章）：g 的作用压成
+  cmap m m=m，否则 φ 可避开自指点使命题失效
+- **F₃ 方向成比例即同线**（84 章）：4 真方向（(0,2)=2·(0,1)）——
+  重复表示线对交 3 点
+- **CNF 序数低位在前**（54 章）：natSum 天然对齐；高位在前要 pad
+- **条件证明目标式非永真**（20 章例 9.5）：挂前提后才是永真——
+  「推导正确性=条件式永真性」
+- **Coq `*` 类型记号被 nat_scope 劫持**（40 章）：`list tsym * nat`
+  报「expected nat」——`(... * ...)%type` 显式类型域
+- **Lean zipWith 方法语法参数序**（79 章）：全应用
+  `List.zipWith f a b`；`Nat.eqb` 不存在（`==`/`Nat.beq`）
+- **Prolog format 不求值目标**（63 章）：`( Goal -> R=true ; ... )`
+  先求再写；step/4 分散定义加 `:- discontiguous`

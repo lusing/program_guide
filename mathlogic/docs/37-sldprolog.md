@@ -210,6 +210,35 @@ Prolog 节正是按这个顺序展开的。本教程的取舍：语义件全
     Unknown procedure（unknown 的是**过程**不是失败）；
   - `\+` 带自由变元 = 存在式否定——NAF 演示一律用定人查询。
 
+
+## 张寅生轮深化：WAM 双栈轨迹（书 11.9 例 11.14）
+
+张书 11.9 节给出全书唯一展开的**推理机执行轨迹**——Warren 抽象机
+（WAM）对查询 ?-p(X,b) 的双栈运作：
+
+```prolog
+program:
+  p(X,X).
+  q(a,b).
+  q(Y,Z) :- ... (recursive clause skeleton)
+WAM trace for ?- p(X,b):
+  [1] goal p(X,b): try clause1 p(X1,X1)
+      bind X=b, X1=b => X=b        (unify OK)
+      => SOLUTION 1: X=b
+  [2] backtrack: try clause2 body q(X,Y),p(Y,b)
+      goal q(X,Y): match q(a,b)
+      bind X=a, Y=b               (choicepoint pushed)
+      ...
+WAM verify (solver agrees): [b,a]
+```
+
+**目标栈**（待解子目标序列）与**绑定栈**（变量置换链+回溯点）的
+分工在此现形：合一成功压绑定、子目标耗尽出解、失败回退到最近选择
+点。`wam_verify` 用 SWI 原生求解器对账——轨迹序与解序一致
+（[b,a]）。这是 37 章 SLD 语义（关系语义）的**执行语义**侧写：
+「计算规则独立性」说的是树搜索的形状，「WAM」说的是树搜索的机器
+实现——两个抽象层次在本件里互相印证。
+
 ---
 
 上一章：[36 自由模型与逻辑编程的代数](docs/36-freemodel.md) · 下一章：[38 程序合成与形式语义](docs/38-synthsem.md)

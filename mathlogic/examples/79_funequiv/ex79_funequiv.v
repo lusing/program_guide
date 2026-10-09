@@ -297,3 +297,104 @@ Print Assumptions inj_left_inv.
 Print Assumptions congN_eqrel.
 Print Assumptions congN_add_wd.
 Print Assumptions congN_mul_wd.
+
+
+(* ---------- 张寅生轮深化：关系运算与传递闭包（书第 3 章） ---------- *)
+
+(* 关系=布尔方阵（教学域 {0..3}）；复合 R∘S=布尔矩阵乘（定义 3.9） *)
+Definition relM := list (list bool).
+
+Definition rowCol (row : list bool) (b : relM) (j : nat) : bool :=
+  existsb (fun i => andb (nth i row false)
+                           (nth j (nth i b []) false)) (seq 0 (length row)).
+
+Definition mMul (a b : relM) : relM :=
+  map (fun row => map (fun j => rowCol row b j) (seq 0 (length b))) a.
+
+Fixpoint zipOr (ra rb : list bool) : list bool :=
+  match ra, rb with
+  | [], _ => []
+  | _, [] => []
+  | x :: ta, y :: tb => orb x y :: zipOr ta tb
+  end.
+
+Fixpoint mOr (a b : relM) : relM :=
+  match a, b with
+  | [], _ => []
+  | _, [] => []
+  | ra :: ta, rb :: tb => zipOr ra rb :: mOr ta tb
+  end.
+
+Definition transpose (m : relM) : relM :=
+  map (fun j => map (fun i => nth j (nth i m []) false) (seq 0 (length m)))
+      (seq 0 (length m)).
+
+Definition mEqb (a b : relM) : bool :=
+  andb (Nat.eqb (length a) (length b))
+       (forallb (fun i =>
+          forallb (fun j => Bool.eqb (nth j (nth i a []) false)
+                                      (nth j (nth i b []) false))
+                  (seq 0 (length a))) (seq 0 (length a))).
+
+Definition mSub (a b : relM) : bool :=
+  forallb (fun i => forallb (fun j =>
+    implb (nth j (nth i a []) false) (nth j (nth i b []) false))
+    (seq 0 (length a))) (seq 0 (length a)).
+
+(* 五性质判定器（定义 3.2-3.6） *)
+Definition isReflexive (m : relM) : bool :=
+  forallb (fun i => nth i (nth i m []) false) (seq 0 (length m)).
+
+Definition isSymmetric (m : relM) : bool := mEqb m (transpose m).
+
+Definition isTransitive (m : relM) : bool := mSub (mMul m m) m.
+
+Definition isAntisymmetric (m : relM) : bool :=
+  forallb (fun i => forallb (fun j =>
+    implb (andb (nth j (nth i m []) false) (nth i (nth j m []) false))
+              (Nat.eqb i j)) (seq 0 (length m))) (seq 0 (length m)).
+
+(* 传递闭包（例 3.2 的 R*）：R∪R²∪…的不动点迭代 *)
+Fixpoint tclose (m : relM) (k : nat) : relM :=
+  match k with
+  | 0 => m
+  | S d => mOr (mMul (tclose m d) m) (tclose m d)
+  end.
+
+(* 教学关系：{0→1, 1→2}（不自反不对称不传递） *)
+Definition r012 : relM :=
+  [ [false;true;false;false]
+  ; [false;false;true;false]
+  ; [false;false;false;false]
+  ; [false;false;false;false] ].
+
+Example r012_props :
+  [ isReflexive r012; isSymmetric r012; isTransitive r012 ]
+  = [false; false; false].
+
+Proof. reflexivity. Qed.
+
+(* 传递闭包：两步迭代后 0→2 进来且稳定（再叠仍是它+对角不含——
+   闭包只加可达对） *)
+Example r012_tclose :
+  [ mSub r012 (tclose r012 1)                    (* R ⊆ R* *)
+  ; mSub (tclose r012 1) (tclose r012 2)         (* 单调 *)
+  ; mEqb (tclose r012 2) (tclose r012 3)         (* 3 步已到不动点 *)
+  ; nth 2 (nth 0 (tclose r012 2) []) false ]     (* 0→2 已进 *)
+  = [true; true; true; true].
+Proof. reflexivity. Qed.
+
+(* 定理 3.2 的同步对偶选样（P(A)∧P(B)→P∧Q(A★B) 的 ∩ 版）：
+   自反∩自反=自反；对称的复合在交换时保持 *)
+Definition rSym1 : relM :=   (* 对称关系 {0↔1} *)
+  [ [false;true;false;false]
+  ; [true;false;false;false]
+  ; [false;false;false;false]
+  ; [false;false;false;false] ].
+
+Example sync_and_symmetric :
+  isSymmetric (mOr rSym1 rSym1) = true.
+Proof. reflexivity. Qed.
+(* 「项与谓词同步运算」（定理 3.2）：集运算 ∩∪−⊕ 与联结词 ∧∨→⊻
+   一一同步——关系的布尔矩阵表示让这层同步成为字面事实
+   （矩阵的逐位布尔运算=集合运算，矩阵乘=关系复合）。 *)
