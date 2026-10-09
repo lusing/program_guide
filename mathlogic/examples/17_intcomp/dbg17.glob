@@ -1,0 +1,506 @@
+DIGEST 11d06dd3ccdc59cf39c480936b7cb64f
+Fdbg17
+R520:523 Stdlib.Lists.List <> <> lib
+R533:545 Stdlib.Lists.List ListNotations <> mod
+ind 600:604 <> kform
+constr 618:619 <> kp
+constr 673:676 <> kneg
+constr 692:695 <> kand
+constr 713:715 <> kor
+constr 734:737 <> kimp
+R628:630 Corelib.Init.Datatypes <> nat ind
+binder 624:624 <> n:3
+R683:687 dbg17 <> kform:1 ind
+binder 679:679 <> a:4
+R704:708 dbg17 <> kform:1 ind
+binder 698:698 <> a:5
+binder 700:700 <> b:6
+R725:729 dbg17 <> kform:1 ind
+binder 719:719 <> a:7
+binder 721:721 <> b:8
+R746:750 dbg17 <> kform:1 ind
+binder 740:740 <> a:9
+binder 742:742 <> b:10
+scheme 600:604 <> kform_rect
+scheme 600:604 <> kform_ind
+scheme 600:604 <> kform_rec
+scheme 600:604 <> kform_sind
+def 820:826 <> forallb
+binder 829:829 <> A:11
+R838:841 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R837:837 dbg17 <> A:11 var
+R842:845 Corelib.Init.Datatypes <> bool ind
+binder 833:833 <> f:12
+R853:856 Corelib.Init.Datatypes <> list ind
+R858:858 dbg17 <> A:11 var
+binder 849:849 <> l:13
+R863:866 Corelib.Init.Datatypes <> bool ind
+R879:879 dbg17 <> l:13 var
+R890:891 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R896:899 Corelib.Init.Datatypes <> true constr
+R906:909 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R915:918 Corelib.Init.Datatypes <> andb def
+R927:933 dbg17 <> forallb:14 def
+R935:935 dbg17 <> f:12 var
+R921:921 dbg17 <> f:12 var
+def 957:964 <> existsb'
+binder 967:967 <> A:16
+R976:979 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R975:975 dbg17 <> A:16 var
+R980:983 Corelib.Init.Datatypes <> bool ind
+binder 971:971 <> f:17
+R991:994 Corelib.Init.Datatypes <> list ind
+R996:996 dbg17 <> A:16 var
+binder 987:987 <> l:18
+R1001:1004 Corelib.Init.Datatypes <> bool ind
+R1017:1017 dbg17 <> l:18 var
+R1028:1029 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R1034:1038 Corelib.Init.Datatypes <> false constr
+R1045:1048 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R1054:1056 Corelib.Init.Datatypes <> orb def
+R1065:1072 dbg17 <> existsb':19 def
+R1074:1074 dbg17 <> f:17 var
+R1059:1059 dbg17 <> f:17 var
+def 1096:1100 <> dedup
+R1107:1110 Corelib.Init.Datatypes <> list ind
+R1112:1114 Corelib.Init.Datatypes <> nat ind
+binder 1103:1103 <> l:21
+R1119:1122 Corelib.Init.Datatypes <> list ind
+R1124:1126 Corelib.Init.Datatypes <> nat ind
+R1139:1139 dbg17 <> l:21 var
+R1150:1151 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R1156:1157 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R1164:1167 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R1176:1183 dbg17 <> existsb' def
+R1186:1192 Corelib.Init.Nat <> eqb def
+R1218:1221 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R1222:1226 dbg17 <> dedup:22 def
+R1204:1208 dbg17 <> dedup:22 def
+def 1247:1251 <> inclb
+R1260:1263 Corelib.Init.Datatypes <> list ind
+R1265:1267 Corelib.Init.Datatypes <> nat ind
+binder 1254:1254 <> l:24
+binder 1256:1256 <> m:25
+R1272:1275 Corelib.Init.Datatypes <> bool ind
+R1288:1288 dbg17 <> l:24 var
+R1299:1300 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R1305:1308 Corelib.Init.Datatypes <> true constr
+R1315:1318 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R1324:1327 Corelib.Init.Datatypes <> andb def
+R1355:1359 dbg17 <> inclb:26 def
+R1363:1363 dbg17 <> m:25 var
+R1330:1337 dbg17 <> existsb' def
+R1351:1351 dbg17 <> m:25 var
+R1340:1346 Corelib.Init.Nat <> eqb def
+def 1385:1392 <> worldsOf
+R1399:1401 Corelib.Init.Datatypes <> nat ind
+binder 1395:1395 <> n:28
+R1406:1409 Corelib.Init.Datatypes <> list ind
+R1411:1413 Corelib.Init.Datatypes <> nat ind
+R1418:1420 Corelib.Lists.ListDef <> seq def
+R1424:1424 dbg17 <> n:28 var
+def 1439:1444 <> implbb
+R1453:1456 Corelib.Init.Datatypes <> bool ind
+binder 1447:1447 <> b:29
+binder 1449:1449 <> c:30
+R1461:1464 Corelib.Init.Datatypes <> bool ind
+R1477:1477 dbg17 <> b:29 var
+R1484:1487 Corelib.Init.Datatypes <> true constr
+R1492:1492 dbg17 <> c:30 var
+R1496:1500 Corelib.Init.Datatypes <> false constr
+R1505:1508 Corelib.Init.Datatypes <> true constr
+def 1797:1799 <> le2
+R1806:1809 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1803:1805 Corelib.Init.Datatypes <> nat ind
+R1813:1816 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1810:1812 Corelib.Init.Datatypes <> nat ind
+R1817:1820 Corelib.Init.Datatypes <> bool ind
+binder 1831:1831 <> w:32
+binder 1833:1833 <> q:33
+R1847:1847 dbg17 <> q:33 var
+R1844:1844 dbg17 <> w:32 var
+R1866:1869 Corelib.Init.Datatypes <> true constr
+R1883:1886 Corelib.Init.Datatypes <> true constr
+R1900:1904 Corelib.Init.Datatypes <> false constr
+def 1925:1928 <> le3v
+R1935:1938 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1932:1934 Corelib.Init.Datatypes <> nat ind
+R1942:1945 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1939:1941 Corelib.Init.Datatypes <> nat ind
+R1946:1949 Corelib.Init.Datatypes <> bool ind
+binder 1960:1960 <> w:36
+binder 1962:1962 <> q:37
+R1976:1976 dbg17 <> q:37 var
+R1973:1973 dbg17 <> w:36 var
+R1995:1998 Corelib.Init.Datatypes <> true constr
+R2012:2015 Corelib.Init.Datatypes <> true constr
+R2029:2032 Corelib.Init.Datatypes <> true constr
+R2046:2050 Corelib.Init.Datatypes <> false constr
+def 2071:2073 <> le1
+R2080:2083 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R2077:2079 Corelib.Init.Datatypes <> nat ind
+R2087:2090 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R2084:2086 Corelib.Init.Datatypes <> nat ind
+R2091:2094 Corelib.Init.Datatypes <> bool ind
+binder 2103:2103 <> w:40
+binder 2105:2105 <> q:41
+R2110:2116 Corelib.Init.Nat <> eqb def
+R2118:2118 dbg17 <> w:40 var
+R2120:2120 dbg17 <> q:41 var
+def 2343:2345 <> kfw
+R2352:2354 Corelib.Init.Datatypes <> nat ind
+binder 2348:2348 <> n:42
+R2366:2369 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R2363:2365 Corelib.Init.Datatypes <> nat ind
+R2373:2376 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R2370:2372 Corelib.Init.Datatypes <> nat ind
+R2377:2380 Corelib.Init.Datatypes <> bool ind
+binder 2358:2359 <> le:43
+R2404:2407 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R2401:2403 Corelib.Init.Datatypes <> nat ind
+R2411:2414 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R2408:2410 Corelib.Init.Datatypes <> nat ind
+R2415:2418 Corelib.Init.Datatypes <> bool ind
+binder 2397:2397 <> v:44
+R2426:2430 dbg17 <> kform ind
+binder 2422:2422 <> a:45
+R2438:2440 Corelib.Init.Datatypes <> nat ind
+binder 2434:2434 <> w:46
+R2445:2448 Corelib.Init.Datatypes <> bool ind
+R2461:2461 dbg17 <> a:45 var
+R2472:2473 dbg17 <> kp constr
+R2484:2484 dbg17 <> v:44 var
+R2486:2486 dbg17 <> w:46 var
+R2494:2497 dbg17 <> kand constr
+R2506:2509 Corelib.Init.Datatypes <> andb def
+R2529:2531 dbg17 <> kfw:47 def
+R2542:2542 dbg17 <> w:46 var
+R2538:2538 dbg17 <> v:44 var
+R2535:2536 dbg17 <> le:43 var
+R2533:2533 dbg17 <> n:42 var
+R2512:2514 dbg17 <> kfw:47 def
+R2525:2525 dbg17 <> w:46 var
+R2521:2521 dbg17 <> v:44 var
+R2518:2519 dbg17 <> le:43 var
+R2516:2516 dbg17 <> n:42 var
+R2549:2551 dbg17 <> kor constr
+R2561:2563 Corelib.Init.Datatypes <> orb def
+R2584:2586 dbg17 <> kfw:47 def
+R2597:2597 dbg17 <> w:46 var
+R2593:2593 dbg17 <> v:44 var
+R2590:2591 dbg17 <> le:43 var
+R2588:2588 dbg17 <> n:42 var
+R2567:2569 dbg17 <> kfw:47 def
+R2580:2580 dbg17 <> w:46 var
+R2576:2576 dbg17 <> v:44 var
+R2573:2574 dbg17 <> le:43 var
+R2571:2571 dbg17 <> n:42 var
+R2604:2607 dbg17 <> kneg constr
+R2616:2622 dbg17 <> forallb def
+R2700:2707 dbg17 <> worldsOf def
+R2709:2709 dbg17 <> n:42 var
+binder 2629:2629 <> q:49
+R2634:2639 dbg17 <> implbb def
+R2642:2643 dbg17 <> le:43 var
+R2647:2647 dbg17 <> q:49 var
+R2645:2645 dbg17 <> w:46 var
+R2651:2654 Corelib.Init.Datatypes <> negb def
+R2657:2659 dbg17 <> kfw:47 def
+R2670:2670 dbg17 <> q:49 var
+R2666:2666 dbg17 <> v:44 var
+R2663:2664 dbg17 <> le:43 var
+R2661:2661 dbg17 <> n:42 var
+R2716:2719 dbg17 <> kimp constr
+R2728:2734 dbg17 <> forallb def
+R2870:2877 dbg17 <> worldsOf def
+R2879:2879 dbg17 <> n:42 var
+binder 2741:2741 <> q:50
+R2764:2769 dbg17 <> implbb def
+R2772:2773 dbg17 <> le:43 var
+R2777:2777 dbg17 <> q:50 var
+R2775:2775 dbg17 <> w:46 var
+R2804:2809 dbg17 <> implbb def
+R2812:2814 dbg17 <> kfw:47 def
+R2825:2825 dbg17 <> q:50 var
+R2821:2821 dbg17 <> v:44 var
+R2818:2819 dbg17 <> le:43 var
+R2816:2816 dbg17 <> n:42 var
+R2829:2831 dbg17 <> kfw:47 def
+R2842:2842 dbg17 <> q:50 var
+R2838:2838 dbg17 <> v:44 var
+R2835:2836 dbg17 <> le:43 var
+R2833:2833 dbg17 <> n:42 var
+def 2977:2982 <> monoOk
+R2989:2991 Corelib.Init.Datatypes <> nat ind
+binder 2985:2985 <> n:51
+R3003:3006 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R3000:3002 Corelib.Init.Datatypes <> nat ind
+R3010:3013 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R3007:3009 Corelib.Init.Datatypes <> nat ind
+R3014:3017 Corelib.Init.Datatypes <> bool ind
+binder 2995:2996 <> le:52
+R3046:3049 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R3043:3045 Corelib.Init.Datatypes <> nat ind
+R3053:3056 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R3050:3052 Corelib.Init.Datatypes <> nat ind
+R3057:3060 Corelib.Init.Datatypes <> bool ind
+binder 3039:3039 <> v:53
+R3071:3073 Corelib.Init.Datatypes <> nat ind
+binder 3064:3067 <> maxp:54
+R3078:3081 Corelib.Init.Datatypes <> bool ind
+R3088:3094 dbg17 <> forallb def
+R3219:3226 dbg17 <> worldsOf def
+R3228:3228 dbg17 <> n:51 var
+binder 3101:3101 <> w:55
+R3106:3112 dbg17 <> forallb def
+R3201:3208 dbg17 <> worldsOf def
+R3210:3210 dbg17 <> n:51 var
+binder 3119:3119 <> q:56
+R3124:3130 dbg17 <> forallb def
+R3187:3189 Corelib.Lists.ListDef <> seq def
+R3193:3196 dbg17 <> maxp:54 var
+binder 3137:3137 <> p:57
+R3146:3151 dbg17 <> implbb def
+R3154:3157 Corelib.Init.Datatypes <> andb def
+R3169:3169 dbg17 <> v:53 var
+R3173:3173 dbg17 <> p:57 var
+R3171:3171 dbg17 <> w:55 var
+R3160:3161 dbg17 <> le:52 var
+R3165:3165 dbg17 <> q:56 var
+R3163:3163 dbg17 <> w:55 var
+R3178:3178 dbg17 <> v:53 var
+R3182:3182 dbg17 <> p:57 var
+R3180:3180 dbg17 <> q:56 var
+def 3464:3467 <> vLem
+R3474:3477 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R3471:3473 Corelib.Init.Datatypes <> nat ind
+R3481:3484 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R3478:3480 Corelib.Init.Datatypes <> nat ind
+R3485:3488 Corelib.Init.Datatypes <> bool ind
+binder 3499:3499 <> w:58
+binder 3501:3501 <> p:59
+R3515:3515 dbg17 <> p:59 var
+R3512:3512 dbg17 <> w:58 var
+R3534:3537 Corelib.Init.Datatypes <> true constr
+R3551:3555 Corelib.Init.Datatypes <> false constr
+def 3724:3730 <> monoLem
+R3754:3756 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R3735:3740 dbg17 <> monoOk def
+R3744:3746 dbg17 <> le2 def
+R3748:3751 dbg17 <> vLem def
+R3757:3760 Corelib.Init.Datatypes <> true constr
+def 3943:3952 <> dneVacuous
+R4023:4025 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R3958:3960 dbg17 <> kfw def
+R3964:3966 dbg17 <> le2 def
+R3980:3984 Corelib.Init.Datatypes <> false constr
+R3988:3991 dbg17 <> kimp constr
+R3994:3997 dbg17 <> kneg constr
+R4000:4003 dbg17 <> kneg constr
+R4006:4007 dbg17 <> kp constr
+R4015:4016 dbg17 <> kp constr
+R4026:4029 Corelib.Init.Datatypes <> true constr
+def 4139:4148 <> lemRefuted
+R4197:4199 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R4154:4156 dbg17 <> kfw def
+R4160:4162 dbg17 <> le2 def
+R4164:4167 dbg17 <> vLem def
+R4170:4172 dbg17 <> kor constr
+R4175:4176 dbg17 <> kp constr
+R4182:4185 dbg17 <> kneg constr
+R4188:4189 dbg17 <> kp constr
+R4200:4204 Corelib.Init.Datatypes <> false constr
+def 4241:4250 <> dneRefuted
+R4307:4309 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R4256:4258 dbg17 <> kfw def
+R4262:4264 dbg17 <> le2 def
+R4266:4269 dbg17 <> vLem def
+R4272:4275 dbg17 <> kimp constr
+R4278:4281 dbg17 <> kneg constr
+R4284:4287 dbg17 <> kneg constr
+R4290:4291 dbg17 <> kp constr
+R4299:4300 dbg17 <> kp constr
+R4310:4314 Corelib.Init.Datatypes <> false constr
+def 4411:4418 <> idValid1
+R4475:4477 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R4424:4426 dbg17 <> kfw def
+R4430:4432 dbg17 <> le1 def
+R4446:4450 Corelib.Init.Datatypes <> false constr
+R4454:4457 dbg17 <> kimp constr
+R4460:4461 dbg17 <> kp constr
+R4467:4468 dbg17 <> kp constr
+R4478:4481 Corelib.Init.Datatypes <> true constr
+def 4776:4783 <> enumVals
+R4797:4799 Corelib.Init.Datatypes <> nat ind
+binder 4786:4789 <> maxp:62
+binder 4791:4793 <> idx:63
+R4804:4807 Corelib.Init.Datatypes <> list ind
+R4813:4816 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R4810:4812 Corelib.Init.Datatypes <> nat ind
+R4820:4823 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R4817:4819 Corelib.Init.Datatypes <> nat ind
+R4824:4827 Corelib.Init.Datatypes <> bool ind
+R4841:4843 dbg17 <> idx:63 var
+R4859:4859 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R4876:4876 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R4871:4875 Corelib.Init.Datatypes <> false constr
+R4882:4882 Corelib.Init.Datatypes <> S constr
+R4980:4980 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R5022:5026 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+binder 4985:4985 <> w:66
+binder 4987:4987 <> p:67
+R4992:5002 Corelib.Init.Nat <> testbit def
+R5004:5006 dbg17 <> idx:63 var
+R5017:5019 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R5010:5012 Corelib.Init.Peano <> ::nat_scope:x_'*'_x not
+R5009:5009 dbg17 <> w:66 var
+R5013:5016 dbg17 <> maxp:62 var
+R5020:5020 dbg17 <> p:67 var
+R5027:5034 dbg17 <> enumVals:64 def
+R5036:5039 dbg17 <> maxp:62 var
+def 5062:5068 <> ikValid
+R5075:5077 Corelib.Init.Datatypes <> nat ind
+binder 5071:5071 <> n:68
+R5089:5092 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R5086:5088 Corelib.Init.Datatypes <> nat ind
+R5096:5099 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R5093:5095 Corelib.Init.Datatypes <> nat ind
+R5100:5103 Corelib.Init.Datatypes <> bool ind
+binder 5081:5082 <> le:69
+R5133:5135 Corelib.Init.Datatypes <> nat ind
+binder 5126:5129 <> maxp:70
+R5143:5147 dbg17 <> kform ind
+binder 5139:5139 <> a:71
+R5152:5155 Corelib.Init.Datatypes <> bool ind
+R5257:5263 dbg17 <> forallb def
+R5388:5395 dbg17 <> enumVals def
+R5397:5400 dbg17 <> maxp:70 var
+R5403:5409 Corelib.Init.Nat <> pow def
+R5415:5417 Corelib.Init.Peano <> ::nat_scope:x_'*'_x not
+R5414:5414 dbg17 <> n:68 var
+R5418:5421 dbg17 <> maxp:70 var
+binder 5270:5270 <> v:72
+R5275:5280 dbg17 <> implbb def
+R5283:5288 dbg17 <> monoOk def
+R5290:5290 dbg17 <> n:68 var
+R5292:5293 dbg17 <> le:69 var
+R5295:5295 dbg17 <> v:72 var
+R5297:5300 dbg17 <> maxp:70 var
+R5328:5334 dbg17 <> forallb def
+R5363:5370 dbg17 <> worldsOf def
+R5372:5372 dbg17 <> n:68 var
+binder 5341:5341 <> w:73
+R5346:5348 dbg17 <> kfw def
+R5350:5350 dbg17 <> n:68 var
+R5352:5353 dbg17 <> le:69 var
+R5355:5355 dbg17 <> v:72 var
+R5357:5357 dbg17 <> a:71 var
+R5359:5359 dbg17 <> w:73 var
+def 5500:5511 <> ikValidImpId
+R5607:5609 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R5517:5520 Corelib.Init.Datatypes <> andb def
+R5569:5575 dbg17 <> ikValid def
+R5579:5582 dbg17 <> le3v def
+R5587:5590 dbg17 <> kimp constr
+R5593:5594 dbg17 <> kp constr
+R5600:5601 dbg17 <> kp constr
+R5523:5529 dbg17 <> ikValid def
+R5533:5535 dbg17 <> le2 def
+R5540:5543 dbg17 <> kimp constr
+R5546:5547 dbg17 <> kp constr
+R5553:5554 dbg17 <> kp constr
+R5610:5613 Corelib.Init.Datatypes <> true constr
+def 5650:5663 <> ikValidConjImp
+R5809:5811 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R5716:5722 dbg17 <> ikValid def
+R5726:5729 dbg17 <> le3v def
+R5738:5741 dbg17 <> kimp constr
+R5744:5747 dbg17 <> kimp constr
+R5750:5751 dbg17 <> kp constr
+R5757:5758 dbg17 <> kp constr
+R5775:5778 dbg17 <> kimp constr
+R5781:5784 dbg17 <> kand constr
+R5787:5788 dbg17 <> kp constr
+R5794:5795 dbg17 <> kp constr
+R5802:5803 dbg17 <> kp constr
+R5812:5815 Corelib.Init.Datatypes <> true constr
+def 5852:5869 <> ikValidNotNotIntro
+R5968:5970 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R5913:5919 dbg17 <> ikValid def
+R5923:5926 dbg17 <> le3v def
+R5935:5938 dbg17 <> kimp constr
+R5941:5942 dbg17 <> kp constr
+R5948:5951 dbg17 <> kneg constr
+R5954:5957 dbg17 <> kneg constr
+R5960:5961 dbg17 <> kp constr
+R5971:5974 Corelib.Init.Datatypes <> true constr
+def 6079:6090 <> ikInvalidLem
+R6138:6140 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R6096:6102 dbg17 <> ikValid def
+R6106:6108 dbg17 <> le2 def
+R6113:6115 dbg17 <> kor constr
+R6118:6119 dbg17 <> kp constr
+R6125:6128 dbg17 <> kneg constr
+R6131:6132 dbg17 <> kp constr
+R6141:6145 Corelib.Init.Datatypes <> false constr
+def 6382:6388 <> kRefute
+R6395:6399 dbg17 <> kform ind
+binder 6391:6391 <> a:74
+R6404:6407 Corelib.Init.Datatypes <> bool ind
+R6504:6506 Corelib.Init.Datatypes <> orb def
+R6709:6716 dbg17 <> existsb' def
+R6889:6896 dbg17 <> enumVals def
+binder 6723:6723 <> v:75
+R6728:6731 Corelib.Init.Datatypes <> andb def
+R6778:6785 dbg17 <> existsb' def
+R6857:6864 dbg17 <> worldsOf def
+binder 6792:6792 <> w:76
+R6797:6800 Corelib.Init.Datatypes <> negb def
+R6803:6805 dbg17 <> kfw def
+R6809:6812 dbg17 <> le3v def
+R6814:6814 dbg17 <> v:75 var
+R6816:6816 dbg17 <> a:74 var
+R6818:6818 dbg17 <> w:76 var
+R6734:6739 dbg17 <> monoOk def
+R6743:6746 dbg17 <> le3v def
+R6748:6748 dbg17 <> v:75 var
+R6509:6516 dbg17 <> existsb' def
+R6687:6694 dbg17 <> enumVals def
+binder 6523:6523 <> v:77
+R6528:6531 Corelib.Init.Datatypes <> andb def
+R6577:6584 dbg17 <> existsb' def
+R6655:6662 dbg17 <> worldsOf def
+binder 6591:6591 <> w:78
+R6596:6599 Corelib.Init.Datatypes <> negb def
+R6602:6604 dbg17 <> kfw def
+R6608:6610 dbg17 <> le2 def
+R6612:6612 dbg17 <> v:77 var
+R6614:6614 dbg17 <> a:74 var
+R6616:6616 dbg17 <> w:78 var
+R6534:6539 dbg17 <> monoOk def
+R6543:6545 dbg17 <> le2 def
+R6547:6547 dbg17 <> v:77 var
+def 6915:6918 <> dbg3
+R6950:6952 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R6922:6928 dbg17 <> kRefute def
+R6931:6934 dbg17 <> kimp constr
+R6937:6938 dbg17 <> kp constr
+R6944:6945 dbg17 <> kp constr
+R6953:6957 Corelib.Init.Datatypes <> false constr
+def 6993:6996 <> dbg5
+R7034:7036 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R7000:7006 dbg17 <> kRefute def
+R7009:7011 dbg17 <> kor constr
+R7014:7015 dbg17 <> kp constr
+R7021:7024 dbg17 <> kneg constr
+R7027:7028 dbg17 <> kp constr
+R7037:7040 Corelib.Init.Datatypes <> true constr
+def 7076:7079 <> dbg6
+R7125:7127 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R7083:7089 dbg17 <> kRefute def
+R7092:7095 dbg17 <> kimp constr
+R7098:7101 dbg17 <> kneg constr
+R7104:7107 dbg17 <> kneg constr
+R7110:7111 dbg17 <> kp constr
+R7119:7120 dbg17 <> kp constr
+R7128:7131 Corelib.Init.Datatypes <> true constr
