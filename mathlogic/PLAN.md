@@ -1,9 +1,10 @@
-# mathlogic 教程总计划（十书为纲 × 七通道）
+# mathlogic 教程总计划（十一书为纲 × 七通道）
 
-> 状态：六轮书本扩充全部收官（H&R+Ben-Ari+Jongsma+EFT+Mendelson+
-> **Marker GTM 301**），80 章 **193** 单元全绿（163 旧单元+Marker 轮
-> 新十单元：26×3/27×2/28×2/29×2/40×2/41×2/42×2/45×2/46×2/47×3，
-> 深化四处 16/37/44 并入既有单元）。本文件是施工蓝图，供后续会话续接。
+> 状态：七轮书本扩充全部收官（H&R+Ben-Ari+Jongsma+EFT+Mendelson+
+> **Marker GTM 301**+**Müller-Stach《The Code of Mathematics》**），
+> 80 章 **208** 单元全绿（193 旧单元+第七轮新十五单元：43×2/44×2/
+> 47×2/48×2/49×2/71×3/79×2；80 收官改写为七轮合拢）。本文件是
+> 施工蓝图，供后续会话续接。
 
 ## 十书定位
 
@@ -14,7 +15,8 @@
 | Mints《A Short Introduction to Intuitionistic Logic》（公式层缺，需按页读版面） | 直觉主义线：NJp/NKp、Glivenko、正规化、Kripke |
 | Ebbinghaus-Flum-Thomas (EFT) 3e | 元理论线：矢列、完备性、L-S、EF 博弈、二阶、自由模型、寄存器机 |
 | Mendelson 6e（第五轮收官） | 元定理与递归论线：完备集与独立性(09)、Rule C/Lindenbaum(18/23 深化)、图灵机(34)、递归函数(35)、算术化(36)、不完备性(37)、NBG 集合论(62) |
-| **Marker《An Invitation to Mathematical Logic》GTM 301**（第六轮收官） | 模型论与高阶递归论线：完备性与范畴性/Ax(26)、超积与 Łoś(27)、量词消去(28)、实闭域与 o-minimal/Hilbert 17(29)、嵌入与图方法(16 深化)、RAM(37 深化)、通用机/Rice/递归定理(40)、算术层级/Kolmogorov(41)、图灵度/优先法(42)、层级化不完备(44 深化)、H10/Pell(45)、ε₀/Goodstein(46)、PA 模型/Paris–Harrington(47) |
+| **Marker《An Invitation to Mathematical Logic》GTM 301**（第六轮收官） | 模型论与高阶递归论线：完备性与范畴性/Ax(26)、超积与 Łoś(27)、量词消去(28)、实闭域与 o-minimal/Hilbert 17(29)、嵌入与图方法(16 深化)、RAM(37 深化)、通用机/Rice/递归定理(40)、算术层级/Kolmogorov(41)、图灵度/优先法(42)、层级化不完备(46 深化)、H10/Pell(50)、ε₀/Goodstein(51)、PA 模型/Paris–Harrington(52) |
+| **Müller-Stach《The Code of Mathematics: Proof and Truth》**（第七轮收官，思想全景书） | 真理理论与应用线：复杂度 P/NP(43)、字问题/Tseytin 半群(44)、Gödel II 一致性扩张(47)、Tarski 不可定义+Kripke 不动点(48)、构造性/Heyting 语义(49)、密码与信任机器(71)、同一性与结构主义(79)、收官七轮合拢(80)；范畴论/类型论主体文档线桥接独立指南 |
 | 《Advances in Natural Deduction》（Prawitz 纪念文集） | 证明论进阶（文档引用） |
 | 贺伟《范畴论》/《高级范畴论》 | （本轮范畴论教程已用） |
 | Jongsma《Introduction to Discrete Mathematics via Logic and Proof》（UTM 2019，文本层好；§7.3 的补运算上杠在提取文本中丢失——按数学实体校读） | 离散底座线：归纳/集合/无穷/函数/格与 Boole/图（68-77 章） |
@@ -77,8 +79,13 @@
 | 40 | 通用性与不可判定性（程序表宇宙+urun+对角双现场+Rice 影子+s-m-n 影子；递归定理文档线） | C/L | ✅ Marker 批次四 |
 | 41 | 可枚举集与算术层级（KΣ₁/TotΠ₂/FinΣ₂ 对账+偶性≤ₘK+Kolmogorov kOf(4)=24 鸽笼） | C/L | ✅ Marker 批次四 |
 | 42 | 图灵度与优先法（oracle 机 roq+KP 显式击败+König 左极+FM 有穷损害阶段账；低基/极小度文档线） | C/L | ✅ Marker 批次五 |
+| 43 | 复杂度：P 与 NP（证书验证 vs 蛮力步数双账+SAT→3SAT 链式组合子+3SAT→CLIQUE 文字图+团-赋值 witnessing+归约复合全链） | C/L | ✅ Müller-Stach 批次一 |
+| 44 | 字问题与重写：Thue 系统与 Tseytin 半群（双向重写一步算子+深度界 BFS+等式链+汇合样本+aaa 不可达影子） | C/L | ✅ Müller-Stach 批次一 |
 | 45 | 算术化与哥德尔编码（平方配对单射真定理+gcf 树编码单射性+subf 现场+β 双现场+dsub 自引骨架） | C/L | ✅ Mendelson 批次四 |
 | 46 | 哥德尔不完备（三步文档线全保留+表示性样板四真定理+qf_agree+论域相对性 Tarski 对照） | 文档/C/L | ✅+Marker 层级化深化✅ 批次四升级 |
+| 47 | Gödel 第二不完备与一致性扩张（BACH 素数幂编码 N 通道+九句宇宙扩张梯子+D1 机制账+soundness 影子） | C/L | ✅ Müller-Stach 批次二 |
+| 48 | 真理理论：Tarski 不可定义与 Kripke 不动点（T-模式+对角逐位化+强 Kleene+不动点迭代+双固定点+振荡现场） | C/L | ✅ Müller-Stach 批次二 |
+| 49 | 构造性与 Heyting 语义（双否定 FOL 翻译器+直觉语境样本+开集格三账+四平方见证工厂） | C/L | ✅ Müller-Stach 批次三 |
 | 50 | Hilbert 第十问题（Pell ⊗ 范数恒等式 ring+d=2 解序列+闭包组合子+Cassini/X-Y 序列；DPRM 文档线） | C/L | ✅ Marker 批次五 |
 | 51 | PA 与 ε₀（CNF 序数树+回环全表 183 项+影子下降网格 28 组+G(1..3) 跑通+Hardy 层谱+τ） | C/L | ✅ Marker 批次六 |
 | 52 | 算术的模型（{c>n̄} 有限可满足+overspill 影子+R(3,3)=6 双账 K5 恰 12 染色+PH(2,2) 账；MacDowell–Specker 文档线） | C/L/P | ✅ Marker 批次六 |
@@ -100,6 +107,7 @@
 | 68 | 数学归纳与递归（PMI 三位一体：弱/强/良序+素因子+√2 下降+F₃ₙ） | C/L | ✅ Jongsma 批次一 |
 | 69 | 递推、结构归纳与 Peano 算术（公理变定理+加乘律+≤ 全链） | C/L | ✅ Jongsma 批次二 |
 | 70 | 整除性与初等数论（dm2 商余+egcdf 四元组 Bézout+Euclid 引理+gcd·lcm+素数无穷） | C/L | ✅ Jongsma 批次三 |
+| 71 | 密码与信任机器（RSA 九消息回环+Shamir 三趟开箱+哈希链篡改级联+纠缠锥+XOR 枚举+DLP 双基表） | C/L/P | ✅ Müller-Stach 批次三 |
 | 72 | 集合、幂集与计数（运算律+De Morgan 经典账本+powl/prodl+ΣC(n,k)=2^n+容斥） | C/L | ✅ Jongsma 批次四 |
 | 73 | 无穷集合与停机问题（Galileo+2^a·3^b 编码+Cantor 对角线三化身+Russell+停机公理账） | C/L | ✅ Jongsma 批次五 |
 | 74 | 函数与等价关系（复合保持+搜索左/右逆+congN 全加形态正规形+良定义） | C/L | ✅ Jongsma 批次六 |
@@ -107,7 +115,8 @@
 | 76 | Boole 代数与逻辑电路（B={0,1} 十公理+恒等式册+半/全加器+minterm 表示定理+QMC 两阶段） | C/L/P | ✅ Jongsma 批次八 |
 | 77 | 图论专题（握手引理真证明+哥尼斯堡/K5/K3,3 平面算术+Ham 检查器+贪心着色两定理+P 通道搜索面） | C/L/P | ✅ Jongsma 批次九 |
 | 78 | 公理集合论 NBG 与序数（vn 典范世界引理族+kur_char 4.3 真定理+vn_trans 传递性+fin_ac 零公理+B1-B5 算子点式定理+系统对照表） | C/L | ✅ Mendelson 批次五 |
-| 80 | 收官：SAT→SMT→MC→ITP 图景 + 总坑位清单 + 十书导读 + 账本尾段（批次七重写） | 文档 | ✅ 扩写✅ |
+| 79 | 同一性与结构主义（Leibniz 等词零公理+Hume 基数分块+ℕ 三化身+Fermat 数另证+F₅ 分解+Z 商构造+对偶数环） | C/L | ✅ Müller-Stach 批次四 |
+| 80 | 收官：七轮合拢（频谱编号清零+43/71 入谱+七轮总坑位+十一书导读+Müller-Stach 九章对账+Lingua Universalis 时间线+三基础圆环） | 文档 | ✅ Müller-Stach 批次四改写 |
 
 章号=示例号；`docs/NN-*.md` 每章坑位速记；ROOTS 随章追加 Isabelle session。
 

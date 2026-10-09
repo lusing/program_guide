@@ -72,8 +72,13 @@ mathlogic/
 | [40 通用性与不可判定性](docs/40-undecidable.md) | 程序表宇宙+通用机 urun+停机对角双现场+Rice 影子（同语义两写法不可分）+s-m-n 影子 | C/L |
 | [41 算术层级](docs/41-hierarchy.md) | K∈Σ₁/Tot∈Π₂/Fin∈Σ₂ 前束对账+偶性 ≤ₘ K 归约样本+Kolmogorov 表宇宙版（kOf(4)=24 无描述即随机） | C/L |
 | [42 图灵度与优先法](docs/42-degrees.md) | oracle 机（roq 指令）+KP 显式击败现场+König 左极路径+FM 有穷损害阶段账本 | C/L |
+| [43 复杂度](docs/43-complexity.md) | 证书验证 vs 蛮力 2^n 步数双账+SAT→3SAT 链式归约组合子（双向保满足表）+3SAT→CLIQUE 文字图（团-赋值 witnessing）+归约复合全链 | C/L |
+| [44 字问题与重写](docs/44-wordproblem.md) | Tseytin 半群九关系（书 p84 原例）双向重写一步算子+深度界 BFS 闭包+等式链账+eca/ce 汇合+aaa 不可达影子 | C/L |
 | [45 算术化](docs/45-goedel.md) | 平方配对单射+树编码 gcf 单射性+subf 代入+β-函数 CRT 双现场+自引骨架 | C/L |
 | [46 不完备性](docs/46-incompleteness.md) | 三步文档线全保留+表示性样板四真定理+有限域可判定与论域相对性（Tarski 对照）+层级化强不完备（Marker 深化） | 文档/C/L |
+| [47 Gödel II 与一致性扩张](docs/47-goedel2.md) | BACH↦8647201500 素数幂编码（二进制 N）+九句宇宙扩张梯子（逐层收编/逃逸/不塌）+D1 机制账+soundness 影子 | C/L |
+| [48 真理理论](docs/48-truth.md) | T-模式全枚举+全枚举失败现场+对角逃逸逐位化（flipAt）+强 Kleene 三值+Kripke 跳跃单调收敛（说谎者恒 U）+诚实者双固定点+全真起步振荡 | C/L |
+| [49 构造性与 Heyting 语义](docs/49-constructive.md) | Gödel–Gentzen 双否定 FOL 翻译器（七行）+经典等价账+零经典公理直觉样本+Sierpinski 开集格三账（¬¬U≠U/等式降级/同格对照）+四平方见证工厂 | C/L |
 | [50 Hilbert 第十问题](docs/50-diophantine.md) | Pell ⊗ 范数乘法恒等式（ring 零公理）+d=2 解序列逐项验证+闭包组合子+Cassini/X-Y 序列 | C/L |
 | [51 PA 与 ε₀](docs/51-epsilon.md) | CNF 序数树+hereditary 回环全表 183 项+Goodstein 影子下降网格+G(1..3) 跑通+Hardy 层谱 | C/L |
 | [52 算术的模型](docs/52-models.md) | {c>n̄} 有限可满足+overspill 影子+R(3,3)=6 双账（K5 恰 12 染色/K6 全枚举）+PH(2,2) 机制账 | C/L/P |
@@ -97,6 +102,7 @@ mathlogic/
 | [68 数学归纳与递归](docs/68-induction.md) | PMI 三位一体：弱/强/良序+素因子+√2 下降 | C/L |
 | [69 递推与 Peano 算术](docs/69-pa.md) | 公理变定理+加乘律+≤ 全链 | C/L |
 | [70 整除性与初等数论](docs/70-divisibility.md) | dm2 商余+Bézout+Euclid 引理+素数无穷 | C/L |
+| [71 密码与信任机器](docs/71-crypto.md) | RSA 九消息回环（含 gcd≠1 边界）+Shamir 三趟四步开箱+哈希链篡改级联+纠缠锥+感知器 XOR 枚举无解+DLP 双基表与生成元 | C/L/P |
 | [72 集合、幂集与计数](docs/72-setscount.md) | 运算律+De Morgan 经典账+容斥 | C/L |
 | [73 无穷集合与停机问题](docs/73-infinity.md) | Cantor 对角线三化身+Russell+停机公理账 | C/L |
 | [74 函数与等价关系](docs/74-funequiv.md) | 搜索左/右逆+congN 正规形+良定义 | C/L |
@@ -104,7 +110,8 @@ mathlogic/
 | [76 Boole 代数与逻辑电路](docs/76-boole.md) | 十公理+加法器+minterm 定理+QMC | C/L/P |
 | [77 图论专题](docs/77-graphs.md) | 握手引理真证明+平面算术+贪心着色+搜索面 | C/L/P |
 | [78 公理集合论 NBG 与序数](docs/78-nbg.md) | vn 典范世界+kur_char 命题 4.3+有限 AC 零公理+B1-B5 类算子 | C/L |
-| [80 收官](docs/80-wrapup.md) | SAT→SMT→MC→ITP 图景+总坑位+八书导读+H&R 映射 | 文档 |
+| [79 同一性与结构主义](docs/79-identity.md) | Leibniz 等词零公理双向+Hume 原理基数分块 1,3,3,1+ℕ 三化身（Zermelo 树编码）+Fermat 数互素与 F₅ 分解+Z 商构造良定义+对偶数 d²=0 | C/L |
+| [80 收官](docs/80-wrapup.md) | SAT→SMT→MC→ITP 图景（频谱编号清零）+七轮总坑位+十一书导读+Müller-Stach 九章对账+Lingua Universalis 时间线+三基础圆环 | 文档 |
 
 ## 工具链（本机实测）
 

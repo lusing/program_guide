@@ -403,3 +403,41 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 - 深化：16 嵌入（embed_qf_keeps 的赋值表用 `fst f :: [snd f]`）；
   44 层级化（rep_sigma1_shadow 用 s3 赋值不是参数化公式）；
   37 RAM（mutual fixpoint 警告——拆成两个独立 Fixpoint）。
+
+## Müller-Stach 轮新章坑位（43/44/47/48/49/71/79 + 80 改写）
+
+- **43**：Lean `flatMap` 笛卡尔积方向反——`rest.flatMap (fun r =>
+  l.map (x::r))` 把 rest 元素整个当后缀（3 组而非 9 组）——正
+  确 `l.flatMap (fun x => (cartProd rest).map (fun r => x :: r))`；
+  Coq `forallb clauseSat F` 漏部分应用——`forallb (clauseSat a) F`；
+- **44**：`interW = []` 是 Prop 不是 bool——补 nonemptyW 判定；
+  Tseytin 九关系闭包极小（自 ce 深度 5 仅 3 词）——e 系字在交
+  换律下几乎不动；
+- **47**：**N_scope 三连劫持**——nat 参数 match 数字模式 `0` 变
+  N 构造子（写构造子 O）；`S e` 的 nat 后继撞 N（`N.succ e`）；
+  nat 字面量表劫持（`Open Scope nat_scope` 分段切回）；`Definition
+  自引用`必须 Fixpoint；Lean 行首 `.map` 断点（dot 前缀不跨行）；
+- **48**：nat 混 t3 的列表非法——分立断言；rfl 期望表要与迭代实
+  际值核对（强 Kleene U∨L=U 不是 T；iterTop 周期 4 振荡回全 T）；
+  Lean `#eval` 自定义类型要 `deriving Repr`；
+- **49**：`Nat.logor` 环境不可用——开集改 3 位布尔表表示；
+  **cupL 空侧必须是恒等元**（`[], r => r`）否则 fold_left 从 []
+  起步吞掉全部开集；**subL 要长度守卫**（combine 截断+空对照恒
+  真）；× 左结合陷阱：`nat*nat*(nat*nat)`=(nat*nat)*(nat*nat)——
+  四元组注解写 `nat * (nat * (nat * nat))`；Coq `tauto` 直觉但
+  **裸 Lean 无 tauto**——直觉证明手写 λ 项；
+- **71**：**guard 第六撞**（powmod 的 Nat.div2 非子项）——教学件
+  朴素线性版+文档线讲平方-乘（Lean GMP 无此劫）；**nat 截断减法
+  判零**（纠缠锥 0−1 塌 0 误判）——改等式判定；**unary mod 归约
+  步数**（mod 9973 每折叠 30 万步卡死整链）——教学模数降 97；
+  4^13 的朴素幂 unary 67M 是 3 分钟元凶——样本降指数；nth 默认
+  值类型要对；Prolog **between/3 要已求值整数**（`P-1` compound
+  先 `is`）；**is_gen 费马陷阱**（g^(p−1)≡1 恒真全群误判）——先
+  找最小阶再比对 p−1；
+- **79**：65537 字面量 rfl 下 of_num_uint 不展开——期望侧同形表
+  达式；**Zermelo 编码层数依赖值**（扁平 list 每层类型不同）——
+  归纳树 zset 忠实编码；Fermat 递推 2^{2^k} 易错位——用平方递推
+  (F_k−1)²+1；负例选择要验算（(5,8) 是 −3 不是 −1）；
+- **80 改写**：`coqc | tail` 管道退出码是 tail 的——失败假绿
+  （用输出文件判定）；python `str.replace` 未命中静默返回原串
+  （校验替换计数再写盘）。
