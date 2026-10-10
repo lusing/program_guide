@@ -1,5 +1,0 @@
-
-session ML21 in "21_decidability" = HOL +
-  options [document = false]
-  theories
-    ex21_decidability
