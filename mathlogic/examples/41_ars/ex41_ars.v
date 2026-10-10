@@ -47,8 +47,14 @@ Definition reach (R x : nat) : list nat :=
 
 Definition inL (x : nat) (l : list nat) : bool := existsb (Nat.eqb x) l.
 
-Definition joinable (R y z : nat) : bool :=
-  existsb (fun w => andb (inL w (reach R y)) (inL w (reach R z))) pts.
+(* 可达掩码：reach 一次、配对查位——性能命脉（HR 穷举 512×512） *)
+Definition reachMask (R x : nat) : nat :=
+  fold_left (fun acc y => Nat.lor acc (Nat.shiftl 1 y)) (reach R x) 0.
+
+Definition maskMeet (R y z : nat) : bool :=
+  negb (Nat.eqb (Nat.land (reachMask R y) (reachMask R z)) 0).
+
+Definition joinable (R y z : nat) : bool := maskMeet R y z.
 
 Definition locallyConfluent (R : nat) : bool :=
   forallb (fun x =>
@@ -60,43 +66,100 @@ Definition locallyConfluent (R : nat) : bool :=
     pts.
 
 Definition confluent (R : nat) : bool :=
+  (* 每层只算一次 reach（x/y/z 各自缓存到 let）——穷举 512×512 的
+     性能命脉：朴素 pairwise joinable 会把 reach 重算 10^10 次。 *)
   forallb (fun x =>
-    forallb (fun p =>
-      match p with
-      | (y, z) => joinable R y z
-      end)
-      (flat_map (fun y => map (fun z => (y, z)) (reach R x)) (reach R x)))
+    let rx := reach R x in
+    forallb (fun y =>
+      let ry := reach R y in
+      forallb (fun z =>
+        existsb (fun w => andb (inL w ry) (inL w (reach R z))) rx)
+        rx)
+      rx)
     pts.
 
-Definition reachNoSelf (R y : nat) : list nat :=
-  (* y 的可达集去掉 y 自身（x→y 后经非空路径回 x 即成圈） *)
-  filter (fun w => negb (Nat.eqb w y)) (reach R y).
+Definition maskMeetR (Ra y Rb z : nat) : bool :=
+  negb (Nat.eqb (Nat.land (reachMask Ra y) (reachMask Rb z)) 0).
 
-Definition terminatingR (R : nat) : bool :=
-  negb (existsb (fun x =>
-          existsb (fun y =>
-            andb (step R x y)
-                 (existsb (Nat.eqb x) (reachNoSelf R y)))
-          pts) pts).
-
-(* 交换（Hindley-Rosen）：x—R1→y 且 x—R2→z ⟹ ∃w: y—R2*→w 且 z—R1*→w *)
 Definition commutes (R1 R2 : nat) : bool :=
   forallb (fun x =>
     forallb (fun y =>
       forallb (fun z =>
         if andb (step R1 x y) (step R2 x z)
-        then existsb (fun w => andb (inL w (reach R2 y))
-                                    (inL w (reach R1 z))) pts
+        then maskMeetR R2 y R1 z
         else true) pts) pts) pts.
 
+
+(* ---------- 表驱动记忆化：512 个关系的可达掩码表 ----------
+   HR 穷举 512×512 的唯一可行形状：每关系一次 reach 存掩码、
+   查表用 nth（单轴 nat 的 eqb/find 是 512×511 步的暗雷）。 *)
+Definition rmaskList : list (list nat) :=
+  map (fun R => map (fun x => reachMask R x) pts) allRels.
+
+Definition masksAt (R : nat) : list nat := nth R rmaskList [].
+Definition mOf (ms : list nat) (x : nat) : nat := nth x ms 0.
+
+Definition bit3 (m : nat) (x : nat) : bool := Nat.testbit m x.
+
+Definition joinMask (m1 m2 : nat) : bool :=
+  negb (Nat.eqb (Nat.land m1 m2) 0).
+
+Definition stepMask (R x : nat) : nat :=
+  (* x 的一步后继打包（位拼装，不查表） *)
+  (if Nat.testbit R (3 * x + 0) then 1 else 0)
++ (if Nat.testbit R (3 * x + 1) then 2 else 0)
++ (if Nat.testbit R (3 * x + 2) then 4 else 0).
+
+(* 纯位循环：x/y/z 各 3 拍，无 reach/succs 调用 *)
+Definition locallyConfluentT (R : nat) : bool :=
+  let ms := masksAt R in
+  forallb (fun x =>
+    forallb (fun y =>
+      forallb (fun z =>
+        if andb (bit3 (stepMask R x) y) (bit3 (stepMask R x) z)
+        then joinMask (mOf ms y) (mOf ms z)
+        else true) pts) pts) pts.
+
+Definition confluentT (R : nat) : bool :=
+  let ms := masksAt R in
+  forallb (fun x =>
+    forallb (fun y =>
+      forallb (fun z =>
+        if andb (bit3 (mOf ms x) y) (bit3 (mOf ms x) z)
+        then joinMask (mOf ms y) (mOf ms z)
+        else true) pts) pts) pts.
+
+Definition commutesT (R1 R2 : nat) : bool :=
+  let ms1 := masksAt R1 in let ms2 := masksAt R2 in
+  forallb (fun x =>
+    forallb (fun y =>
+      forallb (fun z =>
+        if andb (bit3 (stepMask R1 x) y) (bit3 (stepMask R2 x) z)
+        then joinMask (mOf ms2 y) (mOf ms1 z)
+        else true) pts) pts) pts.
+
+Definition terminatingR (R : nat) : bool :=
+  (* 无环=无自环 且 无 x→y 使 x 经非空路径回到（y 的可达去自身） *)
+  let ms := masksAt R in
+  let selfloop := existsb (fun x => bit3 (stepMask R x) x) pts in
+  let backedge :=
+    existsb (fun x =>
+      existsb (fun y =>
+        andb (bit3 (stepMask R x) y)
+             (Nat.testbit (Nat.land (mOf ms y)
+                          (Nat.lxor 7 (Nat.shiftl 1 y))) x))
+      pts) pts in
+  negb (orb selfloop backedge).
+
+(* 交换（Hindley-Rosen）：x—R1→y 且 x—R2→z ⟹ ∃w: y—R2*→w 且 z—R1*→w *)
 Definition unionR (R1 R2 : nat) : nat := Nat.lor R1 R2.
 
 (* ---------- 2. 断言电池 ---------- *)
 
 (* 电一：Newman 引理的穷举式机器证明（3 点全部 512 个关系） *)
 Example newman_exhaustive :
-  forallb (fun R => implb (andb (terminatingR R) (locallyConfluent R))
-                          (confluent R)) allRels
+  forallb (fun R => implb (andb (terminatingR R) (locallyConfluentT R))
+                          (confluentT R)) allRels
   = true.
 Proof. vm_compute. reflexivity. Qed.
 
@@ -104,7 +167,7 @@ Proof. vm_compute. reflexivity. Qed.
    （终止假设在 3 点多余；经典反例 a→b,a→c,b→a 型在 3 点内
    造不出「LC 但不合流」——至少要 4 点） *)
 Example lc_implies_conf_3 :
-  forallb (fun R => implb (locallyConfluent R) (confluent R)) allRels
+  forallb (fun R => implb (locallyConfluentT R) (confluentT R)) allRels
   = true.
 Proof. vm_compute. reflexivity. Qed.
 
@@ -113,25 +176,25 @@ Proof. vm_compute. reflexivity. Qed.
 Example hindley_rosen_exhaustive :
   forallb (fun p =>
     let R1 := fst p in let R2 := snd p in
-    implb (andb (confluent R1)
-                (andb (confluent R2) (commutes R1 R2)))
-          (confluent (unionR R1 R2)))
+    implb (andb (confluentT R1)
+                (andb (confluentT R2) (commutesT R1 R2)))
+          (confluentT (unionR R1 R2)))
     (flat_map (fun a => map (fun b => (a, b)) allRels) allRels)
   = true.
 Proof. vm_compute. reflexivity. Qed.
 
 (* 电四：定理 5 假设必要性现场。R1={(0,1)} 掩码 bit0=1；R2={(0,2)}
    bit2=4：各自合流，但**不交换**；其并局部不合流也不合流。 *)
-Definition R1a : nat := 1.    (* 0→1 *)
+Definition R1a : nat := 2.    (* 0→1：bit(3·0+1)=2 *)
 Definition R2a : nat := 4.    (* 0→2 *)
-Definition Ra  : nat := 5.    (* 并：0→1, 0→2 *)
+Definition Ra  : nat := 6.    (* 并：0→1, 0→2 *)
 
 Example t5_hypothesis_necessary :
-  andb (confluent R1a)
-       (andb (confluent R2a)
-             (andb (negb (commutes R1a R2a))
-                   (andb (negb (locallyConfluent Ra))
-                         (negb (confluent Ra)))))
+  andb (confluentT R1a)
+       (andb (confluentT R2a)
+             (andb (negb (commutesT R1a R2a))
+                   (andb (negb (locallyConfluentT Ra))
+                         (negb (confluentT Ra)))))
   = true.
 Proof. vm_compute. reflexivity. Qed.
 
@@ -141,15 +204,15 @@ Proof. vm_compute. reflexivity. Qed.
    直接取 R2={(2,1)} bit(7)=128：R1 合流 ✓ R2 合流 ✓ 交换：x 有
    R1 与 R2 双出边？x=2: R1 出边无；x=1: R1 1→2, R2 1→? 无。
    vacuous 交换 ✓；并 0→1→2→1 有圈但合流。 *)
-Definition R1b : nat := 17.    (* 0→1, 1→2 *)
+Definition R1b : nat := 34.    (* 0→1, 1→2：bit1+bit5 *)
 Definition R2b : nat := 128.   (* 2→1 *)
-Definition Rb  : nat := 145.   (* 并：0→1,1→2,2→1 *)
+Definition Rb  : nat := 162.   (* 并：0→1,1→2,2→1 *)
 
 Example t5_positive :
-  andb (confluent R1b)
-       (andb (confluent R2b)
-             (andb (commutes R1b R2b)
-                   (confluent Rb)))
+  andb (confluentT R1b)
+       (andb (confluentT R2b)
+             (andb (commutesT R1b R2b)
+                   (confluentT Rb)))
   = true.
 Proof. vm_compute. reflexivity. Qed.
 
