@@ -1,6 +1,6 @@
 # Zig 编程指南（0.17）
 
-面向**会编程（C/C++ 背景最佳）、初学 Zig** 的读者：从零教到 0.17 现代写法——`std.Io` 新接口、`std.process.Init` 入口、unmanaged 集合从第 02 章就是默认姿势，旧写法只在坑位清单里教"认得"。**Zig 特色全部独立成章细讲**：分配器（11）、comptime 两章（13/14）、测试（15）、构建系统与包管理（16）、C 互操作（17）、交叉编译与 zig cc（18）。**25–37 章为书本扩充的进阶缺口**：二进制布局、编码流处理、目录树、文件监视、网络双协议、HTTP、并发进阶、SQLite 直连、解释器、LRU 缓存服务器（取材《Systems Programming with Zig》《Learning Zig》两书，0.17 实测改写）。每章"读讲解 → 跑示例 → 改代码再跑"，全部示例三层验证通过（fmt + test + 运行 exit 0）。
+面向**会编程（C/C++ 背景最佳）、初学 Zig** 的读者：从零教到 0.17 现代写法——`std.Io` 新接口、`std.process.Init` 入口、unmanaged 集合从第 02 章就是默认姿势，旧写法只在坑位清单里教"认得"。**Zig 特色全部独立成章细讲**：分配器（11）、comptime 两章（13/14）、测试（15）、构建系统与包管理（16）、C 互操作（17）、交叉编译与 zig cc（18）。**25–43 章为书本扩充的进阶缺口**：二进制布局、编码流处理、目录树、文件监视、网络双协议、HTTP、并发进阶、SQLite 直连、解释器、LRU 缓存服务器、守护进程与信号、异步 IO、ZIP 解析、随机数与密码、JSON 监控服务、并发文件索引器（取材《Systems Programming with Zig》《Learning Zig》两书，0.17 实测改写）。每章"读讲解 → 跑示例 → 改代码再跑"，全部示例三层验证通过（fmt + test + 运行 exit 0）。
 
 > ⚠️ Zig 尚未 1.0：网上教程多为 0.13/0.14 语法，**0.16 的写法在 0.17 也大量编译不过**
 > （`**` 运算符、`void{}`、`@cImport`、`@intFromEnum`、`b.args`、`std.meta` 等已移除/改名）。
@@ -11,8 +11,8 @@
 ```text
 zig/
 ├── README.md       本文件
-├── docs/           38 篇文档（00 迁移手册 + 01 → 37 教程；25 起为书本扩充进阶篇）
-├── examples/       36 个示例目录（章号 = 目录号；16/17/24/35 为 build.zig 工程；32 链系统 sqlite3）
+├── docs/           44 篇文档（00 迁移手册 + 01 → 43 教程；25 起为书本扩充进阶篇）
+├── examples/       42 个示例目录（章号 = 目录号；16/17/24/35 为 build.zig 工程；32 链系统 sqlite3；38 链 libc）
 ├── build.ps1       统一验证脚本（须 PowerShell 7 / pwsh 运行）
 ├── run-all.sh      同一套验证的 bash 版（Linux/macOS；ZIG= 可指定解释器）
 └── CHEATSheet.md   语法速查 + 0.17 坑位索引
@@ -60,19 +60,25 @@ zig/
 | [35 ZLS 与编辑器工具链](docs/35-zls.md) | 版本配对铁律、0.17 断代、zls.json、check 步骤 | `35_zls`（build.zig 工程） |
 | [36 指针与内存深水区](docs/36-pointers.md) | volatile、ptrCast/alignCast、零尺寸、peer 解析、[*c]、位对齐指针 | `36_pointers` |
 | [37 实战：FileGuard 文件完整性监护](docs/37-fileguard.md) | 内容哈希、inode 移动检测、双索引、手写 glob、CLI | `37_fileguard` |
+| [38 实战：守护进程与信号](docs/38-daemon.md) | sigaction、fork/execve/waitpid、僵尸收割、daemon 化、zcron | `38_daemon`（`-lc`） |
+| [39 异步 IO 与并发编程](docs/39-asyncio.md) | `io.async`/`Io.Group`/`Io.Select`、fan-out/fan-in、并发 echo | `39_asyncio` |
+| [40 实战：ZIP 解析与 comptime 布局校验](docs/40-zunzip.md) | EOCD/CD 结构、CRC32 comptime 查表、@typeInfo 字段校验、字节序 | `40_zunzip` |
+| [41 实战：随机数与密码生成器 zpass](docs/41-zpass.md) | PRNG/CSPRNG、模偏差与拒绝采样、UUID v4、随机时间序列 | `41_zpass` |
+| [42 实战：JSON 系统监控服务](docs/42-memsrv.md) | /proc 解析、std.json 往返、监控循环、HTTP 服务进程内往返 | `42_memsrv` |
+| [43 实战：并发文件索引器 zlocate](docs/43-zlocate.md) | Scatter-Gather、WorkQueue 终止不变量、并行 BFS、生产者-消费者 | `43_zlocate` |
 
 ## 构建工具链
 
 - Zig **0.17.0**：Windows 用 `G:\scoop\apps\zig\current\zig.exe`（scoop 安装；版本不符先看 01 章的版本坑）；**macOS 实测环境**是官方 tarball `/Volumes/mac004/lang/zig-x86_64-macos-0.17.0/zig`（MacPorts 的 `/opt/local/bin/zig` 仍是 0.16.0，**不要用**）。build.ps1 找不到 scoop 路径时自动回退 PATH 里的 `zig`。
 - Linux/macOS：官网 tarball 解压即用（单文件无依赖），`zig version` 须为 `0.17.0`。发行版包版本普遍偏旧（本机 MacPorts 是 0.16.0），**版本不符时以官网 tarball 为准**。
-- **已实测的平台**：macOS Darwin 23 / x86_64 / zig 0.16.0 —— `./run-all.sh` 全量三层验证通过；PowerShell 7.6.6（`pwsh`）下 `build.ps1` 同样全绿。Linux（Arch/WSL2, zig 0.16.0）全量实测通过。**25–34 章（2026-09-30 扩充）在 Windows 11 / 0.16.0 全量 build.ps1 -All 实测通过**（29/30/34 的 TCP 走 ws2_32 直调——std.Io.net 的 AFD 数据面缺陷见 29 章实录；Linux/macOS 复验 32 章需 libsqlite3-dev）。**Apple Silicon（arm64 macOS）**：逐示例用 `-target aarch64-macos` 交叉编译验证全部通过（21 章此前是硬失败，现已补 aarch64 实现）；运行验证待 arm64 真机。
+- **已实测的平台**：macOS Darwin 23 / x86_64 / zig 0.17.0 —— `./run-all.sh` 全量三层验证通过（含 38–43 章新增示例）。PowerShell 7.6.6（`pwsh`）下 `build.ps1` 同样全绿。Linux（Arch/WSL2, zig 0.16.0）全量实测通过。**25–34 章（2026-09-30 扩充）在 Windows 11 / 0.16.0 全量 build.ps1 -All 实测通过**（29/30/34 的 TCP 走 ws2_32 直调——std.Io.net 的 AFD 数据面缺陷见 29 章实录；Linux/macOS 复验 32 章需 libsqlite3-dev）。**38–43 章（2026-10-10 扩充）在 macOS / 0.17.0 全量实测通过**；38 章须 `-lc`（std.c fork/execve），Windows 下 pwsh 脚本已自动加。**Apple Silicon（arm64 macOS）**：逐示例用 `-target aarch64-macos` 交叉编译验证全部通过（21 章此前是硬失败，现已补 aarch64 实现）；运行验证待 arm64 真机。
 - 默认 Debug 模式（安全检查全开）；Windows 中文控制台乱码先 `chcp 65001`（build.ps1 已代设 UTF-8），Linux/macOS 终端原生 UTF-8 无此问题。
 
 ## 验证命令
 
 ```powershell
 cd G:\code\guide\zig
-pwsh -ExecutionPolicy Bypass -File build.ps1 -All                 # 全部 36 个示例：fmt+test+运行
+pwsh -ExecutionPolicy Bypass -File build.ps1 -All                 # 全部 42 个示例：fmt+test+运行
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Example 12_collections   # 单个示例
 pwsh -ExecutionPolicy Bypass -File build.ps1 -Clean               # 清理 build 目录
 ```
@@ -81,7 +87,7 @@ Linux/macOS 用等价的 bash 脚本（与 build.ps1 同一套三层验证）：
 
 ```bash
 cd zig
-ZIG=/Volumes/mac004/lang/zig-x86_64-macos-0.17.0/zig ./run-all.sh   # 全部 36 个示例：fmt+test+运行
+ZIG=/Volumes/mac004/lang/zig-x86_64-macos-0.17.0/zig ./run-all.sh   # 全部 42 个示例：fmt+test+运行
 ./run-all.sh 12_collections         # 单个示例
 ZIG=/path/to/zig ./run-all.sh       # 一般情况下直接 ./run-all.sh 即可
 ```

@@ -292,4 +292,29 @@ init.minimal.args.iterateAllocator(a)           // Windows 上 iterate() 编译�
 | `Stream.close` 不幂等 | 显式 close 后再 `defer close` → BADF panic；要全 defer 或全显式 | 34 |
 | `Server.accept` 要`*Server` | 传给 `Thread.spawn` 的参数写 `&srv`，形参也改指针 | 29 |
 | `Stream.read(io, [][]u8)` | **0.17.0 标准库自身 bug**（Io/net.zig:1286）；改走 reader/writer | 29/30 |
+| `Dir.openDir(io, "", .{})` 在 macOS 报 FileNotFound | 空 sub_path 走 `openat(fd,"",O_DIRECTORY)` → ENOENT（Windows NT 路径吃得下，故跨平台代码易踩）；sub_path 为空时**不要 openDir**，直接拿 root 句柄迭代 | 37 |
+| `stat.inode` 平台类型是 `std.posix.ino_t` | Windows=`i64`（LARGE_INTEGER），macOS/Linux 走 else=`u64`；入库前统一钳/`@intCast` 到 `i64` | 37 |
+
+### 38–43 实测坑位（按疼度排）
+
+| 坑 | 解 | 章 |
+|---|---|---|
+| `std.posix.waitpid` 整个函数不存在 | `grep -c waitpid lib/std/posix.zig` = 0；用 `std.c.waitpid`（0.16 把它当 ECHILD=unreachable，0.17 直接移除） | 38 |
+| `std.posix.sigaction` 返回 `void` | 失败即 unreachable（EINVAL = 程序员错误）；不是 `!void` | 38 |
+| 子进程退出用 `std.process.exit` | fork 后子进程必须 `std.c._exit`——`exit` 会刷父进程继承的 stdio 缓冲，输出翻倍 | 38 |
+| `async`/`await` 不是关键字 | 0.10 已移除语言级 async/await；0.17 是 `io.async(fn, .{args})` 返回 Future，`fut.await(io)` 收结果 | 39 |
+| `io.async` 不保证真并发 | 要"同时跑"用 `io.concurrent`（失败报 `ConcurrencyUnavailable`）；`io.async` 可能立即内联执行 | 39 |
+| `std.Thread.Pool`/`WaitGroup` 已移除 | 用 `std.Io.Group`（`group.async` 扇出 + `group.await` 扇入 + `defer group.cancel` 兜底） | 39/43 |
+| spawn 的线程没有 `init.io` | 自建 `std.Io.Threaded.init(gpa, .{})`；测试用 `.init_single_threaded` | 39/43 |
+| `std.meta.fields` 已废弃 | 直接 `@compileError`；正解 `@typeInfo(T).@"struct".field_names/field_types`（平行数组，须 `inline for`） | 40 |
+| `std.crypto.random` 不存在 | 用 `init.io.randomSecure(&buf)`（CSPRNG）或 `init.io.random(&buf)`（PRNG 播种） | 41 |
+| `std.time.milliTimestamp` 不存在 | 用 `std.Io.Timestamp.now(io, .real).toMilliseconds()` | 41 |
+| `% N` 有模偏差（`2^bits % N != 0`） | 拒绝采样：拒绝 `v >= floor(2^bits/N)*N` 的值重抽；`r.intRangeAtMost` 内部已处理 | 41 |
+| `std.json.stringify` 签名变了 | 0.17 是 `std.json.Stringify.value(v, .{}, writer)`——writer 在最后；写错顺序报 `expected type 'json.Stringify.Options', found pointer` | 42 |
+| `std.json.parseFromSlice` 返回 `Parsed(T)` | 内部持有 arena，必须 `defer parsed.deinit()`；否则泄漏检测立刻抓到 | 42 |
+| 默认 JSON 反序列化遇未知字段报错 | `.ignore_unknown_fields = true` 跳过（服务端演进兼容老客户端） | 42 |
+| `std.posix` 没有 `sysctlbyname` | `std.c.sysctlbyname` 有 extern 声明（macOS 拿总内存）；`std.posix.getrusage(0)` 拿峰值 RSS | 42 |
+| 并行 BFS worker 提前退出 | 终止不变量：`pop()` 仅在 `active == 0` 且队列为空时返回 null；只看队列空会丢整棵子树 | 43 |
+| 条件变量 `wait` 用 `if` 判断 | 必须 `while` 循环重查——虚假唤醒是 API 正式语义 | 43 |
+| `std.Io.Mutex.lock` 返回错误 | 用 `lockUncancelable(io)`（void）；`Condition.waitUncancelable` 同理 | 43 |
 

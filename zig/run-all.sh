@@ -78,6 +78,8 @@ test_one() { # test_one <目录>
         32_sqlite) test_plain_example "$dir" -lsqlite3 ;;
         # 21：21.6/21.9 用 extern "c" 的 getpid/strlen 与 libc 对账，须显式 -lc
         21_asm) test_plain_example "$dir" -lc ;;
+        # 38：信号处理 + fork/setsid/execve/waitpid 全走 std.c，须显式 -lc
+        38_daemon) test_plain_example "$dir" -lc ;;
         18_cross) test_cross_example "$dir" ;;
         *) test_plain_example "$dir" ;;
     esac

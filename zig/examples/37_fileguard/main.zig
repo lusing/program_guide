@@ -29,7 +29,8 @@ const Metadata = struct {
     /// Io.Timestamp 的 i96 纳秒（28 章老熟人，取 .nanoseconds）。
     mtime_ns: i96,
     /// 移动检测的关键：rename 之后路径变了，inode 不变。0 是"无有效值"哨兵。
-    /// 0.17 实测：stat.inode 是 i64（不是 u64）。
+    /// 0.17 实测：stat.inode 的平台类型是 std.posix.ino_t——Windows 是 i64，
+    /// macOS/Linux 走 else 分支是 u64。统一钳到 i64（真实 inode 远到不了 2^63）。
     inode: i64,
     /// 可选内容哈希（SHA-256 原始 32 字节；不开哈希就是 null）。
     checksum: ?[32]u8,
@@ -178,11 +179,14 @@ fn traverse(
     if (cfg.max_depth) |md| {
         if (depth > md) return;
     }
-    var d = if (sub_path.len == 0)
-        try root.openDir(io, "", .{ .iterate = true })
+    // 0.17 跨平台坑：openDir(io, "", ...) 在 macOS 走 openat(fd,"",O_DIRECTORY)
+    // 返回 ENOENT（空路径不是合法 POSIX 路径；Windows 的 NT 路径反而吃得下）。
+    // 所以 sub_path 为空时不许 openDir——直接在 root 句柄上迭代。
+    const d: std.Io.Dir = if (sub_path.len == 0)
+        root
     else
         try root.openDir(io, sub_path, .{ .iterate = true });
-    defer d.close(io);
+    defer if (sub_path.len != 0) d.close(io);
 
     var it = d.iterate();
     while (try it.next(io)) |entry| {
@@ -205,7 +209,7 @@ fn traverse(
                     .path = "", // add 内部会换成自有 key
                     .size = st.size,
                     .mtime_ns = st.mtime.nanoseconds,
-                    .inode = st.inode,
+                    .inode = @intCast(@min(st.inode, @as(@TypeOf(st.inode), @intCast(std.math.maxInt(i64))))),
                     .checksum = sum,
                 });
             },
