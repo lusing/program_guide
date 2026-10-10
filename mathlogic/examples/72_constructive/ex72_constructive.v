@@ -204,3 +204,34 @@ Proof. reflexivity. Qed.
 (* 冒烟 *)
 Compute (map lagrange4 [1; 2; 3; 7; 23]).
 Compute (negL [true; true; false], impL [true; false; false] [true; false; false]).
+
+(* ---------- 负公式的 GG 不动点与稳定性（Mints §13.2 深化） ---------- *)
+
+(* 负公式（Def 13.2 的命题近似）：¬原子经 ∧/→/∀ 搭建——GG 翻译的
+   语义不动点（引理 13.3：⊢¬¬φ↔φ）；量词侧由 nnF 的 ∀ 保形/∃ 缀
+   ¬¬ 维持。经典语义面：evF (nnF a) = evF a（全指派逐位）。 *)
+Fixpoint isNeg (a : form) : bool :=
+  match a with
+  | fimp x ffalse => match x with
+                     | atom _ => true      (* ¬原子 *)
+                     | _ => isNeg x        (* ¬ 外壳 *)
+                     end
+  | fimp x y => andb (isNeg x) (isNeg y)
+  | fand x y => andb (isNeg x) (isNeg y)
+  | fall x => isNeg x
+  | _ => false
+  end.
+
+Definition negSamples : list form :=
+  [ fimp (atom 0) ffalse
+  ; fand (fimp (atom 0) ffalse) (fimp (atom 1) ffalse)
+  ; fimp (atom 0) ffalse
+  ; fall (fimp (atom 0) ffalse) ].
+
+Example neg_gg_fixed :
+  forallb (fun a => orb (negb (isNeg a))
+                (forallb (fun v => if evF (nnF a) v then evF a v else negb (evF a v)) asg4))
+          negSamples = true.
+Proof. vm_compute. reflexivity. Qed.
+
+

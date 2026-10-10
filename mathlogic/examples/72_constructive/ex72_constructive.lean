@@ -139,3 +139,29 @@ example : (List.range 24).all (fun i =>
 
 #eval (List.range 24).map (fun i => lagrange4 (i + 1))
 #eval (negL [true, true, false], impL [true, false, false] [true, false, false])
+
+/- ---------- 负公式的 GG 不动点与稳定性（Mints §13.2 深化） ---------- -/
+
+def isNeg : Form → Bool
+  | .fimp x .ffalse =>
+      match x with
+      | .atom _ => true      -- ¬原子
+      | _ => isNeg x         -- ¬ 外壳
+  | .fimp x y => isNeg x && isNeg y
+  | .fand x y => isNeg x && isNeg y
+  | .fall x => isNeg x
+  | _ => false
+
+def negSamples : List Form :=
+  [ .fimp (.atom 0) .ffalse
+  , .fand (.fimp (.atom 0) .ffalse) (.fimp (.atom 1) .ffalse)
+  , .fall (.fimp (.atom 0) .ffalse) ]
+
+example :
+    negSamples.all fun a =>
+      !(isNeg a) || asg4.all fun v => evF (nnF a) v == evF a v := by
+  native_decide
+
+/-- ¬¬¬P→¬P：三重否定坍缩（引理 13.3 的 Prop 面） -/
+theorem tripleNeg {P : Prop} (h : ¬¬¬P) : ¬P :=
+  fun hp => h (fun hn => hn hp)

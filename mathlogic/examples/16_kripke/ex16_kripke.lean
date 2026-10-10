@@ -78,4 +78,34 @@ theorem lemCounter : ¬ Forces w0 (or_ (fvar 0) (neg (fvar 0))) := by
      （三分支穷尽后剩余目标由上下文 auto-solve）；
    - Knows w0 n 无构造子——`intro k; cases k` 一行收。 -/
 
+/- ---------- 三世界 V 帧：弱排中反例（Mints 例 7.2 深化） ---------- -/
+
+def vval (w _n : Nat) : Bool := if w = 1 then true else false
+
+def Vle (w w' : Nat) : Prop :=
+  (w = 0 ∧ (w' = 0 ∨ w' = 1 ∨ w' = 2))
+    ∨ (w = 1 ∧ (w' = 1 ∨ w' = 2))
+    ∨ (w = 2 ∧ w' = 2)
+
+def Vforces : Nat → Form → Prop
+  | w, fvar n => vval w n = true
+  | w, or_ a b => Vforces w a ∨ Vforces w b
+  | w, imp a b => ∀ w', Vle w w' → Vforces w' a → Vforces w' b
+  | w, neg a => ∀ w', Vle w w' → Vforces w' a → False
+
+/-- 例 7.2：弱排中 ¬p∨¬¬p 在根世界 0 不被强制 -/
+theorem wlemCounter :
+    ¬ Vforces 0 (or_ (neg (fvar 0)) (neg (neg (fvar 0)))) := by
+  intro h
+  rcases h with h1 | h2
+  · exact h1 1 (Or.inl ⟨rfl, by right; left; rfl⟩) rfl
+  · have h3 : Vforces 2 (neg (fvar 0)) := by
+      intro w' hw' hp
+      rcases hw' with ⟨hw, _⟩ | ⟨hw, _⟩ | ⟨hw, hw'⟩
+      · exact absurd hw (by decide)
+      · exact absurd hw (by decide)
+      · exact absurd hp (by rw [hw']; intro h; exact Bool.noConfusion h)
+    exact h2 2 (Or.inl ⟨rfl, by right; right; rfl⟩) h3
+
 end Ex16
+

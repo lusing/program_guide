@@ -163,3 +163,91 @@ Qed.
      等式名字不定，match goal 免疫命名漂移）；
    - neutral_not_typed_nil 的 induction 生成 IH 需对 T 全称——
      把 T 放引理签名（forall t T）而非 intros 后再归纳。 *)
+
+(* ---------- 7. Coherence 实验室（Mints ch6：βη 长正规居元枚举） ---------- *)
+
+(* → 片段的 λ 项（de Bruijn）与类型；长正规形=η 展开到基底的 β 正规形 *)
+Inductive mty : Type :=
+| MBase : nat -> mty
+| MArr : mty -> mty -> mty.
+
+Inductive mtm : Type :=
+| mvar : nat -> mtm
+| mlam : mtm -> mtm
+| mapp : mtm -> mtm -> mtm.
+
+Fixpoint mtyEq (a b : mty) : bool :=
+  match a, b with
+  | MBase m, MBase n => Nat.eqb m n
+  | MArr x y, MArr u v => andb (mtyEq x u) (mtyEq y v)
+  | _, _ => false
+  end.
+
+(* 目标基底 + 参数类型串的分解 *)
+Fixpoint unarrow (t : mty) : list mty * mty :=
+  match t with
+  | MArr d c => let r := unarrow c in (d :: fst r, snd r)
+  | a => ([], a)
+  end.
+
+Fixpoint msize (t : mtm) : nat :=
+  match t with
+  | mvar _ => 1
+  | mlam b => S (msize b)
+  | mapp t u => S (msize t + msize u)
+  end.
+
+Fixpoint cartesian {A} (fuel : nat) (ls : list (list A)) : list (list A) :=
+  match ls with
+  | [] => [[]]
+  | l :: rest => flat_map (fun x => map (cons x) (cartesian fuel rest)) l
+  end.
+
+Definition mapps (t : mtm) (args : list mtm) : mtm :=
+  fold_left (fun a b => mapp a b) args t.
+
+(* 长正规形枚举（η 长：函数型即 λ；基底型=头变量+全参数，参数本身
+   递归 nrm）。单一 fuel 递归——互递归同燃料在 Coq 不合法，每层降 1 *)
+Fixpoint nrm (fuel : nat) (G : list mty) (a : mty) {struct fuel} : list mtm :=
+  match fuel with
+  | 0 => []
+  | S f =>
+      match a with
+      | MArr d c => map mlam (nrm f (d :: G) c)
+      | MBase _ =>
+          flat_map (fun i =>
+            match nth_error G i with
+            | Some t =>
+                let ur := unarrow t in
+                if mtyEq (snd ur) a then
+                  map (fun args => mapps (mvar i) args)
+                      (cartesian f (map (fun d => nrm f G d) (fst ur)))
+                else []
+            | None => []
+            end) (seq 0 (length G))
+      end
+  end.
+
+Definition P1 : mty := MBase 0.
+Definition P2 : mty := MBase 1.
+Definition P3 : mty := MBase 2.
+
+(* 平衡矢列（变元至多两现、每符号至多一次——Def 6.3 前的 balanced）：
+   p1,(p1→p2),…,(pn→pn+1) ⊢ pn+1 的长正规居元恰 1 个（Thm 6.2(a)） *)
+Example bal1_unique : Nat.eqb (length (nrm 7 [P1; MArr P1 P2] P2)) 1 = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Example bal2_unique :
+  Nat.eqb (length (nrm 7 [P1; MArr P1 P2; MArr P2 P3] P3)) 1 = true.
+Proof. vm_compute. reflexivity. Qed.
+
+(* 非平衡：p,p→p→p ⊢ p 有无穷多正规居元（d_{n+1}=v1 v0 d_n）——
+   有界枚举 ≥4 个 *)
+Example unbal_many :
+  Nat.leb 4 (length (nrm 6 [P1; MArr P1 (MArr P1 P1)] P1)) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+(* 对照：Peirce 型 ((p→q)→p)→p 无闭正规居元（不可推导的语义面） *)
+Example peirce_empty :
+  Nat.eqb (length (nrm 6 [] (MArr (MArr (MArr P1 P2) P1) P1))) 0 = true.
+Proof. vm_compute. reflexivity. Qed.

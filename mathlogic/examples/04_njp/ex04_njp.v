@@ -118,3 +118,27 @@ Example mmh_syll : forall P Q R : Prop, (P -> Q) -> ((Q -> R) -> (P -> R)).
 Proof.
   intros P Q R HPQ HQR HP. apply HQR. apply HPQ. exact HP.
 Qed.
+
+(* ---------- 8. 直接链与等价替换（Mints §2.6-2.8 深化） ---------- *)
+
+(* 引理 2.9(2.3)：β,α→β,¬α→β ⊢ ¬α 的「直接链」——目标被前提的
+   ADC 饱和直接吃掉（§2.6 的 heuristics：先拆解、再组合子目标） *)
+Lemma adc_chain : forall a b : Prop,
+  (a -> b) -> ((a -> False) -> b) -> ((b -> False) -> False).
+Proof.
+  intros a b Hab Han Hnb.
+  apply Hnb. apply Han. intro Ha. apply Hnb. apply Hab. exact Ha.
+Qed.
+
+(* 引理 2.10(a)：等价替换的四连接词形态（替换保等价——§2.8） *)
+Lemma repl_imp : forall d a b : Prop,
+  (a -> b) -> ((d -> a) -> (d -> b)).
+Proof. intros d a b Hab Hda hd. apply Hab. apply Hda. exact hd. Qed.
+
+Lemma repl_and : forall c a b : Prop,
+  (a -> b) -> (c /\ a -> c /\ b).
+Proof. intros c a b H [Hc Ha]. split. exact Hc. apply H. exact Ha. Qed.
+
+Lemma repl_or : forall c a b : Prop,
+  (a -> b) -> (c \/ a -> c \/ b).
+Proof. intros c a b H [Hc | Ha]. left. exact Hc. right. apply H. exact Ha. Qed.

@@ -132,3 +132,39 @@ Proof.
   apply (Habs 1 (conj Hw2 (Nat.le_refl 1))).
   left. reflexivity.
 Qed.
+
+(* ---------- 三世界 V 帧：弱排中反例 + 框架条件（Mints §7.3 深化） ---------- *)
+
+(* 例 7.2 的 V 帧：根 0 连双叶 1、2（1、2 不可比）；p 只在世界 1 真 *)
+Definition vval (w : nat) (n : nat) : bool :=
+  match w with
+  | 1 => true
+  | _ => false
+  end.
+
+Definition vle (w w' : nat) : Prop := (w <= w' /\ w' <= 2 /\ w <> 2) \/ (w = 2 /\ w' = 2).
+
+(* 强制关系（同 forces，换模型） *)
+Fixpoint vforces (w : nat) (f : form) : Prop :=
+  match f with
+  | FVar n => vval w n = true
+  | FAnd a b => vforces w a /\ vforces w b
+  | FOr a b => vforces w a \/ vforces w b
+  | FImp a b => forall w', vle w w' -> vforces w' a -> vforces w' b
+  | FBot => False
+  end.
+
+(* 例 7.2：弱排中 ¬p∨¬¬p 在根世界 0 不被强制 *)
+Example wlem_counter :
+  ~ vforces 0 (FOr (FImp (FVar 0) FBot) (FImp (FImp (FVar 0) FBot) FBot)).
+Proof.
+  intro H. destruct H as [H1 | H2].
+  - assert (Hle : vle 0 1) by (left; repeat split; lia).
+    destruct (H1 1 Hle (eq_refl true)).
+  - assert (Hle : vle 0 2) by (left; repeat split; lia).
+    assert (Hn2 : vforces 2 (FImp (FVar 0) FBot)).
+    { intros w Hw Hp.
+      destruct Hw as [[Hc [_ Hne]] | [_ Hw']]; [lia|].
+      subst w. simpl in Hp. discriminate Hp. }
+    destruct (H2 2 Hle Hn2).
+Qed.

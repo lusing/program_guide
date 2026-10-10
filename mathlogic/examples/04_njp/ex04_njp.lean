@@ -71,3 +71,19 @@ theorem mmh_A5 : ∀ P Q : Prop, P → (Q → P ∧ Q) := fun _ _ hp hq => ⟨hp
 
 example : ∀ P Q R : Prop, (P → Q) → ((Q → R) → (P → R)) :=
   fun _ _ _ hpq hqr hp => hqr (hpq hp)
+
+/- ---------- 8. 直接链与等价替换（Mints §2.6-2.8 深化） ---------- -/
+
+/-- 引理 2.9(2.2)：(α→β),(¬α→β) ⊢ ¬¬β 的直接链 -/
+theorem adcChain {a b : Prop} (hab : a → b) (han : ¬a → b) : ¬¬b :=
+  fun hnb => hnb (han (fun ha => hnb (hab ha)))
+
+/-- 引理 2.10(a)：等价替换四形态 -/
+theorem replImp {d a b : Prop} (h : a → b) : (d → a) → (d → b) :=
+  fun hda hd => h (hda hd)
+
+theorem replAnd {c a b : Prop} (h : a → b) : c ∧ a → c ∧ b :=
+  fun hcHa => ⟨hcHa.1, h hcHa.2⟩
+
+theorem replOr {c a b : Prop} (h : a → b) : c ∨ a → c ∨ b :=
+  fun hcHa => hcHa.elim Or.inl (fun x => Or.inr (h x))
