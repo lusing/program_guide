@@ -159,7 +159,7 @@ foreach ($u in $units) {
                 if (-not $ok) { $detail = $out }
             }
             'isabelle' {
-                $sess = 'ML' + ($u.Chapter.Substring(0, 2))
+                $sess = 'ML' + ($u.Chapter -replace '_.*$', '')   # 章号三位（105+）后 Substring(0,2) 截出 ML10 的事故修复
                 $exWin = ($examples -replace '\\', '/')
                 $exCyg = '/cygdrive/' + $exWin.Substring(0, 1).ToLower() + $exWin.Substring(2)
                 $isaWin = ($isaHome -replace '\\', '/')
