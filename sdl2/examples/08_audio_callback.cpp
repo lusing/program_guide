@@ -55,7 +55,9 @@ int main() {
               << ", channels=" << static_cast<int>(obtained.channels)
               << ", samples=" << obtained.samples << '\n';
     std::cout << "==== 08 结束 ====\n";
-    // 设备名取决于机器接了什么声卡，只做观测，不参与字节比对。
+    // 设备名取决于机器接了什么声卡，也取决于音频后端：
+    // coreaudio 给 "Built-in Output"，SDL_AUDIODRIVER=dummy 给
+    // "System audio output device"。只做观测，不参与字节比对。
     std::cout << "[观测] 默认输出设备: " << SDL_GetAudioDeviceName(0, 0) << '\n';
 
     SDL_CloseAudioDevice(dev);
