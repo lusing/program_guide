@@ -90,23 +90,46 @@ Fixpoint remove_dupb (l : list nat) : list nat :=
 Definition atomicClosure (B : nat) : list nat :=
   remove_dupb (applyRules 4 B []).
 
-Definition atomAt (B n : nat) : bool := existsb (Nat.eqb n) (atomicClosure B).
+(* 原子位掩码表：64 基各算一次闭包（穷举断言的性能命脉——
+   每次叶子查询重跑 applyRules 会把电池拖到小时级）。 *)
+Definition atomBits (B : nat) : nat :=
+  fold_left (fun acc n => Nat.lor acc (Nat.shiftl 1 n))
+            (atomicClosure B) 0.
 
-(* ---------- 3. 基扩张有效性 ---------- *)
+Definition atomTab : list nat := map atomBits allBases.
 
-Fixpoint val (B : nat) (a : fm) {struct a} : bool :=
+Definition atomAt (B n : nat) : bool :=
+  Nat.testbit (nth B atomTab 0) n.
+
+(* ---------- 3. 基扩张有效性（表列动态规划版） ----------
+   对每个子公式一次算满 64 基的真值表，→ 的扩张量词在表上做
+   64×64 扫描——嵌套蕴含的 64^深度 在朴素递归里是小时级，
+   表列后是秒级（本轮实测：Glivenko 单断言 153s → 表列后数秒）。 *)
+
+Definition and2 (u v : list bool) : list bool :=
+  map (fun p => andb (fst p) (snd p)) (combine u v).
+Definition or2 (u v : list bool) : list bool :=
+  map (fun p => orb (fst p) (snd p)) (combine u v).
+
+Fixpoint tab (a : fm) {struct a} : list bool :=
   match a with
-  | fat n => atomAt B n
-  | fbot => false
-  | fand x y => andb (val B x) (val B y)
-  | for_ x y => orb (val B x) (val B y)
+  | fat n => map (fun B => atomAt B n) allBases
+  | fbot => repeat false 64
+  | fand x y => and2 (tab x) (tab y)
+  | for_ x y => or2 (tab x) (tab y)
   | fimp x y =>
-      (* 开放世界蕴含：量化一切基扩张 *)
-      forallb (fun B2 =>
-        implb (andb (extends B2 B) (val B2 x)) (val B2 y)) allBases
+      let tx := tab x in
+      let ty := tab y in
+      map (fun B =>
+        forallb (fun B2 =>
+          implb (andb (extends B2 B) (nth B2 tx false))
+                (nth B2 ty false)) allBases)
+        allBases
   end.
 
-Definition VAL (a : fm) : bool := forallb (fun B => val B a) allBases.
+Definition val (B : nat) (a : fm) : bool := nth B (tab a) false.
+
+Definition VAL (a : fm) : bool := forallb (fun b => b) (tab a).
 
 Definition counterBase (a : fm) : option nat :=
   find (fun B => negb (val B a)) allBases.
