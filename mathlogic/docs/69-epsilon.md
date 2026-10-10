@@ -102,6 +102,35 @@ Solovay 后来用它给 Paris–Harrington 的增长定界（76 章再见）。
 基础列早期出现」，影子下降的每一步都在消费它（`shadow_descent_
 grid` 是它的 28 组现场）。
 
+## 五、基础列与 G_x 幂等式（Takeuti §12 深化）
+
+Hardy 机器的隐藏地基是**基础列**（fundamental sequence，Def 12.19）：
+对极限序数 α 指定一列「逼近」α 的严格递增序列 {α}(n)，两条条款：
+(i) {β+ω^{δ+1}}(n)=β+ω^δ·n（后继指数：把乘数换成 n）；
+(ii) {β+ω^λ}(n)=β+ω^{λ(n)}（极限指数：递归下钻）。本章的
+`obase` 就是这两条条款的直译：`isLimitExp` 判定指数是否极限、
+`predOrd` 做 δ+1↦δ 的剥层、`obaseF` 递归分派（Coq 侧
+`examples/69_epsilon/ex69_epsilon.v` 第 7 节；Lean 侧本轮从 Coq
+同构移植了全套——`appendOrd`/`isLimitExp`/`predOrd`/`obaseF`/
+`obase`）。
+
+深化件把条款做成对账表：`fseq_clause_succ` 验 (i)
+（ω² 的基础列是 ω·n）、`fseq_clause_lim` 验 (ii)（ω^ω 的基础列
+是 ω^n——指数本身递归下钻）、`fseq_with_prefix` 验 β 前缀保持
+（{ω·2}(n)=ω+n——obase 的 c≥2 分支先剥一层再拼回）。
+
+第二条深化是 **G_x 幂等式**（Lemma 12.39）：G_x(ω^α)=x^{G_x(α)}，
+其中 G_x 是「hereditary 基表示的数值化」（Cor 12.40：本编码里
+G_x 就是 `evalb`——§二的 roundtrip 已经证明
+evalb(herb n b)=n）。`gx_pow_fueled` 在递归层陈述：燃料 f 下的
+单项 CNF ω^α·1 求值恰是「指数取同燃料 α 求值」的幂——一条
+定义级恒等式（Coq 侧对燃料分情形 `lia` 收尾；Lean 侧 `simp
+[evalbF, pow]` 双分支）。`gx_pow_table` 给数值直观：ω² 在基 2
+读作 4=2²，ω³ 在基 3 读作 27=3³。这条幂等式是 §二 roundtrip
+（G_x(G_x 表示)=恒等）与 §四 Hardy（沿基础列下钻的迭代）两台
+机器的齿轮：herb 把 n 写成 hereditary 基表示，evalb 把它读回
+数值，而读回的过程逐项执行 x^{G_x(·)}。
+
 ## 小结
 
 ε₀ 是 PA 的身份证：范式树是它的数据面，Goodstein 影子是它的

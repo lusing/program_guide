@@ -118,3 +118,73 @@ example : ((List.range 14).flatMap (fun k =>
 
 #eval herb 4 2        -- ω^ω
 #eval [0,1,2,3,4,5].map (fun k => goodRun k 4 2)
+
+/-- 基础列机器（与 Coq 侧 obaseF 同构移植） -/
+def appendOrd : Onf → Onf → Onf
+  | .cnf la, .cnf lb => .cnf (la ++ lb)
+
+/-- 指数为极限 ⟺ 其 CNF 不以有限段收尾 -/
+def isLimitExp : Onf → Bool
+  | .cnf [] => false
+  | .cnf l =>
+    match l.reverse with
+    | (gg, _) :: _ => !oeq gg oz
+    | [] => false
+
+/-- δ+1 ↦ δ：剥掉有限尾的 1 -/
+def predOrd : Onf → Onf
+  | .cnf [] => oz
+  | .cnf l =>
+    match l.reverse with
+    | (gg, c) :: t =>
+      if oeq gg oz then
+        if c == 1 then .cnf t.reverse
+        else .cnf (t.reverse ++ [(gg, c - 1)])
+      else .cnf l
+    | [] => .cnf l
+
+def obaseF : Nat → Onf → Nat → Onf
+  | 0, _, _ => oz
+  | f + 1, .cnf [], _ => oz
+  | f + 1, .cnf ((g, c) :: rest), n =>
+    let unitBase :=
+      if isLimitExp g then .cnf [(obaseF f g n, 1)]
+      else if oeq g oz then oz
+      else .cnf [(predOrd g, n)]
+    match c with
+    | 0 => appendOrd unitBase (.cnf rest)
+    | 1 => appendOrd unitBase (.cnf rest)
+    | _ => appendOrd (.cnf ((g, c - 1) :: rest)) unitBase
+
+def obase (a : Onf) (n : Nat) : Onf := obaseF (sizeO a + 1) a n
+
+/- ---------- 7. Takeuti §12 深化：基础列条款对账与 G_x 幂等式 ---------- -/
+
+/-- 7.1 基础列 {α}(n)（Def 12.19）两条定义条款的机器对账 -/
+-- (i)：ω² = ω^{1+1}，{ω²}(n) = ω·n
+example : [1, 2, 3].all fun n =>
+    oeq (obase (.cnf [(ofin 2, 1)]) n) (.cnf [(ofin 1, n)]) = true := by
+  native_decide
+
+-- (ii)：ω^ω 的指数是极限，{ω^ω}(n) = ω^n
+example : [1, 2, 3].all fun n =>
+    oeq (obase (.cnf [(oomega, 1)]) n) (.cnf [(ofin n, 1)]) = true := by
+  native_decide
+
+/-- β 前缀保持：{ω·2}(n) = ω+n -/
+example : [1, 2].all fun n =>
+    oeq (obase (.cnf [(ofin 1, 2)]) n) (.cnf [(ofin 1, 1), (oz, n)]) = true := by
+  native_decide
+
+/-- 7.2 Lemma 12.39（G_x 幂等式）递归层：G_x(ω^α) = x^{G_x(α)} -/
+theorem gx_pow_fueled (f : Nat) (g : Onf) (b : Nat) :
+    evalbF (f + 1) (.cnf [(g, 1)]) b = pow b (evalbF f g b) := by
+  match f with
+  | 0 => simp [evalbF, pow]
+  | f + 1 => simp [evalbF, pow, Nat.mul_one, Nat.add_zero]
+
+/-- 数值账（Cor 12.40 口径 G_x = evalb） -/
+example : (evalb (.cnf [(ofin 2, 1)]) 2, pow 2 (evalb (ofin 2) 2),
+    evalb (.cnf [(oomega, 1)]) 2, pow 2 (evalb oomega 2),
+    evalb (.cnf [(ofin 3, 1)]) 3, pow 3 (evalb (ofin 3) 3))
+    = (4, 4, 4, 4, 27, 27) := by native_decide

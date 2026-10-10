@@ -207,6 +207,48 @@ Definition ladder : list nat := [1;2;3;4;5;6;7;8;9;10;11;12].
 一层都生效（65 章）。这张天梯是 Hilbert 纲领的墓志铭，也是它最成
 功的遗产：**我们买不到绝对的相容，但可以给每一层标价**。
 
+## 六、mix 版切消：Takeuti 的 LK* 视角（深化）
+
+本章正文用的切消是「G0 版」——cut 一次删去**一处**出现。Takeuti
+《Proof Theory》§5 用的是另一套装备：把 cut 换成 **mix 规则**，其
+结论一次删光混合公式 A 的**全部**出现。两种选择的交易在哪里？
+
+**mix 的形状**。左前提 Γ→Δ、右前提 Π→Λ，且 A 出现在 Δ 与 Π 中；
+结论为 Γ,Π\*→Δ\*,Λ，其中 \* 表示删光该侧全部 A 出现。机器面在
+`examples/70_cutelim/ex70_cutelim.v` 的第 9 节（Lean 侧同构）：
+
+- `eraseAll`/`countForm`：删光操作与出现计数——`mix_erase_ledger`
+  给出样本账：左矢列后件 2 处、右矢列前件 2 处，mix 结论两侧
+  **恰为 0 处**；
+- `mixSeq`：mix 的结论装配器。
+
+**为什么值得？** Takeuti 的归约引理（Lemma 5.4）按 grade（混合公式
+的逻辑符号数）与 rank（thread 上连续含混合公式的矢列数）双归纳消
+mix。rank>2 时要把 mix「推过」上方推理——若用 cut，被删出现可能
+正是上方推理的辅公式，须逐个补弱化；mix 一次删光，**推过推理时
+无残余出现要操心**（省去收缩换位的整类情形）。代价是 Lemma 5.2 的
+两次模拟：
+
+- **方向一（mix 的可靠性）**：mix 可由 cut+收缩导出——`mix_sound_
+  sample` 取两个含 A 重复出现的有效前提，验证 mix 结论仍有效
+  （`seqSem` 全赋值枚举）；`ctr_preserves_sem` 单独验证收缩步
+  保有效性；
+- **方向二（cut 由 mix 模拟）**：`cut_path_ledger` 记录了路径账：
+  cut 结论中 A 尚余 2 处（每侧 1 处），再各补一步收缩，恰好
+  追平 mix 结论——「2 收缩 + 1 cut + 2 收缩 vs 1 步 mix」。
+
+**rank 的机器面**。`rankFromBottom` 从 mix 的上矢列出发沿 thread
+向上数**连续**含 A 的矢列：左 thread 看 succedent、右 thread 看
+antecedent（`leftSide`/`rightSide`）。`rankPair` 相加，书证
+rank≥2 恒成立（`rank_ge2`：两条链的底就是 mix 上矢列，必含 A）。
+两个样本给出形态分野：`rank_fresh`（两侧 A 都新鲜，rank=2——
+Case 1 的主公式情形，按最外层符号拆解、grade 严格降，
+`mix_grade_drop` 记账 grade(B∧C)→grade(B)）与 `rank_pushed`
+（左链底部连续两矢列含 A，rank=3——Case 2「推过推理」的适用
+形态）。张寅生书的 G0 版与这里的 LK\* 版互为镜像：读者应当把
+「级与秩的双重归纳」（本章 §三）与「grade 与 rank 的双重归纳」
+并排对读——同一颗心脏，两种缝合。
+
 ## 小结
 
 本章把 07 章的矢列演算推进到它的证明论核心：反演定理（规则不增不

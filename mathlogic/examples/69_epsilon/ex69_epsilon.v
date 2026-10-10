@@ -279,3 +279,39 @@ Proof. reflexivity. Qed.
    shadow_descent_grid 承载；一般引理记文档线 *)
 
 Print Assumptions good_small_terminate.
+
+(* ---------- 7. Takeuti §12 深化：基础列条款对账与 G_x 幂等式 ---------- *)
+
+(* 7.1 基础列 {α}(n)（Def 12.19）——obase 已是机器实现，这里把两条
+   定义条款做成对账表：
+   (i)  {β+ω^{δ+1}}(n) = β + ω^δ·n
+   (ii) {β+ω^λ}(n)     = β + ω^{λ(n)} *)
+Example fseq_clause_succ :          (* (i)：ω² = ω^{1+1}，{ω²}(n)=ω·n *)
+  map (fun n => oeq (obase (cnf [(ofin 2, 1)]) n) (cnf [(ofin 1, n)])) [1;2;3]
+  = [true; true; true].
+Proof. reflexivity. Qed.
+
+Example fseq_clause_lim :           (* (ii)：ω^ω 的指数是极限，{ω^ω}(n)=ω^n *)
+  map (fun n => oeq (obase (cnf [(oomega, 1)]) n) (cnf [(ofin n, 1)])) [1;2;3]
+  = [true; true; true].
+Proof. reflexivity. Qed.
+
+Example fseq_with_prefix :          (* β 前缀保持：{ω·2}(n)=ω+n *)
+  map (fun n => oeq (obase (cnf [(ofin 1, 2)]) n) (cnf [(ofin 1, 1); (oz, n)])) [1;2]
+  = [true; true].
+Proof. reflexivity. Qed.
+
+(* 7.2 Lemma 12.39（G_x 的幂等式）：G_x(ω^α) = x^{G_x(α)}。
+   在本编码中 G_x = evalb（Cor 12.40 的序数侧）。evalb 的燃料=
+   sizeO 记账使全称式深陷算术，故按递归层陈述：燃料 f 下的单项
+   CNF ω^α·1 求值=「指数为同燃料 α 求值」的幂——定义级恒等式。 *)
+Lemma gx_pow_fueled : forall (f : nat) (g : onf) (b : nat),
+  evalbF (S f) (cnf [(g, 1)]) b = pow b (evalbF f g b).
+Proof. intros f g b. destruct f; simpl; lia. Qed.
+
+Example gx_pow_table :
+  (evalb (cnf [(ofin 2, 1)]) 2, pow 2 (evalb (ofin 2) 2),
+   evalb (cnf [(oomega, 1)]) 2, pow 2 (evalb oomega 2),
+   evalb (cnf [(ofin 3, 1)]) 3, pow 3 (evalb (ofin 3) 3))
+  = (4, 4, 4, 4, 27, 27).
+Proof. reflexivity. Qed.

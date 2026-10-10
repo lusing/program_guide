@@ -719,7 +719,9 @@ Proof.
   apply (d_congr_slot2 Γ f t1 s2 t2 H2).
 Qed.
 
-(* (3) 二元谓词：s₁=t₁, s₂=t₂, P(s₁,s₂) ⊢ P(t₁,t₂)——两步 Sub 的接力 *)
+(* (3) 二元谓词：s₁=t₁, s₂=t₂, P(s₁,s₂) ⊢ P(t₁,t₂)——两步 Sub 接力：
+   先把 slot1 的 s₁ 换成 t₁（φ₁=P(vx,t₂)），再把 slot2 的 s₂ 换成 t₂
+   （φ₂=P(s₁,vx)）——谓词同余是等词公理第三族的完整代表 *)
 Lemma d_pred_congr : forall Γ r s1 t1 s2 t2,
     der Γ (eqf s1 t1) -> der Γ (eqf s2 t2) -> der Γ (rat r [s1; s2]) ->
     der Γ (rat r [t1; t2]).
@@ -732,16 +734,19 @@ Proof.
   pose proof (notin_app2 x (fvt s2) (fvt t2 ++ fv_l Γ) Hm1) as Hm2.
   pose proof (notin_app1 x (fvt t2) (fv_l Γ) Hm2) as Hxt2.
   apply d_ch with (χ := eqf s1 t1); [exact H1|].
-  assert (E : substf (rat r [var x; t2]) x s1 = rat r [s1; t2]).
-  { simpl. rewrite Nat.eqb_refl, (substt_fresh t2 x s1 Hxt2). reflexivity. }
-  rewrite <- E.
+  assert (E1 : substf (rat r [var x; t2]) x t1 = rat r [t1; t2]).
+  { simpl. rewrite Nat.eqb_refl, (substt_fresh t2 x t1 Hxt2). reflexivity. }
+  rewrite <- E1.
   apply Sub with (x := x) (φ := rat r [var x; t2]).
   simpl. rewrite Nat.eqb_refl, (substt_fresh t2 x s1 Hxt2).
   apply d_ch with (χ := eqf s2 t2).
-  - apply (Ant Γ); [unfold incl; intros a Ha; right; exact Ha | exact H2].
-  - apply Sub with (x := x) (φ := rat r [s1; var x]).
-    simpl. rewrite Nat.eqb_refl.
-    apply (Ant Γ); [unfold incl; intros a Ha; right; exact Ha | exact HP].
+  - exact H2.
+  - assert (E2 : substf (rat r [s1; var x]) x t2 = rat r [s1; t2]).
+    { simpl. rewrite Nat.eqb_refl, (substt_fresh s1 x t2 Hxs1). reflexivity. }
+    rewrite <- E2.
+    apply Sub with (x := x) (φ := rat r [s1; var x]).
+    simpl. rewrite Nat.eqb_refl, (substt_fresh s1 x s2 Hxs1).
+    exact HP.
 Qed.
 
 (* 10.2 三族公理的小结构语义账：等词公理在一切结构上真——「计算性
@@ -791,22 +796,27 @@ Example eqax_refl_valid :
 Proof. reflexivity. Qed.
 
 (* 公理 (2)：s₁=t₁ ∧ s₂=t₂ → f₀(s₁,s₂)=f₀(t₁,t₂) 全环境成立 *)
+Definition congrValid (s1 t1 s2 t2 : tm) : bool :=
+  forallb (fun env =>
+    implb (andb (evF (eqf s1 t1) env) (evF (eqf s2 t2) env))
+          (evF (eqf (fsym 0 [s1; s2]) (fsym 0 [t1; t2])) env)) envs.
+
 Example eqax_congr_valid :
-  forallb (fun q => forallb (fun env =>
-    implb (andb (evF (eqf (fst (fst q)) (fst (snd q))) env)
-                (evF (eqf (snd (fst q)) (snd (snd q))) env))
-          (evF (eqf (fsym 0 [fst (fst q); snd (fst q)])
-                    (fsym 0 [fst (snd q); snd (snd q))]) env)) envs)
+  forallb (fun q => congrValid (fst (fst q)) (fst (snd q))
+                             (snd (fst q)) (snd (snd q)))
     (list_prod (list_prod tms tms) (list_prod tms tms)) = true.
 Proof. reflexivity. Qed.
 
 (* 公理 (3)：s₁=t₁ ∧ s₂=t₂ ∧ P₀(s₁,s₂) → P₀(t₁,t₂) *)
+Definition predValid (s1 t1 s2 t2 : tm) : bool :=
+  forallb (fun env =>
+    implb (andb (evF (eqf s1 t1) env)
+                (andb (evF (eqf s2 t2) env) (evF (rat 0 [s1; s2]) env)))
+          (evF (rat 0 [t1; t2]) env)) envs.
+
 Example eqax_pred_valid :
-  forallb (fun q => forallb (fun env =>
-    implb (andb (evF (eqf (fst (fst q)) (fst (snd q))) env)
-                (andb (evF (eqf (snd (fst q)) (snd (snd q))) env)
-                      (evF (rat 0 [fst (fst q); snd (fst q)]) env)))
-          (evF (rat 0 [fst (snd q); snd (snd q))]) env)) envs)
+  forallb (fun q => predValid (fst (fst q)) (fst (snd q))
+                            (snd (fst q)) (snd (snd q)))
     (list_prod (list_prod tms tms) (list_prod tms tms)) = true.
 Proof. reflexivity. Qed.
 

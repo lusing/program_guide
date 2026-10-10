@@ -680,3 +680,123 @@ theorem derp_consistent : ¬derp [] (.rat 0 []) := by
 #print axioms grp_left_inv
 #print axioms inc_ders_all
 #print axioms derp_sound
+
+/- ---------- 10. Takeuti §7 深化：LKe 等词公理族与本质/非本质切 ---------- -/
+
+/-- (2) 二元函词全式：两槽位同余的 d_trans 接力 -/
+theorem d_congr_b {Γ} {s1 t1 s2 t2 : tm} (h1 : der Γ (.eqf s1 t1))
+    (h2 : der Γ (.eqf s2 t2)) :
+    der Γ (.eqf (mul s1 s2) (mul t1 t2)) :=
+  d_trans (d_congr_l h1) (d_congr_r h2)
+
+/-- (3) 二元谓词：s₁=t₁, s₂=t₂, P(s₁,s₂) ⊢ P(t₁,t₂)——两步 Sub 接力
+    （先把 slot1 的 s₁ 换成 t₁，再把 slot2 的 s₂ 换成 t₂） -/
+theorem d_pred_congr {Γ} {r : Nat} {s1 t1 s2 t2 : tm}
+    (h1 : der Γ (.eqf s1 t1)) (h2 : der Γ (.eqf s2 t2))
+    (hp : der Γ (.rat r [s1, s2])) : der Γ (.rat r [t1, t2]) := by
+  obtain ⟨x, hx⟩ := pick_fresh (fvt s1 ++ (fvt s2 ++ (fvt t2 ++ fv_l Γ)))
+  have hxs1 : x ∉ fvt s1 := fun hc => hx (List.mem_append.mpr (Or.inl hc))
+  have hxs2 : x ∉ fvt s2 := fun hc =>
+    hx (List.mem_append.mpr (Or.inr (List.mem_append.mpr (Or.inl hc))))
+  have hxt2 : x ∉ fvt t2 := fun hc =>
+    hx (List.mem_append.mpr
+      (Or.inr (List.mem_append.mpr (Or.inr (List.mem_append.mpr (Or.inl hc))))))
+  apply d_ch (χ := .eqf s1 t1)
+  · exact h1
+  · have E1 : substf (.rat r [.var x, t2]) x t1 = .rat r [t1, t2] := by
+      simp only [substf, List.map_cons, List.map_nil]
+      have e0 : substt (.var x) x t1 = t1 := by simp [substt]
+      rw [e0, substt_fresh t2 x t1 hxt2]
+    rw [← E1]
+    apply der.Sub (x := x) (φ := .rat r [.var x, t2])
+    simp only [substf, List.map_cons, List.map_nil]
+    have e0 : substt (.var x) x s1 = s1 := by simp [substt]
+    rw [e0, substt_fresh t2 x s1 hxt2]
+    apply d_ch (χ := .eqf s2 t2)
+    · exact h2
+    · have E2 : substf (.rat r [s1, .var x]) x t2 = .rat r [s1, t2] := by
+        simp only [substf, List.map_cons, List.map_nil]
+        have e0 : substt (.var x) x t2 = t2 := by simp [substt]
+        rw [e0, substt_fresh s1 x t2 hxs1]
+      rw [← E2]
+      apply der.Sub (x := x) (φ := .rat r [s1, .var x])
+      simp only [substf, List.map_cons, List.map_nil]
+      have e0 : substt (.var x) x s2 = s2 := by simp [substt]
+      rw [e0, substt_fresh s1 x s2 hxs1]
+      exact hp
+
+/-- 10.2 三族公理的小结构语义账：域 {0,1,2,3}、f₀=+₄、f₁=×₄、P₀=<、P₁=偶 -/
+def evT : tm → (Nat → Nat) → Nat
+  | .var n, env => env n
+  | .fsym f ts, env =>
+      match f, ts.map (evT · env) with
+      | 0, [a, b] => (a + b) % 4
+      | 1, [a, b] => (a * b) % 4
+      | _, _ => 0
+
+def evF : fm → (Nat → Nat) → Bool
+  | .rat r ts, env =>
+      match r, ts.map (evT · env) with
+      | 0, [a, b] => a < b
+      | 1, [a] => a % 2 == 0
+      | _, _ => false
+  | .eqf a b, env => evT a env == evT b env
+  | .neg ψ, env => !evF ψ env
+  | .disj ψ χ, env => evF ψ env || evF χ env
+  | .exq y ψ, env => (List.range 4).any fun v =>
+      evF ψ (fun n => if n == y then v else env n)
+
+/-- 全体环境（两变元小宇宙） -/
+def envs : List (Nat → Nat) :=
+  (List.range 4).flatMap fun v0 =>
+    (List.range 4).map fun v1 =>
+      fun n => if n == 0 then v0 else if n == 1 then v1 else 0
+
+/-- 小项宇宙（深度 ≤2，变元 0/1） -/
+def tms : List tm :=
+  [.var 0, .var 1, .fsym 0 [.var 0, .var 1], .fsym 1 [.var 1, .var 1],
+   .fsym 0 [.fsym 0 [.var 0, .var 0], .var 1]]
+
+/-- 小笛卡尔积（裸 core 无 List.prod） -/
+def cart (as bs : List tm) : List (tm × tm) :=
+  as.flatMap fun a => bs.map fun b => (a, b)
+
+/-- 公理 (1)：→ t=t 对一切项与环境成立 -/
+example : tms.all fun t => envs.all fun env => evF (.eqf t t) env = true := by
+  native_decide
+
+/-- 四元组全表 -/
+def quads : List ((tm × tm) × (tm × tm)) :=
+  (cart tms tms).flatMap fun p => (cart tms tms).map fun q2 => (p, q2)
+
+/-- 公理 (2)：s₁=t₁ ∧ s₂=t₂ → f₀(s₁,s₂)=f₀(t₁,t₂) 全环境成立 -/
+example : quads.all fun pq =>
+    envs.all fun env =>
+      (!(evF (.eqf pq.1.1 pq.1.2) env && evF (.eqf pq.2.1 pq.2.2) env)
+        || evF (.eqf (.fsym 0 [pq.1.1, pq.2.1]) (.fsym 0 [pq.1.2, pq.2.2])) env)
+        = true := by
+  native_decide
+
+/-- 公理 (3)：s₁=t₁ ∧ s₂=t₂ ∧ P₀(s₁,s₂) → P₀(t₁,t₂) -/
+example : quads.all fun pq =>
+    envs.all fun env =>
+      (!(evF (.eqf pq.1.1 pq.1.2) env && evF (.eqf pq.2.1 pq.2.2) env
+        && evF (.rat 0 [pq.1.1, pq.2.1]) env)
+        || evF (.rat 0 [pq.1.2, pq.2.2]) env) = true := by
+  native_decide
+
+/-- 10.3 Def 7.5：cut 公式为 s=t 的 cut 是非本质（inessential），
+    其余为本质（essential）——Thm 7.6 允许等词 cut 保留 -/
+def cutEss : fm → Bool
+  | .eqf _ _ => false
+  | _ => true
+
+/-- 样本账：一段证明叙述中的 cut 公式清单 -/
+def cutLedger : List fm :=
+  [.eqf (mul (.var 0) (.var 1)) (mul (.var 1) (.var 0)),   -- 换项等式
+   .disj (.rat 0 [.var 0]) (.neg (.rat 0 [.var 0])),        -- 排中引理
+   .eqf (.var 0) (.var 1),                                   -- 变元等式
+   .exq 0 (.rat 0 [.var 0])]                                 -- 存在引理
+
+example : (cutLedger.filter cutEss).length = 2 := by native_decide
+example : (cutLedger.filter (fun φ => !cutEss φ)).length = 2 := by native_decide
