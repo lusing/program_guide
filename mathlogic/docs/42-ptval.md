@@ -146,8 +146,12 @@ semantics）这个名字下的事业。
   证层」的直接证据。
 - **Lean `extends` 是关键字**（structure 继承）——改 `subbase`；
   类型标注位不可用点前缀（`: .fimp a .fbot` 非法，写 `: Fm :=`）。
-- **重量账**：→ 的 64-基量词嵌套指数爆——Coq vm_compute 分钟级、
-  Lean 必须 native_decide；Lean 里 `!X = true` 的断言要括号
+- **重量账（本轮最深的一课）**：→ 的 64-基量词在朴素递归 val 下按
+  64^深度 爆炸——Glivenko 单断言 153 秒、全电池 50+ 分钟（Coq
+  vm_compute）；**表列动态规划**（每子公式一次算满 64 基真值表，→
+  在表上做 64×64 扫描）后**全文件 4 秒**。教训排序：先记忆化叶子
+  （原子闭包表，必要但不充分），再表列整个递归（definitive）。
+  Lean 侧 native_decide 编译执行同效；`!X = true` 的断言要括号
   `(!X) = true`。
 - **remove_dup 前置**（Coq 不前向引用，第 41 章同坑二现）。
 

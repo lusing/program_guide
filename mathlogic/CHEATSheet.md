@@ -602,7 +602,10 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
     关系一次 reach 存掩码+纯位循环」——朴素 pairwise 把 reach 重
     算 10^10 次（Coq vm_compute 550s 超时）；单轴 nat 的 eqb/find
     查表是 512×511 步暗雷，查表用 nth；Lean 侧 native_decide 也
-    救不了未记忆化的版本。
+    救不了未记忆化的版本。42 章同课二段：**表列动态规划**——嵌套
+    量词语义的朴素递归按基数^深度 爆（Glivenko 单断言 153s/全电池
+    50min），对每子公式一次算满真值表后 4s；记忆化叶子（原子闭包
+    表）必要但不充分，表列整条递归才是 definitive。
 18. **位序掩码**（41 章）：step R x y 的位是 3x+y——「0→1」是
     bit1 不是 bit0，样本常数全错则断言反挂（症状：必要性断言
     true≠false）。
