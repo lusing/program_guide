@@ -21,8 +21,28 @@ PM 与 Hilbert/54 截消定理与序数分析/63 自动机与形式语言：Chom
 层级/78 悖论的结构与解悖理论/84 算术与几何的公理系统）+五处深化
 （34 H 域与语义树/35 Rⁿ 归结闭包/37 WAM 双栈轨迹/40 表格式图灵机/
 79 关系运算与传递闭包）+两注记（48 EFA 下界/42 CTT 公理化），全书
-109 章 **235** 个验证单元全绿（零公理或显式公理记账）；速查表见
+109 章 **271** 个验证单元全绿（零公理或显式公理记账）；速查表见
 [CHEATSheet.md](./CHEATSheet.md)，蓝图与状态表见 [PLAN.md](./PLAN.md)。
+
+**第十一轮扩充收官**：按 David Marker《Model Theory: An
+Introduction》（GTM 217，Springer 2002）完成模型论核心十章
+（35-45 空位块内生长，全书第九次重排 99→109）：**35 代数闭域**
+（ACF 量词消去+F₄/F₁₆ 塔+acl 交换律现场）、**37 型与 Stone
+空间**（深度 d 型枚举器+Bell 数+∞ 型非孤立）、**38 省略型
+与素模型**（三阶段 Henkin 纪律+PA 鸽洞账）、**39 饱和与
+齐次**（有界饱和检查器+DLO 2m+1）、**40 可数模型数**
+（Ryll-Nardzewski 计数器+Ehrenfeucht 三模型）、**41 不可辨元**
+（Ramsey 全账+EM 装配，含 Prolog 通道）、**42 ω-稳定与
+Morley 秩**（E_inf 实验室——无限宇宙上的真秩计算器）、
+**43 分叉与独立性**（秩降三级+维数公式+Morley 序列）、
+**44 ω-稳定群**（泛型鸽笼+群块补全+和集稳定化）、**45 强极小
+集的几何**（预几何实验室：交换律对账+模律平行线剧场+局部化）；
+四深化（27 Meq 想象元实验室/31 Scott 同构定理双路线对账/
+76 PH 的 GTM 217 组合路线注记/34 强极小定理级升级互指）。
+**第十轮**（Takeuti《Proof Theory》2e，92→99）：七新章
+（17 直觉主义完备性三重奏/28 归约树/37 二阶算术证明论/38
+无穷逻辑与决定逻辑/61 Gentzen 一致性证明 o(S)/64 中矢列/
+65 Beth-Robinson-Harrop）+五深化+两注记。
 
 > 核心理念：**逻辑 = 语法 + 证明演算 + 语义**，而证明助手把三者
 > 全部变成可执行的程序。全书四条暗线：构造/经典的账本对照、
@@ -69,14 +89,24 @@ mathlogic/
 | [25 FOL 语义表列](docs/25-foltableau.md) | γ/δ 规则+tclo 推导对象+7.42 完整证明 | C/L |
 | [26 FOL 矢列与等词](docs/26-seqfol.md) | EFT 矢列演算 S 全规则+群例等式链+协调性（命题片段可靠） | C/L |
 | [27 语法解释与范式](docs/27-interp.md) | 词项化简对账+≤定义扩张消去+⟨Φ⟩范式 DNF+ZF 公理现场 | C/L |
-| [29 完备性 Henkin](docs/28-completeness.md) | 七步文档线+词项模型=合同闭包商结构（双向对账）+见证式化 | 文档/C/L |
+| [28 完备性 Henkin](docs/28-completeness.md) | 七步文档线+词项模型=合同闭包商结构（双向对账）+见证式化 | 文档/C/L |
 | [30 L-S 与紧致性](docs/30-lscompact.md) | DLO 无有限模型穷举+「有限性不可单句定义」σₙ 族+量化秩分离+Skolem 闭包 | C/L |
 | [31 EF 博弈与 Fraïssé](docs/31-efgame.md) | dup_wins 求解器（三通道一致）+线序 2^k−1 分离表+空/全关系对照+秩-轮对齐 | C/L/P |
 | [32 完备理论与范畴性](docs/32-categoricity.md) | F₃² 换基排列+x³ 有限域单满射对账（Ax 脚印）+0-1 律 n≤5 全枚举（768/1024） | C/L/P |
 | [33 超积与 Łoś 定理](docs/33-ultraproduct.md) | 256 族全枚举恰 3 个主超滤+主超滤 Łoš 完整结构归纳（零公理）+Fréchet ¬步失败现场 | C/L |
 | [34 量词消去](docs/34-quantelim.md) | DLO 区间推理消去（完备方向零公理+相邻性反例）+F₉ 扩域见证+强极小性 9 式根数表 | C/L |
+| [35 代数闭域](docs/35-acfield.md) | ACF 量词消去（代数归位+有限避开二分）+F₄/F₁₆ 塔显式算术+构造集塌缩+acl 交换律现场（反例与修复） | C/L |
 | [36 实闭域与 o-minimality](docs/36-realclosed.md) | **Motzkin SOS 分解**（ring/系数表反射）+IVT 二分 √2 精确夹逼+{<} 可定义=区间 vs 野谓词对照 | C/L |
-| [48 二阶逻辑](docs/46-secondorder.md) | soev 幂枚举求值器+偶数性交替着色+连通性否定式刻画+L_Q 退化 | C/L |
+| [37 型与 Stone 空间](docs/37-types.md) | 深度 d 型枚举器（profile 去重）+Bell 数对账+(Z_m,S,0) 孤立见证+(N,S,0) ∞ 型非孤立+DLO 切割+Stone 代数三律 | C/L |
+| [38 省略型与素模型](docs/38-omitprime.md) | 三阶段 Henkin 纪律有限重演+省略记账+PA 端扩张鸽洞账 (∗∗)+项模型=素模型 | C/L |
+| [39 饱和与齐次模型](docs/39-saturated.md) | 有界饱和检查器（N 逐层 vs 钳位破口）+DLO 2m+1 型计数+密度=实现三段账+齐次延拓账 | C/L |
+| [40 可数模型数](docs/40-countmodels.md) | Ryll-Nardzewski 计数器三例（Bell/弱序/无界）+Ehrenfeucht 三模型分离+双射全灭 | C/L |
+| [41 不可辨元](docs/41-indiscern.md) | R(3,3)=6 全账（32768 染色）+R(3,4)>8 Wagner 图+不可辨性四账+EM 装配（保序平移搬运） | C/L/P |
+| [42 ω-稳定与 Morley 秩](docs/42-wstable.md) | E_inf 实验室：范式可定义集+真 Morley 秩计算器（0/1/2+度）+分拆见证+新鲜类引理+ω-稳定型计数 | C/L |
+| [43 分叉与独立性](docs/43-forking.md) | 分叉=秩降三级账+不分叉延拓逐例+F₂⁴ 维数公式全样本+独立性维数刻画+Morley 序列五元闭环 | C/L |
+| [44 ω-稳定群](docs/44-wstgroup.md) | 三群公理账（S₃ 程序化）+过半⟹S·S=G 鸽笼全枚举+群块补全+和集累加倍增 | C/L |
+| [45 强极小集的几何](docs/45-pregeom.md) | 闭包算子实验室：线性/仿射交换律全样本+Z₄/偏序两个反例+模律平行线剧场+局部化修复 | C/L |
+| [46 二阶逻辑](docs/46-secondorder.md) | soev 幂枚举求值器+偶数性交替着色+连通性否定式刻画+L_Q 退化 | C/L |
 | [49 归结原理](docs/49-resolution.md) | 矢列→子句+合一+归结反驳 | C/L |
 | [50 Herbrand 定理](docs/50-herbrand.md) | T_P 单调+头原子（Prolog 桥） | C/L |
 | [51 归结完备与 SAT 难例](docs/51-rescomp.md) | resproof+PHP 反驳+DP 消元 | C/L |
@@ -134,7 +164,7 @@ mathlogic/
 | [106 公理集合论 NBG 与序数](docs/106-nbg.md) | vn 典范世界+kur_char 命题 4.3+有限 AC 零公理+B1-B5 类算子 | C/L |
 | [107 算术几何公理](docs/107-axioms.md) | log 同构 Z₇*≅Z₆+解释函子保真+PA 1889 对照+ACA₀ 概括+欧几里得依赖链+希尔伯特关联公理 F₃² 模型（9 点 12 线） | C/L |
 | [108 同一性与结构主义](docs/108-identity.md) | Leibniz 等词零公理双向+Hume 原理基数分块 1,3,3,1+ℕ 三化身（Zermelo 树编码）+Fermat 数互素与 F₅ 分解+Z 商构造良定义+对偶数 d²=0 | C/L |
-| [109 收官](docs/109-wrapup.md) | SAT→SMT→MC→ITP 图景+证明论工程线（费奇/正规化/结构规则/插值/模态/代数）+九轮总坑位+十三书导读+张寅生十五章对账+马明辉七章对账+Lingua Universalis 时间线 | 文档 |
+| [109 收官](docs/109-wrapup.md) | SAT→SMT→MC→ITP 图景+证明论工程线（费奇/正规化/结构规则/插值/模态/代数）+模型论核心线（ACF→型→饱和→不可辨→秩→群→几何）+十一轮总坑位+十四书导读+GTM 217 八章对账 | 文档 |
 
 ## 工具链（本机实测）
 
