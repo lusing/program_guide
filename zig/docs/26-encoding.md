@@ -1,5 +1,7 @@
 # 26 · 编码与流处理
 
+> **阅读位置**：第四篇 · 数据与网络（2/5） ｜ **承前**：[25 二进制布局](25-binary.md) ｜ **启后**：流式 reader/writer 是 [29/30 网络](29-networking.md)、[34 zcache](34-zcache.md)、[42 memsrv](42-memsrv.md) 的数据管线。
+>
 > 对应示例：`examples/26_encoding/main.zig`（1451 行，18 个测试）
 >
 > hex、Base64、URL 百分号编码、压缩、哈希、SIMD 计数——数据处理工具的六件基本功，

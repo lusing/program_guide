@@ -1,5 +1,7 @@
 # 16 · 构建与包管理 ⭐
 
+> **阅读位置**：第三篇 · 工程化（2/6） ｜ **承前**：[15 测试](15-testing.md) ｜ **启后**：[17](17-c-interop.md)、[24](24-minigrep.md)、[35](35-zls.md) 是 build.zig 工程；[38](38-daemon.md) 的 `-lc` 就是链接参数。
+>
 > 对应示例：`examples/16_build/`（**build.zig 工程**）
 >
 > 本章是全教程唯一的"工程组织"章：前面 15 章都是 `main.zig` 单文件 + `zig build-exe`，

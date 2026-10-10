@@ -1,5 +1,7 @@
 # 14 · 泛型
 
+> **阅读位置**：第二篇 · 记忆与编译期（4/4） ｜ **承前**：[13 comptime](13-comptime.md) ｜ **启后**：`@typeInfo` 反射被 [40 布局校验](40-zunzip.md) 与 [42 JSON 往返](42-memsrv.md) 复用；[43 的 WorkQueue(T)](43-zlocate.md) 是泛型类型工厂。
+>
 > 对应示例：`examples/14_generics/main.zig`
 >
 > Zig 没有 C++ 那种 `template` 系统，也没有 Rust 的 `trait`。它只有一件事：**comptime 参数**。

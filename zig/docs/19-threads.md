@@ -1,5 +1,7 @@
 # 19 · 并发 ⭐
 
+> **阅读位置**：第五篇 · 与系统对话（5/8，并发线起点） ｜ **承前**：[05 函数](05-functions.md)、[07 结构体](07-structs.md)、[11 分配器](11-allocators.md) ｜ **启后**：并发深化线 19 → [31](31-concurrency.md) → [39](39-asyncio.md) → [43](43-zlocate.md)。
+>
 > 对应示例：`examples/19_threads/main.zig`（728 行，15 个 test）
 >
 > 0.17 是一次并发侧的**大迁移**：所有同步原语（`Mutex` / `Condition` / `Semaphore` / `Event` / `RwLock`）

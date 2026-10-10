@@ -1,5 +1,7 @@
 # 17 · C 互操作 ⭐
 
+> **阅读位置**：第三篇 · 工程化（3/6） ｜ **承前**：[03](03-types.md)、[07](07-structs.md)、[16](16-build.md) ｜ **启后**：[18 交叉编译](18-cross.md)、[32 sqlite 直连](32-sqlite.md)、[38 的 std.c 系统调用](38-daemon.md)。
+>
 > 对应示例：`examples/17_cinterop/`（**build.zig 工程**，0.17 起不再是 `zig build-exe … -lc`）
 >
 > "Zig 是一门更好的 C"的另一面：**和 C 无缝互认**。没有 FFI 层、没有绑定生成器门槛。

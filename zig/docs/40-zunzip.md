@@ -1,6 +1,7 @@
 # 40 · 实战：ZIP 解析与 comptime 布局校验
 
-
+> **阅读位置**：第六篇 · 综合实战（5/8） ｜ **承前**：[25 二进制布局](25-binary.md)、[13 comptime](13-comptime.md)、[14 反射](14-generics.md) ｜ **启后**：二进制格式解析的收官演示。
+>
 > 对应示例：`examples/40_zunzip/main.zig`（491 行，6 个测试）
 >
 > 二进制格式解析的收官演示：ZIP 文件结构（EOCD / Central Directory / Local File Header）、

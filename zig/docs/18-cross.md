@@ -1,5 +1,7 @@
 # 18 · 交叉编译与 zig cc ⭐
 
+> **阅读位置**：第三篇 · 工程化（4/6） ｜ **承前**：[17 C 互操作](17-c-interop.md) ｜ **启后**：全书示例的 aarch64 验证都靠 `-target` 策略。
+>
 > 对应示例：`examples/18_cross/main.zig`（419 行）、`examples/18_cross/wasm_lib.zig`（约 200 行）、`examples/18_cross/hello.c`（约 40 行）
 >
 > 全部内容在 **Zig 0.17.0**（`/Volumes/mac004/lang/zig-x86_64-macos-0.17.0/zig`）上实测。

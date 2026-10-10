@@ -1,5 +1,7 @@
 # 32 · SQLite 实战：C ABI 直连
 
+> **阅读位置**：第四篇 · 数据与网络（5/5） ｜ **承前**：[17 C 互操作](17-c-interop.md)、[11 分配器](11-allocators.md) ｜ **启后**：实战章需要持久化时的选项。
+>
 > 对应示例：`examples/32_sqlite/main.zig`（908 行，14 个分节 + 14 个 test）
 >
 > 取材：Tsoukalos *Systems Programming with Zig* ch11（书上用 `@cImport` + `sqlite3.h`）。

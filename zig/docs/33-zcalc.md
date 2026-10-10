@@ -1,5 +1,7 @@
 # 33 · 实战：表达式解释器 zcalc
 
+> **阅读位置**：第六篇 · 综合实战（2/8） ｜ **承前**：[04 switch](04-control.md)、[08 tagged union](08-enums.md)、[13/14 comptime 泛型](13-comptime.md) ｜ **启后**：lexer/parser/AST 套路可迁移到任何格式解析（如 40）。
+>
 > 对应示例：`examples/33_zcalc/main.zig`（1550 行，14 个分节 + 26 个 test）
 >
 > 一个小语言的完整生命线：**词法 → 优先级爬升解析 → `union(enum)` AST → 树遍求值 → REPL**。

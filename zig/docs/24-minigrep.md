@@ -1,5 +1,7 @@
 # 24 · 实战：迷你 grep
 
+> **阅读位置**：第六篇 · 综合实战（1/8，第一个完整工具） ｜ **承前**：[19 线程](19-threads.md)、[20 文件](20-files-io.md)、[27 遍历](27-tree.md) ｜ **启后**：CLI 工具的工程套路定型。
+>
 > 对应示例：`examples/24_minigrep/`（build.zig 工程）
 >
 > - `build.zig` **33 行**（exe + run + test 三个 step）

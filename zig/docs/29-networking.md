@@ -1,5 +1,7 @@
 # 29 · TCP 与 UDP
 
+> **阅读位置**：第四篇 · 数据与网络（3/5） ｜ **承前**：[26 流处理](26-encoding.md)、[16 构建](16-build.md) ｜ **启后**：[30 HTTP](30-http.md)、[34 zcache](34-zcache.md)、[39 并发 echo](39-asyncio.md)。
+>
 > 对应示例：`examples/29_netecho/main.zig`（1378 行，13 个 test）
 >
 > echo 是网络编程的 "hello world"——服务器回射一切。取材 Tsoukalos ch6（TCP/UDP echo 双实现），

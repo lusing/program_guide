@@ -1,5 +1,7 @@
 # 10 · 错误处理 II
 
+> **阅读位置**：第一篇 · 语言核心（8/9） ｜ **承前**：[09 可选与错误](09-optionals-errors.md) ｜ **启后**：errdefer 是 [11 分配器](11-allocators.md)、[12 集合](12-collections.md) 析构纪律的前置。
+>
 > 对应示例：`examples/10_errors2/main.zig`
 >
 > 09 章讲了错误处理的**词汇**：`?T`、`E!T`、`try`、`catch`、`@errorCast`。本章讲**工程**：

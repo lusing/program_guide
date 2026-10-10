@@ -1,5 +1,7 @@
 # 15 · 测试 ⭐
 
+> **阅读位置**：第三篇 · 工程化（1/6） ｜ **承前**：[09](09-optionals-errors.md)、[11 分配器](11-allocators.md)（testing.allocator 抓泄漏） ｜ **启后**：每章示例末尾的 test 块都按本章路数写。
+>
 > 对应示例：`examples/15_testing/main.zig`（494 行）、`examples/15_testing/util.zig`
 >
 > 2.6 节已经说过"测试和源码写在一起"，那一节是**入门**。这一章是**深入**：

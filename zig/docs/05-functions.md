@@ -1,5 +1,7 @@
 # 05 · 函数
 
+> **阅读位置**：第一篇 · 语言核心（3/9） ｜ **承前**：[03](03-types.md)、[04](04-control.md) ｜ **启后**：defer/errdefer 的资源纪律贯穿全书所有 init/deinit。
+>
 > 对应示例：`examples/05_functions/main.zig`
 >
 > 前四章讲"值怎么变"，这一章讲**结构**。函数是 Zig 里**唯一**的抽象手段
