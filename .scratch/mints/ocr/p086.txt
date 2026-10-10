@@ -1,0 +1,21 @@
+Chapter 11
+System LJp
+One-succedent version LJp of LJpm is obtained by restricting the succedent to
+one formula in LJpm. In other words, sequents are of the form F → α, and the
+rules are as follows:
+System LJp Axioms:
+Inference rules:
+Φ,,F→0
+Φ&,=
+→,→Φ
+,T→
+Φ,→
+Φ→,T→
+contr
+weak
+The following rules are derivable:
+,→
+11.1. Translating LJpm into LJp
+11.2. A Disjunctive translation
+For A= a1,..., an let VA := αi V... Van.
+83

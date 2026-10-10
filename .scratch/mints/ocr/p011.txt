@@ -1,0 +1,43 @@
+INTRODUCTION
+systems using means correct from the intuitionistic point of view are also called
+intuitionistic formal systems.
+The systems of first-order intuitionistic logic and arithmetic have a very
+simple characterization: these are obtained from suitable traditional or classical
+such as the rule of double negation.
+Our book is organized as follows:
+The first three Chapters of Part I explain notation for natural deduction to
+be used in the book, introduce the reader acquainted with other kinds of formal
+Intuitionistic propositional system NJp is introduced here.
+Chapter 3 describes a translation of classical into intuitionistic logic, which is
+an identity from the classical point of view. This translation allows us to consider
+classical logic as a subset (consisting of negative formulas) of intuitionistic logic.
+Chapter 5 introduces a programming interpretation of intuitionistic propo-
+sitional logic, which is a significant part of its interest and a source of many
+applications and extensions in various directions. This construction demon-
+strates that programs (simply typed >-terms) are actually the same as natural
+deductions, which justifies such expressions and slogans as the Curry-Howard
+isomorphism and:
+PROOFS = PROGRAMS
+A simple normalization proof (going back to Turing (see [7]) is presented and
+such standard consequences as disjunction property, Harrop's theorem for dis-
+junction, underivability of the excluded middle are drawn in Section 5.4.. More
+applications to category theory and having unique derivations are drawn in
+Chapter 6.
+Chapter 7 introduces propositional Kripke models and their most important
+special cases. Chapter 8 presents a construction of the canonical model and
+a completeness proof (see [6]) establishing cut elimination and a finite model
+property for a multiple-succedent L-style formalization LJpm of intuitionistic
+propositional logic. This proof reintroduces the theme of proof-search by satu-
+rating a given goal with respect to all available rules that appeared in Section
+2.6..
+Chapter 9 contains a completeness proof for topological models on the seg-
+ment [O,1] of reals accessible to readers with a very restricted background in
+general topology.
+Chapter 10 uses an example of intuitionistic propositional logic to present
+basic ideas of proof-search methods that proceed from a goal to simpler subgoals.
+Such methods are employed in many working systems for proof checking and
+automated deduction, and these methods form starting points of more sophis-
+ticated algorithms. The resulting completeness proof exemplifies yet another
+proof of the normal form theorem (completeness of cut-free formulation) dating
+from Godel's proof of his completeness theorem and stresses the close connection
+between proof-search strategies and Kripke semantics.

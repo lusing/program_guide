@@ -1,0 +1,9 @@
+12.1.BETH DEFINABILITY THEOREM
+91
+Proof.Derivability of (12.1) implies derivability of the sequent
+p, α, α[p/q] → q.
+Take t to be an interpolant for the partition p, α;α[p/q] =→ q:
+p,α→t;
+t, α[p/q] → q
+This implies (after substituting q by p in the second sequent):
+as required.

@@ -1,0 +1,37 @@
+10.3. COMPLETE PROOF-SEARCH STRATEGY
+79
+where:
+d"b2gd ← b"(b2gd)-* b"b2gd ← d'(b2d)-* S =: IL
+and T2 := S* -(p&q), p = p&q,  * -(p&q), 4 =→ p&g, q.
+The tableau Ti is terminal (no rule can be meaningfully applied bottom-up to
+it). It produces the following refuting Kripke model for the original sequent
+S;
+-(p&q),= p&q,q;
+(p&q), =→ p&q, p
+Indeed the antecedent is true in the world 0: V(-(p&q),0) = 1 because p&q is
+refuted in all three worlds: In 0 and 1, since q is false there and in 2, since p is
+false there. On the other hand -p, -q are both false in the world O; V(-p,o) = 0,
+since V(p, 1) = 1; and V(-q,0) = 0, since V(q, 2) = 1. Hence V(-p V-q,0) = 0
+as required.
+10.3.(
+Complete Proof-Search Strategy
+Let us impose some restrictions on tree extension steps. Structural rules are
+used only as parts in a step by a logical rule, and are not mentioned separately.
+Suitable sequents of maximal complexity are analyzed first. To avoid repeated
+analyzis of the same formula, all principal formulas of invertible rules are pre-
+served; that is, every invertible step is always preceded by a contraction of the
+principal formula. For example, & →, → Vand →→ take the following form:
+Ti * α,β,α&β,=→△* T2
+Ti* F=△,αVβ,α,β* T2
+Ti * α&β,α&β,T→△* T2
+Ti* I=→A,αVβ,αVβ* T2
+Ti * α&β,I →△* T2
+Ti* =→,αVβ* T2
+Ti * α→β,F→,α* T2
+Ti * α-→β,α→β,r→△,α,*T2 Ti * β,α →β,F→△* T2
+Ti * α →β,α →β,I=△* T2
+Ti* α→β,T→△* T2
+Consider the following proof strategy avoiding redundancy.
+DEFINITION 10.1. A sequent  →  subsumes α sequent ' → △'(and
+r'→ ' is subsumed by  → ) iff  ' and   ' as sets offormulas.
+(Note that (& → V△)  &f' -→ V△' in this case).

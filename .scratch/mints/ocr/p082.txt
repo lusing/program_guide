@@ -1,0 +1,36 @@
+78
+PROOF-SEARCH
+is replaced in the list of goals by Ti or by Ti and T2. If Tis an axiom, it is not
+analyzed but simply deleted from the list of goals and declared a closed leaf of
+the tree. Then the extension step is repeated. If T is not an axiom and cannot
+be analyzed further, then it is declared a terminal node, the proof-search process
+stops, and the initial tableau To is declared underivable. If the list of goals is
+empty, that is, all leaf nodes of the tree are closed, then the tree is closed, and
+the initial tableau is derivable. (Indeed in this case the tree TrTo proceeds from
+axioms by the rules of LJpm*.)
+At the initial step, the whole tree consists of exactly one node, namely, the
+tableau To we are testing for derivability.
+Before presenting a proof of the termination and completeness of this proof-
+search procedure, consider two examples. We preserve principal formulas in all
+rules (see the beginning of Section 10.3. below).
+EXAMPLE 10.1. Consider a sequent -(pV-p) =→ I.
+We omit the right premise l,  → △ (axiom) in the rule - → and some occur-
+rences of L in the succedent, since these do not contribute to proof-search:
+d'd'dd  d(dd)- *d'd'dd  (d- d)-
+dd()*"d'd()
+T ← d'(d d)*d'ddd ← (dd)
+'d'd  (dd)
+dd  (dd)
+(p -p)→ 
+Our sequent is derivable.
+d“d  (b2d)-
+b d (bgd)
+Let:
+d'd"'d“ d  (d) =: S
+Sp := -(p&q),p= p&q, and Sg := -(p&q),q → p&q
+Continue the search up the left branch:
+Ti T2
+bs * b ← d'(b2gd)- * S bs *d"b2gd ←d"(b2gd)- * S
+'s*'s*S
+S * -(p&Q),p→ *-(p&q),q 
+b2gd'dbd“b  d  (b2d)

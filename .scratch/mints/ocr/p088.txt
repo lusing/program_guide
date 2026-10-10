@@ -1,0 +1,47 @@
+11.3. PRUNING, PERMUTABILITY OF RULES
+85
+LEMMA 11.2. Every derivation d :  → △ in LJpm can be transformed into
+a pruned derivation d' :  →  by moving weakenings downward and deleting
+occurrences of formulas and whole branches.
+Proof.We use induction on d. The induction base is obvious; for the induc-
+tion step, consider the last rule L in d.
+Case 1. The L is a two-premise rule. If at least one of the side formulas of
+L is introduced by weakening, then L is deleted together with the whole branch
+ending in the other premise; for example:
+e: r'a'
+weak
+r→a,α
+T→a,β
+d: r→A,α&β
+is pruned into:
+e: 'A'
+weak
+d : T=△,α&β
+where F",△'C△.
+If none of the side formulas of L is introduced by weakening, we apply IH.
+For example:
+F'→ ',α
+F" →△",β
+weak
+weak
+r→a,α
+r→a,β
+d: r→△,α&β
+is pruned into:
+'→,α
+" → A",β
+weak
+T* →△*,α
+*→△*,β
+I* →△*,α&β
+weak
+d': T→A,α&β
+Here I* = ',T",△* = △'".
+Case 2. L is a one-premise rule. If all side formulas of L are introduced by
+weakening, then L is deleted. Otherwise weakenings of parametric formulas are
+moved down; for example:
+is pruned into:
+α,I'→β
+In addition to derivations in LJpm, we consider below deductions in LJpm,
+that is, trees constructed according to the rules of LJpm, with leaves containing
+arbitrary sequents (not necessarily axioms α → α or I → α).

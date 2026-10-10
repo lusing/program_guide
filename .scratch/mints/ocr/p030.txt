@@ -1,0 +1,39 @@
+24
+NEGATIVE TRANSLATION: GLIVENKO'S THEOREM
+DEFINITION 3.2. A propositional formula is negative if it does not contain V,
+and all atomic subformula are negated.
+LEMMA 3.1.
+(a)
+ -(α&β) →(--α&-β)
+() ( )
+(b)
+for every negative formula α.
+Proof.Part (a): Use ADC and Glivenko's theorem.
+Part (b): We use induction on α, Lemma 2.7.(bl),(b2), and (a). For the
+induction base, we begin with negations of atomic formulas--(-p) +→ -p.
+Induction step. For ◎ 三 &, -→, α 三 Φ◎Φ, one has
+() ()  
+→ (Φo ) (by IH).
+This concludes the proof since V does not occur in α.
+LEMMA 3.2. Every rule
+of NKp is stable under Godel's negative translation. That is, the rule:
+is derivable and similarly for one-premise and three-premise rules.
+Proof.Translations of the rules &I, &E, -→ I, → E, Ii are instances of the
+same rules. Translation of c
+-aneg, Fneg → 1
+BauD← B3u
+is handled by Lemma 3(b). For the rules for V, it is enough to establish the
+following:
+α;-(-αo&-α1) (i=0, 1)
+(3.1)
+-(-s&-w), Φ→ neg,  → gneg μ gneg
+(3.2)
+Relation (3.1) is obtained by ADC. To obtain (3.2), prefix the last gneg by --
+(Lemma 3) and reduce this goal to a subgoal:
+Φ → oneg, → gneg,-oneg μ(-s&-b),
+which is proved by ADC.
+THEOREM 3.2. A sequent I → △ is derivable in NKp iff Ineg → △neg is
+derivable in NJp.
+Proof.Easy direction: If Fneg → △neg is derivable in NJp, it is derivable in
+NKp. Removing all double negations, we obtain I → △in NKp.
+For the opposite direction, use Lemma 3.

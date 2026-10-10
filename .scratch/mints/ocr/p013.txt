@@ -1,0 +1,19 @@
+INTRODUCTION
+A decision procedure for intuitionistic propositional logic is described in Section
+10.3.; in fact this logic is PSPACE-complete [22].
+Algebraic and topological completeness results for propositional logic (Sec-
+tion 8.4., Chapter 9) extend to predicate logic [20].
+Forty to fifty years ago quite a different presentation of a logical system
+(than natural deduction) was standard: A series of axioms and one inference
+rule, modus ponens (and perhaps one or two rules for quantifiers). Such Hilbert-
+type axiomatizations are given in [9], [8], [25] as well as many other places.
+Underivability results for intuitionistic logic are mentioned mainly to warn
+readers at the very beginning and to illustrate the use of model-theoretic meth-
+ods later. More detailed information are found in [13], [19], [25].
+Most automated deduction programs for intuitionistic logic provide deriva-
+tions in such systems as LJm or even LJm*. To extract programs from such
+derivations, it is possible to use term assignments more ot less mimicking Kripke
+translation x in Chapter 16. Optimization of arising redundancies along the
+lines of Section 11.3. is discussed in [3], [23]. These techniques have their origin
+in the translation of cut-free L-style derivations into normal natural deductions
+described in [19].

@@ -1,0 +1,41 @@
+8.1. SOUNDNESS OF THE SYSTEM LJPM
+57
+8.1. Soundness of the System LJpm
+The value of a sequent in a model is defined exactly as for the corresponding
+formula:
+V(a1, ...,am → βi,...βn, w) = 1 ifffor any w' such that Rww"
+V(α1, w') = . . . V(αm, w') = 1 implies V(βj, w') = 1 for some j ≤ n.
+THEOREM 8.1. Cut and all the rules of LJpm are sound: If all premises are
+true in a world w of a Kripke model, then the conclusion is also true in w.
+Proof.Use Theorem 7.1. and Lemma 8(c).
+Note. All LJpm rules except the succedent rules for -and -→ are invertible:
+Derivability of the conclusion implies derivability of the premises. This can be
+verified directly or inferred from the following observation: The premises are
+derivable from the conclusion using cut. This also shows that the truth of the
+conclusion implies the truth of premises.
+ExERCISE 8.3. Verify that all rules except → - and →-→ are invertible.
+Prove that→ - and →-→ are not invertible.
+8.2.
+Completeness and Admissibility of Cut
+DEFINITION 8.1. A sequent  → △ is falsified in a world w of a Kripke model
+(W, R, V) if V(&r, w) = 1, V(VA, w) = 0. This implies V(T -→ △, w) = 0.
+In this Chapter  ←  means that I → is derivable in LJpm.
+We now prove that any sequent underivable in LJpm is falsified in some world
+(of some model). Moreover we prove (following [6]) that there is a universal
+(canonical) model suitable for the falsification of all underivable sequents (each
+in its own world). It is essential that this model proves completeness of a cut-free
+formulation.
+This proof is a natural extension of a completeness proof for classical predi-
+cate logic.
+DEFINITION 8.2. Sub(r) stands for the set of all subformulas of F. A sequent
+F =→  is complete if it is underivable and for any formula  E Sub(F,) either
+Serua or
+A, and$,,
+(8.3)
+that is, both sequents I → △,Φ and Φ, I →  are derivable.
+Note. The condition (8.3) is used in the proof of the Corollary 8.2., but
+that Corollary shows that (8.3) never holds if F → △ isunderivable.
+The following definitions are motivated in part by the proof-search process,
+which proceeds by bottom-up application of the inference rules.
+DEFINITION 8.3. A sequent  →  is saturated for invertible rules if it is
+underivable and the following conditions are satisfied for any , b:

@@ -1,0 +1,38 @@
+126 
+REFERENCES
+13. S. C. Kleene. Introduction to Metamathematics. Wolters-Noordhoff Pub-
+lishing, Amsterdam, 7 edition, 1971.
+14. S. Kripke. Semantical analysis of modal logic. Zeitschrift fir Mathematische
+Logik und Grundlagen der Mathematik, 9:67-96, 1963.
+15. G. Mints. Axiomatization of a Skolem Function in Intutitonistic Logic.
+CSLI Publications, 2000. To appear.
+16. G. E. Mints. A Simple Prooffor the Coherence Theorem for Cartesian
+Closed Categories, volume 3 of Studies in Proof Theory: Monographs, pages
+213-220. Bibliopolis, Napoli, and North-Holland, Amsterdam, 1992.
+17. Grigori Mints. Resolution strategies for the intuitionistic logic. In B. Mayoh,
+E. Tyugu, and J. Penjam, editors, Proceedings NATO ASI on Constraint
+Programming, Parnu, Estonia, 13-24 Aug 1993, volume 131 of NATO ASI
+Series F, pages 289-311. Springer-Verlag, Berlin, Heidelberg, New York,
+1994.
+18. H. J. Ohlbach. Semantics-based translation methods for modal logics. Jour-
+nal of Logic and Computation, l(5):691-746, October 1990.
+19. D. Prawitz. Natural Deduction. Almquist and Wiksell, Stockholm, 1965.
+20. H. Rasiowa and R. Sikorski. The Mathematics of Metamathematics, vol-
+ume 41 of Polska Akademia Nauk. Monografie matematyczne. Polish Scien-
+tific Publishers, Warsaw, 1963.
+2l. N. Shankar. Proof search in the intuitionistic sequent calculus. In D. Kapur,
+editor, Proceedings 1lth Intl. Conf. on Automated Deduction, CADE'92,
+Saratoga Springs, CA, USA, 15-18 June 1992, volume 607 of Lecture Notes
+in Artificial Intelligence, pages 522-536. Springer-Verlag, Berlin, 1992.
+22. R. Statman. Intuitionistic prepositional logic is polynomial-space complete.
+Theoretical Computer Science, 9(l):67-72, July 1979.
+23. M. Stone. Representing scope in intuitionistic deductions. Theoretical Com-
+puter Science, 211, 1999.
+24. G. Takeuti. Proof Theory, volume 81 of Studies in Logic and the Foundations
+of Mathematics. North-Holland, Amsterdam, 1975.
+25. A. Troelstra and H. Schwichtenberg. Basic Proof Theory, volume 43 of
+Cambridge Tracts in Theoretical Computer Science. Cambridge University
+Press, Cambridge, 1996.
+26. A. Troelstra and D. van Dalen. Constructivism in Mathematics, Vol. 1,
+volume 121 of Studies in Logic and the Foundations ofMathematics. North-
+Holland, Amsterdam, 1988.

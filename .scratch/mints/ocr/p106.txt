@@ -1,0 +1,38 @@
+106
+KRIPKE MODELS FOR PREDICATE LOGIC
+In other words:
+fw = Adi... Adn.V(f)(di,..., dn, w)
+is an n-ary function on D(w) and:
+Pw = Adi ...Adn.V(P)(di,..., dn, w)
+is an n-ary predicate on D(w). Moreover fw, Pu are monotone in w: The value
+true for P and all values of f are preserved in the move to an accessible world
+The values of variable-free terms and sentences in a Kripke model are defined
+by the following recursion.
+DEFINITION 14.3. (a) The value V(t,w) E D(wof a constant term t E D(w):
+Constants: V(d, w) := d if d E D(w)
+Composite terms: V(f(ti, .. ., tp), w) := V(f)(V(ti, w), ..., V(tp, w), w)
+(b) The value V(α, w) E [0, 1) for a sentence α E Lw. First atomic formulas:
+V(P(t1, ...,tn), w) :=- V(P)(V(ti, w), ..., V(tn, w), w)
+&,V,→, I: the same clauses as in the Definition 7.
+3:
+V(3xΦ) = 1 iff V([r/d)], w) = 1 for some d E D(w)
+:A
+V(Vxo) = 1 iff for all w" with Rww" we have V(o[r/d], w') = 1 for all
+d E D(w') .
+A formula α is valid if for every Kripke model < W,R,D,V >, every world
+w E W, and every substitution [αi/di,..., &n/dn] of objects in D(w) for free
+variables of α, we have V(a[z1/di,...,&n/dnl, w) = 1. A sequent F =→  is
+valid iff a formula &r → v is valid.
+EXAMPLE 14.1. Let us refute the formula Vα--Pα → --VαP(α).
+Consider the following Kripke model (W, R, D, V) with a constant individuum
+domain
+D(w)= the set of positive natural numbers, W = w and:
+V(P)(d, i) = 1 iff d < i;
+Rijiffi≤j
+Then V(Vr Pr, i) - 0for every i, since V(P(i+1), i) = 0. Hence V(-VaPa, 0) =
+1. Moreover V(--Pd,i) = 1 for all d, i, since V(Pd,i) = 1for i > d. Hence
+V(Vr--Pr,0) = 1 and:
+V(V--P -→ --VP(), 0) = 0
+Monotonicity (14.1, 14.2), extends to all terms and formulas.
+LEMMA 14.1. Assume Rww: Then:
+V(t, w') = V(t, w) and V(α, w) = 1 implies V(α, w') = 1

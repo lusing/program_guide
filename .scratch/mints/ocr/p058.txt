@@ -1,0 +1,47 @@
+54
+GENTZEN-TYPE PROPOSITIONAL SYSTEM LJPM
+Inference rules:
+→, →,
+中,, 
+r→ A,&
+&,T→△
+,→
+T→A,Φ,
+,→
+→,, ,→
+中,→
+Φ→,→
+,Φ,
+contr
+weak
+T→A,Φ
+The calculus has eight logical rules, namely, two rules for each connective c: One
+rule introduces it to the succedent, and it is called (→ c) or c-succedent; the
+second rule introduces c in the antecedent, and it is called (c=→) or c-antecedent.
+Contraction contr and weakening weak are structural rules.
+All rules except =→-→+ have the same parametric formulas F, in conclusion
+and all premises.
+If negation is taken as a separate connective, corresponding rules become
+Φ,r→
+,→,Φ
+An additional rule that is not officially part of LJpm but is proved to be admis-
+sible later is needed to establish connections with other formalizations. This is
+a cut rule:
+cut
+Sequents written over the line in a rule are called premises; the sequent under
+the line is the conclusion of the rule. A formulaexplicitly shown in the conclusion
+of the rule and containing the connective introduced by the rule is called the
+principal formula. Thus & is the principal formula for &-rules,  V  for
+V-rules, and so on. The subformulas , bof the main formula explicitly shown
+in the premises are side formulas. Formulas in the lists F, △ are parametric
+formulas; the formula  in the cut rule is the cut formula.
+Contraction allows us to treat multisets in the antecedent and succedent as
+sets, that is, to disregard not only order of formulas, but also the number of
+occurrences. Weakening allows us to add arbitrary formulas to antecedent and
+succedent, in particular to treat I,Φ → Φ,Aand I, I → A as axioms and derive
+pruned forms of one-premise rules:
+Φ,→
+Using contraction, we can preserve main formulas in the premises of rules or
+omit these formulas. For example, such inferences as:
+&,Φ,,→
+&,→

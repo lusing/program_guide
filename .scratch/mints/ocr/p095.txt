@@ -1,0 +1,30 @@
+Chapter 13
+Natural Deduction System
+NJ
+Predicate logic terms are constructed from individuum variables denoted by
+x, y, z, i,yi, z1 and so on, by means of function symbols denoted by f, g, h,
+fi,g1,h1 and so on. Variables and O-place function symbols (constants) are
+terms, and ifti,...,tp, (p > O) are terms, then f(ti,...,tp) is a term for a
+p-place functional symbol f. Atomic formulas are constructed from terms and
+predicate symbols (which are denoted by P, Q, Pi, Qi,... ). Propositional letters
+are atomic formulas (and O-place predicate symbols); I is an atomic formula,
+and if ti,...,tp, p > 0 are terms, then P(ti, ...,tp) is an atomic formula for a
+p-place predicate symbol P. Formulas are constructed from atomic formulas by
+propositional connectives &,V,→ and quantifiers. Atomic formulas are formu-
+las, and if α, β are formulas, then α&β,α V β,α → β,Vrα, 3rα are formulas.
+A main complexity measure of a formula is its length, that is, the number of
+occurrences of logic connectives; lth(α) := 0 for atomic α;
+Ith(α O β) := Ith(α) + Ith(β) + 1;
+Ith(Vra) = lth(Frα) := Ith(α) + 1.
+Quantifiers bind occurrences of individuum variables; remaining occurrences are
+free. Let us define the list Fv(α) of free variables of the formula α.
+If α is atomic, then FV(α) is the list of all variables occurring in α:
+FV(α  β) := FV(α) U FV(β) for O = &, V, →.
+FV(Vrα) = FV(Frα) := FV(α) - (α)
+Recall that the expression α[/tj stands for the result of substituting a term
+t for all free occurrences of a variable x in a formula α. For other syntac-
+tic expressions E, substitution E[r/t] is defined componentwise. For example,
+(α1,...→...,βn)[α/t] :=α1[/t],...=→...,βn[α/t].
+Predicate systems NJ and NK
+Add the quantifier rules presented below to propositional versions of these
+95

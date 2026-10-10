@@ -1,0 +1,38 @@
+74
+TOPOLOGICAL COMPLETENESS
+LEMMA 9.6. The set V(p) is open
+Proof.Assume  E V(p). If w(r) = 0, then 0  p and V(p) = [0, 1]. Assume
+now w(r) ± 0 (which implies that s[x] is computed by the second clause of the
+definition) and let  be the distance from x to the closest end of the interval
+s[α]±qn(o[a])+2:
+E := min( - (3[] - qn([ml)+2),3[2] + qn(s[m)+2 - 2)
+Then  > 0. Take an y E [0, 1] with [r - yl < e. To prove w(y)  p, note that
+ly -, s[]l < qn(a[e])+2° This implies ly - s[>] ≤ ly - s[a]l and [s[] - 3[e]l <
+qn(s[3)+1. Hence Rw(α)w(y) and w(g)  p.
+THEOREM 9.3. For arbitrary formula α
+ E V(α) → w()  α
+(9.6)
+Proof.We use induction onα. The induction base is the relation (9.5).
+Induction step for α =(@ β), where O 三 &, V:
+EV((Oβ)) → (EV())O(EV(β))  w(α)Ow(α)μβ
+→ w(α) (0β),
+as required for (9.6).
+Let α = ( → β). Recall that:
+ E V(-→ β) →  E Interior(([0,1] - V())UV(P)) → (e > 0)
+(VyE [0, 1])(ly - rl <e -→(ye V() implies y E V(B)))
+(9.7)
+Assume first r E V(α). Take an e satisfying (9.7) and an arbitrary w with
+Rw(a)w, w  . Take a natural number no ≥ n(s[el)+ 2 such that qno+1 < e.
+Define a sequence t by:
+t(n) := if n ≤ no then s[c](n) else w
+Since s[rl(no) = t(no) = w(r), we have Rt(no)w and t E Nmon, as well as
+w(t) = w , s[a] =n。 t and [z - tl ≤ qno+1 < e.
+Hence t E V(), so t E V(β), and w = w(t)  β by IH. This implies
+w(α) 卜α.
+Now assume that w(r)  ( → β), but   V( → β). Take asequence n E
+V()-V(β), n n→oo a. Ifw(r) = 0 then Rw(r)w(rm) for all m. Otherwise,
+Rw(r)w(am). By IH, w(am)  , and by Rw(α)w(m), w(am) F β. Again by
+IH, am E V(β), a contradiction.
+To finish the proof of the topological completeness for [0,1], recall that 0  α.
+Then for the constant O-sequence 0, we have 0  V(α);hence V(α) + [0,1]as
+required.

@@ -1,0 +1,25 @@
+Chapter 10
+Proof-Search
+10.1.Tableaux: System LJpm*
+For each sequent S, we describe a tree Trs obtained from S by a bottom-up
+application of the inference rules of the system LJpm. If the goal sequent S is,
+say, of the form:
+p&,f→A,
+then it can be derived from a simpler sequent:
+P,,→
+by the rule (=→ &). Therefore the first step of the construction of Trs can be
+p&b,I → △.
+(10.1)
+In this way Trs is extended upward with the ultimate goal of obtaining a deriva-
+tion of S. Bottom-up applications of two-premise rules lead to a branching of
+Trs. If, say,  = i V 2, then (10.1) can be extended as follows:
+P, 1,T→ P, 2,I→
+p&b,→△
+This kind of branching is called conjunctive or and-branching: To prove a
+final goal sequent, it is necessary to prove both subgoals. In this way we can
+treat all invertible rules of the system LJpm: If a potential principal formula of
+such a rule is present, it is eventually analyzed. Non-invertible rules present a
+problem and will cause an extension of the language. Consider a sequent:
+The only invertible rule applicable here (bottom-up) is (→=→), but it is re-
+dundant, since -p is already present in the succedent. Hence we must try
+75

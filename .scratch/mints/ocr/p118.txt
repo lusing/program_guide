@@ -1,0 +1,16 @@
+118
+SYSTEMS LJM, LJ
+Formula (15.6) says that at most one predicate P (up to equivalence) satisfies
+α.
+THEOREM 15.6. (Beth definability theorem). If a formula α implicitly defines
+P,then α explicitly defines P: There exists a formula t with FV(c)  xUFV(α)
+that does not contain P such that:
+← α→Vx(Px →t)
+Proof.Derivability of (15.6) implies derivability of the sequent:
+Px,α,α[P/Q] → Qx
+Take t to be an interpolant for the partition Px, α; a[P/Q] =→ Qx with FV(t) 
+xU FV(α):
+Px,α=t;
+1, a[P/Q] → Qx.
+This implies (after substituting Q by P in the second sequent):
+as required.

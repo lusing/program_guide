@@ -1,0 +1,39 @@
+GENTZEN-TYPE PROPOSITIONAL SYSTEM LJPM
+55
+are derivable:
+Φ&,,,→
+&,&,→ 
+&,→
+System LJpm differs from sequent formalizations of the traditional (classical)
+logic LK mainly in the formulation of the succedent rules for - and -→, where
+succedent parametric formulas do not occur in the premise (although they occur
+in conclusion). Note that the classical forms of these rules:
+中,T→,
+allow us to derive p V -p, so these are not admissible intuitionistically.
+A derivation or proofin LJpm is defined in a standard way as a tree pro-
+ceeding from the axioms by application of inference rules.
+Example (derivations in LJpm).
+d个d
+P,P
+p&q= p&q=p
+d←d
+p&q = q&p
+p,p-9=p
+= p&q → q&p
+LEMMA 8.1. Every rule of LJpm has a subformula property: Each formula in
+a premise is a subformula of some formula in the conclusion. Every derivation
+consists of subformulas of its last sequent.
+Proof.Check all rules.
+Note that the cut rule does not have the subformula property. The systems
+NJp and LJpm are equivalent; moreover their rules are in exact correspondence.
+LEMMA 8.2. Let F → △ be translated as I → V. Then a sequent is derivable
+in LJpm plus cut if and only if its translation is derivable in NJp. In particular
+卜 in LJpm plus cut iff I in NJp. More precisely,
+(a) every introduction rule is the succedent logical rule of LJpm for the same
+connective;
+(b) every elimination rule can be translated by the antecedent rule for the same
+connective plus cut;
+(c) translation of every rule of LJpm is derivable in NJp.
+Proof.Consideronly several subcases. Part (b) :
+&E:
+T=→ &

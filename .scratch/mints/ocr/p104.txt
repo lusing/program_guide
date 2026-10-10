@@ -1,0 +1,32 @@
+104 
+NATURAL DEDUCTION SYSTEM NJ
+(T(do)(T(di)) = T(d3) conv
+z(p(c, ^y.ko((T(di)(a))) 三 T(d4) =
+z(p(, Ay.ko((1b.Av.z(p(b, Ay.kou)))(a)
+red z(p(z, Ay.ko(>v.z(p(a, ^y.ko))))) 三 T(ds) = [d)
+To extend the Normalization theorem (Theorem 5.3.) to NJ, let us preserve
+the definition of cutrank of a redex as the length of its cut formula:
+cutrank(Ar.ta[r/gl)(t') := lth(Vra) = lth(α) + 1;
+cutrank(Ey,u(p(to,t9(e/l),s) = lth(Fza) = lth(a) + 1
+Lemma 5.3. and Theorem 5.3. carry over to NJ together with proofs. We must
+add one more kind of a “new"' redex to Lemma 5.3.(a):
+t = E(α, s) and s = p(uo, u1)
+THEOREM 13.4. (normalization theorem). (a) Every deductive term t can be
+normalized.
+(b) Every natural deduction d in NJ can be normalized.
+Basic properties of normal deductions (Theorem 5.4.) are preserved, too,
+and hence V-property and Harrop's theorem are extended to NJ together with
+their proofs. In addition we have the 3-property.
+THEOREM 13.5. (Properties ofnormal deductions). Let d : F =→  be a normal
+deduction in NJ.
+(a) Ifd ends in an elimination rule, then the main branch contains only elim-
+ination rules, it begins with an axiom, and every sequent in it is of the form
+I' = α, where r' C I and α is some formula.
+(al) In particular the axiom at the top ofthe main branch is ofthe form α =→ α
+where α E I.
+(b) If F = @, then d ends in an introduction rule.
+THEOREM 13.6. (disjunction property, Harrop's theorem). (a) If ← αo Vα1,
+then + qi for some i = 0, 1.
+(b) If  -β→αo Vα1, then -β=→卜 αifor some i= 0,1.
+(c) If  3rα, then  α[α/t]for some t.
+(d) If  -β =→ 3αα, then -β→ α[α/t)for some t.

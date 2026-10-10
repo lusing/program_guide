@@ -1,0 +1,38 @@
+70
+TOPOLOGICAL COMPLETENESS
+for all wo E K as a basis of open sets. In other words, the interior operation
+satisfies the following:
+Interior(Y) := (w E K I Vw'(Rww' → w' E Y))
+for YK
+Set
+V(p)= [wEK/ w卜p)
+The V(p) is open by the monotonicity condition for , and it is easy to verify
+by induction on the formula  that:
+V() =[weK I w F).
+Consider the most important case,  = α -→ β, and let w, w' range over K.
+Then:
+V(α → β) = Interior((K - V(α))U V(β)
+= Interior((K- (w / w α])U[w [ w β))
+= Interior(K- {w | wα and w β}))
+= w / Vw'(Rww' →(w' μ α→w'  β)) = V(α→ )
+Hence (9.3) shows that V(a) ≠ X; that is, α is not valid.
+The construction used in the preceding proof yields a teratological space:
+For example, the closure of a singleton set {w is the set of all points accessible
+from w; hence w is not separable from these points by a neighborhood.
+Let us give a completeness prooffor X = [0, 1], the unit interval of the real
+line. Recall that open sets in [0O, 1] are finite or a countable unions of open
+intervals.
+THEOREM 9.2. A formula is derivable in NJp iff it is valid in [O, 1].
+Proof.Derivable formulas are valid by the previous Theorem. The proof of
+the opposite implication takes the rest of the present subsection. Fix a formula
+α and a finite pointed Kripke model (0, K, R, )[Theorem 8.2.(b)] such that:
+K=<0,...,N-1>, 0μα
+and R is a partial ordering on K.
+If N = 1, let
+V(p) = if 0  p then [0, 1] else 0
+This relation extends to all formulas: By induction on α we prove:
+V(α) = if 0 = α then [0, 1] else 0,
+since computations follow classical truth tables: Interior(Y) = Y for Y =
+[0, 1], 0. In particular, V(a) = @; that is, α is refuted in [O, 1]. This concludes
+the case N = 1.
+From now on, assume that N > 1.

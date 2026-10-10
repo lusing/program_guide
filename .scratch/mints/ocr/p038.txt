@@ -1,0 +1,41 @@
+32
+COMPUTATIONS WITH DEDUCTIONS
+5.2.
+Conversions and Reductions of Natural De-
+ductions
+Let us describe transformations of natural deductions corresponding to a re-
+duction of terms. Each of these transformations converts an occurrence of an
+introduction rule immediately followed by an elimination of the introduced con-
+nective. Such a pair of inferences is called a cut in this Section. We do not
+elaborate here on a connection with the cut rule of Example 2.5..
+The &-conversion corresponding to the pairing conversion (5.2):
+do: → d: →
+[T,A] →&1
+&E
+d : [F,A] → Φi
+cony
+do: → Φo
+Note that conversion can change the set of assumptions.
+A description of remaining conversions uses a substitution operation for nat-
+ural deductions. Let us recall that in every inference (application of an inference
+rule), each occurrence of an undischarged assumption formula in a premise is
+represented by an occurrence of the same formula in the conclusion, which is
+called its immediate descendant in the conclusion. For any natural deduction,
+starting with an assumption formula in the antecedent of one of the sequents,
+we are led successively to unique descendants of this occurrence in the sequents
+below it. The chain of such descendants stops at discharged assumptions. An-
+cestors of a given formula (occurrence) are occurrences that have it as a descen-
+dant. We say that a given antecedent formula (occurrence) is traceable to any of
+its ancestors (including itself). Each occurrence has at most one descendant in
+a given sequent. It is important to note that all ancestors of a given (occurrence
+of) assumption are assigned one and the same variable in the assignment of
+deductive terms to deductions.
+EXAMPLE 5.1. Consider the following deduction of a sequent § -→ q → q,
+where  = p(p-→ q).
+9db9bg
+8,P= q
+Underlined occurrences of the assumption  -→ q are ancestors of the lowermost
+occurrence of this formula.
+For given deductions d and d' of sequents α,I =→ β, and △ → aα, the result
+of substituting d' for α into d is obtained by replacing all ancestors of α in
+d by  and writing d' over former axioms α → α. Taking deductive terms

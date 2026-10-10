@@ -1,0 +1,29 @@
+Chapter 8
+Gentzen-type Propositional
+System LJpm
+We prove natural deduction system NJp sound and complete for Kripke models.
+However it is convenient first to introduce another propositional system LJpm
+that is equivalent to NJp and more suitable for proof-search. Here we work with
+multiple-succedent sequents, that is, expressions of the form:
+(m ≥ 0,n ≥ 1)
+Φ1,...,Φm =→ b1...,n
+(8.1)
+where Φi, i are formulas.
+The translation of sequents into formulas is given by:
+(d1,...,Φn → b1..., n) =(Φi&...&pn D bi V... Vbn)
+(8.2)
+=&;Φ;  Vbj
+The formula corresponding to a sequent I → △ is written as & → V△.
+In particular the sequent =→  corresponds to the formula , and the sequent
+Φ1,...,Φm → is translated as -&iΦi; it is read “Φi,...,Φn are contradicto-
+ry". The left-hand side Φ1, :..,Φm is the antecedent of the sequent (8.1), and
+the right-hand side bi,...,n is its succedent. The formulas Φi,..., Φm are
+antecedent members of the sequent (8.1) and the formulas bi,...,n are its
+succedent members. Antecedent and succedent are considered as multisets, that
+is, the order of formulas is disregarded. If I and △ are multisets of formulas,
+then F,△ is the result of concatenation, and T,Φ means T, {), as before. We
+always treat → as an abbreviation: $→ := ($ → )&( → $).
+Propositional system LJpm
+Axioms:
+I =→ p for atomic formulas p
+53

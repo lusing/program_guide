@@ -1,0 +1,31 @@
+108
+KRIPKE MODELS FOR PREDICATE LOGIC
+Proof.The implication in one direction is obvious. For the other direction,
+combine proofs of Lemma 7.2. and Theorem 7.2.
+Let us illustrate the use of frame conditions.
+DEFINITION 14.5. A Kripke frame < W, R, D > has constant domains if
+D(w) = D(w') for all w, w' E W
+(14.3)
+LEMMA 14.4. A pointed frame has constant domains iff every formula of the
+form
+A(L)A
+(14.4)
+with   FV() is valid on this frame.
+Proof.Assume first that an arbitrary Kripke frame < W, R, D >has con-
+sume that (14.4) is a sentence to simplify notation. To prove V((14.4), w) = 1,
+take w" with Rww' and assume V(Vr( V α),w') = 1. If V(,w') = 1, we
+are done. Otherwise assume (for Vra) that w" E W and Rw'w". Take arbi-
+trary d E D(w"). By (14.3), d E D(w'); hence V( V α[x/d), w') = 1. With
+V(,w') = 0 this implies V(α[r/d], w') = 1, and V(a[r/d], w") = 1 holds by
+monotonicity, so (14.4) is valid.
+Second consider a pointed frame < G,W,R,D>, a world wo E W, and an
+object do E D(wo) - D(G). For every w E W take
+V(p,w) := 1 iff do E D(w);
+V(Qd, w) := 1 iff d E D(w) - [do)
+and prove that (14.4) is refuted for  := p, α := Qa. First for all w, if do E D(w),
+then V(p, w) = 1 and V(p V Qd, w) = 1. If do  D(w), then V(Qd, w) = 1 for
+all d E D(w) and again V(p V Qd, w) = 1. Hence V(Vr(p V Q),G) = 1.
+On the other hand, V(p,G) = O, since do  D(G), and V(VrQx,G) = 0,
+since V(Qdo, wo) = 0. Hence V(p V VQα, G) = 0.
+In fact NJ+(14.4) is sound and complete for Kripke frames with constant
+domains , but we shall not prove this here.

@@ -1,0 +1,39 @@
+8.2. COMPLETENESS AND ADMISSIBIJTY OF CUT
+59
+Proof. Consider an enumeration Φo, Φi, :.. of all (prepositional) formulas
+in Sub(To,Ao). Define the sequences Fo C i C ...,Ao C Ai C... of finite
+sets of formulas such that F; → △; is underivable and complete for all formulas
+Φi, j < i: Either Φ E F; U A; Or both I; → △i,Φi and Φi,T; → A; are
+derivable.
+Let Ii+1 := F; U {Φ:} if i, ; → A; is underivable; otherwise let Ti+1 = F;.
+Then let Ai+1 := A; U {Φ;} if Fi+1 =→ Ai,Φ; is underivable; otherwise let
+Ai+i = A;. Let I =: UT; and △ := UAi. The completeness of T → △ easily
+follows from the completeness of I; → A; for {Φo, ..., Φ;].
+DEFINITION 8.4. Consider the following Kripke model: K = (W, Rc, Ve):
+W is the set of all complete sequents.
+·Rc(→,'→') if  "
+· Ve(p,I→△)=1 if pE I.
+K is clearly a Kripke model: Rc is reflexive and transitive, since  is reflexive
+and transitive; Ve is monotonic, since E is monotonic with respect to .
+We prove below that K falsifies every invalid formula.
+Let us state the properties of K, which we will need later.
+DEFINITION 8.5. A set M of sequents is saturated for non-invertible rules if
+the following condition is satisfied for every  =→ △ in M:
+(→-→) if→  E , then there is a sequent '→ 'in M such that Φ,"
+and  E △'.
+A set M of sequents is saturated if every sequent in M is saturated for invertible
+rules and M is saturated for non-invertible rules.
+Comment. In a saturated set of sequents, both invertible and non-invertible
+rules are eventually applied from the bottom up.
+LEMMA 8.5. The set W of all complete sequents is saturated
+W, then the sequent Φ, I →, § is underivable. By the Completion Lemma 8.2.,
+we can be extend this sequent to a complete sequent w' = r' → △'; hence
+,I  f', and  E ' as required.
+DEFINITION 8.6. A model defined by a saturated set M is KM = (M, RM, Vm),
+where Rm = Rc, Vm = Ve as defined above.
+THEOREM 8.2. Let M be a saturated set. Then for w = I =→ , w E M:
+ E T implies Vm(0, w) = 1
+(8.6)
+ E  implies Vm(0, w) = 0
+(8.7)
+Vm(T → △, w) = 0, that is, I → △ is falsifed in the world w of Km (8.8)

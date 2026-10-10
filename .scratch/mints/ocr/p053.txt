@@ -1,0 +1,32 @@
+KRIPKE MODELS
+49
+V(p V-p, wo) = V(p, wo) v V(-p, wo) = 0 v V(-p, wo).
+V(-p, wo) = 0 since Rwo w1 and V(p, wi) = 1.
+So:
+V(p V -p, wo) = 0.
+That is, the law of the excluded middle is refuted in our model. Verify that the
+same model refutes the law of double negation:
+With Theorem 7.1. below this example again shows that pV-p and --p → p
+are not derivable in NJp.
+EXAMPLE 7.2. The model
+w2
+wo
+that is, V(p, wo) = V(p, wi) = 0; V(p, w2) = 1 and Rwo wi, Rwo w2, refutes the
+principle of the weak excluded middle -pV--p. Indeed V(-p, wi) - 1, since w1
+is the only w' such that Rwi w'. V(-p, wo) = 0, since Rwo w2 and V(p, w2) =- 1.
+V(--p, wo) = 0, given that R wo w1, and V(-p, wi) = 1; therefore:
+V(-pV--p, wo) = 0 V0 = 0
+Let us prove that truth is monotonic with respect to R.
+LEMMA 7.1. (monotonicity lemma). Let (W, R,V) be a model; then for any
+w,w' e w and formula p:
+Rw w' and V(p, w) = 1 imply V(p, w') = 1.
+(7.1)
+Proof.Induction on (the construction of) p. We restate (7.1) as:
+R(w, w') -→(V(, w) -→ V(p, w'))
+Basis:  is a propositional variable; then (7.1) is included in the definition of a
+model.
+Induction step: We assume Rw w' and consider cases depending on the main
+connective of p.
+Φ = b&0.
+Then
+V(, w) = V(b,w)&V(o, w)

@@ -1,0 +1,42 @@
+36
+COMPUTATIONS WITH DEDUCTIONS
+Thus the original derivation d is reduced to:
+Ar (p-q)→p Ap
+d介d
+d个bd'd← (b←d)
+Ar 8
+Arα 4
+b介db←o
+9个6←
+Reduce the only cut in d2 (at the end):
+p=p
+Aα→ α
+A (p→q) -→ Ac p g
+b个db←o
+b←d个btn
+d介d
+d个b←db←(b←d)
+Ar α q
+α→α
+d: α→qq
+Reduce the only cut in ds: VI, introducing § followed by VE:
+d个d
+Ax (p→q) → q
+btdb←n
+(p~q) q,α4±p
+Ac α→
+αα
+d4: α→ q
+This normal deduction is the same as in Example 2.7..
+To get a better feeling of the Curry-Howard isomorphism, let us normalize
+the term T(d):
+(Ay.y(ki Az.y(koz))(Au.x(Dz,v(u, Aw.z, Aw.w(v))) conv
+(Au.x(Dz,r(u, Aw.z, Aw.w(v))))(k1Az.(Au.x(Dz,(u, Aw.z, Aw.w(v))(koz))
+= T(di) redi
+(Au.c(Dz,r(u, Aw.z, Aw.w(v))))(k1Az.r(Dz,v(koz, Aw.z, Aw.w(v))
+redi
+(Au.x(Dz,(u, Aw.z, Aw.w()(kiAz.x(Aw.z)) = T(d2)
+redi
+x(Dz,v(k1Az.r(Aw.z), Aw.z, Aw.w(v)
+= T(d3) redi
+c(Aw.w(Az.x(Aw.z))) 三 T(d4) 三 [T(d)

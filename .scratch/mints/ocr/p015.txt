@@ -1,0 +1,30 @@
+Chapter 1
+Preliminaries
+We use such standard abbreviations as iff for “if and only if'; IH for Induction
+Hypothesis (in proofs by mathematical induction), and so on; the symbol =
+stands for syntactic identity of expressions, and := denotes equality by defini-
+tion. The symbol - indicates the end a proof. We assume some basic knowledge
+of the properties of free and bound variables in formulas of predicate logic; in
+the treatment of substitution, we follow standard conventions (see for example
+[25]). Expressions that differ only in the name of bound variables are regarded
+as identical. In the definition of substituting the expression e' for the variable x
+in expression e, either one requires no variable free in e' to become bound by an
+operator like Vz, Er, Ar in e (that is, e' is free for x in e, or there are no clashes
+of variables), or the substitution operation is taken to involve a systematic re-
+naming operation for bound variables, thereby avoiding clashes. Having stated
+that we are interested only in expressions modulo renaming bound variables, we
+abbreviation FV is used for the set of free variables of an expression.
+It is often convenient to work with finite multisets, that is, finite sequences
+modulo the ordering: Permutation aii,.. ., ai, is identified with a1, . . , Qn, but
+the number of occurrences of each ai is important. Multisets of formulas are
+denoted by F,Fi, A, A1, -
+: . The notation α, I is used for the result of adding
+(one more occurrence of) α to the multiset F. The notation F, means the
+multiset union of F and : Occurrences of the same formula are not contracted,
+for example, {α,α], (α, α,α] is [α,α, α,α,α] .
+The [, ] represents the multiset union of ,  and a possible identification
+of some formulas in △ with identical formulas in f. For example:
+[(α,α, β,β)], (α,α,α,,)]
+can be any of:
+[α,α,α,α,α,β,β,,),(α,α,α,α, β,p,,),(α,α,α,β,β,,)
+but not (α,α, β,β,,)

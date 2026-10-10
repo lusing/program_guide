@@ -117,7 +117,7 @@ Theorem toDown_ok : forall f s, upeval (toDown f) s = beval f s.
 X=true、Y=false 时 NAND 翻译给出 true 而合取应为 false。回看原文
 「A↓B is true when and only when **neither** A nor B is true」——joint
 denial 是 NOR 不是 NAND。改回 `negb (orb …)` 后全绿。「数学先于战术」
-在 96/105 章（旧号）出现过三次，本轮第四次：**先读清语义再写求值器**，
+在 101/110 章（旧号）出现过三次，本轮第四次：**先读清语义再写求值器**，
 编译器的拒证就是正确判断。
 
 另一侧的 **alternative denial** |（NAND，A|B 恰在两者不全真时为真）同样

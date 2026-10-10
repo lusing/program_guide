@@ -1,0 +1,35 @@
+2.9. CLASSICAL PROPOSITIONAL LOGIC
+19
+Consider α → β -→ (α V) → (βV). Analysis yiels α → β,α V βV
+(and the result ofinterchanging β and α), and then:
+α-→β,βα,αβVand αβ,β→α,fβV
+The second subgoal is immediate by vI, and the first subgoal is obtained by
+direct chaining: α -→ β, α, β.
+(b) Use induction on with  → in the induction base and Part (a) in the
+induction step.
+2.9.
+Classical Propositional Logic
+2.9.1. Semantics: Truth Tables
+We recall here some standard elementary definitions. Admissible values for
+propositional variables in the standard semantics for CPC are true and false,
+often denoted by 1,0.
+Truth values of compound formulas are computed from truth values of vari-
+ables by the standard rules summarized by the following truth tables. The
+symbol T always takes the value 1, and I always takes the value 0.
+pvq
+Ip&q /p-q /pq
+Every given assignment of truth values to variables occurring in a given
+formula (truth value assignment) determines the truth value of this formula.
+EXAMPLE 2.16. Let α = pV -pThen for every truth value assignment v
+wehave v(α) = 1 : Consider cases v(p) = 0, v(p) = 1. So α is true, that is it
+takes value true under every truth value assignment. This means by definition
+that αis a tautology or a valid formula of CPC.
+EXAMPLE 2.17. Let α = -(pVq)V p. Consider the assignment v(p) = 0 and
+v(g) = 1. Then:
+u(α) = u(-(p Vq) V 0) = u(-(p Vq)) = u(-(0 V 1)) = 0
+Since α is false under a given assignment, it is not a tautology. The assignment
+u(p) = O,u(q) = 1 is said to be a falsifying assignment for a. Assignment
+v(p) = v(q) = 1 gives v(α) = 1, so it is a verifying (or satisfying) assignment.
+Since operators V, &, -→, , and so on, defined in this way act on truth values
+of their arguments, they are called truth functional operators or truth functional
+connectives.

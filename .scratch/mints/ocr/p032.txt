@@ -1,0 +1,45 @@
+26
+PROGRAM INTERPRETATION OF INTUITIONISTIC LOGIC
+EXERCISE 4.1. What are realizations of formulas of the following form:
+α→(β&);
+(αo Vα1) → β&(βo Vβ1);
+α-→ (αo Vα1) -→ (β V β1)
+4.2. Assignment T of Deductive Terms
+This Section presents a language for writing realizations of formulas derivable
+in NJp. Basic constructs of this language are pairing p with projections po,pi
+satisfying:
+Pi(p(to,ti)) = ti, i = 0, 1
+(4.1)
+and lambda abstraction providing explicit definitions:
+(Ar.t)(u) = t[r /u],
+(4.2)
+where t[r/u] stands for the result of substituting a term u for all free occurrences
+of a variable x (of the same type) in t. In other words, if t is an expression
+containing a variable x, it is possible to define a function (denoted by Xa.t) that
+outputs the value t[r/u] when the value of x is set to u. Sometimes we omit a
+dot and write Art.
+Application of a function t to an argument u is denoted by t(u). Two more
+constructions are connected with disjunction and case distinction.
+To indicate that an object t is to be treated as a realization of Φo in Φo V@1,
+we write kot, and similarly for kit.
+Three-place operation D expresses case distinction for disjunction: If u =
+k;t (i E (0, 1)) is a realization of a disjunction Φo V @1 and to, ti are realizations
+for someformula  depending on realizations o, 1 of o, Φ1, respectively, then
+Dro,rr(u,to,ti) is a realization of g; formalizing the instruction: If t in u = k;t
+realizes Φo (that is, i = O), then the result is to[r/tl;otherwise ti[r/t]. This can
+be expressed by an equality:
+Dro,ri(k;t,to, t1) = ti[r:/t], i = 0, 1.
+(4.3)
+Operation I provides a trivial realization of a formula  under the assumption
+that a contradiction was obtained.
+To formalize the assumption that realizations of some of the formulas are
+given, we assume for every formula  of the language under consideration a
+countably infinite supply of variables of type . For distinct formulas Φ, the
+corresponding sets of variables are disjoint, and the set of typed variables is
+disjoint from the set of individual variables. We use a*,y', z for arbitrary
+variables of type @; we omit the type superscript when clear from the context.
+Now we assign a term T(d) to every natural deduction d deriving a sequent:
+T→Φ.
+(4.4)
+A term u assigned to a derivable sequent (4.4) is supposed to realize a formula
+ according to the BHK-interpretation under assumptions r. We sometimes

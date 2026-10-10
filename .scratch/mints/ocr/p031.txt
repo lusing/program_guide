@@ -1,0 +1,32 @@
+Chapter 4
+Program Interpretation of
+Intuitionistic Logic
+4.1.
+BHK-Interpretation
+Let us recall Brouwer's requirement of effective existence: To claim 3rα, we
+we must point out which of the disjuncts is true, that is, select an i E {o, 1} and
+justify ai.
+We describe now a "programming language"' and a method of mechanically
+extracting programs in this language from intuitionistic proofs. This language
+is a version of simply typed lambda calculus [2]. It is based on a semantics
+of intuitionistic logic in terms of constructions, presupposing that any formula
+A encodes a problem, and corresponding construction c solves this problem or
+realizes A. We give an informal explanation of semantics of logical connectives
+that evolved from the work of Brouwer, Heyting, and Kolmogorov. It is called
+BHK-interpretation. We write crα for “c realizes α"' or "'c is a construction for
+α":
+cr(αo ^α1)
+iff c is a pair c = p(ao,ai) and aorao and aira1,
+cr(αo V α1)
+iff (c = koa and arao) or (c = kia and arai),
+cr(α - β)
+iff c is a function and for every d, if drα then c(d)rp,
+not crl.
+The last clause is equivalent to:
+cr-α iff -drα for every d.
+We see that our language for such constructions should include pairing, pro-
+jections (components of pairs), injection into a direct sum, forming functions,
+and applying functions to arguments.
+EXAMPLE 4.1. Realization t of (αo V αi) →(βo V βijs a program that for
+that b realizes β.
+25

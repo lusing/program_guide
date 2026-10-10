@@ -1,0 +1,38 @@
+INDEX
+131
+sequents, 9
+side formulas, 54
+stage, 122
+strictly positive, 41
+strong normalization, 3
+subgoals, 16
+substitution, 32
+substitution operation, 32
+subsumes, 79
+succedent, 9, 53, 109
+succedent members, 53
+tableaux, 76
+tautology, 19
+terminal, 123
+terminal node, 78
+terms, 95
+topological interpretation, 69
+traceable, 32
+transfer, 3, 119
+transitive, 47
+tree extension, 77
+tree extension steps, 121
+true, 19
+true at the world, 48
+true in a PBA, 63
+truth functional connectives, 19
+truth functional operators, 19
+truth value assignment, 19
+truth values, 19
+valid. 48. 63. 69, 106
+valid formula, 19
+valid in a PBA, 63
+valuation, 63
+valuation function, 48
+verifying assignment, 19
+world, 47, 48

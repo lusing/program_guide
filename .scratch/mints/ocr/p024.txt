@@ -1,0 +1,29 @@
+2.7. HEURISTICS FOR NATURAL DEDUCTION
+17
+One direction is -→ E, the other direction is -→ I:
+T,α→β
+I,α→β
+d(d ())       
+Lemma 2.7. it is sufficient to deduce α -→ q, (p -→ q) → p =→ p,which is reduced
+ s d  d  (  )d  a  d     d   
+(weakening of an) axiom.
+Let us write the deduction in an abbreviated form:
+d + (b d)
+pla
+Heuristics for Disjunction
+LEMMA 2.7. αVβ, iff α, and β,→Φ.
+Proof.α V β,r  implies α, r   by α  α V β. On the other hand,
+α, and β,=imply αβ, by VE.
+Heuristics for Negation
+Recall that -α = (α -→ L). We list some provable properties of negation to be
+used later.
+LEMMA 2.8. (a)-α iff ,α
+(b) double negation introduction and elimination:
+(bl)  α →--α
+(b2)  --α → α
+(b3)   →
+(c) de Morgan's laws valid intuitionistically.
+-(αVβ) →(-α&-β)
+-(α&β) →(α -→-β)
+ -(α → β) →(-α&-β)
+(d) iffα, -αfor some α

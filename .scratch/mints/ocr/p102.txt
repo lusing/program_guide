@@ -1,0 +1,29 @@
+102
+NATURAL DEDUCTION SYSTEM NJ
+(c) Every conversion in d uniquely corresponds to a conversion in T(d), and
+and vice versa.
+(d) A deduction d is normal iffT(d) is normal and vice versa.
+EXAMPLE 13.3. Consider the following deduction of a sequent α =→ I, where:
+α := 3rVy(P V-Py), β := Vy-Py& -Vy~Py
+do: -α →-Vy-Py d: α →y-Py
+Where do, di are as follows:
+Vy-Py=-Pa
+Vy-Py → Pr V-Pa
+Vy-Py =→ Vy(Pr V-Py)
+JQ = Jα
+Vy-Py→α
+-α,Vy-Py→ 
+do : -α =→-Vy-Py
+Pb → Pb
+Pb= Pb V -Py
+Pb → Vy(Pb V -Py)
+Pb → y(P Py)
+-α, Pb =→ 1
+di : -α → Vy-Py
+Deduction d ends in a cut, and it is converted into the following deduction
+d2:
+do : -α =→-Vy-Py di : -α →Vy-Py
+-α →-Vy-Py&Vy-Py
+-α →-Vy-Py&Vy-Py
+-α → Vy-Py
+T← o : p

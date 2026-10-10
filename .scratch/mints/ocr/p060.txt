@@ -1,0 +1,31 @@
+56
+GENTZEN-TYPE PROPOSITIONAL SYSTEM LJPM
+Φ→,F→
+Part (c): Consider translations of the rules of LJpm. Note that every succe-
+dent logical rule of LJpm is translated using the introduction rule for the same
+connective, and every antecedent logical rule of LJpm is translated using the
+elimination rule for the same connective combined with cut. We write transla-
+Φ,→
+r→→
+FV(→)
+9个9
+6→V(&)
+Φ,→(&)
+T-+$ SV(&)
+T,→8(&d)
+T -→ 8(&d)
+,=→6
+中,中→,r=8
+9个←
+ExERCISE 8.1. Derive following sequents in LJpm:
+1. q→p
+2. p=q →p
+d介d← (bd)b←d 
+4. p,p→q,q →r→r
+bb←((bd)^d) S
+6. (((p → q) → p) → p) → q → q
+ExERCISE 8.2. Construct Kripke countermodels for the following sequents:
+1. --p→p
+2. (p→q) →p=p
+3. (p→ q) V (q -→ p)
+(μ←d-) ^ (b←d) ← (α>b) ← dL) 

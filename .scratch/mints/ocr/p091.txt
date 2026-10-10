@@ -1,0 +1,35 @@
+Chapter 12
+Interpolation Theorem
+Now we can prove a proposition having many applications. If E is a formula
+or sequent, then Le stands for the list of propositional variables occurring in E
+plus {T,I.
+A Craig interpolant for an implication β → α is a formula t such that:
+β→,
+and L,  Lα N Lp.
+A Craig interpolant for a partition F;  → α of a sequent I, △ → α is a formula
+t such that:
+Ft,→α
+and L,  Lrn La→α.
+THEOREM 12.1. (interpolation theorem) (a) If I,△ =→ α is derivable, then
+there is a Craig interpolant for F;  → α.
+(b) Ifα -+ β is derivable, then there is a Craig interpolant for α -→ β.
+Proof.Part (b) follows immediately from Part (a). Let us prove Part (a) by
+induction on a given derivation d : I, =→ α in LJp.
+Case O. The d is an axiom α =→ α or I → α. The interpolant depends on
+a given partition I, of the antecedent. If I is empty, define t := T , and we
+have → T and T,α → α, as well as T,  → α. If I is non-empty, that is, the
+whole of the antecedent, define t := f (that is, t := α or t := l), and we have
+f→  and f → α.
+Case 1. The d ends in an one-premise succedent rule L (that is, L → V
+or L ==→-→). By IH, there is an interpolant t for the premise, and it is just
+preserved for the conclusion. If for example L =→ V , then we have:
+I,Aαi
+t,→αi
+by IH
+r,→αoVα1
+→ 1,→αoVα1 by →V
+Case 2. The d ends in a two-premise succedent rule L (that is, L =→ &).
+Take conjunction of interpolants for the premises:
+by IH
+F,△→&
+89

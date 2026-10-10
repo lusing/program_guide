@@ -1,0 +1,43 @@
+100
+NATURAL DEDUCTION SYSTEM NJ
+where x is an individuum variable and t is a term of predicate logic.
+Assignment rules for predicate logic:
+z : I→t : A[c/y]
+z: =t: Vr
+IA
+A: #hY← J: z
+z : f =→t(t) : [α/t]
+z : F → ti : Φ[α/to]
+IE
+z : I → p(to,t1) : 3zΦ
+z : I→t : 3rΦ (ud[m/yl : Φ[c/y])°,z' : △→t1 : 0
+3E
+Z,z' : [T,A] =→ Ey,u(t,t1) : 0
+with a suitable proviso in VI,3E. This extends the assignment T of deductive
+terms (Section 4.2.) to derivations in predicate logic.
+: &β :&β
+u : α[c/y], z : 3aα&vβ=→ k : α[r/y]&β[α/y]
+3&β→ po(): 
+u : α[r/y], 3xa&Vβ→ p(y, k) : 3x(α&β)
+3zα&Vαβ =→ Dy,u(poz, p(y, k) : 3α(α&β)
+= Az.Dy,u(poz, P(y, k) : 3rα&Vaβ -→ 3α(α&β)
+where k = p(u, (piz)(y)) and the right uppermost sequent is derived as follows:
+:& :&
+z : α&β→1z: Vβ
+u : a[r/y] → u : α[r/y]
+z : 3α&Vβ=→(p1z)(y) : β[/y)
+u : a[c/y],z : Eca&Vrβ →k : a[α/y]&p[α/y]
+The Curry-Howard isomorphism (Section 4.3.) between deductive terms and
+natural deductions can be extended to NJ. Operation D (Definition 4.3.) is
+extended in a natural way to new deductive terms t.
+If ts中 = Ayu[r/], then:
+D(u) : T →[α/y]
+IA
+D(ay.u) : r → Vas
+If ta[a/t') = sra(t'), then:
+D(s) : → Vrα
+D(s(t')) : F=α[z/t)]
+If t3rα = p(sa[x/t')], u), then:
+D(s) : r→ α[r/t]
+31
+D(p(s,t) : I → 3α

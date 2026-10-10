@@ -1,0 +1,47 @@
+76
+PROOF-SEARCH
+non-invertible rules. To make the search exhaustive, all of these rules are to be
+tried in parallel. The proof-search is successful iff at least one of these parallel
+processes terminates. This situation is called disjunctive or or-branching.
+To describe disjunctive branching, we introduce more complicated objects:
+Finite ordered sequences or lists of sequents, written as follows:
+Si * S2 *...* Sn(n ≥1)
+(10.2)
+These are called tableaux. The order of components Si,:.:, Sn is in fact irrele-
+of our new system LJpm*. Its rules are the rules of LJpm applied to one of the
+components S;. Note that the rule =→>-→ adds a new component (when viewed
+bottom-up) and hence turns a sequent into a tableau.
+System LJpm*.
+Axioms:
+T*, I →△,Φ*T
+T*I,F=→△*T
+Inference rules:
+T* → △,Φ*T"
+**
+T*P,,  → * T
+T*=→△,&*T
+T*&b,T → △*T
+T*4,=△*T 
+T*,→△*T'
+T*T→△,,*T
+T*V,F=△*T
+T*T=→△,?V*T
+T*Φ-→,F→ △,Φ*T" T*, → △*T'
+T*→,F=△*T
+T*→△,→*,T→*T
+T*→,→*T
+All the rules of LJpm* are in fact invertible, but we call =→→ quasi-invertible
+to stress its connection with the non-nvertible rule =→→of LJpm.
+Let us prove first that the new system is equivalent to the old one. We could
+just interpret * as a disjunction, but this would introduce cuts.
+LEMMA 10.1. Any derivation of a tableau Si * S2 * ...* Sn in LJpm* can
+be pruned into a derivation ofone S; in LJpm by deleting some components of
+tableaux.
+Proof.Use induction on the height of the derivation. The axioms of LJpm*
+are pruned into the corresponding axioms of LJpm, and all remaining compo-
+nents (that is, T, T') are deleted.
+If some non-active component (occurring in T, T') is retained in at least one
+of the premises of a rule, it is also retained in the conclusion. For example, the
+rule:
+P,T=→△*T*S $,T→△*T*S
+PV,F→△*T*S

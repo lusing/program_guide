@@ -1,0 +1,11 @@
+THE UNVERSITY SERIESIN MATHEMATICS
+Series Editors: Sylvain E. Cappell and Joseph J. Kohn
+A Short
+Introduction
+to
+Intuitionistic
+Logic
+3xP(x) → 3yQ(y)
+Vx(P(x) → Q(Y(x) ))
+P, Q =(P →Q)
+Grigori Mints

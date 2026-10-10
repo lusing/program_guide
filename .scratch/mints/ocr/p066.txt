@@ -1,0 +1,39 @@
+62 
+GENTZEN-TYPE PROPOSITIONAL SYSTEM LJPM
+with the universe W and an interpretation for the predicates and the constant
+in pP, satisfying the premise of pP (that is, reflexivity and transitivity of R)
+generates a Kripke model:
+M' = (W,R,VM")
+where Vm(pi, w) = 1 iff M  P(w) for w E W.
+In the other direction, any Kripke model M' with a distinguished world
+ao generates a first-order model M by means of (8.9); that is, M = P(w) iff
+M'  (p, w) = 1. Moreover by induction on b, it is easy to prove that:
+M P[w] iff Vm(,w) = 1
+(8.10)
+We see that pP is valid (in the first-order logic)iff p is valid intuitionistically.
+This may initially suggest an alternative proof-search procedure. To test
+p, write pP and apply some (resolution) theorem prover for the classical logic.
+However the result will be devastating. The search space is very quickly filled
+by useless resolvents. Much more sophisticated approach along these lines is
+proposed in [18].
+8.4. Algebraic Models
+Algebraic models represent another kind of model for non-classical logics. Such
+a model usually consists of a universe U with a distinguished element T (truth)
+and operations on U corresponding to logical operations. Conditions for op-
+erations on U are set so that the validity of derivable formulas can be proved
+rather easily. We show here that intuitionistic prepositional logic is sound and
+complete for algebraic models.
+DEFINITION 8.9. A pseudo-Boolean algebra (PBA) or Heyting algebra is a
+pair(B,≤) where B is a non-empty set and ≤ is a partial ordering relation on
+B, which defines a lattice with the least element I and psudo-complements.
+This means that for arbitrary a and b:
+(i) the least upper bound a U b,
+(ii) the greatest lower bound a  b, and
+(ii) the pseudo-complement a → b := maxfc I c a ≤ b) always exist.
+Lattice conditions imply in addition to (i), (i) commutativity and associativity
+of u, , and distributivity.
+To make this definition easier to remember, associate a ≤ b with the truth
+of a → b,  with & and U with V. Then the conditions for pseudo-complements
+say that for arbitrary a, b, and c:
+(a(α -→ b)) →b= T,
+((cna) →b) → (c →(a →b) = T

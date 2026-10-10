@@ -1,0 +1,39 @@
+110
+SYSTEMS LJM, LJ
+DEFINITION 15.1. If T is a set ofterms, then the set Sub(α, T) (of subformulas
+of a with quantifiers instantiated by T) is defined in a natural way:
+Sub(α, T) := [α) for atomic a;
+Sub(α O β, T) := α O β) U Sub(α, T) U Sub(β, T) for O = &, V, -→
+Sub(Qrα, T) := (Qrα] UUteTSub(α[r/t]) for Q = V,3
+For a set I offormulas, let Sub(r, T) := UaerSub(α, T).
+DEFINITION 15.2. A sequent I →  is falsified in a world w of a Kripke model
+(W, R, D, V) ifV(&r,w) = 1, V(V△, w) = 0. This implies V(T → △,w) = 0.
+In this section   △ means that r =→ △ is derivable in LJm.
+The schema of the completeness proof is the same as for LJp (Section 8.2.)
+The new non-trivial step is to define an individual domain; it consists of terms.
+We prove that any sequent underivable in LJm is falsified in some world of a
+canonical model; that is, this model is suitable for falsification of all underivable
+sequents.
+DEFINITION 15.3. A sequent  → △ is complete with respect to a set T
+of terms if it is underivable and for any formula  E Sub(r U A,T), either
+Setua or:
+F,$ and ,r.
+(15.1)
+A sequent S is complete if it is complete with respect to the set P(S) of all
+terms constructed from all free variables of S (and one more if S has no free
+variables) by all function symbols.
+Let D(S) := P(S).
+DEFINITION 15.4. A sequent S = I → △ is saturated for invertible rules iff
+the following conditions are satisfied:
+all propositional conditions (→ &)-(→→)from Definition 8.2.;
+(→ ) 3rpE △ implies p[t) E A for all t E D(S)
+(日 →) apE F implies p[c/t] E r for some t E D(S)
+(V =) VapE F implies p[r/t) E T for all t E D(S)
+LEMMA 15.1. (saturation) If S =  → △ is complete with respect to D(S)
+and the condition (3 →) is satisfied, then S is saturated for invertible rules.
+Proof.Propositional cases are treated in Lemma 8.2., and (3 →) is assumed.
+Consider remaining cases.
+(V =→): Let VaΦ E r. If for some t E D(S), we have Φ[a/t) E △ or I ←
+A, d[α/t], then r  A; hence Φ[r /t] e .
+(→ 3): Let 3aΦ E △. If for some t E D(S), we have Φ[α/t] E F or Φ, T  △,
+then f 卜 △; hence d[r/t] e .

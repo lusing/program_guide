@@ -1,0 +1,41 @@
+TOPOLOGICAL COMPLETENESS
+73
+sln + 2w(s)gm+2 /(1 - q) = s8lm +
+w(s)
+m+1
+N-1
+ 0< +()s () m :() d
+= I+(1 +()s)+ 1-  I+() + 1- = <?
+8lx-1 +2s(k)g*+1 + 2g*+1 = s]s + 2g*+1 ≥ 3+ g*+1
+LEMMA 9.3. If s,tE Nmon and s =n(t) t, then Rw(t)w(s).
+Proof.If n(t) < n(s), then:
+Rs(n(t)s(n(s)) [monotonicity of s] ←→ Rt(n(t)s(n(s)) [since s =n(t) t) ←+
+Rw(t)w(s).
+if n(t) ≥ n(s), then w(t) = t(n(t)) = s(n(t)) [since 8 =n(t) t) = s(n(s))
+[monotonicity] = w(s).
+For r E [0, 1] define
+ An.0,
+if[a - s] ≥ qn(o)+2 for every 8 E Nmon
+s[] := 
+l the s E Nmon
+closest to x such that [r - gsl < qn(o)+2 otherwise
+The latter condition means jα - sl < [α - tl for all t E Nmon.
+LEMMA 9.4. s[x] is defined.
+Proof.Assume that s, t both satisfy the last clause in the definition of s[x],
+that is,
+t-s
+(9.4)
+and s < t. Then  <  < t [otherwise one of s,t is closer to x than the
+otherl:, We have n(s) ≤ n(t), since otherwise j3 - t) < qn(o)+2 + qn(t)+2 <
+implies w(s) < w(t), n(s) < n(t). Since 8 tn(t) t, we have t > 3 + qn(t)+1.
+- and q > 1/2, a contradiction.
+Let
+w(c) := w(s[r])
+Since s[]] = t for t E Nmon , we have w(t) = w(t). We also write s[] for s[g]
+LEMMA 9.5. If [r - t) < qn(t)+2, then Rw(t)w(a)
+Proof. From lα - t< qn(t)+2, we have [z - 3[all ≤ /α - t] < qn(t)+2. Then
+It - 3[ell < 2qn(t)+2 < qn(t)+1,implying Rw(t)w(s[nj), that is, Rw(t)w(a).
+For every propositional variable p define a set V(p) by
+ E V(p) +→ w() Fp
+(9.5)
+where  stands for truth in the model (O, K, R).

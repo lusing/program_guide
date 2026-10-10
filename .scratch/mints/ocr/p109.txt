@@ -1,0 +1,35 @@
+Chapter 15
+Systems LJm, LJ
+The LJm is the predicate version of LJpm. It has the same formulas as NJ, but
+sequents α1, . . ., αm → βi, . . ., βn (m ≥ 0, n > 0) may have multiple succedents.
+The axioms and prepositional rules are the same as in LJp.
+Four quantifier rules are added:
+T =A,P[]
+[9] 个 J
+()
+(A ←)
+T→a,V
+2[6], T→ A
+p[t],T→ 
+(←E)
+(←A)
+3rg,r→ △
+Vr,T→A
+where t is a term and b is an eigenvariable, which should not occur in the
+conclusion. This restriction on b is called a proviso for variables. Note the form
+of(=→ V) similar to (=→→) and (=→ -). All the rules except for (=→ V), (→→) are
+called invertible. Weakening and contraction (but not cut) are rules of LJm.
+15.0.1. Canonical Model, Admissibility of Cut
+This section extends Section 8.2. to predicate logic. We consider possibly infinite
+sequents I → △, where I, △ are finite or countable multisets of formulas, A ± 0.
+The is the antecedent,  is the succedent. Such a sequent is derivable if }' → '
+is derivable for some finite sets F'  , △'  △.
+A sequent S is pure, if no variable occurs in S both free and bound, and an
+infinite number of variables are absent from S (that is, these variables do not
+occur in S at all).
+NOTE. If an infinite number of variables, say, 2, 4, 6, ... are absent from
+a sequent S, then S can be made pure by renaming bound occurrences of vari-
+ables. Indeed rename bound variables into 4, 8, 12, . ..
+Since we disregard
+renaming of bound variables, it is assumed that S was pure from the beginning.
+109

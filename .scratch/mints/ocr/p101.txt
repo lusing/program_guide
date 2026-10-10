@@ -1,0 +1,46 @@
+13.3.PROGRAM INTERPRETATION OF NJ
+101
+If t = Ey,ual/(t3",ti), then:
+D(to): →3rα 
+D(t1) : α[α/g],△ →6
+D(E(to,t1) : [F,A] → 0
+Conversions for deductive terms are relations (4.1-4.3), a conversion for V
+similar to (4.2):
+(ay.t)(u) = t[y/u]
+(13.8)
+and the following conversion for 3:
+Eo,1(p(to,t1),t2) conu t2[ro/to, 1/ti]
+(13.9)
+Corresponding conversions for natural deduction follow.
+V-conversion:
+y:
+e: I→t:a[r/y]
+T → ay.t : Vaa
+t'
+F =→(Ay.t)(t') : a[α /t']
+conv
+e[y/t'] : T →t[y/t'] : α[r/t']
+Free occurrences of y in the deduction e are replaced by t:
+3-conversion:
+a[/g] : a[α /9] → ua[a/] : a[α/]
+T → t1 : α[α/to]
+y,u:
+T = p(to,t1) : 3rα
+(ua[a/3] : α[α /g])%,△ =→ s : 8
+[, A] → Ey,u(p(to,ti), s) : 6
+F → t1 : α[c/to]
+to,t1 :
+cony
+[r0, A] =→ s[y/to, u/ti] : 8
+Free occurrences of y are replaced by to, and the assumption α[r/y] is re-
+placed by I. The definitions in Section 5.1. (ancestral relations in a natural
+deduction, substitution of a deduction for an assumption, reductions for deduc-
+tive terms and deductions, and so on) are extended in a natural way. After this
+Lemma 5.2. and Theorem 5.2. extend to NJ together with their proofs. The
+notions connected with conversions, reductions, and normal form are defined
+exactly as in Section 5.1..
+THEOREM 13.3. (Curry-Howard isomorphism between terms and natural
+deductions in predicate logic)
+(a) Every natural deduction d in NJ uniquely defines T(d) and vice versa: Every
+deductive term t uniquely defines a natural deduction D(t).
+(b) Cuts in d uniquely correspond to redexes in T(d) and vice versa.

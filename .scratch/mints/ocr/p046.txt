@@ -1,0 +1,31 @@
+Chapter 6
+Coherence Theorem
+6.1.
+Structure of Normal Deduction
+An occurrence of a subformula is positive in a formula if it is in the premise
+of an even number (maybe O) of occurrences of implication. An occurrence is
+strictly positive if it is not in the premise of any implication. An occurrence is
+negative if it is not positive, that is, it is inside an odd number of premises of
+implication. The sign of an occurrence in a sequent  =→ α is the same as in the
+formula &r -→ α.
+THEOREM 6.1. (subformula property). Let 
+f- o   :
+deduction.
+(a) Ifd ends in an elimination rule, then the main branch begins with an axiom
+α → α forα E F and all succedents in the main branch are strictly positive
+subformulas ofα (and hence of I).
+(b) All formulas in d are subformulas of the last sequent.
+Proof. Part (a) is proved by an easy induction on the length of d. The
+induction base and the case when d ends in an introduction rule are trivial.
+If d ends in an elimination rule L, the major premise of L takes the form
+}' =→ ', with I' C  and  strictly positive in α by IH. Since the succedent
+in the conclusion of &E, → E is strictly positive in the major formula ', this
+succedent is strictly positive in α as required.
+Part(b): Induction on the deduction d. The induction base (axiom) is trivial.
+In the induction step, consider cases depending of the last rule L:
+Case 1. The L is an introduction rule. Then all formulas in premises are
+subformulas of the conclusion, and the subformula property follows from IH.
+Case 2. The L is an elimination rule, say:
+=α→β →α
+[F,△] →β
+41

@@ -1,0 +1,31 @@
+52
+KRIPKE MODELS
+precisely, let W be the set of equivalence classes and let R be the corresponding
+accessibility relation:
+W:=(w:weW);
+W:={w : w~w];
+Rww' = Rww'.
+Then R is a partial order, and the following valuation:
+V(p, w) = V(p, w)
+(7.5)
+is well-defined and monotonic. It is easy to prove by induction on p that (7.5)
+extends to all formulas: V(p, w) := V(p, w).
+7.3. Frame Conditions
+Let us illustrate the use offrame properties for characterizing superintuitionistic
+logics, that is, extensions of intuitionistic logic.
+LEMMA 7.3. Let F=< G,W,R> be a pointed frame and let every w E Wbe
+accessible from G. Then the law of the excluded middle pV -p is valid in F iff
+R is total: Rww' for all w, w' e W. IfR is a partial order, then pV-p is valid
+iff W is a singleton (G).
+Proof. Let us first assume R is total and establish G  p V -p. If G  -p,
+we are done. Otherwise w  pfor some w E w. Since R is total, we have RwG,
+and by monotonicity, G  p as required.
+Now assume that R is not total, that is, --RwoG for some wo E W. Define
+a truth value assignment V as follows:
+V(p, w) = 1 iff Rwow
+V is monotone and V(p, G) = O by definition of V. On the other hand,
+V(-p,G) = 0, since RGwo and V(p, wo) = 1.
+  ()()      
+EXERCISE 7.2.
+Prove that a formula p V -p is valid in a frame < W, R > iff R is symmetric:
+Rww' implies Rw'w for all w, w' e W.

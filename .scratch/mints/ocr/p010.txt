@@ -1,0 +1,30 @@
+Introduction
+Intuitionistic logic is studied here as part of familiar classical logic which allows
+an effective interpretation and mechanical extraction of programs from proofs.
+The possibility of retaining classical patterns of reasoning is emphasized, while
+warning signs of differences (beginning with the invalidity of the excluded middle
+Traditional, or classical logic, is traceable to Aristotle. It took its present
+form at the end of nineteenth and beginning of twentieth centuries. Intuitionistic
+logic, the subject of this book has its source in the work of L. E. J. Brouwer.
+The aspect that turned out to be the most important was his requirement
+of effective existence: To claim
+3A,
+we should specify an object t, and justify
+A[r /t].
+Similarly to claim a disjunction:
+A1 VA2;
+we should indicate which of the disjuncts is true; that is, pick an i E {1, 2], and
+justify
+Ai.
+Brouwer stressed that classical logic in general does not satisfy these conditions.
+He drew attention to the law of the excluded middle or excluded third :
+AV-A
+It is not clear how to discover in general which of the disjuncts is true. Brouwer
+gave very serious arguments for the falsity of this law under his effective inter-
+pretation. He and his followers suggested restricting methods of reasoning to
+those that are safe in this respect.
+Our approach to this controversy is pragmatic: It turned out that the logical
+means recognized as correct by Brouwer's school allow construction of correct
+programs and correctness proofs for these.
+Brouwer's philosophic justification of his foundational conception referred to
+mathematical intuition. He called his philosophical system intuitionism; formal

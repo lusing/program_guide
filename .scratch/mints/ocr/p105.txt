@@ -1,0 +1,25 @@
+Chapter 14
+Kripke Models for
+Predicate Logic
+Definitions and results of Chapter 7 are extended here to predicate logic
+DEFINITION 14.1. A Kripke frame for intuitionistic predicate logic is a triple:
+<W,R,D>
+where < R, W > is a propositional intuitionistic Kripke frame (Definition 7)
+and D is a domain function assigning to every w E W a non-empty set D(w)
+expanding with respect to R:
+Rww~ implies D(w)  D(w')
+To every world w of a Kripke frame < R,W,D > corresponds an exten-
+sion Lw of the language of predicate logic obtained by adding constants for all
+elements of the domain D(w). We identify such a constant with the correspond-
+ing element of D(w). Hence sentences of Lw are formulas containing no free
+occurrences of variables but possibly containing objects of D(w).
+DEFINITION 14.2. A Kripke model for intuitionistic predicate logic is a 4-tuple
+< W,R, D,V >,where < R,W,D > is a Kripke frame and V assigns afunction
+V(f) to every function symbol f and a predicate V(P) to every predicate symbol
+P, so that the following conditions are satisfied.
+For all w E W, di,...,dn E D(w) (and n-ary f, P):
+V(f)(di,..., dn,w)E D(w) and V(P)(di, ..., dn, w)E (0,1)
+Rww' implies V(f)(di, ..., dn, w') = V(f)(di, ..., dn, w)
+(14.1)
+Rww' and V(P)(di, .. ., dn, w) = 1 implies V(P)(di,..., dn, w') = 1 (14.2)
+105

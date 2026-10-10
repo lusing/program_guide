@@ -1,0 +1,38 @@
+28
+PROGRAM INTERPRETATION OF INTUITIONISTIC LOGIC
+[) - (0)AH =: (r)AH(n)AHn()A =: (n))AH =: (n')d)AH
+FV(Dry(t,to,ti)) :== FV(t)U FV(to)U FV(ti) - (a,y).
+The term assignment can be extended to structural rules so that weaken-
+ing does not change term assignment, and contraction identifies variables for
+contracted assumptions:
+中:ni:z
+:,y: ,z:f→u:Φ
+weak
+contr
+:b,z:r→u:Φ
+ : ,z: T →u[y/a] : 
+One simple and sufficiently general way of finding a realization of a formula
+is to derive it in NJp and compute the assigned term.
+EXAMPLE 4.2. Find a term t realizing (p → q) → ((q → r) → (p → r)).
+Consider the following natural deduction d:
+d个dbd←bd
+b个b←d'd
+s个du←bbd
+p-,q→rpr
+(α ← d) ← (s b) 个 b d
+(α ← d) + ( ← b) ← (b  d) 个
+Assign terms:
+d:z个d:zbd:a←bd:r
+2 : p, : p→q→(z):q
+d:((z)a)h ←d : z's+b: f'b+-d : 
+ : p→q,y : q →r → azp.y(r(z)) : p→r
+(u +d) + (u +b) : ((z)a)nazXghr 个 b←d : a
+=→ Azp-1)y9→r >zP.y(r(z) : (p → q) →((q →r) →(p → r))
+Hence T(d) = ArAyAz.y(r(z)).
+Several more examples are
+→ P.α : (p → p)
+= rP)y4 . : p→(q →p)
+= >aP-.kia : (pi → po V p1)
+r : p-→ r,y : q -→ r,z : pVq =→ Dup,ug(z, r(up),y(v)) : r
+Hence:
+→ >)yaz.Dup,ua(z, a(up),y(v9)) : (p → q) →(q →r) →(pVq →r)

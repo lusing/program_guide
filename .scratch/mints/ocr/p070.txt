@@ -1,0 +1,35 @@
+66
+GENTZEN-TYPE PROPOSITIONAL SYSTEM LJPM
+Set
+W' = [w[weW]
+R'ow
+iff
+M,u  implies M,w  for all  E Φ
+V'(p,w) = 1 if V(p,w) = 1
+Note that W' isfinite, R' is reflexive and transitive, V'is monotonic, and
+Rww'implies R'ww
+(8.13)
+THEOREM 8.5. For all α E Φ,wE W:
+V'(α, w) = V(α, w)
+Proof.We use induction on α. Induction base and &, V-cases are easy.
+Let α = (β → ). Using IH and (8.13) we have:
+V'(α, w) = 1 iff Vw'(Rww → (V(β, w') -→ V(, w'))
+implies Vw'(Rww' -→ (V(β, w') → V(, w')iff V(α, w) = 1
+Using IH and the definition of R' we have:
+V(α,w) = 1, R'ww', V(β, w') = 1
+imply
+V(α, w') = 1, V(β, w') = 1, V(, w') = 1.
+Therefore, V(α, w) = 1 implies V'(α, w) = 1.
+ExERCISE 8.6. Infer Theorem 8.2.(b) from the Theorem 8.5.1 and complete-
+ness.
+8.5.2. Lindenbaum Algebra
+Let us outline another way of proving completeness of pseudo-Boolean algebras
+This was in fact the first completeness proof [10]. Under this approach the
+elements of the pseudo-Boolean algebras are equivalence classes of formulas.
+Define
+β = { I( → ) is derivable }
+B = the set of all 
+p&b =(p&b);
+  ()    ()()   
+pseudo-complement. Infer the completeness theorem. The PBA B is called the
+Lindenbaum algebra of intuitionistic logic.

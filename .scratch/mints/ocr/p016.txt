@@ -1,0 +1,26 @@
+Chapter 2
+Natural Deduction for
+Propositional Logic
+Formalization of intuitionistic logic was obtained by dropping some axioms of
+classical prepositional logic or classical propositional calculus abbreviated CPC .
+Readers are assumed to know basic properties of this latter system. In the
+following we recall some facts about CPC and fix notation.
+2.1. Syntax
+Formulas of propositional logic are constructed in the standard way from propo-
+sitional variables or propositional letters and a constant I by means of logical
+connectives V, &, -→. Symbols p, q, r, s, pi,q1, ri and so on, represent proposi-
+tional variables. Symbols α, β, , .. ., α1, βi, 1, . .. represent formulas.
+Other connectives and the constant T are treated as abbreviations:
+α:=(α→ ), = -, p→q:= ((p→q)&(q →p))
+Se[nOf ae (d + (d + (b d))'(b d)d) '(bd) “b 'd 'I'z FdXH
+We often drop outermost parentheses as well as parentheses dividing terms
+in a conjunction or a disjunction.
+Let us describe our basic system NJp of intuitionistic propositional logic.
+The additional rule Ic of double negation leads to a system NKp that is com-
+plete for deriving propositional tautologies, that is, classically valid formulas. It
+is convenient to work with sequents:
+α1,...,αn = α
+read "Assumptions α1,..., an imply α" or αi&...&an → α. The formula α
+is called the succedent of the sequent. The part αi,..
+.,αn to the left of → is
+called the antecedent, and it is treated as a multiset (see Section 1).

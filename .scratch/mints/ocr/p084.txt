@@ -1,0 +1,45 @@
+80
+PROOF-SEARCH
+An extension step applied to a tableau T is admissible if none of the new com-
+ponents S' (there is just one S' for one-premise rule) subsumes any component
+of any tableau from T down the root (original sequent) of the proof-search tree.
+LEMMA 10.2. If principal formulas of invertible rules are preserved and
+only admissible tree extension steps are applied, then the proof-search in LJpm
+terminates.
+Proof.Every sequent in the proof-search tree for a sequent S consists of sub-
+formulas of S; hence there is only a finite number N of different sequents (when
+antecedents and succedents are treated as sets of formulas). Every admissible
+extension step adds a new sequent to a given branch of the proof-search tree,
+so the length of the branch is bounded by N. Since the tree is binary (it has at
+most two branches at each node), it is finite.
+LEMMA 10.3. If principal formulas of invertible rules are preserved, only
+admissible tree extension steps are applied, and T is a terminal node of a proof-
+starch tree (no extension step is admissible), then T can be pruned (by deleting
+components properly subsumed by others) into a saturated set T- of sequents.
+Proof.Observe that if a tableau Tis situated over some tableau Ti in some
+branch of the proof-search tree (that is, T is obtained from Ti by a series of
+extension steps), then every component of Ti subsumes some component of T.
+Indeed if a component of the conclusion of a rule is changed in the passage to
+the premise, then this rule is invertible, and the component is just extended.
+Let T be a terminal node. Delete all components of T that properly subsume
+other components and prove that the resulting set T- of sequents is saturated.
+Let S e T-. Then S is saturated for invertible rules: For any potential bottom-
+up application of an invertible rule to a formula in S, one of the newly generated
+components coincides with S. Otherwise this component S' properly contains
+S. Since T is a terminal node, S' subsumes one of the components, say S",
+in the branch from T down to the root. As previously observed, S" subsumes
+some component in T, and hence S properly subsumes some component of T,
+that is, S @ T-.
+To prove that T is saturated for non-invertible rules (of LJpm) to formulas
+in a given component S e T-, consider the new component S'to be generated
+by such an application. As in the case of an invertible rule, a terminal tableau
+T contains a component subsumed by S'; that is, it is saturated.
+It remains to describe the construction of a refuting model for the original
+tableau So from the (non-closed) terminal tableau T in the proof-search tree
+TrTo. By the previous Lemma 10.3., a subset T- of Tis saturated. By Theorem
+8.2., it produces a Kripke model K =< W, M, V > falsifying all sequents in T-
+by (8.8). Since every sequent in T-T- subsumes some sequent in T-, it is also
+falsified in the same world of W.
+LEMMA 10.4. Let T be a terminal tableau (leaf node) in a proof-search tree
+TrT。 for a tableau:
+To 三 Si *...* Sn,

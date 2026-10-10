@@ -1,0 +1,18 @@
+5.4. CONSEQUENCES OF NORMALIZATION
+39
+THEOREM 5.4. (disjunction property, Harrop's theorem).
+(a) If  αo Vα1, then ← αi for some i = O, 1.
+(b) If-β卜 αo Vα1, then -β ← αifor some i= 0,l.
+Proof.Part (a) follows from Theorems 5.3. and 5.4.(b). For Part (b) consider
+the last (lowermost) rule of a given normal deduction of the sequent in question.
+If it is an introduction, we are done, as in Part (a). If it is an elimination,
+consider the axiom and the very first (uppermost) rule in the main branch. The
+axiom is -β → -β by Theorem 5.4.(a). Hence the first rule is -→-elimination
+(recall that -β = β → l):
+β→→
+COROLLARY 5.1. The law of the excluded middle and the law of double negation
+are not derivable in NJp:
+HpVp,
+d  dL A
+but none of these is even a tautology. If  --p -→ p, then substituting p := qV-q
+and using --(q V-q) (Example 2.4.), we obtain ← q V -q.

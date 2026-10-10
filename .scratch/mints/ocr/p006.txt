@@ -1,0 +1,21 @@
+Preface
+This book is an introduction to intuitionistic logic that stresses the subject's
+connections with computer science. To make the material more accessible, basic
+techniques are presented first for propositional logic; Part II contains extensions
+to predicate logic. This material provides a safe background for reading research
+literature in logic and computer science as well as such advanced monographs
+as [26, 27], [25],[13],[24]. Readers are assumed to be familiar with basic notions
+of first order logic presented for example in introductory chapters of such books
+as [12], [28], [5]. Subsections on algebraic and topological semantics require
+some initial information in algebra and topology. One device for making this
+book short was inventing new (or at least modified) proofs of several well-known
+theorems.
+For historic perspective and credits readers may consult Notes at the end of
+chapters in [26, 27] or sections in [25]. Suggestions for further reading are found
+in our Introduction.
+This text developed from material for several courses taught at Stanford
+University in 1992-99. Special thanks are due to N. Bjorner, who took some of
+these courses, asked profound questions, and typed course notes in TEX, and
+to A. Everett, who carefully checked a preliminary version in English.
+Stanford, December 1999
+Grigori Mints

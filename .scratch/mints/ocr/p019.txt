@@ -1,0 +1,32 @@
+12
+NATURAL DEDUCTION FOR PROPOSITIONAL LOGIC
+EXAMPLE 2.4. To derive (p&q) → p, assume the premise and apply &E
+followed by → I:
+p&q
+(p&)  p
+ExAMPLE 2.5. To derive p →(q -→(p&q)), assume both premises and apply
+&I:
+p&q
+q →(p&q)
+p→ (q →(p&q))
+EXAMPLE
+For p→(pVq) use VI:
+pVq
+p→(pVg)
+EXAMPLE 2.7. For (p → r) → (q → r) → ((pV q) → r), assume all
+premises and use VE combined with deductions of r from premises. We show
+a nonabbreviated deduction here to demonstrate handling assumptions in VE-
+inference:
+d个du←d个l←d
+p,p-→r=r
+←bAdu+bud
+d(b^d)u←bd
+p-→r =(q→r) →((pVq) →r)
+((α ← (b^d) ← (α ← b)) ← (α←d) ←
+The next two Examples illustrate treating negation -α as an abbreviation
+for the implication α → I.
+       ()  
+abbreviation for p -→ L):
+p p
+b-d
+(b d) dr

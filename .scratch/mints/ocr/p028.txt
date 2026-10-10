@@ -1,0 +1,59 @@
+2.9. CLASSICAL PROPOSITIONAL LOGIC
+21
+(b) Let us list (slightly strengthened) goals in more detail:
+-α f -(α&β)
+α,β/α&β
+-βμ-(α&β)
+ααβ
+α,β(αβ)
+βα→β
+α,βα→β
+αa,βtα+β
+α,-β(αβ)
+, (α)
+Now use ADC.
+THEOREM 2.1. Assume that all prepositional variables of a formula  are
+among pi, ..., Pn, and let v be a truth value assignment to pi, ..., Pn. Then:
+v(p1)
+,p(pn) + gu()
+p'(p) 卜@(g)
+or
+(2.4)
+Proof. We use induction onΦ. If = pi, then (2.4) is an axiom. If Φ =
+Φ1 O Φ2, then by IH:
+p'(p) + (1), p*(p) +(a).
+induction step.
+THEOREM 2.2. (a) Every tautology is derivable in NKp;
+(b)  --r in NJp for every tautology T.
+Proof. Consider Part (b) first. Let T be a tautology, that is, T is true
+under any truth value assignment  : v(↑) = 1. Then (2.4) takes the form
+v(p1)
+p(pn) + T, which with ↑ -→ --T [Lemma 2.7.(bl)] implies that:
+P1
+, pn
+v(p1)
+(2.5)
+Let us prove in NJ that for any k, O ≤ k ≤ n
+V(pr)
+p'(px) + --t for every 
+,Pk
+(2.6)
+by induction on i = n- k. Then k = Oyields  --r. Induction base i = O,that
+is, k = n is (2.5). The induction step, that is, the passage from (2.6) to:
+V(p1)
+p(pk-1) μ --T for every v
+.,Pk-1
+(2.7)
+is proved as follows. Take any v (assumed to be defined only at pi,..., Pk-1)
+and consider vl = vU (pk = 1), v° = vU (pk = O]. By IH:
+v(pk-1)
+v(p1)
+mu(pk-1)
+,Pk-1
+,Pk-1
+which implies
+v(p1)
+v(pk-1)
+,Pk-1
+by (2.2) and hence (2.7) by Lemma 2.7.(b2), as required.
+To get (a) from (b), note that --α → αis derivable in NKp by the 1crule.

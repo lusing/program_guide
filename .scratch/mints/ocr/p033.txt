@@ -1,0 +1,45 @@
+4.2. ASSIGNMENT T OF DEDUCTIVE TERMS
+27
+write t$ to stress this. To reflect dependence of assumptions, every assignment
+depends on a context that is itself an assignment:
+291 : Φ1,...,z中n : on
+of distinct typed variables to formulas in  = Φ1,.. :, Φn written sometimes as z :
+F. These typed variables stand for hypothetical realizations of the assumptions
+I. When a term u is assigned to Φ, the sequent (4.4) is transformed into a
+statement:
+2Φ : Φ1,...,z中n : Φn → u : Φ
+or
+z:→u:Φ
+Contexts are treated as sets, not multisets. In particular z : I, z' : △ stands for
+the union of sets, and z : I,z : F = z : I.
+Deductive terms and the assignment of a term to a deduction is defined
+inductively. Assignments for axioms are given explicitly, and for every logical
+inference rule, there is an operation that transforms assignments for the premises
+into an assignment for the conclusion of the rule.
+4.2.1. Assignment Rules
+Axioms:
+中:a:a
+Inference rules:
+z: I→t: Φo&Φ1
+&E
+z : I,z' : △ → p(t, u): (Φ&b)
+z:r=pit : :
+i=0,1
+z:=t: Φ;
+z : I,→ k;t : (0o V01)
+i= 0,1
+z:→t:ΦV (αΦ:Φ)%,z':△→to:0 (y*:b)°,z":=ti : 0
+VE
+z : I,z' : A,z" : E=→ Dry(t,to,ti) : 
+::z(←)::z
+(α:Φ),z: f→t: b
+z: I,z': △ =→t(u) : b
+z: r → Ar.t :(Φ →)
+z:r=t:l
+z : →(t) : Φ
+Term assignment T(d) to a natural deduction d is defined in a standard way by
+application of the term assignment rules. Notation T =→ t : α or z : r → t : α
+means that t = T(d) for some natural deduction d : I → α.
+The symbol Aa binds variable x, and Dsy binds variables x and y. Free
+variables of a term are defined in a familiar way:
+FV(r) := r; FV(pit) := FV(k;t) := FV(I(t)) := FV(t)

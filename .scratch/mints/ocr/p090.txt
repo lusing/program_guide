@@ -1,0 +1,37 @@
+11.3.PRUNING, PERMUTABILITY OF RULES
+87
+THEOREM 11.1. Every derivation of a l-sequent  → α in LJpm can be
+transformed by permutation of movable rules and pruning into a derivation in
+LJp.
+Proof. We use induction on the number of logical inferences in the given
+derivation. If all premises of the last rule are 1-sequents (up to weakenings),
+then apply IH. Otherwise delete from the given derivation all sequents above
+the lowermost 1-sequent (up to pruning) in every branch. We are left with a de-
+duction d from 1-sequents by invertible rules, since conclusions of non-invertible
+rules are 1-sequents. If this deduction does not contain V =→-inferences, use
+Lemma 11.3.; otherwise there is a movable rule. Moving it down and applying
+IH to its premises concludes the proof. Let us consider possible cases in detail.
+Case 1. There is a movable & =→-inference. Then d takes the form shown on
+the left below. Permute it down as shown on the right, to appy IH to d'.
+d' : α,(α&β)°,E→
+α&β,' → △
+α&β,(α&β),E→
+contr
+α&β,E→
+α&β,E→
+where the contraction rule and (α&p)° are present only if the lowermost α&β
+has other predecessors than the principal formula of L.
+Case 2. There is a movable V =→>-inference (this case is similar to the previous
+case):
+α,(αVp),E→β,(αVβ)°,→
+αVβ,(αVp)°,
+αV,
+Case 3. There is a movable →→-inferenceL:
+0(d←) :p
+(α→P),→,α
+Move it down:
+β,→
+d' : (α → β)°, ' =→ α
+α→β,→α,
+β,(α→p)°,Z=→
+This concludes the proof.

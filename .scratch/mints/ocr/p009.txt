@@ -1,0 +1,20 @@
+CONTENTS
+ix
+15 Systems LJm, LJ
+109
+15.0.1. Canonical Model, Admissibility of Cut
+109
+15.1. Translation into the Classical Logic
+113
+15.2. System LJ
+114
+15.2.1. Translating LJpm into LJp
+115
+15.3. Interpolation Theorem
+116
+16 Proof-Search in Predicate Logic
+119
+References
+125
+Index
+129

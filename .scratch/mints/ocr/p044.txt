@@ -1,0 +1,40 @@
+38
+COMPUTATIONS WITH DEDUCTIONS
+Proof. Part (b) follows from Part (a) by the Curry-Howard isomorphism.
+For Part (a) we use a main induction on n = maxrank(t) with a subinduction
+on m, the number of redeces of cutrank n.
+The induction base is obvious for both inductions. For the induction step
+on m, choose in t the rightmost redex p of the cutrank n and convert it into
+its reductum p'. Since p is the rightmost, it does not have proper subterms
+of cutrank n. By Lemma 5.3.(b) maxrank(p) = n > maarank(p'). Write
+t = t'lylp) to indicate the unique occurrence of p in t: The variable y has
+exactly one occurrence in t', term t' has exactly m -- 1 redeces of cutrank n, and
+t = t'[yΦ / p!] conv t'[y/ p']
+Applying Lemma 5.3.(a) to t'[y/p'l, new redeces have cutranks equal to lth(@) <
+marank(p') < n, and old redeces preserve their cutranks. Since the redex p
+of cutrank n disappeared, the m decreased by one, and the induction step is
+proved.
+5.4. Consequences of Normalization
+The principal formula of an elimination rule is the succedent formula explicitly
+shown in the rule and containing eliminated connective: α&β in &E, and so on.
+The principal premise contains the principal formula.
+A main branch of a deduction is a branch ending in the final sequent and
+containing principal premises of elimination rules with conclusions in the main
+branch. Hence the main branch of a deduction ending in an introduction rule
+branch up to the lowermost introduction rule or axiom.
+THEOREM 5.3. (properties of normal deductions). Let d : F → be a normal
+deduction in NJp.
+(a) Ifd ends in an elimination rule, then the main branch contains only elimina-
+tion rules, begins with an axiom, and every sequent in it is ofthe form f' = α,
+where f' C r and α is some formula.
+(al) In particular the axiom at the top ofthe main branch is ofthe form α =→ α
+where α E I.
+(b) Ifr = , then d ends in an introduction rule
+Proof.Part (a): If d ends in an elimination rule, then the main branch does
+not contain an introduction rule: Conclusion of such a rule would be a cut. Now
+Part (a) is proved by induction on the number of rules in the main branch using
+an observation: An antecedent of the principal premise of an elimination rule
+is contained in the antecedent of the conclusion. Part (al) immediately follows
+from (a).
+Part (b): Otherwise the main branch of d cannot begin with an axiom by
+(a).

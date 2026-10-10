@@ -1,0 +1,50 @@
+90
+INTERPOLATION THEOREM
+Case 3. The d ends in an antecedent rule L, and L has one premise or
+the principal formula of L is in △. The construction of t is the same as in
+Cases 1 and 2: t is transferred from the premise if L has one premise, and the
+conjunction of interpolants is taken if L has two premises; for example:
+,→,,→α
+, ,,α
+ → &,→ &,,→α
+T,Φ→,→α
+i&n,Φ→,=α
+by IH, →=,& =.
+Case 4. The d ends in a two-premise antecedent rule L, and the principal
+formula of L is in f. Then the interpolant has the same principal connective as
+L. If L = V =→, the argument proceeds as before:
+Φ,t
+,f=t
+Φ,,=→α,,→α
+,→V ,→V ,→α ,→α
+V,,→α
+V,→V
+V,A=α
+If L 三-→→ with the conclusion partitioned as Φ → ,I;△ → α, apply IH to
+partitions:
+△;→Φ and b,I;A→α :
+i,→Φ ,f→
+,→Φ ,,△→α
+Φ→,,t→
+Φ→,→1→
+Φ→,,A=α
+1,→α
+This concludes the proof.
+12.1. Beth Definability Theorem
+One of the applications of the Interpolation Theorem is a criterion of definability
+of a proposition p satisfying given property α. If there is an explicit definition
+p +→ t, where t is a formula that does not contain p, then p is obviously unique:
+ ←→ t implies p → q. Theorem 12.1. below shows that uniqueness implies
+explicit definability.
+DEFINITION 12.1. A formula α implicitly defines a propositional variable p iff
+the formula:
+α&α[p/q] -→ (p +→ q)
+(12.1)
+is derivable for a new propositional variable q.
+Formula (12.1) says that at most one proposition p (up to equivalence) satisfies
+α 三 α[].
+THEOREM 12.2. (Beth definability Theorem). If a formula α implicitly defines
+p, then α explicitly defines p: there exists a formula t that does not contain p
+such that:
+(1d) 
+is derivable.

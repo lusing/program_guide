@@ -1,0 +1,39 @@
+8.5. FILTRATION, FINITE MATRICES
+65 
+extends to all formulas aα:
+h(α) = [w| V(α, w) = 1)
+In particular α is true in h iff it is true in V in all worlds:
+h(α) = T if Vw(V(α, w) = 1)
+COROLLARY 8.3. A formula is derivable iff it is valid in all PBA iff it is valid
+in all finite PBA.
+Proof.We establish Lemma 8.4. by induction on the formula α. The induc-
+tion base is (8.11). The induction steps for &, V are obvious. The induction
+step for → proceeds as follows: h(α -→ β) is the largest R-closed subset of
+(W / h(α))U h(β), that is, of the set:
+[w/ V(α, w) = 0 or V(β, w) = 1) = [w | V(α, w) = 1 → V(β, w) = 1).
+Part (a): w E h(α → β)implies V(α -→ β, w) = 1. Let w E h(α -→ β), Rww',
+V(α, w') = 1. Since h(α -→ β) is R-closed, w" E h(α -→ β). Then w' E h(α)
+implies w' E h(β). By the induction hypothesis, this means V(α, w') = limplies
+V(β, w') = 1.
+Part (b): V(α -→ β, w) = 1implies w E h(α -→ β). The set [w(V(α -→
+β, w) = 1) is R-closed by the monotonicity Lemma 7, and it is the largest R-
+closed subset of(W /(w/ V(α,w) = 1])U{w[V(β, w) = 1]. By the induction
+hypothesis, this is the same as the largest .R-closed subset of (W/ h(α)Uh(β),
+equaling h(α → β) as required.
+NOTE. In fact there is an “inverse"' operation constructing Kripke models
+from finite pseudo-Boolean algebras. For an algebra (B, ≤), let W be the set of
+proper prime filters in B and let R be the inclusion relation. (A filter F satisfies
+the conditions a E F-→ aUb E F for all b; a, bE F -→ anb E F; a prime filter
+satisfies aUbE F-→ a E F or b F.)
+The valuation V in (W, R) corresponding to a valuation h in Bis defined by:
+V(p,F)= 1ifh(p)E F
+(8.12)
+The proof that (W, R) is a Kripke model and (8.12) extends to all formulas is
+given in [6].
+8.5. Filtration, Finite Matrices
+Let us sketch another proof of Theorem 8.2.(b).
+8.5.1. Filtration
+For any Kripke model M =< W, R,V > and a formula p, define the filtra-
+tion M' =< W', R', V' > of M through p as follows. Let  be the set of all
+subformulas of p. For w E W set
+w = uEW  M,w 卜 iff M,u for all  Ed].
