@@ -1,7 +1,7 @@
 /- ex40_countmodels.lean —— 可数模型数：Ryll-Nardzewski（Marker GTM 217 §4.4），
     Coq 侧同构镜像 -/
 
-def atomEv (mode i j : Nat) (asg : List Nat) (step : Nat → Nat) : Bool :=
+def atomEv (mode i j : Nat) (asg : List Nat) (_step : Nat → Nat) : Bool :=
   match mode with
   | 0 => asg.getD i 0 == asg.getD j 0
   | 1 => asg.getD i 0 == j
