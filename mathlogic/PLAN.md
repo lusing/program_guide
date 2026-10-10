@@ -16,6 +16,7 @@
 | Huth & Ryan《Logic in Computer Science》2e（英文文本层好；中译本=同书 OCR 扫描） | CS 主线：ND→SAT→FOL→模型检测→霍尔逻辑→模态→BDD |
 | Ben-Ari 3e（2012，文本层好；2e 为 OCR 扫描仅补充） | 演算主线：G 矢列、Hilbert H、tableau、归结/合一、SLD、验证 |
 | Mints《A Short Introduction to Intuitionistic Logic》（第十二轮专轮，RapidOCR 全 130 页） | 直觉主义全线：饱和完备性/矩阵拓扑/搜索/插值/谓词扩张域 |
+| 《Advances in Natural Deduction》（Prawitz 祝贺卷，Trends in Logic 39） | 34-42 九章+27/02/123 三深化（十三轮） |
 | Ebbinghaus-Flum-Thomas (EFT) 3e | 元理论线：矢列、完备性、L-S、EF 博弈、二阶、自由模型、寄存器机 |
 | Mendelson 6e（第五轮收官） | 元定理与递归论线：完备集与独立性(09)、Rule C/Lindenbaum(18/23 深化)、图灵机(34)、递归函数(35)、算术化(36)、不完备性(37)、NBG 集合论(62) |
 | **Marker《An Invitation to Mathematical Logic》GTM 301**（第六轮收官） | 模型论与高阶递归论线：完备性与范畴性/Ax(26)、超积与 Łoś(27)、量词消去(28)、实闭域与 o-minimal/Hilbert 17(29)、嵌入与图方法(16 深化)、RAM(37 深化)、通用机/Rice/递归定理(40)、算术层级/Kolmogorov(41)、图灵度/优先法(42)、层级化不完备(46 深化)、H10/Pell(50)、ε₀/Goodstein(51)、PA 模型/Paris–Harrington(52) |
@@ -76,6 +77,15 @@
 | 31 | FOL 矢列演算与等词（EFT S 全规则：∃A 侧条件+Sub+可导规则族+群例等式链+协调性） | C/L | ✅ EFT 批次一 |
 | 32 | 语法解释、范式与 ZF（词项化简对账+≤-from-< 定义扩张 E1/E2+⟨Φ⟩ DNF+ZF 公理即公式） | C/L | ✅ EFT 批次二 |
 | 33 | 完备性 Henkin（合同闭包商结构+六探针对账+见证式化+lin_ext/lin_cons/lin_max Lindenbaum 件 C） | 文档/C/L | ✅ EFT 批次三+Mendelson 深化✅ |
+| 34 | 广义消去规则与高层次规则（Schroeder-Heister） | C/L |
+| 35 | Zucker 对应：截消与正规化（Urban） | C/L |
+| 36 | 标号演绎与相等（de Queiroz/de Oliveira） | C/L |
+| 37 | 「一般」逻辑与滤子（Vana/Veloso×2） | C/L |
+| 38 | λ-立方与定理证明器（Seldin） | C/L |
+| 39 | 线性逻辑的自然演绎与范畴语义（de Paiva+Zimmermann） | C/L |
+| 40 | 粗糙集、语用力与双直觉主义（Bellin） | C/L/P |
+| 41 | 归约分解：抽象归约系统（Zimmermann） | C/L |
+| 42 | 证明论语义与完备性猜想（Prawitz） | C/L |
 | 43 | 归约树：完备性的证明论路线（13 阶段循环+双出口 proves/firstSat+freshC Henkin 见证语法化） | C/L | ✅ Takeuti 批次一 |
 | 44 | L-S、紧致性与初等等价（DLO+σₙ 族+量化秩分离+Skolem 闭包+同构⇒初等等价件 C） | C/L | ✅ EFT 批次四+Mendelson 深化✅ |
 | 45 | EF 博弈与 Fraïssé 定理（dup_wins 求解器三通道+(Z_n,<) 2^k−1 分离表+秩-轮对齐） | C/L/P | ✅ EFT 批次五 |

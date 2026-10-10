@@ -21,7 +21,7 @@ PM 与 Hilbert/54 截消定理与序数分析/63 自动机与形式语言：Chom
 层级/78 悖论的结构与解悖理论/84 算术与几何的公理系统）+五处深化
 （34 H 域与语义树/35 Rⁿ 归结闭包/37 WAM 双栈轨迹/40 表格式图灵机/
 79 关系运算与传递闭包）+两注记（48 EFA 下界/42 CTT 公理化），全书
-123 章 **282** 个验证单元全绿（零公理或显式公理记账）；速查表见
+123 章 **301** 个验证单元全绿（零公理或显式公理记账）；速查表见
 [CHEATSheet.md](./CHEATSheet.md)，蓝图与状态表见 [PLAN.md](./PLAN.md)。
 
 **第十一轮扩充收官**：按 David Marker《Model Theory: An
@@ -43,6 +43,22 @@ Morley 秩**（E_inf 实验室——无限宇宙上的真秩计算器）、
 （17 直觉主义完备性三重奏/28 归约树/37 二阶算术证明论/38
 无穷逻辑与决定逻辑/61 Gentzen 一致性证明 o(S)/64 中矢列/
 65 Beth-Robinson-Harrop）+五深化+两注记。
+
+**第十三轮扩充收官**：按《Advances in Natural Deduction: A
+Celebration of Dag Prawitz's Work》（Trends in Logic 39，Prawitz
+祝贺卷十二篇，文字层完好免 OCR）做自然演绎前沿专轮，114→123
+（第十一次重排）：**34 广义消去规则与高层次规则**（三套消去系统并
+存+六翻译程序化+「→⇒ 前提 1 保留主公式」的 GE 版）、**35 Zucker
+对应**（截消与正规化的双项语言+断裂现场机器抓拍）、**36 标号演绎
+与相等**（改写理由带证书、双向重放、Iext 丢轨迹的量化对照）、
+**37 「一般」逻辑与滤子**（∇ 的模块公理表完全枚举）、**38 λ-立方**
+（三开关 PTS 检查器，Leibniz 竟要双开关）、**39 线性逻辑**（资源
+纪律搜索器+三堵墙）、**40 粗糙集与双直觉主义**（Ax.a ⟺ S⊆R 逐帧
+穷举，Prolog 三通道）、**41 归约分解**（Newman/Hindley-Rosen 的
+512/512² 穷举机器证明）、**42 证明论语义**（Prawitz 本人：基扩张
+有效性+完备性猜想的机器面——反换位被机器驳回、Peirce 意外幸存）；
+三深化（27 Hertz 句子系统切割闭包+无中介、02 Chateaubriand 命题
+对象注记、123 收官变形记段）。
 
 **第十二轮扩充收官**：按 Grigori Mints《A Short Introduction to
 Intuitionistic Logic》（CSLI 2000，130 页公式层缺失，RapidOCR 全页
@@ -110,6 +126,15 @@ mathlogic/
 | [31 FOL 矢列与等词](docs/31-seqfol.md) | EFT 矢列演算 S 全规则+群例等式链+协调性（命题片段可靠） | C/L |
 | [32 语法解释与范式](docs/32-interp.md) | 词项化简对账+≤定义扩张消去+⟨Φ⟩范式 DNF+ZF 公理现场 | C/L |
 | [33 完备性 Henkin](docs/33-completeness.md) | 七步文档线+词项模型=合同闭包商结构（双向对账）+见证式化 | 文档/C/L |
+| [34 广义消去规则](docs/34-ge.md) | 三套消去系统并存 AST（MP/GEN+ESL/HL 层 4）+六翻译+类型驱动 β+和谐账本（β/η 互逆） | C/L |
+| [35 Zucker 对应](docs/35-zucker.md) | 名字/余名矢列项+Prawitz 翻译 |·|+定理 4/引理 5 机器面+∨ 对应断裂现场（怪规则缺失的 BFS 证据） | C/L |
+| [36 标号演绎与相等](docs/36-lndequality.md) | 带证书的改写理由 AST+双向重放（σ 翻转/τ 倒序）+标签正规化端点保持+内延性现场（两条理由 vs 范式塌缩） | C/L |
+| [37 「一般」逻辑与滤子](docs/37-generally.md) | ∇ 量词 256 复形×64 赋值完全枚举：模块公理表（P/S/L/F）+反模型提取+真滤子计数 7 | C/L |
+| [38 λ-立方](docs/38-lcube.md) | 三开关 PTS 检查器（八系统）+门槛样本：id 要多态、Leibniz 要双开关、坏假设爆 ⊥ | C/L |
+| [39 线性逻辑](docs/39-linear.md) | ILL 资源纪律证明搜索器（⊗分裂/−∘恰耗/& 加性复制/! 三口）+三堵墙反例（K 公理失效） | C/L |
+| [40 粗糙集与双直觉](docs/40-roughset.md) | 粗糙集三区代数+双模态 S4 引理 1（Ax.a ⟺ S⊆R 逐帧穷举）+减法 Kripke 三电 | C/L/P |
+| [41 归约分解](docs/41-ars.md) | 3 点 ARS 全枚举：Newman 与 Hindley-Rosen 的穷举式机器证明+假设必要性现场+LC⇒Conf 红利 | C/L |
+| [42 证明论语义](docs/42-ptval.md) | 基扩张有效性 64 基全枚举：IPC 可靠性电池+LEM/Dummett 死于空基+Peirce 幸存账（猜想边界在论证层） | C/L |
 | [44 L-S 与紧致性](docs/44-lscompact.md) | DLO 无有限模型穷举+「有限性不可单句定义」σₙ 族+量化秩分离+Skolem 闭包 | C/L |
 | [45 EF 博弈与 Fraïssé](docs/45-efgame.md) | dup_wins 求解器（三通道一致）+线序 2^k−1 分离表+空/全关系对照+秩-轮对齐 | C/L/P |
 | [46 完备理论与范畴性](docs/46-categoricity.md) | F₃² 换基排列+x³ 有限域单满射对账（Ax 脚印）+0-1 律 n≤5 全枚举（768/1024） | C/L/P |
