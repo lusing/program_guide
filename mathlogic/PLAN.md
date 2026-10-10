@@ -15,7 +15,7 @@
 |---|---|
 | Huth & Ryan《Logic in Computer Science》2e（英文文本层好；中译本=同书 OCR 扫描） | CS 主线：ND→SAT→FOL→模型检测→霍尔逻辑→模态→BDD |
 | Ben-Ari 3e（2012，文本层好；2e 为 OCR 扫描仅补充） | 演算主线：G 矢列、Hilbert H、tableau、归结/合一、SLD、验证 |
-| Mints《A Short Introduction to Intuitionistic Logic》（公式层缺，需按页读版面） | 直觉主义线：NJp/NKp、Glivenko、正规化、Kripke |
+| Mints《A Short Introduction to Intuitionistic Logic》（第十二轮专轮，RapidOCR 全 130 页） | 直觉主义全线：饱和完备性/矩阵拓扑/搜索/插值/谓词扩张域 |
 | Ebbinghaus-Flum-Thomas (EFT) 3e | 元理论线：矢列、完备性、L-S、EF 博弈、二阶、自由模型、寄存器机 |
 | Mendelson 6e（第五轮收官） | 元定理与递归论线：完备集与独立性(09)、Rule C/Lindenbaum(18/23 深化)、图灵机(34)、递归函数(35)、算术化(36)、不完备性(37)、NBG 集合论(62) |
 | **Marker《An Invitation to Mathematical Logic》GTM 301**（第六轮收官） | 模型论与高阶递归论线：完备性与范畴性/Ax(26)、超积与 Łoś(27)、量词消去(28)、实闭域与 o-minimal/Hilbert 17(29)、嵌入与图方法(16 深化)、RAM(37 深化)、通用机/Rice/递归定理(40)、算术层级/Kolmogorov(41)、图灵度/优先法(42)、层级化不完备(46 深化)、H10/Pell(50)、ε₀/Goodstein(51)、PA 模型/Paris–Harrington(52) |
@@ -60,6 +60,10 @@
 | 15 | 正规化定理：(k,n) 降序轨迹+∨置换+子公式验收 | ✅ 马明辉 批次二 |
 | 16 | Kripke 语义| 16 | Kripke 语义（两世界 LEM 反例零公理；DNE 空真认知修正） | C/A/L | ✅ 扩写✅ |
 | 17 | 直觉主义完备性：Kripke/cHa/[0,1] 三重奏（kfw 力迫+ikValid 全枚举+gdv 有限线序） | C/L | ✅ Takeuti 批次一 |
+| 18 | LJpm 多后件矢列：饱和与典范模型（闭包神谕+位串 trie+完备化/真引理/LEM 驳倒） | C/L | ✅ Mints 批次二 |
+| 19 | 有限矩阵与拓扑完备性（单调数四连驳+锥拓扑核+[0,1] 级数分离引理） | C/L | ✅ Mints 批次三 |
+| 20 | 证明搜索：LJpm* 表列与判定程序（或分支数据化+淹没阻断+认证反模型） | C/L/P | ✅ Mints 批次四 |
+| 21 | 直觉主义插值与 Beth（全预序有界有效性+签名宇宙+环链双账） | C/L | ✅ Mints 批次五 |
 | 22 | 三段论与传统逻辑（256 式良形筛选+15 有效式+文恩图对照） | C/L/P | ✅ 张寅生 批次 |
 | 23 | FOL 语法与代入（fv 条款含 In x 条件教训；同型不挡混淆实录） | C/A/L | ✅ 扩写✅ |
 | 24 | FOL 语义（一致性+完整代入交换+locale/结构理论） | C/A/L/I | ✅+Marker 嵌入深化✅ 扩写✅ |
@@ -68,6 +72,7 @@
 | 27 | 历史形式系统考古：Frege、PM 与 Hilbert（命题等价翻译链+PM 记号机器化） | 文档 | ✅ 张寅生 批次 |
 | 28 | 前束范式构件（量词穿越四条零公理；侧条件不对称实录） | C/L | ✅ 扩写✅ |
 | 29 | FOL 语义表列（γ/δ 规则+tclo 推导对象+7.42 完整证明） | C/L | ✅ Ben-Ari 批次一 |
+| 30 | 直觉主义谓词：扩张域与传递规则（有限帧翻案+CD 框架刻画+谓词 GG+SOA） | C/L | ✅ Mints 批次六 |
 | 31 | FOL 矢列演算与等词（EFT S 全规则：∃A 侧条件+Sub+可导规则族+群例等式链+协调性） | C/L | ✅ EFT 批次一 |
 | 32 | 语法解释、范式与 ZF（词项化简对账+≤-from-< 定义扩张 E1/E2+⟨Φ⟩ DNF+ZF 公理即公式） | C/L | ✅ EFT 批次二 |
 | 33 | 完备性 Henkin（合同闭包商结构+六探针对账+见证式化+lin_ext/lin_cons/lin_max Lindenbaum 件 C） | 文档/C/L | ✅ EFT 批次三+Mendelson 深化✅ |
@@ -147,7 +152,7 @@
 | 106 | 函数与等价关系（复合保持+搜索左/右逆+congN 全加形态正规形+良定义） | C/L | ✅ Jongsma 批次六 |
 | 107 | 偏序与格（整除偏序三律+lub/glb 唯一性+特征引理装配代数律全家+五点菱形非分配反例） | C/L | ✅ Jongsma 批次七 |
 | 108 | Boole 代数与逻辑电路（B={0,1} 十公理+恒等式册+半/全加器+minterm 表示定理+QMC 两阶段） | C/L/P | ✅ Jongsma 批次八 |
-| 114 | 代数逻辑：M3 分方向账+德摩根等式 | ✅ 马明辉 批次四 |
+| 109 | 代数逻辑：M3 分方向账+德摩根等式 | ✅ 马明辉 批次四 |
 | 110 | 图论专题（握手引理真证明+哥尼斯堡/K5/K3,3 平面算术+Ham 检查器+贪心着色两定理+P 通道搜索面） | C/L/P | ✅ Jongsma 批次九 |
 | 111 | 公理集合论 NBG 与序数（vn 典范世界引理族+kur_char 4.3 真定理+vn_trans 传递性+fin_ac 零公理+B1-B5 算子点式定理+系统对照表） | C/L | ✅ Mendelson 批次五 |
 | 112 | 公理集合论进阶（选择公理等价形式+大基数谱+相对一致性） | C/L | ✅ 既有 |
