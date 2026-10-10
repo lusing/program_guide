@@ -4,7 +4,7 @@
 config_version=5
 
 [application]
-config/name="03_functions"
+config/name="04_control"
 run/main_scene=""
 config/features=PackedStringArray("4.3")
 
