@@ -1,0 +1,854 @@
+DIGEST 35a1f82539281ab17f92ee466acb3fa8
+Fex37_types
+R752:755 Stdlib.Lists.List <> <> lib
+R757:761 Stdlib.Arith.Arith <> <> lib
+R771:783 Stdlib.Lists.List ListNotations <> mod
+def 796:802 <> forallb
+binder 805:805 <> A:1
+R814:817 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R813:813 ex37_types <> A:1 var
+R818:821 Corelib.Init.Datatypes <> bool ind
+binder 809:809 <> f:2
+R829:832 Corelib.Init.Datatypes <> list ind
+R834:834 ex37_types <> A:1 var
+binder 825:825 <> l:3
+R839:842 Corelib.Init.Datatypes <> bool ind
+R855:855 ex37_types <> l:3 var
+R862:863 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R868:871 Corelib.Init.Datatypes <> true constr
+R876:879 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R885:888 Corelib.Init.Datatypes <> andb def
+R897:903 ex37_types <> forallb:4 def
+R905:905 ex37_types <> f:2 var
+R891:891 ex37_types <> f:2 var
+def 924:930 <> existsb
+binder 933:933 <> A:6
+R942:945 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R941:941 ex37_types <> A:6 var
+R946:949 Corelib.Init.Datatypes <> bool ind
+binder 937:937 <> f:7
+R957:960 Corelib.Init.Datatypes <> list ind
+R962:962 ex37_types <> A:6 var
+binder 953:953 <> l:8
+R967:970 Corelib.Init.Datatypes <> bool ind
+R983:983 ex37_types <> l:8 var
+R990:991 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R996:1000 Corelib.Init.Datatypes <> false constr
+R1005:1008 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R1014:1016 Corelib.Init.Datatypes <> orb def
+R1025:1031 ex37_types <> existsb:9 def
+R1033:1033 ex37_types <> f:7 var
+R1019:1019 ex37_types <> f:7 var
+def 1053:1059 <> listBeq
+R1070:1073 Corelib.Init.Datatypes <> list ind
+R1075:1078 Corelib.Init.Datatypes <> bool ind
+binder 1062:1063 <> l1:11
+binder 1065:1066 <> l2:12
+R1083:1086 Corelib.Init.Datatypes <> bool ind
+R1103:1104 ex37_types <> l2:12 var
+R1099:1100 ex37_types <> l1:11 var
+R1115:1116 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R1119:1120 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R1125:1128 Corelib.Init.Datatypes <> true constr
+R1135:1138 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R1144:1147 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R1154:1157 Corelib.Init.Datatypes <> andb def
+R1175:1181 ex37_types <> listBeq:13 def
+R1160:1167 Stdlib.Bool.Bool <> eqb def
+R1202:1206 Corelib.Init.Datatypes <> false constr
+ind 1317:1320 <> term
+constr 1334:1335 <> TZ
+constr 1374:1375 <> TX
+R1342:1345 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1339:1341 Corelib.Init.Datatypes <> nat ind
+R1346:1349 ex37_types <> term:16 ind
+R1382:1385 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1379:1381 Corelib.Init.Datatypes <> nat ind
+R1389:1392 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1386:1388 Corelib.Init.Datatypes <> nat ind
+R1393:1396 ex37_types <> term:16 ind
+scheme 1317:1320 <> term_rect
+scheme 1317:1320 <> term_ind
+scheme 1317:1320 <> term_rec
+scheme 1317:1320 <> term_sind
+ind 1425:1426 <> pf
+constr 1440:1442 <> AEq
+constr 1467:1470 <> PNot
+constr 1485:1488 <> PAnd
+constr 1509:1511 <> POr
+R1450:1453 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1446:1449 ex37_types <> term ind
+R1458:1461 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1454:1457 ex37_types <> term ind
+R1462:1463 ex37_types <> pf:18 ind
+R1476:1479 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1474:1475 ex37_types <> pf:18 ind
+R1480:1481 ex37_types <> pf:18 ind
+R1494:1497 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1492:1493 ex37_types <> pf:18 ind
+R1500:1503 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1498:1499 ex37_types <> pf:18 ind
+R1504:1505 ex37_types <> pf:18 ind
+R1517:1520 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1515:1516 ex37_types <> pf:18 ind
+R1523:1526 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1521:1522 ex37_types <> pf:18 ind
+R1527:1528 ex37_types <> pf:18 ind
+scheme 1425:1426 <> pf_rect
+scheme 1425:1426 <> pf_ind
+scheme 1425:1426 <> pf_rec
+scheme 1425:1426 <> pf_sind
+def 1624:1626 <> evT
+R1633:1636 ex37_types <> term ind
+binder 1629:1629 <> t:20
+R1646:1649 Corelib.Init.Datatypes <> list ind
+R1651:1653 Corelib.Init.Datatypes <> nat ind
+binder 1640:1642 <> asg:21
+R1667:1670 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1664:1666 Corelib.Init.Datatypes <> nat ind
+R1671:1673 Corelib.Init.Datatypes <> nat ind
+binder 1657:1660 <> step:22
+R1678:1680 Corelib.Init.Datatypes <> nat ind
+R1693:1693 ex37_types <> t:20 var
+R1704:1705 ex37_types <> TZ constr
+R1712:1719 Stdlib.Arith.PeanoNat Nat iter def
+R1723:1726 ex37_types <> step:22 var
+R1734:1735 ex37_types <> TX constr
+R1744:1751 Stdlib.Arith.PeanoNat Nat iter def
+R1761:1763 Corelib.Lists.ListDef <> nth def
+R1767:1769 ex37_types <> asg:21 var
+R1755:1758 ex37_types <> step:22 var
+def 1791:1793 <> evP
+R1800:1801 ex37_types <> pf ind
+binder 1796:1796 <> p:24
+R1811:1814 Corelib.Init.Datatypes <> list ind
+R1816:1818 Corelib.Init.Datatypes <> nat ind
+binder 1805:1807 <> asg:25
+R1832:1835 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1829:1831 Corelib.Init.Datatypes <> nat ind
+R1836:1838 Corelib.Init.Datatypes <> nat ind
+binder 1822:1825 <> step:26
+R1843:1846 Corelib.Init.Datatypes <> bool ind
+R1859:1859 ex37_types <> p:24 var
+R1870:1872 ex37_types <> AEq constr
+R1883:1889 Stdlib.Arith.PeanoNat Nat eqb def
+R1892:1894 ex37_types <> evT def
+R1899:1901 ex37_types <> asg:25 var
+R1903:1906 ex37_types <> step:26 var
+R1910:1912 ex37_types <> evT def
+R1917:1919 ex37_types <> asg:25 var
+R1921:1924 ex37_types <> step:26 var
+R1931:1934 ex37_types <> PNot constr
+R1941:1944 Corelib.Init.Datatypes <> negb def
+R1947:1949 ex37_types <> evP:27 def
+R1957:1960 ex37_types <> step:26 var
+R1953:1955 ex37_types <> asg:25 var
+R1967:1970 ex37_types <> PAnd constr
+R1979:1982 Corelib.Init.Datatypes <> andb def
+R2002:2004 ex37_types <> evP:27 def
+R2012:2015 ex37_types <> step:26 var
+R2008:2010 ex37_types <> asg:25 var
+R1985:1987 ex37_types <> evP:27 def
+R1995:1998 ex37_types <> step:26 var
+R1991:1993 ex37_types <> asg:25 var
+R2022:2024 ex37_types <> POr constr
+R2033:2035 Corelib.Init.Datatypes <> orb def
+R2055:2057 ex37_types <> evP:27 def
+R2065:2068 ex37_types <> step:26 var
+R2061:2063 ex37_types <> asg:25 var
+R2038:2040 ex37_types <> evP:27 def
+R2048:2051 ex37_types <> step:26 var
+R2044:2046 ex37_types <> asg:25 var
+def 2157:2161 <> terms
+R2170:2172 Corelib.Init.Datatypes <> nat ind
+binder 2164:2164 <> n:29
+binder 2166:2166 <> B:30
+R2177:2180 Corelib.Init.Datatypes <> list ind
+R2182:2185 ex37_types <> term ind
+R2196:2199 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R2192:2193 ex37_types <> TZ constr
+R2267:2277 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R2200:2207 Stdlib.Lists.List <> flat_map def
+R2253:2255 Corelib.Lists.ListDef <> seq def
+R2261:2263 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R2260:2260 ex37_types <> B:30 var
+binder 2214:2214 <> k:31
+R2219:2221 Corelib.Lists.ListDef <> map def
+R2242:2244 Corelib.Lists.ListDef <> seq def
+R2248:2248 ex37_types <> n:29 var
+binder 2228:2228 <> i:32
+R2233:2234 ex37_types <> TX constr
+R2236:2236 ex37_types <> k:31 var
+R2238:2238 ex37_types <> i:32 var
+R2278:2280 Corelib.Lists.ListDef <> map def
+R2286:2288 Corelib.Lists.ListDef <> seq def
+R2292:2292 ex37_types <> B:30 var
+R2282:2283 ex37_types <> TZ constr
+def 2381:2386 <> formsD
+R2397:2400 Corelib.Init.Datatypes <> list ind
+R2402:2403 ex37_types <> pf ind
+binder 2389:2393 <> atoms:33
+R2411:2413 Corelib.Init.Datatypes <> nat ind
+binder 2407:2407 <> d:34
+R2418:2421 Corelib.Init.Datatypes <> list ind
+R2423:2424 ex37_types <> pf ind
+R2437:2437 ex37_types <> d:34 var
+R2453:2457 ex37_types <> atoms:33 var
+R2463:2463 Corelib.Init.Datatypes <> S constr
+R2482:2487 ex37_types <> formsD:35 def
+R2489:2493 ex37_types <> atoms:33 var
+binder 2474:2477 <> base:37
+R2515:2518 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R2511:2514 ex37_types <> base:37 var
+R2532:2548 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R2519:2521 Corelib.Lists.ListDef <> map def
+R2528:2531 ex37_types <> base:37 var
+R2523:2526 ex37_types <> PNot constr
+R2602:2618 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R2549:2556 Stdlib.Lists.List <> flat_map def
+R2598:2601 ex37_types <> base:37 var
+binder 2563:2563 <> p:38
+R2568:2570 Corelib.Lists.ListDef <> map def
+R2592:2595 ex37_types <> base:37 var
+binder 2577:2577 <> q:39
+R2582:2585 ex37_types <> PAnd constr
+R2587:2587 ex37_types <> p:38 var
+R2589:2589 ex37_types <> q:39 var
+R2619:2626 Stdlib.Lists.List <> flat_map def
+R2667:2670 ex37_types <> base:37 var
+binder 2633:2633 <> p:40
+R2638:2640 Corelib.Lists.ListDef <> map def
+R2661:2664 ex37_types <> base:37 var
+binder 2647:2647 <> q:41
+R2652:2654 ex37_types <> POr constr
+R2656:2656 ex37_types <> p:40 var
+R2658:2658 ex37_types <> q:41 var
+def 2691:2697 <> atomsOf
+R2706:2708 Corelib.Init.Datatypes <> nat ind
+binder 2700:2700 <> n:42
+binder 2702:2702 <> B:43
+R2713:2716 Corelib.Init.Datatypes <> list ind
+R2718:2719 ex37_types <> pf ind
+R2726:2733 Stdlib.Lists.List <> flat_map def
+R2786:2790 ex37_types <> terms def
+R2792:2792 ex37_types <> n:42 var
+R2794:2794 ex37_types <> B:43 var
+binder 2740:2741 <> t1:44
+R2746:2748 Corelib.Lists.ListDef <> map def
+R2773:2777 ex37_types <> terms def
+R2779:2779 ex37_types <> n:42 var
+R2781:2781 ex37_types <> B:43 var
+binder 2755:2756 <> t2:45
+R2761:2763 ex37_types <> AEq constr
+R2765:2766 ex37_types <> t1:44 var
+R2768:2769 ex37_types <> t2:45 var
+def 2916:2922 <> profile
+R2930:2933 Corelib.Init.Datatypes <> list ind
+R2935:2936 ex37_types <> pf ind
+binder 2925:2926 <> fs:46
+R2946:2949 Corelib.Init.Datatypes <> list ind
+R2951:2953 Corelib.Init.Datatypes <> nat ind
+binder 2940:2942 <> asg:47
+R2967:2970 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R2964:2966 Corelib.Init.Datatypes <> nat ind
+R2971:2973 Corelib.Init.Datatypes <> nat ind
+binder 2957:2960 <> step:48
+R2978:2981 Corelib.Init.Datatypes <> list ind
+R2983:2986 Corelib.Init.Datatypes <> bool ind
+R2993:2995 Corelib.Lists.ListDef <> map def
+R3023:3024 ex37_types <> fs:46 var
+binder 3002:3002 <> p:49
+R3007:3009 ex37_types <> evP def
+R3011:3011 ex37_types <> p:49 var
+R3013:3015 ex37_types <> asg:47 var
+R3017:3020 ex37_types <> step:48 var
+def 3037:3046 <> dedupProfA
+R3055:3058 Corelib.Init.Datatypes <> list ind
+R3061:3064 Corelib.Init.Datatypes <> list ind
+R3066:3069 Corelib.Init.Datatypes <> bool ind
+binder 3049:3051 <> acc:50
+R3078:3081 Corelib.Init.Datatypes <> list ind
+R3084:3087 Corelib.Init.Datatypes <> list ind
+R3089:3092 Corelib.Init.Datatypes <> bool ind
+binder 3074:3074 <> l:51
+R3098:3101 Corelib.Init.Datatypes <> list ind
+R3104:3107 Corelib.Init.Datatypes <> list ind
+R3109:3112 Corelib.Init.Datatypes <> bool ind
+R3126:3126 ex37_types <> l:51 var
+R3137:3138 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R3143:3145 ex37_types <> acc:50 var
+R3153:3156 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R3165:3171 ex37_types <> existsb def
+R3186:3188 ex37_types <> acc:50 var
+R3174:3180 ex37_types <> listBeq def
+R3247:3256 ex37_types <> dedupProfA:52 def
+R3261:3264 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R3265:3267 ex37_types <> acc:50 var
+R3210:3219 ex37_types <> dedupProfA:52 def
+R3221:3223 ex37_types <> acc:50 var
+def 3291:3299 <> dedupProf
+R3306:3309 Corelib.Init.Datatypes <> list ind
+R3312:3315 Corelib.Init.Datatypes <> list ind
+R3317:3320 Corelib.Init.Datatypes <> bool ind
+binder 3302:3302 <> l:54
+R3326:3329 Corelib.Init.Datatypes <> list ind
+R3332:3335 Corelib.Init.Datatypes <> list ind
+R3337:3340 Corelib.Init.Datatypes <> bool ind
+R3348:3357 ex37_types <> dedupProfA def
+R3359:3360 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R3362:3362 ex37_types <> l:54 var
+def 3417:3420 <> asgs
+R3429:3432 Corelib.Init.Datatypes <> list ind
+R3434:3436 Corelib.Init.Datatypes <> nat ind
+binder 3423:3425 <> dom:55
+R3444:3446 Corelib.Init.Datatypes <> nat ind
+binder 3440:3440 <> n:56
+R3451:3454 Corelib.Init.Datatypes <> list ind
+R3457:3460 Corelib.Init.Datatypes <> list ind
+R3462:3464 Corelib.Init.Datatypes <> nat ind
+R3472:3479 Stdlib.Arith.PeanoNat Nat iter def
+R3544:3544 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3547:3547 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3545:3546 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+binder 3488:3488 <> L:57
+R3493:3500 Stdlib.Lists.List <> flat_map def
+R3541:3541 ex37_types <> L:57 var
+binder 3507:3507 <> a:58
+R3512:3514 Corelib.Lists.ListDef <> map def
+R3536:3538 ex37_types <> dom:55 var
+binder 3521:3521 <> t:59
+R3527:3530 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R3526:3526 ex37_types <> a:58 var
+R3531:3531 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3533:3533 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3532:3532 ex37_types <> t:59 var
+R3481:3481 ex37_types <> n:56 var
+def 3639:3647 <> typeCount
+R3656:3659 Corelib.Init.Datatypes <> list ind
+R3661:3663 Corelib.Init.Datatypes <> nat ind
+binder 3650:3652 <> dom:60
+R3675:3677 Corelib.Init.Datatypes <> nat ind
+binder 3667:3667 <> n:61
+binder 3669:3669 <> B:62
+binder 3671:3671 <> d:63
+R3691:3694 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R3688:3690 Corelib.Init.Datatypes <> nat ind
+R3695:3697 Corelib.Init.Datatypes <> nat ind
+binder 3681:3684 <> step:64
+R3702:3704 Corelib.Init.Datatypes <> nat ind
+R3711:3716 Corelib.Init.Datatypes <> length def
+R3719:3727 ex37_types <> dedupProf def
+R3730:3732 Corelib.Lists.ListDef <> map def
+R3786:3789 ex37_types <> asgs def
+R3791:3793 ex37_types <> dom:60 var
+R3795:3795 ex37_types <> n:61 var
+binder 3739:3739 <> a:65
+R3744:3750 ex37_types <> profile def
+R3753:3758 ex37_types <> formsD def
+R3761:3767 ex37_types <> atomsOf def
+R3769:3769 ex37_types <> n:61 var
+R3771:3771 ex37_types <> B:62 var
+R3774:3774 ex37_types <> d:63 var
+R3777:3777 ex37_types <> a:65 var
+R3779:3782 ex37_types <> step:64 var
+def 3879:3885 <> termsNC
+R3894:3896 Corelib.Init.Datatypes <> nat ind
+binder 3888:3888 <> n:66
+binder 3890:3890 <> B:67
+R3901:3904 Corelib.Init.Datatypes <> list ind
+R3906:3909 ex37_types <> term ind
+R3916:3923 Stdlib.Lists.List <> flat_map def
+R3969:3971 Corelib.Lists.ListDef <> seq def
+R3977:3979 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R3976:3976 ex37_types <> B:67 var
+binder 3930:3930 <> k:68
+R3935:3937 Corelib.Lists.ListDef <> map def
+R3958:3960 Corelib.Lists.ListDef <> seq def
+R3964:3964 ex37_types <> n:66 var
+binder 3944:3944 <> i:69
+R3949:3950 ex37_types <> TX constr
+R3952:3952 ex37_types <> k:68 var
+R3954:3954 ex37_types <> i:69 var
+def 3996:4002 <> atomsNC
+R4011:4013 Corelib.Init.Datatypes <> nat ind
+binder 4005:4005 <> n:70
+binder 4007:4007 <> B:71
+R4018:4021 Corelib.Init.Datatypes <> list ind
+R4023:4024 ex37_types <> pf ind
+R4031:4038 Stdlib.Lists.List <> flat_map def
+R4093:4099 ex37_types <> termsNC def
+R4101:4101 ex37_types <> n:70 var
+R4103:4103 ex37_types <> B:71 var
+binder 4045:4046 <> t1:72
+R4051:4053 Corelib.Lists.ListDef <> map def
+R4078:4084 ex37_types <> termsNC def
+R4086:4086 ex37_types <> n:70 var
+R4088:4088 ex37_types <> B:71 var
+binder 4060:4061 <> t2:73
+R4066:4068 ex37_types <> AEq constr
+R4070:4071 ex37_types <> t1:72 var
+R4073:4074 ex37_types <> t2:73 var
+def 4118:4128 <> typeCountNC
+R4137:4140 Corelib.Init.Datatypes <> list ind
+R4142:4144 Corelib.Init.Datatypes <> nat ind
+binder 4131:4133 <> dom:74
+R4156:4158 Corelib.Init.Datatypes <> nat ind
+binder 4148:4148 <> n:75
+binder 4150:4150 <> B:76
+binder 4152:4152 <> d:77
+R4172:4175 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R4169:4171 Corelib.Init.Datatypes <> nat ind
+R4176:4178 Corelib.Init.Datatypes <> nat ind
+binder 4162:4165 <> step:78
+R4183:4185 Corelib.Init.Datatypes <> nat ind
+R4192:4197 Corelib.Init.Datatypes <> length def
+R4200:4208 ex37_types <> dedupProf def
+R4211:4213 Corelib.Lists.ListDef <> map def
+R4267:4270 ex37_types <> asgs def
+R4272:4274 ex37_types <> dom:74 var
+R4276:4276 ex37_types <> n:75 var
+binder 4220:4220 <> a:79
+R4225:4231 ex37_types <> profile def
+R4234:4239 ex37_types <> formsD def
+R4242:4248 ex37_types <> atomsNC def
+R4250:4250 ex37_types <> n:75 var
+R4252:4252 ex37_types <> B:76 var
+R4255:4255 ex37_types <> d:77 var
+R4258:4258 ex37_types <> a:79 var
+R4260:4263 ex37_types <> step:78 var
+def 4448:4459 <> bell_pure_eq
+R4642:4646 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R4465:4465 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4506:4510 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4551:4555 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4596:4600 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4641:4641 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4466:4476 ex37_types <> typeCountNC def
+R4479:4481 Corelib.Lists.ListDef <> seq def
+binder 4499:4499 <> x:80
+R4504:4504 ex37_types <> x:80 var
+R4511:4521 ex37_types <> typeCountNC def
+R4524:4526 Corelib.Lists.ListDef <> seq def
+binder 4544:4544 <> x:81
+R4549:4549 ex37_types <> x:81 var
+R4556:4566 ex37_types <> typeCountNC def
+R4569:4571 Corelib.Lists.ListDef <> seq def
+binder 4589:4589 <> x:82
+R4594:4594 ex37_types <> x:82 var
+R4601:4611 ex37_types <> typeCountNC def
+R4614:4616 Corelib.Lists.ListDef <> seq def
+binder 4634:4634 <> x:83
+R4639:4639 ex37_types <> x:83 var
+R4647:4647 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4649:4650 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4652:4653 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4655:4656 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4659:4659 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+def 4794:4808 <> bell_invariance
+R4901:4903 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R4814:4814 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4855:4859 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4900:4900 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4815:4825 ex37_types <> typeCountNC def
+R4828:4830 Corelib.Lists.ListDef <> seq def
+binder 4848:4848 <> x:84
+R4853:4853 ex37_types <> x:84 var
+R4860:4870 ex37_types <> typeCountNC def
+R4873:4875 Corelib.Lists.ListDef <> seq def
+binder 4893:4893 <> x:85
+R4898:4898 ex37_types <> x:85 var
+R4904:4904 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4906:4907 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4909:4909 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+def 5117:5133 <> bell_depth_stable
+R5179:5181 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R5139:5149 ex37_types <> typeCountNC def
+R5152:5154 Corelib.Lists.ListDef <> seq def
+binder 5172:5172 <> x:86
+R5177:5177 ex37_types <> x:86 var
+def 5310:5316 <> stepMod
+R5323:5325 Corelib.Init.Datatypes <> nat ind
+binder 5319:5319 <> m:87
+R5333:5335 Corelib.Init.Datatypes <> nat ind
+binder 5329:5329 <> x:88
+R5340:5342 Corelib.Init.Datatypes <> nat ind
+R5347:5347 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R5353:5358 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R5349:5351 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R5348:5348 ex37_types <> x:88 var
+R5359:5359 ex37_types <> m:87 var
+def 5421:5428 <> smash_zm
+R5515:5517 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R5434:5434 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R5472:5476 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R5514:5514 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R5435:5443 ex37_types <> typeCount def
+R5446:5448 Corelib.Lists.ListDef <> seq def
+R5462:5468 ex37_types <> stepMod def
+R5477:5485 ex37_types <> typeCount def
+R5488:5490 Corelib.Lists.ListDef <> seq def
+R5504:5510 ex37_types <> stepMod def
+R5518:5518 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R5520:5521 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R5523:5523 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+def 5727:5734 <> truthSet
+R5741:5742 ex37_types <> pf ind
+binder 5737:5737 <> f:89
+R5752:5755 Corelib.Init.Datatypes <> list ind
+R5757:5759 Corelib.Init.Datatypes <> nat ind
+binder 5746:5748 <> dom:90
+R5773:5776 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R5770:5772 Corelib.Init.Datatypes <> nat ind
+R5777:5779 Corelib.Init.Datatypes <> nat ind
+binder 5763:5766 <> step:91
+R5784:5787 Corelib.Init.Datatypes <> list ind
+R5789:5792 Corelib.Init.Datatypes <> bool ind
+R5799:5801 Corelib.Lists.ListDef <> map def
+R5828:5830 Corelib.Lists.ListDef <> map def
+R5847:5849 ex37_types <> dom:90 var
+binder 5837:5837 <> v:92
+R5842:5842 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R5844:5844 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R5843:5843 ex37_types <> v:92 var
+binder 5808:5808 <> a:93
+R5813:5815 ex37_types <> evP def
+R5817:5817 ex37_types <> f:89 var
+R5819:5819 ex37_types <> a:93 var
+R5821:5824 ex37_types <> step:91 var
+def 5862:5880 <> isolated_witness_z6
+R6158:6160 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R5886:5892 ex37_types <> forallb def
+R6150:6152 Corelib.Lists.ListDef <> seq def
+binder 5899:5899 <> v:94
+R5908:5914 ex37_types <> existsb def
+R6120:6125 ex37_types <> formsD def
+R6128:6134 ex37_types <> atomsOf def
+binder 5921:5921 <> f:95
+R5926:5929 Corelib.Init.Datatypes <> andb def
+R5982:5988 ex37_types <> forallb def
+R6096:6098 Corelib.Lists.ListDef <> seq def
+binder 5995:5995 <> w:96
+R6000:6004 Corelib.Init.Datatypes <> implb def
+R6081:6087 Stdlib.Arith.PeanoNat Nat eqb def
+R6089:6089 ex37_types <> w:96 var
+R6091:6091 ex37_types <> v:94 var
+R6007:6009 ex37_types <> evP def
+R6011:6011 ex37_types <> f:95 var
+R6013:6013 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R6015:6015 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R6014:6014 ex37_types <> w:96 var
+R6018:6024 ex37_types <> stepMod def
+R5932:5934 ex37_types <> evP def
+R5936:5936 ex37_types <> f:95 var
+R5938:5938 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R5940:5940 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R5939:5939 ex37_types <> v:94 var
+R5943:5949 ex37_types <> stepMod def
+R6161:6164 Corelib.Init.Datatypes <> true constr
+def 6289:6293 <> stepN
+R6300:6302 Corelib.Init.Datatypes <> nat ind
+binder 6296:6296 <> x:97
+R6307:6309 Corelib.Init.Datatypes <> nat ind
+R6315:6317 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R6314:6314 ex37_types <> x:97 var
+def 6419:6432 <> inf_type_count
+R6470:6472 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R6438:6446 ex37_types <> typeCount def
+R6449:6451 Corelib.Lists.ListDef <> seq def
+R6465:6469 ex37_types <> stepN def
+def 6754:6773 <> inf_type_nonisolated
+R6923:6925 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R6779:6785 ex37_types <> forallb def
+R6900:6905 ex37_types <> formsD def
+R6908:6914 ex37_types <> atomsOf def
+binder 6792:6792 <> f:98
+R6797:6801 Corelib.Init.Datatypes <> implb def
+R6848:6854 ex37_types <> existsb def
+R6884:6886 Corelib.Lists.ListDef <> seq def
+binder 6861:6861 <> v:99
+R6866:6868 ex37_types <> evP def
+R6870:6870 ex37_types <> f:98 var
+R6872:6872 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R6874:6874 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R6873:6873 ex37_types <> v:99 var
+R6876:6880 ex37_types <> stepN def
+R6804:6806 ex37_types <> evP def
+R6808:6808 ex37_types <> f:98 var
+R6810:6810 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R6812:6812 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R6814:6818 ex37_types <> stepN def
+R6926:6929 Corelib.Init.Datatypes <> true constr
+def 7136:7140 <> cutLU
+R7147:7150 Corelib.Init.Datatypes <> list ind
+R7152:7154 Corelib.Init.Datatypes <> nat ind
+binder 7143:7143 <> A:100
+R7162:7164 Corelib.Init.Datatypes <> nat ind
+binder 7158:7158 <> p:101
+R7177:7179 Corelib.Init.Datatypes <> ::type_scope:x_'*'_x not
+R7169:7172 Corelib.Init.Datatypes <> list ind
+R7174:7176 Corelib.Init.Datatypes <> nat ind
+R7180:7183 Corelib.Init.Datatypes <> list ind
+R7185:7187 Corelib.Init.Datatypes <> nat ind
+R7194:7194 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7205:7206 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7216:7216 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7195:7200 Corelib.Lists.ListDef <> firstn def
+R7204:7204 ex37_types <> A:100 var
+R7202:7202 ex37_types <> p:101 var
+R7207:7211 Corelib.Lists.ListDef <> skipn def
+R7215:7215 ex37_types <> A:100 var
+R7213:7213 ex37_types <> p:101 var
+def 7231:7241 <> cutIsolated
+R7248:7251 Corelib.Init.Datatypes <> list ind
+R7253:7255 Corelib.Init.Datatypes <> nat ind
+binder 7244:7244 <> A:102
+R7263:7265 Corelib.Init.Datatypes <> nat ind
+binder 7259:7259 <> p:103
+R7270:7273 Corelib.Init.Datatypes <> bool ind
+R7294:7298 ex37_types <> cutLU def
+R7300:7300 ex37_types <> A:102 var
+R7302:7302 ex37_types <> p:103 var
+binder 7285:7285 <> L:104
+binder 7288:7288 <> U:105
+R7309:7312 Corelib.Init.Datatypes <> andb def
+R7405:7405 ex37_types <> U:105 var
+R7412:7413 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R7418:7421 Corelib.Init.Datatypes <> true constr
+R7430:7433 Corelib.Init.Datatypes <> true constr
+R7321:7321 ex37_types <> L:104 var
+R7328:7329 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R7334:7337 Corelib.Init.Datatypes <> true constr
+R7346:7349 Corelib.Init.Datatypes <> true constr
+def 7558:7566 <> cuts_of_A
+R7614:7618 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R7572:7574 Corelib.Lists.ListDef <> map def
+R7606:7608 Corelib.Lists.ListDef <> seq def
+binder 7581:7581 <> p:108
+R7586:7590 ex37_types <> cutLU def
+R7592:7592 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7594:7594 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7596:7596 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7598:7598 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7600:7600 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7602:7602 ex37_types <> p:108 var
+R7619:7619 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7635:7636 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7651:7652 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7667:7673 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7688:7689 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7705:7705 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7620:7620 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7623:7624 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7634:7634 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7621:7622 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R7625:7625 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7627:7627 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7629:7629 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7631:7631 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7633:7633 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7637:7637 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7641:7642 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7650:7650 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7638:7638 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R7640:7640 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R7643:7643 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7645:7645 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7647:7647 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7649:7649 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7653:7653 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7659:7660 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7666:7666 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7654:7654 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7656:7656 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7658:7658 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7661:7661 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7663:7663 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7665:7665 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7674:7674 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7682:7683 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7687:7687 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7675:7675 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7677:7677 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7679:7679 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7681:7681 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7684:7684 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R7686:7686 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R7690:7690 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7700:7701 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7704:7704 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7691:7691 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7693:7693 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7695:7695 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7697:7697 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7699:7699 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7702:7703 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+def 7922:7941 <> finite_cuts_isolated
+R7999:8001 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R7947:7953 ex37_types <> forallb def
+R7991:7993 Corelib.Lists.ListDef <> seq def
+binder 7960:7960 <> p:109
+R7965:7975 ex37_types <> cutIsolated def
+R7977:7977 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7979:7979 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7981:7981 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7983:7983 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7985:7985 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7987:7987 ex37_types <> p:109 var
+R8002:8005 Corelib.Init.Datatypes <> true constr
+def 8223:8227 <> cutOf
+R8234:8237 Corelib.Init.Datatypes <> list ind
+R8239:8241 Corelib.Init.Datatypes <> nat ind
+binder 8230:8230 <> A:110
+R8249:8251 Corelib.Init.Datatypes <> nat ind
+binder 8245:8245 <> v:111
+R8256:8258 Corelib.Init.Datatypes <> nat ind
+R8265:8270 Corelib.Init.Datatypes <> length def
+R8273:8278 Stdlib.Lists.List <> filter def
+R8303:8303 ex37_types <> A:110 var
+binder 8285:8285 <> a:112
+R8290:8296 Stdlib.Arith.PeanoNat Nat ltb def
+R8298:8298 ex37_types <> a:112 var
+R8300:8300 ex37_types <> v:111 var
+def 8316:8329 <> cut_determines
+R8385:8389 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R8335:8337 Corelib.Lists.ListDef <> map def
+R8368:8368 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8370:8370 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8372:8372 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8374:8374 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8376:8376 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8378:8378 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8380:8380 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8382:8382 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8384:8384 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+binder 8344:8344 <> v:113
+R8349:8353 ex37_types <> cutOf def
+R8355:8355 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8357:8357 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8359:8359 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8361:8361 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8363:8363 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8365:8365 ex37_types <> v:113 var
+R8390:8390 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8392:8392 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8394:8394 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8396:8396 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8398:8398 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8400:8400 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8402:8402 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8404:8404 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8406:8406 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+def 8591:8597 <> bracket
+R8604:8605 ex37_types <> pf ind
+binder 8600:8600 <> f:114
+R8615:8618 Corelib.Init.Datatypes <> list ind
+R8620:8622 Corelib.Init.Datatypes <> nat ind
+binder 8609:8611 <> dom:115
+R8636:8639 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R8633:8635 Corelib.Init.Datatypes <> nat ind
+R8640:8642 Corelib.Init.Datatypes <> nat ind
+binder 8626:8629 <> step:116
+R8647:8650 Corelib.Init.Datatypes <> list ind
+R8652:8655 Corelib.Init.Datatypes <> bool ind
+R8662:8664 Corelib.Lists.ListDef <> map def
+R8691:8693 Corelib.Lists.ListDef <> map def
+R8710:8712 ex37_types <> dom:115 var
+binder 8700:8700 <> v:117
+R8705:8705 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R8707:8707 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R8706:8706 ex37_types <> v:117 var
+binder 8671:8671 <> a:118
+R8676:8678 ex37_types <> evP def
+R8680:8680 ex37_types <> f:114 var
+R8682:8682 ex37_types <> a:118 var
+R8684:8687 ex37_types <> step:116 var
+def 8728:8732 <> vecOr
+R8743:8746 Corelib.Init.Datatypes <> list ind
+R8748:8751 Corelib.Init.Datatypes <> bool ind
+binder 8735:8736 <> l1:119
+binder 8738:8739 <> l2:120
+R8756:8759 Corelib.Init.Datatypes <> list ind
+R8761:8764 Corelib.Init.Datatypes <> bool ind
+R8769:8771 Corelib.Lists.ListDef <> map def
+R8805:8811 Stdlib.Lists.List <> combine def
+R8816:8817 ex37_types <> l2:120 var
+R8813:8814 ex37_types <> l1:119 var
+binder 8778:8778 <> p:121
+R8783:8785 Corelib.Init.Datatypes <> orb def
+R8796:8798 Corelib.Init.Datatypes <> snd def
+R8800:8800 ex37_types <> p:121 var
+R8788:8790 Corelib.Init.Datatypes <> fst def
+R8792:8792 ex37_types <> p:121 var
+def 8832:8837 <> vecAnd
+R8848:8851 Corelib.Init.Datatypes <> list ind
+R8853:8856 Corelib.Init.Datatypes <> bool ind
+binder 8840:8841 <> l1:122
+binder 8843:8844 <> l2:123
+R8861:8864 Corelib.Init.Datatypes <> list ind
+R8866:8869 Corelib.Init.Datatypes <> bool ind
+R8874:8876 Corelib.Lists.ListDef <> map def
+R8911:8917 Stdlib.Lists.List <> combine def
+R8922:8923 ex37_types <> l2:123 var
+R8919:8920 ex37_types <> l1:122 var
+binder 8883:8883 <> p:124
+R8888:8891 Corelib.Init.Datatypes <> andb def
+R8902:8904 Corelib.Init.Datatypes <> snd def
+R8906:8906 ex37_types <> p:124 var
+R8894:8896 Corelib.Init.Datatypes <> fst def
+R8898:8898 ex37_types <> p:124 var
+def 9099:9107 <> stonePair
+R9116:9117 ex37_types <> pf ind
+binder 9110:9110 <> q:125
+binder 9112:9112 <> r:126
+R9122:9125 Corelib.Init.Datatypes <> bool ind
+R9132:9135 Corelib.Init.Datatypes <> andb def
+R9312:9318 ex37_types <> listBeq def
+R9321:9327 ex37_types <> bracket def
+R9330:9333 ex37_types <> PAnd constr
+R9335:9335 ex37_types <> q:125 var
+R9337:9337 ex37_types <> r:126 var
+R9341:9343 Corelib.Lists.ListDef <> seq def
+R9351:9357 ex37_types <> stepMod def
+R9380:9385 ex37_types <> vecAnd def
+R9388:9394 ex37_types <> bracket def
+R9396:9396 ex37_types <> q:125 var
+R9399:9401 Corelib.Lists.ListDef <> seq def
+R9409:9415 ex37_types <> stepMod def
+R9446:9452 ex37_types <> bracket def
+R9454:9454 ex37_types <> r:126 var
+R9457:9459 Corelib.Lists.ListDef <> seq def
+R9467:9473 ex37_types <> stepMod def
+R9138:9144 ex37_types <> listBeq def
+R9147:9153 ex37_types <> bracket def
+R9156:9158 ex37_types <> POr constr
+R9160:9160 ex37_types <> q:125 var
+R9162:9162 ex37_types <> r:126 var
+R9166:9168 Corelib.Lists.ListDef <> seq def
+R9176:9182 ex37_types <> stepMod def
+R9205:9209 ex37_types <> vecOr def
+R9212:9218 ex37_types <> bracket def
+R9220:9220 ex37_types <> q:125 var
+R9223:9225 Corelib.Lists.ListDef <> seq def
+R9233:9239 ex37_types <> stepMod def
+R9269:9275 ex37_types <> bracket def
+R9277:9277 ex37_types <> r:126 var
+R9280:9282 Corelib.Lists.ListDef <> seq def
+R9290:9296 ex37_types <> stepMod def
+def 9494:9503 <> smallForms
+R9507:9510 Corelib.Init.Datatypes <> list ind
+R9512:9513 ex37_types <> pf ind
+R9518:9523 ex37_types <> formsD def
+R9526:9532 ex37_types <> atomsOf def
+def 9551:9560 <> stone_laws
+R9639:9641 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R9566:9572 ex37_types <> forallb def
+R9629:9638 ex37_types <> smallForms def
+binder 9579:9579 <> q:127
+R9584:9590 ex37_types <> forallb def
+R9617:9626 ex37_types <> smallForms def
+binder 9597:9597 <> r:128
+R9602:9610 ex37_types <> stonePair def
+R9612:9612 ex37_types <> q:127 var
+R9614:9614 ex37_types <> r:128 var
+R9642:9645 Corelib.Init.Datatypes <> true constr
+R9704:9713 ex37_types <> stone_laws ex
