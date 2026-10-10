@@ -6,8 +6,8 @@
    （α→t 与 t→β 皆有界有效+t 变元⊆共享）三型样本（共享/常值流/划分）；
    Beth：隐定义 α∧α[p/q]→(p↔q) 有效性+显定义 t（不含 p）搜索——
    环链样本 α=(p→q)∧(q→r)∧(r→p) 的 t=q 全账（Thm 12.2）。文档线：
-   Mints 的 LJp 逐情形构造（Case 0-4 组合表）与 73 章经典 Maehara 的
-   对照、谓词版 Beth（Thm 15.6）指向 75 章。零公理。 *)
+   Mints 的 LJp 逐情形构造（Case 0-4 组合表）与 82 章经典 Maehara 的
+   对照、谓词版 Beth（Thm 15.6）指向 84 章。零公理。 *)
 
 From Stdlib Require Import List Arith.
 Import ListNotations.
