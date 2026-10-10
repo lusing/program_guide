@@ -1,0 +1,15 @@
+session MLTC1 in "." = HOL +
+  options [document = false]
+  theories
+    MLTC1
+
+session MLTC2 in "." = HOL +
+  options [document = false]
+  theories
+    MLTC2
+
+session MLTC3 in "." = HOL +
+  options [document = false]
+  theories
+    MLTC3
+

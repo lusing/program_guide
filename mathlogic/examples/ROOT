@@ -43,22 +43,22 @@ session ML21 in "21_folnd" = HOL +
   theories
     ex21_folnd
 
-session ML39 in "39_resolution" = HOL +
+session ML49 in "49_resolution" = HOL +
   options [document = false]
   theories
-    ex39_resolution
+    ex49_resolution
 
-session ML67 in "67_decidability" = HOL +
+session ML77 in "77_decidability" = HOL +
   options [document = false]
   theories
-    ex67_decidability
+    ex77_decidability
 
-session ML81 in "81_hoare" = HOL +
+session ML91 in "91_hoare" = HOL +
   options [document = false]
   theories
-    ex81_hoare
+    ex91_hoare
 
-session ML82 in "82_totalcorrect" = HOL +
+session ML92 in "92_totalcorrect" = HOL +
   options [document = false]
   theories
-    ex82_totalcorrect
+    ex92_totalcorrect

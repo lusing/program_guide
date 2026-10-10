@@ -124,7 +124,7 @@ Qed.
 Lemma mmh_not_p : ~ forces 0 (FVar 0).
 Proof. simpl. discriminate. Qed.
 
-(* ¬¬(p∨¬p) 两世界皆被强制——Glivenko 的 Kripke 侧影子（13/62 章） *)
+(* ¬¬(p∨¬p) 两世界皆被强制——Glivenko 的 Kripke 侧影子（13/72 章） *)
 Example mmh_glivenko_shadow :
   forces 0 (FImp (FImp (FOr (FVar 0) (FImp (FVar 0) FBot)) FBot) FBot).
 Proof.

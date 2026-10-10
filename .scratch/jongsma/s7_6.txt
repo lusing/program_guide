@@ -1,0 +1,560 @@
+7.6 Simplifying Boolean Functions
+As mentioned earlier, computer scientists and engineers are interested in Boolean functions because of their connection to logic-circuit design. We’ve seen how circuits physically realize Boolean functions, and how Boolean Algebra can help determine equivalent Boolean expressions for a given function. We also know that all Boolean functions/logic circuits can be constructed using basic Boolean operators/logic gates, and that there are two ways to do this (minterm expansions, maxterm expansions). However, these forms are usually not the simplest ones possible, a prime concern for those who use logic circuits. In this section we’ll explore how to simplify Boolean functions.
+✜ Example 7.6.1
+Show that the ternary majority function formula f (x, y, z) = xy + xz + yz is simpler than its associated minterm and maxterm expansions.
+
+7.6 Simplifying Boolean Functions
+
+405
+
+Solution The minterm expansion for this function is xyz + xyz + xy z + x yz (see Example 7.5.6), while (x + y + z)(x + y + z )(x + y + z)(x + y + z) is its maxterm expansion (see Exercise 7.5.18d). Neither of these is as simple as the given expression—both contain more components and more operations.
+While the phrase simplest equivalent form isn’t completely unambiguous, simplifying an expression should lead to fewer terms or fewer operators or both (see Exercises 1–6). Engineers would want to take this topic further and focus on ways that reduce the total cost or increase the speed of a circuit.
+
+7.6.1 Algebraic Ways to Simplify Boolean Expressions
+Boolean Algebra provides us with one way to simplify a Boolean expression— use its identities to reduce the number of terms or operations.
+✜ Example 7.6.2
+Simplify the minterm expansion of the ternary majority function, given by f (x, y, z) = xyz + xyz + xy z + x yz.
+Solution This comes at the function of Example 1 from the other direction. xyz + xyz + xy z + x yz = xyz + xyz + xyz + xy z + xyz + x yz
+= xy(z + z ) + xz(y + y ) + yz(x + x )
+= xy + xz + yz
+= x(y + z) + yz .
+Here we duplicated xyz twice (Idempotence Law) so it could be combined with each of the other terms, and then we simpliﬁed pairs of terms via a Distributive Law, a Complementation Law, and an Identity Law. The two ﬁnal lines are both simpliﬁed equivalents.
+While Boolean Algebra provides the basic tools for simplifying an expression, it’s not always clear which law to apply when. Trial and error may be needed to decide what path to take and when to stop, because Boolean Algebra does not spell out how we should proceed.
+People have found a few mechanical but insightful ways to simplify expressions. We’ll look at two standard tools for this task: Karnaugh Maps and the Quine-McCluskey method.
+
+7.6.2 K-Maps for Two-Variable Boolean Functions
+Maurice Karnaugh introduced his map method in 1953 while working as an engineer at Bell Labs. K-maps, as they are now called, provide a visual device for charting and simplifying Boolean functions with a small number of variables. We’ll ﬁrst look at their use for two-variable Boolean functions and then show how to extend the technique to functions with three or four variables.
+
+406
+
+7 Posets, Lattices, and Boolean Algebra
+
+✜ Example 7.6.3
+Exhibit the K-map for the Boolean function f (x, y) = x + x y.
+
+Solution Treating f as a Boolean operator, we get the following table. We put x-inputs on the side, y-inputs on the top, and the calculated outputs f (x, y) in the table’s cells. This is simply a condensed version of a function table.
+
+x10 y 100 111 ........................................................................................................................................................................................................................................................................................................... Function Table
+
+yy
+
+x x
+
+1 11 .................................................................................................................................................................................................................................................................................
+
+K-Map
+
+The exhibited K-map is a slight variant of the operation table. It treats output cells as product minterms (see Proposition 7.5.1). We place a 1 in a cell (let’s call the result a 1-cell) if the associated string is accepted by the function and otherwise leave it blank: 1’s are in the x-row since x is a term in the formula for f (x, y), and a 1 is also present in the x y cell. We’ll often use 0’s and 1’s in column and row labels, as in the function table, but using letters indicates which literal is being represented where.
+
+7.6.3 K-Maps for Three-Variable Boolean Functions
+To represent Boolean functions with three variables in a two-dimensional chart, we’ll place the ﬁrst variable along the side and the other two along the top. So that adjacent cells will represent minterms with shared factors, we’ll change the value of just one variable as we move from a cell to its neighbor. The third column thus represents yz (11) instead of the numerically next value yz (10). In this way, the middle two columns represent z. The last two columns represent y, the ﬁrst two represent y , and the last and ﬁrst columns (which we’ll consider adjacent since we can wrap the right edge around to join the left edge) represent z . The following diagrams show the resulting template, both with letters and binary labels.
+y
+
+y z y z yz yz
+
+x x
+
+...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+
+00 01 11 10
+
+0 1
+
+................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+
+z Karnaugh Maps for Three-Variable Boolean Functions
+
+7.6 Simplifying Boolean Functions
+
+407
+
+✜ Example 7.6.4
+Determine the minterm Boolean expansions represented by the following
+K-maps and then simplify them, comparing your ﬁnal result to the K-map:
+
+y z y z yz yz
+
+y z y z yz yz
+
+x a)
+x1
+
+x
+
+11
+
+b)
+
+1
+
+x
+
+11
+
+00 01 11 10
+
+0
+
+11
+
+c)
+
+11 1 1 1
+
+Solution a) The minterm expansion represented by this K-map is xy z + xyz , which simpliﬁes, after factoring, to xz . This can be read oﬀ the K-map, for the block of 1-cells is the intersection of the x row and the z columns. b) The minterm expansion is x y z + x yz + xy z + xyz. This simpliﬁes to y z + yz (corresponding to adding the second and third columns), which further simpliﬁes to z. This ﬁts the K-map we’re given; the z columns are completely ﬁlled with 1’s. c) This K-map is the union of the last two. The minterm expansion, therefore, is given by x y z + x yz + xy z + xy z + xyz + xyz . The sum of the simpliﬁed expressions is xz + z. However, this can be further simpliﬁed to x + z using a Redundancy Law. Alternatively, the complement of this function is x z , found by inspection of the K-map. The original function is thus its complement, x z = x + z. The simpliﬁed form x+z can also be seen in the K-map—the set of 1-cells is the union of the x row and the z columns.
+It should be clear that blocks of 1, 2, or 4 adjacent 1-cells represent products of three, two, or one literals, respectively (see Exercise 37). To determine a simpliﬁed expression for a Boolean function, then, we can decompose the patterned set of 1-cells into a small union of large blocks, possibly overlapping. This will generate a sum of products of literals to represent the function. (Note that products correspond to intersections and sums to unions.) To talk about this more precisely using standard terminology, we’ll deﬁne some terms.
+Deﬁnition 7.6.1: Adjacent Cells, Blocks, Implicants, and Coverings a) Two K-map cells are adjacent if and only if they share a common edge or are the outer cells in a row or column (adjacent in a wrapped sense). b) A block for a Boolean function is a rectangular set of 2k adjacent cells in the function’s K-map. c) An implicant for a Boolean function is a product of literals corresponding to a K-map block of 1-cells for that function.
+
+408
+
+7 Posets, Lattices, and Boolean Algebra
+
+d) A prime implicant for a Boolean function is an implicant associated with a maximal block of adjacent 1-cells for that function.
+e) An essential prime implicant is a prime implicant whose block contains a 1-cell not in any other prime implicant’s block.
+f) A covering for a Boolean function is a collection of blocks whose union is the set of 1-cells for that function’s K-map.
+
+✜ Example 7.6.5
+Find the implicants, prime implicants, and essential prime implicants for the function of Example 4c. Then relate a covering associated with prime implicants to a simpliﬁed expression for that function.
+Solution
+· For the sake of convenience, let’s repeat the function’s K-map.
+00 01 11 10
+
+0
+
+11
+
+11 1 1 1
+· Each of the six minterms x y z, x yz, xy z , xy z, xyz, and xyz correspond
+to one of the K-map’s 1-cells, so they’re all implicants of the function.
+· Similarly, the products x z, xy , xz, xy, xz , y z, and yz are implicants—they
+correspond to 1-cell blocks of size 2.
+· Finally, the trivial “products” x and z are implicants, corresponding to
+1-cell blocks of size 4. These are the only prime implicants. Furthermore,
+both are essential—each is needed to cover some 1-cell.
+· The covering associated with these prime implicants consists of the bottom
+row of four 1-cells and the middle square block of four 1-cells. From these
+blocks, we can generate the simpliﬁed representation x + z for the function.
+
+✜ Example 7.6.6
+Determine the prime implicants for the K-map of the ternary majority function to ﬁnd a simpliﬁed expression for the function.
+Solution
+· The ternary majority function’s K-map is as follows (see Example 2).
+00 01 11 10
+
+0
+
+1
+
+1
+
+111
+
+· There are no blocks of size 4 here, but there are three blocks of size 2
+(encircled in the K-map). They correspond to the following prime implicants: xz, xy, and yz, each of which is essential. Adding these three together gives a simpliﬁed expression for the ternary majority function: f (x, y, z) = xy + xz + yz.
+
+7.6 Simplifying Boolean Functions
+
+409
+
+Inspecting a function’s K-map, we can decompose its pattern of 1-cells into a minimal union of maximal blocks, ﬁnd the products associated with these blocks, and add them together to generate a simpliﬁed representation. While we need to be able to recognize block patterns, particularly when they stretch around from one side to the other, the process isn’t too complicated.
+
+7.6.4 K-Maps for Boolean Functions of Four Variables
+What if a Boolean function has more than three variables? A slight variation of the K-map for three-variable functions works for functions of four variables. We can use the top of a K-map to represent two variables and the side for two more. The next example illustrates the process.
+✜ Example 7.6.7
+For the Boolean function f (x1, x2, x3, x4) = x1x2x 3x 4 +x1x 2x 3 +x1x3x 4 + x 1x2x4 + x 1x 2x 3 + x 1x3x4 + x 1x 3x4 + x 2x3x 4, exhibit a K-map and then use it to determine a simpliﬁed equivalent for this function.
+Solution
+· Following are two ways to label and draw the K-map for this function (check
+that this is so by mapping each term of the formula). Covering blocks have been drawn in the second K-map for the function’s prime implicants.
+x3
+
+x 3x 4 x 3x4 x3x4 x3x 4 x 1x 2 1 1 1 1
+
+00 01 11 10 00 1 1 1 1
+
+x 1x2
+
+11
+
+x 1x2 1
+
+1
+
+x1
+
+x1x 2 1 1
+
+1
+
+01
+
+11
+
+x2
+
+11 1
+
+1
+
+10 1 1
+
+1
+
+x4
+· The essential prime implicants for this function are x 1x4 (middle top four-
+square), x1x 4 (bottom left-right four-square), and x 2x 3 (left top-bottom four-square). Taking these essential prime implicants, we’re still missing cell 0010 (top right corner). Other prime implicants are x 1x 2 (top row) and x 2x 4 (the “adjacent” four corners). Both of these cover the missing 1-cell. Thus, we have two possible minimal equivalents for our function: f (x1, x2, x3, x4) = x 1x4 + x1x 4 + x 2x 3 + x 1x 2, and f (x1, x2, x3, x4) = x 1x4 + x1x 4 + x 2x 3 + x 2x 4. No further simpliﬁcations are possible.
+K-maps for Boolean functions of four variables will have blocks of size 1, 2 = 1 × 2 = 2 × 1, 4 = 1 × 4 = 4 × 1 = 2 × 2, 8 = 2 × 4 = 4 × 2, and 16 = 4 × 4.
+
+410
+
+7 Posets, Lattices, and Boolean Algebra
+
+Each of these (except for the last, which represents the constant expression 1) corresponds to a product of literals. We can always cover a K-map’s 1-cells by maximal blocks of these binary sizes, and these will be associated with the function’s prime implicants. All essential prime implicants must be used for a covering, but as in the last example, we may need additional prime implicants to complete it and determine a simpliﬁed formula, which may not be unique.
+
+7.6.5 The Quine-McCluskey Method
+K-maps are still used to represent Boolean functions of ﬁve or six variables. A six-variable K-map can be constructed either by representing eight threeliteral minterms in some order along both the top and side of the K-map, or by stacking four four-variable K-maps on top of each other. This gets more complicated than what we’ve done so far, especially since blocks can wrap around and be overlooked, so we won’t pursue this further here.
+Instead we’ll explore the Quine-McCluskey method, proposed independently in the mid-1950s by the philosopher Willard van Orman Quine for logic and by the electrical engineer Edward McCluskey for Boolean functions. The procedure goes as follows:
+Quine-McCluskey Method 0) Minterm Expansion To get started, we need a minterm representation for the function. This isn’t really part of the method, so we’ll label it stage 0. 1) Reduced Sum-of-Products Expansion Rewrite the function’s minterm expansion as a sum involving fewer shorter products (implicants with fewer factors): a) Replace each pair of added minterms by a single shorter product, if possible. This is accomplished by factoring and simplifying, as in xy + xy = x(y + y ) = x. b) Apply the process of part a to the resulting sums of products, if possible. c) Repeat the process on each new sum of shorter products until no further combining and simplifying can occur. 2) Miminized Sum-of-Products Expansion Stage 1 generates a set of prime implicants whose sum represents the function, but not all implicants may be either essential or needed to cover the function. Conclude by further reducing the expression to a minimal sum of essential and other prime implicants.
+We’ll illustrate this method with two simple three-variable examples and then work one for a more complex function of four variables.
+✜ Example 7.6.8
+Apply the Quine-McCluskey method to the ternary majority function.
+
+7.6 Simplifying Boolean Functions
+
+411
+
+Solution This is essentially how we worked Example 2, but we’ll work through it again to illustrate the steps of the Quine-McCluskey method. 0) The minterm expansion for this function is f (x, y, z) = xyz + xyz + xy z + x yz. 1) We can combine and replace xyz + xyz by xy, xyz + xy z by xz, and xyz + x yz by yz; no other pairs combine. We thus have f (x, y, z) = xy + xz + yz.
+· These three new terms cannot be further combined in the required way,
+so all the prime implicants of the function have been found. 2) In this case, we can’t further reduce our sum. If any term is dropped,
+the resulting sum will no longer generate the function—some of the function’s original implicants will no longer be covered. So the minimal expansion for the ternary majority function is given by f (x, y, z) = xy + xz + yz.
+✜ Example 7.6.9
+Apply the Quine-McCluskey method to the function f (x, y, z) = xyz + xyz + xy z + xy z + x yz + x y z of Examples 4c and 5.
+
+Solution 0) The minterm expansion for this function is already given. 1) We can combine and replace xyz+xyz by xy, xyz+xy z by xz, xyz+x yz by yz; xyz + xy z by xz ; xy z + xy z by xy , xy z + x y z by y z; and x yz + x y z by x z.
+· All possible pairs of terms have been considered in this process, so the
+new representation is f (x, y, z) = xy + xz + yz + xy + xz + x z + y z.
+· The terms in this expansion can be further combined. We can replace
+xy + xy by x; xz + xz by x, xz + x z by z; and yz + y z by z. All terms have now been incorporated into a shorter product, so the new representation is f (x, y, z) = x + z, omitting duplicates. No further combining can be done, because we have the prime implicants of our function (see Example 4c). 2) Since both terms are needed (neither one alone suﬃces), our minimal expansion is as stated: f (x, y, z) = x + z.
+In both of the above examples, the Quine-McCluskey procedure was rather straightforward, so we could illustrate the essentials of the process without getting bogged down by complications. This is not typical, however. To illustrate this, we’ll rework the more complex Example 7, which will allow us to check our work there.
+✜ Example 7.6.10
+Use the Quine-McCluskey method to ﬁnd the prime implicants and a minimal expansion for Example 7’s function: f (x1, x2, x3, x4) = x1x2x 3x 4 + x1x 2x 3 + x1x3x 4 + x 1x2x4 + x 1x 2x 3 + x 1x3x4 + x 1x 3x4 + x 2x3x 4.
+
+412
+
+7 Posets, Lattices, and Boolean Algebra
+
+Solution 0) The minterm expansion here is given by f (x1, x2, x3, x4) = x 1x 2x 3x 4 + x 1x 2x 3x4 +x 1x 2x3x 4 +x 1x 2x3x4 +x 1x2x 3x4 +x 1x2x3x4 +x1x 2x 3x 4 + x1x 2x 3x4 + x1x 2x3x 4 + x1x2x 3x 4 + x1x2x3x 4. 1) To facilitate our work, we’ll use a table, replacing minterms with their bit strings labeled by the associated binary number they represent and grouping them in increasing order according to how many 1’s appear in the representation. These appear in the ﬁrst column of Table 7.2. Strings in each group may be combined with ones from the next group, since they diﬀer in a place where one has the variable (1) and the other has its complement (0). This corresponds to adjacent 1-cells in a K-map. Combining these leads to new terms having one fewer factor; these are placed in the second column. For example, 0011 + 0111 simpliﬁes to 0 -11 (a dash indicates a missing variable), because x 1x 2x3x4 + x 1x2x3x4 = x 1x3x4. Used minterms are marked with a ∗ and are omitted from our ﬁnal sum-of-products representation; thus, both minterm 3 and minterm 7 have an asterisk after them.
+Table 7.2 Combined product terms for Example 7.6.10
+
+Minterms
+0 0000 ∗ 1 0001 ∗ 2 0010 ∗ 8 1000 ∗ 3 0011 ∗ 5 0101 ∗ 9 1001 ∗ 10 1010 ∗ 12 1100 ∗ 7 0111 ∗ 14 1110 ∗
+
+Two-Cell Combinations
+
+(0, 1)
+
+000- ∗
+
+(0, 2) (0, 8) (1, 3)
+
+00-0 ∗ -000 ∗ 00-1 ∗
+
+(1, 5)
+
+0-01 ∗
+
+(1, 9)
+
+-001 ∗
+
+(2, 3)
+
+001- ∗
+
+(2, 10) -010 ∗
+
+(5, 7)
+
+01-1 ∗
+
+(8, 9)
+
+100- ∗
+
+(8, 10) 10-0 ∗
+
+(8, 12) 1-00 ∗
+
+(3, 7)
+
+0-11 ∗
+
+(10, 14) 1-10 ∗
+
+(12, 14) 11-0 ∗
+
+Four-Cell Combinations
+
+(0, 1; 2, 3)
+
+00--
+
+(0, 1; 8, 9) (0, 2; 1, 3) (0, 2; 8, 10)
+
+-0000--0-0
+
+(0, 8; 1, 9) (0, 8; 2, 10) (1, 3; 5, 7) (1, 5; 3, 7) (8, 10; 12, 14) (8, 12; 10, 14)
+
+-00-0-0 0--1 0--1 1--0 1--0
+
+· The new combined product terms are labeled by which minterms gave
+rise to them. For example, the result 0-11 is labeled (3, 7) because it
+resulted from combining minterm 3 with minterm 7.
+· Once the entire second column of two-cell combined terms is generated,
+the same process is repeated with these strings. Two-cell blocks that
+are adjacent are combined into a four-cell block and put in the third
+column. Additional columns are added as necessary, but in this case, no
+new combinations can be made with the four-cell blocks.
+· In the end, all strings not marked as contributing to a further combina-
+tion will correspond to maximal blocks and so will yield prime implicants
+
+7.6 Simplifying Boolean Functions
+
+413
+
+for the function. Here these appear in the last column, but this may not
+always happen. The associated products are then used to form a sum-
+of-products representation for the function, duplicates being omitted.
+· The ﬁnal result is f (x1, x2, x3, x4) = x 1x 2 + x 2x 3 + x 2x 4 + x 1x4 + x1x 4.
+2) Comparing the end result of stage one with what we obtained in Exam-
+ple 7 by using the function’s K-map, we see that we have not yet achieved
+a minimal expansion. To determine which prime implicants are essential,
+we’ll determine which minterms are covered by which implicants. We’ll
+do this using the following table:
+
+Prime Implicants
+
+Minterms (Binary Cell Label) 0 1 2 3 5 7 8 9 10 12 14
+
+(0, 1, 2, 3) X X X X
+
+(0, 1, 8, 9) X X
+
+XX
+
+(0, 2, 8, 10) X
+
+X
+
+X
+
+X
+
+(1, 5, 3, 7)
+
+X
+
+XXX
+
+(8, 10, 12, 14)
+
+X
+
+XXX
+
+· We must cover all the minterms in the function’s minterm expansion.
+From the chart above we can see that 5 and 7 are only covered by
+the prime implicant (1, 5, 3, 7); 9 is only covered by the prime impli-
+cant (0, 1, 8, 9); and 12 and 14 are only covered by the prime implicant
+(8, 10, 12, 14). We’ve drawn horizontal lines through the Xs covered by
+these essential prime implicants. Together these three essential prime im-
+plicants cover minterms 0, 1, 3, 5, 7, 8, 9, 10, 12, and 14—all but 2. We’ve
+drawn vertical lines to indicate this coverage. The remaining minterm can
+be covered either by implicant (0, 1, 2, 3) or implicant (0, 2, 8, 10).
+· Translating this into a Boolean expression, we get the following two sum-
+of-products representations (see Table 7.2 for the products associated
+with the four-cell combinations): f (x1, x2, x3, x4) = x 1x 2+x 2x 3+x 1x4+ x1x 4, and f (x1, x2, x3, x4) = x 2x 3 + x 2x 4 + x 1x4 + x1x 4. These agree with the expansions we obtained in Example 7.
+
+7.6.6 Boolean Algebra: Theory and Practice
+We’ve now explored Boolean Algebra both theoretically and practically, both abstractly and concretely. To sum up, we began by looking at the theory of posets and lattices, eventually proving the key result that all ﬁnite Boolean lattices are essentially power set lattices ordered by the subset relation. Using 0’s and 1’s to represent elements in subsets gave us a concrete way to represent these structures as Bn. We next saw that Boolean lattices can be converted into Boolean algebras, and conversely, which gave us another way to connect Boolean Algebra and Set Theory.
+Boolean Algebra can be considered an abstract generalization of Propositional Logic as well as Set Theory. Boolean Algebra had its roots in Boole’s ideas about logic, a connection that was developed further in the twentieth century by Shannon, who investigated relations between Boolean functions
+
+414
+
+7 Posets, Lattices, and Boolean Algebra
+
+and logic circuits. We saw that all Boolean functions/expressions had certain normal representations, such as minterm expansions, which means that Boolean logic circuits can be constructed using only the most basic logic gates AND, OR, and NOT. Theoretically, this means that the equational part of Boolean Algebra can be decided by truth tables, showing important connections between Boolean Algebra, Propositional Logic, and Set Theory.
+Besides using Boolean Algebra to symbolize logic circuits, Shannon showed that we can construct logic circuits to do ordinary computations, a signiﬁcant development underlying twentieth-century computer calculations.
+Finally, we looked at some systematic ways to simplify Boolean expressions. Karnaugh maps provide a visual method for handling simple functions, while the Quine-McCluskey method gives a powerful tabular technique that can be developed into an eﬃcient algorithm implemented on a computer. Simpliﬁcation of Boolean expressions is obviously important to anyone designing complex logic circuits, both in engineering generally and computer science in particular.
+Thus, a topic (Boolean Algebra) that is fairly abstract and theoretical is also very concrete and practical, forming the theoretical basis of some of the most important technological developments of the last century. This ﬁeld demonstrates the interplay between these diﬀerent aspects of mathematics, attracting people with varied interests and attitudes toward theoretical and practical mathematics. Given the concrete applications it has, Boolean Algebra makes an excellent ﬁrst introduction to advanced abstract mathematics. And, given its links to Propositional Logic and Set Theory, it also helps unify diﬀerent aspects of discrete mathematics in a foundational manner, providing reinforcement and a theoretical context for those ﬁelds.
+
+EXERCISE SET 7.6
+Exercises 1–6: Simplifying Boolean Functions via Boolean Algebra Simplify the following functions using Boolean Algebra. Explain, by comparing the number of literals and number of operations involved, why your ﬁnal answer is simpler than the given formula.
+7.6.1. f (x, y) = xy + x y 7.6.2. f (x, y) = xy + xy + x y 7.6.3. f (x, y, z) = xy + xy z + x yz 7.6.4. f (x, y, z) = xy + xy z + xz + x y z + yz 7.6.5. f (x, y, z) = xy + xyz + xyz + x yz + x yz 7.6.6. f (w, x, y, z) = wz + w yz + xy z + x y z
+
+7.6 Simplifying Boolean Functions
+
+415
+
+Exercises 7–10: True or False Are the following statements true or false? Explain your answer.
+7.6.7. The minterm expansion for a Boolean function yields a simpliﬁed expression for the function. 7.6.8. An implicant for a Boolean function is one of the function’s minterms. 7.6.9. An essential prime implicant for a Boolean function is a term that must appear in a simpliﬁed sum-of-products representation of the function. 7.6.10. The only terms that appear in a simpliﬁed sum-of-products representation of a Boolean function are essential prime implicants.
+Exercises 11–14: Determining Implicants for K-Maps For the following K-maps, identify the following, using alphabetic order {x, y}, {x, y, z}, and {w, x, y, z} for two, three, and four variables:
+a. all the implicants of the associated Boolean function; b. all the function’s prime implicants; and c. all the function’s essential prime implicants.
+
+01
+01 1 7.6.11.
+11
+
+7.6.12.
+
+00 01 11 10
+
+01
+
+11
+
+11
+
+1
+
+7.6.13.
+
+00 01 11 10
+
+01
+
+1
+
+11 1 1 1
+
+7.6.14.
+
+00 01 11 10 00 1 1 1 1
+
+01
+
+1
+
+11
+
+11
+
+10
+
+111
+
+416
+
+7 Posets, Lattices, and Boolean Algebra
+
+Exercises 15–18: Simplifying Boolean Functions from K-maps For each of the following K-maps, determine:
+a. the minterm expansion for the associated Boolean function, and b. a simpliﬁed sum-of-products-of-literals representation for the minterm
+expansion. 7.6.15. The K-map of Exercise 11 7.6.17. The K-map of Exercise 13 7.6.16. The K-map of Exercise 12 7.6.18. The K-map of Exercise 14
+Exercises 19–28: Simplifying Boolean Functions Using K-maps Draw K-maps for the following Boolean functions. Then use these K-maps to determine simpliﬁed sums of products for the given functions.
+7.6.19. f (x, y) = xy + x 7.6.20. f (x, y) = xy + xy + x y 7.6.21. f (x, y, z) = xyz + xyz + x y z + x y z 7.6.22. f (x, y, z) = xy + x(y + z ) + x y z + y z 7.6.23. f (x, y, z) = xyz + x y z + x z + yz + y z 7.6.24. f (x, y, z) = xy z + x yz + x y z + x y z 7.6.25. f (x, y, z) = xyz + xyz + xy z + xy z + x y z + x y z 7.6.26. f (w, x, y, z) = wxz + wx y z + xz + yz 7.6.27. f (w, x, y, z) = wx yz + wx y z + w xyz + w x yz + w x y z 7.6.28. f (w, x, y, z) = wxy + xy z + wyz + wxyz + w xy z
+Exercises 29–36: Quine-McCluskey Method Use the Quine-McCluskey method to determine simpliﬁed representations for the following Boolean functions. For three-variable functions, use the procedure of Examples 8 and 9; for four-variable functions use Example 10’s tabular method. 7.6.29. The function of Exercise 21 7.6.33. The function of Exercise 25 7.6.30. The function of Exercise 22 7.6.34. The function of Exercise 26 7.6.31. The function of Exercise 23 7.6.35. The function of Exercise 27 7.6.32. The function of Exercise 24 7.6.36. The function of Exercise 28
+Exercises 37–39: Blocks in K-Maps The following problems explore blocks of cells in K-maps.
+7.6.37. Boolean Expressions for Blocks in a Three-Variable K-map. a. Explain why in a K-map for three-variable functions a rectangular block of two adjacent 1-cells represents a product of two literals. b. Explain why in a K-map for three-variable functions a rectangular block of four adjacent 1-cells represents a single literal.
+7.6.38. Boolean Expressions for Blocks in a Four-Variable K-map. a. Explain why in a K-map for four-variable functions a rectangular block of two adjacent 1-cells represents a product of three literals.
+
+7.6 Simplifying Boolean Functions
+
+417
+
+b. Explain why in a K-map for four-variable functions a rectangular block
+
+of four adjacent 1-cells represents a product of two literals. c. Explain why in a K-map for four-variable functions a rectangular block
+of eight adjacent 1-cells represents a single literal.
+
+7.6.39. Boolean Expressions for Blocks in an N-Variable K-map.
+
+a. Generalize the results of Exercises 37 and 38: in a K-Map for an n-variable
+
+Boolean function, a rectangular block of 2k adjacent 1-cells represents a
+
+product of
+
+literals, for k = 0, 1, . . . , n − 1. What function does the
+
+full block of 2n 1-cells represent?
+
+b. Explain why your formula in part a is correct.
+
+Exercises 40–42: Implicants for Boolean Functions The following problems explore implicants for Boolean Functions.
+7.6.40. Implicants Claim: if a function’s implicant equals 1, then the function as a whole equals 1.
+a. Show from the deﬁnition for an implicant that xy is an implicant for f (x, y, z) = x + z. Then use this to illustrate the given claim.
+b. Argue the given claim in general. c. Explain why the term implicant is an appropriate one. d. Is the converse of the above claim also true? What if the implicant is a
+prime implicant? an essential prime implicant?
+7.6.41. Maximal Blocks and Implicants a. Explain why maximal blocks in a K-map correspond to prime implicants. Must maximal blocks also be essential prime implicants? b. Prove or disprove: the sum of a Boolean function’s essential prime implicants is a Boolean expression that represents the function.
+7.6.42. The Quine-McCluskey Method and Prime Implicants Explain why all products that haven’t been checked oﬀ in the tabular approach to the Quine-McCluskey method are prime implicants of the function.
+
+Chapter 8
+Topics in Graph Theory
+
+8.1 Eulerian Trails
+For most people, the term graph brings to mind pictures of straight lines, circles, parabolas, and other ﬁgures drawn within a rectangular coordinate system. That’s what it means in elementary algebra, calculus, and physical science, but discrete mathematics uses this term in a diﬀerent sense. Here a graph is a set of vertices connected by edges. We’ve seen graphs like this when we drew production graphs for well-formed formulas in Chapters 1 and 3 and when we used Hasse diagrams for binary relations in Chapter 7. Now we’ll explore graphs more systematically. Graph Theory is a well-developed branch of mathematics, though, so we’ll only introduce some basics in this chapter.
+
+8.1.1 Graphs: Leisurely Pastime or Serious Business?
+
+Graph Theory can be traced to a 1736 paper of Euler, submitted as his solu-
+
+tion to what has become known as the Ko¨nigsberg Bridge Problem. Other
+
+well-known recreational problems connected to Graph Theory were inves-
+
+tigated in the mid-nineteenth century. These include a game invented by
+
+Hamilton for traversing the edges of a dodecahedron to visit all its vertices
+
+exactly once and a puzzle posed to De Morgan about how many colors are
+
+needed to color a map when neighboring counties have distinct colors. Of the
+
+three, only Hamilton’s game initially had an explicit connection to a graph,
+
+but all of them lead to important ideas in Graph Theory. We’ll use these
+
+problems to introduce the topics explored in this chapter.
+
+As a branch of mathematics, Graph Theory is
+
+mostly a twentieth- and twenty-ﬁrst-century phenomenon, though discrete graphs began to appear in areas like chemistry and electricity during the
+
+O NOH
+
+H HCH
+
+last half of the nineteenth century. To exhibit O
+
+H
+
+the chemical structure of molecules, for instance,
+
+chemists used bonding diagrams such as the ones shown for nitric acid and
+
+methane gas. Scientists also began to explore the ﬂow of electricity through
+
+a collection of circuits and proved fundamental laws about such networks.
+
+Over the last hundred years or so, networks have found many more
+
+applications—in natural science, social science, transportation, communica-
+
+tion, computer science, and engineering. Graph Theory began in earnest in
+
+the early-to-mid-twentieth century to provide a basis for recreational and
+
+other interests. Our focus in this chapter will be on the underlying ideas,
+
+taking a more geometric approach than we’ve done so far in the book.
+
+© Springer Nature Switzerland AG 2019
+
+419
+
+C. Jongsma, Introduction to Discrete Mathematics via Logic and Proof,
+
+Undergraduate Texts in Mathematics,
+
+https://doi.org/10.1007/978-3-030-25358-5 8
+
+

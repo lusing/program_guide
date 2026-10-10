@@ -1,0 +1,832 @@
+1.3 Propositional logic as a formal language
+
+31
+
+(i)
+
+Assume that bb tional numbers
+
+aisanradtibontoalb. eThe2natnhdisseperothofatisaebaissyjussintcbeb
+
+we can choose irrawhich was assumed
+
+to be rational.
+
+(ii)
+
+Assume a to be
+
+th2at 2b.b
+
+is ir rational. Then we Clearly, a is irrational
+
+change by the
+
+our strategy slightly and choose assumption of case (ii). But we
+
+know that b is irrational (this was known by the ancient Greeks; see the proof
+
+outline in the exercises). So a and b are both irrational numbers and
+
+ab
+
+=
+
+
+
+ 2
+
+ 2
+
+(2 )
+
+=
+
+
+
+ ( 2· 2)
+
+2
+
+=
+
+2 ( 2)
+
+=
+
+2
+
+is rational, where we used the law (xy)z = x(y·z).
+
+Since the two cases above are exhaustive (either bb is irrational, or it isn't)
+
+we have proven the theorem.
+
+2
+
+This proof is perfectly legitimate and mathematicians use arguments like that all the time. The exhaustive nature of the case analysis above rests on the use of the rule LEM, which we use to prove that either b is rational or it is not. Yet, there is something puzzling about it. Surely, we have secured the fact that there are irrational numbers a and b such that ab is rational, but are we in a position to specify an actual pair of such numbers satisfying this theorem? More precisely, which of the pairs (a, b) above fulfils the assertion of the theorem, the pair ( 2, 2), or the pair ( 2 2, 2)? Our proof tells us nothing about which of them is the right choice; it just says that at least one of them works.
+Thus, the intuitionists favour a calculus containing the introduction and elimination rules shown in Figure 1.2 and excluding the rule ¬¬e and the derived rules. Intuitionistic logic turns out to have some specialised applications in computer science, such as modelling type-inference systems used in compilers or the staged execution of program code; but in this text we stick to the full so-called classical logic which includes all the rules.
+
+1.3 Propositional logic as a formal language
+In the previous section we learned about propositional atoms and how they can be used to build more complex logical formulas. We were deliberately informal about that, for our main focus was on trying to understand the precise mechanics of the natural deduction rules. However, it should have been clear that the rules we stated are valid for any formulas we can form, as long as they match the pattern required by the respective rule. For example,
+
+32
+
+1 Propositional logic
+
+the application of the proof rule e in
+
+1
+
+p  q premise
+
+2
+
+p
+
+premise
+
+3
+
+q
+
+e 1, 2
+
+is equally valid if we substitute p with p  ¬r and q with r  p:
+
+1
+
+p  ¬r  (r  p) premise
+
+2
+
+p  ¬r
+
+premise
+
+3
+
+rp
+
+e 1, 2
+
+This is why we expressed such rules as schemes with Greek symbols standing for generic formulas. Yet, it is time that we make precise the notion of `any formula we may form.' Because this text concerns various logics, we will introduce in (1.3) an easy formalism for specifying well-formed formulas. In general, we need an unbounded supply of propositional atoms p, q, r, . . ., or p1, p2, p3, . . . You should not be too worried about the need for infinitely many such symbols. Although we may only need finitely many of these propositions to describe a property of a computer program successfully, we cannot specify how many such atomic propositions we will need in any concrete situation, so having infinitely many symbols at our disposal is a cheap way out. This can be compared with the potentially infinite nature of English: the number of grammatically correct English sentences is infinite, but finitely many such sentences will do in whatever situation you might be in (writing a book, attending a lecture, listening to the radio, having a dinner date, . . . ).
+Formulas in our propositional logic should certainly be strings over the alphabet {p, q, r, . . . }  {p1, p2, p3, . . . }  {¬, , , , (, )}. This is a trivial observation and as such is not good enough for what we are trying to capture. For example, the string (¬)()  pq  is a word over that alphabet, yet, it does not seem to make a lot of sense as far as propositional logic is concerned. So what we have to define are those strings which we want to call formulas. We call such formulas well-formed.
+
+Definition 1.27 The well-formed formulas of propositional logic are those which we obtain by using the construction rules below, and only those, finitely many times:
+
+1.3 Propositional logic as a formal language
+
+33
+
+atom: Every propositional atom p, q, r, . . . and p1, p2, p3, . . . is a wellformed formula.
+¬: If  is a well-formed formula, then so is (¬). : If  and  are well-formed formulas, then so is (  ). : If  and  are well-formed formulas, then so is (  ). : If  and  are well-formed formulas, then so is (  ).
+
+It is most crucial to realize that this definition is the one a computer would expect and that we did not make use of the binding priorities agreed upon in the previous section.
+Convention. In this section we act as if we are a rigorous computer and we call formulas well-formed iff they can be deduced to be so using the definition above.
+Further, note that the condition `and only those' in the definition above rules out the possibility of any other means of establishing that formulas are well-formed. Inductive definitions, like the one of well-formed propositional logic formulas above, are so frequent that they are often given by a defining grammar in Backus Naur form (BNF). In that form, the above definition reads more compactly as
+
+ ::= p | (¬) | (  ) | (  ) | (  )
+
+(1.3)
+
+where p stands for any atomic proposition and each occurrence of  to the right of ::= stands for any already constructed formula.
+So how can we show that a string is a well-formed formula? For example, how do we answer this for  being
+
+(((¬p)  q)  (p  (q  (¬r)))) ?
+
+(1.4)
+
+Such reasoning is greatly facilitated by the fact that the grammar in (1.3) satisfies the inversion principle, which means that we can invert the process of building formulas: although the grammar rules allow for five different ways of constructing more complex formulas ­ the five clauses in (1.3) ­ there is always a unique clause which was used last. For the formula above, this last operation was an application of the fifth clause, for  is an implication with the assumption ((¬p)  q) and conclusion (p  (q  (¬r))). By applying the inversion principle to the assumption, we see that it is a conjunction of (¬p) and q. The former has been constructed using the second clause and is well-formed since p is well-formed by the first clause in (1.3). The latter is well-formed for the same reason. Similarly, we can apply the inversion
+
+34
+
+1 Propositional logic
+
+
+
+
+
+
+
+¬
+
+q
+
+p
+
+
+
+p
+
+q
+
+¬
+
+r
+Figure 1.3. A parse tree representing a well-formed formula.
+principle to the conclusion (p  (q  (¬r))), inferring that it is indeed wellformed. In summary, the formula in (1.4) is well-formed.
+For us humans, dealing with brackets is a tedious task. The reason we need them is that formulas really have a tree-like structure, although we prefer to represent them in a linear way. In Figure 1.3 you can see the parse tree7 of the well-formed formula  in (1.4). Note how brackets become unnecessary in this parse tree since the paths and the branching structure of this tree remove any possible ambiguity in interpreting . In representing  as a linear string, the branching structure of the tree is retained by the insertion of brackets as done in the definition of well-formed formulas.
+So how would you go about showing that a string of symbols  is not wellformed? At first sight, this is a bit trickier since we somehow have to make sure that  could not have been obtained by any sequence of construction rules. Let us look at the formula (¬)()  pq  from above. We can decide this matter by being very observant. The string (¬)()  pq  contains ¬) and ¬ cannot be the rightmost symbol of a well-formed formula (check all the rules to verify this claim!); but the only time we can put a `)' to the right of something is if that something is a well-formed formula (again, check all the rules to see that this is so). Thus, (¬)()  pq  is not well-formed.
+Probably the easiest way to verify whether some formula  is well-formed is by trying to draw its parse tree. In this way, you can verify that the
+7 We will use this name without explaining it any further and are confident that you will understand its meaning through the examples.
+
+1.3 Propositional logic as a formal language
+
+35
+
+formula in (1.4) is well-formed. In Figure 1.3 we see that its parse tree has  as its root, expressing that the formula is, at its top level, an implication. Using the grammar clause for implication, it suffices to show that the left and right subtrees of this root node are well-formed. That is, we proceed in a top-down fashion and, in this case, successfully. Note that the parse trees of well-formed formulas have either an atom as root (and then this is all there is in the tree), or the root contains ¬, ,  or . In the case of ¬ there is only one subtree coming out of the root. In the cases ,  or  we must have two subtrees, each of which must behave as just described; this is another example of an inductive definition.
+Thinking in terms of trees will help you understand standard notions in logic, for example, the concept of a subformula. Given the well-formed formula  above, its subformulas are just the ones that correspond to the subtrees of its parse tree in Figure 1.3. So we can list all its leaves p, q (occurring twice), and r, then (¬p) and ((¬p)  q) on the left subtree of  and (¬r), (q  (¬r)) and ((p  (q  (¬p)))) on the right subtree of . The whole tree is a subtree of itself as well. So we can list all nine subformulas of  as
+
+p q r (¬p) ((¬p)  q) (¬r) (q  (¬r)) ((p  (q  (¬r)))) (((¬p)  q)  (p  (q  (¬r)))).
+
+Let us consider the tree in Figure 1.4. Why does it represent a well-formed formula? All its leaves are propositional atoms (p twice, q and r), all branching nodes are logical connectives (¬ twice, ,  and ) and the numbers of subtrees are correct in all those cases (one subtree for a ¬ node and two subtrees for all other non-leaf nodes). How do we obtain the linear represen-
+tation of this formula? If we ignore brackets, then we are seeking nothing but the in-order representation of this tree as a list8. The resulting well-formed formula is ((¬(p  (q  (¬p))))  r).
+
+8 The other common ways of flattening trees to lists are preordering and postordering. See any text on binary trees as data structures for further details.
+
+36
+
+1 Propositional logic
+
+
+
+¬
+
+r
+
+
+
+p
+
+
+
+q
+
+¬
+
+p
+Figure 1.4. Given: a tree; wanted: its linear representation as a logical formula.
+The tree in Figure 1.21 on page 82, however, does not represent a wellformed formula for two reasons. First, the leaf  (and a similar argument applies to the leaf ¬), the left subtree of the node , is not a propositional atom. This could be fixed by saying that we decided to leave the left and right subtree of that node unspecified and that we are willing to provide those now. However, the second reason is fatal. The p node is not a leaf since it has a subtree, the node ¬. This cannot make sense if we think of the entire tree as some logical formula. So this tree does not represent a well-formed logical formula.
+1.4 Semantics of propositional logic
+1.4.1 The meaning of logical connectives In the second section of this chapter, we developed a calculus of reasoning which could verify that sequents of the form 1, 2, . . . , n  are valid, which means: from the premises 1, 2, . . . , n, we may conclude .
+In this section we give another account of this relationship between the premises 1, 2, . . . , n and the conclusion . To contrast with the sequent
+
+1.4 Semantics of propositional logic
+
+37
+
+above, we define a new relationship, written
+
+1, 2, . . . , n .
+
+This account is based on looking at the `truth values' of the atomic formulas in the premises and the conclusion; and at how the logical connectives manipulate these truth values. What is the truth value of a declarative sentence, like sentence (3) `Every even natural number > 2 is the sum of two prime numbers' ? Well, declarative sentences express a fact about the real world, the physical world we live in, or more abstract ones such as computer models, or our thoughts and feelings. Such factual statements either match reality (they are true), or they don't (they are false).
+If we combine declarative sentences p and q with a logical connective, say , then the truth value of p  q is determined by three things: the truth value of p, the truth value of q and the meaning of . The meaning of  is captured by the observation that p  q is true iff p and q are both true; otherwise p  q is false. Thus, as far as  is concerned, it needs only to know whether p and q are true, it does not need to know what p and q are actually saying about the world out there. This is also the case for all the other logical connectives and is the reason why we can compute the truth value of a formula just by knowing the truth values of the atomic propositions occurring in it.
+
+Definition 1.28 1. The set of truth values contains two elements T and F, where T represents `true' and F represents `false'.
+2. A valuation or model of a formula  is an assignment of each propositional atom in  to a truth value.
+
+Example 1.29 The map which assigns T to q and F to p is a valuation for p  ¬q. Please list the remaining three valuations for this formula.
+We can think of the meaning of  as a function of two arguments; each argument is a truth value and the result is again such a truth value. We specify this function in a table, called the truth table for conjunction, which you can see in Figure 1.5. In the first column, labelled , we list all possible
+
+   TT T TF F FT F FF F
+Figure 1.5. The truth table for conjunction, the logical connective .
+
+38
+
+1 Propositional logic
+
+   TT T TF F FT F FF F
+
+   TT T TF T FT T FF F
+
+  
+
+ ¬
+
+
+
+TT T
+
+TF
+
+T
+
+F
+
+TF F
+
+FT
+
+FT T
+
+FF T
+
+Figure 1.6. The truth tables for all the logical connectives discussed so far.
+
+truth values of . Actually we list them twice since we also have to deal with another formula , so the possible number of combinations of truth values for  and  equals 2 · 2 = 4. Notice that the four pairs of  and  values in the first two columns really exhaust all those possibilities (TT, TF, FT and FF). In the third column, we list the result of    according to the truth values of  and . So in the first line, where  and  have value T, the result is T again. In all other lines, the result is F since at least one of the propositions  or  has value F.
+In Figure 1.6 you find the truth tables for all logical connectives of propositional logic. Note that ¬ turns T into F and vice versa. Disjunction is the mirror image of conjunction if we swap T and F, namely, a disjunction returns F iff both arguments are equal to F, otherwise (= at least one of the arguments equals T) it returns T. The behaviour of implication is not quite as intuitive. Think of the meaning of  as checking whether truth is being preserved. Clearly, this is not the case when we have T  F, since we infer something that is false from something that is true. So the second entry in the column    equals F. On the other hand, T  T obviously preserves truth, but so do the cases F  T and F  F, because there is no truth to be preserved in the first place as the assumption of the implication is false.
+If you feel slightly uncomfortable with the semantics (= the meaning) of , then it might be good to think of    as an abbreviation of the formula ¬   as far as meaning is concerned; these two formulas are very different syntactically and natural deduction treats them differently as well. But using the truth tables for ¬ and  you can check that    evaluates
+
+1.4 Semantics of propositional logic
+
+39
+
+to T iff ¬   does so. This means that    and ¬   are semantically equivalent; more on that in Section 1.5.
+Given a formula  which contains the propositional atoms p1, p2, . . . , pn, we can construct a truth table for , at least in principle. The caveat is that this truth table has 2n many lines, each line listing a possible combination of truth values for p1, p2, . . . , pn; and for large n this task is impossible to complete. Our aim is thus to compute the value of  for each of these 2n cases for moderately small values of n. Let us consider the example  in Figure 1.3. It involves three propositional atoms (n = 3) so we have 23 = 8 cases to consider.
+We illustrate how things go for one particular case, namely for the valuation in which q evaluates to F; and p and r evaluate to T. What does ¬p  q  p  (q  ¬r) evaluate to? Well, the beauty of our semantics is that it is compositional. If we know the meaning of the subformulas ¬p  q and p  (q  ¬r), then we just have to look up the appropriate line of the  truth table to find the value of , for  is an implication of these two subformulas. Therefore, we can do the calculation by traversing the parse tree of  in a bottom-up fashion. We know what its leaves evaluate to since we stated what the atoms p, q and r evaluated to. Because the meaning of p is T, we see that ¬p computes to F. Now q is assumed to represent F and the conjunction of F and F is F. Thus, the left subtree of the node  evaluates to F. As for the right subtree of , r stands for T so ¬r computes to F and q means F, so the disjunction of F and F is still F. We have to take that result, F, and compute its conjunction with the meaning of p which is T. Since the conjunction of T and F is F, we get F as the meaning of the right subtree of . Finally, to evaluate the meaning of , we compute F  F which is T. Figure 1.7 shows how the truth values propagate upwards to reach the root whose associated truth value is the truth value of  given the meanings of p, q and r above.
+It should now be quite clear how to build a truth table for more complex formulas. Figure 1.8 contains a truth table for the formula (p  ¬q)  (q  ¬p). To be more precise, the first two columns list all possible combinations of values for p and q. The next two columns compute the corresponding values for ¬p and ¬q. Using these four columns, we may compute the column for p  ¬q and q  ¬p. To do so we think of the first and fourth columns as the data for the  truth table and compute the column of p  ¬q accordingly. For example, in the first line p is T and ¬q is F so the entry for p  ¬q is T  F = F by definition of the meaning of . In this fashion, we can fill out the rest of the fifth column. Column 6 works similarly, only we now need to look up the truth table for  with columns 2 and 3 as input.
+
+40
+
+1 Propositional logic
+
+T
+
+F 
+
+F 
+
+¬F
+
+qF
+
+pT
+
+F
+
+pT
+
+q F
+
+¬F
+
+rT
+
+Figure 1.7. The evaluation of a logical formula under a given valuation.
+
+p q ¬p ¬q p  ¬q q  ¬p (p  ¬q)  (q  ¬p)
+
+TT F F F
+
+T
+
+T
+
+TF F T T
+
+F
+
+F
+
+FT T F T
+
+T
+
+T
+
+FF T T T
+
+T
+
+T
+
+Figure 1.8. An example of a truth table for a more complex logical formula.
+
+Finally, column 7 results from applying the truth table of  to columns 5 and 6.
+
+1.4.2 Mathematical induction Here is a little anecdote about the German mathematician Gauss who, as a pupil at age 8, did not pay attention in class (can you imagine?), with the result that his teacher made him sum up all natural numbers from 1 to 100. The story has it that Gauss came up with the correct answer 5050 within seconds, which infuriated his teacher. How did Gauss do it? Well, possibly he knew that
+
+1 + 2 + 3 + 4 + · · · + n = n · (n + 1) 2
+
+(1.5)
+
+1.4 Semantics of propositional logic
+
+41
+
+for all natural numbers n.9 Thus, taking n = 100, Gauss could easily calculate:
+1 + 2 + 3 + 4 + · · · + 100 = 100 · 101 = 5050. 2
+Mathematical induction allows us to prove equations, such as the one in (1.5), for arbitrary n. More generally, it allows us to show that every natural number satisfies a certain property. Suppose we have a property M which we think is true of all natural numbers. We write M (5) to say that the property is true of 5, etc. Suppose that we know the following two things about the property M :
+
+1. Base case: The natural number 1 has property M , i.e. we have a proof of M (1).
+2. Inductive step: If n is a natural number which we assume to have property M (n), then we can show that n + 1 has property M (n + 1); i.e. we have a proof of M (n)  M (n + 1).
+
+Definition 1.30 The principle of mathematical induction says that, on the grounds of these two pieces of information above, every natural number n has property M (n). The assumption of M (n) in the inductive step is called the induction hypothesis.
+Why does this principle make sense? Well, take any natural number k. If k equals 1, then k has property M (1) using the base case and so we are done. Otherwise, we can use the inductive step, applied to n = 1, to infer that 2 = 1 + 1 has property M (2). We can do that using e, for we know that 1 has the property in question. Now we use that same inductive step on n = 2 to infer that 3 has property M (3) and we repeat this until we reach n = k (see Figure 1.9). Therefore, we should have no objections about using the principle of mathematical induction for natural numbers.
+Returning to Gauss' example we claim that the sum 1 + 2 + 3 + 4 + · · · + n equals n · (n + 1)/2 for all natural numbers n.
+Theorem 1.31 The sum 1 + 2 + 3 + 4 + · · · + n equals n · (n + 1)/2 for all natural numbers n.
+
+9 There is another way of finding the sum 1 + 2 + · · · + 100, which works like this: write the sum backwards, as 100 + 99 + · · · + 1. Now add the forwards and backwards versions, obtaining 101 + 101 + · · · + 101 (100 times), which is 10100. Since we added the sum to itself, we now divide by two to get the answer 5050. Gauss probably used this method; but the method of
+mathematical induction that we explore in this section is much more powerful and can be
+applied in a wide variety of situations.
+
+42
+
+1 Propositional logic
+
+(1)
+
+(2)
+
+using
+
+M
+
+(2)
+
+M
+
+(1) 
+
+M (1) and
+
+(2) and
+
+(3) using M
+
+M
+
+(2)
+
+
+
+(3) M (n) using
+
+M
+
+(n
+
+1) - (n +
+
+(n)
+
+M
+
+1) 
+
+(n -
+
+(n)
+
+M and
+
+M (n) and
+
+1) using M
+
+
+
+M
+
+(n
+
++
+
+1)
+
+e prove M
+
+e prove M
+
+e prove M
+
+e prove M
+
+e prove M
+
+W
+
+W
+
+W
+
+W
+
+W
+
+... ...
+
+...
+
+1
+
+2
+
+3
+
+n
+
+n+1
+
+Figure 1.9. How the principle of mathematical induction works. By proving just two facts, M (1) and M (n)  M (n + 1) for a formal (and unconstrained) parameter n, we are able to deduce M (k) for each natural number k.
+
+Proof: We use mathematical induction. In order to reveal the fine structure of our proof we write LHSn for the expression 1 + 2 + 3 + 4 + · · · + n and RHSn for n · (n + 1)/2. Thus, we need to show LHSn = RHSn for all n  1.
+Base case: If n equals 1, then LHS1 is just 1 (there is only one summand), which happens to equal RHS1 = 1 · (1 + 1)/2.
+Inductive step: Let us assume that LHSn = RHSn. Recall that this assumption is called the induction hypothesis; it is the driving force of our argument. We need to show LHSn+1 = RHSn+1, i.e. that the longer sum 1 + 2 + 3 + 4 + · · · + (n + 1) equals (n + 1) · ((n + 1) + 1)/2. The key observation is that the sum 1 + 2 + 3 + 4 + · · · + (n + 1) is nothing but the sum (1 + 2 + 3 + 4 + · · · + n) + (n + 1) of two summands, where the first one is the sum of our induction hypothesis. The latter says that 1 + 2 + 3 + 4 + · · · + n equals n · (n + 1)/2, and we are certainly entitled to substitute equals for equals in our reasoning. Thus, we compute
+LHSn+1 = 1 + 2 + 3 + 4 + · · · + (n + 1)
+= LHSn + (n + 1) regrouping the sum
+
+1.4 Semantics of propositional logic
+
+43
+
+= RHSn + (n + 1) by our induction hypothesis
+
+=
+
+n·(n+1) 2
+
++ (n + 1)
+
+=
+
+n·(n+1) 2
+
++
+
+2·(n+1) 2
+
+arithmetic
+
+=
+
+(n+2)·(n+1) 2
+
+arithmetic
+
+=
+
+((n+1)+1)·(n+1) 2
+
+arithmetic
+
+= RHSn+1.
+
+Since we successfully showed the base case and the inductive step, we can
+
+use mathematical induction to infer that all natural numbers n have the
+
+property stated in the theorem above.
+
+2
+
+Actually, there are numerous variations of this principle. For example, we can think of a version in which the base case is n = 0, which would then cover all natural numbers including 0. Some statements hold only for all natural numbers, say, greater than 3. So you would have to deal with a base case 4, but keep the version of the inductive step (see the exercises for such an example). The use of mathematical induction typically suceeds on properties M (n) that involve inductive definitions (e.g. the definition of kl with l  0). Sentence (3) on page 2 suggests there may be true properties M (n) for which mathematical induction won't work.
+
+Course-of-values induction. There is a variant of mathematical induction in which the induction hypothesis for proving M (n + 1) is not just M (n), but the conjunction M (1)  M (2)  · · ·  M (n). In that variant, called courseof-values induction, there doesn't have to be an explicit base case at all ­ everything can be done in the inductive step.
+How can this work without a base case? The answer is that the base case is implicitly included in the inductive step. Consider the case n = 3: the inductive-step instance is M (1)  M (2)  M (3)  M (4). Now consider n = 1: the inductive-step instance is M (1)  M (2). What about the case when n equals 0? In this case, there are zero formulas on the left of the , so we have to prove M (1) from nothing at all. The inductive-step instance is simply the obligation to show M (1). You might find it useful to modify Figure 1.9 for course-of-values induction.
+Having said that the base case is implicit in course-of-values induction, it frequently turns out that it still demands special attention when you get inside trying to prove the inductive case. We will see precisely this in the two applications of course-of-values induction in the following pages.
+
+44
+
+1 Propositional logic
+
+¬
+
+
+
+
+
+
+
+q
+
+¬
+
+p
+
+
+
+p
+
+r
+
+q
+
+Figure 1.10. A parse tree with height 5.
+
+In computer science, we often deal with finite structures of some kind, data structures, programs, files etc. Often we need to show that every instance of such a structure has a certain property. For example, the well-formed formulas of Definition 1.27 have the property that the number of `(' brackets in a particular formula equals its number of `)' brackets. We can use mathematical induction on the domain of natural numbers to prove this. In order to succeed, we somehow need to connect well-formed formulas to natural numbers.
+
+Definition 1.32 Given a well-formed formula , we define its height to be 1 plus the length of the longest path of its parse tree.
+For example, consider the well-formed formulas in Figures 1.3, 1.4 and 1.10. Their heights are 5, 6 and 5, respectively. In Figure 1.3, the longest path goes from  to  to  to ¬ to r, a path of length 4, so the height is 4 + 1 = 5. Note that the height of atoms is 1 + 0 = 1. Since every well-formed formula has finite height, we can show statements about all well-formed formulas by mathematical induction on their height. This trick is most often called structural induction, an important reasoning technique in computer science. Using the notion of the height of a parse tree, we realise that structural induction is just a special case of course-of-values induction.
+
+1.4 Semantics of propositional logic
+
+45
+
+Theorem 1.33 For every well-formed propositional logic formula, the number of left brackets is equal to the number of right brackets.
+
+Proof: We proceed by course-of-values induction on the height of wellformed formulas . Let M (n) mean `All formulas of height n have the same number of left and right brackets.' We assume M (k) for each k < n and try to prove M (n). Take a formula  of height n.
+
+r Base case: Then n = 1. This means that  is just a propositional atom. So there
+
+are no left or right brackets, 0 equals 0. r Course-of-values inductive step: Then n > 1 and so the root of the parse tree
+
+of  must be ¬, ,  or , for  is well-formed. We assume that it is , the other
+
+three cases are argued in a similar way. Then  equals (1  2) for some wellformed formulas 1 and 2 (of course, they are just the left, respectively right, linear representations of the root's two subtrees). It is clear that the heights
+
+of 1 and 2 are strictly smaller than n. Using the induction hypothesis, we therefore conclude that 1 has the same number of left and right brackets and that the same is true for 2. But in (1  2) we added just two more brackets, one `(' and one `)'. Thus, the number of occurrences of `(' and `)' in  is the
+
+same.
+
+2
+
+The formula (p  (q  ¬r)) illustrates why we could not prove the above directly with mathematical induction on the height of formulas. While this formula has height 4, its two subtrees have heights 1 and 3, respectively. Thus, an induction hypothesis for height 3 would have worked for the right subtree but failed for the left subtree.
+
+1.4.3 Soundness of propositional logic
+The natural deduction rules make it possible for us to develop rigorous
+threads of argumentation, in the course of which we arrive at a conclusion  assuming certain other propositions 1, 2, . . . , n. In that case, we said that the sequent 1, 2, . . . , n  is valid. Do we have any evidence that these rules are all correct in the sense that valid sequents all `preserve truth'
+computed by our truth-table semantics? Given a proof of 1, 2, . . . , n , is it conceivable that there is a valu-
+ation in which  above is false although all propositions 1, 2, . . . , n are true? Fortunately, this is not the case and in this subsection we demonstrate
+why this is so. Let us suppose that some proof in our natural deduction calculus has established that the sequent 1, 2, . . . , n  is valid. We need to show: for all valuations in which all propositions 1, 2, . . . , n evaluate to T,  evaluates to T as well.
+
+46
+
+1 Propositional logic
+
+Definition 1.34 If, for all valuations in which all 1, 2, . . . , n evaluate to T,  evaluates to T as well, we say that
+
+1, 2, . . . , n 
+
+holds and call the semantic entailment relation.
+
+Let us look at some examples of this notion.
+1. Does p  q p hold? Well, we have to inspect all assignments of truth values to p and q; there are four of these. Whenever such an assignment computes T for p  q we need to make sure that p is true as well. But p  q computes T only if p and q are true, so p  q p is indeed the case.
+2. What about the relationship p  q p? There are three assignments for which p  q computes T, so p would have to be true for all of these. However, if we assign T to q and F to p, then p  q computes T, but p is false. Thus, p  q p does not hold.
+3. What if we modify the above to ¬q, p  q p? Notice that we have to be concerned only about valuations in which ¬q and p  q evaluate to T. This forces q to be false, which in turn forces p to be true. Hence ¬q, p  q p is the case.
+4. Note that p q  ¬q holds, despite the fact that no atomic proposition on the right of occurs on the left of .
+From the discussion above we realize that a soundness argument has to show: if 1, 2, . . . , n  is valid, then 1, 2, . . . , n  holds.
+
+Theorem 1.35 (Soundness) Let 1, 2, . . . , n and  be propositional logic formulas. If 1, 2, . . . , n  is valid, then 1, 2, . . . , n  holds.
+Proof: Since 1, 2, . . . , n  is valid we know there is a proof of  from the premises 1, 2, . . . , n. We now do a pretty slick thing, namely, we reason by mathematical induction on the length of this proof ! The length of a proof is just the number of lines it involves. So let us be perfectly clear about what it is we mean to show. We intend to show the assertion M (k):
+`For all sequents 1, 2, . . . , n  (n  0) which have a proof of length k, it is the case that 1, 2, . . . , n  holds.'
+by course-of-values induction on the natural number k. This idea requires
+
+1.4 Semantics of propositional logic
+
+47
+
+some work, though. The sequent p  q  r p  (q  r) has a proof
+
+1
+
+p  q  r premise
+
+2
+
+p
+
+assumption
+
+3
+
+q
+
+assumption
+
+4
+
+pq
+
+i 2, 3
+
+5
+
+r
+
+e 1, 4
+
+6
+
+qr
+
+i 3-5
+
+7
+
+p  (q  r) i 2-6
+
+but if we remove the last line or several of the last lines, we no longer have a proof as the outermost box does not get closed. We get a complete proof, though, by removing the last line and re-writing the assumption of the outermost box as a premise:
+
+1
+
+p  q  r premise
+
+2
+
+p
+
+premise
+
+3
+
+q
+
+assumption
+
+4
+
+pq
+
+i 2, 3
+
+5
+
+r
+
+e 1, 4
+
+6
+
+qr
+
+i 3-5
+
+This is a proof of the sequent p  q  r, p p  r. The induction hypothesis then ensures that p  q  r, p p  r holds. But then we can also reason that p  q  r p  (q  r) holds as well ­ why?
+Let's proceed with our proof by induction. We assume M (k ) for each k < k and we try to prove M (k).
+
+Base case: a one-line proof. If the proof has length 1 (k = 1), then it must be of the form
+
+1
+
+ premise
+
+since all other rules involve more than one line. This is the case when n = 1 and 1 and  equal , i.e. we are dealing with the sequent  . Of course, since  evaluates to T so does . Thus,   holds as claimed.
+
+48
+
+1 Propositional logic
+
+Course-of-values inductive step: Let us assume that the proof of the sequent 1, 2, . . . , n  has length k and that the statement we want to prove is true for all numbers less than k. Our proof has the following structure:
+
+1 1 premise
+2 2 premise ...
+n n premise ...
+k  justification
+
+There are two things we don't know at this point. First, what is happening in between those dots? Second, what was the last rule applied, i.e. what is the justification of the last line? The first uncertainty is of no concern; this is where mathematical induction demonstrates its power. The second lack of knowledge is where all the work sits. In this generality, there is simply no way of knowing which rule was applied last, so we need to consider all such rules in turn.
+
+1. Let us suppose that this last rule is i. Then we know that  is of the form 1  2 and the justification in line k refers to two lines further up which have 1, respectively 2, as their conclusions. Suppose that these lines are k1 and k2. Since k1 and k2 are smaller than k, we see that there exist proofs of the sequents 1, 2, . . . , n 1 and 1, 2, . . . , n 2 with length less than k ­ just take the first k1, respectively k2, lines of our original proof. Using the induction hypothesis, we conclude that 1, 2, . . . , n 1 and 1, 2, . . . , n 2 holds. But these two relations imply that 1, 2, . . . , n 1  2 holds as well ­ why?
+2. If  has been shown using the rule e, then we must have proved, assumed or given as a premise some formula 1  2 in some line k with k < k, which was referred to via e in the justification of line k. Thus, we have a shorter proof of the sequent 1, 2, . . . , n 1  2 within that proof, obtained by turning all assumptions of boxes that are open at
+line k into premises. In a similar way we obtain proofs of the sequents 1, 2, . . . , n, 1  and 1, 2, . . . , n, 2  from the case analysis of e. By our induction hypothesis, we conclude that the relations 1, 2, . . . , n 1  2, 1, 2, . . . , n, 1  and 1, 2, . . . , n, 2  hold. But together these three relations then force that 1, 2, . . . , n  holds as well ­ why?
+3. You can guess by now that the rest of the argument checks each possible proof
+rule in turn and ultimately boils down to verifying that our natural deduction
+
+1.4 Semantics of propositional logic
+
+49
+
+rules behave semantically in the same way as their corresponding truth tables
+
+evaluate. We leave the details as an exercise.
+
+2
+
+The soundness of propositional logic is useful in ensuring the non-existence of a proof for a given sequent. Let's say you try to prove that 1, 2, . . . , 2  is valid, but that your best efforts won't succeed. How could you be sure that no such proof can be found? After all, it might just be that you can't find a proof even though there is one. It suffices to find a valuation in which i evaluate to T whereas  evaluates to F. Then, by definition of , we don't have 1, 2, . . . , 2 . Using soundness, this means that 1, 2, . . . , 2  cannot be valid. Therefore, this sequent does not have a proof. You will practice this method in the exercises.
+
+1.4.4 Completeness of propositional logic In this subsection, we hope to convince you that the natural deduction rules of propositional logic are complete: whenever 1, 2, . . . , n  holds, then there exists a natural deduction proof for the sequent 1, 2, . . . , n . Combined with the soundness result of the previous subsection, we then obtain
+1, 2, . . . , n  is valid iff 1, 2, . . . , n  holds.
+This gives you a certain freedom regarding which method you prefer to use. Often it is much easier to show one of these two relationships (although neither of the two is universally better, or easier, to establish). The first method involves a proof search, upon which the logic programming paradigm is based. The second method typically forces you to compute a truth table which is exponential in the size of occurring propositional atoms. Both methods are intractable in general but particular instances of formulas often respond differently to treatment under these two methods.
+The remainder of this section is concerned with an argument saying that if 1, 2, . . . , n  holds, then 1, 2, . . . , n  is valid. Assuming that 1, 2, . . . , n  holds, the argument proceeds in three steps:
+Step 1: We show that 1  (2  (3  (. . . (n  ) . . . ))) holds. Step 2: We show that 1  (2  (3  (. . . (n  ) . . . ))) is valid. Step 3: Finally, we show that 1, 2, . . . , n  is valid.
+The first and third steps are quite easy; all the real work is done in the second one.
+
+50
+
+1 Propositional logic
+
+F
+
+ F
+
+T 1
+
+
+T 2
+
+F 
+T
+
+3
+
+F
+
+ F
+
+T
+
+
+
+n-1 T
+
+n
+
+F 
+
+Figure 1.11. The only way this parse tree can evaluate to F. We represent parse trees for 1, 2, . . . , n as triangles as their internal structure does not concern us here.
+
+Step 1:
+Definition 1.36 A formula of propositional logic  is called a tautology iff it evaluates to T under all its valuations, i.e. iff .
+Supposing that 1, 2, . . . , n  holds, let us verify that 1  (2  (3  (. . . (n  ) . . . ))) is indeed a tautology. Since the latter formula is a nested implication, it can evaluate to F only if all 1, 2,. . .,n evaluate to T and  evaluates to F; see its parse tree in Figure 1.11. But this contradicts the fact that 1, 2, . . . , n  holds. Thus, 1  (2  (3  (. . . (n  ) . . . ))) holds.
+
+Step 2:
+Theorem 1.37 If  holds, then  is valid. In other words, if  is a tautology, then  is a theorem.
+This step is the hard one. Assume that  holds. Given that  contains n distinct propositional atoms p1, p2, . . . , pn we know that  evaluates to T for all 2n lines in its truth table. (Each line lists a valuation of .) How can we use this information to construct a proof for ? In some cases this can be done quite easily by taking a very good look at the concrete structure of . But here we somehow have to come up with a uniform way of building such a proof. The key insight is to `encode' each line in the truth table of 
+
+1.4 Semantics of propositional logic
+
+51
+
+as a sequent. Then we construct proofs for these 2n sequents and assemble them into a proof of .
+
+Proposition 1.38 Let  be a formula such that p1, p2, . . . , pn are its only propositional atoms. Let l be any line number in 's truth table. For all 1  i  n let p^i be pi if the entry in line l of pi is T, otherwise p^i is ¬pi. Then we have
+1. p^1, p^2, . . . , p^n  is provable if the entry for  in line l is T 2. p^1, p^2, . . . , p^n ¬ is provable if the entry for  in line l is F
+Proof: This proof is done by structural induction on the formula , that is, mathematical induction on the height of the parse tree of .
+1. If  is a propositional atom p, we need to show that p p and ¬p ¬p. These have one-line proofs.
+2. If  is of the form ¬1 we again have two cases to consider. First, assume that  evaluates to T. In this case 1 evaluates to F. Note that 1 has the same atomic propositions as . We may use the induction hypothesis on 1 to conclude that p^1, p^2, . . . , p^n ¬1; but ¬1 is just , so we are done. Second, if  evaluates to F, then 1 evaluates to T and we get p^1, p^2, . . . , p^n 1 by induction. Using the rule ¬¬i, we may extend the proof of p^1, p^2, . . . , p^n 1 to one for p^1, p^2, . . . , p^n ¬¬1; but ¬¬1 is just ¬, so again we are done.
+The remaining cases all deal with two subformulas:  equals 1  2, where  is ,  or . In all these cases let q1, . . . , ql be the propositional atoms of 1 and r1, . . . , rk be the propositional atoms of 2. Then we certainly have {q1, . . . , ql}  {r1, . . . , rk} = {p1, . . . , pn}. Therefore, whenever q^1, . . . , q^l 1 and r^1, . . . , r^k 2 are valid so is p^1, . . . , p^n 1  2 using the rule i. In this way, we can use our induction hypothesis and only owe proofs that the conjunctions we conclude allow us to prove the desired conclusion for  or ¬ as the case may be.
+3. To wit, let  be 1  2. If  evaluates to F, then we know that 1 evaluates to T and 2 to F. Using our induction hypothesis, we have q^1, . . . , q^l 1 and r^1, . . . , r^k ¬2, so p^1, . . . , p^n 1  ¬2 follows. We need to show p^1, . . . , p^n ¬(1  2); but using p^1, . . . , p^n 1  ¬2, this amounts to proving the sequent 1  ¬2 ¬(1  2), which we leave as an exercise. If  evaluates to T, then we have three cases. First, if 1 evaluates to F and 2 to F, then we get, by our induction hypothesis, that q^1, . . . , q^l ¬1 and r^1, . . . , r^k ¬2, so p^1, . . . , p^n ¬1  ¬2 follows. Again, we need only to show the sequent ¬1  ¬2 1  2, which we leave as an exercise. Second, if 1 evaluates to F and 2 to T, we use our induction hypothesis to arrive at
+
+52
+
+1 Propositional logic
+
+p^1, . . . , p^n ¬1  2 and have to prove ¬1  2 1  2, which we leave as an exercise. Third, if 1 and 2 evaluate to T, we arrive at p^1, . . . , p^n 1  2,
+
+using our induction hypothesis, and need to prove 1  2 1  2, which
+
+we leave as an exercise as well.
+
+4. If  is of the form 1  2, we are again dealing with four cases in total. First, if 1 and 2 evaluate to T, we get q^1, . . . , q^l 1 and r^1, . . . , r^k 2 by our induction hypothesis, so p^1, . . . , p^n 1  2 follows. Second, if 1 evaluates to F and 2 to T, then we get p^1, . . . , p^n ¬1  2 using our induction hypothesis and the rule i as above and we need to prove ¬1  2 ¬(1  2), which we leave
+
+as an exercise. Third, if 1 and 2 evaluate to F, then our induction hypothesis
+
+and the rule i let us infer that p^1, . . . , p^n ¬1  ¬2; so we are left with prov-
+
+ing ¬1  ¬2 ¬(1  2), which we leave as an exercise. Fourth, if 1 evaluates to T and 2 to F, we obtain p^1, . . . , p^n 1  ¬2 by our induction hypothesis and we have to show 1  ¬2 ¬(1  2), which we leave as an exercise. 5. Finally, if  is a disjunction 1  2, we again have four cases. First, if 1 and 2 evaluate to F, then our induction hypothesis and the rule i give us p^1, . . . , p^n
+
+¬1  ¬2 and we have to show ¬1  ¬2 ¬(1  2), which we leave as an
+
+exercise. Second, if 1 and 2 evaluate to T, then we obtain p^1, . . . , p^n 1  2,
+
+by our induction hypothesis, and we need a proof for 1  2 1  2, which we leave as an exercise. Third, if 1 evaluates to F and 2 to T, then we arrive at p^1, . . . , p^n ¬1  2, using our induction hypothesis, and need to establish ¬1  2 1  2, which we leave as an exercise. Fourth, if 1 evaluates to T and 2 to F, then p^1, . . . , p^n 1  ¬2 results from our induction hypothesis
+
+and all we need is a proof for 1  ¬2 1  2, which we leave as an
+
+exercise.
+
+2
+
+We apply this technique to the formula 1  (2  (3  (. . . (n  ) . . . ))). Since it is a tautology it evaluates to T in all 2n lines of its truth table; thus, the proposition above gives us 2n many proofs of p^1, p^2, . . . , p^n , one for each of the cases that p^i is pi or ¬pi. Our job now is to assemble all these proofs into a single proof for  which does not use any premises.
+We illustrate how to do this for an example, the tautology p  q  p.
+The formula p  q  p has two propositional atoms p and q. By the propo-
+sition above, we are guaranteed to have a proof for each of the four sequents
+
+p, q ¬p, q p, ¬q ¬p, ¬q
+
+pq  p pq  p pq  p p  q  p.
+
+Ultimately, we want to prove p  q  p by appealing to the four proofs of the sequents above. Thus, we somehow need to get rid of the premises on
+
+

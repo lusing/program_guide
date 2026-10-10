@@ -1,0 +1,108 @@
+3.5 CTL* and the expressive powers of LTL and CTL
+
+217
+
+This theorem is proved in a paper referenced in the bibliographic notes at the end of the chapter. The connective EU plays a special role in that theorem because neither weak-until W nor release R are primitive in CTL (Definition 3.12). The temporal connectives AR, ER, AW and EW are all definable in CTL:
+
+r A[ R ] = ¬E[¬ U ¬] r E[ R ] = ¬A[¬ U ¬] r A[ W ] = A[ R (  )], and then use the first equation above r E[ W ] = E[ R (  )], and then use the second one.
+
+These definitions are justified by LTL equivalences in Sections 3.2.4 and 3.2.5. Some other noteworthy equivalences in CTL are the following:
+
+AG     AX AG  EG     EX EG  AF     AX AF  EF     EX EF  A[ U ]    (  AX A[ U ]) E[ U ]    (  EX E[ U ]).
+
+For example, the intuition for the third one is the following: in order to have AF  in a particular state,  must be true at some point along each path from that state. To achieve this, we either have  true now, in the current state; or we postpone it, in which case we must have AF  in each of the next states. Notice how this equivalence appears to define AF in terms of AX and AF itself, an apparently circular definition. In fact, these equivalences can be used to define the six connectives on the left in terms of AX and EX , in a non-circular way. This is called the fixed-point characterisation of CTL; it is the mathematical foundation for the model-checking algorithm developed in Section 3.6.1; and we return to it later (Section 3.7).
+
+3.5 CTL* and the expressive powers of LTL and CTL
+CTL allows explicit quantification over paths, and in this respect it is more expressive than LTL, as we have seen. However, it does not allow one to select a range of paths by describing them with a formula, as LTL does. In that respect, LTL is more expressive. For example, in LTL we can say `all paths which have a p along them also have a q along them,' by writing F p  F q. It is not possible to write this in CTL because of the constraint that every F has an associated A or E. The formula AF p  AF q means
+
+218
+
+3 Verification by model checking
+
+something quite different: it says `if all paths have a p along them, then all paths have a q along them.' One might write AG (p  AF q), which is closer, since it says that every way of extending every path to a p eventually meets a q, but that is still not capturing the meaning of F p  F q.
+CTL* is a logic which combines the expressive powers of LTL and CTL, by dropping the CTL constraint that every temporal operator (X, U, F, G) has to be associated with a unique path quantifier (A, E). It allows us to write formulas such as
+
+r A[(p U r)  (q U r)]: along all paths, either p is true until r, or q is true until r. r A[X p  X X p]: along all paths, p is true in the next state, or the next but one. r E[G F p]: there is a path along which p is infinitely often true.
+
+These formulas are not equivalent to, respectively, A[(p  q) U r)], AX p  AX AX p and EG EF p. It turns out that the first of them can be written as a (rather long) CTL formula. The second and third do not have a CTL equivalent.
+The syntax of CTL* involves two classes of formulas:
+r state formulas, which are evaluated in states:
+
+ ::= | p | (¬) | (  ) | A[] | E[]
+
+where p is any atomic formula and  any path formula; and r path formulas, which are evaluated along paths:
+
+ ::=  | (¬) | (  ) | ( U ) | (G ) | (F ) | (X )
+
+where  is any state formula. This is an example of an inductive definition which is mutually recursive: the definition of each class depends upon the definition of the other, with base cases p and .
+
+LTL and CTL as subsets of CTL* Although the syntax of LTL does not include A and E, the semantic viewpoint of LTL is that we consider all paths. Therefore, the LTL formula  is equivalent to the CTL* formula A[]. Thus, LTL can be viewed as a subset of CTL*.
+CTL is also a subset of CTL*, since it is the fragment of CTL* in which we restrict the form of path formulas to
+ ::= ( U ) | (G ) | (F ) | (X )
+Figure 3.23 shows the relationship among the expressive powers of CTL, LTL and CTL*. Here are some examples of formulas in each of the subsets
+
+3.5 CTL* and the expressive powers of LTL and CTL
+
+219
+
+CTL*
+
+CTL
+
+1
+
+2
+
+LTL
+
+3
+
+4
+
+Figure 3.23. The expressive powers of CTL, LTL and CTL*.
+shown:
+In CTL but not in LTL: 1 =def AG EF p. This expresses: wherever we have got to, we can always get to a state in which p is true. This is also useful, e.g., in finding deadlocks in protocols. The proof that AG EF p is not expressible in LTL is as follows. Let  be an LTL formula such that A[] is allegedly equivalent to AG EF p. Since M, s AG EF p in the left-hand diagram below, we have M, s A[]. Now let M be as shown in the right-hand diagram. The paths from s in M are a subset of those from s in M, so we have M , s A[]. Yet, it is not the case that M , s AG EF p; a contradiction.
+
+s
+
+t
+
+¬p
+
+p
+
+s ¬p
+
+In CTL*, but neither in CTL nor in LTL: 4 =def E[G F p], saying that there is a path with infinitely many p. The proof that this is not expressible in CTL is quite complex and may
+be found in the papers co-authored by E. A. Emerson with others, given
+in the references. (Why is it not expressible in LTL?) In LTL but not in CTL: 3 =def A[G F p  F q], saying that if there are in-
+finitely many p along the path, then there is an occurrence of q. This is an interesting thing to be able to say; for example, many fairness
+constraints are of the form `infinitely often requested implies eventually
+acknowledged'. In LTL and CTL: 2 =def AG (p  AF q) in CTL, or G (p  F q) in LTL:
+any p is eventually followed by a q.
+
+Remark 3.18 We just saw that some (but not all) LTL formulas can be converted into CTL formulas by adding an A to each temporal operator. For
+
+220
+
+3 Verification by model checking
+
+a positive example, the LTL formula G (p  F q) is equivalent to the CTL formula AG (p  AF q). We discuss two more negative examples:
+
+r F G p and AF AG p are not equivalent, since F G p is satisfied, whereas AF AG p is not satisfied, in the model
+
+p
+
+¬p
+
+p
+
+In fact, AF AG p is strictly stronger than F G p. r While the LTL formulas X F p and F X p are equivalent, and they are equivalent
+to the CTL formula AX AF p, they are not equivalent to AF AX p. The latter is strictly stronger, and has quite a strange meaning (try working it out).
+
+Remark 3.19 There is a considerable literature comparing linear-time and branching-time logics. The question of which one is `better' has been debated for about 20 years. We have seen that they have incomparable expressive powers. CTL* is more expressive than either of them, but is computationally much more expensive (as will be seen in Section 3.6). The choice between LTL and CTL depends on the application at hand, and on personal preference. LTL lacks CTL's ability to quantify over paths, and CTL lacks LTL's finer-grained ability to describe individual paths. To many people, LTL appears to be more straightforward to use; as noted above, CTL formulas like AF AX p seem hard to understand.
+
+3.5.1 Boolean combinations of temporal formulas in CTL Compared with CTL*, the syntax of CTL is restricted in two ways: it does not allow boolean combinations of path formulas and it does not allow nesting of the path modalities X, F and G. Indeed, we have already seen examples of the inexpressibility in CTL of nesting of path modalities, namely the formulas 3 and 4 above.
+In this section, we see that the first of these restrictions is only apparent; we can find equivalents in CTL for formulas having boolean combinations of path formulas. The idea is to translate any CTL formula having boolean combinations of path formulas into a CTL formula that doesn't. For example, we may see that E[F p  F q]  EF [p  EF q]  EF [q  EF p] since, if we have F p  F q along any path, then either the p must come before the q, or the other way around, corresponding to the two disjuncts on the right. (If the p and q occur simultaneously, then both disjuncts are true.)
+
+

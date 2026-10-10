@@ -1,0 +1,810 @@
+6 Binary decision diagrams
+6.1 Representing boolean functions
+Boolean functions are an important descriptive formalism for many hardware and software systems, such as synchronous and asynchronous circuits, reactive systems and finite-state programs. Representing those systems in a computer in order to reason about them requires an efficient representation for boolean functions. We look at such a representation in this chapter and describe in detail how the systems discussed in Chapter 3 can be verified using the representation.
+Definition 6.1 A boolean variable x is a variable ranging over the values 0 and 1. We write x1, x2, . . . and x, y, z, . . . to denote boolean variables. We define the following functions on the set {0, 1}: r 0 =def 1 and 1 =def 0; r x · y =def 1 if x and y have value 1; otherwise x · y =def 0; r x + y =def 0 if x and y have value 0; otherwise x + y =def 1; r x  y =def 1 if exactly one of x and y equals 1.
+A boolean function f of n arguments is a function from {0, 1}n to {0, 1}. We write f (x1, x2, . . . , xn), or f (V ), to indicate that a syntactic representation of f depends on the boolean variables in V only.
+Note that ·, + and  are boolean functions with two arguments, whereas ¯ is a boolean function that takes one argument. The binary functions ·, + and  are written in infix notation instead of prefix; i.e. we write x + y instead of +(x, y), etc.
+358
+
+6.1 Representing boolean functions
+
+359
+
+Example 6.2 In terms of the four functions above, we can define other boolean functions such as
+
+(1) f (x, y) =def x · (y + x) (2) g(x, y) =def x · y + (1  x) (3) h(x, y, z) =def x + y · (x  y) (4) k() =def 1  (0 · 1).
+
+6.1.1 Propositional formulas and truth tables Truth tables and propositional formulas are two different representations of boolean functions. In propositional formulas,  denotes ·,  denotes +, ¬ denotes ¯ and and  denote 1 and 0, respectively.
+Boolean functions are represented by truth tables in the obvious way; for example, the function f (x, y) =def x + y is represented by the truth table on the left:
+
+x y f (x, y) 11 0 01 0 10 0 00 1
+
+pq TTF FTF TFF FFT
+
+On the right, we show the same truth table using the notation of Chapter 1; a formula having this truth table is ¬(p  q). In this chapter, we may mix these two notational systems of boolean formulas and formulas of propositional logic whenever it is convenient. You should be able to translate expressions easily from one notation to the other and vice versa.
+As representations of boolean functions, propositional formulas and truth tables have different advantages and disadvantages. Truth tables are very space-inefficient: if one wanted to model the functionality of a sequential circuit by a boolean function of 100 variables (a small chip component would easily require this many variables), then the truth table would require 2100 (which is more than 1030) lines. Alas, there is not enough storage space (whether paper or particle) in the universe to record the information of 2100 different bit vectors of length 100. Although they are space inefficient, operations on truth tables are simple. Once you have computed a truth table, it is easy to see whether the boolean function represented is satisfiable: you just look to see if there is a 1 in the last column of the table.
+Comparing whether two truth tables represent the same boolean function also seems easy: assuming the two tables are presented with the same order
+
+360
+
+6 Binary decision diagrams
+
+of valuations, we simply check that they are identical. Although these operations seem simple, however, they are computationally intractable because of the fact that the number of lines in the truth table is exponential in the number of variables. Checking satisfiability of a function with n atoms requires of the order of 2n operations if the function is represented as a truth table. We conclude that checking satisfiability and equivalence is highly inefficient with the truth-table representation.
+Representation of boolean functions by propositional formulas is slightly better. Propositional formulas often provide a wonderfully compact and efficient presentation of boolean functions. A formula with 100 variables might only be about 200­300 characters long. However, deciding whether an arbitrary propositional formula is satisfiable is a famous problem in computer science: no efficient algorithms for this task are known, and it is strongly suspected that there aren't any. Similarly, deciding whether two arbitrary propositional formulas f and g denote the same boolean function is suspected to be exponentially expensive.
+It is straightforward to see how to perform the boolean operations ·, +,  and ¯ on these two representations. In the case of truth tables, they involve applying the operation to each line; for example, given truth tables for f and g over the same set of variables (and in the same order), the truth table for f  g is obtained by applying  to the truth value of f and g in each line. If f and g do not have the same set of arguments, it is easy to pad them out by adding further arguments. In the case of representation by propositional formulas, the operations ·, , etc., are simply syntactic manipulations. For example, given formulas  and  representing the functions f and g, the formulas representing f · g and f  g are, respectively,    and (  ¬)  (¬  ).
+We could also consider representing boolean functions by various subclasses of propositional formulas, such as conjunctive and disjunctive normal forms. In the case of disjunctive normal form (DNF, in which a formula is a disjunction of conjunctions of literals), the representation is sometimes compact, but in the worst cases it can be very lengthy. Checking satisfiability is a straightforward operation, however, because it is sufficient to find a disjunct which does not have two complementary literals. Unfortunately, there is not a similar way of checking validity. Performing + on two formulas in DNF simply involves inserting  between them. Performing · is more complicated; we cannot simply insert  between the two formulas, because the result will not in general be in DNF, so we have to perform lengthy applications of the distributivity rule   (1  2)  (  1)  (  1). Computing the negation of a DNF formula is also expensive. The DNF formula  may be
+
+6.1 Representing boolean functions
+
+361
+
+Representation of boolean functions Prop. formulas Formulas in DNF Formulas in CNF Ordered truth tables Reduced OBDDs
+
+compact? often sometimes sometimes never often
+
+test for
+
+satisf'ty validity
+
+hard
+
+hard
+
+easy
+
+hard
+
+hard
+
+easy
+
+hard
+
+hard
+
+easy
+
+easy
+
+boolean operations
+
+·
+
++
+
+¯
+
+easy
+
+easy
+
+easy
+
+hard
+
+easy
+
+hard
+
+easy
+
+hard
+
+hard
+
+hard
+
+hard
+
+hard
+
+medium medium easy
+
+Figure 6.1. Comparing efficiency of five representations of boolean formulas.
+
+x
+
+y
+
+y
+
+1
+
+00
+
+0
+
+Figure 6.2. An example of a binary decision tree.
+
+quite short, whereas the length of the disjunctive normal form of ¬ can be exponential in the length of .
+The situation for representation in conjunctive normal form is the dual. A summary of these remarks is contained in Figure 6.1 (for now, please ignore the last row).
+
+6.1.2 Binary decision diagrams Binary decision diagrams (BDDs) are another way of representing boolean functions. A certain class of such diagrams will provide the implementational framework for our symbolic model-checking algorithm. Binary decision diagrams were first considered in a simpler form called binary decision trees. These are trees whose non-terminal nodes are labelled with boolean variables x, y, z, . . . and whose terminal nodes are labelled with either 0 or 1. Each non-terminal node has two edges, one dashed line and one solid line. In Figure 6.2 you can see such a binary decision tree with two layers of variables x and y.
+Definition 6.3 Let T be a finite binary decision tree. Then T determines a unique boolean function of the variables in non-terminal nodes, in the following way. Given an assignment of 0s and 1s to the boolean variables
+
+362
+
+6 Binary decision diagrams
+
+x
+
+x
+
+y
+
+y
+
+y
+
+1
+
+0
+
+1
+
+0
+
+Figure 6.3. (a) Sharing the terminal nodes of the binary decision tree in Figure 6.2; (b) further optimisation by removing a redundant decision point.
+
+occurring in T , we start at the root of T and take the dashed line whenever the value of the variable at the current node is 0; otherwise, we travel along the solid line. The function value is the value of the terminal node we reach.
+For example, the binary decision tree of Figure 6.2 represents a boolean function f (x, y). To find f (0, 1), start at the root of the tree. Since the value of x is 0 we follow the dashed line out of the node labelled x and arrive at the leftmost node labelled y. Since y's value is 1, we follow the solid line out of that y-node and arrive at the leftmost terminal node labelled 0. Thus, f (0, 1) equals 0. In computing f (0, 0), we similarly travel down the tree, but now following two dashed lines to obtain 1 as a result. You can see that the two other possibilities result in reaching the remaining two terminal nodes labelled 0. Thus, this binary decision tree computes the function f (x, y) =def x + y.
+Binary decision trees are quite close to the representation of boolean functions as truth tables as far as their sizes are concerned. If the root of a binary decision tree is an x-node then it has two subtrees (one for the value of x being 0 and another one for x having value 1). So if f depends on n boolean variables, the corresponding binary decision tree will have at least 2n+1 - 1 nodes (see exercise 5 on page 399). Since f 's truth table has 2n lines, we see that decision trees as such are not a more compact representation of boolean functions. However, binary decision trees often contain some redundancy which we can exploit.
+Since 0 and 1 are the only terminal nodes of binary decision trees, we can optimise the representation by having pointers to just one copy of 0 and one copy of 1. For example, the binary decision tree in Figure 6.2 can be optimised in this way and the resulting structure is depicted in Figure 6.3(a). Note that we saved storage space for two redundant terminal 0-nodes, but that we still have as many edges (pointers) as before.
+
+6.1 Representing boolean functions
+
+363
+
+z
+
+x
+
+x
+
+y
+
+yy
+
+y
+
+0
+
+1
+
+Figure 6.4. A BDD with duplicated subBDDs.
+
+A second optimisation we can do is to remove unnecessary decision points in the tree. In Figure 6.3(a), the right-hand y is unnecessary, because we go to the same place whether it is 0 or 1. Therefore the structure could be further reduced, to the one shown on the right, (b).
+All these structures are examples of binary decision diagrams (BDDs). They are more general than binary decision trees; the sharing of the leaves means they are not trees. As a third optimisation, we also allow subBDDs to be shared. A subBDD is the part of a BDD occurring below a given node. For example, in the BDD of Figure 6.4, the two inner y-nodes perform the same role, because the subBDDs below them have the same structure. Therefore, one of them could be removed, resulting in the BDD in Figure 6.5(a). Indeed, the left-most y-node could also be merged with the middle one; then the x-node above both of them would become redundant. Removing it would result in the BDD on the right of Figure 6.5.
+To summarise, we encountered three different ways of reducing a BDD to a more compact form:
+C1. Removal of duplicate terminals. If a BDD contains more than one terminal 0-node, then we redirect all edges which point to such a 0-node to just one of them. We proceed in the same way with terminal nodes labelled with 1.
+C2. Removal of redundant tests. If both outgoing edges of a node n point to the same node m, then we eliminate that node n, sending all its incoming edges to m.
+C3. Removal of duplicate non-terminals. If two distinct nodes n and m in the BDD are the roots of structurally identical subBDDs, then we
+
+364
+
+6 Binary decision diagrams
+
+z
+
+z
+
+x
+
+y
+
+y
+
+x y
+
+x
+
+y
+
+y
+
+0
+
+1
+
+0
+
+1
+
+Figure 6.5. The BDD of Figure 6.4: (a) after removal of one of the duplicate y-nodes; (b) after removal of another duplicate y-node and then a redundant x-decision point.
+
+eliminate one of them, say m, and redirect all its incoming edges to the other one.
+
+Note that C1 is a special case of C3. In order to define BDDs precisely, we need a few auxiliary notions.
+
+Definition 6.4 A directed graph is a set G and a binary relation  on G:   G × G. A cycle in a directed graph is a finite path in that graph that begins and ends at the same node, i.e. a path of the form v1  v2  · · ·  vn  v1. A directed acyclic graph (dag) is a directed graph that does not have any cycles. A node of a dag is initial if there are no edges pointing to that node. A node is called terminal if there are no edges out of that node.
+The directed graph in Figure 3.3 on page 179 has cycles, for example the cycle s0  s1  s0, and is not a dag. If we interpret the links in BDDs (whether solid or dashed) as always going in a downwards direction, then the BDDs of this chapter are also directed graphs. They are also acyclic and have a unique initial node. The optimisations C1­C3 preserve the property of being a dag; and fully reduced BDDs have precisely two terminal nodes. We now formally define BDDs as certain kinds of dags:
+
+Definition 6.5 A binary decision diagram (BDD) is a finite dag with a unique initial node, where all terminal nodes are labelled with 0 or 1 and all non-terminal nodes are labelled with a boolean variable. Each
+
+6.1 Representing boolean functions
+
+365
+
+x 0
+
+0
+
+1
+
+Figure 6.6. The BDDs (a) B0, representing the constant 0 boolean function; similarly, the BDD B1 has only one node 1 and represents the constant 1 boolean function; and (b) Bx, representing the boolean variable x.
+
+non-terminal node has exactly two edges from that node to others: one labelled 0 and one labelled 1 (we represent them as a dashed line and a solid line, respectively).
+A BDD is said to be reduced if none of the optimisations C1­C3 can be applied (i.e. no more reductions are possible).
+All the decision structures we have seen in this chapter (Figures 6.2­6.5) are BDDs, as are the constant functions B0 and B1, and the function Bx from Figure 6.6. If B is a BDD where V = {x1, x2, . . . , xn} is the set of labels of non-terminal nodes, then B determines a boolean function f (V ) in the same way as binary decision trees (see Definition 6.3): given an assignment of 0s and 1s to the variables in V , we compute the value of f by starting with the unique initial node. If its variable has value 0, we follow the dashed line; otherwise we take the solid line. We continue for each node until we reach a terminal node. Since the BDD is finite by definition, we eventually reach a terminal node which is labelled with 0 or 1. That label is the result of f for that particular assignment of truth values.
+The definition of a BDD does not prohibit that a boolean variable occur more than once on a path in the dag. For example, consider the BDD in Figure 6.7.
+Such a representation is wasteful, however. The solid link from the leftmost x to the 1-terminal is never taken, for example, because one can only get to that x-node when x has value 0.
+Thanks to the reductions C1­C3, BDDs can often be quite compact representations of boolean functions. Let us consider how to check satisfiability and perform the boolean operations on functions represented as BDDs. A BDD represents a satisfiable function if a 1-terminal node is reachable from the root along a consistent path in a BDD which represents it. A consistent path is one which, for every variable, has only dashed lines or only solid lines leaving nodes labelled by that variable. (In other words, we cannot assign
+
+366
+
+6 Binary decision diagrams
+
+x
+
+y
+
+z
+
+x
+
+y
+
+x
+
+0
+
+1
+
+Figure 6.7. A BDD where some boolean variables occur more than once on an evaluation path.
+
+a variable the values 0 and 1 simultaneously.) Checking validity is similar,
+but we check that no 0-terminal is reachable by a consistent path. The operations · and + can be performed by `surgery' on the component
+BDDs. Given BDDs Bf and Bg representing boolean functions f and g, a BDD representing f · g can be obtained by taking the BDD f and replacing all its 1-terminals by Bg. To see why this is so, consider how to get to a 1-terminal in the resulting BDD. You have to satisfy the requirements for getting to a 1 imposed by both of the BDDs. Similarly, a BDD for f + g can be obtained by replacing all 0 terminals of Bf by Bg. Note that these operations are likely to generate BDDs with multiple occurrences of variables along a path. Later, in Section 6.2, we will see definitions of + and · on BDDs that don't have this undesirable effect.
+The complementation operation ¯ is also possible: a BDD representing f can be obtained by replacing all 0-terminals in Bf by 1-terminals and vice versa. Figure 6.8 shows the complement of the BDD in Figure 6.2.
+
+6.1.3 Ordered BDDs We have seen that the representation of boolean functions by BDDs is often compact, thanks to the sharing of information afforded by the reductions C1­C3. However, BDDs with multiple occurrences of a boolean variable along a path seem rather inefficient. Moreover, there seems no easy way to test for equivalence of BDDs. For example, the BDDs of Figures 6.7 and 6.9 represent the same boolean function (the reader should check this). Neither of them can be optimised further by applying the rules C1­C3. However,
+
+6.1 Representing boolean functions
+
+367
+
+x
+
+y
+
+y
+
+0
+
+1
+
+1
+
+1
+
+Figure 6.8. The complement of the BDD in Figure 6.2.
+
+x
+
+y
+
+y
+
+z
+
+0
+
+1
+
+Figure 6.9. A BDD representing the same function as the BDD of Figure 6.7, but having the variable ordering [x, y, z].
+
+testing whether they denote the same boolean function seems to involve as much computational effort as computing the entire truth table for f (x, y, z).
+We can improve matters by imposing an ordering on the variables occurring along any path. We then adhere to that same ordering for all the BDDs we manipulate.
+
+Definition 6.6 Let [x1, . . . , xn] be an ordered list of variables without duplications and let B be a BDD all of whose variables occur somewhere in the list. We say that B has the ordering [x1, . . . , xn] if all variable labels of B occur in that list and, for every occurrence of xi followed by xj along any path in B, we have i < j.
+An ordered BDD (OBDD) is a BDD which has an ordering for some list of variables.
+Note that the BDDs of Figures 6.3(a,b) and 6.9 are ordered (with ordering [x, y]). We don't insist that every variable in the list is used in the paths. Thus, the OBDDs of Figures 6.3 and 6.9 have the ordering [x, y, z] and so
+
+368
+
+6 Binary decision diagrams
+
+z
+
+y x
+
+x y
+
+0
+
+1
+
+Figure 6.10. A BDD which does not have an ordering of variables.
+
+does any list having x, y and z in it in that order, such as [u, x, y, v, z, w] and [x, u, y, z]. Even the BDDs B0 and B1 in Figure 6.6 are OBDDs, a suitable ordering list being the empty list (there are no variables), or indeed any list. The BDD Bx of Figure 6.6(b) is also an OBDD, with any list containing x as its ordering.
+The BDD of Figure 6.7 is not ordered. To see why this is so, consider the path taken if the values of x and y are 0. We begin with the root, an xnode, and reach a y-node and then an x-node again. Thus, no matter what list arrangement we choose (remembering that no double occurrences are allowed), this path violates the ordering condition. Another example of a BDD that is not ordered can be seen in Figure 6.10. In that case, we cannot find an order since the path for (x, y, z)  (0, 0, 0) ­ meaning that x, y and z are assigned 0 ­ shows that y needs to occur before x in such a list, whereas the path for (x, y, z)  (1, 1, 1) demands that x be before y.
+It follows from the definition of OBDDs that one cannot have multiple occurrences of any variable along a path.
+When operations are performed on two OBDDs, we usually require that they have compatible variable orderings. The orderings of B1 and B2 are said to be compatible if there are no variables x and y such that x comes before y in the ordering of B1 and y comes before x in the ordering of B2. This commitment to an ordering gives us a unique representation of boolean functions as OBDDs. For example, the BDDs in Figures 6.8 and 6.9 have compatible variable orderings.
+
+Theorem 6.7 The reduced OBDD representing a given function f is unique. That is to say, let B and B be two reduced OBDDs with
+
+6.1 Representing boolean functions
+
+369
+
+compatible variable orderings. If B and B represent the same boolean function, then they have identical structure.
+
+In other words, with OBDDs we cannot get a situation like the one encountered earlier, in which we have two distinct reduced BDDs which represent the same function, provided that the orderings are compatible. It follows that checking equivalence of OBDDs is immediate. Checking whether two OBDDs (having compatible orderings) represent the same function is simply a matter of checking whether they have the same structure1.
+A useful consequence of the theorem above is that, if we apply the reductions C1­C3 to an OBDD until no further reductions are possible, then we are guaranteed that the result is always the same reduced OBDD. The order in which we applied the reductions does not matter. We therefore say that OBDDs have a canonical form, namely their unique reduced OBDD. Most other representations (conjunctive normal forms, etc.) do not have canonical forms.
+The algorithms for · and + for BDDs, presented in Section 6.1.2, won't work for OBDDs as they may introduce multiple occurrences of the same variable on a path. We will soon develop more sophisticated algorithms for these operations on OBDDs, which exploit the compatible ordering of variables in paths.
+OBDDs allow compact representations of certain classes of boolean functions which only have exponential representations in other systems, such as truth tables and conjunctive normal forms. As an example consider the even parity function feven(x1, x2, . . . , xn) which is defined to be 1 if there is an even number of variables xi with value 1; otherwise, it is defined to be 0. Its representation as an OBDD requires only 2n + 1 nodes. Its OBDD for n = 4 and the ordering [x1, x2, x3, x4] can be found in Figure 6.11.
+
+The impact of the chosen variable ordering The size of the OBDD representing the parity functions is independent of the chosen variable ordering. This is because the parity functions are themselves independent of the order of variables: swapping the values of any two variables does not change the value of the function; such functions are called symmetric.
+However, in general the chosen variable ordering makes a significant difference to the size of the OBDD representing a given function. Consider the boolean function (x1 + x2) · (x3 + x4) · · · · · (x2n-1 + x2n); it corresponds to a propositional formula in conjunctive normal form. If we choose the
+
+1 In an implementation this will amount to checking whether two pointers are equal.
+
+370
+
+6 Binary decision diagrams
+
+x1
+
+x2
+
+x2
+
+x3
+
+x3
+
+x4
+
+x4
+
+1
+
+0
+
+Figure 6.11. An OBDD for the even parity function for four bits.
+
+`natural' ordering [x1, x2, x3, x4, . . . ], then we can represent this function as an OBDD with 2n + 2 nodes. Figure 6.12 shows the resulting OBDD for n = 3. Unfortunately, if we choose instead the ordering
+[x1, x3, . . . , x2n-1, x2, x4, . . . , x2n]
+the resulting OBDD requires 2n+1 nodes; the OBDD for n = 3 can be seen in Figure 6.13.
+The sensitivity of the size of an OBDD to the particular variable ordering is a price we pay for all the advantages that OBDDs have over BDDs. Although finding the optimal ordering is itself a computationally expensive problem, there are good heuristics which will usually produce a fairly good ordering. Later on we return to this issue in discussions of applications.
+The importance of canonical representation The importance of having a canonical form for OBDDs in conjunction with an efficient test for deciding whether two reduced OBDDs are isomorphic cannot be overestimated. It allows us to perform the following tests:
+Absence of redundant variables. If the value of the boolean function f (x1, x2, . . . , xn) does not depend on the value of xi, then any reduced OBDD which represents f does not contain any xi-node.
+Test for semantic equivalence. If two functions f (x1, x2, . . . , xn) and g(x1, x2, . . . , xn) are represented by OBDDs Bf , respectively Bg, with a compatible ordering of variables, then we can efficiently decide whether f and g are semantically equivalent. We reduce Bf and Bg (if necessary); f
+
+6.1 Representing boolean functions
+
+371
+
+x1
+
+x2 x3
+
+x4 x5
+
+x6
+
+0
+
+1
+
+Figure 6.12. The OBDD for (x1 + x2) · (x3 + x4) · (x5 + x6) with variable ordering [x1, x2, x3, x4, x5, x6].
+
+x1
+
+x3
+
+x3
+
+x5
+
+x5
+
+x5
+
+x5
+
+x2
+
+x2
+
+x2
+
+x2
+
+x4
+
+x4
+
+x6
+
+0
+
+1
+
+Figure 6.13. Changing the ordering may have dramatic effects on the
+size of an OBDD: the OBDD for (x1 + x2) · (x3 + x4) · (x5 + x6) with variable ordering [x1, x3, x5, x2, x4, x6].
+
+372
+
+6 Binary decision diagrams
+
+and g denote the same boolean functions if, and only if, the reduced OBDDs have identical structure.
+Test for validity. We can test a function f (x1, x2, . . . , xn) for validity (i.e. f always computes 1) in the following way. Compute a reduced OBDD for f . Then f is valid if, and only if, its reduced OBDD is B1.
+Test for implication. We can test whether f (x1, x2, . . . , xn) implies g(x1, x2, . . . , xn) (i.e. whenever f computes 1, then so does g) by computing the reduced OBDD for f · g. This is B0 iff the implication holds.
+Test for satisfiability. We can test a function f (x1, x2, . . . , xn) for satisfiability (f computes 1 for at least one assignment of 0 and 1 values to its variables). The function f is satisfiable iff its reduced OBDD is not B0.
+
+6.2 Algorithms for reduced OBDDs
+6.2.1 The algorithm reduce The reductions C1­C3 are at the core of any serious use of OBDDs, for whenever we construct a BDD we will want to convert it to its reduced form. In this section, we describe an algorithm reduce which does this efficiently for ordered BDDs.
+If the ordering of B is [x1, x2, . . . , xl], then B has at most l + 1 layers. The algorithm reduce now traverses B layer by layer in a bottom-up fashion, beginning with the terminal nodes. In traversing B, it assigns an integer label id(n) to each node n of B, in such a way that the subOBDDs with root nodes n and m denote the same boolean function if, and only if, id(n) equals id(m).
+Since reduce starts with the layer of terminal nodes, it assigns the first label (say #0) to the first 0-node it encounters. All other terminal 0-nodes denote the same function as the first 0-node and therefore get the same label (compare with reduction C1). Similarly, the 1-nodes all get the next label, say #1.
+Now let us inductively assume that reduce has already assigned integer labels to all nodes of a layer > i (i.e. all terminal nodes and xj-nodes with j > i). We describe how nodes of layer i (i.e. xi-nodes) are being handled.
+Definition 6.8 Given a non-terminal node n in a BDD, we define lo(n) to be the node pointed to via the dashed line from n. Dually, hi(n) is the node pointed to via the solid line from n.
+Let us describe how the labelling is done. Given an xi-node n, there are three ways in which it may get its label:
+
+6.2 Algorithms for reduced OBDDs
+
+373
+
+#4 x1
+
+#4 x1
+
+#3 x2
+
+#2 x2
+
+Reduce =
+
+#3 x2
+
+#2 x3
+
+#2 x3
+
+#2 x3
+
+#0 0
+
+#1 1 #0 0 #1 1
+
+#0 0
+
+#1 1
+
+Figure 6.14. An example execution of the algorithm reduce.
+r If the label id(lo(n)) is the same as id(hi(n)), then we set id(n) to be that label. That is because the boolean function represented at n is the same function as the one represented at lo(n) and hi(n). In other words, node n performs a redundant test and can be eliminated by reduction C2.
+r If there is another node m such that n and m have the same variable xi, and id(lo(n)) = id(lo(m)) and id(hi(n)) = id(hi(m)), then we set id(n) to be id(m). This is because the nodes n and m compute the same boolean function (compare with reduction C3).
+r Otherwise, we set id(n) to the next unused integer label.
+Note that only the last case creates a new label. Consider the OBDD in left side of Figure 6.14; each node has an integer label obtained in the manner just described. The algorithm reduce then finishes by redirecting edges bottom-up as outlined in C1­C3. The resulting reduced OBDD is in right of Figure 6.14. Since there are efficient bottom-up traversal algorithms for dags, reduce is an efficient operation in the number of nodes of an OBDD.
+
+6.2.2 The algorithm apply
+Another procedure at the heart of OBDDs is the algorithm apply. It is used to implement operations on boolean functions such as +, · ,  and complementation (via f  1). Given OBDDs Bf and Bg for boolean formulas f and g, the call apply (op, Bf , Bg) computes the reduced OBDD of the boolean formula f op g, where op denotes any function from {0, 1} × {0, 1} to {0, 1}.
+
+374
+
+6 Binary decision diagrams
+
+The intuition behind the apply algorithm is fairly simple. The algorithm operates recursively on the structure of the two OBDDs:
+
+1. let v be the variable highest in the ordering (=leftmost in the list) which occurs in Bf or Bg.
+2. split the problem into two subproblems for v being 0 and v being 1 and solve recursively;
+3. at the leaves, apply the boolean operation op directly.
+
+The result will usually have to be reduced to make it into an OBDD. Some reduction can be done `on the fly' in step 2, by avoiding the creation of a new node if both branches are equal (in which case return the common result), or if an equivalent node already exists (in which case, use it).
+Let us make all this more precise and detailed.
+
+Definition 6.9 Let f be a boolean formula and x a variable.
+1. We denote by f [0/x] the boolean formula obtained by replacing all occurrences of x in f by 0. The formula f [1/x] is defined similarly. The expressions f [0/x] and f [1/x] are called restrictions of f .
+2. We say that two boolean formulas f and g are semantically equivalent if they represent the same boolean function (with respect to the boolean variables that they depend upon). In that case, we write f  g.
+For example, if f (x, y) =def x · (y + x), then f [0/x](x, y) equals 0 · (y + 0), which is semantically equivalent to 0. Similarly, f [1/y](x, y) is x · (1 + x), which is semantically equivalent to x.
+Restrictions allow us to perform recursion on boolean formulas, by decomposing boolean formulas into simpler ones. For example, if x is a variable in f , then f is equivalent to x · f [0/x] + x · f [1/x]. To see this, consider the case x = 0; the expression computes to f [0/x]. When x = 1 it yields f [1/x]. This observation is known as the Shannon expansion, although it can already be found in G. Boole's book `The Laws of Thought' from 1854.
+
+Lemma 6.10 (Shannon expansion) For all boolean formulas f and all boolean variables x (even those not occurring in f ) we have
+
+f  x · f [0/x] + x · f [1/x].
+
+(6.1)
+
+The function apply is based on the Shannon expansion for f op g:
+
+f op g = xi · (f [0/xi] op g[0/xi]) + xi · (f [1/xi] op g[1/xi]).
+
+(6.2)
+
+This is used as a control structure of apply which proceeds from the roots
+
+6.2 Algorithms for reduced OBDDs
+
+375
+
+R1
+
+x1
+
+S1
+
+x1
+
+R2
+
+x2
+
+R4
+
+x4
+
+x3 R3
+
++
+
+S3
+
+x4
+
+x3 S2
+
+R5 0
+
+R6 1
+
+S4 0
+
+S5 1
+
+Figure 6.15. An example of two arguments for a call apply (+, Bf , Bg).
+
+of Bf and Bg downwards to construct nodes of the OBDD Bf op g. Let rf be the root node of Bf and rg the root node of Bg.
+1. If both rf and rg are terminal nodes with labels lf and lg, respectively (recall that terminal labels are either 0 or 1), then we compute the value lf op lg and let the resulting OBDD be B0 if that value is 0 and B1 otherwise.
+2. In the remaining cases, at least one of the root nodes is a non-terminal. Suppose that both root nodes are xi-nodes. Then we create an xi-node n with a dashed line to apply (op, lo(rf ), lo(rg)) and a solid line to apply (op, hi(rf ), hi(rg)), i.e. we call apply recursively on the basis of (6.2).
+3. If rf is an xi-node, but rg is a terminal node or an xj-node with j > i, then we know that there is no xi-node in Bg because the two OBDDs have a compatible ordering of boolean variables. Thus, g is independent of xi (g  g[0/xi]  g[1/xi]). Therefore, we create an xi-node n with a dashed line to apply (op, lo(rf ), rg) and a solid line to apply (op, hi(rf ), rg).
+4. The case in which rg is a non-terminal, but rf is a terminal or an xj-node with j > i, is handled symmetrically to case 3.
+The result of this procedure might not be reduced; therefore apply finishes by calling the function reduce on the OBDD it constructed. An example of apply (where op is +) can be seen in Figures 6.15­6.17. Figure 6.16 shows the recursive descent control structure of apply and Figure 6.17 shows the final result. In this example, the result of apply (+, Bf , Bg) is Bf .
+Figure 6.16 shows that numerous calls to apply occur several times with the same arguments. Efficiency could be gained if these were evaluated only
+
+376
+
+6 Binary decision diagrams
+
+(R1, S1) x1
+
+(R2, S3) x2
+
+(R3, S2) x3
+
+(R4, S3) x4
+
+(R3, S3) x3
+
+(R4, S3) x4
+
+(R6, S5)
+
+(R5, S4)
+
+(R6, S5)
+
+(R4, S3) x4
+
+(R6, S3) x4
+
+(R5, S4)
+
+(R6, S5)
+
+(R5, S4) (R6, S5) (R6, S4) (R6, S5)
+Figure 6.16. The recursive call structure of apply for the example in Figure 6.15 (without memoisation).
+x1
+
+x2 x3
+x4
+
+0
+
+1
+
+Figure 6.17. The result of apply (+, Bf , Bg), where Bf and Bg are given in Figure 6.15.
+
+6.2 Algorithms for reduced OBDDs
+
+377
+
+the first time and the result remembered for future calls. This programming technique is known as memoisation. As well as being more efficient, it has the advantage that the resulting OBDD requires less reduction. (In this example, using memoisation eliminates the need for the final call to reduce altogether.) Without memoisation, apply is exponential in the size of its arguments, since each non-leaf call generates a further two calls. With memoisation, the number of calls to apply is bounded by 2 · |Bf | · |Bg|, where |B| is the size of the BDD. This is a worst-time complexity; the actual performance is often much better than this.
+
+6.2.3 The algorithm restrict
+Given an OBDD Bf representing a boolean formula f , we need an algorithm restrict such that the call restrict(0, x, Bf ) computes the reduced OBDD representing f [0/x] using the same variable ordering as Bf . The algorithm for restrict(0, x, Bf ) works as follows. For each node n labelled with x, incoming edges are redirected to lo(n) and n is removed. Then we
+call reduce on the resulting OBDD. The call restrict (1, x, Bf ) proceeds similarly, only we now redirect incoming edges to hi(n).
+
+6.2.4 The algorithm exists A boolean function can be thought of as putting a constraint on the values of its argument variables. For example, the function x + (y · z) evaluates to 1 only if x is 1; or y is 0 and z is 1 ­ this is a constraint on x, y, and z.
+It is useful to be able to express the relaxation of the constraint on a subset of the variables concerned. To allow this, we write x. f for the boolean function f with the constraint on x relaxed. Formally, x. f is defined as f [0/x] + f [1/x]; that is, x. f is true if f could be made true by putting x to 0 or to 1. Given that x. f =def f [0/x] + f [1/x] the exists algorithm can be implemented in terms of the algorithms apply and restrict as
+
+apply (+, restrict (0, x, Bf ), restrict (1, x, Bf )) .
+
+(6.3)
+
+Consider, for example, the OBDD Bf for the function f =def x1 · y1 + x2 · y2 + x3 · y3, shown in Figure 6.19. Figure 6.20 shows restrict(0, x3, Bf ) and restrict(1, x3, Bf ) and the result of applying + to them. (In this case the apply function happens to return its second argument.)
+We can improve the efficiency of this algorithm. Consider what happens
+during the apply stage of (6.3). In that case, the apply algorithm works on two BDDs which are identical all the way down to the level of the x-nodes;
+
+378
+
+6 Binary decision diagrams
+
+x
+
+y x
+
+z x
+
+0
+
+1
+
+Figure 6.18. An example of a BDD which is not a read-1-BDD.
+
+x1
+
+y1
+
+x2
+
+y2
+
+x3
+
+y3
+
+0
+
+1
+
+Figure 6.19. A BDD Bf to illustrate the exists algorithm.
+
+therefore the returned BDD also has that structure down to the x-nodes. At the x-nodes, the two argument BDDs differ, so the apply algorithm will compute the apply of + to these two subBDDs and return that as the subBDD of the result. This is illustrated in Figure 6.20. Therefore, we can compute the OBDD for x. f by taking the OBDD for f and replacing each node labelled with x by the result of calling apply on + and its two branches.
+This can easily be generalised to a sequence of exists operations. We write x^. f to mean x1.x2. . . . xn. f , where x^ denotes (x1, x2, . . . , xn).
+
+6.2 Algorithms for reduced OBDDs
+
+379
+
+x1 y1
+x2 y2
+
+x1 y1
+x2 y2
+
+x1 y1
+x2 y2
+
+y3
+
+y3
+
+0
+
+1
+
+0
+
+1
+
+0
+
+1
+
+Figure 6.20. restrict(0, x3, Bf ) and restrict(1, x3, Bf ) and the result of applying + to them.
+
+x1
+
+x1
+
+x1
+
+y1
+
+y1
+
+y1
+
+x3
+
+x2
+
+x2
+
+x2
+
+y2
+
+y2
+
+y2
+
+x3
+
+y3
+
+y3
+
+y3
+
+0
+
+1
+
+0
+
+1
+
+0
+
+1
+
+Figure 6.21. OBDDs for f , x3. f and x2.x3. f .
+
+The OBDD for this boolean function is obtained from the OBDD for f by replacing every node labelled with an xi by the + of its two branches.
+Figure 6.21 shows the computation of x3. f and x2.x3. f (which is semantically equivalent to x1 · y1 + y2 + y3) in this way. The boolean quantifier  is the dual of :
+x.f =def f [0/x] · f [1/x]
+asserting that f could be made false by putting x to 0 or to 1. The translation of boolean formulas into OBDDs using the algorithms of
+this section is summarised in Figure 6.22.
+
+380
+
+6 Binary decision diagrams
+
+Boolean formula f 0 1 x f
+f +g f ·g f g f [1/x] f [0/x] x.f x.f
+
+Representing OBDD Bf B0 (Fig. 6.6) B1 (Fig. 6.6) Bx (Fig. 6.6) swap the 0- and 1-nodes in Bf apply (+, Bf , Bg) apply (· , Bf , Bg) apply (, Bf , Bg) restrict (1, x, Bf ) restrict (0, x, Bf ) apply (+, Bf[0/x], Bf[1/x]) apply (· , Bf[0/x], Bf[1/x])
+
+Figure 6.22. Translating boolean formulas f to OBDDs Bf , given a fixed, global ordering on boolean variables.
+
+Algorithm Input OBDD(s) Output OBDD
+
+Time-complexity
+
+reduce B
+
+reduced B
+
+O(|B| · log |B|)
+
+apply Bf , Bg (reduced) Bf op g (reduced)
+
+O(|Bf | · |Bg|)
+
+restrict Bf (reduced) Bf[0/x] or Bf[1/x] (reduced) O(|Bf | · log |Bf |)
+
+
+
+Bf (reduced) Bx1.x2....xn.f (reduced) NP-complete
+
+Figure 6.23. Upper bounds in terms of the input OBDD(s) for the worst-case running times of our algorithms needed in our implementation of boolean formulas.
+
+6.2.5 Assessment of OBDDs Time complexities for computing OBDDs We can measure the complexity of the algorithms of the preceding section by giving upper bounds for the running time in terms of the sizes of the input OBDDs. The table in Figure 6.23 summarises these upper bounds (some of those upper bounds may require more sophisticated versions of the algorithms than the versions presented in this chapter). All the operations except nested boolean quantification are practically efficient in the size of the participating OBDDs. Thus, modelling very large systems with this approach will work if the OBDDs
+
+6.2 Algorithms for reduced OBDDs
+
+381
+
+which represent the systems don't grow too large too fast. If we can somehow control the size of OBDDs, e.g. by using good heuristics for the choice of variable ordering, then these operations are computationally feasible. It has already been shown that OBDDs modelling certain classes of systems and networks don't grow excessively.
+The expensive computational operations are the nested boolean quantifications z1. . . . zn.f and z1. . . . zn.f . By exercise 1 on page 406, the computation of the OBDD for z1. . . . zn.f , given the OBDD for f , is an NPcomplete problem2; thus, it is unlikely that there exists an algorithm with a feasible worst-time complexity. This is not to say that boolean functions modelling practical systems may not have efficient nested boolean quantifications. The performance of our algorithms can be improved by using further optimisation techniques, such as parallelisation.
+Note that the operations apply, restrict, etc. are only efficient in the size of the input OBDDs. So if a function f does not have a compact representation as an OBDD, then computing with its OBDD will not be efficient. There are such nasty functions; indeed, one of them is integer multiplication. Let bn-1bn-2 . . . b0 and an-1an-2 . . . a0 be two n-bit integers, where bn-1 and an-1 are the most significant bits and b0 and a0 are the least significant bits. The multiplication of these two integers results in a 2n-bit integer. Thus, we may think of multiplication as 2n many boolean functions fi in 2n variables (n bits for input b and n bits for input a), where fi denotes the ith output bit of the multiplication. The following negative result, due to R. E. Bryant, shows that OBDDs cannot be used for implementing integer multiplication.
+
+Theorem 6.11 Any OBDD representation of fn-1 has at least a number of vertices proportional to 1.09n, i.e. its size is exponential in n.
+
+Extensions and variations of OBDDs There are many variations and extensions to the OBDD data structure. Many of them can implement certain operations more efficiently than their OBDD counterparts, but it seems that none of them perform as well as OBDDs overall. In particular, one feature which many of the variations lack is the canonical form; therefore they lack an efficient algorithm for deciding when two objects denote the same boolean function.
+One kind of variation allows non-terminal nodes to be labelled with binary operators as well as boolean variables. Parity OBDDs are like OBDDs in that there is an ordering on variables and every variable may occur at
+
+2 Another NP-complete problem is to decide the satisfiability of formulas of propositional logic.
+
+

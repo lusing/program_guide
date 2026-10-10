@@ -1,7 +1,7 @@
 # 第 30 章 L-S、紧致性与初等等价
 
-> 对书：EFT ch VI（§VI.1-6.4）。本章通道：C（`examples/29_lscompact/ex30_lscompact.v`）/
-> L（`examples/29_lscompact/ex30_lscompact.lean`）。
+> 对书：EFT ch VI（§VI.1-6.4）。本章通道：C（`examples/30_lscompact/ex30_lscompact.v`）/
+> L（`examples/30_lscompact/ex30_lscompact.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|
@@ -131,7 +131,7 @@ spoiler 与 duplicator 的 n 轮对局，赢策略的可计算判定——Fraïs
 
 ---
 
-上一章：[29 完备性定理：Henkin 构造](docs/28-completeness.md) · 下一章：[31 EF 博弈与 Fraïssé 定理](docs/31-efgame.md)
+上一章：[29 归约树：完备性的证明论路线](docs/29-redtree.md) · 下一章：[31 EF 博弈与 Fraïssé 定理](docs/31-efgame.md)
 
 ## Mendelson §2.11 深化：同构蕴含初等等价（C 通道）
 
@@ -141,4 +141,4 @@ spoiler 与 duplicator 的 n 轮对局，赢策略的可计算判定——Fraïs
 （`iso_eeq` 双列表全等）。§2.11 的范畴性理论（DLO 的 ℵ₀-范畴性、
 PA 的非范畴性）与 §2.13-2.14（初等扩张、超积与 Łoś 定理、非标准
 分析一瞥）文档线：超积的有限化身=主超滤下的对角结构，非标准模型的
-构造现场在 54 章（论域相对性）与 99 章导读。
+构造现场在 64 章（论域相对性）与 109 章导读。

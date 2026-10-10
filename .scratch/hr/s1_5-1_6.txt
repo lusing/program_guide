@@ -1,0 +1,591 @@
+1.5 Normal forms
+
+53
+
+the left-hand sides of these four sequents. This is the place where we rely on the law of the excluded middle which states r  ¬r, for any r. We use LEM for all propositional atoms (here p and q) and then we separately assume all the four cases, by using e. That way we can invoke all four proofs of the sequents above and use the rule e repeatedly until we have got rid of all our premises. We spell out the combination of these four phases schematically:
+
+1
+
+p  ¬p
+
+2
+
+p
+
+3
+
+q  ¬q
+
+4
+
+q
+
+5
+
+... ...
+
+ass ¬q ... ...
+
+ass ¬p
+LEM q  ¬q
+ass q ... ...
+
+ass ¬q ... ...
+
+LEM ass LEM ass
+
+6
+
+7
+
+pq  p
+
+pq  p
+
+pq  p
+
+pq  p
+
+8
+
+pq  p
+
+e p  q  p
+
+e
+
+9
+
+pq  p
+
+e
+
+As soon as you understand how this particular example works, you will also realise that it will work for an arbitrary tautology with n distinct atoms. Of course, it seems ridiculous to prove p  q  p using a proof that is this long. But remember that this illustrates a uniform method that constructs a proof for every tautology , no matter how complicated it is.
+
+Step 3: Finally, we need to find a proof for 1, 2, . . . , n . Take the proof for 1  (2  (3  (. . . (n  ) . . . ))) given by step 2 and augment its proof by introducing 1, 2, . . . , n as premises. Then apply e n times on each of these premises (starting with 1, continuing with 2 etc.). Thus, we arrive at the conclusion  which gives us a proof for the sequent
+1, 2, . . . , n .
+
+Corollary 1.39 (Soundness and Completeness) Let 1, 2, . . . , n,  be formulas of propositional logic. Then 1, 2, . . . , n  is holds iff the sequent 1, 2, . . . , n  is valid.
+
+1.5 Normal forms
+In the last section, we showed that our proof system for propositional logic is sound and complete for the truth-table semantics of formulas in Figure 1.6.
+
+54
+
+1 Propositional logic
+
+Soundness means that whatever we prove is going to be a true fact, based on the truth-table semantics. In the exercises, we apply this to show that a sequent does not have a proof: simply show that 1, 2, . . . , 2 does not semantically entail ; then soundness implies that the sequent 1, 2, . . . , 2  does not have a proof. Completeness comprised a much more powerful statement: no matter what (semantically) valid sequents there are, they all have syntactic proofs in the proof system of natural deduction. This tight correspondence allows us to freely switch between working with the notion of proofs ( ) and that of semantic entailment ( ).
+Using natural deduction to decide the validity of instances of is only one of many possibilities. In Exercise 1.2.6 we sketch a non-linear, tree-like, notion of proofs for sequents. Likewise, checking an instance of by applying Definition 1.34 literally is only one of many ways of deciding whether 1, 2, . . . , n  holds. We now investigate various alternatives for deciding 1, 2, . . . , n  which are based on transforming these formulas syntactically into `equivalent' ones upon which we can then settle the matter by purely syntactic or algorithmic means. This requires that we first clarify what exactly we mean by equivalent formulas.
+
+1.5.1 Semantic equivalence, satisfiability and validity Two formulas  and  are said to be equivalent if they have the same `meaning.' This suggestion is vague and needs to be refined. For example, p  q and ¬p  q have the same truth table; all four combinations of T and F for p and q return the same result. 'Coincidence of truth tables' is not good enough for what we have in mind, for what about the formulas p  q  p and r  ¬r? At first glance, they have little in common, having different atomic formulas and different connectives. Moreover, the truth table for p  q  p is four lines long, whereas the one for r  ¬r consists of only two lines. However, both formulas are always true. This suggests that we define the equivalence of formulas  and  via : if  semantically entails  and vice versa, then these formulas should be the same as far as our truth-table semantics is concerned.
+Definition 1.40 Let  and  be formulas of propositional logic. We say that  and  are semantically equivalent iff   and   hold. In that case we write   . Further, we call  valid if  holds.
+Note that we could also have defined    to mean that (  )  (  ) holds; it amounts to the same concept. Indeed, because of soundness and completeness, semantic equivalence is identical to provable equivalence
+
+1.5 Normal forms
+
+55
+
+(Definition 1.25). Examples of equivalent formulas are
+
+p  q  ¬q  ¬p p  q  ¬p  q p  q  p  r  ¬r p  q  r  p  (q  r).
+
+Recall that a formula  is called a tautology if  holds, so the tautologies are exactly the valid formulas. The following lemma says that any decision procedure for tautologies is in fact a decision procedure for the validity of sequents as well.
+
+Lemma 1.41 Given formulas 1, 2, . . . , n and  of propositional logic, 1, 2, . . . , n  holds iff 1  (2  (3  · · ·  (n  ))) holds.
+
+Proof: First, suppose that 1  (2  (3  · · ·  (n  ))) holds.
+
+If 1, 2, . . . , n are all true under some valuation, then  has to be true
+
+as well for that same valuation. Otherwise, 1  (2  (3  · · · 
+
+(n  ))) would not hold (compare this with Figure 1.11). Second, if
+
+1, 2, . . . , n  holds, we have already shown that 1  (2  (3 
+
+· · ·  (n  ))) follows in step 1 of our completeness proof.
+
+2
+
+For our current purposes, we want to transform formulas into ones which don't contain  at all and the occurrences of  and  are confined to separate layers such that validity checks are easy. This is being done by
+
+1. using the equivalence     ¬   to remove all occurrences of  from a formula and
+2. by specifying an algorithm that takes a formula without any  into a normal form (still without ) for which checking validity is easy.
+
+Naturally, we have to specify which forms of formulas we think of as being `normal.' Again, there are many such notions, but in this text we study only two important ones.
+
+Definition 1.42 A literal L is either an atom p or the negation of an atom ¬p. A formula C is in conjunctive normal form (CNF) if it is a conjunction of clauses, where each clause D is a disjunction of literals:
+
+L ::= p | ¬p D ::= L | L  D C ::= D | D  C.
+
+(1.6)
+
+56
+
+1 Propositional logic
+
+Examples of formulas in conjunctive normal form are
+
+(i) (¬q  p  r)  (¬p  r)  q (ii) (p  r)  (¬p  r)  (p  ¬r).
+
+In the first case, there are three clauses of type D: ¬q  p  r, ¬p  r, and q ­ which is a literal promoted to a clause by the first rule of clauses in (1.6). Notice how we made implicit use of the associativity laws for  and , saying that   (  )  (  )   and   (  )  (  )  , since we omitted some parentheses. The formula (¬(q  p)  r)  (q  r) is not in CNF since q  p is not a literal.
+Why do we care at all about formulas  in CNF? One of the reasons for their usefulness is that they allow easy checks of validity which otherwise take times exponential in the number of atoms. For example, consider the formula in CNF from above: (¬q  p  r)  (¬p  r)  q. The semantic entailment (¬q  p  r)  (¬p  r)  q holds iff all three relations
+
+¬q  p  r
+
+¬p  r
+
+q
+
+hold, by the semantics of . But since all of these formulas are disjunctions of literals, or literals, we can settle the matter as follows.
+
+Lemma 1.43 A disjunction of literals L1  L2  · · ·  Lm is valid iff there are 1  i, j  m such that Li is ¬Lj.
+
+Proof: If Li equals ¬Lj, then L1  L2  · · ·  Lm evaluates to T for all
+
+valuations. For example, the disjunct p  q  r  ¬q can never be made false.
+
+To see that the converse holds as well, assume that no literal Lk has a
+
+matching negation in L1  L2  · · ·  Lm. Then, for each k with 1  k  n,
+
+we assign F to Lk, if Lk is an atom; or T, if Lk is the negation of an atom.
+
+For example, the disjunct ¬q  p  r can be made false by assigning F to p
+
+and r and T to q.
+
+2
+
+Hence, we have an easy and fast check for the validity of , provided that  is in CNF; inspect all conjuncts k of  and search for atoms in k such that k also contains their negation. If such a match is found for all conjuncts, we have . Otherwise (= some conjunct contains no pair Li and ¬Li),  is not valid by the lemma above. Thus, the formula (¬q  p  r)  (¬p  r)  q above is not valid. Note that the matching literal has to be found in the same conjunct k. Since there is no free lunch in this universe, we can expect that the computation of a formula  in CNF, which is equivalent to a given formula , is a costly worst-case operation.
+Before we study how to compute equivalent conjunctive normal forms, we
+introduce another semantic concept closely related to that of validity.
+
+1.5 Normal forms
+
+57
+
+Definition 1.44 Given a formula  in propositional logic, we say that  is satisfiable if it has a valuation in which is evaluates to T.
+
+For example, the formula p  q  p is satisfiable since it computes T if we assign T to p. Clearly, p  q  p is not valid. Thus, satisfiability is a weaker concept since every valid formula is by definition also satisfiable but not vice versa. However, these two notions are just mirror images of each other, the mirror being negation.
+
+Proposition 1.45 Let  be a formula of propositional logic. Then  is satisfiable iff ¬ is not valid.
+
+Proof: First, assume that  is satisfiable. By definition, there exists a
+
+valuation of  in which  evaluates to T; but that means that ¬ evaluates
+
+to F for that same valuation. Thus, ¬ cannot be valid.
+
+Second, assume that ¬ is not valid. Then there must be a valuation
+
+of ¬ in which ¬ evaluates to F. Thus,  evaluates to T and is there-
+
+fore satisfiable. (Note that the valuations of  are exactly the valuations of
+
+¬.)
+
+2
+
+This result is extremely useful since it essentially says that we need provide
+a decision procedure for only one of these concepts. For example, let's say that we have a procedure P for deciding whether any  is valid. We obtain a decision procedure for satisfiability simply by asking P whether ¬ is valid. If it is,  is not satisfiable; otherwise  is satisfiable. Similarly, we may transform any decision procedure for satisfiability into one for validity. We
+will encounter both kinds of procedures in this text.
+There is one scenario in which computing an equivalent formula in CNF
+is really easy; namely, when someone else has already done the work of writing down a full truth table for . For example, take the truth table of (p  ¬q)  (q  ¬p) in Figure 1.8 (page 40). For each line where (p  ¬q)  (q  ¬p) computes F we now construct a disjunction of literals. Since there is only one such line, we have only one conjunct 1. That conjunct is now obtained by a disjunction of literals, where we include literals ¬p and q. Note that the literals are just the syntactic opposites of the truth values in that line: here p is T and q is F. The resulting formula in CNF is thus ¬p  q which is readily seen to be in CNF and to be equivalent to (p  ¬q)  (q  ¬p).
+Why does this always work for any formula ? Well, the constructed formula will be false iff at least one of its conjuncts i will be false. This means that all the disjuncts in such a i must be F. Using the de Morgan
+
+58
+
+1 Propositional logic
+
+rule ¬1  ¬2  · · ·  ¬n  ¬(1  2  · · ·  n), we infer that the conjunction of the syntactic opposites of those literals must be true. Thus,  and the constructed formula have the same truth table.
+Consider another example, in which  is given by the truth table:
+
+pqr TTTT TTFF TFTT TFFT FTTF FTFF FFTF FFFT
+
+Note that this table is really just a specification of ; it does not tell us what  looks like syntactically, but it does tells us how it ought to `behave.' Since this truth table has four entries which compute F, we construct four conjuncts i (1  i  4). We read the i off that table by listing the disjunction of all atoms, where we negate those atoms which are true in those lines:
+
+1 =def ¬p  ¬q  r (line 2) 3 =def p  ¬q  r etc The resulting  in CNF is therefore
+
+2 =def p  ¬q  ¬r (line 5) 4 =def p  q  ¬r.
+
+(¬p  ¬q  r)  (p  ¬q  ¬r)  (p  ¬q  r)  (p  q  ¬r).
+
+If we don't have a full truth table at our disposal, but do know the structure of , then we would like to compute a version of  in CNF. It should be clear by now that a full truth table of  and an equivalent formula in CNF are pretty much the same thing as far as questions about validity are concerned ­ although the formula in CNF may be much more compact.
+
+1.5.2 Conjunctive normal forms and validity We have already seen the benefits of conjunctive normal forms in that they allow for a fast and easy syntactic test of validity. Therefore, one wonders whether any formula can be transformed into an equivalent formula in CNF. We now develop an algorithm achieving just that. Note that, by Definition 1.40, a formula is valid iff any of its equivalent formulas is valid. We reduce the problem of determining whether any  is valid to the problem of computing an equivalent    such that  is in CNF and checking, via Lemma 1.43, whether  is valid.
+
+1.5 Normal forms
+
+59
+
+Before we sketch such a procedure, we make some general remarks about
+its possibilities and its realisability constraints. First of all, there could be
+more or less efficient ways of computing such normal forms. But even more so, there could be many possible correct outputs, for 1   and 2   do not generally imply that 1 is the same as 2, even if 1 and 2 are in CNF. For example, take  =def p, 1 =def p and 2 =def p  (p  q); then convince yourself that   2 holds. Having this ambiguity of equivalent conjunctive normal forms, the computation of a CNF for  with minimal `cost' (where `cost' could for example be the number of conjuncts, or the height of 's parse tree) becomes a very important practical problem, an issue persued in Chapter 6. Right now, we are content with stating a deterministic algorithm which always computes the same output CNF for a given input .
+This algorithm, called CNF, should satisfy the following requirements:
+
+(1) CNF terminates for all formulas of propositional logic as input; (2) for each such input, CNF outputs an equivalent formula; and (3) all output computed by CNF is in CNF.
+
+If a call of CNF with a formula  of propositional logic as input terminates, which is enforced by (1), then (2) ensures that    holds for the output . Thus, (3) guarantees that  is an equivalent CNF of . So  is valid iff  is valid; and checking the latter is easy relative to the length of .
+What kind of strategy should CNF employ? It will have to function correctly for all, i.e. infinitely many, formulas of propositional logic. This
+strongly suggests to write a procedure that computes a CNF by structural induction on the formula . For example, if  is of the form 1  2, we may simply compute conjunctive normal forms i for i (i = 1, 2), whereupon 1  2 is a conjunctive normal form which is equivalent to  provided that i  i (i = 1, 2). This strategy also suggests to use proof by structural induction on  to prove that CNF meets the requirements (1­3) stated above.
+Given a formula  as input, we first do some preprocessing. Initially, we translate away all implications in  by replacing all subformulas of the form    by ¬  . This is done by a procedure called IMPL FREE. Note that this procedure has to be recursive, for there might be implications in  or  as well.
+The application of IMPL FREE might introduce double negations into the output formula. More importantly, negations whose scopes are non-atomic formulas might still be present. For example, the formula p  ¬(p  q) has such a negation with p  q as its scope. Essentially, the question is whether one can efficiently compute a CNF for ¬ from a CNF for . Since nobody seems to know the answer, we circumvent the question by translating ¬
+
+60
+
+1 Propositional logic
+
+into an equivalent formula that contains only negations of atoms. Formulas which only negate atoms are said to be in negation normal form (NNF). We spell out such a procedure, NNF, in detail later on. The key to its specification for implication-free formulas lies in the de Morgan rules. The second phase of the preprocessing, therefore, calls NNF with the implication-free output of IMPL FREE to obtain an equivalent formula in NNF.
+After all this preprocessing, we obtain a formula  which is the result of the call NNF (IMPL FREE ()). Note that    since both algorithms only transform formulas into equivalent ones. Since  contains no occurrences of  and since only atoms in  are negated, we may program CNF by an analysis of only three cases: literals, conjunctions and disjunctions.
+
+r If  is a literal, it is by definition in CNF and so CNF outputs . r If  equals 1  2, we call CNF recursively on each i to get the respective output
+i and return the CNF 1  2 as output for input . r If  equals 1  2, we again call CNF recursively on each i to get the respective
+output i; but this time we must not simply return 1  2 since that formula is certainly not in CNF, unless 1 and 2 happen to be literals.
+
+So how can we complete the program in the last case? Well, we may resort to the distributivity laws, which entitle us to translate any disjunction of conjunctions into a conjunction of disjunctions. However, for this to result in a CNF, we need to make certain that those disjunctions generated contain only literals. We apply a strategy for using distributivity based on matching patterns in 1  2. This results in an independent algorithm called DISTR which will do all that work for us. Thus, we simply call DISTR with the pair (1, 2) as input and pass along its result.
+Assuming that we already have written code for IMPL FREE, NNF and DISTR, we may now write pseudo code for CNF:
+
+function CNF () : /* precondition:  implication free and in NNF */ /* postcondition: CNF () computes an equivalent CNF for  */ begin function
+case  is a literal : return   is 1  2 : return CNF (1)  CNF (2)  is 1  2 : return DISTR (CNF (1), CNF (2))
+end case end function
+
+1.5 Normal forms
+
+61
+
+Notice how the calling of DISTR is done with the computed conjunctive normal forms of 1 and 2. The routine DISTR has 1 and 2 as input parameters and does a case analysis on whether these inputs are conjunctions. What
+should DISTR do if none of its input formulas is such a conjunction? Well, since we are calling DISTR for inputs 1 and 2 which are in CNF, this can only mean that 1 and 2 are literals, or disjunctions of literals. Thus, 1  2 is in CNF.
+Otherwise, at least one of the formulas 1 and 2 is a conjunction. Since one conjunction suffices for simplifying the problem, we have to decide which conjunct we want to transform if both formulas are conjunctions. That way
+we maintain that our algorithm CNF is deterministic. So let us suppose that 1 is of the form 11  12. Then the distributive law says that 1  2  (11  2)  (12  2). Since all participating formulas 11, 12 and 2 are in CNF, we may call DISTR again for the pairs (11, 2) and (12, 2), and then simply form their conjunction. This is the key insight for writing the
+function DISTR. The case when 2 is a conjunction is symmetric and the structure of
+the recursive call of DISTR is then dictated by the equivalence 1  2  (1  21)  (1  22), where 2 = 21  22:
+
+function DISTR (1, 2) : /* precondition: 1 and 2 are in CNF */ /* postcondition: DISTR (1, 2) computes a CNF for 1  2 */ begin function
+case 1 is 11  12 : return DISTR (11, 2)  DISTR (12, 2) 2 is 21  22 : return DISTR (1, 21)  DISTR (1, 22) otherwise (= no conjunctions) : return 1  2
+end case end function
+
+Notice how the three clauses are exhausting all possibilities. Furthermore, the first and second cases overlap if 1 and 2 are both conjunctions. It is then our understanding that this code will inspect the clauses of a case statement from the top to the bottom clause. Thus, the first clause would apply.
+Having specified the routines CNF and DISTR, this leaves us with the task of writing the functions IMPL FREE and NNF. We delegate the design
+
+62
+
+1 Propositional logic
+
+of IMPL FREE to the exercises. The function NNF has to transform any implication-free formula into an equivalent one in negation normal form. Four examples of formulas in NNF are
+
+p ¬p  (p  q)
+
+¬p ¬p  (p  q),
+
+although we won't have to deal with a formula of the last kind since  won't occur. Examples of formulas which are not in NNF are ¬¬p and ¬(p  q).
+Again, we program NNF recursively by a case analysis over the structure of the input formula . The last two examples already suggest a solution for two of these clauses. In order to compute a NNF of ¬¬, we simply compute a NNF of . This is a sound strategy since  and ¬¬ are semantically equivalent. If  equals ¬(1  2), we use the de Morgan rule ¬(1  2)  ¬1  ¬2 as a recipe for how NNF should call itself recursively in that case. Dually, the case of  being ¬(1  2) appeals to the other de Morgan rule ¬(1  2)  ¬1  ¬2 and, if  is a conjunction or disjunction, we simply let NNF pass control to those subformulas. Clearly, all literals are in NNF. The resulting code for NNF is thus
+
+function NNF () : /* precondition:  is implication free */ /* postcondition: NNF () computes a NNF for  */ begin function
+case  is a literal : return   is ¬¬1 : return NNF (1)  is 1  2 : return NNF (1)  NNF (2)  is 1  2 : return NNF (1)  NNF (2)  is ¬(1  2) : return NNF (¬1)  NNF (¬2)  is ¬(1  2) : return NNF (¬1)  NNF (¬2)
+end case end function
+
+Notice that these cases are exhaustive due to the algorithm's precondition. Given any formula  of propositional logic, we may now convert it into an
+
+1.5 Normal forms
+
+63
+
+equivalent CNF by calling CNF (NNF (IMPL FREE ())). In the exercises, you are asked to show that
+
+r all four algorithms terminate on input meeting their preconditions, r the result of CNF (NNF (IMPL FREE ())) is in CNF and r that result is semantically equivalent to .
+
+We will return to the important issue of formally proving the correctness of programs in Chapter 4.
+Let us now illustrate the programs coded above on some concrete examples. We begin by computing CNF (NNF (IMPL FREE (¬p  q  p  (r  q)))). We show almost all details of this computation and you should compare this with how you would expect the code above to behave. First, we compute IMPL FREE ():
+
+IMPL FREE () = ¬IMPL FREE (¬p  q)  IMPL FREE (p  (r  q)) = ¬((IMPL FREE ¬p)  (IMPL FREE q))  IMPL FREE (p  (r  q)) = ¬((¬p)  IMPL FREE q)  IMPL FREE (p  (r  q)) = ¬(¬p  q)  IMPL FREE (p  (r  q)) = ¬(¬p  q)  ((IMPL FREE p)  IMPL FREE (r  q)) = ¬(¬p  q)  (p  IMPL FREE (r  q)) = ¬(¬p  q)  (p  (¬(IMPL FREE r)  (IMPL FREE q))) = ¬(¬p  q)  (p  (¬r  (IMPL FREE q))) = ¬(¬p  q)  (p  (¬r  q)).
+
+Second, we compute NNF (IMPL FREE ):
+
+NNF (IMPL FREE ) = NNF (¬(¬p  q))  NNF (p  (¬r  q)) = NNF (¬(¬p)  ¬q)  NNF (p  (¬r  q)) = (NNF (¬¬p))  (NNF (¬q))  NNF (p  (¬r  q)) = (p  (NNF (¬q)))  NNF (p  (¬r  q)) = (p  ¬q)  NNF (p  (¬r  q)) = (p  ¬q)  ((NNF p)  (NNF (¬r  q))) = (p  ¬q)  (p  (NNF (¬r  q))) = (p  ¬q)  (p  ((NNF (¬r))  (NNF q))) = (p  ¬q)  (p  (¬r  (NNF q))) = (p  ¬q)  (p  (¬r  q)).
+
+64
+
+1 Propositional logic
+
+Third, we finish it off with
+
+CNF (NNF (IMPL FREE )) = CNF ((p  ¬q)  (p  (¬r  q))) = DISTR (CNF (p  ¬q), CNF (p  (¬r  q))) = DISTR (p  ¬q, CNF (p  (¬r  q))) = DISTR (p  ¬q, p  (¬r  q)) = DISTR (p  ¬q, p)  DISTR (p  ¬q, ¬r  q) = (p  ¬q  p)  DISTR (p  ¬q, ¬r  q) = (p  ¬q  p)  (p  ¬q  ¬r  q) .
+
+The formula (p  ¬q  p)  (p  ¬q  ¬r  q) is thus the result of the call CNF (NNF (IMPL FREE )) and is in conjunctive normal form and equivalent to . Note that it is satisfiable (choose p to be true) but not valid (choose p to be false and q to be true); it is also equivalent to the simpler conjunctive normal form p  ¬q. Observe that our algorithm does not do such optimisations so one would need a separate optimiser running on the output. Alternatively, one might change the code of our functions to allow for such optimisations `on the fly,' a computational overhead which could prove to be counterproductive.
+You should realise that we omitted several computation steps in the subcalls CNF (p  ¬q) and CNF (p  (¬r  q)). They return their input as a result since the input is already in conjunctive normal form.
+As a second example, consider  =def r  (s  (t  s  r)). We compute
+
+IMPL FREE () = ¬(IMPL FREE r)  IMPL FREE (s  (t  s  r)) = ¬r  IMPL FREE (s  (t  s  r)) = ¬r  (¬(IMPL FREE s)  IMPL FREE (t  s  r)) = ¬r  (¬s  IMPL FREE (t  s  r)) = ¬r  (¬s  (¬(IMPL FREE (t  s))  IMPL FREE r)) = ¬r  (¬s  (¬((IMPL FREE t)  (IMPL FREE s))  IMPL FREE r)) = ¬r  (¬s  (¬(t  (IMPL FREE s))  (IMPL FREE r))) = ¬r  (¬s  (¬(t  s))  (IMPL FREE r)) = ¬r  (¬s  (¬(t  s))  r)
+
+1.5 Normal forms
+
+65
+
+NNF (IMPL FREE ) = NNF (¬r  (¬s  ¬(t  s)  r)) = (NNF ¬r)  NNF (¬s  ¬(t  s)  r) = ¬r  NNF (¬s  ¬(t  s)  r) = ¬r  (NNF (¬s)  NNF (¬(t  s)  r)) = ¬r  (¬s  NNF (¬(t  s)  r)) = ¬r  (¬s  (NNF (¬(t  s))  NNF r)) = ¬r  (¬s  (NNF (¬t  ¬s))  NNF r) = ¬r  (¬s  ((NNF (¬t)  NNF (¬s))  NNF r)) = ¬r  (¬s  ((¬t  NNF (¬s))  NNF r)) = ¬r  (¬s  ((¬t  ¬s)  NNF r)) = ¬r  (¬s  ((¬t  ¬s)  r))
+
+where the latter is already in CNF and valid as r has a matching ¬r.
+
+1.5.3 Horn clauses and satisfiability We have already commented on the computational price we pay for transforming a propositional logic formula into an equivalent CNF. The latter class of formulas has an easy syntactic check for validity, but its test for satisfiability is very hard in general. Fortunately, there are practically important subclasses of formulas which have much more efficient ways of deciding their satisfiability. One such example is the class of Horn formulas; the name `Horn' is derived from the logician A. Horn's last name. We shortly define them and give an algorithm for checking their satisfiability.
+Recall that the logical constants  (`bottom') and (`top') denote an unsatisfiable formula, respectively, a tautology.
+
+Definition 1.46 A Horn formula is a formula  of propositional logic if it can be generated as an instance of H in this grammar:
+
+P ::=  | | p A ::= P | P  A C ::= A  P H ::= C | C  H.
+
+(1.7)
+
+We call each instance of C a Horn clause.
+
+66
+
+1 Propositional logic
+
+Horn formulas are conjunctions of Horn clauses. A Horn clause is an implication whose assumption A is a conjunction of propositions of type P and whose conclusion is also of type P . Examples of Horn formulas are
+
+(p  q  s  p)  (q  r  p)  (p  s  s) (p  q  s  )  (q  r  p)  (  s) (p2  p3  p5  p13)  (  p5)  (p5  p11  ).
+Examples of formulas which are not Horn formulas are
+
+(p  q  s  ¬p)  (q  r  p)  (p  s  s)
+(p  q  s  )  (¬q  r  p)  (  s)
+(p2  p3  p5  p13  p27)  (  p5)  (p5  p11  )
+(p2  p3  p5  p13  p27)  (  p5)  (p5  p11  ).
+The first formula is not a Horn formula since ¬p, the conclusion of the implication of the first conjunct, is not of type P . The second formula does not qualify since the premise of the implication of the second conjunct, ¬q  r, is not a conjunction of atoms, , or . The third formula is not a Horn formula since the conclusion of the implication of the first conjunct, p13  p27, is not of type P . The fourth formula clearly is not a Horn formula since it is not a conjunction of implications.
+The algorithm we propose for deciding the satisfiability of a Horn formula  maintains a list of all occurrences of type P in  and proceeds like this:
+
+1. It marks if it occurs in that list.
+2. If there is a conjunct P1  P2  · · ·  Pki  P of  such that all Pj with 1  j  ki are marked, mark P as well and go to 2. Otherwise (= there is no conjunct P1  P2  · · ·  Pki  P such that all Pj are marked) go to 3.
+3. If  is marked, print out `The Horn formula  is unsatisfiable.' and stop. Oth-
+erwise, go to 4.
+4. Print out `The Horn formula  is satisfiable.' and stop.
+
+In these instructions, the markings of formulas are shared by all other occurrences of these formulas in the Horn formula. For example, once we mark p2 because of one of the criteria above, then all other occurrences of p2 are marked as well. We use pseudo code to specify this algorithm formally:
+
+1.5 Normal forms
+
+67
+
+function HORN (): /* precondition:  is a Horn formula */ /* postcondition: HORN () decides the satisfiability for  */ begin function
+mark all occurrences of in ; while there is a conjunct P1  P2  · · ·  Pki  P of 
+such that all Pj are marked but P isn't do mark P end while if  is marked then return `unsatisfiable' else return `satisfiable' end function
+We need to make sure that this algorithm terminates on all Horn formulas  as input and that its output (= its decision) is always correct.
+
+Theorem 1.47 The algorithm HORN is correct for the satisfiability decision problem of Horn formulas and has no more than n + 1 cycles in its whilestatement if n is the number of atoms in . In particular, HORN always terminates on correct input.
+
+Proof: Let us first consider the question of program termination. Notice that entering the body of the while-statement has the effect of marking an unmarked P which is not . Since this marking applies to all occurrences of P in , the while-statement can have at most one more cycle than there are atoms in .
+Since we guaranteed termination, it suffices to show that the answers given by the algorithm HORN are always correct. To that end, it helps to reveal the functional role of those markings. Essentially, marking a P means that that P has got to be true if the formula  is ever going to be satisfiable. We use mathematical induction to show that
+`All marked P are true for all valuations in which  evaluates to T.' (1.8)
+holds after any number of executions of the body of the while-statement above. The base case, zero executions, is when the while-statement has not yet been entered but we already and only marked all occurrences of . Since
+must be true in all valuations, (1.8) follows. In the inductive step, we assume that (1.8) holds after k cycles of the while-statement. Then we need to show that same assertion for all marked P after k + 1 cycles. If we enter the (k + 1)th cycle, the condition of the while-statement is certainly true. Thus, there exists a conjunct P1  P2  · · ·  Pki  P of  such that all Pj are marked. Let v be any valuation
+
+68
+
+1 Propositional logic
+
+in which  is true. By our induction hypothesis, we know that all Pj and
+therefore P1  P2  · · ·  Pki have to be true in v as well. The conjunct P1  P2  · · ·  Pki  P of  has be to true in v, too, from which we infer that P has to be true in v.
+
+By mathematical induction, we therefore secured that (1.8) holds no mat-
+
+ter how many cycles that while-statement went through.
+
+Finally, we need to make sure that the if-statement above always renders
+
+correct replies. First, if  is marked, then there has to be some conjunct
+
+P1  P2  · · ·  Pki   of  such that all Pi are marked as well. By (1.8) that conjunct of  evaluates to T  F = F whenever  is true. As this is
+
+impossible the reply `unsatisfiable' is correct. Second, if  is not marked, we
+
+simply assign T to all marked atoms and F to all unmarked atoms and use
+
+proof by contradiction to show that  has to be true with respect to that
+
+valuation.
+
+If  is not true under that valuation, it must make one of its principal
+
+conjuncts P1  P2  · · ·  Pki  P false. By the semantics of implication this can only mean that all Pj are true and P is false. By the definition of our
+valuation, we then infer that all Pj are marked, so P1  P2  · · ·  Pki  P is a conjunct of  that would have been dealt with in one of the cycles of
+
+the while-statement and so P is marked, too. Since  is not marked, P has
+
+to be or some atom q. In any event, the conjunct is then true by (1.8), a
+
+contradiction
+
+2
+
+Note that the proof by contradiction employed in the last proof was not really needed. It just made the argument seem more natural to us. The literature is full of such examples where one uses proof by contradiction more out of psychological than proof-theoretical necessity.
+
+1.6 SAT solvers
+The marking algorithm for Horn formulas computes marks as constraints on all valuations that can make a formule true. By (1.8), all marked atoms have to be true for any such valuation. We can extend this idea to general formulas  by computing constraints saying which subformulas of  require a certain truth value for all valuations that make  true:
+
+`All marked subformulas evaluate to their mark value for all valuations in which  evaluates to T.'
+
+(1.9)
+
+In that way, marking atomic formulas generalizes to marking subformulas; and `true' marks generalize into `true' and `false' marks. At the same
+
+1.6 SAT solvers
+
+69
+
+time, (1.9) serves as a guide for designing an algorithm and as an invariant for proving its correctness.
+
+1.6.1 A linear solver We will execute this marking algorithm on the parse tree of formulas, except that we will translate formulas into the adequate fragment
+
+ ::= p | (¬) | (  )
+
+(1.10)
+
+and then share common subformulas of the resulting parse tree, making the tree into a directed, acyclic graph (DAG). The inductively defined translation
+
+T (p) = p T (1  2) = T (1)  T (2) T (1  2) = ¬(T (1)  ¬T (2))
+
+T (¬) = ¬T () T (1  2) = ¬(¬T (1)  ¬T (2))
+
+transforms formulas generated by (1.3) into formulas generated by (1.10) such that  and T () are semantically equivalent and have the same propositional atoms. Therefore,  is satisfiable iff T () is satisfiable; and the set of valuations for which  is true equals the set of valuations for which T () is true. The latter ensures that the diagnostics of a SAT solver, applied to T (), is meaningful for the original formula . In the exercises, you are asked to prove these claims.
+
+Example 1.48 For the formula  being p  ¬(q  ¬p) we compute T () = p  ¬¬(¬q  ¬¬p). The parse tree and DAG of T () are depicted in Figure 1.12.
+Any valuation that makes p  ¬¬(¬q  ¬¬p) true has to assign T to the topmost -node in its DAG of Figure 1.12. But that forces the mark T on the p-node and the topmost ¬-node. In the same manner, we arrive at a complete set of constraints in Figure 1.13, where the time stamps `1:' etc indicate the order in which we applied our intuitive reasoning about these constraints; this order is generally not unique.
+The formal set of rules for forcing new constraints from old ones is depicted in Figure 1.14. A small circle indicates any node (¬,  or atom). The force laws for negation, ¬t and ¬f , indicate that a truth constraint on a ¬-node forces its dual value at its sub-node and vice versa. The law te propagates a T constraint on a -node to its two sub-nodes; dually, ti forces a T mark on a -node if both its children have that mark. The laws fl and fr force a F constraint on a -node if any of its sub-nodes has a F value. The laws fll
+
+70
+
+1 Propositional logic
+
+
+
+
+
+p
+
+¬
+
+¬
+
+
+
+¬
+
+¬
+
+q
+
+¬
+
+¬ ¬
+
+
+
+¬
+
+¬
+
+¬
+
+p
+
+q
+
+p
+Figure 1.12. Parse tree (left) and directed acyclic graph (right) of the formula from Example 1.48. The p-node is shared on the right.
+
+1: T 
+
+¬
+
+2: T
+
+¬
+
+3: F
+
+ 5: T ¬
+
+4: T ¬ 4: T ¬ 3: F
+
+2: T p
+
+6: F q
+
+Figure 1.13. A witness to the satisfiability of the formula represented by this DAG.
+
+and frr are more complex: if an -node has a F constraint and one of its sub-nodes has a T constraint, then the other sub-node obtains a F-constraint. Please check that all constraints depicted in Figure 1.13 are derivable from these rules. The fact that each node in a DAG obtained a forced marking does not yet show that this is a witness to the satisfiability of the formula
+
+¬T
+¬t: F
+
+1.6 SAT solvers
+¬F
+¬f : T
+
+71
+forcing laws for negation
+
+T
+
+T
+
+
+
+
+
+te :
+
+T
+
+T
+
+ti :
+
+T
+
+T
+
+true conjunction forces true conjuncts true conjunctions force true conjunction
+
+F 
+fl: F
+
+F
+
+
+
+false conjuncts
+
+force false conjunction
+
+fr :
+
+F
+
+F
+
+F
+
+
+
+
+
+false conjunction and true conjunct
+
+force false conjunction
+
+fll :
+
+T
+
+F frr: F
+
+T
+
+Figure 1.14. Rules for flow of constraints in a formula's DAG. Small
+circles indicate arbitrary nodes (¬,  or atom). Note that the rules fll, frr and ti require that the source constraints of both = are present.
+
+represented by this DAG. A post-processing phase takes the marks for all atoms and re-computes marks of all other nodes in a bottom-up manner, as done in Section 1.4 on parse trees. Only if the resulting marks match the ones we computed have we found a witness. Please verify that this is the case in Figure 1.13.
+We can apply SAT solvers to checking whether sequents are valid. For example, the sequent p  q  r p  q  r is valid iff (p  q  r)  p  q  r is a theorem (why?) iff  = ¬((p  q  r)  p  q  r) is not satisfiable. The DAG of T () is depicted in Figure 1.15. The annotations "1" etc indicate which nodes represent which sub-formulas. Notice that such DAGs may be constructed by applying the translation clauses for T to sub-formulas in a bottom-up manner ­ sharing equal subgraphs were applicable.
+The findings of our SAT solver can be seen in Figure 1.16. The solver concludes that the indicated node requires the marks T and F for (1.9) to be met. Such contradictory constraints therefore imply that all formulas T () whose DAG equals that of this figure are not satisfiable. In particular, all
+
+

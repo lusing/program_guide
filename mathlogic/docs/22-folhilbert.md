@@ -81,7 +81,7 @@ fdeduction_closed : closedF A → fder (A :: G) B → fder G (A → B)
 ```
 
 机器版把侧条件强化为「A 是闭公式」（无自由变元）——对任意 x
-自动满足 Mendelson 条件。四分支归纳（深嵌入 `examples/21_folhilbert/`）：
+自动满足 Mendelson 条件。四分支归纳（深嵌入 `examples/22_folhilbert/`）：
 
 - **假设分支**：B=A 时输出 identity（K1/K2 装配的 p→p）；
   B∈G 时 K1 弱化；

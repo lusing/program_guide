@@ -1,0 +1,992 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+  <head>
+    <meta content="3424f78fbf71492998703de7194985f2" name="dtb:uid"/>
+    <meta content="0" name="dtb:depth"/>
+    <meta content="0" name="dtb:totalPageCount"/>
+    <meta content="0" name="dtb:maxPageNumber"/>
+  </head>
+  <docTitle>
+    <text>设计模式之禅（第2版）</text>
+  </docTitle>
+  <navMap>
+    <navPoint id="第1章　单一职责原则">
+      <navLabel>
+        <text>第1章　单一职责原则</text>
+      </navLabel>
+      <content src="0.xhtml"/>
+    </navPoint>
+    <navPoint id="1.2　绝杀技，打破你的传统思维">
+      <navLabel>
+        <text>1.2　绝杀技，打破你的传统思维</text>
+      </navLabel>
+      <content src="1.xhtml"/>
+    </navPoint>
+    <navPoint id="1.3　我单纯，所以我快乐">
+      <navLabel>
+        <text>1.3　我单纯，所以我快乐</text>
+      </navLabel>
+      <content src="2.xhtml"/>
+    </navPoint>
+    <navPoint id="1.4　最佳实践">
+      <navLabel>
+        <text>1.4　最佳实践</text>
+      </navLabel>
+      <content src="3.xhtml"/>
+    </navPoint>
+    <navPoint id="第2章　里氏替换原则">
+      <navLabel>
+        <text>第2章　里氏替换原则</text>
+      </navLabel>
+      <content src="4.xhtml"/>
+    </navPoint>
+    <navPoint id="2.2　纠纷不断，规则压制">
+      <navLabel>
+        <text>2.2　纠纷不断，规则压制</text>
+      </navLabel>
+      <content src="5.xhtml"/>
+    </navPoint>
+    <navPoint id="2.3　最佳实践">
+      <navLabel>
+        <text>2.3　最佳实践</text>
+      </navLabel>
+      <content src="6.xhtml"/>
+    </navPoint>
+    <navPoint id="第3章　依赖倒置原则">
+      <navLabel>
+        <text>第3章　依赖倒置原则</text>
+      </navLabel>
+      <content src="7.xhtml"/>
+    </navPoint>
+    <navPoint id="3.2　言而无信，你太需要契约">
+      <navLabel>
+        <text>3.2　言而无信，你太需要契约</text>
+      </navLabel>
+      <content src="8.xhtml"/>
+    </navPoint>
+    <navPoint id="3.3　依赖的三种写法">
+      <navLabel>
+        <text>3.3　依赖的三种写法</text>
+      </navLabel>
+      <content src="9.xhtml"/>
+    </navPoint>
+    <navPoint id="3.4　最佳实践">
+      <navLabel>
+        <text>3.4　最佳实践</text>
+      </navLabel>
+      <content src="10.xhtml"/>
+    </navPoint>
+    <navPoint id="第4章　接口隔离原则">
+      <navLabel>
+        <text>第4章　接口隔离原则</text>
+      </navLabel>
+      <content src="11.xhtml"/>
+    </navPoint>
+    <navPoint id="4.2　美女何其多，观点各不同">
+      <navLabel>
+        <text>4.2　美女何其多，观点各不同</text>
+      </navLabel>
+      <content src="12.xhtml"/>
+    </navPoint>
+    <navPoint id="4.3　保证接口的纯洁性">
+      <navLabel>
+        <text>4.3　保证接口的纯洁性</text>
+      </navLabel>
+      <content src="13.xhtml"/>
+    </navPoint>
+    <navPoint id="4.4　最佳实践">
+      <navLabel>
+        <text>4.4　最佳实践</text>
+      </navLabel>
+      <content src="14.xhtml"/>
+    </navPoint>
+    <navPoint id="第5章　迪米特法则">
+      <navLabel>
+        <text>第5章　迪米特法则</text>
+      </navLabel>
+      <content src="15.xhtml"/>
+    </navPoint>
+    <navPoint id="5.2　我的知识你知道得越少越好">
+      <navLabel>
+        <text>5.2　我的知识你知道得越少越好</text>
+      </navLabel>
+      <content src="16.xhtml"/>
+    </navPoint>
+    <navPoint id="5.3　最佳实践">
+      <navLabel>
+        <text>5.3　最佳实践</text>
+      </navLabel>
+      <content src="17.xhtml"/>
+    </navPoint>
+    <navPoint id="第6章　开闭原则">
+      <navLabel>
+        <text>第6章　开闭原则</text>
+      </navLabel>
+      <content src="18.xhtml"/>
+    </navPoint>
+    <navPoint id="6.2　开闭原则的庐山真面目">
+      <navLabel>
+        <text>6.2　开闭原则的庐山真面目</text>
+      </navLabel>
+      <content src="19.xhtml"/>
+    </navPoint>
+    <navPoint id="6.3　为什么要采用开闭原则">
+      <navLabel>
+        <text>6.3　为什么要采用开闭原则</text>
+      </navLabel>
+      <content src="20.xhtml"/>
+    </navPoint>
+    <navPoint id="6.4　如何使用开闭原则">
+      <navLabel>
+        <text>6.4　如何使用开闭原则</text>
+      </navLabel>
+      <content src="21.xhtml"/>
+    </navPoint>
+    <navPoint id="6.5　最佳实践">
+      <navLabel>
+        <text>6.5　最佳实践</text>
+      </navLabel>
+      <content src="22.xhtml"/>
+    </navPoint>
+    <navPoint id="第二部分　真刀实枪 ——23种设计模式完美演绎">
+      <navLabel>
+        <text>第二部分　真刀实枪 ——23种设计模式完美演绎</text>
+      </navLabel>
+      <content src="23.xhtml"/>
+    </navPoint>
+    <navPoint id="第7章　单例模式">
+      <navLabel>
+        <text>第7章　单例模式</text>
+      </navLabel>
+      <content src="24.xhtml"/>
+    </navPoint>
+    <navPoint id="7.2　单例模式的定义">
+      <navLabel>
+        <text>7.2　单例模式的定义</text>
+      </navLabel>
+      <content src="25.xhtml"/>
+    </navPoint>
+    <navPoint id="7.3　单例模式的应用">
+      <navLabel>
+        <text>7.3　单例模式的应用</text>
+      </navLabel>
+      <content src="26.xhtml"/>
+    </navPoint>
+    <navPoint id="7.4　单例模式的扩展">
+      <navLabel>
+        <text>7.4　单例模式的扩展</text>
+      </navLabel>
+      <content src="27.xhtml"/>
+    </navPoint>
+    <navPoint id="7.5　最佳实践">
+      <navLabel>
+        <text>7.5　最佳实践</text>
+      </navLabel>
+      <content src="28.xhtml"/>
+    </navPoint>
+    <navPoint id="第8章　工厂方法模式">
+      <navLabel>
+        <text>第8章　工厂方法模式</text>
+      </navLabel>
+      <content src="29.xhtml"/>
+    </navPoint>
+    <navPoint id="8.2　工厂方法模式的定义">
+      <navLabel>
+        <text>8.2　工厂方法模式的定义</text>
+      </navLabel>
+      <content src="30.xhtml"/>
+    </navPoint>
+    <navPoint id="8.3　工厂方法模式的应用">
+      <navLabel>
+        <text>8.3　工厂方法模式的应用</text>
+      </navLabel>
+      <content src="31.xhtml"/>
+    </navPoint>
+    <navPoint id="8.4　工厂方法模式的扩展">
+      <navLabel>
+        <text>8.4　工厂方法模式的扩展</text>
+      </navLabel>
+      <content src="32.xhtml"/>
+    </navPoint>
+    <navPoint id="8.5　最佳实践">
+      <navLabel>
+        <text>8.5　最佳实践</text>
+      </navLabel>
+      <content src="33.xhtml"/>
+    </navPoint>
+    <navPoint id="第9章　抽象工厂模式">
+      <navLabel>
+        <text>第9章　抽象工厂模式</text>
+      </navLabel>
+      <content src="34.xhtml"/>
+    </navPoint>
+    <navPoint id="9.2　抽象工厂模式的定义">
+      <navLabel>
+        <text>9.2　抽象工厂模式的定义</text>
+      </navLabel>
+      <content src="35.xhtml"/>
+    </navPoint>
+    <navPoint id="9.3　抽象工厂模式的应用">
+      <navLabel>
+        <text>9.3　抽象工厂模式的应用</text>
+      </navLabel>
+      <content src="36.xhtml"/>
+    </navPoint>
+    <navPoint id="9.4　最佳实践">
+      <navLabel>
+        <text>9.4　最佳实践</text>
+      </navLabel>
+      <content src="37.xhtml"/>
+    </navPoint>
+    <navPoint id="第10章　模板方法模式">
+      <navLabel>
+        <text>第10章　模板方法模式</text>
+      </navLabel>
+      <content src="38.xhtml"/>
+    </navPoint>
+    <navPoint id="10.2　模板方法模式的定义">
+      <navLabel>
+        <text>10.2　模板方法模式的定义</text>
+      </navLabel>
+      <content src="39.xhtml"/>
+    </navPoint>
+    <navPoint id="10.3　模板方法模式的应用">
+      <navLabel>
+        <text>10.3　模板方法模式的应用</text>
+      </navLabel>
+      <content src="40.xhtml"/>
+    </navPoint>
+    <navPoint id="10.4　模板方法模式的扩展">
+      <navLabel>
+        <text>10.4　模板方法模式的扩展</text>
+      </navLabel>
+      <content src="41.xhtml"/>
+    </navPoint>
+    <navPoint id="10.5　最佳实践">
+      <navLabel>
+        <text>10.5　最佳实践</text>
+      </navLabel>
+      <content src="42.xhtml"/>
+    </navPoint>
+    <navPoint id="第11章　建造者模式">
+      <navLabel>
+        <text>第11章　建造者模式</text>
+      </navLabel>
+      <content src="43.xhtml"/>
+    </navPoint>
+    <navPoint id="11.2　建造者模式的定义">
+      <navLabel>
+        <text>11.2　建造者模式的定义</text>
+      </navLabel>
+      <content src="44.xhtml"/>
+    </navPoint>
+    <navPoint id="11.3　建造者模式的应用">
+      <navLabel>
+        <text>11.3　建造者模式的应用</text>
+      </navLabel>
+      <content src="45.xhtml"/>
+    </navPoint>
+    <navPoint id="11.4　建造者模式的扩展">
+      <navLabel>
+        <text>11.4　建造者模式的扩展</text>
+      </navLabel>
+      <content src="46.xhtml"/>
+    </navPoint>
+    <navPoint id="11.5　最佳实践">
+      <navLabel>
+        <text>11.5　最佳实践</text>
+      </navLabel>
+      <content src="47.xhtml"/>
+    </navPoint>
+    <navPoint id="第12章　代理模式">
+      <navLabel>
+        <text>第12章　代理模式</text>
+      </navLabel>
+      <content src="48.xhtml"/>
+    </navPoint>
+    <navPoint id="12.2　代理模式的定义">
+      <navLabel>
+        <text>12.2　代理模式的定义</text>
+      </navLabel>
+      <content src="49.xhtml"/>
+    </navPoint>
+    <navPoint id="12.3　代理模式的应用">
+      <navLabel>
+        <text>12.3　代理模式的应用</text>
+      </navLabel>
+      <content src="50.xhtml"/>
+    </navPoint>
+    <navPoint id="12.4　代理模式的扩展">
+      <navLabel>
+        <text>12.4　代理模式的扩展</text>
+      </navLabel>
+      <content src="51.xhtml"/>
+    </navPoint>
+    <navPoint id="12.5　最佳实践">
+      <navLabel>
+        <text>12.5　最佳实践</text>
+      </navLabel>
+      <content src="52.xhtml"/>
+    </navPoint>
+    <navPoint id="第13章　原型模式">
+      <navLabel>
+        <text>第13章　原型模式</text>
+      </navLabel>
+      <content src="53.xhtml"/>
+    </navPoint>
+    <navPoint id="13.2　原型模式的定义">
+      <navLabel>
+        <text>13.2　原型模式的定义</text>
+      </navLabel>
+      <content src="54.xhtml"/>
+    </navPoint>
+    <navPoint id="13.3　原型模式的应用">
+      <navLabel>
+        <text>13.3　原型模式的应用</text>
+      </navLabel>
+      <content src="55.xhtml"/>
+    </navPoint>
+    <navPoint id="13.4　原型模式的注意事项">
+      <navLabel>
+        <text>13.4　原型模式的注意事项</text>
+      </navLabel>
+      <content src="56.xhtml"/>
+    </navPoint>
+    <navPoint id="13.5　最佳实践">
+      <navLabel>
+        <text>13.5　最佳实践</text>
+      </navLabel>
+      <content src="57.xhtml"/>
+    </navPoint>
+    <navPoint id="第14章　中介者模式">
+      <navLabel>
+        <text>第14章　中介者模式</text>
+      </navLabel>
+      <content src="58.xhtml"/>
+    </navPoint>
+    <navPoint id="14.2　中介者模式的定义">
+      <navLabel>
+        <text>14.2　中介者模式的定义</text>
+      </navLabel>
+      <content src="59.xhtml"/>
+    </navPoint>
+    <navPoint id="14.3　中介者模式的应用">
+      <navLabel>
+        <text>14.3　中介者模式的应用</text>
+      </navLabel>
+      <content src="60.xhtml"/>
+    </navPoint>
+    <navPoint id="14.4　中介者模式的实际应用">
+      <navLabel>
+        <text>14.4　中介者模式的实际应用</text>
+      </navLabel>
+      <content src="61.xhtml"/>
+    </navPoint>
+    <navPoint id="14.5　最佳实践">
+      <navLabel>
+        <text>14.5　最佳实践</text>
+      </navLabel>
+      <content src="62.xhtml"/>
+    </navPoint>
+    <navPoint id="第15章　命令模式">
+      <navLabel>
+        <text>第15章　命令模式</text>
+      </navLabel>
+      <content src="63.xhtml"/>
+    </navPoint>
+    <navPoint id="15.2　命令模式的定义">
+      <navLabel>
+        <text>15.2　命令模式的定义</text>
+      </navLabel>
+      <content src="64.xhtml"/>
+    </navPoint>
+    <navPoint id="15.3　命令模式的应用">
+      <navLabel>
+        <text>15.3　命令模式的应用</text>
+      </navLabel>
+      <content src="65.xhtml"/>
+    </navPoint>
+    <navPoint id="15.4　命令模式的扩展">
+      <navLabel>
+        <text>15.4　命令模式的扩展</text>
+      </navLabel>
+      <content src="66.xhtml"/>
+    </navPoint>
+    <navPoint id="15.5　最佳实践">
+      <navLabel>
+        <text>15.5　最佳实践</text>
+      </navLabel>
+      <content src="67.xhtml"/>
+    </navPoint>
+    <navPoint id="第16章　责任链模式">
+      <navLabel>
+        <text>第16章　责任链模式</text>
+      </navLabel>
+      <content src="68.xhtml"/>
+    </navPoint>
+    <navPoint id="16.2　责任链模式的定义">
+      <navLabel>
+        <text>16.2　责任链模式的定义</text>
+      </navLabel>
+      <content src="69.xhtml"/>
+    </navPoint>
+    <navPoint id="16.3　责任链模式的应用">
+      <navLabel>
+        <text>16.3　责任链模式的应用</text>
+      </navLabel>
+      <content src="70.xhtml"/>
+    </navPoint>
+    <navPoint id="16.4　最佳实践">
+      <navLabel>
+        <text>16.4　最佳实践</text>
+      </navLabel>
+      <content src="71.xhtml"/>
+    </navPoint>
+    <navPoint id="第17章　装饰模式">
+      <navLabel>
+        <text>第17章　装饰模式</text>
+      </navLabel>
+      <content src="72.xhtml"/>
+    </navPoint>
+    <navPoint id="17.2　装饰模式的定义">
+      <navLabel>
+        <text>17.2　装饰模式的定义</text>
+      </navLabel>
+      <content src="73.xhtml"/>
+    </navPoint>
+    <navPoint id="17.3　装饰模式应用">
+      <navLabel>
+        <text>17.3　装饰模式应用</text>
+      </navLabel>
+      <content src="74.xhtml"/>
+    </navPoint>
+    <navPoint id="17.4　最佳实践">
+      <navLabel>
+        <text>17.4　最佳实践</text>
+      </navLabel>
+      <content src="75.xhtml"/>
+    </navPoint>
+    <navPoint id="第18章　策略模式">
+      <navLabel>
+        <text>第18章　策略模式</text>
+      </navLabel>
+      <content src="76.xhtml"/>
+    </navPoint>
+    <navPoint id="18.2　策略模式的定义">
+      <navLabel>
+        <text>18.2　策略模式的定义</text>
+      </navLabel>
+      <content src="77.xhtml"/>
+    </navPoint>
+    <navPoint id="18.3　策略模式的应用">
+      <navLabel>
+        <text>18.3　策略模式的应用</text>
+      </navLabel>
+      <content src="78.xhtml"/>
+    </navPoint>
+    <navPoint id="18.4　策略模式的扩展">
+      <navLabel>
+        <text>18.4　策略模式的扩展</text>
+      </navLabel>
+      <content src="79.xhtml"/>
+    </navPoint>
+    <navPoint id="18.5　最佳实践">
+      <navLabel>
+        <text>18.5　最佳实践</text>
+      </navLabel>
+      <content src="80.xhtml"/>
+    </navPoint>
+    <navPoint id="第19章　适配器模式">
+      <navLabel>
+        <text>第19章　适配器模式</text>
+      </navLabel>
+      <content src="81.xhtml"/>
+    </navPoint>
+    <navPoint id="19.2　适配器模式的定义">
+      <navLabel>
+        <text>19.2　适配器模式的定义</text>
+      </navLabel>
+      <content src="82.xhtml"/>
+    </navPoint>
+    <navPoint id="19.3　适配器模式的应用">
+      <navLabel>
+        <text>19.3　适配器模式的应用</text>
+      </navLabel>
+      <content src="83.xhtml"/>
+    </navPoint>
+    <navPoint id="19.4　适配器模式的扩展">
+      <navLabel>
+        <text>19.4　适配器模式的扩展</text>
+      </navLabel>
+      <content src="84.xhtml"/>
+    </navPoint>
+    <navPoint id="19.5　最佳实践">
+      <navLabel>
+        <text>19.5　最佳实践</text>
+      </navLabel>
+      <content src="85.xhtml"/>
+    </navPoint>
+    <navPoint id="第20章　迭代器模式">
+      <navLabel>
+        <text>第20章　迭代器模式</text>
+      </navLabel>
+      <content src="86.xhtml"/>
+    </navPoint>
+    <navPoint id="20.2　迭代器模式的定义">
+      <navLabel>
+        <text>20.2　迭代器模式的定义</text>
+      </navLabel>
+      <content src="87.xhtml"/>
+    </navPoint>
+    <navPoint id="20.3　迭代器模式的应用">
+      <navLabel>
+        <text>20.3　迭代器模式的应用</text>
+      </navLabel>
+      <content src="88.xhtml"/>
+    </navPoint>
+    <navPoint id="20.4　最佳实践">
+      <navLabel>
+        <text>20.4　最佳实践</text>
+      </navLabel>
+      <content src="89.xhtml"/>
+    </navPoint>
+    <navPoint id="第21章　组合模式">
+      <navLabel>
+        <text>第21章　组合模式</text>
+      </navLabel>
+      <content src="90.xhtml"/>
+    </navPoint>
+    <navPoint id="21.2　组合模式的定义">
+      <navLabel>
+        <text>21.2　组合模式的定义</text>
+      </navLabel>
+      <content src="91.xhtml"/>
+    </navPoint>
+    <navPoint id="21.3　组合模式的应用">
+      <navLabel>
+        <text>21.3　组合模式的应用</text>
+      </navLabel>
+      <content src="92.xhtml"/>
+    </navPoint>
+    <navPoint id="21.4　组合模式的扩展">
+      <navLabel>
+        <text>21.4　组合模式的扩展</text>
+      </navLabel>
+      <content src="93.xhtml"/>
+    </navPoint>
+    <navPoint id="21.5　最佳实践">
+      <navLabel>
+        <text>21.5　最佳实践</text>
+      </navLabel>
+      <content src="94.xhtml"/>
+    </navPoint>
+    <navPoint id="第22章　观察者模式">
+      <navLabel>
+        <text>第22章　观察者模式</text>
+      </navLabel>
+      <content src="95.xhtml"/>
+    </navPoint>
+    <navPoint id="22.2　观察者模式的定义">
+      <navLabel>
+        <text>22.2　观察者模式的定义</text>
+      </navLabel>
+      <content src="96.xhtml"/>
+    </navPoint>
+    <navPoint id="22.3　观察者模式的应用">
+      <navLabel>
+        <text>22.3　观察者模式的应用</text>
+      </navLabel>
+      <content src="97.xhtml"/>
+    </navPoint>
+    <navPoint id="22.4　观察者模式的扩展">
+      <navLabel>
+        <text>22.4　观察者模式的扩展</text>
+      </navLabel>
+      <content src="98.xhtml"/>
+    </navPoint>
+    <navPoint id="22.5　最佳实践">
+      <navLabel>
+        <text>22.5　最佳实践</text>
+      </navLabel>
+      <content src="99.xhtml"/>
+    </navPoint>
+    <navPoint id="第23章　门面模式">
+      <navLabel>
+        <text>第23章　门面模式</text>
+      </navLabel>
+      <content src="100.xhtml"/>
+    </navPoint>
+    <navPoint id="23.2　门面模式的定义">
+      <navLabel>
+        <text>23.2　门面模式的定义</text>
+      </navLabel>
+      <content src="101.xhtml"/>
+    </navPoint>
+    <navPoint id="23.3　门面模式的应用">
+      <navLabel>
+        <text>23.3　门面模式的应用</text>
+      </navLabel>
+      <content src="102.xhtml"/>
+    </navPoint>
+    <navPoint id="23.4　门面模式的注意事项">
+      <navLabel>
+        <text>23.4　门面模式的注意事项</text>
+      </navLabel>
+      <content src="103.xhtml"/>
+    </navPoint>
+    <navPoint id="23.5　最佳实践">
+      <navLabel>
+        <text>23.5　最佳实践</text>
+      </navLabel>
+      <content src="104.xhtml"/>
+    </navPoint>
+    <navPoint id="第24章　备忘录模式">
+      <navLabel>
+        <text>第24章　备忘录模式</text>
+      </navLabel>
+      <content src="105.xhtml"/>
+    </navPoint>
+    <navPoint id="24.2　备忘录模式的定义">
+      <navLabel>
+        <text>24.2　备忘录模式的定义</text>
+      </navLabel>
+      <content src="106.xhtml"/>
+    </navPoint>
+    <navPoint id="24.3　备忘录模式的应用">
+      <navLabel>
+        <text>24.3　备忘录模式的应用</text>
+      </navLabel>
+      <content src="107.xhtml"/>
+    </navPoint>
+    <navPoint id="24.4　备忘录模式的扩展">
+      <navLabel>
+        <text>24.4　备忘录模式的扩展</text>
+      </navLabel>
+      <content src="108.xhtml"/>
+    </navPoint>
+    <navPoint id="24.5　最佳实践">
+      <navLabel>
+        <text>24.5　最佳实践</text>
+      </navLabel>
+      <content src="109.xhtml"/>
+    </navPoint>
+    <navPoint id="第25章　访问者模式">
+      <navLabel>
+        <text>第25章　访问者模式</text>
+      </navLabel>
+      <content src="110.xhtml"/>
+    </navPoint>
+    <navPoint id="25.2　访问者模式的定义">
+      <navLabel>
+        <text>25.2　访问者模式的定义</text>
+      </navLabel>
+      <content src="111.xhtml"/>
+    </navPoint>
+    <navPoint id="25.3　访问者模式的应用">
+      <navLabel>
+        <text>25.3　访问者模式的应用</text>
+      </navLabel>
+      <content src="112.xhtml"/>
+    </navPoint>
+    <navPoint id="25.4　访问者模式的扩展">
+      <navLabel>
+        <text>25.4　访问者模式的扩展</text>
+      </navLabel>
+      <content src="113.xhtml"/>
+    </navPoint>
+    <navPoint id="25.5　最佳实践">
+      <navLabel>
+        <text>25.5　最佳实践</text>
+      </navLabel>
+      <content src="114.xhtml"/>
+    </navPoint>
+    <navPoint id="第26章　状态模式">
+      <navLabel>
+        <text>第26章　状态模式</text>
+      </navLabel>
+      <content src="115.xhtml"/>
+    </navPoint>
+    <navPoint id="26.2　状态模式的定义">
+      <navLabel>
+        <text>26.2　状态模式的定义</text>
+      </navLabel>
+      <content src="116.xhtml"/>
+    </navPoint>
+    <navPoint id="26.3　状态模式的应用">
+      <navLabel>
+        <text>26.3　状态模式的应用</text>
+      </navLabel>
+      <content src="117.xhtml"/>
+    </navPoint>
+    <navPoint id="第27章　解释器模式">
+      <navLabel>
+        <text>第27章　解释器模式</text>
+      </navLabel>
+      <content src="118.xhtml"/>
+    </navPoint>
+    <navPoint id="27.2　解释器模式的定义">
+      <navLabel>
+        <text>27.2　解释器模式的定义</text>
+      </navLabel>
+      <content src="119.xhtml"/>
+    </navPoint>
+    <navPoint id="27.3　解释器模式的应用">
+      <navLabel>
+        <text>27.3　解释器模式的应用</text>
+      </navLabel>
+      <content src="120.xhtml"/>
+    </navPoint>
+    <navPoint id="27.4　最佳实践">
+      <navLabel>
+        <text>27.4　最佳实践</text>
+      </navLabel>
+      <content src="121.xhtml"/>
+    </navPoint>
+    <navPoint id="第28章　享元模式">
+      <navLabel>
+        <text>第28章　享元模式</text>
+      </navLabel>
+      <content src="122.xhtml"/>
+    </navPoint>
+    <navPoint id="28.2　享元模式的定义">
+      <navLabel>
+        <text>28.2　享元模式的定义</text>
+      </navLabel>
+      <content src="123.xhtml"/>
+    </navPoint>
+    <navPoint id="28.3　享元模式的应用">
+      <navLabel>
+        <text>28.3　享元模式的应用</text>
+      </navLabel>
+      <content src="124.xhtml"/>
+    </navPoint>
+    <navPoint id="28.4　享元模式的扩展">
+      <navLabel>
+        <text>28.4　享元模式的扩展</text>
+      </navLabel>
+      <content src="125.xhtml"/>
+    </navPoint>
+    <navPoint id="28.5　最佳实践">
+      <navLabel>
+        <text>28.5　最佳实践</text>
+      </navLabel>
+      <content src="126.xhtml"/>
+    </navPoint>
+    <navPoint id="第29章　桥梁模式">
+      <navLabel>
+        <text>第29章　桥梁模式</text>
+      </navLabel>
+      <content src="127.xhtml"/>
+    </navPoint>
+    <navPoint id="29.2　桥梁模式的定义">
+      <navLabel>
+        <text>29.2　桥梁模式的定义</text>
+      </navLabel>
+      <content src="128.xhtml"/>
+    </navPoint>
+    <navPoint id="29.3　桥梁模式的应用">
+      <navLabel>
+        <text>29.3　桥梁模式的应用</text>
+      </navLabel>
+      <content src="129.xhtml"/>
+    </navPoint>
+    <navPoint id="29.4　最佳实践">
+      <navLabel>
+        <text>29.4　最佳实践</text>
+      </navLabel>
+      <content src="130.xhtml"/>
+    </navPoint>
+    <navPoint id="第三部分　谁的地盘谁做主 ——设计模式PK">
+      <navLabel>
+        <text>第三部分　谁的地盘谁做主 ——设计模式PK</text>
+      </navLabel>
+      <content src="131.xhtml"/>
+    </navPoint>
+    <navPoint id="第30章　创建类模式大PK">
+      <navLabel>
+        <text>第30章　创建类模式大PK</text>
+      </navLabel>
+      <content src="132.xhtml"/>
+    </navPoint>
+    <navPoint id="30.1　工厂方法模式VS建造者模式">
+      <navLabel>
+        <text>30.1　工厂方法模式VS建造者模式</text>
+      </navLabel>
+      <content src="133.xhtml"/>
+    </navPoint>
+    <navPoint id="30.2　抽象工厂模式VS建造者模式">
+      <navLabel>
+        <text>30.2　抽象工厂模式VS建造者模式</text>
+      </navLabel>
+      <content src="134.xhtml"/>
+    </navPoint>
+    <navPoint id="第31章　结构类模式大PK">
+      <navLabel>
+        <text>第31章　结构类模式大PK</text>
+      </navLabel>
+      <content src="135.xhtml"/>
+    </navPoint>
+    <navPoint id="31.1　代理模式VS装饰模式">
+      <navLabel>
+        <text>31.1　代理模式VS装饰模式</text>
+      </navLabel>
+      <content src="136.xhtml"/>
+    </navPoint>
+    <navPoint id="31.2　装饰模式VS适配器模式">
+      <navLabel>
+        <text>31.2　装饰模式VS适配器模式</text>
+      </navLabel>
+      <content src="137.xhtml"/>
+    </navPoint>
+    <navPoint id="第32章　行为类模式大PK">
+      <navLabel>
+        <text>第32章　行为类模式大PK</text>
+      </navLabel>
+      <content src="138.xhtml"/>
+    </navPoint>
+    <navPoint id="32.1　命令模式VS策略模式">
+      <navLabel>
+        <text>32.1　命令模式VS策略模式</text>
+      </navLabel>
+      <content src="139.xhtml"/>
+    </navPoint>
+    <navPoint id="32.2　策略模式VS状态模式">
+      <navLabel>
+        <text>32.2　策略模式VS状态模式</text>
+      </navLabel>
+      <content src="140.xhtml"/>
+    </navPoint>
+    <navPoint id="32.3　观察者模式VS责任链模式">
+      <navLabel>
+        <text>32.3　观察者模式VS责任链模式</text>
+      </navLabel>
+      <content src="141.xhtml"/>
+    </navPoint>
+    <navPoint id="第33章　跨战区PK">
+      <navLabel>
+        <text>第33章　跨战区PK</text>
+      </navLabel>
+      <content src="142.xhtml"/>
+    </navPoint>
+    <navPoint id="33.1　策略模式VS桥梁模式">
+      <navLabel>
+        <text>33.1　策略模式VS桥梁模式</text>
+      </navLabel>
+      <content src="143.xhtml"/>
+    </navPoint>
+    <navPoint id="33.2　门面模式VS中介者模式">
+      <navLabel>
+        <text>33.2　门面模式VS中介者模式</text>
+      </navLabel>
+      <content src="144.xhtml"/>
+    </navPoint>
+    <navPoint id="33.3　包装模式群PK">
+      <navLabel>
+        <text>33.3　包装模式群PK</text>
+      </navLabel>
+      <content src="145.xhtml"/>
+    </navPoint>
+    <navPoint id="第四部分　完美世界 ——设计模式混编">
+      <navLabel>
+        <text>第四部分　完美世界 ——设计模式混编</text>
+      </navLabel>
+      <content src="146.xhtml"/>
+    </navPoint>
+    <navPoint id="第34章　命令模式+责任链模式">
+      <navLabel>
+        <text>第34章　命令模式+责任链模式</text>
+      </navLabel>
+      <content src="147.xhtml"/>
+    </navPoint>
+    <navPoint id="34.2　混编小结">
+      <navLabel>
+        <text>34.2　混编小结</text>
+      </navLabel>
+      <content src="148.xhtml"/>
+    </navPoint>
+    <navPoint id="第35章　工厂方法模式+策略模式">
+      <navLabel>
+        <text>第35章　工厂方法模式+策略模式</text>
+      </navLabel>
+      <content src="149.xhtml"/>
+    </navPoint>
+    <navPoint id="35.2　混编小结">
+      <navLabel>
+        <text>35.2　混编小结</text>
+      </navLabel>
+      <content src="150.xhtml"/>
+    </navPoint>
+    <navPoint id="第36章　观察者模式+中介者模式">
+      <navLabel>
+        <text>第36章　观察者模式+中介者模式</text>
+      </navLabel>
+      <content src="151.xhtml"/>
+    </navPoint>
+    <navPoint id="36.2　混编小结">
+      <navLabel>
+        <text>36.2　混编小结</text>
+      </navLabel>
+      <content src="152.xhtml"/>
+    </navPoint>
+    <navPoint id="第五部分　扩展篇">
+      <navLabel>
+        <text>第五部分　扩展篇</text>
+      </navLabel>
+      <content src="153.xhtml"/>
+    </navPoint>
+    <navPoint id="第37章　MVC框架">
+      <navLabel>
+        <text>第37章　MVC框架</text>
+      </navLabel>
+      <content src="154.xhtml"/>
+    </navPoint>
+    <navPoint id="37.2　最佳实践">
+      <navLabel>
+        <text>37.2　最佳实践</text>
+      </navLabel>
+      <content src="155.xhtml"/>
+    </navPoint>
+    <navPoint id="第38章　新模式">
+      <navLabel>
+        <text>第38章　新模式</text>
+      </navLabel>
+      <content src="156.xhtml"/>
+    </navPoint>
+    <navPoint id="38.1　规格模式">
+      <navLabel>
+        <text>38.1　规格模式</text>
+      </navLabel>
+      <content src="157.xhtml"/>
+    </navPoint>
+    <navPoint id="38.2　对象池模式">
+      <navLabel>
+        <text>38.2　对象池模式</text>
+      </navLabel>
+      <content src="158.xhtml"/>
+    </navPoint>
+    <navPoint id="38.3　雇工模式">
+      <navLabel>
+        <text>38.3　雇工模式</text>
+      </navLabel>
+      <content src="159.xhtml"/>
+    </navPoint>
+    <navPoint id="38.4　黑板模式">
+      <navLabel>
+        <text>38.4　黑板模式</text>
+      </navLabel>
+      <content src="160.xhtml"/>
+    </navPoint>
+    <navPoint id="38.5　空对象模式">
+      <navLabel>
+        <text>38.5　空对象模式</text>
+      </navLabel>
+      <content src="161.xhtml"/>
+    </navPoint>
+    <navPoint id="附录　23种设计模式彩图">
+      <navLabel>
+        <text>附录　23种设计模式彩图</text>
+      </navLabel>
+      <content src="162.xhtml"/>
+    </navPoint>
+  </navMap>
+</ncx>

@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#" lang="cn" xml:lang="cn">
+  <head>
+    <title>14.2　中介者模式的定义</title>
+  </head>
+  <body><h3 class="p3" id="sigil_toc_id_76">14.2 中介者模式的定义</h3> 
+<p class="ziti">中介者模式的定义为：Define an object that encapsulates how a set of objects interact.Mediator promotes loose coupling by keeping objects from referring to each other explicitly,and it lets you vary their interaction independently.（用一个中介对象封装一系列的对象交互，中介者使各对象不需要显示地相互作用，从而使其耦合松散，而且可以独立地改变它们之间的交互。）</p> 
+<p class="ziti">中介者模式通用类图如图14-7所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0036.jpg"/></a></p> 
+<p class="middle-img">图14-7 中介者模式通用类图</p> 
+<p class="ziti">从类图中看，中介者模式由以下几部分组成：</p> 
+<p class="ziti">● Mediator 抽象中介者角色</p> 
+<p class="ziti">抽象中介者角色定义统一的接口，用于各同事角色之间的通信。</p> 
+<p class="ziti">● Concrete Mediator 具体中介者角色</p> 
+<p class="ziti">具体中介者角色通过协调各同事角色实现协作行为，因此它必须依赖于各个同事角色。</p> 
+<p class="ziti">● Colleague 同事角色</p> 
+<p class="ziti">每一个同事角色都知道中介者角色，而且与其他的同事角色通信的时候，一定要通过中介者角色协作。每个同事类的行为分为两种：一种是同事本身的行为，比如改变对象本身的状态，处理自己的行为等，这种行为叫做自发行为（Self-Method），与其他的同事类或中介者没有任何的依赖；第二种是必须依赖中介者才能完成的行为，叫做依赖方法（Dep-Method）。</p> 
+<p class="ziti">中介者模式比较简单，其通用源码也比较简单，先看抽象中介者Mediator类，如代码清单14-12所示。</p> 
+<p class="ziti">代码清单14-12 通用抽象中介者</p> 
+<pre>public abstract class Mediator {&#13;
+     //定义同事类&#13;
+     protected ConcreteColleague1 c1;&#13;
+     protected ConcreteColleague2 c2;&#13;
+     //通过getter/setter方法把同事类注入进来&#13;
+     public ConcreteColleague1 getC1() {&#13;
+             return c1;&#13;
+     }&#13;
+     public void setC1(ConcreteColleague1 c1) {&#13;
+             this.c1 = c1;&#13;
+     }&#13;
+     public ConcreteColleague2 getC2() {&#13;
+             return c2;&#13;
+     }&#13;
+     public void setC2(ConcreteColleague2 c2) {&#13;
+             this.c2 = c2;&#13;
+     }&#13;
+     //中介者模式的业务逻辑&#13;
+     public abstract void doSomething1();&#13;
+     public abstract void doSomething2();&#13;
+}</pre> 
+<p class="ziti">在Mediator抽象类中我们只定义了同事类的注入，为什么使用同事实现类注入而不使用抽象类注入呢？那是因为同事类虽然有抽象，但是没有每个同事类必须要完成的业务方法，当然如果每个同事类都有相同的方法，比如execute、handler等，那当然注入抽象类，做到依赖倒置。</p> 
+<p class="ziti">具体的中介者一般只有一个，即通用中介者，其源代码如代码清单14-13所示。</p> 
+<p class="ziti">代码清单14-13 通用中介者</p> 
+<pre>public class ConcreteMediator extends Mediator {&#13;
+     @Override&#13;
+     public void doSomething1() {&#13;
+             //调用同事类的方法，只要是public方法都可以调用&#13;
+             super.c1.selfMethod1();&#13;
+             super.c2.selfMethod2();&#13;
+     }&#13;
+     public void doSomething2() {&#13;
+             super.c1.selfMethod1();&#13;
+             super.c2.selfMethod2();&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">中介者所具有的方法doSomething1和doSomething2都是比较复杂的业务逻辑，为同事类服务，其实现是依赖各个同事类来完成的。</p> 
+<p class="ziti">同事类的基类如代码清单14-14所示。</p> 
+<p class="ziti">代码清单14-14 抽象同事类</p> 
+<pre>public abstract class Colleague {&#13;
+     protected Mediator mediator;&#13;
+     public Colleague(Mediator _mediator){&#13;
+             this.mediator = _mediator;&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">这个基类也非常简单。一般来说，中介者模式中的抽象都比较简单，是为了建立这个中介而服务的，具体同事类如代码清单14-15所示。</p> 
+<p class="ziti">代码清单14-15 具体同事类</p> 
+<pre>public class ConcreteColleague1 extends Colleague {&#13;
+     //通过构造函数传递中介者&#13;
+     public ConcreteColleague1(Mediator _mediator){&#13;
+             super(_mediator);&#13;
+     }&#13;
+     //自有方法 self-method&#13;
+     public void selfMethod1(){&#13;
+             //处理自己的业务逻辑&#13;
+     }&#13;
+     //依赖方法 dep-method&#13;
+     public void depMethod1(){&#13;
+             //处理自己的业务逻辑&#13;
+             //自己不能处理的业务逻辑，委托给中介者处理&#13;
+             super.mediator.doSomething1();&#13;
+     }&#13;
+}&#13;
+public class ConcreteColleague2 extends Colleague {&#13;
+     //通过构造函数传递中介者&#13;
+     public ConcreteColleague2(Mediator _mediator){&#13;
+             super(_mediator);&#13;
+     }&#13;
+     //自有方法 self-method&#13;
+     public void selfMethod2(){&#13;
+             //处理自己的业务逻辑&#13;
+     }&#13;
+     //依赖方法 dep-method&#13;
+     public void depMethod2(){&#13;
+             //处理自己的业务逻辑&#13;
+             //自己不能处理的业务逻辑，委托给中介者处理&#13;
+             super.mediator.doSomething2();&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">为什么同事类要使用构造函数注入中介者，而中介者使用getter/setter方式注入同事类呢？这是因为同事类必须有中介者，而中介者却可以只有部分同事类。</p></body>
+</html>

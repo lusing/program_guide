@@ -1,0 +1,557 @@
+3.6 Model-checking algorithms
+
+221
+
+Since U is like F (only with the extra complication of its first argument), we find the following equivalence:
+
+E[(p1 U q1)  (p2 U q2)]  E[(p1  p2) U (q1  E[p2 U q2])]  E[(p1  p2) U (q2  E[p1 U q1])].
+And from the CTL equivalence A[p U q]  ¬(E[¬q U (¬p  ¬q)]  EG ¬q) (see Theorem 3.10) we can obtain E[¬(p U q)]  E[¬q U (¬p  ¬q)]  EG ¬q. Other identities we need in this translation include E[¬X p]  EX ¬p.
+
+3.5.2 Past operators in LTL The temporal operators X, U, F, etc. which we have seen so far refer to the future. Sometimes we want to encode properties that refer to the past, such as: `whenever q occurs, then there was some p in the past.' To do this, we may add the operators Y, S, O, H. They stand for yesterday, since, once, and historically, and are the past analogues of X, U, F, G, respectively. Thus, the example formula may be written G (q  O p).
+NuSMV supports past operators in LTL. One could also add past operators to CTL (AY, ES, etc.) but NuSMV does not support them.
+Somewhat counter-intuitively, past operators do not increase the expressive power of LTL. That is to say, every LTL formula with past operators can be written equivalently without them. The example formula above can be written ¬p W q, or equivalently ¬(¬q U (p  ¬q)) if one wants to avoid W. This result is surprising, because it seems that being able to talk about the past as well as the future allows more expressivity than talking about the future alone. However, recall that LTL equivalence is quite crude: it says that the two formulas are satisfied by exactly the same set of paths. The past operators allow us to travel backwards along the path, but only to reach points we could have reached by travelling forwards from its beginning. In contrast, adding past operators to CTL does increase its expressive power, because they can allow us to examine states not forward-reachable from the present one.
+
+3.6 Model-checking algorithms
+The semantic definitions for LTL and CTL presented in Sections 3.2 and 3.4 allow us to test whether the initial states of a given system satisfy an LTL or CTL formula. This is the basic model-checking question. In general, interesting transition systems will have a huge number of states and the formula
+
+222
+
+3 Verification by model checking
+
+we are interested in checking may be quite long. It is therefore well worth trying to find efficient algorithms.
+Although LTL is generally preferred by specifiers, as already noted, we start with CTL model checking because its algorithm is simpler.
+
+3.6.1 The CTL model-checking algorithm Humans may find it easier to do model checks on the unwindings of models into infinite trees, given a designated initial state, for then all possible paths are plainly visible. However, if we think of implementing a model checker on a computer, we certainly cannot unwind transition systems into infinite trees. We need to do checks on finite data structures. For this reason, we now have to develop new insights into the semantics of CTL. Such a deeper understanding will provide the basis for an efficient algorithm which, given M, s  S and , computes whether M, s  holds. In the case that  is not satisfied, such an algorithm can be augmented to produce an actual path (= run) of the system demonstrating that M cannot satisfy . That way, we may debug a system by trying to fix what enables runs which refute .
+There are various ways in which one could consider
+?
+M, s0 
+as a computational problem. For example, one could have the model M, the formula  and a state s0 as input; one would then expect a reply of the form `yes' (M, s0  holds), or `no' (M, s0  does not hold). Alternatively, the inputs could be just M and , where the output would be all states s of the model M which satisfy .
+It turns out that it is easier to provide an algorithm for solving the second of these two problems. This automatically gives us a solution to the first one, since we can simply check whether s0 is an element of the output set.
+The labelling algorithm We present an algorithm which, given a model and a CTL formula, outputs the set of states of the model that satisfy the formula. The algorithm does not need to be able to handle every CTL connective explicitly, since we have already seen that the connectives , ¬ and  form an adequate set as far as the propositional connectives are concerned; and AF , EU and EX form an adequate set of temporal connectives. Given an arbitrary CTL formula , we would simply pre-process  in order to write it in an equivalent form in terms of the adequate set of connectives, and then
+
+Repeat. . .
+
+3.6 Model-checking algorithms
+AF1
+
+223
+AF1
+
+AF1
+
+AF1
+
+AF1
+
+AF1
+
+AF1
+
+. . . until no change.
+Figure 3.24. The iteration step of the procedure for labelling states with subformulas of the form AF 1.
+
+call the model-checking algorithm. Here is the algorithm:
+INPUT: a CTL model M = (S, , L) and a CTL formula . OUTPUT: the set of states of M which satisfy .
+First, change  to the output of TRANSLATE (), i.e., we write  in terms of the connectives AF, EU, EX, , ¬ and  using the equivalences given earlier in the chapter. Next, label the states of M with the subformulas of  that are satisfied there, starting with the smallest subformulas and working outwards towards .
+Suppose  is a subformula of  and states satisfying all the immediate subformulas of  have already been labelled. We determine by a case analysis which states to label with . If  is
+r : then no states are labelled with . r p: then label s with p if p  L(s). r 1  2: label s with 1  2 if s is already labelled both with 1 and with 2. r ¬1: label s with ¬1 if s is not already labelled with 1. r AF 1:
+­ If any state s is labelled with 1, label it with AF 1. ­ Repeat: label any state with AF 1 if all successor states are labelled with
+AF 1, until there is no change. This step is illustrated in Figure 3.24. r E[1 U 2]:
+­ If any state s is labelled with 2, label it with E[1 U 2]. ­ Repeat: label any state with E[1 U 2] if it is labelled with 1 and at least
+one of its successors is labelled with E[1 U 2], until there is no change. This step is illustrated in Figure 3.25. r EX 1: label any state with EX 1 if one of its successors is labelled with 1.
+
+224
+1
+
+3 Verification by model checking
+
+E[1 U 2]
+
+1 E[1 U 2]
+
+E[1 U 2]
+
+Figure 3.25. The iteration step of the procedure for labelling states with subformulas of the form E[1 U 2].
+Having performed the labelling for all the subformulas of  (including  itself), we output the states which are labelled .
+The complexity of this algorithm is O(f · V · (V + E)), where f is the number of connectives in the formula, V is the number of states and E is the number of transitions; the algorithm is linear in the size of the formula and quadratic in the size of the model.
+Handling EG directly Instead of using a minimal adequate set of connectives, it would have been possible to write similar routines for the other connectives. Indeed, this would probably be more efficient. The connectives AG and EG require a slightly different approach from that for the others, however. Here is the algorithm to deal with EG 1 directly:
+r EG 1: ­ Label all the states with EG 1. ­ If any state s is not labelled with 1, delete the label EG 1. ­ Repeat: delete the label EG 1 from any state if none of its successors is labelled with EG 1; until there is no change.
+Here, we label all the states with the subformula EG 1 and then whittle down this labelled set, instead of building it up from nothing as we did in the case for EU. Actually, there is no real difference between this procedure for EG  and what you would do if you translated it into ¬AF ¬ as far as the final result is concerned.
+A variant which is more efficient We can improve the efficiency of our labelling algorithm by using a cleverer way of handling EG. Instead of using EX, EU and AF as the adequate set, we use EX, EU and EG instead. For EX and EU we do as before (but take care to search the model by
+
+3.6 Model-checking algorithms
+
+225
+
+states satisfying 
+
+EG  SCC SCC
+
+SCC
+
+Figure 3.26. A better way of handling EG.
+backwards breadth-first search, for this ensures that we won't have to pass over any node twice). For the EG  case:
+r Restrict the graph to states satisfying , i.e., delete all other states and their transitions;
+r Find the maximal strongly connected components (SCCs); these are maximal regions of the state space in which every state is linked with (= has a finite path to) every other one in that region.
+r Use backwards breadth-first search on the restricted graph to find any state that can reach an SCC; see Figure 3.26.
+The complexity of this algorithm is O(f · (V + E)), i.e., linear both in the size of the model and in the size of the formula.
+Example 3.20 We applied the basic algorithm to our second model of mutual exclusion with the formula E[¬c2 U c1]; see Figure 3.27. The algorithm labels all states which satisfy c1 during phase 1 with E[¬c2 U c1]. This labels s2 and s4. During phase 2, it labels all states which do not satisfy c2 and have a successor state that is already labelled. This labels states s1 and s3. During phase 3, we label s0 because it does not satisfy c2 and has a successor state (s1) which is already labelled. Thereafter, the algorithm terminates because no additional states get labelled: all unlabelled states either satisfy c2, or must pass through such a state to reach a labelled state.
+The pseudo-code of the CTL model-checking algorithm We present the pseudo-code for the basic labelling algorithm. The main function SAT (for `satisfies') takes as input a CTL formula. The program SAT expects a parse tree of some CTL formula constructed by means of the grammar in Definition 3.12. This expectation reflects an important precondition on the correctness of the algorithm SAT. For example, the program simply would not know what to do with an input of the form X (  EF p3), since this is not a CTL formula.
+
+226
+
+3 Verification by model checking
+
+s1
+0 : t1n2 2 : E[¬c2 U c1]
+
+s0
+0 : n1n2 3 : E[¬c2 U c1]
+
+s2
+0 : c1n2 1 : E[¬c2 U c1]
+
+s3
+0 : t1t2 2 : E[¬c2 U c1]
+
+s9
+0 : t1t2
+
+s4
+0 : c1t2 1 : E[¬c2 U c1]
+
+s5
+0 : n1t2
+s6
+0 : n1c2
+s7
+0 : t1c2
+
+Figure 3.27. An example run of the labelling algorithm in our second model of mutual exclusion applied to the formula E[¬c2 U c1].
+
+The pseudo-code we write for SAT looks a bit like fragments of C or Java code; we use functions with a keyword return that indicates which result the function should return. We will also use natural language to indicate the case analysis over the root node of the parse tree of . The declaration local var declares some fresh variables local to the current instance of the procedure in question, whereas repeat until executes the command which follows it repeatedly, until the condition becomes true. Additionally, we employ suggestive notation for the operations on sets, like intersection, set complement and so forth. In reality we would need an abstract data type, together with implementations of these operations, but for now we are interested only in the mechanism in principle of the algorithm for SAT; any (correct and efficient) implementation of sets would do and we study such an implementation in Chapter 6. We assume that SAT has access to all the relevant parts of the model: S,  and L. In particular, we ignore the fact that SAT would require a description of M as input as well. We simply assume that SAT operates directly on any such given model. Note how SAT translates  into an equivalent formula of the adequate set chosen.
+
+3.6 Model-checking algorithms
+
+227
+
+function SAT () /* determines the set of states satisfying  */ begin
+case  is : return S  is  : return   is atomic: return {s  S |   L(s)}  is ¬1 : return S - SAT (1)  is 1  2 : return SAT (1)  SAT (2)  is 1  2 : return SAT (1)  SAT (2)  is 1  2 : return SAT (¬1  2)  is AX 1 : return SAT (¬EX ¬1)  is EX 1 : return SATEX(1)  is A[1 U 2] : return SAT(¬(E[¬2 U (¬1  ¬2)]  EG ¬2))  is E[1 U 2] : return SATEU(1, 2)  is EF 1 : return SAT (E( U 1))  is EG 1 : return SAT(¬AF ¬1)  is AF 1 : return SATAF (1)  is AG 1 : return SAT (¬EF ¬1)
+end case
+end function
+Figure 3.28. The function SAT. It takes a CTL formula as input and returns the set of states satisfying the formula. It calls the functions SATEX, SATEU and SATAF, respectively, if EX , EU or AF is the root of the input's parse tree.
+
+The algorithm is presented in Figure 3.28 and its subfunctions in Figures 3.29­3.31. They use program variables X, Y , V and W which are sets of states. The program for SAT handles the easy cases directly and passes more complicated cases on to special procedures, which in turn might call SAT recursively on subexpressions. These special procedures rely on implementations of the functions
+pre(Y ) = {s  S | exists s , (s  s and s  Y )} pre(Y ) = {s  S | for all s , (s  s implies s  Y )}.
+`Pre' denotes travelling backwards along the transition relation. Both functions compute a pre-image of a set of states. The function pre (instrumental in SATEX and SATEU) takes a subset Y of states and returns the set of states which can make a transition into Y . The function pre, used in SATAF, takes
+
+228
+
+3 Verification by model checking
+
+function SATEX () /* determines the set of states satisfying EX  */ local var X, Y begin
+X := SAT (); Y := pre(X); return Y end
+Figure 3.29. The function SATEX. It computes the states satisfying  by calling SAT. Then, it looks backwards along  to find the states satisfying EX .
+
+function SATAF () /* determines the set of states satisfying AF  */ local var X, Y begin
+X := S; Y := SAT (); repeat until X = Y begin
+X := Y ; Y := Y  pre(Y ) end return Y end
+Figure 3.30. The function SATAF. It computes the states satisfying  by calling SAT. Then, it accumulates states satisfying AF  in the manner described in the labelling algorithm.
+
+a set Y and returns the set of states which make transitions only into Y .
+Observe that pre can be expressed in terms of complementation and pre, as follows:
+
+pre(Y ) = S - pre(S - Y )
+
+(3.8)
+
+where we write S - Y for the set of all s  S which are not in Y . The correctness of this pseudocode and the model checking algorithm is
+discussed in Section 3.7.
+
+3.6 Model-checking algorithms
+
+229
+
+function SATEU (, ) /* determines the set of states satisfying E[ U ] */ local var W, X, Y begin
+W := SAT (); X := S; Y := SAT (); repeat until X = Y begin
+X := Y ; Y := Y  (W  pre(Y )) end return Y end
+
+Figure 3.31. The function SATEU. It computes the states satisfying  by calling SAT. Then, it accumulates states satisfying E[ U ] in the manner
+described in the labelling algorithm.
+
+The `state explosion' problem Although the labelling algorithm (with the clever way of handling EG) is linear in the size of the model, unfortunately the size of the model is itself more often than not exponential in the number of variables and the number of components of the system which execute in parallel. This means that, for example, adding a boolean variable to your program will double the complexity of verifying a property of it.
+The tendency of state spaces to become very large is known as the state explosion problem. A lot of research has gone into finding ways of overcoming it, including the use of:
+r Efficient data structures, called ordered binary decision diagrams (OBDDs), which represent sets of states instead of individual states. We study these in Chapter 6 in detail. SMV is implemented using OBDDs.
+r Abstraction: one may interpret a model abstractly, uniformly or for a specific property.
+r Partial order reduction: for asynchronous systems, several interleavings of component traces may be equivalent as far as satisfaction of the formula to be checked is concerned. This can often substantially reduce the size of the model-checking problem.
+r Induction: model-checking systems with (e.g.) large numbers of identical, or similar, components can often be implemented by `induction' on this number.
+
+230
+
+3 Verification by model checking
+
+r Composition: break the verification problem down into several simpler verification problems.
+
+The last four issues are beyond the scope of this book, but references may be found at the end of this chapter.
+
+3.6.2 CTL model checking with fairness The verification of M, s0  might fail because the model M may contain behaviour which is unrealistic, or guaranteed not to occur in the actual system being analysed. For example, in the mutual exclusion case, we expressed that the process prc can stay in its critical section (st=c) as long as it needs. We modelled this by the non-deterministic assignment
+
+next(st) := case ... (st = c) ... esac;
+
+: {c,n};
+
+However, if we really allow process 2 to stay in its critical section as long as it likes, then we have a path which violates the liveness constraint AG (t1  AF c1), since, if process 2 stays forever in its critical section, t1 can be true without c1 ever becoming true.
+We would like to ignore this path, i.e., we would like to assume that the process can stay in its critical section as long as it needs, but will eventually exit from its critical section after some finite time.
+In LTL, we could handle this by verifying a formula like FG¬c2  , where  is the formula we actually want to verify. This whole formula asserts that all paths which satisfy infinitely often ¬c2 also satisfy . However, we cannot do this in CTL because we cannot write formulas of the form FG¬c2   in CTL. The logic CTL is not expressive enough to allow us to pick out the `fair' paths, i.e., those in which process 2 always eventually leaves its critical section.
+It is for that reason that SMV allows us to impose fairness constraints on top of the transition system it describes. These assumptions state that a given formula is true infinitely often along every computation path. We call such paths fair computation paths. The presence of fairness constraints means that, when evaluating the truth of CTL formulas in specifications, the connectives A and E range only over fair paths.
+
+3.6 Model-checking algorithms
+
+231
+
+We therefore impose the fairness constraint that !st=c be true infinitely often. This means that, whatever state the process is in, there will be a state in the future in which it is not in its critical section. Similar fairness constraints were used for the Alternating Bit Protocol.
+Fairness constraints of the form (where  is a state formula) Property  is true infinitely often
+
+are known as simple fairness constraints. Other types include those of the form
+If  is true infinitely often, then  is also true infinitely often.
+
+SMV can deal only with simple fairness constraints; but how does it do that? To answer that, we now explain how we may adapt our model-checking algorithm so that A and E are assumed to range only over fair computation paths.
+
+Definition 3.21 Let C =def {1, 2, . . . , n} be a set of n fairness constraints. A computation path s0  s1  . . . is fair with respect to these fairness constraints iff for each i there are infinitely many j such that sj i, that is, each i is true infinitely often along the path. Let us write AC and EC for the operators A and E restricted to fair paths.
+For example, M, s0 ACG  iff  is true in every state along all fair paths; and similarly for ACF, ACU, etc. Notice that these operators explicitly depend on the chosen set C of fairness constraints. We already know that ECU, ECG and ECX form an adequate set; this can be shown in the same manner as was done for the temporal connectives without fairness constraints (Section 3.4.4). We also have that
+EC [ U ]  E[ U (  ECG )] EC X   EX (  EC G ).
+To see this, observe that a computation path is fair iff any suffix of it is fair. Therefore, we need only provide an algorithm for ECG . It is similar to Algorithm 2 for EG, given earlier in this chapter:
+r Restrict the graph to states satisfying ; of the resulting graph, we want to know from which states there is a fair path.
+r Find the maximal strongly connected components (SCCs) of the restricted graph; r Remove an SCC if, for some i, it does not contain a state satisfying i. The
+resulting SCCs are the fair SCCs. Any state of the restricted graph that can reach one has a fair path from it.
+
+232
+
+3 Verification by model checking
+
+states satisfying 
+
+Ef G
+
+fair SCC
+
+1 fair SCC
+3 2
+
+Figure 3.32. Computing the states satisfying ECG . A state satisfies EC G  iff, in the graph resulting from the restriction to states satisfying , the state has a fair path from it. A fair path is one which leads to an SCC with a cycle passing through at least one state that satisfies each fairness constraint; in the example, C equals {1, 2, 3}.
+r Use backwards breadth-first search to find the states on the restricted graph that can reach a fair SCC.
+See Figure 3.32. The complexity of this algorithm is O(n · f · (V + E)), i.e., still linear in the size of the model and formula.
+It should be noted that writing fairness conditions using SMV's FAIRNESS keyword is necessary only for CTL model checking. In the case of LTL, we can assert the fairness condition as part of the formula to be checked. For example, if we wish to check the LTL formula  under the assumption that  is infinitely often true, we check G F   . This means: all paths satisfying infinitely often  also satisfy . It is not possible to express this in CTL. In particular, any way of adding As or Es to G F    will result in a formula with a different meaning from the intended one. For example, AG AF    means that if all paths are fair then  holds, rather than what was intended:  holds along all paths which are fair.
+
+3.6.3 The LTL model-checking algorithm The algorithm presented in the sections above for CTL model checking is quite intuitive: given a system and a CTL formula, it labels states of the system with the subformulas of the formula which are satisfied there. The state-labelling approach is appropriate because subformulas of the formula may be evaluated in states of the system. This is not the case for LTL: subformulas of the formula must be evaluated not in states but along paths of the system. Therefore, LTL model checking has to adopt a different strategy.
+There are several algorithms for LTL model checking described in the literature. Although they differ in detail, nearly all of them adopt the same
+
+3.6 Model-checking algorithms
+
+233
+
+basic strategy. We explain that strategy first; then, we describe some algorithms in more detail.
+
+The basic strategy Let M = (S, , L) be a model, s  S, and  an LTL formula. We determine whether M, s , i.e., whether  is satisfied along all paths of M starting at s. Almost all LTL model checking algorithms proceed along the following three steps.
+1. Construct an automaton, also known as a tableau, for the formula ¬. The automaton for  is called A. Thus, we construct A¬. The automaton has a notion of accepting a trace. A trace is a sequence of valuations of the propositional atoms. From a path, we can abstract its trace. The construction has the property that for all paths :   iff the trace of  is accepted by A. In other words, the automaton A encodes precisely the traces which satisfy . Thus, the automaton A¬ which we construct for ¬ has the property that it encodes all the traces satisfying ¬; i.e., all the traces which do not satisfy .
+2. Combine the automaton A¬ with the model M of the system. The combination operation results in a transition system whose paths are both paths of the automaton and paths of the system.
+3. Discover whether there is any path from a state derived from s in the combined transition system. Such a path, if there is one, can be interpreted as a path in M beginning at s which does not satisfy . If there was no such path, then output: `Yes, M, s .' Otherwise, if there is such a path, output `No, M, s .' In the latter case, the counterexample can be extracted from the path found.
+Let us consider an example. The system is described by the SMV program and its model M, shown in Figure 3.33. We consider the formula ¬(a U b). Since it is not the case that all paths of M satisfy the formula (for example, the path q3, q2, q2 . . . does not satisfy it) we expect the model check to fail.
+In accordance with Step 1, we construct an automaton AaUb which characterises precisely the traces which satisfy a U b. (We use the fact that ¬¬(a U b) is equivalent to a U b.) Such an automaton is shown in Figure 3.34. We will look at how to construct it later; for now, we just try to understand how and why it works.
+A trace t is accepted by an automaton like the one of Figure 3.34 if there exists a path  through the automaton such that:
+r  starts in an initial state (i.e. one containing ); r it respects the transition relation of the automaton; r t is the trace of ; matches the corresponding state of ;
+
+234
+
+3 Verification by model checking
+
+init(a) := 1; init(b) := 0; next(a) := case
+
+q1
+
+q2
+
+ab
+
+ab
+
+!a : 0;
+
+b : 1;
+
+1 : {0,1};
+
+esac;
+
+next(b) := case
+
+a & next(a) : !b;
+
+ab
+
+ab
+
+!a : 1;
+
+1 : {0,1};
+
+q3
+
+q4
+
+esac;
+
+Figure 3.33. An SMV program and its model M.
+
+q1 ab
+
+q2 ab
+
+ab q3
+
+ab q3
+
+ab q4
+
+Figure 3.34. Automaton accepting precisely traces satisfying  =def a U b. The transitions with no arrows can be taken in either direction. The acceptance condition is that the path of the automaton cannot loop indefinitely through q3.
+
+r the path respects a certain `accepting condition.' For the automaton of Figure 3.34, the accepting condition is that the path should not end q3, q3, q3 . . . , indefinitely.
+For example, suppose t is a b, a b, a b, a b, a b, a b, a b, a b, . . . , eventually repeating forevermore the state a b. Then we choose the path q3, q3, q3, q4, q4, q1, q3, q3 . . . . We start in q3 because the first state is a b and it is an initial
+
+3.6 Model-checking algorithms
+
+235
+
+state. The next states we choose just follow the valuation of the states of . For example, at q1 the next valuation is a b and the transitions allow us to choose q3 or q3. We choose q3, and loop there forevermore. This path meets the conditions, and therefore the trace t is accepted. Observe that the definition states `there exists a path.' In the example above, there are also
+paths which don't meet the conditions:
+
+r Any path beginning q3, q3, . . . doesn't meet the condition that we have to respect the transition relation.
+r The path q3, q3, q3, q4, q4, q1, q3, q3 . . . doesn't meet the condition that we must not end on a loop of q3.
+
+These paths need not bother us, because it is sufficient to find one which does meet the conditions in order to declare that  is accepted.
+Why does the automaton of Figure 3.34 work as intended? To understand
+it, observe that it has enough states to distinguish the values of the propositions ­ that is, a state for each of the valuations {a b, a b, a b, a b}, and in fact two states for the valuation a b. One state for each of {a b, a b, a b} is intuitively enough, because those valuations determine whether a U b holds. But a U b could be false or true in a b, so we have to consider the two cases. The presence of  =def a U b in a state indicates that either we are still expecting  to become true, or we have just obtained it. Whereas  indicates we no longer expect , and have not just obtained it. The transitions of the automaton are such that the only way out of q3 is to obtain b, i.e., to move to q2 or q4. Apart from that, the transitions are liberal, allowing any path to be followed; each of q1, q2, q3 can transition to any valuation, and so can q3, q3 taken together, provided we are careful to choose the right one to enter.
+The acceptance condition, which allows any path except one looping indefinitely on q3, guarantees that the promise of a U b to deliver b is eventually fulfilled.
+Using this automaton AaUb, we proceed to Step 2. To combine the automaton AaUb with the model of the system M shown in Figure 3.33, it is convenient first to redraw M with two versions of q3; see Figure 3.35(left). It is an equivalent system; all ways into q3 now non-deterministically choose q3 or q3, and which ever one we choose leads to the same successors. But it allows us to superimpose it on AaUb and select the transitions common to both, obtaining the combined system of Figure 3.35(right).
+Step 3 now asks whether there is a path from q of the combined automa-
+ton. As can be seen, there are two kinds of path in the combined system: q3, (q4, q3, )q2, q2 . . . , and q3, q4, (q3, q4, )q3, q1, q2, q2, . . . where (q3, q4) denotes either the empty string or q3, q4 or q3, q4, q3, q4 etc. Thus, according
+
+236
+q1 ab
+
+3 Verification by model checking
+
+q2 ab
+
+q1 ab
+
+q2 ab
+
+ab q3
+ab q3
+
+ab q4
+
+ab q3
+ab q3
+
+ab q4
+
+Figure 3.35. Left: the system M of Figure 3.33, redrawn with an expanded state space; right: the expanded M and AaUb combined.
+
+to Step 3, and as we expected, ¬(a U b) is not satisfied in all paths of the original system M.
+Constructing the automaton Let us look in more detail at how the automaton is constructed. Given an LTL formula , we wish to construct an automaton A such that A accepts precisely those runs on which  holds. We assume that  contains only the temporal connectives U and X; recall that the other temporal connectives can be written in terms of these two.
+Define the closure C() of formula  as the set of subformulas of  and their complements, identifying ¬¬ and . For example, C(a U b) = {a, b, ¬a, ¬b, a U b, ¬(a U b)}. The states of A, denoted by q, q etc., are the maximal subsets of C() which satisfy the following conditions:
+r For all (non-negated)   C(), either   q or ¬  q, but not both. r 1  2  q holds iff 1  q or 2  q, whenever 1  2  C(). r Conditions for other boolean combinations are similar. r If 1 U 2  q, then 2  q or 1  q. r If ¬(1 U 2)  q, then ¬2  q.
+Intuitively, these conditions imply that the states of A are capable of saying which subformulas of  are true.
+
+3.6 Model-checking algorithms
+
+237
+
+The initial states of A are those states containing . For transition relation  of A we have (q, q )   iff all of the following conditions hold:
+r if X   q then   q ; r if ¬X   q then ¬  q ; r If 1 U 2  q and 2 / q then 1 U 2  q ; r If ¬(1 U 2)  q and 1  q then ¬(1 U 2)  q .
+
+These last two conditions are justified by the recursion laws
+
+1 U 2 = 2  (1  X (1 U 2)) ¬(1 U 2) = ¬2  (¬1  X ¬(1 U 2)) .
+
+In particular, they ensure that whenever some state contains 1 U 2, subsequent states contain 1 for as long as they do not contain 2.
+As we have defined A so far, not all paths through A satisfy . We use additional acceptance conditions to guarantee the `eventualities'  promised by the formula 1 U 2, namely that A cannot stay for ever in states satisfying 1 without ever obtaining 2. Recall that, for the automaton of Figure 3.34 for a U b, we stipulated the acceptance condition that the path through the automaton should not end q3, q3, . . . .
+The acceptance conditions of A are defined so that they ensure that every state containing some formula  U  will eventually be followed by some state containing . Let 1 U 1, . . . , k U k be all subformulas of this form in C(). We stipulate the following acceptance condition: a run is accepted if, for every i such that 1  i  k, the run has infinitely many states satisfying ¬(i U i)  i. To understand why this condition has the desired effect, imagine the circumstances in which it is false. Suppose we have a run having only finitely many states satisfying ¬(i U i)  i. Let us advance through all those finitely many states, taking the suffix of the run
+none of whose states satisfies ¬(i U i)  i, i.e., all of whose states satisfy (i U i)  ¬i. That is precisely the sort of run we want to eliminate.
+If we carry out this construction on a U b, we obtain the automaton shown
+in Figure 3.34. Another example is shown in Figure 3.36, for the formula
+(p U q)  (¬p U q). Since that formula has two U subformulas, there are two sets specified in the acceptance condition, namely, the states satisfying p U q and the states satisfying ¬p U q.
+
+How LTL model checking is implemented in NuSMV In the sections above, we described an algorithm for LTL model checking. Given an LTL formula  and a system M and a state s of M, we may check whether M, s  holds by constructing the automaton A¬, combining it with M,
+
+238
+
+3 Verification by model checking
+
+q1
+¬(p U q), ¬(¬p U q), ¬p, ¬q, ¬
+
+q2
+p U q, ¬(¬p U q),
+p, ¬q, 
+
+p U q, ¬p U q, ¬p, q, 
+q5
+
+p U q, ¬p U q, p, q, 
+q6
+
+¬(p U q), ¬(¬p U q), p, ¬q, ¬
+
+¬(p U q), ¬p U q, ¬p, ¬q, 
+
+q3
+
+q4
+
+Figure 3.36. Automaton accepting precisely traces satisfying  =def (p U q)  (¬p U q). The transitions with no arrows can be taken in either direction. The acceptance condition asserts that every run must pass infinitely often through the set {q1, q3, q4, q5, q6}, and also the set {q1, q2, q3, q5, q6}.
+
+and checking whether there is a path of the resulting system which satisfies the acceptance condition of A¬.
+It is possible to implement the check for such a path in terms of CTL
+model checking, and this is in fact what NuSMV does. The combined system M × A¬ is represented as the system to be model checked in NuSMV, and the formula to be checked is simply EG . Thus, we ask the question: does the combined system have a path. The acceptance conditions of A¬ are represented as implicit fairness conditions for the CTL model-checking procedure. Explicitly, this amounts to asserting `FAIRNESS ¬( U )  ' for each formula  U  occurring in C().
+
+3.7 The fixed-point characterisation of CTL
+On page 227, we presented an algorithm which, given a CTL formula  and a model M = (S, , L), computes the set of states s  S satisfying . We write this set as [[]]. The algorithm works recursively on the structure of . For formulas  of height 1 (, or p), [[]] is computed directly. Other
+
+3.7 The fixed-point characterisation of CTL
+
+239
+
+formulas are composed of smaller subformulas combined by a connective of CTL. For example, if  is 1  2, then the algorithm computes the sets [[1]] and [[2]] and combines them in a certain way (in this case, by taking the union) in order to obtain [[1  2]].
+The more interesting cases arise when we deal with a formula such as EX , involving a temporal operator. The algorithm computes the set [[]] and then computes the set of all states which have a transition to a state in [[]]. This is in accord with the semantics of EX : M, s EX  iff there is a state s with s  s and M, s .
+For most of these logical operators, we may easily continue this discussion to see that the algorithms work just as expected. However, the cases EU, AF and EG (where we needed to iterate a certain labelling policy until it stabilised) are not so obvious to reason about. The topic of this section is to develop the semantic insights into these operators that allow us to provide a complete proof for their termination and correctness. Inspecting the pseudocode in Figure 3.28, we see that most of these clauses just do the obvious and correct thing according to the semantics of CTL. For example, try out what SAT does when you call it with 1  2.
+Our aim in this section is to prove the termination and correctness of SATAF and SATEU. In fact, we will also write a procedure SATEG and prove its termination and correctness1. The procedure SATEG is given in Figure 3.37 and is based on the intuitions given in Section 3.6.1: note how deleting the label if none of the successor states is labelled is coded as intersecting the labelled set with the set of states which have a labelled successor.
+The semantics of EG  says that s0 EG  holds iff there exists a computation path s0  s1  s2  . . . such that si  holds for all i  0. We could instead express it as follows: EG  holds if  holds and EG  holds in one of the successor states to the current state. This suggests the equivalence EG     EX EG  which can easily be proved from the semantic definitions of the connectives.
+Observing that [[EX ]] = pre([[]]) we see that the equivalence above can be written as [[EG ]] = [[]]  pre([[EG ]]). This does not look like a very promising way of calculating EG , because we need to know EG  in order to work out the right-hand side. Fortunately, there is a way around this apparent circularity, known as computing fixed points, and that is the subject of this section.
+
+1 Section 3.6.1 handles EG  by translating it into ¬AF ¬, but we already noted in Section 3.6.1 that EG could be handled directly.
+
+240
+
+3 Verification by model checking
+
+function SATEG () /* determines the set of states satisfying EG  */ local var X, Y begin
+Y := SAT (); X := ; repeat until X = Y begin
+X := Y ; Y := Y  pre(Y ) end return Y end
+Figure 3.37. The pseudo-code for SATEG.
+
+3.7.1 Monotone functions Definition 3.22 Let S be a set of states and F : P(S)  P(S) a function on the power set of S.
+1. We say that F is monotone iff X  Y implies F (X)  F (Y ) for all subsets X and Y of S.
+2. A subset X of S is called a fixed point of F iff F (X) = X.
+For an example, let S =def {s0, s1} and F (Y ) =def Y  {s0} for all subsets Y of S. Since Y  Y implies Y  {s0}  Y  {s0}, we see that F is monotone. The fixed points of F are all subsets of S containing s0. Thus, F has two fixed points, the sets {s0} and {s0, s1}. Notice that F has a least (= {s0}) and a greatest (= {s0, s1}) fixed point.
+An example of a function G : P(S)  P(S), which is not monotone, is given by
+G(Y ) =def if Y = {s0} then {s1} else {s0}.
+So G maps {s0} to {s1} and all other sets to {s0}. The function G is not monotone since {s0}  {s0, s1} but G({s0}) = {s1} is not a subset of G({s0, s1}) = {s0}. Note that G has no fixed points whatsoever.
+The reasons for exploring monotone functions on P(S) in the context of proving the correctness of SAT are:
+1. that monotone functions always have a least and a greatest fixed point; 2. that the meanings of EG, AF and EU can be expressed via greatest, respectively
+least, fixed points of monotone functions on P(S);
+
+3.7 The fixed-point characterisation of CTL
+
+241
+
+3. that these fixed-points can be easily computed, and; 4. that the procedures SATEU and SATAF code up such fixed-point computations,
+and are correct by item 2.
+
+Notation 3.23 F i(X) means
+F (F (. . . F (X) . . . ))
+i times
+Thus, the function F i is just `F applied i many times.'
+For example, for the function F (Y ) =def Y  {s0}, we obtain F 2(Y ) = F (F (Y )) = (Y  {s0})  {s0} = Y  {s0} = F (Y ). In this case, F 2 = F and therefore F i = F for all i  1. It is not always the case that the sequence of functions (F 1, F 2, F 3, . . . ) stabilises in such a way. For example, this won't happen for the function G defined above (see Exercise 1(d) on page 253). The following fact is a special case of a fundamental insight, often referred to as the Knaster­Tarski Theorem.
+
+Theorem 3.24 Let S be a set {s0, s1, . . . , sn} with n + 1 elements. If F : P(S)  P(S) is a monotone function, then F n+1() is the least fixed point of F and F n+1(S) is the greatest fixed point of F .
+PROOF: Since   F (), we get F ()  F (F ()), i.e., F 1()  F 2(), for F is monotone. We can now use mathematical induction to show that
+F 1()  F 2()  F 3()  . . .  F i()
+for all i  1. In particular, taking i =def n + 1, we claim that one of the expressions F k() above is already a fixed point of F . Otherwise, F 1() needs to contain at least one element (for then  = F ()). By the same token, F 2() needs to have at least two elements since it must be bigger than F 1(). Continuing this argument, we see that F n+2() would have to contain at least n + 2 many elements. The latter is impossible since S has only n + 1 elements. Therefore, F (F k()) = F k() for some 0  k  n + 1, which readily implies that F n+1() is a fixed point of F as well.
+Now suppose that X is another fixed point of F . We need to show that F n+1() is a subset of X; but, since   X, we conclude F ()  F (X) = X, for F is monotone and X a fixed point of F . By induction, we obtain F i()  X for all i  0. So, for i =def n + 1, we get F n+1()  X.
+The proof of the statements about the greatest fixed point is dual to the one above. Simply replace  by ,  by S and `bigger' by `smaller.' 2
+
+242
+
+3 Verification by model checking
+
+This theorem about the existence of least and greatest fixed points of monotone functions F : P(S)  P(S) not only asserted the existence of such fixed points; it also provided a recipe for computing them, and correctly so. For example, in computing the least fixed point of F , all we have to do is apply F to the empty set  and keep applying F to the result until the latter becomes invariant under the application of F . The theorem above further ensures that this process is guaranteed to terminate. Moreover, we can specify an upper bound n + 1 to the worst-case number of iterations necessary for reaching this fixed point, assuming that S has n + 1 elements.
+
+3.7.2 The correctness of SATEG We saw at the end of the last section that [[EG ]] = [[]]  pre([[EG ]]). This implies that EG  is a fixed point of the function F (X) = [[]]  pre(X). In fact, F is monotone, EG  is its greatest fixed point and therefore EG  can
+be computed using Theorem 3.24.
+
+Theorem 3.25 Let F be as defined above and let S have n + 1 elements.
+Then F is monotone, [[EG ]] is the greatest fixed point of F , and [[EG ]] = F n+1(S).
+
+PROOF:
+
+1. In order to show that F is monotone, we take any two subsets X and Y of S
+such that X  Y and we need to show that F (X) is a subset of F (Y ). Given s0 such that there is some s1  X with s0  s1, we certainly have s0  s1, where s1  Y , for X is a subset of Y . Thus, we showed pre(X)  pre(Y ) from which we readily conclude that F (X) = [[]]  pre(X)  [[]]  pre(Y ) = F (Y ). 2. We have already seen that [[EG ]] is a fixed point of F . To show that it is the
+greatest fixed point, it suffices to show here that any set X with F (X) = X has
+to be contained in [[EG ]]. So let s0 be an element of such a fixed point X. We need to show that s0 is in [[EG ]] as well. For that we use the fact that
+
+s0  X = F (X) = [[]]  pre(X)
+
+to infer that s0  [[]] and s0  s1 for some s1  X; but, since s1 is in X, we may apply that same argument to s1  X = F (X) = [[]]  pre(X) and we get s1  [[]] and s1  s2 for some s2  X. By mathematical induction, we can therefore construct an infinite path s0  s1  · · ·  sn  sn+1  . . . such that si  [[]] for all i  0. By the definition of [[EG ]], this entails s0  [[EG ]].
+
+3. The last item is now immediately accessible from the previous one and Theo-
+
+rem 3.24.
+
+2
+
+3.7 The fixed-point characterisation of CTL
+
+243
+
+Now we can see that the procedure SATEG is correctly coded and terminates. First, note that the line Y := Y  pre(Y ) in the procedure SATEG (Figure 3.37) could be changed to Y := SAT()  pre(Y ) without changing the effect of the procedure. To see this, note that the first time round the
+loop, Y is SAT(); and in subsequent loops, Y  SAT(), so it doesn't matter whether we intersect with Y or SAT()2. With the change, it is clear that
+SATEG is calculating the greatest fixed point of F ; therefore its correctness follows from Theorem 3.25.
+
+3.7.3 The correctness of SATEU Proving the correctness of SATEU is similar. We start by noting the equivalence E[ U ]    (  EX E[ U ]) and we write it as [[E[ U ]]] = [[]]  ([[]]  pre[[E[ U ]]]). That tells us that [[E[ U ]]] is a fixed point of the function G(X) = [[]]  ([[]]  pre(X)). As before, we can prove that this function is monotone. It turns out that [[E[ U ]]] is its least fixed point and that the function SATEU is actually computing it in the manner of Theorem 3.24.
+Theorem 3.26 Let G be defined as above and let S have n + 1 elements. Then G is monotone, [[E( U )]] is the least fixed point of G, and we have [[E( U )]] = Gn+1().
+
+2 If you are sceptical, try computing the values Y0, Y1, Y2, . . . , where Yi represents the value of Y after i iterations round the loop. The program before the change computes as follows:
+Y0 = SAT() Y1 = Y0  pre(Y0) Y2 = Y1  pre(Y1)
+= Y0  pre(Y0)  pre(Y0  pre(Y0)) = Y0  pre(Y0  pre(Y0)).
+The last of these equalities follows from the monotonicity of pre.
+Y3 = Y2  pre(Y2) = Y0  pre(Y0  pre(Y0))  pre(Y0  pre(Y0  pre(Y0))) = Y0  pre(Y0  pre(Y0  pre(Y0))).
+Again the last one follows by monotonicity. Now look at what the program does after the change:
+Y0 = SAT() Y1 = SAT()  pre(Y0)
+= Y0  pre(Y0) Y2 = Y0  pre(Y1) Y3 = Y0  pre(Y1)
+= Y0  pre(Y0  pre(Y0)).
+A formal proof would follow by induction on i.
+
+244 PROOF:
+
+3 Verification by model checking
+
+1. Again, we need to show that X  Y implies G(X)  G(Y ); but that is essen-
+tially the same argument as for F , since the function which sends X to pre(X) is monotone and all that G now does is to perform the intersection and union
+of that set with constant sets [[]] and [[]]. 2. If S has n + 1 elements, then the least fixed point of G equals Gn+1() by
+Theorem 3.24. Therefore it suffices to show that this set equals [[E( U )]].
+Simply observe what kind of states we obtain by iterating G on the empty set : G1() = [[]]  ([[]]  pre([[]])) = [[]]  ([[]]  ) = [[]]   = [[]], which are all states s0  [[E( U )]], where we chose i = 0 according to the definition of Until. Now,
+
+G2() = [[]]  ([[]]  pre(G1()))
+
+tells us that the elements of G2() are all those s0  [[E( U )]] where we chose i  1. By mathematical induction, we see that Gk+1() is the set of all states
+
+s0 for which we chose i  k to secure s0  [[E( U )]]. Since this holds for all k, we see that [[E( U )]] is nothing but the union of all sets Gk+1() with
+
+k  0; but, since Gn+1() is a fixed point of G, we see that this union is just
+
+Gn+1().
+
+2
+
+The correctness of the coding of SATEU follows similarly to that of SATEG. We change the line Y := Y  (W  pre(Y )) into Y := SAT()  (W  pre(Y )) and observe that this does not change the result of the procedure, because the first time round the loop, Y is SAT(); and, since Y is
+always increasing, it makes no difference whether we perform a union with
+Y or with SAT(). Having made that change, it is then clear that SATEU is just computing the least fixed point of G using Theorem 3.24.
+We illustrate these results about the functions F and G above
+through an example. Consider the system in Figure 3.38. We begin
+by computing the set [[EF p]]. By the definition of EF this is just [[E( U p)]]. So we have 1 =def and 2 =def p. From Figure 3.38, we obtain [[p]] = {s3} and of course [[ ]] = S. Thus, the function G above equals G(X) = {s3}  pre(X). Since [[E( U p)]] equals the least fixed point of G, we need to iterate G on  until this process stabilises. First, G1() = {s3}  pre() = {s3}. Second, G2() = G(G1()) = {s3}  pre({s3}) = {s1, s3}. Third, G3() = G(G2()) = {s3}  pre({s1, s3}) = {s0, s1, s2, s3}. Fourth, G4() = G(G3()) = {s3}  pre({s0, s1, s2, s3}) = {s0, s1, s2, s3}. Therefore, {s0, s1, s2, s3} is the least fixed point of G, which equals [[E( U p)]] by Theorem 3.20. But then [[E( U p)]] =
+[[EF p]].
+
+

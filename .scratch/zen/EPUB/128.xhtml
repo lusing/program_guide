@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#" lang="cn" xml:lang="cn">
+  <head>
+    <title>29.2　桥梁模式的定义</title>
+  </head>
+  <body><h3 class="p3" id="sigil_toc_id_161">29.2 桥梁模式的定义</h3> 
+<p class="ziti">桥梁模式（Bridge Pattern）也叫做桥接模式，是一个比较简单的模式，其定义如下：Decouple an abstraction from its implementation so that the two can vary independently.（将抽象和实现解耦，使得两者可以独立地变化。）</p> 
+<p class="ziti">桥梁模式的重点是在“解耦”上，如何让它们两者解耦是我们要了解的重点，我们先来看桥梁模式的通用类，如图29-4所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0122.jpg"/></a></p> 
+<p class="middle-img">图29-4 桥梁模式通用类图</p> 
+<p class="ziti">我们先来看桥梁模式中的4个角色。</p> 
+<p class="ziti">● Abstraction——抽象化角色</p> 
+<p class="ziti">它的主要职责是定义出该角色的行为，同时保存一个对实现化角色的引用，该角色一般是抽象类。</p> 
+<p class="ziti">● Implementor——实现化角色</p> 
+<p class="ziti">它是接口或者抽象类，定义角色必需的行为和属性。</p> 
+<p class="ziti">● RefinedAbstraction——修正抽象化角色</p> 
+<p class="ziti">它引用实现化角色对抽象化角色进行修正。</p> 
+<p class="ziti">● ConcreteImplementor——具体实现化角色</p> 
+<p class="ziti">它实现接口或抽象类定义的方法和属性。</p> 
+<p class="ziti">桥梁模式中的几个名词比较拗口，大家只要记住一句话就成：抽象角色引用实现角色，或者说抽象角色的部分实现是由实现角色完成的。我们来看其通用源码，先看实现化角色，如代码清单29-16所示。</p> 
+<p class="ziti">代码清单29-16 实现化角色</p> 
+<pre>public interface Implementor {&#13;
+     //基本方法&#13;
+     public void doSomething();&#13;
+     public void doAnything();&#13;
+}</pre> 
+<p class="ziti">它没有任何特殊的地方，就是一个一般的接口，定义要实现的方法。其实现类如代码清单29-17所示。</p> 
+<p class="ziti">代码清单29-17 具体实现化角色</p> 
+<pre>public class ConcreteImplementor1 implements Implementor{&#13;
+     public void doSomething(){&#13;
+             //业务逻辑处理&#13;
+     }&#13;
+     public void doAnything(){&#13;
+             //业务逻辑处理&#13;
+     }&#13;
+}&#13;
+public class ConcreteImplementor2 implements Implementor{&#13;
+     public void doSomething(){&#13;
+             //业务逻辑处理&#13;
+     }&#13;
+     public void doAnything(){&#13;
+             //业务逻辑处理&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">上面定义了两个具体实现化角色——代表两个不同的业务逻辑。我们再来看抽象化角色，如代码清单29-18所示。</p> 
+<p class="ziti">代码清单29-18 抽象化角色</p> 
+<pre>public abstract class Abstraction {&#13;
+     //定义对实现化角色的引用&#13;
+     private Implementor imp;&#13;
+     //约束子类必须实现该构造函数&#13;
+     public Abstraction(Implementor _imp){&#13;
+             this.imp = _imp;&#13;
+     }&#13;
+     //自身的行为和属性&#13;
+     public void request(){&#13;
+             this.imp.doSomething();&#13;
+     }&#13;
+     //获得实现化角色&#13;
+     public Implementor getImp(){&#13;
+             return imp;&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">各位可能要问，为什么要增加一个构造函数？答案是为了提醒子类，你必须做这项工作，指定实现者，特别是已经明确了实现者，则尽量清晰明确地定义出来。我们来看具体的抽象化角色，如代码清单29-19所示。</p> 
+<p class="ziti">代码清单29-19 具体抽象化角色</p> 
+<pre>public class RefinedAbstraction extends Abstraction {&#13;
+     //覆写构造函数&#13;
+     public RefinedAbstraction(Implementor _imp){&#13;
+             super(_imp);&#13;
+     }&#13;
+     //修正父类的行为&#13;
+     @Override&#13;
+     public void request(){&#13;
+             /*&#13;
+              * 业务处理...&#13;
+              */&#13;
+             super.request();&#13;
+             super.getImp().doAnything();&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">想想看，如果我们的实现化角色有很多的子接口，然后是一堆的子实现。如果在构造函数中不传递一个尽量明确的实现者，代码就很不清晰。我们来看场景类如何模拟，如代码清单29-20所示。</p> 
+<p class="ziti">代码清单29-20 场景类</p> 
+<pre>public class Client {&#13;
+     public static void main(String[] args) {&#13;
+             //定义一个实现化角色&#13;
+             Implementor imp = new ConcreteImplementor1();&#13;
+             //定义一个抽象化角色&#13;
+             Abstraction abs = new RefinedAbstraction(imp);&#13;
+             //执行行文&#13;
+             abs.request();&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">桥梁模式是一个非常简单的模式，它只是使用了类间的聚合关系、继承、覆写等常用功能，但是它却提供了一个非常清晰、稳定的架构。</p></body>
+</html>

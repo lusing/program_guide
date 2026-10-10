@@ -1,0 +1,861 @@
+Chapter 6
+
+Propositional Logic: SAT Solvers
+
+Although it is believed that there is no efficient algorithm for the decidability of
+satisfiability in propositional logic, many algorithms are efficient in practice. This is
+particularly true when a formula is satisfiable; for example, when you build a truth
+table for an unsatisfiable formula of size n you will have to generate all 2n rows, but
+if the formula is satisfiable you might get lucky and find a model after generating
+only a few rows. Even an incomplete algorithm--one that can find a model if one
+exists but may not be able to detect if a formula is unsatisfiable--can be useful in
+practice.
+
+   A computer program that searches for a model for a propositional formula is
+called a SAT Solver. This is a highly developed area of research in computer science
+because many problems in computer science can be encoded in propositional logic
+so that a model for a formula is a solution to the problem.
+
+   We begin the chapter by proving properties of formulas in clausal form. These
+properties are the basis of classical algorithms for satisfiability by Davis and Putnam
+(DP), and Davis, Logemann and Loveland (DLL), which we present next. The joint
+contribution of these two papers is usually recognized by the use of the acronym
+DPLL. Then we give an overview of two of the main approaches used in modern
+SAT solvers that are based upon modifications of the DPLL algorithm. In one ap-
+proach, algorithms and heuristics are used to guide the search for a model; the other
+approach uses random search.
+
+6.1 Properties of Clausal Form
+
+This section collects several theorems that describe transformations on sets of
+clauses that do not affect its satisfiability. These theorems are important because
+they justify the algorithms presented in the next section.
+
+Definition 6.1 Let S, S be sets of clauses. S  S denotes that S is satisfiable if and
+only if S is satisfiable.
+
+M. Ben-Ari, Mathematical Logic for Computer Science,            111
+
+DOI 10.1007/978-1-4471-4129-7_6, © Springer-Verlag London 2012
+112  6 Propositional Logic: SAT Solvers
+
+   It is important to understand that S  S (S is satisfiable if and only if S is
+satisfiable) does not imply that S  S (S is logically equivalent to S ).
+
+Example 6.2 Consider the two sets of clauses:
+                          S = {pqr¯, pq¯, p¯q}, S = {pq¯, p¯q}.
+
+S is satisfied by the interpretation:
+                       I (p) = F, I (q) = F, I (r) = F,
+
+while S is satisfied by the interpretation:
+                                I (p) = F, I (q) = F.
+
+Therefore, S  S . However, under the interpretation:
+                     I (p) = F, I (q) = F, I (r) = T ,
+
+vI (S) = F (since vI (pqr¯) = F ) but vI (S ) = T , so S  S .
+
+Pure Literals
+
+Definition 6.3 Let S be a set of clauses. A pure literal in S is a literal l that appears
+in at least one clause of S, but its complement lc does not appear in any clause of
+S.
+
+Theorem 6.4 Let S be a set of clauses and let l be a pure literal in S. Let S be
+obtained from S by deleting every clause containing l. Then S  S .
+
+Proof If S is satisfiable, there is a model I for S such that vI (C ) = T for
+every C  S . Extend I to a new interpretation I by defining I (l) = T and
+I (p) = I (p) for all other atoms.
+
+   Let us show that I is a model for S by showing that vI (C) = T for every
+C  S. If C  S , vI (C) = vI (C) since I (p) = I (p) for all atoms p in C. If
+C  S - S , vI (C) = T since l  C and I (l) = T .
+
+   Conversely, if S is satisfiable, S is obviously satisfiable since S  S.
+
+Example 6.5 For the sets of clauses in Example 6.2, S was obtained from S by
+deleting the clause pqr¯ containing r¯ since r¯c = r does not appear in S. The inter-
+pretation I was obtained by extending the interpretation I by I (r¯) = T so that
+vI (pqr¯) = T .
+6.1 Properties of Clausal Form     113
+
+Unit Clauses
+
+Theorem 6.6 Let {l}  S be a unit clause and let S be obtained from S by deleting
+every clause containing l and by deleting lc from every (remaining) clause. Then
+
+SS .
+
+Proof Let I be a model for S and let I be the interpretation defined by I (p) =
+I (p) for all atoms p  PS . I is the same as I except no assignment is made
+to the atom for l which does not occur in S . Since {l} is a unit clause, for I be a
+model for S it must be true that I (l) = T and therefore I (lc) = F .
+
+   Let C be an arbitrary clause in S . We must show that vI (C) = T . There are
+two cases:
+
+· C is also a member of S. C is not the unit clause {l} (which was deleted); there-
+   fore, I and I coincide on the literals of C , so vI (C ) = vI (C) = T .
+
+· C = C - {lc} for some C  S. By the first paragraph of the proof, I (lc) = F ,
+   so vI (C) = T holds only if I (l ) = T for some other literal l  C. But l  C
+   which implies vI (C ) = vI (C) = T .
+
+The proof of the converse is similar to the proof of Theorem 6.4.
+
+Example 6.7 Let:
+
+                      S = {r, pqr¯, pq¯, q¯p}, S = {pq, pq¯, q¯p}.
+
+S was obtained by deleting the unit clause {r} from S and the literal r¯ from the
+second clause of S. Since I (r) = T in any model I for S, vI (pqr¯) = T can hold
+only if either I (p) = T or I (q) = T from which we have vI (pq) = T .
+
+   Here is a proof of the unsatisfiability of the empty clause P that does not use
+reasoning about vacuous sets.
+
+Corollary 6.8 P is unsatisfiable.
+
+Proof {{p}, {p¯}} is the clausal form of the unsatisfiable formula p  ¬ p. Delete
+the first clause {p} from the formula and the literal p¯ from the second clause;
+the result is {{}} = {P}. By Theorem 6.6, {P}  {{p}, {p¯}} and therefore P is
+unsatisfiable.
+
+Subsumption
+
+Definition 6.9 Let C1  C2 be two clauses. The clause C1 subsumes the clause C2
+and C2 is subsumed by C1.
+114  6 Propositional Logic: SAT Solvers
+
+Theorem 6.10 Let C1, C2  S be clauses such that C1 subsumes C2, and let S =
+S - {C2}. Then S  S .
+
+Proof Trivially, if S is satisfiable, so is S since it is a subset of S.
+
+   Conversely, let I be an interpretation for S . If C2 contains atoms not in
+S , we might have to extend I to an interpretation I of S, but C1  C2, so
+vI (C1) = vI (C1) = T implies vI (C2) = T since a clause is an implicit disjunc-
+tion. Therefore, I is a model for S.
+
+   The concept of subsumption is somewhat confusing because the smaller clause
+subsumes (is stronger than) the larger clause. From the proof of the theorem, how-
+ever, it is easy to see that if C1 subsumes C2 then C1  C2.
+
+Example 6.11 Let:
+
+                           S = {pr, p¯qr¯, qr¯}, S = {pr, qr¯},
+
+where {qr¯}, the third clause of S, subsumes {p¯qr¯}, the second clause of S. Any
+interpretation which satisfies {qr¯} can be extended to an interpretation that satisfies
+{p¯qr¯} because it doesn't matter what is assigned to p.
+
+Renaming
+
+Definition 6.12 Let S be a set of clauses and U a set of atomic propositions. RU (S),
+the renaming of S by U , is obtained from S by replacing each literal l on an atomic
+proposition in U by lc.
+
+Theorem 6.13 S  RU (S).
+
+Proof Let I be a model for S. Define an interpretation I for RU (S) by:
+
+                               I (p) = I (p¯), if p  U,
+                               I (p) = I (p), if p  U.
+
+Let C  S and C = RU ({C}). Since I is a model for S, vI (C) = T and I (l) = T
+for some l  C. If the atom p of l is not in U then l  C so I (l) = I (l) = T and
+vI (C ) = T . If p  U then lc  C so I (lc) = I (l) = T and vI (C ) = T .
+
+   The converse is similar.
+
+Example 6.14 The set of clauses:
+
+                                     S = {pqr, p¯q, q¯r¯, r}
+
+is satisfied by the interpretation:
+
+                     vI (p) = F, vI (q) = F, vI (r) = T .
+6.2 Davis-Putnam Algorithm                                    115
+
+The renaming:               R{p,q}(S) = {p¯q¯r, pq¯, qr¯, r}
+is satisfied by:
+
+                  vI (p) = T , vI (q) = T , vI (r) = T .
+
+6.2 Davis-Putnam Algorithm
+
+The Davis-Putnam (DP) algorithm was one of the first algorithms proposed for de-
+ciding satisfiability. It uses two rules based upon the concepts introduced in the
+previous section, as well as the resolution rule (Chap. 4).
+
+Algorithm 6.15 (Davis-Putnam algorithm)
+Input: A formula A in clausal form.
+Output: Report that A is satisfiable or unsatisfiable.
+
+   Perform the following rules repeatedly, but the third rule is used only if the first
+two do not apply:
+
+· Unit-literal rule: If there is a unit clause {l}, delete all clauses containing l and
+   delete all occurrences of lc from all other clauses.
+
+· Pure-literal rule: If there is a pure literal l, delete all clauses containing l.
+· Eliminate a variable by resolution: Choose an atom p and perform all possible
+
+   resolutions on clauses that clash on p and p¯. Add these resolvents to the set of
+   clauses and then delete all clauses containing p or p¯.
+
+Terminate the algorithm under the following conditions:
+
+· If empty clause P is produced, report that the formula is unsatisfiable.
+· If no more rules are applicable, report that the formula is satisfiable.
+
+   Clearly, the algorithm terminates because the number of atoms in a formula is
+finite, as is the number of possible clauses that can be produced by resolution. The
+soundness of the three rules is justified by Theorem 6.6, Theorem 6.4 and Theo-
+rem 4.17, respectively.
+
+Example 6.16 Consider the set of clauses:
+
+                                       {p, p¯q, q¯r, r¯st}.
+
+Performing the unit-literal rule on p leads to the creation of a new unit clause q
+upon which the rule can be applied again. This leads to a new unit clause r and
+applying the rule results in the singleton set of clauses {st}. Since no more rules are
+applicable, the set of clauses is satisfiable.
+
+Definition 6.17 Repeatedly applying the unit-literal rule until it is no longer appli-
+cable is called unit propagation or Boolean constraint propagation.
+116                 6 Propositional Logic: SAT Solvers
+
+6.3 DPLL Algorithm
+
+Creating all possible resolvents on an atom is very inefficient. The DPLL algorithm
+improves on the DP algorithm by replacing the variable elimination step with a
+search for a model of the formula.
+
+Definition 6.18 Let A be a set of clauses and let I be a partial interpretation (Defi-
+nition 2.18) for A. For C  A, if vI (C) = T , the interpretation I satisfies C, while
+if vI (C) = F , then C is a conflict clause for I .
+
+Example 6.19 Let A = {pqr, p¯q, q¯r¯, r} and let Iq¯r be the partial interpretation
+defined by:
+
+                               Iq¯r (q) = F, Iq¯r (r) = T .
+
+Iq¯r satisfies all the clauses except for p¯q, which cannot be satisfied or falsified
+without also assigning a truth value to p.
+
+   The fourth clause r is a conflict clause for the partial interpretation Ir defined
+by Ir (r) = F . Clearly, no interpretation that is an extension of this partial interpre-
+tation can satisfy A.
+
+   The DPLL algorithm recursively extends a partial interpretation by adding an
+assignment to some atom that has not yet been assigned a truth value. The current
+set of clauses is evaluated using the new partial interpretation and simplified by
+unit propagation. If the set of clauses contains a conflict clause, there is no need to
+continue extending this partial interpretation and the search backtracks to try another
+one.
+
+Algorithm 6.20 (DPLL algorithm)
+Input: A formula A in clausal form.
+Output: Report that A is unsatisfiable or report that A is satisfiable and return a
+partial interpretation that satisfies A.
+
+   The algorithm is expressed as the recursive function DPLL(B, I ) which takes
+two parameters: a formula B in clausal form and a partial interpretation I . It is
+initially called with the formula A and the empty partial interpretation.
+
+DPLL(B, I )
+
+· Construct the set of clauses B by performing unit propagation on B. Construct
+   I by adding to I all the assignments made during propagation.
+
+· Evaluate B under the partial interpretation I :
+   ­ If B contains a conflict clause return `unsatisfiable';
+   ­ If B is satisfied return I ;
+   ­ (otherwise, continue).
+
+· Choose an atom p in B ; choose a truth value val as T or F ; I1 is the interpreta-
+   tion I together with the assignment of val to p.
+6.4 An Extended Example of the DPLL Algorithm  117
+
+· result  DPLL(B , I1).
+   ­ If result is not `unsatisfiable' return result;
+
+   ­ (otherwise, continue).
+· I2 is the interpretation I together with the assignment of the complement of
+
+   val to p.
+· result  DPLL(B , I2).
+
+   ­ Return result.
+
+   The DPLL algorithm is highly nondeterministic: it must choose an unassigned
+atom and then choose which truth value will be assigned to it first.
+
+6.4 An Extended Example of the DPLL Algorithm
+
+We now give an extended example of the DPLL algorithm by solving the 4-queens
+problem, a smaller instance of the 8-queens problem. Given a 4 × 4 chess board,
+place four queens so that no one can capture any of the others. Here is a solution:
+
+6.4.1 Encoding the Problem in Propositional Logic
+
+First, we have to encode this problem as a formula in propositional logic. It should
+not be too surprising that any finite computational problem can be encoded by binary
+numbers, which in turn can be represented by truth values. Here we take a more
+direct approach to the encoding. Suppose that we want to encode the fact that a
+variable can take one of the values 1, 2, 3. Let us use three atoms p1, p2, p3; the
+intended meaning is that pi is true if the variable has the value i. The formula:
+
+                                         p1  p2  p3,
+
+states that the variable must have at least one of these values, while the following
+formula in CNF states that the variable can have at most one of the values:
+
+                            (p1  p2)  (p1  p3)  (p2  p3).
+118                                         6 Propositional Logic: SAT Solvers
+
+For example, if p1 is assigned T , then p1 is false, so both p2 and p3 must be true,
+that is, p2 and p3 must be false for the formula to encode that the variable has the
+value 1. The conjunction of p1  p2  p3 with this formula states that the variable
+must have exactly one of the values.
+
+   In the 4-queens problem, we need 16 atoms: pij , 1  i  4, 1  i  4, where pij
+is true iff a queen is placed on the square at row i and column j . To simplify notation,
+
+instead of p11, p12, . . . , p43, p44, we will use the subscripts 11, 12, . . . , 43, 44 alone
+to denote each atom.
+
+   The clauses that claim that there is at least one queen in each row are:
+
+     11  12  13  14,
+     21  22  23  24,
+     31  32  33  34,
+     41  42  43  44.
+
+But no more than one queen may be placed in each row:
+
+     11  12, 11  13, 11  14, 12  13, 12  14, 13  14,
+     21  22, 21  23, 21  24, 22  23, 22  24, 23  24,
+     31  32, 31  33, 31  34, 32  33, 32  34, 33  34,
+     41  42, 41  43, 41  44, 42  43, 42  44, 43  44,
+
+and no more than one queen in each column:
+
+     11  21, 11  31, 11  41, 21  31, 21  41, 31  41,
+     12  22, 12  32, 12  42, 22  32, 22  42, 32  42,
+     13  23, 13  33, 13  43, 23  33, 23  43, 33  43,
+     14  24, 14  34, 14  44, 24  34, 24  44, 34  44.
+
+We also have to ensure that no more than one queen is placed in each diagonal. To do
+this systematically, we check each square (i, j ), starting at the top left and enumerate
+the squares that are diagonally below it, which are (i - 1, j + 1), (i + 1, j + 1),
+(i - 2, j + 2), (i + 2, j + 2), as long as both numbers are within the range from
+1 to 4. By commutativity, 12  21  21  12, we do not have to check the squares
+above. Here are the clauses:
+
+     11  22, 11  33, 11  44,  12  21, 12  23, 12  34,
+     13  22, 13  31, 13  24,  14  23, 14  32, 14  41,
+     21  32, 21  43,          22  31, 22  33, 22  44,
+     23  32, 23  41, 23  34,  24  33, 24  42,
+     31  42,                  32  41, 32  43,
+     33  42, 33  44,          34  43.
+6.4 An Extended Example of the DPLL Algorithm         119
+
+Check this by drawing a 4 × 4 chess board on a piece of paper and tracing each of
+the diagonals.
+
+   The total number of clauses is:
+
+4                                              +
+
+(4 × 6)                                        +
+
+(4 × 6)                                        +
+
+(3 + 3 + 3 + 3 + 2 + 3 + 3 + 2 + 1 + 2 + 2 + 1) =
+
+4 + 24 + 24 + 28                               = 80.
+
+   The 4-queens problem has a solution if and only if this 80-clause formula is
+satisfiable. If an algorithm not only decides that the formula is satisfiable, but also
+returns a model, the atoms assigned T in the model will tell us where to place the
+queens.
+
+6.4.2 Solving the Problem with the DP Algorithm?
+
+Let us try to use the DP algorithm to solve the 4-queens problem. There are no
+unit clauses, so we much choose an atom to eliminate. In the absence of any other
+information, let us start with the first atom 11. The atom appears as a positive literal
+only in the first clause 11  12  13  14, so that clause must participate in the
+resolution rule. Negative literals appear in all three sets that exclude two queens in
+a row, column or diagonal. However, the row exclusion clauses 11  12, 11  13,
+11  14, cannot be resolved with 11  12  13  14 because they clash on more
+than one literal, so resolving them would result in trivial clauses (Lemma 4.16).
+This leaves six clashing clauses--three for column exclusion and three for diagonal
+exclusion--and the resolvents are:
+
+              21  12  13  14, 31  12  13  14, 41  12  13  14,
+              22  12  13  14, 33  12  13  14, 44  12  13  14,
+
+The ten original clauses with 11 or 11 are now removed from the set. We don't seem
+to be making much progress, so let us turn to the DPLL algorithm.
+
+6.4.3 Solving the Problem with the DPLL Algorithm
+
+In this section we will carry out the DPLL algorithm in a purely formal manner as
+a computer would. We suggest, however, that you `cheat' by referring to the 4 × 4
+chessboard, which will clarify what happens at each step.
+120                                                     6 Propositional Logic: SAT Solvers
+
+   We start by assigning T to 11 (and F to 11). The clause 11  12  13  14
+becomes true and can be deleted, while 11 can be deleted from all other clauses.
+This results in nine new (unit) clauses:
+
+     12, 13, 14, 21, 31, 41, 22, 33, 44.
+
+The next step is to carry out unit propagation for each of these literals. Negated
+atoms like 12 are assigned T so they are erased from clauses with positive literals
+and all clauses contain the negated atoms are deleted:
+
+      one / row       23  24, 32  34, 42  43,
+      one / row       23  24, 32  34, 42  43,
+      one / column    32  42, 23  43, 24  34,
+      one / diagonal  24  42, 23  32, 23  34, 32  43, 34  43.
+
+By choosing the value of only one literal and propagating units, 80 clauses have
+been reduced to only 14 clauses!
+
+   Let us now assign T to 23 (and F to 23); this creates four new unit clauses:
+
+                      24, 43, 32, 34
+
+and the other clauses are:
+
+                                 32  34, 42  43,
+                                 32  34, 42  43,
+                                 32  42, 24  34,
+                                 24  42, 32  43, 34  43.
+
+Propagating the unit 24 gives:
+
+                                       32  34, 42  43,
+                                       32  34, 42  43,
+                                       32  42,
+                                       32  43, 34  43
+
+and then propagating the unit 43 gives:
+
+                                          32  34, 42,
+                                          32  34,
+                                          32  42.
+6.4 An Extended Example of the DPLL Algorithm                     121
+
+The next unit to propagate is 32; the result is the pair of clauses 34, 42, which we
+can written more formally as {{34}, {42}}. The remaining unit to propagate is l = 34,
+but erasing the literal lc = 34 from the clause {34} produces the empty clause P,
+which is unsatisfiable. Just by choosing values for the two literals 11 and 23, unit
+propagation has caused the entire set of 80 clauses to collapse into the empty clause.
+We have ruled out 214 of the 216 possible interpretations, because any interpretation
+which assigns T to 11 and 23 cannot satisfy the set of clauses.
+
+   We should now backtrack and assign F to 23. But wait, let us `cheat' and notice
+that there are no solutions with a queen placed on the top left square. Instead, we
+backtrack to the very start of the algorithm and assign T to 12. The first clause is
+deleted and unit propagation produces new unit clauses:
+
+                 11, 13, 14, 22, 32, 42, 21, 23, 34.
+
+Clearly, propagating the unit clauses: 11, 13, 14, 21, 22, 23 removes all clauses
+with literals from the first two rows except those with 24 or 24:
+
+ one / row       24, 31  32  33  34, 41  42  43  44,
+ one / row       31  32, 31  33, 31  34, 32  33, 32  34, 33  34,
+                 41  42, 41  43, 41  44, 42  43, 42  44, 43  44,
+ one / column    24  34, 24  44, 31  41, 32  42, 33  43, 34  44,
+ one / diagonal  24  33, 24  42, 31  42, 32  41, 32  43, 33  42,
+                 33  44, 34  43.
+
+We can now propagate 32, 34, 42 to obtain:
+
+                           24, 31  33, 41  43  44,
+                           31  33, 41  43, 41  44, 43  44,
+                           24  44, 31  41, 33  43,
+                           24  33, 33  44.
+
+There is now a new unit clause 24 which can be propagated:
+
+                           31  33, 41  43  44,
+                           31  33, 41  43, 41  44, 43  44,
+                           44, 31  41, 33  43,
+                           33, 33  44.
+122                                              6 Propositional Logic: SAT Solvers
+
+Propagating 33 gives:
+
+                       31, 41  43  44,
+                       41  43, 41  44, 43  44,
+                       44, 31  41
+
+and then propagating 44 gives:
+
+                                31, 41  43,
+                                41  43, 31  41.
+
+The new unit clause is 31 can be propagated:
+
+                       41  43, 41  43, 41.
+
+Finally, propagating 41 leaves one last clause 43. We conclude that the set of clauses
+is satisfiable. If you check which atomic propositions are assigned T , you will find
+that they are 12, 24, 31, 43, which is precisely the placement of queens shown in the
+diagram at the beginning of this section!
+
+6.5 Improving the DPLL Algorithm
+
+An efficient implementation of the DPLL algorithm must use data structures de-
+signed so that operations like unit propagation are efficient. Furthermore, an itera-
+tive algorithm must replace the recursive one. Beyond such issues of implementa-
+tion, the DPLL algorithm has become a practical approach for SAT solving because
+of optimizations to the algorithm itself. We will survey several of these: heuristics
+to resolve the nondeterministic choice of which assignments to make, learning from
+conflicts and non-chronological backtracking.
+
+6.5.1 Branching Heuristics
+
+The DPLL algorithm is nondeterministic since when branching occurs we have to
+choose an atom and an assignment of a truth value. As we saw in the formula for the
+4-queens problem, choosing 12 as the first literal to branch on was more efficient
+than choosing 11.
+
+   Various heuristics have been developed for choosing literals to branch on. The
+choice of a literal is based upon some measurable characteristic of the formula,
+such as the size of the clauses and number of the literals in a clause. The 4-queens
+problem is symmetric so measure-based heuristics are unlikely to help. Consider,
+instead, the following set of clauses:
+6.5 Improving the DPLL Algorithm  123
+
+p¯qs, pq¯s, pqs¯, p¯q¯s¯,
+p¯tv, pt¯v, ptv¯, p¯t¯v¯,
+tu¯, t¯u, uv¯, u¯v,
+
+qr¯, q¯r, rs¯, r¯s.
+
+These are the Tseitin clauses (Sect. 4.5) associated with two triangles qrs and tuv
+connected by an edge labeled p. However, the parity on each node is zero so that
+clauses are satisfiable.
+
+   Let us try the heuristic: branch on the literal that occurs most often in the set of
+clauses. This is p (or p¯) which occur four times. Deleting all clauses with p and all
+occurrences of p¯ gives:
+
+                                       qs, q¯s¯, tv, t¯v¯
+                                       tu¯, t¯u, uv¯, u¯v,
+                                       qr¯, q¯r, rs¯, r¯s.
+We haven't progressed very far.
+   Let us try, instead, the heuristic: branch on a literal whose atom occurs most often
+in a clause of shortest length. The intuition behind this heuristic is that assigning to
+literals in short clauses will bring us rapidly to a unit clause that can be propagated or
+even to an unsatisfiable clause. In this set of clauses, we can choose r or u; suppose
+that we choose r and assign T to r. Immediately, we obtain two unit clauses q and s.
+Propagating these units leads to another unit p¯ and propagating that unit results in:
+
+                                  tv¯, t¯v, tu¯, t¯u, uv¯, u¯v.
+
+This heuristic leads to fewer clauses than the previous one.
+
+6.5.2 Non-chronological Backtracking
+
+Consider now the set of clauses:
+
+                          pq, qr, p¯s¯t, p¯su, p¯t¯u, p¯su¯, p¯s¯u¯.
+
+Let us set the atom p to T . The first clause is deleted and p¯ is deleted from the other
+clauses, resulting in:
+
+                                  qr, s¯t, su, t¯u, su¯, s¯u¯.
+124  6 Propositional Logic: SAT Solvers
+
+Obviously, it is possible to assign values to q and r to satisfy the clause qr without in
+any way affecting the satisfiability of the rest of the formula, but the DPLL algorithm
+doesn't know that. It might just choose to branch on the these atoms, first assigning
+T to q:
+
+                                     s¯t, su, t¯u, su¯, s¯u¯.
+
+   The algorithms next choice might be to assign T to s, resulting in:
+
+                                            t, t¯u, u¯.
+
+Unit propagation immediately produces the empty clause showing that this set of
+assignments does not satisfy the formula. Backtracking and assigning F to s leads
+to:
+
+                                            u, t¯u, u¯
+
+and then to the empty clause.
+   The algorithm returns from the recursion and tries the assignment F to q even
+
+though that assignment will also lead to an unsatisfiable clause. The DPLL algo-
+rithm can be modified to analyze the sequence of assignments and to discover that
+the assignments of T to p and T or F to s are sufficient by themselves to show that
+the formula is unsatisfiable. Therefore, once the two calls on s have returned, the
+algorithm can directly return all the way up to try the assignment of F to p without
+checking the other assignment to q.
+
+   An algorithm which returns up the tree of assignments to an ancestor that is not
+its parent is said to engage in non-chronological backtracking. These algorithms are
+significantly more efficient than the DPLL algorithm that performs chronological
+backtracking.
+
+6.5.3 Learning Conflict Clauses
+
+We showed that the assignment of T to both p and s necessarily falsifies the for-
+mula in the previous section. Unfortunately, backtracking causes this information
+to be lost. In a large set of clauses, the algorithm might again try a sequence of
+assignments that includes assignments known lead to interpretations that falsify the
+formula. The DPLL algorithm can be modified to prevent this by adding clauses to
+the formula, such as p¯s¯ in this case; these clauses will immediately force the set to
+be unsatisfiable on an interpretation that contains the known assignments.
+
+   A clause like p¯s¯ is called a conflict clause, because it is obtained from an anal-
+ysis of the assignments that led to the detection of a conflict--a partial assignment
+that falsifies the formula. An algorithm that performs conflict analysis learns (adds)
+conflict clauses in the hope of improving performance. Since memory is limited, an
+algorithm must also include a policy for deleting clauses that have been learned.
+6.6 Stochastic Algorithms  125
+
+6.6 Stochastic Algorithms
+
+On the surface, nothing appears to be less random than algorithms because they
+formally specify the steps taken to solve a problem. It may come as a surprise that
+algorithms that use randomness can be very effective. A random algorithm will not
+be complete--it may not return an answer--but many random algorithms can be
+shown to return the correct answer with high probability. In practice, an efficient
+incomplete algorithm can be more useful than an inefficient complete algorithm.
+
+   Many SAT solvers employ stochastic algorithms that use randomness. Of course,
+they can only be used when we are looking for a model, because an incomplete
+algorithm can never declare that a formula is unsatisfiable.
+
+   The basic form of a stochastic algorithm for SAT is very simple:
+
+Algorithm 6.21 (Stochastic algorithm for SAT)
+Input: A formula A in clausal form.
+Output: A model for A (or failure to return any answer).
+
+· Choose a random interpretation I for A.
+· Repeat indefinitely:
+
+   ­ If vI (A) = T return I ;
+   ­ Otherwise:
+
+      · Choose an atom p in A;
+      · Modify I by flipping p (changing its assignment to the complementary as-
+
+        signment).
+
+   In practice, Algorithm 6.21 is modified to limit the number of attempts to flip an
+atom in the interpretation; when the limit is reached, the loop restarts after choosing
+a new random interpretation. Of course, you might want to limit the number of
+restarts so that the algorithm does not run indefinitely.
+
+   Stochastic algorithms for SAT differ in the strategy used to choose an atom to flip.
+A simple strategy is to choose to flip the atom that will cause the largest number of
+currently unsatisfied clauses to become satisfied. An algorithm can add randomness
+to avoid getting stuck in a local minimum: a partial interpretation where no flip of
+an atom can improve the chance of obtaining a model.
+
+6.6.1 Solving the 4-Queens Problem with a Stochastic Algorithm
+
+The n-queens problem is quite unsuited for stochastic algorithms, because the num-
+ber of models (solutions) is very small compared to the number of interpretations so
+a random algorithm has a low probability of finding one. For the 4-queens problem,
+there are only two solutions, but there are 216 = 65536 interpretations! Nevertheless,
+we will use this problem to an example of how the algorithm works.
+126  6 Propositional Logic: SAT Solvers
+
+Consider the random assignment associated with the configuration:
+
+The atoms 11, 12, 24, 31, 43 are assigned T and the rest are assigned F . There are
+two unsatisfied clauses:
+
+                                       11  12, 11  31,
+
+corresponding to having two queens in the first row and two in the first column.
+Obviously, we want to flip the assignment to 11 from T to F because that reduces
+the number of unsatisfied clauses from two to zero, but let us see what other choices
+give.
+
+   Flipping 12 will satisfy 11  12 but leave 11  31 unsatisfied, reducing the num-
+ber of unsatisfied clauses from two to one. Flipping 31 will also satisfy one of the
+unsatisfied clauses, but it will make the previously satisfied clause 31  32  33  34
+(at least one queen in a row) unsatisfied; therefore, the number of unsatisfied clauses
+in unchanged. Flipping 24 or 43 will satisfy no unsatisfied clause and make the cor-
+responding row clause unsatisfied, increasing the number of unsatisfied clauses.
+Flipping any of the atoms that have been assigned F is even worse, because sev-
+eral clauses will become unsatisfied. For example, flipping 22 will falsify 22  24,
+12  22, 11  22 and 22  31.
+
+   For this example, the heuristic of flipping the atom that causes the largest reduc-
+tion in the number of unsatisfied clauses works very well and it leads immediately
+to a solution.
+
+6.7 Complexity of SAT *
+
+The problems of deciding satisfiability and validity in propositional logic are central
+to complexity theory. In this section we survey some of the basic results. It assumes
+that you are familiar with fundamental concepts of computational complexity: de-
+terministic and nondeterministic algorithms, polynomial and exponential time and
+space, the complexity classes P, N P, co-N P.
+
+   The method of truth tables is a deterministic algorithm for deciding both satisfi-
+ability and validity in propositional logic. The algorithm is exponential, because the
+size of a formula is polynomial in n, the number of variables, while the truth table
+has 2n rows.
+6.7 Complexity of SAT *  127
+
+   The method of semantic tableaux is a nondeterministic algorithm for both sat-
+isfiability and validity, because at any stage of the construction, we can choose a
+leaf to expand and choose a formula in the label of the leaf to which a rule will be
+applied. Nevertheless, it can be shown that there are families of formulas for which
+the method of semantic tableaux is exponential, as are the David-Putnam procedure
+and resolution (Sect. 4.5).
+
+   There is a very simple nondeterministic algorithm for deciding the satisfiability
+of a formula A in propositional logic:
+
+    Choose an interpretation I for A.
+    Compute the truth value vI (A).
+    If vI (A) = T then A is satisfiable.
+
+If A is satisfiable, for some computation (choice of I ), the algorithm returns with
+the answer that A is satisfiable. Of course, other choices may not give the correct
+answer, but that does not affect the correctness of the nondeterministic algorithm.
+Furthermore, the algorithm is very efficient, since choosing an interpretation and
+computing the truth value of a formula are linear in the size of the formula. This
+shows that the problem of satisfiability in propositional logic is in the class N P of
+problems solvable by a Nondeterministic algorithm in Polynomial time.
+
+   In the context of deciding satisfiability, the difference between a deterministic
+and a nondeterministic algorithm seems to be that guessing and checking is efficient
+whereas searching is inefficient. One can conjecture that satisfiability is not in the
+class P of problems solvable in Polynomial time by a deterministic algorithm.
+
+   A famous theorem by Cook and Levin from 1971 showed that if satisfiability is in
+P, then for every problem in N P, there is a deterministic polynomial algorithm!
+A problem with this property is called an N P-complete problem. The theorem on
+N P-completeness is proved by showing how to transform an arbitrary nondeter-
+ministic Turing machine into a formula in propositional logic such that the Turing
+machine produces an answer if and only if the corresponding formula is satisfiable.
+(It must also be shown that the size of the formula is a polynomial of the size of the
+Turing machine.) Satisfiability was the first problem shown to be N P-complete,
+although since then thousands of problems have been proven to be in this class.
+
+   A major open theoretical question in computer science is called P = N P?:
+Are the two classes the same or are nondeterministic algorithms more efficient? The
+problem can be settled by demonstrating a polynomial algorithm for one of these
+problems like satisfiability or by proving that no such algorithm exists.
+
+   Unsatisfiability (validity) in propositional logic is in the class co-N P of prob-
+lems whose complement (here, satisfiability) is in N P. It can be shown that co-
+N P = N P if and only if unsatisfiability is in N P, but it is not known if there
+is a nondeterministic polynomial decision procedure for unsatisfiability.
+128          6 Propositional Logic: SAT Solvers
+
+6.8 Summary
+
+The problems of deciding satisfiability and validity in propositional logic are almost
+certainly intractable: the former is in N P and the latter in co-N P. However,
+algorithms and data structures like the ones described in this chapter have proved
+themselves to be highly efficient in many practical applications. The DPLL algo-
+rithm uses elementary properties of clauses to search for a model. SAT solvers based
+upon the DPLL algorithm employ heuristics and randomness to make the search for
+a model more efficient.
+
+6.9 Further Reading
+
+The original papers on the DP and DLL algorithms are: Davis and Putnam (1960)
+and Davis et al. (1962). Malik and Zhang (2009) and Zhang (2003) contain good
+introductions to SAT solvers. For the state of the art on SAT algorithms, see the
+handbook by Biere et al. (2009). The presentation in Sect. 6.5.2 was adapted from
+Sect. 3.6.4.1 of this book.
+
+   See http://www.satlive.org/ for links to software for SAT solvers.
+   The encoding of the 8-queens problem is taken from Biere et al. (2009,
+Sect. 2.3.1), which is based on Nadel (1990).
+   There are many textbooks on computational models: Gopalakrishnan (2006),
+Sipser (2005), Hopcroft et al. (2006).
+
+6.10 Exercises
+
+6.1 Are there other solutions to the 4-queens problem? If so, compute these solu-
+tions using the DPLL algorithm and an appropriate choice of assignments.
+
+6.2 A variant of the n-queens problem is the n-rooks problem. A rook can only
+capture horizontally and vertically, not diagonally. Solve the 4-rooks problem using
+DPLL.
+
+6.3 The pigeon-hole problem is to place n + 1 pigeons into n holes such that each
+hole contains at most one pigeon. There is no solution, of course!
+
+1. Encode the pigeon-hole problem for 3 holes and 4 pigeons as a formula in clausal
+   form.
+
+2. Use the DPLL algorithm to show that the formula is unsatisfiable for one assign-
+   ment.
+
+3. Develop an expression for the number of clauses in the formula for the pigeon-
+   hole problem with n holes.
+References                                                         129
+
+6.4 Let G be a connected undirected graph. The graph coloring problem is to decide
+if one of k colors {c1, . . . , ck} can be assigned to each vertex color(vi) = cj such
+that color(vi1 ) = color(vi2 ) if (vi1 , vi1 ) is an edge in E. Show how to translate the
+graph coloring problem for any G into SAT. Use the DPLL algorithm to show that
+
+K2,2 is 2-colorable and that the triangle is 3-colorable.
+
+6.5 What is the relation between the DP algorithm and resolution?
+
+6.6 * Let 3SAT be the problem of deciding satisfiability of formulas in CNF such
+that there are three literals in each clause. The proof that SAT is N P-complete
+actually shows that 3SAT is N P-complete. Let 2SAT be the problem of deciding
+satisfiability of formulas in CNF such that there are two literals in each clause. Show
+that there is an efficient algorithm for 2SAT.
+
+6.7 * Show that there is an efficient algorithm for Horn-SAT, deciding if a set of
+Horn clauses is satisfiable.
+
+References
+
+A. Biere, M. Heule, H. Van Maaren, and T. Walsh, editors. Handbook of Satisfiability, volume 185
+   of Frontiers in Artificial Intelligence and Applications. IOS Press, 2009.
+
+M. Davis and H. Putnam. A computing procedure for quantification theory. Journal of the ACM,
+   7:201­215, 1960.
+
+M. Davis, G. Logemann, and D. Loveland. A machine program for theorem-proving. Communica-
+   tions of the ACM, 5:394­397, 1962.
+
+G. Gopalakrishnan. Computational Engineering: Applied Automata Theory and Logic. Springer,
+   2006.
+
+J.E. Hopcroft, R. Motwani, and J.D. Ullman. Introduction to Automata Theory, Languages and
+   Computation (Third Edition). Addison-Wesley, 2006.
+
+S. Malik and L. Zhang. Boolean satisfiability: From theoretical hardness to practical success. Com-
+   munications of the ACM, 52(8):76­82, 2009.
+
+B.A. Nadel. Representation selection for constraint satisfaction: A case study using n-queens. IEEE
+   Expert: Intelligent Systems and Their Applications, 5:16­23, June 1990.
+
+M. Sipser. Introduction to the Theory of Computation (Second Edition). Course Technology, 2005.
+L. Zhang. Searching for truth: Techniques for satisfiability of Boolean formulas. PhD thesis,
+
+   Princeton University, 2003. http://research.microsoft.com/en-us/people/
+   lintaoz/thesis_lintao_zhang.pdf.
+

@@ -1,0 +1,4 @@
+session MLTC2 in "." = HOL +
+  options [document = false]
+  theories
+    MLTC2

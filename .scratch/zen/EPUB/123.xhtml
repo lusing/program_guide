@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#" lang="cn" xml:lang="cn">
+  <head>
+    <title>28.2　享元模式的定义</title>
+  </head>
+  <body><h3 class="p3" id="sigil_toc_id_155">28.2 享元模式的定义</h3> 
+<p class="ziti">享元模式（Flyweight Pattern）是池技术的重要实现方式，其定义如下：Use sharing to support large numbers of fine-grained objects efficiently.（使用共享对象可有效地支持大量的细粒度的对象。）</p> 
+<p class="ziti">享元模式的定义为我们提出了两个要求：细粒度的对象和共享对象。我们知道分配太多的对象到应用程序中将有损程序的性能，同时还容易造成内存溢出，那怎么避免呢？就是享元模式提到的共享技术。我们先来了解一下对象的内部状态和外部状态。</p> 
+<p class="ziti">要求细粒度对象，那么不可避免地使得对象数量多且性质相近，那我们就将这些对象的信息分为两个部分：内部状态（intrinsic）与外部状态（extrinsic）。</p> 
+<p class="ziti">● 内部状态</p> 
+<p class="ziti">内部状态是对象可共享出来的信息，存储在享元对象内部并且不会随环境改变而改变，如我们例子中的id、postAddress等，它们可以作为一个对象的动态附加信息，不必直接储存在具体某个对象中，属于可以共享的部分。</p> 
+<p class="ziti">● 外部状态</p> 
+<p class="ziti">外部状态是对象得以依赖的一个标记，是随环境改变而改变的、不可以共享的状态，如我们例子中的考试科目+考试地点复合字符串，它是一批对象的统一标识，是唯一的一个索引值。</p> 
+<p class="ziti">有了对象的两个状态，我们就可以来看享元模式的通用类图，如图28-3所示。</p> 
+<p class="pic"><a><img alt="" src="http://csdn-ebook-resources.oss-cn-beijing.aliyuncs.com/images/3424f78fbf71492998703de7194985f2/0117.jpg"/></a></p> 
+<p class="middle-img">图28-3 享元模式的通用类图</p> 
+<p class="ziti">类图也很简单，我们先来看我们享元模式角色名称。</p> 
+<p class="ziti">● Flyweight——抽象享元角色</p> 
+<p class="ziti">它简单地说就是一个产品的抽象类，同时定义出对象的外部状态和内部状态的接口或实现。</p> 
+<p class="ziti">● ConcreteFlyweight——具体享元角色</p> 
+<p class="ziti">具体的一个产品类，实现抽象角色定义的业务。该角色中需要注意的是内部状态处理应该与环境无关，不应该出现一个操作改变了内部状态，同时修改了外部状态，这是绝对不允许的。</p> 
+<p class="ziti">● unsharedConcreteFlyweight——不可共享的享元角色</p> 
+<p class="ziti">不存在外部状态或者安全要求（如线程安全）不能够使用共享技术的对象，该对象一般不会出现在享元工厂中。</p> 
+<p class="ziti">● FlyweightFactory——享元工厂</p> 
+<p class="ziti">职责非常简单，就是构造一个池容器，同时提供从池中获得对象的方法。</p> 
+<p class="ziti">享元模式的目的在于运用共享技术，使得一些细粒度的对象可以共享，我们的设计确实也应该这样，多使用细粒度的对象，便于重用或重构。我来看享元模式的通用代码，先看抽象享元角色，如代码清单28-7所示。</p> 
+<p class="ziti">代码清单28-7 抽象享元角色</p> 
+<pre>public abstract class Flyweight {&#13;
+     //内部状态&#13;
+     private String intrinsic;&#13;
+     //外部状态&#13;
+     protected final String Extrinsic;&#13;
+     //要求享元角色必须接受外部状态&#13;
+     public Flyweight(String _Extrinsic){&#13;
+             this.Extrinsic = _Extrinsic;&#13;
+     }&#13;
+     //定义业务操作&#13;
+     public abstract void operate();&#13;
+     //内部状态的getter/setter&#13;
+     public String getIntrinsic() {&#13;
+             return intrinsic;&#13;
+     }&#13;
+     public void setIntrinsic(String intrinsic) {&#13;
+             this.intrinsic = intrinsic;&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">抽象享元角色一般为抽象类，在实际项目中，一般是一个实现类，它是描述一类事物的方法。在抽象角色中，一般需要把外部状态和内部状态（当然了，可以没有内部状态，只有行为也是可以的）定义出来，避免子类的随意扩展。我们再来看具体的享元角色，如代码清单28-8所示。</p> 
+<p class="ziti">代码清单28-8 具体享元角色</p> 
+<pre>public class ConcreteFlyweight1 extends Flyweight{&#13;
+     //接受外部状态&#13;
+     public ConcreteFlyweight1(String _Extrinsic){&#13;
+             super(_Extrinsic);&#13;
+     }&#13;
+     //根据外部状态进行逻辑处理&#13;
+     public void operate(){&#13;
+             //业务逻辑&#13;
+     }&#13;
+}&#13;
+public class ConcreteFlyweight2 extends Flyweight{&#13;
+     //接受外部状态&#13;
+     public ConcreteFlyweight2(String _Extrinsic){&#13;
+             super(_Extrinsic);&#13;
+     }&#13;
+     //根据外部状态进行逻辑处理&#13;
+     public void operate(){&#13;
+             //业务逻辑&#13;
+     }&#13;
+}</pre> 
+<p class="ziti">这很简单，实现自己的业务逻辑，然后接收外部状态，以便内部业务逻辑对外部状态的依赖。注意，我们在抽象享元中对外部状态加上了final关键字，防止意外产生，什么意外？获得了一个外部状态，然后无意修改了一下，池就混乱了！</p> 
+<hr/> 
+<p class="ziti6"><span class="yanse">注意</span>　在程序开发中，确认只需要一次赋值的属性则设置为final类型，避免无意修改导致逻辑混乱，特别是Session级的常量或变量。</p> 
+<hr/> 
+<p class="ziti">我们继续看享元工厂，如代码清单28-9所示。</p> 
+<p class="ziti">代码清单28-9 享元工厂</p> 
+<pre>public class FlyweightFactory {&#13;
+     //定义一个池容器&#13;
+     private static  HashMap&lt;String,Flyweight&gt; pool= new HashMap&lt;String,Flyweight&gt;();&#13;
+     //享元工厂&#13;
+     public static Flyweight getFlyweight(String Extrinsic){&#13;
+             //需要返回的对象&#13;
+             Flyweight flyweight = null;&#13;
+             //在池中没有该对象&#13;
+             if(pool.containsKey(Extrinsic)){&#13;
+                     flyweight = pool.get(Extrinsic);&#13;
+             }else{&#13;
+                     //根据外部状态创建享元对象&#13;
+                     flyweight = new ConcreteFlyweight1(Extrinsic);&#13;
+                     //放置到池中&#13;
+                     pool.put(Extrinsic, flyweight);&#13;
+             }&#13;
+             return flyweight;&#13;
+     }&#13;
+}</pre></body>
+</html>

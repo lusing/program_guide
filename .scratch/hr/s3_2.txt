@@ -1,0 +1,277 @@
+3.2 Linear-time temporal logic
+
+175
+
+Temporal logics have a dynamic aspect to them, since the truth of a formula is not fixed in a model, as it is in predicate or propositional logic, but depends on the time-point inside the model. In this chapter, we study a logic where time is linear, called Linear-time Temporal Logic (LTL), and another where time is branching, namely Computation Tree Logic (CTL). These logics have proven to be extremely fruitful in verifying hardware and communication protocols; and people are beginning to apply them to the verification of software. Model checking is the process of computing an answer to the question of whether M, s  holds, where  is a formula of one of these logics, M is an appropriate model of the system under consideration, s is a state of that model and is the underlying satisfaction relation.
+Models like M should not be confused with an actual physical system. Models are abstractions that omit lots of real features of a physical system, which are irrelevant to the checking of . This is similar to the abstractions that one does in calculus or mechanics. There we talk about straight lines, perfect circles, or an experiment without friction. These abstractions are very powerful, for they allow us to focus on the essentials of our particular concern.
+
+3.2 Linear-time temporal logic
+Linear-time temporal logic, or LTL for short, is a temporal logic, with connectives that allow us to refer to the future. It models time as a sequence of states, extending infinitely into the future. This sequence of states is sometimes called a computation path, or simply a path. In general, the future is not determined, so we consider several paths, representing different possible futures, any one of which might be the `actual' path that is realised.
+We work with a fixed set Atoms of atomic formulas (such as p, q, r, . . . , or p1, p2, . . . ). These atoms stand for atomic facts which may hold of a system, like `Printer Q5 is busy,' or `Process 3259 is suspended,' or `The content of register R1 is the integer value 6.' The choice of atomic descriptions obviously depends on our particular interest in a system at hand.
+
+3.2.1 Syntax of LTL Definition 3.1 Linear-time temporal logic (LTL) has the following syntax given in Backus Naur form:
+ ::= |  | p | (¬) | (  ) | (  ) | (  ) | (X ) | (F ) | (G ) | ( U ) | ( W ) | ( R ) (3.1)
+where p is any propositional atom from some set Atoms.
+
+176
+
+3 Verification by model checking
+
+
+
+F
+
+U
+
+
+
+¬
+
+p
+
+p
+
+G
+
+q
+
+r
+Figure 3.1. The parse tree of (F (p  G r)  ((¬q) U p)).
+Thus, the symbols and  are LTL formulas, as are all atoms from Atoms; and ¬ is an LTL formula if  is one, etc. The connectives X, F, G, U, R, and W are called temporal connectives. X means `neXt state,' F means `some Future state,' and G means `all future states (Globally).' The next three, U, R and W are called `Until,' `Release' and `Weak-until' respectively. We will look at the precise meaning of all these connectives in the next section; for now, we concentrate on their syntax.
+Here are some examples of LTL formulas:
+r (((F p)  (G q))  (p W r)) r (F (p  (G r))  ((¬q) U p)), the parse tree of this formula is illustrated in
+Figure 3.1. r (p W (q W r)) r ((G (F p))  (F (q  s))).
+It's boring to write all those brackets, and makes the formulas hard to read. Many of them can be omitted without introducing ambiguities; for example, (p  (F q)) could be written p  F q without ambiguity. Others, however, are required to resolve ambiguities. In order to omit some of those, we assume similar binding priorities for the LTL connectives to those we assumed for propositional and predicate logic.
+
+3.2 Linear-time temporal logic
+
+177
+
+
+
+F
+
+
+
+p
+
+G
+
+U
+
+r¬
+
+p
+
+q
+Figure 3.2. The parse tree of F p  G r  ¬q U p, assuming binding priorities of Convention 3.2.
+Convention 3.2 The unary connectives (consisting of ¬ and the temporal connectives X, F and G) bind most tightly. Next in the order come U, R and W; then come  and ; and after that comes .
+These binding priorities allow us to drop some brackets without introducing ambiguity. The examples above can be written:
+r FpGq  p W r r F (p  G r)  ¬q U p r p W (q W r) r G F p  F (q  s).
+The brackets we retained were in order to override the priorities of Convention 3.2, or to disambiguate cases which the convention does not resolve. For example, with no brackets at all, the second formula would become F p  G r  ¬q U p, corresponding to the parse tree of Figure 3.2, which is quite different.
+The following are not well-formed formulas:
+r U r ­ since U is binary, not unary r p G q ­ since G is unary, not binary.
+
+178
+
+3 Verification by model checking
+
+Definition 3.3 A subformula of an LTL formula  is any formula  whose parse tree is a subtree of 's parse tree.
+
+The subformulas of p W (q U r), e.g., are p, q, r, q U r and p W (q U r).
+
+3.2.2 Semantics of LTL The kinds of systems we are interested in verifying using LTL may be modelled as transition systems. A transition system models a system by means of states (static structure) and transitions (dynamic structure). More formally:
+Definition 3.4 A transition system M = (S, , L) is a set of states S endowed with a transition relation  (a binary relation on S), such that every s  S has some s  S with s  s , and a labelling function L : S  P(Atoms).
+Transition systems are also simply called models in this chapter. So a model has a collection of states S, a relation , saying how the system can move from state to state, and, associated with each state s, one has the set of atomic propositions L(s) which are true at that particular state. We write P(Atoms) for the power set of Atoms, a collection of atomic descriptions. For example, the power set of {p, q} is {, {p}, {q}, {p, q}}. A good way of thinking about L is that it is just an assignment of truth values to all the propositional atoms, as it was the case for propositional logic (we called that a valuation). The difference now is that we have more than one state, so this assignment depends on which state s the system is in: L(s) contains all atoms which are true in state s.
+We may conveniently express all the information about a (finite) transition system M using directed graphs whose nodes (which we call states) contain all propositional atoms that are true in that state. For example, if our system has only three states s0, s1 and s2; if the only possible transitions between states are s0  s1, s0  s2, s1  s0, s1  s2 and s2  s2; and if L(s0) = {p, q}, L(s1) = {q, r} and L(s2) = {r}, then we can condense all this information into Figure 3.3. We prefer to present models by means of such pictures whenever that is feasible.
+The requirement in Definition 3.4 that for every s  S there is at least one s  S such that s  s means that no state of the system can `deadlock.' This is a technical convenience, and in fact it does not represent any real restriction on the systems we can model. If a system did deadlock, we could always add an extra state sd representing deadlock, together with new
+
+3.2 Linear-time temporal logic
+
+179
+
+p, q s0
+
+q, r s1
+
+s2 r
+
+Figure 3.3. A concise representation of a transition system M = (S,  ,L) as a directed graph. We label state s with l iff l  L(s).
+
+s0
+
+s1
+
+s0
+
+s1
+
+s2 s3
+s4
+
+s2 s3
+s4
+
+sd
+Figure 3.4. On the left, we have a system with a state s4 that does not have any further transitions. On the right, we expand that system with a `deadlock' state sd such that no state can deadlock; of course, it is then our understanding that reaching the `deadlock' state sd corresponds to deadlock in the original system.
+transitions s  sd for each s which was a deadlock in the old system, as well as sd  sd. See Figure 3.4 for such an example.
+Definition 3.5 A path in a model M = (S, , L) is an infinite sequence of states s1, s2, s3, . . . in S such that, for each i  1, si  si+1. We write the path as s1  s2  . . . .
+Consider the path  = s1  s2  . . . . It represents a possible future of our system: first it is in state s1, then it is in state s2, and so on. We write i for the suffix starting at si, e.g., 3 is s3  s4  . . . .
+
+180
+
+3 Verification by model checking
+
+p, q s0
+
+q, r s1
+
+s2 r
+
+p, q s0
+
+r s2
+
+s2 r
+
+q, r s1
+
+s2 r
+
+r s2
+
+Figure 3.5. Unwinding the system of Figure 3.3 as an infinite tree of all computation paths beginning in a particular state.
+It is useful to visualise all possible computation paths from a given state s by unwinding the transition system to obtain an infinite computation tree. For example, if we unwind the state graph of Figure 3.3 for the designated starting state s0, then we get the infinite tree in Figure 3.5. The execution paths of a model M are explicitly represented in the tree obtained by unwinding the model.
+Definition 3.6 Let M = (S, , L) be a model and  = s1  . . . be a path in M. Whether  satisfies an LTL formula is defined by the satisfaction relation as follows:
+1.  2.   3.  p iff p  L(s1) 4.  ¬ iff   5.  1  2 iff  1 and  2 6.  1  2 iff  1 or  2 7.  1  2 iff  2 whenever  1 8.  X  iff 2  9.  G  iff, for all i  1, i 
+
+3.2 Linear-time temporal logic
+
+181
+
+s0 s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 . . .
+
+p
+
+q
+
+Figure 3.6. An illustration of the meaning of Until in the semantics of
+LTL. Suppose p is satisfied at (and only at) s3, s4, s5, s6, s7, s8 and q is satisfied at (and only at) s9. Only the states s3 to s9 each satisfy p U q along the path shown.
+
+10.  F  iff there is some i  1 such that i  11.   U  iff there is some i  1 such that i  and for all j = 1, . . . , i - 1
+we have j  12.   W  iff either there is some i  1 such that i  and for all j =
+1, . . . , i - 1 we have j ; or for all k  1 we have k  13.   R  iff either there is some i  1 such that i  and for all j = 1, . . . , i
+we have j , or for all k  1 we have k .
+Clauses 1 and 2 reflect the facts that is always true, and  is always false. Clauses 3­7 are similar to the corresponding clauses we saw in propositional logic. Clause 8 removes the first state from the path, in order to create a path starting at the `next' (second) state.
+Notice that clause 3 means that atoms are evaluated in the first state along the path in consideration. However, that doesn't mean that all the atoms occuring in an LTL formula refer to the first state of the path; if they are in the scope of a temporal connective, e.g., in G (p  X q), then the calculation of satisfaction involves taking suffices of the path in consideration, and the atoms refer to the first state of those suffices.
+Let's now look at clauses 11­13, which deal with the binary temporal connectives. U, which stands for `Until,' is the most commonly encountered one of these. The formula 1 U 2 holds on a path if it is the case that 1 holds continuously until 2 holds. Moreover, 1 U 2 actually demands that 2 does hold in some future state. See Figure 3.6 for illustration: each of the states s3 to s9 satisfies p U q along the path shown, but s0 to s2 don't.
+The other binary connectives are W, standing for `Weak-until,' and R, standing for `Release.' Weak-until is just like U, except that  W  does not require that  is eventually satisfied along the path in question, which is required by  U . Release R is the dual of U; that is,  R  is equivalent to ¬(¬ U ¬). It is called `Release' because clause 11 determines that  must remain true up to and including the moment when  becomes true (if there is one);  `releases' . R and W are actually quite similar; the differences are that they swap the roles of  and , and the clause for W has an i - 1
+
+182
+
+3 Verification by model checking
+
+where R has i. Since they are similar, why do we need both? We don't; they are interdefinable, as we will see later. However, it's useful to have both. R is useful because it is the dual of U, while W is useful because it is a weak form of U.
+Note that neither the strong version (U) or the weak version (W) of until says anything about what happens after the until has been realised. This is in contrast with some of the readings of `until' in natural language. For example, in the sentence `I smoked until I was 22' it is not only expressed that the person referred to continually smoked up until he or she was 22 years old, but we also would interpret such a sentence as saying that this person gave up smoking from that point onwards. This is different from the semantics of until in temporal logic. We could express the sentence about smoking by combining U with other connectives; for example, by asserting that it was once true that s U (t  G ¬s), where s represents `I smoke' and t represents `I am 22.'
+
+Remark 3.7 Notice that, in clauses 9­13 above, the future includes the present. This means that, when we say `in all future states,' we are including the present state as a future state. It is a matter of convention whether we do this, or not. As an exercise, you may consider developing a version of LTL in which the future excludes the present. A consequence of adopting the convention that the future shall include the present is that the formulas G p  p, p  q U p and p  F p are true in every state of every model.
+So far we have defined a satisfaction relation between paths and LTL formulas. However, to verify systems, we would like to say that a model as a whole satisfies an LTL formula. This is defined to hold whenever every possible execution path of the model satisfies the formula.
+
+Definition 3.8 Suppose M = (S, , L) is a model, s  S, and  an LTL formula. We write M, s  if, for every execution path  of M starting at s, we have  .
+If M is clear from the context, we may abbreviate M, s  by s . It should be clear that we have outlined the formal foundations of a procedure that, given , M and s, can check whether M, s  holds. Later in this chapter, we will examine algorithms which implement this calculation. Let us now look at some example checks for the system in Figures 3.3 and 3.5.
+1. M, s0 p  q holds since the atomic symbols p and q are contained in the node of s0:  p  q for every path  beginning in s0.
+
+3.2 Linear-time temporal logic
+
+183
+
+2. M, s0 ¬r holds since the atomic symbol r is not contained in node s0. 3. M, s0 holds by definition. 4. M, s0 X r holds since all paths from s0 have either s1 or s2 as their next
+state, and each of those states satisfies r. 5. M, s0 X (q  r) does not hold since we have the rightmost computation path
+s0  s2  s2  s2  . . . in Figure 3.5, whose second node s2 contains r, but not q. 6. M, s0 G ¬(p  r) holds since all computation paths beginning in s0 satisfy G ¬(p  r), i.e. they satisfy ¬(p  r) in each state along the path. Notice that G  holds in a state if, and only if,  holds in all states reachable from the
+given state.
+7. For similar reasons, M, s2 G r holds (note the s2 instead of s0). 8. For any state s of M, we have M, s F (¬q  r)  F G r. This says that if
+any path  beginning in s gets to a state satisfying (¬q  r), then the path  satisfies F G r. Indeed this is true, since if the path has a state satisfying (¬q  r) then (since that state must be s2) the path does satisfy F G r. Notice what F G r says about a path: eventually, you have continuously r. 9. The formula G F p expresses that p occurs along the path in question infinitely
+often. Intuitively, it's saying: no matter how far along the path you go (that's
+the G part) you will find you still have a p in front of you (that's the F part). For example, the path s0  s1  s0  s1  . . . satisfies G F p. But the path s0  s2  s2  s2  . . . doesn't. 10. In our model, if a path from s0 has infinitely many ps on it then it must be the path s0  s1  s0  s1  . . . , and in that case it also has infinitely many rs on it. So, M, s0 G F p  G F r. But it is not the case the other way around! It is not the case that M, s0 G F r  G F p, because we can find a path from s0 which has infinitely many rs but only one p.
+
+3.2.3 Practical patterns of specifications What kind of practically relevant properties can we check with formulas of LTL? We list a few of the common patterns. Suppose atomic descriptions include some words such as busy and requested. We may require some of the following properties of real systems:
+r It is impossible to get to a state where started holds, but ready does not hold: G¬(started  ¬ready) The negation of this formula expresses that it is possible to get to such a state, but this is only so if interpreted on paths ( ). We cannot assert such a possibility if interpreted on states (s ) since we cannot express the existence of paths; for that interpretation, the negation of the formula above asserts that all paths will eventually get to such a state.
+
+184
+
+3 Verification by model checking
+
+r For any state, if a request (of some resource) occurs, then it will eventually be acknowledged: G (requested  F acknowledged).
+r A certain process is enabled infinitely often on every computation path: G F enabled.
+r Whatever happens, a certain process will eventually be permanently deadlocked: F G deadlock.
+r If the process is enabled infinitely often, then it runs infinitely often. G F enabled  G F running.
+r An upwards travelling lift at the second floor does not change its direction when it has passengers wishing to go to the fifth floor: G (floor2  directionup  ButtonPressed5  (directionup U floor5)) Here, our atomic descriptions are boolean expressions built from system variables, e.g., floor2.
+
+There are some things which are not possible to say in LTL, however. One big class of such things are statements which assert the existence of a path, such as these ones:
+r From any state it is possible to get to a restart state (i.e., there is a path from all states to a state satisfying restart).
+r The lift can remain idle on the third floor with its doors closed (i.e., from the state in which it is on the third floor, there is a path along which it stays there).
+
+LTL can't express these because it cannot directly assert the existence of paths. In Section 3.4, we look at Computation Tree Logic (CTL) which has operators for quantifying over paths, and can express these properties.
+
+3.2.4 Important equivalences between LTL formulas Definition 3.9 We say that two LTL formulas  and  are semantically equivalent, or simply equivalent, writing   , if for all models M and all paths  in M:   iff  .
+The equivalence of  and  means that  and  are semantically interchangeable. If  is a subformula of some bigger formula , and   , then we can make the substitution of  for  in  without changing the meaning of . In propositional logic, we saw that  and  are duals of each other, meaning that if you push a ¬ past a , it becomes a , and vice versa:
+¬(  )  ¬  ¬ ¬(  )  ¬  ¬.
+(Because  and  are binary, pushing a negation downwards in the parse tree past one of them also has the effect of duplicating that negation.)
+
+3.2 Linear-time temporal logic
+
+185
+
+Similarly, F and G are duals of each other, and X is dual with itself:
+
+¬G   F ¬ ¬F   G ¬ ¬X   X ¬.
+
+Also U and R are duals of each other:
+
+¬( U )  ¬ R ¬ ¬( R )  ¬ U ¬.
+
+We should give formal proofs of these equivalences. But they are easy, so we leave them as an exercise to the reader. `Morally' there ought to be a dual for W, and you can invent one if you like. Work out what it might mean, and then pick a symbol based on the first letter of the meaning. However, it might not be very useful.
+It's also the case that F distributes over  and G over , i.e.,
+
+F (  )  F   F  G (  )  G   G .
+
+Compare this with the quantifier equivalences in Section 2.3.2. But F does not distribute over . What this means is that there is a model with a path which distinguishes F (  ) and F   F , for some , . Take the path s0  s1  s0  s1  . . . from the system of Figure 3.3, for example; it satisfies F p  F r but it doesn't satisfy F (p  r).
+Here are two more equivalences in LTL:
+
+F   U  G    R .
+
+The first one exploits the fact that the clause for Until states two things: the second formula  must become true; and until then, the first formula must hold. So, if we put `no constraint' for the first formula, it boils down to asking that the second formula holds, which is what F asks. (The formula
+represent `no constraint.' If you ask me to bring it about that holds, I need do nothing, it enforces no constraint. In the same sense,  is `every constraint.' If you ask me to bring it about that  holds, I'll have to meet every constraint there is, which is impossible.)
+The second formula, that G    R , can be obtained from the first by putting a ¬ in front of each side, and applying the duality rules. Another more intuitive way of seeing this is to recall the meaning of `release:'  releases , but  will never be true, so  doesn't get released.
+Another pair of equivalences relates the strong and weak versions of Until, U and W. Strong until may be seen as weak until plus the constraint that the eventuality must actually occur:
+
+ U    W F.
+
+(3.2)
+
+186
+
+3 Verification by model checking
+
+To prove equivalence (3.2), suppose first that a path satisfies  U . Then, from clause 11, we have i  1 such that i  and for all j = 1, . . . , i - 1 we have j . From clause 12, this proves  W , and from clause 10 it proves F . Thus for all paths , if   U  then   W   F . As an
+exercise, the reader can prove it the other way around.
+Writing W in terms of U is also possible: W is like U but also allows the
+possibility of the eventuality never occurring:
+
+ W    U   G .
+
+(3.3)
+
+Inspection of clauses 12 and 13 reveals that R and W are rather similar. The differences are that they swap the roles of their arguments  and ; and the clause for W has an i - 1 where R has i. Therefore, it is not surprising that they are expressible in terms of each other, as follows:
+
+ W    R (  )  R    W (  ).
+
+(3.4) (3.5)
+
+3.2.5 Adequate sets of connectives for LTL Recall that    holds iff any path in any transition system which satisfies  also satisfies , and vice versa. As in propositional logic, there is some redundancy among the connectives. For example, in Chapter 1 we saw that the set {, , ¬} forms an adequate set of connectives, since the other connectives , , , etc., can be written in terms of those three.
+Small adequate sets of connectives also exist in LTL. Here is a summary of the situation.
+r X is completely orthogonal to the other connectives. That is to say, its presence doesn't help in defining any of the other ones in terms of each other. Moreover, X cannot be derived from any combination of the others.
+r Each of the sets {U, X}, {R, X}, {W, X} is adequate. To see this, we note that ­ R and W may be defined from U, by the duality  R   ¬(¬ U ¬) and equivalence (3.4) followed by the duality, respectively. ­ U and W may be defined from R, by the duality  U   ¬(¬ R ¬) and equivalence (3.4), respectively. ­ R and U may be defined from W, by equivalence (3.5) and the duality  U   ¬(¬ R ¬) followed by equivalence (3.5).
+Sometimes it is useful to look at adequate sets of connectives which do not rely on the availability of negation. That's because it is often convenient to assume formulas are written in negation-normal form, where all the negation symbols are applied to propositional atoms (i.e., they are near the leaves
+
+

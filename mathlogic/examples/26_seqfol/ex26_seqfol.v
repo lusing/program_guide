@@ -641,3 +641,194 @@ Compute (fv (exq 8 (eqf (mul (var 10) (var 8)) eg))).   (* = [10] *)
 Print Assumptions grp_left_inv.
 Print Assumptions inc_ders_all.
 Print Assumptions derp_sound.
+
+(* ---------- 10. Takeuti §7 深化：LKe 等词公理族与本质/非本质切 ---------- *)
+
+(* 10.1 Def 7.1 的三族初始矢列（书 p37）：
+   (1) → t=t                     —— Ref 规则（已有）
+   (2) s̄=t̄ → f(s̄)=f(t̄)         —— 函词同余（d_congr_u/d_congr_b）
+   (3) s̄=t̄, R(s̄) → R(t̄)         —— 谓词同余（d_pred_congr） *)
+
+(* (2) 一元函词：s=t ⊢ f(s)=f(t)。Sub 的形状：以 φ=f(vx)=f(t) 侧写
+   目标，把等式从 H 经 d_ch/d_sym 装进上下文 *)
+Lemma d_congr_u : forall Γ f s t,
+    der Γ (eqf s t) -> der Γ (eqf (fsym f [s]) (fsym f [t])).
+Proof.
+  intros Γ f s t H.
+  destruct (pick_fresh (fvt s ++ fvt t ++ fv_l Γ)) as [x Hx].
+  pose proof (notin_app1 x (fvt s) (fvt t ++ fv_l Γ) Hx) as Hxs.
+  pose proof (notin_app2 x (fvt s) (fvt t ++ fv_l Γ) Hx) as Hmid.
+  pose proof (notin_app1 x (fvt t) (fv_l Γ) Hmid) as Hxt.
+  apply d_ch with (χ := eqf t s); [apply (d_sym Γ s t); exact H|].
+  assert (E : substf (eqf (fsym f [var x]) (fsym f [t])) x s
+              = eqf (fsym f [s]) (fsym f [t])).
+  { simpl. rewrite Nat.eqb_refl, (substt_fresh t x s Hxt). reflexivity. }
+  rewrite <- E.
+  apply Sub with (x := x) (φ := eqf (fsym f [var x]) (fsym f [t])).
+  simpl. rewrite Nat.eqb_refl, (substt_fresh t x t Hxt).
+  apply Ref.
+Qed.
+
+(* (2) 二元函词·第二槽位：s=t ⊢ f(a,s)=f(a,t)——Sub 的 d_sym 模板 *)
+Lemma d_congr_slot2 : forall Γ f a s t,
+    der Γ (eqf s t) -> der Γ (eqf (fsym f [a; s]) (fsym f [a; t])).
+Proof.
+  intros Γ f a s t H.
+  destruct (pick_fresh (fvt a ++ fvt s ++ fvt t ++ fv_l Γ)) as [x Hx].
+  pose proof (notin_app1 x (fvt a) (fvt s ++ fvt t ++ fv_l Γ) Hx) as Hxa.
+  pose proof (notin_app2 x (fvt a) (fvt s ++ fvt t ++ fv_l Γ) Hx) as Hm1.
+  pose proof (notin_app1 x (fvt s) (fvt t ++ fv_l Γ) Hm1) as Hxs.
+  pose proof (notin_app2 x (fvt s) (fvt t ++ fv_l Γ) Hm1) as Hm2.
+  pose proof (notin_app1 x (fvt t) (fv_l Γ) Hm2) as Hxt.
+  apply d_ch with (χ := eqf t s); [apply (d_sym Γ s t); exact H|].
+  assert (E : substf (eqf (fsym f [a; var x]) (fsym f [a; t])) x s
+              = eqf (fsym f [a; s]) (fsym f [a; t])).
+  { simpl. rewrite Nat.eqb_refl, (substt_fresh a x s Hxa),
+      (substt_fresh t x s Hxt). reflexivity. }
+  rewrite <- E.
+  apply Sub with (x := x) (φ := eqf (fsym f [a; var x]) (fsym f [a; t])).
+  simpl. rewrite Nat.eqb_refl, (substt_fresh a x t Hxa),
+    (substt_fresh t x t Hxt).
+  apply Ref.
+Qed.
+
+(* (2) 二元函词全式：s₁=t₁, s₂=t₂ ⊢ f(s₁,s₂)=f(t₁,t₂)——两槽位接力 *)
+Lemma d_congr_b : forall Γ f s1 t1 s2 t2,
+    der Γ (eqf s1 t1) -> der Γ (eqf s2 t2) ->
+    der Γ (eqf (fsym f [s1; s2]) (fsym f [t1; t2])).
+Proof.
+  intros Γ f s1 t1 s2 t2 H1 H2.
+  destruct (pick_fresh (fvt s1 ++ fvt t1 ++ fvt s2 ++ fvt t2 ++ fv_l Γ))
+    as [x Hx].
+  pose proof (notin_app1 x (fvt s1) (fvt t1 ++ fvt s2 ++ fvt t2 ++ fv_l Γ) Hx) as Hxs1.
+  pose proof (notin_app2 x (fvt s1) (fvt t1 ++ fvt s2 ++ fvt t2 ++ fv_l Γ) Hx) as Hm1.
+  pose proof (notin_app1 x (fvt t1) (fvt s2 ++ fvt t2 ++ fv_l Γ) Hm1) as Hxt1.
+  pose proof (notin_app2 x (fvt t1) (fvt s2 ++ fvt t2 ++ fv_l Γ) Hm1) as Hm2.
+  pose proof (notin_app1 x (fvt s2) (fvt t2 ++ fv_l Γ) Hm2) as Hxs2.
+  pose proof (notin_app2 x (fvt s2) (fvt t2 ++ fv_l Γ) Hm2) as Hm3.
+  pose proof (notin_app1 x (fvt t2) (fv_l Γ) Hm3) as Hxt2.
+  apply d_ch with (χ := eqf t1 s1); [apply (d_sym Γ s1 t1); exact H1|].
+  assert (E : substf (eqf (fsym f [var x; s2]) (fsym f [t1; t2])) x s1
+              = eqf (fsym f [s1; s2]) (fsym f [t1; t2])).
+  { simpl. rewrite Nat.eqb_refl, (substt_fresh s2 x s1 Hxs2),
+      (substt_fresh t1 x s1 Hxt1), (substt_fresh t2 x s1 Hxt2). reflexivity. }
+  rewrite <- E.
+  apply Sub with (x := x) (φ := eqf (fsym f [var x; s2]) (fsym f [t1; t2])).
+  simpl. rewrite Nat.eqb_refl, (substt_fresh s2 x t1 Hxs2),
+    (substt_fresh t1 x t1 Hxt1), (substt_fresh t2 x t1 Hxt2).
+  apply (d_congr_slot2 Γ f t1 s2 t2 H2).
+Qed.
+
+(* (3) 二元谓词：s₁=t₁, s₂=t₂, P(s₁,s₂) ⊢ P(t₁,t₂)——两步 Sub 的接力 *)
+Lemma d_pred_congr : forall Γ r s1 t1 s2 t2,
+    der Γ (eqf s1 t1) -> der Γ (eqf s2 t2) -> der Γ (rat r [s1; s2]) ->
+    der Γ (rat r [t1; t2]).
+Proof.
+  intros Γ r s1 t1 s2 t2 H1 H2 HP.
+  destruct (pick_fresh (fvt s1 ++ fvt s2 ++ fvt t2 ++ fv_l Γ)) as [x Hx].
+  pose proof (notin_app1 x (fvt s1) (fvt s2 ++ fvt t2 ++ fv_l Γ) Hx) as Hxs1.
+  pose proof (notin_app2 x (fvt s1) (fvt s2 ++ fvt t2 ++ fv_l Γ) Hx) as Hm1.
+  pose proof (notin_app1 x (fvt s2) (fvt t2 ++ fv_l Γ) Hm1) as Hxs2.
+  pose proof (notin_app2 x (fvt s2) (fvt t2 ++ fv_l Γ) Hm1) as Hm2.
+  pose proof (notin_app1 x (fvt t2) (fv_l Γ) Hm2) as Hxt2.
+  apply d_ch with (χ := eqf s1 t1); [exact H1|].
+  assert (E : substf (rat r [var x; t2]) x s1 = rat r [s1; t2]).
+  { simpl. rewrite Nat.eqb_refl, (substt_fresh t2 x s1 Hxt2). reflexivity. }
+  rewrite <- E.
+  apply Sub with (x := x) (φ := rat r [var x; t2]).
+  simpl. rewrite Nat.eqb_refl, (substt_fresh t2 x s1 Hxt2).
+  apply d_ch with (χ := eqf s2 t2).
+  - apply (Ant Γ); [unfold incl; intros a Ha; right; exact Ha | exact H2].
+  - apply Sub with (x := x) (φ := rat r [s1; var x]).
+    simpl. rewrite Nat.eqb_refl.
+    apply (Ant Γ); [unfold incl; intros a Ha; right; exact Ha | exact HP].
+Qed.
+
+(* 10.2 三族公理的小结构语义账：等词公理在一切结构上真——「计算性
+   初始矢列」的机器面。小宇宙：域 {0,1,2,3}、f₀=+₄、f₁=×₄（二元）、
+   P₀=<、P₁=偶。 *)
+Fixpoint evT (t : tm) (env : nat -> nat) : nat :=
+  match t with
+  | var n => env n
+  | fsym f ts =>
+      match f, map (fun a => evT a env) ts with
+      | 0, [a; b] => (a + b) mod 4
+      | 1, [a; b] => (a * b) mod 4
+      | _, _ => 0
+      end
+  end.
+
+Fixpoint evF (φ : fm) (env : nat -> nat) : bool :=
+  match φ with
+  | rat r ts =>
+      match r, map (fun a => evT a env) ts with
+      | 0, [a; b] => Nat.ltb a b
+      | 1, [a] => Nat.even a
+      | _, _ => false
+      end
+  | eqf a b => Nat.eqb (evT a env) (evT b env)
+  | neg ψ => negb (evF ψ env)
+  | disj ψ χ => orb (evF ψ env) (evF χ env)
+  | exq y ψ =>
+      existsb (fun v => evF ψ (fun n => if n =? y then v else env n)) (seq 0 4)
+  end.
+
+(* 全体环境（两变元小宇宙）：v0,v1 ∈ {0..3} *)
+Definition envs : list (nat -> nat) :=
+  flat_map (fun v0 =>
+    map (fun v1 => fun n => if n =? 0 then v0 else if n =? 1 then v1 else 0)
+      (seq 0 4)) (seq 0 4).
+
+(* 小项宇宙（深度 ≤2，变元 0/1） *)
+Definition tms : list tm :=
+  [var 0; var 1;
+   fsym 0 [var 0; var 1]; fsym 1 [var 1; var 1];
+   fsym 0 [fsym 0 [var 0; var 0]; var 1]].
+
+(* 公理 (1)：→ t=t 对一切项与环境成立 *)
+Example eqax_refl_valid :
+  forallb (fun t => forallb (fun env => evF (eqf t t) env) envs) tms = true.
+Proof. reflexivity. Qed.
+
+(* 公理 (2)：s₁=t₁ ∧ s₂=t₂ → f₀(s₁,s₂)=f₀(t₁,t₂) 全环境成立 *)
+Example eqax_congr_valid :
+  forallb (fun q => forallb (fun env =>
+    implb (andb (evF (eqf (fst (fst q)) (fst (snd q))) env)
+                (evF (eqf (snd (fst q)) (snd (snd q))) env))
+          (evF (eqf (fsym 0 [fst (fst q); snd (fst q)])
+                    (fsym 0 [fst (snd q); snd (snd q))]) env)) envs)
+    (list_prod (list_prod tms tms) (list_prod tms tms)) = true.
+Proof. reflexivity. Qed.
+
+(* 公理 (3)：s₁=t₁ ∧ s₂=t₂ ∧ P₀(s₁,s₂) → P₀(t₁,t₂) *)
+Example eqax_pred_valid :
+  forallb (fun q => forallb (fun env =>
+    implb (andb (evF (eqf (fst (fst q)) (fst (snd q))) env)
+                (andb (evF (eqf (snd (fst q)) (snd (snd q))) env)
+                      (evF (rat 0 [fst (fst q); snd (fst q)]) env)))
+          (evF (rat 0 [fst (snd q); snd (snd q))]) env)) envs)
+    (list_prod (list_prod tms tms) (list_prod tms tms)) = true.
+Proof. reflexivity. Qed.
+
+(* 10.3 Def 7.5：cut 公式为 s=t 的 cut 是**非本质**（inessential），
+   其余为**本质**（essential）。Thm 7.6：本质 cut 可全部消去、等词
+   cut 允许保留——分类器是纯语法的一个 match。 *)
+Definition cutEss (φ : fm) : bool :=
+  match φ with
+  | eqf _ _ => false
+  | _ => true
+  end.
+
+(* 样本账：一段证明叙述中的 cut 公式清单——等词 cut（同余链拼接）与
+   命题/量词 cut（引理复用）各就各位 *)
+Definition cutLedger : list fm :=
+  [ eqf (fsym 0 [var 0; var 1]) (fsym 0 [var 1; var 0])      (* 换项等式 *)
+  ; disj (rat 0 [var 0]) (neg (rat 0 [var 0]))               (* 排中引理 *)
+  ; eqf (var 0) (var 1)                                       (* 变元等式 *)
+  ; exq 0 (rat 0 [var 0])                                     (* 存在引理 *)
+  ].
+
+Example cut_ledger_count :
+  (length (filter cutEss cutLedger),
+   length (filter (fun φ => negb (cutEss φ)) cutLedger)) = (2, 2).
+Proof. reflexivity. Qed.

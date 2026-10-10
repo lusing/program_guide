@@ -215,7 +215,7 @@ Example hj_axioms_taut : forallb ktaut (firstn 9 hkAxioms) = true.
 ```
 
 第二条正是 **HJ = HK − A10** 的机器化身：直觉主义公理恰是前九条，
-第十条 p∨¬p 是唯一的「经典增量」。它与 3 章 FJ/FK 的 ¬E 分隔线、13 章 Glivenko、62 章 (Ea) 规则构成同一现象的四个侧面。
+第十条 p∨¬p 是唯一的「经典增量」。它与 3 章 FJ/FK 的 ¬E 分隔线、13 章 Glivenko、72 章 (Ea) 规则构成同一现象的四个侧面。
 
 ---
 

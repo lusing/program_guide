@@ -1,0 +1,371 @@
+Chapter 12
+
+First-Order Logic: Undecidability and Model
+Theory *
+
+The chapter surveys several important theoretical results in first-order logic. In
+Sect. 12.1 we prove that validity in first-order logic is undecidable, a result first
+proved by Alonzo Church. Validity is decidable for several classes of formulas de-
+fined by syntactic restrictions on their form (Sect. 12.2). Next, we introduce model
+theory (Sect. 12.3): the fact that a semantic tableau has a countable number of nodes
+leads to some interesting results. Finally, Sect. 12.4 contains an overview of Gödel's
+surprising incompleteness result.
+
+12.1 Undecidability of First-Order Logic
+
+We show the undecidability of validity in first-order logic by reduction from a prob-
+lem whose undecidability is already known, the halting problem: to decide whether
+a Turing machine will halt if started on a blank tape (Minsky (1967, Sect. 8.3.3),
+Manna (1974, Sect. 1-5.2)). The proof that there is no decision procedure for valid-
+ity describes an algorithm that takes an arbitrary Turing machine T and generates
+a formula ST in first-order logic, such that ST is valid if and only if T halts on an
+blank tape. If there were a decision procedure for validity, this construction would
+give us an decision procedure for the halting problem.
+
+12.1.1 Two-Register Machines
+
+Instead of working directly with Turing machines, we work with a simpler form
+of automata: two-register machines. The halting problem for two-register machines
+is undecidable because there is a reduction from Turing machines to two-register
+machines.
+
+M. Ben-Ari, Mathematical Logic for Computer Science,             223
+
+DOI 10.1007/978-1-4471-4129-7_12, © Springer-Verlag London 2012
+224  12 First-Order Logic: Undecidability and Model Theory *
+
+Definition 12.1 A two-register machine M consists of two registers x and y which
+can store natural numbers, and a program P = {L0, . . . , Ln}, where Ln is the in-
+struction halt and for 0  i < n, Li is one of the instructions:
+
+· x = x + 1;
+· y = y + 1;
+· if (x == 0) goto Lj ; else x = x - 1;
+· if (y == 0) goto Lj ; else y = y - 1;
+
+An execution sequence of M is a sequence of states sk = (Li, x, y), where Li is the
+current instruction and x, y are the contents of the registers x and y. sk+1 is obtained
+from sk by executing Li . The initial state is s0 = (L0, m, 0) for some m. If for some
+k, sk = (Ln, x, y), the computation of M halts and M has computed y = f (m).
+
+Theorem 12.2 Let T be a Turing machine that computes a function f . Then there
+is a two-register machine MT that computes the function f .
+
+Proof Minsky (1967, Sect. 14.1), Hopcroft et al. (2006, Sect. 7.8).
+
+   The proof shows how the contents of the tape of a Turing machine can be encoded
+in an (extremely large) natural number and how the modifications to the tape can be
+carried out when copying the contents of one register into another. Clearly, two-
+register machines are even more impractical than Turing machines, but it is the
+theoretical result that is important.
+
+12.1.2 Church's Theorem
+
+Theorem 12.3 (Church) Validity in first-order logic is undecidable.
+
+Proof Let M be an arbitrary two-register machine. We will construct a formula
+SM such that SM is valid iff M terminates when started in the state (L0, 0, 0). The
+formula is:
+
+                                                          n-1
+
+                     SM = p0(a, a)  Si  z1z2pn(z1, z2),
+
+                                                          i=0
+
+where Si is defined by cases of the instruction Li :
+
+     Li                         Si
+     x = x + 1;                 xy(pi (x, y)  pi+1(s(x), y))
+     y = y + 1;                 xy(pi (x, y)  pi+1(x, s(y)))
+                                x(pi (a, x)  pj (a, x)) 
+     if (x == 0) goto Lj;       xy(pi (s(x), y)  pi+1(x, y))
+               else x = x - 1;  x(pi (x, a)  pj (x, a)) 
+                                xy(pi (x, s(y))  pi+1(x, y))
+     if (y == 0) then goto Lj;
+               else y = y - 1;
+12.1 Undecidability of First-Order Logic  225
+
+The predicates are p0, . . . , pn, one for each statement in M. The intended meaning
+of pi(x, y) is that the computation of M is at the label Li and the values x, y are in
+the two registers. The constant a is intended to mean 0 and the function s is intended
+to mean the successor function s(m) = m + 1.
+
+   s is used both for the function symbol in the formula SM and for states in the
+execution of M. The meaning will be clear from the context.
+
+   We have to prove that M halts if and only if SM is valid.
+
+If M Halts then SM Is Valid
+
+Let s0, . . . , sm be a computation of M that halts after m steps; we need to show that
+SM is valid, that is, that it is true under any interpretation for the formula. However,
+we need not consider every possible interpretation. If I is an interpretation for SM
+such that vI (Si) = F for some 0  i  n - 1 or such that vI (p0(a, a)) = F , then
+trivially vI (SM ) = T since the antecedent of SM is false. Therefore, we need only
+consider interpretations that satisfy the antecedent of SM . For such interpretations,
+we need to show that vI (z1z2pn(z1, z2)) = T . By induction on k, we show that
+vI (z1z2pk(z1, z2)) = T .
+
+   If k = 0, the result is trivial since p0(a, a)  z1z2p0(z1, z2) is valid.
+   Let us assume the inductive hypothesis for k - 1 (provided that k > 0) and prove
+vI (z1z2pk(z1, z2)) = T . We will work through the details when Lk is x=x+1
+and leave the other cases to the reader.
+   By assumption the antecedent is true, in particular, its subformula Sk-1:
+
+                       vI (xy(pk-1(x, y)  pk(s(x), y))) = T ,
+
+and by the inductive hypothesis:
+
+                                vI (z1z2pk-1(z1, z2)) = T ,
+
+from which:
+
+                                vI (z1z2pk(s(z1), z2)) = T
+
+follows by reasoning in first-order logic.
+   Let c1 and c2 be the domain elements assigned to z1 and z2, respectively, such
+
+that (succ(c1), c2)  Pk, where Pk is the interpretation of pk and succ is the inter-
+pretation of s. Since c3 = succ(c1) for some domain element c3, the existentially
+quantified formula in the consequent is true:
+
+                                 vI (z1z2pk(z1, z2)) = T .
+226                          12 First-Order Logic: Undecidability and Model Theory *
+
+If SM Is Valid then M Halts
+
+Suppose that SM is valid and consider the interpretation:
+
+                            I = (N , {P0, . . . , Pn}, {succ}, {0}),
+
+where succ is the successor function on N , and (x, y)  Pi iff (Li, x, y) is reached
+by the register machine when started in (L0, 0, 0).
+
+   We show by induction on the length of the computation that the antecedent of
+SM is true in I . The initial state is (L0, 0, 0), so (a, a)  P0 and vI (p0(a, a)) =
+T . The inductive hypothesis is that in state sk-1 = (Li, xi, yi), (xi, yi)  Pi . The
+inductive step is again by cases on the type of the instruction Li . For x=x+1, sk =
+(Li+1, succ(xi), yi ) and (succ(xi ), yi )  Pi+1 by the definition of Pi+1.
+
+   Since SM is valid, vI (z1z2pn(z1, z2)) = T and vI (pn(m1, m2)) = T for
+some m1, m2  N . By definition, (m1, m2)  Pn means that M halts and computes
+m2 = f (0).
+
+   Church's Theorem holds even if the structure of the formulas is restricted:
+
+· The formulas contain only binary predicate symbols, one constant and one unary
+   function symbol. This follows from the structure of SM in the proof.
+
+· The formulas are logic programs: a set of program clauses, a set of facts and a
+   goal clause (Chap. 11). This follows immediately since SM is of this form.
+
+· The formulas are pure (Mendelson, 2009, 3.6).
+
+Definition 12.4 A formula of first-order logic is pure if it contains no function
+symbols (including constants which are 0-ary function symbols).
+
+12.2 Decidable Cases of First-Order Logic
+
+Theorem 12.5 There are decision procedures for the validity of pure PCNF formu-
+las whose prefixes are of one of the forms (where m, n  0):
+
+                               x1 · · · xn y1 · · · ym,
+                               x1 · · · xn y z1 · · · zm,
+                               x1 · · · xn y1y2 z1 · · · zm.
+
+These classes are conveniently abbreviated , , .
+
+   The decision procedures can be found in Dreben and Goldfarb (1979). This is the
+best that can be done because the addition of existential quantifiers makes validity
+undecidable. See Lewis (1979) for proofs of the following result.
+12.3 Finite and Infinite Models  227
+
+Theorem 12.6 There are no decision procedures for the validity of pure PCNF
+formulas whose prefixes are of one of the forms:
+
+                             z x1 · · · xn y1 · · · ym,
+                             x1 · · · xn y1y2y3 z1 · · · zm.
+For the first prefix, the result holds even if n = m = 1:
+
+                                           z x1 y1,
+and for the second prefix, the result holds even if n = 0, m = 1:
+
+                                        y1y2y3 z1.
+
+Even if the matrix is restricted to contain only binary predicate symbols, there is
+still no decision procedure.
+
+   There are other restrictions besides those on the prefix that enable decision pro-
+cedures to be given (see Dreben and Goldfarb (1979)):
+
+Theorem 12.7 There is a decision procedure for PCNF formulas whose matrix is
+of one of the forms:
+
+1. All conjunctions are single literals.
+2. All conjunctions are either single atomic formulas or consists entirely of negative
+
+   literals.
+3. All atomic formulas are monadic, that is, all predicate letters are unary.
+
+12.3 Finite and Infinite Models
+
+Definition 12.8 A set of formulas U has the finite model property iff: U is satisfi-
+able iff it is satisfiable in an interpretation whose domain is a finite set.
+
+Theorem 12.9 Let U be a set of pure formulas of the form:
+                      x1 · · · xky1 · · · ylA(x1, . . . , xk, y1, . . . , yl),
+
+where A is quantifier-free. Then U has the finite model property.
+
+Proof In a tableau for U , once the -rules have been applied to the existential quan-
+tifiers, no more existential quantifiers remain. Thus the set of constants will be finite
+and the tableau will terminate once all substitutions using these constants have been
+made for the universal quantifiers.
+
+Theorem 12.10 (Löwenheim) If a formula is satisfiable then it is satisfiable in a
+countable domain.
+
+Proof The domain D defined in the proof of completeness is countable.
+228  12 First-Order Logic: Undecidability and Model Theory *
+
+   Löwenheim's Theorem can be generalized to countable sets of formulas U =
+{A0, A1, A2, . . .}. Start the tableaux with formula A0 at the root. Whenever con-
+structing a node at depth d, add the formula Ad into its label in addition to whatever
+formulas are specified by the tableau rule. If the tableau does not close, eventually,
+
+every Ai will appear on the branch, and the labels will form a Hintikka set. Hin-
+tikka's Lemma and completeness can be proved as before.
+
+Theorem 12.11 (Löwenheim­Skolem) If a countable set of formulas is satisfiable
+then it is satisfiable in a countable domain.
+
+   Uncountable sets such as the real numbers can be described by countably many
+axioms (formulas). Thus formulas that describe real numbers also have a countable
+model in addition to the standard uncountable model! Such models are called non-
+standard models.
+
+   As in propositional logic (Theorem 3.48), compactness holds.
+
+Theorem 12.12 (Compactness) Let U be a countable set of formulas. If all finite
+subsets of U are satisfiable then so is U .
+
+12.4 Complete and Incomplete Theories
+
+Definition 12.13 Let T (U ) be a theory. T (U ) is complete if and only if for every
+closed formula A, U A or U ¬ A. T (U ) is incomplete iff it is not complete,
+that is, iff for some closed formula A, U A and U ¬ A.
+
+   It is important not to confuse a complete theory with the completeness of a deduc-
+tive system. The latter relates the syntactic concept of proof to the semantic concept
+of validity: a closed formula can be proved if and only if it is valid. Completeness
+of a theory looks at what formulas are logical consequences of a set of formulas.
+
+   In one of the most surprising results of mathematical logic, Kurt Gödel proved
+that number theory is incomplete. Number theory, first developed by Guiseppe
+Peano, is a first-order logic with one constant symbol 0, one binary predicate sym-
+bol =, one unary function symbol s representing the successor function and two
+binary function symbols +, . A set of axioms for number theory N T consists of
+eight axioms and one axiom scheme for induction (Mendelson, 2009, 3.1).
+
+Theorem 12.14 (Gödel's Incompleteness Theorem) If T (N T ) is consistent then
+T (N T ) is incomplete.
+
+   If T (N T ) were inconsistent, that is, if a theorem and its negation were both
+provable, then by Theorem 3.43, every formula would be a theorem so the theory
+would have be of no interest whatsoever.
+
+   The detailed proof of Gödel's theorem is tedious but not too difficult. An informal
+justification can be found in Smullyan (1978). Here we give a sketch of the formal
+12.5 Summary                                                      229
+
+proof (Mendelson, 2009, 3.4­3.5). The idea is to define a mapping, called a Gödel
+numbering, from logical objects such as formulas and proofs to natural numbers,
+and then to prove the following theorem.
+
+Theorem 12.15 There exists a formula A(x, y) in N T with the following prop-
+erty: For any numbers i, j , A(i, j ) is true if and only if i is the Gödel number
+associated with some formula B(x) with one free variable x, and j is the Gödel
+number associated with the proof of B(i). Furthermore, if A(i, j ) is true then a
+proof can be constructed for these specific integers A(i, j ).
+
+   Consider now the formula C(x) = y¬ A(x, y) which has one free variable x,
+and let m be the Gödel number of this formula C(x). Then C(m) = y¬ A(m, y)
+means that for no y is y the Gödel number of a proof of C(m)!
+
+Theorem 12.16 (Gödel) If N T is consistent then C(m) and ¬ C(m).
+
+Proof We show that assuming either C(m) or ¬ C(m) contradicts the consis-
+tency of N T .
+
+· Suppose that C(m) = y¬ A(m, y) and compute n, the Gödel number of this
+   proof. Then A(m, n) is true and by Theorem 12.15, A(m, n). Now apply Ax-
+   iom 4 of first-order logic to C(m) to obtain ¬ A(m, n). But A(m, n) and
+     ¬ A(m, n) contradict the consistency of N T .
+
+· Suppose that ¬ C(m) = ¬ y¬ A(m, y) = yA(m, y). Then for some n,
+   A(m, n) is true, where n is the Gödel number of a proof of C(m), that is, C(m).
+   But we assumed ¬ C(m) so N T is inconsistent.
+
+12.5 Summary
+
+The decidability of validity for first-order logic has been investigated in detail and it
+is possible to precisely demarcate restricted classes of formulas which are decidable
+from less restricted classes that are not decidable. The Löwenheim-Skolem Theo-
+rem is surprising since it means that it is impossible to characterize uncountable
+structures in first-order logic. Even more surprising is Gödel's incompleteness re-
+sult, since it demonstrates that there are true formulas of mathematical theories that
+cannot be proved in the theories themselves.
+
+12.6 Further Reading
+
+The two sides of the decidability question are comprehensively presented by Dreben
+and Goldfarb (1979) and Lewis (1979). The details of Gödel numbering can be
+found in (Mendelson, 2009, Chap. 3) and (Monk, 1976, Chap. 3). For an introduc-
+tion to model theory see (Monk, 1976, Part 4).
+230             12 First-Order Logic: Undecidability and Model Theory *
+
+12.7 Exercises
+
+12.1 Prove that a formula is satisfiable iff it is satisfiable in an infinite model.
+
+12.2 Prove the Löwenheim-Skolem Theorem (12.11) using the construction of se-
+mantic tableaux for infinite sets of formulas.
+
+12.3 A closed pure formula A is n-condensable iff every unsatisfiable conjunction
+of instances of the matrix of A contains an unsatisfiable subconjunction made up of
+n or fewer instances.
+
+· Let A be a PCNF formula whose matrix is a conjunction of literals. Prove that A
+   is 2-condensable.
+
+· Let A be a PCNF formula whose matrix is a conjunction of positive literals and
+   disjunctions of negative literals. Prove that A is n + 1-condensable, where n is
+   the maximum number of literals in a disjunction.
+
+12.4 * Prove Church's Theorem by reducing Post's Correspondence Problem to
+validity in first-order logic.
+
+References
+
+B. Dreben and W.D. Goldfarb. The Decision Problem: Solvable Classes of Quantificational For-
+   mulas. Addison-Wesley, Reading, MA, 1979.
+
+J.E. Hopcroft, R. Motwani, and J.D. Ullman. Introduction to Automata Theory, Languages and
+   Computation (Third Edition). Addison-Wesley, 2006.
+
+H.R. Lewis. Unsolvable Classes of Quantificational Formulas. Addison-Wesley, Reading, MA,
+   1979.
+
+Z. Manna. Mathematical Theory of Computation. McGraw-Hill, New York, NY, 1974. Reprinted
+   by Dover, 2003.
+
+E. Mendelson. Introduction to Mathematical Logic (Fifth Edition). Chapman & Hall/CRC, 2009.
+M.L. Minsky. Computation: Finite and Infinite Machines. Prentice-Hall, Englewood Cliffs, NJ,
+
+   1967.
+J.D. Monk. Mathematical Logic. Springer, 1976.
+R.M. Smullyan. What Is the Name of This Book?--The Riddle of Dracula and Other Logical
+
+   Puzzles. Prentice-Hall, 1978.
+

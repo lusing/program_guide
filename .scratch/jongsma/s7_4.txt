@@ -1,0 +1,662 @@
+7.4 Boolean Functions and Logic Circuits
+We now know that a Boolean system is simultaneously a lattice ordered by ≤ and an algebra with operations , ∧ ( · ), and ∨ (+). At times it will be more helpful to adopt a relational perspective, at others an operational one. Both viewpoints may help you recall the laws holding for a Boolean structure, both can be used to test an identity’s validity, and both are equally legitimate.
+We started to explore the relation between Boolean Algebra and Propositional Logic, and we’ll continue that in this section, showing that this connection is foundational to computational circuitry. In preparation for this, let’s look at some functions deﬁned on two-valued Boolean algebras.
+4 This was shown by American postulate theorist Edward Huntington in a 1904 paper on Boolean Algebra.
+
+7.4 Boolean Functions and Logic Circuits
+
+379
+
+7.4.1 Two -Valued Boolean Algebras
+
+The simplest nontrivial Boolean algebra is B = {0, 1}. Its addition and multiplication tables are dictated by the Identity, Annihilation, and Absorption Laws of Boolean Algebra.
+
++ 01
+
+0
+
+01
+
+1
+
+11
+
+·
+
+01
+
+0 00 1 01
+
+The Stone Representation Theorem tells us that all ﬁnite Boolean algebras are of size 2n, structured like the power set of {1, 2, . . . , n} under the subset
+relation and the operations of union, intersection, and complementation. We can make this representation less abstract using B.
+
+✜ Example 7.4.1
+Show how all ﬁnite Boolean algebras can be represented by Bn.
+Solution
+· Example 7.3.1 showed how to represent any ﬁnite power set as an n-fold
+Cartesian product Bn: each S ⊆ {1, 2, . . . , n} corresponds to an ordered n-tuple of 0’s and 1’s, where entry xi = 1 if and only if i ∈ S. For example, (1, 0, 1) represents the subset S = {1, 3} in B3.
+· The associated order induced on Bn by this correspondence is the prod-
+uct order: (x1, x2, . . . , xn) ≤ (y1, y2, . . . , yn) if and only if xi ≤ yi for all i (see Exercise 7.3.34). The Boolean operations produced are deﬁned coordi-
+natewise: (x1, x2, . . . , xn) + (y1, y2, . . . , yn) = (x1 + y1, x2 + y2, . . . , xn + yn) and (x1, x2, . . . , xn) · (y1, y2, . . . , yn) = (x1y1, x2y2, . . . , xnyn) (see Exercise 7.3.35).
+· For example, (1, 0, 0) ≤ (1, 0, 1) because 1 ≤ 1, 0 ≤ 0, and 0 ≤ 1. Using the
+above addition and multiplication tables for working in each coordinate, (1, 0, 0) + (1, 0, 1) = (1, 0, 1) and (1, 0, 0) · (1, 0, 1) = (1, 0, 0).
+· These are the Boolean algebra representations we’ll be working with below.
+
+7.4.2 Boolean Functions
+Deﬁnition 7.4.1: Boolean Function A Boolean function is a function f : Bn → B, a Boolean-valued function of several Boolean variables.
+✜ Example 7.4.2
+Exhibit Boolean addition and multiplication as Boolean functions.
+Solution The operations of + and · can be considered functions from B2 to B. The following tables represent these operations. Notice their similarity to the truth tables for ∨ and ∧ in PL if 0 is interpreted as F and 1 as T .
+
+380
+x1 x2 00 01 10 11
+
++ (x1, x2)
+0 1 1 1
+
+7 Posets, Lattices, and Boolean Algebra
+
+x1 x2
+00 01 10 11
+
+· (x1, x2)
+0 0 0 1
+
+✜ Example 7.4.3
+Write out the ternary majority function’s table, where f (x1, x2, x3) = m, the value that appears among {x1, x2, x3} the majority of the time.
+
+Solution The following table gives an output for each input sequence, listed in dictionary (binary numerical) order. This is the exact reverse of how we organized truth tables for Propositional Logic.
+
+x1 x2 x3
+00 0 00 1 01 0 01 1 10 0 10 1 11 0 11 1
+
+f (x1, x2, x3)
+0 0 0 1 0 1 1 1
+
+7.4.3 Boolean Algebra and Propositional Logic
+
+Let’s now look at some simple examples of Boolean functions and use them to connect Boolean Algebra more closely with Propositional Logic.
+
+✜ Example 7.4.4
+Discuss the relation of the following Boolean functions to Propositional
+Logic connectives:
+
+a) x N (x)
+
+b) x1 x2
+
+0
+
+1
+
+00
+
+1
+
+0
+
+01
+
+10
+
+c) x1 x2
+
+D(x1, x2)
+
+11
+
+00
+
+0
+
+01
+
+1
+
+10
+
+1
+
+11
+
+1
+
+C(x1, x2)
+1 1 0 1
+
+7.4 Boolean Functions and Logic Circuits
+
+381
+
+Solution a) The Boolean function N can be thought of as assigning truth values to negations ¬x, taking 0 to be F and 1 to be T . b) Similarly, C assigns truth values to conditional sentences x1 → x2. c) D corresponds to assigning truth values to disjunctions x1 ∨ x2.
+These examples illustrate that every Boolean function has a propositional connective associated with it (possibly unfamiliar, deﬁned simply by its truth table) and that every propositional connective generates a Boolean function via its truth table. Whatever we can say about truth-functional connectives can be translated into language about Boolean functions, and conversely.
+
+7.4.4 Historical Aside: From Boole to Shannon
+As noted in Section 7.3, Boole introduced ideas about an algebra of 0 and 1 in order to justify his approach to logic and reasoning. He never adopted an abstract approach to Boolean Algebra, though, nor did he consider its possible application to other ﬁelds of thought.
+The American mathematician Claude Shannon was one of the ﬁrst to recognize the broader potential of an algebraic approach to logic (see Section 1.1). His pathbreaking 1938 M.A. thesis, A Symbolic Analysis of Relay and Switching Circuits, showed how Boolean Algebra could be physically implemented. Conversely, Shannon showed how to use Boolean Algebra to analyze, simplify, and design electrical circuits, establishing it as an essential tool for contemporary digital electronics and basic computation.
+Shannon’s later work continued to exploit the possibilities in the algebra of 0 and 1. His most important publication, A Mathematical Theory of Communication (1948), laid the groundwork for the information revolution of the following decades by treating information in terms of bits (0’s and 1’s). He also showed that information noise and data corruption could be overcome by transmitting messages with built-in redundancy. And his ideas were instrumental in encrypting messages. The Data Encryption Standard (DES), for example, which saw widespread use for several decades, arose from the work Shannon did during the 1940s.
+
+7.4.5 Boolean Algebra and Switching Circuits
+The main link between Boolean Algebra and computer logic involves logic gates, to which we’ll turn shortly, but we’ll start by looking at the simpler case of switching circuits. This was Shannon’s original idea for how Boolean Algebra could be applied to telecommunication.
+Simple switches have two states: open (no current through) and closed (current through). We’ll represent an open-switch state with 0 and a closedswitch state with 1—the now-standard assignment, though Shannon’s original choice reversed these values as well as the operators used for circuit types.
+
+382
+
+7 Posets, Lattices, and Boolean Algebra
+
+Switches can be connected either in series or in parallel, as shown in Figure 7.2.
+
+>x
+
+y>
+
+x·y
+
+>
+
+x
+
+>
+
+y x+y
+
+Fig. 7.2 Series and parallel circuits
+
+Switches in series are represented by Boolean products since current ﬂows through the circuit (yields output 1) if and only if it ﬂows through both switches. Switches in parallel are denoted by Boolean sums.
+Complex circuits are constructed out of these basic components. If two circuit switches are controlled so that they’re always in the same state, the same letter is used for both switches. If one switch is always in the opposite state of another one, a complement is used to indicate this negative relationship. So, every circuit is associated with a Boolean expression involving switch-labels. Switching circuits provide a concrete representation for Boolean functions.
+
+✜ Example 7.4.5
+Design a switching circuit diagram and a Boolean expression for the ternary
+majority function of Example 3.
+
+Solution
+Since we want output 1 (current ﬂowing through) when two or more switches are closed (value 1), the circuit shown models the ternary majority function. The Boolean expression for this function/circuit is given below the diagram.
+
+x
+
+y
+
+>
+
+x
+
+z
+
+>
+
+y
+
+z
+
+x·y + x·z + y·z
+
+✜ Example 7.4.6
+Design a switching circuit for two switches controlling a single light in the
+usual way (confusingly called three-way switches in the U.S.).
+
+Solution
+· Let’s ﬁrst determine an appropriate Boolean function F . · Taking output 1 to represent the light being on and letting x and y stand
+for the two switches, we choose F (1, 1) = 1. Changing the state of a single
+switch will turn the light oﬀ, so F (0, 1) = 0 and F (1, 0) = 0. Changing the
+state of both switches should turn the light back on, so F (0, 0) = 1, giving
+the following Boolean function table:
+
+x1 x2
+00 01 10 11
+
+F (x1, x2)
+1 0 0 1
+
+7.4 Boolean Functions and Logic Circuits
+
+383
+
+· This resembles the truth table for x1 ←→ x2, which is logically equivalent to
+(x ∧ y) ∨ (¬x ∧ ¬y)—represented in Boolean Algebra by x · y + x · y . This
+expression can be developed into a circuit as shown below.
+· Although this isn’t yet a wiring diagram, it can be converted into one, as
+indicated by the three-way switch diagram.
+
+>
+
+xy
+
+>
+
+xy x·y + x·y
+
+L
+
+>x x
+
+y y
+
+>
+
+three-way switch
+
+✜ Example 7.4.7
+Determine the Boolean expression representing the following switching cir-
+cuit. Then design a simpler circuit to accomplish the same thing.
+
+x
+
+>
+
+>
+
+x
+
+y
+
+Solution
+· The Boolean expression for this circuit is x + xy. · By the Absorption Law for Boolean Algebra, this equals x, so the circuit can
+be simpliﬁed in this case by dropping oﬀ the lower portion of the circuit.
+· A simpliﬁed circuit is therefore the following:
+> x>
+As this example demonstrates, any compound circuit can be represented by a Boolean expression and then simpliﬁed. A simpler, cheaper switching circuit can then be designed that acts exactly like the original. Boolean Algebra, abstract as it is, simpliﬁes circuit design. Because such mathematical work leads to greater proﬁtability, Bell Labs for years had mathematicians such as Shannon on its Research and Development payroll.
+
+7.4.6 Boolean Algebra and Circuits from Logic Gates
+Computers use integrated electronic circuits built out of logic gates. Our concern here will be with combinational circuits, circuits whose outputs are solely determined by their inputs and not also on the present state/memory of the machine. There are ways of treating this extended situation, such as with ﬁnite-state machines or Turing machines, but these go beyond the scope of this text. Already with combinational circuits, however, we’ll be able to perform basic numerical computations, as we’ll show shortly.
+Let’s start by considering the logic gates that correspond to standard binary and unary logical connectives. These logic gates are symbolized as shown in Table 7.1. The inputs are placed left of each logic-gate symbol, the outputs on the right. Note how negating or inverting another operator is indicated by including an inverter node before the output.
+
+384
+
+7 Posets, Lattices, and Boolean Algebra
+
+Strictly speaking, each of the basic logic gates except for the inverter NOTgate is a double-input gate. However, given the associative and commutative properties for the Boolean operators AND and OR we can allow their respective logic gates (as well as those for NAND and NOR) to take on more than two input lines without introducing any ambiguity.
+A value of 1 for input or output represents high voltage; 0 indicates low voltage. If output 1 is the desired state of a logic gate, we can specify which string-inputs xy the gate accepts to put it into that state. We’ll use this same terminology in speaking about Boolean functions.
+
+Table 7.1 Logic Gates
+
+Name
+
+Symbol
+
+AND
+
+x y
+
+z
+
+x
+
+OR
+
+y
+
+z
+
+NOT
+
+x
+
+z
+
+x
+
+XOR
+
+y
+
+z
+
+x
+
+NAND
+
+y
+
+z
+
+NOR
+
+x y
+
+z
+
+x
+
+XNOR
+
+y
+
+z
+
+Accepts Strings xy = 11 xy = 01, 10, or 11 x=0 xy = 01 or 10 xy = 00, 01, or 10 xy = 00 xy = 00 or 11
+
+Boolean Expression
+z =x·y
+z =x+y
+z=x
+z = x⊕y = x·y +x ·y
+z = x·y = x +y
+z = x+y = x ·y
+z = x⊕y = x·y+x ·y
+
+Logic gates can be represented by Boolean expressions (the last column of Table 7.1), just as for switching circuits. The choice of expression, like the name of the gate itself, depends on the functional output of the circuit. For example, the gate that outputs high voltage if and only if it has two high voltage inputs (the AND gate) corresponds to multiplication because that matches the way we get 1 as a product in Boolean Algebra.
+Logic-gate outputs can be used as inputs for other gates in order to make complex circuits. The most basic logic gates from a logical and algebraic point of view are the AND, OR, and NOT gates. These can be combined to
+
+7.4 Boolean Functions and Logic Circuits
+
+385
+
+duplicate the action of NAND and NOR gates, but they can also generate any desired output. Together they form a complete set of connectives, something we’ll prove in Section 7.5. The NAND gate is the one most often used in integrated circuits, however, because any Boolean expression can be modeled solely with NAND gates, appropriately connected (see Exercise 40).
+Diﬀerent compound circuits (Boolean expressions) may yield the same outputs for the same inputs. The laws of Boolean Algebra can help demonstrate this, and so can be used to simplify logic-gate circuit expressions to design simpler equivalent circuits. We’ll explore this topic in depth in the next two sections, but here’s one example.
+✜ Example 7.4.8
+Determine the Boolean expression representing the following logic-gate circuit; then design a simpler circuit that accomplishes the same thing.
+x
+y z
+
+Solution This circuit realizes the Boolean expression x + x y + xy . Using the Absorption and Redundancy Laws of Boolean Algebra, we can simplify this expression to x + x y + xy = x + x y = x + y. A simpler logic-gate circuit, therefore, is given by the following diagram.
+
+x y
+
+z
+
+At this point we’re using Boolean identities to simplify our expressions, giving us valuable practice working with Boolean Algebra. In Section 7.6, we’ll learn some easier, more systematic techniques for doing such simpliﬁcations.
+7.4.7 Computation Performed Via Logic Circuits
+Boole used numerical and algebraic calculations to model a version of logic. In the twentieth century, logic-gate circuits were used to return the favor, providing resources for doing numerical calculations. This remarkable development required some ingenious thinking about the computational potential of logical operations in their Boolean Algebra format. Signiﬁcantly, it provided the foundation for modern electronic computation. In its most elementary form, computation is performed by means of half adders and full adders, using binary (base-two) representation of numbers for doing ordinary addition. This idea was developed toward the end of Shannon’s 1938 work as one example to illustrate what could be done with switching circuits and relays.
+
+386
+
+7 Posets, Lattices, and Boolean Algebra
+
+✜ Example 7.4.9
+a) Design a half adder to implement the Boolean functions z0 = f0(x0, y0) and z1 = f1(x0, y0) for adding two bits: x0 + y0 = z1z0.
+b) Draw a logic circuit for the half adder.
+
+Solution
+
+a) A half adder adds two one-place binary digits (0 or 1) to produce their
+
+ordinary sum (not their Boolean sum). The sum 1+1 = 10 requires a sec-
+
+ond column, so the combined table for adding bits x0 and y0, outputting the binary numeral z1 z0, is as follows:
+
+x0 + y0
+
+x0 y0 00 01
+
+z1 z0 00 01
+
+z1 z0
+
+10 11
+
+01 10
+
+b) Knowing the Boolean expressions for basic logic gates, we see that z1 = (x0 AND y0) while z0 = (x0 XOR y0). The half adder thus has the following circuit diagram. We’ll leave making a diagram using only AND, OR, and NOT gates as an exercise (see Exercise 42a).
+
+x0 y0
+
+z0
+
+z1
+
+The half adder adds two one-place numbers, but in adding two multi-place numbers, such as 111 + 11, there will often be a third bit to add from the previous place’s carry. To deal with this, we’ll use a full adder, a circuit with three inputs and two outputs.
+
+✜ Example 7.4.10
+Design a full adder for adding three binary digits.
+
+Solution The table for the associated Boolean function is given below; a diagram using logic gates and half adders is left as an exercise (see Exercise 43).
+
+w0 x0 + y0
+z1 z0
+
+w0 x0
+
+y0
+
+z1 z0
+
+00
+
+0
+
+00
+
+00
+
+1
+
+01
+
+01
+
+0
+
+01
+
+01
+
+1
+
+10
+
+10
+
+0
+
+01
+
+10
+
+1
+
+10
+
+11
+
+0
+
+10
+
+11
+
+1
+
+11
+
+7.4 Boolean Functions and Logic Circuits
+
+387
+
+EXERCISE SET 7.4
+
+Exercises 1–6: Boolean Functions and Propositional Logic
+
+Write out Boolean function tables to represent the following connectives.
+
+7.4.1. AND (x1, x2) = (x1 ∧ x2)
+
+7.4.3. NOR (x1, x2) = ¬(x1 ∨ x2)
+
+7.4.2. NAND (x1, x2) = ¬(x1 ∧ x2) 7.4.4. FALSE (x) = x ∧ ¬x.
+
+7.4.5. XOR (x1, x2) = (x1 ∨ x2) ∧ ¬(x1 ∧ x2) = (x1 ∧ ¬x2) ∨ (¬x1 ∧ x2)
+
+7.4.6. XNOR (x1, x2) = (x1 ∧ x2) ∨ (¬x1 ∧ ¬x2). What other name does this
+
+connective go under?
+
+Exercises 7–10: True or False Are the following statements true or false? Explain your answer.
+7.4.7. Every PL sentence has a corresponding Boolean function. 7.4.8. Distinct Boolean expressions deﬁne distinct Boolean functions. 7.4.9. If an XOR gate rejects a string of inputs, a NOR gate accepts it. 7.4.10. Boole was the ﬁrst to see how to use logic to perform computations.
+
+Exercises 11–13: Boolean Expressions for Switching Circuits For each switching circuit below, do the following:
+a. Determine the Boolean expression corresponding to the switching circuit. b. Simplify the Boolean expression as much as possible, using the laws of
+Boolean Algebra. c. Draw the equivalent circuit for your simpliﬁed expression.
+
+x
+
+x
+
+7.4.11. >
+
+y
+
+>
+
+y
+
+7.4.12. >
+
+y
+
+x
+
+z
+
+>
+
+yz xy
+
+z
+
+x y
+
+7.4.13.
+
+>
+
+x
+
+y z
+
+>
+
+y
+
+z
+
+Exercises 14–17: Switching Circuits for Boolean Expressions For each Boolean expression given below, do the following:
+a. Draw a switching circuit diagram to realize the given Boolean expression. b. Simplify the Boolean expression as much as possible, using the laws of
+Boolean Algebra. c. Draw the equivalent circuit for your simpliﬁed expression.
+
+388
+
+7 Posets, Lattices, and Boolean Algebra
+
+7.4.14. (x + y ) xy 7.4.15. xy + xy + x y
+
+7.4.16. xyz + y z + x yz 7.4.17. (x + y)(x + z)(y + z)
+
+Exercises 18–19: Circuit Applications Use a switching circuit or a logic-gate circuit to model the situation given in each problem.
+7.4.18. Develop a Boolean function table, with rationale, and a switching circuit to model three switches controlling a light.
+7.4.19. Four naval oﬃcers in a submarine have suﬃcient rank to authorize ﬁring a nuclear warhead. Because of the seriousness of this action, at least three of the four must agree to ﬁre before taking action. Give a Boolean expression and then design a logic circuit that realizes this protocol. You may use generalized logic gates having more than two inputs.
+
+Exercises 20–23: Boolean Expressions for Logic Circuits For each logic circuit given below, do the following:
+a. Determine the Boolean expression corresponding to the circuit. b. Simplify the Boolean expression as much as possible, using the laws of
+Boolean Algebra. c. Draw the logic circuit corresponding to your simpliﬁed expression.
+
+x1
+7.4.20. x 2
+
+F (x 1, x 2 )
+
+x1
+7.4.21. x 2
+
+F (x 1, x 2 )
+
+x1
+7.4.22. x2
+x1 x2
+7.4.23. x 1
+x2 x3
+
+F (x 1, x 2 ) F (x 1, x 2 , x 3 )
+
+7.4 Boolean Functions and Logic Circuits
+
+389
+
+Exercises 24–27: Logic Circuits for Boolean Expressions
+
+For each Boolean expression given below, do the following:
+
+a. Draw a logic-gate circuit diagram to realize the given Boolean expression.
+
+b. Simplify the Boolean expression as much as possible, using the laws of
+
+Boolean Algebra.
+
+c. Draw the logic-gate circuit corresponding to your simpliﬁed expression.
+
+7.4.24. x y + (x + y )
+
+7.4.26. (xy + y )(x + x y )
+
+7.4.25. xy + xy + x y
+
+7.4.27. xyz + x y z + x yz + xyz
+
+Exercises 28–29: Logic Circuits for Boolean Functions For each Boolean function given below, do the following:
+a. Determine a Boolean expression to represent the given function. b. Draw a logic-gate circuit that will implement the function.
+
+7.4.28. f (x, y, z) = 1 if and only if y = 1 and x = z.
+
+7.4.29. f (x, y, z) is given by the following table: x y z f (x, y, z)
+
+00 0
+
+0
+
+00 1
+
+1
+
+01 0
+
+1
+
+01 1
+
+0
+
+10 0
+
+1
+
+10 1
+
+0
+
+11 0
+
+0
+
+11 1
+
+1
+
+Exercises 30–36: Logic-Gate Equivalents Show how the following logic gates can be simulated using only NOT, AND, and OR gates, i.e., ﬁnd a logic-gate circuit using only these gates to represent the same Boolean function as the given one.
+
+7.4.30. NAND 7.4.31. NOR
+
+7.4.32. XOR 7.4.33. XNOR
+
+7.4.34. Show how AND can be simulated using only NOT and OR gates.
+
+7.4.35. Show how OR can be simulated using only NOT and AND gates.
+
+7.4.36. Can NOT be simulated using only AND and OR gates? Explain.
+
+Exercises 37–40: Logic Gates Having One or Two Inputs The text gives seven basic logic gates/Boolean functions, one with one variable and six with two variables. These are not the only ones possible. The following problems explore logic circuits for other connectives.
+7.4.37. Is there a basic logic gate corresponding to the logical connective →? corresponding to the logical connective ←→? Explain.
+7.4.38. How many distinct Boolean functions of a single variable are there? Write down function tables for those not already included among the basic logic gates and give them a name of your choice.
+
+390
+
+7 Posets, Lattices, and Boolean Algebra
+
+7.4.39. How many distinct Boolean functions of two variables are there? Write down function tables for those not already included among the basic logic gates and give them a name of your choice.
+7.4.40. NAND -Gate Simulations: a NAND Gate is Universal a. Show how NOT can be simulated using only NAND gates. b. Show how AND can be simulated using only NAND gates. c. Show how OR can be simulated using only NAND gates.
+Exercises 41–45: Ordinary Computation Done By Logic Circuits The following problems explore integer arithmetic done via logic circuits.
+7.4.41. Need for Full Adders Explain why a half adder is inadequate for adding two binary numbers and why adding two binary numbers in each place value may require three inputs but only two outputs.
+7.4.42. Half Adder Diagrams a. Provide an alternative circuit diagram for a half adder, using only NOT, AND, and OR logic gates. b. Design a half adder circuit that uses only NAND logic gates. c. Design a half adder circuit that uses only NOR logic gates.
+7.4.43. Full Adders from Half Adders a. By knowing what is needed to add three bits (see Example 10), show that a full adder can be built out of three half adders that each add two bits at a time. For simplicity, you may represent each half adder as a rectangle with two inputs and two outputs, labeled appropriately. Explain how your circuit works on the inputs (1, 0, 1) and (1, 1, 1). b. By analyzing the possibilities that can occur in adding three bits, show that the ﬁnal half adder in part a can be replaced with a simple logic gate and identify what that gate is. c. Using the logic-circuit diagram in Example 9 or your work in Exercise 42, draw a logic circuit for a full adder that uses only basic logic gates.
+7.4.44. Addition of Three-Bit Numbers a. Show how one half adder and two full adders can add two three-bit numbers, x2x1x0 + y2y1y0, yielding the sum z3z2z1z0. To simplify your diagram, represent each type of adder as a rectangle with two or three inputs and two outputs, labeling each input and output appropriately. b. Explain how your circuit from part a adds the binary numbers 101 + 11 to yield 1000.
+7.4.45. Ordinary Multiplication using Logic Circuits a. Create a function table for ordinary integer multiplication of two one-bit numbers (z0 = x0 · y0) and then draw a logic circuit to implement it. b. Design a logic circuit to multiply a two-bit number x1x0 by a one-bit number y0 to output a two-bit number z1z0. c. Design a logic circuit to multiply two two-bit numbers x1x0 · y1y0, yielding a four-bit number z3z2z1z0.
+
+

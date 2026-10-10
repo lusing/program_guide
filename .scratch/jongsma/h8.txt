@@ -1,0 +1,120 @@
+8.1.2 Euler’s Bridges of K¨onigsberg Solution
+8.1 Eulerian Trails
+8.1 Eulerian Trails
+8.1.3 Basic Deﬁnitions of Graph Theory
+8.1.4 Eulerian Trails: A Necessary Condition
+8.1 Eulerian Trails
+8.1.5 Eulerian Trails: A Suﬃcient Condition
+8.1.1. Counting Possible Tours Let landmasses be denoted by A, B, C, D, and connecting bridges by a,
+8.1.2. Bridge Tours with Even and Odd Regions a. Prove Euler’s claim that if a region X has 2n + 1 c
+8.1 Eulerian Trails
+8.1.3. Ko¨nigsberg Bridge Problem Extension a. How many new bridges must be added to the Ko¨nigsberg
+8.1.4. Shared Degrees in a Graph a. Prove that every graph with two or more vertices has at least tw
+8.1.5. The Handshake Lemma a. Reformulate the Handshake Lemma (Proposition 1) for graphs with vertic
+8.1.6. Euler’s method of determining whether a tour of bridges is possible or not (see Example 1) is
+8.1.9. Traversing City Streets Snowville has had a winter storm and sent its snowplow out at midnigh
+8.1.10. Round-Robin Letters A group of six friends keeps in touch by each sending news of themselves
+8.1.11. Running the Bases A baseball ﬁeld is outlined as shown. How should the team mascots run the 
+8.1.12. Chalking a Tennis Court The outline of a tennis court is shown with a dashed line where the 
+8.1.13. Constructing a Graph from Given Conditions Draw a graph G satisfying the following condition
+8.1.14. Trails and Paths a. Prove that every path is a trail. b. Prove that every walk between two v
+8.1.15. Trees A graph is a tree if and only if there is exactly one path joining each pair of vertic
+8.1 Eulerian Trails
+8.1.16. Cycles in an Eulerian Graph Prove that a connected graph is Eulerian if and only if it can b
+8.1.17. Number of Cycles in a Connected Order-4 Graph Consider cycles identical if and only if they 
+8.1.18. Number of Cycles in a Connected Order-5 Graph Let G be a connected graph with 5 vertices.
+8.1.19. Number of Cycles in a Connected Graph Let G be a connected graph with n vertices and m edges
+8.1.20. Maximal Trails and Circuits
+8.1.21. Eulerian Trails and Circuits
+8.1.22. Fleury’s Algorithm produces an Eulerian circuit/trail as follows: Begin at any vertex (at an
+8.2 Hamiltonian Paths
+8.2.1 Hamilton’s Icosian Game
+8.2 Hamiltonian Paths
+8.2.2 Hamiltonian Paths and Cycles
+8.2.3 Suﬃcient Conditions for Hamiltonian Paths
+8.2 Hamiltonian Paths
+8.2 Hamiltonian Paths
+8.2.4 Necessary Conditions for Hamiltonian Paths
+8.2 Hamiltonian Paths
+8.2.1. The Icosian Game
+8.2.2. Traversing a Grid Graph A grid graph is an m×n rectangular array of lattice points with line 
+8.2 Hamiltonian Paths
+8.2.3. The Knight’s Tour Problem A knight’s tour is a sequence of chessboard moves in which a knight
+8.2.4. Solving a Rubik’s Cube a. Solving a scrambled Rubik’s Cube is done by going through a sequenc
+8.2.5. The Itinerant Student Taking a gap year before attending college, Anneke wants to travel to a
+8.2.6. Security Sites A night watchman is responsible for checking a number of buildings once each n
+8.2.7. Making Deliveries A grocery store delivery truck goes out to deliver a number of orders. Desc
+8.2.8. If a graph with n vertices has a degree sum for all pairs of nonadjacent vertices of at least
+8.2.9. If every vertex of a connected graph has degree 2 except for two vertices
+8.2.10. Connected graphs exist that are . . .
+8.2.11. Graphs with Squares
+8.2.12. Diamond Graphs
+8.2.13. Hexagon and Pentagon Graphs
+8.2.14. Hexagon, Heptagon, and Octagon Graphs
+8.2 Hamiltonian Paths
+8.2.15. Disjoint Cycles in Complete Graphs Consider two cycles disjoint if and only if they share no
+8.2.16. Draw the following complete bipartite graphs.
+8.2.17. Hamiltonian Paths and Cycles in Complete Bipartite Graphs For n ≥ 2, prove the following:
+8.2.18. Dirac’s Theorem Explain why Dirac’s Theorem is a special case of Ore’s Theorem, i.e., why it
+8.2.19. Ore’s Theorem a. Show that if all nonadjacent vertices of a graph have degree sums of at lea
+8.2.20. Suﬃcient Conditions for Hamiltonian Paths a. Prove Theorem 3 by constructing a Hamiltonian p
+8.2.21. Necessary Conditions for Hamiltonian Graphs a. Prove Theorem 4, which states joint necessary
+8.2.22. Cut Points, Bridges, Cycles, and Paths a. Prove that an edge of a connected graph is a bridg
+8.3 Planar Graphs
+8.3 Planar Graphs
+8.3.1 Euler’s Polyhedral Formula
+8.3.2 Euler’s Formula for Planar Graphs
+8.3 Planar Graphs
+8.3.3 The Edge-Vertex Inequality for Planar Graphs
+8.3 Planar Graphs
+8.3.4 Kuratowski’s Theorem for Planar Graphs
+8.3 Planar Graphs
+8.3 Planar Graphs
+8.3.1. Platonic solids are named after Plato, because he discovered them. 8.3.2. Every planar graph 
+8.3.8. Determining Platonic Solids Explain why there are exactly ﬁve Platonic solids by arguing as f
+8.3.9. Planar Graphs for Platonic Solids Verify that the planar graphs for the Platonic solids have 
+8.3.10. Archimedean Solids Tell how many faces of what shapes the following ﬁgures have, and verify 
+8.3.11. Euler’s Polyhedral Formula for Prisms A prism is a polyhedron whose end faces are parallel c
+8.3.12. Euler’s Polyhedral Formula for Pyramids A pyramid is a solid whose base is a polygon and who
+8.3.13. Possible Polyhedra
+8.3.14. Edge-Face Inequalities a. Use the fact that edges are counted at most twice in adding up the
+8.3 Planar Graphs
+8.3.15. Vertex-Edge-Face Relations in Maximal Planar Graphs A maximal planar graph is a planar graph
+8.3.16. Edge-Vertex Relations a. Prove the Generalized Edge-Vertex Inequality using the Generalized 
+8.3.17. Cycles in Planar Graphs Explain why a planar graph whose vertices all have degree greater th
+8.3.18. Five Neighbors Theorem a. Prove the Five Neighbors Theorem: every planar graph contains a ve
+8.3.19. Euler’s Formula for Planar Graphs a. Show by direct calculation that Euler’s Formula for Pla
+8.3.20. The Three-Utilities Puzzle
+8.3.21. Complete Bipartite Graphs a. Show that the nonplanar graph in Example 4b is K4,4 in disguise
+8.3.22. Planar or Nonplanar?
+8.3.23. Kuratowski’s Theorem
+8.4 Coloring Graphs
+8.4 Coloring Graphs
+8.4.1 Origin of the Four-Color Problem
+8.4.2 Kempe Chains and the Four-Color Problem
+8.4 Coloring Graphs
+8.4.3 Demise of Kempe’s Four-Color Theorem
+8.4.4 Progress and Success on the Four-Color Theorem
+8.4 Coloring Graphs
+8.4.5 Graph Coloring Equivalents
+8.4 Coloring Graphs
+8.4.6 Calculating Chromatic Numbers for Graphs
+8.4 Coloring Graphs
+8.4.7 Coloring Graphs: a Productive Diversion
+8.4.1. If four regions of a planar map all border each other, one of them must be enclosed by the ot
+8.4.7. Mo¨bius’ Five Kingdoms Puzzle a. A ruler wants to pass his kingdom on to his ﬁve heirs so tha
+8.4.8. Map Coloring and Planar Graphs a. Carefully explain how planar maps can be transformed into p
+8.4.9. Kempe’s Alternating-Color Chain Argument a. Show for Example 3 that if one begins by focusing
+8.4.10. The Six-Color Theorem Without citing the Four- or Five-Color Theorems, prove the Six-Color T
+8.4 Coloring Graphs
+8.4.11. The Five-Color Theorem Prove the Five-Color Theorem using proof by contradiction, as suggest
+8.4.12. Three-Dimensional Maps A three-dimensional map is a set of connected solid regions without h
+8.4.13. Prove or disprove:
+8.4.14. Theorem 2 a. Explain why the procedure outlined in the ﬁnal part of Theorem 2’s proof will n
+8.4.15. Brooks’ Theorem Verify Brooks’ Theorem for the following graphs:
+8.4.16. Coloring Cycles a. Prove that a cycle is 3-colorable. When is it 2-chromatic and when is it 
+8.4.17. Coloring Cubic Graphs A cubic graph is one in which each vertex has degree 3.
+8.4.18. Graph Coloring for Computers In compiling a program, variables are assigned to available reg
+8.4.19. Graph Coloring
+8.4.20. Bipartite Graphs
+8.4.21. The Greedy Coloring Algorithm and Chromatic Number
