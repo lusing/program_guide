@@ -1,4 +1,0 @@
-session MLTA in "." = HOL +
-  options [document = false]
-  theories
-    MLTA

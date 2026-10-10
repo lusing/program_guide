@@ -1,8 +1,0 @@
-68
-GENTZEN-TYPE PROPOSITIONAL SYSTEM LJPM
-ExERCISE 8.8. Construct a finite truth table verifying all derivable formulas
-but falsifying -p V -~p
-THEOREM 8.6. A formula is derivable in NJp iff it is valid in all finite
-matrices for intuitionistic logic.
-Proof.If  aα, then take a finite pointed Kripke model falsifying α and turn it
-into a finite matrix.

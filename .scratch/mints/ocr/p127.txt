@@ -1,7 +1,0 @@
-REFERENCES
-127
-27. A. Troelstra and D. van Dalen. Constructivism in Mathematics, Vol. 2,
-volume 123 of Studies in Logic and the Foundations of Mathematics. North-
-Holland, Amsterdam, 1988.
-28. D. van Dalen. Logic and Structure. Universitext. Springer-Verlag, Berlin,
-3rd, augmented edition, 1994. (1st ed., 1980; 2nd ed., 1983).
