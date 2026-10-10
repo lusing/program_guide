@@ -102,6 +102,8 @@ function Test-One {
         "32_sqlite" { Test-PlainExample $Dir @("$env:SystemRoot\System32\winsqlite3.dll") }
         # 21：21.6/21.9 用 extern "c" 的 getpid/strlen 与 libc 对账，须显式 -lc
         "21_asm" { Test-PlainExample $Dir @("-lc") }
+        # 38：信号处理 + fork/setsid/execve/waitpid 全走 std.c，须显式 -lc
+        "38_daemon" { Test-PlainExample $Dir @("-lc") }
         "18_cross" { Test-CrossExample $Dir }
         default { Test-PlainExample $Dir }
     }
