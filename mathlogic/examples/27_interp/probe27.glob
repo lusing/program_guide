@@ -1,0 +1,1194 @@
+DIGEST 1b90ed85c2bbc01f51dce9417901f746
+Fprobe27
+R386:389 Stdlib.Lists.List <> <> lib
+R391:395 Stdlib.Arith.Arith <> <> lib
+R397:399 Stdlib.micromega.Lia <> <> lib
+R409:421 Stdlib.Lists.List ListNotations <> mod
+ind 526:527 <> tm
+constr 541:543 <> var
+constr 559:562 <> fsym
+R550:553 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R547:549 Corelib.Init.Datatypes <> nat ind
+R554:555 probe27 <> tm:1 ind
+R569:572 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R566:568 Corelib.Init.Datatypes <> nat ind
+R580:583 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R573:576 Corelib.Init.Datatypes <> list ind
+R578:579 probe27 <> tm:1 ind
+R584:585 probe27 <> tm:1 ind
+scheme 526:527 <> tm_rect
+scheme 526:527 <> tm_ind
+scheme 526:527 <> tm_rec
+scheme 526:527 <> tm_sind
+ind 599:600 <> fm
+constr 614:616 <> rat
+constr 643:645 <> eqf
+constr 666:668 <> neg
+constr 683:686 <> disj
+constr 707:710 <> conj
+constr 731:733 <> imp
+constr 754:756 <> exq
+constr 778:781 <> allq
+R623:626 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R620:622 Corelib.Init.Datatypes <> nat ind
+R634:637 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R627:630 Corelib.Init.Datatypes <> list ind
+R632:633 probe27 <> tm ind
+R638:639 probe27 <> fm:3 ind
+R651:654 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R649:650 probe27 <> tm ind
+R657:660 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R655:656 probe27 <> tm ind
+R661:662 probe27 <> fm:3 ind
+R674:677 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R672:673 probe27 <> fm:3 ind
+R678:679 probe27 <> fm:3 ind
+R692:695 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R690:691 probe27 <> fm:3 ind
+R698:701 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R696:697 probe27 <> fm:3 ind
+R702:703 probe27 <> fm:3 ind
+R716:719 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R714:715 probe27 <> fm:3 ind
+R722:725 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R720:721 probe27 <> fm:3 ind
+R726:727 probe27 <> fm:3 ind
+R739:742 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R737:738 probe27 <> fm:3 ind
+R745:748 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R743:744 probe27 <> fm:3 ind
+R749:750 probe27 <> fm:3 ind
+R763:766 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R760:762 Corelib.Init.Datatypes <> nat ind
+R769:772 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R767:768 probe27 <> fm:3 ind
+R773:774 probe27 <> fm:3 ind
+R788:791 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R785:787 Corelib.Init.Datatypes <> nat ind
+R794:797 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R792:793 probe27 <> fm:3 ind
+R798:799 probe27 <> fm:3 ind
+scheme 599:600 <> fm_rect
+scheme 599:600 <> fm_ind
+scheme 599:600 <> fm_rec
+scheme 599:600 <> fm_sind
+def 814:821 <> iff_form
+R832:833 probe27 <> fm ind
+binder 824:825 <> φ:5
+binder 827:828 <> ψ:6
+R838:839 probe27 <> fm ind
+R844:847 probe27 <> conj constr
+R850:852 probe27 <> imp constr
+R854:855 probe27 <> φ:5 var
+R857:858 probe27 <> ψ:6 var
+R862:864 probe27 <> imp constr
+R866:867 probe27 <> ψ:6 var
+R869:870 probe27 <> φ:5 var
+def 945:953 <> interp_fn
+R961:964 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R958:960 Corelib.Init.Datatypes <> nat ind
+R973:976 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R965:968 Corelib.Init.Datatypes <> list ind
+R970:972 Corelib.Init.Datatypes <> nat ind
+R977:979 Corelib.Init.Datatypes <> nat ind
+def 993:1002 <> interp_rel
+R1010:1013 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1007:1009 Corelib.Init.Datatypes <> nat ind
+R1022:1025 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1014:1017 Corelib.Init.Datatypes <> list ind
+R1019:1021 Corelib.Init.Datatypes <> nat ind
+R1026:1029 Corelib.Init.Datatypes <> bool ind
+def 1042:1044 <> evt
+R1051:1059 probe27 <> interp_fn def
+binder 1047:1047 <> f:7
+R1071:1074 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1068:1070 Corelib.Init.Datatypes <> nat ind
+R1075:1077 Corelib.Init.Datatypes <> nat ind
+binder 1063:1064 <> β:8
+R1085:1086 probe27 <> tm ind
+binder 1081:1081 <> t:9
+R1091:1093 Corelib.Init.Datatypes <> nat ind
+R1106:1106 probe27 <> t:9 var
+R1117:1119 probe27 <> var constr
+R1126:1127 probe27 <> β:8 var
+R1135:1138 probe27 <> fsym constr
+R1148:1148 probe27 <> f:7 var
+R1153:1155 Corelib.Lists.ListDef <> map def
+R1158:1160 probe27 <> evt:10 def
+R1164:1165 probe27 <> β:8 var
+R1162:1162 probe27 <> f:7 var
+def 1191:1194 <> bump
+R1205:1208 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1202:1204 Corelib.Init.Datatypes <> nat ind
+R1209:1211 Corelib.Init.Datatypes <> nat ind
+binder 1197:1198 <> β:12
+R1221:1223 Corelib.Init.Datatypes <> nat ind
+binder 1215:1215 <> x:13
+binder 1217:1217 <> a:14
+R1231:1234 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1228:1230 Corelib.Init.Datatypes <> nat ind
+R1235:1237 Corelib.Init.Datatypes <> nat ind
+binder 1248:1248 <> n:15
+R1257:1260 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'=?'_x not
+R1256:1256 probe27 <> n:15 var
+R1261:1261 probe27 <> x:13 var
+R1275:1276 probe27 <> β:12 var
+R1278:1278 probe27 <> n:15 var
+R1268:1268 probe27 <> a:14 var
+def 1291:1293 <> evf
+R1300:1308 probe27 <> interp_fn def
+binder 1296:1296 <> f:16
+R1316:1325 probe27 <> interp_rel def
+binder 1312:1312 <> r:17
+R1333:1336 Corelib.Init.Datatypes <> list ind
+R1338:1340 Corelib.Init.Datatypes <> nat ind
+binder 1329:1329 <> D:18
+R1356:1359 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R1353:1355 Corelib.Init.Datatypes <> nat ind
+R1360:1362 Corelib.Init.Datatypes <> nat ind
+binder 1348:1349 <> β:19
+R1371:1372 probe27 <> fm ind
+binder 1366:1367 <> φ:20
+R1377:1380 Corelib.Init.Datatypes <> bool ind
+R1393:1394 probe27 <> φ:20 var
+R1405:1407 probe27 <> rat constr
+R1417:1417 probe27 <> r:17 var
+R1422:1424 Corelib.Lists.ListDef <> map def
+R1427:1429 probe27 <> evt def
+R1431:1431 probe27 <> f:16 var
+R1433:1434 probe27 <> β:19 var
+R1445:1447 probe27 <> eqf constr
+R1458:1464 Stdlib.Arith.PeanoNat Nat eqb def
+R1467:1469 probe27 <> evt def
+R1471:1471 probe27 <> f:16 var
+R1473:1474 probe27 <> β:19 var
+R1481:1483 probe27 <> evt def
+R1485:1485 probe27 <> f:16 var
+R1487:1488 probe27 <> β:19 var
+R1498:1500 probe27 <> neg constr
+R1508:1511 Corelib.Init.Datatypes <> negb def
+R1514:1516 probe27 <> evf:21 def
+R1524:1525 probe27 <> β:19 var
+R1522:1522 probe27 <> D:18 var
+R1520:1520 probe27 <> r:17 var
+R1518:1518 probe27 <> f:16 var
+R1535:1538 probe27 <> disj constr
+R1549:1551 Corelib.Init.Datatypes <> orb def
+R1572:1574 probe27 <> evf:21 def
+R1582:1583 probe27 <> β:19 var
+R1580:1580 probe27 <> D:18 var
+R1578:1578 probe27 <> r:17 var
+R1576:1576 probe27 <> f:16 var
+R1554:1556 probe27 <> evf:21 def
+R1564:1565 probe27 <> β:19 var
+R1562:1562 probe27 <> D:18 var
+R1560:1560 probe27 <> r:17 var
+R1558:1558 probe27 <> f:16 var
+R1593:1596 probe27 <> conj constr
+R1607:1610 Corelib.Init.Datatypes <> andb def
+R1631:1633 probe27 <> evf:21 def
+R1641:1642 probe27 <> β:19 var
+R1639:1639 probe27 <> D:18 var
+R1637:1637 probe27 <> r:17 var
+R1635:1635 probe27 <> f:16 var
+R1613:1615 probe27 <> evf:21 def
+R1623:1624 probe27 <> β:19 var
+R1621:1621 probe27 <> D:18 var
+R1619:1619 probe27 <> r:17 var
+R1617:1617 probe27 <> f:16 var
+R1652:1654 probe27 <> imp constr
+R1665:1669 Corelib.Init.Datatypes <> implb def
+R1690:1692 probe27 <> evf:21 def
+R1700:1701 probe27 <> β:19 var
+R1698:1698 probe27 <> D:18 var
+R1696:1696 probe27 <> r:17 var
+R1694:1694 probe27 <> f:16 var
+R1672:1674 probe27 <> evf:21 def
+R1682:1683 probe27 <> β:19 var
+R1680:1680 probe27 <> D:18 var
+R1678:1678 probe27 <> r:17 var
+R1676:1676 probe27 <> f:16 var
+R1711:1713 probe27 <> exq constr
+R1723:1729 Stdlib.Lists.List <> existsb def
+R1769:1769 probe27 <> D:18 var
+binder 1736:1736 <> a:23
+R1741:1743 probe27 <> evf:21 def
+R1752:1755 probe27 <> bump def
+R1757:1758 probe27 <> β:19 var
+R1762:1762 probe27 <> a:23 var
+R1749:1749 probe27 <> D:18 var
+R1747:1747 probe27 <> r:17 var
+R1745:1745 probe27 <> f:16 var
+R1775:1778 probe27 <> allq constr
+R1788:1794 Stdlib.Lists.List <> forallb def
+R1834:1834 probe27 <> D:18 var
+binder 1801:1801 <> a:24
+R1806:1808 probe27 <> evf:21 def
+R1817:1820 probe27 <> bump def
+R1822:1823 probe27 <> β:19 var
+R1827:1827 probe27 <> a:24 var
+R1814:1814 probe27 <> D:18 var
+R1812:1812 probe27 <> r:17 var
+R1810:1810 probe27 <> f:16 var
+def 2028:2029 <> D3
+R2033:2036 Corelib.Init.Datatypes <> list ind
+R2038:2040 Corelib.Init.Datatypes <> nat ind
+R2045:2045 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2047:2047 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2049:2049 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2051:2051 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+def 2065:2066 <> f3
+R2070:2078 probe27 <> interp_fn def
+binder 2089:2089 <> s:25
+binder 2091:2094 <> args:26
+R2108:2111 probe27 <> args:26 var
+R2105:2105 probe27 <> s:25 var
+R2125:2125 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R2127:2127 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R2136:2139 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'=?'_x not
+R2155:2157 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R2167:2167 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R2169:2169 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R2178:2181 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'=?'_x not
+R2197:2199 Corelib.Init.Peano <> ::nat_scope:x_'-'_x not
+R2209:2210 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+def 2249:2250 <> r3
+R2254:2263 probe27 <> interp_rel def
+binder 2274:2274 <> s:29
+binder 2276:2279 <> args:30
+R2293:2296 probe27 <> args:30 var
+R2290:2290 probe27 <> s:29 var
+R2310:2310 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2312:2312 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2314:2314 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2320:2323 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'<?'_x not
+R2333:2333 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2335:2335 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2337:2337 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2343:2346 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'=?'_x not
+R2356:2356 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2358:2358 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2360:2360 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2365:2367 Corelib.Init.Datatypes <> orb def
+R2380:2383 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'=?'_x not
+R2371:2374 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'<?'_x not
+R2399:2403 Corelib.Init.Datatypes <> false constr
+def 2495:2500 <> satis3
+R2508:2509 probe27 <> fm ind
+binder 2503:2504 <> φ:33
+R2514:2517 Corelib.Init.Datatypes <> bool ind
+R2524:2530 Stdlib.Lists.List <> forallb def
+R2656:2657 probe27 <> D3 def
+binder 2537:2538 <> b0:34
+R2543:2549 Stdlib.Lists.List <> forallb def
+R2652:2653 probe27 <> D3 def
+binder 2556:2557 <> b1:35
+R2562:2568 Stdlib.Lists.List <> forallb def
+R2648:2649 probe27 <> D3 def
+binder 2575:2576 <> b2:36
+R2585:2587 probe27 <> evf def
+R2589:2590 probe27 <> f3 def
+R2592:2593 probe27 <> r3 def
+R2595:2596 probe27 <> D3 def
+binder 2603:2603 <> n:37
+R2614:2614 probe27 <> n:37 var
+R2624:2625 probe27 <> b0:34 var
+R2630:2631 probe27 <> b1:35 var
+R2636:2637 probe27 <> b2:36 var
+R2644:2645 probe27 <> φ:33 var
+def 2751:2756 <> conj_l
+R2763:2766 Corelib.Init.Datatypes <> list ind
+R2768:2769 probe27 <> fm ind
+binder 2759:2759 <> l:39
+R2774:2775 probe27 <> fm ind
+R2788:2788 probe27 <> l:39 var
+R2799:2800 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R2805:2807 probe27 <> eqf constr
+R2810:2812 probe27 <> var constr
+R2818:2820 probe27 <> var constr
+R2829:2829 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R2831:2831 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R2843:2846 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R2853:2856 probe27 <> conj constr
+R2861:2866 probe27 <> conj_l:40 def
+def 3202:3208 <> orig_ex
+R3212:3213 probe27 <> fm ind
+R3218:3221 probe27 <> allq constr
+R3226:3228 probe27 <> eqf constr
+R3231:3234 probe27 <> fsym constr
+R3238:3238 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3253:3253 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3239:3242 probe27 <> fsym constr
+R3246:3246 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3252:3252 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3247:3249 probe27 <> var constr
+R3257:3259 probe27 <> var constr
+def 3277:3283 <> tred_ex
+R3287:3288 probe27 <> fm ind
+R3295:3298 probe27 <> allq constr
+R3303:3305 probe27 <> exq constr
+R3311:3314 probe27 <> conj constr
+R3317:3319 probe27 <> eqf constr
+R3322:3325 probe27 <> fsym constr
+R3329:3329 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3335:3335 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3330:3332 probe27 <> var constr
+R3339:3341 probe27 <> var constr
+R3372:3374 probe27 <> eqf constr
+R3377:3380 probe27 <> fsym constr
+R3384:3384 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3391:3391 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3385:3387 probe27 <> var constr
+R3395:3397 probe27 <> var constr
+def 3415:3427 <> tred_ex_equiv
+R3464:3466 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R3431:3436 probe27 <> satis3 def
+R3439:3446 probe27 <> iff_form def
+R3448:3454 probe27 <> orig_ex def
+R3456:3462 probe27 <> tred_ex def
+R3467:3470 Corelib.Init.Datatypes <> true constr
+def 3598:3605 <> orig_ex2
+R3609:3610 probe27 <> fm ind
+R3615:3617 probe27 <> exq constr
+R3622:3624 probe27 <> eqf constr
+R3627:3630 probe27 <> fsym constr
+R3634:3634 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3653:3653 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3635:3638 probe27 <> fsym constr
+R3642:3642 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3652:3652 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3643:3646 probe27 <> fsym constr
+R3650:3651 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R3657:3659 probe27 <> var constr
+def 3677:3684 <> tred_ex2
+R3688:3689 probe27 <> fm ind
+R3696:3698 probe27 <> exq constr
+R3703:3705 probe27 <> exq constr
+R3711:3714 probe27 <> conj constr
+R3717:3719 probe27 <> eqf constr
+R3722:3725 probe27 <> fsym constr
+R3729:3729 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3739:3739 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3730:3733 probe27 <> fsym constr
+R3737:3738 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R3743:3745 probe27 <> var constr
+R3775:3777 probe27 <> eqf constr
+R3780:3783 probe27 <> fsym constr
+R3787:3787 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3794:3794 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3788:3790 probe27 <> var constr
+R3798:3800 probe27 <> var constr
+def 3818:3831 <> tred_ex2_equiv
+R3870:3872 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R3835:3840 probe27 <> satis3 def
+R3843:3850 probe27 <> iff_form def
+R3852:3859 probe27 <> orig_ex2 def
+R3861:3868 probe27 <> tred_ex2 def
+R3873:3876 Corelib.Init.Datatypes <> true constr
+def 4095:4102 <> delta_le
+R4106:4107 probe27 <> fm ind
+R4114:4117 probe27 <> allq constr
+R4122:4125 probe27 <> allq constr
+R4130:4137 probe27 <> iff_form def
+R4140:4142 probe27 <> rat constr
+R4146:4146 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4152:4153 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4159:4159 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4147:4149 probe27 <> var constr
+R4154:4156 probe27 <> var constr
+R4190:4193 probe27 <> disj constr
+R4196:4198 probe27 <> rat constr
+R4202:4202 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4208:4209 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4215:4215 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4203:4205 probe27 <> var constr
+R4210:4212 probe27 <> var constr
+R4219:4221 probe27 <> eqf constr
+R4224:4226 probe27 <> var constr
+R4232:4234 probe27 <> var constr
+def 4253:4266 <> delta_le_holds
+R4285:4287 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R4270:4275 probe27 <> satis3 def
+R4277:4284 probe27 <> delta_le def
+R4288:4291 Corelib.Init.Datatypes <> true constr
+def 4394:4400 <> elim_le
+R4408:4409 probe27 <> fm ind
+binder 4403:4404 <> φ:42
+R4414:4415 probe27 <> fm ind
+R4428:4429 probe27 <> φ:42 var
+R4440:4442 probe27 <> rat constr
+R4446:4446 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4449:4450 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4453:4453 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4458:4461 probe27 <> disj constr
+R4464:4466 probe27 <> rat constr
+R4470:4470 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4473:4474 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4477:4477 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4481:4483 probe27 <> eqf constr
+R4496:4498 probe27 <> rat constr
+R4508:4510 probe27 <> rat constr
+R4521:4523 probe27 <> eqf constr
+R4534:4536 probe27 <> eqf constr
+R4548:4550 probe27 <> neg constr
+R4558:4560 probe27 <> neg constr
+R4563:4569 probe27 <> elim_le:43 def
+R4579:4582 probe27 <> disj constr
+R4593:4596 probe27 <> disj constr
+R4599:4605 probe27 <> elim_le:43 def
+R4612:4618 probe27 <> elim_le:43 def
+R4628:4631 probe27 <> conj constr
+R4642:4645 probe27 <> conj constr
+R4648:4654 probe27 <> elim_le:43 def
+R4661:4667 probe27 <> elim_le:43 def
+R4677:4679 probe27 <> imp constr
+R4690:4692 probe27 <> imp constr
+R4695:4701 probe27 <> elim_le:43 def
+R4708:4714 probe27 <> elim_le:43 def
+R4724:4726 probe27 <> exq constr
+R4736:4738 probe27 <> exq constr
+R4743:4749 probe27 <> elim_le:43 def
+R4759:4762 probe27 <> allq constr
+R4772:4775 probe27 <> allq constr
+R4780:4786 probe27 <> elim_le:43 def
+def 4863:4866 <> chi1
+R4870:4871 probe27 <> fm ind
+R4876:4879 probe27 <> allq constr
+R4884:4886 probe27 <> exq constr
+R4891:4893 probe27 <> rat constr
+R4897:4897 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4903:4904 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4910:4910 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4898:4900 probe27 <> var constr
+R4905:4907 probe27 <> var constr
+def 4926:4929 <> chi2
+R4933:4934 probe27 <> fm ind
+R4939:4942 probe27 <> allq constr
+R4947:4950 probe27 <> allq constr
+R4955:4957 probe27 <> imp constr
+R4960:4962 probe27 <> rat constr
+R4966:4966 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4972:4973 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4979:4979 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4967:4969 probe27 <> var constr
+R4974:4976 probe27 <> var constr
+R5023:5025 probe27 <> rat constr
+R5029:5029 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5035:5036 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5042:5042 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5030:5032 probe27 <> var constr
+R5037:5039 probe27 <> var constr
+def 5059:5062 <> chi3
+R5066:5067 probe27 <> fm ind
+R5072:5074 probe27 <> exq constr
+R5079:5082 probe27 <> conj constr
+R5085:5087 probe27 <> rat constr
+R5091:5091 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5097:5098 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5104:5104 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5092:5094 probe27 <> var constr
+R5099:5101 probe27 <> var constr
+R5144:5146 probe27 <> neg constr
+R5149:5151 probe27 <> rat constr
+R5155:5155 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5161:5162 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5168:5168 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5156:5158 probe27 <> var constr
+R5163:5165 probe27 <> var constr
+def 5183:5187 <> elim1
+R5228:5230 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R5191:5196 probe27 <> satis3 def
+R5199:5206 probe27 <> iff_form def
+R5208:5211 probe27 <> chi1 def
+R5214:5220 probe27 <> elim_le def
+R5222:5225 probe27 <> chi1 def
+R5231:5234 Corelib.Init.Datatypes <> true constr
+def 5270:5274 <> elim2
+R5315:5317 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R5278:5283 probe27 <> satis3 def
+R5286:5293 probe27 <> iff_form def
+R5295:5298 probe27 <> chi2 def
+R5301:5307 probe27 <> elim_le def
+R5309:5312 probe27 <> chi2 def
+R5318:5321 Corelib.Init.Datatypes <> true constr
+def 5357:5361 <> elim3
+R5402:5404 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R5365:5370 probe27 <> satis3 def
+R5373:5380 probe27 <> iff_form def
+R5382:5385 probe27 <> chi3 def
+R5388:5394 probe27 <> elim_le def
+R5396:5399 probe27 <> chi3 def
+R5405:5408 Corelib.Init.Datatypes <> true constr
+def 5534:5541 <> elim_fix
+R5666:5668 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R5545:5551 Stdlib.Lists.List <> forallb def
+R5622:5622 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5627:5628 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5636:5637 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5665:5665 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5623:5626 probe27 <> chi1 def
+R5629:5635 probe27 <> orig_ex def
+R5638:5640 probe27 <> exq constr
+R5645:5647 probe27 <> eqf constr
+R5650:5652 probe27 <> var constr
+R5658:5660 probe27 <> var constr
+binder 5558:5559 <> χ:45
+R5564:5566 probe27 <> evf def
+R5568:5569 probe27 <> f3 def
+R5571:5572 probe27 <> r3 def
+R5574:5575 probe27 <> D3 def
+R5591:5598 probe27 <> iff_form def
+R5600:5601 probe27 <> χ:45 var
+R5604:5610 probe27 <> elim_le def
+R5612:5613 probe27 <> χ:45 var
+R5669:5672 Corelib.Init.Datatypes <> true constr
+def 6149:6153 <> peval
+R6162:6165 Corelib.Init.Datatypes <> list ind
+R6167:6170 Corelib.Init.Datatypes <> bool ind
+binder 6156:6158 <> βv:46
+R6179:6180 probe27 <> fm ind
+binder 6174:6175 <> φ:47
+R6185:6188 Corelib.Init.Datatypes <> bool ind
+R6201:6202 probe27 <> φ:47 var
+R6213:6215 probe27 <> neg constr
+R6223:6226 Corelib.Init.Datatypes <> negb def
+R6229:6233 probe27 <> peval:48 def
+R6235:6237 probe27 <> βv:46 var
+R6247:6250 probe27 <> disj constr
+R6261:6263 Corelib.Init.Datatypes <> orb def
+R6281:6285 probe27 <> peval:48 def
+R6287:6289 probe27 <> βv:46 var
+R6266:6270 probe27 <> peval:48 def
+R6272:6274 probe27 <> βv:46 var
+R6299:6302 probe27 <> conj constr
+R6313:6316 Corelib.Init.Datatypes <> andb def
+R6334:6338 probe27 <> peval:48 def
+R6340:6342 probe27 <> βv:46 var
+R6319:6323 probe27 <> peval:48 def
+R6325:6327 probe27 <> βv:46 var
+R6352:6354 probe27 <> imp constr
+R6365:6369 Corelib.Init.Datatypes <> implb def
+R6387:6391 probe27 <> peval:48 def
+R6393:6395 probe27 <> βv:46 var
+R6372:6376 probe27 <> peval:48 def
+R6378:6380 probe27 <> βv:46 var
+R6405:6407 probe27 <> rat constr
+R6411:6412 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R6417:6419 Corelib.Lists.ListDef <> nth def
+R6427:6431 Corelib.Init.Datatypes <> false constr
+R6423:6425 probe27 <> βv:46 var
+R6442:6445 Corelib.Init.Datatypes <> true constr
+def 6466:6467 <> p0
+R6471:6472 probe27 <> fm ind
+R6477:6479 probe27 <> rat constr
+R6483:6484 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+def 6498:6499 <> p1
+R6503:6504 probe27 <> fm ind
+R6509:6511 probe27 <> rat constr
+R6515:6516 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+def 6530:6531 <> p2
+R6535:6536 probe27 <> fm ind
+R6541:6543 probe27 <> rat constr
+R6547:6548 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+def 6562:6567 <> atoms3
+R6571:6574 Corelib.Init.Datatypes <> list ind
+R6576:6577 probe27 <> fm ind
+R6582:6582 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6585:6586 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6589:6590 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6593:6593 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6583:6584 probe27 <> p0 def
+R6587:6588 probe27 <> p1 def
+R6591:6592 probe27 <> p2 def
+def 6633:6638 <> betas8
+R6642:6645 Corelib.Init.Datatypes <> list ind
+R6648:6651 Corelib.Init.Datatypes <> list ind
+R6653:6656 Corelib.Init.Datatypes <> bool ind
+R6664:6666 Corelib.Lists.ListDef <> map def
+R6721:6723 Corelib.Lists.ListDef <> seq def
+binder 6673:6673 <> m:50
+R6678:6680 Corelib.Lists.ListDef <> map def
+R6710:6712 Corelib.Lists.ListDef <> seq def
+binder 6687:6687 <> k:51
+R6692:6702 Stdlib.Arith.PeanoNat Nat testbit def
+R6704:6704 probe27 <> m:50 var
+R6706:6706 probe27 <> k:51 var
+def 6793:6800 <> row_conj
+R6809:6812 Corelib.Init.Datatypes <> list ind
+R6814:6817 Corelib.Init.Datatypes <> bool ind
+binder 6803:6805 <> βv:52
+R6822:6823 probe27 <> fm ind
+R6830:6835 probe27 <> conj_l def
+R6838:6840 Corelib.Lists.ListDef <> map def
+R6943:6949 Stdlib.Lists.List <> combine def
+R6958:6960 probe27 <> βv:52 var
+R6951:6956 probe27 <> atoms3 def
+binder 6847:6847 <> p:53
+R6858:6860 Corelib.Init.Datatypes <> snd def
+R6862:6862 probe27 <> p:53 var
+R6887:6890 Corelib.Init.Datatypes <> true constr
+R6895:6897 Corelib.Init.Datatypes <> fst def
+R6899:6899 probe27 <> p:53 var
+R6903:6907 Corelib.Init.Datatypes <> false constr
+R6912:6914 probe27 <> neg constr
+R6917:6919 Corelib.Init.Datatypes <> fst def
+R6921:6921 probe27 <> p:53 var
+def 6977:6982 <> dnf_of
+R6990:6991 probe27 <> fm ind
+binder 6985:6986 <> φ:54
+R6996:6997 probe27 <> fm ind
+R7010:7015 Stdlib.Lists.List <> filter def
+R7043:7048 probe27 <> betas8 def
+binder 7022:7024 <> βv:55
+R7029:7033 probe27 <> peval def
+R7035:7037 probe27 <> βv:55 var
+R7039:7040 probe27 <> φ:54 var
+R7059:7060 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R7065:7067 probe27 <> neg constr
+R7070:7072 probe27 <> eqf constr
+R7075:7077 probe27 <> var constr
+R7083:7085 probe27 <> var constr
+R7097:7100 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R7109:7118 Stdlib.Lists.List <> fold_right def
+R7140:7142 Corelib.Lists.ListDef <> map def
+R7144:7151 probe27 <> row_conj def
+R7126:7133 probe27 <> row_conj def
+R7120:7123 probe27 <> disj constr
+def 7278:7284 <> member1
+R7288:7289 probe27 <> fm ind
+R7294:7296 probe27 <> imp constr
+R7299:7302 probe27 <> disj constr
+R7304:7305 probe27 <> p0 def
+R7307:7308 probe27 <> p1 def
+R7312:7314 probe27 <> neg constr
+R7316:7317 probe27 <> p2 def
+def 7332:7338 <> member2
+R7342:7343 probe27 <> fm ind
+R7348:7351 probe27 <> conj constr
+R7354:7356 probe27 <> neg constr
+R7358:7359 probe27 <> p1 def
+R7363:7366 probe27 <> disj constr
+R7368:7369 probe27 <> p2 def
+R7372:7374 probe27 <> neg constr
+R7376:7377 probe27 <> p0 def
+def 7393:7399 <> member3
+R7403:7404 probe27 <> fm ind
+R7409:7411 probe27 <> neg constr
+R7414:7416 probe27 <> imp constr
+R7418:7419 probe27 <> p2 def
+R7421:7422 probe27 <> p0 def
+def 7435:7441 <> dnf_ok1
+R7530:7532 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R7445:7451 Stdlib.Lists.List <> forallb def
+R7524:7529 probe27 <> betas8 def
+binder 7458:7460 <> βv:56
+R7465:7472 Stdlib.Bool.Bool <> eqb def
+R7475:7479 probe27 <> peval def
+R7481:7483 probe27 <> βv:56 var
+R7485:7491 probe27 <> member1 def
+R7495:7499 probe27 <> peval def
+R7501:7503 probe27 <> βv:56 var
+R7506:7511 probe27 <> dnf_of def
+R7513:7519 probe27 <> member1 def
+R7533:7536 Corelib.Init.Datatypes <> true constr
+def 7572:7578 <> dnf_ok2
+R7667:7669 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R7582:7588 Stdlib.Lists.List <> forallb def
+R7661:7666 probe27 <> betas8 def
+binder 7595:7597 <> βv:57
+R7602:7609 Stdlib.Bool.Bool <> eqb def
+R7612:7616 probe27 <> peval def
+R7618:7620 probe27 <> βv:57 var
+R7622:7628 probe27 <> member2 def
+R7632:7636 probe27 <> peval def
+R7638:7640 probe27 <> βv:57 var
+R7643:7648 probe27 <> dnf_of def
+R7650:7656 probe27 <> member2 def
+R7670:7673 Corelib.Init.Datatypes <> true constr
+def 7709:7715 <> dnf_ok3
+R7804:7806 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R7719:7725 Stdlib.Lists.List <> forallb def
+R7798:7803 probe27 <> betas8 def
+binder 7732:7734 <> βv:58
+R7739:7746 Stdlib.Bool.Bool <> eqb def
+R7749:7753 probe27 <> peval def
+R7755:7757 probe27 <> βv:58 var
+R7759:7765 probe27 <> member3 def
+R7769:7773 probe27 <> peval def
+R7775:7777 probe27 <> βv:58 var
+R7780:7785 probe27 <> dnf_of def
+R7787:7793 probe27 <> member3 def
+R7807:7810 Corelib.Init.Datatypes <> true constr
+def 7912:7917 <> in_rel
+R7926:7927 probe27 <> tm ind
+binder 7920:7920 <> a:59
+binder 7922:7922 <> b:60
+R7932:7933 probe27 <> fm ind
+R7938:7940 probe27 <> rat constr
+R7944:7944 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7946:7947 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7949:7949 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7945:7945 probe27 <> a:59 var
+R7948:7948 probe27 <> b:60 var
+def 7964:7969 <> zf_ext
+R7973:7974 probe27 <> fm ind
+R7981:7984 probe27 <> allq constr
+R7989:7992 probe27 <> allq constr
+R7997:7999 probe27 <> imp constr
+R8002:8005 probe27 <> allq constr
+R8010:8017 probe27 <> iff_form def
+R8020:8025 probe27 <> in_rel def
+R8028:8030 probe27 <> var constr
+R8036:8038 probe27 <> var constr
+R8085:8090 probe27 <> in_rel def
+R8093:8095 probe27 <> var constr
+R8101:8103 probe27 <> var constr
+R8135:8137 probe27 <> eqf constr
+R8140:8142 probe27 <> var constr
+R8148:8150 probe27 <> var constr
+def 8171:8177 <> zf_pair
+R8181:8182 probe27 <> fm ind
+R8189:8192 probe27 <> allq constr
+R8197:8200 probe27 <> allq constr
+R8205:8207 probe27 <> exq constr
+R8212:8215 probe27 <> allq constr
+R8224:8231 probe27 <> iff_form def
+R8234:8239 probe27 <> in_rel def
+R8242:8244 probe27 <> var constr
+R8250:8252 probe27 <> var constr
+R8273:8276 probe27 <> disj constr
+R8279:8281 probe27 <> eqf constr
+R8284:8286 probe27 <> var constr
+R8292:8294 probe27 <> var constr
+R8301:8303 probe27 <> eqf constr
+R8306:8308 probe27 <> var constr
+R8314:8316 probe27 <> var constr
+def 8340:8347 <> zf_union
+R8351:8352 probe27 <> fm ind
+R8359:8362 probe27 <> allq constr
+R8367:8369 probe27 <> exq constr
+R8374:8377 probe27 <> allq constr
+R8382:8389 probe27 <> iff_form def
+R8392:8397 probe27 <> in_rel def
+R8400:8402 probe27 <> var constr
+R8408:8410 probe27 <> var constr
+R8421:8423 probe27 <> exq constr
+R8428:8431 probe27 <> conj constr
+R8434:8439 probe27 <> in_rel def
+R8442:8444 probe27 <> var constr
+R8450:8452 probe27 <> var constr
+R8459:8464 probe27 <> in_rel def
+R8467:8469 probe27 <> var constr
+R8475:8477 probe27 <> var constr
+def 8594:8604 <> zf_sep_inst
+R8608:8609 probe27 <> fm ind
+R8616:8619 probe27 <> allq constr
+R8624:8626 probe27 <> exq constr
+R8631:8634 probe27 <> allq constr
+R8639:8646 probe27 <> iff_form def
+R8649:8654 probe27 <> in_rel def
+R8657:8659 probe27 <> var constr
+R8665:8667 probe27 <> var constr
+R8678:8681 probe27 <> conj constr
+R8684:8689 probe27 <> in_rel def
+R8692:8694 probe27 <> var constr
+R8700:8702 probe27 <> var constr
+R8719:8722 probe27 <> disj constr
+R8725:8730 probe27 <> in_rel def
+R8733:8735 probe27 <> var constr
+R8741:8743 probe27 <> var constr
+R8750:8752 probe27 <> neg constr
+R8755:8760 probe27 <> in_rel def
+R8763:8765 probe27 <> var constr
+R8771:8773 probe27 <> var constr
+def 8905:8912 <> r_empty4
+R8916:8925 probe27 <> interp_rel def
+binder 8936:8936 <> s:61
+binder 8938:8941 <> args:62
+R8955:8958 probe27 <> args:62 var
+R8952:8952 probe27 <> s:61 var
+R8977:8981 Corelib.Init.Datatypes <> false constr
+R8993:8997 Corelib.Init.Datatypes <> false constr
+def 9013:9026 <> zf_ext_trivial
+R9071:9073 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R9032:9034 probe27 <> evf def
+R9036:9037 probe27 <> f3 def
+R9039:9046 probe27 <> r_empty4 def
+R9048:9048 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R9050:9050 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R9065:9070 probe27 <> zf_ext def
+R9074:9077 Corelib.Init.Datatypes <> true constr
+R9115:9120 Corelib.Init.Datatypes <> length def
+R9122:9127 probe27 <> betas8 def
+R9162:9167 probe27 <> satis3 def
+R9169:9175 probe27 <> orig_ex def
+R9245:9247 Corelib.Lists.ListDef <> map def
+R9258:9258 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R9266:9266 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R9259:9265 probe27 <> member1 def
+R9250:9255 probe27 <> dnf_of def
+def 9569:9575 <> xyAtoms
+R9579:9582 Corelib.Init.Datatypes <> list ind
+R9584:9585 probe27 <> fm ind
+R9592:9594 Corelib.Lists.ListDef <> map def
+R9859:9860 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9868:9869 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9877:9878 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9886:9892 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9900:9901 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9909:9915 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9923:9924 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9932:9938 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9946:9947 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9955:9956 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9964:9970 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9978:9979 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9987:9988 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9861:9861 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9863:9863 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9865:9865 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9867:9867 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9870:9870 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9872:9872 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9874:9874 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9876:9876 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9879:9879 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9881:9881 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9883:9883 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9885:9885 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9893:9893 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9895:9895 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9897:9897 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9899:9899 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9902:9902 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9904:9904 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9906:9906 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9908:9908 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9916:9916 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9918:9918 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9920:9920 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9922:9922 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9925:9925 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9927:9927 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9929:9929 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9931:9931 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9939:9939 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9941:9941 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9943:9943 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9945:9945 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9948:9948 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9950:9950 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9952:9952 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9954:9954 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9957:9957 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9959:9959 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9961:9961 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9963:9963 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9971:9971 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9973:9973 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9975:9975 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9977:9977 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9980:9980 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9982:9982 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9984:9984 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9986:9986 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+binder 9601:9601 <> p:65
+R9612:9612 probe27 <> p:65 var
+R9627:9627 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9629:9630 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9632:9633 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9635:9635 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9640:9642 probe27 <> eqf constr
+R9645:9647 probe27 <> var constr
+R9653:9655 probe27 <> var constr
+R9668:9668 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9670:9671 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9673:9674 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9676:9676 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9681:9683 probe27 <> rat constr
+R9687:9687 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9693:9694 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9700:9700 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9688:9690 probe27 <> var constr
+R9695:9697 probe27 <> var constr
+R9710:9710 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9712:9713 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9715:9716 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9718:9718 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9723:9725 probe27 <> rat constr
+R9729:9729 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9735:9736 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9742:9742 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9730:9732 probe27 <> var constr
+R9737:9739 probe27 <> var constr
+R9752:9752 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9754:9755 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9757:9758 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9760:9760 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9765:9767 probe27 <> eqf constr
+R9770:9773 probe27 <> fsym constr
+R9777:9777 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R9783:9783 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R9778:9780 probe27 <> var constr
+R9787:9789 probe27 <> var constr
+R9802:9802 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9804:9805 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9807:9808 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9810:9810 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9815:9817 probe27 <> eqf constr
+R9820:9823 probe27 <> fsym constr
+R9827:9827 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R9833:9833 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R9828:9830 probe27 <> var constr
+R9837:9839 probe27 <> var constr
+def 10003:10006 <> negs
+R10013:10016 Corelib.Init.Datatypes <> list ind
+R10018:10019 probe27 <> fm ind
+binder 10009:10009 <> l:67
+R10024:10027 Corelib.Init.Datatypes <> list ind
+R10029:10030 probe27 <> fm ind
+R10036:10039 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R10035:10035 probe27 <> l:67 var
+R10040:10042 Corelib.Lists.ListDef <> map def
+R10048:10048 probe27 <> l:67 var
+R10044:10046 probe27 <> neg constr
+def 10063:10069 <> xyForms
+R10073:10076 Corelib.Init.Datatypes <> list ind
+R10078:10079 probe27 <> fm ind
+R10098:10103 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R10086:10089 probe27 <> negs def
+R10091:10097 probe27 <> xyAtoms def
+R10104:10111 Stdlib.Lists.List <> flat_map def
+R10164:10167 probe27 <> negs def
+R10169:10175 probe27 <> xyAtoms def
+binder 10118:10118 <> p:68
+R10123:10125 Corelib.Lists.ListDef <> map def
+R10148:10151 probe27 <> negs def
+R10153:10159 probe27 <> xyAtoms def
+binder 10132:10132 <> q:69
+R10137:10140 probe27 <> conj constr
+R10142:10142 probe27 <> p:68 var
+R10144:10144 probe27 <> q:69 var
+def 10191:10197 <> satisAt
+R10205:10206 probe27 <> fm ind
+binder 10200:10201 <> φ:70
+R10216:10218 Corelib.Init.Datatypes <> nat ind
+binder 10210:10210 <> a:71
+binder 10212:10212 <> b:72
+R10223:10226 Corelib.Init.Datatypes <> bool ind
+R10233:10235 probe27 <> evf def
+R10237:10238 probe27 <> f3 def
+R10240:10241 probe27 <> r3 def
+R10243:10244 probe27 <> D3 def
+binder 10251:10251 <> n:73
+R10256:10258 Corelib.Lists.ListDef <> nth def
+R10262:10262 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R10264:10265 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R10267:10267 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R10263:10263 probe27 <> a:71 var
+R10266:10266 probe27 <> b:72 var
+R10260:10260 probe27 <> n:73 var
+R10272:10273 probe27 <> φ:70 var
+def 10288:10292 <> matAt
+R10300:10301 probe27 <> fm ind
+binder 10295:10296 <> φ:74
+R10311:10313 Corelib.Init.Datatypes <> nat ind
+binder 10305:10305 <> a:75
+binder 10307:10307 <> b:76
+R10318:10321 Corelib.Init.Datatypes <> bool ind
+R10326:10332 probe27 <> satisAt def
+R10334:10335 probe27 <> φ:74 var
+R10337:10337 probe27 <> a:75 var
+R10339:10339 probe27 <> b:76 var
+def 10354:10360 <> isEquiv
+R10368:10369 probe27 <> fm ind
+binder 10363:10364 <> φ:77
+R10374:10377 Corelib.Init.Datatypes <> bool ind
+R10384:10387 Corelib.Init.Datatypes <> andb def
+R10434:10437 Corelib.Init.Datatypes <> andb def
+R10589:10595 Stdlib.Lists.List <> forallb def
+R10793:10801 Stdlib.Lists.List <> list_prod def
+R10807:10815 Stdlib.Lists.List <> list_prod def
+R10820:10821 probe27 <> D3 def
+R10817:10818 probe27 <> D3 def
+R10803:10804 probe27 <> D3 def
+binder 10602:10602 <> t:78
+R10623:10627 Corelib.Init.Datatypes <> implb def
+R10759:10763 probe27 <> matAt def
+R10765:10766 probe27 <> φ:77 var
+R10769:10771 Corelib.Init.Datatypes <> fst def
+R10773:10773 probe27 <> t:78 var
+R10777:10779 Corelib.Init.Datatypes <> snd def
+R10782:10784 Corelib.Init.Datatypes <> snd def
+R10786:10786 probe27 <> t:78 var
+R10630:10633 Corelib.Init.Datatypes <> andb def
+R10697:10701 probe27 <> matAt def
+R10703:10704 probe27 <> φ:77 var
+R10707:10709 Corelib.Init.Datatypes <> fst def
+R10712:10714 Corelib.Init.Datatypes <> snd def
+R10716:10716 probe27 <> t:78 var
+R10721:10723 Corelib.Init.Datatypes <> snd def
+R10726:10728 Corelib.Init.Datatypes <> snd def
+R10730:10730 probe27 <> t:78 var
+R10636:10640 probe27 <> matAt def
+R10642:10643 probe27 <> φ:77 var
+R10646:10648 Corelib.Init.Datatypes <> fst def
+R10650:10650 probe27 <> t:78 var
+R10654:10656 Corelib.Init.Datatypes <> fst def
+R10659:10661 Corelib.Init.Datatypes <> snd def
+R10663:10663 probe27 <> t:78 var
+R10440:10446 Stdlib.Lists.List <> forallb def
+R10557:10565 Stdlib.Lists.List <> list_prod def
+R10570:10571 probe27 <> D3 def
+R10567:10568 probe27 <> D3 def
+binder 10453:10453 <> p:79
+R10458:10462 Corelib.Init.Datatypes <> implb def
+R10529:10533 probe27 <> matAt def
+R10535:10536 probe27 <> φ:77 var
+R10539:10541 Corelib.Init.Datatypes <> snd def
+R10543:10543 probe27 <> p:79 var
+R10547:10549 Corelib.Init.Datatypes <> fst def
+R10551:10551 probe27 <> p:79 var
+R10465:10469 probe27 <> matAt def
+R10471:10472 probe27 <> φ:77 var
+R10475:10477 Corelib.Init.Datatypes <> fst def
+R10479:10479 probe27 <> p:79 var
+R10483:10485 Corelib.Init.Datatypes <> snd def
+R10487:10487 probe27 <> p:79 var
+R10390:10396 Stdlib.Lists.List <> forallb def
+R10422:10423 probe27 <> D3 def
+binder 10403:10403 <> a:80
+R10408:10412 probe27 <> matAt def
+R10414:10415 probe27 <> φ:77 var
+R10417:10417 probe27 <> a:80 var
+R10419:10419 probe27 <> a:80 var
+def 10840:10845 <> defEqs
+R10849:10852 Corelib.Init.Datatypes <> list ind
+R10854:10855 probe27 <> fm ind
+R10860:10865 Stdlib.Lists.List <> filter def
+R10875:10881 probe27 <> xyForms def
+R10867:10873 probe27 <> isEquiv def
+def 10896:10906 <> sameNatList
+R10917:10920 Corelib.Init.Datatypes <> list ind
+R10922:10924 Corelib.Init.Datatypes <> nat ind
+binder 10909:10910 <> l1:81
+binder 10912:10913 <> l2:82
+R10929:10932 Corelib.Init.Datatypes <> bool ind
+R10939:10942 Corelib.Init.Datatypes <> andb def
+R10999:11005 Stdlib.Lists.List <> forallb def
+R11041:11042 probe27 <> l2:82 var
+binder 11012:11012 <> x:83
+R11017:11023 Stdlib.Lists.List <> existsb def
+R11037:11038 probe27 <> l1:81 var
+R11026:11032 Stdlib.Arith.PeanoNat Nat eqb def
+R11034:11034 probe27 <> x:83 var
+R10945:10951 Stdlib.Lists.List <> forallb def
+R10987:10988 probe27 <> l1:81 var
+binder 10958:10958 <> x:84
+R10963:10969 Stdlib.Lists.List <> existsb def
+R10983:10984 probe27 <> l2:82 var
+R10972:10978 Stdlib.Arith.PeanoNat Nat eqb def
+R10980:10980 probe27 <> x:84 var
+def 11101:11109 <> classesOf
+R11117:11118 probe27 <> fm ind
+binder 11112:11113 <> φ:85
+R11123:11126 Corelib.Init.Datatypes <> list ind
+R11129:11132 Corelib.Init.Datatypes <> list ind
+R11134:11136 Corelib.Init.Datatypes <> nat ind
+R11144:11152 Stdlib.Lists.List <> fold_left def
+R11297:11298 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R11294:11295 probe27 <> D3 def
+binder 11159:11161 <> acc:86
+binder 11163:11163 <> a:87
+R11183:11188 Stdlib.Lists.List <> filter def
+R11214:11215 probe27 <> D3 def
+binder 11195:11195 <> b:88
+R11200:11204 probe27 <> matAt def
+R11206:11207 probe27 <> φ:85 var
+R11209:11209 probe27 <> a:87 var
+R11211:11211 probe27 <> b:88 var
+binder 11176:11178 <> row:89
+R11227:11233 Stdlib.Lists.List <> existsb def
+R11264:11266 probe27 <> acc:86 var
+binder 11240:11240 <> C:90
+R11245:11255 probe27 <> sameNatList def
+R11257:11257 probe27 <> C:90 var
+R11259:11261 probe27 <> row:89 var
+R11285:11288 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R11282:11284 probe27 <> row:89 var
+R11289:11291 probe27 <> acc:86 var
+R11273:11275 probe27 <> acc:86 var
+def 11311:11318 <> powerset
+R11325:11328 Corelib.Init.Datatypes <> list ind
+R11330:11332 Corelib.Init.Datatypes <> nat ind
+binder 11321:11321 <> l:91
+R11337:11340 Corelib.Init.Datatypes <> list ind
+R11343:11346 Corelib.Init.Datatypes <> list ind
+R11348:11350 Corelib.Init.Datatypes <> nat ind
+R11364:11364 probe27 <> l:91 var
+R11375:11376 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R11381:11381 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R11384:11384 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R11382:11383 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R11391:11394 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R11412:11419 probe27 <> powerset:92 def
+binder 11404:11407 <> rest:94
+R11452:11455 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R11426:11428 Corelib.Lists.ListDef <> map def
+R11448:11451 probe27 <> rest:94 var
+binder 11435:11435 <> s:95
+R11441:11444 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R11445:11445 probe27 <> s:95 var
+R11456:11459 probe27 <> rest:94 var
+def 11478:11481 <> pow2
+R11488:11490 Corelib.Init.Datatypes <> nat ind
+binder 11484:11484 <> n:96
+R11495:11497 Corelib.Init.Datatypes <> nat ind
+R11510:11510 probe27 <> n:96 var
+R11526:11526 Corelib.Init.Datatypes <> S constr
+R11534:11536 Corelib.Init.Peano <> ::nat_scope:x_'*'_x not
+R11537:11540 probe27 <> pow2:97 def
+def 11608:11623 <> invariantSubsets
+R11631:11632 probe27 <> fm ind
+binder 11626:11627 <> φ:99
+R11637:11640 Corelib.Init.Datatypes <> list ind
+R11643:11646 Corelib.Init.Datatypes <> list ind
+R11648:11650 Corelib.Init.Datatypes <> nat ind
+R11658:11663 Stdlib.Lists.List <> filter def
+R11836:11843 probe27 <> powerset def
+R11845:11846 probe27 <> D3 def
+binder 11670:11670 <> S:100
+R11675:11681 Stdlib.Lists.List <> forallb def
+R11813:11821 Stdlib.Lists.List <> list_prod def
+R11826:11827 probe27 <> D3 def
+R11823:11824 probe27 <> D3 def
+binder 11688:11688 <> p:101
+R11699:11703 Corelib.Init.Datatypes <> implb def
+R11782:11788 Stdlib.Lists.List <> existsb def
+R11808:11808 probe27 <> S:100 var
+R11791:11797 Stdlib.Arith.PeanoNat Nat eqb def
+R11800:11802 Corelib.Init.Datatypes <> snd def
+R11804:11804 probe27 <> p:101 var
+R11706:11709 Corelib.Init.Datatypes <> andb def
+R11742:11746 probe27 <> matAt def
+R11748:11749 probe27 <> φ:99 var
+R11752:11754 Corelib.Init.Datatypes <> fst def
+R11756:11756 probe27 <> p:101 var
+R11760:11762 Corelib.Init.Datatypes <> snd def
+R11764:11764 probe27 <> p:101 var
+R11712:11718 Stdlib.Lists.List <> existsb def
+R11738:11738 probe27 <> S:100 var
+R11721:11727 Stdlib.Arith.PeanoNat Nat eqb def
+R11730:11732 Corelib.Init.Datatypes <> fst def
+R11734:11734 probe27 <> p:101 var
+R12094:12094 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R12108:12109 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R12154:12154 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R12095:12100 Corelib.Init.Datatypes <> length def
+R12102:12107 probe27 <> defEqs def
+R12110:12112 Corelib.Lists.ListDef <> map def
+R12148:12153 probe27 <> defEqs def
+binder 12119:12120 <> φ:102
+R12125:12130 Corelib.Init.Datatypes <> length def
+R12133:12141 probe27 <> classesOf def
+R12143:12144 probe27 <> φ:102 var

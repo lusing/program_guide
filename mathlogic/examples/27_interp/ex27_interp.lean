@@ -182,3 +182,62 @@ example : evf f3 r_empty4 [0] (fun _ => 0) zf_ext = true := by native_decide
 #eval satis3 orig_ex                -- false：∀x fgx≡y 在 D3 不真（与化简式同值）
 #eval satis3 orig_ex2               -- true：∃x f(fc)≡x 恒可解
 #eval peval [true, false, true] (dnf_of member1)   -- 与成员同值（=1）
+
+/- ---------- 6. Marker GTM 217 §1.3 深化：Meq 想像元实验室 ---------- -/
+
+def satisAt (φ : fm) (a b : Nat) : Bool :=
+  evf f3 r3 D3 (fun n => [a, b].getD n 0) φ
+
+def matAt (φ : fm) (a b : Nat) : Bool := satisAt φ a b
+
+def isEquiv (φ : fm) : Bool :=
+  D3.all fun a => matAt φ a a
+  && (D3.all fun x => D3.all fun y =>
+        !(matAt φ x y) || matAt φ y x)
+  && (D3.all fun x => D3.all fun y => D3.all fun z =>
+        !(matAt φ x y && matAt φ y z) || matAt φ x z)
+
+/-- 手造两类等价式：(x=0 ∧ y=0) ∨ (x≠0 ∧ y≠0) -/
+def eqTwoClass : fm :=
+  .disj (.conj (.eqf (.var 0) (.fsym 2 [])) (.eqf (.var 1) (.fsym 2 [])))
+        (.conj (.neg (.eqf (.var 0) (.fsym 2 []))) (.neg (.eqf (.var 1) (.fsym 2 []))))
+
+def atomPool : List fm :=
+  [.eqf (.var 0) (.var 1), .eqf (.var 1) (.var 1), .eqf (.var 0) (.fsym 2 []),
+   .eqf (.var 1) (.fsym 2 [])]
+
+def atomPoolN : List fm := atomPool ++ atomPool.map fm.neg
+
+def xyForms : List fm :=
+  eqTwoClass :: (atomPoolN
+    ++ atomPoolN.flatMap fun p => atomPoolN.map fun q => .conj p q)
+
+def defEqs : List fm := xyForms.filter isEquiv
+
+def sameNatList (l1 l2 : List Nat) : Bool :=
+  l1.all (l2.contains ·) && l2.all (l1.contains ·)
+
+def classesOf (φ : fm) : List (List Nat) :=
+  D3.foldl (fun acc a =>
+    let row := D3.filter fun b => matAt φ a b
+    if acc.any fun C => sameNatList C row then acc else row :: acc) []
+
+def powerset : List Nat → List (List Nat)
+  | [] => [[]]
+  | x :: t => let rest := powerset t
+              (rest.map fun s => x :: s) ++ rest
+
+def invariantSubsets (φ : fm) : List (List Nat) :=
+  (powerset D3).filter fun S =>
+    (D3.flatMap fun x => D3.map fun y => (x, y)).all fun p =>
+      !(S.contains p.1 && matAt φ p.1 p.2) || S.contains p.2
+
+def pow2 : Nat → Nat
+  | 0 => 1
+  | n + 1 => 2 * pow2 n
+
+example : ((2 <= defEqs.length : Bool)
+    && defEqs.any fun φ => ((classesOf φ).length == 2)
+    && defEqs.all fun φ =>
+      ((invariantSubsets φ).length == pow2 (classesOf φ).length))
+    = true := by native_decide

@@ -61,3 +61,46 @@ example : !dup_wins 2 (Zord 2) (Zord 3) [] && dup_wins 1 (Zord 2) (Zord 3) []
 #eval (List.range 4).map fun m => dup_wins m (Zord 2) (Zord 3) []
 #eval (List.range 4).map fun m => dup_wins m (Zord 4) (Zord 5) []
 #eval (List.range 4).map fun m => dup_wins m (Zempty 2) (Zempty 3) []
+
+/- ---------- 5. Marker GTM 217 §2.4 深化：Scott 句与同构定理 ---------- -/
+
+def bitOf : Nat → Nat → Bool
+  | 0, _ => false
+  | m + 1, 0 => (m + 1) % 2 == 1
+  | m + 1, b + 1 => bitOf ((m + 1) / 2) b
+
+def allStructs (n : Nat) : List FStruct :=
+  (List.range (2 ^ (n * n))).map fun m =>
+    ⟨n, fun a b => bitOf m (a * n + b)⟩
+
+def insertVal (p : List Nat) (i v : Nat) : List Nat :=
+  p.take i ++ [v] ++ p.drop i
+
+def permuteAll : Nat → List (List Nat)
+  | 0 => [[]]
+  | k + 1 =>
+      (permuteAll k).flatMap fun p =>
+        ((List.range (k + 1)).map fun i => insertVal p i k)
+
+def bijective (π : List Nat) : Bool :=
+  (List.range π.length).all fun x => π.contains x
+
+def relMatch (A B : FStruct) (π : List Nat) : Bool :=
+  (domain A).all fun p => (domain A).all fun q =>
+    A.rel p q == B.rel π[p]! π[q]!
+
+def isoCheck (A B : FStruct) : Bool :=
+  A.size == B.size && (permuteAll B.size).any fun π =>
+    bijective π && relMatch A B π
+
+example : (((allStructs 2).flatMap fun a => (allStructs 2).map fun b => (a, b))
+    ++ ((allStructs 3).take 8).flatMap fun a => ((allStructs 3).take 8).map fun b => (a, b)).all
+    fun p => isoCheck p.1 p.2 == dup_wins p.1.size p.1 p.2 [] = true := by
+  native_decide
+
+def dedupIso : List FStruct → List FStruct
+  | [] => []
+  | x :: t => if t.any fun y => isoCheck x y then dedupIso t else x :: dedupIso t
+
+/-- Burnside：(16+4)/2=10 个轨道 -/
+example : (dedupIso (allStructs 2)).length = 10 := by native_decide

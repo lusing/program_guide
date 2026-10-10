@@ -120,3 +120,68 @@ Compute (map (fun m => dup_wins m (Zord 4) (Zord 5) []) (seq 0 4)).
    (* [true; true; true; false]：4 对 5 在 3 轮被分（4 < 2^3-1=7） *)
 Compute (map (fun m => dup_wins m (Zempty 2) (Zempty 3) []) (seq 0 4)).
    (* [true; true; true; false]：空关系要到 3 轮（元数才分） *)
+
+(* ---------- 5. Marker GTM 217 §2.4 深化：Scott 句与同构定理 ---------- *)
+
+Fixpoint pow2 (n : nat) : nat :=
+  match n with 0 => 1 | S k => 2 * pow2 k end.
+
+Fixpoint bitOf (m b : nat) : bool :=
+  match b with
+  | 0 => Nat.eqb (m mod 2) 1
+  | S b' => bitOf (m / 2) b'
+  end.
+
+(* 全部 n 点二元关系结构（2^{n²} 个） *)
+Definition allStructs (n : nat) : list fstruct :=
+  map (fun m => mk n (fun a b => bitOf m (a * n + b)))
+      (seq 0 (pow2 (n * n))).
+
+(* 排列表：标准插入递归 *)
+Definition insertVal (p : list nat) (i v : nat) : list nat :=
+  firstn i p ++ [v] ++ skipn i p.
+
+Fixpoint permuteAll (n : nat) : list (list nat) :=
+  match n with
+  | 0 => [[]]
+  | S k => flat_map (fun p => map (fun i => insertVal p i k) (seq 0 (S k)))
+                 (permuteAll k)
+  end.
+
+Definition bijective (π : list nat) : bool :=
+  forallb (fun x => existsb (Nat.eqb x) π) (seq 0 (length π)).
+
+Definition relMatch (A B : fstruct) (π : list nat) : bool :=
+  forallb (fun p => forallb (fun q =>
+    Bool.eqb (rel A p q) (rel B (nth p π 0) (nth q π 0)))
+    (domain A)) (domain A).
+
+Definition isoCheck (A B : fstruct) : bool :=
+  andb (Nat.eqb (size A) (size B))
+       (existsb (fun π => andb (bijective π) (relMatch A B π))
+                (permuteAll (size B))).
+
+(* Scott 定理的有限影子（独立路线对账）：σ_A 的语义动作
+   （存在保关系双射）与 EF 博弈充分轮数的 duplicator 获胜
+   **逐对一致**——dup_wins 是第 2 节的既有机器，与排列搜索
+   殊途同归：size=2 的全部 16×16 对 + size=3 的对角与前若干对 *)
+Example scott_via_ef :
+  forallb (fun p => Bool.eqb (isoCheck (fst p) (snd p))
+                             (dup_wins (size (fst p)) (fst p) (snd p) []))
+    (list_prod (allStructs 2) (allStructs 2)
+     ++ list_prod (firstn 8 (allStructs 3)) (firstn 8 (allStructs 3))) = true.
+Proof. vm_compute. reflexivity. Qed.
+
+(* 同构类计数账：size=2 的 16 个二元关系结构恰分 10 个同构类
+   （Burnside：(16+4)/2——交换不动点 4 个：对角对称的关系） *)
+Fixpoint dedupIso (l : list fstruct) : list fstruct :=
+  match l with
+  | [] => []
+  | x :: t => if existsb (fun y => isoCheck x y) t
+              then dedupIso t else x :: dedupIso t
+  end.
+
+Example iso_classes_size2 : length (dedupIso (allStructs 2)) = 10.
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions scott_via_ef.

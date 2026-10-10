@@ -233,3 +233,89 @@ Proof. reflexivity. Qed.
 Compute (length betas8).               (* 8 *)
 Compute (satis3 orig_ex).              (* true：环绕后继下 fgx≡y 可解 *)
 Compute (map (dnf_of) [member1]).      (* 成员 1 的析取合取范式 *)
+
+(* ---------- 6. Marker GTM 217 §1.3 深化：Meq 想象元实验室 ---------- *)
+
+(* 可定义等价关系：枚举小公式池 φ(x,y)（无量词、无参数），在 S3
+   上求值为 3×3 布尔矩阵；等价性=自反+对称+传递 *)
+Definition xyAtoms : list fm :=
+  map (fun p => match p with
+      | (0, i, j) => eqf (var i) (var j)
+      | (1, i, j) => rat 0 [var i; var j]
+      | (2, i, j) => rat 0 [var j; var i]
+      | (3, i, j) => eqf (fsym 0 [var i]) (var j)
+      | (4, i, j) => eqf (fsym 1 [var i]) (var j)
+      | (_, i, _) => eqf (var i) (fsym 2 [])       (* x = c₂（常数 0） *)
+      end)
+    [ (0,0,1); (0,1,1); (0,1,2)
+    ; (1,0,1); (1,1,2)
+    ; (2,0,1); (2,1,2)
+    ; (3,0,1); (3,1,2); (3,0,2)
+    ; (4,0,1); (4,1,2)
+    ; (5,0,0); (5,1,1); (5,2,2) ].
+
+Definition negs (l : list fm) : list fm := l ++ map neg l.
+
+(* 手造两类等价式：(x=0 ∧ y=0) ∨ (x≠0 ∧ y≠0)——想象元的非平凡现场 *)
+Definition eqTwoClass : fm :=
+  disj (conj (eqf (var 0) (fsym 2 [])) (eqf (var 1) (fsym 2 [])))
+       (conj (neg (eqf (var 0) (fsym 2 []))) (neg (eqf (var 1) (fsym 2 [])))).
+
+Definition xyForms : list fm :=
+  eqTwoClass :: negs xyAtoms
+  ++ flat_map (fun p => map (fun q => conj p q) (negs xyAtoms)) (negs xyAtoms).
+
+Definition satisAt (φ : fm) (a b : nat) : bool :=
+  evf f3 r3 D3 (fun n => nth n [a; b] 0) φ.
+
+Definition matAt (φ : fm) (a b : nat) : bool := satisAt φ a b.
+
+Definition isEquiv (φ : fm) : bool :=
+  andb (forallb (fun a => matAt φ a a) D3)
+       (andb (forallb (fun p => implb (matAt φ (fst p) (snd p))
+                                     (matAt φ (snd p) (fst p))) (list_prod D3 D3))
+             (forallb (fun t =>
+                implb (andb (matAt φ (fst t) (fst (snd t)))
+                            (matAt φ (fst (snd t)) (snd (snd t))))
+                      (matAt φ (fst t) (snd (snd t)))) (list_prod D3 (list_prod D3 D3)))).
+
+Definition defEqs : list fm := filter isEquiv xyForms.
+
+Definition sameNatList (l1 l2 : list nat) : bool :=
+  andb (forallb (fun x => existsb (Nat.eqb x) l2) l1)
+       (forallb (fun x => existsb (Nat.eqb x) l1) l2).
+
+(* 等价类：按矩阵行分桶去重 *)
+Definition classesOf (φ : fm) : list (list nat) :=
+  fold_left (fun acc a =>
+    let row := filter (fun b => matAt φ a b) D3 in
+    if existsb (fun C => sameNatList C row) acc then acc else row :: acc) D3 [].
+
+Fixpoint powerset (l : list nat) : list (list nat) :=
+  match l with
+  | [] => [[]]
+  | x :: t => let rest := powerset t in map (fun s => x :: s) rest ++ rest
+  end.
+
+Fixpoint pow2 (n : nat) : nat :=
+  match n with 0 => 1 | S m => 2 * pow2 m end.
+
+(* E-不变子集：a∈S ∧ aEb ⟹ b∈S *)
+Definition invariantSubsets (φ : fm) : list (list nat) :=
+  filter (fun S => forallb (fun p =>
+      implb (andb (existsb (Nat.eqb (fst p)) S) (matAt φ (fst p) (snd p)))
+            (existsb (Nat.eqb (snd p)) S)) (list_prod D3 D3))
+    (powerset D3).
+
+(* 实验账：可定义等价关系池非空；存在恰两类者（想象元的非平凡
+   现场）；对每个可定义 E：E-不变子集数 = 2^类数——Meq 的
+   「商双射」在有限宇宙上完整对账 *)
+Example meq_lab :
+  (Nat.leb 2 (length defEqs),
+   existsb (fun φ => Nat.eqb (length (classesOf φ)) 2) defEqs,
+   forallb (fun φ => Nat.eqb (length (invariantSubsets φ))
+                              (pow2 (length (classesOf φ)))) defEqs)
+  = (true, true, true).
+Proof. vm_compute. reflexivity. Qed.
+
+Print Assumptions meq_lab.
