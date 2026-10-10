@@ -4,7 +4,7 @@
 config_version=5
 
 [application]
-config/name="05_input_and_loop"
+config/name="03_variables"
 run/main_scene=""
 config/features=PackedStringArray("4.3")
 
