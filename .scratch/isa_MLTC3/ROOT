@@ -1,4 +1,0 @@
-session MLTC3 in "." = HOL +
-  options [document = false]
-  theories
-    MLTC3

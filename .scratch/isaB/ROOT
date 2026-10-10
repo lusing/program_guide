@@ -1,4 +1,0 @@
-session MLTB in "." = HOL +
-  options [document = false]
-  theories
-    MLTB
