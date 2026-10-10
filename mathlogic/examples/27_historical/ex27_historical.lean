@@ -149,3 +149,43 @@ example : [0, 5, 9, 200].all (fun asg =>
   native_decide
 
 #eval (fAxioms.length, pmAxioms.length, h17.length)
+
+/- ---------- Hertz 句子系统（Legris 篇，Prawitz 祝贺卷 ch5 深化） ----------
+   句子 (A₁,…,Aₙ → B)：原子前件、原子结论；切割规则从 As→b 与
+   Bs→c（b∈Bs）得合并句。闭包饱和器+无中介判定；Gentzen 矢列
+   =多元 Hertz 句。 -/
+
+def hsEq (a b : List Nat × Nat) : Bool :=
+  a.1 == b.1 && a.2 == b.2
+
+def rmvA (x : Nat) : List Nat → List Nat
+  | [] => []
+  | y :: t => if y == x then t else y :: rmvA x t
+
+def cutPairs (S : List (List Nat × Nat)) : List (List Nat × Nat) :=
+  S.flatMap fun s1 =>
+    S.flatMap fun s2 =>
+      if s2.1.contains s1.2 then [(s1.1 ++ rmvA s1.2 s2.1, s2.2)] else []
+
+def hertzSat : Nat → List (List Nat × Nat) → List (List Nat × Nat)
+  | 0, S => S
+  | n + 1, S =>
+      let news := (cutPairs S).filter fun s => !S.any (hsEq s)
+      match news with
+      | [] => S
+      | _ => hertzSat n (S ++ news)
+
+def hDerivable (S : List (List Nat × Nat)) (s : List Nat × Nat) : Bool :=
+  (hertzSat 30 S).any (hsEq s)
+
+def unmediated (S : List (List Nat × Nat)) (s : List Nat × Nat) : Bool :=
+  S.any (hsEq s)
+    && !hDerivable (S.filter fun t => !(hsEq t s)) s
+
+def HS : List (List Nat × Nat) := [([0, 1], 2), ([2], 3)]
+
+example : hDerivable HS ([0, 1], 3) && !HS.any (hsEq ([0, 1], 3))
+  = true := by native_decide
+
+example : unmediated HS ([0, 1], 2) && unmediated HS ([2], 3)
+          && !unmediated HS ([0, 1], 3) = true := by native_decide

@@ -260,5 +260,78 @@ Example blood_f28_eq_v14 :
                 (PImp (PNeg (PVar 1)) (PNeg (PVar 0)))) 5.
 Proof. reflexivity. Qed.
 
+
+(* ---------- 6. Hertz 句子系统（Legris 篇，Prawitz 祝贺卷 ch5 深化） ----------
+   Paul Hertz 1929 的 Satzsysteme：句子 (A₁,…,Aₙ → B)（原子前件、
+   原子结论）；**切割规则**（Schnitt）：从 As→b 与 Bs→c（b∈Bs）得
+   (As++Bs\{b})→c。Gentzen 的矢列演算直接脱胎于此——矢列=多元
+   Hertz 句（把「→」升格为形式对象）。机器件：闭包饱和器+无中介
+   （unmediated）判定：句子 s 在系统 S 中无中介 ⟺ s∈S 且抽掉 s
+   后不可导——「直接后承」的 Hertz 定义。 *)
+
+Definition hsent : Type := (list nat * nat)%type.
+
+Fixpoint listEqN (a b : list nat) : bool :=
+  match a, b with
+  | [], [] => true
+  | x :: t, y :: t2 => andb (Nat.eqb x y) (listEqN t t2)
+  | _, _ => false
+  end.
+
+Fixpoint rmvA (x : nat) (l : list nat) : list nat :=
+  match l with
+  | [] => []
+  | y :: t => if Nat.eqb y x then t else y :: rmvA x t
+  end.
+
+Definition hsEq (a b : hsent) : bool :=
+  andb (listEqN (fst a) (fst b)) (Nat.eqb (snd a) (snd b)).
+
+(* 切割一步：全部有序对 *)
+Definition cutPairs (S : list hsent) : list hsent :=
+  flat_map (fun s1 =>
+    flat_map (fun s2 =>
+      if existsb (Nat.eqb (snd s1)) (fst s2)
+      then [ (fst s1 ++ rmvA (snd s1) (fst s2), snd s2) ]
+      else []) S) S.
+
+Fixpoint hertzSat (fuel : nat) (S : list hsent) : list hsent :=
+  match fuel with
+  | 0 => S
+  | S k =>
+      let news := filter (fun s => negb (existsb (hsEq s) S)) (cutPairs S) in
+      match news with
+      | [] => S
+      | _ => hertzSat k (S ++ news)
+      end
+  end.
+
+Definition hDerivable (S : list hsent) (s : hsent) : bool :=
+  existsb (hsEq s) (hertzSat 30 S).
+
+Definition unmediated (S : list hsent) (s : hsent) : bool :=
+  andb (existsb (hsEq s) S)
+       (negb (hDerivable (filter (fun t => negb (hsEq t s)) S) s)).
+
+(* 样本系统：{p,q → r;  r → s}。闭包加出 p,q → s（经 r 中介），
+   故 p,q→s 不无中介；p,q→r 与 r→s 都无中介。 *)
+Definition HS : list hsent := [ ([0;1], 2); ([2], 3) ].
+
+Example hertz_closure :
+  andb (hDerivable HS ([0;1], 3))
+       (negb (existsb (hsEq ([0;1], 3)) HS))
+  = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Example hertz_unmediated :
+  andb (unmediated HS ([0;1], 2))
+       (andb (unmediated HS ([2], 3))
+             (negb (unmediated HS ([0;1], 3))))
+  = true.
+Proof. vm_compute. reflexivity. Qed.
+
+(* 血缘账：Gentzen 1934 矢列 A₁,…,Aₙ ⊢ B 即多元 Hertz 句；
+   结构规则（收缩/交换）在 Hertz 处已以后件「集合化」隐形处理。 *)
+
 (* 冒烟 *)
 Compute (length faxioms, length pm_axioms, length h17).

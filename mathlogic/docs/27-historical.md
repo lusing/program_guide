@@ -181,7 +181,42 @@ Theorem hilbert_covers_v14 :
 Mendelson 把 17 条再蒸馏成 3 条——蒸馏掉的部分都是可推导的（06 章
 的推导工厂每天都在证明这一点）。
 
-## 五、三系统的遗产账
+## 五、Hertz 1929：句子系统——矢列演算的前史（Prawitz 卷 Legris 篇）
+
+Gentzen 的矢列并非凭空出现。Paul Hertz（一位物理学家）在 1929 年前
+后发表的 **Satzsysteme**（句子系统）给出了一切的原型：**句子**
+(A₁,…,Aₙ → B)——原子做前件、原子做结论的推理单元；系统的演算只有
+一条**切割规则**（Schnitt）：从 As→b 与 Bs→c（b 出现在 Bs 中）得
+到合并前件的 (As ++ Bs∖{b})→c。Gentzen 1934 年明说他的出发点就是
+把 Hertz 的「句子」升格为形式对象 **矢列**——多元右部、结构规则
+显式化。Legris 在 Prawitz 祝贺卷里的这篇史学文章指出：Hertz 的
+「直接后承」（unmittelbar）概念——句子 s 在系统 S 中**无中介**，
+iff s∈S 且抽掉 s 后就推不回来——已经是「原子切割消去」的雏形。
+
+机器件把这套 1929 年的演算原样跑起来（`ex27_historical` 双语言附
+录）：
+
+```coq
+Definition HS : list hsent := [ ([0;1], 2); ([2], 3) ].  (* {p,q→r; r→s} *)
+Example hertz_closure :
+  andb (hDerivable HS ([0;1], 3))       (* 切割加出 p,q→s *)
+       (negb (existsb (hsEq ([0;1], 3)) HS))   (* 但它不在原系统里 *)
+  = true.
+Example hertz_unmediated :
+  andb (unmediated HS ([0;1], 2))       (* p,q→r 无中介 *)
+       (andb (unmediated HS ([2], 3))   (* r→s 无中介 *)
+             (negb (unmediated HS ([0;1], 3))))  (* p,q→s 有中介 *)
+  = true.
+```
+
+读法：闭包饱和器 `hertzSat` 反复施加切割直到不动点；「p,q→s 可导
+但不无中介」——它经 r 这座桥，桥一拆就断。**无中介=这条句子在系
+统里干着不可替代的活**——这正是 Hertz 给「公理的独立性」下的组合
+定义，也是 Gentzen 把「切消」立为中心问题的史前动机：一个处处无
+中介的系统才是「最简」的推导基座。教程第 75 章的截消定理、第 35
+章的 Zucker 对应，都是这条 1929 年线索的 twentieth-century 后裔。
+
+## 六、三系统的遗产账
 
 | 系统 | 语言 | 公理 | 推出 | 缺什么 |
 |---|---|---|---|---|
