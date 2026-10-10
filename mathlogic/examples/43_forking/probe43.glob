@@ -1,0 +1,549 @@
+DIGEST c50e0e105c2a9c9ea4787ee925417c25
+Fprobe43
+R606:609 Stdlib.Lists.List <> <> lib
+R611:615 Stdlib.Arith.Arith <> <> lib
+R625:637 Stdlib.Lists.List ListNotations <> mod
+def 650:656 <> forallb
+binder 659:659 <> A:1
+R668:671 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R667:667 probe43 <> A:1 var
+R672:675 Corelib.Init.Datatypes <> bool ind
+binder 663:663 <> f:2
+R683:686 Corelib.Init.Datatypes <> list ind
+R688:688 probe43 <> A:1 var
+binder 679:679 <> l:3
+R693:696 Corelib.Init.Datatypes <> bool ind
+R709:709 probe43 <> l:3 var
+R716:717 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R722:725 Corelib.Init.Datatypes <> true constr
+R730:733 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R739:742 Corelib.Init.Datatypes <> andb def
+R751:757 probe43 <> forallb:4 def
+R759:759 probe43 <> f:2 var
+R745:745 probe43 <> f:2 var
+def 778:784 <> existsb
+binder 787:787 <> A:6
+R796:799 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R795:795 probe43 <> A:6 var
+R800:803 Corelib.Init.Datatypes <> bool ind
+binder 791:791 <> f:7
+R811:814 Corelib.Init.Datatypes <> list ind
+R816:816 probe43 <> A:6 var
+binder 807:807 <> l:8
+R821:824 Corelib.Init.Datatypes <> bool ind
+R837:837 probe43 <> l:8 var
+R844:845 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R850:854 Corelib.Init.Datatypes <> false constr
+R859:862 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R868:870 Corelib.Init.Datatypes <> orb def
+R879:885 probe43 <> existsb:9 def
+R887:887 probe43 <> f:7 var
+R873:873 probe43 <> f:7 var
+def 969:970 <> cl
+R977:979 Corelib.Init.Datatypes <> nat ind
+binder 973:973 <> x:11
+R984:986 Corelib.Init.Datatypes <> nat ind
+R992:994 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'/'_x not
+R991:991 probe43 <> x:11 var
+def 1010:1014 <> clsOf
+R1021:1024 Corelib.Init.Datatypes <> list ind
+R1026:1028 Corelib.Init.Datatypes <> nat ind
+binder 1017:1017 <> A:12
+R1033:1036 Corelib.Init.Datatypes <> list ind
+R1038:1040 Corelib.Init.Datatypes <> nat ind
+R1045:1047 Corelib.Lists.ListDef <> map def
+R1052:1052 probe43 <> A:12 var
+R1049:1050 probe43 <> cl def
+def 1067:1070 <> rmTP
+R1077:1079 Corelib.Init.Datatypes <> nat ind
+binder 1073:1073 <> a:13
+R1087:1090 Corelib.Init.Datatypes <> list ind
+R1092:1094 Corelib.Init.Datatypes <> nat ind
+binder 1083:1083 <> A:14
+R1099:1101 Corelib.Init.Datatypes <> nat ind
+R1111:1117 probe43 <> existsb def
+R1131:1131 probe43 <> A:14 var
+R1120:1126 Stdlib.Arith.PeanoNat Nat eqb def
+R1128:1128 probe43 <> a:13 var
+R1150:1156 probe43 <> existsb def
+R1176:1180 probe43 <> clsOf def
+R1182:1182 probe43 <> A:14 var
+R1159:1165 Stdlib.Arith.PeanoNat Nat eqb def
+R1168:1169 probe43 <> cl def
+R1171:1171 probe43 <> a:13 var
+def 1214:1218 <> indep
+R1225:1227 Corelib.Init.Datatypes <> nat ind
+binder 1221:1221 <> a:15
+R1235:1238 Corelib.Init.Datatypes <> list ind
+R1240:1242 Corelib.Init.Datatypes <> nat ind
+binder 1231:1231 <> A:16
+R1247:1250 Corelib.Init.Datatypes <> bool ind
+R1257:1260 Corelib.Init.Datatypes <> negb def
+R1263:1269 probe43 <> existsb def
+R1289:1293 probe43 <> clsOf def
+R1295:1295 probe43 <> A:16 var
+R1272:1278 Stdlib.Arith.PeanoNat Nat eqb def
+R1281:1282 probe43 <> cl def
+R1284:1284 probe43 <> a:15 var
+def 1312:1316 <> forks
+R1323:1325 Corelib.Init.Datatypes <> nat ind
+binder 1319:1319 <> a:17
+R1335:1338 Corelib.Init.Datatypes <> list ind
+R1340:1342 Corelib.Init.Datatypes <> nat ind
+binder 1329:1329 <> A:18
+binder 1331:1331 <> B:19
+R1347:1350 Corelib.Init.Datatypes <> bool ind
+R1357:1363 Stdlib.Arith.PeanoNat Nat ltb def
+R1366:1369 probe43 <> rmTP def
+R1371:1371 probe43 <> a:17 var
+R1373:1373 probe43 <> B:19 var
+R1377:1380 probe43 <> rmTP def
+R1382:1382 probe43 <> a:17 var
+R1384:1384 probe43 <> A:18 var
+def 1544:1555 <> rank_descent
+R1675:1677 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R1561:1561 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1578:1582 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1599:1603 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1620:1624 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1651:1655 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1674:1674 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1562:1565 probe43 <> rmTP def
+R1570:1570 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1573:1574 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1577:1577 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1583:1586 probe43 <> rmTP def
+R1591:1591 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1594:1595 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1598:1598 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1604:1607 probe43 <> rmTP def
+R1612:1612 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1615:1616 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1619:1619 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1625:1629 probe43 <> forks def
+R1634:1634 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1637:1638 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1641:1641 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1643:1643 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1646:1647 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1650:1650 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1656:1660 probe43 <> forks def
+R1665:1665 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1668:1668 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1670:1670 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1673:1673 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1678:1678 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1680:1681 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1683:1684 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1686:1687 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1692:1693 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1698:1698 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1688:1691 Corelib.Init.Datatypes <> true constr
+R1694:1697 Corelib.Init.Datatypes <> true constr
+def 1891:1898 <> nonforkW
+R1905:1907 Corelib.Init.Datatypes <> nat ind
+binder 1901:1901 <> a:20
+R1917:1920 Corelib.Init.Datatypes <> list ind
+R1922:1924 Corelib.Init.Datatypes <> nat ind
+binder 1911:1911 <> A:21
+binder 1913:1913 <> B:22
+R1929:1931 Corelib.Init.Datatypes <> nat ind
+R1999:2001 Corelib.Init.Peano <> ::nat_scope:x_'-'_x not
+R1938:1938 Corelib.Init.Datatypes <> S constr
+R1993:1995 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R1943:1946 Corelib.Init.Peano <> ::nat_scope:x_'*'_x not
+R1992:1992 Corelib.Init.Peano <> ::nat_scope:x_'*'_x not
+R1947:1947 Corelib.Init.Datatypes <> S constr
+R1950:1959 Stdlib.Lists.List <> fold_right def
+R1979:1982 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R1972:1976 probe43 <> clsOf def
+R1978:1978 probe43 <> B:22 var
+R1983:1987 probe43 <> clsOf def
+R1989:1989 probe43 <> A:21 var
+R1961:1967 Stdlib.Arith.PeanoNat Nat max def
+def 2014:2031 <> nonfork_ext_exists
+R2384:2386 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R2037:2043 probe43 <> forallb def
+R2284:2285 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2316:2322 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2347:2353 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2378:2383 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2286:2286 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2311:2312 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2315:2315 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2287:2287 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2296:2297 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2310:2310 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2288:2288 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2291:2292 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2295:2295 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2298:2298 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2301:2302 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2305:2306 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2309:2309 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2323:2323 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2342:2343 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2346:2346 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2324:2324 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2327:2328 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2341:2341 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2325:2326 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R2329:2329 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2332:2333 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2336:2337 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2340:2340 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2354:2354 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2373:2374 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2377:2377 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2355:2355 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2359:2360 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2372:2372 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R2356:2356 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R2358:2358 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R2361:2361 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2363:2364 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2367:2368 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2371:2371 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+binder 2050:2053 <> spec:23
+R2071:2073 Corelib.Init.Datatypes <> fst def
+R2076:2078 Corelib.Init.Datatypes <> fst def
+R2080:2083 probe43 <> spec:23 var
+binder 2066:2066 <> A:24
+R2098:2100 Corelib.Init.Datatypes <> snd def
+R2103:2105 Corelib.Init.Datatypes <> fst def
+R2107:2110 probe43 <> spec:23 var
+binder 2093:2093 <> B:25
+R2125:2127 Corelib.Init.Datatypes <> snd def
+R2129:2132 probe43 <> spec:23 var
+binder 2120:2120 <> a:26
+R2141:2145 Corelib.Init.Datatypes <> implb def
+R2181:2184 Corelib.Init.Datatypes <> andb def
+R2241:2247 Stdlib.Arith.PeanoNat Nat eqb def
+R2250:2253 probe43 <> rmTP def
+R2256:2263 probe43 <> nonforkW def
+R2265:2265 probe43 <> a:26 var
+R2267:2267 probe43 <> A:24 var
+R2269:2269 probe43 <> B:25 var
+R2272:2272 probe43 <> A:24 var
+R2187:2193 Stdlib.Arith.PeanoNat Nat eqb def
+R2196:2199 probe43 <> rmTP def
+R2202:2209 probe43 <> nonforkW def
+R2211:2211 probe43 <> a:26 var
+R2213:2213 probe43 <> A:24 var
+R2215:2215 probe43 <> B:25 var
+R2218:2218 probe43 <> B:25 var
+R2148:2154 Stdlib.Arith.PeanoNat Nat eqb def
+R2157:2160 probe43 <> rmTP def
+R2162:2162 probe43 <> a:26 var
+R2164:2164 probe43 <> A:24 var
+R2387:2390 Corelib.Init.Datatypes <> true constr
+def 2504:2508 <> xorb4
+R2517:2519 Corelib.Init.Datatypes <> nat ind
+binder 2511:2511 <> a:27
+binder 2513:2513 <> b:28
+R2524:2526 Corelib.Init.Datatypes <> nat ind
+R2533:2541 Stdlib.Lists.List <> fold_left def
+R2610:2610 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2612:2613 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2615:2616 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2618:2619 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2621:2621 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+binder 2548:2550 <> acc:29
+binder 2552:2552 <> i:30
+R2560:2563 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R2603:2603 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R2557:2559 probe43 <> acc:29 var
+R2564:2564 Corelib.Init.Peano <> ::nat_scope:x_'*'_x not
+R2594:2597 Corelib.Init.Peano <> ::nat_scope:x_'*'_x not
+R2565:2565 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R2587:2592 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R2575:2577 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R2567:2569 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'/'_x not
+R2566:2566 probe43 <> a:27 var
+R2571:2573 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'^'_x not
+R2574:2574 probe43 <> i:30 var
+R2579:2581 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'/'_x not
+R2578:2578 probe43 <> b:28 var
+R2583:2585 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'^'_x not
+R2586:2586 probe43 <> i:30 var
+R2599:2601 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'^'_x not
+R2602:2602 probe43 <> i:30 var
+def 2636:2642 <> lowbitF
+R2652:2654 Corelib.Init.Datatypes <> nat ind
+binder 2645:2648 <> fuel:31
+R2662:2664 Corelib.Init.Datatypes <> nat ind
+binder 2658:2658 <> x:32
+R2669:2671 Corelib.Init.Datatypes <> nat ind
+R2684:2687 probe43 <> fuel:31 var
+R2709:2709 Corelib.Init.Datatypes <> S constr
+R2719:2725 Stdlib.Arith.PeanoNat Nat eqb def
+R2727:2727 probe43 <> x:32 var
+R2757:2763 Stdlib.Arith.PeanoNat Nat eqb def
+R2767:2771 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R2766:2766 probe43 <> x:32 var
+R2789:2789 Corelib.Init.Datatypes <> S constr
+R2792:2798 probe43 <> lowbitF:33 def
+R2804:2806 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'/'_x not
+R2803:2803 probe43 <> x:32 var
+def 2830:2835 <> lowbit
+R2842:2844 Corelib.Init.Datatypes <> nat ind
+binder 2838:2838 <> x:35
+R2849:2851 Corelib.Init.Datatypes <> nat ind
+R2856:2862 probe43 <> lowbitF def
+R2866:2866 probe43 <> x:35 var
+def 2913:2918 <> addVec
+R2929:2932 Corelib.Init.Datatypes <> list ind
+R2934:2936 Corelib.Init.Datatypes <> nat ind
+binder 2921:2925 <> basis:36
+R2944:2946 Corelib.Init.Datatypes <> nat ind
+binder 2940:2940 <> v:37
+R2951:2954 Corelib.Init.Datatypes <> list ind
+R2956:2958 Corelib.Init.Datatypes <> nat ind
+R2971:2975 probe43 <> basis:36 var
+R2986:2987 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R2995:3001 Stdlib.Arith.PeanoNat Nat eqb def
+R3003:3003 probe43 <> v:37 var
+R3020:3020 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3022:3022 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R3021:3021 probe43 <> v:37 var
+R3012:3013 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R3029:3032 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R3047:3053 Stdlib.Arith.PeanoNat Nat eqb def
+R3056:3056 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R3075:3080 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R3058:3060 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'/'_x not
+R3057:3057 probe43 <> v:37 var
+R3062:3065 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'^'_x not
+R3074:3074 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'^'_x not
+R3066:3071 probe43 <> lowbit def
+R3130:3133 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R3134:3139 probe43 <> addVec:38 def
+R3143:3143 probe43 <> v:37 var
+R3097:3102 probe43 <> addVec:38 def
+R3107:3111 probe43 <> xorb4 def
+R3113:3113 probe43 <> v:37 var
+def 3162:3167 <> remDup
+binder 3170:3170 <> A:40
+R3181:3184 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R3180:3180 probe43 <> A:40 var
+R3186:3189 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R3185:3185 probe43 <> A:40 var
+R3190:3193 Corelib.Init.Datatypes <> bool ind
+binder 3174:3176 <> eqb:41
+R3201:3204 Corelib.Init.Datatypes <> list ind
+R3206:3206 probe43 <> A:40 var
+binder 3197:3197 <> l:42
+R3211:3214 Corelib.Init.Datatypes <> list ind
+R3216:3216 probe43 <> A:40 var
+R3229:3229 probe43 <> l:42 var
+R3240:3241 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R3246:3247 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R3254:3257 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R3266:3272 probe43 <> existsb def
+R3275:3277 probe43 <> eqb:41 var
+R3308:3311 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R3312:3317 probe43 <> remDup:43 def
+R3319:3321 probe43 <> eqb:41 var
+R3289:3294 probe43 <> remDup:43 def
+R3296:3298 probe43 <> eqb:41 var
+def 3344:3348 <> dimOf
+R3355:3358 Corelib.Init.Datatypes <> list ind
+R3360:3362 Corelib.Init.Datatypes <> nat ind
+binder 3351:3351 <> l:45
+R3367:3369 Corelib.Init.Datatypes <> nat ind
+R3376:3381 Corelib.Init.Datatypes <> length def
+R3384:3392 Stdlib.Lists.List <> fold_left def
+R3441:3442 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R3423:3428 probe43 <> remDup def
+R3438:3438 probe43 <> l:45 var
+R3430:3436 Stdlib.Arith.PeanoNat Nat eqb def
+binder 3399:3401 <> acc:46
+binder 3403:3403 <> v:47
+R3408:3413 probe43 <> addVec def
+R3415:3417 probe43 <> acc:46 var
+R3419:3419 probe43 <> v:47 var
+def 3533:3537 <> spanF
+R3547:3549 Corelib.Init.Datatypes <> nat ind
+binder 3540:3543 <> fuel:48
+R3557:3560 Corelib.Init.Datatypes <> list ind
+R3562:3564 Corelib.Init.Datatypes <> nat ind
+binder 3553:3553 <> s:49
+R3569:3572 Corelib.Init.Datatypes <> list ind
+R3574:3576 Corelib.Init.Datatypes <> nat ind
+R3589:3592 probe43 <> fuel:48 var
+R3608:3608 probe43 <> s:49 var
+R3614:3614 Corelib.Init.Datatypes <> S constr
+R3637:3645 Stdlib.Lists.List <> fold_left def
+R3814:3814 probe43 <> s:49 var
+R3799:3807 Stdlib.Lists.List <> list_prod def
+R3811:3811 probe43 <> s:49 var
+R3809:3809 probe43 <> s:49 var
+binder 3652:3654 <> acc:52
+binder 3656:3656 <> p:53
+R3688:3692 probe43 <> xorb4 def
+R3695:3697 Corelib.Init.Datatypes <> fst def
+R3699:3699 probe43 <> p:53 var
+R3703:3705 Corelib.Init.Datatypes <> snd def
+R3707:3707 probe43 <> p:53 var
+binder 3683:3683 <> v:54
+R3734:3740 probe43 <> existsb def
+R3754:3756 probe43 <> acc:52 var
+R3743:3749 Stdlib.Arith.PeanoNat Nat eqb def
+R3751:3751 probe43 <> v:54 var
+R3773:3776 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R3772:3772 probe43 <> v:54 var
+R3777:3779 probe43 <> acc:52 var
+R3763:3765 probe43 <> acc:52 var
+binder 3631:3632 <> s':55
+R3828:3834 Stdlib.Arith.PeanoNat Nat eqb def
+R3837:3842 Corelib.Init.Datatypes <> length def
+R3844:3845 probe43 <> s':55 var
+R3849:3854 Corelib.Init.Datatypes <> length def
+R3856:3856 probe43 <> s:49 var
+R3872:3876 probe43 <> spanF:50 def
+R3880:3881 probe43 <> s':55 var
+R3864:3865 probe43 <> s':55 var
+def 3902:3907 <> spanOf
+R3914:3917 Corelib.Init.Datatypes <> list ind
+R3919:3921 Corelib.Init.Datatypes <> nat ind
+binder 3910:3910 <> s:56
+R3926:3929 Corelib.Init.Datatypes <> list ind
+R3931:3933 Corelib.Init.Datatypes <> nat ind
+R3940:3944 probe43 <> spanF def
+R3950:3955 probe43 <> remDup def
+R3967:3970 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R3971:3973 Corelib.Lists.ListDef <> map def
+R3995:3995 probe43 <> s:56 var
+binder 3980:3980 <> x:57
+R3986:3990 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R3985:3985 probe43 <> x:57 var
+R3957:3963 Stdlib.Arith.PeanoNat Nat eqb def
+def 4012:4017 <> interL
+R4028:4031 Corelib.Init.Datatypes <> list ind
+R4033:4035 Corelib.Init.Datatypes <> nat ind
+binder 4020:4021 <> l1:58
+binder 4023:4024 <> l2:59
+R4040:4043 Corelib.Init.Datatypes <> list ind
+R4045:4047 Corelib.Init.Datatypes <> nat ind
+R4054:4059 Stdlib.Lists.List <> filter def
+R4095:4096 probe43 <> l1:58 var
+binder 4066:4066 <> x:60
+R4071:4077 probe43 <> existsb def
+R4091:4092 probe43 <> l2:59 var
+R4080:4086 Stdlib.Arith.PeanoNat Nat eqb def
+R4088:4088 probe43 <> x:60 var
+def 4196:4205 <> sampleGens
+R4209:4212 Corelib.Init.Datatypes <> list ind
+R4223:4225 Corelib.Init.Datatypes <> ::type_scope:x_'*'_x not
+R4215:4218 Corelib.Init.Datatypes <> list ind
+R4220:4222 Corelib.Init.Datatypes <> nat ind
+R4226:4229 Corelib.Init.Datatypes <> list ind
+R4231:4233 Corelib.Init.Datatypes <> nat ind
+R4241:4242 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4259:4263 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4283:4287 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4313:4317 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4337:4341 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4365:4369 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4389:4392 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4243:4243 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4250:4251 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4258:4258 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4244:4244 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4246:4247 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4249:4249 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4252:4252 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4254:4255 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4257:4257 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4264:4264 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4274:4275 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4282:4282 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4265:4265 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4267:4268 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4270:4271 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4273:4273 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4276:4276 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4278:4279 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4281:4281 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4288:4288 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4301:4302 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4312:4312 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4289:4289 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4291:4292 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4294:4295 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4297:4298 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4300:4300 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4303:4303 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4305:4306 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4308:4309 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4311:4311 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4318:4318 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4328:4329 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4336:4336 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4319:4319 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4321:4322 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4324:4325 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4327:4327 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4330:4330 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4332:4333 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4335:4335 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4342:4342 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4353:4354 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4364:4364 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4343:4343 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4345:4346 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4348:4349 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4352:4352 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4355:4355 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4357:4358 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4360:4361 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4363:4363 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4370:4370 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4377:4378 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4388:4388 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4371:4371 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4373:4374 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4376:4376 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4379:4379 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4381:4382 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4384:4385 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4387:4387 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4417:4419 Corelib.Lists.ListDef <> map def
+R4553:4562 probe43 <> sampleGens def
+binder 4426:4426 <> g:61
+R4444:4449 probe43 <> spanOf def
+R4452:4454 Corelib.Init.Datatypes <> fst def
+R4456:4456 probe43 <> g:61 var
+binder 4439:4439 <> U:62
+R4471:4476 probe43 <> spanOf def
+R4479:4481 Corelib.Init.Datatypes <> snd def
+R4483:4483 probe43 <> g:61 var
+binder 4466:4466 <> V:63
+R4493:4493 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4501:4502 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4510:4511 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4526:4527 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4546:4546 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4494:4498 probe43 <> dimOf def
+R4500:4500 probe43 <> U:62 var
+R4503:4507 probe43 <> dimOf def
+R4509:4509 probe43 <> V:63 var
+R4512:4516 probe43 <> dimOf def
+R4520:4523 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R4519:4519 probe43 <> U:62 var
+R4524:4524 probe43 <> V:63 var
+R4528:4532 probe43 <> dimOf def
+R4535:4540 probe43 <> interL def
+R4542:4542 probe43 <> U:62 var
+R4544:4544 probe43 <> V:63 var
+R4585:4585 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4598:4599 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4611:4611 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R4586:4591 probe43 <> spanOf def
+R4593:4593 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4595:4595 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4597:4597 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4600:4604 probe43 <> dimOf def
+R4606:4606 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4608:4608 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4610:4610 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
