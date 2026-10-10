@@ -1,0 +1,923 @@
+DIGEST a92220a29a139202d3df01026bd11eec
+Fex35_acfield
+R542:545 Stdlib.Lists.List <> <> lib
+R547:551 Stdlib.Arith.Arith <> <> lib
+R561:573 Stdlib.Lists.List ListNotations <> mod
+def 586:592 <> forallb
+binder 595:595 <> A:1
+R604:607 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R603:603 ex35_acfield <> A:1 var
+R608:611 Corelib.Init.Datatypes <> bool ind
+binder 599:599 <> f:2
+R619:622 Corelib.Init.Datatypes <> list ind
+R624:624 ex35_acfield <> A:1 var
+binder 615:615 <> l:3
+R629:632 Corelib.Init.Datatypes <> bool ind
+R645:645 ex35_acfield <> l:3 var
+R652:653 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R658:661 Corelib.Init.Datatypes <> true constr
+R666:669 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R675:678 Corelib.Init.Datatypes <> andb def
+R687:693 ex35_acfield <> forallb:4 def
+R695:695 ex35_acfield <> f:2 var
+R681:681 ex35_acfield <> f:2 var
+def 715:721 <> existsb
+binder 724:724 <> A:6
+R733:736 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R732:732 ex35_acfield <> A:6 var
+R737:740 Corelib.Init.Datatypes <> bool ind
+binder 728:728 <> f:7
+R748:751 Corelib.Init.Datatypes <> list ind
+R753:753 ex35_acfield <> A:6 var
+binder 744:744 <> l:8
+R758:761 Corelib.Init.Datatypes <> bool ind
+R774:774 ex35_acfield <> l:8 var
+R781:782 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R787:791 Corelib.Init.Datatypes <> false constr
+R796:799 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R805:807 Corelib.Init.Datatypes <> orb def
+R816:822 ex35_acfield <> existsb:9 def
+R824:824 ex35_acfield <> f:7 var
+R810:810 ex35_acfield <> f:7 var
+def 846:850 <> inclb
+R861:864 Corelib.Init.Datatypes <> list ind
+R866:868 Corelib.Init.Datatypes <> nat ind
+binder 853:854 <> l1:11
+binder 856:857 <> l2:12
+R873:876 Corelib.Init.Datatypes <> bool ind
+R883:889 ex35_acfield <> forallb def
+R925:926 ex35_acfield <> l1:11 var
+binder 896:896 <> x:13
+R901:907 ex35_acfield <> existsb def
+R921:922 ex35_acfield <> l2:12 var
+R910:916 Stdlib.Arith.PeanoNat Nat eqb def
+R918:918 ex35_acfield <> x:13 var
+def 941:946 <> eqsetb
+R957:960 Corelib.Init.Datatypes <> list ind
+R962:964 Corelib.Init.Datatypes <> nat ind
+binder 949:950 <> l1:14
+binder 952:953 <> l2:15
+R969:972 Corelib.Init.Datatypes <> bool ind
+R977:980 Corelib.Init.Datatypes <> andb def
+R997:1001 ex35_acfield <> inclb def
+R1003:1004 ex35_acfield <> l2:15 var
+R1006:1007 ex35_acfield <> l1:14 var
+R983:987 ex35_acfield <> inclb def
+R989:990 ex35_acfield <> l1:14 var
+R992:993 ex35_acfield <> l2:15 var
+def 1164:1167 <> bits
+R1176:1178 Corelib.Init.Datatypes <> nat ind
+binder 1170:1170 <> k:16
+binder 1172:1172 <> x:17
+R1183:1186 Corelib.Init.Datatypes <> list ind
+R1188:1190 Corelib.Init.Datatypes <> nat ind
+R1197:1199 Corelib.Lists.ListDef <> map def
+R1231:1233 Corelib.Lists.ListDef <> seq def
+R1237:1237 ex35_acfield <> k:16 var
+binder 1206:1206 <> i:18
+R1211:1211 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R1221:1226 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R1213:1215 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'/'_x not
+R1212:1212 ex35_acfield <> x:17 var
+R1217:1219 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'^'_x not
+R1220:1220 ex35_acfield <> i:18 var
+def 1251:1256 <> unbits
+R1263:1266 Corelib.Init.Datatypes <> list ind
+R1268:1270 Corelib.Init.Datatypes <> nat ind
+binder 1259:1259 <> l:19
+R1275:1277 Corelib.Init.Datatypes <> nat ind
+R1290:1290 ex35_acfield <> l:19 var
+R1301:1302 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R1314:1317 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R1330:1332 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R1324:1328 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R1334:1336 Corelib.Init.Peano <> ::nat_scope:x_'*'_x not
+R1337:1342 ex35_acfield <> unbits:20 def
+def 1437:1440 <> padd
+R1449:1452 Corelib.Init.Datatypes <> list ind
+R1454:1456 Corelib.Init.Datatypes <> nat ind
+binder 1443:1443 <> a:22
+binder 1445:1445 <> b:23
+R1461:1464 Corelib.Init.Datatypes <> list ind
+R1466:1468 Corelib.Init.Datatypes <> nat ind
+R1484:1484 ex35_acfield <> b:23 var
+R1481:1481 ex35_acfield <> a:22 var
+R1495:1496 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R1504:1506 Corelib.Lists.ListDef <> map def
+binder 1513:1513 <> x:27
+R1519:1523 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R1518:1518 ex35_acfield <> x:27 var
+R1536:1537 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R1542:1544 Corelib.Lists.ListDef <> map def
+binder 1551:1551 <> x:28
+R1557:1561 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R1556:1556 ex35_acfield <> x:28 var
+R1572:1575 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R1581:1584 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R1591:1591 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R1605:1609 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R1592:1592 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R1598:1603 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R1594:1596 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R1610:1613 ex35_acfield <> padd:24 def
+def 1678:1681 <> conv
+R1690:1693 Corelib.Init.Datatypes <> list ind
+R1695:1697 Corelib.Init.Datatypes <> nat ind
+binder 1684:1684 <> a:29
+binder 1686:1686 <> b:30
+R1702:1705 Corelib.Init.Datatypes <> list ind
+R1707:1709 Corelib.Init.Datatypes <> nat ind
+R1722:1722 ex35_acfield <> a:29 var
+R1733:1734 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R1739:1740 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R1747:1750 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R1756:1759 ex35_acfield <> padd def
+R1762:1764 Corelib.Lists.ListDef <> map def
+R1783:1783 ex35_acfield <> b:30 var
+binder 1771:1771 <> y:33
+R1777:1779 Corelib.Init.Peano <> ::nat_scope:x_'*'_x not
+R1780:1780 ex35_acfield <> y:33 var
+R1816:1819 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R1806:1811 Corelib.Lists.ListDef <> repeat def
+R1820:1823 ex35_acfield <> conv:31 def
+R1827:1827 ex35_acfield <> b:30 var
+def 2024:2034 <> reducePolyF
+R2046:2048 Corelib.Init.Datatypes <> nat ind
+binder 2037:2040 <> fuel:34
+binder 2042:2042 <> k:35
+R2058:2061 Corelib.Init.Datatypes <> list ind
+R2063:2065 Corelib.Init.Datatypes <> nat ind
+binder 2052:2054 <> tbl:36
+R2073:2076 Corelib.Init.Datatypes <> list ind
+R2078:2080 Corelib.Init.Datatypes <> nat ind
+binder 2069:2069 <> l:37
+R2085:2088 Corelib.Init.Datatypes <> list ind
+R2090:2092 Corelib.Init.Datatypes <> nat ind
+R2105:2108 ex35_acfield <> fuel:34 var
+R2124:2126 Corelib.Lists.ListDef <> map def
+R2147:2147 ex35_acfield <> l:37 var
+binder 2133:2133 <> x:40
+R2139:2143 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R2138:2138 ex35_acfield <> x:40 var
+R2153:2153 Corelib.Init.Datatypes <> S constr
+R2169:2175 Stdlib.Arith.PeanoNat Nat leb def
+R2178:2183 Corelib.Init.Datatypes <> length def
+R2185:2185 ex35_acfield <> l:37 var
+R2188:2188 ex35_acfield <> k:35 var
+R2256:2258 Corelib.Init.Peano <> ::nat_scope:x_'-'_x not
+R2248:2253 Corelib.Init.Datatypes <> length def
+R2255:2255 ex35_acfield <> l:37 var
+binder 2243:2243 <> n:41
+R2281:2283 Corelib.Lists.ListDef <> nth def
+R2287:2287 ex35_acfield <> l:37 var
+R2285:2285 ex35_acfield <> n:41 var
+binder 2276:2276 <> c:42
+R2315:2320 Corelib.Lists.ListDef <> firstn def
+R2324:2324 ex35_acfield <> l:37 var
+R2322:2322 ex35_acfield <> n:41 var
+binder 2306:2310 <> front:43
+R2368:2371 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R2352:2357 Corelib.Lists.ListDef <> repeat def
+R2363:2365 Corelib.Init.Peano <> ::nat_scope:x_'-'_x not
+R2362:2362 ex35_acfield <> n:41 var
+R2366:2366 ex35_acfield <> k:35 var
+R2372:2374 Corelib.Lists.ListDef <> map def
+R2393:2395 ex35_acfield <> tbl:36 var
+binder 2381:2381 <> x:44
+R2387:2389 Corelib.Init.Peano <> ::nat_scope:x_'*'_x not
+R2386:2386 ex35_acfield <> x:44 var
+R2390:2390 ex35_acfield <> c:42 var
+binder 2341:2347 <> shifted:45
+R2408:2418 ex35_acfield <> reducePolyF:38 def
+R2429:2432 ex35_acfield <> padd def
+R2434:2438 ex35_acfield <> front:43 var
+R2440:2446 ex35_acfield <> shifted:45 var
+R2424:2426 ex35_acfield <> tbl:36 var
+R2422:2422 ex35_acfield <> k:35 var
+R2195:2197 Corelib.Lists.ListDef <> map def
+R2218:2218 ex35_acfield <> l:37 var
+binder 2204:2204 <> x:46
+R2210:2214 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R2209:2209 ex35_acfield <> x:46 var
+def 2468:2477 <> reducePoly
+R2484:2486 Corelib.Init.Datatypes <> nat ind
+binder 2480:2480 <> k:47
+R2496:2499 Corelib.Init.Datatypes <> list ind
+R2501:2503 Corelib.Init.Datatypes <> nat ind
+binder 2490:2492 <> tbl:48
+R2511:2514 Corelib.Init.Datatypes <> list ind
+R2516:2518 Corelib.Init.Datatypes <> nat ind
+binder 2507:2507 <> l:49
+R2523:2526 Corelib.Init.Datatypes <> list ind
+R2528:2530 Corelib.Init.Datatypes <> nat ind
+R2537:2547 ex35_acfield <> reducePolyF def
+R2550:2555 Corelib.Init.Datatypes <> length def
+R2557:2557 ex35_acfield <> l:49 var
+R2560:2560 ex35_acfield <> k:47 var
+R2562:2564 ex35_acfield <> tbl:48 var
+R2566:2566 ex35_acfield <> l:49 var
+def 2581:2586 <> f4_add
+R2595:2597 Corelib.Init.Datatypes <> nat ind
+binder 2589:2589 <> x:50
+binder 2591:2591 <> y:51
+R2602:2604 Corelib.Init.Datatypes <> nat ind
+R2609:2614 ex35_acfield <> unbits def
+R2617:2620 ex35_acfield <> padd def
+R2623:2626 ex35_acfield <> bits def
+R2630:2630 ex35_acfield <> x:50 var
+R2634:2637 ex35_acfield <> bits def
+R2641:2641 ex35_acfield <> y:51 var
+def 2657:2662 <> f4_mul
+R2671:2673 Corelib.Init.Datatypes <> nat ind
+binder 2665:2665 <> x:52
+binder 2667:2667 <> y:53
+R2678:2680 Corelib.Init.Datatypes <> nat ind
+R2687:2692 ex35_acfield <> unbits def
+R2695:2704 ex35_acfield <> reducePoly def
+R2708:2708 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2710:2710 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2712:2712 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2715:2718 ex35_acfield <> conv def
+R2721:2724 ex35_acfield <> bits def
+R2728:2728 ex35_acfield <> x:52 var
+R2732:2735 ex35_acfield <> bits def
+R2739:2739 ex35_acfield <> y:53 var
+def 2756:2762 <> f16_add
+R2771:2773 Corelib.Init.Datatypes <> nat ind
+binder 2765:2765 <> x:54
+binder 2767:2767 <> y:55
+R2778:2780 Corelib.Init.Datatypes <> nat ind
+R2785:2790 ex35_acfield <> unbits def
+R2793:2796 ex35_acfield <> padd def
+R2799:2802 ex35_acfield <> bits def
+R2806:2806 ex35_acfield <> x:54 var
+R2810:2813 ex35_acfield <> bits def
+R2817:2817 ex35_acfield <> y:55 var
+def 2833:2839 <> f16_mul
+R2848:2850 Corelib.Init.Datatypes <> nat ind
+binder 2842:2842 <> x:56
+binder 2844:2844 <> y:57
+R2855:2857 Corelib.Init.Datatypes <> nat ind
+R2864:2869 ex35_acfield <> unbits def
+R2872:2881 ex35_acfield <> reducePoly def
+R2885:2885 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2887:2887 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2889:2889 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2891:2891 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2893:2893 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2896:2899 ex35_acfield <> conv def
+R2902:2905 ex35_acfield <> bits def
+R2909:2909 ex35_acfield <> x:56 var
+R2913:2916 ex35_acfield <> bits def
+R2920:2920 ex35_acfield <> y:57 var
+def 2938:2944 <> f16_dom
+R2948:2951 Corelib.Init.Datatypes <> list ind
+R2953:2955 Corelib.Init.Datatypes <> nat ind
+R2960:2962 Corelib.Lists.ListDef <> seq def
+def 2981:2986 <> f4_dom
+R2990:2993 Corelib.Init.Datatypes <> list ind
+R2995:2997 Corelib.Init.Datatypes <> nat ind
+R3002:3004 Corelib.Lists.ListDef <> seq def
+def 3118:3137 <> f16_no_zero_divisors
+R3309:3311 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R3143:3149 ex35_acfield <> forallb def
+R3283:3291 Stdlib.Lists.List <> list_prod def
+R3301:3307 ex35_acfield <> f16_dom def
+R3293:3299 ex35_acfield <> f16_dom def
+binder 3156:3156 <> p:58
+R3161:3165 Corelib.Init.Datatypes <> implb def
+R3232:3234 Corelib.Init.Datatypes <> orb def
+R3257:3263 Stdlib.Arith.PeanoNat Nat eqb def
+R3266:3268 Corelib.Init.Datatypes <> snd def
+R3270:3270 ex35_acfield <> p:58 var
+R3237:3243 Stdlib.Arith.PeanoNat Nat eqb def
+R3246:3248 Corelib.Init.Datatypes <> fst def
+R3250:3250 ex35_acfield <> p:58 var
+R3168:3174 Stdlib.Arith.PeanoNat Nat eqb def
+R3177:3183 ex35_acfield <> f16_mul def
+R3186:3188 Corelib.Init.Datatypes <> fst def
+R3190:3190 ex35_acfield <> p:58 var
+R3194:3196 Corelib.Init.Datatypes <> snd def
+R3198:3198 ex35_acfield <> p:58 var
+R3312:3315 Corelib.Init.Datatypes <> true constr
+def 3364:3375 <> f16_mul_comm
+R3491:3493 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R3381:3387 ex35_acfield <> forallb def
+R3465:3473 Stdlib.Lists.List <> list_prod def
+R3483:3489 ex35_acfield <> f16_dom def
+R3475:3481 ex35_acfield <> f16_dom def
+binder 3394:3394 <> p:59
+R3399:3405 Stdlib.Arith.PeanoNat Nat eqb def
+R3408:3414 ex35_acfield <> f16_mul def
+R3417:3419 Corelib.Init.Datatypes <> fst def
+R3421:3421 ex35_acfield <> p:59 var
+R3425:3427 Corelib.Init.Datatypes <> snd def
+R3429:3429 ex35_acfield <> p:59 var
+R3434:3440 ex35_acfield <> f16_mul def
+R3443:3445 Corelib.Init.Datatypes <> snd def
+R3447:3447 ex35_acfield <> p:59 var
+R3451:3453 Corelib.Init.Datatypes <> fst def
+R3455:3455 ex35_acfield <> p:59 var
+R3494:3497 Corelib.Init.Datatypes <> true constr
+def 3534:3544 <> f16_mul_one
+R3600:3602 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R3550:3556 ex35_acfield <> forallb def
+R3593:3599 ex35_acfield <> f16_dom def
+binder 3563:3563 <> x:60
+R3568:3574 Stdlib.Arith.PeanoNat Nat eqb def
+R3577:3583 ex35_acfield <> f16_mul def
+R3585:3585 ex35_acfield <> x:60 var
+R3590:3590 ex35_acfield <> x:60 var
+R3603:3606 Corelib.Init.Datatypes <> true constr
+def 3701:3705 <> inv16
+R3712:3714 Corelib.Init.Datatypes <> nat ind
+binder 3708:3708 <> x:61
+R3719:3721 Corelib.Init.Datatypes <> nat ind
+R3734:3737 Stdlib.Lists.List <> find def
+R3774:3780 ex35_acfield <> f16_dom def
+binder 3744:3744 <> y:62
+R3749:3755 Stdlib.Arith.PeanoNat Nat eqb def
+R3758:3764 ex35_acfield <> f16_mul def
+R3766:3766 ex35_acfield <> x:61 var
+R3768:3768 ex35_acfield <> y:62 var
+R3791:3794 Corelib.Init.Datatypes <> Some constr
+R3805:3808 Corelib.Init.Datatypes <> None constr
+def 3831:3839 <> f16_units
+R3934:3936 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R3843:3849 ex35_acfield <> forallb def
+R3927:3933 ex35_acfield <> f16_dom def
+binder 3856:3856 <> x:63
+R3861:3865 Corelib.Init.Datatypes <> implb def
+R3893:3899 Stdlib.Arith.PeanoNat Nat eqb def
+R3902:3908 ex35_acfield <> f16_mul def
+R3910:3910 ex35_acfield <> x:63 var
+R3913:3917 ex35_acfield <> inv16 def
+R3919:3919 ex35_acfield <> x:63 var
+R3868:3871 Corelib.Init.Datatypes <> negb def
+R3874:3880 Stdlib.Arith.PeanoNat Nat eqb def
+R3882:3882 ex35_acfield <> x:63 var
+R3937:3940 Corelib.Init.Datatypes <> true constr
+def 4130:4135 <> evalGF
+R4151:4154 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R4148:4150 Corelib.Init.Datatypes <> nat ind
+R4158:4161 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R4155:4157 Corelib.Init.Datatypes <> nat ind
+R4162:4164 Corelib.Init.Datatypes <> nat ind
+binder 4138:4140 <> mul:64
+binder 4142:4144 <> add:65
+R4172:4175 Corelib.Init.Datatypes <> list ind
+R4177:4179 Corelib.Init.Datatypes <> nat ind
+binder 4168:4168 <> p:66
+R4187:4189 Corelib.Init.Datatypes <> nat ind
+binder 4183:4183 <> x:67
+R4194:4196 Corelib.Init.Datatypes <> nat ind
+R4209:4209 ex35_acfield <> p:66 var
+R4220:4221 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R4233:4236 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R4242:4244 ex35_acfield <> add:65 var
+R4247:4249 ex35_acfield <> mul:64 var
+R4254:4259 ex35_acfield <> evalGF:68 def
+R4271:4271 ex35_acfield <> x:67 var
+R4265:4267 ex35_acfield <> add:65 var
+R4261:4263 ex35_acfield <> mul:64 var
+R4251:4251 ex35_acfield <> x:67 var
+def 4352:4361 <> no_root_f2
+R4441:4443 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R4367:4373 ex35_acfield <> forallb def
+R4436:4436 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4438:4438 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4440:4440 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+binder 4380:4380 <> x:70
+R4385:4388 Corelib.Init.Datatypes <> negb def
+R4391:4397 Stdlib.Arith.PeanoNat Nat eqb def
+R4400:4405 ex35_acfield <> evalGF def
+R4407:4412 ex35_acfield <> f4_mul def
+R4414:4419 ex35_acfield <> f4_add def
+R4421:4421 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4423:4423 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4425:4425 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4427:4427 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4429:4429 ex35_acfield <> x:70 var
+R4444:4447 Corelib.Init.Datatypes <> true constr
+def 4558:4564 <> root_f4
+R4610:4612 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R4568:4574 Stdlib.Arith.PeanoNat Nat eqb def
+R4577:4582 ex35_acfield <> evalGF def
+R4584:4589 ex35_acfield <> f4_mul def
+R4591:4596 ex35_acfield <> f4_add def
+R4598:4598 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4600:4600 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4602:4602 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4604:4604 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4613:4616 Corelib.Init.Datatypes <> true constr
+def 4747:4756 <> no_root_s4
+R4842:4844 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R4762:4768 ex35_acfield <> forallb def
+R4837:4837 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4839:4839 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4841:4841 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+binder 4775:4775 <> x:71
+R4780:4783 Corelib.Init.Datatypes <> negb def
+R4786:4792 Stdlib.Arith.PeanoNat Nat eqb def
+R4795:4800 ex35_acfield <> evalGF def
+R4802:4808 ex35_acfield <> f16_mul def
+R4810:4816 ex35_acfield <> f16_add def
+R4818:4818 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4820:4820 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4822:4822 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4824:4824 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4826:4826 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4828:4828 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R4830:4830 ex35_acfield <> x:71 var
+R4845:4848 Corelib.Init.Datatypes <> true constr
+def 5053:5057 <> alpha
+R5061:5063 Corelib.Init.Datatypes <> nat ind
+R5068:5074 ex35_acfield <> f16_add def
+R5077:5083 ex35_acfield <> f16_mul def
+def 5102:5114 <> f4_inside_f16
+R5168:5170 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R5120:5126 Stdlib.Arith.PeanoNat Nat eqb def
+R5129:5134 ex35_acfield <> evalGF def
+R5136:5142 ex35_acfield <> f16_mul def
+R5144:5150 ex35_acfield <> f16_add def
+R5152:5152 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5154:5154 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5156:5156 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5158:5158 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5160:5164 ex35_acfield <> alpha def
+R5171:5174 Corelib.Init.Datatypes <> true constr
+def 5304:5317 <> f4_copy_closed
+R5513:5515 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R5323:5329 ex35_acfield <> forallb def
+R5447:5455 Stdlib.Lists.List <> list_prod def
+R5485:5485 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5487:5487 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5489:5489 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5495:5495 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5511:5511 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5490:5494 ex35_acfield <> alpha def
+R5496:5502 ex35_acfield <> f16_add def
+R5504:5508 ex35_acfield <> alpha def
+R5457:5457 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5459:5459 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5461:5461 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5467:5467 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5483:5483 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5462:5466 ex35_acfield <> alpha def
+R5468:5474 ex35_acfield <> f16_add def
+R5476:5480 ex35_acfield <> alpha def
+binder 5336:5336 <> p:72
+R5341:5347 ex35_acfield <> existsb def
+R5413:5413 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5415:5415 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5417:5417 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5423:5423 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5439:5439 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5418:5422 ex35_acfield <> alpha def
+R5424:5430 ex35_acfield <> f16_add def
+R5432:5436 ex35_acfield <> alpha def
+R5350:5356 Stdlib.Arith.PeanoNat Nat eqb def
+R5359:5365 ex35_acfield <> f16_mul def
+R5368:5370 Corelib.Init.Datatypes <> fst def
+R5372:5372 ex35_acfield <> p:72 var
+R5376:5378 Corelib.Init.Datatypes <> snd def
+R5380:5380 ex35_acfield <> p:72 var
+R5516:5519 Corelib.Init.Datatypes <> true constr
+def 5669:5675 <> roots16
+R5682:5685 Corelib.Init.Datatypes <> list ind
+R5687:5689 Corelib.Init.Datatypes <> nat ind
+binder 5678:5678 <> p:73
+R5694:5697 Corelib.Init.Datatypes <> list ind
+R5699:5701 Corelib.Init.Datatypes <> nat ind
+R5708:5713 Stdlib.Lists.List <> filter def
+R5765:5771 ex35_acfield <> f16_dom def
+binder 5720:5720 <> x:74
+R5725:5731 Stdlib.Arith.PeanoNat Nat eqb def
+R5734:5739 ex35_acfield <> evalGF def
+R5741:5747 ex35_acfield <> f16_mul def
+R5749:5755 ex35_acfield <> f16_add def
+R5757:5757 ex35_acfield <> p:73 var
+R5759:5759 ex35_acfield <> x:74 var
+def 5783:5792 <> roots_x3_1
+R5850:5852 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R5796:5801 ex35_acfield <> eqsetb def
+R5804:5810 ex35_acfield <> roots16 def
+R5812:5812 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5814:5814 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5816:5816 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5818:5818 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5820:5820 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5823:5823 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5825:5826 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5832:5833 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5849:5849 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R5827:5831 ex35_acfield <> alpha def
+R5834:5840 ex35_acfield <> f16_add def
+R5842:5846 ex35_acfield <> alpha def
+R5853:5856 Corelib.Init.Datatypes <> true constr
+def 6007:6012 <> evalF3
+R6019:6022 Corelib.Init.Datatypes <> list ind
+R6024:6026 Corelib.Init.Datatypes <> nat ind
+binder 6015:6015 <> p:75
+R6034:6036 Corelib.Init.Datatypes <> nat ind
+binder 6030:6030 <> x:76
+R6041:6043 Corelib.Init.Datatypes <> nat ind
+R6056:6056 ex35_acfield <> p:75 var
+R6067:6068 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R6080:6083 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R6089:6089 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R6116:6121 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R6112:6114 Corelib.Init.Peano <> ::nat_scope:x_'+'_x not
+R6090:6090 Corelib.Init.Peano <> ::nat_scope:x_'*'_x not
+R6098:6101 Corelib.Init.Peano <> ::nat_scope:x_'*'_x not
+R6092:6096 Stdlib.Arith.PeanoNat <> ::nat_scope:x_'mod'_x not
+R6091:6091 ex35_acfield <> x:76 var
+R6102:6107 ex35_acfield <> evalF3:77 def
+R6111:6111 ex35_acfield <> x:76 var
+def 6143:6145 <> vf3
+R6152:6155 Corelib.Init.Datatypes <> list ind
+R6157:6159 Corelib.Init.Datatypes <> nat ind
+binder 6148:6148 <> p:79
+R6164:6167 Corelib.Init.Datatypes <> list ind
+R6169:6171 Corelib.Init.Datatypes <> nat ind
+R6178:6183 Stdlib.Lists.List <> filter def
+R6219:6219 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6221:6221 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6223:6223 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6225:6225 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+binder 6190:6190 <> x:80
+R6195:6201 Stdlib.Arith.PeanoNat Nat eqb def
+R6204:6209 ex35_acfield <> evalF3 def
+R6211:6211 ex35_acfield <> p:79 var
+R6213:6213 ex35_acfield <> x:80 var
+def 6396:6404 <> allPolys3
+R6408:6411 Corelib.Init.Datatypes <> list ind
+R6414:6417 Corelib.Init.Datatypes <> list ind
+R6419:6421 Corelib.Init.Datatypes <> nat ind
+R6429:6436 Stdlib.Lists.List <> flat_map def
+R6514:6514 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6516:6516 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6518:6518 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6520:6520 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+binder 6443:6444 <> c0:81
+R6449:6456 Stdlib.Lists.List <> flat_map def
+R6505:6505 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6507:6507 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6509:6509 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6511:6511 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+binder 6463:6464 <> c1:82
+R6469:6471 Corelib.Lists.ListDef <> map def
+R6496:6496 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6498:6498 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6500:6500 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6502:6502 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+binder 6478:6479 <> c2:83
+R6484:6484 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6487:6487 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6490:6490 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6493:6493 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6485:6486 ex35_acfield <> c0:81 var
+R6488:6489 ex35_acfield <> c1:82 var
+R6491:6492 ex35_acfield <> c2:83 var
+def 6535:6539 <> dedup
+R6546:6549 Corelib.Init.Datatypes <> list ind
+R6552:6555 Corelib.Init.Datatypes <> list ind
+R6557:6559 Corelib.Init.Datatypes <> nat ind
+binder 6542:6542 <> l:84
+R6565:6568 Corelib.Init.Datatypes <> list ind
+R6571:6574 Corelib.Init.Datatypes <> list ind
+R6576:6578 Corelib.Init.Datatypes <> nat ind
+R6586:6594 Stdlib.Lists.List <> fold_left def
+R6675:6676 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R6673:6673 ex35_acfield <> l:84 var
+binder 6601:6603 <> acc:85
+binder 6605:6605 <> s:86
+R6613:6619 ex35_acfield <> existsb def
+R6643:6645 ex35_acfield <> acc:85 var
+binder 6626:6626 <> t:87
+R6631:6636 ex35_acfield <> eqsetb def
+R6638:6638 ex35_acfield <> t:87 var
+R6640:6640 ex35_acfield <> s:86 var
+R6664:6667 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R6661:6663 ex35_acfield <> acc:85 var
+R6668:6668 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R6670:6670 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R6669:6669 ex35_acfield <> s:86 var
+R6652:6654 ex35_acfield <> acc:85 var
+def 6688:6712 <> constructible_collapse_f3
+R6809:6813 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R6718:6718 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R6753:6754 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R6808:6808 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R6719:6724 Corelib.Init.Datatypes <> length def
+R6727:6731 ex35_acfield <> dedup def
+R6734:6736 Corelib.Lists.ListDef <> map def
+R6742:6750 ex35_acfield <> allPolys3 def
+R6738:6740 ex35_acfield <> vf3 def
+R6755:6760 Corelib.Init.Datatypes <> length def
+R6763:6767 ex35_acfield <> dedup def
+R6770:6772 Corelib.Lists.ListDef <> map def
+R6803:6803 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R6805:6805 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+binder 6779:6779 <> s:88
+R6795:6798 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R6784:6786 ex35_acfield <> vf3 def
+R6788:6788 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6790:6790 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6792:6792 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6794:6794 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R6799:6800 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R6814:6814 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R6816:6817 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R6819:6819 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+def 7110:7116 <> rem_dup
+R7123:7126 Corelib.Init.Datatypes <> list ind
+R7128:7130 Corelib.Init.Datatypes <> nat ind
+binder 7119:7119 <> l:89
+R7135:7138 Corelib.Init.Datatypes <> list ind
+R7140:7142 Corelib.Init.Datatypes <> nat ind
+R7155:7155 ex35_acfield <> l:89 var
+R7166:7167 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R7172:7173 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R7180:7183 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R7192:7198 ex35_acfield <> existsb def
+R7201:7207 Stdlib.Arith.PeanoNat Nat eqb def
+R7235:7238 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R7239:7245 ex35_acfield <> rem_dup:90 def
+R7219:7225 ex35_acfield <> rem_dup:90 def
+def 7266:7274 <> closeStep
+R7281:7284 Corelib.Init.Datatypes <> list ind
+R7286:7288 Corelib.Init.Datatypes <> nat ind
+binder 7277:7277 <> s:92
+R7293:7296 Corelib.Init.Datatypes <> list ind
+R7298:7300 Corelib.Init.Datatypes <> nat ind
+R7307:7315 Stdlib.Lists.List <> fold_left def
+R7537:7537 ex35_acfield <> s:92 var
+R7522:7530 Stdlib.Lists.List <> list_prod def
+R7534:7534 ex35_acfield <> s:92 var
+R7532:7532 ex35_acfield <> s:92 var
+binder 7322:7324 <> acc:94
+binder 7326:7326 <> p:95
+R7346:7348 Corelib.Init.Datatypes <> fst def
+R7350:7350 ex35_acfield <> p:95 var
+binder 7341:7341 <> x:96
+R7364:7366 Corelib.Init.Datatypes <> snd def
+R7368:7368 ex35_acfield <> p:95 var
+binder 7359:7359 <> y:97
+R7379:7387 Stdlib.Lists.List <> fold_left def
+R7512:7514 ex35_acfield <> acc:94 var
+R7476:7476 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7488:7489 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7501:7502 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7510:7510 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7477:7483 ex35_acfield <> f16_add def
+R7485:7485 ex35_acfield <> x:96 var
+R7487:7487 ex35_acfield <> y:97 var
+R7490:7496 ex35_acfield <> f16_mul def
+R7498:7498 ex35_acfield <> x:96 var
+R7500:7500 ex35_acfield <> y:97 var
+R7503:7507 ex35_acfield <> inv16 def
+R7509:7509 ex35_acfield <> x:96 var
+binder 7394:7397 <> acc2:98
+binder 7399:7399 <> e:99
+R7407:7413 ex35_acfield <> existsb def
+R7427:7430 ex35_acfield <> acc2:98 var
+R7416:7422 Stdlib.Arith.PeanoNat Nat eqb def
+R7424:7424 ex35_acfield <> e:99 var
+R7451:7454 Corelib.Init.Datatypes <> ::list_scope:x_'++'_x not
+R7447:7450 ex35_acfield <> acc2:98 var
+R7455:7455 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R7457:7457 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R7456:7456 ex35_acfield <> e:99 var
+R7437:7440 ex35_acfield <> acc2:98 var
+def 7550:7556 <> closeTo
+R7566:7568 Corelib.Init.Datatypes <> nat ind
+binder 7559:7562 <> fuel:100
+R7576:7579 Corelib.Init.Datatypes <> list ind
+R7581:7583 Corelib.Init.Datatypes <> nat ind
+binder 7572:7572 <> s:101
+R7588:7591 Corelib.Init.Datatypes <> list ind
+R7593:7595 Corelib.Init.Datatypes <> nat ind
+R7608:7611 ex35_acfield <> fuel:100 var
+R7627:7627 ex35_acfield <> s:101 var
+R7633:7633 Corelib.Init.Datatypes <> S constr
+R7650:7658 ex35_acfield <> closeStep def
+R7660:7660 ex35_acfield <> s:101 var
+binder 7644:7645 <> s':104
+R7679:7685 Stdlib.Arith.PeanoNat Nat eqb def
+R7688:7693 Corelib.Init.Datatypes <> length def
+R7695:7696 ex35_acfield <> s':104 var
+R7700:7705 Corelib.Init.Datatypes <> length def
+R7707:7707 ex35_acfield <> s:101 var
+R7723:7729 ex35_acfield <> closeTo:102 def
+R7733:7734 ex35_acfield <> s':104 var
+R7715:7716 ex35_acfield <> s':104 var
+def 7755:7759 <> acl16
+R7766:7769 Corelib.Init.Datatypes <> list ind
+R7771:7773 Corelib.Init.Datatypes <> nat ind
+binder 7762:7762 <> A:105
+R7778:7781 Corelib.Init.Datatypes <> list ind
+R7783:7785 Corelib.Init.Datatypes <> nat ind
+R7790:7796 ex35_acfield <> closeTo def
+R7801:7807 ex35_acfield <> rem_dup def
+R7811:7814 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R7816:7819 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R7820:7820 ex35_acfield <> A:105 var
+def 7932:7941 <> acl_layers
+R8058:8060 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R7947:7947 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7971:7975 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8026:8030 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8057:8057 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R7948:7953 ex35_acfield <> eqsetb def
+R7956:7960 ex35_acfield <> acl16 def
+R7962:7963 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R7966:7966 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7968:7968 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7970:7970 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R7976:7981 ex35_acfield <> eqsetb def
+R7984:7988 ex35_acfield <> acl16 def
+R7990:7990 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R7996:7996 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R7991:7995 ex35_acfield <> alpha def
+R7999:7999 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8001:8001 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8003:8003 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8009:8009 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8025:8025 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8004:8008 ex35_acfield <> alpha def
+R8010:8016 ex35_acfield <> f16_add def
+R8018:8022 ex35_acfield <> alpha def
+R8031:8036 ex35_acfield <> eqsetb def
+R8039:8043 ex35_acfield <> acl16 def
+R8045:8045 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R8047:8047 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R8050:8056 ex35_acfield <> f16_dom def
+R8061:8061 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8066:8067 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8072:8073 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8078:8078 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R8062:8065 Corelib.Init.Datatypes <> true constr
+R8068:8071 Corelib.Init.Datatypes <> true constr
+R8074:8077 Corelib.Init.Datatypes <> true constr
+def 8469:8474 <> f4copy
+R8478:8481 Corelib.Init.Datatypes <> list ind
+R8483:8485 Corelib.Init.Datatypes <> nat ind
+R8490:8490 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8492:8492 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8494:8494 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8500:8500 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8516:8516 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8495:8499 ex35_acfield <> alpha def
+R8501:8507 ex35_acfield <> f16_add def
+R8509:8513 ex35_acfield <> alpha def
+def 8587:8609 <> exchange_counterexample
+R8709:8711 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R8615:8618 Corelib.Init.Datatypes <> andb def
+R8666:8669 Corelib.Init.Datatypes <> negb def
+R8672:8678 ex35_acfield <> existsb def
+R8693:8697 ex35_acfield <> acl16 def
+R8699:8699 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R8705:8705 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R8700:8704 ex35_acfield <> alpha def
+R8681:8687 Stdlib.Arith.PeanoNat Nat eqb def
+R8621:8627 ex35_acfield <> existsb def
+R8646:8650 ex35_acfield <> acl16 def
+R8652:8652 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R8654:8654 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R8630:8636 Stdlib.Arith.PeanoNat Nat eqb def
+R8638:8642 ex35_acfield <> alpha def
+R8712:8715 Corelib.Init.Datatypes <> true constr
+def 8912:8930 <> s_algebraic_over_f4
+R8984:8986 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R8936:8942 Stdlib.Arith.PeanoNat Nat eqb def
+R8945:8950 ex35_acfield <> evalGF def
+R8952:8958 ex35_acfield <> f16_mul def
+R8960:8966 ex35_acfield <> f16_add def
+R8968:8968 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8974:8974 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8976:8976 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8978:8978 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R8969:8973 ex35_acfield <> alpha def
+R8987:8990 Corelib.Init.Datatypes <> true constr
+def 9125:9134 <> inFailZone
+R9141:9144 Corelib.Init.Datatypes <> list ind
+R9146:9148 Corelib.Init.Datatypes <> nat ind
+binder 9137:9137 <> A:106
+R9158:9160 Corelib.Init.Datatypes <> nat ind
+binder 9152:9152 <> a:107
+binder 9154:9154 <> b:108
+R9165:9168 Corelib.Init.Datatypes <> bool ind
+R9175:9178 Corelib.Init.Datatypes <> andb def
+R9264:9267 Corelib.Init.Datatypes <> andb def
+R9330:9333 Corelib.Init.Datatypes <> negb def
+R9336:9342 ex35_acfield <> existsb def
+R9356:9361 ex35_acfield <> f4copy def
+R9345:9351 Stdlib.Arith.PeanoNat Nat eqb def
+R9353:9353 ex35_acfield <> a:107 var
+R9270:9276 ex35_acfield <> existsb def
+R9290:9290 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9296:9297 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9313:9313 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9291:9295 ex35_acfield <> alpha def
+R9298:9304 ex35_acfield <> f16_add def
+R9306:9310 ex35_acfield <> alpha def
+R9279:9285 Stdlib.Arith.PeanoNat Nat eqb def
+R9287:9287 ex35_acfield <> b:108 var
+R9181:9187 ex35_acfield <> forallb def
+R9249:9249 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9251:9251 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9253:9253 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+binder 9194:9194 <> x:109
+R9199:9201 Corelib.Init.Datatypes <> orb def
+R9235:9241 Stdlib.Arith.PeanoNat Nat eqb def
+R9243:9243 ex35_acfield <> x:109 var
+R9204:9207 Corelib.Init.Datatypes <> negb def
+R9210:9216 ex35_acfield <> existsb def
+R9230:9230 ex35_acfield <> A:106 var
+R9219:9225 Stdlib.Arith.PeanoNat Nat eqb def
+R9227:9227 ex35_acfield <> x:109 var
+def 9379:9391 <> exchangeCheck
+R9398:9401 Corelib.Init.Datatypes <> list ind
+R9403:9405 Corelib.Init.Datatypes <> nat ind
+binder 9394:9394 <> A:110
+R9415:9417 Corelib.Init.Datatypes <> nat ind
+binder 9409:9409 <> a:111
+binder 9411:9411 <> b:112
+R9422:9425 Corelib.Init.Datatypes <> bool ind
+R9432:9436 Corelib.Init.Datatypes <> implb def
+R9546:9552 ex35_acfield <> existsb def
+R9567:9571 ex35_acfield <> acl16 def
+R9575:9578 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R9574:9574 ex35_acfield <> b:112 var
+R9579:9579 ex35_acfield <> A:110 var
+R9555:9561 Stdlib.Arith.PeanoNat Nat eqb def
+R9563:9563 ex35_acfield <> a:111 var
+R9439:9442 Corelib.Init.Datatypes <> andb def
+R9498:9501 Corelib.Init.Datatypes <> negb def
+R9504:9510 ex35_acfield <> existsb def
+R9525:9529 ex35_acfield <> acl16 def
+R9531:9531 ex35_acfield <> A:110 var
+R9513:9519 Stdlib.Arith.PeanoNat Nat eqb def
+R9521:9521 ex35_acfield <> b:112 var
+R9445:9451 ex35_acfield <> existsb def
+R9466:9470 ex35_acfield <> acl16 def
+R9474:9477 Corelib.Init.Datatypes <> ::list_scope:x_'::'_x not
+R9473:9473 ex35_acfield <> a:111 var
+R9478:9478 ex35_acfield <> A:110 var
+R9454:9460 Stdlib.Arith.PeanoNat Nat eqb def
+R9462:9462 ex35_acfield <> b:112 var
+def 9597:9605 <> exchCases
+R9609:9612 Corelib.Init.Datatypes <> list ind
+R9623:9626 Corelib.Init.Datatypes <> ::type_scope:x_'*'_x not
+R9636:9636 Corelib.Init.Datatypes <> ::type_scope:x_'*'_x not
+R9615:9618 Corelib.Init.Datatypes <> list ind
+R9620:9622 Corelib.Init.Datatypes <> nat ind
+R9630:9632 Corelib.Init.Datatypes <> ::type_scope:x_'*'_x not
+R9627:9629 Corelib.Init.Datatypes <> nat ind
+R9633:9635 Corelib.Init.Datatypes <> nat ind
+R9644:9651 Stdlib.Lists.List <> flat_map def
+R9718:9718 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9721:9722 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9730:9730 Stdlib.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R9719:9720 Stdlib.Lists.List ListNotations ::list_scope:'['_']' not
+R9723:9723 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R9729:9729 Stdlib.Lists.List ListNotations ::list_scope:'['_x_']' not
+R9724:9728 ex35_acfield <> alpha def
+binder 9658:9658 <> A:113
+R9663:9665 Corelib.Lists.ListDef <> map def
+R9686:9694 Stdlib.Lists.List <> list_prod def
+R9704:9710 ex35_acfield <> f16_dom def
+R9696:9702 ex35_acfield <> f16_dom def
+binder 9672:9672 <> p:114
+R9677:9677 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9679:9680 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9682:9682 Corelib.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R9678:9678 ex35_acfield <> A:113 var
+R9681:9681 ex35_acfield <> p:114 var
+def 9742:9770 <> exchange_f16_outside_failzone
+R9937:9939 Corelib.Init.Logic <> ::type_scope:x_'='_x not
+R9776:9782 ex35_acfield <> forallb def
+R9928:9936 ex35_acfield <> exchCases def
+binder 9789:9789 <> c:115
+R9794:9796 Corelib.Init.Datatypes <> orb def
+R9872:9884 ex35_acfield <> exchangeCheck def
+R9887:9889 Corelib.Init.Datatypes <> fst def
+R9891:9891 ex35_acfield <> c:115 var
+R9895:9897 Corelib.Init.Datatypes <> fst def
+R9900:9902 Corelib.Init.Datatypes <> snd def
+R9904:9904 ex35_acfield <> c:115 var
+R9909:9911 Corelib.Init.Datatypes <> snd def
+R9914:9916 Corelib.Init.Datatypes <> snd def
+R9918:9918 ex35_acfield <> c:115 var
+R9799:9808 ex35_acfield <> inFailZone def
+R9811:9813 Corelib.Init.Datatypes <> fst def
+R9815:9815 ex35_acfield <> c:115 var
+R9819:9821 Corelib.Init.Datatypes <> fst def
+R9824:9826 Corelib.Init.Datatypes <> snd def
+R9828:9828 ex35_acfield <> c:115 var
+R9833:9835 Corelib.Init.Datatypes <> snd def
+R9838:9840 Corelib.Init.Datatypes <> snd def
+R9842:9842 ex35_acfield <> c:115 var
+R9940:9943 Corelib.Init.Datatypes <> true constr
+R10002:10030 ex35_acfield <> exchange_f16_outside_failzone ex
