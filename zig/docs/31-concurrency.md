@@ -1,5 +1,7 @@
 # 31 · 并发进阶
 
+> **阅读位置**：第五篇 · 与系统对话（6/8，并发线） ｜ **承前**：[19 并发](19-threads.md)、[12 集合](12-collections.md) ｜ **启后**：[43 WorkQueue 的终止不变量](43-zlocate.md) 是它的落地。
+>
 > 对应示例：`examples/31_concurrency/main.zig`（1755 行，18 个 test）
 >
 > 前置章节：[19 并发](19-threads.md) 讲基础线程（spawn/join、Mutex、Condition、Semaphore、

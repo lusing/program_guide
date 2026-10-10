@@ -1,5 +1,7 @@
 # 43 · 实战：并发文件索引器 zlocate
 
+> **阅读位置**：第六篇 · 综合实战（8/8，全教程收官） ｜ **承前**：并发线 [19](19-threads.md)→[31](31-concurrency.md)→[39](39-asyncio.md)、[27 遍历](27-tree.md)、[12 集合](12-collections.md) ｜ **启后**：无——这里是终点，也是你自己的起点。
+>
 > 对应示例：`examples/43_zlocate/main.zig`（547 行，4 个测试）
 >
 > 取材 Tsoukalos ch8（zlocate：并发文件索引器），升级到 0.17。ch8 的完整

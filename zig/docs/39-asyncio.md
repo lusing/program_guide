@@ -1,6 +1,7 @@
 # 39 · 异步 IO 与并发编程
 
-
+> **阅读位置**：第五篇 · 与系统对话（7/8，并发线） ｜ **承前**：[31 并发进阶](31-concurrency.md)、[29 网络](29-networking.md)（echo 演示） ｜ **启后**：[43 并行采集](43-zlocate.md)。
+>
 > 对应示例：`examples/39_asyncio/main.zig`（335 行，5 个测试）
 >
 > 取材 Tsoukalos ch8/ch9（`std.Io` 异步模型、fan-out/fan-in、TCP 代理），按 0.17.0

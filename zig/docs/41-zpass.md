@@ -1,6 +1,7 @@
 # 41 · 实战：随机数与密码生成器 zpass
 
-
+> **阅读位置**：第六篇 · 综合实战（6/8） ｜ **承前**：[03 位宽整数](03-types.md)、[26 编码](26-encoding.md)、[20 std.Io](20-files-io.md) ｜ **启后**：随机性是 43 采样与一切测试数据的来源。
+>
 > 对应示例：`examples/41_zpass/main.zig`（412 行，4 个测试）
 >
 > 随机数的完整路线图：三种随机源（DefaultPrng / io.random / io.randomSecure）、

@@ -1,5 +1,7 @@
 # 22 · 进程
 
+> **阅读位置**：第三篇 · 工程化（5/7，进程与调试） ｜ **承前**：[16 构建](16-build.md) ｜ **启后**：[23 调试](23-debugging.md) 的子进程技巧、[38 的 fork/execve/waitpid](38-daemon.md)；文件 IO 深化在第五篇 [20](20-files-io.md)。
+>
 > 对应示例：`examples/22_process/main.zig`（779 行，15 个小节，15 个 test）
 >
 > 本章把 0.17.0 上"进程相关的每一个 API"逐个实测一遍：`std.process.Init` 的字段、

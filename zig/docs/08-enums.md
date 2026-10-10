@@ -1,5 +1,7 @@
 # 08 · 枚举与联合
 
+> **阅读位置**：第一篇 · 语言核心（6/9） ｜ **承前**：[07 结构体](07-structs.md) ｜ **启后**：tagged union 撑起 [33 的 AST](33-zcalc.md) 与 [39 的 Select 结果](39-asyncio.md)；packed struct 去 [25](25-binary.md)。
+>
 > 对应示例：`examples/08_enums/main.zig`
 >
 > 本章是 0.17 迁移里**改动最狠**的一章。枚举 ↔ 整数的三个内建函数全部改名，

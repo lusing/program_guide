@@ -1,5 +1,7 @@
 # 07 · 结构体
 
+> **阅读位置**：第一篇 · 语言核心（5/9） ｜ **承前**：[06 切片](06-slices.md) ｜ **启后**：struct 是 [11 Allocator](11-allocators.md)、[25 extern struct](25-binary.md)、[40 wire 格式](40-zunzip.md) 的载体。
+>
 > 对应示例：`examples/07_structs/main.zig`（680 行，14 个 `test`），另有 `examples/07_structs/helper2.zig` 演示「文件即struct」
 >
 > Zig 没有类。结构体是Zig 里唯一的"用户自定义聚合类型"，它同时扮演三个角色：**数据布局**（字段 + 内存布局）、**命名空间**（常量 / 函数 / 嵌套类型挂在类型上）、**值语义载体**（赋值即拷贝）。这一章要把这三层都讲透，因为后面每一章都会用到它们的组合。读完你应该能自己回答：为什么 `const p = Point{.x=1}; p.x = 2;` 编译不过，而 `var q = Point{.x=1}; q.translate(1,1);` 里的 `translate` 能改到 `q`。

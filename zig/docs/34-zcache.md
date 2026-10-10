@@ -1,6 +1,7 @@
 # 34 · 实战：LRU 缓存服务器 zcache
 
-
+> **阅读位置**：第六篇 · 综合实战（3/8） ｜ **承前**：[12 HashMap](12-collections.md)、[29/30 网络](29-networking.md)、[19 线程](19-threads.md) ｜ **启后**：常驻服务形态，配合 [38 守护进程](38-daemon.md) 部署。
+>
 > 对应示例：`examples/34_zcache/main.zig`（1785 行，18 个测试）
 >
 > 收官工程：内存 KV 缓存——LRU 淘汰核 + TCP 行协议 + 并发访问。取材 Tsoukalos

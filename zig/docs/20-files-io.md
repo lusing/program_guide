@@ -1,5 +1,7 @@
 # 20 · 文件与 IO
 
+> **阅读位置**：第五篇 · 与系统对话（1/8，文件线） ｜ **承前**：[06 切片](06-slices.md)、[11 分配器](11-allocators.md)、[26 流](26-encoding.md) ｜ **启后**：[27 遍历](27-tree.md)、[28 监视](28-watch.md)、[37 FileGuard](37-fileguard.md)、[42 /proc 解析](42-memsrv.md)。
+>
 > 对应示例：`examples/20_files/main.zig`（871 行，16 个 test）
 >
 > 0.16 是一次 breaking 大迁移：`std.fs.File` / `std.fs.Dir` **并入 `std.Io`**，

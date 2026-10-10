@@ -1,5 +1,7 @@
 # 02 · 第一个程序
 
+> **阅读位置**：开篇 ｜ **承前**：[01 全景](01-overview.md) ｜ **启后**：缓冲 Writer 与 `std.process.Init` 入口是之后每一章示例的公共骨架。
+>
 > 对应示例：`examples/02_hello/main.zig`
 >
 > 这一章不写"Hello World"，而是写一个**把之后每章都要用到的东西一次性摊开**

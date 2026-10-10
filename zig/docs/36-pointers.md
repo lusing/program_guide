@@ -1,5 +1,7 @@
 # 36 · 指针与内存深水区
 
+> **阅读位置**：第一篇 · 语言核心（9/9，收官） ｜ **承前**：[06 切片](06-slices.md)、[07 结构体](07-structs.md)、[11 分配器](11-allocators.md) ｜ **启后**：[25](25-binary.md) 的 ptrCast、[21](21-asm.md) 的 volatile、[17](17-c-interop.md) 的指针互转都在这里钉死。
+
 11 章讲过分配器五件套（`alloc` / `free` / `resize` / `create` / `destroy`）和各分配器的定位，本章不再重复。本章专攻**指针本身**——那些 06 章讲切片时按下不表的深水区：`volatile`、指针与整数互转、两种"重解释"的分工、零尺寸类型、`anyopaque`、强转与 peer 类型解析的完整规则、`[*c]T` 之祸、位对齐指针。取材《Learning Zig》第 9 章（Memory Management）与第 12 章（Sophisticated Topics）的指针半区，原书是 0.15 时代写法，本章全部按 **0.17.0 实测**重写——其中三条结论（`[*]T` 的算术语法、ZST 的地址、`@ptrFromInt` 的对齐检查时机）跟旧资料都不一样，都以本机实测为准。示例在 `examples/36_pointers/main.zig`，11 个 test 块钉住每节语义。
 
 ## 36.1 显式可变性：可变性写进指针类型

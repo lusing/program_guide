@@ -1,5 +1,7 @@
 # 12 · 集合
 
+> **阅读位置**：第二篇 · 记忆与编译期（2/4） ｜ **承前**：[11 分配器](11-allocators.md) ｜ **启后**：ArrayList/HashMap 是 [24 grep](24-minigrep.md)、[34 zcache](34-zcache.md)、[37 FileGuard](37-fileguard.md)、[43 zlocate](43-zlocate.md) 的清册。
+>
 > 对应示例：`examples/12_collections/main.zig`
 >
 > Zig 的集合层不是"库"，是**标准库提供的一组纯数据结构**——它们没有隐式的全局状态，
