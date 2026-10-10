@@ -1,20 +1,33 @@
 # SDL2 编程指南示例集
 
-SDL2 C++ 教程与可编译示例。示例本身是跨平台代码（只用 SDL2 公共 API +
-`SDL_MAIN_HANDLED`），两个构建入口分别覆盖 Windows/MSVC 与 macOS/Linux/clang。
+SDL2 C++ 教程与可编译示例。正文按章拆分在 `docs/`（12 章，01–10 与示例同号），
+示例本身是跨平台代码（只用 SDL2 公共 API + `SDL_MAIN_HANDLED`），两个构建入口
+分别覆盖 Windows/MSVC 与 macOS/Linux/clang。
 
 ## 目录结构
 
 <!-- 目录结构示意，非运行输出 -->
 ```text
 sdl2/
-├── README.md              本文件：工具链 + 验证状态 + 平台差异
-├── SDL2编程指南.md        教程正文（11 章，章号 = 示例号）
-├── CHEATSheet.md          语法速查 + 实测坑位索引
+├── README.md              本文件：分章导航 + 工具链 + 验证状态 + 平台差异
+├── CHEATSheet.md          语法速查 + 40 条实测坑位索引
 ├── run-all.sh             验证入口（shell 版：macOS / Linux）
 ├── build.ps1              验证入口（PowerShell 版：Windows / MSVC）
+├── docs/                  12 章正文（NN-slug.md，章号 = 示例号；11/12 无示例）
+│   ├── 01-init-version.md
+│   ├── 02-window-renderer.md
+│   ├── 03-event-loop.md
+│   ├── 04-surface-texture.md
+│   ├── 05-draw-primitives.md
+│   ├── 06-timer-fps.md
+│   ├── 07-keyboard-state.md
+│   ├── 08-audio-callback.md
+│   ├── 09-threads-mutex.md
+│   ├── 10-raii-wrappers.md
+│   ├── 11-platform-macos.md     平台差异（macOS ↔ Windows）
+│   └── 12-verification.md       统一编译验证（七条判定 + 双通道）
 ├── tools/
-│   └── check_docs.py      文档机器核查（章节↔示例 / 输出引用 / 坑位数）
+│   └── check_docs.py      文档机器核查（章节↔示例 / 输出对账 / 坑位 / 导航 / 正文自足）
 ├── examples/              10 个独立单文件示例
 │   ├── 01_init_version.cpp
 │   ├── 02_window_renderer.cpp
@@ -29,13 +42,41 @@ sdl2/
 └── build/                 验证产物（可删）
 ```
 
+## 分章导航
+
+**第一部分 图形主线（窗口 → 事件 → 像素 → 绘制）**
+
+1. [初始化与版本：把入口权拿回自己手里](docs/01-init-version.md)
+2. [窗口与渲染器：加速后端拿不到怎么办](docs/02-window-renderer.md)
+3. [事件循环骨架：PollEvent 与"没人点关闭"的退出](docs/03-event-loop.md)
+4. [Surface 与 Texture：像素在 CPU 还是在 GPU](docs/04-surface-texture.md)
+5. [基础绘制 API：返回 void 的 Present 怎么判成败](docs/05-draw-primitives.md)
+
+**第二部分 时间与输入**
+
+6. [计时与帧率：哪些数字能进字节比对](docs/06-timer-fps.md)
+7. [键盘输入状态：状态表、PumpEvents 与那个 512](docs/07-keyboard-state.md)
+
+**第三部分 音频与并发**
+
+8. [音频回调模型：desired/obtained 与打开后的暂停态](docs/08-audio-callback.md)
+9. [线程与互斥锁：让 `counter=2000` 成为确定性断言](docs/09-threads-mutex.md)
+
+**第四部分 C++ 封装与工程侧**
+
+10. [C++ RAII 封装：不泄漏不等于顺序对](docs/10-raii-wrappers.md)
+11. [平台差异：macOS 与 Windows 的构建和运行分野](docs/11-platform-macos.md)
+12. [统一编译验证：七条判定与双通道](docs/12-verification.md)
+
+坑位共 **40 条实测坑位**，按章编号 1–40，索引见 [CHEATSheet.md](CHEATSheet.md)。
+
 ## 构建工具链
 
 ### macOS（本机实测）
 
 | 项 | 值 |
 |---|---|
-| 编译器 | Apple clang 16.0.0（`x86_64-apple-darwin23.6.0`，Xcode CLT） |
+| 编译器 | Apple clang 17.0.0（`x86_64-apple-darwin24.6.0`，Xcode CLT） |
 | SDL2 | 2.32.10，MacPorts 装在 `/opt/local` |
 | 配置工具 | `/opt/local/bin/sdl2-config`（退回 `pkg-config sdl2`） |
 | 头文件 | `-I/opt/local/include/SDL2 -D_THREAD_SAFE` |
@@ -79,9 +120,22 @@ Windows：
 .\build.ps1 -Clean
 ```
 
+文档核查（五关：章节↔示例、输出块与 build 产物对账、坑位编号自洽、导航链接有效、
+**示例每一行代码都在正文里有出处**）：
+
+```bash
+python3 tools/check_docs.py
+```
+
+判定标准（两个入口共用，shell 版多一条双通道比对）与每条的存在理由，
+正文见 [12 章 · 统一编译验证](docs/12-verification.md)：编译退出码 0 且编译期
+stderr 为空（`-Wall -Wextra`，任何告警即失败）→ 运行退出码 0 → 运行 stderr 为空
+→ stdout 含 `==== NN 开始/结束 ====` 双标记 → 区间非空且不含控制字符 → 同通道
+两跑逐字节一致 → shared 与 static 两条通道逐字节一致。
+
 ## 验证状态
 
-**macOS（Darwin 23.6 x86_64，Apple clang 16.0.0 + SDL2 2.32.10，2026-09-22 实测）**
+**macOS（Darwin 24.6 x86_64，Apple clang 17.0.0 + SDL2 2.32.10，2026-10-10 实测）**
 
 | 场景 | 结果 |
 |---|---|
@@ -92,20 +146,10 @@ Windows：
 Windows/MSVC 侧：本机无 MSVC，`build.ps1` 只做了 PowerShell 语法解析通过，
 **未实跑**，其判定逻辑与 `run-all.sh` 逐条对齐（详见文件头注释）。
 
-判定标准（两个入口共用，shell 版多一条双通道比对）：
-
-1. 编译退出码 0，且编译期 stderr 为空
-2. 运行退出码 0
-3. 运行 stderr 为空
-4. stdout 里同时出现 `==== NN 开始 ====` 与 `==== NN 结束 ====`
-5. 两标记之间的区间非空，且不含控制字符
-6. 同一通道连跑两次，区间逐字节一致
-7. **（仅 shell 版）** shared 与 static 两条通道的区间逐字节一致
-
-第 7 条的存在理由：两个产物由同一份源码编译，比对不是为了验证两种语义，
-而是检验**示例没有偷偷依赖动态库加载或安装前缀**。
-
 ## 平台差异速查（macOS ↔ Windows）
+
+详版（含后端枚举实测、渲染器请求位矩阵、链接反例证据）见
+[11 章 · 平台差异](docs/11-platform-macos.md)。
 
 | 主题 | Windows / MSVC | macOS / clang |
 |---|---|---|
@@ -118,7 +162,8 @@ Windows/MSVC 侧：本机无 MSVC，`build.ps1` 只做了 PowerShell 语法解�
 | 超时命令 | 无内置 | 无 GNU `timeout`，需 MacPorts `gtimeout` |
 | `SDL_PIXELFORMAT_RGBA32` | 小端 → `ABGR8888` | 小端 → `ABGR8888`（两平台相同；陷阱在大端机，别把它当固定内存布局） |
 
-`sdl2-config --static-libs` 在本机的实际输出（供对照）：
+`sdl2-config --static-libs` 在本机的实际输出（`run-all.sh` 已把它留档进
+`build/toolchain.txt` 的 `LIBS(static)` 行，可逐字节对账）：
 
 ```text
 -L/opt/local/lib /opt/local/lib/libSDL2.a -lm -Wl,-framework,CoreAudio
@@ -139,12 +184,13 @@ Windows/MSVC 侧：本机无 MSVC，`build.ps1` 只做了 PowerShell 语法解�
 | 5 | 8 个示例没有任何 stdout，跑对了也无从验证 | 示例可验证性 | 全部加 `==== NN 开始/结束 ====` 区间，区间内放驱动名、渲染器名、返回码等稳定事实 |
 | 6 | `05` 里 `SDL_RenderPresent` 返回 `void`，校验脚本自己写错被编译器抓住 | 示例/脚本 | 改用 `SDL_ClearError()` + `SDL_GetError()` 判成败 |
 | 7 | 静态链接缺 frameworks（实测 `ld: symbol(s) not found`） | 环境差异 | 不手工拼，统一取 `sdl2-config --static-libs`，并写进本文件速查表 |
+| 8 | 「`SDL_CreateThread` 之前要 `SDL_Init(SDL_INIT_TIMER)`」——SDL 1.2 的文档遗留被当成 SDL2 的规则沿用 | **文档问题** | 用 `SDL.h` 原文（threading 默认初始化）+ 三种初始化状态的实测纠正，见 [09 章 9.0](docs/09-threads-mutex.md) 的补充实验 |
+| 9 | 正文是代码罗列：整份示例一次性贴出，讲解得回源码查 | 教程结构 | 按章拆分，讲解按片段引用进正文并逐行标号；核查新增第⑤关，把「示例的每一行代码都在正文里有出处」变成机器判定 |
 
-未在本机验证、需要在真机确认的点：
+对应正文：#2 → [02 章](docs/02-window-renderer.md)，#3 → [10 章](docs/10-raii-wrappers.md)，
+#4 → [06 章](docs/06-timer-fps.md)，#5 → [12 章](docs/12-verification.md)，
+#6 → [05 章](docs/05-draw-primitives.md)，#7 → [11 章](docs/11-platform-macos.md)，
+#8 → [09 章](docs/09-threads-mutex.md)，#9 → 全部章节 + `tools/check_docs.py`。
 
-- **纯 SSH（无 GUI 会话）下 `cocoa` 驱动的行为**：推断会 `SDL_Init(SDL_INIT_VIDEO)` 失败
-  （拿不到 WindowServer 连接），本机始终在 GUI 会话中，无法制造该场景。CI 请
-  直接设 `SDL_VIDEODRIVER=dummy`（已验证 10/10 通过）。
-- **Windows/MSVC 的实际运行结果**：本机无 MSVC，仅保证 `build.ps1` 语法与判定逻辑对齐。
-- **Apple Silicon（arm64）**：本机为 x86_64，未做交叉验证；示例不含任何架构相关代码，
-  理论上可直接编译，但需真机确认。
+未在本机验证、需要在真机确认的三个点（纯 SSH 会话下的 `cocoa` 驱动、Windows/MSVC
+实跑结果、Apple Silicon arm64），逐条说明见 [11 章 11.5 节](docs/11-platform-macos.md)。
