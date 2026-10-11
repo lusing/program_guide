@@ -7,7 +7,7 @@
 
 ## 协作式 vs 抢占式
 
-- **抢占式**（Windows/Linux）：时钟中断随时切走你——共享数据要加锁；
+- **抢占式**（Windows/Linux/macOS）：时钟中断随时切走你——共享数据要加锁；
 - **协作式**（Forth 传统）：任务必须自己喊 `pause` 才让位——没人抢，
   天然确定，代码里不用一把锁。
 
@@ -46,7 +46,13 @@ sleep / wake / pass`，还会把 `key/emit/type` 换成带 pause 的版本。
 
 ⚠ **自然结束的任务会 `kill-task` 自杀并 free 自己的内存**——之后再对
 它 `kill` 就是 `double free or corruption`（glibc 直接报）。
+**macOS 上崩溃一样发生（rc=134），只是文案变成 shell 的 `Abort trap: 6`，
+没有 malloc 诊断行**——别靠报错文字识别它，用退出码或事前确认任务还活着。
 只 kill 还活着的任务。都结束后 `single-tasking?` 返回真。
+
+⚠ 另外两条 macOS 复核过的事实：`activate` 在顶层裸调会把主任务返回栈
+交给 `(pass)`，**两个平台都是真挂死**（tty 下也一样，只能靠超时杀）；
+`require tasker.fs` 的 redefined 噪音在 macOS 同样走 stderr。
 
 ## require 的噪音
 

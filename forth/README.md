@@ -1,4 +1,4 @@
-# Forth / GForth 教程（gforth 0.7.3 · WSL Debian）
+# Forth / GForth 教程（gforth 0.7.3 · WSL Debian + macOS 双实测）
 
 面向**已经会一门命令式语言**的读者：从栈机器的心智模型讲到算术、词与变量、
 控制流、内存与字符串，再深入到 `CREATE ... DOES>`、局部变量、堆、异常、
@@ -29,11 +29,11 @@ RPN 计算器实战，最后以简史与文献导读、速查表和 130+ 条实�
 ```text
 forth/
 ├── README.md        本文件
-├── build.ps1        统一构建入口（PowerShell → wsl -d Debian 通道）
-├── run-all.sh       Linux/WSL 下的一键运行与回归验证
+├── build.ps1        Windows 侧构建入口（PowerShell → wsl -d Debian 通道）
+├── run-all.sh       Linux/WSL/macOS 通用的一键运行与回归验证
 ├── docs/            31 章教程（01 → 31 顺序阅读）
 ├── examples/        28 个 .fs 示例（章号 = 示例编号，01–28）
-└── build/           构建输出（build.ps1 通道使用）
+└── build/           构建输出（只有 build.ps1 通道会创建，仓库里没有这个目录）
 ```
 
 ## 章节索引
@@ -98,9 +98,13 @@ forth/
 
 | 组件 | 路径 / 版本 |
 |---|---|
-| GForth | 0.7.3，**WSL Debian** 的 `/usr/bin/gforth`（Windows 侧 `wsl -d Debian -- gforth …`） |
+| GForth（Debian/WSL） | 0.7.3，`/usr/bin/gforth`；Windows 侧 `wsl -d Debian -- gforth …` |
+| GForth（macOS 实测） | 0.7.3，MacPorts 的 `/opt/local/bin/gforth`（`sudo port install gforth`）；同包装了 `gforth-fast`、`gforth-itc` |
 | 仓库位置 | Windows `G:\code\guide\forth` ↔ WSL `/mnt/g/code/guide/forth` |
-| PowerShell | `pwsh`（`build.ps1` 入口，自动翻译路径走 WSL） |
+| PowerShell | `pwsh`（`build.ps1` **仅 Windows**：内部要调 `wsl -d Debian`，macOS/Linux 上用不了，请直接走 `run-all.sh`） |
+
+macOS 侧环境（2026-10-11 复核）：macOS 15.8.1 / Intel x86_64 / MacPorts gforth 0.7.3。
+Homebrew 通道与 Apple Silicon（arm64）构建**未实测**，下述结论只对本机这条通道负责。
 
 ## 验证命令
 
@@ -116,7 +120,19 @@ gforth --version
 gforth examples/04-control-flow.fs     # 单个示例
 ```
 
-Windows PowerShell 通道（自动走 wsl -d Debian，写 build/ 日志）：
+macOS（2026-10-11 本机实测，验证入口与 WSL 完全相同）：
+
+```bash
+sudo port install gforth     # 本条通道是 MacPorts；brew install gforth 未实测
+cd <仓库路径>/forth
+gforth --version             # gforth 0.7.3
+
+./run-all.sh                 # 28/28 全绿（系统 bash 3.2 下同样可用）
+./run-all.sh -v 13           # 只跑 13 并显示完整输出
+gforth-fast examples/25-outer-interp.fs    # gforth-fast / gforth-itc 也各 28/28
+```
+
+Windows PowerShell 通道（自动走 wsl -d Debian，写 build/ 日志；**macOS/Linux 用不了**）：
 
 ```powershell
 pwsh ./build.ps1 -All                        # 全量验证
@@ -131,23 +147,49 @@ pwsh ./build.ps1 -Clean                      # 清理 build 目录
 3. 结束最后一行显示 `<0>`（数据栈为空）。
 
 第 2、3 条是 Forth 特有的：某个词悄悄在栈上多留一个值，程序照样跑完不报错，
-但后续代码全被污染；而 **gforth 脚本报错后退出码仍是 0**（实测），所以
-stderr 干不干净才是硬门槛。每个示例末尾都写了 `.s` 兜底——**写 Forth 时
-养成习惯，每个词跑完都看一眼栈**。
+但后续代码全被污染。每个示例末尾都写了 `.s` 兜底——**写 Forth 时养成习惯，
+每个词跑完都看一眼栈**。
 
-当前状态：28 个示例全部通过（gforth 0.7.3，WSL Debian 经 `./run-all.sh`
-与 `build.ps1 -All` 双通道实测）。
+⚠ 第 1 条**按构建而异**，不能当成通用规律：
+
+| 报错形态 | WSL Debian 0.7.3（本教程原记录） | macOS（MacPorts）0.7.3，2026-10-11 实测 |
+|---|---|---|
+| Undefined word / 未捕获 `throw` / `abort"` / Address alignment exception | rc=0，且退回交互态等 stdin（表现为「卡死」） | **rc=1 直接退出**，喂给 stdin 的标记行不会被消费；tty（`script` 分配 pty）与非 tty 一致 |
+| 只有 `redefined` 警告（如 `require objects.fs`） | rc=0，stderr 脏 | rc=0，stderr 脏（`redefined catch`） |
+| 顶层误调 `activate` 弄坏主任务返回栈 | 挂死进交互态 | **同样挂死**（macOS 实测超时被 kill） |
+
+所以 **stderr 干不干净在两边都是硬门槛**；退出码在 macOS 可信、在 Debian 不可信，
+别把它当唯一判据（`run-all.sh` 三条一起查正是为了这个）。
+
+当前状态：28 个示例全部通过——WSL Debian 经 `./run-all.sh` 与 `build.ps1 -All`
+双通道实测；macOS 经 `./run-all.sh` 与 `gforth` / `gforth-fast` / `gforth-itc`
+三个二进制逐条实测（判据同上），均 28/28。
 
 ## 平台差异说明
 
-- `.fs` 文件为 UTF-8 **LF** 行尾，中文注释与中文词名直接运行；
-  ⚠ `run-all.sh` 若是 CRLF，WSL 里会报 `bash\r`——先转 LF；
-- 示例的临时文件统一写在 `/tmp/`（14 文件 IO、16 词表、23 块文件）；
+- `.fs` 与 `run-all.sh` 统一 UTF-8 **LF**；Windows 侧存成 CRLF 的话，WSL 里
+  `run-all.sh` 会直接报 `bash\r`（macOS/Linux 原生就是 LF，无需处理）；
+- **macOS / 原生 Linux 直接走 `run-all.sh`**（`sudo port install gforth` 或
+  `brew install gforth`），无需 build.ps1；28 个示例在 macOS（MacPorts
+  0.7.3，Intel x86_64）上 `gforth` / `gforth-fast` / `gforth-itc` 三个二进制
+  都全绿，`.fs` 的 UTF-8 + LF 与中文词名在 macOS 下照常工作；
+- 示例的临时文件统一写在 `/tmp/`（14 文件 IO、16 词表、23 块文件）——
+  macOS 的 `/tmp` 是 `/private/tmp` 的软链接，示例不受影响；
+- 23 章块文件自动扩展的**尺寸随构建不同**：Debian 记录 9216 字节，
+  macOS 实测稳定 8192 字节（全新文件与重复运行都一致）；
+- 26 章「对已死任务再 `kill`」两边都崩，但**报错文案不同**：Debian 出
+  glibc 的 `double free or corruption`，macOS 只有 shell 的
+  `Abort trap: 6`（rc=134），没有 malloc 诊断行；
+- `find-name` 两边都坏、结论一致，但症状不同：Debian 是 `(vocfind)` 里的
+  Stack underflow，macOS 是 **Address alignment exception**（backtrace 落在
+  `2dup`）；替代写法 `get-current search-wordlist` 在 macOS 实测可用；
+- Debian 上「`search-wordlist` 顶层裸调必炸（Invalid memory address）」
+  **在 macOS 未复现**——顶层已定义/未定义两种写法都 rc=0、stderr 干净。
+  包进冒号定义仍然是标准姿势，但别指望它帮你避开一个 macOS 上不存在的坑；
 - `build.ps1` 自动把 Windows 路径翻译成 `/mnt/g/...` 再调 WSL 内的
   gforth，并过滤 wsl.exe 自身的 NAT 提示噪音；
-- macOS / 原生 Linux 亦可直接用 `run-all.sh`（装 gforth 即可），坑清单
-  结论以 WSL Debian 实测为准（个别词条如 `find-name` 在不同构建上好坏
-  不同，已在清单里标注）。
+- 完整的双平台逐条对照见 [31 章](docs/31-pitfalls.md)。Apple Silicon
+  （arm64）构建与 Homebrew 通道**尚未实测**。
 
 ## 示例怎么读
 

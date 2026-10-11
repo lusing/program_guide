@@ -36,12 +36,14 @@ PFA 里是你 `,` 进去的数据——「四区」里 PFA 的意义看得见摸
 
 ## 查词典
 
-⚠ 本机 Debian gforth 0.7.3 双坑（详见坑清单）：
+⚠ Debian gforth 0.7.3 双坑（详见坑清单）：
 
 - **`find-name` 一用就 Stack underflow**（在 `(vocfind)` 里炸，交互态同
-  样）——这个构建里它坏了；
+  样）——这个构建里它坏了；**macOS（MacPorts 0.7.3）也坏，但炸法是
+  Address alignment exception**（backtrace 落在 `2dup`）。两边结论一样：别用；
 - `search-wordlist` 顶层裸调会 Invalid memory address——**包进冒号定义
-  里用就稳**：
+  里用就稳**：**这条 macOS 未复现**（顶层裸调已定义/未定义两种都正常退出、
+  stderr 干净）。下面的 `exists?` 写法两边通吃，照抄它就行：
 
 ```forth
 : exists?  ( caddr u -- flag )
@@ -50,7 +52,8 @@ PFA 里是你 `,` 进去的数据——「四区」里 PFA 的意义看得见摸
 ```
 
 还有一条：**千万别 `require look.fs`**——`>name`/`see` 已在镜像里，
-现场再 require 会在 glocals/search 链上炸出 Undefined word。
+现场再 require 会在 glocals/search 链上炸出 Undefined word（macOS 复现：
+炸在 `glocals.fs:87`，支持文件在 `/opt/local/share/gforth/0.7.3/`）。
 
 ## 字典指针
 

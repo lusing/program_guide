@@ -67,6 +67,9 @@ cr ." sample 词名       xt（执行令牌）     >body（参数区）" cr
 \      交互态也一样；别用
 \   2. search-wordlist 别在顶层裸调（Invalid memory address），
 \      包在冒号定义里用就稳
+\ ⚠ macOS（MacPorts 0.7.3，2026-10-11 复核）：坑 1 照样在，但炸成
+\      Address alignment exception（backtrace 落在 2dup）；坑 2 不复现，
+\      顶层裸调能正常退出。下面这个 exists? 两边通吃，照它写。
 : exists?  ( caddr u -- flag )
   get-current search-wordlist
   if  drop true  else  false then ;
