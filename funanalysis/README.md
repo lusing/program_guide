@@ -25,6 +25,9 @@
 - [14 赋范空间与 Banach 空间](docs/14-banach-spaces.md)
 - [15 线性泛函与 Hahn-Banach 定理](docs/15-hahn-banach.md)
 - [16 应用三讲](docs/16-applications.md)
+- [17 对偶理论](docs/17-duality.md)
+- [18 开映射与闭图像定理](docs/18-open-mapping.md)
+- [19 一致有界原理](docs/19-uniform-boundedness.md)
 
 （更多章节随批次推进，完整清单见 [PLAN.md](PLAN.md)。）
 
