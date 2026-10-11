@@ -1,0 +1,24 @@
+session FA00 in "FA00" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T00_Overview
+
+session FA01 in "FA01" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T01_Prelim
+
+session FA02 in "FA02" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T02_InnerProduct
+
+session FA03 in "FA03" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T03_Projection
+
+session FA04 in "FA04" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T04_Riesz

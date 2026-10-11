@@ -127,3 +127,9 @@ cppgui/imgui.ini
 
 # Working scratch (book OCR digests, probe scripts) — never commit
 .scratch/
+
+# funanalysis tutorial build artifacts
+funanalysis/build/
+funanalysis/examples/lean/.lake/
+funanalysis/examples/lean/lake-manifest.json
+funanalysis/examples/lean/lake-packages/
