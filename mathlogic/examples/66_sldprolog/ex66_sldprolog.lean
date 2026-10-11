@@ -80,8 +80,8 @@ def rightmost (n : Nat) : Nat := n - 1
 
 def bob : Tm := .c 100
 def allen : Tm := .c 101
-def fred : Tm := .c 103
-def dave : Tm := .c 102
+def fred : Tm := .c 102
+def dave : Tm := .c 103
 def catherine : Tm := .c 104
 def george : Tm := .c 105
 def ellen : Tm := .c 106
