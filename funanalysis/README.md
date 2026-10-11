@@ -32,6 +32,9 @@
 - [21 几何 Hahn-Banach：分离定理](docs/21-separation.md)
 - [22 归纳极限与分布](docs/22-distributions.md)
 - [23 弱拓扑与 Alaoglu 定理](docs/23-weak-topology.md)
+- [24 Stone-Čech 紧化](docs/24-stone-cech.md)
+- [25 Krein-Milman 与 Stone-Weierstrass](docs/25-krein-milman.md)
+- [26 不变子空间与不动点](docs/26-fixed-points.md)
 
 （更多章节随批次推进，完整清单见 [PLAN.md](PLAN.md)。）
 

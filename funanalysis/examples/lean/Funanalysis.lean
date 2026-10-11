@@ -26,3 +26,6 @@ import Funanalysis.Ch20LocallyConvex
 import Funanalysis.Ch21Separation
 import Funanalysis.Ch22Distributions
 import Funanalysis.Ch23WeakTopology
+import Funanalysis.Ch24StoneCech
+import Funanalysis.Ch25KreinMilman
+import Funanalysis.Ch26FixedPoints
