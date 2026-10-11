@@ -29,3 +29,10 @@ import Funanalysis.Ch23WeakTopology
 import Funanalysis.Ch24StoneCech
 import Funanalysis.Ch25KreinMilman
 import Funanalysis.Ch26FixedPoints
+import Funanalysis.Ch27AdjointBanach
+import Funanalysis.Ch28CompactBanach
+import Funanalysis.Ch29BanachAlgebra
+import Funanalysis.Ch30Spectrum
+import Funanalysis.Ch31RieszCalculus
+import Funanalysis.Ch32CompactSpectrum
+import Funanalysis.Ch33Gelfand
