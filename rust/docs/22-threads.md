@@ -23,6 +23,26 @@ let sum = handle.join().unwrap();          // join：等待 + 取回返回值
 - **`join` 返回 `Result`**：子线程 panic 会在这里变 Err——panic 不跨线程传染，但也不会静默消失；
 - 命名线程：`thread::Builder::new().name("worker-1".into()).spawn(...)`（调试器/日志里可读）。
 
+### spawn 的完整签名：把约束拆开看
+
+`thread::spawn` 的签名（std 源码简化）是理解 Rust 线程模型的最好教材：
+
+```rust
+pub fn spawn<F, T>(f: F) -> JoinHandle<T>
+where
+    F: FnOnce() -> T,       // 闭包只调一次（线程入口），所以最宽约束 FnOnce
+    F: Send + 'static,      // 闭包本身（含捕获变量）能跨线程 move、且不含短命借用
+    T: Send + 'static,      // 返回值也要能跨线程搬回来
+```
+
+三行 where 子句各自堵死一类事故：
+
+1. **`FnOnce`**：线程入口只执行一次，不需要 Fn/FnMut 的"可重复调用"承诺——约束最宽，什么闭包都收；
+2. **`F: Send + 'static`**：闭包按值 move 进新线程，捕获的每个变量跟着搬家——非 Send 类型（`Rc`、`RefCell`）在这里被拦下；
+3. **`T: Send + 'static`**：返回值从子线程 move 回 `join()` 的调用方——反向搬家同样要通行证。
+
+`'static` 反复出现的原因：线程的生命周期与当前栈帧**没有任何同步关系**——它可能在你 return 之后还跑很久。任何借用局部变量的闭包都可能在"被调时数据已死"，编译器一律拒绝。这就是 22.2 scoped threads 的存在意义：scope 用类型技巧保证"所有子线程在函数返回前 join"，从而放开 `'static` 限制、允许直接借用局部变量。
+
 ## 22.2 scoped threads（1.63+）：借用局部变量的现代写法
 
 ```rust
@@ -59,6 +79,21 @@ for msg in rx {                             // 所有 sender drop 后迭代自�
 - `send` 拿值的所有权（**消息传递 = 所有权转移**，收发两端无共享内存）；
 - `rx` 迭代终止条件：所有 sender drop——忘了 drop 会死等（示例 `drop(tx)` 是必要的一行）；
 - `try_recv` 非阻塞轮询、`recv_timeout` 带超时；跨线程 async 用 `tokio::sync::mpsc`（23 章）。
+
+**有界通道 `sync_channel`**：标准库还有一种带容量上限的通道——队列满时 `send` 阻塞，等消费者腾出位置：
+
+```rust
+let (tx, rx) = mpsc::sync_channel::<String>(2);   // 容量 2：第 3 条消息会阻塞发送方
+
+thread::spawn(move || {
+    for i in 0..5 {
+        tx.send(format!("任务{i}")).unwrap();   // 发到第 3 条时在这里等 rx 消费
+    }
+});
+for msg in rx { println!("{msg}"); }
+```
+
+选型：**无界 `channel`**——生产者不受消费者速度反压（内存换吞吐，小心消费者挂掉时队列无限膨胀）；**有界 `sync_channel`**——天然背压，生产者速度被消费者自动节流（内存占用可控，但 send 可能阻塞）。async 世界的 `tokio::sync::mpsc::channel(n)` 就是有界版，n 的取值是吞吐与内存的经典权衡。
 
 ## 22.4 共享可变状态：Arc<Mutex<T>>
 
@@ -103,6 +138,8 @@ hits.load(Ordering::Relaxed);
 
 选型：**读多写少 RwLock；简单计数/标志用原子；复杂不变量用 Mutex**。原子 Ordering 深似海，Relaxed（计数）与 AcqRel/SeqCst（同步语义）覆盖 99% 需求，其余场景先读 std 文档再写。
 
+**RwLock 的写者饥饿**：std 的 `RwLock` 在 Linux 上由 pthread 读写锁实现，**不保证公平**——读者源源不断到来时，写者可能永远排不上队（读者优先策略）。读多写少且写不紧迫的场景没问题；写延迟敏感的场景（缓存刷新、配置热更新）要么换 `parking_lot::RwLock`（公平队列），要么用 `Mutex` 实测对比——Mutex 在竞争低时反而更快（单次原子操作 vs 读写锁的状态机）。
+
 ## 22.6 Send 与 Sync：自动判定的通行证
 
 Rust 看待线程安全的哲学：**多线程共享内存并非问题所在，问题在于错误地共享数据**。Send 和 Sync 是给类型贴的标签——编译器按标签决定哪些类型可以跨线程移动/共享，从而在编译期发现线程不安全。
@@ -127,7 +164,43 @@ TRB 给出一个更精确的角度：**`T: Sync` 当且仅当 `&T: Send`**——
 
 `Arc` 的计数是原子的——每次 clone/drop 都要做原子读写（CPU 级同步指令），比 `Rc` 的非原子计数慢。如果数据只在单线程用，`Rc` 就是零代价的正确选择；跨线程才付原子税。标准库不默认 `Arc` 的原因：**线程安全不是免费的，按需付费**——和 `Mutex` vs `Cell`、`Box` vs 栈分配是同一哲学。
 
-## 22.7 死锁与经典陷阱
+## 22.7 并发生态：标准库之外
+
+std 的并发原语刻意精简（spawn/scope/mpsc/Mutex/RwLock/原子），真实项目按需求从 crates.io 补：
+
+| crate | 解决什么 | 何时选它 |
+|---|---|---|
+| `rayon` | 数据并行（`par_iter()` 把迭代器管道自动拆到线程池） | CPU 密集批处理：`.par_iter().map(...).sum()` 一行并行化 |
+| `crossbeam` | 无锁数据结构 + 有界通道 + scoped 线程的"祖师爷" | 高性能队列（`ArrayQueue`）、多消费者通道 |
+| `parking_lot` | 更快更小的 Mutex/RwLock（无毒锁、无系统调用快路径） | 锁竞争是热点时的 drop-in 替换 |
+| `tokio` / `async-std` | async 运行时（23 章主角） | I/O 密集、万级并发连接 |
+| `actix` | Actor 模型框架（每个 Actor 独占状态、靠消息通信） | 状态机/长连接网关（WebSocket 推送等） |
+
+**Actor 模型**值得一提：它是"不共享任何状态"路线的极致——每个 actor 拥有私有数据，actor 之间只通过消息通信（与 mpsc 同哲学，但把"线程 + 邮箱 + 生命周期"打包成框架）。`actix` 的用法长这样：
+
+```rust
+use actix::prelude::*;
+
+struct Counter { count: usize }
+impl Actor for Counter { type Context = Context<Self>; }
+
+struct Increment;
+impl Message for Increment { type Result = usize; }
+
+impl Handler<Increment> for Counter {
+    type Result = usize;
+    fn handle(&mut self, _: Increment, _: &mut Context<Self>) -> usize {
+        self.count += 1;
+        self.count
+    }
+}
+
+// 使用：Addr<Counter> 是 actor 的句柄，.send(Increment).await 发消息
+```
+
+Actor 模型消灭了数据竞争（状态私有 + 消息驱动），代价是消息协议的类型样板。选型直觉：**共享状态少而集中 → Arc<Mutex>；流水线/扇出 → 通道；状态机林立 → Actor**。
+
+## 22.8 死锁与经典陷阱
 
 - **锁顺序**：两线程各持一锁互相等对方——固定全局加锁顺序或一次拿一把；
 - **guard 跨 await**（23 章）：std::Mutex 的 guard 不是 Send，跨 await 点持有会编译错——那是 tokio::Mutex 的场景；
@@ -153,7 +226,7 @@ loop {
 
 原因：`while let`（以及 `if let`、`match`）会把**条件表达式的临时值活到整个代码块结束**；而 `let` 语句的右侧临时值在语句结束就丢弃。`MutexGuard` 的 Drop 就是解锁——所以 `while let` 版本在 `job()` 执行期间一直持锁，其他 Worker 线程干等。**这是作用域语义在并发下的直接后果**，不写线程池很难遇到，一遇到就是生产事故。
 
-## 22.8 坑位清单
+## 22.9 坑位清单
 
 1. **spawn 不 move 直接编译错**：借用局部 = "线程可能用悬垂"，借用检查器六亲不认——加 `move`，需要共享再 Arc。
 2. **`rx` 死等的元凶是忘 drop(tx)**：主线程持有 sender 句柄，迭代器等它——示例里 `drop(tx)` 单独一行是教学重点。

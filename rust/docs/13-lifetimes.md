@@ -99,6 +99,44 @@ static GREETING: &str = "静态项";              // 同上
 fn boxed_copy<T: Clone + 'static>(v: T) -> Box<T> { ... }
 ```
 
+### 生命周期边界：泛型参数上的 'static
+
+生命周期标注不只出现在引用上——泛型参数也可以带生命周期约束，语法是 `T: 'a`（读作"T 至少活到 'a"）。最常见的组合是 `T: Send + 'static`——线程间搬家的完整合同：
+
+```rust
+fn spawn_shared<T>(data: T) -> thread::JoinHandle<T>
+where
+    T: Send + 'static,      // 能跨线程 move（Send）+ 不含短命借用（'static）
+{
+    thread::spawn(move || {
+        // data 被 move 进闭包，闭包再 move 进新线程
+        // 'static 保证 data 不含指向当前栈帧的引用——否则线程跑的时候栈帧早没了
+        data
+    })
+}
+
+let handle = spawn_shared(String::from("独立数据"));   // String: Send + 'static ✔
+// spawn_shared(&local_var);                           // ← 编译错：&String 不是 'static
+```
+
+`T: 'static` 在这里的精确含义（13.6 已述）：**T 的所有字段都不含非 'static 的借用**——`String`、`Vec<i32>` 满足（纯拥有），`&'a String` 不满足（借别人的）。22 章 `thread::spawn` 的 `F: Send + 'static` 约束就是这个模式的实战版：Send 管"跨线程搬家的类型安全"，'static 管"搬过去之后数据不会先死"。
+
+另一个常见搭配是 `T: 'a`（非 static 的局部约束）——泛型函数要求"传入的类型至少活到 'a"：
+
+```rust
+fn longest_name<'a, T>(items: &'a [T]) -> &'a str
+where
+    T: AsRef<str> + 'a,     // T 至少活到 'a（其实 &'a [T] 已隐含，显式写更清晰）
+{
+    items.iter()
+        .map(|s| s.as_ref())
+        .max_by_key(|s| s.len())
+        .unwrap_or("")
+}
+```
+
+绝大多数场景编译器会从 `&'a [T]` 自动推导出 `T: 'a`——显式写 `where T: 'a` 是文档化的好习惯，告诉读者"这个函数不关心 T 内部有没有借用，但如果有，必须活得够久"。
+
 ## 13.7 与编译器吵架的正确姿势
 
 1. **从最小标注开始**：先写 `&'a`，编译器嫌"活得不够久"（借得太短）就放宽输入标注；它反过来嫌调用点不满足，就缩短使用点。

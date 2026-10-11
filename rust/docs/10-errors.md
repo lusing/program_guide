@@ -112,6 +112,49 @@ enum AppError {
 }
 ```
 
+### 错误链：把根因一层层包起来
+
+真实系统的错误很少是单层的——读文件失败 → 因为解析配置失败 → 因为某行格式错。`Error::source` 就是给这个链条准备的：每一层错误都把**下一层**装进来，打印时逐层下钻到根因。手写模式：
+
+```rust
+use std::error::Error;
+use std::fmt;
+
+#[derive(Debug)]
+enum ConfigError {
+    Io(std::io::Error),                          // 第 1 层：IO 失败
+    Parse { line: usize, source: ParseIntError }, // 第 2 层：解析失败（带位置）
+}
+
+impl fmt::Display for ConfigError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ConfigError::Io(e) => write!(f, "读取配置文件失败: {e}"),
+            ConfigError::Parse { line, .. } => write!(f, "第 {line} 行解析失败"),
+        }
+    }
+}
+
+impl Error for ConfigError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match self {
+            ConfigError::Io(e) => Some(e),               // 链到 io::Error
+            ConfigError::Parse { source, .. } => Some(source), // 链到 ParseIntError
+        }
+    }
+}
+```
+
+`source` 返回 `Option` 的原因：链尾的错误（如 `ParseIntError`）没有更底层的根因，返回 `None`。打印端用 `{:?}`（`anyhow` 的默认格式）会自动沿 `source` 链展开成：
+
+```text
+读取配置文件失败: 第 3 行解析失败
+Caused by: 第 3 行解析失败
+Caused by: invalid digit found in string
+```
+
+一层 `Caused by:` 对应一次 `source` 下钻——错误链让"哪一步、为什么、根因是什么"一目了然。
+
 ## 10.5 main 也可以返回 Result
 
 ```rust
@@ -135,6 +178,28 @@ panic = 'abort'    # 默认是 'unwind'；切换后二进制更小，但无法 c
 ```
 
 要 recover：线程边界能接住 panic（`JoinHandle` 返回 Err，22 章）；同线程内 `catch_unwind` 是逃生舱不是 try/catch（不保证清理、不是控制流工具）。注意 `panic = 'abort'` 时 `catch_unwind` 也失效——进程直接终止。
+
+`catch_unwind` 的签名有个容易忽略的约束：
+
+```rust
+pub fn catch_unwind<F: FnOnce() -> R + UnwindSafe, R>(f: F) -> Result<R, Box<dyn Any + Send>>
+```
+
+`UnwindSafe` 是一个自动实现的标记 trait——大多数类型自动满足，但 `&mut T`、`RefCell` 这类"内部可变且非原子"的类型**不是** `UnwindSafe`：panic 展开时它们可能留下半修改状态，接住 panic 继续跑会读到不一致数据。真需要传闭包捕获 `&mut` 时，显式 `AssertUnwindSafe` 包装是"我知道风险"的签字：
+
+```rust
+use std::panic::{catch_unwind, AssertUnwindSafe};
+
+let mut log = Vec::new();
+let result = catch_unwind(AssertUnwindSafe(|| {
+    log.push("步骤1");
+    panic!("模拟崩溃");
+}));
+// result 是 Err——panic 被接住了，log 可能只推到一半（这正是 UnwindSafe 担心的）
+assert!(result.is_err());
+```
+
+`AssertUnwindSafe` 不是 unsafe——它是"我审阅过这个闭包的 panic 安全性"的显式声明。测试框架（`cargo test`）内部就是用 `catch_unwind` 让每个测试独立崩溃、互不影响。
 
 **规则：库代码不 panic（返回 Result），应用代码边界处 assert。**
 

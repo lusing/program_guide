@@ -28,6 +28,18 @@ let same = std::ptr::eq(rc, rp as *const i32);   // 比较/传拷贝不需要 un
 
 裸指针三特性：**允许为空、允许别名、不实现 Deref**——前两条正是 `&T`（非空、无别名）排除掉的。指针运算 `ptr.add(n)` / `ptr.offset(n)` 都在 unsafe 内（越界即 UB）。
 
+**引用 → 裸指针的自动降级**：安全代码里可以把引用**隐式**转成裸指针（方向不可逆）：
+
+```rust
+let mut y = 7;
+let rp: *mut i32 = &mut y;        // &mut T → *mut T：自动，安全上下文允许
+let rc: *const i32 = &y;          // &T     → *const T：自动
+let weakened: *const i32 = rp;    // *mut T → *const T：自动（能力降级，安全）
+// let back: *mut i32 = weakened; // ← 编译错：*const → *mut 不允许（能力升级需 unsafe）
+```
+
+规则一句话：**能力只能降不能升**——共享引用/指针可以"弱化"成只读裸指针（丢弃独占/可变承诺永远安全），反向"强化"成可变则必须由 unsafe 块签字（编译器无法静态证明没有别名）。这与 18 章 Deref 强转规则 3（`&mut T → &U` 自动、`&T → &mut T` 禁止）是同一条"可变独占"原则在裸指针上的投影。
+
 ## 19.3 unsafe 函数与最小作用域
 
 ```rust
@@ -59,6 +71,24 @@ fn split_at_mut(values: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
 
 这是 std 的真实实现。**模式：边界检查/不变量在安全代码里完成，unsafe 只做最后一步"编译器不会的原语"**。
 
+这个模式有个专门的名字——**安全封装（safe wrapper）**：unsafe 代码的正确归宿不是裸露在调用方面前，而是被一层安全 API 包住。标准库自己就是这么做的：`String::insert` 内部用 unsafe 直接操作字节缓冲（跳过 UTF-8 校验的重复扫描），但对外签名是安全的 `fn insert(&mut self, idx: usize, ch: char)`——调用方永远不需要知道里面有 unsafe。
+
+手写 FFI 封装时照抄这个结构：
+
+```rust
+// 内部：unsafe 的 C 函数（假设来自某个 C 库）
+unsafe extern "C" { fn c_strlen(s: *const c_char) -> usize; }
+
+// 外部：安全封装——把"指针有效且以 NUL 结尾"的约定变成类型签名
+fn mystrlen(s: &CStr) -> usize {
+    // SAFETY: s 是 &CStr，CStr 的不变量保证内部指针有效且以 NUL 结尾，
+    // 满足 c_strlen 的全部前置条件；返回值是纯函数结果无副作用。
+    unsafe { c_strlen(s.as_ptr()) }
+}
+```
+
+安全封装的设计要点：**把 C 的"调用约定"翻译成 Rust 的"类型签名"**。C 函数要求"指针非空、NUL 结尾、调用方不释放返回值"——这些口头约定在 Rust 侧变成 `&CStr`（引用天然非空、CStr 保证 NUL 结尾、返回 usize 无所有权问题）。调用方想传错类型，编译期就拦住；unsafe 只在封装内部出现一次，审计面最小化。
+
 ## 19.5 FFI：与 C 互操作
 
 **调 C（外部函数导入）**——直接链系统 CRT 里的 `abs`：
@@ -80,6 +110,65 @@ pub extern "C" fn rust_add(a: i32, b: i32) -> i32 { a + b }
 `extern "C"` 指定调用约定（C ABI；也有 "system" = Windows 上随 stdcall/cdecl）。字符串与结构体跨边界要按 C 布局（`#[repr(C)]`），内存谁分配谁释放——FFI 的坑八成在所有权，不在语法。
 
 真实项目不手写 extern 块：**bindgen** 从 C 头文件自动生成声明；**cbindgen** 反向生成给 C 的头。Rust↔C++ 大型互操作有 cxx crate（类型映射 + 安全封装生成）。
+
+### 编译 C 代码进 Rust 项目：cc crate
+
+FFI 不止"调系统库"——很多项目自带一小段 C 源码（性能热点、复用既有算法）。`cc` crate 让 build.rs 在 `cargo build` 时自动调本机 C 编译器：
+
+```toml
+# Cargo.toml
+[build-dependencies]
+cc = "1"
+```
+
+```rust
+// build.rs —— cargo build 时自动执行
+fn main() {
+    cc::Build::new()
+        .file("src/native/fast.c")     // 要编译的 C 源文件
+        .include("src/native")         // C 侧头文件搜索路径
+        .compile("fast");              // 产出 libfast.a，自动链给 Rust 侧
+    println!("cargo:rerun-if-changed=src/native/fast.c");  // 改了 C 文件才重编
+}
+```
+
+```rust
+// src/main.rs —— 声明并调用
+unsafe extern "C" { fn fast_checksum(data: *const u8, len: usize) -> u32; }
+
+fn checksum(data: &[u8]) -> u32 {
+    // SAFETY: data.as_ptr() 对空切片也合法（len=0 时 C 侧不得解引用），
+    // 非空时指针有效且长度准确——满足 fast_checksum 的全部前置条件。
+    unsafe { fast_checksum(data.as_ptr(), data.len()) }
+}
+```
+
+`cargo:rerun-if-changed` 那行是增量编译的关键——没写的话，每次 build 都重编 C（大项目里很痛）。`cc` 自动处理平台差异（MSVC/gcc/clang）、交叉编译工具链前缀，是 Rust 生态里编译 C 的默认答案。
+
+### bindgen：从头文件自动生成声明
+
+手写 `unsafe extern "C" { ... }` 的问题：C 头文件几百行，手写一遍既累又容易错（签名错 = UB）。`bindgen` 在 build.rs 里读头文件、直接生成对应的 Rust 声明：
+
+```toml
+[build-dependencies]
+bindgen = "0.71"
+```
+
+```rust
+// build.rs
+fn main() {
+    let bindings = bindgen::Builder::default()
+        .header("src/native/fast.h")           // C 头文件
+        .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
+        .generate()
+        .expect("生成绑定失败");
+    bindings
+        .write_to_file(std::path::Path::new("src/bindings.rs"))
+        .expect("写绑定文件失败");
+}
+```
+
+生成的 `bindings.rs` 里是类型正确的 `extern` 块 + `#[repr(C)]` 结构体——**签名错误从"运行期 UB"降级为"生成期报错"**。大型 C 库（sqlite、openssl、libgit2 的 Rust 绑定）全是 bindgen 产物。反向工具 **cbindgen** 做对称的事：从你的 Rust `pub extern "C"` 函数生成 `.h` 头文件，给 C 侧 `#include`。
 
 ## 19.6 static mut（2024 edition 新规）
 

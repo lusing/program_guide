@@ -39,6 +39,8 @@ impl Summary for Article {
 
 **孤儿规则（orphan rule）**：`impl Trait for Type` 中，trait 或 type 至少一个定义在当前 crate。`impl Display for Vec<i32>` ✘（都是外来的）；给自己的类型实现 `Display`/`Debug`/`From` ✔。这避免了全局命名空间里的实现冲突——生态共存的基石。
 
+**trait 一致性（trait coherence）**：Rust 保证"**一个类型对同一个 trait 至多有一份实现**"。任何代码里 `x.foo()` 的语义是唯一确定的——编译器不需要在多个候选实现之间做运行期抉择。孤儿规则是一致性的守门员：如果允许任意 crate 给任意类型实现任意 trait，两个库可能分别为 `Vec<i32>` 实现 `Display`，链接到一起就产生歧义。一致性 + 孤儿规则共同保证了 trait 系统的全局确定性。
+
 ## 12.2 trait 约束：泛型的合同
 
 ```rust
@@ -74,6 +76,20 @@ for item in &feed { item.headline(); }   // 运行期查 vtable
 
 - `dyn Trait` 是**不定大小类型（DST）**，必须藏在指针后：`&dyn`、`Box<dyn>`；
 - `&dyn Trait` 是**胖指针**：数据指针 + vtable 指针（16 字节，03 章 3.6），方法调用走表。
+
+胖指针的 16 字节可以用一行代码实测（`std::mem::size_of` 在编译期求值）：
+
+```rust
+trait Draw { fn draw(&self); }
+struct Button;
+impl Draw for Button { fn draw(&self) {} }
+
+assert_eq!(std::mem::size_of::<&Button>(), 8);          // 普通引用 = 1 个指针
+assert_eq!(std::mem::size_of::<&dyn Draw>(), 16);       // trait 对象引用 = 2 个指针
+assert_eq!(std::mem::size_of::<Box<dyn Draw>>(), 16);   // 堆上装箱也一样是胖指针
+```
+
+64 位机器上裸指针 8 字节：`&Button` 只有数据地址；`&dyn Draw` 额外背一个 vtable 地址——两份信息缺一不可，这就是 DST 必须藏在指针后的物理原因。
 
 **trait 对象的内存布局**（原书第 3 章的图解，文字版）：
 
@@ -219,7 +235,7 @@ std::marker 里有一组**空 trait**——没有方法，纯作类型系统的�
 
 ## 12.9 完全限定语法：消歧义的最后手段
 
-当一个类型实现了多个 trait、它们有同名方法时，编译器可能无法推断你想调哪个。完全限定语法（fully qualified syntax）就是显式指明"用哪个 trait 的哪个方法"：
+当一个类型实现了多个 trait、它们有同名方法时，编译器可能无法推断你想调哪个。完全限定语法（fully qualified syntax，早期 Rust 文献里叫 **UFCS**——Universal Function Call Syntax，通用函数调用语法）就是显式指明"用哪个 trait 的哪个方法"：
 
 ```rust
 trait Animal { fn name(&self) -> String; }
@@ -236,6 +252,25 @@ assert_eq!(n, "Pet::Dog");
 ```
 
 通用形式是 `<Type as Trait>::method(&receiver, args)`。方法调用时 Rust 允许省略能从上下文推导的部分——只有当同名方法存在多个实现且编译器无法区分时，才需要这种显式语法。对关联函数（无 self），形式是 `<Type as Trait>::assoc_fn(args)`。
+
+**解析优先级**：一个类型可以有"固有方法"（直接 `impl Dog { fn name(...) }` 定义的）和多个 trait 的同名方法。调用 `d.name()` 时，编译器按以下顺序找：
+
+1. **固有方法优先**——`impl Dog` 块里的方法永远赢过 trait 方法；
+2. 唯一匹配的 trait 方法（只有一个 trait 提供 `name` 时直接命中）；
+3. 多个候选 → 编译错，逼你用 UFCS 写明。
+
+```rust
+struct Cat;
+impl Cat { fn name(&self) -> String { "inherent".into() } }   // 固有方法
+trait Label { fn name(&self) -> String; }
+impl Label for Cat { fn name(&self) -> String { "trait".into() } }
+
+let c = Cat;
+assert_eq!(c.name(), "inherent");          // 固有方法胜出，无需消歧
+assert_eq!(<Cat as Label>::name(&c), "trait");   // 想调 trait 版必须 UFCS
+```
+
+这条"固有方法优先"规则解释了为什么给类型加 trait 实现通常不会破坏既有代码——既有的方法调用全部继续指向固有方法。
 
 ## 12.10 坑位清单
 
