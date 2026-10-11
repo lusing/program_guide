@@ -154,5 +154,19 @@ let package = Package(
             name: "Ch23ToolingTests",
             dependencies: ["Ch23Tooling"],
             path: "examples/23_tooling/Tests/23_toolingTests"),
+        .executableTarget(
+            name: "Ch25AdvancedOperators",
+            path: "examples/25_advanced_operators/Sources/25_advanced_operators"),
+        .testTarget(
+            name: "Ch25AdvancedOperatorsTests",
+            dependencies: ["Ch25AdvancedOperators"],
+            path: "examples/25_advanced_operators/Tests/25_advanced_operatorsTests"),
+        .executableTarget(
+            name: "Ch26InheritanceCasting",
+            path: "examples/26_inheritance_casting/Sources/26_inheritance_casting"),
+        .testTarget(
+            name: "Ch26InheritanceCastingTests",
+            dependencies: ["Ch26InheritanceCasting"],
+            path: "examples/26_inheritance_casting/Tests/26_inheritance_castingTests"),
     ]
 )

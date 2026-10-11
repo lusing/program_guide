@@ -56,6 +56,8 @@ swift/
 | [22 SPM](docs/22-spm.md) | 目标/产品/依赖、嵌套独立包 | `22_spm`（独立包） |
 | [23 工具与互操作](docs/23-tooling.md) | WinSDK/ucrt、静态分发、钉版心法 | `23_tooling` |
 | [24 实战：迷你 grep](docs/24-minigrep.md) | 递归 + 并发 + 高亮 + JSON 报告 + 测试 | `24_minigrep`（独立工程） |
+| [25 位运算与运算符重载](docs/25-advanced-operators.md) | `~&\|^<<>>`、`&+` 溢出家族、运算符函数、自定义运算符 | `25_advanced_operators` |
+| [26 继承与类型转换](docs/26-inheritance-casting.md) | override/super/final、指定与便利构造器、is/as?/as!/as、Any | `26_inheritance_casting` |
 
 ## 构建工具链
 

@@ -77,6 +77,33 @@ let v = try? parse(); let w = try! parse()
 Result<Int, Err>.success(1)            // 值形态的错误
 ```
 
+### 位运算与运算符重载（25 章）
+
+```swift
+~x; x & y; x | y; x ^ y; x << n; x >> n   // 取反/与/或/异或/左移/右移
+x &+ y; x &- y; x &* y                    // 溢出回绕（普通 + 溢出会 trap）
+a ^ b ^ b == a                            // 异或两次还原（掩码/校验常用）
+(pink & 0xFF_0000) >> 16                  // 掩码 + 移位拆 RGB 分量
+static func + (l: V, r: V) -> V { }      // 类型内重载 +（static func）
+static prefix func - (v: V) -> V { }      // 前置一元
+static func += (l: inout V, r: V) { }     // 组合赋值：左参必须 inout
+infix operator +-: AdditionPrecedence     // 全局声明新运算符 + 挂优先级组
+```
+
+### 继承与类型转换（26 章）
+
+```swift
+class Car: Vehicle { override func f() { super.f() } }   // override 必标
+final class NoSub { } / final var x / final func f       // 封印：不可再重写
+convenience init() { self.init(name: d) }  // 便利→横向委托指定；指定→super.init 向上
+item is Movie                              // 类型检测（Bool）
+item as? Movie                             // 条件转型：失败 nil，配 if let
+item as! Movie                             // 强转：失败崩溃
+movie as MediaItem                         // 向上/桥接：编译期安全
+case let m as Movie:                       // switch 模式匹配里转型 + 绑定
+var things: [Any] = []                     // 类型擦除口袋（逃生舱，优先枚举/泛型）
+```
+
 ### 并发（Swift 6）
 
 ```swift
@@ -168,6 +195,20 @@ swiftc -static-stdlib a.swift -o a.exe   # 静态链接独立分发
 23. **swift-format 的 AlwaysUseLowerCamelCase** 拒绝大写开头的函数名——中文没问题，
     `Stack推弹` 不行（改 `stack推弹`）。
 24. **并行测试的清理范围 = 自己创建的文件**——删共享目录殃及邻居（19 章实测竞态）。
+
+### 继承与转型（25/26 章实测）
+
+25. **`&/` `&%` 已删除**（Swift 3 / SE-0007）——老书里的"除零安全运算符"不存在了，
+    除零容错用可选绑定或错误处理。
+26. **构造器默认不继承**——子类写了任何指定构造器，父类构造器全丢；一个都不写
+    才全继承。重写父类指定构造器要 `override`（变便利构造器时
+    `override convenience` 一起标）。
+27. **`type(of: x)` 返回动态类型**——`MediaItem` 变量装着 `Movie` 时
+    `type(of:) == Movie.self`；判"是不是某子类"用 `is`，别用 `type(of:) ==`。
+28. **计算属性不能重写成存储属性**——`override var x: T = 1` 在父类是计算属性时
+    编译错误；存储 → 计算可以。
+29. **移位也查溢出**——`UInt8(1) << 8` trap，不是 0；要宽结果先升
+    `UInt16(UInt8(1)) << 8`。
 
 ## 4. 相关资源
 
