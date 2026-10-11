@@ -19,7 +19,7 @@ warnings on
 cr cr .( ---- 世界观 ----) cr
 
 : theory  ( -- )
-  cr ." · 抢占式（Windows/Linux）：时钟中断随时切走你——共享要加锁"
+  cr ." · 抢占式（Windows/Linux/macOS）：时钟中断随时切走你——共享要加锁"
   cr ." · 协作式（Forth 传统）：任务必须自己喊 pause 才让位——"
   cr ."   没人抢，天然确定，代码里不用一把锁"
   cr ." · PC/FORTH 2.0 当年就是 1 个前台任务 + 10 个后台任务："
@@ -95,6 +95,8 @@ cr cr .( ---- 任务死亡 ----) cr
 \ ⚠ 坑（本机实测）：任务跑完自然结束时会 kill-task 自杀并 free 掉
 \   自己的内存——之后你再对它 kill 就是 double free（glibc 直接报
 \   double free or corruption）。只 kill 还活着的任务。
+\   macOS（MacPorts 0.7.3）复核：一样崩（rc=134），但文案只剩 shell 的
+\   Abort trap: 6，没有 glibc 那行诊断——别靠报错文字认它。
 variable 乙计数
 : 长工  ( -- )  100 0 do  1 乙计数 +!  pause  loop ;
 4096 NewTask constant 任务戊

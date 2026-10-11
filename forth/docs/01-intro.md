@@ -29,10 +29,12 @@ dup    ( n -- n n )        \ 复制栈顶
 ## 本地工具链与第一个程序
 
 ```
-gforth      0.7.3
-路径        WSL Debian 的 /usr/bin/gforth（Windows 侧：wsl -d Debian -- gforth）
-仓库路径    WSL 内是 /mnt/g/code/guide/forth
-系统        WSL Debian (Linux x86-64) 实测通过
+gforth      0.7.3（两条通道同版本号）
+WSL Debian  /usr/bin/gforth；仓库在 /mnt/g/code/guide/forth；Linux x86-64 实测通过
+macOS       /opt/local/bin/gforth（MacPorts，sudo port install gforth）；
+            macOS 15.8.1 / Intel x86-64，2026-10-11 实测 28 个示例全绿；
+            同一个包还带 gforth-fast / gforth-itc，这两个构建也各 28/28
+cell 宽度   macOS 实测 5 cells → 40，即一个 cell = 8 字节（64 位构建）
 ```
 
 一个最小程序：
@@ -49,7 +51,12 @@ gforth examples/01-hello-stack.fs
 
 几个必须知道的事实：
 
-- **每个脚本末尾要写 `bye`**。未捕获的 `throw` 会让 gforth 退回交互态等 stdin，表现是「脚本卡死」而不是报错退出。
+- **每个脚本末尾要写 `bye`**。Debian/WSL 上，未捕获的 `throw` 会让 gforth 退回
+  交互态等 stdin，表现是「脚本卡死」而不是报错退出。macOS（MacPorts 0.7.3）实测
+  **行为不同**：`throw`、`abort"`、Undefined word、Address alignment exception
+  四种错误**都是直接 rc=1 退出**，往 stdin 喂标记行也不会被读走；但顶层误用
+  `activate` 这类把主任务返回栈搞坏的操作，macOS 上照样挂死。`bye` 照写，
+  只是别把「报错必卡死」当成普遍规律（对照表见 README 与 31 章）。
 - **`."` 只能写在冒号定义内部**；顶层要立即打印用 `.( ... )`。
 - **结构化语句（`if` / `do` / `begin`…）只能写在冒号定义内部**，顶层直接写会报 `Interpreting a compile-only word`。
 - `see 词` 可以反编译一个词，`words` 列出当前可见的词，交互探索非常方便。

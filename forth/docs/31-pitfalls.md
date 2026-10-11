@@ -1,7 +1,30 @@
-# 31 · gforth 0.7.3 坑清单（Debian/WSL 实测版）
+# 31 · gforth 0.7.3 坑清单（Debian/WSL + macOS 双实测版）
 
-这一章是全教程最有价值的部分——下面每一条都是在本机 0.7.3（WSL Debian）
-上**真跑出来的**，不是从文档抄的。代码里搜 `⚠ 坑：` 能看到当时的上下文。
+这一章是全教程最有价值的部分——下面每一条都是**真跑出来的**，不是从文档抄的。
+代码里搜 `⚠ 坑：` 能看到当时的上下文。
+
+两条实测通道：
+
+| 通道 | 环境 | 复核时间 |
+|---|---|---|
+| A | WSL Debian (Linux x86-64) 的 `/usr/bin/gforth` 0.7.3 | 本教程原始记录 |
+| B | macOS 15.8.1 / Intel x86-64 的 MacPorts `/opt/local/bin/gforth` 0.7.3 | 2026-10-11 |
+
+**默认结论两边一致**：28 个示例在 macOS 的 `gforth`、`gforth-fast`、`gforth-itc`
+三个二进制上都是三条判据全绿（rc=0 / stderr 空 / 结尾 `<0>`），缺词清单、
+`{` 被 tester.fs 抢走、`f~` 负容差、`alias` 崩、`look.fs`/`objects.fs`/
+`arch/amd64/asm.fs` 不可用、`/tmp` 临时文件、UTF-8 中文词名——macOS 逐条复现。
+下面标了 **macOS:** 的条目是两边不一致的，只有 7 条：
+
+| # | 事项 | Debian/WSL | macOS（2026-10-11 实测） |
+|---|---|---|---|
+| 1 | 脚本报错后的退出码 | rc=0，不可信 | **rc=1，可信** |
+| 2 | 报错后是否回落交互态 | 会，表现为卡死 | **不会**（tty 与非 tty 都验过），但顶层 `activate` 仍会挂死 |
+| 3 | `find-name` | 坏了：Stack underflow（`(vocfind)`） | **同样坏了，症状是 Address alignment exception**（backtrace 落 `2dup`） |
+| 4 | `search-wordlist` 顶层裸调 | Invalid memory address | **未复现**：已定义/未定义两种顶层写法都 rc=0、stderr 干净 |
+| 5 | 对已死任务再 `kill` | glibc 报 `double free or corruption` | 崩溃一致（rc=134），文案只有 shell 的 `Abort trap: 6` |
+| 6 | 块文件自动扩展尺寸 | 实测 9216 字节 | **稳定 8192 字节**（全新文件、重复运行都一致） |
+| 7 | `libcc` FFI | 不可用（`libcc.h` 路径拼不对） | 同样不可用：`require libcc.fs` 只吐 redefined 噪音能加载，但 `\c` 之后的 `#include` 行报 Undefined word |
 
 ## 字面量与数字
 
@@ -19,6 +42,7 @@
 
 `+to`、`-!`、`%free`、`holds`、`traverse-wordlist`、整数 `**`、
 `3drop`、`3dup`、`buffer:`、`up@`、`latestnt` —— 都不存在。
+**macOS 复核一致**：逐个 `' 词名` 试编译，全部 Undefined word。
 
 | 想要 | 改成 |
 |---|---|
@@ -31,6 +55,8 @@
 
 反过来这些**是内置词，别重定义**（redefined 警告走 stderr，判定脚本
 直接挂）：`2nip`、`sign`、`sgn`、`.line`、`boot`、`for/next`。
+（macOS 复核：这六个词都确实已定义——`' 词名` 能编译通过，空栈执行才炸
+Address alignment exception；存在性成立，别重定义。）
 
 ## 会直接崩的词（Address alignment exception）
 
@@ -41,12 +67,12 @@
 | 起别名 | `: 新名 旧名 ;` |
 | 执行找到的词 | `xt execute` |
 | 打印词的名字 | `nt name>string` |
-| `objects.fs` | **0.7.3 上完全不可用**，改用 `mini-oof.fs` |
-| `libcc`（FFI） | 本机不可用，`libcc.h` 路径拼不对 |
-| `find-name` | **Debian 版 0.7.3 上坏了**：一用就 Stack underflow（`(vocfind)` 里炸，交互态同样）。用 `get-current search-wordlist` 包在冒号里代替 |
-| `search-wordlist` | **顶层裸调**会 Invalid memory address；包进冒号定义就稳 |
-| `require look.fs` / `see.fs` | 炸（`>name`/`see` 已在镜像里）。千万别 require |
-| `require arch/amd64/asm.fs` | 炸 unstructured——那是交叉编译器的部件，0.7.3 **没有可用的宿主汇编器**，CODE 定义写不了机器码 |
+| `objects.fs` | **0.7.3 上完全不可用**，改用 `mini-oof.fs`。macOS 同样：`require objects.fs` 能过（只吐 `redefined catch`，**rc=0 但 stderr 脏**——这就是退出码不可信的反例），真用 `object` 时报 Undefined word |
+| `libcc`（FFI） | 本机不可用，`libcc.h` 路径拼不对。macOS 上 `require libcc.fs` 同样炸在 `\c` 之后的 `#include` 行（Undefined word） |
+| `find-name` | **Debian 版 0.7.3 上坏了**：一用就 Stack underflow（`(vocfind)` 里炸，交互态同样）。**macOS 也坏，但症状是 Address alignment exception**（backtrace 落在 `2dup`）。两边统一用 `get-current search-wordlist` 包在冒号里代替——这个替代写法 macOS 实测可用 |
+| `search-wordlist` | **顶层裸调**会 Invalid memory address；包进冒号定义就稳。**macOS 未复现这条**（顶层 `s" 名字" get-current search-wordlist .` 已定义/未定义都正常退出）——包进冒号定义仍照写，但要知道自己躲的不是同一个雷 |
+| `require look.fs` / `see.fs` | 炸（`>name`/`see` 已在镜像里）。千万别 require。macOS 复现：炸在 `glocals.fs:87` |
+| `require arch/amd64/asm.fs` | 炸 unstructured——那是交叉编译器的部件，0.7.3 **没有可用的宿主汇编器**，CODE 定义写不了机器码。macOS 复现：炸在 `asm.fs:118` 的 `FOR … NEXT` |
 
 ## 编译期 vs 运行期
 
@@ -94,7 +120,7 @@
 | 循环体内 `dup { e }` | 能编译但容易被退出协议咬——循环里走链用变量或 `>r` 配对 |
 | 局部变量不能用 `TO` 赋值 | 它只是有名字的栈槽，只能读 |
 | gforth locals 不做闭包捕获 | `:noname` 捕不到外层变量 |
-| `require test/tester.fs` 之后 | tester.fs 里有 `: { T{ ;`，**把 `{` 抢走**，locals 语法报废 |
+| `require test/tester.fs` 之后 | tester.fs 里有 `: { T{ ;`，**把 `{` 抢走**，locals 语法报废。macOS 复现：`redefined {` 走 stderr，之后的 `{ a }` 直接坏掉 |
 
 ## 循环
 
@@ -128,7 +154,7 @@
 | 坑 | 说明 |
 |---|---|
 | `f=` | 存在，但是**精确比较**，对算出来的值几乎永远假 |
-| `f~` 负容差 | ANS 说是绝对误差比较，**0.7.3 实测反直觉**：`f: 0.0e0 0.0e0 -1.0e-9 f~` → **false**。判等请自己写 `f- fabs 容差 f<` |
+| `f~` 负容差 | ANS 说是绝对误差比较，**0.7.3 实测反直觉**：`0.0e0 0.0e0 -1.0e-9 f~` → **false**（macOS 2026-10-11 复现，写在冒号定义里跑；顺带一提 `f:` 不是 gforth 的词，别照抄带 `f:` 前缀的示例行）。判等请自己写 `f- fabs 容差 f<` |
 | `f~` 会吃掉三个浮点数 | `fover fover f- fabs 1.0e-12 f~` 是错的 |
 | 在浮点栈上做收敛判断 | 不好写，改用 `fvariable` 存当前值 / 新值 |
 | `fvalue` / `fto` 不存在 | 别写 `1.0e0 fvalue x` |
@@ -151,16 +177,16 @@
 | `require blocks.fs` | redefined 噪音全走 stderr——`warnings off` … `require` … `warnings on` 包夹 |
 | 块要用**空格**填充 | `n block 1024 bl fill`；填 NUL 的话 `load` 把垃圾字节当 token 报错 |
 | `fill` 参数序 | `( c-addr u char )`——1024 要压在地址**之后**（实测反着压 = Invalid memory address） |
-| 空文件可以直接写块 | 自动扩文件（实测 9216 字节）；但别 `@` 一个从没写过的块 |
+| 空文件可以直接写块 | 自动扩文件（Debian 实测 9216 字节；**macOS 实测 8192 字节**，全新文件与重复运行都稳定）；但别 `@` 一个从没写过的块 |
 | `open-blocks` 不存在的文件 | 会自动新建（实测），不抛错 |
 
 ## 多任务（26 章）
 
 | 坑 | 说明 |
 |---|---|
-| `activate` 顶层调用 | 主任务返回栈被 `(pass)` 吃掉——**脚本挂死进交互态**。只能包在冒号定义里 |
+| `activate` 顶层调用 | 主任务返回栈被 `(pass)` 吃掉——**脚本挂死进交互态**。只能包在冒号定义里。**macOS 同样挂死**（tty 与非 tty 都要靠超时才能杀掉，这条不是 Debian 专属） |
 | `activate` 是「双返回」 | 主任务从这句话直接跳出所在词；新任务从这句话**后面**开始跑。启动词是固定套式（26 章五步走） |
-| 任务自然结束 | 会 `kill-task` 自杀并 free 自己——之后再 `kill` 就是 **double free or corruption**（glibc 报） |
+| 任务自然结束 | 会 `kill-task` 自杀并 free 自己——之后再 `kill` 就是 **double free or corruption**（glibc 报）。**macOS 也崩（rc=134），但没有 glibc 那行字**，只剩 shell 的 `Abort trap: 6`——别靠报错文案判断，看退出码 |
 | `require tasker.fs` | 同款 redefined 噪音 → warnings off/on 包夹；它还会把 `key/emit/type` 换成带 pause 的版本 |
 
 ## 其它
@@ -169,8 +195,8 @@
 |---|---|
 | `create` 后写 `, ,` | **栈顶先存**，所以 `body[0]` = 栈顶那个 |
 | `?dup` 后接 `if` | 复制的那份被 `if` 吃掉，剩下那份才是真值（异常码 / xt），别急着 `drop` |
-| 未捕获的 `throw` | gforth 会退回交互态等 stdin —— **表现是脚本「卡死」而不是报错退出**。脚本末尾一定写 `bye` |
-| **脚本出错退出码仍是 0** | 实测：报了 Undefined word 照样 rc=0——**退出码不可信，stderr 干不干净才是硬门槛**（run-all.sh 两条都查） |
+| 未捕获的 `throw` | **Debian**：gforth 退回交互态等 stdin——表现是脚本「卡死」而不是报错退出。**macOS**：直接 rc=1 退出，不会读走你喂给 stdin 的内容。两边脚本末尾都写 `bye`，但「报错必卡死」不是普遍规律 |
+| **脚本出错退出码仍是 0** | **Debian 实测**：报了 Undefined word 照样 rc=0——退出码不可信，stderr 干不干净才是硬门槛。**macOS 相反**：Undefined word / `throw` / `abort"` / alignment 四种错误全部 rc=1，退出码可用。但 macOS 上 `require objects.fs` 这类**只有 redefined 警告**的仍是 rc=0 + stderr 脏，所以 `run-all.sh` 三条判据一条都不能省 |
 | `catch` 后面 | 不能直接跟复合表达式，必须先封装成词 |
 | `try...recover...endtry` | 用不了。except.fs 里根本没有 `recover`；换 `endtry-iferror` 也编译不过（unstructured）。异常用内核的 `catch` / `throw` |
 | `abort"` 在定义内 | 会直接抛出。想演示就包一层 `: 试 ( -- ) ... ;` 再 `' 试 catch` |
@@ -179,14 +205,15 @@
 | `constant` | 是编译期造词工具，**不能放进冒号定义** |
 | `utime` | 双精度。要 `utime 2>r ... utime 2r> d- d>s` |
 | `move` 参数序 | `( src dst u )`——摆反了就是悄悄把目标拷进源 |
-| 源文件行尾 | `.fs` 要 **LF**；CRLF 的 `run-all.sh` 在 WSL 里直接 `bash\r` 报错 |
+| 源文件行尾 | `.fs` 要 **LF**；CRLF 的 `run-all.sh` 在 WSL 里直接 `bash\r` 报错（macOS 原生 LF，已核：本仓库 31 篇 docs + 28 个 examples + 两个脚本全是 LF） |
 
 最后再强调最容易吃亏的两条：
 
 > **每个词跑完都看一眼栈。** `.s` 是你的第一道防线。
 > **stderr 有一行就算挂。** 编译警告也是错——查你的重定义。
 
-（全书完 · 31 章 · 示例 28 个 · 全部经 gforth 0.7.3 / WSL Debian 实测通过）
+（全书完 · 31 章 · 示例 28 个 · WSL Debian 与 macOS 15.8.1/MacPorts 双通道实测通过；
+macOS 上 `gforth`、`gforth-fast`、`gforth-itc` 三个二进制各自都是 28/28 全绿）
 
 ---
 上一章：[30 · 速查表](30-cheatsheet.md) ｜ 返回：[README](../README.md)
