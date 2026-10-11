@@ -33,32 +33,32 @@ session ML11 in "11_dpll" = HOL +
   theories
     ex11_dpll
 
-session ML24 in "24_folsem" = HOL +
+session ML23 in "23_folsem" = HOL +
   options [document = false]
   theories
-    ex24_folsem
+    ex23_folsem
 
-session ML25 in "25_folnd" = HOL +
+session ML24 in "24_folnd" = HOL +
   options [document = false]
   theories
-    ex25_folnd
+    ex24_folnd
 
 session ML63 in "63_resolution" = HOL +
   options [document = false]
   theories
     ex63_resolution
 
-session ML91 in "91_decidability" = HOL +
+session ML90 in "90_decidability" = HOL +
   options [document = false]
   theories
-    ex91_decidability
+    ex90_decidability
 
-session ML105 in "105_hoare" = HOL +
+session ML104 in "104_hoare" = HOL +
   options [document = false]
   theories
-    ex105_hoare
+    ex104_hoare
 
-session ML106 in "106_totalcorrect" = HOL +
+session ML105 in "105_totalcorrect" = HOL +
   options [document = false]
   theories
-    ex106_totalcorrect
+    ex105_totalcorrect

@@ -154,4 +154,4 @@ Example hj_axioms_taut : forallb ktaut (firstn 9 hkAxioms) = true.
 Proof. reflexivity. Qed.
 
 (* 定理 2.1 的公理装载账：A1-A9 已在 NJ 可证（04 章深化件），A10
-   需要 FK 的 ¬E/G3ipEa 的 (Ea)（3 章/86 章）——两侧的分隔线。 *)
+   需要 FK 的 ¬E/G3ipEa 的 (Ea)（3 章/84 章）——两侧的分隔线。 *)

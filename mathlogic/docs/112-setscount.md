@@ -1,7 +1,7 @@
 # 第 112 章 集合、幂集与计数
 
-> 对书：Jongsma ch4（§4.1–4.5）。本章通道：C（`examples/100_setscount/ex112_setscount.v`）/
-> L（`examples/100_setscount/ex112_setscount.lean`）。
+> 对书：Jongsma ch4（§4.1–4.5）。本章通道：C（`examples/102_setscount/ex112_setscount.v`）/
+> L（`examples/102_setscount/ex112_setscount.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|
@@ -75,7 +75,7 @@ def powl : List Nat → List (List Nat)
 
 幂集的**完全性**（每个子列表都出现）对带重复元素的列表会失真（重复元素产生
 重复候选），所以本章只机器化「列表版」的这两条；「幂集 = 所有子集的集合」
-的集合论表述留给第 113 章的一般集合论讨论。
+的集合论表述留给第 114 章的一般集合论讨论。
 
 ## 三、笛卡尔积与乘法计数原理
 
@@ -207,4 +207,4 @@ sumchoose 一族衔接，完整机器化是后续工作（清单在 123 章收�
 
 ---
 
-上一章：[111 密码与信任机器](docs/111-crypto.md) · 下一章：[113 无穷集合与停机问题](docs/113-infinity.md)
+上一章：[111 密码与信任机器](docs/111-crypto.md) · 下一章：[113 图论专题](docs/113-graphs.md)

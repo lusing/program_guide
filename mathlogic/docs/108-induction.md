@@ -1,7 +1,7 @@
 # 第 108 章 数学归纳与递归：PMI 三位一体
 
 > 对书：Jongsma《Discrete Mathematics via Logic and Proof》§3.1–3.2。
-> 本章通道：C（`examples/96_induction/ex108_induction.v`）/ L（`examples/96_induction/ex108_induction.lean`）。
+> 本章通道：C（`examples/98_induction/ex108_induction.v`）/ L（`examples/98_induction/ex108_induction.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|
@@ -95,7 +95,7 @@ theorem oddsum_sq : ∀ n, oddsum n = n * n := by
 ## 二、递归定义与递归定理：Hanoi 塔
 
 书 §3.1.3 的递归定理（引 Henkin 1960）说：给一条基点条款和一条递推条款，
-概念就被唯一确定。证明它需要集合论工具（第 113 章会回来），但**使用**它不需要。
+概念就被唯一确定。证明它需要集合论工具（第 114 章会回来），但**使用**它不需要。
 类型论里它化身为人人天天写的东西——`Fixpoint` 的**结构性终止检查**：
 
 ```coq
@@ -334,7 +334,7 @@ theorem fib_triple : ∀ n,
 F₃ₖ₊₅ = 奇+偶 = 奇（Ho5）。要的定理（`fib_3n`）从三分量里读出第一个即可。
 这是「**机器证明经常需要比书上更强的归纳命题**」的教科书现场——书作者可以
 在正文里隐式借用「显然相邻两项奇偶如下」的现成知识，机器必须把它写进命题里
-才能进入归纳假设。第 94 章（饥饿路径的状态机递推）见过同款现象。
+才能进入归纳假设。第 102 章（饥饿路径的状态机递推）见过同款现象。
 
 ## 坑位速记（本章实测）
 

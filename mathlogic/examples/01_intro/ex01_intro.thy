@@ -19,7 +19,7 @@ lemma ml_nn_elim: "\<not> \<not> P \<Longrightarrow> P"
 
 (* 坑位速记（Isabelle 侧）：
    - Unicode 记号用反斜杠转义写法（\<longrightarrow> 等）最稳，
-     直接贴字面 ‹⟧› 记号容易踩词法层的坑（详见 hol/isabelle 教程坑清单）；
+     直接贴字面 ‹› 记号容易踩词法层的坑（详见 hol/isabelle 教程坑清单）；
    - blast/simp/metis 是自动化三板斧，经典性由内核担保；
    - 对象逻辑是 HOL：P 是 bool 的别名（prop 层与 bool 层的关系见 02 章）。 *)
 

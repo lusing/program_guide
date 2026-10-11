@@ -1,7 +1,7 @@
 # 第 110 章 整除性与初等数论
 
-> 对书：Jongsma §3.5。本章通道：C（`examples/99_divisibility/ex110_divisibility.v`）/
-> L（`examples/99_divisibility/ex110_divisibility.lean`）。
+> 对书：Jongsma §3.5。本章通道：C（`examples/101_divisibility/ex110_divisibility.v`）/
+> L（`examples/101_divisibility/ex110_divisibility.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|
@@ -194,7 +194,7 @@ Theorem inf_primes : forall L, (forall n, In n L -> prime n) ->
 
 整除、除法算式、gcd/Bézout、Euclid 引理、lcm——初等数论的承重墙在两个
 通道上全部立起，且账本干净（Coq 全零公理，Lean 仅基线）。Bézout 的差形式
-（方向位 s）是 nat 世界给「负系数」的答案，后面第 115 章（模算术）还会用到
+（方向位 s）是 nat 世界给「负系数」的答案，后面第 119 章（模算术）还会用到
 同款手艺。下一章告别算术、进入集合与计数：乘法原理、组合、容斥、鸽笼。
 
 ---

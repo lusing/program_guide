@@ -13,7 +13,7 @@ Import ListNotations.
 (* m^e mod n：朴素线性版（每步乘底即取模——值域被压在 n² 以内，
    unary nat 全程温和）。工业用的平方-乘是 O(log e) 次「底数平方
    +按位乘」；但它的递归走 Nat.div2（指数减半），guard 检查器
-   不认（家族第六撞，77/78 章同病）——教学件里消息与指数都小
+   不认（家族第六撞，75/76 章同病）——教学件里消息与指数都小
    （e=7、d=103），线性版诚实够用，快速幂的机制记文档线 *)
 Fixpoint powmod (base e n : nat) : nat :=
   match e with

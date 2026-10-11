@@ -153,7 +153,7 @@ semantics）这个名字下的事业。
   （原子闭包表，必要但不充分），再表列整个递归（definitive）。
   Lean 侧 native_decide 编译执行同效；`!X = true` 的断言要括号
   `(!X) = true`。
-- **remove_dup 前置**（Coq 不前向引用，第 41 章同坑二现）。
+- **remove_dup 前置**（Coq 不前向引用，第 36 章同坑二现）。
 
 ## 小结
 
@@ -166,4 +166,4 @@ semantics）这个名字下的事业。
 的 supposition」；读完本章的你，已经有了亲手掂量它的机器。
 
 ---
-上一章：[41 归约分解：抽象归约系统](docs/41-ars.md) · 下一章：[43 归约树与切消](docs/43-redtree.md)
+上一章：[41 λ-立方与定理证明器](docs/41-lcube.md) · 下一章：[43 L-S、紧致性与初等等价](docs/43-lscompact.md)
