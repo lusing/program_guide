@@ -170,3 +170,25 @@ funanalysis/
   diff_self/right_minus_eq 显式添加）——线性函数差的自消需要
   函数级等式而非向量级；③onorm_le 前提序在 v4.33 变化，
   rule 直接用会报 refine 错，需用 onorm_bound 命题形式。
+- 2026-10-11 B8（27-33 章）完成：Banach 算子 + Banach 代数。
+  docs×7、Lean 7/7、Julia/Python 各7文件、Isabelle FA07-09。
+- 2026-10-11 B9（34-40 章）完成：C* 代数 + 谱定理。
+  docs×7、Lean 7/7、Julia/Python 各7文件。
+- 2026-10-11 B9.5 质量债清偿（27-40 章）：B7 起遗留的
+  14 章 24 行占位文档全部重写为 95-121 行正式教程；
+  Julia/Python 各 10 个空壳实验全部充实为真实验
+  （伴随保范/零化子/Banach-Stone 分类、Eckart-Young、Neumann
+  级数、Gelfand 公式 k=200、预解式爆破、三法合一 exp(A)、
+  Riesz 投影、三角谱不变性、Volterra 拟幂零、正元平方根、
+  PVM 五公理、移位 WOT≠SOT、交换子核 = 双交换子、
+  不变旗/约化/Jordan 重数）；Lean Ch35/36/38/39/40 空 Shell
+  补 mathlib 锚点（IsPositive/orthogonalProjectionOnto/
+  le_opNorm/comp_assoc/Submodule.map+eigenspace）。
+  实测新坑：Julia 顶层 for 内对已声明全局的再赋值（含 &= / +=）
+  一律按局部处理致假绿/报错，须 let 块或推导式收集；
+  λ ∈ f 对函数 f 不合法（in 当集合处理），须直接调用 f(x)；
+  eigvals 升序 vs 1./n 降序的对位比较要 reverse 参考向量；
+  级数累加漏 k=0 项时误差恰为 √n（Frobenius 范数的指纹）；
+  numpy np.exp 是逐元素、矩阵指数必须 scipy.linalg.expm；
+  满秩矩阵的 null_space 为空数组，断言空转——需造亏秩矩阵
+  才是真检验。
