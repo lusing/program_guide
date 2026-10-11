@@ -22,6 +22,9 @@
 - [11 紧自伴算子的对角化](docs/11-diagonalization.md)
 - [12 应用：Sturm-Liouville 系统](docs/12-sturm-liouville.md)
 - [13 紧正规算子的谱定理与泛函演算](docs/13-compact-normal.md)
+- [14 赋范空间与 Banach 空间](docs/14-banach-spaces.md)
+- [15 线性泛函与 Hahn-Banach 定理](docs/15-hahn-banach.md)
+- [16 应用三讲](docs/16-applications.md)
 
 （更多章节随批次推进，完整清单见 [PLAN.md](PLAN.md)。）
 

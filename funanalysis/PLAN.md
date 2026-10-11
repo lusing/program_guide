@@ -149,7 +149,11 @@ funanalysis/
   （Ch10-13，IsCompactOperator/eq_zero_of_forall_hasEigenvalue_eq_zero/
   conj_eigenvalue_eq_self/orthogonalFamily_eigenspaces）、Julia/Python
   各4文件全绿（截断SVD误差=σ_{k+1}/Volterra 2π/Green函数/
-  特征值1/(n²π²)/正规性/泛函演算/sqrtm/酉等价）。
+  特征值1/(n²π²)/正规性/泛函演算/sqrtm/酉等别）。
+- 2026-10-11 B4（14-16 章）完成：Banach 空间三连。docs×3、
+  Lean 3/3（Ch14-16）、Julia/Python 各3文件全绿
+  （Taylor收敛/商范数/Riesz高维/Banach极限Cesàro/Runge逼近1/z）。
+  同时修复 B3 遗留：Ch11 conj 改 starRingEnd、Ch12/13 重写简化。
   Isabelle 通道 v4.33 三大新坑入记忆：①type 2 坐标系是 {1,2} 而非
   {0,1}（axis_def 展开后 if-condition 求值需要 axis_def 而非 axis_nth
   单独使用）；②E x - E x = 0 在 also/finally 链中 simp 不闭（哪怕

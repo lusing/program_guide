@@ -19,3 +19,6 @@ import Funanalysis.Ch10CompactOperators
 import Funanalysis.Ch11Diagonalization
 import Funanalysis.Ch12SturmLiouville
 import Funanalysis.Ch13CompactNormal
+import Funanalysis.Ch14BanachSpaces
+import Funanalysis.Ch15HahnBanach
+import Funanalysis.Ch16Applications
