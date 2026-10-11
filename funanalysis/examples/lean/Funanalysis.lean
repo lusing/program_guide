@@ -10,3 +10,8 @@ import Funanalysis.Ch01Prelim
 import Funanalysis.Ch02InnerProduct
 import Funanalysis.Ch03Projection
 import Funanalysis.Ch04Riesz
+import Funanalysis.Ch05Orthonormal
+import Funanalysis.Ch06Isomorphism
+import Funanalysis.Ch07BoundedOperators
+import Funanalysis.Ch08Adjoint
+import Funanalysis.Ch09Projections

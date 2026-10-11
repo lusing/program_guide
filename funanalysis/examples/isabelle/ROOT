@@ -22,3 +22,28 @@ session FA04 in "FA04" = "HOL-Analysis" +
   options [document = false]
   theories
     T04_Riesz
+
+session FA05 in "FA05" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T05_Orthonormal
+
+session FA07 in "FA07" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T07_BoundedOperators
+
+session FA08 in "FA08" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T08_Adjoint
+
+session FA09 in "FA09" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T09_Projections
+
+session FA09P in "FA09p" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    probe_axis

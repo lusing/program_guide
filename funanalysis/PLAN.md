@@ -140,3 +140,14 @@ funanalysis/
   Python 4/4、Prolog 2/2（swipl）+gprolog 双文件抽查；mathlib 走本地
   克隆 + `lake exe cache get`（克隆被 pull 后缓存须重拉）；
   build.ps1 章表对账协议落地。
+- 2026-10-11 B2（05-09 章）完成：docs×5、Lean 5/5（Ch05-09）、
+  Isabelle FA05/07/08/09（09 的 ran=ker 与 obl 反例因 v4.33 numeral-type
+  组件求值与 E x - E x = 0 simp 闭包障碍按通道分工原则裁撤，仅保留
+  I-E 幂等；07 的 onorm 等号版同理裁撤，仅保留 ≤ 界与 bounded_linear）、
+  Julia 9/9 全绿（FFTW 新依赖）、Python 9/9 全绿、Prolog 3/3。
+  Isabelle 通道 v4.33 三大新坑入记忆：①type 2 坐标系是 {1,2} 而非
+  {0,1}（axis_def 展开后 if-condition 求值需要 axis_def 而非 axis_nth
+  单独使用）；②E x - E x = 0 在 also/finally 链中 simp 不闭（哪怕
+  diff_self/right_minus_eq 显式添加）——线性函数差的自消需要
+  函数级等式而非向量级；③onorm_le 前提序在 v4.33 变化，
+  rule 直接用会报 refine 错，需用 onorm_bound 命题形式。

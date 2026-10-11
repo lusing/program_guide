@@ -13,6 +13,11 @@
 - [02 内积空间初步](docs/02-inner-product.md)
 - [03 正交性与投影定理](docs/03-orthogonality.md)
 - [04 Riesz 表示定理](docs/04-riesz.md)
+- [05 标准正交集与基](docs/05-orthonormal-bases.md)
+- [06 同构分类、圆周 Fourier 变换与直和](docs/06-fourier-sums.md)
+- [07 有界算子与 B(ℋ)](docs/07-bounded-operators.md)
+- [08 伴随算子](docs/08-adjoint.md)
+- [09 投影、幂等与不变子空间](docs/09-projections.md)
 
 （更多章节随批次推进，完整清单见 [PLAN.md](PLAN.md)。）
 
