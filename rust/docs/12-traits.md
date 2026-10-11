@@ -244,6 +244,68 @@ let s: Box<dyn Shape> = Box::new(Circle::new());    // ✔ 合法
 
 一个 trait 里只要有一个方法不满足 object safe 且没有 `where Self: Sized` 隔离，**整个 trait** 都不能做 dyn——不是"不安全的方法不能调"，是"trait 对象根本构造不出来"。这是 all-or-nothing 规则。
 
+### 实战：用 trait 实现可互换的组件接口
+
+游戏开发中 trait 的典型用法是定义**可插拔的组件接口**——不同的实现可以运行时互换，而不改调用方代码。两个教科书案例：
+
+**地图主题**：同一套地图数据，用不同的渲染风格（地下城 vs 森林）呈现。trait 定义接口，`Box<dyn>` 存储具体实现：
+
+```rust
+// 定义：给定图块类型，返回渲染字符
+pub trait MapTheme: Sync + Send {
+    fn tile_to_render(&self, tile_type: TileType) -> FontCharType;
+}
+
+// 实现 A：地下城风格
+pub struct DungeonTheme;
+impl MapTheme for DungeonTheme {
+    fn tile_to_render(&self, tile_type: TileType) -> FontCharType {
+        match tile_type {
+            TileType::Floor => to_cp437('.'),
+            TileType::Wall  => to_cp437('#'),
+        }
+    }
+}
+
+// 实现 B：森林风格
+pub struct ForestTheme;
+impl MapTheme for ForestTheme {
+    fn tile_to_render(&self, tile_type: TileType) -> FontCharType {
+        match tile_type {
+            TileType::Floor => to_cp437(';'),   // 草地
+            TileType::Wall  => to_cp437('"'),   // 树木
+        }
+    }
+}
+
+// 使用方：不 care 具体主题，只调 trait 方法
+fn render_map(map: &Map, theme: &Box<dyn MapTheme>) {
+    for tile in &map.tiles {
+        let glyph = theme.tile_to_render(*tile);   // 动态分发
+        // ... 渲染
+    }
+}
+```
+
+**地图生成算法**：不同的程序化生成算法（房间+走廊、元胞自动机、醉鬼漫步）都产出 `MapBuilder`，用 trait 统一接口：
+
+```rust
+pub trait MapArchitect {
+    fn new(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder;
+}
+
+// 三种实现：RoomsArchitect、CellularAutomataArchitect、DrunkardsWalkArchitect
+// 运行时随机选择一种：
+let architect: Box<dyn MapArchitect> = match rng.range(0, 3) {
+    0 => Box::new(DrunkardsWalkArchitect),
+    1 => Box::new(RoomsArchitect),
+    _ => Box::new(CellularAutomataArchitect),
+};
+let map_builder = architect.new(&mut rng);   // 多态调用
+```
+
+这两个案例的共同模式：**trait 定义"能做什么"，具体类型定义"怎么做"，`Box<dyn Trait>` 在运行时选择"用哪个做"**。加新实现（新主题、新算法）时，调用方代码零改动——这是开闭原则（OCP）在 Rust 的落地方式。注意 `MapTheme: Sync + Send` 的约束——它限制了只有线程安全的类型才能实现该 trait（22 章），因为游戏引擎会在多线程环境中访问资源。
+
 ## 12.8 标签 trait（marker trait）：编译器的隐形印章
 
 std::marker 里有一组**空 trait**——没有方法，纯作类型系统的标记：

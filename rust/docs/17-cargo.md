@@ -74,6 +74,56 @@ cargo build / test / doc --open
 
 版本号是**语义化版本约束**：`"1"` = `^1`（兼容范围内的最新）。`Cargo.lock` 锁定具体版本——**应用工程提交 lock，库工程不提交**（社区惯例）。
 
+### 语义化版本号：三位数字的契约
+
+Cargo 的版本号遵循 [SemVer](https://semver.org) 规范——三位数字各有意图：
+
+| 位 | 名称 | 何时增长 | 兼容性承诺 |
+|---|---|---|---|
+| 第一位 | 主版本（major） | 破坏性 API 变更 | 不保证兼容 |
+| 第二位 | 次版本（minor） | 新增功能，保持兼容 | 向后兼容 |
+| 第三位 | 修订号（patch） | 缺陷修复 | 完全兼容 |
+
+`0.x.y` 是特例：主版本为 0 表示"预发布"，**任何次版本增长都可能破坏兼容**——`0.8` → `0.9` 可能改了 API。所以 `^0.8.1` 的实际含义是 `>=0.8.1, <0.9.0`（只在 0.8 内升级），而 `^1.2.3` 是 `>=1.2.3, <2.0.0`（1.x 内随便升）。
+
+### 版本约束运算符
+
+```toml
+[dependencies]
+serde = "1.0"           # = ^1.0：>=1.0.0, <2.0.0（最常用，默认行为）
+serde = "^1.0"          # 同上，显式写出脱字符
+serde = "=1.0.115"      # 精确锁定：只接受 1.0.115，任何其他版本都不行
+serde = "~1.0"          # 波浪号：>=1.0.0, <1.1.0（只升修订号）
+serde = ">=1.0, <1.5"   # 手动范围（少用）
+```
+
+| 运算符 | 含义 | 使用场景 |
+|---|---|---|
+| `^1.2.3`（默认） | 兼容范围内最新 | 绝大多数依赖——信任 SemVer 承诺 |
+| `=1.2.3` | 精确锁定 | API 不稳定期（0.x 版本）、可复现构建要求 |
+| `~1.2.3` | 只升修订号 | 保守升级：接受 bugfix，不接受新功能 |
+
+**实战建议**：开发初期用 `=` 锁定关键依赖（尤其 0.x 的 crate），避免上游升级破坏构建；项目稳定后切回 `^` 让 Cargo 自动吸收 bugfix。`cargo update` 在锁文件范围内升级到最新兼容版，`cargo update -p serde --precise 1.0.200` 精确指定。
+
+### 依赖来源：不只是版本号
+
+```toml
+[dependencies]
+# crates.io（默认）
+serde = "1.0"
+
+# Git 仓库（跟踪某个分支/commit/tag）
+bracket-lib = { git = "https://github.com/thebracket/bracket-lib", branch = "master" }
+
+# 本地路径（monorepo 内部 crate）
+geometry = { path = "../geometry" }
+
+# 关闭默认 feature + 开启可选 feature
+bracket-lib = { version = "0.8", default-features = false, features = ["amethyst_engine_vulkan"] }
+```
+
+`git` 依赖适合"急需上游未发布的修复"的场景，但**生产项目应尽量避免**——git 依赖没有 SemVer 保证，上游 force-push 可能破坏你的构建。路径依赖是 workspace 内部 crate 的标准用法（见 17.5）。
+
 ## 17.4 feature：编译期开关
 
 ```toml
