@@ -147,7 +147,45 @@ Rust 不能百分百阻止内存泄漏——Rc 循环引用就是安全代码里
 
 另两个顺路的：`Cow<T>`（写时克隆，06 章字符串场景偶用）、`Cell<T>`（Copy 类型的轻量内部可变，`get/set` 无借用检查）。
 
-## 18.8 坑位清单
+## 18.8 Cell：Copy 类型的"无借用检查"内部可变
+
+`Cell<T>` 与 `RefCell<T>` 同属 `std::cell` 家族，但机制更轻：没有运行期借用计数，直接**整体替换值**（`get`/`set`），所以只支持 `Copy` 类型。想"改"一个 `Cell<i32>`，实际是读出旧值、写入新值——没有 `&mut` 参与，借用规则无从检查也不需要检查。
+
+典型用法是**惰性缓存**——逻辑上"只读"的方法，内部悄悄记一笔下次省重算：
+
+```rust
+use std::cell::Cell;
+
+struct Data {
+    values: Vec<u8>,
+    cached_sum: Cell<Option<u8>>,   // 缓存位：None = 未算过
+}
+
+impl Data {
+    fn new(values: Vec<u8>) -> Self {
+        Self { values, cached_sum: Cell::new(None) }
+    }
+
+    fn sum(&self) -> u8 {                    // &self 不是 &mut self！
+        if let Some(s) = self.cached_sum.get() {
+            return s;                        // 命中缓存：O(1) 返回
+        }
+        let s: u8 = self.values.iter().sum(); // 未命中：现场算
+        self.cached_sum.set(Some(s));        // 写回缓存（&self 下完成！）
+        s
+    }
+}
+
+let d = Data::new(vec![1, 2, 3, 4]);
+assert_eq!(d.sum(), 10);   // 第一次：真算
+assert_eq!(d.sum(), 10);   // 第二次：走缓存
+```
+
+`&self` 里完成"读旧值 + 写新值"是 Cell 的独门绝技——`RefCell` 需要运行期记账（borrow/borrow_mut 可能 panic），`Cell` 用"整体替换"绕开了借用语义，零记账开销。代价是只能搬整个值（Copy 类型才划算），大结构或要部分修改的场景还是 RefCell。
+
+选型：**小 Copy 值 + 逻辑只读 + 内部要改 → Cell；非 Copy 或要部分修改 → RefCell**。
+
+## 18.9 坑位清单
 
 1. **Rc 跨线程直接编译错**：`Rc<i32>` 非 Send/Sync——报错会指向 rc.rs 注释劝你用 Arc（22 章 Send/Sync）。
 2. **RefCell 双重 borrow 是 panic 不是编译错**：测试要覆盖冲突路径；借用 guard 活得过长（存进变量）是隐形炸弹——`let g = cell.borrow(); ...` 拖到 borrow_mut 就炸。
