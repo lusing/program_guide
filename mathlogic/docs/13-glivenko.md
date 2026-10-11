@@ -33,7 +33,7 @@ a=b=√2、见证 √2·√2=2（ witnessed 证明反而更短）。
 ## ¬¬ 翻译：把经典真「藏进」双重否定
 
 Glivenko 的思想：经典原理挂上 ¬¬ 后全部变成直觉定理。机器现场
-（`examples/12_glivenko/ex13_glivenko.v`，四通道同构）：
+（`examples/13_glivenko/ex13_glivenko.v`，四通道同构）：
 
 ```coq
 Theorem n3 : forall A : Prop, ~ ~ ~ A -> ~ A.

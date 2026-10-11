@@ -1,7 +1,7 @@
 # 第 110 章 整除性与初等数论
 
-> 对书：Jongsma §3.5。本章通道：C（`examples/101_divisibility/ex110_divisibility.v`）/
-> L（`examples/101_divisibility/ex110_divisibility.lean`）。
+> 对书：Jongsma §3.5。本章通道：C（`examples/110_divisibility/ex110_divisibility.v`）/
+> L（`examples/110_divisibility/ex110_divisibility.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|

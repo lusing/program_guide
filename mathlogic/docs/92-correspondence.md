@@ -27,7 +27,7 @@ S5 的可达关系是等价关系的代数原因。
 
 ## 五条正向定理（机器件）
 
-性质 ⟹ 公式在该框架类上有效（`examples/106_correspondence/`，
+性质 ⟹ 公式在该框架类上有效（`examples/92_correspondence/`，
 双通道）：
 
 ```coq

@@ -32,7 +32,7 @@ diagram，中译本译「二叉判定图」，教程沿用更通行的「二叉�
 
 ## 教学表示：深度编码
 
-机器表示用**深度编码**（`examples/11_bdd/ex12_bdd.v`）：
+机器表示用**深度编码**（`examples/12_bdd/ex12_bdd.v`）：
 
 ```coq
 Inductive dtree : Type :=

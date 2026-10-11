@@ -1,7 +1,7 @@
 # 第 113 章 图论专题
 
-> 对书：Jongsma ch8（§8.1–8.4）。本章通道：C（`examples/105_graphs/ex113_graphs.v`）/
-> L（`examples/105_graphs/ex113_graphs.lean`）/ P（`examples/105_graphs/ex113_graphs.pl`）。
+> 对书：Jongsma ch8（§8.1–8.4）。本章通道：C（`examples/113_graphs/ex113_graphs.v`）/
+> L（`examples/113_graphs/ex113_graphs.lean`）/ P（`examples/113_graphs/ex113_graphs.pl`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|

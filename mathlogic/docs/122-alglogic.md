@@ -1,8 +1,8 @@
-# 第 123 章 代数逻辑：后承演算与德摩根代数
+# 第 122 章 代数逻辑：后承演算与德摩根代数
 
 > 对书：马明辉《结构证明论》第 7 章（p228-251）。本章通道：
-> C（`examples/123_alglogic/ex122_alglogic.v`）/ L（`examples/
-> 123_alglogic/ex122_alglogic.lean`）。
+> C（`examples/122_alglogic/ex122_alglogic.v`）/ L（`examples/
+> 122_alglogic/ex122_alglogic.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|

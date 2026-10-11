@@ -151,7 +151,7 @@ H : ¬∃x.(Px→∀y.Py) ⊢ False
 ## 深嵌入现场：等式规则的机器演算（ex24_eq，C/L 新单元）
 
 浅嵌入里 =i/=e 就是内核的 eq_refl/eq_subst——复述内核没有
-教学价值。新单元（`examples/23_folnd/ex24_eq.v` 与
+教学价值。新单元（`examples/24_folnd/ex24_eq.v` 与
 `.lean`）自建**深嵌入演算**：沿 22 章 form 加等式原子，
 nd 归纳谓词装七条规则：
 

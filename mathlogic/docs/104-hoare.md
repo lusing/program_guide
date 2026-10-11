@@ -127,7 +127,7 @@ countdown 为例的竖式骨架（H&R 图 4.13 的风格）：
 
 ## countdown 组装的机器走查
 
-机器版（`examples/44_hoare/ex104_hoare.v`）的组装链逐层拆开——
+机器版（`examples/104_hoare/ex104_hoare.v`）的组装链逐层拆开——
 它是竖式表的「正向镜像」，值得对照读（Coq 版骨架）：
 
 ```coq

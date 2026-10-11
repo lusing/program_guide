@@ -1,8 +1,8 @@
 # 第 31 章 完备性定理：Henkin 构造
 
 > 对书：EFT ch V（§V.1-5.4）+ H&R §3.2 的七步骨架。本章通道：文档 +
-> C（`examples/30_completeness/ex31_completeness.v`）/
-> L（`examples/30_completeness/ex31_completeness.lean`）。
+> C（`examples/31_completeness/ex31_completeness.v`）/
+> L（`examples/31_completeness/ex31_completeness.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|

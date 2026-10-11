@@ -1,7 +1,7 @@
 # 第 112 章 集合、幂集与计数
 
-> 对书：Jongsma ch4（§4.1–4.5）。本章通道：C（`examples/102_setscount/ex112_setscount.v`）/
-> L（`examples/102_setscount/ex112_setscount.lean`）。
+> 对书：Jongsma ch4（§4.1–4.5）。本章通道：C（`examples/112_setscount/ex112_setscount.v`）/
+> L（`examples/112_setscount/ex112_setscount.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|

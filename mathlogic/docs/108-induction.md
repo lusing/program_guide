@@ -1,7 +1,7 @@
 # 第 108 章 数学归纳与递归：PMI 三位一体
 
 > 对书：Jongsma《Discrete Mathematics via Logic and Proof》§3.1–3.2。
-> 本章通道：C（`examples/98_induction/ex108_induction.v`）/ L（`examples/98_induction/ex108_induction.lean`）。
+> 本章通道：C（`examples/108_induction/ex108_induction.v`）/ L（`examples/108_induction/ex108_induction.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|

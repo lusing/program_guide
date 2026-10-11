@@ -27,7 +27,7 @@ LTL 的语法在命题连接词上加四个时态算子（H&R §3.2.1）：
 ——其余都是区间性质。W（weak until，不保证到达）与 R
 （release，U 的对偶）在 adequate set 讨论中出场。
 
-机器件（`examples/63_ltl/ex95_ltl.v`）把路径压成流（无限
+机器件（`examples/95_ltl/ex95_ltl.v`）把路径压成流（无限
 序列=位置函数），语义按公式结构递归：
 
 ```coq

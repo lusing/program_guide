@@ -70,7 +70,7 @@ H ::= C | C ∧ H           （公式：子句合取）
 Prolog 桥）与硬件验证里最常见的公式形态——所以「线性」不是
 象牙塔优惠。
 
-机器表示（`examples/10_dpll/ex11_horn.v`）把 Horn 公式直接
+机器表示（`examples/11_dpll/ex11_horn.v`）把 Horn 公式直接
 压缩成它的语义骨架：
 
 ```coq

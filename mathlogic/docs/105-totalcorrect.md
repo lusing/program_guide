@@ -14,7 +14,7 @@
 
 104 章的 `hoare P c Q := ∀s1 s2. P s1 → exec c s1 s2 → Q s2`——
 关系形态的 exec 自动豁免发散。完全版把「存在终态」写进定义
-（`examples/65_totalcorrect/`，三通道同构）：
+（`examples/105_totalcorrect/`，三通道同构）：
 
 ```coq
 Definition hoareT (P : state -> Prop) (c : cmd)

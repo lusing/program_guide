@@ -26,7 +26,7 @@ CTL 的量词网格（H&R 定义 3.12）：**路径量词** A（所有路径）/
 E（某条路径）× **时态算子** X（下一步）/F（终将）/G（总是）/
 U（直到）——成对组合（AX、EX、AF、EF、AG、EG、AU、EU）才是
 完整算子（CTL 的 C=branching 即「量词必须成对」）。机器件
-（`examples/43_temporal/ex96_temporal.v`）装六个代表：
+（`examples/96_temporal/ex96_temporal.v`）装六个代表：
 
 ```coq
 Inductive ctl : Type :=
@@ -164,7 +164,7 @@ s₀ ∈ 集合即可，反例路径也从集合差里长出来。
 - **EX φ**：标记 φ 的集合的**前像**（有后继落在集合里的状态）；
 - **EU φ ψ / AF φ**：不动点迭代。
 
-机器件（`examples/43_temporal/ex96_label.v`，Lean 版同构）：
+机器件（`examples/96_temporal/ex96_label.v`，Lean 版同构）：
 
 ```coq
 Definition satEX (m : fmodel) (S : list nat) : list nat :=

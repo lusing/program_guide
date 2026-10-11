@@ -1,7 +1,7 @@
 # 第 59 章 二阶逻辑与弱二阶系统
 
-> 对书：EFT ch IX（§IX.1-9.3）+ §X.5 的伏笔。本章通道：C（`examples/44_secondorder/ex59_secondorder.v`）/
-> L（`examples/44_secondorder/ex59_secondorder.lean`）。
+> 对书：EFT ch IX（§IX.1-9.3）+ §X.5 的伏笔。本章通道：C（`examples/59_secondorder/ex59_secondorder.v`）/
+> L（`examples/59_secondorder/ex59_secondorder.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|

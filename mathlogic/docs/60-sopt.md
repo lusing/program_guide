@@ -5,7 +5,7 @@
 > 三重归纳与命题 16.7 有限实例化（文档线）、§17 相对化理论（Def 17.1/
 > 引理 17.5/定理 17.8/17.10）、§18 分层真值定义（Def 18.4-定理 18.17）、
 > §19 S₁⊂S₂⊂S₃（定理 19.16）、§20-§21 简单类型论与 Takeuti 猜想（文档线）。
-> 本章通道：C（`examples/59_sopt/ex60_sopt.v`）/ L（`examples/59_sopt/
+> 本章通道：C（`examples/60_sopt/ex60_sopt.v`）/ L（`examples/60_sopt/
 > ex60_sopt.lean`）。
 
 | 机器件 | 内容 | 通道 |

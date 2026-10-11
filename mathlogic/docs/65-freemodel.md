@@ -1,7 +1,7 @@
 # 第 65 章 自由模型与逻辑编程的代数
 
-> 对书：EFT ch XI（§XI.1-11.3+11.7）。本章通道：C（`examples/64_freemodel/ex65_freemodel.v`）/
-> L（`examples/64_freemodel/ex65_freemodel.lean`）。
+> 对书：EFT ch XI（§XI.1-11.3+11.7）。本章通道：C（`examples/65_freemodel/ex65_freemodel.v`）/
+> L（`examples/65_freemodel/ex65_freemodel.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|

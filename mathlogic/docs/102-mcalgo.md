@@ -21,7 +21,7 @@
 ## reach 的不动点工程：去重、燃料与收敛
 
 安全性判定 `safety_mutex` 的一行 `reflexivity` 背后是一台
-值得拆开看的小机器（`examples/62_mcalgo/ex103_mcalgo.v`）：
+值得拆开看的小机器（`examples/102_mcalgo/ex102_mcalgo.v`）：
 
 ```coq
 Definition closureStep (S : list st) : list st :=
@@ -54,7 +54,7 @@ Fixpoint reach (fuel : nat) (S : list st) : list st :=
 - **Non-blocking**：随时可申请——`AG(n₁ → EX t₁)` 形态；
 - **No strict sequencing**：不必严格轮流入场。
 
-机器件（`examples/62_mcalgo/`，双通道）：状态三元组
+机器件（`examples/102_mcalgo/`，双通道）：状态三元组
 `(p₁, p₂, last)`（pi ∈ {n,t,c}，last 记录最后动作方——公平性
 要用），迁移按 H&R 图 3.7 的协议：**t→c 需对方不在 c**（否则
 就是会撞车的裸交错——初版实测可达 (c₁,c₂)，协议纪律补上后才

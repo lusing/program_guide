@@ -1,7 +1,7 @@
 # 第 119 章 函数与等价关系
 
-> 对书：Jongsma ch6（§6.1–6.4）。本章通道：C（`examples/92_funequiv/ex119_funequiv.v`）/
-> L（`examples/92_funequiv/ex119_funequiv.lean`）。
+> 对书：Jongsma ch6（§6.1–6.4）。本章通道：C（`examples/119_funequiv/ex119_funequiv.v`）/
+> L（`examples/119_funequiv/ex119_funequiv.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|

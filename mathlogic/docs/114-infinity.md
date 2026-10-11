@@ -1,7 +1,7 @@
 # 第 114 章 无穷集合与停机问题
 
-> 对书：Jongsma ch5（§5.1–5.3）。本章通道：C（`examples/91_infinity/ex114_infinity.v`）/
-> L（`examples/91_infinity/ex114_infinity.lean`）。
+> 对书：Jongsma ch5（§5.1–5.3）。本章通道：C（`examples/114_infinity/ex114_infinity.v`）/
+> L（`examples/114_infinity/ex114_infinity.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|

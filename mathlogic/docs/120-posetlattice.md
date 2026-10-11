@@ -1,7 +1,7 @@
 # 第 120 章 偏序与格
 
-> 对书：Jongsma ch7（§7.1–7.2）。本章通道：C（`examples/93_posetlattice/ex120_posetlattice.v`）/
-> L（`examples/93_posetlattice/ex120_posetlattice.lean`）。
+> 对书：Jongsma ch7（§7.1–7.2）。本章通道：C（`examples/120_posetlattice/ex120_posetlattice.v`）/
+> L（`examples/120_posetlattice/ex120_posetlattice.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|

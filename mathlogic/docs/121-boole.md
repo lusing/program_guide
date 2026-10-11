@@ -1,7 +1,7 @@
 # 第 121 章 Boole 代数与逻辑电路
 
-> 对书：Jongsma ch7（§7.3–7.6）。本章通道：C（`examples/104_boole/ex121_boole.v`）/
-> L（`examples/104_boole/ex121_boole.lean`）/ P（`examples/104_boole/ex121_boole.pl`）。
+> 对书：Jongsma ch7（§7.3–7.6）。本章通道：C（`examples/121_boole/ex121_boole.v`）/
+> L（`examples/121_boole/ex121_boole.lean`）/ P（`examples/121_boole/ex121_boole.pl`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|

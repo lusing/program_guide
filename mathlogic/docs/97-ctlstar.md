@@ -38,7 +38,7 @@ CTL* 的定义性特征是**两类公式互相递归**（H&R §3.5）：
 路径公式 ψ ::= φ | ¬ψ | ψ∧ψ | X ψ | G ψ | F ψ | ψ U ψ （沿路径读）
 ```
 
-机器件（`examples/64_ctlstar/ex97_ctlstar.v`，Lean 同构）：
+机器件（`examples/97_ctlstar/ex97_ctlstar.v`，Lean 同构）：
 
 ```coq
 Inductive sform : Type :=
