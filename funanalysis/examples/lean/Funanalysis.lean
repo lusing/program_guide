@@ -36,3 +36,10 @@ import Funanalysis.Ch30Spectrum
 import Funanalysis.Ch31RieszCalculus
 import Funanalysis.Ch32CompactSpectrum
 import Funanalysis.Ch33Gelfand
+import Funanalysis.Ch34CStarAlgebra
+import Funanalysis.Ch35PositiveElements
+import Funanalysis.Ch36SpectralMeasures
+import Funanalysis.Ch37SpectralTheorem
+import Funanalysis.Ch38TopologiesBH
+import Funanalysis.Ch39VonNeumann
+import Funanalysis.Ch40InvariantSubspaces
