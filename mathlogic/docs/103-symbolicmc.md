@@ -52,7 +52,7 @@ Lemma preE_In : forall m S s,
 restrict/exb/apply 在这里会师。
 
 **preE 单调**（`preE_mono`）：集合变大前像变大——Knaster–
-Tarski 的前提，一切不动点论证的地基（62 章 T_P 单调、96 章
+Tarski 的前提，一切不动点论证的地基（62 章 T_P 单调、102 章
 exStep 单调的同族第三件）。
 
 ## 关系 μ 演算（H&R §6.4.1）
@@ -119,7 +119,7 @@ Theorem mu_eu_is_iterEU : forall m A B,
   = iterEU m (length (fstates m)) A B.
 ```
 
-**编码等价 = 96 章算法的 μ 演算身份**：ν 编码与 iterEG 是
+**编码等价 = 102 章算法的 μ 演算身份**：ν 编码与 iterEG 是
 同一条迭代链（同构引理 `iterF_is_iterEG` 对轮次归纳——每轮
 `interL A (preE ·)` 的形状逐字相同）；μ 编码与 iterEU **差
 恰好一轮**（μ 的 ⊥-起跑第一轮 F(∅)=B 恰好落到 EU 的 B-起跑

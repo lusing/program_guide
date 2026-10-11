@@ -175,7 +175,7 @@ Fixpoint sitSeq (n : nat) : list bool :=
 Example sit_alternates : sitSeq 6 = [true;false;true;false;true;false].
 ```
 
-与 76 章 Kripke 跳跃的对照是本章最美的对偶：**同一枚硬币的两面**
+与 86 章 Kripke 跳跃的对照是本章最美的对偶：**同一枚硬币的两面**
 ——Kripke 的修订理论让说谎者恒 U（不动的悬置：从不获得稳定真值），
 情境语义学让它 T/F 交替（流动的否认：每次否认换一个情境）。书
 p208 的批评也公允：情境方案不是通用解（未接通数学系统的相容性），
