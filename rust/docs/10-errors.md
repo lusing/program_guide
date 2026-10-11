@@ -127,7 +127,14 @@ Err 时运行时打印 Debug 并以非零码退出——**小工具的黄金写�
 
 允许 panic 的场景：数组下标越界（你是调用方， invariant 你负责）、`Option::expect`（按约定不可能 None）、断言（`assert_eq!` 测试里）、第三方库的 panic。
 
-要 recover：线程边界能接住 panic（`JoinHandle` 返回 Err，22 章）；同线程内 `catch_unwind` 是逃生舱不是 try/catch（不保证清理、不是控制流工具）。
+panic 的默认行为是**栈展开**（stack unwind）：沿调用栈反向遍历，清理每个函数的局部数据。这需要二进制里存储额外的清理信息。如果你需要让二进制更小（比如嵌入式），可以在 Cargo.toml 里切换为**直接中止**（abort）——不做任何清理，由操作系统回收内存：
+
+```toml
+[profile.release]
+panic = 'abort'    # 默认是 'unwind'；切换后二进制更小，但无法 catch_unwind
+```
+
+要 recover：线程边界能接住 panic（`JoinHandle` 返回 Err，22 章）；同线程内 `catch_unwind` 是逃生舱不是 try/catch（不保证清理、不是控制流工具）。注意 `panic = 'abort'` 时 `catch_unwind` 也失效——进程直接终止。
 
 **规则：库代码不 panic（返回 Result），应用代码边界处 assert。**
 

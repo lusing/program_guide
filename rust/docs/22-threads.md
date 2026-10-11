@@ -78,8 +78,10 @@ for h in handles { h.join().unwrap(); }
 ```
 
 - **Mutex 包住数据**而不是 lock 方法满天飞：拿锁的同时拿到数据访问权；
-- **guard 是 RAII 锁**：作用域结束自动释放——05 章的借用规则顺带保证了"锁内改数据、锁外摸不着"（guard 活着期间独占借用）；
+- **MutexGuard 是智能指针**：`lock()` 返回的 guard 实现 Deref（解出 `&mut T`）和 Drop（作用域结束自动解锁）——18 章的两大 trait 在并发原语上原样复现。忘记 unlock 在类型上不可能；
 - `lock()` 返回 Result：**毒锁**机制——持锁线程 panic 后锁标记 poisoned，后来者 unwrap 拿 Err 而不是拿到可能半写的状态。恢复手法：`lock().unwrap_or_else(|e| e.into_inner())`（要数据不管毒）。
+
+**Mutex 的现实隐喻**（TRB）：一场仅有一个话筒的座谈会——每个人讲话前必须申请话筒，讲完必须移交，否则全场沉默。Rust 的类型系统把"申请"和"移交"都变成了类型约束：不 `lock()` 拿不到数据（编译错），guard 离开作用域自动释放（Drop）。其他语言把这两条交给程序员的记忆，Rust 交给编译器。
 
 ## 22.5 RwLock 与原子量
 
@@ -117,12 +119,39 @@ assert_sync::<Mutex<i32>>();
 
 `thread::spawn` 的签名要求闭包 `F: Send + 'static`——闭包的捕获变量和返回值都必须是 Send。`'static` 是因为线程可能活得比当前函数久，借用局部变量就是悬垂。编译器按字段自动推导（含泛型），**unsafe 手动实现是最终手段**（19 章）。这就是"编译期消灭数据竞争"的执行机构：Rc/RefCell 想跨线程，类型系统先拦住，Arc/Mutex 是指定的替换品——**18 章选型表的多线程列由此而来**。
 
+### Sync 的等价定义
+
+TRB 给出一个更精确的角度：**`T: Sync` 当且仅当 `&T: Send`**——"T 可被多线程共享"等价于"T 的引用可被送到别的线程"。这个等价式把两个 trait 统一了起来：Sync 不是独立概念，是 Send 在引用上的投影。`Mutex<T>` 是 Sync 的典型（`&Mutex` 可以跨线程），`Cell`/`RefCell` 不是（内部计数非原子）。
+
+### 为什么不默认全用 Arc
+
+`Arc` 的计数是原子的——每次 clone/drop 都要做原子读写（CPU 级同步指令），比 `Rc` 的非原子计数慢。如果数据只在单线程用，`Rc` 就是零代价的正确选择；跨线程才付原子税。标准库不默认 `Arc` 的原因：**线程安全不是免费的，按需付费**——和 `Mutex` vs `Cell`、`Box` vs 栈分配是同一哲学。
+
 ## 22.7 死锁与经典陷阱
 
 - **锁顺序**：两线程各持一锁互相等对方——固定全局加锁顺序或一次拿一把；
 - **guard 跨 await**（23 章）：std::Mutex 的 guard 不是 Send，跨 await 点持有会编译错——那是 tokio::Mutex 的场景；
 - **忘 join 的线程**：主线程退出时后台线程直接被杀（不是等待）——scope 或显式 join；
 - **饥饿**：RwLock 写者可能饿死（实现相关），高竞争场景实测选型。
+
+### `while let` 的隐形锁陷阱（TRB 线程池章的精髓）
+
+TRB 在实现线程池时踩了一个极其微妙的坑，值得单独记录：
+
+```rust
+// ✘ 错误：锁在整个循环体期间持有——其他 Worker 全部饿死
+while let Ok(job) = receiver.lock().unwrap().recv() {
+    job();  // 执行期间锁没释放！其他 Worker 拿不到任务
+}
+
+// ✔ 正确：锁只在 recv 那一刻持有
+loop {
+    let job = receiver.lock().unwrap().recv().unwrap();  // 临时值在 let 结束即 drop
+    job();  // 执行时锁已释放
+}
+```
+
+原因：`while let`（以及 `if let`、`match`）会把**条件表达式的临时值活到整个代码块结束**；而 `let` 语句的右侧临时值在语句结束就丢弃。`MutexGuard` 的 Drop 就是解锁——所以 `while let` 版本在 `job()` 执行期间一直持锁，其他 Worker 线程干等。**这是作用域语义在并发下的直接后果**，不写线程池很难遇到，一遇到就是生产事故。
 
 ## 22.8 坑位清单
 

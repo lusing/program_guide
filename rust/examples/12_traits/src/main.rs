@@ -173,6 +173,25 @@ impl Factory for Widget {
     }
 }
 
+// ---- 完全限定语法：同名方法的消歧义 ----
+trait Animal {
+    fn name(&self) -> String;
+}
+trait Pet {
+    fn name(&self) -> String;
+}
+struct Dog;
+impl Animal for Dog {
+    fn name(&self) -> String {
+        "Animal::Dog".into()
+    }
+}
+impl Pet for Dog {
+    fn name(&self) -> String {
+        "Pet::Dog".into()
+    }
+}
+
 fn main() {
     let article = Article {
         title: "Rust 1.99 发布".into(),
@@ -261,6 +280,13 @@ fn main() {
     }
     // new 只能经具体类型调用（Self: Sized 把"返回 Self"从 vtable 中隔离）
     let _w = Widget::new();
+
+    // 完全限定语法：Dog 实现了 Animal 和 Pet，两者都有 name()
+    let d = Dog;
+    // d.name();  // ← 编译错：多个候选，无法消歧
+    let n = <Dog as Pet>::name(&d); // 显式指定用 Pet 实现的 name
+    let na = <Dog as Animal>::name(&d); // 或 Animal 的
+    println!("完全限定语法：Pet = {n}，Animal = {na}");
 }
 
 #[cfg(test)]
@@ -336,5 +362,12 @@ mod tests {
         let makers: Vec<Box<dyn Factory>> = vec![Box::new(Widget)];
         assert_eq!(makers[0].describe(), "widget");
         // Widget::new() 只能经具体类型调用，不能过 dyn——这是 Sized 限定的含义
+    }
+
+    #[test]
+    fn fully_qualified_syntax_disambiguates() {
+        let d = Dog;
+        assert_eq!(<Dog as Pet>::name(&d), "Pet::Dog");
+        assert_eq!(<Dog as Animal>::name(&d), "Animal::Dog");
     }
 }

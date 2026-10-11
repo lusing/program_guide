@@ -217,7 +217,27 @@ std::marker 里有一组**空 trait**——没有方法，纯作类型系统的�
 
 它们都是 `unsafe trait`（Send/Sync 手动实现是 unsafe——你在向编译器担保线程安全）或语言项（`#[lang = "sized"]` 等），编译器特殊对待。`?Sized`（11 章）就是"解除 Sized 默认约束"的语法。
 
-## 12.9 坑位清单
+## 12.9 完全限定语法：消歧义的最后手段
+
+当一个类型实现了多个 trait、它们有同名方法时，编译器可能无法推断你想调哪个。完全限定语法（fully qualified syntax）就是显式指明"用哪个 trait 的哪个方法"：
+
+```rust
+trait Animal { fn name(&self) -> String; }
+trait Pet { fn name(&self) -> String; }
+
+struct Dog;
+impl Animal for Dog { fn name(&self) -> String { "Animal::Dog".into() } }
+impl Pet for Dog { fn name(&self) -> String { "Pet::Dog".into() } }
+
+let d = Dog;
+// d.name();  // ← 编译错：name 有多个候选，编译器无法消歧
+let n = <Dog as Pet>::name(&d);   // 显式：用 Dog 的 Pet 实现里的 name
+assert_eq!(n, "Pet::Dog");
+```
+
+通用形式是 `<Type as Trait>::method(&receiver, args)`。方法调用时 Rust 允许省略能从上下文推导的部分——只有当同名方法存在多个实现且编译器无法区分时，才需要这种显式语法。对关联函数（无 self），形式是 `<Type as Trait>::assoc_fn(args)`。
+
+## 12.10 坑位清单
 
 1. **`dyn Trait` 作参数要装箱或借引用**：`fn f(x: dyn Trait)` 编译错（Sized 未满足）——`&dyn` / `Box<dyn>`。
 2. **对象安全四规则**：泛型方法 / Self 出现在签名 / `Self: Sized` 方法 / 关联常量——报错 "not object safe" 时按条对号（12.7）。

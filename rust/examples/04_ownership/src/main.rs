@@ -5,11 +5,21 @@
 //! 3) 释放时机确定（RAII，无 GC）。
 
 fn main() {
+    // ---- String 的内存布局：栈上三元组 + 堆上字节 ----
+    let s_layout = String::from("hello");
+    println!(
+        "String 布局：len = {}, capacity = {}, 堆地址 = {:p}",
+        s_layout.len(),
+        s_layout.capacity(),
+        s_layout.as_ptr()
+    );
+    // 栈上只有 (ptr, len, capacity) 三元组——move 只复制这三样，不碰堆数据
+
     // ---- move：String 的内容在堆上，赋值 = 所有权转移 ----
     let s1 = String::from("hello");
     let s2 = s1; // s1 被 move，此后 s1 不可用
     // println!("{s1}"); // ← 取消注释：borrow of moved value 编译错
-    println!("s2 = {s2}");
+    println!("s2 = {s2}（s1 已失效，堆缓冲只释放一次）");
 
     // ---- Copy：栈上小类型赋值即复制，原值仍可用 ----
     let x = 5;

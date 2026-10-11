@@ -138,7 +138,34 @@ let w = Rect { width: 5.0, ..base };
 
 `..base` 把 height 从 base **move** 过来：f64 是 Copy 所以无感；若字段是 String，base 进入"部分移动"状态——base.height 不可用，base.width（Copy 部分）还能用。编译器逐字段分析。
 
-## 7.8 组合优于继承
+## 7.8 封装：pub 与私有字段的制度力量
+
+面向对象的"封装"在 Rust 里是**默认私有 + 按需 pub** 的制度，不是程序员自律。看一个经典例子——维护整数列表及其平均值：
+
+```rust
+pub struct AveragedCollection {
+    list: Vec<i32>,      // 私有：外部无法绕过 add/remove 直接改
+    average: f64,        // 私有：缓存的平均值，与 list 严格同步
+}
+
+impl AveragedCollection {
+    pub fn add(&mut self, value: i32) {
+        self.list.push(value);
+        self.update_average();
+    }
+    pub fn remove(&mut self) -> Option<i32> {
+        let result = self.list.pop();
+        if result.is_some() { self.update_average(); }
+        result
+    }
+    pub fn average(&self) -> f64 { self.average }
+    fn update_average(&mut self) { /* 重算缓存 */ }
+}
+```
+
+`list` 和 `average` 都是私有的——外部只能通过 `add`/`remove`/`average` 三个公共方法交互。这保证了**不变式**（average 永远等于 list 的平均值）不可能被外部破坏。更妙的是：未来可以把内部实现从 `Vec<i32>` 换成 `HashSet<i32>`，只要公共方法签名不变，调用方一行代码都不用改。这就是封装的回报：**实现自由换，接口不变**。
+
+## 7.9 组合优于继承
 
 Rust 没有类继承。这是刻意的设计决策，背后是软件工程几十年沉淀的共识（GoF 之后的设计模式演进、Go/Java 的接口实践都指向同一结论）：**组合优于继承，委托代替继承**。Rust 用三驾马车替掉了继承体系：
 
@@ -148,7 +175,7 @@ Rust 没有类继承。这是刻意的设计决策，背后是软件工程几十
 
 需要"是一个（is-a）"关系时，用 trait 对象（`Box<dyn Trait>`）或泛型；需要"有一个（has-a）"关系时，直接嵌套字段。C++ 里靠继承解决的代码复用问题，在 Rust 里通常用组合 + 委托更清晰地解决。
 
-## 7.9 与 C++ class 的对照
+## 7.10 与 C++ class 的对照
 
 | C++ | Rust |
 |---|---|
@@ -161,7 +188,7 @@ Rust 没有类继承。这是刻意的设计决策，背后是软件工程几十
 | 运算符重载 | trait 实现（12 章），不能发明新运算符 |
 | 友元 | 不存在；测试走 `#[cfg(test)]` 同模块可见性（21 章） |
 
-## 7.10 坑位清单
+## 7.11 坑位清单
 
 1. **整可变**：想只改一个字段，也得让绑定 mut；真要字段级可变用 `Cell<T>`（18 章）。
 2. **`..base` 之后 base 可能残废**：含非 Copy 字段时是部分移动，编译器逐字段判定，报错行指向具体字段。

@@ -168,6 +168,10 @@ pub fn run(config: &Config) -> Result<usize, Box<dyn Error>> {
 
 `Box<dyn Error>` 承装 io::Error 与自定义错误（10 章）；调用方拿 `Result<usize>` 决定退出码——**库不 process::exit，退出是 main 的职权**。
 
+**错误信息走 stderr，正常输出走 stdout**：`eprintln!("{err}")` 而不是 `println!`——这样用户 `minigrep foo bar.txt > result.txt` 重定向时，错误提示仍然显示在屏幕上而不是混进结果文件。这是 CLI 工具的基本礼仪（TRB 的 minigrep 也强调了这一点）。
+
+**参数含非法 Unicode 时用 `args_os`**：`env::args()` 遇到非 UTF-8 参数会 panic；`env::args_os()` 返回 `OsString`，按平台原生字节处理。本教程示例用 `args()`（假设输入合法），生产工具应该考虑 `args_os`。
+
 ## 24.7 测试三件套落地
 
 ```rust

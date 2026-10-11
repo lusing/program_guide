@@ -114,6 +114,8 @@ for (k, v) in &map { }   // 顺序 = 哈希布局 + 随机化种子，每次运�
 
 - 只要求有序遍历/范围查询 → `BTreeMap`；
 - 要求"插入顺序" → `indexmap` crate；
+
+**为什么默认哈希不是最快的**：`HashMap` 默认用 SipHash——一种密码学安全的哈希函数，能抵御哈希碰撞 DoS 攻击（攻击者构造大量碰撞键让哈希表退化成链表）。代价是比 FxHash 等非加密哈希慢。性能分析确认哈希是热点时，可以换 `BuildHasher` 实现（如 `hashbrown` 的 `foldhash`、`rustc-hash` 的 `FxHash`）——`HashMap<K, V, S>` 的第三个泛型参数就是哈希器类型。
 - 测试里比较集合 → 排序后比较（本教程示例实测踩过：HashSet 交集顺序不稳定）。
 
 ## 9.6 BTreeMap：有序版的代价与收益

@@ -114,6 +114,10 @@ tokio = { version = "1", features = ["rt", "macros", "time"] }  # 23 章用
 
 `cargo add serde` 自动写入并选好 feature——比手写稳。版本号 `1` 指 `>=1.0, <2.0`（语义化版本约束，17 章细讲）。
 
+**`cargo doc --open`**：生成本地 HTML 文档并在浏览器打开——包括你所有依赖的文档。离线查 API 的第一选择。
+
+**`Cargo.lock` 与 `cargo update`**：第一次 `cargo build` 时 Cargo 计算出符合 `Cargo.toml` 约束的具体版本，写入 `Cargo.lock`——之后构建锁定这些版本，保证可重现。`cargo update` 忽略 `Cargo.lock` 重新计算最新兼容版本（只升补丁号，不升 breaking 版本）。应用项目把 `Cargo.lock` 提交进版本库；库项目不提交（让下游自己解析）。
+
 ## 2.6 坑位清单
 
 1. **`{}` 打印数组/Vec 报错**：`Display` 没实现，用 `{:?}`。报错信息会明说 "cannot be formatted with the default formatter"。

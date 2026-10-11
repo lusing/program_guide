@@ -146,6 +146,14 @@ cargo publish -p geometry           # 真发布（不可撤销/覆盖）
 
 crates.io 名字先到先得、版本只进不退。发布前自查：README/license/description、`cargo package --list` 看打进包里的文件。
 
+**撤回（yank）不是删除**：`cargo yank --vers 1.0.1` 阻止新项目依赖这个版本，但已有 `Cargo.lock` 的项目照常下载——保证生态的构建可复现性。密钥误发布时 yank 救不了你，只能立即作废密钥。
+
+**`cargo install`**：从 crates.io 安装二进制工具（如 `cargo install ripgrep`）——装到 `~/.cargo/bin/`。只能装 bin crate，不能替代系统包管理器。
+
+**自定义子命令**：`$PATH` 里有 `cargo-xxx` 可执行文件就能 `cargo xxx` 调用——`cargo install cargo-watch` 后 `cargo watch -x test` 文件变动自动跑测试。`cargo --list` 列出全部可用子命令。
+
+**`pub use` 重新导出**：内部模块结构不必等于公共 API。`pub use self::kinds::PrimaryColor;` 把深层类型提到 crate 根——用户写 `use my_crate::PrimaryColor` 而不是 `use my_crate::kinds::PrimaryColor`。内部组织自由，对外界面友好，两者解耦。
+
 ## 17.8 坑位清单
 
 1. **mod 声明不能省**：文件放进 src/ 不等于存在——`mod network;` 必须写（在 main.rs/lib.rs 或父模块里）。

@@ -114,6 +114,32 @@ fn main() {
     }
     println!("原子计数：{}", hits.load(Ordering::Relaxed)); // 恒为 4000
 
+    // ============ while let 锁陷阱：临时值活到块结束 ============
+    // let 语句右侧的临时值在语句结束即 drop；
+    // while let / if let / match 的临时值活到整个块结束。
+    // MutexGuard 的 Drop 就是解锁——所以 while let 版本在循环体执行期间一直持锁。
+    let trap = Arc::new(Mutex::new(vec![1, 2, 3]));
+    {
+        let t = Arc::clone(&trap);
+        // ✔ 正确：锁只在 recv 那一刻持有
+        let first = {
+            let mut g = t.lock().unwrap();
+            g.pop()
+        }; // guard 在此 drop，锁释放
+        println!("let 语句模式取到：{first:?}");
+    }
+    {
+        let t = Arc::clone(&trap);
+        // ✘ 如果写成 while let Some(x) = t.lock().unwrap().pop() { ... }
+        //    锁会在整个循环体期间持有——其他线程全部饿死。
+        //    正确做法：把 lock() 的结果绑给变量，在语句结束释放。
+        let remaining = {
+            let g = t.lock().unwrap();
+            g.clone()
+        };
+        println!("剩余元素：{remaining:?}");
+    }
+
     // ============ Send / Sync：自动判定的两协议 ============
     // Send：类型的值可以移交给另一个线程（所有权搬家）
     // Sync：&T 可以安全地跨线程共享（等价 T: Send + 可共享引用）
