@@ -145,6 +145,11 @@ funanalysis/
   组件求值与 E x - E x = 0 simp 闭包障碍按通道分工原则裁撤，仅保留
   I-E 幂等；07 的 onorm 等号版同理裁撤，仅保留 ≤ 界与 bounded_linear）、
   Julia 9/9 全绿（FFTW 新依赖）、Python 9/9 全绿、Prolog 3/3。
+- 2026-10-11 B3（10-13 章）完成：紧算子四连。docs×4、Lean 4/4
+  （Ch10-13，IsCompactOperator/eq_zero_of_forall_hasEigenvalue_eq_zero/
+  conj_eigenvalue_eq_self/orthogonalFamily_eigenspaces）、Julia/Python
+  各4文件全绿（截断SVD误差=σ_{k+1}/Volterra 2π/Green函数/
+  特征值1/(n²π²)/正规性/泛函演算/sqrtm/酉等价）。
   Isabelle 通道 v4.33 三大新坑入记忆：①type 2 坐标系是 {1,2} 而非
   {0,1}（axis_def 展开后 if-condition 求值需要 axis_def 而非 axis_nth
   单独使用）；②E x - E x = 0 在 also/finally 链中 simp 不闭（哪怕

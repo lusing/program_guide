@@ -18,6 +18,10 @@
 - [07 有界算子与 B(ℋ)](docs/07-bounded-operators.md)
 - [08 伴随算子](docs/08-adjoint.md)
 - [09 投影、幂等与不变子空间](docs/09-projections.md)
+- [10 紧算子](docs/10-compact-operators.md)
+- [11 紧自伴算子的对角化](docs/11-diagonalization.md)
+- [12 应用：Sturm-Liouville 系统](docs/12-sturm-liouville.md)
+- [13 紧正规算子的谱定理与泛函演算](docs/13-compact-normal.md)
 
 （更多章节随批次推进，完整清单见 [PLAN.md](PLAN.md)。）
 

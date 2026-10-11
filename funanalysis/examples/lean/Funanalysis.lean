@@ -15,3 +15,7 @@ import Funanalysis.Ch06Isomorphism
 import Funanalysis.Ch07BoundedOperators
 import Funanalysis.Ch08Adjoint
 import Funanalysis.Ch09Projections
+import Funanalysis.Ch10CompactOperators
+import Funanalysis.Ch11Diagonalization
+import Funanalysis.Ch12SturmLiouville
+import Funanalysis.Ch13CompactNormal
