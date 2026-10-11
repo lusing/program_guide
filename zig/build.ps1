@@ -89,6 +89,24 @@ function Test-CrossExample {
     Invoke-Native (Join-Path $buildDir "$name`_hello_c.exe")
 }
 
+# 44_embedded：宿主侧模拟 + 裸机目标交叉编译（编译即验证；裸机产物无 OS 可运行）
+function Test-EmbeddedExample {
+    param([string]$Dir)
+    $name = Split-Path -Leaf $Dir
+    Write-Host "`n[Example] $name (嵌入式：宿主模拟 + freestanding 交叉)" -ForegroundColor Cyan
+    Invoke-Zig $Dir @("fmt", "--check", ".")
+    Invoke-Zig $Dir @("test", "main.zig")
+    $exe = Join-Path $buildDir "$name.exe"
+    Invoke-Zig $Dir @("build-exe", "main.zig", "-femit-bin=$exe")
+    Invoke-Native $exe
+    Invoke-Zig $Dir @("build-obj", "baremetal.zig", "-target", "x86_64-freestanding-none",
+        "-femit-bin=$(Join-Path $buildDir "$name`_x86_64.o")")
+    Invoke-Zig $Dir @("build-obj", "baremetal.zig", "-target", "arm-freestanding-eabihf",
+        "-femit-bin=$(Join-Path $buildDir "$name`_arm.o")")
+    Invoke-Zig $Dir @("build-obj", "baremetal.zig", "-target", "riscv32-freestanding-none",
+        "-femit-bin=$(Join-Path $buildDir "$name`_riscv32.o")")
+}
+
 function Test-One {
     param([string]$Dir)
     switch (Split-Path -Leaf $Dir) {
@@ -104,6 +122,8 @@ function Test-One {
         "21_asm" { Test-PlainExample $Dir @("-lc") }
         # 38：信号处理 + fork/setsid/execve/waitpid 全走 std.c，须显式 -lc
         "38_daemon" { Test-PlainExample $Dir @("-lc") }
+        # 44：宿主模拟 + 三目标 freestanding 交叉（编译即验证）
+        "44_embedded" { Test-EmbeddedExample $Dir }
         "18_cross" { Test-CrossExample $Dir }
         default { Test-PlainExample $Dir }
     }

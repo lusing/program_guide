@@ -1,6 +1,6 @@
 # 42 · 实战：JSON 系统监控服务
 
-> **阅读位置**：第六篇 · 综合实战（7/8） ｜ **承前**：[20 文件](20-files-io.md)、[14 反射/JSON](14-generics.md)、[30 HTTP](30-http.md) ｜ **启后**：监控系统的最小可行形态。
+> **阅读位置**：第六篇 · 综合实战（7/10） ｜ **承前**：[20 文件](20-files-io.md)、[14 反射/JSON](14-generics.md)、[30 HTTP](30-http.md) ｜ **启后**：[45 Web 服务](45-websrv.md) 把 HTTP 往返扩成完整路由服务。
 >
 > 对应示例：`examples/42_memsrv/main.zig`（474 行，7 个测试）
 >

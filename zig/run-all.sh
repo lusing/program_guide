@@ -68,6 +68,25 @@ test_cross_example() { # test_cross_example <目录>
     "$BUILD_DIR/${name}_hello_c" || return 1
 }
 
+# 44_embedded：宿主侧模拟（fmt/test/build-exe/运行）+ 裸机目标交叉编译（编译即验证）
+test_embedded_example() { # test_embedded_example <目录>
+    local dir="$1"
+    local name; name="$(basename "$dir")"
+    echo ""
+    echo "[Example] $name (嵌入式：宿主模拟 + freestanding 交叉)"
+    run_zig "$dir" fmt --check . || return 1
+    run_zig "$dir" test main.zig || return 1
+    run_zig "$dir" build-exe main.zig -femit-bin="$BUILD_DIR/$name" || return 1
+    "$BUILD_DIR/$name" || return 1
+    # 裸机目标：无 OS 可运行，编译通过即验证（链接脚本/启动文件是真实板级工程的事）
+    run_zig "$dir" build-obj baremetal.zig -target x86_64-freestanding-none \
+        -femit-bin="$BUILD_DIR/${name}_x86_64.o" || return 1
+    run_zig "$dir" build-obj baremetal.zig -target arm-freestanding-eabihf \
+        -femit-bin="$BUILD_DIR/${name}_arm.o" || return 1
+    run_zig "$dir" build-obj baremetal.zig -target riscv32-freestanding-none \
+        -femit-bin="$BUILD_DIR/${name}_riscv32.o" || return 1
+}
+
 test_one() { # test_one <目录>
     local dir="$1"
     case "$(basename "$dir")" in
@@ -80,6 +99,8 @@ test_one() { # test_one <目录>
         21_asm) test_plain_example "$dir" -lc ;;
         # 38：信号处理 + fork/setsid/execve/waitpid 全走 std.c，须显式 -lc
         38_daemon) test_plain_example "$dir" -lc ;;
+        # 44：宿主模拟 + 三目标 freestanding 交叉（编译即验证）
+        44_embedded) test_embedded_example "$dir" ;;
         18_cross) test_cross_example "$dir" ;;
         *) test_plain_example "$dir" ;;
     esac
