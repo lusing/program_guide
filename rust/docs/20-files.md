@@ -119,6 +119,85 @@ v["a"][0].as_i64()      // Some(1)
 
 常用属性速查：`rename_all`、`default`、`skip_serializing_if = "Option::is_none"`、`flatten`（合并结构）、`deny_unknown_fields`（严格模式）。
 
+### RON：Rust 原生风格的配置格式
+
+JSON 是跨语言通用格式，但语法和 Rust 差异大（引号、逗号、null）。**RON（Rusty Object Notation）** 是 Rust 生态的替代方案——语法贴近 Rust 结构体字面量，特别适合游戏配置、实体模板等"Rust 程序读 Rust 风格数据"的场景：
+
+```rust
+// resources/template.ron —— 游戏实体模板
+Templates(
+    entities: [
+        Template(
+            entity_type: Item,
+            name: "Healing Potion",
+            glyph: '!',
+            levels: [0, 1, 2],
+            provides: Some([("Healing", 6)]),
+            frequency: 2,
+        ),
+        Template(
+            entity_type: Enemy,
+            name: "Goblin",
+            glyph: 'g',
+            levels: [0, 1, 2],
+            hp: Some(1),
+            frequency: 3,
+        ),
+    ],
+)
+```
+
+对应的数据结构用 serde derive 直接映射——`Option` 字段在 RON 里写 `Some(...)` 或省略，`HashSet` 用 `[...]` 初始化：
+
+```rust
+use serde::Deserialize;
+use std::collections::HashSet;
+
+#[derive(Clone, Deserialize, Debug)]
+pub struct Template {
+    pub entity_type: EntityType,
+    pub levels: HashSet<usize>,          // RON 的 [0, 1, 2] → HashSet
+    pub frequency: i32,
+    pub name: String,
+    pub glyph: char,
+    pub provides: Option<Vec<(String, i32)>>,  // RON 的 Some([...]) → Option
+    pub hp: Option<i32>,
+}
+
+#[derive(Clone, Deserialize, Debug, PartialEq)]
+pub enum EntityType { Enemy, Item }
+
+#[derive(Clone, Deserialize, Debug)]
+pub struct Templates {
+    pub entities: Vec<Template>,
+}
+```
+
+加载只需两行——`ron::de::from_reader` 把文件直接反序列化成结构体：
+
+```rust
+use ron::de::from_reader;
+use std::fs::File;
+
+impl Templates {
+    pub fn load() -> Self {
+        let file = File::open("resources/template.ron")
+            .expect("Failed opening template file");
+        from_reader(file).expect("Unable to parse templates")
+    }
+}
+```
+
+**数据驱动设计的价值**：游戏实体（怪兽、物品、武器）的定义从代码中抽离到数据文件——添加新怪物只需改 RON 文件，无需重新编译。这让游戏设计师（非程序员）也能调整数值，也缩短了"试玩 → 调数值 → 再试玩"的迭代周期。
+
+```toml
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+ron = "0.8"    # 0.6 是旧版，0.8+ 改进了错误报告和性能
+```
+
+RON vs JSON 选型：纯 Rust 项目、配置文件手写维护 → RON（语法亲切、支持注释、char/元组原生）；跨语言 API、前端配置 → JSON（生态通用性不可替代）。
+
 ## 20.7 错误处理配合（10 章落地）
 
 ```rust

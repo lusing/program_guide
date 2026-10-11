@@ -132,6 +132,8 @@ O(log n) vs HashMap 的 O(1)，换来：有序遍历、范围迭代、最坏情�
 
 ## 9.7 HashSet：集合运算
 
+`HashSet<T>` 是 `HashMap<T, ()>` 的类型别名——值就是键，没有关联数据。它只关心"某个值在不在集合里"，去重是它的本职。
+
 ```rust
 let a: HashSet<i32> = [1, 2, 3].into();
 let b: HashSet<i32> = [2, 3, 4].into();
@@ -143,6 +145,71 @@ a.insert(x) / a.contains(&x) / a.remove(&x)
 ```
 
 集合运算返回**迭代器**（惰性，15 章），配 `collect` 落地。比较前记得排序——顺序不确定。
+
+### HashSet 的底层：哈希函数如何工作
+
+`HashSet` 的核心是**哈希函数**——把任意大小的输入映射到固定大小的哈希值（通常是 64 位整数）。一个好的哈希函数保证：**输入微小变化 → 输出显著变化**。无论输入是一个 `i32` 还是整本《战争与和平》（约 3MB），输出的哈希值都是同样大小。
+
+```rust
+use std::collections::HashSet;
+use std::hash::{Hash, Hasher};
+use std::collections::hash_map::DefaultHasher;
+
+fn my_hash<T: Hash>(t: &T) -> u64 {
+    let mut s = DefaultHasher::new();
+    t.hash(&mut s);
+    s.finish()
+}
+
+assert_eq!(my_hash(&42), my_hash(&42));   // 相同输入 → 相同哈希值
+assert_ne!(my_hash(&42), my_hash(&43));   // 不同输入 → （几乎一定）不同哈希值
+```
+
+`HashSet` 的 `insert` 内部流程：
+
+1. 计算新条目的哈希值；
+2. 如果集合中没有相同哈希值的条目 → 直接插入，更新索引；
+3. 如果有（**哈希碰撞**）→ 进一步用 `Eq` 比较确认是否真的相同，相同则替换，不同则处理碰撞（开放寻址或链地址）。
+
+这就是为什么 `HashSet` 要求 `T: Eq + Hash`——`Hash` 决定大致位置，`Eq` 处理碰撞时的精确判断。
+
+### HashSet vs Vec：什么时候用哪个
+
+| 操作 | `Vec<T>` | `HashSet<T>` |
+|---|---|---|
+| `contains(&x)` | O(n) 线性扫描 | O(1) 哈希查找 |
+| `insert(x)` | O(1) 尾部追加 | O(1) 均摊（需算哈希 + 更新索引） |
+| 遍历 | O(n)，顺序 = 插入序 | O(n)，顺序随机 |
+| 去重 | 手动（`sort` + `dedup`） | 自动（重复 insert 无效） |
+| 内存 | 紧凑 | 有哈希表开销（约 2 倍） |
+
+**选型直觉**：需要频繁查"在不在"且不关心顺序 → `HashSet`；需要按下标访问或保持顺序 → `Vec`。数据量小（<100）时 Vec 的线性扫描可能更快（缓存友好），但代码可读性上 `HashSet::contains` 的意图更清晰。
+
+### 实战：用 HashSet 做视场（FOV）缓存
+
+游戏开发中 `HashSet` 的经典用法是存储"当前可见的图块坐标集合"——`contains` 的 O(1) 查询让渲染循环高效判断每个图块是否可见：
+
+```rust
+use std::collections::HashSet;
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct FieldOfView {
+    pub visible_tiles: HashSet<(i32, i32)>,  // 当前可见的坐标集合
+    pub radius: i32,
+    pub is_dirty: bool,                       // 脏标记：位置变了才重算
+}
+
+impl FieldOfView {
+    pub fn new(radius: i32) -> Self {
+        Self { visible_tiles: HashSet::new(), radius, is_dirty: true }
+    }
+}
+
+// 渲染时：O(1) 判断图块是否可见
+// if player_fov.visible_tiles.contains(&(x, y)) { /* 渲染 */ }
+```
+
+`HashSet` 不实现 `Copy`（内部是堆分配的哈希表），所以包含它的结构体也不能 derive `Copy`——这是 04 章所有权规则在集合上的直接体现。
 
 ## 9.8 VecDeque：双端队列
 

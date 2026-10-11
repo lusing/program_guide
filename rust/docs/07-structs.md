@@ -25,6 +25,27 @@ let output = std::process::Command::new("echo")
 
 每个配置方法返回 `&mut Self` 支持链式调用，`build`（这里是 `output`）才做最终构造。字段多、有默认值、有校验规则的类型都适合这个模式。
 
+### 实战：游戏引擎的终端配置
+
+游戏开发库 bracket-lib 的 `BTermBuilder` 是建造者模式的教科书案例——终端窗口有大量可选配置（尺寸、字体、图层、帧率上限），用 Builder 收集比 20 个参数的构造函数清晰得多：
+
+```rust
+let context = BTermBuilder::new()                    // 空配置的起点
+    .with_title("Dungeon Crawler")                   // 窗口标题
+    .with_fps_cap(30.0)                              // 帧率上限
+    .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)  // 控制台尺寸
+    .with_tile_dimensions(32, 32)                    // 每个图块的像素尺寸
+    .with_resource_path("resources/")                // 资源文件目录
+    .with_font("dungeonfont.png", 32, 32)            // 字体文件 + 字符尺寸
+    .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png")      // 图层 0：地图
+    .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png") // 图层 1：实体（透明背景）
+    .build()?;                                       // 最终构造：可能失败，返回 Result
+```
+
+每个 `with_*` 方法返回 `&mut Self`（或 `Self`，取决于所有权设计），链式累积配置；`build()` 最后一次性校验并产出 `BTerm`。注意 `build()` 返回 `Result`——配置可能不合法（字体文件不存在、尺寸为 0），建造者模式把"参数收集"和"校验/构造" cleanly 分离。
+
+对比 C++ 的构造函数重载：Rust 没有重载，Builder 用**方法链**达到同样的"多种构造路径"效果，且每个步骤自文档化——`.with_fps_cap(30.0)` 比裸参数 `30.0` 可读得多。
+
 ## 7.2 三种形态
 
 ```rust

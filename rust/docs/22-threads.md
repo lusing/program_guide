@@ -260,6 +260,35 @@ unsafe impl<'a, T: Send + ?Sized> Send for &'a mut T {} // &mut T 是 Send 当�
 
 **Mutex 的"构造器"角色**：`Mutex<T>` 把非 Sync 的 T 包成 Sync——这是"构造器类型"（wrapper type）的典范。同理 `Arc<T>` 把非 Send 的 Rc 变成 Send（原子计数）。**包一层，改变线程安全属性**——这是类型系统层面的装饰器模式。
 
+### 实战：游戏引擎资源的 Sync + Send 约束
+
+游戏引擎（如 Legion ECS）的资源系统要求所有资源实现 `Sync + Send`——因为系统可能在不同线程中并行访问同一资源。这不是建议，是 trait 定义中的硬约束：
+
+```rust
+// 地图主题 trait：只有 Sync + Send 的类型才能做资源
+pub trait MapTheme: Sync + Send {
+    fn tile_to_render(&self, tile_type: TileType) -> FontCharType;
+}
+
+// 纯函数实现自动满足 Sync + Send（无内部可变状态）
+pub struct DungeonTheme;
+impl MapTheme for DungeonTheme {
+    fn tile_to_render(&self, tile_type: TileType) -> FontCharType {
+        match tile_type {
+            TileType::Floor => to_cp437('.'),
+            TileType::Wall  => to_cp437('#'),
+        }
+    }
+}
+
+// 存入资源系统：编译器验证 Sync + Send
+resources.insert(Box::new(DungeonTheme) as Box<dyn MapTheme>);
+```
+
+`tile_to_render` 是**纯函数**（只依赖输入、无副作用、不存状态）——纯函数天然线程安全，因为"没有共享状态"就谈不上"竞争"。如果主题需要缓存（比如预计算渲染查找表），用 `Mutex<HashMap<...>>` 包一层即可恢复 Sync——这就是"构造器类型"的实战价值。
+
+这个约束的实际效果：**编译器在插入资源的那一刻就检查了线程安全性**，而不是等到运行时才出现数据竞争。如果开发者忘了给非 Sync 字段加锁，编译错会精确指向 `resources.insert(...)` 那一行。
+
 ### 全局变量与 Sync 的交汇
 
 `static` 全局变量要求类型实现 `Sync`——这是编译器的额外检查，堵住了"通过全局变量绕过 Send 约束"的漏洞：

@@ -192,6 +192,52 @@ enum AppError { EmptyInput, Parse(ParseIntError), OutOfRange { .. } }
 enum Either<L, R> { Left(L), Right(R) }   // 11 章泛型版
 ```
 
+### 实战：回合制游戏的状态机
+
+游戏开发中 enum 状态机的经典案例是**回合制流程控制**——一个地下城探险游戏在任意时刻只能处于以下状态之一：
+
+```rust
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub enum TurnState {
+    AwaitingInput,    // 等待玩家按键
+    PlayerTurn,       // 玩家行动中
+    MonsterTurn,      // 怪兽行动中
+    NextLevel,        // 进入下一关
+    Victory,          // 胜利
+    GameOver,         // 失败
+}
+```
+
+游戏主循环每帧用 `match` 分派到不同的系统调度器——**enum 的穷尽性检查保证了新加状态时所有分支都被处理**：
+
+```rust
+let current_state = *resources.get::<TurnState>().unwrap();
+match current_state {
+    TurnState::AwaitingInput => input_systems.execute(&mut ecs, &mut resources),
+    TurnState::PlayerTurn    => player_systems.execute(&mut ecs, &mut resources),
+    TurnState::MonsterTurn   => monster_systems.execute(&mut ecs, &mut resources),
+    TurnState::NextLevel     => self.advance_level(),
+    TurnState::Victory       => self.show_victory_screen(),
+    TurnState::GameOver      => self.show_game_over_screen(),
+}
+```
+
+状态转移由专门的系统负责——`match` 的返回值就是下一个状态：
+
+```rust
+pub fn end_turn(#[resource] turn_state: &mut TurnState) {
+    let new_state = match turn_state {
+        TurnState::AwaitingInput => return,               // 等待中：不转移
+        TurnState::PlayerTurn    => TurnState::MonsterTurn,  // 玩家动完 → 怪兽
+        TurnState::MonsterTurn   => TurnState::AwaitingInput, // 怪兽动完 → 等输入
+        _ => return,                                       // 终态不自动转移
+    };
+    *turn_state = new_state;
+}
+```
+
+这个模式的力量在于：**加新状态（如 `Paused`）时，编译器会指出所有漏掉的 match 分支**——状态机的完备性由类型系统保证，不是程序员记忆。
+
 ## 8.7 模式的可失败性：irrefutable vs refutable
 
 模式分两种：**不可失败模式（irrefutable）**能匹配任何值——变量名、`(_)`、结构体解构（所有字段都是不可失败模式）。**可失败模式（refutable）**可能对某些值匹配失败——`Some(x)`、`Ok(v)`、字面量、`4..=9`。
