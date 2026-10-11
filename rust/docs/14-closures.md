@@ -33,17 +33,41 @@ let consume = move || drop(owned); // move：把所有权搬进闭包
 // println!("{owned}");            // ← 编译错：owned 已 move
 ```
 
+编译器按"闭包体怎么用捕获变量"自动选择最小权限：
+
+- 只读 → `&T` 共享借用（Fn）
+- 修改 → `&mut T` 独占借用（FnMut）
+- 消耗（move 关键字或类型需要）→ 按值转移所有权（FnOnce）
+
 **`move` 关键字**：强制按值捕获（最常用的场景：把数据交给线程——闭包必须活得比当前栈帧久，借用局部变量是不可能的，22 章实战）。`move` 与捕获方式正交：`move || x + 1` 按值捕获但只读（仍是 Fn）。
 
 ## 14.3 Fn / FnMut / FnOnce：能力递减链
 
-| trait | 捕获 | 可调用次数 | 典型 |
-|---|---|---|---|
-| `Fn` | 共享引用（只读） | 无限 | `x * factor` |
-| `FnMut` | 可变引用（要改环境） | 多次（需 mut 绑定） | `count += 1` |
-| `FnOnce` | 按值（消耗捕获物） | **恰好一次** | `drop(owned)` |
+Rust 的闭包不是语言内建类型——它是**编译器自动生成的结构体 + trait 实现**。每个闭包表达式对应一个匿名结构体，捕获的变量是它的字段；调用语法 `f(x)` 被脱糖为 trait 方法调用：
+
+```rust
+// 标准库源码（简化）——三个 trait 的继承关系一目了然
+pub trait FnOnce<Args> {
+    type Output;
+    fn call_once(self, args: Args) -> Self::Output;      // 消耗 self
+}
+pub trait FnMut<Args>: FnOnce<Args> {
+    fn call_mut(&mut self, args: Args) -> Self::Output;  // 可变借用
+}
+pub trait Fn<Args>: FnMut<Args> {
+    fn call(&self, args: Args) -> Self::Output;          // 共享借用
+}
+```
+
+| trait | 调用方式 | 捕获 | 可调用次数 | 典型 |
+|---|---|---|---|---|
+| `Fn` | `call(&self)` | 共享引用（只读） | 无限 | `x * factor` |
+| `FnMut` | `call_mut(&mut self)` | 可变引用（要改环境） | 多次（需 mut 绑定） | `count += 1` |
+| `FnOnce` | `call_once(self)` | 按值（消耗捕获物） | **恰好一次** | `drop(owned)` |
 
 继承链：**Fn ⊃ FnMut ⊃ FnOnce**（满足 Fn 的自动满足 FnMut/FnOnce——只读闭包哪里都能去，反方向不行）。编译器按闭包体自动实现**最宽松可能**的那个。
+
+这套设计叫**非装箱闭包（Unboxed Closure）**：早期 Rust 把捕获变量装箱到堆上，LLVM 难以内联优化；改成"结构体字段 + trait 调用"后，单态化让一切发生在编译期，零运行期开销——这是 Rust 零成本抽象哲学的又一次体现。
 
 函数项/函数指针实现了 Fn——普通函数能传给一切收闭包的参数。
 

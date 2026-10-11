@@ -32,6 +32,8 @@ mod network;               // 声明后，文件内容成为该模块
 
 分文件规则：`mod network;` 找 `src/network.rs`（现代首选）或 `src/network/mod.rs`。子模块继续下钻目录：`network::tcp` → `src/network/tcp.rs`。
 
+> **2018 edition 变化**（本教程用 2024，这些是历史包袱的清理）：不再需要 `extern crate` 导入第三方包；`crate::` 前缀明确表示当前 crate 的路径起点；`use` 支持嵌套导入。如果你看到老代码里的 `extern crate serde;`，那是 2015 时代的写法——删掉它，直接用 `use serde::...`。
+
 ## 17.2 可见性：默认私有，pub 按需放行
 
 ```rust

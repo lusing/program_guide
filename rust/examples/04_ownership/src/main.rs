@@ -63,6 +63,27 @@ fn main() {
     let _v2 = v; // 容器本身也 move
     println!("first = {first}，v 整体已转移");
 
+    // ---- move 后重新初始化：被 move 的变量绑新值即复活 ----
+    let mut s = String::from("旧值");
+    println!("初始 s = {s}");
+    s = String::from("新值"); // 旧值先 drop，s 重新初始化后复活
+    println!("重新初始化后 s = {s}");
+
+    // ---- 结构体不自动 Copy：字段全 Copy 也要 derive 显式声明 ----
+    #[derive(Debug, Copy, Clone)]
+    struct Point {
+        x: i32,
+        y: i32,
+    }
+    let p1 = Point { x: 1, y: 2 };
+    let p2 = p1; // 有了 Copy derive：按位复制
+    println!(
+        "结构体 derive Copy 后：{:?} 与 {:?} 都活着（x+y={}）",
+        p1,
+        p2,
+        p1.x + p2.y
+    );
+
     // ---- 借用预演（05 章细讲）：不拿走所有权也能用 ----
     let s = String::from("最后演示借用");
     let len = byte_len(&s); // 传引用，s 不受影响
@@ -108,6 +129,27 @@ impl Drop for Tracer {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn move_then_reinit() {
+        let mut s = String::from("旧");
+        assert_eq!(s, "旧"); // 先读一次，消除 unused_assignments
+        s = String::from("新"); // 旧值 drop，s 重新初始化
+        assert_eq!(s, "新");
+    }
+
+    #[test]
+    fn struct_needs_derive_copy() {
+        // 字段全 Copy 的结构体也不会自动 Copy——必须 derive 显式声明
+        #[derive(Debug, Copy, Clone)]
+        struct Point {
+            x: i32,
+            y: i32,
+        }
+        let p1 = Point { x: 1, y: 2 };
+        let p2 = p1;
+        assert_eq!(p1.x + p2.y, 3); // 两个都活着
+    }
+
     #[test]
     fn copy_types_survive_assignment() {
         let a = [1u8, 2, 3];

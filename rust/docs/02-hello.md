@@ -48,7 +48,7 @@ fn main() {
 
 ```rust
 let lang = "Rust";
-let ver = 1.98;
+let ver = 1.99;
 println!("{} {}", lang, ver);      // 顺序占位（最基础）
 println!("{lang} {ver}");          // 内联参数：变量名即占位名（1.58+，现代默认）
 println!("{0}×{1} = {2}", 2, 3, 6);// 位置参数：可复用 {0}

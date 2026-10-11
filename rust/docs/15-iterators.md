@@ -16,6 +16,34 @@ for x in v.into_iter()   { }   // T       拿走元素，v 之后不可用
 
 `for x in expr` 的真身：`expr.into_iter()`——所以 `for x in &v` 走借用版、`for x in v` 消费版。数组、Range（`0..5`）、`&String`、HashMap 都实现了 `IntoIterator`，都能直接 for。
 
+### 外部迭代器 vs 内部迭代器
+
+迭代器分两种流派：**外部迭代器**由调用方控制遍历节奏（C++/Java/Python 的迭代器模式）；**内部迭代器**由容器自己控制遍历，外部只能传一个闭包让它对每个元素执行（Ruby 的 `each`）。Rust 1.0 之前用的是内部迭代器——与所有权系统叠加后非常难用，社区论证后改成了外部迭代器。
+
+`for` 循环就是外部迭代器的语法糖，展开后等价于：
+
+```rust
+let mut _iter = v.into_iter();      // 拿到迭代器
+loop {
+    match _iter.next() {             // 反复问"下一个"
+        Some(x) => { /* 循环体 */ }
+        None => break,               // None = 遍历完毕
+    }
+}
+```
+
+### IntoIterator：从容器到迭代器的桥
+
+```rust
+pub trait IntoIterator {
+    type Item;
+    type IntoIter: Iterator<Item = Self::Item>;  // 关联类型约束：必须是迭代器
+    fn into_iter(self) -> Self::IntoIter;         // 消耗 self！
+}
+```
+
+`into_iter` 按值接收 self——所以 `for x in v` 之后 v 不可用。`&Vec<T>` 和 `&mut Vec<T>` 也各自实现了 `IntoIterator`（产出 `&T` / `&mut T`），这就是 `for x in &v` 能工作的原因。
+
 ## 15.2 适配器 × 消费器：惰性流水线
 
 ```text
@@ -94,7 +122,19 @@ let fibs: Vec<u64> = Fib { a: 0, b: 1, left: 10 }.collect();
 let evens: Vec<u64> = Fib { a: 0, b: 1, left: 20 }.filter(|x| x % 2 == 0).collect();
 ```
 
+Iterator trait 的核心就三行（标准库源码简化）：
+
+```rust
+trait Iterator {
+    type Item;
+    fn next(&mut self) -> Option<Self::Item>;
+    // …其余 70+ 方法全部有默认实现
+}
+```
+
 实现 `next` 一项，**全套适配器白送**——filter/map/take 全都基于 next 组合出来。这是 trait 设计的教科书案例。
+
+还有一个可选的优化点：`size_hint()` 返回 `(usize, Option<usize>)`——迭代器剩余长度的（下限，上限）。`collect` 进 Vec 时用它预分配容量，避免反复扩容。实现了 `ExactSizeIterator`（能给出精确 len）的迭代器还能享受进一步优化的 `Iterator::len()`。
 
 ## 15.6 迭代器 vs 手写循环
 

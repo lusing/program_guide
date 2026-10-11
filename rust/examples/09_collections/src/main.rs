@@ -12,6 +12,25 @@ fn main() {
     let init = vec![10, 20, 30];
     println!("v={v:?} macro={from_macro:?} init={init:?}");
 
+    // ---- 容量机制：with_capacity 预分配 / clear 保留容量 / shrink_to_fit 归还 ----
+    let mut cap = Vec::with_capacity(10);
+    println!(
+        "with_capacity(10)：len = {}, capacity = {}",
+        cap.len(),
+        cap.capacity()
+    );
+    for i in 0..10 {
+        cap.push(i);
+    }
+    cap.clear(); // 清空元素，容量保留
+    println!(
+        "clear() 后：len = {}, capacity = {}",
+        cap.len(),
+        cap.capacity()
+    );
+    cap.shrink_to_fit(); // 归还多余容量
+    println!("shrink_to_fit 后：capacity = {}", cap.capacity());
+
     // 读取：索引（越界 panic）vs get（返回 Option）
     let third = init[2];
     let maybe = init.get(10);
@@ -53,6 +72,13 @@ fn main() {
     // remove 返回 Option<V>
     println!("删除 zig：{:?}", freq.remove("zig"));
     println!("删除不存在：{:?}", freq.remove("java"));
+
+    // ---- Entry 三件套：or_insert / or_insert_with / and_modify ----
+    let mut cfg: HashMap<&str, u32> = HashMap::new();
+    *cfg.entry("retries").or_insert(3) += 1; // 无则插 3，再 +1 → 4
+    cfg.entry("timeout").or_insert_with(|| 30 * 2); // 闭包惰性求默认值
+    cfg.entry("retries").and_modify(|v| *v *= 10).or_insert(1); // 有则改，无则插
+    println!("cfg = {cfg:?}");
 
     // 键需要 Eq + Hash；拥有所有权的键进表后不可再改（影响哈希）
     let mut owner: HashMap<String, i32> = HashMap::new();
@@ -173,5 +199,31 @@ mod tests {
         v.sort_unstable();
         v.dedup();
         assert_eq!(v, vec![1, 2, 3]);
+    }
+
+    #[test]
+    fn capacity_mechanics() {
+        let mut v = Vec::with_capacity(10);
+        assert_eq!(v.capacity(), 10);
+        for i in 0..10 {
+            v.push(i);
+        }
+        v.clear();
+        assert_eq!(v.capacity(), 10); // clear 不释放容量
+        v.shrink_to_fit();
+        assert_eq!(v.capacity(), 0); // 显式归还
+    }
+
+    #[test]
+    fn entry_api_variants() {
+        let mut m: HashMap<&str, u32> = HashMap::new();
+        *m.entry("k").or_insert(1) += 1;
+        assert_eq!(m["k"], 2);
+        m.entry("lazy").or_insert_with(|| 6 * 7);
+        assert_eq!(m["lazy"], 42);
+        m.entry("k").and_modify(|v| *v *= 100).or_insert(9);
+        assert_eq!(m["k"], 200); // 已存在 → and_modify 生效，or_insert 被跳过
+        m.entry("new").and_modify(|v| *v *= 100).or_insert(9);
+        assert_eq!(m["new"], 9); // 不存在 → or_insert 生效
     }
 }

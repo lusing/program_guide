@@ -5,6 +5,51 @@
 //! 坑位慢慢看。
 
 fn main() {
+    // ============ 一切皆表达式：语句与表达式 ============
+    // 语句两种：声明语句（let/fn/use）与表达式语句（表达式 + 分号，值丢弃成 ()）。
+    // 块 { ... } 本身是表达式：块末无分号的表达式就是块的值。
+    let block_val = {
+        let a = 40;
+        let b = 2;
+        a + b // 块的值 = 42（无分号！）
+    };
+    println!("块表达式的值 = {block_val}");
+
+    // 位置表达式 vs 值表达式：位置表达式（变量/解引用/索引/字段）出现在
+    // 赋值号右边的"值上下文"里，会把内存位置让渡出去——这就是 move（04 章）。
+    let place1 = "hello"; // &str：Copy 类型，让渡的是副本
+    let place2 = "hello".to_string(); // String：move 语义
+    let other = place1; // 按位复制，place1 仍可用
+    let other2 = place2; // move：内存位置让渡给 other2
+    // println!("{place2}"); // ← 编译错：value used here after move
+    println!("place1={other}（Copy 仍在），place2 → {other2}（已 move）");
+
+    // 值表达式不能出现在位置上下文（赋值号左边）：
+    // make_value() = 3; // ← 编译错：invalid left-hand side expression
+    // 但 & 可以为值表达式锚定临时存储：let r = &42 合法
+    let anchored = &42;
+    println!("&42 锚定临时存储 → {anchored}");
+
+    // ============ 类型大小的三种形态（03 章 3.6 表格的实测）============
+    println!(
+        "size_of &[u8;5]={} &[u8]={} &str={} ()={}",
+        std::mem::size_of::<&[u8; 5]>(),
+        std::mem::size_of::<&[u8]>(),
+        std::mem::size_of::<&str>(),
+        std::mem::size_of::<()>()
+    ); // 8 / 16 / 16 / 0 —— 普通引用 vs 胖指针 vs ZST
+
+    // DST 当参数类型直接编译错（fn f(arr: [u32]) 报 size 未知）——
+    // 参数要写 [u32; 5] 或 &[u32]（胖指针）。这里只演示合法形态：
+    fn _takes_slice(_s: &[u32]) {}
+    // _takes_slice 不调用：演示签名即可（调用会触发 dead_code 之外的告警噪音）
+
+    // 推断没收敛时编译器给出占位类型名 {integer}——补标注即可：
+    // let a = 0;
+    // a.is_positive(); // ← 报错：no method named `is_positive` on type `{integer}`
+    let a: i32 = 0;
+    println!("标注收敛后 is_positive = {}", a.is_positive());
+
     // ============ 变量：绑定而非赋值 ============
     let x = 42; // 默认不可变（编译期强制，不是君子协定）
     let mut count = 0; // mut 才能改
@@ -159,6 +204,37 @@ fn die() -> ! {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn place_vs_value_expressions() {
+        // 位置表达式出现在值上下文：Copy 复制、非 Copy move
+        let s = String::from("move 我");
+        let moved = s;
+        // s 已不可用；这里只断言新绑定拿到了值
+        assert_eq!(moved, "move 我");
+        // 块表达式有值
+        let v = {
+            let x = 1;
+            let y = 2;
+            x + y
+        };
+        assert_eq!(v, 3);
+    }
+
+    #[test]
+    fn type_size_three_forms() {
+        // Sized 引用 8 字节；胖指针（DST 视图）16 字节；ZST 0 字节
+        assert_eq!(std::mem::size_of::<&[u8; 5]>(), 8);
+        assert_eq!(std::mem::size_of::<&[u8]>(), 16);
+        assert_eq!(std::mem::size_of::<&str>(), 16);
+        assert_eq!(std::mem::size_of::<()>(), 0);
+    }
+
+    #[test]
+    fn inference_placeholder_needs_annotation() {
+        let a: i32 = 0; // 不标注时 a.is_positive() 报 {integer} 无此方法
+        assert!(!a.is_positive());
+    }
 
     #[test]
     fn overflow_strategies() {

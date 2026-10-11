@@ -12,6 +12,10 @@ struct Color(u8, u8, u8); // 元组结构体：字段无名，按位置访问
 #[derive(Debug)]
 struct Marker; // 单元结构体：无字段（常用作类型级标签/占位）
 
+// ---- NewType 模式 vs type 别名 ----
+struct Meters(f64); // 全新类型：编译期与 f64 区分，可挂 trait
+type Kilometers = f64; // 别名：与 f64 完全等价，只是外号
+
 impl Rect {
     // ---- 关联函数：无 self，通过 Type::name() 调用（构造器惯例 new）----
     fn new(width: f64, height: f64) -> Self {
@@ -89,6 +93,11 @@ fn main() {
     let _tag = Marker;
     println!("{_tag:?} {red:?}");
 
+    // NewType：包装 f64 得到编译期区分的类型；type 别名只是外号
+    let dist = Meters(100.0);
+    let alias: Kilometers = 42.0; // 等价于 let alias: f64 = 42.0
+    println!("Meters({}) / Kilometers = f64 的别名({alias})", dist.0);
+
     // 解构
     let Rect {
         width: w,
@@ -142,5 +151,15 @@ mod tests {
         // 换成 String 字段则 base 整体被 move（部分移动），后续不可用。
         assert_eq!((w.width, w.height), (5.0, 9.9));
         assert_eq!(base.width, 1.0);
+    }
+
+    #[test]
+    fn newtype_vs_type_alias() {
+        let m = Meters(10.0);
+        assert_eq!(m.0, 10.0);
+        let k: Kilometers = 5.0; // 等价于 f64
+        let f: f64 = k; // 别名可直接赋给原类型
+        assert_eq!(f, 5.0);
+        // let _x: f64 = m; // ← 编译错：Meters 不是 f64（NewType 是独立类型）
     }
 }

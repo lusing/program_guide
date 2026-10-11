@@ -7,16 +7,31 @@
 
 ## 8.1 enum = 带数据的标签联合
 
+C 的 enum 只是整数常量；C++ 的 `std::variant` 接近但要 `std::get_if` 查询；Rust 把"变体 + 数据 + 匹配"做成语言核心。Rust 的枚举有三种形态：
+
 ```rust
-enum Message {
-    Quit,                        // 无数据
-    Move { x: i32, y: i32 },     // 结构体式字段
-    Write(String),               // 一个值
-    ChangeColor(u8, u8, u8),     // 多个值（元组式）
-}
+enum Number { Zero, One, Two }              // 无参数：就是 C 风格枚举
+enum Color { Red = 0xff0000, Green = 0x00ff00, Blue = 0x0000ff }  // 类 C：显式 discriminant
+enum IpAddr { V4(u8, u8, u8, u8), V6(String) }  // 带数据：每个变体类型可以不同
 ```
 
-C 的 enum 只是整数常量；C++ 的 `std::variant` 接近但要 `std::get_if` 查询；Rust 把"变体 + 数据 + 匹配"做成语言核心。`Option<T>` 与 `Result<T, E>` 就是标准库里的两个 enum（10 章），你天天用的 `Some(3)` 本质是 `enum Option::Some(3)` 构造。
+第三种是 Rust 的精髓——**每个变体可以携带不同类型、不同数量的数据**。从类型论角度看，enum 是**和类型（sum type）**：一个 `IpAddr` 的值"要么是 V4 要么是 V6"，两种可能性**求和**；struct 是**积类型（product type）**：一个 `Rect` 同时有 width **和** height，两种成分**求积**。Rust 基于代数数据类型统一了结构体和枚举——这是函数式语言（ML/Haskell/OCaml）的血统，比 OOP 的继承层级更自由地构造类型。
+
+带数据的变体本质上是一个**构造函数**：
+
+```rust
+let f: fn(u8, u8, u8, u8) -> IpAddr = IpAddr::V4; // 变体是函数指针类型！
+let home = IpAddr::V4(127, 0, 0, 1);             // 调用它 = 构造一个值
+```
+
+`Option<T>` 与 `Result<T, E>` 就是标准库里用 enum 定义的两个类型（10 章），你天天用的 `Some(3)` 本质是 `Option::Some(3)` 构造：
+
+```rust
+enum Option<T> { Some(T), None }  // 标准库定义（简化）：有值 / 无值 二选一
+enum Result<T, E> { Ok(T), Err(E) } // 成功 / 失败 二选一，各自携带数据
+```
+
+Rust 没有 null——`Option<T>` 用类型系统强迫你处理"可能没有值"的情况，把 Tony Hoare 称之为"十亿美元错误"的空指针问题在编译期消灭。
 
 ## 8.2 match：穷尽性是生命线
 
@@ -90,6 +105,14 @@ assert!(matches!(Some(9), Some(n) if n > 5));
 
 let-else 的适用面：函数开头"剥洋葱"（连续解包 Option/Result，失败早退），比层层 if let 嵌套清爽。注意它解构失败就发散，**不能**用来做"两种都走"的分支。
 
+`while let` 是循环版的 if let——只要模式还匹配就一直循环：
+
+```rust
+while let Some(x) = v.pop() {  // Vec 取空返回 None，循环自动结束
+    println!("{x}");
+}
+```
+
 ## 8.5 impl 也可以在 enum 上
 
 enum 与 struct 平权——方法、trait、derive 全都适用：
@@ -126,6 +149,7 @@ enum Either<L, R> { Left(L), Right(R) }   // 11 章泛型版
 5. **`_` 吞掉新变体**：加了兜底就失去"新增变体报警"的保险——公开 API 的 enum 少用 `_`，显式列出所有变体。
 6. **matches! 与 if let 的选择**：要"是否"用 matches!，要"值"用 if let——用 matches! 取值是误解。
 7. **let-else 的 else 分支忘 return**：写 `{ println!(...) }` 不发散 → 编译错 "else branch must diverge"。这是特性不是 bug。
+8. **unwrap 在不确定时用是定时炸弹**：`Some(42).unwrap()` 没问题；`maybe_value.unwrap()` 在 maybe 为 None 时 panic。不确定时用 `if let` / `match` / `?`。
 
 ---
 

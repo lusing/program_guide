@@ -6,6 +6,26 @@ fn main() {
     let owned: String = String::from("堆上字符串"); // 拥有堆缓冲，可增长
     println!("{lit} / {owned}");
 
+    // &str 是胖指针：指针 + 长度（16 字节 = 8 + 8，64 位机器）
+    let ptr = lit.as_ptr();
+    let len = lit.len();
+    println!("&str 胖指针：ptr = {ptr:p}, len = {len}（字节）");
+    println!("sizeof &str = {}", std::mem::size_of::<&str>());
+
+    // String 是 Vec<u8> 的包装：with_capacity 预分配（与 Vec 同机制）
+    let mut pre = String::with_capacity(10);
+    println!(
+        "with_capacity(10)：len = {}, capacity = {}",
+        pre.len(),
+        pre.capacity()
+    );
+    pre.push_str("hi");
+    println!(
+        "push_str 后：len = {}, capacity = {}",
+        pre.len(),
+        pre.capacity()
+    );
+
     // String → &str：自动 deref（切片视图）
     let view: &str = &owned;
     println!("视图：{view}");
@@ -15,6 +35,12 @@ fn main() {
     let s2 = String::from(lit);
     let s3 = format!("{lit}+拼接");
     println!("{} / {} / {}", s1, s2, s3);
+
+    // String ↔ Vec<u8>：零拷贝互转（String 本来就是 Vec<u8>）
+    let bytes = owned.clone().into_bytes();
+    println!("into_bytes = {bytes:?}");
+    let restored = String::from_utf8(bytes).unwrap(); // 校验 UTF-8，失败返回 Err
+    println!("from_utf8 还原：{restored}");
 
     // ---- 增删改（全部要求 &mut String）----
     let mut s = String::from("Rust");
@@ -62,6 +88,12 @@ fn main() {
     // ---- 按字符取第 n 个：chars().nth() ----
     let second = zh.chars().nth(1);
     println!("第 2 个字符 = {second:?}");
+
+    // ---- char 是 4 字节 Unicode 标量值：转义与码位构造 ----
+    let star = '\x2A'; // ASCII 转义：'\xHH'
+    let odbl = '\u{151}'; // Unicode 转义：'\u{HHHH}'
+    println!("'\\x2A' = {star}，'\\u{{151}}' = {odbl}");
+    println!("sizeof char = {} 字节", std::mem::size_of::<char>());
 
     // ---- API 参数惯例：要只读就收 &str，要拥有/修改才收 String ----
     println!("greet(&String) = {}", greet(&owned));
@@ -119,5 +151,37 @@ mod tests {
         assert_eq!(c, "A-B");
         assert_eq!(a, "A"); // format! 只借用——两个都还活着
         assert_eq!(b, "B");
+    }
+
+    #[test]
+    fn str_is_fat_pointer() {
+        let s: &str = "Hello Rust";
+        assert_eq!(s.len(), 10); // 字节数
+        assert_eq!(std::mem::size_of::<&str>(), 16); // 胖指针 = 指针 + 长度
+    }
+
+    #[test]
+    fn string_with_capacity() {
+        let mut s = String::with_capacity(10);
+        assert_eq!(s.capacity(), 10);
+        s.push_str("hi");
+        assert_eq!(s.len(), 2);
+        assert!(s.capacity() >= 10); // 容量只增不减
+    }
+
+    #[test]
+    fn string_vec_u8_roundtrip() {
+        let s = String::from("你好");
+        let bytes = s.into_bytes();
+        assert_eq!(bytes, vec![0xe4, 0xbd, 0xa0, 0xe5, 0xa5, 0xbd]);
+        let back = String::from_utf8(bytes).unwrap();
+        assert_eq!(back, "你好");
+    }
+
+    #[test]
+    fn char_escapes_and_size() {
+        assert_eq!('\x2A', '*');
+        assert_eq!('\u{151}', 'ő');
+        assert_eq!(std::mem::size_of::<char>(), 4); // Unicode 标量值
     }
 }

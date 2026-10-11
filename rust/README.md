@@ -1,8 +1,8 @@
-# Rust 编程指南（1.98 / edition 2024）
+# Rust 编程指南（1.99 / edition 2024）
 
 面向**会编程（C/C++ 背景最佳）、初学 Rust** 的读者：从零教到现代 Rust——edition **2024**、`scoped threads`、let-else、迭代器管道从对应章节就是默认姿势，老写法（`extern` 块不加 unsafe、`#[no_mangle]` 裸写、`static mut` 取引用）只在坑位清单里教"认得"。**Rust 特色全部独立成章细讲**：所有权（04）、借用（05）、字符串（06）、错误处理（10）、泛型与 Trait（11/12）、生命周期（13）、闭包与迭代器（14/15）、宏（16）、Cargo 工程化（17）、unsafe/FFI（19）、测试（21）、线程（22）、async（23）。每章"读讲解 → 跑示例 → 改代码再跑"，全部 23 个示例**四层验证**通过（fmt + clippy `-D warnings` + test + 运行 exit 0）。
 
-> ⚠️ 网上教程版本混杂：2018/2021 edition 的写法在 2024 里 `extern`、`#[no_mangle]`、`static mut` 三处直接编译错。本教程所有代码在 **rustc/cargo 1.98.1** 实测，每章坑位清单收录版本差异。
+> ⚠️ 网上教程版本混杂：2018/2021 edition 的写法在 2024 里 `extern`、`#[no_mangle]`、`static mut` 三处直接编译错。本教程所有代码在 **rustc/cargo 1.99.0** 实测，每章坑位清单收录版本差异。
 
 ## 目录结构
 
@@ -61,7 +61,7 @@ rust/
 | macOS | MacPorts | `/opt/local/bin/`（cargo / rustc / cargo-clippy / rustfmt 全套） |
 | macOS / Linux | rustup（官方默认） | `~/.cargo/bin/` |
 
-- Rust **1.98.1 / cargo 1.98.0** 实测（macOS 上是 MacPorts 的 `x86_64-apple-darwin`，
+- Rust **1.99.0 / cargo 1.99.0** 实测（macOS 上是 MacPorts 的 `x86_64-apple-darwin`，
   Windows 上是 scoop 的独立版，**同一版本、同一套示例、四层结论一致**）。
 - edition **2024**（1.85+ 起默认）；版本不符先看 [01 章](docs/01-overview.md)的 edition 对照表。
 - 两个入口都不硬编码路径：`build.ps1` 只在 Windows 上试 scoop 位置、否则走 `Get-Command cargo`；
@@ -114,7 +114,7 @@ cargo test       # 跑断言（故意改坏代码，看哪条测试红）
 **本目录不用「结束标记」那条判定**：示例是 cargo 工程，崩了退出码就非 0，
 而第 5 条已经能抓住中途失败，再加标记是重复。
 
-## macOS 上的兼容性（2026-09-18 实测于 macOS 12.7 + MacPorts rustc 1.98.1）
+## macOS 上的兼容性（2026-10-11 实测于 macOS 12.7 + MacPorts rustc 1.99.0）
 
 全部 23 个示例在 macOS 上四层验证通过，**示例代码本身一处都不用改**（它们一律用
 `std::env::temp_dir()`、无平台分支）。需要处理的只有工具链与脚本：

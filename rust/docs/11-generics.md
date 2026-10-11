@@ -37,6 +37,8 @@ where
 
 约束复杂时 `where` 子句比内联签名可读——社区惯例是超过两个约束就下放 where。
 
+**从集合的角度理解约束**（《Rust 编程之道》的视角，有助于读复杂签名）：类型是值的集合，`T: Display` 读作"T 属于实现了 Display 的类型集合"；`T: A + B` 是**交集**（同时满足 A 和 B）；`trait P: A + B`（trait 继承，12 章）读作"P 是 A∩B 的子集"。于是 `impl<T: A + B> C for T` 就是"为交集里的所有类型批量实现 C"——blanket impl（12.6）的数学本质。
+
 ## 11.3 泛型结构体与枚举
 
 ```rust
@@ -47,7 +49,14 @@ struct Pair<T, U = i32> {     // 默认类型参数（运算符重载里常见�
 enum Either<L, R> { Left(L), Right(R) }   // Option/Result 就是泛型枚举
 ```
 
-`Option<T>`、`Result<T, E>`、`Vec<T>`、`HashMap<K, V>`——标准库的半壁江山是泛型类型，你从第 02 章起就在用。
+`Option<T>`、`Result<T, E>`、`Vec<T>`、`HashMap<K, V>`——标准库的半壁江山是泛型类型，你从第 02 章起就在用。标准库 `Vec<T>` 的真身就是个泛型结构体：
+
+```rust
+pub struct Vec<T> {
+    buf: RawVec<T>,   // 堆缓冲的原始管理器
+    len: usize,       // 元素个数
+}
+```
 
 ## 11.4 泛型 impl：方法有自己的约束
 
@@ -61,7 +70,7 @@ impl Pair<f64, f64> {        // 只给具体类型加方法（部分具体化）
 }
 ```
 
-方法约束可以比 impl 约束更紧；`Self` 在 impl 块里指"当前类型"。类型不同则方法不同——`Pair<i32, f64>` 没有 `distance`（示例实测编译错）。
+方法约束可以比 impl 约束更紧；`Self` 在 impl 块里指"当前类型"。注意 `impl<T> Point<T>` 里的 `<T>` 是**重新声明**——为泛型类型写 impl 时泛型参数必须再次出现。类型不同则方法不同——`Pair<i32, f64>` 没有 `distance`（示例实测编译错）。
 
 ## 11.5 单态化：零成本的机制
 
@@ -70,9 +79,34 @@ largest::<i32> 与 largest::<&str> 各生成一份机器码（编译期复制粘
 → 无虚表、无装箱、可内联 —— 与手写具体类型的代码性能一致
 ```
 
-代价在**编译时间和代码体积**：每个新类型组合都是一份新实例。泛型库的编译慢主要来自这里。对照：trait 对象（12 章）动态分发——一份代码 + 每次虚调用，编译快二进制小。这是 Rust 的核心权衡之一，12 章给决策表。
+用《Rust 编程之道》的等价变换来理解：编译器把 `fn foo<T>(x: T) -> T` 在 `foo(1)` 和 `foo("hello")` 两处调用点分别实例化成：
 
-## 11.6 与 C++ 模板的关键差异
+```rust
+fn foo_i32(x: i32) -> i32 { x }
+fn foo_str(x: &'static str) -> &'static str { x }
+```
+
+这就是**单态化（monomorphization）**：泛型只是源码层的抽象，机器码层没有任何"泛型"。
+
+代价在**编译时间和代码体积**：每个新类型组合都是一份新实例，泛型库的编译慢主要来自这里；二进制膨胀到 noticeable 时，热点路径可考虑 trait 对象（12 章）收敛代码体积。对照：trait 对象动态分发——一份代码 + 每次虚调用，编译快二进制小。这是 Rust 的核心权衡之一，12 章给决策表。
+
+## 11.6 泛型返回值自动推导
+
+```rust
+trait Make { fn new(v: i32) -> Self; }
+struct Foo(i32);
+struct Bar(i32, i32);
+impl Make for Foo { fn new(v: i32) -> Self { Foo(v) } }
+impl Make for Bar { fn new(v: i32) -> Self { Bar(v, v + 10) } }
+
+fn make<T: Make>(v: i32) -> T { T::new(v) }
+let f: Foo = make(10);   // 标注返回值类型 → 推导出调用 Foo::new
+let b: Bar = make(20);   // 同一函数，另一份实例
+```
+
+泛型函数的返回类型可以靠**调用处的标注**收敛——这是关联类型（12.4）与泛型协同的典型场景。
+
+## 11.7 与 C++ 模板的关键差异
 
 | | Rust 泛型 | C++ 模板 |
 |---|---|---|
@@ -84,7 +118,7 @@ largest::<i32> 与 largest::<&str> 各生成一份机器码（编译期复制粘
 
 不支持特化是有意的：约束即合同，没有"这个类型走后门"。
 
-## 11.7 const 泛型（了解）
+## 11.8 const 泛型（了解）
 
 ```rust
 struct Buffer<const N: usize> { data: [u8; N] }     // 长度进类型
@@ -93,7 +127,7 @@ fn dot<const N: usize>(a: &[f64; N], b: &[f64; N]) -> f64 { ... }
 
 数组按值传参（`[u8; 32]` 与 `[u8; 64]` 是不同类型）的桥——标准库的 `impl TryFrom<&[u8]> for [u8; N]` 靠它覆盖所有长度。日常业务少写，读标准库会遇到。
 
-## 11.8 坑位清单
+## 11.9 坑位清单
 
 1. **裸 T 编译不过你的直觉**：`fn f<T>(x: T) { println!("{x}"); }` 缺 `Display`——报错第一条就是解药。
 2. **默认类型参数的触发**：`Pair { first: "x", second: 42 }` 才用到默认；显式写全两参时默认不生效。
@@ -102,6 +136,7 @@ fn dot<const N: usize>(a: &[f64; N], b: &[f64; N]) -> f64 { ... }
 5. **impl 块类型对不上就"方法不存在"**：`Pair::new(3, 4)` vs `Pair::new(3, 4.5)` 是不同类型——示例 `same_as` 实测报 E0308（expected f64, found integer）。
 6. **单态化膨胀**：库里大量小泛型函数 × 多类型 = 编译变慢、二进制变大；热点具体类型可专设别名。
 7. **别忘了泛型 enum 的 derive**：`#[derive(Debug)] struct Pair<T, U>` 要求 T/U 也 Debug——derive 自动加 bounds，类型不满足时再报。
+8. **DST 与 `?Sized`**：`fn f<T: ?Sized>(x: &T)` 允许 T 是 str/[T]/dyn Trait 这类动态大小类型——代价是只能经引用使用（03 章 3.6 的胖指针）。绝大多数泛型默认 `T: Sized`，遇到 `?Sized` 别慌，意思是"这个函数连切片都能收"。
 
 ---
 

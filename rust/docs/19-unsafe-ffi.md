@@ -105,6 +105,8 @@ fn read() -> u32 { unsafe { COUNTER } }
 
 写 unsafe 的纪律：每处 unsafe 配 `// SAFETY: 为什么成立` 注释；能 assert 的先 assert；封装成安全函数对外。
 
+还有一个进阶概念：**型变（variance）**。生命周期在泛型类型中有协变（covariant，如 `&'a T`、`Box<T>`）、逆变（contravariant，如函数参数位置）、不变（invariant，如 `&mut T`、`Cell<T>`）三种行为。写 unsafe 代码时，如果自定义类型不当声明型变，可能让编译器错误地放宽生命周期约束，产生悬垂引用——这是 unsafe 代码里最常见的隐蔽 UB 来源之一。安全代码不用管型变；写 unsafe 抽象时，先想清楚你的类型对生命周期是协变还是不变。
+
 ## 19.8 坑位清单
 
 1. **edition 2024 语法三连变**：`unsafe extern`、`#[unsafe(no_mangle)]`、static mut 禁取引用——旧教程代码照抄三处全炸（01 章对照表）。

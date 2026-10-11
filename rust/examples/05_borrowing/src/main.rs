@@ -55,8 +55,33 @@ fn main() {
     // words.clear();  // ← 编译错：first 还持有共享借用（悬垂防线）
     println!("words 完整内容仍可用：{words}");
 
-    // ---- 典型 API 形态：函数要只读文本就用 &str（06 章细讲）----
+    // ---- 借用规则的理由：aliasing 反例（05 章 5.1）----
+    // 假想编译器允许 & 与 &mut 同时指向同一数据：
+    //   fn compute(input: &u32, output: &mut u32) {
+    //       if *input > 10 { *output = 1; }
+    //       if *input > 5  { *output = 2; }   // 期望 input 还是 10……
+    //   }
+    //   compute(&i, &mut o);      // o == 2 ✔
+    //   compute(&o, &mut o);      // input/output 同一块内存！o == 1 ✘
+    // 铁律 1 让这类调用编译不过——编译器才能放心缓存与重排（noalias）。
+    // 这里用安全代码演示"不重叠"版本的正确性：
+    let i = 10u32;
+    let mut o = 0u32;
+    compute_disjoint(&i, &mut o);
+    println!("compute_disjoint 后 o = {o}（i 不受影响 = {i}）");
+
+    // ---- 借用预演结束 ----
     println!("byte_len(&str) = {}", "你好".len()); // 6：UTF-8 三个字节/汉字
+}
+
+/// 共享输入与独占输出必须指向不同数据——借用检查器在调用点强制这一点。
+fn compute_disjoint(input: &u32, output: &mut u32) {
+    if *input > 10 {
+        *output = 1;
+    }
+    if *input > 5 {
+        *output = 2;
+    }
 }
 
 fn change(s: &mut String) {
@@ -102,6 +127,18 @@ mod tests {
         assert_eq!(*r, 10); // r 最后一次使用
         v.push(20); // 新的借用阶段开始
         assert_eq!(v.len(), 2);
+    }
+
+    #[test]
+    fn aliasing_would_break_invariants() {
+        // 借用规则保护的是"输入不被输出改写"这条不变量：
+        // 若允许 compute_disjoint(&x, &mut x)，第二个 if 读到的就不再是 10。
+        // 编译器拒绝混用 → 这里只验证不混用的语义。
+        let i = 10u32;
+        let mut o = 0u32;
+        compute_disjoint(&i, &mut o);
+        assert_eq!(o, 2);
+        assert_eq!(i, 10);
     }
 
     #[test]

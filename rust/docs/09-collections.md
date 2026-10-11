@@ -3,7 +3,7 @@
 > 对应示例：`examples/09_collections/`
 >
 > std 的四大集合：Vec、HashMap、BTreeMap、VecDeque（外加 HashSet）。
-> 选型、惯用法（entry）、以及"为什么没有 C++ 那么多容器"。
+> 选型、惯用法（entry）、容量机制、以及"为什么没有 C++ 那么多容器"。
 
 ## 9.1 选型表
 
@@ -44,7 +44,27 @@ for x in &mut v { *x *= 10; }   // 可变借用：就地改
 let owned = v;        // move 整个容器；for x in v 则逐元素 move 出来
 ```
 
-## 9.3 HashMap 与 entry 惯用法
+## 9.3 容量：Vec 是智能指针
+
+Vec 不是"数组"，它是一个**智能指针**——和 `String` 一样，由三部分组成：指向堆缓冲的指针、记录元素个数的 `len`、堆分配的 `capacity`。`Vec::new()` 不分配堆内存；`with_capacity(n)` 预分配 n 个元素的空间：
+
+```rust
+let mut v = Vec::with_capacity(10);
+assert_eq!(v.capacity(), 10);
+for i in 0..10 { v.push(i); }
+v.clear();                      // 清空元素，但容量保留
+assert_eq!(v.capacity(), 10);   // 堆内存没释放
+v.shrink_to_fit();              // 归还多余容量
+assert_eq!(v.capacity(), 0);
+```
+
+容量满了会自动翻倍扩容（4→8→16→…），每次扩容都意味着 realloc + 全量拷贝。知道规模时 `with_capacity` 是免费午餐。
+
+**容量 ≠ 大小**：容量是与内存分配相关的概念，大小是元素个数。搞混两者可能写出逻辑漏洞——CVE-2018-1000657 就是 `VecDeque::reserve` 把环形缓冲区的"逻辑容量"当成"物理容量"，少分配了一个位置导致缓冲区溢出。Rust 的内存安全保证的是**没有未定义行为**；逻辑层面的容量计算错误，编译器管不了。
+
+零大小类型（ZST）的 Vec 有个有趣的实现细节：`Vec<Foo>`（Foo 是单元结构体）的容量等于 `usize::MAX`——反正 ZST 不占内存，"无限容量"是合法的占位值。
+
+## 9.4 HashMap 与 entry 惯用法
 
 ```rust
 use std::collections::HashMap;
@@ -61,6 +81,19 @@ freq.remove("zig")      // Option<V>：连删带取
 
 `entry()` 一次哈希同时完成"查找 + 预备插入"，比 `contains_key` + `insert` 两趟高效且无 TOCTOU 缝隙。
 
+**Entry 是一个 enum**：`entry(key)` 返回 `Entry<K, V>`，它只有两个变体——`Occupied`（桶里有值）和 `Vacant`（桶是空的）。`or_insert` 的实现就是对这个 enum 做 match：
+
+```rust
+pub fn or_insert(self, default: V) -> &'a mut V {
+    match self {
+        Occupied(entry) => entry.into_mut(),  // 有值：返回已有值的可变引用
+        Vacant(entry) => entry.insert(default), // 空桶：插入默认值
+    }
+}
+```
+
+还有 `or_insert_with(|| ...)`（惰性计算默认值，闭包只在空桶时执行）和 `or_default()`（要求 V: Default）。`entry` 也支持 `and_modify(|v| ...)` 链式修改已有值。
+
 键的约束：`Eq + Hash`（String、整数、&str、tuple 都行；float 不行——NaN）。**键 move 进表**：
 
 ```rust
@@ -71,7 +104,7 @@ map.insert(key, 1);      // key 所有权进表
 
 查找却不用拥有键：`map.get("字面量")`——`&str` 能哈希就能查 String 的表。
 
-## 9.4 HashMap 遍历顺序每次运行都不同
+## 9.5 HashMap 遍历顺序每次运行都不同
 
 ```rust
 for (k, v) in &map { }   // 顺序 = 哈希布局 + 随机化种子，每次运行不同！
@@ -83,7 +116,7 @@ for (k, v) in &map { }   // 顺序 = 哈希布局 + 随机化种子，每次运�
 - 要求"插入顺序" → `indexmap` crate；
 - 测试里比较集合 → 排序后比较（本教程示例实测踩过：HashSet 交集顺序不稳定）。
 
-## 9.5 BTreeMap：有序版的代价与收益
+## 9.6 BTreeMap：有序版的代价与收益
 
 ```rust
 let mut bt = BTreeMap::new();
@@ -95,7 +128,7 @@ bt.first_key_value() / bt.last_key_value()
 
 O(log n) vs HashMap 的 O(1)，换来：有序遍历、范围迭代、最坏情况稳定（HashMap 有病态碰撞）。键约束 `Ord`。
 
-## 9.6 HashSet：集合运算
+## 9.7 HashSet：集合运算
 
 ```rust
 let a: HashSet<i32> = [1, 2, 3].into();
@@ -109,7 +142,7 @@ a.insert(x) / a.contains(&x) / a.remove(&x)
 
 集合运算返回**迭代器**（惰性，15 章），配 `collect` 落地。比较前记得排序——顺序不确定。
 
-## 9.7 VecDeque：双端队列
+## 9.8 VecDeque：双端队列
 
 ```rust
 let mut dq: VecDeque<i32> = VecDeque::new();
@@ -120,9 +153,9 @@ dq.pop_back()       // 尾出
 dq.front() / dq.back()   // Option<&T>
 ```
 
-FIFO 队列用它（`Vec` 头部操作是 O(n)）。与数组可直接比较：`assert_eq!(dq, [2]);`。
+FIFO 队列用它（`Vec` 头部操作是 O(n)）。内部是环形缓冲区：两个指针 + 一个可增长数组，头尾指针在数组上环形移动。与数组可直接比较：`assert_eq!(dq, [2]);`。
 
-## 9.8 容器与所有权
+## 9.9 容器与所有权
 
 容器拥有元素（04 章递归规则）：
 
@@ -136,7 +169,7 @@ let drained: Vec<String> = std::mem::take(&mut v); // 整表搬空
 
 `Vec<Option<T>>` 想"取出元素但保留位置"时是常用手法：`v[i].take()`。
 
-## 9.9 坑位清单
+## 9.10 坑位清单
 
 1. **HashMap 遍历顺序不稳定**：测试断言先 collect→sort；展示输出用 BTreeMap。
 2. **dedup 不排序**：只去相邻重复，先 `sort_unstable()` 再 `dedup()`。
@@ -146,6 +179,7 @@ let drained: Vec<String> = std::mem::take(&mut v); // 整表搬空
 6. **`get(0)` 被 clippy 提醒改 `first()`**：语义同，可读性高。
 7. **容量预分配**：知道规模时 `Vec::with_capacity(n)` / `HashMap::with_capacity(n)`，省掉反复扩容拷贝（默认翻倍增长）。
 8. **remove(i) 返回元素而不是 bool**：拿走值；"删存在与否"用 `if i < v.len()` 先判或换数据结构。
+9. **clear/truncate 不释放容量**：要归还内存用 `shrink_to_fit()`（或 drop 整个 Vec）。clippy 会提醒 `truncate(0)` 应写 `clear()`。
 
 ---
 

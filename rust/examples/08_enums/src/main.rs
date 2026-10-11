@@ -1,5 +1,27 @@
 //! 08 · 枚举与模式匹配：带数据的 enum、match 穷尽性、绑定/守卫/if let/let-else
 
+// ---- 枚举的三种形态 ----
+#[derive(Debug, PartialEq)]
+enum Number {
+    Zero,
+    One,
+    Two,
+}
+
+#[derive(Debug)]
+enum Color {
+    // 类 C 枚举：显式 discriminant（底层整数）
+    Red = 0xff0000,
+    Green = 0x00ff00,
+    Blue = 0x0000ff,
+}
+
+#[derive(Debug)]
+enum IpAddr {
+    V4(u8, u8, u8, u8), // 带数据的变体：本质是构造函数
+    V6(String),
+}
+
 #[derive(Debug)]
 enum Shape {
     Circle { radius: f64 }, // 结构体式变体（命名字段）
@@ -38,6 +60,32 @@ fn area(s: &Shape) -> f64 {
 }
 
 fn main() {
+    // ---- 三种形态的枚举 ----
+    for n in [Number::Zero, Number::One, Number::Two] {
+        match n {
+            Number::Zero => println!("0"),
+            Number::One => println!("1"),
+            Number::Two => println!("2"),
+        }
+    }
+    println!(
+        "roses #{:06x} / grass #{:06x} / sky #{:06x}",
+        Color::Red as i32,
+        Color::Green as i32,
+        Color::Blue as i32
+    ); // 类 C 枚举可 as 转整数
+    let home = IpAddr::V4(127, 0, 0, 1);
+    if let IpAddr::V4(a, b, c, d) = home {
+        println!("IPv4 = {a}.{b}.{c}.{d}");
+    }
+    let loop_v6 = IpAddr::V6("::1".into());
+    if let IpAddr::V6(addr) = &loop_v6 {
+        println!("IPv6 = {addr}");
+    }
+    // 带数据的变体是函数指针类型：
+    let ctor: fn(u8, u8, u8, u8) -> IpAddr = IpAddr::V4;
+    let _loopback = ctor(127, 0, 0, 1);
+
     // ---- enum = 带数据的标签联合（tagged union）----
     let shapes = [
         Shape::Circle { radius: 1.0 },
@@ -194,5 +242,16 @@ mod tests {
     fn result_matching() {
         assert_eq!(divide(10, 2), Ok(5));
         assert!(divide(1, 0).is_err());
+    }
+
+    #[test]
+    fn three_enum_forms() {
+        assert_eq!(Number::One, Number::One);
+        assert_ne!(Number::Zero, Number::Two);
+        assert_eq!(Color::Red as i32, 0xff0000);
+        // 带数据的变体是构造函数：
+        let v4: fn(u8, u8, u8, u8) -> IpAddr = IpAddr::V4;
+        let addr = v4(192, 168, 0, 1);
+        assert!(matches!(addr, IpAddr::V4(192, 168, 0, 1)));
     }
 }

@@ -10,7 +10,7 @@ fn main() {
 
     // ---- println! 占位符全家 ----
     let lang = "Rust";
-    let ver = 1.98;
+    let ver = 1.99;
     println!("语言：{}，版本：{}", lang, ver); // 顺序占位
     println!("语言：{lang}，版本：{ver}"); // 内联参数（1.58+，现代默认）
     println!("{0}×{1} = {2}；再来一次 {0}", 2, 3, 6); // 位置参数

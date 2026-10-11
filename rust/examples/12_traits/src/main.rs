@@ -128,9 +128,54 @@ fn largest_preview(items: &[Box<dyn Summary>]) -> String {
         .unwrap_or_default()
 }
 
+// ---- trait 继承：组合优于继承的"行为复用"通道 ----
+trait Page {
+    fn set_page(&self, p: i32) {
+        println!("  翻到第 {p} 页");
+    }
+}
+trait PerPage {
+    fn set_per_page(&self, n: i32) {
+        println!("  每页 {n} 条");
+    }
+}
+trait Paginate: Page + PerPage {
+    // 继承两个父 trait；自带一个默认方法
+    fn set_skip(&self, num: i32) {
+        println!("  直接跳到第 {num} 页");
+    }
+}
+struct Listing {
+    total: u32,
+}
+impl Page for Listing {}
+impl PerPage for Listing {}
+impl<T: Page + PerPage> Paginate for T {} // blanket impl：一切"已分页"类型自动可跳页
+
+// ---- 对象安全：泛型方法 vs where Self: Sized 隔离 ----
+trait Factory {
+    fn describe(&self) -> String; // 对象安全
+    // fn make<T>(&self, x: T) -> T;          // ← 泛型方法：trait 因此不对象安全
+    fn new() -> Self
+    where
+        Self: Sized, // 用 Sized 限定把"返回 Self"隔离开 → trait 保持对象安全
+    {
+        panic!("默认 new 仅供演示：具体类型应覆盖它")
+    }
+}
+struct Widget;
+impl Factory for Widget {
+    fn describe(&self) -> String {
+        "widget".into()
+    }
+    fn new() -> Self {
+        Widget // 覆盖默认实现：返回具体类型
+    }
+}
+
 fn main() {
     let article = Article {
-        title: "Rust 1.98 发布".into(),
+        title: "Rust 1.99 发布".into(),
         author: "官方".into(),
     };
     let weibo = Weibo {
@@ -201,6 +246,21 @@ fn main() {
     };
     println!("{default_cfg:?} → {custom:?}");
     assert_ne!(default_cfg, custom);
+
+    // trait 继承 + blanket impl：Listing 自动获得 set_skip
+    let list = Listing { total: 100 };
+    println!("Listing 共 {} 条", list.total);
+    list.set_page(2);
+    list.set_per_page(20);
+    list.set_skip(5);
+
+    // 对象安全：Box<dyn Factory> 合法（new 被 Sized 限定隔离，不能经 dyn 调用）
+    let makers: Vec<Box<dyn Factory>> = vec![Box::new(Widget)];
+    for m in &makers {
+        println!("dyn Factory describe = {}", m.describe());
+    }
+    // new 只能经具体类型调用（Self: Sized 把"返回 Self"从 vtable 中隔离）
+    let _w = Widget::new();
 }
 
 #[cfg(test)]
@@ -261,5 +321,20 @@ mod tests {
         let s: Seconds = 5u32.into();
         assert_eq!(s.0, 5);
         assert_eq!(Seconds::from(7).0, 7);
+    }
+
+    #[test]
+    fn trait_inheritance_blanket_impl() {
+        let list = Listing { total: 50 };
+        list.set_page(1); // 父 trait 方法
+        list.set_per_page(10); // 另一个父 trait 方法
+        list.set_skip(3); // 子 trait 默认方法——blanket impl 白送
+    }
+
+    #[test]
+    fn object_safe_with_sized_guard() {
+        let makers: Vec<Box<dyn Factory>> = vec![Box::new(Widget)];
+        assert_eq!(makers[0].describe(), "widget");
+        // Widget::new() 只能经具体类型调用，不能过 dyn——这是 Sized 限定的含义
     }
 }

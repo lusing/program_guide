@@ -39,6 +39,8 @@ scope 保证所有子线程在闭包返回前 join 完——借用检查器放�
 
 ## 22.3 mpsc：通道（消息传递）
 
+并发编程有两条哲学路线：**共享内存**（加锁保护）和**消息传递**（通过通信来共享内存，而非共享内存来通信）。消息传递的数学基础是 CSP（Communicating Sequential Processes，通信顺序进程）——Erlang 的 Actor 模型和 Go 的 Channel 都是这一路线的实现。Rust 标准库选了 CSP：线程是进程，Channel 是通道，**不关注谁发谁收，只关注消息本身**。
+
 ```rust
 use std::sync::mpsc;
 
@@ -53,6 +55,7 @@ for msg in rx {                             // 所有 sender drop 后迭代自�
 }
 ```
 
+- `mpsc` = Multi-Producer Single-Consumer：多生产者、单消费者的 FIFO 队列；
 - `send` 拿值的所有权（**消息传递 = 所有权转移**，收发两端无共享内存）；
 - `rx` 迭代终止条件：所有 sender drop——忘了 drop 会死等（示例 `drop(tx)` 是必要的一行）；
 - `try_recv` 非阻塞轮询、`recv_timeout` 带超时；跨线程 async 用 `tokio::sync::mpsc`（23 章）。
@@ -100,6 +103,8 @@ hits.load(Ordering::Relaxed);
 
 ## 22.6 Send 与 Sync：自动判定的通行证
 
+Rust 看待线程安全的哲学：**多线程共享内存并非问题所在，问题在于错误地共享数据**。Send 和 Sync 是给类型贴的标签——编译器按标签决定哪些类型可以跨线程移动/共享，从而在编译期发现线程不安全。
+
 ```rust
 fn assert_send<T: Send>() {}    // 值可以 move 到别的线程（所有权搬家）
 fn assert_sync<T: Sync>() {}    // &T 可以跨线程共享
@@ -110,7 +115,7 @@ assert_sync::<Mutex<i32>>();
 // assert_sync::<RefCell<i32>>();  // ← 编译错：借用计数非原子
 ```
 
-编译器按字段自动推导（含泛型），**unsafe 手动实现是最终手段**（19 章）。这就是"编译期消灭数据竞争"的执行机构：Rc/RefCell 想跨线程，类型系统先拦住，Arc/Mutex 是指定的替换品——**18 章选型表的多线程列由此而来**。
+`thread::spawn` 的签名要求闭包 `F: Send + 'static`——闭包的捕获变量和返回值都必须是 Send。`'static` 是因为线程可能活得比当前函数久，借用局部变量就是悬垂。编译器按字段自动推导（含泛型），**unsafe 手动实现是最终手段**（19 章）。这就是"编译期消灭数据竞争"的执行机构：Rc/RefCell 想跨线程，类型系统先拦住，Arc/Mutex 是指定的替换品——**18 章选型表的多线程列由此而来**。
 
 ## 22.7 死锁与经典陷阱
 
