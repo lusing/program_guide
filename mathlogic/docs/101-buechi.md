@@ -207,4 +207,4 @@ checking（BMC）加进来第三条：把「k 步内无反例」编码成 SAT
 
 ---
 
-上一章：[100 自动机与形式语言：Chomsky 层级](docs/100-automata.md) · 下一章：[103 符号模型检查与关系 μ 演算](docs/103-symbolicmc.md)
+上一章：[100 自动机与形式语言：Chomsky 层级](docs/100-automata.md) · 下一章：[102 模型检查算法与公平性](docs/102-mcalgo.md)

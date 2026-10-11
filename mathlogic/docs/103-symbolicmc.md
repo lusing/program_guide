@@ -200,4 +200,4 @@ existsb**——本章的 `preE_In` 成员刻画在 BDD 版逐位重演。
 
 ---
 
-上一章：[101 自动机与 LTL 模型检查](docs/101-buechi.md) · 下一章：[102 模型检查算法与公平性](docs/102-mcalgo.md)
+上一章：[102 模型检查算法与公平性](docs/102-mcalgo.md) · 下一章：[104 霍尔逻辑程序验证：while 规则与不变式](docs/104-hoare.md)
