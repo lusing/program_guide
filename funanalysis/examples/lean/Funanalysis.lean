@@ -22,3 +22,7 @@ import Funanalysis.Ch16Applications
 import Funanalysis.Ch17Duality
 import Funanalysis.Ch18OpenMapping
 import Funanalysis.Ch19UniformBoundedness
+import Funanalysis.Ch20LocallyConvex
+import Funanalysis.Ch21Separation
+import Funanalysis.Ch22Distributions
+import Funanalysis.Ch23WeakTopology

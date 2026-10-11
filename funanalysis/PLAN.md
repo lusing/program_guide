@@ -157,6 +157,9 @@ funanalysis/
   Lean 3/3（Ch17-19）、Julia/Python 各3文件全绿
   （对偶范数sup/Hölder/svd满射/min σ/逐点vs一致有界）。
   mathlib 核心API：banach_steinhaus + isOpenMap。
+- 2026-10-11 B6（20-23 章）完成：局部凸+弱拓扑。docs×4、
+  Lean 4/4（Ch20-23）、Julia/Python 各4文件全绿
+  （半范数族分离/超平面分离/δ高斯逼近/弱收敛eₙ→0）。
   同时修复 B3 遗留：Ch11 conj 改 starRingEnd、Ch12/13 重写简化。
   Isabelle 通道 v4.33 三大新坑入记忆：①type 2 坐标系是 {1,2} 而非
   {0,1}（axis_def 展开后 if-condition 求值需要 axis_def 而非 axis_nth
