@@ -317,4 +317,10 @@ init.minimal.args.iterateAllocator(a)           // Windows 上 iterate() 编译�
 | 并行 BFS worker 提前退出 | 终止不变量：`pop()` 仅在 `active == 0` 且队列为空时返回 null；只看队列空会丢整棵子树 | 43 |
 | 条件变量 `wait` 用 `if` 判断 | 必须 `while` 循环重查——虚假唤醒是 API 正式语义 | 43 |
 | `std.Io.Mutex.lock` 返回错误 | 用 `lockUncancelable(io)`（void）；`Condition.waitUncancelable` 同理 | 43 |
+| MMIO 别名坑：普通视图写 + `*volatile` 读 → **编译期死循环** | 编译器不做跨视图别名分析，轮询循环被判永真；MMIO 读写必须全程走 volatile 指针 | 44 |
+| 裸机没有 `main` | 入口 `export fn _start() callconv(.c) noreturn`；先设栈指针，再清 BSS/搬 DATA | 44 |
+| `std.http.Client.fetch` 对 POST 带 `.payload` 断言 panic | POST 必须带请求体（哪怕 `{}`）；走 sendBodiless 会 `assert(!r.method.requestHasBody())` | 45 |
+| `request.reader()` 不存在 | 读请求体用 `request.readerExpectNone(&buf)`，返回 `*Reader`（非错误联合） | 45 |
+| `respond` 默认 keep-alive 会撞 `HttpConnectionClosing` | 逐连接处理时显式 `.keep_alive = false` | 45 |
+| `Reader.readAlloc` 已 deprecated 且语义=readAllocAll | 读已知上限的短 body 用 `readAllocShort`（读不满不报错） | 45 |
 

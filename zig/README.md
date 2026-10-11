@@ -1,6 +1,6 @@
 # Zig 编程指南（0.17）
 
-面向**会编程（C/C++ 背景最佳）、初学 Zig** 的读者：从零教到 0.17 现代写法。全书 **44 篇分 6 个篇章**——每篇回答一个独立问题，篇章之间是依赖关系而非时间关系；`docs/` 章号（00–43）是**稳定编号**，供引用与坑位索引定位，**实际阅读顺序以下面路线图为准**。每篇头部都有"阅读位置"一行，标明它在全书中的坐标、承接哪几篇、为谁铺路。
+面向**会编程（C/C++ 背景最佳）、初学 Zig** 的读者：从零教到 0.17 现代写法。全书 **46 篇分 6 个篇章**——每篇回答一个独立问题，篇章之间是依赖关系而非时间关系；`docs/` 章号（00–45）是**稳定编号**，供引用与坑位索引定位，**实际阅读顺序以下面路线图为准**。每篇头部都有"阅读位置"一行，标明它在全书中的坐标、承接哪几篇、为谁铺路。
 
 - Zig 特色全部独立成章细讲：分配器（11）、comptime 两章（13/14）、测试（15）、构建与包管理（16）、C 互操作（17）、交叉编译（18）。
 - 每章"读讲解 → 跑示例 → 改代码再跑"，全部示例三层验证通过（fmt + test + 运行 exit 0）。
@@ -89,8 +89,9 @@
 | 6 | [31 并发进阶](docs/31-concurrency.md) | 六种内存序、CAS、无锁队列 | 43 的终止不变量在这埋过 | `31_concurrency` |
 | 7 | [39 异步 IO](docs/39-asyncio.md) | `io.async`、`Io.Group`、`Io.Select` | 0.17 结构化并发；echo 演示用 29 | `39_asyncio` |
 | 8 | [21 内联汇编](docs/21-asm.md) | asm 语法、约束、时间计数器 | 硬件侧收尾，可独立读 | `21_asm`（双架构） |
+| 9 | [44 嵌入式与裸机](docs/44-embedded.md) | MMIO/volatile、packed struct 位域、启动序列、实时控制环、freestanding 交叉 | 硬件侧终点：volatile 别名坑实证 | `44_embedded`（宿主模拟+三目标交叉） |
 
-### 第六篇 · 综合实战 —— 八件真工具
+### 第六篇 · 综合实战 —— 十件真工具
 
 每章一件可交付的工具，把前五篇的知识按"项目"重新组织一遍。
 
@@ -103,7 +104,9 @@
 | 5 | [40 ZIP 解析](docs/40-zunzip.md) | EOCD/CD、CRC32 comptime 查表 | 二进制格式解析的收官演示 | `40_zunzip` |
 | 6 | [41 zpass](docs/41-zpass.md) | PRNG/CSPRNG、模偏差、UUID v4 | 随机性的正确姿势 | `41_zpass` |
 | 7 | [42 JSON 监控服务](docs/42-memsrv.md) | /proc 解析、JSON 往返、HTTP 服务 | 系统数据的全链路小服务 | `42_memsrv` |
-| 8 | [43 zlocate](docs/43-zlocate.md) | WorkQueue、Scatter-Gather、并行 BFS | 并发线终点，全教程收官 | `43_zlocate` |
+| 8 | [43 zlocate](docs/43-zlocate.md) | WorkQueue、Scatter-Gather、并行 BFS | 并发线终点 | `43_zlocate` |
+| 9 | [44 嵌入式与裸机](docs/44-embedded.md) | MMIO/volatile、寄存器位域、启动序列、实时控制环 | 硬件线终点，宿主模拟+freestanding 交叉 | `44_embedded` |
+| 10 | [45 Web 服务](docs/45-websrv.md) | 路由两维分派、JSON CRUD、查询串、进程内端到端测试 | 网络线终点，全教程收官 | `45_websrv` |
 
 ## 主线一览（跨篇主题带）
 
@@ -114,7 +117,7 @@
 | 内存 | 06 切片 → 11 分配器 → 12 集合 → 36 指针深水区 | 从类型到策略再到硬件语义 |
 | 并发 | 19 → 31 → 39 → 43 | 线程基础 → 内存序与无锁 → 结构化并发 → WorkQueue 落地 |
 | 文件 | 20 → 27 → 28 → 37 → 43 | 单文件 → 遍历 → 监视 → 台账 → 并发爬取 |
-| 网络 | 29 → 30 → 34 → 42 | 报文 → HTTP → 缓存服务 → 监控服务 |
+| 网络 | 29 → 30 → 34 → 42 → 45 | 报文 → HTTP → 缓存服务 → 监控服务 → Web 服务 |
 | 编译期 | 13 → 14 → 25 → 40 | comptime 求值 → 泛型反射 → 布局 → 格式校验 |
 | C 互操作 | 17 → 18 → 32 → 38 | extern → 交叉编译 → sqlite3 → std.c 系统调用 |
 | 数据格式 | 25 → 26 → 40 → 41 | 字节序 → 编码 → ZIP → 随机与密码 |
@@ -124,8 +127,8 @@
 ```text
 zig/
 ├── README.md       本文件（路线图 + 工具链 + 验证命令）
-├── docs/           44 篇教程（章号是稳定编号；阅读顺序见上面路线图）
-├── examples/       42 个示例目录（章号 = 目录号；16/17/24/35 为 build.zig 工程；32 链 sqlite3；38 链 libc）
+├── docs/           46 篇教程（章号是稳定编号；阅读顺序见上面路线图）
+├── examples/       44 个示例目录（章号 = 目录号；16/17/24/35 为 build.zig 工程；32 链 sqlite3；38 链 libc；44 含 freestanding 交叉）
 ├── build.ps1       统一验证脚本（须 PowerShell 7 / pwsh 运行）
 ├── run-all.sh      同一套验证的 bash 版（Linux/macOS；ZIG= 可指定解释器）
 └── CHEATSheet.md   语法速查 + 0.17 坑位索引
@@ -135,7 +138,7 @@ zig/
 
 - Zig **0.17.0**：Windows 用 `G:\scoop\apps\zig\current\zig.exe`（scoop 安装；版本不符先看 01 章的版本坑）；**macOS 实测环境**是官方 tarball `/Volumes/mac004/lang/zig-x86_64-macos-0.17.0/zig`（MacPorts 的 `/opt/local/bin/zig` 仍是 0.16.0，**不要用**）。build.ps1 找不到 scoop 路径时自动回退 PATH 里的 `zig`。
 - Linux/macOS：官网 tarball 解压即用（单文件无依赖），`zig version` 须为 `0.17.0`。发行版包版本普遍偏旧（本机 MacPorts 是 0.16.0），**版本不符时以官网 tarball 为准**。
-- **已实测的平台**：macOS / x86_64 / zig 0.17.0 —— `./run-all.sh` 全部 42 例三层验证通过（含 38–43 章；38 章须 `-lc`，脚本已自动加）。Windows 11 / PowerShell 7.6.6（`pwsh`）下 `build.ps1 -All` 同样全绿。Linux（Arch/WSL2）全量实测通过（32 章需 libsqlite3-dev）。**Apple Silicon（arm64 macOS）**：逐示例 `-target aarch64-macos` 交叉编译验证全部通过（21 章已补 aarch64 实现）；运行验证待 arm64 真机。
+- **已实测的平台**：macOS / x86_64 / zig 0.17.0 —— `./run-all.sh` 全部 44 例三层验证通过（含 38–45 章；38 章须 `-lc`，44 章含 x86_64/arm/riscv32 三目标 freestanding 交叉编译，脚本均已自动处理）。Windows 11 / PowerShell 7.6.6（`pwsh`）下 `build.ps1 -All` 同样全绿。Linux（Arch/WSL2）全量实测通过（32 章需 libsqlite3-dev）。**Apple Silicon（arm64 macOS）**：逐示例 `-target aarch64-macos` 交叉编译验证全部通过（21 章已补 aarch64 实现）；运行验证待 arm64 真机。
 - 默认 Debug 模式（安全检查全开）；Windows 中文控制台乱码先 `chcp 65001`（build.ps1 已代设 UTF-8），Linux/macOS 终端原生 UTF-8 无此问题。
 
 ## 验证命令
@@ -177,6 +180,7 @@ zig run main.zig                                      # macOS/Linux
 - **主线**：Zig 官方文档与标准库源码逐 API 实测（01–24、25–31）。
 - **《Systems Programming with Zig》**（Mihalis Tsoukalos）：补齐信号/守护进程（38）、异步 IO（39）、ZIP 解析（40）、随机数与密码（41）、JSON 监控服务（42）、并发索引器 WorkQueue（43），以及 25–34 章的对应工具线。
 - **《Learning Zig》**（Ryan Swift）：补齐 ZLS 工具链（35）、指针深水区（36）、FileGuard（37）。
+- **《Zig Programming for Developers》**（Charles Sprinter）：补齐嵌入式与裸机（44）、Web 服务（45）。**注意：原书系 AI 生成的伪 Zig**（虚构 `std.os.spawn`/`go` 关键字/`std.chan`/`<-` 操作符/`std.parallel.for`/`@new`/`comptime fn` 宏/`zig.mod` 等，任何 Zig 版本都不存在），本书仅取其**章节骨架**（嵌入式、Web、错误速查等主题缺口），全部内容按 0.17.0 实测重写——它同时是"如何识别网络上的伪 Zig 资料"的反面教材。
 
 原书成书于 0.14–0.15 时代，所有代码在 0.17.0 上重写，差异逐条记入各章坑位清单与 [CHEATSheet.md](CHEATSheet.md)。
 
