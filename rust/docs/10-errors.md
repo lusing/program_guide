@@ -201,6 +201,82 @@ assert!(result.is_err());
 
 `AssertUnwindSafe` 不是 unsafe——它是"我审阅过这个闭包的 panic 安全性"的显式声明。测试框架（`cargo test`）内部就是用 `catch_unwind` 让每个测试独立崩溃、互不影响。
 
+### panic safety：从 C++ 异常安全到 Rust
+
+panic safety 是 C++ 异常安全（exception safety）的 Rust 版。C++ 定义了四层保证：no-throw（内部全处理）、strong（失败可回滚到初始状态）、basic（不泄漏资源）、none（无保证）。Rust 标准库的目标是：**即使发生 panic，也不产生内存不安全或线程不安全**。
+
+标准库 `Box<[T]>` 的 `Clone` 实现是 panic safety 的教科书案例：
+
+```rust
+// 标准库源码（简化）——为什么引入 BoxBuilder 中间类型？
+impl<T: Clone> Clone for Box<[T]> {
+    fn clone(&self) -> Self {
+        let mut new = BoxBuilder {
+            data: RawVec::with_capacity(self.len()),
+            len: 0,
+        };
+        for item in self.iter() {
+            unsafe {
+                std::ptr::write(new.data.ptr().add(new.len), item.clone());
+                // ↑ item.clone() 可能 panic！T 是泛型，谁保证 clone 不 panic？
+                new.len += 1;
+            }
+        }
+        unsafe { new.into_box() }
+    }
+}
+
+struct BoxBuilder<T> { data: RawVec<T>, len: usize }
+
+impl<T> Drop for BoxBuilder<T> {
+    fn drop(&mut self) {
+        // panic 时：RAII 保证这个析构被调用
+        // 只 drop 已初始化的前 len 个元素
+        unsafe {
+            for i in 0..self.len {
+                std::ptr::drop_in_place(self.data.ptr().add(i));
+            }
+        }
+    }
+}
+```
+
+如果不用 `BoxBuilder` 直接在 `clone()` 里写循环，`item.clone()` panic 时——部分元素已写入 RawVec，但 RawVec 不知道它们存在（`len` 没更新），不会 drop 它们——**泄漏 + 潜在的双重释放**（如果 RawVec 的析构又尝试清理）。`BoxBuilder` 用 RAII 保证：无论正常结束还是 panic 中途退出，`Drop` 都会执行，只清理已初始化的部分。
+
+这个模式在标准库中反复出现（`Vec::extend_with`、`String::insert` 等）——**写 unsafe 容器时，假设一切外部回调都可能 panic，并保持数据结构在任何 panic 点都合法**。
+
+### Mutex poison：panic safety 的运行时防线
+
+22 章提到 Mutex 的毒锁机制——这里是完整故事。如果持锁线程在临界区 panic，数据结构可能处于半修改状态（比如 Vec 只 push 了一半）。Mutex 检测到这种情况后标记自己为 **poisoned**——后续 `lock()` 返回 `Err(PoisonError)` 而不是 `Ok(guard)`：
+
+```rust
+use std::sync::{Arc, Mutex};
+use std::thread;
+
+let data = Arc::new(Mutex::new(vec![1, 2, 3]));
+let d = Arc::clone(&data);
+
+let handle = thread::spawn(move || {
+    let mut v = d.lock().unwrap();
+    v.push(4);
+    panic!("模拟崩溃");    // 持锁 panic → Mutex 被标记 poisoned
+});
+
+let _ = handle.join();     // 子线程 panic，join 返回 Err
+
+// 主线程再 lock：返回 Err（不是 Ok）
+match data.lock() {
+    Ok(mut v) => println!("正常: {v:?}"),
+    Err(poisoned) => {
+        // poisoned.into_inner() 可以拿到数据——但你要自己判断数据是否可信
+        let mut v = poisoned.into_inner();
+        println!("毒锁恢复: {v:?}");   // [1, 2, 3, 4]——push 在 panic 前已完成
+    }
+}
+```
+
+poison 的设计意图：**宁可拒绝服务，也不给调用方一个可能损坏的数据**。`into_inner()` 是显式声明"我检查过数据一致性，愿意承担风险"。服务型代码常用 `lock().unwrap_or_else(|e| e.into_inner())` 加日志——继续服务，但留下审计痕迹。
+
 **规则：库代码不 panic（返回 Result），应用代码边界处 assert。**
 
 ## 10.7 错误报告的层次

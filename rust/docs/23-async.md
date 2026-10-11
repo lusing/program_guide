@@ -130,7 +130,112 @@ fn block_on<F: Future>(mut fut: F) -> F::Output {
 
 结论：**Future = 被动轮询的状态机，Waker = "好了叫我"的回调，运行时 = 调度器 + IO/定时器事件源**。tokio 的多任务调度、work-stealing、epoll/IOCP 集成是把这三件事做到工业级。
 
-## 23.9 生态速览
+## 23.9 生成器：async 的底层引擎
+
+async/await 不是凭空设计的——它站在**生成器（Generator）**的肩膀上。理解生成器就理解了 async 状态机的本质。
+
+### 生成器 = 可暂停的函数
+
+生成器是一种可以在执行中"让出"（yield）、稍后从让出点恢复的函数。Rust 的生成器语法（nightly 特性）：
+
+```rust
+#![feature(generators, generator_trait)]
+use std::ops::{Generator, GeneratorState};
+
+let mut g = || {           // 一个生成器闭包
+    let mut curr: u64 = 1;
+    let mut next: u64 = 1;
+    loop {
+        let new_next = curr.checked_add(next);
+        if let Some(n) = new_next {
+            curr = next;
+            next = n;
+            yield curr;    // ← 在这里暂停，把 curr 交给调用方
+        } else {
+            return;        // 结束
+        }
+    }
+};
+
+loop {
+    match g.resume() {     // 恢复执行
+        GeneratorState::Yielded(v) => println!("{v}"),  // 拿到一个值
+        GeneratorState::Complete(_) => break,            // 生成器结束
+    }
+}
+// 输出：1 1 2 3 5 8 13 21 ...
+```
+
+`yield` 和 `await` 是同一族语义：**暂停当前函数、把值交出去、下次从暂停点恢复**。
+
+### 编译器如何脱糖生成器
+
+生成器的脱糖与闭包同构——编译器生成一个匿名结构体，跨 yield 存活的局部变量是它的字段：
+
+```rust
+// 源代码
+let mut g = || {
+    let mut curr: u64 = 1;
+    let mut next: u64 = 1;
+    loop {
+        let new_next = curr.checked_add(next);
+        if let Some(n) = new_next {
+            curr = next;
+            next = n;
+            yield curr;
+        } else { return; }
+    }
+};
+
+// 编译器脱糖（示意——真实转换在 MIR 层完成，此处为教学模型）
+enum __Gen {
+    Start { curr: u64, next: u64 },
+    Yield1 { curr: u64, next: u64 },
+    Done,
+}
+
+impl Generator for __Gen {
+    type Yield = u64;
+    type Return = ();
+    fn resume(mut self: Pin<&mut Self>) -> GeneratorState<u64, ()> {
+        // 用 mem::replace 取出当前状态，匹配后推进
+        match std::mem::replace(&mut *self, __Gen::Done) {
+            __Gen::Start { curr, next }
+            | __Gen::Yield1 { curr, next } => {
+                if let Some(n) = curr.checked_add(next) {
+                    *self = __Gen::Yield1 { curr: next, next: n };
+                    GeneratorState::Yielded(curr)
+                } else {
+                    *self = __Gen::Done;
+                    GeneratorState::Complete(())
+                }
+            }
+            __Gen::Done => panic!("generator resumed after completion"),
+        }
+    }
+}
+```
+
+关键观察：**`curr` 和 `next` 跨 yield 存活，所以必须是结构体字段**；`new_next` 不跨 yield，可以留在 `resume` 的栈帧里。多个 yield 点就引入状态枚举（`Start` / `Yield1` / `Yield2` / …）记录"上次执行到哪"。编译器自动管理"哪些变量要存、存到哪、恢复时怎么读"——这就是 async 状态机的原型。
+
+### 自引用问题与 Pin
+
+生成器（以及 async 块）有一个深层问题：**跨 yield 的借用**。如果生成器内部有一个变量 `local` 和指向它的引用 `ptr`，编译器脱糖后 `local` 和 `ptr` 是结构体的两个字段——`ptr` 指向 `local` 的内存地址。如果这个结构体被 move（比如从函数返回），`local` 的地址变了，但 `ptr` 的值没变——**悬垂指针**。
+
+这就是**自引用类型（self-referential type）**问题。Rust 的解决方案是 `Pin`：
+
+```rust
+// Pin 的核心承诺：被 Pin 包裹的值不会被 move
+let mut gen = /* 某个自引用生成器 */;
+let mut pinned = Box::pin(gen);   // Pin<Box<Gen>>——堆上固定，不再移动
+// pinned.as_mut().resume();      // 通过 Pin 调用 resume，安全
+```
+
+`Pin<P>` 是一个智能指针包装：它**承诺**指向的对象不会被 move。`Box::pin` 把值放到堆上——堆地址在 Box 活着期间不变，所以值不会被 move。`resume` 的 `self` 参数是 `Pin<&mut Self>` 而不是 `&mut Self`——这保证了 resume 被调用时，生成器已经固定。
+
+async/await 的脱糖与生成器完全同构：`await` 就是 `yield`（让出），async 块捕获的变量和跨 await 存活的局部变量是状态机的字段，`Pin` 保证状态机不被移动。这就是为什么 `Future::poll` 的签名是 `fn poll(self: Pin<&mut Self>, ...)`——`Pin` 不是 async 的附属品，是**自引用状态机能安全存在的根基**。
+
+## 23.10 生态速览
 
 | 名字 | 是什么 |
 |---|---|
@@ -142,7 +247,7 @@ fn block_on<F: Future>(mut fut: F) -> F::Output {
 | sqlx | 异步数据库（编译期校验 SQL） |
 | tracing | 结构化日志（async 友好的 span 传播） |
 
-## 23.10 坑位清单
+## 23.11 坑位清单
 
 1. **忘 await = 白写**：`fetch("A", 30);` 不带 `.await` 只造 Future——编译器 `#[must_use]` 警告，别无视。
 2. **async 里 thread::sleep 是事故**：占死 worker；`tokio::time::sleep` 才让出。同理锁内重活、`std::fs` 大文件 → spawn_blocking。

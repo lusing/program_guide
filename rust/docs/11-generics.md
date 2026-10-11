@@ -118,6 +118,82 @@ let b: Bar = make(20);   // 同一函数，另一份实例
 
 不支持特化是有意的：约束即合同，没有"这个类型走后门"。
 
+### 泛型特化（nightly 预览）：为特定类型开后门
+
+Rust 正在实验泛型特化（`specialization` feature）——允许为泛型 impl 提供更具体的覆盖版本。这不稳定，但理解它有助于看懂标准库的设计意图：
+
+```rust
+#![feature(specialization)]   // nightly only！
+
+trait Example { fn call(&self); }
+
+impl<T> Example for T {                    // 最泛：所有类型
+    default fn call(&self) { println!("most generic"); }
+}
+
+impl<T: std::fmt::Display> Example for T { // 较具体：Display 类型
+    default fn call(&self) { println!("generic for Display, {self}"); }
+}
+
+impl Example for str {                     // 最具体：仅 str
+    fn call(&self) { println!("specialized for str, {self}"); }
+}
+
+let v1 = vec![1i32, 2, 3];
+v1.call();        // "most generic"——Vec<i32> 不满足 Display
+1i32.call();      // "generic for Display, 1"——i32 满足 Display
+"hello".call();   // "specialized for str, hello"——精确匹配 str
+```
+
+三个 impl 构成从泛到特的层次。编译器自动选最匹配版本。`default` 关键字标记"这个方法可以被更具体的 impl 覆盖"——没有 `default` 的方法不可被特化。
+
+**为什么需要特化**——标准库 `ToString` 的性能问题：标准库为所有 `Display` 类型 blanket impl 了 `ToString`：
+
+```rust
+impl<T: fmt::Display + ?Sized> ToString for T {
+    fn to_string(&self) -> String {
+        let mut buf = String::new();
+        buf.write_fmt(format_args!("{}", self)).expect("...");
+        buf
+    }
+}
+```
+
+这对大多数类型是合理的默认。但对 `&str` 来说——它已经是字符串了，`to_string` 走 `write_fmt` 的格式化管道纯属浪费。特化允许：
+
+```rust
+impl<T: fmt::Display + ?Sized> ToString for T {
+    default fn to_string(&self) -> String { /* 通用路径 */ }
+}
+
+impl ToString for str {
+    fn to_string(&self) -> String {
+        String::from(self)    // 直接拷贝，零格式化开销
+    }
+}
+```
+
+对外接口统一（都是 `to_string`），内部实现按需优化——零开销抽象的又一面。这也解释了为什么 `&str` 转 `String` 推荐 `String::from(s)` 或 `s.into()` 而非 `s.to_string()`（历史原因：特化稳定前 `to_string` 确实慢）。
+
+**交叉 impl 问题**：特化的最大障碍不是语法，而是**一致性**。如果两个 impl 针对的类型集合有交集但互不包含，编译器无法判断哪个更"特化"：
+
+```rust
+trait Foo {}
+trait B {}
+trait C {}
+
+impl<T: B> Foo for T {}    // B 类型
+impl<T: C> Foo for T {}    // C 类型——与上面交叉！
+
+// 如果 T: B + C，该用哪个 impl？真子集规则判不出。
+// 方案：为交集再写一个 impl（最特化）
+impl<T: B + C> Foo for T {}   // 交集版本——最匹配
+```
+
+但交集规则引入了跨 crate 问题：crate A 为 `Display` 类型实现了 `RichDisplay`，crate B 为 `Widget<T>` 实现了 `RichDisplay`——上游 crate 给 `Widget<T>` 加上 `Display` 后，两个 impl 突然冲突，下游代码编译错。上游的"非破坏性扩展"变成了下游的 breaking change——这是特化至今未稳定的根本原因。
+
+**当前状态**：特化仍在 nightly 实验中，完整规则（negative impl、lifetime 特化、跨 crate 一致性）尚未定型。日常代码用不上，但读标准库源码时会遇到 `default fn`——知道它是"可被特化覆盖"的标记即可。
+
 ## 11.8 const 泛型（了解）
 
 ```rust

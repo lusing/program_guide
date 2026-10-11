@@ -17,6 +17,39 @@ enum IpAddr { V4(u8, u8, u8, u8), V6(String) }  // 带数据：每个变体类�
 
 第三种是 Rust 的精髓——**每个变体可以携带不同类型、不同数量的数据**。从类型论角度看，enum 是**和类型（sum type）**：一个 `IpAddr` 的值"要么是 V4 要么是 V6"，两种可能性**求和**；struct 是**积类型（product type）**：一个 `Rect` 同时有 width **和** height，两种成分**求积**。Rust 基于代数数据类型统一了结构体和枚举——这是函数式语言（ML/Haskell/OCaml）的血统，比 OOP 的继承层级更自由地构造类型。
 
+### 代数类型系统：用基数理解类型
+
+类型可以做代数运算——这是理解 enum 与 struct 关系的精确工具。一个类型的**基数（cardinality）**是它可能的取值个数。由此：
+
+```rust
+// 单位类型 () 的基数 = 1（只有一个值：()）
+// bool 的基数 = 2（true / false）
+// i32 的基数 = 2³²
+
+// 积类型（struct/tuple）：基数相乘
+struct R { var1: bool, var2: bool }
+// Cardinality(R) = 2 × 2 = 4
+
+// 和类型（enum）：基数相加
+enum Direction { North, East, South, West }
+// Cardinality(Direction) = 1 + 1 + 1 + 1 = 4
+
+// 混合运算
+enum Message {
+    Quit,                        // 基数 1
+    ChangeColor(i32, i32, i32),  // 基数 = i32³
+    Move { x: i32, y: i32 },     // 基数 = i32²
+}
+// Cardinality(Message) = 1 + i32³ + i32²
+
+// Option<T> 的基数 = Cardinality(T) + 1（多了一个 None）
+// 空 enum 的基数 = 0——没有任何值可以构造
+```
+
+基数相同的类型是**同构**的——它们携带的信息量完全一样。`[i32; 2]`、`(i32, i32)`、`struct P(i32, i32)`、`struct R { a: i32, b: i32 }` 是四种不同的类型（不能互换），但基数都是 `i32²`——它们只是给同样的信息起了不同的名字。这个视角解释了为什么 Rust 的类型系统如此严格又如此灵活：**类型是信息的度量，不是内存布局的偶然**。
+
+代数直觉还能推导语言的性质：加法交换律 ↔ enum 变体换序不影响表达能力；乘法交换律 ↔ struct 字段换序不影响；`()` 是乘法单位元（加进 struct 不改变基数）；空 enum 是加法单位元（加进 enum 不改变基数）。
+
 带数据的变体本质上是一个**构造函数**：
 
 ```rust
@@ -32,6 +65,25 @@ enum Result<T, E> { Ok(T), Err(E) } // 成功 / 失败 二选一，各自携带�
 ```
 
 Rust 没有 null——`Option<T>` 用类型系统强迫你处理"可能没有值"的情况，把 Tony Hoare 称之为"十亿美元错误"的空指针问题在编译期消灭。
+
+### Option 的零开销证明
+
+`Option<T>` 不只是类型安全——它对指针类型的包装是**零开销**的。实测：
+
+```rust
+use std::mem::size_of;
+
+assert_eq!(size_of::<isize>(), 8);
+assert_eq!(size_of::<Option<isize>>(), 16);        // 普通整数：需要额外空间存 discriminant
+assert_eq!(size_of::<&isize>(), 8);
+assert_eq!(size_of::<Box<isize>>(), 8);
+assert_eq!(size_of::<Option<&isize>>(), 8);         // 可空引用：和裸引用一样大！
+assert_eq!(size_of::<Option<Box<isize>>>(), 8);     // 可空 Box：也一样大！
+assert_eq!(size_of::<*const isize>(), 8);
+assert_eq!(size_of::<Option<*const isize>>(), 16);  // 裸指针本身可为 null，无法优化
+```
+
+原理：`&T` 和 `Box<T>` 从语义上**不可能为 0**（Rust 不允许空引用/空 Box），编译器用 `NonZero<T>` 包装这个承诺。于是 `Option<&T>` 的内存表示就是：0 = None，非 0 = Some（指向 T）。机器码层面和 C 的指针**完全一样**——判别位藏在指针的"不可能值"里，不花一分钱。这就是为什么 `HashSet<T>` 能定义为 `HashMap<T, ()>`（值类型是零大小的 `()`），以及为什么 `Option<Box<T>>` 不比 `Box<T>` 大——**零开销抽象**在类型系统的最底层就成立。
 
 ## 8.2 match：穷尽性是生命线
 

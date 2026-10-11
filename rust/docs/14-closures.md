@@ -69,6 +69,58 @@ pub trait Fn<Args>: FnMut<Args> {
 
 这套设计叫**非装箱闭包（Unboxed Closure）**：早期 Rust 把捕获变量装箱到堆上，LLVM 难以内联优化；改成"结构体字段 + trait 调用"后，单态化让一切发生在编译期，零运行期开销——这是 Rust 零成本抽象哲学的又一次体现。
 
+### 编译器到底生成了什么
+
+闭包的脱糖可以手动模拟——这解释了为什么 FnOnce 只能调一次、为什么 move 闭包可以多次调用。以两个闭包为例：
+
+```rust
+// 闭包 1：消耗捕获变量
+let v: Vec<i32> = vec![];
+let c = || drop(v);    // drop 按值收参 → v 被 move 捕获
+c();
+// c();                // ← 编译错：use of moved value
+
+// 闭包 2：只读捕获（move 版）
+let v2 = vec![1, 2, 3];
+let c2 = move || v2.len();   // move 按值捕获，但调用时只读
+c2(); c2();                   // ✔ 可以多次调用
+```
+
+编译器对闭包 1 的展开近似于：
+
+```rust
+struct ClosureEnv { v: Vec<i32> }   // 捕获变量是字段，不是引用
+
+impl FnOnce<()> for ClosureEnv {
+    type Output = ();
+    extern "rust-call" fn call_once(self, _: ()) {   // self 按值传入
+        drop(self.v);                                 // v 的所有权随 self 一起被消耗
+    }
+}
+// 注意：无法为 ClosureEnv 实现 FnMut——call_mut 只给 &mut self，
+// 但函数体需要 move self.v 出去，&mut 权限不够。编译器因此只实现 FnOnce。
+
+let c = ClosureEnv { v };
+c.call_once();    // c 被 move 进 call_once——此后 c 不可用
+// c.call_once(); // ← 编译错：c 已 move
+```
+
+闭包 2 的展开：
+
+```rust
+struct ClosureEnv2 { v2: Vec<i32> }   // move 捕获，字段是拥有的 Vec
+
+impl Fn<()> for ClosureEnv2 {          // 注意：实现了 Fn，不是 FnOnce！
+    extern "rust-call" fn call(&self, _: ()) -> usize {
+        self.v2.len()                   // 只读 → &self 足够
+    }
+}
+// move 只影响"捕获方式"（按值 vs 借用），不影响"调用方式"（Fn/FnMut/FnOnce）。
+// 决定调用方式的是闭包体怎么用 self：只读 → Fn，改字段 → FnMut，消耗字段 → FnOnce。
+```
+
+关键洞察：**move 关键字和 Fn/FnMut/FnOnce 是正交的两个维度**。move 管"捕获时拿所有权还是拿引用"；Fn 家族管"调用时要什么权限"。`move || v.len()` 按值捕获但只读调用——两个维度自由组合。
+
 函数项/函数指针实现了 Fn——普通函数能传给一切收闭包的参数。
 
 ## 14.4 闭包作参数

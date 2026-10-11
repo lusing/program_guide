@@ -165,7 +165,98 @@ TRB 引用了 Stroustrup（C++ 之父）对零开销原则的定义，这也是 
 
 一个具体的优化案例（TRB 的音频解码器示例）：对 12 个系数做 `zip + map + sum` 的迭代器管道，编译器**完全展开循环**（12 次迭代写成 12 段直线代码，消除循环控制开销），把所有系数留在寄存器里，并消去全部边界检查——产出的汇编与手写汇编几乎一致。你写高层抽象的迭代器管道，编译器给你底层的直线代码——**高表达力和高性能不冲突**，这是 Rust 的核心承诺之一。
 
-## 15.8 坑位清单
+## 15.8 Vec 源码解剖：unsafe 如何服务安全抽象
+
+迭代器不是魔法——它是标准库用 unsafe 原语精心构造的安全 API。解剖 `Vec` 的三个核心操作，看 unsafe 的正确使用姿势。
+
+### push：一次 move = 按位拷贝 + 抑制旧值析构
+
+```rust
+// Vec::push 的简化实现（标准库源码骨架）
+pub fn push(&mut self, value: T) {
+    if self.len == self.buf.capacity() {
+        self.grow();    // 容量不够先扩容（见下）
+    }
+    unsafe {
+        let end = self.as_mut_ptr().add(self.len);
+        std::ptr::write(end, value);    // 按位拷贝 value 到 end，不调用拷贝构造
+        self.len += 1;
+    }
+}
+```
+
+`ptr::write(dst, src)` 把 `src` 按位搬到 `dst`，**不调用 `src` 的析构函数**——Rust 没有 C++ 的拷贝构造/移动构造，move 就是按位复制 + 旧标脏。`ptr::write` 恰好完成这个语义：值到了新位置，旧位置被视为未初始化（不会 double drop）。
+
+### grow：扩容 = realloc + 按位搬运
+
+```rust
+// RawVec::grow 的简化逻辑
+fn grow(&mut self) {
+    let new_cap = if self.cap == 0 { 4 } else { self.cap * 2 };
+    // 首次分配 4 个元素（或 1 个大元素），之后每次翻倍
+    let new_ptr = unsafe {
+        self.alloc.realloc(self.ptr, old_layout, new_layout)
+        // realloc：旧内存数据按位拷贝到新内存，旧内存释放
+    };
+    self.ptr = new_ptr;
+    self.cap = new_cap;
+}
+```
+
+容量从 0 → 4 → 8 → 16 …… 倍增策略摊销了每次 push 的拷贝成本——均摊 O(1)。`realloc` 是 allocator 的 unsafe 原语：它假定旧指针有效、旧布局正确——这些不变量由 `RawVec` 的结构维持。
+
+### set_len：一行赋值为何是 unsafe
+
+```rust
+pub unsafe fn set_len(&mut self, new_len: usize) {
+    self.len = new_len;    // 内部只是一个 usize 赋值
+}
+```
+
+一个 `usize` 赋值为什么标记 unsafe？因为 Vec 的所有其它 unsafe 操作都依赖 `self.len` 准确反映已初始化元素的个数。如果外部代码用 `set_len` 把 len 调大，随后 `Vec` 会尝试 drop 未初始化的内存——UB。**判断一个函数是否该是 unsafe，不看它内部做了什么，看调用方可能用它造成什么后果**。这是 unsafe API 设计的核心原则。
+
+### drain：泄漏安全的设计
+
+`drain(range)` 移除一个范围内的元素并返回迭代器。关键问题：如果调用方 `mem::forget` 了这个迭代器（合法的安全操作），被移除的元素会怎样？
+
+```rust
+// Vec::drain 的简化实现
+pub fn drain<R>(&mut self, range: R) -> Drain<'_, T> {
+    let start = ...; let end = ...;
+    unsafe {
+        self.set_len(start);    // ← 先把 len 缩到 start！
+        Drain { iter: /* 指向 start..end */, vec: self, tail_len: len - end }
+    }
+}
+// Drain 的 Drop：把 end 之后的元素移到 start，更新 len
+```
+
+`set_len(start)` 在返回迭代器**之前**就把 Vec 的 len 缩到安全值。即使 `Drain` 被 forget（析构函数不执行），最坏结果也只是"Vec 少了几个元素"——**绝不会出现"Vec 认为未初始化内存是合法元素"的 UB**。底线是：**即使析构泄漏导致逻辑错误，也不能导致内存不安全**。
+
+### truncate：panic safety 的微观体现
+
+`truncate(new_len)` 丢弃尾部元素。如果元素的 `drop` 实现 panic 了怎么办？
+
+```rust
+// Vec::truncate 的简化实现
+pub fn truncate(&mut self, len: usize) {
+    unsafe {
+        while len < self.len {
+            self.len -= 1;                              // ← 先减 len
+            let last = self.len;
+            std::ptr::drop_in_place(self.get_unchecked_mut(last));
+            // 再 drop：即使这里 panic，len 已经减过了
+            // 不会 double drop 同一个元素
+        }
+    }
+}
+```
+
+先减 len 再 drop——如果 drop 中 panic，unwind 会跳过剩余元素的析构，但 len 已经准确反映了"还剩多少活着的元素"。下次访问 Vec 时不会碰到已 drop 的值。**panic safety 不是"不 panic"，是"panic 之后数据结构仍然合法"**。
+
+这些模式（`ptr::write` 搬运、`set_len` 维护不变量、先缩 len 再 drop）是写 unsafe 容器的标准套路——19 章的 `split_at_mut` 是入门，这里是进阶。
+
+## 15.9 坑位清单
 
 1. **忘 collect，一切静默**：惰性 + `#[must_use]` 警告（`unused` 警告会提示）——但零警告纪律下这是编译期就抓到的；调试期记得"管道不通电"。
 2. **filter 的闭包收 `&T`**：`|x| x % 2 == 0` 对 `&i32` 编译错——写 `|x| *x % 2 == 0` 或先 `.copied()`。clippy 有时建议再加一层解引用，实测最稳的是 copied 前置。

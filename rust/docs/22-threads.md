@@ -57,6 +57,8 @@ println!("{scores:?}");
 
 scope 保证所有子线程在闭包返回前 join 完——借用检查器放行。**新代码优先 scope，数据要长期后台跑才 spawn + Arc**。
 
+这个 API 的设计有一个深刻的历史教训（04 章详述）：早期 Rust 有 `thread::scoped` 函数，它返回一个 guard，guard 的 `Drop` 中 join 子线程。问题是 `mem::forget(guard)` 可以阻止 Drop 执行——子线程脱离控制，父函数返回后子线程访问已回收的栈内存——安全代码构造出内存不安全。`scoped` 因此被移除。现代的 `thread::scope` 把 join 逻辑放在**函数体内**而非 guard 的析构中——不依赖析构函数一定执行，从根上消除了泄漏路径。
+
 ## 22.3 mpsc：通道（消息传递）
 
 并发编程有两条哲学路线：**共享内存**（加锁保护）和**消息传递**（通过通信来共享内存，而非共享内存来通信）。消息传递的数学基础是 CSP（Communicating Sequential Processes，通信顺序进程）——Erlang 的 Actor 模型和 Go 的 Channel 都是这一路线的实现。Rust 标准库选了 CSP：线程是进程，Channel 是通道，**不关注谁发谁收，只关注消息本身**。
@@ -140,6 +142,88 @@ hits.load(Ordering::Relaxed);
 
 **RwLock 的写者饥饿**：std 的 `RwLock` 在 Linux 上由 pthread 读写锁实现，**不保证公平**——读者源源不断到来时，写者可能永远排不上队（读者优先策略）。读多写少且写不紧迫的场景没问题；写延迟敏感的场景（缓存刷新、配置热更新）要么换 `parking_lot::RwLock`（公平队列），要么用 `Mutex` 实测对比——Mutex 在竞争低时反而更快（单次原子操作 vs 读写锁的状态机）。
 
+### Barrier：多线程同步起跑线
+
+`Barrier::new(n)` 让 n 个线程在某个点集合——全部到达后才一起放行：
+
+```rust
+use std::sync::{Arc, Barrier};
+use std::thread;
+
+let barrier = Arc::new(Barrier::new(3));
+let mut handles = vec![];
+for i in 0..3 {
+    let b = Arc::clone(&barrier);
+    handles.push(thread::spawn(move || {
+        println!("线程{i} 准备完毕");
+        b.wait();                    // 等所有线程都到这里
+        println!("线程{i} 开始工作");  // 这行一定在全部"准备完毕"之后打印
+    }));
+}
+for h in handles { h.join().unwrap(); }
+```
+
+输出永远是 3 行"准备完毕"在前、3 行"开始工作"在后——`wait()` 就是同步起跑线。删掉 `b.wait()`，两行输出就会交错。适用：并行计算中"所有线程加载完数据再同时开始"、分阶段算法中"阶段间同步"。
+
+### Condvar：等待一个条件
+
+`Condvar` 让线程阻塞等待某个条件变为真——必须与 `Mutex` 配对使用（条件本身需要锁保护）：
+
+```rust
+use std::sync::{Arc, Condvar, Mutex};
+use std::thread;
+use std::time::Duration;
+
+let pair = Arc::new((Mutex::new(false), Condvar::new()));
+let pair2 = Arc::clone(&pair);
+
+thread::spawn(move || {
+    thread::sleep(Duration::from_millis(100));   // 模拟工作
+    let (lock, cvar) = &*pair2;
+    let mut started = lock.lock().unwrap();
+    *started = true;                             // 条件变为真
+    cvar.notify_one();                           // 通知等待者
+});
+
+let (lock, cvar) = &*pair;
+let mut started = lock.lock().unwrap();
+while !*started {                                // 必须用 while 不是 if（防止虚假唤醒）
+    started = cvar.wait(started).unwrap();       // 释放锁 + 阻塞，被通知后重新拿锁
+}
+println!("条件满足，继续执行");
+```
+
+经典模式：**`Mutex<bool>` 存条件 + `while !cond { cvar.wait(guard) }` 等待**。`wait` 会原子地释放锁并阻塞——醒来时重新拿锁，所以条件检查在锁保护下。用 `while` 而非 `if` 是防御虚假唤醒（spurious wakeup）的标准做法。注意 `Condvar` 与 `Mutex` 必须一一配对，混用会导致运行期 panic。
+
+### 线程局部存储：每个线程一份
+
+`thread_local!` 声明的变量在每个线程有独立副本——跨线程读写无需同步：
+
+```rust
+use std::cell::RefCell;
+use std::thread;
+
+thread_local! {
+    static FOO: RefCell<u32> = RefCell::new(1);
+}
+
+FOO.with(|f| {
+    println!("主线程初始: {}", *f.borrow());   // 1
+    *f.borrow_mut() = 2;
+});
+
+thread::spawn(|| {
+    FOO.with(|f| {
+        println!("子线程初始: {}", *f.borrow());   // 还是 1——独立副本！
+        *f.borrow_mut() = 3;
+    });
+}).join().unwrap();
+
+FOO.with(|f| println!("主线程最终: {}", *f.borrow()));   // 2——不受子线程影响
+```
+
+输出：`主线程初始: 1`、`子线程初始: 1`、`主线程最终: 2`。子线程修改自己的副本到 3，主线程的副本不受影响。访问必须用 `.with(|val| ...)` 闭包——因为线程局部存储的地址在线程内才有效。适用：线程池里每个 worker 的临时缓冲、随机数生成器、格式化器的复用缓存。
+
 ## 22.6 Send 与 Sync：自动判定的通行证
 
 Rust 看待线程安全的哲学：**多线程共享内存并非问题所在，问题在于错误地共享数据**。Send 和 Sync 是给类型贴的标签——编译器按标签决定哪些类型可以跨线程移动/共享，从而在编译期发现线程不安全。
@@ -155,6 +239,46 @@ assert_sync::<Mutex<i32>>();
 ```
 
 `thread::spawn` 的签名要求闭包 `F: Send + 'static`——闭包的捕获变量和返回值都必须是 Send。`'static` 是因为线程可能活得比当前函数久，借用局部变量就是悬垂。编译器按字段自动推导（含泛型），**unsafe 手动实现是最终手段**（19 章）。这就是"编译期消灭数据竞争"的执行机构：Rc/RefCell 想跨线程，类型系统先拦住，Arc/Mutex 是指定的替换品——**18 章选型表的多线程列由此而来**。
+
+### Send 和 Sync 的精确语义
+
+两个 trait 都是 **auto trait**（编译器自动推导，不需要手写 impl）：
+
+```rust
+// 标准库中的定义——注意 unsafe impl
+unsafe impl<T: ?Sized> !Send for *const T {}    // 裸指针不是 Send
+unsafe impl<T: ?Sized> !Send for *mut T {}
+unsafe impl<'a, T: Sync + ?Sized> Send for &'a T {}   // &T 是 Send 当且仅当 T 是 Sync
+unsafe impl<'a, T: Send + ?Sized> Send for &'a mut T {} // &mut T 是 Send 当且仅当 T 是 Send
+```
+
+`!Send` 是"否定实现"——显式声明某类型**不**满足某 auto trait。手动实现（或否定）Send/Sync 必须是 `unsafe`——你在向编译器担保"我比自动推导更懂这个类型的线程安全性"。FFI 封装裸指针的类型是典型场景：裸指针本身 `!Send`，但你的封装如果做了适当的同步，可以 `unsafe impl Send for MyWrapper`。
+
+**哪些类型是 Send？** 不包含非 Send 字段的类型。`i32`、`String`（拥有的堆数据随值搬家）、`Vec<T: Send>` 都是 Send。`Rc<T>` 不是——计数器非原子，两个线程同时 clone/drop 会数据竞争。`RefCell<T>` 不是——borrow 计数非原子。
+
+**哪些类型是 Sync？** `&T` 可以安全跨线程共享的类型。`i32` 是 Sync（只读共享安全）。`Mutex<T>` 是 Sync 即使 `T` 不是——锁保证了内部可变性安全。`Cell<T>`/`RefCell<T>` 不是 Sync——`&Cell` 可以调 `set` 修改内部值，多线程同时 set 就竞争。
+
+**Mutex 的"构造器"角色**：`Mutex<T>` 把非 Sync 的 T 包成 Sync——这是"构造器类型"（wrapper type）的典范。同理 `Arc<T>` 把非 Send 的 Rc 变成 Send（原子计数）。**包一层，改变线程安全属性**——这是类型系统层面的装饰器模式。
+
+### 全局变量与 Sync 的交汇
+
+`static` 全局变量要求类型实现 `Sync`——这是编译器的额外检查，堵住了"通过全局变量绕过 Send 约束"的漏洞：
+
+```rust
+use std::cell::Cell;
+use std::thread;
+
+// static G: Cell<i32> = Cell::new(1);
+// ← 编译错：`Cell<i32>` cannot be shared between threads safely
+//    即使闭包不捕获任何局部变量（满足 Send），
+//    两个线程同时通过全局变量修改同一个 Cell → 数据竞争
+
+// 正解：用满足 Sync 的原子类型
+static N: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
+// 多线程通过全局 AtomicU32 计数完全安全（19 章 static mut 的对比）
+```
+
+闭包不捕获局部变量就满足 `Send`——但全局变量是"共享 + 可变"的另一种路径。`static` 的 `Sync` 要求是第二道防线：**线程安全不能靠"碰巧没捕获"来保证**。
 
 ### Sync 的等价定义
 

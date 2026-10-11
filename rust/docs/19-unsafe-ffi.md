@@ -89,6 +89,51 @@ fn mystrlen(s: &CStr) -> usize {
 
 安全封装的设计要点：**把 C 的"调用约定"翻译成 Rust 的"类型签名"**。C 函数要求"指针非空、NUL 结尾、调用方不释放返回值"——这些口头约定在 Rust 侧变成 `&CStr`（引用天然非空、CStr 保证 NUL 结尾、返回 usize 无所有权问题）。调用方想传错类型，编译期就拦住；unsafe 只在封装内部出现一次，审计面最小化。
 
+### unsafe 的判定原则：看后果，不看实现
+
+`Vec::set_len` 是理解 unsafe 边界的最佳案例——它的实现只有一行：
+
+```rust
+pub unsafe fn set_len(&mut self, new_len: usize) {
+    self.len = new_len;    // 只是一个 usize 赋值，哪里 unsafe？
+}
+```
+
+一个 `usize` 赋值本身完全安全。但 `Vec` 的所有其它 unsafe 操作（`get_unchecked`、`from_raw_parts`、`drop_in_place`）都依赖 `self.len` 准确反映已初始化元素的个数。如果 `set_len` 不是 unsafe，外部代码可以：
+
+```rust
+let mut v = vec![1, 2, 3];
+unsafe { v.set_len(1000); }    // Vec 现在认为有 1000 个元素
+// v[500] 读取未初始化内存 → UB
+// drop 时尝试 drop 997 个不存在的元素 → UB
+```
+
+**判断一个函数是否该是 unsafe，不看它内部做了什么，看调用方可能用它造成什么后果。**这是 unsafe API 设计的核心原则——unsafe 标记的是"调用方必须维护的契约"，不是"实现里的危险操作"。
+
+同理，安全代码对 unsafe 内部有**隐含义务**：如果你在一个库里用了 unsafe，所有安全代码都必须维持 unsafe 所依赖的不变量。修改安全代码（比如把 `if idx < len` 改成 `if idx <= len`）可能静默破坏 unsafe 内部假设——这是 unsafe 库最难维护的原因。
+
+### 泄漏安全：析构函数不是保险
+
+`std::mem::forget`（以及 `ManuallyDrop`）可以阻止析构函数执行——这是**安全操作**，因为内存泄漏不是内存安全问题。但写 unsafe 代码时，这意味着**不能假设析构函数一定会执行**。
+
+标准库 `Vec::drain` 的处理是教科书：
+
+```rust
+// Vec::drain 在返回迭代器之前，先把 len 缩到安全值
+pub fn drain<R>(&mut self, range: R) -> Drain<'_, T> {
+    let start = ...; let end = ...;
+    unsafe {
+        self.set_len(start);    // ← 关键：先把 Vec 缩短到"绝对安全"的长度
+        Drain { /* 持有 start..end 的范围 */, vec: self, tail_len: len - end }
+    }
+}
+// Drain 的 Drop：把 end 之后的元素移到 start，更新 len
+```
+
+如果调用方 `mem::forget(drain)`——`Drain` 的析构不执行，`end` 之后的元素不会被移回来。但因为 `set_len(start)` 已经执行了，最坏结果只是"Vec 少了一些元素"——**绝不会出现"Vec 认为未初始化内存是合法元素"的 UB**。
+
+**底线：即使析构泄漏导致逻辑错误，也不能导致内存不安全。**写 unsafe 容器时，每一步都问："如果调用方 forget 了 guard / panic 了 / 提前 return 了，数据结构还合法吗？"
+
 ## 19.5 FFI：与 C 互操作
 
 **调 C（外部函数导入）**——直接链系统 CRT 里的 `abs`：

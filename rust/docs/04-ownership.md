@@ -172,6 +172,35 @@ impl Drop for Tracer {
 
 `Drop` 是语言项 trait（`#[lang = "drop"]`），编译器在变量离开作用域时自动插入调用。Vec/String/File 全都实现了它——你从未手动关过文件，这就是原因。
 
+### 析构函数不保证执行：泄漏是安全操作
+
+`std::mem::forget` 接受一个值并**阻止其析构**——不释放堆内存、不调用 Drop。关键是：**forget 不是 unsafe 函数**。Rust 设计者明确承认：内存泄漏不是内存安全问题（进程退出时 OS 回收所有内存），所以制造泄漏不需要 unsafe 标记。
+
+```rust
+let s = String::from("这块堆内存不会被释放");
+std::mem::forget(s);    // 安全调用——s 的堆缓冲永远泄漏
+```
+
+`mem::forget` 的存在引出了一个深层设计约束：**析构函数不保证执行**。除了 forget，还有多种方式阻止析构：Rc 循环引用（18 章）、channel 首尾相连形成消息环、全局 static 变量的析构（泄漏）。Rust 标准库因此有一条铁律：**unsafe 代码的正确性不能依赖析构函数一定被调用**。
+
+这个约束直接导致了 `thread::scoped` 的移除——Rust 并发史上最著名的设计失败案例。早期标准库有 `thread::scoped`，它保证子线程在父函数返回前结束，因此允许子线程借用父线程的栈上变量（不需要 `Arc`）：
+
+```rust
+// 以下代码在旧版 Rust 中曾编译通过，后来 scoped 被移除
+let mut vec = vec![0, 1, 2, 3];
+{
+    let guards: Vec<_> = vec.iter_mut().map(|x| {
+        thread::scoped(move || *x += 1)   // 借用 vec 的元素！
+    }).collect();
+    // guards 析构时 join 所有子线程
+}
+println!("{vec:?}");   // [1, 2, 3, 4]
+```
+
+实现原理：`scoped` 返回一个 `JoinGuard`，其 `Drop` 中阻塞等待子线程结束。问题：如果用户 `mem::forget(guard)`——子线程不会被 join，父函数返回后栈帧销毁，子线程继续访问已回收的栈内存——**安全代码构造出内存不安全**。这违反了 Rust 的核心承诺，因此 `scoped` 被紧急移除。
+
+现代替代（22 章的 `thread::scope`）用不同的 API 风格解决了同一问题：不是返回一个"析构时 join"的 guard，而是**把 join 逻辑放在闭包内部**——scope 函数自己保证所有子线程在返回前 join，不依赖任何析构函数。教训：**如果一段逻辑必须执行，把它放在函数体内，不要放在 Drop 里交给调用方**。
+
 ### 栈帧的一生：函数调用在内存里发生了什么
 
 每次函数调用，操作系统做三件事：

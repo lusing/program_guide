@@ -219,6 +219,31 @@ trait Foo {
 
 `Iterator` 就不是对象安全的（`collect<B>` 是泛型方法）——所以 15 章的"自定义迭代器装箱"需要技巧。日常判断：报错 "the trait `X` is not object safe" 时，按上面四条对号入座。
 
+**为什么 `Clone` 不是 object safe 的**——这是理解"返回 Self"限制的最佳案例：
+
+```rust
+// 假设（错误地）能构造 &dyn Clone
+let p: &dyn Clone = if from_input() { &obj1 } else { &obj2 };
+let o = p.clone();    // o 应该是什么类型？
+```
+
+`clone()` 的签名是 `fn clone(&self) -> Self`——返回类型是 `Self`，即**实现该 trait 的具体类型**。但通过 `&dyn Clone` 调用时，编译器只知道"它实现了 Clone"，不知道具体类型是 `String` 还是 `Vec<i32>`——`o` 的类型无法确定，编译器无法为它分配栈空间。这不是实现细节的限制，是**类型系统的根本矛盾**：dyn 的全部意义就是抹掉具体类型，而 `Self` 的全部意义就是引用具体类型。
+
+同理，`fn new() -> Self`（无参构造）也不能进 vtable。但 `Clone` 的 `clone_from(&mut self, source: &Self)` 呢？参数含 `Self` 同样不行——调用方传入的 `&Self` 必须与动态类型一致，编译时无法验证。
+
+**修复模式**：给对象不安全的方法加 `where Self: Sized`，把它从 vtable 中剔除，trait 的其余部分恢复对象安全：
+
+```rust
+trait Shape {
+    fn area(&self) -> f64;                          // object safe
+    fn new() -> Self where Self: Sized;             // 从 vtable 剔除
+    fn clone_shape(&self) -> Box<dyn Shape> where Self: Sized;  // 同理
+}
+let s: Box<dyn Shape> = Box::new(Circle::new());    // ✔ 合法
+```
+
+一个 trait 里只要有一个方法不满足 object safe 且没有 `where Self: Sized` 隔离，**整个 trait** 都不能做 dyn——不是"不安全的方法不能调"，是"trait 对象根本构造不出来"。这是 all-or-nothing 规则。
+
 ## 12.8 标签 trait（marker trait）：编译器的隐形印章
 
 std::marker 里有一组**空 trait**——没有方法，纯作类型系统的标记：

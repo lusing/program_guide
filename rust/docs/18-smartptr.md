@@ -81,6 +81,40 @@ println!("{}", Rc::strong_count(&a));   // 2
 
 适用：树/图中多个节点引用同一子结构、多处缓存同一份只读数据。限制：**只读共享**（要改配 RefCell）、**禁止跨线程**（计数非原子——跨线程用 Arc，22 章）。
 
+### Rc 的内部构造：Cell 的最佳教材
+
+剥开 Rc 的源码，能看到 Cell 存在的真正理由——**引用计数器必须在 `&self` 下被修改**：
+
+```rust
+// Rc 的内部结构（标准库源码简化）
+struct RcBox<T> {
+    strong: Cell<usize>,     // 强引用计数——Cell 包裹！
+    weak: Cell<usize>,       // 弱引用计数
+    value: T,
+}
+
+pub struct Rc<T: ?Sized> {
+    ptr: NonNull<RcBox<T>>,  // 指向堆上的 RcBox
+}
+
+// Clone 的实现——注意 self 是 &Self，不是 &mut Self
+impl<T: ?Sized> Clone for Rc<T> {
+    fn clone(&self) -> Rc<T> {
+        self.inc_strong();    // 在 &self 下修改计数器！
+        Rc { ptr: self.ptr }
+    }
+}
+
+fn inc_strong(&self) {
+    let n = self.inner().strong.get();
+    self.inner().strong.set(n + 1);   // Cell::get + Cell::set
+}
+```
+
+`clone` 的签名是 `fn clone(&self) -> Self`——只拿到共享引用。但引用计数必须 +1，这意味着**在不可变引用下修改数据**——这正是内部可变性的定义。如果不用 `Cell<usize>` 而用 `usize`，`clone` 就需要 `&mut self`，于是同一时刻只能有一个 `Rc` 可变——共享计数就无从谈起了。
+
+`Rc<RefCell<T>>` 的嵌套也是同理：`Rc` 提供"共享所有权"，`RefCell` 提供"共享下的可变访问"——两层各管一层。
+
 ## 18.4 RefCell：把借用检查挪到运行期（内部可变性）
 
 ```rust
@@ -146,6 +180,29 @@ Rust 不能百分百阻止内存泄漏——Rc 循环引用就是安全代码里
 | 打破循环 | `Weak<T>` | `Weak<T>`（Arc 版） |
 
 另两个顺路的：`Cow<T>`（写时克隆，06 章字符串场景偶用）、`Cell<T>`（Copy 类型的轻量内部可变，`get/set` 无借用检查）。
+
+### Cow：写时克隆
+
+`Cow<'a, B>`（Clone-On-Write）是一个 enum：要么借用一个 `&B`，要么拥有一个 `B::Owned`——读时零拷贝，写时才克隆：
+
+```rust
+use std::borrow::Cow;
+
+fn remove_spaces(input: &str) -> Cow<'_, str> {
+    if input.contains(' ') {
+        let owned: String = input.chars().filter(|c| *c != ' ').collect();
+        Cow::Owned(owned)          // 需要修改 → 分配新内存
+    } else {
+        Cow::Borrowed(input)       // 不需要修改 → 零拷贝，直接借用
+    }
+}
+
+let r1 = remove_spaces("no_spaces");       // Cow::Borrowed——零开销
+let r2 = remove_spaces("has spaces");      // Cow::Owned——按需分配
+println!("{r1} {r2}");                      // 用法完全一致
+```
+
+返回值用 `&str` 不行（需要新分配时生命周期不够），用 `String` 又强迫调用方接受堆分配（不需要修改时也是）。`Cow` 解了这个两难：**调用方按需付费，不需要时零开销**。它实现了 `Deref<Target = B>`，所以 `cow.len()`、`cow.chars()` 等方法直接可用——调用方甚至不需要知道背后是借用还是拥有。
 
 ## 18.8 Cell：Copy 类型的"无借用检查"内部可变
 

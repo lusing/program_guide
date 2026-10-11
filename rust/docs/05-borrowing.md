@@ -35,6 +35,66 @@ compute(&o, &mut o);         // input 和 output 指向同一块内存！
 
 最后一行调用后 `o == 1`——第二个 if 读到的"input"已被第一个 if 改写。C 里这种 aliasing 是优化杀手（编译器不敢把 input 缓存进寄存器）；Rust 直接让这类代码**编译不过**，于是编译器可以放心缓存、重排——**借用规则同时也是性能规则**。这是 5.8 节"noalias 优化"的理论根。
 
+### 没有这两条规则，世界会怎样
+
+规则是抽象的，事故是具体的。以下三个真实事故场景（C++ 里每天都在发生）展示了"mutation + alias"规则防住的每一类灾难：
+
+**事故一：枚举变体被中途替换**。设想你持有一个指向枚举内部 String 的引用，然后把整个枚举改写成 i64——引用现在指向一块被重新解释的内存：
+
+```rust
+enum StringOrInt { Str(String), Int(i64) }
+
+let mut x = StringOrInt::Str("Hello world".to_string());
+if let StringOrInt::Str(insides) = &x {
+    // x = StringOrInt::Int(1);          // ← 编译错：cannot assign to `x` because it is borrowed
+    // println!("{insides}");            //    若放行：String 引用指向 i64 的内存——类型系统被击穿
+}
+```
+
+C 的 `union` 加指针强转就是这个场景——Rust 在编译期按住。规则不是洁癖，是**防止用一种类型的指针去读另一种类型的数据**。
+
+**事故二：迭代器失效**。C++ 的经典崩溃：遍历 vector 时 clear 它，迭代器指向已释放内存（UB）：
+
+```cpp
+// C++：编译通过，运行崩溃
+for (auto it = v.begin(); it != v.end(); ++it) {
+    if (*it % 2 == 0) { v.clear(); }   // 迭代器立刻变野指针
+}
+```
+
+Rust 里同样的代码编译不过：
+
+```rust
+let mut arr = vec!["ABC", "DEF", "GHI"];
+for item in &arr {
+    // arr.clear();                     // ← 编译错：for 循环持有 &arr，clear 需要 &mut arr
+    let _ = item;
+}
+```
+
+`for` 循环展开后持有一个指向容器的借用，循环体内任何对容器的修改都会与这个借用冲突。Java 用运行时异常（`ConcurrentModificationException`）兜底——Rust 在编译期就不给机会。**编译期的读写锁**（多读 OK、单写独占）是同一个思想在单线程的投影。
+
+**事故三：悬空指针**。C++ 里指向 vector 元素的指针，在 push 引发扩容后变成悬空指针：
+
+```cpp
+// C++：编译通过，运行输出垃圾值
+std::vector<int> v(100, 5);
+int* p = &v[0];
+for (int i = 0; i < 100; i++) { v.push_back(10); }  // 扩容 → 旧内存释放
+std::cout << *p << std::endl;                         // 悬空：输出未定义
+```
+
+Rust 里同样的模式被铁律 1 拦截：
+
+```rust
+let mut arr: Vec<i32> = vec![1, 2, 3, 4, 5];
+let p: &i32 = &arr[0];
+// for i in 1..100 { arr.push(i); }    // ← 编译错：cannot borrow `arr` as mutable
+let _ = p;                             //    因为也被借为 immutable
+```
+
+三个事故的共同根源：**"读"的引用和"写"的路径同时存在**。铁律 1 不区分场景、不做 case-by-case 判断——一条规则统一堵死所有变体。
+
 ## 5.2 共享引用 &：只读
 
 ```rust
@@ -81,7 +141,32 @@ println!("{v:?}");
 
 反过来，把 `println!("{first}")` 挪到 `v.push` 之后，同一段代码立即编译错。**报错与修复往往只差一行位置调整**——这是 NLL 时代最常见的日常。
 
-**NLL 的原理**（《Rust 编程之道》5.8 节）：早期借用检查基于 AST/HIR，生命周期的长短由变量声明的**词法顺序**决定——于是出现过"`let z; let y = ...; z = foo(&x, &y)` 报错、把两句换个位置就好"这种反直觉行为（变量声明晚却活得久的悖论）。NLL 把借用检查下沉到 **MIR**（01 章 1.4 的编译流水线）：MIR 是控制流图，检查器沿图追踪每个引用从创建到**最后使用点**的活跃区间——所以现在的规则是"最后使用即到期"，与声明顺序无关。这也是报错能精确指向"某次使用"的原因。
+**NLL 之前的世界：Lexical Lifetime**。2018 版之前的借用检查基于 AST，引用的存活期从声明点一直延伸到**当前代码块结束**——与"最后使用"无关。这导致大量"逻辑上正确但编译不过"的误伤。经典案例：
+
+```rust
+fn get_default(map: &mut HashMap<String, String>, key: String) {
+    match map.get_mut(&key) {
+        Some(value) => println!("{value}"),
+        None => {
+            map.insert(key, String::new());  // NLL 之前：编译错
+        }                                    // get_mut 的借用"应该"在 None 分支已死
+    }
+}
+```
+
+在 Lexical Lifetime 下，`get_mut` 返回的 `Option<&mut V>` 让整个 `match` 块都被视为借用期——即使 `None` 分支里根本不存在这个引用。当时的"绕法"是先 `contains_key` 再 `get_mut`（两次哈希查找），或者用标准库的 `entry` API：
+
+```rust
+fn get_default_modern(map: &mut HashMap<String, String>, key: String) {
+    map.entry(key).or_insert_with(String::new);   // 一次查找，语义精确
+}
+```
+
+`entry` API 之所以存在，部分原因就是 Lexical Lifetime 太严格——它把"查不到就插入"这个常见需求做成了原子操作。NLL 落地后，`match get_mut` 的直写版本也能编译了，但 `entry` 仍然是更好的 API（一次哈希、语义清晰）。**NLL 不是让烂代码变合法，而是让正确的代码不再需要绕路**。
+
+**NLL 的原理**（《Rust 编程之道》5.8 节）：早期借用检查基于 AST/HIR，生命周期的长短由变量声明的**词法顺序**决定——于是出现过"`let z; let y = ...; z = foo(&x, &y)` 报错、把两句换个位置就好"这种反直觉行为（变量声明晚却活得久的悖论）。NLL 把借用检查下沉到 **MIR**（01 章 1.4 的编译流水线）：MIR 是控制流图（CFG），节点是语句、边是分支跳转。检查器沿图追踪每个引用在哪些节点活跃、在哪些节点已死——循环、分支、早退路径全部精确覆盖。所以现在的规则是"最后使用即到期"，与声明顺序无关。这也是报错能精确指向"某次使用"的原因。
+
+可以用 `rustc --emit=mir test.rs` 查看 MIR 文本——控制流图的可视化对理解 NLL 很有帮助。
 
 ## 5.5 悬垂引用：铁律 2 的拦截
 
