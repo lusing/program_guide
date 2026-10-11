@@ -168,5 +168,12 @@ let package = Package(
             name: "Ch26InheritanceCastingTests",
             dependencies: ["Ch26InheritanceCasting"],
             path: "examples/26_inheritance_casting/Tests/26_inheritance_castingTests"),
+        .executableTarget(
+            name: "Ch27InitializersMethods",
+            path: "examples/27_initializers_methods/Sources/27_initializers_methods"),
+        .testTarget(
+            name: "Ch27InitializersMethodsTests",
+            dependencies: ["Ch27InitializersMethods"],
+            path: "examples/27_initializers_methods/Tests/27_initializers_methodsTests"),
     ]
 )

@@ -104,6 +104,17 @@ case let m as Movie:                       // switch 模式匹配里转型 + 绑
 var things: [Any] = []                     // 类型擦除口袋（逃生舱，优先枚举/泛型）
 ```
 
+### 构造器高级主题（27 章）
+
+```swift
+init?(n: Int, d: Int) { guard d != 0 else { return nil } }  // 可失败构造器
+required init(frame: F) { }               // 子类必须实现（继承或重写）
+class func describe() -> String { }       // 子类可 override
+static func unit() -> String { }          // 子类不可 override（= final class func）
+defer { cleanup() }                        // 函数/作用域退出前必执行（LIFO）
+let table: [String: Int] = { ... }()      // 闭包构造属性：末尾 () 立即执行
+```
+
 ### 并发（Swift 6）
 
 ```swift
@@ -209,6 +220,18 @@ swiftc -static-stdlib a.swift -o a.exe   # 静态链接独立分发
     编译错误；存储 → 计算可以。
 29. **移位也查溢出**——`UInt8(1) << 8` trap，不是 0；要宽结果先升
     `UInt16(UInt8(1)) << 8`。
+
+### 构造器高级主题（27 章实测）
+
+30. **`init!` 返回值仍需显式解包**——Swift 6 严格模式下隐式解包不再自动展开，
+    `init!` 构造失败访问即崩；新代码用 `init?` + `if let` 更安全。
+31. **`static func` 不能 `override`**——只有 `class func` 可以；写错了报
+    "declarations in extensions cannot override yet" 或 "no overriding
+    declaration found"——检查是否该用 `class func`。
+32. **`defer` 只保护它之后的退出路径**——`guard else { return }` 在 `defer`
+    之前返回，清理不会执行；`defer` 紧跟资源获取的下一行。
+33. **闭包构造属性漏 `()` 类型变闭包**——`let x = { ... }` 是 `() -> T`，
+    `let x = { ... }()` 才是 `T`；编译器报类型不匹配时先检查末尾括号。
 
 ## 4. 相关资源
 
