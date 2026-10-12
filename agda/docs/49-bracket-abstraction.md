@@ -765,4 +765,4 @@ translation」，这也是本章为什么要费劲造 `tc`：**纯语法定理�
 
 ---
 
-上一章：[48 · 负类型与 strict positivity：Agda 的第二道守门检查](48-negative-datatypes.md) ｜ 下一章：暂无（全书完；45 是主线收官章，43–44 为附录，46–49 是元理论、语言防线与 λ 消除的最后一块） ｜ 返回：[README](../README.md)
+上一章：[48 · 负类型与 strict positivity：Agda 的第二道守门检查](48-negative-datatypes.md) ｜ 下一章：[50 · Huffman 编解码：把一整个工具写进类型检查器](50-huffman.md)（全书完；45 是主线收官章，43–44 为附录，46–49 是元理论、语言防线与 λ 消除，50 把零件装进一个完整程序） ｜ 返回：[README](../README.md)
