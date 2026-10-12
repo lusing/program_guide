@@ -53,3 +53,8 @@ session FA48 in "FA48" = "HOL-Analysis" +
   options [document = false]
   theories
     T48_LaxMilgram
+
+session FA54 in "FA54" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T54_FredholmDet

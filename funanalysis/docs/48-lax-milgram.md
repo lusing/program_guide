@@ -332,10 +332,14 @@ Laplacian = 0）与紧支向量 z 的离散内积 ⟨∇t, ∇z⟩ = 0（分部�
 
 ## 48.8 Lean 机器化
 
-文件 `examples/lean/Funanalysis/Ch48LaxMilgram.lean`。mathlib v4.33.1
-没有 Lax-Milgram（也无 BanachLimit、迹类、半群——第二卷多处如此，
-通道分工原则：Lean 证核心不等式与有限维影子，无穷维主体由数值通道
-承载并如实标注）。机器化三步，第一步是引擎不等式 (21)：
+文件 `examples/lean/Funanalysis/Ch48LaxMilgram.lean`。**勘误（第二卷
+实测）**：最初断言"mathlib 无 Lax-Milgram"是错的——本树的
+`Mathlib.Analysis.InnerProductSpace.LaxMilgram.lean` 提供完整的
+`IsCoercive` 理论：`bounded_below`（引擎不等式 (21) 的官方版）、
+`continuousLinearEquivOfBilin`（**定理全文**：强制双线性形式的表示
+算子是连续线性等价）与表示性质 ⟪equiv v, w⟫ = B v w。本章 Lean
+文件三层：手写引擎不等式 (21)（与官方版互证）、强制⟹单射/满射、
+官方定理实例化锚点：
 
 ```lean
 /-- 引擎不等式（Lax (21)）：强制性 ⟹ 下有界 -/
@@ -350,11 +354,13 @@ theorem coercive_bound (A : H →L[ℝ] H) {b : ℝ} (hb : 0 < b)
 ```
 
 实内积下 ⟪Ax,x⟫ ≤ |⟪Ax,x⟫| ≤ ‖Ax‖·‖x‖（`le_abs_self` 接
-`abs_inner_le_norm`），两边除以正数 ‖x‖——`mul_le_mul_iff_of_pos_right`
-是 iff，要用 `.mp` 取方向。推论一 `coercive_injective`：`A.map_sub`
-把单射化为核平凡后反证（b>0 与范数为正矛盾）。推论二在
-`EuclideanSpace ℝ (Fin 2)` 上以 `LinearMap.injective_iff_surjective`
-收尾——"强制 ⟹ 表示方程 B(x,y)=l(x) 对一切右端可解"的 ℝ² 全文。
+`norm_inner_le_norm`——本树名，旧名 `abs_inner_le_norm` 已废），
+两边除以正数 ‖x‖——`mul_le_mul_iff_of_pos_right` 是 iff，要用
+`.mp` 取方向。推论一 `coercive_injective`：`A.map_sub` 把单射化
+为核平凡后反证。推论二在 `EuclideanSpace ℝ (Fin 2)` 上以
+`LinearMap.injective_iff_surjective` 收尾。官方锚点
+`hB.continuousLinearEquivOfBilin_apply` 给表示性质
+⟪equiv v, w⟫_ℝ = B v w——Lax-Milgram 定理的现成机器化。
 
 ## 48.9 Isabelle 机器化
 
