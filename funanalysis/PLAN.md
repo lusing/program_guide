@@ -258,3 +258,15 @@ funanalysis/
   mathlib 锚点：Seminorm/SeminormFamily/gauge/gaugeSeminormFamily
   （R1）、MeasureTheory.Measure.Haar（Weil-Cartan 路线与 Rudin
   Kakutani 路线对照）、IsHaarMeasure。
+- 2026-10-12 R3-R6（66-69）完成：Rudin 增补篇全部收官。
+  R3：66 Banach 刚性（Hellinger-Toeplitz 闭图像弱形式、
+  Grothendieck Lᵖ∩L∞、Lyapunov 向量测度值域 Krein-Milman
+  端点=特征函数、Bishop 推广 Stone-Weierstrass 零化子端点
+  支撑=反对称集、Pick-Nevanlinna NP 矩阵、disk algebra 不可余
+  Lebesgue 常数指纹）；R4：67 𝒮 反演+δ̂=1+谱符号表+基本解
+  动物园+Malgrange-Ehrenpreis 环面估计+椭圆正则性谱机制+
+  非椭圆反例；R5：68 Tauber 三角+Λ/log n! 恒等式机器精度+
+  ψ(x)/x 表（10⁶ 筛法）+Ingham 核三角不等式下界+ζ(1+it)
+  无零点数值面+格/非格 μ̂=1 精确格点判据；R6：69 三书总对照
+  CHEATSheet（领地表+五定理速查+三卷风格+14 条实测坑账）。
+  终态：三卷 69 章，全量对账 187/187 PASS。

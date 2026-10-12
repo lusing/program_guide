@@ -1,7 +1,8 @@
 # 泛函分析：编程与自动证明教程
 
-以 John B. Conway《A Course in Functional Analysis》（第二版，GTM 96）与
-Peter D. Lax《Functional Analysis》（Wiley 2002）两卷为纲的
+以 John B. Conway《A Course in Functional Analysis》（第二版，GTM 96）、
+Peter D. Lax《Functional Analysis》（Wiley 2002）与 Walter Rudin
+《泛函分析》（第二版，刘培德译）三卷为纲的
 中文泛函分析教程。全书 11 章 + 附录全覆盖（48 章，已收官），每个定理
 有三种化身：**机器证明**（Lean 4 + mathlib4 主证、Isabelle/HOL 对拍）、
 **精确离散模型**（Prolog 有限维影子）、**数值实验**（Julia + Python/scipy）。
@@ -77,7 +78,18 @@ Peter D. Lax《Functional Analysis》（Wiley 2002）两卷为纲的
 62 [Beurling 定理与 Hardy 空间](docs/62-beurling-hardy.md) ·
 63 [Lax 篇收官 CHEATSheet](docs/63-lax-cheatsheet.md)
 
-全书 64 章（Conway 卷 01-47 + Lax 增补卷 48-63）于 2026-10-12 全部收官。
+
+### 第三卷 · Rudin 增补篇（64-69）
+
+64 [拓扑向量空间与 Fréchet 空间](docs/64-tvs-frechet.md) ·
+65 [不动点定理群与 Haar 测度](docs/65-fixed-points-haar.md) ·
+66 [Banach 刚性与不可余子空间](docs/66-banach-rigidity.md) ·
+67 [广义函数的 Fourier 变换与基本解](docs/67-distributions-fundamental.md) ·
+68 [Tauber 理论与素数定理](docs/68-tauber-pnt.md) ·
+69 [Rudin 篇收官：三书总对照](docs/69-rudin-cheatsheet.md)
+
+全书 69 章（Conway 卷 01-47 + Lax 增补卷 48-63 + Rudin 增补卷 64-69）
+于 2026-10-12 全部收官。
 
 ## 通道与验证
 
