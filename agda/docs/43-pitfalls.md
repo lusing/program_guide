@@ -414,4 +414,4 @@
    谓词——这是「什么时候该从 Bool 版升级到归纳谓词」的判据。→ [35](35-combinators.md)
 
 ---
-上一章：[42 · Reasoning 链与 Tactic 求解器](42-stdlib-automation.md) ｜ 下一章：[44 · macOS 校验与 2.3→3.0 迁移](44-macos-checklist.md) ｜ 返回：[README](../README.md)
+上一章：[42 · stdlib 自动证明：Reasoning 链与 Tactic 求解器](42-stdlib-automation.md) ｜ 下一章：[44 · macOS 校验与 2.3→3.0 迁移](44-macos-checklist.md) ｜ 返回：[README](../README.md)

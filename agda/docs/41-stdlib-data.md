@@ -138,4 +138,4 @@ Data/Tree/AVL/Sets.agda
 6. **`filter` 要 `Decidable P`**（`Dec p → ...`，不是 `Bool`）：想按谓词过滤，
    先给出判定（38 章）。
 ---
-上一章：[40 · stdlib 函数论与类型运算](40-stdlib-functions.md) ｜ 下一章：[42 · Reasoning 链与 Tactic 求解器](42-stdlib-automation.md) ｜ 返回：[README](../README.md)
+上一章：[40 · stdlib 函数论与类型运算](40-stdlib-functions.md) ｜ 下一章：[42 · stdlib 自动证明：Reasoning 链与 Tactic 求解器](42-stdlib-automation.md) ｜ 返回：[README](../README.md)

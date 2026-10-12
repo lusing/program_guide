@@ -401,4 +401,4 @@ Agda 只能试图在 List 层面 unify `sort (toList v) ≟ toList v` 来凑索�
    模式匹配（zero 行 `⊥-elim (h z≤n)` 是固定招式）；`¬ ∘ ≤` 与 `≤` 反
    向之间没有 definition equality。
 ---
-上一章：[33 · 实战：类型良好表达式解释器](33-typedast.md) ｜ 下一章：[35 · 操作语义与终止性证明](35-combinators.md) ｜ 返回：[README](../README.md)
+上一章：[33 · 实战：类型良好表达式解释器](33-typedast.md) ｜ 下一章：[35 · SK 组合子：操作语义与终止性证明](35-combinators.md) ｜ 返回：[README](../README.md)

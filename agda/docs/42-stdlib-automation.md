@@ -142,4 +142,4 @@ TC ⊤`，不用再传 ring 名；`solve : Term → Term → TC ⊤` 传两侧�
    配 `Relation.Binary.Reasoning` 下的 `Preorder`，别串到别的 bundle（用错
    关系参数立刻 `Type mismatch`）。
 ---
-上一章：[41 · List / Vec / Fin / Tree.AVL](41-stdlib-data.md) ｜ 下一章：[43 · 坑清单与最佳实践](43-pitfalls.md) ｜ 返回：[README](../README.md)
+上一章：[41 · stdlib 数据结构系统：List / Vec / Fin / Tree.AVL](41-stdlib-data.md) ｜ 下一章：[43 · 坑清单与最佳实践](43-pitfalls.md) ｜ 返回：[README](../README.md)

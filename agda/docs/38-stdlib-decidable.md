@@ -138,4 +138,4 @@ isYes (false because _) = false
    是错的，正确是 `Decidable (_≡_ {A = ℕ})`（关系层面点开两点）。
 6. **组合子旧名 `_×-dec_` 等已弃用**，统一 `_×?_`/`_⊎?_`/`_→?_`。
 ---
-上一章：[37 · Structures / Bundles / 求解器](37-stdlib-algebra.md) ｜ 下一章：[39 · Definitions / Structures / Bundles / Construct](39-stdlib-relations.md) ｜ 返回：[README](../README.md)
+上一章：[37 · stdlib 代数结构：Structures / Bundles / 求解器](37-stdlib-algebra.md) ｜ 下一章：[39 · stdlib 关系产业：Definitions / Structures / Bundles / Construct](39-stdlib-relations.md) ｜ 返回：[README](../README.md)
