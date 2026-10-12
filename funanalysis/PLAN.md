@@ -209,3 +209,22 @@ funanalysis/
   （绝对残差对任何 λ 都 ~1/√m）；Python ** 右结合
   （w**(-1.5)**2 = w**2.25）；理论等值点上的严格不等号
   断言须留余量（0.75 倍）。
+- 2026-10-12 L 轮（Lax 增补篇 48-63 章启动）：以 Peter D. Lax
+  《Functional Analysis》(Wiley 2002, 598 页扫描版) 为第二底本，
+  对现有 Conway 48 章做增补而非重写。差距分析结论：Lax 独有而
+  Conway 不覆盖的标志性内容共 16 章新篇——
+  L1（48-51）：Lax-Milgram+变分法/Dirichlet、Banach 极限+有限可加
+  不变测度、Müntz/Runge 对偶逼近、弱收敛应用（Toeplitz 求和法/
+  Fourier 发散/Galerkin/Herglotz-Riesz）；
+  L2（52-56）：Riesz-Thorin 插值+Hilbert 变换+Hausdorff-Young、
+  Wiener Tauberian、Fredholm 行列式+迹公式、Toeplitz/Hankel 算子
+  绕数指标、迹类 Weyl/Lidskii/Mercer；
+  L3（57-58）：Herglotz 表示/Cauchy 变换谱路线（深化 42 章）、
+  Friedrichs 扩张+Rellich 扰动；
+  L4（59-62）：Hille-Yosida 半群+Lax 等价定理+Trotter、von Neumann
+  平均遍历+Koopman、Weyl 交换关系+一维散射、Beurling 定理+Hardy
+  空间内外因子分解；
+  L5（63）：Lax 篇 CHEATSheet + 两书路线总对照。
+  取材：rapidocr（cudnn G:/cudnn/9.24/bin/12.9/x64 须入 PATH）
+  OCR 扫描页，书页 N ↔ PDF 页 N+18。文档纪律同 Conway 篇：
+  ≥200 行、文字多于代码、定理自包含。

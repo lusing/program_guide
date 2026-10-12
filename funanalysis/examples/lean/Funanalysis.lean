@@ -44,3 +44,5 @@ import Funanalysis.Ch38TopologiesBH
 import Funanalysis.Ch39VonNeumann
 import Funanalysis.Ch40InvariantSubspaces
 import Funanalysis.Ch41Unbounded
+import Funanalysis.Ch48LaxMilgram
+import Funanalysis.Ch49BanachLimits

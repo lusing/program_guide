@@ -47,3 +47,9 @@ session FA09P in "FA09p" = "HOL-Analysis" +
   options [document = false]
   theories
     probe_axis
+
+
+session FA48 in "FA48" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T48_LaxMilgram
