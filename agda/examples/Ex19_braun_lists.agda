@@ -11,6 +11,10 @@
 -- （insert / remove-min / Fin 索引查找）、Σ 类型实战。
 ------------------------------------------------------------------------
 
+-- 无 postulate、无unsafe 反射：显式标 --safe，好让 50 章在 --safe 下复用本模块
+-- （Agda 的 safe 是按模块声明的，不标就会被 50 章的 CoInfectiveImport 拦下）。
+{-# OPTIONS --safe #-}
+
 module Ex19_braun_lists where
 
 open import Data.Nat

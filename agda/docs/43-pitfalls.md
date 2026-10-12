@@ -384,6 +384,11 @@
 | 六 · 综合实战 | [33](33-typedast.md) §33.6 ◆ ｜ [34](34-sorting.md) §34.8 ◆ ｜ [35](35-combinators.md) §35.6 ◆ |
 | 七 · 标准库手册 | [36](36-stdlib-guide.md) §36.8 ｜ [37](37-stdlib-algebra.md) §37.5 ◆ ｜ [38](38-stdlib-decidable.md) §38.5 ◆ ｜ [39](39-stdlib-relations.md) §39.6 ◆ ｜ [40](40-stdlib-functions.md) §40.5 ◆ ｜ [41](41-stdlib-data.md) §41.5 ◆ ｜ [42](42-stdlib-automation.md) §42.5 ◆ |
 | 八 · 参考与附录 | [44](44-macos-checklist.md) §44.5 |
+| 九 · 收官 | [45](45-memoize.md) §45.11 ◆ |
+| 十 · 元理论 | [46](46-ppil-kripke.md) §46.13 ◆ ｜ [47](47-nbe.md) §47.9 ◆ |
+| 十一 · 语言防线 | [48](48-negative-datatypes.md) §48.10 ◆ |
+| 十二 · λ 的消除 | [49](49-bracket-abstraction.md) §49.11 ◆ |
+| 十三 · 综合案例 | [50](50-huffman.md) §50.12 ◆ |
 
 下面九条是上表带 ◆ 的各章里**跨章复用率最高**的坑，值得单独背：
 
