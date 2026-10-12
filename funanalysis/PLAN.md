@@ -237,3 +237,24 @@ funanalysis/
   Halmos 证明全文 + M 提取（Gram=m·[0|I] 达 1e-13）+ 内外因子
   分解 Poisson 重构。L5：63 章 CHEATSheet（两书 38 章对照总表 +
   十个大定理速查 + 18 条实测坑总账）、53/55 补注、README 双卷化。
+- 2026-10-12 R 轮（Rudin 增补篇 64-69 章启动）：第三底本
+  Walter Rudin《泛函分析》（第二版，刘培德译，机械工业出版社，
+  华章数学译丛 3，329 页扫描版）。书页 N ↔ PDF 页 N+3。差距分析：
+  Rudin 独有内容六章——R1（64）拓扑向量空间：度量化/半范数/
+  Minkowski 泛函/Kolmogorov 可赋范性/Fréchet 空间例（H(Ω)、
+  C^∞、L^p 0<p<1 无连续泛函）；R2（65）不动点定理群（Markov-
+  Kakutani/不变 Hahn-Banach/交换群有限可加不变测度/Schauder-
+  Tychonoff）+ 紧群 Haar 测度存在唯一（Kakutani 路线，与 49 章
+  Lax 有限可加测度会师）；R3（66）Banach 刚性：Hellinger-Toeplitz/
+  Grothendieck Lᵖ∩L∞ 有限维/向量测度值域（Lyapunov，Krein-
+  Milman 端点=特征函数）/Bishop 推广 Stone-Weierstrass/Pick-
+  Nevanlinna（Krein-Milman 于概率测度）/不可余子空间+Poisson 核
+  之和；R4（67）广义函数 Fourier 变换与基本解：反演定理/Malgrange-
+  Ehrenpreis 基本解存在（环面积分估计+Hahn-Banach）/椭圆正则性
+  （Sobolev H^s 谱刻画）；R5（68）Tauber 理论与素数定理：Wiener
+  定理（L¹ 平移稠密=Fourier 无零点）/慢振荡/Ingham 核心 K̂≠0/
+  **素数定理全证明**（Chebyshev ψ/von Mangoldt/Stirling/挤压）
+  /更新方程；R6（69）三书总对照收官。
+  mathlib 锚点：Seminorm/SeminormFamily/gauge/gaugeSeminormFamily
+  （R1）、MeasureTheory.Measure.Haar（Weil-Cartan 路线与 Rudin
+  Kakutani 路线对照）、IsHaarMeasure。
