@@ -1,6 +1,7 @@
 # 泛函分析：编程与自动证明教程
 
-以 John B. Conway《A Course in Functional Analysis》（第二版，GTM 96）为纲的
+以 John B. Conway《A Course in Functional Analysis》（第二版，GTM 96）与
+Peter D. Lax《Functional Analysis》（Wiley 2002）两卷为纲的
 中文泛函分析教程。全书 11 章 + 附录全覆盖（48 章，已收官），每个定理
 有三种化身：**机器证明**（Lean 4 + mathlib4 主证、Isabelle/HOL 对拍）、
 **精确离散模型**（Prolog 有限维影子）、**数值实验**（Julia + Python/scipy）。
@@ -57,7 +58,26 @@
 - [46 本质谱与谱的精细分析](docs/46-essential-spectrum.md)
 - [47 CHEATSheet：全定理地图与通道速查](docs/47-cheatsheet.md)
 
-全书 48 章（00 导引 + 01-46 正文 + 47 CHEATSheet）已收官。
+### 第二卷 · Lax 增补篇（48-63）
+
+48 [Lax-Milgram 与变分法](docs/48-lax-milgram.md) ·
+49 [Banach 极限与不变平均](docs/49-banach-limits.md) ·
+50 [Müntz 与 Runge](docs/50-muntz-runge.md) ·
+51 [弱收敛的应用](docs/51-weak-applications.md) ·
+52 [Riesz-Thorin 插值与 Hilbert 变换](docs/52-riesz-thorin.md) ·
+53 [Wiener Tauberian 定理](docs/53-wiener-tauberian.md) ·
+54 [Fredholm 行列式](docs/54-fredholm-determinant.md) ·
+55 [Toeplitz 与 Hankel 算子](docs/55-toeplitz-hankel.md) ·
+56 [迹类算子与 Lidskii 定理](docs/56-trace-class.md) ·
+57 [Herglotz 表示与自伴谱](docs/57-herglotz-spectral.md) ·
+58 [Friedrichs 扩张与 Rellich 扰动](docs/58-friedrichs-rellich.md) ·
+59 [半群与 Hille-Yosida 定理](docs/59-semigroups.md) ·
+60 [平均遍历定理与 Koopman 群](docs/60-mean-ergodic.md) ·
+61 [Weyl 交换关系与散射理论](docs/61-weyl-scattering.md) ·
+62 [Beurling 定理与 Hardy 空间](docs/62-beurling-hardy.md) ·
+63 [Lax 篇收官 CHEATSheet](docs/63-lax-cheatsheet.md)
+
+全书 64 章（Conway 卷 01-47 + Lax 增补卷 48-63）于 2026-10-12 全部收官。
 
 ## 通道与验证
 

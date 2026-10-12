@@ -228,3 +228,12 @@ funanalysis/
   取材：rapidocr（cudnn G:/cudnn/9.24/bin/12.9/x64 须入 PATH）
   OCR 扫描页，书页 N ↔ PDF 页 N+18。文档纪律同 Conway 篇：
   ≥200 行、文字多于代码、定理自包含。
+- 2026-10-12 L4（59-62）+ L5（63）完成：Lax 增补篇全部收官。
+  L4：Hille-Yosida（Yosida 逼近全文）+ Lax 等价定理（望远镜
+  恒等式）+ Trotter/Strang 分裂一阶二阶；Stone 双向 + von Neumann
+  平均遍历全证明 + mathlib MeanErgodic 锚点 + 非传递流反例；
+  Weyl 形式/vN 唯一性 + Weyl 本质谱/谱凝结 + 格点精确散射
+  （幺正 1e-10 + Pöschl-Teller 无反射势全透射）；Beurling 定理
+  Halmos 证明全文 + M 提取（Gram=m·[0|I] 达 1e-13）+ 内外因子
+  分解 Poisson 重构。L5：63 章 CHEATSheet（两书 38 章对照总表 +
+  十个大定理速查 + 18 条实测坑总账）、53/55 补注、README 双卷化。
