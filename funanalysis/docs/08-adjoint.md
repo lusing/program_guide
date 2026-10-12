@@ -126,8 +126,8 @@ ker–range 对偶（Conway 2.19）的 mathlib 形态是
 ## 8.6 机器化：Isabelle 的伴随构造
 
 `examples/isabelle/FA08/T08_Adjoint.thy` 在 real^2 上从头构造：
-`adj2 A y = χ k. Σⱼ (A (axis j 1)) $ k * y $ j`（按标准基转置），
-然后完整证明**定义性质**：
+`adj2 A y = χ k. Σⱼ (A (axis k 1)) $ j * y $ j`（第 k 分量 =
+⟨A eₖ, y⟩，按标准基转置），然后完整证明**定义性质**：
 
 ```isabelle
 theorem adj2_inner:
@@ -135,10 +135,16 @@ theorem adj2_inner:
   shows "inner (A x) y = inner x (adj2 A y)"
 ```
 
-证明走基展开（Alin.sum / Alin.scale 的线性性）+ sum_swap 重排
-双和——Conway 2.2 存在性证明的有限维直译。唯一性用
-`all_zero_iff`（与所有向量正交者为零）：若 B₁、B₂ 都满足定义性质，
-则 B₁y − B₂y 与一切内积为零。
+证明走基展开（Alin.sum / Alin.scale 的线性性），两侧都化为
+Σᵢ xᵢ·⟨A eᵢ, y⟩ 后直接合拢——Conway 2.2 存在性证明的有限维直译。
+唯一性用 `all_zero_iff`（与所有向量正交者为零）：若 B₁、B₂ 都满足
+定义性质，则 B₁y − B₂y 与一切内积为零。
+
+**机器抓错实录**：初版定义把下标写成 `(A (axis j 1)) $ k`
+（第 k 分量 = Σⱼ Mₖⱼyⱼ，恰是 **A y 自己**），于是定理变成
+⟨Ax, y⟩ = ⟨x, Ay⟩——对非对称 A **为假**。Isabelle 连续两轮
+"Failed to finish proof / 栈溢出"，逼出定义级 bug。这与第 03 章
+proj_line_unique 陈述漏洞同属"形式化先于证明暴露数学错误"。
 
 ## 8.7 数值实验
 

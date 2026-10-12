@@ -43,3 +43,4 @@ import Funanalysis.Ch37SpectralTheorem
 import Funanalysis.Ch38TopologiesBH
 import Funanalysis.Ch39VonNeumann
 import Funanalysis.Ch40InvariantSubspaces
+import Funanalysis.Ch41Unbounded

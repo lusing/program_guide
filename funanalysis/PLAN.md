@@ -192,3 +192,20 @@ funanalysis/
   numpy np.exp 是逐元素、矩阵指数必须 scipy.linalg.expm；
   满秩矩阵的 null_space 为空数组，断言空转——需造亏秩矩阵
   才是真检验。
+- 2026-10-11 B10（41-47 章）完成：全书收官。docs×7
+  （41-46 教程 + 47 CHEATSheet 全定理地图/通道速查/坑总账）、
+  Lean 1/1（Ch41：LinearPMap.adjoint + IsSymmetric）、
+  Julia/Python 各5文件全绿（Cayley 酉性 + -d²/dx² 三自伴扩张
+  三套谱、Stone 群律/酉性/强连续生成元界、无界对角算子域内
+  域外判别 + √N 演算、Parseval/谱方法求导/Heisenberg Gaussian
+  饱和 0.5/双峰 4.0/Hamburger 正反例、行列式引理/奇异秩一
+  ker=coker=1/截断移位 vs 无穷维指标 -1/I+tK 谱锁 1、
+  Weyl 列 1/√m vs 圆盘内 0.866 下界/谱坍缩 ≥20/30）。
+  实测新坑：Julia $var 后紧跟全角标点被并入标识符（须 $(var)）；
+  Julia fftfreq 第二参数是采样率而非间距（与 NumPy 相反），
+  且网格须排除右端点否则误差 ~1/n；左移的点谱是开圆盘
+  （几何向量为真特征向量），Weyl 列演示必须用右移（等距，
+  ‖(S-λ)x‖ ≥ (1-|λ|)‖x‖）；Weyl 误差必须用相对误差
+  （绝对残差对任何 λ 都 ~1/√m）；Python ** 右结合
+  （w**(-1.5)**2 = w**2.25）；理论等值点上的严格不等号
+  断言须留余量（0.75 倍）。

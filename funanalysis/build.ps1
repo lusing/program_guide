@@ -183,6 +183,15 @@ if ($wantLangs -contains 'julia') {
 }
 if ($wantLangs -contains 'python') {
     $env:PYTHONIOENCODING = 'utf-8'
+    # 解释器自愈：scoop current 可能指向无 numpy 的新 Python（实测 3.15），
+    # 优先用带 numpy/scipy 的解释器
+    if (-not (& python -I -c "import numpy, scipy" *> $null)) {
+        $pyFallback = 'G:\scoop\apps\python313\current'
+        if (Test-Path (Join-Path $pyFallback 'python.exe')) {
+            Write-Host "[python] 默认 python 缺 numpy/scipy，改用 $pyFallback"
+            $env:PATH = "$pyFallback;$env:PATH"
+        }
+    }
     Invoke-ScriptUnit $pyUnits 'python' { param($p) & python -I $p }
 }
 if ($wantLangs -contains 'prolog') {

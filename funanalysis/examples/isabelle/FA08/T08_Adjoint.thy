@@ -12,7 +12,7 @@ text \<open>
 section \<open>伴随的构造：按标准基转置\<close>
 
 definition adj2 :: "(real^2 \<Rightarrow> real^2) \<Rightarrow> real^2 \<Rightarrow> real^2" where
-  "adj2 A y = (\<chi> k. \<Sum>j\<in>UNIV. (A (axis j 1)) $ k * y $ j)"
+  "adj2 A y = (\<chi> k. \<Sum>j\<in>UNIV. (A (axis k 1)) $ j * y $ j)"
 
 section \<open>定义性质（Conway 2.3）\<close>
 
@@ -41,8 +41,6 @@ proof -
     unfolding Ax by (simp add: inner_sum_left inner_scaleR_left)
   also have "\<dots> = (\<Sum>i\<in>UNIV. x $ i * (\<Sum>k\<in>UNIV. (A (axis i 1)) $ k * y $ k))"
     by (simp add: inner_vec_def)
-  also have "\<dots> = (\<Sum>k\<in>UNIV. (\<Sum>j\<in>UNIV. (A (axis j 1)) $ k * y $ j) * x $ k)"
-    by (simp add: sum.swap sum_distrib_left algebra_simps)
   also have "\<dots> = inner x (adj2 A y)"
     unfolding adj2_def inner_vec_def by simp
   finally show ?thesis .

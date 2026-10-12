@@ -1,7 +1,7 @@
 # 泛函分析：编程与自动证明教程
 
 以 John B. Conway《A Course in Functional Analysis》（第二版，GTM 96）为纲的
-中文泛函分析教程。全书 11 章 + 附录全覆盖（48 章 + CHEATSheet），每个定理
+中文泛函分析教程。全书 11 章 + 附录全覆盖（48 章，已收官），每个定理
 有三种化身：**机器证明**（Lean 4 + mathlib4 主证、Isabelle/HOL 对拍）、
 **精确离散模型**（Prolog 有限维影子）、**数值实验**（Julia + Python/scipy）。
 
@@ -35,8 +35,29 @@
 - [24 Stone-Čech 紧化](docs/24-stone-cech.md)
 - [25 Krein-Milman 与 Stone-Weierstrass](docs/25-krein-milman.md)
 - [26 不变子空间与不动点](docs/26-fixed-points.md)
+- [27 算子的伴随与 Banach-Stone 定理](docs/27-adjoint-banach.md)
+- [28 紧算子、不变子空间与弱紧算子](docs/28-compact-banach.md)
+- [29 Banach 代数：理想与商](docs/29-banach-algebra.md)
+- [30 谱与预解式](docs/30-spectrum.md)
+- [31 Riesz 泛函演算](docs/31-riesz-calculus.md)
+- [32 紧算子的谱理论](docs/32-compact-spectrum.md)
+- [33 交换 Banach 代数与 Gelfand 理论](docs/33-gelfand.md)
+- [34 C* 代数与 Gelfand-Naimark 定理](docs/34-cstar-algebra.md)
+- [35 正元、理想、表示与 GNS 构造](docs/35-positive-elements.md)
+- [36 谱测度与交换 C* 代数的表示](docs/36-spectral-measures.md)
+- [37 谱定理](docs/37-spectral-theorem.md)
+- [38 星循环算子、应用与 B(H) 上的拓扑](docs/38-topologies-bh.md)
+- [39 von Neumann 代数与泛函演算终章](docs/39-von-neumann.md)
+- [40 不变子空间与重数理论](docs/40-invariant-subspaces.md)
+- [41 无界算子基础](docs/41-unbounded-basics.md)
+- [42 对称、自伴与 Cayley 变换](docs/42-symmetric-selfadjoint.md)
+- [43 无界谱定理与 Stone 定理](docs/43-stone-unbounded.md)
+- [44 Fourier 变换、微分算子与矩问题](docs/44-fourier-moments.md)
+- [45 Fredholm 算子与指标](docs/45-fredholm.md)
+- [46 本质谱与谱的精细分析](docs/46-essential-spectrum.md)
+- [47 CHEATSheet：全定理地图与通道速查](docs/47-cheatsheet.md)
 
-（更多章节随批次推进，完整清单见 [PLAN.md](PLAN.md)。）
+全书 48 章（00 导引 + 01-46 正文 + 47 CHEATSheet）已收官。
 
 ## 通道与验证
 
