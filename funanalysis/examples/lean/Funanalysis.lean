@@ -47,3 +47,4 @@ import Funanalysis.Ch41Unbounded
 import Funanalysis.Ch48LaxMilgram
 import Funanalysis.Ch49BanachLimits
 import Funanalysis.Ch56TraceClass
+import Funanalysis.Ch60MeanErgodic
