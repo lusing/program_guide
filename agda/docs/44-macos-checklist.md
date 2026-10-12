@@ -220,4 +220,4 @@ Data/String.agda:30:open import Data.String.Properties using (_≟_; _≈?_; _�
 8. **Unicode 输出认 locale**：macOS 默认 locale 下 `≟`/`ℕ`/`≤` 可能打成问号
    或乱码，`build.sh` 的 darwin 分支 `export LC_ALL=en_US.UTF-8` 后正常。
 ---
-上一章：[43 · 坑清单与最佳实践](43-pitfalls.md) ｜ 下一章：暂无（全书完） ｜ 返回：[README](../README.md)
+上一章：[43 · 坑清单与最佳实践](43-pitfalls.md) ｜ 下一章：[45 · 记忆化即类型优化：Shape 索引的 Trie 与 Memoizes 谓词](45-memoize.md)（收官章；43–44 为附录） ｜ 返回：[README](../README.md)

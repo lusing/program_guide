@@ -1086,4 +1086,4 @@ fin→int→fin -[1+ n ]  = refl
     `build.sh` 第 13–15 行已经替你补上 `LC_ALL=en_US.UTF-8`，手工调
     `agda` 复现报错时别忘了（44 章迁移清单同款）。
 ---
-上一章：[11 · 规范化、卡住项与 copattern](11-computation-model.md) ｜ 下一章：[13 · 命题等式](13-equality.md) ｜ 返回：[README](../README.md)
+上一章：[11 · Agda 的计算模型：规范化、卡住项与 copattern](11-computation-model.md) ｜ 下一章：[13 · 命题等式](13-equality.md) ｜ 返回：[README](../README.md)

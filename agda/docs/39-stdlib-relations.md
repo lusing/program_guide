@@ -120,4 +120,4 @@ open import Relation.Binary.Reasoning.PartialOrder ≤-poset using (begin_; _≤
 5. **`Transitive`/`Antisym` 隐式绑定名 3.0 修过**：用旧字段名解构会出现
    `did you mean`，去 `CHANGELOG.md` 看 `Renaming`。
 ---
-上一章：[38 · Dec / Recomputable / 判定式](38-stdlib-decidable.md) ｜ 下一章：[40 · stdlib 函数论与类型运算](40-stdlib-functions.md) ｜ 返回：[README](../README.md)
+上一章：[38 · stdlib 判定性体系：Dec / Recomputable / 判定式](38-stdlib-decidable.md) ｜ 下一章：[40 · stdlib 函数论与类型运算](40-stdlib-functions.md) ｜ 返回：[README](../README.md)

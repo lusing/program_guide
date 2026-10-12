@@ -160,4 +160,4 @@ ring-demo = solve-∀
    网上旧例子的 import 直连这些路径会 `No such module`，一律改到
    `Algebra.Bundles`/`Algebra.Structures` 的对应名字。
 ---
-上一章：[36 · 标准库阅读指南](36-stdlib-guide.md) ｜ 下一章：[38 · Dec / Recomputable / 判定式](38-stdlib-decidable.md) ｜ 返回：[README](../README.md)
+上一章：[36 · 标准库阅读指南](36-stdlib-guide.md) ｜ 下一章：[38 · stdlib 判定性体系：Dec / Recomputable / 判定式](38-stdlib-decidable.md) ｜ 返回：[README](../README.md)

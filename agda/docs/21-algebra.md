@@ -401,4 +401,4 @@ grep -rn "record IsMonoid\b" /usr/share/agda-stdlib/src/Algebra/
    全灌成 `_≤_` 版本，与命题等式同名函数撞车。本章姿势：具名模块
    `module ≤P = Poset ≤-poset`、别名 `Eq.isEquivalence`。
 ---
-上一章：[20 · 函数世界：同构与外延](20-functions.md) ｜ 下一章：[22 · 单子折纸（monoidal origami）](22-monoid-origami.md) ｜ 返回：[README](../README.md)
+上一章：[20 · 函数世界：同构与外延](20-functions.md) ｜ 下一章：[22 · monoid 与折叠：单子折纸（monoidal origami）](22-monoid-origami.md) ｜ 返回：[README](../README.md)

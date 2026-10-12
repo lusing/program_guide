@@ -356,4 +356,4 @@ Agda 与 stdlib 是**两条版本号**，每个 stdlib 发布在自己的 README
 8. **grep 定位用 `^` 锚行首**：定义永远顶格，缩进的命中全是用例/重导出，
    混在一起看会误判"这名字在哪定义的"。
 ---
-上一章：[35 · 操作语义与终止性证明](35-combinators.md) ｜ 下一章：[37 · Structures / Bundles / 求解器](37-stdlib-algebra.md) ｜ 返回：[README](../README.md)
+上一章：[35 · SK 组合子：操作语义与终止性证明](35-combinators.md) ｜ 下一章：[37 · stdlib 代数结构：Structures / Bundles / 求解器](37-stdlib-algebra.md) ｜ 返回：[README](../README.md)

@@ -691,4 +691,4 @@ Semiring 反而是诚实的上限。
 下一章我们把「类型算数」换成「列表算真」：Braun 树与列表证明
 （19 章）。
 ---
-上一章：[22 · 单子折纸（monoidal origami）](22-monoid-origami.md) ｜ 下一章：[24 · intrinsic 与 extrinsic 证明](24-intrinsic-extrinsic.md) ｜ 返回：[README](../README.md)
+上一章：[22 · monoid 与折叠：单子折纸（monoidal origami）](22-monoid-origami.md) ｜ 下一章：[24 · intrinsic 与 extrinsic 证明：二叉查找树实战](24-intrinsic-extrinsic.md) ｜ 返回：[README](../README.md)

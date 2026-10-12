@@ -370,4 +370,4 @@ CI 只看退出码会一路绿灯，直到你**使用**这个名字才 `NotInSco
 9. **依赖参数顺序 = 统一顺序**：`at : Fin n → Vec A n → A` 里 n 被先到的
    索引钉死，向量长度不配就 `4 != 3`；stdlib 的 `lookup` 先吃向量就没这烦恼。
 ---
-上一章：[09 · 记录与 Σ 类型](09-records.md) ｜ 下一章：[11 · 规范化、卡住项与 copattern](11-computation-model.md) ｜ 返回：[README](../README.md)
+上一章：[09 · 记录与 Σ 类型](09-records.md) ｜ 下一章：[11 · Agda 的计算模型：规范化、卡住项与 copattern](11-computation-model.md) ｜ 返回：[README](../README.md)

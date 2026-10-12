@@ -120,4 +120,4 @@ funext : Extensionality _ _
 6. **`_↝[_]_` 的 kind 与 bundle 一一对应**，引用文档时别把 `bijection` 写成
    `equivalence`——那是"至少"关系，不是同值。
 ---
-上一章：[39 · Definitions / Structures / Bundles / Construct](39-stdlib-relations.md) ｜ 下一章：[41 · List / Vec / Fin / Tree.AVL](41-stdlib-data.md) ｜ 返回：[README](../README.md)
+上一章：[39 · stdlib 关系产业：Definitions / Structures / Bundles / Construct](39-stdlib-relations.md) ｜ 下一章：[41 · stdlib 数据结构系统：List / Vec / Fin / Tree.AVL](41-stdlib-data.md) ｜ 返回：[README](../README.md)

@@ -804,4 +804,4 @@ IsPreorder _~_` 在 stdlib 里要写成 `⦃ IsEquivalence _≈_ ⦄ → IsPreor
     畸形，报 `ShouldBeASort: List _A_8 should be a sort`。回溯式实例搜索
     （`--backtracking-instance-search`）是**文件级**选项，不能局部开关。
 ---
-上一章：[24 · intrinsic 与 extrinsic 证明](24-intrinsic-extrinsic.md) ｜ 下一章：[26 · Functor/Applicative/Monad](26-monads.md) ｜ 返回：[README](../README.md)
+上一章：[24 · intrinsic 与 extrinsic 证明：二叉查找树实战](24-intrinsic-extrinsic.md) ｜ 下一章：[26 · Functor/Applicative/Monad](26-monads.md) ｜ 返回：[README](../README.md)
