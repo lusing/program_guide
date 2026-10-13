@@ -87,3 +87,8 @@ session ST19 in "ST19" = "ZF-Constructible" +
   options [document = false]
   theories
     Independence
+
+session ST20 in "ST20" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Products
