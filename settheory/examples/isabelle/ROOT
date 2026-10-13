@@ -82,3 +82,8 @@ session ST18 in "ST18" = "ZF-Constructible" +
   options [document = false]
   theories
     Forcing
+
+session ST19 in "ST19" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Independence

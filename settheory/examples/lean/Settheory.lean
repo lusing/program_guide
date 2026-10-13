@@ -22,3 +22,4 @@ import Settheory.Ch15OD
 import Settheory.Ch16Generic
 import Settheory.Ch17Boolean
 import Settheory.Ch18Forcing
+import Settheory.Ch19Independence
