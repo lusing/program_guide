@@ -1,7 +1,7 @@
 # 24 · 契约式编程（Ada 2012）
 
 > 示例：[`examples/ch24_contracts.adb`](../examples/ch24_contracts.adb)
-> 运行：`./run-all.sh 17`（需 `-gnata`，脚本已内置）
+> 运行：`./run-all.sh 24`（需 `-gnata`，脚本已内置）
 
 > **本章是 Ada 2012 最具革命性的特性。**  
 > Ada 2012 把"契约式编程"（Contract-Based Programming）提升为**语言一等公民**——开发者可以在源码中直接声明前置条件、后置条件、类型不变式和循环不变式，编译器和运行时共同保证它们的成立。这是 Ada 优于绝大多数主流语言的核心能力之一，也是通往形式化验证（SPARK）的桥梁。

@@ -16,7 +16,11 @@ Windows / Linux 双平台实测通过。
 > 张丽芬《Ada 程序设计导论》三本国内 Ada 83 时代教材的专题深挖
 > （访问类型、判别类型、定点实数、低级程序设计、select 家族、
 > 子单位与可见性等现代教程常略过的"硬核"），案例全部现代化重写
-> 并在 GNAT 16.2 实测；术语对照见 [27 章附录](docs/27-appendix.md)。
+> 并在 GNAT 16.2 实测；其余 15 个基础章节于 2026-10 对照张丽芬书全书十章
+> 逐一重写为教程体（词法/类型/控制/子程序/数组/记录/包/异常/泛型/
+> 任务/文件/互操作/容器，案例含八皇后式回溯、汉诺塔、分数包、
+> 符号表实现互换、磁带重试、strlen 互操作等）。术语对照见
+> [27 章附录](docs/27-appendix.md)。
 
 ## 目录结构
 
@@ -36,34 +40,34 @@ Ada/
 |---|---|---|
 | **基础篇** | | |
 | [01 全景与工具链](docs/01-overview.md) | 诞生史、标准演进、设计哲学、应用案例、GNAT 安装与编译命令 | — |
-| [02 Hello World](docs/02-hello.md) | `with`/`use`、过程基本结构 | `ch02_hello` |
-| [03 基本数据类型与变量](docs/03-types.md) | 整型/浮点/枚举/子类型/常量 | `ch03_types` |
-| [04 控制结构](docs/04-control.md) | if / case / loop / exit when | `ch04_control` |
-| [05 子程序](docs/05-subprograms.md) | 过程与函数、参数模式、默认/命名参数 | `ch05_subprograms` |
-| [06 数组与字符串](docs/06-arrays-strings.md) | 约束/无约束数组、属性、有界字符串 | `ch06_arrays` |
-| [07 记录类型](docs/07-records.md) | 记录、默认值、变体记录、嵌套 | `ch07_records` |
+| [02 Hello World 与程序解剖](docs/02-hello.md) | `with`/`use`、词法单元、基于直接量、标识符大小写 | `ch02_hello` |
+| [03 基本数据类型与变量](docs/03-types.md) | 范围检查、枚举属性、digits/delta、子类型 vs 派生 | `ch03_types` |
+| [04 控制结构](docs/04-control.md) | 短路逻辑、rem/mod、命名循环、goto 边界、declare 块 | `ch04_control` |
+| [05 子程序](docs/05-subprograms.md) | 参数模式语义、运算符重载、汉诺塔、最频值、renames | `ch05_subprograms` |
+| [06 数组与字符串](docs/06-arrays-strings.md) | 聚集三记法、非约束形参、分片窗口、Bounded | `ch06_arrays` |
+| [07 记录类型](docs/07-records.md) | 两种聚集、缺省初值、嵌套、值语义、变体预告 | `ch07_records` |
 | **类型深入（老教材深挖）** | | |
 | [08 判别类型](docs/08-discriminants.md) | 变体记录、变长数组、判别式约束、`'Constrained` | `ch08_discriminants` |
 | [09 访问类型](docs/09-access-types.md) | `new`/`.all`、链表、二叉树、手动回收、访问子程序 | `ch09_access` |
 | **模块化** | | |
-| [10 包与模块化编程](docs/10-packages.md) | 规范（.ads）与体（.adb）分离 | `ch10_packages`（+ `ch10_math_lib`） |
-| [11 异常处理](docs/11-exceptions.md) | raise / exception / 传播与重抛 | `ch11_exceptions` |
-| [12 泛型编程](docs/12-generics.md) | 泛型过程/函数/包与实例化 | `ch12_generics` |
+| [10 包与模块化编程](docs/10-packages.md) | 私有类型/延迟常量/异常接口/符号表实现互换 | `ch10_packages`（+ `ch10_math_lib`） |
+| [11 异常处理](docs/11-exceptions.md) | 传播链、块内重试、偶发故障重试、Suppress | `ch11_exceptions` |
+| [12 泛型编程](docs/12-generics.md) | 形参类别=操作承诺、通用栈、子程序形参注入 | `ch12_generics` |
 | [13 泛型进阶](docs/13-generics-deep.md) | 类属形参全种类、默认 `is <>`、类属 FIFO 缓冲 | `ch13_generics_deep` |
-| [14 面向对象编程](docs/14-oop.md) | tagged record、派生、动态分发 | `ch14_oop` |
+| [14 面向对象编程](docs/14-oop.md) | abstract/overriding、`'Class` 类范围、异构容器 | `ch14_oop` |
 | **并发三部曲** | | |
-| [15 并发编程：Tasking](docs/15-tasking.md) | task、rendezvous、生产者-消费者 | `ch15_tasking` |
-| [16 受保护对象](docs/16-protected-objects.md) | protected、entry 守卫、有界缓冲区 | `ch16_protected` |
+| [15 并发编程：Tasking](docs/15-tasking.md) | 会合三步、任务数组、激活与终止 | `ch15_tasking` |
+| [16 受保护对象](docs/16-protected-objects.md) | 三成员策略、入口屏障、信号灯现代版 | `ch16_protected` |
 | [17 任务深入：select 家族](docs/17-select-family.md) | 选择等待/哨兵、条件/定时入口调用、terminate、入口族、信号灯 | `ch17_select` |
 | **I/O** | | |
-| [18 文件 I/O](docs/18-file-io.md) | 写/读/追加、三种文件模式 | `ch18_fileio` |
+| [18 文件 I/O](docs/18-file-io.md) | Text 三步曲、Sequential/Direct 二进制、IO 异常 | `ch18_fileio` |
 | [19 文件 I/O 全景](docs/19-file-io-full.md) | Sequential_IO / Direct_IO / Stream_IO、文件归并 | `ch19_files` |
 | **系统与嵌入式（老教材深挖）** | | |
-| [20 与 C 语言互操作](docs/20-c-interop.md) | Import/Export、Interfaces.C、libm 坑 | `ch20_c_interop` |
+| [20 与 C 语言互操作](docs/20-c-interop.md) | Import/Export、chars_ptr、nm 验证符号 | `ch20_c_interop`（+ `ch20_capi`） |
 | [21 低级程序设计](docs/21-low-level.md) | Size/Pack、记录与枚举表示、地址覆盖、存储池配额 | `ch21_lowlevel` |
 | [22 定点与十进制实数](docs/22-fixed-point.md) | delta/Small、十进制定点、数字滤波器定点实现 | `ch22_fixed` |
 | **高级篇** | | |
-| [23 标准容器库](docs/23-containers.md) | Vectors / Lists / Hashed_Maps / Sets | `ch23_containers` |
+| [23 标准容器库](docs/23-containers.md) | 游标遍历、Insert/Include、有序集合 Ceiling | `ch23_containers` |
 | [24 契约式编程（Ada 2012）](docs/24-contracts.md) | Pre/Post/Type_Invariant/Predicate/Loop_Invariant | `ch24_contracts` |
 | [25 SPARK 形式化验证](docs/25-spark.md) | SPARK 子集、证明级别、GNATprove 工具链 | `ch25_spark` |
 | [26 独立编译与可见性](docs/26-separate-compilation.md) | with/use/use type、renames、子单位、子库单元 | `ch26_separate`（+ 5 文件） |
@@ -123,6 +127,7 @@ gnatmake -gnata -o ch24_contracts examples/ch24_contracts.adb       # 需断言
   `procedure Ch02_Hello`）。`ch` 前缀是因为 **Ada 标识符不能以数字开头**。
 - 10 章的包由三个文件组成：`ch10_math_lib.ads`（规范）、`ch10_math_lib.adb`（体）、
   `ch10_packages.adb`（主程序）。
+- 20 章的导出函数在支撑包 `ch20_capi.{ads,adb}` 里（Export 只对库级单元有效）。
 - 26 章的层级结构：`ch26_separate.adb`（主程序，含体存根）+
   `ch26_separate-report.adb` / `ch26_separate-helpers.adb`（子单位，文件名 =
   父单元名 + `-` + 单元名）+ `ch26_support.ads` / `ch26_support-stats.{ads,adb}`
