@@ -2,3 +2,11 @@ session ST00 in "ST00" = "ZF-Constructible" +
   options [document = false]
   theories
     Intro
+session ST01 in "ST01" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Axioms
+session ST02 in "ST02" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Ordinals

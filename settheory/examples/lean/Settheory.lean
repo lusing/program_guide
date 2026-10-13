@@ -4,3 +4,5 @@
 
 import Settheory.Basic
 import Settheory.Ch00Intro
+import Settheory.Ch01Axioms
+import Settheory.Ch02Ordinals
