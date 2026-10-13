@@ -1,11 +1,13 @@
 -- ============================================================
 -- 第17章：任务深入——select 会合家族
 -- 选择等待/哨兵、条件与定时入口调用、terminate、入口族、信号灯、
--- 周期任务无漂移延迟、任务属性/abort/任务异常
+-- 周期任务无漂移延迟、任务属性/abort/任务异常、任务优先级、
+-- 会合异常通道、三任务通信接口收官案例
 -- ============================================================
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Calendar;
 with System;
+with Ada.Characters.Latin_1;
 
 procedure Ch17_Select is
 
@@ -440,5 +442,193 @@ begin
       delay 0.02;
       Put_Line ("  Crasher'Terminated = " & Boolean'Image (Crasher'Terminated)
                 & "（异常穿出 accept 后，任务体自身也终止）");
+   end;
+
+   -- ---------------------------
+   -- 11. 收官案例：三任务通信接口（何诚 §12.13）
+   --    TX 重发+超时 / RX 解帧+校验和 / 输出线互斥；帧损伤注入
+   -- ---------------------------
+   New_Line;
+   Put_Line ("--- 11. 收官案例：三任务通信接口 ---");
+   declare
+      package L1 renames Ada.Characters.Latin_1;
+      Message_Size : constant := 8;
+      subtype Message is String (1 .. Message_Size);
+
+      -- 模拟线路：TX 方向的字符回环信道（有界、先进先出）
+      Line_Cap : constant := 64;               -- 常量放外面：保护组件不许 const
+      protected Line is
+         entry Send (C : Character);           -- 写一个字符（空位才收）
+         entry Recv (C : out Character);       -- 读一个字符（有数据才给）
+      private
+         Buf  : String (1 .. Line_Cap) := (others => ' ');
+         Head : Natural range 0 .. Line_Cap := 0; -- 已写字符数
+         Tail : Natural range 0 .. Line_Cap := 0; -- 已读字符数
+      end Line;
+
+      protected body Line is
+         entry Send (C : Character) when Head - Tail < Line_Cap is
+         begin
+            Head := Head + 1;
+            Buf (Head) := C;
+         end Send;
+         entry Recv (C : out Character) when Head > Tail is
+         begin
+            Tail := Tail + 1;
+            C := Buf (Tail);
+         end Recv;
+      end Line;
+
+      -- 输出线互斥：83 式资源控制任务（现代等价物是保护对象）
+      task TX_Control is
+         entry Secure;
+         entry Release;
+      end TX_Control;
+      task body TX_Control is
+      begin
+         loop
+            select
+               accept Secure;
+               accept Release;                 -- 一借一还：成对会合
+            or
+               terminate;
+            end select;
+         end loop;
+      end TX_Control;
+
+      -- 发送任务：整个重发流程嵌套在 accept Transmit 体内
+      task TX is
+         entry Transmit (M : in Message; Done : out Boolean);
+         entry Acknowledged (Ok : in Boolean);
+      end TX;
+      task body TX is
+         procedure Send_Frame (M : Message; Damage : Boolean) is
+            Sum : Natural range 0 .. 127 := 0;
+         begin
+            Put_Line ("  [TX] 发一帧"
+                      & (if Damage then "（本帧注入校验和损伤）" else "（重发，完好）"));
+            TX_Control.Secure;                 -- 独占输出线
+            Line.Send (L1.STX);                -- 帧头
+            for I in M'Range loop
+               declare
+                  Ch : constant Character := M (I);
+               begin
+                  Line.Send (Ch);
+                  Sum := (Sum + Character'Pos (Ch)) mod 128;
+               end;
+            end loop;
+            if Damage then
+               Sum := (Sum + 1) mod 128;       -- 损伤：校验和错一位
+            end if;
+            Line.Send (Character'Val (Sum));   -- 校验和
+            Line.Send (L1.ETX);                -- 帧尾
+            TX_Control.Release;
+         end Send_Frame;
+         --
+         Sent  : Boolean;
+         Tries : Natural;
+      begin
+         accept Transmit (M : in Message; Done : out Boolean) do
+            Sent  := False;
+            Tries := 0;
+            while not Sent and Tries < 3 loop
+               Send_Frame (M, Tries = 0);      -- 首帧坏、重发的好
+               Tries := Tries + 1;
+               select                          -- 等应答：最多 0.5 秒
+                  accept Acknowledged (Ok : in Boolean) do
+                     Sent := Ok;
+                  end Acknowledged;
+                  if Sent then
+                     Put_Line ("  [TX] 收到 ACK，投递完成");
+                  else
+                     Put_Line ("  [TX] 收到 NAK，重发");
+                  end if;
+               or
+                  delay 0.5;                   -- 原书 3 秒，演示缩短
+                  Put_Line ("  [TX] 超时无应答（本例不会走到）");
+               end select;
+            end loop;
+            Done := Sent;
+         end Transmit;
+      end TX;
+
+      -- 接收任务：解帧→校验→条件转发应答→交货
+      task RX is
+         entry Receive (M : out Message);
+      end RX;
+      task body RX is
+         Ch     : Character;
+         Msg    : Message;
+         Got_It : Boolean := False;
+      begin
+         while not Got_It loop
+            loop                              -- 阶段1：搜帧头
+               Line.Recv (Ch);
+               exit when Ch = L1.STX;
+            end loop;
+            declare                           -- 阶段2：读报文与校验和
+               Sum : Natural range 0 .. 127 := 0;
+            begin
+               for I in Msg'Range loop
+                  Line.Recv (Ch);
+                  Msg (I) := Ch;
+                  Sum := (Sum + Character'Pos (Ch)) mod 128;
+               end loop;
+               Line.Recv (Ch);                -- 收到的校验和
+               Got_It := Character'Pos (Ch) = Sum;
+               Line.Recv (Ch);                -- ETX 帧尾
+            end;
+            -- 阶段3：转发应答。先打印再发送：让日志顺序 = 因果顺序
+            -- （会合结束后双方并发续跑，谁先打印无保证）。
+            -- 实测教训：纯"select ... else null"的条件调用会静默丢应答
+            -- ——TX 还没走到 accept 站台时 else 分支空过一次，TX 被迫
+            -- 超时重发；可靠化 = 条件调用 + 微重试（0.5s 预算防挂死）
+            if Got_It then
+               Put_Line ("  [RX] 校验通过 → 回 ACK，报文待取");
+            else
+               Put_Line ("  [RX] 校验失败 → 回 NAK");
+            end if;
+            declare
+               Delivered : Boolean := False;
+            begin
+               for T in 1 .. 500 loop
+                  select
+                     TX.Acknowledged (Got_It);
+                     Delivered := True;
+                     exit;
+                  else
+                     delay 0.001;            -- TX 未就位：稍候再试，绝不挂死
+                  end select;
+               end loop;
+               if not Delivered then
+                  Put_Line ("  [RX] 应答未送达（TX 已超时退出）");
+               end if;
+            end;
+         end loop;
+         accept Receive (M : out Message) do  -- 阶段4：交货
+            M := Msg;
+         end Receive;
+      end RX;
+
+      Got : Message;
+      Ok  : Boolean;
+   begin
+      -- 读或走（RECEIVE_P 语义）：一切未发生，必然走 else
+      select
+         RX.Receive (Got);
+         Put_Line ("  不该走到这");
+      else
+         Put_Line ("  RECEIVE_P 探测：暂无就绪报文（条件入口调用走了 else）");
+      end select;
+
+      TX.Transmit ("HelloAda", Ok);           -- 会合内完成整个往返
+      Put_Line ("  Transmit 返回 Ok = " & Boolean'Image (Ok));
+
+      select
+         RX.Receive (Got);                    -- 这次报文就绪，立即会合
+         Put_Line ("  读到回环报文: " & Got);
+      else
+         Put_Line ("  不该走到这");
+      end select;
    end;
 end Ch17_Select;
