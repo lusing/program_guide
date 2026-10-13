@@ -1,94 +1,55 @@
-# 10 函数外延 —— 逐点相等与相等
+# 10 函数外延 —— 逐点相等与相等之间的鸿沟
 
-> 对应示例：`examples/10_funext.v`（编译验证通过）
+> 本章代码：[`examples/10_funext.v`](../examples/10_funext.v)
 
-"两个函数在每个点上都相等，所以它们相等"——这句话在 Martin-Löf 类型论里
-**证不出来**，它是公理。本章讲这条公理在 HoTT 库里是怎么被管理的。
+"两个函数在每个点上都相等，所以它们相等。"这句话听起来理所当然，
+但在 Martin-Löf 类型论里**证不出来**。本章讲三件事：为什么证不出来、
+HoTT 怎样把它作为公理引入而又不失控、以及它为什么和泛等一样属于"同伦"的世界观。
 
-## 10.1 `Funext` 是一个"空类型"
+## 10.1 为什么证不出来
 
-```coq
-Print Funext.
-Check isequiv_apD10.
-Check apD10.
-Check ap10.
-Locate "==".
-```
-
-```text
-*** [ Funext : Type0 ]
-isequiv_apD10
-     : forall (A : Type) (P : A -> Type) (f g : forall x : A, P x),
-       IsEquiv apD10
-where
-?H : [ |- Funext]
-apD10
-     : ?f = ?g -> ?f == ?g
-where
-?A : [ |- Type]
-?B : [ |- ?A -> Type]
-?f : [ |- forall x : ?A, ?B x]
-?g : [ |- forall x : ?A, ?B x]
-ap10
-     : ?f = ?g -> ?f == ?g
-where
-?A : [ |- Type]
-?B : [ |- Type]
-?f : [ |- ?A -> ?B]
-?g : [ |- ?A -> ?B]
-```
-
-`Print Funext` 只输出一行 `*** [ Funext : Type0 ]`——
-它是一个**没有任何构造子**的 `Monomorphic Axiom` 声明加类型类。
-本库刻意*不*把函数外延当成无条件成立的公理，而是把它作为类型类假设
-（`{Funext}`），这样每个定理用到哪些公理都能被 `Print Assumptions` 查出来。
-
-## 10.2 两个方向的桥
-
-`f = g -> f == g` 永远成立（不需要任何公理），它就是 `ap10`（依赖版 `apD10`）：
+对 `f g : A -> B`，有一个总是存在的映射：
 
 ```coq
-Definition eq_to_pointwise {A B : Type} (f g : A -> B) : f = g -> f == g
-  := ap10.
-Check eq_to_pointwise.
-Print Assumptions eq_to_pointwise.
+Check apD10.   (* f = g -> f == g *)
+Check ap10.    (* 非依赖版本，同样是 f = g -> forall x, f x = g x *)
 ```
 
-```text
-eq_to_pointwise
-     : forall f g : ?A -> ?B, f = g -> f == g
-where
-?A : [ |- Type]
-?B : [ |- Type]
-Closed under the global context
-```
+从一条相等路径 `p : f = g`，对每个 `x` 取 `ap (fun h => h x) p` 就得到 `f x = g x`。
+这是纯定义的，零公理。
 
-反方向 `f == g -> f = g` 就是函数外延，需要 `Funext`：
+反方向 `f == g -> f = g` 为什么不行？类型论的内部语言对函数的看法是**内涵的**：
+两个函数相等意味着它们作为"算法"相同（可以互相归约）。`fun n => n + 0` 和 `fun n => n`
+在每个输入上值相同，但归约形式不同——内部没有任何规则能把它们合二为一。
+相等的证明都从 `idpath` 来，而 `idpath` 只能证明定义性相等的东西。
+
+所以"逐点相等推出相等"是一条**独立于类型论的公理**。它的名字叫**函数外延**（function extensionality）。
+
+## 10.2 HoTT 里的表述：`apD10` 是等价
+
+HoTT 的表述比"逐点相等推出相等"更强、也更对：
+
+> 函数外延：对任意 `f g : forall x, P x`，映射 `apD10 : (f = g) -> (f == g)` 是**等价**。
+
+这比只要求一个反向映射强在哪？它保证路径类型 `f = g` 与同伦类型 `f == g` 作为
+**类型**是一样的——不仅元素对应，路径结构也对应。这正是同伦类型论要求的"对"的定义。
+弱版本（只要反向映射）其实能推出强版本，但强版本才是日常使用的形态。
+
+库里的写法：
 
 ```coq
-Check path_forall.
-Check path_arrow.
+Class Funext : Type0.                   (* 空的类型类，是公理的"载体" *)
+Axiom isequiv_apD10 : Funext -> forall A P (f g : forall x : A, P x), IsEquiv (@apD10 A P f g).
+
+Definition path_forall `{Funext} {A P} (f g : forall x : A, P x) : f == g -> f = g
+  := (apD10)^-1.
 ```
 
-```text
-path_forall
-     : forall f g : forall x : ?A, ?P x, f == g -> f = g
-where
-?H : [ |- Funext]
-?A : [ |- Type]
-?P : [ |- ?A -> Type]
-path_arrow
-     : forall f g : ?A -> ?B, f == g -> f = g
-where
-?H : [ |- Funext]
-?A : [ |- Type]
-?B : [ |- Type]
-```
+`path_forall` 就是 `apD10` 的逆。非依赖的方便版本叫 `path_arrow`。
 
-看清楚：两者的类型里都带着 `?H : [ |- Funext]`——
-一个未解决的隐式参数，意思是"调用方需要提供"。
+## 10.3 公理如何被管理：显式假设
 
-## 10.3 在 `Section` 里假设 `Funext`
+`Funext` 是一个没有构造子的类型类。需要函数外延的定理把它写成假设：
 
 ```coq
 Section FunextDemo.
@@ -96,195 +57,105 @@ Section FunextDemo.
 
   Definition twice_eq {A B : Type} (f g : A -> B) (h : forall x, f x = g x)
     : f = g := path_forall f g h.
-  Check twice_eq.
 
   Definition add_zero_l : (fun n : nat => (0 + n)%nat) = (fun n : nat => n).
   Proof.
     apply path_forall; intro n; destruct n; reflexivity.
   Defined.
-  Check add_zero_l.
 End FunextDemo.
 ```
 
-```text
-twice_eq
-     : forall f g : ?A -> ?B, (forall x : ?A, f x = g x) -> f = g
-where
-?A : [H : Funext |- Type]
-?B : [H : Funext |- Type]
-add_zero_l
-     : (fun n : nat => (0 + n)%nat) = idmap
-```
-
-出了 Section，`twice_eq` 的类型里带着 `Funext` 假设：
-
-```coq
-Check twice_eq.
-Print Assumptions twice_eq.
-```
+出了 `Section`，`Funext` 成为 `twice_eq` 的一个隐式参数。`Print Assumptions` 诚实地报告：
 
 ```text
-twice_eq
-     : forall f g : ?A -> ?B, (forall x : ?A, f x = g x) -> f = g
-where
-?H : [ |- Funext]
-?A : [ |- Type]
-?B : [ |- Type]
 Axioms:
-isequiv_apD10 :
-  Funext ->
-  forall (A : Type) (P : A -> Type) (f g : forall x : A, P x), IsEquiv apD10
+isequiv_apD10 : Funext -> forall (A : Type) (P : A -> Type) (f g : forall x : A, P x), IsEquiv apD10
 Funext : Type0
 ```
 
-注意上下文里的 `[H : Funext |- Type]` 变成了全局的 `?H : [ |- Funext]`——
-这就是"假设被泛化"的痕迹。
+而没有 `Funext` 实例时，`path_forall` 用不了——类型类搜索找不到 `Funext`，报
+`Unable to satisfy the following constraints`。这不是 bug，是设计：**公理必须被显式请求**。
 
-## 10.4 没有实例时 `path_forall` 用不了
-
-此刻文件里还没有 `Funext` 的全局实例，类型类搜索会失败：
-
-```coq
-Fail Definition bad_pointwise : (fun n : nat => n) = (fun n : nat => n)
-  := path_forall _ _ (fun n => 1).
-```
-
-错误信息是"Unable to satisfy the following constraints: ?H : Funext"。
-
-## 10.5 显式假设 vs 导入公理
-
-想在全文件范围内无条件使用，就导入公理文件：
+另一种方式是导入全局实例：
 
 ```coq
 Require Import HoTT.Axioms.Funext.
-Check funext_axiom.
+Check funext_axiom.   (* : Funext *)
 ```
 
-```text
-funext_axiom
-     : Funext
-```
+之后 `path_forall` 可以直接用，`Print Assumptions` 里会多出一行 `funext_axiom : Funext`。
+两种方式各有用处：写库代码时用 `Context`，让使用者决定；写应用代码时直接导入。
 
-现在 `path_forall` 可以直接用，不用再写 `Context `{Funext}`：
+## 10.4 函数外延买到了什么
+
+**截断层级穿过 Π 类型。** 若每个 `P x` 是 n-型，则 `forall x, P x` 也是 n-型。
+特别地，命题的 Π 还是命题，集合的 Π 还是集合。没有函数外延这一条证不出来，
+因为要比较两个函数就得比较它们的路径类型。
+
+**`IsHProp A` 本身是命题，`IsEquiv f` 本身是命题。** 两者的定义里都有 Π 类型，
+证明它们是命题需要函数外延。这意味着"是等价"真的是一个性质而不是额外结构——
+这是第 07 章承诺的事，兑现它要靠这里。
+
+**前复合、后复合保持等价**：
 
 ```coq
-Definition add_zero_r : (fun n : nat => (n + 0)%nat) = (fun n : nat => n).
-Proof.
-  apply path_forall; intro n; induction n as [|n IH]; simpl.
-  - reflexivity.
-  - exact (ap S IH).
-Defined.
-Check add_zero_r.
-Print Assumptions add_zero_r.
-```
-
-```text
-add_zero_r
-     : (fun n : nat => (n + 0)%nat) = idmap
-Axioms:
-isequiv_apD10 :
-  Funext ->
-  forall (A : Type) (P : A -> Type) (f g : forall x : A, P x), IsEquiv apD10
-funext_axiom : Funext
-Funext : Type0
-```
-
-`Print Assumptions` 现在会列出 `funext_axiom`——
-这就是"显式假设"这套机制的价值：**公理用量一目了然**。
-
-## 10.6 函数外延的常用推论
-
-前后复合保持等价（需要 `Funext`）：
-
-```coq
-Check isequiv_precompose.
-Check isequiv_postcompose.
-Check equiv_precompose.
+Check equiv_precompose.    (* IsEquiv f -> (B -> C) <~> (A -> C) *)
 Check equiv_postcompose.
 ```
 
-```text
-isequiv_precompose
-     : forall f : ?A -> ?B,
-       IsEquiv f -> IsEquiv (fun (g : ?B -> ?C) (x : ?A) => g (f x))
-where
-?A : [ |- Type]
-?B : [ |- Type]
-?C : [ |- Type]
-equiv_precompose
-     : forall f : ?A -> ?B, IsEquiv f -> (?B -> ?C) <~> (?A -> ?C)
-where
-?A : [ |- Type]
-?B : [ |- Type]
-?C : [ |- Type]
-```
-
-逐点路径的"based homotopy"类型是可缩的：
+**与一个函数同伦的所有函数构成可缩类型**（基于函数的"路径空间"）：
 
 ```coq
-Check contr_basedhomotopy.
+Check contr_basedhomotopy.   (* Contr {g & f == g} *)
 ```
 
-```text
-contr_basedhomotopy
-     : forall f : forall x : ?A, ?B x,
-       Contr {g : forall x : ?A, ?B x & f == g}
-where
-?A : [ |- Type]
-?B : [ |- ?A -> Type]
-```
+对比第 08 章的 `contr_basedpaths : Contr {y & x = y}`。函数外延让同伦的行为
+和路径完全一致。
 
-等价之间的相等可以逐点判断：
+## 10.5 两条公理的关系
 
-```coq
-Check path_equiv.
-Check equiv_path_equiv.
-```
+函数外延与泛等（第 11 章）是 HoTT 的两条公理。它们不是独立的：**泛等蕴含函数外延**
+（`Univalence_implies_Funext`，第 23 章会在 `Print Assumptions` 里看到它）。
+但库仍然把两者分开，因为很多结论只需函数外延，分开管理能让公理用量更精确。
 
-```text
-path_equiv
-     : ?e1 = ?e2 -> ?e1 = ?e2
-where
-?A : [ |- Type]
-?B : [ |- Type]
-?e1 : [ |- ?A <~> ?B]
-?e2 : [ |- ?A <~> ?B]
-equiv_path_equiv
-     : forall e1 e2 : ?A <~> ?B, e1 = e2 <~> e1 = e2
-where
-?A : [ |- Type]
-?B : [ |- Type]
-```
+此外，函数外延还能从一个高阶归纳类型——区间——推出来（第 12 章）。
+那时会看到：公理之间是可以互相兑换的，`Print Assumptions` 里出现的是 `seg` 而不是 `Funext`。
 
-（`path_equiv` 的打印两侧看起来一样，是因为左边是"逐点相等"的
-`==` 记号的展开形式；`equiv_path_equiv` 是它打包成的等价。）
+## 10.6 直觉：函数外延为什么是"同伦"的
 
-## 本章坑位清单
+把 `A -> B` 看成"从 `A` 到 `B` 的所有连续映射构成的空间"。两个映射之间的一条路径
+`p : f = g`，在拓扑上是一个**同伦** `H : A × [0,1] → B`，`H(x, 0) = f(x)`，`H(x, 1) = g(x)`。
+而逐点相等 `f == g` 给的是对每个 `x` 一条从 `f(x)` 到 `g(x)` 的路径——
+这正是同伦的另一种写法（固定 `x`，让时间变化）。两者在拓扑里显然等价。
 
-1. **`Require Import HoTT` 不给 `Funext` 实例**：
-   必须 `Context `{Funext}` 或 `Require Import HoTT.Axioms.Funext`。
-2. **`path_forall` 与 `path_arrow` 是两个名字**：
-   前者用于依赖函数，后者用于普通函数；非依赖时两者都可以用。
-3. **`Print Funext` 只输出 `*** [ Funext : Type0 ]`**：
-   它没有任何构造子，是"空类型 + 类型类"。
-4. **`apply path_forall` 之后要先 `intro`**：
-   目标是 `f == g`，展开就是 `forall x, f x = g x`。
-5. **`(fun n : nat => n)` 会被打印成 `idmap`**：
-   这是 pretty-printer 的化简，不是你的定义变了。
-6. **`Fail` 在 `-q` 下静默**：调试类型类失败时别加 `-q`。
-7. **`0 + n = n` 是定义性的，`n + 0 = n` 要归纳**：
-   因为 `nat_add` 递归在第一个参数上。
-8. **`contr_basedhomotopy` 说的是"与 f 同伦的函数构成可缩类型"**，
-   这是函数外延的直接推论。
-9. **`isequiv_apD10` 才是真正的公理**：
-   `Funext` 只是它的载体，`Print Assumptions` 里两者都会列出来。
-10. **`ap10` 不需要任何公理**，`path_arrow`（反方向）才需要。
-11. **`equiv_path_equiv` 的打印两侧看似相同**，
-    左边其实是逐点相等的展开；不要以为它是恒等定理。
-12. **函数外延可以由区间 HIT 证明**（第 12 章），
-    那时 `Print Assumptions` 里出现的是 `seg` 而不是 `Funext`。
+函数外延说的就是：类型论里的 `A -> B` 应当表现得像拓扑里的映射空间。
+这和泛等（`Type` 应当表现得像"所有空间构成的空间"）是同一个精神。
+
+## 小结
+
+- `apD10 : f = g -> f == g` 永远存在；反方向是函数外延公理。
+- HoTT 的表述：`apD10` 是等价。`path_forall` 是它的逆。
+- `Funext` 是空类型类；需要它的定理写 `Context `{Funext}`，或导入 `HoTT.Axioms.Funext`。
+  `Print Assumptions` 会列出它。
+- 函数外延让截断层级穿过 Π 类型，让 `IsHProp`、`IsEquiv` 成为命题。
+- 泛等蕴含函数外延；区间 HIT 也能推出函数外延。
+
+## 常见误区
+
+1. **以为函数外延是"显然的"**。它在类型论内部不可证；拒绝它的模型（比如纯语法模型）存在。
+2. **只把它理解成 `f == g -> f = g`**。正确的表述是 `apD10` 是等价；弱版本虽能推出强版本，
+   但日常使用的是强版本。
+3. **忘记请求 `Funext`**。`path_forall` 的类型挂着 `?H : Funext` 时，要么 `Context`，
+   要么导入公理。
+4. **把 `(fun n => n)` 被打印成 `idmap` 当成定义被改了**。那只是漂亮打印。
+
+## 练习
+
+1. 在 `Context `{Funext}` 下证明 `IsHProp B -> IsHProp (A -> B)`。
+2. 用 `path_forall` 证明 `(fun n : nat => (n + 0)%nat) = idmap`（提示：归纳，`ap S`）。
+3. 思考：为什么 `contr_basedhomotopy` 需要函数外延，而 `contr_basedpaths` 不需要？
 
 ---
 
-**上一章**：[09 截断层级](docs/09-truncation.md)
-**下一章**：[11 泛等公理 —— 等价就是相等](docs/11-univalence.md)
+**上一章**：[09 截断层级](09-truncation.md)
+**下一章**：[11 泛等公理](11-univalence.md)

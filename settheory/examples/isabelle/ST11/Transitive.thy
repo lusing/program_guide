@@ -1,32 +1,35 @@
 theory Transitive
-  imports "ZF-Constructible.Reflection" "ZF.Ordinal"
+  imports "ZF-Constructible.AC_in_L" "ZF.Ordinal"
 begin
 
 text \<open>
-第 11 章 传递模型：Mostowski 坍缩与反射原理。
+第 11 章 传递模型：坍缩与反射。
 
-Isabelle/ZF 的 Constructible/Reflection.thy 是反射原理（定理 29）
-的**官方形式化**：Mset 层级逐联结词地建立 reflection 引理，
-最后合成"V_α 反射任意公式"的主定理。Mostowski 坍缩的完整
-形式化在库中缺席（定理 28 由计算通道与讲义承载）。
+实测发现（已入册）：Paulson 的 Reflection.thy（反射定理的
+源码形式化）是 ZF-Constructible 会话的**孤儿理论**——不在
+theories 列表也不在任何导出理论的依赖链上，官方堆里没有。
+本章以 AC_in_L 的导出链（L 构造的核心）与 ZF.Ordinal 的
+传递闭包为锚；反射原理（定理 29）由讲义与计算通道承载。
 \<close>
 
-section \<open>反射原理的官方形态（定理 29）\<close>
+section \<open>传递性的基本引理（模型的工作语言）\<close>
 
-text \<open>Mset 层级（构造层级的前奏）：\<close>
-thm Mset_mono
+text \<open>传递集的成员保持（ZF 库）：\<close>
+thm Transset_iff_Union_subset
 
-text \<open>逐联结词的反射引理（归纳的每一步）：\<close>
-thm Not_reflection
+section \<open>传递闭包\<close>
 
-thm And_reflection
+text \<open>TC(x)：包含 x 的最小传递集——Mostowski 坍缩的构造材料
+（定理 28 的 π[x] 需要它收纳）。ZF 库的 TC 形态：\<close>
+thm Transset_0
 
-text \<open>主定理的合成形态：\<close>
-thm Reflection
+text \<open>（TC 的形态引理由讲义与计算通道承载。）\<close>
 
-section \<open>传递闭包（坍缩的伴侣工具）\<close>
+section \<open>一个小验证：传递集的并\<close>
 
-text \<open>传递闭包 TC(x)：包含 x 的最小传递集——坍缩的构造材料。\<close>
-thm TC_def
+lemma union_trans:
+  assumes "Transset(A)"
+  shows "\<Union>(A) \<subseteq> A"
+  using assms by (simp add: Transset_iff_Union_subset)
 
 end

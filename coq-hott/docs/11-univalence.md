@@ -1,170 +1,71 @@
 # 11 泛等公理 —— 等价就是相等
 
-> 对应示例：`examples/11_univalence.v`（编译验证通过）
+> 本章代码：[`examples/11_univalence.v`](../examples/11_univalence.v)
 
-这是 HoTT 的心脏。泛等公理（univalence axiom）说：
+这是 HoTT 的心脏。泛等公理（univalence axiom）用一句话说完：
 
-> `(A ≃ B) ≃ (A = B)`
+> 对任意类型 `A B`，**`(A = B) ≃ (A ≃ B)`**。两个类型相等，当且仅当它们等价。
 
-即"两个类型等价"与"两个类型相等"是同一件事。
-本章把这条公理的用法、行为律、以及它带来的后果讲清楚。
+这一章解释这句话的精确含义、它为什么合理、它带来的第一个震撼结论（`Type` 不是集合），
+以及日常使用它的方式。
 
-## 11.1 `Univalence` 也是一个"空类型"
+## 11.1 一个免费的方向：相等给出等价
 
-```coq
-Print Univalence.
-Check equiv_path.
-Check isequiv_equiv_path.
-```
-
-```text
-*** [ Univalence : Type0 ]
-equiv_path
-     : forall A B : Type, A = B -> A <~> B
-isequiv_equiv_path
-     : forall A B : Type, IsEquiv (equiv_path A B)
-where
-?H : [ |- Univalence]
-```
-
-和 `Funext` 一样，`Univalence` 是空的占位类型，
-需要它的定理写成 `Context `{Univalence}`，这样公理用量可被追踪。
-
-## 11.2 `equiv_path`：从相等到等价（不需要公理）
+先看不需要公理的那一半。若 `p : A = B`，沿 `p` 搬运（以 `idmap : Type -> Type` 为族）
+给出 `transport idmap p : A -> B`，它是等价——路径归纳：`p = 1` 时它就是恒等。
 
 ```coq
-Check equiv_path.
-Print Assumptions equiv_path.
+Check equiv_path.                    (* forall A B : Type, A = B -> A <~> B *)
+Print Assumptions equiv_path.        (* Closed under the global context *)
 ```
 
-```text
-equiv_path
-     : forall A B : Type, A = B -> A <~> B
-Closed under the global context
-```
+这和第 07 章的"路径与等价构成平行的群胚"相呼应：`equiv_path` 是从路径群胚到等价群胚的
+一个自然的函子。
 
-相等必然给出等价——把元素沿路径搬运过去。这一步是**纯定义的**，
-零公理。反方向才是公理。
+## 11.2 泛等：这个方向是等价
 
-## 11.3 `path_universe`：从等价到相等（需要泛等）
+泛等公理断言：`equiv_path A B` 本身是等价。
 
 ```coq
-Section UnivalenceDemo.
-  Context `{Univalence}.
-
-  Check path_universe.
-  Check path_universe_uncurried.
-  Check equiv_path_universe.
-  Check equiv_equiv_path.
-End UnivalenceDemo.
+Class Univalence : Type0.
+Axiom isequiv_equiv_path : Univalence -> forall A B : Type, IsEquiv (equiv_path A B).
 ```
 
-```text
-path_universe
-     : forall f : ?A -> ?B, IsEquiv f -> ?A = ?B
-where
-?A : [H : Univalence |- Type]
-?B : [H : Univalence |- Type]
-path_universe_uncurried
-     : ?A <~> ?B -> ?A = ?B
-where
-?A : [H : Univalence |- Type]
-?B : [H : Univalence |- Type]
-equiv_path_universe
-     : forall A B : Type, (A <~> B) <~> A = B
-equiv_equiv_path
-     : forall A B : Type, A = B <~> (A <~> B)
-```
-
-布尔取反这个自等价，给出一条 `Bool = Bool` 的路径：
+于是有逆映射，把等价变成路径：
 
 ```coq
-Definition negb_path : Bool = Bool
-  := path_universe (equiv_adjointify negb negb
-      (fun b => match b with true => idpath | false => idpath end)
-      (fun b => match b with true => idpath | false => idpath end)).
-Check negb_path.
+Check path_universe_uncurried.   (* A <~> B -> A = B *)
+Check path_universe.             (* forall f : A -> B, IsEquiv f -> A = B *)
+Check equiv_path_universe.       (* (A <~> B) <~> (A = B) *)
 ```
 
-```text
-negb_path
-     : Bool = Bool
-```
-
-> **坑**：这里必须写 `idpath` 而不是 `1`——本文件打开了 `path_scope`，
-> 但若在同时打开 `equiv_scope` 的文件里，`1` 会被解析成 `equiv_idmap`。
-> 保险起见一律写 `idpath`。
-
-沿这条路径搬运，等于把等价作用在元素上（这是泛等唯一的"计算律"）：
+两者互逆：
 
 ```coq
-Check transport_path_universe.
-Check transport_path_universe_V.
+Check eta_path_universe.          (* path_universe (equiv_path p) = p *)
+Check equiv_path_path_universe.   (* equiv_path (path_universe f) = f *)
 ```
 
-```text
-transport_path_universe
-     : forall (f : ?A -> ?B) (feq : IsEquiv f) (z : ?A),
-       transport idmap (path_universe f) z = f z
-where
-?A : [H : Univalence |- Type]
-?B : [H : Univalence |- Type]
-transport_path_universe_V
-     : forall (f : ?A -> ?B) (feq : IsEquiv f) (z : ?B),
-       transport idmap (path_universe f)^ z = f^-1 z
-where
-?A : [H : Univalence |- Type]
-?B : [H : Univalence |- Type]
-```
+和函数外延一样，泛等做成空类型类 `Univalence`，需要它的定理写 `Context `{Univalence}`，
+或者导入 `HoTT.Axioms.Univalence` 拿到全局实例 `univalence_axiom`。
 
-**这两条是泛等唯一的"计算规则"**——泛等本身不可计算，
-所以库里所有关于 `path_universe` 的推理最终都要化到这两条上。
+## 11.3 它为什么合理
 
-出了 Section，`negb_path` 带着 `Univalence` 假设：
+**从数学实践看**：数学家一直把同构的结构当成相同的——"ℝ 的完备有序域在同构意义下唯一"
+之后，就放心地说"**那个**实数域"。泛等把这个习惯变成了形式系统里的定理：
+等价的类型字面上相等，所以关于一个类型证明的任何性质自动对等价的类型成立（第 18 章）。
 
-```coq
-Check negb_path.
-Print Assumptions negb_path.
-```
+**从同伦论看**：把 `Type` 想成"所有空间构成的空间"。在这个空间里，两个点（空间）
+之间的一条路径应该是什么？同伦论的答案是同伦等价。泛等说：`Type` 的路径结构
+就是等价结构。它让类型论的 `Type` 真的像一个"分类空间"（对象分类子）。
 
-```text
-negb_path
-     : Bool = Bool
-where
-?H : [ |- Univalence]
-Axioms:
-isequiv_equiv_path :
-  Univalence -> forall A B : Type, IsEquiv (equiv_path A B)
-Univalence : Type0
-```
+**从一致性看**：泛等在 Voevodsky 的单纯集模型里成立，所以加上它不会导致矛盾。
+它和经典逻辑里的排中律相容，但与 UIP 不相容（下一节）。
 
-## 11.4 导入公理，然后把世界撬起来
+## 11.4 第一个后果：`Type` 不是集合
 
-```coq
-Require Import HoTT.Axioms.Univalence.
-Check univalence_axiom.
-```
-
-```text
-univalence_axiom
-     : Univalence
-```
-
-### `Type` 不是集合
-
-先看一条著名结论：`Type` 本身**不是**集合——因为它有非平凡的自等价。
-
-```coq
-Check not_hset_Type.
-```
-
-```text
-not_hset_Type
-     : ~ IsHSet Type
-```
-
-我们自己证一遍，思路是：若 `Type` 是集合，则 `Bool = Bool` 的任意两条路径
-相等；但恒等等价与取反等价给出的两条路径并不相等。
+如果 `Type` 是集合，那么 `Bool = Bool` 的任意两条路径相等。但泛等给出两条不同的路径：
+一条来自恒等等价，一条来自取反。
 
 ```coq
 Definition negb_equiv : Bool <~> Bool
@@ -172,154 +73,110 @@ Definition negb_equiv : Bool <~> Bool
        (fun b => match b with true => idpath | false => idpath end)
        (fun b => match b with true => idpath | false => idpath end).
 
-Definition negb_path' : Bool = Bool := path_universe negb_equiv.
+Definition negb_path : Bool = Bool := path_universe negb_equiv.
+```
 
-Definition negb_path_neq_1 : negb_path' <> 1.
+要证 `negb_path ≠ 1`，就用第 05 章的套路：找一个区分它们的"观测"。
+沿 `negb_path` 搬运 `true` 得到 `false`，沿 `1` 搬运得到 `true`，而 `true ≠ false`。
+
+```coq
+Definition negb_path_neq_1 : negb_path <> 1.
 Proof.
-  intro h.
-  apply true_ne_false.
+  intro h.                     (* 假设 h : negb_path = 1 *)
+  apply true_ne_false.         (* 目标：true = false *)
   exact ((1 @ (ap (fun p : Bool = Bool => transport idmap p true) h)^)
            @ transport_path_universe negb_equiv true).
 Defined.
 ```
 
-```text
-negb_path_neq_1
-     : negb_path' <> 1
-Axioms:
-univalence_axiom : Univalence
-isequiv_equiv_path :
-  Univalence -> forall A B : Type, IsEquiv (equiv_path A B)
-Univalence : Type0
-```
+证明里两条路径接起来：
 
-拆解这个证明：
+- `ap (fun p => transport idmap p true) h : transport idmap negb_path true = transport idmap 1 true`，
+  右边按定义就是 `true`；取逆得 `true = transport idmap negb_path true`；
+- `transport_path_universe negb_equiv true : transport idmap negb_path true = negb_equiv true`，
+  右边是 `false`。
 
-- `h : negb_path' = 1`；
-- `ap (fun p => transport idmap p true) h` 给出
-  `transport idmap negb_path' true = transport idmap 1 true`，
-  右边就是 `true`；
-- 取逆后与 `transport_path_universe negb_equiv true`
-  （左边 = `negb_equiv true` = `false`）拼接，
-  得到 `false = true`；
-- `apply true_ne_false` 把目标换成 `true = false`，正好对上。
+于是 `true = false`。库里的现成版本叫 `not_hset_Type`。
 
-> **坑**：`@` 不是左结合的，连写三个要显式加括号，
-> 否则 Rocq 9 会给出 `[level-tolerance]` 警告——它出现在 stderr 上，
-> 会让本教程的验证失败。
+这个结论的意义：**宇宙 `Type` 有非平凡的路径结构**。它至少是 1-型（事实上任何层级都不是——
+`Type` 里有任意高阶的同伦）。于是"两个类型相等"这件事本身有内容：
+`Bool = Bool` 恰好有两个元素，对应 `Bool` 的两个自同构。
 
-## 11.5 泛等的行为律
+## 11.5 泛等的计算律
+
+泛等是公理，`path_universe` 不会归约。它唯一的"计算规则"是搬运的行为：
 
 ```coq
-Check eta_path_universe.          (* path_universe (equiv_path p) = p *)
-Check equiv_path_path_universe.   (* equiv_path (path_universe f) = f *)
-Check path_universe_1.            (* path_universe (1 : A <~> A) = 1 *)
-Check path_universe_V.            (* path_universe (f^-1) = (path_universe f)^ *)
-Check path_universe_compose.      (* path_universe (g oE f) = ... *)
+Check transport_path_universe.
+(* transport idmap (path_universe f) z = f z *)
+Check transport_path_universe_V.
+(* transport idmap (path_universe f)^ z = f^-1 z *)
 ```
 
-```text
-eta_path_universe
-     : forall p : ?A = ?B, path_universe (equiv_path ?A ?B p) = p
-where
-?A : [ |- Type]
-?B : [ |- Type]
-equiv_path_path_universe
-     : forall f : ?A <~> ?B, equiv_path ?A ?B (path_universe f) = f
-where
-?A : [ |- Type]
-?B : [ |- Type]
-path_universe_compose
-     : forall (f : ?A <~> ?B) (g : ?B <~> ?C),
-       path_universe (fun x : ?A => g (f x)) =
-       path_universe f @ path_universe g
-where
-?A : [ |- Type]
-?B : [ |- Type]
-?C : [ |- Type]
-```
+读法：**沿"由等价 `f` 造出的路径"搬运，就是作用 `f`。** 这是泛等与 transport 的接口，
+库里所有关于 `path_universe` 的推理最终都化到这两条上。第 13 章与第 24 章会一再使用。
 
-前两条合起来说：`equiv_path` 与 `path_universe` 互逆——
-这就是"等价 ≃ 相等"的精确形式。
+其他行为律把路径运算和等价运算对应起来：
 
-等价归纳（等价版的路径归纳）：
+| 引理 | 内容 |
+|---|---|
+| `path_universe_1` | `path_universe 1 = 1` |
+| `path_universe_V` | `path_universe f^-1 = (path_universe f)^` |
+| `path_universe_compose` | `path_universe (g oE f) = path_universe f @ path_universe g` |
+
+这正是说 `path_universe` 是群胚之间的函子——第 07 章的那张对照表，现在合为一张。
+
+## 11.6 对等价做归纳
+
+有了泛等，第 07 章的 `equiv_ind` 升级成真正的"等价归纳"：
+要对所有 `V` 和所有 `w : U <~> V` 证明 `P V w`，只需对 `(U, 1)` 证明。
 
 ```coq
 Check equiv_induction.
-Check equiv_induction'.
+(* forall P : forall V, U <~> V -> Type, P U 1 -> forall V (w : U <~> V), P V w *)
 ```
 
-```text
-equiv_induction
-     : forall P : forall V : Type, ?U <~> V -> Type,
-       P ?U 1%equiv -> forall (V : Type) (w : ?U <~> V), P V w
-where
-?U : [ |- Type]
-equiv_induction'
-     : forall P : forall U V : Type, U <~> V -> Type,
-       (forall T : Type, P T T 1%equiv) ->
-       forall (U V : Type) (w : U <~> V), P U V w
-```
+证明思路：把 `w` 变成路径 `path_universe w`，对路径做归纳，再变回来。
+这意味着**关于等价的所有性质，只要在恒等等价上成立就处处成立**——
+和路径归纳一样强大，也一样要求终点自由。
 
-## 11.6 泛等能做什么：结构沿等价自动搬运
+## 11.7 结构沿等价搬运（预告）
 
-任何定义在类型上的结构都能沿等价搬过去。
-比如把 `Bool` 上的取反搬到任何一个与之等价的两元素类型上。
+泛等最实用的后果：任何 `S : Type -> Type` 定义的结构都能沿等价搬运。
 
 ```coq
-Check univalent_transport.
-Check univalent_transport_idequiv.
+Check univalent_transport.   (* forall (S : Type -> Type) X Y, X <~> Y -> S X -> S Y *)
 ```
 
-```text
-univalent_transport
-     : forall (S : Type -> Type) (X Y : Type), X <~> Y -> S X -> S Y
-univalent_transport_idequiv
-     : forall (S : Type -> Type) (X : Type), univalent_transport S 1 == idmap
-```
+`S X` 可以是"X 上的一个群结构""X 是集合""X 上有一个判定相等的算法"——
+只要 `X ≃ Y`，`Y` 就自动拥有同样的东西。第 18 章展开这件事。
 
-更常见的是"两个等价的类型，一个满足某性质则另一个也满足"：
+## 小结
 
-```coq
-Check istrunc_equiv_istrunc.
-```
+- `equiv_path : A = B -> A <~> B` 零公理；泛等说它是等价，逆映射是 `path_universe`。
+- 泛等让 `Type` 的路径结构等于等价结构：数学里"同构即相同"的形式化。
+- `Type` 不是集合：`Bool = Bool` 有两条不同的路径（恒等与取反）。
+- 唯一的计算律：`transport idmap (path_universe f) z = f z`。
+- 等价归纳：关于等价的性质在恒等等价上成立即可。
 
-```text
-istrunc_equiv_istrunc
-     : forall A B : Type,
-       A <~> B -> forall n : trunc_index, IsTrunc n A -> IsTrunc n B
-```
+## 常见误区
 
-## 本章坑位清单
+1. **以为泛等让所有等价的类型"变成同一个"**。不是。`Bool` 和 `Bool` 之间有两条路径，
+   路径是有内容的；泛等增加了相等的证据，而不是抹平差别。
+2. **期待 `path_universe` 能计算**。它是公理，`simpl`、`Compute` 都不会动它；
+   只能用 `transport_path_universe` 系列引理改写。
+3. **混淆 `path_universe` 与 `path_universe_uncurried`**。前者接受函数加 `IsEquiv` 实例，
+   后者接受 `A <~> B`。
+4. **以为泛等与排中律冲突**。不冲突；泛等与命题层面的排中律相容。它冲突的是 UIP。
 
-1. **`equiv_path` 不需要公理，`path_universe` 需要**：
-   判断依据是 `Print Assumptions`。
-2. **`Require Import HoTT` 不给 `Univalence` 实例**，
-   要 `Require Import HoTT.Axioms.Univalence`。
-3. **`1` 在 `equiv_scope` 里是 `equiv_idmap`**：
-   打开了 `equiv_scope` 的文件里写 `idpath` 更安全。
-4. **三个 `@` 连写会触发 `[level-tolerance]` 警告**：
-   显式加括号 `((1 @ a) @ b)`。
-5. **`transport_path_universe` 是泛等唯一的计算律**，
-   `simpl` 对 `path_universe` 无能为力。
-6. **`not_hset_Type` 说明 `Type` 不是集合**：
-   所以"两个类型相等"这件事有非平凡的结构。
-7. **`path_universe` 的第一个参数是函数，不是等价**：
-   `path_universe f` 里 `f : A -> B`，`IsEquiv f` 作为类型类实例被搜索；
-   想传 `A <~> B` 要用 `path_universe_uncurried`。
-8. **`eta_path_universe` 与 `equiv_path_path_universe` 合起来才是
-   "互逆"**：单独一条只说明一个方向。
-9. **`negb_path_neq_1` 的证明里 `apply true_ne_false` 会把目标换成
-   `true = false`**：这是 `<>` 展开后的标准操作。
-10. **`equiv_induction` 的 `P` 依赖 `V` 与 `w`**，
-    比第 07 章的 `equiv_ind` 强（那个只依赖 `B` 不依赖等价本身）。
-11. **`univalent_transport` 需要 `S : Type -> Type`**：
-    它是"结构不变性原理"（SIP）的雏形，第 18 章展开。
-12. **`path_universe_compose` 的右端是
-    `path_universe f @ path_universe g`**，
-    复合的顺序与路径拼接的顺序一致。
+## 练习
+
+1. 用 `path_universe` 造出 `Bool + Bool = Bool * Bool` 的一条路径。
+2. 证明 `IsHSet Type -> Empty`，直接复用 `negb_path_neq_1`。
+3. 思考：`Unit = Unit` 有几个元素？`Bool = Bool` 有几个？`nat = nat` 呢？
+   （后者在泛等下等价于 `nat` 的所有自同构构成的类型。）
 
 ---
 
-**上一章**：[10 函数外延](docs/10-funext.md)
-**下一章**：[12 高阶归纳类型入门 —— 区间](docs/12-hit-interval.md)
+**上一章**：[10 函数外延](10-funext.md)
+**下一章**：[12 HIT 入门：区间](12-hit-interval.md)

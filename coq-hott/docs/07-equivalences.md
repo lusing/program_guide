@@ -1,367 +1,178 @@
-# 07 等价 —— `A <~> B`
+# 07 等价 —— 什么叫"两个类型一样"
 
-> 对应示例：`examples/07_equivalences.v`（编译验证通过）
+> 本章代码：[`examples/07_equivalences.v`](../examples/07_equivalences.v)
 
-在 HoTT 里"两个类型一样"的正确含义**不是**同构，而是**等价**
-（有双-sided 逆的映射）。等价是这本教材的中心概念：
-泛等公理说的就是"等价 = 相等"。
+集合论里"两个集合一样"有一个清楚的答案：存在双射。类型论里这个问题微妙得多，
+因为类型不只是点的集合，还有路径、路径之间的路径……"一样"必须把所有这些层次都对上。
+这一章给出 HoTT 的回答——**等价**（equivalence）——并解释为什么它的定义看起来比
+"有逆函数"复杂一点，以及这点复杂换来了什么。
 
-## 7.1 `IsEquiv` 与 `Equiv` 的结构
+## 7.1 第一次尝试：有逆函数
+
+直觉的定义：`f : A -> B` 是等价，如果有 `g : B -> A` 使得 `f ∘ g == id` 且 `g ∘ f == id`。
+这个概念叫**拟逆**（quasi-inverse），HoTT 书记作 qinv。
+
+它在"是否存在"的意义上完全正确：`f` 有拟逆当且仅当它是等价。
+问题出在**数据**上：类型 `qinv f`（所有拟逆构成的类型）不是命题——同一个 `f` 可以有
+"不同"的拟逆证据，因为两个同伦 `f ∘ g == id` 和 `g ∘ f == id` 可以独立选取，
+它们之间缺少一个相容条件。这会导致 `{f : A -> B & qinv f}` 和"A 与 B 的等价"
+这个概念在高阶上对不齐。
+
+## 7.2 HoTT 的定义：伴随等价
+
+补上那个相容条件，就得到库里的定义：
 
 ```coq
-Print IsEquiv.
-Print Equiv.
-Locate "<~>".
-```
-
-```text
-Record IsEquiv@{u u0} (A B : Type) (f : A -> B) : Type := Build_IsEquiv
+Record IsEquiv {A B : Type} (f : A -> B) := Build_IsEquiv
   { equiv_inv : B -> A;
-    eisretr : f o equiv_inv == idmap;
-    eissect : equiv_inv o f == idmap;
-    eisadj : forall x : A, eisretr (f x) = ap f (eissect x) }.
+    eisretr   : f o equiv_inv == idmap;                    (* f (g b) = b *)
+    eissect   : equiv_inv o f == idmap;                    (* g (f a) = a *)
+    eisadj    : forall x, eisretr (f x) = ap f (eissect x) }.
+```
 
-IsEquiv has primitive projections with eta conversion.
-Arguments IsEquiv {A B}%_type_scope f%_function_scope
-Arguments Build_IsEquiv (A B)%_type_scope (f equiv_inv)%_function_scope
-  eisretr eissect eisadj%_function_scope
-Arguments equiv_inv {A B}%_type_scope {f}%_function_scope {IsEquiv} _
-Arguments eisretr {A B}%_type_scope f%_function_scope {IsEquiv} x
-Arguments eissect {A B}%_type_scope f%_function_scope {IsEquiv} x
-Arguments eisadj {A B}%_type_scope f%_function_scope {IsEquiv} x
-Record Equiv@{u u0} (A B : Type) : Type := Build_Equiv
+四份数据：反函数、右逆同伦、左逆同伦，以及第四条 `eisadj`——它说"用右逆同伦
+消掉 `f (g (f x))` 里的外层"与"用左逆同伦消掉内层再让 `f` 作用"这两条从 `f (g (f x))`
+到 `f x` 的路径是**相等**的。这就是范畴论里伴随的三角恒等式之一，故名**伴随等价**。
+
+加上这一条之后，`IsEquiv f` 成为一个**命题**（h-prop）：对给定的 `f`，
+"它是等价"这件事至多有一种方式成立。于是 `A <~> B`（打包了 `f` 和 `IsEquiv f` 的记录）
+里两个元素相等当且仅当底层函数相等——这正是我们想要的"一样"。
+
+```coq
+Record Equiv (A B : Type) := Build_Equiv
   { equiv_fun : A -> B;  equiv_isequiv : IsEquiv equiv_fun }.
-
-Equiv has primitive projections with eta conversion.
-Notation "A <~> B" := (Equiv A B)
-  (* A in scope _type_scope, B in scope _type_scope *) : type_scope
-  (default interpretation) (from HoTT.Basics.Overture)
+Notation "A <~> B" := (Equiv A B).
 ```
 
-`IsEquiv f` 是一个类型类，装了四份数据：
+`Equiv` 可以强制转换为函数，所以 `e : A <~> B` 时可以直接写 `e a`；反函数用 `e^-1`。
 
-| 字段 | 含义 |
-|---|---|
-| `equiv_inv` | 反函数 `B -> A` |
-| `eisretr` | `f o f^-1 == idmap`（右逆 / section 方向） |
-| `eissect` | `f^-1 o f == idmap`（左逆 / retraction 方向） |
-| `eisadj` | 两者相容（伴随律） |
+## 7.3 不用手写第四条：`equiv_adjointify`
 
-最后一条让"半等价"升级为**伴随等价**（adjoint equivalence），
-这是本库采用的定义——它比"只是有左右逆"更强，但性质更好。
+好消息是你几乎永远不需要手工构造 `eisadj`。给定拟逆（两个同伦），
+可以**修正其中一个同伦**使伴随条件成立，这个修正是机械的：
 
 ```coq
-Check equiv_inv.
-Check eisretr.
-Check eissect.
-Check eisadj.
-```
-
-```text
-?f^-1%function
-     : ?B -> ?A
-where
-?A : [ |- Type]
-?B : [ |- Type]
-?IsEquiv : [ |- IsEquiv ?f]
-eisretr
-     : forall (f : ?A -> ?B) (IsEquiv : Overture.IsEquiv f),
-       (fun x : ?B => f (f^-1%function x)) == idmap
-where
-?A : [ |- Type]
-?B : [ |- Type]
-eissect
-     : forall (f : ?A -> ?B) (IsEquiv : Overture.IsEquiv f),
-       (fun x : ?A => f^-1%function (f x)) == idmap
-where
-?A : [ |- Type]
-?B : [ |- Type]
-```
-
-`Equiv A B` 把函数与它的 `IsEquiv` 证据打包，可强制转换为函数：
-
-```coq
-Check equiv_fun.
-Check (fun (A B : Type) (e : A <~> B) => e : A -> B).
-```
-
-```text
-equiv_fun
-     : ?A <~> ?B -> ?A -> ?B
-where
-?A : [ |- Type]
-?B : [ |- Type]
-fun (A B : Type) (e : A <~> B) => e : A -> B
-     : forall A B : Type, A <~> B -> A -> B
-```
-
-## 7.2 由左右逆构造等价：伴随化
-
-```coq
-Check isequiv_adjointify.
 Check equiv_adjointify.
+(* forall (f : A -> B) (g : B -> A), f o g == idmap -> g o f == idmap -> A <~> B *)
 ```
 
-```text
-isequiv_adjointify
-     : forall (f : ?A -> ?B) (g : ?B -> ?A),
-       (fun x : ?B => f (g x)) == idmap ->
-       (fun x : ?A => g (f x)) == idmap -> IsEquiv f
-where
-?A : [ |- Type]
-?B : [ |- Type]
-equiv_adjointify
-     : forall (f : ?A -> ?B) (g : ?B -> ?A),
-       (fun x : ?B => f (g x)) == idmap ->
-       (fun x : ?A => g (f x)) == idmap -> ?A <~> ?B
-where
-?A : [ |- Type]
-?B : [ |- Type]
-```
-
-只需要给两个同伦（左右逆），伴随律由 `isequiv_adjointify` 自动补上。
-经典例子——布尔取反：
+经典例子，布尔取反是 `Bool` 的自等价：
 
 ```coq
 Definition equiv_bool_neg : Bool <~> Bool.
 Proof.
   refine (equiv_adjointify negb negb _ _).
-  - intro b; destruct b; reflexivity.
+  - intro b; destruct b; reflexivity.   (* negb (negb b) = b *)
   - intro b; destruct b; reflexivity.
 Defined.
-Check equiv_bool_neg.
-Compute equiv_bool_neg true.
-Compute equiv_bool_neg false.
-Compute equiv_bool_neg^-1 true.
+
+Compute equiv_bool_neg true.        (* = false *)
+Compute equiv_bool_neg^-1 true.     (* = false *)
 ```
 
-```text
-equiv_bool_neg
-     : Bool <~> Bool
-     = false
-     : Bool
-     = true
-     : Bool
-     = false
-     : Bool
-```
-
-反函数用 `^-1` 取（`function_scope` 里的记号）。
-
-> **`make_equiv` 这个 tactic**能自动收拾"给反函数 + 两个同伦"的证明，
-> 见 7.5。
-
-## 7.3 等价构成一个群胚
-
-```coq
-Check equiv_idmap.
-Check equiv_compose.
-Check equiv_inverse.
-Locate "oE".
-```
-
-```text
-1%equiv
-     : ?A <~> ?A
-where
-?A : [ |- Type]
-equiv_compose
-     : forall (g : ?B -> ?C) (f : ?A -> ?B),
-       IsEquiv g -> IsEquiv f -> ?A <~> ?C
-where
-?A : [ |- Type]
-?B : [ |- Type]
-?C : [ |- Type]
-equiv_inverse
-     : ?A <~> ?B -> ?B <~> ?A
-where
-?A : [ |- Type]
-?B : [ |- Type]
-```
-
-复合与取逆都是等价：
-
-```coq
-Check (equiv_compose' equiv_bool_neg equiv_bool_neg).
-Compute (equiv_compose' equiv_bool_neg equiv_bool_neg) true.
-```
-
-```text
-equiv_bool_neg oE equiv_bool_neg
-     : Bool <~> Bool
-     = true
-     : Bool
-```
-
-取反两次是恒等，所以结果是 `true` ✓。
-
-等价的逆的逆是自己（在 `==` 的意义下）：
-
-```coq
-Check equiv_inverse_compose.
-```
-
-```text
-equiv_inverse_compose
-     : forall (f : ?A <~> ?B) (g : ?B <~> ?C), (g oE f)^-1 == f^-1 oE g^-1
-where
-?A : [ |- Type]
-?B : [ |- Type]
-?C : [ |- Type]
-```
-
-## 7.4 `ap` 保持等价
-
-```coq
-Check isequiv_ap.
-Check equiv_ap.
-```
-
-```text
-isequiv_ap
-     : forall x y : ?A, IsEquiv (ap ?f)
-where
-?A : [ |- Type]
-?B : [ |- Type]
-?f : [ |- ?A -> ?B]
-?H : [ |- IsEquiv ?f]
-equiv_ap
-     : forall f : ?A -> ?B, IsEquiv f -> forall x y : ?A, x = y <~> f x = f y
-where
-?A : [ |- Type]
-?B : [ |- Type]
-```
-
-若 `f` 是等价，则 `ap f : (x = y) -> (f x = f y)` 也是等价。
-这条在编码-解码证明（第 13 章）里反复用到。
-
-## 7.5 手写几个常见等价
-
-积的交换。`make_equiv` 这个 tactic 能自动把"给出反函数 + 两个同伦"
-的证明收拾干净：
+对简单情形，`make_equiv` 这个 tactic 能自动搜出"反函数 + 两个同伦"：
 
 ```coq
 Definition my_prod_symm (A B : Type) : A * B <~> B * A.
-Proof.
-  make_equiv.
-Defined.
-Check my_prod_symm.
-Compute (my_prod_symm Bool nat (true, 3%nat)).
+Proof. make_equiv. Defined.
 ```
 
-```text
-my_prod_symm
-     : forall A B : Type, A * B <~> B * A
-     = (3%nat, true)
-     : nat * Bool
-```
+## 7.4 等价构成群胚
 
-库里的现成版本与函子版本：
+和路径一样，等价有单位元、复合、逆：
+
+| | 路径 | 等价 |
+|---|---|---|
+| 单位 | `1 : x = x` | `equiv_idmap : A <~> A`（`equiv_scope` 里也写 `1`） |
+| 复合 | `p @ q` | `g oE f`（注意顺序是数学的 `g ∘ f`） |
+| 逆 | `p^` | `e^-1`（`equiv_inverse`） |
 
 ```coq
-Check equiv_prod_symm.
-Check equiv_sigma_symm.
-Check equiv_functor_sigma.
-Check equiv_functor_prod.
+Compute (equiv_bool_neg oE equiv_bool_neg) true.   (* = true *)
+```
+
+这张表不是巧合。第 11 章的泛等公理会说：**等价就是 `Type` 里的路径**。
+那时这两列将真的合为一列。
+
+## 7.5 `ap` 保持等价
+
+若 `f` 是等价，则它在路径上的作用 `ap f : (x = y) -> (f x = f y)` 也是等价：
+
+```coq
+Check equiv_ap.   (* forall f, IsEquiv f -> forall x y, (x = y) <~> (f x = f y) *)
+```
+
+这是"等价保持所有结构"的第一个例子：它不仅把点一一对应，还把路径一一对应。
+第 17 章会把这条性质推广成嵌入的定义。
+
+## 7.6 等价穿过类型构造器
+
+等价是"函子性"的：乘积、Σ、和、函数类型都把等价映到等价：
+
+```coq
+Check equiv_functor_prod'.   (* A <~> A' -> B <~> B' -> A * B <~> A' * B' *)
 Check equiv_functor_sum.
+Check equiv_functor_sigma.
 ```
 
-```text
-equiv_functor_sigma
-     : forall f : ?A -> ?B,
-       IsEquiv f ->
-       forall g : forall a : ?A, ?P a -> ?Q (f a),
-       (forall a : ?A, IsEquiv (g a)) -> {x : _ & ?P x} <~> {x : _ & ?Q x}
-where
-?A : [ |- Type]
-?P : [ |- ?A -> Type]
-?B : [ |- Type]
-?Q : [ |- ?B -> Type]
-```
+第 14 章与第 18 章大量依赖这一点：要证明两个复杂类型等价，把它们拆成构造器，
+在每个分量上给等价，再用 `equiv_functor_*` 拼回去。
 
-> "等价可以穿过类型构造器"这件事是第 14 章与第 18 章的支柱。
+## 7.7 沿等价做归纳：`equiv_ind`
 
-## 7.6 等价 vs 可缩纤维
-
-`f : A -> B` 是等价，**当且仅当**它的每个同伦纤维 `hfiber f b` 可缩。
-这是判定等价最常用的手段，详见第 08 章。
-
-```coq
-Check hfiber.
-Check contr_map_isequiv.
-```
-
-```text
-hfiber
-     : (?A -> ?B) -> ?B -> Type
-where
-?A : [ |- Type]
-?B : [ |- Type]
-contr_map_isequiv
-     : forall f : ?A -> ?B, IsEquiv f -> IsTruncMap (-2) f
-where
-?A : [ |- Type]
-?B : [ |- Type]
-```
-
-## 7.7 `equiv_ind`：像做归纳一样消掉一个等价
+路径归纳说：要对所有 `y` 和 `p : a = y` 证明某事，只需在 `(a, 1)` 上证明。
+等价有一个类似的原则——要对所有 `b : B` 证明 `P b`，只需对所有 `a : A` 证明 `P (f a)`：
 
 ```coq
 Check equiv_ind.
-Check equiv_ind_comp.
+(* forall (f : A -> B), IsEquiv f -> forall P : B -> Type,
+     (forall a, P (f a)) -> forall b, P b *)
 ```
 
-```text
-equiv_ind
-     : forall f : ?A -> ?B,
-       IsEquiv f ->
-       forall P : ?B -> Type, (forall x : ?A, P (f x)) -> forall y : ?B, P y
-where
-?A : [ |- Type]
-?B : [ |- Type]
-equiv_ind_comp
-     : forall (P : ?B -> Type) (df : forall x : ?A, P (?f x)) 
-       (x : ?A), equiv_ind ?f P df (?f x) = df x
-where
-?A : [ |- Type]
-?B : [ |- Type]
-?f : [ |- ?A -> ?B]
-?H : [ |- IsEquiv ?f]
+直觉：`f` 是满的（每个 `b` 都是某个 `f a`），所以沿 `f` 把 `b` 换成 `f a` 不丢失一般性。
+配合泛等后，它会升级成真正的"对等价做路径归纳"（`equiv_induction`，第 11 章）。
+
+## 7.8 预告：另一种刻画
+
+还有一种与伴随等价**逻辑等价、并且同样是命题**的刻画：
+**`f` 是等价，当且仅当它的每个同伦纤维可缩**。
+
+```coq
+Check hfiber.             (* (A -> B) -> B -> Type；hfiber f b := {a : A & f a = b} *)
+Check contr_map_isequiv.  (* IsEquiv f -> 所有纤维可缩 *)
 ```
 
-等价归纳说：要证 `forall b, P b`，只需证 `forall a, P (f a)`。
-配合泛等（第 11 章），它就变成真正的路径归纳
-（那时叫 `equiv_induction`）。
+"纤维可缩"是说对每个 `b`，解集 `{a & f a = b}` 不仅非空、不仅唯一，
+而且"唯一性的证明也唯一"……一直到所有层次。这是第 08 章的主题，
+也是把等价放进截断层级这把标尺（第 09、17 章）的入口。
 
-## 本章坑位清单
+## 小结
 
-1. **`IsEquiv` 有四份数据，不是两份**：只给左右逆不构成 `IsEquiv`，
-   要用 `isequiv_adjointify` 补上 `eisadj`。
-2. **`equiv_adjointify` 的两个同伦顺序**：先"右逆"
-   （`f (g x) == x`，`x : B`），再"左逆"（`g (f x) == x`，`x : A`）。
-3. **`^-1` 有两个版本**：`function_scope` 里是 `equiv_inv`（反函数），
-   `equiv_scope` 里是 `equiv_inverse`（逆等价）。
-4. **`make_equiv` 不是万能的**：目标形状稍微复杂它就搜不出来，
-   那时改用 `refine (equiv_adjointify ... _ _)`。
-5. **`Equiv` 可以强制转换成函数**，但反过来不行——
-   `Check (e : A -> B)` 可以，`Check (f : A <~> B)` 不行。
-6. **`equiv_compose` 与 `equiv_compose'` 参数顺序相反**：
-   `equiv_compose g f` 里 `g` 在前（数学的 `g ∘ f`），
-   `equiv_compose' g f` 同上但接受 `IsEquiv` 作为类型类。
-7. **`1` 在 `equiv_scope` 里是 `equiv_idmap`**：
-   打开了 `equiv_scope` 的文件里想写 `idpath` 要显式写 `idpath`。
-8. **`isequiv_ap` 需要 `IsEquiv f` 作为类型类实例**，
-   若没有实例，错误信息会是"Unable to satisfy the following constraints"。
-9. **`hfiber` 的两个类型参数是隐式的**：`Check hfiber` 只显示
-   `(?A -> ?B) -> ?B -> Type`。
-10. **`equiv_ind` 的 `P` 只依赖 `B` 不依赖 `f`**：
-    它是"沿等价做归纳"的最简形式。
-11. **`Locate "equiv_intros"` 输出 `Unknown notation`**：
-    本版本库里没有这个 tactic 记号，别照抄旧教程。
-12. **不要把等价和"同构"混为一谈**：HoTT 里没有同构这个原始概念，
-    一律用 `A <~> B`。
+- "有逆函数"（拟逆）在存在性上够用，但作为数据不是命题；补上伴随条件 `eisadj` 后，
+  `IsEquiv f` 成为命题。
+- 用 `equiv_adjointify` 从拟逆造等价，用 `make_equiv` 对付简单情形。
+- 等价构成群胚（`1`、`oE`、`^-1`），与路径的结构平行——泛等会让它们合一。
+- 等价保持路径（`equiv_ap`），穿过类型构造器（`equiv_functor_*`），支持归纳（`equiv_ind`）。
+- 等价 ⟺ 所有纤维可缩，下一章展开。
+
+## 常见误区
+
+1. **以为 `IsEquiv` 就是"有左右逆"**。少了 `eisadj` 的版本不是命题，
+   不能作为"等价"的定义。但日常构造只需给左右逆，`equiv_adjointify` 会补齐。
+2. **把等价当成"同构"的同义词**。HoTT 里没有独立的"同构"概念；对类型而言等价就是
+   正确的"一样"。（范畴里对象的同构是另一个层次的事，第 20 章。）
+3. **`equiv_adjointify` 的两个同伦顺序**：先 `f o g == idmap`（`B` 上），后 `g o f == idmap`（`A` 上）。
+4. **`^-1` 有两个作用域**：函数作用域里是反函数（`B -> A`），等价作用域里是逆等价（`B <~> A`）。
+
+## 练习
+
+1. 用 `equiv_adjointify` 证明 `A + B <~> B + A`，再用 `make_equiv` 做一遍。
+2. 证明 `Unit * A <~> A`。
+3. 思考：为什么 `qinv f` 不是命题？构造一个 `f` 和它的两个"不同"的拟逆证据
+   （提示：取 `f := idmap : Circle -> Circle`，左逆同伦可以选 `fun x => 1`，
+   也可以选别的环路——第 13 章之后再回来想这个问题）。
 
 ---
 
-**上一章**：[06 路径代数](docs/06-path-algebra.md)
-**下一章**：[08 同伦纤维与可缩性](docs/08-fibers.md)
+**上一章**：[06 路径代数](06-path-algebra.md)
+**下一章**：[08 同伦纤维与可缩性](08-fibers.md)

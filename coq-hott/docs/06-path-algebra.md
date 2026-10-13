@@ -1,298 +1,165 @@
-# 06 路径代数 —— 群胚律与移项术
+# 06 路径代数 —— 群胚律与二维路径
 
-> 对应示例：`examples/06_path_algebra.v`（编译验证通过）
+> 本章代码：[`examples/06_path_algebra.v`](../examples/06_path_algebra.v)
 
-路径构成一个**群胚**（groupoid）：`1` 是单位元，`@` 是乘法，`^` 是取逆。
-但注意，结合律**不是定义上相等**，而是一条路径。这一章把这套代数用熟。
+第 04 章派生了路径的逆与复合。这一章退后一步，看它们合起来构成什么结构：
+一个**群胚**（groupoid）——每个元素都可逆的范畴。然后往上走一层：
+路径之间的路径也有代数，而且它们满足一条出人意料的交换律（Eckmann–Hilton）。
+最后介绍几种让路径计算不那么痛苦的工具。
 
-## 6.1 一维：路径构成一个群胚
+## 6.1 一维：路径构成群胚
 
-```coq
-Check concat_p1.          (* p @ 1 = p *)
-Check concat_1p.          (* 1 @ p = p *)
-Check concat_p_pp.        (* p @ (q @ r) = (p @ q) @ r *)
-Check concat_pp_p.        (* (p @ q) @ r = p @ (q @ r) *)
-Check concat_pV.          (* p @ p^ = 1 *)
-Check concat_Vp.          (* p^ @ p = 1 *)
-Check inv_pp.             (* (p @ q)^ = q^ @ p^ *)
-Check inv_V.              (* (p^)^ = p *)
-```
+把 `1` 看成单位元、`@` 看成乘法、`^` 看成取逆，路径满足全部群公理：
 
-```text
-concat_p_pp
-     : forall (p : ?x = ?y) (q : ?y = ?z) (r : ?z = ?t),
-       p @ (q @ r) = (p @ q) @ r
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-?z : [ |- ?A]
-?t : [ |- ?A]
-concat_pV
-     : forall p : ?x = ?y, p @ p^ = 1
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-```
+| 律 | 引理 | 内容 |
+|---|---|---|
+| 右单位 | `concat_p1` | `p @ 1 = p` |
+| 左单位 | `concat_1p` | `1 @ p = p` |
+| 结合律 | `concat_p_pp` | `p @ (q @ r) = (p @ q) @ r` |
+| 结合律（反向） | `concat_pp_p` | `(p @ q) @ r = p @ (q @ r)` |
+| 右逆 | `concat_pV` | `p @ p^ = 1` |
+| 左逆 | `concat_Vp` | `p^ @ p = 1` |
+| 反同态 | `inv_pp` | `(p @ q)^ = q^ @ p^` |
+| 对合 | `inv_V` | `(p^)^ = p` |
 
-库里同时提供正反两种命名（`concat_p_pp` 与 `concat_pp_p`），
-记不住方向就用 `lhs` / `rhs` 显式改写（见 6.5）。
+和普通的群有一个关键差别：这些律**不是定义上成立的，而是路径**。
+`p @ (q @ r)` 和 `(p @ q) @ r` 是两个不同的项，`concat_p_pp p q r` 是它们之间的一条路径。
+这正是"群胚"而非"群"的意思——在一个类型里，每个 `x = y` 都是一个群胚的态射集，
+而群胚公理本身是更高一层的态射。
+
+库里结合律提供了正反两个名字，纯粹为了方便：改写时想要哪个方向就用哪个。
 
 ## 6.2 二维：路径之间的路径
 
-`concat2` 把两条 2-路径"横向"并置：
+既然 `p q : x = y` 是同一类型的两个元素，就可以问 `p = q`——这是一条 **2-路径**，
+几何上是两条道路之间的连续形变（同伦）。2-路径也有自己的运算。
+
+**横向复合**：如果 `p = p'` 且 `q = q'`，那么 `p @ q = p' @ q'`。
 
 ```coq
-Check concat2.
+Check concat2.   (* p = p' -> q = q' -> p @ q = p' @ q' *)
 ```
 
-```text
-concat2
-     : ?p = ?p' -> ?q = ?q' -> ?p @ ?q = ?p' @ ?q'
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-?z : [ |- ?A]
-?p : [ |- ?x = ?y]
-?p' : [ |- ?x = ?y]
-?q : [ |- ?y = ?z]
-?q' : [ |- ?y = ?z]
-```
-
-`whiskerL` / `whiskerR` 在 2-路径的一侧补上一条 1-路径：
+**须化**（whiskering）：在 2-路径的一侧补上一条不变的 1-路径。
 
 ```coq
-Check whiskerL.
-Check whiskerR.
+Check whiskerL.  (* forall p, q = r -> p @ q = p @ r *)
+Check whiskerR.  (* p = q -> forall r, p @ r = q @ r *)
 ```
 
-```text
-whiskerL
-     : forall (p : ?x = ?y) (q r : ?y = ?z), q = r -> p @ q = p @ r
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-?z : [ |- ?A]
-whiskerR
-     : ?p = ?q -> forall r : ?y = ?z, ?p @ r = ?q @ r
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-?z : [ |- ?A]
-?p : [ |- ?x = ?y]
-?q : [ |- ?x = ?y]
-```
+**纵向复合**：两条 2-路径 `p = q` 和 `q = r` 首尾相接，就是普通的 `@`——
+因为 2-路径本身就是 `x = y` 这个类型里的路径。
 
-它们各自的运算律：
+`ap` 也可以作用在 2-路径上：对 `h : p = q`，`ap (ap f) h : ap f p = ap f q`。
 
-```coq
-Check whiskerL_pp.
-Check whiskerR_pp.
-Check whiskerL_1p.
-Check whiskerR_p1.
-```
-
-`ap` 也能作用在 2-路径上（它就是 `ap (ap f)`）：
-
-```coq
-Check (fun (A B : Type) (f : A -> B) (x y : A) (p q : x = y) => ap (ap f)).
-```
+这些就是"2-群胚"的结构。一直往上走，每个类型都是一个 ∞-群胚——这是 HoTT 的基本图像。
 
 ## 6.3 Eckmann–Hilton：二阶环路必交换
 
-```coq
-Check eckmann_hilton.
-```
-
-```text
-eckmann_hilton
-     : forall p q : 1 = 1, p @ q = q @ p
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-```
-
-这个结论在 HoTT 里格外重要：它说明"环路空间的环路空间"永远是交换的，
-所以基本群（1-维）之上才有交换的 π₂、π₃……
-
-## 6.4 移项术：`moveR` / `moveL`
-
-证明形状为 `p @ q = r` 的等式时，手工做 `concat` / `inverse` 的组合很痛苦。
-库里提供了成套的"移项"引理：
+一阶环路一般不交换：圆的基本群 ℤ 恰好是交换的，但一般空间的 π₁ 可以是任何群。
+然而**二阶**环路——以 `1 : x = x` 为基点的环路 `p q : 1 = 1`——总是交换的：
 
 ```coq
-Check moveR_Mp.   (* p = r^ @ q -> r @ p = q *)
-Check moveR_pM.   (* r = q @ p^ -> r @ p = q *)
-Check moveR_Vp.   (* p = r @ q  -> r^ @ p = q *)
-Check moveR_pV.   (* r = q @ p  -> r @ p^ = q *)
-Check moveL_Mp.   (* r^ @ q = p -> q = r @ p *)
-Check moveL_pM.   (* q @ p^ = r -> q = r @ p *)
-Check moveL_Vp.   (* r @ q = p -> q = r^ @ p *)
-Check moveL_pV.   (* q @ p = r -> q = r @ p^ *)
-Check moveL_1M.   (* p @ q^ = 1 -> p = q *)
-Check moveR_1M.   (* 1 = q @ p^ -> p = q *)
+Check eckmann_hilton.   (* forall p q : 1 = 1, p @ q = q @ p *)
 ```
 
-```text
-moveR_Mp
-     : forall (p : ?x = ?z) (q : ?y = ?z) (r : ?y = ?x),
-       p = r^ @ q -> r @ p = q
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-?z : [ |- ?A]
-```
+为什么？在 `1 = 1` 这个类型里有两种复合：纵向的 `@`（把两条 2-路径接起来）和横向的
+`concat2`（把它们并排放）。两者有相同的单位元，并且满足交换律（interchange law）。
+一个经典的代数论证说：**一个集合上两个有共同单位元且满足交换律的二元运算必定相同且交换。**
+Eckmann–Hilton 论证就是这个。
 
-**命名规则**：`M` 表示移项后带 `^`（minus），`V` 表示被移的那条原本是 `^`，
-`p` / `1` 表示等式里出现的是路径还是单位元。
+这解释了代数拓扑里一个著名事实：π₁ 可以非交换，但 π₂、π₃、…… 全是交换群。
+在 HoTT 里它是一条可以逐步展开的路径等式。
 
-### 一个手工例子
+## 6.4 移项：`moveR` / `moveL`
 
-证明 `p^ @ (p @ q) = q`，用路径归纳一步就好：
+证明形如 `p @ q = r` 的等式时，手工搭配 `concat_*` 和 `inverse` 很痛苦。
+库提供了一整套"移项"引理，就像解方程时把一项挪到另一边：
 
 ```coq
-Definition cancel_p_left {A : Type} {x y z : A} (p : x = y) (q : y = z)
-  : p^ @ (p @ q) = q.
-Proof.
-  destruct p; destruct q; reflexivity.
-Defined.
+Check moveR_Mp.   (* p = r^ @ q  ->  r @ p = q *)
+Check moveR_pM.   (* r = q @ p^  ->  r @ p = q *)
+Check moveL_Mp.   (* r^ @ q = p  ->  q = r @ p *)
+Check moveL_1M.   (* p @ q^ = 1  ->  p = q *)
 ```
 
-```text
-cancel_p_left
-     : forall (p : ?x = ?y) (q : ?y = ?z), p^ @ (p @ q) = q
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-?z : [ |- ?A]
-```
+命名规则：`R` / `L` 说结论里被操作的东西在等号右边还是左边；`M` 表示移项后带上 `^`
+（minus）；`V` 表示被移的那条原本就是逆；`1` 表示等式一边是单位元。
+名字很难背，但一旦理解规则，`Check` 一下就能找到对的那条。
 
-库里对应的引理叫 `concat_V_pp`：
+## 6.5 把改写锁定在等式的一侧：`lhs` / `rhs`
 
-```coq
-Check concat_V_pp.
-```
-
-```text
-concat_V_pp
-     : forall (p : ?x = ?y) (q : ?y = ?z), p^ @ (p @ q) = q
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-?z : [ |- ?A]
-```
-
-> 注意这里不能写 `destruct p; simpl; apply concat_1p`——
-> `destruct` 后目标是 `q = 1 @ q` 之类，`apply concat_1p` 会报
-> `Unable to unify "q" with "1 @ q"`。要么一次 `destruct` 完，
-> 要么显式给参数（`apply (concat_1p q)`）。
-
-## 6.5 `lhs` / `rhs`：把改写锁定在等式的一侧
-
-目标 `a = c` 时，`lhs napply e` 会把左边 `a` 改成 `e` 的左端，
-把目标变成 `e 的右端 = c`。这是 HoTT 库里到处可见的写法。
+目标 `a = c`，手里有 `e : a = b`。`lhs napply e` 把目标变成 `b = c`——左边被 `e` 改写了。
+对称地 `rhs` 改写右边。这是 HoTT 库源码里到处可见的写法：
 
 ```coq
 Definition demo_lhs {A : Type} {x y : A} (p : x = y) : 1 @ p = p.
 Proof.
-  lhs napply (concat_1p p).   (* 把左边 [1 @ p] 重写成 [p]，目标变成 [p = p] *)
-  reflexivity.
-Defined.
-
-Definition demo_rhs {A : Type} {x y : A} (p : x = y) : p = 1 @ p.
-Proof.
-  rhs napply (concat_1p p).
+  lhs napply (concat_1p p).   (* 左边 1 @ p 变成 p，目标 p = p *)
   reflexivity.
 Defined.
 ```
 
-```text
-demo_lhs
-     : forall p : ?x = ?y, 1 @ p = p
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-demo_rhs
-     : forall p : ?x = ?y, p = 1 @ p
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-```
-
-> **`lhs napply e` 里的 `e` 必须给全参数**：写 `lhs napply concat_1p`
-> 会报 `Unable to unify "q" with "1 @ q"`（参数没定下来）。
+比 `rewrite` 好的地方是它完全受控：只动一侧，不会误伤别处。
+注意引理要给全参数（`concat_1p p` 而不是 `concat_1p`），否则统一失败。
 
 ## 6.6 一个完整的小证明：逆的唯一性
+
+**命题**：若 `p @ q = 1`，则 `q = p^`。换言之，右逆是唯一的。
 
 ```coq
 Definition inverse_unique {A : Type} {x y : A} (p : x = y) (q : y = x)
   (h : p @ q = 1) : q = p^.
 Proof.
   destruct p; simpl in *.
-  (* 此时目标 [q = 1]，而 [h : 1 @ q = 1]，
-     先用 [concat_1p q : 1 @ q = q] 的逆把左边换成 [q]：*)
+  (* 现在 p 是 1，目标 q = 1，假设 h : 1 @ q = 1 *)
   exact ((concat_1p q)^ @ h).
 Defined.
 ```
 
-```text
-inverse_unique
-     : forall (p : ?x = ?y) (q : ?y = ?x), p @ q = 1 -> q = p^
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-```
+走一遍：`destruct p` 之后 `p^` 归约成 `1`，目标 `q = 1`；假设 `h : 1 @ q = 1`。
+`concat_1p q : 1 @ q = q`，取逆得 `q = 1 @ q`，再接上 `h` 得 `q = 1`。
 
-拆解这一步：`destruct p` 后目标是 `q = 1`，假设 `h : 1 @ q = 1`。
-`concat_1p q : 1 @ q = q`，取逆得 `(concat_1p q)^ : q = 1 @ q`。
-于是 `(concat_1p q)^ @ h : q = 1`——正是目标。
+一个常见的错误是写 `exact h^`：它的类型是 `1 = 1 @ q`，方向和形状都不对。
+路径证明里**先把每一步的类型写出来**，比瞎试 tactic 快得多。
 
-> 常见错误：写 `exact (h^)`。它的类型是 `1 = 1 @ q`，
-> 而目标是 `q = 1`，会报类型不符。
+这个结论有一般的意义：在任何群胚里逆元唯一。但注意这里"唯一"是一条路径 `q = p^`，
+而不是元素层面的相等——高阶类型里，这条路径本身可能是有内容的。
 
-库里现成的等价思路是 `moveL_pV` 与 `moveR_M1` 的组合：
+## 6.7 为什么路径代数值得学
 
-```coq
-Check moveR_M1.   (* 1 = p^ @ q -> p = q *)
-Check moveL_M1.   (* q^ @ p = 1 -> p = q *)
-```
+初学者容易觉得这些引理是"记号游戏"。它们的真实作用有三个：
 
-## 本章坑位清单
+1. **HIT 的消去条件**（第 12、13、19 章）几乎总是一条 `transport ... = ...` 的路径等式，
+   把它化成能证的形状全靠路径代数。
+2. **编码-解码**（第 13 章）要在路径类型上定义函数并证明互逆，每一步都是路径代数。
+3. **2-路径的结构**是 HoTT 区别于集合论数学的地方。集合里 `p @ 1 = p` 无所谓；
+   在圆或球面上，这些律之间的相容性（例如五边形恒等式）是真正的几何信息。
 
-1. **结合律不是定义上相等**：`p @ (q @ r)` 与 `(p @ q) @ r` 之间
-   需要 `concat_p_pp` / `concat_pp_p` 这条路径。
-2. **`@` 不是左结合的**：连写三个 `@` 会触发 `[level-tolerance]` 警告，
-   而警告打在 stderr 上会让验证失败。显式加括号。
-3. **`lhs napply e` 必须给全参数**：`lhs napply concat_1p` 报
-   `Unable to unify`，要写 `lhs napply (concat_1p p)`。
-4. **`destruct p` 后别急着 `apply`**：目标可能被化简成别的形式，
-   要么一次 `destruct` 完，要么先看清楚目标。
-5. **`exact (h^)` 常常方向不对**：先算清 `(concat_1p q)^ @ h` 这类组合的类型。
-6. **`moveR` / `moveL` 共 8 条基本款 + 4 条含单位元款**，
-   名字由 M / V / p / 1 四个部件拼成，记不住就 `Check`。
-7. **`eckmann_hilton` 说的是二阶环路交换**，
-   不要拿它去证一阶的东西（一阶环路一般不交换，比如圆）。
-8. **`whiskerL` / `whiskerR` 的参数顺序不同**：
-   `whiskerL p (r @ s)` 与 `whiskerR (r @ s) q`。
-9. **`concat2` 是"横向并置"，2-路径的"纵向"复合就是普通 `@`**，
-   两者别混。
-10. **`simpl in *` 在 `destruct` 之后很常用**：
-    它会把 `1 @ q` 之类化简，但不会动 `transport`。
-11. **`cancel_p_left` 这个引理库里叫 `concat_V_pp`**，
-    自己写一遍是理解路径归纳的好练习。
-12. **`inv_VV` 而不是两次 `inv_pp`**：`(p^ @ q^)^ = q @ p`。
+## 小结
+
+- 路径在 `1`、`@`、`^` 下构成群胚；群胚律本身是路径，不是定义等式。
+- 2-路径有横向复合 `concat2`、须化 `whiskerL/R`、纵向复合 `@`。
+- Eckmann–Hilton：`1 = 1` 里的环路总交换；这是 π₂ 以上都是交换群的类型论形式。
+- `moveR_*` / `moveL_*` 移项，`lhs` / `rhs` 定向改写。
+- 路径证明的第一步是把每个项的类型写清楚。
+
+## 常见误区
+
+1. **把结合律当成定义等式**。`p @ (q @ r)` 和 `(p @ q) @ r` 之间需要显式的 `concat_p_pp`。
+2. **把 Eckmann–Hilton 用在一阶环路上**。它只对 `1 = 1`（基点为恒等路径）的二阶环路成立；
+   圆的一阶环路 `loop` 和 `loop^` 当然也交换，但那是因为 ℤ 恰好交换，不是 Eckmann–Hilton。
+3. **分不清横向与纵向复合**。横向是 `concat2`（并排），纵向是 `@`（首尾相接）。
+4. **`destruct p` 后立刻 `apply` 库引理**。目标形状可能已经变了；先看目标，或一次 `destruct` 到底。
+
+## 练习
+
+1. 用 `destruct` 证明 `concat_p_pp`，再思考为什么需要对三条路径都 `destruct`。
+2. 不用 `inverse_unique`，直接用 `moveL_*` 系列引理证明"若 `p @ q = 1` 则 `q = p^`"。
+3. 把 `whiskerL p` 与 `whiskerR r` 对两条 2-路径 `h : q = q'`、`k : p = p'` 的
+   两种组合顺序写出来，并说明它们为什么都等于 `concat2 k h`（这就是交换律）。
 
 ---
 
-**上一章**：[05 Transport](docs/05-transport.md)
-**下一章**：[07 等价 —— `A <~> B`](docs/07-equivalences.md)
+**上一章**：[05 Transport](05-transport.md)
+**下一章**：[07 等价](07-equivalences.md)

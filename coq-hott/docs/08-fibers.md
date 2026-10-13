@@ -1,326 +1,181 @@
 # 08 同伦纤维与可缩性
 
-> 对应示例：`examples/08_fibers.v`（编译验证通过）
+> 本章代码：[`examples/08_fibers.v`](../examples/08_fibers.v)
 
-"每个纤维可缩"是判定等价的主力手段；可缩性本身也是 (-2)-截断。
-这一章把第 07 章末尾的那句话变成可操作的工具。
+上一章结尾留了一句话："等价当且仅当每个纤维可缩"。这一章把这句话里的两个概念——
+**同伦纤维**和**可缩**——讲清楚，然后亲手证明那个等价关系。顺带会遇到一条
+看似平凡却极其有用的引理：以某点为起点的所有路径构成的类型是可缩的。
 
-## 8.1 同伦纤维 `hfiber`
+## 8.1 同伦纤维：方程的解空间
 
-```coq
-Print hfiber.
-```
-
-```text
-hfiber@{u u0} =
-fun (A B : Type) (f : A -> B) (y : B) => {x : A & f x = y}
-     : forall {A B : Type}, (A -> B) -> B -> Type
-
-Arguments hfiber {A B}%_type_scope f%_function_scope y
-```
-
-`hfiber f y := { x : A & f x = y }`：所有映到 `y` 的点，
-连同"映到 `y` 的证据"。它衡量的是**解的结构**，而不只是"有没有解"。
+给定 `f : A -> B` 和 `b : B`，方程 `f a = b` 的解是什么？集合论里是一个子集 `f⁻¹(b)`。
+类型论里，解不只是一个 `a`，还要带着"它确实是解"的证据：
 
 ```coq
-Check (fun (A B : Type) (f : A -> B) (y : B) => hfiber f y).
+Definition hfiber {A B : Type} (f : A -> B) (b : B) : Type
+  := {a : A & f a = b}.
 ```
 
-```text
-fun (A B : Type) (f : A -> B) (y : B) => hfiber f y
-     : forall A B : Type, (A -> B) -> B -> Type
-```
+这叫**同伦纤维**。它的几何图像：把 `f` 想成一个把 `A` 铺在 `B` 上方的映射，
+`hfiber f b` 是 `b` 正上方的那一片。
 
-对比：`isinj f` 只说"解至多一个"，`IsSurjection f` 只说"解至少存在一个"
-（还是 `merely` 意义上的），而"纤维可缩"说的是**恰好一个，且唯一性本身也是数据**。
+同伦纤维衡量的是解的**结构**，不只是"有没有解"：
 
-## 8.2 可缩类型 `Contr`
+| 对所有 `b`，`hfiber f b` …… | `f` 是 |
+|---|---|
+| 可缩（恰好一个解，而且唯一性也唯一） | 等价 |
+| 是命题（至多一个解） | 嵌入（第 17 章） |
+| merely 有居民（至少一个解，不说是哪个） | 满射（第 15 章） |
+
+这张表是第 17 章的全部内容，这里先种下种子。
+
+## 8.2 可缩：只有一个点，连路径也只有一条
+
+一个类型 `A` **可缩**，如果有一个中心点，并且每个点都有一条路径连到中心：
 
 ```coq
-Check (fun A : Type => Contr A).
-Check center.
-Check contr.
-Print IsTrunc_internal.
+Record Contr (A : Type) := Build_Contr
+  { center : A;
+    contr  : forall y : A, center = y }.
 ```
 
-```text
-fun A : Type => Contr A
-     : Type -> Type
-center
-     : forall A : Type, Contr A -> A
-contr
-     : forall y : ?A, center ?A = y
-where
-?A : [ |- Type]
-?H : [ |- Contr ?A]
-Inductive IsTrunc_internal@{u} (A : Type) : trunc_index -> Type :=
-    Build_Contr : forall center : A, (forall y : A, center = y) -> Contr A
-  | istrunc_S : forall n : trunc_index,
-                (forall x y : A, IsTrunc n (x = y)) -> IsTrunc n.+1 A.
-
-Arguments IsTrunc_internal A%_type_scope _%_trunc_scope
-Arguments Build_Contr A%_type_scope center contr%_function_scope
-Arguments istrunc_S A%_type_scope {n}%_trunc_scope _%_function_scope
-```
-
-可缩 = 有一个中心点，且所有点都与之相连。`Contr A` 就是 `IsTrunc (-2) A`。
+几何上：`A` 可以连续地收缩到一个点。`Unit` 当然可缩：
 
 ```coq
-Definition contr_unit : Contr Unit := Build_Contr _ tt (fun u => match u with tt => 1 end).
-Check contr_unit.
+Definition contr_unit : Contr Unit
+  := Build_Contr _ tt (fun u => match u with tt => 1 end).
 ```
 
-```text
-contr_unit
-     : Contr Unit
-```
-
-可缩类型的任何两点之间都有路径，且这些路径还唯一：
+可缩比"恰好一个元素"强得多，强在**路径层面**：
 
 ```coq
-Check path_contr.
-Check path2_contr.
-Check contr_paths_contr.
+Check path_contr.    (* 可缩类型里任意两点有路径 *)
+Check path2_contr.   (* 任意两条平行路径也相等 *)
+Check contr_paths_contr.   (* 可缩类型的路径类型本身可缩 *)
 ```
 
-```text
-path_contr
-     : forall x y : ?A, x = y
-where
-?A : [ |- Type]
-?Contr0 : [ |- Contr ?A]
-path2_contr
-     : forall p q : ?x = ?y, p = q
-where
-?A : [ |- Type]
-?Contr0 : [ |- Contr ?A]
-?x : [ |- ?A]
-?y : [ |- ?A]
-contr_paths_contr
-     : forall x y : ?A, Contr (x = y)
-where
-?A : [ |- Type]
-?Contr0 : [ |- Contr ?A]
-```
+第三条意味着可缩性会向上传播到所有高阶路径：可缩类型从同伦的角度看和一个点无法区分。
 
-可缩性沿等价保持：
+可缩性沿等价和收缩保持：
 
 ```coq
-Check contr_equiv'.
-Check contr_retract.
-Check contr_change_center.
+Check contr_equiv'.    (* A <~> B -> Contr A -> Contr B *)
+Check contr_retract.   (* 若 Y 是可缩类型 X 的收缩（r ∘ s == id），则 Y 可缩 *)
 ```
 
-```text
-contr_equiv'
-     : forall A B : Type, A <~> B -> Contr A -> Contr B
-contr_retract
-     : forall (r : ?X -> ?Y) (s : ?Y -> ?X),
-       (forall y : ?Y, r (s y) = y) -> Contr ?Y
-where
-?X : [ |- Type]
-?Y : [ |- Type]
-?Contr0 : [ |- Contr ?X]
-```
+## 8.3 一条关键引理：基于某点的路径空间可缩
 
-`contr_retract` 很实用：若 `Y` 是 `X` 的收缩（retract）而 `X` 可缩，则 `Y` 可缩。
-
-## 8.3 纤维可缩 ⟺ 是等价
-
-方向一：等价的每个纤维可缩。
+固定 `x : X`，考虑"所有以 `x` 为起点的路径，连同它们的终点"：
 
 ```coq
-Check contr_map_isequiv.
+Check contr_basedpaths.   (* forall x : X, Contr {y : X & x = y} *)
 ```
 
-```text
-contr_map_isequiv
-     : forall f : ?A -> ?B, IsEquiv f -> IsTruncMap (-2) f
-where
-?A : [ |- Type]
-?B : [ |- Type]
-```
+中心是 `(x; 1)`。为什么任何 `(y; p)` 都能连到它？这正是路径归纳：
+要对所有 `(y, p)` 证明 `(x; 1) = (y; p)`，只需在 `(x, 1)` 上证明——而那是 `1`。
 
-方向二：所有纤维可缩 ⇒ 是等价（`IsTruncMap (-2) f` 即"所有纤维可缩"）。
+这条引理是**路径归纳的类型化表述**：J 规则说"从 `x` 出发的路径可以全部收缩到 `1`"，
+`contr_basedpaths` 把它说成"`{y & x = y}` 可缩"。两者是一回事。
+
+一个直接推论：忘掉可缩的第二分量是等价。
 
 ```coq
-Check isequiv_contr_map.
-Check IsTruncMap.
+Check equiv_sigma_contr.   (* (forall a, Contr (P a)) -> {a & P a} <~> A *)
 ```
 
-```text
-isequiv_contr_map
-     : forall f : ?A -> ?B, IsTruncMap (-2) f -> IsEquiv f
-where
-?A : [ |- Type]
-?B : [ |- Type]
-IsTruncMap
-     : trunc_index -> forall X Y : Type, (X -> Y) -> Type
-```
+## 8.4 纤维可缩 ⟺ 等价
 
-把它写成一条显式的定理，用 `isequiv_adjointify` 给反函数：
+现在来证明本章的主定理。
+
+**方向一：等价的纤维可缩。** 库里是 `contr_map_isequiv`。直觉：`f` 有逆 `g`，
+`b` 上方的纤维以 `(g b; eisretr b)` 为中心；任何其他解 `(a; p)` 都能用 `eissect` 和
+伴随条件连到它。第四条 `eisadj` 正是在这里起作用——没有它这个证明做不下去，
+这也是为什么伴随等价是"对"的定义。
+
+**方向二：纤维全可缩则是等价。** 自己写一遍，用 `equiv_adjointify`：
 
 ```coq
 Definition isequiv_from_contr_fibers {A B : Type} (f : A -> B)
   (H : forall b : B, Contr (hfiber f b)) : IsEquiv f.
 Proof.
   srapply isequiv_adjointify.
-  - intro b; exact (center (hfiber f b)).1.
-  - intro b; exact (center (hfiber f b)).2.
-  - intro a.
+  - intro b; exact (center (hfiber f b)).1.        (* 反函数：取中心的解 *)
+  - intro b; exact (center (hfiber f b)).2.        (* f (g b) = b：中心的证据 *)
+  - intro a.                                       (* g (f a) = a *)
     exact (ap pr1 (@contr (hfiber f (f a)) (H (f a)) (a; 1))).
 Defined.
 ```
 
-```text
-isequiv_from_contr_fibers
-     : forall f : ?A -> ?B, (forall b : ?B, Contr (hfiber f b)) -> IsEquiv f
-where
-?A : [ |- Type]
-?B : [ |- Type]
-```
+三个子目标对应三份数据：
 
-三个子弹分别给：
+1. 反函数 `g b` 取 `b` 上方纤维的中心的第一分量；
+2. `f (g b) = b` 就是中心的第二分量；
+3. `g (f a) = a`：`(a; 1)` 是 `f a` 上方纤维里的一个点，`contr` 给出从中心到它的路径，
+   对这条路径取第一分量就是要的等式。
 
-1. 反函数 `g b := (center (hfiber f b)).1`——取中心的底分量；
-2. 右逆 `(center (hfiber f b)).2 : f (g b) = b`；
-3. 左逆 `ap pr1 (contr (a; 1))`——`contr` 给出
-   `center (hfiber f (f a)) = (a; 1)`，取第一分量即 `g (f a) = a`。
-
-注意 `contr` 的 `Contr` 实例是隐式参数，这里要显式给：
-`@contr (hfiber f (f a)) (H (f a)) (a; 1)`。
-
-## 8.4 经典例子：带基点的路径类型是可缩的
+两方向合起来：
 
 ```coq
-Check contr_basedpaths.
-Check contr_basedpaths'.
+Check isequiv_contr_map.   (* IsTruncMap (-2) f -> IsEquiv f *)
+Check contr_map_isequiv.   (* IsEquiv f -> IsTruncMap (-2) f *)
 ```
 
-```text
-contr_basedpaths
-     : forall x : ?X, Contr {y : ?X & x = y}
-where
-?X : [ |- Type]
-contr_basedpaths'
-     : forall x : ?X, Contr {y : ?X & y = x}
-where
-?X : [ |- Type]
-```
+`IsTruncMap (-2) f` 是"所有纤维可缩"的缩写（第 17 章）。
 
-`{ y : X & x = y }` 可缩——中心是 `(x; 1)`。
-这条引理是"Σ 类型上的路径归纳"的引擎。
+这个刻画的价值在于：**它不提反函数**。要证明某个映射是等价，可以不去构造逆，
+而是直接分析它的纤维。在高阶类型里，构造逆并证明伴随条件常常非常繁琐，
+而纤维分析可以用 Σ 类型的路径结构（第 14 章）机械地进行。
 
-由它立刻得到：把第二分量忘掉是等价。
+## 8.5 纤维内部的路径
 
-```coq
-Check isequiv_pr1.
-Check equiv_pr1.
-Check equiv_sigma_contr.
-```
-
-```text
-isequiv_pr1
-     : forall P : ?A -> Type, (forall x : ?A, Contr (P x)) -> IsEquiv pr1
-where
-?A : [ |- Type]
-equiv_pr1
-     : forall P : ?A -> Type,
-       (forall x : ?A, Contr (P x)) -> {x : ?A & P x} <~> ?A
-where
-?A : [ |- Type]
-equiv_sigma_contr
-     : forall P : ?A -> Type,
-       (forall a : ?A, Contr (P a)) -> {x : _ & P x} <~> ?A
-where
-?A : [ |- Type]
-```
-
-## 8.5 纤维内部的路径长什么样
+纤维里两个点 `(a1; p1)` 和 `(a2; p2)` 之间的路径是什么？
 
 ```coq
 Check equiv_path_hfiber.
-Check path_hfiber.
+(* {q : x1.1 = x2.1 & x1.2 = ap f q @ x2.2} <~> (x1 = x2) *)
 ```
 
-```text
-equiv_path_hfiber
-     : forall x1 x2 : hfiber ?f ?y,
-       {q : x1.1 = x2.1 & x1.2 = ap ?f q @ x2.2} <~> x1 = x2
-where
-?A : [ |- Type]
-?B : [ |- Type]
-?f : [ |- ?A -> ?B]
-?y : [ |- ?B]
-path_hfiber
-     : forall q : ?x1.1 = ?x2.1, ?x1.2 = ap ?f q @ ?x2.2 -> ?x1 = ?x2
-where
-?A : [ |- Type]
-?B : [ |- Type]
-?f : [ |- ?A -> ?B]
-?y : [ |- ?B]
-?x1 : [ |- hfiber ?f ?y]
-?x2 : [ |- hfiber ?f ?y]
-```
+一条底空间路径 `q : a1 = a2`，加上一个相容条件：`p1` 等于"先沿 `ap f q` 走到 `f a2`，
+再沿 `p2` 走到 `b`"。这是 Σ 类型路径结构（第 14 章）在纤维上的特例。
 
-纤维里两点 `x1 x2 : hfiber f y` 之间的路径，等价于
-一条底空间路径 `q : x1.1 = x2.1` 加上一个相容条件
-`x1.2 = ap f q @ x2.2`。这是"纤维化"这一概念在类型论里的精确形式。
+## 8.6 预告：可缩只是开始
 
-## 8.6 可缩 ⇒ 是命题 ⇒ 是集合（预告）
-
-截断层级是往上走的：可缩（-2）⇒ h-prop（-1）⇒ h-set（0）。
-第 09 章展开这条链。
+可缩是截断层级的最底层（-2）。往上一层是命题（-1），再往上是集合（0）。
+两条连接它们的引理：
 
 ```coq
-Check istrunc_contr.
-Check hprop_inhabited_contr.
-Check (fun (A : Type) => hprop_inhabited_contr A).
+Check istrunc_contr.            (* 可缩 ⇒ 任何更高层 *)
+Check hprop_inhabited_contr.    (* (A -> Contr A) -> IsHProp A *)
 ```
 
-```text
-istrunc_contr
-     : IsTrunc ?n.+1 ?A
-where
-?n : [ |- trunc_index]
-?A : [ |- Type]
-?Contr0 : [ |- Contr ?A]
-hprop_inhabited_contr
-     : forall A : Type, (A -> Contr A) -> IsHProp A
-fun A : Type => hprop_inhabited_contr A
-     : forall A : Type, (A -> Contr A) -> IsHProp A
-```
+第二条很有意思：一个命题只要有居民就可缩。这正是"命题没有信息量"的精确表述——
+它要么空，要么和一个点一样。第 09 章把这条标尺完整展开。
 
-一个 h-prop 只要有一个居民就可缩——这正是"命题没有信息量"的精确表述。
+## 小结
 
-## 本章坑位清单
+- `hfiber f b := {a & f a = b}` 是方程 `f a = b` 的解空间，带证据。
+- `Contr A`：有中心，所有点都连到中心；可缩性向上传播到所有高阶路径。
+- `contr_basedpaths`：`{y & x = y}` 可缩，这是路径归纳的另一种说法。
+- 等价 ⟺ 所有纤维可缩；后一个方向的证明只用 `center` 与 `contr`，不需要先构造逆。
+- 可缩是截断层级的起点。
 
-1. **`hfiber` 的类型参数是隐式的**，裸 `Check hfiber` 只看到
-   `(?A -> ?B) -> ?B -> Type`。
-2. **`Build_Contr` 只接受三个参数**：`Build_Contr A center contr`；
-   写成 `Build_Contr _ tt (fun ...)` 时下划线会被推断为 `Unit`。
-3. **`center` 需要 `Contr A` 实例**：`center (hfiber f b)` 能写是因为
-   `H b` 在上下文里可被类型类搜索找到。
-4. **`contr` 的 `Contr` 实例是隐式参数**，用 `@contr A H y` 显式给。
-5. **`IsTruncMap (-2) f` 就是"所有纤维可缩"**，
-   `IsTruncMap (-1) f` 是"所有纤维是命题"（= 嵌入，第 17 章）。
-6. **`srapply isequiv_adjointify` 的三个子弹顺序**：
-   反函数、右逆、左逆；写错会得到"目标是函数类型是 X"这类报错。
-7. **`Check IsTruncMap.` 会打印出定义体**，
-   因为它是 `Definition` 而不是 `Abbreviation`。
-8. **`Locate "IsEmbedding"` 输出 `Unknown notation`**：
-   它是 `Definition` 不是记号，直接 `Check IsEmbedding` 就行
-   （但要带参数，见第 16 章）。
-9. **`contr_basedpaths` 的中心是 `(x; 1)`**，
-   证明"Σ 上的路径"时几乎总会用到它。
-10. **`equiv_pr1` 与 `equiv_sigma_contr` 是同一条定理的两个名字**，
-    前者在 `Types.Sigma`、后者在 `Basics.Trunc`。
-11. **`path_hfiber` 的相容条件是 `x1.2 = ap f q @ x2.2`**，
-    方向写反了会类型不符。
-12. **不要把"可缩"和"有唯一元素"混为一谈**：可缩要求
-    `forall y, center = y` 这条路径作为数据给出。
+## 常见误区
+
+1. **把"可缩"等同于"恰有一个元素"**。可缩还要求连接到中心的路径作为数据给出，
+   并且由此所有高阶路径都平凡。
+2. **忘记 `hfiber` 带证据**。它是 Σ 类型，不是子集；两个解即使第一分量相同，
+   第二分量不同也算不同的点。
+3. **以为纤维可缩必须先有反函数**。恰恰相反，这个刻画的意义就在于绕开反函数。
+4. **混淆 `contr_basedpaths` 与 `contr_paths_contr`**。前者说"从 x 出发的路径空间可缩"
+   （对任何类型成立），后者说"可缩类型里的路径类型可缩"（需要可缩假设）。
+
+## 练习
+
+1. 证明 `Contr A -> IsHProp A`（提示：用 `path_contr`）。
+2. 用 `contr_basedpaths` 证明 `equiv_sigma_contr` 的特例：`{y : X & x = y} <~> Unit`。
+3. 思考：`hfiber (fun _ : Unit => true) false` 是什么类型？`hfiber idmap b` 呢？
 
 ---
 
-**上一章**：[07 等价](docs/07-equivalences.md)
-**下一章**：[09 截断层级 —— -2、-1、0](docs/09-truncation.md)
+**上一章**：[07 等价](07-equivalences.md)
+**下一章**：[09 截断层级](09-truncation.md)

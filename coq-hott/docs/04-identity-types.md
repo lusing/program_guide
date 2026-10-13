@@ -1,83 +1,65 @@
 # 04 恒等类型与路径归纳
 
-> 对应示例：`examples/04_identity_types.v`（编译验证通过）
+> 本章代码：[`examples/04_identity_types.v`](../examples/04_identity_types.v)
 
-这一章是整个 HoTT 的引擎室。**路径归纳（J 消去子）是唯一的武器**，
-后面所有关于路径的结论——拼接、逆、`ap`、`transport`——都由它派生。
+这一章是整个 HoTT 的引擎室。关于路径的一切——倒转、拼接、函数作用、搬运——
+都由**一条规则**派生：路径归纳，也叫 J 规则。学会它，后面所有"看起来很神奇"的
+路径引理都会变成 `destruct p; reflexivity` 这一行。
 
-## 4.1 `paths` 的真身
+## 4.1 `paths` 的定义，以及它为什么长这样
 
 ```coq
-Print paths.
-Check idpath.
+Inductive paths (A : Type) (a : A) : A -> Type :=
+  idpath : paths a a.
+```
+
+注意冒号两侧：`A` 和起点 `a` 在左边，是**参数**，整个归纳定义过程中固定不变；
+终点在右边，是**索引**，可以随构造子变化。只有一个构造子 `idpath`，它把索引定为 `a` 本身。
+
+把这句话翻译成几何语言：**固定起点 a，所有从 a 出发的路径构成的类型族，
+是由"停在原地"这一条路径生成的。** 这不是说只有一条路径——而是说任何关于
+"从 a 出发的路径"的性质，只要在 `idpath` 上成立，就处处成立。这就是路径归纳。
+
+## 4.2 路径归纳（J 规则）
+
+```coq
 Check paths_ind.
-Check paths_rec.
+(* forall (A : Type) (a : A) (P : forall y : A, a = y -> Type),
+     P a 1 -> forall (y : A) (p : a = y), P y p *)
 ```
 
-```text
-Inductive paths@{u} (A : Type) (a : A) : A -> Type :=  idpath : a = a.
+读法：要对所有终点 `y` 和所有路径 `p : a = y` 证明 `P y p`，**只需要证明 `P a 1`**。
 
-Arguments paths {A}%_type_scope a _
-Arguments idpath {A}%_type_scope {a}, [_] _
-1
-     : ?a = ?a
-where
-?A : [ |- Type]
-?a : [ |- ?A]
-paths_ind
-     : forall (A : Type) (a : A) (P : forall a0 : A, a = a0 -> Type),
-       P a 1 -> forall (y : A) (p : a = y), P y p
-paths_rec
-     : forall (A : Type) (a : A) (P : A -> Type),
-       P a -> forall y : A, a = y -> P y
-```
+直觉上为什么合理？想象 `P y p` 是关于"终点 y 和到达它的路径 p"的某个断言。
+路径可以连续收缩：把 `p` 从终点那一端往起点拉，拉到底就是 `a` 上的 `idpath`。
+如果断言在收缩过程中保持（类型论里这是自动的），那么它在 `idpath` 上成立就足够了。
 
-`paths` 是一个**索引**归纳族：参数 `A : Type` 与 `a : A`，索引是终点。
-只有一个构造子 `idpath : a = a`，因此：
+注意**不能**把起点和终点同时固定。"对所有 `p : a = a` 证明 `P p`"不是路径归纳能处理的——
+环路不能收缩到一个点（否则圆就没有非平凡环路了）。J 规则总是把终点当成自由变量。
 
-> 要证 `forall (y : A) (p : a = y), P y p`，只需证 `P a 1`。
+在 Coq 里，路径归纳就是对路径做 `destruct`。
 
-这就是 `paths_ind`（J）。非依赖版本 `paths_rec` 更简单：
-要证 `forall y, a = y -> P y`，只需证 `P a`。
+## 4.3 用 J 派生逆与复合
 
-## 4.2 路径归纳（J）能干什么
-
-所有"对所有路径成立"的命题，都只要证 `1` 的情形。
-反向、拼接、`ap` 全部由它派生。自己实现一次逆路径：
+自己实现一遍逆路径与路径复合，是理解 J 的最好方式：
 
 ```coq
 Definition my_inverse {A : Type} {x y : A} (p : x = y) : y = x.
 Proof.
-  destruct p; reflexivity.
+  destruct p.      (* 现在 y 就是 x，目标是 x = x *)
+  reflexivity.
 Defined.
-```
 
-自己实现一次拼接：
-
-```coq
 Definition my_concat {A : Type} {x y z : A} (p : x = y) (q : y = z) : x = z.
 Proof.
-  destruct p, q; reflexivity.
+  destruct p, q.   (* x、y、z 全部合并 *)
+  reflexivity.
 Defined.
 ```
 
-```text
-my_inverse
-     : ?x = ?y -> ?y = ?x
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-my_concat
-     : ?x = ?y -> ?y = ?z -> ?x = ?z
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-?z : [ |- ?A]
-```
-
-库里的版本与自己写的在 `1` 上行为一致：
+`destruct p` 做的事：把 `y` 替换成 `x`，把 `p` 替换成 `1`。于是"造一条 `y = x` 的路径"
+变成"造一条 `x = x` 的路径"，`1` 就行。库里的 `inverse`（记号 `p^`）和 `concat`
+（记号 `p @ q`）就是这样定义的。可以验证自己写的和库里的一致：
 
 ```coq
 Definition my_inverse_is_inverse {A : Type} {x y : A} (p : x = y)
@@ -87,185 +69,93 @@ Proof.
 Defined.
 ```
 
-```text
-my_inverse_is_inverse
-     : forall p : ?x = ?y, my_inverse p = p^
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-```
+> **证明节奏**：HoTT 里绝大多数关于路径的引理都是 `destruct p; reflexivity`。
+> 这一行就是"路径归纳"四个字的 Coq 拼法。看到一条路径引理，先问：
+> 它在 `p = 1` 时是不是定义性成立？如果是，证明就写完了。
 
-> **证明节奏**：HoTT 里绝大多数关于路径的证明都是
-> `destruct p; ...; reflexivity`。这行代码就是"路径归纳"这四个字。
+## 4.4 `ap`：函数作用在路径上
 
-## 4.3 `ap`：函数作用在路径上
+函数把点映到点，自然也把路径映到路径。这件事叫 `ap`（action on paths）：
 
 ```coq
-Check ap.
-Print ap.
+Check ap.    (* forall (f : A -> B) {x y : A}, x = y -> f x = f y *)
 ```
 
-```text
-ap
-     : forall (f : ?A -> ?B) (x y : ?A), x = y -> f x = f y
-where
-?A : [ |- Type]
-?B : [ |- Type]
-ap@{u u0} =
-fun (A B : Type) (f : A -> B) (x y : A) (p : x = y) =>
-match p in _ = a return f x = f a with
-| 1 => 1
-end
-     : forall {A B : Type} (f : A -> B) {x y : A}, x = y -> f x = f y
+它也是由 J 定义的：`p = 1` 时结果就是 `1`。
 
-Arguments ap {A B}%_type_scope f%_function_scope {x y}
-  p%_path_scope : simpl nomatch
-```
+`ap` 是函子性的——它保持所有路径运算：
 
-看清楚定义体：它就是一个 `match p`，所以 `ap` 也是路径归纳的产物。
+| 引理 | 内容 | 读法 |
+|---|---|---|
+| `ap_1` | `ap f 1 = 1` | 保恒等 |
+| `ap_pp` | `ap f (p @ q) = ap f p @ ap f q` | 保复合 |
+| `ap_V` | `ap f p^ = (ap f p)^` | 保逆 |
+| `ap_compose` | `ap (g o f) p = ap g (ap f p)` | 与函数复合相容 |
+| `ap_idmap` | `ap idmap p = p` | 恒等函数不动路径 |
+| `ap_const` | `ap (fun _ => z) p = 1` | 常值函数把路径压成恒等 |
 
-`ap` 的函子性——保持单位元、拼接、逆、复合：
+最后一条很有用：想证明某条路径是平凡的，可以让一个常值函数作用在它上面。
+
+一个具体例子，让 `S` 作用在 `2 = 2` 上得到 `3 = 3`：
 
 ```coq
-Check ap_idpath.   (* ap f 1 = 1 *)
-Check ap_1.
-Check ap_pp.       (* ap f (p @ q) = ap f p @ ap f q *)
-Check ap_V.        (* ap f p^ = (ap f p)^ *)
-Check ap_compose.  (* ap (g o f) p = ap g (ap f p) *)
-Check ap_idmap.    (* ap idmap p = p *)
-Check ap_const.    (* ap (fun _ => z) p = 1 *)
+Compute (ap S (1 : (2%nat) = 2%nat)).   (* = 1 : 3 = 3 *)
 ```
 
-```text
-ap_pp
-     : forall (f : ?A -> ?B) (x y z : ?A) (p : x = y) 
-       (q : y = z), ap f (p @ q) = ap f p @ ap f q
-where
-?A : [ |- Type]
-?B : [ |- Type]
-```
+## 4.5 `apD`：当函数是依赖函数
 
-一个具体例子：`ap S` 把 `2 = 2` 送到 `3 = 3`。
+如果 `f : forall a : A, B a`，`f x : B x` 和 `f y : B y` 属于**不同的类型**，
+写 `f x = f y` 根本不合法。必须先把 `f x` 搬到 `B y` 里去，这就是 `transport`
+（第 05 章的主角）。依赖版本的 `ap` 叫 `apD`：
 
 ```coq
-Check (ap S (1 : (2%nat) = 2%nat)).
-Compute (ap S (1 : (2%nat) = 2%nat)).
+Check apD.   (* forall (f : forall a, B a) {x y} (p : x = y), transport B p (f x) = f y *)
 ```
 
-```text
-ap S (1 : 2%nat = 2%nat)
-     : 3%nat = 3%nat
-     = 1
-     : 3%nat = 3%nat
-```
+几何图像：`B` 是 `A` 上方的一族纤维，`f` 是一个截面。沿底空间的路径 `p` 走，
+截面在起点的值被平行移动到终点的纤维里，和截面在终点的值之间有一条路径——
+这就是 `apD f p`。
 
-## 4.4 `apD`：依赖函数的情形
+现在只需记住：**非依赖用 `ap`，依赖用 `apD`，后者的类型里有 `transport`。**
 
-```coq
-Check apD.
-Print apD.
-```
+## 4.6 几条立刻能派生出来的律
 
-```text
-apD
-     : forall (f : forall a : ?A, ?B a) (x y : ?A) 
-       (p : x = y), transport ?B p (f x) = f y
-where
-?A : [ |- Type]
-?B : [ |- ?A -> Type]
-apD@{u u0} =
-fun (A : Type) (B : A -> Type) (f : forall a : A, B a) (x y : A) (p : x = y) =>
-match p as p0 in _ = a return transport B p0 (f x) = f a with
-| 1 => 1
-end
-     : forall {A : Type} {B : A -> Type} (f : forall a : A, B a) 
-       {x y : A} (p : x = y), transport B p (f x) = f y
+| 引理 | 内容 |
+|---|---|
+| `concat_p1` / `concat_1p` | `p @ 1 = p`、`1 @ p = p` |
+| `concat_pV` / `concat_Vp` | `p @ p^ = 1`、`p^ @ p = 1` |
+| `concat_V_pp` | `p^ @ (p @ q) = q` |
+| `inv_pp` | `(p @ q)^ = q^ @ p^` |
+| `inv_V` | `(p^)^ = p` |
 
-Arguments apD {A}%_type_scope {B} f%_function_scope 
-  {x y} p%_path_scope : simpl nomatch
-```
-
-依赖函数 `f : forall x, B x` 作用在 `p : x = y` 上得到的是
-`transport B p (f x) = f y`，**而不是**简单的 `f x = f y`——
-因为两边的类型不同，必须先把左边搬到右边所在的纤维里。
-
-`transport` 是第 05 章的主角，这里先认识它的存在。
-
-## 4.5 路径归纳的几个标准推论
-
-单位元律：
-
-```coq
-Check concat_p1.   (* p @ 1 = p *)
-Check concat_1p.   (* 1 @ p = p *)
-```
-
-抵消律：
-
-```coq
-Check concat_pV.   (* p @ p^ = 1 *)
-Check concat_Vp.   (* p^ @ p = 1 *)
-Check concat_pV_p.
-Check concat_V_pp. (* p^ @ (p @ q) = q *)
-Check concat_pp_V.
-```
-
-逆的运算律：
-
-```coq
-Check inv_pp.      (* (p @ q)^ = q^ @ p^ *)
-Check inv_V.       (* (p^)^ = p *)
-Check inv_VV.
-```
-
-自己证一次 `p @ 1 = p`，体会"只剩 `1` 的情形"：
+每一条都是 `destruct` 到底再 `reflexivity`。试一条：
 
 ```coq
 Definition my_concat_p1 {A : Type} {x y : A} (p : x = y) : p @ 1 = p.
 Proof.
   destruct p; reflexivity.
 Defined.
-
-Definition my_concat_p1_matches {A : Type} {x y : A} (p : x = y)
-  : my_concat_p1 p = concat_p1 p.
-Proof.
-  destruct p; reflexivity.
-Defined.
 ```
 
-```text
-my_concat_p1
-     : forall p : ?x = ?y, p @ 1 = p
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-my_concat_p1_matches
-     : forall p : ?x = ?y, my_concat_p1 p = concat_p1 p
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-```
+`destruct p` 后目标变成 `1 @ 1 = 1`，而 `1 @ 1` 按 `concat` 的定义直接归约成 `1`，
+所以 `reflexivity` 能关掉它。
 
-`destruct p` 之后目标变成 `1 @ 1 = 1`，`reflexivity` 直接关掉——
-两者都归约到 `1`，所以第二条也成立。
+注意一个微妙之处：这些律本身是**路径**，不是定义上的相等。`p @ 1` 和 `p` 不是
+同一个项，它们之间有一条路径 `concat_p1 p`。到第 06 章会看到，这些路径之间
+又有路径（二维同伦），而且它们的结构是有内容的。
 
-## 4.6 恒等类型不是布尔值
+## 4.7 恒等类型不是布尔值：没有 UIP
 
-标准 Coq 有 UIP（同一等式的两个证明必相等），HoTT 里**没有**。
-能证 UIP 的类型叫 h-set（第 09 章），而 `Type` 本身甚至不是集合
-（第 11 章会看到 `not_hset_Type`）。
+标准 Coq 的用户习惯了 UIP：同一等式的任意两个证明相等。在 HoTT 里**这不成立**——
+它是 h-set 的定义性质（第 09 章），而 `Type` 本身就不是 h-set（第 11 章）。
 
-我们**不能**证明 `forall (p q : x = y), p = q`，只能把它当作假设：
+于是 `forall (p q : x = y), p = q` 不能当定理，只能当假设：
 
 ```coq
 Definition UIP_statement (A : Type) : Type := forall x y : A, IsHProp (x = y).
-Check UIP_statement.
 ```
 
-对 `Unit` 这种可缩类型，它成立：
+对具体类型可以证明它。比如 `Unit`：
 
 ```coq
 Definition uip_unit : UIP_statement Unit.
@@ -274,43 +164,36 @@ Proof.
 Defined.
 ```
 
-```text
-UIP_statement
-     : Type -> Type
-uip_unit
-     : UIP_statement Unit
-```
+`exact _` 让类型类搜索去找 `IsHProp (tt = tt)` 的实例；因为 `Unit` 是集合，能找到。
 
-`exact _` 让类型类搜索去找 `IsHProp (tt = tt)`——
-`Unit` 是集合，所以能找到。
+为什么放弃 UIP 值得？因为保留它就等于宣布所有类型都是集合，圆、球面、泛等
+这些东西从一开始就被排除了。放弃它，相等才有了几何。
 
-## 本章坑位清单
+## 小结
 
-1. **不要指望 UIP**：`forall p q : x = y, p = q` 在 HoTT 里不可证，
-   只能作为 `IsHSet` 假设引入。
-2. **`destruct p` 就是路径归纳**：`destruct p; reflexivity` 是最高频的两行。
-3. **`ap` 与 `apD` 的类型不同**：`ap` 给 `f x = f y`，
-   `apD` 给 `transport B p (f x) = f y`。依赖函数必须用后者。
-4. **`concat_p1` 与 `concat_1p` 是两条不同的引理**，
-   方向相反，别记混（前者是 `p @ 1 = p`）。
-5. **`inv_pp` 的反方向是 `inv_VV` 而不是再写一遍 `inv_pp`**：
-   `(p @ q)^ = q^ @ p^` 取逆要用 `inv_VV`。
-6. **`Check (ap S (1 : (2%nat) = 2%nat))` 里的类型标注不能省**，
-   否则 `1` 会被解析成 `nat` 或 `equiv_idmap`。
-7. **`reflexivity` 在本库里被重定向到 `idpath`**，
-   所以它的行为和标准 Coq 略有不同（不会尝试 `eq_refl`）。
-8. **`paths_ind` 与 `paths_rec` 的参数顺序不同**：
-   `paths_ind` 要一个依赖到路径的谓词，`paths_rec` 只依赖终点。
-9. **`exact _` 依赖类型类搜索**：`uip_unit` 里靠它找 `IsHProp`，
-   若目标不是 h-prop 就会失败并给出很晦涩的报错。
-10. **`ap_const` 说的是"常值函数把任何路径送到 `1`"**：
-    这是证明"某条路径平凡"的常用手段。
-11. **`ap` 的参数 `x y` 是隐式的**：`ap f p` 就够，
-    写全参数时要按 `ap (f := ...) p` 的形式。
-12. **本文件 `Local Open Scope path_scope`**：
-    不开这个 scope，`@` 与 `^` 就不是路径拼接与取逆。
+- `paths` 以起点为参数、终点为索引，只有一个构造子 `idpath`。
+- 路径归纳（J）：要对所有 `p : a = y` 证明 `P y p`，只需证明 `P a 1`。终点必须是自由变量。
+- 逆、复合、`ap`、`apD`、单位律、消去律全部由 J 派生；Coq 里写成 `destruct p; reflexivity`。
+- `ap` 处理非依赖函数，`apD` 处理依赖函数（类型里带 `transport`）。
+- 没有 UIP；"所有路径相等"是 h-set 的性质，要对具体类型证明。
+
+## 常见误区
+
+1. **以为路径归纳能处理环路**。J 要求终点自由；对 `p : a = a` 做 `destruct` 会失败或改变目标。
+   环路的性质要用别的手段（覆叠、编码-解码，第 13 章）。
+2. **以为 `p @ 1` 就是 `p`**。它们之间有一条路径 `concat_p1 p`，不是同一个项。
+   在集合里这无所谓，在高阶类型里这条路径可能携带信息。
+3. **用 `ap` 处理依赖函数**。`f x = f y` 类型不合法时，要用 `apD`。
+4. **期待 UIP 或 `proof_irrelevance`**。它们在 HoTT 里是假设，不是定理。
+
+## 练习
+
+1. 用 `destruct` 证明 `inv_pp : (p @ q)^ = q^ @ p^`。
+2. 证明 `ap f (p @ q) = ap f p @ ap f q`。注意需要对两条路径都 `destruct`。
+3. 思考：为什么 `destruct p` 之后 `reflexivity` 能关掉 `1 @ 1 = 1`，却关不掉 `p @ 1 = p`？
+   （提示：哪一个是定义性归约？）
 
 ---
 
-**上一章**：[03 依赖类型](docs/03-dependent-types.md)
-**下一章**：[05 Transport —— 沿路径搬运纤维](docs/05-transport.md)
+**上一章**：[03 依赖类型](03-dependent-types.md)
+**下一章**：[05 Transport](05-transport.md)

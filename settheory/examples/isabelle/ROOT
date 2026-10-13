@@ -43,3 +43,7 @@ session ST10 in "ST10" = "ZF-Constructible" +
   options [document = false]
   theories
     Models
+session ST11 in "ST11" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Transitive

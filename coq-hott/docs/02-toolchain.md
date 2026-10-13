@@ -1,135 +1,51 @@
-# 02 工具链 —— `-noinit`、`-indices-matter` 与公理追踪
+# 02 读懂这个库 —— HoTT 库与标准 Coq 的三点不同
 
-> 对应示例：`examples/02_toolchain.v`（编译验证通过）
+> 本章代码：[`examples/02_toolchain.v`](../examples/02_toolchain.v)
 
-HoTT 库不是"装在 Coq 上的一个插件"，它**替换**了 Coq 的 prelude。
-因此它的编译命令行与标准 Coq 项目不同，漏一个开关就会得到一堆莫名其妙的错。
+Coq-HoTT 不是装在 Coq 上的一个插件，而是**替换了 Coq 的地基**。
+这一章不讲安装和编译（那些在 README 附录里），只讲三件读代码之前必须知道的事：
+它为什么要自带一套 prelude、它怎样管理公理、以及同一个记号为什么会有好几种含义。
+顺带介绍四条问询命令，后面每一章都靠它们"看清楚"库里的对象。
 
-## 2.1 `-noinit`：HoTT 自带一套 prelude
+## 2.1 第一点不同：自带 prelude
 
-Rocq 默认会加载 Stdlib 的 Prelude（`nat`、`list`、`+` 等）。HoTT 要重新定义
-`paths`、`prod`、`sum`、`nat` 等，所以必须 `-noinit` 把 Stdlib 挡在外面，
-再用自己的库充当 prelude。
+标准 Coq 启动时会加载 Stdlib 的 Prelude，里面有 `nat`、`list`、`eq`、`+` 等等。
+HoTT 库对这些基础类型有自己的定义——它们**同名但不同义**：
 
-```coq
-Fail Require Import Stdlib.Lists.List.   (* Stdlib 取不到 *)
+- `paths`（即 `=`）在 HoTT 里是一个要认真对待的类型，不是被 proof irrelevance 压扁的命题；
+- `nat`、`Bool`、`prod`、`sum`、`sig` 都是重新定义的，带着 HoTT 自己的宇宙层级和记号；
+- 没有 `Prop` 这个 impredicative 的命题层，一切都在 `Type` 里。
 
-Check nat.
-Check Bool.
-Check list.
-Check prod.
-Check sum.
-```
-
-```text
-nat
-     : Type0
-Bool
-     : Type0
-list
-     : Type -> Type
-prod
-     : Type -> Type -> Type
-sum
-     : Type -> Type -> Type
-```
-
-关键差别：`paths` 是 HoTT 自己的归纳族，`1` 是 `idpath`：
+所以 HoTT 项目必须用 `-noinit` 把标准库挡在外面，再 `Require Import HoTT` 换上自己的地基。
+在示例文件里你看到的开头永远是：
 
 ```coq
-Print paths.
-Check (1 : Bool = Bool).
+Require Import HoTT.
+Local Open Scope path_scope.
 ```
 
-```text
-Inductive paths@{u} (A : Type) (a : A) : A -> Type :=  idpath : a = a.
-
-Arguments paths {A}%_type_scope a _
-Arguments idpath {A}%_type_scope {a}, [_] _
-1 : Bool = Bool
-     : Bool = Bool
-```
-
-## 2.2 问询四件套：`Check` / `About` / `Print` / `Locate`
-
-这四条命令的用法：
-
-| 命令 | 用途 | 代价 |
-|---|---|---|
-| `Check t` | 看项的类型 | 最小，本教程全靠它 |
-| `About c` | 完整信息：多态性、`Arguments`、scope | 中等 |
-| `Print c` | 展开定义体 | 大 |
-| `Locate "记号"` | 反查记号定义在哪、属于哪个 scope | 小 |
+试图再去拿标准库的东西会失败：
 
 ```coq
-Check concat_p1.
-About concat_p1.
-Print concat_p1.
-Locate "@".
-Locate "<~>".
-Locate "->".
+Fail Require Import Stdlib.Lists.List.
 ```
 
-```text
-concat_p1
-     : forall p : ?x = ?y, p @ 1 = p
-where
-?A : [ |- Type]
-?x : [ |- ?A]
-?y : [ |- ?A]
-concat_p1@{u} : forall {A : Type} {x y : A} (p : x = y), p @ 1 = p
+这解释了一个常见困惑：为什么 HoTT 教程里的 `nat` 和你在别处学的 `nat` 行为略有差异
+（比如 `Print nat` 显示它在 `Type0`，而且 `+` 不在默认作用域）。它们是不同的定义。
 
-concat_p1 is universe polymorphic
-Arguments concat_p1 {A}%_type_scope {x y} p%_path_scope
-concat_p1 is transparent
-Expands to: Constant HoTT.Basics.PathGroupoids.concat_p1
-Declared in library HoTT.Basics.PathGroupoids, line 85, characters 11-20
-concat_p1@{u} =
-fun (A : Type) (x y : A) (p : x = y) =>
-match p as p0 in _ = a return p0 @ 1 = p0 with
-| 1 => 1
-end
-     : forall {A : Type} {x y : A} (p : x = y), p @ 1 = p
+## 2.2 第二点不同：公理是显式假设，不是全局事实
 
-Arguments concat_p1 {A}%_type_scope {x y} p%_path_scope
-```
+HoTT 有两条著名的公理：**函数外延**（逐点相等的函数相等）和**泛等**（等价的类型相等）。
+库对它们的处理方式很值得学习：
 
-`Locate "->"` 的输出最能说明"记号冲突"这件事：
+- 把每条公理做成一个**空的类型类**：`Funext : Type0`、`Univalence : Type0`，没有构造子；
+- 需要公理的定理写成 `Context `{Funext}` 或 `Context `{Univalence}`，也就是把公理当参数；
+- 真正断言"公理成立"的实例放在单独的模块 `HoTT.Axioms.Funext` 和 `HoTT.Axioms.Univalence` 里。
 
-```text
-Notation "p @ q" := (concat p q)
-  (* p in scope path_scope, q in scope path_scope *) : path_scope
-  (default interpretation) (from HoTT.Basics.Overture)
-Notation "A <~> B" := (Equiv A B)
-  (* A in scope _type_scope, B in scope _type_scope *) : type_scope
-  (default interpretation) (from HoTT.Basics.Overture)
-Notation "x -> y" := (implb x y)
-  (* x in scope _bool_scope, y in scope _bool_scope *) : bool_scope
-  (from HoTT.Types.Bool)
-Notation "x -> y" := (dimpl x y)
-  (* x in scope _dprop_scope, y in scope _dprop_scope *) : dprop_scope
-  (from HoTT.Universes.DProp)
-Notation "A -> B" := (forall _ : A, B)
-  (* A in scope _type_scope, B in scope _type_scope *) : type_scope
-  (default interpretation) (from HoTT.Basics.Overture)
-```
-
-同一个 `->` 在四个 scope 里有四种含义——这就是 scope 坑的根源。
-
-`Search` 在 `-noinit` 下仍可用（它是 Rocq 内核自带的查询命令）。
-查询要写得窄，否则会刷出上百条：
+这样做的好处是**每一条定理用到了什么公理都可以被机器列出来**：
 
 ```coq
-Search (IsEquiv) (@inverse Bool true false).
-```
-
-## 2.3 `Print Assumptions`：追踪用到了哪些公理
-
-HoTT 库刻意把**泛等**与**函数外延**做成"空类型 + 类型类"，
-这样每个定理用到哪些公理都能被机器查出来。这是本库最重要的工程约定。
-
-```coq
-Print Assumptions concat_p1.      (* 纯路径代数：不依赖任何公理 *)
+Print Assumptions concat_p1.      (* 纯路径代数，不用任何公理 *)
 ```
 
 ```text
@@ -137,149 +53,120 @@ Closed under the global context
 ```
 
 ```coq
-Print Assumptions path_forall.    (* 函数外延：需要 Funext *)
-Check isequiv_apD10.
+Print Assumptions path_forall.    (* 函数外延 *)
 ```
 
 ```text
 Axioms:
-isequiv_apD10 :
-  Funext ->
-  forall (A : Type) (P : A -> Type) (f g : forall x : A, P x), IsEquiv apD10
+isequiv_apD10 : Funext -> forall (A : Type) (P : A -> Type) (f g : forall x : A, P x), IsEquiv apD10
 Funext : Type0
 ```
 
-```coq
-Check path_universe.
-Check equiv_path.
-Print Assumptions isequiv_equiv_path.
-```
+"Closed under the global context"的意思是：这条定理是纯构造性的，一个公理都没用。
+本教程会一直用这个工具标记哪些结论是零公理的、哪些依赖函数外延、哪些依赖泛等
+（README 里有总表）。
 
-```text
-path_universe
-     : forall f : ?A -> ?B, IsEquiv f -> ?A = ?B
-where
-?H : [ |- Univalence]
-?A : [ |- Type]
-?B : [ |- Type]
-equiv_path
-     : forall A B : Type, A = B -> A <~> B
-Axioms:
-isequiv_equiv_path :
-  Univalence -> forall A B : Type, IsEquiv (equiv_path A B)
-Univalence : Type0
-```
-
-### `Require Import HoTT` 不给你公理实例
-
-这一点极易误解：导入 `HoTT` 只是导入**定义**，公理（的实例）要单独导入。
+一个常见的坑由此而来：**`Require Import HoTT` 不给你公理的实例。**
+导入 `HoTT` 只是导入定义和定理。当你看到 `path_universe` 的类型里挂着一个
+未解决的 `?H : Univalence`，那是在说"请调用方提供泛等"。两种提供方式：
 
 ```coq
-Fail Check HoTT.Axioms.Univalence.univalence_axiom.
-Fail Check HoTT.Axioms.Funext.funext_axiom.
+Section Demo.
+  Context `{Univalence}.          (* 方式一：作为假设，出了 Section 变成参数 *)
+  (* ... *)
+End Demo.
+
+Require Import HoTT.Axioms.Univalence.   (* 方式二：全局导入公理实例 *)
 ```
 
-所以看到 `path_universe` 的类型里带着 `?H : [ |- Univalence]`
-（一个未解决的隐式参数）时，那正是"这条定理需要你提供泛等"的意思。
-两种做法：写成 `Context `{Univalence}`（第 11 章），
-或者 `Require Import HoTT.Axioms.Univalence`（第 13 章起）。
+第 10、11 章会分别对两条公理演示这两种方式，并用 `Print Assumptions` 看结果的差别。
 
-## 2.4 `-indices-matter`
+## 2.3 第三点不同：记号由作用域决定含义
 
-这个开关让归纳类型的**索引**（而不仅是参数）参与"类型是否相同"的判断。
-HoTT 依赖它来保证 `paths` 这类索引归纳族的等价判定符合预期。
+HoTT 库大量使用重载记号，同一个符号在不同作用域（scope）里指不同的东西。
+最重要的几个：
 
-命令行必须传；写进 `_CoqProject` 时是两行：
-
-```plain
--arg -noinit
--arg -indices-matter
-```
-
-本教程所有示例统一用这条命令编译：
-
-```bash
-coqc -q -noinit -indices-matter -R $HOTT/theories HoTT ex_NN_xxx.v
-```
-
-其中 `-R ... HoTT` 把库根映射成 `HoTT` 命名空间，
-`-q` 是安静模式（`Check` / `Compute` 的输出仍然会打印）。
-
-> 注意：Coq 模块名不能以数字开头，所以示例 `01_type_theory.v`
-> 在验证时会被复制成 `ex_01_type_theory.v` 再编译。
-
-## 2.5 Unicode 与记号 scope
-
-库里大量使用 Unicode 记号，并定义了多个专用 scope：
-
-| scope | 记号 | 含义 |
+| 作用域 | 记号 | 含义 |
 |---|---|---|
-| `path_scope` | `1`、`@`、`^` | `idpath`、`concat`、`inverse` |
-| `equiv_scope` | `1`、`oE`、`^-1` | `equiv_idmap`、复合、取逆 |
-| `trunc_scope` | `-2`、`.+1` | 截断层级 |
-| `nat_scope` | `+`、`*`、`-`、`<` | 自然数算术 |
-| `fibration_scope` | `.1`、`.2` | Σ 的投影 |
-| `pointed_scope` | `->*`、`->**` | 保点映射 |
+| `path_scope` | `1`、`p @ q`、`p^` | 恒等路径、路径复合、逆路径 |
+| `equiv_scope` | `1`、`g oE f`、`e^-1` | 恒等等价、等价复合、逆等价 |
+| `type_scope` | `A * B`、`A + B`、`A <~> B`、`f == g` | 乘积、和、等价类型、逐点同伦 |
+| `nat_scope` / `int_scope` | `+`、`*`、`-`、`n.+1` | 算术 |
+| `trunc_scope` | `-2`、`-1`、`0` | 截断层级 |
+| `fibration_scope` | `u.1`、`u.2` | Σ 类型的投影 |
+| `pointed_scope` | `X ->* Y`、`X <~>* Y` | 保点映射、点化等价 |
 
-混用时最容易踩的坑就是数字与 `@` 被别的 scope 抢走：
+`1` 是重载最严重的一个：它在 `path_scope` 里是 `idpath`，在 `equiv_scope` 里是 `equiv_idmap`，
+在 `nat_scope` 里才是自然数 1。库默认打开 `path_scope`，所以**裸写的 `1` 是恒等路径**。
+想要别的含义就加作用域键：`1%nat`、`1%equiv`、`(-2)%trunc`。
 
 ```coq
-Check (1 : nat = nat).
-Check (0%nat : nat).
-Check (-2)%trunc.
-Check (equiv_idmap Bool).
-Locate "oE".
-Locate "^-1".
+Check (1 : nat = nat).     (* idpath : nat = nat *)
+Check (0%nat : nat).       (* 自然数 0 *)
+Check (-2)%trunc.          (* 截断层级 -2 *)
+Check (equiv_idmap Bool).  (* 打印成 1%equiv *)
 ```
 
-```text
-1 : nat = nat
-     : nat = nat
-0 : nat
-     : nat
-(-2)%trunc
-     : trunc_index
-1%equiv
-     : Bool <~> Bool
-Notation "g 'oE' f" := (equiv_compose' g f)
-  (* g in scope equiv_scope, f in scope equiv_scope *) : equiv_scope
-  (default interpretation) (from HoTT.Basics.Equivalences)
-Notation "e ^-1" := (equiv_inverse e) (* e in scope _equiv_scope *)
-  : equiv_scope (from HoTT.Basics.Equivalences)
-Notation "f ^-1" := equiv_inv (* f in scope _function_scope *)
-  : function_scope (default interpretation) (from HoTT.Basics.Overture)
-```
-
-注意最后两条：`^-1` 在 `function_scope` 里是"反函数"（`equiv_inv`），
-在 `equiv_scope` 里是"逆等价"（`equiv_inverse`）。两者经常可以互换使用，
+`^-1` 也有两个版本：`function_scope` 里是"等价的反函数"（`equiv_inv`，类型 `B -> A`），
+`equiv_scope` 里是"逆等价"（`equiv_inverse`，类型 `B <~> A`）。日常使用它们可以互换，
 但类型不同。
 
-## 本章坑位清单
+## 2.4 四条问询命令
 
-1. **少了 `-noinit` 或 `-indices-matter` 中的任一个，本库都无法正确编译。**
-   这两个开关不是"可选优化"。
-2. **`Require Import HoTT` 不给你 `Univalence` / `Funext` 的实例**，
-   必须 `Context `{Univalence}` 或 `Require Import HoTT.Axioms.*`。
-3. **`Fail` 在 `-q` 下静默**：调试 `Fail` 时看不到失败原因，别加 `-q`。
-4. **Coq 模块名不能以数字开头**：`coqc -o 01_type_theory.v` 报
-   `Invalid character '0' at beginning of identifier`；加 `ex_` 前缀。
-5. **`-noinit` 下没有 string 记号**：`idtac "文本"` 报
-   `No interpretation for string`。
-6. **`Search` 查询里不能出现未绑定的变量**：`Search (x = y -> y = x)` 报
-   `The reference x was not found`；要写成 `Search (...) (@inverse Bool true false)`。
-7. **`About` 比 `Check` 信息全**：排查"为什么这个项被解析成了别的东西"
-   时用 `About` 能看到 `Arguments` 与 scope。
-8. **`^-1` 有两个版本**：`function_scope` 的 `equiv_inv` 与
-   `equiv_scope` 的 `equiv_inverse`。
-9. **`Print Assumptions` 只列公理，不列定义里的假设**：
-   若你的定理本身带着 `Context `{Funext}`，它会出现在类型里而不是 Axioms 里。
-10. **Unicode 记号要靠 `Locate` 反查**：记不住 `oE` 属于哪个 scope 时，
-    `Locate "oE"` 一行就能看清。
-11. **`Closed under the global context` 是"零公理"的意思**，
-    看到它说明这条定理是纯构造性的。
-12. **`HoTT.v` 加载约 1 秒**：不要因为"库很大"就回避 `Require Import HoTT`。
+读 HoTT 库的代码，最重要的技能是"看清楚一个名字到底是什么"。四条命令各有分工：
+
+| 命令 | 回答的问题 | 什么时候用 |
+|---|---|---|
+| `Check t` | `t` 的类型是什么 | 最常用；确认一条引理说了什么 |
+| `About c` | `c` 的完整信息：隐式参数、作用域、定义在哪个文件哪一行 | 排查"为什么它被解析成了别的东西" |
+| `Print c` | `c` 的定义体 | 想知道一个引理是怎么证的、一个类型有哪些构造子 |
+| `Locate "sym"` | 记号 `sym` 定义在哪、属于哪个作用域 | 遇到不认识的符号 |
+
+一个典型的用法：`Print paths` 让你看到相等类型的真身：
+
+```text
+Inductive paths (A : Type) (a : A) : A -> Type :=  idpath : a = a.
+```
+
+`A` 和起点 `a` 是**参数**（在冒号左边），终点是**索引**（在冒号右边）。
+这个区分决定了路径归纳的形状（第 04 章）。
+
+另一个典型用法：`Locate "->"` 会告诉你 `->` 在四个作用域里有四种含义
+（函数类型、布尔蕴含、可判定命题蕴含、保点映射），这就是作用域机制的根源。
+
+`Search` 在找引理时不可或缺，但要给足约束，否则会刷出几百条。第 23 章专门讲搜索技巧。
+
+## 2.5 `-indices-matter` 是什么意思
+
+编译命令里的 `-indices-matter` 值得说一句。Coq 默认在计算一个归纳类型所在的宇宙时，
+只看参数不看索引。对 `paths` 这样的索引族，这会让 `x = y` 落在比 `A` 更低的宇宙里，
+进而在某些推理里产生不一致。HoTT 要求索引也参与宇宙计算，所以这个开关必须打开。
+作为读者你不需要操心它，只需知道：这不是可选优化，而是语义要求。
+
+## 小结
+
+- HoTT 库替换了 Coq 的 prelude，基础类型同名不同义；一切都在 `Type` 里，没有 `Prop`。
+- 公理是显式假设：`Funext`、`Univalence` 是空类型类，用 `Context` 引入或从 `HoTT.Axioms.*` 导入；
+  `Print Assumptions` 能列出任意定理的公理依赖。
+- 记号由作用域决定；裸写的 `1` 是恒等路径，算术要加 `%nat`。
+- 四条问询命令：`Check` 看类型、`About` 看全貌、`Print` 看定义、`Locate` 查记号。
+
+## 常见误区
+
+1. **以为 `Require Import HoTT` 已经包含泛等**。没有；看到 `?H : Univalence` 挂在类型上，
+   就是在要你提供它。
+2. **以为 `1 + 1` 是算术**。在默认作用域下它根本解析不了；写 `(1 + 1)%nat`。
+3. **把 `Closed under the global context` 当成报错**。它是好消息：零公理。
+4. **把 `Check` 输出里的 `?A`、`?H` 当成错误**。它们是尚未确定的隐式参数或类型类实例，
+   给足参数就会消失。
+
+## 练习
+
+1. 对 `transport`、`equiv_adjointify`、`path_universe` 各做一次 `Print Assumptions`，
+   预测哪个会出现公理，再验证。
+2. `Locate "1"` 列出了多少个作用域？哪一个标着 `default interpretation`？
 
 ---
 
-**上一章**：[01 类型论原理](docs/01-type-theory.md)
-**下一章**：[03 依赖类型 —— Π、Σ 与基础类型构造器](docs/03-dependent-types.md)
+**上一章**：[01 类型论原理](01-type-theory.md)
+**下一章**：[03 依赖类型](03-dependent-types.md)

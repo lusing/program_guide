@@ -1,107 +1,50 @@
 # 01 类型论原理
 
-> 对应示例：`examples/01_type_theory.v`（编译验证通过）
+> 本章代码：[`examples/01_type_theory.v`](../examples/01_type_theory.v)
 
-本章是全教程的地基。如果你以前用过 Coq / Agda / Lean，请特别留意第 1.4 节——
-HoTT 对"相等"的处理和你熟悉的那套**不是一回事**，后面所有新现象都由它长出。
+这一章讲的是整本教程赖以成立的三个观念：**命题即类型**、**证明即程序**、
+**类型即空间**。前两个是 Martin-Löf 类型论的老传统，第三个是同伦类型论的新贡献。
+如果你以前用过 Coq、Agda 或 Lean，前两个观念会很熟悉；但请特别留意 1.4 节——
+HoTT 对"相等"的处理和你习惯的那一套**不是一回事**，后面所有新鲜的现象都从这里长出来。
 
 ## 1.1 命题即类型
 
-Martin-Löf 类型论最核心的一句口号是：**命题即类型，证明即程序**。
-逻辑运算符不是什么特殊的原始概念，它们就是普通的类型构造器：
+先问一个朴素的问题：在编程语言里，"证明"是什么？
 
-| 逻辑 | 类型 | HoTT 库里的名字 |
-|---|---|---|
-| 真 ⊤ | 单元素类型 | `Unit` |
-| 假 ⊥ | 空类型 | `Empty` |
-| 合取 A ∧ B | 乘积 | `prod`（记号 `A * B`） |
-| 析取 A ∨ B | 和类型 | `sum`（记号 `A + B`） |
-| 蕴含 A → B | 函数类型 | `A -> B` |
-| 全称 ∀x. P x | 依赖函数（Π） | `forall x : A, P x` |
-| 存在 ∃x. P x | 依赖对（Σ） | `{x : A & P x}` |
-| 否定 ¬A | 到空类型的函数 | `A -> Empty` |
+Martin-Löf 的回答是：**一个命题就是一个类型，这个命题的一个证明就是这个类型的一个元素。**
+"A 为真"不是别的，就是"类型 A 有居民"。于是逻辑连接词不再是什么特殊的原始概念，
+它们就是普通的类型构造器：
 
-用 `Check` 逐个确认：
+| 逻辑 | 读法 | 类型 | HoTT 库里的名字 |
+|---|---|---|---|
+| 真 ⊤ | 平凡地有一个证明 | 单元素类型 | `Unit` |
+| 假 ⊥ | 没有任何证明 | 空类型 | `Empty` |
+| A ∧ B | 一个 A 的证明和一个 B 的证明 | 乘积 | `A * B` |
+| A ∨ B | 要么一个 A 的证明，要么一个 B 的证明 | 和类型 | `A + B` |
+| A → B | 把 A 的证明变成 B 的证明的方法 | 函数类型 | `A -> B` |
+| ¬A | 从 A 的证明造出矛盾 | 到空类型的函数 | `A -> Empty` |
+| ∀x:A. P x | 对每个 x 给出 P x 的证明 | 依赖函数（Π） | `forall x : A, P x` |
+| ∃x:A. P x | 一个见证 x，外加 P x 的证明 | 依赖对（Σ） | `{x : A & P x}` |
 
-```coq
-Check Unit.                        (* 真：只有一个居民 *)
-Check Empty.                       (* 假：没有居民 *)
-Check prod.                        (* 合取 *)
-Check sum.                         (* 析取 *)
-Check (fun A B : Type => (A -> B)). (* 蕴含 *)
-Check sig.                         (* 存在 *)
-```
-
-实测输出（抽取自 `build/out/01.sec1`，本教程所有 ```text 块同此来源）：
-
-```text
-Unit
-     : Type0
-Empty
-     : Type0
-prod
-     : Type -> Type -> Type
-sum
-     : Type -> Type -> Type
-(->)
-     : Type -> Type -> Type
-sig
-     : (?A -> Type) -> Type
-where
-?A : [ |- Type]
-```
-
-`(?A -> Type) -> Type` 里的 `?A` 是一个尚未确定的隐式参数——`sig` 的类型是
-`forall A : Type, (A -> Type) -> Type`，只是 `A` 被标成了隐式。
-
-全称量词与否定可以自己定义出来（示例里之所以要自己写，是因为在 `-noinit`
-下直接 `Check (fun (A : Type) (P : A -> Type) => forall x : A, P x)` 会语法错，
-必须绑定成常量名）：
+这张表的妙处在于：**每条引入规则就是一个构造子，每条消除规则就是一个函数。**
 
 ```coq
-Definition PiType (A : Type) (P : A -> Type) : Type := forall x : A, P x.
-Definition Not (A : Type) : Type := A -> Empty.
+Check tt.        (* Unit 唯一的居民：⊤ 的证明 *)
+Check @inl.      (* A -> A + B：析取引入（左） *)
+Check @inr.      (* B -> A + B：析取引入（右） *)
+Check @fst.      (* A * B -> A：合取消除（左） *)
+Check @snd.      (* A * B -> B：合取消除（右） *)
 ```
 
-```text
-PiType
-     : forall A : Type, (A -> Type) -> Type
-Not
-     : Type -> Type
-```
+"从 A ∧ B 推出 A"这条逻辑规则，就是取有序对的第一分量。没有任何魔法。
 
-### 引入与消除规则就是构造子与投影
-
-"逻辑常量有居民"这句话是有内容的：每条引入规则对应一个构造子，
-每条消除规则对应一个函数。
-
-```coq
-Check tt.                          (* Unit 的唯一居民 *)
-Check (@inl : forall A B : Type, A -> A + B).  (* 左注入 = 析取引入 *)
-Check (@inr : forall A B : Type, B -> A + B).  (* 右注入 *)
-Check (@fst : forall A B : Type, A * B -> A).  (* 合取消除 *)
-Check (@snd : forall A B : Type, A * B -> B).
-```
-
-```text
-@inl : forall A B : Type, A -> A + B
-     : forall A B : Type, A -> A + B
-@inr : forall A B : Type, B -> A + B
-     : forall A B : Type, B -> A + B
-@fst : forall A B : Type, A * B -> A
-     : forall A B : Type, A * B -> A
-@snd : forall A B : Type, A * B -> B
-     : forall A B : Type, A * B -> B
-```
-
-注意这里一律写的是 `@inl` / `@fst` 而不是 `inl` / `fst`——
-不带 `@` 时它们的第一个类型参数默认是隐式的，直接 `Check` 会拿到
-`Type -> Type + ?B` 这种意外结果（坑位 3）。
+> 库里 `inl`、`fst` 这些函数的类型参数是隐式的；在 `Check` 里想看到完整类型要加 `@`。
+> 后文凡是写 `@f`，意思都是"把隐式参数显式化"。
 
 ## 1.2 证明即程序
 
-写"定理"和写"函数"是**同一件事**：结论是要造出的类型，假设是参数。
-下面每一条都只是 `Definition`，但读起来是逻辑定律：
+既然命题是类型，写一个定理的证明就是**写一个那个类型的程序**。
+下面每一行都只是 `Definition`，但读起来是一条逻辑定律：
 
 ```coq
 Definition law_identity (A : Type) : A -> A := fun x => x.
@@ -116,226 +59,157 @@ Definition law_exists_intro (A : Type) (P : A -> Type) (a : A) (p : P a)
   := (a; p).
 ```
 
-```text
-law_identity
-     : forall A : Type, A -> A
-law_modus_ponens
-     : forall A B : Type, A -> (A -> B) -> B
-law_exists_intro
-     : forall (A : Type) (P : A -> Type) (a : A), P a -> {x : A & P x}
-```
+- 肯定前件（modus ponens）就是函数应用：有 `a : A` 和 `f : A -> B`，就有 `f a : B`。
+- 否定消除也是函数应用，只是返回类型是 `Empty`。
+- 存在引入就是打包：`(a; p)` 是 Σ 类型的有序对，分号是 HoTT 库给 Σ 用的记号，
+  以区别于乘积的 `(a, p)`。
 
-证明项是可以**求值**的程序：
+证明既然是程序，就可以**运行**：
 
 ```coq
-Compute law_modus_ponens Bool Bool true (fun b => b).
-Compute (@fst Bool nat (true, 3%nat)).
+Compute law_modus_ponens Bool Bool true (fun b => b).   (* = true *)
 ```
 
-```text
-     = true
-     : Bool
-     = true
-     : Bool
-```
+这一点在后面会反复起作用：一个"相等的证明"是可以计算的对象，
+而不是写完就扔掉的勾号。
 
-### 【坑】数字字面量默认不是 nat
+### 第一个必须记住的细节：数字字面量
 
-这是本库最劝退的细节，也是本章必须记住的第一件事：
+HoTT 库里 `0` 和 `1` 默认**不是**自然数。`1` 是恒等路径 `idpath`（下文解释），
+`0` 是截断层级里的 -2 对应的表示（第 09 章）。想写自然数要加作用域标记：
 
 ```coq
 Check (0%nat : nat).
-Check (0 : trunc_index).
-Check (1 : (0%nat) = 0%nat).
+Check (1 : (0%nat) = 0%nat).    (* 这里的 1 是"0 等于 0"的证明 *)
 ```
 
-```text
-0 : nat
-     : nat
-0 : trunc_index
-     : trunc_index
-1 : 0%nat = 0%nat
-     : 0%nat = 0%nat
-```
-
-`0` 落在 `trunc_scope`（截断层级 -2 的表示），`1` 落在 `path_scope`
-（`idpath`）。想写自然数就必须 `%nat`。整数是 `%int`，截断层级是 `%trunc`。
+这不是库的恶作剧，而是优先级的选择：在 HoTT 里，路径比自然数更常用。
 
 ## 1.3 依赖类型：谓词就是 `A -> Type`
 
-依赖函数（Π）与依赖对（Σ）是普通函数 / 乘积的"终点随起点变化"的版本，
-逻辑上正对应全称与存在。
+一个关于 `n : nat` 的性质，比如"n 是零"，在类型论里就是一个**从 `nat` 到类型的函数**：
+给每个 n 一个类型，这个类型的居民就是"n 是零"的证明。
 
 ```coq
 Definition IsZero (n : nat) : Type := n = 0%nat.
 
 Check IsZero.                      (* nat -> Type：一个谓词 *)
 Check IsZero 0%nat.                (* 一个具体的命题 *)
-Check (idpath : IsZero 0%nat).     (* 它有居民：0 = 0 *)
+Check (idpath : IsZero 0%nat).     (* 它有居民 *)
 ```
 
-```text
-IsZero
-     : nat -> Type
-IsZero 0
-     : Type
-1 : IsZero 0
-     : IsZero 0
-```
-
-Σ 类型的居民是"见证 + 证据"，取分量用 `.1` / `.2`
-（`fibration_scope` 的记号）或 `pr1` / `pr2`：
+于是"存在一个 n 使得 n 是零"就是一个依赖对：见证加证据。
 
 ```coq
 Definition witness_zero : { n : nat & IsZero n } := (0%nat; idpath).
-Compute (witness_zero).1.
-Compute (witness_zero).2.
+Compute (witness_zero).1.          (* 见证：0 *)
+Compute (witness_zero).2.          (* 证据：0 = 0 *)
 ```
 
-```text
-witness_zero
-     : {n : nat & IsZero n}
-     = 0%nat
-     : nat
-     = 1
-     : IsZero witness_zero.1
-```
-
-`{x : A & P x}` 与 `{x : A | P x}` 是两个记号：前者第二分量是数据
-（对应"存在"），后者第二分量是 h-prop（对应"存在唯一"意义上的命题）。
-本章只用前者。
+`.1` 和 `.2` 是两个投影。Π 类型（`forall`）和 Σ 类型（`{x : A & P x}`）是本教程
+最基本的两块积木，第 03 章会把它们单独拎出来讲透。
 
 ## 1.4 相等的特殊地位
 
-在 HoTT 里 `x = y` **不是**布尔值，而是一个类型。`paths` 是一个归纳类型族，
-只有一个构造子 `idpath`：
+到这里为止一切都和普通 Coq 一样。分水岭在于：**`x = y` 是什么？**
+
+在 HoTT 库里，相等由一个归纳类型族 `paths` 给出，只有一个构造子：
 
 ```coq
-Check paths.
-Check idpath.
-Print paths.
+Inductive paths (A : Type) (a : A) : A -> Type :=
+  idpath : paths A a a.
 ```
 
-```text
-Inductive paths@{u} (A : Type) (a : A) : A -> Type :=  idpath : a = a.
+`x = y` 是 `paths x y` 的记号。表面上看这和标准库的 `eq` 一模一样，差别在于我们
+**怎样对待它**：
 
-Arguments paths {A}%_type_scope a _
-Arguments idpath {A}%_type_scope {a}, [_] _
-```
+1. 标准 Coq 的习惯是把 `x = y` 看成命题，证明之间没有区别（UIP / proof irrelevance）。
+2. HoTT 拒绝这个假设。`x = y` 是一个普通的类型，**它的居民可以有很多个、彼此不同**。
 
-`A` 与 `a` 是**参数**，终点是**索引**。这个区分在第 02 章的
-`-indices-matter` 里会再出现。
-
-因为 `x = y` 是类型，它就有居民；那些居民叫**路径**。而且
-——关键来了——同一个相等命题可以有**多个不同**的居民。
-
-记号上，`1` 是 `idpath`，`p @ q` 是拼接，`p^` 是取逆，
-都与标准 Coq 的习惯不同：
+一个相等命题的居民叫**路径**。路径之间可以运算：`1` 是恒等路径（`idpath`），
+`p @ q` 是把两条路径首尾相接，`p^` 是把路径倒过来走。
 
 ```coq
 Check (1 : (3%nat) = 3%nat).
-Check (@concat Bool true true true).
-Check (@inverse Bool true false).
+Check (@concat Bool true true true).    (* true = true -> true = true -> true = true *)
+Check (@inverse Bool true false).       (* true = false -> false = true *)
 ```
 
-```text
-1 : 3%nat = 3%nat
-     : 3%nat = 3%nat
-concat
-     : true = true -> true = true -> true = true
-inverse
-     : true = false -> false = true
-```
+为什么要这样？因为这样做之后，类型论和拓扑学之间出现了一个精确的字典。
 
-## 1.5 类型即空间：三层词典
-
-HoTT 的完整词典有四层（可以继续往上）：
+## 1.5 类型即空间
 
 | 类型论 | 同伦论 |
 |---|---|
 | 类型 `A` | 空间 |
-| 项 `x : A` | 点 |
+| 元素 `x : A` | 点 |
 | 路径 `p : x = y` | 从 x 到 y 的连续道路 |
-| 2-路径 `r : p = q` | 两条道路之间的同伦 |
+| 2-路径 `r : p = q` | 两条道路之间的同伦（连续形变） |
+| 3-路径 … | 同伦之间的同伦 … |
 
-同一条相等命题的不同证明，就是不同的道路；证明之间的相等，就是同伦：
+同一个相等命题的两个不同证明，就是两点之间两条不同的道路。
+两个证明之间的相等，就是两条道路之间的形变。这个阶梯可以一直往上走。
 
 ```coq
-Definition two_paths_to_true : true = true := 1.
 Definition path_of_paths : (1 : true = true) = (1 @ 1 : true = true)
   := (concat_1p 1)^.
 ```
 
-```text
-two_paths_to_true
-     : true = true
-path_of_paths
-     : 1 = 1 @ 1
-```
+这里 `1` 与 `1 @ 1` 是 `true = true` 里的两条路径，`path_of_paths` 是它们之间的一条 2-路径。
+它的存在不是靠公理，而是靠一条可以计算的引理 `concat_1p : 1 @ p = p`。
 
-"所有路径都相同"是很强的性质，叫 **h-set**（0-型）；
-允许非平凡环路的类型（圆）就不是集合。
+有了这个字典，"所有路径都相同"就成了一个**性质**而不是一条**公理**。
+满足这个性质的类型叫 **h-set**（集合）；而允许非平凡环路的类型（比如圆，第 13 章）
+就不是集合。类型按"路径结构有多复杂"分级，这条标尺叫截断层级：
 
 ```coq
-Check (fun A : Type => IsHSet A).
-Check (fun A : Type => IsHProp A).
-Check (fun A : Type => Contr A).
-Check (fun (n : trunc_index) (A : Type) => IsTrunc n A).
-Check trunc_index.
-Check minus_two.
+Check (fun A : Type => Contr A).     (* -2 层：可缩，只有一个点 *)
+Check (fun A : Type => IsHProp A).   (* -1 层：命题，任意两点相连 *)
+Check (fun A : Type => IsHSet A).    (*  0 层：集合，任意两条平行路径相等 *)
 ```
 
-```text
-fun A : Type => IsHSet A
-     : Type -> Type
-fun A : Type => IsHProp A
-     : Type -> Type
-fun A : Type => Contr A
-     : Type -> Type
-fun (n : trunc_index) (A : Type) => IsTrunc n A
-     : trunc_index -> Type -> Type
-trunc_index
-     : Type0
-(-2)%trunc
-     : trunc_index
-```
+第 09 章会解释这些层级为什么从 -2 开始数。
 
-三者都是 `IsTrunc n A` 的记号：`Contr` = -2 层，`IsHProp` = -1 层，
-`IsHSet` = 0 层。第 09 章展开这条链。
+## 1.6 为什么值得这么做
 
-## 本章坑位清单
+读到这里你可能会想：把相等搞复杂有什么好处？
 
-1. **数字字面量默认不是 `nat`**：`0` 是 `trunc_index`，`1` 是 `idpath`。
-   自然数一律写 `%nat`，整数写 `%int`，截断层级写 `%trunc`。
-2. **`-noinit` 下没有 string 记号**：`idtac "文本"` 会报
-   `No interpretation for string`。本教程改用 `Check` 打印哨兵常量来分节。
-3. **`inl` / `inr` / `fst` / `snd` 的首个类型参数是隐式的**：
-   裸写 `Check (inl : forall A B, A -> A + B)` 会得到
-   `Type -> Type + ?B`；要写 `@inl` / `@fst`。
-4. **注释紧贴 `.)` 会被当成限定名后缀**：
-   `Check (fun A B => (A -> B)).(* 注释 *)` 报
-   `Syntax error: '@' or [global] expected after '.('`，点号后要留空格。
-5. **`Check` 裸写 `Notation` / `Abbreviation` 会报
-   `Abbreviation is not applied enough`**：`IsHSet`、`Contr`、
-   `IsEquiv`、`IsTrunc`、`IsEmbedding` 都必须带参数，写
-   `Check (fun A : Type => IsHSet A)`。
-6. **`{x : A & P x}` 与 `{x : A | P x}` 不是一个东西**：
-   前者第二分量是数据，后者要求第二分量是 h-prop。
-7. **`1` 在不同 scope 里含义不同**：`path_scope` 里是 `idpath`，
-   `equiv_scope` 里是 `equiv_idmap`，`nat_scope` 里是自然数 1。
-   混开 scope 时务必用 `%` 定界。
-8. **`paths` 的参数/索引区分**：`A` 与起点 `a` 是参数，终点是索引。
-   这决定了路径归纳的形状，也决定了 `-indices-matter` 为什么必须开。
-9. **不要指望 UIP**：HoTT 里不能证 `forall p q : x = y, p = q`。
-   能证的类型叫 h-set，必须显式拿到 `IsHSet` 实例。
-10. **`reflexivity` 在 HoTT 里被重定向到 `idpath`**：
-    所以"对 `p` 做 `destruct` 再 `reflexivity`"就是路径归纳，
-    和标准 Coq 的那套写法是同一回事。
-11. **`Compute` 需要具体实例**：`Compute fst (true, 3)` 报类型不符，
-    要写 `Compute (@fst Bool nat (true, 3%nat))`。
-12. **`sig` 的 `A` 是隐式参数**：`Check sig` 输出里带 `?A`，
-    说明它还没被确定，不是错误。
+- **结构的同一性原理**。在集合论数学里，"同构的结构有相同的性质"是口头禅，
+  但在形式系统里必须逐个证明。HoTT 的泛等公理（第 11 章）让"等价的类型就是相等的类型"，
+  于是沿着相等搬运性质（`transport`，第 05 章）就自动完成了这件事。
+- **拓扑直觉可以直接用**。圆、球面、覆叠空间、基本群——这些拓扑对象在 HoTT 里
+  是具体的类型（高阶归纳类型，第 12–13 章），拓扑定理变成了可以机器检查的证明。
+- **公理用量可审计**。HoTT 库把函数外延和泛等做成显式假设，每条定理用了什么公理
+  一查便知（第 23 章）。
+
+本章的任务只是把字典立起来。接下来的三章——依赖类型、恒等类型、transport——
+会把字典里的每一行都变成可以操作的工具。
+
+## 小结
+
+- 命题是类型，证明是元素；逻辑连接词是类型构造器，推理规则是构造子和投影。
+- 证明是程序，可以运行。
+- `x = y` 是一个类型，叫路径类型；它的居民可以不止一个。
+- 类型 ↔ 空间，元素 ↔ 点，路径 ↔ 道路，路径之间的路径 ↔ 同伦。
+- 路径结构的复杂度用截断层级衡量：可缩、命题、集合、……
+
+## 常见误区
+
+1. **"相等有多个证明"不等于"相等不可靠"**。两条不同的路径都是真实的相等证明，
+   只是它们携带了不同的信息（比如"绕圆几圈"）。
+2. **不要指望 UIP**。`forall p q : x = y, p = q` 在 HoTT 里一般不成立，
+   它是集合（h-set）的定义性质，必须对具体类型证明。
+3. **`{x : A & P x}` 和 `{x : A | P x}` 不同**。前者的第二分量是任意数据；
+   后者要求第二分量是命题（h-prop）。本教程绝大多数时候用前者。
+4. **`1`、`0`、`+`、`*` 默认不是算术**。`1` 是 `idpath`，`+` 是和类型，`*` 是乘积。
+   算术要写 `(2 + 3)%nat`。
+
+## 练习
+
+1. 用 `Definition` 写出"A ∧ B → B ∧ A"与"(A → B) → (B → C) → (A → C)"的证明。
+2. 不看库，自己定义 `Not (A : Type) : Type` 并证明 `A -> Not (Not A)`。
+3. 思考：`Bool` 是不是 h-set？`Type` 呢？先凭直觉猜，第 09 与 11 章会给出答案。
 
 ---
 
-**下一章**：[02 工具链 —— `-noinit`、`-indices-matter` 与公理追踪](docs/02-toolchain.md)
+**下一章**：[02 读懂这个库](02-toolchain.md)
