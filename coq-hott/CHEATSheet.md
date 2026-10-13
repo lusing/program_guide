@@ -1,6 +1,6 @@
 # Coq-HoTT 速查
 
-> 一页纸：核心概念、记号、常用引理、证明套路。条目后的数字指向章节。
+> 读完教程后来查的一页纸，不是入门读物。先读 [README](README.md) 里的章节，理解概念之后再回到这里找记号和引理名字。条目后的数字指向章节。
 
 ## 1. 核心词典
 
@@ -193,7 +193,7 @@ PreCategory：object / morphism（须集合）/ identity / compose（先 d→d' 
 Category := PreCategory + IsCategory（idtoiso 是等价）
 ```
 
-## 13. 证明工程（23）
+## 13. 公理与查阅（23）
 
 | 任务 | 做法 |
 |---|---|

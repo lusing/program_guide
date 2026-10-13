@@ -1,12 +1,8 @@
-(** 示例 02：工具链
-    HoTT 库的构建、[-noinit] 与 [-indices-matter]、问询命令、公理追踪。
+(** 示例 02：三条设计选择
+    没有 Prop、公理是假设、路径优先于算术。
 
-    对应文档：docs/02-toolchain.md
-
-    运行方式：
-      coqc -q -noinit -indices-matter -R $HOTT/theories HoTT ex_02_toolchain.v
-
-    注意：少了 [-noinit] 或 [-indices-matter] 中的任一个，本库都无法正确编译。 *)
+    对应文档：docs/02-toolchain.md（先读文档）。
+    编译方式见 README 附录。 *)
 
 Require Import HoTT.
 

@@ -1,15 +1,11 @@
-(** 示例 01：类型论原理
+(** 示例 01：类型即空间
     命题即类型、证明即程序、类型即空间。
 
-    对应文档：docs/01-type-theory.md
+    对应文档：docs/01-type-theory.md（先读文档，本文件是对照用的定义）。
+    编译方式见 README 附录。
 
-    运行方式（详见 docs/02-toolchain.md）：
-      coqc -q -noinit -indices-matter -R $HOTT/theories HoTT ex_01_type_theory.v
-
-    关于分节标记：本教程用 [Check] 打印哨兵常量来划分区间——
-    在 [-noinit] 下 Rocq 没有 string 记号，[idtac "文本"] 会报
-    「No interpretation for string」，所以只能借常量名当标记。
-    验证脚本按 [sec_NN_BEGIN] / [sec_NN_END] 两行抽区间做逐字节比对。 *)
+    关于分节标记：验证脚本用哨兵常量划分区间——
+    在 [-noinit] 下 Rocq 没有 string 记号，所以借常量名当标记。 *)
 
 Require Import HoTT.
 
