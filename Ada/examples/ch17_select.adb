@@ -1,8 +1,10 @@
 -- ============================================================
 -- 第17章：任务深入——select 会合家族
--- 选择等待/哨兵、条件与定时入口调用、terminate、入口族、信号灯
+-- 选择等待/哨兵、条件与定时入口调用、terminate、入口族、信号灯、
+-- 周期任务无漂移延迟、任务属性/abort/任务异常
 -- ============================================================
 with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Calendar;
 
 procedure Ch17_Select is
 
@@ -246,4 +248,91 @@ begin
       -- 块结束前主人会等依赖任务收尾
    end;
    Put_Line ("  块结束：信号灯任务已终止");
+
+   -- ---------------------------
+   -- 7. 周期任务：无漂移延迟（刘炳文 §16.5 响铃任务）
+   -- ---------------------------
+   New_Line;
+   Put_Line ("--- 7. 周期任务：无漂移延迟 ---");
+   declare
+      use Ada.Calendar;
+      Period  : constant Duration := 0.05;
+      Ticks   : constant := 3;
+      Start   : Time;
+      Elapsed : Duration;
+   begin
+      Start := Clock;
+      declare
+         task Ring;
+         task body Ring is
+            Next_Due : Time := Clock + Period;  -- 下一次该响的"绝对时刻"
+         begin
+            for K in 1 .. Ticks loop
+               delay Next_Due - Clock;          -- 咬住绝对时刻：单轮误差不累积
+               Next_Due := Next_Due + Period;
+            end loop;
+         end Ring;
+      begin
+         null;                                  -- 块结束处主人等 Ring 收尾
+      end;
+      Elapsed := Clock - Start;
+      Put_Line ("  3 个周期名义时长 0.150s，实测 >= 名义: "
+                & Boolean'Image (Elapsed >= Duration (Ticks) * Period));
+      Put_Line ("  （对照 delay Period 写法：每轮的调度误差会逐轮叠进总时长）");
+   end;
+
+   -- ---------------------------
+   -- 8. 任务异常与 abort（刘炳文 §16.7-16.9）
+   -- ---------------------------
+   New_Line;
+   Put_Line ("--- 8. 任务异常与 abort ---");
+   declare
+      task Doomed is
+         entry Ask;
+         pragma Warnings                        -- 生来就是"调用已完结任务"演示的靶子
+           (Off, "no accept for entry");
+      end Doomed;
+      task body Doomed is
+      begin
+         raise Constraint_Error;                -- 任务体内冒出的异常
+      exception
+         when Constraint_Error =>
+            Put_Line ("  [将死任务] 异常被本地处理，任务随即""完成""");
+         -- 即使不写处理段：异常也绝不传出任务体（任务静默完成）
+      end Doomed;
+
+      task Sleeper;
+      task body Sleeper is
+      begin
+         delay 30.0;                            -- 卡在长延迟上
+         Put_Line ("  不该走到这");
+      end Sleeper;
+   begin
+      delay 0.05;                               -- 让 Doomed 先跑完
+      Put_Line ("  Doomed'Terminated = " & Boolean'Image (Doomed'Terminated)
+                & "（完成且无依赖任务 → 已彻底终止）");
+      Put_Line ("  Doomed'Callable   = " & Boolean'Image (Doomed'Callable)
+                & "（已完结，不再接单）");
+
+      -- 调用已完结任务的入口：RM 9.5.3 明文规定引发 Tasking_Error
+      begin
+         Doomed.Ask;
+      exception
+         when Tasking_Error =>
+            Put_Line ("  调用已完结任务的入口 → Tasking_Error（RM 9.5.3）");
+      end;
+
+      abort Sleeper;                            -- 打断 delay，强制作废
+      declare
+         Tries : Natural := 0;
+      begin
+         while not Sleeper'Terminated and Tries < 200 loop
+            delay 0.005;                        -- abort 落地需要一点时间
+            Tries := Tries + 1;
+         end loop;
+      end;
+      Put_Line ("  abort Sleeper 后 Sleeper'Terminated = "
+                & Boolean'Image (Sleeper'Terminated)
+                & "（轮询等待作废生效，最多 1s）");
+   end;
 end Ch17_Select;
