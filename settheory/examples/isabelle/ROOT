@@ -31,3 +31,11 @@ session ST07 in "ST07" = "ZF-Constructible" +
   options [document = false]
   theories
     Filters
+session ST08 in "ST08" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Singular
+session ST09 in "ST09" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Foundation

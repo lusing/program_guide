@@ -11,3 +11,5 @@ import Settheory.Ch04Reals
 import Settheory.Ch05Choice
 import Settheory.Ch06CardArith
 import Settheory.Ch07Filters
+import Settheory.Ch08Singular
+import Settheory.Ch09Foundation
