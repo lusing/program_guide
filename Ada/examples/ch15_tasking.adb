@@ -1,87 +1,132 @@
 -- ============================================================
--- 第12章：并发编程 (Tasking)
+-- 第15章：并发编程 —— 任务 (Task) 与会合 (Rendezvous)
+--   —— 任务说明与体 / accept 参数传递 / 入口队列 /
+--      任务类型与任务数组 / 生产者-消费者管道
 -- ============================================================
 with Ada.Text_IO; use Ada.Text_IO;
 
 procedure Ch15_Tasking is
 
-   -- 简单任务类型
-   task type Worker (Id : Integer);
+   -- ---------------------------
+   -- 1. 会合服务：入口 + accept
+   --    （老教材 PRODUCER/CONSUMER 的无交互版本）
+   -- ---------------------------
+   task Upper is
+      entry Send (C : in Character);   -- 入口：其他任务的调用接口
+   end Upper;
 
-   task body Worker is
-      Delay_Time : constant Duration := 0.5;
+   task body Upper is
    begin
-      Put_Line ("  Worker" & Integer'Image(Id) & " 开始工作...");
-      delay Delay_Time;  -- 模拟工作
-      Put_Line ("  Worker" & Integer'Image(Id) & " 完成工作。");
-   end Worker;
-
-   -- 与主程序同步的任务
-   task Printer is
-      entry Print_Message (Msg : String);
-   end Printer;
-
-   task body Printer is
-   begin
-      accept Print_Message (Msg : String) do
-         Put_Line ("  Printer 收到消息: " & Msg);
-      end Print_Message;
-
-      accept Print_Message (Msg : String) do
-         Put_Line ("  Printer 收到消息: " & Msg);
-      end Print_Message;
-   end Printer;
-
-   -- 生产者-消费者
-   task type Producer (Id : Integer);
-   task Consumer is
-      entry Deliver (Item : Integer);
-   end Consumer;
-
-   task body Producer is
-   begin
-      for I in 1 .. 3 loop
-         Put_Line ("  Producer" & Integer'Image(Id) & " 生产: " & Integer'Image(I));
-         Consumer.Deliver (I);
+      loop
+         select                          -- 选择等待：见第 17 章
+            accept Send (C : in Character) do
+               -- 会合窗口：调用方挂起，直到 do...end 执行完
+               if C in 'a' .. 'z' then
+                  Put (Character'Val (Character'Pos (C)
+                       - Character'Pos ('a') + Character'Pos ('A')));
+               else
+                  Put (C);
+               end if;
+            end Send;
+         or
+            terminate;                   -- 调用方都结束时自己也收摊
+         end select;
       end loop;
-   end Producer;
+   end Upper;
 
-   task body Consumer is
+   -- ---------------------------
+   -- 2. accept 的参数传递：in 拷入、out 拷回
+   -- ---------------------------
+   task Squarer is
+      entry Compute (X : in Integer; Y : out Integer);
+   end Squarer;
+
+   task body Squarer is
    begin
-      for I in 1 .. 6 loop
-         accept Deliver (Item : Integer) do
-            Put_Line ("  Consumer 消费: " & Integer'Image(Item));
-         end Deliver;
-      end loop;
-   end Consumer;
+      accept Compute (X : in Integer; Y : out Integer) do
+         Y := X * X;                     -- out 参数在会合结束时拷回调用方
+      end Compute;
+   end Squarer;
 
-   P1 : Producer (1);
-   P2 : Producer (2);
+   -- ---------------------------
+   -- 3. 任务类型与任务数组（老教材 TAPE_DRIVE 磁带驱动器）
+   -- ---------------------------
+   task type Tape_Drive is
+      entry Request;
+      entry Release;
+   end Tape_Drive;
+
+   task body Tape_Drive is
+      Busy : Boolean := False;
+   begin
+      loop
+         select
+            accept Request;
+            Busy := True;
+         or
+            accept Release;
+            Busy := False;
+         or
+            terminate;
+         end select;
+      end loop;
+   end Tape_Drive;
 
 begin
-   Put_Line ("=== Ada 并发编程 (Tasking) 示例 ===");
+   Put_Line ("=== Ada 并发编程：任务与会合 ===");
    New_Line;
 
-   -- 1. 并行 Worker
-   Put_Line ("--- 1. 并行任务 ---");
+   -- ---------------------------
+   -- 1. 主程序作为生产者：逐字符经会合送入 Upper 任务
+   -- ---------------------------
+   Put_Line ("--- 1. 生产者-消费者（大写转换） ---");
    declare
-      W1 : Worker (1);
-      W2 : Worker (2);
-      W3 : Worker (3);
+      Text : constant String := "Hello, concurrent Ada!";
    begin
-      null;  -- 等待所有 Worker 结束
+      for K in Text'Range loop
+         Upper.Send (Text (K));          -- 每个字符一次会合
+      end loop;
+      New_Line;
+      Put_Line ("  每个字符一次会合：顺序确定，输出与输入一一对应。");
    end;
 
-   -- 2. Rendezvous (同步入口)
+   -- ---------------------------
+   -- 2. 会合中的参数传递
+   -- ---------------------------
    New_Line;
-   Put_Line ("--- 2. Rendezvous (同步入口) ---");
-   Printer.Print_Message ("Hello from main!");
-   Printer.Print_Message ("第二条消息");
+   Put_Line ("--- 2. accept 的 in/out 参数 ---");
+   declare
+      Result : Integer;
+   begin
+      Squarer.Compute (12, Result);      -- 会合结束时 Result 拿到 144
+      Put_Line ("  Squarer.Compute (12, Result) → Result ="
+                & Integer'Image (Result));
+   end;
 
-   -- 3. 生产者-消费者已经随声明启动
+   -- ---------------------------
+   -- 3. 任务数组：一个任务类型，N 份拷贝
+   -- ---------------------------
    New_Line;
-   Put_Line ("--- 3. 生产者-消费者模式 ---");
-   Put_Line ("  (See output above for Producer/Consumer messages)");
+   Put_Line ("--- 3. 任务数组 ---");
+   declare
+      Drives : array (1 .. 3) of Tape_Drive;   -- 三个任务对象
+   begin
+      for K in Drives'Range loop
+         Drives (K).Request;             -- 依次申请三台驱动器
+      end loop;
+      Put_Line ("  3 台驱动器全部申请成功。");
+      Drives (2).Release;                -- 释放中间那台
+      Put_Line ("  释放 2 号驱动器。");
+      Drives (2).Request;                -- 再次申请它
+      Put_Line ("  再次申请 2 号成功——每台驱动器有独立状态。");
+      for K in Drives'Range loop
+         Drives (K).Release;
+      end loop;
+   end;
+   -- 块结束：所有任务终止（terminate 备选）后才离开块
 
-   Put_Line ("  所有任务已完成。");
+   New_Line;
+   Put_Line ("  任务的激活：说明部分加工完、首句执行前；");
+   Put_Line ("  任务的终止：块/主程序结束前，相关任务必须全部终止。");
+   Put_Line ("=== 第 15 章演示结束 ===");
 end Ch15_Tasking;
