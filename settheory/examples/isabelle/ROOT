@@ -77,3 +77,8 @@ session ST17 in "ST17" = "ZF-Constructible" +
   options [document = false]
   theories
     Boolean
+
+session ST18 in "ST18" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Forcing
