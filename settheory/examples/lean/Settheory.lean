@@ -9,3 +9,4 @@ import Settheory.Ch02Ordinals
 import Settheory.Ch03Cardinals
 import Settheory.Ch04Reals
 import Settheory.Ch05Choice
+import Settheory.Ch06CardArith

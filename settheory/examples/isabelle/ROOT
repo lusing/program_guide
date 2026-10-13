@@ -23,3 +23,7 @@ session ST05 in "ST05" = "ZF-AC" +
   options [document = false]
   theories
     Choice
+session ST06 in "ST06" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    CardArith
