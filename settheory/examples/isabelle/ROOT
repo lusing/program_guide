@@ -39,3 +39,7 @@ session ST09 in "ST09" = "ZF-Constructible" +
   options [document = false]
   theories
     Foundation
+session ST10 in "ST10" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Models
