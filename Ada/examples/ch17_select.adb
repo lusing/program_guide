@@ -5,6 +5,7 @@
 -- ============================================================
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Calendar;
+with System;
 
 procedure Ch17_Select is
 
@@ -334,5 +335,110 @@ begin
       Put_Line ("  abort Sleeper 后 Sleeper'Terminated = "
                 & Boolean'Image (Sleeper'Terminated)
                 & "（轮询等待作废生效，最多 1s）");
+   end;
+
+   -- ---------------------------
+   -- 9. 任务优先级（何诚 §12.10）：静态指定的两个时代写法
+   -- ---------------------------
+   New_Line;
+   Put_Line ("--- 9. 任务优先级 ---");
+   declare
+      -- 83 风格：杂注写在任务规范说明里（现代依然合法）
+      task Urgent is
+         pragma Priority (System.Default_Priority + 3);
+         entry Ping;
+      end Urgent;
+      task body Urgent is
+      begin
+         accept Ping;
+      end Urgent;
+
+      -- 现代风格：方面（aspect）写在名字与 is 之间（Ada 2005 起）
+      task type Background with Priority => System.Default_Priority - 3 is
+         entry Ping;
+      end Background;
+      task body Background is
+      begin
+         accept Ping;
+      end Background;
+      Bg : Background;
+   begin
+      Put_Line ("  Default_Priority = " & Integer'Image (System.Default_Priority));
+      Put_Line ("  Any_Priority 范围 = " & Integer'Image (System.Any_Priority'First)
+                & " .. " & Integer'Image (System.Any_Priority'Last));
+      Put_Line ("  Priority     范围 = " & Integer'Image (System.Priority'First)
+                & " .. " & Integer'Image (System.Priority'Last));
+      Urgent.Ping;                          -- 高优先级任务正常会合
+      Bg.Ping;                              -- 低优先级任务正常会合
+      Put_Line ("  高/低优先级任务均会合成功（何时分高下见正文）");
+   end;
+
+   -- 越界的优先级：编译器只警告，说明部分加工时才引爆
+   begin
+      declare
+         task Bad_Prio is
+            pragma Priority (Integer'Last); -- 远超 Any_Priority 上界
+            pragma Warnings (Off, "value not in range of type");
+            pragma Warnings (Off, """Priority"" will be raised");
+            entry Ping;
+         end Bad_Prio;
+         task body Bad_Prio is
+         begin
+            accept Ping;                    -- 不会到达：加工即炸
+         end Bad_Prio;
+      begin
+         Put_Line ("  不该走到这");
+      end;
+   exception
+      when Constraint_Error =>
+         Put_Line ("  Priority 越界：编译只警告，说明部分加工时 CONSTRAINT_ERROR");
+   end;
+
+   -- ---------------------------
+   -- 10. 会合中的异常（何诚 §13.6）：accept 体传调用方
+   -- ---------------------------
+   New_Line;
+   Put_Line ("--- 10. 会合中的异常 ---");
+   declare
+      Junk : Integer;
+      task Server is
+         entry Fetch (V : out Integer);
+      end Server;
+      task body Server is
+      begin
+         accept Fetch (V : out Integer) do
+            raise Constraint_Error;         -- accept 语句体内冒异常
+         end Fetch;
+      end Server;
+   begin
+      Server.Fetch (Junk);                  -- 调用点收到！
+      Put_Line ("  不该走到这");
+   exception
+      when Constraint_Error =>
+         Put_Line ("  accept 体内的异常 → 调用者的入口调用处收到");
+   end;
+
+   declare
+      Junk : Integer;
+      task Crasher is
+         entry Fetch (V : out Integer);
+      end Crasher;
+      task body Crasher is
+      begin
+         accept Fetch (V : out Integer) do
+            raise Constraint_Error;
+         end Fetch;
+         -- 异常没处理：Crasher 自己随即静默"完成"
+      end Crasher;
+   begin
+      begin
+         Crasher.Fetch (Junk);              -- 调用点照样收到
+      exception
+         when Constraint_Error =>
+            Put_Line ("  服务者没处理 → 自己静默完成，调用方仍收到异常");
+      end;
+      delay 0.02;
+      Put_Line ("  Crasher'Terminated = " & Boolean'Image (Crasher'Terminated)
+                & "（异常穿出 accept 后，任务体自身也终止）");
    end;
 end Ch17_Select;

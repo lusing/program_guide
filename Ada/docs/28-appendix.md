@@ -171,7 +171,8 @@ gnatmake -gnat2022 source.adb
 |------|------|
 | `T'Terminated` / `T'Callable` † | 已终止 / 仍可接单 |
 | `E'Count` † | 入口队列长度（竞态，仅参考） |
-| `T'Priority` (95) / `T'Storage_Size` † | 优先级 / 任务栈大小 |
+| `T'Storage_Size` † | 任务栈大小 |
+| `P'Priority` (05，保护对象专用) | 保护对象天花板优先级（仅在其自身操作内读写；任务前缀非法，见 [17 章](17-select-family.md)） |
 
 **对象与子程序**
 
