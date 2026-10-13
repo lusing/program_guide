@@ -1,131 +1,231 @@
-# Coq-HoTT CHEATSheet —— 语法速查 + 实测坑位索引
+# Coq-HoTT 速查
 
-> 所有条目均来自 24 个编译验证过的示例（`examples/`）与实测输出
-> （`build/out/NN.sec1`）。坑位编号「章.条」指向该章坑位清单。
+> 一页纸：核心概念、记号、常用引理、证明套路。条目后的数字指向章节。
 
-## 0. 一条命令跑起来
+## 1. 核心词典
 
-```bash
-coqc -q -noinit -indices-matter -R /Volumes/mac004/lang/Coq-HoTT/theories HoTT ex_01_type_theory.v
-```
-
-四个开关缺一不可：`-q` 安静；`-noinit` 不加载标准库（防 `paths`/`sig` 被抢）；
-`-indices-matter` HoTT 要求；`-R ... HoTT` 命名空间映射。
-
-## 1. 每文件最小骨架
-
-```coq
-Require Import HoTT.                       (* 总导出；不含公理 *)
-Require Import HoTT.Axioms.Univalence.     (* 要 path_universe 时单独加 *)
-Local Open Scope path_scope.
-
-Definition sec_01_BEGIN := tt.   Check sec_01_BEGIN.   (* 分节哨兵 *)
-(* ... Check / Compute / Definition / Proof ... *)
-Definition sec_01_END := tt.     Check sec_01_END.
-```
-
-- 哨兵用 **`Check` 常量**：`-noinit` 下没有 string 记号，`idtac "..."` 不可用。
-- 文件名/模块名**不能以数字开头** → 用 `ex_` 前缀。
-
-## 2. 记号速查（scope 决定含义）
-
-| 写法 | 含义 | 所在 scope |
+| 类型论 | 同伦论 | 章 |
 |---|---|---|
-| `1` | `idpath`（路径） | path_scope（默认解释） |
-| `1` | `equiv_idmap`（恒等等价） | equiv_scope |
-| `1` | 恒等态射 | morphism_scope |
-| `p @ q` | 路径复合 | path_scope |
-| `p^` | 逆路径 | path_scope |
-| `f o g` | 函数复合 | function_scope |
-| `f == g` | 逐点同伦（`pointwise_paths`） | type_scope |
-| `A <~> B` | 等价类型 `Equiv A B` | type_scope |
-| `X ->* Y` | 保点映射 | pointed_scope |
-| `X <~>* Y` | 点化等价 | pointed_scope |
-| `+` / `*` | **和类型 / 积类型**（非算术！） | type_scope |
-| `+` / `*` / `-` | 算术 | nat_scope / int_scope |
-| `x.+1` / `x.-1` | 后继 / 前驱 | nat_scope / int_scope |
-| `(-2)%trunc` | 截断层级 -2 | trunc_scope |
-| `{x : A & P x}` | Σ 类型 | type_scope |
-| `forall x : A, P x` | Π 类型 | — |
+| 类型 `A` | 空间 | 01 |
+| 元素 `x : A` | 点 | 01 |
+| 路径 `p : x = y` | 道路 | 01、04 |
+| 2-路径 `r : p = q` | 同伦 | 06 |
+| `transport P p` | 沿道路平行移动纤维 | 05 |
+| `A <~> B` | 同伦等价 | 07 |
+| `hfiber f b` | 纤维 | 08 |
+| `Contr` / `IsHProp` / `IsHSet` | 可缩 / 命题 / 集合（-2 / -1 / 0 层） | 09 |
+| `Tr n A`、`merely A` | n-截断、命题截断 | 15 |
+| HIT | 由点和路径粘出的空间 | 12、19 |
+| `loops X` | 环路空间 ΩX | 21 |
 
-**数字字面量默认不是 nat**：`0` 是截断层级、`1` 是 `idpath`。
-算术一律写 `(2 + 3)%nat`。〔坑 03、22〕
-
-## 3. 核心类型与记号
+## 2. 文件骨架
 
 ```coq
-paths : ?A -> ?A -> Type           (* a = b 的真名 *)
-transport : forall (P : A -> Type) (x y : A), x = y -> P x -> P y
-concat_p1 / concat_1p / concat_p_pp / concat_pp_p / concat_V_pp / inv_pp
-ap : (A -> B) -> x = y -> f x = f y        apD : 依赖版
-IsEquiv（四份数据）: equiv_inv / eisretr / eissect / eisadj
-equiv_adjointify f g eisretr eissect   (* 日常造等价 *)
-hfiber f y = {x : A & f x = y}         (* 纤维 *)
-IsTrunc n A: -2 可缩 / -1 命题 / 0 集合（IsTrunc_internal 归纳族）
-path_forall : f == g -> f = g          (* 需 Funext *)
-path_universe : IsEquiv f -> A = B     (* 需 Univalence *)
-Tr n A / tr / merely / hexists / hor   (* 截断操作 *)
-Circle / Circle.base / Circle.loop / Circle_ind
-Pushout / pushl / pushr / pglue  |  Coeq / coeq / cglue
-Quotient / class_of / qglue  |  Susp
-pType / Build_pType / pt / loops / Build_pMap
-nat / Int / nat_add / int_iter ...
+Require Import HoTT.                       (* 定义与定理，不含公理实例 *)
+Require Import HoTT.Axioms.Univalence.     (* 需要 path_universe 时 *)
+Require Import HoTT.Axioms.Funext.         (* 需要 path_forall 时（泛等已蕴含） *)
+Local Open Scope path_scope.
 ```
 
-## 4. 证明套路速查
+或在 `Section` 内用 `Context `{Univalence}` / `Context `{Funext}` 把公理当参数。
+
+## 3. 记号（作用域决定含义）
+
+| 写法 | 含义 | 作用域 |
+|---|---|---|
+| `1` | `idpath` | `path_scope`（默认） |
+| `1%equiv` | `equiv_idmap` | `equiv_scope` |
+| `1%morphism` | 恒等态射 | `morphism_scope` |
+| `p @ q`、`p^` | 路径复合、逆 | `path_scope` |
+| `g oE f`、`e^-1` | 等价复合、逆等价 | `equiv_scope` |
+| `f^-1` | 等价的反函数 `B -> A` | `function_scope` |
+| `f == g` | 逐点同伦 | `type_scope` |
+| `A <~> B` | 等价类型 | `type_scope` |
+| `A * B`、`A + B` | 乘积、和 | `type_scope` |
+| `{x : A & P x}`、`(a; p)`、`u.1`、`u.2` | Σ 类型、构造、投影 | `type_scope`、`fibration_scope` |
+| `(2 + 3)%nat`、`(0 - 5)%int` | 算术 | `nat_scope`、`int_scope` |
+| `(-2)%trunc`、`trunc_S n` | 截断层级 | `trunc_scope` |
+| `X ->* Y`、`X <~>* Y` | 保点映射、点化等价 | `pointed_scope` |
+| `x <> y` | `x = y -> Empty` | — |
+
+数字字面量默认不是 `nat`：`0` 是截断层级、`1` 是 `idpath`。
+
+## 4. 路径代数（04–06，零公理）
+
+```coq
+concat_p1 : p @ 1 = p         concat_1p : 1 @ p = p
+concat_p_pp : p @ (q @ r) = (p @ q) @ r      concat_pp_p : 反向
+concat_pV : p @ p^ = 1        concat_Vp : p^ @ p = 1
+concat_V_pp : p^ @ (p @ q) = q
+inv_pp : (p @ q)^ = q^ @ p^   inv_V : (p^)^ = p
+ap_pp : ap f (p @ q) = ap f p @ ap f q       ap_V, ap_compose, ap_idmap, ap_const
+apD f p : transport B p (f x) = f y          apD_const : apD f p = transport_const p _ @ ap f p
+eckmann_hilton : forall p q : 1 = 1, p @ q = q @ p
+moveR_Mp / moveR_pM / moveL_Mp / moveL_pM / moveL_1M / moveR_1M ...   (* 移项，Check 看方向 *)
+```
+
+证明路径引理：`destruct p; reflexivity`（路径归纳）。
+
+## 5. Transport（05，零公理）
+
+```coq
+transport P p : P x -> P y
+transport_const : transport (fun _ => B) p y = y
+transport_pp : transport P (p @ q) u = transport P q (transport P p u)
+transport_pV / transport_Vp : 来回抵消
+transport_compose : transport (fun x => P (f x)) p z = transport P (ap f p) z
+transport_paths_l  : transport (fun x => x = y) p q = p^ @ q
+transport_paths_r  : transport (fun y => x = y) p q = q @ p
+transport_paths_lr : transport (fun x => x = x) p q = p^ @ q @ p
+transport_paths_FlFr : transport (fun x => f x = g x) p q = (ap f p)^ @ q @ ap g p
+moveR_transport_p : u = transport P p^ v -> transport P p u = v
+```
+
+证明 `a ≠ b`：造族 `code`（`a` 上 `Unit`，`b` 上 `Empty`），`fun p => transport code p tt`。
+
+## 6. 等价与纤维（07–08，零公理）
+
+```coq
+IsEquiv f := { equiv_inv ; eisretr : f o g == id ; eissect : g o f == id ; eisadj }
+equiv_adjointify f g (f o g == id) (g o f == id) : A <~> B    (* 日常构造 *)
+make_equiv.                        (* 简单情形自动 *)
+equiv_idmap / equiv_compose' (oE) / equiv_inverse (^-1)
+equiv_ap : IsEquiv f -> (x = y) <~> (f x = f y)
+equiv_ind : IsEquiv f -> (forall a, P (f a)) -> forall b, P b
+hfiber f b := {a & f a = b}
+Contr A := { center ; contr : forall y, center = y }
+contr_basedpaths : Contr {y & x = y}          (* 路径归纳的另一种说法 *)
+isequiv_contr_map / contr_map_isequiv : 等价 ⟺ 纤维可缩
+equiv_sigma_contr : (forall a, Contr (P a)) -> {a & P a} <~> A
+```
+
+## 7. 截断层级（09、15、17）
+
+| 层 | 类型 | 映射（纤维是该层） |
+|---|---|---|
+| -2 | `Contr A` | 等价 |
+| -1 | `IsHProp A` | 嵌入 `IsEmbedding`（⟺ `ap f` 是等价） |
+| 0 | `IsHSet A` | 0-截断映射 |
+| — | 0-连通 | 满射 `IsSurjection`（纤维 merely 非空） |
+
+```coq
+istrunc_paths : IsTrunc n.+1 A -> IsTrunc n (x = y)
+istrunc_contr / istrunc_hprop / istrunc_leq : 往上抬
+istrunc_equiv_istrunc : A <~> B -> IsTrunc n A -> IsTrunc n B
+path_ishprop : IsHProp A -> x = y        hprop_allpath : 反向
+hset_path2 : IsHSet A -> p = q
+equiv_iff_hprop : 命题之间互相蕴含即等价
+Tr n A / tr / Trunc_rec（目标须是 n-型）/ equiv_tr
+merely A := Tr (-1) A      hexists P := merely {x & P x}      hor A B := merely (A + B)
+isequiv_surj_emb : 满射 ∧ 嵌入 ⇒ 等价
+```
+
+## 8. 两条公理（10–11）
+
+```coq
+(* Funext *)
+apD10 / ap10 : f = g -> f == g                     (* 零公理 *)
+path_forall / path_arrow : f == g -> f = g         (* 需 Funext *)
+(* Univalence *)
+equiv_path : A = B -> A <~> B                      (* 零公理 *)
+path_universe f / path_universe_uncurried e : A = B    (* 需 Univalence *)
+transport_path_universe : transport idmap (path_universe f) z = f z   (* 唯一计算律 *)
+transport_path_universe_V, path_universe_V, path_universe_compose, eta_path_universe
+equiv_induction : P U 1 -> forall V (w : U <~> V), P V w
+univalent_transport : forall S X Y, X <~> Y -> S X -> S Y    (* 结构搬运 *)
+not_hset_Type : ~ IsHSet Type
+Univalence_implies_Funext
+```
+
+`Print Assumptions foo`：`Closed under the global context` = 零公理。
+
+## 9. 类型构造器的路径（14）
+
+```coq
+equiv_path_prod  : (fst z = fst z') * (snd z = snd z') <~> z = z'
+equiv_path_sigma : {q : u.1 = v.1 & transport P q u.2 = v.2} <~> u = v
+path_sum_inl : inl x = inl x' -> x = x'    inl_ne_inr   （造路径用 ap inl）
+equiv_path_arrow : f == g <~> f = g         （需 Funext）
+equiv_functor_prod' / sum / sigma / arrow（逆变）
+```
+
+## 10. HIT（12、13、16、19）
+
+通用模板：**点构造子给值，路径构造子给 `transport P glue a = b`**；
+点上的计算规则定义性成立，路径上的是命题性 `_beta_` 引理（用 `rewrite`）。
+
+| HIT | 构造子 | 消去子 |
+|---|---|---|
+| `interval` | `zero`、`one`、`seg` | `interval_ind`、`interval_rec`、`interval_rec_beta_seg` |
+| `Circle` | `Circle.base`、`Circle.loop` | `Circle_ind`、`Circle_rec`、`Circle_rec_beta_loop` |
+| `Quotient R` | `class_of`、`qglue`、截断 | `Quotient_ind`（目标须集合）、`Quotient_ind_hprop`、`Quotient_rec` |
+| `Pushout f g` | `pushl`、`pushr`、`pglue` | `Pushout_ind`、`Pushout_rec` |
+| `Coeq f g` | `coeq`、`cglue` | `Coeq_ind`、`Coeq_rec`、`Coeq_rec_beta_cglue` |
+| `Susp A` | `North`、`South`、`merid` | `Susp_ind`、`Susp_rec` |
+| `Tr n A` | `tr`、截断 | `Trunc_ind`、`Trunc_rec` |
+
+目标是命题时，HIT 归纳只需处理点构造子（`*_ind_hprop`）。
+
+圆：`equiv_Circle_rec : {b & b = b} <~> (Circle -> P)`；
+`equiv_loopCircle_int : (base = base) <~> Int`（需泛等）；`istrunc_Circle : IsTrunc 1 Circle`。
+
+## 11. 覆叠类证明三步（13、24）
+
+```coq
+Definition code : Circle -> Type := Circle_rec Type X (path_universe f).
+
+(* transport code loop x = f x *)
+refine (transport_compose idmap code Circle.loop x @ _).   (* 05 *)
+rewrite Circle_rec_beta_loop.                               (* 13 *)
+apply transport_path_universe.                              (* 11 *)
+```
+
+绕 n 圈：对 n 归纳，归纳步 `rewrite transport_pp; rewrite IH; apply (上面的定理)`。
+
+## 12. 点化与范畴（20–21）
+
+```coq
+Build_pType X x : pType      pt      loops X := (pt = pt, 1)
+Build_pMap f (p : f pt = pt) : A ->* B        Build_pEquiv'
+pmap_from_circle_loops : (pCircle ->** X) <~>* loops X    (* 需 Funext *)
+pfiber : (A ->* B) -> pType
+PreCategory：object / morphism（须集合）/ identity / compose（先 d→d' 后 s→d）/ 五条定律
+Category := PreCategory + IsCategory（idtoiso 是等价）
+```
+
+## 13. 证明工程（23）
 
 | 任务 | 做法 |
 |---|---|
-| 路径目标 | `destruct p q; reflexivity` 或直接 `exact` 路径代数引理 |
-| transport 化简 | `transport_const` / `transport_pp` / `transport_pV` / `transport_compose` |
-| 沿泛等路径搬运 | `apply transport_path_universe`（**simpl 化不开**） |
-| HIT 消去 | `HIT_ind`：点给值 + 路径给 `transport P glue a = b` |
-| h-命题目标免相容条件 | `Quotient_ind_hprop` / 目标 `IsHProp` 时走捷径 |
-| 移项 | `moveR_transport_p` / `moveL_transport_p`（对称孪生，`Check` 区分） |
-| 公理审计 | `Print Assumptions foo` → `Closed under the global context` = 零公理 |
-| 找引理 | `Search (IsEquiv) (@inverse Bool true false).`（带具体类型！） |
-| 查记号 | `Locate "@"` / `Locate "1"`（`1` 被绑定 9 次） |
-| 查定义 | `Print X`（摊开）；`About X`（含全限定名 + 源码行号） |
+| 查公理 | `Print Assumptions foo` |
+| 看类型 / 全貌 / 定义 / 记号 | `Check` / `About` / `Print` / `Locate "sym"` |
+| 找引理 | `Search (形状) (具体类型项)`，然后 `Check` 确认方向 |
+| 类型类失败 | 查公理导入 → 查截断实例（`Definition t : IsHSet X := _.`）→ 查目标形状 |
+| `simpl` 不动 | `transport`/`concat` 是 `simpl nomatch`；`path_universe`/`_beta_` 是命题性；用引理 |
+| 怪类型变量（`ordinal_carrier ?o`） | 类型类任意统一，给具体类型参数 |
+| 对称孪生引理 | `Check`，别猜 |
 
-## 5. 高频坑位 Top 15（各章坑位清单合计 **291** 条，完整版见 docs/25-pitfalls.md）
+## 14. 公理依赖一览
 
-1. 数字字面量要 `%nat` / `%int`；`0`/`1` 默认是截断层级/`idpath`〔03.1, 22.1〕
-2. 裸 `Check IsHSet` 报 `Abbreviation is not applied enough` → 带参写〔07, 09〕
-3. `Check` 出 `ordinal_carrier ?o` 之类怪类型 = typeclass 任意统一 → 给具体类型〔20, 23〕
-4. `path_universe` 不可计算，`simpl` 救不了 → 用 `_path_universe` 引理〔11, 18〕
-5. `-noinit` 缺了标准库会抢走 `paths` / `sig` / `=`〔02, 23〕
-6. 模块名数字开头 → `Invalid character '0'`〔23〕
-7. `HoTT.Categories` 触发 stderr 警告 → `Set Warnings "-notation-overridden"`〔20〕
-8. `Coeq_rec` 第一个显式参数是目标类型 `P`；`Coeq` 变量顺序是 `(B->A)->(B->A)`〔19〕
-9. `Build_HSet` / `Build_HProp` 只吃一个参数〔09〕
-10. `[X, x]` 点化记号不可用（撞列表 + 无定界键）→ `Build_pType`〔21〕
-11. 消去方向引理（`path_sum_inl` 等）是"从构造子里抽路径"，造路径用 `ap`〔14〕
-12. `ap (fun Z => Z * A)` 的 `Z` 要显式标类型，否则宇宙推不出〔18〕
-13. `equiv_scope` 打开时 `1` 是恒等等价；`@` 三连可能触发 `level-tolerance` 警告〔11〕
-14. `loopexp` 有两份（Int 与 BinInt）同名互相遮蔽 → 自己写 `loopexp_nat`〔24〕
-15. 命题是 `Type0` 里的类型不是 Bool；判定归 `Decidable`〔22〕
+| 零公理 | `Funext` | `Univalence` |
+|---|---|---|
+| 路径代数、transport、等价论、纤维可缩 ⟺ 等价、乘积/Σ/和的路径、截断层级推理、HIT 消去子 | 函数相等、Π 的层级、`IsEquiv`/`IsHProp` 是命题、HIT 泛性质 | `Type` 不是集合、结构搬运、圆的覆叠、`loop ≠ 1`、π₁(S¹) = ℤ、单叶范畴 |
 
-## 6. 截断层级与映射对照
+## 15. 源码位置
 
-| 层级 | 名称 | 含义 | `IsTruncMap n f` 的含义 |
-|---|---|---|---|
-| -2 | `Contr` | 可缩（有中心点） | f 是等价 |
-| -1 | `IsHProp` | 命题（任意两点相等） | f 是嵌入 |
-| 0 | `IsHSet` | 集合（路径空间是命题） | —（满射用 `IsConnMap (Tr (-1))`） |
-
-`Build_Contr center contr` / `istrunc_S n`：`IsTrunc_internal` 的两个构造子。
-抬层级用 `istrunc_leq : (m <= n)%trunc -> IsTrunc m A -> IsTrunc n A`。
-
-## 7. 常用源码位置（`/Volumes/mac004/lang/Coq-HoTT/theories/`）
-
-| 内容 | 文件 |
+| 内容 | 文件（`theories/`） |
 |---|---|
-| `paths` / `transport` / `ap` / `IsEquiv` / `nat` / `hfiber` | `Basics/Overture.v` |
-| `Univalence` / `path_universe` | `Types/Universe.v` |
+| `paths`、`transport`、`ap`、`IsEquiv`、`nat`、`hfiber` | `Basics/Overture.v` |
+| 路径群胚律 | `Basics/PathGroupoids.v` |
+| `IsTrunc`、`Contr` | `Basics/Trunc.v` |
+| `Univalence`、`path_universe` | `Types/Universe.v` |
+| `Funext`、`path_forall` | `Types/Forall.v` |
 | `interval` | `HIT/Interval.v` |
 | `Circle` | `Spaces/Circle.v` |
 | `Quotient` | `Colimits/Quotient.v` |
-| `Pushout` / `Coeq` | `Colimits/` |
-| `Int` / `loopexp` | `Spaces/Int.v`、`Spaces/BinInt/LoopExp.v`（同名遮蔽！） |
+| `Pushout`、`Coeq`、`GraphQuotient` | `Colimits/` |
+| `Int` | `Spaces/Int.v` |
+| 点化类型 | `Pointed/` |
+| 范畴论 | `Categories/` |
 
-`About X` 的 `Expands to` 会直接给出全限定名与源码行号，可 grep。
+`About foo` 的 `Declared in library ... line ...` 直接给出位置。

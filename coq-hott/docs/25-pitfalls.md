@@ -1,147 +1,125 @@
-# 25 坑位总清单
+# 25 误区总览
 
-> 本章不配示例。它是第 01–24 章各章"坑位清单"的**跨章汇总**：
-> 各章合计 **291 条**（每章 12 条左右），本章按主题归纳出其中**反复出现、
-> 跨章通用**的 30 条。单章特有的坑请回各章查阅。
+> 本章不配示例。它把前 24 章末尾的"常见误区"按主题重新组织，分成**概念误区**
+> （想错了）与**工程陷阱**（写错了）两部分，最后附一张按症状速查的表。
+> 建议在读完全书后通读一遍，也可以在卡住时按症状查。
 
-## 25.1 各章坑位分布
+## 第一部分：概念误区
 
-| 章 | 主题 | 坑位数 |
+这些是对 HoTT 本身的误解。它们比语法错误更值得警惕，因为代码可能编译通过，
+但你以为证明了的东西和实际证明的不是一回事。
+
+### A. 关于相等
+
+1. **"相等有多个证明"不等于"相等不可靠"。** 不同的路径携带不同的信息（绕圆几圈）；
+   它们都是真实的相等证明。（01、04）
+2. **不要指望 UIP。** `forall p q : x = y, p = q` 是集合的定义性质，不是定理。
+   `Type`、圆、`HSet` 本身都不是集合。（01、04、09、11）
+3. **`p @ 1` 不是 `p`。** 群胚律是路径，不是定义等式。集合里无所谓，高阶类型里有内容。（04、06）
+4. **路径归纳不能处理环路。** J 要求终点自由。`p : base = base` 的性质要用覆叠或编码-解码。（04、13）
+5. **`ap` 与 `apD` 不同。** 依赖函数在路径上的作用必须经过 `transport`。（04、05）
+
+### B. 关于等价
+
+6. **等价不只是"有逆函数"。** 拟逆不是命题；伴随等价（多一条 `eisadj`）才是。
+   日常用 `equiv_adjointify` 自动补齐。（07）
+7. **嵌入不是单射。** 嵌入要求 `ap f` 是等价；`Unit -> Circle` 单射但不是嵌入。
+   集合之间两者一致。（17）
+8. **"逻辑等价即等价"只对命题成立。** 普通类型之间不行。（09）
+9. **等价保持性质不是自动的。** 对一般的 `S : Type -> Type` 需要泛等。（18）
+
+### C. 关于层级与截断
+
+10. **`IsHProp` 不是 Coq 的 `Prop`。** 它是任意类型的一个性质；HoTT 没有 `Prop` 宇宙。（09）
+11. **层级是复杂度上限。** 说 `A` 是 1-型只是说它不比圆复杂；集合也是 1-型。（09）
+12. **Σ 类型不是"存在"。** `{x & P x}` 带见证，一般不是命题；数学里的"存在"是 `hexists`。（03、15）
+13. **从 `merely A` 不能挑元素。** 那是选择公理。只有目标是命题时才能"剥掉" `merely`。（15）
+14. **0-连通不是可缩。** 圆 0-连通但有非平凡环路。（15）
+15. **商类型是集合是因为截断构造子。** 没有截断的"商"就是圆那样的东西。（16）
+16. **"可缩"不等于"平凡"。** 区间可缩，却能推出函数外延。（12）
+
+### D. 关于公理
+
+17. **函数外延不是"显然的"。** 它在类型论内部不可证，是独立公理。（10）
+18. **泛等不抹平差别。** `Bool = Bool` 有两条路径；泛等增加了相等的证据，没有合并类型。（11）
+19. **`loop ≠ 1` 和 π₁(S¹) = ℤ 都依赖泛等。** 不加泛等的 HoTT 与"所有类型是集合"相容。（13、24）
+20. **HIT 规则不是逻辑公理。** `Print Assumptions` 里的 `gqglue` 等是构造性规则，
+    Coq 用 `Axiom` 模拟它们而已。（13、23）
+21. **泛等不能计算。** `path_universe` 永远不归约；只能用 `_path_universe` 系列行为律。（11、18）
+
+### E. 关于 HIT
+
+22. **HIT 的依赖消去条件必须经过 `transport`。** 不是 `a = b`，是 `transport P glue a = b`。（12、19）
+23. **路径构造子的计算规则是命题性的。** `ap (rec ...) glue = p` 要 `rewrite`，`simpl` 不动它。（12、13）
+24. **把两个点粘起来不等于得到一个点。** 得到的是一个点加自环；抹掉自环要截断。（19）
+25. **泛性质需要 `Funext`，消去子不需要。** 泛性质比较函数类型。（19、21）
+
+### F. 关于范畴与点化
+
+26. **范畴的对象不必是集合，态射必须是。** 这让范畴公理成为命题。（20）
+27. **保点映射的 `f pt = pt` 是路径，不是定义等式。** 它会在证明里出现。（21）
+
+## 第二部分：工程陷阱
+
+这些是写代码时的实际错误。它们通常立刻报错，所以危害较小，但初学时会反复撞上。
+
+### G. 作用域与记号
+
+28. **数字字面量默认不是 `nat`。** `0` 是截断层级，`1` 是 `idpath`。算术写 `(2 + 3)%nat`、`%int`。（01、22）
+29. **`+`、`*` 默认是和类型与乘积。** 目标里 `n + m = m + n` 不加 `%nat` 会报"需要 Type"。（03、22）
+30. **`1` 被绑定了 9 次。** `path_scope` 的 `idpath`、`equiv_scope` 的 `equiv_idmap`、
+    `morphism_scope` 的恒等态射……`Locate "1"` 分辨。（02、23）
+31. **`^-1` 有两个版本。** 函数作用域是反函数，等价作用域是逆等价。（02、07）
+32. **`(a; b)` 是 Σ，`(a, b)` 是乘积。** （03）
+33. **点化记号 `[X, x]` 与列表冲突。** 写 `Build_pType X x`。（21）
+
+### H. 类型类与隐式参数
+
+34. **`Require Import HoTT` 不给公理实例。** 要 `Context` 或 `Require Import HoTT.Axioms.*`。（02、10、11）
+35. **类型类缺信息时任意统一。** `Check hset_path2` 出现 `ordinal_carrier`、`Check zero` 出现 `CRing`，
+    给具体类型参数即可。（20、22、23）
+36. **`Unable to satisfy the following constraints` 的排查顺序。** 公理导入 → 截断实例 → 目标形状。（23）
+37. **记号/缩写不能裸 `Check`。** `IsHSet`、`Contr`、`IsEquiv` 要带参数写 `Check (fun A => IsHSet A)`。（01、09）
+
+### I. 参数顺序与方向
+
+38. **成对引理靠 `Check` 分辨方向。** `concat_p_pp`/`pp_p`、`moveR`/`moveL`、`transport_paths_l`/`_r`。（05、06、23）
+39. **`path_sum_inl` 等是消去方向。** 造路径用 `ap inl`。（14）
+40. **`Coeq` 的第一个类型变量是粘合源**，`Coeq_rec` 的第一个显式参数是目标类型。（19）
+41. **范畴 `compose` 先接后作用的态射**（`morphism d d'` 在前）。用具名字段语法避免错位。（20）
+42. **`equiv_adjointify` 先右逆后左逆。** （07）
+
+### J. 化简
+
+43. **`simpl` 不动 `transport`、`concat`。** 它们标了 `simpl nomatch`；用引理化简。（05、23）
+44. **`simpl` 不动 `path_universe`、HIT 的 `_beta_`。** 命题性规则要 `rewrite`。（11、12、18）
+
+## 第三部分：按症状速查
+
+| 症状 | 最可能的原因 | 条 |
 |---|---|---|
-| 01 | 类型论原理 | 12 |
-| 02 | 工具链 | 12 |
-| 03 | 依赖类型 | 12 |
-| 04 | 恒等类型与路径归纳 | 12 |
-| 05 | Transport | 12 |
-| 06 | 路径代数 | 12 |
-| 07 | 等价 | 12 |
-| 08 | 同伦纤维与可缩性 | 12 |
-| 09 | 截断层级 | 12 |
-| 10 | 函数外延 | 12 |
-| 11 | 泛等公理 | 12 |
-| 12 | HIT 区间 | 12 |
-| 13 | 圆 S¹ 与编码-解码 | 12 |
-| 14 | 类型构造器的路径与等价 | 12 |
-| 15 | 截断操作 | 12 |
-| 16 | 集合与商类型 | 12 |
-| 17 | 截断映射与嵌入 | 12 |
-| 18 | 泛等的应用 | 12 |
-| 19 | 余极限 | 12 |
-| 20 | 范畴论 | 12 |
-| 21 | 点化类型与环路空间 | 12 |
-| 22 | 自然数与整数 | 14 |
-| 23 | 元理论与证明工程 | 13 |
-| 24 | 综合实战 | 12 |
-| **合计** | | **291** |
+| `No interpretation for number "3"` | 字面量缺 `%nat` | 28 |
+| 目标里 `+` 报"expected Type" | 算术缺 `%nat` | 29 |
+| `Abbreviation is not applied enough` | 裸 `Check` 记号 | 37 |
+| `Unable to satisfy the following constraints: ?H : Univalence` | 公理未导入 | 34 |
+| `Unable to satisfy ... IsHSet` / `IsTrunc` | 截断实例缺失或目标不是 n-型 | 36 |
+| `Check` 结果出现 `ordinal_carrier ?o`、`?R : CRing` | 类型类任意统一 | 35 |
+| `simpl` 后目标纹丝不动 | `simpl nomatch` 或 `path_universe` | 43、44 |
+| `Unable to unify "q" with "1 @ q"` | 引理参数未给全，或 `destruct` 后目标变形 | 38 |
+| `has type Type0 while it is expected to have type ?A -> ?P` | HIT 消去子漏给目标类型 | 40 |
+| `The term "n" has type "Int" while ...` | `loopexp` 同名遮蔽（`Int` vs `BinInt`） | 24 章 |
+| `Unknown interpretation for notation "[ _, _ ]"` | 点化记号撞车 | 33 |
+| 对 HIT 做 `destruct` 失败 | `Private Inductive` 禁止；用消去子 | 23 |
+| `destruct p` 报错或不改变目标 | 路径两端固定（环路），J 不适用 | 4 |
+| 证完了 `loop ≠ 1` 但 `Print Assumptions` 没有 `Univalence` | 不可能；检查是否真的证了圆的 `loop` | 19 |
 
-## 25.2 通用 30 条（跨章精选）
+## 怎么用这一章
 
-### A. scope 与记号（出现频率最高的一类）
-
-1. **数字字面量默认不是 `nat`**：`0` 落在 `trunc_scope`（截断层级）、
-   `1` 落在 `path_scope`（= `idpath`）。算术表达式必须写 `%nat` / `%int`，
-   否则报 `No interpretation for number "3"`。（第 03、22 章）
-2. **`1` 被绑定了 9 次**：`idpath`、`equiv_idmap`、`mon_unit`、`sq_id`……
-   `Locate "1"` 是分辨它们的唯一可靠方法。（第 23 章）
-3. **`+` / `*` 默认是和类型 / 积类型**（`type_scope`），不是算术。
-4. **`<~>` 在 `type_scope`**、`->*` / `<~>*` 在 `pointed_scope`、
-   `==` 在 `type_scope`（逐点同伦）—— 写目标时想清楚在哪个 scope。
-5. **`[X, x]` 点化记号不可用**：与列表记号撞车且 `pointed_scope` 没有
-   `Delimit Scope` 键，一律写 `Build_pType X x`。（第 21 章）
-6. **`Require Import HoTT.Categories` 触发 `[notation-overridden]` 警告**
-   （打在 stderr）：`Set Warnings "-notation-overridden"` 关掉。（第 20 章）
-
-### B. 类型类与实例
-
-7. **typeclass 缺实例时"任意统一"**：`Check hset_path2` 统一到
-   `ordinal_carrier ?o`、`Check lt` 统一到 `GenNo ?S`、`Check zero` 统一到
-   `?R : CRing`。给具体类型参数即可恢复正常。（第 20、22、23 章）
-8. **`pt` 由 `IsPointed` 实例参数化**，`Check pt` 留下未解 evar 是正常的。（第 21 章）
-9. **数系的 `IsHSet` / `IsHProp` 实例都在库里**：
-   `Definition h : IsHSet nat := _.` 直接可用。（第 22 章）
-10. **"Unable to satisfy the following constraints" 的排查顺序**：
-    先查截断实例，再查 `Funext` / `Univalence` 是否导入。（第 23 章）
-11. **`Univalence_implies_Funext` 会把 `Funext` 带进公理清单**：
-    用了泛等的定理自动依赖它，不代表你多用了公理。（第 23 章）
-
-### C. 公理纪律
-
-12. **`HoTT.v` 不导出公理**：`Univalence` 要 `Require Import
-    HoTT.Axioms.Univalence`，`Funext` 同理。（第 11、18 章）
-13. **路径代数与等价论是零公理的**：`Print Assumptions` 对
-    `concat_p1` / `transport_pp` / `isequiv_adjointify` 全部报告
-    `Closed under the global context`。（第 23 章）
-14. **`path_universe` 不可计算**：`simpl` / `cbn` / `Compute` 都救不了，
-    必须用 `_path_universe` 系列引理化开。（第 11、18、24 章）
-15. **HIT 的计算规则不是公理**，但 HIT 构造子（如 `gqglue`）会出现在
-    `Print Assumptions` 的报告里，属"解释规则"而非公理。（第 23、24 章）
-16. **π₁(S¹) = ℤ 与"loop 非平凡"都依赖泛等**：这是 HoTT 里最著名的
-    公理依赖事实。（第 13、21、24 章）
-
-### D. 裸 `Check` 的语法陷阱
-
-17. **Notation/Abbreviation 不能裸 `Check`**：`IsHSet` / `IsTrunc` /
-    `IsEquiv` / `IsEmbedding` / `Contr` 要写成
-    `Check (fun A : Type => IsHSet A).` 等带参形式，否则报
-    `Abbreviation is not applied enough`。（第 07、09、17 章）
-18. **`inl` / `inr` / `fst` / `snd` 的首参数是隐式的**：要写 `@inl`、`@fst`。
-    （第 01 章）
-19. **注释紧贴 `.)` 会被当成限定名**：`Check (fun ...).(* 蕴含 *)` 报语法错，
-    注释前加空格。（第 01 章）
-20. **trunc_index 的后继是 `trunc_S n`**，不是 `n.+1`（那个记号不存在）。
-    （第 09 章）
-
-### E. 构造子与参数顺序
-
-21. **`Coeq` 的类型变量顺序是 `(B -> A) -> (B -> A) -> Type`**（源在前、
-    点在后），且 `Coeq_rec` 的第一个显式参数是目标类型 `P`；漏给时报
-    `has type Type0 while it is expected to have type ?A -> ?P`。（第 19 章）
-22. **`Build_HSet` / `Build_HProp` 只接受一个参数**（非函数构造）：
-    `Build_HSet Bool : HSet`。（第 09 章）
-23. **范畴的 `compose` 参数顺序是 `morphism d d'` 在前**；
-    `associativity` 与 `associativity_sym`、`identity_identity` 都必须填，
-    用 Record 具名字段语法 `{| object := ... ; ... |}` 避免错位。（第 20 章）
-24. **`int_iter` 的参数是 `(f : A -> A)` + `IsEquiv f`**，不是 `<~>`。（第 21 章）
-25. **`IsEquiv` 的四份数据**（`equiv_inv` / `eisretr` / `eissect` / `eisadj`）
-    是伴随等价；日常构造用 `equiv_adjointify` 给两份即可。（第 07 章）
-
-### F. 引理方向
-
-26. **消去方向与构造方向成对出现**：`path_sum_inl` 是
-    `inl x = inl x' -> x = x'`（消去），造路径要用 `ap inl p`；
-    `moveR_transport_p` 与 `moveL_transport_p` 是对称孪生，靠 `Check` 区分。
-    （第 14、05、23 章）
-27. **`transport` 的方向不可交换**：`transport P p : P x -> P y` 恒从路径
-    起点搬向终点；HIT 消去子里 `transport P (glue a)` 的两端由构造子决定。
-    （第 05、19 章）
-
-### G. 工程与元理论
-
-28. **编译开关一个都不能少**：`-noinit`（否则标准库抢走 `paths` / `sig`）、
-    `-indices-matter`、`-R theories HoTT`。（第 02、23 章）
-29. **模块名不能以数字开头**：`coqc -o` 报
-    `Invalid character '0' at beginning of identifier`，先查文件名。（第 23 章）
-30. **`Search` 三板斧**：给具体单态类型缩范围、按形状搜
-    （`Search (transport _ _ _ = _ -> _ = _)`）、`Check` 确认参数顺序。
-    `About` 的 `Expands to` 给全限定名与源码行号。（第 23 章）
-
-## 25.3 按症状速查
-
-| 症状 | 根因 | 见 |
-|---|---|---|
-| `No interpretation for number "3"` | 字面量缺 `%nat` | 通用 1 |
-| `Abbreviation is not applied enough` | 裸 `Check` 记号 | 通用 17 |
-| `Invalid character '0' at beginning of identifier` | 文件名数字开头 | 通用 29 |
-| `Unable to satisfy the following constraints` | 实例缺失/公理未导入 | 通用 10 |
-| `simpl` 后目标纹丝不动 | `: simpl nomatch` 或 `path_universe` | 通用 14；第 23 章 5 |
-| 类型打印成 `ordinal_carrier ?o` 等 | typeclass 任意统一 | 通用 7 |
-| `has type Type0 while expected ?A -> ?P` | 漏给 HIT 消去子的 `P` | 通用 21 |
-| `Unknown interpretation for notation "[ _, _ ]"` | 点化记号撞车 | 通用 5 |
-| stderr 出现 `[notation-overridden]` | 范畴模块覆盖记号 | 通用 6 |
-| `The term "n" has type "Int" while ...` | `loopexp` 同名遮蔽 | 第 24 章 |
-| `mbstate_t`/`EOF` 未声明（C 工具链） | 裸 clang 缺 `-isysroot` | 第 02 章 |
-| 目标里 `+` 报"expected Type" | 算术缺 `%nat` | 通用 3 |
+- 读完全书后通读第一部分，检查自己有没有哪条还在想错。
+- 卡住时查第三部分，顺着条号回到对应章节。
+- 第二部分的陷阱撞过两三次就不会再撞；第一部分的误区可能潜伏很久。
 
 ---
 
-**上一章**：[24 综合实战 —— 圆上的螺旋覆叠](docs/24-capstone.md)
+**上一章**：[24 综合实战：圆上的螺旋覆叠](24-capstone.md)
+**回到**：[README](../README.md)

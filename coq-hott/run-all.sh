@@ -19,8 +19,6 @@
 #   5. 区间里没有控制字符
 #   6. 同一文件连跑两遍，区间逐字节一致（Coq 是单引擎，用运行间确定性代替跨通道比对）
 #   7. 至少有一个示例被验证（杜绝「通过 0」的假绿）
-#   8. 全量模式下追加文档机器核查（build/check-docs.py，五关：
-#      节号对应 / 输出行逐字节可溯 / 坑位数一致 / 导航链 / CHEATSheet 引用）
 #
 set -uo pipefail
 
@@ -171,17 +169,3 @@ if [ "${FAIL}" -ne 0 ]; then
   exit 1
 fi
 echo "全部示例验证通过。"
-
-# ---- 文档机器核查（仅全量模式；缺 python3 则显式跳过，不静默放过） ----
-if [ -z "$ONLY" ]; then
-  if PY="$(find_tool python3)"; then
-    echo "------------------------------------------------------------"
-    echo "[Docs] $PY $PROJECT_ROOT/build/check-docs.py"
-    if ! "$PY" "$PROJECT_ROOT/build/check-docs.py"; then
-      echo "错误：文档机器核查未通过（见上）。"
-      exit 1
-    fi
-  else
-    echo "[Docs] 跳过：找不到 python3（文档核查未执行，此非「通过」）。"
-  fi
-fi

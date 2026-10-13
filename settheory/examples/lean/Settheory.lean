@@ -15,3 +15,4 @@ import Settheory.Ch08Singular
 import Settheory.Ch09Foundation
 import Settheory.Ch10Models
 import Settheory.Ch11Mostowski
+import Settheory.Ch12Constructible

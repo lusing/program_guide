@@ -1,112 +1,70 @@
-# 20 范畴论 —— PreCategory、Category、Functor
+# 20 范畴论 —— 为什么要"预范畴"
 
-> 对应示例：`examples/20_categories.v`（编译验证通过）
+> 本章代码：[`examples/20_categories.v`](../examples/20_categories.v)
 
-HoTT 里的范畴论有一处与教科书根本不同：
-**"两个范畴相等"这句话本身不成立**（`Type` 不是集合，见第 11 章）。
-因此整个库从一开始就把"相等"换成"等价/同构"，
-这套对称性的管理正是 `PreCategory` 里那些看似多余的字段（`associativity_sym`
-等）存在的原因。
+HoTT 里的范畴论有一处与教科书根本不同。教科书说"一个范畴由对象的**集合**和态射的**集合**组成"；
+但在 HoTT 里，`Type` 不是集合（第 11 章），我们希望"所有集合构成的范畴"
+这样的东西存在，它的对象显然不构成集合。于是定义必须重新设计。
+这一章解释库里的 `PreCategory` 为什么长成那个样子（尤其是那些看起来多余的字段），
+手造一个范畴，然后讲"预"范畴和真正的范畴之间差了什么——
+那个差别正是泛等公理在范畴层面的回声。
 
-本章先把 `PreCategory` 拆开看清楚，再手造一个离散范畴，最后谈为什么叫"预"范畴。
+范畴论模块不在 `HoTT` 的默认导出里：
+
+```coq
+Require Import HoTT.Categories.
+```
 
 ## 20.1 `PreCategory` 的结构
 
-范畴论**不在** `HoTT.v` 的默认导出里，需要单独引入：
-
 ```coq
-Require Import HoTT.
-Set Warnings "-notation-overridden".
-Require Import HoTT.Categories.
-Local Open Scope path_scope.
-```
-
-> 引入 `HoTT.Categories` 会覆盖 `path_scope` 里的 `/` 记号
-> （范畴论用它表示商范畴），Rocq 会往 **stderr** 打一条
-> `[notation-overridden]` 警告。本教程的验证要求 stderr 为空，
-> 所以显式用 `Set Warnings "-notation-overridden"` 关掉这一类。
-> 若你自己写代码不关心 stderr，可以不加这行 —— 但它会污染 `run-all.sh` 的判据。
-
-```coq
-Print PreCategory.
-Check object.
-Check morphism.
-Check identity.
-Check Build_PreCategory'.
-```
-
-实测输出（`build/out/20.sec1`，以下同）：
-
-```text
-Record PreCategory@{u u0} : Type := Build_PreCategory'
-  { object : Type;
+Record PreCategory := Build_PreCategory'
+  { object   : Type;
     morphism : object -> object -> Type;
-    identity : forall x : object, morphism x x;
-    compose : forall s d d' : object,
-              morphism d d' -> morphism s d -> morphism s d';
-    associativity : forall (x1 x2 x3 x4 : object)
-                    (m1 : morphism x1 x2) (m2 : morphism x2 x3)
-                    (m3 : morphism x3 x4),
-                    compose x1 x2 x4 (compose x2 x3 x4 m3 m2) m1 =
-                    compose x1 x3 x4 m3 (compose x1 x2 x3 m2 m1);
-    associativity_sym : forall (x1 x2 x3 x4 : object)
-                        (m1 : morphism x1 x2) (m2 : morphism x2 x3)
-                        (m3 : morphism x3 x4),
-                        compose x1 x3 x4 m3 (compose x1 x2 x3 m2 m1) =
-                        compose x1 x2 x4 (compose x2 x3 x4 m3 m2) m1;
-    left_identity : forall (a b : object) (f : morphism a b),
-                    compose a b b (identity b) f = f;
-    right_identity : forall (a b : object) (f : morphism a b),
-                     compose a a b f (identity a) = f;
-    identity_identity : forall x : object,
-                        compose x x x (identity x) (identity x) = identity x;
-    trunc_morphism : forall s d : object, IsHSet (morphism s d) }.
+    identity : forall x, morphism x x;
+    compose  : forall s d d', morphism d d' -> morphism s d -> morphism s d';
+    associativity     : forall x1 x2 x3 x4 (m1 : morphism x1 x2) (m2 : morphism x2 x3) (m3 : morphism x3 x4),
+                        compose (compose m3 m2) m1 = compose m3 (compose m2 m1);
+    associativity_sym : (* 同上，方向相反 *) ...;
+    left_identity     : forall a b (f : morphism a b), compose (identity b) f = f;
+    right_identity    : forall a b (f : morphism a b), compose f (identity a) = f;
+    identity_identity : forall x, compose (identity x) (identity x) = identity x;
+    trunc_morphism    : forall s d, IsHSet (morphism s d) }.
 ```
 
-十个字段，分成三组：
+十个字段，三组：
 
 | 组 | 字段 | 说明 |
 |---|---|---|
 | 数据 | `object`、`morphism`、`identity`、`compose` | 通常意义的范畴数据 |
-| 定律 | `associativity`、`associativity_sym`、`left_identity`、`right_identity`、`identity_identity` | 为何结合律要存**两次**见下 |
-| 截断 | `trunc_morphism` | 态射必须构成集合 |
+| 定律 | `associativity`、`associativity_sym`、`left_identity`、`right_identity`、`identity_identity` | 范畴公理 |
+| 截断 | `trunc_morphism` | **态射必须构成集合** |
 
-**为什么 `associativity` 与 `associativity_sym` 都保存？**
-在 HoTT 里，` PreCategory` 的范畴公理本身是**数据**，不是性质。
-如果只存一个方向，那么从一个范畴构造另一个范畴时（例如取反范畴、切片范畴）
-常常只能算出反向的那条，而去找一条路径证明它等于正向的是多余工作。
-存正反两条，构造时就不需要额外证明它们的相容性。
+两处值得停下来想。
 
-`identity_identity` 也是如此：它的目的是保证 `1 o 1 = 1`，
-否则就要从 `left_identity` 演绎，那会引入一次不必要的改写。
+### 为什么态射必须是集合，对象却不必
 
-`trunc_morphism` 是关键的一条：**态射必须是集合**。
-它保证了"证明两个态射相等"不会产生高阶同伦的麻烦，
-这正是 HoTT 里"1-范畴"的正确定义。
+范畴公理是关于态射的等式。如果态射类型不是集合，"结合律"就不是一个性质而是一份数据——
+需要选一条特定的路径，而且还要讨论这些路径之间的相容性（五边形、三角形……），
+那就成了 2-范畴、∞-范畴。要求态射是集合，正好让范畴公理退化为命题，
+这是"1-范畴"的精确含义。
 
-投影可通过 `Arguments` 以 `.` 语法访问（`PreCategory` 用了
-**原始投影** `primitive projections with eta conversion`）：
+对象则不必是集合。"所有集合的范畴"的对象是 `HSet`，它是 1-型；
+这正是允许它存在的地方。
 
-```text
-object
-     : PreCategory -> Type
-morphism
-     : forall C : PreCategory, C -> C -> Type
-identity
-     : forall x : ?C, morphism ?C x x
-where
-?C : [ |- PreCategory]
-```
+### 为什么结合律要存两遍
 
-注意这里的类型 —— 由于开了 coercion，`PreCategory` 可以直接当它的对象类型用，
-所以 `morphism` 打印成 `C -> C -> Type`（对象层的 coercion 被插入了）。
+`associativity` 和 `associativity_sym` 互为逆路径，逻辑上存一条就够。
+存两条是工程考虑：从一个范畴构造另一个（取反范畴、切片范畴、函子范畴）时，
+常常只能自然地算出反方向的那条；如果只存一条，就得插一步取逆，
+而取逆会在后续证明里留下 `inverse` 需要化简。存两条，构造时直接各取所需。
+`identity_identity` 同理——它能从 `left_identity` 推出，但存着省一次改写。
+（因为态射是集合，这些冗余字段之间的相容性自动成立。）
 
 ## 20.2 动手造一个：离散范畴
 
-对象是一个集合 `A`，态射 `a -> b` 就是 `a = b`。
-这是最简单的范畴，也是"类型即群胚"这一观点的直接体现。
-
-**用 Record 的具名字段语法写，字段顺序就不会搞错：**
+对象是一个集合 `A`，态射 `a -> b` 就是路径 `a = b`。这是"类型即群胚"
+（第 06 章）这一观点的直接体现——每个集合都是一个范畴，态射是它的路径。
 
 ```coq
 Definition discrete_category (A : Type) `{IsHSet A} : PreCategory :=
@@ -114,198 +72,107 @@ Definition discrete_category (A : Type) `{IsHSet A} : PreCategory :=
      morphism := (fun a b : A => a = b) ;
      identity := (fun a : A => 1) ;
      compose := (fun (s d d' : A) (q : d = d') (p : s = d) => p @ q) ;
-     associativity := (fun x1 x2 x3 x4 (m1 : x1 = x2) (m2 : x2 = x3) (m3 : x3 = x4)
-                       => concat_p_pp m1 m2 m3) ;
-     associativity_sym := (fun x1 x2 x3 x4 (m1 : x1 = x2) (m2 : x2 = x3) (m3 : x3 = x4)
-                           => concat_pp_p m1 m2 m3) ;
-     left_identity := (fun a b (f : a = b) => concat_p1 f) ;
-     right_identity := (fun a b (f : a = b) => concat_1p f) ;
+     associativity := (fun x1 x2 x3 x4 m1 m2 m3 => concat_p_pp m1 m2 m3) ;
+     associativity_sym := (fun x1 x2 x3 x4 m1 m2 m3 => concat_pp_p m1 m2 m3) ;
+     left_identity := (fun a b f => concat_p1 f) ;
+     right_identity := (fun a b f => concat_1p f) ;
      identity_identity := (fun x : A => 1) ;
      trunc_morphism := (fun s d : A => _) |}.
-Check discrete_category.
-```
-
-```text
-discrete_category
-     : forall A : Type, IsHSet A -> PreCategory
 ```
 
 逐条对账：
 
-- `identity` 给 `1`（`idpath`）；
-- `compose` 的参数顺序是 `morphism d d'` **在先**、`morphism s d` **在后**
-  （见上面的 `Print`），所以先拿到的 `q : d = d'` 在后、`p : s = d` 在前，结果为 `p @ q`；
-- 两条结合律正好对应第 06 章的 `concat_p_pp` 与 `concat_pp_p`；
+- `identity` 是恒等路径；`compose` 是路径复合——注意 `compose` 的参数顺序是先
+  `morphism d d'` 后 `morphism s d`（数学里 `g ∘ f` 的顺序），所以 `q` 在前 `p` 在后，
+  结果是 `p @ q`；
+- 两条结合律正是第 06 章的 `concat_p_pp` 与 `concat_pp_p`；
 - 两条单位律是 `concat_p1` 与 `concat_1p`；
-- `trunc_morphism` 用 `_` 占位，让 Coq 从 `{IsHSet A}` 实例推出 `IsHSet (a = b)`。
+- `trunc_morphism` 留 `_`，让类型类从 `IsHSet A` 推出 `IsHSet (a = b)`。
 
-试试它：
+路径群胚的全部结构正好填满范畴的全部字段，没有一个多余。
 
 ```coq
-Compute (@morphism (discrete_category Bool) true false).
-Check (@identity (discrete_category Bool) true).
+Compute (@morphism (discrete_category Bool) true false).   (* = true = false *)
 ```
-
-```text
-     = true = false
-     : Type
-1%morphism
-     : morphism (discrete_category Bool) true true
-```
-
-第一行说明：`morphism (discrete_category Bool) true false` 计算出来就是
-`true = false`，这也印证了离散范畴的态射确实是相等类型；
-第二行出现了 **`1%morphism`**，这是 `morphism_scope` 里的 `1` 记号 ——
-在范畴记号的上下文里 `1` 表示恒等态射而非 `idpath`。
 
 ## 20.3 函子
 
 ```coq
-Check Functor.
 Check Build_Functor.
-Check object_of.
-Check morphism_of.
+(* forall (C D : PreCategory) (object_of : C -> D)
+     (morphism_of : forall s d, morphism C s d -> morphism D (object_of s) (object_of d)),
+     (保复合) -> (保恒等) -> Functor C D *)
 ```
 
-```text
-Functor
-     : PreCategory -> PreCategory -> Type
-Build_Functor
-     : forall (C D : PreCategory) (object_of : C -> D)
-       (morphism_of : forall s d : C,
-                      morphism C s d ->
-                      morphism D (object_of s) (object_of d)),
-       (forall (s d d' : C) (m1 : morphism C s d)
-        (m2 : morphism C d d'),
-        morphism_of s d' (m2 o m1)%morphism =
-        (morphism_of d d' m2 o morphism_of s d m1)%morphism) ->
-       (forall x : C, morphism_of x x 1%morphism = 1%morphism) -> Functor C D
-object_of
-     : Functor ?C ?D -> ?C -> ?D
-morphism_of
-     : forall (C D : PreCategory) (F : Functor C D)
-       (s d : C),
-       morphism C s d -> morphism D (F _0 s)%object (F _0 d)%object
-```
+四份数据：对象映射、态射映射、保复合、保恒等。后两条是等式，因为态射是集合，
+所以它们是命题——函子之间的相等只看前两份数据。
 
-与 `PreCategory` 的对比：
+## 20.4 "预"范畴与范畴
 
-- `Build_Functor` 只有**四条**显式数据（object_of、morphism_of、
-  保复合、保恒等），远少于 `Build_PreCategory'`；
-- 打印里的 `(m2 o m1)%morphism` 是受 scope 键限定的复合记号，
-  打印形式与源码写法（`∘` 记号的展开）可能不同；
-- `morphism_of` 的结果里出现 `F _0 s`：`_0` 是 `object_of F` 的 coercion 记号。
+`PreCategory` 前面的"预"字是什么意思？
 
-## 20.4 为什么叫"预"范畴
+在任何预范畴里，对象之间有两个"一样"的概念：**相等** `x = y`（对象类型里的路径）
+和**同构** `x ≅ y`（有逆的态射）。从相等总能造出同构——路径归纳，`idtoiso : x = y -> x ≅ y`。
+但反过来不一定。
 
 ```coq
-Check Category.
 Print Category.
+(* Record Category := { precategory_of_category : PreCategory;
+                        iscategory_precategory_of_category : IsCategory ... } *)
 ```
 
-```text
-Category
-     : Type
-Record Category@{u u0} : Type := Build_Category
-  { precategory_of_category : PreCategory;
-    iscategory_precategory_of_category : IsCategory precategory_of_category }.
-```
+`IsCategory C` 说：对所有 `x y`，`idtoiso : (x = y) -> (x ≅ y)` 是**等价**。
+满足它的预范畴叫**范畴**（HoTT 书里也叫"单叶范畴"，univalent category）。
 
-`Category` 只是在 `PreCategory` 上**多包一层 `IsCategory`**。
-`IsCategory` 的内容是：`idtoiso : x = y -> x ≅ y` 本身是**等价**。
-也就是说 ——
+这和泛等公理的形状一模一样：泛等说 `equiv_path : (A = B) -> (A ≃ B)` 是等价。
+事实上"所有集合的范畴是单叶的"就是泛等的推论。单叶性是**泛等在范畴层面的回声**：
+对象的同构就是对象的相等。
 
-> **`PreCategory` 只要求态射是集合；
-> `Category` 额外要求"对象类型与同构关系相容"**。
+为什么这个条件好？
 
-这个额外的要求是让"范畴等价 = 范畴相等"得以成立的关键。
-在集合论范畴论里这条自动成立（因为对象层面还在 Set 里），
-而在 HoTT 里 `Type` 不是集合，必须显式加条件 —— 正是泛等精神在范畴论里的体现。
+- 在单叶范畴里，"同构的对象有相同的性质"自动成立（沿 `idtoiso⁻¹` 搬运）；
+- 两个范畴等价（有拟逆函子）当且仅当它们相等（需要泛等）；
+- 对象类型的层级受控：单叶范畴的对象是 1-型。
 
-## 20.5 范畴论里的"相等"一律换成"等价"
+集合论范畴论里这些都不成立或没有意义（比如"两个范畴相等"在 ZFC 里几乎总是假的），
+所以经典范畴论要不断说"在等价意义下"。HoTT 把它变成了字面意思。
 
-在 HoTT 里说"两个范畴相同"是没有意义的（`Type` 不是集合），
-要说"它们等价"。同理，两个对象的"同构"取代了"相等"。
+## 20.5 实际使用
 
-```coq
-Check (fun (C : PreCategory) => @morphism C).
-```
+范畴论模块相当庞大。入门记住三点：
 
-```text
-fun C : PreCategory => morphism C
-     : forall C : PreCategory, C -> C -> Type
-```
+1. **证态射相等用 `hset_path2` 或 `path_ishprop`**：态射是集合，任意两条平行路径相等。
+2. **教科书写"相等"的地方，这里常是"同构"**；只有在单叶范畴里两者才一致。
+3. **要"范畴等价即相等"，需要 `Univalence`**。
 
-此外：本库还并行发展了一套 **WildCat**（野范畴）：它们放松了
-`trunc_morphism`，保留高阶结构。选择哪一套取决于你要不要"高阶同伦信息"：
+库还并行维护一套 **WildCat**（野范畴）：去掉 `trunc_morphism`，允许态射是任意类型，
+保留高阶结构。它用于处理 `Type` 本身这样的"∞-范畴"（对象是类型，态射是函数，
+2-态射是同伦……）。选择哪一套取决于要不要高阶同伦信息。
 
-```coq
-Check (fun (A : Type) => A).   (* WildCat 的对象就是类型，态射可以不是集合 *)
-```
+## 小结
 
-```text
-idmap
-     : Type -> Type
-```
+- `PreCategory`：对象任意类型，态射必须是集合；范畴公理因此是命题。
+- 结合律存两遍、`identity_identity` 单独存，都是为了构造时省去改写。
+- 每个集合是一个离散范畴，态射是路径；路径群胚的结构正好填满范畴的字段。
+- 范畴 = 预范畴 + 单叶性（`idtoiso` 是等价）；单叶性是泛等在范畴层面的对应物。
+- 单叶范畴里"同构即相等"，经典的"在等价意义下"成为字面意思。
 
-（注意 `Check` 把 `fun (A : Type) => A` 化简打印成了 `idmap`。）
+## 常见误区
 
-## 20.6 实际使用建议
+1. **以为范畴的对象也要是集合**。不要求；"所有集合的范畴"的对象是 `HSet`，它不是集合。
+2. **把 `compose` 的参数顺序想成 `f` 在前**。它先接 `morphism d d'`（后作用的那个），
+   与数学里 `g ∘ f` 一致。
+3. **觉得 `associativity_sym` 多余就不填**。它是必填字段；用具名字段语法 `{| ... |}` 避免错位。
+4. **把 `1%morphism` 和 `1%path` 混淆**。范畴记号上下文里 `1` 是恒等态射。
 
-范畴论模块相当庞大（代数、伴随、极限都在里面）。
-入门时只需记住三件事：
+## 练习
 
-1. `PreCategory` 的态射是集合，所以证态射相等可以用 `hset_path2`；
-2. 凡是教科书里写"相等"的地方，这里通常要换成"同构/等价"；
-3. 需要 `Univalence` 才能把范畴等价升级为范畴相等。
-
-```coq
-Check hset_path2.
-```
-
-```text
-hset_path2
-     : forall p q : ?x = ?y, p = q
-where
-?x : [ |- ordinal_carrier ?o]
-?y : [ |- ordinal_carrier ?o]
-?o : [ |- Ordinal]
-```
-
-> **⚠ 这条输出的意外之处**：`?x` 的类型打印成了 `ordinal_carrier ?o`，
-> 而不是你预期的任意 `A`。原因是 `hset_path2` 带一个 `IsHSet` 实例参数，
-> 而我们没有给出具体的 `A`，Rocq 在解决这个实例时**随便挑了一个最容易匹配的
-> `IsHSet` 实例**（序数载体），于是把 `A` 统一到了 `ordinal_carrier ?o`。
->
-> **这就是"隐式实例可能在缺信息时被任意统一"的典型症状**。
-> 单独 `Check` 一个带 typeclass 参数的引理时，看到奇怪的名字不要慌，
-> 给它一个具体的类型参数就会正常：
-> `Check (fun (A : Type) `{IsHSet A} (x y : A) (p q : x = y) => hset_path2 p q).`
-
-## 本章坑位清单
-
-1. **范畴论不在 `HoTT.v` 的默认导出里**，必须 `Require Import HoTT.Categories`。
-2. **引入 `HoTT.Categories` 会触发 `[notation-overridden]` 警告**（打在 stderr），
-   追求 stderr 为空要 `Set Warnings "-notation-overridden"`。
-3. **`compose` 的参数顺序是 `morphism d d'` 在前、`morphism s d` 在后**，
-   与手写复合的直觉顺序相反。
-4. **`associativity` 与 `associativity_sym` 是两个字段**：都得填，不能省略一个。
-5. **`identity_identity` 也是必需的**（`1 o 1 = 1`），不能靠别的定律推导。
-6. **`trunc_morphism` 要求态射是集合**：这是 HoTT 里"1-范畴"的定义要件。
-7. **用 `{| object := ... ; morphism := ... |}` 的具名字段语法**：
-   位置语法极易错位，且错位时报的是无关的不合一错误。
-8. **`Print PreCategory` 里的 `Arguments` 可以看到 coercion**：
-   `morphism` 打印成 `C -> C -> Type` 是因为对象层被 coercion 了。
-9. **`1%morphism` 是恒等态射**（`morphism_scope` 的记号），
-   与 `path_scope` 的 `1`（`idpath`）同名不同义。
-10. **`Check (fun A : Type => A)` 会被化简打印成 `idmap`**：
-    别以为引用了一个不存在的名字。
-11. **`Check hset_path2` 会把类型变量统一到 `ordinal_carrier ?o`**：
-    typeclass 缺信息时的任意统一；给具体类型即可恢复正常。
-12. **`Category = PreCategory + IsCategory`**：
-    要"等价=相等"时上 `Category`，否则 `PreCategory` 够用。
+1. 定义一个有两个对象、唯一一个非恒等态射的范畴（"箭头范畴" `0 → 1`）。
+2. 证明 `discrete_category A` 是单叶的（提示：对集合，`x ≅ y` 与 `x = y` 都是命题，
+   且互相蕴含）。
+3. 思考：为什么"所有预范畴的范畴"不是一个预范畴？（提示：函子之间的态射是什么？它们构成集合吗？）
 
 ---
 
-**上一章**：[19 余极限 —— Pushout、Coequalizer、Suspension](docs/19-colimits.md)
-**下一章**：[21 点化类型与环路空间](docs/21-pointed.md)
+**上一章**：[19 余极限](19-colimits.md)
+**下一章**：[21 点化类型](21-pointed.md)
