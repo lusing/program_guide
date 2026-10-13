@@ -17,7 +17,14 @@ FOL 一阶逻辑、ZF 集合论）；**数学原理篇 49–53**（λ 演算与 
 类型安全双定理、自然演绎、Knaster–Tarski 不动点、Newman 引理、
 ε-δ 分析基础）——每条数学定理都在 Isabelle 里证出来，不是空谈。
 
-**章号 = 示例编号**——01–53 章每章对应 `examples/`（及其会话子目录）
+第三轮扩充（54–56 章）补上历史与架构的纵深：
+**LCF 与 ML 的诞生**（自动证明危机、AUTOMATH、Milner 的 LCF、
+ML 作为元语言的设计意图）；**de Bruijn 判据与 kernel 原理**
+（信任基础、thm 抽象类型、kernel 函数实战、oracles 与信任边界）；
+**Isabelle 架构演进**（Pure 通用逻辑框架、Isar 声明式证明、
+PIDE/并行/会话基础设施、与 Coq/Lean/HOL Light 的架构对比）。
+
+**章号 = 示例编号**——01–56 章每章对应 `examples/`（及其会话子目录）
 里一个经 `isabelle build` 构建通过、且两遍输出逐字节一致的 `.thy` 文件。
 
 > 核心理念：**每个示例都是被机器逐条认可过的数学文本，不是"能跑就行"的程序。**
@@ -31,8 +38,8 @@ isabelle/
 ├── README.md        本文件
 ├── CHEATSheet.md    语法速查 + 实测坑位索引（300+ 条）
 ├── run-all.sh       验证脚本（bash）
-├── docs/            30 章教程（01 → 30 顺序阅读）
-├── examples/        30 个 .thy 示例 + ROOT（章号 = 示例编号）
+├── docs/            56 章教程（01 → 56 顺序阅读）
+├── examples/        56 个 .thy 示例 + ROOT（章号 = 示例编号）
 └── build/           验证产物（build.log + 两遍输出，可删）
 ```
 
@@ -93,11 +100,16 @@ isabelle/
 | [51 Knaster–Tarski](docs/51-fixpoints.md) | `lfp` 三刻画 / gfp 对偶 / 三首编曲 | `T51_fixpoints.thy` |
 | [52 重写系统与 Newman](docs/52-rewrite-ars.md) | ARS locale / 强归纳过 trancl / 合流 | `T52_rewrite_ars.thy` |
 | [53 ε-δ 分析基础](docs/53-epsilon-delta.md) | 裸 ε-N/ε-δ / 与滤子定义的等价 | `T53_epsilon_delta.thy` |
+| [54 LCF 与 ML 的诞生](docs/54-lcf-ml-history.md) | 自动证明危机 / AUTOMATH / Milner LCF / ML 元语言 | `T54_lcf_ml_history.thy` |
+| [55 de Bruijn 判据与 kernel](docs/55-de-bruijn-kernel.md) | 信任基础 / thm 抽象类型 / kernel 实战 / oracles | `T55_de_bruijn_kernel.thy` |
+| [56 Isabelle 架构演进](docs/56-isabelle-architecture.md) | Pure 框架 / Isar / PIDE·并行·会话 / 架构对比 | `T56_isabelle_architecture.thy` |
 
 学习路线：01–03 心智模型与基本材料 → 04–07 数据建模与化简 →
 08–13 证明技法主线（自动化 / 逻辑 / 归纳 / Isar）→ 14–17 结构与方法论
 → 18–19 大案例 → 20–23 工程化 → 24 综合收束 → 25–30 六个进阶专题
-（类 / 共归 / Eisbach / typedef / quotient / Orderings+Lattices）。
+（类 / 共归 / Eisbach / typedef / quotient / Orderings+Lattices）
+→ 31–44 手册覆盖 → 45–48 库与对象逻辑 → 49–53 数学原理
+→ 54–56 历史与架构（LCF 谱系 / kernel 原理 / 系统演进）。
 
 ## 工具链
 
