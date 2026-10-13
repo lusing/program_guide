@@ -1,0 +1,13 @@
+build/
+examples/lean/.lake/
+examples/lean/lake-manifest.json.bak
+*.vo
+*.vok
+*.vos
+*.glob
+*.aux
+.agda-lib
+*.agdai
+examples/agda/_build/
+tools/text/
+tools/smoke/

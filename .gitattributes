@@ -20,3 +20,10 @@ mathlogic/**/*.agda text eol=lf
 mathlogic/**/*.thy text eol=lf
 mathlogic/examples/**/*.sml text eol=lf
 mathlogic/tools/*.sh text eol=lf
+# settheory：agda（WSL）、thy（Isabelle/Cygwin）、lean-toolchain（elan 对
+# CRLF 敏感）统一 LF。
+settheory/**/*.agda text eol=lf
+settheory/**/*.thy text eol=lf
+settheory/**/*.ROOT text eol=lf
+settheory/examples/isabelle/ROOT text eol=lf
+settheory/examples/lean/lean-toolchain text eol=lf

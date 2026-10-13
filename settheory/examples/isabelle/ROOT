@@ -1,0 +1,4 @@
+session ST00 in "ST00" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Intro
