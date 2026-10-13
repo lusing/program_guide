@@ -67,3 +67,8 @@ session ST15 in "ST15" = "ZF-Constructible" +
   options [document = false]
   theories
     OD
+
+session ST16 in "ST16" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Generic
