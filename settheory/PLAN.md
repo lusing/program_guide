@@ -135,4 +135,48 @@ pdftotext 按节页段提取（书页 = PDF-12），文本作骨架（定理编�
 
 ## 坑位速记（随做随记）
 
-- （待记）
+- **B0/B1 实测坑（00-04 章，2026-10-13）**：
+  - Lean：`Ordinal.induction` 已弃用（→ `WellFoundedLT.induction`）；
+    `Ordinal.succ` 不是常量（SuccOrder 实例，`succ o = o+1`，写
+    `Order.succ`/`o+1`）；1+1=2 用 `one_add_one_eq_two`（rfl 对
+    `(2:Ordinal) = 1+1` 失败）；`ω`/`ℵ_`/`𝔠` 都是 scoped 记号
+    （须 `open scoped Ordinal/Cardinal`，裸用报"Function expected"
+    型怪错）；`add_assoc`/`mul_add` 是根命名空间通用引理非
+    `Ordinal.add_assoc`；本版 mathlib 无 `Cardinal.cof`/`Ordinal.IsLimit`
+    ——共尾性 API 是 `Order.cof`/`Order.cof_nat`；`Ordinal.add_one_eq_succ`
+    弃用（→ `← Order.succ_eq_add_one`）；`Ordinal.aleph_succ` 弃用
+    （→ `Cardinal.succ_aleph`：`Order.succ (ℵ_ o) = ℵ_ (o+1)`）；
+    `Function.Embedding.antisymm` 是 SB 官方形态；mathlib 模块 doc
+    必须在 import 之后；cantorSet 的 subset 引理拼写是
+    `cantorSet_subset_unitInterval`（大写 I）。
+  - Isabelle/ZF：会话名带连字符要引号（`"ZF-Constructible"`）；
+    公理名全小写（`infinity` 非 `Infinity`）；序数子集→le 用
+    `subset_imp_le`+`le_iff`（无 `subset_iff_le`/`le_def`，那是 HOL 的）；
+    ZF 库无 Aleph 构造、无 Cantor 幂集定理名（用 `Finite_Pow_iff`
+    等替代+Lean 通道承载）；自证 lepoll 前先 grep 现成
+    （`subset_imp_lepoll`/`lepoll_refl`）；`ltD : i<j ⟹ i∈j`。
+  - Coq：模块名不能数字开头（文件名 ChNN_*.v）；`~ P <> P` 解析为
+    `~(P<>P)` 须括号；transport 写 match-E-in-_-=T-return-T 形式；
+    SB 的 P↔¬P→⊥ 函数版直觉主义不可证（要相等版的 transport）；
+    Z_scope 会把 nat 语境的变元吸成 Z（不用就别 open）；`exact (IH y Hy)`
+    应用要括号。
+  - Agda：`here/there` 从 `Data.List.Relation.Unary.Any` 导入；
+    `take` 只吃列表（函数前缀要自造 `prefix`）；Data.List 的 ∃/⊤
+    where 内 import 块有坑（顶部统一 open）；证明相关性裂缝
+    （dup/single 反例）是外延性教学的最好素材。
+  - Julia：`Set(a,b)` 是多参构造不合法（`Set([a,b])`）；
+    Dict 是 `g[x]` 非 `g(x)`；`$var全角标点` 须 `$(var)`；
+    顶层 for 内改全局撞 Base 名（eps）→封装函数；Rational 元组
+    字面量要显式类型参数。CNF 加法的等指数项要**合并系数**
+    （漏写则 ω+ω=ω 假绿）。
+  - Python：Fraction 传 float 是伪精确（直接构造 Fraction(p,q)）；
+    求导实验的 ε 必须严格落在"核内最小间距"与"装饰距离"之间
+    （康托 depth-n 网格最小间距是 2/3ⁿ 不是 1/3ⁿ）。
+  - Prolog：`:- encoding(utf8).` 必须第一行；`~` 是 format 转义
+    （消息里写 `~~`）；互指子句别真 call（无限递归=不一致的程序
+    形态）；未绑定列表做 forall 生成器会栈爆（`between`+`maplist`
+    有限域铁律）；`length(S,N)` 全生成器+`N=<4` 是无限失败循环；
+    自造谓词先检查语义（finite_seq 生成"≤N"非"恰 N"）。
+  - build.ps1：wslpath 传参路径反斜杠被吃（先 `-replace '\\','/'`）；
+    Split-Path 对 POSIX 路径给 Windows 分隔符（字符串 LastIndexOf 切）。
+

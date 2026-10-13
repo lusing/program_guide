@@ -10,3 +10,12 @@ session ST02 in "ST02" = "ZF-Constructible" +
   options [document = false]
   theories
     Ordinals
+session ST03 in "ST03" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Cardinals
+
+session ST04 in "ST04" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Reals
