@@ -50,3 +50,6 @@ session IsaTut = "HOL-Eisbach" +
     T51_fixpoints
     T52_rewrite_ars
     T53_epsilon_delta
+    T54_lcf_ml_history
+    T55_de_bruijn_kernel
+    T56_isabelle_architecture
