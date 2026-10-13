@@ -145,10 +145,62 @@ begin
    end;
 
    -- ---------------------------
-   -- 6. 命名循环：exit 循环名 直接跳出多重循环
+   -- 6. 循环嵌套与剪枝：百鸡问题（刘炳文 §5.6 例 5-24）
+   --    鸡翁一值钱五，鸡母一值钱三，鸡雏三值钱一；百钱买百鸡，问各几何
    -- ---------------------------
    New_Line;
-   Put_Line ("--- 6. 命名循环 ---");
+   Put_Line ("--- 6. 百鸡问题：三重循环 → 两重循环 ---");
+   declare
+      Count_Triple : Natural := 0;          -- 版本 A 实际判定次数
+      Count_Double : Natural := 0;          -- 版本 B 实际判定次数
+   begin
+      -- 版本 A：三重暴力循环，101*101*101 = 1030301 次判定
+      for X in 0 .. 100 loop                -- 公鸡数
+         for Y in 0 .. 100 loop             -- 母鸡数
+            for Z in 0 .. 100 loop          -- 雏鸡数
+               Count_Triple := Count_Triple + 1;
+               -- 雏鸡三只一钱：先验整除，再算钱。老书原版漏了这条，
+               -- 实测会多打 4 行伪解（X=3/7/11、Z=77/80/83 不整除 3，
+               -- 靠 Z/3 截断除法"凑"出 100 钱）
+               if X + Y + Z = 100
+                 and then Z mod 3 = 0
+                 and then 5 * X + 3 * Y + Z / 3 = 100
+               then
+                  Put_Line ("    解：公鸡" & Integer'Image (X)
+                            & "  母鸡" & Integer'Image (Y)
+                            & "  雏鸡" & Integer'Image (Z));
+               end if;
+            end loop;
+         end loop;
+      end loop;
+
+      -- 版本 B：约束传播——鸡总数十守恒推出 Z = 100 - X - Y，
+      -- 公鸡钱数十界把 X 压到 0..20，母鸡压到 0..33
+      for X in 0 .. 20 loop
+         for Y in 0 .. 33 loop
+            Count_Double := Count_Double + 1;
+            declare
+               Z : constant Integer := 100 - X - Y;   -- 白送的第三个变量
+            begin
+               if Z >= 0 and then Z mod 3 = 0
+                 and then 5 * X + 3 * Y + Z / 3 = 100
+               then
+                  null;                    -- 解已在上面列全，这里只对账
+               end if;
+            end;
+         end loop;
+      end loop;
+      Put_Line ("  三重循环判定" & Integer'Image (Count_Triple)
+                & " 次；两重循环仅" & Integer'Image (Count_Double)
+                & " 次（相差约 "
+                & Integer'Image (Count_Triple / Count_Double) & " 倍）");
+   end;
+
+   -- ---------------------------
+   -- 7. 命名循环：exit 循环名 直接跳出多重循环
+   -- ---------------------------
+   New_Line;
+   Put_Line ("--- 7. 命名循环 ---");
    declare
       type Grid is array (1 .. 4, 1 .. 5) of Integer;
       M : constant Grid :=
@@ -172,10 +224,10 @@ begin
    end;
 
    -- ---------------------------
-   -- 7. goto：受限的无条件转移
+   -- 8. goto：受限的无条件转移
    -- ---------------------------
    New_Line;
-   Put_Line ("--- 7. goto 与气泡分类 ---");
+   Put_Line ("--- 8. goto 与气泡分类 ---");
    declare
       A : array (1 .. 6) of Integer := (5, 2, 8, 1, 9, 3);
       Temp : Integer;
@@ -200,10 +252,10 @@ begin
    end;
 
    -- ---------------------------
-   -- 8. 块结构 declare：把临时变量的作用域压到最小
+   -- 9. 块结构 declare：把临时变量的作用域压到最小
    -- ---------------------------
    New_Line;
-   Put_Line ("--- 8. 块结构 ---");
+   Put_Line ("--- 9. 块结构 ---");
    declare
       X : Integer := 10;
       Y : Integer := 20;
