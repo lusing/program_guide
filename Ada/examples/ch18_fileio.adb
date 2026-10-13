@@ -5,6 +5,8 @@
 --      （老教材第 3 章三件套的现代版）
 -- ============================================================
 with Ada.Text_IO;          use Ada.Text_IO;
+with Ada.Integer_Text_IO;  use Ada.Integer_Text_IO;
+with Ada.Float_Text_IO;    use Ada.Float_Text_IO;
 with Ada.Sequential_IO;
 with Ada.Direct_IO;
 with Ada.Calendar;
@@ -181,6 +183,97 @@ begin
          Put_Line ("  从 trace.log 读回: " & Line (1 .. Last));
       end;
       Close (Log);
+   end;
+
+   -- ---------------------------
+   -- 7. 正文输入：Get 家族（刘炳文 §4.5 / §11.7）
+   --    数值 Get 自动跳过空格与行界；坏词引发 Data_Error
+   -- ---------------------------
+   New_Line;
+   Put_Line ("--- 7. 正文输入：Get 家族 ---");
+   declare
+      Data : File_Type;
+   begin
+      -- 准备一份"脏"数据：两个合法整数 + 一个坏词 + 跨行整数
+      Create (Data, Out_File, "nums.txt");
+      Put_Line (Data, "10 20 oops");
+      Put_Line (Data, "30");
+      Close (Data);
+
+      Open (Data, In_File, "nums.txt");
+      Set_Input (Data);                        -- 此后无文件参数的 Get 都从文件读
+      declare
+         Sum  : Integer := 0;
+         N    : Integer;
+         Good : Natural := 0;
+         Bad  : Natural := 0;
+      begin
+         while not End_Of_File loop            -- 无参 End_Of_File = 当前缺省输入
+            begin
+               Get (N);                        -- 数值 Get：自动跨过空格和行界
+               Sum  := Sum + N;
+               Good := Good + 1;
+            exception
+               when Data_Error =>              -- "oops" 不是整数
+                  Bad  := Bad + 1;
+                  Skip_Line;                   -- 丢弃坏词所在行，从下一行继续
+            end;
+         end loop;
+         Put_Line ("  Get 读入" & Integer'Image (Good) & " 个整数（跨行），坏词"
+                   & Integer'Image (Bad) & " 个，和 =" & Integer'Image (Sum));
+      end;
+      Set_Input (Standard_Input);              -- 切回键盘
+      Close (Data);
+
+      -- 字符串 Get：按缓冲区长度硬读——跨过行界继续凑满 S'Length 个字符
+      -- （实测：不补空格！要"按行"处理必须用 Get_Line）
+      Open (Data, In_File, "nums.txt");
+      declare
+         Buf  : String (1 .. 8);               -- 8 格缓冲
+         Last : Natural;
+      begin
+         Get (Data, Buf);                      -- 恰好读满 8 个字符（"10 20 oo"）
+         Put_Line ("  字符串 Get 前 8 格 = """ & Buf & """");
+         Skip_Line (Data);
+         Get_Line (Data, Buf, Last);           -- Get_Line 才给"实际长度"
+         Put_Line ("  Get_Line 第二行 = """ & Buf (1 .. Last)
+                   & """（Last =" & Integer'Image (Last) & "，不含补空格）");
+      end;
+      Close (Data);
+   end;
+
+   -- ---------------------------
+   -- 8. 格式化输出：Width/Base/Fore/Aft/Exp（刘炳文 §4.4 表 4-2）
+   -- ---------------------------
+   New_Line;
+   Put_Line ("--- 8. 格式化输出参数 ---");
+   declare
+      type Level is (Low, Mid, High);
+      package Level_IO is new Enumeration_IO (Level);
+   begin
+      Put ("  Put (255, Width => 6) = [");
+      Put (255, Width => 6);                   -- 数值右对齐，左侧补空格
+      Put_Line ("]");
+      Put ("  Put (255, Base => 16) = [");
+      Put (255, Base => 16);                   -- 带基输出：16#FF#
+      Put_Line ("]");
+      Put ("  Put (255, Base => 2, Width => 12) = [");
+      Put (255, Base => 2, Width => 12);       -- 2#11111111#
+      Put_Line ("]");
+      Put ("  Put (3.14159, Fore => 0, Aft => 3, Exp => 0) = [");
+      Put (3.14159, Fore => 0, Aft => 3, Exp => 0);
+      Put_Line ("]");
+      Put ("  枚举小写 Level_IO.Put (High, Set => Lower_Case) = [");
+      Level_IO.Put (High, Set => Lower_Case);  -- 枚举/布尔左对齐，右侧补空格
+      Put_Line ("]");
+      -- Set_Col：绝对列定位，两栏报表对齐
+      Put_Line ("  Set_Col 两栏对齐:");
+      for I in 1 .. 3 loop
+         Set_Col (6);
+         Put ("Item" & Integer'Image (I));
+         Set_Col (20);
+         Put_Line ("价格" & Integer'Image (I * 25));
+      end loop;
    end;
 
    New_Line;

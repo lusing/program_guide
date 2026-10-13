@@ -8,8 +8,10 @@
 交给**三个预定义泛型包**：`Text_IO`（人可读的正文）、
 `Sequential_IO`（定长元素的顺序二进制）、`Direct_IO`（可按索引
 随机访问的二进制）。本章把三件套各讲一套完整用例，覆盖文件的
-建立/打开/关闭、模式、EOF 循环、文件异常与缺省文件重定向。
-内容对应张丽芬《Ada 程序设计导论》第三章（输入和输出）；
+建立/打开/关闭、模式、EOF 循环、文件异常与缺省文件重定向；
+并补上大多数教程略过的两块：**正文输入 Get 家族**与**格式化
+输出参数总表**。内容对应张丽芬《Ada 程序设计导论》第三章
+（输入和输出）与刘炳文《程序设计语言 Ada》§4.4–4.5、§11.6–11.9；
 `Streams` 等现代补充见第 19 章。
 
 ---
@@ -37,7 +39,9 @@ Create/Open（内外文件建立关联）
 `Sequential_IO`/`Direct_IO` 是**泛型包**——元素类型由你实例化
 时指定（这正是第 12 章泛型的用武之地）；`Text_IO` 直接用（但
 它内部的 `Integer_IO`/`Float_IO`/`Enumeration_IO` 是泛型，实例化
-才有 `Put (Integer)`）。
+才有 `Put (Integer)`——不过标准库已替我们对 `Integer`/`Float`
+预实例化好了：`Ada.Integer_Text_IO`/`Ada.Float_Text_IO`，
+`use` 之后直接 `Get`/`Put` 数值）。
 
 ## 18.2 正文文件：Text_IO
 
@@ -101,7 +105,160 @@ Open (File, Append_File, "report.txt");       -- 追加模式：写在文件尾
 打字誊抄程序（COPY），输出的换页逻辑全靠 `Page (Current_Input)`
 比对。
 
-## 18.3 顺序二进制：Sequential_IO
+## 18.3 正文输入：Get 家族
+
+输出讲得再多，程序总要从外面拿数据。`Text_IO` 的输入面由
+**`Get` 家族**构成——键盘与文件**同源**：每个 `Get` 都以文件
+参数开头，省略时用当前缺省输入（默认键盘）。所以"从文件读数"
+与"从键盘读数"是同一套调用，只差一个 `Set_Input` 重定向。
+
+### 数值 Get：自动跨行，坏词引发 Data_Error
+
+```ada
+Open (Data, In_File, "nums.txt");       -- 内容："10 20 oops" / "30"
+Set_Input (Data);                        -- 此后无文件参数的 Get 都从文件读
+
+while not End_Of_File loop              -- 无参 End_Of_File = 当前缺省输入
+   begin
+      Get (N);                           -- 数值 Get：自动跨过空格和行界
+      Sum  := Sum + N;
+   exception
+      when Data_Error =>                 -- "oops" 不是整数
+         Skip_Line;                      -- 丢弃坏词所在行，从下一行继续
+   end;
+end loop;
+
+Set_Input (Standard_Input);              -- 切回键盘
+```
+
+实测输出（数据文件两行、三好一坏）：
+
+```text
+  Get 读入 3 个整数（跨行），坏词 1 个，和 = 60
+```
+
+四个要点：
+
+1. **数值 Get 跳过空格与行终止符**——"10 20"在一行、`30` 在
+   下一行，三个数照单全收。想"一行一组"要自己用 `End_Of_Line`
+   划界。
+2. **解析失败 = Data_Error**，文件位置停在坏词**之前**。恢复
+   动作通常是 `Skip_Line`（丢弃本行）后继续——这正是第 11 章
+   "块内重试"模式在文件上的应用，也是刘炳文 §11.9 例 11-11
+   （跳过非法行求和）的骨架。
+3. `End_Of_File` / `End_Of_Line` / `End_Of_Page` 三件判断对应
+   "页 → 行 → 字符"三层结构。
+4. 提示输入的程序习惯（老书 §4.5）：**`Put` 提示在先，`Get`
+   跟后**——`Put ("Enter an integer: "); Get (N);`。没有提示的
+   交互程序会让用户对着黑窗发呆。
+
+### 字符串 Get：硬读满，跨行界
+
+```ada
+declare
+   Buf  : String (1 .. 8);
+   Last : Natural;
+begin
+   Get (Data, Buf);                      -- 恰好读满 8 个字符（"10 20 oo"）
+   ...
+   Get_Line (Data, Buf, Last);           -- Get_Line 才给"实际长度"
+end;
+```
+
+**实测纠正一个以讹传讹**：老教材说"字符串的长度要设置得适当，
+否则在输入时要补充空格"（§4.5 例 4-7）。GNAT 的真实语义是——
+`Get (Buf)` **硬读满 `Buf'Length` 个字符，行界直接跨过去继续
+凑数**：缓冲 6 格、文件第一行只有 `"ab"`，读到的不是 `"ab    "`
+而是 `"ab0123"`（后 4 格来自下一行！）；到了文件尾还凑不满，
+不做任何补齐，直接 `End_Error`。**按行处理是 `Get_Line` 的
+专利**——`Last` 出参告诉你有效长度，`Buf (1 .. Last)` 才是
+本行内容。
+
+### Get 家族速查
+
+| 调用 | 语义 |
+|------|------|
+| `Get (N)` 数值/枚举 | 跳空格跨行界，解析目标类型的值；失败 `Data_Error` |
+| `Get (Ch)` 字符 | 恰好一个字符，**同样跨过行界**（实测：读 `"ab"` 后再 Get 得到下一行的 `'c'`；要探测行尾用 `End_Of_Line`/`Look_Ahead`） |
+| `Get (Buf)` 字符串 | 硬读满 `Buf'Length` 格，跨行界 |
+| `Get_Line (Buf, Last)` | 读到行尾，`Last` 出实际长度 |
+| `Get_Immediate (Ch)` | 不等回车立即取一键（键盘交互、游戏循环） |
+| `Skip_Line` / `Skip_Page` | 丢弃本行/本页剩余 |
+
+一句话总结这套语义：**在 `Get` 眼里只有"字符流"，行只是
+`Get_Line`/`End_Of_Line` 关心的注记**。想按行处理，先
+`Get_Line` 拿整行再解析字符串（第 11 章的 `Integer'Value` 路
+线），或老老实实用 `End_Of_Line` 划界。
+
+**实测坑（混用 Get 与 Get_Line）**：数值 `Get` 恰好读到最后一
+个字符、文件只剩行终止符时，紧接着的 `Get_Line` 会在 GNAT 下
+直接 `End_Error`（此时 `End_Of_File` 已为 True）。要清理行残留
+用 `Skip_Line`——它对"已在行尾"是安全的。
+
+（`Get_Immediate` 只对真实终端有意义——重定向到文件时它退化为
+普通读；本教程的自动化测试都走 `Set_Input` 文件重定向，故示例
+未演示它。）
+
+## 18.4 格式化输出：参数总表
+
+老书 §4.4 用一整节加表 4-2 讲 `Put` 的格式参数——这套参数今天
+一个没变，依然是报表对齐的全部家当。数值与枚举的 `Put` 来自
+实例化包（或预实例化的 `Ada.Integer_Text_IO` 等）：
+
+```ada
+Put (255, Width => 6);                   -- 数值右对齐，左侧补空格
+Put (255, Base => 16);                   -- 带基输出：16#FF#
+Put (255, Base => 2, Width => 12);       -- 2#11111111#，右对齐
+Put (3.14159, Fore => 0, Aft => 3, Exp => 0);   -- 3.142
+Level_IO.Put (High, Set => Lower_Case);  -- 枚举小写输出：high
+```
+
+```text
+  Put (255, Width => 6) = [   255]
+  Put (255, Base => 16) = [     16#FF#]
+  Put (255, Base => 2, Width => 12) = [ 2#11111111#]
+  Put (3.14159, Fore => 0, Aft => 3, Exp => 0) = [3.142]
+  枚举小写 Level_IO.Put (High, Set => Lower_Case) = [high]
+```
+
+参数一览（`Field`/`Number_Base`/`Type_Set` 都是 `Text_IO` 的
+整数/枚举子类型）：
+
+| 类型 | 参数 | 缺省 | 含义 |
+|------|------|------|------|
+| 整数 | `Width` | `Integer'Width` 级实现值 | 最小域宽，右对齐左补空格 |
+| 整数 | `Base` | 10 | 2–16 基；输出 `16#FF#` 形态（第 02 章直接量语法互为镜像） |
+| 浮点/定点 | `Fore` | 2 | 小数点前位数（含符号位） |
+| 浮点/定点 | `Aft` | 由 `digits` 定 | 小数位数（四舍五入） |
+| 浮点 | `Exp` | 3 | 指数位数；0 = 不用科学计数 |
+| 枚举/布尔 | `Width` | 0 | 最小域宽，**左对齐右补空格** |
+| 枚举/布尔 | `Set` | Upper_Case | `Lower_Case` 输出小写 |
+
+两条对齐纪律记牢：**数值右对齐**（补空格在左），**字符/
+字符串/枚举/布尔左对齐**（补空格在右）——对账单里价格列与
+品名列天然相反的原因。
+
+### Set_Col：绝对列定位
+
+```ada
+for I in 1 .. 3 loop
+   Set_Col (6);   Put ("Item"  & Integer'Image (I));
+   Set_Col (20);  Put_Line ("价格" & Integer'Image (I * 25));
+end loop;
+```
+
+```text
+     Item 1        价格 25
+     Item 2        价格 50
+     Item 3        价格 75
+```
+
+`Set_Col (N)` 把当前位置**跳到第 N 列**（只能向后跳；已越过
+则换行）。配套 `Set_Line`（行定位）、`Col`/`Line`（查询）。
+刘炳文 §6.10 的价目表程序（例 6-14）通篇靠 `Set_Col` 排版——
+今天做两栏报表、对齐表格依然是它。
+
+## 18.5 顺序二进制：Sequential_IO
 
 记录整块进整块出——元素类型**任意**（这里是一个记录）：
 
@@ -161,7 +318,7 @@ end loop;
 **实例化之后绝不 `use`**，全部限定调用 `Sample_IO.Open (...)`。
 一旦 `use Sample_IO;`，`File_Type` 立刻二义，编译器直接罢工。
 
-## 18.4 直接文件：Direct_IO
+## 18.6 直接文件：Direct_IO
 
 直接文件 = 顺序文件 + **索引**：每个元素有个位置号（**从 1
 起**），读写可以直奔目标。这是老教材 §3.2 例二（10 的幂表）的
@@ -204,7 +361,7 @@ Nat_IO.Write (File, 999_999, 2);           -- 原地改写第 2 条
 直接文件是数据库文件、定长记录表（工资表、学籍卡）的正统工具：
 改第 3847 条记录不必重写整个文件。
 
-## 18.5 文件异常：七个预定义名
+## 18.7 文件异常：七个预定义名
 
 老教材 §3.2 列出的 IO 异常，全部活在 `Ada.IO_Exceptions` 里：
 
@@ -235,7 +392,7 @@ end;
 查路径、End_Error 是循环边界、Data_Error 提示数据损坏**——
 四种最常见的处理路径。
 
-## 18.6 缺省文件：Set_Output 重定向
+## 18.8 缺省文件：Set_Output 重定向
 
 `Put_Line ("...")` 不带文件参数时输出到**当前缺省输出**——
 默认是屏幕，但可以重定向：
@@ -257,7 +414,7 @@ begin
 （现代更讲究的做法是到处传 `File_Type` 参数；重定向适合快速
 取证与老代码的无侵入改造。）
 
-## 18.7 本章示例的完整输出
+## 18.9 本章示例的完整输出
 
 ```text
 === Ada 文件 I/O ===
@@ -293,15 +450,36 @@ begin
 --- 6. 缺省文件重定向 ---
   从 trace.log 读回: 这行进了 trace.log，而不是屏幕。
 
+--- 7. 正文输入：Get 家族 ---
+  Get 读入 3 个整数（跨行），坏词 1 个，和 = 60
+  字符串 Get 前 8 格 = "10 20 oo"
+  Get_Line 第二行 = "30"（Last = 2，不含补空格）
+
+--- 8. 格式化输出参数 ---
+  Put (255, Width => 6) = [   255]
+  Put (255, Base => 16) = [     16#FF#]
+  Put (255, Base => 2, Width => 12) = [ 2#11111111#]
+  Put (3.14159, Fore => 0, Aft => 3, Exp => 0) = [3.142]
+  枚举小写 Level_IO.Put (High, Set => Lower_Case) = [high]
+  Set_Col 两栏对齐:
+     Item 1        价格 25
+     Item 2        价格 50
+     Item 3        价格 75
+
 文件 I/O 演示完成。
 ```
 
-## 18.8 小结
+## 18.10 小结
 
 | 概念 | 要点 |
 |------|------|
 | 内/外文件 | `File_Type` ↔ 物理文件；Create/Open→操作→Close |
 | Text_IO | 行/页/字符三层；Get_Line 的 Last 出参 |
+| 数值 Get | 跳空格跨行界；坏词 `Data_Error` + `Skip_Line` 恢复 |
+| 字符串 Get | 硬读满缓冲、跨行界；EOF 凑不满直接 `End_Error` |
+| 键盘=文件 | `Set_Input`/`Standard_Input` 与 Set_Output 对称 |
+| 格式化 | 整数 Width/Base（`16#FF#`）；浮点 Fore/Aft/Exp；枚举 Set |
+| 对齐纪律 | 数值右对齐补左空格；字符/串/枚举/布尔左对齐补右空格 |
 | Sequential_IO | 泛型实例化定元素；Write/Read + EOF |
 | Direct_IO | `Inout_File` 读写一体；索引从 1；元素必须定长 |
 | 撞名纪律 | 多 IO 包实例化后绝不 use，全限定 |
