@@ -172,4 +172,54 @@ begin
       Put_Line ("  Swap (Float) 后: P =" & Float'Image (P) & ", Q =" & Float'Image (Q));
       Say ("  Say 是 Ada.Text_IO.Put_Line 的换名（renames）。");
    end;
+
+   -- ---------------------------
+   -- 7. 嵌套过程与逐步求精：杨辉三角（何诚 §6.8）
+   -- ---------------------------
+   New_Line;
+   Put_Line ("--- 7. 嵌套过程与逐步求精：杨辉三角 ---");
+   declare
+      Max_Row_Number : constant := 9;
+      Field_Width    : constant := 4;
+      subtype Index is Integer range 0 .. Max_Row_Number;
+
+      -- 逐步求精第 1 步的骨架：每行两个动作——对齐、打值
+      procedure Pascals_Triangle (Last_Row : Index) is
+
+         -- 求精第 2 步之一：换行并打前导空格（左右对称形）
+         procedure Align_Output (Row : Index) is
+         begin
+            New_Line;
+            for S in 1 .. (Max_Row_Number - Row) * (Field_Width / 2) loop
+               Put (" ");
+            end loop;
+         end Align_Output;
+
+         -- 求精第 2 步之二：组合数递推打当前行——不用数组、不用递归
+         procedure Print_Values (Row : Index) is
+            Val : Integer := 1;            -- C(n,0) = 1
+         begin
+            Put (Val, Width => Field_Width);
+            for Column in 1 .. Row loop
+               -- C(n,k+1) = C(n,k) * (n-k+1) / (k+1)：
+               -- 恒等式保证先乘后除必整除（见正文）
+               Val := Val * (Row - Column + 1) / Column;
+               Put (Val, Width => Field_Width);
+            end loop;
+         end Print_Values;
+
+      begin
+         for Row in Index range 0 .. Last_Row loop
+            Align_Output (Row);
+            Print_Values (Row);
+         end loop;
+      end Pascals_Triangle;
+
+   begin
+      Pascals_Triangle (Max_Row_Number);
+      New_Line;
+      New_Line;
+      Put_Line ("  递推式 Val := Val*(Row-Column+1)/Column：组合数恒等式");
+      Put_Line ("  C(n,k+1)=C(n,k)*(n-k+1)/(k+1) 保证先乘后除每步都整除。");
+   end;
 end Ch05_Subprograms;

@@ -68,4 +68,17 @@ begin
    Put_Line ("--- 4. 注释 ---");
    Put_Line ("  从 -- 到行尾都是注释，Ada 没有块注释。");
    Put_Line ("  嵌套子程序/包体里同样适用。");
+
+   -- ---------------------------
+   -- 5. 杂注：与编译器对话（何诚 §2.7）
+   -- ---------------------------
+   New_Line;
+   Put_Line ("--- 5. 杂注 pragma ---");
+   declare
+      Unused : Integer := 1;            -- 没人读它：编译器会警告
+      pragma Unreferenced (Unused);    -- 杂注：宣告"此变量故意不用"
+   begin
+      Put_Line ("  Unreferenced 压掉了""变量未读""警告——杂注对编译器说话。");
+      Put_Line ("  注释给人看，杂注给编译器看；删掉上面那行试试警告。");
+   end;
 end Ch02_Hello;
