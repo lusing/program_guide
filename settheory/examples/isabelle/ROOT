@@ -19,3 +19,7 @@ session ST04 in "ST04" = "ZF-Constructible" +
   options [document = false]
   theories
     Reals
+session ST05 in "ST05" = "ZF-AC" +
+  options [document = false]
+  theories
+    Choice
