@@ -2,7 +2,7 @@
 # ============================================================
 # run-all.sh —— Linux/macOS 版全量编译运行脚本（等价于 build.ps1）
 #
-#   ./run-all.sh            编译并运行全部 25 个示例，打印通过/失败摘要
+#   ./run-all.sh            编译并运行全部 26 个示例，打印通过/失败摘要
 #   ./run-all.sh -v         附带每个示例的完整输出
 #   ./run-all.sh 01 13      只跑指定章节编号（如 01 13 16）
 #   ./run-all.sh --clean    清理 build 目录
@@ -85,6 +85,7 @@ UNITS=(
     "24:ch24_contracts:-gnata"
     "25:ch25_spark:-gnata"
     "26:ch26_separate:"
+    "27:ch27_stdlib:"
 )
 
 TIMEOUT=""

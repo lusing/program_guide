@@ -57,7 +57,8 @@ $mainUnits = @(
     "ch23_containers.adb",
     "ch24_contracts.adb",
     "ch25_spark.adb",
-    "ch26_separate.adb"
+    "ch26_separate.adb",
+    "ch27_stdlib.adb"
 )
 
 function Invoke-AdaCompile {

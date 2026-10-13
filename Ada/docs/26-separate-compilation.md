@@ -233,4 +233,4 @@ Ada 用"强制点名"消灭了 C++ 那类 namespace 惊喜。
    起合法），打印编译时间戳；对比把它挪回父单元上下文子句的差别。
 
 ---
-上一章：[25 SPARK 形式化验证](25-spark.md) ｜ 下一章：[27 附录](27-appendix.md) ｜ 返回：[README](../README.md)
+上一章：[25 SPARK 形式化验证](25-spark.md) ｜ 下一章：[27 标准库拾遗](27-stdlib.md) ｜ 返回：[README](../README.md)

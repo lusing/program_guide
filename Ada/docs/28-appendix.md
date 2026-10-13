@@ -1,4 +1,4 @@
-# 27 · 附录：编译测试、常用选项、编码规范与术语对照
+# 28 · 附录：编译测试、常用选项、属性速查与术语对照
 
 > 本章不带示例：汇总全书的编译验证记录、常用 gnatmake 开关、编码规范
 > 速记，以及老教材（Ada 83 时代）与现代 Ada 的术语对照表。
@@ -32,8 +32,9 @@
 | 24. 契约式编程 | `ch24_contracts.adb` (`-gnata`) | PASS | PASS |
 | 25. SPARK | `ch25_spark.adb` (`-gnata`) | PASS | PASS |
 | 26. 独立编译 | `ch26_separate.adb` + 5 个配套文件 | PASS | PASS |
+| 27. 标准库拾遗 | `ch27_stdlib.adb` | PASS | PASS |
 
-**总计：25 个示例（02–26 章，章号 = 示例编号），33 个源文件，全部编译
+**总计：26 个示例（02–27 章，章号 = 示例编号），34 个源文件，全部编译
 通过，全部运行通过。**（26 章为多文件工程：主程序 + 2 个子单位 +
 父包 + 子库单元对。）
 
@@ -55,6 +56,7 @@
 | 2026-09-22 | GNAT 16.2.0（章号 +1 重构后 17 例） | 17/17 通过；契约示例异常消息中的文件名随重编号同步 |
 | 2026-09-25 | GNAT 16.2.0（19→27 章老教材扩充后 25 例） | 25/25 通过；含新增判别/访问/泛型进阶/select/文件全景/低级/定点/独立编译八章 |
 | 2026-10-13 | GNAT 16.2.0（对照张丽芬书 15 薄章全量重写） | 25/25 通过；02–07/10–12/14–16/18/20/23 重写为教程体，20 章新增 `ch20_capi` 导出包（33 源文件） |
+| 2026-10-13 | GNAT 16.2.0（对照刘炳文书扩充） | 26/26 通过；新增 27 章标准库拾遗（Calendar/Real_Time/随机数/Command_Line，34 源文件），04/17/18 三章扩节 |
 
 ### 26 章（2026-09-25）扩充来源
 
@@ -74,7 +76,7 @@
 
 ---
 
-## 27.2 常用编译选项
+## 28.2 常用编译选项
 
 ```powershell
 # 基本编译
@@ -119,7 +121,73 @@ gnatmake -gnat2022 source.adb
 
 ---
 
-## 27.3 Ada 83 → 现代 Ada 术语对照
+## 28.3 常用属性速查表
+
+刘炳文书用附录 3 整整四页列 Ada 83 的三十来个属性；下面按家族
+整理**今天最常用的一批**（老书已有的标注 †，现代新增的标 95/05/
+12/22），完整清单见 RM 附录 K：
+
+**标量类型与子类型**
+
+| 属性 | 含义 |
+|------|------|
+| `T'First` / `T'Last` † | 下界 / 上界（数组维度加参数：`A'First (2)`） |
+| `T'Range` † | `T'First .. T'Last` 的简写；作 for 范围最常用 |
+| `T'Succ` / `T'Pred` † | 后继 / 前趋（越界 raise Constraint_Error） |
+| `T'Pos` / `T'Val` † | 值 ↔ 位置序号（枚举、Character、Integer 通吃） |
+| `T'Image (X)` / `T'Value (S)` † | 值 → 字符串 / 字符串 → 值（Image 带前导空格） |
+| `T'Min` / `T'Max` † | 两个同类型值取小 / 取大 |
+| `T'Base` † | 基类型（绕过子类型约束：`T'Base'Last`） |
+| `T'Remainder`、`T'Machine_Rounds` 等 | 浮点族群（03/22 章用过） |
+| `X'Valid` (95) | 检查未初始化/非法值（未检查联合的救星） |
+
+**数组**
+
+| 属性 | 含义 |
+|------|------|
+| `A'First (n)` / `A'Last (n)` / `A'Range (n)` † | 第 n 维的界与范围 |
+| `A'Length (n)` † | 第 n 维元素个数（空范围 = 0） |
+| `A'Component_Size` (95) | 分量的位宽 |
+
+**记录与表示（21 章的战场）**
+
+| 属性 | 含义 |
+|------|------|
+| `R'Component'Size` / `'Position` / `'First_Bit` / `'Last_Bit` † | 分量的位布局 |
+| `X'Size` † / `X'Alignment` (95) / `X'Address` † | 尺寸 / 对齐 / 地址 |
+| `T'Bit_Order` (95) | 位序（大端/小端位域） |
+
+**浮点与定点**
+
+| 属性 | 含义 |
+|------|------|
+| `F'Digits` / `F'Delta` † | 十进制精度 / 增量 |
+| `F'Small` / `F'Fore` / `F'Aft` † | 定点三件套（22 章） |
+| `F'Round (X)` | 就近舍入到类型 F |
+
+**任务与入口（17 章）**
+
+| 属性 | 含义 |
+|------|------|
+| `T'Terminated` / `T'Callable` † | 已终止 / 仍可接单 |
+| `E'Count` † | 入口队列长度（竞态，仅参考） |
+| `T'Priority` (95) / `T'Storage_Size` † | 优先级 / 任务栈大小 |
+
+**对象与子程序**
+
+| 属性 | 含义 |
+|------|------|
+| `X'Access` (95) | 取访问值（`access` 型别须匹配） |
+| `P'Access` (95) | 子程序访问值（回调） |
+| `X'Tag` (95) | tagged 类型的标签（动态分发的心脏，14 章） |
+| `T'Class` (95) | 类范围类型（14 章） |
+
+老书附录 3 里有两个名字值得立碑：`P'MACHINE_OVERFLOWS`/
+`MACHINE_ROUNDS` 还在（RM 附录 K），而当年为查"有没有小写字母"
+用的 `CHARACTER'LAST < LC_A` 之类的比较，早就让位给
+`Ada.Characters.Handling` 的函数族了。
+
+## 28.4 Ada 83 → 现代 Ada 术语对照
 
 读老教材（何诚 1992 / 刘炳文 1993 / 张丽芬 1992，均以 ANSI/MIL-STD-1815A
 即 Ada 83 为基准）时的"翻译表"：
@@ -147,11 +215,13 @@ gnatmake -gnat2022 source.adb
 | 实数类型（定点/浮点） | 定点/浮点未变 | 十进制定点是金融正解；Ada 2022 增 `delta` aspect |
 | 转移语句 `goto` | 仍存在但禁用级别 | 现代规范一律避免 |
 | `ASCII` 包 | `Ada.Characters.Latin_1` | Ada 95 起 |
+| `raise T'FAILURE`（远程引爆任务） | 无后继——`abort` + `'Terminated` 组合 | 未活过 Ada 83 |
+| `pragma SHARED`（共享变量） | `Atomic`/`Volatile` 方面 | Ada 95 起；现代另有受保护对象正解 |
 | `CALENDAR` 包 | `Ada.Calendar` + `Ada.Real_Time` | 实时系统首选后者 |
 | `NEW_LINE`/`PUT` 等直接可见 | 需 `with Ada.Text_IO` | 83 时代部分实现预置 |
 | Meridian Ada Vantage 等 | GNAT (GCC) / GNAT Pro | 工具链世代更替 |
 
-## 27.4 Ada 编码规范要点
+## 28.5 Ada 编码规范要点
 
 1. **大小写不敏感** — `Put_Line` 与 `put_line` 等价，推荐使用下划线命名
 2. **强类型** — 不同类型不能隐式转换，需显式类型转换
@@ -163,4 +233,4 @@ gnatmake -gnat2022 source.adb
 8. **`use`** — 使包内容直接可见（圈进最小作用域；算符可见用 `use type`）
 
 ---
-上一章：[26 独立编译](26-separate-compilation.md) ｜ 返回：[README](../README.md)
+上一章：[27 标准库拾遗](27-stdlib.md) ｜ 返回：[README](../README.md)

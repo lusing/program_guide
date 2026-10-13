@@ -3,32 +3,32 @@
 面向**会编程（任意语言背景）、初学 Ada** 的读者：从 GNAT 环境搭建讲到类型系统、
 判别与访问类型、包、泛型、OOP、Tasking 并发与 select 会合家族、文件 I/O、
 C 互操作、低级程序设计与定点实数，再到标准容器、Ada 2012 **契约式编程**与
-**SPARK 形式化验证**，最后落到独立编译与可见性——**章号 = 示例编号**，
-02–26 章每章对应 `examples/` 里一个可编译、可运行的完整示例，
-Windows / Linux 双平台实测通过。
+**SPARK 形式化验证**、标准库拾遗（时间/随机数/命令行），最后落到独立编译
+与可见性——**章号 = 示例编号**，02–27 章每章对应 `examples/` 里一个可编译、
+可运行的完整示例，Windows / Linux 双平台实测通过。
 
 > 核心理念：**把错误消灭在编译期，而不是让它在生产环境爆炸。** Ada 的强类型、
 > 范围检查、契约与 SPARK 证明，都是这句话的落地；详见
 > [01 章](docs/01-overview.md) 与 [24 章](docs/24-contracts.md)。
 >
-> 教程共 27 章：其中 08/09/13/17/19/21/22/26 八章为**老教材深挖篇**——
+> 教程共 28 章：其中 08/09/13/17/19/21/22/26 八章为**老教材深挖篇**——
 > 对照何诚《ADA 语言程序设计教程》、刘炳文《程序设计语言 Ada》、
 > 张丽芬《Ada 程序设计导论》三本国内 Ada 83 时代教材的专题深挖
 > （访问类型、判别类型、定点实数、低级程序设计、select 家族、
 > 子单位与可见性等现代教程常略过的"硬核"），案例全部现代化重写
-> 并在 GNAT 16.2 实测；其余 15 个基础章节于 2026-10 对照张丽芬书全书十章
-> 逐一重写为教程体（词法/类型/控制/子程序/数组/记录/包/异常/泛型/
-> 任务/文件/互操作/容器，案例含八皇后式回溯、汉诺塔、分数包、
-> 符号表实现互换、磁带重试、strlen 互操作等）。术语对照见
-> [27 章附录](docs/27-appendix.md)。
+> 并在 GNAT 16.2 实测；15 个基础章节于 2026-10 对照张丽芬书全书十章
+> 重写为教程体；27 章与 04/17/18 章的扩节于 2026-10 对照刘炳文全书
+> 十六章补齐（正文输入 Get 家族、格式化输出、百鸡问题剪枝、周期任务
+> 无漂移、abort/任务异常、Calendar/Real_Time/随机数/命令行）。
+> 术语与属性对照见 [28 章附录](docs/28-appendix.md)。
 
 ## 目录结构
 
 ```text
 Ada/
 ├── README.md        本文件
-├── docs/            27 章教程（01 → 27 顺序阅读）
-├── examples/        25 个示例（章号 = 示例编号，02–26；26 章为多文件工程）
+├── docs/            28 章教程（01 → 28 顺序阅读）
+├── examples/        26 个示例（章号 = 示例编号，02–27；26 章为多文件工程）
 ├── build.ps1        Windows 编译脚本（PowerShell）
 ├── run-all.sh       编译并运行全部示例（bash：Linux/macOS/Git Bash）
 └── build/           构建输出（已 gitignore）
@@ -71,12 +71,15 @@ Ada/
 | [24 契约式编程（Ada 2012）](docs/24-contracts.md) | Pre/Post/Type_Invariant/Predicate/Loop_Invariant | `ch24_contracts` |
 | [25 SPARK 形式化验证](docs/25-spark.md) | SPARK 子集、证明级别、GNATprove 工具链 | `ch25_spark` |
 | [26 独立编译与可见性](docs/26-separate-compilation.md) | with/use/use type、renames、子单位、子库单元 | `ch26_separate`（+ 5 文件） |
-| [27 附录](docs/27-appendix.md) | 测试汇总、编译选项、编码规范、Ada 83→2022 术语对照 | — |
+| [27 标准库拾遗](docs/27-stdlib.md) | Calendar/Real_Time、随机数、Command_Line、Standard | `ch27_stdlib` |
+| [28 附录](docs/28-appendix.md) | 测试汇总、编译选项、属性速查、Ada 83→2022 术语对照 | — |
 
 ## 工具链
 
 | 平台 | 工具链 | 验证记录 |
 |---|---|---|
+| Windows | GNAT 16.2.0（MSYS2 UCRT64，scoop 安装） | 2026-10-13 刘炳文书扩充（+27 章）后 26/26 通过 |
+| Windows | GNAT 16.2.0（MSYS2 UCRT64，scoop 安装） | 2026-10-13 张丽芬书 15 章重写后 25/25 通过 |
 | Windows | GNAT 16.2.0（MSYS2 UCRT64，scoop 安装） | 2026-09-25 老教材扩充（19→27 章）后 25/25 通过 |
 | Windows | GNAT 16.2.0（MSYS2 UCRT64） | 2026-09-22 章号对齐重构后 17/17 通过 |
 | Windows | GNAT 16.1.0（MSYS2 UCRT64） | 首轮验证 17/17 通过 |
@@ -86,7 +89,7 @@ Ada/
 
 ```bash
 cd Ada
-./run-all.sh            # 编译并运行全部 25 个示例，打印通过/失败摘要
+./run-all.sh            # 编译并运行全部 26 个示例，打印通过/失败摘要
 ./run-all.sh 02 14      # 只跑指定章号（章号 = 示例编号）
 ./run-all.sh --clean    # 清理 build 目录
 ```
