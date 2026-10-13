@@ -27,3 +27,7 @@ session ST06 in "ST06" = "ZF-Constructible" +
   options [document = false]
   theories
     CardArith
+session ST07 in "ST07" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Filters
