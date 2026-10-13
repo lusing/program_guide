@@ -57,3 +57,8 @@ session ST13 in "ST13" = "ZF-Constructible" +
   options [document = false]
   theories
     ACinL
+
+session ST14 in "ST14" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Levy
