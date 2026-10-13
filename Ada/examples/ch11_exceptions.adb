@@ -171,10 +171,98 @@ begin
    end;
 
    -- ---------------------------
-   -- 7. Suppress：在确信安全处关闭检查
+   -- 7. 错误处理三策略（何诚 §13.5）
    -- ---------------------------
    New_Line;
-   Put_Line ("--- 7. 抑制检查 (Suppress) ---");
+   Put_Line ("--- 7. 错误处理三策略 ---");
+
+   -- 策略一：分级处置——同一批异常按“致命/非致命”放到不同层处理
+   declare
+      Table_Full : exception;              -- 致命：存储级故障
+      Symbol_Err : exception;              -- 非致命：单个坏符号
+      Used       : Natural := 0;
+      procedure Insert (Name : String) is
+      begin
+         Used := Used + 1;
+         if Used > 2 then
+            raise Table_Full;              -- 表满：整批干不下去
+         end if;
+         if Name = "" then
+            raise Symbol_Err;              -- 坏符号：跳过即可
+         end if;
+      end Insert;
+   begin
+      for K in 1 .. 4 loop
+         begin
+            Insert (if K = 2 then "" else "SYM" & Integer'Image (K));
+         exception
+            when Symbol_Err =>             -- 非致命：就地处理，循环继续
+               Put_Line ("  第" & Integer'Image (K) & " 个符号是坏的，跳过");
+         end;
+      end loop;
+   exception
+      when Table_Full =>                   -- 致命：传到本层整批停止
+         Put_Line ("  表满（第 3 笔致命）→ 高层处理段接管，整批停止");
+   end;
+
+   -- 策略二：降级恢复——复杂算法失败，处理程序里换简单算法给粗值
+   declare
+      type Vector is array (1 .. 8) of Float;
+      Data : constant Vector :=
+        (0.5, 2.0, 1.0, 4.5, 3.0, 4.0, 2.5, 1.5);
+      function Fit_Peak (X : Vector) return Float is
+      begin
+         return X (X'First - 1);           -- 越界：模拟拟合算法内部崩溃
+      end Fit_Peak;
+      function Estimate_Peak (X : Vector) return Float is
+         Peak : Float := Float'First;
+      begin
+         return Fit_Peak (X);              -- 正常路径：精细拟合
+      exception
+         when others =>
+            for V of X loop                -- 降级路径：扫一遍取最大值
+               if V > Peak then
+                  Peak := V;
+               end if;
+            end loop;
+            return Peak;                   -- 精度差但够用：放松规范换完备
+      end Estimate_Peak;
+   begin
+      Put_Line ("  Estimate_Peak（拟合崩溃，降级扫描）= "
+                & Float'Image (Estimate_Peak (Data)));
+   end;
+
+   -- 策略三：清理后上抛——异常终止前完成“最后的愿望”
+   declare
+      Busy : Boolean := False;             -- 模拟独占资源（设备/文件/锁）
+      procedure Use_Resource (Ok : Boolean) is
+      begin
+         Busy := True;                     -- 取资源
+         begin
+            if not Ok then
+               raise Program_Error;        -- 干活时出事
+            end if;
+            Put_Line ("  资源使用成功");
+         exception
+            when others =>
+               Busy := False;              -- 最后的愿望：归还资源
+               raise;                      -- 再抛：调用方照样收到
+         end;
+      end Use_Resource;
+   begin
+      Use_Resource (True);
+      Use_Resource (False);                -- 出事的这次
+   exception
+      when Program_Error =>
+         Put_Line ("  调用方收到 Program_Error，且资源已归还（Busy = "
+                   & Boolean'Image (Busy) & " = 已释放）");
+   end;
+
+   -- ---------------------------
+   -- 8. Suppress：在确信安全处关闭检查
+   -- ---------------------------
+   New_Line;
+   Put_Line ("--- 8. 抑制检查 (Suppress) ---");
    declare
       pragma Suppress (Range_Check);   -- 仅本块生效
       A : Integer range 1 .. 10 := 5;

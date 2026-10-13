@@ -8,9 +8,11 @@
 而应**引发（raise）一个有名有姓的异常**，由**异常处理程序**接住，
 要么恢复要么体面退出。本章讲全异常机制：说明与引发、捕获与
 `others`、沿调用链的**传播**与再抛、块结构如何**圈住**异常、
-偶发故障的重试模式、以及**抑制检查**。内容对应张丽芬《Ada 程序
-设计导论》第七章（异常处理）；Ada 83 的 `NUMERIC_ERROR` 等术语
-按现代标准（Ada 95+）勘正。
+偶发故障的重试模式、以及**抑制检查**；最后把何诚 §13.5 的
+**三个层级策略**（分级处置、降级恢复、清理后上抛）收进决策学。
+内容对应张丽芬《Ada 程序设计导论》第七章与何诚《ADA 语言程序
+设计教程》第十三章；Ada 83 的 `NUMERIC_ERROR` 等术语按现代
+标准（Ada 95+）勘正。
 
 ---
 
@@ -260,7 +262,132 @@ end Factorial;
 的权力"。这种"极端安全值"策略要慎用（调用方必须知道约定），
 但对超界即无意义的计算（组合数爆表）是干净的妥协。
 
-## 11.8 抑制检查：pragma Suppress
+## 11.8 三个层级策略：报告、降级、清理
+
+11.4–11.7 讲的都是**机制**（怎么捕获、怎么再抛、怎么重试）。
+何诚 §13.5 把机制之上的**决策学**总结成三个层级策略——异常
+冒出来时，先问"这一层该做哪件事"：
+
+### 策略一：分级处置——同一批异常，放到不同层处理
+
+一个库单元报出的多种异常，**致命程度不同，处理位置就该不同**。
+何诚的符号表是标准案例：`TABLE_FULL`（表满）是存储级故障，
+整个任务干不下去——处理段放在**主程序层**，报错后全局终止；
+`SYMBOL_ERR`（符号未定义）只是单个输入的毛病——处理段放在
+**使用符号的那个过程里**，报一行错，继续处理剩余输入：
+
+```ada
+declare
+   Table_Full : exception;              -- 致命：存储级故障
+   Symbol_Err : exception;              -- 非致命：单个坏符号
+   Used       : Natural := 0;
+   procedure Insert (Name : String) is
+   begin
+      Used := Used + 1;
+      if Used > 2 then
+         raise Table_Full;              -- 表满：整批干不下去
+      end if;
+      if Name = "" then
+         raise Symbol_Err;              -- 坏符号：跳过即可
+      end if;
+   end Insert;
+begin
+   for K in 1 .. 4 loop
+      begin
+         Insert (if K = 2 then "" else "SYM" & Integer'Image (K));
+      exception
+         when Symbol_Err =>             -- 非致命：就地处理，循环继续
+            Put_Line ("  第" & Integer'Image (K) & " 个符号是坏的，跳过");
+      end;
+   end loop;
+exception
+   when Table_Full =>                   -- 致命：传到本层整批停止
+      Put_Line ("  表满（第 3 笔致命）→ 高层处理段接管，整批停止");
+end;
+```
+
+设计的要点是**异常放哪一层，由错误的性质决定，不由"哪里方便"
+决定**：局部能恢复的（丢一条数据无妨）放局部，全局才能裁决的
+（继续运行已无意义）放全局。
+
+### 策略二：降级恢复——换一个更简单的算法
+
+有时"确保子程序返回有用的结果"比"确保它精确"更重要。何诚的
+`ESTIMATE_PEAK`：正常路径跑复杂的多项式曲线拟合；拟合算法崩了，
+处理程序就**换一个简单到几乎不会错的算法**（扫一遍数组取最大值），
+返回粗略但可用的估值——用精度换完备性：
+
+```ada
+function Fit_Peak (X : Vector) return Float is
+begin
+   return X (X'First - 1);              -- 越界：模拟拟合算法内部崩溃
+end Fit_Peak;
+
+function Estimate_Peak (X : Vector) return Float is
+   Peak : Float := Float'First;
+begin
+   return Fit_Peak (X);                 -- 正常路径：精细拟合
+exception
+   when others =>
+      for V of X loop                   -- 降级路径：扫一遍取最大值
+         if V > Peak then
+            Peak := V;
+         end if;
+      end loop;
+      return Peak;                      -- 精度差但够用：放松规范换完备
+end Estimate_Peak;
+```
+
+```text
+  Estimate_Peak（拟合崩溃，降级扫描）=  4.50000E+00
+```
+
+与 11.7 的兜底值策略对照：兜底值给的是"哨兵数"（`Integer'Last`，
+含义交给调用方约定）；降级恢复给的是"真的算出来的粗值"——调用方
+甚至无需知道发生过降级。飞行控制、工业监控里"宁可粗不可停"的
+模块，用的都是这一策略。
+
+### 策略三：清理后上抛——"最后的愿望"
+
+子程序要独占资源（文件、设备、锁）时出异常，直接传播会把资源
+**挂在手里**。何诚的 `PROCESS_FILE` 给出标准骨架：处理程序里先
+释放资源，再 `raise;` 把异常原样交还调用者——"异常终止前完成
+最后的愿望"：
+
+```ada
+Busy : Boolean := False;                -- 模拟独占资源（设备/文件/锁）
+procedure Use_Resource (Ok : Boolean) is
+begin
+   Busy := True;                        -- 取资源
+   begin
+      if not Ok then
+         raise Program_Error;           -- 干活时出事
+      end if;
+      Put_Line ("  资源使用成功");
+   exception
+      when others =>
+         Busy := False;                 -- 最后的愿望：归还资源
+         raise;                         -- 再抛：调用方照样收到
+   end;
+end Use_Resource;
+```
+
+```text
+  资源使用成功
+  调用方收到 Program_Error，且资源已归还（Busy = FALSE = 已释放）
+```
+
+Ada 没有 C++/Java 的 `finally`，`when others => 清理; raise;`
+就是它的等价物——[16 章](16-protected-objects.md)的保护对象、
+[18 章](18-file-io.md)的文件关闭，出的都是这同一招。注意裸
+`raise;` 只能写在处理程序里（11.4），恰好保证了"清理者就是
+接异常者"，不会漏。
+
+三个策略合起来看：**策略一决定放哪层，策略二决定还要不要值，
+策略三决定走之前收拾什么**。下一节的 `Suppress` 则是反方向的
+问题——哪些检查从一开始就可以不要。
+
+## 11.9 抑制检查：pragma Suppress
 
 每个范围/下标/除法检查都要花运行时间。**确信安全**的热点代码
 可以局部关闭检查：
@@ -290,7 +417,7 @@ end;
 SPARK（第 25 章）提供了正道：**证明**检查永不触发，然后由工具
 自动免检——既快又不出卖安全性。
 
-## 11.9 本章示例的完整输出
+## 11.10 本章示例的完整输出
 
 ```text
 === Ada 异常处理 ===
@@ -323,12 +450,19 @@ SPARK（第 25 章）提供了正道：**证明**检查永不触发，然后由�
   12! = 479001600
   99! 溢出 → 返回 Integer'Last = 2147483647
 
---- 7. 抑制检查 (Suppress) ---
+--- 7. 错误处理三策略 ---
+  第 2 个符号是坏的，跳过
+  表满（第 3 笔致命）→ 高层处理段接管，整批停止
+  Estimate_Peak（拟合崩溃，降级扫描）=  4.50000E+00
+  资源使用成功
+  调用方收到 Program_Error，且资源已归还（Busy = FALSE = 已释放）
+
+--- 8. 抑制检查 (Suppress) ---
   本块内 Range_Check 已抑制：A = 6
   出了块，检查恢复——抑制范围被块结构限死。
 ```
 
-## 11.10 小结
+## 11.11 小结
 
 | 概念 | 要点 |
 |------|------|
@@ -338,6 +472,7 @@ SPARK（第 25 章）提供了正道：**证明**检查永不触发，然后由�
 | 捕获 | `when A \| B =>`；`others` 必须最后；不返回 |
 | 传播 | 无本地处理程序→沿调用链；说明期异常直接外抛 |
 | 裸 `raise;` | 处理程序内再抛当前异常；捕获-加工-转发 |
+| 三策略 | 分级处置（层由错误性质定）/ 降级恢复（精度换完备）/ 清理后上抛 |
 | 块圈异常 | declare 块 + exception：破坏半径最小化 |
 | 重试模式 | 循环 × 块；N 次失败后主动 raise |
 | Suppress | 局部关检查提速；SPARK 是正道 |
