@@ -115,9 +115,11 @@
 - **B0 前置**：Lean 工程脚手架（lakefile.toml + 钉版 toolchain + cache get）、
   Isabelle ZF 堆首建（`isabelle build -D src/ZF` 一次）、六通道冒烟、
   build.ps1 骨架。
-- **B1**：00-04（导引+公理/序数/基数/实数）
-- **B2**：05-09（AC/基数算术/滤子/奇异/正则）
-- **B3**：10-15（模型/传递模型/L/AC+GCH/Σₙ/OD）
+- **B1** ✅：00-04（36/36）
+- **B2** ✅：05-09（71/71）
+- **B3** ✅（2026-10-13）：10-15（L 篇全绿）。官方锚点 Isabelle
+  Lset/DPow/AC_in_L；孤儿理论 Reflection.thy 与 GCH/OD 库缺席
+  如实标注。
 - **B4**：16-22（力迫七连章）
 - **B5**：23-28（力迫应用六连章）
 - **B6**：29-34（可测基数六连章）
@@ -179,4 +181,17 @@ pdftotext 按节页段提取（书页 = PDF-12），文本作骨架（定理编�
     自造谓词先检查语义（finite_seq 生成"≤N"非"恰 N"）。
   - build.ps1：wslpath 传参路径反斜杠被吃（先 `-replace '\\','/'`）；
     Split-Path 对 POSIX 路径给 Windows 分隔符（字符串 LastIndexOf 切）。
+- **B2/B3 坑（05-15 章）**：Isabelle ZF-Constructible 只导出三理论
+  （DPow_absolute/AC_in_L/Rank_Separation）——**Reflection.thy 是
+  孤儿理论**（堆中无，import 静默空）；`InfCard_square_eq` 实为
+  `InfCard_square_eqpoll`（等势形态）；poly.exe 逃逸进程锁 db 致
+  SQLITE 主键冲突（杀进程删 heaps/log/ST*.db）；blast 对 De Morgan
+  爆炸改 Isar。Lean：ω 被 Cardinal scope 劫持、IsSuccPrelimit 在
+  Order 命名空间、doc comment 紧跟声明。Coq：嵌套归纳 guard 三撞
+  （二叉编码/燃料解）、apply 函数变量须显式全参、bullet 层级严格。
+  Agda：where 参数捕获错位（mutual 块）、m≤m⊔n 参数序、lookup 要
+  Fin、Data.List.all 迁移（自写 allB）。Julia：$(expr) 一律化、
+  中文串内禁 ASCII 引号。Python：坍缩规范化键 (len,str)。Prolog：
+  between 的 B=N 平凡真、(A;B)->C 双解、length+=<k 无限失败循环、
+  未绑定 D 的 \+ call 全域失败。
 
