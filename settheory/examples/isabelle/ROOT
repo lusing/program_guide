@@ -288,6 +288,16 @@ session ST59 in "ST59" = "ZF-Constructible" +
   theories
     Induction
 
+session ST60 in "ST60" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Counting
+
+session ST61 in "ST61" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Probability
+
 session ST67 in "ST67" = "ZF-Constructible" +
   options [document = false]
   theories

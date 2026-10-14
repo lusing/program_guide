@@ -63,4 +63,6 @@ import Settheory.Ch56Sets
 import Settheory.Ch57Relations
 import Settheory.Ch58Functions
 import Settheory.Ch59Induction
+import Settheory.Ch60Counting
+import Settheory.Ch61Probability
 import Settheory.Ch67Topic
