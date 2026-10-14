@@ -24,3 +24,4 @@ import Settheory.Ch17Boolean
 import Settheory.Ch18Forcing
 import Settheory.Ch19Independence
 import Settheory.Ch20Products
+import Settheory.Ch21Symmetric

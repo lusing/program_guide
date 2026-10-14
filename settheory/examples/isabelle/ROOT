@@ -92,3 +92,8 @@ session ST20 in "ST20" = "ZF-Constructible" +
   options [document = false]
   theories
     Products
+
+session ST21 in "ST21" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Symmetric
