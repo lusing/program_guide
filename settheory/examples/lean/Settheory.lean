@@ -53,4 +53,5 @@ import Settheory.Ch46Regopen
 import Settheory.Ch47BA
 import Settheory.Ch48Stone
 import Settheory.Ch49Completion
+import Settheory.Ch50Fnxy
 import Settheory.Ch56Topic
