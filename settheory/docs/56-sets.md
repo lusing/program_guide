@@ -237,22 +237,19 @@ Julia 通道用位串把这张代数表**穷举验证**一遍——对 6 元宇�
 
 ```julia
 # examples/julia/56_sets.jl（节选）
-const U6 = 0:63                    # 6 元宇宙的全部子集（位掩码）
 meet(a, b) = a & b; uni(a, b) = a | b; diff(a, b) = a & ~b
 
-laws_ok = all(U6) do a             # 交换律 × 双向分配律 × De Morgan
-  all(U6) do b
-    all(U6) do c
-      meet(a,b) == meet(b,a) &&
-      uni(a,b) == uni(b,a) &&
-      meet(a, uni(b,c)) == uni(meet(a,b), meet(a,c)) &&
-      uni(a, meet(b,c)) == meet(uni(a,b), uni(a,c)) &&
-      diff(a, uni(b,c)) == meet(diff(a,b), diff(a,c)) &&
-      diff(a, meet(b,c)) == uni(diff(a,b), diff(a,c))
-    end
-  end
+ok = true
+for a in 0:63, b in 0:63, c in 0:63        # 6 元宇宙的全部 64 个子集
+    ok &= meet(a,b) == meet(b,a)           # 交换律
+    ok &= uni(a,b) == uni(b,a)
+    ok &= meet(a, uni(b,c)) == uni(meet(a,b), meet(a,c))   # 分配律（双向）
+    ok &= uni(a, meet(b,c)) == meet(uni(a,b), uni(a,c))
+    ok &= meet(a, uni(a,b)) == a           # 吸收律
+    ok &= diff(a, uni(b,c)) == meet(diff(a,b), diff(a,c))  # 相对 De Morgan
+    ok &= diff(a, meet(b,c)) == uni(diff(a,b), diff(a,c))
 end
-println("交并差六律（64×64×64 穷举）：", laws_ok ? "全部成立 ✓" : "有反例！")
+println("  交并差九律（64^3 穷举）：", ok ? "全部成立 ✓" : "有反例！")
 ```
 
 穷举的对象不是"证明"（定律已经手证过了），而是**证伪性的普查**
@@ -346,7 +343,7 @@ Fixpoint powerset (l : list nat) : list (list nat) :=
   match l with
   | [] => [[]]
   | x :: xs => let rest := powerset xs in
-               map (fun s => s) rest ++ map (fun s => x :: s) rest
+               rest ++ map (cons x) rest
   end.
 
 Theorem card_powerset : forall l,
@@ -354,18 +351,20 @@ Theorem card_powerset : forall l,
 Proof.
   induction l as [|x xs IH]; intros Hnd; simpl.
   - reflexivity.
-  - rewrite IH by (inversion Hnd; assumption).
-    rewrite app_length, map_length, map_length. lia.
+  - inversion Hnd; subst.
+    rewrite length_app, length_map.
+    rewrite IH by assumption. lia.
 Qed.
 ```
 
 `powerset` 的递归形状就是乘法原理：对表头 x，每个子集要么不含 x
 （原样继承 xs 的子集），要么含 x（在 xs 的子集前加 x）。归纳步骤
-里 `app_length`（表连接长度可加）与 `map_length`（映射保长度）把
-"|rest| + |rest| = 2·2^|xs|"算干净——证明的每一步都是计数论证的
-镜像。`NoDup` 前提是必要的：幂集的定义域得是真正的集合（无重复
-元素），否则计数会翻倍。运行 `Compute (length (powerset [1;2;3])).`
-得 8，与手数一致。
+里 `length_app`（表连接长度可加）与 `length_map`（映射保长度）把
+"|rest| + |rest| = 2·2^|xs|"算干净——顶层 `simpl` 已把 2^(n+1)
+展开为 `2^n + (2^n + 0)`，最后一步纯交给 `lia`。`NoDup` 前提是
+必要的：幂集的定义域得是真正的集合（无重复元素），否则计数会
+翻倍。文件末尾的 `Example cert_pow3 : length (powerset [1;2;3]) = 8`
+用 `vm_compute` + `reflexivity` 秒验，与手数一致。
 
 Prolog 通道用同一思路生成幂集并验证 2ⁿ：
 
@@ -373,11 +372,11 @@ Prolog 通道用同一思路生成幂集并验证 2ⁿ：
 % examples/prolog/56_sets.pl（节选）
 pow([], [[]]).
 pow([X|Xs], P) :- pow(Xs, P0),
-                  findall(S, member(S, P0), Keep),
                   findall([X|S], member(S, P0), Add),
-                  append(Keep, Add, P).
+                  append(P0, Add, P).
 
-card_pow(N, 2^N式) :- numlist(1, N, L), pow(L, P), length(P, K), K =:= 2^N.
+card_pow(N) :- numlist(1, N, L), pow(L, P), length(P, K),
+               K =:= 2^N, format("  幂集计数：|P({1..~d})| = ~d = 2^~d ✓~n", [N,K,N]).
 ```
 
 `pow/2` 的两条子句与 Coq 的 `Fixpoint` 一一对应（空表的幂集是
@@ -397,7 +396,7 @@ Cantor 实数）与本篇的朴素用法互为表里。
 |---|---|---|
 | Lean | 包含传递、真包含反例、分配律、幂集 | `Set.Subset.trans`、`Set.inter_union_distrib_left`、`Finset.card_powerset` |
 | Isabelle/ZF | 广义 De Morgan、𝒫({0,1}) 四元素枚举 | `equalityI`+`subsetI`、`Pow_iff`、equalities 库 |
-| Coq | 幂集函数 + 2ⁿ 计数定理 | `powerset`/`card_powerset`、`app_length` |
+| Coq | 幂集函数 + 2ⁿ 计数定理 | `powerset`/`card_powerset`、`length_app` |
 | Agda | membership 级子集格律 | 自写 `_⊆_`、`∅-最小` |
 | Julia | 64×64×64 位串穷举定律普查 | 位运算即集合运算 |
 | Python | 特征函数/位串双向翻译、指数增长 | `itertools.product` |

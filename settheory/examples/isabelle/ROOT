@@ -273,6 +273,11 @@ session ST56 in "ST56" = "ZF-Constructible" +
   theories
     Sets
 
+session ST57 in "ST57" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Relations
+
 session ST67 in "ST67" = "ZF-Constructible" +
   options [document = false]
   theories

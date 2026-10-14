@@ -9,11 +9,11 @@ subsection \<open>包含与外延\<close>
 
 lemma incl_trans_example:
   assumes "A \<subseteq> B" "B \<subseteq> C" shows "A \<subseteq> C"
-  by (rule subset_trans)
+  using assms by (rule subset_trans)
 
 lemma incl_cycle:
   assumes "A \<subseteq> B" "B \<subseteq> A" shows "A = B"
-  using assms by (blast intro: equalityI)
+  using assms by (rule equalityI)
 
 text \<open>Exercise 1.2.2 (4)(g)：A \<subseteq> B 且 B 真含于 C 推出 A 真含于 C。
   真包含没有记号，用"包含 + 见证元素"表达。\<close>
@@ -61,8 +61,8 @@ next
   proof (rule subsetI)
     fix y assume hy: "y \<in> (\<Inter>x\<in>C. U - f(x))"
     from neC obtain x0 where "x0 \<in> C" by (rule not_emptyE) blast
-    hence "y \<in> U - f(x0)" using hy by (blast dest: INT_E)
-    thus "y \<in> U - (\<Union>x\<in>C. f(x))" by blast
+    hence hy0: "y \<in> U - f(x0)" using hy by (blast dest: INT_E)
+    thus "y \<in> U - (\<Union>x\<in>C. f(x))" using hy by (blast dest: INT_E)
   qed
 qed
 
@@ -77,34 +77,22 @@ next
     fix X assume "X \<in> Pow({0,1})"
     hence hX: "X \<subseteq> {0,1}" by (rule PowD)
     show "X \<in> {0,{0},{1},{0,1}}"
-    proof (cases "0 \<in> X")
-      case True
-      then show ?thesis
-      proof (cases "1 \<in> X")
-        case True
-        have "X = {0,1}" using hX \<open>0 \<in> X\<close> \<open>1 \<in> X\<close>
-          by (rule equalityI; blast)
-        then show ?thesis by blast
-      next
-        case False
-        have "X = {0}" using hX \<open>0 \<in> X\<close> \<open>1 \<notin> X\<close>
-          by (rule equalityI; blast)
-        then show ?thesis by blast
-      qed
+    proof (cases "0 \<in> X"; cases "1 \<in> X")
+      assume h0: "0 \<in> X" and h1: "1 \<in> X"
+      hence "X = {0,1}" using hX by (blast intro: equalityI)
+      thus ?thesis by (simp only: cons_iff; blast)
     next
-      case False
-      then show ?thesis
-      proof (cases "1 \<in> X")
-        case True
-        have "X = {1}" using hX \<open>0 \<notin> X\<close> \<open>1 \<in> X\<close>
-          by (rule equalityI; blast)
-        then show ?thesis by blast
-      next
-        case False
-        have "X = 0" using hX \<open>0 \<notin> X\<close> \<open>1 \<notin> X\<close>
-          by (rule equalityI; blast)
-        then show ?thesis by blast
-      qed
+      assume h0: "0 \<in> X" and h1: "1 \<notin> X"
+      hence "X = {0}" using hX by (blast intro: equalityI)
+      thus ?thesis by (simp only: cons_iff; blast)
+    next
+      assume h0: "0 \<notin> X" and h1: "1 \<in> X"
+      hence "X = {1}" using hX by (blast intro: equalityI)
+      thus ?thesis by (simp only: cons_iff; blast)
+    next
+      assume h0: "0 \<notin> X" and h1: "1 \<notin> X"
+      hence "X = 0" using hX by (blast intro: equalityI)
+      thus ?thesis by (simp only: cons_iff; blast)
     qed
   qed
 qed

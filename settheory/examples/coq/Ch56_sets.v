@@ -18,11 +18,12 @@ Proof.
   - destruct (Nat.eqb x y) eqn:E.
     + apply Nat.eqb_eq in E; subst y; split.
       * intros _; left; reflexivity.
-      * intros [H | []]; subst; reflexivity.
+      * intros _; reflexivity.
     + split.
       * intros H; right; apply IH; exact H.
-      * intros [Hxy | []].
+      * intros [Hxy | Hys].
         exfalso; subst; rewrite Nat.eqb_refl in E; discriminate.
+        apply IH; exact Hys.
 Qed.
 
 Fixpoint insert (x : nat) (l : list nat) : list nat :=
@@ -54,7 +55,8 @@ Definition eqs (l m : list nat) : Prop := incl l m /\ incl m l.
 Lemma meet_In : forall x l m, In x (meet l m) <-> In x l /\ In x m.
 Proof.
   intros; unfold meet; split.
-  - intros H; apply filter_In in H; tauto.
+  - intros H; apply filter_In in H; destruct H as [H1 H2].
+    split; [exact H1 | apply mem_spec; exact H2].
   - intros [H1 H2]; apply filter_In; split; [exact H1|].
     apply mem_spec; exact H2.
 Qed.
@@ -63,9 +65,15 @@ Lemma diff_In : forall x l m, In x (diff l m) <-> In x l /\ ~ In x m.
 Proof.
   intros; unfold diff; split.
   - intros H; apply filter_In in H.
-    destruct H as [H1 H2]; apply mem_spec in H2; split; auto.
+    destruct H as [H1 H2]; simpl in H2.
+    destruct (mem x m) eqn:Em; [discriminate H2|].
+    split; [exact H1|]. intros H3.
+    assert (T := proj2 (mem_spec x m) H3).
+    rewrite Em in T; discriminate.
   - intros [H1 H2]; apply filter_In; split; [exact H1|].
-    apply not_true_iff_false, mem_spec, not_false_iff_true; exact H2.
+    destruct (mem x m) eqn:Em.
+    + exfalso. exact (H2 (proj1 (mem_spec x m) Em)).
+    + reflexivity.
 Qed.
 
 (* ---------- 基本包含事实 ---------- *)
@@ -86,34 +94,42 @@ Qed.
 Theorem dist_meet_uni : forall l m n,
     eqs (meet l (uni m n)) (uni (meet l m) (meet l n)).
 Proof.
-  intros l m n; split; intros x Hx.
+  intros l m n; unfold eqs, incl, uni; split; intros x Hx.
   - apply meet_In in Hx; destruct Hx as [Hl Hun].
     apply in_app_or in Hun; destruct Hun as [Hm | Hn].
-    + apply in_app_or; left; apply meet_In; auto.
-    + apply in_app_or; right; apply meet_In; auto.
+    + apply in_or_app; left; apply meet_In; auto.
+    + apply in_or_app; right; apply meet_In; auto.
   - apply in_app_or in Hx; destruct Hx as [H1 | H2].
-    + apply meet_In in H1; apply meet_In; tauto.
-    + apply meet_In in H2; apply meet_In; tauto.
+    + apply meet_In in H1; apply meet_In.
+      split; [tauto | apply in_or_app; left; tauto].
+    + apply meet_In in H2; apply meet_In.
+      split; [tauto | apply in_or_app; right; tauto].
 Qed.
 
 (* ---------- 相对 De Morgan：差对并 ---------- *)
 Theorem demorgan_diff : forall l m n,
     eqs (diff l (uni m n)) (meet (diff l m) (diff l n)).
 Proof.
-  intros l m n; split; intros x Hx.
-  - apply diff_In in Hx; apply in_app_or in Hx.
-    apply meet_In, diff_In, diff_In in Hx; tauto.
+  intros l m n; unfold eqs, incl, uni; split; intros x Hx.
+  - apply diff_In in Hx; destruct Hx as [Hl Hn].
+    apply meet_In; split.
+    + apply diff_In. split; [exact Hl|].
+      intros Hm. apply Hn. apply in_or_app. left. exact Hm.
+    + apply diff_In. split; [exact Hl|].
+      intros Hn2. apply Hn. apply in_or_app. right. exact Hn2.
   - apply meet_In in Hx; destruct Hx as [H1 H2].
     apply diff_In in H1; apply diff_In in H2.
-    apply diff_In, in_app_or; tauto.
+    apply diff_In. split; [tauto|].
+    intros Hin. apply in_app_or in Hin.
+    destruct Hin as [Hm | Hn2]; tauto.
 Qed.
 
 (* 吸收律：交对并 *)
 Theorem absorb : forall l m, eqs (meet l (uni l m)) l.
 Proof.
-  intros l m; split; intros x Hx.
+  intros l m; unfold eqs, incl, uni; split; intros x Hx.
   - apply meet_In in Hx; tauto.
-  - apply meet_In; auto.
+  - apply meet_In; split; [exact Hx | apply in_or_app; left; exact Hx].
 Qed.
 
 (* ---------- 幂集与 2^n 计数 ---------- *)
@@ -130,8 +146,8 @@ Proof.
   induction l as [|x xs IH]; intros Hnd; simpl.
   - reflexivity.
   - inversion Hnd; subst.
-    rewrite IH by assumption.
-    rewrite app_length, map_length, map_length. lia.
+    rewrite length_app, length_map.
+    rewrite IH by assumption. lia.
 Qed.
 
 (* ---------- 具体计算证书（norm 规范形 + vm_compute） ---------- *)
@@ -143,4 +159,9 @@ Example cert_pow3 : length (powerset [1;2;3]) = 8.
 Proof. vm_compute. reflexivity. Qed.
 
 Example cert_pow3_nodup : NoDup [1;2;3].
-Proof. repeat constructor. Qed.
+Proof.
+  apply NoDup_cons_iff; split; [simpl; intros [H|[H|[]]]; discriminate|].
+  apply NoDup_cons_iff; split; [simpl; intros [H|[]]; discriminate|].
+  apply NoDup_cons_iff; split; [intros []|].
+  constructor.
+Qed.
