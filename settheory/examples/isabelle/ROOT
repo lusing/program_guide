@@ -97,3 +97,8 @@ session ST21 in "ST21" = "ZF-Constructible" +
   options [document = false]
   theories
     Symmetric
+
+session ST22 in "ST22" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Suslin
