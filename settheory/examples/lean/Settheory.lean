@@ -37,3 +37,16 @@ import Settheory.Ch30Topic
 import Settheory.Ch31Topic
 import Settheory.Ch32Topic
 import Settheory.Ch33Topic
+import Settheory.Ch34Topic
+import Settheory.Ch35Topic
+import Settheory.Ch36Topic
+import Settheory.Ch37Topic
+import Settheory.Ch38Topic
+import Settheory.Ch39Topic
+import Settheory.Ch40Topic
+import Settheory.Ch41Topic
+import Settheory.Ch42Topic
+import Settheory.Ch43Topic
+import Settheory.Ch44Topic
+import Settheory.Ch45Topic
+import Settheory.Ch46Topic
