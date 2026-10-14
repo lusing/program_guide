@@ -31,3 +31,9 @@ import Settheory.Ch24Topic
 import Settheory.Ch25Topic
 import Settheory.Ch26Topic
 import Settheory.Ch27Topic
+import Settheory.Ch28Topic
+import Settheory.Ch29Topic
+import Settheory.Ch30Topic
+import Settheory.Ch31Topic
+import Settheory.Ch32Topic
+import Settheory.Ch33Topic

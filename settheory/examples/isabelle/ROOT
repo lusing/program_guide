@@ -127,3 +127,33 @@ session ST27 in "ST27" = "ZF-Constructible" +
   options [document = false]
   theories
     Topic
+
+session ST28 in "ST28" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Topic
+
+session ST29 in "ST29" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Topic
+
+session ST30 in "ST30" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Topic
+
+session ST31 in "ST31" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Topic
+
+session ST32 in "ST32" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Topic
+
+session ST33 in "ST33" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Topic
