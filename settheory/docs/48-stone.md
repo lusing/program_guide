@@ -175,10 +175,20 @@ a∨b = a+b+ab、¬a = 1+a 两条重建公式是布尔代数运算（对全部
 空间：3 个超滤（47 章枚举器复用）、N_b 生成拓扑（8 个开集）、
 开↔理想/闭↔滤子对应（定理 3）的穷举验证、孤立点刻画。
 
-**Isabelle/ZF（`examples/isabelle/ST48/Stone.thy`）**：ZF 上
-St(B) 的骨架：定义 `stoneN(A0, b, G)`（超滤含 b）与 clopen 族；
-证 N_{b∩c} = N_b ∩ N_c 与单射性（b ≠ c ⟹ ∃ 超滤分离——有限
-幂集版用主超滤见证）。
+**Isabelle/ZF（`examples/isabelle/ST48/Stone.thy`）**：超滤子宇宙
+`ufilter_on`（含上闭、交闭、超性六条）上的 N_b 谓词式嵌入
+`Nmem(A0, X, G)`，配 intro/dest 规则全家桶（NmemI/NmemD1/D2），
+推出**单调（Nmono）、空（Nempty）、交（NinterI/D 双向）**三定理
+——全部手动 Isar，仅两个正向提取 lemma 用 blast。
+
+> **Isabelle 实测坑（48 章第八撞，与前七撞同族）**：集合式
+> `stN(A0,X) = {G ∈ Pow(Pow(A0)). ufilter ∧ X ∈ G}` 的成员
+> iff 让 blast 在 Pow(Pow(..)) 见证搜索上**系统性爆炸**（正向、
+> 反向、show 侧全部中招）；**谓词式 Nmem + intro/dest 规则**
+> 一次通过（1 秒 vs 数小时）。这是 ZF 浅嵌入的通用教训：
+> **能谓词就别 Collect**——Collect 折叠进 blast 的搜索空间是
+> 灾难。另：NinterD 需要 X、Y ∈ Pow 假设（X ∈ Pow 无法从
+> X∩Y ∈ G 导出——上闭性只走"小→大"，不走"大→小"）。
 
 ## 48.7 习题
 
