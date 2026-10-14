@@ -1,2 +1,2 @@
-println("==== 紧基数与超紧")
+println("==== 34")
 println("END ====")

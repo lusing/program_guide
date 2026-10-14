@@ -1,2 +1,2 @@
-println("==== L 中的投影集")
+println("==== 42")
 println("END ====")

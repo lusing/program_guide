@@ -1,4 +1,4 @@
 import sys, io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-print("==== 实值可测基数")
+print("==== 35")
 print("END ====")
