@@ -26,3 +26,8 @@ import Settheory.Ch19Independence
 import Settheory.Ch20Products
 import Settheory.Ch21Symmetric
 import Settheory.Ch22Suslin
+import Settheory.Ch23Topic
+import Settheory.Ch24Topic
+import Settheory.Ch25Topic
+import Settheory.Ch26Topic
+import Settheory.Ch27Topic
