@@ -218,6 +218,11 @@ session ST45 in "ST45" = "ZF-Constructible" +
   theories
     Topic
 
+session ST53 in "ST53" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Names
+
 session ST52 in "ST52" = "ZF-Constructible" +
   options [document = false]
   theories
