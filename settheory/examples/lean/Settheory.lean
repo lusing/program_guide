@@ -50,4 +50,6 @@ import Settheory.Ch43Topic
 import Settheory.Ch44Topic
 import Settheory.Ch45Topic
 import Settheory.Ch46Regopen
+import Settheory.Ch47BA
+import Settheory.Ch48Stone
 import Settheory.Ch56Topic
