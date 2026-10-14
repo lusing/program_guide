@@ -1,14 +1,24 @@
 # 集合论教程 · 总体规划（PLAN）
 
-以 Thomas Jech《Set Theory》（Academic Press 1978 第一版，642 页）为纲的
-中文教程，结合机器证明（Lean 4 + mathlib4 主证、Isabelle/ZF object-logic
-第二证明通道、Coq 8.20 三证、Agda 构造性视角）与计算/离散实验
-（Julia、Python/scipy、Prolog）。全书 7 章 44 节全覆盖 + 附录（Bernays-Gödel
-并入 09 章），星号与力迫/大基数元理论不砍、按通道分工承载。
+以 Thomas Jech《Set Theory》（Academic Press 1978 第一版，642 页）为纲、
+Matteo Viale《The Forcing Method in Set Theory》（Springer UNITEXT 168，
+2024，246 页）为力迫篇第二底本的中文教程，结合机器证明（Lean 4 +
+mathlib4 主证、Isabelle/ZF object-logic 第二证明通道、Coq 8.20 三证、
+Agda 构造性视角）与计算/离散实验（Julia、Python/scipy、Prolog）。
+Jech 全书 7 章 44 节全覆盖 + 附录（Bernays-Gödel 并入 09 章），
+Viale 全书 7 章 + 附录 A/B/C/D 提炼为第八篇（46-55），星号与
+力迫/大基数元理论不砍、按通道分工承载。
 
-**底本定位**：`G:\book\数学\Set Theory (Thomas Jech) (z-library.sk, 1lib.sk, z-lib.sk).pdf`，
-**PDF 页 = 书页 + 12**（书页 1 = PDF 页 13）。文字层完好，pdftotext 直接
-取材；扫描公式符号（∈ 子集符号等）由领域知识校订，结构与编号直接可靠。
+**底本定位**：
+- Jech：`G:\book\数学\Set Theory (Thomas Jech) (z-library.sk, 1lib.sk, z-lib.sk).pdf`，
+  **PDF 页 = 书页 + 12**（书页 1 = PDF 页 13）。文字层完好，pdftotext 直接
+  取材；扫描公式符号（∈ 子集符号等）由领域知识校订，结构与编号直接可靠。
+- Viale：`G:\book\数学\The Forcing Method in Set Theory.pdf`（246 页，
+  pdftotext 提取于 `.scratch/viale.txt`；数学符号被映射为 "."，按领域
+  知识校订——".ZFC"=𝒵𝒻𝒸 类字体、".1"=Σ₁、".0"=Δ₀、".-system"=Δ 系统、
+  "L�s"=Łoś）。章边界（提取行号）：Ch2@257、Ch3@544、Ch4@1877、
+  Ch5@2385、Ch6@2823、Ch7@3925、AppA@5700、AppB@6710、AppC@7361、
+  AppD@7900。
 
 ## 硬性写作纪律
 
@@ -126,8 +136,52 @@
 - **B7** ✅（2026-10-14）：35-40（其他大基数六连章）
 - **B8** ✅（2026-10-14）：41-46（描述集合论六连章）
 - **B9** ✅（2026-10-14）：47 收官 CHEATSheet + 全量对账 + README 面貌定稿
+- **V0**：PLAN 扩充定稿 + 收官章重编号 46→56（七通道 + 导航），330 单元保持全绿
+- **V1**：46-47（正则开集 + 布尔代数）
+- **V2**：48-49（Stone 对偶 + 布尔补全/测度代数）
+- **V3**：50-51（泛型滤子/Fn/Δ 引理 + 布尔值语义）
+- **V4**：52-53（商/满性/Łoś + V^B 名的宇宙）
+- **V5**：54-55（力迫定理/CH 独立性 + 绝对性补篇）
+- **V6**：56 收官 CHEATSheet 更新 + README + 全量对账收官
 
 每批：docs 全章 + examples 全通道 + build.ps1 -All 该批全绿 + commit。
+
+## 第八篇章表（Viale 2024 全书提炼；实际建成结构 00-56）
+
+| 章 | docs | 标题 | Viale 节 | lean | isa | coq | agda | julia/py | prolog |
+|---|---|---|---|---|---|---|---|---|---|
+| **第八篇 Viale 路线：布尔值逻辑导引力迫** |
+| 46 | 46-regopen.md | 预备：拓扑、正则开集与预序字典 | Ch2+D.1 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 47 | 47-ba.md | 布尔代数：恒等式、理想与素理想定理 | Ch3.1-3.7 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 48 | 48-stone.md | Stone 对偶与布尔环 | Ch3.8-3.11+D.3 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 49 | 49-completion.md | 完备布尔代数：布尔补全唯一性与测度代数 | Ch4 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 50 | 50-fnxy.md | 泛型滤子与 Fn(X,Y)：ccc、Δ 引理与 Baire 纲 | Ch5 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 51 | 51-bvsem.md | 布尔值语义：B-值模型、可靠性与完备性 | Ch6.1-6.2 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 52 | 52-los.md | 商、满性与 Łoś 定理：混合性质三例 | Ch6.3-6.4 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 53 | 53-names.md | V^B：名的宇宙、混合引理与最大原理 | Ch7.1 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 54 | 54-forcingthm.md | Cohen 力迫定理与 CH 独立性全程 | Ch7.2-7.4+C | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 55 | 55-absoluteness.md | 绝对性补篇：H_χ、Lévy 绝对性、反射与 Shoenfield | AppA+B | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| **收官（重编号）** |
+| 56 | 56-cheatsheet.md | 收官：CHEATSheet、两书对照总表与坑位总账 | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+
+第八篇与第三篇（16-22 Jech 路线）的关系：Jech 路线先走通力迫的骨架
+（偏序→泛型扩张→cBa→V^B→独立性→积→对称），Viale 路线**从零重建**：
+以正则开集与 Stone 对偶为地基、布尔值语义为一阶逻辑的自然推广
+（可靠性/完备性/Łoś/混合性质）、V^B 的全部证明（立方归纳、混合引理、
+最大原理、M^B ⊨ ZFC 逐公理名字构造）自包含给出，并与 Kunen 式
+P-名路线（附录 C 桥梁）对照。两书编号均只作溯源注记。
+
+通道锚点备忘（第八篇）：
+- Lean：mathlib v4.33.1 有 `Stonean`（Topology.Category.Stonean）、
+  `BooleanRing`（Algebra.Ring.BooleanRing）、`BooleanAlgebra`/
+  `CompleteBooleanAlgebra`（Order）；**无 RegularOpen 文件**——46 章
+  自建 `IsRegularOpen` 定义并证五律。无力迫/无力迫语义——53/54 章
+  自建有限 toy 或走通用引理。
+- Isabelle/ZF：无布尔代数库（HOL 有 ZF 无）——47-49 章自建浅结构；
+  55 章注意 Reflection.thy 孤儿坑（B2/B3 已记录）。
+- Coq/Agda：布尔值语义与 V^B 有限 toy 的主战场。
+- Julia/Python：RO 计算、Div(30) 同构、Δ 引理枚举、MALG 数值实验、
+  有限力迫模拟；Prolog：超滤子搜索、泛型滤子构造、有限 Stone 空间。
 
 ## 取材协议
 
