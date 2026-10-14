@@ -129,4 +129,4 @@ H_χ 的定义骨架 + Σ₁ 向上保持的一阶引理（谓词式）。
 
 ---
 
-上一章：[54 Cohen 力迫定理与 CH 独立性](docs/54-forcingthm.md) · 下一篇（收官）：[56 收官 CHEATSheet](docs/56-cheatsheet.md)
+上一章：[54 Cohen 力迫定理与 CH 独立性](docs/54-forcingthm.md) · 下一篇：[56 朴素集合：计算者的第一课](docs/56-sets.md)（第九篇开篇，建设中） · [收官 CHEATSheet](docs/67-cheatsheet.md)

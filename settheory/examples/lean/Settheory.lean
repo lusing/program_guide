@@ -59,4 +59,5 @@ import Settheory.Ch52Los
 import Settheory.Ch53Names
 import Settheory.Ch54Forcingthm
 import Settheory.Ch55Absoluteness
-import Settheory.Ch56Topic
+import Settheory.Ch56Sets
+import Settheory.Ch67Topic

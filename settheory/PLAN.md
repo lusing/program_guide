@@ -2,12 +2,18 @@
 
 以 Thomas Jech《Set Theory》（Academic Press 1978 第一版，642 页）为纲、
 Matteo Viale《The Forcing Method in Set Theory》（Springer UNITEXT 168，
-2024，246 页）为力迫篇第二底本的中文教程，结合机器证明（Lean 4 +
-mathlib4 主证、Isabelle/ZF object-logic 第二证明通道、Coq 8.20 三证、
-Agda 构造性视角）与计算/离散实验（Julia、Python/scipy、Prolog）。
+2024，246 页）为力迫篇第二底本、David Makinson《Sets, Logic and Maths
+for Computing》（Springer UTiCS，第三版 2020，389 页）为计算视角篇
+第三底本的中文教程，结合机器证明（Lean 4 + mathlib4 主证、
+Isabelle/ZF object-logic 第二证明通道、Coq 8.20 三证、Agda 构造性视角）
+与计算/离散实验（Julia、Python/scipy、Prolog）。
 Jech 全书 7 章 44 节全覆盖 + 附录（Bernays-Gödel 并入 09 章），
-Viale 全书 7 章 + 附录 A/B/C/D 提炼为第八篇（46-55），星号与
-力迫/大基数元理论不砍、按通道分工承载。
+Viale 全书 7 章 + 附录 A/B/C/D 提炼为第八篇（46-55），
+Makinson 全书 3 部 11 章提炼为第九篇（56-66：计算者的集合—关系—
+函数—归纳递归—计数—概率—树—命题逻辑—量词逻辑—证明后承—相关性），
+星号与力迫/大基数元理论不砍、按通道分工承载。三线关系：Jech 是
+公理化高路、Viale 是布尔值重建力迫、Makinson 是计算者的工具箱与
+全书自包含的入门坡道（第九篇不依赖前八篇即可读，交叉引用双向）。
 
 **底本定位**：
 - Jech：`G:\book\数学\Set Theory (Thomas Jech) (z-library.sk, 1lib.sk, z-lib.sk).pdf`，
@@ -19,6 +25,13 @@ Viale 全书 7 章 + 附录 A/B/C/D 提炼为第八篇（46-55），星号与
   "L�s"=Łoś）。章边界（提取行号）：Ch2@257、Ch3@544、Ch4@1877、
   Ch5@2385、Ch6@2823、Ch7@3925、AppA@5700、AppB@6710、AppC@7361、
   AppD@7900。
+- Makinson：`G:\book\数学\Sets, Logic and Maths for Computing.pdf`
+  （第三版 2020，pdftotext 提取于 `.scratch/makinson.txt` 共 19249 行；
+  ∈/⊆/∩ 等符号被吃成空白，按上下文校订）。章边界（提取行号）：
+  Ch1@690、Ch2@2194、Ch3@4381、Ch4@5880、Ch5@7912、Ch6@9142、
+  Ch7@10881、Ch8@12044、Ch9@13975、Ch10@15656、Ch11@17420、Index@18700。
+  全书 11 章习题**带解答**（正文内联 Solution），是教程化的一手素材；
+  Alice Box/Warning Box/Logic Box 三种旁注栏全部提炼进正文。
 
 ## 硬性写作纪律
 
@@ -143,6 +156,15 @@ Viale 全书 7 章 + 附录 A/B/C/D 提炼为第八篇（46-55），星号与
 - **V4** ✅（2026-10-14）：52-53（商/满性/Łoś + V^B 名的宇宙）
 - **V5** ✅（2026-10-14）：54-55（力迫定理/CH 独立性 + 绝对性补篇）
 - **V6** ✅（2026-10-14）：56 收官 CHEATSheet 更新 + README + 全量对账收官（400 单元）
+- **M0**：收官章重编号 56→67（腾出 56-66 给第九篇），PLAN 三底本化，
+  400 单元保持全绿
+- **M1**：56-57（朴素集合 + 关系/关系代数）
+- **M2**：58-59（函数/鸽笼 + 归纳递归四阶）
+- **M3**：60-61（计数四式 + 有限概率）
+- **M4**：62（树）+ 63（命题逻辑）
+- **M5**：64-65（量词两语义 + 证明与后承）
+- **M6**：66（相关性）
+- **M7**：67 收官 CHEATSheet 三书总表 + README + 全量对账收官（477 单元）
 
 每批：docs 全章 + examples 全通道 + build.ps1 -All 该批全绿 + commit。
 
@@ -162,7 +184,7 @@ Viale 全书 7 章 + 附录 A/B/C/D 提炼为第八篇（46-55），星号与
 | 54 | 54-forcingthm.md | Cohen 力迫定理与 CH 独立性全程 | Ch7.2-7.4+C | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | 55 | 55-absoluteness.md | 绝对性补篇：H_χ、Lévy 绝对性、反射与 Shoenfield | AppA+B | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | **收官（重编号）** |
-| 56 | 56-cheatsheet.md | 收官：CHEATSheet、两书对照总表与坑位总账 | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 67 | 67-cheatsheet.md | 收官：CHEATSheet、两书对照总表与坑位总账（M7 扩三书） | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 第八篇与第三篇（16-22 Jech 路线）的关系：Jech 路线先走通力迫的骨架
 （偏序→泛型扩张→cBa→V^B→独立性→积→对称），Viale 路线**从零重建**：
@@ -183,7 +205,57 @@ P-名路线（附录 C 桥梁）对照。两书编号均只作溯源注记。
 - Julia/Python：RO 计算、Div(30) 同构、Δ 引理枚举、MALG 数值实验、
   有限力迫模拟；Prolog：超滤子搜索、泛型滤子构造、有限 Stone 空间。
 
-## 取材协议
+## 第九篇章表（Makinson 2020 全书提炼；实际建成结构 00-67）
+
+| 章 | docs | 标题 | Makinson 章 | lean | isa | coq | agda | julia/py | prolog |
+|---|---|---|---|---|---|---|---|---|---|
+| **第九篇 Makinson 路线：计算者的工具箱** |
+| 56 | 56-sets.md | 朴素集合：计算者的第一课 | Ch1 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 57 | 57-relations.md | 关系：表格、有向图与关系代数 | Ch2 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 58 | 58-functions.md | 函数：单射、满射与鸽笼原理 | Ch3 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 59 | 59-induction.md | 归纳与递归：从简单归纳到良基递归 | Ch4 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 60 | 60-counting.md | 计数：四式选取、排列组合与重排 | Ch5 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 61 | 61-probability.md | 概率：有限空间、条件、辛普森与贝叶斯 | Ch6 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 62 | 62-trees.md | 树：有根树、二叉树与生成树 | Ch7 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 63 | 63-prop.md | 命题逻辑：真值函数、范式与真值树 | Ch8 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 64 | 64-quant.md | 量词逻辑：语言、等价与两种语义 | Ch9 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 65 | 65-proof.md | 证明与后承：链条、Tarski 条件与分层策略 | Ch10 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 66 | 66-relevance.md | 相关性：经典怪原理与可接受性 | Ch11 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| **收官（重编号）** |
+| 67 | 67-cheatsheet.md | 收官：CHEATSheet、三书对照总表与坑位总账 | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+
+第九篇与前八篇的关系：Makinson 的朴素集合—布尔运算（56 章）是 18 章
+完备布尔代数与 47-48 章 Stone 对偶的"平面版本"；关系与序（57 章）是
+02 章序数与 16 章偏序力迫的离散前身；函数与等势（58 章）通向 03 章
+Hartogs/Cantor/SB；归纳递归四阶（59 章：简单→累积→结构→良基）正是
+02 章超穷归纳的阶梯预备；计数（60 章）补上教程此前缺席的有限组合
+（二项/多重集/重排+容斥）；概率（61 章）是 29 章测度的有限身影；
+树（62 章）与 23/26 章的 Suslin/Aronszajn 树互为图论侧写；命题逻辑
+（63 章）联结 47-48 章 BA 与 51 章布尔值语义；量词语义（64 章）的
+x-variant 读法正是 51-52 章 B-值语义的原型；证明与后承（65 章）给出
+51 章可靠性/完备性的证明论侧；相关性（66 章）收束全书对"经典逻辑
+边界"的讨论。三书编号均只作溯源注记。
+
+通道锚点备忘（第九篇）：
+- Lean：mathlib v4.33.1 有 `Set.image`/`Set.preimage`、`Rel`、`Equivalence`、
+  `Function.Injective/Surjective/Bijective`、`WellFounded`、`Nat.choose`、
+  `Fintype`、`SimpleGraph`（连通性/树：`SimpleGraph.IsTree`）、
+  `Mathlib.Logic.Propositional`（`Formula`/`evalAtoms`/`isSat` 试验场）、
+  命题范式自建；无真值树/无 tableaux——自建。
+- Isabelle/ZF：`converse`/`comp`/`Image`、`equiv`+`Partition`、`Finite`
+  与 `CardinalArith`（`Finite` 库的 card 算术）、`trancl`（传递闭包，
+  Transitive_Closure 理论在 ZF 有 `rtrancl`/`trancl`）；概率/树/逻辑自建浅结构。
+- Coq：计数与重排全可决定计算（`vm_compute`）；有限概率直接 list 实现；
+  命题逻辑 Formula 归纳 + 语义布尔判定子。
+- Agda：结构归纳/递归（59 章）与树归纳类型（62 章）是 Agda 主场；
+  有限集合用 List+去重；W-类型点睛。
+- Julia/Python：组合枚举（`combinations`/`permutations`/自写多重集）、
+  蒙特卡洛、辛普森悖论数据表、关系闭包 Warshall、鸽笼实验、贝叶斯网格、
+  真值表生成器、波兰记法求值。
+- Prolog：关系代数（join/projection/selection 谓词化）、传递闭包、
+  划分-等价对应、真值树搜索、自然演绎检查器、树谓词（rooted/path）。
+
+
 
 pdftotext 按节页段提取（书页 = PDF-12），文本作骨架（定理编号、陈述、
 证明结构、习题），公式由领域知识校订重建；不依赖 OCR。Jech 1978 版的
