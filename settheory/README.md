@@ -1,8 +1,12 @@
 # 集合论教程（settheory）
 
-以 Thomas Jech《Set Theory》（Academic Press 1978，第一版）为纲的中文
-教程：从 ZFC 公理、序数、基数到力迫、大基数与描述集合论，全书 44 节
-全覆盖。六通道机器验证：
+以 Thomas Jech《Set Theory》（Academic Press 1978，第一版）为纲、
+Matteo Viale《The Forcing Method in Set Theory》（Springer UNITEXT 168，
+2024）为力迫篇第二底本、David Makinson《Sets, Logic and Maths for
+Computing》（Springer UTiCS，第三版 2020）为计算视角篇第三底本的
+中文教程：从 ZFC 公理、序数、基数到力迫、大基数与描述集合论，
+Jech 全书 44 节 + Viale 7 章附录 + Makinson 11 章全覆盖。
+七通道机器验证：
 
 - **Lean 4 + mathlib4**（主证明：Ordinal / Cardinal / ZFC / Zorn 官方锚点）
 - **Isabelle/ZF**（第二证明：Paulson 的 Constructible = Gödel L 独家形式化）

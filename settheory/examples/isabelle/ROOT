@@ -298,6 +298,31 @@ session ST61 in "ST61" = "ZF-Constructible" +
   theories
     Probability
 
+session ST62 in "ST62" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Trees
+
+session ST63 in "ST63" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Prop
+
+session ST64 in "ST64" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Quant
+
+session ST65 in "ST65" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Proof
+
+session ST66 in "ST66" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Relevance
+
 session ST67 in "ST67" = "ZF-Constructible" +
   options [document = false]
   theories

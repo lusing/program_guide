@@ -1,0 +1,6 @@
+println("==== 66")
+shares(la, lb) = !isempty(intersect(Set(la), Set(lb)))
+println("  (p∧¬p)→q 无共享：", !shares([0],[1]) ? "✓" : "✗")
+println("  p→(q∨¬q) 无共享：", !shares([0],[1]) ? "✓" : "✗")
+println("  ¬q→(q→p) 有共享：", shares([1,0],[1,0]) ? "✓" : "✗")
+println("END ====")

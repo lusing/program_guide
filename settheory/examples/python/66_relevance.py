@@ -1,0 +1,11 @@
+import sys, io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+print("==== 66")
+shares = lambda la, lb: bool(set(la) & set(lb))
+assert not shares([0],[1])
+print("  (p∧¬p)→q 无共享 ✓")
+assert not shares([0],[1])
+print("  p→(q∨¬q) 无共享 ✓")
+assert shares([1,0],[1,0])
+print("  ¬q→(q→p) 有共享 ✓")
+print("END ====")
