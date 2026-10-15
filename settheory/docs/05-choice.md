@@ -209,4 +209,4 @@ Zorn）；**(b)** 代数闭包的存在唯一；**(c)** Hahn-Banach 延拓；
 
 ---
 
-上一章：[04 实数](docs/04-reals.md) · 下一章：[06 基数算术：κ^λ、连续统假设与 König](docs/06-cardinal-arith.md)
+上一章：[04 实数构造](04-reals.md) · 下一章：[06 基数算术](06-cardinal-arith.md)

@@ -131,4 +131,4 @@ vs |L_{ω+1}| = ℵ₀（HF 上只有可数个**可定义**子集！）。L 从
 
 ---
 
-上一章：[11 传递模型](docs/11-transitive.md) · 下一章：[13 L 是 ZFC 的模型：AC 与 GCH 在 L 中](docs/13-L-model.md)
+上一章：[11 传递模型](11-transitive.md) · 下一章：[13 L 是 ZFC 模型](13-L-model.md)

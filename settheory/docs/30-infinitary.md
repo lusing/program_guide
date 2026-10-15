@@ -36,4 +36,4 @@ Erdős-Rado 定理、Rowbottom 与 Jonsson 基数。
 
 ---
 
-上一章：[29 超幂](docs/29-ultrapower.md) · 下一章：[31 Silver 不可辨别](docs/31-silver.md)
+上一章：[29 超幂](29-ultrapower.md) · 下一章：[31 Silver 与 0#](31-silver.md)

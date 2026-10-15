@@ -85,4 +85,4 @@ Julia（`21_symmetric.jl`）同构骨架。
 
 ---
 
-上一章：[20 链条件](docs/20-chain.md) · 下一章：[22 Suslin 问题](docs/22-suslin.md)
+上一章：[20 链条件](20-chain.md) · 下一章：[22 Suslin 问题](22-suslin.md)

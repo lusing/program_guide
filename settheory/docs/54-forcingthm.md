@@ -161,4 +161,4 @@ Lemma 7.2.3 型引理（泛型滤子与前稠密集）的谓词式骨架。
 
 ---
 
-上一章：[53 V^B：名的宇宙](docs/53-names.md) · 下一章：[55 绝对性补篇](docs/55-absoluteness.md)
+上一章：[53 V^B 名的宇宙](53-names.md) · 下一章：[55 绝对性补篇](55-absoluteness.md)

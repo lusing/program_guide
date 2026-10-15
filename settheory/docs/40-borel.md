@@ -10,4 +10,4 @@
 
 ---
 
-[上一章](docs/39-ultrafilters.md) · [下一章](docs/41-projective.md)
+上一章：[39 超滤再探](39-ultrafilters.md) · 下一章：[41 投影层级](41-projective.md)

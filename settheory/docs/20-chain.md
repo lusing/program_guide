@@ -70,4 +70,4 @@ Python（`20_products.py`）验证积的基数 |P₁×P₂| = |P₁|·|P₂|
 
 ---
 
-上一章：[19 CH 独立性](docs/19-independence.md) · 下一章：[21 对称子模型](docs/21-symmetric.md)
+上一章：[19 CH 与 AC 独立](19-independence.md) · 下一章：[21 对称子模型](21-symmetric.md)

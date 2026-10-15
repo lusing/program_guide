@@ -10,4 +10,4 @@
 
 ---
 
-上一章：[34 紧基数](docs/34-compact.md) · [下一章](docs/36-saturation.md)
+上一章：[34 紧基数](34-compact.md) · 下一章：[36 理想饱和](36-saturation.md)

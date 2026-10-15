@@ -10,4 +10,4 @@
 
 ---
 
-[上一章](docs/37-mgch.md) · [下一章](docs/39-ultrafilters.md)
+上一章：[37 可测与 GCH](37-mgch.md) · 下一章：[39 超滤再探](39-ultrafilters.md)

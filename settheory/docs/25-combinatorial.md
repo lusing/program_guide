@@ -63,4 +63,4 @@ Ramsey 定理的无限版在 MA 下加强：
 
 ---
 
-上一章：[24 迭代力迫](docs/24-iterated.md) · 下一章：[26 力迫与 cBa](docs/26-cba.md)
+上一章：[24 迭代力迫](24-iterated.md) · 下一章：[26 cBa 对应](26-cba.md)

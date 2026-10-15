@@ -10,4 +10,4 @@ Lebesgue 可测)。
 
 ---
 
-[上一章](docs/42-Lproj.md) · [下一章](docs/44-AD.md)
+上一章：[42 L 中的投影](42-Lproj.md) · 下一章：[44 决定性 AD](44-AD.md)

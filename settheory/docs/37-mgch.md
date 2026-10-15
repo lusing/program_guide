@@ -7,4 +7,4 @@ L[U] ⊨ GCH + κ 可测（Silver 定理）。
 
 ---
 
-[上一章](docs/36-saturation.md) · [下一章](docs/38-lcforcing.md)
+上一章：[36 理想饱和](36-saturation.md) · 下一章：[38 大基数力迫](38-lcforcing.md)

@@ -41,4 +41,4 @@
 
 ---
 
-上一章：[28 可测基数](docs/28-measurable.md) · 下一章：[30 无穷组合](docs/30-infinitary.md)
+上一章：[28 可测基数](28-measurable.md) · 下一章：[30 分划演算](30-infinitary.md)

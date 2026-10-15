@@ -193,4 +193,4 @@ f(α) = 第 α 个不可达 是 regressive 的）。Mahlo 是大基数阶梯
 
 ---
 
-上一章：[06 基数算术](docs/06-cardinal-arith.md) · 下一章：[08 奇异基数、共尾性与不可达](docs/08-singular.md)
+上一章：[06 基数算术](06-cardinal-arith.md) · 下一章：[08 奇异基数](08-singular.md)

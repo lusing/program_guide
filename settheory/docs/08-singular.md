@@ -117,4 +117,4 @@ Silver 链条在计算通道的完整对应：Julia 的 beth 表 + 传染表格
 
 ---
 
-上一章：[07 滤子与 club](docs/07-filters.md) · 下一章：[09 正则公理、秩层级与 BG 类理论](docs/09-foundation.md)
+上一章：[07 滤子与理想](07-filters.md) · 下一章：[09 正则公理](09-foundation.md)

@@ -253,4 +253,4 @@ example : Order.cof ℕ = ℵ₀ :=
 
 ---
 
-上一章：[02 序数](docs/02-ordinals.md) · 下一章：[04 实数的集合论构造](docs/04-reals.md)
+上一章：[02 序数与超穷归纳](02-ordinals.md) · 下一章：[04 实数构造](04-reals.md)

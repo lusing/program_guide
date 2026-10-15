@@ -119,4 +119,4 @@ Rank_Separation）——它们是 L 篇的真正官方资产。反射原理的
 
 ---
 
-上一章：[10 模型](docs/10-models.md) · 下一章：[12 可构造层级：Gödel 的 L](docs/12-constructible.md)
+上一章：[10 模型与一致性](10-models.md) · 下一章：[12 可构造层级 L](12-constructible.md)

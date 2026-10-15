@@ -205,4 +205,4 @@ Julia 版的 Prolog 镜像，双通道互证。
 
 ---
 
-上一章：[48 Stone 对偶与布尔环](docs/48-stone.md) · 下一章：[50 泛型滤子与 Fn(X,Y)](docs/50-fnxy.md)
+上一章：[48 Stone 对偶](48-stone.md) · 下一章：[50 泛型滤子与 Fn](50-fnxy.md)

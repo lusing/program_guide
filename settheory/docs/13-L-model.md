@@ -109,4 +109,4 @@ Reflection.thy 的孤儿状态一起如实标注。
 
 ---
 
-上一章：[12 可构造层级](docs/12-constructible.md) · 下一章：[14 Lévy 层级：Σₙ/Πₙ 类、关系与函数](docs/14-levy.md)
+上一章：[12 可构造层级 L](12-constructible.md) · 下一章：[14 Lévy 层级](14-levy.md)

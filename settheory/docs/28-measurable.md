@@ -38,4 +38,4 @@
 
 ---
 
-上一章：[27 更多应用](docs/27-applications.md) · 下一章：[29 超幂与初等嵌入](docs/29-ultrapower.md)
+上一章：[27 更多应用](27-applications.md) · 下一章：[29 超幂](29-ultrapower.md)

@@ -69,4 +69,4 @@ Product Lemma（§20）：G 在 P×Q 泛型 ⟺ G = G₁×G₂。
 
 ---
 
-上一章：[23 Martin 公理](docs/23-martin.md) · 下一章：[25 组合问题](docs/25-combinatorial.md)
+上一章：[23 Martin 公理](23-martin.md) · 下一章：[25 组合问题](25-combinatorial.md)

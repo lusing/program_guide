@@ -127,4 +127,4 @@ Isabelle/ZF 未形式化力迫（依赖极重——第三篇的核心但
 
 ---
 
-上一章：[15 OD/HOD](docs/15-OD.md) · 下一章：[17 完备布尔代数](docs/17-boolean.md)
+上一章：[15 L[A] 与 OD](15-OD.md) · 下一章：[17 完备布尔代数](17-boolean.md)

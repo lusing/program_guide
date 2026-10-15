@@ -347,4 +347,4 @@ Julia 侧还有一段对照值得记（01_axioms.jl）：对任何 g : X → P(X
 
 ---
 
-上一章：[00 导引](docs/00-intro.md) · 下一章：[02 序数与超穷归纳递归](docs/02-ordinals.md)
+上一章：[00 导引](00-intro.md) · 下一章：[02 序数与超穷归纳](02-ordinals.md)

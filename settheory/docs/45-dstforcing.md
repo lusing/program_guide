@@ -8,4 +8,4 @@
 
 ---
 
-[上一章](docs/44-AD.md) · 下一篇：[收官 CHEATSheet](docs/67-cheatsheet.md)
+上一章：[44 决定性 AD](44-AD.md) · 下一章：[46 正则开集](46-regopen.md)

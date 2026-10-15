@@ -50,4 +50,4 @@ f = ⋃G 不被任何 h 支配。
 
 ---
 
-上一章：[25 组合问题](docs/25-combinatorial.md) · 下一章：[27 更多应用](docs/27-applications.md)
+上一章：[25 组合问题](25-combinatorial.md) · 下一章：[27 更多应用](27-applications.md)

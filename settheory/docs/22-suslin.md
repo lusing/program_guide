@@ -83,4 +83,4 @@ SH 独立于 ZFC——与 CH 的独立性并列为力迫方法最深刻的应用
 
 ---
 
-上一章：[21 对称子模型](docs/21-symmetric.md) · 下一篇（第五篇）：[29 可测基数](docs/29-measurable.md)
+上一章：[21 对称子模型](21-symmetric.md) · 下一章：[23 Martin 公理](23-martin.md)

@@ -297,4 +297,4 @@ fib(N, F) :- N >= 2, N1 is N-1, N2 is N-2,
 
 ---
 
-上一章：[58 函数：单射、满射与鸽笼原理](docs/58-functions.md) · 下一章：[60 计数：四式选取、排列组合与重排](docs/60-counting.md) · [返回目录](README.md)
+上一章：[58 函数](58-functions.md) · 下一章：[60 计数](60-counting.md)

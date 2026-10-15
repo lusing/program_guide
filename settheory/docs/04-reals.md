@@ -236,4 +236,4 @@ T-der T t = ∃ λ s₁ → ∃ λ s₂ →
 
 ---
 
-上一章：[03 基数](docs/03-cardinals.md) · 下一章：[05 选择公理：Zorn 与良序定理](docs/05-choice.md)
+上一章：[03 基数](03-cardinals.md) · 下一章：[05 选择公理](05-choice.md)

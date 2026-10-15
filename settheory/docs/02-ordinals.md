@@ -316,4 +316,4 @@ length(E)）。序数本身是 ∈ 在传递集上的特例；第 09 章将把 �
 
 ---
 
-上一章：[01 公理](docs/01-axioms.md) · 下一章：[03 基数：Hartogs、Cantor、Schröder-Bernstein](docs/03-cardinals.md)
+上一章：[01 公理](01-axioms.md) · 下一章：[03 基数](03-cardinals.md)

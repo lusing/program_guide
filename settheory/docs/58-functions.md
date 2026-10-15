@@ -292,4 +292,4 @@ Julia/Python 做实验剧场：400 村民生日蒙特卡洛（验证"至少两�
 
 ---
 
-上一章：[57 关系：表格、有向图与关系代数](docs/57-relations.md) · 下一章：[59 归纳与递归：从简单归纳到良基递归](docs/59-induction.md) · [返回目录](README.md)
+上一章：[57 关系](57-relations.md) · 下一章：[59 归纳与递归](59-induction.md)

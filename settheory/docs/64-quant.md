@@ -109,4 +109,4 @@ Coq/Julia/Python 对 3 元论域穷举量词互换/分配等价式。Prolog 的
 
 ---
 
-上一章：[63 命题逻辑：真值函数、范式与真值树](docs/63-prop.md) · 下一章：[65 证明与后承：链条、Tarski 条件与分层策略](docs/65-proof.md) · [返回目录](README.md)
+上一章：[63 命题逻辑](63-prop.md) · 下一章：[65 证明与后承](65-proof.md)

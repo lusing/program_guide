@@ -428,4 +428,4 @@ xs ⊆ ys = ∀ x → x ∈ xs → x ∈ ys
 
 ---
 
-上一章：[55 绝对性补篇](docs/55-absoluteness.md) · 下一章：[57 关系：表格、有向图与关系代数](docs/57-relations.md) · [返回目录](README.md)
+上一章：[55 绝对性补篇](55-absoluteness.md) · 下一章：[57 关系](57-relations.md)

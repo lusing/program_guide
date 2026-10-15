@@ -78,4 +78,4 @@ Jech 一侧 + Jensen（V=L → ◊ → SH）一侧。
 
 ---
 
-上一章：[22 Suslin](docs/22-suslin.md) · 下一章：[24 迭代力迫](docs/24-iterated.md)
+上一章：[22 Suslin 问题](22-suslin.md) · 下一章：[24 迭代力迫](24-iterated.md)

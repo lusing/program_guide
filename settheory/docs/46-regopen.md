@@ -309,4 +309,4 @@ lemma atom_in_dense: "[| a ∈ P; is_atom(P, a); dense(P, D) |] ==> a ∈ D"
 
 ---
 
-上一章：[45 DST 力迫应用](docs/45-dstforcing.md) · 下一章：[47 布尔代数](docs/47-ba.md)
+上一章：[45 DST 中的力迫](45-dstforcing.md) · 下一章：[47 布尔代数](47-ba.md)

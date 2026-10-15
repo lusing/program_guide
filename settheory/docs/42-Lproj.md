@@ -8,4 +8,4 @@ V = L ⟹ 存在不可测的 Σ¹₂ 集和没有 Baire 性质的
 
 ---
 
-[上一章](docs/41-projective.md) · [下一章](docs/43-solovay.md)
+上一章：[41 投影层级](41-projective.md) · 下一章：[43 Solovay 模型](43-solovay.md)

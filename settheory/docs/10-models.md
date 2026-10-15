@@ -126,4 +126,4 @@ L 中成立（第 13 章）的实操工具单。
 
 ---
 
-上一章：[09 正则公理](docs/09-foundation.md) · 下一章：[11 ZF 的传递模型](docs/11-transitive.md)
+上一章：[09 正则公理](09-foundation.md) · 下一章：[11 传递模型](11-transitive.md)

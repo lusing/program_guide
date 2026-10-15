@@ -142,4 +142,4 @@ check 名的骨架：定义 check(A0, u)（按 ∈ 递归的占位——谓词�
 
 ---
 
-上一章：[52 商、满性与 Łoś 定理](docs/52-los.md) · 下一章：[54 Cohen 力迫定理与 CH 独立性](docs/54-forcingthm.md)
+上一章：[52 Łoś 定理](52-los.md) · 下一章：[54 力迫定理与 CH](54-forcingthm.md)

@@ -87,4 +87,4 @@ B 的一切 𝔐 内子集 X 的 inf ⋀X ∈ G ⟹ X ∈ G。
 
 ---
 
-上一章：[16 泛型扩张](docs/16-generic.md) · 下一章：[18 力迫与布尔值模型](docs/18-forcing.md)
+上一章：[16 偏序与泛型](16-generic.md) · 下一章：[18 力迫关系](18-forcing.md)

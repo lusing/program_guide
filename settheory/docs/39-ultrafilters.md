@@ -8,4 +8,4 @@
 
 ---
 
-[上一章](docs/38-lcforcing.md) · [下一章](docs/40-borel.md)
+上一章：[38 大基数力迫](38-lcforcing.md) · 下一章：[40 Borel 集](40-borel.md)

@@ -91,4 +91,4 @@ Curry-Howard 对应。Prolog 的 proof search 是链条的自动化。
 
 ---
 
-上一章：[64 量词逻辑：语言、等价与两种语义](docs/64-quant.md) · 下一章：[66 相关性：经典怪原理与可接受性](docs/66-relevance.md) · [返回目录](README.md)
+上一章：[64 量词逻辑](64-quant.md) · 下一章：[66 相关性](66-relevance.md)

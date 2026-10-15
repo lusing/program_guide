@@ -102,4 +102,4 @@ M[G] = {i_G(x) : x ∈ M^B}——传递模型，含 M 与 G。
 
 ---
 
-上一章：[17 完备布尔代数](docs/17-boolean.md) · 下一章：[19 CH 与 AC 的独立性](docs/19-independence.md)
+上一章：[17 完备布尔代数](17-boolean.md) · 下一章：[19 CH 与 AC 独立](19-independence.md)

@@ -304,4 +304,4 @@ axiom(pairing,
 
 ---
 
-上一章：（本书起点） · 下一章：[01 公理：从 Cantor 到 Russell 悖论](docs/01-axioms.md)
+下一章：[01 公理](01-axioms.md)

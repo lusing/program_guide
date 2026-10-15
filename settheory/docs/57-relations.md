@@ -477,4 +477,4 @@ TC-minimal T hR hT a b (trans tc r) =
 
 ---
 
-上一章：[56 朴素集合：计算者的第一课](docs/56-sets.md) · 下一章：[58 函数：单射、满射与鸽笼原理](docs/58-functions.md) · [返回目录](README.md)
+上一章：[56 朴素集合](56-sets.md) · 下一章：[58 函数](58-functions.md)

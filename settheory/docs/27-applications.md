@@ -40,4 +40,4 @@ V = L ⟹ ◊（Jensen 1972）⟹ SH（无 Suslin 树）。
 
 ---
 
-上一章：[26 力迫与 cBa](docs/26-cba.md) · 下一篇（第五篇）：[29 可测基数](docs/29-measurable.md)
+上一章：[26 cBa 对应](26-cba.md) · 下一章：[28 可测基数](28-measurable.md)

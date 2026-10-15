@@ -135,4 +135,4 @@ Coq 的 `Formula` 归纳 + `vm_compute` 判定真值是主战场；真值树
 
 ---
 
-上一章：[62 树：有根树、二叉树与生成树](docs/62-trees.md) · 下一章：[64 量词逻辑：语言、等价与两种语义](docs/64-quant.md) · [返回目录](README.md)
+上一章：[62 树](62-trees.md) · 下一章：[64 量词逻辑](64-quant.md)

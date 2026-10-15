@@ -12,4 +12,4 @@
 
 ---
 
-[上一章](docs/40-borel.md) · [下一章](docs/42-Lproj.md)
+上一章：[40 Borel 集](40-borel.md) · 下一章：[42 L 中的投影](42-Lproj.md)

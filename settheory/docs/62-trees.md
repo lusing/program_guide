@@ -172,4 +172,4 @@ Isabelle/ZF 侧用 ZF 的关系语言定义树性（unique path from root）
 
 ---
 
-上一章：[61 概率：有限空间、条件、辛普森与贝叶斯](docs/61-probability.md) · 下一章：[63 命题逻辑：真值函数、范式与真值树](docs/63-prop.md) · [返回目录](README.md)
+上一章：[61 概率](61-probability.md) · 下一章：[63 命题逻辑](63-prop.md)
