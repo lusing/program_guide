@@ -52,3 +52,5 @@ import Funanalysis.Ch64TVS
 import Funanalysis.Ch65Haar
 import Funanalysis.Ch70Lebesgue
 import Funanalysis.Ch71WeakDerivative
+import Funanalysis.Ch72Poincare
+import Funanalysis.Ch73Cea
