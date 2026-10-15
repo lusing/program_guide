@@ -8,7 +8,7 @@ text \<open>第 65 章：证明与后承（Makinson Ch10）。Tarski 三条件�
 subsection \<open>强自反：a \<in> A \<Longrightarrow> A \<turnstile> a\<close>
 
 lemma strong_refl: "a \<in> A \<Longrightarrow> a \<in> A"
-  by (rule assumption)
+  by assumption
 
 subsection \<open>单调：A \<subseteq> B 与 A \<turnstile> b 推出 B \<turnstile> b\<close>
 
