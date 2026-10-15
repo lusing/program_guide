@@ -88,8 +88,20 @@ Peter D. Lax《Functional Analysis》（Wiley 2002）与 Walter Rudin
 68 [Tauber 理论与素数定理](docs/68-tauber-pnt.md) ·
 69 [Rudin 篇收官：三书总对照](docs/69-rudin-cheatsheet.md)
 
-全书 69 章（Conway 卷 01-47 + Lax 增补卷 48-63 + Rudin 增补卷 64-69）
-于 2026-10-12 全部收官。
+### 第四卷 · 工科篇（《工科泛函分析基础》增补，70-75）
+
+70 [勒贝格积分与 L^p](docs/70-lebesgue-lp.md) ·
+71 [弱导数：从 δ 到 Sobolev 空间](docs/71-weak-derivatives.md) ·
+72 Poincaré 不等式与 Sobolev 嵌入（G2） ·
+73 弱解与 Riesz 路线（G2） ·
+74 内积应用：相关系数与 Gram 矩阵（G3） ·
+75 工科篇收官 CHEATSheet（G3）
+
+全书 75 章（Conway 卷 01-47 + Lax 增补卷 48-63 + Rudin 增补卷
+64-69 + 工科增补卷 70-75）。第四卷以《工科泛函分析基础》（2019）
+为纲：勒贝格积分自包含重建（前三卷未覆盖）、Sobolev 空间系统论
+（书第 6 章，前三卷唯一空白领地）、弱解变分路线、内积的工程应用
+（相关系数/Gram 矩阵/最佳逼近）。
 
 ## 通道与验证
 
