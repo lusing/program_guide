@@ -54,3 +54,4 @@ import Funanalysis.Ch70Lebesgue
 import Funanalysis.Ch71WeakDerivative
 import Funanalysis.Ch72Poincare
 import Funanalysis.Ch73Cea
+import Funanalysis.Ch74InnerProductApps

@@ -287,3 +287,25 @@ funanalysis/
   （6.4 狄氏边值问题：Poincaré 造内积→Hölder 造连续泛函→Riesz
   表示→存在唯一，全证明自包含 + Céa 引理（Galerkin 误差）作为
   机器章主干）；G3（74-75）内积应用例 + 四卷收官 CHEATSheet。
+
+- 2026-10-15 G1（70-71）完成提交：勒贝格/L^p（外测度→切值域→三大
+  定理→Riesz-Fischer；Lean 狄利克雷函数全证：countable_range→
+  measure_zero→ae_iff→integral_congr_ae）+ 弱导数/W^{k,p}（δ 危机
+  →分布→分部积分规则化→完备化定义；Lean ibp_zero_boundary/
+  ibp_compact_support 两层 + TemperedDistribution.MemSobolev 巡礼）。
+  8/8 PASS。实测坑：rapidocr 双进程 GPU 显存必炸（单进程串行 +
+  resume 兜底）；Set.range Rat.cast 表示 ℚ⊂ℝ；integrable_zero
+  显式 ε'/μ 参数（ascription 惯用法）；Order.Filter.AtTopBot 变
+  目录须 import .Defs；#check 前禁挂 doc 注释。
+- 2026-10-15 G2（72-73）完成提交：Poincaré/嵌入（Friedrichs 平板
+  证明全篇、1/π² 谱逼近、√h 平移律、Rellich 数值化身、一维 Morrey
+  两版——Lean abs_sub_le_integral_abs_deriv/supnorm_le_l1_deriv
+  两层全证）+ 弱解/Galerkin/Céa（Riesz 三步全证明；Céa 引理 Lean
+  完整形式化 cea_lemma：Submodule 正交性+第一槽 map_add 分解+消去）。
+  8/8 PASS。实测坑：Gauss 中心权 8/18；帽基左右顶点方向；误差须
+  每单元 2 点 Gauss（节点/中点皆超收敛假零）；离散 Poincaré 是
+  广义谱 λ(K,M) 非纯 K 谱。
+- 2026-10-15 G3（74-75）完成：内积应用（相关系数/法方程/Gram 距离
+  公式；Lean least_squares_square 配平方全证 norm_sub_sq_real 路线 +
+  weak_plus_norm_implies_strong）+ 75 收官 CHEATSheet（四书领地图 +
+  十定理速查 + 12 条实测坑账）。终态：四卷 75 章。

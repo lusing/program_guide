@@ -92,16 +92,17 @@ Peter D. Lax《Functional Analysis》（Wiley 2002）与 Walter Rudin
 
 70 [勒贝格积分与 L^p](docs/70-lebesgue-lp.md) ·
 71 [弱导数：从 δ 到 Sobolev 空间](docs/71-weak-derivatives.md) ·
-72 Poincaré 不等式与 Sobolev 嵌入（G2） ·
-73 弱解与 Riesz 路线（G2） ·
-74 内积应用：相关系数与 Gram 矩阵（G3） ·
-75 工科篇收官 CHEATSheet（G3）
+72 [Poincaré 不等式与 Sobolev 嵌入](docs/72-poincare-embedding.md) ·
+73 [弱解与 Galerkin/Céa 误差](docs/73-galerkin-cea.md) ·
+74 [内积的应用：相关系数、Gram 矩阵与最佳逼近](docs/74-inner-product-apps.md) ·
+75 [工科篇收官：四书总对照](docs/75-gongke-cheatsheet.md)
 
 全书 75 章（Conway 卷 01-47 + Lax 增补卷 48-63 + Rudin 增补卷
 64-69 + 工科增补卷 70-75）。第四卷以《工科泛函分析基础》（2019）
-为纲：勒贝格积分自包含重建（前三卷未覆盖）、Sobolev 空间系统论
-（书第 6 章，前三卷唯一空白领地）、弱解变分路线、内积的工程应用
-（相关系数/Gram 矩阵/最佳逼近）。
+为纲：勒贝格积分自包含重建（前三卷未覆盖）、分布的工科导引与
+弱导数/W^{k,p}、Poincaré 与嵌入定理（书第 6 章，前三卷唯一空白
+领地）、弱解变分路线 + Céa 引理（Lean 全证）、内积的工程应用
+（相关系数/Gram 矩阵/距离公式）。
 
 ## 通道与验证
 
