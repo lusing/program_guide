@@ -94,7 +94,7 @@ Nordström–Petersson–Smith《Martin-Löf 类型论程序设计导论》（�
   自动化生态（第 34 章）。
 - **Voevodsky**（2006–2013）发现 MLTT 的相等类型可以解读为**同伦**，
   「等价的类型相等」（泛等公理）打开了同伦类型论（HoTT）——
-  第 36–40 章。
+  第 36–47 章。
 
 ## 1.3 四大实现一览
 
@@ -109,10 +109,11 @@ Nordström–Petersson–Smith《Martin-Löf 类型论程序设计导论》（�
 | 终止性 | Fixpoint 结构递归检查 | 全局终止检查器 | 结构/良基递归检查 | 同 Coq |
 | 命令行 | `coqc` | `agda` | `lean` / `lake` | `coqc` |
 
-> **本指南对 Coq-HoTT 的处理**：官方 HoTT 库（582 个 `.v`）不在本机工具链内。
-> 第 36–40 章采用**自包含 mini-HoTT** 策略——用普通 `coqc` 从零定义路径
-> 类型、J、transport、泛等公理与 HIT 公理化模拟。这在教学上反而更贴近
-> HoTT 书的做法：每一条公理与规则都是显式引入、显式计数的。
+> **本指南对 HoTT 机器面的处理**：两条通道。**cubical Agda**（WSL
+> Agda 2.8 的 `--cubical` 模式）从区间与 Glue 原语手造 transport/hcomp/ua
+> ——泛等与 HIT **原生计算**，37 章起的主力；**Coq mini-HoTT**（自包含
+> 公理化模拟，38–43 章的对照组）用普通 `coqc` 从零定义路径、J、泛等
+> 公理与 HIT——每条公理显式引入、显式计数，更贴近 HoTT 书的散文做法。
 
 ## 1.4 工具链与验证通道（本机实测）
 
@@ -218,42 +219,35 @@ theorem lean_lhs_zero : ∀ n : Nat, 0 + n = n := by
 ## 1.6 全书路线图
 
 ```text
-第一部分  简单类型论（02–11）
-  02 无类型 λ 演算        项、α/β、de Bruijn、Church–Rosser、范式  [Hindley 1A–1B; TTAFP 1]
-  03 η、βη 与 λI          η-归约、βη-合流、受限 λI-演算          [Hindley 1C–1D]
-  04 简单类型 λ→          Church 式类型规则、推导树、progress     [TTAFP 2; TAPL 9]
-  05 Curry 式类型指派     TA_λ、合一、主类型算法（HM 之根）     [Hindley 2–3]
-  06 等式规则与语义       eq-规则、集合解释、可靠性与完备性      [Hindley 4]
-  07 正规化与可指派刻画   WN/SN 证明、可指派 ⟹ SN、刻画定理     [Hindley 2D, 5C]
-  08 Curry–Howard         蕴涵逻辑 ↔ λ→，组合子 K/S             [Hindley 6A–6B]
-  09 弱逻辑与子结构 λ     BCI/BCK、线性/仿射/相关、Hilbert 式   [Hindley 6C–6D]
-  10 逆主类型与凝结分离   逆 PT 定理、identifications、CD 算法  [Hindley 7]
-  11 居留项计数           Ben-Yelles 搜索、长 nf-方案、计数      [Hindley 8]
-第二部分  λ 立方体（12–15）
-  12 System F λ2          多态、Church 编码                    [TTAFP 3]
-  13 依赖类型 λP          类型依赖项、逻辑框架 LF               [TTAFP 4]
-  14 λω 与 λC             类型依赖类型、构造演算、Barendregt 立方体 [TTAFP 5–6]
-  15 定义与证明工程       λD 精神：定义/缩写/局部性             [TTAFP 8–11]
+第一部分  简单类型论（02–17）
+  02–11 证明论线：无类型 λ、η、λ→、Curry 指派、等式语义、
+         正规化、Curry–Howard、弱逻辑、逆主类型、居留计数  [Hindley 全书]
+  12–17 模型论线：Alonzo、未定义性、证明系统 A、理论与模型、
+         理论态射、描述算子                                 [Farmer 全书]
+第二部分  λ 立方体与 λD（18–26）
+  18–21 System F、依赖类型、立方体、λC 逻辑编码             [TTAFP 1–7]
+  22–26 λD 形式系统、旗式自然演绎、λD 数学、Peano→Bézout    [TTAFP 8–15]
 第三部分  Martin-Löf 类型论（27–33）
-  16 判断与规则           四种判断、一般规则、语境               [Nordström 4–5]
-  17 Π 与枚举集合         ∅/⊤/Bool、case 分析                   [Nordström 6–7]
-  18 相等类型             内涵/外延、J、等式定律                 [Nordström 8]
-  19 归纳类型族           ℕ/列表/Σ/不交和、四方同证              [Nordström 9–13]
-  20 全域与层级           U₀:U₁:…、Girard 悖论                   [Nordström 14]
-  21 W 类型与良序         归纳定义的表达力                       [Nordström 15–16]
-  22 子集与子类型         子集类型、强制子类型                   [Nordström 17–18; 现代 2.5]
+  27–33 判断与规则、Π 与枚举、相等与 J、归纳族、全域、
+         W 类型、子集与强制                                 [Nordström 全书]
 第四部分  证明助手实战（34–35）
-  23 四大助手对照         同一开发流四家走一遍
-  24 程序即证明          抽取、编译、证明无关性
-第五部分  同伦类型论（36–40）
-  25 路径与同伦           恒等类型的同伦解读、transport         [HoTT 1–2]
-  26 泛等公理             等价即相等、结构搬运                   [HoTT 2]
-  27 截断层级             h-level、命题/集合/群胚               [HoTT 3]
-  28 高阶归纳类型         区间、圆、商                          [HoTT 6]
-  29 综合实战             π₁(S¹)=ℤ 编码-解码                    [HoTT 8]
-第六部分  收束（41–42）
-  30 元理论总览           Church–Rosser、SN、一致性、主体归约
-  31 坑位清单与书目导读   四家差异速查、七本书怎么读
+  34–35 四家对照、提取与运行
+第五部分  同伦类型论（36–47）
+  36    路径与同伦：类型即空间                              [HoTT 1–2]
+  37    等价论：quasi-inverse 到合同纤维的四定义            [HoTT 4]
+  38    泛等公理：等价即相等、UA⇒函数外延                   [HoTT 2]
+  39    集合与逻辑：h-level、AC 是定理                      [HoTT 3]
+  40    截断与 n-类型：Hedberg、连通性                      [HoTT 7]
+  41    归纳进阶：初始代数、恒等系统                        [HoTT 5]
+  42    高阶归纳类型：区间、圆、商、粘合                    [HoTT 6]
+  43    压轴：π₁(S¹)=ℤ 编码-解码                            [HoTT 8]
+  44    同伦论进阶：Freudenthal、van Kampen、Whitehead      [HoTT 8]
+  45    范畴论：precategory、Yoneda、SIP、Rezk              [HoTT 9]
+  46    集合论：Set 范畴、基数、序数、累积层级               [HoTT 10]
+  47    实数：Dedekind vs Cauchy、区间紧性                  [HoTT 11]
+第六部分  收束（48–49）
+  48    元理论总览：Church–Rosser、SN、一致性、主体归约
+  49    坑位清单与书目导读：四家差异速查、七本书怎么读
 ```
 
 ## 1.7 记号约定
@@ -280,7 +274,7 @@ Coq 源码里 `->` 即可，本文叙述用 Unicode 简写。
 - 同一个定理 `n + 0 = n` 在四家写出来都是「用 `refl`、`cong` 和递归
   消去子拼一个程序」——证明即程序不是口号，是可以 `Print` 出来看的东西。
 
-> **坑位速记**（详细清单见 42 章）
+> **坑位速记**（详细清单见 49 章）
 > ① Coq 8.20 与 Agda 都不接受数字开头的文件名/模块名；
 > ② Lean 的 `Nat.add` 递归在**第二个**参数上：`n + 0 = n` 全程 `rfl`，
 > `0 + n = n` 反而要归纳——与 Coq/Agda（加法递归在第一参数）正相反；

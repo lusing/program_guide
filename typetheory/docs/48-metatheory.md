@@ -2,12 +2,12 @@
 
 > 对应读本：TTAFP 第 12–13 章（规则与性质 / 证明论视角）；
 > Hindley 第 9 章；TAPL 第 9 章。
-> 代码：`examples/41_metatheory/ex41_metatheory.lean`——de Bruijn
+> 代码：`examples/48_metatheory/ex48_metatheory.lean`——de Bruijn
 > 移位/代换的两条元定理机器证明。
 
 ## 30.1 元理论问什么
 
-前 40 章的定理都是「类型论内部」的；元理论问**类型论本身**：
+前 43 章的定理都是「类型论内部」的；元理论问**类型论本身**：
 
 | 性质 | 内容 | 后果 |
 |---|---|---|
@@ -105,4 +105,4 @@ Agda/Lean 的交互孔洞正是「半可判定」的工程化身（人在环里
 
 ---
 
-上一章：[40 压轴](40-capstone.md) · 下一章：[42 坑位与书目](42-pitfalls.md)
+上一章：[43 压轴](43-capstone.md) · 下一章：[49 坑位与书目](49-pitfalls.md)

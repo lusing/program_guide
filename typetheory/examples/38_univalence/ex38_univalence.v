@@ -79,7 +79,7 @@ Definition transport_neg (b : bool2)
 
 (* ---- 实测二：宇宙不是集合（泛等的第一个推论） ---- *)
 (* Bool == Bool 里至少有两条不同的路：idpath 与 neg_path。
-   证不同需要更多机器（encode-decode，见 40 章）；此处先把
+   证不同需要更多机器（encode-decode，见 43 章）；此处先把
    【两条候选】摆出来——集合世界里 (Bool == Bool) 只该有
    idpath 一条。 *)
 

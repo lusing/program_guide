@@ -1,6 +1,6 @@
 # 37 坑位总清单与书目导读
 
-> 本章汇总 01–42 章各章尾的「坑位速记」，按主题重组；
+> 本章汇总 1–49 章各章尾的「坑位速记」，按主题重组；
 > 末尾是七本读本的阅读建议与四家速查表。
 
 ## 31.1 工具链与环境（全章通用）
@@ -45,7 +45,7 @@
 10. 匿名构造器里类型由前字段定时，数字要标注 `(3 : Nat)`
     （OfNat 对投影类型失明，31 章）。
 11. doc 注释 `/-- -/` 后必须跟声明；挂文件尾会让整文件
-    报 unexpected end of input（08/31/39 章）。
+    报 unexpected end of input（08/31/42 章）。
 12. 跨行 `|>.length` 在 example 里解析不稳（08 章）。
 13. core 没有 `List.maximum?`（Batteries/Mathlib 才有）——自写
     maxOf 三行（07 章）。
@@ -104,13 +104,13 @@ TTAFP 专轮（21–26 章）追加：文档注释 `/-- -/` 不能挂在
    `destruct k` 后再 discriminate（04 章）。
 6. `ltac:(lia)` 在**项位置**系统性失灵（"Cannot find witness"）
    ——子集类型证据走 `Proof. exists 1. lia. Defined.`（33 章）。
-7. record 构造子在 seed 位置要 `@MkX A B ...` 全显式（37/38 章
+7. record 构造子在 seed 位置要 `@MkX A B ...` 全显式（38/40 章
    连环踩）；record 投影带参全应用（`hprop_all (P x) (H x) ...`）。
 8. 自造等式类型要 `Unset Automatic Proposition Inductives`
    （否则落 Prop、失去 Type 层消去，36 章）。
 9. 记号优先级：`·`(60) 紧于 `!`(65)——`! p · p` 解析成
    `!(p·p)`（36 章）；依赖 match 的 motive 里裸 `idpath` 要
-   `@idpath A y'` 注端点（36/38 章）；motive 引用外层 q 必须
+   `@idpath A y'` 注端点（36/40 章）；motive 引用外层 q 必须
    retype（q 做成 match 参数，25/29 章）。
 10. Coq 的 `+` 递归在第一参数：`2 + n` 折叠、`n + 2` 不折
     （与 Lean 相反，19 章方向学表）。
@@ -164,13 +164,13 @@ stdlib 析构嵌套合取时 destruct 出的假设可能是「合取里的合取
 ## 31.5 HoTT/mini 库特有
 
 1. HIT 的 `ap f loop`-型计算规则要用**依赖版 apD**（非依赖版
-   两端锚点不一致，39 章）。
+   两端锚点不一致，42 章）。
 2. `transport (fun _ => X) q u == u`（常值族）是 **J-定理**非
-   定义——q 不透明时先立引理（39/40 章）。
+   定义——q 不透明时先立引理（42/43 章）。
 3. loop-UIP 在自造 paths 上是 destruct 地狱——正路 noconf 或
-   投靠 stdlib eq（38 章，三种写法实测全败的记录在案）。
+   投靠 stdlib eq（40 章，三种写法实测全败的记录在案）。
 4. 公理**记账制**：每章收尾 `Print Assumptions`；UA 的 β 规则
-   要单独公理（37 章 transport_ua）。
+   要单独公理（38 章 transport_ua）。
 
 ## 31.6 Prolog 高频坑（Hindley/Farmer 两专轮：06/09–12–15 章）
 
@@ -220,7 +220,7 @@ ok/NONE 噪声；`between(0, A, X)` 的 A 先算后用；表驱动检查
 
 | 书 | 定位 | 建议路线 |
 |---|---|---|
-| Hindley《BSTT》 | Curry 线教科书 | **已全覆盖**（专轮 03/06/07/09/10/11 章）；第 9 章技术细节配合 41 章 |
+| Hindley《BSTT》 | Curry 线教科书 | **已全覆盖**（专轮 03/06/07/09/10/11 章）；第 9 章技术细节配合 48 章 |
 | TTAFP | 立方体与 λD 主线 | **已全覆盖**（专轮 21/23/24/25/26 章：逻辑编码/λD 系统/旗式与附录 A/等式序 ι/公理化算术 Bézout；06–09 章骨架在 18–20） |
 | TAPL | 工程视角 | 03/04/24 章的对照读物；实现细节最全 |
 | Nordström 导论 | MLTT 圣经 | 10–16 章逐章对读；扫描件（无文本层） |
@@ -242,4 +242,4 @@ ok/NONE 噪声；`between(0, A, X)` 的 A 先算后用；表驱动检查
 
 ---
 
-上一章：[41 元理论](41-metatheory.md) · 下一章：（完）
+上一章：[48 元理论](48-metatheory.md) · 下一章：（完）

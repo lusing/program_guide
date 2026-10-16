@@ -75,7 +75,7 @@ Eval compute in (concat_pV (idpath : 2 == 2)).   (* 直接给出 idpath *)
 `transport P idpath u` **定义性**等于 u——J 消去只在 refl 构造子
 上计算。但 `p · idpath` 不折叠（36 章 Coq 文件里 `ap_pp` 归纳
 变量的选择就是被它逼的：`idpath · q` 折叠、`p · idpath` 不折）。
-这正是 39 章 HIT 要打破的天花板：**区间/圆的构造子没有计算
+这正是 42 章 HIT 要打破的天花板：**区间/圆的构造子没有计算
 规则**，必须显式补充公理——到时对照。
 
 > **坑位速记**
@@ -95,4 +95,4 @@ Eval compute in (concat_pV (idpath : 2 == 2)).   (* 直接给出 idpath *)
 
 ---
 
-上一章：[35 提取与运行](35-extraction.md) · 下一章：[37 泛等](37-univalence.md)
+上一章：[35 提取与运行](35-extraction.md) · 下一章：[38 泛等](38-univalence.md)

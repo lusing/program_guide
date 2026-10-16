@@ -1,7 +1,7 @@
 # 37 泛等公理：等价即相等
 
 > 对应读本：HoTT 书第 2 章（泛等）；coq-hott 教程 11 章。
-> 代码：`examples/37_univalence/`——Coq（等价四份数据 + UA 公理 +
+> 代码：`examples/38_univalence/`——Coq（等价四份数据 + UA 公理 +
 > β 计算公理，账目两条）、Agda（postulate 版同账目）、Lean
 >（账目摆出 + 为什么 Lean 加不了）。
 
@@ -40,7 +40,7 @@ Axiom transport_ua : ... transport X (ua e) u == equiv_fun e u.
 
 **宇宙不是集合**：`Bool == Bool` 若只有 `idpath` 一条路，
 类型宇宙就是 0 层；泛等制造新路 → 宇宙至少是 1 层（群胚）。
-（证「两条路不同」要 40 章的 encode-decode。）
+（证「两条路不同」要 43 章的 encode-decode。）
 
 ## 26.3 泛等的代价与收益
 
@@ -61,8 +61,8 @@ Axiom transport_ua : ... transport X (ua e) u == equiv_fun e u.
 > 用 `Definition x := ua e.` 让推断做主；
 > ③ Agda postulate 块里不能写 `where`——import 提前；
 > ④ `transport (fun _ => X) p u == u`（常值族搬运）是 J-定理
-> 不是定义——mini 库里要立引理再用（40 章正文展开）。
+> 不是定义——mini 库里要立引理再用（43 章正文展开）。
 
 ---
 
-上一章：[36 路径与同伦](36-paths.md) · 下一章：[38 截断层级](38-truncation.md)
+上一章：[36 路径与同伦](36-paths.md) · 下一章：[40 截断层级](40-truncation.md)

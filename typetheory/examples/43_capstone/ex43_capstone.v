@@ -27,7 +27,7 @@ Definition ap {A B : Type} (f : A -> B) {x y : A} (p : x == y)
   | idpath => idpath
   end.
 
-(* ---- 圆 S¹（公理化 HIT，同 39 章） ---- *)
+(* ---- 圆 S¹（公理化 HIT，同 42 章） ---- *)
 
 Axiom circle : Type.
 Axiom base : circle.
@@ -76,7 +76,7 @@ Proof. apply iterate_add. Defined.
 Print Assumptions iterate_add.
 (* loop（S¹ 的公理化构造子）是唯一依赖——本章没有别的公理 *)
 
-(* ---- 40 章正文的两个「未在此机器化」的陈述（诚实清单） ---- *)
+(* ---- 43 章正文的两个「未在此机器化」的陈述（诚实清单） ---- *)
 (* 1. loop ≠ idpath：需要 encode-decode（Ω(S¹) ≃ ℤ），
       完整机器版见本仓库 coq-hott 教程 19 章（官方 HoTT 库实现）。
    2. funext-from-interval：区间 HIT 的消去子在常值族上的

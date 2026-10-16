@@ -6,7 +6,7 @@
 
 Unset Automatic Proposition Inductives.
 
-(* paths 必须住在 Type：它的元素要有【高维结构】（36–40 章的主题） *)
+(* paths 必须住在 Type：它的元素要有【高维结构】（36–43 章的主题） *)
 Inductive paths {A : Type} (a : A) : A -> Type :=
 | idpath : paths a a.
 

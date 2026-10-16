@@ -52,7 +52,7 @@ Axiom interval_one : forall (Q : interval -> Type)
   (u : Q zero) (v : Q one) (e : transport Q seg u == v),
   interval_rec Q u v e one == v.
 
-(* 区间的妙用（推出 funext）见 40 章压轴 *)
+(* 区间的妙用（推出 funext）见 43 章压轴 *)
 
 (* ============ HIT 二：圆 S¹ ============ *)
 (* 一个基点 + 一条非平凡环路：loop : base == base *)
@@ -77,7 +77,7 @@ Definition double : circle -> circle :=
   circle_rec (fun _ => circle) base loop_transport_trivial.
 
 (* 消去子对【路径构造子】loop 的计算规则要用依赖版 apD 表述
-   （transport 家族下的路径作用），本迷你库不展开——见 40 章正文。
+   （transport 家族下的路径作用），本迷你库不展开——见 43 章正文。
    基点上的计算规则 circle_base 已公理化。 *)
 
 (* ============ HIT 三：商类型（模 2 同余的 nat） ============ *)

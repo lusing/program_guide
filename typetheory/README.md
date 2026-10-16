@@ -8,16 +8,16 @@ Farmer《Simple Type Theory》、《现代类型论的发展与应用》），
 横跨 **Coq / Coq-HoTT（自包含 mini-HoTT）/ Agda / Lean 4 / SWI-Prolog**
 五种实现讲解。
 
-**章号 = 示例编号**——除 36（仅 Lean）与 37（坑位清单）外，
+**章号 = 示例编号**——除 49（坑位清单）与 44/47 的陈述级部分外，
 每章对应 `examples/NN_name/` 里经多通道（coqc 8.20.1 /
-WSL Agda 2.8.0+stdlib 2.3 / Lean 4.25.0 / swipl 10.0）机器验证的
-完整文件。
+WSL Agda 2.8.0+stdlib 2.3——第五部分另启用其 `--cubical` 模式 /
+Lean 4.25.0 / swipl 10.0）机器验证的完整文件。
 
 > 核心理念：**类型论 = 语法分层 × 依赖类型 × Curry–Howard**。
 > λ 演算（02）→ 简单类型双轮：Hindley 证明论线（03–11）+
 > Farmer 模型论线（12–17）→ λ 立方体（18–21）→ Martin-Löf
-> （27–33）→ 证明助手实战（34–35）→ 同伦（36–40）→
-> 元理论与收束（41–42）。
+> （27–33）→ 证明助手实战（34–35）→ 同伦（36–47）→
+> 元理论与收束（48–49）。
 
 ## 目录结构
 
@@ -28,7 +28,7 @@ typetheory/
 │                      + 运行通道（Lean main 自动 --run；
 │                      Agda *_run.agda 触发 --compile+执行+清理）
 ├── CHEATSheet.md      记号/规则/四家语法速查 + 精选坑位
-├── docs/              42 章教程（01 → 42 顺序阅读，六个部分）
+├── docs/              49 章教程（01 → 49 顺序阅读，六个部分）
 └── examples/          章目录（章号 = 示例编号）
 ```
 
@@ -89,22 +89,29 @@ typetheory/
 | [34 四家对照](docs/34-fourways.md) | rev·rev 一题三文化 | 三家 |
 | [35 提取与运行](docs/35-extraction.md) | Extraction/lean --run/MAlonzo 编译 | 三家 |
 
-### 第五部分 · 同伦类型论（36–40）
+### 第五部分 · 同伦类型论（36–47）
 
 | 章 | 主题 | 示例 |
 |---|---|---|
-| [36 路径与同伦](docs/36-paths.md) | 零公理 paths 库；群律；UIP 天花板 | 三家 |
-| [37 泛等](docs/37-univalence.md) | 等价即相等；Bool 取反新路 | 三家 |
-| [38 截断层级](docs/38-truncation.md) | Contr/Prop/Set；noconf；funext | Coq |
-| [39 HIT](docs/39-hit.md) | 区间/圆/商公理化；计算规则补账 | Coq |
-| [40 压轴](docs/40-capstone.md) | S¹ 环路代数 iterate_add 完整证明 | Coq |
+| [36 路径与同伦](docs/36-paths.md) | 零公理 paths 库；群律；纤维化与 transport 族；UIP 天花板 | 三家 |
+| [37 等价论](docs/37-equivalence.md) | quasi-inverse/半伴随/双可逆/合同纤维四定义互含；embed/surj | cubical Agda+Coq |
+| [38 泛等](docs/38-univalence.md) | 等价即相等；Bool 取反新路；UA⇒函数外延 | 三家+cubical |
+| [39 集合与逻辑](docs/39-setlogic.md) | h-level；mere prop；AC 是定理；唯一选择 | cubical Agda+Lean |
+| [40 截断与 n-类型](docs/40-truncation.md) | Contr/Prop/Set；Hedberg；连通性 | Coq+cubical |
+| [41 归纳进阶](docs/41-induction.md) | 初始代数；同伦归纳型；恒等系统 | cubical Agda |
+| [42 高阶归纳类型](docs/42-hit.md) | 区间/圆/商； Suspension/Pushout/Flattening | Coq+cubical |
+| [43 压轴：π₁(S¹)](docs/43-capstone.md) | encode-decode 完整证明 + 一般形式 | Coq+cubical |
+| [44 同伦论进阶](docs/44-homotopy.md) | Freudenthal；van Kampen；Whitehead；Hopf | cubical 陈述级 |
+| [45 范畴论](docs/45-category.md) | precategory；Yoneda；SIP；Rezk 完成 | cubical+Coq |
+| [46 集合论](docs/46-settheory.md) | Set 范畴；基数/序数；累积层级 | Lean+cubical |
+| [47 实数](docs/47-reals.md) | Dedekind vs Cauchy；区间紧性 | cubical 陈述级 |
 
-### 第六部分 · 收束（41–42）
+### 第六部分 · 收束（48–49）
 
 | 章 | 主题 | 示例 |
 |---|---|---|
-| [41 元理论](docs/41-metatheory.md) | de Bruijn 元定理组；CR/SN 策略地图 | Lean |
-| [42 坑位与书目](docs/42-pitfalls.md) | 五类坑位总清单；七书导读；四家速查 | — |
+| [48 元理论](docs/48-metatheory.md) | de Bruijn 元定理组；CR/SN 策略地图 | Lean |
+| [49 坑位与书目](docs/49-pitfalls.md) | 五类坑位总清单；七书导读；四家速查 | — |
 
 > 第一部分 03/06/07/09/10/11 六章为 Hindley《Basic Simple Type
 > Theory》专轮扩充（η/βη/λI、等式与语义、正规化与刻画、弱逻辑、
@@ -116,6 +123,13 @@ typetheory/
 > λD 数学：等式·序·ι / 公理化算术与 Bézout）——至此该书
 > ch.7–15 + 附录 A/B/C 核心内容全部自包含覆盖，与 Farmer 线
 > 在描述子 ι（17 章）与公理化方法（15/16 章）两处互读。
+>
+> 第五部分为 **HoTT 书专轮**（37 等价论 / 39 集合与逻辑 /
+> 41 归纳进阶 / 44 同伦论进阶 / 45 范畴论 / 46 集合论 / 47 实数
+> 七新章 + 36/38/40/42/43 五章深化）——至此该书 ch.1–11 核心
+> 内容全部自包含覆盖；机器面以 **cubical Agda**（`--cubical`
+> 从 Glue/区间原语手造 ua/hcomp，泛等与 HIT 原生计算）为主力，
+> Coq mini-HoTT 公理化对照组与 Lean set 层对照延续。
 
 ## 工具链（本机实测）
 
@@ -147,9 +161,10 @@ pwsh -NoProfile -Command '& ./build.ps1 -Lang agda'  # 单语言
 
 ## 已知边界（诚实清单）
 
-- mini-HoTT（36–40）为公理记账制：UA/β/HIT 构造子公理化，
-  每章 `Print Assumptions` 公示；loop ≠ idpath 与
-  funext-from-interval 未机器化（42 章清单 + coq-hott 教程续读）。
+- Coq mini-HoTT（38/40/42/43 的公理对照组）为公理记账制：
+  UA/β/HIT 构造子公理化，每章 `Print Assumptions` 公示；cubical
+  通道补齐计算面；loop ≠ idpath 的完整覆叠论证（44 章）以
+  陈述+骨架呈现，完整机器版见 coq-hott 教程续读。
 - 05 章主类型算法为 Curry 式单态（无 let-多态）；19 章 Vec
   为示教版（非 stdlib 全功能）。
 - 全部示例在本机通道通过；其他版本（Coq 9.x / Agda 3 /

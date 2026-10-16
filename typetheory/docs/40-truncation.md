@@ -1,7 +1,7 @@
 # 38 截断层级：命题、集合、群胚
 
 > 对应读本：HoTT 书第 3 章；《现代类型论的发展与应用》3.5
->（证明无关性）。代码：`examples/38_truncation/ex38_truncation.v`
+>（证明无关性）。代码：`examples/40_truncation/ex40_truncation.v`
 >（公理：funext 一条，账目 Print Assumptions 公示）。
 
 ## 27.1 层级：-2, -1, 0, …
@@ -52,7 +52,7 @@ Definition pi_hprop (A : Type) (P : A -> Type)
 ```
 
 「每点是命题 ⇒ 函数空间是命题」——直觉主义逻辑里 Π 对命题
-封闭的机器面（逻辑性，impredicativity 的直谓版本）。39 章
+封闭的机器面（逻辑性，impredicativity 的直谓版本）。42 章
 会看到 funext 能从区间 HIT **推出来**（公理降级为定理）。
 
 ## 27.4 与三家 Prop 的对照
@@ -81,4 +81,4 @@ Coq 的 `proof_irrelevance : forall (P : Prop) (p q : P), p = q`
 
 ---
 
-上一章：[37 泛等](37-univalence.md) · 下一章：[39 HIT](39-hit.md)
+上一章：[38 泛等](38-univalence.md) · 下一章：[42 HIT](42-hit.md)

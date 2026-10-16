@@ -72,7 +72,7 @@ def betaStep : Tm → Option Tm
 example : betaStep (.ap (.lm (.ap (.vr 0) (.vr 0))) (.vr 7))
         = some (.ap (.vr 7) (.vr 7)) := rfl
 
-/- ---------- 41 章正文的「未机器化」清单 ----------
+/- ---------- 48 章正文的「未机器化」清单 ----------
    Church–Rosser（并行归约 + 完全发展归纳，TTAFP 12 章）
    强规范化（逻辑关系法，TTAFP 12 章 / Girard 证明树）
    主体归约（代换引理：[j:=s]([k:=t]u) = [k:=t][j:=s]u 的

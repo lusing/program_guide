@@ -1,8 +1,8 @@
 # 40 综合：圆周上的环路代数
 
 > 对应读本：HoTT 书第 8 章（同伦群）；coq-hott 教程 13 章
->（完整 encode-decode）与 41 章压轴（螺旋覆叠）。
-> 代码：`examples/40_capstone/ex40_capstone.v`——`iterate_add`
+>（完整 encode-decode）与 48 章压轴（螺旋覆叠）。
+> 代码：`examples/43_capstone/ex43_capstone.v`——`iterate_add`
 > 完整机器证明，依赖公理只有 S¹ 的构造子（Print Assumptions）。
 
 ## 29.1 任务：绕 m+n 圈 = 先绕 m 圈再绕 n 圈
@@ -47,7 +47,7 @@ decode : code x → (x == base)           —— circle_rec 按 code 走
 | 陈述 | 状态 | 出处 |
 |---|---|---|
 | `iterate_add` | ✅ 本章机器证明 | 零额外公理（除 S¹ 构造子） |
-| `! iterate n == iterate (0-n)` | 正文练习（组装同 iterate_add） | 39 章坑位 |
+| `! iterate n == iterate (0-n)` | 正文练习（组装同 iterate_add） | 42 章坑位 |
 | `loop ≠ idpath` | ❌ 需 encode-decode | coq-hott 19 章 |
 | funext-from-interval | ❌ 需 eta/计算规则配合 | HoTT 书 4.9/6.3 |
 
@@ -72,4 +72,4 @@ decode : code x → (x == base)           —— circle_rec 按 code 走
 
 ---
 
-上一章：[39 HIT](39-hit.md) · 下一章：[41 元理论](41-metatheory.md)
+上一章：[42 HIT](42-hit.md) · 下一章：[48 元理论](48-metatheory.md)
