@@ -1,0 +1,178 @@
+# 25 λD 中的数学：等式、序与描述子
+
+> 对应读本：TTAFP 第 12 章全部 + 第 13 章全部（Leibniz 等式与
+> 同余、序与最小元引理、∃¹ 三件套、描述子 ι；子集即谓词、
+> 基本集运算、等价类、关系与映射、数学概念的表示法）。
+> 代码：`examples/25_ldmath/`——**Lean 主场**（Leibniz 等式全套
+> 定理、Lemma 12.1.2、∃¹/ι 与 choose 的账本对照、位向量式
+> 子集代数、泛关系映射）；**Prolog 对照**（有限模型：偏序表、
+> 最小元唯一性的有限版、De Morgan 全枚举、映射表正反例）。
+
+逻辑的地基铺完（21–24 章），现在开始**在上面盖房子**。书第 12
+章从一个朴素的问题出发——「数论的初等引理怎么形式化？」——
+一路逼出五个问题 Q1–Q5：等式怎么来（Q1）、最小元怎么表（Q2–
+Q4）、怎么证（Q5）。本章跟随这条线索，看三个数学最底层的
+概念——**等式、序、描述子**——如何在 λD 里获得形式生命；然后
+（ch.13）把「集合论的家常话」（子集、交并补、关系、映射）翻译
+成谓词的语言。
+
+## 25.1 等式是定义，不是公理（书 12.2–12.3）
+
+Leibniz 的洞见：**x = y 当且仅当它们在一切谓词下不可分辨**。
+λD 把这个哲学立场直接写成描述式定义（Figure 12.2）：
+
+> **eq(S, x, y) := ΠP:S→∗p. (P x ⇔ P y)**
+
+Remark 12.2.1：单向版就够——`∀P. P x ⇒ P y`。等式就此**免费**
+获得（不需要公理！——对照 29 章 MLTT 把等式做成归纳族的另一条
+路线，与 17 章 Farmer 把 = 当原语的第三条路线：**三本书对同一
+个概念给出三种本体论**，这是本指南反复出现的母题）。
+
+自反是两行（λP.λu.u）；对称是一场小芭蕾——把 P 染成
+「P z ⇒ P x」施于 x：
+
+```lean
+def EqL {S : Type} (x y : S) : Prop := ∀ P : S → Prop, P x → P y
+
+theorem eqSymm {S : Type} {x y : S} (h : EqL x y) : EqL y x :=
+  fun P hy => h (fun z => P z → P x) (fun hx => hx) hy
+```
+
+传递、**替换性**（等换等——就是定义本身的应用）、**同余**
+（x=y ⇒ f x = f y，P 染成 `fun z => P (f z)`）依次免费。数学
+里「代入」这一步的合法性，全押在 eqSubst 这一行上。Remark
+12.2.2 提醒：这是**二阶**定义（Π 量过谓词）——一阶逻辑装不下
+它，λC 的表达力在此变现。
+
+## 25.2 序与最小元唯一性（书 12.4–12.6，Lemma 12.1.2）
+
+序不定义，**参数化**：`le : S → S → ∗p` 挂在语境里，偏序公理
+（refl/antisym/trans）是三面旗。最小元（Figure 12.13）：
+
+> **Least(S, ≤, m) := ∀n:S. m ≤ n**
+
+主引理 12.1.2（最小元若存在则唯一）的形式化只需要反对称：
+
+```lean
+theorem leastUnique (antisym : ∀ a b : S, le a b → le b a → EqL a b)
+    (m₁ m₂ : S) (h₁ : IsLeast le m₁) (h₂ : IsLeast le m₂) : EqL m₁ m₂ :=
+  antisym m₁ m₂ (h₁ m₂) (h₂ m₁)
+```
+
+——h₁ m₂ : m₁ ≤ m₂、h₂ m₁ : m₂ ≤ m₁，反对称收针。Prolog 侧
+的有限版更生动：0..3 的 ≤ 表上 `least_unique_under_antisym`
+通过；而**坏表**（le_bad：0≤1 且 1≤0）上 0 和 1 都是「最小
+元」——反对称缺位，引理失效（电池 5 的反例正是公理的用处在
+说话）。
+
+## 25.3 ∃¹ 三件套与描述子 ι（书 12.6–12.7）
+
+「恰一个」拆成两半（Figure 12.14）：
+
+> **∃≥1(S,P) := ∃(S,P)**（存在至少一个——21 章的二阶编码）
+> **∃≤1(S,P) := ∀y z. P y ⇒ P z ⇒ y = z**（至多一个——用等式！）
+> **∃¹(S,P) := ∃≥1 ∧ ∃≤1**
+
+描述子 ι 取「那一个」：`ιx:S. P x`——**原始定义**（公理），
+配引理 12.7.1（iota-prop）：∃¹ ⇒ ∀z. P z ⇒ z = ιx. P x。
+这里是 TTAFP 与 Farmer 两书**握手的地方**：17 章的 I 算子
+（V6「恰一满足者」）与本章的 ι 是同一个数学对象，只是安装
+方式不同——Farmer 给语义条款，TTAFP 给公理加引理，Coq/Lean
+给古典选择加唯一性钉死：
+
+```lean
+noncomputable def iotaL {S : Type} {P : S → Prop} (h : Ex1 P) : S :=
+  Classical.choose h.1
+
+theorem iotaProp (h : Ex1 P) (z : S) (pz : P z) : EqL z (iotaL h) :=
+  h.2 z (iotaL h) pz (Classical.choose_spec h.1)
+```
+
+`#print axioms iotaProp` 的账单：**Classical.choice**——ι 的
+每一点便利都记在古典公理头上，与 17 章 Print Assumptions 的
+记账传统一脉相承。三个证明助手三种安装、账本上同一行字。
+
+## 25.4 子集即谓词（书 13.1–13.3）
+
+「T 是 S 的子集」在 λD 里的答案干脆到令人不安：**子集就是
+谓词**——`V : S → ∗p`；隶属就是应用——`x ε V := V x`。集合
+的家常话全部点态翻译（Figure 13.2/13.3）：
+
+```lean
+def PSet (S : Type) : Type := S → Prop
+def Mem {S : Type} (x : S) (V : PSet S) : Prop := V x
+def Cap   {S} (V W : PSet S) : PSet S := fun x => Mem x V ∧ Mem x W
+def Cup   {S} (V W : PSet S) : PSet S := fun x => Mem x V ∨ Mem x W
+def Compl {S} (V : PSet S)   : PSet S := fun x => ¬ Mem x V
+def Single {S} (x : S) : PSet S := fun y => EqL y x   -- 单元素集用等式造！
+```
+
+注意 Single 的构造——**用 25.1 的等式定义单元素集**：本章两
+条线索在此拧成一股。点态定律是练习题级的证明（deMorgan/
+interComm 双双机器过检）；Prolog 侧把它做成位向量全枚举——
+4 位上 16×16 组合逐一验证 De Morgan（电池 12：定义的「内容」
+在有限世界里是可穷举的布尔）。
+
+与 33 章（MLTT 的子集类型）的哲学对照在此预演：Church 式路线
+说「子集 = 谓词，隶属 = 命题」；Martin-Löf 路线说「子集 = Σ
+型，元素 = 值 + 见证」。两条路线的取舍贯穿到证明无关性（38
+章截断）——那是后话。
+
+等价类 `[x]_R := λz. R x z`（书 13.4）同样一行。子集路线的
+代价：没有「集合的元素个数」这种结构——那是 26 章公理化算术
+要另起炉灶的原因之一。
+
+## 25.5 关系与映射：泛关系（书 13.4–13.5）
+
+关系 `R : S → S → ∗p` 平凡；**映射的定义是本章的巧思**：
+F 是映射当且仅当它是**泛关系**——`∀x:S. ∃¹y:T. F x y`。
+
+```lean
+def IsMap {S T : Type} (F : S → T → Prop) : Prop :=
+  ∀ x : S, Ex1 (F x)
+def Inj {S T : Type} (F : S → T → Prop) : Prop :=
+  ∀ x y : S, ∀ a : T, F x a → F y a → EqL x y
+```
+
+「函数」没有新原语——它是带唯一性条款的关系，而唯一性条款
+正是 25.3 的 ∃¹。样本：后继关系 `(fun n m => m = n+1)` 是映射
+且单射（Nat.succ.inj 收尾）。Prolog 侧的表级版本同样直白：
+`is_map` 查每个 x 恰有一像（好表过、nonmap 的 0 无像被拒）、
+`inj_table` 查同像不同原像（bad_f 的 0、1 同像被拒）。
+
+书 13.5 的后半（单射/满射/双射的谓词化、双射的逆）与 13.6 的
+**表示论**（representation of mathematical notions：同一个
+概念可以有多种形式化——乘法当作函数、当作关系、当作曲线——
+选择是工程决策）值得通读：形式化不是抄写，是**设计**。
+
+## 25.6 机器面导读
+
+**Lean（`ex25_ldmath.lean`）**：五个文件段对应五节——等式
+全套（refl/symm/trans/subst/congr + 原生等式桥）、序与引理
+12.1.2、∃¹/ι/账本、子集代数（含 De Morgan 的 by_cases 证明）、
+泛关系映射（含 succMap/succInj）。零 Mathlib，全 core。
+
+**Prolog（`ex25_ldmath.pl`）**：有限模型秤——偏序三公理在
+0..3 的 ≤ 表全查、坏表反例、最小元唯一性的正反对照、位向量
+Cap/Cup/Compl 与 De Morgan 的 16×16 全枚举、映射表三例。与
+15 章（Farmer 轮）的结构枚举机同宗：**定义是无穷的宣言，有
+限模型是它的抽样检验**。
+
+> **坑位速记**
+> ① Lean core 已占 `Sub`（减法类）与 `Inter`/`Union`（⋂⋃
+>   类）——自定义谓词集请换名（PSet/Cap/Cup）；
+> ② `variable` 只在签名里被提及才绑定（第三踩！本章
+>   leastUnique 的反对称干脆显式作参数）；
+> ③ `P : T → Prop` 的「∀a : F x」不成立——泛关系的单射要写成
+>   `∀a:T, F x a → F y a → …`（像点量化，不是证明量化）；
+> ④ Prolog `between(0, A, X)` 的 A 必须**先算后用**（算术先于
+>   使用的第 N 次现身）；表驱动检查记得给 N 定参的闭包版
+>   （le4），否则 call(R, X, Y) 撞元数；
+> ⑤ Leibniz 等式的 sym 用「P 染色」技巧（P := fun z => P z
+>   → P x）——直接展开定义会绕不出来；
+> ⑥ 字符串批量替换集合律时小心把交换成并（interComm 的右侧
+>   被顺手改错——逐条核对再编译）。
+
+---
+
+上一章：[24 旗式自然演绎与逻辑规则库](24-flags.md) · 下一章：[26 从 Peano 到 Bézout：公理化算术](26-bezout.md)

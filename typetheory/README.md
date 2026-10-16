@@ -67,6 +67,7 @@ typetheory/
 | [22 定义 λD](docs/22-definitions.md) | Section/opaque/模块三管理术 | 三家 |
 | [23 λD 形式系统](docs/23-lambdad.md) | def/inst 两规则；δ-归约可执行；原始定义=公理 | Lean+Prolog |
 | [24 旗式自然演绎](docs/24-flags.md) | 附录 A 规则库=定义；旗式解释器；图 11.16 全 7 行 | Prolog 主场+Lean |
+| [25 λD 数学：等式/序/ι](docs/25-ldmath.md) | Leibniz 等式=定义；∃¹ 与 ι 握手 17 章；子集即谓词 | Lean 主场+Prolog |
 
 ### 第三部分 · Martin-Löf 类型论（27–33）
 
