@@ -65,6 +65,7 @@ typetheory/
 | [20 立方体 λC](docs/20-cube.md) | mini-PTS 内核：八系统=八张规则表可执行 | 三家 |
 | [21 λC 逻辑编码](docs/21-logic.md) | ⊥¬∧∨∃ 二阶编码即程序；ET↔DN 零公理；λP2 检查器 | Lean+Prolog |
 | [22 定义 λD](docs/22-definitions.md) | Section/opaque/模块三管理术 | 三家 |
+| [23 λD 形式系统](docs/23-lambdad.md) | def/inst 两规则；δ-归约可执行；原始定义=公理 | Lean+Prolog |
 
 ### 第三部分 · Martin-Löf 类型论（27–33）
 
