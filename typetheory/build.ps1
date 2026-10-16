@@ -17,6 +17,9 @@
              退出码 0 且输出无 error/warning（stdlib 2.3 的 .agdai 已由
              打包产物合并进 src/，秒级加载）
       lean : `lean 文件`，退出码 0 且输出无 error:/warning:
+      prolog: `swipl -q -g main -t halt -l 文件`（本机 swipl 10.0），
+             退出码 0 且输出无 ERROR/Warning；
+             约定每个 .pl 定义 main/0，检查失败须 fail/抛错（退出码 1/2）
 
     所有源码无 BOM UTF-8；.agdai/.vo 等产物不入库。
 #>
@@ -50,9 +53,9 @@ if ($Clean) {
 $units = Get-ChildItem $examples -Directory | Sort-Object Name | ForEach-Object {
     $dir = $_
     Get-ChildItem $dir.FullName -File | Where-Object {
-        $_.Extension -in '.v', '.agda', '.lean'
+        $_.Extension -in '.v', '.agda', '.lean', '.pl'
     } | ForEach-Object {
-        $tool = switch ($_.Extension) { '.v' { 'coq' } '.agda' { 'agda' } '.lean' { 'lean' } }
+        $tool = switch ($_.Extension) { '.v' { 'coq' } '.agda' { 'agda' } '.lean' { 'lean' } '.pl' { 'prolog' } }
         [PSCustomObject]@{
             Chapter = $dir.Name
             Tool    = $tool
@@ -128,6 +131,13 @@ foreach ($u in $units) {
                     if (-not $ok) { $detail = $outRun }
                 }
                 if (-not $ok -and -not $detail) { $detail = $out }
+            }
+            'prolog' {
+                $swipl = 'G:/scoop/apps/swipl/current/bin/swipl.exe'
+                $out = & $swipl -q -g main -t halt -l $u.Path 2>&1 | Out-String
+                $ok = ($LASTEXITCODE -eq 0) -and -not ($out -match 'ERROR|Warning')
+                if ($ok) { Write-Host "      | $($out.Trim() -split "`n" | Select-Object -First 3 | Out-String)".Trim() -ForegroundColor DarkGray }
+                if (-not $ok) { $detail = $out }
             }
         }
     } catch {

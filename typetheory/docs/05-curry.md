@@ -129,4 +129,4 @@ Milner 算法 W 的 `generalize`/`instantiate` 二重奏。但要小心
 
 ---
 
-上一章：[04 λ→](04-stlc.md) · 下一章：[08 Curry–Howard](08-curryhoward.md)
+上一章：[04 λ→](04-stlc.md) · 下一章：[06 等式规则与语义](06-eqsem.md)
