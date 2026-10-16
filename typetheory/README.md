@@ -8,7 +8,7 @@ Farmer《Simple Type Theory》、《现代类型论的发展与应用》），
 横跨 **Coq / Coq-HoTT（自包含 mini-HoTT）/ Agda / Lean 4 / SWI-Prolog**
 五种实现讲解。
 
-**章号 = 示例编号**——除 30（仅 Lean）与 31（坑位清单）外，
+**章号 = 示例编号**——除 36（仅 Lean）与 37（坑位清单）外，
 每章对应 `examples/NN_name/` 里经多通道（coqc 8.20.1 /
 WSL Agda 2.8.0+stdlib 2.3 / Lean 4.25.0 / swipl 10.0）机器验证的
 完整文件。
@@ -16,8 +16,8 @@ WSL Agda 2.8.0+stdlib 2.3 / Lean 4.25.0 / swipl 10.0）机器验证的
 > 核心理念：**类型论 = 语法分层 × 依赖类型 × Curry–Howard**。
 > λ 演算（02）→ 简单类型双轮：Hindley 证明论线（03–11）+
 > Farmer 模型论线（12–17）→ λ 立方体（18–21）→ Martin-Löf
-> （22–28）→ 证明助手实战（29–30）→ 同伦（31–35）→
-> 元理论与收束（36–37）。
+> （27–33）→ 证明助手实战（34–35）→ 同伦（36–40）→
+> 元理论与收束（41–42）。
 
 ## 目录结构
 
@@ -28,7 +28,7 @@ typetheory/
 │                      + 运行通道（Lean main 自动 --run；
 │                      Agda *_run.agda 触发 --compile+执行+清理）
 ├── CHEATSheet.md      记号/规则/四家语法速查 + 精选坑位
-├── docs/              37 章教程（01 → 37 顺序阅读，六个部分）
+├── docs/              42 章教程（01 → 42 顺序阅读，六个部分）
 └── examples/          章目录（章号 = 示例编号）
 ```
 
@@ -56,55 +56,55 @@ typetheory/
 | [16 理论态射与小理论](docs/16-morphisms.md) | 态射定理；义务清偿；运输双实例；GRP 负例见证 | Lean 旗舰+Prolog |
 | [17 描述算子、选择与引用](docs/17-desc.md) | I/ε/AC 三级；Coq iota 古典互证；引用往返定理 | Coq 主场+Lean |
 
-### 第二部分 · λ 立方体（18–21）
+### 第二部分 · λ 立方体与 λD（18–26）
 
 | 章 | 主题 | 示例 |
 |---|---|---|
-| [12 System F](docs/18-systemf.md) | 双 β 引擎；Church 数带类型复活；I I 翻案 | 三家 |
-| [13 依赖类型](docs/19-dependent.md) | Vec/Even/even_double；加法方向学三连 | 三家 |
-| [14 立方体 λC](docs/20-cube.md) | mini-PTS 内核：八系统=八张规则表可执行 | 三家 |
-| [15 定义 λD](docs/21-definitions.md) | Section/opaque/模块三管理术 | 三家 |
+| [18 System F](docs/18-systemf.md) | 双 β 引擎；Church 数带类型复活；I I 翻案 | 三家 |
+| [19 依赖类型](docs/19-dependent.md) | Vec/Even/even_double；加法方向学三连 | 三家 |
+| [20 立方体 λC](docs/20-cube.md) | mini-PTS 内核：八系统=八张规则表可执行 | 三家 |
+| [22 定义 λD](docs/22-definitions.md) | Section/opaque/模块三管理术 | 三家 |
 
-### 第三部分 · Martin-Löf 类型论（22–28）
-
-| 章 | 主题 | 示例 |
-|---|---|---|
-| [16 判断与规则](docs/22-judgments.md) | 四种判断；等式四公理动作 | 三家 |
-| [17 Π 与枚举](docs/23-enums.md) | ⊥/⊤/Bool；荒谬三拼写；Π-填表 | 三家 |
-| [18 相等与 J](docs/24-identity.md) | MyEq 手造；四件套 J 手推；funext 边界 | 三家 |
-| [19 归纳族](docs/25-indfam.md) | 自造 ℕ/List/Σ/Sum；add_comm Peano 三步走 | 三家 |
-| [20 全域](docs/26-universes.md) | 宇宙塔；Cumulativity 三家立场 | 三家 |
-| [21 W 类型](docs/27-wtypes.md) | 良序归纳；ℕ=W Bool；W-加法 2+3=5 | 三家 |
-| [22 子集与强制](docs/28-subtype.md) | sig/Subtype/Σ；Coercion/Coe/函数 | 三家 |
-
-### 第四部分 · 证明助手实战（29–30）
+### 第三部分 · Martin-Löf 类型论（27–33）
 
 | 章 | 主题 | 示例 |
 |---|---|---|
-| [23 四家对照](docs/29-fourways.md) | rev·rev 一题三文化 | 三家 |
-| [24 提取与运行](docs/30-extraction.md) | Extraction/lean --run/MAlonzo 编译 | 三家 |
+| [27 判断与规则](docs/27-judgments.md) | 四种判断；等式四公理动作 | 三家 |
+| [28 Π 与枚举](docs/28-enums.md) | ⊥/⊤/Bool；荒谬三拼写；Π-填表 | 三家 |
+| [29 相等与 J](docs/29-identity.md) | MyEq 手造；四件套 J 手推；funext 边界 | 三家 |
+| [30 归纳族](docs/30-indfam.md) | 自造 ℕ/List/Σ/Sum；add_comm Peano 三步走 | 三家 |
+| [31 全域](docs/31-universes.md) | 宇宙塔；Cumulativity 三家立场 | 三家 |
+| [32 W 类型](docs/32-wtypes.md) | 良序归纳；ℕ=W Bool；W-加法 2+3=5 | 三家 |
+| [33 子集与强制](docs/33-subtype.md) | sig/Subtype/Σ；Coercion/Coe/函数 | 三家 |
 
-### 第五部分 · 同伦类型论（31–35）
-
-| 章 | 主题 | 示例 |
-|---|---|---|
-| [25 路径与同伦](docs/31-paths.md) | 零公理 paths 库；群律；UIP 天花板 | 三家 |
-| [26 泛等](docs/32-univalence.md) | 等价即相等；Bool 取反新路 | 三家 |
-| [27 截断层级](docs/33-truncation.md) | Contr/Prop/Set；noconf；funext | Coq |
-| [28 HIT](docs/34-hit.md) | 区间/圆/商公理化；计算规则补账 | Coq |
-| [29 压轴](docs/35-capstone.md) | S¹ 环路代数 iterate_add 完整证明 | Coq |
-
-### 第六部分 · 收束（36–37）
+### 第四部分 · 证明助手实战（34–35）
 
 | 章 | 主题 | 示例 |
 |---|---|---|
-| [30 元理论](docs/36-metatheory.md) | de Bruijn 元定理组；CR/SN 策略地图 | Lean |
-| [31 坑位与书目](docs/37-pitfalls.md) | 五类坑位总清单；七书导读；四家速查 | — |
+| [34 四家对照](docs/34-fourways.md) | rev·rev 一题三文化 | 三家 |
+| [35 提取与运行](docs/35-extraction.md) | Extraction/lean --run/MAlonzo 编译 | 三家 |
+
+### 第五部分 · 同伦类型论（36–40）
+
+| 章 | 主题 | 示例 |
+|---|---|---|
+| [36 路径与同伦](docs/36-paths.md) | 零公理 paths 库；群律；UIP 天花板 | 三家 |
+| [37 泛等](docs/37-univalence.md) | 等价即相等；Bool 取反新路 | 三家 |
+| [38 截断层级](docs/38-truncation.md) | Contr/Prop/Set；noconf；funext | Coq |
+| [39 HIT](docs/39-hit.md) | 区间/圆/商公理化；计算规则补账 | Coq |
+| [40 压轴](docs/40-capstone.md) | S¹ 环路代数 iterate_add 完整证明 | Coq |
+
+### 第六部分 · 收束（41–42）
+
+| 章 | 主题 | 示例 |
+|---|---|---|
+| [41 元理论](docs/41-metatheory.md) | de Bruijn 元定理组；CR/SN 策略地图 | Lean |
+| [42 坑位与书目](docs/42-pitfalls.md) | 五类坑位总清单；七书导读；四家速查 | — |
 
 > 第一部分 03/06/07/09/10/11 六章为 Hindley《Basic Simple Type
 > Theory》专轮扩充（η/βη/λI、等式与语义、正规化与刻画、弱逻辑、
 > 逆主类型与凝结分离、居留计数）——至此该书 1–8 章核心内容全部
-> 自包含覆盖，第 9 章技术细节与 36 章元理论相接。
+> 自包含覆盖，第 9 章技术细节与 41 章元理论相接。
 
 ## 工具链（本机实测）
 
@@ -125,7 +125,7 @@ pwsh -NoProfile -Command '& ./build.ps1 -Lang agda'  # 单语言
 
 ## 与本仓库其他教程的关系
 
-- [coq](../coq)（33 章）：tactic 与工程详讲——本指南 29 章后
+- [coq](../coq)（33 章）：tactic 与工程详讲——本指南 34 章后
   的 Coq 深修线；
 - [agda](../agda)（44 章）：Agda 全景——第三部分后的 Agda 线；
 - [lean4](../lean4)：Lean 4 与 Mathlib——同上；
@@ -136,9 +136,9 @@ pwsh -NoProfile -Command '& ./build.ps1 -Lang agda'  # 单语言
 
 ## 已知边界（诚实清单）
 
-- mini-HoTT（31–35）为公理记账制：UA/β/HIT 构造子公理化，
+- mini-HoTT（36–40）为公理记账制：UA/β/HIT 构造子公理化，
   每章 `Print Assumptions` 公示；loop ≠ idpath 与
-  funext-from-interval 未机器化（37 章清单 + coq-hott 教程续读）。
+  funext-from-interval 未机器化（42 章清单 + coq-hott 教程续读）。
 - 05 章主类型算法为 Curry 式单态（无 let-多态）；19 章 Vec
   为示教版（非 stdlib 全功能）。
 - 全部示例在本机通道通过；其他版本（Coq 9.x / Agda 3 /

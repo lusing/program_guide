@@ -262,7 +262,7 @@ example : occurs 3 (app (lam (lam (var 0))) (var 3)) = true := by rfl
 example : occurs 3 (lam (var 0)) = false := by rfl
 ```
 
-持存引理的完整归纳证明（含代换与 shift 引理链）留给 36 章元理论
+持存引理的完整归纳证明（含代换与 shift 引理链）留给 41 章元理论
 的路线图；本章机器面只到「实例账」——但请注意上面三行断言恰好
 是引理在**这一步**上的全息切片：消元只发生在非 λI 项上。
 

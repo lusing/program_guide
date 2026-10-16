@@ -51,6 +51,6 @@ Proof. simpl. auto. Qed.
 (* ---- Coq 的 Prop 与 Type：非直谓的顶点 ---- *)
 (* λC 的逻辑对应是构造演算式的直觉主义高阶逻辑：
    Prop 本身 : Type，且 Prop 上可以再量化——非直谓。
-   Girard 悖论被「Prop 的证明无关性 + 受限消去」挡在门外（27 章） *)
+   Girard 悖论被「Prop 的证明无关性 + 受限消去」挡在门外（32 章） *)
 Check Prop.       (* : Type *)
 Check (fun P : Prop => P -> P).   (* : Prop → Prop，且整体 : Type *)

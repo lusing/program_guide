@@ -45,6 +45,6 @@ def zeroAddTerm : ∀ n : Nat, 0 + n = n :=
 theorem imp_trans {P Q R : Prop} (hpq : P → Q) (hqr : Q → R) : P → R :=
   fun hp => hqr (hpq hp)
 
--- ---- Lean 特有：instance 隐式参数、autoParam 等 29 章细讲 ----
+-- ---- Lean 特有：instance 隐式参数、autoParam 等 34 章细讲 ----
 -- 验证零公理：Lean 里 #print axioms 对应 Coq 的 Print Assumptions
 #print axioms zeroAddTerm   -- 期望 'does not depend on any axioms'
