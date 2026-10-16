@@ -1,6 +1,6 @@
 # 11 · KVC、KVO 与 Cocoa Bindings
 
-> 示例：`examples/11_kvo_bindings/main.swift`
+> 对应示例：`examples/11_kvo_bindings/main.swift`
 > 实测输出见 `build/11_kvo_bindings/stdout.clt.txt`
 
 这三者是 AppKit 的「胶水层」，也是 macOS 与 iOS 分野最明显的地方：

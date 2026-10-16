@@ -1,6 +1,6 @@
 # 07 · Objective-C 与 Swift 混编
 
-> 示例：`examples/07_objc_swift_mix/`（`Greeter.h/.m`、`ObjcCaller.h/.m`、`SwiftCounter.swift`、`Bridging.h`、`main.swift`）
+> 对应示例：`examples/07_objc_swift_mix/`（`Greeter.h/.m`、`ObjcCaller.h/.m`、`SwiftCounter.swift`、`Bridging.h`、`main.swift`）
 > 实测输出见 `build/07_objc_swift_mix/stdout.clt.txt`
 
 混编在两个方向上都要走通：

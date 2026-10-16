@@ -1,6 +1,6 @@
 # 18 · 并发：GCD、OperationQueue 与主线程规则
 
-> 示例：`examples/18_concurrency/main.swift`
+> 对应示例：`examples/18_concurrency/main.swift`
 > 实测输出见 `build/18_concurrency/stdout.clt.txt`
 
 macOS 上的并发和 iOS 一样用 GCD，但有个额外的大前提：

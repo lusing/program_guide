@@ -1,6 +1,6 @@
 # 06 · Foundation（Swift 篇）：桥接、Codable、值语义
 
-> 示例：`examples/06_swift_foundation/main.swift`
+> 对应示例：`examples/06_swift_foundation/main.swift`
 > 实测输出见 `build/06_swift_foundation/stdout.clt.txt`
 
 Swift 的 `String` / `Data` / `Array` 是**值类型**，`NSString` / `NSData` /

@@ -1,6 +1,6 @@
 # 08 · 窗口、sheet、模态与面板
 
-> 示例：`examples/08_window_and_modals/main.swift`
+> 对应示例：`examples/08_window_and_modals/main.swift`
 > 实测输出见 `build/08_window_and_modals/stdout.clt.txt`
 
 macOS 的窗口比 iOS 复杂得多：有层级（level）、有 sheet（贴在窗口上的模态）、

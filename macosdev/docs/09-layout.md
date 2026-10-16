@@ -1,6 +1,6 @@
 # 09 · 布局：autoresizingMask、Auto Layout、StackView、ScrollView
 
-> 示例：`examples/09_layout/main.swift`
+> 对应示例：`examples/09_layout/main.swift`
 > 实测输出见 `build/09_layout/stdout.clt.txt`
 
 macOS 上有**两套并存**的布局系统。新代码一律 Auto Layout，

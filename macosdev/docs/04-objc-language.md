@@ -1,6 +1,6 @@
 # 04 · Objective-C 语言基础
 
-> 示例：`examples/04_objc_language/`（`main.m` + `Person.h/.m` + `NSString+Extras.h/.m` + `Speaker.h`）
+> 对应示例：`examples/04_objc_language/`（`main.m` + `Person.h/.m` + `NSString+Extras.h/.m` + `Speaker.h`）
 > 实测输出见 `build/04_objc_language/stdout.clt.txt`
 
 macOS 上即使你写纯 Swift，也躲不开 Objective-C：

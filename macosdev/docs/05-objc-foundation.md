@@ -1,6 +1,6 @@
 # 05 · Foundation（Objective-C 篇）：字符串、集合、数据
 
-> 示例：`examples/05_objc_foundation/main.m`
+> 对应示例：`examples/05_objc_foundation/main.m`
 > 实测输出见 `build/05_objc_foundation/stdout.clt.txt`
 
 Foundation 是 AppKit 的地基：`NSString`、`NSArray`、`NSDictionary`、
