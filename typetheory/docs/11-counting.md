@@ -179,4 +179,4 @@ example : (inhabitants 8 tIter).length = 4 := by rfl   -- 再加 f³x
 
 ---
 
-上一章：[10 逆主类型与凝结分离](10-converse.md) · 下一章：[12 System F](12-systemf.md)
+上一章：[10 逆主类型与凝结分离](10-converse.md) · 下一章：[18 System F](18-systemf.md)

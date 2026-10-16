@@ -78,7 +78,7 @@ example : inferClosed (app (lam (arrow base base) (var 0)) (lam base (var 0)))
         = some (arrow base base) := by rfl
 
 -- 注意：I I 在 λ→ 里【不】可类型化！I : (β→β)→(β→β)，而 I 的参数
--- 只能是 β→β —— 类型对不上。自应用要等到 System F 的 ∀（12 章）
+-- 只能是 β→β —— 类型对不上。自应用要等到 System F 的 ∀（18 章）
 example : inferClosed (app (lam (arrow base base) (var 0)) (lam (arrow base base) (var 0)))
         = none := by rfl
 
@@ -113,7 +113,7 @@ example : normalizeFuel 100
 /- ---------- 观察一：λ→ 的「贫穷」：没有多态 ---------- -/
 
 -- λ(x:β). x 只能服务基类型；想要「对一切 T 的恒等」需要 ∀，
--- 即 System F —— 12 章的主角。这里只能给每个类型手写一份：
+-- 即 System F —— 24 章的主角。这里只能给每个类型手写一份：
 #eval inferClosed (lam base (var 0))                -- β → β
 #eval inferClosed (lam (arrow base base) (var 0))   -- (β→β) → (β→β)
 #eval inferClosed (lam (arrow (arrow base base) (arrow base base)) (var 0))

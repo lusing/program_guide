@@ -196,8 +196,8 @@ SN 定理 Hindley 不重证（引 HS 86 附录 2），但 5C2 给了两件
 都走**可计算性谓词**（computability predicate）路线——按类型
 归纳定义「可计算项」类，先证可计算 ⟹ SN，再证全体带注解项
 可计算。Tait 1967 定型；Girard 1970s 把它加强成 candidats de
-réductibilité 证下 System F 的 SN（12 章的天花板正是它挡住的）。
-本指南 30 章的 SN 策略地图把这条路画在图灵路线旁边——
+réductibilité 证下 System F 的 SN（18 章的天花板正是它挡住的）。
+本指南 36 章的 SN 策略地图把这条路画在图灵路线旁边——
 **WN 有初等策略证明，SN 要逻辑关系**，这是简单类型论的
 方法论分水岭。
 
