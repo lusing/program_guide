@@ -162,3 +162,42 @@ example : principal (.lam (.app (.lam (.var 0)) (.app (.var 0) (.var 2))))
         = none := by rfl     -- var 2 未绑定（封闭算法对自由变量说不）
 
 #eval principal (.lam (.lam (.app (.var 1) (.var 0))))   -- some (t0 → t1 → t1 … 见输出)
+
+/- ---------- 深化：型代换的代数（Hindley 3B） ---------- /
+
+   代换的「函数式表示」（Subst := Nat → Ty）让复合律成为一条
+   可机器证明的定理——书上手算的 3B5 例在此逐字复算。 -/
+
+/-- 复合律：(σ ∘ τ) 作用于 T = 先 τ 后 σ（3B5.1(ii)） -/
+theorem applyS_comp (σ τ : Subst) : ∀ T : Ty,
+    applyS (comp σ τ) T = applyS σ (applyS τ T)
+  | .tvar _ => rfl
+  | .arrow a b => by
+      simp only [applyS]
+      rw [applyS_comp σ τ a, applyS_comp σ τ b]
+
+/-- 3B5 的原始算例：s = [a := c→d, b := b→a]，t = [b := b→a]，
+    T = a→b。手算 s(t(T)) = (c→d)→((b→a)→(c→d))。 -/
+def sB : Subst := fun n =>
+  match n with
+  | 0 => .arrow (.tvar 2) (.tvar 3)          -- a ↦ c→d
+  | 1 => .arrow (.tvar 1) (.tvar 0)          -- b ↦ b→a
+  | k => .tvar k
+
+def tB : Subst := single 1 (.arrow (.tvar 1) (.tvar 0))
+
+example : applyS (comp sB tB) (.arrow (.tvar 0) (.tvar 1))
+        = .arrow (.arrow (.tvar 2) (.tvar 3))
+                (.arrow (.arrow (.tvar 1) (.tvar 0)) (.arrow (.tvar 2) (.tvar 3)))
+        := by rfl
+
+-- 书上的警告：直接并置（先 s 后忘了 t）会算出不同的东西——
+-- s(T) = (c→d)→(b→a)，复合必须把 t 的痕迹送进 s 的值域
+example : applyS sB (.arrow (.tvar 0) (.tvar 1))
+        = .arrow (.arrow (.tvar 2) (.tvar 3)) (.arrow (.tvar 1) (.tvar 0))
+        := by rfl
+
+/-- 3B5.1(v)：实例的实例仍是实例——复合律的直接推论 -/
+example : applyS (comp (single 0 (.tvar 4)) (single 1 (.tvar 5))) (.arrow (.tvar 1) (.tvar 0))
+        = applyS (single 0 (.tvar 4)) (.arrow (.tvar 5) (.tvar 0)) := by rfl
+
