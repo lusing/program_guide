@@ -163,4 +163,4 @@ Agda 与 Lean/Coq 的分野在此显形：Agda 走 MLTT 一系，宇宙塔
 
 ---
 
-上一章：[19 依赖类型](19-dependent.md) · 下一章：[22 定义 λD](22-definitions.md)
+上一章：[19 依赖类型](19-dependent.md) · 下一章：[21 λC 中的逻辑编码](21-logic.md)

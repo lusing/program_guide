@@ -63,6 +63,7 @@ typetheory/
 | [18 System F](docs/18-systemf.md) | 双 β 引擎；Church 数带类型复活；I I 翻案 | 三家 |
 | [19 依赖类型](docs/19-dependent.md) | Vec/Even/even_double；加法方向学三连 | 三家 |
 | [20 立方体 λC](docs/20-cube.md) | mini-PTS 内核：八系统=八张规则表可执行 | 三家 |
+| [21 λC 逻辑编码](docs/21-logic.md) | ⊥¬∧∨∃ 二阶编码即程序；ET↔DN 零公理；λP2 检查器 | Lean+Prolog |
 | [22 定义 λD](docs/22-definitions.md) | Section/opaque/模块三管理术 | 三家 |
 
 ### 第三部分 · Martin-Löf 类型论（27–33）
