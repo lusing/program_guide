@@ -149,4 +149,4 @@ Agda 那一行值得盯着看三十秒：**排中律的双重否定在直觉主�
 
 ---
 
-上一章：[05 Curry 指派](05-curry.md) · 下一章：[12 System F](12-systemf.md)
+上一章：[07 正规化与可指派刻画](07-norm.md) · 下一章：[12 System F](12-systemf.md)

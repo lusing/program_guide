@@ -315,4 +315,4 @@ V₀(a) = { [P]β : Γ⁺ ⊢ P : a }
 
 ---
 
-上一章：[05 Curry 指派](05-curry.md) · 下一章：[08 Curry–Howard](08-curryhoward.md)
+上一章：[05 Curry 指派](05-curry.md) · 下一章：[07 正规化与可指派刻画](07-norm.md)

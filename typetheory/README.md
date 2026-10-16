@@ -42,6 +42,7 @@ typetheory/
 | [04 λ→](docs/04-stlc.md) | 三种工程路线：检查器/推导即数据/内在式 + progress | 三路线 |
 | [05 Curry 指派](docs/05-curry.md) | 合一+主类型算法（HM 之根），occurs check | Lean |
 | [06 等式规则与语义](docs/06-eqsem.md) | Eq-规则/后置/WN-非-SN；λ-模型、类型解释、完备性 | Lean+Prolog |
+| [07 正规化与可指派刻画](docs/07-norm.md) | 图灵 1942 度数策略机器化；Y/SN-反例/BCKλ 三票 | Lean 旗舰 |
 
 ### 第二部分 · λ 立方体（12–15）
 
