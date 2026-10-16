@@ -144,4 +144,4 @@ F 有了「项 → 类型」方向的依赖（类型里能量化类型变量）�
 
 ---
 
-上一章：[08 Curry–Howard](08-curryhoward.md) · 下一章：[13 依赖类型](13-dependent.md)
+上一章：[11 居留项计数](11-counting.md) · 下一章：[13 依赖类型](13-dependent.md)

@@ -46,6 +46,7 @@ typetheory/
 | [08 Curry–Howard](docs/08-curryhoward.md) | 同构精确表述（三层/非单射/最疏散代表元）；居留搜索 | 三家 |
 | [09 弱逻辑与子结构 λ](docs/09-sub.md) | R_/BCK/BCI ↔ λI/BCKλ/BCIλ；四公理集矩阵 | Lean+Prolog |
 | [10 逆主类型与凝结分离](docs/10-converse.md) | 逆 PT/Meyer 构造/双胞胎定理；D-规则=PT 应用情形 | Prolog 主场+Lean |
+| [11 居留项计数](docs/11-counting.md) | Ben-Yelles 长式搜索；D(τ)=｜τ｜×‖τ‖ 三案例判定 | Prolog 主场+Lean |
 
 ### 第二部分 · λ 立方体（12–15）
 
