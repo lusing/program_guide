@@ -60,6 +60,23 @@
     （06/07 章）。
 18. 归纳证复合律等箭头情形：先 `simp only [applyS]` 展开再 rw
     归纳假设（05 章深化批）。
+19. **冒号前参数不参与模式匹配——第五踩**（14 章 axInst）：
+    `def axInst (s : Nat) : Fm → Bool | 1, …` 报 OfNat Fm 1；
+    全部参数移到冒号后即绿。
+20. **deriving BEq 遇嵌套递归字段（List (Val × Val)）内核不
+    归约**：#eval 正常而 by rfl/decide 全假，#reduce 停在
+    instBEqVal.beq（12 章）——手写 valEq/tabEq 互递归即愈。
+21. 公式臂内**多关注点 match on (Option, Option)** 同款卡壳
+    ——拆 qcombine/ecombine 辅助函数；`List.lookup` 也要换
+    手写查表（14 章）。
+22. **类型同义词挡实例**：`def Op2 := List Nat` 之后 `t[i]!`
+    报 failed to synthesize GetElem?（15 章）——直接用 List Nat。
+23. `interval_cases`/`by_contra` 是 Mathlib 的——standalone 用
+    `cases y`/`cases Nat.lt_or_ge` 正向二分（16 章）；∃! 记号
+    也不在 core，展开成 ∃ + ∀ 合取（17 章）。
+24. `Classical.choose` 的 def 要 `noncomputable`；`choose_spec`
+    给整个合取（取 `.1`）；omega 拒非线性假设——先 rw 成常数
+    不等式再 omega（17 章）。
 
 ## 31.3 Coq 高频坑
 
@@ -93,6 +110,15 @@
     （27 章）。
 13. `Check f : T` 遇隐式参数用 `@f`；`Fail Check` 演示不可类型
     化（04/24 章）。
+14. **`iota` 在 ClassicalDescription 不在 ClassicalEpsilon**；
+    签名 `iota [A] (i : A) P`——第二参是**默认元素**（epsilon
+    才要 inhabited）（17 章）。
+15. `exists!` 析构是**三层** intro 模式 `[x [Hx Huni]]`；且
+    `exists! x, P x -> Q` 解析成 `exists! x, (P x -> Q)`——
+    前提必须括号（17 章）。
+16. 自定义谓词（Definition 出来的 Prop）喂 lia 前要 `unfold`
+    ——simpl 不展开 Prop 定义，lia 报 Cannot find witness
+    （17 章 square4 实测）。
 
 ## 31.4 Agda 高频坑
 
@@ -127,7 +153,7 @@
 4. 公理**记账制**：每章收尾 `Print Assumptions`；UA 的 β 规则
    要单独公理（32 章 transport_ua）。
 
-## 31.6 Prolog 高频坑（Hindley 专轮新增：06/09/10/11 章）
+## 31.6 Prolog 高频坑（Hindley/Farmer 两专轮：06/09–12–15 章）
 
 1. SWI-Prolog 在 Windows 按系统 locale 读源文件——中文注释必须
    首行 `:- encoding(utf8).`，否则一串 Illegal multibyte Sequence
@@ -147,6 +173,15 @@
 7. de Bruijn 表示让 α-等价 = 字面相等，枚举去重就是 sort/2；
    深度枚举对 f-双参型按平方爆炸——逐层加燃料 + 撞到
    深度 > ‖τ‖ 早退（11 章）。
+8. **算术先于使用**：`numlist(0, N1, L), N1 is N-1` 顺序一反
+   就是 instantiation error（15 章 perm/2）。
+9. **目标失败时 format 输出被吞**（不 flush 就退场）——电池写
+   成 chk/cond 双谓词 + between 链式检查，失败先 format 再
+   halt(1)（12 章起定型）。
+10. 手写嵌套项十括号九错——**命名部件法**（`t_c1/1`、逐行组合）
+    + 逐行括号平衡扫描是批量电池的救命符（12 章）；公式求值器
+    允许「变量已换成值」的半展开态时要给叶子值加直通子句
+    （13 章 k3_fml(u,u)）。
 
 ## 31.7 七本读本怎么读
 
@@ -157,7 +192,7 @@
 | TAPL | 工程视角 | 03/04/24 章的对照读物；实现细节最全 |
 | Nordström 导论 | MLTT 圣经 | 10–16 章逐章对读；扫描件（无文本层） |
 | HoTT 书 | 第五部分 | 25–29 章；第 8 章配合 coq-hott 教程 |
-| Farmer《STT》 | 另一种简单类型论 | 01 章动机讨论的来源；模型论视角独有 |
+| Farmer《STT》(2023) | Church 式实用逻辑全书 | **12–17 章全覆盖**（双语义/未定义性/证明系统/理论/态射/变体）；01 章动机讨论来源 |
 | 《现代类型论的发展与应用》 | 中文综述 | 全程中文底本；2.5 子类型配 22 章、6.2 LF 配 19 章 |
 
 ## 31.8 四家速查（一页带走）

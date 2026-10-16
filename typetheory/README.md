@@ -14,9 +14,10 @@ WSL Agda 2.8.0+stdlib 2.3 / Lean 4.25.0 / swipl 10.0）机器验证的
 完整文件。
 
 > 核心理念：**类型论 = 语法分层 × 依赖类型 × Curry–Howard**。
-> λ 演算（02）→ 简单类型与 Hindley 深水区（03–11）→
-> λ 立方体（12–21）→ Martin-Löf（22–28）→ 证明助手实战（29–30）→
-> 同伦（31–35）→ 元理论与收束（36–37）。
+> λ 演算（02）→ 简单类型双轮：Hindley 证明论线（03–11）+
+> Farmer 模型论线（12–17）→ λ 立方体（18–21）→ Martin-Löf
+> （22–28）→ 证明助手实战（29–30）→ 同伦（31–35）→
+> 元理论与收束（36–37）。
 
 ## 目录结构
 
@@ -33,7 +34,7 @@ typetheory/
 
 ## 章节索引
 
-### 第一部分 · 简单类型论（01–11）
+### 第一部分 · 简单类型论（01–17）
 
 | 章 | 主题 | 示例 |
 |---|---|---|
@@ -48,6 +49,12 @@ typetheory/
 | [09 弱逻辑与子结构 λ](docs/09-sub.md) | R_/BCK/BCI ↔ λI/BCKλ/BCIλ；四公理集矩阵 | Lean+Prolog |
 | [10 逆主类型与凝结分离](docs/10-converse.md) | 逆 PT/Meyer 构造/双胞胎定理；D-规则=PT 应用情形 | Prolog 主场+Lean |
 | [11 居留项计数](docs/11-counting.md) | Ben-Yelles 长式搜索；D(τ)=｜τ｜×‖τ‖ 三案例判定 | Prolog 主场+Lean |
+| [12 Alonzo](docs/12-alonzo.md) | Church 式七构造子；V1–V7 部分赋值；Henkin 落域可执行化 | Lean+Prolog |
+| [13 未定义性](docs/13-undef.md) | TATU 三原则；= vs ≃；非法 β 双反例；K3 对照 | Lean+Prolog |
+| [14 证明系统 A](docs/14-proofsystem.md) | 公理即合一的检查器；A.3 三步原证；节俭模型与完备性 | Prolog 主场+Lean |
+| [15 理论与模型论](docs/15-theories.md) | 四级扩张；PA⁺ 紧致性引擎；范畴性/完备性；结构枚举机 | Prolog 主场+Lean |
+| [16 理论态射与小理论](docs/16-morphisms.md) | 态射定理；义务清偿；运输双实例；GRP 负例见证 | Lean 旗舰+Prolog |
+| [17 描述算子、选择与引用](docs/17-desc.md) | I/ε/AC 三级；Coq iota 古典互证；引用往返定理 | Coq 主场+Lean |
 
 ### 第二部分 · λ 立方体（18–21）
 
@@ -136,3 +143,7 @@ pwsh -NoProfile -Command '& ./build.ps1 -Lang agda'  # 单语言
   为示教版（非 stdlib 全功能）。
 - 全部示例在本机通道通过；其他版本（Coq 9.x / Agda 3 /
   Lean 4.3x）未测。
+- Farmer 专轮的完备性/紧致性/LST 等元定理证明为散文重构
+  （附录 B/C 的完整归纳未机器化——机器面取其可执行内核：
+  Henkin 落域检查、A.3 标本、PA⁺ 切片引理）；ch.10–12 的
+  序列记法/实数开发/知识模块语法以对读形式并入 15/16 章。
