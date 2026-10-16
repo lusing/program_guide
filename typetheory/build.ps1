@@ -116,7 +116,10 @@ foreach ($u in $units) {
             'agda' {
                 $dir = (Split-Path -Parent $u.Path) -replace '\\', '/'
                 $wslDir = '/mnt/' + $dir.Substring(0, 1).ToLower() + $dir.Substring(2)
-                $cmd = "cd '$wslDir' && agda -i $agdaStdlib -i . '$($u.Name)'"
+                $cub = ''
+                $head = (Get-Content -LiteralPath $u.Path -TotalCount 3 -ErrorAction SilentlyContinue) -join ' '
+                if ($head -match '--cubical') { $cub = '--cubical' }
+                $cmd = "cd '$wslDir' && agda $cub -i $agdaStdlib -i . '$($u.Name)'"
                 $out = & wsl -d $wslDistro bash -lc $cmd 2>&1 | Out-String
                 $ok = ($LASTEXITCODE -eq 0) -and -not ($out -match 'error|warning')
                 # _run.agda 结尾的文件：--compile 成原生可执行并运行（35 章）
