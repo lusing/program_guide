@@ -66,6 +66,7 @@ typetheory/
 | [21 λC 逻辑编码](docs/21-logic.md) | ⊥¬∧∨∃ 二阶编码即程序；ET↔DN 零公理；λP2 检查器 | Lean+Prolog |
 | [22 定义 λD](docs/22-definitions.md) | Section/opaque/模块三管理术 | 三家 |
 | [23 λD 形式系统](docs/23-lambdad.md) | def/inst 两规则；δ-归约可执行；原始定义=公理 | Lean+Prolog |
+| [24 旗式自然演绎](docs/24-flags.md) | 附录 A 规则库=定义；旗式解释器；图 11.16 全 7 行 | Prolog 主场+Lean |
 
 ### 第三部分 · Martin-Löf 类型论（27–33）
 
