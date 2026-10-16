@@ -45,6 +45,7 @@ typetheory/
 | [07 正规化与可指派刻画](docs/07-norm.md) | 图灵 1942 度数策略机器化；Y/SN-反例/BCKλ 三票 | Lean 旗舰 |
 | [08 Curry–Howard](docs/08-curryhoward.md) | 同构精确表述（三层/非单射/最疏散代表元）；居留搜索 | 三家 |
 | [09 弱逻辑与子结构 λ](docs/09-sub.md) | R_/BCK/BCI ↔ λI/BCKλ/BCIλ；四公理集矩阵 | Lean+Prolog |
+| [10 逆主类型与凝结分离](docs/10-converse.md) | 逆 PT/Meyer 构造/双胞胎定理；D-规则=PT 应用情形 | Prolog 主场+Lean |
 
 ### 第二部分 · λ 立方体（12–15）
 
