@@ -102,7 +102,7 @@ foreach ($u in $units) {
             'lean' {
                 $out = & lean $u.Path 2>&1 | Out-String
                 $ok = ($LASTEXITCODE -eq 0) -and -not ($out -match 'error:|warning:')
-                # 带 main 的文件加跑一遍编译执行（18 章的运行通道）
+                # 带 main 的文件加跑一遍编译执行（24 章的运行通道）
                 if ($ok -and (Select-String -LiteralPath $u.Path -Pattern 'def main' -Quiet)) {
                     $outRun = & lean --run $u.Path 2>&1 | Out-String
                     $ok = ($LASTEXITCODE -eq 0) -and -not ($outRun -match 'error:|warning:')
@@ -116,7 +116,7 @@ foreach ($u in $units) {
                 $cmd = "cd '$wslDir' && agda -i $agdaStdlib -i . '$($u.Name)'"
                 $out = & wsl -d $wslDistro bash -lc $cmd 2>&1 | Out-String
                 $ok = ($LASTEXITCODE -eq 0) -and -not ($out -match 'error|warning')
-                # _run.agda 结尾的文件：--compile 成原生可执行并运行（18 章）
+                # _run.agda 结尾的文件：--compile 成原生可执行并运行（24 章）
                 if ($ok -and $u.Name.EndsWith('_run.agda')) {
                     $exe = $u.Name -replace '\.agda$', ''
                     $drive = $buildDir.Substring(0, 1).ToLower()

@@ -1,7 +1,7 @@
 # CHEATSheet：类型论速查（typetheory 版）
 
-> 25 章正文的浓缩。四家对照以 Coq / Agda / Lean 为主；
-> Coq-HoTT 线（19–23 章）用自造 paths 的 mini 语法。
+> 31 章正文的浓缩。四家对照以 Coq / Agda / Lean 为主；
+> Coq-HoTT 线（25–29 章）用自造 paths 的 mini 语法。
 
 ## 1 判断与规则
 
@@ -53,13 +53,13 @@ funext : (∀x, fx=gx) → f=g    【公理】（Lean=Quot.sound 定理）
 ## 5 HoTT 五层楼
 
 ```text
-19 路径   p·q、!p、ap f、transport ——群律全 J 免费推
-20 泛等   idtoequiv : (A=B)→(A≃B) 是等价；ua 反向；β 记账
-21 截断   Contr(-2) IsHProp(-1) IsHSet(0)…
+25 路径   p·q、!p、ap f、transport ——群律全 J 免费推
+26 泛等   idtoequiv : (A=B)→(A≃B) 是等价；ua 反向；β 记账
+27 截断   Contr(-2) IsHProp(-1) IsHSet(0)…
           Prop=压平到 -1 层；funext ⇒ Π 对命题封闭
-22 HIT    构造子造路径：区间/圆/商；消去子带「路径条款」；
+28 HIT    构造子造路径：区间/圆/商；消去子带「路径条款」；
           计算规则公理补账（cubical 里可计算）
-23 环路   iterate (m+n) = iterate m · iterate n；
+29 环路   iterate (m+n) = iterate m · iterate n；
           π₁(S¹)=ℤ 要 encode-decode（coq-hott 教程续）
 ```
 
@@ -91,12 +91,12 @@ theorem t : ∀ n, 0 + n = n := fun _ => rfl  -- Lean 方向相反！
 CR（合流）   局部合流+SN ⟹ CR（Newman）；或并行归约+完全发展
 SN（λ→）     逻辑关系法（Tait）：按类型赋良行为语义
 SN（F）      Girard 消去剪枝（candidats）
-主体归约     类型沿归约保持（代换引理是地基：24 章）
+主体归约     类型沿归约保持（代换引理是地基：30 章）
 一致性       范式论证 + canonical forms
 可判定性     λ→/F 检查可判定；F 推断不可判定（Wells）
 ```
 
-## 8 精选坑位（25 章总清单的 TOP-10）
+## 8 精选坑位（31 章总清单的 TOP-10）
 
 1. Lean `def f (n) : T → U | 0, _ => ...`——冒号前参数不匹配；
 2. Coq 注释嵌套：`(*,*,*)` 会开层/闭层；

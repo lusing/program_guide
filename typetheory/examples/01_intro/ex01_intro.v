@@ -46,7 +46,7 @@ Check Type.                        (* : Type *)
 Check (fun A : Type => A -> A).    (* : Type -> Type *)
 
 (* ---- Prop 里的证明无关性（Coq 的 SProp / 理论上的证明无关） ---- *)
-(* 粗看：Prop 的两个证明在消去受限的意义下行为一致（第 21 章细讲） *)
+(* 粗看：Prop 的两个证明在消去受限的意义下行为一致（第 27 章细讲） *)
 
 (* ---- 从柯里-霍华德看：-> 是蕴涵，forall 是全称量词 ---- *)
 Theorem imp_trans_example : forall (P Q R : Prop),
