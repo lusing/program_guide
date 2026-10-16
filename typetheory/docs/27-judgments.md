@@ -91,4 +91,4 @@ Nordström 的次序进集合构造子：枚举（23）、等式（24）、归�
 
 ---
 
-上一章：[22 定义 λD](22-definitions.md) · 下一章：[28 Π 与枚举](28-enums.md)
+上一章：[26 从 Peano 到 Bézout](26-bezout.md) · 下一章：[28 Π 与枚举](28-enums.md)
