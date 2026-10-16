@@ -1,6 +1,6 @@
 # 01 · 工具链：不打开 Xcode 也能开发 macOS 应用
 
-> 示例：`examples/01_toolchain/main.swift`
+> 对应示例：`examples/01_toolchain/main.swift`
 > 实测输出见 `build/01_toolchain/stdout.clt.txt`
 
 ## 为什么要先讲命令行

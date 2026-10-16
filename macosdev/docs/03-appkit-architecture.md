@@ -1,6 +1,6 @@
 # 03 · AppKit 架构：MVC、响应链、委托
 
-> 示例：`examples/03_appkit_architecture/main.swift`
+> 对应示例：`examples/03_appkit_architecture/main.swift`
 > 实测输出见 `build/03_appkit_architecture/stdout.clt.txt`
 
 iOS 和 macOS 都叫 MVC，但 macOS 上的「C」承担的东西多得多：

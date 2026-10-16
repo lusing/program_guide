@@ -1,6 +1,6 @@
 # 15 · 绘图：NSRect、NSBezierPath、NSColor、NSImage
 
-> 示例：`examples/15_drawing/main.swift`
+> 对应示例：`examples/15_drawing/main.swift`
 > 实测输出见 `build/15_drawing/stdout.clt.txt`
 
 AppKit 的绘图分两条路：**NSBezierPath**（老式、简单）和 **Core Graphics**（`CGContext`）。

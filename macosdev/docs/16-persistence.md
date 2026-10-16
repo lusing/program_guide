@@ -1,6 +1,6 @@
 # 16 · 持久化：UserDefaults、plist、文件、本地化
 
-> 示例：`examples/16_persistence/main.swift`
+> 对应示例：`examples/16_persistence/main.swift`
 > 实测输出见 `build/16_persistence/stdout.clt.txt`
 
 macOS 上「存数据」有五六个层次。本章从轻到重走一遍，

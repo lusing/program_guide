@@ -1,6 +1,6 @@
 # 17 · 打包：.app 的结构、Info.plist、资源与本地化
 
-> 示例：`examples/17_packaging/`（`main.swift` + `AppWindow.xib`）
+> 对应示例：`examples/17_packaging/`（`main.swift` + `AppWindow.xib`）
 > 实测输出见 `build/17_packaging/stdout.clt.txt`
 
 Xcode 的「Archive」帮你做了很多事，也因此把很多事藏起来了。

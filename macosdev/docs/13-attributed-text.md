@@ -1,6 +1,6 @@
 # 13 · 富文本：NSAttributedString、字体度量与 TextKit
 
-> 示例：`examples/13_attributed_text/main.swift`
+> 对应示例：`examples/13_attributed_text/main.swift`
 > 实测输出见 `build/13_attributed_text/stdout.clt.txt`
 
 macOS 的文本系统是 Cocoa 里最深的坑之一，也是它最强的地方。

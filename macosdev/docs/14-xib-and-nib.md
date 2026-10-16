@@ -1,6 +1,6 @@
 # 14 · XIB 与 nib：Interface Builder 到底产出了什么
 
-> 示例：`examples/14_xib_and_nib/`（`MainView.xib` + `main.swift`）
+> 对应示例：`examples/14_xib_and_nib/`（`MainView.xib` + `main.swift`）
 > 实测输出见 `build/14_xib_and_nib/stdout.clt.txt`
 
 XIB 是 macOS 开发绕不开的一环（Xcode 的模板默认就给一个 `MainMenu.xib`）。

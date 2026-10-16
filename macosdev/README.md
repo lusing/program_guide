@@ -71,28 +71,28 @@ macosdev/
 
 ## 各章索引
 
-| 章 | 标题 | 示例 | 要点 |
-| --- | --- | --- | --- |
-| 01 | 工具链 | `01_toolchain` | xcrun / 两套 SDK / ibtool / 部署目标 / 六条判定 |
-| 02 | 第一个 AppKit 应用 | `02_hello_appkit` | NSApplication / NSWindow / 左下角原点 / 自测模式 |
-| 03 | AppKit 架构 | `03_appkit_architecture` | 响应链 / 委托可选方法 / target-action / MVC |
-| 04 | Objective-C 语言基础 | `04_objc_language` | 消息发送 / nil / SEL / 协议分类 / block / NSError |
-| 05 | Foundation（OC 篇） | `05_objc_foundation` | NSString length / NSNotFound / NSNumber / JSON |
-| 06 | Foundation（Swift 篇） | `06_swift_foundation` | String↔NSString / Range↔NSRange / Codable / 值语义 |
-| 07 | OC 与 Swift 混编 | `07_objc_swift_mix` | bridging header / 生成的 Swift 头 / nullability |
-| 08 | 窗口、sheet、模态 | `08_window_and_modals` | frame vs contentRect / level / NSAlert / NSSavePanel |
-| 09 | 布局 | `09_layout` | autoresizingMask / Auto Layout / NSStackView / NSScrollView |
-| 10 | 常用控件 | `10_controls` | NSButton 四种类型 / NSTextField / NSPopUpButton / Stepper |
-| 11 | KVC / KVO / Bindings | `11_kvo_bindings` | @objc dynamic / Bindings 双向 / NSArrayController |
-| 12 | 表格与大纲 | `12_table_outline` | view-based vs cell-based / NSOutlineView 的 item 模型 |
-| 13 | 富文本与 TextKit | `13_attributed_text` | 属性串共享引用 / 字体度量 / storage-layout-container |
-| 14 | XIB 与 nib | `14_xib_and_nib` | ibtool / File's Owner / outlet / customModule |
-| 15 | 绘图 | `15_drawing` | NSRect / NSBezierPath / 语义色 / bitmapData / NSImage |
-| 16 | 持久化 | `16_persistence` | UserDefaults 域 / plist / 文件 / 本地化 / 沙箱 |
-| 17 | 打包 | `17_packaging` | .app 结构 / Info.plist / .lproj / 签名公证 |
-| 18 | 并发 | `18_concurrency` | GCD / concurrentPerform / OperationQueue / 主线程规则 |
-| 19 | 菜单、状态栏、工具栏 | `19_menus` | NSMenu / target=nil 走响应链 / NSStatusItem / NSToolbar |
-| 20 | 剪贴板、拖放、撤销 | `20_pasteboard_undo` | NSPasteboard 多类型 / 拖放协商 / NSUndoManager 分组 |
+| 章 | 要点 | 示例 |
+| --- | --- | --- |
+| [01 工具链](docs/01-toolchain.md) | xcrun / 两套 SDK / ibtool / 部署目标 / 六条判定 | `01_toolchain` |
+| [02 第一个 AppKit 应用](docs/02-hello-appkit.md) | NSApplication / NSWindow / 左下角原点 / 自测模式 | `02_hello_appkit` |
+| [03 AppKit 架构](docs/03-appkit-architecture.md) | 响应链 / 委托可选方法 / target-action / MVC | `03_appkit_architecture` |
+| [04 Objective-C 语言基础](docs/04-objc-language.md) | 消息发送 / nil / SEL / 协议分类 / block / NSError | `04_objc_language` |
+| [05 Foundation（OC 篇）](docs/05-objc-foundation.md) | NSString length / NSNotFound / NSNumber / JSON | `05_objc_foundation` |
+| [06 Foundation（Swift 篇）](docs/06-swift-foundation.md) | String↔NSString / Range↔NSRange / Codable / 值语义 | `06_swift_foundation` |
+| [07 OC 与 Swift 混编](docs/07-objc-swift-mix.md) | bridging header / 生成的 Swift 头 / nullability | `07_objc_swift_mix` |
+| [08 窗口、sheet、模态](docs/08-window-and-modals.md) | frame vs contentRect / level / NSAlert / NSSavePanel | `08_window_and_modals` |
+| [09 布局](docs/09-layout.md) | autoresizingMask / Auto Layout / NSStackView / NSScrollView | `09_layout` |
+| [10 常用控件](docs/10-controls.md) | NSButton 四种类型 / NSTextField / NSPopUpButton / Stepper | `10_controls` |
+| [11 KVC / KVO / Bindings](docs/11-kvo-bindings.md) | @objc dynamic / Bindings 双向 / NSArrayController | `11_kvo_bindings` |
+| [12 表格与大纲](docs/12-table-outline.md) | view-based vs cell-based / NSOutlineView 的 item 模型 | `12_table_outline` |
+| [13 富文本与 TextKit](docs/13-attributed-text.md) | 属性串共享引用 / 字体度量 / storage-layout-container | `13_attributed_text` |
+| [14 XIB 与 nib](docs/14-xib-and-nib.md) | ibtool / File's Owner / outlet / customModule | `14_xib_and_nib` |
+| [15 绘图](docs/15-drawing.md) | NSRect / NSBezierPath / 语义色 / bitmapData / NSImage | `15_drawing` |
+| [16 持久化](docs/16-persistence.md) | UserDefaults 域 / plist / 文件 / 本地化 / 沙箱 | `16_persistence` |
+| [17 打包](docs/17-packaging.md) | .app 结构 / Info.plist / .lproj / 签名公证 | `17_packaging` |
+| [18 并发](docs/18-concurrency.md) | GCD / concurrentPerform / OperationQueue / 主线程规则 | `18_concurrency` |
+| [19 菜单、状态栏、工具栏](docs/19-menus.md) | NSMenu / target=nil 走响应链 / NSStatusItem / NSToolbar | `19_menus` |
+| [20 剪贴板、拖放、撤销](docs/20-pasteboard-undo.md) | NSPasteboard 多类型 / 拖放协商 / NSUndoManager 分组 | `20_pasteboard_undo` |
 
 ## 建议阅读顺序
 

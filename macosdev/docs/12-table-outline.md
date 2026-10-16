@@ -1,6 +1,6 @@
 # 12 · NSTableView 与 NSOutlineView
 
-> 示例：`examples/12_table_outline/main.swift`
+> 对应示例：`examples/12_table_outline/main.swift`
 > 实测输出见 `build/12_table_outline/stdout.clt.txt`
 
 macOS 的列表控件比 iOS 的 `UITableView` 老，也因此**有两套并存的实现**。

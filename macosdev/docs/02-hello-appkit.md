@@ -1,6 +1,6 @@
 # 02 · 第一个 AppKit 应用：不用 XIB 也能建窗口
 
-> 示例：`examples/02_hello_appkit/main.swift`
+> 对应示例：`examples/02_hello_appkit/main.swift`
 > 实测输出见 `build/02_hello_appkit/stdout.clt.txt`
 
 ```bash

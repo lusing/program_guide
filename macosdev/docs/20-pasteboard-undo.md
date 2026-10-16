@@ -1,6 +1,6 @@
 # 20 · 剪贴板、拖放与撤销
 
-> 示例：`examples/20_pasteboard_undo/main.swift`
+> 对应示例：`examples/20_pasteboard_undo/main.swift`
 > 实测输出见 `build/20_pasteboard_undo/stdout.clt.txt`
 
 复制粘贴和拖放在 macOS 上**共用同一套机制**：`NSPasteboard`。

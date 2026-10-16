@@ -1,6 +1,6 @@
 # 19 · 菜单、状态栏与工具栏
 
-> 示例：`examples/19_menus/main.swift`
+> 对应示例：`examples/19_menus/main.swift`
 > 实测输出见 `build/19_menus/stdout.clt.txt`
 
 macOS 的菜单栏**不属于任何窗口**，它属于 `NSApplication`。

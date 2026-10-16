@@ -1,6 +1,6 @@
 # 10 · 常用控件：NSButton、NSTextField、NSPopUpButton……
 
-> 示例：`examples/10_controls/main.swift`
+> 对应示例：`examples/10_controls/main.swift`
 > 实测输出见 `build/10_controls/stdout.clt.txt`
 
 AppKit 的控件名字和 UIKit 很像（`NSButton` vs `UIButton`），
