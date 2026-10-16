@@ -193,4 +193,4 @@ A₃ : x:a→a→c, y:a, z:a ⊢ x y z : c        A₄ : x:a→a→c, y:a ⊢ x 
 
 ---
 
-上一章：[07 正规化与可指派刻画](07-norm.md) · 下一章：[12 System F](12-systemf.md)
+上一章：[07 正规化与可指派刻画](07-norm.md) · 下一章：[09 弱逻辑与子结构 λ](09-sub.md)
