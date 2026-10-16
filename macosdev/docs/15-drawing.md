@@ -73,7 +73,7 @@ hand.lineCapStyle  = .butt
 ```
 
 > **坑**：`elementCount` **不是 API 契约的一部分**。
-> 矩形路径在本机（macOS 14 / SDK 15.2）是 5，某些版本上是 6
+> 矩形路径在本机（macOS 15 / SDK 26.2）是 5，某些版本上是 6
 > （收笔被拆成 lineto + closepath），别拿具体数字做断言。
 >
 > **坑**：`NSBezierPath(ovalIn:)` 的 `bounds` **不能写 `==` 精确比较**。

@@ -2,7 +2,7 @@
 
 > macOS 原生应用开发讲的是 **Cocoa** 这一整套东西：AppKit 负责窗口、控件、绘图、菜单这些界面能力；Foundation 提供字符串、集合、数据、日期这些地基类；而它们全部建立在 **Objective-C 运行时**之上——消息发送、selector、KVO、Bindings、XIB 里的 outlet/action，无一不是 OC 语义。即使你只写 Swift，也躲不开它：Swift 与 OC 在 Foundation/AppKit 这一层是**双向桥接**的，桥接处的「看起来一样其实不一样」正是大多数 bug 的来源。
 
-本教程面向「想真正搞懂 macOS 开发、而不是只会拖 Xcode 控件」的读者，按依赖链组织为 **20 章（五篇）**，每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例，全部用本机 Xcode 16.2（Swift 6.0.3）+ Command Line Tools **双工具链**编译验证，输出逐字节比对。全部示例**不打开 Xcode**——只用 `swiftc` / `clang` / `ibtool` 在终端里编出来跑，因为这样你才知道 Xcode 到底替你做了什么。
+本教程面向「想真正搞懂 macOS 开发、而不是只会拖 Xcode 控件」的读者，按依赖链组织为 **20 章（五篇）**，每章对应 `examples/` 下一个**可编译、可运行、可自测**的示例，全部用本机 Xcode 26.3（Swift 6.2.4）+ Command Line Tools **双通道**编译验证，输出逐字节比对。全部示例**不打开 Xcode**——只用 `swiftc` / `clang` / `ibtool` 在终端里编出来跑，因为这样你才知道 Xcode 到底替你做了什么。
 
 ## 目录
 

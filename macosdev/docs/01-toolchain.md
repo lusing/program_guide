@@ -17,26 +17,39 @@ Xcode 很好用，但它把三件事藏起来了：编译器怎么被调起来�
 
 | 项目 | 值 |
 | --- | --- |
-| macOS | 14.8.9（Darwin 23.6.0） |
+| macOS | 15.8.1（Build 24H32，Darwin 24.6.0） |
 | 架构 | x86_64 |
-| Xcode | 16.2（Build 16C5032a，`/Applications/Xcode.app`） |
+| Xcode | 26.3（Build 17C529，`/Applications/Xcode.app`，`xcode-select` 当前指向它） |
 | Xcode 工具链 | `.../Toolchains/XcodeDefault.xctoolchain` |
-| Xcode SDK | `.../Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk`（macOS 15.2） |
+| Xcode SDK | `.../Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk`（macOS 26.2） |
 | Command Line Tools | `/Library/Developer/CommandLineTools` |
-| CLT SDK | `/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk`（macOS 15.2） |
-| Swift | 6.0.3（swiftlang-6.0.3.1.10）—— 两套工具链同版本 |
-| Apple clang | 16.0.0（clang-1600.0.26.6） |
-| 部署目标 | `x86_64-apple-macos12.0`（**刻意钉得比本机低**，见下） |
+| CLT SDK | `/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk`（macOS 15.5；目录里另存有 14.5/15/15.2 等旧 SDK） |
+| Swift | Xcode 工具链 6.2.4（swiftlang-6.2.4.1.4）；CLT 自带 6.1.2（swiftlang-6.1.2.1.2）—— **两套版本不再相同** |
+| Apple clang | 17.0.0（clang-1700.6.4.2） |
+| 部署目标 | `x86_64-apple-macos12.0`（**刻意钉得比本机低**，见下；Xcode 26 仍接受 12.0） |
 
-也就是说**本机有两套可用的 Swift**：
+本机实际有**三处** Swift：
 
 ```bash
-/usr/bin/swiftc                                          # CLT 自带的（走 xcode-select）
-/Applications/Xcode.app/.../usr/bin/swiftc               # Xcode.app 里那套
+/usr/bin/swiftc                                           # 壳（shim），按 xcode-select 派发
+/Library/Developer/CommandLineTools/usr/bin/swiftc        # CLT 自带的 6.1.2
+/Applications/Xcode.app/.../usr/bin/swiftc                # Xcode.app 里那套 6.2.4
 ```
 
-这两套版本号可能不一样（本机恰好都是 6.0.3）。本教程的验证脚本**两条通道都跑一遍，再逐字节比对输出** ——
-这一步不是强迫症，它抓到过的真实问题包括「SDK 版本不同导致某个 API 的默认值不同」。
+**坑**：`xcode-select` 指向 Xcode.app 时，`/usr/bin/swiftc` 派发到的是 **Xcode 的
+6.2.4**，不是 CLT 自己的 6.1.2。所以本教程验证脚本的两条通道实际是：
+
+- `clt` 通道 = `/usr/bin/swiftc`（实为 Xcode 编译器）+ **CLT SDK 15.5**
+- `xcode` 通道 = Xcode 工具链 + **Xcode SDK 26.2**
+
+也就是说两通道的差异主要落在 **SDK** 上（15.5 vs 26.2），这恰恰是脚本要抓的东西
+——「SDK 版本不同导致某个 API 的默认值/行为不同」。想连编译器也各用各的，
+用环境变量把 clt 通道钉到 CLT 自带工具链：
+
+```bash
+SWIFTC_CLT=/Library/Developer/CommandLineTools/usr/bin/swiftc \
+CLANG_CLT=/Library/Developer/CommandLineTools/usr/bin/clang ./run-all.sh
+```
 
 ## xcrun：永远不要硬编码路径
 
@@ -144,14 +157,14 @@ simulator         : false
 ```
 == 部署目标（编译进二进制的一条元数据）==
 系统 >= 14.0 : true
-系统 >= 15.0 : false
-走进 macOS 15 分支 : false
+系统 >= 26.0 : false
+走进 macOS 26 分支 : false
 ```
 
 `-target` 里的 `macos12.0` 就是**部署目标**：它是一条**编译进二进制**的元数据，
 声明「这个程序最低要跑在 macOS 12.0 上」。它的作用在**编译期**——
 如果你不加 `#available` 守卫就用了一个 macOS 13 才有的 API，编译器会**直接报错**，
-而不是等到运行时才崩。本教程把部署目标刻意钉在比本机（14.8.9）低的 12.0，
+而不是等到运行时才崩。本教程把部署目标刻意钉在比本机（15.8.1）低的 12.0，
 就是为了让「误用新 API」在编译期暴露出来。
 
 **但要分清两件事**（这是最容易搞混的一点）：
@@ -160,10 +173,10 @@ simulator         : false
 - **`#available` / `isOperatingSystemAtLeast`**：**运行期**判定，判的是
   「**此刻实际跑在哪个系统版本上**」，跟部署目标、跟 SDK 版本都**无关**。
 
-所以上面 `系统 >= 14.0` 是 true、`系统 >= 15.0` 是 false，判的是本机实际系统
-（14.8.9），**不是**部署目标 12.0。`if #available(macOS 15.0, *)` 同理：
-本机还不到 15，所以走 else 分支。部署目标只影响「编译器要不要保留 else 分支」
-（部署目标 ≥ 15 时编译器知道 else 永远走不到，会优化掉并允许你省略守卫），
+所以上面 `系统 >= 14.0` 是 true、`系统 >= 26.0` 是 false，判的是本机实际系统
+（15.8.1），**不是**部署目标 12.0。`if #available(macOS 26.0, *)` 同理：
+本机还不到 26，所以走 else 分支。部署目标只影响「编译器要不要保留 else 分支」
+（部署目标 ≥ 26 时编译器知道 else 永远走不到，会优化掉并允许你省略守卫），
 真正运行时走哪条，永远由**实际系统版本**决定。
 
 > 一句话：**部署目标管编译，`#available` 管运行。** 两者要成对设置——
