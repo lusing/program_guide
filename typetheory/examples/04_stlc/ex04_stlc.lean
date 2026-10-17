@@ -113,7 +113,7 @@ example : normalizeFuel 100
 /- ---------- 观察一：λ→ 的「贫穷」：没有多态 ---------- -/
 
 -- λ(x:β). x 只能服务基类型；想要「对一切 T 的恒等」需要 ∀，
--- 即 System F —— 34 章的主角。这里只能给每个类型手写一份：
+-- 即 System F —— 40 章的主角。这里只能给每个类型手写一份：
 #eval inferClosed (lam base (var 0))                -- β → β
 #eval inferClosed (lam (arrow base base) (var 0))   -- (β→β) → (β→β)
 #eval inferClosed (lam (arrow (arrow base base) (arrow base base)) (var 0))

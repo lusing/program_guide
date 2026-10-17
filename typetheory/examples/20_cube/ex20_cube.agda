@@ -51,7 +51,7 @@ _ = refl ∷ []
 --   impred   : ((A : Set₀) → A → Set₀) → Set₀  -- 结果仍在 Set₀，
 -- 量化进来的只是参数，不违反直谓性。真正被禁的是
 --   Π (P : Set₀ → Set₀) . Set₀   若要它【本身】在 Set₀ 里
--- （Coq 的 Prop 语义允许——59 章细讲两种立场的代价）
+-- （Coq 的 Prop 语义允许——65 章细讲两种立场的代价）
 
 BigQuant : (ℕ → Set) → Set
 BigQuant P = P zero
