@@ -21,7 +21,7 @@ ready.store(true, boost::memory_order_release);  // 发布
 ready.load(boost::memory_order_acquire);         // 订阅
 ```
 
-运行输出（`atomic.cpp`，计数与 CAS 结果全部确定）：
+运行输出（`atomic.cpp`）：
 
 ```text
 fetch_add 前值 = 10 现值 = 15
@@ -32,8 +32,12 @@ relaxed 读回 = 100
 double 原子 lock-free? true
 std 版同构: 2
 atomic_ref 作用后普通变量 = 7
+减一次是最后持有者? false
+再减是最后持有者? true（此时应 acquire 栅栏后 delete——intrusive_ptr 的 intrusive_ref_counter 就是这套内存序）
 自检通过
 ```
+
+最后两行是书 ch12.1.4 的 **ref_count 内存序配方**（`intrusive_ref_counter` 的内核）：**加计数用 `relaxed`**——只求原子不求同步；**减计数用 `release`**——最后一次减之前的所有写（对象成员的构造等）必须对删除后的世界可见；检测到自己减到 0 时加一道 **`acquire` 栅栏**再 delete。这是"精选内存序"最著名的实例——比默认 `seq_cst` 快，又保正确性。
 
 三个必懂的概念（例程逐一实证）：
 

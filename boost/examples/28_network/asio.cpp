@@ -3,6 +3,7 @@
 // 对应文档：docs/28-network.md
 #include <boost/asio.hpp>
 #include <chrono>
+#include <functional>
 #include <iostream>
 #include <thread>
 
@@ -43,7 +44,42 @@ int main() {
     guard.reset();                        // 放行
     bg.join();
 
-    // 5) C++26 展望：std::execution（P2300）是这套执行模型的标准化，
+    // ── 书 ch12.3 的定时期详解 ──
+    // 5) 定时器对象合同：读/写到期时间 + cancel 掐掉待处理的 handler
+    {
+        asio::io_context io4;
+        asio::steady_timer tc(io4, std::chrono::milliseconds(30));
+        std::cout << "到期时间在未来? "
+                  << (tc.expiry() > asio::steady_timer::clock_type::now())
+                  << '\n';
+        tc.async_wait([](const boost::system::error_code& ec) {
+            // 被取消的 handler 收到 operation_aborted——不是异常不是崩溃
+            std::cout << "被取消的 handler 收到 operation_aborted? "
+                      << (ec == asio::error::operation_aborted) << '\n';
+        });
+        std::size_t n = tc.cancel();      // 挂上之后再掐（cancel 返回掐掉的数）
+        std::cout << "cancel 掐掉 handler 数 = " << n << '\n';
+        io4.run();
+    }
+
+    // 6) 周期定时器：到期后续期再挂（书 timer_with_func 的核心循环）
+    {
+        asio::io_context io5;
+        asio::steady_timer tick(io5, std::chrono::milliseconds(5));
+        int ticks = 0;
+        std::function<void(const boost::system::error_code&)> loop =
+            [&](const boost::system::error_code& ec) {
+                if (ec || ticks >= 3) return;    // 取消或到次数即止
+                ++ticks;
+                tick.expires_after(std::chrono::milliseconds(5)); // 续期
+                tick.async_wait(loop);           // 再挂自己
+            };
+        tick.async_wait(loop);
+        io5.run();
+        std::cout << "周期定时器 tick 了 " << ticks << " 次后自停\n";
+    }
+
+    // 7) C++26 展望：std::execution（P2300）是这套执行模型的标准化，
     //    作者同源；在那之前 asio 就是答案
     std::cout << "自检通过\n";
     return 0;

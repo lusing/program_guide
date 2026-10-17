@@ -24,8 +24,14 @@ asio::post(io, task);           // 向事件循环投递任务
 异步回调触发? 1
 跨线程事件循环? 1
 post 的任务被执行
+到期时间在未来? 1
+cancel 掐掉 handler 数 = 1
+被取消的 handler 收到 operation_aborted? 1
+周期定时器 tick 了 3 次后自停
 自检通过
 ```
+
+输出后四行是书 ch12.3 定时器详解的落地：**`expiry()`** 读到期时间点（与 `now()` 比较判断是否已过期）；**`cancel()`** 掐掉待处理的 handler——被掐的 handler 收到 `operation_aborted` 错误码（**不是异常不是崩溃**，返回值是掐掉的 handler 数）；**周期定时器**的模式是"到期 → 处理 → `expires_after()` 续期 → `async_wait(自己)` 再挂"——书 timer_with_func 类的核心循环。
 
 **毕业档案**：**平行共存**——`std::execution`（C++26，P2300）的执行模型思想直通 asio（作者 Chris Kohlhoff 深度参与提案），但 asio 的 socket/timer 体系本身没有 std 对应，**未来很多年它仍是网络的答案**。⭐ 大法器：strand（无锁串行化）、协程集成（16 章 cobalt）、buffer 家族、unix domain socket、SSL。
 

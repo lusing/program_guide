@@ -64,6 +64,22 @@ int main() {
     ar.fetch_add(7);
     std::cout << "atomic_ref 作用后普通变量 = " << plain << '\n';
 
+    // 7) 书 ch12.1.4 的综合件：ref_count——原子计数 + 精选内存序的
+    //    引用计数（intrusive_ptr 基类同款语义，这里直接演练计数本身）：
+    //    加计数用 relaxed 就够（无同步意义）；减计数要 release——最后一次
+    //    减之前的所有写必须对随后 delete 之后的读者可见，故配 acquire 栅栏
+    {
+        boost::atomic<int> cnt{0};
+        cnt.fetch_add(1, boost::memory_order_relaxed);       // 加：只求原子
+        cnt.fetch_add(1, boost::memory_order_relaxed);       // 加：只求原子
+        bool last = cnt.fetch_sub(1, boost::memory_order_release) == 1;
+        std::cout << "减一次是最后持有者? " << last << '\n';
+        last = cnt.fetch_sub(1, boost::memory_order_release) == 1;
+        std::cout << "再减是最后持有者? " << last
+                  << "（此时应 acquire 栅栏后 delete——intrusive_ptr 的"
+                     " intrusive_ref_counter 就是这套内存序）\n";
+    }
+
     std::cout << "自检通过\n";
     return 0;
 }
