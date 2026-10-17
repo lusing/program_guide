@@ -1,10 +1,15 @@
 # Boost C++ 教程（1.92 全库版）
 
-每个库都有例程和简介，沿 C++ 标准演进时间线讲解。全部 **149 个例程**在本机
-编译 + 运行 + 六条判定验证（297/297 全绿），GPU 例程在 RTX 3060 上实测。
+每个库都有例程和简介，沿 C++ 标准演进时间线讲解，另以罗剑锋《Boost 程序库
+完全开发指南（第 5 版）》为纲做了全书深化（其 1.72 时代的示例全部升级到 1.92
+实测、正文自包含）。全部 **156 个例程**在本机编译 + 运行 + 六条判定验证
+（全绿），GPU 例程在 RTX 3060 上实测。
 
 **macOS 侧另有一套等价入口** `run-all.sh`：Apple clang 16 + 自建 Boost 1.88，
-双通道（动态/静态链接 Boost）跑完 149 例，见 [macOS 验证](#macos--linux-验证run-allsh)。
+双通道（动态/静态链接 Boost）对账，见 [macOS 验证](#macos--linux-验证run-allsh)。
+（2026-10 本仓库按罗剑锋第 5 版书扩充后新增了 7 个例程——`timer_v1/posix_time/
+local_time/operators/sp_patterns/minmax_clamp/integer`——macOS 侧上次全量对账
+是扩充前的 149 例，新例程的跨通道对账待下次在 macOS 上跑 `run-all.sh` 补上。）
 
 ## 目录结构
 
@@ -14,8 +19,8 @@ boost/
 ├── build.ps1            ← Windows 构建/验证入口（MSVC + Boost 1.92 DLL）
 ├── run-all.sh           ← macOS/Linux 构建/验证入口（clang + 自建 Boost）
 ├── tools/check-docs.py  ← 文档与实测输出的对账（三项机器核查之一）
-├── docs/                ← 章节正文（33 章）
-└── examples/NN_章名/    ← 每库一个自包含例程（149 个 .cpp，含 1 个插件库）
+├── docs/                ← 章节正文（34 章）
+└── examples/NN_章名/    ← 每库一个自包含例程（156 个 .cpp，含 1 个插件库）
 ```
 
 ## 工具链
@@ -229,6 +234,7 @@ Apple clang 16.0.0（Xcode 16）/ macOS 14 / x86_64，Boost 1.88 源码树自建
 | 章 | 主题 |
 |---|---|
 | [33](docs/33-appendix.md) | 全库总表（毕业状态 / std 对应 / 验证状态 / 选型决策树） |
+| [34](docs/34-design-patterns.md) | Boost 与设计模式（GoF 23+4 个模式在库里的实例归位） |
 
 ## 未纳入验证的库（需外部环境）
 
