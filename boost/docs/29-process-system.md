@@ -210,8 +210,14 @@ port = 9000
 verbose = 1
 tags: alpha beta
 帮助首行 = help
+implicit_value(-d 不带值) = 5
+位置参数(免选项名) = a.txt
+配置文件解析 port = 7777
+未注册选项收集到 1 个（首 = --unknown）
 自检通过
 ```
+
+书里四件进阶（例程 4-7 段）：**implicit_value**——选项出现但不带值时的隐含值（`-d` 等价 `-d5`，书里的搜索深度默认 5 就是这么做的；default_value 是"没出现时的值"，两者是两回事）；**位置参数**——`positional_options_description` 把"裸参数"挂到某选项名上（`command_line_parser(...).options(d).positional(pod).run()`，不能用 `parse_command_line` 简式）；**配置文件**——`parse_config_file(流, desc)` 吃 `name = value` 格式；**未注册选项放行**——`allow_unregistered()` + `collect_unrecognized()`（"把 `--unknown` 收集起来转发给别人"是响应文件/子命令转发的基础）。三大组件的分工：**选项描述器**（`options_description`/`value<T>()`）定义"有哪些选项、值什么语义"，**分析器**（`parse_command_line`/`parse_config_file`/`command_line_parser`/`parse_environment`）从各数据源解析，**存储器**（`variables_map`，本质 `map<string, any>`）统一存取（`vm["x"].as<T>()` 取值、`notify(vm)` 把绑定外部变量的值推出去）。
 
 短/长选项、默认值、多值、配置文件（`parse_config_file`）、环境变量三合一。**竞争者**：CLI11（第三方但现代）。老牌项目的既定答案。⭐
 

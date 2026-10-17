@@ -21,7 +21,7 @@ for (const auto& entry : fs::recursive_directory_iterator(dir)) {
 }
 ```
 
-运行输出（`filesystem.cpp`，**Windows 侧**）：
+运行输出（`filesystem.cpp`）：
 
 ```text
 目录 = "F:\temp\boost_tutorial_demo"
@@ -30,8 +30,19 @@ for (const auto& entry : fs::recursive_directory_iterator(dir)) {
 目录下条目数 = 2（data.txt + sub）
 递归找到 .log = 2 个
 std 版文件名 = "data.txt"
+分解: root_name="C:" 有根目录? 1 parent="C:/boost/boost/filesystem" stem="path" ext=".hpp"
+改扩展名后文件名 = "path.hxx"
+路径迭代:["/"]["boost"]["tools"]["libs"]
+改名后的文件存在? 1
+修改时间非零? 1
+磁盘: 容量>0? 1 可用>0? 1
 清理后存在? 0
+自检通过
 ```
+
+**path 分解全家**（输出的 7-9 行）：`root_name()`（Windows 盘符 `C:`）/`root_directory()`/`parent_path()`/`filename()`/`stem()`（去扩展名）/`extension()`——每个都有对应的 `has_xxx()`；就地修改 `replace_extension(".hxx")`/`remove_filename()`。**path 自身可迭代**：每段一个元素，根目录也占一段（`["/"]["boost"]...`）——逐级走目录树不用手写分隔符解析。文件操作四件：`rename`/`copy_file`（配 `copy_options::overwrite_existing` 等）/`remove_all`/`last_write_time`（boost 版返回 `std::time_t`——std::filesystem 的 `file_time_type` 是另一个类型，两库别混）；`space()` 拿磁盘容量三元组。
+
+
 
 运行输出（`filesystem.cpp`，macOS 侧）：
 
