@@ -100,7 +100,7 @@ boost::locale::translate("File not found").str();    // gettext 翻译骨架
 运行输出（`locale.cpp`）：
 
 ```text
-大写 = GRÜSSE
+大写 = GRÜßE
 小写 = grüsse
 NFC/NFD 字节数 = 2/3（分解形 e+́ 占更多字节）
 归一化后相等? true

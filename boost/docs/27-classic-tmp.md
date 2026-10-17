@@ -20,7 +20,7 @@ mpl::accumulate<Cnts, mpl::int_<0>, mpl::plus<mpl::_1, mpl::_2>>::type;
 transform → int* OK（比 mp11 多个 ::type）
 浮点数 = 2 个
 accumulate 求和 = 6
-size = 4 at<2> = d
+size = 4 at<2> = double
 自检通过
 ```
 
@@ -116,7 +116,7 @@ AST 结构:
 plus(
     terminal(1)
   , multiplies(
-        terminal(8Wildcard)
+        terminal(struct Wildcard)
       , terminal(1)
     )
 )

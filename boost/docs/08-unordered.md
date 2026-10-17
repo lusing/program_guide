@@ -51,7 +51,7 @@ list 哈希非零? true
 tuple 哈希非零? true
 组合哈希非零? true
 range 哈希 = 2187638889926216118
-std::hash(string) = 11527739985994839142
+std::hash(string) = 6367522192732022988
 自检通过
 ```
 

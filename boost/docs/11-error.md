@@ -26,14 +26,24 @@ catch (const boost::exception& e) {
 行号 = 42
 来源 = config.ini
 重抛后仍能取行号 = 42
+诊断含 errno 译文? 1 含文件名? 1
+老异常装箱后能取 errno = 13
+throw_exception 抛出: from throw_e...
 exception_ptr 搬运后重抛成功? true
 ```
 
 三个设计点：
 
-1. **虚继承双根**：异常同时是 `std::exception`（std 世界认）和 `boost::exception`（行李舱）——两种 catch 都能接住。
+1. **虚继承双根**：异常同时是 `std::exception`（std 世界认）和 `boost::exception`（行李舱）——两种 catch 都能接住。为什么 boost::exception 故意**不**直接继承 std::exception？防止与既有异常体系形成钻石继承。
 2. **重抛加行李**：中间层 `catch (boost::exception& e) { e << 上下文; throw; }`——错误信息逐层累积，到顶层日志时已经带完整因果链。这是它真正的杀手级用法。
 3. **`std::exception_ptr`**（C++11）：`current_exception`/`rethrow_exception` 把异常**当值传递**——线程池 worker 捕获、主线程重抛的整个模式由此而来（boost 首创语义，例程验证搬运后类型完好）。
+
+**行李舱的存货分类**：自定义行李用 `error_info<Tag, T>`（Tag 是空标签类，惯例一行 typedef：`typedef boost::error_info<struct tag_err_no, int> err_no;`）；嫌 typedef 累就宏 `DEFINE_ERROR_INFO(type, name)`。库还预定义了一批常用的：`errinfo_errno`（C 错误码，`diagnostic_information` 会把它翻译成可读消息）、`errinfo_api_function`、`errinfo_file_name`、`errinfo_file_open_mode`、`errinfo_at_line`，以及配 `BOOST_THROW_EXCEPTION` 自动填的 `throw_function`/`throw_file`/`throw_line` 三件。
+
+**两个"不用改异常类"的进阶件**（例程第 4、5 段）：
+
+- `enable_error_info(old_exception{})`——给**不是** boost::exception 子类的老异常现场装箱：返回一个动态类型同时继承老异常和 boost::exception 的副本，行李照塞（catch 要用 `boost::exception&` 才接得住行李）。
+- `boost::throw_exception(e)`——统一抛出出口：自动装箱、支持无异常构建（`BOOST_NO_EXCEPTIONS`）；`BOOST_THROW_EXCEPTION` 宏再自动补上函数名/文件/行号三件行李。注意两者要求实参是 `std::exception` 子类。看全量行李用 `diagnostic_information(e)`（一段完整诊断文本），catch 块内还有免传参的 `current_exception_diagnostic_information()`。
 
 **毕业档案**：`exception_ptr` 毕业了；**行李机制（error_info）没有 std 对应**，⭐ 抛异常带上下文的最佳 C++ 实践至今仍属它。
 
@@ -55,7 +65,7 @@ ec.message();                                    // "网络超时"
 是 timeout? true
 默认构造无错? true
 捕获 system_error: 连接被拒
-std 版: Operation timed out (域 generic)
+std 版: timed out (域 generic)
 ENOENT: 有错=true 值=2（generic 类别）
 自定义类别: mylib.net
 自检通过

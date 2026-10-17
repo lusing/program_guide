@@ -36,8 +36,21 @@ map×2 = 84
 bad.map 不触发: -1
 引用语义改写: target = 20
 std transform = 43
+条件构造: calc(10) 有值? 1 calc(0) 有值? 0
+value_or_eval = 874（惰性默认值，lambda 现算）
+赋 none 复位后空? 1
+深比较 (7 == 7)? 1
+make_optional = 5
 in_place: xxxxx
 ```
+
+把 optional 想成"**最多装一个元素的容器**"（书中用语），它的接口合同就都顺了：
+
+- 构造六条路：无参（无值）/ `boost::none`（无值）/ 值 / **条件构造** `optional(bool cond, T v)`（cond 真则有值——`calc`/`sqrt_op` 这类"算得出才算"的函数一行写完）/ 拷贝 / `in_place`（就地构造免拷贝）；
+- 复位：赋 `boost::none` 就回到无值态；
+- 访问三档：`operator*`/`operator->`（无值时未定义行为，只受 BOOST_ASSERT 保护）→ `value()`（无值抛 `bad_optional_access`）→ `value_or(默认)`（永不出错）/ `value_or_eval(f)`（默认值**惰性现算**，传函数对象）；
+- **比较是深比较**：比的是"值"而不是内部存储（与智能指针的浅比较相反），无值参与比较也有定义（无值 < 任何有值）；
+- `make_optional(v)` 能自动推导类型，但**推不出 `optional<T&>`**、也不支持 emplace 姿态——要引用语义就得显式写类型。
 
 **毕业档案**：`std::optional`（C++17，直系）。但有个惊人的时间差：`map`/`flat_map`（std 名 `transform`/`and_then`）boost 版 **2014 年就有**，std 到 **C++23** 才补——"直系毕业不等于立即完整毕业"的典型。boost 版残留差异：`optional<T&>`（引用语义，std 至今不允许）、`in_place_init` 姿态差异。
 
@@ -105,7 +118,7 @@ a.clear();                             // boost 版叫 clear（std 版叫 reset�
 double = 3.14
 any_cast<int> 失败抛 bad_any_cast
 指针式取回 = 3.14
-有值? 1 类型 = d
+有值? 1 类型 = double
 reset 后有值? 0
 std 版长度 = 3
 选型：开放载荷 any / 封闭分派 variant
@@ -175,9 +188,28 @@ uuid v4: 8bff3725-4b96-4ee5-b411-15e3a2303891
 v5(dns,codeberg.org) 版本位 = 5
 两次生成一致? 1
 nil = 00000000-0000-0000-0000-000000000000 is_nil? 1
+nil_generator()() 也是 nil? 1
+hi > id1? 1（字典序）
 大小 = 16 字节
+fill 0xab = abababab-abab-abab-abab-abababababab 变体 = 2（10x = RFC 4122）版本 = 10（手工填的没有版本信息）
+memset 后 is_nil? 1
+uuid_t: 随机版非 nil? 1 nil? 1 串版 = 01234567-89ab-cdef-0123-456789abcdef 名字版非 nil? 1
+lexical_cast 往返一致? 1
 自检通过
 ```
+
+uuid 的**四种生成器**（都是函数对象，`()` 出 uuid）：
+
+| 生成器 | 版本 | 特点 |
+|---|---|---|
+| `nil_generator` | — | 全零；注意**双括号** `nil_generator()()`：第一对构造临时对象、第二对才是调用 |
+| `string_generator` | 解析 | 严格格式：32 位裸十六进制或标准连字符式（可带花括号），别的都抛异常 |
+| `name_generator` | v5(SHA1) | 需先给基准 UUID（`ns::dns()` 等四个标准名字空间）；同名同基准 → 永远同一 UUID |
+| `random_generator` | v4 | 默认用 random_provider 播种（本例程为了可复现换成固定种子引擎） |
+
+uuid 还是个"**16 字节的容器**"：公有 `data[16]` 数组 + `begin()/end()` 迭代器，`std::fill_n`/`std::copy`/`memset` 随便用——手工填的值 `variant()` 仍能识别布局（`10x` = RFC 4122），但 `version()` 给不出算法信息。比较是字典序（memcmp 语义，x86 有特化优化）。与字符串互转有两条路：`to_string()`/`string_generator()` 全功能；`lexical_cast` 走流 I/O，**只认连字符格式**（不认花括号/裸十六进制）——能用但弱一档。
+
+书里的**增强类 `uuid_t`**（uuid.cpp 第 6 节完整实现）把生成器封进构造函数：默认构造出随机 UUID、`uuid_t(0)` 出 nil、`uuid_t("{...}")` 出解析值、`uuid_t(basis, "name")` 出派生值——四种来源一个类型，顺带练习了"基类初始化列表里的名字只看得见已声明成员"的坑（生成器静态函数必须声明在构造函数之前）。
 
 > **为什么把 v4 也做成可复现**：随机 UUID 每次运行都不同，文档里嵌的输出没法复核，
 > "两条通道输出逐字节一致"这条判定也会永远挂在它身上。给生成器一个固定种子的
@@ -204,7 +236,17 @@ boost::indeterminate(unknown);   // 显式判第三态
 未知 OR 真 = 真（短路吸收）
 NOT 未知 = 未知
 indeterminate()? 1
+选型：第三态语义用 tribool，缺答案用 optional<bool>
+  陷阱: ob=真(有值!) 但 *ob=false ——判值必须 *ob
+更名宏 BOOST_TRIBOOL_THIRD_STATE(名字) 可给第三态换名
+自检通过
 ```
+
+第三态的**运算律**（Kleene 三值逻辑）刻三条就够：与 `indeterminate` 的比较结果仍是 `indeterminate`（所以 `if (tb == indeterminate)` 永远不成立——判第三态**只能**用函数形式 `indeterminate(tb)`）；AND 里只有遇 `false` 被吸收、OR 里只有遇 `true` 被吸收，其余全部传播未知；`!` 未知仍是未知。
+
+`indeterminate` 本尊其实是个**函数指针类型**的常量——`tribool(indeterminate)` 这个重载认出这个类型就把值置为第三态。既然是函数，就能换名字：全局作用域宏 `BOOST_TRIBOOL_THIRD_STATE(unknown)` 定义一个同款函数，之后 `unknown` 既能当值用也能当判断函数用（`unknown(tb)`）。
+
+**`optional<bool>` 的 bool 语境陷阱**（上面输出倒数第二行）：`ob` 的 bool 语义是"有无值"，不是"值真假"——`optional<bool> ob{false}` 时 `if (ob)` **成立**！判"值为假"必须 `ob && !*ob`。这也是 tribool 存在的另一半理由：它没有这层歧义。
 
 std 无对应。与 `optional<bool>` 的语义分界：**tribool 的 indeterminate 是"答案就是第三态"**（SQL NULL、三态检查"通过/失败/未测"）；**optional<bool> 的无值是"没有答案"**（还没查、查不到）。混用会让 API 语义含混。
 

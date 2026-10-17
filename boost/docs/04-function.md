@@ -162,9 +162,9 @@ boost::callable_traits::is_const_member_v<memfn>;       // 成员函数的 const
 运行输出（`callable_traits.cpp`；`typeid` 名在 MSVC 上是可读形，见下）：
 
 ```text
-函数类型: 参数个数=2 返回类型=i 第2参数=NSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEE
-仿函数: 参数个数=2 返回类型=d 第2参数=i
-lambda: 参数个数=2 返回类型=d 第2参数=d
+函数类型: 参数个数=2 返回类型=int 第2参数=class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >
+仿函数: 参数个数=2 返回类型=double 第2参数=int
+lambda: 参数个数=2 返回类型=double 第2参数=double
 成员函数 is_const = true
 自检通过
 ```

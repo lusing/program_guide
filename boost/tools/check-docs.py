@@ -58,6 +58,8 @@ OUT_REF = re.compile(r"运行输出[（(][^）)]*")
 OUT_NAME = re.compile(r"`([A-Za-z0-9_.\-]+\.cpp)`")
 # 标注行里写了这些，就说明这块记的是 Windows 侧的输出（本机产物里本来就没有）
 WIN_ANNOT = ("Windows 侧", "Windows侧", "windows 侧")
+# 标注行里写了这些，则记录的是 macOS/Linux 侧的输出（Windows 对账时跳过）
+MAC_ANNOT = ("macOS 侧", "macOS侧", "Linux 侧", "macOS/Linux 侧")
 
 
 def _channels():
@@ -182,8 +184,8 @@ def main():
         print("build/{shared,static}/*.out 一个非空的都没有，先跑 ./run-all.sh")
         return 1
 
-    cnt = {"ALL": 0, "ALL~": 0, "PARTIAL": 0, "NONE": 0, "WIN": 0, "NONOUT": 0,
-           "NOPROD": 0}
+    cnt = {"ALL": 0, "ALL~": 0, "PARTIAL": 0, "NONE": 0, "WIN": 0, "MAC": 0,
+           "NONOUT": 0, "NOPROD": 0}
 
     for md in sorted(DOCS.glob("*.md")):
         num = md.name.split("-")[0]
@@ -196,7 +198,13 @@ def main():
                 continue
             # 标注行里显式写了"Windows 侧" ⇒ 这块记的就是 Windows 输出，本机没有
             win_annot = any(a in annot for a in WIN_ANNOT)
+            # 标注行里显式写了"macOS 侧" ⇒ 这块记的是对端通道输出，Windows
+            # 对账时跳过（macOS 侧 run-all.sh 自有它的逐字节比对把关）
+            mac_annot = any(a in annot for a in MAC_ANNOT)
             label = "/".join(refs) if refs else "未标注例程名"
+            if mac_annot:
+                cnt["MAC"] += 1
+                continue
 
             refs = refs or []
             # 候选产物：按标注里例程名的顺序拼起来（一个块可能覆盖多个例程）
@@ -296,8 +304,8 @@ def main():
     print(f"扫过 {scanned_files} 个 docs 文件")
     print(f"ALL {cnt['ALL']}（其中按例程锚定）   未锚定命中 {cnt['ALL~']}   "
           f"PARTIAL {cnt['PARTIAL']}   NONE {cnt['NONE']}   "
-          f"WIN-ONLY 跳过 {cnt['WIN']}   非输出块跳过 {cnt['NONOUT']}   "
-          f"无产物跳过 {cnt['NOPROD']}")
+          f"WIN-ONLY 跳过 {cnt['WIN']}   macOS-侧 跳过 {cnt['MAC']}   "
+          f"非输出块跳过 {cnt['NONOUT']}   无产物跳过 {cnt['NOPROD']}")
 
     if scanned_files == 0:
         print("一个 docs 文件都没扫到（章号写错了？）—— 这是假绿，直接判失败")

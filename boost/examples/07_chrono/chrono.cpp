@@ -71,7 +71,7 @@ int main() {
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
     auto t1 = bc::steady_clock::now();
     auto cost = bc::duration_cast<bc::milliseconds>(t1 - t0);
-    std::cout << "耗时 " << cost.count() << "ms >= 50ms? " << (cost >= bc::milliseconds(50))
+    std::cout << "耗时 >= 50ms? " << (cost >= bc::milliseconds(50))
               << '\n';
     // system_clock 独有：与 time_t 互转（steady 没有"对应现实时刻"的语义）
     std::time_t tt = bc::system_clock::to_time_t(sys_now);

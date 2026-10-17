@@ -536,7 +536,7 @@ floor<minutes>=60 minutes ceil<minutes>=61 minutes round<minutes>=61 minutes rou
 steady 读数非零? true  system 秒数 > 17 亿? true
 clock_string: system=system_clock since  since Jan 1, 1970 | steady= since boot
 进程实际时钟读数非零? true
-耗时 63ms >= 50ms? true
+耗时 >= 50ms? true
 to_time_t 往返一致? true
 格式化: 3661000 milliseconds 与 3661 seconds（同计数不同单位）
 steady_timer >= 15ms? true

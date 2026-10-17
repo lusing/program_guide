@@ -19,7 +19,7 @@ proc::process::environment::get("PATH");
 运行输出（`process.cpp`；首行是子进程直接继承父进程 stdout 写的机器名）：
 
 ```text
-xulundeMacBook-Pro.local
+xulun-main
 找到 hostname? 1
 hostname 退出码 = 0（预期 0）
 自己 --exit-3 退出码 = 3（预期 3）

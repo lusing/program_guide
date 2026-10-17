@@ -126,10 +126,25 @@ map_list_of: ada=36 grace=85
 += 语法: 10 20 30
 insert: x=1 y=2
 现代写法: 3 元, 2 对
+push_back 链: 1 2 3 4 5
+混用语法 6..10? 1
+repeat(3,2) 结果 = 1
+repeat_fun = 1
+range 搬运 = 1
+stack 顶 = 4（4 在顶）
+queue 首尾 = c/swift
+ref_list_of = 1
 自检通过
 ```
 
 C++11 初始化列表（`{1, 2, 3}`、`{{"ada", 36}}`）覆盖了它 95% 的用途——**已毕业（平行进化型）**，老代码里认识即可。
+
+认识老代码需要认得它的三件结构：
+
+- **`+=` 只对标准容器重载**（vector/set/map...），机制是 `operator+=` 返回 `list_inserter`（内部包着 push_back/insert 的函数对象，重载 `,` 和 `()` 串联插值）；其他容器走 `push_back(v)(1)(2)` / `push_front` / `insert(m)(k, v)` 工厂——括号式还能多参（map 免 `make_pair`）、括号逗号可混用、空括号 `()` 插值初始化的默认元素；
+- **`list_of` 族产 `generic_list`**（可隐式转任意容器）：`list_of` 造序列、`map_list_of`/`pair_list_of` 造键值对、`tuple_list_of` 造元组序列、`ref_list_of<N>(a)(b)(c)` 造**引用**序列（内部不拷贝，更省）；
+- **`repeat(sz, value)` / `repeat_fun(sz, f)` / `range(first, last)`** 是初始化列表至今没有的能力：重复元素、按函数现造、搬运既有序列；
+- 容器**适配器**（stack/queue/priority_queue 没有 push_back）用 `list_of(...).to_adapter()` 落地、`push(q)(x)` 插值。
 
 ---
 

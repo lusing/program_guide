@@ -70,7 +70,7 @@ port = 443
 path = /lusing/programming
 片段 = README
 参数 tab = activity
-构造 = https://example.com:8443/a%20path/%E4%B8%AD%E6%96%87?q=hello%20world
+构造 = https://example.com:8443/a%20path/%E4%B8%AD%E6%96%87?q=hello+world
 相对解析 = https://example.com/api
 自检通过
 ```

@@ -35,7 +35,25 @@ int main() {
     std::cout << "std transform = "
               << sok.transform([](int x) { return x + 1; }).value_or(0) << '\n';
 
-    // 5) in-place 构造（不必先构造 T 再拷）
+    // 5) 条件构造 + value_or_eval + 赋 none 复位（书里的 calc/sqrt 套路）
+    auto calc = [](int x) { return boost::optional<double>(x != 0, 1.0 / x); };
+    auto r = calc(10);
+    std::cout << "条件构造: calc(10) 有值? " << static_cast<bool>(r)
+              << " calc(0) 有值? " << static_cast<bool>(calc(0)) << '\n';
+    boost::optional<int> fallback;
+    std::cout << "value_or_eval = " << fallback.value_or_eval([] { return 874; })
+              << "（惰性默认值，lambda 现算）\n";
+    boost::optional<std::string> reset_me{"temp"};
+    reset_me = boost::none;                       // 复位为"无值"
+    std::cout << "赋 none 复位后空? " << (!reset_me) << '\n';
+    // 深比较：optional 比较的是"值"而不是指针（与智能指针的浅比较相反）
+    boost::optional<int> a1{7}, a2{7};
+    std::cout << "深比较 (7 == 7)? " << (a1 == a2) << '\n';
+    // make_optional 的限制：推不出引用、也不支持 emplace
+    auto mo = boost::make_optional(5);
+    std::cout << "make_optional = " << *mo << '\n';
+
+    // 6) in-place 构造（不必先构造 T 再拷）
     boost::optional<std::string> s{boost::in_place_init, 5, 'x'};
     std::cout << "in_place: " << *s << '\n';
 

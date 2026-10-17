@@ -1,11 +1,12 @@
 # 05 · 语言基建先行者：那些"没毕业时你根本没法写 C++"的库
 
-> 对应示例：`examples/05_langbase/`（14 个例程）
+> 对应示例：`examples/05_langbase/`（15 个例程）
 
 这一章的库有个共同点：**它们的功能今天看起来平淡无奇**——定长数组、元组、编译期断言、类型特征、`auto`。因为在 C++11 里这些全是语言/标准库的一部分了。但回到 2001–2005 年，没有它们你连一个像样的泛型库都写不出来。这批库是"Boost 库 = 标准库的预备队"最字面意义的证明：**TR1 收编名单的一半在这一章**。
 
 | 库 | 是什么 | std 对应 | 血缘 |
 |---|---|---|---|
+| Boost.Operators | 操作符重载流水线 | `operator<=>`（C++20）覆盖大半 | 半系 |
 | Boost.Tuple | 异构定长容器 | `std::tuple`（C++11） | 直系 |
 | Boost.Array | 定长数组容器 | `std::array`（C++11） | 直系 |
 | Boost.StaticAssert | 编译期断言 | `static_assert`（C++11） | 直系（语言特性） |
@@ -174,6 +175,9 @@ take_over 拿到 fd=7 留下 fd=-1
 swap 后 x=2 y=1
 string_view... 长度 30
 in_place 家族见 optional/container 章
+BOOST_BINARY(0110) = 6  多组拼接 = 109
+BOOST_BINARY_LL(1101) = 13（现代写法 0b1101LL）
+当前函数（截断显示）: int __cde...
 自检通过
 ```
 
@@ -182,11 +186,20 @@ in_place 家族见 optional/container 章
 ```text
 noncopyable 会话 id=1
 真实地址非空? true
-demangle: std::__1::shared_ptr<int> 可读
+demangle: class std::shared_ptr<int> 可读
 exchange: old=1 new=99
 lightweight_test 见第 32 章（其报告走 stderr，与本章判定口径不合）
+ignore_unused：变量与类型两种形式都吞掉了告警
 自检通过
 ```
+
+抽屉里三件值得展开讲讲：
+
+**`noncopyable` 的原理**（它教的是 C++ 的访问控制怎么当工具用）：老写法把拷贝构造/赋值"私化"（声明不定义）——子类拷贝时编译器要调用基类拷贝构造，而那是 private 的，于是**整个子类自动不可拷贝**；C++11 后一句话 `= delete` 达成同样效果。两处细节：构造/析构设为 `protected`（自己不能实例化、只能当基类）；继承时默认 `private` 继承即可——这是 HAS-A 不是 IS-A。
+
+**`ignore_unused`**：比 C 风格 `(void)x` 更好的"消除未用告警"件（原是 proto 库小件后扶正进 core）。两种形式：函数式 `ignore_unused(x, i)` 吞变量、模板式 `ignore_unused<T>()` 吞类型（未用的 typedef）——inline 空函数，零运行时开销。
+
+**`BOOST_BINARY` 与 `BOOST_CURRENT_FUNCTION`**（住在 utility）：前者是 C++14 之前没有 `0b` 字面量时代的二进制书写——预处理元编程把 `01` 串展开成八进制，数字组最长 8 位、多组空格拼接（`BOOST_BINARY(0110 1101)` = 109），后缀版 `_UL/_LL` 配特定整型；后者统一 MSVC `__FUNCSIG__`/GCC `__PRETTY_FUNCTION__` 的"我在哪个函数"，抛异常、打日志时的定位三件套之一（第 11 章的 `throw_function` 行李就用它）。
 
 > 实测坑（跨平台）：`demangle` 那行取决于 `typeid(T).name()` 给什么——MSVC 给 `class std::shared_ptr<int>`，Itanium ABI（clang/GCC）给 `NSt3__110shared_ptrIiE`，`core::demangle` 还原出来就是 `std::__1::shared_ptr<int>`（libc++ 的内联命名空间名 `__1` 会露出来）。两边都"可读"，但字符串不同。
 
@@ -360,7 +373,53 @@ cv+引用完整型: std::__1::basic_string<char, std::__1::char_traits<char>, st
 
 > 实测坑（跨平台）：`pretty_name()` 在 MSVC 上**几乎等于** `raw_name()`（MSVC 的 `typeid().name()` 本来就可读，还带 `class`/`struct` 前缀和 `__ptr64`），所以上面两行在 Windows 上长得很像；只有在 Itanium ABI 上才能看出 pretty 的价值（`NSt3__1...` → `std::__1::...`）。另外 MSVC 的 `__ptr64` 后缀是它独有的。
 
-## 5.15 本章速查
+## 5.15 Boost.Operators（2000）：操作符重载的流水线
+
+运算有对称性：给了 `<` 就能推出 `>`、`<=`、`>=`；给了 `==` 就能推出 `!=`；给了 `+=` 就能推出 `+`。这个库让你**只写少数基本操作符**，其余的由概念基类生成——语义保证正确（`a != b` 恒等于 `!(a == b)`），且不污染命名空间（生成的是友元函数）。
+
+（对应示例：`operators.cpp`）
+
+### 概念与基类链
+
+常用基本概念：`less_than_comparable`（要 `<`）、`equality_comparable`（要 `==`）、`addable`（要 `+=`）、`subtractable`（要 `-=`）、`incrementable`（要前置 `++`）。复合概念是基本概念的打包：`totally_ordered`（全序四件 = `==` + `<`）、`additive`（+ 与 -）、`multiplicative`、`arithmetic`、`unit_stoppable`。
+
+多个概念用**基类链**串联——不是多重继承，而是"把下一个基类当模板参数"的链式单继承（书里叫"把多继承翻译成链表"）：
+
+```cpp
+class point : boost::totally_ordered<point,          // 全序：< == → > <= >= !=
+             boost::additive<point>> {               // 加减：+= -= → + -
+public:
+    friend bool operator<(const point& l, const point& r) { /*...*/ }
+    friend bool operator==(const point& l, const point& r) { /*...*/ }
+    point& operator+=(const point& r) { /*...*/ return *this; }
+    point& operator-=(const point& r) { /*...*/ return *self; }
+};
+```
+
+只写了四个函数，得到八个操作符。两个纪律：**模板参数必须是子类全名**（子类是模板类时要写 `point<T>`，写 `point` 或 `T` 都是编译错误）；基类链结尾会有一长串 `>`，注意配对。
+
+运行输出（`operators.cpp`）：
+
+```text
+基本概念: p1<p2? false（按距离） p1>p0? true p1<=p2? true p1==p2? false p1!=p2? true
+复合概念: sum=(6,8,10) diff=(4,4,4) (b-a)==a*? true
+排序后首元素 = (0,0,0)
+相等与等价: q1==q2? false 等价(!(q1<q2)&&!(q2<q1))? true
+equivalent: 11==14? true 11==25? false
+dereferenceable: ->size() = 9
+indexable: arr[1] = 2.5
+自检通过
+```
+
+### 相等与等价：一个容易踩的语义分叉
+
+`equality_comparable` 的 `==` 是你手写的**值相等**（坐标全同）；`equivalent` 的 `==` 是 `!(a<b) && !(b<a)` 的**等价**（同一个 `<` 档位）——两者都能给 `==`，含义完全不同。例程里 `q1(1,2)` 与 `q2(2,1)`：按坐标**不相等**、按距离档位**等价**。为什么要在意：**关联容器（set/map）和排序用的是等价（`<`），各种 find 算法用的是相等（`==`）**——两个"相等"不一致的类，在 `set` 里和在 `find` 里行为不同。
+
+### dereferenceable 与 indexable：智能指针式类的现成件
+
+写"行为像指针/像数组"的包装类时，`dereferenceable<T, P>`（你给 `operator*`，它给 `operator->`）和 `indexable<T, I, R>`（你给 `operator+`，它给 `operator[]`）直接补齐剩下那个——注意这两个生成的是**成员函数**不是友元，必须 `public` 继承，private 继承会把 `operator->` 藏起来。C++20 之后这整块的第一选择是 `operator<=>`（三路比较一个函数顶四个）+ defaulted 操作符——但"从基本操作符推导对称操作符"的思想没变，变的只是语言把活接过去了。
+
+## 5.16 本章速查
 
 | 需求 | 2026 答案 |
 |---|---|
@@ -370,6 +429,7 @@ cv+引用完整型: std::__1::basic_string<char, std::__1::char_traits<char>, st
 | 可读类型名（跨编译器/跨 DLL） | `boost::typeindex` ⭐ |
 | 编译器版本探测 | `boost::predef` ⭐ |
 | 库作者断言 | `BOOST_ASSERT` 家族 ⭐ |
+| 对称操作符成套生成（C++20 前） | `boost::operators`（现在先想 `<=>`） |
 
 ---
 

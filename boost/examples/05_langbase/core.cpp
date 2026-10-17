@@ -3,6 +3,7 @@
 #include <boost/core/exchange.hpp>
 #include <boost/core/addressof.hpp>
 #include <boost/core/demangle.hpp>
+#include <boost/core/ignore_unused.hpp>
 #include <boost/core/noncopyable.hpp>
 #include <iostream>
 #include <memory>
@@ -40,6 +41,26 @@ int main() {
     //    一定往 stderr 打 "No errors detected."——本教程的判定标准要求
     //    stderr 恒空，所以这里只展示 core 的四个工具，测试宏留到第 32 章
     std::cout << "lightweight_test 见第 32 章（其报告走 stderr，与本章判定口径不合）\n";
+
+    // 6) noncopyable 的实现原理（书的两种写法对照）：
+    //    老写法——把拷贝构造/赋值"私化"（声明不定义）：
+    //      class noncopyable {
+    //      protected: noncopyable() {} ~noncopyable() {}
+    //      private:   noncopyable(const noncopyable&);
+    //                 const noncopyable& operator=(const noncopyable&);
+    //      };
+    //    新写法——= delete 一句话。继承它的子类拷贝时需要调用基类拷贝构造，
+    //    而那是 private/deleted 的 → 编译错误。protected 构造/析构保证
+    //    noncopyable 自己不能被实例化，只能当基类。
+    //    （继承写法默认 private 继承即可——HAS-A 语义，不必 public）
+    // Session s2 = s;                        // ← 编译错误（E1776/C2280 一族）
+
+    // 7) ignore_unused：比 (void)x 更好的"消除未用告警"（原是 proto 库小件）
+    int unused_var = 5;
+    int unused_param_style = 6;
+    boost::ignore_unused(unused_var, unused_param_style);   // 函数形式
+    boost::ignore_unused<Session>();     // 模板形式：忽略未用的**类型**（typedef）
+    std::cout << "ignore_unused：变量与类型两种形式都吞掉了告警\n";
 
     std::cout << "自检通过\n";
     return 0;
