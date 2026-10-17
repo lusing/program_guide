@@ -109,6 +109,26 @@ Coq 的 `proof_irrelevance : forall (P : Prop) (p q : P), p = q`
 > ④ `Axiom funext` 的路径版本与 stdlib functional_extensionality
 > 平行——mini 库内自洽即可。
 
+## 40.4b 层级塔的 Coq 递归骨架
+
+IsTrunc n 的完整递归版（coq-hott 教程 15 章的形态，本章给出
+签名骨架）：
+
+```coq
+Fixpoint IsTrunc (n : nat) (A : Type) : Type :=
+  match n with
+  | O => IsHSet A
+  | S n' => forall (a b : A), IsTrunc n' (a == b)
+  end.
+(* 注意：真实的 -2/-1 基座用单独的 Contr/IsHProp 定义索引
+   （负数层的编码），此处展示的是 0 起步的骨架。 *)
+```
+
+递归的每一层「降维打击」：n-type 的判定被归结为「路径空间
+是 (n−1)-type」——与 7.2.7 的定理互相锁定（递归定义与迭代
+定理的同一性）。cubical 侧的同型（40 章未给 IsTrunc 递归，
+39 章 isProp/isSet 的前两级+此骨架的映射）是回填清单件。
+
 ## 40.5 UIP、K 与 Hedberg（书 7.2）——本章的深化主菜
 
 「集合」的重命名学：UIP（唯一性证明）= Axiom K（一切自环是

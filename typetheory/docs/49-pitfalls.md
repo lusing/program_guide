@@ -1,4 +1,4 @@
-# 37 坑位总清单与书目导读
+# 49 坑位总清单与书目导读
 
 > 本章汇总 1–49 章各章尾的「坑位速记」，按主题重组；
 > 末尾是七本读本的阅读建议与四家速查表。
@@ -172,6 +172,38 @@ stdlib 析构嵌套合取时 destruct 出的假设可能是「合取里的合取
 4. 公理**记账制**：每章收尾 `Print Assumptions`；UA 的 β 规则
    要单独公理（38 章 transport_ua）。
 
+## 31.5b cubical Agda 高频坑（HoTT 专轮：37–47 章）
+
+1. 区间运算要 renaming 自 `Agda.Primitive.Cubical`（primINeg
+   → ~_ 等）——且 **区间 `_∧_`/`_∨_` 与逻辑记号撞名**（39 章
+   起逻辑当道，区间改名 `_∧ᵢ_`/`_∨ᵢ_`）。
+2. `primHComp`/`primTransp` 的**别名会触发边界检查**——直接
+   在用点调用；J-合成 `_∙_` 用 `J (λ z _ → x ≡ z) p q` 的
+   transport 版最稳。
+3. **点-free 子句的隐式参不在辖域**（五踩实录：37 的 lUnit、
+   39 的 pathOverProp/∃-syntax、41 的 pointed-induction、42
+   的 Susp-fun、44 的 transport-fib）——子句模式显式
+   `{A = A}` 绑定，或**内联 motive 让 where 块消失**。
+4. 巨型 2-维 cong 链：先画**结合树**再写段（Agda 的
+   UnequalTerms 十有八九是树形错位）；Coq 版改 **assert
+   分段** + 全显式 `@mk…`/`concat`。
+5. Glue 手造 ua：`primGlue B (两端 partial 类型) (两端 partial
+   等价)`——i0 端放源等价、i1 端放恒等；漏 i1 端 φ 面不全。
+6. HIT 的**矛盾路径分支**写 `constructor () i`（absurd 参数
+   +区间双占位）——`⊥-elim` 整条路径返回会被端点锚定拒绝
+   （39 章 isProp-sum¬ 与 44 章 merid 两案）。
+7. HIT 消去子的 squash/push 分支用 `PathP 分量`——依赖版要
+   `pathOverProp`（J 一击把 PathP 降为 isProp）。
+8. W 编码 ℕ 的**构造子-分支配向**：零参数构造子配空分支
+   （`sup true (λ ())`）——配反则自引用不终止（41 章
+   Termination checker 抓获）。
+9. builtin `⊤`（Unit）自带导出——自造 record ⊤ 会撞名；
+   `if-then-else` 非原生（自造 branch）；ℕ 在裸文件里用
+   data 自造。
+10. Lean 侧姊妹坑：axiom 不能合并声明；裸文件 ℕ 记号失效
+    （用 Nat）；依赖 axiom 的 def 要 `noncomputable`；
+    `Quot.lift₂` 无内置（相容性定理是良定义的正式载体）。
+
 ## 31.6 Prolog 高频坑（Hindley/Farmer 两专轮：06/09–12–15 章）
 
 1. SWI-Prolog 在 Windows 按系统 locale 读源文件——中文注释必须
@@ -224,7 +256,7 @@ ok/NONE 噪声；`between(0, A, X)` 的 A 先算后用；表驱动检查
 | TTAFP | 立方体与 λD 主线 | **已全覆盖**（专轮 21/23/24/25/26 章：逻辑编码/λD 系统/旗式与附录 A/等式序 ι/公理化算术 Bézout；06–09 章骨架在 18–20） |
 | TAPL | 工程视角 | 03/04/24 章的对照读物；实现细节最全 |
 | Nordström 导论 | MLTT 圣经 | 10–16 章逐章对读；扫描件（无文本层） |
-| HoTT 书 | 第五部分 | 25–29 章；第 8 章配合 coq-hott 教程 |
+| HoTT 书 | 第五部分 | **已全覆盖**（专轮 37/39/41/44/45/46/47 七新章 + 36/38/40/42/43 五章深化）；ch.1–11 核心内容自包含；机器面 cubical Agda 主力（37 章起）+ Coq mini-HoTT 对照 + Lean set 层（39/46/47）；同伦论大定理（Freudenthal/Hopf/van Kampen 完整机器版）以陈述级呈现、coq-hott 教程续读 |
 | Farmer《STT》(2023) | Church 式实用逻辑全书 | **12–17 章全覆盖**（双语义/未定义性/证明系统/理论/态射/变体）；01 章动机讨论来源 |
 | 《现代类型论的发展与应用》 | 中文综述 | 全程中文底本；2.5 子类型配 27 章、6.2 LF 配 19 章 |
 

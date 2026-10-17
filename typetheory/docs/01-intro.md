@@ -100,7 +100,7 @@ Nordström–Petersson–Smith《Martin-Löf 类型论程序设计导论》（�
 
 本指南的代码横跨四个系统。先给一张总表，细节随后各章展开：
 
-| | Coq 8.20 | Agda 2.8 | Lean 4 | Coq-HoTT |
+| | Coq 8.20 | Agda 2.8 | Lean 4 | cubical Agda（--cubical） |
 |---|---|---|---|---|
 | 内核 | CIC（λC+归纳+Prop/Type） | MLTT（+大小无关的宇宙塔） | CIC 变体（+Quot） | MLTT+泛等+HIT |
 | 命题 | 独立 `Prop` 宇宙 | 无专门命题层：命题即类型 | `Prop = Sort 0` | 类型即空间 |
@@ -110,10 +110,13 @@ Nordström–Petersson–Smith《Martin-Löf 类型论程序设计导论》（�
 | 命令行 | `coqc` | `agda` | `lean` / `lake` | `coqc` |
 
 > **本指南对 HoTT 机器面的处理**：两条通道。**cubical Agda**（WSL
-> Agda 2.8 的 `--cubical` 模式）从区间与 Glue 原语手造 transport/hcomp/ua
-> ——泛等与 HIT **原生计算**，37 章起的主力；**Coq mini-HoTT**（自包含
-> 公理化模拟，38–43 章的对照组）用普通 `coqc` 从零定义路径、J、泛等
-> 公理与 HIT——每条公理显式引入、显式计数，更贴近 HoTT 书的散文做法。
+> Agda 2.8 的 `--cubical` 模式）从区间与 Glue 原语手造 transport/
+> hcomp/ua——泛等与 HIT **原生计算**（∥·∥ 是真 HIT、J 是两行程序、
+> funext 一行），37 章起的主力；**Coq mini-HoTT**（自包含公理化
+> 模拟，38–43 章的对照组）用普通 `coqc` 从零定义路径、J、泛等
+> 公理与 HIT——每条公理显式引入、显式计数，Hedberg 与 π₁(S¹)
+> 的完整机器版在此通道完成。Lean 在 39/46/47 章做 set 层对照
+>（Prop=内核化 mere prop、Cantor、实数骨架）。
 
 ## 1.4 工具链与验证通道（本机实测）
 

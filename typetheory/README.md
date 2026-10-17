@@ -102,8 +102,8 @@ typetheory/
 | [42 高阶归纳类型](docs/42-hit.md) | 区间/圆/商； Suspension/Pushout/Flattening | Coq+cubical |
 | [43 压轴：π₁(S¹)](docs/43-capstone.md) | encode-decode 完整证明 + 一般形式 | Coq+cubical |
 | [44 同伦论进阶](docs/44-homotopy.md) | Freudenthal；van Kampen；Whitehead；Hopf | cubical 陈述级 |
-| [45 范畴论](docs/45-category.md) | precategory；Yoneda；SIP；Rezk 完成 | cubical+Coq |
-| [46 集合论](docs/46-settheory.md) | Set 范畴；基数/序数；累积层级 | Lean+cubical |
+| [45 范畴论](docs/45-category.md) | precategory；iso≠eq 与饱和；Yoneda；SIP；Rezk 完成 | cubical |
+| [46 集合论](docs/46-settheory.md) | Cantor 构造版机器证明；基数/序数；累积层级 V | Lean |
 | [47 实数](docs/47-reals.md) | Dedekind vs Cauchy；区间紧性 | cubical 陈述级 |
 
 ### 第六部分 · 收束（48–49）
@@ -128,8 +128,12 @@ typetheory/
 > 41 归纳进阶 / 44 同伦论进阶 / 45 范畴论 / 46 集合论 / 47 实数
 > 七新章 + 36/38/40/42/43 五章深化）——至此该书 ch.1–11 核心
 > 内容全部自包含覆盖；机器面以 **cubical Agda**（`--cubical`
-> 从 Glue/区间原语手造 ua/hcomp，泛等与 HIT 原生计算）为主力，
-> Coq mini-HoTT 公理化对照组与 Lean set 层对照延续。
+> 从 Glue/区间原语手造 ua/hcomp，泛等与 HIT 原生计算：∥·∥
+> 真 HIT、ua β 律可证、funext 一行）为主力，Coq mini-HoTT
+> 公理化对照组（Hedberg/π₁ 完整版）与 Lean set 层对照
+>（Cantor/实数骨架）延续；同伦论大定理（Freudenthal/Hopf/
+> van Kampen）以陈述级+证明思想呈现（完整机器版 coq-hott
+> 教程续读——已知边界条目）。
 
 ## 工具链（本机实测）
 
