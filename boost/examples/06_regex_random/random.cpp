@@ -54,6 +54,37 @@ int main() {
     std::cout << "不播种的两个引擎同序列? " << (unseeded1() == unseeded2())
               << "（默认构造 = 固定种子，注意！）\n";
 
+    // 6) 引擎合同四件：min/max 界、discard 跳段、generate 填区间、拷贝复现
+    std::cout << "引擎界: mt19937 ∈ [0, " << boost::random::mt19937::max() << "]\n";
+    boost::random::mt19937 ra(7), rb(7);
+    ra.discard(100);                       // 丢 100 个（快进）
+    for (int i = 0; i < 100; ++i) rb();   // 笨办法跳 100 个
+    std::cout << "discard(100) == 循环 100 次? " << (ra() == rb()) << '\n';
+    boost::random::mt19937 rc(ra);         // 拷贝 = 完整状态快照
+    bool copy_same = true;
+    for (int i = 0; i < 10; ++i)
+        if (ra() != rc()) { copy_same = false; break; }
+    std::cout << "拷贝引擎同序列? " << copy_same << "（复现测试的抓手）\n";
+    boost::uint32_t buf[5];                // 引擎产 32 位值——容器得能装下
+    rb.generate(buf, buf + 5);             // 直接填一段区间
+    std::cout << "generate 填区间: 值都在引擎界内? "
+              << (buf[0] <= boost::random::mt19937::max()
+                  && buf[4] <= boost::random::mt19937::max()) << '\n';
+
+    // 7) variate_generator：引擎+分布打包成一个可拷贝的函数对象
+    //    【坑】引擎模板参数声明为引用（mt19937&）时必须传**左值**——
+    //    传临时对象编不过（引用版的意义就是"拷贝打包器不搬走引擎状态"）
+    boost::random::mt19937 dice_engine(42);
+    boost::random::variate_generator<
+        boost::random::mt19937&,
+        boost::random::uniform_smallint<>>
+        six(dice_engine, boost::random::uniform_smallint<>(1, 6));
+    std::cout << "variate 打包掷骰: ";
+    for (int i = 0; i < 6; ++i) std::cout << six() << ' ';
+    std::cout << "（引擎参数用引用 = 拷贝不带走引擎状态）\n";
+    // uniform_smallint vs uniform_int_distribution：前者假设"值域远小于
+    // 引擎值域"不管量化偏差（更快）；后者任意区间严格均匀（拒绝采样）
+
     std::cout << "自检通过\n";
     return 0;
 }

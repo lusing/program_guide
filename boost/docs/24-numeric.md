@@ -4,6 +4,28 @@
 
 Boost 的数值家族覆盖"从精确到安全"的整条光谱：算得更准（multiprecision/rational）、算得对量纲（units）、算得安全（safe_numerics/numeric_conversion）、算得专（math/qvm/crc）。
 
+## 24.0 Boost.Integer（2001）：整数类型三件套（书 ch9.2）
+
+（对应示例：`integer.cpp`）
+
+① **`<boost/cstdint.hpp>`** 精确宽度整型的命名律：`int8_t`（恰好 8 位）/`int_least32_t`（至少 32 位里最小）/`int_fast16_t`（至少 16 位里最快，本机实测取 32 位——"最快"不等于"最小"）/`uintmax_t`（编译器支持的最大无符号）。C++11 起 std 已收编（`<cstdint>`）。
+
+② **`integer_traits<T>`** 派生自 `numeric_limits`，把 min/max 补成**编译期常量** `const_min`/`const_max`——C++11 前 `numeric_limits::min()` 不是 constexpr，泛型代码里用不了，它就是为补这个洞（如今 std 已 constexpr 化，主要在老代码见到）。
+
+③ **`<boost/integer.hpp>` 的按需选型模板**：`int_t<N>::fast`/`uint_t<N>::fast` 按**位宽**要类型（N 不必是 8 的倍数——15 位也能要）；`int_max_value_t<V>`/`int_min_value_t<V>`/`uint_value_t<V>` 按**值域**要类型（"装得下 32700 的最快有符号"）。编译期选好、运行期零开销，比手挑 `short`/`int` 可移植。
+
+运行输出（`integer.cpp`）：
+
+```text
+宽度: int8=1 int_fast16=4 int_least32=4（本机 fast16 取的是最快不最小的宽度）
+intmax 能装 uint32 相加? 1
+int8 最大 = 127 uintmax 最大存在? 0（0=无符号）
+integer_traits: short 范围 = -32768...32767 bool const_min = 0
+按需选型: 15 位 → unsigned short(16 位)  ≤32700 → short  ≥-33000 → int  u33000 → unsigned short
+（编译期选好 = 运行期零开销；比手挑类型可移植）
+自检通过
+```
+
 ## 24.1 Boost.Math（2005）：数学全家桶
 
 ```cpp
@@ -69,8 +91,15 @@ rational<int>(1,10) + rational<int>(2,10) == rational<int>(3,10);   // true！
 1/10 + 2/10 == 3/10 ? 1
 1/2 < 2/3 ? 1
 1/0 抛 bad_rational（不是 UB）
+gcd(37,62) = 1 lcm(37,62) = 2294
+-14/10 规范化 = -7/5 abs = 7/5
+bool 语境: 0 为假? 1 7/5 为真? 1
+rational_cast<double>(22/7) = 3.14286（sqrt 等数学函数也要先转出去）
 自检通过
 ```
+
+合同四条（输出后五行）：`gcd`/`lcm` 工具就在这个头里（C++17 起 std 也有）；构造与运算全程**规范化**（`-14/10` 存成 `-7/5`：约分 + 分母恒正）；**bool 语境**可用（0 为假）但**没有到浮点的隐式转换**——出向 double 必须显式 `rational_cast<double>()`（防精度静默丢失，sqrt/pow 等数学函数都得先转出去）；精度由模板参数 I 决定（`rational<int>` 的最大精度就是 `INT_MAX` 分之一）。
+
 
 **与 decimal（17 章）的分界**：rational 是**精确分数**（分母任意，运算量增长）；decimal 是**十进制浮点**（固定位数，可规模化）。实验数学用 rational，金融工程用 decimal。
 

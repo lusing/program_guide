@@ -34,6 +34,20 @@ int main() {
         std::cout << "1/0 抛 bad_rational（不是 UB）\n";
     }
 
+    // 6) 书 ch9.3 补充：gcd/lcm 工具、abs、bool 语境、rational_cast 出口
+    std::cout << "gcd(37,62) = " << boost::gcd(37, 62)
+              << " lcm(37,62) = " << boost::lcm(37, 62) << '\n';
+    rational<int> neg(-14, 10);
+    std::cout << "-14/10 规范化 = " << neg << " abs = " << abs(neg) << '\n';
+    rational<int> zero(0);
+    std::cout << "bool 语境: 0 为假? " << (!zero) << " 7/5 为真? "
+              << (rational<int>(7, 5) ? true : false) << '\n';
+    // 出向浮点必须显式 rational_cast（无隐式转换——防精度悄悄丢失）
+    rational<int> approx_pi(22, 7);
+    std::cout << "rational_cast<double>(22/7) = "
+              << boost::rational_cast<double>(approx_pi)
+              << "（sqrt 等数学函数也要先转出去）\n";
+
     std::cout << "自检通过\n";
     return 0;
 }

@@ -50,7 +50,33 @@ join = Samus+Link+Zelda+Mario join_if(含a) = Samus**Zelda**Mario
 
 std 只收编了 `starts_with/ends_with/contains`（C++20/23）——**split/join/trim/replace_all/i 系列/分类件仍是 Boost 独有**。⭐ 每个项目都该有的头文件。
 
-## 19.2 Boost.Tokenizer（2001）：流式分词
+## 19.2 Boost.Algorithm 一般算法部：minmax / clamp / hex（书 ch8）
+
+string_algo 之外，Boost.Algorithm 还有三组数值向小件（`<boost/algorithm/minmax.hpp>` 等单独头）：
+
+（对应示例：`minmax_clamp.cpp`）
+
+运行输出（`minmax_clamp.cpp`）：
+
+```text
+minmax(3,7) = 3,7（返回 tuple：小在前大在后）
+std::minmax = 3,7
+minmax_element: min=2 max=10
+first_min 位 = 2 last_min 位 = 3
+first_min_last_max: 位 = 2/6（2 与最后一个 10）
+clamp: (5∈[1,10])=5 (5<[1])=10 (5>[4])=4
+clamp_range(3..9): 3,4,6,8,9,
+hex("123") = 313233  hex_lower = 2b2d2a2f
+unhex(414243) = ABC
+坏输入抛 boost::exception? 1
+自检通过
+```
+
+- **`boost::minmax(a,b)`** 一次比较拿两个（返回 tuple，`std::minmax` C++11 毕业且返回 pair、多 initializer_list 形态）；**`minmax_element`** 一趟扫描同时拿最小最大（std 同名毕业）；它的**全家族**处理并列第一的取法——`first_min_element`（第一个最小）/`last_min_element`（最后一个最小）/`first_min_last_max_element` 等四种组合，对"打分表要第一个还是最后一个并列者"这类语义敏感场景有用；
+- **`clamp(v, lo, hi)`** 夹进闭区间（`std::clamp` C++17 毕业）；`clamp_range` 是整段夹的 transform 形态；
+- **`hex`/`hex_lower`/`unhex`** 十六进制编解码（网络协议、二进制转储常用）；坏输入抛 `not_enough_input`/`non_hex_input`（都是 boost::exception 子类，可塞行李）。
+
+## 19.3 Boost.Tokenizer（2001）：流式分词
 
 与 `split` 的分界：tokenizer 是**迭代器**——逐段产出不建容器，大文件/高频路径的省内存选择：
 
@@ -73,7 +99,7 @@ CSV: [ada] [lovelace;36] [计算,数学]
 
 `escaped_list_separator` 的 CSV 语义实测：引号内的逗号不算分隔符（`计算,数学` 整段保留）。**std 无对应**。⭐
 
-## 19.3 Boost.LexicalCast（2000）与 19.4 Boost.Convert（2014）
+## 19.4 Boost.LexicalCast（2000）与 19.4 Boost.Convert（2014）
 
 ```cpp
 boost::lexical_cast<int>("42");                       // 失败抛 bad_lexical_cast
@@ -112,7 +138,7 @@ hex ff = 255
 
 **毕业档案**：数字场景被瓜分——`stoi/to_string`（C++11）覆盖内置类型，`std::to_chars/from_chars`（C++17）覆盖高性能路径。lexical_cast 的独门是**泛型**：模板参数 T/U 只要能流进出就行，`lexical_cast<std::string>(任意可打印类型)` 仍是最短答案。Convert 是它的可配置版（失败不抛 + 操纵符 + 自定义后端），适合"要 locale/进制/精度控制又不想要异常"的配置解析场景。
 
-## 19.5 Boost.Locale（2010）：Unicode 的地面部队
+## 19.6 Boost.Locale（2010）：Unicode 的地面部队
 
 `std::locale` 只管格式化刻面（数字/日期怎么排）；**大小写转换、归一化、字符集转换、断行**这些真活是 Boost.Locale 的独占领地：
 
