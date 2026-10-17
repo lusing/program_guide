@@ -15,13 +15,38 @@ int rc = boost::unit_test::unit_test_main(&init_unit_test, argc, argv);
 运行输出（`test.cpp`；例程把日志/报告 sink 重定向到 stdout 以满足本教程"stderr 恒空"判定）：
 
 ```text
-Running 2 test cases...
+Running 3 test cases...
+  [夹具] 安装（构造）
+G:/code/guide/boost/examples/32_quality/test.cpp(41): warning: in "assertions_demo": WARN 档故意失败：只留日志，不计数不退出
+这是 BOOST_TEST_MESSAGE：默认日志级别下不显示
+  [夹具] 清理（析构）
 
 *** No errors detected
 自检通过
 ```
 
+**断言分级三档**（命名的中间层是级别，尾部是断言种类）：
+
+| 级别 | 失败后果 | 用在 |
+|---|---|---|
+| `BOOST_WARN_*` | 留一条日志，**不计数不退出** | 非关键观察（输出里的故意失败就是它） |
+| `BOOST_CHECK_*` | 计入错误数，继续跑后续断言 | 默认选择 |
+| `BOOST_REQUIRE_*` | 计错并**中止本用例** | 后续断言依赖此前结果时 |
+
+断言种类是全家桶：`EQUAL/NE/LT/LE/GT/GE`、浮点容差 `CLOSE`/`CLOSE_FRACTION`、`SMALL`（绝对误差）、`THROW`/`NO_THROW`、`MESSAGE`（给任何断言附加说明）、`BOOST_TEST_MESSAGE`（纯通知，默认日志级别下不显示——例程用 `--log_level=message` 把它放出来）。
+
+**测试树的组织**：用例（函数）→ 套件（用例的容器，可任意嵌套）→ 主套件（唯一根）。AUTO 体系三对宏 `BOOST_AUTO_TEST_CASE/SUITE(+_END)` 声明即注册；手动体系 `BOOST_TEST_CASE(&fn)` 造用例、`BOOST_TEST_SUITE("名")` 造套件、`add()` 挂树——例程两种混用（`s_slugify` 子套件 + 主套件直挂一个用例）。
+
+**夹具**（fixture = 测试安装 + 清理）：AUTO 体系三档——`BOOST_FIXTURE_TEST_CASE`（用例级）、`BOOST_FIXTURE_TEST_SUITE`（套件级，成员对套件内所有用例可见）、`BOOST_TEST_GLOBAL_FIXTURE`（全局级，每个测试模块一次）。夹具类就是个 struct：构造函数做安装、析构做清理，测试函数直接访问它的成员（继承实现）。例程走手动路径，夹具就是"用例函数开头声明的 RAII 对象"（输出里的安装/清理两行）。
+
+**运行参数**（`--名=值`，大小写敏感、等号两侧无空格）：`--log_level=message/success/warning/error/nothing`（默认 warning，所以 TEST_MESSAGE 不显示）；`--log_sink=stdout --report_sink=stdout`（本例程的 stderr 归零手段）；`--run_test=s_slugify/*`（只跑某个子树，支持通配符）；`--list_content`（列出测试树不运行）；`--build_info=yes`（编译器/Boost 版本）；`--output_format=XML`（CI 集成）。
+
+**期望失败**：`BOOST_AUTO_TEST_CASE_EXPECTED_FAILURES(用例名, n)` 声明"该用例允许 n 条断言失败"——模块没写完先立测试的过渡手段。**泛型测试**：`BOOST_AUTO_TEST_CASE_TEMPLATE(名, 类型形参, 类型列表)`（mpl::list）对一族类型各生成一个用例。
+
 全家福：自动/手动注册、fixture、参数化、浮点容差（`BOOST_CHECK_CLOSE`）、输出比对（`output_test_stream`）、超时、依赖用例。**竞争格局**：GoogleTest/Catch2 更流行，但 Boost.Test 胜在无外部依赖 + Boost 生态原生。
+### 补：lightweight_test——头文件级的"最小测试件"（书 6.3）
+
+比 Boost.Test 再轻一档的是 `<boost/core/lightweight_test.hpp>`：无框架、无注册，断言就是宏（`BOOST_TEST`/`BOOST_TEST_EQ`/`BOOST_TEST_NE`/`BOOST_TEST_THROWS`/`BOOST_ERROR`），main 结尾必须调 `boost::report_errors()`（忘了调会触发 BOOST_ASSERT）。还有编译期变体 `<boost/core/lightweight_test_trait.hpp>` 的 `BOOST_TEST_TRAIT_TRUE/FALSE((元函数))`——注意双括号。它跟 std 的 `assert` 一样属于"给库作者验证一小段代码"的工具，不入本教程例程的原因：`report_errors()` 的报告固定写 **stderr**，与本教程"stderr 恒空"的判定口径冲突（第 5 章 core.cpp 例程里有注释存档）。
 
 > 实测坑一串（都值得记）：框架**日志与结果报告默认走 stderr**，要归零需 `--log_sink=stdout --report_sink=stdout` 运行时参数（API 重定向不可靠）；`BOOST_TEST_NO_MAIN` 下 **AUTO 宏用例不自动装配**（手动 `BOOST_TEST_CASE` 注册）；默认 init 签名是 `test_suite*(int, char**)` 不是 `bool()`。
 
