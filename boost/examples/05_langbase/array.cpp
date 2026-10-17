@@ -26,6 +26,14 @@ int main() {
     std::array<int, 5> s{3, 1, 4, 1, 5};
     std::cout << "std::array 求和 = " << std::accumulate(s.begin(), s.end(), 0) << '\n';
 
+    // boost 版的私货 assign 已被 1.92 标弃用（请改用 std 同款 fill）
+    boost::array<int, 3> ar;
+    ar.fill(777);
+    std::cout << "fill(777): 首元素 = " << ar[0] << "（老代码里的 assign 已弃用）\n";
+    // 能力限制（两个版本同）：没有构造函数、不能动态增删（无 push_back），
+    // 插入迭代器也不适用——要动态长度用 vector
+    std::cout << "限制: 无构造/无 push_back/无插入迭代器（编译期定长的代价）\n";
+
     std::cout << "自检通过\n";
     return 0;
 }

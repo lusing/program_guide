@@ -25,8 +25,17 @@ int main() {
     ages["jean"] = 74;
     std::cout << "3 位: " << ages.size() << " ada=" << ages.at("ada") << '\n';
 
-    // 2) 找到桶布局（调试/教学用）
-    std::cout << "桶数 >= 3? " << std::boolalpha << (ages.bucket_count() >= 3) << '\n';
+    // 2) 桶模型：元素按哈希落桶；负载因子超过上限自动 rehash 扩桶
+    std::cout << "桶数 = " << ages.bucket_count()
+              << "（3 个元素至少 3 桶）每个键的桶号 = "
+              << ages.bucket("ada") << '/' << ages.bucket("jean")
+              << " ada 桶内元素数 = " << ages.bucket_size(ages.bucket("ada")) << '\n';
+    ages.reserve(100);          // 预约容量：一次 rehash 到位（避免逐个扩）
+    std::cout << "reserve(100) 后桶数 = " << ages.bucket_count()
+              << " 上限负载因子 = " << ages.max_load_factor() << '\n';
+    ages.rehash(200);           // 直接指定最小桶数
+    std::cout << "rehash(200) 后桶数 >= 200? " << std::boolalpha
+              << (ages.bucket_count() >= 200) << '\n';
 
     // 3) 自定义类型 + boost::hash
     boost::unordered_set<Point> points;

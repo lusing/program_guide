@@ -33,6 +33,19 @@ int main() {
     std::any sa = std::string("std");
     std::cout << "std 版长度 = " << std::any_cast<std::string>(sa).size() << '\n';
 
+    // 5.5) any_cast 的引用版（左值出口）与存指针的危险
+    boost::any box = 7;
+    boost::any_cast<int&>(box) = 20;        // 引用版：原地改
+    std::cout << "引用版改写 = " << boost::any_cast<int>(box) << '\n';
+    // 【危险】存原始指针：any 析构只删 holder 不 delete 指针 → 泄漏；
+    // 存指针请用 shared_ptr 包装（拿回时 any_cast<shared_ptr<T>>）
+    boost::any safe = std::make_shared<std::string>("智能指针进 any");
+    std::cout << "shared_ptr 进 any 取回 = "
+              << *boost::any_cast<std::shared_ptr<std::string>>(safe) << '\n';
+    // 判型三件套：type() == typeid(T) / empty() / 指针版 any_cast
+    std::cout << "判型: 是 int? " << (box.type() == typeid(int))
+              << " 指针版是 int? " << (boost::any_cast<int>(&box) != nullptr) << '\n';
+
     // 6) 与 variant 的边界：any 是开放的（任何类型），variant 是封闭的
     //    （列出成员）。配置值、消息载荷用 any；穷尽分派用 variant。
     std::cout << "选型：开放载荷 any / 封闭分派 variant\n";

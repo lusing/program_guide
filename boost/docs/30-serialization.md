@@ -49,8 +49,15 @@ name = guide2 port = 9090
 缺省值 = 无
 XML 首段 = <?xml version="1.0" encoding="utf-8"?>
 INI count = 42
+put 覆盖 + add 追加: 2 个 url
+XML: theme=matrix 属性 id=1 注释= note
+斜杠路径下 "theme.name1" 是一个整键? 1
+缺路径抛 ptree_error? 1 get_optional 版? 0（optional 版不抛）
 自检通过
 ```
+
+书里四个"进阶合同"（例程 7-9 段）：**put vs add**——put 定位**已有的第一个**同名节点改值（没有才新建），add 永远**追加新节点**（重复键列表靠它）；**XML 三件特殊节点**——属性在 `<xmlattr>`、注释在 `<xmlcomment>`、混合文本在 `<xmltext>` 下，路径直接写 `conf.theme.<xmlattr>.id`；**路径分隔符可换**——键名本身带点号时用 `ptree::path_type("theme.name1", '/')`（斜杠当普通字符）；**取数三档**——`get`（缺了抛 `ptree_bad_path`/`ptree_bad_data`）、`get(路径, 默认值)`、`get_optional`（optional 版不抛）。
+
 
 **注意输出的真相**：ptree 把所有值存成**字符串**——JSON 里 `"port":"8080"` 不是数字！这是它与真正的 JSON 库的本质差异（快糙猛换通用性）。适合配置文件读写、格式互转；**不适合 API 对接**（类型语义丢了）。⭐ 小工具配置的事实答案。
 

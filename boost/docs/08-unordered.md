@@ -22,11 +22,17 @@ std::size_t hash_value(const Point& p) {
 
 ```text
 3 位: 3 ada=36
-桶数 >= 3? true
+桶数 = 13（3 个元素至少 3 桶）每个键的桶号 = 10/2 ada 桶内元素数 = 1
+reserve(100) 后桶数 = 193 上限负载因子 = 1
+rehash(200) 后桶数 >= 200? true
 点集大小 = 2（{1,2} 只进一次）
 multimap 中 k 出现 2 次
 std 版大小 = 2
+自检通过
 ```
+
+**桶模型**（三个函数一组看懂布局）：`bucket_count()` 总桶数、`bucket(key)` 某键落哪个桶、`bucket_size(n)` 桶里几个元素。负载因子 = size/bucket_count，超过 `max_load_factor()`（默认 1，别动）就自动 rehash 扩桶——扩桶时机不受你控制，**批量插入前 `reserve(n)` 一次到位**（省掉中间的多次 rehash），或 `rehash(m)` 直接指定最小桶数。自定义类型进哈希容器的合同：给 `hash_value(const T&)`（配 `hash_combine` 组合字段，见例程的 Point）+ `operator==`——比 std 的"手写 std::hash 特化"少一层样板。
+
 
 **毕业档案**：`std::unordered_map/set/multimap/multiset`（TR1→C++11，直系）。Boost 版 2022 年做了大重制（foa 系列开放寻址实现，`boost::unordered_flat_map` 比多数 `std::unordered_map` 实现快 2-3 倍、省一半内存——flat 系列在 21 章容器里展开）。日常哈希容器用 std；性能敏感查表用 boost 的 flat 系。
 

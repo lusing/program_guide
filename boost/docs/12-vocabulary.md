@@ -76,6 +76,13 @@ boost::get<int>(v);                                     // 类型不符 → bad_
 当前活性下标 = 2（double 是 2）
 get<int> 失败抛 bad_get（不是 UB）
   std::visit: std
+带返回值访问: doubler(21) = 42
+  int = 7
+  str = x
+二元访问: (7,7) 同? 1
+get 指针版: 活 int? 1 活 string? 0
+递归变体见文档（std 需要包裹结构体间接递归）
+自检通过
 ```
 
 **毕业档案**：`std::variant` + `std::visit`（C++17，直系）。std 版的分派器从"必须继承 static_visitor"简化为"任何可调用物"（重载 lambda 惯用法）。boost 版残留价值：**递归变体**（表达式树 `variant<int, recurse<Expr>>` 直接自引用，std::variant 必须包一层 struct 间接递归）——写 AST/JSON 树时是真实差异。
@@ -121,6 +128,9 @@ any_cast<int> 失败抛 bad_any_cast
 有值? 1 类型 = double
 reset 后有值? 0
 std 版长度 = 3
+引用版改写 = 20
+shared_ptr 进 any 取回 = 智能指针进 any
+判型: 是 int? 1 指针版是 int? 1
 选型：开放载荷 any / 封闭分派 variant
 自检通过
 ```

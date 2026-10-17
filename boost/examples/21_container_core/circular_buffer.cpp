@@ -30,8 +30,30 @@ int main() {
         std::cout << "  窗口均值 = " << sum / win.size() << '\n';
     }
 
-    // 4) 线程安全版：circular_buffer_space_optimized / 手动配锁；
-    //    无锁场景看 lockfree::spsc_queue（第 22 章后的并发容器）
+    // ── 4) 环形结构的三件专用操作 ──
+    boost::circular_buffer<int> ring(5);
+    for (int x : {1, 2, 3, 4, 5}) ring.push_back(x);    // 定容 5，已满
+    std::cout << "满容: full? " << ring.full() << " size==capacity? "
+              << (ring.size() == ring.capacity()) << '\n';
+    // linearize：把"逻辑环"整理成首尾连续的内存块（给 C API/连续算法用）
+    int* mem = ring.linearize();
+    std::cout << "线性化后连续访问: mem[0]=" << mem[0] << " mem[3]=" << mem[3]
+              << " 已线性? " << ring.is_linearized() << '\n';
+    // rotate：以某迭代器为新起点整体旋转（不改元素只改"哪里算开头"）
+    ring.rotate(ring.begin() + 2);
+    std::cout << "rotate(+2) 后:";
+    for (int x : ring) std::cout << ' ' << x;
+    std::cout << '\n';
+    // 【坑】迭代器不环形：只在 begin..end 内有效，越过 end 即失效断言
+    // std::cout << *(ring.begin() + 7);   // 越界 → 断言/UB
+
+    // ── 5) space_optimized：元素少时少占内存的适配版 ──
+    boost::circular_buffer_space_optimized<int> eco(10);
+    for (int i = 1; i <= 4; ++i) eco.push_back(i);
+    std::cout << "space_optimized: size=" << eco.size()
+              << " capacity=" << eco.capacity() << "（满额才用满 10 块）\n";
+
+    // 线程安全版：手动配锁；无锁场景看 lockfree::spsc_queue
     std::cout << "std 无对应（deque 不是环形语义）\n";
 
     std::cout << "自检通过\n";

@@ -40,7 +40,15 @@ tie 解包: 7,x
 k1 < k2 ? true
 结构化绑定: 2,grace,2.71
 std::tuple_size = 3
+boost 版 length = 3 第 1 个元素类型是 string? true
+ignore 解包只收第一个 = 1
+make_tuple 版交换 = 20,10
+cons 链: 首元素 = 1 剥一层后首元素 = ada（null_type 是递归终点哨兵）
+默认输出: (1 ada 3.14)
+自检通过
 ```
+
+tuple 的**内部结构**值得看一眼（输出后两行）：它是 `cons`（head + tail）的递归链表，`tuple<int,string,double>` 概念上就是 `cons<int, cons<string, cons<double, null_type>>>`——`get_head()`/`get_tail()` 拿到"短一号的链表头"，`null_type` 空类是递归终点哨兵（空对象模式的例子）。这就是"为什么 get&lt;N&gt; 的 N 必须是编译期常量"的实现层答案：N 决定递归剥几层。**两个坑**：`tie(a,b) = tie(b,a)` 不是交换（两次顺序赋值，最后两变量同值）——右边必须 `make_tuple`（先求值成真元组）；流输出默认 `(1 ada 3.14)` 格式（括号+空格），`set_open/set_close/set_delimiter` 三操纵符可改（tuple_io.hpp）。
 
 **毕业档案**：`std::tuple`（C++11，直系）。今天用 boost 版的唯一理由是接口兼容。注意演化终点不止 C++11——`std::tie` 的解包被 C++17 结构化绑定 `auto [id, name, score] = s;` 又升级了一代；而 boost::tie 的"忽略元素"（`boost::ignore`）对应 `std::ignore`，C++26 起结构化绑定也可以 `_` 忽略了。
 
@@ -60,6 +68,9 @@ std::cout.write(buf.data(), 4);            // data() 无 NUL，打印要带长�
 size=5 求和=14
 data 前 4 字节: abcd 首元素 a
 std::array 求和 = 14
+fill(777): 首元素 = 777（老代码里的 assign 已弃用）
+限制: 无构造/无 push_back/无插入迭代器（编译期定长的代价）
+自检通过
 ```
 
 `std::array`（C++11）是它的直系后代（Nicolai Josuttis 亲手送进 TR1）。毕业后 std 版还持续进化：单花括号初始化（聚合初始化规则修正）、CTAD、C++20 `std::to_array`。**2026 无理由用 boost 版。**
