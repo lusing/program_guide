@@ -1,7 +1,5 @@
 # 第 2 章 安装、启动器与命令行
 
-> [← 第 1 章 认识 Ren'Py](ch01-what-is-renpy.md) ｜ [目录](index.md) ｜ [第 3 章 第一个游戏：对话与角色 →](ch03-first-game.md)
-
 ## 2.1 获取 SDK
 
 从 https://www.renpy.org/latest.html 下载对应操作系统的 SDK（Windows 为 zip/exe，macOS 为 tar.bz2，Linux 为 tar.bz2）。当前 8.5 系列 SDK 约 350 MB。
@@ -85,4 +83,4 @@ SDK 根目录的 `renpy.exe`（Windows）、`renpy.app`（macOS）或 `renpy.sh`
 
 ---
 
-> [← 第 1 章 认识 Ren'Py](ch01-what-is-renpy.md) ｜ [目录](index.md) ｜ [第 3 章 第一个游戏：对话与角色 →](ch03-first-game.md)
+上一章：[01 认识 Ren'Py](ch01-what-is-renpy.md) · 下一章：[03 第一个游戏：对话与角色](ch03-first-game.md)

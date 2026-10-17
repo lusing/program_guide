@@ -1,7 +1,5 @@
 # 第 9 章 音频与视频
 
-> [← 第 8 章 NVL 模式](ch08-nvl-mode.md) ｜ [目录](index.md) ｜ [第 10 章 ATL 与 transform →](ch10-atl-and-transform.md)
-
 ## 9.1 通道模型与三大语句
 
 Ren'Py 的音频建立在**通道**之上：内置通道有 `music`（默认循环的背景音乐）、`sound`（一次性音效）、`voice`（语音）、`movie`（影片音轨），你也可以建自定义通道。操作通道的是三个语句：
@@ -82,4 +80,4 @@ label start:
 
 ---
 
-> [← 第 8 章 NVL 模式](ch08-nvl-mode.md) ｜ [目录](index.md) ｜ [第 10 章 ATL 与 transform →](ch10-atl-and-transform.md)
+上一章：[08 NVL 模式](ch08-nvl-mode.md) · 下一章：[10 ATL 与 transform](ch10-atl-and-transform.md)

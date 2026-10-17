@@ -1,7 +1,5 @@
 # 第 20 章 画廊、音乐室与回放
 
-> [← 第 19 章 输入与对话历史](ch19-input-and-history.md) ｜ [目录](index.md) ｜ [第 21 章 开场动画与游戏生命周期 →](ch21-splash-and-lifecycle.md)
-
 通关后的“收集要素”——CG 画廊、音乐鉴赏、剧情回放——是视觉小说的标配。本章把它们一次讲完。你会发现三者的骨架惊人地一致：
 
 1. **解锁数据**：某件事发生过（看过这张 CG / 听过这首曲子 / 走到过这个结局）；
@@ -824,4 +822,4 @@ label route_sea_morning:
 
 ---
 
-> [← 第 19 章 输入与对话历史](ch19-input-and-history.md) ｜ [目录](index.md) ｜ [第 21 章 开场动画与游戏生命周期 →](ch21-splash-and-lifecycle.md)
+上一章：[19 输入与对话历史](ch19-input-and-history.md) · 下一章：[21 开场动画与游戏生命周期](ch21-splash-and-lifecycle.md)

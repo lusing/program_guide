@@ -1,7 +1,5 @@
 # 第 12 章 Layered Images 立绘系统
 
-> [← 第 11 章 转场](ch11-transitions.md) ｜ [目录](index.md) ｜ [第 13 章 Screen 语言基础 →](ch13-screen-basics.md)
-
 ## 12.1 问题：立绘是零件的组合
 
 一个角色的立绘往往由身体、表情、服装、配饰等图层组合。如果每张组合图都单独出图，文件数量是各零件数的乘积。`layeredimage` 让你只出零件图，在引擎里描述**组合规则**，Ren'Py 自动合成，并与 `say` 属性、`show` 无缝联动。
@@ -98,4 +96,4 @@ label start:
 
 ---
 
-> [← 第 11 章 转场](ch11-transitions.md) ｜ [目录](index.md) ｜ [第 13 章 Screen 语言基础 →](ch13-screen-basics.md)
+上一章：[11 转场](ch11-transitions.md) · 下一章：[13 Screen 语言基础](ch13-screen-basics.md)

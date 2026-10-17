@@ -1,7 +1,5 @@
 # 第 18 章 Python 语句与引擎 API
 
-> [← 第 17 章 持久化：persistent 与跨周目数据](ch17-persistent.md) ｜ [目录](index.md) ｜ [第 19 章 输入与对话历史 →](ch19-input-and-history.md)
-
 前面十七章里我们已经零散用过 `$`、`init python:`、`python:`。这一章把它们一次讲透，并给出引擎 API 的分类地图——不是字典式的罗列，而是按“你什么时候需要它”组织的检索框架。
 
 ## 18.1 四种 Python 代码的执行时机
@@ -219,4 +217,4 @@ label calm_path:
 
 ---
 
-> [← 第 17 章 持久化：persistent 与跨周目数据](ch17-persistent.md) ｜ [目录](index.md) ｜ [第 19 章 输入与对话历史 →](ch19-input-and-history.md)
+上一章：[17 持久化：persistent 与跨周目数据](ch17-persistent.md) · 下一章：[19 输入与对话历史](ch19-input-and-history.md)

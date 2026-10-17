@@ -1,7 +1,5 @@
 # 附录 A 示例集总览与构建方法
 
-> [← 第 24 章 构建与发布](ch24-build-and-distribution.md) ｜ [目录](index.md) ｜ [返回教程首页 →](index.md)
-
 本仓库 `renpy/examples/` 下的示例工程与本书章节一一对应，全部**不依赖任何图片/音频素材**（用引擎内建的 `Solid`、`Text`、`<silence>` 等代替），因此 clone 后即可直接编译运行。
 
 ## A.1 示例一览
@@ -86,4 +84,4 @@ done
 
 ---
 
-> [← 第 24 章 构建与发布](ch24-build-and-distribution.md) ｜ [目录](index.md) ｜ [返回教程首页 →](index.md)
+上一章：[24 构建与发布](ch24-build-and-distribution.md) · 下一章：（完）

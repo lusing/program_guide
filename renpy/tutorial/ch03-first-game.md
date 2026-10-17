@@ -1,7 +1,5 @@
 # 第 3 章 第一个游戏：对话与角色
 
-> [← 第 2 章 安装、启动器与命令行](ch02-install-launcher-cli.md) ｜ [目录](index.md) ｜ [第 4 章 图像与舞台 →](ch04-images-and-stage.md)
-
 （配套示例：`examples/01_first_game`）
 
 ## 3.1 最小可运行游戏
@@ -172,4 +170,4 @@ label marry:
 
 ---
 
-> [← 第 2 章 安装、启动器与命令行](ch02-install-launcher-cli.md) ｜ [目录](index.md) ｜ [第 4 章 图像与舞台 →](ch04-images-and-stage.md)
+上一章：[02 安装、启动器与命令行](ch02-install-launcher-cli.md) · 下一章：[04 图像与舞台](ch04-images-and-stage.md)

@@ -1,7 +1,5 @@
 # 第 14 章 Screen 动作与数据绑定
 
-> [← 第 13 章 Screen 语言基础](ch13-screen-basics.md) ｜ [目录](index.md) ｜ [第 15 章 特殊屏幕与菜单定制 →](ch15-special-screens.md)
-
 上一章我们学会了"搭界面"——容器、定位、显示物、屏幕作用域。但一个没有按钮的界面只是风景画，这一章要让界面"动"起来。核心概念只有一个词：**action（动作）**。
 
 ## 14.1 action 是按钮的灵魂：三态模型
@@ -562,4 +560,4 @@ label shop_demo:
 
 ---
 
-> [← 第 13 章 Screen 语言基础](ch13-screen-basics.md) ｜ [目录](index.md) ｜ [第 15 章 特殊屏幕与菜单定制 →](ch15-special-screens.md)
+上一章：[13 Screen 语言基础](ch13-screen-basics.md) · 下一章：[15 特殊屏幕与菜单定制](ch15-special-screens.md)

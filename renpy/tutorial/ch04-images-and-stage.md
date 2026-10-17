@@ -1,7 +1,5 @@
 # 第 4 章 图像与舞台
 
-> [← 第 3 章 第一个游戏：对话与角色](ch03-first-game.md) ｜ [目录](index.md) ｜ [第 5 章 标签与控制流 →](ch05-labels-and-flow.md)
-
 （配套示例：`examples/02_images_and_stage`）
 
 ## 4.1 图像名：tag 与 attribute
@@ -154,4 +152,4 @@ camera:
 
 ---
 
-> [← 第 3 章 第一个游戏：对话与角色](ch03-first-game.md) ｜ [目录](index.md) ｜ [第 5 章 标签与控制流 →](ch05-labels-and-flow.md)
+上一章：[03 第一个游戏：对话与角色](ch03-first-game.md) · 下一章：[05 标签与控制流](ch05-labels-and-flow.md)

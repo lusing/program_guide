@@ -1,7 +1,5 @@
 # 第 15 章 特殊屏幕与菜单定制
 
-> [← 第 14 章 Screen 动作与数据绑定](ch14-screen-actions.md) ｜ [目录](index.md) ｜ [第 16 章 变量、存档与回滚 →](ch16-save-and-rollback.md)
-
 到目前为止，你游戏里的对话窗口、选项列表、确认框，长得都和所有 Ren'Py 游戏一个样——因为它们来自官方模板文件 `screens.rpy`。这一章把这块"公共骨架"拆开给你看：引擎其实留了一排**带保留名的钩子屏幕**，你在自己项目里定义同名屏幕，就能整体替换任何一块。读完这章，模板就从"黑盒"变成"素材库"。
 
 ## 15.1 十三个特殊屏幕总览
@@ -902,4 +900,4 @@ define gui.button_text_size = gui.interface_text_size
 
 ---
 
-> [← 第 14 章 Screen 动作与数据绑定](ch14-screen-actions.md) ｜ [目录](index.md) ｜ [第 16 章 变量、存档与回滚 →](ch16-save-and-rollback.md)
+上一章：[14 Screen 动作与数据绑定](ch14-screen-actions.md) · 下一章：[16 变量、存档与回滚](ch16-save-and-rollback.md)

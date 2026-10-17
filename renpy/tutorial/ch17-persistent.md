@@ -1,7 +1,5 @@
 # 第 17 章 持久化：persistent 与跨周目数据
 
-> [← 第 16 章 变量、存档与回滚](ch16-save-and-rollback.md) ｜ [目录](index.md) ｜ [第 18 章 Python 语句与引擎 API →](ch18-python-and-engine-api.md)
-
 存档是一局游戏的记忆，persistent 是**玩家**的记忆：解锁过哪些结局、看过哪些 CG、设置里的音量、成就系统——这些不属于任何一局，而属于“这个玩家在这个设备上玩过的整个游戏”。Ren'Py 把这套数据挂在全局对象 `persistent` 上，引擎自动读写，你只管当普通变量用。
 
 ## 17.1 persistent 对象的基本用法
@@ -196,4 +194,4 @@ screen main_menu():
 
 ---
 
-> [← 第 16 章 变量、存档与回滚](ch16-save-and-rollback.md) ｜ [目录](index.md) ｜ [第 18 章 Python 语句与引擎 API →](ch18-python-and-engine-api.md)
+上一章：[16 变量、存档与回滚](ch16-save-and-rollback.md) · 下一章：[18 Python 语句与引擎 API](ch18-python-and-engine-api.md)

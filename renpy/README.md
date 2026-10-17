@@ -2,7 +2,7 @@
 
 本目录是《Ren'Py 开发指南》的配套示例集，结构为“分章版教程 + 可独立运行的示例工程 + 构建脚本”。
 
-- 教程正文：[`tutorial/`](./tutorial/index.md)，`index.md` 为目录页，正文按章拆为 `ch01`–`ch24` 共 24 个文件外加 `appendix-a-examples.md`；每个文件页首与页尾都带「上一章 ｜ 目录 ｜ 下一章」导航。
+- 教程正文：[`tutorial/`](./tutorial/index.md)，`index.md` 为目录页，正文按章拆为 `ch01`–`ch24` 共 24 个文件外加 `appendix-a-examples.md`；每个文件章末页脚带「上一章 · 下一章」导航。
 - 示例工程：`examples/` 下 **19 个**可独立 `compile` / `lint` / `run` 的 Ren'Py 工程，与正文章节一一对应。
 - 构建脚本：`build.sh`（Linux/macOS）与 `build.ps1`（Windows），用于批量编译与静态校验。
 

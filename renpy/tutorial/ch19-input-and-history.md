@@ -1,7 +1,5 @@
 # 第 19 章 输入与对话历史
 
-> [← 第 18 章 Python 语句与引擎 API](ch18-python-and-engine-api.md) ｜ [目录](index.md) ｜ [第 20 章 画廊、音乐室与回放 →](ch20-gallery-music-replay.md)
-
 本章解决两件玩家每天都在做、开发者却常常糊里糊涂的事：
 
 1. **要玩家输入文字**——主角叫什么名字？密代号是多少？
@@ -918,4 +916,4 @@ screen history():
 
 ---
 
-> [← 第 18 章 Python 语句与引擎 API](ch18-python-and-engine-api.md) ｜ [目录](index.md) ｜ [第 20 章 画廊、音乐室与回放 →](ch20-gallery-music-replay.md)
+上一章：[18 Python 语句与引擎 API](ch18-python-and-engine-api.md) · 下一章：[20 画廊、音乐室与回放](ch20-gallery-music-replay.md)

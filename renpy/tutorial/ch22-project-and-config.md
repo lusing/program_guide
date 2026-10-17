@@ -1,7 +1,5 @@
 # 第 22 章 项目组织与配置：从目录到 settings
 
-> [← 第 21 章 开场动画与游戏生命周期](ch21-splash-and-lifecycle.md) ｜ [目录](index.md) ｜ [第 23 章 调试与自动化测试 →](ch23-debug-and-testing.md)
-
 本章从“一个 Ren'Py 工程到底有哪些文件、谁先谁后”讲起，把 `game/` 目录的组织、`init` 的执行顺序、`options.rpy` 的常用配置一次性讲清。
 
 ## 22.1 一个工程的目录结构
@@ -547,4 +545,4 @@ default preferences.afm_enable = False  # 默认是否开自动前进
 
 ---
 
-> [← 第 21 章 开场动画与游戏生命周期](ch21-splash-and-lifecycle.md) ｜ [目录](index.md) ｜ [第 23 章 调试与自动化测试 →](ch23-debug-and-testing.md)
+上一章：[21 开场动画与游戏生命周期](ch21-splash-and-lifecycle.md) · 下一章：[23 调试与自动化测试](ch23-debug-and-testing.md)

@@ -1,7 +1,5 @@
 # 第 6 章 菜单、变量与分支
 
-> [← 第 5 章 标签与控制流](ch05-labels-and-flow.md) ｜ [目录](index.md) ｜ [第 7 章 对话进阶与文本 →](ch07-text-and-dialogue.md)
-
 ## 6.1 menu 语句的完整形态
 
 ```renpy
@@ -155,4 +153,4 @@ label ask_one:
 
 ---
 
-> [← 第 5 章 标签与控制流](ch05-labels-and-flow.md) ｜ [目录](index.md) ｜ [第 7 章 对话进阶与文本 →](ch07-text-and-dialogue.md)
+上一章：[05 标签与控制流](ch05-labels-and-flow.md) · 下一章：[07 对话进阶与文本](ch07-text-and-dialogue.md)

@@ -1,7 +1,5 @@
 # 第 21 章 开场动画与游戏生命周期
 
-> [← 第 20 章 画廊、音乐室与回放](ch20-gallery-music-replay.md) ｜ [目录](index.md) ｜ [第 22 章 项目组织与配置：从目录到 settings →](ch22-project-and-config.md)
-
 玩过足够多的游戏之后，那一串开场动作会变成肌肉记忆：双击图标 → 一个浅色的小窗口一闪（presplash）→ 一段厂商 logo 或标题动画 → 主菜单音乐响起 → 点“开始游戏”→ 第一句台词出现。
 
 这串动作背后没有魔法，只有几个固定名字的 label 被引擎依次执行。本章要把它们全部摊开：从你双击图标那一刻起，Ren'Py 走了哪几个 label、每句话在干什么、你能在哪些位置插进自己的开场动画、以及“开始游戏”和“返回主菜单”这两个按钮究竟让引擎做了什么。
@@ -1500,4 +1498,4 @@ label quit:
 
 ---
 
-> [← 第 20 章 画廊、音乐室与回放](ch20-gallery-music-replay.md) ｜ [目录](index.md) ｜ [第 22 章 项目组织与配置：从目录到 settings →](ch22-project-and-config.md)
+上一章：[20 画廊、音乐室与回放](ch20-gallery-music-replay.md) · 下一章：[22 项目组织与配置：从目录到 settings](ch22-project-and-config.md)

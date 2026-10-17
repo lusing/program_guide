@@ -1,7 +1,5 @@
 # 第 11 章 转场
 
-> [← 第 10 章 ATL 与 transform](ch10-atl-and-transform.md) ｜ [目录](index.md) ｜ [第 12 章 Layered Images 立绘系统 →](ch12-layered-images.md)
-
 ## 11.1 with 语句与预定义转场
 
 `with` 语句触发一次"旧画面 → 新画面"的过渡：
@@ -106,4 +104,4 @@ label start:
 
 ---
 
-> [← 第 10 章 ATL 与 transform](ch10-atl-and-transform.md) ｜ [目录](index.md) ｜ [第 12 章 Layered Images 立绘系统 →](ch12-layered-images.md)
+上一章：[10 ATL 与 transform](ch10-atl-and-transform.md) · 下一章：[12 Layered Images 立绘系统](ch12-layered-images.md)

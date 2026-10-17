@@ -1,7 +1,5 @@
 # 第 8 章 NVL 模式
 
-> [← 第 7 章 对话进阶与文本](ch07-text-and-dialogue.md) ｜ [目录](index.md) ｜ [第 9 章 音频与视频 →](ch09-audio-and-video.md)
-
 ## 8.1 两种呈现：ADV 与 NVL
 
 默认的对话呈现叫 **ADV 模式**：一次一句，窗口底部随说话者切换内容。**NVL 模式**（"novel"）则把多句话**堆叠在一个整屏文本窗**里，像翻小说页一样推进。适合旁白叙事、书信体、系统播报、群聊记录。
@@ -87,4 +85,4 @@ label start:
 
 ---
 
-> [← 第 7 章 对话进阶与文本](ch07-text-and-dialogue.md) ｜ [目录](index.md) ｜ [第 9 章 音频与视频 →](ch09-audio-and-video.md)
+上一章：[07 对话进阶与文本](ch07-text-and-dialogue.md) · 下一章：[09 音频与视频](ch09-audio-and-video.md)

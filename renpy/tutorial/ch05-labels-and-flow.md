@@ -1,7 +1,5 @@
 # 第 5 章 标签与控制流
 
-> [← 第 4 章 图像与舞台](ch04-images-and-stage.md) ｜ [目录](index.md) ｜ [第 6 章 菜单、变量与分支 →](ch06-menus-and-variables.md)
-
 Ren'Py 剧本的执行模型很简单：**从 `start` 标签开始，语句自上而下顺序执行**。这一章讲的是让"直线叙事"变成"任意结构"的四件工具：`label`（路标）、`jump`/`call`（跳转与往返）、`pass`（占位）、`while`（循环）。
 
 ## 5.1 label：剧本的路标
@@ -172,4 +170,4 @@ label start:
 
 ---
 
-> [← 第 4 章 图像与舞台](ch04-images-and-stage.md) ｜ [目录](index.md) ｜ [第 6 章 菜单、变量与分支 →](ch06-menus-and-variables.md)
+上一章：[04 图像与舞台](ch04-images-and-stage.md) · 下一章：[06 菜单、变量与分支](ch06-menus-and-variables.md)

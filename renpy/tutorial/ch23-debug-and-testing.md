@@ -1,7 +1,5 @@
 # 第 23 章 调试与自动化测试
 
-> [← 第 22 章 项目组织与配置：从目录到 settings](ch22-project-and-config.md) ｜ [目录](index.md) ｜ [第 24 章 构建与发布 →](ch24-build-and-distribution.md)
-
 写代码的绝大部分时间不是在“写”，而是在“找为什么没按预想运行”。这一章把 Ren’Py 提供的调试武器一次讲全：开发者模式与快捷键、控制台、lint 静态检查、命令行工具、以及自动化测试框架。
 
 ## 23.1 开发者模式：先打开总开关
@@ -909,4 +907,4 @@ git -C /Volumes/mac004/code/programming/renpy diff   # 查看被改动的 call
 
 ---
 
-> [← 第 22 章 项目组织与配置：从目录到 settings](ch22-project-and-config.md) ｜ [目录](index.md) ｜ [第 24 章 构建与发布 →](ch24-build-and-distribution.md)
+上一章：[22 项目组织与配置：从目录到 settings](ch22-project-and-config.md) · 下一章：[24 构建与发布](ch24-build-and-distribution.md)

@@ -1,7 +1,5 @@
 # 第 13 章 Screen 语言基础
 
-> [← 第 12 章 Layered Images 立绘系统](ch12-layered-images.md) ｜ [目录](index.md) ｜ [第 14 章 Screen 动作与数据绑定 →](ch14-screen-actions.md)
-
 ## 13.1 第一个 screen：一块会自己更新的面板
 
 先看一个最小的 screen 定义：
@@ -332,4 +330,4 @@ label start:
 
 ---
 
-> [← 第 12 章 Layered Images 立绘系统](ch12-layered-images.md) ｜ [目录](index.md) ｜ [第 14 章 Screen 动作与数据绑定 →](ch14-screen-actions.md)
+上一章：[12 Layered Images 立绘系统](ch12-layered-images.md) · 下一章：[14 Screen 动作与数据绑定](ch14-screen-actions.md)

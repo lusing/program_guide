@@ -1,7 +1,5 @@
 # 第 1 章 认识 Ren'Py
 
-> [← 教程首页](index.md) ｜ [目录](index.md) ｜ [第 2 章 安装、启动器与命令行 →](ch02-install-launcher-cli.md)
-
 Ren'Py 是一个用 Python 编写、专为**视觉小说（visual novel）与叙事型游戏**设计的开源引擎。它解决的核心问题是：把"讲故事"这件事的门槛降到接近写剧本，同时保留用 Python 扩展出任何玩法系统的能力。
 
 它有几个鲜明的特点：
@@ -25,4 +23,4 @@ Ren'Py 并不限于"纯视觉小说"。官方生态里有把 Ren'Py 做成养成
 
 ---
 
-> [← 教程首页](index.md) ｜ [目录](index.md) ｜ [第 2 章 安装、启动器与命令行 →](ch02-install-launcher-cli.md)
+下一章：[02 安装、启动器与命令行](ch02-install-launcher-cli.md)

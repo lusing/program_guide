@@ -1,7 +1,5 @@
 # 第 10 章 ATL 与 transform
 
-> [← 第 9 章 音频与视频](ch09-audio-and-video.md) ｜ [目录](index.md) ｜ [第 11 章 转场 →](ch11-transitions.md)
-
 ## 10.1 ATL 是什么
 
 ATL（Animation and Transformation Language）是 Ren'Py 内嵌的小型动画语言：一串"属性随时间变化"的指令，告诉引擎某个可显示物如何动。它有两个载体：
@@ -129,4 +127,4 @@ ATL 里的字符串行表示"显示这个 displayable"，裸数字 `0.5` 等价 
 
 ---
 
-> [← 第 9 章 音频与视频](ch09-audio-and-video.md) ｜ [目录](index.md) ｜ [第 11 章 转场 →](ch11-transitions.md)
+上一章：[09 音频与视频](ch09-audio-and-video.md) · 下一章：[11 转场](ch11-transitions.md)

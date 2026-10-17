@@ -1,7 +1,5 @@
 # 第 7 章 对话进阶与文本
 
-> [← 第 6 章 菜单、变量与分支](ch06-menus-and-variables.md) ｜ [目录](index.md) ｜ [第 8 章 NVL 模式 →](ch08-nvl-mode.md)
-
 对话是视觉小说的呼吸。这一章把 `say` 语句的全部能力——角色参数、附加参数、`extend`、多段独白、插值、文本标签、转义——一次讲透。
 
 ## 7.1 Character 的进阶参数
@@ -194,4 +192,4 @@ screen hud():
 
 ---
 
-> [← 第 6 章 菜单、变量与分支](ch06-menus-and-variables.md) ｜ [目录](index.md) ｜ [第 8 章 NVL 模式 →](ch08-nvl-mode.md)
+上一章：[06 菜单、变量与分支](ch06-menus-and-variables.md) · 下一章：[08 NVL 模式](ch08-nvl-mode.md)
