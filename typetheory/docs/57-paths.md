@@ -202,4 +202,4 @@ HIT 计算规则的预演。
 
 ---
 
-上一章：[46 纯函数对象](46-pureobjects.md) · 下一章：[59 泛等](59-univalence.md)
+上一章：[56 LF 与元理论](56-lf.md) · 下一章：[58 等价论](58-equivalence.md)
