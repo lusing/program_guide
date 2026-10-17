@@ -61,7 +61,7 @@ example (h : MyEq (1 + 1) 2) (v : Vec Nat 2) : Vec Nat (1 + 1) := myTransport (V
 -- 用 MyEq 的自造世界里没有它——myJ 只认 refl，而 f ≡ g 不是
 -- 定义相等。三家的处理各有故事：Coq 有可选的 Funext 公理类；
 -- Lean 从 Quot.sound【推导】出 funext；Agda 内涵理论同样不可证，
--- 同伦路线（36–54 章）给出另一种解法。
+-- 同伦路线（36–64 章）给出另一种解法。
 
 #check @funext                -- Lean 核心的函数外延（定理）
 #print axioms funext          -- 依赖 [propext, Quot.sound]——不是 J！

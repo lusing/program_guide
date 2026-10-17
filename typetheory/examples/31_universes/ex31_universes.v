@@ -25,7 +25,7 @@ Check (myId Type).     (* A := Type@{i}，更高的 u *)
 
 (* ---- Prop：另一条宇宙线 ---- *)
 Check (Prop : Type).
-(* Prop : Type，但 Prop 内部是「证明无关」的世界（49 章细讲）；
+(* Prop : Type，但 Prop 内部是「证明无关」的世界（59 章细讲）；
    Coq 的 Set/Type 是直谓与否取决于旗标（-impredicative-set），
    默认 Set 直谓、Prop 非直谓 *)
 

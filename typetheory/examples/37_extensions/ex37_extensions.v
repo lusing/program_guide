@@ -136,7 +136,7 @@ Definition seqc (t1 t2 : tm) : tm := app (abs TUnit t2) t1.
 
 (* de Bruijn 的诚实注记：named 演算里 [x↦v]t2 = t2 只要 x ∉ FV(t2)；
    de Bruijn 的 β-代换还会给高于绑定位的变量减位，字面等式只在
-   t2 无自由变量时成立（02/48 章的同一话题）。故闭项给样本、
+   t2 无自由变量时成立（02/58 章的同一话题）。故闭项给样本、
    一般情形的「外部规则 = 内部规则的定理」在 E-Seq（下面）无保留成立。 *)
 
 (* 外部规则 E-Seq：子项先走 = 内部 E-App1 的直译（无保留） *)
@@ -146,7 +146,7 @@ Proof. intros. unfold seqc. apply E_App2; [constructor | assumption]. Qed.
 
 (* 外部规则 E-SeqNext 的样本：t1 是值、t2 的 0 号变量指 seq 绑定器
    时，β 落回 t2。一般引理需要「全部自由变量低于绑定位」的新鲜性
-   （Forall (< j) (fv t) ⇒ subst t j s = t）——48 章元理论的属地，
+   （Forall (< j) (fv t) ⇒ subst t j s = t）——58 章元理论的属地，
    这里以两个直算样本立据：*)
 Example E_SeqNext_sample :
   step (seqc tt (abs TUnit (var 0))) (abs TUnit (var 0)).
