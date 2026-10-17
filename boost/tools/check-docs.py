@@ -60,9 +60,21 @@ OUT_NAME = re.compile(r"`([A-Za-z0-9_.\-]+\.cpp)`")
 WIN_ANNOT = ("Windows 侧", "Windows侧", "windows 侧")
 
 
+def _channels():
+    """可用的产物通道：macOS/Linux 的 run-all.sh 写 build/{shared,static}/，
+    Windows 的 build.ps1 写 build/*.out（顶层）。有 shared/static 用双通道，
+    否则回退顶层（同一批例程，判定逻辑不变）。"""
+    if (BUILD / "shared").is_dir() or (BUILD / "static").is_dir():
+        return ("shared", "static")
+    return ("",)
+
+
 def product_paths(stem):
-    """某例程在两条通道下的产物路径（可能不存在）。"""
-    return [BUILD / ch / f"{stem}.out" for ch in ("shared", "static")]
+    """某例程在可用通道下的产物路径（可能不存在）。"""
+    chs = _channels()
+    if chs == ("shared", "static"):
+        return [BUILD / ch / f"{stem}.out" for ch in chs]
+    return [BUILD / f"{stem}.out"]
 
 
 def read_lines(p):
@@ -148,18 +160,18 @@ def main():
     show_diff = "--diff" in argv
     select = [a for a in argv if not a.startswith("-")]
 
-    if not (BUILD / "shared").is_dir() and not (BUILD / "static").is_dir():
-        print("build/{shared,static} 都不存在，先跑 ./run-all.sh")
+    chs = _channels()
+    if chs == ("",) and not any(BUILD.glob("*.out")):
+        print("build/ 下没有任何 .out 产物，先跑 ./build.ps1 或 ./run-all.sh")
         return 1
 
     scanned_files = 0
     # 例程名未标注时的兜底：在全部产物里找（比按例子定位宽松，所以单独计数）
     def load_all_products():
         out = []
-        for ch in ("shared", "static"):
+        for ch in chs:
             d = BUILD / ch
-            if d.is_dir():
-                for f in sorted(d.glob("*.out")):
+            for f in sorted(d.glob("*.out")):
                     lns = read_lines(f)
                     if lns:
                         out.append((f, lns))
@@ -232,12 +244,15 @@ def main():
 
             # 按"标注里的顺序拼起来"的两条通道序列
             seqs = []
-            for ch in ("shared", "static"):
-                seq = []
-                for r in refs:
-                    seq += read_lines(BUILD / ch / f"{Path(r).stem}.out") or []
-                if seq:
-                    seqs.append(seq)
+            for pths in ([product_paths(Path(r).stem) for r in refs],):
+                # product_paths 已按可用通道给出路径；把"每条通道各自的拼接序列"
+                # 重组出来（Windows 单通道时只有一个序列）
+                for idx in range(len(pths[0])):
+                    seq = []
+                    for p in pths:
+                        seq += read_lines(p[idx]) or []
+                    if seq:
+                        seqs.append(seq)
 
             best = None
             fail_at = 0
