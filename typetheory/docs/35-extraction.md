@@ -57,7 +57,7 @@ Agda 的 MAlonzo 通道在本机实测（WSL Ubuntu-26.04 + GHC 9.10）：
 
 ## 24.3 证明无关性：Prop 的特权
 
-《现代类型论》3.5 的核心概念在 Coq 里有机器面：
+《现代类型论》3.5 的核心概念在 Coq 里有机器面（完整理论、PI 与驴句双读法的机器判决见 **52 章**）：
 
 ```coq
 Check proof_irrelevance : forall (P : Prop) (p q : P), p = q.

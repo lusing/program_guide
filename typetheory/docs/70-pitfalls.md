@@ -282,6 +282,58 @@ ok/NONE 噪声；`between(0, A, X)` 的 A 先算后用；表驱动检查
 ⑭ build.ps1 的 Prolog 判定对输出做**大小写不敏感**匹配 —
   检定标签里别出现 error/warning 字样（38 章实测误伤）。
 
+## 31.6c 罗朝晖线高频坑（47–56 章：Coq 语义件 + Prolog 分析器）
+
+> 语义建模三纪律：**谓词的论域先声明**（Parameters 全列）；
+> **Fail 见证要求失败真的发生**；**双强制要么目标不同
+> （合谐）要么删一条**（48 章定理的工程面）。
+
+① Record 字段引用前面的字段拿到的是**字段值**不是投影 —
+  `H_a x (am_of x)` 报「Human 不能应用于 x」（51 章实测）；
+② 构造子 destruct 的 intro 模式要**平铺全字段**：三字段
+  构造子 `[x y Hp]`，嵌套写 `[x [y Hp]]` 被当析取模式拆
+  （52 章实测「Expects a disjunctive pattern」）；
+③ exists∧exists∧… 的模式**每层合取都有自己的括号** —
+  `[k [Hk [f [Hinj Hall]]]]`（52 章 most_two 实测）；
+④ `lia` 不算 `Nat.div`——先 `cbn` 把常量除法算掉再 lia；
+⑤ 依赖等式上的 destruct 有「抽象不良类型」暗礁：目标/假设
+  含**单态函数**（f : Fin 2 → F3）时 destruct 抛异常且
+  **try 不捕获**——改道等价形或换见证构造（52 章 Most
+  反向改走 Most3，诚实记录）；
+⑥ `apply (lemma _)` 留 evar 时把假设**直接应到具体对象**
+  （Hua (mkDo f1 d2 I)）一锤定音——exact 消不掉 evar；
+⑦ JMeq 在 8.20 预加载库**不存在**——自造三行且隐式参数
+  {A}{B} 别写显式（54 章）；自造件必须声明在**使用前**；
+⑧ `contradiction` 不认「对称后矛盾」（E : j = i 对 Hij :
+  i <> j）——congruence/lia 才行（49 章）；
+⑨ Coq 8.20 对空/单点 Inductive 自动降 Prop 并发**弃用警告**
+  ——`Unset Automatic Proposition Inductives.` 压制（56 章）；
+  同因避开 Prop 形负位归纳（BadNeg→False 会触发双输出）；
+⑩ `nth_error_Some` 8.20 是 iff 形——用 proj1 拆方向；
+⑪ 双 nat 字段记录的 `:>` 双投影触发 ambiguous-paths **警告**
+  （stderr 非空=build 失败）——`Set Warnings "-ambiguous-paths"`
+  屏蔽并在注释保留警告原文当教学证据（48 章）；
+⑫ Coq 强制插入**只做原子层**——函数逆变/List 传播/谓词
+  传播都要手写 map 版函数（理论有实现无的边界，48 章）；
+⑬ 强制查找按**语法形状**找目标——参数位目标 `A→Prop`（A
+  待定）与注册的 T1 对不上，用类型归属 `(run_word : T1)`
+  点名（50 章书原文写法）；
+⑭ 语义负例用 `Fail Definition` 见证时先想清楚**会不会真的
+  失败**——is 的 A/B 独立参数让「生成过剩」形式上合法
+  （54 章实测 The command has not failed!）；真失败的两个
+  位（EQP 错误语义的 x 出辖域、Evt_H 的 Table≠Human）才
+  是 Fail 的正当用户；
+⑮ Prolog 分析器：`(B/A)` 的 A（论域）是**第一分量**——
+  sr(cn,np) 是 NP/CN，写反后分析器「看似工作实则全错」
+  （55 章 caught/the/most 三连环）；π 消解要**在轨内**做
+  （预实例化反成 bug）；应用规则 cumul 方向=参数⊑论域，
+  左应用参数在前照抄有序轨必反；
+⑯ mini-LF 检查器的 kind_ok 查**开类别**时绑定名被当全局
+  常量查表（kel(c(a)) 的 a 出作用域）——只查外层形状是
+  诚实的降级（56 章）；
+⑰ Section 内的 Coercion 在 End 后失效——这是「局部强制」
+  的机器化身不是 bug，docs 要讲明（53 章）。
+
 ## 31.7 七本读本怎么读
 
 | 书 | 定位 | 建议路线 |
@@ -292,7 +344,7 @@ ok/NONE 噪声；`between(0, A, X)` 的 A 先算后用；表驱动检查
 | Nordström 导论 | MLTT 圣经 | 10–16 章逐章对读；扫描件（无文本层） |
 | HoTT 书 | 第五部分 | **已全覆盖**（专轮 37/39/41/44/45/46/47 七新章 + 36/38/40/42/43 五章深化）；ch.1–11 核心内容自包含；机器面 cubical Agda 主力（58 章起）+ Coq mini-HoTT 对照 + Lean set 层（39/46/47）；同伦论大定理（Freudenthal/Hopf/van Kampen 完整机器版）以陈述级呈现、coq-hott 教程续读 |
 | Farmer《STT》(2023) | Church 式实用逻辑全书 | **12–17 章全覆盖**（双语义/未定义性/证明系统/理论/态射/变体）；01 章动机讨论来源 |
-| 《现代类型论的发展与应用》 | 中文综述 | 全程中文底本；2.5 子类型配 27 章、6.2 LF 配 19 章 |
+| 《现代类型论的发展与应用》 | 中文综述 | **已全覆盖**（专轮 47–56 十章：UTT/强制子类型/记录与模块/MTT 语义/形容词/证明无关与驴句/标记与点类型/判断与事件/范畴语法/LF 与元理论）；书内 Coq 代码（5.3 节）全部升级为过检机器件、栈细化定理补全真证明；旧引用（2.5 配 33、6.2 配 19、3.5 配 35）升级为交叉引用 |
 
 ## 31.8 四家速查（一页带走）
 
