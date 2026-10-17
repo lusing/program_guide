@@ -16,7 +16,7 @@ Lean 4.25.0 / swipl 10.0）机器验证的完整文件。
 > 核心理念：**类型论 = 语法分层 × 依赖类型 × Curry–Howard**。
 > λ 演算（02）→ 简单类型双轮：Hindley 证明论线（03–11）+
 > Farmer 模型论线（12–17）→ λ 立方体（18–21）→ Martin-Löf
-> （27–33）→ 证明助手实战（40–41）→ **程序设计语言类型论
+> （27–39）→ 证明助手实战（40–41）→ **程序设计语言类型论
 > （42–52）** → **现代类型论：UTT 与 MTT 语义学（53–62）** →
 > 同伦（63–74）→ 元理论与收束（75–76）。
 
@@ -71,7 +71,7 @@ typetheory/
 | [25 λD 数学：等式/序/ι](docs/25-ldmath.md) | Leibniz 等式=定义；∃¹ 与 ι 握手 17 章；子集即谓词 | Lean 主场+Prolog |
 | [26 从 Peano 到 Bézout](docs/26-bezout.md) | 公理化 Peano 记账；整数=对之商；九个洞；eea 见证 | Coq 主场+Lean |
 
-### 第三部分 · Martin-Löf 类型论（27–33）
+### 第三部分 · Martin-Löf 类型论（27–39）
 
 | 章 | 主题 | 示例 |
 |---|---|---|
@@ -82,6 +82,12 @@ typetheory/
 | [31 全域](docs/31-universes.md) | 宇宙塔；Cumulativity 三家立场 | 三家 |
 | [32 W 类型](docs/32-wtypes.md) | 良序归纳；ℕ=W Bool；W-加法 2+3=5 | 三家 |
 | [33 子集与强制](docs/33-subtype.md) | sig/Subtype/Σ；Coercion/Coe/函数 | 三家 |
+| [34 版本史与同一性](docs/34-versions.md) | 四合一判断；Heyting 逐常元；五版本演化 | Agda |
+| [35 类型与单型集合 I](docs/35-monotypes.md) | 元变元；Set/El；类型层 η；假设↔函数翻译 | Agda |
+| [36 单型集合 II](docs/36-monosets.md) | 常元声明法；Salvesen 定理；操作语义协议 | Agda |
+| [37 杂例三讲](docs/37-examples.md) | half 提取；distr；Bool 限制；Decidable；强消去 | Agda |
+| [38 程序推导](docs/38-derivprog.md) | 规则倒读成策略；荷兰国旗全程机器化 | Agda |
+| [39 ADT 规格说明](docs/39-adtspec.md) | 模块=依赖多元组；参数模；CompEq/FSET | Agda |
 
 ### 第四部分 · 证明助手实战（40–41）
 

@@ -65,3 +65,7 @@ example (h : MyEq (1 + 1) 2) (v : Vec Nat 2) : Vec Nat (1 + 1) := myTransport (V
 
 #check @funext                -- Lean 核心的函数外延（定理）
 #print axioms funext          -- 依赖 [propext, Quot.sound]——不是 J！
+
+-- 29.4 η 实验：Lean 4 的 defeq 含 η——rfl 直接过
+-- （对照：Coq 需公理、书的多型系统走 funsplit 推导命题层 η）
+example (f : Nat → Nat) : (fun x => f x) = f := rfl

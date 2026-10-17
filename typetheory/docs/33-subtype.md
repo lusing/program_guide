@@ -194,6 +194,11 @@ Lean 的 Coe 家族挂在 instance 机制上、常要显式 ascription
 > ⑥ (A′,A″) 模型件的字段引用要带记录名限定（`SSet.carrier S`）
 >   ——裸 `carrier S` 在 open field 之外不可见。
 
+顺带一记：子集合理论的量词判断（18.2）允许上下文带命题
+前提——`x ∈ C, P(x) true, y ∈ D(x)`——这一「判断混合
+假设」的形式是 38 章目标推导里「假设即义务」的语义底座，
+也是 Nuprl 递归类型的表现层起源。
+
 ---
 
 上一章：[32 W 类型](32-wtypes.md) · 下一章：[34 版本史与同一性](34-versions.md)

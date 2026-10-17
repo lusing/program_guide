@@ -172,6 +172,14 @@ W 有两个「表达不到」的地方，各自长出一门理论：
 主流，W 是理论根基——两边对照，「声明即原理」（构造子 →
 消去子 → 归纳原理）的机制完全同构。
 
+Odd/Even 例的四参数实参表（把 data 声明显式化）：
+A = {Odd,Even}（名集合）；B(Odd) = {so}、B(Even) = {zero,se}
+（子句名）；C(Odd,so) = {x}、C(Even,zero) = {}（空！zero 无
+分量）、C(Even,se) = {x}（位置名）；d(Odd,so,x) = Even、
+d(Even,se,x) = Odd（部件集合名——so 的孩子是 Even、se 的
+孩子是 Odd）。空选取子族 C(Even,zero) = {} 正是 32.1 的
+叶技巧在文法世界的化身：**无分量的产生式**。
+
 > **坑位速记**
 > ① Coq 的 W 构造子是 `(B a → W A B) → W A B`（**高阶**），
 >   不是 `B a → W A B → W A B`——写错后一切下游错误都是谜；

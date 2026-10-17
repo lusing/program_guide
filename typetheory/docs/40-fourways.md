@@ -95,4 +95,4 @@ rev-rev (x ∷ xs) =
 
 ---
 
-上一章：[33 子集与强制](33-subtype.md) · 下一章：[41 提取与运行](41-extraction.md)
+上一章：[39 ADT 规格说明](39-adtspec.md) · 下一章：[41 提取与运行](41-extraction.md)

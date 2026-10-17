@@ -150,6 +150,8 @@ Definition IsZero (n : nat) : Prop :=
 
 ```coq
 Lemma peano4_leib : forall x : nat, ~ leib nat 0 (S x).
+（这套 Is-zero 谓词 + 替换炸弹的证法原典是 Nordström 书 14.1 的
+  peano4——31 章有它的完整展开与 Smith 独立性定理。）
 Proof.
   intros x h. exact (h IsZero I).   (* h : ∀P, P 0 → P (S x) *)
 Qed.

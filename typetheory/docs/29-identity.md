@@ -139,8 +139,19 @@ funsplit(f, (y)id(λ(y))) ∈ Id(Π(A,B), λ((x)apply(f,x)), f)  [f∈Π(A,B)]
 - **Agda**：defeq **含 η**——`η-defeq : f ≡ (λ x → f x)` 用
   `refl` 直接过；
 - **Lean 4**：defeq 同样含 η——`rfl` 直接过；
-- **Coq**：defeq **不含 η**——`f = fun x => f x` 需要公理
-  （`functional_extensionality` 的特例）。
+- **Coq**：defeq **不含 η**——命题层同样要公理（件内实验
+  `Print Assumptions` 见证依赖）：
+
+Lean 与 Coq 的件内实验各两行：
+
+```lean
+example (f : Nat → Nat) : (fun x => f x) = f := rfl   -- 直接过
+```
+```coq
+Definition eta_prop (f : nat -> nat) : (fun x => f x) = f.
+Proof. apply functional_extensionality. reflexivity. Qed.
+Print Assumptions eta_prop.   (* 依赖 functional_extensionality *)
+```
 
 书里的多型系统站在 Coq 一边（判断层无 η），但 η 作为命题
 可证——比 Coq 更强一点（Coq 里该命题也要公理）。原因：书
@@ -166,6 +177,21 @@ example (h : MyEq (1 + 1) 2) (v : Vec Nat 2) : Vec Nat (1 + 1) :=
 
 （`1+1` 在 Lean 定义折叠为 2，所以这里 refl 就有；换成
 `n+0` 方向就必须走归纳引理——同一台 transport 机器。）
+
+Eq 的 Id 形归纳规则（8.2 末的推导）也值得留档：由
+强消去得 a=b∈A、由替代得 d(a)∈C(a,a,eq)、再由 Eq-消去 2
+（c=eq）与替代搬进 C(a,b,c)——**两步替代一步强消去**，恰好
+是 Id-消去规则的形状。这说明 Id 的 J 与 Eq 的「强消去+唯一
+性」互为镜像：外延论者把「反转为判断」当第一性、内涵论者
+把「归纳原理」当第一性。
+
+现代三家的 Id 家族对照（件内全部可验证）：Coq 的 `eq`
+即 Id（J 是 eq_ind）；Lean 的 `Eq` 同构但 defeq 含 η 与
+proof irrelevance 的 Sort 分层；Agda 的 `_≡_` 最贴书——
+`--without-K` 旗标正是「Id 的证据可能有高维结构」的开关
+（67 章起 cubical 线的主场）。K/UIP 的开关史：Coq 内建 UIP
+（可推导）、Lean 的 Eq UIP 成立（Quot 之下）、Agda 默认允许
+K、cubical 禁 K——同一 Id 规则、四种工程立场。
 
 > **坑位速记**
 > ① Lean 自造等式类型要用 `Sort (max 1 u)`——裸 `Sort u`
