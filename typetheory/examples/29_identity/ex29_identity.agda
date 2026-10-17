@@ -53,3 +53,18 @@ shift-proof v = transport (Vec _) one-one v
 -- K 可以由「对 p 匹配」直接得到——但那要求所有 refl 相等，
 -- 即恒等类型无高维结构。Agda 用 --without-K 关掉这条推理，
 -- HoTT 世界（63 章起）必须关。本章文件未开该旗标（默认即可用 K）。
+
+open import Data.Bool using (Bool; true; false; if_then_else_)
+
+-- ---- 29.2 条件表达式的相等性（书 8.1 第四例） ----
+if-const : {A : Set} (b : Bool) (c : A) → (if b then c else c) ≡ c
+if-const true  c = refl
+if-const false c = refl
+
+-- ---- 29.4 η 的地位：书 8.3 判断层无 η、命题层可证 ----
+-- 现代分野：Agda/Lean 的 defeq 含 η（refl/rfl 直接过），
+-- Coq 不含（命题层也要公理）；书的多型系统恰在中间——
+-- η 是 funsplit 一次应用的**可证命题**：
+η-defeq : {A : Set} {B : A → Set} (f : (x : A) → B x)
+          → f ≡ (λ x → f x)
+η-defeq f = refl

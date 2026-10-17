@@ -54,3 +54,25 @@ not-defeq : ∀ n → n + 0 ≡ n      -- refl 过不了！
 not-defeq zero    = refl
 not-defeq (suc n) = cong suc (not-defeq n)
 
+
+-- ---- 27.1 语法层四种运算的日常形态（组合/选取） ----
+open import Data.Product using (_×_; _,_; proj₁; proj₂)
+
+kcomb : (A B : Set) → A → B → A        -- K：丢第二支
+kcomb A B a b = a
+procomb : (A B : Set) → A → B → A × B  -- 组合：多元组壳 ⟨a,b⟩
+procomb A B a b = a , b
+sel1 : (A B : Set) → A × B → A         -- 选取：e.1
+sel1 A B p = proj₁ p
+
+-- ---- 27.2 典则元 vs 非典则：值与定义相等 ----
+oneC : ℕ
+oneC = suc zero                         -- 典则元：构造子形式
+twoNC : ℕ
+twoNC = oneC + oneC                     -- 非典则：+ 递归在第一参
+two-is-two : twoNC ≡ 2
+two-is-two = refl                       -- refl 过 ⟺ 值相同（lazy 只看最外层）
+
+-- 类型等同 a : A, A ≡ B ⊢ a : B 的机器面 = transport
+ty-eq-move : {A B : Set} → A ≡ B → A → B
+ty-eq-move refl a = a

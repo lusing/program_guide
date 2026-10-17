@@ -62,3 +62,17 @@ Sel false = Bool
 sel : (b : Bool) → Sel b
 sel = bothCases Sel tt false
 
+
+-- ---- 28.3 funsplit：结构归纳原理版消去子（书 7.2） ----
+-- apply 不遵循结构归纳原理（β 而来）；funsplit 遵循（对 λ 分派）。
+-- apply 可由 funsplit 定义，反向不行——设计取舍的机器见证：
+funsplit : {A : Set} {B : A → Set} {C : Set}
+  (f : (x : A) → B x) (d : ((x : A) → B x) → C) → C
+funsplit f d = d f
+
+apply′ : {A : Set} {B : A → Set} (f : (x : A) → B x) (a : A) → B a
+apply′ f a = funsplit f (λ g → g a)
+
+β-direct : {A : Set} {B : A → Set} (f : (x : A) → B x) (a : A)
+           → apply′ f a ≡ f a
+β-direct f a = refl
