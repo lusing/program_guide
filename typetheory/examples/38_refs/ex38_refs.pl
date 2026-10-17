@@ -9,7 +9,7 @@
       带值异常 error(v)
    验证面：书 13.1 的自增/别名程序跑通；preservation 13.5.3
    的机器面（求值全程良型、存储一致、Σ 只增不减）；
-   异常上浮/捕获样本；error 的类型任意性（T-Error 破坏惟一性）
+   异常上浮/捕获样本；error 的类型任意性（T-Err 破坏惟一性（err 任意型））
    ============================================================ */
 
 :- use_module(library(lists)).
@@ -197,18 +197,18 @@ main :-
            ( prog_count(4, Q2), steps_safe(Q2, [], []) )),
 
     /* ⑤ 异常（书 14.1/14.2/14.3） */
-    check("error 上浮：(λx:Nat.x) error ⇓ err",
+    check("err 项沿应用栈上浮 ⇓ err",
            run(ap(lm(natt, vr(0)), err), err)),
-    check("左端先求值：succ((λx.x) error) 不会部分求值",
+    check("左端先求值纪律：err 在参数位不提前终止",
            run(ap(lm(natt, succ(vr(0))), err), err)),
-    check("try 捕获：try error with 0 ⇓ 0",
+    check("try 捕获：try err with 0 ⇓ 0",
            run(tryw(err, zero), zero)),
     check("try 值路：try 1 with 0 ⇓ 1",
            run(tryw(succ(zero), zero), succ(zero))),
-    check("error 的类型任意（T-Error 破坏惟一性）",
+    check("err 项的类型任意（T-Err 破坏惟一性）",
            ( typeof(err, [], [], natt), typeof(err, [], [], boolt),
              typeof(err, [], [], arr(natt, natt)) )),
-    check("带值异常：try error(1) with (λx.succ x) ⇓ 2（图 14.3）",
+    check("带值异常：try err(1) with (λx.succ x) ⇓ 2（图 14.3）",
            run(tryw(error(succ(zero)), lm(natt, succ(vr(0)))),
                succ(succ(zero)))),
 
