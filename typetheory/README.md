@@ -103,7 +103,7 @@ typetheory/
 | [43 存在类型](docs/43-existentials.md) | pack/unpack；ADT；存在量词编码 | Coq+Prolog |
 | [44 囿量词 F<:](docs/44-bounded.md) | 界限量词；算法化；全系统不可判定性 | Prolog+Coq |
 | [45 类型算子与 Fω](docs/45-higherorder.md) | kind；高阶多态；高阶子类型 | Agda+Prolog |
-| [46 纯函数对象](docs/46-pureobjects.md) | 存在编码的对象与类 | Prolog+Lean |
+| [46 纯函数对象](docs/46-pureobjects.md) | 存在包×记录×self 三合一；更新=函数组合 | Prolog |
 
 ### 第六部分 · 同伦类型论（47–58）
 

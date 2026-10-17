@@ -15,6 +15,8 @@
    ============================================================ */
 
 :- use_module(library(lists)).
+:- discontiguous dtypeof/3.
+:- discontiguous atypeof/3.
 
 /* ---- 类型语法：Top / arrow(A,B) / rcd([l=T,...]) ---- */
 
@@ -80,11 +82,7 @@ every_field_has_subtype([L=T|TF], SF) :-
 lookup([X=T|_], X, T) :- !.
 lookup([_|G], X, T) :- lookup(G, X, T).
 
-/* 值常量（样本字段用） */
-dtypeof(zero, _, natt).
-dtypeof(truev, _, boolt).
-atypeof(zero, _, natt).
-atypeof(truev, _, boolt).
+/* 值常量（样本字段用）见文末 */
 
 /* 声明式定型：T-Sub 版（宽进） */
 dtypeof(var(X), G, T) :- lookup(G, X, S), subtype(S, T).
@@ -96,13 +94,14 @@ dtypeof(rc(Fs), G, rcd(Ts)) :- dfields(Fs, G, Ts).
 dtypeof(pr(E, L), G, T) :-
     dtypeof_rc(E, G, Ts), member(L=T0, Ts), subtype(T0, T).
 
+
+dfields([], _, []).
+dfields([L=E|Fs], G, [L=T|Ts]) :- dtypeof(E, G, T), dfields(Fs, G, Ts).
+
 /* 记录位的「开箱」版：直接拿 rcd 类型的字段表——绕开
    subtype(S, rcd(未定)) 的无界模式 */
 dtypeof_rc(var(X), G, Ts) :- lookup(G, X, rcd(Ts)).
 dtypeof_rc(rc(Fs), G, Ts) :- dfields(Fs, G, Ts).
-
-dfields([], _, []).
-dfields([L=E|Fs], G, [L=T|Ts]) :- dtypeof(E, G, T), dfields(Fs, G, Ts).
 
 /* 算法版最小类型（16.2）：T-Sub 消失、T-App 靠算法子类型 */
 atypeof(var(X), G, T) :- lookup(G, X, T).
@@ -116,6 +115,12 @@ atypeof(pr(E, L), G, T) :-
 
 afields([], _, []).
 afields([L=E|Fs], G, [L=T|Ts]) :- atypeof(E, G, T), afields(Fs, G, Ts).
+
+/* 值常量（样本字段用） */
+dtypeof(zero, _, natt).
+dtypeof(truev, _, boolt).
+atypeof(zero, _, natt).
+atypeof(truev, _, boolt).
 
 /* ---- 见证 ---- */
 check(Name, Goal) :-

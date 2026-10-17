@@ -91,6 +91,8 @@ Inductive has_ty : ctx -> tm -> ty -> Prop :=
 - **强规范化（strong normalization, SN）**：每个良式项的**所有**
   归约序列都有限（都到范式）。ω/Ω 从此无法良式化。
 
+（NB 语言的完整双定理机器版见 36 章——本指南的 Coq 件在
+那里把 preservation 也证到底，本章 progress 的姊妹件。）
 两者合称**类型安全**（TAPL 的 progress + preservation；Wright–Feller
 「良式程序不go wrong」）。本指南的 Coq 文件完整证明了**进展定理**
 （progress）：
