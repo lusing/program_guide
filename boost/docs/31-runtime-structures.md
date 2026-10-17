@@ -30,8 +30,19 @@ auto ans = ask();                      // 返回值聚合（combiner 可定制�
   [控制台] again
   [日志] 收到 "again"
 聚合返回 = 42（默认取最后）
+前置   组1 组3 组3'
+常驻 临时 常驻 
+AA
+存活时调用 = 7 销毁后槽数 = 0（连接自动断开）
 自检通过
 ```
+
+后三行是连接管理的三件套与一件保命机制（书 ch11.4 后半）：
+
+- **组号排序**：`connect(组号, 槽)` 按组号升序调用，同组内按连接序；未编组的槽在组前（`at_front`）或组后（`at_back`，默认）；
+- **`scoped_connection`**：作用域即连接生命期（connection 的 RAII 版，离开作用域自动断开）；
+- **`shared_connection_block`**：**临时屏蔽**（信号来时不调它）而不是断开——析构或 `unblock()` 恢复；`connection::blocked()` 可查询；
+- **`track`（自动连接管理）**：槽的宿主对象销毁 → 连接自动断开。`slot_type(可调用物).track(指针)` 的写法；**实测坑（1.92）**：track 只认 **boost 指针体系**（`boost::shared_ptr`），`std::shared_ptr`/`std::weak_ptr` 传进去编不过——想用 std 指针只能自己包一层。signal 的合并器模板参数（默认 `optional_last_value<R>`）可换自定义（如"求和+最大值"的 pair 合并器，书里的例子）。signal 本身不可拷贝（noncopyable）——持有它的类要共享就存 `shared_ptr<signal>`。
 
 "2"的全部意义是**线程安全**：连接管理的竞态、槽里断开自己、发出信号时订阅者析构——全部由库处理（`track_foreign`/`scoped_connection`）。⭐ GUI 框架、事件总线的标准件。std 无对应（`std::function` 只能一 对一）。
 
