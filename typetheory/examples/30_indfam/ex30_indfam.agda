@@ -71,3 +71,17 @@ _ = refl
 
 -- Agda 的「归纳原理」即模式匹配的完备性检查——没有独立的
 -- N-ind / N-rect：add-z 的两行就是归纳原理的两次应用
+
+-- ---- 30.3 Peano 第三公设：前驱 + succ 单射（书 9 章例） ----
+pred : N → N
+pred z     = z
+pred (s n) = n
+
+-- 命题版：对 refl 匹配即把两侧统一——单射是模式匹配的赠品
+peano3 : ∀ m n → s m ≡ s n → m ≡ n
+peano3 m n refl = refl
+
+-- Peano 第五公设 = N-消去的命题化（归纳即消去）
+peano5 : (C : N → Set) → C z → (∀ n → C n → C (s n)) → ∀ n → C n
+peano5 C c step z     = c
+peano5 C c step (s n) = step n (peano5 C c step n)

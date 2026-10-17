@@ -73,3 +73,18 @@ _ = val natEx
 
 
 
+
+-- ---- 31.3 Peano 第四公设：U 的第一份红利（书 14.1） ----
+-- Is-zero 谓词 = natrec(m,⊤̂,(y,z){}) 的现代版：直接用 ℕ → Set 族
+open import Data.Empty using (⊥; ⊥-elim)
+open import Data.Unit using (⊤; tt)
+open import Data.Nat using (ℕ; zero; suc)
+open import Relation.Binary.PropositionalEquality using (_≡_; subst)
+
+IsZero : ℕ → Set
+IsZero zero    = ⊤
+IsZero (suc _) = ⊥
+
+-- 书里的 subst(x,tt)：把 tt 从 IsZero 0 搬到 IsZero (suc n) = ⊥
+peano4 : ∀ n → zero ≡ suc n → ⊥
+peano4 n e = subst IsZero e tt

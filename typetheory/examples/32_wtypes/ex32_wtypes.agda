@@ -84,3 +84,23 @@ _ = refl
 -- ---- 表达力注记（与 Lean/Coq 版同文） ----
 -- List A ≅ W Bool（true→A × ⊤）：标签可带负载；
 -- 「归纳定义 = (标签集, 元数函数)」——归纳族的祖先。
+
+-- ---- 32.1 叶技巧：空域上的函数（书 15 章的 case⊥） ----
+noChild : ⊥ → W Tag arity
+noChild ()
+
+leafW : W Tag arity
+leafW = sup leaf noChild    -- B(leaf)=⊥ ⟹ 零个孩子 = 叶
+
+-- ---- 32.4 相互依赖归纳定义（书 16 章 Odd/Even 例） ----
+-- 现代语法内建 mutual；W 路线要 Tree(A,B,C,d) 四参数元层化
+mutual
+  data Evenᵐ : Set where
+    zeroᵉ : Evenᵐ
+    se    : Oddᵐ → Evenᵐ
+  data Oddᵐ : Set where
+    so    : Evenᵐ → Oddᵐ
+
+-- 奇加一得偶（2k+1+1 = 2k+2）：构造子互指即「部件集合名 d」的显式化
+odd-to-even : Oddᵐ → Evenᵐ
+odd-to-even (so e) = se (so e)

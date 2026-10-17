@@ -80,3 +80,49 @@ _ : ℕ
 _ = px origin
 
 
+
+-- ---- 33.3 子集合理论 (A′,A″) 语义的最小模型（书 18 章） ----
+-- 集合 = 载体 + 成员谓词的配对；相等只看载体（不带谓词）
+open import Data.Empty using (⊥)
+open import Data.Unit using (⊤; tt)
+
+-- 偶数谓词（概括子集的 ″ 换岗——书 18.5/18.6）
+mutual
+  IsEven : ℕ → Set
+  IsEven zero    = ⊤
+  IsEven (suc n) = OddE n
+  OddE : ℕ → Set
+  OddE zero    = ⊥
+  OddE (suc n) = IsEven n
+
+record SSet : Set₁ where
+  field carrier : Set
+        mem : carrier → Set
+open SSet public
+
+-- 自然数的翻译：N′ = ℕ，N″ = (z)⊤（全员通过——书 18.6.3）
+NatS : SSet
+NatS = record { carrier = ℕ ; mem = λ _ → ⊤ }
+
+-- 偶数的翻译：概括 {x∈ℕ|Even} 的 ″ 换岗为谓词（书 18.5）
+EvenS : SSet
+EvenS = record { carrier = ℕ ; mem = IsEven }
+
+-- 成员判断：载体元素 + 谓词证据
+_∈ₛ_ : (S : SSet) → carrier S → Set
+S ∈ₛ a = mem S a
+
+-- 相等只看载体：谓词不进相等判断（书 18.2.4 的语义）
+EqS : (S : SSet) → carrier S → carrier S → Set
+EqS S a b = a ≡ b
+
+-- 见证：2 是偶数（证据随值走）；0 是自然数（⊤ 直接 tt）
+two-even : EvenS ∈ₛ 2
+two-even = tt
+
+zero-nat : NatS ∈ₛ zero
+zero-nat = tt
+
+-- 谓词证据不进相等：EqS EvenS 2 2 用 refl 即居留（mem 不出场）
+eq-carrier-only : EqS EvenS 2 2
+eq-carrier-only = refl
