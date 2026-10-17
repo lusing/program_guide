@@ -8,16 +8,16 @@ Farmer《Simple Type Theory》、《现代类型论的发展与应用》），
 横跨 **Coq / Coq-HoTT（自包含 mini-HoTT）/ Agda / Lean 4 / SWI-Prolog**
 五种实现讲解。
 
-**章号 = 示例编号**——除 49（坑位清单）与 44/47 的陈述级部分外，
+**章号 = 示例编号**——除 60（坑位清单）与 55/58 的陈述级部分外，
 每章对应 `examples/NN_name/` 里经多通道（coqc 8.20.1 /
-WSL Agda 2.8.0+stdlib 2.3——第五部分另启用其 `--cubical` 模式 /
+WSL Agda 2.8.0+stdlib 2.3——第六部分另启用其 `--cubical` 模式 /
 Lean 4.25.0 / swipl 10.0）机器验证的完整文件。
 
 > 核心理念：**类型论 = 语法分层 × 依赖类型 × Curry–Howard**。
 > λ 演算（02）→ 简单类型双轮：Hindley 证明论线（03–11）+
 > Farmer 模型论线（12–17）→ λ 立方体（18–21）→ Martin-Löf
-> （27–33）→ 证明助手实战（34–35）→ 同伦（36–47）→
-> 元理论与收束（48–49）。
+> （27–33）→ 证明助手实战（34–35）→ **程序设计语言类型论
+> （36–46）** → 同伦（47–58）→ 元理论与收束（59–60）。
 
 ## 目录结构
 
@@ -28,7 +28,7 @@ typetheory/
 │                      + 运行通道（Lean main 自动 --run；
 │                      Agda *_run.agda 触发 --compile+执行+清理）
 ├── CHEATSheet.md      记号/规则/四家语法速查 + 精选坑位
-├── docs/              49 章教程（01 → 49 顺序阅读，六个部分）
+├── docs/              60 章教程（01 → 60 顺序阅读，七个部分）
 └── examples/          章目录（章号 = 示例编号）
 ```
 
@@ -89,34 +89,50 @@ typetheory/
 | [34 四家对照](docs/34-fourways.md) | rev·rev 一题三文化 | 三家 |
 | [35 提取与运行](docs/35-extraction.md) | Extraction/lean --run/MAlonzo 编译 | 三家 |
 
-### 第五部分 · 同伦类型论（36–47）
+### 第五部分 · 程序设计语言的类型论（36–46）
 
 | 章 | 主题 | 示例 |
 |---|---|---|
-| [36 路径与同伦](docs/36-paths.md) | 零公理 paths 库；群律；纤维化与 transport 族；UIP 天花板 | 三家 |
-| [37 等价论](docs/37-equivalence.md) | quasi-inverse/半伴随/双可逆/合同纤维四定义互含；embed/surj | cubical Agda+Coq |
-| [38 泛等](docs/38-univalence.md) | 等价即相等；Bool 取反新路；UA⇒函数外延 | 三家+cubical |
-| [39 集合与逻辑](docs/39-setlogic.md) | h-level；mere prop；AC 是定理；唯一选择 | cubical Agda+Lean |
-| [40 截断与 n-类型](docs/40-truncation.md) | Contr/Prop/Set；Hedberg；连通性 | Coq+cubical |
-| [41 归纳进阶](docs/41-induction.md) | 初始代数；同伦归纳型；恒等系统 | cubical Agda |
-| [42 高阶归纳类型](docs/42-hit.md) | 区间/圆/商； Suspension/Pushout/Flattening | Coq+cubical |
-| [43 压轴：π₁(S¹)](docs/43-capstone.md) | encode-decode 完整证明 + 一般形式 | Coq+cubical |
-| [44 同伦论进阶](docs/44-homotopy.md) | Freudenthal；van Kampen；Whitehead；Hopf | cubical 陈述级 |
-| [45 范畴论](docs/45-category.md) | precategory；iso≠eq 与饱和；Yoneda；SIP；Rezk 完成 | cubical |
-| [46 集合论](docs/46-settheory.md) | Cantor 构造版机器证明；基数/序数；累积层级 V | Lean |
-| [47 实数](docs/47-reals.md) | Dedekind vs Cauchy；区间紧性 | cubical 陈述级 |
+| [36 操作语义](docs/36-opsem.md) | NB 语言；小步/大步；推导归纳；stuck；安全性 | Coq+Prolog |
+| [37 简单扩展](docs/37-extensions.md) | unit/序列/归属/let/序对/记录/变式/一般递归/列表 | Prolog+Coq |
+| [38 引用与异常](docs/38-refs.md) | store typing；带状态的安全性；异常 | Coq+Prolog |
+| [39 子类型](docs/39-subtyping.md) | 记录宽度深度置换；包含规则；算法化；合类型 | Coq+Prolog |
+| [40 命令式对象与 FJ](docs/40-objects.md) | 命令式对象；轻量级 Java 演算 | Prolog+Coq |
+| [41 递归类型](docs/41-rectypes.md) | μ；等式/同构递归；归纳与余归纳；成员算法 | Coq+Prolog |
+| [42 类型重构](docs/42-reconstruction.md) | 约束类型化；合一；主类型；let 多态 | Prolog 主场+Coq |
+| [43 存在类型](docs/43-existentials.md) | pack/unpack；ADT；存在量词编码 | Coq+Prolog |
+| [44 囿量词 F<:](docs/44-bounded.md) | 界限量词；算法化；全系统不可判定性 | Prolog+Coq |
+| [45 类型算子与 Fω](docs/45-higherorder.md) | kind；高阶多态；高阶子类型 | Agda+Prolog |
+| [46 纯函数对象](docs/46-pureobjects.md) | 存在编码的对象与类 | Prolog+Lean |
 
-### 第六部分 · 收束（48–49）
+### 第六部分 · 同伦类型论（47–58）
 
 | 章 | 主题 | 示例 |
 |---|---|---|
-| [48 元理论](docs/48-metatheory.md) | de Bruijn 元定理组；CR/SN 策略地图 | Lean |
-| [49 坑位与书目](docs/49-pitfalls.md) | 五类坑位总清单；七书导读；四家速查 | — |
+| [47 路径与同伦](docs/47-paths.md) | 零公理 paths 库；群律；纤维化与 transport 族；UIP 天花板 | 三家 |
+| [48 等价论](docs/48-equivalence.md) | quasi-inverse/半伴随/双可逆/合同纤维四定义互含；embed/surj | cubical Agda+Coq |
+| [49 泛等](docs/49-univalence.md) | 等价即相等；Bool 取反新路；UA⇒函数外延 | 三家+cubical |
+| [50 集合与逻辑](docs/50-setlogic.md) | h-level；mere prop；AC 是定理；唯一选择 | cubical Agda+Lean |
+| [51 截断与 n-类型](docs/51-truncation.md) | Contr/Prop/Set；Hedberg；连通性 | Coq+cubical |
+| [52 归纳进阶](docs/52-induction.md) | 初始代数；同伦归纳型；恒等系统 | cubical Agda |
+| [53 高阶归纳类型](docs/53-hit.md) | 区间/圆/商； Suspension/Pushout/Flattening | Coq+cubical |
+| [54 压轴：π₁(S¹)](docs/54-capstone.md) | encode-decode 完整证明 + 一般形式 | Coq+cubical |
+| [55 同伦论进阶](docs/55-homotopy.md) | Freudenthal；van Kampen；Whitehead；Hopf | cubical 陈述级 |
+| [56 范畴论](docs/56-category.md) | precategory；iso≠eq 与饱和；Yoneda；SIP；Rezk 完成 | cubical |
+| [57 集合论](docs/57-settheory.md) | Cantor 构造版机器证明；基数/序数；累积层级 V | Lean |
+| [58 实数](docs/58-reals.md) | Dedekind vs Cauchy；区间紧性 | cubical 陈述级 |
+
+### 第七部分 · 收束（59–60）
+
+| 章 | 主题 | 示例 |
+|---|---|---|
+| [59 元理论](docs/59-metatheory.md) | de Bruijn 元定理组；CR/SN 策略地图 | Lean |
+| [60 坑位与书目](docs/60-pitfalls.md) | 五类坑位总清单；七书导读；四家速查 | — |
 
 > 第一部分 03/06/07/09/10/11 六章为 Hindley《Basic Simple Type
 > Theory》专轮扩充（η/βη/λI、等式与语义、正规化与刻画、弱逻辑、
 > 逆主类型与凝结分离、居留计数）——至此该书 1–8 章核心内容全部
-> 自包含覆盖，第 9 章技术细节与 41 章元理论相接。
+> 自包含覆盖，第 9 章技术细节与 52 章元理论相接。
 >
 > 第二部分 21–26 六章为 TTAFP（Nederpelt–Geuvers）专轮扩充
 > （λC 逻辑编码 / λD 形式系统 / 旗式自然演绎与附录 A 规则库 /
@@ -124,9 +140,23 @@ typetheory/
 > ch.7–15 + 附录 A/B/C 核心内容全部自包含覆盖，与 Farmer 线
 > 在描述子 ι（17 章）与公理化方法（15/16 章）两处互读。
 >
-> 第五部分为 **HoTT 书专轮**（37 等价论 / 39 集合与逻辑 /
-> 41 归纳进阶 / 44 同伦论进阶 / 45 范畴论 / 46 集合论 / 47 实数
-> 七新章 + 36/38/40/42/43 五章深化）——至此该书 ch.1–11 核心
+> 第五部分为 **TAPL（皮尔斯《类型和程序设计语言》）专轮**（36
+> 操作语义 / 37 简单扩展 / 38 引用与异常 / 39 子类型 / 40 命令式
+> 对象与轻量级 Java / 41 递归类型 / 42 类型重构 / 43 存在类型 /
+> 44 囿量词 / 45 类型算子与 Fω / 46 纯函数对象 十一新章）——至此
+> 该书 32 章中本指南未覆盖的部分（ch.3/4/8 操作语义、ch.11 扩展
+> 目录、ch.13/14 引用与异常、ch.15–19 子类型与对象、ch.20/21
+> 递归类型、ch.22 类型重构、ch.24 存在类型、ch.26–28 囿量词、
+> ch.29–32 高阶系统）全部自包含覆盖；已覆盖部分（ch.5/6 无类型
+> λ 与 de Bruijn→02、ch.9/10 简单类型→04、ch.23 全称类型→18、
+> ch.12 规范化→07 深化）以对读标注衔接。机器面以 **Coq（inductive
+> 操作语义与元定理：安全性/算法可靠性/不可判定性陈述）+ Prolog
+> （可执行件：NB 求值机/子类型算法/合一与 W/存储机/F 检查器）**
+> 双主力，Lean/Agda 延续。
+
+> 第六部分为 **HoTT 书专轮**（48 等价论 / 50 集合与逻辑 /
+> 52 归纳进阶 / 55 同伦论进阶 / 56 范畴论 / 57 集合论 / 58 实数
+> 七新章 + 47/49/51/53/54 五章深化）——至此该书 ch.1–11 核心
 > 内容全部自包含覆盖；机器面以 **cubical Agda**（`--cubical`
 > 从 Glue/区间原语手造 ua/hcomp，泛等与 HIT 原生计算：∥·∥
 > 真 HIT、ua β 律可证、funext 一行）为主力，Coq mini-HoTT
@@ -156,7 +186,7 @@ pwsh -NoProfile -Command '& ./build.ps1 -Lang agda'  # 单语言
 
 - [coq](../coq)（33 章）：tactic 与工程详讲——本指南 34 章后
   的 Coq 深修线；
-- [agda](../agda)（44 章）：Agda 全景——第三部分后的 Agda 线；
+- [agda](../agda)（55 章）：Agda 全景——第三部分后的 Agda 线；
 - [lean4](../lean4)：Lean 4 与 Mathlib——同上；
 - [coq-hott](../coq-hott)（25 章）：官方 HoTT 库完整版——
   第五部分（mini-HoTT）的工业级续篇（含 loop ≠ 1、螺旋覆叠）；
@@ -165,9 +195,9 @@ pwsh -NoProfile -Command '& ./build.ps1 -Lang agda'  # 单语言
 
 ## 已知边界（诚实清单）
 
-- Coq mini-HoTT（38/40/42/43 的公理对照组）为公理记账制：
+- Coq mini-HoTT（49/51/53/54 的公理对照组）为公理记账制：
   UA/β/HIT 构造子公理化，每章 `Print Assumptions` 公示；cubical
-  通道补齐计算面；loop ≠ idpath 的完整覆叠论证（44 章）以
+  通道补齐计算面；loop ≠ idpath 的完整覆叠论证（55 章）以
   陈述+骨架呈现，完整机器版见 coq-hott 教程续读。
 - 05 章主类型算法为 Curry 式单态（无 let-多态）；19 章 Vec
   为示教版（非 stdlib 全功能）。

@@ -37,5 +37,5 @@ Proof. apply rev_rev. Qed.
 
 (* 与另两家的差异速记：
    ① 战术排布要「手排」：app_nil_r / app_assoc 的次序是排出来的；
-   ② simpl 的展开时机影响 rewrite 的可匹配性（29/36 章的 iota 教训）；
+   ② simpl 的展开时机影响 rewrite 的可匹配性（29/47 章的 iota 教训）；
    ③ induction ... as [| x xs IH] 显式命名——Coq 的老派严谨。 *)

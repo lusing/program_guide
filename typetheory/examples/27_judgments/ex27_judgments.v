@@ -46,7 +46,7 @@ Proof. intros f a b H. rewrite H. reflexivity. Qed.
 (* ---- eq_ind 就是 J：打印出来看 ---- *)
 Print eq_ind.
 (* forall A x (P : A -> Prop), P x -> forall y, x = y -> P y
-   —— 43 章手工把它从归纳定义里推出来 *)
+   —— 54 章手工把它从归纳定义里推出来 *)
 
 (* ---- 上下文里的判断 ---- *)
 Section Ctx.
