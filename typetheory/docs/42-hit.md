@@ -1,10 +1,15 @@
-# 39 高阶归纳类型：造空间的粘合剂
+# 42 高阶归纳类型：造空间的粘合剂
 
-> 对应读本：HoTT 书第 6 章；coq-hott 教程 12–13、16 章。
-> 代码：`examples/42_hit/ex42_hit.v`——区间、圆、商三件套，
-> 全部**公理化**（构造子 + 消去子 + 计算规则，账目公开）。
+> 对应读本：HoTT 书第 6 章全部（引言、归纳原理与依赖路径、
+> 区间、圆与球面、** Suspension**、胞腔复形、**hubs-spokes**、
+> **Pushout**、截断、商、代数、**flattening 引理**、一般语法）；
+> coq-hott 教程 12–13、16 章。代码：`examples/42_hit/`——
+> **Coq 公理对照组**（区间、圆、商三件套，账目公开）+
+> **cubical Agda 深化件 `ex42_hitc.agda`**（Suspension/Pushout
+> 是真 data——消去子与计算规则由模式匹配派生；S¹ = Susp Bool
+> 的「生产线」；Interval = Pushout 样本；loop 的两行定义）。
 
-## 28.1 HIT 是什么：构造子可以是「路径」
+## 42.1 HIT 是什么：构造子可以是「路径」
 
 普通归纳类型的构造子造**点**；HIT 允许构造子造**路径**（乃至
 更高维）：
@@ -18,7 +23,7 @@
 这补齐了类型论「造空间」的最后一块：拓扑粘合（把区间两端
 粘起来得圆；把整段整段的点等同起来得商）。
 
-## 28.2 消去子：签名里的「路径构造子条款」
+## 42.2 消去子：签名里的「路径构造子条款」
 
 HIT 的归纳原理在普通归纳原理之外多出**路径条款**：
 
@@ -40,7 +45,7 @@ seg/loop 是公理化的路径（不透明），计算规则只能**公理补账
 （`interval_zero`/`interval_one`/`circle_base`）。Cubical Agda
 等系统里这些规则可计算——那才是「原生 HIT」。
 
-## 28.3 商类型：万有性质实测
+## 42.3 商类型：万有性质实测
 
 公理化的商（nat 按 mod 2）：
 
@@ -62,7 +67,7 @@ Example parity_5 : parity (qg 5) == false2 :=
 这是「定义方式选得好，公理负担就小」的典型现场——对照 19 章
 的方向学（加法递归侧）一脉相承。
 
-## 28.4 公理记账：本章的诚实清单
+## 42.4 公理记账：本章的诚实清单
 
 | 公理 | 作用 |
 |---|---|
@@ -85,6 +90,100 @@ Cubical 系统的意义就在这张表：**把公理变成可计算规则**
 > ④ `Definition f (q : Q) := lift ... q` 别忘应用到 q——
 > 类型 `Q -> X` 交给 `X` 位的经典报错。
 
+## 42.5 Suspension：球面生产线（书 6.5）
+
+**双锥构造**（suspension）：把 A 的每一点拉成一条南北子午线：
+
+```agda
+data Susp (A : Set) : Set where
+  north : Susp A          -- 北极
+  south : Susp A          -- 南极
+  merid : (a : A) → north ≡ south   -- a 的一条子午线
+```
+
+消去子的三段式（`Susp-elim`）：两极给值、**每条子午线给一个
+方形调整**（PathP 从北值到南值）。函子性一行（`Susp-fun`）：
+极点保极点、子午线跟函数走。生产线的本义：
+
+> S⁰ = Bool ⇒ **S¹ = Susp Bool** ⇒ S² = Susp S¹ ⇒ …
+
+圆不再手搓（Coq 组的 base/loop 公理化 vs cubical 组的 north/
+merid 数据——同一数学的两种身份）。书 6.5 的定理（Susp 的
+连通性提升、Susp A 的 Ω 与 A 的悬挂同调）在 44 章展开。
+
+## 42.6 Pushout：粘合的万有构造（书 6.8）
+
+span B ←f— A —g→ C 的**推挤**（pushout）——把 B 与 C 沿 f、g
+的像粘起来：
+
+```agda
+data Pushout (f : A → B) (g : A → C) : Set where
+  inl : B → Pushout f g
+  inr : C → Pushout f g
+  push : (a : A) → inl (f a) ≡ inr (g a)   -- 粘合路径
+```
+
+`Pushout-elim` 三段式同构于 Susp（push 方块调整）。两个样本：
+
+- **区间 = Pushout of 1 ← 1 → 1**（书 6.8 例 1；深化件给出
+  inl/inr/push 的三件）：粘合路径就是 seg——42.2 公理化区间的
+  pushout 身份揭晓；
+- **Susp A = Pushout of 1 ← A → 1**（双点粘合）——生产线与
+  粘合机是同一台机器的两个刀头。
+
+Pushout 是 HIT 的「万有构造」：圆、胞腔复形（6.6）、截断
+（6.9）、商（6.10）全部能从它加上 higher inductive 递归造出
+（书 6.9 的 truncation as pushout——39 章 ∥·∥ 的 pushout 身份）。
+
+## 42.7 hubs 与 spokes、flattening、商（书 6.7/6.12/6.10）
+
+**Hubs and spokes**（6.7）：一组 n-维路径方形可以用「轮毂 +
+辐条」替代——一个 hub 点加一组辐条路径（每点一条到 hub），
+维数减一代价是点上量化。这是「无限道路构造子」的工程形态，
+截断 HIT 的标准内衬。
+
+**Flattening 引理**（6.12）：Σ over a HIT 的计算律——
+Σ(w : W). F w 的元素可拉平为（底层 + 每构造子的分量数据的
+Σ）推挤。它是 43 章（编码-解码的 code 是 Σ 形）与 44 章
+（覆叠空间的「拉平 = 全空间」）的关键预备件——陈述级呈现，
+两处用例落地时回看。
+
+**商类型**（6.10）：商 = Pushout 版截断——`quot qg` 的公理化
+身份是「加 squash 的 Pushout」。与 25 章（λD 商：把 xRy 造
+成定义）对照：λD 商改**定义**（ judgemental），HoTT 商加
+**路径**（propositional）——两种「视作相等」的层级差异在两
+章并读时最清楚。
+
+## 42.8 区间与函数外延（书 6.3）
+
+区间（I，两端 + seg）的最著名应用：**funext 的证明**——
+f ∼ g ⇒ f ≡ g 的路径逐点走 seg（书 6.3.2 的 interval-funext）。
+公理化世界（coq-hott 库）用它把「函数外延公理」降格为定理；
+cubical 世界里区间被**内建区间 I 吸收**（funext = λ i j → h j i
+——37 章一行）。三个世界的接力：公理（mini-HoTT 38 章组）→
+定理（interval 构造）→ 定义（cubical 转置）。
+
+## 42.8b HIT 的一般语法与边界（书 6.13）
+
+书 6.13 给出 HIT 声明的一般语法（构造子可为点、路径、方形…
+每维一段），并划定边界：**不是所有「看起来合理」的 HIT 都有
+模型**——构造子的「严格性」要求（计算规则只在点构造子上）
+与一致性共存是一道细线。cubical Agda 把它工程化：data 声明
+里路径构造子（IApply）合法、且自动推导相容的消去子——本书
+两章（39 章 squash、本章 merid/push）的全部实践都在这条线
+的安全侧。更激进的形式（quotient inductive types、two-level
+type theory）是活跃的研究前线——47 章结尾再访。
+
+## 42.9 机器面导读
+
+- **Coq（`ex42_hit.v`）**：区间/圆/商三件套的公理化 + 计算规则
+  补账 + `Print Assumptions` 逐条公示——「假设世界」的完整
+  标本；
+- **cubical（`ex42_hitc.agda`）**：Susp（elim+函子）与 Pushout
+  （elim+区间样本）的 data 版；S¹ = Susp Bool、S² = Susp S¹
+  的生产线；43 章主角 loop 的两行定义
+  （`merid false ∙ sym (merid true)`）与幂塔 `loop^`。
+
 ---
 
-上一章：[40 截断层级](40-truncation.md) · 下一章：[43 压轴](43-capstone.md)
+上一章：[41 归纳进阶](41-induction.md) · 下一章：[43 压轴：π₁(S¹)](43-capstone.md)

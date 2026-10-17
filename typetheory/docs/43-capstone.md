@@ -1,11 +1,14 @@
-# 40 综合：圆周上的环路代数
+# 43 压轴：π₁(S¹) 与编码-解码方法
 
-> 对应读本：HoTT 书第 8 章（同伦群）；coq-hott 教程 13 章
->（完整 encode-decode）与 48 章压轴（螺旋覆叠）。
+> 对应读本：HoTT 书 §8.1（π₁(S¹)=ℤ 完整证明）+ **§8.9
+>（编码-解码的一般陈述）**；coq-hott 教程 13 章（完整
+> encode-decode）与 48 章压轴（螺旋覆叠）。
 > 代码：`examples/43_capstone/ex43_capstone.v`——`iterate_add`
-> 完整机器证明，依赖公理只有 S¹ 的构造子（Print Assumptions）。
+> 完整机器证明，依赖公理只有 S¹ 的构造子（Print Assumptions）；
+> 42 章 cubical 件已给 loop 的两行定义与幂塔（本 章 的
+> cubical 前哨）。
 
-## 29.1 任务：绕 m+n 圈 = 先绕 m 圈再绕 n 圈
+## 43.1 任务：绕 m+n 圈 = 先绕 m 圈再绕 n 圈
 
 ```coq
 Fixpoint iterate (n : nat) : base == base :=
@@ -25,7 +28,7 @@ Defined.
 下）+ `concat_assoc`（括号右移，单步 J）。**这是 π₁(S¹) 加法
 结构的第一块基石**——它说明「圈数」对加法保持。
 
-## 29.2 通往 π₁(S¹) = ℤ：还差什么
+## 43.2 通往 π₁(S¹) = ℤ：还差什么
 
 完整的编码-解码（encode-decode）证明链：
 
@@ -42,7 +45,7 @@ decode : code x → (x == base)           —— circle_rec 按 code 走
 两个教程互为表里：typetheory 讲原理的最小化，coq-hott 讲
 工业级完整版。
 
-## 29.3 诚实的「未机器化清单」
+## 43.3 诚实的「未机器化清单」
 
 | 陈述 | 状态 | 出处 |
 |---|---|---|
@@ -55,7 +58,7 @@ decode : code x → (x == base)           —— circle_rec 按 code 走
 逐条审计「这个定理到底信了什么」。这是 mini-HoTT 的教学立场：
 不求全，但求每一行都清楚来路。
 
-## 29.4 第五部分总结：类型论的几何面
+## 43.4 第五部分总结：类型论的几何面
 
 36 章起五步走：路径（J 的群律）→ 泛等（等价即相等）→
 截断（层级塔）→ HIT（造空间）→ 环路代数（同伦群雏形）。
@@ -70,6 +73,101 @@ decode : code x → (x == base)           —— circle_rec 按 code 走
 > ③ `Print Assumptions` 是公理审计的日常工具——mini 开发
 > 每章收尾都跑一遍（本指南全五部分的惯例）。
 
+## 43.5b 编码-解码的一般形式（书 8.9）
+
+本章的方法抽象成一个模式（书 8.9 的正式陈述）：
+
+> 给定点 x₀ : X 与族 code : X → Type，若每点的
+> **解码** dec x : code x ≃ (x₀ = x) 且 dec x₀ 把基点送到
+> id（基点一致），则 Ω(X,x₀) ≃ code x₀——**用 code 的代数
+> 换取环路空间的代数**。
+
+四步曲（本章机器面的骨架即其特化）：① 定 code（本章：ℤ 的
+旗帜模型）；② 定 enc（用 J 从 refl 出发）；③ 定 dec 与等价
+证明；④ 基点验证。方法论的普适性在 44 章全面兑现——
+Freudenthal、π_k<n(S^n)、Hopf 纤维的三大主定理全是
+encode-decode 的变奏。**为什么它总能工作**：code 是「可计算
+的替身」（ℤ 有归纳原理），等价把环路空间的「拓扑」翻译成
+code 的「代数」——这是同伦论里 Brown 代表性定理的类型论版。
+
+## 43.5c cubical 前哨的近况（诚实清单）
+
+42 章 cubical 件已机器定义 loop（`merid false ∙ sym
+(merid true)`）与幂塔 loop^。完整的 cubical encode-decode
+（code : S¹ → Set 的 S¹-elim 上方形一致性 + dec 的等价证明）
+在 plain cubical Agda 里可行但工程量是 Coq 版的两倍（每一处
+「公理化计算规则」都要展开成 Glue/hcomp 的显式计算）——本
+章以 Coq 版为正典（公理账目已最小化），cubical 全版列入回填
+清单（44 章 Freudenthal 陈述级的同批）。
+
+## 43.5 encode-decode 四步曲逐步展开（书 8.1 完整数学）
+
+**第一步：code 的旗帜模型**。覆叠空间 p : R → S¹（螺旋线）
+的类型论化身是族 code : S¹ → U：
+
+> code(base) := ℤ（整面旗帜：基点上的纤维是 ℤ 层楼）
+> code 沿 loop 搬运 := succ 的等价（上一层楼）
+
+ℤ 本身用 triumph 架构（free group on one generator 的集合
+版）：pos n / neg n 两支，见书 8.1 的 int 类型——加减法在
+两支间穿越（succ (pos n) 与 neg 的边界翻转），本章 Coq 侧
+用 nat 差值表示同构地实现。
+
+**第二步：enc 由 J 白送**。enc x : (base = x) → code x 定义为
+transport code p（对 p 归纳）：enc(refl) := pos 0（基点住在
+零层）。**「编码」就是「搬家」**——泛等之前它已是程序。
+
+**第三步：dec 是圆的归纳原理**。dec x : code x → (base = x)
+用 circle_ind 构造：base 分支给 iterate（n 层楼 = 绕 n 圈，
+本章机器件的正典）；loop 分支要给 PathP——「loop 上方 code
+的搬运 = succ，iterate 对 succ 保持」——正是 iterate_add +
+iterate_succ 的串接。**消去子的路径分支是整个证明的技术
+心脏**：它把「覆叠的单值性」编进类型论。
+
+**第四步：互逆与基点一致**。dec∘enc：对 p 归纳（enc refl =
+pos 0、dec base (pos 0) = refl 的定义级坍缩 + transport 的
+融合）；enc∘dec：对 ℤ 归纳（pos/suc 的逐层解析——书 8.1.6/
+8.1.7 的两条引理）。基点验证 dec(base)(pos 0) ≡ refl 由定义
+给出。于是 Ω(S¹, base) = (base = base) ≃ ℤ。
+
+**推论（loop ≠ refl）**：若 loop = refl，则 enc loop = enc
+refl = pos 0；但 enc loop = succ (pos 0) = pos 1 ≠ pos 0
+（ℤ 两支的判别性——40 章 Hedberg 的样本）。**圆上真的有非
+平凡的路**——36 章宣布的「天花板」在此兑现。
+
+## 43.6 π₁(S¹) = ℤ 与主定理的地图（书 8.1.10 及其后）
+
+书 8.1.10 的正式陈述：**π₁(S¹) = ℤ**——把 Ω ≃ ℤ 截断成群
+同构（0-截断 + 群结构搬运）。其后的推广线（44 章的入口）：
+
+- 8.1.11：π₁₊ₙ(Sⁿ⁺¹) = π_n(Sⁿ⁺¹) 的样板（高维球面）；
+- **8.9 的方法化**：encode-decode 作为可复用的定理模板；
+- 44 章：连通性机器（8.2）、纤维序列（8.4）、Hopf（8.5）、
+  Freudenthal（8.6）、van Kampen（8.7）、Whitehead（8.8）。
+
+本指南的分工：**43 章把「一条非平凡的路」证到底**（数学的
+完整性），**44 章把「一族的定理」做成地图与陈述级机器**
+（工程的范围诚实）。
+
+## 43.7 机器面导读
+
+- **Coq（`ex43_capstone.v`，正典）**：iterate 的定义 +
+  iterate_add 的两段组装（ap 顶置 + assoc 右移）+ Print
+  Assumptions（仅 S¹ 构造子公理）；
+- **cubical（`ex42_hitc.agda` 尾段，前哨）**：loop 的两行
+  定义（merid 的错位差）、loop^ 的幂塔——43.5 的第零步在
+  cubical 世界免费成立，其余三步见 43.5c 的诚实清单；
+- **coq-hott 教程（外部续读）**：完整版（含 loop ≠ 1 与螺旋
+  覆叠）——本仓库 README 的「已知边界」标注的正式去向。
+
+> **坑位速记（本章新增）**
+> ① encode 的基点值（pos 0）与 dec 的基点坍缩（iterate 0 =
+  refl）必须在**定义级**对齐——基点验证若需引理，整条等价
+  的归纳负担加倍；
+> ② loop 分支的 PathP 计算依赖「iterate_succ 即搬运」——
+  Coq 侧用 apD 表述（42 章坑位同源），cubical 侧是方形
+  分支的 pm 字段。
+
 ---
 
-上一章：[42 HIT](42-hit.md) · 下一章：[48 元理论](48-metatheory.md)
+上一章：[42 高阶归纳类型](42-hit.md) · 下一章：[44 同伦论进阶](44-homotopy.md)
