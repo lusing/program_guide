@@ -6,29 +6,49 @@ C++ 标准库对字符串的处理长期停留在"能查能截"的水平——�
 
 ## 19.1 Boost.Algorithm（字符串算法部，2012）：手术刀全家福
 
+string_algo 建立在 boost.range 之上（算法吃"区间"而不是两个迭代器），处理对象不必是 string——任何元素的 range 都行。先背**命名律**，三百多个函数就都读得懂：
+
+- `i` 前缀 = 大小写不敏感（`iequals`、`iends_with`…）；
+- `_copy` 后缀 = 不动原串、返回处理结果的拷贝；不带 = 原地改；
+- `_if` 后缀 = 接谓词（自己定"什么算空白/该删什么"）。
+
+五大类算法：**大小写**（to_upper/to_lower ×2 版）、**判定**（lexicographical_compare/starts_with/ends_with/contains/equals/all）、**修剪**（trim/trim_left/trim_right ×i×copy×if）、**查找与替换**（find/replace/erase 的 first/last/nth/all/head/tail 组合阵）、**分割与合并**（find_all/split/join/join_if）。
+
 ```cpp
-boost::to_upper_copy(line);                              // 大小写族
-boost::trim_copy(line);                                  // 修剪族
-boost::split(parts, line, boost::is_any_of(" ,"));       // 切分
-boost::join(parts, "_");                                 // 连接
-boost::replace_all(s, "boost::", "std::");               // 替换族
-boost::erase_all(s, "std::");
-boost::iends_with("Photo.JPG", ".jpg");                  // 大小写不敏感判定
+boost::trim_copy_if(noisy, boost::is_digit() || boost::is_punct() || boost::is_space());
+boost::ifind_all(hits, csv, "zelda");              // 大小写不敏感找全部
+boost::split(parts, csv, boost::is_any_of(", .:-+"), boost::token_compress_on);
+boost::join_if(names, "**", [](const auto& s){ return boost::contains(s, "a"); });
 ```
+
+**分类件 13 件**（`is_space/is_alnum/is_alpha/is_cntrl/is_digit/is_graph/is_lower/is_print/is_punct/is_upper/is_xdigit/is_any_of/is_from_range`）都是"函数对象工厂"——`is_digit()` 造出谓词，谓词之间还能 `|| && !` 组合成复合条件（上面第一行就是三合一修剪）。
+
+**查找族返回 `iterator_range`**（一段子区间）而不是迭代器：能当容器用（`empty()`/`begin()`）、能直接流输出、能算位置（`r.begin() - text.begin()`）——找不到给空 range，不抛异常。
 
 运行输出（`algorithm.cpp`）：
 
 ```text
-大写 = [  THE QUICK, BROWN FOX  ]
-修剪 = [The Quick, Brown Fox]
-分词数 = 5 连接 = The_Quick__Brown_Fox
-替换 = std::algorithm std::string boost
-擦除 = algorithm string boost
-JPEG? 1
+大小写: [  THE QUICK, BROWN FOX  ] 原地版一致? 1 原串未动? 1
+修剪: [The Quick, Brown Fox] 左 [The Quick, Brown Fox  ] 右 [  The Quick, Brown Fox]
+修剪_if（去数字/标点/空白）: [Happy New Year]
+判定: iends_with(.jpg)? 1 ends_with? false istarts_with(photo)? true icontains(HOTO)? true
+iequals(Samus/samus)? true ilexicographical_compare(a/B)? true
+all("power", is_lower)? true
+分类: is_digit('7')=true is_any_of(abc)('b')=true is_from_range(0-9)('5')=true 组合(小写|数字)('x')=true
+查找: [long] 位5 i 版 [Long] 位0 nth [ng] head [Long] tail [king.] 找不到为空? true
+替换: first=[samus beat the monster.] all=[Samus bEat thE monstEr.] tail=[Samus beat theridley.]
+擦除: all=[samus beat  monster.] head=[beat the monster.]
+find_all 命中 2 次:[Zelda][zelda]
+split(默认) 8 段[Samus][][Link][Zelda][][Mario][Luigi][zelda]（连续分隔符产出空段）
+split(compress) 6 段[Samus][Link][Zelda][Mario][Luigi][zelda]
+join = Samus+Link+Zelda+Mario join_if(含a) = Samus**Zelda**Mario
+[Samus][samus][mario][][Link]（按 "||" 分割）
 自检通过
 ```
 
-命名规律：`*_copy` 返回新串，不带 `_copy` 的原地改。std 只收编了 `starts_with/ends_with/contains`（C++20/23）——**split/join/trim/replace_all/i 系列仍是 Boost 独有**。⭐ 每个项目都该有的头文件。
+输出里有三个值得点名的行为：`split` 默认把**连续分隔符**当多段（空段出现），`token_compress_on` 把它们压成一段；`split_iterator` 的独门能力是**任意长度字符串当分隔符**（`"||"`，split 算法只能按单字符切）；`join_if` 只有满足谓词的段才进结果。
+
+std 只收编了 `starts_with/ends_with/contains`（C++20/23）——**split/join/trim/replace_all/i 系列/分类件仍是 Boost 独有**。⭐ 每个项目都该有的头文件。
 
 ## 19.2 Boost.Tokenizer（2001）：流式分词
 
@@ -71,8 +91,14 @@ cnv(std::hex); boost::convert<int>("ff", cnv);        // 流操纵符直通
 坏转换被抓住: bad_lexical_cast
 串→double = 2.71
 std 版 = 42（非泛型，仅内置类型）
+try_convert("42")? 1 try_convert("0x100")? 0（0x 前缀不认）
+num_valid<int>("65535")? 1 num_valid<double>("3.14")? 1 num_valid<int>("3.14")? 0
+自定义类 → demo_class#7（合同就是给个 operator<<）
+bool 只认 1/0: lexical_cast<bool>("1") = 1
 自检通过
 ```
+
+lexical_cast 的**合同三条**（内部走流）：源可流输出（`operator<<`）、目标可流输入（`operator>>`）、目标可默认构造+拷贝构造——自定义类给个 `operator<<` 就能转出字符串（上面第 8 行）。**边界两条**：待转字符串只能是纯数字表示（`"0x100"`/`"123L"` 都不认，C++ 字面量语法不等于流语法）；bool 只认 `"1"/"0"` 不认 `"true"/"false"`。**不想捕获异常**就用 `boost::conversion::try_lexical_convert(str, val)`（bool 返回值）——一行就能写出输入合法性校验（书里的 `num_valid`），验证用户输入时比 try/catch 干净得多。
 
 运行输出（`convert.cpp`）：
 

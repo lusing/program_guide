@@ -56,10 +56,28 @@ xp::sregex dyn = xp::sregex::compile("retry (\\d+)");                  // 动态
 重试次数 = 3
 动态正则 = 3
 静态正则编译期检查 = Xpressive 独有卖点
+regex_match 整串校验: 1
+regex_replace: readme.txt → readyou.txt（$1 = 第一捕获组）
+多组反引用: t#t → tNt
+regex_iterator 命中 3 次
+token(-1 分隔) :[*Link*][+Mario+][Zelda!!!][Metroid]
+token(0 匹配) :[Link][Mario][Zelda][Metroid]
+compiler 复用: 命中 1 池内同一对象? 1
+坏正则抛 regex_error
+格式化器: MARIO WORLD
 自检通过
 ```
 
+动态正则的全套件（与 std::regex 同名同语义，例程 6-10 段逐件验证）：
+
+- **`regex_match`** 全串匹配（身份证形校验：一个表达式断言"整串是 18 位身份证形状"，配 `icase` 忽略校验位大小写）；**`regex_search`** 找子串；**`regex_replace`** 替换——格式串里 `$1..$N` 引用捕获组、`$&` 引用全匹配；
+- **`regex_iterator`** 遍历所有匹配（流式，不落容器）；**`regex_token_iterator`** 分词双模式：默认给匹配段（抓单词），传 `-1` 给"分隔符之外"的段（按分隔符切）；
+- **`regex_compiler`** 正则对象池：`rc["name"]` 按名缓存编译结果（享元）——同一个正则在递归/重入里只编译一次；
+- 坏正则抛 **`regex_error`**（boost::exception 子类，可以再塞行李）；替换串可以是**格式化器**（任意可调用物，拿 `match_results` 现算——例程里把每个命中的单词转大写）。
+
 **选型**：正则固定不变（热路径）→ Xpressive 静态正则（编译期确定 + 通常更快）；正则来自配置/用户 → 动态正则或 `std::regex`/Boost.Regex。语义动作、正则嵌套（sregex 里套 sregex）是它的独门。
+
+> 实测坑（MSVC C4702）：xpressive 的 `match_results.hpp` 会在模板实例化点触发"不可达代码"告警——`/external:W0` 压不住实例化诊断（归属本翻译单元），与仓库里 yap/binomial_heap 先例同款，在 include 点定点 `#pragma warning(disable : 4702)`。
 
 ## 20.3 Boost.Parser（2024）：Spirit 的现代重制
 
