@@ -6,7 +6,7 @@ Boost 的数值家族覆盖"从精确到安全"的整条光谱：算得更准（
 
 ## 24.0 Boost.Integer（2001）：整数类型三件套（书 ch9.2）
 
-（对应示例：`integer.cpp`）
+（对应示例：`integer_types.cpp`）
 
 ① **`<boost/cstdint.hpp>`** 精确宽度整型的命名律：`int8_t`（恰好 8 位）/`int_least32_t`（至少 32 位里最小）/`int_fast16_t`（至少 16 位里最快，本机实测取 32 位——"最快"不等于"最小"）/`uintmax_t`（编译器支持的最大无符号）。C++11 起 std 已收编（`<cstdint>`）。
 
@@ -14,7 +14,7 @@ Boost 的数值家族覆盖"从精确到安全"的整条光谱：算得更准（
 
 ③ **`<boost/integer.hpp>` 的按需选型模板**：`int_t<N>::fast`/`uint_t<N>::fast` 按**位宽**要类型（N 不必是 8 的倍数——15 位也能要）；`int_max_value_t<V>`/`int_min_value_t<V>`/`uint_value_t<V>` 按**值域**要类型（"装得下 32700 的最快有符号"）。编译期选好、运行期零开销，比手挑 `short`/`int` 可移植。
 
-运行输出（`integer.cpp`）：
+运行输出（`integer_types.cpp`）：
 
 ```text
 宽度: int8=1 int_fast16=4 int_least32=4（本机 fast16 取的是最快不最小的宽度）
