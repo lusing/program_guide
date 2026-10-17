@@ -202,4 +202,4 @@ HIT 计算规则的预演。
 
 ---
 
-上一章：[35 提取与运行](35-extraction.md) · 下一章：[49 泛等](49-univalence.md)
+上一章：[46 纯函数对象](46-pureobjects.md) · 下一章：[49 泛等](49-univalence.md)
