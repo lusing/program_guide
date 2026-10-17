@@ -65,28 +65,50 @@ std 无对应（deque 不是环形语义）
 
 ## 21.3 Boost.Pool（2000）：同型小块的批发商
 
+pool 库基于"简单分隔存储"思想：向系统**批发**一大块内存，切成等大的小块**零售**给同型对象。它是四个组件的家族，分工先立住：
+
+- `pool<>` —— 最原始的池：只给内存不给构造（POD 专用），接口就是 malloc/free 的池化版；
+- `object_pool<T>` —— 类实例的池：`construct()` 分配 + 构造、`destroy()` 析构 + 归池；
+- `singleton_pool<Tag, Size>` —— 全局单件池：静态接口、无需实例、生命周期到程序结束；
+- `pool_allocator` / `fast_pool_allocator` —— 给 STL 容器换上的池化分配器（一行升级）。
+
+`pool<>` 的构造参数是**每块的大小而不是池的总大小**——池会按需自动扩容，析构时全部归还。分配失败**返回空指针而不抛异常**，用前要判空；`is_from(p)` 可以问"这块内存是不是从我这里出去的"；`ordered_malloc` 一族在分配的同时顺带合并空闲链（大量零散 free 之后用它整理一次）。
+
+`object_pool` 的 `malloc()` 与 `construct()` 是两个层次：前者只给原始内存（值未定义，别读），后者分配 + 调构造函数——**优先用 construct**。`singleton_pool` 的 `Tag` 是个空类，纯粹用于在编译期区分不同的池（可以内联声明 `singleton_pool<struct pool_tag, sizeof(int)>`）；它不随作用域析构，想主动还内存要调 `release_memory()`（只还空闲块）或 `purge_memory()`（强制全还）。
+
 ```cpp
+boost::pool<> pl(sizeof(int));
+int* p1 = static_cast<int*>(pl.malloc());     // 失败返回 nullptr（不抛）
+
 boost::object_pool<Particle> pool;
-Particle* p = pool.construct(1);      // 槽位分配 + 构造
-pool.destroy(p);                      // 析构 + 归池（下次 construct 复用）
-std::list<int, boost::pool_allocator<int>> pooled;     // 容器直接换池化分配器
+Particle* q = pool.construct(1);              // 分配 + 构造
+pool.destroy(q);                              // 析构 + 归池（复用槽位）
+
+using particle_pool = boost::singleton_pool<particle_tag, sizeof(Particle)>;
+Particle* s = static_cast<Particle*>(particle_pool::malloc());   // 静态接口
+
+std::list<int, boost::pool_allocator<int>> pooled;               // 容器换池
 ```
 
 运行输出（`pool.cpp`）：
 
 ```text
-p1 = (0,0,0) id=1
-p2 id = 2
-p3 复用槽位 id=3
+pool<>: *p1=42 *p2=7 is_from(p1)? 1
+ordered_malloc 非空? 1 失败约定 = 返回 nullptr（不抛异常）
+object_pool: q1 id=1 q2 id=2
+复用槽位: q3 id=3 地址复用? 1
+malloc 原始内存 is_from? 1（值未定义，不读）
+自由函数 4 参构造: 1234
+singleton_pool: s1 id=99 is_from? 1
+singleton 释放后仍可再分配? 1
 池化 list: 0 100 200 300 400
 fast 池化 list 大小 = 2
-std 无对应（allocator 没有池化的标准件）
 自检通过
 ```
 
 **什么时候还用它**：百万级 16-64 字节小对象高频生灭（粒子系统、AST 节点、网络会话）。日常场景已被 `make_shared`（单次分配）和 `pmr` 内存资源（C++17，那才是池化的标准答案）覆盖大半。⭐ 剩余生态位明确。
 
-> 实测坑：`object_pool::construct` 的构造参数透传**有参数个数上限**（4 个就编不过）——复杂初始化用单参构造 + 成员赋值最稳。
+> 实测坑：`object_pool::construct` 的构造参数透传**有参数个数上限**——本机 1.92/MSVC 实测 4 参即编译错误（预生成档位只到 3 参；历史上靠 m4 宏生成更多，1.92 仍是旧机制）。第 5 版书给的解法至今仍是最优解：写一个可变参数模板的自由函数 `construct(pool, args...)`，内部 `pool.malloc()` + **placement new** 完美转发——参数个数无上限，任何 pool 类型通用（`pool.cpp` 里有完整实现；注意 placement new 出来的对象要手动调析构再归还）。
 
 ## 21.4 Boost.Assign（2003）：被语言特性吞掉的库
 
