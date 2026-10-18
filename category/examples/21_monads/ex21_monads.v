@@ -68,3 +68,49 @@ Print Assumptions listM.   (* 零公理！元素级归纳即够 *)
       simpl 直接走（map id 在 21 章不再出现——join 直接用 concat）。
    3. SetMonad 的 Tmap 字段是依赖类型（{A B} 隐式）——record
       字段的隐式 binder 与 02 章同样的填充规则。 *)
+
+(* ---------- 分裂余等值子是绝对的（贺伟 3.6） ----------
+   分裂数据（图序）：s;h = 1_C、t;f = 1_B、t;g = h;s（g∘t = s∘h），
+   外加 f;h = g;h（h 等值化 f,g——这一条不由三件套推出：
+   A 比 B 大时 g 在 t 的像外可自由取值，须按定义给出）。
+   结论：任何 k 满足 f;k = g;k 时，中介 m := s;k 存在且唯一。
+   存在性走 Hft+Hk+Hgt 的连环；唯一性用 s;h = 1 收口。
+   全程只用方程与范畴定律——任何函子作用后仍是证明，
+   这就是「绝对」的机器版。 *)
+
+Record Category : Type := mkCat {
+  Obj : Type;
+  Hom : Obj -> Obj -> Set;
+  idn : forall a, Hom a a;
+  comp : forall {a b c}, Hom a b -> Hom b c -> Hom a c;
+  idL : forall {a b} (f : Hom a b), comp (idn a) f = f;
+  idR : forall {a b} (f : Hom a b), comp f (idn b) = f;
+  assoc : forall {a b c d} (f : Hom a b) (g : Hom b c) (h : Hom c d),
+            comp (comp f g) h = comp f (comp g h)
+}.
+
+Lemma split_coeq_mediate : forall (C : Category) (a b c d : Obj C)
+  (f g : Hom C a b) (h : Hom C b c) (s : Hom C c b) (t : Hom C b a),
+  comp C s h = idn C c ->
+  comp C t f = idn C b ->
+  comp C t g = comp C h s ->
+  comp C f h = comp C g h ->
+  forall (k : Hom C b d), comp C f k = comp C g k ->
+  { m : Hom C c d | k = comp C h m /\ forall m', k = comp C h m' -> m' = m }.
+Proof.
+  intros C a b c d f g h s t Hhs Hft Hgt Hfh k Hk.
+  exists (comp C s k).
+  split.
+  - (* 存在：k = 1;k = (t;f);k = t;(f;k) = t;(g;k) = (t;g);k
+                  = (h;s);k = h;(s;k) *)
+    symmetry.   (* 改证 h;(s;k) = k：只动左侧，免得 k 被全局替换 *)
+    rewrite <- (assoc C h s k), <- Hgt, (assoc C t g k), <- Hk,
+             <- (assoc C t f k), Hft, (idL C k).
+    reflexivity.
+  - (* 唯一：m' = 1;m' = (s;h);m' = s;(h;m') = s;k *)
+    intros m' Hm'.
+    rewrite <- (idL C m'), <- Hhs, (assoc C s h m'), <- Hm'.
+    reflexivity.
+Qed.
+
+Print Assumptions split_coeq_mediate.
