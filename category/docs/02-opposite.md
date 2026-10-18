@@ -25,7 +25,7 @@ Definition opposite (C : Category) : Category := {|
 类型检查器逐条核对了定律搬运的方向，写反了它立刻报错。
 
 于是每个范畴论陈述都免费获得一个孪生：mono↔epi（03 章）、
-积↔余积（09 章）、极限↔余极限（11 章）、反射↔余反射（15 章）。
+积↔余积（10 章）、极限↔余极限（12 章）、反射↔余反射（17 章）。
 **证明一次，对偶免费**——这是范畴论经济性的来源。
 
 ## 2.2 预序范畴（瘦范畴）
@@ -99,7 +99,7 @@ Check (fun x : fin 2 => Some x) : Hom (opposite catFin) 3 2.
 4. Lean 方程式定义返回「第一参数」要给名字（`| p, .refl _ => p`），
    写 `.refl _` 会留 metavar 卡死 iota。
 5. Agda `suc` 双义（Level/ℕ）——`renaming (suc to lsuc)`（typetheory
-   14 章老坑在此复现）；Fin 的嵌入是 `Fin.suc` 全名。
+   16 章老坑在此复现）；Fin 的嵌入是 `Fin.suc` 全名。
 
 ---
 

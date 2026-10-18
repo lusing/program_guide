@@ -1,8 +1,8 @@
-# 09 积与余积
+# 10 积与余积
 
 > 对书：贺伟《范畴论》2.3（积和余积）/《高级范畴论》3.2 /
 > Simmons 2.5（Products and coproducts）。
-> 代码：`examples/09_products/`。
+> 代码：`examples/10_products/`。
 
 ## 9.1 泛性质：存在 + 唯一
 
@@ -58,8 +58,8 @@ Agda 版把同一证明写成 let-模式 + trans 链；Lean 版用
   （Pfn 里的积 = 部分函数图对）留给读者；
 - 积在 FinCat = 基数相乘（fin (m×n) ≅ fin m × fin n）——
   可作练习（机器化需要基数同构，超出本章范围）；
-- 09 章的 IsProduct 在 12 章被 Hom 函子「免费吃掉」、
-  在 15 章被右伴随「免费吃掉」——**泛性质是可以搬运的结构**。
+- 10 章的 IsProduct 在 14 章被 Hom 函子「免费吃掉」、
+  在 17 章被右伴随「免费吃掉」——**泛性质是可以搬运的结构**。
 
 ## 坑位速记
 
@@ -77,4 +77,4 @@ Agda 版把同一证明写成 let-模式 + trans 链；Lean 版用
 
 ---
 
-上一章：[08 Yoneda 引理与可表函子](08-yoneda.md) · 下一章：[10 等化子与拉回](10-pullbacks.md)
+上一章：[08 Yoneda 引理与可表函子](08-yoneda.md) · 下一章：[11 等化子与拉回](11-pullbacks.md)

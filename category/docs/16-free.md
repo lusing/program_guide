@@ -1,6 +1,6 @@
-# 14 自由与遗忘
+# 16 自由与遗忘
 
-> 对书：Simmons 5.5 / 贺伟 3.1 / 高级 5.2。代码：`examples/14_free/`。
+> 对书：Simmons 5.5 / 贺伟 3.1 / 高级 5.2。代码：`examples/16_free/`。
 
 自由构造的样板：**freeCat ⊣ 遗忘函子 U : Cat → Graph**。机器内容（Coq）：
 GraphMap（顶点映射 + 每边一态射——端点方程按类型免费）+ 单位（边 ↦ 单边路）+ 延拓 extendPath（对 Path 归纳）+ 延拓保复合 extend_comp（零公理）。
@@ -14,4 +14,4 @@ GraphMap（顶点映射 + 每边一态射——端点方程按类型免费）+ �
 
 ---
 
-上一章：[13 伴随的三副面孔](13-adjunctions.md) · 下一章：[15 伴随与极限](15-adjlimits.md)
+上一章：[15 伴随的三副面孔](15-adjunctions.md) · 下一章：[17 伴随与极限](17-adjlimits.md)

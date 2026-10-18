@@ -1,6 +1,6 @@
-# 16 Cartesian 闭范畴
+# 18 Cartesian 闭范畴
 
-> 对书：贺伟 3.4 /《高级范畴论》6.3 / Simmons 5.x。代码：`examples/16_ccc/`。
+> 对书：贺伟 3.4 /《高级范畴论》6.3 / Simmons 5.x。代码：`examples/18_ccc/`。
 
 CCC = 终对象 + 二元积 + 指数：**λ 演算的语义家**。指数 b^a 的泛性质 = curry 双射：
 Hom(c × a, b) ≅ Hom(c, b^a)。机器内容：TyCat 的指数 = 函数类型、curry/uncurry 的两个往返等式（funext）。
@@ -13,4 +13,4 @@ Hom(c × a, b) ≅ Hom(c, b^a)。机器内容：TyCat 的指数 = 函数类型�
 
 ---
 
-上一章：[15 伴随与极限](15-adjlimits.md) · 下一章：[17 λ 演算与演绎系统构成的范畴](17-stlc.md)
+上一章：[17 伴随与极限](17-adjlimits.md) · 下一章：[19 λ 演算与演绎系统构成的范畴](19-stlc.md)

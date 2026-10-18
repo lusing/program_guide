@@ -5,7 +5,7 @@
 Category Theory》习题解答版），横跨 **Coq / Agda / Lean 4**
 三种实现讲解。
 
-**章号 = 示例编号**——11–14、16、18 章（双语）与 15、17、19–22 章
+**章号 = 示例编号**——12–16、18、20 章（双语）与 17、19、21–28 章
 （文档章）之外，每章对应 `examples/NN_name/` 里经三通道
 （coqc 8.20.1 / WSL Agda 2.8.0+stdlib 2.3 / Lean 4.25.0）
 机器验证的完整文件。
@@ -21,7 +21,7 @@ category/
 ├── README.md          本文件
 ├── build.ps1          三通道验证（-All/-Chapter/-Lang/-File/-List/-Clean）
 ├── CHEATSheet.md      速查 + 精选坑位
-├── docs/              23 章教程
+├── docs/              29 章教程
 └── examples/          15 个章目录（章号 = 示例编号）
 ```
 
@@ -37,21 +37,21 @@ category/
 | [06 自然变换](docs/06-natural.md) | Godement 积；record 相等三家分岔 | 三家 |
 | [07 范畴等价](docs/07-equivalence.md) | 全忠实+本质满；Pfn≃Set⊥ | 三家 |
 | [08 Yoneda 引理](docs/08-yoneda.md) | **旗舰**：往返双程完整机器 | 三家 |
-| [09 积与余积](docs/09-products.md) | 泛性质唯一到同构（零公理） | 三家 |
-| [10 等化子与拉回](docs/10-pullbacks.md) | 单态射的拉回仍是单态射 | 三家 |
-| [11 极限一般理论](docs/11-limits.md) | 常值函子；二元图极限=积 | 双语 |
-| [12 连续函子](docs/12-continuous.md) | Hom(c,-) 保积（Yoneda 推论） | 双语 |
-| [13 伴随](docs/13-adjunctions.md) | 三角恒等式⟹hom-双射 | 双语 |
-| [14 自由与遗忘](docs/14-free.md) | 图上自由范畴的泛性质 | Coq |
-| [15 伴随与极限](docs/15-adjlimits.md) | RAPL/AFT/反射子范畴 | 文档 |
-| [16 Cartesian 闭](docs/16-ccc.md) | curry 双射（TyCat） | Coq |
-| [17 λ 演算范畴](docs/17-stlc.md) | STLC⟷CCC；演绎系统 | 文档 |
-| [18 单子](docs/18-monads.md) | Set 级单子 + List 实例（零公理） | Coq |
-| [19 幺半与富范畴](docs/19-monoidal.md) | 五边形连贯性 | 文档 |
-| [20 加法/Abel 范畴](docs/20-abelian.md) | 贺伟第 4 章公理表 | 文档 |
-| [21 层与拓扑斯](docs/21-sheaves.md) | 粘合条件/Grothendieck 拓扑 | 文档 |
-| [22 压轴串联](docs/22-capstone.md) | 泛性质-唯一性-Yoneda-对偶-伴随 | 文档 |
-| [23 坑位与书目](docs/23-pitfalls.md) | 总清单 + 三书导读 + 速查 | — |
+| [10 积与余积](docs/10-products.md) | 泛性质唯一到同构（零公理） | 三家 |
+| [11 等化子与拉回](docs/11-pullbacks.md) | 单态射的拉回仍是单态射 | 三家 |
+| [12 极限一般理论](docs/12-limits.md) | 常值函子；二元图极限=积 | 双语 |
+| [14 连续函子](docs/14-continuous.md) | Hom(c,-) 保积（Yoneda 推论） | 双语 |
+| [15 伴随](docs/15-adjunctions.md) | 三角恒等式⟹hom-双射 | 双语 |
+| [16 自由与遗忘](docs/16-free.md) | 图上自由范畴的泛性质 | Coq |
+| [17 伴随与极限](docs/17-adjlimits.md) | RAPL/AFT/反射子范畴 | 文档 |
+| [18 Cartesian 闭](docs/18-ccc.md) | curry 双射（TyCat） | Coq |
+| [19 λ 演算范畴](docs/19-stlc.md) | STLC⟷CCC；演绎系统 | 文档 |
+| [20 单子](docs/20-monads.md) | Set 级单子 + List 实例（零公理） | Coq |
+| [21 幺半与富范畴](docs/21-monoidal.md) | 五边形连贯性 | 文档 |
+| [22 加法/Abel 范畴](docs/22-abelian.md) | 贺伟第 4 章公理表 | 文档 |
+| [27 层与拓扑斯](docs/27-sheaves.md) | 粘合条件/Grothendieck 拓扑 | 文档 |
+| [28 压轴串联](docs/28-capstone.md) | 泛性质-唯一性-Yoneda-对偶-伴随 | 文档 |
+| [29 坑位与书目](docs/29-pitfalls.md) | 总清单 + 三书导读 + 速查 | — |
 
 ## 工具链（本机实测）
 
@@ -72,7 +72,7 @@ pwsh -NoProfile -Command '& ./build.ps1 -All'
   ncomp——Coq 止步于分量级、Agda 走 setoid（_≈NT_）、Lean 用
   结构 η+内核 PI 拿到完整 record 相等；Yoneda 往返 2 的完整版
   仅 Lean。
-- Agda 的 TyCat 纤维积唯一性需证明无关性——10 章 Agda 版止步
+- Agda 的 TyCat 纤维积唯一性需证明无关性——11 章 Agda 版止步
   于抽象定理。
 - 15/17/19/20/21/22 为文档章：RAPL、Beck 定理、五边形连贯性、
   层化的机器化需要函子范畴的完整 record 级相等 + 极限一般机器

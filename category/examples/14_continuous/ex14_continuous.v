@@ -55,7 +55,7 @@ Print Assumptions hom_preserves_product.   (* 零公理 *)
 Print Assumptions hom_product_unique.      (* 零公理 *)
 
 (* 文档层：一般定理「可表函子保持全部极限」由 Yoneda 从这一情形
-   推广；「右伴随保持极限」（贺伟 3.6/高级 5.6）在 15 章陈述。 *)
+   推广；「右伴随保持极限」（贺伟 3.6/高级 5.6）在 17 章陈述。 *)
 
 (* 坑位速记：
    1. 「保积」的两种陈述：对象层（像还是积）与 hom 层（配对双射）

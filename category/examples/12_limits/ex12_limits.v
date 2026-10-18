@@ -101,7 +101,7 @@ Print Assumptions product_is_limit2.  (* 零公理 *)
    1. shape2 的 Hom 用 if-then-else 打包恒等——把「离散」的
       类型层定义直接写出来；Abort 的 diag2 草稿删掉
       （直接展开版更清楚，二元图表就是两个对象）。
-   2. Cone2/IsLimit2 与 IsProduct（09 章）只差一层包装——
+   2. Cone2/IsLimit2 与 IsProduct（10 章）只差一层包装——
       两个方向的引理都是「拆包装 + 复用」。
    3. record 字段的 comp 访问：limUniv 的输出 sig 结构与
-      09 章的 IsProduct 逐字段相同——跨章复用记录形状。 *)
+      10 章的 IsProduct 逐字段相同——跨章复用记录形状。 *)

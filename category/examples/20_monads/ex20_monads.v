@@ -55,7 +55,7 @@ Print Assumptions listM.   (* 零公理！元素级归纳即够 *)
    1. 范畴级单子 (T, η, μ) 的自然性/结合律 = 上面元素级定律的
       funext 打包；Set 语境下两者等价。
    2. 伴随生成单子（贺伟 3.5 主定理）：F ⊣ G ⟹ T := G∘F，
-      η := 单位，μ := GεF——14 章的自由范畴伴随生成「路径单子」
+      η := 单位，μ := GεF——16 章的自由范畴伴随生成「路径单子」
       （T G := 图 G 上所有路的顶点集）。
    3. Kleisli 范畴与 Eilenberg–Moore 范畴；Beck 单子性定理
       （贺伟 3.6）：比较函子创造极限 ⟹ 等价——精细条件需要
@@ -65,6 +65,6 @@ Print Assumptions listM.   (* 零公理！元素级归纳即够 *)
    1. 「对象层单子」写不下 η·Tη（T 作用在态射上）——Set 级
       单子把 Tmap 显式携带，元素级定律最省基础设施。
    2. join 的三条定律都是 list 归纳；concat/map 的化简方向
-      simpl 直接走（map id 在 18 章不再出现——join 直接用 concat）。
+      simpl 直接走（map id 在 20 章不再出现——join 直接用 concat）。
    3. SetMonad 的 Tmap 字段是依赖类型（{A B} 隐式）——record
       字段的隐式 binder 与 01 章同样的填充规则。 *)

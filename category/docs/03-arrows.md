@@ -99,7 +99,7 @@ destruct (g z) as [e|]; [destruct e | reflexivity].   (* 映到 fin 1 *)
 
 零对象（既终又始）在 FinCat 不存在（0 ≠ 1）；最简例子是终范畴
 `catOne` 的唯一对象。Grp 的零对象是平凡群、Abel 群范畴的零对象
-同样是 0——20 章加法范畴会重逢。
+同样是 0——22 章加法范畴会重逢。
 
 对偶翻译一行：`Terminal C t → Initial (opposite C) t`——三家的
 验证都是「定义层面直接翻转」，无需证明。
