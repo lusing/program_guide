@@ -41,6 +41,7 @@ category/
 | [10 积与余积](docs/10-products.md) | 泛性质唯一到同构（零公理） | 三家 |
 | [11 等化子与拉回](docs/11-pullbacks.md) | 单态射的拉回仍是单态射 | 三家 |
 | [12 极限一般理论](docs/12-limits.md) | 常值函子；二元图极限=积 | 双语 |
+| [13 合流余极限](docs/13-confluent.md) | 块与结构搬运（R-集/幺半群） | Coq |
 | [14 连续函子](docs/14-continuous.md) | Hom(c,-) 保积（Yoneda 推论） | 双语 |
 | [15 伴随](docs/15-adjunctions.md) | 三角恒等式⟹hom-双射 | 双语 |
 | [16 自由与遗忘](docs/16-free.md) | 图上自由范畴的泛性质 | Coq |

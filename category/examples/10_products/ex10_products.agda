@@ -118,6 +118,22 @@ tyProduct A B c f g = (λ x → f x , g x) , (refl , refl) , uniq
       (f x , proj₂ (h' x))              ≡⟨ cong (λ k → f x , k) (cong (λ k → k x) e2) ⟩
       (f x , g x)                       ∎)
 
+
+------------------------------------------------------------------------
+-- 余积在 Set 的化身：不交并（Simmons 2.5）——
+-- 中介 = 分派函数；唯一性 = 对 sum 分派即定。
+
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+
+sum-mediate : ∀ {A B C : Set} (f : A → C) (g : B → C) → A ⊎ B → C
+sum-mediate f g (inj₁ a) = f a
+sum-mediate f g (inj₂ b) = g b
+
+sum-unique : ∀ {A B C : Set} (f : A → C) (g : B → C) (u : A ⊎ B → C) →
+  (∀ a → u (inj₁ a) ≡ f a) → (∀ b → u (inj₂ b) ≡ g b) →
+  u ≡ sum-mediate f g
+sum-unique f g u h1 h2 = funext λ{ (inj₁ a) → h1 a ; (inj₂ b) → h2 b }
+
 ------------------------------------------------------------------------
 -- 坑位速记：
 -- 1. where 块不能用模式绑定（k , (k1 , k2) , kuniq = ...）——

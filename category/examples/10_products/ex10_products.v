@@ -130,3 +130,26 @@ Print Assumptions tyProduct.            (* funext *)
       这是「泛性质自动给同构」的标准机器套路。
    3. IsCoproduct 用 opposite 一行定义，注意对象次序：
       C^op 的 Hom a b = C 的 b→a，所以 (q2, q1) 对掉。 *)
+
+(* ---------- 余积在 Set 的化身：不交并（Simmons 2.5） ----------
+   IsCoproduct 已有（10 章开头用 opposite 定义过抽象版）；
+   这里给 TyCat 的具体化身：A + B 配双侧注入，
+   中介 = 分派函数，唯一性 = 对 sum 分派即定。 *)
+
+Axiom funext_dep : forall (A : Type) (B : A -> Type) (f g : forall x, B x),
+  (forall x, f x = g x) -> f = g.
+
+Definition sumCop (A B : Set) : IsCoproduct catTy A B (sum A B)
+  (inl (A:=A) (B:=B)) (inr (A:=A) (B:=B)).
+Proof.
+  (* 展开成 opposite catTy 上的积：两条腿反着看 *)
+  intros c f g. exists (fun x => match x with
+                               | inl a => g a
+                               | inr b => f b
+                               end).
+  split; [reflexivity|]. split; [reflexivity|].
+  intros h' e1 e2. apply funext_dep. intro x.
+  destruct x as [a|b].
+  - exact (f_equal (fun k : A -> c => k a) e2).
+  - exact (f_equal (fun k : B -> c => k b) e1).
+Defined.

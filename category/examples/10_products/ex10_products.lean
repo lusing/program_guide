@@ -96,3 +96,15 @@ def tyProduct (A B : Type 0) : IsProduct TyCat A B (A × B) Prod.fst Prod.snd :=
    ——where 附属于 definition（合法），模式匹配处带名字。
 4. IsProduct 的三层结构（Σ' h、方程对、唯一性）在三家分别用
    sigT/Σ/Σ'——「证据是数据」的选择决定宇宙层级。 -/
+
+/-! 【余积在 Set 的化身】不交并（Simmons 2.5）——
+中介 = 分派函数；唯一性 = 对 sum 分派即定。 -/
+def sumMediate {A B C : Type} (f : A → C) (g : B → C) : A ⊕ B → C
+  | .inl a => f a
+  | .inr b => g b
+
+theorem sum_unique {A B C : Type} (f : A → C) (g : B → C) (u : A ⊕ B → C)
+    (h1 : ∀ a, u (.inl a) = f a) (h2 : ∀ b, u (.inr b) = g b) :
+    u = sumMediate f g := by
+  funext x
+  cases x <;> simp [sumMediate, h1, h2]

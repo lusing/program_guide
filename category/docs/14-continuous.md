@@ -13,4 +13,4 @@
 
 ---
 
-上一章：[12 极限的一般理论](12-limits.md) · 下一章：[15 伴随的三副面孔](15-adjunctions.md)
+上一章：[13 合流余极限](13-confluent.md) · 下一章：[15 伴随的三副面孔](15-adjunctions.md)
