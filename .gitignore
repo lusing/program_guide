@@ -127,6 +127,7 @@ cppgui/imgui.ini
 
 # Working scratch (book OCR digests, probe scripts) — never commit
 .scratch/
+.scratch*/
 
 # funanalysis tutorial build artifacts
 funanalysis/build/
