@@ -1,7 +1,7 @@
 # 附录 · Erlang ↔ Elixir 双语言对照
 
-> 取材《Erlang and Elixir for Imperative Programmers》（Wolfgang Loder）
-> 第 2 章「From Erlang to Elixir」与附录 D 的速查精神。
+> 本章是 Erlang 与 Elixir 的双语言速查对照：同一台 BEAM 上的两套表层
+> 语法，以及它们共用的 OTP 概念。
 > 本仓库的双教程互为镜像：Erlang 篇（本目录）32 章、
 > [Elixir 篇](../../elixir)29 章——同一台 VM（BEAM）、同一套 OTP、
 > 两种表层语法。

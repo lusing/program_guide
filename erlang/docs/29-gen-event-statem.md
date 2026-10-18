@@ -4,8 +4,8 @@
 
 gen_server（15 章）、supervisor（16 章）、application（17 章）之外，
 OTP 还有两块常用行为：**gen_event**（事件管理器）与 **gen_statem**
-（状态机）。取材《Erlang 程序设计》第 22 章 + 《Erlang and Elixir
-for Imperative Programmers》第 10 章的 OTP 服务器巡礼。
+（状态机）。本章把它们补全：前者讲「一对多、可插拔的处理器」模型，
+后者讲「状态即函数」的状态机写法，两者都按统一的行为回调契约展开。
 
 ## 29.1 gen_event：manager 是进程，handler 是可插拔的小角色
 
@@ -48,7 +48,7 @@ ok = gen_event:swap_handler(M, {evt_counter, []}, {evt_counter, []}),
 
 OTP 29 实测三连：
 
-1. 老书的 **swap_handler/4 已是 undef**——现在是 **/3**：新旧 handler
+1. **swap_handler 的签名是 /3**（旧版曾为 /4，现已移除）：新旧 handler
    连各自的 args **各自成对**；
 2. 状态传递链：老 handler 的 `terminate(Args1, State)` 返回
    `{ok, Term}` → 新实例的 `init` 收到 **`{Args2, Term}`**（Term 是
@@ -70,8 +70,9 @@ terminate(_Args, Count) -> {ok, Count}.
 
 ## 29.4 gen_statem：状态机即回调
 
-门禁锁是教科书经典例（Armstrong 书 22 章拿它讲 gen_statem 前身）。
-**状态 = 函数名**，事件按四类分派：
+门禁锁是讲状态机的经典例子——输入正确密码开锁、按错清零、一段时间不动
+自动落锁。用它最容易看清 gen_statem 的形状：**状态 = 函数名**，事件按
+四类分派：
 
 ```erlang
 callback_mode() -> state_functions.
@@ -116,7 +117,7 @@ open(state_timeout, auto_lock, Data) -> {next_state, locked, Data}.
 
 1. **gen_event 的 code_change 是 /3**（gen_server/gen_statem 是 /4）
    ——从别的行为抄回调签名必挂。
-2. **swap_handler 是 /3**（OTP 29；老书 /4 已 undef），新旧 handler
+2. **swap_handler 的签名是 /3**（旧版的 /4 已移除），新旧 handler
    各自成对；携带值经 terminate → `init({Args2, Term})`。
 3. **`global`/`gen_event` 的返回值风格不统一**：register_name 返回
    yes/no、add_handler 返回 ok——别拿 `true =` 到处匹配。

@@ -200,7 +200,7 @@ start_udp_echo() ->
 
 udp_loop(Socket) ->
     %% OTP 29 实测：recv 返回扁平的 {ok, {对端地址, 对端端口, 数据}}——
-    %% （老书写法 {ok, {地址, 端口}, 数据} 直接 badmatch！）回信用 send/4
+    %% （旧式写法 {ok, {地址, 端口}, 数据} 会直接 badmatch！）回信用 send/4
     case gen_udp:recv(Socket, 0, ?RECV_TIMEOUT * 2) of
         {ok, {Addr, FromPort, Data}} ->
             gen_udp:send(Socket, Addr, FromPort, Data),

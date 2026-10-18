@@ -89,7 +89,7 @@ swap_carries_state() ->
     d("替换前 counter 数到", gen_event:call(M, evt_counter, get_count, 2000)),
     %% swap：老 handler 的 terminate 返回值会传给新实例的 init
     %% （OTP 29 是 swap_handler/3：新旧 handler 连 args 各自成对，
-    %%   老书里的 /4 写法已是 undef）
+    %%   旧版的 /4 写法已移除）
     ok = gen_event:swap_handler(M, {evt_counter, []}, {evt_counter, []}),
     d("替换后新 counter 从旧状态接着数", gen_event:call(M, evt_counter, get_count, 2000)),
     gen_event:stop(M).

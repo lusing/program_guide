@@ -3,8 +3,8 @@
 > 对应示例：`examples/28_dets_mnesia/`（沙箱在 build 目录下，每次运行前清空）
 
 第 18 章的 ETS 住在内存、随进程生死。这一章是它的两步延伸——
-DETS（磁盘版 ETS）与 Mnesia（带事务的分布式数据库）。取材《Erlang
-程序设计》第 19 章尾部与第 20 章。
+DETS（磁盘版 ETS）与 Mnesia（带事务的分布式数据库），二者都是 OTP 自带，
+不需要任何第三方依赖。
 
 ```text
 ETS    内存 / 随进程死 / 无事务
@@ -83,7 +83,7 @@ Abort = fun () -> mnesia:write({kv, z, 99}), mnesia:abort(simulated_failure) end
 1. **dets:info 看条数用 `size`**——`no_items` 返回 undefined（老接口
    残留，编译器不拦）。
 2. **dets:lookup 返回对象列表**，模式 `{Obj} = dets:lookup(...)` 会
-   badmatch——同 ets 的形状，但老书里常写成单对象。
+   badmatch——形状和 ets 一样（列表），别按「查一个对象」写。
 3. **dets 文件跨运行残留**：测试/演示必须每次清沙箱或删文件再开；
    同名 open 会看到上次的数据累积（bag/duplicate_bag 越攒越多）。
 4. **mnesia 的 dir 要在 create_schema 之前 set_env**——schema 文件

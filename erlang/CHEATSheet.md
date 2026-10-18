@@ -1,4 +1,4 @@
-# Erlang/OTP 29 速查表
+# Erlang/OTP 29.1.1 速查表
 
 一页纸放下 32 章的常用语法与命令；`N.M` = 第 N 章 M 节，详细讲解见对应章（02–32 章都有可跑示例）。
 
@@ -230,7 +230,7 @@ ok = io:setopts(standard_io, [{binary, true}, {encoding, latin1}]).
 | peer 的 logger 声明失效 | `level => none` 是**全放行**不是全静音——`remove_handler(default)`（25.9） |
 | 失配握手 ERROR REPORT | ERTS 层带时间戳，摘 handler 拦不住——别触发真实失配握手（25.6） |
 | global:register_name 返回 | yes 不是 true；查名前先 global:sync()（25.5） |
-| gen_udp:recv 形状 | OTP29 扁平 `{Addr,Port,Packet}`——老书 `{Addr,Port},Packet` badmatch（26.5） |
+| gen_udp:recv 形状 | OTP29 扁平 `{Addr,Port,Packet}`——旧写法 `{{Addr,Port},Packet}` badmatch（26.5） |
 | gen_udp:send/3 badarg | 未连接 socket 用 send/4；地址写 {127,0,0,1} 防 v6 解析（26.5） |
 | active once 单侧武装 | 服务器与客户端每条消息后都要再 setopts（26.3） |
 | escript 端口透传 | 不 setopts 则 unicode→latin1 转译崩：binary+latin1 双保险（27.3） |
@@ -262,7 +262,7 @@ ok = gen_event:swap_handler(M, {H1, []}, {H2, []}).   %% OTP29 是 /3
 | index_read 事务外 | 直接 exit({aborted,no_transaction})——外面用 dirty_index_read（28.3） |
 | dets 错误带绝对路径 | 打印只留标签 not_a_dets_file（28.2） |
 | gen_event code_change 是 /3 | gen_server/gen_statem 才是 /4（29.5） |
-| swap_handler 老书 /4 | OTP29 是 /3；携带值走 terminate→init({Args2,Term})（29.3） |
+| swap_handler 旧版签名 /4 | OTP29 是 /3；携带值走 terminate→init({Args2,Term})（29.3） |
 | state_timeout 写成 timeout | function_clause 崩掉状态机（29.4） |
 | handler 崩溃摘除异步 | notify 后 sleep 一拍再断言 which_handlers（29.2） |
 

@@ -1,7 +1,7 @@
 %% ============================================================
 %% 32_sherlock —— 收官：文本侦探（福尔摩斯的最后一案）
 %%
-%%    Armstrong 书的压轴项目：给几段已知作者的文章 + 一段匿名文本，
+%%    收官项目：给几段已知作者的文章 + 一段匿名文本，
 %%    用统计手法判断匿名作者「文风最像谁」。全链路纯函数：
 %%      · tokens     —— 分词与规范化（小写、去标点）
 %%      · counts     —— 词频表
@@ -162,4 +162,4 @@ bigram_model() ->
     d("indeed 后面最常出现", predict_next(TokensA, "indeed")),
     d("therefore 后面最常出现", predict_next(TokensA, "therefore")),
     d("查无此词", predict_next(TokensA, "elephant")),
-    io:format("  （书上的下一词预测模型：把语料统计变成生成器的心脏）~n").
+    io:format("  （下一词预测模型：把语料统计变成生成器的心脏）~n").

@@ -39,6 +39,14 @@ classify(X) ->
 
 三条实测语义：① 只有 `?=` 失败才走 else，else 匹配**失败值本身**；② body 里普通 `=` 的 badmatch **穿透** else（实测 `{error,{badmatch,false}}`）；③ else 全不匹配抛 `else_clause`。
 
+版本与保留字：`maybe` 是 OTP 25 引入的**实验特性**（那时默认关，得显式开 feature `maybe_expr`），**OTP 27 起默认启用**，本教程用的 OTP 29 直接写就行。代价是 `maybe` 自 OTP 27 变成**保留字**——它不再是合法原子了，下面这段在本机实测是编译错：
+
+```erlang
+f(maybe) -> ok.     %% ✘ syntax error before: 'maybe'（要写成 f('maybe')）
+```
+
+（同一个字面上的坑还有 `else`、`end`，它们早就是保留字。完整保留字表见 01 章。）
+
 ## 12.5 Reason 全表（实测）
 
 | Reason | 场景 | 形状 |

@@ -3,9 +3,9 @@
 > 对应示例：`examples/26_sockets/`
 
 Erlang 写网络服务的原生姿态：一条连接一个进程、消息驱动、崩溃隔离。
-取材《Erlang 程序设计》第 17 章（顺序服务器 → 并行服务器 → 路由器）；
-第 18 章的 WebSocket 走 cowboy 生态、超出「零依赖」铁律，只在文末
-留一段概念。
+本章按「顺序服务器 → 并行服务器」的经典演进讲清 TCP 服务器怎么写，再
+补上 UDP、流控（active 三态）与 raw 字节流；WebSocket 因为要依赖 cowboy
+生态、超出本教程「零依赖」铁律，只在文末留一段概念。
 
 ## 26.1 listen / accept：一条连接的诞生
 
@@ -114,10 +114,10 @@ recv 里消失。`{packet, N}` 帧由驱动负责加/剥——消息边界回来
 
 ## 26.7 WebSocket 一段概念
 
-`gen_tcp` 之上手写 WebSocket 要处理 HTTP 升级握手、帧格式
-（FIN/opcode/mask）、掩码解码——书上第 18 章正是这么教的。工程里
-用 cowboy/ranch（监听器/路由/升级都是现成的）。本教程守住零依赖，
-知道「WebSocket = TCP + 升级握手 + 帧协议」即可。
+`gen_tcp` 之上手写 WebSocket 要自己处理 HTTP 升级握手、帧格式
+（FIN/opcode/mask）、掩码解码这些细节。工程里几乎不会手写——直接用
+cowboy/ranch，监听器/路由/升级都是现成的。本教程守住零依赖，知道
+「WebSocket = TCP + 升级握手 + 帧协议」这个分解即可。
 
 ## 26.8 要点小结
 
@@ -135,7 +135,7 @@ recv 里消失。`{packet, N}` 帧由驱动负责加/剥——消息边界回来
 ## 26.9 坑位清单
 
 1. **`gen_udp:recv` 的扁平三元组**（OTP 29）：`{ok, {Addr, Port,
-   Packet}}`——老书写法 badmatch；源码 `-spec` 为证。
+   Packet}}`——写成旧式的 `{ok, {Addr, Port}, Packet}` 会直接 badmatch。
 2. **`gen_udp:send/3` 只服务已 connect 的 socket**——未连接就用
    send/4，且地址写 `{127,0,0,1}` 而不是 `"localhost"`（v6 解析回信
    走丢）。

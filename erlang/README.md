@@ -1,8 +1,8 @@
 # Erlang/OTP 编程指南（32）
 
-给"会编程、初学 Erlang/OTP"的读者：从变量不可变、没有循环的语言地基，到进程/监督树/应用三件套，再到一个带 worker 池的 mini-grep；25–32 章按《Erlang 程序设计（第 2 版）》与《Erlang and Elixir for Imperative Programmers》两本书扩充进阶篇——分布式、套接字、端口、DETS/Mnesia、gen_event/gen_statem、剖析跟踪、多核并行，纯函数文本侦探收官。**读讲解 → 跑示例 → 改代码再跑**。
+给"会编程、初学 Erlang/OTP"的读者：从变量不可变、没有循环的语言地基，到进程/监督树/应用三件套，再到一个带 worker 池的 mini-grep；25–32 章是进阶篇——分布式、套接字、端口、DETS/Mnesia、gen_event/gen_statem、剖析跟踪、多核并行，纯函数文本侦探收官。**读讲解 → 跑示例 → 改代码再跑**。
 
-> ⚠️ 所有代码在 Erlang/OTP 29（erts 17.0.6）windows/amd64 实测；全部示例四层验证通过（erlc `-Wall -Werror` 零警告 → EUnit → 运行四条判定 → `+S 1:1` 单调度器双通道逐字节一致）。各章"坑位清单"收录了 90+ 条实测坑中与本章相关的部分。
+> ⚠️ 所有代码在 Erlang/OTP 29.1.1（erts 17.x）windows/amd64 实测；全部示例四层验证通过（erlc `-Wall -Werror` 零警告 → EUnit → 运行四条判定 → `+S 1:1` 单调度器双通道逐字节一致）。各章"坑位清单"收录了 90+ 条实测坑中与本章相关的部分。
 
 ## 目录结构
 
@@ -62,7 +62,7 @@ erlang/
 
 ## 构建工具链
 
-- Erlang/OTP 29：scoop 的 `G:\scoop\apps\erlang\current\bin\`（erl/erlc/dialyzer/typer/ct_run 齐全；无 rebar3——教程只用标准库）
+- Erlang/OTP 29.1.1：scoop 的 `G:\scoop\apps\erlang\current\bin\`（erl/erlc/dialyzer/typer/ct_run 齐全；无 rebar3——教程只用标准库）
 - pwsh 7（build.ps1 有中文输出，Windows PowerShell 5 读不了无 BOM 脚本）
 - 编译统一 `+debug_info -Werror -Wall`（debug_info 是 dialyzer 的料，23 章实测 erlc 默认不带）
 - 25_distributed 特判：EUnit 与运行层自动加 `-sname ex25_a`（peer 要求本节点是活节点）
