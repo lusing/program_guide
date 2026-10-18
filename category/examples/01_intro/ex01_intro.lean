@@ -85,3 +85,80 @@ example : (fun b => !(!b)) = (fun b => b) := funext (fun b => by cases b <;> rfl
    typetheory 教程 07 章「方向学」在此再现）。
 4. `Type 0` 作对象必须显式给宇宙 `Category.{1, 0}`——Lean 无
    Cumulativity，靠注解对齐 Obj 层与 Hom 层。 -/
+
+/-. 【例 5】Pno —— Peano 式代数的范畴（Simmons 1.2.1 / 1.2.2）
+结构集范畴的通用配方：携带集 + 结构 + 保结构映射。
+Pno 对象 = (A, a, α)；箭头 f 满足 f(a) = b 且 f(αx) = β(fx)。 -/
+
+structure PnoAlg where
+  carr : Type
+  start : carr
+  step : carr → carr
+
+structure PnoArr (A B : PnoAlg) where
+  pfun : A.carr → B.carr
+  pkeep1 : pfun A.start = B.start
+  pkeep2 : ∀ x, pfun (A.step x) = B.step (pfun x)
+
+namespace PnoArr
+
+def idn (A : PnoAlg) : PnoArr A A where
+  pfun := id
+  pkeep1 := rfl
+  pkeep2 := fun _ => rfl
+
+/-- 复合封闭（1.2.2 最小实例）：两条钩链 -/
+def comp {A B C : PnoAlg} (f : PnoArr A B) (g : PnoArr B C) : PnoArr A C where
+  pfun := fun x => g.pfun (f.pfun x)
+  pkeep1 := by
+    show g.pfun (f.pfun A.start) = C.start
+    rw [f.pkeep1]; exact g.pkeep1
+  pkeep2 := fun x => by
+    show g.pfun (f.pfun (A.step x)) = C.step (g.pfun (f.pfun x))
+    rw [f.pkeep2]; exact g.pkeep2 _
+
+/-- Pno 整个是一个范畴——Lean 独享的完整实例：
+    pkeep 字段住 Prop，证明无关性让定律免费（idL/assoc 全 rfl）。
+    对照：Coq 要 funext_dep + 逐字段 destruct，Agda 需公理（03/06 章）。 -/
+def PnoCat : Category where
+  Obj := PnoAlg
+  Hom := fun A B => PnoArr A B
+  idn := PnoArr.idn
+  comp := fun f g => PnoArr.comp f g
+  idL := fun _ => rfl
+  idR := fun _ => rfl
+  assoc := fun _ _ _ => rfl
+
+/-- 万有起点（1.2.1(c)）：natPno 出发的箭头逐点唯一 -/
+def NatPno : PnoAlg where
+  carr := Nat
+  start := (0 : Nat)
+  step := Nat.succ
+
+def piter (B : PnoAlg) : Nat → B.carr
+  | 0 => B.start
+  | m + 1 => B.step (piter B m)
+
+theorem pno_arr_unique {B : PnoAlg} (f : PnoArr NatPno B) (r : Nat) :
+    f.pfun r = piter B r := by
+  match r with
+  | 0 => exact f.pkeep1
+  | m + 1 =>
+      show f.pfun (m + 1) = B.step (piter B m)
+      rw [show f.pfun (m + 1) = B.step (f.pfun m) from f.pkeep2 m,
+          pno_arr_unique f m]
+
+/-- 具体演示：唯一箭头 r ↦ not^r(true) -/
+def BoolPno : PnoAlg where
+  carr := Bool
+  start := true
+  step := not
+
+def TheArr : PnoArr NatPno BoolPno where
+  pfun := piter BoolPno
+  pkeep1 := rfl
+  pkeep2 := fun _ => rfl
+
+example : TheArr.pfun (3 : Nat) = false := rfl
+
+end PnoArr

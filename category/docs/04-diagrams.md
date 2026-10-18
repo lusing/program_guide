@@ -111,7 +111,63 @@ Simmons 2.1 的 diagram chasing 就是这种重写的图形化记法：
 追着方块转圈 = 沿 assoc/idL/idR 归约方程串。后续章节的通用模式：
 **具体范畴里交换图用计算（rfl/lia/omega），抽象范畴里用定律重写**。
 
-## 4.4 本章在三书中的位置
+## 4.4 旗舰操练：五角星绕两圈（Simmons 2.1.3）
+
+Simmons 2.1 给的看家练习值得整个机器化。五个顶点 0..4 排在
+圆周上，**周长边** `p_i : i → i+1`（mod 5）、**星形弦**
+`s_i : i → i+2`（mod 5）。假设五个三角形都交换：
+
+```text
+T0 : p0;p1 = s0    T1 : p1;p2 = s1    T2 : p2;p3 = s2
+T3 : p3;p4 = s3    T4 : p4;p0 = s4
+```
+
+**定理**：沿周长绕两圈 = 沿星形绕一圈。书的坍缩序列（角标从
+1 数起）读作：
+
+```text
+12345123451 → 1345123451 → 135123451 → 13523451 → 1352451 → 135241
+   (123→13)     (345→35)     (512→52)   (234→24)   (451→41)
+```
+
+每步塌掉一个角——「绕周边两圈」的 10 步路径缩成「沿星一圈」
+的 5 步路径。机器版完全按这个剧本演出（Coq）：
+
+```coq
+Theorem pentagram : perim2 = star1.
+Proof.
+  unfold perim2, star1.
+  repeat rewrite <- ?assoc.            (* 先规范到左嵌套 *)
+  rewrite T0.                          (* 123 -> 13  *)
+  rewrite (assoc C s0 p2 p3), T2.      (* 345 -> 35  *)
+  rewrite (assoc C (comp C s0 s2) p4 p0), T4.   (* 512 -> 52  *)
+  rewrite (assoc C (comp C (comp C s0 s2) s4) p1 p2), T1.  (* 234 -> 24  *)
+  rewrite (assoc C (comp C (comp C (comp C s0 s2) s4) s1) p3 p4), T3.
+  reflexivity.
+Qed.
+```
+
+五个 `rewrite` 与五个坍缩一一对应；每步先用一条**显式实例**的
+assoc 把已坍缩的前缀「剥」到最左，再换掉暴露出的三角。为什么
+要显式？Coq 的 `rewrite` 遍历选**最右侧匹配**——半显式写法
+`(assoc C _ p2 p3)` 会命中链尾的同形子项，把坍缩做错位置。
+Agda 版把「对齐 + 坍缩」打包成小步引理，长成一棵 cong/trans 树：
+
+```agda
+step : ∀ {o ℓ} (C : Category o ℓ) {a b c d : Obj C}
+     (f : Hom C a b) (g : Hom C b c) (s : Hom C a c) (r : Hom C c d)
+     → comp C f g ≡ s → comp C f (comp C g r) ≡ comp C s r
+step C f g s r h = trans (sym (assoc C f g r)) (cong (λ w → comp C w r) h)
+```
+
+Lean 版则是 `simp only [← C.assoc]` 一步规范化 + 五条 rw，
+与 Coq 版逐行对映。三份代码同一个定理、零公理——
+**图上的推理 = 三条定律上的重写**，这句话至此有了完整机器版。
+
+同节的另外两道操练（2.1.1/2.1.2 的多边形拼接）读者可用同样的
+「规范化 + 坍缩」配方自验——它们是五角星的减少步数版。
+
+## 4.5 本章在三书中的位置
 
 - 《高级范畴论》1.2 讲图同态与「图自然变换」——预层理论的伏笔
   （27 章 presheaf = 图/层的推广）；
@@ -133,6 +189,13 @@ Simmons 2.1 的 diagram chasing 就是这种重写的图形化记法：
 5. Lean `simp only [Path.cat]` 展开方程式定义后再 rw 递归假设
    （iota 折叠下的子项 rw 看不见——typetheory 13 章老坑复现）；
    结构投影 `TyCat.comp` 不是 simp 定理，用 `change`/类型注解绕行。
+6. Coq `rewrite` 的匹配遍历选最右侧/最内层：坍缩链条的每一步
+   assoc 都要**完全显式实例**（把已坍缩前缀逐字写出），否则
+   同形子项会被错换位置。
+7. Agda 的长推理链嵌在元组/应用参数里解析不了——拆 where 局部
+   名（step/step4/step2 三级）；顶层声明缩进必须归零。
+8. 括号预算：右嵌套 9 层 comp 的定义，闭括号数 = 开括号数——
+   数错一个，报错位置远在天边。
 
 ---
 

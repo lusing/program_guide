@@ -93,3 +93,41 @@ example : (opposite FinCat).Hom (3 : Nat) (2 : Nat) := embed23
    `(3 : Nat)` 显式标注。
 5. leTrans 递归在第二参数 ⇒ idR 是 rfl、idL 要归纳——
    与 typetheory 07 章「加法方向学」同源。 -/
+
+/-! 【范畴 2】两个对象、一条非平凡箭头（Simmons 1.5.1）——
+索引归纳类型 + 方程式复合：Lean 的 match 自动处理依赖约束。 -/
+inductive TwoHom : Bool → Bool → Type
+  | id0 : TwoHom false false
+  | arr : TwoHom false true
+  | id1 : TwoHom true true
+
+namespace TwoHom
+def comp : ∀ {a b c : Bool}, TwoHom a b → TwoHom b c → TwoHom a c
+  | _, _, _, .id0, .id0 => .id0
+  | _, _, _, .id0, .arr => .arr
+  | _, _, _, .arr, .id1 => .arr
+  | _, _, _, .id1, .id1 => .id1
+
+def CatTwo : Category.{0, 0} where
+  Obj := Bool
+  Hom := fun a b => TwoHom a b
+  idn := fun a => match a with | false => .id0 | true => .id1
+  comp := fun f g => TwoHom.comp f g
+  idL := by
+    intro a b f
+    cases f <;> rfl
+  idR := by
+    intro a b f
+    cases f <;> rfl
+  assoc := by
+    intro a b c d f g h
+    cases f <;> cases g <;> cases h <;> rfl
+end TwoHom
+
+/-! 【主截面】（Simmons 1.5.2）：↓ 单调、↑ 反单调——
+各是 leTrans 的一次应用；24 章 ∃/∀ 超幂集函子的积木。 -/
+def down_mono {a b : Nat} (hab : Le a b) : ∀ x, Le x a → Le x b :=
+  fun _ hxa => hxa.trans hab
+
+def up_anti {a b : Nat} (hab : Le a b) : ∀ x, Le b x → Le a x :=
+  fun _ hbx => hab.trans hbx

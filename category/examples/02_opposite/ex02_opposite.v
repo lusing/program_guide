@@ -127,4 +127,70 @@ Check (fun x : fin 2 => Some x) : Hom (opposite catFin) 3 2.
    3. le_trans 递归在第二参数 ⇒ idR 定义成立、idL 要归纳
       ——与 typetheory 07 章「加法方向学」同构的现象。
    4. record 之间没有「相等」：op (op C) 只在字段层面还原 C，
-      机器里能对齐的是每条投影，不是 record 本身。 *)
+      机器里能对齐的是每条投影，不是 record 本身。
+   5. 瘦范畴（每对对象至多一条箭头）最省事的做法是 Hom :=
+      if 合法性 then unit else Empty——但复合的「非法分支」
+      在类型层看不见端点细化，术语版 match 写不出来，
+      destruct a,b,c 一遍全暴露（twoComp 的 tactic 定义）。
+   6. 带索引归纳族的依赖 destruct 顺序敏感：g 的索引 c 若还
+      活在别的假设的类型里，destruct g 的 motive 就病——
+      先 destruct 让 c 定下来的那条（h），再 destruct g。 *)
+
+(* ---------- 范畴 2：两个对象、一条非平凡箭头（Simmons 1.5.1） ----------
+   Obj := bool（false 当 0、true 当 1）。瘦范畴方案：
+   twoLegal a b = negb a || b 决定 Hom 是 unit 还是 Empty。
+   「行走箭头」0 -> 1 —— 交换图里每个无名箭头的化身，
+   09 章切片 / 26 章 Sierpinski 都以它为骨架。 *)
+
+Definition twoLegal : bool -> bool -> bool := fun a b => orb (negb a) b.
+
+Definition twoHom : bool -> bool -> Set :=
+  fun a b => if twoLegal a b then unit else Empty_set.
+
+Definition twoIdn (a : bool) : twoHom a a :=
+  match a as x return twoHom x x with false => tt | true => tt end.
+
+(* 复合由端点决定（瘦范畴：每对对象至多一条箭头）：
+   a->c 合法时给 tt；非法只可能 a=true,c=false，
+   此时中间必为 true，g（或 f）的 Hom 本身就是 Empty，交出去。 *)
+Definition twoComp {a b c} (f : twoHom a b) (g : twoHom b c) : twoHom a c.
+Proof.
+  (* 合法组合直接给 tt；非法组合 a=T,c=F 时，b=T 则 g 的 Hom
+     本身是 Empty、b=F 则 f 是 Empty——destruct 自然消灭。 *)
+  destruct a, b, c; simpl; try exact tt;
+  destruct f; destruct g; simpl; exact tt.
+Defined.
+
+Lemma two_idL : forall a b (f : twoHom a b), twoComp (twoIdn a) f = f.
+Proof. intros a b f; destruct a, b, f; reflexivity. Qed.
+
+Lemma two_idR : forall a b (f : twoHom a b), twoComp f (twoIdn b) = f.
+Proof. intros a b f; destruct a, b, f; reflexivity. Qed.
+
+Lemma two_assoc : forall a b c d (f : twoHom a b) (g : twoHom b c) (h : twoHom c d),
+  twoComp (twoComp f g) h = twoComp f (twoComp g h).
+Proof. intros; destruct a, b, c, d, f, g, h; reflexivity. Qed.
+
+Definition catTwo : Category := {|
+  Obj := bool;
+  Hom := fun a b => twoHom a b;
+  idn := twoIdn;
+  comp := fun a b c f g => twoComp f g;
+  idL := two_idL;
+  idR := two_idR;
+  assoc := two_assoc
+|}.
+
+(* ---------- 主截面（Simmons 1.5.2）：切片范畴的预序版本 ----------
+   (s↓S) = ↓s 主下截面 {x | x ≤ s}；(S↓s) = ↑s 主上截面。
+   ↓ 随基点单调、↑ 随基点反单调——两条引理各是 le_trans 的一次应用；
+   这两片将是 24 章 ∃/∀ 超幂集函子的第一块积木。 *)
+
+Lemma down_mono : forall a b (hab : Le a b) x (hxa : Le x a), Le x b.
+Proof. intros. exact (le_trans hxa hab). Qed.
+
+Lemma up_anti : forall a b (hab : Le a b) x (hbx : Le b x), Le a x.
+Proof. intros. exact (le_trans hab hbx). Qed.
+
+(* 凸截面 (s↓S↓t) = {x | s ≤ x ∧ x ≤ t}：两条 Le 的积 *)
+Definition convex (s t x : nat) : Set := prod (Le s x) (Le x t).

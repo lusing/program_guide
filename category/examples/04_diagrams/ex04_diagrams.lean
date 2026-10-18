@@ -107,3 +107,25 @@ theorem square_commutes :
    方向一致，`example ... = 1` 才能 rfl。
 4. 交换图两层：退化 rfl 白送；一般 `funext n; omega`——
    「交换 = 逐点方程」的机器形态（omega 吃任意线性算术）。 -/
+
+/-! 【图上操练】五角星绕两圈（Simmons 2.1.3）——
+周长两圈 = 星形一圈：五个三角方程逐步坍缩
+（书的坍缩序列 12345123451 → … → 135241）。
+`simp only [← C.assoc]` 先把两侧规范到左嵌套，五步坍缩与
+Coq 版逐行对映。 -/
+theorem pentagram {C : Category.{u, v}} {v0 v1 v2 v3 v4 : C.Obj}
+    (p0 : C.Hom v0 v1) (p1 : C.Hom v1 v2) (p2 : C.Hom v2 v3)
+    (p3 : C.Hom v3 v4) (p4 : C.Hom v4 v0)
+    (s0 : C.Hom v0 v2) (s1 : C.Hom v1 v3) (s2 : C.Hom v2 v4)
+    (s3 : C.Hom v3 v0) (s4 : C.Hom v4 v1)
+    (T0 : C.comp p0 p1 = s0) (T1 : C.comp p1 p2 = s1)
+    (T2 : C.comp p2 p3 = s2) (T3 : C.comp p3 p4 = s3)
+    (T4 : C.comp p4 p0 = s4) :
+    C.comp p0 (C.comp p1 (C.comp p2 (C.comp p3 (C.comp p4
+      (C.comp p0 (C.comp p1 (C.comp p2 (C.comp p3 p4))))))))
+      = C.comp s0 (C.comp s2 (C.comp s4 (C.comp s1 s3))) := by
+  simp only [← C.assoc]
+  rw [T0, C.assoc s0 p2 p3, T2,
+      C.assoc (C.comp s0 s2) p4 p0, T4,
+      C.assoc (C.comp (C.comp s0 s2) s4) p1 p2, T1,
+      C.assoc (C.comp (C.comp (C.comp s0 s2) s4) s1) p3 p4, T3]

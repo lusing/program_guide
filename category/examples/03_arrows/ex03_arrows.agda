@@ -7,6 +7,8 @@ open import Level using (Level; _⊔_; 0ℓ) renaming (suc to lsuc)
 open import Data.Unit using (⊤; tt)
 open import Data.Nat using (ℕ)
 open import Data.Fin using (Fin; zero; suc)
+open import Data.Bool using (Bool; true; false)
+open import Data.Empty using (⊥)
 open import Data.Product using (Σ; _×_; _,_)
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl; cong; sym; trans)
 open Eq.≡-Reasoning
@@ -184,6 +186,133 @@ one-terminal a = tt , λ g → ⊤-uniq g
 
 one-initial : Initial OneCat tt
 one-initial a = tt , λ g → ⊤-uniq g
+
+
+------------------------------------------------------------------------
+-- 分裂满态射 + 消去律封闭（Simmons 2.2.1 / 2.2.4 / 2.2.10）
+
+SplitEpi : ∀ {o ℓ} (C : Category o ℓ) (a b : Obj C) → Hom C a b → Set ℓ
+SplitEpi C a b f = Σ (Hom C b a) λ s → comp C s f ≡ idn C {b}
+
+-- 2.2.1(a)：section 若还是 epi，自动补出另一侧逆——成 iso
+section-epi-iso : ∀ {o ℓ} (C : Category o ℓ) (a b : Obj C) (s : Hom C b a)
+  → Epi C b a s → (r : Hom C a b) → comp C s r ≡ idn C {b} → IsIso C b a s
+section-epi-iso C a b s Hepi r Hsr = r , Hsr , other
+  where
+  other : comp C r s ≡ idn C {a}
+  other = Hepi a (comp C r s) (idn C) step
+    where
+    step : comp C s (comp C r s) ≡ comp C s (idn C)
+    step = begin
+      comp C s (comp C r s)   ≡⟨ sym (assoc C s r s) ⟩
+      comp C (comp C s r) s   ≡⟨ cong (λ w → comp C w s) Hsr ⟩
+      comp C (idn C) s        ≡⟨ idL C s ⟩
+      s                       ≡⟨ sym (idR C s) ⟩
+      comp C s (idn C)        ∎
+
+-- 2.2.4 封闭律（mono 两条；epi 两条对偶）
+mono-comp : ∀ {o ℓ} (C : Category o ℓ) (a b c : Obj C)
+  (f : Hom C a b) (g : Hom C b c)
+  → Mono C a b f → Mono C b c g → Mono C a c (comp C f g)
+mono-comp C a b c f g Hf Hg d h1 h2 H
+  = Hf d h1 h2 (Hg d (comp C h1 f) (comp C h2 f)
+      (begin
+        comp C (comp C h1 f) g  ≡⟨ assoc C h1 f g ⟩
+        comp C h1 (comp C f g)  ≡⟨ H ⟩
+        comp C h2 (comp C f g)  ≡⟨ sym (assoc C h2 f g) ⟩
+        comp C (comp C h2 f) g  ∎))
+
+mono-of-comp : ∀ {o ℓ} (C : Category o ℓ) (a b c : Obj C)
+  (f : Hom C a b) (g : Hom C b c)
+  → Mono C a c (comp C f g) → Mono C a b f
+mono-of-comp C a b c f g H d h1 h2 Hf1
+  = H d h1 h2
+      (begin
+        comp C h1 (comp C f g)  ≡⟨ sym (assoc C h1 f g) ⟩
+        comp C (comp C h1 f) g  ≡⟨ cong (λ w → comp C w g) Hf1 ⟩
+        comp C (comp C h2 f) g  ≡⟨ assoc C h2 f g ⟩
+        comp C h2 (comp C f g)  ∎)
+
+epi-comp : ∀ {o ℓ} (C : Category o ℓ) (a b c : Obj C)
+  (f : Hom C a b) (g : Hom C b c)
+  → Epi C a b f → Epi C b c g → Epi C a c (comp C f g)
+epi-comp C a b c f g Hf Hg d h1 h2 H
+  = Hg d h1 h2 (Hf d (comp C g h1) (comp C g h2)
+      (begin
+        comp C f (comp C g h1)  ≡⟨ sym (assoc C f g h1) ⟩
+        comp C (comp C f g) h1  ≡⟨ H ⟩
+        comp C (comp C f g) h2  ≡⟨ assoc C f g h2 ⟩
+        comp C f (comp C g h2)  ∎))
+
+epi-of-comp : ∀ {o ℓ} (C : Category o ℓ) (a b c : Obj C)
+  (f : Hom C a b) (g : Hom C b c)
+  → Epi C a c (comp C f g) → Epi C b c g
+epi-of-comp C a b c f g H d h1 h2 Hg1
+  = H d h1 h2
+      (begin
+        comp C (comp C f g) h1  ≡⟨ assoc C f g h1 ⟩
+        comp C f (comp C g h1)  ≡⟨ cong (λ w → comp C f w) Hg1 ⟩
+        comp C f (comp C g h2)  ≡⟨ sym (assoc C f g h2) ⟩
+        comp C (comp C f g) h2  ∎)
+
+-- 2.2.10 抽象内核：e 单 + m 满（mono/epi）⇒ m;u;e = m;v;e ⟹ u = v
+mono-epi-cancel : ∀ {o ℓ} (C : Category o ℓ) (A B X Y : Obj C)
+  (e : Hom C A B) (u v : Hom C B X) (m : Hom C X Y)
+  → Epi C A B e → Mono C X Y m
+  → comp C (comp C e u) m ≡ comp C (comp C e v) m → u ≡ v
+mono-epi-cancel C A B X Y e u v m He Hm H
+  = Hm B u v (He Y (comp C u m) (comp C v m)
+      (begin
+        comp C e (comp C u m)  ≡⟨ sym (assoc C e u m) ⟩
+        comp C (comp C e u) m  ≡⟨ H ⟩
+        comp C (comp C e v) m  ≡⟨ assoc C e v m ⟩
+        comp C e (comp C v m)  ∎))
+
+------------------------------------------------------------------------
+-- 平衡反例（Simmons 2.2.2）：瘦范畴全箭头 mono+epi，行走箭头非 iso
+
+data TwoHom : Bool → Bool → Set where
+  two-id0 : TwoHom false false
+  two-arr : TwoHom false true
+  two-id1 : TwoHom true true
+
+twoComp : ∀ {a b c} → TwoHom a b → TwoHom b c → TwoHom a c
+twoComp two-id0 two-id0 = two-id0
+twoComp two-id0 two-arr = two-arr
+twoComp two-arr two-id1 = two-arr
+twoComp two-id1 two-id1 = two-id1
+
+CatTwo : Category 0ℓ 0ℓ
+CatTwo = record
+  { Obj = Bool
+  ; Hom = TwoHom
+  ; idn = λ { {false} → two-id0 ; {true} → two-id1 }
+  ; comp = twoComp
+  ; idL = λ { two-id0 → refl ; two-arr → refl ; two-id1 → refl }
+  ; idR = λ { two-id0 → refl ; two-arr → refl ; two-id1 → refl }
+  ; assoc = λ { two-id0 two-id0 two-id0 → refl
+              ; two-id0 two-id0 two-arr → refl
+              ; two-id0 two-arr two-id1 → refl
+              ; two-arr two-id1 two-id1 → refl
+              ; two-id1 two-id1 two-id1 → refl }
+  }
+
+thin-mono : ∀ {a b} (f : TwoHom a b) → Mono CatTwo a b f
+thin-mono f c g h _ with g | h
+... | two-id0 | two-id0 = refl
+... | two-arr | two-arr = refl
+... | two-id1 | two-id1 = refl
+
+thin-epi : ∀ {a b} (f : TwoHom a b) → Epi CatTwo a b f
+thin-epi f c g h _ with g | h
+... | two-id0 | two-id0 = refl
+... | two-arr | two-arr = refl
+... | two-id1 | two-id1 = refl
+
+-- 行走箭头无反向箭头 ⟹ 非 iso ⟹ CatTwo 不平衡
+arr-not-iso : IsIso CatTwo false true two-arr → ⊥
+arr-not-iso (g , _) with g
+... | ()
 
 ------------------------------------------------------------------------
 -- 坑位速记：

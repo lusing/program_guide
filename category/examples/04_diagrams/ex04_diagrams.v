@@ -141,3 +141,48 @@ Qed.
    3. 交换图验证的两层：退化情形 reflexivity；一般情形
       funext + 算术（lia/omega）——「交换 = 逐点方程」的机器形态。
    4. GraphHom 的两条保端点方程就是最小的「图同态交换图」。 *)
+
+(* ---------- 图上操练：五角星绕两圈（Simmons 2.1.3） ----------
+   五个顶点 0..4 排在圆周上。周长边 p_i : i -> i+1（mod 5），
+   星形弦 s_i : i -> i+2（mod 5）。五个三角方程：每个 (i,i+1,i+2)
+   三角形交换，即 p_i;p_{i+1} = s_i。
+   定理：沿周长绕两圈 = 沿星形绕一圈。
+   书中坍缩序列（角标从 1 数）：12345123451 -> 1345123451 ->
+   135123451 -> 13523451 -> 1352451 -> 135241，每步塌一个三角。 *)
+
+Section Pentagon.
+Variable C : Category.
+Variables (v0 v1 v2 v3 v4 : Obj C).
+Variables
+  (p0 : Hom C v0 v1) (p1 : Hom C v1 v2) (p2 : Hom C v2 v3)
+  (p3 : Hom C v3 v4) (p4 : Hom C v4 v0)
+  (s0 : Hom C v0 v2) (s1 : Hom C v1 v3) (s2 : Hom C v2 v4)
+  (s3 : Hom C v3 v0) (s4 : Hom C v4 v1).
+Hypothesis T0 : comp C p0 p1 = s0.   (* 三角 (0,1,2) *)
+Hypothesis T1 : comp C p1 p2 = s1.   (* 三角 (1,2,3) *)
+Hypothesis T2 : comp C p2 p3 = s2.   (* 三角 (2,3,4) *)
+Hypothesis T3 : comp C p3 p4 = s3.   (* 三角 (3,4,0) *)
+Hypothesis T4 : comp C p4 p0 = s4.   (* 三角 (4,0,1) *)
+
+(* 沿周长两圈：右嵌套写法 *)
+Definition perim2 : Hom C v0 v0 :=
+  comp C p0 (comp C p1 (comp C p2 (comp C p3 (comp C p4
+    (comp C p0 (comp C p1 (comp C p2 (comp C p3 p4)))))))).
+
+(* 沿星形一圈：0 -> 2 -> 4 -> 1 -> 3 -> 0 *)
+Definition star1 : Hom C v0 v0 :=
+  comp C s0 (comp C s2 (comp C s4 (comp C s1 s3))).
+
+Theorem pentagram : perim2 = star1.
+Proof.
+  unfold perim2, star1.
+  repeat rewrite <- ?assoc.            (* 先规范到左嵌套 *)
+  rewrite T0.                          (* 123 -> 13  *)
+  rewrite (assoc C s0 p2 p3), T2.      (* 345 -> 35  *)
+  rewrite (assoc C (comp C s0 s2) p4 p0), T4.   (* 512 -> 52  *)
+  rewrite (assoc C (comp C (comp C s0 s2) s4) p1 p2), T1.  (* 234 -> 24  *)
+  rewrite (assoc C (comp C (comp C (comp C s0 s2) s4) s1) p3 p4), T3.  (* 451 -> 41  *)
+  reflexivity.
+Qed.
+
+End Pentagon.

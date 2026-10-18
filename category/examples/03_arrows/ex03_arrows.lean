@@ -150,3 +150,85 @@ def one_initial : Initial OneCat () := fun _ => ⟨(), fun _ => Unit.ext ..⟩
 5. `Terminal FinCat 1` 里数字推不出 OfNat——`(1 : Nat)` 标注。
 6. isoEpi 的重写串与 splitMonoMono 镜像：idL↔idR、assoc 方向翻
    ——对偶原理在证明层面的样子。 -/
+/-! 【分裂满态射 + 消去封闭】（Simmons 2.2.1 / 2.2.4 / 2.2.10） -/
+structure SplitEpi (C : Category.{u, v}) (a b : C.Obj) (f : C.Hom a b) where
+  sect : C.Hom b a
+  law : C.comp sect f = C.idn b
+
+/-- 2.2.1(a)：section 若还是 epi，自动补出另一侧逆——成 iso -/
+def section_epi_iso {C : Category.{u, v}} {a b : C.Obj} (s : C.Hom b a)
+    (Hepi : Epi C b a s) (r : C.Hom a b) (Hsr : C.comp s r = C.idn b) :
+    IsIso C b a s where
+  inv := r
+  inv_r := Hsr
+  inv_l := Hepi a (C.comp r s) (C.idn a)
+    (by rw [← C.assoc, Hsr, C.idL, C.idR])
+
+/-- 2.2.4 封闭律四条（分裂版两条读者对偶可得） -/
+theorem mono_comp {C : Category.{u, v}} {a b c : C.Obj}
+    (f : C.Hom a b) (g : C.Hom b c) (Hf : Mono C a b f) (Hg : Mono C b c g) :
+    Mono C a c (C.comp f g) := by
+  intro d h1 h2 H
+  refine Hf d h1 h2 ?_
+  exact Hg d _ _ (by rw [C.assoc, C.assoc]; exact H)
+
+theorem mono_of_comp {C : Category.{u, v}} {a b c : C.Obj}
+    (f : C.Hom a b) (g : C.Hom b c) (H : Mono C a c (C.comp f g)) :
+    Mono C a b f := by
+  intro d h1 h2 Hf1
+  exact H d h1 h2 (by rw [← C.assoc, ← C.assoc]; exact congrArg (fun w => C.comp w g) Hf1)
+
+theorem epi_comp {C : Category.{u, v}} {a b c : C.Obj}
+    (f : C.Hom a b) (g : C.Hom b c) (Hf : Epi C a b f) (Hg : Epi C b c g) :
+    Epi C a c (C.comp f g) := by
+  intro d h1 h2 H
+  refine Hg d h1 h2 ?_
+  exact Hf d _ _ (by rw [← C.assoc, ← C.assoc]; exact H)
+
+theorem epi_of_comp {C : Category.{u, v}} {a b c : C.Obj}
+    (f : C.Hom a b) (g : C.Hom b c) (H : Epi C a c (C.comp f g)) :
+    Epi C b c g := by
+  intro d h1 h2 Hg1
+  exact H d h1 h2 (by rw [C.assoc, C.assoc]; exact congrArg (fun w => C.comp f w) Hg1)
+
+/-- 2.2.10 抽象内核：e 单 + m 满 ⟹ m;u;e = m;v;e 推出 u = v -/
+theorem mono_epi_cancel {C : Category.{u, v}} {A B X Y : C.Obj}
+    (e : C.Hom A B) (u v : C.Hom B X) (m : C.Hom X Y)
+    (He : Epi C A B e) (Hm : Mono C X Y m)
+    (H : C.comp (C.comp e u) m = C.comp (C.comp e v) m) : u = v :=
+  Hm B u v (He Y _ _ (by rw [← C.assoc, ← C.assoc]; exact H))
+
+/-! 【平衡反例】（Simmons 2.2.2）：瘦范畴全箭头 mono+epi，行走箭头非 iso -/
+inductive TwoHom : Bool → Bool → Type
+  | id0 : TwoHom false false
+  | arr : TwoHom false true
+  | id1 : TwoHom true true
+
+namespace TwoHom
+def comp : ∀ {a b c : Bool}, TwoHom a b → TwoHom b c → TwoHom a c
+  | _, _, _, .id0, .id0 => .id0
+  | _, _, _, .id0, .arr => .arr
+  | _, _, _, .arr, .id1 => .arr
+  | _, _, _, .id1, .id1 => .id1
+
+def CatTwo : Category.{0, 0} where
+  Obj := Bool
+  Hom := fun a b => TwoHom a b
+  idn := fun a => match a with | false => .id0 | true => .id1
+  comp := fun f g => TwoHom.comp f g
+  idL := by intro a b f; cases f <;> rfl
+  idR := by intro a b f; cases f <;> rfl
+  assoc := by intro a b c d f g h; cases f <;> cases g <;> cases h <;> rfl
+
+theorem thin_mono : ∀ {a b : Bool} (f : TwoHom a b), Mono CatTwo a b f := by
+  intro a b f c g h _
+  cases g <;> cases h <;> rfl
+
+theorem thin_epi : ∀ {a b : Bool} (f : TwoHom a b), Epi CatTwo a b f := by
+  intro a b f c g h _
+  cases g <;> cases h <;> rfl
+
+/-- 行走箭头没有反向箭头 ⟹ 不是 iso ⟹ CatTwo 不平衡 -/
+def arrNotIso : IsIso CatTwo false true .arr → False
+  | inv => nomatch inv
+end TwoHom

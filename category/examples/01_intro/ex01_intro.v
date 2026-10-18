@@ -117,4 +117,75 @@ Example composed_ok : composed 3 = true := eq_refl.   (* even 3 = false，再取
       要用 @comp catNat tt tt tt 显式给全。
    4. Coq 定义相等含 β 与 η（函数），故函数族的 idL/idR/assoc 全是
       eq_refl——「函数范畴的定律免费」的机器版本。
-   5. 幺半群范畴的 idR（f + 0 = f）不是 rfl：加法递归在第一参数。 *)
+   5. 幺半群范畴的 idR（f + 0 = f）不是 rfl：加法递归在第一参数。
+   6. 带参数 Record 的构造子/投影默认不隐化参数——Pno 段用
+      Set Implicit Arguments（mkPno 的 pcarr 字段随之隐化，
+      造 natPno 时首字段写 (0 : nat) 让推断自定 pcarr）。
+   7. pno_idL 的 f_equal 只产出两个目标（函数字段被 eta 自动关掉），
+      bullet 数对不上会「错位一层」报出下一字段的 unify 错。
+   8. 依赖函数字段（forall x, ... = ...）的外延要 funext_dep，
+      普通版 funext 的 A -> B 模式统一不了依赖 pi。 *)
+
+
+(* ---------- 例 5：Pno —— Peano 式代数的范畴（Simmons 1.2.1 / 1.2.2） ----------
+   结构集范畴的通用配方：携带集 + 结构 + 保结构映射。
+   Pno 对象 = (A, a, alpha)：集合、基点、自映射；
+   箭头 f : (A,a,alpha) -> (B,b,beta) 是函数 f:A->B 且
+     f(a) = b；  f(alpha x) = beta (f x)。
+   这正是 Mon/Top/Pre/Pos/Set-R 等结构集范畴的最小缩影。 *)
+
+Set Implicit Arguments.
+
+Record PnoAlg : Type := mkPno {
+  pcarr : Set;
+  pstart : pcarr;
+  pstep : pcarr -> pcarr
+}.
+
+Record PnoArr (A B : PnoAlg) : Type := mkPnoArr {
+  pfun : pcarr A -> pcarr B;
+  pkeep1 : pfun (pstart A) = pstart B;
+  pkeep2 : forall x, pfun (pstep A x) = pstep B (pfun x)
+}.
+
+Definition pid (A : PnoAlg) : PnoArr A A :=
+  @mkPnoArr A A (fun x => x) eq_refl (fun _ => eq_refl).
+
+Definition pcomp {A B C} (f : PnoArr A B) (g : PnoArr B C) : PnoArr A C :=
+  @mkPnoArr A C (fun x => pfun g (pfun f x))
+           (eq_trans (f_equal (pfun g) (pkeep1 f)) (pkeep1 g))
+           (fun x => eq_trans (f_equal (pfun g) (pkeep2 f x)) (pkeep2 g (pfun f x))).
+
+Axiom funext_dep : forall (A : Type) (B : A -> Type) (f g : forall x, B x),
+  (forall x, f x = g x) -> f = g.
+
+Lemma pno_idL (A B : PnoAlg) (f : PnoArr A B) : pcomp (pid A) f = f.
+Proof.
+  destruct f as [fu fk1 fk2]; unfold pcomp, pid; simpl; f_equal.
+  - destruct fk1; reflexivity.
+  - apply funext_dep; intro x; destruct (fk2 x); reflexivity.
+Qed.
+
+Definition natPno : PnoAlg := mkPno (0 : nat) S.
+
+Fixpoint piter (B : PnoAlg) (r : nat) : pcarr B :=
+  match r with
+  | O => pstart B
+  | S m => pstep B (piter B m)
+  end.
+
+Lemma pno_arr_unique (B : PnoAlg) (f : PnoArr natPno B) :
+  forall r, pfun f r = piter B r.
+Proof.
+  induction r as [|m IH]; simpl.
+  - apply (pkeep1 f).
+  - simpl. rewrite <- IH. apply (pkeep2 f m).
+Qed.
+
+Definition boolPno : PnoAlg := mkPno (true : bool) negb.
+
+Definition theArr : PnoArr natPno boolPno :=
+  @mkPnoArr natPno boolPno (fun r => piter boolPno r) eq_refl (fun r => eq_refl).
+
+Example pno_demo : pfun theArr 3 = false := eq_refl.
+Print Assumptions pno_arr_unique.

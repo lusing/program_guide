@@ -5,6 +5,7 @@
 
 open import Level using (Level; _⊔_; 0ℓ) renaming (suc to lsuc)
 open import Data.Nat using (ℕ; suc)
+open import Data.Bool using (Bool; true; false)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong)
 
 ------------------------------------------------------------------------
@@ -112,6 +113,46 @@ check-opp = λ x → Fin.suc x    -- 嵌入：Fin n → Fin (suc n)
 
 opp-check : Hom (opposite FinCat) 3 2
 opp-check = check-opp
+
+
+------------------------------------------------------------------------
+-- 范畴 2：两个对象、一条非平凡箭头（Simmons 1.5.1）
+-- Agda 的索引族模式匹配原生处理依赖约束：复合四行写满。
+
+data TwoHom : Bool → Bool → Set where
+  two-id0 : TwoHom false false
+  two-arr : TwoHom false true
+  two-id1 : TwoHom true true
+
+twoComp : ∀ {a b c} → TwoHom a b → TwoHom b c → TwoHom a c
+twoComp two-id0 two-id0 = two-id0
+twoComp two-id0 two-arr = two-arr
+twoComp two-arr two-id1 = two-arr
+twoComp two-id1 two-id1 = two-id1
+
+CatTwo : Category 0ℓ 0ℓ
+CatTwo = record
+  { Obj = Bool
+  ; Hom = TwoHom
+  ; idn = λ { {false} → two-id0 ; {true} → two-id1 }
+  ; comp = twoComp
+  ; idL = λ { two-id0 → refl ; two-arr → refl ; two-id1 → refl }
+  ; idR = λ { two-id0 → refl ; two-arr → refl ; two-id1 → refl }
+  ; assoc = λ { two-id0 two-id0 two-id0 → refl
+              ; two-id0 two-id0 two-arr → refl
+              ; two-id0 two-arr two-id1 → refl
+              ; two-arr two-id1 two-id1 → refl
+              ; two-id1 two-id1 two-id1 → refl }
+  }
+
+------------------------------------------------------------------------
+-- 主截面（Simmons 1.5.2）：↓ 单调、↑ 反单调——24 章 ∃/∀ 的积木
+
+down-mono : ∀ {a b} → Le a b → ∀ x → Le x a → Le x b
+down-mono hab _ hxa = le-trans hxa hab
+
+up-anti : ∀ {a b} → Le a b → ∀ x → Le b x → Le a x
+up-anti hab _ hbx = le-trans hab hbx
 
 ------------------------------------------------------------------------
 -- 坑位速记：

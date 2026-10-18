@@ -3,18 +3,19 @@
 -- 三书对位：贺伟《范畴论》1.1 /《高级范畴论》1.3 / Simmons 1.1
 ------------------------------------------------------------------------
 
-open import Level using (Level; suc; _⊔_; 0ℓ)
+open import Level using (Level; _⊔_; 0ℓ) renaming (suc to lsuc)
 open import Data.Unit using (⊤; tt)
 open import Data.Nat using (ℕ; zero; _+_)
 open import Data.Nat.Properties using (+-identityˡ; +-identityʳ; +-assoc)
 open import Data.Fin using (Fin)
 open import Data.Bool using (Bool; not; true; false)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; trans; cong)
+open import Data.Nat using (suc)
 
 ------------------------------------------------------------------------
 -- 定义（宇宙多态：Obj 在 o 层，Hom 在 ℓ 层）
 
-record Category (o ℓ : Level) : Set (suc (o ⊔ ℓ)) where
+record Category (o ℓ : Level) : Set (lsuc (o ⊔ ℓ)) where
   field
     Obj : Set o
     Hom : Obj → Obj → Set ℓ
@@ -87,7 +88,7 @@ FinCat = record
 -- 对象 = Set₀，态射 = 函数。宇宙多态在此发挥作用：
 -- Obj 落在 1 层，Hom 落在 0 层。
 
-TyCat : Category (suc 0ℓ) 0ℓ
+TyCat : Category (lsuc 0ℓ) 0ℓ
 TyCat = record
   { Obj = Set 0ℓ
   ; Hom = λ A B → A → B
@@ -107,6 +108,69 @@ module TyDemo where
   nn-pointwise : ∀ b → nn b ≡ b
   nn-pointwise true = refl
   nn-pointwise false = refl
+
+
+------------------------------------------------------------------------
+-- 例 5：Pno —— Peano 式代数的范畴（Simmons 1.2.1 / 1.2.2）
+-- 结构集范畴的通用配方：携带集 + 结构 + 保结构映射。
+-- Pno 对象 = (A, a, alpha)；箭头 f 满足 f(a) = b 且保步。
+
+record PnoAlg : Set₁ where
+  constructor mkPno
+  field
+    pcarr : Set
+    pstart : pcarr
+    pstep : pcarr → pcarr
+
+open PnoAlg
+
+record PnoArr (A B : PnoAlg) : Set₁ where
+  constructor mkPnoArr
+  field
+    pfun : pcarr A → pcarr B
+    pkeep1 : pfun (pstart A) ≡ pstart B
+    pkeep2 : ∀ x → pfun (pstep A x) ≡ pstep B (pfun x)
+
+open PnoArr
+
+module PnoDemo where
+  open import Data.Nat using (suc)
+  -- 复合封闭（1.2.2 的最小实例）：两条钩链，无任何公理
+  pcomp : ∀ {A B C : PnoAlg} → PnoArr A B → PnoArr B C → PnoArr A C
+  -- 证明直接内联：where 块看不见子句的隐式 A B C，注解里写 _
+  -- 会留死 meta（06 章老坑），这里字段类型由构造子自定
+  pcomp f g = mkPnoArr
+    (λ x → pfun g (pfun f x))
+    (trans (cong (pfun g) (pkeep1 f)) (pkeep1 g))
+    (λ x → trans (cong (pfun g) (pkeep2 f x)) (pkeep2 g (pfun f x)))
+
+  -- 万有起点（1.2.1(c)）：natPno 出发的箭头逐点唯一
+  natPno : PnoAlg
+  natPno = mkPno ℕ zero suc
+
+  piter : (B : PnoAlg) → ℕ → pcarr B
+  piter B zero = pstart B
+  piter B (suc m) = pstep B (piter B m)
+
+  pno-arr-unique : ∀ {B} (f : PnoArr natPno B) →
+                   ∀ r → pfun f r ≡ piter B r
+  pno-arr-unique f zero = pkeep1 f
+  pno-arr-unique {B} f (suc m) =
+    trans (pkeep2 f m) (cong (pstep B) (pno-arr-unique f m))
+
+  -- 具体演示：唯一箭头 r ↦ not^r(true)
+  boolPno : PnoAlg
+  boolPno = mkPno Bool true not
+
+  the-arr : PnoArr natPno boolPno
+  the-arr = mkPnoArr (piter boolPno) refl (λ _ → refl)
+
+  demo : pfun the-arr 3 ≡ false
+  demo = refl
+
+  -- 注：pcomp/pid 凑成完整 Category 时，idL 需要 record 相等
+  -- （pkeep 字段是证明分量）——Agda 侧需 funext + 证明无关性，
+  -- 本文件保持零公理，record 相等的三家差异见 03/06 章。
 
 ------------------------------------------------------------------------
 -- 坑位速记：

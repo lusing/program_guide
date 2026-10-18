@@ -190,3 +190,126 @@ Print Assumptions unit_eq2.          (* 零公理 *)
       mono/epi 的消去性质立刻翻译成单射/满射。
    5. funext 是本章唯一新公理；Lean 里它是核心定理（Quot.sound
       的推论），Coq/Agda 要入账——三文化的分岔点。 *)
+
+(* ---------- 分裂满态射 + 消去律封闭（Simmons 2.2.1 / 2.2.4） ---------- *)
+
+(* 分裂满态射：有 section s（s;f = id） *)
+Definition SplitEpi (C : Category) (a b : Obj C) (f : Hom C a b) : Type :=
+  { s : Hom C b a | comp C s f = idn C b }.
+
+(* 2.2.1(a)：section 若还是 epi，自动补出另一侧逆——成 iso。
+   全程只用 idL/idR/assoc/Epi 的定义，零公理。 *)
+Lemma section_epi_iso : forall (C : Category) (a b : Obj C) (s : Hom C b a),
+  Epi C b a s -> forall r : Hom C a b,
+  comp C s r = idn C b -> IsIso C b a s.
+Proof.
+  intros C a b s Hepi r Hsr.
+  exists r. split.
+  - exact Hsr.
+  - apply (Hepi a (comp C r s) (idn C a)).
+    rewrite <- (assoc C s r s), Hsr, idL, idR. reflexivity.
+Qed.
+
+(* 2.2.4 封闭八律（一半由对偶免费，这里全写） *)
+Lemma mono_comp : forall C a b c (f : Hom C a b) (g : Hom C b c),
+  Mono C a b f -> Mono C b c g -> Mono C a c (comp C f g).
+Proof.
+  intros C a b c f g Hf Hg d h1 h2 H.
+  rewrite <- !assoc in H.
+  exact (Hf d h1 h2 (Hg d (comp C h1 f) (comp C h2 f) H)).
+Qed.
+
+Lemma mono_of_comp : forall C a b c (f : Hom C a b) (g : Hom C b c),
+  Mono C a c (comp C f g) -> Mono C a b f.
+Proof.
+  intros C a b c f g H d h1 h2 Hf1.
+  apply (H d h1 h2). rewrite <- !assoc, Hf1. reflexivity.
+Qed.
+
+Lemma epi_comp : forall C a b c (f : Hom C a b) (g : Hom C b c),
+  Epi C a b f -> Epi C b c g -> Epi C a c (comp C f g).
+Proof.
+  intros C a b c f g Hf Hg d h1 h2 H.
+  rewrite !assoc in H.
+  exact (Hg d h1 h2 (Hf d (comp C g h1) (comp C g h2) H)).
+Qed.
+
+Lemma epi_of_comp : forall C a b c (f : Hom C a b) (g : Hom C b c),
+  Epi C a c (comp C f g) -> Epi C b c g.
+Proof.
+  intros C a b c f g H d h1 h2 Hg1.
+  apply (H d h1 h2). rewrite !assoc, Hg1. reflexivity.
+Qed.
+
+(* ---------- 双消去（Simmons 2.2.10 的抽象内核） ----------
+   e 单、m 满（按 mono/epi 定义）时：m ∘ u ∘ e = m ∘ v ∘ e ⟹ u = v。
+   书里的五格图（2.2.10）正是这条的图上特例。 *)
+Lemma mono_epi_cancel : forall (C : Category) (A B X Y : Obj C)
+  (e : Hom C A B) (u v : Hom C B X) (m : Hom C X Y),
+  Epi C A B e -> Mono C X Y m ->
+  comp C (comp C e u) m = comp C (comp C e v) m -> u = v.
+Proof.
+  intros C A B X Y e u v m He Hm H.
+  rewrite !assoc in H.
+  exact (Hm B u v (He Y (comp C u m) (comp C v m) H)).
+Qed.
+
+(* ---------- 平衡范畴的最小反例（Simmons 2.2.2） ----------
+   瘦范畴（每对对象至多一条箭头）里平行箭头恒相等 ⟹
+   一切箭头既 mono 又 epi；行走箭头 0->1 没有反向箭头，
+   不是 iso——catTwo 不平衡。预序版：balanced ⟺ 离散。 *)
+
+Definition twoLegal : bool -> bool -> bool := fun a b => orb (negb a) b.
+Definition twoHom : bool -> bool -> Set :=
+  fun a b => if twoLegal a b then unit else Empty_set.
+
+Definition twoIdn (a : bool) : twoHom a a :=
+  match a as x return twoHom x x with false => tt | true => tt end.
+
+Definition twoComp {a b c} (f : twoHom a b) (g : twoHom b c) : twoHom a c.
+Proof.
+  destruct a, b, c; simpl; try exact tt;
+  destruct f; destruct g; simpl; exact tt.
+Defined.
+
+Lemma two_idL : forall a b (f : twoHom a b), twoComp (twoIdn a) f = f.
+Proof. intros a b f; destruct a, b, f; reflexivity. Qed.
+Lemma two_idR : forall a b (f : twoHom a b), twoComp f (twoIdn b) = f.
+Proof. intros a b f; destruct a, b, f; reflexivity. Qed.
+Lemma two_assoc : forall a b c d (f : twoHom a b) (g : twoHom b c) (h : twoHom c d),
+  twoComp (twoComp f g) h = twoComp f (twoComp g h).
+Proof. intros; destruct a, b, c, d, f, g, h; reflexivity. Qed.
+
+Definition catTwo : Category := {|
+  Obj := bool;
+  Hom := fun a b => twoHom a b;
+  idn := twoIdn;
+  comp := fun a b c f g => twoComp f g;
+  idL := two_idL; idR := two_idR; assoc := two_assoc
+|}.
+
+Lemma thin_mono : forall a b (f : twoHom a b), Mono catTwo a b f.
+Proof.
+  intros a b f c g h _.
+  destruct c, a; cbn in g, h; try destruct g; try destruct h; reflexivity.
+Qed.
+
+Lemma thin_epi : forall a b (f : twoHom a b), Epi catTwo a b f.
+Proof.
+  intros a b f c g h _.
+  destruct c, b; cbn in g, h; try destruct g; try destruct h; reflexivity.
+Qed.
+
+Definition twoArr : twoHom false true := tt.
+
+Lemma arr_not_iso : IsIso catTwo false true twoArr -> False.
+Proof.
+  intros [g _].
+  change (twoHom true false) with Empty_set in g.
+  destruct g.
+Qed.
+
+
+Print Assumptions section_epi_iso.
+Print Assumptions mono_epi_cancel.
+Print Assumptions thin_mono.

@@ -1,7 +1,7 @@
 # 02 反范畴与对偶原理
 
 > 对书：《高级范畴论》1.5（范畴的运算）、2.2 的对偶视角 /
-> Simmons 2.8（Using the opposite category）/ 贺伟 1.4 前置。
+> Simmons 1.5、2.8（Using the opposite category）/ 贺伟 1.4 前置。
 > 代码：`examples/02_opposite/`。
 
 ## 2.1 反范畴：一行构造，定律互译
@@ -87,6 +87,58 @@ Check (fun x : fin 2 => Some x) : Hom (opposite catFin) 3 2.
 相应的事实是 C ≅ (C^op)^op（且是典范同构）。**「相等」与「典范
 同构」的裂缝**从第一章就埋下，直到 07 章（范畴等价）才正面处理。
 
+## 2.5 两个小范畴与主截面（Simmons 1.5）
+
+Simmons 1.5 专门停下来看两个最小的范畴，它们的用处贯穿全书：
+
+**范畴 1** = 终范畴（01 章的 catOne）：一个对象、一条恒等。它是
+Cat 的**终对象**。
+
+**范畴 2** = 行走箭头：两个对象 0、1，一条非平凡箭头
+`0 → 1`。机器版用三条箭头的索引族（Agda 写来最短，四行复合
+就写满）：
+
+```agda
+data TwoHom : Bool → Bool → Set where
+  two-id0 : TwoHom false false
+  two-arr : TwoHom false true
+  two-id1 : TwoHom true true
+
+twoComp : ∀ {a b c} → TwoHom a b → TwoHom b c → TwoHom a c
+twoComp two-id0 two-id0 = two-id0
+twoComp two-id0 two-arr = two-arr
+twoComp two-arr two-id1 = two-arr
+twoComp two-id1 two-id1 = two-id1
+```
+
+它的意义：**任何图里的无名箭头都是它**。给定范畴 C 与 C 中箭头
+f : a → b，存在唯一函子 2 → C 把 0↦a、1↦b、arr↦f——「交换图」
+= 「从图示形状到 C 的函子」这句纲领的最小实例（04 章展开）。
+03 章还会用它给出第一批「mono+epi 却不是 iso」的反例。
+
+**预序的切片**（1.5.2）：把预序 S 当范畴后，切片范畴的长相可以
+完全算出来——`(S↓s)` 是 s 上方的主上截面 ↑s、`(s↓S)` 是主下
+截面 ↓s、`(s↓S↓t)` 是凸截面 {x | s ≤ x ≤ t}。截面的两条基本
+单调性各是传递律的一次应用（零公理）：
+
+```coq
+Lemma down_mono : forall a b (hab : Le a b) x (hxa : Le x a), Le x b.
+Proof. intros. exact (le_trans hxa hab). Qed.
+
+Lemma up_anti : forall a b (hab : Le a b) x (hbx : Le b x), Le a x.
+Proof. intros. exact (le_trans hab hbx). Qed.
+```
+
+↓ 随基点**单调**、↑ 随基点**反单调**——这两个相反的方向就是
+24 章三个超幂集函子 ∃/I/∀ 的第一批观察。09 章会把
+`(S↓s)` 认定为逗号范畴（Id↓K）的特例。
+
+**两个反转**（1.5.3/1.5.4）：预序的 S^op 就是把 S 上下颠倒；
+幺半群（单对象范畴）的 R^op 是同一个集合配新运算
+`r ⋆ s := s·r`。最后，S 上「元素对 + 相容关系」的范畴
+（1.3.3 的对偶版本）就是 `A × S^op`——**乘积 + 反范畴**两个
+基本操作拼出预层方向，又一次「旧材料的新组合」。
+
 ## 坑位速记
 
 1. opposite 的定律搬运要看清展开：`comp_op (idn) f` 展开是
@@ -100,6 +152,15 @@ Check (fun x : fin 2 => Some x) : Hom (opposite catFin) 3 2.
    写 `.refl _` 会留 metavar 卡死 iota。
 5. Agda `suc` 双义（Level/ℕ）——`renaming (suc to lsuc)`（typetheory
    16 章老坑在此复现）；Fin 的嵌入是 `Fin.suc` 全名。
+6. Coq 里「Hom := if 合法 then unit else Empty」的瘦范畴：复合
+   的非法分支在类型层看不见端点细化，术语 match 写不出来——
+   `destruct a,b,c` 的 tactic 定义一遍暴露（twoComp）；
+   索引族版的依赖 destruct 顺序敏感：先 destruct 让公共索引
+   定下来的那条箭头。
+7. Agda record 字段的模式 λ 匹配隐式对象要花括号：
+   `idn = λ { {false} → two-id0 ; {true} → two-id1 }`。
+8. Lean 的 `Le` 住在 Type 时，结论是构造而非命题——`theorem`
+   拒收「不是命题的类型」，用 `def`。
 
 ---
 

@@ -117,6 +117,128 @@ destruct (g z) as [e|]; [destruct e | reflexivity].   (* 映到 fin 1 *)
 Σ 不收 Prop 分量、Σ'（PSigma）才混居——这是 Lean 的 Sort 层级
 在设计泛性质数据结构时的直接后果。
 
+## 3.6 section、retraction 与「自动补逆」（Simmons 2.2.1）
+
+《高级范畴论》讲了 split mono 的一侧；Simmons 2.2 把账记全：
+
+| 箭头性质 | 消去性质 | 分裂版本 | 终点 |
+|---|---|---|---|
+| mono | 左可消去 | ∃r, f;r = id（有 retraction） | ↘ |
+| epi | 右可消去 | ∃s, s;f = id（有 section） | ↗ |
+| iso | 双侧可消去 | 双侧逆 | 两侧同时分裂 |
+
+分裂 ⇒ 消去（03.2 的旗舰）。反方向不成立——但两条分裂性质
+**合起来**会升级：**section 若还是 epi，自动补出另一侧逆**（2.2.1a）。
+证明只有一行箭头论：从 `s;r = id` 出发，把 `(s;r);s = s;id` 两边
+按 `s;? = s;?` 对齐，用 epi 消去 s，得 `r;s = id`。机器版：
+
+```coq
+Lemma section_epi_iso : forall (C : Category) (a b : Obj C) (s : Hom C b a),
+  Epi C b a s -> forall r : Hom C a b,
+  comp C s r = idn C b -> IsIso C b a s.
+Proof.
+  intros C a b s Hepi r Hsr.
+  exists r. split.
+  - exact Hsr.
+  - apply (Hepi a (comp C r s) (idn C a)).
+    rewrite <- (assoc C s r s), Hsr, idL, idR. reflexivity.
+Qed.
+```
+
+`Print Assumptions` 报 Closed——零公理。对偶命题（retraction 若
+还是 mono 也是 iso）由 02 章的对偶原理免费。
+
+## 3.7 封闭八律与消去演算（Simmons 2.2.4 / 2.2.10）
+
+这批箭头性质在复合下的封闭性像乘法表，值得全表机器化
+（`mono_comp`、`mono_of_comp`、`epi_comp`、`epi_of_comp` +
+四条分裂版；全部零公理）：
+
+| 前提 | 结论 |
+|---|---|
+| f mono、g mono | g∘f mono |
+| g∘f mono | f mono |
+| f epi、g epi | g∘f epi |
+| g∘f epi | g epi |
+| 分裂版同理 | (m.iii/iv、e.iii/iv) |
+
+注意**不对称**：g∘f mono 只保证**前段** f mono；g∘f epi 只保证
+**后段** g epi——方向相反。书里 2.2.4(c) 的反例提醒另一面：
+`A →(嵌入) B →(满射) C`（A、C 单点、B 更大）时 g∘f 是同构，
+但 f 不满、g 不单。
+
+消去性质的**组合拳**（2.2.10 的五格图）抽象成一条引理：
+外层等式 `m;u;e = m;v;e`（e 单、m 满）⟹ `u = v`——先消 m 再消 e，
+各一次：
+
+```coq
+Lemma mono_epi_cancel : forall (C : Category) (A B X Y : Obj C)
+  (e : Hom C A B) (u v : Hom C B X) (m : Hom C X Y),
+  Epi C A B e -> Mono C X Y m ->
+  comp C (comp C e u) m = comp C (comp C e v) m -> u = v.
+Proof.
+  intros C A B X Y e u v m He Hm H.
+  rewrite !assoc in H.
+  exact (Hm B u v (He Y (comp C u m) (comp C v m) H)).
+Qed.
+```
+
+书里的图版证明（沿五个格子追箭头、两端各消去一次）就是这条
+引理在具体布局下的展开——图是给人看的，消去链是给机器看的。
+
+## 3.8 满而不单、单而不满（Simmons 2.2.5–2.2.8）
+
+在 Set 里 mono = 单、epi = 满（3.3 节）；离开 Set，两条
+等式各崩一半，经典反例都值得亲手核一遍：
+
+**ℕ ↪ ℤ 在 Mon 里是 epi**（2.2.5）。设 f, g : ℤ → A 是幺半群
+态射且在 ℕ 上一致，要证 f(−m) = g(−m)。链条：
+
+```text
+g(−m) = g(−m)·ι = g(−m)·f(0) = g(−m)·f(m+(−m))
+      = g(−m)·f(m)·f(−m) = g(−m)·g(m)·f(−m)
+      = g(−m+m)·f(−m) = g(0)·f(−m) = f(−m)
+```
+
+中间那步 `f(m) = g(m)` 是唯一用到前提的地方——负数的信息被
+幺半群结构从正数「挤」出来。同款技巧证 **ℤ ↪ ℚ 在 Rng 里是 epi**
+（2.2.6：对 n ≠ 0 先证 g(1/n) = f(1/n)，再乘 m）。
+
+**稠密 + T₂ 在 Top 里是 epi**（2.2.8b）。设 ϵ[T] 稠密、φϵ = ψϵ、
+R 豪斯多夫。若 φ(s) ≠ ψ(s)，取不相交开集 U ∋ φ(s)、V ∋ ψ(s)，
+则 φ⁻¹(U) ∩ ψ⁻¹(V) 是含 s 的非空开集，必交稠密集 ϵ[T] 于某 t，
+于是 φϵ(t) ∈ U 且 ψϵ(t) ∈ V 同点——矛盾。附带 2.2.8(a) 的提醒：
+**连续双射不必是同胚**（离散化的恒等映射 S_d → S）。
+
+**反过来，mono = 单在结构集范畴里有统一解释**（2.2.7）：若
+范畴有**选择子** (S, ⋆)——一个由单元素生成万有的对象——则
+mono ⟹ 单射。各家选择子：Set/Pos/Top 用 1 元结构、Mon 用
+(ℕ,+,0)、Grp 用 (ℤ,+,1)、Rng 用 ℤ[X]、Set-R 用 R 自身。证明
+是 3.3 节「元素即态射」的推广：把 a₁、a₂ 编成两条从 S 出发的
+箭头，消去律回收单射性。
+
+## 3.9 平衡范畴：mono+epi ≠ iso（Simmons 2.2.2 / 2.2.3）
+
+「单且满」在集合论里就是双射，在范畴论里**未必是同构**。
+最小反例就是 02 章的行走箭头：瘦范畴里平行箭头恒相等（Hom
+至多一条），于是**一切箭头自动既 mono 又 epi**：
+
+```coq
+Lemma thin_mono : forall a b (f : twoHom a b), Mono catTwo a b f.
+Proof.
+  intros a b f c g h _.
+  destruct c, a; cbn in g, h; try destruct g; try destruct h; reflexivity.
+Qed.
+```
+
+但 `0 → 1` 没有反向箭头（`twoHom true false` 就是
+`Empty_set`），成不了 iso——`arr_not_iso` 三个字母
+（`destruct g`）就把「无逆」判掉。所以 **catTwo 不平衡**。
+书里的两个配套事实：预序（作为范畴）平衡 ⟺ 离散；幺半群（作为
+单对象范畴）平衡 ⟺ 可消去元素成群。「mono+epi 却不是 iso」
+因此是衡量范畴离 Set 有多远的**第一个标尺**——Abel 范畴
+（22 章）会要求平衡，那正是它们「像 Set」的地方。
+
 ## 坑位速记
 
 1. mono 定义的方向：`comp g f = comp h f → g = h`——f 在复合**右侧**；
@@ -131,6 +253,16 @@ destruct (g z) as [e|]; [destruct e | reflexivity].   (* 映到 fin 1 *)
 5. Agda 的 Mono/Epi 量化 `c : Obj C`（Set o）→ 结果在 `Set (o ⊔ ℓ)`；
    SplitMono 的 Σ 谓词是 Prop 值时只升到 ℓ——层级账要算清。
 6. epi ⇒ 满射需要选择：诚实边界，不硬凑构造性证明。
+7. Coq IsIso 的合取顺序：先 `comp f g = id a` 后 `comp g f = id b`
+   ——section_epi_iso 里 bullet 顺序填反会报 unify 错。
+8. `apply (Hepi a)` 会把整个左侧当 g——消去律应用要显式给
+   两个参数 `apply (Hepi a (comp C r s) (idn C a))`。
+9. Agda 的 `r , Hsr , <begin…∎>` 解析不了：元组与推理链混排
+   要拆 where 局部名；各家 assoc 字段方向可能相反——链式
+   重写前先看字段声明（本仓三个 ex03 文件两种方向都有）。
+10. Lean 结论是数据（IsIso 是 structure）时用 `def` 不能用
+    `theorem`；`rw` 按第一匹配走，双侧重写写两遍
+    `rw [C.assoc, C.assoc]`，别赌 simp。
 
 ---
 

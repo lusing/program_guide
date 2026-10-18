@@ -8,7 +8,7 @@ open import Data.Unit using (⊤; tt)
 open import Data.Bool using (Bool; true; false)
 open import Data.Nat using (ℕ; zero; suc; _+_; _*_)
 open import Data.Product using (Σ; _×_; _,_)
-open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl; cong)
+open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl; cong; sym; trans)
 open Eq.≡-Reasoning
 
 ------------------------------------------------------------------------
@@ -139,6 +139,51 @@ square-commutes = funext pointwise
   where
     pointwise : ∀ n → (λ n → 2 * n) (suc n) ≡ (λ n → n + 2) (2 * n)
     pointwise n = suc-double n
+
+
+------------------------------------------------------------------------
+-- 图上操练：五角星绕两圈（Simmons 2.1.3）
+-- 周长两圈 = 星形一圈；每步塌一个三角（书的坍缩序列 12345123451
+-- → … → 135241）。小步引理 step 把「对齐 + 坍缩」打包成一次转移，
+-- Coq 版的五个 rewrite 在这里是一棵 cong/trans 树。
+
+step : ∀ {o ℓ} (C : Category o ℓ) {a b c d : Obj C}
+       (f : Hom C a b) (g : Hom C b c) (s : Hom C a c) (r : Hom C c d)
+       → comp C f g ≡ s → comp C f (comp C g r) ≡ comp C s r
+step C f g s r h = trans (sym (assoc C f g r)) (cong (λ w → comp C w r) h)
+
+pentagon :
+    ∀ {o ℓ} (C : Category o ℓ)
+      (v0 v1 v2 v3 v4 : Obj C)
+      (p0 : Hom C v0 v1) (p1 : Hom C v1 v2) (p2 : Hom C v2 v3)
+      (p3 : Hom C v3 v4) (p4 : Hom C v4 v0)
+      (s0 : Hom C v0 v2) (s1 : Hom C v1 v3) (s2 : Hom C v2 v4)
+      (s3 : Hom C v3 v0) (s4 : Hom C v4 v1)
+    → comp C p0 p1 ≡ s0 → comp C p1 p2 ≡ s1 → comp C p2 p3 ≡ s2
+    → comp C p3 p4 ≡ s3 → comp C p4 p0 ≡ s4
+    → comp C p0 (comp C p1 (comp C p2 (comp C p3 (comp C p4
+        (comp C p0 (comp C p1 (comp C p2 (comp C p3 p4))))))))
+      ≡ comp C s0 (comp C s2 (comp C s4 (comp C s1 s3)))
+pentagon C v0 v1 v2 v3 v4 p0 p1 p2 p3 p4 s0 s1 s2 s3 s4 T0 T1 T2 T3 T4 =
+  trans (step C p0 p1 s0 rest T0) (cong (comp C s0) step2)
+  where
+  rest = comp C p2 (comp C p3 (comp C p4 (comp C p0
+           (comp C p1 (comp C p2 (comp C p3 p4))))))
+  -- 内层：p1;(p2;(p3;p4)) -> s1;s3
+  inner43 : comp C p1 (comp C p2 (comp C p3 p4)) ≡ comp C s1 s3
+  inner43 = trans (step C p1 p2 s1 (comp C p3 p4) T1) (cong (comp C s1) T3)
+  -- s4 段
+  step4 : comp C p4 (comp C p0 (comp C p1 (comp C p2 (comp C p3 p4))))
+          ≡ comp C s4 (comp C s1 s3)
+  step4 = trans (step C p4 p0 s4 (comp C p1 (comp C p2 (comp C p3 p4))) T4)
+                 (cong (comp C s4) inner43)
+  -- s2 段
+  step2 : comp C p2 (comp C p3 (comp C p4 (comp C p0
+            (comp C p1 (comp C p2 (comp C p3 p4))))))
+          ≡ comp C s2 (comp C s4 (comp C s1 s3))
+  step2 = trans (step C p2 p3 s2 (comp C p4 (comp C p0
+                      (comp C p1 (comp C p2 (comp C p3 p4))))) T2)
+                 (cong (comp C s2) step4)
 
 ------------------------------------------------------------------------
 -- 坑位速记：
