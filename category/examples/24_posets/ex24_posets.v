@@ -83,3 +83,52 @@ Print Assumptions adjunction_law.
       穷尽验证就是 (2)⟹(1) 构造的可计算复述。
    3. leD 用 bool 而非 Prop/Le-族：瘦范畴的「同序」比较
       要 bool 相等（rfl 判定），Prop 值会拖进证明无关性。 *)
+
+(* ---------- 闭包算子与闭元互同构（高级范畴论 5.1 定理 5.1.1/5.1.2） ----------
+   最小非平凡现场：链 {0 ≤ 1}（Ch2，c0 < c1）。
+   F := 常底（c0）、G := 常顶（c1）——F ⊣ G：两侧皆为恒真
+   （F(a)=c0 ≤ b 恒真；a ≤ c1=G(b) 恒真）。四格查表。
+   GF ≡ 1（闭包算子）：闭元集 A0 = {c1}；
+   FG ≡ 0（开核算子）：开元集 B0 = {c0}；
+   F 把闭元 c1 送到开元 c0 —— 定理 5.1.2 的最小化身。零公理。 *)
+
+Inductive Ch2 : Set := c0 | c1.
+
+Definition le2 : Ch2 -> Ch2 -> bool :=
+  fun x y => match x, y with
+             | c0, _ => true
+             | c1, c1 => true
+             | _, _ => false end.
+
+Definition Fbot (a : Ch2) : Ch2 := c0.     (* 常底 *)
+Definition Gtop (b : Ch2) : Ch2 := c1.     (* 常顶 *)
+
+(* F ⊣ G：F(a) ≤ b ⟺ a ≤ G(b)——四格穷尽 *)
+Lemma galois_pair : forall a b, le2 (Fbot a) b = le2 a (Gtop b).
+Proof. intros a b; destruct a, b; reflexivity. Qed.
+
+(* 闭包算子 GF ≡ 1：膨胀 + 幂等由常值白送 *)
+Lemma gf_one : forall a, Gtop (Fbot a) = c1.
+Proof. intros a; destruct a; reflexivity. Qed.
+
+(* 开核算子 FG ≡ 0 *)
+Lemma fg_zero : forall b, Fbot (Gtop b) = c0.
+Proof. intros b; destruct b; reflexivity. Qed.
+
+(* 闭元集 A0 = {c1}（GF(a) = a 的解）、开元集 B0 = {c0} *)
+Definition closedA (a : Ch2) : bool :=
+  match a with c1 => true | c0 => false end.
+
+Lemma closedA_ok : forall a, closedA a = true -> Gtop (Fbot a) = a.
+Proof. intros a H; destruct a; [discriminate|reflexivity]. Qed.
+
+(* 定理 5.1.2：F 映闭元到开元、G 映开元到闭元、限制后互逆 *)
+Lemma F_maps_closed : forall a, closedA a = true -> Fbot a = c0.
+Proof. intros a H; destruct a; [discriminate|reflexivity]. Qed.
+
+Lemma G_maps_open : Fbot c0 = c0 -> Gtop c0 = c1.
+Proof. intros _; reflexivity. Qed.
+
+(* F0 与 G0 的互逆：单点集之间的同构，refl 级 *)
+Lemma F0_G0_inverse : Gtop (Fbot c1) = c1 /\ Fbot (Gtop c0) = c0.
+Proof. split; reflexivity. Qed.

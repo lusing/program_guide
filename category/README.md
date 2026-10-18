@@ -23,7 +23,7 @@ category/
 ├── build.ps1          三通道验证（-All/-Chapter/-Lang/-File/-List/-Clean）
 ├── CHEATSheet.md      速查 + 精选坑位
 ├── docs/              30 章教程
-└── examples/          24 个章目录（章号 = 示例编号）
+└── examples/          23 个章目录（章号 = 示例编号）
 ```
 
 ## 章节索引
@@ -48,12 +48,12 @@ category/
 | [16 伴随](docs/16-adjunctions.md) | 三副面孔 + Table 5.1 换位演算 | 双语 |
 | [17 自由与遗忘](docs/17-free.md) | freeCat ⊣ U；**自由幺半群 List ⊣ U** | Coq |
 | [18 伴随与极限](docs/18-adjlimits.md) | RAPL 完整叙事/AFT/反射子范畴 | 文档 |
-| [19 Cartesian 闭](docs/19-ccc.md) | curry 双射（TyCat） | Coq |
-| [20 λ 演算范畴](docs/20-stlc.md) | STLC⟷CCC；演绎系统 | 文档 |
+| [19 Cartesian 闭](docs/19-ccc.md) | curry 双射；**ΛT 语法范畴**（R1-R18 全表） | Coq |
+| [20 FL/FDS/ΛT 三范畴](docs/20-stlc.md) | 程序/证明/λ 项 = 态射三进料口 | 文档 |
 | [21 单子](docs/21-monads.md) | Set 级单子 + List 实例（零公理） | Coq |
 | [22 幺半与富范畴](docs/22-monoidal.md) | 五边形连贯性 | 文档 |
 | [23 加法/Abel 范畴](docs/23-abelian.md) | 双积/矩阵演算/正合序列/蛇形 | 双语 |
-| [24 完备预序与剩余](docs/24-posets.md) | **保 sup ⟺ 有右伴随**（Galois 连接） | 三家 |
+| [24 完备预序与剩余](docs/24-posets.md) | 保 sup⟺右伴随；**闭包算子与闭元同构** | 三家 |
 | [25 截面与三超幂函子](docs/25-sections.md) | **∃ ⊣ I ⊣ ∀**（量词的伴随身份） | 双语 |
 | [26 幺半集：Σ ⊣ U ⊣ Π](docs/26-rsets.md) | 自由/余自由 R-集三明治 | 双语 |
 | [27 反变伴随：Sierpiński](docs/27-contravariant.md) | ⇑/⇓/Ξ/Π 与精神分裂对象 | 文档 |

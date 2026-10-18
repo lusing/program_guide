@@ -53,3 +53,35 @@ theorem fMeet_join (x y : Diam) :
 
 /-- 保空 sup：f(⊥) = ⊥ -/
 example : fMeet .dBot = .dBot := rfl
+
+/-! 【闭包算子与闭元互同构】（高级范畴论 5.1 定理 5.1.1/5.1.2）——
+链 {0 < 1} 上 F = 常底 ⊣ G = 常顶（两侧恒真）；GF ≡ 1 闭包、
+FG ≡ 0 开核；闭元 {1} 与开元 {0} 经 F 互同构。零公理。 -/
+inductive Ch2 : Type
+  | c0 | c1
+
+def le2 : Ch2 → Ch2 → Bool
+  | .c0, _ => true
+  | .c1, .c1 => true
+  | _, _ => false
+
+def Fbot (_ : Ch2) : Ch2 := .c0
+def Gtop (_ : Ch2) : Ch2 := .c1
+
+theorem galois_pair (a b : Ch2) : le2 (Fbot a) b = le2 a (Gtop b) := by
+  cases a <;> cases b <;> rfl
+
+theorem gf_one (a : Ch2) : Gtop (Fbot a) = .c1 := by cases a <;> rfl
+theorem fg_zero (b : Ch2) : Fbot (Gtop b) = .c0 := by cases b <;> rfl
+
+def closedA : Ch2 → Bool
+  | .c1 => true | .c0 => false
+
+theorem closedA_ok (a : Ch2) (h : closedA a = true) : Gtop (Fbot a) = a := by
+  cases a with
+  | c1 => rfl
+  | c0 => exact absurd h (by simp [closedA])
+
+/-- 定理 5.1.2 的互逆：F₀/G₀ 单点互逆 -/
+theorem F0_G0_inverse :
+    Gtop (Fbot .c1) = .c1 ∧ Fbot (Gtop .c0) = .c0 := ⟨rfl, rfl⟩
