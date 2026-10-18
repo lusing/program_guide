@@ -118,3 +118,67 @@ Print Assumptions extend_comp.   (* 零公理：纯复合搬运 *)
    3. 延拓函子律：Fid 按 pid 分支定义成立；Fcomp 即 extend_comp。
    4. 完整 Functor record 打包（FObj/FHom/Fid/Fcomp 四字段填充）
       与本引理同型，留作练习/文档。 *)
+
+Require Import List.
+Import ListNotations.
+
+Record Monoid : Type := mkMon {
+  mcar : Type;
+  mop : mcar -> mcar -> mcar;
+  mun : mcar;
+  massoc : forall x y z, mop (mop x y) z = mop x (mop y z);
+  munitL : forall x, mop (mun) x = x;
+  munitR : forall x, mop x (mun) = x
+}.
+
+Record MonHom (A B : Monoid) : Type := mkMH {
+  hfun : mcar A -> mcar B;
+  hunit : hfun (mun A) = mun B;
+  hop : forall x y, hfun (mop A x y) = mop B (hfun x) (hfun y)
+}.
+
+(* List 幺半群 *)
+Definition listMon (X : Type) : Monoid := {|
+  mcar := list X;
+  mop := fun l m => app l m;
+  mun := nil;
+  massoc := fun x y z => eq_sym (app_assoc x y z);
+  munitL := fun x => eq_refl;
+  munitR := fun x => app_nil_r x
+|}.
+
+(* 折叠：f 沿 ++ 的扩张 *)
+Definition mfold {X A} (f : X -> mcar A) : list X -> mcar A :=
+  fix go (l : list X) : mcar A :=
+    match l with
+    | nil => mun A
+    | x :: rest => mop A (f x) (go rest)
+    end.
+
+(* (1) f# 是同态：单位与乘法各一条归纳（乘法用 massoc） *)
+Lemma mfold_unit {X A} (f : X -> mcar A) : mfold f nil = mun A.
+Proof. reflexivity. Qed.
+
+Lemma mfold_op {X A} (f : X -> mcar A) : forall l m,
+  mfold f (app l m) = mop A (mfold f l) (mfold f m).
+Proof.
+  intros l m. induction l as [|x rest IH]; simpl.
+  - now rewrite munitL.
+  - rewrite IH, massoc. reflexivity.
+Qed.
+
+(* (2) f# 延拓 η *)
+Lemma mfold_eta {X A} (f : X -> mcar A) : forall x, mfold f (x :: nil) = f x.
+Proof. intros x. simpl. now rewrite munitR. Qed.
+
+(* (3) 唯一性：同态 + 延拓 η ⟹ 逐点等于 f# *)
+Lemma mfold_unique {X A} (f : X -> mcar A) (h : MonHom (listMon X) A)
+  (Hext : forall x, hfun h (x :: nil) = f x) :
+  forall l, hfun h l = mfold f l.
+Proof.
+  induction l as [|x rest IH]; simpl.
+  - apply (hunit h).
+  - pose proof (hop h (x :: nil) rest) as Hh. simpl in Hh.
+    (* Hh : hfun h (x :: rest) = mop A (hfun h [x]) (hfun h rest) *)
+    rewrite Hh, Hext, IH. reflexivity.
+Qed.
