@@ -218,7 +218,7 @@ Defined.
    J := Set[-,2]：J A = (A -> 2)，J² A = ((A -> 2) -> 2)。
    求值映射 eval : Id -> J²，eval a p = p a。
    自然性点式版两侧都定义地等于 q (f a)——β 一步。
-   这是 Yoneda（08 章）在 2 值世界的最小缩影：
+   这是 Yoneda（09 章）在 2 值世界的最小缩影：
    「对象由其上的特征函数刻画」。 *)
 
 Definition two : Set := bool.

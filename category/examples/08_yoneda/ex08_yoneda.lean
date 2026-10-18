@@ -6,7 +6,7 @@
 --   ψ(x)_b(g) := F g(x)        （沿 g 搬运取样）
 -- 往返 1 用 Fid 白送；往返 2 恰是自然性在 id 处的特例。
 -- Lean 版给出**完整 record 相等**的往返 2（cases + congr 1 +
--- 内核证明无关性——06 章的裂缝在这里被结构 η 缝合）。
+-- 内核证明无关性——07 章的裂缝在这里被结构 η 缝合）。
 
 structure Category where
   Obj : Type u
@@ -75,7 +75,7 @@ theorem yoneda_round1 {C : Category.{0, 0}} {F : FunctorC C TyCat} {a : C.Obj}
 
 /-! 【往返 2】ψ(φ(X)) = X —— 自然性在 id 处的特例。
 完整 record 相等：cases/congr 之后 nlaw 字段被内核证明无关性拍平，
-只剩分量目标（06 章的裂缝在 Lean 这边缝合）。 -/
+只剩分量目标（07 章的裂缝在 Lean 这边缝合）。 -/
 theorem yoneda_round2 {C : Category.{0, 0}} {F : FunctorC C TyCat} {a : C.Obj}
     (X : NT (homFun C a) F) : yonedaTo (yonedaFrom X) = X := by
   obtain ⟨Xc, Xl⟩ := X

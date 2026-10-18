@@ -2,7 +2,7 @@
    (Id_leCat ↓ K_1)：对象 = (c, 哑元, Le c 1) ——定义地化简成
    主下截面 ↓1。箭头的交换方块拼装见 Coq 版；本文件主打对象对应。 -/
 
-/-- 02 章同款最小基建 -/
+/-- 03 章同款最小基建 -/
 inductive Le : Nat → Nat → Type
   | refl (n : Nat) : Le n n
   | step {m n : Nat} : Le m n → Le m (n + 1)

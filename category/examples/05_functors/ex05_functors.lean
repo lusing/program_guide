@@ -111,12 +111,12 @@ theorem F_preserves_square {C : Category.{u, v}} {D : Category.{u', v'}}
    `.{u', v'}` 跨范畴时必须写全（无 Cumulativity）。
 3. map 律点式自证（方程式归纳）比翻核心库引理名稳。
 4. homFun 的 Fcomp 是 assoc 的点式对称——「函子定律 = 范畴
-   定律点式化」是 08 章 Yoneda 一切免费的根源。 -/
+   定律点式化」是 09 章 Yoneda 一切免费的根源。 -/
 
 /-! 【三个幂集函子】（Simmons 3.3.1）——二元素集上机器化：
   ∃(f) 直接像、I(f) 逆像（定义即函子）、∀(f) 对偶像。
   穷尽检查 = cases 三个函数值 + 谓词值 + 点，128 格全 rfl。
-  伴随串 ∃ ⊣ I ⊣ ∀ 留给 24 章。 -/
+  伴随串 ∃ ⊣ I ⊣ ∀ 留给 25 章。 -/
 def PSet := Bool → Bool
 
 def pex (f : Bool → Bool) (X : PSet) : PSet := fun b =>

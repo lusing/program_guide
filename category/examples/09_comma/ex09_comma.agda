@@ -10,7 +10,7 @@ open import Data.Unit using (⊤; tt)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
--- 02 章同款最小基建
+-- 03 章同款最小基建
 data Le : ℕ → ℕ → Set where
   lerefl : ∀ {n} → Le n n
   lestep : ∀ {m n} → Le m n → Le m (suc n)

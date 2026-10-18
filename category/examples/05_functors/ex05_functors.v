@@ -146,7 +146,7 @@ Print Assumptions homFun.               (* funext *)
    1. map 律的函数级相等要 funext + 归纳（点式版 map_id'/map_comp'
       自证比翻 stdlib 引理名更稳——名字随版本漂）。
    2. hom-函子的 Fcomp 是 assoc 的点式对称——「函子定律 = 范畴
-      定律点式化」是 Yoneda（08 章）一切免费的根源。
+      定律点式化」是 Yoneda（09 章）一切免费的根源。
    3. Hom(a,-) 的靶范畴是 catTy：Hom C a b 必须落在 Set 层——
       源范畴钉 Category@{Set,Set}，宇宙对齐后再玩。
    4. Abort 留下的引理要清干净（map_id_ext 那种写歪的草稿）。
@@ -161,7 +161,7 @@ Print Assumptions homFun.               (* funext *)
      ∀(f)   对偶像    b ∈ ∀f X  ⟺ f⁻¹{b} ⊆ X
    ∃/I/∀ 都是逆变的——P 本身是反变函子 Set^op → Set。
    这里在二元素集 bool 上机器化：全部 16 种谓词情形可穷尽。
-   三者的伴随串 ∃ ⊣ I ⊣ ∀ 留给 24 章（在那里它们是截面函子）。 *)
+   三者的伴随串 ∃ ⊣ I ⊣ ∀ 留给 25 章（在那里它们是截面函子）。 *)
 
 Require Import Bool.
 

@@ -16,7 +16,7 @@ structure Category where
     comp (comp f g) h = comp f (comp g h)
 
 -- 复合按「图序」书写：comp f g = 先 f 后 g（Simmons 风格）。
--- 函数式的 f ∘ g = 先 g 后 f，恰是反范畴视角（见 02 章）。
+-- 函数式的 f ∘ g = 先 g 后 f，恰是反范畴视角（见 03 章）。
 
 /-. 【例 1】终范畴 1 —— 一个对象、一条态射 -/
 
@@ -73,7 +73,7 @@ def TyCat : Category.{1, 0} where
 def nn : TyCat.Hom Bool Bool :=
   TyCat.comp (fun b => !b) (fun b => !b)
 
--- 逐点等于 id；函数层面的相等 Lean 用核心库的 funext（见 03 章）
+-- 逐点等于 id；函数层面的相等 Lean 用核心库的 funext（见 04 章）
 example : (fun b => !(!b)) = (fun b => b) := funext (fun b => by cases b <;> rfl)
 
 /-! 坑位速记：
@@ -119,7 +119,7 @@ def comp {A B C : PnoAlg} (f : PnoArr A B) (g : PnoArr B C) : PnoArr A C where
 
 /-- Pno 整个是一个范畴——Lean 独享的完整实例：
     pkeep 字段住 Prop，证明无关性让定律免费（idL/assoc 全 rfl）。
-    对照：Coq 要 funext_dep + 逐字段 destruct，Agda 需公理（03/06 章）。 -/
+    对照：Coq 要 funext_dep + 逐字段 destruct，Agda 需公理（04/07 章）。 -/
 def PnoCat : Category where
   Obj := PnoAlg
   Hom := fun A B => PnoArr A B

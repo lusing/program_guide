@@ -115,8 +115,8 @@ Definition catFin : Category := {|
 Check (fun x : fin 2 => Some x) : Hom (opposite catFin) 3 2.
 
 (* ---------- 伴随预告 ----------
-   「对偶」贯穿全书：mono/epi（03 章）、积/余积（10 章）、
-   极限/余极限（12 章）、反射/余反射子范畴（17 章）——
+   「对偶」贯穿全书：mono/epi（04 章）、积/余积（11 章）、
+   极限/余极限（13 章）、反射/余反射子范畴（18 章）——
    每个概念证明一次，对偶概念免费获得。 *)
 
 (* 坑位速记：
@@ -140,7 +140,7 @@ Check (fun x : fin 2 => Some x) : Hom (opposite catFin) 3 2.
    Obj := bool（false 当 0、true 当 1）。瘦范畴方案：
    twoLegal a b = negb a || b 决定 Hom 是 unit 还是 Empty。
    「行走箭头」0 -> 1 —— 交换图里每个无名箭头的化身，
-   09 章切片 / 26 章 Sierpinski 都以它为骨架。 *)
+   10 章切片 / 27 章 Sierpinski 都以它为骨架。 *)
 
 Definition twoLegal : bool -> bool -> bool := fun a b => orb (negb a) b.
 
@@ -184,7 +184,7 @@ Definition catTwo : Category := {|
 (* ---------- 主截面（Simmons 1.5.2）：切片范畴的预序版本 ----------
    (s↓S) = ↓s 主下截面 {x | x ≤ s}；(S↓s) = ↑s 主上截面。
    ↓ 随基点单调、↑ 随基点反单调——两条引理各是 le_trans 的一次应用；
-   这两片将是 24 章 ∃/∀ 超幂集函子的第一块积木。 *)
+   这两片将是 25 章 ∃/∀ 超幂集函子的第一块积木。 *)
 
 Lemma down_mono : forall a b (hab : Le a b) x (hxa : Le x a), Le x b.
 Proof. intros. exact (le_trans hxa hab). Qed.

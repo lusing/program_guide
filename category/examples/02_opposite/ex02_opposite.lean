@@ -125,7 +125,7 @@ def CatTwo : Category.{0, 0} where
 end TwoHom
 
 /-! 【主截面】（Simmons 1.5.2）：↓ 单调、↑ 反单调——
-各是 leTrans 的一次应用；24 章 ∃/∀ 超幂集函子的积木。 -/
+各是 leTrans 的一次应用；25 章 ∃/∀ 超幂集函子的积木。 -/
 def down_mono {a b : Nat} (hab : Le a b) : ∀ x, Le x a → Le x b :=
   fun _ hxa => hxa.trans hab
 

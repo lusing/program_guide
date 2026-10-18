@@ -146,7 +146,7 @@ CatTwo = record
   }
 
 ------------------------------------------------------------------------
--- 主截面（Simmons 1.5.2）：↓ 单调、↑ 反单调——24 章 ∃/∀ 的积木
+-- 主截面（Simmons 1.5.2）：↓ 单调、↑ 反单调——25 章 ∃/∀ 的积木
 
 down-mono : ∀ {a b} → Le a b → ∀ x → Le x a → Le x b
 down-mono hab _ hxa = le-trans hxa hab

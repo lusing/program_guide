@@ -27,7 +27,7 @@ record Category (o ℓ : Level) : Set (lsuc (o ⊔ ℓ)) where
           → comp (comp f g) h ≡ comp f (comp g h)
 
 -- 复合按「图序」书写：comp f g = 先 f 后 g（Simmons 风格）。
--- 函数式的 f ∘ g = 先 g 后 f，恰是反范畴视角（见 02 章）。
+-- 函数式的 f ∘ g = 先 g 后 f，恰是反范畴视角（见 03 章）。
 
 ------------------------------------------------------------------------
 -- 例 1：终范畴 1 —— 一个对象、一条态射
@@ -104,7 +104,7 @@ module TyDemo where
   -- 在 TyCat 里复合两条态射：not 再 not
   nn : Hom Bool Bool
   nn = comp (λ b → not b) (λ b → not b)
-  -- 逐点等于 id；函数层面的相等要外延公理（见 03 章），先证逐点
+  -- 逐点等于 id；函数层面的相等要外延公理（见 04 章），先证逐点
   nn-pointwise : ∀ b → nn b ≡ b
   nn-pointwise true = refl
   nn-pointwise false = refl
@@ -138,7 +138,7 @@ module PnoDemo where
   -- 复合封闭（1.2.2 的最小实例）：两条钩链，无任何公理
   pcomp : ∀ {A B C : PnoAlg} → PnoArr A B → PnoArr B C → PnoArr A C
   -- 证明直接内联：where 块看不见子句的隐式 A B C，注解里写 _
-  -- 会留死 meta（06 章老坑），这里字段类型由构造子自定
+  -- 会留死 meta（07 章老坑），这里字段类型由构造子自定
   pcomp f g = mkPnoArr
     (λ x → pfun g (pfun f x))
     (trans (cong (pfun g) (pkeep1 f)) (pkeep1 g))
@@ -170,7 +170,7 @@ module PnoDemo where
 
   -- 注：pcomp/pid 凑成完整 Category 时，idL 需要 record 相等
   -- （pkeep 字段是证明分量）——Agda 侧需 funext + 证明无关性，
-  -- 本文件保持零公理，record 相等的三家差异见 03/06 章。
+  -- 本文件保持零公理，record 相等的三家差异见 04/07 章。
 
 ------------------------------------------------------------------------
 -- 坑位速记：

@@ -42,7 +42,7 @@ Definition IsProduct (C : Category) (a b p : Obj C)
 Definition IsCoproduct (C : Category) (a b q : Obj C)
   (i1 : Hom C a q) (i2 : Hom C b q) : Type :=
   IsProduct (opposite C) b a q i2 i1.
-(* 余积 = 反范畴里的积——02 章的对偶一行兑现（注意对象次序掉头） *)
+(* 余积 = 反范畴里的积——03 章的对偶一行兑现（注意对象次序掉头） *)
 
 (* ---------- TyCat 里：积 = 笛卡尔积 ---------- *)
 
@@ -132,7 +132,7 @@ Print Assumptions tyProduct.            (* funext *)
       C^op 的 Hom a b = C 的 b→a，所以 (q2, q1) 对掉。 *)
 
 (* ---------- 余积在 Set 的化身：不交并（Simmons 2.5） ----------
-   IsCoproduct 已有（10 章开头用 opposite 定义过抽象版）；
+   IsCoproduct 已有（11 章开头用 opposite 定义过抽象版）；
    这里给 TyCat 的具体化身：A + B 配双侧注入，
    中介 = 分派函数，唯一性 = 对 sum 分派即定。 *)
 

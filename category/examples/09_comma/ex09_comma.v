@@ -2,11 +2,11 @@
    三书对位：Simmons 3.3.10-3.3.12 /《高级范畴论》2.3 / 贺伟 2.2。
 
    (U ↓ L)：平行函子 C --U--> A <--L-- B 的逗号范畴。
-   本文件在 leCat（02 章的预序范畴）上实例化 (Id ↓ K_1)：
+   本文件在 leCat（03 章的预序范畴）上实例化 (Id ↓ K_1)：
    U := Id，B := 终范畴，L := 常值在 1 的 K_1。
    对象类型定义地化简为主下截面 ↓1 = {x | x ≤ 1}。 *)
 
-(* ---------- 最小基建：范畴 + leCat + catOne（02 章同款） ---------- *)
+(* ---------- 最小基建：范畴 + leCat + catOne（03 章同款） ---------- *)
 
 Record Category : Type := mkCat {
   Obj : Type;
@@ -110,7 +110,7 @@ Definition fromSection (s : SectionDown1) : CommaObj :=
 Lemma round_section : forall s, toSection (fromSection s) = s.
 Proof. destruct s as [x a]. reflexivity. Qed.
 
-(* 反方向差一个哑元：分量级相等，record 级不等——02 章的老裂缝。 *)
+(* 反方向差一个哑元：分量级相等，record 级不等——03 章的老裂缝。 *)
 Lemma round_comma_component : forall o,
   cobj (fromSection (toSection o)) = cobj o /\ carr (fromSection (toSection o)) = carr o.
 Proof. destruct o. split; reflexivity. Qed.

@@ -94,7 +94,7 @@ Proof.
 Qed.
 
 (* ---------- 往返 2：ψ(φ(X)) = X —— 自然性在 id 处的特例 ----------
-   NT 的 record 相等是异构问题（见 06 章），按分量证：
+   NT 的 record 相等是异构问题（见 07 章），按分量证：
    对每个 b、每条 g : a → b，ψ(φ X)_b(g) = X_b(g)。 *)
 Lemma yoneda_round2_pointwise : forall (C : Category@{Set Set}) (F : Functor C catTy)
   (a : Obj C) (X : NT (homFun C a) F) (b : Obj C) (g : Hom C a b),
@@ -134,4 +134,4 @@ Print Assumptions yoneda_round2_pointwise. (* 证明本身零新公理：纯自�
    3. homFun 的宇宙钉死在 Category@{Set Set}：Hom C a b 要当
       catTy 的对象（Set 层）。
    4. NT record 相等异构：往返 2 分量化（Lean 版才完整）——
-      与 06 章同一裂缝。 *)
+      与 07 章同一裂缝。 *)

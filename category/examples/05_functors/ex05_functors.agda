@@ -153,7 +153,7 @@ F-preserves-square {C = C} {D = D} F f h g k sq =
 -- 1. map 律的点式版自证（归纳）比翻 stdlib 引理名稳——名字/方向
 --    随版本漂（*-suc 那课）。
 -- 2. homFun 的 Fid/Fcomp 用 funext 包「范畴定律的点式版」——
---    这是 Yoneda（08 章）一切免费的根源。
+--    这是 Yoneda（09 章）一切免费的根源。
 -- 3. TyCat 的 Obj = Set（0 层），homFun 的源范畴钉 Category 0ℓ 0ℓ
 --    对齐宇宙；高一层就错位。
 -- 4. Functor record 带四个 level 参数：{o ℓ o′ ℓ′}——跨范畴构造

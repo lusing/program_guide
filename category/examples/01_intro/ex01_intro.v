@@ -19,7 +19,7 @@ Record Category@{u v} : Type := mkCat {
 }.
 
 (* 复合按「图序」书写：comp f g = 先 f 后 g（Simmons 风格）。
-   函数式的 f ∘ g = 先 g 后 f，恰是反范畴视角（见 02 章）。
+   函数式的 f ∘ g = 先 g 后 f，恰是反范畴视角（见 03 章）。
 
    坑：字段值必须连同隐式 binder 一起绑定——
    comp 的提供项要写 fun _ _ _ f g => …（5 个 binder）。 *)
@@ -105,7 +105,7 @@ Definition composed : nat -> bool := @comp catTy nat bool bool isEven negate.
 Example composed_ok : composed 3 = true := eq_refl.   (* even 3 = false，再取反 *)
 
 (* ---------- 预告：把范畴本身当对象 ----------
-   同构的范畴看起来不同、行为相同。从 02 章起，范畴成为新范畴的
+   同构的范畴看起来不同、行为相同。从 03 章起，范畴成为新范畴的
    对象：反范畴 C^op、函子范畴 [C,D]——「范畴论研究范畴」。 *)
 
 (* 坑位速记：
