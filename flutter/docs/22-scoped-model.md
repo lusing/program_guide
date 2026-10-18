@@ -42,6 +42,10 @@ class NewsItem {
 
 裸 `Map<String, dynamic>` 的字段名拼错要到运行时才炸；实体类让 analyzer 管住拼写与类型。`final` 字段表达"不改对象、换新对象"——换的时候用 `copyWith`（书年代手抄全部字段重建，如今一行搞定，这是"当年如此/现在这样"的第一个点）。
 
+### copyWith 的 null 语义
+
+`copyWith({bool? isFavorite})` 的 `?? this.isFavorite` 兜底意味着**没法通过 copyWith 把字段改回 null**（传 null 被当成"没传"）。对"可空字段需要显式清除"的场景，加 `bool clearXxx = false` 参数（第 20 章 Note 的同款讨论）。NewsItem 的字段都不可空，没有这个问题。
+
 ## 22.4 手写 ScopedModel：三个零件
 
 书用的 `scoped_model` 包（2018 年出品，2022 年停更）核心只有三个零件，全部能用手学过的原语拼出来：
@@ -98,6 +102,22 @@ ScopedModelDescendant<MainScopeModel>(
 )
 ```
 
+### child 参数的重建优化
+
+`ScopedModelDescendant` 的 `child` 参数是性能关键：builder 在每次 notifyListeners 时都跑，但 `child` 只 build 一次、原样传给 builder——把不随模型变的部分（静态图标、装饰）提到 child 里，重建范围缩到最小：
+
+```dart
+ScopedModelDescendant<MainScopeModel>(
+  child: const Icon(Icons.favorite),  // 静态部分，不重建
+  builder: (context, child, model) => IconButton(
+    icon: model.isFavorited ? (child as Icon) : const Icon(Icons.favorite_border),
+    onPressed: model.toggleFavorite,
+  ),
+)
+```
+
+这是第 15 章 AnimatedBuilder 的 child 参数同款优化——Flutter 的"重建范围控制"思想贯穿所有 builder 模式。
+
 ## 22.5 模型层的规矩
 
 书 11.3–11.8 节沉淀出集中式模型的四条军规，全部进了示例：
@@ -140,6 +160,24 @@ mixin NewsPart on Model {
 - **索引 vs 实体**：书用"选中索引"当光标（`selectNews(i)` → `deleteNews()`），每个方法收尾都要 `_selectedIndex = null`，而且**过滤模式下展示索引和内部索引错位**是经典 bug。按实体操作（`remove(item)` 走同一性匹配）从根上免掉这层心智负担——示例回归测试专门锁这个场景。
 - **getter 出防御性拷贝**：外界拿到的列表改了也不影响内部（要更狠可以回 `List.unmodifiable`——改直接抛，19 章 fake 存储撞的就是它）。
 
+### notifyListeners 的调用限制
+
+`notifyListeners` 不能在**监听器回调里**直接调用——比如某个 listener 里又改模型又通知，会触发"在迭代监听器列表时修改它"的问题。需要链式通知时，把后续改动 post 到下一帧：
+
+```dart
+void complexUpdate() {
+  _news.add(item);
+  notifyListeners();
+  // 如果必须在通知后做二次修改：
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _log.add('added $item');
+    notifyListeners();  // 安全：当前通知已完成
+  });
+}
+```
+
+日常模型方法（改一个字段 → 通知一次）不会碰到这个限制——链式场景（A 改触发 B 改）才需要。
+
 ## 22.6 多模型合并：mixin 登场
 
 第二个领域状态（用户）进来时，`ScopedModel` 只有一个 `model:` 参数。书的解法是 Dart 的 mixin：
@@ -156,6 +194,10 @@ class MainScopeModel extends Model with NewsPart, UserPart {}
 ```
 
 `with` 不是继承：把两个 mixin 的成员**拍平**进同一个类，一个 model 参数全带走。书 11.11 还演示了"连接两个模型"（建资讯时记下当前用户）——因为合并后 `_user` 与 `_news` 同类可见，`addNews` 直接读用户名即可。现代评注：provider 时代的答案是 `MultiProvider`（各模型独立挂树、不需要合并类），跨模型调用则靠构造注入——**合并是 scoped_model 时代的形状**。
+
+### mixin 的 on 约束
+
+`mixin NewsPart on Model` 的 `on Model` 是**约束**——NewsPart 只能 `with` 在 Model（或其子类）上，因为它调用了 `notifyListeners()`（Model 从 ChangeNotifier 继承的方法）。约束让 mixin 的依赖显式化：看到 `on Model` 就知道这个 mixin 需要 notifyListeners 可用。
 
 ## 22.7 从 ScopedModel 到今天
 
@@ -175,6 +217,7 @@ scoped_model 停更于 2022，provider 是同批作者写的直系继任（把 `
 - **过滤列表的 index 传给模型**：展示索引 ≠ 内部索引——按实体操作，或传过滤前算好的引用。
 - **在 build 里调模型方法**：`builder: (c, w, m) => m.addNews(...)` 每次重建都执行——改模型的调用放回调/生命周期里。
 - **对话框里找不到模型**：`showDialog` 的路由挂在 Navigator 下、仍在 `ScopedModel` 子树内——能找到；但如果你把模型挂在了某个页面下面，全屏对话框就够不着了（挂根上）。
+- **notifyListeners 在监听器里调用**：迭代中修改监听器列表——链式通知用 addPostFrameCallback 延后。
 ---
 
 上一章：[21 · 调试与 DevTools：让代码开口说话](21-debugging.md) ｜ 下一章：[23 · 认证与凭据：token 的完整一生](23-auth.md) ｜ 返回：[README](../README.md)

@@ -60,6 +60,21 @@ list.add(3);
 
 这条在 19 章测试里也撞过（fake 存储返回 const 原表）。要点：**从错误信息底部往上读**——Flutter 习惯把最相关的描述放最后段；widget 面板/屏幕上的红黄错误屏（debug 版专属）点开就有完整栈。
 
+### FlutterError.onError：全局错误钩子
+
+```dart
+void main() {
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);  // 默认行为（红屏/控制台）
+    // 生产环境：上报到 Crashlytics / Sentry
+    // reportToSentry(details.exception, details.stack);
+  };
+  runApp(const MyApp());
+}
+```
+
+`FlutterError.onError` 捕获框架层的所有未处理异常——生产应用在这里接崩溃上报服务（Firebase Crashlytics、Sentry 等）。
+
 ## 21.4 逻辑错误：print → debugPrint → 断点
 
 最阴的一类：忘调 `setState()`（第 08 章），界面纹丝不动、零报错。排查阶梯：
@@ -78,6 +93,32 @@ void _addFixed(int n) {
 3. **断点精确制导**：debug 方式启动（`flutter run` 默认就是），在行号左侧点红点，触发后 IDE 停在该行——**单步进入/跳过**（Step Into/Over）、悬停看值、Watch 面板盯变量、调用栈看"谁把我叫来的"。VS Code 装 Dart 插件后全套免费。
 
 print 治标（要改代码），断点治本（不改代码、随时增删观察点）。习惯：**短路径先 print，跨方法的数据流上断点**。
+
+### print vs debugPrint
+
+| | print | debugPrint |
+|---|---|---|
+| 输出 | 直接到控制台 | 节流分片（避免 Android logcat 截断） |
+| 长文本 | 可能被截断 | `wrapWidth` 控制分片宽度（默认 1024） |
+| 生产环境 | 会输出（安全隐患） | 可替换为空实现 |
+
+```dart
+// 生产环境关闭 debugPrint：
+debugPrint = (String? message, {int? wrapWidth}) {};  // 空实现 = 静默
+
+// 长 JSON 输出：
+debugPrint(jsonEncode(data), wrapWidth: 2048);
+```
+
+lint（`avoid_print`）会拦 `print` 鼓励 `debugPrint`——示例工程里 `print` 按钮带 `// ignore: avoid_print` 注释（本章的教学点就是对比两者）。
+
+### 断点进阶：条件断点与日志断点
+
+IDE 的断点不止"停住"一种：
+
+- **条件断点**：右键断点设条件（`_count > 100`）——只在条件满足时停，循环里排查特定值的神器
+- **日志断点**：右键断点选 "Log message"——命中时打印表达式值但**不停住**，适合高频路径（比 print 方便，不用改代码）
+- **debugger() 语句**：代码里写 `debugger(when: x > 10)`（`import 'dart:developer'`）——编程式条件断点，版本控制可见
 
 ## 21.5 flutter run 键位与多设备
 
@@ -104,6 +145,14 @@ print 治标（要改代码），断点治本（不改代码、随时增删观�
 
 Inspector 还有一条隐藏价值：**慢动画按钮**（Slow Animations）把动画放慢 5 倍，调 15 章那种交互动画时极好用。
 
+### DevTools 的启动方式
+
+| 方式 | 场景 |
+|---|---|
+| `flutter run` 后按 `v` | 最常用——自动挂到当前会话 |
+| `dart devtools` 独立启动 | 分析 profile/release 数据 |
+| IDE 内置（VS Code/Android Studio） | 调试图标一键开 |
+
 ## 21.7 视觉调试开关
 
 一组 debug 全局变量，给 UI 开"透视"：
@@ -127,6 +176,7 @@ MaterialApp(debugShowMaterialGrid: true);  // 栅格网格（Material 布局对�
 - **debug 开关拨了没反应**：热重载不重读全局 debug 变量——热重启 `R`。
 - **release 包里找红屏**：错误屏/断言都是 debug 专属，release 只有无声失败——验收以 release 行为为准（18 章）。
 - **移动端日志被截断**：长文本用 `debugPrint` 不用 `print`（自动分片）。
+- **生产环境留 print**：日志泄露敏感信息——发布前全局检查或用 `debugPrint = ...` 空实现。
 ---
 
 上一章：[20 · 实战：记事本](20-notes.md) ｜ 下一章：[22 · 集中状态管理：从传参链到 ScopedModel](22-scoped-model.md) ｜ 返回：[README](../README.md)

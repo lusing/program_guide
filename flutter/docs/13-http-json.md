@@ -6,7 +6,7 @@
 
 本地写死的数据终究要换成真数据：请求 HTTP 接口、解析 JSON、变成类型安全的对象。异步底座（Future/await）在 [Dart 教程·第 15 章](../dart/docs/15-async.md)，JSON 建模模板在 [Dart 教程·第 18 章](../dart/docs/18-files-json-http.md)——本章只讲 Flutter 侧怎么把它们接进界面，以及一个重要工程习惯：**依赖注入让页面可测**。
 
-请求侧用 Flutter 官方第一方包 `http`（pubspec 里 `http: ^1.2.0`）：
+请求侧用 Flutter 官方第一方包 `http`（pubspec 里 `http: ^1.2.0`，pub.dev 当前 1.6.x）：
 
 ```dart
 Future<List<NewsItem>> Function() fetchFrom(String url) => () async {
@@ -20,6 +20,48 @@ Future<List<NewsItem>> Function() fetchFrom(String url) => () async {
 ```
 
 为什么不用裸 dart:io HttpClient（Dart 教程 18 章教过）？http 包 API 更顺手（`resp.body` 已解码、状态码直接读）且跨平台（Web 上自动换实现）；两者心智模型一致，学过的 await/JSON 全部适用。
+
+### http 包的 API 面
+
+| 函数 | 用途 |
+|---|---|
+| `http.get(Uri)` | GET 请求 |
+| `http.post(Uri, body: ...)` | POST（`body` 是 String/Map/List） |
+| `http.put(Uri, body: ...)` | PUT（更新资源） |
+| `http.delete(Uri)` | DELETE |
+| `http.Client()` | 可复用连接的客户端（多次请求用它） |
+
+`Response` 的关键字段：`statusCode`（200 成功 / 404 不存在 / 500 服务器错）、`body`（响应体字符串）、`headers`（响应头 Map）。
+
+### 状态码检查：别默认 200
+
+`http.get` 对 4xx/5xx **不抛异常**——404 和 200 一样正常返回，区别只在 `statusCode`。生产代码必须显式检查：
+
+```dart
+final resp = await http.get(uri);
+if (resp.statusCode != 200) {
+  throw HttpException('请求失败：${resp.statusCode} ${resp.reasonPhrase}');
+}
+final list = jsonDecode(resp.body) as List<dynamic>;
+```
+
+示例为了篇幅省略了这步（自测后端必定 200），真实接口必须加。`HttpException` 是 dart:io 的异常类；也可以自定义 `ApiException` 携带 statusCode 供上层分支（401 跳登录、500 显示重试）。
+
+### http.Client：复用连接
+
+`http.get` 每次新建连接；频繁请求（列表分页、心跳）用 `http.Client` 复用：
+
+```dart
+final client = http.Client();
+try {
+  final r1 = await client.get(uri1);
+  final r2 = await client.get(uri2);  // 复用底层连接
+} finally {
+  client.close();  // 用完必关
+}
+```
+
+`client.close()` 释放连接池——State 里持有的 client 在 dispose 里关（第 08 章资源纪律）。
 
 ## 13.2 数据建模：fromJson 一行海关
 
@@ -36,6 +78,25 @@ class NewsItem {
 ```
 
 模型类 + factory fromJson + toJson：**dynamic 世界到类型世界的海关**，逐字段 as 强转，类型不对当场抛错而不是拖到千里之外。完整模板（嵌套/可空字段/列表）看 Dart 教程 18 章——Flutter 生态的 json_serializable 代码生成只是把这个样板自动化，手写先懂原理。
+
+### 可空与嵌套字段的处理
+
+真实接口的字段不总是齐的。可空字段用 `as String?` + 默认值；嵌套对象递归 fromJson：
+
+```dart
+factory NewsItem.fromJson(Map<String, dynamic> json) => NewsItem(
+      id: json['id'] as int,
+      title: json['title'] as String? ?? '无标题',  // 缺 title 给默认
+      cover: json['cover'] == null
+          ? null
+          : CoverImage.fromJson(json['cover'] as Map<String, dynamic>),  // 嵌套对象
+      tags: (json['tags'] as List<dynamic>? ?? [])
+          .map((e) => e as String)
+          .toList(),  // 列表字段
+    );
+```
+
+`json['x'] as String?` 与 `(json['x'] as String?) ?? '默认'` 的区别：前者允许 null 存活，后者把 null 换成默认值。选哪个取决于业务语义（"没有标题"和"标题为空"是不是一回事）。
 
 ## 13.3 自测型后端：零外网的示例
 
@@ -93,6 +154,23 @@ class NewsApp extends StatelessWidget {
 
 这就是依赖注入在 Flutter 里最朴素的形态——构造参数传函数/对象。第 17 章的存储、第 20 章的 NotesStorage 都是同款思路：**边界（网络/文件）注入化，核心逻辑才可测**。
 
+### 注入的粒度：函数 vs 接口
+
+示例注入的是"函数"（`Future<List<NewsItem>> Function()`）——一个边界操作一个函数，最轻量。当边界操作多起来（增删改查四个方法），函数不够表达，升级成**抽象类**：
+
+```dart
+abstract class NewsApi {
+  Future<List<NewsItem>> list();
+  Future<NewsItem> create(String title);
+  Future<void> delete(int id);
+}
+
+class HttpNewsApi implements NewsApi { /* http 实现 */ }
+class FakeNewsApi implements NewsApi { /* 测试假实现 */ }
+```
+
+第 20 章的记事本就是接口注入的完整实战。判断标准：**一个操作注入函数，一组操作注入接口**。
+
 ## 13.6 频道切换：参数化 URL + Drawer 联动
 
 真实资讯类 App 的列表不是一张嘴等喂数据——用户在抽屉里换频道，列表得跟着换请求。《Flutter从0基础到App上线》13 章的头条新闻实战把这套联动浓缩成一个模式：**频道对象 = 显示名 + 请求参数**：
@@ -119,12 +197,40 @@ Future<List<NewsItem>> fetchNews(Channel c) async {
 
 当年如此 → 现在这样：书里 `new List()` + `channelList.add(...)` 逐个塞；现代是 `const` 列表字面量。联动链路两跳：Drawer 的 `ListTile.onTap` 换 `currentChannel` → 触发 `fetchNews(currentChannel)` 重拉。频道与页面的解耦升级版见第 29 章——用 Stream 广播替代直接持有，换频道的发起方甚至不需要认识列表页。
 
+## 13.7 超时与取消：生产网络的两条底线
+
+示例的自测后端没有"慢"和"断"的概念，真实接口必须有超时：
+
+```dart
+final resp = await http.get(uri).timeout(
+  const Duration(seconds: 10),
+  onTimeout: () => throw TimeoutException('请求超时'),
+);
+```
+
+`.timeout` 是 Future 的通用扩展（dart:async）——超时未完成的 Future 被忽略，onTimeout 的回调决定返回什么。10 秒是常见默认值；图片上传可以放宽到 30 秒。
+
+**取消**：Flutter 的 http 请求**没有内置取消**——`http.get` 返回的 Future 一旦开始就无法中断（`.timeout` 只是不再等它）。要真取消用 `http.Client` + `http.Request`：
+
+```dart
+final client = http.Client();
+final request = http.Request('GET', uri);
+final future = client.send(request).then((s) => s.stream.bytesToString());
+// 取消：
+client.close();  // 关闭 client = 中断所有 in-flight 请求
+```
+
+或者上生态包 `dio`（内置 CancelToken）——但本教程第一方主线不引入，知道 http 的边界即可。
+
 ## 坑位清单
 
 - **build 里发请求**：每次重建都发（帧率掉、接口被打爆）——initState 发一次存 State（14 章详述）。
 - **jsonDecode 结果裸用**：全程 dynamic、拼错字段名运行时才炸——立刻 as + fromJson 进类型世界。
 - **错误处理只考虑成功**：断网/500 时 FutureBuilder 给你 error 态（14 章），别让界面白屏。
 - **API key 写进代码**：桌面应用也是要发出去的——配置/环境变量，别提交仓库。
+- **不检查 statusCode**：404/500 当 200 解析——`if (resp.statusCode != 200) throw ...` 是标配。
+- **http.Client 忘 close**：连接池泄漏——State 持有的 client 在 dispose 里关。
+- **可空字段直接 as**：接口字段缺失时 `as String` 抛 `type 'Null' is not a subtype`——可空字段用 `as String?` + 默认值。
 ---
 
 上一章：[12 · 列表与滚动：从十条到十万条](12-lists.md) ｜ 下一章：[14 · 异步 UI：把 Future 画出来](14-async-ui.md) ｜ 返回：[README](../README.md)

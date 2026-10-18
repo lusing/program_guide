@@ -6,6 +6,16 @@
 
 内容有了，怎么摆？Flutter 布局的心脏是一条**约束传递协议**：父级给子级下发约束（"你的宽度必须在 0..768 之间"），子级在约束内选定自己的尺寸回报，父级再决定摆放位置。记住一句口诀：**约束向下，尺寸向上，位置由父定**。本章讲只有一个孩子的容器——它们是这条协议最简单的参与者。
 
+### 约束的三种形态
+
+| 形态 | min/max 关系 | 效果 |
+|---|---|---|
+| **紧约束（tight）** | min = max = X | "你必须正好是 X"——子级没有选择权 |
+| **松约束（loose）** | min = 0, max = X | "你最多 X，随意"——子级按内容决定 |
+| **无界（unbounded）** | max = infinity | "随便多大"——子级若无限伸展会崩 |
+
+`BoxConstraints.tightFor(width: 100)` 造紧约束；`BoxConstraints.loose(Size(100, 100))` 造松约束。常见紧约束来源：`Expanded`（"剩余空间全是你的"）、`ListView` 子项的宽度（"和 ListView 一样宽"）；常见松约束来源：`Center`/`Align`（"最多到父级大小"）、`Container` 无尺寸参数时。
+
 先看最常用的留白三件套：
 
 ```dart
@@ -48,6 +58,30 @@ Container 是最常用的盒子，聚合了尺寸（width/height）、内边距�
 | `border` | 边框（`Border.all(color, width)`） |
 | `boxShadow` | 阴影列表（blurRadius 模糊、offset 偏移） |
 | `gradient` | 渐变（LinearGradient 等） |
+| `image` | 背景图（DecorationImage，通常用 Image.asset 更方便） |
+| `shape` | `BoxShape.rectangle`（默认）/ `BoxShape.circle`（正圆） |
+
+### 渐变三兄弟
+
+```dart
+// 线性渐变：左上 → 右下
+BoxDecoration(gradient: LinearGradient(
+  begin: Alignment.topLeft, end: Alignment.bottomRight,
+  colors: [Colors.blue, Colors.purple],
+))
+
+// 径向渐变：从中心向外
+BoxDecoration(gradient: RadialGradient(
+  colors: [Colors.yellow, Colors.orange],
+))
+
+// 扫掠渐变：绕中心扫一圈（仪表盘风格）
+BoxDecoration(gradient: SweepGradient(
+  colors: [Colors.red, Colors.green, Colors.blue, Colors.red],
+))
+```
+
+渐变至少给两个 color；`stops` 数组控制每个颜色的停止位置（0.0~1.0）。
 
 性能小知识：**无参数的 Container 直接退化为 child**；只要纯色背景用 `ColoredBox`、只要约束用 `SizedBox` 更轻——框架内部也会做这种替换，但写代码时选对组件是好习惯。
 
@@ -63,6 +97,10 @@ Container 是最常用的盒子，聚合了尺寸（width/height）、内边距�
 Align 把唯一的孩子放到盒子里的指定位置。`Alignment(x, y)` 用 -1..1 的坐标：`(0,0)` 正中、`(-1,-1)` 左上、`(0.9, 0)` 靠右居中——不是像素值，是相对盒子的比例位置（九宫格加刻度）。`Center` 就是 `Align(alignment: Alignment.center)` 的别名，也是你写得最多的居中手段（第 02 章已经用过）。
 
 Align 还有一个隐藏用途：**放松约束**。父级给的紧约束（"宽度必须是 768"）会让孩子的 `width` 设置失效——套一层 Align/Center，约束变松（"0..768 都行"），孩子的自有尺寸才能生效。第 15 章的动画示例就踩过这个坑（ListView 里 AnimatedContainer 宽度被顶满，Center 一包就好）。
+
+### Alignment 与 AlignmentDirectional
+
+`Alignment(0.9, 0)` 是**物理坐标**（右永远是 +x）；`AlignmentDirectional.centerEnd` 是**文字方向感知**的（RTL 语言里"end"是左边）。国际化应用（第 30 章）优先用 Directional 系列——阿拉伯语用户看到的"右对齐"应该在左边。
 
 ## 4.4 裁剪、旋转与透明度
 
@@ -87,6 +125,10 @@ Opacity(opacity: 0.3, child: Container(...))       // 整体不透明度 0.0–1
 
 透明度同理：静态半透明用 `Opacity`；若只是让**颜色**半透明，`Colors.black.withValues(alpha: 0.3)` 更便宜（不引入合成层）。频繁动画的透明度交给 `AnimatedOpacity`/`FadeTransition`（15 章）。
 
+### FittedBox：缩放适配
+
+`FittedBox(fit: BoxFit.contain, child: ...)` 把 child 缩放适配到可用空间——图片缩略图、响应式文字都用它。`fit` 的常用值：`contain`（等比缩放到放下）、`cover`（等比缩放到铺满，可能裁剪）、`fill`（拉伸变形铺满）、`none`（不缩放，直接裁剪溢出部分）。
+
 ## 4.5 布局选型小结
 
 | 需求 | 用 |
@@ -97,6 +139,7 @@ Opacity(opacity: 0.3, child: Container(...))       // 整体不透明度 0.0–1
 | 摆放/居中/放松约束 | `Align` / `Center` |
 | 圆形头像/裁剪图片 | `ClipOval` / `ClipRRect` |
 | 旋转（布局真实占位） | `RotatedBox` |
+| 缩放适配 | `FittedBox` |
 | 摆多个孩子 | Row/Column/Stack（下一章） |
 | 内容超出屏幕 | ListView（第 12 章） |
 
@@ -106,6 +149,8 @@ Opacity(opacity: 0.3, child: Container(...))       // 整体不透明度 0.0–1
 - **阴影被裁剪**：父级带裁剪（ClipRect）或贴边时阴影被切——留出 margin 余量。
 - **Container 同时写 color 和 decoration 会编译错**：把 color 挪进 BoxDecoration。
 - **`double.infinity` 的条件**：无界父级（如横向 Row 里写 `width: infinity`）直接崩（unbounded 约束）——用 Expanded/Flexible（05 章）表达"占满"。
+- **RTL 下 Alignment 左右颠倒**：物理坐标的 Alignment 不随文字方向变——国际化应用用 AlignmentDirectional。
+- **ClipRRect 包大列表卡顿**：裁剪引入合成层——长列表项的圆角图片改用 `Image` 的 `borderRadius` 参数（绘制期圆角，无合成层）。
 ---
 
 上一章：[03 · Widget：不可变的配置树](03-widgets.md) ｜ 下一章：[05 · 布局 II：线性、弹性与层叠](05-layout-multi.md) ｜ 返回：[README](../README.md)

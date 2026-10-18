@@ -35,6 +35,18 @@ cd examples/20_notes && flutter run -d windows
 
 四文件各司其职：**入口薄**（runApp 装配 + 根主题状态）、**模型纯**（Note 无任何 Flutter 依赖）、**存储抽象**（接口隔离实现）、**页面自治**（EditPage 不知道存储的存在，只管"编辑完 pop 带回结果"）。这是 13/17/19 章"可测设计"的落地形态——也是你能带走复用的工程骨架。
 
+### 为什么 main() 是 async
+
+```dart
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();  // async main 必须先拉 Binding
+  final dir = await DirectoryWrapper.tempDir();
+  runApp(NotesApp(storage: FileNotesStorage('${dir.path}/notes.json')));
+}
+```
+
+`runApp` 前要做异步准备（取目录、读配置、初始化插件）时，`main` 变 async + `WidgetsFlutterBinding.ensureInitialized()`——没有这行，await 期间框架未初始化，插件调用全崩（第 01 章 Binding 体系的实战）。`DirectoryWrapper` 是薄封装——main 不直接调 `Directory.systemTemp`，测试可以替换它。
+
 ## 20.3 模型：Note 与时间戳
 
 ```dart
@@ -70,6 +82,21 @@ class Note {
 
 fromJson/toJson 是 [Dart 教程·第 20 章](../dart/docs/20-todo.md) 同款海关；**copyWith 是 Flutter 世界的高频惯用法**——Widget 不可变，"改一条笔记"永远是"复制一份新的"（07 章哲学的应用）。**DateTime 不会自动序列化**：存前 `toIso8601String()`、读时 `DateTime.tryParse`（tryParse 吃 null/垃圾返回 null——旧数据兼容就靠它）。
 
+### copyWith 的 null 陷阱
+
+`copyWith({String? title})` 用 `?? this.title` 兜底——**没法把字段改回 null**（传 null 被当成"没传"）。对可空字段（`DateTime? updatedAt`），需要"显式清除"语义时加 sentinel：
+
+```dart
+Note copyWith({String? title, DateTime? updatedAt, bool clearUpdatedAt = false}) => Note(
+      id: id,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      updatedAt: clearUpdatedAt ? null : (updatedAt ?? this.updatedAt),
+    );
+```
+
+记事本的 Note 用不上（updatedAt 每次保存都刷新），知道有这个模式即可。
+
 ## 20.4 存储抽象：接口 + 文件实现
 
 ```dart
@@ -84,6 +111,17 @@ class FileNotesStorage implements NotesStorage {
 ```
 
 页面只认 `NotesStorage` 接口：main 装配 `FileNotesStorage(临时目录/notes.json)`，测试装配内存实现。换实现（换云端、换 DB）不动页面——第 09/13 章的依赖注入思想收口于此。
+
+### JsonEncoder.withIndent：可读的文件
+
+`jsonEncode` 默认输出一行紧凑 JSON——人打开文件改不了。`JsonEncoder.withIndent('  ').convert(obj)` 输出缩进格式：
+
+```dart
+final encoder = const JsonEncoder.withIndent('  ');
+await File(path).writeAsString(encoder.convert(notes.map((n) => n.toJson()).toList()));
+```
+
+记事本的 notes.json 人可以手动编辑——调试和救急都方便。
 
 ## 20.5 列表页：三态一职责
 
@@ -109,6 +147,14 @@ class FileNotesStorage implements NotesStorage {
 ```
 
 列表页管三态：**加载中**（CircularProgressIndicator）→ **空态**（提示文案）→ **数据**（ListView.builder，12 章）。`_openEditor` 是新建/编辑共用通道：push 后 await 编辑页 pop 回来的 Note（10 章），indexWhere 判断"更新还是插入"，**改完内存立刻落盘**。删除走长按 + 确认对话框（07 章），同样"改内存 → 落盘"两步。 mounted 检查在两处 await 之后——纪律回顾。
+
+### id 生成策略
+
+```dart
+int _nextId() => _notes.fold(0, (max, n) => n.id > max ? n.id : max) + 1;
+```
+
+取现有最大 id + 1——简单可靠（删除不重用 id，避免"删了 3 又建一个 3"的错位）。数据量大了（10k+）可以换 UUID 或自增计数器持久化。
 
 ## 20.6 编辑页：controller 与保存即 pop
 
@@ -148,7 +194,7 @@ class InMemoryStorage implements NotesStorage {
 
 ## 20.8 扩展方向
 
-每个方向都是一次独立练习：搜索过滤（TextField + where 过滤列表）、markdown 渲染（生态 flutter_markdown）、自动保存防抖（Timer 重置）、系统托盘（生态 tray_manager）、多窗口（等官方支持）、导出分享。做完这些，你已经在真实工程里了。
+每个方向都是一次独立练习：搜索过滤（TextField + where 过滤列表）、markdown 渲染（生态 flutter_markdown）、自动保存防抖（Timer 重置，17 章）、系统托盘（生态 tray_manager）、多窗口（等官方支持）、导出分享。做完这些，你已经在真实工程里了。
 
 ## 坑位清单
 
@@ -156,6 +202,8 @@ class InMemoryStorage implements NotesStorage {
 - **DateTime 直接 jsonEncode**：不报错但存的是字符串，读回时 `as DateTime` 崩——手转 ISO 字符串（20.3）。
 - **编辑页拿旧 controller**：热重载后 State 复用而 widget.note 变了——didUpdateWidget 里同步，或页面不复用。
 - **空标题笔记**：列表里显示兜底文案（`n.title.isEmpty ? '（无标题）' : n.title`），别让用户看到空白行。
+- **async main 忘 ensureInitialized**：await 期间框架未初始化，插件全崩——第一行必写。
+- **load 返回原表**：页面 insert/remove 炸 "unmodifiable"——存储层返回拷贝（`[...seed]`）。
 ---
 
 上一章：[19 · Widget 测试：自动化的界面验证](19-testing.md) ｜ 下一章：[21 · 调试与 DevTools：让代码开口说话](21-debugging.md) ｜ 返回：[README](../README.md)

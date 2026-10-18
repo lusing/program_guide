@@ -30,6 +30,21 @@ class CartPage extends StatelessWidget {
 
 提升（lifting state up）的规矩：**数据放能看见所有使用者的最近公共祖先**，改数据的函数也由祖先下发，子组件通过回调上抛事件。数据向下（构造参数）、事件向上（回调）——单向数据流，出问题时排查路径清晰。局限也明显：层级一深，中间组件被迫当"传菜员"（每层转发一遍构造参数）——这正是下一节要解决的。
 
+### 单向数据流
+
+状态提升形成的"数据下传、事件上抛"结构就是单向数据流（unidirectional data flow）：
+
+```text
+        CartPage (持有 _count)
+        ↓ 传 count      ↑ 传 onAdd 回调
+    ┌───────┴───────┐
+    ↓               ↓
+CartViewer      CartAdder
+"显示 count"    "点按钮调 onAdd"
+```
+
+子组件不直接改共享数据——它们发事件（调回调），由祖先决定怎么改。这条纪律让数据变更路径唯一（只有 CartPage 的 setState 一处），排查"谁改了数据"时不用全树搜索。
+
 ## 9.3 ChangeNotifier：可监听的状态对象
 
 ```dart
@@ -44,7 +59,22 @@ class Cart extends ChangeNotifier {
 }
 ```
 
-ChangeNotifier 是 Flutter 自带的**观察者基类**（也是 Listenable 的标准实现）：状态对象自己管理"谁在听我"，改完数据 `notifyListeners()` 一声令下，所有监听者各自重建。**谁改谁通知**——不靠 setState，粒度跟着监听者走。
+ChangeNotifier 是 Flutter 自带的**观察者基类**（`Listenable` 的标准实现）：状态对象自己管理"谁在听我"（`addListener`/`removeListener`），改完数据 `notifyListeners()` 一声令下，所有监听者各自重建。**谁改谁通知**——不靠 setState，粒度跟着监听者走。
+
+### ChangeNotifier 的 API 面
+
+| 方法 | 用途 |
+|---|---|
+| `addListener(VoidCallback)` | 注册监听者 |
+| `removeListener(VoidCallback)` | 注销监听者 |
+| `notifyListeners()` | 通知全部监听者（必须在数据变更后调用） |
+| `dispose()` | 释放（dispose 后再 notifyListeners 会抛错） |
+
+`notifyListeners` 的调用时机：在**状态字段更新之后**——先改后通知，监听者读到的才是新值。dispose 后调用 notifyListeners 在 debug 模式会触发 assert（"A ChangeNotifier was used after being disposed"）——异步操作回调里先查 `mounted` 再改状态。
+
+### 与 setState 的关系
+
+setState 是"标记这个 State 重建"；notifyListeners 是"通知所有监听者重建"。两者都是"改完数据喊一声"，区别在于 setState 只管自己，notifyListeners 管所有订阅者。ChangeNotifier 模式让状态对象**脱离 Widget 树存活**——它可以放在任何地方（全局单例、InheritedWidget 的字段、甚至另一个 Isolate），监听者各自决定怎么响应。
 
 ## 9.4 InheritedNotifier：沿树广播 + 自动订阅
 
@@ -78,6 +108,22 @@ InheritedWidget 是 Flutter 的"沿树广播"原语：放在树的任何位置�
 
 读代码时认出这个模式：`Xxx.of(context)` = 向上找 XxxScope = 隐式订阅了它。
 
+### InheritedNotifier 的自动订阅机制
+
+`InheritedNotifier` 内部做了两件事：
+
+1. **监听 notifier**：构造时 `notifier.addListener(_handleUpdate)`——notifier 变化时触发 `updateShouldNotify`
+2. **通知依赖者**：`updateShouldNotify` 返回 true 时，所有 `dependOnInheritedWidgetOfExactType` 过的 Element 被标记重建
+
+你不需要手写 addListener/removeListener——InheritedNotifier 替你管理监听生命周期（dispose 时自动 removeListener）。这是它比"手写 InheritedWidget + 手动 addListener"更简洁的原因。
+
+### dependOn 与 getInheritedWidgetOfExactType 的区别
+
+`context.dependOnInheritedWidgetOfExactType<T>()`：取回 + **建立依赖**（T 变化时当前 Element 重建）。
+`context.getInheritedWidgetOfExactType<T>()`：只取回，**不建立依赖**（T 变化时当前 Element 不重建）。
+
+什么时候用后者：一次性读取（比如 initState 里读一次主题色）——不需要随主题变化重建的场景。日常 `Xxx.of(context)` 都用 dependOn 版本。
+
 ## 9.5 生态选型：什么时候上工具
 
 原生方案（提升 + InheritedNotifier）能撑大多数应用，但样板代码多（每个状态写一套 Scope/of）。生态工具解决的是**人体工学**：
@@ -91,12 +137,18 @@ InheritedWidget 是 Flutter 的"沿树广播"原语：放在树的任何位置�
 
 建议路径：**先用原生写痛了，再上 provider/Riverpod**——知道工具在替你做什么，才不会滥用。
 
+### provider 在替你做什么
+
+`package:provider` 的核心 `ChangeNotifierProvider` 就是本例 `CartScope` 的通用化——你写 `ChangeNotifierProvider(create: (_) => Cart(), child: ...)`，它替你生成 InheritedNotifier 层。消费侧 `context.watch<Cart>()` = `dependOn...`，`context.read<Cart>()` = `getInheritedWidgetOfExactType`（不重建）。看穿了这层，provider 没有任何魔法——只是把 9.3/9.4 的样板代码压缩成一行。
+
 ## 坑位清单
 
 - **notifyListeners 忘调**：界面纹丝不动（改了数据没广播）——ChangeNotifier 的方法里，改完必通知。
 - **InheritedNotifier 每次通知重建整片子树**：粒度控制靠"订阅范围小"（把 depend 收在真正用数据的叶子），不是无脑包全页。
 - **const 构造里装 ChangeNotifier**：编译错（notifier 非常量）——CartScope 构造去掉 const。
 - **提升后又全树 setState**：状态提上去了、通知却炸全页——该换成 notifier 精确重建。
+- **dispose 后 notifyListeners**：ChangeNotifier 已释放还通知——异步回调里先查 mounted；ChangeNotifier 自己的 dispose 里调 notifyListeners 也是错的。
+- **getInheritedWidgetOfExactType 当 watch 用**：取了不建立依赖，数据变了界面不更新——要订阅就用 dependOn 版本（或 provider 的 watch）。
 ---
 
 上一章：[08 · 有状态 Widget：setState 与生命周期](08-stateful.md) ｜ 下一章：[10 · 导航与路由：页面的栈](10-navigation.md) ｜ 返回：[README](../README.md)

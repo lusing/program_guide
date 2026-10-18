@@ -28,6 +28,17 @@ if (xfile == null) return;       // 用户取消了——不是错误
 
 "当年如此/现在这样"：书 2020 年写的是 `ImagePicker.pickImage(...)`（静态方法）返回 `Future<File>`——现在是**实例方法**，返回 `XFile?`。`XFile` 是跨平台文件抽象（Web 上根本没有磁盘路径，`File` 撑不住）。可空性本身就是语义：**取消不再抛异常，返回 null**。三板斧（`maxWidth`/`maxHeight`/`imageQuality`）在书年代只有 `maxWidth`——后两个是后来补的压缩武器：原图 4000px 直传既卡界面又费流量。
 
+### pickImage 的完整参数面
+
+| 参数 | 用途 |
+|---|---|
+| `source` | `ImageSource.gallery` / `ImageSource.camera` |
+| `maxWidth` / `maxHeight` | 限制输出尺寸（像素）——超出等比缩放 |
+| `imageQuality` | JPEG 质量 0-100（100 = 无损，默认）——配合 maxWidth 用 |
+| `preferredCameraDevice` | `CameraDevice.front` / `.rear`（前置/后置，仅 camera 源） |
+
+`pickMultiImage` 是多选版（返回 `List<XFile>`）——相册多图场景（朋友圈九图）用它。
+
 ## 24.3 选择器 UI：底部弹层
 
 ```dart
@@ -68,6 +79,10 @@ Future<void> _pick(BuildContext context, ImageSource source) async {
 
 平台差异的教训：**能力矩阵进 UI 层**——要么隐藏"拍照"项（按 `Platform.isWindows` 判断），要么像示例这样接住错误给一句人话提示。直接崩给用户看是下策。
 
+### 先 pop 再 await 的顺序
+
+`_pick` 的第一步是 `Navigator.of(sheetContext).pop()`（关弹层），然后才 `await picker(...)`——顺序反了的话：BottomSheet 的 context 在 await 期间失效，后续 SnackBar 找不到 ScaffoldMessenger。这是第 07 章"async 回调里 context 可能已失效"的具体化。
+
 ## 24.4 预览三态
 
 ```dart
@@ -90,6 +105,10 @@ Widget _preview() {
 
 `XFile` 喂 `Image.file` 要过一道 `File(x.path)`（平台实现里 XFile 包着真文件）；`errorBuilder` 让坏图不白屏——测试环境里假路径也能给出可断言的文本（第 23 章同款手法）。
 
+### didUpdateWidget 的协同
+
+`ImageInput` 的 `didUpdateWidget` 监听 `networkUrl` 变化：上传完成后 `networkUrl` 从 null 变 URL，本地 `_picked` 让位给网络图——`widget.networkUrl != oldWidget.networkUrl` 判断"这次更新是上传完成触发的"。这是第 08 章 didUpdateWidget 的实战用例。
+
 ## 24.5 上传：multipart 表单
 
 书 14.6 当年为此引入了 `dio`（第三方 HTTP 库）。**第一方 `http` 包同样能发 multipart**，不必为此加依赖：
@@ -105,6 +124,8 @@ Future<String> uploadImage(Uri base, XFile file) async {
   return body['url'] as String;       // 服务端返回可访问的 URL
 }
 ```
+
+`MultipartRequest` 与 `http.get/post` 的区别：后者返回完整的 `Response`，前者返回 `StreamedResponse`（流式，适合大文件）——`stream.bytesToString()` 把响应体读成字符串再 JSON 解码。`MultipartFile.fromPath` 的 `'files'` 是表单字段名，**必须与服务端约定一致**（示例的假上传服务器按 `files` 字段取文件）。
 
 选完图到拿到 URL 是异步链路：`onPicked` 回调里先显示本地预览（乐观 UI），上传完成再切网络图——示例的假上传服务器（本地 HttpServer，把文件落临时目录再发回 URL）跑通了全链路。
 
@@ -137,7 +158,7 @@ class ImageInput extends StatefulWidget {
 | 能力 | 常用包（社区） | Windows 桌面 | 第一方出路 |
 |---|---|---|---|
 | 相机/图库 | image_picker | ✅ 图库 / ❌ 相机 | ——（已是第一方） |
-| GPS 定位 | geolocator | ❌ | MethodChannel 桥 Win32 `GetLatLon` 系 API |
+| GPS 定位 | geolocator | ❌ | MethodChannel 桥 Win32 API |
 | 加速度/陀螺仪 | sensors_plus | 部分 | MethodChannel 自桥 |
 | 蓝牙 BLE | flutter_blue_plus | ❌ | MethodChannel 自桥 |
 | 音频播放 | audioplayers / just_audio | 部分 | MethodChannel 桥 Media Foundation |
@@ -154,6 +175,7 @@ class ImageInput extends StatefulWidget {
 - **弹层没关就去等选取**：先 `pop` 弹层再 `await`，顺序反了上下文先失效（书 14.3 的顺序）。
 - **iOS 忘配 Info.plist**：一调相机/图库就崩，控制台给的原因在真机日志里——两个 UsageDescription key 先写上。
 - **widget 测试里调真 picker**：测试环境没有文件框——picker/upload 全注入。
+- **multipart 字段名对不上**：服务端收不到文件——`MultipartFile.fromPath('files', ...)` 的字段名与服务端约定对齐。
 ---
 
 上一章：[23 · 认证与凭据：token 的完整一生](23-auth.md) ｜ 下一章：[25 · 性能优化与质量债](25-performance.md) ｜ 返回：[README](../README.md)
