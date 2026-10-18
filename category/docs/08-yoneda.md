@@ -89,6 +89,12 @@ Yoneda 嵌入全忠实的机器化需要同构数据在 NT 层的搬运（含 06
 | Agda | funext + cong (λk→k x) | cong (λ k → k id) 取样 | ≈NT（setoid） |
 | Lean | funext + show 折叠 | congrFun 取样 + idL | **完整**（congr 1） |
 
+> Simmons 3.5.2/3.5.3 是本章的天然预热：广义 Hom-后处理函子间
+> 的自然变换由「沿 l 追 id 一圈」决定（06 章 6.5 已机器缩影）；
+> Yoneda 把它推到极致——可表函子间的 τ 整个由 `Fa` 一个元素
+> 决定。读 8.2 的机器证明前值得先把 06 章 6.5 的三行 reflexivity
+> 摆在手边。
+
 ## 坑位速记
 
 1. Coq 的 yonedaTo 分量要**双层注解**：外层 lambda 对齐
@@ -105,4 +111,4 @@ Yoneda 嵌入全忠实的机器化需要同构数据在 NT 层的搬运（含 06
 
 ---
 
-上一章：[07 范畴的等价与同构](07-equivalence.md) · 下一章：[10 积与余积](10-products.md)
+上一章：[07 范畴的等价与同构](07-equivalence.md) · 下一章：[09 逗号范畴](09-comma.md)

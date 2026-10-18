@@ -37,6 +37,7 @@ category/
 | [06 自然变换](docs/06-natural.md) | Godement 积；record 相等三家分岔 | 三家 |
 | [07 范畴等价](docs/07-equivalence.md) | 全忠实+本质满；Pfn≃Set⊥ | 三家 |
 | [08 Yoneda 引理](docs/08-yoneda.md) | **旗舰**：往返双程完整机器 | 三家 |
+| [09 逗号范畴](docs/09-comma.md) | (U↓L)；切片/箭头范畴/截面三合一 | 三家 |
 | [10 积与余积](docs/10-products.md) | 泛性质唯一到同构（零公理） | 三家 |
 | [11 等化子与拉回](docs/11-pullbacks.md) | 单态射的拉回仍是单态射 | 三家 |
 | [12 极限一般理论](docs/12-limits.md) | 常值函子；二元图极限=积 | 双语 |

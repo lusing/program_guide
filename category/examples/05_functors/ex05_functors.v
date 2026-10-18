@@ -149,4 +149,61 @@ Print Assumptions homFun.               (* funext *)
       定律点式化」是 Yoneda（08 章）一切免费的根源。
    3. Hom(a,-) 的靶范畴是 catTy：Hom C a b 必须落在 Set 层——
       源范畴钉 Category@{Set,Set}，宇宙对齐后再玩。
-   4. Abort 留下的引理要清干净（map_id_ext 那种写歪的草稿）。 *)
+   4. Abort 留下的引理要清干净（map_id_ext 那种写歪的草稿）。
+   5. 幂集三函子段（新增）：函数值 destruct 要按依赖序——先 a 后
+      (f a)（先 destruct (f a) 再 destruct a 会造出不现实的状态）；
+      RHS 的 g 原值与 LHS 的 g(f x) 是不同项，destruct 清单要并集。 *)
+
+(* ---------- 三个幂集函子（Simmons 3.3.1） ----------
+   幂集 PA 配上三种箭头行为：
+     ∃(f)   直接像    b ∈ ∃f X  ⟺ ∃a, f a = b ∧ a ∈ X
+     I(f)   逆像      a ∈ I f Y  ⟺ f a ∈ Y           （定义即函子）
+     ∀(f)   对偶像    b ∈ ∀f X  ⟺ f⁻¹{b} ⊆ X
+   ∃/I/∀ 都是逆变的——P 本身是反变函子 Set^op → Set。
+   这里在二元素集 bool 上机器化：全部 16 种谓词情形可穷尽。
+   三者的伴随串 ∃ ⊣ I ⊣ ∀ 留给 24 章（在那里它们是截面函子）。 *)
+
+Require Import Bool.
+
+Definition PSet := bool -> bool.            (* 谓词即特征函数 *)
+
+Definition pex (f : bool -> bool) (X : PSet) : PSet :=
+  fun b => orb (andb (X false) (eqb (f false) b))
+               (andb (X true)  (eqb (f true)  b)).
+
+Definition pimg (f : bool -> bool) (Y : PSet) : PSet := fun a => Y (f a).
+
+Definition pall (f : bool -> bool) (X : PSet) : PSet :=
+  fun b => andb (implb (eqb (f false) b) (X false))
+                (implb (eqb (f true)  b) (X true)).
+
+Lemma pex_comp : forall (f g : bool -> bool),
+  pex (fun x => g (f x)) = fun X => pex g (pex f X).
+Proof.
+  intros f g. apply funext. intros X. apply funext. intros b. unfold pex.
+  destruct (f false), (f true), (g false), (g true),
+           (X false), (X true), b; reflexivity.
+Qed.
+
+Lemma pimg_comp : forall (f g : bool -> bool),
+  pimg (fun x => g (f x)) = fun X => pimg f (pimg g X).
+Proof.
+  intros f g. apply funext. intros X. apply funext. intros a.
+  unfold pimg. reflexivity.
+Qed.
+
+Lemma pall_comp : forall (f g : bool -> bool),
+  pall (fun x => g (f x)) = fun X => pall g (pall f X).
+Proof.
+  intros f g. apply funext. intros X. apply funext. intros b. unfold pall.
+  destruct (f false), (f true), (g false), (g true),
+           (X false), (X true), b; reflexivity.
+Qed.
+
+(* 单点截面 η∃ : 单元映到单点集（3.5.7 的种子）——单点像是直接像 *)
+Lemma eta_ex : forall (f : bool -> bool) (a b : bool),
+  pex f (fun x => eqb x a) b = eqb (f a) b.
+Proof.
+  intros f a b. unfold pex.
+  destruct a, (f false), (f true), b; reflexivity.
+Qed.

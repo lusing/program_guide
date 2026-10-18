@@ -213,3 +213,32 @@ Defined.
       （assoc 并组 → Fcomp 进函子 → nlaw α → Fcomp 出 → nlaw β →
       assoc 拆组），每步 rewrite 的方向都要对着目标摆正。
    4. rev 自然变换的 naturality = rev_map（map_app 展开方向拼）。 *)
+
+(* ---------- 双对偶与求值（Simmons 3.5.9(b)） ----------
+   J := Set[-,2]：J A = (A -> 2)，J² A = ((A -> 2) -> 2)。
+   求值映射 eval : Id -> J²，eval a p = p a。
+   自然性点式版两侧都定义地等于 q (f a)——β 一步。
+   这是 Yoneda（08 章）在 2 值世界的最小缩影：
+   「对象由其上的特征函数刻画」。 *)
+
+Definition two : Set := bool.
+Definition J1 (A : Set) : Set := A -> two.
+Definition J2 (A : Set) : Set := J1 A -> two.
+Definition Jmap (f : bool -> bool) (p : J1 bool) : J1 bool :=
+  fun b => p (f b).
+Definition Jmap2 (f : bool -> bool) (pi : J2 bool) : J2 bool :=
+  fun q => pi (Jmap f q).
+Definition evalDD (a : bool) (p : J1 bool) : two := p a.
+
+(* 点式自然性：定义性成立（β），零公理 *)
+Lemma eval_nat_pointwise : forall (f : bool -> bool) (a : bool)
+  (q : J1 bool), evalDD a (Jmap f q) = evalDD (f a) q.
+Proof. intros. reflexivity. Qed.
+
+(* 函数级自然性：只差一层 funext *)
+Lemma eval_nat : forall (f : bool -> bool) (a : bool),
+  Jmap2 f (evalDD a) = evalDD (f a).
+Proof.
+  intros f a. apply funext. intro q.
+  apply eval_nat_pointwise.
+Qed.

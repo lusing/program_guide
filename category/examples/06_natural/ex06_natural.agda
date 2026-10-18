@@ -3,6 +3,7 @@
 -- 三书对位：贺伟《范畴论》1.3 /《高级范畴论》4.5–4.6 / Simmons 3.4–3.5
 ------------------------------------------------------------------------
 
+open import Data.Bool using (Bool; true; false)
 open import Level using (Level; _⊔_; 0ℓ) renaming (suc to lsuc)
 open import Data.List using (List; map; reverse; []; _∷_)
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl; cong; sym)
@@ -199,6 +200,28 @@ revNT = record
   { ncomp = λ A → reverse {A = A}
   ; nlaw = λ f → funext (rev-map f)
   }
+
+
+------------------------------------------------------------------------
+-- 双对偶与求值（Simmons 3.5.9(b)）——J := Set[-,2]，
+-- eval : Id ⇒ J²，eval a p = p a。点式自然性是定义性的。
+
+module EvalDD where
+  J1 : Set → Set
+  J1 A = A → Bool
+
+  Jmap : (Bool → Bool) → J1 Bool → J1 Bool
+  Jmap f p = λ b → p (f b)
+
+  Jmap2 : (Bool → Bool) → J1 (J1 Bool) → J1 (J1 Bool)
+  Jmap2 f π = λ q → π (Jmap f q)
+
+  evalDD : Bool → J1 Bool → Bool
+  evalDD a p = p a
+
+  eval-nat-pointwise : ∀ (f : Bool → Bool) (a : Bool) (q : J1 Bool) →
+    evalDD a (Jmap f q) ≡ evalDD (f a) q
+  eval-nat-pointwise f a q = refl
 
 ------------------------------------------------------------------------
 -- 坑位速记：

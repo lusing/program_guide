@@ -92,6 +92,46 @@ revNT = record { ncomp = λ A → reverse {A = A} ; nlaw = λ f → funext (rev-
 教训在列表上的重演：Agda stdlib 的 `*` 递归在第一参数，`*-suc`
 的右端还是 `m + m*n` 方向）。
 
+## 6.5 双对偶与求值：Yoneda 的缩影（Simmons 3.5.9）
+
+书里 3.5.9 的例子把「自然变换」练到了极致。取 `2 = {0,1}`，
+令 `J := Set[−,2]`（2 值特征函子）。每个集合 A 配**求值映射**：
+
+```text
+φA : A → J²A        φA(a)(p) = p(a)     （p : A → 2）
+```
+
+「对象由其上的特征函数簇刻画」。自然性
+`φB ∘ f = J²f ∘ φA` 展开后两侧都是 `q(f a)`——**点式自然性
+是定义性的**（β 一步），机器版三行：
+
+```coq
+Definition Jmap (f : bool -> bool) (p : J1 bool) : J1 bool :=
+  fun b => p (f b).
+
+Lemma eval_nat_pointwise : forall (f : bool -> bool) (a : bool)
+  (q : J1 bool), evalDD a (Jmap f q) = evalDD (f a) q.
+Proof. intros. reflexivity. Qed.
+```
+
+函数级自然性只差一层 funext（`eval_nat`）。为什么说这是
+Yoneda 的缩影？把 2 换成任意对象、Hom 换掉特征函数，同样的
+「把 a 送到求值」就是 Yoneda 嵌入的组件——08 章的往返双程
+在结构上就是 `eval` 的自然性来回。
+
+同节的 3.5.2 给出更一般的模式：两个「Hom 后处理」函子
+`F = R^(C[−,P])`、`G = S^(C[−,Q])` 之间的自然变换由一对
+`p : P → P′`、`s : R → R′` 完全决定（`τA(l) = s ∘ l ∘ p`）；
+自然性方块两边都归到 `s(l(p∘b∘f))`——**先复合后处理 = 先
+处理后复合**，一次 assoc 翻转。3.5.3 再点破：`τA(l)` 恰是
+「把 id 沿 l 追一圈」的结果（`τA(l) = F(l)(τP(id_P))`）——
+这正是 Yoneda 引理「自然变换由一个元素决定」的预热：
+**全知全能的 τ，信息量只等于一个点**。
+
+最后，幂集三函子（5.5 节）的单点截面 `η∃(a) = {a}` 与补点
+截面 `η∀(a) = {a}′` 是 NT 语义的又一组例子——它们分别是
+`∃ ⊣ I` 与 `I ⊣ ∀`（24 章）的单位分量，在这里先混个脸熟。
+
 ## 坑位速记
 
 1. **依赖字段的 record 相等**是本章主角：Coq 无原始投影无解

@@ -6,6 +6,7 @@
 open import Level using (Level; _⊔_; 0ℓ) renaming (suc to lsuc)
 open import Data.Unit using (⊤; tt)
 open import Data.Nat using (ℕ)
+open import Data.Bool using (Bool; true; false; _∧_; _∨_; not)
 open import Data.Fin using (Fin)
 open import Data.List using (List; map; []; _∷_)
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl; cong; sym)

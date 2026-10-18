@@ -170,3 +170,24 @@ def revNT : NT listFun listFun where
    已改好的左侧又改回去。
 4. rev_map 的 cons 分支交给 simp（reverse_cons + map_append + ih），
    比 simp only 列引理名稳。 -/
+
+/-! 【双对偶与求值】（Simmons 3.5.9(b)）——
+  J := Set[-,2]，eval : Id ⇒ J²，eval a p = p a。
+  点式自然性两侧都定义地等于 q (f a)——Yoneda 的 2 值缩影。 -/
+def J1 : Type → Type := fun A => A → Bool
+
+def Jmap (f : Bool → Bool) (p : J1 Bool) : J1 Bool := fun b => p (f b)
+
+def Jmap2 (f : Bool → Bool) (pi : J1 (J1 Bool)) : J1 (J1 Bool) :=
+  fun q => pi (Jmap f q)
+
+def evalDD (a : Bool) (p : J1 Bool) : Bool := p a
+
+/-- 点式自然性：定义性成立 -/
+theorem eval_nat_pointwise (f : Bool → Bool) (a : Bool) (q : J1 Bool) :
+    evalDD a (Jmap f q) = evalDD (f a) q := rfl
+
+/-- 函数级：只差一层 funext -/
+theorem eval_nat (f : Bool → Bool) (a : Bool) :
+    Jmap2 f (evalDD a) = evalDD (f a) := by
+  funext q; rfl

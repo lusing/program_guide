@@ -81,6 +81,73 @@ Simmons 3.x 的每个「diagram chasing」习题背后都是这个引理。
 - Lean：`structure FunctorC (C : Category.{u,v}) (D : ...)` 原生
   支持——但撞核心库 `Functor`（typeclass）的名字，改名 `FunctorC`。
 
+## 5.5 三个幂集函子（Simmons 3.3.1）
+
+幂集不只「是」一个构造——它是**三个函子的舞台**。对每个函数
+`f : A → B`，幂集上自然长出三种箭头行为：
+
+| 记号 | 名字 | `b ∈ ?(f)(X)` 的判据 | 复合方向 |
+|---|---|---|---|
+| `∃(f)` | 直接像 | `∃a, X a ∧ f a = b` | `∃(g∘f) = ∃(g)∘∃(f)` |
+| `I(f)` | 逆像 | `f a ∈ Y`（即 `Y (f a)`） | `I(g∘f) = I(f)∘I(g)` **反变** |
+| `∀(f)` | 对偶像 | `f⁻¹{b} ⊆ X`（纤维整个落进 X） | `∀(g∘f) = ∀(g)∘∀(f)` |
+
+`I` 就是通常的 `f⁻¹`——**复合律是定义性的**（两侧展开是同一个
+项）；`∃` 与 `∀` 的复合律要真算。记号不是巧合：`∃(f)` 把
+「存在原像」打包、`∀(f)` 把「对所有纤维成员」打包——**量词是
+幂集上的函子行为**。这一观察在 24 章兑现成伴随串
+`∃(f) ⊣ I(f) ⊣ ∀(f)`（量词的左伴随/右伴随身份）。
+
+机器版在二元素集上把三条复合律全部穷尽验证（Coq 128 格）：
+
+```coq
+Definition pex (f : bool -> bool) (X : PSet) : PSet :=
+  fun b => orb (andb (X false) (eqb (f false) b))
+               (andb (X true)  (eqb (f true)  b)).
+
+Lemma pex_comp : forall (f g : bool -> bool),
+  pex (fun x => g (f x)) = fun X => pex g (pex f X).
+Proof.
+  intros f g. apply funext. intros X. apply funext. intros b. unfold pex.
+  destruct (f false), (f true), (g false), (g true),
+           (X false), (X true), b; reflexivity.
+Qed.
+```
+
+注意 destruct 清单是「并集」：左式要 `g (f x)` 的值、右式要
+`g` 的原值，两组都得拆开。同款引理 `pall_comp` 对 `∀` 成立；
+`pimg_comp`（逆像）则是 `reflexivity`——**定义即函子**的机器
+版（Agda 版一行 `refl`）。再加一条「单点截面」（3.5.7 的种子）：
+
+```coq
+Lemma eta_ex : forall (f : bool -> bool) (a b : bool),
+  pex f (fun x => eqb x a) b = eqb (f a) b.
+```
+
+单点集的直接像恰是单点的像——`η∃ : Id ⇒ ∃` 的组件，24 章
+两套完备化的第一个组件。
+
+## 5.6 从积来的函子与「换装」函子（Simmons 3.3.3 / 3.3.5）
+
+**二元积是函子**：`−×− : C×C → C` 在箭头上的行为
+`(f₁,f₂) ↦ f₁×f₂` 由积的泛性质**唯一**确定（先经投影回到分量、
+再经中介映射回去）。`f₁×f₂` 的函子性（`(g₁∘f₁)×(g₂∘f₂) =
+(g₁×g₂)∘(f₁×f₂)`）不是靠计算、而是靠**中介箭头的唯一性**——
+两个候选都满足定义同一组方程，故相等。「唯一性代替计算」
+是泛性质技术的第一次完整亮相，10 章将把它做成机器。
+
+固定一头得 `−×R`（右乘函子）。Simmons 3.3.5 再给三个「换装」
+样本：
+
+- **阿贝尔化** `δ : Grp → Grp`：`δA` = 交换子子群；任何群同态
+  限制到交换子群上给出唯一的 `δ(f)`——函子性又是唯一性；
+  商掉 δA 得到 `A → A/δA`，阿贝尔群世界在 Grp 里的反射（17 章）；
+- **幺半群换装**：幺半群态射 `φ : S → R` 把任何 R-集变成 S-集
+  （`a ⋆ s := a·φ(s)`）——`Mon → CAT` 的作用，25 章两个伴随的
+  原材料；
+- **Pfn ≃ Set⊥** 的翻译 `L/M`（1.2.7 的构造）其实都是函子——
+  07 章的等价因此是**范畴同构**级别的强命题。
+
 ## 坑位速记
 
 1. Coq 字段值 binder 计数在 Functor 上重现：`FHom := fun _ _ f => ...`

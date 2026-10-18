@@ -77,4 +77,4 @@ Agda 版把同一证明写成 let-模式 + trans 链；Lean 版用
 
 ---
 
-上一章：[08 Yoneda 引理与可表函子](08-yoneda.md) · 下一章：[11 等化子与拉回](11-pullbacks.md)
+上一章：[09 逗号范畴](09-comma.md) · 下一章：[11 等化子与拉回](11-pullbacks.md)

@@ -112,3 +112,42 @@ theorem F_preserves_square {C : Category.{u, v}} {D : Category.{u', v'}}
 3. map 律点式自证（方程式归纳）比翻核心库引理名稳。
 4. homFun 的 Fcomp 是 assoc 的点式对称——「函子定律 = 范畴
    定律点式化」是 08 章 Yoneda 一切免费的根源。 -/
+
+/-! 【三个幂集函子】（Simmons 3.3.1）——二元素集上机器化：
+  ∃(f) 直接像、I(f) 逆像（定义即函子）、∀(f) 对偶像。
+  穷尽检查 = cases 三个函数值 + 谓词值 + 点，128 格全 rfl。
+  伴随串 ∃ ⊣ I ⊣ ∀ 留给 24 章。 -/
+def PSet := Bool → Bool
+
+def pex (f : Bool → Bool) (X : PSet) : PSet := fun b =>
+  (X false && (f false == b)) || (X true && (f true == b))
+
+def pimg (f : Bool → Bool) (Y : PSet) : PSet := fun a => Y (f a)
+
+def pall (f : Bool → Bool) (X : PSet) : PSet := fun b =>
+  (!(f false == b) || X false) && (!(f true == b) || X true)
+
+theorem pex_comp (f g : Bool → Bool) :
+    pex (fun x => g (f x)) = fun X => pex g (pex f X) := by
+  funext X b
+  simp only [pex]
+  cases f false <;> cases f true <;> cases g false <;> cases g true <;>
+    cases X false <;> cases X true <;> cases b <;> rfl
+
+theorem pimg_comp (f g : Bool → Bool) :
+    pimg (fun x => g (f x)) = fun X => pimg f (pimg g X) := by
+  funext X a
+  rfl
+
+theorem pall_comp (f g : Bool → Bool) :
+    pall (fun x => g (f x)) = fun X => pall g (pall f X) := by
+  funext X b
+  simp only [pall]
+  cases f false <;> cases f true <;> cases g false <;> cases g true <;>
+    cases X false <;> cases X true <;> cases b <;> rfl
+
+/-- 单点截面 η∃（3.5.7 的种子）：单点的直接像恰是单点 -/
+theorem eta_ex (f : Bool → Bool) (a b : Bool) :
+    pex f (fun x => x == a) b = ((f a) == b) := by
+  simp only [pex]
+  cases a <;> cases f false <;> cases f true <;> cases b <;> rfl
