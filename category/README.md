@@ -51,6 +51,10 @@ category/
 | [20 单子](docs/20-monads.md) | Set 级单子 + List 实例（零公理） | Coq |
 | [21 幺半与富范畴](docs/21-monoidal.md) | 五边形连贯性 | 文档 |
 | [22 加法/Abel 范畴](docs/22-abelian.md) | 贺伟第 4 章公理表 | 文档 |
+| [23 完备预序与剩余映射](docs/23-posets.md) | 保 sup ⟺ 有右伴随（Galois 连接） | 三家 |
+| [24 截面与三超幂函子](docs/24-sections.md) | ∃ ⊣ I ⊣ ∀（量词的伴随身份） | 双语 |
+| [25 幺半集：Σ ⊣ U ⊣ Π](docs/25-rsets.md) | 自由/余自由 R-集三明治 | 双语 |
+| [26 反变伴随：Sierpiński 两面](docs/26-contravariant.md) | ⇑/⇓/Ξ/Π 与精神分裂对象 | 文档 |
 | [27 层与拓扑斯](docs/27-sheaves.md) | 粘合条件/Grothendieck 拓扑 | 文档 |
 | [28 压轴串联](docs/28-capstone.md) | 泛性质-唯一性-Yoneda-对偶-伴随 | 文档 |
 | [29 坑位与书目](docs/29-pitfalls.md) | 总清单 + 三书导读 + 速查 | — |
