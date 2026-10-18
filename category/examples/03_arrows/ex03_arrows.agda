@@ -314,6 +314,41 @@ arr-not-iso : IsIso CatTwo false true two-arr → ⊥
 arr-not-iso (g , _) with g
 ... | ()
 
+
+------------------------------------------------------------------------
+-- 例 2.6 反例范畴（高级范畴论 2.4）：一条箭头上的全属性。
+-- 瘦范畴编码：bool 对象 + 合法性函数。f : A ->B 同时是
+-- mono/epi/常态/余常态/零态射——一切消去律空真/平凡。
+
+module Ex26 where
+  open import Data.Bool using (Bool; true; false; not; _∨_)
+  open import Data.Unit using (⊤; tt)
+  open import Data.Empty using (⊥)
+  open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+
+  -- A := false, B := true；态射集直接给出：A 出发恒合法，
+  -- B 只能到 B，B -> A 为空——瘦范畴的「一条箭头」现场
+  H26 : Bool → Bool → Set
+  H26 false _ = ⊤
+  H26 true true = ⊤
+  H26 true false = ⊥
+
+  f26 : H26 false true
+  f26 = tt
+
+  comp26 : ∀ {x y z} → H26 x y → H26 y z → H26 x z
+  comp26 {false} {false} {_}  k h = h    -- A;A 路径：答案由终点箭头给出
+  comp26 {false} {true}  {false} k ()   -- B→A 非法：终点箭头不存在
+  comp26 {false} {true}  {true}  k h = h -- f;1B = f
+  comp26 {true}  {false} {_}  ()        -- B→A 非法：出发箭头不存在
+  comp26 {true}  {true}  {_}  k h = h
+
+  -- mono/epi/常态/余常态四性质的三语言对照：
+  -- Coq/Lean 版完整给出（ex03_arrows.v/.lean）；
+  -- Agda 版到此为止（瘦范畴 with/if 编码的统一坑见 02 章）。
+
+
+
 ------------------------------------------------------------------------
 -- 坑位速记：
 -- 1. mono 定义的方向：comp g f ≡ comp h f → g ≡ h——f 在复合右侧；

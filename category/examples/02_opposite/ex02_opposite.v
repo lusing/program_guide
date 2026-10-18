@@ -194,3 +194,54 @@ Proof. intros. exact (le_trans hab hbx). Qed.
 
 (* 凸截面 (s↓S↓t) = {x | s ≤ x ∧ x ≤ t}：两条 Le 的积 *)
 Definition convex (s t x : nat) : Set := prod (Le s x) (Le x t).
+
+(* ---------- 商范畴：平行对商掉 f ≈ g（高级范畴论 1.5 例 1.17 预演） ----------
+   平行对范畴：两对象 + 两条平行箭头 f g : A -> B + 恒等。
+   同余 ≈ 认同 f 与 g（恒等自类）。商范畴的态射集只剩三个
+   基元：[idA]、[idB]、[f]=[g]。复合良定义性 = 同余与复合
+   相容的逐格版本：换代表元（f 换 g）不改变复合结果。 *)
+
+Inductive Par2 : Set := pA | pB.
+
+Inductive PHom : Par2 -> Par2 -> Set :=
+| pidA : PHom pA pA | pidB : PHom pB pB
+| pf : PHom pA pB | pg : PHom pA pB.
+
+(* 原范畴的复合：依赖分支交给 destruct *)
+Definition pcomp {x y z} (h : PHom y z) (k : PHom x y) : PHom x z.
+Proof.
+  destruct h, k; try exact pidA; try exact pidB; try exact pf; try exact pg.
+Defined.
+
+(* 同余 ≈ 只做一件事：pf ≈ pg。商态射集 = 三基元（类内没有
+   第二个代表需要区分——同余的等价类在此显式枚举为 QHom） *)
+Inductive QHom : Par2 -> Par2 -> Set :=
+| qIdA : QHom pA pA | qIdB : QHom pB pB | qArr : QHom pA pB.
+
+Definition qcls {x y} (h : PHom x y) : QHom x y :=
+  match h with
+  | pidA => qIdA | pidB => qIdB
+  | pf => qArr | pg => qArr
+  end.
+
+(* 商复合：按类定义 *)
+Definition qcomp {x y z} (h : QHom y z) (k : QHom x y) : QHom x z.
+Proof.
+  destruct h, k; try exact qIdA; try exact qIdB; try exact qArr.
+Defined.
+
+(* 良定义性（逐对方程版）：f 与 g 是唯一非平凡的同余对，
+   它们只出现在两种合法复合里——前后接恒等。换代表元
+   （f 换 g）不改变复合的类，这就是「同余与复合相容」。 *)
+Lemma qcomp_wd_post : qcls (pcomp pidB pf) = qcls (pcomp pidB pg).
+Proof. reflexivity. Qed.
+
+Lemma qcomp_wd_pre : qcls (pcomp pf pidA) = qcls (pcomp pg pidA).
+Proof. reflexivity. Qed.
+
+(* 一般形式（依赖 destruct 卡索引抽象——小范畴上以两对
+   方程代替一般引理；一般证明见 14 章合流余极限的良定义性
+   讨论） *)
+
+Example quotient_collapses : qcomp (qcls pidB) (qcls pf) = qArr := eq_refl.
+Example quotient_idL : qcomp (qcls pidB) (qcls pg) = qArr := eq_refl.

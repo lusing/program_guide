@@ -141,3 +141,20 @@ Print Assumptions id_es.        (* 零公理 *)
       [f x] = [g x] 用 inversion 提取头部——单点列表当探针。
    3. EssentiallySurj 里 True 占位是为了把「存在同构」保持为
       可扩充的 sig 结构（换成 IsIsoD 即得完整版，证明变重）。 *)
+
+(* ---------- 反射定理：忠信函子保真（高级范畴论 4.4.3） ----------
+   F 忠信 + F(f) 单态射 ⟹ f 单态射。三步：等式沿 F 搬下去
+   （函子律反解 Fcomp）、D 侧消去、忠信搬回来。零公理。 *)
+
+Lemma faithful_reflects_mono : forall (C D : Category) (F : Functor C D),
+  @Faithful C D F ->
+  forall (a b : Obj C) (f : Hom C a b),
+  (forall dd (u v : Hom D dd (FObj F a)), comp D u (FHom F f) = comp D v (FHom F f) -> u = v) ->
+  forall cc (g h : Hom C cc a), comp C g f = comp C h f -> g = h.
+Proof.
+  intros C D F Hf a b f HM cc g h Hgh.
+  apply (Hf cc a).                      (* 忠信：Hom 层单射 *)
+  apply (HM (FObj F cc)).               (* D 侧单态射消去 *)
+  rewrite <- !Fcomp.                     (* 方程沿 F 搬回 D 侧 *)
+  rewrite Hgh. reflexivity.
+Qed.

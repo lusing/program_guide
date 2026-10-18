@@ -313,3 +313,54 @@ Qed.
 Print Assumptions section_epi_iso.
 Print Assumptions mono_epi_cancel.
 Print Assumptions thin_mono.
+
+(* ---------- 例 2.6 反例范畴：一条箭头上的全属性（高级范畴论 2.4） ----------
+   范畴 Ob = {A, B}、Mor = {1A, 1B, f}（f : A -> B，别无其他）。
+   瘦范畴编码（02 章 catTwo 同款）：bool 对象 + 合法性函数。
+   平行对在源端只有恒等、在靶端也只有恒等——一切消去律
+   空真/平凡：f 同时是 mono、epi、常态射、余常态射、零态射，
+   却不对应任何集合论行为（A、B 可取任意集合，f 不必单/满）。 *)
+
+Definition legal26 : bool -> bool -> bool :=
+  fun x y => orb (negb x) y.        (* A:=false, B:=true；A->B 合法，B->A 非法 *)
+
+Definition H26 : bool -> bool -> Set :=
+  fun x y => if legal26 x y then unit else Empty_set.
+
+Definition f26 : H26 false true := tt.
+
+Definition comp26 {x y z} (k : H26 x y) (h : H26 y z) : H26 x z.
+Proof.
+  destruct x, y, z; simpl; try exact tt;
+  destruct k; destruct h; simpl; exact tt.
+Defined.
+
+(* f 是单态射：左可消去 *)
+Lemma f26_mono : forall c (g h : H26 c false),
+  comp26 g f26 = comp26 h f26 -> g = h.
+Proof.
+  intros c g h _; destruct c; cbn in *; try destruct g, h; reflexivity.
+Qed.
+
+(* f 是满态射：右可消去 *)
+Lemma f26_epi : forall c (g h : H26 true c),
+  comp26 f26 g = comp26 f26 h -> g = h.
+Proof.
+  intros c g h _; destruct c; cbn in *; try destruct g, h; reflexivity.
+Qed.
+
+(* f 是常态射：吸收一切到达 A 的平行对（高级范畴论 2.4.1） *)
+Lemma f26_normal : forall c (g h : H26 c false),
+  comp26 g f26 = comp26 h f26.
+Proof.
+  intros c g h; destruct c; cbn in *; try destruct g, h; reflexivity.
+Qed.
+
+(* f 是余常态射 *)
+Lemma f26_conormal : forall c (g h : H26 true c),
+  comp26 f26 g = comp26 f26 h.
+Proof.
+  intros c g h; destruct c; cbn in *; try destruct g, h; reflexivity.
+Qed.
+
+Print Assumptions f26_normal.

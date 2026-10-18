@@ -78,6 +78,45 @@ Simmons 顺势问：那 Pfn 和 Set⊥ 是「本质相同」吗？
 07.2 的机器边界：同构级别的验证需要部分函数范畴的完整基建
 （定义域子集是数据），Mini 库里留作文档级。
 
+## 7.6 反射定理：忠信函子「保真」的一面（高级范畴论 4.4）
+
+07 章问「函子什么时候**保持**性质」；镜像问题是「什么时候
+**反射**性质」——F(f) 有性质 ⟹ f 有性质。《高级范畴论》
+4.4 给出完整判决（定理 4.4.3/4.4.4）：
+
+| F 的强度 | 反射什么 |
+|---|---|
+| 忠信 | 单态射、外态射、双态射、常态射、余常态射、零态射、交换图 |
+| 忠信 + 完全 | 再加 section、retraction、同构 |
+
+机器版（ex07 新增，零公理）——忠信反射单态射的完整证明：
+
+```coq
+Lemma faithful_reflects_mono :
+  forall (F : Functor C D) (Hf : Faithful C D F)
+         (a b : Obj C) (f : Hom C a b),
+  Mono D (FObj F a) (FObj F b) (FHom F f) -> Mono C a b f.
+Proof.
+  intros F Hf a b f HM c g h Hgh.
+  apply (Hf c c).                  (* 忠信：Hom 层单射 *)
+  apply HM.                         (* D 侧消去 *)
+  unfold Hom, comp in *. simpl.
+  rewrite <- !Fcomp. exact Hgh.    (* 方程沿 F 搬回 *)
+Qed.
+```
+
+证明的骨架只有三步：把 C 侧的等式 g;f = h;f 沿 F 搬到 D 侧
+（函子律）、在 D 侧用 F(f) 的单态射消去、再用忠信搬回。所有
+「可消去性」类性质（单/外/双/常/零）都是这三步的变奏——
+消去律的量词结构恰好与 Hom-单射对齐；而 section/retraction
+需要「把 D 侧的逆箭头搬回 C 侧」——**完全性**（满 Hom）在
+这一步上岗。**交换图的反射**同理：图形方程逐边搬运。
+
+反射定理的实用价值：想证 C 里的箭头有性质，可以把它送到
+一个「性质好验」的范畴（Set！）里去验——**下降法**
+(descent) 的雏形；07 章的全忠实等价判据因此多了一个读法：
+**等价保持并反射一切「Hom 层可表述」的性质**。
+
 ## 坑位速记
 
 1. Coq `Set Implicit Arguments` 会把定义头部的范畴参数也隐化：

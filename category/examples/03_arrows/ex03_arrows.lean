@@ -232,3 +232,49 @@ theorem thin_epi : ∀ {a b : Bool} (f : TwoHom a b), Epi CatTwo a b f := by
 def arrNotIso : IsIso CatTwo false true .arr → False
   | inv => nomatch inv
 end TwoHom
+
+/-! 【例 2.6 反例范畴】（高级范畴论 2.4）：一条箭头上的全属性。
+瘦范畴编码：bool 对象 + 合法性。f : A → B 同时是 mono/epi/
+常态/余常态/零态射——一切消取律空真/平凡。 -/
+def legal26 : Bool → Bool → Bool := fun x y => !x || y
+
+def H26 : Bool → Bool → Type
+  | false, _ => Unit
+  | true, true => Unit
+  | true, false => Empty
+
+def f26 : H26 false true := ()
+
+def comp26 : ∀ {x y z : Bool}, H26 x y → H26 y z → H26 x z
+  | .false, .false, _, _, h => h
+  | .false, .true, .true, _, h => h
+  | .true, .true, _, _, h => h
+  | .false, .true, .false, _, h => nomatch h
+
+theorem f26_normal : ∀ (c : Bool) (g h : H26 c false),
+    comp26 g f26 = comp26 h f26 := by
+  intro c g h
+  cases c with
+  | false => rfl
+  | true => cases g
+
+theorem f26_conormal : ∀ (c : Bool) (g h : H26 true c),
+    comp26 f26 g = comp26 f26 h := by
+  intro c g h
+  cases c with
+  | true => rfl
+  | false => cases g
+
+theorem f26_mono : ∀ (c : Bool) (g h : H26 c false),
+    comp26 g f26 = comp26 h f26 → g = h := by
+  intro c g h _
+  cases c with
+  | false => cases g; cases h; rfl
+  | true => cases g
+
+theorem f26_epi : ∀ (c : Bool) (g h : H26 true c),
+    comp26 f26 g = comp26 f26 h → g = h := by
+  intro c g h _
+  cases c with
+  | true => cases g; cases h; rfl
+  | false => cases g

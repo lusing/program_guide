@@ -106,3 +106,15 @@ Simmons 1.2.7：Pfn ≃ Set⊥（部分函数 ≅ 带点集，L 补点/M 去点�
    headD (f x :: []) = f x 是 rfl 级别。
 3. Full/EssentiallySurj 用 Σ（数据），Faithful 用 Prop——
    「证据是计算还是命题」决定落哪一层。 -/
+
+/-! 【反射定理】（高级范畴论 4.4.3）：忠信函子保真——
+F 忠信 + F(f) 单态射 ⟹ f 单态射。三步：等式沿 F 搬下去
+（函子律反解）、D 侧消去、忠信搬回来。零公理。 -/
+theorem faithful_reflects_mono {C : Category.{u, v}} {D : Category.{u', v'}}
+    (F : FunctorC C D) (Hf : Faithful F) {a b : C.Obj} (f : C.Hom a b)
+    (HM : ∀ (d : D.Obj) (u v : D.Hom d (F.FObj a)),
+      D.comp u (F.FHom f) = D.comp v (F.FHom f) → u = v)
+    (cc : C.Obj) (g h : C.Hom cc a) (Hgh : C.comp g f = C.comp h f) :
+    g = h :=
+  Hf cc a g h (HM (F.FObj cc) (F.FHom g) (F.FHom h)
+    (by rw [← F.Fcomp, ← F.Fcomp, Hgh]))
