@@ -3,3 +3,10 @@ session IsaTutLib = "HOL-Library" +
   theories
     T36_corec_friends
     T45_library_tour
+    T57_fmap_mapping
+    T58_fset
+    T59_rbt
+    T60a_comparator
+    T60b_prefix
+    T60c_subseq
+    T60d_lenlex

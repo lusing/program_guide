@@ -297,7 +297,7 @@ Nat.add_le_mono                               单调性
 | JDK18+ 管道输出按 ANSI 转码（中文变 GBK 字节） | 43 |
 | 文档反引号拼错名字构建必死（编译期检查） | 44 |
 | Library 理论必须 `imports "HOL-Library.X"` 全名 | 45 |
-| `AList.lookup` 第一个参数是相等函数 | 45 |
+| AList **没有** lookup（查找用 `map_of`）；lookup 在 DAList 上 | 45 |
 | Complex_Main **不含**积分（has_integral 零结果） | 46 |
 | 现代 FOL 无 `i` 类型；`P x` 空格应用解析失败，要 `P(x)` | 47/48 |
 | de Bruijn 移位必须带 cutoff；代换进壳抬 s 一层 | 49 |
@@ -306,3 +306,17 @@ Nat.add_le_mono                               单调性
 | 集合补全式显示形态与书写不同——给关系起**命名常量**免疫 | 52 |
 | wf 归纳用 `wf_induct_rule`+`induct x arbitrary: ...`；链式事实按"wf 在前"排序，多余前提会被吸进归纳谓词 | 52 |
 | ε-δ 定义对齐 `eventually_at` 的去心形态最省事（`imp_conjL` 桥接） | 53 |
+| fset/fmap 求值打印 `Abs_fset`/`Abs_fmap` 内部构造子是正常现象 | 57/58 |
+| `m ++⇘f n` / `RBT.union` 都是**右表优先** | 57/59 |
+| fmap/fset 一族收集型操作只对 `enum` 类型可 value；其余写引理 | 57/58 |
+| 带自由 fset 变量的目标别 transfer（存在量词僵局），用 `fset_induct_stronger` | 58 |
+| 语境内引理要导出名：`comp_fun_commute.ffold_empty` 外层裸名报 Undefined fact | 58 |
+| 库里**没有**现成 `comp_fun_commute (+)`，自己 `by standard` 证 | 58 |
+| `simp add:` 已在默认 simpset 的规则触发 duplicate 警告 | 58 |
+| AList_Mapping 与 RBT_Mapping 互斥（同一构造子双 code_datatype） | 57/59 |
+| RBT 一族常量全部 hide_const，引用必须 `RBT.lookup` 全称 | 59 |
+| 导入 RBT_Set 顶掉列表实现集合的全局代码等式（官方警告） | 59 |
+| 列表序类实例唯一：lex/前缀/子序列/lenlex 四理论两两互斥 | 60 |
+| `compare_prod_lex_apply` 不是 simp 规则，要显式 add | 60 |
+| ⊥/⊤/⊓/⊔ 默认不激活（`unbundle lattice_syntax` 或写 bot/top） | 60 |
+| 元组数字标注要罩全组：`((2,0)::nat×nat)`，只钉分量会留多态残目标 | 60 |

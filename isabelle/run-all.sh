@@ -215,7 +215,7 @@ run_once() { # $1=run目录
     hdir=$(awk -F'\t' -v h="$heap" '$1==h {print $3; exit}' <<<"$ROOTMAP")
     "$ISABELLE" process_theories -O -l "$heap" \
       -o parallel_print=false -o parallel_proofs=0 -o threads=1 \
-      -H 'T[0-9]{2}_[a-z_]+\.thy' -D "$hdir" $ths \
+      -H 'T[0-9]{2}[a-z]?_[a-z_]+\.thy' -D "$hdir" $ths \
       >"$1/run-$heap.log" 2>"$1/run-$heap.err" || FAIL=1
     cat "$1/run-$heap.log" >>"$1/run.log"
   done

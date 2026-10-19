@@ -53,20 +53,31 @@ Collatz 从 6 实测会到 1。配套定理：`while_option_stop`
 （终态必不满足条件）、`while_option_induct`（对执行步数归纳）。
 第 35 章的 `mywhile` 手搓版与它逐条对应。
 
-## 45.6 其余货架（文档节）
+## 45.6 其余货架（指路节）
 
-Code_Target_Numeral（按目标语言编译数字）、Code_Lazy（惰性化
-任意 datatype，第 36 章流的可执行化）、DAList、Permutations
-（排列与组合计数）、Disjoint_Sets、List_Lexorder（列表字典序
-instance）、Tree/Tree23（搜索树家族）。取货单就是本章头部的
-四行 imports。
+本章四行 imports 只是入口。同一会话里的其余货架按去处指路：
+
+- **字典两族**：fmap 与 Mapping 抽象字典见第 57 章；红黑树后端
+  与 RBT_Set（集合的对数实现）见第 59 章；DAList 是带「键互异」
+  不变量的抽象关联表（`DAList.lookup` 在它上面，不在 AList 上）。
+- **集合有限化**：FSet 与 Disjoint_FSets 见第 58 章。
+- **序与排序**：Comparator、Sorting_Algorithms、List_Lexorder、
+  Prefix_Order 等见第 60 章。
+- **代码生成周边**：Code_Target_Numeral（按目标语言编译数字，
+  第 19/37 章的延伸，第 65 章再深挖）、Code_Lazy（惰性化任意
+  datatype，第 36 章流的可执行化）。
+- **计数**：Permutations（排列与组合计数）、Tree/Tree23（搜索树
+  家族，第 59 章 Tree 的兄弟）。
 
 ## 45.7 坑位清单（实测）
 
 1. Library 理论**必须**从 HOL-Library 会话引入
    （`imports "HOL-Library.Multiset"`）；裸名在 Main 会话报 undefined。
 2. `{# ... #}` 字面量要带 `nat multiset` 标注（数字字面量老坑复发）。
-3. `AList.lookup` 第一个参数是相等函数。
+3. AList 确实**没有** `lookup`（45.4 已实测）：查找用 Main 的
+   `map_of`；`lookup` 在 DAList 的抽象关联表上（与第 57 章
+   Mapping 是近亲）。旧版 Isabelle 的 `AList.lookup`（带相等
+   函数参数）早已移除，别照旧书抄。
 4. `sublist` 谓词版/布尔版重载，签名看清再用。
 
 ## 45.8 与其他章的接口
