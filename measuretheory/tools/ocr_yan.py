@@ -23,24 +23,24 @@ IMG = BUILD / "img"
 
 
 def render(first: int, last: int) -> None:
+    """用 PyMuPDF 逐页渲染（pdf2image 会把整段区间囤进内存——实测 287 页
+    撑到 10 GB 仍未写盘；fitz 逐页即时落盘且可断点续渲）。"""
+    import fitz
+
     BUILD.mkdir(parents=True, exist_ok=True)
     IMG.mkdir(parents=True, exist_ok=True)
-    code_text = (
-        "from pdf2image import convert_from_path\n"
-        f"pages = convert_from_path({PDF!r}, dpi=300, first_page={first}, last_page={last})\n"
-        f"base = {first}\n"
-        f"outdir = {IMG.as_posix()!r}\n"
-        "import os\n"
-        "kept = 0\n"
-        "for i, p in enumerate(pages):\n"
-        "    fn = outdir + '/p%03d.png' % (base + i)\n"
-        "    if not os.path.exists(fn):\n"
-        "        p.save(fn); kept += 1\n"
-        "print('rendered', len(pages), 'new', kept)\n"
-    )
-    code = subprocess.call([sys.executable, "-I", "-c", code_text])
-    if code != 0:
-        sys.exit("render failed")
+    doc = fitz.open(PDF)
+    kept = 0
+    for n in range(first, min(last, doc.page_count) + 1):
+        fn = IMG / ("p%03d.png" % n)
+        if fn.exists():
+            continue
+        pix = doc[n - 1].get_pixmap(dpi=300)
+        pix.save(fn.as_posix())
+        kept += 1
+        if kept % 40 == 0:
+            print("rendered", kept, flush=True)
+    print("render done, new =", kept, "total in dir =", len(list(IMG.glob('p*.png'))))
 
 
 def ocr(first: int, last: int, only_odd: bool = False) -> None:

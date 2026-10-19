@@ -16,13 +16,14 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 章 | 锚点 | import |
 |---|---|---|
 | 03 | `MeasureTheory.measure_iUnion_le` 等 | MeasureTheory.Measure.MeasureSpace |
-| 04 | `MeasureTheory.Measure.caratheodory`（OuterMeasure→Measure）、`Measure.completion` | MeasureTheory.Measure.MeasureSpace / NullMeasurable |
-| 05 | `MeasureTheory/Measure/Stieltjes.lean`（measureStieltjes 家族，大小写以文件内为准） | MeasureTheory.Measure.Stieltjes |
-| 06 | `Measure.ext_of_generateFrom` | MeasureTheory.Measure.MeasureSpace / Constructions.BorelSpace.Order |
+| 04 | **`OuterMeasure.toMeasure (m) (h : ms ≤ m.caratheodory)`**（Measure/MeasureSpace.lean:779）+ `toMeasure_apply`；`Measure.completion`（NullMeasurable.lean:454） | MeasureTheory.Measure.MeasureSpace / NullMeasurable |
+| 05 | `StieltjesFunction R`（结构：单调+右连续）、`Monotone.stieltjesFunction`、`StieltjesFunction.outer_Ioc`（Measure/Stieltjes.lean） | MeasureTheory.Measure.Stieltjes |
+| 06 | **`ext_of_generateFrom_of_iUnion` / `ext_of_generateFrom_of_cover`**（MeasureSpace.lean:61-66，π-系上相等⇒测度相等） | MeasureTheory.Measure.MeasureSpace |
+| 01/02 补 | π-系 API 在 `Constructions/BorelSpace/Basic.lean`（PiSystem）；单调类定理（集合形式）mathlib 无现成名——用 `generateFrom` 最小性+π系唯一性组合呈现 | MeasureTheory.Constructions.BorelSpace.Basic |
 | 08 | 函数单调类：`MeasurableSpace.induction_on` 不存在（NONE）→ 手写小件或以 `Measurable` 格引理替代 | — |
 | 09 | `MeasureTheory/Function/Egorov.lean`（Egorov）+ `ConvergenceInMeasure.lean` | MeasureTheory.Function.Egorov |
-| 10 | `lintegral`（Integral/Lebesgue/）+ `MeasureTheory.integral`（Integral/Bochner/Basic.lean irreducible_def——**Bochner 积分即 integral**） | MeasureTheory.Integral.Bochner.Basic 等 |
-| 11 | MCT=`lintegral_iSup`（Integral/Lebesgue/Add.lean）、Fatou=`lintegral_liminf…`（private，正名时再查公开版）、DCT=`tendsto_integral_of_dominated_convergence`（Integral/DominatedConvergence.lean） | 同左 |
+| 10 | `lintegral`（Integral/Lebesgue/Basic.lean:48 noncomputable irreducible_def）+ `MeasureTheory.integral`（Integral/Bochner/Basic.lean:156——**Bochner 积分即 integral**）+ 简单函数逼近 `Function/SimpleFuncDense.lean`、`SimpleFuncDenseLp.lean` | MeasureTheory.Integral.Lebesgue.Basic 等 |
+| 11 | MCT=`lintegral_iSup`（Integral/Lebesgue/Add.lean:34）、Fatou=`lintegral_liminf…`（Add.lean:202 起，公开版正名时再核）、DCT=`tendsto_integral_of_dominated_convergence`（Integral/DominatedConvergence.lean:57） | 同左 |
 | 12 | `SignedMeasure`、`Measure/Decomposition/Hahn.lean`、`Decomposition/RadonNikodym…`（rnDeriv 在 Covering/Differentiation 与 Decomposition/IntegralRNDeriv）、`haveLebesgueDecomposition` | MeasureTheory.Measure.Decomposition.* |
 | 13 | `MeasureTheory.Lp`（Function/LpSeminorm/ 目录） | MeasureTheory.Function.LpSeminorm |
 | 14 | ba：**无**（通道分工） | — |
@@ -136,7 +137,7 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 
 ## 3. 批次进度
 
-- [ ] B0 基建（OCR 全书 / 侦察 / 骨架冒烟 / build.ps1 / README / 00 导言）
+- [x] B0 基建（OCR 全书 144 奇数页 ✓ / 侦察 ✓ / 骨架冒烟 2/2 ✓ / build.ps1 ✓ / README ✓ / 00 导言 209 行 ✓）
 - [ ] B1 01-06 集类与测度
 - [ ] B2 07-09 可测映射
 - [ ] B3 10-16 积分与 Lp
@@ -153,3 +154,17 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 1. （B0）`tools/ocr_yan.py` render 的 f-string 嵌套 `{'p%03d' % (first+i)}` 被外层
    f-string 当替换字段在定义期求值（i 未定义 NameError）——生成代码串里嵌套
    表达式必须提出来先算或分层拼接。
+2. （B0）pdf2image `convert_from_path(17, 303)` 一次性转换整段并把 PIL 页囤在
+   内存（287 页撑到 10 GB 仍零写盘）——大范围渲染必须 PyMuPDF 逐页。
+3. （B0）**管道假绿**：isabelle build 经 `… | tail -4` 管道调用时退出码被 tail
+   吃掉，冒烟"通过"实为 FAIL——对账必须走 build.ps1 的 `$LASTEXITCODE` 直采。
+4. （B0）build.ps1 空通道目录：`Find-ChannelUnits` 返回空 → `$null | Where-Object`
+   在 -All（无章过滤）下透出一个 null 单元 → `Split-Path` 炸——Invoke-ScriptUnit
+   加 `if (-not $units) { return }` + `@($units)` 守卫。
+5. （B0）Isabelle `using assms by (rule card_mono)` 对 assumes/shows 形态引理
+   解析失败（"Failed to apply initial proof method"）——用显式
+   `by (rule card_mono[OF assms(2) assms(1)])`；另 `of_nat (card A)` 目标类型
+   含糊（ennreal/nat 两可）会炸 of_nat_mono——避免裸 of_nat have，直接走
+   `emeasure_mono` 这类结构化引理。
+6. （B0）Lean 模块 doc `/-! -/` 在 import 之前报 "invalid 'import' command"
+   （funanalysis 前科重现）；`measure_union` 新签名只需 (h, hs) 两参。

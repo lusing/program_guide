@@ -1,0 +1,4 @@
+session MT00 in "MT00" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T00_Intro
