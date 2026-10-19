@@ -48,17 +48,27 @@ session ML63 in "63_resolution" = HOL +
   theories
     ex63_resolution
 
-session ML90 in "90_decidability" = HOL +
+session ML92 in "92_decidability" = HOL +
   options [document = false]
   theories
-    ex90_decidability
+    ex92_decidability
 
-session ML104 in "104_hoare" = HOL +
+session ML106 in "106_hoare" = HOL +
   options [document = false]
   theories
-    ex104_hoare
+    ex106_hoare
 
-session ML105 in "105_totalcorrect" = HOL +
+session ML107 in "107_totalcorrect" = HOL +
   options [document = false]
   theories
-    ex105_totalcorrect
+    ex107_totalcorrect
+
+session ML78 in "78_provability" = HOL +
+  options [document = false]
+  theories
+    ex78_provability
+
+session ML91 in "91_presburger" = HOL +
+  options [document = false]
+  theories
+    ex91_presburger

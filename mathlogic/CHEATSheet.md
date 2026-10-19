@@ -1,6 +1,6 @@
 # 数理逻辑教程 CHEATSheet（六通道速查）
 
-> 78 个验证单元沉淀的工具坑与语言坑速查。详证见各章 docs/ 的
+> 309 个验证单元沉淀的工具坑与语言坑速查。详证见各章 docs/ 的
 > 坑位速记；本表按「你需要做什么」组织。
 
 ## 我要跑验证
@@ -8,8 +8,8 @@
 ```powershell
 cd mathlogic
 pwsh -NoProfile -Command '& ./build.ps1 -All'            # 全量 78 单元
-pwsh -NoProfile -Command '& ./build.ps1 -File ex104_hoare.v'   # 单文件
-pwsh -NoProfile -Command '& ./build.ps1 -Chapter 104_hoare'    # 单章
+pwsh -NoProfile -Command '& ./build.ps1 -File ex106_hoare.v'   # 单文件
+pwsh -NoProfile -Command '& ./build.ps1 -Chapter 106_hoare'    # 单章
 ```
 
 | 通道 | 入口 | 判定 |
@@ -33,13 +33,37 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 104_hoare'    # 单章
 
 ## 六通道高频坑（章号索引）
 
-### Coq
+### Isabelle
+- lemma 自由变元**多态逃逸** presburger——`fixes x y k :: nat` 或 `∀x::nat` 钉死（91）
+- 区间计数 `card {Suc 0..<n} = n - 1` 用 `card_atLeastLessThan` 直算；`atLeast_lessThanSuc_zero`/`atLeastLessThanSuc_conv` **不存在**（91）
+- iff-of-iffs 交给 `auto simp: mult_cancel_left`；纯消去 `algebra_simps` 加进最后的 simp（91）
+
+
+### Prolog（郝轮新账）
+- 饱和循环写 `(step, fail ; true)` **永不重试已穷尽的左支**——mp 支早期无解后被回溯永久跳过；必须 `step 成功则递归重开`（78）
+- `setof(M, ...Mm...)` 模板变量与生成子**不同名**（M vs Mm）→ 空变量混入类（91）
+- 项一多 `K-1`/`N-1` 直接进 `between/3`/`numlist` 报 compound——先 `is` 求值（91）
+- 一名两用：`cg_lits([cg1(M,R)|T], C, [cg(M,TC,TR)|R])` 的 R 既是残基又当尾表 → improper list 静默吞解（91）
+- 量词布尔值协议：`fev(ex, E, 1) :- !, ...` 后接 `fev(ex, E, 0) :- !.` 的 **cut 会剪掉后续子句**——改单子句 if-then-else（91）
+- 候选表 off-by-one：严格下界 L<u 的最小残类点从 **L+1** 起算；ℤ 语义行族=下界+1∪{0}∪上界−1（91）
+- 暴力对拍 ∀∃ 嵌套要**分层窗口**（∃ 宽 ∀ 窄），窗缘见证掉出即假绿/假红（91）
+
+- `assert (H : T) := term.` 非法——带类型必须 `{ exact }` 或改 `assert (H := term)`（78）
+- `rewrite X in H` 只改**首个实例化**；双侧同形要 `rewrite !X`（91 鸽笼长度账）
+- `destruct H as [[y H] | [y H]]`：析取+存在嵌套要**双层括号**（91 奇偶归纳）
+- `nlinarith` 不存在：非线性恒等式先 AC-simp 展开（`simp [mul_comm, mul_left_comm]`）再 omega/lia 以原子对账（91）
 - `apply (proj1 (iff…)) in H` shelve 前提 → destruct+pose proof（01）
 - `destruct eqn:` 分支序=模式序（05）；会替换目标 scrutinee（15）
 - lia 视 `2^S n`/`2^n` 为两原子（08）；`hd` 撞 stdlib（24）
 - iff 分量显式 `.mp/.mpr`（15）；需要 `In x` 条件的 fv 条款（14）
 
 ### Lean
+- `decide` 大数值触 **max recursion depth**（内核默认 512）：1825 层试除/3×10²² 级等式一律 `native_decide`（110）
+- `omega` **不解 ∃ 目标**（只吃无量词片段+∀ 假设）——奇偶要手工归纳，分支内 omega 收尾（91）
+- bare core 无 ring/nlinarith：`simp [Nat.mul_comm, Nat.mul_left_comm]` 做 AC 正规化是代数身份的救命稻草（91）
+- `rcases/obtain` 不在 core——`cases ... with | inl h => | inr h =>` + 匿名 `intro ⟨a, b⟩`（91）
+- `Nat.add_mul : (a+b)*k = a*k + b*k`、`Nat.mul_add : n*(m+k) = n*m+n*k`——左右分配名字易混（91）
+
 - **`lemma` 非关键字**、**`while` 保留字**（25）
 - induction 拒构造子头索引；`with` 模式构造子字段在前 IH 在后（17/25）
 - doc comment 紧邻声明（13/21）；`‹_›` 复合类型会挂死（13）
@@ -71,7 +95,7 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 104_hoare'    # 单章
 ## 语义嵌入模式（横评结论）
 
 - **深嵌入**（本章主流）：语法自建归纳类型，语义/推导全是引理
-  ——104 章的 cmd/exec/hoare 全是这个形状
+  ——106 章的 cmd/exec/hoare 全是这个形状
 - **浅嵌入**（06 章 Hilbert 示范）：宿主 Prop 当对象逻辑的
   Prop，推导规则变成定理持续器——代码量小但受限
 - 布尔截面：`nat -> bool` 表示谓词（09 DPLL）vs Prop 值语义
@@ -91,50 +115,50 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 104_hoare'    # 单章
 
 ### Coq（Rocq 9.1）
 
-- 否定进归纳谓词（95 章 lsat）→ 非严格正性——语义改**公式结构
+- 否定进归纳谓词（97 章 lsat）→ 非严格正性——语义改**公式结构
   Fixpoint**（递归在子公式，位置不动）
 - Notation 定义的总公式**不能 unfold**——`Cannot coerce to an
-  evaluable reference`（97 章 EFP）；全走 simpl
+  evaluable reference`（99 章 EFP）；全走 simpl
 - F 见证的 destruct 是对 `(∃j, ≤ ∧ …)`——`[j [_ Hj]]` 两层
-  拆（97 章）
+  拆（99 章）
 - `discriminate` 裸调不收「假等式目标」（0 = 2）——要
-  `discriminate H` 或 lia（97 章）
+  `discriminate H` 或 lia（99 章）
 - `apply Htr with (y := v)` 的隐式 unify 岔开——全参显式
-  `apply (Htr w v u)`（92 章）
+  `apply (Htr w v u)`（94 章）
 - 探针赋值的双 eqb match：`Nat.eqb_neq` 的 proj2 提供
-  `(v =? w) = false`，外层 match 对 false 直接 iota（92 章）
+  `(v =? w) = false`，外层 match 对 false 直接 iota（94 章）
 - 迭代同构引理不能 reflexivity——两个 Fixpoint 对**轮次归纳**
-  （103 章）
-- `F [] = B` 的种子步：app_nil_r 前先 unfold unionL（103 章）
+  （105 章）
+- `F [] = B` 的种子步：app_nil_r 前先 unfold unionL（105 章）
 
 ### Lean（bare core）
 
 - `cases h : starve k` 目标含 starve (k+1) 报 free variables
-  ——**generalize hs : starve k = s** 先抽象（102 章）
+  ——**generalize hs : starve k = s** 先抽象（104 章）
 - `decide` 只收闭目标；含自由变量的成员判定换 simp 方程引理
-  （102 章）
+  （104 章）
 - `Nat × Nat × Nat` 是**右嵌套**（Coq 左嵌套相反）——投影
-  s.1 / s.2.1 / s.2.2（102 章）
+  s.1 / s.2.1 / s.2.2（104 章）
 - `simp [模型] at hs` 常把成员命题收成**单个反向等式**——
-  `first | exact hs | exact hs.symm` 直收（97 章）
-- 列表字面量是**逗号**不是分号（97 章）
+  `first | exact hs | exact hs.symm` 直收（99 章）
+- 列表字面量是**逗号**不是分号（99 章）
 - 守卫三连坑：`(s x == 0) = false` 是 Prop；`!(s x == 0)`
   elaborate 成 `!decide …`；正解 `decide (s x ≠ 0)` +
-  `of_decide_eq_true`（105 章）
+  `of_decide_eq_true`（107 章）
 - `Nat.eqb_neq` 不存在——`cases hb : Nat.beq …` + `Nat.beq_eq`
-  手工组装（92 章）
-- match 表达式内**不用 end**（92 章 T_converse 的探针赋值）
-- `by_contra` 非 core——`by_cases h : P` 替代（92 章）
+  手工组装（94 章）
+- match 表达式内**不用 end**（94 章 T_converse 的探针赋值）
+- `by_contra` 非 core——`by_cases h : P` 替代（94 章）
 
 ### Isabelle
 
 - exec 的 inductive 规则默认入 intro 集——blast/auto/force 在
   含 exec 的目标沿 eWhileT **无限展开**（600s+ 假死）——纪律：
-  exec 目标一律 **metis**（只吃给定事实）或定向 rule（105 章）
+  exec 目标一律 **metis**（只吃给定事实）或定向 rule（107 章）
 - `of` 属性按命题**首次出现序**（23 章坑在 total correctness
-  的 V 前缀上复现——105 章）
+  的 V 前缀上复现——107 章）
 - 四层闭合括号少一层 = cwhile 第三参数（错误 `at ""` 的真义）
-- 会话级 sqlite 冲突：中断后必须删 ML105.db 再 build（105 章）
+- 会话级 sqlite 冲突：中断后必须删 ML107.db 再 build（107 章）
 
 ## 中译本术语对照（哈斯/瑞安版）
 
@@ -178,8 +202,8 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 104_hoare'    # 单章
 ## Jongsma 扩充新坑（离散底座——新号 53-61）
 
 **数学先于战术**（三连：53/55/61）——目标为假时 lia 的
-"Cannot find witness" 是**正确判断**：110 章 `2*2 ≤ (k₁'+1)(k₂'+1)`
-不真（应证乘积=1）；113 章 filter 口径的度数引理在自环 (v,v)
+"Cannot find witness" 是**正确判断**：112 章 `2*2 ≤ (k₁'+1)(k₂'+1)`
+不真（应证乘积=1）；115 章 filter 口径的度数引理在自环 (v,v)
 上是假命题（改多重图递归口径后成定义方程）。写证明前先验算。
 
 **PDF 文本层丢上杠**（50）——§7.3 命题的补运算排印在提取文本
@@ -262,7 +286,7 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
   对的；「不可有限公理化」的对象是有限性而非 DLO）；空真陷阱（稠密
   在单点域空真，穷举从 n≥2 起）；σₙ 嵌套括号程序生成；Lean 草稿
   sorry/where 残留要清。
-- **78 章新坑**：嵌套结构相等 mutual/fuel/list-外层三连拒（fuel 单
+- **79 章新坑**：嵌套结构相等 mutual/fuel/list-外层三连拒（fuel 单
   Fixpoint 收）；合同闭包两炸（无界 f-提升→T4 截断；重复项→每轮
   dedup）；canon 须统一次序+自反闭包；Lean 严格正定性拒高阶辅助谓词
   （cong 内联 cong0/congS）；求值器 neg 穿透明量词会算错。
@@ -281,7 +305,7 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 - **账本对照**：同一群例 Coq 零公理 vs Lean [propext, Classical.choice,
   Quot.sound]（by_cases 经典分叉）。
 
-## 09/68/69/75/76/116 章新坑（Mendelson 扩充）
+## 09/68/69/75/76/118 章新坑（Mendelson 扩充）
 
 ### 10 章 完备集与公理独立性（C/L）
 - **↓ 是 NOR 不是 NAND**：joint denial 的 `upeval` 首版写成 `negb (andb …)`
@@ -335,7 +359,7 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 - **Bool↔Prop 桥**：not_eq_true'+absurd+Bool.noConfusion 手工搭；
   Coq destruct eqn:E 会联动重写假设（exact E 失配改按新形写）。
 
-### 116 章 NBG 集合论（C/L）
+### 118 章 NBG 集合论（C/L）
 - **`at` 撞 Coq 关键字**（rewrite … at）——构造子改名 atom；
 - **map vn 未应用递归被 guard 拒**（第三次撞：09/35/62）——改**追加式**
   vn (S k) = els (vn k) ++ [vn k]+els 引桥族；vn 定义体是 match——
@@ -444,27 +468,27 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
 
 ## 张寅生轮新章坑位（15/20/54/63/78/84 + 34/35/37/40/79 深化）
 
-- **Coq `&&`/`||` 记号缺**（32/100 章）：From Stdlib List Arith 语境
+- **Coq `&&`/`||` 记号缺**（32/102 章）：From Stdlib List Arith 语境
   不可用——andb/orb 显式前缀；`Nat.pow2`→`Nat.pow 2 n`；`map2` 不在
-  （手写 zip 递归）；`at` 是关键字（115 章 lambda 撞名）；`seq` 自定
-  义类型撞 List.seq（80 章 gseq）；`dedup`→`nodup Nat.eq_dec`
+  （手写 zip 递归）；`at` 是关键字（117 章 lambda 撞名）；`seq` 自定
+  义类型撞 List.seq（81 章 gseq）；`dedup`→`nodup Nat.eq_dec`
 - **三元组左结合**（32 章）：`(a,b,c)`=(a,b),c——清单全部显式
   `(a,(b,(c,d)))`；Lean 列表字面量首元素全限定（`.pvar` 推不出类型）
-- **DFA 缺省转移=自环是语义 bug**（100 章）：越轨词免费跳一个符号
+- **DFA 缺省转移=自环是语义 bug**（102 章）：越轨词免费跳一个符号
   ——缺省必须 sink（99）；**字母表必须覆盖终态字符**（Coq 侧因漏
   e 符号「空对空」假绿——Prolog 对账抓获）
-- **Smullyan 对角编码要带对角公理**（115 章）：g 的作用压成
+- **Smullyan 对角编码要带对角公理**（117 章）：g 的作用压成
   cmap m m=m，否则 φ 可避开自指点使命题失效
-- **F₃ 方向成比例即同线**（117 章）：4 真方向（(0,2)=2·(0,1)）——
+- **F₃ 方向成比例即同线**（119 章）：4 真方向（(0,2)=2·(0,1)）——
   重复表示线对交 3 点
-- **CNF 序数低位在前**（80 章）：natSum 天然对齐；高位在前要 pad
+- **CNF 序数低位在前**（81 章）：natSum 天然对齐；高位在前要 pad
 - **条件证明目标式非永真**（33 章例 9.5）：挂前提后才是永真——
   「推导正确性=条件式永真性」
 - **Coq `*` 类型记号被 nat_scope 劫持**（68 章）：`list tsym * nat`
   报「expected nat」——`(... * ...)%type` 显式类型域
-- **Lean zipWith 方法语法参数序**（119 章）：全应用
+- **Lean zipWith 方法语法参数序**（121 章）：全应用
   `List.zipWith f a b`；`Nat.eqb` 不存在（`==`/`Nat.beq`）
-- **Prolog format 不求值目标**（100 章）：`( Goal -> R=true ; ... )`
+- **Prolog format 不求值目标**（102 章）：`( Goal -> R=true ; ... )`
   先求再写；step/4 分散定义加 `:- discontiguous`
 
 
@@ -632,7 +656,7 @@ dnf2 的 or 链卡在不透明应用处→全 `simp [lit]` 一发收；`show`
    ——数字对调必须用章号语境的精确模式（第 N 章/表行/路径/链接），
    修完必须跑「非章号 10x 翻转」审计。
 4. **年代冻结的旧章号是多轮重排的暗债**：不同轮次写入的引用
-   （「78 章 Henkin」=完备性旧位、「61 章 EF 博弈」等）被后续
+   （「79 章 Henkin」=完备性旧位、「61 章 EF 博弈」等）被后续
    MAP 机械前移后指向**别的章**——修复只能靠**话题锚定的上下文
    审计**（每簇数字 grep 语境、逐条判对错），正则映射修不了语义；
    收官章的编年堆叠同理，正解是重写不是修补。

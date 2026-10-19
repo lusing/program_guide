@@ -4,7 +4,7 @@
    双向重写一步算子 rew1、深度界 BFS 闭包 rewStar、书内等式的应用
    链账本、aaa 不可达的有限影子（不可判定性的「找不到≠不存在」
    语义）、两条写法汇合样本。Novikov/Boone/Markov 与 PCP 表亲
-   （90 章）记文档线。 *)
+   （92 章）记文档线。 *)
 
 From Stdlib Require Import List Arith Lia.
 Import ListNotations.

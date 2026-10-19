@@ -1,7 +1,7 @@
 # 第 30 章 语法解释、范式与 ZF
 
 > 对书：EFT ch VIII（§VIII.1-8.4）+ §VII.3-7.4。本章通道：C
-> （`examples/29_interp/ex30_interp.v`）/ L（`examples/29_interp/ex30_interp.lean`）。
+> （`examples/30_interp/ex30_interp.v`）/ L（`examples/30_interp/ex30_interp.lean`）。
 
 | 机器件 | 内容 | 通道 |
 |---|---|---|

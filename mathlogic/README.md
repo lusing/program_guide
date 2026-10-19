@@ -1,6 +1,6 @@
 # 数理逻辑指南（mathlogic）：从命题到不完备性
 
-面向**会编程、想系统学数理逻辑**的读者。以十二本读本为骨架
+面向**会编程、想系统学数理逻辑**的读者。以十四本读本为骨架
 （Huth&Ryan、Ben-Ari 3e、Mints、EFT、Mendelson、Jongsma、Marker、
 Müller-Stach、张寅生等详见
 [PLAN.md](./PLAN.md)），横跨 **Coq / Agda / Lean 4 / Isabelle/HOL /
@@ -21,7 +21,7 @@ PM 与 Hilbert/54 截消定理与序数分析/63 自动机与形式语言：Chom
 层级/78 悖论的结构与解悖理论/84 算术与几何的公理系统）+五处深化
 （34 H 域与语义树/35 Rⁿ 归结闭包/37 WAM 双栈轨迹/40 表格式图灵机/
 79 关系运算与传递闭包）+两注记（48 EFA 下界/42 CTT 公理化），全书
-123 章 **301** 个验证单元全绿（零公理或显式公理记账）；速查表见
+125 章 **309** 个验证单元全绿（零公理或显式公理记账）；速查表见
 [CHEATSheet.md](./CHEATSheet.md)，蓝图与状态表见 [PLAN.md](./PLAN.md)。
 
 **第十一轮扩充收官**：按 David Marker《Model Theory: An
@@ -44,7 +44,20 @@ Morley 秩**（E_inf 实验室——无限宇宙上的真秩计算器）、
 无穷逻辑与决定逻辑/61 Gentzen 一致性证明 o(S)/64 中矢列/
 65 Beth-Robinson-Harrop）+五深化+两注记。
 
-**第十四轮：全书逻辑重排**。十三轮书本扩充按「当时空位」插章，
+**第十五轮扩充收官**：按郝兆宽/杨睿之/杨跃《数理逻辑：证明及其
+限度》（复旦大学出版社 2014，纯扫描件 RapidOCR 全书取材）完成
+两新章+三深化（123→125，第十三次重编号）：**78 可证性条件与
+Löb 定理**（ch9.3+10 的机器化——六假设抽象演算：断言 ¬□不动点
+⟺con、(10.2)、Gödel II、Löb 公理形 D4 与规则形、辛钦问题答案，
+Coq/Lean/Isabelle/Prolog 四通道零公理；Prolog 有限宇宙饱和器可打印
+完整 Löb 推导树并做「去假设」对照）与 **91 简化版本的自然数模型**
+（ch8 全谱——ℤ-链模型分类、Łoś-Vaught 判别法、后继/序/Presburger
+三阶量词消去器：否定裂解→DNF→断言 3 系数归一→候选表消去，14 组
+对拍+4 闭句判定全绿；qf-阻碍账、ℤ-链有限影子、习题 8.5.7 加法在
+(ℕ,S,×) 中可定义的恒等式与网格验证、鸽笼账三通道）；三深化：
+110 证明的必要性反例账（33…331 素性断崖+Elkies 四次方反例）、
+02 唯一可读性定理、125 收官章郝书线合拢注记。**第十四轮：全书
+逻辑重排**。十三轮书本扩充按「当时空位」插章，
 章号已不承载教学顺序，收官章则逐轮追加成编年堆叠。本轮按教学逻辑
 全书重排（第十二次重编号，非单调映射、两阶段哨兵协议）：**十一篇
 结构**——命题(01-12)/直觉主义与证明论基础(13-21)/一阶逻辑(22-33，
@@ -174,7 +187,7 @@ mathlogic/
 | [62 Herbrand 定理](docs/62-herbrand.md) | T_P 单调+头原子（Prolog 桥） | C/L |
 | [64 归结完备与 SAT 难例](docs/64-rescomp.md) | resproof+PHP 反驳+DP 消元 | C/L |
 | [65 自由模型](docs/65-freemodel.md) | 自由幺半群=表+初始性两定理（泛性质）+必需性证词 | C/L |
-| **第七篇 可计算性与算术（67-90）** | RM·TM→不可判定→层级→复杂度→算术化→不完备→证明论回应→真理·构造·H10→算术模型·SMT | ↑ |
+| **第七篇 可计算性与算术（67-91）** | RM·TM→不可判定→层级→复杂度→算术化→不完备→证明论回应→真理·构造·H10→算术模型·SMT | ↑ |
 | [67 寄存器机](docs/67-regmachine.md) | 五指令 RM 解释器（三通道）+书例 P₀ 奇偶对账+加法+循环不停机 | C/L/P |
 | [68 图灵机](docs/68-turing.md) | 四元组+纸带解释器（三通道）+书例四机（后继/零/加法/抹除）+Tadd 网格抓包+永不停实证 | C/L/P |
 | [69 递归函数](docs/69-recfn.md) | prf 求值器+命题 3.16 函数族全正确（步进方程法）+Ackermann 非 PR 线+限制 μ 的 Option 语义 | C/L |
@@ -186,52 +199,54 @@ mathlogic/
 | [75 算术化](docs/75-goedel.md) | 平方配对单射+树编码 gcf 单射性+subf 代入+β-函数 CRT 双现场+自引骨架 | C/L |
 | [76 不完备性](docs/76-incompleteness.md) | 三步文档线全保留+表示性样板四真定理+有限域可判定与论域相对性（Tarski 对照）+层级化强不完备（Marker 深化） | 文档/C/L |
 | [77 Gödel II 与一致性扩张](docs/77-goedel2.md) | BACH↦8647201500 素数幂编码（二进制 N）+九句宇宙扩张梯子（逐层收编/逃逸/不塌）+D1 机制账+soundness 影子 | C/L |
-| [86 真理理论](docs/86-truth.md) | T-模式全枚举+全枚举失败现场+对角逃逸逐位化（flipAt）+强 Kleene 三值+Kripke 跳跃单调收敛（说谎者恒 U）+诚实者双固定点+全真起步振荡 | C/L |
-| [87 构造性与 Heyting 语义](docs/87-constructive.md) | Gödel–Gentzen 双否定 FOL 翻译器（七行）+经典等价账+零经典公理直觉样本+Sierpinski 开集格三账（¬¬U≠U/等式降级/同格对照）+四平方见证工厂 | C/L |
-| [88 Hilbert 第十问题](docs/88-diophantine.md) | Pell ⊗ 范数乘法恒等式（ring 零公理）+d=2 解序列逐项验证+闭包组合子+Cassini/X-Y 序列 | C/L |
-| [79 PA 与 ε₀](docs/79-epsilon.md) | CNF 序数树+hereditary 回环全表 183 项+Goodstein 影子下降网格+G(1..3) 跑通+Hardy 层谱 | C/L |
-| [80 截消与序数](docs/80-cutelim.md) | 反演定理八规则账+例 9.15 七步链+cut 插入演例+情形 3 级下降+CNF 序数指派降序（3<ω³+2）+TI 有限影子+相容性层级表 | C/L |
-| [84 结构规则谱系](docs/84-structural.md) | G0→G4 逐级拆除+μ 权重四不等式+**G4ip 终止搜索器**（三非定理否证）+Glivenko 嵌入双树 | C/L |
-| [85 Craig 插值](docs/85-interpolation.md) | Maehara 组合表 interp+三条件真值表审计+常值流（⊥/⊤ 跨侧） | C/L |
-| [89 算术的模型](docs/89-models.md) | {c>n̄} 有限可满足+overspill 影子+R(3,3)=6 双账（K5 恰 12 染色/K6 全枚举）+PH(2,2) 机制账 | C/L/P |
-| [90 可判定性与 SMT](docs/90-decidability.md) | presburger 现场+Decidable 机器面 | I/L |
-| [96 CTL 模型检查](docs/96-temporal.md) | AG/EG 展开等价+不动点构件 | C/L |
+| [78 可证性条件与 Löb](docs/78-provability.md) | **郝书 ch9.3+10**：D1-D3 六假设抽象演算+三组合子；¬□ 不动点⟺con、(10.2)、Gödel II、Löb 公理 D4+规则形、辛钦问题答案——四通道零公理；Prolog 有限宇宙饱和器打印推导树+去假设对照 | C/L/I/P |
+| [87 真理理论](docs/87-truth.md) | T-模式全枚举+全枚举失败现场+对角逃逸逐位化（flipAt）+强 Kleene 三值+Kripke 跳跃单调收敛（说谎者恒 U）+诚实者双固定点+全真起步振荡 | C/L |
+| [88 构造性与 Heyting 语义](docs/88-constructive.md) | Gödel–Gentzen 双否定 FOL 翻译器（七行）+经典等价账+零经典公理直觉样本+Sierpinski 开集格三账（¬¬U≠U/等式降级/同格对照）+四平方见证工厂 | C/L |
+| [89 Hilbert 第十问题](docs/89-diophantine.md) | Pell ⊗ 范数乘法恒等式（ring 零公理）+d=2 解序列逐项验证+闭包组合子+Cassini/X-Y 序列 | C/L |
+| [80 PA 与 ε₀](docs/80-epsilon.md) | CNF 序数树+hereditary 回环全表 183 项+Goodstein 影子下降网格+G(1..3) 跑通+Hardy 层谱 | C/L |
+| [81 截消与序数](docs/81-cutelim.md) | 反演定理八规则账+例 9.15 七步链+cut 插入演例+情形 3 级下降+CNF 序数指派降序（3<ω³+2）+TI 有限影子+相容性层级表 | C/L |
+| [85 结构规则谱系](docs/85-structural.md) | G0→G4 逐级拆除+μ 权重四不等式+**G4ip 终止搜索器**（三非定理否证）+Glivenko 嵌入双树 | C/L |
+| [86 Craig 插值](docs/86-interpolation.md) | Maehara 组合表 interp+三条件真值表审计+常值流（⊥/⊤ 跨侧） | C/L |
+| [90 算术的模型](docs/90-models.md) | {c>n̄} 有限可满足+overspill 影子+R(3,3)=6 双账（K5 恰 12 染色/K6 全枚举）+PH(2,2) 机制账 | C/L/P |
+| [91 简化版本的自然数模型](docs/91-presburger.md) | **郝书 ch8**：ℤ-链分类+Łoś-Vaught+三阶量词消去器（系数归一/候选表，14 组对拍）+qf-阻碍账+8.5.7 加法在 (ℕ,S,×) 可定义+鸽笼三通道 | C/L/I/P |
+| [92 可判定性与 SMT](docs/92-decidability.md) | presburger 现场+Decidable 机器面 | I/L |
+| [98 CTL 模型检查](docs/98-temporal.md) | AG/EG 展开等价+不动点构件 | C/L |
 | [66 SLD 与 Prolog 语义](docs/66-sldprolog.md) | 计算规则独立性+cut/NAF/CLP | C/L/P |
-| [106 合成与形式语义](docs/106-synthsem.md) | 小步语义+读出式正确性 | C/L |
-| [95 LTL](docs/95-ltl.md) | 路径语义+等价族六件+adequate sets | C/L |
-| [102 MC 算法与公平性](docs/102-mcalgo.md) | 互斥全程+饥饿路径+公平性微观模型 | C/L |
-| [97 CTL*](docs/97-ctlstar.md) | 两层语法+三组分离现场（表达能力天梯） | C/L |
-| [98 LTL 语义表列](docs/98-ltltab.md) | lasso+兑现检查+fulfill_ok_sound | C/L |
-| [99 时态演绎系统 L](docs/99-ltlded.md) | lth+lth_sound+14.2/14.4 推导 | C/L |
-| [100 自动机](docs/100-automata.md) | DFA 运行器（熊猫/1+1=2+sink 教训）+NFA 子集构造构造化+PDA aⁿbⁿ+LBA 影子+3 型文法↔DFA 互译 | C/L/P |
-| [101 自动机与 LTL MC](docs/101-buechi.md) | baut+findLoop+loop_accept_inf | C/L/P |
-| [103 符号 MC 与 μ 演算](docs/103-symbolicmc.md) | preE 前像+μ/ν 编码 CTL（合流点） | C/L |
-| **第八篇 时态与模态（91-102）** | 模态 K·对应·ND·证明论→LTL·CTL·CTL*→表列·演绎→自动机·Büchi→MC·符号 MC | ↑ |
-| [91 模态 K](docs/91-modal.md) | Kripke 语义+K/必然化+T/4 反例 | C/L |
-| [92 对应理论](docs/92-correspondence.md) | 五条正向+T 的逆（探针赋值） | C/L |
-| [93 模态 ND 与 KT45n](docs/93-modalnd.md) | □i 严格性+泥孩子三轮 decide | C/L |
-| [94 模态证明论](docs/94-modalpt.md) | GI 组 (K)/(T)/(S4) 检查器+书例 6.4+超矢列分量级操作账（MG 合成/Ew/Ec/(□1⇒)） | C/L |
-| **第九篇 程序验证（104-107）** | 霍尔→完全正确→合成语义→并发 | ↑ |
-| [104 霍尔逻辑](docs/104-hoare.md) | while 规则五通道对照+别名前提+倒数程序 | C/A/L/I/H4 |
-| [105 完全正确性](docs/105-totalcorrect.md) | 变体方法+minsum 案例+契约式设计 | C/L/I |
-| [107 并发演绎验证](docs/107-conc.md) | 不变式族+reach_inv | C/L |
-| **第十篇 数学基础（108-122）** | 归纳·PA·数论·密码→集合·图论·无穷·悖论→NBG·公理·同一性→代数线（函数·格·Boole·代数逻辑） | ↑ |
-| [108 数学归纳与递归](docs/108-induction.md) | PMI 三位一体：弱/强/良序+素因子+√2 下降 | C/L |
-| [109 递推与 Peano 算术](docs/109-pa.md) | 公理变定理+加乘律+≤ 全链 | C/L |
-| [110 整除性与初等数论](docs/110-divisibility.md) | dm2 商余+Bézout+Euclid 引理+素数无穷 | C/L |
-| [111 密码与信任机器](docs/111-crypto.md) | RSA 九消息回环（含 gcd≠1 边界）+Shamir 三趟四步开箱+哈希链篡改级联+纠缠锥+感知器 XOR 枚举无解+DLP 双基表与生成元 | C/L/P |
-| [112 集合、幂集与计数](docs/112-setscount.md) | 运算律+De Morgan 经典账+容斥 | C/L |
-| [114 无穷集合与停机问题](docs/114-infinity.md) | Cantor 对角线三化身+Russell+停机公理账 | C/L |
-| [115 悖论解悖](docs/115-paradox.md) | Smullyan 对角集不可表示全枚举+类型阶检查器（罗素无类型现场）+ZFC 分离现场+NF 层化求解器+情境序列交替 | C/L |
-| [119 函数与等价关系](docs/119-funequiv.md) | 搜索左/右逆+congN 正规形+良定义 | C/L |
-| [120 偏序与格](docs/120-posetlattice.md) | 特征引理装配代数律+五点菱形反例 | C/L |
-| [121 Boole 代数与逻辑电路](docs/121-boole.md) | 十公理+加法器+minterm 定理+QMC | C/L/P |
+| [108 合成与形式语义](docs/108-synthsem.md) | 小步语义+读出式正确性 | C/L |
+| [97 LTL](docs/97-ltl.md) | 路径语义+等价族六件+adequate sets | C/L |
+| [104 MC 算法与公平性](docs/104-mcalgo.md) | 互斥全程+饥饿路径+公平性微观模型 | C/L |
+| [99 CTL*](docs/99-ctlstar.md) | 两层语法+三组分离现场（表达能力天梯） | C/L |
+| [100 LTL 语义表列](docs/100-ltltab.md) | lasso+兑现检查+fulfill_ok_sound | C/L |
+| [101 时态演绎系统 L](docs/101-ltlded.md) | lth+lth_sound+14.2/14.4 推导 | C/L |
+| [102 自动机](docs/102-automata.md) | DFA 运行器（熊猫/1+1=2+sink 教训）+NFA 子集构造构造化+PDA aⁿbⁿ+LBA 影子+3 型文法↔DFA 互译 | C/L/P |
+| [103 自动机与 LTL MC](docs/103-buechi.md) | baut+findLoop+loop_accept_inf | C/L/P |
+| [105 符号 MC 与 μ 演算](docs/105-symbolicmc.md) | preE 前像+μ/ν 编码 CTL（合流点） | C/L |
+| **第八篇 时态与模态（92-103）** | 模态 K·对应·ND·证明论→LTL·CTL·CTL*→表列·演绎→自动机·Büchi→MC·符号 MC | ↑ |
+| [93 模态 K](docs/93-modal.md) | Kripke 语义+K/必然化+T/4 反例 | C/L |
+| [94 对应理论](docs/94-correspondence.md) | 五条正向+T 的逆（探针赋值） | C/L |
+| [95 模态 ND 与 KT45n](docs/95-modalnd.md) | □i 严格性+泥孩子三轮 decide | C/L |
+| [96 模态证明论](docs/96-modalpt.md) | GI 组 (K)/(T)/(S4) 检查器+书例 6.4+超矢列分量级操作账（MG 合成/Ew/Ec/(□1⇒)） | C/L |
+| **第九篇 程序验证（105-108）** | 霍尔→完全正确→合成语义→并发 | ↑ |
+| [106 霍尔逻辑](docs/106-hoare.md) | while 规则五通道对照+别名前提+倒数程序 | C/A/L/I/H4 |
+| [107 完全正确性](docs/107-totalcorrect.md) | 变体方法+minsum 案例+契约式设计 | C/L/I |
+| [109 并发演绎验证](docs/109-conc.md) | 不变式族+reach_inv | C/L |
+| **第十篇 数学基础（109-123）** | 归纳·PA·数论·密码→集合·图论·无穷·悖论→NBG·公理·同一性→代数线（函数·格·Boole·代数逻辑） | ↑ |
+| [110 数学归纳与递归](docs/110-induction.md) | PMI 三位一体：弱/强/良序+素因子+√2 下降 | C/L |
+| [111 递推与 Peano 算术](docs/111-pa.md) | 公理变定理+加乘律+≤ 全链 | C/L |
+| [112 整除性与初等数论](docs/112-divisibility.md) | dm2 商余+Bézout+Euclid 引理+素数无穷 | C/L |
+| [113 密码与信任机器](docs/113-crypto.md) | RSA 九消息回环（含 gcd≠1 边界）+Shamir 三趟四步开箱+哈希链篡改级联+纠缠锥+感知器 XOR 枚举无解+DLP 双基表与生成元 | C/L/P |
+| [114 集合、幂集与计数](docs/114-setscount.md) | 运算律+De Morgan 经典账+容斥 | C/L |
+| [116 无穷集合与停机问题](docs/116-infinity.md) | Cantor 对角线三化身+Russell+停机公理账 | C/L |
+| [117 悖论解悖](docs/117-paradox.md) | Smullyan 对角集不可表示全枚举+类型阶检查器（罗素无类型现场）+ZFC 分离现场+NF 层化求解器+情境序列交替 | C/L |
+| [121 函数与等价关系](docs/121-funequiv.md) | 搜索左/右逆+congN 正规形+良定义 | C/L |
+| [122 偏序与格](docs/122-posetlattice.md) | 特征引理装配代数律+五点菱形反例 | C/L |
+| [123 Boole 代数与逻辑电路](docs/123-boole.md) | 十公理+加法器+minterm 定理+QMC | C/L/P |
 **收官**
-| [123 收官](docs/123-wrapup.md) | 十一篇地图+两处回环三个门轴+十三书骨架对账+频谱与机器验证教训+Leibniz 历史弧线+轮次编年压缩表 | 文档 |
-| [113 图论专题](docs/113-graphs.md) | 握手引理真证明+平面算术+贪心着色+搜索面 | C/L/P |
-| [116 公理集合论 NBG 与序数](docs/116-nbg.md) | vn 典范世界+kur_char 命题 4.3+有限 AC 零公理+B1-B5 类算子 | C/L |
-| [117 算术几何公理](docs/117-axioms.md) | log 同构 Z₇*≅Z₆+解释函子保真+PA 1889 对照+ACA₀ 概括+欧几里得依赖链+希尔伯特关联公理 F₃² 模型（9 点 12 线） | C/L |
-| [118 同一性与结构主义](docs/118-identity.md) | Leibniz 等词零公理双向+Hume 原理基数分块 1,3,3,1+ℕ 三化身（Zermelo 树编码）+Fermat 数互素与 F₅ 分解+Z 商构造良定义+对偶数 d²=0 | C/L |
+| [125 收官](docs/125-wrapup.md) | 十一篇地图+两处回环三个门轴+十三书骨架对账+频谱与机器验证教训+Leibniz 历史弧线+轮次编年压缩表 | 文档 |
+| [115 图论专题](docs/115-graphs.md) | 握手引理真证明+平面算术+贪心着色+搜索面 | C/L/P |
+| [118 公理集合论 NBG 与序数](docs/118-nbg.md) | vn 典范世界+kur_char 命题 4.3+有限 AC 零公理+B1-B5 类算子 | C/L |
+| [119 算术几何公理](docs/119-axioms.md) | log 同构 Z₇*≅Z₆+解释函子保真+PA 1889 对照+ACA₀ 概括+欧几里得依赖链+希尔伯特关联公理 F₃² 模型（9 点 12 线） | C/L |
+| [120 同一性与结构主义](docs/120-identity.md) | Leibniz 等词零公理双向+Hume 原理基数分块 1,3,3,1+ℕ 三化身（Zermelo 树编码）+Fermat 数互素与 F₅ 分解+Z 商构造良定义+对偶数 d²=0 | C/L |
 
 ## 工具链（本机实测）
 
@@ -254,12 +269,12 @@ pwsh -NoProfile -Command '& ./build.ps1 -All'
 
 - 可靠性/演绎定理类元定理：Coq 通道最完整（07 章九规则归纳）；
   Lean/Agda/Isabelle 相应章节立演算与示例，完整归纳证明按章注记。
-- HOL4 采用浅嵌入（06 章对照点）；104 章霍尔逻辑的 HOL4 版止步
+- HOL4 采用浅嵌入（06 章对照点）；106 章霍尔逻辑的 HOL4 版止步
   于单步不变式引理（exec 双重反演的实例级联污染，见该章速记）。
 - 中译本 Huth&Ryan 是扫描件（引用以英文 2e 为准；术语对照表
   在 CHEATSheet）；
   Mints 书公式层缺失（引用需按页核对版面）。
 - 76 章（不完备性）现为文档章——Mendelson 批次四将升级为机器章
-  （表示性样板+对角现场；S 完整推导仍文档级）；78 章完备性已有
+  （表示性样板+对角现场；S 完整推导仍文档级）；79 章完备性已有
   C/L 机器件（合同闭包商结构）。
 - 其他版本（Coq 9/Agda 3/Lean 4.3x）未测。

@@ -4,7 +4,7 @@
 > （无限 Ramsey、**Thm 5.1.4 Erdős–Rado**、Cor 5.1.5；Def 5.2.1-5.2.2、
 > **Thm 5.2.3** 不可辨序列存在、Lemma 5.2.4-5.2.6、Cor 5.2.7-5.2.8、
 > **Thm 5.2.9** 与 Cor 5.2.10-5.2.11、Lemma 5.2.12-5.2.15；§5.3
-> Shelah 多模型定理机制；§5.4 见 89 章深化）。本章通道：C
+> Shelah 多模型定理机制；§5.4 见 90 章深化）。本章通道：C
 > （`examples/54_indiscern/ex54_indiscern.v`）/ L（同 .lean）/ P
 > （`examples/54_indiscern/ex54_indiscern.pl`）。
 
@@ -131,8 +131,8 @@ Prolog 的 map_shift 同构搬运）。教学要点：**模板不动、指标右
 常定）；机制：在 κ 上搭建「每个可数子集的可数封闭包」的层叠
 （Erdős–Rado 保证每次扩张），再让不同的平稳集组合产生无法
 互嵌的模型族。本章把机制记为文档线——它需要单独的集合论
-装备箱，教程主线（84 章 NBG 集合论）之外；§5.4 的 Paris-
-Harrington 独立性（Ramsey 语句在 PA 不可证）见 89 章的深化
+装备箱，教程主线（85 章 NBG 集合论）之外；§5.4 的 Paris-
+Harrington 独立性（Ramsey 语句在 PA 不可证）见 90 章的深化
 （GTM 217 与 Marker 301 双视角）。
 
 另两条余脉：**稳定理论里序不可辨列自动是不可辨集**
