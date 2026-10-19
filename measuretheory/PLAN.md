@@ -82,12 +82,12 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 章 | slug | 书节 | L | I | J | P | R | 批 | 状态 |
 |---|---|---|---|---|---|---|---|---|---|
 | 00 | intro | — | · | · | · | · | · | B0 | ☐ |
-| 01 | setclasses | 1.1 | ✓ | · | ✓ | ✓ | ✓ | B1 | ☐ |
-| 02 | monotone-class | 1.2 | ✓ | · | ✓ | ✓ | ✓ | B1 | ☐ |
-| 03 | measures | 1.3 | ✓ | · | ✓ | ✓ | ✓ | B1 | ☐ |
-| 04 | extension | 1.4 | ✓ | · | ✓ | ✓ | ✓ | B1 | ☐ |
-| 05 | stieltjes | 1.5 | ✓ | · | ✓ | ✓ | · | B1 | ☐ |
-| 06 | approximation | 1.6 | ✓ | · | ✓ | ✓ | ✓ | B1 | ☐ |
+| 01 | setclasses | 1.1 | ✓ | · | ✓ | ✓ | ✓ | B1 | ✅ |
+| 02 | monotone-class | 1.2 | ✓ | · | ✓ | ✓ | ✓ | B1 | ✅ |
+| 03 | measures | 1.3 | ✓ | · | ✓ | ✓ | ✓ | B1 | ✅ |
+| 04 | extension | 1.4 | ✓ | · | ✓ | ✓ | ✓ | B1 | ✅ |
+| 05 | stieltjes | 1.5 | ✓ | · | ✓ | ✓ | · | B1 | ✅ |
+| 06 | approximation | 1.6 | ✓ | · | ✓ | ✓ | ✓ | B1 | ✅ |
 | 07 | measurable-maps | 2.1 | ✓ | · | ✓ | ✓ | ✓ | B2 | ☐ |
 | 08 | functional-monotone-class | 2.2 | ✓ | · | ✓ | ✓ | ✓ | B2 | ☐ |
 | 09 | convergence-modes | 2.3 | ✓ | · | ✓ | ✓ | ✓ | B2 | ☐ |
@@ -138,7 +138,7 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 ## 3. 批次进度
 
 - [x] B0 基建（OCR 全书 144 奇数页 ✓ / 侦察 ✓ / 骨架冒烟 2/2 ✓ / build.ps1 ✓ / README ✓ / 00 导言 209 行 ✓）
-- [ ] B1 01-06 集类与测度
+- [x] B1 01-06 集类与测度（docs 6 篇 200-237 行 / Lean 6 / Julia 6 / Python 6 / Prolog 5；23/23 全绿；docs 扩写补严书 1.3.5 概率化引理、1.4.4/1.4.5 半环验收工序、§1.5 ℝⁿ 盒半环与高维分布函数、§1.6 逼近定理全文）
 - [ ] B2 07-09 可测映射
 - [ ] B3 10-16 积分与 Lp
 - [ ] B4 17-22 乘积空间
@@ -168,3 +168,19 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
    `emeasure_mono` 这类结构化引理。
 6. （B0）Lean 模块 doc `/-! -/` 在 import 之前报 "invalid 'import' command"
    （funanalysis 前科重现）；`measure_union` 新签名只需 (h, hs) 两参。
+7. （B1）**pwsh 参数模式逗号数组丢零**：`-Chapter 01,02` 的数组元素走
+   表达式解析被规整为整数 1、2（丢前导零），而单值 `-Chapter 01` 保持
+   字符串 '01'——同一参数两种绑定行为。build.ps1 的章号归一化必须
+   `-match '^\d+$'` 再 `'{0:D2}' -f [int]$_` 显式补零。
+8. （B1）**`-replace` 与 `-f` 同行不加括号实测为 no-op**：
+   `$_ -replace '^(\d+)$', '{0:D2}' -f [int]$_` 原样返回输入（运算符
+   与逗号的组合解析吞掉了格式化），必须写成
+   `if ($_ -match ...) { '{0:D2}' -f ... }`。隔离复现时务必用与原
+   文件相同的参数类型（改 [string] 单值测试会引入新 bug 假阳/假阴）。
+9. （B1）**prolog 首标记缺失假 FAIL**：build.ps1 判定单元 PASS 要求
+   输出同时含 `==== NN`（头）与 `END ====`（尾），prolog 五件初稿只打
+   尾标记——内容全 OK 但判 FAIL。标记协议必须两头齐全，julia/python
+   同理。
+10. （B1）坑 3（管道假绿）复发警告：后台任务里写
+    `pwsh … | tail -50` 会把退出码换成 tail 的 0——即使 PLAN 里已记
+    载，稍不留神仍会重蹈；对账永远读报告正文，不信管道退出码。

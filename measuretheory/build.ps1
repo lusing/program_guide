@@ -93,7 +93,12 @@ $allChapters = (@($leanChapters) + @($isaSessions.Chapter) + $juliaUnits.Chapter
     Sort-Object -Unique
 
 # ---------- 过滤 ----------
-$wantChapters = if ($Chapter.Count -gt 0) { $Chapter | ForEach-Object { $_ -replace '^(\d+)$', '{0:D2}' -f [int]$_ } } else { @() }
+# 坑（实测）：① 参数模式 `-Chapter 01,02` 的逗号数组元素走表达式解析，
+# 01 被规整成整数 1 丢零（单值 `-Chapter 01` 反而保持字符串），故必须
+# 在此补零；② `-replace` 与 `-f` 同行且不加括号时实测为 no-op，禁用。
+$wantChapters = if ($Chapter.Count -gt 0) {
+    @($Chapter | ForEach-Object { if ($_ -match '^\d+$') { '{0:D2}' -f [int]$_ } else { $_ } })
+} else { @() }
 $wantLangs = if ($Lang) { @($Lang.ToLower()) } else { @('lean', 'isabelle', 'julia', 'python', 'prolog') }
 
 function Test-ChapterWanted($ch) {
@@ -104,7 +109,7 @@ function Test-ChapterWanted($ch) {
 # ---------- 列出 ----------
 if ($List) {
     Write-Host '章 × 通道矩阵（文件存在即预期验证）：'
-    foreach ($ch in $allChapters) {
+    foreach ($ch in ($allChapters | Where-Object { Test-ChapterWanted $_ })) {
         $row = [ordered]@{ 章 = $ch }
         $row.lean = if ($leanChapters -contains $ch) { 'x' } else { '' }
         $row.isabelle = if ($isaSessions.Chapter -contains $ch) { 'x' } else { '' }
