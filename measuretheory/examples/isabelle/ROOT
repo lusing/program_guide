@@ -2,3 +2,13 @@ session MT00 in "MT00" = "HOL-Analysis" +
   options [document = false]
   theories
     T00_Intro
+
+session MT10 in "MT10" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T10_Integral
+
+session MT11 in "MT11" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T11_LimitTheorems

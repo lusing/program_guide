@@ -14,3 +14,5 @@ import Measuretheory.Ch06Approximation
 import Measuretheory.Ch07MeasurableMaps
 import Measuretheory.Ch08FunctionalMonotoneClass
 import Measuretheory.Ch09ConvergenceModes
+import Measuretheory.Ch10Integral
+import Measuretheory.Ch11LimitTheorems

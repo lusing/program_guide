@@ -92,8 +92,8 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 07 | measurable-maps | 2.1 | ✓ | · | ✓ | ✓ | ✓ | B2 | ✅ |
 | 08 | functional-monotone-class | 2.2 | ✓ | · | ✓ | ✓ | ✓ | B2 | ✅ |
 | 09 | convergence-modes | 2.3 | ✓ | · | ✓ | ✓ | ✓ | B2 | ✅ |
-| 10 | integral | 3.1 | ✓ | ✓ | ✓ | ✓ | ✓ | B3 | ☐ |
-| 11 | limit-theorems | 3.2 | ✓ | ✓ | ✓ | ✓ | · | B3 | ☐ |
+| 10 | integral | 3.1 | ✓ | ✓ | ✓ | ✓ | ✓ | B3 | ✅ |
+| 11 | limit-theorems | 3.2 | ✓ | ✓ | ✓ | ✓ | · | B3 | ✅ |
 | 12 | signed-measures | 3.3 | ✓ | ✓ | ✓ | ✓ | · | B3 | ☐ |
 | 13 | lp-spaces | 3.4 | ✓ | · | ✓ | ✓ | · | B3 | ☐ |
 | 14 | linfty-dual | 3.5 | 分工 | · | ✓ | ✓ | ✓ | B3 | ☐ |
@@ -141,6 +141,7 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 - [x] B0 基建（OCR 全书 144 奇数页 ✓ / 侦察 ✓ / 骨架冒烟 2/2 ✓ / build.ps1 ✓ / README ✓ / 00 导言 209 行 ✓）
 - [x] B1 01-06 集类与测度（docs 6 篇 200-237 行 / Lean 6 / Julia 6 / Python 6 / Prolog 5；23/23 全绿；docs 扩写补严书 1.3.5 概率化引理、1.4.4/1.4.5 半环验收工序、§1.5 ℝⁿ 盒半环与高维分布函数、§1.6 逼近定理全文）
 - [x] B2 07-09 可测映射（docs 3 篇 200/201/232 行 / Lean 3 / Julia 3 / Python 3 / Prolog 3；12/12 全绿；π-λ 引擎 induction_on_inter 完整重放（含机器抓出"补集需总质量相等"）、垫高技巧与 f∨g 公式机器版、TendstoInMeasure 三件套 + Egorov xⁿ 实弹）
+- [ ] B3 10-16 积分与 Lp（**批 1/2 已完成：10-11 章 10/10 全绿**——三步构造+Markov 手作+L⁰ 距离（Lean/Isabelle/Julia/Python/Prolog）、MCT 对角线+Fatou+DCT 三反例机+习题 3.2.1/3.2.3（同上五通道，Isabelle Fatou=nn_integral_liminf 正名）；12-16 待续）
 - [ ] B2 07-09 可测映射
 - [ ] B3 10-16 积分与 Lp
 - [ ] B4 17-22 乘积空间
@@ -223,3 +224,27 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
     （最小原子 1/6 逼出"终归为空"退化定理）；"前 K 层光柱并集"
     的 Egorov 挖集构造错误（并集测度是 1 不是 ε）——正确载体是
     逃逸尖峰 + 尾集嵌套并。**断言前先手推测度值**的铁律再立新功。
+20. （B3）mathlib 4.33 断代：`lintegral_add` 已降级为内部件
+    （lintegral_add_aux），主推 `lintegral_add_left`（单边可测）；
+    `Set.indicator_of_not_mem` 不存在——非成员分支 `simp [hx]`，
+    成员分支 `Set.indicator_of_mem hx` 仍在；pow 单调用
+    `pow_le_pow_left₀`（带 0 ≤ a）而非 pow_le_pow_left（那是
+    无序 Monoid 版，ℝ 无实例）。
+21. （B3）`Tendsto.congr'` 等式方向反直觉：h : f₁ =ᶠ f₂ 配
+    Tendsto f₁ 产 f₂（要 .symm 垫）；`ae_of_all` 的位置参数 μ 在
+    定理应用参数位上推不出，须显式喂；∫ x in s 记号与显式
+    (volume).restrict 形式因 volume 双实例不能直接互换，结论侧
+    用 `simpa` 归一（∫0=0 由 simp 收）。
+22. （B3）Python 先 print 首标记后重包 TextIOWrapper：块缓冲管道
+    下首行滞留旧 wrapper 缓冲丢失（build 判 FAIL 而输出从第二行
+    开始）——全 ASCII 输出的文件干脆不换 wrapper。
+23. （B3）Isabelle：`nn_integral_indicator` 本身是 simp 引理，
+    自己再 add nn_integral_count_space_finite 反而把 simp 带偏
+    （报 False）；text 注释里的 \<^sub> 类 antiquotation 在
+    document=false 下直接炸——注释写纯文本；isabelle build -d
+    路径必须 /cygdrive 形式（裸 G:/ 报 Illegal character ":"，
+    且经 tail 管道时假绿——坑 3 的 Isabelle 版）。
+24. （B3）心算翻车三连（机器全部如实揭发）：Isabelle 2·1+3·1=5
+    写成 3；Julia humps 的 x=103 还在最后一支脊背 [100,110] 内
+    （8 拍非 0）；covers 的半开边界 x=1/n 处不覆盖。**Markov 最紧
+    点的比值 27/32 这类断言，先在纸上通分再写进代码。**
