@@ -121,13 +121,13 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 20 | infinite-products | 4.4/袁10.4.1 | ✓ | ✓ | ✓ | ✓ | · | B4 | ✅ |
 | 21 | kolmogorov-tulcea | 4.5/袁10.4.2-10.4.3 | ✓ | ✓ | ✓ | ✓ | ✓ | B4 | ✅ |
 | 22 | projective-limits | 4.6-4.7 | ✓ | ✓ | ✓ | ✓ | · | B4 | ✅ |
-| 23 | topology-borel | 5.1/袁2+3.4 | ✓ | · | ✓ | ✓ | ✓ | B5 | ☐ |
-| 24 | riesz | 5.2/袁11.2.3 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
-| 25 | regular-measures | 5.3/袁11.2.1-11.2.2 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
-| 26 | c0-dual | 5.4/袁11.2.3 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
-| 27 | lusin | 5.5/袁11.3 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
-| 28 | product-topological | 5.6/袁11.4 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
-| 29 | polish | 5.7/袁2.4+11 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
+| 23 | topology-borel | 5.1/袁2+3.4 | ✓ | · | ✓ | ✓ | ✓ | B5 | ✅ |
+| 24 | riesz | 5.2/袁11.2.3 | ✓ | · | ✓ | ✓ | · | B5 | ✅ |
+| 25 | regular-measures | 5.3/袁11.2.1-11.2.2 | ✓ | · | ✓ | ✓ | · | B5 | ✅ |
+| 26 | c0-dual | 5.4/袁11.2.3 | ✓ | · | ✓ | ✓ | · | B5 | ✅ |
+| 27 | lusin | 5.5/袁11.3 | ✓ | · | ✓ | ✓ | · | B5 | ✅ |
+| 28 | product-topological | 5.6/袁11.4 | ✓ | · | ✓ | ✓ | · | B5 | ✅ |
+| 29 | polish | 5.7/袁2.4+11 | ✓ | · | ✓ | ✓ | · | B5 | ✅ |
 | 30 | euclidean-convergence | 6.1/袁12.3 | ✓ | ✓ | ✓ | ✓ | · | B6 | ☐ |
 | 31 | weak-convergence | 6.2/袁12.2 | ✓ | ✓ | ✓ | ✓ | · | B6 | ☐ |
 | 32 | tightness-prohorov | 6.3/袁12.7 | ✓ | · | ✓ | ✓ | · | B6 | ☐ |
@@ -172,7 +172,7 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 - [x] B2 07-09 可测映射（docs 3 篇 200/201/232 行 / Lean 3 / Julia 3 / Python 3 / Prolog 3；12/12 全绿；π-λ 引擎 induction_on_inter 完整重放（含机器抓出"补集需总质量相等"）、垫高技巧与 f∨g 公式机器版、TendstoInMeasure 三件套 + Egorov xⁿ 实弹）
 - [x] B3 10-16 积分与 Lp（**全部完成，终态 -All 64/64 全绿**——批 1：10-11 章 10/10（三步构造+Markov 手作+L⁰ 距离、MCT 对角线+Fatou+DCT 三反例机、Isabelle MT10/MT11）；批 2：12 章 4/4（Jordan-Hahn 骨架+Lebesgue 分解 H-类+RN 定理、RN_derivI 还原、位掩码 Hahn 穷举）；批 3：13-16 章 13/13——13：三不等式+Riesz-Fischer 六步账+对偶装配线+σ-有限反例（Lean Cauchy 六平方和 nlinarith）；14-15 通道分工（ba 空间/自然密度荷死亡现场、Daniell 五步流水线+非 Stone 反例）；16：强可测/Pettis 三档表+对角线反例六步骨架+ASP 注记（integral 即 Bochner、MT16 向量和））
 - [x] B4 17-22 乘积空间（**25/25 全绿**——docs 6 篇 201-212 行；Lean 6 件：矩形/对角线预像、dirac 折叠+Tonelli 坍缩、deterministic 复合=映射复合+两态恒等、infinitePi 柱集账 2⁻ⁿ、唯一性实例化+traj 锚点、投影极限换算表；Isabelle 4 件（MT18/20/21/22）：矩形账、n 次全正面 inverse(2)^n、distr_restrict 相容性、塔边际账；Julia 6/Python 6/Prolog 3：闭包算法、两张罚单、CK+平稳分布、三组硬币账、相容检查器+Fréchet 反例、Cantor/高斯塔。**B4 侦察三连大发现**：mathlib 4.33.1 已有 IonescuTulcea 全形式化（traj/trajMeasure）+ Measure.infinitePi 任意族无穷乘积（柱集 AddContent→Carathéodory=严书 §4.4 同路）+ IsProjectiveLimit 谓词族——21/22 章 Lean 从"分工"升级为 ✓）
-- [ ] B5 23-29 拓扑测度
+- [x] B5 23-29 拓扑测度（**22/22 全绿，终态 -All 111/111**——docs 7 篇 191-218 行：网/滤子对照表+Borel 层级图+Ba/B 有限反例、RMK 四步+mathlib 构造对照表+局部紧用量清单、三档正则+反例档案+层级表、c₀*/符号 Radon+弱*预告、Lusin 三版等价+Cauchy 传染骨架+Egorov 双胞表、截口引理解剖+无穷乘积关卡、胎紧三步+距离改造工具箱+判据表；Lean 7 件：RealRMK 主定理/Regular instance 算术/BorelSpace 三登记/紧矩形账；Julia 7/Python 7/Prolog 1：三明治构造、R-S 透视 δ₀、p=∞ 近距对论证、非紧反例 sup 恒 1/2、ρ₀ 边界爆炸。**Julia 抓出真数学错**：非 T₁ 有限空间 Ba ⊊ B（修正 docs 想当然））
 - [ ] B6 30-34 测度收敛
 - [ ] B7 35-40 概率选讲
 - [ ] B8 41-43 鞅
@@ -360,3 +360,24 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
     整数（用 q(N,D) 复合项）。
 42. （B4）Python 相容检查器：两两边缘一致 ≠ 整体可实现——反例族
     （完美相关对+独立对）须用 Fréchet 上确界装配总质量 < 1 判死。
+
+43. （B5）**数值通道抓出真数学错**：非 T₁ 有限拓扑（{∅,{1},{1,2},Ω}）上
+    连续函数仅常值 ⟹ Ba = {∅,Ω} ⊊ B（8 元）——"有限空间自动 Ba=B"
+    的想当然被 Julia/Python/Prolog 三通道一致否决（离散有限才取等）。
+44. （B5）Lean：`SeparableSpace` 在 `TopologicalSpace` 命名空间内
+   （`TopologicalSpace.SeparableSpace`）而 `SecondCountableTopology`
+   在根——同名家族分家；`C_c` 记号 scoped[CompactlySupported]
+   （`open scoped CompactlySupported`），integrable 的 μ 是 context
+   变量不是参数（`integrable f` 不喂 μ）；`Real.sin` 需 Trigonometric
+   import；`volume` 双实例在乘积测度上复发（只在一侧写 ascription）；
+   `Measure.Regular` 无 add instance（smul/zero 有）。
+45. （B5）Isabelle→Lean 转场：`rieszMeasure_integralPositiveLinearMap`
+   （NNReal 版）在根命名空间、Real 版在 `RealRMK`；`integral_dirac`
+   无需可测假设（[MeasurableSingletonClass]），a 显式第二参。
+46. （B5）Julia：p=∞ 的 Lusin 反例不能只用"远距理/无理对"（线性函数
+    可钻 0.29 的空）——须用**近距对**（连续性把两点值锁近，1_ℚ 却差 1，
+    下界 (1−osc)/2）；中点法 x² 误差 h²/24·f''≈1e-9 级（容差写 1e-9
+    会假阴）；拓扑乘积非紧反例的 sup 峰在 t=dx 处（网格必须扫峰位）。
+47. （B5）Python：Fraction 网格上 R-S 和的跨跳中点偏差 ~h/2 级
+   （2e-4 网格给 2.5e-4 偏差）；δ-带覆盖分母 ≤Q 有理数时带宽须
+   2δ/q³（q² 会因 (q+1) 重数发散成 ln）。

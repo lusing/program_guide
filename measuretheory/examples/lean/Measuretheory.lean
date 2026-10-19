@@ -25,3 +25,10 @@ import Measuretheory.Ch19Kernels
 import Measuretheory.Ch20InfiniteProducts
 import Measuretheory.Ch21KolmogorovTulcea
 import Measuretheory.Ch22ProjectiveLimits
+import Measuretheory.Ch23TopologyBorel
+import Measuretheory.Ch24Riesz
+import Measuretheory.Ch25RegularMeasures
+import Measuretheory.Ch26C0Dual
+import Measuretheory.Ch27Lusin
+import Measuretheory.Ch28ProductTopological
+import Measuretheory.Ch29Polish
