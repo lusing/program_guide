@@ -14,7 +14,7 @@ Emacs 的扩展开发有个特点：语言（Elisp）本身很小，但它的**�
 # 跑单个示例（-Q 表示不加载任何配置文件，保证结果可复现）
 emacs -Q --batch -l examples/01-hello.el
 
-# 跑全部 26 个示例，逐个核对判定标准
+# 跑全部 35 个示例，逐个核对判定标准
 ./run-all.sh
 ```
 
@@ -102,6 +102,36 @@ Emacs 的三个核心对象——**buffer**、**文本属性/overlay**、**文�
 | 章 | 主题 | 示例 |
 |---|---|---|
 | [26 · 完整示例：一个 todo 扩展](26-todo-demo.md) | 完整示例：一个 todo 扩展 | `26-todo-demo.el` |
+
+## 第 7 部分 · 跟随 eintr：内存模型与递归
+
+从这部分起，我们跟随 GNU 经典教材《An Introduction to Programming in Emacs Lisp》（Robert J. Chassell 著，简称 **eintr**）的后半程走一遍：原书用 Emacs 22 时代的写法，这里全部**提炼、重写并升级到 Emacs 31**，每章照旧配一个可验证的示例。先补两块语言深水区：列表在内存里的真实形状，以及递归的几种固定模式。
+
+| 章 | 主题 | 示例 |
+|---|---|---|
+| [27 · cons 单元与列表的内存模型](27-cons-cells.md) | cons 单元与列表的内存模型 | `27-cons-cells.el` |
+| [28 · 递归：让函数调用自己](28-recursion.md) | 递归：让函数调用自己 | `28-recursion.el` |
+
+## 第 8 部分 · 跟随 eintr：读懂真实代码
+
+eintr 最有价值的部分：**读 Emacs 自带的真实源码**。这一部分解剖了 buffer 三命令、kill ring、正则推进，最后照着 eintr 的路子写出两个完整的扩展（词频统计、带坐标的柱状图在第 9 部分）。
+
+| 章 | 主题 | 示例 |
+|---|---|---|
+| [29 · 读懂真实函数：三个 buffer 命令的走查](29-read-source.md) | 读懂真实函数：三个 buffer 命令的走查 | `29-read-source.el` |
+| [30 · kill ring：剪切与粘贴的实现](30-kill-ring.md) | kill ring：剪切与粘贴的实现 | `30-kill-ring.el` |
+| [31 · 正则驱动的文本推进：forward-sentence 与 forward-paragraph](31-forward-sentence.md) | 正则驱动的文本推进 | `31-forward-sentence.el` |
+| [32 · 词频统计：从 count-words 到一个完整的扩展](32-count-words.md) | 词频统计：从 count-words 到一个完整的扩展 | `32-count-words.el` |
+
+## 第 9 部分 · 跟随 eintr：调试与收尾项目
+
+收尾三件事：调试（eintr 的 Debugging 一章，在 `--batch` 下用实测数据讲透）、初始化文件与 mode line（你的代码住哪、屏幕最下面那条线怎么定制）、以及全书的收尾项目——打印一张带坐标的柱状图。
+
+| 章 | 主题 | 示例 |
+|---|---|---|
+| [33 · 调试：debug-on-entry、edebug 与 batch 下的排查](33-debugging.md) | 调试：debug-on-entry、edebug 与 batch 下的排查 | `33-debugging.el` |
+| [34 · 初始化文件与 mode line](34-init-mode-line.md) | 初始化文件与 mode line | `34-init-mode-line.el` |
+| [35 · 收尾项目：打印一张带坐标的柱状图](35-graph.md) | 收尾项目：打印一张带坐标的柱状图 | `35-graph.el` |
 
 ## 附录
 

@@ -71,4 +71,4 @@
 
 ---
 
-上一章：[26 · 完整示例：一个 todo 扩展](26-todo-demo.md)　｜　下一章：[附录 B · 命令与变量速查](appendix-b-cheatsheet.md)　｜　返回：[Emacs 扩展开发指南](README.md)
+上一章：[35 · 收尾项目：打印一张带坐标的柱状图](35-graph.md)　｜　下一章：[附录 B · 命令与变量速查](appendix-b-cheatsheet.md)　｜　返回：[Emacs 扩展开发指南](README.md)

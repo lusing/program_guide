@@ -135,4 +135,4 @@
 
 ---
 
-上一章：[25 · 测试](25-tests.md)　｜　下一章：[附录 A · 常见坑速查](appendix-a-pitfalls.md)　｜　返回：[Emacs 扩展开发指南](README.md)
+上一章：[25 · 测试](25-tests.md)　｜　下一章：[27 · cons 单元与列表的内存模型](27-cons-cells.md)　｜　返回：[Emacs 扩展开发指南](README.md)
