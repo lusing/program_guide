@@ -1,6 +1,6 @@
 # Rust 编程指南（1.99.1 / edition 2024）
 
-面向**会编程（C/C++ 背景最佳）、初学 Rust** 的读者：从零教到现代 Rust——edition **2024**、`scoped threads`、let-else、迭代器管道从对应章节就是默认姿势，老写法（`extern` 块不加 unsafe、`#[no_mangle]` 裸写、`static mut` 取引用）只在坑位清单里教"认得"。**Rust 特色全部独立成章细讲**：所有权（04）、借用（05）、字符串（06）、错误处理（10）、泛型与 Trait（11/12）、生命周期（13）、闭包与迭代器（14/15）、宏（16）、Cargo 工程化（17）、unsafe/FFI（19）、测试（21）、线程（22）、async（23）。每章"读讲解 → 跑示例 → 改代码再跑"，全部 23 个示例**四层验证**通过（fmt + clippy `-D warnings` + test + 运行 exit 0）。
+面向**会编程（C/C++ 背景最佳）、初学 Rust** 的读者：从零教到现代 Rust——edition **2024**、`scoped threads`、let-else、迭代器管道从对应章节就是默认姿势，老写法（`extern` 块不加 unsafe、`#[no_mangle]` 裸写、`static mut` 取引用）只在坑位清单里教"认得"。**Rust 特色全部独立成章细讲**：所有权（04）、借用（05）、字符串（06）、错误处理（10）、泛型与 Trait（11/12）、生命周期（13）、闭包与迭代器（14/15）、宏（16）、Cargo 工程化（17）、unsafe/FFI（19）、测试（21）、线程（22）、async（23）、系统标准库（25）。每章"读讲解 → 跑示例 → 改代码再跑"，全部 24 个示例**四层验证**通过（fmt + clippy `-D warnings` + test + 运行 exit 0）。
 
 > ⚠️ 网上教程版本混杂：2018/2021 edition 的写法在 2024 里 `extern`、`#[no_mangle]`、`static mut` 三处直接编译错。本教程所有代码在 **rustc/cargo 1.99.1** 实测，每章坑位清单收录版本差异。
 
@@ -9,9 +9,9 @@
 ```text
 rust/
 ├── README.md       本文件
-├── docs/           24 章教程（01 → 24 顺序阅读）
-├── examples/       23 个示例工程（章号 = 目录号；均为 cargo 工程）
-│   ├── …           21 个普通示例（根 workspace 成员，共享 target/）
+├── docs/           25 章教程（01 → 25 顺序阅读）
+├── examples/       24 个示例工程（章号 = 目录号；均为 cargo 工程）
+│   ├── …           22 个普通示例（根 workspace 成员，共享 target/）
 │   ├── 17_cargo/   多 crate workspace 工程（独立构建）
 │   └── 24_minigrep/ 实战项目（lib + bin + 集成测试，独立构建）
 ├── build.ps1       PowerShell 入口（四层：fmt + clippy + test + run）
@@ -51,6 +51,7 @@ rust/
 | [22 ⭐并发](docs/22-threads.md) | scoped threads、mpsc、Arc<Mutex>、毒锁、Send/Sync | `22_threads` |
 | [23 ⭐async/await](docs/23-async.md) | Future 心智模型、join/select/spawn、tokio、取消安全 | `23_async` |
 | [24 ⭐实战：迷你 grep](docs/24-minigrep.md) | lib/bin 分层、参数解析、递归搜索、退出码、系统级测试 | `24_minigrep`（工程） |
+| [25 系统标准库](docs/25-system.md) | std::time/env/process/net、计时、子进程、TCP/UDP 回环 | `25_system` |
 
 ## 构建工具链
 
@@ -74,7 +75,7 @@ rust/
 ```bash
 # macOS / Linux
 cd <仓库>/rust
-./run-all.sh                 # 全部 23 个：fmt + clippy + test + run
+./run-all.sh                 # 全部 24 个：fmt + clippy + test + run
 ./run-all.sh 12_traits       # 单个示例
 ./run-all.sh --clean         # 清理全部 target 目录
 ```
@@ -116,8 +117,8 @@ cargo test       # 跑断言（故意改坏代码，看哪条测试红）
 
 ## macOS 上的兼容性（2026-10-11 实测于 macOS 12.7 + MacPorts rustc 1.99.1）
 
-全部 23 个示例在 macOS 上四层验证通过，**示例代码本身一处都不用改**（它们一律用
-`std::env::temp_dir()`、无平台分支）。需要处理的只有工具链与脚本：
+全部 24 个示例在 macOS 上四层验证通过，**示例代码本身一处都不用改**（它们一律用
+`std::env::temp_dir()`、无平台分支；25 章的网络演示绑 `127.0.0.1:0` 回环，同样跨平台）。需要处理的只有工具链与脚本：
 
 | 问题 | 现象 | 修法 |
 |---|---|---|
