@@ -24,7 +24,13 @@ ML 作为元语言的设计意图）；**de Bruijn 判据与 kernel 原理**
 **Isabelle 架构演进**（Pure 通用逻辑框架、Isar 声明式证明、
 PIDE/并行/会话基础设施、与 Coq/Lean/HOL Light 的架构对比）。
 
-**章号 = 示例编号**——01–56 章每章对应 `examples/`（及其会话子目录）
+第四轮扩充（57–64 章）对 HOL-Library 做系统深挖：
+**容器族 57–60**（fmap 与 Mapping 抽象字典、FSet 与不相交集族、
+红黑树五层流水线、比较器与四种列表序、排序算法一证三实现）；
+**数学与编程设施 61–64**（扩展数系 enat/ereal/ennreal、可数与
+基数、单子语法与状态单子、流与 ω 词与周期函数）。
+
+**章号 = 示例编号**——01–64 章每章对应 `examples/`（及其会话子目录）
 里一个经 `isabelle build` 构建通过、且两遍输出逐字节一致的 `.thy` 文件。
 
 > 核心理念：**每个示例都是被机器逐条认可过的数学文本，不是"能跑就行"的程序。**
@@ -38,8 +44,8 @@ isabelle/
 ├── README.md        本文件
 ├── CHEATSheet.md    语法速查 + 实测坑位索引（300+ 条）
 ├── run-all.sh       验证脚本（bash）
-├── docs/            56 章教程（01 → 56 顺序阅读）
-├── examples/        56 个 .thy 示例 + ROOT（章号 = 示例编号）
+├── docs/            64 章教程（01 → 64 顺序阅读）
+├── examples/        64+ 个 .thy 示例 + ROOT（章号 = 示例编号）
 └── build/           验证产物（build.log + 两遍输出，可删）
 ```
 
@@ -103,13 +109,23 @@ isabelle/
 | [54 LCF 与 ML 的诞生](docs/54-lcf-ml-history.md) | 自动证明危机 / AUTOMATH / Milner LCF / ML 元语言 | `T54_lcf_ml_history.thy` |
 | [55 de Bruijn 判据与 kernel](docs/55-de-bruijn-kernel.md) | 信任基础 / thm 抽象类型 / kernel 实战 / oracles | `T55_de_bruijn_kernel.thy` |
 | [56 Isabelle 架构演进](docs/56-isabelle-architecture.md) | Pure 框架 / Isar / PIDE·并行·会话 / 架构对比 | `T56_isabelle_architecture.thy` |
+| [57 fmap 与 Mapping](docs/57-fmap-mapping.md) | 有限映射 typedef / 抽象字典 / AList 后端 | `T57_fmap_mapping.thy`（Lib） |
+| [58 FSet 与不相交集族](docs/58-fset.md) | fset 字面量 / fsum / disjnt / fmadd 交换律 | `T58_fset.thy`（Lib） |
+| [59 红黑树族](docs/59-rbt.md) | Tree / RBT_Impl 不变量 / RBT / RBT_Set / RBT_Mapping | `T59_rbt.thy`（Lib） |
+| [60 比较器与字典序](docs/60-orders-sorting.md) | comparator 三态 / sort·quicksort·mergesort / 前缀·子序列·lenlex | `T60a…T60d`（Lib） |
+| [61 扩展数系](docs/61-extended-numbers.md) | enat / ereal / ennreal / ℤ≤0 / ∞ 的设计决定 | `T61_extended.thy`（Lib） |
+| [62 可数与基数](docs/62-cardinality.md) | Cantor 配对 / ≈≲≺ / countable / CARD / ∃⇩∞ | `T62_cardinality.thy`（Lib） |
+| [63 单子与无序对](docs/63-monads.md) | do 记法 / State_Monad / 开状态单子 / Uprod | `T63_monads.thy`（Lib） |
+| [64 流与 ω 词](docs/64-streams.md) | stream 共归纳 / LTL / ω 词 / 周期 locale | `T64_streams.thy`（Lib） |
 
 学习路线：01–03 心智模型与基本材料 → 04–07 数据建模与化简 →
 08–13 证明技法主线（自动化 / 逻辑 / 归纳 / Isar）→ 14–17 结构与方法论
 → 18–19 大案例 → 20–23 工程化 → 24 综合收束 → 25–30 六个进阶专题
 （类 / 共归 / Eisbach / typedef / quotient / Orderings+Lattices）
 → 31–44 手册覆盖 → 45–48 库与对象逻辑 → 49–53 数学原理
-→ 54–56 历史与架构（LCF 谱系 / kernel 原理 / 系统演进）。
+→ 54–56 历史与架构（LCF 谱系 / kernel 原理 / 系统演进）
+→ 57–64 HOL-Library 深挖（容器族 57–60 / 数学与编程设施 61–64；
+65–68 代码生成批在路上）。
 
 ## 工具链
 

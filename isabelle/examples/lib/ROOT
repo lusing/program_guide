@@ -10,3 +10,7 @@ session IsaTutLib = "HOL-Library" +
     T60b_prefix
     T60c_subseq
     T60d_lenlex
+    T61_extended
+    T62_cardinality
+    T63_monads
+    T64_streams

@@ -320,3 +320,16 @@ Nat.add_le_mono                               单调性
 | `compare_prod_lex_apply` 不是 simp 规则，要显式 add | 60 |
 | ⊥/⊤/⊓/⊔ 默认不激活（`unbundle lattice_syntax` 或写 bot/top） | 60 |
 | 元组数字标注要罩全组：`((2,0)::nat×nat)`，只钉分量会留多态残目标 | 60 |
+| `\<infty>` 不是符号——只有 `\<infinity>`，词法层直接拒 | 61 |
+| ennreal 不可 eval（无 equal）；Complex_Main 在场时 transfer 对 ennreal 数值目标静默不动 | 61 |
+| `ennreal_numeral` simp 抢吃包装：数值减法要 `simp del: ennreal_numeral add: ennreal_minus` | 61 |
+| prod_encode 加的是**第一**分量（triangle (m+n) + m），不对称 | 62 |
+| ≈/≲/≺ 两侧集合类型独立，数字要整体标注否则 card 算不动 | 62 |
+| 裸 binder（∃⇩∞/SOME）不能进 `@{term}`——不是完整项 | 62 |
+| `@{verbatim}` 字符串放不下 `\<...>` 转义（bad escape character） | 62/63 |
+| do 记法靠 adhoc_overloading 落类型；exec 块没有 return 用 Pair | 63 |
+| 状态单子 value 要给初态标类型（term_of 推导失败） | 63 |
+| 流 value 前必须 `code_lazy_type stream`（严格求值撑爆栈） | 64 |
+| 库里已有 nats/fromN/sconst 缩写，别重名定义 | 64 |
+| `##` 双主（Stream.SCons vs Omega_Words.build），同导入歧义 | 64 |
+| alw 共归纳要带 arbitrary: 泛化起点，否则尾巴掉出关系 | 64 |
