@@ -17,6 +17,8 @@
 
 ## 19.2 裸指针：不带契约的地址
 
+裸指针有两种创建方式。**传统方式**是从引用隐式降级：
+
 ```rust
 let mut y = 7;
 let rp: *mut i32 = &mut y;    // 从安全引用造裸指针（安全）
@@ -25,6 +27,20 @@ unsafe { *rp += 1; }          // 解引用/写穿 = unsafe（编译器不再管�
 let rc: *const i32 = &y;
 let same = std::ptr::eq(rc, rp as *const i32);   // 比较/传拷贝不需要 unsafe
 ```
+
+**现代方式**（Rust 1.84+ / edition 2024 推荐）是用 `&raw const` / `&raw mut` 运算符直接创建裸指针：
+
+```rust
+let mut x = 5;
+let raw_const = &raw const x;    // *const i32——直接创建裸指针，不经过引用
+let raw_mut = &raw mut x;        // *mut i32
+
+unsafe {
+    println!("const: {}, mut: {}", *raw_const, *raw_mut);
+}
+```
+
+`&raw const/mut` 与"先造引用再转裸指针"的区别在于：**它不创建中间引用**。引用有严格的别名规则（`&mut T` 独占、`&T` 无别名），而裸指针没有。当你在一个已经有 `&mut` 借用的值上再创建裸指针时，用 `&raw mut` 可以避免违反引用的别名规则——这是写 unsafe 代码时的重要区别。
 
 裸指针三特性：**允许为空、允许别名、不实现 Deref**——前两条正是 `&T`（非空、无别名）排除掉的。指针运算 `ptr.add(n)` / `ptr.offset(n)` 都在 unsafe 内（越界即 UB）。
 
@@ -145,6 +161,17 @@ unsafe extern "C" {                 // 2024 edition：extern 块标 unsafe
 let n = unsafe { abs(-42) };        // 你承诺：调用约定、参数合法性
 ```
 
+**标记特定 FFI 函数为安全**：如果某个外部函数经过审查确认没有内存安全风险（比如纯数学函数），可以在 extern 块内用 `safe fn` 标记它，调用方就不需要 unsafe 块了：
+
+```rust
+unsafe extern "C" {
+    safe fn abs(input: i32) -> i32;   // 显式承诺：这个函数安全，调用方无需 unsafe
+}
+let n = abs(-42);                     // 直接调用，不需要 unsafe 块
+```
+
+`safe fn` 的意义在于**精确标注**：一个 extern 块里可能有几十个函数，其中大部分需要 unsafe 调用（涉及指针、内存管理），但少数纯计算函数是安全的。用 `safe fn` 标记后，调用方代码更干净，审计时也更容易区分哪些调用真正需要 unsafe 签字。
+
 **给 C 调（导出）**：
 
 ```rust
@@ -239,17 +266,44 @@ fn read() -> u32 { unsafe { COUNTER } }
 
 写 unsafe 的纪律：每处 unsafe 配 `// SAFETY: 为什么成立` 注释；能 assert 的先 assert；封装成安全函数对外。
 
+### Miri：检测 unsafe 代码的未定义行为
+
+编译器只能做静态检查，很多 unsafe 代码的 UB（未定义行为）要到运行时才暴露。**Miri** 是 Rust 官方的动态分析工具，它运行你的程序并检测 UB——类似于 unsafe 代码的"内存 sanitizer"。
+
+安装与使用：
+
+```bash
+rustup +nightly component add miri      # 安装 Miri（需要 nightly 工具链）
+cargo +nightly miri run                 # 运行程序并检测 UB
+cargo +nightly miri test                # 跑测试并检测 UB
+```
+
+Miri 能检测的 UB 包括：解引用空指针/悬垂指针、使用未初始化内存、越界访问、数据竞争（多线程场景）、违反别名规则等。如果代码有 UB，Miri 会给出精确的错误位置和原因：
+
+```text
+error: Undefined Behavior: constructing invalid value of type &mut [i32]:
+encountered a dangling reference (0x1234[noalloc] has no provenance)
+ --> src/main.rs:7:35
+  |
+7 |     let values: &[i32] = unsafe { slice::from_raw_parts_mut(r, 10000) };
+  |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Undefined Behavior occurred here
+```
+
+Miri 的局限：只检测**实际执行到的代码路径**（没跑到的分支不检查）；不覆盖所有可能的 UB 类型；运行速度比正常执行慢很多（解释执行）。但它是验证 unsafe 代码正确性的最有力工具——写 unsafe 容器或 FFI 封装时，用 Miri 跑一遍测试是必要的验证步骤。
+
 还有一个进阶概念：**型变（variance）**。生命周期在泛型类型中有协变（covariant，如 `&'a T`、`Box<T>`）、逆变（contravariant，如函数参数位置）、不变（invariant，如 `&mut T`、`Cell<T>`）三种行为。写 unsafe 代码时，如果自定义类型不当声明型变，可能让编译器错误地放宽生命周期约束，产生悬垂引用——这是 unsafe 代码里最常见的隐蔽 UB 来源之一。安全代码不用管型变；写 unsafe 抽象时，先想清楚你的类型对生命周期是协变还是不变。
 
-## 19.8 坑位清单
+## 19.9 坑位清单
 
 1. **edition 2024 语法三连变**：`unsafe extern`、`#[unsafe(no_mangle)]`、static mut 禁取引用——旧教程代码照抄三处全炸（01 章对照表）。
-2. **extern 块签名错误 = UB 不是编译错**：C 侧 `int64_t` 你写 i32，链接照过、运行错位——对照头文件逐个核对。
-3. **`from_raw_parts` 的三前提**：指针有效、长度正确、别名规则（返回的两个切片不得重叠）——split_at_mut 靠 mid<=len 保证，你的封装也要写明。
-4. **assert 挡边界，不要 if-else 补救**：契约破裂就该 panic（10 章边界论），UB 没有补救。
-5. **unsafe 块里调 safe 代码照样可能 UB**：`unsafe { vec.get_unchecked(i) }` 越界就是 UB——unsafe 只解锁，不兜底。
-6. **SAFETY 注释不是装饰**：回头审计时它是唯一线索；团队 lint（如 `clippy::undocumented_unsafe_blocks`）可强制。
-7. **FFI 内存谁分配谁释放**：Rust `String` 给 C 后 free 的必须是 Rust（`drop` from Rust 侧）；跨边界传裸指针 + 明确所有权文档是底线。
+2. **`&raw const/mut` vs 引用转裸指针**：新代码优先用 `&raw const/mut` 直接创建裸指针，避免中间引用违反别名规则；旧代码里 `&mut x as *mut _` 的写法仍然合法但不推荐。
+3. **extern 块签名错误 = UB 不是编译错**：C 侧 `int64_t` 你写 i32，链接照过、运行错位——对照头文件逐个核对。
+4. **`from_raw_parts` 的三前提**：指针有效、长度正确、别名规则（返回的两个切片不得重叠）——split_at_mut 靠 mid<=len 保证，你的封装也要写明。
+5. **assert 挡边界，不要 if-else 补救**：契约破裂就该 panic（10 章边界论），UB 没有补救。
+6. **unsafe 块里调 safe 代码照样可能 UB**：`unsafe { vec.get_unchecked(i) }` 越界就是 UB——unsafe 只解锁，不兜底。
+7. **SAFETY 注释不是装饰**：回头审计时它是唯一线索；团队 lint（如 `clippy::undocumented_unsafe_blocks`）可强制。
+8. **FFI 内存谁分配谁释放**：Rust `String` 给 C 后 free 的必须是 Rust（`drop` from Rust 侧）；跨边界传裸指针 + 明确所有权文档是底线。
+9. **Miri 不是万能药**：只检测实际执行到的路径，没跑到的分支不检查；写完 unsafe 代码要用 Miri 跑测试验证，但不能替代人工审查。
 
 ---
 

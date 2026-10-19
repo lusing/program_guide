@@ -27,7 +27,7 @@ Rust 的三根支柱：
 
 ## 1.3 语言架构：四层概念栈
 
-原书把 Rust 的概念按层次梳理成一张图，自底向上四层：
+Rust 的概念可以按层次梳理成一张图，自底向上四层：
 
 ```text
 ┌─ 混合编程范式层    trait 支撑的接口抽象 / 函数式 / 面向对象风格（07/12 章）
@@ -74,7 +74,7 @@ MIR 值得记住，因为它解释了 Rust 的两个日常体验：
 
 ## 1.6 版本与 Edition（2026 年现状）
 
-- Rust 每 **6 周**发一个稳定版（1.x 递增，无大版本断裂）。本教程实测 **rustc 1.99.0**（2026-09）。
+- Rust 每 **6 周**发一个稳定版（1.x 递增，无大版本断裂）。本教程实测 **rustc 1.99.1**（2026-09）。
 - **Edition** 是"允许小幅不兼容"的语言版本开关，目前有 2015 / 2018 / 2021 / **2024**（2024 于 1.85 稳定，现为 `cargo new` 默认）。旧代码可逐 crate 升级，`cargo fix --edition` 自动迁移大半。
 - 本教程全程 **edition 2024**。与旧教程差异最大的几处（各章坑位清单还会展开）：
 
@@ -109,7 +109,7 @@ MIR 值得记住，因为它解释了 Rust 的两个日常体验：
 | macOS | MacPorts | `/opt/local/bin/`（`cargo`/`rustc`/`cargo-clippy`/`rustfmt` 全套） | 同上 |
 | macOS / Linux | rustup（官方默认） | `~/.cargo/bin/` | 同上 |
 
-本教程按 **rustc 1.99.0 / cargo 1.99.0** 实测（macOS 上 MacPorts 与 rustup 双通道均通过）：
+本教程按 **rustc 1.99.1 / cargo 1.99.1** 实测（macOS 上 MacPorts 与 rustup 双通道均通过）：
 
 ```bash
 # macOS / Linux

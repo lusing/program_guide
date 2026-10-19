@@ -91,7 +91,7 @@ assert_eq!(std::mem::size_of::<Box<dyn Draw>>(), 16);   // 堆上装箱也一样
 
 64 位机器上裸指针 8 字节：`&Button` 只有数据地址；`&dyn Draw` 额外背一个 vtable 地址——两份信息缺一不可，这就是 DST 必须藏在指针后的物理原因。
 
-**trait 对象的内存布局**（原书第 3 章的图解，文字版）：
+**trait 对象的内存布局**（图解）：
 
 ```text
 &dyn Summary（16 字节）
