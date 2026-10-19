@@ -358,18 +358,60 @@ cd G:/code/guide && git add measuretheory/ .gitignore && git commit -m "docs(mea
 - 47：Hilbert 上 Gauss 测度、均值/协方差、Cameron-Martin 空间、拟不变性、无穷维无 Lebesgue。L：视侦察（`gaussMeasure` ℝⁿ 锚点）；J：Cameron-Martin 有限截断 RKHS 数值。
 - 提交：`docs(measuretheory): B9 无穷维测度（44-47 章）——Bochner/Minlos-Sazonov/Minlos/Gauss；批内全绿 N/N`
 
-### Task 15: B10 选讲+收官（48-50 章）
+### Task 15: B10 袁下册 I（48-50 章：概率不等式/特征函数/弱大数律）
 
-- [ ] Step 1: 袁书取材：先查下册有无文字层（pypdf extract）；无则建 `tools/ocr_yuan.py`（同 yan 模板）OCR 相关章（特征函数/CLT/大数定律，先 OCR 下册目录定位章号）。
-- [ ] Step 2: docs/48（特征函数深入+Lévy 连续性+CLT（Lindeberg）；I `central_limit_theorem` 主证（正名）；L 视侦察；J/P：CLT 模拟+特征函数展开数值）。
-- [ ] Step 3: docs/49（弱/强大数定律、Kolmogorov 判据；L 视侦察（Birkhoff 锚点）；J/P：SLLN 速率模拟）。
-- [ ] Step 4: docs/50 CHEATSheet（≥250 行）：全书定理地图（51 章一句一定理）、严/袁书对照表、五通道速查、累计实测坑总账（每批新坑即时入册，此处汇总）。
-- [ ] Step 5: 全量对账 `pwsh -NoProfile -Command '& ./build.ps1 -All'`；质量门全项；PLAN.md 全勾。
-- [ ] Step 6: 提交：`docs(measuretheory): B10 收官——袁书选讲 CLT/SLLN + CHEATSheet；全量 N/N 全绿`
-- [ ] Step 7: 收官报告给用户（总章数/单元数/通道分布/坑账条数），并把工程经验写入 memory（新建 measuretheory-tutorial-build.md + MEMORY.md 索引行）。
+**2026-10-19 用户二次指令扩充**：原 48-50（clt/slln/cheatsheet）扩为
+48-57 十章（袁下册 13-25 全谱，收官移 57）。袁书两册均有文字层
+（已实测：上 338 页/下 373 页，get_text 直出）——免 OCR，取材用
+`tools/extract_yuan.py`（落 build/ocr/yuan_v{1,2}_pNNN.txt）。
+
+- [ ] Step 1: 袁书取材：`extract_yuan.py v1 247 329`（上册 10-12 章）+
+  `extract_yuan.py v2 11 66`（下册 13-15 章）等按批取页；袁14（pdf34-64）、
+  袁17-18（pdf111-159）、袁19（pdf159-184）。
+- [ ] Step 2: docs/48 概率不等式（袁14：Chebyshëv 截尾/c_r/Lévy/对称化/
+  MZ/Rosenthal/Etemadi/Ottaviani/Kolmogorov 最大值/Hájek-Rényi/
+  Hoffmann-Jørgensen；L=分工（Markov 手作先例），J/P/R 承载）。
+- [ ] Step 3: docs/49 特征函数（袁17-18：定义计算/不等式族/唯一性/
+  Lévy 连续性/Bochner/Pólya/矩-导数/Lévy 等价/正态抽样分布/χ²；
+  L `charFun`+`LevyConvergence`；I `Characteristic_Functions`；P FFT 往返）。
+- [ ] Step 4: docs/50 弱大数律（袁19：Markov/B-K/Khinchin/MZ/阵列/
+  退化收敛/圣彼得堡/K-F；L 视侦察+Markov 三行内核；J/P 模拟）。
+- [ ] Step 5: 对账+质量门+提交：`docs(measuretheory): B10 袁下册 I
+  （48-50 章）——概率不等式/特征函数/弱大数律；批内全绿 N/N`
+
+### Task 16: B11 袁下册 II（51-53 章：强大数律/CLT/无穷可分）
+
+同协议。要点：
+- 51：Kolmogorov 收敛准则/三级数定理/子序列方法/Kronecker 引理/
+  Kolmogorov SLLN/MZ SLLN/正规数/蒙特卡罗/更新/Glivenko-Cantelli/
+  分位数强相合/核密度（袁20）。L `StrongLaw`；J/P 模拟。
+- 52：De Moivre-Laplace/Lindeberg-Lévy/L-F/Lyapunov/阵列/分位数渐近
+  正态/多维 CLT/Delta 方法/Berry-Esseen（袁21）。L
+  `tendstoInDistribution_inv_sqrt_mul_sum_sub`；I
+  `Central_Limit_Theorem`；J/P 模拟+Esseen 界数值。
+- 53：无穷可分（袁22：定义性质/构造定理/Lévy-Khinchin/Lévy/Kolmogorov
+  三表示/收敛条件）。L=分工；J/P/R 承载（Poisson/正态/Cauchy 族封闭性）。
+- 提交：`docs(measuretheory): B11 袁下册 II（51-53 章）——SLLN/CLT/无穷可分；批内全绿 N/N`
+
+### Task 17: B12 袁下册 III（54-57 章：普遍极限/稳定/重对数律/收官）
+
+同协议。要点：
+- 54：普遍极限问题（袁23：古典→普遍/(K₀) 条件/无穷小条件/中心收敛
+  准则/正态-退化-Poisson 收敛准则）。L=分工；J/P/R 承载。
+- 55：半稳定族与稳定分布族（袁24：特征函数刻画/吸引场/慢变函数）。
+  L=分工；J/P/R 承载。
+- 56：重对数律（袁25：Kolmogorov LIL/Hartman-Wintner/逆问题/广义）。
+  L=分工；J/P 蒙特卡罗上下包络。
+- 57：CHEATSheet（≥250 行）：全书定理地图（58 章一句一定理）、严/袁
+  书对照表、五通道速查、累计实测坑总账汇总。
+- [ ] 收官 Step：全量对账 `pwsh -NoProfile -Command '& ./build.ps1 -All'`；
+  质量门全项；PLAN.md 全勾；提交
+  `docs(measuretheory): B12 收官——袁下册 III（54-57 章）+ CHEATSheet；全量 N/N 全绿`；
+  收官报告给用户（总章数/单元数/通道分布/坑账条数），工程经验写入
+  memory（新建 measuretheory-tutorial-build.md + MEMORY.md 索引行）。
 
 ## Self-Review 记录
 
-- 覆盖核对：spec §2 表 51 章 → Task 4（00）+ Task 6-15（01-50）全覆盖；spec §4 侦察清单 → Task 2；spec §5 质量门 → Global Constraints + 每批步骤 6-7；spec §6 批次 → Task 1-15 一一对应；spec §1.2 袁书 OCR → Task 15 Step 1。无缺口。
+- 覆盖核对：spec §2 表 51 章 → Task 4（00）+ Task 6-14（01-47）；spec §4 侦察清单 → Task 2；spec §5 质量门 → Global Constraints + 每批步骤 6-7；spec §6 批次 → Task 1-14 一一对应；spec §1.2 袁书 → Task 15-17（2026-10-19 二次指令扩充为 48-57 十章，袁下册 13-25 全谱）。无缺口。
 - 占位符扫描：无 TBD/TODO；"视侦察"是 spec 定义的决策程序（Task 2 落地），不是占位。
 - 命名一致性：docs slug / Lean 模块 / Isabelle 理论 / 脚本文件名三处统一以"文件结构"节与 PLAN.md 为准。

@@ -22,3 +22,23 @@ session MT16 in "MT16" = "HOL-Analysis" +
   options [document = false]
   theories
     T16_BochnerIntegral
+
+session MT18 in "MT18" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T18_Fubini
+
+session MT20 in "MT20" = "HOL-Probability" +
+  options [document = false]
+  theories
+    T20_InfiniteProducts
+
+session MT21 in "MT21" = "HOL-Probability" +
+  options [document = false]
+  theories
+    T21_Kolmogorov
+
+session MT22 in "MT22" = "HOL-Probability" +
+  options [document = false]
+  theories
+    T22_ProjectiveLimits

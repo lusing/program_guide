@@ -3,8 +3,17 @@
 Spec: `docs/superpowers/specs/2026-10-19-measuretheory-design.md`
 Plan: `docs/superpowers/plans/2026-10-19-measuretheory.md`
 
-书页 N ↔ PDF 奇数页 `2·ceil((N+15)/2)−1`（对页重复扫描）。OCR 骨架在
-`build/ocr/yan_full/`（gitignore）。本表为逐批工作文档，随进度勾选。
+**双支柱书源（2026-10-19 用户二次指令）**：
+- 主线：严加安《测度论讲义》第二版（00-47 章骨架）。书页 N ↔ PDF 奇数页
+  `2·ceil((N+15)/2)−1`（对页重复扫描）。OCR 骨架在 `build/ocr/yan_full/`（gitignore）。
+- 第二支柱：袁德美–王学军《测度论基础与高等概率论》上册（338 页 PDF，
+  章 1-12）+ 下册（373 页 PDF，章 13-25）。**两册均有文字层 + 内嵌书签**
+  （免 OCR），取材用 `tools/extract_yuan.py`（get_text 直出，落
+  `build/ocr/yuan_v1_pNNN.txt` / `yuan_v2_pNNN.txt`）。目录全文见
+  `build/ocr/yuan_toc.txt`。袁上册 3-12 章与本书 01-34 章同构（作第二印证
+  源）；袁下册 13-25 章为高等概率论主体，独占 48-56 章全谱。
+
+本表为逐批工作文档，随进度勾选。
 
 ## 1. 侦察结论（2026-10-19，grep 实测）
 
@@ -30,12 +39,12 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 14 | ba：**无**（通道分工） | — |
 | 15 | Daniell：**无**（通道分工） | — |
 | 16 | `MeasureTheory.integral` 即 Bochner；`AEStronglyMeasurable`；`Integral/Bochner/VitaliCaratheodory.lean` 也在 | 同 10 |
-| 17 | `MeasurableSpace.prod`、`Measurable.prodMk`（Constructions/Pi.lean） | MeasureTheory.Constructions.Pi |
-| 18 | `Measure.prod`、`lintegral_prod`（Integral/Marginal.lean）、`integral_prod` | MeasureTheory.Integral.Marginal |
-| 19 | `Probability/Kernel/`（Kernel.comp 在 Composition/Comp.lean、Kernel.prod、Kernel.map） | ProbabilityTheory.Kernel.* |
-| 20 | `Measure.pi`（Constructions/Pi.lean） | MeasureTheory.Constructions.Pi |
-| 21 | Kolmogorov 相容性：mathlib **无**（Brownian 的 GaussianProjectiveFamily 是特例）→ Isabelle Projective_Limit 扛 | — |
-| 22 | 投影极限同上（Isabelle）；随机 Daniell：无（通道分工） | — |
+| 17 | **B4 实测**：`MeasurableSpace.prod`、投影 `measurable_fst/snd`、配对 `Measurable.prodMk`、矩形 `MeasurableSet.prod`、任意族 `measurable_pi_iff`/`measurable_pi_apply`（注意：`Measurable.abs` 不存在，常值幂走 `Measurable.pow_const`；`Measurable.preimage` 应为 `MeasurableSet.preimage (ht) (hf)` 参数序） | Mathlib.MeasureTheory.Measure.Prod |
+| 18 | **B4 实测**：`Measure.prod`/`prod_prod`（Measure/Prod.lean:231 矩形账，无 MeasurableSet 前提）+ Tonelli `lintegral_prod`/`lintegral_prod_swap`（同文件）+ Fubini `integral_prod`/`integral_prod_symm`（Integral/Prod.lean:444-467）+ `dirac_prod_dirac`/`prod_swap` | MeasureTheory.Measure.Prod / MeasureTheory.Integral.Prod |
+| 19 | **B4 实测**：`Kernel.comp`（记号 `∘ₖ`，Composition/Comp.lean）+ 单位元 `Kernel.id`/`id_comp`/`comp_id` + dirac 型核 = **`Kernel.deterministic`**（无 Kernel.dirac！）+ 金子引理 `deterministic_comp_deterministic`（CompMap.lean:50：确定性核复合 = 映射复合）+ `Kernel.prod`（并排，需 import Composition.Prod） | Mathlib.Probability.Kernel.Composition.* |
+| 20 | **B4 实测三连**：`Measure.pi`（Constructions/Pi.lean，[Fintype ι] 有限版）+ **`Probability/ProductMeasure.lean`：`Measure.infinitePi`（任意族概率的无穷乘积，柱集 AddContent→Carathéodory 路线=严书 §4.4 原文）**+ `isProjectiveLimit_infinitePi`/`infinitePi_map_restrict`/`infinitePi_eq_pi [Fintype]`+ 验收灵魂 `piContent_tendsto_zero`；`isProjectiveMeasureFamily_pi`（pi 族相容性实例） | Mathlib.Probability.ProductMeasure / MeasureTheory.Constructions.Pi |
+| 21 | **`Probability/Kernel/IonescuTulcea/`（Maps/PartialTraj/Traj.lean）✓ B4 实测**：`ProbabilityTheory.traj`/`trajMeasure μ₀ κ`/`eq_traj`/`condExp_traj`（核族无穷复合的存在性=Tulcea）+ `Constructions/Projective.lean`：`IsProjectiveMeasureFamily`/`IsProjectiveLimit`（谓词+`measure_cylinder`+`unique` 唯一性）+ `ProjectiveFamilyContent.lean`：`projectiveFamilyContent`（柱集内容构造=Carathéodory 侧）——**PLAN 原"mathlib 无"结论作废**；Kolmogorov 存在性（一般相容族）仍无 → Isabelle Projective_Limit 扛 | Mathlib.Probability.Kernel.IonescuTulcea.* / MeasureTheory.Constructions.Projective |
+| 22 | 投影极限：同 21（`IsProjectiveLimit` 谓词即本章主角）；随机 Daniell：无（docs+数值承载） | — |
 | 23 | `BorelSpace`/`borel` | Mathlib.Topology.BorelSpace? 以正名为准 |
 | 24/26 | **`Integral/RieszMarkovKakutani/`（Basic/NNReal/Real）** ✓ | MeasureTheory.Integral.RieszMarkovKakutani.* |
 | 25 | `MeasureTheory.Measure.Regular`（Measure/Regular.lean，class，extends IsFiniteMeasureOnCompacts+OuterRegular） | MeasureTheory.Measure.Regular |
@@ -60,6 +69,11 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 47 | `gaussianReal 0 1`（CLT 文件内出现）；gaussMeasure 正名再查 | Probability.CentralLimitTheorem 等 |
 | 48 | **`Probability/CentralLimitTheorem.lean`**：`tendstoInDistribution_inv_sqrt_mul_sum_sub` ✓ | Mathlib.Probability.CentralLimitTheorem |
 | 49 | **`Probability/StrongLaw.lean`** ✓ | Mathlib.Probability.StrongLaw |
+| 48 | 概率不等式族：视侦察（Chebyshev/Markov 手作先例=第 10 章；Kolmogorov 最大值不等式在 `Martingale/` 有近亲 `submartingale_max_mul_le`，独立和版视侦察）→ 大概率通道分工 | — |
+| 50 | 弱大数律：`Probability/Moment`? 视侦察；Khinchin 可经特征函数手作；Markov LLN 三行内核（Markov 不等式+Chebyshev）照第 10 章先例 | — |
+| 51 | `Probability/StrongLaw.lean`（`strong_law_ae` 族）✓ | Mathlib.Probability.StrongLaw |
+| 52 | `Probability/CentralLimitTheorem.lean`：`tendstoInDistribution_inv_sqrt_mul_sum_sub` ✓ | Mathlib.Probability.CentralLimitTheorem |
+| 53-56 | 无穷可分/普遍极限/稳定分布/重对数律：mathlib **无**（通道分工；Lévy-Khinchin 表示与 LIL 均缺基础设施） | — |
 
 ### Isabelle 锚点表
 
@@ -74,9 +88,11 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 30 | `Probability/Helly_Selection.thy` | Helly 选择定理 |
 | 31 | `Probability/Weak_Convergence.thy` | 弱收敛 |
 | 36 | `Probability/Conditional_Expectation.thy` | conditional_expectation |
-| 44 | `Probability/Characteristic_Functions.thy` | 特征函数 |
-| 48 | `Probability/Central_Limit_Theorem.thy` | CLT |
+| 44/49 | `Probability/Characteristic_Functions.thy` | 特征函数（char_distribution 族；Lévy 连续性视正名） |
+| 52 | `Probability/Central_Limit_Theorem.thy` | CLT（iid 版；Lindeberg 条件版视侦察） |
 | 13 | Lp：**无 LPspace** → 仅 Lean | — |
+| 48 | 概率不等式族：视侦察（`Probability/Inequalities`? 多半仅 Markov 型） | — |
+| 53-56 | 无穷可分/普遍极限/稳定/重对数律：**无** → 通道分工 | — |
 
 ## 2. 51 章通道定案表（L/I/J/P/R；·=该通道无文件）
 
@@ -99,42 +115,55 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 14 | linfty-dual | 3.5 | 分工 | · | ✓ | ✓ | ✓ | B3 | ✅ |
 | 15 | daniell | 3.6 | 分工 | · | ✓ | ✓ | ✓ | B3 | ✅ |
 | 16 | bochner-integral | 3.7 | ✓ | ✓ | ✓ | ✓ | · | B3 | ✅ |
-| 17 | product-sigma | 4.1 | ✓ | · | ✓ | ✓ | ✓ | B4 | ☐ |
-| 18 | fubini | 4.2 | ✓ | ✓ | ✓ | ✓ | · | B4 | ☐ |
-| 19 | kernels | 4.3 | ✓ | · | ✓ | ✓ | ✓ | B4 | ☐ |
-| 20 | infinite-products | 4.4 | ✓ | ✓ | ✓ | ✓ | · | B4 | ☐ |
-| 21 | kolmogorov-tulcea | 4.5 | 分工 | ✓ | ✓ | ✓ | ✓ | B4 | ☐ |
-| 22 | projective-limits | 4.6-4.7 | 分工 | ✓ | ✓ | ✓ | · | B4 | ☐ |
-| 23 | topology-borel | 5.1 | ✓ | · | ✓ | ✓ | ✓ | B5 | ☐ |
-| 24 | riesz | 5.2 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
-| 25 | regular-measures | 5.3 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
-| 26 | c0-dual | 5.4 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
-| 27 | lusin | 5.5 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
-| 28 | product-topological | 5.6 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
-| 29 | polish | 5.7 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
-| 30 | euclidean-convergence | 6.1 | ✓ | ✓ | ✓ | ✓ | · | B6 | ☐ |
-| 31 | weak-convergence | 6.2 | ✓ | ✓ | ✓ | ✓ | · | B6 | ☐ |
-| 32 | tightness-prohorov | 6.3 | ✓ | · | ✓ | ✓ | · | B6 | ☐ |
-| 33 | metrization | 6.4 | ✓ | · | ✓ | ✓ | · | B6 | ☐ |
-| 34 | vague-convergence | 6.5 | 分工 | · | ✓ | ✓ | · | B6 | ☐ |
-| 35 | independence | 7.1 | ✓ | · | ✓ | ✓ | ✓ | B7 | ☐ |
-| 36 | conditional-expectation | 7.2 | ✓ | ✓ | ✓ | ✓ | · | B7 | ☐ |
-| 37 | regular-conditional | 7.3 | ✓ | · | ✓ | ✓ | · | B7 | ☐ |
-| 38 | uniform-integrability | 7.4 | ✓ | · | ✓ | ✓ | · | B7 | ☐ |
+| 17 | product-sigma | 4.1/袁10.1 | ✓ | · | ✓ | ✓ | ✓ | B4 | ✅ |
+| 18 | fubini | 4.2/袁10.2-10.3 | ✓ | ✓ | ✓ | ✓ | · | B4 | ✅ |
+| 19 | kernels | 4.3 | ✓ | · | ✓ | ✓ | ✓ | B4 | ✅ |
+| 20 | infinite-products | 4.4/袁10.4.1 | ✓ | ✓ | ✓ | ✓ | · | B4 | ✅ |
+| 21 | kolmogorov-tulcea | 4.5/袁10.4.2-10.4.3 | ✓ | ✓ | ✓ | ✓ | ✓ | B4 | ✅ |
+| 22 | projective-limits | 4.6-4.7 | ✓ | ✓ | ✓ | ✓ | · | B4 | ✅ |
+| 23 | topology-borel | 5.1/袁2+3.4 | ✓ | · | ✓ | ✓ | ✓ | B5 | ☐ |
+| 24 | riesz | 5.2/袁11.2.3 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
+| 25 | regular-measures | 5.3/袁11.2.1-11.2.2 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
+| 26 | c0-dual | 5.4/袁11.2.3 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
+| 27 | lusin | 5.5/袁11.3 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
+| 28 | product-topological | 5.6/袁11.4 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
+| 29 | polish | 5.7/袁2.4+11 | ✓ | · | ✓ | ✓ | · | B5 | ☐ |
+| 30 | euclidean-convergence | 6.1/袁12.3 | ✓ | ✓ | ✓ | ✓ | · | B6 | ☐ |
+| 31 | weak-convergence | 6.2/袁12.2 | ✓ | ✓ | ✓ | ✓ | · | B6 | ☐ |
+| 32 | tightness-prohorov | 6.3/袁12.7 | ✓ | · | ✓ | ✓ | · | B6 | ☐ |
+| 33 | metrization | 6.4/袁12.1 | ✓ | · | ✓ | ✓ | · | B6 | ☐ |
+| 34 | vague-convergence | 6.5/袁12.6 | 分工 | · | ✓ | ✓ | · | B6 | ☐ |
+| 35 | independence | 7.1/袁13 | ✓ | · | ✓ | ✓ | ✓ | B7 | ☐ |
+| 36 | conditional-expectation | 7.2/袁15.1-15.2 | ✓ | ✓ | ✓ | ✓ | · | B7 | ☐ |
+| 37 | regular-conditional | 7.3/袁15.3-15.5 | ✓ | · | ✓ | ✓ | · | B7 | ☐ |
+| 38 | uniform-integrability | 7.4/袁9.3 | ✓ | · | ✓ | ✓ | · | B7 | ☐ |
 | 39 | esssup | 7.5 | ✓ | · | ✓ | ✓ | ✓ | B7 | ☐ |
 | 40 | analytic-sets | 7.6 | 分工 | · | ✓ | ✓ | ✓ | B7 | ☐ |
 | 41 | martingale-inequalities | 8.1 | ✓ | · | ✓ | ✓ | ✓ | B8 | ☐ |
 | 42 | martingale-convergence | 8.2 | ✓ | · | ✓ | ✓ | ✓ | B8 | ☐ |
 | 43 | local-martingales | 8.3 | 分工 | · | ✓ | ✓ | ✓ | B8 | ☐ |
-| 44 | bochner-theorem | 9.1 | ✓ | ✓ | ✓ | ✓ | · | B9 | ☐ |
+| 44 | bochner-theorem | 9.1/袁17.4 | ✓ | ✓ | ✓ | ✓ | · | B9 | ☐ |
 | 45 | minlos-sazonov | 9.2 | 分工 | · | ✓ | ✓ | · | B9 | ☐ |
 | 46 | minlos | 9.3 | 分工 | · | ✓ | ✓ | · | B9 | ☐ |
-| 47 | gaussian-measures | 9.4 | ✓ | · | ✓ | ✓ | · | B9 | ☐ |
-| 48 | clt | 袁下册 | ✓ | ✓ | ✓ | ✓ | · | B10 | ☐ |
-| 49 | slln | 袁下册 | ✓ | · | ✓ | ✓ | · | B10 | ☐ |
-| 50 | cheatsheet | — | · | · | · | · | · | B10 | ☐ |
+| 47 | gaussian-measures | 9.4/袁16 | ✓ | · | ✓ | ✓ | · | B9 | ☐ |
+| 48 | prob-inequalities | 袁14 | 分工 | · | ✓ | ✓ | ✓ | B10 | ☐ |
+| 49 | characteristic-functions | 袁17-18 | ✓ | ✓ | ✓ | ✓ | ✓ | B10 | ☐ |
+| 50 | lln | 袁19 | ✓ | · | ✓ | ✓ | ✓ | B10 | ☐ |
+| 51 | slln | 袁20 | ✓ | · | ✓ | ✓ | · | B11 | ☐ |
+| 52 | clt | 袁21 | ✓ | ✓ | ✓ | ✓ | · | B11 | ☐ |
+| 53 | infinitely-divisible | 袁22 | 分工 | · | ✓ | ✓ | ✓ | B11 | ☐ |
+| 54 | universal-limits | 袁23 | 分工 | · | ✓ | ✓ | ✓ | B12 | ☐ |
+| 55 | stable-laws | 袁24 | 分工 | · | ✓ | ✓ | ✓ | B12 | ☐ |
+| 56 | lll | 袁25 | 分工 | · | ✓ | ✓ | ✓ | B12 | ☐ |
+| 57 | cheatsheet | — | · | · | · | · | · | B12 | ☐ |
 
-单元统计：Lean 41 / Isabelle 13 / Julia 49 / Python 49 / Prolog 23 ≈ 175。
+单元统计：Lean 45 / Isabelle 15 / Julia 58 / Python 58 / Prolog 30 ≈ 206。
+
+袁书页码速查（PDF 页=文字层直出，无对页重复）：上册 338 页（第 1-12 章：
+袁10 乘积 pdf247 / 袁11 局部紧 pdf272 / 袁12 弱收敛 pdf296）；下册 373 页
+（袁13 独立 pdf11 / 袁14 不等式 pdf34 / 袁15 条件期望 pdf64 / 袁16 多维
+正态 pdf96 / 袁17-18 特征函数 pdf111,145 / 袁19-21 大数律-CLT pdf159,184,216 /
+袁22-25 无穷可分-重对数律 pdf247,269,308,344）。
 
 ## 3. 批次进度
 
@@ -142,13 +171,21 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 - [x] B1 01-06 集类与测度（docs 6 篇 200-237 行 / Lean 6 / Julia 6 / Python 6 / Prolog 5；23/23 全绿；docs 扩写补严书 1.3.5 概率化引理、1.4.4/1.4.5 半环验收工序、§1.5 ℝⁿ 盒半环与高维分布函数、§1.6 逼近定理全文）
 - [x] B2 07-09 可测映射（docs 3 篇 200/201/232 行 / Lean 3 / Julia 3 / Python 3 / Prolog 3；12/12 全绿；π-λ 引擎 induction_on_inter 完整重放（含机器抓出"补集需总质量相等"）、垫高技巧与 f∨g 公式机器版、TendstoInMeasure 三件套 + Egorov xⁿ 实弹）
 - [x] B3 10-16 积分与 Lp（**全部完成，终态 -All 64/64 全绿**——批 1：10-11 章 10/10（三步构造+Markov 手作+L⁰ 距离、MCT 对角线+Fatou+DCT 三反例机、Isabelle MT10/MT11）；批 2：12 章 4/4（Jordan-Hahn 骨架+Lebesgue 分解 H-类+RN 定理、RN_derivI 还原、位掩码 Hahn 穷举）；批 3：13-16 章 13/13——13：三不等式+Riesz-Fischer 六步账+对偶装配线+σ-有限反例（Lean Cauchy 六平方和 nlinarith）；14-15 通道分工（ba 空间/自然密度荷死亡现场、Daniell 五步流水线+非 Stone 反例）；16：强可测/Pettis 三档表+对角线反例六步骨架+ASP 注记（integral 即 Bochner、MT16 向量和））
-- [ ] B4 17-22 乘积空间
+- [x] B4 17-22 乘积空间（**25/25 全绿**——docs 6 篇 201-212 行；Lean 6 件：矩形/对角线预像、dirac 折叠+Tonelli 坍缩、deterministic 复合=映射复合+两态恒等、infinitePi 柱集账 2⁻ⁿ、唯一性实例化+traj 锚点、投影极限换算表；Isabelle 4 件（MT18/20/21/22）：矩形账、n 次全正面 inverse(2)^n、distr_restrict 相容性、塔边际账；Julia 6/Python 6/Prolog 3：闭包算法、两张罚单、CK+平稳分布、三组硬币账、相容检查器+Fréchet 反例、Cantor/高斯塔。**B4 侦察三连大发现**：mathlib 4.33.1 已有 IonescuTulcea 全形式化（traj/trajMeasure）+ Measure.infinitePi 任意族无穷乘积（柱集 AddContent→Carathéodory=严书 §4.4 同路）+ IsProjectiveLimit 谓词族——21/22 章 Lean 从"分工"升级为 ✓）
 - [ ] B5 23-29 拓扑测度
 - [ ] B6 30-34 测度收敛
 - [ ] B7 35-40 概率选讲
 - [ ] B8 41-43 鞅
 - [ ] B9 44-47 无穷维
-- [ ] B10 48-50 选讲+收官
+- [ ] B10 48-50 袁下册 I（概率不等式/特征函数/弱大数律）
+- [ ] B11 51-53 袁下册 II（强大数律/CLT/无穷可分）
+- [ ] B12 54-57 袁下册 III（普遍极限/稳定分布/重对数律/收官 CHEATSheet）
+
+**袁书整合备忘（2026-10-19 二次指令）**：原 48-50 三章（clt/slln/cheatsheet）
+扩充为 48-57 十章——袁下册 13-25 章全谱入列（13→35 章、14→48、15→36-37、
+16→47、17-18→49（17.4→44）、19→50、20→51、21→52、22→53、23→54、24→55、
+25→56），收官移至 57。袁上册作 01-34 章第二印证源（书节列"袁X.Y"）。
+袁书取材免 OCR（文字层直出，`tools/extract_yuan.py`）。
 
 ## 4. 实测坑账（随批追加，50 章汇总）
 
@@ -283,3 +320,43 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
     integral_eq` 是唯一性方向（两 has_bochner ⟹ 等式），改
     积分值用 `h[simplified 引理]` 在结论内改写；∫ 绑定器已
     λ 化，body 里再写 fun 是双重 λ（Lean 同款坑）。
+
+33. （B4）**mathlib 4.33.1 三连大发现（B0 侦察作废）**：`Probability/Kernel/
+    IonescuTulcea/`（traj/trajMeasure/eq_traj——Tulcea 全形式化）、
+    `Probability/ProductMeasure.lean`（`Measure.infinitePi` 任意族无穷乘积，
+    柱集 AddContent→`piContent_tendsto_zero` 验收→Carathéodory——与严书
+    §4.4 逐字同路）、`Constructions/Projective.lean`（IsProjectiveMeasure
+    Family/IsProjectiveLimit+unique）。且 `Measure.pi` 在 4.33 是
+    [Fintype ι]——只做有限族。
+34. （B4）Lean：`Measurable.abs` 不存在；`Measurable.pow` 是 f^g 双函数版，
+    常值指数走 `pow_const`；`MeasurableSet.preimage` 参数序 (ht) (hf)
+    （不是 Measurable.preimage）；核的 dirac 型叫 `Kernel.deterministic`
+    （无 Kernel.dirac），单位元是 `Kernel.id`；`Kernel.prod` 要单独
+    import Composition.Prod；`/-! -/` 或 `/-- -/` 注释直接挂 `#check`
+    前会报 "expected 'lemma'"——文档注释只能贴声明。
+35. （B4）Isabelle 2025-2：**全局 `interpretation product_prob_space` 触发
+    "Malformed global fact / Illegal fixed variable I"**（子 locale 注册
+    事故）——必须证明内局部 `interpret` 且带两参（M 与指标集 I）。
+36. （B4）Isabelle：`by (rule …) auto` 对 locale 谓词目标会让 auto 合成
+    σ-有限见证而**挂死**（MT18 首建 40 分钟无输出）——用显式 rule+simp
+    或免 interpret 的导出引理（`emeasure_pair_measure_Times` 挂 M 侧
+    locale、N 是自由变量，只需 M 侧 σ-有限见证）。
+37. （B4）Isabelle：卡死会话留下 MT18.db 锁（poly 9GB 常驻）+
+    `SQLITE_CONSTRAINT_PRIMARYKEY`——终结进程后删 build log db 重建。
+38. （B4）Isabelle：**ennreal 的 `/` 与 `inverse` 在 simp 层不可互换**
+    （`inverse 2 = 1/2` 三种 simp 战术全灭）——结论说本地方言
+    `inverse (2::ennreal)`；`unfolding def by (rule …)` 失效而
+    `by (simp add: def 引理)` 通过（definition 展开后 rule 无法 apply）。
+39. （B4）Lean：`lake build` 零 error 但有 "This simp argument is unused"
+    linter warning——build.ps1 的 lean 判定把 warning: 也算 FAIL；
+    simp 参数按 linter 点名删净。
+40. （B4）Julia：顶层 for 循环累计变量须 `global` 或函数封装（软作用域）；
+    收敛速率账 0.3^n 在 n>20 后被浮点消去污染（比值假爆炸）——20 步内
+    验证显式常数 C=3/7；二维高斯 `[x y] * Σ * v` 返回向量炸 exp——用
+    `dot(v, Σ*v)`。
+41. （B4）Prolog：同一谓词子句分散两处被当重定义覆盖（"Clauses not
+    together"）；findall 里递归子句的自由目标变量导致重数事故
+    （dist(3,·) 账 >1）——改显式两态 advance；分数求和别把 N*D 乘成
+    整数（用 q(N,D) 复合项）。
+42. （B4）Python 相容检查器：两两边缘一致 ≠ 整体可实现——反例族
+    （完美相关对+独立对）须用 Fréchet 上确界装配总质量 < 1 判死。
