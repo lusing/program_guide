@@ -4,7 +4,7 @@
 
 全书分两篇：**语言篇 01–24**（语法到实战）+ **标准库篇 25–35**（按《[Go 标准库示例](https://github.com/polaris1119/The-Golang-Standard-Library-by-Example)》的地图，把 strings/regexp/unicode、容器、数学、编码、压缩归档、进程信号、flag/日志、database/sql、unsafe 补齐；书里 ioutil、math/rand 等"老写法"一律翻新成 1.27 的默认姿势，差异进坑位清单）。
 
-> ⚠️ 网上教程版本混杂（1.20 前的写法与现在差异不小）。本教程所有代码在 **go1.27.1 windows/amd64** 与 **darwin/amd64** 双平台实测（两个入口都会跑交叉编译检查，见下），每章坑位清单收录版本差异（含 1.27 的 `synctest.Test` 新签名、`json/v2` 默认可用等）。
+> ⚠️ 网上教程版本混杂（1.20 前的写法与现在差异不小）。本教程所有代码在 **go1.27.1 windows/amd64** 与 **go1.27.2 darwin/amd64** 双平台实测（两个入口都会跑交叉编译检查，见下），每章坑位清单收录版本差异（含 1.27 的 `synctest.Test` 新签名、`json/v2` 默认可用等）。
 
 ## 目录结构
 
@@ -37,7 +37,7 @@ go/
 | [11 ⭐泛型](docs/11-generics.md) | 类型参数、约束、cmp.Ordered、何时不用 | `11_generics` |
 | [12 slices/maps 标准库](docs/12-collections.md) | SortFunc、Compact、迭代器联动 | `12_collections` |
 | [13 ⭐迭代器](docs/13-iterators.md) | iter.Seq/Seq2、range over func、Pull | `13_iterators` |
-| [14 包与模块](docs/14-modules.md) | go.mod、internal、init、go.work | `14_module`（工程） |
+| [14 包与模块](docs/14-modules.md) | go.mod 指令全集、版本/MVS、go.sum、命令全家桶、go.work、代理与私有模块、发布、cmd/internal/pkg | `14_module`（工程） |
 | [15 ⭐测试](docs/15-testing.md) | 表驱动、基准、模糊、synctest、Example | `15_testing` |
 | [16 ⭐并发 I：goroutine](docs/16-goroutines.md) | wg.Go、Once、race 检测器 | `16_goroutines` |
 | [17 ⭐并发 II：channel](docs/17-channels.md) | select、关闭协议、worker pool、流水线 | `17_channels` |
@@ -72,7 +72,7 @@ go/
 
 | | Windows | macOS |
 |---|---|---|
-| go 位置 | `G:\scoop\apps\go\current\bin\go.exe`（scoop） | `/opt/local/bin/go`（MacPorts，本机 1.27.1）或 `/usr/local/go/bin/go` |
+| go 位置 | `G:\scoop\apps\go\current\bin\go.exe`（scoop） | `/opt/local/bin/go`（MacPorts，本机 1.27.2）或 `/usr/local/go/bin/go` |
 | 手动指定 | `GOBIN` 环境变量 | `GO=/path/to/go ./run-all.sh` 或 `GOBIN` |
 | `-race` 前提 | cgo + gcc（15.2.0） | cgo + clang（Xcode 命令行工具，自带） |
 | 控制台中文 | `chcp 65001`（build.ps1 已代设 UTF-8） | 终端默认 UTF-8，不用管 |

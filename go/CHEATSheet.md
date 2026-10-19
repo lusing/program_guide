@@ -9,15 +9,37 @@ go run .                        # 编译+运行（`.` 是包目录，不是 main
 go build -o out.exe .           # 产可执行（macOS/Linux 不带 .exe）
 go test [-v] [-race] [-bench .] [-cover] .
 go vet . / gofmt -l .           # 静态检查 / 格式检查（-l 输出空 = 合格）
-go mod init|tidy|why            # 模块管理（14）
 go doc fmt.Println              # 命令行文档
 go tool pprof|trace <file>      # 性能画像（23）
 $env:GOOS="linux"; go build .   # 交叉编译（PowerShell；用完清掉！）
 GOOS=linux go build .           # 交叉编译（bash；只作用于这一条命令）
 go build -ldflags "-s -w -X main.ver=1.0" .
+# —— 模块（14）——
+go mod init <path>              # 建模块（生成 go.mod）
+go get pkg@v1.2.3               # 加/钉依赖；-u 升级；-tool 登记工具
+go mod tidy                     # 对齐 import 与 go.mod（最常敲）
+go mod why -m <module>          # 这依赖是谁引进来的
+go list -m all / -u all         # 构建列表 / 各依赖可升级项
+go mod edit -json -require=pkg@v1.0.0   # 脚本化改 go.mod（不联网）
+go work init ./a ./b            # 多模块本地联调工作区（go.work）
+go env -w GOPROXY=https://goproxy.cn,direct   # 国内代理（持久化）
 ```
 
 `-race` 需要 cgo：Windows 装 gcc，macOS 用自带 clang。`go env CGO_ENABLED` 看是否可用。
+
+### 模块坑位（14）
+
+| 坑 | 解法 |
+|---|---|
+| `go get` 完依赖全标 `// indirect` | 再跑 `go mod tidy` 理顺直接/间接（14.7） |
+| `replace` 写在依赖的 go.mod 里不生效 | 只有主模块 / `go.work` 的 replace 算数（14.3） |
+| 工作区里 `go mod vendor` 报错 | 用 `go work vendor`，或 `GOWORK=off` 退出（14.7） |
+| 工作区根 `go build ./...` 报错 | 用 `go build all`，或 `cd` 进模块目录（14.8） |
+| 私有模块 403/404 还泄露内网地址 | `go env -w GOPRIVATE=内网域名`（14.9） |
+| `go.sum` 被 gitignore / 手改 | 必须提交；冲突删段重跑 `go mod tidy` 重建（14.6） |
+| 发 `v2` 忘了加 `/v2` 路径 | SIV 硬规矩，`module` 行改 `.../v2`（14.4） |
+| 删 Git 标签代替撤版本 | 删不掉，用 `retract` + 发新版引导升级（14.3） |
+| `GOPROXY` 逗号/竖线用反 | 逗号只在 404/410 回退，竖线任何错误都回退（14.9） |
 
 ## 2. 声明与类型（03）
 
