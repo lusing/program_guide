@@ -11,3 +11,6 @@ import Measuretheory.Ch03Measures
 import Measuretheory.Ch04Extension
 import Measuretheory.Ch05Stieltjes
 import Measuretheory.Ch06Approximation
+import Measuretheory.Ch07MeasurableMaps
+import Measuretheory.Ch08FunctionalMonotoneClass
+import Measuretheory.Ch09ConvergenceModes

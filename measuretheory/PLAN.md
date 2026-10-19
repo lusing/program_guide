@@ -20,7 +20,8 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 05 | `StieltjesFunction R`（结构：单调+右连续）、`Monotone.stieltjesFunction`、`StieltjesFunction.outer_Ioc`（Measure/Stieltjes.lean） | MeasureTheory.Measure.Stieltjes |
 | 06 | **`ext_of_generateFrom_of_iUnion` / `ext_of_generateFrom_of_cover`**（MeasureSpace.lean:61-66，π-系上相等⇒测度相等） | MeasureTheory.Measure.MeasureSpace |
 | 01/02 补 | π-系 API 在 `Constructions/BorelSpace/Basic.lean`（PiSystem）；单调类定理（集合形式）mathlib 无现成名——用 `generateFrom` 最小性+π系唯一性组合呈现 | MeasureTheory.Constructions.BorelSpace.Basic |
-| 08 | 函数单调类：`MeasurableSpace.induction_on` 不存在（NONE）→ 手写小件或以 `Measurable` 格引理替代 | — |
+| 07 | `MeasurableSpace.comap`/`comap_eq_generateFrom`/`comap_generateFrom`/`measurable_generateFrom`（MeasurableSpace/Basic.lean:93-238）；`Real.borel_eq_generateFrom_Iic_rat`/`Iio_rat`（Constructions/BorelSpace/Real.lean） | MeasureTheory.MeasurableSpace.Basic 等 |
+| 08 | **`MeasurableSpace.induction_on_inter`（MeasureTheory/PiSystem.lean:692，谓词式 π-λ，DynkinSystem 实现）✓（修正 B0 侦察"NONE"结论）**；`Continuous.measurable`；`fun_prop` 接管 Measurable 格/算术 | MeasureTheory.PiSystem |
 | 09 | `MeasureTheory/Function/Egorov.lean`（Egorov）+ `ConvergenceInMeasure.lean` | MeasureTheory.Function.Egorov |
 | 10 | `lintegral`（Integral/Lebesgue/Basic.lean:48 noncomputable irreducible_def）+ `MeasureTheory.integral`（Integral/Bochner/Basic.lean:156——**Bochner 积分即 integral**）+ 简单函数逼近 `Function/SimpleFuncDense.lean`、`SimpleFuncDenseLp.lean` | MeasureTheory.Integral.Lebesgue.Basic 等 |
 | 11 | MCT=`lintegral_iSup`（Integral/Lebesgue/Add.lean:34）、Fatou=`lintegral_liminf…`（Add.lean:202 起，公开版正名时再核）、DCT=`tendsto_integral_of_dominated_convergence`（Integral/DominatedConvergence.lean:57） | 同左 |
@@ -88,9 +89,9 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 04 | extension | 1.4 | ✓ | · | ✓ | ✓ | ✓ | B1 | ✅ |
 | 05 | stieltjes | 1.5 | ✓ | · | ✓ | ✓ | · | B1 | ✅ |
 | 06 | approximation | 1.6 | ✓ | · | ✓ | ✓ | ✓ | B1 | ✅ |
-| 07 | measurable-maps | 2.1 | ✓ | · | ✓ | ✓ | ✓ | B2 | ☐ |
-| 08 | functional-monotone-class | 2.2 | ✓ | · | ✓ | ✓ | ✓ | B2 | ☐ |
-| 09 | convergence-modes | 2.3 | ✓ | · | ✓ | ✓ | ✓ | B2 | ☐ |
+| 07 | measurable-maps | 2.1 | ✓ | · | ✓ | ✓ | ✓ | B2 | ✅ |
+| 08 | functional-monotone-class | 2.2 | ✓ | · | ✓ | ✓ | ✓ | B2 | ✅ |
+| 09 | convergence-modes | 2.3 | ✓ | · | ✓ | ✓ | ✓ | B2 | ✅ |
 | 10 | integral | 3.1 | ✓ | ✓ | ✓ | ✓ | ✓ | B3 | ☐ |
 | 11 | limit-theorems | 3.2 | ✓ | ✓ | ✓ | ✓ | · | B3 | ☐ |
 | 12 | signed-measures | 3.3 | ✓ | ✓ | ✓ | ✓ | · | B3 | ☐ |
@@ -139,6 +140,7 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 
 - [x] B0 基建（OCR 全书 144 奇数页 ✓ / 侦察 ✓ / 骨架冒烟 2/2 ✓ / build.ps1 ✓ / README ✓ / 00 导言 209 行 ✓）
 - [x] B1 01-06 集类与测度（docs 6 篇 200-237 行 / Lean 6 / Julia 6 / Python 6 / Prolog 5；23/23 全绿；docs 扩写补严书 1.3.5 概率化引理、1.4.4/1.4.5 半环验收工序、§1.5 ℝⁿ 盒半环与高维分布函数、§1.6 逼近定理全文）
+- [x] B2 07-09 可测映射（docs 3 篇 200/201/232 行 / Lean 3 / Julia 3 / Python 3 / Prolog 3；12/12 全绿；π-λ 引擎 induction_on_inter 完整重放（含机器抓出"补集需总质量相等"）、垫高技巧与 f∨g 公式机器版、TendstoInMeasure 三件套 + Egorov xⁿ 实弹）
 - [ ] B2 07-09 可测映射
 - [ ] B3 10-16 积分与 Lp
 - [ ] B4 17-22 乘积空间
@@ -184,3 +186,40 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 10. （B1）坑 3（管道假绿）复发警告：后台任务里写
     `pwsh … | tail -50` 会把退出码换成 tail 的 0——即使 PLAN 里已记
     载，稍不留神仍会重蹈；对账永远读报告正文，不信管道退出码。
+11. （B2）Lean 生成族 `⋃ a, {t a}` 的成员关系必须先
+    `simp only [Set.mem_iUnion, Set.mem_singleton_iff]` 剥开再
+    `rintro ⟨r, rfl⟩`；对 Membership 外壳直接上 rfl 模式，报错
+    形如"not an inductive datatype / invalid equality proof"且
+    指向误导位置。
+12. （B2）`measurable_generateFrom` 造**陪域** σ-代数：`Measurable[m]`
+    方括号语法只能改值域侧，须 `@Measurable γ β _ (…generateFrom s)`；
+    generateFrom 与 ℝ 环境实例不 defeq，两步换算
+    `(BorelSpace.measurable_eq).trans Real.borel_eq_generateFrom_Iic_rat`
+    （方向：inst = borel = generateFrom）后再 rw/exact。
+13. （B2）裸 `Tendsto`/`atTop` 要 `open Filter`，`𝓝` 还要
+    `open scoped Topology`——否则 autoImplicit 把未知记号静默吞成
+    哑变量，错误在下游以 "Function expected at 𝓝" 出现。
+14. （B2）ℝ 上 volume 双实例（MeasureSpace 派生 vs
+    Real.measurableSpace）在 a.e. 陈述与测度项缝合处打架——a.e.
+    定理改带自由测度参数 + 零点集假设（μ {1} = 0），调用处喂
+    volume，绕开实例统一。`Real.volume` 不是常量名（volume 是
+    MeasureSpace 记号）；`Real.volume_Icc` 要 import
+    Measure.Lebesgue.Basic。
+15. （B2）谓词式 π-λ（induction_on_inter）重放"π-系上相等 ⟹ 相等"
+    时，补集一步 rw measure_compl 需要 μ Ω = ν Ω——两测度在 π-系
+    上相等不自动给总质量相等，须先证（⋃ₙ Iic ↑n = ℝ 下方连续 +
+    iSup_congr）。机器抓出的真数学缺口，第 06 章穷竭列的伏笔。
+16. （B2）SWI `subset/2` 参数序是 (Sub, Super)：当"枚举子列表"用
+    会反向枚举超集直接爆栈——自制 sublist/3，且 skip 子句必须同
+    时消耗源表。另：整数 0 与浮点 0.0 的**项统一**失败（= 不是 =:=），
+    结果断言统一用整数。
+17. （B2）Julia 顶层 for 循环体内改全局计数器须 `global n += 1`，
+    否则 soft-scope 警告后 UndefVarError。
+18. （B2）精确分数版牛顿迭代分母按 c^(2^k) 双重指数增长：30 步挂死
+    （天文数字位数）；且收敛比率是 1−√t（t 贴近 1 才快）。步数
+    节制 + t 选近 1；"从下方单调"断言用精确 `p*p <= t`，浮点差
+    符号在 1e-14 量级不可靠。
+19. （B2）数值实验设计两次翻案：打字机在有限 Ω 上无法依测度收敛
+    （最小原子 1/6 逼出"终归为空"退化定理）；"前 K 层光柱并集"
+    的 Egorov 挖集构造错误（并集测度是 1 不是 ε）——正确载体是
+    逃逸尖峰 + 尾集嵌套并。**断言前先手推测度值**的铁律再立新功。
