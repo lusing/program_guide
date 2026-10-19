@@ -128,11 +128,11 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 27 | lusin | 5.5/袁11.3 | ✓ | · | ✓ | ✓ | · | B5 | ✅ |
 | 28 | product-topological | 5.6/袁11.4 | ✓ | · | ✓ | ✓ | · | B5 | ✅ |
 | 29 | polish | 5.7/袁2.4+11 | ✓ | · | ✓ | ✓ | · | B5 | ✅ |
-| 30 | euclidean-convergence | 6.1/袁12.3 | ✓ | ✓ | ✓ | ✓ | · | B6 | ☐ |
-| 31 | weak-convergence | 6.2/袁12.2 | ✓ | ✓ | ✓ | ✓ | · | B6 | ☐ |
-| 32 | tightness-prohorov | 6.3/袁12.7 | ✓ | · | ✓ | ✓ | · | B6 | ☐ |
-| 33 | metrization | 6.4/袁12.1 | ✓ | · | ✓ | ✓ | · | B6 | ☐ |
-| 34 | vague-convergence | 6.5/袁12.6 | 分工 | · | ✓ | ✓ | · | B6 | ☐ |
+| 30 | euclidean-convergence | 6.1/袁12.3 | ✓ | ✓ | ✓ | ✓ | · | B6 | ✅ |
+| 31 | weak-convergence | 6.2/袁12.2 | ✓ | ✓ | ✓ | ✓ | · | B6 | ✅ |
+| 32 | tightness-prohorov | 6.3/袁12.7 | ✓ | · | ✓ | ✓ | · | B6 | ✅ |
+| 33 | metrization | 6.4/袁12.1 | ✓ | · | ✓ | ✓ | · | B6 | ✅ |
+| 34 | vague-convergence | 6.5/袁12.6 | 分工 | · | ✓ | ✓ | · | B6 | ✅ |
 | 35 | independence | 7.1/袁13 | ✓ | · | ✓ | ✓ | ✓ | B7 | ☐ |
 | 36 | conditional-expectation | 7.2/袁15.1-15.2 | ✓ | ✓ | ✓ | ✓ | · | B7 | ☐ |
 | 37 | regular-conditional | 7.3/袁15.3-15.5 | ✓ | · | ✓ | ✓ | · | B7 | ☐ |
@@ -173,7 +173,7 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 - [x] B3 10-16 积分与 Lp（**全部完成，终态 -All 64/64 全绿**——批 1：10-11 章 10/10（三步构造+Markov 手作+L⁰ 距离、MCT 对角线+Fatou+DCT 三反例机、Isabelle MT10/MT11）；批 2：12 章 4/4（Jordan-Hahn 骨架+Lebesgue 分解 H-类+RN 定理、RN_derivI 还原、位掩码 Hahn 穷举）；批 3：13-16 章 13/13——13：三不等式+Riesz-Fischer 六步账+对偶装配线+σ-有限反例（Lean Cauchy 六平方和 nlinarith）；14-15 通道分工（ba 空间/自然密度荷死亡现场、Daniell 五步流水线+非 Stone 反例）；16：强可测/Pettis 三档表+对角线反例六步骨架+ASP 注记（integral 即 Bochner、MT16 向量和））
 - [x] B4 17-22 乘积空间（**25/25 全绿**——docs 6 篇 201-212 行；Lean 6 件：矩形/对角线预像、dirac 折叠+Tonelli 坍缩、deterministic 复合=映射复合+两态恒等、infinitePi 柱集账 2⁻ⁿ、唯一性实例化+traj 锚点、投影极限换算表；Isabelle 4 件（MT18/20/21/22）：矩形账、n 次全正面 inverse(2)^n、distr_restrict 相容性、塔边际账；Julia 6/Python 6/Prolog 3：闭包算法、两张罚单、CK+平稳分布、三组硬币账、相容检查器+Fréchet 反例、Cantor/高斯塔。**B4 侦察三连大发现**：mathlib 4.33.1 已有 IonescuTulcea 全形式化（traj/trajMeasure）+ Measure.infinitePi 任意族无穷乘积（柱集 AddContent→Carathéodory=严书 §4.4 同路）+ IsProjectiveLimit 谓词族——21/22 章 Lean 从"分工"升级为 ✓）
 - [x] B5 23-29 拓扑测度（**22/22 全绿，终态 -All 111/111**——docs 7 篇 191-218 行：网/滤子对照表+Borel 层级图+Ba/B 有限反例、RMK 四步+mathlib 构造对照表+局部紧用量清单、三档正则+反例档案+层级表、c₀*/符号 Radon+弱*预告、Lusin 三版等价+Cauchy 传染骨架+Egorov 双胞表、截口引理解剖+无穷乘积关卡、胎紧三步+距离改造工具箱+判据表；Lean 7 件：RealRMK 主定理/Regular instance 算术/BorelSpace 三登记/紧矩形账；Julia 7/Python 7/Prolog 1：三明治构造、R-S 透视 δ₀、p=∞ 近距对论证、非紧反例 sup 恒 1/2、ρ₀ 边界爆炸。**Julia 抓出真数学错**：非 T₁ 有限空间 Ba ⊊ B（修正 docs 想当然））
-- [ ] B6 30-34 测度收敛
+- [x] B6 30-34 测度收敛（**17/17 全绿，终态 -All 128/128**——docs 5 篇 195-215 行：磨光三连母版+次概率画像+泊松二项全流程、Skorokhod 构造骨架+独立性裂缝+检验族缩减清单+证明地图、Carathéodory 紧性版验收+C[0,1] 判据、距离公理细账+Polish lifting+姊妹距离族+TV 分档、截断分解细账+严书 6.5 对照总表+Banach-Alaoglu 接手+离散三档分离；Lean 5 件：cdf_eq_real 跳点账、TendstoInDistribution+连续映射+Slutsky、IsTightMeasureSet+Prokhorov 双向+Chebyshev 打包、levyProkhorovEDist 公理族、c₀/ℓ¹ 离散账；Isabelle 2 件（Helly 选择/弱收敛 locale）；Julia 5/Python 5：Helly 对角线（sin 聚点子列 4616 成员）、Portmanteau 四条款、同源采样一致轨道、d_P 穷举 1/4+TV 分档、三档分离）
 - [ ] B7 35-40 概率选讲
 - [ ] B8 41-43 鞅
 - [ ] B9 44-47 无穷维
@@ -381,3 +381,20 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 47. （B5）Python：Fraction 网格上 R-S 和的跨跳中点偏差 ~h/2 级
    （2e-4 网格给 2.5e-4 偏差）；δ-带覆盖分母 ≤Q 有理数时带宽须
    2δ/q³（q² 会因 (q+1) 重数发散成 ln）。
+
+48. （B6）Lean：`∑ k in` 不存在——**mathlib 记号是 `∑ k ∈ s, f k`**（∈ 不是
+    in）；`∑'` 级数与 `Summable.hasSum` 配 ENNReal.hasSum_iff_tendsto_nat
+    （方向 .mp！）；ℝ≥0∞ 记号要 `open scoped ENNReal`；`Filter.atTop`/
+    𝓝 需 `open scoped Topology`；Prokhorov 正向 lemma（isCompact_closure
+    _of_isTightMeasureSet）不可裸寻（命名空间藏匿）——以 iff 与反向
+    两个可寻锚代偿。
+49. （B6）Isabelle：F_n_def 的 `n + 1` 与引理里的 `1 + real n` 数字节序
+    不同步——cases 条件必须与 def 展开后的 simp 范式**逐字符对齐**
+   （numeral-order normalization 是隐形合同）；`auto; linarith` 组合在
+    unfolding 之后可能整体拒用——改 cases+分步。
+50. （B6）Python：GBK 控制台打印 `⟹`（U+27F9）触发 UnicodeEncodeError
+    判 FAIL——输出行避免生僻 Unicode 或运行时 replace。
+51. （B6）Julia：二维 comprehension `for c in A, r in B` 产出 Matrix 须
+    vec()；`0.5*sin(k) + [数组]` 广播失控——标量化；`erf` 不在 Base
+   （用 A&S 7.1.26 有理逼近，误差 < 7.5e-8）；`(1-e^{-n})/n` 型严格
+    不等式在浮点下取等——容差 + 1e-15。

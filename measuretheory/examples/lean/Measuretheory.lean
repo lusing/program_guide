@@ -32,3 +32,8 @@ import Measuretheory.Ch26C0Dual
 import Measuretheory.Ch27Lusin
 import Measuretheory.Ch28ProductTopological
 import Measuretheory.Ch29Polish
+import Measuretheory.Ch30EuclideanConvergence
+import Measuretheory.Ch31WeakConvergence
+import Measuretheory.Ch32TightnessProhorov
+import Measuretheory.Ch33Metrization
+import Measuretheory.Ch34VagueConvergence

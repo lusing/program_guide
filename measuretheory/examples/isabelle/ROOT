@@ -42,3 +42,13 @@ session MT22 in "MT22" = "HOL-Probability" +
   options [document = false]
   theories
     T22_ProjectiveLimits
+
+session MT30 in "MT30" = "HOL-Probability" +
+  options [document = false]
+  theories
+    T30_EuclideanConv
+
+session MT31 in "MT31" = "HOL-Probability" +
+  options [document = false]
+  theories
+    T31_WeakConvergence
