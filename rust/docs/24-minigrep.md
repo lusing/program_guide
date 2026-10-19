@@ -219,4 +219,6 @@ assert!(!out.status.success());                            // 无命中 → 退�
 
 ---
 
-恭喜——24 章全部完成。回到 [README](../README.md) 看全貌，或用 `build.ps1 -All` 复核全部示例。
+恭喜——实战项目完成。回到 [README](../README.md) 看全貌，或用 `build.ps1 -All` 复核全部示例。
+
+下一章：[25 系统标准库](25-system.md)（时间、环境、进程与网络——把"和操作系统打交道"的四个 std 模块讲透）

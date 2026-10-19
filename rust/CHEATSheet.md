@@ -1,4 +1,4 @@
-# Rust 速查表（1.99 / edition 2024）
+# Rust 速查表（1.99.1 / edition 2024）
 
 语法速查 + 坑位索引。详细讲解见对应章（表中 N.M = 第 N 章 M 节）。
 
@@ -176,7 +176,39 @@ timeout(dur, fut).await                   // Err(Elapsed)
 | rx 死等 | 忘 drop(tx)（22.8） |
 | guard 跨 await | 换 tokio::sync::Mutex（23.10） |
 
-## 11. edition 2024 迁移坑位索引（01/19）
+## 11. 系统标准库（25）
+
+```rust
+// std::time——测耗时用 Instant，打时间戳用 SystemTime
+let start = Instant::now();  /* ... */  let d: Duration = start.elapsed();
+Duration::from_millis(1500) / from_secs(30) / from_secs_f64(2.5)
+d.as_secs() / d.subsec_nanos() / d.as_nanos()（u128）
+SystemTime::now().duration_since(UNIX_EPOCH)?   // Result：时钟可能回拨
+// std::env
+std::env::args()           // 迭代器，args[0] 是程序路径
+std::env::var("PATH")      // Result<String, VarError>：NotPresent / NotUnicode
+std::env::var_os("X")      // OsString，不强制 UTF-8
+std::env::temp_dir() / current_dir()   // 跨平台临时目录 / 工作目录
+// std::process
+Command::new(exe).arg("--child").output()?   // 捕获 stdout/stderr/status
+.status()?  /* 不捕获，继承父进程输出 */   .spawn()?  /* 不等，返回 Child */
+output.status.success() / output.status.code()  // Option<i32>：被信号杀死为 None
+// std::net（阻塞）
+TcpListener::bind("127.0.0.1:0")?   // 端口 0 = 让 OS 分配空闲端口
+listener.local_addr()?  /  listener.accept()?  -> (TcpStream, SocketAddr)
+TcpStream::connect(addr)?  /  stream.read_exact(&mut buf)  /  write_all(&buf)
+UdpSocket::bind(...)?  /  send / recv / send_to / recv_from
+```
+
+| 坑 | 解法 |
+|---|---|
+| 测耗时用 SystemTime | 改 Instant（单调、不回拨）（25.2） |
+| 基准测到 0 纳秒 | black_box 挡住编译器优化（25.2） |
+| Command::new("echo") Windows 失败 | 启动 current_exe() + 标志位（25.4） |
+| 网络测试硬编码端口偶发失败 | 绑 127.0.0.1:0，local_addr() 反查（25.5） |
+| 阻塞 accept 与客户端同线程 | 死锁——服务器放进 thread::spawn（25.5） |
+
+## 12. edition 2024 迁移坑位索引（01/19）
 
 | 旧写法 | 2024 写法 | 章 |
 |---|---|---|
@@ -186,7 +218,7 @@ timeout(dur, fut).await                   // Err(Elapsed)
 | `gen`/`raw` 当标识符 | 保留字，改名 | 01 |
 | `cargo fix --edition` | 官方自动迁移大半 | 01 |
 
-## 12. clippy 高频提醒（本教程零警告实测）
+## 13. clippy 高频提醒（本教程零警告实测）
 
 | lint | 场景 | 处置 |
 |---|---|---|
@@ -201,7 +233,7 @@ timeout(dur, fut).await                   // Err(Elapsed)
 | `redundant_pattern_matching` | `matches!(x, None)` | 改 `is_none()`（08 实测） |
 | `len() == 0` | 长度判零 | `is_empty()`（09/13 实测） |
 
-## 13. 格式化占位符（02）
+## 14. 格式化占位符（02）
 
 | 占位 | 用途 |
 |---|---|

@@ -29,6 +29,21 @@ TextFormField(
 
 要点两个：**枚举驱动 UI 分支**（登录模式不渲染确认框，按钮文案随模式变）；**确认密码的 validator 读另一个框的 controller**——两个 TextField 各持 controller，实时文本随手可得（第 11 章表单的进阶用法）。
 
+### 加载态的按钮替换
+
+提交期间把按钮内容换成转圈：
+
+```dart
+FilledButton(
+  onPressed: controller.isLoading ? null : _submit,  // 加载中禁用，防重复提交
+  child: controller.isLoading
+      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+      : Text(_mode == AuthMode.login ? '登录' : '注册'),
+)
+```
+
+`isLoading ? null : _submit` 是防重复提交的关键——不禁用的话用户连点三次发三个请求。转圈的 `SizedBox` 限定 18×18 防止按钮高度跳动。
+
 ## 23.3 认证服务与错误分支
 
 网络细节收进一个 `AuthGateway` 抽象（第 13 章依赖注入的接口版）——页面只认接口，`main()` 传真实现（HTTP），测试传真数据：
@@ -38,13 +53,17 @@ TextFormField(
 class AuthResult {
   const AuthResult({required this.ok, required this.message, this.user, this.expiresIn});
   final bool ok;
-  final String message;        // '登录成功' / '用户已存在' / '密码不错误'…
+  final String message;        // '登录成功' / '用户已存在' / '密码不正确'…
   final AuthUser? user;        // ok 时才有
   final int? expiresIn;        // token 有效秒数
 }
 ```
 
 书 13.4 的错误处理纪律：**把服务端的错误码翻译成用户能懂的话，再决定 UI 反应**——`EMAIL_EXISTS → "用户已存在"`（弹对话框）、`EMAIL_NOT_FOUND → "不存在这个用户"`。提交期间用 `isLoading` 换掉按钮（转圈），登录/注册共用一套提交逻辑（书 13.5）。
+
+### AuthResult vs 抛异常
+
+网关层选择"返回结果对象"而不是"抛异常"——因为登录失败是**预期内的业务分支**（密码错、用户不存在），不是程序错误。异常留给真正的意外（网络断、JSON 解析失败）。区分标准：**业务分支用返回值，程序错误用异常**。
 
 ## 23.4 带 token 访问受保护资源
 
@@ -57,6 +76,20 @@ final resp = await http.get(
 ```
 
 "当年如此/现在这样"：把 token 拼进 URL 会进服务器日志、浏览器历史、代理缓存——**凭据走头不走 URL** 是今天的铁律。示例的假服务器专门两个都查：无头 401，带合法 Bearer 才发资料。
+
+### Bearer 方案
+
+`Authorization: Bearer <token>` 是 OAuth 2.0 / RFC 6750 的标准格式——"Bearer" 表示"持有此 token 者即可访问"。服务器端解析：
+
+```dart
+// 服务器侧（示例的 FakeAuthServer）
+final auth = request.headers.value('Authorization');
+if (auth == null || !auth.startsWith('Bearer ')) {
+  request.response.statusCode = 401;
+  return;
+}
+final token = auth.substring(7);  // 去掉 'Bearer ' 前缀
+```
 
 ## 23.5 持久化与自动登录
 
@@ -79,6 +112,10 @@ if (token == null || expiry == null || expiry.isBefore(DateTime.now())) {
 
 注意存的是**绝对时间点**而不是剩余秒数（书 13.11 的关键洞察）：重启后剩余时间要靠 `expiryTime - now` 现算，存相对值一重启就失真。
 
+### 为什么存四样而不是只存 token
+
+只存 token 的话，自动登录后界面要显示"欢迎回来，xxx@xxx.com"——还得再发一次请求拿用户信息。四样一起落盘（token + id + email + expiry），自动登录零请求直接恢复完整会话。代价是登出时四样一起清（`_clearPrefs` 的四个 `remove`）。
+
 ## 23.6 过期与自动登出
 
 ```dart
@@ -92,11 +129,25 @@ void _armTimer(int seconds) {
 
 登出要做全套：`_expiryTimer?.cancel()` → 清 prefs（`remove` 精准删或 `clear` 全清，书 13.10）→ 置空用户 → 通知。**controller 的 dispose 也必须 cancel**——否则页面关了 Timer 还挂着（widget 测试会直接报 "Timer is still pending" 给你看，第 21 章的坑在这是正解）。
 
+### Timer vs Future.delayed
+
+| | Timer | Future.delayed |
+|---|---|---|
+| 返回 | `Timer`（可 cancel） | `Future`（不可取消） |
+| 用途 | 需要取消的定时（过期登出、防抖） | 一次性延迟（动画延时、重试间隔） |
+| 周期性 | `Timer.periodic` | 无 |
+
+选错的结果：用 `Future.delayed` 做过期登出，登出后 Future 照样触发——无法取消。
+
 ## 23.7 书的 rxdart 时刻：今天不需要了
 
 书 13.12 当年引入 rxdart 的 `PublishSubject` 解决一个时序问题：`autoAuthenticate()` 是异步的，`initState` 发起后根组件可能**先于会话恢复**就 build 了，路由判断用了旧状态。书的解法是发布/订阅事件驱动 `setState`。
 
 今天的答案你已经会了：**ChangeNotifier 本来就是发布订阅**（`notifyListeners` 即事件）。把认证状态放根级 InheritedNotifier，`autoLogin()` 完成后一通知，根路由自然翻页——第 09/22 章的原语直接覆盖 rxdart 在这里的职责。书 13.13 的性能顾虑（包住 MaterialApp 会不会重建太多）也一并消解：重建的是根的 builder，Flutter 的 diff 只提交真正的差异。
+
+### 启动期的路由判断
+
+示例的启动顺序：`main()` → 起假服务器 → 建 AuthController → `autoLogin()` 异步恢复 → 完成后 setState 挂 AuthScope → MaterialApp 的 `RootGate` 按 `controller.user == null` 判登录页/主页。`AuthApp` 的 build 在 `_controller == null` 时显示转圈——避免"会话恢复前闪一下登录页"。
 
 ## 23.8 凭据安全红线
 
@@ -104,7 +155,7 @@ void _armTimer(int seconds) {
 - **token 过期短、可撤销**：`expiresIn` 别设一年；服务端能作废 token 才是安全边界。
 - **更高安全需求上 secure storage**：`flutter_secure_storage`（Keychain/Keystore/Windows 凭据库）——非第一方，本教程不引入，知道边界在哪。
 - **https**：明文 http 上的 token 等于广播。示例用 loopback 演示，真实接口必须 TLS。
-- **token 不进日志、不进异常上报**：打印用户对象前先脱敏。
+- **token 不进日志、不进异常上报**：打印用户对象前先脱敏（示例的 `_masked` 只显示前 12 字符）。
 
 ## 坑位清单
 
@@ -113,6 +164,8 @@ void _armTimer(int seconds) {
 - **登出忘 cancel Timer**：到点对着已注销会话再"登出"一次；widget 测试里是 "Timer is still pending"。
 - **把凭据拼进 URL**：日志/历史/缓存全留痕——走 Authorization 头。
 - **错误码直接怼给用户**：`EMAIL_EXISTS` 不是给人看的——网关层翻译成人话。
+- **加载中不禁用按钮**：连点发多次请求——`onPressed: isLoading ? null : submit`。
+- **自动登录闪登录页**：会话恢复是异步的——恢复完成前显示转圈，不要提前 build 登录页。
 ---
 
 上一章：[22 · 集中状态管理：从传参链到 ScopedModel](22-scoped-model.md) ｜ 下一章：[24 · 相机与图库：媒体选取](24-camera-gallery.md) ｜ 返回：[README](../README.md)

@@ -41,7 +41,7 @@ if [ -z "$CARGO_BIN" ]; then
     CARGO_BIN="$(command -v cargo 2>/dev/null || true)"
 fi
 if [ -z "$CARGO_BIN" ] || [ ! -x "$CARGO_BIN" ]; then
-    echo "未找到 cargo：请先安装 Rust（edition 2024 需 1.85+，本教程按 1.98.1 实测），" >&2
+    echo "未找到 cargo：请先安装 Rust（edition 2024 需 1.85+，本教程按 1.99.1 实测），" >&2
     echo "或设 CARGO=/path/to/cargo 再跑。" >&2
     exit 1
 fi

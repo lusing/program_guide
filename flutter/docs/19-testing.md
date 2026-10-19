@@ -10,7 +10,7 @@
 |---|---|---|---|
 | 纯逻辑 | `test()`（Dart 教程·第 19 章同款） | 毫秒 | 不碰 Widget 的逻辑 |
 | Widget | `testWidgets`（flutter_test） | 秒级 | 界面行为（渲染/交互） |
-| 集成 | integration_test（生态） | 分钟 | 真机/多页流程 |
+| 集成 | integration_test（第一方） | 分钟 | 真机/多页流程 |
 
 19 章工程本身就是"被测示例"：`lib/counter.dart` 纯逻辑 + `lib/main.dart` 薄 UI，test/ 下两层各一份。**纯逻辑下沉、UI 变薄**，是可测性的第一原则（与 [Dart 教程·第 19 章](../dart/docs/19-testing.md) 的"可测试设计"一脉相承）。
 
@@ -58,7 +58,7 @@ void main() {
 - **pump()**：再走一帧（setState 后必须泵一帧才重建）；`pumpAndSettle()` 泵到没有动画/过渡为止；
 - **tester.tap / enterText / longPress / drag**：注入交互。
 
-finder 速查（选最specific 的）：
+finder 速查（选最 specific 的）：
 
 | Finder | 例子 |
 |---|---|
@@ -67,8 +67,14 @@ finder 速查（选最specific 的）：
 | `find.byIcon(Icons.add)` | 按图标 |
 | `find.byKey(const Key('x'))` | 按 key（最稳，给测试专用节点打） |
 | `find.widgetWithText(FilledButton, '删除')` | 类型+文案组合 |
+| `find.ancestor(of: find.text('x'), matching: find.byType(Card))` | 祖先关系 |
+| `find.descendant(of: find.byType(ListView), matching: find.byType(ListTile))` | 子孙关系 |
 
 matcher 补充：`findsNWidgets(3)`、`findsNothing`、`findsWidgets`（≥1）。
+
+### widgetWithText vs descendant
+
+`find.widgetWithText(FilledButton, '删除')` 是 `find.descendant(of: find.text('删除'), matching: find.byType(FilledButton))` 的语法糖——找"包含某文字的某类型 Widget"。断言"这个按钮上有这段文字"用它最语义化。
 
 ## 19.4 pump 与假时钟
 
@@ -76,6 +82,19 @@ widget 测试跑在 FakeAsync 里：**真实时间不流动**，`pump(Duration)`
 
 - **pumpAndSettle 的盲区**：settle 靠"还有没有帧要调度"；两个事件之间没有帧时它提前返回——定时器驱动的流要手动逐格 `pump(300ms)`（14 章示例）。
 - **手势的收尾定时器**：双击识别器留 40ms 定时器，测试结束前 `pump(100ms)` 冲掉，否则"Timer is still pending"（07 章示例）。
+
+### takeException：抓框架异常
+
+测试里框架抛的异常（比如 build 里的 assert）不会直接 fail 测试——要用 `tester.takeException()` 主动取：
+
+```dart
+testWidgets('非法输入抛断言', (tester) async {
+  await tester.pumpWidget(BadWidget());
+  expect(tester.takeException(), isA<AssertionError>());
+});
+```
+
+`takeException()` 取走并清空最近的异常——不取的话异常在测试结束时自动 fail（也算一种断言）。
 
 ## 19.5 可测性：把边界注入化
 
@@ -111,12 +130,27 @@ void main() {
 
 跑法：`flutter test integration_test/app_test.dart -d windows`（桌面也能跑！指定设备就是真机/模拟器）。与 widget 测试的分工：**widget 测试在进程外仿真 UI（毫秒级、可入 CI 全量），集成测试在真进程里走完整启动链路（插件初始化、真实窗口、多页流程）**。本教程的示例全部轻量，widget 测试层足够覆盖，故未引入集成测试工程；发布前拿它过一遍主流程是性价比最高的一道保险。
 
+## 19.7 Golden 测试：像素级回归
+
+`matchesGoldenFile` 把 Widget 渲染成图片与基线对比——视觉回归的终极手段：
+
+```dart
+testWidgets('卡片外观不变', (tester) async {
+  await tester.pumpWidget(const MyCard());
+  await expectLater(find.byType(MyCard), matchesGoldenFile('card.png'));
+});
+```
+
+首次运行生成基线（`--update-goldens`），之后任何像素差异都会 fail。代价：对字体/平台渲染敏感，跨平台基线不同——适合组件库，不适合业务页面。本教程不用，知道它存在即可。
+
 ## 坑位清单
 
 - **断言前忘 pump**：setState 之后界面还没重建——tap 后至少 `pump()` 一次。
 - **find.text 命中多个**：同文案多处（如 AppBar 与正文）——换 byKey 或更 specific 的 finder。
 - **真实 IO 塞进 testWidgets**：假时钟里事件不推进，测试卡死——注入/mock（19.5）。
 - **await 期间页面已变**：异步回调后先查 `mounted` 再断言（生产代码同款纪律）。
+- **手势测试后 Timer pending**：双击/长按的识别定时器没走完——测试末尾 `pump(100ms)` 冲掉。
+- **matchesGoldenFile 跨平台 fail**：基线是按平台生成的——CI 和本地的平台要一致。
 ---
 
 上一章：[18 · 桌面专题：Windows 的一等公民](18-desktop.md) ｜ 下一章：[20 · 实战：记事本](20-notes.md) ｜ 返回：[README](../README.md)

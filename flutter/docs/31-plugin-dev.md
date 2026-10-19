@@ -45,7 +45,30 @@ class GuideBattery {
 }
 ```
 
-为什么隔一层接口？**可替换性**。测试时塞一个假实现（`GuideBatteryPlatform.instance = MockX()`）、某平台想走非通道方案（FFI、纯 Dart），都不动应用代码。`PlatformInterface` 基类还带"token 门禁"：不是 `with MockPlatformInterfaceMixin` 的类冒充实现，setter 直接断言拒绝——防止平台实现之间意外串味。
+### 31.2.1 为什么隔一层接口？
+
+**可替换性**。测试时塞一个假实现（`GuideBatteryPlatform.instance = MockX()`）、某平台想走非通道方案（FFI、纯 Dart），都不动应用代码。`PlatformInterface` 基类还带"token 门禁"：不是 `with MockPlatformInterfaceMixin` 的类冒充实现，setter 直接断言拒绝——防止平台实现之间意外串味。
+
+```dart
+// ═══ 31.2 PlatformInterface 的 token 门禁 ═══
+abstract class GuideBatteryPlatform extends PlatformInterface {
+  GuideBatteryPlatform() : super(token: _token);
+  static final Object _token = Object();
+
+  static GuideBatteryPlatform _instance = MethodChannelGuideBattery();
+  static GuideBatteryPlatform get instance => _instance;
+  static set instance(GuideBatteryPlatform instance) {
+    PlatformInterface.verifyToken(instance, _token);  // 非授权类直接炸
+    _instance = instance;
+  }
+}
+```
+
+`verifyToken` 检查传入实例是否持有同一个 `_token`——只有 extends `GuideBatteryPlatform` 的类才能通过构造器拿到 token。测试替身用 `class MockGuideBattery extends GuideBatteryPlatform with MockPlatformInterfaceMixin` 绕过检查（`MockPlatformInterfaceMixin` 是 `plugin_platform_interface` 包提供的标记 mixin）。
+
+### 31.2.2 联邦插件的完全体
+
+本章单平台插件里三层文件同居一包。发布到 pub.dev 的跨平台大插件会拆成三个包——`xxx`（应用层）、`xxx_platform_interface`（契约）、`xxx_windows`/`xxx_android`/...（各端实现，各有版本号）——各端独立演进、社区可给冷门平台补实现。结构即 31.2 的物理拆分版。
 
 ## 31.3 MethodChannel：电量一问一答
 
@@ -80,7 +103,15 @@ if (method_call.method_name().compare("getBatteryLevel") == 0) {
 }
 ```
 
-与 27 章应用侧通道的三点不同：**通道常量变成插件的公开契约**（两端一字不差）；**错误要有出口**（台式机没电池 → `Error(code, message)` → Dart 侧 `PlatformException`，example 的 FutureBuilder 走错误分支给"重试"）；**注册自动化**——插件通过 `pluginClass` 写进 pubspec，构建时被工具链自动挂载，应用零配置。
+### 31.3.1 与应用侧通道的三点不同
+
+1. **通道常量变成插件的公开契约**（两端一字不差）——`@visibleForTesting` 标注让测试能直接拿到 channel 引用。
+2. **错误要有出口**（台式机没电池 → `Error(code, message)` → Dart 侧 `PlatformException`，example 的 FutureBuilder 走错误分支给"重试"）。
+3. **注册自动化**——插件通过 `pluginClass` 写进 pubspec，构建时被工具链自动挂载，应用零配置。
+
+### 31.3.2 类型纪律
+
+`invokeMethod<int>` 的泛型参数是"期望的原生返回类型"；类型对不上会在 await 处炸 `TypeError`——插件作者要把类型兜在实现层。示例第 28-29 行 `level!` 硬拆箱，因为原生 `Success(int)` 保证非 null；若原生可能返回 null，要加 null 检查或给默认值。
 
 ## 31.4 EventChannel：状态推送流
 
@@ -120,7 +151,7 @@ auto handler =
 plugin->status_channel_->SetStreamHandler(std::move(handler));
 ```
 
-生命周期是本章的核心心智模型：
+### 31.4.1 生命周期是核心心智模型
 
 ```text
 Dart listen()  ──▶ 原生 onListen(sink)   ──▶ 启动轮询线程
@@ -130,7 +161,13 @@ Dart cancel()  ──▶ 原生 onCancel()       ──▶ 停线程、放掉 si
 
 教学版轮询线程每 500ms 读一次 `GetSystemPowerStatus`，**状态变化才推**（`status != last`）。生产级会改听 `WM_POWERBROADCAST` 广播——机制不变，事件源更优雅。三处工程细节：轮询线程与 sink 的访问用 `std::mutex` 保护（onCancel 可能在拖动线程里发生）；析构先停线程再拆成员（垂死的 sink 不许被引用）；重复 listen（热重启场景）先清旧线程。
 
-**值的纪律**：通道只传朴素值（字符串/数字/列表/字典——`StandardMessageCodec` 认识的类型）。原生推 `'charging'` 字符串，Dart 侧 `_parseStatus` 映射回 `enum BatteryStatus`——两端各自演进枚举也不至于炸，未知标签在 map 阶段炸 `ArgumentError`（值域由插件收口）。
+### 31.4.2 值的纪律
+
+通道只传朴素值（字符串/数字/列表/字典——`StandardMessageCodec` 认识的类型）。原生推 `'charging'` 字符串，Dart 侧 `_parseStatus` 映射回 `enum BatteryStatus`——两端各自演进枚举也不至于炸，未知标签在 map 阶段炸 `ArgumentError`（值域由插件收口）。
+
+### 31.4.3 广播流的缓存
+
+`_onStatus ??= eventChannel.receiveBroadcastStream()` 缓存广播流：多个订阅者共享同一次原生 `onListen`，最后一个退订才触发 `onCancel`。这是 `receiveBroadcastStream` 的语义——示例测试第 108-138 行专门断言这条广播语义。
 
 ## 31.5 Channel 三剑客与四要素
 
@@ -170,7 +207,17 @@ await messenger.handlePlatformMessage(
 // → 订阅者的 onData 立刻收到 BatteryStatus.charging
 ```
 
+### 31.6.1 测试 harness 的结构
+
+示例的 `_StatusChannelHarness`（第 12-47 行）封装了事件通道的 mock 逻辑：
+
+- `setUp`：挂 mock handler 记录 `listen`/`cancel` 调用；
+- `emit(label)`：用 `handlePlatformMessage` 注入成功信封；
+- `tearDown`：清掉 mock handler（防跨测试污染，27 章纪律的插件版）。
+
 用这套注入可以精确断言**广播语义**：两个订阅者共享一次 `listen`、最后一个退订才触发 `cancel`（`receiveBroadcastStream` 的缓存让多订阅者复用同一条底层流）。
+
+### 31.6.2 example 应用层
 
 **example 应用层**（`example/test/`）再mock 一遍通道，测 UI 三态与状态换脸——插件的使用者同样不需要真机。模板还送了 `integration_test/`（真机跑的原生集成测试）；我们删掉了它——原生侧由 build.ps1 的 `flutter build windows` 硬验证（连 C++ 一起编译），教学重心放在 Dart 两层。
 
@@ -178,9 +225,46 @@ await messenger.handlePlatformMessage(
 
 **PlatformView**：把原生视图**嵌进** Flutter 页面（书 13.4：Android `AndroidView`、iOS `UIKitView`）——地图、WebView、视频播放器这类"画不出来只能借"的控件。Dart 侧声明 `UiKitView(viewType: 'maps')`，原生侧注册视图工厂。代价是合成开销与生命周期复杂度，能用组合控件替代就别上 PlatformView。**Windows 桌面**对 PlatformView 的支持远不如移动端成熟——需要嵌入原生控件时，优先考虑整窗（多窗口）或纹理（Texture/ExternalTexture）方案。
 
-**联邦插件的完全体**：本章单平台插件里三层文件同居一包。发布到 pub.dev 的跨平台大插件会拆成三个包——`xxx`（应用层）、`xxx_platform_interface`（契约）、`xxx_windows`/`xxx_android`/...（各端实现，各有版本号）——各端独立演进、社区可给冷门平台补实现。结构即 31.2 的物理拆分版。
-
 **开发体验提示**：改原生代码没有热重载，得完全重启；Android Studio 的"打开 Android 模块"、Xcode 的"打开 iOS 模块"是为了让原生侧也能断点调试——Windows 插件的 C++ 直接用 VS 打开 `example/build/windows/x64/*.sln` 即可。
+
+## 31.8 发布到 pub.dev
+
+插件开发完成后，发布到 pub.dev 让其他人用：
+
+```bash
+# 1. 检查包是否合规
+dart pub publish --dry-run
+
+# 2. 发布（需要 pub.dev 账号 + OAuth 授权）
+dart pub publish
+```
+
+### 31.8.1 pubspec 里的 plugin 声明
+
+```yaml
+# pubspec.yaml
+flutter:
+  plugin:
+    platforms:
+      windows:
+        pluginClass: GuideBatteryPlugin
+      android:
+        package: com.example.guide_battery
+        pluginClass: GuideBatteryPlugin
+      ios:
+        pluginClass: GuideBatteryPlugin
+```
+
+`pluginClass` 是各平台注册入口的类名——构建时工具链自动调用它的 `registerWith`（Android/iOS）或 `RegisterWithRegistrar`（Windows C++）。
+
+### 31.8.2 发布前的 checklist
+
+- **README.md**：用法示例、平台支持矩阵、API 文档链接；
+- **CHANGELOG.md**：版本历史，遵循 semver；
+- **LICENSE**：开源协议（MIT/Apache-2.0 最常见）；
+- **example/**：必须有可运行的演示应用；
+- **测试覆盖**：`dart test` 全绿，`flutter analyze` 无警告；
+- **平台矩阵**：pubspec 的 `platforms` 声明与实际实现一致。
 
 ## 坑位清单
 
@@ -192,6 +276,9 @@ await messenger.handlePlatformMessage(
 - **example 是独立包**：根包 `flutter analyze` 会连 example 的文件一起查（报错路径带 `example\` 前缀），但根包 `flutter test` 不跑 example 的测试——验证脚本两处都要跑。
 - **`invokeMethod<int>` 的类型对不上会炸 TypeError**：原生返回的整数实际是 `int`，但两端约定错类型（如按 String 收）在 await 处崩——插件作者要把类型兜在实现层。
 - **书时代的空安全差异**：`static Battery _instance;`（可空字段）、`Future get batteryLevel`（无泛型）都是无空安全写法；现代插件 SDK 约束 `sdk: ^3.x`，照书抄会满屏告警。
+- **PlatformInterface 的 token 门禁**：自定义实现类必须 extends 平台接口类（拿到 token），或用 `MockPlatformInterfaceMixin` 绕过——直接 implements 会被 `verifyToken` 拒绝。
+- **EventChannel 的 listen/cancel 生命周期**：原生 `onListen` 里申请的资源（线程、receiver）必须在 `onCancel` 里释放——漏了会内存泄漏，多次 listen 会重复申请。
+- **广播流的缓存语义**：`receiveBroadcastStream` 返回的流被缓存，多订阅者共享一次 `onListen`——测试里要断言"两次 listen 只触发一次原生 listen"。
 
 ---
 
