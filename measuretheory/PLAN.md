@@ -94,7 +94,7 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 09 | convergence-modes | 2.3 | ✓ | · | ✓ | ✓ | ✓ | B2 | ✅ |
 | 10 | integral | 3.1 | ✓ | ✓ | ✓ | ✓ | ✓ | B3 | ✅ |
 | 11 | limit-theorems | 3.2 | ✓ | ✓ | ✓ | ✓ | · | B3 | ✅ |
-| 12 | signed-measures | 3.3 | ✓ | ✓ | ✓ | ✓ | · | B3 | ☐ |
+| 12 | signed-measures | 3.3 | ✓ | ✓ | ✓ | ✓ | · | B3 | ✅ |
 | 13 | lp-spaces | 3.4 | ✓ | · | ✓ | ✓ | · | B3 | ☐ |
 | 14 | linfty-dual | 3.5 | 分工 | · | ✓ | ✓ | ✓ | B3 | ☐ |
 | 15 | daniell | 3.6 | 分工 | · | ✓ | ✓ | ✓ | B3 | ☐ |
@@ -141,7 +141,7 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 - [x] B0 基建（OCR 全书 144 奇数页 ✓ / 侦察 ✓ / 骨架冒烟 2/2 ✓ / build.ps1 ✓ / README ✓ / 00 导言 209 行 ✓）
 - [x] B1 01-06 集类与测度（docs 6 篇 200-237 行 / Lean 6 / Julia 6 / Python 6 / Prolog 5；23/23 全绿；docs 扩写补严书 1.3.5 概率化引理、1.4.4/1.4.5 半环验收工序、§1.5 ℝⁿ 盒半环与高维分布函数、§1.6 逼近定理全文）
 - [x] B2 07-09 可测映射（docs 3 篇 200/201/232 行 / Lean 3 / Julia 3 / Python 3 / Prolog 3；12/12 全绿；π-λ 引擎 induction_on_inter 完整重放（含机器抓出"补集需总质量相等"）、垫高技巧与 f∨g 公式机器版、TendstoInMeasure 三件套 + Egorov xⁿ 实弹）
-- [ ] B3 10-16 积分与 Lp（**批 1/2 已完成：10-11 章 10/10 全绿**——三步构造+Markov 手作+L⁰ 距离（Lean/Isabelle/Julia/Python/Prolog）、MCT 对角线+Fatou+DCT 三反例机+习题 3.2.1/3.2.3（同上五通道，Isabelle Fatou=nn_integral_liminf 正名）；12-16 待续）
+- [ ] B3 10-16 积分与 Lp（**批 1-2/2 已完成：10-12 章全绿**——10-11 章 10/10（三步构造+Markov 手作+L⁰ 距离、MCT 对角线+Fatou+DCT 三反例机+习题 3.2.1/3.2.3、Isabelle MT10/MT11 新会话）；12 章 4/4（Jordan-Hahn 证明骨架+极分解+Lebesgue 分解 H-类机器+RN 定理与反例、Lean withDensity_rnDeriv_eq 实弹、Isabelle RN_derivI=SOME 选择子还原、Julia/Python 位掩码 Hahn 穷举 64 集合+变差达界）；13-16 待续）
 - [ ] B2 07-09 可测映射
 - [ ] B3 10-16 积分与 Lp
 - [ ] B4 17-22 乘积空间
@@ -248,3 +248,19 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
     写成 3；Julia humps 的 x=103 还在最后一支脊背 [100,110] 内
     （8 拍非 0）；covers 的半开边界 x=1/n 处不覆盖。**Markov 最紧
     点的比值 27/32 这类断言，先在纸上通分再写进代码。**
+25. （B3）mathlib RN 族四坑：① `withDensity_rnDeriv_eq (μ ν)` 的
+    结论里**基测度是第二个参数**（μ 是被还原者），`μ.rnDeriv ν`
+    点记号方向极易读反；② `withDensity_absolutelyContinuous` 在
+    MeasureTheory 根、`withDensity_rnDeriv_eq` 在 MeasureTheory.
+    Measure——两级命名空间，裸名/限定名分开写；③
+    `HaveLebesgueDecomposition` 实例引理带 Measurable 前提，TC
+    不自动搜，plain `have` 供入（haveI 反被 linter 点名）；④ 具体
+    dirac 项代入让 whnf 超心跳——通用陈述既快又贴本体。
+26. （B3）`lake env lean` 单文件检查的输出若用 grep 过滤后再 head，
+    可能漏看后续 error 行而误判"全绿"（Ch12 实录：过滤后只见
+    warning，full build 才见 unknown identifier）——判定以全量
+    `lake build` 退出码为准。
+27. （B3）Isabelle `RN_derivI` 的真实签名只要两条（f 可测 +
+    density M f = N）——SOME-选择子的良定还原，不含 σ-有限/
+    绝对连续（存在性在 RN_deriv_unique_sigma_finite 族）；凭
+    "RN 定理"的印象脑补签名会写出一整套展开不了的实例义务。

@@ -12,3 +12,8 @@ session MT11 in "MT11" = "HOL-Analysis" +
   options [document = false]
   theories
     T11_LimitTheorems
+
+session MT12 in "MT12" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T12_SignedMeasures
