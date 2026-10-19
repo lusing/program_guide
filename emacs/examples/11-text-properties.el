@@ -14,20 +14,34 @@
                (get-text-property 0 'face demo-s)
                (get-text-property 0 'nope demo-s)))
 
-;;; 2) 在 buffer 里加属性：put-text-property / add-text-properties
+;;; 2) 在 buffer 里加属性：区间写成 [起, 止)。
+;;;    put-text-property      —— 设一个属性
+;;;    add-text-properties    —— 加几个属性，不影响已有的
+;;;    set-text-properties    —— 整份替换，没列到的全被清掉
+;;;    注意 buffer 位置从 1 开始，字符串下标从 0 开始：
+;;;    KEYWORD 的 K 在 buffer 位置 8，换算成字符串下标 7。
 (with-temp-buffer
   (insert "normal KEYWORD normal")
   (goto-char (point-min))
   (re-search-forward "KEYWORD")
   (put-text-property (match-beginning 0) (match-end 0) 'face 'error)
-  ;; 注意：buffer 位置从 1 开始，字符串下标从 0 开始，
-  ;; 所以 buffer 位置 8（KEYWORD 的 K）对应字符串下标 7。
   (princ (format "KEYWORD 首字符的 face = %S，普通字符的 face = %S\n"
                  (get-text-property 7 'face (buffer-string))
                  (get-text-property 2 'face (buffer-string))))
-  ;; 找出属性变化的位置
+  ;; 找出属性第一次变化的位置（遍历属性区间就靠它）
   (princ (format "属性变化点: %S\n"
                  (next-property-change 1 (buffer-string)))))
+(with-temp-buffer
+  (insert "abcdef")
+  (put-text-property 1 4 'face 'bold)
+  (add-text-properties 1 4 '(help-echo "点我"))
+  (princ (format "put+add: face = %S，help-echo = %S\n"
+                 (get-text-property 1 'face (buffer-string))
+                 (get-text-property 1 'help-echo (buffer-string))))
+  (set-text-properties 1 4 '(face italic))
+  (princ (format "set 整份替换: face = %S，help-echo = %S\n"
+                 (get-text-property 1 'face (buffer-string))
+                 (get-text-property 1 'help-echo (buffer-string)))))
 
 ;;; 3) 【坑】equal 忽略文本属性，equal-including-properties 不忽略。
 ;;;    结果就是：两个看起来一模一样的字符串，equal 为真但行为不同。
@@ -35,13 +49,41 @@
                (equal "abc" (propertize "abc" 'face 'bold))
                (equal-including-properties "abc" (propertize "abc" 'face 'bold))))
 
-;;; 4) 【关键区别一】文本属性跟着字符走：复制粘贴会带着走，
-;;;    插入相邻文本时属性会「粘」上来（stickiness）。
+;;; 4) 【关键区别一】文本属性跟着字符走：concat / 复制 / kill-ring 都带着走。
+;;;    但【插入】是另一回事——insert 只插入字符串自带的属性，什么都不继承；
+;;;    要「像用户打字那样接着前面的属性」得用 insert-and-inherit。
 (with-temp-buffer
   (insert (propertize "AAA" 'face 'bold))
   (goto-char (point-max))
-  (insert "BBB")                        ; 紧贴着插入
-  (princ (format "后面紧插的文本继承了属性: face@3 = %S\n"
+  (insert "BBB")                        ; 普通 insert：不继承
+  (princ (format "insert 后插 BBB: face@3 = %S\n"
+                 (get-text-property 3 'face (buffer-string)))))
+(princ (format "concat 带着属性走: face@1 = %S\n"
+               (get-text-property 1 'face (concat (propertize "AA" 'face 'bold) "BB"))))
+;;;     insert-and-inherit 的继承规则（sticky properties）：
+;;;     默认 rear-sticky（向后粘）——继承【前一个】字符的属性；
+;;;     默认 front-nonsticky（不向前粘）——不继承【后一个】字符的属性。
+;;;     两个特殊属性可逐字改：front-sticky（该字向前粘）、rear-nonsticky（该字不向后粘）。
+;;;     缓冲区级默认值在 text-property-default-nonsticky 里（Emacs 31 默认只有三项）。
+(princ (format "text-property-default-nonsticky = %S\n" text-property-default-nonsticky))
+(with-temp-buffer
+  (insert (propertize "AAA" 'face 'bold))
+  (goto-char (point-max))
+  (insert-and-inherit "BBB")
+  (princ (format "insert-and-inherit 后插: face@3 = %S\n"
+                 (get-text-property 3 'face (buffer-string)))))
+(with-temp-buffer
+  (insert "PPP")
+  (insert (propertize "AAA" 'face 'bold 'front-sticky t))
+  (goto-char 4)                          ; 插在 P 和 A 之间
+  (insert-and-inherit "M")
+  (princ (format "front-sticky 向前粘: face@3 = %S\n"
+                 (get-text-property 3 'face (buffer-string)))))
+(with-temp-buffer
+  (insert (propertize "AAA" 'face 'bold 'rear-nonsticky t))
+  (goto-char (point-max))
+  (insert-and-inherit "BBB")
+  (princ (format "rear-nonsticky 不向后粘: face@3 = %S\n"
                  (get-text-property 3 'face (buffer-string)))))
 
 ;;; 5) 去除属性：substring-no-properties / remove-text-properties /

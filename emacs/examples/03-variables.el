@@ -64,4 +64,18 @@
 (princ (format "boundp demo-counter = %S, boundp 不存在的 = %S\n"
                (boundp 'demo-counter) (boundp 'demo-never-defined)))
 
+;;;    fboundp 是「函数版」的 boundp。写要跨多个 Emacs 版本运行的扩展时，
+;;;    标准做法就是先问「这个符号在不在」，再用它。
+(princ (format "fboundp 'string-search = %S, fboundp 不存在的函数 = %S\n"
+               (fboundp 'string-search) (fboundp 'demo-never-defined-fn)))
+(when (fboundp 'string-search)
+  (princ (format "   string-search 可用: %S\n" (string-search "cad" "abracadabra"))))
+
+;;;    makunbound 解除绑定：变量又回到「void」状态。日常几乎不用，
+;;;    但它解释了 void-variable 错误的本质 —— 符号存在，只是没有值。
+(defvar demo-tmp nil "只为演示 makunbound：先给它一个值，再解除绑定。")
+(setq demo-tmp 1)
+(makunbound 'demo-tmp)
+(princ (format "makunbound 之后 boundp = %S\n" (boundp 'demo-tmp)))
+
 (princ "==== 03 结束 ====\n")

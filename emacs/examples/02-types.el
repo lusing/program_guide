@@ -46,4 +46,22 @@
 (princ (format "t = %S, float-pi = %S, emacs-version = %S\n"
                t float-pi emacs-version))
 
+;;; 9) 向量：定长数组，下标访问（aref），内容可变（aset）。
+;;;    列表是链，向量是连续存储 —— 随机访问用向量。
+(princ (format "vector: %S, aref = %S, length = %S\n"
+               (vector 'a 'b 'c) (aref [10 20 30] 1) (length [1 2 3])))
+
+;;; 10) 哈希表：O(1) 查找，:test 决定键的比较方式（默认 eq，整数键常用 eql）
+(let ((ht (make-hash-table :test 'eql)))
+  (puthash 'name "emacs" ht)
+  (puthash 42 "answer" ht)
+  (princ (format "hash: %S, %S, 键数 = %S\n"
+                 (gethash 'name ht) (gethash 42 ht) (hash-table-count ht))))
+
+;;; 11) 可变性：数字/符号/t/nil 不可变（改了就是新对象），
+;;;     字符串/向量/cons/哈希表可变（aset/setcar/puthash 就地改）。
+(let ((s (copy-sequence "abc")))
+  (aset s 0 ?X)
+  (princ (format "aset 之后字符串 = %S（原字面量没变）\n" s)))
+
 (princ "==== 02 结束 ====\n")

@@ -10,12 +10,12 @@
 
 ```elisp
 (defgroup demo-timer nil
-  "演示用的定时器功能。"
-  :group 'tools
-  :prefix "demo-timer-")
+  "演示扩展的配置。"
+  :group 'emacs
+  :prefix "demo-timer-")     ; :prefix 只是约定声明，方便 checkdoc 检查命名
 
 (defcustom demo-timer-interval 25
-  "两次提醒之间的分钟数。"
+  "专注计时的默认时长，单位是分钟。"
   :type 'integer
   :group 'demo-timer)
 ```
@@ -33,22 +33,41 @@
 
 ## 18.2 :type 常用类型
 
+`:type` 决定 customize 界面长什么样。示例里用到的几种真身：
+
 ```elisp
 :type 'integer
-:type 'string
-:type 'boolean
-:type '(choice (const :tag "关闭" nil) (const :tag "警告" warn) (const :tag "报错" error))
-:type '(repeat string)
-:type '(alist :key-type symbol :value-type string)
-:type 'file
-:type 'directory
-:type 'face
+:type 'sexp
+:type '(choice (const :tag "关闭" nil)
+               (const :tag "剩余时间" remaining)
+               (const :tag "百分比" percent))
+:type '(integer :value 10)
+:type '(choice (const :tag "不响" nil)
+               (file :must-match t :tag "音频文件"))
 ```
 
 ```
 9) demo-timer-interval 的 :type = integer
    它的标准值（未改过的默认值）= 25
 ```
+
+常用类型速查：
+
+| 类型 | 界面 |
+|---|---|
+| `integer` / `number` / `string` / `boolean` / `symbol` | 对应的输入控件 |
+| `(choice ...)` | 下拉/单选 |
+| `(const SYM)` | 固定值，配合 `choice` 用 |
+| `(repeat ...)` | 列表，可增删元素 |
+| `(alist :key-type ... :value-type ...)` | 键值对列表 |
+| `file` / `directory` | 带补全的路径 |
+| `face` / `color` | face 或颜色 |
+| `sexp` | 任意 Lisp 表达式（兜底用） |
+
+> 【坑】示例里的 `demo-timer-sound` 是**故意写错的示范**：默认值写成了
+> `'(choice (const :tag "不响" nil) file)`（一个 choice 形式的数据结构），
+> 而 `:type` 却是 `sexp`。正确写法是「**默认值是数据，`:type` 是它的类型描述**」——
+> 看 `demo-timer-file`：默认值 `nil`（数据），`:type` 是 `(choice (const ...) (file ...))`。
 
 ## 18.3 【坑】defcustom 不会覆盖已有值
 
@@ -63,12 +82,15 @@
 这是本章最实用的一节，也是很多人踩过的坑：
 
 ```elisp
-(defcustom demo-timer-label "默认"
-  "..."
+(defcustom demo-timer-label "Focus"
+  "计时器的显示名。"
   :type 'string
-  :set (lambda (sym val)
-         (set-default sym val)              ; ← 一定要真的把值设上
-         (setq demo-timer-applied (1+ demo-timer-applied))))  ; 再做副作用
+  :set (lambda (sym value)
+         (set-default sym value)
+         (setq demo-timer-applied (1+ demo-timer-applied))
+         (princ (format "    [:set 触发] %s 变成 %S\n" sym value)))
+  :initialize #'custom-initialize-default
+  :group 'demo-timer)
 ```
 
 ```
@@ -98,8 +120,10 @@
 ## 18.5 判断「是不是用户选项」
 
 ```elisp
-(custom-variable-p 'demo-timer-interval)     ; → t
-(custom-variable-p 'demo-timer-applied)      ; 普通 defvar → nil
+(princ (format "8) demo-timer-interval 是用户选项吗: %S\n"
+               (and (custom-variable-p 'demo-timer-interval) t)))
+(princ (format "   普通 defvar 的: %S\n"
+               (and (custom-variable-p 'demo-timer-applied) t)))
 ```
 
 ```
@@ -107,15 +131,21 @@
    普通 defvar 的: nil
 ```
 
-相关函数：`custom-variable-type` 取类型定义（注意它需要 `custom` 已加载，
-并且在字节编译时需要 `declare-function`，否则会报未定义警告）。
+> 【坑】`custom-variable-p` 返回的**不是 `t`**，而是类型表达式本身，当成布尔用之前记得
+> `(and ... t)` 转一下。
+>
+> 【坑】想取类型定义，标准函数 `custom-variable-type` 在裸 `emacs -Q` 下**并不在内存里**
+> （`custom` 库只是按需自动加载），直接调用会 `void-function`，字节编译还会告
+> "not known to be defined"。示例因此改用属性直读
+> `(get 'demo-timer-interval 'custom-type)` —— 默认值同理存在 `standard-value` 属性里，
+> 而且它是个**待求值的表达式的列表**，要 `(eval (car ...))` 才是真值。
 
 ## 18.6 defface
 
 ```elisp
 (defface demo-timer-face
-  '((t :foreground "orange" :weight bold))
-  "演示用的 face。"
+  '((t :inherit warning :weight bold))
+  "计时器显示用的 face。"
   :group 'demo-timer)
 ```
 
@@ -124,11 +154,10 @@
 ```
 
 `defface` 的用法和 `defcustom` 类似，`(custom-set-faces ...)` 改它，`(facep 'xxx)` 判存在。
-`'((t :foreground "orange"))` 里的 `t` 表示「所有终端类型都适用」（老式写法，
-现在基本都写 `t`）。
+`'((t :inherit warning))` 里的 `t` 是「所有显示类型都适用」的通配规格，后面的 plist 是属性。
 
-写 face 时注意：**只设前景色**通常是最安全的做法，让用户主题的背景色透出来；
-如果要设背景色，记得同时考虑深色/浅色主题。
+写 face 时注意：**优先 `:inherit` 而不是硬编码颜色**，让用户主题透出来；
+非要设颜色时，记得同时考虑深色/浅色主题（用 `((class color) (min-colors 88))` 之类的规格分情况）。
 
 ## 18.7 打包建议
 

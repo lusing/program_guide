@@ -12,6 +12,17 @@
 (require 'ert)
 (require 'cl-lib)
 
+;;; 本示例要自己统计测试结果（原因见第 7 节），所以先准备两样东西：
+;;; 一个「什么都不做」的 listener（让 ERT 全程零输出），
+;;; 和一个「跑一批用例并返回统计」的小工具。
+(defvar demo-silent-listener (lambda (&rest _args) nil)
+  "一个什么都不做的 listener，用来静默运行测试。")
+
+(defun demo-run-tests (selector)
+  "静默运行 SELECTOR 选中的用例，返回 (通过数 . 总数)。"
+  (let ((stats (ert-run-tests selector demo-silent-listener)))
+    (cons (ert-stats-completed-expected stats) (ert-stats-total stats))))
+
 ;;; ------------------------------------------------------------
 ;;; 被测代码：一个极简的「标题层级」解析器
 ;;; ------------------------------------------------------------
@@ -40,6 +51,12 @@
 ;;;      should         断言为真（失败时打印原表达式和各个子表达式的值）
 ;;;      should-not     断言为假
 ;;;      should-error   断言会报错（第二个参数可指定错误类型）
+;;; 2b) demo-count-words 的用例：注意「多个连续空白」和「全空白」这两种边界。
+(ert-deftest demo-test-count-words ()
+  (should (= 3 (demo-count-words "hello emacs world")))
+  (should (= 3 (demo-count-words "hello   emacs\tworld")))
+  (should (= 0 (demo-count-words "   "))))
+
 (ert-deftest demo-test-not-heading ()
   (should-not (demo-heading-level "普通的一行"))
   (should-not (demo-heading-level "#没有空格的一级"))
@@ -55,14 +72,19 @@
 ;;;    每个用例都该是独立的：不依赖执行顺序，不留下脏 buffer。
 (ert-deftest demo-test-in-buffer ()
   (with-temp-buffer
-    (insert "hello emacs world")
-    (should (= 15 (point-max)))
+    (insert "hello emacs world")            ; 17 个字符
+    (should (= 18 (point-max)))             ; point-max 是「末尾 + 1」
     (goto-char (point-min))
     (should (looking-at "hello"))
-    ;; 测试插入之后 point 的位置
+    ;; 测试插入之后 buffer 变长了
     (goto-char (point-max))
     (insert "!")
-    (should (= 16 (point-max)))))
+    (should (= 19 (point-max)))))
+;;;    【坑】point-max 不是「字符数」而是「末尾之后的那个位置」，所以比长度大 1。
+;;;    写死数字时很容易差一个 —— 更稳的写法是先用 (length "hello emacs world") 反推。
+(princ (format "3) buffer 相关用例: 通过 %S / 共 %S\n"
+               (car (demo-run-tests 'demo-test-in-buffer))
+               (cdr (demo-run-tests 'demo-test-in-buffer))))
 
 ;;; 4) 用 cl-letf 临时改写函数，做「mock」。
 ;;;    这是测「依赖外部状态的代码」最省事的办法，见 09-sequences.el 第 10 节。
@@ -70,6 +92,9 @@
   (cl-letf (((symbol-function 'current-time)
              (lambda () '(0 0 0 0))))
     (should (equal '(0 0 0 0) (current-time)))))
+(princ (format "4) mock 用例: 通过 %S / 共 %S\n"
+               (car (demo-run-tests 'demo-test-with-mock))
+               (cdr (demo-run-tests 'demo-test-with-mock))))
 
 ;;; 5) 用 let 临时改写变量（动态绑定）来构造测试场景
 (defvar demo-threshold 10
@@ -85,12 +110,18 @@
   ;; 临时把阈值调低，验证逻辑真的读了变量
   (let ((demo-threshold 1))
     (should (demo-is-big 5))))
+(princ (format "5) 动态绑定构造场景: 通过 %S / 共 %S\n"
+               (car (demo-run-tests 'demo-test-threshold))
+               (cdr (demo-run-tests 'demo-test-threshold))))
 
 ;;; 6) skip-unless：某些环境不满足时跳过，而不是失败。
 (ert-deftest demo-test-skip-on-demand ()
   (skip-unless (executable-find "echo"))
   (should (string-match-p "ok"
                           (shell-command-to-string "echo ok"))))
+(princ (format "6) skip-unless 用例: 通过 %S / 共 %S（echo 不存在时会被跳过，不算失败）\n"
+               (car (demo-run-tests 'demo-test-skip-on-demand))
+               (cdr (demo-run-tests 'demo-test-skip-on-demand))))
 
 ;;; 7) ------------------------------------------------------------
 ;;; 运行测试。
@@ -103,9 +134,6 @@
 ;;; 真实项目里用命令行跑就好（输出会走 stderr，那才是给人看的）：
 ;;;     emacs -Q --batch -l ert -l my-tests.el -f ert-run-tests-batch-and-exit
 ;;; ------------------------------------------------------------
-
-(defvar demo-silent-listener (lambda (&rest _args) nil)
-  "一个什么都不做的 listener，用来静默运行测试。")
 
 (let* ((stats (ert-run-tests 't demo-silent-listener))
        (expected (ert-stats-completed-expected stats))

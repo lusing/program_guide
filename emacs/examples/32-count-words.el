@@ -52,7 +52,9 @@
 (princ "== 1) 读源码：count-words 与它的两个帮手 ==\n")
 (my-print-source 'count-words)
 (my-print-source 'count-words--format)
+(my-print-source 'count-words--buffer-format)
 (my-print-source 'forward-word-strictly)
+(my-print-source 'count-sentences)
 
 ;;; ---------- 2) 三种算法，同一个答案 ----------
 (defconst my-text

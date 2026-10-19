@@ -69,15 +69,38 @@
 ;;;    典型写法（本示例不实际触发，只展示结构）：
 ;;;      (run-with-idle-timer 0.5 t #'demo-refresh)   ; t = 每次空闲都跑
 ;;;    注意第 2 个参数传 t 表示「重复」—— 每次空闲够久就再跑一次。
+(princ "7) idle timer 的正经用途：把「每次击键都要做」的重活延后到用户停下来时做\n")
 
 ;;; 8) sit-for 与 sleep-for 的区别：
-;;;    sleep-for  —— 纯等待，不处理 redisplay（batch 里用它）
-;;;    sit-for    —— 等待**并处理 redisplay**，用户一按键就立刻返回
+;;;    sleep-for  —— 纯等待，不处理 redisplay（batch 里用它），返回值恒为 nil
+;;;    sit-for    —— 等待**并处理 redisplay**，用户一按键就立刻返回，
+;;;                  等满了返回 t、被输入打断返回 nil
 ;;;    写交互式的「动画 / 进度提示」时用 sit-for，写脚本时用 sleep-for。
-(princ "8) sleep-for 不处理 redisplay；sit-for 会\n")
+(princ (format "8) sit-for 返回值 = %S，sleep-for 返回值 = %S\n"
+               (sit-for 0.05) (sleep-for 0.05)))
 
 ;;; 9) 【坑】定时器持有的是**函数对象**，如果传 lambda 就取消不掉（同 advice）。
 ;;;    需要能取消的定时器，一律传具名函数（本示例的 demo-tick 就是）。
+;;;    下面把「具名函数」和「lambda」各建一个 timer，看 timer-list 里能不能认出来。
+(defvar demo-named-timer (run-with-timer 100 nil #'demo-tick))
+(defvar demo-lambda-timer (run-with-timer 100 nil (lambda () (setq demo-fired 0))))
+(defun demo-count-timer (fn)
+  "数一数 timer-list 里有多少个 timer 的函数是 FN。"
+  (let ((n 0))
+    (dolist (tm timer-list)
+      (when (eq (timer--function tm) fn)
+        (setq n (1+ n))))
+    n))
+(princ (format "9) 按 #'demo-tick 在 timer-list 里找到 %S 个；按一个「同等」lambda 找到 %S 个\n"
+               (demo-count-timer #'demo-tick)
+               (demo-count-timer (lambda () (setq demo-fired 0)))))
+;;;    所以：手上没有 timer 对象时，具名函数的 timer 还能从 timer-list 里捞出来取消，
+;;;    lambda 的则永远捞不出来 —— 你没法再写出「同一个」lambda 对象。
+(dolist (tm (copy-sequence timer-list))
+  (when (eq (timer--function tm) #'demo-tick)
+    (cancel-timer tm)))
+(princ (format "   顺着 timer-list 取消掉之后，还剩 %S 个\n" (demo-count-timer #'demo-tick)))
+(cancel-timer demo-lambda-timer)
 
 ;;; 10) 清理：本示例创建的所有定时器都要取消掉，否则 Emacs 退出时会残留。
 ;;;     一个常见 bug 是「mini mode 关掉了但定时器还在跑」，

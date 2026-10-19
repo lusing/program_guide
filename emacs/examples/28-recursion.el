@@ -52,6 +52,14 @@
 (princ "\n== 3) 阶乘 ==\n")
 (princ (format "4! = %S\n" (my-factorial 4)))
 (princ (format "6! = %S\n" (my-factorial 6)))
+;;;    递归的「形状」可以让程序自己打印出来：不去算乘法，而是把**要算的那个
+;;;    表达式**构造出来 —— 一眼就能看出乘法是被推迟到「回来」之后才做的。
+(defun my-factorial-shape (n)
+  "返回 (my-factorial N) 真正会展开成的那个嵌套表达式。"
+  (if (= n 0)
+      1
+    (list '* n (my-factorial-shape (1- n)))))
+(princ (format "4! 展开成: %S\n" (my-factorial-shape 4)))
 
 ;;; ---------- 4) 同一个问题，循环版与递归版 ----------
 ;;; 三角形数 1+2+...+n，两种写法对照着看。
@@ -142,5 +150,17 @@
            (my-count-elements (make-list 100000 'x))
          (error (format "递归太深，被拦住：%S" (car err))))))
   (princ (format "十万元素的递归结果：%S\n" result)))
+;;;    需要更深时可以临时抬高这个上限 —— 实测：5000 个元素在默认上限下被拦，
+;;;    抬到 100000 之后就能跑完。但真正的深递归即使抬了上限也很慢（每层都要
+;;;    分配栈帧），工程上不如直接换成循环。
+(princ (format "默认上限下 5000 个元素: %S\n"
+               (condition-case err
+                   (my-count-elements (make-list 5000 'x))
+                 (error (car err)))))
+(princ (format "把上限抬到 100000 之后: %S\n"
+               (let ((max-lisp-eval-depth 100000))
+                 (condition-case err
+                     (my-count-elements (make-list 5000 'x))
+                   (error (car err))))))
 
 (princ "==== 28 结束 ====\n")

@@ -27,9 +27,17 @@
                (eq (list 1) (list 1))))
 
 ;;; 3) eql —— 在 eq 之外，还让「数值相等且类型相同」成立。
-;;;    浮点比数值，但 -0.0 与 0.0 不等（eql 区分符号位）。
+;;;    浮点比数值，但 -0.0 与 0.0 不等（eql 区分符号位）；= 则认为它们相等。
 (princ (format "eql 1.0 1.0 = %S,  eql 1 1.0 = %S,  (= 1 1.0) = %S\n"
                (eql 1.0 1.0) (eql 1 1.0) (= 1 1.0)))
+(princ (format "eql -0.0 0.0 = %S,  (= -0.0 0.0) = %S\n"
+               (eql -0.0 0.0) (= -0.0 0.0)))
+
+;;; 3b) 【坑】bignum 超出 fixnum 范围后是独立对象：eq 为 nil，eql/equal 为 t。
+;;;     所以拿大整数当哈希表键、用 eq 比较的场合（make-hash-table 默认 :test 'eq），
+;;;     大整数键会「查得到表里没有」——这类哈希表要显式 :test 'eql。
+(let ((a (expt 2 70)) (b (expt 2 70)))
+  (princ (format "bignum: eq=%S eql=%S equal=%S\n" (eq a b) (eql a b) (equal a b))))
 
 ;;; 4) = —— 只比数，而且会做类型提升（1 和 1.0 相等）。
 ;;;    【坑】= 只能吃数字，喂字符串会直接报错。

@@ -88,20 +88,32 @@ nconc:  (1 2 3 4)，之后 a 变成 (1 2 3 4)
 ## 7.6 【坑】共享结构
 
 ```elisp
-(let ((x '(1 2 3)))
-  (let ((y x))           ; y 和 x 是**同一个对象**
-    (setcar (cdr y) 99)
-    (list x y)))
+(let ((x (list 1 2 3))
+      (y nil))
+  (setq y x)
+  (setcar y 99)
+  (princ (format "改了 y 的 car 之后，x = %S，y = %S\n" x y)))
 ```
 
 ```
 改了 y 的 car 之后，x = (99 2 3)，y = (99 2 3)
 ```
 
-`setq` 只复制「指针」。想让两个列表独立，必须显式复制：
+`setq` 只复制「指向链头的指针」——`y` 和 `x` 是同一个对象，改 `y` 就是改 `x`。
+（注意示例用 `(list 1 2 3)` 造列表而不是字面量 `'(1 2 3)`——**对字面量做破坏性操作是未定义行为**，字节编译器会警告。）
 
-- `copy-sequence`：**浅**拷贝 —— 顶层是新 cons，嵌套的子列表仍是共享的；
-- `copy-tree`：**深**拷贝 —— 递归复制所有层级。
+想让两个列表独立，必须显式复制：
+
+- `copy-sequence`：**浅**拷贝——顶层是新 cons，嵌套的子列表仍是共享的；
+- `copy-tree`：**深**拷贝——递归复制所有层级。
+
+```elisp
+(let* ((x (list 1 (list 2)))
+       (shallow (copy-sequence x))
+       (deep (copy-tree x)))
+  (setcar (nth 1 x) 99)
+  (princ (format "浅拷贝跟着变 = %S，深拷贝不变 = %S\n" shallow deep)))
+```
 
 ```
 浅拷贝跟着变 = (1 (99))，深拷贝不变 = (1 (2))
@@ -128,7 +140,7 @@ lambda 必须每次返回新造的列表，不能返回共享结构。
 
 ## 7.8 【坑】remove 与 delete
 
-```elisp
+```
 remove 2: (1 3)，原列表没变: (1 2 3 2)
 delete 2: (1 3)，原列表已变: (1 3)
 delete 头元素必须接返回值: (2)
@@ -141,9 +153,16 @@ delete 头元素必须接返回值: (2)
 而调用方手里的变量还指着老的头。所以 `delete` 必须**接收返回值**：
 
 ```elisp
-(setq my-list (delete 2 my-list))    ; 正确
-(delete 2 my-list)                   ; 错误：头元素被删时 my-list 仍指向旧头
+(let ((xs (list 1 1 2)))
+  (princ (format "delete 头元素必须接返回值: %S\n" (delete 1 xs))))
 ```
+
+```
+delete 头元素必须接返回值: (2)
+```
+
+写成 `(setq xs (delete 1 xs))` 才对；直接 `(delete 1 xs)` 而不管返回值，
+删头元素时 `xs` 仍指向旧头 —— 这就是「删了好像没删」的来源。
 
 ## 7.9 alist：配置类数据的首选
 
@@ -171,8 +190,8 @@ assoc-default = "localhost"，rassoc 反查 = (port . 8080)
 ## 7.10 plist：扁平 key value 列表
 
 ```elisp
-(plist-get '(:a 1 :b 2) :a)              ; → 1
-(plist-put '(:a 1) :b 2)                 ; → (:a 1 :b 2)
+(princ (format "plist-get: %S\n" (plist-get '(:a 1 :b 2) :b)))
+(princ (format "plist-put: %S\n" (plist-put (list :a 1) :b 2)))
 ```
 
 ```
@@ -180,9 +199,10 @@ plist-get: 2
 plist-put: (:a 1 :b 2)
 ```
 
-结构是 `key1 value1 key2 value2 ...`。查找同样是 O(n)（用 `eq` 比 key，所以 **key 必须是符号**）。
-符号的属性表（`(get 'sym 'prop)` / `(put 'sym 'prop val)`）就是 plist ——
-第 16 章的 `derived-mode-parent` 就是这么存的。
+结构是 `key1 value1 key2 value2 ...`。查找是 O(n)，用 `eq` 比 key，所以 **key 必须是符号**。
+`plist-put` 会**就地修改**传入的 plist（它返回改完的 plist，但参数本身也可能被改）——所以别喂字面量常量，示例里用 `(list :a 1)` 现造。
+
+符号的属性表（`(get 'sym 'prop)` / `(put 'sym 'prop val)`）就是 plist——第 27 章的「符号抽屉柜」和第 16 章的 `derived-mode-parent` 都是它。
 
 选择建议：
 

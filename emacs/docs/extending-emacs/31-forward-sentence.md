@@ -12,7 +12,7 @@ Emacs 的解法是：用一个**正则表达式**把这种模糊的自然语言�
 
 先看 `forward-sentence` 本身。这是 31.1 的真实源码：
 
-```elisp
+```
 (defun forward-sentence (&optional arg)
   "Move forward to next end of sentence.  With argument ARG, repeat.
 If ARG is negative, move backward repeatedly to start of
@@ -34,7 +34,7 @@ sentence.  Delegates its work to `forward-sentence-function'."
 
 默认实现待会儿再看，先解决一个前置问题：句子结束的正则长什么样？它**不是一个写死的常量**，而是由 `sentence-end` 这个函数按当前设置**现算**出来的。最底层的一块拼图是常量 `sentence-end-base`：
 
-```elisp
+```
 (defcustom sentence-end-base "[.?!…‽][]\"'”’)}»›]*"
   "Regexp matching the basic end of a sentence, not including following space."
   :type 'regexp
@@ -50,17 +50,19 @@ sentence.  Delegates its work to `forward-sentence-function'."
 == 2) sentence-end 是算出来的正则 ==
 sentence-end 变量（没设过，所以是 nil） = nil
 调用 (sentence-end) 算出来的正则：
-  "\\([.?!…‽][]\"'”’)}»›]*\\($\\|[  ]$\\|\t\\|[  ][  ]\\)\\|[。．？！]+\\)[  \t\n]*"
+  "\\([.?!…‽][]\"'”’)}»›]*\\($\\|[ \u00a0]$\\|\t\\|[ \u00a0][ \u00a0]\\)\\|[。．？！]+\\)[ \u00a0\t\n]*"
 ```
 
 先注意第一行：变量 `sentence-end` 是 `nil`。**这里的 `sentence-end` 是「变量」也是「函数」，同名但两回事**：平时它是 `nil`，表示「按默认规则算」；`(sentence-end)` 是个函数，返回真正要用的正则。你如果直接 `(setq sentence-end "我的正则")`，就等于接管了切句规则（第 4 节会做这件事）。
 
 再看算出来的正则（去掉转义后的可读版）：
 
-- `\\( [.?!…‽][]\"'”’)}»›]* \\( $\|[  ]$\|\t\|[  ][  ] \\) \\|[。．？！]+ \\)` —— 前半段就是我们刚看的 `sentence-end-base`，后面接一个「必须出现」的结尾条件：行尾、一个「非断行空格 + 行尾」、一个 TAB，或**两个连续空格**；
+- `\\( [.?!…‽][]\"'”’)}»›]* \\( $\|[ \u00a0]$\|\t\|[ \u00a0][ \u00a0] \\) \\|[。．？！]+ \\)` —— 前半段就是我们刚看的 `sentence-end-base`，后面接一个「必须出现」的结尾条件：行尾、一个「空格 + 行尾」、一个 TAB，或**两个连续的空格**；
 - `\\|` 是「或者」；
 - `[。．？！]+` —— 直接的「或者」：遇到全角的中文句号、点号、问号、感叹号（一个或多个）也算句尾；
-- 最后 `[  \t\n]*` —— 吞掉句尾后面所有空格、TAB、换行。
+- 最后 `[ \u00a0\t\n]*` —— 吞掉句尾后面所有空格、TAB、换行。
+
+> 【坑】正则里的 `\u00a0` 不是「反斜杠 u 零零 a 零」，而是**不换行空格 NBSP**（U+00A0）。示例的可见化函数特意把它转义打印出来——在终端里它和普通空格**长得一模一样**，肉眼绝对分不出来。Emacs 31 的 `(sentence-end)` 源码里写着注释 `;; We accept non-break space along with space.`，也就是说**从网页上复制下来的文本里如果带 NBSP，`M-e` 会把它当成普通空格处理**。反过来说：如果你写了句尾却怎么也切不动，检查一下那个「空格」到底是不是真空格——在 Emacs 里把光标移到上面按 `C-u C-x =`（`what-cursor-position`）能看到字符码点。
 
 那个「两个连续空格」就是下一节的主角。
 
@@ -68,7 +70,7 @@ sentence-end 变量（没设过，所以是 nil） = nil
 
 如果你在**只留一个空格**的英文文本上试 `M-e`，会遇到一个奇怪的现象：
 
-```
+```text
 One sentence. Two sentences! Three? Four.
 ```
 
@@ -149,7 +151,7 @@ sentence-end-double-space = nil：
 
 回到 `forward-sentence` 委托出去的那个函数。31.1 的真实源码：
 
-```elisp
+```
 (defun forward-sentence-default-function (&optional arg)
   "Move forward to next end of sentence.  With argument, repeat.
 When ARG is negative, move backward repeatedly to start of sentence.
@@ -197,13 +199,13 @@ sentences.  Also, every paragraph boundary terminates sentences as well."
 3. 两个 `while` 循环：`(< arg 0)` 处理**往回走**，`(> arg 0)` 处理**往前走**。因为 `arg` 可能大于 1（`M-e` 带数字前缀），所以是循环而不是一次到位。
 4. 往前走的循环是本章重点：
 
-```elisp
-(while (> arg 0)
-  (let ((par-end (save-excursion (end-of-paragraph-text) (point))))
-    (if (re-search-forward sentence-end par-end t)
-        (skip-chars-backward " \t\n")
-      (goto-char par-end)))
-  (setq arg (1- arg)))
+```
+    (while (> arg 0)
+      (let ((par-end (save-excursion (end-of-paragraph-text) (point))))
+	(if (re-search-forward sentence-end par-end t)
+	    (skip-chars-backward " \t\n")
+	  (goto-char par-end)))
+      (setq arg (1- arg)))
 ```
 
 - `(save-excursion (end-of-paragraph-text) (point))` —— 先算出「当前段落的末尾」，作为搜索的**上界**。`save-excursion` 保证算完之后 point 回到原处。这就是那句 docstring 说的「段落边界也算句子终点」：**搜索不会越过段落末尾**，一段的最后一句哪怕没有句号，也会停在段落末尾。
@@ -218,13 +220,13 @@ sentences.  Also, every paragraph boundary terminates sentences as well."
 
 句子的规则讲完了，段落呢？段落由**两个**正则共同定义，31.1 的真实默认值：
 
-```elisp
+```
 (defcustom paragraph-start "\f\\|[ \t]*$" "\
 Regexp for beginning of a line that starts OR separates paragraphs.
 This regexp should match lines that separate paragraphs
 and should also match lines that start a paragraph
 \(and are part of that paragraph).
-…
+
 This is matched against the text at the left margin, which is not necessarily
 the beginning of the line, so it should never use \"^\" as an anchor.  This
 ensures that the paragraph functions will work equally well within a region
@@ -232,16 +234,18 @@ of text indented by a margin setting.
 
 The variable `paragraph-separate' specifies how to distinguish
 lines that start paragraphs from lines that separate them.
-…"
+
+If the variable `use-hard-newlines' is non-nil, then only lines following a
+hard newline are considered to match."
   :type 'regexp
   :safe #'stringp)
 ```
 
-```elisp
+```
 (defcustom paragraph-separate "[ \t\f]*$"
   "Regexp for beginning of a line that separates paragraphs.
 If you change this, you may have to change `paragraph-start' also.
-…
+
 This is matched against the text at the left margin, which is not necessarily
 the beginning of the line, so it should not use \"^\" as an anchor.  This
 ensures that the paragraph functions will work equally within a region of
@@ -250,6 +254,11 @@ text indented by a margin setting."
   :safe #'stringp)
 ```
 
+先看两个细节，它们解释了为什么源码长得有点怪：
+
+- `paragraph-start` 的 docstring 是写在**第二行**的：`"Regexp for … paragraphs.` 前面那个 `"\` —— 行尾的**反斜杠**表示「紧接着的换行不算字符串内容」。这是 Emacs Lisp 里给 docstring 换行的老写法，效果是让首行不被算进 docstring（Emacs 的 docstring 约定：第一行应当是**独立完整的一句话**）。`paragraph-separate` 的 docstring 就正常写在值后面一行，没有这个反斜杠。
+- 两个正则里都出现了 `\f`：`paragraph-start` 的 `"\f\\|[ \t]*$"` 是「分页符 **或** 空行」；`paragraph-separate` 的 `"[ \t\f]*$"` 把分页符也当成空白。Emacs 至今仍把 `^L`（分页符）当成分节符（`C-x ]` / `forward-page` 就靠它），段落函数顺手也认。
+
 它们的默认值都匹配**空行**（`[ \t]*$` 是「只有空白直到行尾」，也就是空行），区别在于：
 
 - `paragraph-start`：匹配「一行的开头，这一行**要么启动一段、要么分隔两段**」。所以它匹配空行，也匹配 `\f`（分页符）。
@@ -257,13 +266,13 @@ text indented by a margin setting."
 
 两个都匹配空行时，空行**只起分隔作用**——所以「空行下面是新段落」。如果你改 `paragraph-start` 让它匹配别的（比如以 `*` 开头的行，第 6 节会做），空行就不一定是段首了，这时 `paragraph-separate` 负责把「纯粹的分隔行」和「真正开始一段的行」区分开。
 
-docstring 里那句「should never use `^` as an anchor」很关键，它解释了段落函数的一个设计选择。
+docstring 里那句「should never use `^` as an anchor」很关键，它解释了段落函数的一个设计选择；最后那段 `use-hard-newlines` 说明开了「硬换行」模式后（长行不自动折行、`use-hard-newlines` 非 `nil`），只有**紧跟硬换行**的行才算匹配——这是 `longlines-mode` 那一类模式留下的钩子。
 
 ## 31.6 走一遍 `forward-paragraph`
 
 31.1 的真实源码（较长，下面分段解释）：
 
-```elisp
+```
 (defun forward-paragraph (&optional arg)
   "Move forward to end of paragraph.
 With argument ARG, do it ARG times;
@@ -310,8 +319,8 @@ Returns the count of paragraphs left to move."
 - `fill-prefix-regexp`：如果你设了 `fill-prefix`（比如邮件引用前缀 `"> "`），把它转成正则，让段落识别能正确处理缩进。
 - **`parstart` / `parsep`：把 `paragraph-start`、`paragraph-separate` 开头的 `^` 去掉**。这就是 docstring 那句「不要用 `^`」的兑现方式——段落函数的搜索**不是从行首开始**，而是从「左边距（left margin）」开始：
 
-```elisp
-(sp-parstart (concat "^[ \t]*\\(?:" parstart "\\|" parsep "\\)"))
+```
+	 (sp-parstart (concat "^[ \t]*\\(?:" parstart "\\|" parsep "\\)"))
 ```
 
 - `sp-parstart` 把两个正则合成一个：「行首 + 任意前导空白 + （段首正则 **或** 段分隔正则）」。`\\(?: … \\)` 是**非捕获组**——只分组、不占用 `\1` 这样的捕获编号（`\1` 留给真正的 `\\(…\\)` 用）。因为去掉了 `^`，所以即使段落被缩进（前导空白由 `[ \t]*` 吃掉），也能正确匹配。
@@ -319,52 +328,76 @@ Returns the count of paragraphs left to move."
 
 接下来两个 `while`，结构和 `forward-sentence` 完全对称。往回走的分支：
 
-```elisp
-(while (and (< arg 0) (not (bobp)))
-  (if (and (not (looking-at parsep))
-	   (re-search-backward "^\n" (max (1- (point)) (point-min)) t)
-	   (looking-at parsep))
-      (setq arg (1+ arg))
-    (setq start (point))
-    ;; Move back over paragraph-separating lines.
-    (forward-char -1) (beginning-of-line)
-    (while (and (not (bobp))
-		(progn (move-to-left-margin)
-		       (looking-at parsep)))
-      (forward-line -1))
-    …))
+```
+    (while (and (< arg 0) (not (bobp)))
+      (if (and (not (looking-at parsep))
+	       (re-search-backward "^\n" (max (1- (point)) (point-min)) t)
+	       (looking-at parsep))
+	  (setq arg (1+ arg))
+	(setq start (point))
+	;; Move back over paragraph-separating lines.
+	(forward-char -1) (beginning-of-line)
+	(while (and (not (bobp))
+		    (progn (move-to-left-margin)
+			   (looking-at parsep)))
+	  (forward-line -1))
 ```
 
-关键在于 `(move-to-left-margin)` 的出现：它把 point 移到**左边距**（而不是行首），然后 `(looking-at parsep)` 从那里开始匹配。这正是前面强调的「段落正则不做行首锚定」在代码里的落点。往回的空行被一段 `(forward-line -1)` 循环跨过。
+关键在于 `(move-to-left-margin)` 的出现：它把 point 移到**左边距**（而不是行首），然后 `(looking-at parsep)` 从那里开始匹配。这正是前面强调的「段落正则不做行首锚定」在代码里的落点。往回的空行被一段 `(forward-line -1)` 循环跨过；跨完之后，往回找段首用的也是 `sp-parstart`，只是方向反过来：
+
+```
+		(while (and (re-search-backward sp-parstart nil 1)
+			    (setq found-start t)
+			    ;; Found a candidate, but need to check if it is a
+			    ;; REAL parstart.
+			    (progn (setq start (point))
+				   (move-to-left-margin)
+				   (not (looking-at parsep)))
+			    (not (and (looking-at parstart)
+				      (or (not use-hard-newlines)
+					  (bobp)
+					  (get-text-property
+					   (1- start) 'hard)))))
+		  (setq found-start nil)
+		  (goto-char start))
+```
+
+注意 `(setq found-start t)` 被塞进了 `while` 的**条件里**：`and` 的每个分支都会求值，所以「每找到一次候选就先把 `found-start` 置真」这个副作用就顺手办了。这种写法在真实代码里很常见，但读的时候要认出来——它不是在判断真假，而是在**顺带赋值**（`and` 只关心最后结果，`t` 恒真所以不影响条件）。循环体里的 `(setq found-start nil)` 才是「这个候选不合格」的回退。剩下那两个 `use-hard-newlines` / `get-text-property … 'hard` 的判断，是给 `use-hard-newlines`（硬换行）模式留的口子，这里不展开。
 
 往前走的 `while` 分支是本章示例第 5、6 节实际走过的路径：
 
-```elisp
-(while (and (> arg 0) (not (eobp)))
-  ;; Move forward over separator lines...
-  (while (and (not (eobp))
-	      (progn (move-to-left-margin) (not (eobp)))
-	      (looking-at parsep))
-    (forward-line 1))
-  (unless (eobp) (setq arg (1- arg)))
-  ;; ... and one more line.
-  (forward-line 1)
-  …
-  (while (and (re-search-forward sp-parstart nil 1)
-	      (progn (setq start (match-beginning 0))
-		     (goto-char start)
-		     (not (eobp)))
-	      (progn (move-to-left-margin)
-		     (not (looking-at parsep)))
-	      (or (not (looking-at parstart))
-		  (and use-hard-newlines
-		       (not (get-text-property (1- start) 'hard)))))
-    (forward-char 1))
-  (if (< (point) (point-max))
-      (goto-char start)))
-(constrain-to-field nil opoint t)
-;; Return the number of steps that could not be done.
-arg)
+```
+    (while (and (> arg 0) (not (eobp)))
+      ;; Move forward over separator lines...
+      (while (and (not (eobp))
+		  (progn (move-to-left-margin) (not (eobp)))
+		  (looking-at parsep))
+	(forward-line 1))
+      (unless (eobp) (setq arg (1- arg)))
+      ;; ... and one more line.
+      (forward-line 1)
+      (if fill-prefix-regexp
+	  ;; There is a fill prefix; it overrides parstart.
+	  (while (and (not (eobp))
+		      (progn (move-to-left-margin) (not (eobp)))
+		      (not (looking-at parsep))
+		      (looking-at fill-prefix-regexp))
+	    (forward-line 1))
+	(while (and (re-search-forward sp-parstart nil 1)
+		    (progn (setq start (match-beginning 0))
+			   (goto-char start)
+			   (not (eobp)))
+		    (progn (move-to-left-margin)
+			   (not (looking-at parsep)))
+		    (or (not (looking-at parstart))
+			(and use-hard-newlines
+			     (not (get-text-property (1- start) 'hard)))))
+	  (forward-char 1))
+	(if (< (point) (point-max))
+	    (goto-char start))))
+    (constrain-to-field nil opoint t)
+    ;; Return the number of steps that could not be done.
+    arg))
 ```
 
 顺着读就是「一个段落往前走」的完整过程：
@@ -372,9 +405,10 @@ arg)
 1. 先跨过**开头的空行**（`looking-at parsep` 的 `forward-line` 循环）；
 2. `(unless (eobp) (setq arg (1- arg)))` —— 只要还不在文件末尾，就算消耗掉一次前进；
 3. `(forward-line 1)` —— 至少往后过一行（保证进度）；
-4. 内层 `re-search-forward sp-parstart` 循环：**一直搜到下一个「段首或段分隔行」**。循环条件里的 `(or (not (looking-at parstart)) …)` 用来确认「匹配到的确实是新段的开始，而不是当前段自己中间某行恰好长得像段首」；
-5. `(if (< (point) (point-max)) (goto-char start))` —— 回到那个「新段开始」的位置（`start` 是匹配位置的记录），于是光标就停在**上一段的末尾 / 新段之前**，这正是 `M-}` 的行为。
-6. 最后的 `(constrain-to-field nil opoint t)` 与 `forward-sentence` 同款；返回值是「没能走完的步数」——正常走完时是 `0`。
+4. `(if fill-prefix-regexp … …)` —— **二选一**。如果设了 `fill-prefix`（例如邮件里每行前面的 `"> "`），就走 then 分支：逐行往下，只要还是「带 fill 前缀、且不是分隔行」就继续，也就是**按前缀来划段**，`parstart` 被完全忽略（注释里写的 `it overrides parstart`）。没设 `fill-prefix` 时走 else 分支，也就是下面第 5 步的正则搜索。示例用的是 `-Q --batch`，`fill-prefix` 是 `nil`，所以走的是 else。
+5. 内层 `re-search-forward sp-parstart` 循环：**一直搜到下一个「段首或段分隔行」**。循环条件里的 `(or (not (looking-at parstart)) …)` 用来确认「匹配到的确实是新段的开始，而不是当前段自己中间某行恰好长得像段首」；
+6. `(if (< (point) (point-max)) (goto-char start))` —— 回到那个「新段开始」的位置（`start` 是匹配位置的记录），于是光标就停在**上一段的末尾 / 新段之前**，这正是 `M-}` 的行为。
+7. 最后的 `(constrain-to-field nil opoint t)` 与 `forward-sentence` 同款；返回值是「没能走完的步数」——正常走完时是 `0`。
 
 示例第 5 节在一条多段文本上实测：
 
@@ -406,7 +440,7 @@ paragraph-start 设为 "^\\*"（forward-paragraph 会去掉开头的 ^）
 
 `forward-sentence` 和 `forward-paragraph` 内部反复调用一对辅助函数，它们也值得单独看。31.1 的真实源码：
 
-```elisp
+```
 (defun start-of-paragraph-text ()
   "Move to the start of the current paragraph."
   (let ((opoint (point)) npoint)
@@ -418,23 +452,23 @@ paragraph-start 设为 "^\\*"（forward-paragraph 会去掉开头的 ^）
     ;; Must be careful to avoid infinite loop
     ;; when following a single return at start of buffer.
     (if (and (>= (point) opoint) (< npoint opoint))
-        (progn
-          (goto-char npoint)
-          (if (> npoint (point-min))
-              (start-of-paragraph-text))))))
+	(progn
+	  (goto-char npoint)
+	  (if (> npoint (point-min))
+	      (start-of-paragraph-text))))))
 ```
 
-```elisp
+```
 (defun end-of-paragraph-text ()
   "Move to the end of the current paragraph."
   (let ((opoint (point)))
     (forward-paragraph 1)
     (if (eq (preceding-char) ?\n) (forward-char -1))
     (if (<= (point) opoint)
-        (progn
-          (forward-char 1)
-          (if (< (point) (point-max))
-              (end-of-paragraph-text))))))
+	(progn
+	  (forward-char 1)
+	  (if (< (point) (point-max))
+	      (end-of-paragraph-text))))))
 ```
 
 两个函数都很短，但都是**递归**的（28 章讲过）：
