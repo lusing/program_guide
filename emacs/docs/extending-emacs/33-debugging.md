@@ -12,7 +12,7 @@ eintr 用一整章（第 17 章 Debugging）讲这件事：`debug-on-entry`、`d
 
 调试的第一步，是别把错误当成一句人话，而把它当成**一个数据结构**。Emacs 的错误对象永远是：
 
-```
+```text
 (错误符号 . 附加数据)     ; 更准确地说是个列表：(错误符号 数据1 数据2 ...)
 ```
 
@@ -288,32 +288,69 @@ If NFRAMES is more than the number of frames, the value is nil.
 
 ### 它其实是一段 advice
 
-先看 31.1 的真实源码（`debug.el`）：
+先看 Emacs 31.1 的真实源码（`emacs-lisp/debug.el`）：
 
-```elisp
-;;;###autoload
+```
 (defun debug-on-entry (function)
   "Request FUNCTION to invoke debugger each time it is called.
-  ...（docstring 从略）..."
+
+When called interactively, prompt for FUNCTION in the minibuffer.
+
+This works by modifying the definition of FUNCTION.  If you tell the
+debugger to continue, FUNCTION's execution proceeds.  If FUNCTION is a
+normal function or a macro written in Lisp, you can also step through
+its execution.  FUNCTION can also be a primitive that is not a special
+form, in which case stepping is not possible.  Break-on-entry for
+primitive functions only works when that function is called from Lisp.
+
+Use \\[cancel-debug-on-entry] to cancel the effect of this command.
+Redefining FUNCTION also cancels it."
   (interactive
    (let ((fn (function-called-at-point)) val)
-     ...))
+     (when (special-form-p fn)
+       (setq fn nil))
+     (setq val (completing-read
+                (format-prompt "Debug on entry to function" fn)
+		obarray
+		#'(lambda (symbol)
+		    (and (fboundp symbol)
+			 (not (special-form-p symbol))))
+		'confirm nil nil (symbol-name fn)))
+     (list (if (equal val "") fn (intern val)))))
   (advice-add function :before #'debug--implement-debug-on-entry
               '((depth . -100)))
   function)
 ```
 
-**关键就一行**：`debug-on-entry` 做的事，是给目标函数**挂一个 `:before` 建议（advice）**，建议体是 `debug--implement-debug-on-entry`。[19 · advice](19-advice.md) 讲过 advice 的机制——`advice-add` 把一个包装函数「贴」在原函数身上，调用原函数时先跑包装函数。所以：
+整个函数真正干活的**只有三行**（`(interactive …)` 那一大段是交互时读参数用的，下面单独说）：
+
+```
+  (advice-add function :before #'debug--implement-debug-on-entry
+              '((depth . -100)))
+  function)
+```
+
+也就是说，`debug-on-entry` 做的事，是给目标函数**挂一个 `:before` 建议（advice）**，建议体是 `debug--implement-debug-on-entry`。[19 · advice](19-advice.md) 讲过 advice 的机制——`advice-add` 把一个包装函数「贴」在原函数身上，调用原函数时先跑包装函数。所以：
 
 - 它**不修改**函数的定义，可随时撤销；
 - 它**保留了函数原有行为**（`:before` 只是先跑一下，不拦截返回值）；
-- 那个 `'((depth . -100))` 表示这条 advice **排到最外层**，保证「进入函数的第一件事」就是触发调试。
+- 那个 `'((depth . -100))` 表示这条 advice **排到最外层**（depth 越小越靠外），保证「进入函数的第一件事」就是触发调试；
+- 最后一行 `function` 是**返回值**：`debug-on-entry` 返回你传进去的那个函数名，方便继续传给别的函数。
+
+> 【坑】docstring 里写的是 `This works by modifying the definition of FUNCTION.`，可实现用的是 advice——**文档和代码会漂移**。 Emacs 早年确实是直接改函数定义的，后来改成 advice 更干净（可撤销、不影响原定义），但 docstring 那句没跟着改。**读源码时，以代码为准、以文档为线索**；反过来也提醒你：改实现的时候记得回头改 docstring。
+
+顺带把 `(interactive …)` 这一段读一遍，它是「交互式命令怎么读参数」的标准样本（[13 · 交互式命令](13-interactive.md) 讲过 `(interactive)` 的各种写法，这里是一个 `interactive` 接**一段表达式**、且必须返回**参数列表**的例子）：
+
+- `(function-called-at-point)` 猜一个「光标下的函数名」当默认值；
+- `(when (special-form-p fn) (setq fn nil))` —— 特殊形式（如 `if`、`setq`）不能设断点，猜到就丢弃；
+- `completing-read` 的**第四个参数**是「候选集合」，这里直接给 `obarray`（**所有已知符号**），第五个参数是一个**判定谓词**——只有「有函数定义、且不是特殊形式」的符号才算候选。这就是 minibuffer 补全背后「候选从哪来」的标准配置；
+- 最后 `(list (if (equal val "") fn (intern val)))` 把输入的字符串 `intern` 成符号，包成一个**列表**返回——因为 `interactive` 的返回值就是这次调用的实参表。
 
 ### 「停下」这件事是谁干的
 
 接着看被挂上去的那个函数：
 
-```elisp
+```
 (defun debug--implement-debug-on-entry (&rest _ignore)
   "Conditionally call the debugger.
 A call to this function is inserted by `debug-on-entry' to cause
@@ -381,37 +418,49 @@ debugger 被调用时的实参： (debug :backtrace-base (1 . debug--implement-d
 - **`(let ((debugger …)) …)` 是「局部换掉全局变量」**（动态作用域的一种用法，[03 · 变量](03-variables.md)）：在 `let` 体内 `debugger` 变成桩函数，`let` 结束就自动还原。**配合 `unwind-protect`，这正是「临时改全局状态、用完还原」的教科书场景**（本示例范围很小，`let` 足矣）。
 - **输出里的实参完全对上了源码**：`(debug :backtrace-base (1 . debug--implement-debug-on-entry))`——第一个 `'debug` 说明「以错误/断点方式进入」，后面是 `:backtrace-base` 和那个 `(1 . …)` 偏移。**你读的源码和机器跑的行为，在此严丝合缝地互相印证。**
 - **`(my-add 3 4)` 照样返回 `7`**。因为桩函数只是**记录**、返回 `'stubbed` 就完了；而真正的 `debug` 会用「读取按键→可能单步→继续」的方式返回，效果也是「函数体继续跑」。**断点不断断执行，只断断「暂停观察」。**
-- **`debug--function-list` 列出所有设了断点的函数**。打出来是 `(my-add)`——注意它是靠遍历所有符号、逐一 `advice-member-p` 找出来的：
+- **`debug--function-list` 列出所有设了断点的函数**。打出来是 `(my-add)`——注意它不是靠一张「已设断点」的登记表，而是**反查**出来的：
 
-  ```elisp
-  (defun debug--function-list ()
-    "List of functions currently set for debug on entry."
-    (let ((funs '()))
-      (mapatoms
-       (lambda (s)
-         (when (advice-member-p #'debug--implement-debug-on-entry s)
-           (push s funs))))
-      funs))
-  ```
+```
+(defun debug--function-list ()
+  "List of functions currently set for debug on entry."
+  (let ((funs '()))
+    (mapatoms
+     (lambda (s)
+       (when (advice-member-p #'debug--implement-debug-on-entry s)
+         (push s funs))))
+    funs))
+```
 
-  `mapatoms` 遍历**所有**已存在的符号（obarray），这个遍历顺序是**不确定的**，所以 `(my-add)` 里只有一个元素时看着很稳；真有多个时可别指望顺序。**「遍历全局表 + 判定条件」就是 `debug--function-list` 的全部**——非常简单，却是个很好的例子：**记住「记录状态」比「反查状态」更省事**，Emacs 这里选择了反查，是为了不引入额外的状态变量。
-- **`cancel-debug-on-entry`** 则是把这条 advice 摘掉：
+`mapatoms` 遍历**所有**已存在的符号（obarray），这个遍历顺序是**不确定的**，所以 `(my-add)` 里只有一个元素时看着很稳；真有多个时可别指望顺序。**「遍历全局表 + 判定条件」就是 `debug--function-list` 的全部**——非常简单，却是个很好的例子：**「记录状态」和「反查状态」是两种设计取向**，Emacs 这里选择了反查，代价是 O(全部符号数)，好处是不用维护一张表、也不会和 `advice-remove` 走岔。
 
-  ```elisp
-  (defun cancel-debug-on-entry (&optional function)
-    "Undo effect of \\[debug-on-entry] on FUNCTION.
-  If FUNCTION is nil, cancel `debug-on-entry' for all functions.
-  ..."
-    (interactive ...)
-    (if function
-        (progn
-          (advice-remove function #'debug--implement-debug-on-entry)
-          function)
-      (message "Canceling debug-on-entry for all functions")
-      (mapcar #'cancel-debug-on-entry (debug--function-list))))
-  ```
+`cancel-debug-on-entry` 则是把这条 advice 摘掉：
 
-  传 `nil` 时它**递归地把所有断点都取消**——用 `mapcar` 对自己逐个调用。函数文档里那句「Redefining FUNCTION also cancels it」也值得记：**重新定义函数会让 advice 一起失效**（因为 advice 是挂在旧函数对象上的），调试时反复改函数、断点莫名消失，多半就是这个原因。
+```
+(defun cancel-debug-on-entry (&optional function)
+  "Undo effect of \\[debug-on-entry] on FUNCTION.
+If FUNCTION is nil, cancel `debug-on-entry' for all functions.
+When called interactively, prompt for FUNCTION in the minibuffer.
+To specify a nil argument interactively, exit with an empty minibuffer."
+  (interactive
+   (list (let ((name
+		(completing-read
+                 (format-prompt "Cancel debug on entry to function"
+                                "all functions")
+		 (mapcar #'symbol-name (debug--function-list)) nil t)))
+	   (when name
+	     (unless (string= name "")
+	       (intern name))))))
+  (if function
+      (progn
+        (advice-remove function #'debug--implement-debug-on-entry)
+	function)
+    (message "Canceling debug-on-entry for all functions")
+    (mapcar #'cancel-debug-on-entry (debug--function-list))))
+```
+
+传 `nil` 时它**递归地把所有断点都取消**——用 `mapcar` 对自己逐个调用。函数文档里那句「Redefining FUNCTION also cancels it」也值得记：**重新定义函数会让 advice 一起失效**（因为 advice 是挂在旧函数对象上的），调试时反复改函数、断点莫名消失，多半就是这个原因。
+
+另外注意 `(interactive …)` 那一段：它用 `completing-read` 让你在 minibuffer 里挑一个函数名，候选列表正好来自 `(mapcar #'symbol-name (debug--function-list))`——**「列出当前断点」这个内部函数，同时也被交互界面复用了**。`(unless (string= name "") (intern name))` 处理「直接回车」的情形：空串代表 `nil`，也就是「全部取消」。
 
 ## 33.7 `edebug`：交互式单步
 

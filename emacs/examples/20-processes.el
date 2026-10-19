@@ -37,10 +37,19 @@
                (string-trim
                 (with-temp-buffer (insert-file-contents demo-proc-out) (buffer-string)))))
 
-;;; 4) 【坑】命令和参数必须分开传，不要拼成一个字符串再交给 shell ——
-;;;    既慢（多起一个 shell），又会引入注入问题，还会踩各家 shell 的引号差异。
-;;;    正确： (call-process "git" nil t nil "log" "--oneline")
-;;;    错误： (call-process shell-file-name nil t nil "-c" "git log --oneline")
+;;; 4) 【坑】命令和参数必须**分开传**，不要拼成一个字符串再交给 shell ——
+;;;    分开传时不经过 shell，参数里的空格、引号、$、; 都只是普通字符，
+;;;    既不用转义，也没有注入风险；拼成整串则慢（多起一个 shell）、
+;;;    要自己转义、还会踩各家 shell 的引号差异。
+;;;    这里用 printf 打印三个「在 shell 里有特殊含义」的参数来验证。
+(with-temp-buffer
+  (call-process "printf" nil t nil "[%s]\n" "one two" "a;b" "$HOME")
+  (princ (format "4) 分开传参，printf 原样收到: %S\n"
+                 (string-trim (buffer-string)))))
+;;;    文件名带空格时差别最直观：分开传不用加引号，拼进 shell 就得自己加。
+(let ((fname (expand-file-name "带 空格.txt" demo-proc-dir)))
+  (call-process "touch" nil nil nil fname)
+  (princ (format "   文件名带空格，分开传直接能用: %S\n" (file-exists-p fname))))
 
 ;;; 5) 找可执行文件：executable-find。写扩展时启动外部程序之前一定要先查一次，
 ;;;    找不到就给用户一个明确的错误，而不是让它抛个莫名其妙的异常。
@@ -125,6 +134,21 @@
   (delete-process proc)
   (accept-process-output proc 0.05)
   (princ (format "    delete-process 之后: 活着 = %S\n" (process-live-p proc))))
+
+;;; 10b) 超时兜底的标准写法：deadline + 轮询 accept-process-output。
+;;;      外部工具挂住（等网络、等锁、弹出交互提示）是常态，所以**必须**有超时。
+(let* ((proc (make-process :name "demo-timeout"
+                           :command (list "sleep" "30")
+                           :buffer nil :filter #'ignore :sentinel #'ignore))
+       (deadline (+ (float-time) 1))
+       (timed-out nil))
+  (while (and (process-live-p proc) (< (float-time) deadline))
+    (accept-process-output proc 0.1))
+  (when (process-live-p proc)
+    (setq timed-out '超时已触发)
+    (delete-process proc))
+  (princ (format "10b) 1 秒后仍活着 → %S，杀掉之后还活着吗: %S\n"
+                 timed-out (process-live-p proc))))
 
 ;;; 11) 清理
 (delete-directory demo-proc-dir t)

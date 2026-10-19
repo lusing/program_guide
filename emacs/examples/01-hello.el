@@ -38,4 +38,15 @@
 ;;; 6) prin1-to-string 生成「可以被 read 回来」的形式，调试时比 princ 好用
 (princ (format "prin1 形式：%s\n" (prin1-to-string "带\"引号\"的字符串")))
 
+;;; 7) reader（读取器）语法：数字的 #x / #b / #o 前缀和科学计数法
+(princ (format "数字读法: #x1F=%S #b101=%S #o17=%S 1e3=%S\n"
+               #x1F #b101 #o17 1e3))
+
+;;; 8) reader 语法：字符的转义写法。?\n 是换行符(10)，?\C-a 是 Ctrl-A(1)
+(princ (format "字符读法: ?\\n=%S ?\\C-a=%S ?a=%S\n" ?\n ?\C-a ?a))
+
+;;; 9) 符号区分大小写（和 Common Lisp 相反）：'Hello 与 'hello 是两个符号
+(princ (format "符号大小写: %S 与 %S 是同一个吗？%S\n"
+               'Hello 'hello (eq 'Hello 'hello)))
+
 (princ "==== 01 结束 ====\n")

@@ -69,6 +69,43 @@
 | 定时器里的错看不到 | 错误被 Emacs 吃掉 | 自己 `condition-case` 并打印 |
 | 找不到外部命令时错误难懂 | 没预检查 | `(executable-find ...)` 先查 |
 
+## A.6 语言细节类（第 10 部分）
+
+第 36–40 章补的这批主题，坑的共同特点是**不报错、静默给错结果**，所以单独列一节。
+
+| 症状 | 原因 | 解法 |
+|---|---|---|
+| 哈希表 `puthash` 进去 `gethash` 取不出来 | 默认 `:test` 是 `eql`，两个字符串永不 `eql` | 键是字符串/列表就写 `:test 'equal` |
+| `maphash` 里新增键，Emacs 卡死 | 新键会被同一次遍历看到 | 先 `maphash` 收集键，再对快照 `dolist` |
+| 想用 `hash-table-keys` 报 void-function | Emacs 31 没这个函数 | 自己 `maphash` 收集；判空用 `(zerop (hash-table-count h))` |
+| `:rehash-size` 设了没效果 | 它和 `:rehash-threshold`、`:purecopy` 已废弃被忽略 | 别传；`:size` 也只是提示 |
+| 自定义 `:test` 的表存盘后读回来不对 | `#s(hash-table test my-test …)` 里的符号下次未必注册过 | 存盘前转 alist 或换回 `equal` 表 |
+| `gethash` 给默认值也区分不出「值是 nil」 | 默认值只在键不存在时生效 | 别存 `nil`，或 `maphash` 确认 |
+| `(/ 7 2)` 得到 3 不是 3.5 | 两个整数相除是整除 | 写成 `(/ 7.0 2)` |
+| `round` 把 2.5 舍成 2 | 银行家舍入（取偶） | 要「四舍五入」用 `(floor (+ x 0.5))` |
+| 符号的 plist 里冒出 `variable-documentation` | `defvar` 带了 docstring | 演示四格时用不带 docstring 的 `defvar` |
+| `unintern` 报参数个数错 | 它需要两个参数 | `(unintern sym obarray)` |
+| 未 intern 的符号打印出来和 intern 过的一样 | 默认 `print-gensym` 为 nil | 设 `print-gensym` 打成 `#:foo` |
+| 环形结构打印出 `#N`，读不回来 | 默认 `print-circle` 为 nil | 要存盘/还原共享关系就开 `print-circle` |
+| `format` 拼完的字符串自带字体 | `%s` 会把文本属性一起粘走 | 先 `substring-no-properties` |
+| `read` 一段文本后什么都没发生 | `read` 只读不执行 | 要执行再套一层 `eval` |
+| `read` 循环读到末尾报 End of file | 空内容报的是错，不是返回 nil | 循环终止条件判「到末尾」，别判 nil |
+| 拼字符串时 `%` 报错 | `%` 是转换符前缀 | 写 `%%` |
+| `format` 参数多了没报错、结果却不对 | 多余参数静默忽略 | 参数个数要对齐（只有少了才报错） |
+| 打印中文/换行时输出跨行 | `prin1` 默认不转义 | 设 `print-escape-newlines`；`pp` 默认就转义 |
+| 浮点数打印只剩两位 | 全局设了 `float-output-format` | 在拼接那一步用 `(format "%.2f" x)` |
+
+## A.7 压不住的字节编译警告
+
+有两条警告**用 `with-no-warnings` 也压不住**（实测于 Emacs 31.1），只能改代码：
+
+| 警告 | 为什么压不住 | 怎么办 |
+|---|---|---|
+| `pcase pattern X shadowed by previous pcase pattern` | 由 C 层的 `macroexp-warn-and-return` 发出；`with-no-warnings` 只在字节编译时有效，解释执行（`-l` 加载）时照样报，`byte-compile-log-warning-function` 也拦不住它打 stderr | 别写裸符号打头的多子句 `pcase`，改用 `(and (pred ...) VAR)` |
+| `quoted with ' rather than with #'` | 同上 | lambda 一律用 `#'` |
+
+（能压住的那些——比如 `avoid ‘lsh’; use ‘ash’ instead`——正常用 `with-no-warnings` 包住即可。）
+
 ---
 
-上一章：[35 · 收尾项目：打印一张带坐标的柱状图](35-graph.md)　｜　下一章：[附录 B · 命令与变量速查](appendix-b-cheatsheet.md)　｜　返回：[Emacs 扩展开发指南](README.md)
+上一章：[40 · 读取与打印：read、prin1、princ 与那一堆 print-* 开关](40-reading-printing.md)　｜　下一章：[附录 B · 命令与变量速查](appendix-b-cheatsheet.md)　｜　返回：[Emacs 扩展开发指南](README.md)

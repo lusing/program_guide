@@ -96,8 +96,8 @@ $ emacs -Q --batch --eval '(princ (format "%S" (kbd "C-c x")))' | cat -v
 ```
 
 ```elisp
-;; advice-member-p 返回的不是 t，而是整个 advice 对象（内含字节码）
-(advice-member-p #'demo-log-before #'demo-save)   ; → 一个含控制字节的对象
+;; advice-member-p 返回的不是 t，而是整个 advice 对象（内含字节码）——
+;; 直接 %S 打印它就会把裸控制字节写进输出，这就是第 19 章那条坑的由来
 ```
 
 这类输出扔进终端会把光标搞乱，重定向到文件后 `grep` 也可能崩。所以判定脚本会扫一遍字节流，

@@ -104,6 +104,11 @@
 
 ;;; 11) 用 which-key / 描述来给用户提示：命令必须有 docstring，
 ;;;     因为 C-h k、which-key 的提示都取自它。
+;;;     docstring 里用 \[命令] 占位而不是写死按键 ——
+;;;     substitute-command-keys 会换成用户当前实际的绑定。
 (princ (format "命令的 docstring: %S\n" (documentation #'demo-do-a)))
+(princ (format "docstring 替换后: %S\n"
+               (substring-no-properties
+                (substitute-command-keys "运行：\\[demo-do-a]"))))
 
 (princ "==== 14 结束 ====\n")

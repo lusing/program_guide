@@ -55,6 +55,7 @@
 (princ "== 1) 从符号名找到源码 ==\n")
 (my-print-source 'beginning-of-buffer)
 (my-print-source 'mark-whole-buffer)
+(my-print-source 'append-to-buffer)
 
 ;;; ---------- 2) 验证 beginning-of-buffer 的「N/10」语义 ----------
 ;;; 造一个 10 行、每行 10 个字符的缓冲区，共 110 个字符。

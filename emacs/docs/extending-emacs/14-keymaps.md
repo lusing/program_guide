@@ -7,10 +7,13 @@
 ## 14.1 kbd：把「人写的按键」编译成 Emacs 内部表示
 
 ```elisp
-(kbd "C-c x")      ; 两个元素的 key 序列
-(kbd "M-x")
-(kbd "C-<tab>")
-(kbd "RET")
+(princ (format "kbd \"C-c x\"   = %S（内部是 %S 个元素的序列）\n"
+               (key-description (kbd "C-c x")) (length (kbd "C-c x"))))
+(princ (format "kbd \"M-x\"     = %S\n" (key-description (kbd "M-x"))))
+(princ (format "kbd \"C-<tab>\" = %S\n" (key-description (kbd "C-<tab>"))))
+(princ (format "kbd \"RET\"     = %S\n" (key-description (kbd "RET"))))
+(princ (format "kbd \"C-M-s\"   = %S\n" (key-description (kbd "C-M-s"))))
+(princ (format "kbd \"<f5>\"    = %S\n" (key-description (kbd "<f5>"))))
 ```
 
 ```
@@ -43,8 +46,10 @@ car 是符号 `keymap`，后面的条目形如 `(字符 . 命令)` 或 `(字符 
 
 ```elisp
 (define-key demo-map (kbd "C-c a") #'demo-do-a)
-(lookup-key demo-map (kbd "C-c a"))        ; → demo-do-a
-(lookup-key demo-map (kbd "C-c z"))        ; → nil
+(define-key demo-map (kbd "C-c b") #'demo-do-b)
+(princ (format "lookup \"C-c a\" = %S，\"C-c z\" = %S\n"
+               (lookup-key demo-map (kbd "C-c a"))
+               (lookup-key demo-map (kbd "C-c z"))))
 ```
 
 ```
@@ -57,17 +62,28 @@ lookup "C-c a" = demo-do-a，"C-c z" = nil
 
 ## 14.4 前缀键
 
+```elisp
+(define-key demo-map (kbd "C-c m") (make-sparse-keymap))
+(define-key demo-map (kbd "C-c m s") #'demo-do-a)
+(define-key demo-map (kbd "C-c m t") #'demo-do-b)
 ```
-define-prefix-command: find-file
+
+```
 前缀下的绑定: demo-do-a / demo-do-b
 ```
 
-`C-c` 就是一个前缀 —— 一个键下面挂着一整棵子 keymap。定义自己的前缀：
+`C-c` 就是一个前缀 —— 一个键下面挂着一整棵子 keymap。前缀本身也是一个 keymap，挂上去就行。
+
+想让前缀同时**是个命令**（能 `M-x` 执行、能被 which-key 识别），用 `define-prefix-command`：
 
 ```elisp
-(define-prefix-command 'demo-map)
-(define-key global-map (kbd "C-c d") 'demo-map)   ; C-c d 变成前缀
-(define-key demo-map (kbd "r") #'demo-run)        ; 于是 C-c d r
+(define-prefix-command 'demo-prefix-map)
+(define-key demo-map (kbd "C-c p") 'demo-prefix-map)
+(define-key demo-map (kbd "C-c p f") #'find-file)
+```
+
+```
+define-prefix-command: find-file
 ```
 
 `C-c` 后跟一个字母（`C-c a` 到 `C-c z`，不加其他修饰）是**保留给用户**的，
@@ -76,7 +92,8 @@ define-prefix-command: find-file
 ## 14.5 keymap-parent：继承
 
 ```elisp
-(set-keymap-parent child-map parent-map)
+(defvar demo-child (make-sparse-keymap))
+(set-keymap-parent demo-child demo-map)
 ```
 
 ```
@@ -88,13 +105,16 @@ define-prefix-command: find-file
 
 ## 14.6 【重点】一次按键到底触发谁
 
-查询顺序（从高到低）：
+查询顺序（从高到低，手册的伪代码总结）：
 
-1. 当前启用的 **minor mode** 的 keymap（按 `minor-mode-map-alist` 的顺序，后启用的优先）
-2. 当前 buffer 的 **local keymap**（major mode 的 keymap）
-3. **global-map**
-
-实测：
+1. `overriding-terminal-local-map`（极少用，`set-transient-map` 就设它）
+2. `overriding-local-map`（极少用）
+3. point 处的 `keymap` 文本属性 / overlay keymap
+4. `emulation-mode-map-alists`
+5. `minor-mode-overriding-map-alist`
+6. `minor-mode-map-alist`（按 alist 顺序，**越靠前越优先**；只有变量非 `nil` 的条目才算数）
+7. point 处的 `local-map` 属性，否则当前 buffer 的 local map（major mode 的 keymap）
+8. `global-map`
 
 ```
 global-map 里 C-x C-f 绑的是: find-file
@@ -104,16 +124,24 @@ local-set-key 之后: demo-do-b
 ```
 
 同一个键既在 local 又在 global 绑了，**local 赢** —— 这就是为什么 mode 可以覆盖全局快捷键。
-想知道某个键最终执行什么：
+同理，minor mode 的键会盖住 major mode 的键：「major mode 的键被 minor mode 挡住」是正常
+现象，不是 bug。
+
+想知道某个键最终执行什么，用 `key-binding`（它会走完整套查找），别用 `lookup-key`
+（它只看一个 map）：
 
 ```elisp
-(key-binding (kbd "C-x C-f"))    ; → find-file
+(princ (format "key-binding C-x C-f = %S\n" (key-binding (kbd "C-x C-f"))))
+```
+
+```
+key-binding C-x C-f = find-file
 ```
 
 ## 14.7 绑定到 global / local
 
 ```elisp
-(global-set-key (kbd "C-c g") #'demo-do-a)       ; 全局
+(global-set-key (kbd "C-c d") #'demo-do-a)       ; 全局
 (local-set-key  (kbd "C-c l") #'demo-do-b)       ; 当前 buffer
 ```
 
@@ -123,58 +151,54 @@ local-set-key 之后: demo-do-b
 ## 14.8 解绑与屏蔽
 
 ```elisp
-(define-key map (kbd "C-c x") nil)          ; 解绑（回到继承来的绑定）
-(define-key map (kbd "C-c x") #'undefined)  ; 屏蔽（彻底不响应，也不往上找）
+(define-key demo-map (kbd "C-c a") nil)          ; 解绑（回到继承来的绑定）
 ```
 
 ```
 解绑后 lookup = nil
 ```
 
-区别在于：绑到 `nil` 只是删掉这一层的绑定，查询会继续往上找父 map；
-绑到 `#'undefined` 则明确表示「这个键就是要无效」。
+绑到 `nil` 只是删掉这一层的绑定，查询会继续往上找父 map；要「屏蔽」某个键则绑到
+`#'undefined`，它明确表示「这个键就是要无效」，不再继续找。
 
 ## 14.9 【坑】C-c + 单个字母是用户的
 
-Emacs 官方约定：
+Emacs 官方约定（手册附录 D.2）：
 
 | 键区 | 归属 |
 |---|---|
-| `C-c` + 字母 | **用户**保留（用户自己的快捷键） |
-| `C-c C-<字母>` | 给 major mode 用 |
-| `C-c` + 非字母字符 | 给少数特例（`C-c /` 之类） |
+| `C-c` + 字母（大小写、含非 ASCII 字母） | **用户**保留，且是唯一留给用户的序列 |
+| `F5`–`F9` 无修饰键 | **用户**保留 |
+| `C-c` + 控制字符或数字 | **major mode** |
+| `C-c` + `{` `}` `<` `>` `:` `;` | **major mode** |
+| `C-c` + 其他 ASCII 标点/符号 | **minor mode**（major mode 用也不算禁，但可能被 minor mode 盖住） |
 
-所以你的扩展要绑键，应该用 `C-c C-x` 这种**带修饰**的形式，或者自己造前缀（`C-c d` 那种）。
-占用 `C-c a` 会和用户的配置打架，而且用户会很不高兴 —— 这是社区里有共识的礼节。
+另外几条常被违反的：
 
-```
-global-map 里 C-x C-f 绑的是: find-file
-```
+- 任何前缀后面**不要绑 `C-h`**（`C-h` 要留给「列出这个前缀下有哪些子命令」）；
+- 不要绑以 `ESC` 结尾的序列（跟在另一个 `ESC` 后面除外），否则干扰终端转义序列识别；
+- 不要绑以 `C-g` 结尾的序列（`C-g` 是通用的「取消」）；
+- 临时性 mode/状态应该提供 `ESC ESC`（或接受普通命令的状态用 `ESC ESC ESC`）作为退出。
+
+占用 `C-c a` 会和用户的配置打架 —— 这是社区里有共识的礼节。
 
 ## 14.10 给用户提示
 
 ```elisp
-(substitute-command-keys "\\[find-file]")
+(princ (format "命令的 docstring: %S\n" (documentation #'demo-do-a)))
+(princ (format "docstring 替换后: %S\n"
+               (substring-no-properties
+                (substitute-command-keys "运行：\\[demo-do-a]"))))
 ```
-
-```
-去掉属性之后: "C-x C-f"
-```
-
-`substitute-command-keys` 把 docstring 里的 `\[命令名]` 替换成**用户当前实际绑定的键**。
-所以写 docstring 时应该写：
-
-```elisp
-(defun demo-run ()
-  "运行当前项。\\[demo-run] 可以重新运行。"
-  (interactive))
-```
-
-用户改了绑定之后，docstring 里显示的也是改后的键 —— 这比自己写死 `C-c r` 好得多。
 
 ```
 命令的 docstring: "命令 A。"
+docstring 替换后: "运行：C-c d"
 ```
+
+`substitute-command-keys` 把 docstring 里的 `\[命令名]` 替换成**用户当前实际绑定的键**。
+所以写 docstring 时应该写 `\\[命令名]`，不要写死 `C-c r` —— 上面第二行输出的是 `C-c d`
+（本例里 `demo-do-a` 绑在 `C-c d` 上），用户改了绑定之后，docstring 里显示的也是改后的键。
 
 > `substitute-command-keys` 会往字符串上加 `help-key-binding` 属性（好让 `C-h f` 里显示成一个
 > 按钮）。想在纯文本输出里用，要先 `substring-no-properties` 去掉属性。

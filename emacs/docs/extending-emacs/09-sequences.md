@@ -10,7 +10,7 @@
 
 ```elisp
 (seq-map #'1+ '(1 2 3))      ; → (2 3 4)    列表
-(seq-map #'1+ [1 2 3])       ; → [2 3 4]    vector
+(seq-map #'1+ [1 2 3])       ; → (2 3 4)    输入是 vector，输出仍是列表！
 (seq-filter (lambda (c) (= c ?a)) "aaa")  ; → (97 97 97)  字符串进去，字符列表出来
 ```
 
@@ -19,6 +19,10 @@ seq-map list:   (2 3 4)
 seq-map vector: (2 3 4)
 seq-filter string: (97 97 97)
 ```
+
+> 【坑】**`seq-map` 永远返回列表**，即使输入是 vector 或字符串（源码里就是 `mapcar` +
+> `nreverse`）。想要保持类型的映射，用 `seq-map` 之后自己 `apply #'vector`，或者干脆
+> 用 `cl-map` 指定结果类型。
 
 ## 9.2 常用 seq-* 一览
 
@@ -44,7 +48,7 @@ seq-do 累加: 6
 
 ## 9.3 【坑】seq.el 大多是非破坏性的
 
-```elisp
+```
 seq-sort 后原列表: (3 1 2)，新列表: (1 2 3)
 ```
 
@@ -57,11 +61,14 @@ seq-sort 后原列表: (3 1 2)，新列表: (1 2 3)
 `cl-lib` 的 `cl-loop` 是 Common Lisp 的 `loop` 宏，几乎能表达所有遍历需求：
 
 ```elisp
-(cl-loop for i from 1 to 5 collect (* i i))          ; → (1 4 9 16 25)
-(cl-loop for i from 1 to 10 when (cl-evenp i) collect i)  ; → (2 4 6 8 10)
-(cl-loop for i in '(1 2 3) sum i)                    ; → 6
-(cl-loop for c across "abc" collect (char-to-string c))   ; → ("A" "B" "C")
-(cl-loop for (a b) in '((1 11) (2 22) (3 33)) collect b)  ; → (11 22 33)
+(princ (format "cl-loop collect: %S\n" (cl-loop for i from 1 to 5 collect (* i i))))
+(princ (format "cl-loop 带条件: %S\n"
+               (cl-loop for i from 1 to 10 when (cl-evenp i) collect i)))
+(princ (format "cl-loop sum: %S\n" (cl-loop for x in '(1 2 3) sum x)))
+(princ (format "cl-loop 遍历字符串: %S\n"
+               (cl-loop for c across "abc" collect (upcase (char-to-string c)))))
+(princ (format "cl-loop 多变量: %S\n"
+               (cl-loop for a in '(1 2 3) for b in '(10 20 30) collect (+ a b))))
 ```
 
 ```
@@ -71,6 +78,8 @@ cl-loop sum: 6
 cl-loop 遍历字符串: ("A" "B" "C")
 cl-loop 多变量: (11 22 33)
 ```
+
+注意 `for c across "abc"`：字符串也是序列，遍历得到的是**字符（整数）**，要字符串得自己 `char-to-string`（示例里还套了 `upcase` 让它变成大写）。
 
 常用动词（子句）：
 
@@ -90,22 +99,46 @@ cl-loop 多变量: (11 22 33)
 ## 9.5 cl-lib 的其他常用件
 
 ```elisp
-(cl-incf n)          ; 原地自增，可加步长
-(cl-case kind ...)   ; 见 5.7
+(let ((n 0))
+  (cl-incf n 5)
+  (cl-incf n)
+  (princ (format "cl-incf 之后 n = %S\n" n)))
 ```
 
 ```
 cl-incf 之后 n = 6
 ```
 
-`cl-incf` / `cl-decf` 是宏，直接改地方（`(cl-incf (aref v 0))` 也能用）。
+`cl-incf` / `cl-decf` 是宏，直接改地方——第二个参数是步长，而且**被改的可以是任何 `setf` 能接受的位置**（`(cl-incf (aref v 0))` 修改数组元素）。
+
+`cl-case` / `cl-ecase`（5.7 节讲过 `cl-case`）：`cl-ecase` 在所有分支都没命中时会**报错**，适合处理「理论上不该出现」的值——把静默的 `nil` 变成响亮的错误。
+
+```elisp
+(defun demo-kind (x)
+  "返回 X 的类型名。"
+  (cl-case x
+    (:a "A 类")
+    (:b "B 类")
+    (t "其它")))
+(princ (format "cl-case: %S / %S\n" (demo-kind :a) (demo-kind :z)))
+```
+
+```
+cl-case: "A 类" / "其它"
+```
 
 ## 9.6 cl-defstruct：带名字的结构
 
 ```elisp
-(cl-defstruct demo-point x y)     ; 自动生成 demo-point-p / demo-point-x / 构造器等
-(setq p (make-demo-point :x 3 :y 4))
-(demo-point-x p)                  ; → 3
+(cl-defstruct (demo-point (:constructor demo-point-new (x y)))
+  "演示用结构。"
+  x y)
+(defvar demo-p (demo-point-new 3 4))
+(princ (format "结构: %S, x = %S, 判定 = %S\n"
+               demo-p (demo-point-x demo-p) (demo-point-p demo-p)))
+(cl-incf (demo-point-x demo-p) 10)
+(princ (format "setf 风格改字段后: %S\n" demo-p))
+(princ (format "copy 出的副本: %S\n" (copy-demo-point demo-p)))
 ```
 
 ```
@@ -114,44 +147,47 @@ setf 风格改字段后: #s(demo-point 13 4)
 copy 出的副本: #s(demo-point 13 4)
 ```
 
-生成的东西：`make-demo-point`（构造器，支持 `:x` `:y` 关键字）、`demo-point-p`（判定）、
-`demo-point-x` / `demo-point-y`（访问器，可 `setf`）、`copy-demo-point`（拷贝）、
-`demo-point-p` 打印成 `#s(demo-point 3 4)`。
+`cl-defstruct` 一次定义生成一整套东西：`demo-point-new`（构造器，例子里用 `(:constructor ...)` 自定义成位置参数）、`demo-point-p`（类型判定）、`demo-point-x` / `demo-point-y`（访问器，可用 `cl-incf` / `setf` 改字段）、`copy-demo-point`（拷贝）。不指定 `:constructor` 时，默认生成 `make-demo-point`，用关键字参数调用：`(make-demo-point :x 3 :y 4)`。
 
-它比 alist 更适合「数据结构固定」的场景：有类型判定、有名字、`%S` 打印可读。
+它比 alist 更适合「数据结构固定」的场景：有类型判定、有名字、`%S` 打印成可读的 `#s(demo-point 3 4)`（而不是一长串 cons）。
 
 ## 9.7 cl-defun 的 &key
 
-参数多了之后 `&optional` 的位置陷阱很痛：
+参数多了之后 `&optional` 的位置陷阱很痛：想改最后一个参数，得把前面全写出来。
+`cl-defun` 的 `&key` 让调用点自解释，还支持默认值：
 
 ```elisp
-(defun demo-connect (host &optional port user scheme) ...)
-;; 只想改 user 也得写全前面三个 (demo-connect "h" nil "me")
-
-(cl-defun demo-connect (host &key (port 22) (user "root") scheme) ...)
-(demo-connect "h1" :user "me")    ; 只写要改的
+(cl-defun demo-connect (host &key (port 22) (user "root"))
+  "演示 &key 参数。"
+  (format "%s@%s:%d" user host port))
+(princ (format "%S / %S\n" (demo-connect "h1") (demo-connect "h1" :port 80 :user "me")))
 ```
 
 ```
 "root@h1:22" / "me@h1:80"
 ```
 
-`&key` 让调用点自解释，还支持默认值 `(port 22)`。代价是每个参数多两个字节的开销，
-但可读性提升明显，参数超过 3 个就值得用。
+代价是每个 `&key` 参数多一点开销，但可读性提升明显，参数超过 3 个就值得用。
+另外 `&key` 参数可以配 `:allow-other-keys`，方便转发给别的函数。
 
 ## 9.8 cl-letf：临时改写函数或变量
 
-测试里 mock 的标准手段：
+测试里 mock 的标准手段。它和 `let` 的区别是：**`cl-letf` 改的是 place（广义位置）**，
+普通变量、结构体访问器、甚至 `symbol-function` 都能临时换掉，退出自动恢复：
 
 ```elisp
-(cl-letf (((symbol-function 'demo-slow-call) (lambda (&rest _) "fake")))
-  (demo-slow-call))     ; 用假的
-;; 出了 let 自动恢复
+(princ (format "cl-letf 临时改值: %S\n"
+               (let ((demo-p (demo-point-new 1 1)))
+                 (cl-letf (((demo-point-x demo-p) 42))
+                   (demo-point-x demo-p)))))
 ```
 
 ```
 cl-letf 临时改值: 42
 ```
+
+这里临时把 `demo-point-x` 访问器在 `demo-p` 上的值改成了 42 —— 出来就恢复。
+要 mock 整个函数，把 place 写成 `((symbol-function 'some-fn) (lambda ...))` 即可。
 
 它同时能改函数和变量（`(cl-letf (((symbol-function 'f) ...)) ...)` 改函数，
 `(cl-letf ((var value)) ...)` 改变量）。第 25 章的测试用的就是这个。

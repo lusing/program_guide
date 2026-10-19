@@ -169,8 +169,11 @@
 
 (define-derived-mode demo-todo-mode special-mode "Demo-Todo"
   "待办列表的主模式。"
-  ;; 【坑】special-mode 不会自动打开 font-lock，要自己开。
-  ;; （很多 mode 的 parent 是 text-mode / prog-mode，那边是自动开的）
+  ;; 【坑】交互模式下 global-font-lock-mode 会自动给「支持字体锁的 mode」打开
+  ;; 它（font-lock-global-modes 默认 t，**没有 special-mode 例外**）。
+  ;; 但 batch 下 (font-lock-mode 1) 会被 font-lock-mode 自己的守卫打回 nil
+  ;; （守卫条件是 noninteractive 或 buffer 名以空格开头），
+  ;; 所以本示例里真正把字上色的是 demo-todo-render 末尾的 font-lock-ensure。
   (setq font-lock-defaults '(demo-todo-font-lock-keywords t))
   (font-lock-mode 1)
   (setq-local revert-buffer-function (lambda (_ignore-auto _noconfirm)
@@ -245,9 +248,13 @@
 ;;; ------------------------------------------------------------
 (princ "=== 完整流程演示 ===\n")
 
-;;; 用一个临时文件，别污染用户目录。
+;;; 用一个临时目录 + 固定文件名，别污染用户目录。
+;;; 【坑】make-temp-file 生成的文件名每次都不同；如果它被打印进输出，
+;;;      本示例的输出就不可复现了 —— 所以这里只让**父目录**是临时的，
+;;;      文件名固定成 demo-todo.eld。
 ;;; demo-todo-file 是 defcustom（special 变量），let 能临时改写它。
-(defvar demo-todo-temp-file (make-temp-file "demo-todo-" nil ".eld"))
+(defvar demo-todo-temp-dir (make-temp-file "demo-todo-" t))
+(defvar demo-todo-temp-file (expand-file-name "demo-todo.eld" demo-todo-temp-dir))
 
 (let ((demo-todo-file demo-todo-temp-file))
   (setq demo-todo-items nil)
@@ -363,7 +370,7 @@
 ;;;   - 版本号 + Package-Requires: ((emacs "29.1"))
 ;;; ------------------------------------------------------------
 
-(delete-file demo-todo-temp-file)
+(delete-directory demo-todo-temp-dir t)
 (princ (format "8) 临时数据文件已清理: %S\n"
                (not (file-exists-p demo-todo-temp-file))))
 

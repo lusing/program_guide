@@ -23,12 +23,17 @@
 
 ## 30.2 最短的剪切命令：`zap-to-char`
 
-先看一个最简的「剪切命令」。`M-z` 绑定的 `zap-to-char`：杀掉「从这里到某个字符（含该字符）」的文本。31.1 的真实源码：
+先看一个最简的「剪切命令」。`M-z` 绑定的 `zap-to-char`：杀掉「从这里到某个字符（含该字符）」的文本。下面是示例运行时抓出来的 31.1 真实源码（即示例的 stdout）：
 
-```elisp
+```
 (defun zap-to-char (arg char &optional interactive)
   "Kill up to and including ARGth occurrence of CHAR.
-...
+When run interactively, the argument INTERACTIVE is non-nil.
+Case is ignored if `case-fold-search' is non-nil in the current buffer.
+Goes backward if ARG is negative; error if CHAR not found.
+See also `zap-up-to-char'.
+If called interactively, do a case sensitive search if CHAR
+is an upper-case character."
   (interactive (list (prefix-numeric-value current-prefix-arg)
 		     (read-char-from-minibuffer "Zap to char: "
 						nil 'read-char-history)
@@ -45,8 +50,8 @@
 
 核心只有最后一行：
 
-```elisp
-(kill-region (point) (search-forward (char-to-string char) nil nil arg))
+```
+    (kill-region (point) (search-forward (char-to-string char) nil nil arg))))
 ```
 
 `search-forward` 把 point 移到「该字符之后」，**并返回那个位置**；于是 `kill-region` 拿到的区间就是 `(point) → (找到的位置)`，正好含目标字符。**一条命令干了两件事：搜索 + 剪切**。这是 Emacs 命令里非常常见的组合——用会移动 point 的函数当「定位器」。
@@ -55,11 +60,12 @@
 
 ## 30.3 真正的剪切：`kill-region`
 
-`zap-to-char` 把活交给了 `kill-region`。这是 31.1 的源码（文档字符串略去，正文中逐句解释）：
+`zap-to-char` 把活交给了 `kill-region`。这是 31.1 的真实源码（示例 stdout 原文，**文档字符串太长，这里略去**，正文中逐句解释）：
 
-```elisp
+```
 (defun kill-region (beg end &optional region)
-  "…"
+  ;; Pass mark first, then point, because the order matters when
+  ;; calling `kill-append'.
   (interactive (progn
                  (let ((beg (mark kill-region-dwim))
                        (end (point)))
@@ -120,11 +126,11 @@
 
 **(3) 进环** —— `(when string …)`。`string` 为 `nil` 表示 `beg = end`（空区间），此时什么都不做。否则：
 
-```elisp
-(if (and (not (memq region '(unix-word emacs-word)))
-	 (eq last-command 'kill-region))
-    (kill-append string (< end beg))
-  (kill-new string))
+```
+	  (if (and (not (memq region '(unix-word emacs-word)))
+		   (eq last-command 'kill-region))
+	      (kill-append string (< end beg))
+	    (kill-new string)))
 ```
 
 - 如果**上一条命令也是 `kill-region`**（连续按 `C-w`），就调用 `kill-append` 把新文本**并到环头那一条**上；
@@ -138,20 +144,20 @@
 
 ## 30.4 入环的两条路：`kill-new` 与 `kill-append`
 
-`kill-new` 负责「把一条新文本放进环的最前面」：
+`kill-new` 负责「把一条新文本放进环的最前面」。下面是示例抓出来的真实源码，其中「与系统剪贴板同步」那一大段（`save-interprogram-paste-before-kill`）为了可读性略去，正文里单独讲：
 
-```elisp
+```
 (defun kill-new (string &optional replace)
-  "…"
   ;; Allow the user to transform or ignore the string.
   (when (or (not kill-transform-function)
             (setq string (funcall kill-transform-function string)))
     (unless (and kill-do-not-save-duplicates
+	         ;; Due to text properties such as 'yank-handler that
+	         ;; can alter the contents to yank, comparison using
+	         ;; `equal' is unsafe.
 	         (equal-including-properties string (car kill-ring)))
       (if (fboundp 'menu-bar-update-yank-menu)
 	  (menu-bar-update-yank-menu string (and replace (car kill-ring)))))
-    (when save-interprogram-paste-before-kill
-      …)				; 与系统剪贴板同步，见下
     (unless (and kill-do-not-save-duplicates
 	         (equal-including-properties string (car kill-ring)))
       (if (and replace kill-ring)
@@ -163,6 +169,33 @@
         (funcall interprogram-cut-function string))))
 ```
 
+被略去的那一段长这样（同样摘自真实源码），它就是「剪之前先把系统剪贴板里的内容存进环」：
+
+```
+    (when save-interprogram-paste-before-kill
+      (let ((interprogram-paste
+             (and interprogram-paste-function
+                  ;; On X, the selection owner might be slow, so the user might
+                  ;; interrupt this. If they interrupt it, we want to continue
+                  ;; so we become selection owner, so this doesn't stay slow.
+                  (if (eq (window-system) 'x)
+                      (ignore-error quit (funcall interprogram-paste-function))
+                    (funcall interprogram-paste-function)))))
+        (when interprogram-paste
+          (setq interprogram-paste
+                (if (listp interprogram-paste)
+                    ;; Use `reverse' to avoid modifying external data.
+                    (reverse interprogram-paste)
+		  (list interprogram-paste)))
+          (when (or (not (numberp save-interprogram-paste-before-kill))
+                    (< (seq-reduce #'+ (mapcar #'length interprogram-paste) 0)
+                       save-interprogram-paste-before-kill))
+            (dolist (s interprogram-paste)
+	      (unless (and kill-do-not-save-duplicates
+                           (equal-including-properties s (car kill-ring)))
+	        (push s kill-ring)))))))
+```
+
 三行是重点：
 
 - **`(if (and replace kill-ring) (setcar kill-ring string) …)`** —— 如果 `replace` 为真且环非空，就**直接改环头那个 cons 的 `car`**（相当于「覆盖最新一条」）；否则走 `add-to-history`，把 `string` 压到列表最前面。
@@ -172,16 +205,25 @@
 
 `kill-append` 更短——它只是「把新文本拼到环头那一条上，再调用 `kill-new`」：
 
-```elisp
+```
 (defun kill-append (string before-p)
-  "…"
   (let ((cur (car kill-ring)))
     (kill-new (if before-p (concat string cur) (concat cur string))
               (or (= (length cur) 0)
                   (null (get-text-property 0 'yank-handler cur)))))
   (when (and kill-append-merge-undo (not buffer-read-only))
-    …))				; 把两次剪切的 undo 边界合并成一次
+    (let ((prev buffer-undo-list)
+          (next (cdr buffer-undo-list)))
+      ;; Find the next undo boundary.
+      (while (car next)
+        (pop next)
+        (pop prev))
+      ;; Remove this undo boundary.
+      (when prev
+        (setcdr prev (cdr next))))))
 ```
+
+（文档字符串略去；末尾那一段就是「把两次剪切的 undo 边界合并成一次」。）
 
 - **`(concat cur string)` 或 `(concat string cur)`** —— 由 `before-p` 决定拼在前还是拼在后；
 - **第二个参数 `replace`** —— 一般传 `t`，于是 `kill-new` 里走 `setcar` 分支，**替换**环头而不是新增一条。所以「连续剪三次」在环里只占**一条**，内容是三段的拼接——这正是你按 `C-w C-w C-w` 后 `C-y` 能一次粘出全部的原因；
@@ -191,17 +233,22 @@
 
 出环靠 `current-kill`。这是全章最精妙的一段：
 
-```elisp
+```
 (defun current-kill (n &optional do-not-move)
-  "…"
   (let ((interprogram-paste (and (= n 0)
 				 interprogram-paste-function
 				 (funcall interprogram-paste-function))))
     (if interprogram-paste
 	(progn
+	  ;; Disable the interprogram cut function when we add the new
+	  ;; text to the kill ring, so Emacs doesn't try to own the
+	  ;; selection, with identical text.
+          ;; Also disable the interprogram paste function, so that
+          ;; `kill-new' doesn't call it repeatedly.
           (let ((interprogram-cut-function nil)
                 (interprogram-paste-function nil))
 	    (if (listp interprogram-paste)
+                ;; Use `reverse' to avoid modifying external data.
                 (mapc #'kill-new (reverse interprogram-paste))
 	      (kill-new interprogram-paste)))
 	  (car kill-ring))
@@ -219,21 +266,21 @@
 	(car ARGth-kill-element)))))
 ```
 
-先看「正常路径」（`interprogram-paste` 为 `nil` 时）：
-
-```elisp
-(or kill-ring (error "Kill ring is empty"))
-(let ((ARGth-kill-element
-       (nthcdr (mod (- n (length kill-ring-yank-pointer))
-                    (length kill-ring))
-               kill-ring)))
-  …
-  (car ARGth-kill-element))
-```
-
-下标的算法是：
+（文档字符串略去。）先看「正常路径」（`interprogram-paste` 为 `nil` 时）：
 
 ```
+      (or kill-ring (error "Kill ring is empty"))
+      (let ((ARGth-kill-element
+	     (nthcdr (mod (- n (length kill-ring-yank-pointer))
+			  (length kill-ring))
+		     kill-ring)))
+	(car ARGth-kill-element)))))
+```
+
+下标的算法（这是**公式**，不是程序输出；对应的真实代码是上面那段里的
+`(nthcdr (mod (- n (length kill-ring-yank-pointer)) (length kill-ring)) kill-ring)`）：
+
+```text
 目标下标 = (n - 当前指针长度) mod (环长度)
 ```
 
@@ -255,11 +302,12 @@
 
 `yank` 把 `current-kill` 返回的字符串插进缓冲区：
 
-```elisp
+```
 (defun yank (&optional arg)
-  "…"
   (interactive "*P")
   (setq yank-window-start (window-start))
+  ;; If we don't get all the way thru, make last-command indicate that
+  ;; for the following command.
   (setq this-command t)
   (push-mark)
   (insert-for-yank (current-kill (cond
@@ -267,12 +315,18 @@
 				  ((eq arg '-) -2)
 				  (t (1- arg)))))
   (if (consp arg)
+      ;; This is like exchange-point-and-mark, but doesn't activate the mark.
+      ;; It is cleaner to avoid activation, even though the command
+      ;; loop would deactivate the mark because we inserted text.
       (goto-char (prog1 (mark t)
 		   (set-marker (mark-marker) (point) (current-buffer)))))
+  ;; If we do get all the way thru, make this-command indicate that.
   (if (eq this-command t)
       (setq this-command 'yank))
   nil)
 ```
+
+（`yank` 的文档字符串有 40 多行，讲的全是 `yank-handler` 文本属性的细节，这里略去。）
 
 逐句：
 
@@ -285,9 +339,8 @@
 
 `yank-pop`（`M-y`）的做法正好相反：它**先删掉刚粘的那一段**，再插入 `current-kill 1` 取到的新文本，如此反复就能在环里「翻页」：
 
-```elisp
+```
 (defun yank-pop (&optional arg)
-  "…"
   (interactive "p")
   (if (not (eq last-command 'yank))
       (yank-from-kill-ring (read-from-kill-ring "Yank from kill-ring: ")
@@ -302,8 +355,13 @@
       (setq yank-undo-function nil)
       (set-marker (mark-marker) (point) (current-buffer))
       (insert-for-yank (current-kill arg))
+      ;; Set the window start back where it was in the yank command,
+      ;; if possible.
       (set-window-start (selected-window) yank-window-start t)
       (if before
+          ;; This is like exchange-point-and-mark, but doesn't activate the mark.
+          ;; It is cleaner to avoid activation, even though the command
+          ;; loop would deactivate the mark because we inserted text.
           (goto-char (prog1 (mark t)
                        (set-marker (mark-marker) (point) (current-buffer))))))
     nil))

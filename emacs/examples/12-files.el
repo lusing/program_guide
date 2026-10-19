@@ -1,6 +1,7 @@
 ;;; -*- lexical-binding: t; -*-
 ;;; ============================================================
 ;;; 12 - 文件与目录：路径、读写、遍历、临时文件
+;;;   输出全部经过「只打印文件名、不打印完整路径」处理，保证可复现
 ;;;
 ;;; 编译：emacs -Q --batch --eval '(byte-compile-file "12-files.el")'
 ;;; 运行：emacs -Q --batch -l 12-files.el
@@ -9,7 +10,16 @@
 ;;; 0) 【坑】相对路径是相对 `default-directory` 解析的，而它是**每个 buffer 各一份**
 ;;;    的 buffer-local 变量 —— 不是进程的 cwd。写扩展时凡是要落盘的路径，
 ;;;    一律先 expand-file-name，别指望「当前目录」。
-(princ (format "default-directory = %S\n" default-directory))
+;;;    （这里只打印它的形状，不打印具体路径 —— 路径随运行环境而变。）
+(princ (format "default-directory 以 / 结尾: %S\n"
+               (string-suffix-p "/" default-directory)))
+;;;    它展开出来一定是绝对路径 —— 这正是「别用相对路径落盘」的实证。
+(princ (format "相对展开出来也是绝对路径: %S\n"
+               (file-name-absolute-p (expand-file-name "data.txt"))))
+;;;    它是 special 变量，let 动态绑定立刻生效 —— 临时换个目录干活的标准写法。
+(let ((default-directory "/tmp/emacs-demo/"))
+  (princ (format "let 绑定 default-directory 后: %S\n"
+                 (file-name-directory (expand-file-name "a.txt")))))
 
 ;;; 1) 路径拆分与拼接。file-name-* 家族全是纯字符串运算，不碰磁盘，
 ;;;    所以既快又安全（文件不存在也能算）。
@@ -36,8 +46,9 @@
 (with-temp-file demo-file
   (insert "第一行\n")
   (insert (format "写于 Emacs %s\n" emacs-version)))
-(princ (format "写入 %S，大小 %S 字节\n" demo-file (file-attribute-size
-                                                    (file-attributes demo-file))))
+(princ (format "写入 %S，大小 %S 字节\n"
+               (file-name-nondirectory demo-file)
+               (file-attribute-size (file-attributes demo-file))))
 
 ;;; 4) 读文件：insert-file-contents 读进当前 buffer；
 ;;;    with-temp-buffer + insert-file-contents 是最常见的「读成字符串」写法。
@@ -56,24 +67,27 @@
 
 ;;; 6) 遍历目录。directory-files 返回文件名列表（含 . 和 ..，默认不过滤），
 ;;;    加 t 返回绝对路径；directory-files-recursively 递归。
+;;;    递归的结果顺序依赖文件系统，示例里 sort 一下保证输出稳定。
 (princ (format "目录内容（含 . 和 ..）: %S\n" (directory-files demo-dir)))
 (princ (format "只要 .txt（正则 + 不要 . ..）: %S\n"
-               (directory-files demo-dir t "\\.txt\\'")))
-(princ (format "递归全部文件: %S\n"
                (mapcar #'file-name-nondirectory
-                       (directory-files-recursively demo-dir "" t))))
+                       (directory-files demo-dir t "\\.txt\\'"))))
+(princ (format "递归全部文件: %S\n"
+               (sort (mapcar #'file-name-nondirectory
+                             (directory-files-recursively demo-dir "" t))
+                     #'string<)))
 
 ;;; 7) 追加写：write-region 的第五个参数传 t
 (write-region "追加的一行\n" nil demo-file 'append)
 (princ (format "追加后内容: %S\n"
                (with-temp-buffer (insert-file-contents demo-file) (buffer-string))))
 
-;;; 8) 「访问文件」≠「读文件」。find-file-noselect 返回与该路径关联的 buffer，
+;;; 8) 「访问文件」≠「读文件」。find-file-noselect 返回与该路径关联的 buffer；
 ;;;    这个 buffer 会被 Emacs 记住 —— 下次再访问同一路径拿到的是同一个 buffer。
 ;;;    批处理程序要记得 kill 掉，否则会越攒越多。
 (let ((buf (find-file-noselect demo-file)))
-  (princ (format "buffer 名 = %S，关联文件 = %S，已修改 = %S\n"
-                 (buffer-name buf) (buffer-file-name buf) (buffer-modified-p buf)))
+  (princ (format "buffer 名 = %S，已修改 = %S\n"
+                 (buffer-name buf) (buffer-modified-p buf)))
   (kill-buffer buf))
 
 ;;; 9) 复制、重命名、删除
@@ -89,8 +103,9 @@
 (delete-directory demo-dir t)
 (princ (format "清理后目录还在吗: %S\n" (file-exists-p demo-dir)))
 
-;;; 11) 常用目录变量
-(princ (format "temporary-file-directory = %S\n" temporary-file-directory))
-(princ (format "user-emacs-directory = %S\n" user-emacs-directory))
+;;; 11) 常用目录变量（只验证存在性，不打印路径 —— 路径随环境而变）
+(princ (format "temporary-file-directory 是目录: %S，user-emacs-directory 是目录: %S\n"
+               (file-directory-p temporary-file-directory)
+               (file-directory-p user-emacs-directory)))
 
 (princ "==== 12 结束 ====\n")

@@ -8,6 +8,46 @@
 ;;; 运行：emacs -Q --batch -l 33-debugging.el
 ;;; ============================================================
 (require 'debug)
+(require 'jka-compr)
+
+;;; ---------- 工具：从一个符号找到它的源码（函数或变量） ----------
+(defun my-source-file (sym)
+  "返回 SYM 的定义所在源码文件的路径；找不到返回 nil。"
+  (let* ((compiled (or (symbol-file sym 'defvar) (symbol-file sym 'defun)))
+         (base (and compiled
+                    (if (string-match-p "\\.elc\\'" compiled)
+                        (substring compiled 0 -1)
+                      compiled))))
+    (cond ((null base) nil)
+          ((file-exists-p base) base)
+          ((file-exists-p (concat base ".gz")) (concat base ".gz"))
+          (t nil))))
+
+(defun my-defun-source (sym)
+  "抓出 SYM 的定义原文（defun/defmacro/defcustom/defvar 都行）。"
+  (let ((file (my-source-file sym)))
+    (when file
+      (with-temp-buffer
+        (let ((jka-compr-verbose nil))
+          (insert-file-contents file))
+        (goto-char (point-min))
+        (when (re-search-forward
+               (concat "^(def\\(?:un\\|macro\\|subst\\|custom\\|var\\(?:-local\\)?\\)"
+                       "[ \t\n]+" (regexp-quote (symbol-name sym)) "[ \t\n]")
+               nil t)
+          (beginning-of-line)
+          (let ((start (point)))
+            (condition-case nil
+                (forward-sexp)
+              (error (goto-char (point-max))))
+            (buffer-substring-no-properties start (point))))))))
+
+(defun my-print-source (sym)
+  "打印 SYM 的定义位置和源码。"
+  (princ (format "\n----- %S -----\n" sym))
+  (princ (format "定义在：%s\n" (or (my-source-file sym) "（找不到）")))
+  (let ((src (my-defun-source sym)))
+    (if src (princ (concat src "\n")) (princ "找不到源码原文\n"))))
 
 ;;; ---------- 1) 错误其实是一个「符号 + 数据」的列表 ----------
 ;;; 出错时，Emacs 会「抛出」（signal）一个错误对象，形如 (符号 . 数据)。
@@ -109,6 +149,11 @@
 ;;; 真正进入调试器这件事在 --batch 下不好演示，所以我们把变量 debugger
 ;;; 换成一个「桩」，就能看清它在什么时候、带着什么参数被调用。
 (princ "\n== 6) debug-on-entry 的机制 ==\n")
+(my-print-source 'debug-on-entry)
+(my-print-source 'debug--implement-debug-on-entry)
+(my-print-source 'debug--function-list)
+(my-print-source 'cancel-debug-on-entry)
+
 (defun my-add (a b) (+ a b))
 (defvar my-debug-log nil)
 

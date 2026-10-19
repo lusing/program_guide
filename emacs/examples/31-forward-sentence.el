@@ -50,7 +50,9 @@
 ;;; ---------- 工具：把字符串里的控制字符变成可见的转义写法 ----------
 ;;; 正则里常常含有 TAB、换行这样的字符，直接打印会破坏版面。
 (defun my-visible (s)
-  "把字符串 S 里的控制字符换成可见的转义写法，方便在终端里打印。"
+  "把字符串 S 里的控制字符和「看不见的空格」换成可见的转义写法。
+TAB、换行这类控制字符会破坏版面，不换行空格（NBSP）在终端里和普通空格
+长得一模一样，两者都要转义之后才看得出来。"
   (let ((out ""))
     (dolist (ch (string-to-list s))
       (setq out
@@ -61,6 +63,8 @@
                           ((= ch ?\r) "\\r")
                           ((= ch ?\\) "\\\\")
                           ((= ch ?\") "\\\"")
+                          ;; 不换行空格：Emacs 31 的 (sentence-end) 认它当空格
+                          ((= ch ?\u00a0) "\\u00a0")
                           ((< ch 32) (format "\\x%02x" ch))
                           (t (char-to-string ch))))))
     out))
@@ -72,6 +76,9 @@
 (my-print-source 'sentence-end-base)
 (my-print-source 'paragraph-start)
 (my-print-source 'paragraph-separate)
+(my-print-source 'forward-paragraph)
+(my-print-source 'start-of-paragraph-text)
+(my-print-source 'end-of-paragraph-text)
 
 ;;; ---------- 2) 句子边界就是一个正则 ----------
 (princ "\n== 2) sentence-end 是算出来的正则 ==\n")

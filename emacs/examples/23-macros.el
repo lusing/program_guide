@@ -64,6 +64,9 @@ BINDING 形如 (VAR EXPR)。"
 (princ (format "4) 展开式: %S\n" (macroexpand-1 '(demo-bad-capture x))))
 (princ (format "   调用方 (let ((x 1)) ...) 里拿到: %S  <- 期望 (1 1)，实际第一个被劫持\n"
                (let ((x 1)) (list (demo-bad-capture x) x))))
+;;;    用 macroexpand-all 展开到底，就能看清「劫持」是怎么发生的。
+(princ (format "   把调用方那行展开到底: %S\n"
+               (macroexpand-all '(let ((x 1)) (list (demo-bad-capture x) x)))))
 
 ;;; 5) 修法：用 make-symbol 造一个「未 interned」的符号，
 ;;;    它跟任何用户写的符号都不 eq，自然不可能撞名。
@@ -93,6 +96,17 @@ BINDING 形如 (VAR EXPR)。"
   1)
 (princ (format "6) 求值两次: 结果 = %S，副作用执行了 %S 次\n"
                (demo-bad-double (demo-bump)) demo-side-effect))
+
+;;; 6b) 正确做法：把参数**绑一次**再用 —— 用 make-symbol 造个唯一符号当临时变量，
+;;;     这样既只求值一次，又不会和调用方的变量撞名（见第 5 节）。
+(defmacro demo-safe-double (x)
+  "正确示范：X 只求值一次。"
+  (let ((sym (make-symbol "e")))
+    `(let ((,sym ,x))
+       (+ ,sym ,sym))))
+(setq demo-side-effect 0)
+(princ (format "   改成先绑一次: 结果 = %S，副作用执行了 %S 次\n"
+               (demo-safe-double (demo-bump)) demo-side-effect))
 
 ;;; 7) 调试宏的三个工具：
 ;;;    macroexpand-1  展开一层

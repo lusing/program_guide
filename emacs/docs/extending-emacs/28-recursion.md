@@ -116,18 +116,29 @@ my-count-elements nil         = 0
 (princ "\n== 3) 阶乘 ==\n")
 (princ (format "4! = %S\n" (my-factorial 4)))
 (princ (format "6! = %S\n" (my-factorial 6)))
+;; 递归的「形状」可以让程序自己打印出来：不去算乘法，而是把**要算的那个
+;; 表达式**构造出来 —— 一眼就能看出乘法是被推迟到「回来」之后才做的。
+(defun my-factorial-shape (n)
+  "返回 (my-factorial N) 真正会展开成的那个嵌套表达式。"
+  (if (= n 0)
+      1
+    (list '* n (my-factorial-shape (1- n)))))
+(princ (format "4! 展开成: %S\n" (my-factorial-shape 4)))
 ```
 
 输出：
 
-```
+```text
 4! = 24
 6! = 720
+4! 展开成: (* 4 (* 3 (* 2 (* 1 1))))
 ```
 
-`(my-factorial 4)` 展开成：
+第三行是本节最值得记住的一行。`my-factorial-shape` 和 `my-factorial` 结构完全一样，唯一区别是**不做乘法、只把「要做的那个乘法」构造出来**——于是递归的形状被原样打印了出来。
 
-```
+也就是说 `(my-factorial 4)` 真正计算的正是这个：
+
+```text
 (* 4 (* 3 (* 2 (* 1 1))))
 ```
 
@@ -337,19 +348,36 @@ max-lisp-eval-depth = 1600
 十万元素的递归结果："递归太深，被拦住：excessive-lisp-nesting"
 ```
 
-十万元素的列表并不大，但递归需要一万层栈帧，远超上限 1600，于是被 `condition-case` 拦了下来。这带来两条实践规则：
+十万元素的列表并不大，但递归需要**十万层**栈帧，远超上限 1600，于是被 `condition-case` 拦了下来。这带来两条实践规则：
 
 - **处理「可能很长」的线性数据（缓冲区文本、大文件行列表）时，用循环**（`while` / `dolist` / `seq-*`），不要用递归；
 - **处理层次有限的结构（嵌套列表、表达式、抽象语法树）时，放心用递归**，配合 `condition-case` 兜住意外。
 
-需要更深时可以临时抬高这个上限：
+需要更深时可以临时抬高这个上限——同一份数据，抬起前后差别很直观：
 
 ```elisp
-(let ((max-lisp-eval-depth 100000))
-  (my-count-elements (make-list 50000 'x)))
+;; 需要更深时可以临时抬高这个上限 —— 实测：5000 个元素在默认上限下被拦，
+;; 抬到 100000 之后就能跑完。但真正的深递归即使抬了上限也很慢（每层都要
+;; 分配栈帧），工程上不如直接换成循环。
+(princ (format "默认上限下 5000 个元素: %S\n"
+               (condition-case err
+                   (my-count-elements (make-list 5000 'x))
+                 (error (car err)))))
+(princ (format "把上限抬到 100000 之后: %S\n"
+               (let ((max-lisp-eval-depth 100000))
+                 (condition-case err
+                     (my-count-elements (make-list 5000 'x))
+                   (error (car err))))))
+```
+
+```text
+默认上限下 5000 个元素: excessive-lisp-nesting
+把上限抬到 100000 之后: 5000
 ```
 
 但真正的深递归即使抬了上限也很慢（每层都要分配栈帧），工程上不如直接换成循环或显式的栈。
+
+> 【坑】`max-lisp-eval-depth` 只是** Lisp 层**的保险丝。抬得太高（比如几十万）而递归真的用到那么深，会先撞上**原生 C 栈**溢出——那不是 Lisp 错误，`condition-case` 接不住，Emacs 直接崩。所以抬高上限只能作为临时手段，不能当解决方案。
 
 ## 28.8 小结
 

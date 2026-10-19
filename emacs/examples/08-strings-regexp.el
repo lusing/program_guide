@@ -20,11 +20,13 @@
 (princ (format "mapconcat: %S\n" (mapconcat #'identity '("a" "b" "c") ", ")))
 (princ (format "string-join 等价写法: %S\n" (string-join '("a" "b" "c") ", ")))
 
-;;; 3) 【坑】split-string 的默认分隔符是「空白」，而且会丢掉空串。
-;;;    想按字面字符切必须显式给分隔符，并按需传 nil 关掉 omit-nulls。
+;;; 3) 【坑】split-string 的默认分隔符是「空白」（split-string-default-separators），
+;;;    而且默认丢掉空串（OMIT-EMPTY 为 t）。
+;;;    给了显式分隔符时，OMIT-EMPTY 默认 nil —— 空串被保留，这正是解析 CSV 要的。
+;;;    想显式丢掉空串才传第三个参数 t；想保留就传 nil。
 (princ (format "默认（按空白、去空）: %S\n" (split-string "  a  b   c ")))
-(princ (format "按逗号切: %S\n" (split-string "a,,b,c" ",")))
-(princ (format "按逗号切并保留空串: %S\n" (split-string "a,,b,c" "," nil)))
+(princ (format "按逗号切（保留空串）: %S\n" (split-string "a,,b,c" ",")))
+(princ (format "按逗号切且丢掉空串: %S\n" (split-string "a,,b,c" "," t)))
 
 ;;; 4) 取子串与裁剪。substring 的下标从 0 开始，越界会被截断而不是报错。
 (princ (format "substring: %S\n" (substring "hello world" 0 5)))
@@ -56,9 +58,18 @@
   (princ (format "所有数字: %S\n" (nreverse hits))))
 
 ;;; 8) 【坑】match-string 用的是「最后一次匹配」的全局状态。
-;;;    任何一次正则操作都会覆盖它，所以取值要紧跟在匹配之后，
-;;;    中间不要插别的 string-match / looking-at。
-(princ (format "匹配失败时 string-match 返回: %S\n" (string-match "zzz" demo-text)))
+;;;    两个反直觉点：
+;;;    a) 匹配**失败**（返回 nil）并不会清理 match data —— 上一次的结果还在，
+;;;       所以忽略 nil 返回值就会读到脏数据；
+;;;    b) 字符串匹配之后 match-string 必须传字符串，不传会报错
+;;;       （它默认去当前 buffer 里取，而字符串匹配的位置是 0 开始的）。
+(let ((s1 "aaa"))
+  (string-match "a" s1)
+  (princ (format "   先成功匹配: %S\n" (match-string 0 s1)))
+  (princ (format "   失败匹配返回: %S\n" (string-match "zzz" s1)))
+  (princ (format "   失败后 match-string 还在: %S\n" (match-string 0 s1)))
+  (princ (format "   不传字符串会怎样: %S\n"
+                 (condition-case err (match-string 0) (error err)))))
 
 ;;; 9) rx 宏：用 S-表达式写正则，可读性远胜字符串，强烈推荐。
 (princ (format "rx 生成: %S\n" (rx "v" (one-or-more digit))))
@@ -74,5 +85,9 @@
 (princ (format "string-to-number: %S，number-to-string: %S\n"
                (string-to-number "0x1f") (number-to-string 31)))
 (princ (format "实际写代码里更常用 (format \"%%d\" 31) = %S\n" (format "%d" 31)))
+
+;;; 11) 字面量查找/替换的现代函数（不用写正则）：string-search / string-replace
+(princ (format "string-search: %S\n" (string-search "lo" "hello")))
+(princ (format "string-replace: %S\n" (string-replace "a" "X" "banana")))
 
 (princ "==== 08 结束 ====\n")

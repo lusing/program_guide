@@ -10,20 +10,23 @@ hook 是「在某个事件发生时，按顺序跑一串函数」的机制。它
 ## 17.1 hook 就是一个函数列表
 
 ```elisp
+(defvar demo-hook nil "演示用的普通 hook。")
+(defun demo-first () "第一个。" (princ "    [first] 执行\n"))
 (add-hook 'demo-hook #'demo-first)
-(remove-hook 'demo-hook #'demo-first)
 (run-hooks 'demo-hook)
 ```
 
 ```
+    [first] 执行
 4) hook 里装的是符号: (demo-first)
 ```
 
 约定：hook 变量以 `-hook` 结尾，里面装的是**函数符号**而不是 lambda。
 
-> 【坑】**永远不要把 lambda 直接加进 hook**。原因有二：`remove-hook` 比的是对象身份，
-> 匿名 lambda 每次都是新对象，加进去就摘不掉；而且 `run-hooks` 对 lambda 的处理在不同版本/是否
-> 字节编译下有所不同。**具名函数是唯一正确的写法。**
+> 【坑】**永远不要把 lambda 用 `add-hook` 加进 hook**。原因有二：`remove-hook` 比的是对象身份，
+> 匿名 lambda 每次都是新对象，加进去就摘不掉；而且用户 `C-h v` 看 hook 时会看到满屏
+> `#<compiled-function>`，完全没法读。**具名函数是唯一正确的写法。**
+> （临时 `let` 一个 hook 变量时用 lambda 没问题，见 17.8。）
 
 ## 17.2 【坑】默认是插到最前面
 
@@ -45,8 +48,9 @@ hook 是「在某个事件发生时，按顺序跑一串函数」的机制。它
 的直觉相反。想按加入顺序执行，第 3 个参数传 `t`（append）：
 
 ```elisp
+(setq demo-hook nil)
 (add-hook 'demo-hook #'demo-first)
-(add-hook 'demo-hook #'demo-second t)     ; 追加到末尾
+(add-hook 'demo-hook #'demo-second t)          ; t = append
 ```
 
 ## 17.3 add-hook 是幂等的
@@ -63,13 +67,12 @@ hook 是「在某个事件发生时，按顺序跑一串函数」的机制。它
 普通 hook 里的函数**不接收参数**，`run-hooks` 只是无参调用它们。要传参得用 abnormal hook：
 
 ```elisp
-;; 名字以 -functions 结尾（不是 -hook）的通常是 abnormal hook
-(add-hook 'demo-save-functions #'demo-on-save)
-
-(defun demo-on-save (filename)
-  (princ (format "    [on-save] 保存了 %S\n" filename)))
-
-(run-hook-with-args 'demo-save-functions "/tmp/a.txt")
+(defvar demo-args-hook nil "演示用的带参 hook。")
+(defun demo-on-save (file)
+  "文件 FILE 保存时调用。"
+  (princ (format "    [on-save] 保存了 %S\n" file)))
+(add-hook 'demo-args-hook #'demo-on-save)
+(run-hook-with-args 'demo-args-hook "/tmp/a.txt")
 ```
 
 ```
@@ -98,8 +101,9 @@ hook 是「在某个事件发生时，按顺序跑一串函数」的机制。它
 ## 17.6 精确控制顺序：DEPTH
 
 ```elisp
-(add-hook 'demo-hook #'demo-first  -10)    ; 数字更小的更早跑
-(add-hook 'demo-hook #'demo-second 10)
+(setq demo-hook nil)
+(add-hook 'demo-hook #'demo-first 10)
+(add-hook 'demo-hook #'demo-second -10)
 ```
 
 ```
@@ -129,9 +133,11 @@ Buffer A 的 hook 里出现了 `t`，这是 buffer-local 绑定在默认值上�
 ## 17.8 「一次性」hook
 
 ```elisp
-(let ((demo-hook (list #'demo-temp)))     ; 动态绑定覆盖 hook 变量
-  (demo-run-temp-hook))
-;; 出了 let 自动恢复
+(setq demo-hook (list #'demo-first))
+(princ "9) 临时替换 hook：\n")
+(let ((demo-hook (list (lambda () (princ "    [临时] 只跑这一次\n")))))
+  (run-hooks 'demo-hook))
+(princ (format "   退出 let 后恢复为: %S\n" demo-hook))
 ```
 
 ```
@@ -142,6 +148,8 @@ Buffer A 的 hook 里出现了 `t`，这是 buffer-local 绑定在默认值上�
 
 利用 `let` 对 special 变量的动态绑定（第 3.4 节）：`let` 期间 hook 里只有你想跑的那个函数，
 退出后自动恢复。这比「加进去再摘掉」安全得多（中途出错也不会漏摘）。
+
+这也是**唯一一种可以往 hook 里放 lambda 的情况**：它随 `let` 一起消失，不需要被摘掉。
 
 ## 17.9 常用内置 hook
 
@@ -162,11 +170,8 @@ Buffer A 的 hook 里出现了 `t`，这是 buffer-local 绑定在默认值上�
 
 ## 17.10 【坑】高频 hook
 
-```
-11) post-command-hook 和 after-change-functions 每次击键都会跑
-```
-
-这两个 hook **每次按键都跑**。在里面做重活会立刻让 Emacs 卡顿。如果确实需要，
+这两个 hook **每次按键都跑**（`post-command-hook` 在每条命令结束后，`after-change-functions`
+在每次 buffer 内容变化后）。在里面做重活会立刻让 Emacs 卡顿。如果确实需要，
 用定时器延后（第 21 章的空闲定时器）或者加节流。
 
 ---

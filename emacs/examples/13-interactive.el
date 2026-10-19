@@ -64,7 +64,7 @@
 (defun demo-repeat-p (n)
   "用 \"p\" 接收前缀参数。"
   (interactive "p")
-  (message "p 收到: %S（没按 C-u 时是 1）" n))
+  (message "p 收到: %S" n))
 (defun demo-repeat-P (arg)
   "用 \"P\" 接收原始前缀参数。"
   (interactive "P")

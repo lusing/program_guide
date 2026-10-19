@@ -50,10 +50,14 @@
       (princ "找不到源码原文\n"))))
 
 ;;; ---------- 1) 读源码 ----------
-(princ "== 1) 读源码：kill ring 的三个核心函数 ==\n")
+(princ "== 1) 读源码：kill ring 的几个核心函数 ==\n")
 (my-print-source 'zap-to-char)
+(my-print-source 'kill-region)
+(my-print-source 'kill-new)
 (my-print-source 'kill-append)
 (my-print-source 'current-kill)
+(my-print-source 'yank)
+(my-print-source 'yank-pop)
 
 ;;; ---------- 工具：看指针在环里的位置 ----------
 (defun my-yank-pos ()

@@ -47,11 +47,14 @@
 ;;;    advice 收到的参数是「原函数」+ 原参数列表，它自己决定
 ;;;    要不要调用原函数、调用几次、传什么参数、返回什么。
 ;;;    【坑】参数顺序是 (原函数 . 原参数)，别写反。
+;;;    【坑】计时在 batch 下是微秒级、输出不稳定 —— 这里包一个 100ms 的
+;;;          sleep 模拟「耗时操作」，用一位小数的粒度打印，输出才可复现。
 (defun demo-timing (orig-fun &rest args)
   "统计 ORIG-FUN 的运行时间。"
   (let ((t0 (current-time)))
+    (sleep-for 0.1)                       ; 模拟被包住的耗时操作
     (let ((result (apply orig-fun args)))
-      (princ (format "    [around] 耗时 %.6f 秒，返回值 %S\n"
+      (princ (format "    [around] 耗时 %.1f 秒，返回值 %S\n"
                      (float-time (time-subtract (current-time) t0)) result))
       result)))
 (advice-add #'demo-save :around #'demo-timing)
@@ -75,18 +78,13 @@
 (advice-add #'demo-save :override #'demo-override)
 (princ (format "7) :override 之后: %S（其它 advice 全被短路）\n" (demo-save "g" 7)))
 
-;;; 8) 移除 advice：advice-remove（单个）/ advice-remove-all？没有后者，
-;;;    要全清就逐个 remove。查询用 advice-member-p。
+;;; 8) 移除 advice：advice-remove（单个）。没有 advice-remove-all，
+;;;    要全清就用 advice-mapc 遍历着删。查询用 advice-member-p。
 ;;;    【坑】advice-member-p 返回的不是 t，而是整个 advice 对象
 ;;;    （里面含字节码，%S 打印出来会带裸控制字符），要用得先转布尔。
 (princ (format "8) demo-log-before 还挂着吗: %S\n"
                (and (advice-member-p #'demo-log-before #'demo-save) t)))
-(advice-remove #'demo-save #'demo-override)
-(advice-remove #'demo-save #'demo-timing)
-(advice-remove #'demo-save #'demo-add-suffix)
-(advice-remove #'demo-save #'demo-upcase-key)
-(advice-remove #'demo-save #'demo-log-after)
-(advice-remove #'demo-save #'demo-log-before)
+(advice-mapc (lambda (a _) (advice-remove #'demo-save a)) 'demo-save)
 (princ (format "   全部移除后: %S，还挂着吗: %S\n"
                (demo-save "h" 8)
                (and (advice-member-p #'demo-log-before #'demo-save) t)))

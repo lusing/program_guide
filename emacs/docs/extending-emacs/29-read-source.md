@@ -88,9 +88,10 @@ Emacs 里每个已加载的函数都记着一件事：「我编译自哪个文�
 (princ "== 1) 从符号名找到源码 ==\n")
 (my-print-source 'beginning-of-buffer)
 (my-print-source 'mark-whole-buffer)
+(my-print-source 'append-to-buffer)
 ```
 
-输出（本机 Emacs 31.1）：
+输出（本机 Emacs 31.1；`定义在：` 那行的绝对路径在你的机器上会不同）：
 
 ```
 == 1) 从符号名找到源码 ==
@@ -99,8 +100,9 @@ Emacs 里每个已加载的函数都记着一件事：「我编译自哪个文�
 定义在：/opt/local/share/emacs/31.1/lisp/simple.el.gz
 (defun beginning-of-buffer (&optional arg)
   "Move point to the beginning of the buffer.
-...
 ```
+
+（后面还有 `mark-whole-buffer` 和 `append-to-buffer` 两段，完整原文分别见 29.3 和 29.4。）
 
 **这套工具就是接下来几章的眼睛。** 只要把函数名换掉，你就能读 Emacs 里任何一个函数的源码。
 
@@ -110,9 +112,11 @@ Emacs 里每个已加载的函数都记着一件事：「我编译自哪个文�
 
 ## 29.2 第一例：`beginning-of-buffer`
 
-这是抓到的 31.1 真实源码（位于 `simple.el`）：
+这是示例运行时抓出来的 31.1 真实源码（原文位于 `simple.el`，本机的实际路径是
+`/opt/local/share/emacs/31.1/lisp/simple.el.gz`）——换句话说，下面这一整段是
+**示例的 stdout**，不是照着手抄的：
 
-```elisp
+```
 (defun beginning-of-buffer (&optional arg)
   "Move point to the beginning of the buffer.
 With numeric arg N, put point N/10 of the way from the beginning.
@@ -148,12 +152,13 @@ is supplied, or Transient Mark mode is enabled and the mark is active."
 
 `(consp arg)` 判断的是「参数是不是一个 cons」。当用户按 `M-<` 时不带参数，`arg` 是 `nil`，`consp` 为假；按 `C-u M-<` 时 `arg` 是 `(4)`，`consp` 为真。所以这一行的意思是「**给前缀参数就不 push mark**」。
 
-**核心的三行**：
+**核心的三行**（同样摘自上面那段真实源码）：
 
-```elisp
-(let ((size (- (point-max) (point-min))))
-  (goto-char (if (and arg (not (consp arg)))
-		   (+ (point-min) 1 (/ (* size (prefix-numeric-value arg)) 10))
+```
+  (let ((size (- (point-max) (point-min))))
+    (goto-char (if (and arg (not (consp arg)))
+		   (+ (point-min) 1
+		      (/ (* size (prefix-numeric-value arg)) 10))
 		 (point-min))))
 ```
 
@@ -216,9 +221,9 @@ is supplied, or Transient Mark mode is enabled and the mark is active."
 
 ## 29.3 第二例：`mark-whole-buffer`
 
-这是 `C-x h` 绑定的命令，31.1 的真实源码：
+这是 `C-x h` 绑定的命令，同样是示例抓出来的 31.1 真实源码（stdout 原文）：
 
-```elisp
+```
 (defun mark-whole-buffer ()
   "Put point at beginning and mark at end of buffer.
 Also push mark at point before pushing mark at end of buffer.
@@ -268,12 +273,15 @@ region 里的字符数 = 110
 
 ## 29.4 第三例：`append-to-buffer`
 
-把当前缓冲区的一段文本追加到另一个缓冲区。31.1 的真实源码：
+把当前缓冲区的一段文本追加到另一个缓冲区。31.1 的真实源码（示例 stdout 原文）：
 
-```elisp
+```
 (defun append-to-buffer (buffer start end)
   "Append to specified BUFFER the text of the region.
-...
+The text is inserted into that buffer before its point.
+BUFFER can be a buffer or the name of a buffer; this
+function will create BUFFER if it doesn't already exist.
+
 When calling from a program, give three arguments:
 BUFFER (or buffer name), START and END.
 START and END specify the portion of the current buffer to be copied."

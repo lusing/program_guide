@@ -9,6 +9,10 @@
 ;;; 1) Emacs 的错误由「错误符号（error symbol）」+「数据」组成。
 ;;;    (error "格式串" ...) 会 signal 一个 'error；也可以直接 (signal 'wrong-type-argument ...)。
 ;;;    错误信息用 (error-message-string ERR) 取。
+(princ (format "1) 错误的形状: %S\n"
+               (condition-case e (+ 1 "x") (error e))))
+(princ (format "   转成人类可读: %S\n"
+               (condition-case e (+ 1 "x") (error (error-message-string e)))))
 
 ;;; 2) condition-case 是最常用的捕获结构：
 ;;;      (condition-case VAR
@@ -36,9 +40,13 @@
                      (void-function 'nope))
                  (wrong-type-argument '外层接住了))))
 
-;;; 4) 【坑】(condition-case nil ...) 用 nil 当变量时会**忽略错误详情**，
-;;;    而且字节编译器对未使用的变量会警告。需要详情就给变量并用到它，
-;;;    不需要就写 nil。
+;;; 4) 【坑】(condition-case nil ...) 用 nil 当变量时会**忽略错误详情** ——
+;;;    你只能知道「出错了」，拿不到消息，也没法判断是哪一类错。
+;;;    日志/调试时一定要给变量；只在乎成败时写 nil 才合适。
+(princ (format "4) 用 nil 只能知道出错了: %S\n"
+               (condition-case nil (error "这条消息你拿不到") (error '出错了))))
+(princ (format "   给变量就能拿到详情: %S\n"
+               (condition-case e (error "这条消息你拿得到") (error (error-message-string e)))))
 
 ;;; 5) 只关心「出错没出错」时，用 ignore-errors 更简洁：
 ;;;    出错返回 nil，正常返回 body 的值。

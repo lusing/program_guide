@@ -14,7 +14,7 @@ Emacs 的扩展开发有个特点：语言（Elisp）本身很小，但它的**�
 # 跑单个示例（-Q 表示不加载任何配置文件，保证结果可复现）
 emacs -Q --batch -l examples/01-hello.el
 
-# 跑全部 35 个示例，逐个核对判定标准
+# 跑全部 40 个示例，逐个核对判定标准
 ./run-all.sh
 ```
 
@@ -132,6 +132,18 @@ eintr 最有价值的部分：**读 Emacs 自带的真实源码**。这一部分
 | [33 · 调试：debug-on-entry、edebug 与 batch 下的排查](33-debugging.md) | 调试：debug-on-entry、edebug 与 batch 下的排查 | `33-debugging.el` |
 | [34 · 初始化文件与 mode line](34-init-mode-line.md) | 初始化文件与 mode line | `34-init-mode-line.el` |
 | [35 · 收尾项目：打印一张带坐标的柱状图](35-graph.md) | 收尾项目：打印一张带坐标的柱状图 | `35-graph.el` |
+
+## 第 10 部分 · 对照参考手册补齐的主题
+
+前 9 部分是「从零写出一个扩展」的主线。主线走完之后，回头对照《Emacs Lisp 参考手册》的目录，还有一批**主线没覆盖到、但写扩展迟早会撞上**的主题：数字与位运算、符号的四个格子、求值与 backquote、哈希表、读取与打印、minibuffer 输入、字节编译、marker、窗口与框架、语法表。这一部分补齐它们，体例照旧：一章一个可跑的示例，结论全部来自实测。
+
+| 章 | 主题 | 示例 |
+|---|---|---|
+| [36 · 数字：整除、取整、bignum 与位运算](36-numbers.md) | 整除、取整、bignum 与位运算 | `36-numbers.el` |
+| [37 · 符号：四个格子、属性表与 obarray](37-symbols.md) | 符号的四个格子、属性表与 obarray | `37-symbols.el` |
+| [38 · 求值：quote、backquote 与 eval](38-evaluation.md) | 求值：quote、backquote 与 eval | `38-evaluation.el` |
+| [39 · 哈希表：测试函数、遍历与弱引用](39-hash-tables.md) | 哈希表：测试函数、遍历与弱引用 | `39-hash-tables.el` |
+| [40 · 读取与打印：read、prin1、princ 与 print-* 开关](40-reading-printing.md) | 读取与打印：read、prin1、princ 与 print-* 开关 | `40-reading-printing.el` |
 
 ## 附录
 

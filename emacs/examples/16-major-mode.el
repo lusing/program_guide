@@ -66,10 +66,23 @@
 ;;;           因为派生链上就没有 fundamental-mode 这一环 ——
 ;;;           想判断「是不是最原始的 mode」，要判 major-mode 本身而不是 derived-mode-p。
 ;;;    所以：判断派生关系一律用 derived-mode-p，别去读 derived-mode-parent 属性。
+;;;
+;;;    【坑三】keymap 的 parent、语法表的 parent 都是**首次进入 mode 时**才设上的
+;;;            （define-derived-mode 在 mode 函数体里把 parent 设成「当时的
+;;;             current-local-map / 当前语法表」）。定义完立刻去查，
+;;;            keymap parent 是 nil、语法表 parent 还是标准语法表 —— 别被吓到。
 (princ (format "4) 派生关系: parent 属性 = %S\n"
                (get 'demo-note-mode 'derived-mode-parent)))
+(princ (format "   定义后立刻查: keymap parent = %S，语法表 parent 是标准表? %S\n"
+               (keymap-parent demo-note-mode-map)
+               (eq (char-table-parent demo-note-mode-syntax-table)
+                   (standard-syntax-table))))
 (with-temp-buffer
   (demo-note-mode)
+  (princ (format "   进入 mode 后: keymap parent = text-mode-map? %S，语法表 parent = text-mode 表? %S\n"
+                 (eq (keymap-parent demo-note-mode-map) text-mode-map)
+                 (eq (char-table-parent demo-note-mode-syntax-table)
+                     text-mode-syntax-table)))
   (princ (format "   derived-mode-p: text=%S prog=%S fundamental=%S\n"
                  (derived-mode-p 'text-mode)
                  (derived-mode-p 'prog-mode)
@@ -86,18 +99,23 @@
 
 ;;; 6) 字体锁实际着色效果。font-lock-ensure 强制把整个 buffer 着色一遍
 ;;;    （交互模式下它是按需、延迟触发的，batch 下要手动调用）。
+;;;    【坑】font-lock-mode 的 body 里有硬守卫：batch（noninteractive）或
+;;;          buffer 名以空格开头时，(font-lock-mode 1) 会被**打回 nil** ——
+;;;          但 font-lock-ensure 不走这个守卫，照样能把字上色。
+;;;          所以在 batch 里测字体锁：别信 font-lock-mode 变量，信 font-lock-ensure。
 (with-temp-buffer
   (demo-note-mode)
   (insert "# 我的笔记\n")
   (insert "* TODO 买咖啡\n")
   (insert "* DONE 写教程 @emacs\n")
   (font-lock-mode 1)
+  (princ (format "6) (font-lock-mode 1) 之后变量 = %S（batch 下被守卫打回）\n" font-lock-mode))
   (font-lock-ensure)
   ;; 【坑】search-forward 结束后 point 停在匹配的**末尾**，
   ;; 而属性区间是左闭右开的，所以要在 (match-beginning 0) 处取属性。
   (goto-char (point-min))
   (search-forward "TODO")
-  (princ (format "6) TODO 处被着上的 face = %S\n"
+  (princ (format "   TODO 处被着上的 face = %S\n"
                  (get-text-property (match-beginning 0) 'face)))
   (goto-char (point-min))
   (search-forward "DONE")
@@ -136,5 +154,15 @@
 ;;;     - 一个 hook         —— 用户能扩展
 (princ (format "10) keymap 名 = %S，hook 名 = %S\n"
                'demo-note-mode-map 'demo-note-mode-hook))
+
+;;; 11) :after-hook（Emacs 29+）：hook 跑完之后、mode 函数返回之前再执行一次，
+;;;     用来做「用户配置之后我还得收拾」的收尾。执行顺序：body → hook → :after-hook。
+(defvar demo-ah-order nil)
+(define-derived-mode demo-ah-mode text-mode "AH"
+  :after-hook (setq-local demo-ah-order (cons :after-hook demo-ah-order))
+  (setq-local demo-ah-order (cons :body demo-ah-order)))
+(with-temp-buffer
+  (demo-ah-mode)
+  (princ (format "11) 执行顺序（晚执行的排在前面）= %S\n" demo-ah-order)))
 
 (princ "==== 16 结束 ====\n")

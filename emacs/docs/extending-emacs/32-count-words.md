@@ -10,9 +10,9 @@ eintr 用「数词数」这件小事演示了「同一个问题可以有多种�
 
 ## 32.1 读源码：Emacs 自己怎么数词
 
-先看 Emacs 的 `count-words`。它是 31.1 的真实源码（`simple.el`）：
+先看 Emacs 的 `count-words`。它是 Emacs 31.1 的真实源码（`simple.el`）：
 
-```elisp
+```
 (defun count-words (start end &optional totals)
   "Count words between START and END.
 If called interactively, START and END are normally the start and
@@ -31,13 +31,13 @@ from Lisp."
       (let ((words 0)
             ;; Count across field boundaries. (Bug#41761)
             (inhibit-field-text-motion t))
-        (save-excursion
-          (save-restriction
-            (narrow-to-region start end)
-            (goto-char (point-min))
-            (while (forward-word-strictly 1)
-              (setq words (1+ words)))))
-        words)
+	(save-excursion
+	  (save-restriction
+	    (narrow-to-region start end)
+	    (goto-char (point-min))
+	    (while (forward-word-strictly 1)
+	      (setq words (1+ words)))))
+	words)
     ;; When called interactively, message the data.
     (let ((totals (if (and totals
                            (or (use-region-p)
@@ -48,7 +48,7 @@ from Lisp."
                                              (point-min) (point-max)))
                     "")))
       (if (use-region-p)
-          (message "%s%s" (count-words--format
+	  (message "%s%s" (count-words--format
                            "Region" (region-beginning) (region-end))
                    totals)
         (message "%s%s" (count-words--buffer-format) totals)))))
@@ -65,18 +65,22 @@ from Lisp."
 
 **`words` 是累加器。** 上半支的核心是这个循环：
 
-```elisp
-(let ((words 0))
-  (save-excursion
-    (save-restriction
-      (narrow-to-region start end)
-      (goto-char (point-min))
-      (while (forward-word-strictly 1)
-        (setq words (1+ words)))))
-  words)
+```
+      (let ((words 0)
+            ;; Count across field boundaries. (Bug#41761)
+            (inhibit-field-text-motion t))
+	(save-excursion
+	  (save-restriction
+	    (narrow-to-region start end)
+	    (goto-char (point-min))
+	    (while (forward-word-strictly 1)
+	      (setq words (1+ words)))))
+	words)
 ```
 
 `words` 从 `0` 开始，每成功前移一个词就 `(1+ words)`。为什么循环条件能直接用 `(forward-word-strictly 1)` 的返回值？因为它的 docstring 说「Normally returns `t`。到缓冲区边界就停在那里并返回 `nil`」——**「还能往前走」这个事实，正好被它自己编码成了真/假**。于是循环不必额外判断「到没到头」，`nil` 自然终止。这跟上一章 `forward-paragraph` 返回 `0`（真值！）形成对照组，提醒我们：**调用前务必确认返回值的真假含义**。
+
+`let` 里还多绑了一个一眼看不懂的 `(inhibit-field-text-motion t)`。上一章末尾提过「字段（field）」——带文本属性的受保护区域（`comint` 提示符、只读区域等），移动命令会用 `constrain-to-field` 把 point 夹在字段内。**字段边界会拦住移动函数**：`forward-word-strictly` 撞到字段边界也会返回 `nil`（docstring 明写）。于是如果区间里含字段边界，循环会提前停下、数少了。把它设成 `t` 就等于说「这次遍历别管字段」，配合源码里那句注释 `;; Count across field boundaries. (Bug#41761)`——**这是修一个真实 bug 时加进去的**。读真实源码常能撞见这种「一行补丁 + 一个 bug 号」，它往往正是最值得琢磨的地方：先想明白「没有这一行会怎样」，那一行的作用就懂了。
 
 **`save-excursion` + `save-restriction` + `narrow-to-region` 三件套。** 这段是「在一个区间里做遍历、做完全复原」的标准范式：
 
@@ -89,9 +93,9 @@ from Lisp."
 
 ## 32.2 `forward-word-strictly`：为什么不用 `forward-word`
 
-`count-words` 用的不是 `forward-word`，而是 `forward-word-strictly`。同样是 31.1 的真实源码（`subr.el`）：
+`count-words` 用的不是 `forward-word`，而是 `forward-word-strictly`。同样是 Emacs 31.1 的真实源码（`subr.el`）：
 
-```elisp
+```
 (defun forward-word-strictly (&optional arg)
   "Move point forward ARG words (backward if ARG is negative).
 If ARG is omitted or nil, move point forward one word.
@@ -206,20 +210,20 @@ by `find-word-boundary-function-table'.  It is also not interactive."
 
 ## 32.4 一次报四样：`count-words--format`
 
-回到 `count-words` 下半支调用的两个帮手。`count-words--format`（31.1 真实源码）：
+回到 `count-words` 下半支调用的两个帮手。`count-words--format`（Emacs 31.1 真实源码）：
 
-```elisp
+```
 (defun count-words--format (str start end)
   (let ((lines (count-lines start end))
-        (sentences (count-sentences start end))
-        (words (count-words start end))
-        (chars (- end start)))
+	(sentences (count-sentences start end))
+	(words (count-words start end))
+	(chars (- end start)))
     (format "%s has %d line%s, %d sentence%s, %d word%s, and %d character%s"
-             str
-             lines (if (= lines 1) "" "s")
-             sentences (if (= sentences 1) "" "s")
-             words (if (= words 1) "" "s")
-             chars (if (= chars 1) "" "s"))))
+	     str
+	     lines (if (= lines 1) "" "s")
+	     sentences (if (= sentences 1) "" "s")
+	     words (if (= words 1) "" "s")
+	     chars (if (= chars 1) "" "s"))))
 ```
 
 逐点看：
@@ -230,7 +234,7 @@ by `find-word-boundary-function-table'.  It is also not interactive."
 
 `count-words--buffer-format` 更短，只是替 `count-words--format` 选好称呼和范围：
 
-```elisp
+```
 (defun count-words--buffer-format ()
   (count-words--format
    (if (buffer-narrowed-p) "Narrowed part of buffer" "Buffer")
@@ -248,7 +252,7 @@ Buffer has 2 lines, 2 sentences, 37 words, and 215 characters
 
 这里 `sentences` 用的 `count-sentences` 来自 `textmodes/paragraphs.el`，就是[上一章](31-forward-sentence.md)那群段落/句子函数的邻居：
 
-```elisp
+```
 (defun count-sentences (start end)
   "Count sentences in current buffer from START to END."
   (let ((sentences 0)
@@ -267,7 +271,7 @@ Buffer has 2 lines, 2 sentences, 37 words, and 215 characters
         ;; Remove last possibly empty sentence
         (when (/= (skip-chars-backward " \t\n") 0)
           (setq sentences (1- sentences)))
-        sentences))))
+	sentences))))
 ```
 
 它和你刚写的 `my-count-iter` **是同一个骨架**（三件套 + 从头遍历 + 累加），只是把 `forward-word` 换成了上一章的 `forward-sentence`。两个细节值得学：
@@ -299,7 +303,7 @@ Buffer has 2 lines, 2 sentences, 37 words, and 215 characters
   (princ (format "这个 defun 里有 %d 个词\n" (my-count-words-in-defun))))
 ```
 
-```text
+```
 == 4) 只数一个 defun 里的词 ==
 这个 defun 里有 8 个词
 ```
@@ -352,7 +356,7 @@ Buffer has 2 lines, 2 sentences, 37 words, and 215 characters
 
 它顺着 alist 一个 `cdr` 一个 `cdr` 地走，打印到 `limit` 行为止。`%-12s` 是「左对齐、宽度 12」的格式串，让数字列对齐。`(caar freq)` 是「第一个元素的 car」即词，`(cdar freq)` 是次数。第 5 节实测（前 6 名）：
 
-```text
+```
 == 5) 词频统计（前 6 名）==
   are          3
   that         3
@@ -398,7 +402,7 @@ Buffer has 2 lines, 2 sentences, 37 words, and 215 characters
 
 示例第 6 节确认命令已就绪：
 
-```text
+```
 == 6) 交互命令也已定义 ==
 命令 my-word-frequency-buffer 可用，文档：统计当前缓冲区（或激活的选区）里的词频，打印前 LIMIT 名。
 交互调用时，用前缀参数指定要打印多少名。

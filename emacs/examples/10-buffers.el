@@ -48,12 +48,21 @@
 
 ;;; 6) 查找替换：re-search-forward 把 point 移到匹配末尾，replace-match 替换
 ;;;    **刚刚那次匹配**的内容（同样依赖全局 match data）。
+;;;    【坑】replace-match 默认做「大小写适配」：替换串全小写、原文不全小写时，
+;;;    替换结果会被改成原文的大小写（下面 THIS → that 却得到 THAT）。
+;;;    不想要这个行为，传第 4 个参数 t（LITERAL）。
 (with-temp-buffer
   (insert "keep-THIS-keep")
   (goto-char (point-min))
   (re-search-forward "THIS")
   (replace-match "that")
   (princ (format "replace-match 后: %S\n" (buffer-string))))
+(with-temp-buffer
+  (insert "keep-This-keep")
+  (goto-char (point-min))
+  (re-search-forward "This")
+  (replace-match "that" t t)
+  (princ (format "关掉大小写适配: %S\n" (buffer-string))))
 
 ;;; 【坑】buffer 可能是只读的（dired、*Messages*、grep 结果都是）。
 ;;;    直接 insert 会报 buffer-read-only。标准做法是 let-bind
