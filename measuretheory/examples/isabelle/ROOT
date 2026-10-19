@@ -17,3 +17,8 @@ session MT12 in "MT12" = "HOL-Analysis" +
   options [document = false]
   theories
     T12_SignedMeasures
+
+session MT16 in "MT16" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    T16_BochnerIntegral

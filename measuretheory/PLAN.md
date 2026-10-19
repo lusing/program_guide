@@ -95,10 +95,10 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 10 | integral | 3.1 | ✓ | ✓ | ✓ | ✓ | ✓ | B3 | ✅ |
 | 11 | limit-theorems | 3.2 | ✓ | ✓ | ✓ | ✓ | · | B3 | ✅ |
 | 12 | signed-measures | 3.3 | ✓ | ✓ | ✓ | ✓ | · | B3 | ✅ |
-| 13 | lp-spaces | 3.4 | ✓ | · | ✓ | ✓ | · | B3 | ☐ |
-| 14 | linfty-dual | 3.5 | 分工 | · | ✓ | ✓ | ✓ | B3 | ☐ |
-| 15 | daniell | 3.6 | 分工 | · | ✓ | ✓ | ✓ | B3 | ☐ |
-| 16 | bochner-integral | 3.7 | ✓ | ✓ | ✓ | ✓ | · | B3 | ☐ |
+| 13 | lp-spaces | 3.4 | ✓ | · | ✓ | ✓ | · | B3 | ✅ |
+| 14 | linfty-dual | 3.5 | 分工 | · | ✓ | ✓ | ✓ | B3 | ✅ |
+| 15 | daniell | 3.6 | 分工 | · | ✓ | ✓ | ✓ | B3 | ✅ |
+| 16 | bochner-integral | 3.7 | ✓ | ✓ | ✓ | ✓ | · | B3 | ✅ |
 | 17 | product-sigma | 4.1 | ✓ | · | ✓ | ✓ | ✓ | B4 | ☐ |
 | 18 | fubini | 4.2 | ✓ | ✓ | ✓ | ✓ | · | B4 | ☐ |
 | 19 | kernels | 4.3 | ✓ | · | ✓ | ✓ | ✓ | B4 | ☐ |
@@ -141,9 +141,7 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 - [x] B0 基建（OCR 全书 144 奇数页 ✓ / 侦察 ✓ / 骨架冒烟 2/2 ✓ / build.ps1 ✓ / README ✓ / 00 导言 209 行 ✓）
 - [x] B1 01-06 集类与测度（docs 6 篇 200-237 行 / Lean 6 / Julia 6 / Python 6 / Prolog 5；23/23 全绿；docs 扩写补严书 1.3.5 概率化引理、1.4.4/1.4.5 半环验收工序、§1.5 ℝⁿ 盒半环与高维分布函数、§1.6 逼近定理全文）
 - [x] B2 07-09 可测映射（docs 3 篇 200/201/232 行 / Lean 3 / Julia 3 / Python 3 / Prolog 3；12/12 全绿；π-λ 引擎 induction_on_inter 完整重放（含机器抓出"补集需总质量相等"）、垫高技巧与 f∨g 公式机器版、TendstoInMeasure 三件套 + Egorov xⁿ 实弹）
-- [ ] B3 10-16 积分与 Lp（**批 1-2/2 已完成：10-12 章全绿**——10-11 章 10/10（三步构造+Markov 手作+L⁰ 距离、MCT 对角线+Fatou+DCT 三反例机+习题 3.2.1/3.2.3、Isabelle MT10/MT11 新会话）；12 章 4/4（Jordan-Hahn 证明骨架+极分解+Lebesgue 分解 H-类机器+RN 定理与反例、Lean withDensity_rnDeriv_eq 实弹、Isabelle RN_derivI=SOME 选择子还原、Julia/Python 位掩码 Hahn 穷举 64 集合+变差达界）；13-16 待续）
-- [ ] B2 07-09 可测映射
-- [ ] B3 10-16 积分与 Lp
+- [x] B3 10-16 积分与 Lp（**全部完成，终态 -All 64/64 全绿**——批 1：10-11 章 10/10（三步构造+Markov 手作+L⁰ 距离、MCT 对角线+Fatou+DCT 三反例机、Isabelle MT10/MT11）；批 2：12 章 4/4（Jordan-Hahn 骨架+Lebesgue 分解 H-类+RN 定理、RN_derivI 还原、位掩码 Hahn 穷举）；批 3：13-16 章 13/13——13：三不等式+Riesz-Fischer 六步账+对偶装配线+σ-有限反例（Lean Cauchy 六平方和 nlinarith）；14-15 通道分工（ba 空间/自然密度荷死亡现场、Daniell 五步流水线+非 Stone 反例）；16：强可测/Pettis 三档表+对角线反例六步骨架+ASP 注记（integral 即 Bochner、MT16 向量和））
 - [ ] B4 17-22 乘积空间
 - [ ] B5 23-29 拓扑测度
 - [ ] B6 30-34 测度收敛
@@ -264,3 +262,24 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
     density M f = N）——SOME-选择子的良定还原，不含 σ-有限/
     绝对连续（存在性在 RN_deriv_unique_sigma_finite 族）；凭
     "RN 定理"的印象脑补签名会写出一整套展开不了的实例义务。
+28. （B3）mathlib 的 Hölder 挂在 **ContinuousLinearMap** 命名空间
+    （Function/Holder.lean，非 MeasureTheory）；Lp 结构在
+    LpSpace/Basic、范数实例要 Fact(1≤p)。惊喜件：nlinarith 能
+    从"六个交叉差平方非负"自动合成 Lagrange 恒等式路线——
+    Cauchy 不等式的教科书证明压成一行提示列表。
+29. （B3）有理数 p-范数：1/p 根超出 ℚ——精确账记"p 次幂和"
+    （平方账），Minkowski 的 p=1 精确、p=2,4 浮点容差；Cauchy/
+    对偶全部平方化后是整数不等式。"哪个量在哪个域可精确"必须
+    设计实验前先想清楚。
+30. （B3）Julia 三连：单行多 const 语法炸（分开写）；is_measurable
+    的 setdiff(A,B) 空是 A⊆B（要的是 B⊆A，方向写反）；向量值
+  mid 混标量 norm 崩（using LinearAlgebra: norm）。掩码索引
+    vals[mask+1] 偏移两撞。
+31. （B3）Prolog：大写 I 开头的 `Ifun` 是**变量**不是谓词
+    （报"Operator expected"在调用行，定位偏移）；q(N,D) 有理数
+    体系里伪 1r2 记号无效（SWI 的 r/2 只在 is 算术里有效）。
+32. （B3）Isabelle 收尾三式：有限空间可积性 simp 需配
+    nn_integral_count_space_finite 算出有限和；`has_bochner_
+    integral_eq` 是唯一性方向（两 has_bochner ⟹ 等式），改
+    积分值用 `h[simplified 引理]` 在结论内改写；∫ 绑定器已
+    λ 化，body 里再写 fun 是双重 λ（Lean 同款坑）。
