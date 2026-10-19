@@ -14,3 +14,7 @@ session IsaTutLib = "HOL-Library" +
     T62_cardinality
     T63_monads
     T64_streams
+    T65_codegen
+    T66_floats
+    T67_order_fixpoint
+    T68_sugar

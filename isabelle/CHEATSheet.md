@@ -333,3 +333,15 @@ Nat.add_le_mono                               单调性
 | 库里已有 nats/fromN/sconst 缩写，别重名定义 | 64 |
 | `##` 双主（Stream.SCons vs Omega_Words.build），同导入歧义 | 64 |
 | alw 共归纳要带 arbitrary: 泛化起点，否则尾巴掉出关系 | 64 |
+| Code_Target_Numeral 全局生效：value 不变、导出代码变脸 | 65 |
+| `code_lazy_type` 只收代数类型且每理论一次 | 65 |
+| `-1 :: 8 word = 255`——word 的负数是环绕值 | 65 |
+| IArray 的 `!!` 是 IArray.sub，与列表/流同记号不同常量 | 65 |
+| float 非 IEEE754：无 NaN，指数是二进制，打印走 normfloat | 66 |
+| sos 失败=证书求不出（非命题假）；离线只能过简单目标 | 66 |
+| Code_Real_Approx_By_Float 故意不一致（能"证" False），只读勿导 | 66 |
+| Bourbaki–Witt 喂关系集合+显式 lub；iterates_above 含极限步 | 67 |
+| fact 名撞 Isar 关键字报外层语法错（fix 实测，位置指错行） | 67 |
+| Lub_Glb 第一参数是载集不是关系（isLub UNIV S x） | 67 |
+| 模式别名 `=:` 右侧必须是自由变量；codegen 展开成嵌套 Let | 68 |
+| OptionalSugar 是单向打印糖：输出里 set/of_nat「消失」是错觉 | 68 |
