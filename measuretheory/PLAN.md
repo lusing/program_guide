@@ -139,9 +139,9 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 38 | uniform-integrability | 7.4/袁9.3 | ✓ | · | ✓ | ✓ | · | B7 | ✅ |
 | 39 | esssup | 7.5 | ✓ | · | ✓ | ✓ | ✓ | B7 | ✅ |
 | 40 | analytic-sets | 7.6/袁下册 | ✓ | · | ✓ | ✓ | ✓ | B7 | ✅ |
-| 41 | martingale-inequalities | 8.1 | ✓ | · | ✓ | ✓ | ✓ | B8 | ☐ |
-| 42 | martingale-convergence | 8.2 | ✓ | · | ✓ | ✓ | ✓ | B8 | ☐ |
-| 43 | local-martingales | 8.3 | 分工 | · | ✓ | ✓ | ✓ | B8 | ☐ |
+| 41 | martingale-inequalities | 8.1 | ✓ | · | ✓ | ✓ | ✓ | B8 | ✅ |
+| 42 | martingale-convergence | 8.2 | ✓ | · | ✓ | ✓ | ✓ | B8 | ✅ |
+| 43 | local-martingales | 8.3 | 分工 | · | ✓ | ✓ | ✓ | B8 | ✅ |
 | 44 | bochner-theorem | 9.1/袁17.4 | ✓ | ✓ | ✓ | ✓ | · | B9 | ☐ |
 | 45 | minlos-sazonov | 9.2 | 分工 | · | ✓ | ✓ | · | B9 | ☐ |
 | 46 | minlos | 9.3 | 分工 | · | ✓ | ✓ | · | B9 | ☐ |
@@ -175,7 +175,7 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 - [x] B5 23-29 拓扑测度（**22/22 全绿，终态 -All 111/111**——docs 7 篇 191-218 行：网/滤子对照表+Borel 层级图+Ba/B 有限反例、RMK 四步+mathlib 构造对照表+局部紧用量清单、三档正则+反例档案+层级表、c₀*/符号 Radon+弱*预告、Lusin 三版等价+Cauchy 传染骨架+Egorov 双胞表、截口引理解剖+无穷乘积关卡、胎紧三步+距离改造工具箱+判据表；Lean 7 件：RealRMK 主定理/Regular instance 算术/BorelSpace 三登记/紧矩形账；Julia 7/Python 7/Prolog 1：三明治构造、R-S 透视 δ₀、p=∞ 近距对论证、非紧反例 sup 恒 1/2、ρ₀ 边界爆炸。**Julia 抓出真数学错**：非 T₁ 有限空间 Ba ⊊ B（修正 docs 想当然））
 - [x] B6 30-34 测度收敛（**17/17 全绿，终态 -All 128/128**——docs 5 篇 195-215 行：磨光三连母版+次概率画像+泊松二项全流程、Skorokhod 构造骨架+独立性裂缝+检验族缩减清单+证明地图、Carathéodory 紧性版验收+C[0,1] 判据、距离公理细账+Polish lifting+姊妹距离族+TV 分档、截断分解细账+严书 6.5 对照总表+Banach-Alaoglu 接手+离散三档分离；Lean 5 件：cdf_eq_real 跳点账、TendstoInDistribution+连续映射+Slutsky、IsTightMeasureSet+Prokhorov 双向+Chebyshev 打包、levyProkhorovEDist 公理族、c₀/ℓ¹ 离散账；Isabelle 2 件（Helly 选择/弱收敛 locale）；Julia 5/Python 5：Helly 对角线（sin 聚点子列 4616 成员）、Portmanteau 四条款、同源采样一致轨道、d_P 穷举 1/4+TV 分档、三档分离）
 - [x] B7 35-40 概率选讲（**22/22 全绿，终态 -All 150/150**——docs 6 篇 196-212 行：卷积跨章总表+BC i.o. 诚实数值学（计数增长侧写）、条件期望投影谱系+新息分解+退化显式库五条、条件分布三张面孔互译表+装配进料单+Rao-Blackwell、UI 缴费阶梯五档+Dunford-Pettis 影子、ess inf 存在四步+L⁰ 完备格地位、解析集 Souslin 双定义+Lusin 分离+Choquet 容度链；Lean 6 件（**B7 双翻案**：ch40 AnalyticSet 全家升 ✓；condexp→condLExp 新 API 正名）；Isabelle MT36（nn_cond_exp/real_cond_exp/Jensen）；Julia 6/Python 6/Prolog 3：双骰爆雷 1/36≠1/72 精确、塔/取出/Jensen/正交全精确、Rao-Blackwell 4 倍压缩 35/12→35/48、尖峰跳变谱系、树运算退化注记）
-- [ ] B8 41-43 鞅
+- [x] B8 41-43 鞅（**12/12 全绿，终态 -All 162/162**——docs 3 篇 191-202 行：上穿策略的赌博账证明文化（一切鞅式不等式都是某个交易策略的盈亏封顶——mathlib upcrossingStrat 直接继承此骨架）、Pólya 罐完全账四步+乘积鞅双轨分叉解剖（E[log]<log E 的 Jensen 间隙）、局部化选取学+无套利离散影子；Lean 3 件：Doob 分解（predictablePart+martingalePart）、exists_ae_tendsto_of_bdd+upcrossingsBefore、可料变换期望账（局部鞅分工如实：mathlib Martingale/ 无 local 文件）；Julia 3/Python 3/Prolog 3：Doob L¹/L² 采样验证（ratio 1.32 < 2）、上穿计数 2.9 有限、Pólya Beta(1,1) 直方图、G-W s=1/4 精确、截断冻结语义（clamp 会破坏鞅性——数值抓出的真语义）、偷看策略套利 199 vs 可料 0）
 - [ ] B9 44-47 无穷维
 - [ ] B10 48-50 袁下册 I（概率不等式/特征函数/弱大数律）
 - [ ] B11 51-53 袁下册 II（强大数律/CLT/无穷可分）
@@ -420,3 +420,24 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
     顶层 for 循环内数组赋值须函数封装（第 35/37 章两犯）；`fit_hist` 类
     辅助函数必须在使用点之前定义（脚本顺序敏感）；满二叉树 depth-1..d
     节点数 = 2^d − 1（非 2^(d+1) − 2——心算翻车被机器抓住）。
+
+56. （B8）mathlib：`Submartingale.submartingale_max_mul_le` **不存在**（Doob Lᵖ 极大
+    不等式在 4.33 缺失）——用 upcrossing 族 + `exists_ae_tendsto_of_bdd` +
+    Centering（Doob 分解）三件代偿；`upcrossingsBefore` 对 Preorder 索引类
+    抽象，裸调用类型类歧义——以 docs 语义承载。
+57. （B8）**数值抓出真语义**：局部鞅的截断实现若用 clamp（m = sign·cap 后
+    继续乘）会**破坏鞅性**（E → 0）；正确语义是**冻结**（停止过程 M^{τ}
+    后值恒定）——Julia/Python/Prolog 三通道在冻结版下 E 恰 = 1（全树
+    精确）。这是"停止"与"反射"的区别在数值侧的显影。
+58. （B8）Julia：协方差 `cov(D', dims=2)` 对 8×20000 矩阵给 20000 维——
+    dims=2 的语义是"对第 2 维分组"（变量维 = 行）——正确用法 cov(D, dims=2)
+    直接 8×8；Prolog `abs(X) < Y` 不是 is 表达式（须 `Diff is abs(...)`）；
+    Prolog 头部 `:- encoding(utf8.`（少右括号）吞掉整个后续定义（"Unknown
+    procedure stopped_product/3" 的误导报错）。
+59. （B8）Python：Fraction 定点迭代的**分母平方爆炸**——s = c0+c2s² 型迭代
+    200 步的分母位数 ~ 2^200（直接挂起）；正确做法：is_fixed 不动点代入
+    验证（精确）+ 浮点迭代方向验证（数值）分离。
+60. （B8）Julia：GW 超临界模拟的种群爆炸（μ=1.6 的 60 代 ~ 10^12 个体）
+    需 pop > 100_000 熔断（视为存活）；乘积鞅的 E[Mₙ]=1 验证在 n=500
+    时方差天文（重尾）——改用 E[log M] 精确账（150·log(0.84)）展示
+    a.s. 衰减引擎。
