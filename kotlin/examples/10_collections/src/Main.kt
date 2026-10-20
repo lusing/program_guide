@@ -86,6 +86,8 @@ fun main() {
     println(sortDemo())
     val byName = people.sortedWith(compareByDescending<Person> { it.age }.thenBy { it.name })
     println("按年龄降序: ${byName.joinToString { it.name }}")
+    println("compareValues(1, 2) = ${compareValues(1, 2)}, compareValues(\"b\", \"a\") = ${compareValues("b", "a")}")
+    println("compareValuesBy(年龄段, 名字): ${people.sortedWith { a, b -> byAgeGroupThenName(a, b) }.joinToString { it.name }}")
 
     println("== 10.11 接口层次与实现内幕 ==")
     // 注：is 检查对静态类型恒真/恒假会触发 K2 告警（10 章老坑），教学演示先转 Any

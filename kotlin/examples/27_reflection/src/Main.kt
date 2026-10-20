@@ -1,5 +1,5 @@
 // 27 · 注解与反射：annotation class、元注解、使用处目标、KClass/KFunction/KProperty、泛型反射、迷你 @Test 框架
-// 注：supertypes/annotations/typeParameters 在 2.4.20 是 KClass 成员（不用 import）；
+// 注：supertypes/annotations/typeParameters 是 KClass 成员（不用 import）；
 //     declaredFunctions/findAnnotation/primaryConstructor 是 kotlin.reflect.full 扩展（要 import）
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredFunctions

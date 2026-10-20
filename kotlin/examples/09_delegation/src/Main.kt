@@ -1,6 +1,8 @@
 // 09 · object、companion 与委托：单例、伴生、类委托、委托属性（lazy/observable/自定义）
 
 import kotlin.properties.Delegates
+import kotlin.properties.ReadOnlyProperty
+import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 /** object 声明 = 立即创建的单例（类声明 + 唯一实例） */
@@ -9,6 +11,25 @@ object Registry {
     var probes = 0
     fun register(name: String) { probes++; items[name] = items.getOrDefault(name, 0) + 1 }
     fun snapshot(): Map<String, Int> = items.toMap()
+}
+
+// ---------- kotlin.properties：委托属性的"官方"接口形式 ----------
+
+/** ReadOnlyProperty：只读委托一个 getValue 就够（对照：lazy 走的是 Lazy<T> 的 getValue 运算符扩展，没实现这个接口） */
+class Constant(private val v: String) : ReadOnlyProperty<Any?, String> {
+    override fun getValue(thisRef: Any?, property: KProperty<*>): String = v
+}
+
+/** ReadWriteProperty：可写委托 = getValue + setValue（Trimmed 的接口化写法） */
+class Trimmed2 : ReadWriteProperty<Any?, String> {
+    private var raw = ""
+    override fun getValue(thisRef: Any?, property: KProperty<*>): String = raw.trim()
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: String) { raw = value }
+}
+
+class Form2 {
+    val title: String by Constant("订单")     // 只读：编译期就定了谁来实现
+    var note: String by Trimmed2()            // 可写：接口强迫两个函数都实现，漏一个编译不过
 }
 
 /** companion object：类的"静态"成员与工厂函数 */
@@ -123,4 +144,10 @@ fun main() {
     b.fruits = mutableListOf("苹果", "梨", "西瓜")
     println("整体换引用: 记录数=${b.changes.size}，最后一条=${b.changes.last()}")
     println("选型: lateinit 更快但不能用于基本类型/顶级属性；notNull 全类型可用但要过委托调用")
+
+    println("== 9.10 委托属性接口：ReadOnlyProperty / ReadWriteProperty ==")
+    val f2 = Form2()
+    println("title = ${f2.title}（ReadOnlyProperty：只实现 getValue）")
+    f2.note = "  草稿  "
+    println("note 赋值 '  草稿  ' 读出 '${f2.note}'（ReadWriteProperty：get + set 成对）")
 }

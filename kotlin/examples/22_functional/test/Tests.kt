@@ -1,4 +1,7 @@
-// 22 的测试：惰性、组合、Either 链、依赖注入、不可变更新
+// 22 的测试：惰性、组合、Either 链、依赖注入、不可变更新、Stream 互操作
+import kotlin.streams.asSequence
+import kotlin.streams.asStream
+import kotlin.streams.toList
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -47,6 +50,20 @@ fun testImmutableCopy() {
     assertEquals(C("h", 80, false), a)          // 原值不动
 }
 
+fun testStreamInterop() {
+    // Java Stream → Kotlin Sequence：接住 Java 库的返回值，用 Kotlin 管道处理
+    val odds = java.util.stream.Stream.of(1, 2, 3, 4, 5).asSequence().filter { it % 2 == 1 }.toList()
+    assertEquals(listOf(1, 3, 5), odds)
+    // Kotlin Sequence → Java Stream：喂给只认 Stream 的 Java API
+    val lens = sequenceOf("a", "bb", "ccc").asStream().map { it.length }.toList()
+    assertEquals(listOf(1, 2, 3), lens)
+    // 桥是零拷贝的视图：Sequence 侧仍然是惰性的
+    var seen = 0
+    val first = java.util.stream.Stream.of(1, 2, 3).asSequence().onEach { seen++ }.first()
+    assertEquals(1, first)
+    assertEquals(1, seen)
+}
+
 fun main() {
     testLaziness()
     testCompose()
@@ -54,5 +71,6 @@ fun main() {
     testEither()
     testInjectClock()
     testImmutableCopy()
+    testStreamInterop()
     println("22_functional 全部测试通过")
 }

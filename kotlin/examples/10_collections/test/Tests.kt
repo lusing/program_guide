@@ -41,6 +41,24 @@ fun testSortTrap() {
     assertEquals("src=[3, 1, 2], copy=[1, 2, 3]", sortDemo())   // sorted 不动原列表
 }
 
+fun testCompareValues() {
+    // kotlin.comparisons.compareValues：-1/0/1 三态，自定义比较器的最小结石
+    assertEquals(-1, compareValues(1, 2))
+    assertEquals(0, compareValues("x", "x"))
+    assertEquals(1, compareValues("b", "a"))
+    val people = listOf(
+        Person("Alice", 30, "北京"), Person("Bob", 17, "北京"),
+        Person("Carol", 25, "北京"), Person("Dave", 41, "深圳"),
+    )
+    // 先按年龄段（0/1/2）再按名字：Bob(0) → Alice/Carol(1, 字典序) → Dave(2)
+    assertEquals(
+        listOf("Bob", "Alice", "Carol", "Dave"),
+        people.sortedWith { a, b -> byAgeGroupThenName(a, b) }.map { it.name },
+    )
+    assertEquals(-1, byAgeGroupThenName(Person("Bob", 17, ""), Person("Alice", 30, "")))
+    assertEquals(0, byAgeGroupThenName(Person("Alice", 30, ""), Person("Alice", 30, "")))
+}
+
 fun testSetOps() {
     assertEquals(setOf(1, 2, 3, 4), setOf(1, 2, 3) + setOf(3, 4))
     assertEquals(setOf(3), setOf(1, 2, 3) intersect setOf(3, 4))
@@ -73,6 +91,7 @@ fun main() {
     testChecksum()
     testZipChunk()
     testSortTrap()
+    testCompareValues()
     testSetOps()
     testMapOps()
     testHierarchy()

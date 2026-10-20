@@ -38,3 +38,5 @@ partial2(加法, 10)(5) = 15
   debug = Config2(host=api.x.io, port=8443, debug=true)（copy 产出新值，原值不动）
 == 22.7 递归与尾调用 ==
   sumTo(100000) = 705082704（tailrec 编译成循环，不爆栈）
+== 22.8 kotlin.streams：与 Java Stream 互操作 ==
+  Stream→Sequence 取奇数: [1, 3, 5]; Sequence→Stream 取长度: [1, 2, 3]

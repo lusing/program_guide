@@ -136,7 +136,7 @@ u.toString(16)                  // "ff"
 
 与有符号互转：`toInt()` 保**数值**（4_000_000_000u.toInt() 截断），`toLong()` 扩展；位重解释用 `.toInt() then .toUInt()`。无符号的定位是**协议解析、位标志、防负数下标**等场景，日常业务代码仍用有符号。
 
-注意坑：类型已转正，但**部分 API 仍标实验**——`uintArrayOf`、`UIntArray.sorted()` 等在 2.4.20 仍要 `@OptIn(ExperimentalUnsignedTypes::class)`（否则 `-Werror` 直接挂）；`listOf(1u, 2u).sorted()` 则不受限。
+注意坑：类型已转正，但**部分 API 仍标实验**——`uintArrayOf`、`UIntArray.sorted()` 等在 2.4.21 仍要 `@OptIn(ExperimentalUnsignedTypes::class)`（否则 `-Werror` 直接挂）；`listOf(1u, 2u).sorted()` 则不受限。
 
 ## 26.6 装箱开销微基准
 

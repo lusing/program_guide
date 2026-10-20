@@ -49,7 +49,10 @@ fun fnv1a(data: String): UInt {
 fun main() {
     println("== Kotlin Multiplatform Probe ==")
     println("platform : ${platformName()}")
-    println("kotlin   : ${KotlinVersion.CURRENT}")
+    // 只钉 major.minor：patch 级升级（2.4.20 → 2.4.21）不该让四份快照翻红——
+    // 快照确定性设计：不稳定信息要么消灭，要么降维成稳定断言（25.9 的纪律）
+    val kv = KotlinVersion.CURRENT
+    println("kotlin   : ${kv.major}.${kv.minor}")
 
     // 共享算法：四目标必须逐字节一致的部分
     val a = arrayOf(intArrayOf(1, 2), intArrayOf(3, 4), intArrayOf(5, 6))

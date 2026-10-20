@@ -38,3 +38,14 @@ fun sortDemo(): String {
     val copy = src.sorted()                 // 新列表
     return "src=$src, copy=$copy"
 }
+
+/** kotlin.comparisons.compareValues：两值比较返回 -1/0/1，自定义比较器的最小结石 */
+fun ageGroup(p: Person): Int = when {
+    p.age < 18 -> 0        // 未成年
+    p.age < 60 -> 1        // 成年
+    else -> 2              // 老年
+}
+
+/** compareValuesBy：按抽取的键依次比较——选择器列表的顺序就是优先级顺序 */
+fun byAgeGroupThenName(a: Person, b: Person): Int =
+    compareValuesBy(a, b, { ageGroup(it) }, { it.name })

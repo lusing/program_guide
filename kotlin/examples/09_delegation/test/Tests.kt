@@ -69,6 +69,15 @@ fun testNotNullAndObservableEdge() {
     assertEquals("[苹果, 梨] → [苹果, 梨, 西瓜]", b.changes.single())
 }
 
+fun testPropertyInterfaces() {
+    val f = Form2()
+    assertEquals("订单", f.title)               // ReadOnlyProperty 只有 getValue
+    f.note = "  A B  "
+    assertEquals("A B", f.note)                 // ReadWriteProperty：set 存原值，get 时 trim
+    f.note = "x"
+    assertEquals("x", f.note)
+}
+
 fun main() {
     testRegistry()
     testCompanion()
@@ -78,5 +87,6 @@ fun main() {
     testCustomDelegate()
     testMapDelegate()
     testNotNullAndObservableEdge()
+    testPropertyInterfaces()
     println("09_delegation 全部测试通过")
 }
