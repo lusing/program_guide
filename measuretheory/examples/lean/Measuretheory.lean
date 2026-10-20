@@ -46,3 +46,7 @@ import Measuretheory.Ch40AnalyticSets
 import Measuretheory.Ch41MartingaleInequalities
 import Measuretheory.Ch42MartingaleConvergence
 import Measuretheory.Ch43LocalMartingales
+import Measuretheory.Ch44BochnerTheorem
+import Measuretheory.Ch45MinlosSazonov
+import Measuretheory.Ch46Minlos
+import Measuretheory.Ch47GaussianMeasures

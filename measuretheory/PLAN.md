@@ -142,10 +142,10 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 41 | martingale-inequalities | 8.1 | ✓ | · | ✓ | ✓ | ✓ | B8 | ✅ |
 | 42 | martingale-convergence | 8.2 | ✓ | · | ✓ | ✓ | ✓ | B8 | ✅ |
 | 43 | local-martingales | 8.3 | 分工 | · | ✓ | ✓ | ✓ | B8 | ✅ |
-| 44 | bochner-theorem | 9.1/袁17.4 | ✓ | ✓ | ✓ | ✓ | · | B9 | ☐ |
-| 45 | minlos-sazonov | 9.2 | 分工 | · | ✓ | ✓ | · | B9 | ☐ |
-| 46 | minlos | 9.3 | 分工 | · | ✓ | ✓ | · | B9 | ☐ |
-| 47 | gaussian-measures | 9.4/袁16 | ✓ | · | ✓ | ✓ | · | B9 | ☐ |
+| 44 | bochner-theorem | 9.1/袁17.4 | ✓ | ✓ | ✓ | ✓ | · | B9 | ✅ |
+| 45 | minlos-sazonov | 9.2 | 分工 | · | ✓ | ✓ | · | B9 | ✅ |
+| 46 | minlos | 9.3 | 分工 | · | ✓ | ✓ | · | B9 | ✅ |
+| 47 | gaussian-measures | 9.4/袁16 | ✓ | · | ✓ | ✓ | · | B9 | ✅ |
 | 48 | prob-inequalities | 袁14 | 分工 | · | ✓ | ✓ | ✓ | B10 | ☐ |
 | 49 | characteristic-functions | 袁17-18 | ✓ | ✓ | ✓ | ✓ | ✓ | B10 | ☐ |
 | 50 | lln | 袁19 | ✓ | · | ✓ | ✓ | ✓ | B10 | ☐ |
@@ -176,7 +176,7 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 - [x] B6 30-34 测度收敛（**17/17 全绿，终态 -All 128/128**——docs 5 篇 195-215 行：磨光三连母版+次概率画像+泊松二项全流程、Skorokhod 构造骨架+独立性裂缝+检验族缩减清单+证明地图、Carathéodory 紧性版验收+C[0,1] 判据、距离公理细账+Polish lifting+姊妹距离族+TV 分档、截断分解细账+严书 6.5 对照总表+Banach-Alaoglu 接手+离散三档分离；Lean 5 件：cdf_eq_real 跳点账、TendstoInDistribution+连续映射+Slutsky、IsTightMeasureSet+Prokhorov 双向+Chebyshev 打包、levyProkhorovEDist 公理族、c₀/ℓ¹ 离散账；Isabelle 2 件（Helly 选择/弱收敛 locale）；Julia 5/Python 5：Helly 对角线（sin 聚点子列 4616 成员）、Portmanteau 四条款、同源采样一致轨道、d_P 穷举 1/4+TV 分档、三档分离）
 - [x] B7 35-40 概率选讲（**22/22 全绿，终态 -All 150/150**——docs 6 篇 196-212 行：卷积跨章总表+BC i.o. 诚实数值学（计数增长侧写）、条件期望投影谱系+新息分解+退化显式库五条、条件分布三张面孔互译表+装配进料单+Rao-Blackwell、UI 缴费阶梯五档+Dunford-Pettis 影子、ess inf 存在四步+L⁰ 完备格地位、解析集 Souslin 双定义+Lusin 分离+Choquet 容度链；Lean 6 件（**B7 双翻案**：ch40 AnalyticSet 全家升 ✓；condexp→condLExp 新 API 正名）；Isabelle MT36（nn_cond_exp/real_cond_exp/Jensen）；Julia 6/Python 6/Prolog 3：双骰爆雷 1/36≠1/72 精确、塔/取出/Jensen/正交全精确、Rao-Blackwell 4 倍压缩 35/12→35/48、尖峰跳变谱系、树运算退化注记）
 - [x] B8 41-43 鞅（**12/12 全绿，终态 -All 162/162**——docs 3 篇 191-202 行：上穿策略的赌博账证明文化（一切鞅式不等式都是某个交易策略的盈亏封顶——mathlib upcrossingStrat 直接继承此骨架）、Pólya 罐完全账四步+乘积鞅双轨分叉解剖（E[log]<log E 的 Jensen 间隙）、局部化选取学+无套利离散影子；Lean 3 件：Doob 分解（predictablePart+martingalePart）、exists_ae_tendsto_of_bdd+upcrossingsBefore、可料变换期望账（局部鞅分工如实：mathlib Martingale/ 无 local 文件）；Julia 3/Python 3/Prolog 3：Doob L¹/L² 采样验证（ratio 1.32 < 2）、上穿计数 2.9 有限、Pólya Beta(1,1) 直方图、G-W s=1/4 精确、截断冻结语义（clamp 会破坏鞅性——数值抓出的真语义）、偷看策略套利 199 vs 可料 0）
-- [ ] B9 44-47 无穷维
+- [x] B9 44-47 无穷维（**12/12 全绿，终态 -All 174/174**——docs 4 篇 198-207 行：正定性三免费推论+一维完全体 Feller 手算+Δ-引理病灶诊断+Pólya 快餐；Sazonov"加粗省钱"直觉+三步付费清单+两档收费对照表（S₁/S₂/紧）+白噪声终局；核空间 S(ℝ) 半范数塔手感+逐层装配+白噪声三步落户+Brown=白噪声积分；Gauss 四柱（支撑/CM/Fernique/等集中）+三形态判据表+CM 会员费+集中现象导览；Lean 4 件：charFun/ext_of_charFun/charFun_gaussianReal/charFun_conv 四锚+高斯闭式收割+唯一性 funext 调用+Σ1/k²≤2 迹收敛 telescoping+白噪声柱面账+对称镜像账；Julia 4/Python 4：Gram PSD 四核、数值积分 vs 闭式、卷积乘积律、迹/HS 两档、柱面换基不变、Brown 增量独立 cor≈0、CM 门槛发散、Fernique α<1/2 闭式对拍、CM 密度归一、Poisson 噪声 LK）
 - [ ] B10 48-50 袁下册 I（概率不等式/特征函数/弱大数律）
 - [ ] B11 51-53 袁下册 II（强大数律/CLT/无穷可分）
 - [ ] B12 54-57 袁下册 III（普遍极限/稳定分布/重对数律/收官 CHEATSheet）
@@ -441,3 +441,21 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
     需 pop > 100_000 熔断（视为存活）；乘积鞅的 E[Mₙ]=1 验证在 n=500
     时方差天文（重尾）——改用 E[log M] 精确账（150·log(0.84)）展示
     a.s. 衰减引擎。
+
+61. （B9）mathlib 命名空间陷阱续：`charFun_gaussianReal` 在 **ProbabilityTheory** 而非
+    MeasureTheory（定义于 Probability/Distributions/Gaussian/Basic.lean——非
+    CharacteristicFunction/Basic.lean）；`ext_of_charFun` 需要 **funext** 包装逐点
+    相等；`NNReal` 记号在 scoped（非 ℝ≥0 裸用）；Complex 侧 `-(t:ℂ)^2/2` 与
+    `-((t:ℂ)^2/2)` 的括号差异导致 simp 死循环——目标陈述必须与引理输出
+    逐括号对齐。
+62. （B9）Julia：`Z' = randn(...)`（撇号赋值）是转置语法不是赋值——直接报
+    syntax error；`rand(Poisson(λ))` 需 Distributions 包（环境无）——自制
+    Bernoulli 组合采样器；`sum(randn() for _ in 1:0)` 报"empty collection"——
+    K = 0 须三元守卫；`cor` 需 2 万样本才稳到 0.05。
+63. （B9）Python：Brown 路径步长是 N(0, dt)（std = sqrt(dt)），写 N(0,1)
+    步长 × 100 步给方差 100——Var(B_1) ≠ 1 的假阴（机器抓住：1.0159 通过
+    但原版 100 倍偏差）。
+64. （B9）数学陷阱自纠（数值抓出）：**能量账的 λⱼ 是方差项**——E‖X‖² =
+    Σλⱼ（非 Σ√λⱼ）：`sum((1/j)*z²)` 的期望 = Σ1/j（发散）vs 正确
+    `sum((1/j²)*z²)` 的期望 = Σ1/j² → π²/6——Julia/Python 双通道同错
+    后同纠（docs 47.1.5 的账本格式反向校验了实现）。
