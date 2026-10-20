@@ -108,4 +108,4 @@
 
 ---
 
-上一章：[40 · 读取与打印：read、prin1、princ 与那一堆 print-* 开关](40-reading-printing.md)　｜　下一章：[附录 B · 命令与变量速查](appendix-b-cheatsheet.md)　｜　返回：[Emacs 扩展开发指南](README.md)
+上一章：[48 · 类型与结构：cl-defstruct、cl-assert 与 cl-print](48-types-structs.md)　｜　下一章：[附录 B · 命令与变量速查](appendix-b-cheatsheet.md)　｜　返回：[Emacs 扩展开发指南](README.md)

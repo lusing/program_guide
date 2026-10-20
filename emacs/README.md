@@ -22,7 +22,7 @@
 
 ### [Emacs 扩展开发指南](docs/extending-emacs/README.md)
 
-教你**怎么写** Emacs 扩展（Elisp 编程）：语言基础、buffer/point/keymap/hook 等核心对象、mode 机制、进程/定时器、宏、测试、打包……27 章 + 2 附录，配套 26 个可运行示例。
+教你**怎么写** Emacs 扩展（Elisp 编程）：语言基础、buffer/point/keymap/hook 等核心对象、mode 机制、进程/定时器、宏、测试、打包、eintr 精读、参考手册补遗、CL 手册（cl-lib）……49 章 + 2 附录，配套 48 个可运行示例。
 
 - 适合：想给 Emacs 写扩展/插件的人
 - 需要一定编程基础
@@ -44,17 +44,17 @@ emacs/
 │   │   ├── 00-overview-and-activation.md
 │   │   ├── ...
 │   │   └── 08-customization-performance.md
-│   └── extending-emacs/          《扩展开发指南》（27 章 + 2 附录）
+│   └── extending-emacs/          《扩展开发指南》（49 章 + 2 附录）
 │       ├── README.md
 │       ├── 00-setup.md
 │       ├── ...
-│       ├── 26-todo-demo.md
+│       ├── 48-types-structs.md
 │       ├── appendix-a-pitfalls.md
 │       └── appendix-b-cheatsheet.md
-├── examples/                     扩展教程的配套示例（26 个 .el 文件）
+├── examples/                     扩展教程的配套示例（48 个 .el 文件）
 │   ├── 01-hello.el
 │   ├── ...
-│   └── 26-todo-demo.el
+│   └── 48-types-structs.el
 ├── tools/
 │   └── check_docs.py             文档结构核查脚本（覆盖三套教程）
 ├── run-all.sh                    批量验证示例（bash）
@@ -73,7 +73,7 @@ emacs/
 
 ```bash
 # bash 入口
-./run-all.sh                  # 验证 examples/ 下全部 26 个示例
+./run-all.sh                  # 验证 examples/ 下全部 48 个示例
 ./run-all.sh 07-lists         # 只验证一个
 ./run-all.sh -Keep            # 验证并保留 build/ 里的产物
 ```

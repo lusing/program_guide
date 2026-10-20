@@ -14,7 +14,7 @@ Emacs 的扩展开发有个特点：语言（Elisp）本身很小，但它的**�
 # 跑单个示例（-Q 表示不加载任何配置文件，保证结果可复现）
 emacs -Q --batch -l examples/01-hello.el
 
-# 跑全部 40 个示例，逐个核对判定标准
+# 跑全部 48 个示例，逐个核对判定标准
 ./run-all.sh
 ```
 
@@ -144,6 +144,21 @@ eintr 最有价值的部分：**读 Emacs 自带的真实源码**。这一部分
 | [38 · 求值：quote、backquote 与 eval](38-evaluation.md) | 求值：quote、backquote 与 eval | `38-evaluation.el` |
 | [39 · 哈希表：测试函数、遍历与弱引用](39-hash-tables.md) | 哈希表：测试函数、遍历与弱引用 | `39-hash-tables.el` |
 | [40 · 读取与打印：read、prin1、princ 与 print-* 开关](40-reading-printing.md) | 读取与打印：read、prin1、princ 与 print-* 开关 | `40-reading-printing.el` |
+
+## 第 11 部分 · 跟随 CL 手册：Common Lisp 扩展
+
+这一部分跟随《GNU Emacs Common Lisp Emulation》手册（简称 **CL 手册**），把 cl-lib 按手册章节系统讲一遍：从来历与命名约定讲起，依次覆盖参数列表、宏工具、广义变量、作用域与控制流、`cl-loop`、序列与列表，最后收在类型系统、结构、断言与 `cl-print`。体例照旧：一章一个可跑的示例，结论全部来自 Emacs 31.1 实测。
+
+| 章 | 主题 | 示例 |
+|---|---|---|
+| [41 · cl-lib 是什么：来历、加载、命名与移植](41-cl-lib-overview.md) | cl-lib 是什么：来历、加载、命名与移植 | `41-cl-lib-overview.el` |
+| [42 · 参数列表：cl-defun、cl-defmacro 与 &key](42-argument-lists.md) | 参数列表：cl-defun、cl-defmacro 与 &key | `42-argument-lists.el` |
+| [43 · 写宏的工具：cl-eval-when、cl-once-only 与 compiler macro](43-macro-tools.md) | 写宏的工具：cl-eval-when、cl-once-only 与 compiler macro | `43-macro-tools.el` |
+| [44 · 广义变量：setf、cl-letf 与就地修改](44-generalized-variables.md) | 广义变量：setf、cl-letf 与就地修改 | `44-generalized-variables.el` |
+| [45 · 作用域与控制流：cl-flet、cl-block 与多值](45-scoping-control.md) | 作用域与控制流：cl-flet、cl-block 与多值 | `45-scoping-control.el` |
+| [46 · cl-loop：Loop 宏的完整语法](46-loop-facility.md) | cl-loop：Loop 宏的完整语法 | `46-loop-facility.el` |
+| [47 · 序列与列表：cl-map、cl-reduce 与列表构造](47-sequences-lists.md) | 序列与列表：cl-map、cl-reduce 与列表构造 | `47-sequences-lists.el` |
+| [48 · 类型与结构：cl-defstruct、cl-assert 与 cl-print](48-types-structs.md) | 类型与结构：cl-defstruct、cl-assert 与 cl-print | `48-types-structs.el` |
 
 ## 附录
 
