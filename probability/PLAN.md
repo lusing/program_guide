@@ -26,9 +26,9 @@ Steven J. Miller, *The Probability Lifesaver*（Princeton UP 2017，
 | 02 | axioms | ch2 公理与定律 (p59) | ✓ | ✓ | ✓ | ✓ | ✓ | B1 | ✅ |
 | 03 | counting | ch3.1 阶乘与二项系数 (p98) | ✓ | · | ✓ | ✓ | ✓ | B2 | ✅ |
 | 04 | cards | ch3.2-3.4 扑克/接龙/桥牌 (p107) | · | · | ✓ | ✓ | ✓ | B2 | ✅ |
-| 05 | conditional | ch4 条件概率与 Bayes (p147) | ✓ | ✓ | ✓ | ✓ | ✓ | B3 | ☐ |
-| 06 | inclusion-exclusion | ch5 容斥 (p175) | ✓ | · | ✓ | ✓ | ✓ | B3 | ☐ |
-| 07 | combinatorics | ch6 高级组合 (p205) | ✓ | · | ✓ | ✓ | · | B3 | ☐ |
+| 05 | conditional | ch4 条件概率与 Bayes (p147) | ✓ | ✓ | ✓ | ✓ | ✓ | B3 | ✅ |
+| 06 | inclusion-exclusion | ch5 容斥 (p175) | ✓ | · | ✓ | ✓ | ✓ | B3 | ✅ |
+| 07 | combinatorics | ch6 高级组合 (p205) | ✓ | · | ✓ | ✓ | ✓ | B3 | ✅ |
 | 08 | discrete-rv | ch7 离散随机变量 (p238) | ✓ | · | ✓ | ✓ | ✓ | B4 | ☐ |
 | 09 | continuous-rv | ch8 连续随机变量 (p255) | ✓ | · | ✓ | ✓ | · | B4 | ☐ |
 | 10 | expectation | ch9 期望工具 (p271) | ✓ | ✓ | ✓ | ✓ | · | B4 | ☐ |
@@ -57,7 +57,7 @@ R=Prolog（✓=主锚/·=该通道无单元——初判，批次侦察后可调�
 
 - [x] B1 00-02 骨架与公理（**7/7 全绿**——docs 3 篇 108-160 行：导言（书的三特质/四部分地图/五通道/与 measuretheory 关系）、招牌问题三连（生日平方根律/投篮不动点与几何级数/对冲期望线性性）、公理章（三悖论/集合复习/Kolmogorov 三公理/免费午餐八条/σ-代数一瞥）；Lean 2 件：生日 22/23 的 decide 大数判决（22 不等号方向一度写反被 decide 当场抓获）、coin2 两点空间 + measure_mono/compl/union 实弹；Isabelle MT02（emeasure 四锚）；Julia 2/Python 2/Prolog 2：模拟贴理论 3σ 带、Fraction 精确分数（24995/3 对冲账）、3125 全穷举生日玩具、256 对容斥+De Morgan 穷举）
 - [x] B2 03-04 计数（**9/9 全绿（本批），终态 -All 16/16**——docs 2 篇 148/157 行：计数基础（乘法/加法原理、排列 vs 组合的 k! 去重、Pascal 双推导（故事+代数）、二项定理、三陷阱、数量级感）；扑克实验室（九型牌型账本逐条结构化（(2,1,1,1) 划分模式→先点数后花色）、分母守恒、接龙 52! 让位模拟、桥牌 void/singleton 容斥伏笔、Yarborough 期望伏笔）；Lean 1 件：Nat.choose 锚（succ_succ 递推/sum_range_choose/eq_zero_of_lt）+ decide 判决 C(52,5)=2598960/C(23,2)=253/10·9·8=6·C(10,3)；Julia 2/Python 2/Prolog 2：Pascal 表逐格、二项定理两侧、九型精确账本+模拟 4σ 带、桥牌 4-4-3-2 谱（21.7% vs 21.6%）、迷你扑克 1140 全穷举（three=20/pair=480/flush=28/straight=180/sflush=12）、4!=24 与 C(4,2)=6 枚举）
-- [ ] B3 05-07 条件与组合（Bayes/容斥/Catalan）
+- [x] B3 05-07 条件与组合（**13/13 全绿（本批），终态 -All 29/29**——docs 3 篇 139/141/134 行：条件概率章（三读法/乘法链/全概率与 Bayes 的反向推理/基率忽视医学账/成对≠相互/Monty Hall 完整解剖（6 行穷举胜千言））；容斥章（覆盖次数对账表/两证明（归纳+逐点 C(m,k) 恒等式）/错排 Dₙ→1/e（交错 Taylor）/篮子-生日-桥牌 void 三张面孔）；组合章（多项式系数三面孔/恒等式三证法（代数确信-故事理解-母函数威力）/Vandermonde 分组故事/hockey-stick 按最大元分类）。**假绿大坑修复**：裸数字分式默认 ℕ（(1/3)=0 使 0=0 假绿）——ℚ 断言必须显式 (x:ℚ)，Ch05 医学账真阳率写错百倍（95/10⁵ 非 95/10³）被 norm_num False 抓出；Lean 3 件：ProbabilityTheory.cond 四锚（含 Bayes 的 cond_eq_inv_mul_cond_mul）+ 医学 19/1018 与 Monty 2/3 的 ℚ 收割、derZ 整数版错排（9/44/265/1854 连判+递推对拍，native_decide）、Vandermonde/hockey-stick decide 实弹；Isabelle MT05（cond_prob_def）；Julia 3/Python 3/Prolog 3：Monty 双主持人对照（知情 2/3 vs 不知情 1/2——结构变则结论变）、ε₁ε₂ 两两独立反例（C=两 bit 相同）、错排 1/e 渐近、篮子 36/81 全枚举终审、24 排列错排终审、hockey-stick 最大元分类现场）
 - [ ] B4 08-10 随机变量（离散/连续/期望工具）
 - [ ] B5 11-12 变换工具（卷积换元/微分恒等式）
 - [ ] B6 13-17 分布族（离散五族/均匀指数/正态/Γ/卡方）
@@ -121,3 +121,22 @@ ch23 p620 · ch24 p638 · ch25 p649 · 附录 A p661 / B p687 / C p705。
    Sum——#check 失败先 ls Data/Nat/Choose/ 目录。Prolog
    classify 的连续性判定若放在子句体内错误位置会全部分类
    成 straight——多特征分类先算布尔再分派，cut 收尾。
+11. （B3）**ℚ 假绿大坑（本教程最重要坑）**：裸数字分式
+   `(1/3)` 默认 ℕ，整数除法得 0——`(1/3)/(1/6+1/3) = 2/3`
+   在 ℕ 里是 0 = 0 恒真通过（假绿！），而 `(1/100)+(99/100)
+   = 1` 是 0 = 1 被 norm_num 抓 False 才暴露。**规则：分数
+   断言必须显式 `(1 : ℚ)/3`**。同批被抓的数学错：医学账真阳
+   = 0.95×0.001 = 95/10⁵（写 95/10³ 大百倍）；DNA 重复率
+   C(50,2)/4⁸ = 1.85%（心算漏一位写成 85%）——norm_num 与
+   模拟双通道互为审计。
+12. （B3）mathlib/Lean 语法三则：`(n ! : ℤ)` 与 `(3 : ℕ)!`
+   的类型标注贴着 `!` 后缀记号都解析失败——用全名
+   `Nat.factorial n` 或 `↑(n !)`；ℤ 上 Finset.sum 的 decide
+   不 reduce（ℤ 除法的 Decidable 实例太深）——`native_decide`
+   通过（derZ 错排系列）；doc comment 不能孤立在文件尾
+   （expected 'lemma'）——改普通 `--` 注释。
+13. （B3）Prolog 杂项：singleton 警告源于 `_A` 形式变量被
+   复用（Assign=[_A,...]）——改具名 A1/B1；Isabelle 条件概率
+   真名 `cond_prob_def`（非 conditional_prob_def，且在
+   Probability_Measure.thy 的 cond_prob 记号族）；session
+   目录（MT05/）要先 mkdir 再写 thy。

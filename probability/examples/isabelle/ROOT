@@ -2,3 +2,8 @@ session MT02 in "MT02" = "HOL-Probability" +
   options [document = false]
   theories
     T02_Axioms
+
+session MT05 in "MT05" = "HOL-Probability" +
+  options [document = false]
+  theories
+    T05_Conditional
