@@ -9,3 +9,6 @@ import Probability.Ch03Counting
 import Probability.Ch05Conditional
 import Probability.Ch06InclusionExclusion
 import Probability.Ch07Combinatorics
+import Probability.Ch08DiscreteRV
+import Probability.Ch09ContinuousRV
+import Probability.Ch10Expectation
