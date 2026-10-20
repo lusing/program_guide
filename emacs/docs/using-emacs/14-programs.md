@@ -171,6 +171,12 @@ Font Lock 使用一组命名的 face 来着色，如 `font-lock-keyword-face`（
 - Font Lock mode 默认开启，负责语法高亮。
 - Which Function mode 在 mode line 显示当前函数名。
 
+## 14.9 深入：C 系语言的 CC Mode
+
+本章只讲了编程 mode 的**通用**操作。C、C++、Objective-C、Java、IDL、Pike、AWK 这七种语言共用一个叫 **CC Mode** 的大家族，它比通用 prog-mode 多出一整套专属机制：缩进引擎按「syntactic symbol + anchor → offset」算缩进、可整体切换的**风格系统**（gnu / linux / bsd / java…）、你敲标点时自动重缩的**电键**、自动插换行的 auto-newline、一次删整段空白的 hungry delete、以及注释与多行宏的填充。这些都不是「用一用」而是「配一配」的东西。
+
+想真正驾驭它，读配套的 [CC Mode 教程](../cc-mode/README.md)——从「CC Mode 是什么、怎么接管你的文件」讲起，一路到缩进引擎、`c-offsets-alist`、风格系统与性能，全部基于 GNU Emacs 31.1 + CC Mode 5.35.2 实测。
+
 下一章讲 Dired——Emacs 内置的目录与文件管理器。在 Dired 里，你可以用类似编辑文本的方式批量操作文件。
 
 ---
