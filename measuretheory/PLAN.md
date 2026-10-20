@@ -60,7 +60,7 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 37 | `Probability/Kernel/Disintegration/Basic.lean` + `CondDistrib.lean`（condKernel）✓ | ProbabilityTheory.Kernel.CondDistrib |
 | 38 | `Function/UniformIntegrable.lean` ✓ | MeasureTheory.Function.UniformIntegrable |
 | 39 | `essSup`（Function/ConvergenceInMeasure.lean 等）✓ | MeasureTheory.Function.EssSup? 正名为准 |
-| 40 | 解析集：mathlib **无**（SetTheory 无 analytic 命中）→ 通道分工 | — |
+| 40 | **B7 实测翻案**：`Constructions/Polish/Basic.lean` 有 `MeasureTheory.AnalyticSet`（连续像定义）+ `AnalyticSet.measurablySeparable`（Lusin 分离定理）+ `MeasurableSet.analyticSet`——ch40 Lean 升 ✓ | Mathlib.MeasureTheory.Constructions.Polish.Basic |
 | 41 | `Probability/Martingale/Basic.lean`（Submartingale，Doob 极大：正名） | ProbabilityTheory.Martingale.Basic |
 | 42 | **`Martingale/Upcrossing.lean` + `Martingale/Convergence.lean`** ✓（上穿不等式+收敛定理都有） | ProbabilityTheory.Martingale.Convergence |
 | 43 | 局部鞅：**无**（通道分工） | — |
@@ -133,12 +133,12 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 32 | tightness-prohorov | 6.3/袁12.7 | ✓ | · | ✓ | ✓ | · | B6 | ✅ |
 | 33 | metrization | 6.4/袁12.1 | ✓ | · | ✓ | ✓ | · | B6 | ✅ |
 | 34 | vague-convergence | 6.5/袁12.6 | 分工 | · | ✓ | ✓ | · | B6 | ✅ |
-| 35 | independence | 7.1/袁13 | ✓ | · | ✓ | ✓ | ✓ | B7 | ☐ |
-| 36 | conditional-expectation | 7.2/袁15.1-15.2 | ✓ | ✓ | ✓ | ✓ | · | B7 | ☐ |
-| 37 | regular-conditional | 7.3/袁15.3-15.5 | ✓ | · | ✓ | ✓ | · | B7 | ☐ |
-| 38 | uniform-integrability | 7.4/袁9.3 | ✓ | · | ✓ | ✓ | · | B7 | ☐ |
-| 39 | esssup | 7.5 | ✓ | · | ✓ | ✓ | ✓ | B7 | ☐ |
-| 40 | analytic-sets | 7.6 | 分工 | · | ✓ | ✓ | ✓ | B7 | ☐ |
+| 35 | independence | 7.1/袁13 | ✓ | · | ✓ | ✓ | ✓ | B7 | ✅ |
+| 36 | conditional-expectation | 7.2/袁15.1-15.2 | ✓ | ✓ | ✓ | ✓ | · | B7 | ✅ |
+| 37 | regular-conditional | 7.3/袁15.3-15.5 | ✓ | · | ✓ | ✓ | · | B7 | ✅ |
+| 38 | uniform-integrability | 7.4/袁9.3 | ✓ | · | ✓ | ✓ | · | B7 | ✅ |
+| 39 | esssup | 7.5 | ✓ | · | ✓ | ✓ | ✓ | B7 | ✅ |
+| 40 | analytic-sets | 7.6/袁下册 | ✓ | · | ✓ | ✓ | ✓ | B7 | ✅ |
 | 41 | martingale-inequalities | 8.1 | ✓ | · | ✓ | ✓ | ✓ | B8 | ☐ |
 | 42 | martingale-convergence | 8.2 | ✓ | · | ✓ | ✓ | ✓ | B8 | ☐ |
 | 43 | local-martingales | 8.3 | 分工 | · | ✓ | ✓ | ✓ | B8 | ☐ |
@@ -174,7 +174,7 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 - [x] B4 17-22 乘积空间（**25/25 全绿**——docs 6 篇 201-212 行；Lean 6 件：矩形/对角线预像、dirac 折叠+Tonelli 坍缩、deterministic 复合=映射复合+两态恒等、infinitePi 柱集账 2⁻ⁿ、唯一性实例化+traj 锚点、投影极限换算表；Isabelle 4 件（MT18/20/21/22）：矩形账、n 次全正面 inverse(2)^n、distr_restrict 相容性、塔边际账；Julia 6/Python 6/Prolog 3：闭包算法、两张罚单、CK+平稳分布、三组硬币账、相容检查器+Fréchet 反例、Cantor/高斯塔。**B4 侦察三连大发现**：mathlib 4.33.1 已有 IonescuTulcea 全形式化（traj/trajMeasure）+ Measure.infinitePi 任意族无穷乘积（柱集 AddContent→Carathéodory=严书 §4.4 同路）+ IsProjectiveLimit 谓词族——21/22 章 Lean 从"分工"升级为 ✓）
 - [x] B5 23-29 拓扑测度（**22/22 全绿，终态 -All 111/111**——docs 7 篇 191-218 行：网/滤子对照表+Borel 层级图+Ba/B 有限反例、RMK 四步+mathlib 构造对照表+局部紧用量清单、三档正则+反例档案+层级表、c₀*/符号 Radon+弱*预告、Lusin 三版等价+Cauchy 传染骨架+Egorov 双胞表、截口引理解剖+无穷乘积关卡、胎紧三步+距离改造工具箱+判据表；Lean 7 件：RealRMK 主定理/Regular instance 算术/BorelSpace 三登记/紧矩形账；Julia 7/Python 7/Prolog 1：三明治构造、R-S 透视 δ₀、p=∞ 近距对论证、非紧反例 sup 恒 1/2、ρ₀ 边界爆炸。**Julia 抓出真数学错**：非 T₁ 有限空间 Ba ⊊ B（修正 docs 想当然））
 - [x] B6 30-34 测度收敛（**17/17 全绿，终态 -All 128/128**——docs 5 篇 195-215 行：磨光三连母版+次概率画像+泊松二项全流程、Skorokhod 构造骨架+独立性裂缝+检验族缩减清单+证明地图、Carathéodory 紧性版验收+C[0,1] 判据、距离公理细账+Polish lifting+姊妹距离族+TV 分档、截断分解细账+严书 6.5 对照总表+Banach-Alaoglu 接手+离散三档分离；Lean 5 件：cdf_eq_real 跳点账、TendstoInDistribution+连续映射+Slutsky、IsTightMeasureSet+Prokhorov 双向+Chebyshev 打包、levyProkhorovEDist 公理族、c₀/ℓ¹ 离散账；Isabelle 2 件（Helly 选择/弱收敛 locale）；Julia 5/Python 5：Helly 对角线（sin 聚点子列 4616 成员）、Portmanteau 四条款、同源采样一致轨道、d_P 穷举 1/4+TV 分档、三档分离）
-- [ ] B7 35-40 概率选讲
+- [x] B7 35-40 概率选讲（**22/22 全绿，终态 -All 150/150**——docs 6 篇 196-212 行：卷积跨章总表+BC i.o. 诚实数值学（计数增长侧写）、条件期望投影谱系+新息分解+退化显式库五条、条件分布三张面孔互译表+装配进料单+Rao-Blackwell、UI 缴费阶梯五档+Dunford-Pettis 影子、ess inf 存在四步+L⁰ 完备格地位、解析集 Souslin 双定义+Lusin 分离+Choquet 容度链；Lean 6 件（**B7 双翻案**：ch40 AnalyticSet 全家升 ✓；condexp→condLExp 新 API 正名）；Isabelle MT36（nn_cond_exp/real_cond_exp/Jensen）；Julia 6/Python 6/Prolog 3：双骰爆雷 1/36≠1/72 精确、塔/取出/Jensen/正交全精确、Rao-Blackwell 4 倍压缩 35/12→35/48、尖峰跳变谱系、树运算退化注记）
 - [ ] B8 41-43 鞅
 - [ ] B9 44-47 无穷维
 - [ ] B10 48-50 袁下册 I（概率不等式/特征函数/弱大数律）
@@ -398,3 +398,25 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
     vec()；`0.5*sin(k) + [数组]` 广播失控——标量化；`erf` 不在 Base
    （用 A&S 7.1.26 有理逼近，误差 < 7.5e-8）；`(1-e^{-n})/n` 型严格
     不等式在浮点下取等——容差 + 1e-15。
+
+52. （B7）**B7 双翻案**：① ch40 `Constructions/Polish/Basic.lean` 有 `AnalyticSet`（连续像
+    定义）+ `measurablySeparable`（Lusin 分离）——PLAN 原判"无"作废，Lean 升 ✓；
+    ② mathlib 4.33 条件期望改名 **`condLExp`**（记号 `P⁻[X|mΩ]`，类型化测度
+    `Measure[mΩ₀] Ω` API，配套按性质分文件 CondexpL1/L2/Indicator/PullOut）——
+    旧名 `condexp` 已不存在（B0 侦察表作废）。CondDistrib 真名：
+    `ProbabilityTheory.condDistrib` + `MeasureTheory.Measure.condKernel`
+    （后者在 Measure 命名空间）。
+53. （B7）Lean：`essSup` 在**根命名空间**（非 MeasureTheory——`essSup f μ =
+    (ae μ).limsup f`）；`essSup_const'` 显式喂 c；`AnalyticSet.image_of_
+    continuousOn`（camelCase C）；Isabelle Jensen：`sigma_finite_subalgebra.
+    real_cond_exp_jensens_inequality`（locale 限定全名）；Isabelle bool 的
+    UNIV 求和需 `UNIV_bool` simp。
+54. （B7）数值通道：BC 第二版的 i.o. 概率在有限窗口不可见（尾部和 ~ ln2 固定，
+    P(≥1) ≈ 0.5 恒定）——正确数值侧写是**总计数增长**（收敛级数饱和 π²/6、
+    发散级数 ~ log steps）；分箱条件统计的容差要覆盖 Poisson 噪声（箱宽 0.05
+    × 40 万样本给 ~0.15 的均值带）；Rao-Blackwell 的 Var(S/4) = 35/48 需
+    30k 样本才稳到 0.03。
+55. （B7）Julia：`P(...)` 单字母大写被解析为类型构造——改 pA/pB 小驼峰；
+    顶层 for 循环内数组赋值须函数封装（第 35/37 章两犯）；`fit_hist` 类
+    辅助函数必须在使用点之前定义（脚本顺序敏感）；满二叉树 depth-1..d
+    节点数 = 2^d − 1（非 2^(d+1) − 2——心算翻车被机器抓住）。

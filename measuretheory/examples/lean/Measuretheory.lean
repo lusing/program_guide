@@ -37,3 +37,9 @@ import Measuretheory.Ch31WeakConvergence
 import Measuretheory.Ch32TightnessProhorov
 import Measuretheory.Ch33Metrization
 import Measuretheory.Ch34VagueConvergence
+import Measuretheory.Ch35Independence
+import Measuretheory.Ch36ConditionalExpectation
+import Measuretheory.Ch37RegularConditional
+import Measuretheory.Ch38UniformIntegrability
+import Measuretheory.Ch39EssSup
+import Measuretheory.Ch40AnalyticSets

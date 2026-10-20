@@ -52,3 +52,8 @@ session MT31 in "MT31" = "HOL-Probability" +
   options [document = false]
   theories
     T31_WeakConvergence
+
+session MT36 in "MT36" = "HOL-Probability" +
+  options [document = false]
+  theories
+    T36_CondExp
