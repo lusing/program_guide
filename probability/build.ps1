@@ -13,7 +13,7 @@
       lean     : examples/lean 单一 lake 工程（mathlib 路径依赖
                  H:/Lang/lean4/mathlib4-4.33.1 钉版发布），`lake build` 退出码 0 且
                  输出无 error:/warning:。整工程一次构建，
-                 报告时把 Measuretheory/ChNN*.lean 逐章点亮。
+                 报告时把 Probability/ChNN*.lean 逐章点亮。
       isabelle : 每章一个会话（examples/isabelle/ROOT 里
                  session MTNN in "MTNN"），经 Isabelle2025-2 自带
                  Cygwin bash -lc 调 `isabelle build -d <dir> MTNN`；
@@ -58,7 +58,7 @@ if ($Clean) {
 # ---------- 发现验证单元 ----------
 # lean：整工程 + 逐章文件点亮
 $leanDir = Join-Path $examples 'lean'
-$leanChapters = Get-ChildItem (Join-Path $leanDir 'Measuretheory') -Filter 'Ch*.lean' -ErrorAction SilentlyContinue |
+$leanChapters = Get-ChildItem (Join-Path $leanDir 'Probability') -Filter 'Ch*.lean' -ErrorAction SilentlyContinue |
     ForEach-Object { ($_.BaseName -replace '^Ch(\d\d).*$', '$1') }
 
 # isabelle：解析 ROOT 得会话（会话名 MTNN <-> 章 NN）

@@ -5,3 +5,4 @@
 -/
 import Probability.Ch01SignatureProblems
 import Probability.Ch02Axioms
+import Probability.Ch03Counting

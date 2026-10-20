@@ -24,8 +24,8 @@ Steven J. Miller, *The Probability Lifesaver*（Princeton UP 2017，
 | 00 | intro | How to use (p16) | · | · | · | · | · | B1 | ✅ |
 | 01 | signature-problems | ch1 生日/投篮/对冲 (p22) | ✓ | · | ✓ | ✓ | ✓ | B1 | ✅ |
 | 02 | axioms | ch2 公理与定律 (p59) | ✓ | ✓ | ✓ | ✓ | ✓ | B1 | ✅ |
-| 03 | counting | ch3.1 阶乘与二项系数 (p98) | ✓ | · | ✓ | ✓ | ✓ | B2 | ☐ |
-| 04 | cards | ch3.2-3.4 扑克/接龙/桥牌 (p107) | · | · | ✓ | ✓ | ✓ | B2 | ☐ |
+| 03 | counting | ch3.1 阶乘与二项系数 (p98) | ✓ | · | ✓ | ✓ | ✓ | B2 | ✅ |
+| 04 | cards | ch3.2-3.4 扑克/接龙/桥牌 (p107) | · | · | ✓ | ✓ | ✓ | B2 | ✅ |
 | 05 | conditional | ch4 条件概率与 Bayes (p147) | ✓ | ✓ | ✓ | ✓ | ✓ | B3 | ☐ |
 | 06 | inclusion-exclusion | ch5 容斥 (p175) | ✓ | · | ✓ | ✓ | ✓ | B3 | ☐ |
 | 07 | combinatorics | ch6 高级组合 (p205) | ✓ | · | ✓ | ✓ | · | B3 | ☐ |
@@ -56,7 +56,7 @@ R=Prolog（✓=主锚/·=该通道无单元——初判，批次侦察后可调�
 ## 批次
 
 - [x] B1 00-02 骨架与公理（**7/7 全绿**——docs 3 篇 108-160 行：导言（书的三特质/四部分地图/五通道/与 measuretheory 关系）、招牌问题三连（生日平方根律/投篮不动点与几何级数/对冲期望线性性）、公理章（三悖论/集合复习/Kolmogorov 三公理/免费午餐八条/σ-代数一瞥）；Lean 2 件：生日 22/23 的 decide 大数判决（22 不等号方向一度写反被 decide 当场抓获）、coin2 两点空间 + measure_mono/compl/union 实弹；Isabelle MT02（emeasure 四锚）；Julia 2/Python 2/Prolog 2：模拟贴理论 3σ 带、Fraction 精确分数（24995/3 对冲账）、3125 全穷举生日玩具、256 对容斥+De Morgan 穷举）
-- [ ] B2 03-04 计数（二项系数/扑克桥牌实验室）
+- [x] B2 03-04 计数（**9/9 全绿（本批），终态 -All 16/16**——docs 2 篇 148/157 行：计数基础（乘法/加法原理、排列 vs 组合的 k! 去重、Pascal 双推导（故事+代数）、二项定理、三陷阱、数量级感）；扑克实验室（九型牌型账本逐条结构化（(2,1,1,1) 划分模式→先点数后花色）、分母守恒、接龙 52! 让位模拟、桥牌 void/singleton 容斥伏笔、Yarborough 期望伏笔）；Lean 1 件：Nat.choose 锚（succ_succ 递推/sum_range_choose/eq_zero_of_lt）+ decide 判决 C(52,5)=2598960/C(23,2)=253/10·9·8=6·C(10,3)；Julia 2/Python 2/Prolog 2：Pascal 表逐格、二项定理两侧、九型精确账本+模拟 4σ 带、桥牌 4-4-3-2 谱（21.7% vs 21.6%）、迷你扑克 1140 全穷举（three=20/pair=480/flush=28/straight=180/sflush=12）、4!=24 与 C(4,2)=6 枚举）
 - [ ] B3 05-07 条件与组合（Bayes/容斥/Catalan）
 - [ ] B4 08-10 随机变量（离散/连续/期望工具）
 - [ ] B5 11-12 变换工具（卷积换元/微分恒等式）
@@ -107,3 +107,17 @@ ch23 p620 · ch24 p638 · ch25 p649 · 附录 A p661 / B p687 / C p705。
    （expected 'lemma'）——改普通注释。measure_union 4.33 只吃
    两个显式参数（h + MeasurableSet s₂）；MeasurableSet 目标
    不能 fun_prop（用 measurability tactic 或显式引理）。
+8. （B2）**build.ps1 复制改造的目录名硬编码坑**：lean 发现
+   目录写死 'Measuretheory'（源工程名）——新工程 Probability
+   的 ChNN 文件全部静默不发现，报告 lean 列空但不报错。
+   复制脚本模板时 grep 源工程名逐处替换。
+9. （B2）低级算术错被抓：(2+3)^8 写成 8^8 断言（=5^8 才对）；
+   迷你扑克公式手推 pair=480（5·C(4,2)·4·4，初写 240 漏了
+   第三张花色 4）、flush=28（4·(C(5,3)−3)，初写 32 顺段算
+   错）——**穷举（Prolog 1140 手）是公式手推的终审法庭**。
+10. （B2）Julia 环境无 Combinatorics 包——组合枚举手写三重
+   循环（i<j<k 保序即去重）；mathlib 二项系数求和真名
+   Nat.sum_range_choose（非 choose_sum），在 Data.Nat.Choose.
+   Sum——#check 失败先 ls Data/Nat/Choose/ 目录。Prolog
+   classify 的连续性判定若放在子句体内错误位置会全部分类
+   成 straight——多特征分类先算布尔再分派，cut 收尾。
