@@ -62,3 +62,8 @@ session MT49 in "MT49" = "HOL-Probability" +
   options [document = false]
   theories
     T49_CharFunctions
+
+session MT52 in "MT52" = "HOL-Probability" +
+  options [document = false]
+  theories
+    T52_CLT

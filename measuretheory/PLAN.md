@@ -149,9 +149,9 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 48 | prob-inequalities | 袁14 | 分工 | · | ✓ | ✓ | ✓ | B10 | ✅ |
 | 49 | characteristic-functions | 袁17-18 | ✓ | ✓ | ✓ | ✓ | ✓ | B10 | ✅ |
 | 50 | lln | 袁19 | ✓ | · | ✓ | ✓ | ✓ | B10 | ✅ |
-| 51 | slln | 袁20 | ✓ | · | ✓ | ✓ | · | B11 | ☐ |
-| 52 | clt | 袁21 | ✓ | ✓ | ✓ | ✓ | · | B11 | ☐ |
-| 53 | infinitely-divisible | 袁22 | 分工 | · | ✓ | ✓ | ✓ | B11 | ☐ |
+| 51 | slln | 袁20 | ✓ | · | ✓ | ✓ | · | B11 | ✅ |
+| 52 | clt | 袁21 | ✓ | ✓ | ✓ | ✓ | · | B11 | ✅ |
+| 53 | infinitely-divisible | 袁22 | 分工 | · | ✓ | ✓ | ✓ | B11 | ✅ |
 | 54 | universal-limits | 袁23 | 分工 | · | ✓ | ✓ | ✓ | B12 | ☐ |
 | 55 | stable-laws | 袁24 | 分工 | · | ✓ | ✓ | ✓ | B12 | ☐ |
 | 56 | lll | 袁25 | 分工 | · | ✓ | ✓ | ✓ | B12 | ☐ |
@@ -178,7 +178,7 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 - [x] B8 41-43 鞅（**12/12 全绿，终态 -All 162/162**——docs 3 篇 191-202 行：上穿策略的赌博账证明文化（一切鞅式不等式都是某个交易策略的盈亏封顶——mathlib upcrossingStrat 直接继承此骨架）、Pólya 罐完全账四步+乘积鞅双轨分叉解剖（E[log]<log E 的 Jensen 间隙）、局部化选取学+无套利离散影子；Lean 3 件：Doob 分解（predictablePart+martingalePart）、exists_ae_tendsto_of_bdd+upcrossingsBefore、可料变换期望账（局部鞅分工如实：mathlib Martingale/ 无 local 文件）；Julia 3/Python 3/Prolog 3：Doob L¹/L² 采样验证（ratio 1.32 < 2）、上穿计数 2.9 有限、Pólya Beta(1,1) 直方图、G-W s=1/4 精确、截断冻结语义（clamp 会破坏鞅性——数值抓出的真语义）、偷看策略套利 199 vs 可料 0）
 - [x] B9 44-47 无穷维（**12/12 全绿，终态 -All 174/174**——docs 4 篇 198-207 行：正定性三免费推论+一维完全体 Feller 手算+Δ-引理病灶诊断+Pólya 快餐；Sazonov"加粗省钱"直觉+三步付费清单+两档收费对照表（S₁/S₂/紧）+白噪声终局；核空间 S(ℝ) 半范数塔手感+逐层装配+白噪声三步落户+Brown=白噪声积分；Gauss 四柱（支撑/CM/Fernique/等集中）+三形态判据表+CM 会员费+集中现象导览；Lean 4 件：charFun/ext_of_charFun/charFun_gaussianReal/charFun_conv 四锚+高斯闭式收割+唯一性 funext 调用+Σ1/k²≤2 迹收敛 telescoping+白噪声柱面账+对称镜像账；Julia 4/Python 4：Gram PSD 四核、数值积分 vs 闭式、卷积乘积律、迹/HS 两档、柱面换基不变、Brown 增量独立 cor≈0、CM 门槛发散、Fernique α<1/2 闭式对拍、CM 密度归一、Poisson 噪声 LK）
 - [x] B10 48-50 袁下册 I（**13/13 全绿，终态 -All 187/187**——docs 3 篇 200-216 行：四代不等式引擎表+Kolmogorov max 停时三行证明+MZ/Rosenthal 两 regime+接口 41 章同构表；特征函数计算库九行+Lévy 连续性三步解剖+矩-导数词典+De Moivre-Laplace；LLN 谱系（矩×独立性兑换图）+Khinchin 截尾证明+MZ 速率+阵列版+圣彼得堡+K-F+分位数相合；Lean 3 件：mul_meas_ge_le_pow_eLpNorm' L¹ 形态实弹、charFun_gaussianReal 闭式收割（括号对齐战）+charFun_map_cast_poissonMeasure 锚、strong_law_ae/strong_law_Lp 锚+truncation 族两恒等实弹；Isabelle MT49（char_zero/cmod_char_le_1 locale 前缀）；Julia 3/Python 3/Prolog 3：Chebyshev 取等恒等、Kolmogorov max 两步取等现场（1/2=2/4）、LIL 端点带 vs 全程带的诚实修正、Pareto 跨界稳定账、圣彼得堡截尾 (k+1)/2 分数判决、Euler/矩词典差分/独立和=乘积 cos²t；**翻案**：doc 50.5.6 侦察占位句回填（strong_law_ae 实锤在库））
-- [ ] B11 51-53 袁下册 II（强大数律/CLT/无穷可分）
+- [x] B11 51-53 袁下册 II（**11/11 全绿，终态 -All 198/198**——docs 3 篇 247-308 行：SLLN（随机级数三定理+三级数+Kronecker+Kolmogorov/MZ+正规数/MC/更新/G-C 四应用+核估计 Fourier 桥+WLLN-死-SLLN 分界账）；CLT（L-F 充要完全解剖"取实部"神来之笔+Lyapunov+阵列版 Hájek-Sidak/核估计/分位数+Cramér-Wold+Delta 相关系数 (1−ρ²)²+Esseen 平滑+BE）；i.d.（三形态+无处为零 Log 手术+构造定理+LK/Lévy/Kolmogorov 三表示+反例账）。**Lean 三旗舰**：Borel 正规数定理二进制全机器证（iIndepFun_iff_map_fun_eq_infinitePi_map₀' 坐标独立收割+strong_law_ae 实例化+strong_law_Lp 附赠）、Dé Moivre-Laplace 全实例化（方差账 1/4 显式结清+HasLaw 承载者）、convPow 卷积幂的 Poisson/Gauss n 重分解双定理；Isabelle MT52（central_limit_theorem locale 锚+weak_conv_m 对照）；Julia 3/Python 3/Prolog 1：精确二项 sup err 比值 9.93≈√100、χ² 双极限 2 与 1/2、Delta 双档 0.569/0.141、BE 36 常数保守 90 倍、双峰压峰 2.48（理论 2.5）、Panjer 1e−17、Bochner 破产 min eig=1−√2、三级数/Kronecker/层饼精确分数账、分界双轨 median 1/log 慢尺度（0.768→0.549））
 - [ ] B12 54-57 袁下册 III（普遍极限/稳定分布/重对数律/收官 CHEATSheet）
 
 **袁书整合备忘（2026-10-19 二次指令）**：原 48-50 三章（clt/slln/cheatsheet）
@@ -492,8 +492,40 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
     （裸名 unknown）。`charFun_gaussianReal` 的实参括号须与引理输出
     逐括号对齐（`Complex.exp (-(t^2/2))` 形态），差一层 simp 死循环。
 71. （B10）教程流水线两纪律：**"视侦察"占位句**侦察完成后必须回填，
-    否则正文出现空锚名（"mathlib 的 ⟨空⟩ 存在与否"——本次 50.5.6
+    否则正文出现空锚名（"mathlib 的 ⟨空⟩ 存在与与否"——本次 50.5.6
     的断行级事故，收割时回填 strong_law_ae/Lp + truncation 族实锤）；
     页脚"对应示例"清单必须与 PLAN 通道列同步（加 R 单元 = 正文段落 +
     页脚行双登记，缺一即断链）。
+
+72. （B11）Julia 跨行表达式断裂：`lp = A + B\n - C - D`——行首 `-`
+    被解析为新顶层语句的一元负，两个减项**静默丢弃**（lp 偏 42 ⟹
+    exp(lp) 天文数、pmf 表爆掉）；诊断套路：inline 单行复现通过而
+    文件版失败时，先 diff 断行结构。续行必须行尾放运算符或写单行。
+73. （B11）Julia 二项 pmf 模点递推的比率错位：pmf(k)/pmf(k+1) =
+    (k+1)/(n-k)——写成 (k+2)/(n-k-1) 则整段偏一位（sum = 1.155 =
+    1+pmf(模)）；**归一自检 assert(|sum-1|<1e-9) 是这类 bug 的
+    标准抓法**；`lgamma` 不在 base 环境（无 SpecialFunctions 包），
+    log(n!) 用 log(factorial(big(n)))。
+74. （B11）ECDF 判据的噪声底：m=400 的 KS 噪声 1.36/√m ≈ 0.068
+    直接淹没 Berry-Esseen 误差（0.04）与 CLT 速率账——速率对拍
+    须走**精确 CDF 通道**（模点锚定递推）；实测 BE 的 36 常数保守
+    ~90 倍（err(100)=0.0398 vs 界 3.6）；sqrt 会放大浮点残差
+    （|φ(π)| 判 0 的容差要放到 1e-8）。
+75. （B11）数学自纠三则（数值/逻辑通道抓出）：① 对称 ±√n 双峰
+    离群的 sup|F−Φ| 仅 ~0.04（双峰 CDF 恰好贴着 Φ 走）——真显形
+    在**峰度**（理论 2.5，实测 2.48，双峰化压峰）；② 三点反例
+    记错版：1/8-3/4 的 φ=3/4+(1/4)cos t 恒 ≥ 1/2 **永不为零**——
+    经典零点反例是 1/4-1/2 版（φ(π)=0）；Bochner 破产账 min eig
+    = 1−√2 ≈ −0.414 与循环矩阵理论精确吻合；③ (1−x/3)^{−1} 的
+    系数是 3^{−k} 不是 3^k（幂次方向记反，Fraction 判等当场爆）。
+76. （B11）1/log 慢尺度的诚实判据：对称重尾 e/(x log x) 的 WLLN
+    收敛被大跳主导（median|S̄ₙ| ≈ 方程 e/(ε·log(εn)) = ln2 的解），
+    n=1e3→8e3 只从 0.768→0.549——**小 ε 带在可达 n 上必假阴**；
+    判据须对齐理论量级（median 单调降 + 大 ε 越界率趋势 + 单轨道
+    漂移），docs 如实记录慢尺度。
+77. （B11）格点 CDF 的语义账：floor 语义下中心格点质量主导
+    （n=20 二项 P(≤10)=0.588 vs Φ(0)=0.5 → 差 0.088；n=25 sup
+    0.079）——对拍容差按格点语义定（<0.12），勿用连续直觉
+    （0.06）；Prolog 倒序累积表的 lookup 偏移：f(Km) 位于
+    K−1−Km（Panjer 递推差一位给全错 pmf，1e−17 才是正确水位）。
 

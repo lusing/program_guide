@@ -53,3 +53,6 @@ import Measuretheory.Ch47GaussianMeasures
 import Measuretheory.Ch48ProbInequalities
 import Measuretheory.Ch49CharacteristicFunctions
 import Measuretheory.Ch50LLN
+import Measuretheory.Ch51SLLN
+import Measuretheory.Ch52CLT
+import Measuretheory.Ch53InfinitelyDivisible
