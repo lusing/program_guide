@@ -199,3 +199,7 @@ Convergence.lean`：锚点正名 + **乘积鞅的非闭合证词**
 `examples/julia/42_martingale_convergence.jl`、
 `examples/python/42_martingale_convergence.py`、
 `examples/prolog/42_martingale_convergence.pl`。*
+
+---
+
+上一章：[41 鞅与 Doob 不等式：公平游戏的纪律](41-martingale-inequalities.md) · 下一章：[43 局部鞅：放松全局公平的工程学](43-local-martingales.md)

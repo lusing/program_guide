@@ -198,3 +198,7 @@ singleton {2} = Iic2 minus Iic1: OK
 *对应示例（可选）：`examples/lean/Measuretheory/Ch06Approximation.lean`、
 `examples/julia/06_approximation.jl`、`examples/python/06_approximation.py`、
 `examples/prolog/06_approximation.pl`。*
+
+---
+
+上一章：[05 欧氏空间中的 Lebesgue-Stieltjes 测度](05-stieltjes.md) · 下一章：[07 可测映射](07-measurable-maps.md)

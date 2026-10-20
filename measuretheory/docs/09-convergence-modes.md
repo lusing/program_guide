@@ -230,3 +230,7 @@ Egorov 挖集用 `Fraction` 精确核对 μ(t) ≤ ε 与补集 sup-误差 = 0�
 *对应示例：`examples/lean/Measuretheory/Ch09ConvergenceModes.lean`、
 `examples/julia/09_convergence_modes.jl`、`examples/python/09_convergence_modes.py`、
 `examples/prolog/09_convergence_modes.pl`。*
+
+---
+
+上一章：[08 函数形式的单调类定理](08-functional-monotone-class.md) · 下一章：[10 积分的构造与基本性质](10-integral.md)

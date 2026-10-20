@@ -198,3 +198,7 @@ V(A) = I_A）是第二档向第三档的坠落现场：它甚至没有 Pettis
 `examples/isabelle/MT16/T16_BochnerIntegral.thy`、
 `examples/julia/16_bochner_integral.jl`、
 `examples/python/16_bochner_integral.py`。*
+
+---
+
+上一章：[15 Daniell 积分：从泛函到测度](15-daniell.md) · 下一章：[17 乘积可测空间：联合观测的舞台](17-product-sigma.md)

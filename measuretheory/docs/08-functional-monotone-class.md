@@ -199,3 +199,7 @@ L_b(C) 回收）对拍，展示判据的边界。
 *对应示例：`examples/lean/Measuretheory/Ch08FunctionalMonotoneClass.lean`、
 `examples/julia/08_functional_monotone_class.jl`、`examples/python/08_functional_monotone_class.py`、
 `examples/prolog/08_functional_monotone_class.pl`。*
+
+---
+
+上一章：[07 可测映射](07-measurable-maps.md) · 下一章：[09 可测函数序列的收敛](09-convergence-modes.md)

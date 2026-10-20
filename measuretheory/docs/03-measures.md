@@ -235,3 +235,7 @@ check_tail :-
 *对应示例（可选）：`examples/lean/Measuretheory/Ch03Measures.lean`、
 `examples/julia/03_measures.jl`、`examples/python/03_measures.py`、
 `examples/prolog/03_measures.pl`。*
+
+---
+
+上一章：[02 单调类定理](02-monotone-class.md) · 下一章：[04 外测度与测度的扩张](04-extension.md)

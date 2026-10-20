@@ -213,3 +213,7 @@ Kolmogorov 相容性、弱收敛、Gauss 测度）的入口全部预埋。
 `examples/isabelle/MT20/T20_InfiniteProducts.thy`、
 `examples/julia/20_infinite_products.jl`、
 `examples/python/20_infinite_products.py`。*
+
+---
+
+上一章：[19 转移核：带参数的测度](19-kernels.md) · 下一章：[21 Kolmogorov 相容性定理与 Tulcea 定理：无穷维测度的存在驾照](21-kolmogorov-tulcea.md)

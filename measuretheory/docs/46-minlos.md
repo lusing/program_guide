@@ -199,3 +199,7 @@ Minkowski 量子场联系起来——构造性场论的测度论骨架。
 *对应示例：`examples/lean/Measuretheory/Ch46Minlos.lean`、
 `examples/julia/46_minlos.jl`、
 `examples/python/46_minlos.py`。*
+
+---
+
+上一章：[45 Minlos-Sazonov 定理：无穷维可加性的收费单](45-minlos-sazonov.md) · 下一章：[47 Hilbert 空间上的 Gauss 测度：无穷维正态世界](47-gaussian-measures.md)

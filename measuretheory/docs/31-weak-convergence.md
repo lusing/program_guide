@@ -213,3 +213,7 @@ Prokhorov 线）称 étroite（窄收敛）。**文献穿越提示**：
 `examples/isabelle/MT31/T31_WeakConvergence.thy`、
 `examples/julia/31_weak_convergence.jl`、
 `examples/python/31_weak_convergence.py`。*
+
+---
+
+上一章：[30 欧氏空间上的测度收敛：分布函数的赛马场](30-euclidean-convergence.md) · 下一章：[32 胎紧与 Prokhorov 定理：弱收敛的紧性货币](32-tightness-prohorov.md)

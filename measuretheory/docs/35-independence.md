@@ -200,3 +200,7 @@ _of_...` 型 + `indep_...` 尾部版。`Ch35Independence.lean`
 *对应示例：`examples/lean/Measuretheory/Ch35Independence.lean`、
 `examples/julia/35_independence.jl`、`examples/python/35_independence.py`、
 `examples/prolog/35_independence.pl`。*
+
+---
+
+上一章：[34 淡收敛：C₀ 与 C_c 的两档检验](34-vague-convergence.md) · 下一章：[36 条件期望：投影与信息的市场](36-conditional-expectation.md)

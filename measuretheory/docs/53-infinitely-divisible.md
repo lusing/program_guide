@@ -264,3 +264,7 @@ Raikov-Ottaviani 定理（习题 22.13 脚注：X₁+X₂~Po(λ) 独立 ⟹
 `examples/julia/53_infinitely_divisible.jl`、
 `examples/python/53_infinitely_divisible.py`、
 `examples/prolog/53_infinitely_divisible.pl`。*
+
+---
+
+上一章：[52 中心极限定理](52-clt.md) · 下一章：[54 普遍极限定理](54-universal-limits.md)

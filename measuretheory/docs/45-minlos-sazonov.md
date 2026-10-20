@@ -201,3 +201,7 @@ Operators"第三卷收录了国际视角的整理。白噪声的严格化
 *对应示例：`examples/lean/Measuretheory/Ch45MinlosSazonov.lean`、
 `examples/julia/45_minlos_sazonov.jl`、
 `examples/python/45_minlos_sazonov.py`。*
+
+---
+
+上一章：[44 Bochner 定理：正定函数与特征函数的完全等价](44-bochner-theorem.md) · 下一章：[46 Minlos 定理：核空间上的测度论](46-minlos.md)

@@ -205,3 +205,7 @@ Bochner（1932，"Monotone Funktionen"与调和分析专论）建立
 *对应示例：`examples/lean/Measuretheory/Ch44BochnerTheorem.lean`、
 `examples/julia/44_bochner_theorem.jl`、
 `examples/python/44_bochner_theorem.py`。*
+
+---
+
+上一章：[43 局部鞅：放松全局公平的工程学](43-local-martingales.md) · 下一章：[45 Minlos-Sazonov 定理：无穷维可加性的收费单](45-minlos-sazonov.md)

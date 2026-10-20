@@ -203,3 +203,7 @@ mathlib 实况：近似型 Lusin 主定理（C_c 在 Lᵖ 稠密 / 紧限制
 
 *对应示例：`examples/lean/Measuretheory/Ch27Lusin.lean`、
 `examples/julia/27_lusin.jl`、`examples/python/27_lusin.py`。*
+
+---
+
+上一章：[26 C₀(X) 的对偶：连续消逝函数与符号 Radon 测度](26-c0-dual.md) · 下一章：[28 拓扑乘积上的测度：Radon 乘积与拓扑 Fubini](28-product-topological.md)

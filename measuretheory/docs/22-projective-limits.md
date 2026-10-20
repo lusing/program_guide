@@ -231,3 +231,7 @@ Cantor 塔（2⁻ⁿ 精确账、截断映射 π_{n,m} 的显式矩阵）；
 `examples/isabelle/MT22/T22_ProjectiveLimits.thy`、
 `examples/julia/22_projective_limits.jl`、
 `examples/python/22_projective_limits.py`。*
+
+---
+
+上一章：[21 Kolmogorov 相容性定理与 Tulcea 定理：无穷维测度的存在驾照](21-kolmogorov-tulcea.md) · 下一章：[23 拓扑空间与 Borel σ-代数：测度论安家拓扑](23-topology-borel.md)

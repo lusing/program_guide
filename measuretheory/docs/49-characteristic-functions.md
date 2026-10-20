@@ -210,3 +210,7 @@ mathlib 的 `charFun` 形式化是 2020s 的产物——本章四锚
 `examples/julia/49_characteristic_functions.jl`、
 `examples/python/49_characteristic_functions.py`、
 `examples/prolog/49_characteristic_functions.pl`。*
+
+---
+
+上一章：[48 概率不等式工具箱：尾概率的四代引擎](48-prob-inequalities.md) · 下一章：[50 大数定律：频率稳定性的完全谱系](50-lln.md)

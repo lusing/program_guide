@@ -200,3 +200,7 @@ ba 的缺席与此不无关系：**不可构造对象的形式化需要显式选
 *对应示例：`examples/julia/14_linfty_dual.jl`、
 `examples/python/14_linfty_dual.py`、
 `examples/prolog/14_linfty_dual.pl`。*
+
+---
+
+上一章：[13 Lᵖ 空间：完备性、不等式与对偶](13-lp-spaces.md) · 下一章：[15 Daniell 积分：从泛函到测度](15-daniell.md)

@@ -283,3 +283,7 @@ Berry-Esseen 的最优常数至今仍在改进（36 → 0.47 附近的历史
 *对应示例：`examples/lean/Measuretheory/Ch52CLT.lean`、
 `examples/isabelle/MT52/T52_CLT.thy`、
 `examples/julia/52_clt.jl`、`examples/python/52_clt.py`。*
+
+---
+
+上一章：[51 强大数定律](51-slln.md) · 下一章：[53 无穷可分分布](53-infinitely-divisible.md)

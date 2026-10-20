@@ -199,3 +199,7 @@ Leibniz 级数对拍、截口 sup-差的精确上界（Lipschitz 常数
 
 *对应示例：`examples/lean/Measuretheory/Ch28ProductTopological.lean`、
 `examples/julia/28_product_topological.jl`、`examples/python/28_product_topological.py`。*
+
+---
+
+上一章：[27 Lusin 定理：可测函数的连续伪装](27-lusin.md) · 下一章：[29 Polish 空间：测度论的天堂地址](29-polish.md)

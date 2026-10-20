@@ -208,3 +208,7 @@ simp 不会替你算算术，只会如实揭发。
 *对应示例：`examples/lean/Measuretheory/Ch10Integral.lean`、
 `examples/julia/10_integral.jl`、`examples/python/10_integral.py`、
 `examples/prolog/10_integral.pl`。*
+
+---
+
+上一章：[09 可测函数序列的收敛](09-convergence-modes.md) · 下一章：[11 积分号下取极限：三大定理](11-limit-theorems.md)

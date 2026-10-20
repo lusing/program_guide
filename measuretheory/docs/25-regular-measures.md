@@ -201,3 +201,7 @@ lean` 实弹：
 
 *对应示例：`examples/lean/Measuretheory/Ch25RegularMeasures.lean`、
 `examples/julia/25_regular_measures.jl`、`examples/python/25_regular_measures.py`。*
+
+---
+
+上一章：[24 Riesz 表现定理：从泛函到测量的翻译机](24-riesz.md) · 下一章：[26 C₀(X) 的对偶：连续消逝函数与符号 Radon 测度](26-c0-dual.md)

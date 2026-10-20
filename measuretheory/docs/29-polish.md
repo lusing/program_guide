@@ -202,3 +202,7 @@ lean` 实弹：
 
 *对应示例：`examples/lean/Measuretheory/Ch29Polish.lean`、
 `examples/julia/29_polish.jl`、`examples/python/29_polish.py`。*
+
+---
+
+上一章：[28 拓扑乘积上的测度：Radon 乘积与拓扑 Fubini](28-product-topological.md) · 下一章：[30 欧氏空间上的测度收敛：分布函数的赛马场](30-euclidean-convergence.md)

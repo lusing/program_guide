@@ -210,3 +210,7 @@ Luzin-Novikov-Keldysh 完成。"Analytic set"与实分析中
 *对应示例：`examples/lean/Measuretheory/Ch40AnalyticSets.lean`、
 `examples/julia/40_analytic_sets.jl`、`examples/python/40_analytic_sets.py`、
 `examples/prolog/40_analytic_sets.pl`。*
+
+---
+
+上一章：[39 本性上确界：忽略零测的最大值](39-esssup.md) · 下一章：[41 鞅与 Doob 不等式：公平游戏的纪律](41-martingale-inequalities.md)

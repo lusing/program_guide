@@ -220,3 +220,7 @@ Lebesgue 外测度分辨率是"区间精度"（Borel + 零测完备化）。三�
 *对应示例（可选）：`examples/lean/Measuretheory/Ch04Extension.lean`、
 `examples/julia/04_extension.jl`、`examples/python/04_extension.py`、
 `examples/prolog/04_extension.pl`。*
+
+---
+
+上一章：[03 测度与非负集函数](03-measures.md) · 下一章：[05 欧氏空间中的 Lebesgue-Stieltjes 测度](05-stieltjes.md)

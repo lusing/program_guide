@@ -259,3 +259,7 @@ class"到严书 §4.5 的混合推广（核 + 紧类两台发动机合一），
 `examples/isabelle/MT21/T21_Kolmogorov.thy`、
 `examples/julia/21_kolmogorov.jl`、`examples/python/21_kolmogorov.py`、
 `examples/prolog/21_kolmogorov.pl`。*
+
+---
+
+上一章：[20 无穷乘积测度：无穷次随机试验的一致模型](20-infinite-products.md) · 下一章：[22 投影极限与随机 Daniell 积分：从局部到整体的三台机器合龙](22-projective-limits.md)

@@ -204,3 +204,7 @@ A，{B : A∪B, A\B 均在 m(C)}是好集"的同类技术证并封闭），而**
 *对应示例（可选）：`examples/lean/Measuretheory/Ch02MonotoneClass.lean`、
 `examples/julia/02_monotone_class.jl`、`examples/python/02_monotone_class.py`、
 `examples/prolog/02_monotone_class.pl`。*
+
+---
+
+上一章：[01 集合运算与集类](01-setclasses.md) · 下一章：[03 测度与非负集函数](03-measures.md)

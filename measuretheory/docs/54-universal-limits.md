@@ -198,3 +198,7 @@ Khinchin（1937）给出 iid 情形的稳定收敛分类；Feller（1935
 `examples/julia/54_universal_limits.jl`、
 `examples/python/54_universal_limits.py`、
 `examples/prolog/54_universal_limits.pl`。*
+
+---
+
+上一章：[53 无穷可分分布](53-infinitely-divisible.md) · 下一章：[55 稳定分布](55-stable-laws.md)

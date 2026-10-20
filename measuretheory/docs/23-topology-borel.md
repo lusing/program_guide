@@ -219,3 +219,7 @@ SecondCountableTopology`。`Ch23TopologyBorel.lean` 实弹：
 *对应示例：`examples/lean/Measuretheory/Ch23TopologyBorel.lean`、
 `examples/julia/23_topology_borel.jl`、`examples/python/23_topology_borel.py`、
 `examples/prolog/23_topology_borel.pl`。*
+
+---
+
+上一章：[22 投影极限与随机 Daniell 积分：从局部到整体的三台机器合龙](22-projective-limits.md) · 下一章：[24 Riesz 表现定理：从泛函到测量的翻译机](24-riesz.md)

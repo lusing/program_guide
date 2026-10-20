@@ -203,3 +203,7 @@ Doob 的系统化使条件期望成为鞅论的语言底座——第 41-43
 `examples/isabelle/MT36/T36_CondExp.thy`、
 `examples/julia/36_conditional_expectation.jl`、
 `examples/python/36_conditional_expectation.py`。*
+
+---
+
+上一章：[35 独立性：概率论的乘法公理](35-independence.md) · 下一章：[37 正则条件概率与条件分布：版本的统一装配](37-regular-conditional.md)

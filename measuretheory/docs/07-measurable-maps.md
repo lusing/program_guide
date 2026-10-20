@@ -198,3 +198,7 @@ f = [1,1,2,2,3,3,3,3]（三个纤维，大小 2/2/4），机器枚举
 *对应示例：`examples/lean/Measuretheory/Ch07MeasurableMaps.lean`、
 `examples/julia/07_measurable_maps.jl`、`examples/python/07_measurable_maps.py`、
 `examples/prolog/07_measurable_maps.pl`。*
+
+---
+
+上一章：[06 测度的逼近](06-approximation.md) · 下一章：[08 函数形式的单调类定理](08-functional-monotone-class.md)

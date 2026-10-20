@@ -214,3 +214,7 @@ lean` 实弹：
 *对应示例：`examples/lean/Measuretheory/Ch19Kernels.lean`、
 `examples/julia/19_kernels.jl`、`examples/python/19_kernels.py`、
 `examples/prolog/19_kernels.pl`。*
+
+---
+
+上一章：[18 乘积测度与 Fubini 定理：重积分的换序执照](18-fubini.md) · 下一章：[20 无穷乘积测度：无穷次随机试验的一致模型](20-infinite-products.md)

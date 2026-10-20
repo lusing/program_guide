@@ -198,3 +198,7 @@ Stone 唯一性、顶层的正则性），翻译保真度由各自的附加条�
 *对应示例：`examples/julia/15_daniell.jl`、
 `examples/python/15_daniell.py`、
 `examples/prolog/15_daniell.pl`。*
+
+---
+
+上一章：[14 L∞ 的对偶与 ba 空间](14-linfty-dual.md) · 下一章：[16 Bochner 积分：向量值的积分](16-bochner-integral.md)

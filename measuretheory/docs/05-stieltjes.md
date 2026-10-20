@@ -201,3 +201,7 @@ Python（`05_stieltjes.py`）用 `Fraction` 把块结构与自相似方程做成
 
 *对应示例（可选）：`examples/lean/Measuretheory/Ch05Stieltjes.lean`、
 `examples/julia/05_stieltjes.jl`、`examples/python/05_stieltjes.py`。*
+
+---
+
+上一章：[04 外测度与测度的扩张](04-extension.md) · 下一章：[06 测度的逼近](06-approximation.md)

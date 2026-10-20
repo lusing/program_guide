@@ -202,3 +202,7 @@ Fₙ → F 的逐点极限计算）。
 `examples/isabelle/MT30/T30_EuclideanConv.thy`、
 `examples/julia/30_euclidean_convergence.jl`、
 `examples/python/30_euclidean_convergence.py`。*
+
+---
+
+上一章：[29 Polish 空间：测度论的天堂地址](29-polish.md) · 下一章：[31 弱收敛：有界连续函数的选举制](31-weak-convergence.md)

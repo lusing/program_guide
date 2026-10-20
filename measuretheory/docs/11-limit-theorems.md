@@ -199,3 +199,7 @@ simp）。Bochner 层的单边控制收敛在 Isabelle 侧名为
 *对应示例：`examples/lean/Measuretheory/Ch11LimitTheorems.lean`、
 `examples/julia/11_limit_theorems.jl`、`examples/python/11_limit_theorems.py`、
 `examples/prolog/11_limit_theorems.pl`。*
+
+---
+
+上一章：[10 积分的构造与基本性质](10-integral.md) · 下一章：[12 符号测度：Jordan-Hahn 分解与 Radon-Nikodym 定理](12-signed-measures.md)

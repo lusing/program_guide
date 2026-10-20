@@ -209,3 +209,7 @@ Etemadi（1981）的两两独立版是 SLLN 独立性需求的最终
 `examples/julia/48_prob_inequalities.jl`、
 `examples/python/48_prob_inequalities.py`、
 `examples/prolog/48_prob_inequalities.pl`。*
+
+---
+
+上一章：[47 Hilbert 空间上的 Gauss 测度：无穷维正态世界](47-gaussian-measures.md) · 下一章：[49 特征函数：分布的调和护照](49-characteristic-functions.md)

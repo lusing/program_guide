@@ -198,3 +198,7 @@ Billingsley（1968《Convergence of Probability Measures》）
 *对应示例：`examples/lean/Measuretheory/Ch32TightnessProhorov.lean`、
 `examples/julia/32_tightness_prohorov.jl`、
 `examples/python/32_tightness_prohorov.py`。*
+
+---
+
+上一章：[31 弱收敛：有界连续函数的选举制](31-weak-convergence.md) · 下一章：[33 Lévy-Prokhorov 度量：弱收敛的度量化](33-metrization.md)

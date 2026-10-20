@@ -200,3 +200,7 @@ Schwarz 与对偶全部平方化后是**整数不等式**，Fraction 分毫不�
 
 *对应示例：`examples/lean/Measuretheory/Ch13LpSpaces.lean`、
 `examples/julia/13_lp_spaces.jl`、`examples/python/13_lp_spaces.py`。*
+
+---
+
+上一章：[12 符号测度：Jordan-Hahn 分解与 Radon-Nikodym 定理](12-signed-measures.md) · 下一章：[14 L∞ 的对偶与 ba 空间](14-linfty-dual.md)

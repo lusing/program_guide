@@ -202,3 +202,7 @@ Lean 锚点的直接来源。
 *对应示例：`examples/lean/Measuretheory/Ch37RegularConditional.lean`、
 `examples/julia/37_regular_conditional.jl`、
 `examples/python/37_regular_conditional.py`。*
+
+---
+
+上一章：[36 条件期望：投影与信息的市场](36-conditional-expectation.md) · 下一章：[38 一致可积：L¹ 收敛的通行证制度](38-uniform-integrability.md)

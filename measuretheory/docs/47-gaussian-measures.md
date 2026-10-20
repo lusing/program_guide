@@ -199,3 +199,7 @@ charFun_gaussianReal（一维正态的调和刻画——机器版）+
 *对应示例：`examples/lean/Measuretheory/Ch47GaussianMeasures.lean`、
 `examples/julia/47_gaussian_measures.jl`、
 `examples/python/47_gaussian_measures.py`。*
+
+---
+
+上一章：[46 Minlos 定理：核空间上的测度论](46-minlos.md) · 下一章：[48 概率不等式工具箱：尾概率的四代引擎](48-prob-inequalities.md)

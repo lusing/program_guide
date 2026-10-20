@@ -210,3 +210,7 @@ lemma rn_deriv_restore:
 `examples/isabelle/MT12/T12_SignedMeasures.thy`、
 `examples/julia/12_signed_measures.jl`、
 `examples/python/12_signed_measures.py`。*
+
+---
+
+上一章：[11 积分号下取极限：三大定理](11-limit-theorems.md) · 下一章：[13 Lᵖ 空间：完备性、不等式与对偶](13-lp-spaces.md)

@@ -201,3 +201,7 @@ Pi.lean，二元记号 `m₁ ⊗ m₂`?——正名以 #check 为准），配套
 *对应示例：`examples/lean/Measuretheory/Ch17ProductSigma.lean`、
 `examples/julia/17_product_sigma.jl`、`examples/python/17_product_sigma.py`、
 `examples/prolog/17_product_sigma.pl`。*
+
+---
+
+上一章：[16 Bochner 积分：向量值的积分](16-bochner-integral.md) · 下一章：[18 乘积测度与 Fubini 定理：重积分的换序执照](18-fubini.md)

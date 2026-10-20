@@ -218,3 +218,7 @@ docs 骨架 + 数值通道的轨道带与 Pareto 分界实验承担
 *对应示例：`examples/lean/Measuretheory/Ch50LLN.lean`、
 `examples/julia/50_lln.jl`、`examples/python/50_lln.py`、
 `examples/prolog/50_lln.pl`。*
+
+---
+
+上一章：[49 特征函数：分布的调和护照](49-characteristic-functions.md) · 下一章：[51 强大数定律](51-slln.md)

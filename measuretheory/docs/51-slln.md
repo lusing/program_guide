@@ -313,3 +313,7 @@ Glivenko-Cantelli（1933）被尊为"统计学基本定理"；Parzen
 
 *对应示例：`examples/lean/Measuretheory/Ch51SLLN.lean`、
 `examples/julia/51_slln.jl`、`examples/python/51_slln.py`。*
+
+---
+
+上一章：[50 大数定律：频率稳定性的完全谱系](50-lln.md) · 下一章：[52 中心极限定理](52-clt.md)

@@ -199,3 +199,7 @@ docs 承载注记。
 `examples/julia/43_local_martingales.jl`、
 `examples/python/43_local_martingales.py`、
 `examples/prolog/43_local_martingales.pl`。*
+
+---
+
+上一章：[42 鞅收敛定理：公平游戏的长期命运](42-martingale-convergence.md) · 下一章：[44 Bochner 定理：正定函数与特征函数的完全等价](44-bochner-theorem.md)

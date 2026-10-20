@@ -200,3 +200,7 @@ mathlib 锚点：`Probability/Martingale/Basic.lean`
 `examples/julia/41_martingale_inequalities.jl`、
 `examples/python/41_martingale_inequalities.py`、
 `examples/prolog/41_martingale_inequalities.pl`。*
+
+---
+
+上一章：[40 解析集：投影下的可测性存亡](40-analytic-sets.md) · 下一章：[42 鞅收敛定理：公平游戏的长期命运](42-martingale-convergence.md)

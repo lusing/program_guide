@@ -203,3 +203,7 @@ Egorov 的 ε-带、第 27 章运走集的 δ-带同族的"模糊度
 *对应示例：`examples/lean/Measuretheory/Ch39EssSup.lean`、
 `examples/julia/39_esssup.jl`、`examples/python/39_esssup.py`、
 `examples/prolog/39_esssup.pl`。*
+
+---
+
+上一章：[38 一致可积：L¹ 收敛的通行证制度](38-uniform-integrability.md) · 下一章：[40 解析集：投影下的可测性存亡](40-analytic-sets.md)

@@ -209,3 +209,7 @@ locale 提供 Tonelli 的 nn-积分换序（`Fubini`/`Fubini'`）与
 *对应示例：`examples/lean/Measuretheory/Ch18Fubini.lean`、
 `examples/isabelle/MT18/T18_Fubini.thy`、
 `examples/julia/18_fubini.jl`、`examples/python/18_fubini.py`。*
+
+---
+
+上一章：[17 乘积可测空间：联合观测的舞台](17-product-sigma.md) · 下一章：[19 转移核：带参数的测度](19-kernels.md)

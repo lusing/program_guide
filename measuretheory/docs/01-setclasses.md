@@ -204,3 +204,7 @@ B₁ = {1,2}，B₂ = {3}，B₃ = {4}——两两不交，并 = {1,2,3,4} = ⋃
 *对应示例（可选）：`examples/julia/01_setclasses.jl`、
 `examples/python/01_setclasses.py`、`examples/prolog/01_setclasses.pl`、
 `examples/lean/Measuretheory/Ch01Setclasses.lean`。*
+
+---
+
+上一章：[00 导言：测度论地图与工具链](00-intro.md) · 下一章：[02 单调类定理](02-monotone-class.md)

@@ -199,3 +199,7 @@ condexp`（条件期望保 UI——38.2 速查表的机器版）、
 *对应示例：`examples/lean/Measuretheory/Ch38UniformIntegrability.lean`、
 `examples/julia/38_uniform_integrability.jl`、
 `examples/python/38_uniform_integrability.py`。*
+
+---
+
+上一章：[37 正则条件概率与条件分布：版本的统一装配](37-regular-conditional.md) · 下一章：[39 本性上确界：忽略零测的最大值](39-esssup.md)

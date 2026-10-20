@@ -208,3 +208,7 @@ Baire 测度）几乎无条件，装修（正则性→Borel 全层）按拓扑
 
 *对应示例：`examples/lean/Measuretheory/Ch24Riesz.lean`、
 `examples/julia/24_riesz.jl`、`examples/python/24_riesz.py`。*
+
+---
+
+上一章：[23 拓扑空间与 Borel σ-代数：测度论安家拓扑](23-topology-borel.md) · 下一章：[25 正则测度与 Radon 测度：内外逼近的银行制度](25-regular-measures.md)

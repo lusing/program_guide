@@ -212,3 +212,7 @@ Kallenberg（Foundations of Modern Probability）以 vague 为
 *对应示例：`examples/lean/Measuretheory/Ch34VagueConvergence.lean`、
 `examples/julia/34_vague_convergence.jl`、
 `examples/python/34_vague_convergence.py`。*
+
+---
+
+上一章：[33 Lévy-Prokhorov 度量：弱收敛的度量化](33-metrization.md) · 下一章：[35 独立性：概率论的乘法公理](35-independence.md)

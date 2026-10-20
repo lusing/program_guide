@@ -201,3 +201,7 @@ mathlib 锚点（`Measure/LevyProkhorovMetric.lean`）：
 *对应示例：`examples/lean/Measuretheory/Ch33Metrization.lean`、
 `examples/julia/33_metrization.jl`、
 `examples/python/33_metrization.py`。*
+
+---
+
+上一章：[32 胎紧与 Prokhorov 定理：弱收敛的紧性货币](32-tightness-prohorov.md) · 下一章：[34 淡收敛：C₀ 与 C_c 的两档检验](34-vague-convergence.md)

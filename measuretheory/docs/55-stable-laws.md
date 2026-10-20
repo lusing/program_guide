@@ -210,3 +210,7 @@ Kolmogorov 完成广义 CLT 的尾平衡刻画。稳定分布的现代生命
 `examples/julia/55_stable_laws.jl`、
 `examples/python/55_stable_laws.py`、
 `examples/prolog/55_stable_laws.pl`。*
+
+---
+
+上一章：[54 普遍极限定理](54-universal-limits.md) · 下一章：[56 重对数律](56-lll.md)

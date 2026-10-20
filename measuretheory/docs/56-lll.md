@@ -199,3 +199,7 @@ Strassen（1964）的泛函 LIL（轨道在 Brown 桥紧集里稠密）
 `examples/julia/56_lll.jl`、
 `examples/python/56_lll.py`、
 `examples/prolog/56_lll.pl`。*
+
+---
+
+上一章：[55 稳定分布](55-stable-laws.md) · 下一章：[57 全书速查表](57-cheatsheet.md)

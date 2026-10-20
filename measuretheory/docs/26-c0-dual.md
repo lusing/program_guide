@@ -203,3 +203,7 @@ mathlib 实况：**符号/复版 RMK 未打包**（`RealRMK` 处理正
 
 *对应示例：`examples/lean/Measuretheory/Ch26C0Dual.lean`、
 `examples/julia/26_c0_dual.jl`、`examples/python/26_c0_dual.py`。*
+
+---
+
+上一章：[25 正则测度与 Radon 测度：内外逼近的银行制度](25-regular-measures.md) · 下一章：[27 Lusin 定理：可测函数的连续伪装](27-lusin.md)
