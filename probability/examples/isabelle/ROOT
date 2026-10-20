@@ -1,0 +1,4 @@
+session MT02 in "MT02" = "HOL-Probability" +
+  options [document = false]
+  theories
+    T02_Axioms
