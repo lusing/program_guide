@@ -21,6 +21,7 @@ from pathlib import Path
 EMACS_DIR = Path(__file__).parent.parent
 USING_DIR = EMACS_DIR / "docs" / "using-emacs"
 EXTENDING_DIR = EMACS_DIR / "docs" / "extending-emacs"
+CCMODE_DIR = EMACS_DIR / "docs" / "cc-mode"
 EXAMPLES_DIR = EMACS_DIR / "examples"
 
 H1_RE = re.compile(r"^# (\d{2}|附录 [AB]) · (.+)$")
@@ -195,6 +196,11 @@ def main():
         else:
             print("✗ Mutation test FAILED for extending-emacs")
             sys.exit(1)
+        if mutate_and_test(CCMODE_DIR):
+            print("✓ Mutation test passed for cc-mode")
+        else:
+            print("✗ Mutation test FAILED for cc-mode")
+            sys.exit(1)
         return
 
     all_errors = []
@@ -210,6 +216,15 @@ def main():
 
     print("\nChecking extending-emacs tutorial...")
     errors = check_tutorial(EXTENDING_DIR, "extending-emacs", has_examples=True)
+    all_errors.extend(errors)
+    if errors:
+        for e in errors:
+            print(f"  ✗ {e}")
+    else:
+        print("  ✓ All checks passed")
+
+    print("\nChecking cc-mode tutorial...")
+    errors = check_tutorial(CCMODE_DIR, "cc-mode", has_examples=False)
     all_errors.extend(errors)
     if errors:
         for e in errors:
