@@ -138,3 +138,4 @@ funanalysis/examples/lean/lake-packages/
 # measuretheory tutorial build artifacts
 measuretheory/examples/lean/.lake/
 measuretheory/examples/lean/lake-manifest.json
+probability/examples/lean/.lake/
