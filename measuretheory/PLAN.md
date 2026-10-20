@@ -146,9 +146,9 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 | 45 | minlos-sazonov | 9.2 | 分工 | · | ✓ | ✓ | · | B9 | ✅ |
 | 46 | minlos | 9.3 | 分工 | · | ✓ | ✓ | · | B9 | ✅ |
 | 47 | gaussian-measures | 9.4/袁16 | ✓ | · | ✓ | ✓ | · | B9 | ✅ |
-| 48 | prob-inequalities | 袁14 | 分工 | · | ✓ | ✓ | ✓ | B10 | ☐ |
-| 49 | characteristic-functions | 袁17-18 | ✓ | ✓ | ✓ | ✓ | ✓ | B10 | ☐ |
-| 50 | lln | 袁19 | ✓ | · | ✓ | ✓ | ✓ | B10 | ☐ |
+| 48 | prob-inequalities | 袁14 | 分工 | · | ✓ | ✓ | ✓ | B10 | ✅ |
+| 49 | characteristic-functions | 袁17-18 | ✓ | ✓ | ✓ | ✓ | ✓ | B10 | ✅ |
+| 50 | lln | 袁19 | ✓ | · | ✓ | ✓ | ✓ | B10 | ✅ |
 | 51 | slln | 袁20 | ✓ | · | ✓ | ✓ | · | B11 | ☐ |
 | 52 | clt | 袁21 | ✓ | ✓ | ✓ | ✓ | · | B11 | ☐ |
 | 53 | infinitely-divisible | 袁22 | 分工 | · | ✓ | ✓ | ✓ | B11 | ☐ |
@@ -177,7 +177,7 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
 - [x] B7 35-40 概率选讲（**22/22 全绿，终态 -All 150/150**——docs 6 篇 196-212 行：卷积跨章总表+BC i.o. 诚实数值学（计数增长侧写）、条件期望投影谱系+新息分解+退化显式库五条、条件分布三张面孔互译表+装配进料单+Rao-Blackwell、UI 缴费阶梯五档+Dunford-Pettis 影子、ess inf 存在四步+L⁰ 完备格地位、解析集 Souslin 双定义+Lusin 分离+Choquet 容度链；Lean 6 件（**B7 双翻案**：ch40 AnalyticSet 全家升 ✓；condexp→condLExp 新 API 正名）；Isabelle MT36（nn_cond_exp/real_cond_exp/Jensen）；Julia 6/Python 6/Prolog 3：双骰爆雷 1/36≠1/72 精确、塔/取出/Jensen/正交全精确、Rao-Blackwell 4 倍压缩 35/12→35/48、尖峰跳变谱系、树运算退化注记）
 - [x] B8 41-43 鞅（**12/12 全绿，终态 -All 162/162**——docs 3 篇 191-202 行：上穿策略的赌博账证明文化（一切鞅式不等式都是某个交易策略的盈亏封顶——mathlib upcrossingStrat 直接继承此骨架）、Pólya 罐完全账四步+乘积鞅双轨分叉解剖（E[log]<log E 的 Jensen 间隙）、局部化选取学+无套利离散影子；Lean 3 件：Doob 分解（predictablePart+martingalePart）、exists_ae_tendsto_of_bdd+upcrossingsBefore、可料变换期望账（局部鞅分工如实：mathlib Martingale/ 无 local 文件）；Julia 3/Python 3/Prolog 3：Doob L¹/L² 采样验证（ratio 1.32 < 2）、上穿计数 2.9 有限、Pólya Beta(1,1) 直方图、G-W s=1/4 精确、截断冻结语义（clamp 会破坏鞅性——数值抓出的真语义）、偷看策略套利 199 vs 可料 0）
 - [x] B9 44-47 无穷维（**12/12 全绿，终态 -All 174/174**——docs 4 篇 198-207 行：正定性三免费推论+一维完全体 Feller 手算+Δ-引理病灶诊断+Pólya 快餐；Sazonov"加粗省钱"直觉+三步付费清单+两档收费对照表（S₁/S₂/紧）+白噪声终局；核空间 S(ℝ) 半范数塔手感+逐层装配+白噪声三步落户+Brown=白噪声积分；Gauss 四柱（支撑/CM/Fernique/等集中）+三形态判据表+CM 会员费+集中现象导览；Lean 4 件：charFun/ext_of_charFun/charFun_gaussianReal/charFun_conv 四锚+高斯闭式收割+唯一性 funext 调用+Σ1/k²≤2 迹收敛 telescoping+白噪声柱面账+对称镜像账；Julia 4/Python 4：Gram PSD 四核、数值积分 vs 闭式、卷积乘积律、迹/HS 两档、柱面换基不变、Brown 增量独立 cor≈0、CM 门槛发散、Fernique α<1/2 闭式对拍、CM 密度归一、Poisson 噪声 LK）
-- [ ] B10 48-50 袁下册 I（概率不等式/特征函数/弱大数律）
+- [x] B10 48-50 袁下册 I（**13/13 全绿，终态 -All 187/187**——docs 3 篇 200-216 行：四代不等式引擎表+Kolmogorov max 停时三行证明+MZ/Rosenthal 两 regime+接口 41 章同构表；特征函数计算库九行+Lévy 连续性三步解剖+矩-导数词典+De Moivre-Laplace；LLN 谱系（矩×独立性兑换图）+Khinchin 截尾证明+MZ 速率+阵列版+圣彼得堡+K-F+分位数相合；Lean 3 件：mul_meas_ge_le_pow_eLpNorm' L¹ 形态实弹、charFun_gaussianReal 闭式收割（括号对齐战）+charFun_map_cast_poissonMeasure 锚、strong_law_ae/strong_law_Lp 锚+truncation 族两恒等实弹；Isabelle MT49（char_zero/cmod_char_le_1 locale 前缀）；Julia 3/Python 3/Prolog 3：Chebyshev 取等恒等、Kolmogorov max 两步取等现场（1/2=2/4）、LIL 端点带 vs 全程带的诚实修正、Pareto 跨界稳定账、圣彼得堡截尾 (k+1)/2 分数判决、Euler/矩词典差分/独立和=乘积 cos²t；**翻案**：doc 50.5.6 侦察占位句回填（strong_law_ae 实锤在库））
 - [ ] B11 51-53 袁下册 II（强大数律/CLT/无穷可分）
 - [ ] B12 54-57 袁下册 III（普遍极限/稳定分布/重对数律/收官 CHEATSheet）
 
@@ -459,3 +459,41 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
     Σλⱼ（非 Σ√λⱼ）：`sum((1/j)*z²)` 的期望 = Σ1/j（发散）vs 正确
     `sum((1/j²)*z²)` 的期望 = Σ1/j² → π²/6——Julia/Python 双通道同错
     后同纠（docs 47.1.5 的账本格式反向校验了实现）。
+
+65. （B10）Python Fraction 双闸门：float 入参一律拒收——`Fraction(1/25)` 与
+    `Fraction(1, 4*20*(1/25)**1)`（分母经幂运算转 float）同报
+    "both arguments should be Rational instances"；界账分母必须保持整数
+    （`Fraction(1, 4*n) / Fraction(1, 25)`）。调试期的 `A if False else B`
+    草稿链是事故温床——选不中也要写对（本次即炸在链尾 else 值）。
+66. （B10）Julia 模拟的参数三闸门：`rand(Bool)` 是 p=1/2 不是模拟目标的
+    p=1/3（参数错位假阴）；自制 Poisson 用两个 geometric(λ/2) 复合则方差
+    错误（须 Knuth 逆变换：∏U > e^−λ 计步）；`cov` 的列账要 `dims=2`；
+    `Diagonal` 须 `using LinearAlgebra`；环境无 Distributions 包——
+    采样全部手写。
+67. （B10）数值带的"重对数律墙"：要求 n=1..N **全程**轨道压在 c/√n 带内
+    必被中间尺度的 LIL 涨落打破——Julia 50 只在**端点带**
+    `|Sₙ/n − p| ≤ 2/√n` 判收敛；Python 48：两步对称游动的
+    P(max|Sₖ| ≥ 1) = 1（|S₁|≡1 恒成立），Kolmogorov 账要选 λ=2 才看到
+    1/2=1/2 的取等现场——带阈值的选择藏住账本。
+68. （B10）MZ 速率账：中心化常数须用**经验 EX**（`mean(samples)`），理论
+    猜测错中心使速率比失去 regime 判别力；Pareto α=1 的发散账用"跨尺度
+    稳定"（|E_b − E_c| < 0.05）替代对理论值——有界逆变换 (1+U)^{−1/α}
+    对一切 α 都有有限均值（数值账与定理账形式不同，docs 如实注记）。
+69. （B10）Prolog：SWI `is` 的分数算术精确保 ℚ（`2/4 =:= 1/2`）——
+    弱大数律账（B(10)=2·B(20)、圣彼得堡 (k+1)/2）全可 `=:=` 判决；
+    但 `binom/3` 递归必须补 `K > N → 0` 兜底（`binom(N-1, N)` 尾项
+    失败外显为 "Initialization goal failed" 且无 END 尾巴——沉默单元
+    失败，靠头尾标记对账抓出）；`include(=(>=2), ...)` 语法不成立，
+    改 `findall(M, (member(M,L), M >= 2), H)`。
+70. （B10）前缀/命名空间陷阱续：mathlib truncation 族
+    （abs_truncation_le_bound/truncation_zero/…）与 strong_law_* 全在
+    **ProbabilityTheory** 命名空间（#61 同族第三撞）；Isabelle
+    `char_zero`/`cmod_char_le_1` 是 real_distribution locale 成员
+    （裸名 unknown）。`charFun_gaussianReal` 的实参括号须与引理输出
+    逐括号对齐（`Complex.exp (-(t^2/2))` 形态），差一层 simp 死循环。
+71. （B10）教程流水线两纪律：**"视侦察"占位句**侦察完成后必须回填，
+    否则正文出现空锚名（"mathlib 的 ⟨空⟩ 存在与否"——本次 50.5.6
+    的断行级事故，收割时回填 strong_law_ae/Lp + truncation 族实锤）；
+    页脚"对应示例"清单必须与 PLAN 通道列同步（加 R 单元 = 正文段落 +
+    页脚行双登记，缺一即断链）。
+
