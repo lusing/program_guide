@@ -75,7 +75,8 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
       lean 1 + jl 1 + py 2 + pl 2 + coq 1），docs 273/261 行
 - [x] **B3**：05-06 自然数递归/等势——8 单元批内全绿（终态 -All 24/24：
       lean 2 + isa 1 + jl 2 + py 2 + pl 1），docs 242/204 行
-- [ ] B4：07-08 实数构造/不可数（5 单元）
+- [x] **B4**：07-08 实数构造/不可数——6 单元批内全绿（终态 -All 30/30：
+      lean 1 + jl 2 + py 2 + pl 1），docs 253/202 行
 - [ ] B5：09-11 良序/序数/递归与算术（8 单元）
 - [ ] B6：12-13 古德斯坦/选择公理（6 单元）
 - [ ] B7：14-15 基数/基数算术（4 单元）
@@ -163,3 +164,21 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
 27. **B3·Prolog between 不求值**：`between(0, Max-1, H)` 报 compound——
     先 `MaxM is Max-1` 再 between。
 28. **B3·zigzag 超额**：末条对角线整段附加使 count 超标——断言 ≥ 且不重。
+29. **B4·Lean nlinarith 需要显式乘积提示**：r ≥ 2 ⟹ r² ≥ 4 对
+    nlinarith 不自动——`mul_nonneg h1 h1` 手喂 (r−2)² 再 nlinarith；
+    结论端 absurd 配 not_lt.mpr 显式转换。
+30. **B4·截断恒等式**：无穷三进级数 0.0222…₃ 的 d 项前缀是
+    1/3 − 3^{-d} 而非 1/3——机器逼出精确陈述（这比含糊的"≈"诚实）。
+31. **B4·首差异账的位号**：两地址首异于第 2 位却标 n=1、方向还反了
+    ——差 ≥ 3^{-(n+1)} 的断言先手推再写码（B2 序方向坑的复现）。
+32. **B4·哨兵自坑 (−10)^8 = +10^8**：负底偶次幂为正——两个哨兵
+    相同导致区间空、findfirst 永败；写 -(10^8)。
+33. **B4·√2 分割的负半轴**：{q | q² < 2} 在负方向不向下封闭——
+    分割是 {q ≤ 0} ∪ {q > 0 且 q² < 2}；有限窗口的无最大元条件
+    须降格为边界余量版。
+34. **B4·Julia 软作用域三连**：全局 p 复用于循环内（警告）→ 循环
+    变量改名 pk/qk；数据结构版本 q 的 (3.17) 收敛率首步 2/9>0.2
+    ——阈值按 sup|g'| 与首步实际值定 0.23。
+35. **B4·mathlib 锚点**：`Real.exists_isLUB` 在
+    Algebra/Order/Archimedean/Real（非 Data/Real）；`irrational_sqrt_two`
+    在 NumberTheory/Real/Irrational。
