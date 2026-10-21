@@ -18,3 +18,5 @@ import Probability.Ch14UniformExponential
 import Probability.Ch15Normal
 import Probability.Ch16Gamma
 import Probability.Ch17ChiSquare
+import Probability.Ch18InequalitiesLLN
+import Probability.Ch21CLT

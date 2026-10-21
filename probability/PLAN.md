@@ -39,11 +39,11 @@ Steven J. Miller, *The Probability Lifesaver*（Princeton UP 2017，
 | 15 | normal | ch14 正态分布 (p387) | ✓ | · | ✓ | ✓ | · | B6 | ✅ |
 | 16 | gamma | ch15 Γ 函数与分布 (p414) | ✓ | · | ✓ | ✓ | · | B6 | ✅ |
 | 17 | chi-square | ch16 卡方 (p443) | ✓ | · | ✓ | ✓ | · | B6 | ✅ |
-| 18 | inequalities-lln | ch17 不等式与 LLN (p463) | ✓ | · | ✓ | ✓ | · | B7 | ☐ |
-| 19 | stirling | ch18 Stirling 公式 (p483) | · | · | ✓ | ✓ | · | B7 | ☐ |
-| 20 | generating-functions | ch19 母函数 (p508) | · | · | ✓ | ✓ | ✓ | B7 | ☐ |
-| 21 | clt | ch20 CLT 证明 (p541) | ✓ | ✓ | ✓ | ✓ | · | B7 | ☐ |
-| 22 | fourier-clt | ch21 Fourier 与 CLT (p567) | · | · | ✓ | ✓ | · | B7 | ☐ |
+| 18 | inequalities-lln | ch17 不等式与 LLN (p463) | ✓ | · | ✓ | ✓ | · | B7 | ✅ |
+| 19 | stirling | ch18 Stirling 公式 (p483) | · | · | ✓ | ✓ | · | B7 | ✅ |
+| 20 | generating-functions | ch19 母函数 (p508) | · | · | ✓ | ✓ | ✓ | B7 | ✅ |
+| 21 | clt | ch20 CLT 证明 (p541) | ✓ | ✓ | ✓ | ✓ | · | B7 | ✅ |
+| 22 | fourier-clt | ch21 Fourier 与 CLT (p567) | · | · | ✓ | ✓ | · | B7 | ✅ |
 | 23 | hypothesis-testing | ch22 假设检验 (p582) | · | · | ✓ | ✓ | ✓ | B8 | ☐ |
 | 24 | markov-least-squares | ch23-24 差分方程/Markov/最小二乘 (p620) | · | · | ✓ | ✓ | · | B8 | ☐ |
 | 25 | famous-problems | ch25 两著名问题与编码 (p649) | · | · | ✓ | ✓ | ✓ | B8 | ☐ |
@@ -61,7 +61,7 @@ R=Prolog（✓=主锚/·=该通道无单元——初判，批次侦察后可调�
 - [x] B4 08-10 随机变量（**11 单元批内全绿（本批），终态 -All 40/40**——docs 3 篇 176/154/186 行：离散章（pmf 双牌/伯努利过程三步推导/CDF 阶梯四性质/两骰三角形）；连续章（单点概率为零的 ε 论证/归一化三关（形状→有限积分→常数）/F′=f 与逆变换采样 X=√U/混合型分段账）；期望章（矩=Taylor 系数类比/E[1/X] 与 Cauchy 均值不存在两反例/线性性不需要独立的证明结构/方差捷径/粘硬币边际同联合崩坏/投资组合 w=1/2 减半/零协方差不独立）。Lean 3 件：Ch08 pmf 归一与 CDF 判决、Ch09 volume_Icc+HasDerivAt 反导数判据（F=x²）、Ch10 矩账全家桶（3/4、35/12、35/6、1250、抛物线谷底）；Isabelle MT10（ereal 界坑+FTC 机器件：lborel 体积/密度 2x 三账/多项式归一）；Julia 3（二项直方图逐 k<0.002/概率树折层 1e-12/逆变换+拒绝采样/Cauchy 均值震荡 vs 正态收敛/投资组合抛物线）；Python 3（16 串枚举=C(4,k)/16/多项式 antiderivative 精确 CDF 表/粘硬币 16 穷举破坏格/Cauchy 路径依赖 (ln2)/π）；Prolog 08（8/36/16 三重穷举）
 - [x] B5 11-12 变换工具（**5 单元批内全绿，终态 -All 45/45**——docs 2 篇 168/159 行：卷积章（"知道两密度不够"的 X/−X 反例/卷积定理 CDF 法证明骨架/交换律的结构论证（一行顶一页代数）/grouping 智慧（(X1+X2)+(X3+X4) 与快速幂同构，8 骰 3 种卷积 vs 朴素 7 种）/换元公式 fX(h)|h'|（绝对值两案例/GCDF 法现场再生/1/(4√y) 弱无穷）/积商公式与 dt/t 乘法不变性/指数商 1/(1+z)² 与 λ 无关 + 均值无穷的模拟陷阱）；微分章（Σn/2ⁿ=2/Σn²/2ⁿ=6 的抽象-求导-收割三步/算子工艺 x·d/dx·p∂/∂p·σ³d/dσ·λ²d/dλ 保幂次预补偿/q 独立到最后（早代 q=1−p 得 0=0）/二项 np 与 np(1−p) 全账/组合收获 Σk·C=n·2ⁿ⁻¹/正态偶矩 (2k−1)!!/指数 k!λᵏ）。Julia 2（四骰 grouping 卷积 vs 1296 格模拟/连续三角形/1/(4√y) 分桶/λ 无关双 λ 经验 CDF 重合+分裂均值差 7.27 现场/正态样本偶矩 945）；Python 2（Fraction 全精确 f2*f2=1296 枚举/三角形分段 CDF 精确/E[Y]=4/3 双路会师/二项矩 35/9 与 10/9/组合恒等式 n=8 审判/Simpson 正态偶矩到 11!!）；Lean Ch12（截断平铺和 509/256 尾 3/256、717/128 尾 51/128——二阶链肥尾实测/n=8 组合恒等式 decide/双阶乘 ring）
 - [ ] B6 13-17 分布族（离散五族/均匀指数/正态/Γ/卡方）
-- [ ] B7 18-22 极限定理（不等式 LLN/Stirling/母函数/CLT/Fourier）
+- [x] B7 18-22 极限定理五章（**14 单元批内全绿，终态 -All 76/76**——docs 5 篇：不等式章（"只知均值不够"的零均值两点族反例扫描/Markov 一行半证明与非负性用处/Chebyshev 双证明（消费 Markov 于平方）/σ vs σ² 经典事故（界低于真值即信号）/Boole-Bonferroni=容斥截断/收敛四级/WLLN=Chebyshev 三行的接力链（Markov⟹Chebyshev⟹WLLN）/SLLN 路径现场）；Stirling 章（递推一致性检查 (1+1/n)ⁿ→e/C(2n,n)/4ⁿ=1/√(πn) 与 2008 平票双模型（0.73% vs 10⁻⁵⁴——模型换结论换）/正态 MGF=e^{t²/2}/速率陷阱（对数展开 vs 草率极限差一个 e^{k²/N}）/穷汉 Stirling（log 单调配积分+几何均值 2.718√n vs 2.5066√n 差 8%））；母函数章（泊松和三步幸运→一行乘法/Fibonacci 全程+Binet/卷积定理独立和=乘积/MGF 三件套与六族闭式表/Cauchy 无 MGF 警告）；CLT 章（"测试函数积分相等⟹函数相等"的方波反证/标准化代数/Poisson 特例完整账/一般证明四件套（标准化吃一阶项-MGF 乘积-Taylor 二阶-(1+w/N)^N）/使用规范与连续性修正/WLLN→CLT→Berry-Esseen 三层弧线）；Fourier 章（积分变换核代数/特征函数恒存在（Pythagoras 一行）/Schwartz 空间与反演定理兑付唯一性/卷积定理 f̂∗ĝ=f̂·ĝ/特征函数版 CLT（i²=−1 负号来历）/Cauchy 的 e^{−|t|} 稳定不 CLT/Gaussian 自反）。Lean 3 件（18/21 两章 ℚ 判决+pow_le_pow_right₀、(201/200)^100、MGF 系数账）；Isabelle MT21（两点矩账+骰方差可加，antiq 三连劫持：\<^sup> 外不能再裸 <）；Julia 5（Markov 紧度/正态远低于界/WLLN 实测/SLLN 路径/Stirling 误差幂律斜率 −1 与 −2/2n 掷币格点 vs e^{−k²/N}/Fibonacci 三赛跑（Float64 Binet n=80 失真）/泊松 MC 泊松采样/ecf 全家（正态均匀柯西 CLT Cauchy 平均 100 个仍柯西/Box-Muller））；Python 5（三方对照/平票对数账/Simpson MGF/连续性修正/三族 φ 收敛/Cauchy MC 慢收敛/卷积定理实部对照）；Prolog 20（Fibonacci 迭代版+多项式卷积=骰子三角形+gf 系数恢复）
 - [ ] B8 23-27 统计与收官（检验/Markov/最小二乘/著名问题/
   证明十一式/CHEATSheet）
 
@@ -187,3 +187,20 @@ ch23 p620 · ch24 p638 · ch25 p649 · 附录 A p661 / B p687 / C p705。
    防无理数；Isabelle {1..6} 区间求和 simp 不算——显式
    列举集合 {1,2,3,4,5,6} 直算；PMF 族真名在
    Probability_Mass_Function.thy（bernoulli/geometric/poisson）。
+24. （B7）**Isabelle antiq 三连劫持**：`\<^sup>` 系列字符
+   （积分记号 integral\<^sup>L、平方 \<^sup>2）在纯文本写入时
+   会被吃成 `<sup>` 反引号——书写时必须逐字符验证；且
+   `integral`（集合积分）与 `integral\<^sup>L`（测度积分）
+   类型不同，pmf 侧必须用后者。
+25. （B7）**Julia randexp(1) 陷阱**：参数 1 不是"生成 1 个"
+   而是数组维度——`randexp()` 才是标量；`randexp(1)*mu`
+   会产生 Vector 导致 count 比较炸出 isless(Float,Vector)。
+   同族：`I` 在无 LinearAlgebra 时不可用（手写 BigInt 单位阵）。
+26. （B7）**MC 精度地板**：经验 CDF/矩的对拍在 n 大时撞
+   1/√reps 噪声地板（KS 偏差不再单调降）——断言改首尾对照；
+   修正项 Stirling 误差 < 1e-9 在 n>10³ 后低于 sum(log) 求和
+   精度地板，幂律斜率只能用干净段估计。
+27. （B7）**格点 CLT 的桶共振**：Bernoulli(p=0.3) 标准化
+   和的格距 0.154 使 0.5 宽的桶偏差 0.04（远超容差）——
+   换对称 die 族或放宽容差并注明"含格点残差"；Python ②
+   的重复循环残段（for t in 1.0,）是语法错误源。
