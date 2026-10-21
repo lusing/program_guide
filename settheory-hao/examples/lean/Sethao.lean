@@ -6,3 +6,4 @@
 
 import Sethao.Prelude
 import Sethao.Ch02Axioms
+import Sethao.Ch03Relations

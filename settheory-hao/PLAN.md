@@ -71,7 +71,8 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
 - [x] **B0** 骨架 + build.ps1 + Lean 工程空构建 + Isabelle ZF 通道冒烟（2026-10-21）
 - [x] **B1**：00-02 导引/悖论语逻/公理——8 单元批内全绿（终态 -All 9/9：
       lean 1 + isa 1 + coq 1 + jl 1 + py 3 + pl 1），docs 239/276/419 行
-- [ ] B2：03-04 关系函数/等价划分序（6 单元）
+- [x] **B2**：03-04 关系函数/等价划分序——7 单元批内全绿（终态 -All 16/16：
+      lean 1 + jl 1 + py 2 + pl 2 + coq 1），docs 273/261 行
 - [ ] B3：05-06 自然数递归/等势（7 单元）
 - [ ] B4：07-08 实数构造/不可数（5 单元）
 - [ ] B5：09-11 良序/序数/递归与算术（8 单元）
@@ -122,3 +123,24 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
    bigint——第二层演示用玩具码（2^8·3^32），正文注明。
 8. **B1·Prolog findall 命名纪律**：多 findall 各用独立变量名（_X1、
    Hits1/Hits2），预防 settheory 轮的变量泄漏坑（本批未触发，写入规范）。
+9. **B2·Lean 关系 API**：mathlib 4.33 无 `Rel.dom/range/image`（Lean3
+   旧账）；关系代数在 `Relation` 命名空间（`flip_comp`、`comp_assoc`），
+   且 `∘r` 是 Relation.lean 的 **local** 记号不外传——自建
+   `local infixr:80 " ∘r " => Relation.Comp`，dom/ran/rimage 自定义落在明处。
+10. **B2·Lean warning 纪律**：`intro x y` 后 x/y 只出现在假设类型里也触发
+    unusedVariables（用 `show` 让变量现身）；simp 未用引理出 unused 警告。
+11. **B2·python 优先级+见证手算**：`A & B - C` 解析为 `A & (B-C)`；
+    像律单向包含的见证两版算错第三版才对（R 把 0、2 同映 c 时差集 {c}）。
+12. **B2·Julia values 广播恒等**：`values.(Xs)` 对 Pair 向量返回原向量
+    （values(::AbstractArray)=self）——取第二分量用 `last.(Xs)`。
+13. **B2·Julia 空求和复现**：`sum(1:0)` 报错（probability 轮同坑）→ init=0。
+14. **B2·Prolog setof 自由变元**：`setof(C, X^(class_of(P,X,C)), Q)` 的 X
+    不先绑定则以自由身进入 findall、收集全宇宙——`member(X,Es)` 先绑。
+15. **B2·Prolog 划分生成器**：按块序+块内倒序产生重复（有序 Bell 数），
+    计数前 canonical（maplist sort + sort 块序）去重。
+16. **B2·Prolog 序方向三连翻车**：sub_le 写反、整除上界方向反、把最大元
+    当最小元断言——有限序分析先手推再写码，机器逐条暴露。
+17. **B2·Coq 等价类双表示**：类用谓词（A→Prop）、块用 list（list A），
+    避开商类型与函数外延性；两歧性拆两条引理避开经典析取。
+18. **B2·OCR 勘误**：书 2.5.24 "inf∅=0" 按数学事实应为 inf∅=X（P(X) 顶），
+    正文按正确版讲并注明。
