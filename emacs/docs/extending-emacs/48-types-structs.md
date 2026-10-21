@@ -580,4 +580,4 @@
 
 至此第 11 部分讲完：41–43 章的宏与编译期设施、44 章的广义变量、45 章的作用域与控制流、46 章的 `cl-loop`、47 章的序列与列表、本章的类型/结构/断言/打印——cl-lib 的全貌已经展开。附录 A 把散落在各章的「实测坑」集中成一份速查表，写代码前翻一遍能省不少编译器警告。
 
-上一章：[47 · 序列与列表：cl-map、cl-reduce 与列表构造](47-sequences-lists.md)　｜　下一章：[附录 A · 常见坑速查](appendix-a-pitfalls.md)　｜　返回：[Emacs 扩展开发指南](README.md)
+上一章：[47 · 序列与列表：cl-map、cl-reduce 与列表构造](47-sequences-lists.md)　｜　下一章：[49 · EIEIO 快速上手：defclass、构造、泛型与方法](49-eieio-quickstart.md)　｜　返回：[Emacs 扩展开发指南](README.md)
