@@ -7,3 +7,5 @@
 import Sethao.Prelude
 import Sethao.Ch02Axioms
 import Sethao.Ch03Relations
+import Sethao.Ch05Naturals
+import Sethao.Ch06Equipollence

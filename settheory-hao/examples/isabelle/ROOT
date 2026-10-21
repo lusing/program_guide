@@ -2,3 +2,7 @@ session HS02 in "HS02" = "ZF" +
   options [document = false]
   theories
     Axioms
+session HS05 in "HS05" = "ZF" +
+  options [document = false]
+  theories
+    Naturals

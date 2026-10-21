@@ -73,7 +73,8 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
       lean 1 + isa 1 + coq 1 + jl 1 + py 3 + pl 1），docs 239/276/419 行
 - [x] **B2**：03-04 关系函数/等价划分序——7 单元批内全绿（终态 -All 16/16：
       lean 1 + jl 1 + py 2 + pl 2 + coq 1），docs 273/261 行
-- [ ] B3：05-06 自然数递归/等势（7 单元）
+- [x] **B3**：05-06 自然数递归/等势——8 单元批内全绿（终态 -All 24/24：
+      lean 2 + isa 1 + jl 2 + py 2 + pl 1），docs 242/204 行
 - [ ] B4：07-08 实数构造/不可数（5 单元）
 - [ ] B5：09-11 良序/序数/递归与算术（8 单元）
 - [ ] B6：12-13 古德斯坦/选择公理（6 单元）
@@ -144,3 +145,21 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
     避开商类型与函数外延性；两歧性拆两条引理避开经典析取。
 18. **B2·OCR 勘误**：书 2.5.24 "inf∅=0" 按数学事实应为 inf∅=X（P(X) 顶），
     正文按正确版讲并注明。
+19. **B3·Nat.rec 显式 motive**：`Nat.rec m Nat.succ` 类型推断失败——
+    `(motive := fun _ => ℕ)` 必须显式。
+20. **B3·doc 注释+#check 第四撞**：坑 #4 在 Ch06 复现两处——#check/#print
+    前一律普通块注释，写入肌肉记忆。
+21. **B3·Finite≠Fintype**：单射⟺满射是 `Finite.injective_iff_surjective`
+    （Finite typeclass 版，非 Fintype）。
+22. **B3·Nat.find 不展开**：`Nat.find h = 6` 的 rfl/decide 都不闭合
+    （WellFounded 定义的 opaqueness）——改证上界 `≤ 6`（find_min'）。
+23. **B3·Isabelle 终端组合**：`by (rule X) (rule Y)` 失败——ZF simp 集
+    本含 add_0_right/add_succ_right，直接 `by simp`。
+24. **B3·Julia 1-基索引**：aps[3] 误当 3-近似（是 2-近似；aps[1] 为 0-近似）。
+25. **B3·Python 世界混用**：succ 是 frozenset 运算，集合里混放 int 崩——
+    归纳集最小性改为推导式审计（两条规则逼出数字）。
+26. **B3·CSB 窗口模型教训**：书引理本质无穷（有限时 A'=A=B 空洞）——
+    有限彩排须以 ℤ 窗口建模；交替序列 C 在 log2(窗口) 深度稳定（实测 7）。
+27. **B3·Prolog between 不求值**：`between(0, Max-1, H)` 报 compound——
+    先 `MaxM is Max-1` 再 between。
+28. **B3·zigzag 超额**：末条对角线整段附加使 count 超标——断言 ≥ 且不重。
