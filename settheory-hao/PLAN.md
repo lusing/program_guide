@@ -83,7 +83,8 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
       lean 1 + isa 1 + coq 1 + jl 2 + py 2 + pl 1），docs 204/205 行
 - [x] **B7**：14-15 基数/基数算术——6 单元批内全绿（终态 -All 55/55：
       lean 2 + isa 1 + jl 1 + py 2），docs 183/161 行
-- [ ] B8：16-18 共尾/幂/滤与 club（8 单元）
+- [x] **B8**：16-18 共尾/幂/滤与 club——10 单元批内全绿（终态 -All 65/65：
+      lean 3 + jl 2 + py 3 + pl 2）
 - [ ] B9：19-20 谱系绝对性/基础良基（6 单元）
 - [ ] B10：21-22 不可达反映/L（5 单元）
 - [ ] B11：23-24 力迫/速查收官（4 单元）
@@ -243,3 +244,24 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
     sort(vcat(...)) 核对。
 59. **B7·ZF 无 Card_succ 引理**：Card(1) 走 Card_iff_initial 展开
     eqpoll_def/bij_def/surj_def 后 auto 可收（空定义域无满射）。
+60. **B8·Lean cf 断代名**：isRegular_aleph0 无 Cardinal 前缀报 Unknown
+    constant——正确名 Cardinal.isRegular_aleph0；isRegular_aleph_one
+    同；cof_cof → cof_ord_cof（deprecated）。
+61. **B8·mathlib 无 Cardinal.pow_add**——幂吸收用 cantor→mul_eq_self
+    两级火箭；power_le_power_left 根命名空间需 open Cardinal，
+    参数是 two_ne_zero。
+62. **B8·UltraFilter 命名空间**：exists_ultrafilter_of_finite_inter
+    _nonempty 在 Ultrafilter 命名空间（order/filter/ultrafilter/
+    basic.lean），mathlib grep 大小写敏感。
+63. **B8·Prolog 子集生成器炸栈（本教程最大坑）**：sub(S,Y) 以
+    member 逐位生成会产重复元素无限分支——必须 subselect2（头
+    include/exclude 二叉）；与 ch04 同坑重踩，列入肌肉记忆。
+64. **B8·Julia Set 相等**：generator 造的 Set == 字面 Set 可能因
+    首元素差异失败（18 vs 24）——期望值先实际核对。
+65. **B8·Prolog between 未实例化**：between(0, A1, H) 中 A1 若是
+    表达式 A-1 须先 is 求值再 between。
+66. **B8·窗口'无界'语义**：maximum(S)==N-1 过强（稀疏 club 如
+    3 倍数永假）——approaches_top(S) = maximum > N-10 更诚实；
+    极限点用"n%5==0 + 下方密度"模拟可数极限。
+67. **B8·GCH 三分支实现顺序**：先查 κ≤λ（5.2.10 无条件），再
+    κ>λ 时的 cf 分岔——写反会把 ℵ₂^ℵ₁ 吞进 2^ℵ₁。
