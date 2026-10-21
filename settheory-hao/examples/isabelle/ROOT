@@ -1,0 +1,4 @@
+session HS02 in "HS02" = "ZF" +
+  options [document = false]
+  theories
+    Axioms

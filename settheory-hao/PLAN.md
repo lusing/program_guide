@@ -69,7 +69,8 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
 ## 批次
 
 - [x] **B0** 骨架 + build.ps1 + Lean 工程空构建 + Isabelle ZF 通道冒烟（2026-10-21）
-- [ ] B1：00-02 导引/悖论语逻/公理（8 单元）
+- [x] **B1**：00-02 导引/悖论语逻/公理——8 单元批内全绿（终态 -All 9/9：
+      lean 1 + isa 1 + coq 1 + jl 1 + py 3 + pl 1），docs 239/276/419 行
 - [ ] B2：03-04 关系函数/等价划分序（6 单元）
 - [ ] B3：05-06 自然数递归/等势（7 单元）
 - [ ] B4：07-08 实数构造/不可数（5 单元）
@@ -100,4 +101,24 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
 
 ## 坑账（随批次追加）
 
-（暂无；B0 无坑——manifest 直拷即用，ZF 堆已在位。）
+1. **B0·rapidocr cudnn 路径**：cudnn DLL 在 `G:\cudnn\9.24\bin\12.9\x64`
+   （bin 下还有一层 12.9/x64），PATH 须指到最里层否则 `cudnn_graph64_9.dll
+   找不到`。
+2. **B0·lake 空工程网络拉包**：新工程无 `.lake/packages` 时 lake 试图
+   从 GitHub 拉 batteries 等（网络被重置失败）——**直接拷贝 settheory 的
+   `.lake/packages`（383M，8 个包）**，manifest 逐字节相同即不再触网。
+3. **B0·lake glob 空目录**：`globs := #[.submodules `Sethao]` 在 `Sethao/`
+   目录不存在时报 `no such file or directory`——常驻 `Sethao/Prelude.lean`
+   占位。
+4. **B1·Lean doc 注释 + #check**：`/-- … -/` 后跟 `#check` 报
+   "unexpected token '#check'; expected 'lemma'"（doc 注释只能挂声明）——
+   #check/#print 前一律用普通块注释 `/- … -/`。probability B2 轮同坑复现。
+5. **B1·python -I 忽略 PYTHONIOENCODING**：隔离模式连环境变量一起忽略，
+   stdout 走 GBK——print 字符串必须 GBK 安全（`↦`² 不行，`->`^2 行）。
+   代码注释不受影响（文件本身 UTF-8）。
+6. **B1·zigzag 起点**：有理数对角线枚举须从 d=1 起步（0/1 在第一条
+   对角线 p+q=1 上）；从 d=2 起会漏掉 0，断言 [0,1,1/2,2] 才暴露。
+7. **B1·两层哥德尔编码爆炸**：真实公式码 ~10^87 做第二层指数超任何
+   bigint——第二层演示用玩具码（2^8·3^32），正文注明。
+8. **B1·Prolog findall 命名纪律**：多 findall 各用独立变量名（_X1、
+   Hits1/Hits2），预防 settheory 轮的变量泄漏坑（本批未触发，写入规范）。
