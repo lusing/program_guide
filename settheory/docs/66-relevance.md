@@ -108,4 +108,4 @@ p,q-公式扫描爆炸律家族的字母共享、验证 Lewis 推导的每步
 
 ---
 
-上一章：[65 证明与后承](65-proof.md) · 下一章：[67 收官 CHEATSheet](67-cheatsheet.md)
+上一章：[65 证明与后承](65-proof.md) · 下一章：[84 收官 CHEATSheet](84-cheatsheet.md)

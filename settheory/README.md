@@ -158,7 +158,7 @@ Borel 集与解析集、Baire 空间与投影层级、L 中的投影集、Solova
 
 | 章 | 标题 | 一句话 |
 |---|---|---|
-| [67](docs/67-cheatsheet.md) | 收官 CHEATSheet | 三书对照总表 + 坑位总账 |
+| [84](docs/84-cheatsheet.md) | 收官 CHEATSheet | 四书对照总表 + 坑位总账 |
 
 ## 验证
 

@@ -323,7 +323,7 @@ session ST66 in "ST66" = "ZF-Constructible" +
   theories
     Relevance
 
-session ST67 in "ST67" = "ZF-Constructible" +
+session ST84 in "ST84" = "ZF-Constructible" +
   options [document = false]
   theories
     Topic
