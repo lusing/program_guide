@@ -6,3 +6,11 @@ session HS05 in "HS05" = "ZF" +
   options [document = false]
   theories
     Naturals
+session HS09 in "HS09" = "ZF" +
+  options [document = false]
+  theories
+    Wellorders
+session HS10 in "HS10" = "ZF" +
+  options [document = false]
+  theories
+    Ordinals

@@ -77,7 +77,8 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
       lean 2 + isa 1 + jl 2 + py 2 + pl 1），docs 242/204 行
 - [x] **B4**：07-08 实数构造/不可数——6 单元批内全绿（终态 -All 30/30：
       lean 1 + jl 2 + py 2 + pl 1），docs 253/202 行
-- [ ] B5：09-11 良序/序数/递归与算术（8 单元）
+- [x] **B5**：09-11 良序/序数/递归与算术——12 单元批内全绿（终态 -All 42/42：
+      lean 3 + isa 2 + coq 1 + jl 2 + py 3 + pl 1），docs 204/200/203 行
 - [ ] B6：12-13 古德斯坦/选择公理（6 单元）
 - [ ] B7：14-15 基数/基数算术（4 单元）
 - [ ] B8：16-18 共尾/幂/滤与 club（8 单元）
@@ -182,3 +183,35 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
 35. **B4·mathlib 锚点**：`Real.exists_isLUB` 在
     Algebra/Order/Archimedean/Real（非 Data/Real）；`irrational_sqrt_two`
     在 NumberTheory/Real/Irrational。
+36. **B5·lakefile globs 自动编译**：`globs := #[.submodules `Sethao]` 编译
+    目录下**全部**文件——未 import 的新章文件也会进 lake build（好事：
+    不必每章改根模块；坏事：写一半的文件会炸整工程）。
+37. **B5·Prod.lex 三层包装**：mathlib 的 `Prod.lex`（WellFoundedRelation
+    打包）≠ `Prod.Lex`（关系本体，**首**坐标优先）≠ 书 4.1.8（次坐标
+    优先——交换乘积上的同一构造）；`Sum.lex` 不存在、是 `Sum.Lex`。
+38. **B5·序数引理断代**：4.33 中 `Ordinal.induction` 已 deprecated
+    （→ WellFoundedLT.induction）；`add_lt_add_iff_left` 无 Ordinal 命名
+    空间版——Covariant 实例走根命名空间无限定名；ω<ω+1 直接 `by simp`。
+39. **B5·序数端点无现成引理**：Ordinal.lt_add_one/add_one/zero_lt_one 全
+    缺——simp 是万能钥匙。
+40. **B5·Prolog 扁平双射列表**：pairs_of 生成**扁平**配对列表，每个解
+    就是一个映射——`member(M, Cand)` 枚举的是单个配对（叠了 40 分钟
+    才定位）；解直接当 M 用。
+41. **B5·Prolog 方向纪律（第四次）**：related(R,X,Y) 的读序约定（X 在
+    Y 后）在段/保序/递增三处全部用反——同一坑在本项目已四连撞，
+    有限序分析先写约定注释再动笔。
+42. **B5·Julia 哨兵自坑复现**：`(-10)^8 = +10^8`（B4 #32 同款）在
+    09 未复现但列入检查单；canon 对 [0] 返回 nothing 的 max(nothing,1)
+    MethodError——findlast 判空分支不可省。
+43. **B5·CNF 乘法首系数两种命运**：e=0 时首系数放大（α·m = ω^d·cm+尾）、
+    e≥1 时首系数归一（α·ω^e = ω^{d+e}）——初版公式漏两者被
+    (ω·2+1)(ω+5)=ω²+ω·10+1 样本打回。
+44. **B5·吸收的范围**：α+β 只吃掉 β 顶指数**以下**的 α 项、交叉处
+    **相加**——(ω²+ω·3+4)+ω = ω²+ω·4（不是 ω·2！）；期望值先手推。
+45. **B5·CNF 读序**：向量 (c0,c1,..) 的值 = ω^k·ck + … + ω·c1 + c0
+    （高位项在**左**）——ω·2+5 是 (5,2) 不是 (3,2)；写期望值时按
+    "低位系数在前"逐位对。
+46. **B5·Isabelle lt_def 带 Ord 副词**：i<j ⟷ i∈j ∧ Ord(j)——unfolding
+    lt_def 后必须供给 Ord 前提（blast intro 组合）。
+47. **B5·Coq nat 截断污染**：`length [] - 1 = 0`（非 -1）使空 β 分支
+    产出 [0]——定义处 match b with [] => a 显式分流。
