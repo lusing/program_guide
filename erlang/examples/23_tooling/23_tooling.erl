@@ -10,7 +10,9 @@
 %%    2. proc_lib —— 让"自己手写的进程"也像个 OTP 进程；
 %%    3. 热代码加载 —— 为什么你的循环函数改了却没生效；
 %%    4. typespec 与 beam 内省 —— -spec 写在哪、dialyzer 怎么跑；
-%%    5. 节点内省 —— 出问题第一眼看什么。
+%%    5. 节点内省 —— 出问题第一眼看什么；
+%%    6. beam_lib —— 不加载模块，直接把 beam 当数据库读（发布前自检）；
+%%    7. io_ansi（OTP 29）—— 终端彩色输出；erl_features —— 特性开关。
 %%
 %%  dialyzer 的完整工作流（建 PLT、跑分析、typer）见 docs/23-tooling.md，
 %%  那里给了本机实测过的命令与输出。
@@ -48,6 +50,8 @@ main() ->
     hot_code(),
     typespec_section(),
     introspection(),
+    beam_lib_section(),
+    io_ansi_section(),
     cleanup(),
     process_flag(trap_exit, Old),
     io:format("==== 23 结束 ====~n"),
@@ -279,13 +283,24 @@ typespec_section() ->
     io:format("~n  -- spec 存在 beam 的抽象代码里（前提：编译带 +debug_info，~n"),
     io:format("     erlc 默认**不带**——不带的话 beam 里就是 no_abstract_code） --~n"),
     {ok, Beam} = file:read_file(code:which(?MODULE)),
+    {ok, {_, [{abstract_code, OwnAbs}]}} = beam_lib:chunks(Beam, [abstract_code]),
+    d("erlc 默认编出来的本模块", OwnAbs),
+
+    %% 现场带 debug_info 编译一个小模块，抽象代码就进 beam 了
+    Src = "-module(spec_demo).\n"
+          "-export([combine/2]).\n"
+          "-spec combine(string(), string()) -> string().\n"
+          "combine(A, B) -> A ++ \" \" ++ B.\n",
+    File = filename:join(?DIR, "spec_demo.erl"),
+    ok = file:write_file(File, Src),
+    {ok, spec_demo, Bin} = compile:file(File, [binary, debug_info, return_errors]),
     {ok, {_, [{abstract_code, {raw_abstract_v1, Forms}}]}} =
-        beam_lib:chunks(Beam, [abstract_code]),
+        beam_lib:chunks(Bin, [abstract_code]),
     Specs = [F || {attribute, _, spec, _} = F <- Forms],
-    d("本模块里 -spec 属性的个数", length(Specs)),
-    d("第一个 -spec 的形状（函数名 + 输入输出类型）",
+    d("spec_demo 里 -spec 属性的个数", length(Specs)),
+    d("这个 -spec 属于哪个函数（{函数名, 元数}）",
       begin
-          {attribute, _, spec, {{Name, Arity}, [{type, _, 'fun', _} | _]}} = hd(Specs),
+          {attribute, _, spec, {{Name, Arity}, _}} = hd(Specs),
           {Name, Arity}
       end),
     io:format("  dialyzer 的工作流（本机实测命令在 docs/23-tooling.md）：~n"),
@@ -332,6 +347,64 @@ introspection() ->
       tuple_size(element(2, process_info(whereis(?SERVER), current_function)))),
     d("  reductions（跑了多少\"步\"，越大越忙）",
       element(2, process_info(whereis(?SERVER), reductions)) > 0),
+    ok.
+
+%% ---------------------------------------------------------------------------
+%% 6) beam_lib：不加载模块，直接把 beam 当数据库读（docs 23.7）
+%% ---------------------------------------------------------------------------
+beam_lib_section() ->
+    io:format("~n== 6) beam_lib：把 beam 当数据库读 ==~n"),
+    io:format("  beam_lib 直接解析 beam 文件的区块，不需要把模块加载进虚拟机。~n"),
+    io:format("  发布前自检——有没有抽象代码、用什么编译器与选项编的——就靠它。~n~n"),
+    {ok, Beam} = file:read_file(code:which(?MODULE)),
+
+    %% info/1：直接返回清单（不包 {ok, ...}）：模块名、原始二进制、
+    %% chunk 清单（{名字, 偏移, 大小}）
+    Info = beam_lib:info(Beam),
+    d("info/1 给出的模块名", proplists:get_value(module, Info)),
+    d("beam 文件大小（字节）> 0",
+      byte_size(proplists:get_value(binary, Info)) > 0),
+    d("chunk 清单的条数 > 0", length(proplists:get_value(chunks, Info)) > 0),
+
+    %% attributes：版本指纹。模块里没写 -vsn 时，编译器自动算一个
+    {ok, {_, [{attributes, Attrs}]}} = beam_lib:chunks(Beam, [attributes]),
+    d("vsn 是编译器自动算的指纹（没写 -vsn 也有）",
+      is_list(proplists:get_value(vsn, Attrs))),
+
+    %% compile_info：编译器版本与编译选项
+    {ok, {_, [{compile_info, CI}]}} = beam_lib:chunks(Beam, [compile_info]),
+    d("编译器版本", proplists:get_value(version, CI)),
+    d("编译选项", proplists:get_value(options, CI)),
+    ok.
+
+%% ---------------------------------------------------------------------------
+%% 7) io_ansi：终端彩色输出（OTP 29）与 erl_features（docs 23.8）
+%% ---------------------------------------------------------------------------
+io_ansi_section() ->
+    io:format("~n== 7) io_ansi：终端彩色输出（OTP 29）与 erl_features ==~n"),
+
+    io:format("~n  -- 颜色就是一小段转义序列（VTS） --~n"),
+    d("io_ansi:blue()", io_ansi:blue()),
+    d("io_ansi:red_background()", io_ansi:red_background()),
+
+    io:format("~n  -- format/3：带格式串的彩色输出，自动追加 reset --~n"),
+    d("format([blue, \"~p\"], [red], [{enabled, true}])",
+      io_ansi:format([blue, "~p"], [red], [{enabled, true}])),
+    d("组合：粗体 + 红底（含中文必须用 ~ts，~s 会 badarg）",
+      io_ansi:format([bold, red_background, " ~ts "], ["警告"], [{enabled, true}])),
+    d("{reset, false}：不自动复位",
+      io_ansi:format([blue, "~p"], [red], [{enabled, true}, {reset, false}])),
+    d("{color, false}：去色但保留粗体",
+      io_ansi:format([blue, bold, "~p"], [red], [{enabled, true}, {color, false}])),
+
+    io:format("~n  -- 关键：输出随终端能力变（docs 23.9 的坑 9） --~n"),
+    d("noshell 下 io_ansi:enabled()", io_ansi:enabled()),
+    d("同一个 format 不带 enabled 选项（VTS 被自动剥掉）",
+      io_ansi:format([blue, "~p"], [red], [])),
+    io:format("  所以测试断言一律用 [{enabled, true}] 强制开色，别依赖本机终端。~n"),
+
+    io:format("~n  -- erl_features：语言特性开关（OTP 25 引入机制） --~n"),
+    d("erl_features:all()（本机 OTP 29 的全部特性）", erl_features:all()),
     ok.
 
 

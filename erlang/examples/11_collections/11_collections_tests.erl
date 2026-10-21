@@ -72,6 +72,92 @@ array_test() ->
     ?assertEqual(1001, array:size(Sparse)),
     ?assertEqual([{1000, x}], array:sparse_to_orddict(Sparse)).
 
+queue_hofs_test() ->
+    Q = queue:from_list([1, 2, 3, 4]),
+    ?assertEqual(10, queue:fold(fun(X, Acc) -> X + Acc end, 0, Q)),
+    ?assert(queue:member(3, Q)),
+    ?assertNot(queue:member(9, Q)),
+    ?assert(queue:all(fun(X) -> X > 0 end, Q)),
+    ?assertNot(queue:all(fun(X) -> X > 1 end, Q)),
+    ?assert(queue:any(fun(X) -> X > 3 end, Q)),
+    ?assertNot(queue:any(fun(X) -> X > 9 end, Q)),
+    %% filtermap / delete* 返回**新 queue**，看内容要过 to_list
+    ?assertEqual([20, 40],
+                 queue:to_list(queue:filtermap(
+                                 fun(X) -> case X rem 2 of
+                                               0 -> {true, X * 10};
+                                               _ -> false
+                                           end
+                                 end, Q))),
+    ?assertEqual([1, 3, 4], queue:to_list(queue:delete(2, Q))),
+    ?assertEqual([1, 2, 3, 4], queue:to_list(queue:delete(9, Q))),  %% 不匹配则原样
+    %% _r 后缀是「从队尾方向」，参数顺序不变
+    ?assertEqual([1, 2], queue:to_list(queue:delete_r(1, queue:from_list([1, 2, 1])))),
+    ?assertEqual([1, 3, 4],
+                 queue:to_list(queue:delete_with(fun(X) -> X rem 2 =:= 0 end, Q))),
+    ?assertEqual([1, 2, 3],
+                 queue:to_list(queue:delete_with_r(fun(X) -> X rem 2 =:= 0 end, Q))).
+
+gb_trees_test() ->
+    T = gb_trees:from_orddict(lists:sort([{3, c}, {1, a}, {2, b}])),
+    %% 迭代器按键升序走
+    {1, a, It1} = gb_trees:next(gb_trees:iterator(T)),
+    {2, b, _} = gb_trees:next(It1),
+    %% iterator_from 从「大于等于给定键」的第一个开始；越界返回 none
+    {2, b, _} = gb_trees:next(gb_trees:iterator_from(2, T)),
+    ?assertEqual(none, gb_trees:next(gb_trees:iterator_from(25, T))),
+    %% 严格邻居查询：找不到返回 none，不抛异常
+    ?assertEqual({2, b}, gb_trees:larger(1, T)),
+    ?assertEqual({2, b}, gb_trees:smaller(3, T)),
+    ?assertEqual(none, gb_trees:larger(9, T)),
+    %% take_smallest 让 gb_trees 直接当优先队列
+    ?assertEqual({1, a, [{2, b}, {3, c}]},
+                 begin {K, V, T2} = gb_trees:take_smallest(T),
+                       {K, V, gb_trees:to_list(T2)} end),
+    ?assertEqual([{1, [a]}, {2, [b]}, {3, [c]}],
+                 gb_trees:to_list(gb_trees:map(fun(_K, V) -> [V] end, T))).
+
+digraph_test() ->
+    G = digraph:new(),
+    digraph:add_vertex(G, a), digraph:add_vertex(G, b), digraph:add_vertex(G, c),
+    %% add_edge 是原地修改，返回边 id（形如 [$e|0]），不是新图
+    ?assertMatch(['$e' | _], digraph:add_edge(G, a, b)),
+    digraph:add_edge(G, b, c),
+    %% 引用不存在的顶点返回 error，不会自动建顶点
+    ?assertEqual({error, {bad_vertex, nope}}, digraph:add_edge(G, a, nope)),
+    ?assertEqual([a, b, c], digraph:get_short_path(G, a, c)),
+    ?assertEqual([a, b, c], digraph_utils:topsort(G)),
+    ?assertEqual(true, digraph:delete(G)).
+
+digraph_cyclic_test() ->
+    C = digraph:new(),
+    digraph:add_vertex(C, c1), digraph:add_vertex(C, c2),
+    digraph:add_edge(C, c1, c2), digraph:add_edge(C, c2, c1),
+    %% 有环时不存在拓扑序：topsort 返回 false
+    ?assertNot(digraph_utils:is_acyclic(C)),
+    ?assertEqual(false, digraph_utils:topsort(C)),
+    ?assertEqual(true, digraph:delete(C)).
+
+graph_test() ->
+    G0 = graph:new(),
+    {A, G1} = graph:add_vertex(G0),
+    {B, G2} = graph:add_vertex(G1),
+    %% add_vertex 返回 {顶点id, 新图}，id 从 0 递增
+    ?assertEqual({0, 1}, {A, B}),
+    %% add_edge 直接返回新图；边是 {From, To, Label}，默认 label []
+    G3 = graph:add_edge(G2, A, B),
+    ?assertEqual([{0, 1, []}], graph:edges(G3)),
+    ?assertEqual([0, 1], graph:topsort(G3)),
+    %% 同一对顶点间可以有多条 label 不同的边（实测 edges/1 的列出顺序）
+    G4 = graph:add_edge(graph:add_edge(G3, A, B, fast), A, B, slow),
+    ?assertEqual([{0, 1, fast}, {0, 1, slow}, {0, 1, []}], graph:edges(G4)),
+    %% [acyclic] 图加成环边直接抛 bad_edge
+    {X, D1} = graph:add_vertex(graph:new([acyclic])),
+    {Y, D2} = graph:add_vertex(D1),
+    D3 = graph:add_edge(D2, X, Y),
+    ?assertEqual({error, {bad_edge, {1, 0}}},
+                 '11_collections':raises(fun(DG) -> graph:add_edge(DG, Y, X) end, D3)).
+
 options_api_test() ->
     ?assertEqual({ok, [{mode, read}, {retries, 3}, {verbose, false}]},
                  '11_collections':describe_open([])),

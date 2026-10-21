@@ -34,6 +34,7 @@ main() ->
     record_matching(),
     record_is_tuple(),
     record_vs_map(),
+    maps_otp24(),
     io:format("~n==== 10 结束 ====~n").
 
 %% 1) 构造与访问
@@ -196,6 +197,39 @@ record_vs_map() ->
     d("from_map(to_map(P)) 等价于 P", from_map(to_map(P)) =:= P),
     d("map 可以缺字段，用默认值补",
       sorted(to_map(from_map(#{name => "bob", age => 1})))),
+    ok.
+
+%% 10) OTP 24 新增：foreach / filtermap / from_keys / intersect
+%% ------------------------------------------------------------
+%% 免去自己 fold 的一批常用件。三个要点：
+%%   · filtermap 的 fun 返回 true 保留原值、{true, NewV} 保留并换值、false 丢弃
+%%   · intersect 只留公共键，**值取右侧 map**（与 merge/2 的右侧优先一致）
+%%   · 公共键想自定义合并规则就用 intersect_with
+maps_otp24() ->
+    io:format("~n== 10) OTP 24 新增：foreach/filtermap/from_keys/intersect ==~n"),
+    M = #{a => 1, b => 2, c => 4},
+    %% foreach 只要副作用、返回 ok；这里借进程字典收集来演示（排序后输出）
+    d("maps:foreach（副作用收集进进程字典）",
+      begin
+          maps:foreach(fun(K, V) -> put(K, V) end, #{b => 2, a => 1}),
+          lists:sort(get())
+      end),
+    d("maps:filtermap 一步完成过滤+变换",
+      sorted(maps:filtermap(fun(_K, V) ->
+                                case V rem 2 of
+                                    0 -> {true, V * 10};
+                                    _ -> false
+                                end
+                            end, M))),
+    d("maps:filtermap 返回 true 时保留原值",
+      sorted(maps:filtermap(fun(_K, V) -> V > 1 end, M))),
+    d("maps:from_keys([a,b,c], 0) 同初值建 map",
+      sorted(maps:from_keys([a, b, c], 0))),
+    d("maps:intersect 公共键的值取右侧",
+      sorted(maps:intersect(#{a => 1, b => 2}, #{a => 9, c => 3}))),
+    d("maps:intersect_with 公共键交给函数合并",
+      sorted(maps:intersect_with(fun(_K, L, R) -> L + R end,
+                                 #{a => 1, b => 2}, #{a => 9, c => 3}))),
     ok.
 
 %% 把 map 转成「按 key 排序的列表」，输出才可逐字节比对

@@ -17,6 +17,8 @@
 %%         no_translation 崩掉；
 %%      2) {packet,N} 的帧由**驱动**负责：command 发裸载荷即可，
 %%         手工再加一层前缀就是对端读到的「载荷里带前缀」。
+%%    另附 argparse（OTP 26 进 stdlib）：escript 的官方命令行解析——
+%%    run 管入口（出错直接 halt(1)），parse 是纯函数、可进 EUnit。
 %%
 %% 编译：
 %%   erlc -Werror -Wall -o build/27_ports examples/27_ports/27_ports.erl
@@ -26,7 +28,7 @@
 -module('27_ports').
 
 -export([main/0, write_escript/2, escript_path/0, open_echo_port/1,
-         call/2, echo_source/0, bad_echo_source/0]).
+         call/2, echo_source/0, bad_echo_source/0, mul_cli/0, git_cli/0]).
 
 %% 正确的 echo 端口程序：binary+latin1 透传字节
 echo_source() ->
@@ -98,6 +100,7 @@ main() ->
     framing_roundtrips(),
     utf8_transparency(),
     crash_and_cleanup(),
+    argparse_cli(),
     io:format("~n==== 27 结束 ====~n").
 
 %% ------------------------------------------------------------ %%
@@ -166,3 +169,58 @@ crash_and_cleanup() ->
     {0, <<"still alive">>} = call(Port, <<"still alive">>),
     d("Erlang 这边无恙，新端口照常工作", ok),
     port_close(Port).
+
+%% ------------------------------------------------------------ %%
+%% 5) argparse：escript 的官方命令行解析（OTP 26）
+%% ------------------------------------------------------------
+%% 教程 27.6 的乘法器规格：name 决定一切——没 short/long 的按位置解析，
+%% type 自动转换（转不过去替你报错）；handler 收一个 map，键就是 name。
+mul_cli() ->
+    #{arguments =>
+          [#{name => left, type => integer},                 %% 位置参数：按顺序
+           #{name => right, type => integer},
+           #{name => verbose, short => $v, long => "-verbose",
+             type => boolean, default => false}],            %% 可选参数：-v / --verbose
+      handler =>
+          fun(#{left := L, right := R}) -> io:format("~b~n", [L * R]) end}.
+
+%% git 风格子命令：commands 键嵌套，每层各带 handler
+git_cli() ->
+    #{commands =>
+          #{"add" => #{arguments => [#{name => file}],
+                       handler => fun(#{file := F}) -> io:format("add ~s~n", [F]) end},
+            "commit" => #{arguments => [#{name => m, long => "-message"}],
+                          handler => fun(M) -> io:format("commit ~p~n", [M]) end}}}.
+
+argparse_cli() ->
+    io:format("~n== 5) argparse：escript 的官方命令行解析（OTP 26）==~n"),
+    %% escript 入口里写的是 argparse:run(Args, mul_cli(), #{progname => mul})
+    %% ——run 把「解析→handler」串起来，但解析失败会打印 usage 后**直接
+    %% halt(1)**（文档警告勿 RPC 调用），入口专用；这里和 EUnit 只用纯
+    %% 函数 parse：成功 {ok, 参数map, 命令路径, 匹配规格}，失败 {error, 四元组}。
+    {ok, M1, ["mul"], _} = argparse:parse(["3", "4", "-v"], mul_cli(), #{progname => mul}),
+    d("parse [\"3\",\"4\",\"-v\"] 的参数 map", M1),
+    {ok, M2, _, _} = argparse:parse(["1", "2"], mul_cli(), #{progname => mul}),
+    d("不给 -v 时 verbose 落 default", maps:get(verbose, M2)),
+    {ok, M3, _, _} = argparse:parse(["1", "2", "--verbose"], mul_cli(), #{progname => mul}),
+    d("长选项 --verbose 与 -v 等价", maps:get(verbose, M3)),
+    %% help 免费：根据规格自动生成 usage 文本
+    io:format("  argparse:help 自动生成的帮助：~n~ts",
+              [argparse:help(mul_cli(), #{progname => mul})]),
+    %% 错误是纯数据：{error, {命令路径, 出错的参数规格, 原始输入, 原因}}，
+    %% format_error 把它翻译成人话
+    {error, E1} = argparse:parse(["1"], mul_cli(), #{progname => mul}),
+    d("缺必需参数 format_error", lists:flatten(argparse:format_error(E1))),
+    {error, E2} = argparse:parse(["1", "x"], mul_cli(), #{progname => mul}),
+    d("类型错误 format_error",
+      unicode:characters_to_binary(argparse:format_error(E2))),
+    %% 子命令：parse 结果第二元是命令路径；长选项支持 = 赋值
+    {ok, Add, ["git", "add"], _} = argparse:parse(["add", "a.txt"], git_cli(), #{progname => git}),
+    d("子命令 add 的参数 map", Add),
+    {ok, Commit, ["git", "commit"], _} =
+        argparse:parse(["commit", "--message=init"], git_cli(), #{progname => git}),
+    d("长选项 --message=init 的 = 赋值", Commit),
+    {error, {["git"], undefined, "bogus", <<>>}} =
+        argparse:parse(["bogus"], git_cli(), #{progname => git}),
+    d("未知子命令也是 {error, 四元组}", ok),
+    ok.

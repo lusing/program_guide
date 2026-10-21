@@ -68,3 +68,67 @@ graceful_stop_test() ->
     ?assertEqual(stopped, gen_server:call('15_gen_server', {countdown, 0})),
     ?assertMatch({terminating, t_stop, normal},
                  receive M = {terminating, t_stop, _} -> M after 2000 -> timeout end).
+
+%% 15.4：send_request 把 call 拆成「发」和「收」两步（OTP 23）
+send_request_test() ->
+    _ = start(t_sr),
+    ok = '15_gen_server':put(a, 1, alice),
+    ReqId = gen_server:send_request('15_gen_server', {get, a}),
+    ?assert(is_reference(ReqId)),
+    ?assertEqual({reply, 1}, gen_server:wait_response(ReqId, 1000)),
+    R2 = gen_server:send_request('15_gen_server', count),
+    ?assertEqual({reply, 1}, gen_server:receive_response(R2, 1000)),
+    stop_and_drain().
+
+%% 15.4：wait_response 超时不抛异常、返回原子 timeout；响应之后还能取到
+wait_response_timeout_test() ->
+    _ = start(t_slow),
+    R = gen_server:send_request('15_gen_server', {slow, 200, slow_done}),
+    ?assertEqual(timeout, gen_server:wait_response(R, 50)),
+    ?assertEqual({reply, slow_done}, gen_server:wait_response(R, 1000)),
+    stop_and_drain().
+
+%% 15.4：check_response(Msg, ReqId) 不等待，检查已收到的消息是不是响应
+check_response_test() ->
+    _ = start(t_check),
+    R = gen_server:send_request('15_gen_server', {echo, checkme}),
+    %% 响应消息的真实形状是 {[alias|ReqId], Reply}（OTP 24+ 的 alias 形状）
+    Checked = receive M = {[alias|R], _} -> gen_server:check_response(M, R)
+              after 2000 -> no_message end,
+    ?assertEqual({reply, {echoed, checkme}}, Checked),
+    ?assertEqual(no_reply, gen_server:check_response(some_other_msg, R)),
+    stop_and_drain().
+
+%% 15.4：reqids collection 一把发、按标签收（OTP 25），收取必须用 /3
+reqids_collection_test() ->
+    _ = start(t_coll),
+    C0 = gen_server:reqids_new(),
+    C1 = gen_server:send_request('15_gen_server', {echo, 1}, first, C0),
+    C2 = gen_server:send_request('15_gen_server', {echo, 2}, second, C1),
+    ?assertEqual(2, gen_server:reqids_size(C2)),
+    {Res1, Lab1, C3} = gen_server:wait_response(C2, 1000, true),
+    ?assertEqual({reply, {echoed, 1}}, Res1),
+    ?assertEqual(first, Lab1),
+    ?assertEqual(1, gen_server:reqids_size(C3)),
+    {Res2, Lab2, C4} = gen_server:receive_response(C3, 1000, true),
+    ?assertEqual({reply, {echoed, 2}}, Res2),
+    ?assertEqual(second, Lab2),
+    ?assertEqual(0, gen_server:reqids_size(C4)),
+    %% 对 collection 误用 /2 形式只会等到 timeout（响应本身不丢）
+    Cx = gen_server:send_request('15_gen_server', {echo, 9}, third, gen_server:reqids_new()),
+    ?assertEqual(timeout, gen_server:wait_response(Cx, 100)),
+    ?assertMatch({{reply, {echoed, 9}}, third, _},
+                 gen_server:receive_response(Cx, 1000, true)),
+    stop_and_drain().
+
+%% 15.4：新式超时 action {timeout, Time, Msg}（OTP 25）——
+%% init 返回 {ok, State, {timeout, 30, tick}} 后，handle_info 收到的就是 tick 原样
+timeout_action_test() ->
+    _ = logger:remove_handler(default),
+    _ = process_flag(trap_exit, true),
+    {ok, _Pid} = gen_server:start_link({local, '15_gen_server'}, '15_gen_server',
+                                       #{notify => self(), tag => t_timeout,
+                                         timeout_after => 30}, []),
+    ?assertEqual({timeout_tick, t_timeout},
+                 receive M = {timeout_tick, t_timeout} -> M after 2000 -> timeout end),
+    stop_and_drain().

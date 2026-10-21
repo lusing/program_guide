@@ -36,23 +36,23 @@ erlang/
 | [08 二进制与位语法](docs/08-binaries.md) | 变长报文解析 | 08_binaries |
 | [09 字符串与 Unicode](docs/09-strings.md) | 三个"长度"、头号编码坑 | 09_strings |
 | [10 映射与记录](docs/10-maps.md) | `=>` vs `:=`、迭代顺序随机 | 10_maps |
-| [11 容器与配置结构](docs/11-collections.md) | proplists/sets/queue/array | 11_collections |
+| [11 容器与配置结构](docs/11-collections.md) | proplists/sets/queue、gb_trees、graph | 11_collections |
 | [12 异常与错误哲学](docs/12-errors.md) | 三类异常、maybe、let it crash | 12_errors |
 | [13 进程与消息](docs/13-processes.md) | 邮箱、ref 协议、pmap | 13_processes |
 | [14 链接与监控](docs/14-links.md) | trap_exit、DOWN 形状 | 14_links |
-| [15 gen_server ⭐](docs/15-gen-server.md) | 回调契约、先干活后回 | 15_gen_server |
-| [16 supervisor ⭐](docs/16-supervisor.md) | 三种策略、重启强度 | 16_supervisor |
+| [15 gen_server ⭐](docs/15-gen-server.md) | 回调契约、send_request 并行 | 15_gen_server |
+| [16 supervisor ⭐](docs/16-supervisor.md) | 三种策略、auto_shutdown | 16_supervisor |
 | [17 application ⭐](docs/17-application.md) | kvapp、env 快照、关闭顺序 | 17_application（工程） |
 | [18 ETS](docs/18-ets.md) | 四种表、match spec、heir | 18_ets |
-| [19 文件 I/O](docs/19-files.md) | 编码陷阱、二进制协议、序列化 | 19_files |
+| [19 文件 I/O](docs/19-files.md) | 编码陷阱、json/zstd、归档 | 19_files |
 | [20 时间与定时器](docs/20-time.md) | 单调钟、timer 模块真相 | 20_time |
 | [21 测试](docs/21-testing.md) | EUnit 断言/fixture、Common Test | 21_testing（含 CT suite） |
 | [22 日志](docs/22-logger.md) | 四道关、过载保护 | 22_logger |
-| [23 工具链](docs/23-tooling.md) | typespec/dialyzer、sys、热加载 | 23_tooling |
+| [23 工具链](docs/23-tooling.md) | typespec/dialyzer、sys、beam_lib | 23_tooling |
 | [24 实战 mini-grep ⭐](docs/24-minigrep.md) | 监督树 + worker 池 | 24_minigrep（工程） |
-| [25 分布式 Erlang](docs/25-distributed.md) | peer、rpc、global、cookie | 25_distributed |
+| [25 分布式 Erlang](docs/25-distributed.md) | peer、rpc、global、pool | 25_distributed |
 | [26 套接字编程](docs/26-sockets.md) | 顺序/并行服务器、active 三态 | 26_sockets |
-| [27 端口与外部接口](docs/27-ports.md) | escript 端口程序、帧协议 | 27_ports |
+| [27 端口与外部接口](docs/27-ports.md) | escript 端口程序、argparse | 27_ports |
 | [28 DETS 与 Mnesia](docs/28-dets-mnesia.md) | 磁盘表、事务、索引 | 28_dets_mnesia |
 | [29 gen_event 与 gen_statem](docs/29-gen-event-statem.md) | 事件管理器、状态机 | 29_gen_event_statem |
 | [30 性能剖析与跟踪](docs/30-profiling.md) | timer:tc、cprof、trace | 30_profiling |

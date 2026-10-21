@@ -49,8 +49,11 @@ lists:foldr(F, Acc, L). %% 从右折
 lists:sort(L).                       %% 稳定排序，混合类型按项序
 lists:usort([3,1,2,1,3]).            %% [1,2,3]：去重并排序
 lists:sort(fun(A,B) -> A >= B end, L).  %% 比较器要返回 =< 语义（这里是降序）
-lists:uniq(L).                       %% 只去**相邻**重复；先 sort 再 uniq 才是按值去重
+lists:uniq([1,1,2,1,3]).             %% [1,2,3]：按值去掉**所有**重复，保留首次出现（OTP 25）
+lists:uniq(fun({K,_}) -> K end, [{a,1},{b,2},{a,3}]).  %% [{a,1},{b,2}]：uniq/2 按 Fun 返回值判重
 ```
+
+`uniq/1,2` 是**保序去重**：不排序，只把后面再出现的重复值丢掉。这与 `usort/1`（去重**且**排序）正好互补——要哪种语义取决于你保不保顺序。`uniq/2` 的 fun 返回什么就按什么判重，所以"按元组首元素去重"这类需求不用先手写折叠。
 
 没有 `lists:group/1`——"连续相等打包"自己写（示例里的 `group/1`），或用 `maps:groups_from_list/2,3`（OTP 25+，10 章）。
 
@@ -68,7 +71,7 @@ lists:dropwhile(fun(X) -> X < 3 end, [1,2,3,1]).   %% [3,1]：丢前缀，后面
 1. **`nth` 是 1 基**：从 0 数的语言过来的先改直觉；`nth(0, _)` 抛 `function_clause`。
 2. **`++` 代价看左边**：`Acc ++ [X]` 循环 N 次是 O(N²)；`[X | Acc]` + 最后 reverse。
 3. **lookup 家族返回值不统一**：`false` / `error` / `[]` / `none`——逐个确认。
-4. **`lists:uniq` 只去相邻重复**：`[1,1,2,1]` uniq 完是 `[1,2,1]`。
+4. **`uniq` 与 `usort` 别记混**：`uniq` 去除所有重复但**不排序**（`[3,1,3,2]` → `[3,1,2]`）；`usort` 去重**且**排序（→ `[1,2,3]`）。Unix 的 `uniq` 命令只去相邻重复，Erlang 的 `lists:uniq` 不是这个语义，别被名字带偏。
 5. **`join` 是插分隔符**：`lists:join(",", ["a","b"])` 得 `["a",",","b"]`，拼接要再 flatten。
 6. **foldl 造列表是逆序**：保序用 foldr 或头插后 reverse。
 

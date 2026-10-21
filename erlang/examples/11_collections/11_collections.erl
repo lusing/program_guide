@@ -7,6 +7,9 @@
 %%      sets/ordsets/gb_sets  三套集合（map/有序列表/平衡树）
 %%      queue      FIFO（in/snoc 参数顺序相反！）
 %%      array      稀疏数组（越界不报错）
+%%      gb_trees   有序的 map（邻居查询 / 优先队列）
+%%      digraph    进程持有的可变图（ETS，用完必须 delete）
+%%      graph      OTP 29 纯函数式图（每次修改返回新图）
 %%
 %%    本示例所有输出都先归一化（sort / to_list），因为
 %%    sets 的遍历顺序每次启动都随机。
@@ -28,7 +31,11 @@ main() ->
     set_algebra(),
     gb_sets_extras(),
     queues(),
+    queue_hofs(),
     arrays(),
+    gb_trees(),
+    digraphs(),
+    graphs(),
     options_api(),
     choosing(),
     io:format("~n==== 11 结束 ====~n").
@@ -177,13 +184,45 @@ queues() ->
       {queue:is_empty(queue:new()), queue:peek(queue:new()), queue:len(queue:new())}),
     ok.
 
-%% 8) array：稀疏数组
+%% 8) queue 的 lists 风格高阶函数（OTP 24）
+%% ------------------------------------------------------------
+%% 不用再 to_list 出来处理。两个要点：
+%%   · filtermap / delete* 返回**新 queue**，看内容要过 to_list
+%%   · _r 后缀是「从队尾方向操作」，**参数顺序不变** ——
+%%     delete_r(Item, Q) 与 delete(Item, Q) 同序
+%%     （别跟 in/1 对 snoc/2 的参数序反转搞混）
+queue_hofs() ->
+    io:format("~n== 8) queue 高阶函数（OTP 24）==~n"),
+    Q = queue:from_list([1, 2, 3, 4]),
+    d("fold（从队头开始折）", queue:fold(fun(X, Acc) -> X + Acc end, 0, Q)),
+    d("member(3) / member(9)", {queue:member(3, Q), queue:member(9, Q)}),
+    d("all(>0) / all(>1)", {queue:all(fun(X) -> X > 0 end, Q),
+                             queue:all(fun(X) -> X > 1 end, Q)}),
+    d("any(>3) / any(>9)", {queue:any(fun(X) -> X > 3 end, Q),
+                             queue:any(fun(X) -> X > 9 end, Q)}),
+    d("filtermap（偶数 ×10，返回新 queue）",
+      queue:to_list(queue:filtermap(
+                      fun(X) -> case X rem 2 of
+                                    0 -> {true, X * 10};
+                                    _ -> false
+                                end
+                      end, Q))),
+    d("delete(2)（删队头起第一个匹配；9 不存在则原样）",
+      {queue:to_list(queue:delete(2, Q)), queue:to_list(queue:delete(9, Q))}),
+    d("delete_r(1, [1,2,1])（从队尾方向删）",
+      queue:to_list(queue:delete_r(1, queue:from_list([1, 2, 1])))),
+    d("delete_with(偶数) / delete_with_r(偶数)",
+      {queue:to_list(queue:delete_with(fun(X) -> X rem 2 =:= 0 end, Q)),
+       queue:to_list(queue:delete_with_r(fun(X) -> X rem 2 =:= 0 end, Q))}),
+    ok.
+
+%% 9) array：稀疏数组
 %% ------------------------------------------------------------
 %%   size/1             条目总数（**含**默认值条目）
 %%   sparse_size/1      到「最后一个非默认值条目」为止的条目数
 %%   sparse_to_orddict  只列**真正设过**的 {下标, 值}
 arrays() ->
-    io:format("~n== 8) array：稀疏数组 ==~n"),
+    io:format("~n== 9) array：稀疏数组 ==~n"),
     A = array:from_list([a, b, c]),
     d("from_list([a,b,c])", array:to_list(A)),
     d("get(0) / get(2)", {array:get(0, A), array:get(2, A)}),
@@ -196,10 +235,86 @@ arrays() ->
     d("sparse_to_orddict（只列真正设过的）", array:sparse_to_orddict(Sparse)),
     ok.
 
-%% 9) 实战：带选项的 API（见文件尾部 open/1）
+%% 10) gb_trees：有序的 map
+%% ------------------------------------------------------------
+%% map 的迭代顺序随机（10 章），要「按键有序」就用平衡二叉搜索树 gb_trees，
+%% 查询/插入 O(log n)，中序遍历天然升序。独有能力：有序遍历与邻居查询。
+gb_trees() ->
+    io:format("~n== 10) gb_trees：有序的 map ==~n"),
+    T = gb_trees:from_orddict(lists:sort([{3, c}, {1, a}, {2, b}])),
+    d("from_orddict 建树后 to_list（按键升序）", gb_trees:to_list(T)),
+    {K1, V1, It1} = gb_trees:next(gb_trees:iterator(T)),
+    {K2, V2, _It2} = gb_trees:next(It1),
+    d("iterator + next 逐个走（迭代器内部结构不打印）", [{K1, V1}, {K2, V2}]),
+    d("iterator_from(2, T)（从 >=2 的第一个键开始）",
+      element(1, gb_trees:next(gb_trees:iterator_from(2, T)))),
+    d("iterator_from(25, T)（没有 >=25 的键 → none）",
+      gb_trees:next(gb_trees:iterator_from(25, T))),
+    d("larger(1) / smaller(3)（严格邻居查询）",
+      {gb_trees:larger(1, T), gb_trees:smaller(3, T)}),
+    d("larger(9)（越界返回 none，不抛异常）", gb_trees:larger(9, T)),
+    {SK, SV, Rest} = gb_trees:take_smallest(T),
+    d("take_smallest → {键, 值, 剩下的树}（可直接当优先队列）",
+      {{SK, SV}, gb_trees:to_list(Rest)}),
+    d("map/2 变换值（树结构不变）",
+      gb_trees:to_list(gb_trees:map(fun(_K, V) -> [V] end, T))),
+    ok.
+
+%% 11) digraph：进程持有的可变图
+%% ------------------------------------------------------------
+%% 图存在 ETS 里，两条天性都由此而来：
+%%   ① add_vertex/add_edge 是**原地修改**，返回的不是新图
+%%      （add_edge 返回边 id，形如 [$e|0]）
+%%   ② ETS 表不随变量出作用域消失，不 delete 就泄漏到持有进程终结
+digraphs() ->
+    io:format("~n== 11) digraph：进程持有的可变图 ==~n"),
+    G = digraph:new(),
+    digraph:add_vertex(G, a), digraph:add_vertex(G, b), digraph:add_vertex(G, c),
+    E1 = digraph:add_edge(G, a, b),
+    digraph:add_edge(G, b, c),
+    d("add_edge 返回的是边 id（不是新图）", E1),
+    d("add_edge 引用不存在的顶点 → {error, {bad_vertex, V}}",
+      digraph:add_edge(G, a, nope)),
+    d("get_short_path(a, c)", digraph:get_short_path(G, a, c)),
+    d("digraph_utils:topsort（算法在 digraph_utils 里）",
+      digraph_utils:topsort(G)),
+    C = digraph:new(),
+    digraph:add_vertex(C, c1), digraph:add_vertex(C, c2),
+    digraph:add_edge(C, c1, c2), digraph:add_edge(C, c2, c1),
+    d("有环时 topsort 返回 false（实测）", digraph_utils:topsort(C)),
+    d("delete 释放 ETS 表（用完必须删）", {digraph:delete(G), digraph:delete(C)}),
+    ok.
+
+%% 12) graph：纯函数式图（OTP 29）
+%% ------------------------------------------------------------
+%% 把 digraph/digraph_utils 的能力做成纯函数式：每次修改返回新图，
+%% 旧值不变、用完交给 GC，没有 delete 纪律。三个不同的设计点：
+%%   · 边由 {From, To, Label} 三元组标识（默认 label 是 []），
+%%     同一对顶点间可以有多条 label 不同的边
+%%   · graph:new([acyclic]) 创建的图，加成环边直接抛 bad_edge
+%%   · 返回值两套：add_vertex → {顶点id, 新图}，add_edge → 新图
+graphs() ->
+    io:format("~n== 12) graph：纯函数式图（OTP 29）==~n"),
+    G0 = graph:new(),
+    {A, G1} = graph:add_vertex(G0),
+    {B, G2} = graph:add_vertex(G1),
+    d("add_vertex 返回 {顶点id, 新图}（id 从 0 递增）", {A, B}),
+    G3 = graph:add_edge(G2, A, B),
+    d("add_edge 直接返回新图；edges 是 {From,To,Label} 三元组", graph:edges(G3)),
+    d("topsort（算法内置，不再需要 digraph_utils）", graph:topsort(G3)),
+    G4 = graph:add_edge(graph:add_edge(G3, A, B, fast), A, B, slow),
+    d("同一对顶点间多条不同 label 的边并存", graph:edges(G4)),
+    {X, D1} = graph:add_vertex(graph:new([acyclic])),
+    {Y, D2} = graph:add_vertex(D1),
+    D3 = graph:add_edge(D2, X, Y),
+    d("[acyclic] 图加成环边直接抛 bad_edge（实测）",
+      raises(fun(DG) -> graph:add_edge(DG, Y, X) end, D3)),
+    ok.
+
+%% 13) 实战：带选项的 API（见文件尾部 open/1）
 %% ------------------------------------------------------------
 options_api() ->
-    io:format("~n== 9) 实战：带选项的 API ==~n"),
+    io:format("~n== 13) 实战：带选项的 API ==~n"),
     d("全用默认值", describe_open([])),
     d("改两个", describe_open([{mode, write}, {retries, 0}])),
     d("布尔开关写成裸原子", describe_open([{mode, append}, verbose])),
@@ -208,16 +323,18 @@ options_api() ->
       describe_open([{mode, read}, {retry, 5}])),
     ok.
 
-%% 10) 该用哪个
+%% 14) 该用哪个
 %% ------------------------------------------------------------
 choosing() ->
-    io:format("~n== 10) 选择建议 ==~n"),
+    io:format("~n== 14) 选择建议 ==~n"),
     Tips = [{"频繁成员判断、不在乎顺序", "sets（O(1)，to_list 顺序随机）"},
             {"元素少且要按序遍历", "ordsets（实现就是有序列表）"},
             {"元素多、要按序或取最小/最大", "gb_sets（O(log n)，功能最全）"},
             {"FIFO 队列", "queue（均摊 O(1)，别用 list ++）"},
             {"下标是整数、大部分为空", "array（越界返回默认值）"},
-            {"键是任意项、要 O(1) 查找", "map（10 章）"}],
+            {"键是任意项、要 O(1) 查找", "map（10 章）"},
+            {"键要按键有序遍历/邻居查询", "gb_trees（键上有值；只要键用 gb_sets）"},
+            {"有向图 / 任务编排", "graph（OTP 29 纯函数式；需跨进程共享可变图才回 digraph）"}],
     [io:format("  ~ts -> ~ts~n", [K, V]) || {K, V} <- Tips],
     ok.
 

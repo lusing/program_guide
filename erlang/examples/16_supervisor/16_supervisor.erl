@@ -54,6 +54,8 @@ child_loop() ->
 %%            对 worker 常用 5000，对 supervisor 用 infinity
 %%   type     worker | supervisor
 %%   modules  给 release 升级用的提示，一般写 [?MODULE]
+%%   significant true|false —— OTP 24，标记「核心成员」，
+%%              配合 sup flags 的 auto_shutdown（见第 7 节演示）
 spec(Tag, Notify) ->
     #{id => Tag,
       start => {?MODULE, worker_start, [{Tag, Notify}]},
@@ -88,6 +90,8 @@ main() ->
     rest_for_one_demo(),
     intensity_demo(),
     inspect_and_dynamic(),
+    auto_shutdown_demo(),
+    hibernate_after_demo(),
 
     process_flag(trap_exit, Old),
     io:format("~n==== 16 结束 ====~n").
@@ -236,4 +240,67 @@ inspect_and_dynamic() ->
     ok.
 
 d(Label, Value) -> io:format("  ~ts = ~p~n", [Label, Value]).
+
+%% ------------------------------------------------------------
+%% auto_shutdown：干完活自动收队（OTP 24）
+%% ------------------------------------------------------------
+%% 临时监督树（一次性任务编组、测试夹具）的老问题：任务进程正常退出了，
+%% supervisor 还挂在那儿，得有人记得去关。
+%% auto_shutdown => any_significant 配合 child spec 的 significant 标记：
+%% 主角（significant => true）一退，整棵树自动关闭。
+auto_shutdown_demo() ->
+    io:format("~n== 7) auto_shutdown：干完活自动收队（OTP 24）==~n"),
+    Flags = #{strategy => one_for_one, auto_shutdown => any_significant},
+    Children = [auto_spec(main_task, true), auto_spec(helper, false)],
+    {ok, Sup} = supervisor:start_link('16_auto_shutdown_sup', {Flags, Children}),
+    _ = wait_child_up(),
+    _ = wait_child_up(),
+    d("主角 main_task + 陪跑 helper 都起来了",
+      lists:sort([Id || {Id, _, _, _} <- supervisor:which_children(Sup)])),
+    %% 陪跑（significant => false）正常退出：supervisor 原地不动
+    {helper, Helper, _, _} = lists:keyfind(helper, 1, supervisor:which_children(Sup)),
+    Helper ! stop,
+    timer:sleep(200),
+    d("陪跑正常退出后 supervisor 还活着", is_process_alive(Sup)),
+    d("收到 EXIT 了吗", receive {'EXIT', Sup, R1} -> {exit, R1} after 0 -> none end),
+    %% 主角（significant => true）正常退出：整棵树自动关闭
+    {main_task, Main, _, _} = lists:keyfind(main_task, 1, supervisor:which_children(Sup)),
+    Main ! stop,
+    d("主角正常退出后收到的 EXIT 原因",
+      receive {'EXIT', Sup, R2} -> R2 after 2000 -> none end),
+    timer:sleep(100),
+    d("supervisor 还活着吗", is_process_alive(Sup)),
+    %% 约束：auto_shutdown => never（默认）时 significant => true 会被直接拒绝
+    d("never + significant=true 的 child spec 被拒",
+      supervisor:start_link('16_auto_shutdown_sup',
+                            {#{strategy => one_for_one}, [auto_spec(bad, true)]})),
+    ok.
+
+%% auto_shutdown 演示用的 child spec：temporary（退了不重启）+ significant 标记。
+%% 触发条件实测：temporary 的 significant 正常/异常退出都会触发自动关闭。
+auto_spec(Id, Significant) ->
+    #{id => Id,
+      start => {?MODULE, worker_start, [{Id, self()}]},
+      restart => temporary,
+      significant => Significant,
+      shutdown => 1000,
+      type => worker,
+      modules => [?MODULE]}.
+
+%% ------------------------------------------------------------
+%% hibernate_after（OTP 28）：空闲 supervisor 整机休眠
+%% ------------------------------------------------------------
+%% 管着几千个动态子进程的长驻 supervisor 省内存的开关：
+%% 空闲超过给定毫秒数，supervisor 自己 hibernate。
+hibernate_after_demo() ->
+    io:format("~n== 8) hibernate_after：空闲 supervisor 自动休眠（OTP 28）==~n"),
+    Flags = #{strategy => one_for_one, hibernate_after => 100},
+    {ok, Sup} = supervisor:start_link('16_auto_shutdown_sup', {Flags, [auto_spec(w, false)]}),
+    _ = wait_child_up(),
+    d("带 hibernate_after 的 supervisor 正常启动", is_process_alive(Sup)),
+    timer:sleep(300),
+    d("空闲 100ms 后已进入休眠（current_function）",
+      element(2, process_info(Sup, current_function))),
+    stop_sup(Sup),
+    ok.
 

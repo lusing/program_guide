@@ -102,7 +102,71 @@ Erlang 这边无恙，新端口照常工作 = ok
 选型口诀：**信任边界外用端口/节点，性能热点才上 NIF**——NIF 里一个
 段错误就是整台 VM 的段错误。
 
-## 27.6 要点小结
+## 27.6 argparse：escript 的官方命令行解析（OTP 26）
+
+escript 的 `main(Args)` 拿到的是字符串列表。OTP 26 之前大家靠第三方 getopt；现在 stdlib 自带 argparse，**零依赖**。最小完整模式——规格与 handler 写在一起，run 串起一切：
+
+```erlang
+#!/usr/bin/env escript
+
+main(Args) ->
+    argparse:run(Args, cli(), #{progname => mul}).
+
+cli() ->
+    #{arguments =>
+          [#{name => left,  type => integer},                 %% 位置参数：按顺序
+           #{name => right, type => integer},
+           #{name => verbose, short => $v, long => "-verbose",
+             type => boolean, default => false}],            %% 可选参数：-v / --verbose
+      handler =>
+          fun (#{left := L, right := R}) -> io:format("~b~n", [L * R]) end}.
+```
+
+三个设计点：
+
+1. **name 决定一切**：没有 short/long 的按位置解析；type 自动转换，转不过去替你报错；handler 收一个 map，键就是 name。
+2. **help 免费**：`argparse:help(cli(), #{progname => mul})` 自动生成（本机实测）：
+
+```text
+Usage:
+  mul [-v] [--verbose] <left> <right>
+
+Arguments:
+  left          left (int)
+  right         right (int)
+
+Optional arguments:
+  -v, --verbose verbose , default: false
+```
+
+3. **run 是入口专用**：解析失败打印 `error:` + usage 然后**直接 halt(1)**——文档原话警告：别通过 RPC 调它，会把远程节点带崩。要测试就用纯函数 parse（本机实测）：
+
+```erlang
+argparse:parse(["3", "4", "-v"], cli(), #{progname => mul}).
+%% => {ok, #{left => 3, right => 4, verbose => true}, ["mul"], 匹配的命令规格}
+argparse:parse(["3"], cli(), #{progname => mul}).
+%% => {error, {["mul"], #{name => right, ...}, undefined, <<>>}}
+argparse:format_error(element(2, v:1)).
+%% => "mul: required argument missing: right"
+argparse:parse(["x", "4"], cli(), #{progname => mul}).
+%% => {error, {["mul"], #{name => left, ...}, "x", <<"is not an integer">>}}
+```
+
+**子命令**（git 风格）用 `commands` 键嵌套，每层各带 handler，parse 结果第二元是命令路径：
+
+```erlang
+Git = #{commands =>
+            #{"add"    => #{arguments => [#{name => file}],
+                            handler => fun(#{file := F}) -> io:format("add ~s~n", [F]) end},
+              "commit" => #{arguments => [#{name => m, long => "-message"}],
+                            handler => fun(M) -> io:format("commit ~p~n", [M]) end}}},
+argparse:parse(["add", "a.txt"], Git, #{progname => git}).
+%% => {ok, #{file => "a.txt"}, ["git", "add"], add 的规格}
+argparse:parse(["commit", "--message=init"], Git, #{progname => git}).
+%% => {ok, #{m => "init"}, ["git", "commit"], commit 的规格}——长选项支持 = 赋值
+```
+
+## 27.7 要点小结
 
 ```text
   open_port + spawn_executable；os:find_executable 跨平台找可执行
@@ -111,9 +175,10 @@ Erlang 这边无恙，新端口照常工作 = ok
   exit_status 让外部进程的退出可观测；死端口 port_close 抛 badarg
   端口崩溃不连累 Erlang；escript 的异常栈会进 stderr——自捕后 halt(1)
   端口（进程级隔离）vs 分布式（节点级）vs NIF（零隔离，最高性能）
+  argparse：run 管入口（出错 halt(1)）；parse 是纯函数，进 EUnit
 ```
 
-## 27.7 坑位清单
+## 27.8 坑位清单
 
 1. **escript 端口程序不 setopts 就崩**：standard_io 默认
    unicode→latin1 转译，非 ASCII 字节 `{no_translation, unicode,
@@ -128,6 +193,9 @@ Erlang 这边无恙，新端口照常工作 = ok
    spawn_executable 的参数，false 会变成 open_port badarg。
 6. **外部程序也有状态**（echo 的序号）——「无状态服务器」是设计选择
    不是默认事实，重连不重置。
+7. **argparse:run 解析失败直接 halt(1)**（文档 warning：勿 RPC 调用）——
+   escript 入口专用；规格测试用纯函数 `parse`，错误是 `{error, 四元组}`
+   可断言（27.6）。
 
 ---
 

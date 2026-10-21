@@ -9,6 +9,7 @@
 -module('19_files_tests').
 
 -include_lib("eunit/include/eunit.hrl").
+-include_lib("stdlib/include/zip.hrl").
 
 -define(DIR, "build/eunit-19").
 
@@ -97,3 +98,120 @@ term_serialization_test() ->
 unknown_atom_ext() ->
     Name = "zz_atom_that_does_not_exist_yet",
     <<131, 100, (length(Name)):16, (list_to_binary(Name))/binary>>.
+
+json_test() ->
+    %% encode 返回 iodata（坑），要平面二进制自己 iolist_to_binary
+    Enc = json:encode(#{name => <<"erlang">>, tags => [a, b], n => 42}),
+    ?assertNot(is_binary(Enc)),
+    %% map 键的输出顺序 OTP 不保证：按内容断言，不断言字节级顺序
+    ?assertEqual(#{<<"name">> => <<"erlang">>, <<"n">> => 42,
+                   <<"tags">> => [<<"a">>, <<"b">>]},
+                 json:decode(iolist_to_binary(Enc))),
+    %% decode：对象 → map，键一律是 binary；null → 原子 null
+    ?assertEqual(#{<<"a">> => 1, <<"b">> => [true, null], <<"c">> => <<"x">>},
+                 json:decode(<<"{\"a\":1,\"b\":[true,null],\"c\":\"x\"}">>)),
+    %% [{a,1}] 不能直接 encode，要用 encode_key_value_list
+    ?assertError({unsupported_type, {a, 1}}, json:encode([{a, 1}])),
+    ?assertEqual(<<"{\"a\":1,\"b\":2}">>,
+                 iolist_to_binary(json:encode_key_value_list(
+                                    [{a, 1}, {b, 2}], fun json:encode_value/2))),
+    %% 非法输入抛 error 的三种形态
+    ?assertError(unexpected_end, json:decode(<<"{\"a\":">>)),
+    ?assertError({invalid_byte, $!}, json:decode(<<"{\"a\":!}">>)),
+    ?assertError({unexpected_sequence, <<"\\uZZZZ">>},
+                 json:decode(<<"\"\\uZZZZ\"">>)),
+    %% json:format（OTP 27.1）美化输出
+    ?assertEqual(<<"{\n  \"a\": 1,\n  \"b\": [1,2]\n}\n">>,
+                 iolist_to_binary(json:format(#{a => 1, b => [1, 2]}))).
+
+base64_test() ->
+    ?assertEqual(<<"aGVsbG8=">>, base64:encode(<<"hello">>)),
+    ?assert(is_binary(base64:encode(<<"hello">>))),
+    ?assertEqual("aGVsbG8=", base64:encode_to_string(<<"hello">>)),
+    ?assertEqual(<<"hello">>, base64:decode(<<"aGVsbG8=">>)),
+    %% mime_decode 容忍 \r\n
+    ?assertEqual(<<"hello">>, base64:mime_decode(<<"aGVs\r\nbG8=">>)),
+    %% 非法输入抛错，不返回元组
+    ?assertError(missing_padding, base64:decode(<<"!!!">>)),
+    %% 模块只提供 MIME 方向的解码，没有 mime_encode
+    ?assertNot(erlang:function_exported(base64, mime_encode, 1)).
+
+zstd_test() ->
+    Data = binary:copy(<<"abcdef">>, 100),
+    ?assertEqual(600, byte_size(Data)),
+    C = zstd:compress(Data),
+    %% compress 返回 iodata（坑）：直接 byte_size 会 badarg
+    ?assertNot(is_binary(C)),
+    ?assertError(badarg, byte_size(C)),
+    CB = iolist_to_binary(C),
+    ?assertEqual(23, byte_size(CB)),
+    %% compressionLevel 用 map 传
+    C20 = iolist_to_binary(zstd:compress(Data, #{compressionLevel => 20})),
+    ?assertEqual(23, byte_size(C20)),
+    %% decompress 返回的也是 iodata，roundtrip 完全还原
+    D = zstd:decompress(CB),
+    ?assertNot(is_binary(D)),
+    ?assertEqual(Data, iolist_to_binary(D)),
+    ?assertEqual(Data, iolist_to_binary(zstd:decompress(C20))).
+
+archive_test() ->
+    cleanup_dir(),
+    ok = file:make_dir(?DIR),
+    Assets = filename:join(?DIR, "assets"),
+    ok = file:make_dir(Assets),
+    ok = file:write_file(filename:join(Assets, "a.txt"), <<"AAA">>),
+    ok = file:write_file(filename:join(Assets, "b.txt"), <<"BBB">>),
+    %% zip：{cwd, Dir} 让裸文件名相对指定目录
+    Zip = filename:join(?DIR, "demo.zip"),
+    ?assertEqual({ok, Zip}, zip:create(Zip, ["a.txt", "b.txt"], [{cwd, Assets}])),
+    %% [memory] 解包直接拿内容不落盘
+    ?assertEqual({ok, [{"a.txt", <<"AAA">>}, {"b.txt", <<"BBB">>}]},
+                 zip:extract(Zip, [memory])),
+    {ok, Entries} = zip:table(Zip),
+    ?assertEqual(["a.txt", "b.txt"], [N || #zip_file{name = N} <- Entries]),
+    %% erl_tar 没有 cwd 选项：裸文件名只认当前目录
+    ?assertEqual({error, {"a.txt", enoent}},
+                 erl_tar:create(filename:join(?DIR, "cwd.tar"), ["a.txt"],
+                                [{cwd, Assets}])),
+    %% 跨目录用 {归档内名字, 磁盘路径} 元组（名字在前）
+    Tar = filename:join(?DIR, "demo.tar"),
+    ?assertEqual(ok, erl_tar:create(Tar, [{"a.txt", filename:join(Assets, "a.txt")},
+                                          {"b.txt", filename:join(Assets, "b.txt")}])),
+    ?assertEqual({ok, [{"a.txt", <<"AAA">>}, {"b.txt", <<"BBB">>}]},
+                 erl_tar:extract(Tar, [memory])),
+    %% 元组顺序写反 → enoent
+    ?assertEqual({error, {"a.txt", enoent}},
+                 erl_tar:create(filename:join(?DIR, "bad.tar"),
+                                [{filename:join(Assets, "a.txt"), "a.txt"}])),
+    %% compressed 直接产 .tar.gz；解的时候也要给 compressed
+    Gz = filename:join(?DIR, "demo.tar.gz"),
+    ?assertEqual(ok, erl_tar:create(Gz, [{"a.txt", filename:join(Assets, "a.txt")}],
+                                    [compressed])),
+    {ok, GzBin} = file:read_file(Gz),
+    ?assertEqual(<<31, 139>>, binary:part(GzBin, 0, 2)),
+    ?assertEqual({ok, [{"a.txt", <<"AAA">>}]},
+                 erl_tar:extract(Gz, [memory, compressed])),
+    cleanup_dir().
+
+file_sorter_test() ->
+    cleanup_dir(),
+    ok = file:make_dir(?DIR),
+    Terms = filename:join(?DIR, "terms.txt"),
+    ok = file:write_file(Terms, [io_lib:format("~p.~n", [T]) || T <- [{c, 3}, {a, 1}, {b, 2}]]),
+    %% Input 必须是文件名列表：裸字符串被拆成码点，撞上路径首字符（这里是 $/）
+    AbsTerms = filename:absname(Terms),
+    First = hd(AbsTerms),
+    ?assertError({badarg, First},
+                 file_sorter:sort(AbsTerms, filename:join(?DIR, "never.txt"),
+                                  [{format, term}])),
+    %% 正确写法：单个文件名也包一层列表
+    Sorted = filename:join(?DIR, "sorted.txt"),
+    ?assertEqual(ok, file_sorter:sort([Terms], Sorted, [{format, term}])),
+    ?assertEqual({ok, [{a, 1}, {b, 2}, {c, 3}]}, file:consult(Sorted)),
+    %% keysort(2, ...) 按 element(2) 排，与整体排序结果不同
+    KTerms = filename:join(?DIR, "kterms.txt"),
+    ok = file:write_file(KTerms, [io_lib:format("~p.~n", [T]) || T <- [{x, 3}, {y, 1}, {z, 2}]]),
+    Ks = filename:join(?DIR, "ks.txt"),
+    ?assertEqual(ok, file_sorter:keysort(2, [KTerms], Ks, [{format, term}])),
+    ?assertEqual({ok, [{y, 1}, {z, 2}, {x, 3}]}, file:consult(Ks)),
+    cleanup_dir().

@@ -77,7 +77,86 @@ erlang:memory().      process_info(P, current_function/reductions/memory).
 
 邮箱一直涨 = 有人发得比处理得快——线上"变慢但 CPU 不高"的头号原因。
 
-## 23.7 坑位清单
+## 23.7 beam_lib：把 beam 当数据库读
+
+beam 文件是**分块容器**：抽象代码、属性、编译信息各占一块。23.1 用它验过 abstract_code，其实任何元数据都能按需取。本机实测（对一个探针模块自己的 beam）：
+
+```erlang
+Beam = code:which(probe_23).
+beam_lib:info(Beam).
+%% 注意：直接返回清单，**不包 {ok, ...}**（OTP 29 实测，连错两次的坑）：
+%% => [{binary, 整个 beam 二进制}, {module, probe_23},
+%%     {chunks, [{块名, 偏移, 大小}, ...]}]
+{ok, {probe_23, [{attributes, Attrs}]}} = beam_lib:chunks(Beam, [attributes]),
+proplists:get_value(vsn, Attrs).
+%% => [203085611425987404064261429777252364843]
+%%    没写 -vsn 时编译器自动算的版本指纹
+{ok, {_, [{compile_info, CI}]}} = beam_lib:chunks(Beam, [compile_info]),
+proplists:get_value(version, CI).   %% => "10.0.2"  ← 编译器版本
+proplists:get_value(options, CI).   %% => []  ← 编译选项原样记录（+debug_info 会出现在这里）
+```
+
+工程用途：**发布前自检**——遍历发布目录的 beam，断言每个都能读出 `abstract_code`（没编 debug_info 的混进来立刻现形）、`compile_info` 的 options 里没有忘关的调试开关。
+
+## 23.8 Shell 体验：h()、彩色输出与特性开关
+
+**h()：文档进了 beam（OTP 23）**。OTP 23 起文档以 docs_v1 chunk 编进 beam，shell 里直接查，不用开浏览器：
+
+```erlang
+1> h(lists).            %% 整个模块的文档
+2> h(lists, reverse).   %% 单个函数
+```
+
+底层是 shell_docs 渲染，本机实测 `h(lists, reverse)` 的输出（逐字节）：
+
+```text
+   -spec reverse(List1) -> List2
+                    when List1 :: [T], List2 :: [T], T :: term().
+
+   Returns a list containing the elements in List1 in
+   reverse order.
+
+   Examples
+
+       1> lists:reverse([1,2,3]).
+       [3,2,1]
+```
+
+官方库全带文档；自己的模块写 `-moduledoc`/`-doc` 属性（OTP 27 起的文档语法）就能享受同等待遇。
+
+**io_ansi：终端控制序列（OTP 29）**。手写 `\e[31m` 的时代结束了——新模块 io_ansi 按命名族生成序列，直接返回 binary：
+
+```erlang
+io_ansi:blue().              %% <<"\e[34m">>
+io_ansi:red_background().    %% <<"\e[41m">>——注意命名：颜色_background，不是 background_red
+io_ansi:bold().              %% <<"\e[1m">>
+```
+
+更好用的是 format 族：跟 io_lib:format 一个路子，但**格式串里可以混排 VTS 原子**：
+
+```erlang
+io_ansi:format([blue, "~p"], [red], [{enabled, true}]).
+%% => <<"\e[34mred\e[0m">>              ← 结尾自动追加 reset
+io_ansi:format([bold, red_background, " ~s "], ["WARN"], [{enabled, true}]).
+%% => <<"\e[1m\e[41m WARN \e[0m">>
+```
+
+**它知道什么时候不该输出转义序列**：默认按终端能力探测（terminfo），无终端环境（noshell、重定向到文件）自动剥掉 VTS——本机 `erl -noshell` 下实测：
+
+```erlang
+io_ansi:enabled().                    %% => false
+io_ansi:format([blue, "~p"], [red]).  %% => <<"red">>——日志文件里干干净净，不会有一堆 ^[
+```
+
+其他旋钮：`{reset, false}` 不追加 reset；`{color, false}` 只剥颜色、保留 underline 等修饰；`fwrite` 直写设备返回 `ok`；认 `NO_COLOR` 环境变量约定。
+
+**erl_features：特性开关（OTP 25）**。语言新特性先以"实验特性"发布、逐版本转正，all/0 列出当前 VM 认识的全部特性：
+
+```erlang
+erl_features:all().   %% => [compr_assign, maybe_expr]——本机 OTP 29 实测
+```
+
+## 23.9 坑位清单
 
 1. **erlc 默认不带 debug_info**：dialyzer/beam_lib 没料——build.ps1 统一 `+debug_info`（实测）。
 2. **PLT 少 app**：调了 `compile:file`/`eunit:test` 而 PLT 没编 compiler/eunit → Unknown functions。
@@ -87,6 +166,8 @@ erlang:memory().      process_info(P, current_function/reductions/memory).
 6. **API 撞 BIF**：`put/2` 撞进程字典——本模块实测改名 `set/2`（15 章的坑再现）。
 7. **不同 arity 子句用分号连接**：`-Wall` 报 head mismatch——每个 arity 独立成函数。
 8. **sys:get_state 卡住**：目标不是 OTP 进程（不认系统消息）——proc_lib 也不行，要 gen_server。
+9. **io_ansi:format 的输出随终端能力变**：无终端自动剥 VTS（noshell 下实测 `<<"red">>`）——测试里断言序列要 `[{enabled, true}]` 强制（23.8）。
+10. **argparse:run 出错直接 halt(1)**：escript 入口专用；单元测试和库代码用纯函数 parse（27.6）。
 
 ---
 
