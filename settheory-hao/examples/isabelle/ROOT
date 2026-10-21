@@ -18,3 +18,7 @@ session HS13 in "HS13" = "ZF-AC" +
   options [document = false]
   theories
     Choice
+session HS14 in "HS14" = "ZF" +
+  options [document = false]
+  theories
+    Cardinals

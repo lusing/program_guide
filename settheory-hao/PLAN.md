@@ -81,7 +81,8 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
       lean 3 + isa 2 + coq 1 + jl 2 + py 3 + pl 1），docs 204/200/203 行
 - [x] **B6**：12-13 古德斯坦/选择公理——7 单元批内全绿（终态 -All 49/49：
       lean 1 + isa 1 + coq 1 + jl 2 + py 2 + pl 1），docs 204/205 行
-- [ ] B7：14-15 基数/基数算术（4 单元）
+- [x] **B7**：14-15 基数/基数算术——6 单元批内全绿（终态 -All 55/55：
+      lean 2 + isa 1 + jl 1 + py 2），docs 183/161 行
 - [ ] B8：16-18 共尾/幂/滤与 club（8 单元）
 - [ ] B9：19-20 谱系绝对性/基础良基（6 单元）
 - [ ] B10：21-22 不可达反映/L（5 单元）
@@ -230,3 +231,15 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
     复现）——顶层循环一律 goodstein_steps 式封装。
 54. **B6·Python 家族注释写错**：注释声称两两不交但数据相交
     （{a,b} ∩ {b,c}）——断言先于注释说话。
+55. **B7·λ 保留字复现**：funanalysis 坑再现——Lean 4 的 λ 是
+    lambda 关键字，基数变量改 μ。
+56. **B7·ℵ₀ 记号解析不一致**：`ℵ₀ ≤ κ` 作为 add_eq_self 的参数
+    类型不匹配，显式 `Cardinal.aleph0 ≤ κ` 过——记号与常量名不同
+    宇宙实例； aleph_lt_aleph 的 iff 形态配 `by norm_num`。
+57. **B7·窗口等势计数被截断扭曲**：ω 的窗口元素被砍到 6 个、
+    ω+1 有 7 个——两者被判不等势（假）；等势判定必须走结构事实
+    （有限=自身 / ≥ω 皆可数）而非截断计数——窗口方法论入清单。
+58. **B7·Julia union 无序**：union(a,b) == collect(0:n) 恒假——
+    sort(vcat(...)) 核对。
+59. **B7·ZF 无 Card_succ 引理**：Card(1) 走 Card_iff_initial 展开
+    eqpoll_def/bij_def/surj_def 后 auto 可收（空定义域无满射）。
