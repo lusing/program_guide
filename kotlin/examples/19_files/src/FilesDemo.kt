@@ -6,6 +6,15 @@ import java.time.LocalDateTime
 import java.time.Duration
 import java.time.Period
 import java.time.format.DateTimeFormatter
+import kotlin.time.Duration as KtDuration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TimeSource
+import kotlin.time.measureTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 // ---------- 文本与目录 ----------
 
@@ -82,6 +91,37 @@ fun jsonEscape(s: String): String = buildString {
         else -> if (c < ' ') append("\\u%04x".format(c.code)) else append(c)
     }
 }
+
+// ---------- kotlin.time：Kotlin 自己的时间 API（多平台，java.time 的对应物） ----------
+
+/** kotlin.time.Duration 拆时/分/秒：toComponents 是成员函数，不需要 import */
+fun describeKtDuration(d: KtDuration): String =
+    d.toComponents { h, m, s, _ -> "${h}时${m}分${s}秒" }
+
+/** 单调时钟打点：不受系统改表影响，测"耗时"用它；挂钟时间（日志时间戳）才用 System.currentTimeMillis */
+fun timedSum(n: Int): Pair<Long, KtDuration> {
+    val mark = TimeSource.Monotonic.markNow()
+    var acc = 0L
+    for (i in 1..n) acc += i
+    return acc to mark.elapsedNow()
+}
+
+// ---------- kotlin.uuid：随机 UUID（24 章 todo 项目的 id 生成策略升级版） ----------
+
+/** 生成任务 id：随机 UUID v4——多客户端并发/数据合并场景不会撞 id（24 章注释的兑现） */
+@OptIn(ExperimentalUuidApi::class)
+fun newTaskId(): String = Uuid.random().toString()
+
+// ---------- kotlin.io.encoding：Base64（二进制数据进文本协议的标准操作） ----------
+
+/** Base64 标准字母表：JWT、data URI、邮件附件都用它 */
+@OptIn(ExperimentalEncodingApi::class)
+fun b64(s: String): String = Base64.Default.encode(s.encodeToByteArray())
+
+/** HTTP Basic 认证头：Base64("user:pass")——教科书级用例 */
+@OptIn(ExperimentalEncodingApi::class)
+fun basicAuth(user: String, pass: String): String =
+    "Basic " + Base64.Default.encode("$user:$pass".encodeToByteArray())
 
 fun toJson(v: Any?): String = when (v) {
     null -> "null"

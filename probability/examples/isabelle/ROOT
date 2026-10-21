@@ -12,3 +12,8 @@ session MT10 in "MT10" = "HOL-Analysis" +
   options [document = false]
   theories
     T10_Expectation
+
+session MT13 in "MT13" = "HOL-Probability" +
+  options [document = false]
+  theories
+    T13_DiscreteDists

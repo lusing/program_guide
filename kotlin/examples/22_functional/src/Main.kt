@@ -1,4 +1,7 @@
 // 22 · 函数式编程：惰性 Sequence、纯函数、组合、柯里化、Either、不可变数据
+import kotlin.streams.asSequence
+import kotlin.streams.asStream
+import kotlin.streams.toList
 
 /** 集合管道（急切）：每个操作立刻物化出新集合 */
 fun eagerPipeline(): List<Int> {
@@ -73,6 +76,21 @@ class FakeClock(private var t: Long) : Clock {
 }
 fun isExpired(createdAt: Long, ttl: Long, clock: Clock): Boolean = clock.nowMs() - createdAt > ttl
 
+/** kotlin.streams：Java Stream ↔ Kotlin Sequence 双向桥（kotlin.streams 是 JVM 专属包） */
+fun streamInterop(): String {
+    // 方向一：Java 库返回的 Stream → asSequence()，接进 Kotlin 惰性管道
+    val fromJava: List<Int> = java.util.stream.Stream.of(1, 2, 3, 4, 5)
+        .asSequence()
+        .filter { it % 2 == 1 }
+        .toList()
+    // 方向二：Kotlin 的 Sequence → asStream()，喂给只认 Stream 的 Java API
+    val toJava: List<Int> = sequenceOf("a", "bb", "ccc")
+        .asStream()
+        .map { it.length }
+        .toList()                       // kotlin.streams 的 Stream.toList()，免写 Collectors.toList()
+    return "Stream→Sequence 取奇数: $fromJava; Sequence→Stream 取长度: $toJava"
+}
+
 fun main() {
     println("== 22.2 惰性求值：List vs Sequence ==")
     println("急切结果: ${eagerPipeline()}")
@@ -108,6 +126,9 @@ fun main() {
     println("== 22.7 递归与尾调用 ==")
     tailrec fun sumTo(n: Int, acc: Int = 0): Int = if (n == 0) acc else sumTo(n - 1, acc + n)
     println("  sumTo(100000) = ${sumTo(100_000)}（tailrec 编译成循环，不爆栈）")
+
+    println("== 22.8 kotlin.streams：与 Java Stream 互操作 ==")
+    println("  ${streamInterop()}")
 }
 
 fun add2(a: Int, b: Int): Int = a + b

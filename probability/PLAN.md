@@ -34,11 +34,11 @@ Steven J. Miller, *The Probability Lifesaver*（Princeton UP 2017，
 | 10 | expectation | ch9 期望工具 (p271) | ✓ | ✓ | ✓ | ✓ | · | B4 | ✅ |
 | 11 | convolutions | ch10 卷积与换元 (p302) | · | · | ✓ | ✓ | · | B5 | ✅ |
 | 12 | differentiating | ch11 微分恒等式 (p326) | ✓ | · | ✓ | ✓ | · | B5 | ✅ |
-| 13 | discrete-dists | ch12 离散分布族 (p343) | ✓ | ✓ | ✓ | ✓ | ✓ | B6 | ☐ |
-| 14 | uniform-exponential | ch13 均匀与指数 (p365) | ✓ | · | ✓ | ✓ | · | B6 | ☐ |
-| 15 | normal | ch14 正态分布 (p387) | ✓ | · | ✓ | ✓ | · | B6 | ☐ |
-| 16 | gamma | ch15 Γ 函数与分布 (p414) | ✓ | · | ✓ | ✓ | · | B6 | ☐ |
-| 17 | chi-square | ch16 卡方 (p443) | ✓ | · | ✓ | ✓ | · | B6 | ☐ |
+| 13 | discrete-dists | ch12 离散分布族 (p343) | ✓ | ✓ | ✓ | ✓ | ✓ | B6 | ✅ |
+| 14 | uniform-exponential | ch13 均匀与指数 (p365) | ✓ | · | ✓ | ✓ | · | B6 | ✅ |
+| 15 | normal | ch14 正态分布 (p387) | ✓ | · | ✓ | ✓ | · | B6 | ✅ |
+| 16 | gamma | ch15 Γ 函数与分布 (p414) | ✓ | · | ✓ | ✓ | · | B6 | ✅ |
+| 17 | chi-square | ch16 卡方 (p443) | ✓ | · | ✓ | ✓ | · | B6 | ✅ |
 | 18 | inequalities-lln | ch17 不等式与 LLN (p463) | ✓ | · | ✓ | ✓ | · | B7 | ☐ |
 | 19 | stirling | ch18 Stirling 公式 (p483) | · | · | ✓ | ✓ | · | B7 | ☐ |
 | 20 | generating-functions | ch19 母函数 (p508) | · | · | ✓ | ✓ | ✓ | B7 | ☐ |
@@ -173,3 +173,17 @@ ch23 p620 · ch24 p638 · ch25 p649 · 附录 A p661 / B p687 / C p705。
    数组做卷积时第二取值索引要再减一（f2[j−i−2]），BoundsError
    是第一信号；顶层 for 累积变量再犯软作用域（cumprod/推导式
    根治）。
+21. （B6）**数值积分端点奇异三连**（Python 17）：χ²(1) 的
+   y^{−1/2} 在 0 端——y=t² 代换后 chi2_pdf(0)=0 分支在端点
+   注入 1.2e-4 误差（直写化简后被积 2e^{−t²/2}/√(2π)）；
+   (t²)^{−1/2}=1/t 的幂次相消再坑（E[Y] 的 t³ 误写）；
+   卷积被积在 t→0 爆破同理 t=u² 吸收（Simpson 偏差 2-4%）。
+   Γ 的 (0,1] 段通用幂代换 m=⌈1/s⌉（16 章）。
+22. （B6）**CLT 近似误差是真实信号**：n=8 均匀和中心质量与
+   正态差 0.007（峰度 −1.2/8 效应）、χ²(20) 差 0.002——
+   模拟 vs 正态的断言容差必须计入形状差，不是模拟噪声。
+23. （B6）ℚ 合取里的裸分式陷阱再犯（14 章 1/2=2−3/2 第二
+   合取支默认 ℕ 得 0=1）；√3 以 (2√3)²=4·3 平方形态入账
+   防无理数；Isabelle {1..6} 区间求和 simp 不算——显式
+   列举集合 {1,2,3,4,5,6} 直算；PMF 族真名在
+   Probability_Mass_Function.thy（bernoulli/geometric/poisson）。

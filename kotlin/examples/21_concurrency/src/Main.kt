@@ -45,6 +45,17 @@ fun main() {
         println("  100k 协程 vs 100k 线程：协程 ≈ 轻量对象，线程 ≈ 1MB 栈预留")
     }
 
-    println("== 21.8 选型速查 ==")
+    println("== 21.8 kotlin.concurrent.atomics：多平台原子类 ==")
+    val kc = KotlinAtomicCounter()
+    val kts = (1..4).map { Thread { repeat(10_000) { kc.bump() } } }
+    kts.forEach { it.start() }; kts.forEach { it.join() }
+    println("  AtomicInt 40000 次 incrementAndFetch = ${kc.value}（终值同样确定）")
+    println("  fetchAndAdd(10) 返回旧值 ${kc.fetchAndAdd(10)}，现值 ${kc.value}")
+    val before = kc.value
+    println("  compareAndSet($before, 999) = ${kc.cas(before, 999)} → 现值 ${kc.value}")
+    println("  compareAndSet(1, 2) = ${kc.cas(1, 2)} → 现值不变 ${kc.value}")
+    println("  asJavaAtomic() 底层 = ${kc.asJavaAtomic()::class.simpleName}（JVM 桥；JS/Wasm 无真线程，实现 trivial）")
+
+    println("== 21.9 选型速查 ==")
     println("  阻塞 IO/长寿任务 → 线程池 | 高并发等待 → 协程 | 共享计数 → 原子类 | 复合临界区 → Mutex/锁")
 }

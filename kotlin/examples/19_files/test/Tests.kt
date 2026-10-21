@@ -1,11 +1,19 @@
-// 19 的测试：文件读写、CSV、正则、JSON 编码（用临时目录，不污染示例目录）
+// 19 的测试：文件读写、CSV、正则、JSON 编码、kotlin.time/uuid/Base64（用临时目录，不污染示例目录）
 import java.io.File
 import java.time.Duration
 import java.time.LocalDate
 import kotlin.io.path.createTempDirectory
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 fun tmpDir(): File = createTempDirectory("kt19").toFile()
 
@@ -74,6 +82,28 @@ fun testProcessExecute() {
     assertTrue(out.isNotBlank())     // -version 输出走 stderr，合流后统一可读
 }
 
+@OptIn(ExperimentalUuidApi::class, ExperimentalEncodingApi::class)
+fun testKotlinTimeUuidBase64() {
+    // kotlin.time
+    assertEquals("2时35分54秒", describeKtDuration(9354.seconds))
+    assertTrue(1.seconds > 900.milliseconds)
+    assertEquals("1m 15s", (30.seconds + 45.seconds).toString())
+    assertEquals(90, 90.seconds.inWholeSeconds)
+    assertEquals(9600, 400.days.inWholeHours)      // Duration 内部是纳秒计数，单位换算不掉精度
+    val (s, d) = timedSum(100)
+    assertEquals(5050L, s)
+    assertTrue(d >= 0.seconds)
+    // kotlin.uuid
+    val id = newTaskId()
+    assertEquals(36, id.length)
+    assertEquals(id, Uuid.parse(id).toString())          // 字符串 → Uuid → 字符串 往返
+    assertFailsWith<IllegalArgumentException> { Uuid.parse("not-a-uuid") }
+    // kotlin.io.encoding
+    assertEquals("5L2g5aW9", b64("你好"))
+    assertEquals("你好", String(Base64.Default.decode(b64("你好"))))
+    assertEquals("Basic YWxpY2U6czNjcmV0", basicAuth("alice", "s3cret"))
+}
+
 fun main() {
     testWriteRead()
     testCountWords()
@@ -82,5 +112,6 @@ fun main() {
     testRegex()
     testJson()
     testProcessExecute()
+    testKotlinTimeUuidBase64()
     println("19_files 全部测试通过")
 }

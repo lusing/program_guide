@@ -36,3 +36,21 @@ toSnakeCase(myKotlinVar2) = my_kotlin_var2
 == 19.10 进程执行扩展 ==
 "java -version".execute(): exit=0, 输出非空=true（版本细节随机器，不进快照）
 防御: redirectErrorStream(true) 合流——双管道不排空时缓冲写满会把 waitFor 挂死
+== 19.11 kotlin.time：Duration 与计时 ==
+ttl = 1m 30s（inWholeMinutes=1, 秒分量=30）
+ISO-8601 解析: 2h 45m 30s
+toComponents: 2时35分54秒
+比较/运算: 1.seconds > 900.milliseconds = true, 30.seconds + 45.seconds = 1m 15s
+markNow/elapsedNow: 睡 5ms 后 >= 1ms = true
+measureTime(10万求和) = 5000050000, 耗时非负 = true
+timedSum(10万) = 5000050000, 同款耗时非负 = true
+== 19.12 kotlin.uuid：随机 UUID ==
+random: 长度=36（8-4-4-4-12 带连字符）, 往返相等=true
+parse(固定串).toByteArray().size = 16B
+parse(坏串) 抛: IllegalArgumentException
+newTaskId() 长度 = 36
+== 19.13 kotlin.io.encoding：Base64 ==
+encode("写 Kotlin 教程") = 5YaZIEtvdGxpbiDmlZnnqIs=
+decode 还原 = 写 Kotlin 教程
+三字节 FB FF BF: Default=+/+/, UrlSafe=-_-_
+Basic 认证头: Basic YWxpY2U6czNjcmV0

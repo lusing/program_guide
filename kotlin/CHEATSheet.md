@@ -1,4 +1,4 @@
-# Kotlin 速查表（2.4.20）
+# Kotlin 速查表（2.4.21）
 
 > 配合 [README 章节索引](README.md) 使用；每条后面的 `→ N 章` 指向详解章节。
 
@@ -81,6 +81,7 @@ xs.fold(0){a,b->a+b}                    // reduce 空列表会炸 → 10
 xs.sorted() / xs.sort()                 // 新列表 / 原地 → 10
 chunked(2) / windowed(2) / zip / flatMap                       // → 10
 m.getOrPut(k){v}                                               // → 10
+compareValues(a,b) / compareValuesBy(a,b,{k1},{k2})  // -1/0/1；选择器顺序=优先级 → 10
 seq: xs.asSequence().map{}.take(2).toList()                    // 惰性 → 22
 ```
 
@@ -145,6 +146,24 @@ Lib.getBase2()            // 静态 get/set 不合成属性 → 18
 assertEquals(want, got, "msg"); assertTrue/Null/Contains; assertFailsWith<E>{ }  // → 20
 Random(42)                       // 可复现随机 → 20
 表驱动 for ((input, want) in table)         // → 20
+```
+
+## 文件与标准库工具箱
+
+```kotlin
+f.writeText(s) / readText() / readLines() / f.useLines { }     // 大文件用 useLines → 19.2/19.3
+f.walkTopDown().sortedBy { it.path }.map { }                    // 目录树；枚举序不稳先排序 → 19.5
+f.copyTo(t, overwrite = true)                 // 默认不覆盖，同名抛 FileAlreadyExists → 19.6
+createTempDirectory("x").toFile()                                 // kotlin.io.path；测完删 → 19.14
+90.seconds / 1.milliseconds                 // import Duration.Companion.seconds 才可见 → 19.11
+d.toComponents { h, m, s, _ -> }            // 成员函数免 import；别和 java.time.Duration 混 → 19.11
+TimeSource.Monotonic.markNow() / measureTime { }  // 单调时钟测耗时（快照只断言非负）→ 19.11
+@OptIn(ExperimentalUuidApi::class) Uuid.random()  // 36 字符 v4；parse 坏串抛 IllegalArgumentException → 19.12
+@OptIn(ExperimentalEncodingApi::class)
+  Base64.Default.encode(bs) / Base64.UrlSafe   // URL 里必须 UrlSafe（- _ 而非 + /）→ 19.13
+@OptIn(ExperimentalAtomicApi::class) AtomicInt(0)  // incrementAndFetch/plusAssign 是扩展要 import → 21.8
+Stream.asSequence() / Sequence.asStream() / Stream.toList()      // JVM 桥保惰性，别遍历两遍 → 22.8
+class C : ReadOnlyProperty<Any?, String> { getValue(...) }       // ReadWriteProperty 再 +setValue → 9.10
 ```
 
 ## DSL
@@ -251,6 +270,11 @@ enum Tetromino(vararg rot: String)           // ASCII 旋转帧 "XXX/.X."；Byte
 | runCatching 吞掉取消 | 协程里别包 CancellationException | 16 |
 | 静态 getter 用属性语法报错 | 静态 get/set 不合成属性 | 18 |
 | Period.days 数值"不对" | 它是分量；总天数用 ChronoUnit | 19 |
+| `90.seconds` / `incrementAndFetch` unresolved | 扩展函数/属性不 import 就没有（Duration.Companion、atomics） | 19/21 |
+| `Duration` 解析到 java.time | 同名不同包，`import kotlin.time.Duration as KtDuration` | 19 |
+| `Uuid.parse` 坏串炸 / 实验性告警 | 抛 IllegalArgumentException 不返 null；`@OptIn(ExperimentalUuidApi)` | 19 |
+| Base64 进 URL 偶发解析坏 | 该用 `Base64.UrlSafe`（`- _` 而非 `+ /`） | 19 |
+| 计时值进快照每跑必红 | 具体毫秒随机器；只断言非负/量级 | 19/21 |
 | 原始字符串 `"""…$"""` 编译错 | 行尾 $ 被当模板 | 19 |
 | 快照测试偶发红 | 线程名/绝对路径/残留文件进输出 | 20/21/24/31 |
 | konanc 报"此时不应有 =ALL-UNNAMED" | JDK ≥ 24 的 bat 引号 bug；JAVA_HOME 指非 21 会被脚本跳过 | 25 |

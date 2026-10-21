@@ -24,7 +24,7 @@ fun main() {
     val b = 2
     println("$a + $b = ${a + b}")          // $变量 与 ${表达式}
     val lang = "Kotlin"
-    val ver = "2.4.20"
+    val ver = "2.4.21"
     println("你好, $lang $ver")
     println("花括号里还能调方法: ${lang.uppercase()}")
 

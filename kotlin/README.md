@@ -1,10 +1,10 @@
-# Kotlin 编程指南（2.4.20 / JVM）
+# Kotlin 编程指南（2.4.21 / JVM）
 
-面向**会编程（Java/C++/Rust/Go 背景最佳）、初学 Kotlin** 的读者：从零教到现代 Kotlin——**K2 编译器**（2.4.20）、空安全、密封类型与穷尽 when、委托、型变 + reified、作用域函数、扩展、结构化并发协程 + Flow、与 Java 互操作、类型安全 DSL；进阶**多平台**（同一份代码编到 JS / Wasm / Native，25 章）与**语言深水区**（数值装箱/原语数组、注解反射、inline、成员扩展、运算符约定，26–30 章）；最后三个实战项目压轴（零依赖 HTTP 服务、MVP 终端聊天室、俄罗斯方块，31–33 章）。每章"读讲解 → 跑示例 → 改代码再跑"，全部 32 个示例**四层验证**通过（kotlinc `-Werror` 编译 → kotlin.test 测试 → 运行 exit 0 → expected.txt 快照比对）。
+面向**会编程（Java/C++/Rust/Go 背景最佳）、初学 Kotlin** 的读者：从零教到现代 Kotlin——**K2 编译器**（2.4.21）、空安全、密封类型与穷尽 when、委托、型变 + reified、作用域函数、扩展、结构化并发协程 + Flow、与 Java 互操作、类型安全 DSL；进阶**多平台**（同一份代码编到 JS / Wasm / Native，25 章）与**语言深水区**（数值装箱/原语数组、注解反射、inline、成员扩展、运算符约定，26–30 章）；最后三个实战项目压轴（零依赖 HTTP 服务、MVP 终端聊天室、俄罗斯方块，31–33 章）。每章"读讲解 → 跑示例 → 改代码再跑"，全部 32 个示例**四层验证**通过（kotlinc `-Werror` 编译 → kotlin.test 测试 → 运行 exit 0 → expected.txt 快照比对）。
 
 > 26–33 章及主线 09/10/11/18/19 章的扩充取材自 4 本参考书：《Kotlin语言实例精解（2019）》《Kotlin从入门到进阶实战（2018）》《零基础学Kotlin编程（2018）》《Android 10 Kotlin编程通俗演义（2020）》——示例全部按本书四层验证标准重写实测，书里的 RxJava2/Android 时代写法对照了现代 Kotlin（协程/Flow/K2）的对应答案。
 
-> ⚠️ 版本敏感：两个入口脚本都**钉 JDK 21**（PATH 上可能是别的版本、`JAVA_HOME` 也可能指着 JDK 27——脚本按版本探测，非 21 一律跳过）；1.x 时代教程的部分写法在 K2 下行为不同。所有代码在 **kotlinc-jvm 2.4.20 + oraclejdk-lts 21** 实测。
+> ⚠️ 版本敏感：两个入口脚本都**钉 JDK 21**（PATH 上可能是别的版本、`JAVA_HOME` 也可能指着 JDK 27——脚本按版本探测，非 21 一律跳过）；1.x 时代教程的部分写法在 K2 下行为不同。所有代码在 **kotlinc-jvm 2.4.21 + oraclejdk-lts 21** 实测。
 
 ## 目录结构
 
@@ -13,7 +13,7 @@ kotlin/
 ├── README.md        本文件
 ├── docs/            33 章教程（01 → 24 主线顺序阅读；25 多平台；26–30 语言深水区；31–33 实战）
 ├── examples/        32 个示例（章号 = 目录号）
-│   ├── …            28 个 kotlinc 直编示例（src/ + test/ + expected.txt）
+│   ├── …            30 个 kotlinc 直编示例（src/ + test/ + expected.txt）
 │   ├── 17_gradle/   Gradle 多模块工程（lib+app，JUnit5，fat jar——独立构建）
 │   ├── 18_javainterop/  Java/Kotlin 混编（javac→kotlinc 两遍法）
 │   ├── 24_todo/     实战项目（手写 JSON 解析器 + 文件存储 + CLI）
@@ -29,7 +29,7 @@ kotlin/
 
 | 章 | 主题 | 示例 |
 |---|---|---|
-| [01 全景](docs/01-overview.md) | 三支柱、与 Java/C++/Rust/Go 对照、工具链 | — |
+| [01 全景](docs/01-overview.md) | 三支柱、语言对照、**标准库包地图**、工具链 | — |
 | [02 第一个程序](docs/02-hello.md) | kotlinc 全流程、jar、字符串模板、脚本 | `02_hello` |
 | [03 变量类型控制流](docs/03-basics.md) | val/var、无隐式加宽、when 四形态、标签 | `03_basics` |
 | [04 ⭐空安全](docs/04-nullsafety.md) | `?.`/`?:`/`!!`/let、lateinit、平台类型 | `04_nullsafety` |
@@ -37,8 +37,8 @@ kotlin/
 | [06 ⭐类与属性](docs/06-classes.md) | 属性 vs 字段、data class 五件套、operator | `06_classes` |
 | [07 继承与接口](docs/07-inheritance.md) | 默认 final、接口默认实现、嵌套 vs inner | `07_inheritance` |
 | [08 ⭐密封枚举 when](docs/08-sealed-enum.md) | 穷尽 when、ADT、守卫条件、状态机 | `08_sealed_enum` |
-| [09 ⭐object与委托](docs/09-delegation.md) | 单例、companion、类委托、lazy/observable | `09_delegation` |
-| [10 集合](docs/10-collections.md) | 只读双轨、管道全景、sorted/sort 陷阱 | `10_collections` |
+| [09 ⭐object与委托](docs/09-delegation.md) | 单例、companion、类委托、lazy/observable、属性接口 | `09_delegation` |
+| [10 集合](docs/10-collections.md) | 只读双轨、管道全景、sorted/sort 陷阱、compareValues | `10_collections` |
 | [11 ⭐泛型](docs/11-generics.md) | out/in、星投影、reified、类型擦除 | `11_generics` |
 | [12 ⭐lambda与作用域函数](docs/12-lambdas.md) | 函数类型、真闭包、五件套、inline | `12_lambdas` |
 | [13 ⭐扩展](docs/13-extensions.md) | 静态解析铁律、可空接收者、伴生扩展 | `13_extensions` |
@@ -47,10 +47,10 @@ kotlin/
 | [16 错误处理](docs/16-errors.md) | try/throw 表达式、Nothing、Result 双轨 | `16_errors` |
 | [17 工程化与 Gradle](docs/17-gradle.md) | 多模块、依赖范围、fat jar、JUnit5 | `17_gradle`（工程） |
 | [18 ⭐Java 互操作](docs/18-javainterop.md) | 平台类型、@Jvm* 家族、SAM、两遍编译 | `18_javainterop` |
-| [19 文件与文本](docs/19-files.md) | useLines、walk、java.time、Regex、JSON 编码 | `19_files` |
+| [19 文件与文本](docs/19-files.md) | useLines、walk、java.time、Regex、JSON 编码、**kotlin.time/uuid/Base64** | `19_files` |
 | [20 ⭐测试](docs/20-testing.md) | 断言画廊、表驱动、可复现随机、fake | `20_testing` |
-| [21 并发线程](docs/21-concurrency.md) | 锁/原子/线程池、ThreadLocal、协程 M:N | `21_concurrency` |
-| [22 函数式](docs/22-functional.md) | Sequence 惰性、组合、Either、注入时钟 | `22_functional` |
+| [21 并发线程](docs/21-concurrency.md) | 锁/原子/线程池、ThreadLocal、协程 M:N、**多平台原子类** | `21_concurrency` |
+| [22 函数式](docs/22-functional.md) | Sequence 惰性、组合、Either、注入时钟、**Java Stream 桥** | `22_functional` |
 | [23 ⭐类型安全 DSL](docs/23-dsl.md) | HTML builder、@DslMarker、infix/invoke | `23_dsl` |
 | [24 ⭐实战：ktodo](docs/24-todo.md) | 手写 JSON、文件存储、CLI、退出码 | `24_todo` |
 | [25 ⭐多平台：JS/Native/Wasm](docs/25-multiplatform.md) | 四目标编译、expect/actual、cinterop、KMP | `25_multiplatform`（四目标） |
@@ -69,10 +69,10 @@ kotlin/
 
 | 工具 | Windows（scoop） | macOS（MacPorts，本机） |
 |---|---|---|
-| Kotlin **2.4.20** | `G:\scoop\apps\kotlin\current` | `/opt/local/share/java/kotlin`（kotlinc-jvm / kotlinc-js / kotlinc-wasm 全套 + lib/*.jar + stdlib klib） |
-| Kotlin/Native **2.4.20** | `G:\scoop\apps\kotlin-native\current`（konanc；首跑自动下 LLVM 21 约 275MB 到 `~/.konan`） | **本机未安装**（MacPorts 无此包，GitHub 下载不通）→ 25 章 native 目标自动 `[SKIP]`，**未实测** |
+| Kotlin **2.4.21** | `G:\scoop\apps\kotlin\current` | `/opt/local/share/java/kotlin`（kotlinc-jvm / kotlinc-js / kotlinc-wasm 全套 + lib/*.jar + stdlib klib） |
+| Kotlin/Native **2.4.21** | `G:\scoop\apps\kotlin-native\current`（konanc；首跑自动下 LLVM 21 约 275MB 到 `~/.konan`） | **本机未安装**（MacPorts 无此包，GitHub 下载不通）→ 25 章 native 目标自动 `[SKIP]`，**未实测** |
 | JDK **21** | `G:\scoop\apps\oraclejdk-lts\current`（机器上另装 openjdk 27 且用户级 `JAVA_HOME` 指着它——**脚本会跳过非 21 的 JAVA_HOME 自动找真 21**，因为 konanc 在 JDK ≥ 24 会崩） | `/usr/libexec/java_home -v 21` → `/opt/local/.../jdk-21-macports.jdk`（机器上另装了 25/26，PATH 上默认是 26） |
-| Gradle **9.7.1** | `G:\scoop\apps\gradle\current\bin\gradle.bat` | `/opt/local/bin/gradle`（仅 17 章用；首次构建联网拉插件约 5 分钟） |
+| Gradle **9.7.1** | `G:\scoop\apps\gradle\current\bin\gradle.bat` | **本机未安装**（MacPorts 无 gradle 包）→ 17 章在 macOS 自动 `[SKIP]`，**未在本机实测**；Windows 侧 2026-09-26 全量通过 |
 | node | 26 | 22（WasmGC 支持够了；跑 wasm-wasi 时 node 会往 **stderr** 打 `ExperimentalWarning: WASI is an experimental feature`，两个入口都按白名单滤除） |
 
 覆盖顺序：`$KOTLIN_HOME` → 平台常见位置 → PATH；JDK 是**版本感知**的（先 `$JAVA_HOME` 且为 21 → oraclejdk-lts/microsoft-jdk 里验证过是 21 的 → 才回退 `$JAVA_HOME`/PATH，详见 25 章 JDK 钉版说明）。Windows 控制台中文乱码先 `chcp 65001`；两个入口都已统一 UTF-8。
@@ -94,15 +94,18 @@ pwsh ./build.ps1 -Example 12_lambdas -Update     # 刷新快照
 pwsh ./build.ps1 -Clean                          # 清理
 ```
 
-**Windows 全量实测（2026-09-26，kotlinc 2.4.20 + oraclejdk-lts 21.0.12 + Gradle 9.7.1 + node 26）**：
+**Windows 全量实测（2026-09-26，kotlinc **2.4.20** + oraclejdk-lts 21.0.12 + Gradle 9.7.1 + node 26）**：
 `pwsh ./build.ps1 -All` 通过 32、失败 0、跳过 0——含 25 章四目标（js / wasm-js / wasm-wasi / **native**）、
 31 章真 HTTP 临时端口端到端、32 章剧本对话回放、33 章整局棋盘快照。
 （环境插曲：当天用户级 `JAVA_HOME` 指着 scoop openjdk 27，konanc 首跑即崩——两个入口随即升级为版本感知探测，非 21 的 `JAVA_HOME` 自动跳过，见上面 JDK 行。）
 
-**macOS 实测状态（2026-09-19，25 章时代记录）**：`./run-all.sh` 与 `pwsh ./build.ps1 -All` 当时结论一致——通过 24、失败 0、跳过 1。
-跳过的是 `25_multiplatform/native`：本机没有 Kotlin/Native（MacPorts 无此包），**该目标未在 macOS 实测**；
-25 章的 js / wasm-js / wasm-wasi 三目标两个入口都通过；含并发/计时/随机种子的示例（14/15/20/21）连跑三轮无偶发。
-26–33 章尚未在 macOS 复验。
+**macOS 实测状态（2026-10-20，kotlinc **2.4.21** + JDK 21.0.x MacPorts + node 22）**：`./run-all.sh` 通过 31、失败 0、跳过 2。
+跳过的两项：`17_gradle`（**本机 MacPorts 无 gradle**，该章未在 macOS 实测——Gradle 插件版本已随教程升到 2.4.21，下次在 Windows 上跑 `build.ps1` 时顺带覆盖）；
+`25_multiplatform/native`（本机没有 Kotlin/Native，MacPorts 无此包，该目标未在 macOS 实测）。
+25 章的 js / wasm-js / wasm-wasi 三目标本机通过；含并发/计时/随机种子的示例（14/15/20/21）连跑三轮无偶发。
+本次同步把 25 章快照的版本行从"全版本号"改为"major.minor"（2.4），patch 级升级不再翻红——详见 docs/25-multiplatform.md 25.9。
+
+**标准库覆盖扩充（2026-10-20，同批实测）**：按 [kotlin-stdlib API 索引](https://kotlinlang.org/api/core/kotlin-stdlib/) 的包清单补齐了教程里缺席的多平台 API——19.11 `kotlin.time`（Duration/TimeSource/measureTime）、19.12 `kotlin.uuid`（v4 + 严格 parse）、19.13 `kotlin.io.encoding`（Base64 两套字母表）、21.8 `kotlin.concurrent.atomics`（AtomicInt，含"扩展要逐个 import"的实测课）、22.8 `kotlin.streams`（与 Java Stream 的双向桥，桥保惰性有断言）、10.10 `kotlin.comparisons`（compareValues/compareValuesBy）、9.10 `kotlin.properties`（ReadOnlyProperty/ReadWriteProperty）；01 章新增 1.7「标准库包地图」把索引里全部 24 个包按"管什么/在哪章/要不要 import"列表。新增代码全部随四层验证通过（19/21/22 三章快照已重生成）。
 
 单跑某个示例（每章标准学法）——改代码后重跑。**注意 classpath 分隔符：Windows 是 `;`、macOS/Linux 是 `:`**（脚本里自动切换，手敲时要自己换）：
 

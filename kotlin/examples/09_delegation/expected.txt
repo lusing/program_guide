@@ -26,3 +26,6 @@ notNull 未初始化即读: Property name should be initialized before get.
 内部 add 后内容=[苹果, 梨]，但 observable 记录数=0（引用没换，没触发！）
 整体换引用: 记录数=1，最后一条=[苹果, 梨] → [苹果, 梨, 西瓜]
 选型: lateinit 更快但不能用于基本类型/顶级属性；notNull 全类型可用但要过委托调用
+== 9.10 委托属性接口：ReadOnlyProperty / ReadWriteProperty ==
+title = 订单（ReadOnlyProperty：只实现 getValue）
+note 赋值 '  草稿  ' 读出 '草稿'（ReadWriteProperty：get + set 成对）

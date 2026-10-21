@@ -13,3 +13,8 @@ import Probability.Ch08DiscreteRV
 import Probability.Ch09ContinuousRV
 import Probability.Ch10Expectation
 import Probability.Ch12Differentiating
+import Probability.Ch13DiscreteDists
+import Probability.Ch14UniformExponential
+import Probability.Ch15Normal
+import Probability.Ch16Gamma
+import Probability.Ch17ChiSquare

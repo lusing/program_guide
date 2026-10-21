@@ -14,7 +14,7 @@ Emacs 的扩展开发有个特点：语言（Elisp）本身很小，但它的**�
 # 跑单个示例（-Q 表示不加载任何配置文件，保证结果可复现）
 emacs -Q --batch -l examples/01-hello.el
 
-# 跑全部 48 个示例，逐个核对判定标准
+# 跑全部 54 个示例，逐个核对判定标准
 ./run-all.sh
 ```
 
@@ -159,6 +159,19 @@ eintr 最有价值的部分：**读 Emacs 自带的真实源码**。这一部分
 | [46 · cl-loop：Loop 宏的完整语法](46-loop-facility.md) | cl-loop：Loop 宏的完整语法 | `46-loop-facility.el` |
 | [47 · 序列与列表：cl-map、cl-reduce 与列表构造](47-sequences-lists.md) | 序列与列表：cl-map、cl-reduce 与列表构造 | `47-sequences-lists.el` |
 | [48 · 类型与结构：cl-defstruct、cl-assert 与 cl-print](48-types-structs.md) | 类型与结构：cl-defstruct、cl-assert 与 cl-print | `48-types-structs.el` |
+
+## 第 12 部分 · 跟随 EIEIO 手册：Emacs 面向对象编程
+
+这一部分跟随 GNU 官方《EIEIO 手册》，把 Emacs 内置的面向对象层系统讲一遍：`defclass` 定义类、`cl-defgeneric`/`cl-defmethod` 写泛型与方法、限定符与方法链、五个预定义基类（named、singleton、tracker、inheritor、persistent）、内省与废弃清单。手册里的 Emacs 23 时代写法（`:name` initarg、`:tracker-symbol`、`defgeneric`/`defmethod`、`object-print` 等）全部提炼、重写并升级到 Emacs 31.1，体例照旧：一章一个可跑的示例，结论全部来自实测。
+
+| 章 | 主题 | 示例 |
+|---|---|---|
+| [49 · EIEIO 快速上手：defclass、构造、泛型与方法](49-eieio-quickstart.md) | EIEIO 快速上手：defclass、构造、泛型与方法 | `49-eieio-quickstart.el` |
+| [50 · defclass 详解：槽选项与类选项](50-eieio-defclass.md) | defclass 详解：槽选项与类选项 | `50-eieio-defclass.el` |
+| [51 · 槽与访问：slot-value、oref 与绑定状态](51-eieio-slots.md) | 槽与访问：slot-value、oref 与绑定状态 | `51-eieio-slots.el` |
+| [52 · 方法与调用：特化、限定符与方法链](52-eieio-methods.md) | 方法与调用：特化、限定符与方法链 | `52-eieio-methods.el` |
+| [53 · 预定义基类：named、singleton、tracker、inheritor 与 persistent](53-eieio-base-classes.md) | 预定义基类：named、singleton、tracker、inheritor 与 persistent | `53-eieio-base-classes.el` |
+| [54 · 内省与工具：谓词族、object-assoc 与废弃清单](54-eieio-introspection.md) | 内省与工具：谓词族、object-assoc 与废弃清单 | `54-eieio-introspection.el` |
 
 ## 附录
 
