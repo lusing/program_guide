@@ -44,11 +44,11 @@ Steven J. Miller, *The Probability Lifesaver*（Princeton UP 2017，
 | 20 | generating-functions | ch19 母函数 (p508) | · | · | ✓ | ✓ | ✓ | B7 | ✅ |
 | 21 | clt | ch20 CLT 证明 (p541) | ✓ | ✓ | ✓ | ✓ | · | B7 | ✅ |
 | 22 | fourier-clt | ch21 Fourier 与 CLT (p567) | · | · | ✓ | ✓ | · | B7 | ✅ |
-| 23 | hypothesis-testing | ch22 假设检验 (p582) | · | · | ✓ | ✓ | ✓ | B8 | ☐ |
-| 24 | markov-least-squares | ch23-24 差分方程/Markov/最小二乘 (p620) | · | · | ✓ | ✓ | · | B8 | ☐ |
-| 25 | famous-problems | ch25 两著名问题与编码 (p649) | · | · | ✓ | ✓ | ✓ | B8 | ☐ |
-| 26 | proof-techniques | 附录 A 证明十一式×概率实例 (p661) | ✓ | · | ✓ | ✓ | ✓ | B8 | ☐ |
-| 27 | cheatsheet | 收官（附录 B-D 提炼并入） | · | · | · | · | · | B8 | ☐ |
+| 23 | hypothesis-testing | ch22 假设检验 (p582) | · | · | ✓ | ✓ | ✓ | B8 | ✅ |
+| 24 | markov-least-squares | ch23-24 差分方程/Markov/最小二乘 (p620) | · | · | ✓ | ✓ | · | B8 | ✅ |
+| 25 | famous-problems | ch25 两著名问题与编码 (p649) | · | · | ✓ | ✓ | ✓ | B8 | ✅ |
+| 26 | proof-techniques | 附录 A 证明十一式×概率实例 (p661) | ✓ | · | ✓ | ✓ | ✓ | B8 | ✅ |
+| 27 | cheatsheet | 收官（附录 B-D 提炼并入） | · | · | · | · | · | B8 | ✅ |
 
 通道列：L=Lean4+mathlib4、I=Isabelle2025-2、J=Julia、Py=Python、
 R=Prolog（✓=主锚/·=该通道无单元——初判，批次侦察后可调）。
@@ -204,3 +204,19 @@ ch23 p620 · ch24 p638 · ch25 p649 · 附录 A p661 / B p687 / C p705。
    和的格距 0.154 使 0.5 宽的桶偏差 0.04（远超容差）——
    换对称 die 族或放宽容差并注明"含格点残差"；Python ②
    的重复循环残段（for t in 1.0,）是语法错误源。
+28. （B8）**Prolog 三连**：`findall` 间变量泄漏（前一个 findall
+   的 K=8 残留使第二个 between(12,20,K) 静默失败——变量各自
+   命名）；分母笔误 20! ≠ 2^20（p=2e-13 的荒谬值暴露）；SWI
+   的 `(A=:=1)` 不能作 is/2 的函数（if-then-else 重写）；once/
+   括号截断多解（first_better 失败分支的 Win=0 会与主分支
+   并行产生重复解）。
+29. （B8）**有限尺寸效应**：秘书 n=10 的精确峰值 39.9% ≠ 1/e
+   （36.8%），n=4 的最优 k=1 而非 round(4/e)=1 ✓ 但 P=11/24
+   而非手算的 5/12——小 n 时先机器再手抄，不是先手算再
+   机器"验证"。
+30. （B8）**Julia 小坑**：字符串内 `$30` 触发插值解析错（转义
+   \$）；`I(2)` 需 LinearAlgebra（手写 BigInt 单位阵）；Python 的
+   round(x, digits=) 是 Julia 语法（Python 用 ndigits）。
+31. （B8）**鲸鱼 Leslie 矩阵的主特征值恰为 φ**（[0,2,1;1,0,0;…]
+   的 char poly 与 Fibonacci 同构）——机器揭示的意外联系，
+   已回写进 docs 24。

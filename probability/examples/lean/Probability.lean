@@ -20,3 +20,4 @@ import Probability.Ch16Gamma
 import Probability.Ch17ChiSquare
 import Probability.Ch18InequalitiesLLN
 import Probability.Ch21CLT
+import Probability.Ch26ProofTechniques
