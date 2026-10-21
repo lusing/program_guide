@@ -89,7 +89,8 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
       lean 2 + isa 1 + coq 1 + jl 1 + py 2）
 - [x] **B10**：21-22 不可达反映/L——5 单元批内全绿（终态 -All 77/77：
       isa 1 + coq 1 + jl 1 + py 2）
-- [ ] B11：23-24 力迫/速查收官（4 单元）
+- [x] **B11**：23-24 力迫/速查收官——3 单元批内全绿（终态 -All 80/80：
+      jl 1 + py 1 + pl 1），docs 180/165 行——**全书完结**
 
 ## 通道分工与判定
 
@@ -291,3 +292,12 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
 77. **B10·Coq filter_length_split 的 IH**：rewrite Hcomp 在目标
     不在 IH——改写目标后再 destruct + lia，或直接简化引理为
     计算样例（reflexivity 级）。
+78. **B11·力迫偏序双方向**：frozenset 的 >= 是超集 = 力迫的 ≤
+    （更强）——两个偏序方向恰好相反；滤的上封闭 = frozenset 的
+    子方向（p ⊆ 链元素）。
+79. **B11·itertools product vs combinations**：部分函数的值
+    独立选——product 而非 combinations（combinations 丢掉一半
+    条件：Func(2,2) 只有 6 而非 9 个条件）。
+80. **B11·Prolog 滤的空条件**：力迫的最大元 1 = 空函数——
+    滤应包含它；初始版本误将 [] 排除在 G 外导致 is_filter
+    失败。
