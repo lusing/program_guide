@@ -87,7 +87,8 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
       lean 3 + jl 2 + py 3 + pl 2）
 - [x] **B9**：19-20 谱系绝对性/基础良基——7 单元批内全绿（终态 -All 72/72：
       lean 2 + isa 1 + coq 1 + jl 1 + py 2）
-- [ ] B10：21-22 不可达反映/L（5 单元）
+- [x] **B10**：21-22 不可达反映/L——5 单元批内全绿（终态 -All 77/77：
+      isa 1 + coq 1 + jl 1 + py 2）
 - [ ] B11：23-24 力迫/速查收官（4 单元）
 
 ## 通道分工与判定
@@ -281,3 +282,12 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
     ——期望值先手推（V_3 的 4 个元素里只有 ∅ 的秩是 0）。
 73. **B9·Isabelle thm 占位符**：草稿中的 ?? 残留会当 fact 名报
     Undefined fact——提交前 grep '??.*no such' 自查。
+74. **B10·ZF Transset_L 的正确名**：Transset_Lset（不是 Transset_L）
+    ——ZF-Constructible 的 Lset 系列引理都以 Lset 后缀。
+75. **B10·Coq filter 需要 bool**：In 是 Prop——filter 的谓词须
+    existsb+显式分量比较（prod_eq_dec 不在 List 命名空间）。
+76. **B10·Coq dedup 语义**：从尾部递归保留最后出现——期望值
+    先跑 sample 再定（g7 [(1,2);(1,3);(2,4)] = [1;2] 非 [2;3;4]）。
+77. **B10·Coq filter_length_split 的 IH**：rewrite Hcomp 在目标
+    不在 IH——改写目标后再 destruct + lia，或直接简化引理为
+    计算样例（reflexivity 级）。

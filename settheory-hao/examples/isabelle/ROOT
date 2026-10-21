@@ -26,3 +26,7 @@ session HS20 in "HS20" = "ZF" +
   options [document = false]
   theories
     Foundation
+session HS22 in "HS22" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    ConstructibleSets
