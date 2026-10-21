@@ -54,7 +54,7 @@ Proof.
 Qed.
 ```
 
-`destruct n`（nat）则裂成 `0` 与 `S k`。**destruct 与 induction 的关系**：induction = destruct + 自动附赠归纳假设 IH。枚举两三种情况够用 destruct；结论需要「对更小的同类值成立」就必须 induction。
+`destruct n`（nat）则裂成 `0` 与 `S k`。**destruct 与 induction 的关系**：induction = destruct + 自动附赠归纳假设 IH。枚举两三种情况够用 destruct；结论需要「对更小的同类值成立」就必须 induction。（destruct 裂出的多个目标与 induction 一样，在 `Set Generate Goal Names` 打开时也会按构造子命名——见第 12.6 节。）
 
 destruct 也能作用于**假设**（假设是 `P \/ Q` 时裂出两个分支，第 14 章）——这与「对变量 destruct」是同一个动作：把一个项按它的构造子拆开。
 

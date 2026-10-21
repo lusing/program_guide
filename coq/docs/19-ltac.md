@@ -75,11 +75,11 @@ Ltac S_to_plus_simpl :=
   end.
 ```
 
-这个经典例子（书 7.6.2.4）要把所有 `S x` 改写成 `x + 1` 再交给 ring。为什么不直接 `repeat rewrite S_plus_one`？——`1` 本身就是 `S 0`，改写产物 `0 + 1` 里又长出新的 `S 0`，**无限循环**。解法是挖出参数 x：x 是 0 时用 `fail 1` 跳出。
+这个经典例子的任务：把目标里所有 `S x` 改写成 `x + 1`，再交给 ring 收尾。为什么不直接 `repeat rewrite S_plus_one`？——`1` 本身就是 `S 0`，改写产物 `0 + 1` 里又长出新的 `S 0`，**无限循环**。解法是挖出参数 x：x 是 0 时用 `fail 1` 跳出。
 
 `fail 1` 的数字是「跳出几层选择点」。`fail 0` 只废掉当前分支，Ltac 会试同一模式的下一个实例；`fail 1` 连内层 match 一起废掉，回到外层找 `S` 的下一个出现——这正是我们要的语义。
 
-> 版本注记（实测）：书里这个技巧的动机是「ring 不认识 S」——在 8.x 属实；**9.1 的 ring 已经能直接吃下 `S n`**，本例的价值转为展示 context 匹配与 fail 层级本身。
+> 版本注记（实测）：这个技巧的原始动机是「ring 不认识 S」——在 8.x 属实；**9.x（含 9.2/9.3）的 ring 已经能直接吃下 `S n`**，本例的价值转为展示 context 匹配与 fail 层级本身。
 
 ### 19.6 在策略里做计算：eval ... in
 
@@ -113,7 +113,13 @@ Ltac number_goal := first [ reflexivity | lia | ring | congruence ].
 
 `Hint Rewrite 定理 : 库名.` 注册「永远从左往右」的重写规则，配合 `autorewrite with 库名` 一键展开。示例 19.7 的组合逻辑例子：S、K 两条重写规则注册后，`S K K` 被自动化简成恒等组合子——`autorewrite` 做完了所有该做的事。注意别注册会**互相点燃**的规则组，否则 autorewrite 不终止。
 
-### 19.9 本章坑位清单（实测）
+实测提醒（9.2 起）：直接 `Hint Resolve ... : 新库名` 隐式创建数据库会触发弃用警告，先显式声明再注册——普通库用 `Create HintDb 库名.`，Rewrite 库用 `Create Rewrite HintDb 库名.`（示例里两个数据库分别按此写法）。
+
+### 19.9 9.2 的 Ltac2 动态
+
+本章教的是**经典 Ltac**（社区现在常称 Ltac1）。官方的新一代策略语言 **Ltac2** 在持续增强：9.2 加入了 Custom Entry 支持——可以为 Ltac2 Notation 定义更复杂的语法——以及多项 API 改进。不过存量代码与主流教材仍以 Ltac1 为主，新手先把本章这套吃透；想跟进 Ltac2，直接去官方 refman 的 Ltac2 章节即可。
+
+### 19.10 本章坑位清单（实测）
 
 1. **matched 子句失败 ≠ 整个 match 失败**：右支失败回溯尝试后续子句，全不中才报 No matching clauses——报错位置经常出乎意料；
 2. **`repeat rewrite` 会循环**：改写产物里长出新的匹配项（S 0 → 0 + 1 → …）时无限循环，coqc 直接卡死——用 context 挖参数 + fail n 精确控制（19.5）；

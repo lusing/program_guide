@@ -4,7 +4,7 @@
 
 ### 25.1 Example 即测试
 
-Coq 里不需要测试框架——`Example` + `reflexivity` 就是断言，`coqc` 就是测试运行器：
+Coq 里不需要测试框架——`Example` + `reflexivity` 就是断言，`rocq compile`（即 9.x 的批处理编译命令，旧名 `coqc`）就是测试运行器：
 
 ```coq
 Definition inc (n : nat) : nat := S n.

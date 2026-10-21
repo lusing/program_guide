@@ -3,7 +3,7 @@
 ### 33.1 全书坑位总清单
 
 三十三章攒下的坑，按「第一天就会踩」到「写项目才会踩」排序。每条都经过
-9.1.0 实测（2026-09 自 8.20.1 迁移后全书复验；迁移新增坑单独成块），括号内是原始章节。
+9.3.0 实测（2026-10 在 rocq 9.3.0 + rocq-stdlib 9.2.0 上全书复验；自 8.20.1 迁移新增的坑单独成块），括号内是原始章节。
 
 **入门第一周（环境与语法）：**
 
@@ -53,7 +53,7 @@
 
 33. `Hint Rewrite` 注册含隐式类型参数的引理报 `Cannot infer the implicit parameter`——A 改显式再注册（29 的实测，通用规律）；
 34. eauto 搜索树指数膨胀——能 Hint 的先 Hint，必要时 `eauto 3` 限深度（19）；
-35. `fourier` 8.9 起弃用（现名 `lra`，且要单独 `Require Import Lra`）；`omega` 早已移除（换 lia）——老教材的决策过程名字对不上号（20）。
+35. `fourier` 8.9 起弃用（现名 `lra`，且要单独 `Require Import Lra`）；`omega` 早已移除（换 lia）；`rtauto` 自 Stdlib 9.1.0 起弃用——老教材的决策过程名字对不上号（20）。
 
 **依赖类型与强规范：**
 
@@ -81,14 +81,17 @@
 48. `From Coq Require ...` 触发弃用警告——换 `From Stdlib Require ...`；前言库在 `Corelib`（Nat.add 声明于 Corelib.Init.Nat）（2/全书）；
 49. `Nat.le_gt_dec` / `Nat.le_lt_eq_dec` 限定名已移除——用无限定的 `le_gt_dec` / `le_lt_eq_dec`（28）；
 50. `app_length` 8.20 起改名 `length_app`（27）；
-51. **9.1 的 ring 已能直接吃下 `S n`**——8.x 教材「先改写成 n+1 再 ring」的老套路不再必要（19/20）；
+51. **9.x（含 9.2/9.3）的 ring 已能直接吃下 `S n`**——8.x 教材「先改写成 n+1 再 ring」的老套路不再必要（19/20）；
 52. 工具名两套并存：`coqc`/`rocq compile`、`coqtop`/`rocq repl`、CoqIDE/RocqIDE、VSCoq/VsRocq——新资料混用，`Fail Check 名字.` 是最快的试金石（2）。
+53. 定义嵌套归纳类型忘注册 All：收到 `register-all` 警告，归纳时拿不到嵌套在容器里的子项的归纳假设——先 `Scheme All for 容器类型.`（27）；
+54. `Set Generate Goal Names` 默认关闭——想让目标自动带上名字要自己开（12）；
+55. 9.2 起隐式创建 hint 数据库触发弃用警告（`implicit-create-hint-db`）——库代码先用 `Create HintDb 名.` / `Create Rewrite HintDb 名.` 显式创建再注册（19）。
 
 **工程化：**
 
-53. `Admitted`/`Axiom` 混进正式代码——`Print Assumptions` 审查，只许 `Closed under the global context`（3/25/28）；
-54. `Recursive Extraction` 要先 `Require Import Extraction`，裸写报非法命令（32）；
-55. 封印模块（`Module M : SIG`）看不到表示——对实现做计算用未封印原模块（18）。
+56. `Admitted`/`Axiom` 混进正式代码——`Print Assumptions` 审查，只许 `Closed under the global context`（3/25/28）；
+57. `Recursive Extraction` 要先 `Require Import Extraction`，裸写报非法命令（32）；
+58. 封印模块（`Module M : SIG`）看不到表示——对实现做计算用未封印原模块（18）。
 
 ### 33.2 最佳实践十二条
 
@@ -107,7 +110,7 @@
 
 ### 33.3 下一步去哪里
 
-- **《交互式定理证明与程序开发：Coq 归纳构造演算的艺术》**（Bertot & Casteran，中译本）：本书 19–20、26–31 章的直接源头，依赖类型、余归纳、一般递归、自反证明四大主题的完整展开全在里面；
+- **《交互式定理证明与程序开发：Coq 归纳构造演算的艺术》**（Bertot & Casteran，中译本）：本书 19–20、26–31 章的源头，谨致谢意——这些章节的内容已全自包含地提炼进本教程，不读原书也能跟上；想就依赖类型、余归纳、一般递归、自反证明四大主题再往深处走，完整展开全在这本书里；
 - **Software Foundations**（softwarefoundations.cis.upenn.edu）：逻辑（Logic）、程序语言（PLF）、验证（VF）三卷，本书第 21/32 章的直接源头，习题质量全领域第一；
 - **Mathematical Components / MathComp**：另一套证明风格（SSReflect 小步战术），适合大量数学推理；
 - **Equations 插件**：比 Program Fixpoint 更强的依赖函数定义工具（生成的不动点方程可直接用来推理，正好补第 30 章的痛点）；
@@ -121,7 +124,7 @@
 
 ---
 
-（全书完 · 33 章 · 示例 32 个 · 全部经 coqc（Rocq Platform 9.1.0）编译验证）
+（全书完 · 33 章 · 示例 32 个 · 全部经 rocq compile（rocq 9.3.0 + stdlib 9.2.0）编译验证）
 
 ---
 上一章：[32 · 综合实战：表达式解释器与优化器](32-project.md) ｜ 返回：[README](../README.md)

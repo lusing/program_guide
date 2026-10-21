@@ -100,7 +100,7 @@ Check ltree_ind.
 
 (* 数节点也要新招：互 Fixpoint 跨 list 类型会被守卫检查拒绝
    （实测报 Recursive call to lcount has principal argument equal
-   to "t" instead of "l'"）——解法是书 14.3.3 的「内部不动点」：
+   to "t" instead of "l'"）——解法是「内部不动点」：
    在树上的递归里嵌一个列表上的匿名 fix *)
 Fixpoint lcount {A} (t : ltree A) : nat :=
   match t with
@@ -114,8 +114,9 @@ Fixpoint lcount {A} (t : ltree A) : nat :=
 Compute (lcount (lnode 1 [lnode 2 []; lnode 3 [lnode 4 []]])).
 (* = 4 —— 递归穿透了「树的列表」这层嵌套 *)
 
-(* 归纳原理同样要手工造：Scheme 帮不了嵌套归纳，
-   嵌套 fix 的归纳原理得自己写（书 14.3.3 的原版技术） *)
+(* 归纳原理同样要手工造：9.2 之前 Scheme 帮不了嵌套归纳，
+   嵌套 fix 的归纳原理得自己写——下面是这门手艺的原样演示；
+   9.2 起更省事的官方做法见 27.8 的 Scheme All *)
 Section LTreeInd.
   Variables (A : Type) (P : ltree A -> Prop) (Q : list (ltree A) -> Prop).
   Hypotheses
@@ -157,5 +158,74 @@ Fail Inductive T_bad : Type := bad : (T_bad -> T_bad) -> T_bad.
 
 (* 反过来，(nat -> T_bad) -> T_bad 是合法的——
    T_bad 只出现在箭头右边（严格正位置） *)
+
+(* ---------- 27.8 9.2 新特性：Scheme All 与嵌套归纳的自动 IH ---------- *)
+
+(* 给容器类型注册 All 方案：生成「每个元素都满足 P」的谓词 *)
+Scheme All for list.
+Check list_all.
+(* list_all : forall A : Type, (A -> Type) -> list A -> Type
+   构造子两个（Print list_all 实测）：
+     nil_all  : list_all A PA []
+     cons_all : forall a, PA a -> forall l, list_all A PA l
+                -> list_all A PA (a :: l) *)
+
+(* 关键顺序：先给容器注册 All，再定义嵌套类型——
+   自动生成的 rose_ind 直接带上嵌套 IH *)
+Inductive rose : Type :=
+| node : list rose -> rose.
+
+Check rose_ind.
+(* forall P : rose -> Prop,
+     (forall l : list rose, list_all rose P l -> P (node l)) ->
+     forall r : rose, P r
+   ——node 前提里有 list_all rose P l，IH 在场，不用手写原理了 *)
+
+(* 对照：如果定义 rose 之前没注册，会收到警告，且 rose_ind 退回残废版
+   （forall l : list rose, P (node l) —— node 前提没有 IH）：
+     Warning: rose is nested using list. No scheme for list is
+     registered as All. It can be generated using command "Scheme All"
+     e.g. "Scheme All for list.". [register-all,automation,default]
+   补救：Scheme All for list. 之后重新定义 rose，或手写原理 *)
+
+Fixpoint rcount (r : rose) : nat :=
+  match r with
+  | node l => S ((fix rsum (l' : list rose) : nat :=
+      match l' with
+      | [] => 0
+      | t :: tl => rcount t + rsum tl
+      end) l)
+  end.
+
+(* induction 直接用：IH 自动以 list_all 形状出现在上下文里 *)
+Lemma rcount_pos : forall r : rose, 1 <= rcount r.
+Proof.
+  intros r. induction r as [l IH].
+  (* IH : list_all rose (fun r : rose => 1 <= rcount r) l *)
+  simpl. lia.
+Qed.
+
+(* 消费 list_all 的标准姿势：列表归纳 + inversion 拆 cons_all *)
+Lemma rcount_node_ge : forall l : list rose,
+  list_all rose (fun r : rose => 1 <= rcount r) l ->
+  length l + 1 <= rcount (node l).
+Proof.
+  induction l as [| t tl IHtl]; intros Hall.
+  - simpl. lia.
+  - inversion Hall as [| a Ht l' Htl E].
+    (* Ht : 1 <= rcount t，Htl : list_all rose ... tl *)
+    simpl. simpl in IHtl.
+    assert (Hrec := IHtl Htl). simpl in Hrec.
+    lia.
+Qed.
+
+(* schemes 属性：控制定义时自动生成哪些方案（9.2 新增） *)
+#[schemes=none]
+Inductive quietly : Type := q1 : quietly.
+Fail Check quietly_ind.   (* schemes=none：连 _ind 都不生成 *)
+
+#[schemes=default]
+Inductive loudly : Type := l1 : loudly.
+Check loudly_ind.         (* schemes=default：照常生成 *)
 
 End Ex27Mutual.

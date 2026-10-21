@@ -4,10 +4,14 @@
 
 ### 2.1 安装与验证
 
-本教程的实测环境：
+本教程的实测环境有两套，正文所有输出均出自第一套：
 
-- Windows 11，**Rocq Platform 9.1.0**（2026.01 版，位于 `G:\rocq\Rocq-Platform~9.1~2026.01`）
-- 这套安装自带全套工具：`coqc`（批处理编译器）、`coqtop`（交互式顶层）、`rocqide`（图形界面）、`rocqchk`（独立检查器），以及新的统一入口 `rocq` 主命令
+- **macOS + opam**：`rocq` **9.3.0**（rocq-core 9.3.0 + rocq-stdlib 9.2.0，OCaml 5.4.1）——本教程当前的实测环境；
+- **Windows 11 + Rocq Platform**：官方全家桶，最新为 **2026.07.0 版**（2026-07-30 发布，主配 Rocq 9.1，另可选 8.12.2–8.20.1 与 9.0）。想追新的 Windows 读者也可以改用 opam 安装 `rocq-prover` 9.2.0（2026-03-27 发布）或更新版本。
+
+版本兼容性一句话：**9.1 与 9.2/9.3 在本教程覆盖的范围内行为一致**；个别 9.2 才引入的新特性，正文会在对应位置标注「9.2+」。
+
+一套完整安装自带全套工具：`rocq`（统一主命令）、`coqc`（批处理编译器）、`coqtop`（交互式顶层）、`rocqide`（图形界面）、`rocqchk`（独立检查器）。
 
 **一段必须知道的历史**：Coq 在 2024 年更名为 **Rocq**（原名在英语里有不雅俚语含义）。版本脉络是：8.20.x 是最后一批叫 Coq 的版本，之后是 Rocq 9.0+。更名带来的三个现实影响：
 
@@ -19,29 +23,44 @@
 
 | 方式 | 说明 |
 |---|---|
-| Rocq Platform | 官方推荐全家桶（rocq-prover.org/platform），含 Stdlib、微米几何决策过程、RocqIDE，本教程环境即此 |
-| opam（跨平台） | `opam install rocq-platform` 或单装 `rocq-core`，版本管理最灵活 |
-| Windows 下 scoop | `scoop install coq` 装的是 8.x 旧版线——想跟本教程同步请用 Platform |
+| Rocq Platform | 官方推荐全家桶（rocq-prover.org/platform），含 Stdlib、常用库与 RocqIDE，Windows 用户首选 |
+| opam（跨平台） | `opam install rocq-prover`（或按需单装 `rocq-core` / `rocq-stdlib`），版本管理最灵活，本教程环境即此 |
+| Windows 下 scoop | `scoop install coq` 装的是 8.x 旧版线——想跟本教程同步请用 Platform 或 opam |
 | WSL / Linux 包管理器 | apt/dnf 版本可能偏旧，注意核对 |
 
-验证安装：
+验证安装（命令在 PATH 里时直接调用）：
 
-```powershell
-G:\rocq\Rocq-Platform~9.1~2026.01\bin\rocq.exe --version
-(* The Rocq Prover, version 9.1.0
-   compiled with OCaml 4.14.2 *)
+```bash
+rocq --version
 ```
+
+```text
+The Rocq Prover, version 9.3.0
+compiled with OCaml 5.4.1
+```
+
+Windows Platform 用户把 `rocq` 换成安装目录下的完整路径即可，形如 `G:\rocq\Rocq-Platform~9.1~2026.07\bin\rocq.exe --version`（目录名以实际安装为准）——本章后面的命令同理，不再逐一标注。
+
+**9.2 新特性速览**（9.3 全部包含；这里只挑与本教程后续章节直接相关的，各指路一处）：
+
+- `Set Generate Goal Names`：`induction` / `destruct` / `eapply` 产生的子目标自动起名（实测会叫 `?O`、`?S` 之类），见第 12 章；
+- `Scheme All for T.`：一句生成归纳类型 `T` 的全套归纳方案，嵌套归纳类型也能自动获得归纳假设，见第 27 章；
+- `congruence` 支持 primitive int / float / string 的同余推理，见第 20 章；
+- `#[schemes=none]` 属性：定义归纳类型时关掉自动方案生成，见第 27 章；
+- `native_compute` 在 OCaml 5 下重新启用（仅部分 x86 平台）；
+- `Set Printing Fully Qualified.`：打印的名字全部展开成全限定路径——本章 2.5 节末尾马上就用。
 
 ### 2.2 coqtop：交互式问答
 
 证明的构造是交互式的，所以 Rocq 的「主战场」是顶层解释器。启动（新旧两种入口等价）：
 
-```powershell
-G:\rocq\Rocq-Platform~9.1~2026.01\bin\rocq.exe repl
+```bash
+rocq repl        # 等价于旧入口 coqtop
 ```
 
 ```text
-Welcome to Rocq 9.1.0
+Welcome to Rocq 9.3.0
+
 Rocq <
 ```
 
@@ -63,39 +82,56 @@ Rocq < Compute (2 + 2).
      : nat
 
 Rocq < Example e : 2 + 2 = 4.
+1 goal
 
-Rocq < Proof. reflexivity. Qed.
+  ============================
+  2 + 2 = 4
+
+e < Proof.
+
+e < reflexivity.
+No more goals.
+
+e < Qed.
 
 Rocq < Quit.
 ```
+
+注意提示符的变化：陈述 `Example` 之后立刻进入证明模式——提示符变成以该定理命名的 `e <`，并打印出当前目标；`reflexivity.` 报告 `No more goals.`，`Qed.` 封存定理，提示符回到 `Rocq <`。
 
 在证明中途，`Show.` 显示当前目标；`Abort.` 放弃当前证明；`Restart.` 从头再来。这些是交互调试的四件常备工具。
 
 ### 2.3 coqc：批处理编译
 
-`coqc file.v`（新写法 `rocq compile file.v`）把整个文件一口气编译检查，产出 `file.vo`（编译产物，供其他文件 `Require` 引用）：
+`rocq compile file.v`（旧写法 `coqc file.v`）把整个文件一口气编译检查，产出 `file.vo`（编译产物，供其他文件 `Require` 引用）：
 
-```powershell
-G:\rocq\Rocq-Platform~9.1~2026.01\bin\coqc.exe examples\02_toolchain.v
+```bash
+rocq compile examples/02_toolchain.v
 ```
 
-本仓库的 `build.ps1` 做了三件贴心事：把 `../examples/*.v` 复制到 `build/examples/` 并加 `ex_` 前缀（**源码目录永远干净**，`.vo` 等产物不会污染 git）、逐个调用 `coqc -q`、任何失败立刻中断报错。日常用它：
+本仓库的两个构建脚本（Windows 用 `build.ps1`，macOS / Linux 用 `build.sh`，参数完全相同）做了三件贴心事：把 `../examples/*.v` 复制到 `build/examples/` 并加 `ex_` 前缀（**源码目录永远干净**，`.vo` 等产物不会污染 git）、逐个调用编译器、任何失败立刻中断报错。日常用它：
 
 ```powershell
-.\build.ps1 -All                    # 全部示例
+.\build.ps1 -All                    # 全部示例（Windows）
 .\build.ps1 -File 02_toolchain.v    # 单个
 .\build.ps1 -Clean                  # 清理产物
 ```
 
-`-q` 表示跳过用户 rcfile（保证本教程结果可复现）。
+```bash
+./build.sh -All                     # macOS / Linux，参数含义同上
+./build.sh -File 02_toolchain.v
+./build.sh -Clean
+```
 
-一个重要的实测差异：**`Fail` 命令的提示语只在交互模式显示**。`Fail` 用来断言「接下来的命令应当失败」——repl 里它会友好地打出失败原因；coqc 批处理下静默通过。所以本教程示例里用 `Fail` 演示的错误信息，请到 repl 里复现着看。
+两个脚本编译时都带 `-q`，表示跳过用户 rcfile（保证本教程结果可复现）。
+
+一个重要的实测差异：**`Fail` 命令的提示语只在交互模式显示**。`Fail` 用来断言「接下来的命令应当失败」——repl 里它会友好地打出失败原因；批处理编译下静默通过。所以本教程示例里用 `Fail` 演示的错误信息，请到 repl 里复现着看。
 
 ### 2.4 RocqIDE 与 VS Code（VsRocq）
 
 交互式写证明，纯命令行的体验是裸奔。两个图形选项：
 
-- **RocqIDE**：Platform 安装自带（`rocqide.exe`），零配置开箱即用。快捷键 F10（下一句）/ F11（回退）逐步执行证明，右侧面板实时显示证明状态——**强烈建议初学者前几章用它**，「目标如何随策略变化」必须亲眼看过才能内化；
+- **RocqIDE**：Platform 安装自带（`rocqide.exe`），opam 用户 `opam install rocqide` 即可，零配置开箱即用。快捷键 F10（下一句）/ F11（回退）逐步执行证明，右侧面板实时显示证明状态——**强烈建议初学者前几章用它**，「目标如何随策略变化」必须亲眼看过才能内化；
 - **VS Code + VsRocq 扩展**（原 VSCoq）：现代编辑体验，同样的逐步求值能力。已在用 VS Code 的读者选这条。
 
 它们与 repl 本质相同：把句子一句句喂给 Rocq 内核，把证明状态画给你看。工具随喜好，内核只有一个。
@@ -141,6 +177,8 @@ Notation "x + y" := (Nat.add x y) : nat_scope
 Notation "x + y" := (sum x y) : type_scope
 ```
 
+（9.3 的实际输出里，每条记号还附有参数作用域与定义位置的注解行，这里按教程惯例略去，保留每条的核心一行。）
+
 同一个 `+`，在不同**作用域**（scope）里是不同的东西：nat 里是加法，类型层面是和类型。这解释了 Rocq 里大量「符号重载」现象——记号按作用域解释，规则清晰但需要你有这个意识。
 
 **`Search`——「库里有没有长得像这样的定理？」**
@@ -156,6 +194,25 @@ plus_n_O: forall n : nat, n = n + 0
 按**形状**搜索全部已知定理——下划线是通配符。写证明卡住时，先描述一下「我想要的结论长什么样」，让 Search 找。配合关键字过滤（`Search (_ <= _) "le_n_S".`）更好用。
 
 这四个命令的意义再强调一次：**Rocq 是一个可查询的形式系统，而不是一个黑盒**。养成「先问再搜」的习惯，是脱离初学者的分水岭。
+
+**加餐（9.2+）：`Set Printing Fully Qualified`——重名迷雾的照妖镜**
+
+模块一层套一层之后，短名字的真身常常成谜：`cons` 到底定义在哪个库？当你 `Import` 的模块都提供了同名定义时，眼前的这个名字究竟是谁？9.2 起有一个总开关（示例 `02_toolchain.v` 末尾有同款演示）：
+
+```coq
+From Stdlib Require Import List.
+Set Printing Fully Qualified.
+Check cons.
+```
+
+```text
+Corelib.Init.Datatypes.cons
+     : ?A -> Corelib.Init.Datatypes.list ?A -> Corelib.Init.Datatypes.list ?A
+where
+?A : [ |- Type]
+```
+
+打开之后，所有打印出来的名字都展开成**全限定路径**：原来 `cons` 不住在 `List` 库，而是前言库 `Corelib.Init.Datatypes` 里 `list` 类型的构造子——`List` 只是在它之上补充引理与记号。调试「名字解析到别处去了」一类的问题时打开这面照妖镜，重名立现；平时嫌输出啰嗦，用 `Unset Printing Fully Qualified.` 关掉即可。
 
 ### 2.6 .v 文件的组织习惯
 
@@ -184,7 +241,7 @@ End Ex02Toolchain.
 ### 2.7 本章坑位清单（实测）
 
 1. **忘写句点 `.`**：repl 一动不动地「等你把话说完」，看起来像卡死；
-2. **`Fail` 的提示语在 coqc 下不打印**：想看失败原因去 repl；
+2. **`Fail` 的提示语在批处理编译下不打印**：想看失败原因去 repl；
 3. **`8 / 2` 直接报错 `Unknown interpretation for notation "_ / _"`**：nat 的 `/` 记号不在默认作用域里，必须先 `From Stdlib Require Import Arith`（或写全 `Nat.div 8 2`）。乘加 `* +` 是默认有的，除法模运算不是——为什么？因为 `+` `*` 由 `Init` 阶段加载，而 `/` `mod` 的记号绑定在 Arith 库里。同一家族的还有 `=?` `<=?` `<?` `^`（也要 Arith）和 `&&` `||`（要 `Open Scope bool_scope`）——初学者第一周必踩；
 4. **在证明中途退出**：忘记 `Qed.`/`Abort.` 就开始下一个定义，报错位置莫名其妙——先 `Show.` 确认自己是不是还在证明模式里；
 5. **新旧资料两套名字**：`From Coq Require ...`（≤8.20 与老书）vs `From Stdlib Require ...`（9.x），`coqc` vs `rocq compile`，CoqIDE vs RocqIDE——抄代码先对版本，`Fail Check 名字.` 是最快的试金石；

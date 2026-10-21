@@ -59,9 +59,9 @@ Check lt_wf.
 
 (* 注意（实测坑）：well_founded_ind 是 Prop 版归纳原理
    （P : A -> Prop）；定义函数要用 Set 版递归子
-   well_founded_induction（P : A -> Set）——书里正是这对名字 *)
+   well_founded_induction（P : A -> Set）——名字只差一个后缀，别混 *)
 
-(* 用连续减法做欧氏除法（书 15.2.6 的精简版）：
+(* 用连续减法做欧氏除法：
    递归调用发生在 m - n 上，靠 m - n < m 的良基性保证终止 *)
 Definition wf_div : forall m n : nat, 0 < n ->
   {q : nat & {r : nat | m = q * n + r /\ r < n}}.
@@ -106,7 +106,7 @@ Compute (plog2 1000).   (* = 9：2^9 = 512 <= 1000 < 1024 *)
 (* 燃料       ：最朴素，证明容易，但调用背着界、抽取代码不干净；
                 自反证明（第 31 章）反而喜欢它——计算可完全归约
    良基递归   ：代码干净贴近算法本意，但直接推理难——
-                证明常用不动点方程路线（书 15.3）绕行
+                证明常用不动点方程路线绕行（见 docs 30.5 节末尾的展开）
    Program    ：日常首选；measure/relation 都支持，
                 义务还完即得良规定义，配合 Equations 插件更顺 *)
 

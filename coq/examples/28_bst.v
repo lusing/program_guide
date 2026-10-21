@@ -18,7 +18,7 @@ Inductive occ (v : nat) : bt -> Prop :=
 | occ_r : forall (k : nat) (t1 t2 : bt), occ v t2 -> occ v (bnode k t1 t2).
 
 (* 谓词层 2：below z t（t 的标记都 < z）/ above z t（t 的标记都 > z）。
-   实测建议（书 11.1.3）：写成归纳定义而非 Definition，
+   实测建议：写成归纳定义而非 Definition，
    intro/elim 直接可用，不必 unfold——展开式证明难控制 *)
 Inductive below (z : nat) : bt -> Prop :=
 | below_intro : forall t, (forall q, occ q t -> q < z) -> below z t.
@@ -34,8 +34,9 @@ Inductive search_tree : bt -> Prop :=
     search_tree (bnode k t1 t2).
 
 (* ---------- 28.2 引理库：先备粮，再开战 ---------- *)
-(* 直接证 lookup 会淹没在目标里；先把「用得顺手的零件」证好
-   （书 11.3 的方法，图 11.2 的精简版） *)
+(* 直接证 lookup 会淹没在目标里；先把「用得顺手的零件」证好：
+   投影引理（st_l/st_r/st_below/st_above 从父节点拆出子性质）
+   与传播引理，备齐再攻主定理 *)
 
 Lemma st_l : forall k t1 t2, search_tree (bnode k t1 t2) -> search_tree t1.
 Proof. intros k t1 t2 H. inversion H; subst; assumption. Qed.

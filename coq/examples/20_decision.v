@@ -2,6 +2,7 @@
 
 From Stdlib Require Import Arith ZArith Lia.
 From Stdlib Require Import Reals Lra Classical.
+From Stdlib Require Import PrimInt63 Floats PrimString.
 
 Module Ex20Decision.
 
@@ -29,7 +30,7 @@ Theorem ring_opaque : forall n m : nat, dbl (n + m) = dbl n + dbl m.
 Proof. intros n m. unfold dbl. ring. Qed.
 
 (* 版本演进（实测）：8.x 时代 ring 不认识 S n，教材里要用专门策略
-   把 S n 改写成 n + 1 再 ring；9.1 的 ring 已能直接吃下 S n *)
+   把 S n 改写成 n + 1 再 ring；9.x（含 9.2/9.3）的 ring 已能直接吃下 S n *)
 
 (* ring_simplify：把等式两边规整成范式（只规整不收尾，通常跟一刀收） *)
 Example ring_simplify_ex : forall n m : Z,
@@ -105,5 +106,25 @@ Theorem congruence_neq : forall x y : nat, S x = 0 -> y = x.
 Proof. intros x y H. congruence. Qed.
 (* 构造子冲突（S _ = O 不可能）被 congruence 识别，
    假设一废，目标里的 y 随便什么都能推出来 *)
+
+(* ---------- 20.5 9.2 新动向：congruence 吃下 primitive 类型 ---------- *)
+
+(* 机器字长 int63 / 浮点 / 字符串是 8.20 起进内核的 primitive 类型，
+   但 congruence 对它们支持不全；9.2 起同余推理直接覆盖 *)
+Theorem congruence_int63 : forall (x y : int) (f : int -> int),
+  x = y -> f x = f y.
+Proof. intros x y f H. congruence. Qed.
+
+Theorem congruence_float : forall (x y : float) (f : float -> float),
+  x = y -> f x = f y.
+Proof. intros x y f H. congruence. Qed.
+
+Theorem congruence_string : forall (x y : string) (f : string -> string),
+  x = y -> f x = f y.
+Proof. intros x y f H. congruence. Qed.
+
+(* 记号坑（实测）：示例只演示「函数应用 + 等式」的纯同余——
+   别写 x + 1 这类算术，PrimInt63 的 + 记号不在默认作用域，
+   (x + 1)%int63 会被解析成 Nat.add 报类型错 *)
 
 End Ex20Decision.

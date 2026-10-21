@@ -7,13 +7,28 @@ param(
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $projectRoot
 
-$coqc = "G:\rocq\Rocq-Platform~9.1~2026.01\bin\coqc.exe"
+# 编译器解析顺序：PATH 中的 rocq -> ROCQ_COQC 环境变量 -> 硬编码 Platform 路径
+$coqc = $null
+$coqcArgs = @()
+$rocqCmd = Get-Command rocq -ErrorAction SilentlyContinue
+if ($rocqCmd) {
+    $coqc = $rocqCmd.Source
+    $coqcArgs = @("compile", "-q")
+} elseif ($env:ROCQ_COQC -and (Test-Path -LiteralPath $env:ROCQ_COQC)) {
+    $coqc = $env:ROCQ_COQC
+    $coqcArgs = @("-q")
+} else {
+    $coqc = "G:\rocq\Rocq-Platform~9.1~2026.01\bin\coqc.exe"
+    $coqcArgs = @("-q")
+    Write-Host "[提示] PATH 中未找到 rocq，回退到 $coqc，请按你的 Platform 安装路径调整（或把 rocq 加入 PATH / 设置 ROCQ_COQC 环境变量）。" -ForegroundColor Yellow
+}
+
 $examplesDir = Join-Path $projectRoot "examples"
 $buildDir = Join-Path $projectRoot "build"
 $buildExamplesDir = Join-Path $buildDir "examples"
 
 if (-not (Test-Path -LiteralPath $coqc)) {
-    throw "未找到 coqc.exe，请检查 Coq 安装路径。"
+    throw "未找到编译器 $coqc，请检查 Coq/Rocq 安装路径。"
 }
 
 if ($Clean) {
@@ -53,7 +68,7 @@ function Invoke-CoqCompile {
     )
 
     Write-Host "[Compile] $([System.IO.Path]::GetFileName($SourcePath))" -ForegroundColor Cyan
-    & $coqc "-q" $SourcePath
+    & $coqc @coqcArgs $SourcePath
     if ($LASTEXITCODE -ne 0) {
         throw "编译失败: $SourcePath"
     }

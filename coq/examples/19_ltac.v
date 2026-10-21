@@ -92,8 +92,9 @@ Ltac S_to_plus_simpl :=
   | [ |- _ ] => idtac
   end.
 
-(* ring 不认识 S：这个等式 ring 直接吃不下（残留 m * S n 之类），
-   先用自定义策略把 S n 规整成 n + 1，ring 才能收 *)
+(* 经典动机：ring 不认识 S，要先把 S n 规整成 n + 1 再交给 ring。
+   版本注记（实测）：这在 8.x 属实；9.x（含 9.2/9.3）的 ring
+   已能直接吃下这个目标——本例保留为 context 匹配与 fail 层级的演示 *)
 Example ring_after_ltac : forall n m : nat,
   n * 0 + (S n) * m = n * n * 0 + m * n + m.
 Proof. intros n m. S_to_plus_simpl. ring. Qed.
@@ -122,7 +123,9 @@ Proof. intros ys H. inv H. reflexivity. Qed.
 
 (* ---------- 19.7 Hint 数据库与 eauto ---------- *)
 
-(* Hint Resolve 把定理注册进指定数据库，eauto 搜索时当积木用 *)
+(* Hint Resolve 把定理注册进指定数据库，eauto 搜索时当积木用。
+   9.2 起隐式创建数据库会触发弃用警告——先 Create HintDb 显式声明 *)
+Create HintDb le_db.
 Hint Resolve Nat.le_trans : le_db.
 
 Theorem eauto_ex : forall a b c d : nat,
@@ -139,6 +142,7 @@ Hypothesis S_rule : forall A B C : CL,
   App (App (App S A) B) C = App (App A C) (App B C).
 Hypothesis K_rule : forall A B : CL, App (App K A) B = A.
 
+Create Rewrite HintDb CL_rules.
 Hint Rewrite S_rule K_rule : CL_rules.
 
 Theorem obtain_I : forall A : CL, App (App (App S K) K) A = A.

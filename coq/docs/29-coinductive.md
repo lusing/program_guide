@@ -80,11 +80,11 @@ CoInductive Infinite (A : Type) : LList A -> Prop :=
 证 `forall n, Infinite (from n)` 用 `cofix` 策略：引入余递归假设 H，rewrite 展开后把 H 喂给构造子。两条纪律：
 
 - **H 只能出现在构造子内部**（guard 对证明同样生效）；
-- 用过 `assumption`/`auto` 等自动策略后敲一下 **`Guarded.`** 命令当场检查——unguarded 的证明要拖到 Qed 才炸，中间还自以为证完了（书 13.6.3 的翻车实录）。
+- 用过 `assumption`/`auto` 等自动策略后敲一下 **`Guarded.`** 命令当场检查——unguarded 的证明要拖到 Qed 才炸，中间还自以为证完了。这是 cofix 实战里最经典的翻车（9.3 实测）：`cofix H. intros A a. apply H.` 这样把余递归假设**直接**当答案交出去，脚本走完安安静静，直到 Qed 才报 `Recursive definition of H is ill-formed ... Unguarded recursive call in "H A a"`；若在 `apply H.` 之后敲一行 `Guarded.`，同一个错误**当场**就报出来，省掉整段自欺。
 
 一个概念陷阱：把 Infinite 写成 `Inductive`（而非 CoInductive）会得到一个**永不可满足**的谓词——归纳版本要求有限次构造子应用，而它的唯一构造子永远往上递归。关键字选错，谓词直接废掉。
 
-顺带收获：普通谓词 `Finite`（有限序列）照样用 Inductive 定义在余归纳类型上——inversion、归纳法这些老工具都还工作（书 13.5）。
+顺带收获：归纳与余归纳可以和平共处——余归纳类型上照样能定义**普通归纳谓词**，比如「序列有限」的 `Finite`（LNil 有限，有限序列接一个 LCons 仍有限）。对它做 inversion、归纳法，所有老工具照常工作；关键字的选择只影响**这个谓词自身**的证明项形状，不妨碍其他谓词用另一种方式建模。
 
 ### 29.5 互模拟：无限对象的「相等」
 
