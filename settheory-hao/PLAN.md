@@ -85,7 +85,8 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
       lean 2 + isa 1 + jl 1 + py 2），docs 183/161 行
 - [x] **B8**：16-18 共尾/幂/滤与 club——10 单元批内全绿（终态 -All 65/65：
       lean 3 + jl 2 + py 3 + pl 2）
-- [ ] B9：19-20 谱系绝对性/基础良基（6 单元）
+- [x] **B9**：19-20 谱系绝对性/基础良基——7 单元批内全绿（终态 -All 72/72：
+      lean 2 + isa 1 + coq 1 + jl 1 + py 2）
 - [ ] B10：21-22 不可达反映/L（5 单元）
 - [ ] B11：23-24 力迫/速查收官（4 单元）
 
@@ -265,3 +266,18 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
     极限点用"n%5==0 + 下方密度"模拟可数极限。
 67. **B8·GCH 三分支实现顺序**：先查 κ≤λ（5.2.10 无条件），再
     κ>λ 时的 cf 分岔——写反会把 ℵ₂^ℵ₁ 吞进 2^ℵ₁。
+68. **B9·书 7.2.13(3) 的 ⋃ 是求并**：trcl(x) = x ∪ ⋃{trcl(y)}——
+    Python 的 frozenset(list) 收集了集合本身而非元素；
+    frozenset().union(*list) 才是 ⋃。两版代码写出后才看清。
+69. **B9·trcl 不含 x 自身**：书 7.2.12 的 a_0=x, a_{n+1}=⋃a_n
+    给出 trcl = ⋃a_n 只含后裔；含 x 的"最小传递集"= trcl(x)
+    本身是传递的这一事实（x⊆trcl(x)）不是 x∈trcl(x)。
+70. **B9·Coq In 左支方向**：In y (z::l) = (z=y)∨In y l——
+    左支 Heq : z = y，subst y（不是 subst z）。
+71. **B9·Coq fold_right S 差**：引理给 rank<S(fold) 而目标要
+    rank<fold——结论去掉 S 后直接匹配（fold ≥ rank+1 在
+    max 中成立）。
+72. **B9·Julia V_4 秩直方图**：rank1 的子集恰 1 个({∅})非 4 个
+    ——期望值先手推（V_3 的 4 个元素里只有 ∅ 的秩是 0）。
+73. **B9·Isabelle thm 占位符**：草稿中的 ?? 残留会当 fact 名报
+    Undefined fact——提交前 grep '??.*no such' 自查。

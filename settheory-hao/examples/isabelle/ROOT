@@ -22,3 +22,7 @@ session HS14 in "HS14" = "ZF" +
   options [document = false]
   theories
     Cardinals
+session HS20 in "HS20" = "ZF" +
+  options [document = false]
+  theories
+    Foundation
