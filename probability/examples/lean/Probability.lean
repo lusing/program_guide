@@ -12,3 +12,4 @@ import Probability.Ch07Combinatorics
 import Probability.Ch08DiscreteRV
 import Probability.Ch09ContinuousRV
 import Probability.Ch10Expectation
+import Probability.Ch12Differentiating
