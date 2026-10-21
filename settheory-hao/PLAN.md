@@ -79,7 +79,8 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
       lean 1 + jl 2 + py 2 + pl 1），docs 253/202 行
 - [x] **B5**：09-11 良序/序数/递归与算术——12 单元批内全绿（终态 -All 42/42：
       lean 3 + isa 2 + coq 1 + jl 2 + py 3 + pl 1），docs 204/200/203 行
-- [ ] B6：12-13 古德斯坦/选择公理（6 单元）
+- [x] **B6**：12-13 古德斯坦/选择公理——7 单元批内全绿（终态 -All 49/49：
+      lean 1 + isa 1 + coq 1 + jl 2 + py 2 + pl 1），docs 204/205 行
 - [ ] B7：14-15 基数/基数算术（4 单元）
 - [ ] B8：16-18 共尾/幂/滤与 club（8 单元）
 - [ ] B9：19-20 谱系绝对性/基础良基（6 单元）
@@ -215,3 +216,17 @@ L=Lean I=Isabelle/ZF Coq J=Julia Py=Python R=SWI-Prolog（约 66 单元；按批
     lt_def 后必须供给 Ord 前提（blast intro 组合）。
 47. **B5·Coq nat 截断污染**：`length [] - 1 = 0`（非 -1）使空 β 分支
     产出 [0]——定义处 match b with [] => a 显式分流。
+48. **B6·Goodstein 书表自纠**：书载 g₇(13)=134219591 与书载 g₈ 不自洽——
+    机器链 134219479 恰好复现书载 g₈、g₉；双通道交叉验证裁决原书笔误。
+49. **B6·doc 注释+#check 第六撞**：Ch13 两处复现（B1 #4）——#check/#print
+    前用 `/- -/` 已列肌肉记忆清单仍漏；写完 grep 一遍 `/--.*-/` + `#check`。
+50. **B6·ZF-AC 显式导入**：session = "ZF-AC" 只建堆——AC1_def 等 fact
+    仍需 `imports "ZF-AC.AC_Equiv"` 等会话限定名；AC1_WO2 在 HH.thy。
+51. **B6·Lean Zorn 根命名空间**：exists_maximal_of_chains_bounded 无 Zorn
+    前缀且需显式传递性参数；(4.33 无 Classical.wellOrderingRel)。
+52. **B6·Coq In 非自反**：In (x) (x::xs) 的 reflexivity 不成立——
+    destruct 后 `simpl; left; reflexivity`。
+53. **B6·Julia 顶层 for 软作用域**：三处循环全部包函数（B4 #34 同坑
+    复现）——顶层循环一律 goodstein_steps 式封装。
+54. **B6·Python 家族注释写错**：注释声称两两不交但数据相交
+    （{a,b} ∩ {b,c}）——断言先于注释说话。
