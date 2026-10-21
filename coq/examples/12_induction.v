@@ -63,7 +63,35 @@ Proof.
   - simpl. rewrite IH. reflexivity. (* 头保住，尾交给 IH *)
 Qed.
 
-(* ---------- 例 5：从证据归纳（归纳谓词第 15 章展开） ---------- *)
+(* ---------- 例 5：给子目标起名字（Set Generate Goal Names，Rocq 9.2 新增） ---------- *)
+
+(* 默认情况下，induction / destruct / eapply 裂出的子目标是匿名的，
+   Show Existentials 里显示为 ?Goal、?Goal0 ……
+   打开下面这个开关后（opt-in，默认关闭），子目标按构造子自动命名；
+   多分支大证明里，引用目标、调试、读编译日志都更轻松。 *)
+
+Set Generate Goal Names.
+
+Theorem plus_n_O_gn : forall n : nat, n + 0 = n.
+Proof.
+  intros n. induction n.
+  Show Existentials.
+  (* 实测输出（Rocq 9.3.0）——两个子目标被命名为 O 与 S：
+     Existential 1 = ?O : [ |- 0 + 0 = 0]
+     Existential 2 = ?S : [n : nat  IHn : n + 0 = n |- S n + 0 = S n]
+     注意：没写 as 模式时，步例变量与归纳假设自动取名 n、IHn。 *)
+  - reflexivity.
+  - simpl. rewrite IHn. reflexivity.
+Qed.
+
+Unset Generate Goal Names.
+(* 恢复默认。同样的证明再 induction 一次，子目标回到匿名命名
+   （实测输出，注意末尾的 only printing 标记）：
+   Existential 1 = ?Goal : [ |- 0 + 0 = 0] (only printing)
+   Existential 2 =
+   ?Goal0 : [n : nat  IH : n + 0 = n |- S n + 0 = S n] (only printing) *)
+
+(* ---------- 例 6：从证据归纳（归纳谓词第 15 章展开） ---------- *)
 
 (* 对「命题的证明」本身做归纳是 Coq 的高级武器，第 15 章见。 *)
 

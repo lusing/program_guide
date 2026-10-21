@@ -1,11 +1,11 @@
-# Coq 教程（Rocq 9.1）
+# Coq 教程（Rocq 9.2/9.3）
 
 面向**会编程（任意语言背景）、初学 Coq** 的读者：从证明助手的心智模型讲到
 类型系统、归纳类型、tactic 证明技法，再到 AST 求值器、插入排序正确性、
 列表定律等证明实战，继而是依赖类型、余归纳、一般递归、自反证明四大进阶
 主题，最后以综合项目**表达式解释器与优化器**收束。
-**章号 = 示例编号**——01–32 章每章对应 `examples/` 里一个经 coqc（Rocq
-Platform 9.1.0）编译验证的完整 .v 文件，33 章为 80+ 条实测坑位总清单。
+**章号 = 示例编号**——01–32 章每章对应 `examples/` 里一个经 `rocq compile`
+（rocq 9.3.0 + stdlib 9.2.0）编译验证的完整 .v 文件，33 章为 80+ 条实测坑位总清单。
 
 > 核心理念：**类型即命题，程序即证明。** Coq 把"写代码"和"证定理"变成
 > 同一种语言里的同一件事——编译通过就是定理成立；详见
@@ -17,6 +17,7 @@ Platform 9.1.0）编译验证的完整 .v 文件，33 章为 80+ 条实测坑位
 coq/
 ├── README.md        本文件
 ├── build.ps1        编译验证脚本（PowerShell）
+├── build.sh         编译验证脚本（macOS / Linux，用法同 build.ps1）
 ├── docs/            33 章教程（01 → 33 顺序阅读）
 ├── examples/        32 个 .v 示例（章号 = 示例编号，01–32）
 └── build/           编译输出（已 gitignore）
@@ -68,16 +69,19 @@ coq/
 前先查）。
 
 19–20 与 26–31 八章为 2026-09 按经典教材《交互式定理证明与程序开发：
-Coq 归纳构造演算的艺术》（Bertot & Casteran，中译本）扩充的「书本篇」，
-同时把全书实测环境从 Coq 8.20.1 迁到 Rocq Platform 9.1.0。
+Coq 归纳构造演算的艺术》（Bertot & Casteran，中译本）扩充的「书本篇」；
+全部内容已自包含提炼，无需翻阅原书。2026-10 起全书按 [Rocq 9.2.0
+参考手册](https://rocq-prover.org/doc/V9.2.0/refman/index.html)校准，
+现以 rocq 9.3.0 + stdlib 9.2.0 实测复验（早期环境为 Coq 8.20.1）。
 
 ## 工具链
 
 | 组件 | 路径 / 版本 |
 |---|---|
-| Rocq Platform | `G:\rocq\Rocq-Platform~9.1~2026.01`（9.1.0，2026-01 版） |
-| 编译器 | `...\bin\coqc.exe`（新入口 `rocq compile`） |
-| 交互顶层 | `...\bin\rocq.exe repl`（兼容名 coqtop） |
+| prover（本教程实测环境，macOS + opam） | rocq 9.3.0（`opam install rocq-prover`，rocq-core 9.3.0）/ stdlib 9.2.0 |
+| Windows | Rocq Platform 2026.07.0（2026-07-30 版，主配 Rocq 9.1，可选 8.12.2–8.20.1 与 9.0） |
+| 编译器入口 | `rocq compile`（兼容名 coqc） |
+| 交互顶层 | `rocq repl`（兼容名 coqtop） |
 
 2024 年 Coq 更名 **Rocq**；9.0 起标准库命名空间 `Coq.*` → `Stdlib.*`
 （前言库进一步拆出 `Corelib.*`），本教程全部示例已按 9.x 写法
@@ -87,12 +91,22 @@ Coq 归纳构造演算的艺术》（Bertot & Casteran，中译本）扩充的�
 
 ```powershell
 cd coq
-.\build.ps1 -All                        # 复制到 build/ 加 ex_ 前缀逐个 coqc 编译
+.\build.ps1 -All                        # 复制到 build/ 加 ex_ 前缀逐个 rocq compile 编译
 .\build.ps1 -File 03_first_proof.v      # 单文件编译验证
 .\build.ps1 -Clean                      # 清理 build/
 ```
 
-**判定标准**：全部 32 个示例 coqc 编译退出码 0。`32_project.v` 的
+macOS / Linux 下用等价的 bash 脚本（用法一致）：
+
+```bash
+cd coq
+chmod +x build.sh
+./build.sh -All                        # 复制到 build/ 加 ex_ 前缀逐个 rocq compile 编译
+./build.sh -File 03_first_proof.v      # 单文件编译验证
+./build.sh -Clean                      # 清理 build/
+```
+
+**判定标准**：全部 32 个示例 `rocq compile` 退出码 0。`32_project.v` 的
 `Recursive Extraction` 会向输出打印抽取的 OCaml 代码，全量编译耗时略长
 属正常。
 
@@ -100,7 +114,10 @@ cd coq
 
 - .v 文件为 UTF-8 **无 BOM**，中文注释可直接编译。
 - Windows 下 scoop 的 `coq` 包停在 8.x 旧版线；要用 9.x 请装 Rocq
-  Platform（本教程环境）或 opam。
+  Platform 或 opam。
+- macOS 实测：opam 安装 `opam install rocq-prover`，二进制在
+  `~/.opam/default/bin`（rocq 9.3.0 + rocq-stdlib 9.2.0），加入 PATH 后
+  直接 `./build.sh -All` 即可。
 - 老资料（含本书 2004 年原版）是 `Coq.*` 命名空间与旧 tactic 名
   （omega 已删、fourier 弃用等），抄代码先 `Fail Check 名字.` 探路。
 
@@ -109,7 +126,8 @@ cd coq
 - **章号 = 示例编号**：`docs/05-expressions.md` ↔ `examples/05_expressions.v`，
   每章开头一行"对应示例"标注。
 - 33 章无示例，是全教程坑位的汇总清单——写代码前先查它。
-- 改示例后重跑对应文件：`.\build.ps1 -File NN_xxx.v`。
+- 改示例后重跑对应文件：`.\build.ps1 -File NN_xxx.v`（macOS / Linux 用
+  `./build.sh -File NN_xxx.v`）。
 
 ## 相关教程
 

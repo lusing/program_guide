@@ -4,7 +4,7 @@
 
 ### 28.1 本章任务：一个「真实」的数据结构
 
-前面 27 章的实战章节（排序、AST、解释器）验证的都是**纯函数性质**；本章按书第 11 章的路线做一个更工程味的案例：二叉搜索树的**查找与插入**，并保证：
+前面 27 章的实战章节（排序、AST、解释器）验证的都是**纯函数性质**；本章做一个更工程味的案例：二叉搜索树的**查找与插入**，并保证：
 
 1. 查找**利用搜索树性质剪枝**——不再全树遍历；
 2. 插入**保持搜索树性质**——类型与定理双保险。
@@ -22,14 +22,14 @@ Inductive above (z : nat) : bt -> Prop := ...      (* 树中标记都 > z *)
 Inductive search_tree : bt -> Prop := ...          (* 左 below 右 above，递归 *)
 ```
 
-两个建模决策值得咀嚼（都来自书 11.1.3）：
+两个建模决策值得咀嚼：
 
 - **不为 BST 单独造类型**。数据类型是最普通的 bt，「是搜索树」是一个**谓词**——普通树 + 性质谓词的组合比「 BST 类型」灵活得多（同一棵树既可当普通树也可当搜索树用）；
 - **below/above 用归纳定义而非 Definition**。写成 `Definition below z t := forall q, occ q t -> q < z` 也能过类型检查，但后续每个证明都要 unfold 展开，目标越铺越乱；归纳定义让 intro/elim（构造子）风格直接可用，证明状态干净。这跟程序里「newtype 变量」优于裸 int 是同一个工程直觉。
 
 ### 28.3 引理库：先备粮，再开战
 
-直接构造查找函数会淹没在嵌套目标里（书 11.3 的忠告）。先把顺手的零件证好：
+直接构造查找函数会淹没在嵌套目标里——这是本章的第一个忠告：先别碰主函数，把顺手的零件证好：
 
 ```coq
 Lemma st_l     : search_tree (bnode k t1 t2) -> search_tree t1.
@@ -39,7 +39,7 @@ Lemma go_left  : search_tree (bnode k t1 t2) -> occ v (bnode k t1 t2)
                  -> v < k -> occ v t1.
 ```
 
-这套引理像 Prolog 程序员写的子句库（书的原话）。`go_left`/`go_right` 是剪枝正确性的核心：值要么在根，要么只能去它该在的那一侧。
+这套引理的角色很像 Prolog 程序里的子句库：每条引理是一种形状的推理规则，主证明里只管按前提形状取用。`go_left`/`go_right` 是剪枝正确性的核心：值要么在根，要么只能去它该在的那一侧。
 
 ### 28.4 朴素版 vs 剪枝版
 
@@ -56,9 +56,9 @@ Definition lookup : forall (v : nat) (t : bt),
   search_tree t -> {occ v t} + {~ occ v t}.
 ```
 
-每个节点一次 `le_gt_dec` + `le_lt_eq_dec`，三种情况各走各的（左/命中/右）。`Print Assumptions lookup` 报告 **Closed under the global context**——零公理，构造性成立。抽取出的代码只搜一条路径（书 11.4.1 的 OCaml 输出可对照）。
+每个节点一次 `le_gt_dec` + `le_lt_eq_dec`，三种情况各走各的（左/命中/右）。`Print Assumptions lookup` 报告 **Closed under the global context**——零公理，构造性成立。用 Extraction 把它抽到 OCaml，得到的代码每个节点恰好沿一个方向下行——只搜一条路径，没有全树遍历的影子。
 
-构造过程里撞上一个漂亮的墙：想对 `search_tree` 假设做 inversion 拿子树前提，**被系统拒绝**——目标是 Set 大类的 sumbool，对 Prop 归纳做消去违反「证明无关」约束（书 14.2 的核心限制）。出路正是 28.2 的引理库：用已证好的 **Prop 引理**（st_l/st_r）取子树前提，绕开限制。引理库不只是省事，某些构造里是**必需品**。
+构造过程里撞上一个漂亮的墙：想对 `search_tree` 假设做 inversion 拿子树前提，**被系统拒绝**。这条限制本身值得说清楚：**Prop 大类的归纳类型，其消去原则上只能构造 Prop 目标**；当目标是 Set/Type 大类的构造（比如这里的 sumbool）时，对 Prop 归纳假设做消去就违反了「证明无关」的设计——Prop 的证明项被当作不可区分的证据，不允许拿它来做分情况计算（仅有的例外是构造子不超过一个、且参数全为证明或可直接复制项的「单例消去」，search_tree 显然不在其列）。系统报的错误是 `Inversion would require case analysis on sort Set`。出路正是 28.2 的引理库：用已证好的 **Prop 引理**（st_l/st_r）取子树前提——Prop 到 Prop 的消去完全合法，绕开限制。引理库不只是省事，某些构造里是**必需品**。
 
 > 实测坑（9.1）：`Nat.le_gt_dec` / `Nat.le_lt_eq_dec` 的限定名已移除，用无限定的 `le_gt_dec` / `le_lt_eq_dec`。
 
@@ -88,7 +88,7 @@ Lemma occ_insert : forall v t w, occ w (insert v t) <-> (w = v \/ occ w t).
 Lemma insert_st  : forall v t, search_tree t -> search_tree (insert v t).
 ```
 
-`occ_insert` 是书 INSERT 谓词的可计算内核（插入后元素 = 原元素 + 新值）；`insert_st` 说插入保持搜索树性——below/above 的延续推理全部经由 `occ_insert` 完成，两条引理互相接力。
+`occ_insert` 把「插入」的语义压成一条可计算的刻画（插入后的元素 = 原元素 ∪ 新值）；`insert_st` 说插入保持搜索树性——below/above 的延续推理全部经由 `occ_insert` 完成，两条引理互相接力。
 
 ### 28.6 串起来跑
 
@@ -101,7 +101,7 @@ Compute (match lookup 3 t1 t1_st with left _ => 100 | right _ => 200 end).  (* =
 Compute (match lookup 7 t1 t1_st with left _ => 100 | right _ => 200 end).  (* = 200 *)
 ```
 
-`search_tree t1` 的证明就是一串 `insert_st` 套娃——**从空树出发的任何插入序列自动是搜索树**，不需要写检查函数。这正是书 11.4.3 「应该给 search_tree 写测试函数吗」的答案：不写，让类型构造过程自己担保。
+`search_tree t1` 的证明就是一串 `insert_st` 套娃——**从空树出发的任何插入序列自动是搜索树**，不需要写检查函数。这里顺手回答一个自然的问题：「应该给 search_tree 写一个布尔测试函数吗？」答案是**不写**——让类型构造过程自己担保：每步插入都有 `insert_st` 背书，性质由证明项随身携带，不存在「忘了检查」的时刻。
 
 ### 28.7 本章坑位清单（实测）
 

@@ -33,7 +33,7 @@ ring 用**自反证明**（第 31 章展开）实现：把两边规整成多项�
 1. **ring 无视上下文**——假设 `H : x = 3` 摆在那它也不看。先把已知值 `rewrite` 进目标，ring 才能收（示例 20.1 的 `ring_no_hyp`）；
 2. **ring 看不见定义**——自定义的 `dbl n := n + n` 对它是原子，`unfold dbl` 展开成多项式后它才认识（`ring_opaque`）。
 
-版本注记（实测）：8.x 时代 ring 不认识 `S n`，老教材要用专门策略先改写成 `n + 1`；**9.1 的 ring 已能直接吃下**——`S n * m = m + n * m` 一击即中。
+版本注记（实测）：8.x 时代 ring 不认识 `S n`，老教材要用专门策略先改写成 `n + 1`；**9.x（含 9.2/9.3）的 ring 已能直接吃下**——`S n * m = m + n * m` 一击即中。
 
 `ring_simplify` 把等式两边规整成范式但不负责收尾——目标是「化简」不是「证明」时用它，通常跟一刀 `ring` 或 `reflexivity` 收。
 
@@ -72,7 +72,9 @@ Theorem tauto_ex : forall P Q : Prop, P /\ ~ P -> Q.
 Proof. intros P Q H. tauto. Qed.
 ```
 
-auto 证不了这条（它不会拆假设里的合取），tauto 一击——它判定的是**直觉主义**命题逻辑的永真式。天花板也在这里：`~~P -> P` 不是直觉主义定理，tauto 证不动——要么走经典逻辑公理（`Classical` 的 `NNPP`，见 20.6 的公理审查），要么改述命题。
+auto 证不了这条（它不会拆假设里的合取），tauto 一击——它判定的是**直觉主义**命题逻辑的永真式。天花板也在这里：`~~P -> P` 不是直觉主义定理，tauto 证不动——要么走经典逻辑公理（`Classical` 的 `NNPP`，见 20.7 的公理审查），要么改述命题。
+
+顺带一个版本标注：同族的 `rtauto`（自反版 tauto）自 Stdlib 9.1.0（2026-02-10）起已弃用，官方正在寻找维护者——新代码直接用 `tauto` / `intuition` 即可。
 
 `intuition` 先把命题结构（合取/析取/蕴含）自动拆解，再用给定策略收拾残余目标——`intuition lia` 是「命题壳 + 算术芯」目标的标配：
 
@@ -84,7 +86,21 @@ Proof. intros n p q H. intuition lia. Qed.
 
 `congruence` 做等式同余推理：`x = y` 时 `f x = f y` 自动成立；构造子冲突（`S x = 0`）它也认。
 
-### 20.6 公理审查：决策过程也可能带公理
+### 20.6 9.2 新动向：congruence 吃下 primitive 类型
+
+机器字长的 int63、浮点、字符串是 8.20 起进入内核的 **primitive 类型**（`PrimInt63` / `Floats` / `PrimString`），但 congruence 对它们的支持一直不全——等式落在这些类型上时它常常装看不见。9.2 补齐了这一课：同余推理现在直接覆盖 primitive ints、floats、strings。
+
+```coq
+From Stdlib Require Import PrimInt63 Floats PrimString.
+
+Theorem congruence_int63 : forall (x y : int) (f : int -> int),
+  x = y -> f x = f y.
+Proof. intros x y f H. congruence. Qed.
+```
+
+float、string 各有一例，见示例 20_decision.v。一个实测记号坑要提醒：示例只演示「函数应用 + 等式」的**纯同余**——别顺手写 `x + 1` 这类算术。PrimInt63 的 `+` 记号不在默认作用域里，`(x + 1)%int63` 会落到 `Nat.add` 上，报「The term "x" has type "int" while it is expected to have type "nat"」；int63 的算术记号要另行打开作用域，与本节无关。
+
+### 20.7 公理审查：决策过程也可能带公理
 
 ```coq
 Print Assumptions nnpp.
@@ -94,7 +110,7 @@ Print Assumptions nnpp.
 
 经典逻辑的定理建立在排中律公理上——`Print Assumptions` 把账本摊开（第 25 章详述）。选决策过程时心里有这张表：lia/ring/tauto 是构造性的，`Classical` 系列引公理。
 
-### 20.7 本章坑位清单（实测）
+### 20.8 本章坑位清单（实测）
 
 1. **ring 不读上下文**：假设里的等式要先 rewrite 进目标；
 2. **ring 不展开定义**：自定义函数先 unfold；
