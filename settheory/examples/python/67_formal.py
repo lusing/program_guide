@@ -3,6 +3,7 @@
 import sys, io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 from itertools import combinations
+import random
 
 print("==== 67")
 
@@ -56,11 +57,11 @@ chain = [
     (("imp", P, ("imp", P, P)), "axC"),
     (("imp", P, P), (2, 3)),
 ]
-labels = ["1: P→((P→P)→P)        [公理 c]",
-          "2: (1)→((P→(P→P))→(P→P))  [公理 a]",
-          "3: (P→(P→P))→(P→P)    [MP 1,2]",
-          "4: P→(P→P)            [公理 c]",
-          "5: P→P                [MP 4,3]"]
+labels = ["1: P→((P→P)→P)            [公理 c]",
+          "2: (1)→((P→(P→P))→(P→P))   [公理 a]",
+          "3: (P→(P→P))→(P→P)        [MP 1,2]",
+          "4: P→(P→P)                [公理 c]",
+          "5: P→P                    [MP 4,3]"]
 for lab in labels:
     print("  " + lab)
 print("五步链验证:", check(chain))
@@ -71,19 +72,20 @@ bad2 = chain[:4] + [(("imp", P, P), "axC")]
 print("伪装公理步被拒绝:", not check(bad2))
 
 # ---------- 二、罗素定理有限剧场（例 1.4：没有万有集合） ----------
-# 对每个有限集合 x，罗素类 R(x) = {a ∈ x | a ∉ a} 都不在 x 内。
+# 论域取 𝒫(𝒫({1,2,3}))：其元素是"整数的集合"，a ∈ a 有意义。
+# 对每个 x，罗素类 R(x) = {a ∈ x | a ∉ a} 都不在 x 内。
 def powerset(s):
     return [frozenset(c) for r in range(len(s) + 1)
             for c in combinations(s, r)]
 
-U = powerset({1, 2, 3})
+U = powerset(frozenset(powerset({1, 2, 3})))
 for x in U:
     R = frozenset(a for a in x if a not in a)
-    assert R not in x
-print(f"对 {len(U)} 个有限集合逐一检验：罗素类从不在集合内 —— 没有万有集合的有限影子")
+    assert R not in x   # 若 R ∈ x 则 R∈R ↔ R∉R，恒矛盾
+print(f"对 𝒫𝒫({{1,2,3}}) 的 {len(U)} 个元素逐一检验：罗素类从不在集合内",
+      "—— 没有万有集合的有限影子")
 
 # ---------- 三、同一律（命题 1.1） ----------
-import random
 random.seed(67)
 for _ in range(200):
     A = set(random.sample(range(10), 3))

@@ -52,16 +52,31 @@ proof
   assume "\<exists>a. \<forall>y. y \<in> a"
   then obtain a where A: "\<forall>y. y \<in> a" ..
   let ?R = "{x \<in> a. x \<notin> x}"
-  have Ra: "?R \<in> a" by (blast intro: A)
-  have H: "?R \<in> ?R \<longleftrightarrow> (?R \<in> a \<and> ?R \<notin> ?R)"
-    by (rule Collect_iff)
-  hence "?R \<in> ?R \<longleftrightarrow> ?R \<notin> ?R" using Ra by blast
-  thus False by blast
+  have Ra: "?R \<in> a" using A by blast
+  have H: "?R \<in> ?R \<longleftrightarrow> ?R \<notin> ?R"
+  proof
+    assume "?R \<in> ?R"
+    thus "?R \<notin> ?R" by (blast dest: CollectD2)
+  next
+    assume "?R \<notin> ?R"
+    with Ra show "?R \<in> ?R" by (blast intro: CollectI)
+  qed
+  have em: "?R \<notin> ?R \<or> ?R \<in> ?R" by (rule excluded_middle)
+  then show False
+  proof
+    assume Q: "?R \<notin> ?R"
+    have P: "?R \<in> ?R" by (rule iffD2 [OF H Q])
+    from Q P show False by (rule notE)
+  next
+    assume P: "?R \<in> ?R"
+    have Q: "?R \<notin> ?R" by (rule iffD1 [OF H P])
+    from Q P show False by (rule notE)
+  qed
 qed
 
 subsection \<open>定义 1.23：分离规则（租借逻辑的唯一推理规则）\<close>
 
 lemma modus_ponens: assumes "P \<longrightarrow> Q" and "P" shows "Q"
-  by (rule assms(1) [OF assms(2)])
+  by (rule mp [OF assms(1) assms(2)])
 
 end

@@ -4,12 +4,12 @@
 module Ch67_formal where
 
 open import Data.Nat using (ℕ)
-open import Data.Bool using (Bool; not)
+open import Data.Bool using (Bool; true; false; not)
 open import Data.Empty using (⊥)
 open import Data.Product using (∃; _,_)
 open import Relation.Nullary using (¬_)
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; cong)
+  using (_≡_; refl; cong; _≢_)
 
 -- ---------- 定义 1.1：表达式（命题片段，Agda 原生归纳类型） ----------
 
@@ -29,7 +29,18 @@ data Der : Fml → Set where
 
 -- 67.6 的五步链：axC、axA、MP、axC、MP——压缩成一个项
 P⟶P : ∀ {P} → Der (imp P P)
-P⟶P = mp (mp axA axC) axC
+P⟶P {P} =
+  -- 五步链每步的显式类型（隐参不自动推断，逐步标注）
+  let s1 : Der (imp P (imp (imp P P) P))                              -- 1 [c]
+      s1 = axC
+      s2 : Der (imp (imp P (imp (imp P P) P))
+                    (imp (imp P (imp P P)) (imp P P)))                -- 2 [a]
+      s2 = axA
+      s3 : Der (imp (imp P (imp P P)) (imp P P))                      -- 3 MP 1,2
+      s3 = mp s2 s1
+      s4 : Der (imp P (imp P P))                                      -- 4 [c]
+      s4 = axC
+  in mp s3 s4                                                         -- 5 MP 4,3
 
 -- 展开对应：mp axA axC          ← 第 1、2 步给第 3 步
 --           mp (mp axA axC) axC ← 第 4 步（axC）与第 3 步给第 5 步

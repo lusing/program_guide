@@ -327,3 +327,25 @@ session ST84 in "ST84" = "ZF-Constructible" +
   options [document = false]
   theories
     Topic
+
+session ST67 in "ST67" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Language
+
+session ST68 in "ST68" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Naturals
+
+
+
+session ST69 in "ST69" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Integers
+
+session ST70 in "ST70" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Replacement

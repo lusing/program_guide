@@ -94,9 +94,12 @@ Theorem no_surjection : forall f : nat -> (nat -> bool),
   exists D, forall i, f i <> D.
 Proof.
   intros f.
-  exists (fun i => negb (f i i)).
+  pose (g := fun k => negb (f k k)).
+  exists g.
   intros i Hrewrite.
-  assert (H : f i i = negb (f i i)).
-  { rewrite Hrewrite. reflexivity. }
+  assert (Hg : f i = g) by (unfold g; exact Hrewrite).
+  (* 单侧改写：目标里 f i 只在左边出现，绕开"连右带左"陷阱 *)
+  assert (H : f i i = g i) by (rewrite Hg; reflexivity).
+  unfold g in H. simpl in H.
   destruct (f i i); simpl in H; discriminate.
 Qed.

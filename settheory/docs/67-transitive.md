@@ -406,14 +406,24 @@ Lean 通道用 mathlib 的集合论原生 API 复刻本章三个主角。同一�
 
 ```lean
 /-- 康托尔对角线（定理 1.4 的核心）：不存在 α → Set α 的满射 -/
-theorem no_surj_onto_powerset (α : Type*) :
+theorem noSurjOnPowerset (α : Type*) :
     ¬ ∃ f : α → Set α, Function.Surjective f := by
   rintro ⟨f, hf⟩
-  -- 对角集合 A = {a | a ∉ f a}（书页 36 的 A = {a∈x | a ∉ f(a)}）
+  -- 对角集合 D = {a | a ∉ f a}（书页 36 的 A = {a∈x | a ∉ f(a)}）
   obtain ⟨z, hz⟩ := hf {a | a ∉ f a}
-  have h : z ∈ {a | a ∉ f a} ↔ z ∉ f z := Iff.rfl
-  exact absurd (hz ▸ Iff.rfl) ((h.mp (hz ▸ hz)).elim (hz ▸ h))
+  have key : z ∈ f z ↔ z ∉ f z := by
+    conv_lhs => rw [hz]
+    exact Iff.rfl
+  by_cases h : z ∈ f z
+  · exact absurd h (key.mp h)
+  · exact h (key.mpr h)
 ```
+
+关键一步 `conv_lhs => rw [hz]` 把等式 `f z = D` 只改写到左边——
+若用普通 `rw [hz]`，等式右边的 `f z` 也会被换成 D，对角矛盾就
+消失了（这是本通道的实测坑：全域改写后目标变成 D ∈ D ↔ D ∉ D，
+Iff.rfl 失效）。`Iff.rfl` 之所以能闭合，是因为 `z ∈ {a | φ a}`
+与 `φ z` 定义性相等——分离规则就住在集合的花括号里。
 
 推导检查器则以归纳类型登场——表达式、以及"第 n 步是公理/由第
 i、j 步分离而来"的步骤标注：

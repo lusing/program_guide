@@ -13,7 +13,7 @@ namespace Settheory.Ch67
 -- ---------- 同一律（公理 1）：双包含即相等 ----------
 
 example (A B : Set ℕ) (h1 : A ⊆ B) (h2 : B ⊆ A) : A = B :=
-  Set.ext fun x => ⟨h1 x, h2 x⟩
+  Set.ext fun _x => ⟨fun hx => h1 hx, fun hx => h2 hx⟩
 
 -- 命题 1.1 的两个方向合起来：相等 ⟷ 双包含
 example (A B : Set ℕ) : A = B → A ⊆ B ∧ B ⊆ A := by
@@ -28,7 +28,8 @@ theorem noSurjOnPowerset (α : Type*) :
   -- 对角集合 D = {a | a ∉ f a}（书页 36 的 A = {a ∈ x | a ∉ f(a)}）
   obtain ⟨z, hz⟩ := hf {a | a ∉ f a}
   have key : z ∈ f z ↔ z ∉ f z := by
-    rw [hz]; simp
+    conv_lhs => rw [hz]
+    exact Iff.rfl
   by_cases h : z ∈ f z
   · exact absurd h (key.mp h)
   · exact h (key.mpr h)

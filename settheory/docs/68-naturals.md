@@ -356,33 +356,242 @@ m 归纳"的原生语法。(2)(3)(4) 的证明同款（练习，冯琦 1.3.4 留
 本章机器化的三个剧场：**(A) 递归定理三段式**——Python/Prolog
 把"有限近似 f₀ ⊆ f₁ ⊆ … + 和谐系统 + 取并"做成可执行构造，
 定理 1.12 的证明就是程序的运行轨迹；**(B) 鸽子笼与雪崩**——
-Julia 枚举 (n+1)→n 的全部映射验证无单射、计算无界子集的雪崩
+计算通道枚举 (n+1)→n 的全部映射验证无单射、计算无界子集的雪崩
 映射（素数/偶数/平方数的名次表）；**(C) 三明治与双归纳**——
 Python 在有限集合上执行引理 1.4 的 Aₙ/Bₙ/E/D 构造并验证拼合
 双射，Lean/Coq/Agda/Isabelle 四通道各自复刻定理 1.16(1) 的双
 归纳交换律证明。
 
-Lean 通道的锚点对照表：定理 1.9 ↔ `Nat.rec`（归纳即递归子），
-定理 1.15 ↔ mathlib 的 `Nat.add`（其定义正是 m+0 = m、
-m+(n+1) = (m+n)+1 的教科书递归），引理 1.1 ↔ `Finset.exists_le`，
-定理 1.10 ↔ `Fintype.injective_iff_bijective`（官方鸽子笼），
-推论 1.1(3) ↔ `Set.Nat.countable`/`Set.infinite_coe_iff` 一族。
-冯琦的"每个 m 一个递归再取并"在柯里化语言里免费获得：`add m`
-就是书上的 f_m，`fun m => add m` 的整体性就是取并。
+### Lean：递归子就是书页递归
 
-Isabelle/ZF 通道直接落在 ZF/Arith 的官方递归子上：`add(m,0) = m`、
-`add(m, succ(n)) = succ(add(m,n))` 与定理 1.15 逐字对应（ZF 的
-加法恰好也递归在第二变元），`add_commute`、`add_assoc`、
-`add_0`、`add_succ` 是定理 1.16 的官方版本；`Ord(nat)`、
-`Transset(nat)`（若在库中，经查引用）给出例 1.8 的锚点。
+Lean 通道（examples/lean/Settheory/Ch68Naturals.lean）把定理
+1.15 的两条递归式写成 `Nat.rec`——冯琦的 f(0) = a、f(n+1) =
+g(f(n), n) 与"对 n 归纳即按 n 递归"在 Lean 里是同一件事：
 
-Coq/Agda 通道：自定义 `vadd`（按书递归）+ 双归纳 `vadd_comm`，
-每步 tactic/模式匹配与书页的六步推导一一对应；Agda 版还把
-"对 m 归纳假设 + 对 n 归纳假设"两个 rewrite 的先后顺序做成可
-观察的证明项。Prolog 通道：`harmonious/1`（两两和谐判定）、
-`approximation/2`（生成 f_m 有限近似列表）、`union_of/2`（焊接
-成整体函数），三段式谓词化；外加 `avalanche/2`（无界子集的
-名次计算）。
+```lean
+/-- 书页 51：+(m,0)=m；+(m,n+1)=S(+(m,n))。Nat.rec 的展开即此。 -/
+def bookAdd (m n : ℕ) : ℕ := Nat.rec m (fun _ acc => acc + 1) n
+
+theorem bookAdd_zero (m : ℕ) : bookAdd m 0 = m := rfl
+theorem bookAdd_succ (m n : ℕ) : bookAdd m (n + 1) = bookAdd m n + 1 := rfl
+```
+
+两条递归式都是 `rfl`——定义本身携带了它们。交换律（定理
+1.16(1)）的书页证明是"外层对 n 归纳、归纳步内再对第一变元
+归纳"，Lean 用 `generalizing m` + 内层第二重 `induction` 逐字
+复刻：
+
+```lean
+theorem bookAdd_comm (m n : ℕ) : bookAdd m n = bookAdd n m := by
+  induction n generalizing m with
+  | zero => rw [bookAdd_zero, bookAdd_zero_left]
+  | succ k ih =>
+      -- 内层对第一变元归纳（书页 51 的嵌套归纳；外层 IH 随取随用）
+      have hl : ∀ j, bookAdd (k + 1) j = bookAdd j (k + 1) := by
+        intro j
+        induction j with
+        | zero => rw [bookAdd_zero, bookAdd_zero_left]
+        | succ i hi =>
+            rw [bookAdd_succ, bookAdd_succ, hi, bookAdd_succ,
+                ih i, ih (i + 1), bookAdd_succ]
+      rw [hl m]
+```
+
+内层 `rw` 链的六个重写正是书页六步推导的机器形态：先把两边
+的后继展开，用内层归纳假设 `hi` 换面，再借外层 `ih i` 与
+`ih (i + 1)` 把 `k+1` 挪到左侧。鸽子笼则走官方路线：`Fintype.card_le_of_injective` 一行给出 n+1 ≤ n 的矛盾——
+`(n+1) → Fin n` 上不存在单射：
+
+```lean
+theorem noInjection_succ_le (n : Nat) :
+    ¬ ∃ f : Fin (n + 1) → Fin n, Function.Injective f := by
+  rintro ⟨f, hf⟩
+  have h := Fintype.card_le_of_injective f hf
+  simpa using h
+```
+
+冯琦定理 1.10 后半（"3→3 单射必满射"）对应官方
+`Fintype.injective_iff_bijective`。冯琦的"每个 m 一个递归再取并"
+在柯里化语言里免费获得：`bookAdd m` 就是书上的 f_m，`fun m =>
+bookAdd m` 的整体性就是取并。
+
+### Isabelle/ZF：ZF/Arith 官方递归子 + 手工双归纳
+
+Isabelle 通道（examples/isabelle/ST68/Naturals.thy）落在 ZF/Arith
+的官方加法上——`add_0_right`、`add_succ_right` 与定理 1.15 逐字
+相同（ZF 的加法恰好也递归在第二变元）。例 1.8（ω 与其元素都
+传递）借官方序数引理一步到位：
+
+```isabelle
+lemma omega_transset: "Transset(nat)"
+  by (rule Ord_is_Transset [OF Ord_nat])
+
+lemma nat_elem_transset: "n \<in> nat \<Longrightarrow> Transset(n)"
+  by (rule Ord_is_Transset [OF nat_into_Ord])
+```
+
+交换律的手工版复刻书页结构——外层 `nat_induct` 对 n，归纳步
+用 `add_succ_right` / `add_succ` 两个递归式把后继在等式链上
+平移：
+
+```isabelle
+lemma add_comm_manual:
+  assumes "m \<in> nat" "n \<in> nat" shows "m #+ n = n #+ m"
+  using assms(2)
+proof (induct rule: nat_induct)
+  case 0
+  show "m #+ 0 = 0 #+ m" using assms(1) by simp
+next
+  case (succ x)
+  have "m #+ succ(x) = succ(m #+ x)" by (rule add_succ_right)
+  also have "\<dots> = succ(x #+ m)" by (simp add: succ.hyps)
+  also have "\<dots> = succ(x) #+ m" by (rule add_succ [THEN sym])
+  finally show "m #+ succ(x) = succ(x) #+ m" .
+qed
+```
+
+末尾 `official_check` 引用官方 `add_commute` 作对照锚点——
+手工版与官方版陈述一致，证明路径一为教学复刻、一为库内优化。
+
+### Coq：六步推导的原生形态
+
+Coq 通道（examples/coq/Ch68_naturals.v）自定义按书递归的 `vadd`
+（递归在第二变元，与 Coq 官方 `Nat.add` 方向相反，恰好排除
+"抄库"嫌疑），然后逐字复刻六步推导：
+
+```coq
+Fixpoint vadd (m n : nat) : nat :=
+  match n with
+  | 0 => m
+  | S k => S (vadd m k)
+  end.
+
+Theorem vadd_comm : forall n m, vadd m n = vadd n m.
+Proof.
+  induction n as [|n IH]; intros m.
+  - simpl. rewrite vadd_0_l. reflexivity.
+  - (* 外层对 n 归纳得 IH : ∀m, vadd m n = vadd n m；内层对 m 归纳 *)
+    (* 变量名取 mm：外层语境已有 m，induction m 会抓错对象 *)
+    assert (H : forall mm, vadd (S n) mm = vadd mm (S n)).
+    { induction mm as [|mm IHmm].
+      - simpl. rewrite vadd_0_l. reflexivity.
+      - simpl. rewrite IHmm. simpl. rewrite (IH mm). simpl.
+        rewrite (IH (S mm)). simpl. reflexivity. }
+    rewrite H. reflexivity.
+Qed.
+```
+
+注释里藏着本通道的实测坑：内层归纳的变量必须改名 `mm`——
+`induction m` 会抓住外层语境里已有的 `m`，归纳对象错位后 IH
+对不上目标。Agda 通道把同一个双归纳写成**可观察的证明项**：
+
+```agda
+⊕-comm : ∀ m n → m ⊕ n ≡ n ⊕ m
+⊕-comm m zero    = sym (⊕-zeroˡ m)
+⊕-comm m (suc k) = sym (hl m)
+  where
+  hl : ∀ p → suc k ⊕ p ≡ p ⊕ suc k
+  hl zero    = cong suc (sym (⊕-zeroˡ k))
+  hl (suc j) =
+    trans (cong suc (hl j)) (sym (cong suc (⊕-sucˡ j k)))
+```
+
+`hl` 的递归项 `trans (cong suc (hl j)) …` 就是"内层归纳假设
++ 左后继引理 ⊕-sucˡ"两个 rewrite 的先后顺序——Agda 没有全局
+隐式归纳，每个归纳步骤都必须以 `cong suc` 的形式显式写出来。
+文件末尾 `⊕≡+` 证明书版递归与 stdlib 的 `_+_` 恰是同一函数，
+`official` 引用 `+-comm` 作官方锚点。
+
+### Python/Julia：三段式、三明治与网格
+
+Python（examples/python/68_naturals.py）把定理 1.12 与推论 1.2
+做成并排的两个解释器——注意 `corec` 的 g 读的是**之前的
+整个列表**，这正是"强递归"与"原始递归"的分界线：
+
+```python
+def primrec(a, g, N):
+    """第一递归定义定理：f(0)=a; f(n+1)=g(f(n), n)"""
+    f = {0: a}
+    for n in range(N):
+        f[n + 1] = g(f[n], n)
+    return f
+
+def corec(g, N):
+    """推论 1.2（强递归）：f(n) = g(f|n)——由之前所有值决定"""
+    f = {}
+    for n in range(N + 1):
+        f[n] = g([f[i] for i in range(n)])
+    return f
+
+fact = primrec(1, lambda x, n: x * (n + 1), 10)
+fib = corec(lambda p: p[-1] + p[-2] if len(p) >= 2 else (1 if len(p) == 1 else 0), 12)
+catalan = corec(lambda p: sum(p[i] * p[len(p) - 1 - i] for i in range(len(p))) if p else 1, 10)
+```
+
+`catalan` 是强递归的招牌案例：f(n) = Σf(i)f(n−1−i) 需要之前
+**所有**值，任何原始递归形状都装不下它。三明治引理（引理 1.4）
+在 0..23 的有限段上跑希尔伯特旅馆——递归生成 Aₙ/Bₙ、验证
+Eₙ = {2n}、确认拼合函数 g（偶数段 +2、奇数段不动）把
+{0,…,23} 双射到 {1,…,24}：
+
+```python
+An, Bn = set(range(24)), set(range(1, 24))
+Es = []
+for n in range(10):
+    En = {x for x in (An - Bn) if x < 20}   # 截去边界装饰，看芯
+    Es.append(sorted(En))
+    An = {x + 2 for x in An}
+    Bn = {x + 2 for x in Bn}
+assert Es == [[2 * n] for n in range(10)], Es
+E = set(range(0, 24, 2))                     # 偶数段
+D = set(range(1, 24, 2))                     # 奇数段
+g = lambda x: x + 2 if x % 2 == 0 else x
+img = sorted(g(x) for x in range(24))
+assert img == list(range(1, 25))
+```
+
+断言逐条对应书页：Eₙ 恰为单点集 {2n}（引理 1.4 的关键计算），
+D = A − E 是奇数段，g 在 E 上是 f、在 D 上是恒等——有限截段
+上 assert 失败即书页证明的"哪一步穿帮"。Julia 版（examples/
+julia/68_naturals.jl）另跑 15×15 网格验证 vadd 交换律与
+4→3 映射/单射计数（81 种映射、0 个单射——定理 1.10 的有限
+剧场）。
+
+### Prolog：三段式的谓词化
+
+Prolog（examples/prolog/68_naturals.pl）把命题 1.9 的和谐系统
+与引理 1.2/1.3 的有限近似直接写成谓词——函数用 K-V 对列表
+表示，"两两和谐"就是 `forall` 量词化的相等检查：
+
+```prolog
+compatible(F, G) :-
+    forall((member(K-V, F), member(K-W, G)), V == W).
+
+harmonious([]).
+harmonious([F|Rest]) :-
+    forall(member(G, Rest), compatible(F, G)),
+    harmonious(Rest).
+
+% 引理 1.2：长度 m+1 的有限近似（例：f(0)=1, f(n+1)=f(n)*(n+1)——阶乘）
+g_step(X, N, Y) :- Y is X * (N + 1).
+
+approx(0, [0-1]).
+approx(M1, F1) :-
+    M1 > 0, M is M1 - 1,
+    approx(M, F0),
+    func_value(F0, M, V0),
+    g_step(V0, M, V),
+    append(F0, [M1-V], F1).
+```
+
+`approx/2` 的递归结构就是引理 1.2 的证明：f_{m+1} = f_m 加上
+一个新点对。`main` 里 `findall` 收出全部近似后用 `harmonious`
+判定（引理 1.3：近似序列两两和谐 ✓），再取最长者查值——焊接
+f(6) = 720 = 6!，**定理 1.12 的三段式构造以程序轨迹现形**。
+雪崩映射用 `rank_in(X, K, R)` 计算名次（素数集上 2,3,5,11,29
+的名次为 0,1,2,4,9）， pigeons 部分枚举 3→3 全部 27 个映射、
+筛出 6 个单射并验证全部满射，4→3 的 81 个映射中单射计数为
+0——定理 1.10 的两个半句都有了有限证人。
 
 ## 68.9 收束：最小无穷的三副面孔
 
