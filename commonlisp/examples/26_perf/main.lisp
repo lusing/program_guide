@@ -7,11 +7,13 @@
 ;;;;   1. 类型声明（declare / declaim）
 ;;;;   2. 优化级别（optimize）
 ;;;;   3. 内联函数（inline / declaim inline）
-;;;;   4. 性能分析（time / sb-profile）
+;;;;   4. 性能分析（time / sb-profile / sb-sprof）
 ;;;;   5. 内存优化
-;;;;   6. 数值计算优化
-;;;;   7. 常见性能陷阱
-;;;;   8. 基准测试
+;;;;   6. 数值计算优化（fixnum/浮点/矩阵 + 模运算/环绕加法/ctz）
+;;;;   7. 尾调用与块编译（TCO 互递归 / start-block）
+;;;;   8. 栈分配 dynamic-extent
+;;;;   9. 常见性能陷阱
+;;;;  10. 基准测试
 ;;;;
 ;;;; 运行方式（推荐 --load）：
 ;;;;   sbcl --noinform --non-interactive --no-userinit --load examples/26_perf/main.lisp
@@ -201,12 +203,32 @@
 (sb-profile:unprofile)
 
 ;; sb-sprof — 统计采样分析器（更准确）
-;; 它**是** contrib 模块，所以这里必须 require，且它没有 prof/profile 函数：
-;; 真正可用的是 START-PROFILING / STOP-PROFILING / REPORT / RESET
-;; 以及宏 WITH-PROFILING（:report 取 :flat 或 :graph）。
-;; (require :sb-sprof)
-;; (sb-sprof:with-profiling (:max-samples 1000 :report :flat)
-;;   (your-code-here))
+;; 它**是** contrib 模块，必须 require；接口是 START-PROFILING / STOP-PROFILING
+;; / REPORT / RESET 以及宏 WITH-PROFILING。
+;; macOS（Darwin）上用 :mode :time（墙钟）：:mode :cpu 的剖析信号在 Darwin 上
+;; 不按 CPU 用量比例投递到各线程，多线程程序可能采出空调用图。
+(require :sb-sprof)
+
+(defun sum-02 (n)
+  (declare (type fixnum n))
+  (let ((acc 0))
+    (declare (type fixnum acc))
+    (loop for i fixnum from 1 to n do (incf acc i))
+    acc))
+
+;; :report nil = 只采样先不打印，宏返回 body 的值。
+;; 注意：body 必须比采样间隔（默认 0.01s）跑得久，否则 with-profiling
+;; 会因「一轮下来样本数没涨」打 No sampling progress 警告——所以这里
+;; 故意跑一亿次（约 0.1 秒），而不是文档里的十万次。
+(format t "with-profiling 跑 sum-02 一亿次: ~A~%"
+        (sb-sprof:with-profiling (:max-samples 100 :report nil :mode :time)
+          (sum-02 100000000)))
+
+;; 报告走 *trace-output*，绑到 *standard-output* 免得落进 stderr 判定
+(format t "--- sb-sprof flat 报告（前 5 行）---~%")
+(let ((*trace-output* *standard-output*))
+  (sb-sprof:report :type :flat :max 5))
+(sb-sprof:reset)
 
 
 ;;; ----------------------------------------------------------
@@ -318,9 +340,100 @@
     (declare (ignore result))
     (format t "50x50 矩阵乘法: ~,4F 秒~%" elapsed)))
 
+;; 模运算优化：logand/logxor/lognot/+/-/ash 组成的表达式树，若掩码是
+;; (unsigned-byte 32/64) 这样的好宽度，中间结果全按宽度截断，直接用机器指令
+(defun mod-xor (x y)
+  (declare (type (unsigned-byte 32) x y))
+  (ldb (byte 32 0) (logxor x (lognot y))))
+(format t "mod-xor 5 3 = ~A~%" (mod-xor 5 3))
+
+;; 有符号环绕加法惯用法：先按宽度截断，再符号扩展
+(defun add64-wrap (a b)
+  (declare (type (signed-byte 64) a b))
+  (let ((u (ldb (byte 64 0) (+ a b))))
+    (logior u (- (mask-field (byte 1 63) u)))))
+(format t "add64-wrap 3 4 = ~A~%" (add64-wrap 3 4))
+(format t "add64-wrap max+1 = ~A（环绕回最小值）~%"
+        (add64-wrap 9223372036854775807 1))
+
+;; ctz（数尾部零）是被识别的惯用法：x86-64/arm64 上一条指令，0 按约定返回 64
+(defun ctz (n)
+  (declare (type (unsigned-byte 64) n))
+  (integer-length (ldb (byte 64 0) (lognor n (- n)))))
+(format t "ctz 8 = ~A，ctz 0 = ~A~%" (ctz 8) (ctz 0))
+
 
 ;;; ----------------------------------------------------------
-;;; 7. 常见性能陷阱
+;;; 7. 尾调用与块编译
+;;; ----------------------------------------------------------
+
+(format t "~%=== 尾调用与块编译 ===~%")
+
+;; 局部尾递归：labels 的自调用是局部调用，编译出来和命令式循环一样好
+(defun recurse-fact (n)
+  (labels ((loop* (n total)
+             (if (zerop n)
+                 total
+                 (loop* (1- n) (* n total)))))
+    (loop* n 1)))
+(format t "recurse-fact 5 = ~A~%" (recurse-fact 5))
+
+;; TCO（尾调用优化）：尾位置的调用编译成「改参数 + 跳转」，不分配新栈帧。
+;; 条件：尾位置（不被 let 动态绑定/catch/unwind-protect 等包裹）且 debug ≤ 2。
+;; 意义：互递归的一组函数可以当状态机写，每层转移不耗栈。
+;; 先 proclaim ftype，免得先定义的 even-p* 引用尚未定义的 odd-p* 触发
+;; undefined-function 风格警告（会落进 stderr 判定）。
+(declaim (ftype (function (fixnum) t) odd-p* even-p*))
+(defun even-p* (n) (if (zerop n) t (odd-p* (1- n))))
+(defun odd-p* (n) (if (zerop n) nil (even-p* (1- n))))
+(format t "even-p* 1000000 = ~A（互递归一百万层没爆栈）~%" (even-p* 1000000))
+
+;; 块编译：块内 defun 之间的全调用也变局部调用，哪怕调用点在被调函数之前；
+;; 非入口函数（这里只有 bc-entry 是入口）不安装全局定义。
+(declaim (ftype (function (fixnum) fixnum) bc-helper))
+(declaim (sb-ext:start-block bc-entry))
+(defun bc-entry (x) (bc-helper (1+ x)))
+(defun bc-helper (y) (* y 2))
+(declaim (sb-ext:end-block))
+(format t "bc-entry 5 = ~A~%" (bc-entry 5))
+;; 代价：块内调用不经过 symbol-function，重定义 bc-helper 不影响 bc-entry
+
+
+;;; ----------------------------------------------------------
+;;; 8. 栈分配 dynamic-extent
+;;; ----------------------------------------------------------
+
+(format t "~%=== dynamic-extent 栈分配 ===~%")
+
+;; setq 进 DX 变量的 cons 链整条都在栈上，函数返回即释放，零 GC 压力
+(defun dx-list-sum (n)
+  (let ((xs nil))
+    (declare (dynamic-extent xs))
+    (dotimes (i n)
+      (setq xs (cons (1+ i) xs)))
+    (reduce #'+ xs)))
+(format t "dx-list-sum 5 = ~A~%" (dx-list-sum 5))
+
+;; &rest 列表是 dynamic-extent 最经典的用法
+(defun dx-args (&rest args)
+  (declare (dynamic-extent args))
+  (length args))
+(format t "dx-args 1 2 3 = ~A~%" (dx-args 1 2 3))
+
+;; 构造器声明 inline 的 defstruct，实例也能整个上栈
+(declaim (inline make-perf-pt))
+(defstruct perf-pt x y)
+(defun pt-norm-sq (a b)
+  (let ((p (make-perf-pt :x a :y b)))
+    (declare (dynamic-extent p))
+    (+ (* (perf-pt-x p) (perf-pt-x p))
+       (* (perf-pt-y p) (perf-pt-y p)))))
+(format t "pt-norm-sq 3 4 = ~A~%" (pt-norm-sq 3 4))
+;; 纪律：让 DX 值逃逸出动态范围 = 读垃圾甚至崩映像——声明只被信任不被检查
+
+
+;;; ----------------------------------------------------------
+;;; 9. 常见性能陷阱
 ;;; ----------------------------------------------------------
 
 (format t "~%=== 性能陷阱 ===~%")
@@ -387,7 +500,7 @@
 
 
 ;;; ----------------------------------------------------------
-;;; 8. 基准测试
+;;; 10. 基准测试
 ;;; ----------------------------------------------------------
 
 (format t "~%=== 基准测试 ===~%")

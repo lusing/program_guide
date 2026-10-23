@@ -42,7 +42,7 @@
 (namestring (pathname-as-file #p"foo/bar/"))         ; => "foo/bar"
 ```
 
-## 30.2 实测差异账本（SBCL 2.6.8 vs CLISP 2.49.95）
+## 30.2 实测差异账本（SBCL 2.6.9 vs CLISP 2.49.95）
 
 这是本教程「diff 出可移植性」方法论的集中营，四个新条目：
 
