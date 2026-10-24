@@ -2,7 +2,7 @@
 
 Isabelle2025-2 / HOL，配套 `docs/01..72` 与 `examples/T01..T72`。
 本页分两部分：**语法速查**（按用途排列）与**实测坑位索引**（按症状排列，
-指向章号）。坑位总数是 619 条（72 章，详单见各章"坑位清单"），
+指向章号）。坑位总数是 629 条（73 章，详单见各章"坑位清单"），
 每条都在本机跑出来过。
 
 ---
@@ -387,3 +387,21 @@ CCL（`IsaTutCCL`，FOL 之上的 1993 年"计算逻辑"库）专用坑，
 | `typechk`/`gen_ccs` 可带类型定理作参数（`typechk redT whiteT blueT ccaseT`） | 72 |
 | `Perm` 是公理（`axiomatization Perm`），Flag 的 correctness 以 `oops` 收场 | 72 |
 | `$` 优先级 80、`@` 是 55，`x$xs @ m` 不等于 `x $ (xs @ m)` | 72 |
+
+## 十二、第六轮扩充（73 章）LCF 坑位速览
+
+LCF（`IsaTutLCF`，FOL 之上的域论计算逻辑，Paulson 1987 书的形式化）专用坑，
+详单见第 73 章"坑位清单"：
+
+| 症状/要点 | 章 |
+|---|---|
+| `imports "IsaTutLCF.ex.Ex1"` 解析不到——注册名是 `IsaTutLCF.Ex1`（`directories "ex"` 不进限定名） | 73 |
+| Ex1 与 Ex2 不能同 imports（都公理化 `P :: 'a ⇒ tr`，合并即 Clash of types） | 73 |
+| `induct` 方法的 adm 自动关只覆盖 `adm_lemmas` 表内形状；任意谓词 Q 要自带 `adm(Q)` 前提 | 73 |
+| `apply (induct f)` 三子目标顺序固定（adm / P(UU) / 逐步保持）；第三个先 `intro strip` | 73 |
+| 证等式开局 `unfold eq_def` 拆两个 `<<`；等式 = 双向偏序，不是原始关系 | 73 |
+| `ap_term` 是"项同推作用同"，`ap_thm` 是"函数同推作用同"（AP_TERM/AP_THM 直译） | 73 |
+| 处理 COND 用 `simp split: COND_cases_iff`，直接 simp 只重写头部不分情况 | 73 |
+| `FIX_eq` 是等式、`least_FIX` 是序——证 `FIX(f) = p` 用 `lfp_is_FIX` 双向模板 | 73 |
+| `(λx. UU) = UU`（`UU_abs`）：常 bottom 函数就是 bottom，simp 已挂 | 73 |
+| LCF 无结构归纳：唯一归纳是不动点 `induct`/`induct2`，数据推理靠穷举公理 | 73 |

@@ -22,6 +22,8 @@
 #   examples/zf/    IsaTutZF   = ZF              集合论对象逻辑章
 #   examples/cclbase/ IsaTutCCL = FOL            CCL 库本身（Set…Fix + ex/*）
 #   examples/ccl/   IsaTutCCLex = IsaTutCCL      CCL 教程示例章（T69–T72）
+#   examples/lcfbase/ IsaTutLCF = FOL            LCF 库本身（LCF + ex/Ex1–4）
+#   examples/lcf/   IsaTutLCFex = IsaTutLCF      LCF 教程示例章（T73）
 #   脚本从各 ROOT 解析「会话 → 父堆 → 理论清单」，按 (父堆, 目录) 分组各跑一路
 #   process_theories；判定标准对所有会话一视同仁。
 #

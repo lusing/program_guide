@@ -1,0 +1,10 @@
+session IsaTutLCF = FOL +
+  options [document = false]
+  directories "ex"
+  theories
+    LCF
+    (* Some examples from Lawrence Paulson's book Logic and Computation *)
+    "ex/Ex1"
+    "ex/Ex2"
+    "ex/Ex3"
+    "ex/Ex4"
