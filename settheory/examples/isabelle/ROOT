@@ -349,3 +349,43 @@ session ST70 in "ST70" = "ZF-Constructible" +
   options [document = false]
   theories
     Replacement
+
+session ST71 in "ST71" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Ordinals
+
+session ST72 in "ST72" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Wellorder
+
+session ST73 in "ST73" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Fastgrowth
+
+session ST74 in "ST74" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Cardinals
+
+session ST75 in "ST75" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Collapse
+
+session ST76 in "ST76" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Choice
+
+session ST77 in "ST77" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Nonstat
+
+session ST78 in "ST78" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Sch

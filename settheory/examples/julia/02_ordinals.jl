@@ -74,7 +74,11 @@ function omul(a::ON, b::ON)
     a == oz() || b == oz() ? (return oz()) : ()
     b == on_n(1) && return a
     isempty(b.terms) && return omul_fin(a, b.fin)     # α·n = α+…+α
-    isempty(a.terms) && return ON(b.terms, b.fin)     # 有限正数·无穷 = 无穷首项吸收系数
+    if isempty(a.terms)
+        # 有限正数·无穷：无穷首项吸收系数，有限尾巴如实放大
+        #   （n·(ω+m) = ω+n·m——72 章勘误补正：尾巴不能丢）
+        return ON(b.terms, a.fin * b.fin)
+    end
     (ea, ca) = a.terms[1]
     (eb, cb) = b.terms[1]
     head = (oadd(ea, eb), cb)                          # ω^(ea+eb)·cb：α 首项系数被吸收
@@ -129,6 +133,10 @@ println("ω + ω = ", show_on(r3), "  （即 ω·2）")
 r4 = omul(two, w)
 println("2 · ω = ", show_on(r4))
 @assert r4 == w                          # 乘法吸收：2·ω = ω
+
+r4b = omul(two, oadd(w, on_n(3)))
+println("2 · (ω+3) = ", show_on(r4b))
+@assert r4b == oadd(w, on_n(6))          # 有限系数作用于有限尾巴：2·(ω+3) = ω+6
 
 wp1 = oadd(w, one)
 r5 = omul(wp1, two)

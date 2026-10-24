@@ -170,12 +170,20 @@ Makinson 全书 3 部 11 章提炼为第九篇（56-66：计算者的集合—�
 
 - **F0**（2026-10-21）：收官章重编号 67→84（腾出 67-83 给第十篇），
   docs/示例/ROOT/会话名/导航接缝/README，477 单元保持全绿
-- **F1**：67-68（传递集合与形式理论 + 自然数与第一递归定义定理）
-- **F2**：69-70（有限无限/整数有理数 + 第二递归定义定理/彻底有限集合）
-- **F3**：71-72（序数与累积层次 + 秩序与序数算术）
-- **F4**：73-74（快速增长数论函数层次 + 基数之和积典型秩序）
-- **F5**：75-76（传递化刚性与有秩关系 + 选择公理与无穷和积不等式）
-- **F6**：77-78（非荟萃集理想与广义无界闭子集 + 奇异基数假设银杰/嘎尔文-海纳）
+- **F1** ✅（2026-10-23）：67-68（传递集合与形式理论 + 自然数与第一递归定义定理）
+- **F2** ✅（2026-10-23）：69-70（有限无限/整数有理数 + 第二递归定义定理/彻底有限集合）
+- **F3** ✅（2026-10-24）：71-72（序数与累积层次 + 秩序与序数算术）
+- **F4** ✅（2026-10-24）：73-74（快速增长数论函数层次 + 基数之和积典型秩序）
+- **F5** ✅（2026-10-24）：75-76（传递化刚性与有秩关系 + 选择公理与无穷和积不等式）；
+  ST71-75 首建攻坚（Vset 缩写 simp 死循环爆 11.5 GB → Vfrom_0/
+  Limit_Vfrom_eq 零搜索化；blast 三形态失控 → bspec 链/UN_I 目标先行/
+  equalityI+simp），批内 -Chapter 71-76 43/43 全绿
+- **F6** ✅（2026-10-24）：77-78（滤子/非荟萃集理想与广义无界闭子集 +
+  奇异基数假设银杰/嘎尔文-海纳）；ST77/ST78 首建（`Limit_has_succ` 要 `b<K`
+  而非 `b∈K`；闭集之交用 `equalityI`+`also/finally` 夹逼，`with` 链会把 `⊆`
+  误当 `i` 触发类型冲突；text 里链式 `\<^term>\<open>A ⊆ B ⊆ C\<close>` 也类型冲突 →
+  拆成两段或改纯文本；`wf_induct` 是 `rule_format` → 元层 IH，高阶合一脆弱 →
+  先 `have step` 再 `[OF wf_Memrel step]`），批内 -Chapter 77-78 15/15 全绿
 - **F7**：79-80（树/苏斯林/马丁公理/划分定理 + 实数轴与连续统假设）
 - **F8**：81-82（实数子集正则性 + 贝尔空间波兰空间投影集）
 - **F9**：83（非标准实数直线与苏斯林直线）+ 84 收官 CHEATSheet 四书总表
@@ -388,4 +396,99 @@ pdftotext 按节页段提取（书页 = PDF-12），文本作骨架（定理编�
   中文串内禁 ASCII 引号。Python：坍缩规范化键 (len,str)。Prolog：
   between 的 B=N 平凡真、(A;B)->C 双解、length+=<k 无限失败循环、
   未绑定 D 的 \+ call 全域失败。
+- **F3-F5 坑（71-76 章，2026-10-24）**：
+  - Lean 2026 断代三连：`λ` 是保留符号不能当变量名（`(κ λ : Cardinal)`
+    报 unexpected token，改 `ν`）；`Ordinal.epsilon_zero_eq_nfp` 住在
+    `Mathlib.SetTheory.Ordinal.Veblen`（只 import FixedPoint 报 Unknown
+    constant）；`ZFSet.vonNeumann_succ` 弃用 → `vonNeumann_add_one`
+    （类型同步从 `V_ (Order.succ o)` 变 `V_ (o + 1)`）。
+  - Isabelle/ZF：`ZF.AC.AC_Equiv` 不在 ZF-Constructible 父会话堆里
+    （报 need to include sessions "ZF.AC" in ROOT）；显式 AC 全家桶
+    （AC_Pi0/AC_func_Pow/AC_well_ord/Zorn_po/Cardinal_AC）import
+    `ZF.Cardinal_AC` 一个就够。
+  - Coq：`existsb_exists` 是 iff，假设侧 `E : existsb … = false` 不能
+    直接 `apply … in E`；另证 `= true` 形态再 `rewrite E in` +
+    discriminate。
+  - Agda：自造中置算子无 fixity 声明时 `x ≡ᵇ y ∨ member x ys` 解析
+    错位（Bool !=< ℕ），必须显式括号 `(x ≡ᵇ y) ∨ …`；**rewrite
+    表达式看不到 where 块绑定**（scope 隔离，推导须内联）；
+    `s≤s ≤-refl : suc a ≤ suc a` 不是 `a ≤ suc a`（后者自证两行
+    归纳 ≤-suc）。
+  - Julia：顶层 for 循环改全局计数器必须 `global n_add, …` 声明
+    （soft scope 新局部 + 先读后写 = UndefVarError）；插值后紧跟
+    全角顿号 `$n_add、` 被解析器吞进标识符——`$(n_add)、` 一律化
+    （B2/B3 老坑复发在 72 章）。
+  - build.ps1 调用形态：`-File … -Chapter 71,72` 被当字符串炸 Int32
+    转换；`-File … -Chapter 71 72 …` 位置错位**静默 0 单元假绿**；
+    铁律 `-Command "& '…build.ps1' -Chapter @('71','72')"`。
+  - König 对角实验三口径：Python 25 种候选覆盖（含两块皆空）、
+    Julia 24 种（排除皆空无效覆盖）、Prolog 16 种单点候选对——
+    数量差是口径差不是矛盾，正文须明说。
+  - 数学自纠（docs 侧）：71 传递性证明须 Φ₂ 三择一逐支排除（δ=β/
+    β∈δ/δ∈β）；72 换顶良序最小元须按"子集含不含 0"分四况；73
+    "ε₀ 以上无有限范式"是错的——把 ε₀ 当常量后更大序数仍有有限
+    表达式；74 定理 1.93 须分清 Γ 像/序型/等势三层（θ_α=ot(ω_α×ω_α)
+    最小反例归纳）；76 SCH 三面貌中第二面貌**不能**排除定理 2.13(2)
+    （κ=ℵ_{ω+1}、λ=ℵ₀ 时它真触发但结论仍 κ），须走有界函数+归纳
+    ν^λ≤κ；第三面貌才靠"奇异=极限基数 ⇒ μ⁺<κ"排除；H_κ 的下界是
+    "每个 A⊆λ 属于 H_κ"而非 𝒫(λ)⊆H_κ 整体；秩引理 |RK(a)|≤|TC(a)|
+    （秩值沿 TC 逐层可达）是 H_κ⊆V_κ 的正路。
+- **F3-F5 Isabelle/ZF 补充坑（ST71-75 首建血泪，2026-10-24）**：
+  - **ST71-75 从未在前会话建成**（heaps/log 无账）——`Vset(i) ≡
+    Vfrom(0,i)` 是 **abbreviation**：无 `Vset_def`/`Vset_0` 事实名；
+    名为 `Vset` 的引理是递归展开式（库原注 NOT SUITABLE FOR
+    REWRITING），`simp add: Vset` = 无限展开、poly 爆 11.5 GB 的
+    元凶。V_0 用 `Vfrom_0`、V_limit 直接 `rule Limit_Vfrom_eq`
+    （缩写透明，零 unfold）。
+  - `≤` 是 `x < succ(y)` 的缩写（序数 ≤）**不是子集**；OrdmemD 给
+    j≤i；x∈序数 → x⊆序数 走 `Ord_is_Transset` + `simp only:
+    Transset_def`。变元应用必须反引号 ``f`x``，`f(x)` 对 f::i 直接
+    类型错。`⋃x<A.`（OUnion）与 `⋃x∈A.`（UNION）是两个内部常量：
+    `Ord_OUN` vs `Ord_UN` 分别伺候。`beta`（λ 应用方程）**无
+    [simp]**，须手动 `simp add: beta`。`oadd_le_self: i≤i++j` vs
+    `oadd_le_self2: i≤j++i` 看方向取用；`omult_Limit` 前提 Ord 在
+    前 Limit 在后。归纳选 `trans_induct3`（0/succ/limit 三案）+
+    `erule_tac i = b` 钉死归纳变量；`nat_induct` 后归纳步变量是
+    新鲜 x，`subgoal_tac` 写原 n 静默失配。
+  - **blast 失控三形态**（都烧 5+ 分钟 CPU 无内存峰或缓慢爬升）：
+    `blast intro: UN_I`（高阶柔性 B 匹配）、等式+双向包含合取
+    （from eq sub sup）、`obtain` 配 ∀∈ 实例化。确定性替代：
+    `rule UN_I`（目标先定 B 再吃 facts）、`equalityI` + `simp`、
+    `bspec` 链逐步实例化 + simp 重写。`emptyE` 在（`lemmas` 声明，
+    grep "lemma emptyE" 搜不到）。
+  - **内存/进程管理**：poly 膨胀触发 Claude Code 低内存回收杀后台
+    任务、留下孤儿再膨胀的死亡循环；`taskkill /T` 对 cygwin 树无效
+    （cygwin fork 不走 Windows 树），必须枚举 poly/java PID 逐个
+    Stop-Process；新旧调度器同写一个日志会出零填充空洞+交错假象
+    ——每轮换新日志文件；**谁在被构建以 heaps/log/*.db 时间戳为准**
+    （T71B.db 15:18 vs ST71.db 14:58 破案：爆内存的是没删掉的
+    scratch 会话残骸而非修好的 ST71）。
+- **F6 坑（77-78 章，2026-10-24）**：
+  - Isabelle/ZF：`Limit_has_succ` 的前提是 `⟦Limit(i); j<i⟧`（要 `<`
+    不是 `∈`），`b∈K` 须先 `ltI [OF bK Ord(K)]` 转成 `b<K` 再喂；
+    闭集之交的夹逼用 `proof (rule equalityI)` 拆两个 `⊆`，每支走
+    `also/finally` 链——`with aeq show ?thesis by blast` 会把 `⊆`
+    事实当 `i` 型操作数触发 "Clash of types o and i"。**text 里的
+    链式 `\<^term>\<open>A ⊆ B ⊆ C\<close>` 同样类型冲突**（`⊆` 右结合
+    成 `A ⊆ (B⊆C)`），须拆成两段 `\<^term>` 或改纯文本。
+  - `wf_induct` 标了 `rule_format` → 归纳假设是**元层** `⋀y. ⟨y,x⟩∈r ⟹ …`
+    而非对象层 `∀y. …⟶…`；直接 `proof (rule wf_induct [OF wf_Memrel])`
+    对 `∉`-谓词目标触发脆弱高阶合一（"Failed to refine any pending
+    goal At qed"）。稳健式：先 `have step: "⋀x. (⋀y. …⟹…) ⟹ …"`
+    单独证出，再 `wf_induct [OF wf_Memrel step]`。`wf_Memrel` 无条件
+    良基（不需 `Ord(A)`）；**没有** `wf_on_Memrel` 这个名字。
+  - ZF 自然数减法是 `#-`（monus）不是 `∸`；`nat_diff_pred: k #- succ(n)
+    = pred(k #- n)`；`diff_is_0_lemma`（`m #- n = 0 ⟷ m ≤ n`）住在
+    `ZF.ArithSimp` 不在 `ZF.Arith`，须补 import。`f`x` 是函数应用，
+    `by blast` 在 `Pi`/`function` 展开上会发散（160s+）→ 用
+    `fun_is_function [OF fn]` 取 `function(f)`。
+  - Python f-string：`{ℵ₁}` 这类带下标/花括号的数学记号在 f-string 里
+    被当占位符，须转义或挪出插值；`∸` 不是合法 Python 运算符。
+  - docs 须与最终编译代码一致：正文原许诺的 `club_inter_club`（交替
+    `nat_rec`+`Least` 乒乓序列 + 显式 `reg` 正则性假设）实际未实现，
+    ST77 收敛到 `unbounded_K`/`closed_K`/`K_is_club`/`closed_inter_closed`/
+    `club_inter_closed`/`DiagInt_subset`/`DiagInt_mem_iff`（κ 是 club +
+    定理 2.23 μ=2 的**闭**一半 + 对角线交成员判定），无界一半与 Fodor
+    交 mathlib `IsClub.sInter` 与 Coq/Agda/Prolog 有限模型分担；77 章
+    Isabelle 小节据此重写。
 

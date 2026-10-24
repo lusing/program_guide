@@ -3,12 +3,14 @@
 以 Thomas Jech《Set Theory》（Academic Press 1978，第一版）为纲、
 Matteo Viale《The Forcing Method in Set Theory》（Springer UNITEXT 168，
 2024）为力迫篇第二底本、David Makinson《Sets, Logic and Maths for
-Computing》（Springer UTiCS，第三版 2020）为计算视角篇第三底本的
+Computing》（Springer UTiCS，第三版 2020）为计算视角篇第三底本、
+冯琦《集合论导引（第一卷）基本理论》为传递集合路线第四底本的
 中文教程。从 ZFC 公理、序数、基数到力迫、大基数与描述集合论，
-再到布尔值语义重建与计算者的离散数学工具箱——三本书、九篇、
-68 章全覆盖，每章正文自包含（只读 docs 即可学习）。
+再到布尔值语义重建、计算者的离散数学工具箱与传递集合为纲的
+基本理论——四本书、十篇、80 章（第十篇 79-83 写作中），每章正文
+自包含（只读 docs 即可学习）。
 
-七通道机器验证（68 章 × 7 = 476 单元）：
+七通道机器验证（80 章 × 7 = 560 单元）：
 
 - **Lean 4 + mathlib4**（主证明：Ordinal / Cardinal / ZFC / Zorn 官方锚点）
 - **Isabelle/ZF**（第二证明：Paulson 的 Constructible = Gödel L 独家形式化）
@@ -154,6 +156,25 @@ Borel 集与解析集、Baire 空间与投影层级、L 中的投影集、Solova
 | [65](docs/65-proof.md) | 证明与后承 | Tarski 三条件/条件证明 |
 | [66](docs/66-relevance.md) | 相关性 | 爆炸律/Lewis 推导/变量共享 |
 
+### 第十篇 冯琦路线：传递集合为纲的基本理论（冯琦《集合论导引》第一卷）
+
+以**传递集合**为唯一组织概念重讲基本理论：自然数 = 最小无穷传递集合、序数 = 传递的传递集合、累积层次 = 传递集合之塔；两个递归定义定理给出归纳定义的统一框架，再经快速增长层次、基数算术、Mostowski 传递化，抵达选择公理与无穷和积不等式；第 2 章续写非荟萃集理想、广义无界闭子集与奇异基数假设（银杰定理、嘎尔文-海纳）。
+
+| 章 | 标题 | 一句话 |
+|---|---|---|
+| [67](docs/67-transitive.md) | 传递集合与形式理论 | 传递闭包 TC、∈-归纳与 ZFC 形式语言 |
+| [68](docs/68-naturals.md) | 自然数与第一递归定义定理 | ω = 最小无穷传递集合；递归定理第一版 |
+| [69](docs/69-integers.md) | 有限与无限、整数与有理数 | Dedekind 有限⇔有限；ℤ/ℚ 的商构造 |
+| [70](docs/70-recursion2.md) | 第二递归定义定理与彻底有限集合 | 良基递归第二版；HF 与 V_ω |
+| [71](docs/71-ordinals.md) | 序数与累积层次 | 传递的传递集合；V=⋃V_α 与秩 |
+| [72](docs/72-wellorder.md) | 秩序与序数算术 | 表示定理、共尾度、+·^ 与康托尔范式 |
+| [73](docs/73-fastgrowth.md) | 快速增长数论函数层次 | ε₀、F_α 层次、古德斯坦与 PA 边界 |
+| [74](docs/74-cardinals.md) | 基数：和、积与典型秩序 | 初始序数、ℵ 序列、Gödel 配对与 ℵ·ℵ=ℵ |
+| [75](docs/75-collapse.md) | 传递化：刚性与有秩关系 | 良基外延结构的 Mostowski 标准形 |
+| [76](docs/76-choice.md) | 选择公理与无穷和积不等式 | AC/Zorn/良序等价；König、Hausdorff、SCH、H_κ |
+| [77](docs/77-nonstat.md) | 滤子、非荟萃集理想与广义无界闭子集 | club 滤子、NS 理想、对角线交与 Fodor |
+| [78](docs/78-sch.md) | 奇异基数假设：银杰与嘎尔文-海纳 | Silver 定理、Galvin-Hajnal 与 SCH 边界 |
+
 ### 收官
 
 | 章 | 标题 | 一句话 |
@@ -163,18 +184,19 @@ Borel 集与解析集、Baire 空间与投影层级、L 中的投影集、Solova
 ## 验证
 
 ```pwsh
-pwsh -NoProfile -Command '& ./build.ps1 -All'        # 全量对账（476 单元）
+pwsh -NoProfile -Command '& ./build.ps1 -All'        # 全量对账（560 单元）
 pwsh -NoProfile -Command '& ./build.ps1 -Chapter 02' # 只验一章
 pwsh -NoProfile -Command '& ./build.ps1 -List'       # 列出全部验证单元
 ```
 
-## 三底本
+## 四底本
 
 | 底本 | 版本 | 覆盖范围 |
 |---|---|---|
 | Thomas Jech, *Set Theory* | Academic Press 1978（第一版） | 全书 7 章 44 节 + 附录 |
 | Matteo Viale, *The Forcing Method in Set Theory* | Springer UNITEXT 168, 2024 | 全书 7 章 + 附录 A/B/C/D |
 | David Makinson, *Sets, Logic and Maths for Computing* | Springer UTiCS, 3rd ed. 2020 | 全书 3 部 11 章 |
+| 冯琦, *集合论导引（第一卷）基本理论* | 324 页扫描版（rapidocr 取材） | 引言 + 第 1 章 + 第 2 章 §2.1-2.4（第十篇 67-78，79-83 推进中） |
 
 每章正文中底本编号（如 "Jech §12"）仅作溯源注记，不构成阅读依赖；
 全部定理给完整证明或完整讲解，自包含可读。
