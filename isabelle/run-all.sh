@@ -7,22 +7,33 @@
 #   ./run-all.sh clean                 # 清理 build/ 下本脚本产物
 #
 # 验证纪律（与仓库其他语言项目一致，按 Isabelle 特性定制）:
-#   1. isabelle build -D examples 退出码 0，且日志无溃逃痕迹
+#   1. isabelle build 对每个含 ROOT 的目录各建一次，退出码 0，且日志无溃逃痕迹
 #      —— Isabelle/Scala 工具失败不一定让进程退出码非 0，必须查日志。
 #   2. isabelle process_theories -O 捕获每个示例的
 #      ==== NN 开始 ==== / ==== NN 结束 ==== 区间，要求标记齐、区间非空、
 #      无 ASCII 控制字符、无溃逃痕迹（Error/FAILED/Unfinished/Uncaught）。
-#   3. 同一命令连跑两遍，标记区间逐字节一致
-#      —— 单引擎无多通道可比，用「运行间确定性」替代「跨通道一致性」；
-#      输出漂移往往指向示例自身依赖随机/环境，不只是工具噪声。
+#   3. 同一命令连跑两遍；
+#   4. 区间逐字节一致。
 #
-# 多会话布局（examples/ROOT 里一个会话一组，各自父会话即验证堆）:
-#   IsaTut    = "HOL-Eisbach"   主线 30 章 + 手册覆盖章
-#   IsaTutLib = "HOL-Library"   corec friends / HOL-Library 选讲章
-#   IsaTutFOL = FOL             一阶逻辑对象逻辑章
-#   IsaTutZF  = ZF              集合论对象逻辑章
-#   脚本从 ROOT 解析「会话 → 父堆 → 理论清单」，逐堆各跑一路
+# 多会话布局（examples/ 下每个含 ROOT 的目录一个会话，各自父会话即验证堆）:
+#   examples/       IsaTut     = "HOL-Eisbach"   主线 30 章 + 手册覆盖章
+#   examples/lib/   IsaTutLib  = "HOL-Library"   corec friends / HOL-Library 选讲章
+#   examples/fol/   IsaTutFOL  = FOL             一阶逻辑对象逻辑章
+#   examples/zf/    IsaTutZF   = ZF              集合论对象逻辑章
+#   examples/cclbase/ IsaTutCCL = FOL            CCL 库本身（Set…Fix + ex/*）
+#   examples/ccl/   IsaTutCCLex = IsaTutCCL      CCL 教程示例章（T69–T72）
+#   脚本从各 ROOT 解析「会话 → 父堆 → 理论清单」，按 (父堆, 目录) 分组各跑一路
 #   process_theories；判定标准对所有会话一视同仁。
+#
+# 两个 2026-10 修掉的「假绿」缺口（旧版脚本在本机实测复现过）:
+#   * build 只吃一个 -D：`isabelle build -D examples` 只建 examples/ROOT 里的
+#     会话，lib/fol/zf/ccl 子目录的 ROOT 完全不可见——堆没建时
+#     process_theories -l FOL 静默空跑（run-FOL.log 0 字节、退出码 0），
+#     对应章节「全绿」但什么都没验。现在第 1 关对每个 ROOT 目录各建一次。
+#   * -l 的父堆若是本地会话（IsaTutCCL 在 examples/cclbase/），必须同时用
+#     -d 把它的 ROOT 目录加为会话根，且 Draft 的 -D 目录不能与父会话目录
+#     相同（Isabelle 报 Duplicate use of directory）。这就是 CCL 教程示例
+#     与 CCL 库分放两个目录的原因。
 #
 # 环境前置条件（Windows/Cygwin + Linux + macOS 三端实测，换环境重新确认）：
 #   * Windows 版 Isabelle 不能在 Git Bash(MSYS/MINGW) 里直接跑：lib/scripts/
@@ -141,11 +152,12 @@ clean() {
   echo "已清理 $OUT/"
 }
 
-# --- 从 ROOT 解析「堆 -> 理论列表 -> 目录」三列会话分组 ---------------------
+# --- 从各 ROOT 解析「会话 -> 父堆 -> 理论 -> 目录」四列 ----------------------
 # 扫描 examples/ 及其子目录下所有 ROOT；条目形如
 #   session IsaTut = "HOL-Eisbach" +  /  session IsaTutFOL = FOL +
-# （父堆可带引号可不带），其后 4 空格缩进行是 theories 名单。
-# 输出三列 TSV：堆 <TAB> 理论名 <TAB> 目录。
+#   session IsaTutCCL = FOL +  /  session IsaTutCCLex = IsaTutCCL +
+# （父堆可带引号可不带），其后 4 空格缩进行是 theories 名单（可带 (global)）。
+# 输出四列 TSV：会话 <TAB> 父堆 <TAB> 理论名 <TAB> 目录。
 # BSD awk（macOS）兼容：不用 match 第三参。
 parse_root() {
   find "$EXAMPLES" -name ROOT | LC_ALL=C sort | while read -r root; do
@@ -161,9 +173,11 @@ parse_root() {
       }
       /^  theories/ { inthy = 1; next }
       /^  [A-Za-z]/ { inthy = 0; next }
-      inthy && /^    [A-Za-z0-9_]+[ \t\r]*$/ {
-        gsub(/[ \t\r]/, "", $0)
-        print heap "\t" $0 "\t" dir
+      inthy && /^    [A-Za-z0-9_]+/ {
+        line = $0
+        gsub(/\(.*\)/, "", line)
+        gsub(/[ \t\r"]/, "", line)
+        if (line != "") print sess "\t" heap "\t" line "\t" dir
       }
     ' "$root"
   done
@@ -174,7 +188,11 @@ if [[ -z "$ROOTMAP" ]]; then
   echo "!! 未能从 $EXAMPLES/ROOT 解析出任何会话分组" >&2
   exit 1
 fi
-heaps=$(awk -F'\t' '{print $1}' <<<"$ROOTMAP" | awk '!seen[$0]++')
+# 会话名 -> 其 ROOT 所在目录（用于给 process_theories 的 -d 找本地父堆）
+sess_dir() { awk -F'\t' -v s="$1" '$1==s {print $4; exit}' <<<"$ROOTMAP"; }
+# 只验 T 前缀的教程示例理论（CCL 库理论 Set/Lfp/... 不带标记区间，不参与判定）
+is_example() { [[ "$1" =~ ^T[0-9]{2}[a-z]?_[A-Za-z0-9_]+$ ]]; }
+examples_only() { while read -r t; do is_example "$t" && echo "$t"; done <<<"$1"; }
 
 # 从某一遍 run.log 抽单个 theory 的标记区间
 extract() { # $1=run目录 $2=theory名 $3=输出文件
@@ -190,39 +208,48 @@ extract() { # $1=run目录 $2=theory名 $3=输出文件
 
 run_once() { # $1=run目录
   mkdir -p "$1/out"
-  # 多会话布局：每个含 ROOT 的目录一个 -d（-D 只吃单目录）
-  local dflags=""
-  local d
-  while read -r d; do dflags="$dflags -d $d"; done < <(find "$EXAMPLES" -name ROOT | xargs -n1 dirname | LC_ALL=C sort -u)
-  # 每个会话堆一路 process_theories：Draft 会话的父堆由 -l 指定。
-  # -l HOL-Eisbach：T27 用了 Eisbach `method` DSL，Draft 会话必须有 HOL-Eisbach
-  # 才能装；主线其余章只用 HOL 的定理，父会话是 HOL 的超集，不受影响。
-  # -l HOL-Library / FOL / ZF：corec friends、HOL-Library 选讲、FOL/ZF 对象
-  # 逻辑章各自的父堆。
-  #
-  # 三个 -o 是"两遍逐字节可比"的前提，缺一个都不行（三端实测）：
-  #   parallel_print=false —— 否则消息按线程异步落地，同一条命令的输出
-  #     在两遍里落到不同位置。12/24 个示例的差异全部来自这里，
-  #     表现是 value/ML 的打印与证明态的 show ... 行互相移位。
-  #   parallel_proofs=0 / threads=1 —— 关掉命令级并行，让执行顺序固定。
-  # 实测关掉之后，两遍之间的唯一差异只剩末尾那行
-  #   "Finished Draft (... cpu time, factor 0.51)"
-  # 的耗时数字，而它在标记区间之外，不参与比对。
   : >"$1/run.log"
-  for heap in $heaps; do
-    ths=$(awk -F'\t' -v h="$heap" '$1==h {print $2}' <<<"$ROOTMAP")
-    local hdir
-    hdir=$(awk -F'\t' -v h="$heap" '$1==h {print $3; exit}' <<<"$ROOTMAP")
+  # 按 (父堆, 目录) 分组——同父堆可有多个目录（FOL: fol/ 与 ccl/ 并存），
+  # 旧版只按父堆取第一个目录，会把 T47 派到 examples/ccl 下去找文件。
+  local pairs heap hdir hdir_slug ths dflags
+  pairs=$(awk -F'\t' '{print $2 "\t" $4}' <<<"$ROOTMAP" | awk '!seen[$0]++')
+  while IFS=$'\t' read -r heap hdir; do
+    [[ -z "$heap" ]] && continue
+    ths=$(examples_only "$(awk -F'\t' -v h="$heap" -v d="$hdir" '$2==h && $4==d {print $3}' <<<"$ROOTMAP")")
+    [[ -z "$ths" ]] && continue   # 纯库会话（如 cclbase）没有教程示例，跳过
+    # 每个会话堆一路 process_theories：Draft 会话的父堆由 -l 指定。
+    # -l HOL-Eisbach：T27 用了 Eisbach `method` DSL，Draft 会话必须有 HOL-Eisbach
+    # 才能装；主线其余章只用 HOL 的定理，父会话是 HOL 的超集，不受影响。
+    # -l HOL-Library / FOL / ZF / IsaTutCCL：corec friends、HOL-Library 选讲、
+    # FOL/ZF 对象逻辑章、CCL 教程章各自的父堆。
+    # -d DIR：父堆是**本地**会话（CCL 库 IsaTutCCL 在 examples/cclbase/）时，
+    #   必须把它的 ROOT 目录加为会话根，Draft 里 `imports Set` 等才解析得到
+    #   （父堆理论需在 ROOT 里标 (global)，见 examples/cclbase/ROOT）。
+    #   发行版自带的堆（HOL-Eisbach/FOL/ZF/...）不需要 -d。
+    dflags=""
+    local proot
+    proot=$(sess_dir "$heap")
+    [[ -n "$proot" ]] && dflags="-d $proot"
+    hdir_slug=$(echo "$hdir" | tr '/' '_')
+    # 三个 -o 是"两遍逐字节可比"的前提，缺一个都不行（三端实测）：
+    #   parallel_print=false —— 否则消息按线程异步落地，同一条命令的输出
+    #     在两遍里落到不同位置。12/24 个示例的差异全部来自这里，
+    #     表现是 value/ML 的打印与证明态的 show ... 行互相移位。
+    #   parallel_proofs=0 / threads=1 —— 关掉命令级并行，让执行顺序固定。
+    # 实测关掉之后，两遍之间的唯一差异只剩末尾那行
+    #   "Finished Draft (... cpu time, factor 0.51)"
+    # 的耗时数字，而它在标记区间之外，不参与比对。
     "$ISABELLE" process_theories -O -l "$heap" \
       -o parallel_print=false -o parallel_proofs=0 -o threads=1 \
+      $dflags \
       -H 'T[0-9]{2}[a-z]?_[a-z_]+\.thy' -D "$hdir" $ths \
-      >"$1/run-$heap.log" 2>"$1/run-$heap.err" || FAIL=1
-    cat "$1/run-$heap.log" >>"$1/run.log"
-  done
+      >"$1/run-$hdir_slug.log" 2>"$1/run-$hdir_slug.err" || FAIL=1
+    cat "$1/run-$hdir_slug.log" >>"$1/run.log"
+  done < <(printf '%s\n' "$pairs")
 }
 
 # --- 第 1 关：会话构建（全部证明/类型错误在此暴露） -------------------------
-echo "== [1/4] isabelle build -D $EXAMPLES"
+echo "== [1/4] isabelle build（每个 ROOT 目录各建一次）"
 mkdir -p "$OUT"
 # 清掉上次中断留下的半截 SQLite journal：它一存在，本次 commit 必失败。
 # 路径不猜，问工具要（ISABELLE_HEAPS 不能靠环境变量改，见文件头注释）。
@@ -230,7 +257,18 @@ HEAPS=$("$ISABELLE" getenv -b ISABELLE_HEAPS 2>/dev/null)
 if [[ -n "$HEAPS" && -d "$HEAPS" ]]; then
   find "$HEAPS" -maxdepth 2 -name '*.db-journal' -print -delete 2>/dev/null
 fi
-if ! "$ISABELLE" build -v -D "$EXAMPLES" >"$OUT/build.log" 2>&1; then
+# 旧版只 -D examples：build 的 -D 只吃单目录且不递归子目录 ROOT，
+# lib/fol/zf/cclbase/ccl 的会话根本不在构建范围里（本机实测：对应
+# process_theories 静默空跑、章节假绿）。现在对每个含 ROOT 的目录各 -D 一次。
+# 注意 -D 可重复；一次命令里给全，父堆依赖由 Isabelle 自己按名解析
+# （IsaTutCCLex 的父堆 IsaTutCCL 就在同一次的 -D examples/cclbase 里）。
+BUILD_DIRS=$(find "$EXAMPLES" -name ROOT | xargs -n1 dirname | LC_ALL=C sort -u)
+if [[ -z "$BUILD_DIRS" ]]; then
+  echo "!! $EXAMPLES 下没有任何 ROOT" >&2; exit 1
+fi
+DFLAGS=""
+for d in $BUILD_DIRS; do DFLAGS="$DFLAGS -D $d"; done
+if ! "$ISABELLE" build -v $DFLAGS >"$OUT/build.log" 2>&1; then
   echo "!! build 失败（退出码非 0），详见 $OUT/build.log"; tail -30 "$OUT/build.log"; exit 1
 fi
 if grep -E 'FAILED|Unfinished session|^\*\*\*' "$OUT/build.log" >/dev/null; then
@@ -238,6 +276,15 @@ if grep -E 'FAILED|Unfinished session|^\*\*\*' "$OUT/build.log" >/dev/null; then
   grep -E 'FAILED|Unfinished session|^\*\*\*' "$OUT/build.log" | head
   exit 1
 fi
+# 每个示例会话都要真的出现在构建日志里，否则说明 -D 漏了目录（假绿缺口复发）
+# （BSD grep 不认 GNU 的 \b，词边界要写 [[:>:]]——实测 '\b' 在本机恒不匹配，
+#   六条会话全部误报"未出现"）
+while IFS=$'\t' read -r sess _heap _thy dir; do
+  if ! grep -Eq "Session .*$sess[[:>:]]|Finished $sess[[:>:]]" "$OUT/build.log"; then
+    echo "!! 会话 $sess（$dir）未出现在 build 日志中——-D 漏了目录？" >&2
+    FAIL=1
+  fi
+done < <(awk -F'\t' '{print $1 "\t" $2 "\t" $3 "\t" $4}' <<<"$ROOTMAP" | awk '!seen[$1]++')
 echo "   build 通过"
 
 # --- 第 2/3 关：process_theories 跑两遍 -------------------------------------
@@ -248,7 +295,8 @@ run_once "$OUT/second"
 
 # --- 第 4 关：抽区间、查标记/控制字符/溃逃、逐字节比对 ----------------------
 echo "== [4/4] 抽取与比对"
-for t in $(awk -F'\t' '{print $2}' <<<"$ROOTMAP"); do
+all_examples=$(examples_only "$(awk -F'\t' '{print $3}' <<<"$ROOTMAP")")
+for t in $all_examples; do
   extract "$OUT/first" "$t" "$OUT/first/out/$t.txt"
   extract "$OUT/second" "$t" "$OUT/second/out/$t.txt"
   f1="$OUT/first/out/$t.txt"

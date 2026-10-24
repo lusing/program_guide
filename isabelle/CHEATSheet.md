@@ -1,8 +1,9 @@
 # Isabelle/HOL 速查表
 
-Isabelle2025-2 / HOL，配套 `docs/01..24` 与 `examples/T01..T24`。
+Isabelle2025-2 / HOL，配套 `docs/01..72` 与 `examples/T01..T72`。
 本页分两部分：**语法速查**（按用途排列）与**实测坑位索引**（按症状排列，
-指向章号）。坑位总数是 240 条（24 章 × 10 条），每条都在本机跑出来过。
+指向章号）。坑位总数是 619 条（72 章，详单见各章"坑位清单"），
+每条都在本机跑出来过。
 
 ---
 
@@ -345,3 +346,44 @@ Nat.add_le_mono                               单调性
 | Lub_Glb 第一参数是载集不是关系（isLub UNIV S x） | 67 |
 | 模式别名 `=:` 右侧必须是自由变量；codegen 展开成嵌套 Let | 68 |
 | OptionalSugar 是单向打印糖：输出里 set/of_nat「消失」是错觉 | 68 |
+
+---
+
+## 十一、第五轮扩充（69–72 章）CCL 坑位速览
+
+CCL（`IsaTutCCL`，FOL 之上的 1993 年"计算逻辑"库）专用坑，
+详单见各章"坑位清单"：
+
+| 症状/要点 | 章 |
+|---|---|
+| Isabelle2025-2 的 CCL 会话只剩 5 个理论；Set/Lfp/Gfp/CCL/Trancl/Term/Type/Hered 是遗留文件，要自建会话 | 69 |
+| Draft 会话里 `imports Set` 解析不到——必须限定导入 `"IsaTutCCL.Set"` | 69 |
+| 库理论绝不能标 `(global)`：会与 HOL/ZF/HOL-Library 同名理论相撞 | 69 |
+| ASCII 量词 `ALL`/`EX`/`INT`/`UN` 在 FOL 可用，但常量名不能叫它们 | 69 |
+| `subst rtrancl_unfold` 是**展开**不是收拢（等式左端是 `r^*`） | 69 |
+| `lfp_lowerbound` 不需要 `mono`；`lfp_Tarski` 才需要 | 69 |
+| CCL 无 `value`/`fun`/`QuickCheck`；所有项只有一个类型 `i` | 70 |
+| `` ` `` 应用必须写括号：`f ` t` 不是 `f t` | 70 |
+| `fixB`/`letrecB` 不能进 simp 集（无限展开）；库用 `set_loop` 循环规则 | 70 |
+| `rule term_case` 会把高阶变量 `P` 绑错，必须 `where P = "λt. ..."` | 70 |
+| `eq_coinduct3 "{p. ...}"`（方法）与 `rule eq_coinduct3[of ...]`（引理）不是一回事 | 70 |
+| `EQgenXH` 的析取支关于 `t`/`t'` 两个分量，不是关于序对 `<t,t'>` | 70 |
+| FOL 没有 `disjI3` 以上，五路析取只能 `disjI2 [OF disjI2 [OF ...]]` 叠 | 70 |
+| `EQ_refl` 在 `Type` 理论里，不在 `CCL` | 70 |
+| `:` 是成员关系命题，不是 HOL 的 `::` 类型标注 | 71 |
+| `List(A)`（lfp）与 `Lists(A)`（gfp）只差一个字母，规则分两套 | 71 |
+| 递归类型归纳规则带守卫：`Nat_ind` 的归纳假设是 `⟦x:Nat; P(x)⟧`；`EX x:A.` 是 **Bex**，证人用 `bexI`（`rule exI` 失败）；`auto simp add: ListsXH` 会无限发散，用 `ListsXH [THEN iffD2]`+`bexI` 链 | 71 |
+| `rule lamT` 之后必须 `fix n`；`ncaseT`/`Nat_ind` 要 `OF hn` 关掉首前提 | 71 |
+| `then show P by (rule X)` 会把链式事实当额外前提，`rule` 关不掉蕴含式 | 71 |
+| `eq_INCL` 用前必须给 `a`/`b` 写 `fixes a b :: "i ⇒ i"` | 71 |
+| `INCL` 是公理不是定理；`HTT_rews` 不知道 `letrec` 定义的函数 | 71 |
+| `map` 收 **HOL 函数**，`filter`/`insert`/`isort` 收 **CCL 项**（要 `lam x. ...`） | 72 |
+| `letrec` 定义的函数（sub/le/lt/div/ackermann/partition/qsort）一条 simp 规则都没有 | 72 |
+| 证类型前必须 `unfold` 定义，`typechk` 靠规则匹配不认常量 | 72 |
+| `sub` 是**截断减法**（`a<b` 时返回 `zero`），源第 78 行注释 | 72 |
+| 余归纳关系要带 `EX n:Nat` 当燃料，每层换更大的 `n` | 72 |
+| `letrecB` 后必须接 `trans`，少一步就形状不匹配 | 72 |
+| 有限用 `List_ind`、无穷用 `eq_coinduct3`，混用报 `Failed to refine` | 72 |
+| `typechk`/`gen_ccs` 可带类型定理作参数（`typechk redT whiteT blueT ccaseT`） | 72 |
+| `Perm` 是公理（`axiomatization Perm`），Flag 的 correctness 以 `oops` 收场 | 72 |
+| `$` 优先级 80、`@` 是 55，`x$xs @ m` 不等于 `x $ (xs @ m)` | 72 |

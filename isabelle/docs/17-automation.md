@@ -176,6 +176,7 @@ theorem rev (?xs @ ?ys) = rev ?ys @ rev ?xs
 
 因此本教程**不**把 `sledgehammer` 放进任何 `.thy`，只在这里给出定位与用法。
 
+<!-- 示意块：非构建产物，不参与输出比对 -->
 ```text
 sledgehammer                                    (* 默认：全上下文，5 秒 *)
 sledgehammer [timeout = 20]                     (* 更久一点 *)

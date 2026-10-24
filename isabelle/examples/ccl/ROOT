@@ -1,0 +1,7 @@
+session IsaTutCCLex = IsaTutCCL +
+  options [document = false]
+  theories
+    T69_ccl_set
+    T70_ccl_lambda
+    T71_ccl_type
+    T72_ccl_programs

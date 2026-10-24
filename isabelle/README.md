@@ -33,7 +33,14 @@ PIDE/并行/会话基础设施、与 Coq/Lean/HOL Light 的架构对比）。
 Word/IArray、Float/区间/判别式/sos/Z2、Bourbaki–Witt 不动点/
 格构造/补格、Cancellation/模式别名/Debug/打印糖）。
 
-**章号 = 示例编号**——01–68 章每章对应 `examples/`（及其会话子目录）
+第五轮扩充（69–72 章）回到 Isabelle 的**对象逻辑**一侧，把发行版自带的
+CCL 库（Martin Coen，1993）完整讲一遍：**Set/Lfp/Gfp/Trancl**（FOL 上的
+集合论与不动点）、**无类型 λ 演算**（`prog` 类型类 + `case` 定义的应用 +
+SIM/POgen/EQgen 最大不动点行为等价）、**Term/Type/Hered/Wfd/Fix**（类型即
+项集、遗传终止性、良基关系、不动点归纳）、**四个可执行例子**（Nat/List/
+Stream/Flag——含 `letrec` 定义与 `eq_coinduct3` 证无穷流等式）。
+
+**章号 = 示例编号**——01–72 章每章对应 `examples/`（及其会话子目录）
 里一个经 `isabelle build` 构建通过、且两遍输出逐字节一致的 `.thy` 文件。
 
 > 核心理念：**每个示例都是被机器逐条认可过的数学文本，不是"能跑就行"的程序。**
@@ -45,10 +52,10 @@ Word/IArray、Float/区间/判别式/sos/Z2、Bourbaki–Witt 不动点/
 ```text
 isabelle/
 ├── README.md        本文件
-├── CHEATSheet.md    语法速查 + 实测坑位索引（300+ 条）
+├── CHEATSheet.md    语法速查 + 实测坑位索引（619 条）
 ├── run-all.sh       验证脚本（bash）
-├── docs/            68 章教程（01 → 68 顺序阅读）
-├── examples/        68+ 个 .thy 示例 + ROOT（章号 = 示例编号）
+├── docs/            72 章教程（01 → 72 顺序阅读）
+├── examples/        72+ 个 .thy 示例 + ROOT（章号 = 示例编号）
 └── build/           验证产物（build.log + 两遍输出，可删）
 ```
 
@@ -124,6 +131,10 @@ isabelle/
 | [66 浮点与判别式](docs/66-floats.md) | Float / 定向舍入 / 区间保守性 / sos / Z2 | `T66_floats.thy`（Lib） |
 | [67 不动点与格构造](docs/67-order-fixpoint.md) | Bourbaki–Witt / sup_continuous / Lub_Glb / 拍平格 / 补格 | `T67_order_fixpoint.thy`（Lib） |
 | [68 语法糖与调试](docs/68-sugar.md) | Cancellation / Suc 记号 / case 互转 / 模式别名 / Debug / 打印糖 | `T68_sugar.thy`（Lib） |
+| [69 CCL（一）：Set/Lfp/Gfp/Trancl](docs/69-ccl-set.md) | 两条公理造集合论 / ASCII 有界量词 / I-D-E 规则命名法 / lfp-gfp 对偶与三级余归纳 / 传递闭包 | `T69_ccl_set.thy`（CCL） |
+| [70 CCL（二）：无类型 λ 演算](docs/70-ccl-lambda.md) | `prog` 类型类 / Eval 九公理 / `apply` 即 `case` / SIM·POgen·EQgen / po_coinduct 与 eq_coinduct3 | `T70_ccl_lambda.thy`（CCL） |
+| [71 CCL（三）：Type/Hered/Wfd/Fix](docs/71-ccl-type.md) | 类型即项集 / lfp 造有限 gfp 造无穷 / XH 穷举规则 / 良基关系与字典序 / HTT / INCL 不动点归纳 | `T71_ccl_type.thy`（CCL） |
+| [72 CCL（四）：四个可执行例子](docs/72-ccl-programs.md) | Nat 算术与 typechk / NatPR 终止三件套 / Ackermann 字典序 / listBs / 有限归纳 vs 无穷余归纳 / 荷兰国旗 | `T72_ccl_programs.thy`（CCL） |
 
 学习路线：01–03 心智模型与基本材料 → 04–07 数据建模与化简 →
 08–13 证明技法主线（自动化 / 逻辑 / 归纳 / Isar）→ 14–17 结构与方法论
@@ -132,7 +143,8 @@ isabelle/
 → 31–44 手册覆盖 → 45–48 库与对象逻辑 → 49–53 数学原理
 → 54–56 历史与架构（LCF 谱系 / kernel 原理 / 系统演进）
 → 57–68 HOL-Library 深挖三批收官（容器族 57–60 / 数学与编程
-设施 61–64 / 代码生成与糖 65–68）。
+设施 61–64 / 代码生成与糖 65–68）→ 69–72 CCL 库四讲（集合与不动点 /
+无类型 λ 演算 / 类型即项集 / 四个可执行例子）。
 
 ## 工具链
 
@@ -143,13 +155,15 @@ isabelle/
 | 可执行文件（macOS） | `/Applications/Isabelle2025-2.app/bin/isabelle` |
 | 可执行文件（Linux） | `/home/admin/hol/Isabelle2025-2/bin/isabelle`（本机 Ubuntu 22.04 实测路径） |
 | ML 系统 | polyml-5.9.2，`x86_64_32-windows` / `x86_64_32-darwin` / `x86_64_32-linux` |
-| 会话（四组） | `IsaTut`（HOL-Eisbach，examples/）/ `IsaTutLib`（HOL-Library，examples/lib/）/ `IsaTutFOL`（FOL，examples/fol/）/ `IsaTutZF`（ZF，examples/zf/）——一个裸会话独占一个目录 |
+| 会话（五组） | `IsaTut`（HOL-Eisbach，examples/）/ `IsaTutLib`（HOL-Library，examples/lib/）/ `IsaTutFOL`（FOL，examples/fol/）/ `IsaTutZF`（ZF，examples/zf/）/ `IsaTutCCL`+`IsaTutCCLex`（FOL→CCL 库→CCL 教程示例，examples/cclbase/ + examples/ccl/）——一个裸会话独占一个目录 |
 | 交互前端 | `isabelle jedit`（随发行版自带） |
 | 本地 ATP/SAT | contrib 自带 `e-3.2` / `cvc5-1.2.0` / `z3-4.4.0pre` / `verit` / `minisat-2.2.1`（第 32/33 章全离线可用） |
 
 发行版自带预编译的 `Pure` / `HOL` 堆镜像；`HOL-Eisbach` / `HOL-Library` /
 `FOL` / `ZF` 四个堆需要现场构建一次（本机 Windows/Cygwin 实测：
 Eisbach 27 秒、Library 约 3 分钟、FOL/ZF 各约 1 分钟），之后全部命中缓存。
+CCL 堆（`IsaTutCCL`，即 `examples/cclbase/` 里的 14 个库理论）也需现场
+构建一次；`IsaTutCCLex` 只含 T69–T72 四个示例理论。
 `run-all.sh` 会按 `uname -s` 自选默认 `ISABELLE` 路径与重入方式；
 显式覆盖用 `ISABELLE=/path/to/isabelle ./run-all.sh`。
 
@@ -170,8 +184,8 @@ cd isabelle
 
 **判定标准**（四关，全部通过才算过）：
 
-1. `isabelle build -D examples` 退出码 0（四个会话：IsaTut 及其
-   lib/fol/zf 子目录里的三个附加会话），且日志无 `FAILED` /
+1. `isabelle build -D examples` 退出码 0（五个会话：IsaTut 及其
+   lib/fol/zf/cclbase/ccl 子目录里的四个附加会话），且日志无 `FAILED` /
    `Unfinished session` / `^\*\*\*`——Isabelle/Scala 工具失败不一定让
    进程退出码非 0，必须查日志；
 2. `process_theories -O` 抽出的 `==== NN 开始 ====` / `==== NN 结束 ====`
@@ -210,7 +224,7 @@ cd isabelle
   每章开头一行"对应示例"标注。
 - 示例是**扁平**放在 `examples/` 下的（不做 `NN_topic/` 子目录），
   因为 `process_theories -D` 的临时 Draft 会话要求扁平布局。
-- 每章末尾有 10 条"本章坑位清单"（共 240 条），
+- 每章末尾有 10 条"本章坑位清单"（共 619 条），
   `CHEATSheet.md` 按症状重新索引了一遍。
 - 改示例后重跑：`./run-all.sh T18_hoare`。
 
