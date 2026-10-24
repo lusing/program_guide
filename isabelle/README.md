@@ -102,7 +102,7 @@ isabelle/
 | [44 文档生成 sugar](docs/44-document-sugar.md) | 文档反引号 / markup / 会话文档 | `T44_document_sugar.thy` |
 | [45 HOL-Library 选讲](docs/45-library-tour.md) | Multiset / Sublist / AList / while_option | `T45_library_tour.thy`（Lib） |
 | [46 HOL-Analysis 入门](docs/46-analysis-intro.md) | 滤子 / 极限 / 连续 / DERIV / IVT | `T46_analysis_intro.thy` |
-| [47 FOL 一阶逻辑](docs/47-fol.md) | IFOL/FOL / `P(x)` 函数式写法 / 量词手动挡 | `T47_fol.thy`（FOL） |
+| [47 FOL 一阶逻辑](docs/47-fol.md) | 命题逻辑全规则 / 经典 vs 直觉主义 / 量词与唯一存在 / 等词推理 / 定义与自动化 / De Morgan 律 | `T47_fol.thy`（FOL） |
 | [48 ZF 集合论](docs/48-zf.md) | 公理定理形态 / 序数与超穷归纳 / 自然数 / 有限集 / 基数与 Schroeder-Bernstein / 整数 / 列表 / AC 与 Zorn / 迭代与超穷递归 | `T48_zf.thy`（ZF） |
 | [49 λ 演算与 STLC](docs/49-stlc.md) | de Bruijn / weakening / 进展+保持 | `T49_stlc.thy` |
 | [50 自然演绎](docs/50-natded.md) | ND↔Isar / 导出规则兵器谱 / 经典等价链 | `T50_natded.thy` |
