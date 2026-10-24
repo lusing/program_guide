@@ -4,10 +4,12 @@
 %%  编译：erlc -Werror -Wall -o build/19_files examples/19_files.erl
 %%  运行：erl -noshell -pa build/19_files -run '19_files' main -s init stop
 %%
-%%  这一章解决三件实际的事：
+%%  这一章解决四件实际的事：
 %%    1. 文件和目录怎么读写、路径怎么拼；
 %%    2. 「字符串」在这个语言里到底是什么 —— 为什么写文件会 badarg；
-%%    3. 怎么把数据打包成字节（二进制协议）以及如何序列化成字节流。
+%%    3. 怎么把数据打包成字节（二进制协议）以及如何序列化成字节流；
+%%    4. 标准库现成的编解码 / 压缩 / 归档 / 外部排序：
+%%       json（OTP 27）、base64、zstd（OTP 28）、zip 与 erl_tar、file_sorter。
 %%
 %%  本章会用到的临时目录固定在 build/erl-demo-19/，开头重建、结尾删掉，
 %%  所以可以反复跑，输出稳定。
@@ -16,6 +18,8 @@
 
 %% #file_info 记录的定义在 kernel 的头文件里
 -include_lib("kernel/include/file.hrl").
+%% #zip_file 记录的定义在 stdlib 的头文件里（zip:table 的返回）
+-include_lib("stdlib/include/zip.hrl").
 
 -export([main/0, encode/3, decode/1]).
 
@@ -23,6 +27,11 @@
 %% 想强制按「列表/字节」看数字，用 ds/2（内部用 ~w）。
 d(Label, Value) -> io:format("  ~ts = ~p~n", [Label, Value]).
 ds(Label, Value) -> io:format("  ~ts = ~w~n", [Label, Value]).
+
+%% 把「可能在运行期抛异常」的调用包起来：抛了返回 {Class, Reason}，
+%% 没抛就原样返回调用的返回值。
+raises(F, Arg) ->
+    try F(Arg) catch Class:Reason -> {Class, Reason} end.
 
 -define(DIR, "build/erl-demo-19").
 
@@ -38,6 +47,11 @@ main() ->
     text_lines(),
     binary_protocol(),
     serialization(),
+    json_builtins(),
+    base64_codec(),
+    zstd_compress(),
+    archives(),
+    file_sorter_sort(),
     mistakes(),
     cleanup(),
     io:format("==== 19 结束 ====~n"),
@@ -432,10 +446,139 @@ unknown_atom_ext() ->
     <<131, 100, (length(Name)):16, (list_to_binary(Name))/binary>>.
 
 %% ---------------------------------------------------------------------------
-%% 9) 常见错误清单
+%% 9) json：OTP 27 起标准库自带（EEP 68）
+%% ---------------------------------------------------------------------------
+json_builtins() ->
+    io:format("~n== 9) json：OTP 27 内置的 JSON ==~n"),
+    M = #{name => <<"erlang">>, tags => [a, b], n => 42},
+    Enc = json:encode(M),
+    d("json:encode 的返回**不是 binary，是 iodata**（坑 1/3）", is_list(Enc)),
+    d("  要平面二进制自己 iolist_to_binary", iolist_to_binary(Enc)),
+    io:format("  （map 键的输出顺序 OTP 不保证、随运行状态变化，别依赖；"
+              "上面是本机本次实测）~n"),
+    io:format("  好处是能直接喂 file:write_file / gen_tcp:send，零拷贝。~n"),
+    Dec = json:decode(<<"{\"a\":1,\"b\":[true,null],\"c\":\"x\"}">>),
+    d("json:decode：对象 → map，但**键一律是 binary**（坑 2/3）", Dec),
+    d("  访问得写 maps:get(<<\"a\">>, M)", maps:get(<<"a">>, Dec)),
+    d("  null 解成原子 null；true/false 还是 true/false", maps:get(<<"b">>, Dec)),
+    io:format("~n  -- [{a,1}] 这种 kv 元组列表不能直接 encode（坑 3/3） --~n"),
+    d("json:encode([{a,1}]) 抛 {unsupported_type, ...}",
+      raises(fun json:encode/1, [{a, 1}])),
+    d("正确姿势：json:encode_key_value_list + fun json:encode_value/2",
+      iolist_to_binary(json:encode_key_value_list([{a, 1}, {b, 2}],
+                                                  fun json:encode_value/2))),
+    io:format("~n  -- 非法输入是**抛** error 而不是返回元组，三种形态 --~n"),
+    d("数据截断 → unexpected_end", raises(fun json:decode/1, <<"{\"a\":">>)),
+    d("坏字节 → {invalid_byte, Byte}（33 就是 $!）",
+      raises(fun json:decode/1, <<"{\"a\":!}">>)),
+    d("非法 \\u 转义 → {unexpected_sequence, Bytes}",
+      raises(fun json:decode/1, <<"\"\\uZZZZ\"">>)),
+    io:format("~n  -- json:format（OTP 27.1 起）：给人看的缩进输出 --~n"),
+    io:format("~ts", [json:format(#{a => 1, b => [1, 2]})]),
+    ok.
+
+%% ---------------------------------------------------------------------------
+%% 10) base64：一行编解码
+%% ---------------------------------------------------------------------------
+base64_codec() ->
+    io:format("~n== 10) base64 ==~n"),
+    d("base64:encode(<<\"hello\">>)（返回 binary）", base64:encode(<<"hello">>)),
+    d("base64:encode_to_string（要字符串用这个）", base64:encode_to_string(<<"hello">>)),
+    d("base64:decode 还原", base64:decode(<<"aGVsbG8=">>)),
+    d("base64:mime_decode 容忍 \\r\\n（MIME 格式）",
+      base64:mime_decode(<<"aGVs\r\nbG8=">>)),
+    d("非法输入是**抛**错，不返回元组", raises(fun base64:decode/1, <<"!!!">>)),
+    d("模块只有 mime_decode，**没有** mime_encode",
+      erlang:function_exported(base64, mime_encode, 1)),
+    ok.
+
+%% ---------------------------------------------------------------------------
+%% 11) zstd：现代压缩（OTP 28）
+%% ---------------------------------------------------------------------------
+zstd_compress() ->
+    io:format("~n== 11) zstd：OTP 28 引入的现代压缩 ==~n"),
+    Data = binary:copy(<<"abcdef">>, 100),
+    d("造一份 600 字节的重复数据", byte_size(Data)),
+    C = zstd:compress(Data),
+    d("compress 返回的是 iodata（帧列表），不是 binary —— 坑", is_list(C)),
+    d("  所以直接 byte_size 会 badarg", raises(fun byte_size/1, C)),
+    CB = iolist_to_binary(C),
+    d("  iolist_to_binary 之后：600 字节压到这么多", byte_size(CB)),
+    d("compressionLevel => 20（文档范围 -22..22，默认 3 附近）",
+      byte_size(iolist_to_binary(zstd:compress(Data, #{compressionLevel => 20})))),
+    D = zstd:decompress(CB),
+    d("decompress 返回的同样是 iodata", is_list(D)),
+    d("roundtrip：解压后与原数据完全相等", iolist_to_binary(D) =:= Data),
+    ok.
+
+%% ---------------------------------------------------------------------------
+%% 12) zip 与 erl_tar：归档读写
+%% ---------------------------------------------------------------------------
+archives() ->
+    io:format("~n== 12) zip 与 erl_tar ==~n"),
+    Assets = filename:join(?DIR, "assets"),
+    ok = file:make_dir(Assets),
+    ok = file:write_file(filename:join(Assets, "a.txt"), <<"AAA">>),
+    ok = file:write_file(filename:join(Assets, "b.txt"), <<"BBB">>),
+
+    Zip = filename:join(?DIR, "demo.zip"),
+    d("zip:create + {cwd, Dir}：裸文件名相对指定目录",
+      zip:create(Zip, ["a.txt", "b.txt"], [{cwd, Assets}])),
+    d("zip:extract [memory]：直接拿内容不落盘", zip:extract(Zip, [memory])),
+    {ok, Entries} = zip:table(Zip),
+    d("zip:table 看清单（名字 + 大小）",
+      [{N, Sz} || #zip_file{name = N, info = #file_info{size = Sz}} <- Entries]),
+
+    io:format("~n  -- erl_tar 接口同形，但**没有 cwd 选项**（坑） --~n"),
+    d("给它 {cwd, Dir} 也白搭：选项被忽略，裸文件名只认当前目录 → enoent",
+      erl_tar:create(filename:join(?DIR, "cwd.tar"), ["a.txt"], [{cwd, Assets}])),
+    Tar = filename:join(?DIR, "demo.tar"),
+    d("跨目录正确姿势：{归档内名字, 磁盘路径} 元组（名字在前）",
+      erl_tar:create(Tar, [{"a.txt", filename:join(Assets, "a.txt")},
+                           {"b.txt", filename:join(Assets, "b.txt")}])),
+    d("erl_tar:extract [memory]", erl_tar:extract(Tar, [memory])),
+    d("元组顺序写反 → 它拿 \"a.txt\" 当磁盘路径去读，报 enoent",
+      erl_tar:create(filename:join(?DIR, "bad.tar"),
+                     [{filename:join(Assets, "a.txt"), "a.txt"}])),
+    Gz = filename:join(?DIR, "demo.tar.gz"),
+    d("加 compressed 选项直接产 .tar.gz",
+      erl_tar:create(Gz, [{"a.txt", filename:join(Assets, "a.txt")}], [compressed])),
+    d("  文件头是 gzip 魔数", binary:part(element(2, file:read_file(Gz)), 0, 2)),
+    d("  解 .tar.gz 时 extract 也要带上 compressed",
+      erl_tar:extract(Gz, [memory, compressed])),
+    ok.
+
+%% ---------------------------------------------------------------------------
+%% 13) file_sorter：内存放不下的外部归并排序
+%% ---------------------------------------------------------------------------
+file_sorter_sort() ->
+    io:format("~n== 13) file_sorter：外部归并排序 ==~n"),
+    Terms = filename:join(?DIR, "terms.txt"),
+    ok = file:write_file(Terms, [io_lib:format("~p.~n", [T]) || T <- [{c, 3}, {a, 1}, {b, 2}]]),
+    io:format("  terms.txt 每行一个 \"Term.\"，故意乱序写入 {c,3} {a,1} {b,2}~n"),
+    d("Input 忘包列表、直接传裸字符串 → {badarg, 47}",
+      raises(fun(P) -> file_sorter:sort(P, filename:join(?DIR, "never.txt"),
+                                        [{format, term}])
+             end, filename:absname(Terms))),
+    io:format("  根因：Input 是**文件名列表**，裸字符串被当成字符列表拆开，~n"),
+    io:format("  每个码点被当作一个文件名，撞上绝对路径的第一个 '/'（码点 47）。~n"),
+    Sorted = filename:join(?DIR, "sorted.txt"),
+    d("正确写法：单个文件名也要包一层列表",
+      file_sorter:sort([Terms], Sorted, [{format, term}])),
+    d("  file:consult 看排序结果", file:consult(Sorted)),
+    KTerms = filename:join(?DIR, "kterms.txt"),
+    ok = file:write_file(KTerms, [io_lib:format("~p.~n", [T]) || T <- [{x, 3}, {y, 1}, {z, 2}]]),
+    Ks = filename:join(?DIR, "ks.txt"),
+    d("keysort(2, ...)：按 element(2) 排（普通 sort 会先比第一个元素）",
+      file_sorter:keysort(2, [KTerms], Ks, [{format, term}])),
+    d("  结果：y 的键 1 最小，排最前", file:consult(Ks)),
+    ok.
+
+%% ---------------------------------------------------------------------------
+%% 14) 常见错误清单
 %% ---------------------------------------------------------------------------
 mistakes() ->
-    io:format("~n== 9) 常见错误清单 ==~n"),
+    io:format("~n== 14) 常见错误清单 ==~n"),
     Rows =
      [{"file:write_file(F, \"中文\")", "badarg",
        "参数是字节 iodata，中文码点 > 255。用 <<\"中文\"/utf8>> 或 unicode:characters_to_binary/1"},

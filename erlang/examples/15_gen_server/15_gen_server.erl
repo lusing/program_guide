@@ -57,8 +57,14 @@ stop()        -> gen_server:stop(?SERVER).
 %% ------------------------------------------------------------
 %% 回调
 %% ------------------------------------------------------------
-init(#{notify := N, tag := Tag}) ->
-    {ok, #{notify => N, tag => Tag, data => #{}}}.
+init(#{notify := N, tag := Tag} = Args) ->
+    State = #{notify => N, tag => Tag, data => #{}},
+    case Args of
+        %% 新式超时 action（OTP 25）：init 的第三元可以写 {timeout, Time, Msg}，
+        %% 到点后 handle_info 收到的**就是 Msg 原样**（见第 9 节）
+        #{timeout_after := Ms} -> {ok, State, {timeout, Ms, tick}};
+        _ -> {ok, State}
+    end.
 
 %% handle_call/3：同步请求。必须给调用方一个结果，两种方式：
 %%   {reply, Reply, NewState}                     框架替你回
@@ -74,6 +80,13 @@ handle_call(count, _From, State) ->
 handle_call(snapshot, _From, State) ->
     %% 只暴露稳定的部分（notify 里是 pid，不能进输出）
     {reply, {maps:size(maps:get(data, State)), maps:get(last_writer, State, none)}, State};
+handle_call({echo, X}, _From, State) ->
+    %% 原样回显，给 send_request 演示用（第 7、8 节）
+    {reply, {echoed, X}, State};
+handle_call({slow, Ms, Reply}, _From, State) ->
+    %% 故意慢慢回，演示 wait_response / receive_response 的超时分支
+    timer:sleep(Ms),
+    {reply, Reply, State};
 handle_call({countdown, 0}, _From, State) ->
     %% {stop, Reason, Reply, NewState}：先回复再优雅停止，terminate/2 会被调用
     {stop, normal, stopped, State};
@@ -98,6 +111,11 @@ handle_cast({countdown, N}, State) when is_integer(N), N > 0 ->
 
 %% handle_info/2：收到「不是 call / cast」的普通消息时走这里 ——
 %% send_after 的定时消息、别人直接 ! 过来的消息、以及回调返回的 Timeout 到期。
+handle_info(tick, State) ->
+    %% 新式 {timeout, Time, Msg} 到点了：收到的就是 Msg 原样（本例是原子 tick，
+    %% 不是 {timeout, TRef, tick} 包装，也不是魔法原子 timeout）
+    notify(State, {timeout_tick, maps:get(tag, State)}),
+    {noreply, State};
 handle_info({tick, Tag}, State) ->
     notify(State, {ticked, Tag, ok}),
     {noreply, State};
@@ -141,6 +159,9 @@ main() ->
     timer_and_info(),
     crash_in_callback(),
     graceful_stop(),
+    send_request_demo(),
+    reqids_collection_demo(),
+    timeout_action_demo(),
 
     process_flag(trap_exit, Old),
     io:format("~n==== 15 结束 ====~n").
@@ -268,6 +289,81 @@ graceful_stop() ->
       receive {terminating, stop_demo_api, R2} -> R2 after 2000 -> timeout end),
     ok.
 
+%% 7) send_request：不阻塞的同步调用（OTP 23）
+%% ------------------------------------------------------------
+%% call 是「发出去就睡在原地等」。send_request 把 call 拆成「发」和「收」两步：
+%% 发的时候立即拿回一个请求标识 ReqId，收的时候才等 ——
+%% 想同时问多个服务、谁先回先处理谁，就靠它（循环发 N 个 call 是串行的）。
+send_request_demo() ->
+    io:format("~n== 7) send_request：不阻塞的同步调用（OTP 23）==~n"),
+    {ok, _Pid} = start_link(sr_demo),
+    R1 = gen_server:send_request(?SERVER, {echo, hi}),
+    d("send_request 立即返回请求标识（是引用）", is_reference(R1)),
+    d("wait_response(ReqId, 1000)", gen_server:wait_response(R1, 1000)),
+    R2 = gen_server:send_request(?SERVER, {echo, hi2}),
+    d("receive_response(ReqId, 1000)", gen_server:receive_response(R2, 1000)),
+    %% 超时不抛异常，返回原子 timeout；响应不丢，睡够再取还能拿到
+    Rs = gen_server:send_request(?SERVER, {slow, 200, slow_done}),
+    d("50ms 等一个 200ms 的活 → 超时返回原子 timeout", gen_server:wait_response(Rs, 50)),
+    d("睡够再取 → 响应还在", gen_server:wait_response(Rs, 1000)),
+    %% check_response(Msg, ReqId)：不等待，检查**已收到**的消息是不是该请求的响应。
+    %% 注意签名是 (Msg, ReqId)，不是 (ReqId, Timeout)——传整数会 badarg。
+    %% 响应消息的真实形状是 {[alias|ReqId], Reply}（OTP 24+ 的 alias 形状）；
+    %% 且前面小节在邮箱里留了 {'EXIT', ...} 残信，所以按这个形状精确匹配再检查。
+    R3 = gen_server:send_request(?SERVER, {echo, checkme}),
+    receive M3 = {[alias|R3], _} ->
+        d("check_response(刚收到的响应消息, ReqId)", gen_server:check_response(M3, R3))
+    after 2000 ->
+        d("check_response", no_message)
+    end,
+    d("check_response(别的消息, ReqId) → no_reply", gen_server:check_response(some_other_msg, R3)),
+    d("停止服务", stop()),
+    receive {terminating, sr_demo, _} -> ok after 2000 -> ok end,
+    ok.
+
+%% 8) reqids collection：一把发、按标签收（OTP 25）
+%% ------------------------------------------------------------
+%% 请求多了用 collection 管理：每个请求贴个标签，取响应时标签告诉你这是谁。
+%% 场景：扇出查询、并行聚合——慢的不拖快的。
+reqids_collection_demo() ->
+    io:format("~n== 8) reqids collection：一把发、按标签收（OTP 25）==~n"),
+    {ok, _Pid} = start_link(coll_demo),
+    C0 = gen_server:reqids_new(),
+    C1 = gen_server:send_request(?SERVER, {echo, 1}, first, C0),
+    C2 = gen_server:send_request(?SERVER, {echo, 2}, second, C1),
+    d("两个请求在途，reqids_size", gen_server:reqids_size(C2)),
+    %% collection 版 wait/receive 必须用 /3：第三个参数是「取完是否从 collection 删除」
+    {{reply, V1}, L1, C3} = gen_server:wait_response(C2, 1000, true),
+    d("wait_response(C, 1000, true) 取到 {值, 标签}（先到的先出）", {V1, L1}),
+    d("取走一个后 reqids_size", gen_server:reqids_size(C3)),
+    {{reply, V2}, L2, C4} = gen_server:receive_response(C3, 1000, true),
+    d("receive_response(C, 1000, true) 取到", {V2, L2}),
+    d("全部取完 reqids_size", gen_server:reqids_size(C4)),
+    %% 坑：对 collection 误用 /2，会被当成单个 ReqId，等到的只有 timeout
+    Cx = gen_server:send_request(?SERVER, {echo, 9}, third, gen_server:reqids_new()),
+    d("误用 wait_response(C, 100)（/2 形式）→ timeout", gen_server:wait_response(Cx, 100)),
+    d("改用 /3 正常取回", gen_server:receive_response(Cx, 1000, true)),
+    d("停止服务", stop()),
+    receive {terminating, coll_demo, _} -> ok after 2000 -> ok end,
+    ok.
+
+%% 9) 新式超时 action：{timeout, Time, Msg}（OTP 25）
+%% ------------------------------------------------------------
+%% 回调返回值的第三元从裸毫秒数升级为 {timeout, Time, Msg}：
+%% 到点后 handle_info 收到的**就是 Msg 原样**，不再是魔法原子 timeout ——
+%% 超时消息从此可以带上下文，跟普通消息一个写法。老式裸 Time 仍兼容。
+timeout_action_demo() ->
+    io:format("~n== 9) 新式超时 action {timeout, Time, Msg}（OTP 25）==~n"),
+    %% init 返回 {ok, State, {timeout, 30, tick}}（见本模块 init/1 的 timeout_after 分支）
+    {ok, _Pid} = gen_server:start_link({local, ?SERVER}, ?MODULE,
+                                       #{notify => self(), tag => timeout_demo,
+                                         timeout_after => 30}, []),
+    d("30ms 后 handle_info 收到的消息（服务转告我们）",
+      receive {timeout_tick, timeout_demo} -> tick after 2000 -> timeout end),
+    d("停止服务", stop()),
+    receive {terminating, timeout_demo, _} -> ok after 2000 -> ok end,
+    ok.
+
 %% gen_server:call 失败时，调用方拿到的 exit 原因是
 %%   {Reason, {gen_server, call, [Name, Request]}}
 %% 其中 Reason 可能带着整个栈（里面是 file / line）—— 那就没法当稳定输出了。
@@ -288,6 +384,7 @@ d(Label, Value) -> io:format("  ~ts = ~p~n", [Label, Value]).
 %% init/1
 %%   {ok, State}                   正常启动
 %%   {ok, State, Timeout}          并设一个初始超时（到期触发 handle_info(timeout, _)）
+%%   {ok, State, {timeout, T, Msg}} 新式超时（OTP 25）：到期 handle_info 收到 Msg 原样
 %%   {ok, State, hibernate}        启动后立刻休眠（省内存，适合长期不用的状态）
 %%   {ok, State, {continue, Term}} 启动后立刻给自己发一条消息
 %%   ignore                        不启动，start_link 返回 ignore（不是错误）

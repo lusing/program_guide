@@ -82,12 +82,12 @@ Common Lisp 只有标准、没有官方实现，各家实现（简称"impl"）�
 # macOS：port install sbcl clisp   （或 brew install sbcl clisp）
 # Windows：scoop install sbcl（CLISP 官网下载 zip）
 $ sbcl --version
-SBCL 2.6.8
+SBCL 2.6.9
 $ clisp --version | head -1
 GNU CLISP 2.49.95+ (2024-11-03) ...
 ```
 
-本教程实测基线：**SBCL 2.6.8 + GNU CLISP 2.49.95（Linux/WSL2）**；
+本教程实测基线：**SBCL 2.6.9 + GNU CLISP 2.49.95**；
 此前版本在 macOS（SBCL 2.6.7）验证过同等内容。
 
 ## 1.6 本教程怎么学

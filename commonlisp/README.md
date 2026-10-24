@@ -1,11 +1,13 @@
 # Common Lisp 教程（SBCL + CLISP 双实现）
 
 面向**会编程、看得懂 S 表达式、没系统写过 Lisp** 的读者：从 REPL 讲到
-CLOS、宏、条件系统，再到线程/FFI/性能的 SBCL 专属扩展，收束于**书本实践篇**
-（28–33 章，按《Practical Common Lisp》的六个 Practical 项目重演）。
+CLOS、宏、条件系统，再到线程/FFI/性能的 SBCL 专属扩展，经**书本实践篇**
+（28–33 章，按《Practical Common Lisp》的六个 Practical 项目重演），收束于
+**SBCL 深度篇**（34–38 章，按 SBCL 2.6.9 手册提炼：调试器、条件之外的扩展、
+外部格式与流、定时器与网络、contrib 模块）。
 **语言主线与实现解耦**——语言主线与实践篇（02–20、22、27–33 章）的每个示例
 同时跑在 **SBCL 和 GNU CLISP** 上，两个通道的 stdout **逐字节一致**；
-SBCL 扩展（21/23–26 章）单独成章。
+SBCL 扩展（21/23–26、34–38 章）单独成章。
 
 > 核心方法论：**可移植性不是背出来的，是 diff 出来的**。本目录的验证脚本
 > 对每个双通道示例执行跨实现逐字节比对，实测差异全部记录在
@@ -16,8 +18,8 @@ SBCL 扩展（21/23–26 章）单独成章。
 ```text
 commonlisp/
 ├── README.md        本文件
-├── docs/            33 章教程（01 → 33 顺序阅读）
-├── examples/        32 个示例目录（章号 = 目录号，各含 main.lisp）
+├── docs/            38 章教程（01 → 38 顺序阅读）
+├── examples/        37 个示例目录（章号 = 目录号，各含 main.lisp）
 ├── CHEATSheet.md    语法速查 + 双实现差异 + 报错速查
 ├── build.ps1        统一验证脚本（PowerShell 7 / pwsh）
 ├── run-all.sh       同一套验证的 bash 版（macOS/Linux）
@@ -74,11 +76,21 @@ commonlisp/
 | [32 二进制与 ID3](docs/32-pcl-binary.md) | read-value 框架/合成标签回读（书 24–25） | `32_pcl_binary` |
 | [33 HTML 生成库](docs/33-pcl-html.md) | 解释器 vs 宏编译器对账（书 30–31） | `33_pcl_html` |
 
+### SBCL 深度篇（34–38，SBCL 专属，按 SBCL 2.6.9 手册提炼）
+
+| 章 | 主题 | 示例 |
+|---|---|---|
+| [34 调试](docs/34-debugging.md) | 调试器命令、backtrace、trace/step、break 族 | `34_debug` |
+| [35 超越 ANSI 精选扩展（二）](docs/35-beyond-ansi.md) | 读取器扩展、包昵称/包锁、终结器与弱指针、超时与截止时间 | `35_beyond_ansi` |
+| [36 外部格式与流](docs/36-formats-streams.md) | external-format、路径名细节、Gray 流自定义 | `36_formats_streams` |
+| [37 定时器与网络](docs/37-timers-network.md) | make-timer 全家桶、sb-bsd-sockets TCP/UDP/local | `37_timers_network` |
+| [38 contrib 巡礼](docs/38-contrib.md) | sb-md5/rotate-byte/concurrency/introspect/posix/cltl2/cover/simd | `38_contrib` |
+
 ## 工具链
 
 | 通道 | 本教程实测 | 安装 |
 |---|---|---|
-| SBCL | 2.6.8（Linux/WSL2；2.6.7 macOS 亦验证过） | `pacman -S sbcl` / `port install sbcl` / `scoop install sbcl` |
+| SBCL | 2.6.9（macOS 自编译；2.6.8 Linux/WSL2 亦验证过） | `pacman -S sbcl` / `port install sbcl` / `scoop install sbcl` |
 | CLISP | 2.49.95（Linux/WSL2） | `pacman -S clisp` / `port install clisp` |
 
 CLISP 启动记得 `-E UTF-8`（默认编码跟 locale 走，ASCII 终端下中文直接报错）——
@@ -88,7 +100,7 @@ CLISP 启动记得 `-E UTF-8`（默认编码跟 locale 走，ASCII 终端下中�
 
 ```bash
 cd commonlisp
-./run-all.sh                    # 全部 32 个示例 × 双通道（60 单元）
+./run-all.sh                    # 全部 37 个示例 × 双通道（64 单元）
 ./run-all.sh 12                 # 只跑 12 章
 SBCL=/path/sbcl CLISP=/path/clisp ./run-all.sh
 ```

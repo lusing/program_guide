@@ -155,8 +155,10 @@ application:ensure_all_started(App).          %% 幂等；start/1 不管依赖
 | 坑 | 解法 |
 |---|---|
 | terminate/2 不执行 | gen_server 要 `process_flag(trap_exit, true)`（17.5 头号坑） |
-| API 叫 get/size | 撞自动导入 BIF——改名（15.7） |
+| API 叫 get/size | 撞自动导入 BIF——改名（15.8） |
 | handle_info 没兜底 | 未知消息堆积邮箱（15.3） |
+| send_request 裸 receive | 响应形状是 `{[alias|ReqId], Reply}`——走 wait/check_response（15.4） |
+| never + significant=true | 非法组合 sup 直接拒绝；拒绝退出顺 link 传播——调用方 trap_exit（16.5） |
 | stop ≠ unload | stop 只停树，env 还在（17.3） |
 | env 改了不生效 | init 快照，重启进程（17.4） |
 
@@ -177,6 +179,8 @@ Ref = erlang:send_after(N, self(), Msg).  erlang:cancel_timer(Ref).
 | write_file 中文 | {error,badarg}——`/utf8` 二进制；encoding 选项无效（19.3） |
 | pread 移动偏移 | Windows/OTP29 实测会动，别依赖（19.4） |
 | binary_to_term 不可信输入 | 会创建原子（DoS）——加 `[safe]`（19.7） |
+| `[{a,1}]` 直接 json:encode | 抛 `{unsupported_type,_}`——用 encode_key_value_list（19.8） |
+| erl_tar 跨目录 | 没有 cwd 选项——`{归档内名字, 磁盘路径}`（19.11） |
 | timer:cancel 判断成功 | 永远 {ok,cancel}——用 erlang:cancel_timer（20.3） |
 
 ## 12. 测试、日志与运维（21/22/23）
@@ -200,6 +204,7 @@ sys:get_state(Name).  sys:replace_state(Name, F). sys:no_debug(Name).
 | 改代码不生效 | 循环用了局部调用——`?MODULE:loop`（23.5） |
 | code:purge 杀进程 | 先 soft_purge（23.5） |
 | init_fail/2 老 API | 已变 (Ret,Exception)——用 /3（23.4 实测） |
+| beam_lib:info/1 匹配 {ok,_} | 直接返回裸清单，不包 ok（23.7） |
 
 ## 13. 分布式、套接字与端口（25/26/27）
 
@@ -226,8 +231,8 @@ ok = io:setopts(standard_io, [{binary, true}, {encoding, latin1}]).
 | 坑 | 解法 |
 |---|---|
 | peer 生命周期绑父连接 | disconnect 杀死 peer——反复断连用 `connection => 0`（25.7） |
-| peer_start 选项不存在 | 传 erl 参数用 `args => ["-eval", ...]`（25.9） |
-| peer 的 logger 声明失效 | `level => none` 是**全放行**不是全静音——`remove_handler(default)`（25.9） |
+| peer_start 选项不存在 | 传 erl 参数用 `args => ["-eval", ...]`（25.10） |
+| peer 的 logger 声明失效 | `level => none` 是**全放行**不是全静音——`remove_handler(default)`（25.10） |
 | 失配握手 ERROR REPORT | ERTS 层带时间戳，摘 handler 拦不住——别触发真实失配握手（25.6） |
 | global:register_name 返回 | yes 不是 true；查名前先 global:sync()（25.5） |
 | gen_udp:recv 形状 | OTP29 扁平 `{Addr,Port,Packet}`——旧写法 `{{Addr,Port},Packet}` badmatch（26.5） |
@@ -236,6 +241,7 @@ ok = io:setopts(standard_io, [{binary, true}, {encoding, latin1}]).
 | escript 端口透传 | 不 setopts 则 unicode→latin1 转译崩：binary+latin1 双保险（27.3） |
 | {packet,N} 双重成帧 | command 发裸载荷——帧由驱动管（27.2） |
 | escript 异常栈进 stderr | 崩溃演示自捕异常后 halt(1)（27.4） |
+| argparse:run 在库/测试代码 | 出错直接 halt(1)——用纯函数 parse（27.6） |
 
 ## 14. 持久化与行为补全（28/29）
 

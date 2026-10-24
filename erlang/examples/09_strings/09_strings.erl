@@ -8,6 +8,11 @@
 %%         中文必须写 <<"中文"/utf8>>。
 %%      ③ ~s 只认 latin1，码点超过 255 直接 badarg；中文要用 ~ts。
 %%
+%%    覆盖点：
+%%      字符串即整数列表 / latin1 截断坑 / 三种长度 / string 模块 /
+%%      iolist / string:replace（OTP 20，返回 iodata，默认只换第一处）/
+%%      uri_string（OTP 21，parse 的 map 只含出现过的部件）。
+%%
 %% 编译：
 %%   erlc -Werror -Wall -o build/09_strings examples/09_strings/09_strings.erl
 %% 运行：
@@ -23,6 +28,8 @@ main() ->
     three_lengths(),
     string_module(),
     iolists(),
+    string_replace(),
+    uri_string_parts(),
     io:format("~n==== 09 结束 ====~n").
 
 %% 1) 字符串就是整数列表
@@ -105,6 +112,43 @@ iolists() ->
     %% 大量拼接时，iolist 比反复 ++ 快得多（06 章讲了 ++ 的代价）
     d("用列表推导拼 iolist",
       iolist_to_binary([integer_to_list(I) || I <- [1, 2, 3]])),
+    ok.
+
+%% 6) string:replace（OTP 20）：返回 iodata，默认只换第一处
+%% ------------------------------------------------------------
+string_replace() ->
+    io:format("~n== 6) string:replace ==~n"),
+    d("string:replace(\"a-b-c\", \"-\", \"+\")（默认只换第一处）",
+      string:replace("a-b-c", "-", "+")),
+    d("string:replace(\"a-b-c\", \"-\", \"+\", all)（全换）",
+      string:replace("a-b-c", "-", "+", all)),
+    d("string:replace(\"a-b-c\", \"-\", \"+\", trailing)（只换最后一处）",
+      string:replace("a-b-c", "-", "+", trailing)),
+    %% 返回的是嵌套列表（iodata），要平面二进制得再转一道
+    d("unicode:characters_to_binary 转平面二进制",
+      unicode:characters_to_binary(string:replace("a-b-c", "-", "+", all))),
+    ok.
+
+%% 7) uri_string（OTP 21）：解析与构造 URI
+%% ------------------------------------------------------------
+uri_string_parts() ->
+    io:format("~n== 7) uri_string ==~n"),
+    Full = uri_string:parse("https://user@example.com:8443/a/b?x=1#frag"),
+    d("uri_string:parse 全件（map 只含出现过的部件）", Full),
+    d("maps:get(port, Full)（port 是整数）", maps:get(port, Full)),
+    %% 没出现的部件不进 map，取可选项要给默认值
+    NoPort = uri_string:parse("https://example.com/"),
+    d("无 port 的解析结果", NoPort),
+    d("maps:get(port, NoPort, 443)（兜底）", maps:get(port, NoPort, 443)),
+    %% 非法输入不抛异常，返回 {error, Reason, Rest} 三元组
+    d("非法输入（含空格）", uri_string:parse("http://h/p?a=b c")),
+    %% 重组函数名是 recompose，不是 compose
+    d("uri_string:recompose 把部件 map 拼回 URI",
+      uri_string:recompose(#{scheme => "https", host => "example.com", path => "/a"})),
+    d("uri_string:normalize（小写化、去默认端口、解码 %7e）",
+      uri_string:normalize("HTTP://Example.COM:80/%7euser")),
+    d("uri_string:quote(\"a b\")", uri_string:quote("a b")),
+    d("uri_string:unquote(\"a%20b\")", uri_string:unquote("a%20b")),
     ok.
 
 %% 把「预期会抛异常」的调用包起来。

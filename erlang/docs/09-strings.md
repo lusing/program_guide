@@ -38,9 +38,13 @@ string:split("a,b,c", ",", all).     %% ["a","b","c"]
 string:lexemes("a,,b", ",").         %% ["a","b"]：连续分隔符当一个
 string:trim("  x  ").                %% "x"
 string:to_integer("42x").            %% {42,"x"}——失败返回 {error,no_integer} 不抛
+string:replace("a-b-c", "-", "+").         %% ["a","+","b-c"]：默认只换第一处
+string:replace("a-b-c", "-", "+", all).    %% ["a","+","b","+","c"]：全换
 ```
 
 `string:*` 的函数同时接受列表与二进制（chardata）。注意 `string:pad` 返回**嵌套列表**（iodata），要平面字符串再 `lists:flatten`。
+
+`string:replace/3,4`（OTP 20）也是 iodata 派：上面两个结果都是嵌套列表，要平面二进制得 `unicode:characters_to_binary(string:replace("a-b-c", "-", "+", all))` → `<<"a+b+c">>`。第四参控制替换方向——`leading`（默认）只换第一处、`all` 全换、`trailing` 只换**最后一处**（`string:replace("a-b-c", "-", "+", trailing)` 得 `["a-b","+","c"]`）。想换掉所有出现记得显式写 `all`。
 
 ## 9.5 iolist：拼接不复制
 
@@ -153,7 +157,55 @@ Erlang 源文件默认按 **UTF-8** 解析，所以字符串里的中文可以�
 
 两条纪律：① 默认就是 UTF-8（OTP 17 起从 Latin-1 改的），日常文件**不需要**这条注释；② 注意区分"源码编码"和"字符串在运行期的表示"——源文件是 UTF-8，但 `<<"中">>` 默认仍按 latin1 截断（9.2），两者是两回事。
 
-## 9.10 坑位清单
+## 9.10 uri_string：解析与构造 URI（OTP 21）
+
+HTTP 客户端、回调地址、配置里的连接串——碰到 URI 就别手写正则，`uri_string` 模块（OTP 21 起）把解析、重组、规整、百分号编码全包了。
+
+**解析**用 `uri_string:parse/1`，返回一个 map，**只包含 URI 里真实出现过的部件**：
+
+```erlang
+uri_string:parse("https://user@example.com:8443/a/b?x=1#frag").
+%% #{scheme => "https", userinfo => "user", host => "example.com",
+%%   port => 8443, path => "/a/b", query => "x=1", fragment => "frag"}
+```
+
+候选键共七个：`scheme`、`userinfo`、`host`、`port`、`path`、`query`、`fragment`。注意 `port` 是**整数**，其余是字符串。因为没出现的部件不进 map，取可选项要给默认值：
+
+```erlang
+uri_string:parse("https://example.com/").
+%% #{scheme => "https", host => "example.com", path => "/"}——没有 port 键
+maps:get(port, uri_string:parse("https://example.com/"), 443).   %% 443
+```
+
+非法输入不抛异常，返回**三元组** `{error, Reason, Rest}`：
+
+```erlang
+uri_string:parse("http://h/p?a=b c").     %% 含空格
+%% {error, invalid_uri, ":"}
+```
+
+**重组**用 `uri_string:recompose/1` 把部件 map 拼回 URI 字符串——函数名是 `recompose`，不是 `compose`，别记错：
+
+```erlang
+uri_string:recompose(#{scheme => "https", host => "example.com", path => "/a"}).
+%% "https://example.com/a"
+```
+
+**规整**用 `uri_string:normalize/1`：scheme 和 host 转小写、默认端口去掉、能解码的百分号编码解码。比较两个 URI 是否等价之前先 normalize：
+
+```erlang
+uri_string:normalize("HTTP://Example.COM:80/%7euser").
+%% "http://example.com/~user"
+```
+
+最后，`uri_string:quote/1` 与 `uri_string:unquote/1` 做百分号编解码——往 query 里拼用户输入时先 quote：
+
+```erlang
+uri_string:quote("a b").        %% "a%20b"
+uri_string:unquote("a%20b").    %% "a b"
+```
+
+## 9.11 坑位清单
 
 1. **`<<"中文">>` 必须写 `/utf8`**：本教程出现频率最高的坑，静态看不出错。
 2. **`~s` 打中文抛 badarg**：`~s` 只认 latin1，中文一律 `~ts`（02 章）。
@@ -165,6 +217,8 @@ Erlang 源文件默认按 **UTF-8** 解析，所以字符串里的中文可以�
 8. **sigil 小写解释、大写逐字**：`~b`/`~s` 会处理 `\t`、`\n` 转义，`~B`/`~S` 原样保留反斜杠——别把 `~B` 当成"更强的 `~b`"（9.7）。
 9. **相邻字面量之间必须留空白**：`"a" "b"` 合法（编译期拼成 `"ab"`），`"a""b"` 是语法错（9.8，OTP 27 起）。
 10. **源码编码默认 UTF-8**：`coding` 注释只认前两行、只认 `Latin-1`/`UTF-8`；它管的是**源码文本怎么读**，跟运行时 `<<"中">>` 的 latin1 截断（9.2）完全无关。
+11. **`string:replace` 返回 iodata 且默认只换第一处**：要平面串记得 `unicode:characters_to_binary`，要全换记得显式写 `all`（9.4）。
+12. **`uri_string:parse` 的 map 键不全**：没出现的部件不进 map，取 `port` 用 `maps:get/3` 带默认值；非法 URI 返回 `{error, Reason, Rest}` 三元组，不抛异常（9.10）。
 
 ---
 

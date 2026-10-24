@@ -78,12 +78,51 @@ load_hot(N) ->
     code:load_binary(hot_t, "hot_t.erl", Bin).
 
 spec_in_beam_test() ->
-    %% -spec 存在 beam 的抽象代码里
-    {ok, Beam} = file:read_file(code:which('23_tooling')),
+    %% -spec 存在 beam 的抽象代码里（前提：带 debug_info 编译，erlc 默认不带）
+    Src = "-module(spec_demo_t).\n"
+          "-export([combine/2, tagged/1]).\n"
+          "-spec combine(string(), string()) -> string().\n"
+          "combine(A, B) -> A ++ \" \" ++ B.\n"
+          "-spec tagged(integer() | float()) -> {number(), integer()}.\n"
+          "tagged(N) -> {N, trunc(N)}.\n",
+    ok = file:write_file("build/spec_demo_t.erl", Src),
+    {ok, spec_demo_t, Bin} =
+        compile:file("build/spec_demo_t.erl", [binary, debug_info, return_errors]),
     {ok, {_, [{abstract_code, {raw_abstract_v1, Forms}}]}} =
-        beam_lib:chunks(Beam, [abstract_code]),
+        beam_lib:chunks(Bin, [abstract_code]),
     Specs = [F || {attribute, _, spec, _} = F <- Forms],
-    ?assert(length(Specs) >= 2),
+    ?assertEqual(2, length(Specs)),
     Names = [begin {attribute, _, spec, {{N, _A}, _}} = S, N end || S <- Specs],
     ?assert(lists:member(combine, Names)),
     ?assert(lists:member(tagged, Names)).
+
+beam_lib_info_test() ->
+    %% beam_lib 不加载模块就能读出 beam 的档案信息
+    {ok, Beam} = file:read_file(code:which('23_tooling')),
+    %% info/1 直接返回清单（不包 {ok, ...}）
+    Info = beam_lib:info(Beam),
+    ?assertEqual('23_tooling', proplists:get_value(module, Info)),
+    ?assert(byte_size(proplists:get_value(binary, Info)) > 0),
+    ?assert(length(proplists:get_value(chunks, Info)) > 0),
+    {ok, {_, [{attributes, Attrs}]}} = beam_lib:chunks(Beam, [attributes]),
+    ?assert(is_list(proplists:get_value(vsn, Attrs))),
+    {ok, {_, [{compile_info, CI}]}} = beam_lib:chunks(Beam, [compile_info]),
+    ?assert(is_list(proplists:get_value(version, CI))),
+    %% erlc 默认不带 debug_info：抽象代码区块是 no_abstract_code
+    {ok, {_, [{abstract_code, Abs}]}} = beam_lib:chunks(Beam, [abstract_code]),
+    ?assertEqual(no_abstract_code, Abs).
+
+io_ansi_test() ->
+    ?assertEqual(<<"\e[34m">>, io_ansi:blue()),
+    ?assertEqual(<<"\e[41m">>, io_ansi:red_background()),
+    %% 断言一律用 [{enabled, true}] 强制开色，别依赖本机终端（docs 23.9 坑 9）
+    ?assertEqual(<<"\e[34mred\e[0m">>,
+                 io_ansi:format([blue, "~p"], [red], [{enabled, true}])),
+    ?assertEqual(<<"\e[34mred">>,
+                 io_ansi:format([blue, "~p"], [red], [{enabled, true}, {reset, false}])),
+    %% eunit（noshell）下终端能力不足，format 自动剥掉 VTS
+    ?assertEqual(<<"red">>, io_ansi:format([blue, "~p"], [red], [])).
+
+erl_features_test() ->
+    %% OTP 29 的全部特性（OTP 25 引入特性开关机制）
+    ?assertEqual([compr_assign, maybe_expr], erl_features:all()).

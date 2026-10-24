@@ -1,7 +1,7 @@
 # Common Lisp CHEATSheet（双实现版）
 
-配 [README.md](README.md) 与 [docs/](docs/) 使用：正文 27 章讲「为什么」，
-本页只放「查」。所有条目都在 **SBCL 2.6.8 + GNU CLISP 2.49.95** 实测过
+配 [README.md](README.md) 与 [docs/](docs/) 使用：正文 38 章讲「为什么」，
+本页只放「查」。所有条目都在 **SBCL 2.6.9 + GNU CLISP 2.49.95** 实测过
 （标注差异的地方除外）。
 
 ## 0. 命令速查

@@ -34,6 +34,20 @@ maps:merge_with(fun(_K, L, R) -> L + R end, A, B).   %% 冲突交给函数
 maps:with([a, c], M). / maps:without([a], M).
 ```
 
+OTP 24 又补了一批常用件，免去自己 fold：
+
+```erlang
+maps:foreach(fun(K, V) -> io:format("~p=~p ", [K, V]) end, M).   %% ok：只要副作用
+maps:filtermap(fun(_K, V) -> case V rem 2 of 0 -> {true, V * 10}; _ -> false end end,
+               #{a => 1, b => 2, c => 4}).          %% #{b => 20, c => 40}：一步完成过滤+变换
+maps:from_keys([a, b, c], 0).                       %% #{a => 0, b => 0, c => 0}：同初值建 map
+maps:intersect(#{a => 1, b => 2}, #{a => 9, c => 3}).           %% #{a => 9}
+maps:intersect_with(fun(_K, L, R) -> L + R end,
+                    #{a => 1, b => 2}, #{a => 9, c => 3}).      %% #{a => 10}
+```
+
+三个要点：`filtermap` 的 fun 返回 `true` 保留原值、`{true, NewV}` 保留并换值、`false` 丢弃；`intersect` 只留两边都有的键，**公共键的值取右侧 map**（上面是 `9` 不是 `1`——与 `merge/2` 的"右侧优先"一致）；要自定义公共键的合并规则就用 `intersect_with`。
+
 ## 10.4 顺序不保证（map 的头号纪律）
 
 **map 迭代顺序每次进程启动都随机**（原子哈希随机种子）——`maps:keys` 两次运行可能不同。要稳定输出必须 `lists:sort(maps:to_list(M))`；判等也用排序后的列表。整数键看起来有序是实现细节，**不要依赖**。
@@ -74,6 +88,7 @@ label(#person{age = A}) when A < 18 -> minor.
 4. **record 当动态字典用**：字段名运行期拿不到，动态键场景换 map。
 5. **子句顺序**：`label` 里"匿名"判定排在年龄判定后面就永远轮不到——age=0 先命中 minor（示例实测）。
 6. **两个模块的 record 定义不同步**：同一 record 各处定义不一致时元组照旧匹配——共享定义放 .hrl。
+7. **`maps:intersect` 公共键取右值**：`maps:intersect(#{a => 1}, #{a => 9})` 得 `#{a => 9}`，想要别的合并规则用 `maps:intersect_with`（10.3）。
 
 ---
 

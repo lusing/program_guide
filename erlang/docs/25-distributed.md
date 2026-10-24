@@ -111,7 +111,25 @@ disconnect 之后 nodes() = [ex25_peer1]
 disconnect/reconnect 只对 **TCP 控制 peer** 可演示——默认 peer 的分布
 式连接就是控制通道，disconnect 等于判死刑。
 
-## 25.8 要点小结
+## 25.8 pool：认识即可的遗留负载池
+
+翻 stdlib 目录会遇到 pool 模块——它是 slave/rsh 时代的"节点池负载均衡"：`pool:start(worker, Args)` 读 `~/.hosts.erlang` 主机清单，对每台主机 `slave:start` 起节点编成一个池；之后 `pool:get_node()` 按**预期负载最低**挑节点，`pool:pspawn(M, F, A)` 直接把活派过去。pool_master 全局注册，任何节点都能从池里拿节点。
+
+**为什么新项目不要用它**：
+
+1. 起节点靠 slave——slave 模块已整体 deprecated（文档原话："Use the module 'peer' instead"），新方式是 25.2 的 peer。
+2. 依赖 `.hosts.erlang` 主机文件 + rsh/ssh 远程起节点。实测本机没有主机文件时，`pool:start` 不是优雅返回空池，而是**直接 function_clause 崩溃**：
+
+```text
+{error,function_clause,[{pool,start_nodes,[{error,enoent},worker,2],
+                        [{file,"pool.erl"},{line,174}]}, ...]}
+```
+
+3. 现代替代：pg（24 章）做成员发现 + 自己按 hash/轮询挑目标——语义透明，不藏全局状态。
+
+老代码里见到认识即可。
+
+## 25.9 要点小结
 
 ```text
   节点=有名字的 VM；-sname 短名 / -name 长名，一个集群只用一种
@@ -121,9 +139,10 @@ disconnect/reconnect 只对 **TCP 控制 peer** 可演示——默认 peer 的�
   global 集群注册名：返回 yes 不是 true；查名前先 global:sync()
   cookie 只在握手时校验；失配握手的 ERROR REPORT 在 ERTS 层，摘 logger 拦不住
   输出纪律：不打印 pid、不打印带主机名的完整节点名
+  pool 是 slave 时代的负载池：认识即可，新项目用 peer + pg 自搭
 ```
 
-## 25.9 坑位清单
+## 25.10 坑位清单
 
 1. **peer 生命周期绑父连接**：默认 peer 的分布式连接即控制通道，
    `net_kernel:disconnect/1` 会把 peer 节点和父侧控制进程一并带走；
@@ -143,6 +162,9 @@ disconnect/reconnect 只对 **TCP 控制 peer** 可演示——默认 peer 的�
    （peer 要求父节点是活节点）——手工跑别忘带。
 8. **rpc 别裸奔**：`rpc:call/4` 无超时默认 5 秒挂等；长活或对端不可靠
    时显式给第 5 参。
+9. **pool 起不来是 function_clause 不是错误元组**：`pool:start` 依赖
+   `.hosts.erlang` + slave（已 deprecated），无主机文件实测直接崩
+   `{error,function_clause,...}`——老代码认识即可（25.8）。
 
 ---
 

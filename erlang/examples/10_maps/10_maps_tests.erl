@@ -67,3 +67,28 @@ record_map_convert_test() ->
     %% map 缺字段时 from_map 用默认值补
     ?assertEqual({person, "bob", 1, []},
                  '10_maps':from_map(#{name => "bob", age => 1})).
+
+maps_otp24_test() ->
+    M = #{a => 1, b => 2, c => 4},
+    %% filtermap：true 保留原值、{true, NewV} 换值、false 丢弃
+    ?assertEqual(#{b => 20, c => 40},
+                 maps:filtermap(fun(_K, V) ->
+                                    case V rem 2 of
+                                        0 -> {true, V * 10};
+                                        _ -> false
+                                    end
+                                end, M)),
+    ?assertEqual(#{b => 2, c => 4}, maps:filtermap(fun(_K, V) -> V > 1 end, M)),
+    %% from_keys：同初值建 map
+    ?assertEqual(#{a => 0, b => 0, c => 0}, maps:from_keys([a, b, c], 0)),
+    %% intersect：只留公共键，值取右侧 map（与 merge/2 的右侧优先一致）
+    ?assertEqual(#{a => 9}, maps:intersect(#{a => 1, b => 2}, #{a => 9, c => 3})),
+    %% intersect_with：公共键交给函数
+    ?assertEqual(#{a => 10},
+                 maps:intersect_with(fun(_K, L, R) -> L + R end,
+                                     #{a => 1, b => 2}, #{a => 9, c => 3})),
+    %% foreach 只要副作用，返回 ok
+    ?assertEqual(ok, maps:foreach(fun(_K, _V) -> ok end, M)),
+    %% groups_from_list（OTP 25）：按分组函数聚类，组内保持输入顺序
+    ?assertEqual(#{1 => ["a", "c"], 2 => ["bb"]},
+                 maps:groups_from_list(fun length/1, ["a", "bb", "c"])).
