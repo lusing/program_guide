@@ -129,4 +129,4 @@ Ltac number_goal := first [ reflexivity | lia | ring | congruence ].
 6. **Hint Rewrite 别注册循环规则**：两条互相改写的等式会让 autorewrite 停不下来。
 
 ---
-上一章：[18 · 策略武器库与模块](18-tactics-modules.md) ｜ 下一章：[20 · 决策过程](20-decision.md) ｜ 返回：[README](../README.md)
+上一章：[18 · 策略武器库与模块](18-tactics-modules.md) ｜ 下一章：[20 · 决策过程：ring、lia 与它的家族](20-decision.md) ｜ 返回：[README](../README.md)

@@ -163,4 +163,4 @@ Qed.
 5. **`rewrite IHa1, IHa2` 逗号**：`rewrite A, B` 是 `rewrite A. rewrite B.` 的缩写——顺序执行，B 失败整个失败，分开排查更容易。
 
 ---
-上一章：[20 · 决策过程](20-decision.md) ｜ 下一章：[22 · 列表定律证明实战](22-list-laws.md) ｜ 返回：[README](../README.md)
+上一章：[20 · 决策过程：ring、lia 与它的家族](20-decision.md) ｜ 下一章：[22 · 列表定律证明实战](22-list-laws.md) ｜ 返回：[README](../README.md)

@@ -1,8 +1,8 @@
-# 33 · 坑清单与最佳实践
+# 45 · 坑清单与最佳实践
 
-### 33.1 全书坑位总清单
+### 45.1 全书坑位总清单
 
-三十三章攒下的坑，按「第一天就会踩」到「写项目才会踩」排序。每条都经过
+四十五章攒下的坑，按「第一天就会踩」到「写项目才会踩」排序。每条都经过
 9.3.0 实测（2026-10 在 rocq 9.3.0 + rocq-stdlib 9.2.0 上全书复验；自 8.20.1 迁移新增的坑单独成块），括号内是原始章节。
 
 **入门第一周（环境与语法）：**
@@ -93,7 +93,44 @@
 57. `Recursive Extraction` 要先 `Require Import Extraction`，裸写报非法命令（32）；
 58. 封印模块（`Module M : SIG`）看不到表示——对实现做计算用未封印原模块（18）。
 
-### 33.2 最佳实践十二条
+**语言理论篇（33–44 章）：**
+
+59. `Open Scope com_scope.` 必须在第一次使用 `<{ }>` 之前——放在后面报
+    `Unknown interpretation for notation "<{ _ }>"`，且报错位置指向 fixpoint 内部（38/39）；
+60. 类型乘积写 `(com * state)%type`：nat_scope 的 `*`（Nat.mul，`Require Import Arith` 时打开）压过
+    type_scope 的 `*`（prod），裸写 `com * state` 报 `The term "com" has type "Set" while it is
+    expected to have type "nat"`——最小复现 `Definition A := nat * nat.` 与 com 无关（40）；
+61. 燃料求值的账要实测：`fuel k` 的 while 最多 `k-1` 轮，直觉常差一格；最终状态是"层层覆盖的函数"，
+    `= Some (X !-> 0)` 编不过（`reflexivity` 无函数外延），要写全历史或投影成元组（39）；
+62. 自造记号 `'LETOPT' x <== e1 'IN' e2` 会把 `LETOPT`/`IN` 变成全局关键字——`IN` 撞常用词，
+    别随手复制进别的项目（39）；
+63. bullet 只能变深不能回浅（`*` 里写 `+` 报 `[Focus] Wrong bullet`）；省 bullet 的前提是每支
+    战术**写到完全关闭**，靠自动聚焦跳转（39）；
+64. `exists 1. reflexivity.` 在 E_Asgn/E_Seq 型目标上过不了——`rewrite <- H` 先把表达式换成值，
+    `rewrite` 之前还要 `simpl` 让子项真正出现（`Found no subterm matching`）（39/40）；
+65. **索引是复合项的归纳要给裸变量**：`multi step (c1, st) (c1', st')` 直接 `induction` 会把
+    `c1/st` 钉死（`Unable to unify ...`）；陈述成 `forall p q` 或 fst/snd 形式（40）；
+66. **对命令是变量的假设反演会爆炸**：`inversion Hce`（`Hce : st =[c2]=> st''`）一次裂出全部构造子，
+    一段证明实测攒出 25 个目标——命令具体才反演，命令抽象时用目标规则直接拼（40）；
+67. inversion 产出的假设名不稳定（H4/H5…随上下文漂移）——按形状引用：
+    `match goal with H : ceval (CSeq _ _) _ _ |- _ => ... end`；注意 ceval 的参数序是
+    （命令, 初态, 终态），模式放错参数位永远失配（40）；
+68. `lia` 不认 `(st X <=? 2) = true` 这类布尔等式（报 `Cannot find witness`）——先 `Nat.leb_le /
+    Nat.eqb_eq / Nat.eqb_neq` 翻成算术再 lia；`~(b = true)` 转 `b = false` 用自写小引理，标准库
+    `not_true_iff_false` 用 `apply ... in` 会挑反方向（42）；
+69. 断言替换的三板斧 `unfold assert_implies, assertion_sub, t_update` → `simpl` → `lia`：少
+    `t_update` 就留着 `if X =? X then ...`，lia 失败（42）；
+70. `hoare_seq` 的前提是**倒序**的（c2 在前）——两个分支写反时报
+    `Unexpected name (no introduction patterns were expected in the branch)`（42）；
+71. 标准库闭包的显式参数陷阱：`clos_refl_trans` 的 `A` 显式（裸调用把关系塞给 A）；
+    短名 `rt1n_trans` 一名两义（构造子 vs `Operators_Properties` 的缩写引理）——`About` 先看归属（36）；
+72. `Nat.le_S_n` 不存在（在 `Peano` 命名空间）——按名字猜引理不如 `Search (S _ <= S _ -> _ <= _)`
+    按形状搜；本地 `relation`/`reflexive` 会遮蔽 `Relation_Definitions` 的同名定义，`Locate` 可见两者（36）。
+
+本章只摘语言理论篇里复用价值最高的条目；34–44 每一章末尾的「本章坑位清单（实测）」是完整的
+第一手记录，含真实报错原文。
+
+### 45.2 最佳实践十四条
 
 1. **先 Check 再 rewrite**：方向、类型、存在性，一秒钟避免十分钟困惑；
 2. **子弹用全，prove 的每个目标都点名**：可读性就是正确性的一半；
@@ -106,25 +143,27 @@
 9. **模块+签名交付 ADT**，接口连同正确性定理一起封印（18 的 STACK_SIG）；
 10. **每个 pass 一条正确性定理**，组合的正确性免费合成（32 的 pipeline）；
 11. **证定理用 Qed、造函数用 Defined**：强规范函数的透明度就是它的可计算性（26）；
-12. **引理库先行**：直接构造会被嵌套目标淹没，先把「顺手的零件」（st_l、go_left 这类）证好再开工（28 的实战检验）。
+12. **引理库先行**：直接构造会被嵌套目标淹没，先把「顺手的零件」（st_l、go_left 这类）证好再开工（28 的实战检验）；
+13. **规则组合优先于展开定义**：证程序性质时先把推理规则证成定理（霍尔七条、大小步等价两向），之后所有证明只用规则名 + 算术，不再碰求值语义（40/42）；
+14. **对带索引的归纳先想清楚「什么能被抽象」**：索引是复合项就 remember + revert，端点写成裸变量；前提依赖谁就先 generalize 谁——IH 的形状决定证明能不能走通（39/40）。
 
-### 33.3 下一步去哪里
+### 45.3 下一步去哪里
 
 - **《交互式定理证明与程序开发：Coq 归纳构造演算的艺术》**（Bertot & Casteran，中译本）：本书 19–20、26–31 章的源头，谨致谢意——这些章节的内容已全自包含地提炼进本教程，不读原书也能跟上；想就依赖类型、余归纳、一般递归、自反证明四大主题再往深处走，完整展开全在这本书里；
-- **Software Foundations**（softwarefoundations.cis.upenn.edu）：逻辑（Logic）、程序语言（PLF）、验证（VF）三卷，本书第 21/32 章的直接源头，习题质量全领域第一；
+- **Software Foundations**（softwarefoundations.cis.upenn.edu）：逻辑（Logic）、程序语言（PLF）、验证（VF）三卷，本书第 21/32 章与语言理论篇（33–44 章）的直接源头，习题质量全领域第一；
 - **Mathematical Components / MathComp**：另一套证明风格（SSReflect 小步战术），适合大量数学推理；
 - **Equations 插件**：比 Program Fixpoint 更强的依赖函数定义工具（生成的不动点方程可直接用来推理，正好补第 30 章的痛点）；
 - **真项目**：给第 32 章的语言加布尔与 if（易）、加 let 绑定（易）、加函数调用（中）、加 while（难——燃料或度量）、写个解析器从字符串构造 aexp（与验证正交的纯工程）；把第 28 章的 BST 升级成泛型字典（书第 12 章模块系统的经典练习）。
 
-### 33.4 结语
+### 45.4 结语
 
-33 章前你面对的是「证明助手」这个词；现在你手里有：一门能定义数据、写函数、组织模块的语言，一套把命题变成类型、把推理变成程序的世界观，一条从 Example 到 Theorem、从函数到流水线、从证明到抽取的完整生产线，和依赖类型、余归纳、良基递归、自反证明这四把进阶钥匙。
+45 章前你面对的是「证明助手」这个词；现在你手里有：一门能定义数据、写函数、组织模块的语言，一套把命题变成类型、把推理变成程序的世界观，一条从 Example 到 Theorem、从函数到流水线、从证明到抽取的完整生产线，依赖类型、余归纳、良基递归、自反证明这四把进阶钥匙，以及语言理论篇里那台从映射一路搭到 Hoare 逻辑与 λ 演算的完整语义机器——它的每一步（大步、燃料、小步、霍尔）都被你亲手证明过等价或正确。
 
 最重要的练习只有一种：**打开 Coq，写下你想证的东西，然后动手**。它会顶嘴，会拒绝，会把你的每个「显然」逼成原理——这正是它四十年来存在的意义。
 
 ---
 
-（全书完 · 33 章 · 示例 32 个 · 全部经 rocq compile（rocq 9.3.0 + stdlib 9.2.0）编译验证）
+（全书完 · 45 章 · 示例 44 个 · 全部经 rocq compile（rocq 9.3.0 + stdlib 9.2.0）编译验证）
 
 ---
-上一章：[32 · 综合实战：表达式解释器与优化器](32-project.md) ｜ 返回：[README](../README.md)
+上一章：[44 · 简单类型 λ 演算](44-stlc.md) ｜ 返回：[README](../README.md)
