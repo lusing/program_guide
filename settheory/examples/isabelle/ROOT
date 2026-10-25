@@ -404,3 +404,8 @@ session ST78 in "ST78" = "ZF-Constructible" +
   options [document = false]
   theories
     Sch
+
+session ST87 in "ST87" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Constructible

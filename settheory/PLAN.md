@@ -195,10 +195,13 @@ Makinson 全书 3 部 11 章提炼为第九篇（56-66：计算者的集合—�
   补记（同日复查）：86 的 julia/py/prolog 三件缺 `==== 86`/`END ====` 输出
   标记——build.ps1 判定必 FAIL 的假绿，已补；85 prolog 顺手补 `==== 85`。
   证明四通道（lean/isa/coq/agda）产物在盘（olean 哈希匹配 mathlib 4.33.1、
-  heaps ST84-86、.glob、.agdai），真编译过。87（可构造宇宙 L 与 GCH）待建
-- **G3**：88-89（L 的组合原理与弱紧 + 内模型 HOD/L[A]/L(ℝ)）
-- **G4**：90-91（力迫基本理论与 CH/AC 独立 + 马丁公理与迭代）
-- **G5**：92（布尔值模型冯琦视角）+ 93 收官扩五书总表 + 全量对账收官
+  heaps ST84-86、.glob、.agdai），真编译过
+- **G3** ✅（2026-10-25）：87（可构造宇宙 L 与 GCH：定义 2.1 层次/哥德尔
+  集合运算/简朴运算/最小内模型/<_L 秩序/凝聚化引理/定理 2.11 GCH），
+  build.ps1 -Chapter 87 七通道全绿（22 单元）；88-89 顺延为 G4
+- **G4**：88-89（L 的组合原理与弱紧 + 内模型 HOD/L[A]/L(ℝ)）
+- **G5**：90-91（力迫基本理论与 CH/AC 独立 + 马丁公理与迭代）
+- **G6**：92（布尔值模型冯琦视角）+ 93 收官扩五书总表 + 全量对账收官
 
 ## 第八篇章表（Viale 2024 全书提炼；实际建成结构 00-56）
 
@@ -326,7 +329,7 @@ x-variant 读法正是 51-52 章 B-值语义的原型；证明与后承（65 章
 | 84 | 84-admissible.md | KP 与舒适集合（把一阶逻辑植入 KP） | 1.1 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | 85 | 85-transmodel.md | 传递模型与内在模型论 | 1.2 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | 86 | 86-pcf.md | 模型分析应用：谢旲 pcf 理论 | 1.3 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| 87 | 87-constructible.md | 可构造宇宙 L 与一般连续统假设 | 2.1.1-2.1.3 | — | — | — | — | — | — |
+| 87 | 87-constructible.md | 可构造宇宙 L 与一般连续统假设 | 2.1.1-2.1.3 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | 88 | 88-lcomb.md | L 中的组合原理与弱紧基数 | 2.1.4-2.1.5 | — | — | — | — | — | — |
 | 89 | 89-innermodel.md | 内模型 HOD、L[A] 与 L(ℝ) | 2.2 | — | — | — | — | — | — |
 | 90 | 90-forcing2.md | 力迫基本理论与 CH/AC 独立性 | 3.1-3.3 | — | — | — | — | — | — |
@@ -535,4 +538,30 @@ pdftotext 按节页段提取（书页 = PDF-12），文本作骨架（定理编�
   - 记账纪律：篇章表的 ✓ 只标已建成行；79-83（F7-F9 未执行）与
     87-92 曾被预标 ✓，已改 —。README 的"N 章 × 7 = M 单元"式总账
     每批都会过期，改为指向 `build.ps1 -All` 对账报告。
-
+- **G3 坑（87 章，2026-10-25）**：
+  - Isabelle：**本机 ZF-Constructible 堆的 Formula 是老版本——DPow_insert
+    源码里有、堆里没有**。锚点引理名先用 PROBE 会话（thm 全列一遍一次
+    build 探明）再写正式理论；`with a b` 的因子序是 [a,b,this]，多前提
+    rule（subsetD ⟦A⊆B; a∈A⟧）被 with 排序反喂——改显式 `from h1 h2 …
+    by (rule subsetD)`。
+  - Lean 4.33 core：结构字段多名字简写 `g1 g2 g3 g4 g5 : T` 报
+    inferBinderTypeFailed（逐字段声明）；`/-- -/` 文档注释不能挂在
+    `variable` 前（非声明命令，改普通 `/- -/`）；递归 def 方程体内引用
+    自身**不能带节变量参数**（方程编译器最后才抽象 section variable，
+    体内写裸 `Lh n` 而非 `Lh D n`）。
+  - Agda 2.8.0/stdlib：`Data.List.filter` 是 Decidable 版（吃 A → Dec P
+    而非 A → Bool）——布尔版手卷 bfilter；`≡ᵇ` 与 `≡` 同级中缀
+    `m ≡ᵇ n ≡ true` 不可解析（必须括号）；**这版 stdlib 的 subst 其 P 是
+    显式第一参**；with-抽象会重命名目标中被抽象项涉及的同名绑定变元
+    （goal 的表头恰叫 x 时变 x₁）——分支逻辑用 Bool-elim 分派到两个
+    独立分支引理（与 Coq 结构同构）最稳。
+  - Coq：归纳参数默认显式（Arguments ftt {A} 全家补齐）；`In x (a::l)`
+    的等式方向是 a = x（left 后要 symmetry）；filter_In 用
+    `rewrite filter_In` 进目标最稳。
+  - Python：`-I` 隔离模式忽略 PYTHONIOENCODING，stdout 走 GBK——
+    ✓ ↔ ℵ ₀ ₁ 全不可编码，print 文案必须 GBK 安全（84-86 同款纪律，
+    87 首跑即翻车）。
+  - Prolog：between/3 不求值算术表达式（`N - 1` 是复合项，先 is）。
+  - Julia：链式比较 `a == b == c` 解析为 `(a==b)==c`（拆两条 @assert）；
+    HS 直接构造不经 hs() 规范化会让同一子集以不同元素序重复入 Set；
+    levels 数组 1-based（levels[k]=V_{k-1}），秩序调用注意偏移。
