@@ -7,10 +7,11 @@ Computing》（Springer UTiCS，第三版 2020）为计算视角篇第三底本�
 冯琦《集合论导引（第一卷）基本理论》为传递集合路线第四底本的
 中文教程。从 ZFC 公理、序数、基数到力迫、大基数与描述集合论，
 再到布尔值语义重建、计算者的离散数学工具箱与传递集合为纲的
-基本理论——四本书、十篇、80 章（第十篇 79-83 写作中），每章正文
+基本理论——五本书、十一篇、94 章（00–93；现建成 83 章：00–78、84–86 与收官 93；
+第十篇 79–83、第十一篇 87–92 写作中），每章正文
 自包含（只读 docs 即可学习）。
 
-七通道机器验证（80 章 × 7 = 560 单元）：
+七通道机器验证（单元逐章点亮，全量对账见 `build.ps1 -All`）：
 
 - **Lean 4 + mathlib4**（主证明：Ordinal / Cardinal / ZFC / Zorn 官方锚点）
 - **Isabelle/ZF**（第二证明：Paulson 的 Constructible = Gödel L 独家形式化）
@@ -175,11 +176,21 @@ Borel 集与解析集、Baire 空间与投影层级、L 中的投影集、Solova
 | [77](docs/77-nonstat.md) | 滤子、非荟萃集理想与广义无界闭子集 | club 滤子、NS 理想、对角线交与 Fodor |
 | [78](docs/78-sch.md) | 奇异基数假设：银杰与嘎尔文-海纳 | Silver 定理、Galvin-Hajnal 与 SCH 边界 |
 
+### 第十一篇 冯琦第二卷路线：传递模型、内模型与力迫（冯琦《集合论导引》第二卷）
+
+以**传递模型**为纲讲可采纳集合与 KP 理论、内在模型论与谢旲 pcf 应用；再以**内模型**为纲讲可构造宇宙 L、GCH、组合原理、HOD 与 L(ℝ)；最后以冯琦视角重讲力迫与布尔值模型，与第三/八篇互为镜像。
+
+| 章 | 标题 | 一句话 |
+|---|---|---|
+| [84](docs/84-admissible.md) | KP 与舒适集合 | 解析表达式、KP⁻、Σ 镜像、V_ω 与 H_κ |
+| [85](docs/85-transmodel.md) | 传递模型与内在模型论 | 依定义扩充、塔尔斯基准则、镜像原理 |
+| [86](docs/86-pcf.md) | 模型分析应用：谢旯 pcf 理论 | 标尺、生成元、2^{ℵ_ω}<ℵ_{ω₄} |
+
 ### 收官
 
 | 章 | 标题 | 一句话 |
 |---|---|---|
-| [84](docs/84-cheatsheet.md) | 收官 CHEATSheet | 四书对照总表 + 坑位总账 |
+| [93](docs/93-cheatsheet.md) | 收官 CHEATSheet | 五书对照总表 + 坑位总账 |
 
 ## 验证
 
@@ -189,7 +200,7 @@ pwsh -NoProfile -Command '& ./build.ps1 -Chapter 02' # 只验一章
 pwsh -NoProfile -Command '& ./build.ps1 -List'       # 列出全部验证单元
 ```
 
-## 四底本
+## 五底本
 
 | 底本 | 版本 | 覆盖范围 |
 |---|---|---|
@@ -197,6 +208,7 @@ pwsh -NoProfile -Command '& ./build.ps1 -List'       # 列出全部验证单元
 | Matteo Viale, *The Forcing Method in Set Theory* | Springer UNITEXT 168, 2024 | 全书 7 章 + 附录 A/B/C/D |
 | David Makinson, *Sets, Logic and Maths for Computing* | Springer UTiCS, 3rd ed. 2020 | 全书 3 部 11 章 |
 | 冯琦, *集合论导引（第一卷）基本理论* | 324 页扫描版（rapidocr 取材） | 引言 + 第 1 章 + 第 2 章 §2.1-2.4（第十篇 67-78，79-83 推进中） |
+| 冯琦, *集合论导引（第二卷）* | 415 页扫描版（rapidocr 取材） | 第 1 章传递模型 + 第 2 章内模型 + 第 3 章力迫论（第十一篇 84-92 推进中） |
 
 每章正文中底本编号（如 "Jech §12"）仅作溯源注记，不构成阅读依赖；
 全部定理给完整证明或完整讲解，自包含可读。

@@ -323,10 +323,25 @@ session ST66 in "ST66" = "ZF-Constructible" +
   theories
     Relevance
 
-session ST84 in "ST84" = "ZF-Constructible" +
+session ST93 in "ST93" = "ZF-Constructible" +
   options [document = false]
   theories
     Topic
+
+session ST84 in "ST84" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Admissible
+
+session ST85 in "ST85" = ZF +
+  options [document = false]
+  theories
+    Transmodel
+
+session ST86 in "ST86" = ZF +
+  options [document = false]
+  theories
+    Pcf
 
 session ST67 in "ST67" = "ZF-Constructible" +
   options [document = false]
