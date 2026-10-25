@@ -1,0 +1,4 @@
+session IsaTutLCFex = IsaTutLCF +
+  options [document = false]
+  theories
+    T73_lcf

@@ -1,0 +1,18 @@
+session IsaTutCCL = FOL +
+  options [document = false]
+  directories "ex"
+  theories
+    Set
+    Lfp
+    Gfp
+    CCL
+    Trancl
+    Term
+    Type
+    Hered
+    Wfd
+    Fix
+    "ex/Nat"
+    "ex/List"
+    "ex/Stream"
+    "ex/Flag"

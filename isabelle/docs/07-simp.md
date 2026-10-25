@@ -68,6 +68,7 @@ theorem double 3 = 6
 **`simp` 不会把字面量 3 展开成 `Suc (Suc (Suc 0))` 去匹配 `double` 的方程。** 数字字面量在化简器眼里就是一个整体常量 `3`，不是一个构造器图案。想让它展开：
 
 - 手写成构造器形式 `Suc (Suc (Suc 0))`，`simp` 立刻能过（实测）：
+
   ```text
   theorem double (Suc (Suc (Suc 0))) = Suc (Suc (Suc (Suc (Suc (Suc 0)))))
   ```
