@@ -3,13 +3,15 @@
 面向**会编程（任意语言背景）、初学 Coq** 的读者：从证明助手的心智模型讲到
 类型系统、归纳类型、tactic 证明技法，再到 AST 求值器、插入排序正确性、
 列表定律等证明实战，继而是依赖类型、余归纳、一般递归、自反证明四大进阶
-主题，最后以综合项目**表达式解释器与优化器**收束。
-**章号 = 示例编号**——01–32 章每章对应 `examples/` 里一个经 `rocq compile`
-（rocq 9.3.0 + stdlib 9.2.0）编译验证的完整 .v 文件，33 章为 80+ 条实测坑位总清单。
+主题与综合项目**表达式解释器与优化器**，最后进入**语言理论篇**（33–44 章）：
+从映射出发，亲手造出 Imp 语言、它的三种语义（大步/燃料/小步）与 Hoare 逻辑，
+证明它们互相等价，直到简单类型 λ 演算的类型安全性。
+**章号 = 示例编号**——除 45 章外每章对应 `examples/` 里一个经 `rocq compile`
+（rocq 9.3.0 + stdlib 9.2.0）编译验证的完整 .v 文件，45 章为 100+ 条实测坑位总清单。
 
 > 核心理念：**类型即命题，程序即证明。** Coq 把"写代码"和"证定理"变成
 > 同一种语言里的同一件事——编译通过就是定理成立；详见
-> [01 章](docs/01-intro.md) 与 [33 章](docs/33-pitfalls.md)。
+> [01 章](docs/01-intro.md) 与 [45 章](docs/45-pitfalls.md)。
 
 ## 目录结构
 
@@ -18,8 +20,9 @@ coq/
 ├── README.md        本文件
 ├── build.ps1        编译验证脚本（PowerShell）
 ├── build.sh         编译验证脚本（macOS / Linux，用法同 build.ps1）
-├── docs/            33 章教程（01 → 33 顺序阅读）
-├── examples/        32 个 .v 示例（章号 = 示例编号，01–32）
+├── docs/            45 章教程（01 → 45 顺序阅读）
+├── examples/        44 个 .v 示例（章号 = 示例编号，01–44）
+├── tools/           文档核查脚本（check_docs_coverage.py）
 └── build/           编译输出（已 gitignore）
 ```
 
@@ -59,20 +62,34 @@ coq/
 | [30 一般递归](docs/30-general-recursion.md) | 燃料、良基递归、Program Fixpoint | `30_general_recursion.v` |
 | [31 自反证明](docs/31-reflection.md) | 判定函数 + 桥定理、flatten 规格化 | `31_reflection.v` |
 | [32 综合实战：表达式解释器与优化器](docs/32-project.md) | 解释器 + 双 pass 流水线 + Extraction | `32_project.v` |
-| [33 坑清单与最佳实践](docs/33-pitfalls.md) | 80+ 条实测坑位与最佳实践总清单 | — |
+| [33 映射：把函数当数据结构](docs/33-maps.md) | total_map、`!->` 记号、更新引理 | `33_maps.v` |
+| [34 证明即项：Curry–Howard 落地](docs/34-proof-terms.md) | 证明项、`IndProp` 的另一面 | `34_proof_terms.v` |
+| [35 归纳原则解剖](docs/35-induction-principles.md) | `Print ... _ind`、一般化归纳 | `35_induction_principles.v` |
+| [36 关系、闭包与确定性](docs/36-relations.md) | 偏函数/等价/序、自反传递闭包 | `36_relations.v` |
+| [37 自定义记号与语法](docs/37-notation.md) | Coercion、Custom Entry、level 阶梯 | `37_notation.v` |
+| [38 Imp：状态、命令与大步语义](docs/38-imp-semantics.md) | state、com、ceval 七规则、栈机 | `38_imp_semantics.v` |
+| [39 燃料求值器：把关系变回函数](docs/39-fuel-evaluation.md) | ceval_step、与 ceval 的等价 | `39_fuel_evaluation.v` |
+| [40 小步语义：执行即关系](docs/40-smallstep.md) | step/multi、大小步等价、star | `40_smallstep.v` |
+| [41 词法与语法解析](docs/41-parsing.md) | 正则匹配、tokenize、解析组合子 | `41_parsing.v` |
+| [42 Hoare 逻辑](docs/42-hoare.md) | 三元组、七条规则、循环不变量 | `42_hoare.v` |
+| [43 自动化工程：evar 搜索与 hint 数据库](docs/43-automation.md) | auto/eauto、hint 数据库 | `43_automation.v` |
+| [44 简单类型 λ 演算](docs/44-stlc.md) | STLC、progress、preservation | `44_stlc.v` |
+| [45 坑清单与最佳实践](docs/45-pitfalls.md) | 100+ 条实测坑位与最佳实践总清单 | — |
 
 学习路线：01–05 语言与基本证明 → 06–10 数据建模（元组/匹配/列表/归纳/
 递归）→ 11–15 证明技法主线（归纳/重写/逻辑）→ 16–18 高阶与工程化 →
 **19–20 自动化双章（Ltac 与决策过程）** → 21–25 实战递进（AST → 列表定律
 → 排序 → 数值 → 测试）→ **26–31 进阶四重奏（依赖类型 → 互归纳 → BST →
-余归纳 → 一般递归 → 自反证明）** → 32 综合项目收束 → 33 坑清单（写代码
-前先查）。
+余归纳 → 一般递归 → 自反证明）** → 32 综合项目收束 → **33–44 语言理论篇
+（映射 → 归纳原则 → 关系 → 记号 → Imp → 燃料 → 小步 → 解析 → Hoare →
+自动化 → STLC）** → 45 坑清单（写代码前先查）。
 
 19–20 与 26–31 八章为 2026-09 按经典教材《交互式定理证明与程序开发：
 Coq 归纳构造演算的艺术》（Bertot & Casteran，中译本）扩充的「书本篇」；
-全部内容已自包含提炼，无需翻阅原书。2026-10 起全书按 [Rocq 9.2.0
-参考手册](https://rocq-prover.org/doc/V9.2.0/refman/index.html)校准，
-现以 rocq 9.3.0 + stdlib 9.2.0 实测复验（早期环境为 Coq 8.20.1）。
+33–44 章为 2026-10 按 _Software Foundations_（LF 卷 + PLF 卷精选）扩充的
+「语言理论篇」；两部分内容均已自包含提炼，无需翻阅原书。2026-10 起全书按
+[Rocq 9.2.0 参考手册](https://rocq-prover.org/doc/V9.2.0/refman/index.html)
+校准，现以 rocq 9.3.0 + stdlib 9.2.0 实测复验（早期环境为 Coq 8.20.1）。
 
 ## 工具链
 
@@ -106,7 +123,10 @@ chmod +x build.sh
 ./build.sh -Clean                      # 清理 build/
 ```
 
-**判定标准**：全部 32 个示例 `rocq compile` 退出码 0。`32_project.v` 的
+**判定标准**：全部 44 个示例 `rocq compile` 退出码 0；
+`python3 tools/check_docs_coverage.py NN --mutate` 对语言理论篇各章
+（33–44）报 missing 0 且 mutate 自检通过（正文必须引用示例的每一行代码；
+01–32 章为早期体例，不在此关卡内）。`32_project.v` 的
 `Recursive Extraction` 会向输出打印抽取的 OCaml 代码，全量编译耗时略长
 属正常。
 
@@ -125,7 +145,7 @@ chmod +x build.sh
 
 - **章号 = 示例编号**：`docs/05-expressions.md` ↔ `examples/05_expressions.v`，
   每章开头一行"对应示例"标注。
-- 33 章无示例，是全教程坑位的汇总清单——写代码前先查它。
+- 45 章无示例，是全教程坑位的汇总清单——写代码前先查它。
 - 改示例后重跑对应文件：`.\build.ps1 -File NN_xxx.v`（macOS / Linux 用
   `./build.sh -File NN_xxx.v`）。
 
