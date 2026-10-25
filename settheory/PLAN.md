@@ -207,7 +207,21 @@ Makinson 全书 3 部 11 章提炼为第九篇（56-66：计算者的集合—�
   OD/HOD 定义 2.27-2.29/引理 2.26-2.27/定理 2.20-2.21；ODR/HODR
   定义 2.30-2.32/定理 2.22-2.23；L(a)/L(ℝ) 定义 2.33/定理 2.24-2.25 DC），
   build.ps1 -Chapter @('88','89') 七通道全绿（15 单元）
-- **G5**：90-91（力迫基本理论与 CH/AC 独立 + 马丁公理与迭代）
+- **G5** ✅（2026-10-26）：90（力迫基本理论：定义 3.1-3.11 偏序/稠密集/
+  滤子/泛型/名字/M[G]/引理 3.2 六账/力迫关系定义 3.12-3.16/力迫定理
+  引理 3.4 真相+3.5 可定义性+定理 3.3-3.4；ccc 定义 3.6 与 Fn(ω,2)
+  例 3.1/3.3 A_f 极大反链；§3.2 科恩实数定义 3.17/引理 3.27 D_n D_f/
+  定理 3.5 新实数/推论 3.4 V≠L/Add(ω,κ) 定义 3.18 保基数链/定理 3.6
+  ¬CH/定理 3.7/等价构思 3.22/Add(λ,κ) 3.23/θ-完全 θ-分配 3.24 引理
+  3.39/乘积 3.25/同根 3.11/伊斯顿 3.12；§3.3 稠密完备嵌入 3.27-3.28/
+  引理 3.49 极大冲突刻画/3.50 拉回/区分 定义 3.30/引理 3.52 自同构
+  对角翻牌/定理 3.13/推论 3.6 ¬AC）+ 91（马丁公理 MA(κ) 三重等价
+  引理 3.58 化归；一步迭代定义 3.31-3.34/引理 3.53 乘积稠密嵌入/
+  3.54 完备嵌入/定理 3.14 一步迭代引理；有限支撑迭代定义 3.36/3.37/
+  引理 3.57/迭代分配律 3.55 定理 3.15/性质(K) 定义 3.35/迭代链条件
+  定理 3.16/3.17/Solovay-Tennenbaum 定理 3.18 记录函数+事实一支撑
+  覆盖+事实二相遇已安排/2^ω=κ 双向账），
+  build.ps1 -Chapter @('90','91') 七通道全绿（15 单元）
 - **G6**：92（布尔值模型冯琦视角）+ 93 收官扩五书总表 + 全量对账收官
 
 ## 第八篇章表（Viale 2024 全书提炼；实际建成结构 00-56）
@@ -339,8 +353,8 @@ x-variant 读法正是 51-52 章 B-值语义的原型；证明与后承（65 章
 | 87 | 87-constructible.md | 可构造宇宙 L 与一般连续统假设 | 2.1.1-2.1.3 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | 88 | 88-lcomb.md | L 中的组合原理与弱紧基数 | 2.1.4-2.1.5 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | 89 | 89-innermodel.md | 内模型 HOD、L[A] 与 L(ℝ) | 2.2 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| 90 | 90-forcing2.md | 力迫基本理论与 CH/AC 独立性 | 3.1-3.3 | — | — | — | — | — | — |
-| 91 | 91-martin.md | 马丁公理之合理性与迭代力迫 | 3.4 | — | — | — | — | — | — |
+| 90 | 90-forcing2.md | 力迫基本理论与 CH/AC 独立性 | 3.1-3.3 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 91 | 91-martin.md | 马丁公理之合理性与迭代力迫 | 3.4 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | 92 | 92-boolval.md | 布尔值模型：冯琦视角 | 3.5 | — | — | — | — | — | — |
 
 第十篇与前九篇的关系：冯琦以**传递集合**为唯一组织概念重讲全部基本
@@ -599,3 +613,62 @@ pdftotext 按节页段提取（书页 = PDF-12），文本作骨架（定理编�
     Vector{Tuple} 防 vcat 类型分裂。
   - Prolog：is_list/1 + append 展开嵌套列表（=.. 对表误用）；
     include/3 过滤、forall/2 做全称断言；`**` 整数幂在 is 里合法。
+- **G5 坑（90-91 章，2026-10-26）**：
+  - Lean 4.33（mathlib 钉版堆无 PushNeg.olean！import Mathlib.Tactic.PushNeg
+    直接「object file does not exist」——非 simp 手工 push_neg 或绕开）；
+    `simp only [dif_neg]` 不吃命题决策项（if h : ... → 用 by_cases + simp
+    only [dif_pos/dif_neg h]）；induction … generalizing p 会**自动重引**
+    泛化变量（case 里别再 intro p）；`l[k]!`（getD 展开）rw 不识别、统一
+    改 `[i]?`（Option 版）配 getElem?_append_left/right；`List.Dense` 结构
+    上 `[k]!` 需 Inhabited 实例（D 字段含 Prop 无 default——手工造恒真
+    平凡稠密集）；`rw … by exact H` 要求引理有副作用位（nth_app_right
+    的 `n - length p` 陷阱：`(if_pos h)` 不是 rewrite 规则）；**docstring
+    `/-! -/` 不能挂在 #eval 前**（parser 期待 declaration 报
+    "unexpected token '#eval'"——改普通注释 --）；replicate 无 getElem
+    成品引理（自写 get?_replicate_false 走 getElem?_cons_succ）；
+    genBuildFrom 泛型对角用 flipBit 整体函数化（比 match b[k]? 展开
+    干净一个量级）；getElem!_eq_getElem?_getD + getElem?_append_right +
+    自写 get?_replicate_false 三段拆 getElem!；`!x ≠ x` 必须括号成
+    `(!x) ≠ x`（否则解析成 decide）；decide 直证 ∀x:Bool, (!x)≠x。
+  - Coq 8.20：**`destruct o as [b| |]`（option 三分支）外层语法错**
+    "Expects a disjunctive pattern with 2 branches"（option 两构造子
+    `[b|]`）；`simpl in H` 对「f 头抽象 + g=[]」的 match 会算成
+    `match o with Some _|_ => true end = false`（分支 2 `_, []` 编译
+    顺序）——discriminate 关不掉，须**先 destruct f 头再 destruct g**；
+    eqb 相冲用 andb_false_iff 拆（apply … in H 后 destruct H as [He|Hr]，
+    直接 destruct (andb_false_iff _ _ H) 不行）；`eqb_neq` 不在
+    （用 eqb_false_iff）；`count` 不在 List（自写递归 spt）；stdcount
+    引理名全自含（induction l1; simpl; auto 版 len_app/len_repeat）；
+    `apply Nat.div_le_mono` 需两参（c≠0 与 ≤ 证）且 8.17 起 deprecated
+    （warning 无碍退出码）；`intros H [Ha _]` 会在 ~A 目标上把
+    exists 证据当 Ha 拆（用 intros H Ha 再 conj/proj1 显式）；
+    8.20 iff split 分支序：split; intros H Ha 后第一分支常是反向
+    （以报错上下文为准交换 conj/proj1 写法）。
+  - Agda 2.8 stdlib：**replicate 参数序是数量在前**（replicate n x，
+    Lean 习惯反着写会 Bool vs ℕ 类型错）；length-++ 的 xs 是位置参数
+    ys 隐式（`length-++ p` 再 cong；带名参 {xs=} 被拒 "named implicit"）；
+    length-replicate 显式参后 x 隐式（别把 x 写进位置）；stdcount
+    谓词式 ExtTail 在「链头变量表」上卡壳（改按稠密集序列结构陈述
+    ExtStep）；Nth 索引数据类型必须全域多态（Dense: Set₁ 时 {A : Set}
+    报 UnequalLevel）；顶层 `∃ λ r → … → …` 箭头会吞进 λ 体（模式
+    (r , (h1,h2) , …) 对不上 Σ 层数）——类型加括号、逗号模式**显式
+    双层括号** `(r , ((h1,h2),(h3,h4)))`（Agda 逗号左结合，嵌套 Σ
+    需手工对齐）；`¬ (∃ …)` 要括号（¬ 优先级高会吃错范围）；
+    自写 ≤-step 基例 `≤-step z≤n = z≤n`（s≤s z≤n 是 1≤1 不是 0≤1）。
+  - Isabelle ZF：**text 块里 `\<S>`/`\<^sub>`/`{\>` 全非法**
+    （"Undefined document antiquotation sub" / "Malformed command
+    syntax"）——§、下标、ℵ₂ 一律直接字符；sed 的 `\<` 是词首锚定
+    （替换转义串要用 Python）；locale 引理用未 fixes 的自由谓词时
+    公理必须写成 `⋀f g. …` 全称形态；`from X show ?thesis by
+    (rule exI)` 对链式前提不消费（先 have hres: … by simp 再
+    then show by (rule exI)）；locale 参数序错误（filter_meets 的
+    (P,F,D) 三元一致）会让 exI 统一失败——报错上下文的参数顺序
+    即诊断。
+  - Python：`python -I` 下 print 遇 ⟺ 直接 UnicodeEncodeError（GBK
+    纪律再犯：输出文案只许 <=>）；条件空间混用 None 坐标式与串式
+    语义（decider 补长度不填 None 空洞——第四节换串式空间重验）。
+  - Julia：Iterators.product(fill((0,1),k)...) 展开嵌套生成前缀层
+    （replicate 无、用 fill tuple 展开）；decide 演示直接 vcat(copy)。
+  - Prolog：include(\=(none), P, Qs) 数支撑（\=(none) 一元闭包）；
+    merge_c 用 maplist(take_first,,,) 逐坐标取先决者；cmn 二子句
+    第二支的哑元改 _Q（singleton 警告）。

@@ -7,8 +7,8 @@ Computing》（Springer UTiCS，第三版 2020）为计算视角篇第三底本�
 冯琦《集合论导引（第一卷）基本理论》为传递集合路线第四底本的
 中文教程。从 ZFC 公理、序数、基数到力迫、大基数与描述集合论，
 再到布尔值语义重建、计算者的离散数学工具箱与传递集合为纲的
-基本理论——五本书、十一篇、94 章（00–93；现建成 86 章：00–78、84–89 与收官 93；
-第十篇 79–83、第十一篇 88–92 写作中），每章正文
+基本理论——五本书、十一篇、94 章（00–93；现建成 87 章：00–78、84–91 与收官 93；
+第十篇 79–83、第十一篇 92 写作中），每章正文
 自包含（只读 docs 即可学习）。
 
 七通道机器验证（单元逐章点亮，全量对账见 `build.ps1 -All`）：
@@ -188,6 +188,8 @@ Borel 集与解析集、Baire 空间与投影层级、L 中的投影集、Solova
 | [87](docs/87-constructible.md) | 可构造宇宙 L 与一般连续统假设 | 𝒟 层次、哥德尔运算、凝聚化引理、GCH |
 | [88](docs/88-lcomb.md) | L 中的组合原理与弱紧基数 | Jensen 苏斯林树封口、◇、ℒ_{κ,κ} 弱紧刻画、L 中保持 |
 | [89](docs/89-innermodel.md) | 内模型 HOD、L[A] 与 L(ℝ) | 谓词截断 L[U]=L[Ũ]、eventual GCH、OD/HOD、L(ℝ) 与 DC |
+| [90](docs/90-forcing2.md) | 力迫基本理论与 CH/AC 独立性 | 泛型滤子、名字与 M[G]、力迫定理、科恩实数 ¬CH、区分与 ¬AC |
+| [91](docs/91-martin.md) | 马丁公理之合理性与迭代力迫 | MA 三重等价、一步迭代、有限支撑、Solovay-Tennenbaum |
 
 ### 收官
 
@@ -198,7 +200,7 @@ Borel 集与解析集、Baire 空间与投影层级、L 中的投影集、Solova
 ## 验证
 
 ```pwsh
-pwsh -NoProfile -Command '& ./build.ps1 -All'        # 全量对账（574 单元）
+pwsh -NoProfile -Command '& ./build.ps1 -All'        # 全量对账（589 单元）
 pwsh -NoProfile -Command '& ./build.ps1 -Chapter 02' # 只验一章
 pwsh -NoProfile -Command '& ./build.ps1 -List'       # 列出全部验证单元
 ```
