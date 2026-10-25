@@ -199,7 +199,14 @@ Makinson 全书 3 部 11 章提炼为第九篇（56-66：计算者的集合—�
 - **G3** ✅（2026-10-25）：87（可构造宇宙 L 与 GCH：定义 2.1 层次/哥德尔
   集合运算/简朴运算/最小内模型/<_L 秩序/凝聚化引理/定理 2.11 GCH），
   build.ps1 -Chapter 87 七通道全绿（22 单元）；88-89 顺延为 G4
-- **G4**：88-89（L 的组合原理与弱紧 + 内模型 HOD/L[A]/L(ℝ)）
+- **G4** ✅（2026-10-25）：88（L 中组合原理与弱紧基数：Jensen 苏斯林树
+  定理 2.12 封口引擎/◇ 定义 2.18、定理 2.13/2.14/无穷语言 ℒ_{κ,ω}、
+  ℒ_{κ,κ} 定义 2.19/2.20/定理 2.15 语言刻画/定理 2.16 L 中保持）+
+  89（相对可构造 L[U]：定义 2.21-2.23/引理 2.23-2.24 截断/定理 2.17；
+  U-简朴运算 18/定理 2.18 秩序/引理 2.25 凝聚/定理 2.19 eventual GCH；
+  OD/HOD 定义 2.27-2.29/引理 2.26-2.27/定理 2.20-2.21；ODR/HODR
+  定义 2.30-2.32/定理 2.22-2.23；L(a)/L(ℝ) 定义 2.33/定理 2.24-2.25 DC），
+  build.ps1 -Chapter @('88','89') 七通道全绿（15 单元）
 - **G5**：90-91（力迫基本理论与 CH/AC 独立 + 马丁公理与迭代）
 - **G6**：92（布尔值模型冯琦视角）+ 93 收官扩五书总表 + 全量对账收官
 
@@ -330,8 +337,8 @@ x-variant 读法正是 51-52 章 B-值语义的原型；证明与后承（65 章
 | 85 | 85-transmodel.md | 传递模型与内在模型论 | 1.2 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | 86 | 86-pcf.md | 模型分析应用：谢旲 pcf 理论 | 1.3 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | 87 | 87-constructible.md | 可构造宇宙 L 与一般连续统假设 | 2.1.1-2.1.3 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| 88 | 88-lcomb.md | L 中的组合原理与弱紧基数 | 2.1.4-2.1.5 | — | — | — | — | — | — |
-| 89 | 89-innermodel.md | 内模型 HOD、L[A] 与 L(ℝ) | 2.2 | — | — | — | — | — | — |
+| 88 | 88-lcomb.md | L 中的组合原理与弱紧基数 | 2.1.4-2.1.5 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 89 | 89-innermodel.md | 内模型 HOD、L[A] 与 L(ℝ) | 2.2 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | 90 | 90-forcing2.md | 力迫基本理论与 CH/AC 独立性 | 3.1-3.3 | — | — | — | — | — | — |
 | 91 | 91-martin.md | 马丁公理之合理性与迭代力迫 | 3.4 | — | — | — | — | — | — |
 | 92 | 92-boolval.md | 布尔值模型：冯琦视角 | 3.5 | — | — | — | — | — | — |
@@ -565,3 +572,30 @@ pdftotext 按节页段提取（书页 = PDF-12），文本作骨架（定理编�
   - Julia：链式比较 `a == b == c` 解析为 `(a==b)==c`（拆两条 @assert）；
     HS 直接构造不经 hs() 规范化会让同一子集以不同元素序重复入 Set；
     levels 数组 1-based（levels[k]=V_{k-1}），秩序调用注意偏移。
+- **G4 坑（88-89 章，2026-10-25）**：
+  - Isabelle/ZF：**ZF 的 nat 不是 datatype——对 nat 写 primrec 直接外层
+    语法错误**（层次递归只能引理化单步，超限归纳交讲义）；nat_induct
+    的后继步 IH 取 `succ.hyps(2)`（hyps(1) 是 n∈nat）；后继层比较要用
+    `le_succ_iff` 把 succ(k) ≤ n 从 succ(k) ≤ succ(n) ∧ 不等里降出来；
+    locale 中 `fixes` 被后面的 `assumes` 引用时必须先声明；locale 内
+    blast 只用于 ballI/obtain 已钉死的单点存在实例化（安全白名单）。
+  - Lean 4.33：乘积不等式链 omega 不管乘法（Nat.lt_of_lt_of_le +
+    Nat.mul_le_mul_right + Nat.one_mul 规范化）；subst 只吃 x=t 模式
+    变量（先 `have n=k := by omega` 再 subst）；方程编译器做传递性
+    递归子最稳形态是按第一前提构造子匹配
+    `| _,_,_, .head _, h2 => h2 | …, .step hmem hr, h2 => .step …`。
+  - Coq：Fixpoint 守卫拒绝「递归调用实参写死」（Tdemo n 调 Tdemo 1），
+    泛化成 Tfrom l m 只在 m 上递归；flat_map 成员用 in_flat_map；
+    嵌套析取 `[Hc|[Hc|[]]]` 一次拆完；existsb 要 existsb_exists 进出。
+  - Agda 2.8：with 分叉中递归调用自身（sealed-persists）可行但不等
+    证明须用 `n ≟ k` 的 yes/no 而 ≤ 拆分用 ≤∧≢⇒<；stdlib 引理名为
+    ≤∧≢⇒<（不是 ≠ 版）；`rhead x` 里 x 未绑定时写 `rhead _`。
+  - Python：append 后立刻按旧 n 索引会漂移（一律 T[-1] 取新尾）；
+    元组/int 混算（(0,) 当 0）TypeError，层节点统一元组。
+  - Julia：`[BitVec([1,1])]` 必须包外层数组（裸 BitVec[[1,1]] 被
+    拍平）；`[[BitVec()]]` 而非 `Vector{BitVec}[BitVec()]`（后者解析为
+    零参构造）；冯诺依曼后继 `hs(vcat(prev.elems,[prev])...)`
+    （hs(prev) 只得 {n} 不是 n∪{n}）；三元组数组类型标注
+    Vector{Tuple} 防 vcat 类型分裂。
+  - Prolog：is_list/1 + append 展开嵌套列表（=.. 对表误用）；
+    include/3 过滤、forall/2 做全称断言；`**` 整数幂在 is 里合法。
