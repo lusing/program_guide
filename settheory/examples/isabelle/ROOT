@@ -429,3 +429,8 @@ session ST91 in "ST91" = "ZF-Constructible" +
   options [document = false]
   theories
     Martin
+
+session ST92 in "ST92" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Boolval

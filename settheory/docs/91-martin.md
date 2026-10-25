@@ -114,4 +114,4 @@ theorem cantor_selfLE (b g : Nat) : b ≤ cantor b g := by
 
 上一章：[第 90 章 力迫基本理论与 CH/AC 独立性](90-forcing2.md)
 
-下一章：第 92 章 布尔值模型（待写）
+下一章：[第 92 章 布尔值模型](92-boolval.md)

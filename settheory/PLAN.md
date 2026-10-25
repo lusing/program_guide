@@ -222,7 +222,17 @@ Makinson 全书 3 部 11 章提炼为第九篇（56-66：计算者的集合—�
   定理 3.16/3.17/Solovay-Tennenbaum 定理 3.18 记录函数+事实一支撑
   覆盖+事实二相遇已安排/2^ω=κ 双向账），
   build.ps1 -Chapter @('90','91') 七通道全绿（15 单元）
-- **G6**：92（布尔值模型冯琦视角）+ 93 收官扩五书总表 + 全量对账收官
+- **G6** ✅（2026-10-26）：92（布尔值模型：§3.5.1 完备布尔代数 Ba1-Ba6/
+  Stone 3.20/完备化 3.21/饱和数 3.22；§3.5.2 布尔值结构四公理定义 3.50/
+  算法 3.51/基本布尔值不等式定理 3.23 八条/逻辑公理 3.70/富有性 3.53/
+  布尔 Łoś 引理 3.72；§3.5.3 V^B 定义 3.54-3.58/度量 3.56/引理 3.73-3.74/
+  泛型特性 3.75/混合名字 3.77/富有性 3.78/Δ0 绝对 3.80/定理 3.24 ZFC 在
+  V^B 中真/推论 3.11 相对独立性原理/例 3.33；§3.5.4 布尔=力迫定理 3.25-3.26/
+  V-泛型 3.62-3.64/定理 3.27-3.28/Vopénka 代数 3.65/定理 3.29 V=HOD[G]；
+  §3.5.5 完备子代数 3.66-3.67/引理 3.85-3.88/推论 3.12-3.14；§3.5.6 广义
+  分配律定义 3.68）+ 93 收官扩五书总表（93.1 加十/十一篇行、新增 93.5b
+  冯琦二卷篇总表 84-92），
+  build.ps1 -Chapter @('92') 七通道全绿（8 单元）
 
 ## 第八篇章表（Viale 2024 全书提炼；实际建成结构 00-56）
 
@@ -355,7 +365,7 @@ x-variant 读法正是 51-52 章 B-值语义的原型；证明与后承（65 章
 | 89 | 89-innermodel.md | 内模型 HOD、L[A] 与 L(ℝ) | 2.2 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | 90 | 90-forcing2.md | 力迫基本理论与 CH/AC 独立性 | 3.1-3.3 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | 91 | 91-martin.md | 马丁公理之合理性与迭代力迫 | 3.4 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| 92 | 92-boolval.md | 布尔值模型：冯琦视角 | 3.5 | — | — | — | — | — | — |
+| 92 | 92-boolval.md | 布尔值模型 | 3.5 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 第十篇与前九篇的关系：冯琦以**传递集合**为唯一组织概念重讲全部基本
 理论（自然数 = 最小无穷传递集合、序数 = 传递的传递集合之秩、累积层次
@@ -672,3 +682,35 @@ pdftotext 按节页段提取（书页 = PDF-12），文本作骨架（定理编�
   - Prolog：include(\=(none), P, Qs) 数支撑（\=(none) 一元闭包）；
     merge_c 用 maplist(take_first,,,) 逐坐标取先决者；cmn 二子句
     第二支的哑元改 _Q（singleton 警告）。
+- **G6 坑（92 章，2026-10-26）**：
+  - Lean 4.33：bval（方程编译器 def）嵌套调用对 rw [bval] 不展开
+    （"Failed to rewrite using equation theorems"）——**点态化是最短路径**
+    （funext i + have key : ∀b, b&&!b=false := by decide + exact key …，
+    definitional iota 自动吃掉嵌套 bval (Fm.not φ)）；funext 后目标里
+    出现的是 `bImp X X i` 而非 `bval v φ i`（外层函数先应用）——cases
+    某项前先 show 点态展开式再 cases；#eval 不吃 Prop（U0 : Prop）——
+    decide 裸等式 `(a 0 = true)` 而非 `decide (U0 a)`（def 包装的 Prop
+    无 Decidable 实例推导）。
+  - Coq 8.20：无 `have`（标准 Coq 用 assert）；destruct (fst (bval f v))
+    eqn:E 后 E : fst(...) = true 不随目标替换——用 destruct (bval f v)
+    as [x y] eqn:E 再 destruct x eqn:Ex 后 rewrite Ex 找不到（已替换）——
+    直接 reflexivity 即可；bval_identity 需先 ba1_join_comm 交换再
+    ba5_join（rewrite 模式 bjoin a (compl a) 方向敏感）。
+  - Agda 2.8：混缀构造子名 `imp_→_` 非法（→ 保留字）——改前缀 fand/
+    forr/fimp/fiff；with 分支的 `(false , _)` 通配不绑定第二坐标导致
+    refl 失败——**四值全枚举**；(x , _) 模式省略坐标会造出幽灵
+    snd/snd₁ 不等；cong₂ _,_ 组合坐标级交换引理比 16 分支穷举干净。
+  - Isabelle ZF：prop 里 `·`（U+00B7）Inner lexical error、`\<cdot>`
+    ZF 无语法类（HOL 记号）——**ZF 乘号用 `*`**；sed 替换 `\<cdot>` 时
+    `\<` 是词首锚定（必须 Python）；locale 里 `≤` 未 fixes 时 assumes
+    用裸 `x ≤ y` 会 unify 成二元 ∈ 形态——自定义序一律走 fixes 的
+    谓词（ble(x,y)）；simp 关不掉「乘 1 吸收」时补公理 unit_absorb
+    再 hence 传递；locale 引理参数序错误（filter_meets (P,F,D)）在
+    exI 处报 no unifiers——看报错上下文的实参顺序即诊断。
+  - Python：⟦⟧ĠŁośś 全炸 GBK（连 Ł 都不行）——输出文案纯 ASCII 化
+    （[[ ]]、Los）；eq1 双向包含的交断言方向（meet(imp(a,b),imp(b,a))）。
+  - Julia：Symbol 字面量 :-> 与 :<-> 解析失败（invalid identifier）——
+    用 :imp/:iff；`op, g, h = f` 对二元组越界——一元先判 f[1] === :~；
+    @assert … in [..] 列表断言无意义（写 == 等式）。
+  - Prolog：check_ba5 中 bmeet 在 bcompl 前会让 AC 留多解——forall
+    语义下失败；**先绑定唯一解的谓词**（bcompl 唯一）再验证等式。
