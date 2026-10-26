@@ -1,8 +1,8 @@
-# 44 · 简单类型 λ 演算
+# 47 · 简单类型 λ 演算
 
-对应示例：`../examples/44_stlc.v`（`Module Ex44Stlc`，rocq 9.3.0 + stdlib 9.2.0 实测编译退出码 0）
+对应示例：`../examples/47_stlc.v`（`Module Ex47Stlc`，rocq 9.3.0 + stdlib 9.2.0 实测编译退出码 0）
 
-38–42 章造了一门命令式语言并配了三种语义。本章换到函数式世界的一台最小机器：
+38–43 章造了一门命令式语言并配了三种语义。本章换到函数式世界的一台最小机器：
 **简单类型 λ 演算**（Simply Typed Lambda Calculus，STLC）——变量、抽象（λ）、应用，
 外加布尔和 if。它小得可以在一页纸上写完，却装下了类型系统研究的全部核心问题。
 本章的目标是它的**类型安全性**，由两条大定理组成：
@@ -20,7 +20,7 @@
 本章不再重复，全部用构造子直写（`tm_abs x Ty_Bool (tm_var x)`）——多打几个字，
 两个大定理的证明结构反而更醒目。
 
-### 44.1 类型与项
+### 47.1 类型与项
 
 类型只有两个构造子：布尔与箭头。
 
@@ -30,9 +30,9 @@
 From Stdlib Require Import Arith Bool List Strings.String Logic.FunctionalExtensionality.
 Import ListNotations.
 
-Module Ex44Stlc.
+Module Ex47Stlc.
 
-(* ---------- 44.1 类型与项 ---------- *)
+(* ---------- 47.1 类型与项 ---------- *)
 
 Inductive ty : Type :=
   | Ty_Bool  : ty
@@ -65,12 +65,12 @@ Definition if_example : tm :=
 `idB` 是布尔上的恒等函数（后面反复用）；`if_example` 把它用在 if 的条件位——
 一个真实的小程序：两个 `idB true/false` 应用先算出布尔，if 再选分支。
 
-### 44.2 值：抽象与两个布尔
+### 47.2 值：抽象与两个布尔
 
 小步语义需要"跑完了"的定义——**值**：
 
 ```coq
-(* ---------- 44.2 值：抽象与两个布尔 ---------- *)
+(* ---------- 47.2 值：抽象与两个布尔 ---------- *)
 
 Inductive value : tm -> Prop :=
   | v_abs : forall w T t1, value (tm_abs w T t1)
@@ -88,12 +88,12 @@ Proof. intros H. inversion H. Qed.
 小步语义，变量永远不该出现在运行的程序里（progress 定理会精确兑现这一点）。
 `not_value_if` 用 `inversion` 验证 if 不在值的世界里（零分支关闭目标）。
 
-### 44.3 替换：把 v 代入 x 的自由出现
+### 47.3 替换：把 v 代入 x 的自由出现
 
 λ 演算的心脏：`[x:=v]t`，把 v 替换进 t 中 x 的**自由**出现。先看定义再谈坑：
 
 ```coq
-(* ---------- 44.3 替换：把 v 代入 x 的自由出现 ---------- *)
+(* ---------- 47.3 替换：把 v 代入 x 的自由出现 ---------- *)
 
 Fixpoint subst (x : string) (s : tm) (t : tm) : tm :=
   match t with
@@ -132,13 +132,13 @@ Proof. reflexivity. Qed.
 三个例子全部 `reflexivity`——替换是**函数**（Fixpoint），不涉及推导，直接算。
 一个重要的技术简化（原书明说）：这个替换**不回避捕获**（not capture-avoiding）。
 把含自由变量的项替换进 `tm_abs y ...` 里，y 可能被意外捕获。规避办法是替换引理
-（44.9）只对**闭的** v 使用——类型安全性的证明恰好只需要闭项，所以我们能承受这个
+（47.9）只对**闭的** v 使用——类型安全性的证明恰好只需要闭项，所以我们能承受这个
 简化的替换。真正的捕获回避替换需要 de Bruijn 指标或重命名，超出本章范围。
 
-### 44.4 小步语义：call-by-value 的六条规则
+### 47.4 小步语义：call-by-value 的六条规则
 
 ```coq
-(* ---------- 44.4 小步语义：call-by-value 的六条规则 ---------- *)
+(* ---------- 47.4 小步语义：call-by-value 的六条规则 ---------- *)
 
 Reserved Notation "t '-->' t'" (at level 40).
 
@@ -231,13 +231,13 @@ Qed.
 `String.eqb` 的 stuck if 统一不动（实测），把中间点写出来就绕开了这个统一死角
 （坑清单第 4 条）。
 
-### 44.5 类型上下文：partial_map（33 章 total_map 之上）
+### 47.5 类型上下文：partial_map（33 章 total_map 之上）
 
 类型检查需要一个"变量 → 类型"的查找表。33 章的 `total_map` 直接复用，再叠一层
 **偏映射**——值域是 `option A`，`None` 表示"没这个变量"：
 
 ```coq
-(* ---------- 44.5 类型上下文：partial_map（33 章 total_map 之上） ---------- *)
+(* ---------- 47.5 类型上下文：partial_map（33 章 total_map 之上） ---------- *)
 
 Definition total_map (A : Type) := string -> A.
 
@@ -302,7 +302,7 @@ Qed.
 
 注意两条都**用了函数外延公理**（`functional_extensionality`，文件头 Require 进来）：
 两个查表行为相同的函数，要证明它们**相等**，构造性数学里没有免费的路。这个公理
-会一路传到 44.10 的保持定理——45 章的公理账本里会再见到它。
+会一路传到 47.10 的保持定理——52 章的公理账本里会再见到它。
 
 偏映射层与记号：
 
@@ -358,7 +358,7 @@ Qed.
 
 四条 update 引理把 total_map 层的结果"抬"到 option 世界。**注意 `|->` 记号的
 level 是 0**——比 `!->` 的 100 低得多，这让 `x |-> Ty_Bool ; Gamma` 在任何位置都
-整体解析（和 `!->` 的设计取舍相反；44.9 的 `rewrite update_shadow` 全靠它能整体
+整体解析（和 `!->` 的设计取舍相反；47.9 的 `rewrite update_shadow` 全靠它能整体
 匹配）。最后是弱化引理要用的**包含**关系：
 
 ```coq
@@ -382,10 +382,10 @@ Qed.
 weakening 的归纳就靠它接力。`rewrite !update_neq by apply n` 的 `by` 子句给
 条件重写补前提（`n : w <> w'` 来自 eqb_spec 的否定分支）。
 
-### 44.6 类型关系：六条规则
+### 47.6 类型关系：六条规则
 
 ```coq
-(* ---------- 44.6 类型关系：六条规则 ---------- *)
+(* ---------- 47.6 类型关系：六条规则 ---------- *)
 
 Definition context := partial_map ty.
 
@@ -413,7 +413,7 @@ Inductive has_type : context -> tm -> ty -> Prop :=
 Hint Constructors value step has_type : core.
 ```
 
-六条规则对着 44.1 的六个构造子，读法（Γ 读"在上下文 Γ 下"）：
+六条规则对着 47.1 的六个构造子，读法（Γ 读"在上下文 Γ 下"）：
 
 - **T_Var**：查表。Γ 里 x 有类型 T，则 x 有类型 T。
 - **T_Abs**：给 `\w:T2. t1` 配箭头类型 `T2 -> T1`，条件是**在扩展了 w 的上下文里**
@@ -421,7 +421,7 @@ Hint Constructors value step has_type : core.
 - **T_App**：函数侧的类型必须是箭头 `T2 -> T1`，参数侧恰好是 T2，应用结果是 T1。
   **这条规则是类型检查的全部实质**：`true true` 之所以不可类型化，就是因为
   `tm_true` 的类型 `Ty_Bool` 不是箭头。
-- **T_True/T_False/T_If**：布尔与条件（两个分支同型，条件必须 Bool——和 42.7 的
+- **T_True/T_False/T_If**：布尔与条件（两个分支同型，条件必须 Bool——和 43.7 的
   bassertion 一个思想）。
 
 `Hint Constructors value step has_type : core.` 把三个关系的构造子注册给 auto——
@@ -494,12 +494,12 @@ Qed.
 - 两处都用了 `match goal with Ht : <形状> |- _ => inversion Ht end`——反演产出的
   假设名不稳定（40 章坑 4 的老朋友），按形状定位最稳。
 
-### 44.7 范式引理：闭项的值按类型分家
+### 47.7 范式引理：闭项的值按类型分家
 
 progress 的关键一步："是值 + 有类型 Bool/箭头"能把值的**形状**钉死。
 
 ```coq
-(* ---------- 44.7 范式引理：闭项的值按类型分家 ---------- *)
+(* ---------- 47.7 范式引理：闭项的值按类型分家 ---------- *)
 
 Lemma canonical_forms_bool : forall t,
   has_type empty t Ty_Bool ->
@@ -530,10 +530,10 @@ Qed.
 **"类型 + 值 ⇒ 形状"** 是范式引理的一般模式：类型系统把运行时世界的可能性砍到
 只剩"能继续算的那些"。
 
-### 44.8 进展：良类型闭项不会卡住
+### 47.8 进展：良类型闭项不会卡住
 
 ```coq
-(* ---------- 44.8 进展：良类型闭项不会卡住 ---------- *)
+(* ---------- 47.8 进展：良类型闭项不会卡住 ---------- *)
 
 Theorem progress : forall t T,
   has_type empty t T ->
@@ -586,12 +586,12 @@ Qed.
 四格分析里"两个都是值"那一格是类型系统真正干活的地方——**没有类型，值 + 值
 的应用可能是 `true true`（卡住）；有了类型，函数侧的值只能是抽象，β 一定可用**。
 
-### 44.9 弱化与替换引理
+### 47.9 弱化与替换引理
 
 保持定理的 β 分支需要"替换保持类型"。它依赖 weakening。
 
 ```coq
-(* ---------- 44.9 弱化与替换引理 ---------- *)
+(* ---------- 47.9 弱化与替换引理 ---------- *)
 
 Lemma weakening : forall Gamma Gamma' t T,
   includedin Gamma Gamma' ->
@@ -653,7 +653,7 @@ Qed.
 
 陈述读三遍：在 `w |-> U ; Gamma` 下 t 有类型 T、v 在空上下文有类型 U，则替换结果
 `[w:=v]t` 在 **Gamma** 下有类型 T——替换掉了上下文里关于 w 的假设（它已被 v 兑现）。
-**v 必须是闭项**（空上下文），这是 44.3 末尾说的"不捕获替换"的安全区。
+**v 必须是闭项**（空上下文），这是 47.3 末尾说的"不捕获替换"的安全区。
 
 证明**对项 t 归纳**（不是对类型推导）：六个构造子分支里，app/true/false/if 四支的
 推导形状唯一，`inversion H; ...; eauto` 直接过关；剩两个分支手动：
@@ -664,20 +664,20 @@ Qed.
     weakening 存在的理由**。
   - `w <> y`：y 的查表结果在删掉 w 那行后不变（`update_neq`），`T_Var` 原样重建。
 - **tm_abs**（t 是 `\y:S. t0`）：
-  - `w = y`（**影子**）：subst 整个抽象原样返回（44.3 的规则），目标类型对
+  - `w = y`（**影子**）：subst 整个抽象原样返回（47.3 的规则），目标类型对
     `y |-> S ; w |-> U ; Gamma` 的推导——把 w 那行删掉即可，**这正是
     `update_shadow`**：`(y|->S; w|->U; Gamma)` 与 `y|->S; Gamma` 相等（y=w 代入后
     两键相同，旧的被新的遮住）。`rewrite update_shadow in H5` 一步对齐。
   - `w <> y`：需要对 `w |-> U ; y |-> S ; Gamma`（两行换序）里的 t0 用 IH——
     **`update_permute`** 提供换序等式，`rewrite update_permute; auto` 后 IH 精确命中。
 
-shadow 与 permute 两条"映射等式"引理在这两个分支里各就各位——44.5 那两段
+shadow 与 permute 两条"映射等式"引理在这两个分支里各就各位——47.5 那两段
 functional_extensionality 的开销，花在了刀刃上。
 
-### 44.10 保持：小步不改变类型
+### 47.10 保持：小步不改变类型
 
 ```coq
-(* ---------- 44.10 保持：小步不改变类型 ---------- *)
+(* ---------- 47.10 保持：小步不改变类型 ---------- *)
 
 Theorem preservation : forall t t' T,
   has_type empty t T ->
@@ -726,7 +726,7 @@ subst; auto]` 一行收掉五个分支：T_Var/T_Abs/T_True/T_False 根本迈不
 Print Assumptions progress.
 Print Assumptions preservation.
 
-End Ex44Stlc.
+End Ex47Stlc.
 ```
 
 repl 实测输出：
@@ -741,7 +741,7 @@ functional_extensionality_dep :
 ```
 
 - **progress 零公理**——它只用推导归纳和范式引理，不碰映射等式。
-- **preservation 依赖函数外延公理**（经由 44.9 的 shadow/permute 分支，一路从
+- **preservation 依赖函数外延公理**（经由 47.9 的 shadow/permute 分支，一路从
   `t_update_shadow` 传上来）。这不是本教程的疏漏：上下文是函数，"删一行/换两行
   的表彼此相等"是函数等式，构造性框架里必须借助外延公理（原书 PLF 同款依赖）。
   想去掉它有标准路线——改用 `appears_free_in`（自由变量）+ **context_invariance**
@@ -749,52 +749,52 @@ functional_extensionality_dep :
   变量的引理；对教学主线而言，公理 + `Print Assumptions` 的诚实呈现是更划算的
   选择。
 
-对比 40 章 `ceval_iff_multi` 的 `Closed under the global context` 和 42 章
+对比 40 章 `ceval_iff_multi` 的 `Closed under the global context` 和 43 章
 `while_example_add` 的零公理——同一个教程里两种答案并存，`Print Assumptions`
 始终是最后一句要说的话。
 
-### 44.11 本章坑位清单（实测）
+### 47.11 本章坑位清单（实测）
 
 以下每一条都在 rocq 9.3.0 + stdlib 9.2.0 上真实踩过或观测到。
 
-1. **remember 之后 IH 带 `empty = empty ->` 前提**（44.8/44.10）：`remember empty as
+1. **remember 之后 IH 带 `empty = empty ->` 前提**（47.8/47.10）：`remember empty as
    Gamma` + `induction` + `subst Gamma` 会把等式前提折进每个 IH；不还账直接
    `destruct IHHt1` 报错。解法：`(IHHt1 eq_refl)`。另一侧不 remember 也不行——
    结论里的 empty 是非变量索引，归纳会把它抽象坏，且 T_Var 分支的 `discriminate`
    需要 Gamma 已被换回 empty（实测 `Not a discriminable equality`）。
-2. **eapply 留搁置 evar、Qed 报 incomplete**（44.9 weakening_empty）：`eapply
+2. **eapply 留搁置 evar、Qed 报 incomplete**（47.9 weakening_empty）：`eapply
    weakening` 让上下文成为 evar，`rewrite apply_empty in Hv` 之后 repl 显示
    "All the remaining goals are on the shelf"（搁置目标类型 string/ty），Qed 报
    `Attempt to save an incomplete proof`。解法：`apply (weakening empty Gamma t T)`
-   显式全参。与 43 章坑 2 同族的 evar 搁置病。
-3. **apply 不展开 Definition**（44.6）：`apply T_Abs` 打在 `has_type empty idB ...`
+   显式全参。与 46 章坑 2 同族的 evar 搁置病。
+3. **apply 不展开 Definition**（47.6）：`apply T_Abs` 打在 `has_type empty idB ...`
    上报 `Unable to unify ... tm_abs ...`——统一器不 delta 展开 idB。先
    `unfold idB`。同理 `if_example`。
-4. **β 步的 unification 死角**（44.4）：`eapply multi_step` 后 `?t'` 被统一成
+4. **β 步的 unification 死角**（47.4）：`eapply multi_step` 后 `?t'` 被统一成
    未求值的 `subst` 表达式，下一步 `apply ST_IfFalse` 对 stuck 的
    `if (x =? x) then ...` 统一失败。解法：`eapply multi_step with (t' := <显式中间点>)`。
    单独 `apply ST_AppAbs`（无 evar）时同一计算由转换检查完成，两副面孔都真实存在。
-5. **映射等式绕不开函数外延**（44.5/44.10）：`t_update_shadow/permute` 的陈述是
+5. **映射等式绕不开函数外延**（47.5/47.10）：`t_update_shadow/permute` 的陈述是
    函数相等，`apply functional_extensionality` 逐点化后 `destruct (String.eqb w w');
    reflexivity` 两行干净收掉——但公理依赖就此进入 preservation（`Print
    Assumptions` 实测显示 `functional_extensionality_dep`）。要零公理得换
    context_invariance 路线。
-6. **`destruct (String.eqb a b)` 不留等式**（44.5）：纯 destruct 只分真假不给
+6. **`destruct (String.eqb a b)` 不留等式**（47.5）：纯 destruct 只分真假不给
    `eqn:E`，后面要用布尔等式时（permute 的矛盾分支）拿不到——写
    `destruct (... ) eqn:E1`，再 `apply String.eqb_eq in E1` 翻译。
-7. **inversion 的目标顺序别按编号想象**（44.10）：preservation 的 T_App 分支里
+7. **inversion 的目标顺序别按编号想象**（47.10）：preservation 的 T_App 分支里
    `inversion HE` 实测**第一个目标是 ST_AppAbs**（不是直觉的 ST_App1）。用 repl
    `Show` 探针确认顺序再排 bullet；或写成按形状分派的 match。
-8. **`destruct (canonical_forms_fun t1 ...)` 要显式给类型参数**（44.8）：裸
+8. **`destruct (canonical_forms_fun t1 ...)` 要显式给类型参数**（47.8）：裸
    `apply canonical_forms_fun with (T1 := T2)` 会因**余类型**（箭头右端）无法从目标
    解出而报 `Unable to find an instance for the variable T2`。全参形式
    `destruct (canonical_forms_fun t1 T2 T1 Ht1 Hv1)` 一步到位。
-9. **`|->` 与 `!->` 的 level 设计相反**（44.5）：偏映射层 `|->` 在 level 0（整体
+9. **`|->` 与 `!->` 的 level 设计相反**（47.5）：偏映射层 `|->` 在 level 0（整体
    吞并右侧），total_map 层 `!->` 在 level 100。rewrite `update_shadow` 能整体匹配
-   上下文表达式全靠 level 0 的贪婪解析——改 level 会连锁破坏 44.9 的三个 rewrite。
-10. **值不含变量、替换不回避捕获**（44.2/44.3）：两条设计决定互相配合——只对闭项
+   上下文表达式全靠 level 0 的贪婪解析——改 level 会连锁破坏 47.9 的三个 rewrite。
+10. **值不含变量、替换不回避捕获**（47.2/47.3）：两条设计决定互相配合——只对闭项
     跑小步、替换引理只吃闭的 v。任何一处松开（比如让变量当值）都要重新面对捕获
     问题（de Bruijn 或显式重命名）。
 
 ---
-上一章：[43 · 自动化工程：evar 搜索与 hint 数据库](43-automation.md) ｜ 下一章：[45 · 坑清单与最佳实践](45-pitfalls.md) ｜ 返回：[README](../README.md)
+上一章：[46 · 自动化工程：evar 搜索与 hint 数据库](46-automation.md) ｜ 下一章：[48 · 类型检查算法](48-typechecking.md) ｜ 返回：[README](../README.md)

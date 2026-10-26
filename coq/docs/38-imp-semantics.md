@@ -21,7 +21,7 @@
    第一个"程序变换保语义"的完整定理。
 
 39 章接着讲怎么把 `ceval` 强行变回可计算的函数（燃料），40 章换成小步语义，
-42 章用 Hoare 逻辑系统地推理命令。
+43 章用 Hoare 逻辑系统地推理命令。
 
 ### 38.1 状态：33 章全映射的最小自包含副本
 
@@ -877,7 +877,7 @@ Qed.
 
 - **→（对推导归纳）**：`induction H` 对归纳谓词 `H : st |- a ==> n` 做归纳，得到
   **五个目标，一个构造子一个**。每个目标里前提变成假设加对应的 IH，命名规则是
-  `IHaevalR1`/`IHaevalR2`（按前提顺序）。这就是 45 章坑清单里说的
+  `IHaevalR1`/`IHaevalR2`（按前提顺序）。这就是 52 章坑清单里说的
   **"对推导归纳 = 按构造子分情况"**。三个 `rewrite` 分支的形状完全一样，`simpl`
   把 `aeval st (APlus ...)` 展成 `aeval st a1 + aeval st a2`，两条 IH 重写掉，
   `reflexivity` 收工。
@@ -887,7 +887,7 @@ Qed.
     若不先量化进去，`induction a` 会把 `n` 固定住，IH 就变成
     `st |- a1 ==> n -> ...`（对**同一个** `n`），而我们真正需要
     `forall n, st |- a1 ==> n -> ...`——因为 `APlus` 的两个子式求出的值本来就不一样。
-    这是"对归纳谓词之外的变量做归纳"时最经典的一脚空，45 章有专条。
+    这是"对归纳谓词之外的变量做归纳"时最经典的一脚空，52 章有专条。
   - `reflexivity` 在 `apply IHa1` 后面出现，是因为 IH 的前提是 `aeval st a1 = ?n`
     这种"等式当输入"的形状；`apply` 之后剩下的就是 `aeval st a1 = aeval st a1`，
     `reflexivity` 一步解决。
@@ -1344,7 +1344,7 @@ the terms ... leads to an ill-typed term"。`remember` 是 Coq/Rocq 里对付这
 **直接对 `H` 用会失败**（实测 `Error: Not a discriminable equality.`）——因为
 `H : beval st b = false` 里的 `b` 还是个变量，`beval st b` 归约不动。必须先
 `rewrite H1 in H` 把 `b` 换成 `<{true}>`，`H` 变成 `true = false` 才 `discriminate`。
-**"先重写再 discriminate"是这类矛盾分支的固定套路**，45 章有专条。
+**"先重写再 discriminate"是这类矛盾分支的固定套路**，52 章有专条。
 
 第二个是 `E_WhileTrue`。目标形状（实测节选）：
 
@@ -1599,7 +1599,7 @@ Print Assumptions s_compile_correct.
 左边是**语法操作**（`s_compile` 把 AST 变成指令列表），右边是**语义操作**
 （`aeval` 把 AST 变成数），定理说这两个交换图可交换。32 章的优化器证明的是
 `aeval (optimize a) = aeval a`（同层变换保语义），这里证的是跨层变换保语义。
-后面 42 章 Hoare 逻辑、44 章类型一致性，走的都是这个骨架。
+后面 43 章 Hoare 逻辑、47 章类型一致性，走的都是这个骨架。
 
 ```coq
 End Ex38ImpSemantics.

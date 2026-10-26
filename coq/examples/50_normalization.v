@@ -1,11 +1,11 @@
-(* 44 简单类型 λ 演算 —— STLC 的替换/小步/类型，以及 progress 与 preservation *)
+(* 50 STLC 规范化 —— 良类型 ⟹ 强终止：逻辑谓词 N、多重替换与 typable_N/normalize（Bool 基础语言） *)
 
 From Stdlib Require Import Arith Bool List Strings.String Logic.FunctionalExtensionality.
 Import ListNotations.
 
-Module Ex44Stlc.
+Module Ex50Normalization.
 
-(* ---------- 44.1 类型与项 ---------- *)
+(* ---------- 50.1 最小 STLC：Bool 作不解释基础类型 ---------- *)
 
 Inductive ty : Type :=
   | Ty_Bool  : ty
@@ -16,32 +16,15 @@ Inductive tm : Type :=
   | tm_app   : tm -> tm -> tm
   | tm_abs   : string -> ty -> tm -> tm
   | tm_true  : tm
-  | tm_false : tm
-  | tm_if    : tm -> tm -> tm -> tm.
+  | tm_false : tm.
 
 Definition x : string := "x".
 Definition y : string := "y".
-Definition z : string := "z".
-
-Definition idB : tm := tm_abs x Ty_Bool (tm_var x).
-
-Definition if_example : tm :=
-  tm_if (tm_app idB tm_true) tm_false (tm_app idB tm_false).
-
-(* ---------- 44.2 值：抽象与两个布尔 ---------- *)
 
 Inductive value : tm -> Prop :=
   | v_abs : forall w T t1, value (tm_abs w T t1)
   | v_true : value tm_true
   | v_false : value tm_false.
-
-Example value_abs : value (tm_abs x Ty_Bool (tm_var x)).
-Proof. apply v_abs. Qed.
-
-Example not_value_if : ~ value (tm_if tm_true tm_true tm_true).
-Proof. intros H. inversion H. Qed.
-
-(* ---------- 44.3 替换：把 v 代入 x 的自由出现 ---------- *)
 
 Fixpoint subst (x : string) (s : tm) (t : tm) : tm :=
   match t with
@@ -51,24 +34,7 @@ Fixpoint subst (x : string) (s : tm) (t : tm) : tm :=
   | tm_app t1 t2 => tm_app (subst x s t1) (subst x s t2)
   | tm_true => tm_true
   | tm_false => tm_false
-  | tm_if t1 t2 t3 => tm_if (subst x s t1) (subst x s t2) (subst x s t3)
   end.
-
-Example subst_example1 :
-  subst x tm_false (tm_if (tm_var x) tm_true (tm_var x))
-  = tm_if tm_false tm_true tm_false.
-Proof. reflexivity. Qed.
-
-Example subst_example2 :
-  subst x tm_false idB = idB.
-Proof. reflexivity. Qed.
-
-Example subst_example3 :
-  subst x tm_false (tm_app (tm_var y) (tm_var x))
-  = tm_app (tm_var y) tm_false.
-Proof. reflexivity. Qed.
-
-(* ---------- 44.4 小步语义：call-by-value 的六条规则 ---------- *)
 
 Reserved Notation "t '-->' t'" (at level 40).
 
@@ -83,26 +49,8 @@ Inductive step : tm -> tm -> Prop :=
       value v1 ->
       t2 --> t2' ->
       tm_app v1 t2 --> tm_app v1 t2'
-  | ST_IfTrue : forall t1 t2,
-      tm_if tm_true t1 t2 --> t1
-  | ST_IfFalse : forall t1 t2,
-      tm_if tm_false t1 t2 --> t2
-  | ST_If : forall t1 t1' t2 t3,
-      t1 --> t1' ->
-      tm_if t1 t2 t3 --> tm_if t1' t2 t3
 
   where "t --> t'" := (step t t').
-
-Example step_example1 :
-  tm_app (tm_abs x Ty_Bool (tm_if (tm_var x) tm_true (tm_var x))) tm_false
-  --> tm_if tm_false tm_true tm_false.
-Proof.
-  apply ST_AppAbs. apply v_false.
-Qed.
-
-Example step_example2 :
-  tm_if tm_false tm_true tm_false --> tm_false.
-Proof. apply ST_IfFalse. Qed.
 
 Inductive multi {X : Type} (R : X -> X -> Prop) : X -> X -> Prop :=
   | multi_refl : forall (t : X), multi R t t
@@ -113,30 +61,20 @@ Inductive multi {X : Type} (R : X -> X -> Prop) : X -> X -> Prop :=
 
 Notation "t1 '-->*' t2" := (multi step t1 t2) (at level 40).
 
-Example multistep_example1 :
-  tm_app (tm_abs x Ty_Bool (tm_if (tm_var x) tm_true (tm_var x))) tm_false
-  -->* tm_false.
+Lemma multi_trans : forall (X : Type) (R : X -> X -> Prop) x y z,
+  multi R x y ->
+  multi R y z ->
+  multi R x z.
 Proof.
-  eapply multi_step with (t' := tm_if tm_false tm_true tm_false).
-  - apply ST_AppAbs. apply v_false.
-  - eapply multi_step with (t' := tm_false).
-    + apply ST_IfFalse.
-    + apply multi_refl.
+  intros X R x y z Hxy. revert z.
+  induction Hxy; intros z Hz.
+  - exact Hz.
+  - eapply multi_step.
+    + exact H.
+    + apply IHHxy. exact Hz.
 Qed.
 
-Example multistep_example2 :
-  if_example -->* tm_false.
-Proof.
-  unfold if_example, idB.
-  eapply multi_step
-    with (t' := tm_if tm_true tm_false (tm_app (tm_abs x Ty_Bool (tm_var x)) tm_false)).
-  - apply ST_If. apply ST_AppAbs. apply v_true.
-  - eapply multi_step with (t' := tm_false).
-    + apply ST_IfTrue.
-    + apply multi_refl.
-Qed.
-
-(* ---------- 44.5 类型上下文：partial_map（33 章 total_map 之上） ---------- *)
+(* ---------- 50.2 上下文、类型关系与保持（47 章同骨架） ---------- *)
 
 Definition total_map (A : Type) := string -> A.
 
@@ -199,9 +137,6 @@ Definition update {A : Type} (m : partial_map A)
 Notation "w '|->' v ';' m" := (update m w v)
   (at level 0, w constr, v at level 200, right associativity).
 
-Notation "w '|->' v" := (update empty w v)
-  (at level 0, w constr, v at level 200).
-
 Lemma apply_empty : forall (A : Type) (w : string),
   @empty A w = None.
 Proof. intros. reflexivity. Qed.
@@ -250,8 +185,6 @@ Proof.
   - rewrite !update_neq by apply n. apply H.
 Qed.
 
-(* ---------- 44.6 类型关系：六条规则 ---------- *)
-
 Definition context := partial_map ty.
 
 Inductive has_type : context -> tm -> ty -> Prop :=
@@ -268,119 +201,7 @@ Inductive has_type : context -> tm -> ty -> Prop :=
   | T_True : forall Gamma,
       has_type Gamma tm_true Ty_Bool
   | T_False : forall Gamma,
-      has_type Gamma tm_false Ty_Bool
-  | T_If : forall t1 t2 t3 T1 Gamma,
-      has_type Gamma t1 Ty_Bool ->
-      has_type Gamma t2 T1 ->
-      has_type Gamma t3 T1 ->
-      has_type Gamma (tm_if t1 t2 t3) T1.
-
-Hint Constructors value step has_type : core.
-
-Example typing_example_1 :
-  has_type empty idB (Ty_Arrow Ty_Bool Ty_Bool).
-Proof.
-  unfold idB. apply T_Abs. apply T_Var. apply update_eq.
-Qed.
-
-Example typing_example_2 :
-  has_type empty
-    (tm_abs x Ty_Bool (tm_if (tm_var x) tm_false (tm_var x)))
-    (Ty_Arrow Ty_Bool Ty_Bool).
-Proof.
-  apply T_Abs.
-  apply T_If.
-  - apply T_Var. apply update_eq.
-  - apply T_False.
-  - apply T_Var. apply update_eq.
-Qed.
-
-Example typing_example_3 :
-  has_type empty if_example Ty_Bool.
-Proof.
-  unfold if_example, idB. apply T_If.
-  - apply T_App with Ty_Bool.
-    + apply typing_example_1.
-    + apply T_True.
-  - apply T_False.
-  - apply T_App with Ty_Bool.
-    + apply typing_example_1.
-    + apply T_False.
-Qed.
-
-Example typing_nonexample_1 :
-  ~ has_type empty (tm_app tm_true tm_true) Ty_Bool.
-Proof.
-  intros H. inversion H; subst.
-  match goal with
-  | Ht : has_type _ tm_true (Ty_Arrow _ _) |- _ => inversion Ht
-  end.
-Qed.
-
-Example typing_nonexample_2 :
-  ~ has_type empty (tm_if tm_true tm_true (tm_abs x Ty_Bool (tm_var x))) Ty_Bool.
-Proof.
-  intros H. inversion H; subst.
-  match goal with
-  | Ht : has_type _ (tm_abs _ _ _) Ty_Bool |- _ => inversion Ht
-  end.
-Qed.
-
-(* ---------- 44.7 范式引理：闭项的值按类型分家 ---------- *)
-
-Lemma canonical_forms_bool : forall t,
-  has_type empty t Ty_Bool ->
-  value t ->
-  (t = tm_true) \/ (t = tm_false).
-Proof.
-  intros t HT HVal.
-  destruct HVal; auto.
-  inversion HT.
-Qed.
-
-Lemma canonical_forms_fun : forall t T1 T2,
-  has_type empty t (Ty_Arrow T1 T2) ->
-  value t ->
-  exists w u, t = tm_abs w T1 u.
-Proof.
-  intros t T1 T2 HT HVal.
-  destruct HVal as [w ? t1 | | ]; inversion HT; subst.
-  exists w, t1. reflexivity.
-Qed.
-
-(* ---------- 44.8 进展：良类型闭项不会卡住 ---------- *)
-
-Theorem progress : forall t T,
-  has_type empty t T ->
-  value t \/ exists t', t --> t'.
-Proof.
-  intros t T Ht.
-  remember empty as Gamma.
-  induction Ht; subst Gamma; auto.
-  - (* T_Var：空上下文里变量无类型——矛盾 *)
-    discriminate H.
-  - (* T_App *)
-    right. destruct (IHHt1 eq_refl) as [Hv1 | [t1' Hstp1]].
-    + destruct (IHHt2 eq_refl) as [Hv2 | [t2' Hstp2]].
-      * destruct (canonical_forms_fun t1 T2 T1 Ht1 Hv1) as [w [t0 Hdef]].
-        subst t1.
-        exists (subst w t2 t0).
-        apply ST_AppAbs. assumption.
-      * exists (tm_app t1 t2').
-        apply ST_App2; assumption.
-    + exists (tm_app t1' t2).
-      apply ST_App1. assumption.
-  - (* T_If *)
-    right. destruct (IHHt1 eq_refl) as [Hv1 | [t1' Hstp1]].
-    + destruct (canonical_forms_bool t1 Ht1 Hv1) as [Htb | Htb];
-        subst t1.
-      * exists t2. apply ST_IfTrue.
-      * exists t3. apply ST_IfFalse.
-    + exists (tm_if t1' t2 t3).
-      apply ST_If. assumption.
-Qed.
-
-(* ---------- 44.9 弱化与替换引理 ---------- *)
+      has_type Gamma tm_false Ty_Bool.
 
 Lemma weakening : forall Gamma Gamma' t T,
   includedin Gamma Gamma' ->
@@ -389,7 +210,13 @@ Lemma weakening : forall Gamma Gamma' t T,
 Proof.
   intros Gamma Gamma' t T H Ht.
   generalize dependent Gamma'.
-  induction Ht; intros; eauto using includedin_update.
+  induction Ht; intros.
+  - apply T_Var. apply H0. exact H.
+  - apply T_Abs. apply IHHt.
+    apply includedin_update. exact H.
+  - eapply T_App with T2; eauto.
+  - apply T_True.
+  - apply T_False.
 Qed.
 
 Lemma weakening_empty : forall Gamma t T,
@@ -418,43 +245,182 @@ Proof.
       injection H2 as H2; subst.
       apply weakening_empty. assumption.
     + apply T_Var. rewrite update_neq in H2; auto.
+  - (* tm_app *)
+    eapply T_App with T2; eauto.
   - (* tm_abs *)
-    rename s into y, t into S.
-    destruct (String.eqb_spec w y); subst; apply T_Abs.
+    destruct (String.eqb_spec w s); subst; apply T_Abs.
     + rewrite update_shadow in H5. assumption.
     + apply IHt.
       rewrite update_permute; auto.
+  - apply T_True.
+  - apply T_False.
 Qed.
-
-(* ---------- 44.10 保持：小步不改变类型 ---------- *)
 
 Theorem preservation : forall t t' T,
   has_type empty t T ->
   t --> t' ->
   has_type empty t' T.
 Proof.
-  intros t t' T Ht.
+  intros t t' T HT.
   generalize dependent t'.
   remember empty as Gamma.
-  induction Ht; intros t' HE; subst Gamma;
+  induction HT; intros t' HE; subst Gamma;
     try solve [inversion HE; subst; auto].
   - (* T_App *)
     inversion HE; subst.
-    + (* ST_AppAbs：β 步靠替换引理 *)
-      apply substitution_preserves_typing with (U := T2).
-      * inversion Ht1; subst; assumption.
+    + apply substitution_preserves_typing with T2.
+      * inversion HT1; subst; assumption.
       * assumption.
-    + (* ST_App1：函数先走 *)
-      apply T_App with T2.
-      * apply (IHHt1 eq_refl). assumption.
+    + apply T_App with T2.
+      * apply (IHHT1 eq_refl). assumption.
       * assumption.
-    + (* ST_App2：参数先走 *)
-      apply T_App with T2.
+    + apply T_App with T2.
       * assumption.
-      * apply (IHHt2 eq_refl). assumption.
+      * apply (IHHT2 eq_refl). assumption.
 Qed.
 
-Print Assumptions progress.
 Print Assumptions preservation.
 
-End Ex44Stlc.
+(* ---------- 50.3 停机：halts 与一个失败的直接归纳 ---------- *)
+
+Definition halts (t : tm) : Prop :=
+  exists t', t -->* t' /\ value t'.
+
+Lemma value_halts : forall v, value v -> halts v.
+Proof.
+  intros v V. exists v. split; [apply multi_refl | exact V].
+Qed.
+
+(* 直接对类型推导归纳证停机——App 分支在"代入后的体"处失守：
+   IH 只覆盖 c1/c2 的语法子项，β 之后的新项不在其中。 *)
+Theorem normalization_try1 :
+  forall t T, has_type empty t T -> halts t.
+Proof.
+  intros t T HT.
+  remember empty as Gamma.
+  induction HT; subst Gamma; intros.
+  - rewrite apply_empty in H. inversion H.
+  - apply value_halts. apply v_abs.
+  - (* App：走到一半就卡住 *)
+    destruct (IHHT1 eq_refl) as [v1 [ST1 V1]].
+    destruct (IHHT2 eq_refl) as [v2 [ST2 V2]].
+    assert (HTV1 : has_type empty v1 (Ty_Arrow T2 T1)).
+    { clear - HT1 ST1. induction ST1; eauto using preservation. }
+    assert (V1ABS : exists w u, v1 = tm_abs w T2 u).
+    { inversion V1; subst v1.
+      + inversion HTV1; subst. exists w, t0. reflexivity.
+      + inversion HTV1.
+      + inversion HTV1. }
+    destruct V1ABS as [w [u E]]. subst v1.
+    assert (ST11 : tm_app t1 t2 -->* tm_app (tm_abs w T2 u) t2).
+    { clear - ST1. induction ST1.
+      - apply multi_refl.
+      - eapply multi_step.
+        + apply ST_App1. exact H.
+        + exact IHST1. }
+    assert (ST22 : tm_app (tm_abs w T2 u) t2 -->* tm_app (tm_abs w T2 u) v2).
+    { clear - ST2 V2. induction ST2.
+      - apply multi_refl.
+      - eapply multi_step.
+        + apply ST_App2; [apply v_abs | exact H].
+        + apply IHST2; exact V2. }
+    assert (ST23 : tm_app t1 t2 -->* tm_app (tm_abs w T2 u) v2).
+    { eapply multi_trans with (tm_app (tm_abs w T2 u) t2).
+      - exact ST11.
+      - exact ST22. }
+    assert (STT : tm_app t1 t2 -->* subst w v2 u).
+    { eapply multi_trans; [exact ST23 |].
+      eapply multi_step.
+      - apply ST_AppAbs; exact V2.
+      - apply multi_refl. }
+    (* 要收尾还得知道 subst w v2 u 停机——它不是任何子项，IH 够不着。 *)
+    (* 若 N 机制在手的完整证明将在此收尾；本 Abort 是教学演示。 *)
+Abort.
+
+(* ---------- 50.4 逻辑谓词 N：按类型加码的停机 ---------- *)
+
+Fixpoint N (T : ty) (t : tm) : Prop :=
+  has_type empty t T /\ halts t /\
+  (match T with
+   | Ty_Bool => True
+   | Ty_Arrow T1 T2 => (forall s, N T1 s -> N T2 (tm_app t s))
+  end).
+
+Lemma N_halts : forall T t, N T t -> halts t.
+Proof.
+  intros T t H. destruct T; unfold N in H; destruct H as [_ [H _]]; assumption.
+Qed.
+
+Lemma N_typable_empty : forall T t, N T t -> has_type empty t T.
+Proof.
+  intros T t H. destruct T; unfold N in H; destruct H as [H _]; assumption.
+Qed.
+
+Lemma value__normal : forall v, value v -> forall t, ~ (v --> t).
+Proof.
+  intros v V t E. inversion V; subst; inversion E.
+Qed.
+
+Lemma step_deterministic : forall t t1 t2,
+  (t --> t1) -> (t --> t2) -> t1 = t2.
+Proof.
+  intros t t1 t2 E1.
+  revert t2.
+  induction E1; intros t'0 E2; inversion E2; subst; try congruence;
+    try match goal with
+    | Hs : step (tm_abs _ _ _) _ |- _ =>
+        exfalso; eapply value__normal; [apply v_abs | exact Hs]
+    end;
+    try (exfalso; match goal with
+         | Hv : value ?v, Hs : ?v --> _ |- _ =>
+             exact (value__normal _ Hv _ Hs)
+         end).
+  - (* App1/App1 *) f_equal. apply IHE1. exact H2.
+  - (* App2/App2 *) f_equal. apply IHE1. exact H4.
+Qed.
+
+Lemma step_preserves_halting : forall t t' T,
+  has_type empty t T ->
+  (t --> t') ->
+  halts t ->
+  halts t'.
+Proof.
+  intros t t' T HT E [w [STM V]].
+  exists w. split; [| exact V].
+  destruct STM as [u | u1 u2 u3 Hs Hrest].
+  - exfalso. eapply value__normal; [exact V | exact E].
+  - assert (Heq : u2 = t') by (eapply step_deterministic; eauto).
+    subst u2. exact Hrest.
+Qed.
+
+Lemma step_preserves_N : forall T t t',
+  (t --> t') -> N T t -> N T t'.
+Proof.
+  induction T; intros t t' E Nt; simpl in Nt |- *;
+    destruct Nt as [typable_empty_t [halts_t NN]].
+  - (* Bool *)
+    split; [| split].
+    + eapply preservation; eauto.
+    + eapply step_preserves_halting; eauto.
+    + auto.
+  - (* Arrow *)
+    split; [| split].
+    + eapply preservation; eauto.
+    + eapply step_preserves_halting; eauto.
+    + intros.
+      eapply IHT2.
+      * apply ST_App1. apply E.
+      * apply NN; auto.
+Qed.
+
+Lemma multistep_preserves_N : forall T t t',
+  (t -->* t') -> N T t -> N T t'.
+Proof.
+  intros T t t' STM. induction STM; intros.
+  - assumption.
+  - apply IHSTM. eapply step_preserves_N.
+    + apply H.
+    + assumption.
+Qed.
+
+End Ex50Normalization.

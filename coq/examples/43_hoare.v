@@ -3,9 +3,9 @@
 From Stdlib Require Import Arith Bool List Lia Strings.String.
 Import ListNotations.
 
-Module Ex42Hoare.
+Module Ex43Hoare.
 
-(* ---------- 42.1 语言与大步语义的副本（同 38/39/40 章） ---------- *)
+(* ---------- 43.1 语言与大步语义的副本（同 38/39/40 章） ---------- *)
 
 Definition total_map (A : Type) := string -> A.
 
@@ -161,7 +161,7 @@ Inductive ceval : com -> state -> state -> Prop :=
 
   where "st0 =[ c ]=> st1" := (ceval c st0 st1).
 
-(* ---------- 42.2 断言：把"程序状态"变成"逻辑命题" ---------- *)
+(* ---------- 43.2 断言：把"程序状态"变成"逻辑命题" ---------- *)
 
 Definition Assertion := state -> Prop.
 
@@ -189,7 +189,7 @@ Proof.
   - lia.
 Qed.
 
-(* ---------- 42.3 霍尔三元组：偏正确性的形式化 ---------- *)
+(* ---------- 43.3 霍尔三元组：偏正确性的形式化 ---------- *)
 
 Definition valid_hoare_triple
            (P : Assertion) (c : com) (Q : Assertion) : Prop :=
@@ -216,7 +216,7 @@ Proof.
   intros P Q c H st st' HE HP. destruct (H st HP).
 Qed.
 
-(* ---------- 42.4 skip 与顺序复合规则 ---------- *)
+(* ---------- 43.4 skip 与顺序复合规则 ---------- *)
 
 Theorem hoare_skip : forall P,
   {{P}} <{ skip }> {{P}}.
@@ -234,7 +234,7 @@ Proof.
   eapply H1; eauto.
 Qed.
 
-(* ---------- 42.5 赋值规则：从后置条件倒推前置条件 ---------- *)
+(* ---------- 43.5 赋值规则：从后置条件倒推前置条件 ---------- *)
 
 Definition assertion_sub (X : string) (a : aexp) (P : Assertion) : Assertion :=
   fun st => P (X !-> aeval st a ; st).
@@ -260,7 +260,7 @@ Example assertion_sub_example :
   {{fun st => st X < 5}}.
 Proof. apply hoare_asgn. Qed.
 
-(* ---------- 42.6 结论规则：搬动前置/后置条件 ---------- *)
+(* ---------- 43.6 结论规则：搬动前置/后置条件 ---------- *)
 
 Theorem hoare_consequence_pre : forall (P P' Q : Assertion) c,
   {{P'}} c {{Q}} ->
@@ -319,7 +319,7 @@ Proof.
     simpl. intros st H. lia.
 Qed.
 
-(* ---------- 42.7 条件规则：把 bexp 抬成断言 ---------- *)
+(* ---------- 43.7 条件规则：把 bexp 抬成断言 ---------- *)
 
 Definition bassertion (b : bexp) : Assertion :=
   fun st => (beval st b = true).
@@ -369,7 +369,7 @@ Proof.
       simpl. intros st _. lia.
 Qed.
 
-(* ---------- 42.8 循环规则：不变量 ---------- *)
+(* ---------- 43.8 循环规则：不变量 ---------- *)
 
 Theorem hoare_while : forall P (b:bexp) c,
   {{fun st => P st /\ bassertion b st}} c {{P}} ->
@@ -425,7 +425,7 @@ Proof.
     intros st [Hinv Hguard]. congruence.
 Qed.
 
-(* ---------- 42.9 综合例子：给循环找一个不变量 ---------- *)
+(* ---------- 43.9 综合例子：给循环找一个不变量 ---------- *)
 
 Example while_example_add :
   {{fun st => st X + st Y = 5}}
@@ -459,4 +459,4 @@ Qed.
 
 Print Assumptions while_example_add.
 
-End Ex42Hoare.
+End Ex43Hoare.

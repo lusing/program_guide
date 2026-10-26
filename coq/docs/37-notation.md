@@ -13,11 +13,11 @@
 
 本章按"最小实验 → 完整工程 → 再造一遍"的顺序解剖它们：37.2 用一个两行记号做对照
 实验，37.3–37.4 搭起 38 章用的整套 `com` 条目，37.7 把同一套机制**再造一遍**——给霍尔
-逻辑的断言（42.7 的 `bassertion` 世界）造一个 `assn` 条目，让你能写
+逻辑的断言（43.7 的 `bassertion` 世界）造一个 `assn` 条目，让你能写
 `{{ X = 3 \/ X <= Y }}`。最后一节 37.8 是反例集：类型串了、level 错了、作用域没开，
 各报什么错（全部 `Fail` 实测）。
 
-这套东西的完整工程版在 38 章（Imp 语言）里首次投入实战；42 章为省篇幅用了 `fun st =>`
+这套东西的完整工程版在 38 章（Imp 语言）里首次投入实战；43 章为省篇幅用了 `fun st =>`
 的显式断言形式，本章 37.7 补上它的"漂亮记号"版本，两个世界互为对照。
 
 ### 37.1 为什么需要 Coercion：string / nat 怎么变成 aexp
@@ -630,7 +630,7 @@ fun st : state => forall w : string, st w = st w
      : Assertion
 ```
 
-最后是 42 章的三件语义装备在漂亮记号下的样子：
+最后是 43 章的三件语义装备在漂亮记号下的样子：
 
 ```coq
 Definition assert_implies (P Q : Assertion) : Prop :=
@@ -645,7 +645,7 @@ Notation "P <<->> Q" := ((P ->> Q) /\ (Q ->> P))
 
 注意 `<<->>` 的 RHS 写成了 `(P ->> Q) /\ (Q ->> P)`——两个记号同为 level 80，不加
 括号会触发解析容忍警告（实测 `Warning: In term, tolerating this expression at a
-higher level than expected ...`，42 章坑 3 的同款；本文件的第一版就踩过，修正后
+higher level than expected ...`，43 章坑 3 的同款；本文件的第一版就踩过，修正后
 收进坑清单第 6 条）。
 
 ```coq
@@ -673,7 +673,7 @@ Qed.
 ```
 
 `P [ X |-> a ]` 是**跨条目记号**：P 用 assn 条目、a 用 com 条目、X 是主语法全局
-（`X global`）——一个记号里三个语法域协同。两个等价性例子把 42.5 的
+（`X global`）——一个记号里三个语法域协同。两个等价性例子把 43.5 的
 `assertion_sub` 语义（"在更新过的状态里求值 P"）与直觉的文本替换对上：两边都是
 `split; unfold ...; intros; simpl; apply H` 一气呵成。
 

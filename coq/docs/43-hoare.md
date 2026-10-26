@@ -1,6 +1,6 @@
-# 42 · Hoare 逻辑
+# 43 · Hoare 逻辑
 
-对应示例：`../examples/42_hoare.v`（`Module Ex42Hoare`，rocq 9.3.0 + stdlib 9.2.0 实测编译退出码 0）
+对应示例：`../examples/43_hoare.v`（`Module Ex43Hoare`，rocq 9.3.0 + stdlib 9.2.0 实测编译退出码 0）
 
 38 章问了"这段程序怎么跑"（大步语义），39 章让它能算（燃料），40 章拆开看每一步。
 本章换一个问题：**这段程序跑完之后，什么东西一定是对的？**
@@ -14,15 +14,15 @@
 
 读作："如果 `c` 从满足断言 P 的状态开始执行，**并且它终止**，那么终止状态满足断言
 Q。"注意"并且终止"这个限定——霍尔逻辑是**偏正确性**（partial correctness）：它不管
-程序会不会死循环（42.8 的 `always_loop_hoare` 会把这一点推到极致：不终止的循环可以
+程序会不会死循环（43.8 的 `always_loop_hoare` 会把这一点推到极致：不终止的循环可以
 证明出**任何**后置条件）。
 
 本章的主线是给 Imp 的每条命令配一条**推理规则**——skip、赋值、顺序、条件、循环，外加
 两条"结论"规则搬动前后置条件。规则凑齐之后，**程序的结构就是证明的结构**：
-`while_example_add`（42.9）里我们用一个不变量证明一个把 X 的值搬到 Y 的循环，整个
+`while_example_add`（43.9）里我们用一个不变量证明一个把 X 的值搬到 Y 的循环，整个
 证明的形状和程序的形状严丝合缝。
 
-### 42.1 语言与大步语义的副本（同 38/39/40 章）
+### 43.1 语言与大步语义的副本（同 38/39/40 章）
 
 示例自包含。文件头——本章需要 `Lia`（断言之间的算术蕴含全靠它）：
 
@@ -32,9 +32,9 @@ Q。"注意"并且终止"这个限定——霍尔逻辑是**偏正确性**（par
 From Stdlib Require Import Arith Bool List Lia Strings.String.
 Import ListNotations.
 
-Module Ex42Hoare.
+Module Ex43Hoare.
 
-(* ---------- 42.1 语言与大步语义的副本（同 38/39/40 章） ---------- *)
+(* ---------- 43.1 语言与大步语义的副本（同 38/39/40 章） ---------- *)
 
 Definition total_map (A : Type) := string -> A.
 
@@ -199,12 +199,12 @@ Inductive ceval : com -> state -> state -> Prop :=
   where "st0 =[ c ]=> st1" := (ceval c st0 st1).
 ```
 
-### 42.2 断言：把"程序状态"变成"逻辑命题"
+### 43.2 断言：把"程序状态"变成"逻辑命题"
 
 **断言**（assertion）就是关于状态的一元谓词——`state -> Prop`：
 
 ```coq
-(* ---------- 42.2 断言：把"程序状态"变成"逻辑命题" ---------- *)
+(* ---------- 43.2 断言：把"程序状态"变成"逻辑命题" ---------- *)
 
 Definition Assertion := state -> Prop.
 
@@ -253,12 +253,12 @@ Qed.
 `split` 把 `P ->> Q /\ Q ->> P` 拆成两个蕴含，每个 `unfold assert_implies; intros st H`
 之后就是普通的自然数算术，`lia` 收尾。
 
-### 42.3 霍尔三元组：偏正确性的形式化
+### 43.3 霍尔三元组：偏正确性的形式化
 
 核心定义只有一行：
 
 ```coq
-(* ---------- 42.3 霍尔三元组：偏正确性的形式化 ---------- *)
+(* ---------- 43.3 霍尔三元组：偏正确性的形式化 ---------- *)
 
 Definition valid_hoare_triple
            (P : Assertion) (c : com) (Q : Assertion) : Prop :=
@@ -306,13 +306,13 @@ Qed.
 - `hoare_post_true`：后置条件永真，三元组自动成立——根本不用管 c 是什么。
 - `hoare_pre_false`：前置条件处处为假，三元组也自动成立。`destruct (H st HP)` 用
   `H st : ~ P st` 吃掉 `HP : P st` 得到 `False`，`destruct` 一个 `False` 证明直接
-  关闭任意目标。**这两个定理是"空洞正确"的两个出口**，42.8 的 `always_loop_hoare`
+  关闭任意目标。**这两个定理是"空洞正确"的两个出口**，43.8 的 `always_loop_hoare`
   会组合它们证出"死循环满足任何规格"。
 
-### 42.4 skip 与顺序复合规则
+### 43.4 skip 与顺序复合规则
 
 ```coq
-(* ---------- 42.4 skip 与顺序复合规则 ---------- *)
+(* ---------- 43.4 skip 与顺序复合规则 ---------- *)
 
 Theorem hoare_skip : forall P,
   {{P}} <{ skip }> {{P}}.
@@ -340,7 +340,7 @@ Qed.
 目标后置条件 R，先给 c2 配中间断言 Q，再往前推 c1 的前置。证明体：反演 `E_Seq` 拿到
 中间状态，`eapply H1; eauto` 让 eauto 自己把 `H2`（c1 的三元组）套上去补出中间断言。
 
-### 42.5 赋值规则：从后置条件倒推前置条件
+### 43.5 赋值规则：从后置条件倒推前置条件
 
 赋值规则是整个霍尔逻辑最精妙的一条。问：`{{ ??? }} X := X + 1 {{ X < 5 }}` 的前置
 条件是什么？答：把后置条件里的 X 全部换成 `X + 1`——`X + 1 < 5`。**这条规则是"倒着"
@@ -350,7 +350,7 @@ Qed.
 是**在更新过的状态里求值 P**：
 
 ```coq
-(* ---------- 42.5 赋值规则：从后置条件倒推前置条件 ---------- *)
+(* ---------- 43.5 赋值规则：从后置条件倒推前置条件 ---------- *)
 
 Definition assertion_sub (X : string) (a : aexp) (P : Assertion) : Assertion :=
   fun st => P (X !-> aeval st a ; st).
@@ -400,10 +400,10 @@ Proof. apply hoare_asgn. Qed.
 是更好看的 `{{X < 4}} X := X + 1 {{X < 5}}`——两个前置条件**逻辑等价但不字面相同**，
 `hoare_asgn` 直接 apply 不上。这正是下一节结论规则存在的理由。
 
-### 42.6 结论规则：搬动前置/后置条件
+### 43.6 结论规则：搬动前置/后置条件
 
 ```coq
-(* ---------- 42.6 结论规则：搬动前置/后置条件 ---------- *)
+(* ---------- 43.6 结论规则：搬动前置/后置条件 ---------- *)
 
 Theorem hoare_consequence_pre : forall (P P' Q : Assertion) c,
   {{P'}} c {{Q}} ->
@@ -453,7 +453,7 @@ Proof.
 Qed.
 ```
 
-现在可以回到 42.5 结尾的悬案：
+现在可以回到 43.5 结尾的悬案：
 
 ```coq
 Example hoare_asgn_example1 :
@@ -484,7 +484,7 @@ t_update` → `simpl` → `lia`（或 `reflexivity`）。`unfold` 名单里 **`t
 状态更新是个 `if String.eqb ...`，不展开的话 `simpl` 之后目标里还挂着
 `if X =? X then ... else ...`，`lia` 看不懂（坑清单第 2 条）。
 
-### 42.7 条件规则：把 bexp 抬成断言
+### 43.7 条件规则：把 bexp 抬成断言
 
 朴素版条件规则"两个分支都用同一个 P、证到同一个 Q"太弱（原书用
 `{{True}} if X = 0 then Y := 2 else Y := X + 1 end {{X <= Y}}` 说明这点）。关键改进：
@@ -493,7 +493,7 @@ t_update` → `simpl` → `lia`（或 `reflexivity`）。`unfold` 名单里 **`t
 bexp 是布尔表达式、断言是谓词，两者不同类型，需要"抬升"：
 
 ```coq
-(* ---------- 42.7 条件规则：把 bexp 抬成断言 ---------- *)
+(* ---------- 43.7 条件规则：把 bexp 抬成断言 ---------- *)
 
 Definition bassertion (b : bexp) : Assertion :=
   fun st => (beval st b = true).
@@ -571,14 +571,14 @@ Qed.
 - else 分支：前置 `(X <= Y)[Y |-> X + 1]` 即 `X <= X + 1`，`lia` 无需条件。
 - 两个分支都**无视**前提里没用的那一半（`[_ H]`、`_`）——断言里的合取分量按需取用。
 
-### 42.8 循环规则：不变量
+### 43.8 循环规则：不变量
 
 先想一个天真的规则：`{{P}} c {{P}}` 蕴含 `{{P}} while b do c end {{P}}`。它对，但
 浪费了两条信息：循环**退出**时 b 为假（后置可以加 `~b`）；循环**进入体内**时 b 为真
 （体内的前置可以加 `b`）。补全后：
 
 ```coq
-(* ---------- 42.8 循环规则：不变量 ---------- *)
+(* ---------- 43.8 循环规则：不变量 ---------- *)
 
 Theorem hoare_while : forall P (b:bexp) c,
   {{fun st => P st /\ bassertion b st}} c {{P}} ->
@@ -673,7 +673,7 @@ Qed.
 ```
 
 - 体内 `skip`：取不变量 `P := fun st => True`，体内三元组
-  `{{True /\ bassertion true}} skip {{True}}` 直接由 `hoare_post_true`（42.3）给出。
+  `{{True /\ bassertion true}} skip {{True}}` 直接由 `hoare_post_true`（43.3）给出。
 - 退出侧要证 `True /\ ~ bassertion true ->> Q`：`bassertion true` 求值就是 `true = true`，
   它的否定是矛盾——`congruence` 发现 `Hguard : ~ (true = true)` 和事实冲突，关闭任意
   目标。
@@ -683,13 +683,13 @@ Qed.
 想要"终止 + 正确"（全正确性），得另外提供变体函数/良基递减证据，那是原书 PLF 卷
 后续章节的话题。
 
-### 42.9 综合例子：给循环找一个不变量
+### 43.9 综合例子：给循环找一个不变量
 
 把全部规则串起来证一个真正的两变量循环：`while X <> 0 do Y := Y + 1; X := X - 1 end`
 把 X 的值搬到 Y（X 每次 -1、Y 每次 +1，X + Y 保持）：
 
 ```coq
-(* ---------- 42.9 综合例子：给循环找一个不变量 ---------- *)
+(* ---------- 43.9 综合例子：给循环找一个不变量 ---------- *)
 
 Example while_example_add :
   {{fun st => st X + st Y = 5}}
@@ -753,50 +753,50 @@ Closed under the global context
 零公理——整个证明只用了 38 章的语言层和本章七条规则。
 
 ```coq
-End Ex42Hoare.
+End Ex43Hoare.
 ```
 
-### 42.10 本章坑位清单（实测）
+### 43.10 本章坑位清单（实测）
 
 以下每一条都在 rocq 9.3.0 + stdlib 9.2.0 上真实踩过或观测到。
 
-1. **`lia` 不认 `<=? = true` 这类布尔等式**（42.8）：体内蕴含里我直接 `lia`，报
+1. **`lia` 不认 `<=? = true` 这类布尔等式**（43.8）：体内蕴含里我直接 `lia`，报
    `Cannot find witness`——它把 `(st X <=? 2) = true` 当不透明布尔等式，从 `X <= 3`
    推不出 `X + 1 <= 3`。必须先 `Nat.leb_le / Nat.leb_gt / Nat.eqb_eq / Nat.eqb_neq`
    把布尔翻成算术。配套的 `~(b = true)` → `b = false` 用自写的
    `not_true_is_false`。
-2. **`unfold t_update` 不能漏**（42.6 起）：断言替换的三板斧
+2. **`unfold t_update` 不能漏**（43.6 起）：断言替换的三板斧
    `unfold assert_implies, assertion_sub, t_update` → `simpl` → `lia`。少了
    `t_update`，`simpl` 后目标里留着 `if X =? X then ... else ...`（`String.eqb` 的
    if），`lia` 失败。
-3. **两个 level-80 记号叠用要加括号**（42.2）：`P <<->> Q` 的 RHS 写成
+3. **两个 level-80 记号叠用要加括号**（43.2）：`P <<->> Q` 的 RHS 写成
    `P ->> Q /\ Q ->> P` 会触发
    `Warning: In term, tolerating this expression at a higher level ...`；写成
    `(P ->> Q) /\ (Q ->> P)` 消除。
-4. **`apply` 三元组要显式 `with (st := st)`**（42.6、42.7、42.8）：`valid_hoare_triple`
+4. **`apply` 三元组要显式 `with (st := st)`**（43.6、43.7、43.8）：`valid_hoare_triple`
    的量词是 `forall st st', st =[c]=> st' -> P st -> Q st'`，直接 `apply Hhoare` 会把
    两个状态都往目标上碰运气，失败时统一显式给初态。
-5. **`apply <iff引理> in H` 会挑反方向**（42.7）：`not_true_iff_false : b <> true <->
+5. **`apply <iff引理> in H` 会挑反方向**（43.7）：`not_true_iff_false : b <> true <->
    b = false`，对 `H : b <> true` 做 `apply ... in H` 实测走了 `b = false -> b <> true`
    那半边（留下 `H : False` 残局并新开 `(st X <=? 2) = false` 目标）。要正向用 iff 的
    `proj1`，或者像本章一样写一个方向明确的小引理。
-6. **断言里的 aexp 必须 `<{ }>` 抬进**（42.5）：`P [ X |-> X + 1 ]` 里的 `X + 1` 是
+6. **断言里的 aexp 必须 `<{ }>` 抬进**（43.5）：`P [ X |-> X + 1 ]` 里的 `X + 1` 是
    aexp，裸写会被解析成 `Nat.add X 1`（X 是 string）直接报类型错。`<{ X + 1 }>` 才走
    com 条目。
-7. **nat 比较不受 com 记号影响，类型乘积却会**（42.2 vs 40 章坑 1）：`st X <= st Y` 安全，
+7. **nat 比较不受 com 记号影响，类型乘积却会**（43.2 vs 40 章坑 1）：`st X <= st Y` 安全，
    因为 `<= > = <>` 只声明在自定义条目 `com` 内部；而 `+ - *` 在 nat_scope 与
    type_scope 之间的冲突（40 章的 `(com * state)%type`）依然存在。同文件混写命令和
    断言时，对每个中缀操作符想一遍"它现在归谁管"。
-8. **`hoare_seq` 的前提是倒序的**（42.4、42.9）：`{{Q}} c2 {{R}} -> {{P}} c1 {{Q}} ->
-   ...`。写证明时第一个子目标永远是**后半段**命令——42.9 我第一版把两个 `+` 分支写反，
+8. **`hoare_seq` 的前提是倒序的**（43.4、43.9）：`{{Q}} c2 {{R}} -> {{P}} c1 {{Q}} ->
+   ...`。写证明时第一个子目标永远是**后半段**命令——43.9 我第一版把两个 `+` 分支写反，
    编译器报 `Unexpected name (no introduction patterns were expected in the branch)`
    （一侧的假设是合取、另一侧是单条，intro 模式对不上）。看到这种"模式对不上"，先检查
    分支是不是装反了。
-9. **`remember` 之后归纳假设带等式前提**（42.8）：`IHHeval2 : <{while...}> = <{while...}>
+9. **`remember` 之后归纳假设带等式前提**（43.8）：`IHHeval2 : <{while...}> = <{while...}>
    -> ...`，先 `reflexivity` 消掉再用。这是 remember 冻结命令的固定代价。
-10. **规则齐了就不要再 `unfold valid_hoare_triple`**（42.5 之后）：本章设计的意义就是
-    用七条规则**组合**推理、不再碰求值语义。除了规则本身的证明（42.3–42.8 各一次
+10. **规则齐了就不要再 `unfold valid_hoare_triple`**（43.5 之后）：本章设计的意义就是
+    用七条规则**组合**推理、不再碰求值语义。除了规则本身的证明（43.3–43.8 各一次
     `unfold`），所有 Example 的脚本里只有规则名 + 断言翻译 + `lia`。
 
 ---
-上一章：[41 · 词法与语法解析](41-parsing.md) ｜ 下一章：[43 · 自动化工程：evar 搜索与 hint 数据库](43-automation.md) ｜ 返回：[README](../README.md)
+上一章：[42 · 词法与语法解析](42-parsing.md) ｜ 下一章：[44 · 装饰程序：不变量的寻找法](44-decorated.md) ｜ 返回：[README](../README.md)

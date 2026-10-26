@@ -1,6 +1,6 @@
-# 43 · 自动化工程：evar 搜索与 hint 数据库
+# 46 · 自动化工程：evar 搜索与 hint 数据库
 
-对应示例：`../examples/43_automation.v`（`Module Ex43Automation`，rocq 9.3.0 + stdlib 9.2.0 实测编译退出码 0）
+对应示例：`../examples/46_automation.v`（`Module Ex46Automation`，rocq 9.3.0 + stdlib 9.2.0 实测编译退出码 0）
 
 18 章见过 `auto`，19 章写过 Ltac。本章把自动化当成一项**工程**来解剖：搜索机怎么工作、
 hint 怎么注册进数据库、evar 怎么参与统一，以及每一样东西的**边界**在哪里。四个主角：
@@ -13,15 +13,15 @@ hint 怎么注册进数据库、evar 怎么参与统一，以及每一样东西�
    自建库（`Create HintDb`），以及模块边界与 `Local` 的作用域规则。
 4. **`congruence`**：等式关系的判定过程——不搜索，直接判定。
 
-本章的实验场还是 Imp 的 `ceval`（43.1 的副本）：同一个定理
+本章的实验场还是 Imp 的 `ceval`（46.1 的副本）：同一个定理
 `ceval_deterministic`（38.11 手证过十几个目标）会被 `auto`、自写 Ltac、`congruence`
-三种方式逐步压缩，最后 `eauto` + hint 把一个带存在量词的求证**整条吞掉**。43.9 用
+三种方式逐步压缩，最后 `eauto` + hint 把一个带存在量词的求证**整条吞掉**。46.9 用
 `~~P -> P` 摸到自动化的硬边界：evar 搜索不越经典逻辑一步。
 
-### 43.1 语言与大步语义的副本（同 38–42 章）
+### 46.1 语言与大步语义的副本（同 38–43 章）
 
 与前几章相同的自包含副本（细节全在 38 章，此处不重复讲解）。文件头——注意
-**`Classical` 不在这里**，43.9 会解释为什么它必须"晚点进来"：
+**`Classical` 不在这里**，46.9 会解释为什么它必须"晚点进来"：
 
 ```coq
 (* 43 自动化工程：evar 搜索与 hint 数据库 —— auto / eauto / Hint / congruence *)
@@ -29,9 +29,9 @@ hint 怎么注册进数据库、evar 怎么参与统一，以及每一样东西�
 From Stdlib Require Import Arith Bool List Lia Strings.String.
 Import ListNotations.
 
-Module Ex43Automation.
+Module Ex46Automation.
 
-(* ---------- 43.1 语言与大步语义的副本（同 38–42 章） ---------- *)
+(* ---------- 46.1 语言与大步语义的副本（同 38–43 章） ---------- *)
 
 Definition total_map (A : Type) := string -> A.
 
@@ -140,7 +140,7 @@ Inductive com : Type :=
 Notation "'skip'"  := CSkip
   (in custom com at level 0) : com_scope.
 Notation "x := y"  := (CAsgn x y)
-  (in custom com at level 0, x constr at level 0, y constr at level 85, no associativity,
+  (in custom com at level 0, x constr at level 0, y at level 85, no associativity,
     format "x  :=  y") : com_scope.
 Notation "x ; y" := (CSeq x y)
   (in custom com at level 90, right associativity,
@@ -204,12 +204,12 @@ Proof.
 Qed.
 ```
 
-### 43.2 auto：一台带回溯的深度优先搜索机
+### 46.2 auto：一台带回溯的深度优先搜索机
 
 先建立基线：手写与一键的对照。
 
 ```coq
-(* ---------- 43.2 auto：一台带回溯的深度优先搜索机 ---------- *)
+(* ---------- 46.2 auto：一台带回溯的深度优先搜索机 ---------- *)
 
 Example auto_example_1 : forall (P Q R : Prop),
   (P -> Q) -> (Q -> R) -> P -> R.
@@ -324,12 +324,12 @@ Qed.
 `auto` 自己不认识 `le_antisym`（自证引理不在库里）；`auto using le_antisym` 把它
 **一次性**地加进本轮搜索，证完即弃。
 
-### 43.3 hint 数据库：Resolve / Unfold / Extern 与自有库
+### 46.3 hint 数据库：Resolve / Unfold / Extern 与自有库
 
 一次性 `using` 的对面是**永久注册**：
 
 ```coq
-(* ---------- 43.3 hint 数据库：Resolve / Unfold / Extern 与自有库 ---------- *)
+(* ---------- 46.3 hint 数据库：Resolve / Unfold / Extern 与自有库 ---------- *)
 
 Hint Resolve le_antisym : core.
 
@@ -390,7 +390,7 @@ Qed.
 三件事：
 
 - `Create HintDb cong.` 开一个**自有库**（避免污染 core）。实测 9.2 起隐式创建
-  hint 库会触发弃用警告，所以 `Create` 这行是必需的（45 章坑清单第 55 条的实战）。
+  hint 库会触发弃用警告，所以 `Create` 这行是必需的（52 章坑清单第 55 条的实战）。
 - `Hint Extern 4 (_ = _) => congruence : cong.`：凡目标是**任意等式**（模式 `_ = _`），
   把 `congruence` 作为优先级 4 的候选塞进搜索。数字越小越优先。
 - 裸 `auto` 找不到（repl 实测报 `No applicable tactic.`——这是 `solve [auto]` 失败
@@ -400,12 +400,12 @@ Qed.
 再 `Fail`——直接 `Fail auto.` 在 auto 成功时会报 "The command has not failed!"
 （坑清单第 5 条）。
 
-### 43.4 Ltac 入门：把剧本打包成 rwd / find_rwd / find_eqn
+### 46.4 Ltac 入门：把剧本打包成 rwd / find_rwd / find_eqn
 
 自动化不止 auto。19 章的 Ltac 在这里收网：把 38.11 确定性证明里的重复剧本打包。
 
 ```coq
-(* ---------- 43.4 Ltac 入门：把剧本打包成 rwd / find_rwd / find_eqn ---------- *)
+(* ---------- 46.4 Ltac 入门：把剧本打包成 rwd / find_rwd / find_eqn ---------- *)
 
 Ltac rwd H1 H2 := rewrite H1 in H2; discriminate.
 
@@ -498,12 +498,12 @@ Qed.
 按形状收割、IH 改写型被 find_eqn 收割——**整条证明压缩成一行骨架 + 三个 try**。
 这是"Ltac 是用户侧自动化"的直观含义：不写搜索机，写**识别器**。
 
-### 43.5 eapply 与 evar：先立欠条，后还账
+### 46.5 eapply 与 evar：先立欠条，后还账
 
 `auto` 的世界没有欠条，`eauto` 的世界有。欠条就是 **evar**（存在变量 `?x`）。
 
 ```coq
-(* ---------- 43.5 eapply 与 evar：先立欠条，后还账 ---------- *)
+(* ---------- 46.5 eapply 与 evar：先立欠条，后还账 ---------- *)
 
 Example ceval_apply_fail :
   empty_st =[
@@ -585,12 +585,12 @@ Qed.
 `Attempt to save an incomplete proof (the proof term is not complete)`——本章坑清单
 第 2 条记录了一个更隐蔽的变体。
 
-### 43.6 eauto 与 Hint Constructors：把 evar 塞进搜索机
+### 46.6 eauto 与 Hint Constructors：把 evar 塞进搜索机
 
 evar + 搜索机 = eauto。同一个"求出终态"的例子：
 
 ```coq
-(* ---------- 43.6 eauto 与 Hint Constructors：把 evar 塞进搜索机 ---------- *)
+(* ---------- 46.6 eauto 与 Hint Constructors：把 evar 塞进搜索机 ---------- *)
 
 Example eauto_example_no_hint : exists s',
   (Y !-> 1 ; X !-> 2) =[
@@ -701,10 +701,10 @@ Qed.
 先 destruct 再 eapply（silly2_fixed），或 `eassumption`——**assumption 的 evar 版**，
 允许统一时带欠条（silly2_eassumption）；最后 `eauto` 一个词包圆（silly2_eauto）。
 
-### 43.7 congruence：等式关系的判定过程
+### 46.7 congruence：等式关系的判定过程
 
 ```coq
-(* ---------- 43.7 congruence：等式关系的判定过程 ---------- *)
+(* ---------- 46.7 congruence：等式关系的判定过程 ---------- *)
 
 Theorem eq_example1 :
   forall (A B C : Type) (f : A -> B) (g : B -> C) (x : A) (y : B),
@@ -759,13 +759,13 @@ Proof.
 Qed.
 ```
 
-对比 43.4 的 `_find` 版：四个 discriminate 分支被 `try congruence` 收编，只剩两个
+对比 46.4 的 `_find` 版：四个 discriminate 分支被 `try congruence` 收编，只剩两个
 真正要用 IH 的分支。**矛盾检测交给判定过程，归纳结构留给人**。
 
-### 43.8 hint 的作用域：模块内外与 Local
+### 46.8 hint 的作用域：模块内外与 Local
 
 ```coq
-(* ---------- 43.8 hint 的作用域：模块内外与 Local ---------- *)
+(* ---------- 46.8 hint 的作用域：模块内外与 Local ---------- *)
 
 Module HintScope.
 
@@ -815,12 +815,12 @@ Abort.
   是模块私有，Import 之后照样不生效（local_not_exported 失败）。写库给别人用时，
   想 export 的 hint 千万别加 `Local`。
 
-### 43.9 直觉边界：evar 搜索不越经典线
+### 46.9 直觉边界：evar 搜索不越经典线
 
 最后摸硬边界：双否消去 `~~P -> P` 在直觉逻辑里不可证——搜索机再强也不该找到它：
 
 ```coq
-(* ---------- 43.9 直觉边界：evar 搜索不越经典线 ---------- *)
+(* ---------- 46.9 直觉边界：evar 搜索不越经典线 ---------- *)
 
 Example dne_intuitionistic : forall P : Prop, ~~ P -> P.
 Proof.
@@ -861,14 +861,14 @@ classic : forall P : Prop, P \/ ~ P
 要用经典逻辑，就得显式引入并接受公理依赖（和 14 章的结论闭环）。
 
 ```coq
-End Ex43Automation.
+End Ex46Automation.
 ```
 
-### 43.10 本章坑位清单（实测）
+### 46.10 本章坑位清单（实测）
 
 以下每一条都在 rocq 9.3.0 + stdlib 9.2.0 上真实踩过或观测到（报错文本来自 repl）。
 
-1. **`Require Import Classical` 会污染 core 搜索库**（43.9）：文件头引入 Classical 后，
+1. **`Require Import Classical` 会污染 core 搜索库**（46.9）：文件头引入 Classical 后，
    `Fail (solve [eauto])`（~~P -> P）报 `The command has not failed!`——经典引理的
    hint 进了库，"直觉上不可证"的演示全部失效。修法：把 Classical 挪到演示**之后**
    局部引入（本文件的最终形态）。凡是要演示"自动化做不到 X"的实验，先审计 Require 行。
@@ -876,29 +876,31 @@ End Ex43Automation.
    `solve [eauto]` 能成功，但 `eauto. Qed.` 与 `info_eauto. Qed.` 都报
    `Attempt to save an incomplete proof (the proof term is not complete)`——目标被关
    但欠条没还清。这类 evar 型等式目标要么手工 `exists 0`，要么 `Unshelve` 后处理。
-3. **带前提的构造子 hint 只进 eauto**（43.6）：`Hint Constructors ceval` 时 repl 警告
+3. **带前提的构造子 hint 只进 eauto**（46.6）：`Hint Constructors ceval` 时 repl 警告
    `The hint E_Seq will only be used by eauto, because applying E_Seq would leave ...
    unresolved variables`。想让 auto 也用，得保证构造子 apply 后不剩变量（或接受
    只给 eauto 用）。
-4. **9.2 起隐式建 hint 库触发弃用警告**（43.3）：`Hint ... : mydb` 前必须
+4. **9.2 起隐式建 hint 库触发弃用警告**（46.3）：`Hint ... : mydb` 前必须
    `Create HintDb mydb.`（否则 `implicit-create-hint-db` 警告，未来变错误）。
-5. **断言"tactic 不行"要用 `Fail (solve [tac])`**（43.3/43.6/43.9）：`Fail auto.` 在
+5. **断言"tactic 不行"要用 `Fail (solve [tac])`**（46.3/46.6/46.9）：`Fail auto.` 在
    auto 成功时报 `The command has not failed!`；`solve [...]` 把"关掉全部目标"变成
    单个可失败的动作，才是 Fail 的正确对象。
-6. **`info_*` 与原版的输出差异**（43.2/43.6）：`info_auto`/`info_eauto`/`debug auto`
+6. **`info_*` 与原版的输出差异**（46.2/46.6）：`info_auto`/`info_eauto`/`debug auto`
    的轨迹只在 repl/IDE 显示，`rocq compile` 下与安静版行为一致——但个别目标上
    info 版与原版在 evar 处理上有差异（见第 2 条），以实测为准。
-7. **hint 的成本是全局的**（43.3）：`Hint ... : core` 从注册点影响之后所有证明；
-   演示性/实验性 hint 用 `Create HintDb` + `with` 限定，或放进模块管好作用域（43.8）。
-8. **`Local Hint` 不随 Import 导出**（43.8）：写库时想导出的 hint 别加 `Local`；
+7. **hint 的成本是全局的**（46.3）：`Hint ... : core` 从注册点影响之后所有证明；
+   演示性/实验性 hint 用 `Create HintDb` + `with` 限定，或放进模块管好作用域（46.8）。
+8. **`Local Hint` 不随 Import 导出**（46.8）：写库时想导出的 hint 别加 `Local`；
    反过来，模块内部用的 hint 加 `Local` 是礼貌（不污染 import 者的搜索）。
-9. **复合右端赋值在 本章文件 解析异常**（43.5/43.6）：`if ... then Z := Y - X ...`
-   在本章环境实测报 `The term "Y" has type "string" while it is expected to have type
-   "nat"`（右端 `-` 回落主语法），而同样文本在 38–42 章环境正常——根因未定位，
-   规避法：此类语句一律用字面量右端（`Z := 0` / `Y := 3`）。已如实记录，供后来者
-   续查。
-10. **`Fail apply E_Seq` 的报错位置很诚实**（43.5）：`Unable to find an instance for
+9. **赋值记号的 RHS 槽位写法决定它在哪个语法解析**（46.5/46.6）：本章文件第一版把
+   赋值记号写成 `y constr at level 85`——`constr` 限定让右端回落**主语法**解析，
+   `Z := Y - X` 的 `-` 变成 `Nat.sub`，实测报 `The term "Y" has type "string" while
+   it is expected to have type "nat"`；38 章原版是 `y at level 85`（右端在 com 条目
+   内解析，`-` 是 AMinus）。**根因已于 41 章开工时定位并修复**（本章文件与 41 章均已
+   改回 `y at level 85`），修复后复合右端语句即可直接使用；正文保留字面量右端的例子
+   不动。记号槽位多一个 `constr`，语义完全不同——自定义条目的槽位限定要逐字核对。
+10. **`Fail apply E_Seq` 的报错位置很诚实**（46.5）：`Unable to find an instance for
     the variable st'.` 直接点名还不出的变量——看到它就该想到 `with` 或 `eapply`。
 
 ---
-上一章：[42 · Hoare 逻辑](42-hoare.md) ｜ 下一章：[44 · 简单类型 λ 演算](44-stlc.md) ｜ 返回：[README](../README.md)
+上一章：[45 · 霍尔逻辑作为逻辑](45-hoare-logic.md) ｜ 下一章：[47 · 简单类型 λ 演算](47-stlc.md) ｜ 返回：[README](../README.md)

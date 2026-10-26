@@ -3,9 +3,9 @@
 From Stdlib Require Import Arith Bool List Lia Strings.String.
 Import ListNotations.
 
-Module Ex43Automation.
+Module Ex46Automation.
 
-(* ---------- 43.1 语言与大步语义的副本（同 38–42 章） ---------- *)
+(* ---------- 46.1 语言与大步语义的副本（同 38–43 章） ---------- *)
 
 Definition total_map (A : Type) := string -> A.
 
@@ -114,7 +114,7 @@ Inductive com : Type :=
 Notation "'skip'"  := CSkip
   (in custom com at level 0) : com_scope.
 Notation "x := y"  := (CAsgn x y)
-  (in custom com at level 0, x constr at level 0, y constr at level 85, no associativity,
+  (in custom com at level 0, x constr at level 0, y at level 85, no associativity,
     format "x  :=  y") : com_scope.
 Notation "x ; y" := (CSeq x y)
   (in custom com at level 90, right associativity,
@@ -177,7 +177,7 @@ Proof.
     + apply E_Asgn. reflexivity.
 Qed.
 
-(* ---------- 43.2 auto：一台带回溯的深度优先搜索机 ---------- *)
+(* ---------- 46.2 auto：一台带回溯的深度优先搜索机 ---------- *)
 
 Example auto_example_1 : forall (P Q R : Prop),
   (P -> Q) -> (Q -> R) -> P -> R.
@@ -254,7 +254,7 @@ Proof.
   auto using le_antisym.
 Qed.
 
-(* ---------- 43.3 hint 数据库：Resolve / Unfold / Extern 与自有库 ---------- *)
+(* ---------- 46.3 hint 数据库：Resolve / Unfold / Extern 与自有库 ---------- *)
 
 Hint Resolve le_antisym : core.
 
@@ -294,7 +294,7 @@ Proof.
   info_auto with cong.
 Qed.
 
-(* ---------- 43.4 Ltac 入门：把剧本打包成 rwd / find_rwd / find_eqn ---------- *)
+(* ---------- 46.4 Ltac 入门：把剧本打包成 rwd / find_rwd / find_eqn ---------- *)
 
 Ltac rwd H1 H2 := rewrite H1 in H2; discriminate.
 
@@ -374,7 +374,7 @@ Proof.
     auto.
 Qed.
 
-(* ---------- 43.5 eapply 与 evar：先立欠条，后还账 ---------- *)
+(* ---------- 46.5 eapply 与 evar：先立欠条，后还账 ---------- *)
 
 Example ceval_apply_fail :
   empty_st =[
@@ -433,7 +433,7 @@ Proof.
     + apply E_Asgn. reflexivity.
 Qed.
 
-(* ---------- 43.6 eauto 与 Hint Constructors：把 evar 塞进搜索机 ---------- *)
+(* ---------- 46.6 eauto 与 Hint Constructors：把 evar 塞进搜索机 ---------- *)
 
 Example eauto_example_no_hint : exists s',
   (Y !-> 1 ; X !-> 2) =[
@@ -509,7 +509,7 @@ Proof.
   intros P Q HP HQ. destruct HP as [y HP']. eauto.
 Qed.
 
-(* ---------- 43.7 congruence：等式关系的判定过程 ---------- *)
+(* ---------- 46.7 congruence：等式关系的判定过程 ---------- *)
 
 Theorem eq_example1 :
   forall (A B C : Type) (f : A -> B) (g : B -> C) (x : A) (y : B),
@@ -555,7 +555,7 @@ Proof.
     auto.
 Qed.
 
-(* ---------- 43.8 hint 的作用域：模块内外与 Local ---------- *)
+(* ---------- 46.8 hint 的作用域：模块内外与 Local ---------- *)
 
 Module HintScope.
 
@@ -596,7 +596,7 @@ Proof.
   auto.
 Abort.
 
-(* ---------- 43.9 直觉边界：evar 搜索不越经典线 ---------- *)
+(* ---------- 46.9 直觉边界：evar 搜索不越经典线 ---------- *)
 
 Example dne_intuitionistic : forall P : Prop, ~~ P -> P.
 Proof.
@@ -616,4 +616,4 @@ Qed.
 
 Print Assumptions dne_classical.
 
-End Ex43Automation.
+End Ex46Automation.
