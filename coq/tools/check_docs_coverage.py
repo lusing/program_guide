@@ -64,12 +64,16 @@ def check(ex_path, doc_path):
 
 
 def mutate(ex_path, doc_path):
-    """自检：从正文里删掉 3 行被引用的代码，检查器必须把它们报成 missing。"""
+    """自检：从正文里删掉 3 行被引用的代码，检查器必须把它们报成 missing。
+    只挑全文唯一的行当 victim——重复行删一处仍可由兜底匹配兜住，属自检噪声。"""
     doc = coq_lines(doc_path)
-    victims = set(doc[7:10])
-    if len(victims) < 3:
-        print("mutate check skipped: doc has too few coq lines")
+    from collections import Counter
+    counts = Counter(doc)
+    unique = [l for l in doc[7:25] if counts[l] == 1][:3]
+    if len(unique) < 3:
+        print("mutate check skipped: doc has too few unique coq lines")
         return True
+    victims = set(unique)
     raw = doc_path.read_text(encoding="utf-8").split("\n")
     keep, dropped, budget = [], [], 3
     for line in raw:
