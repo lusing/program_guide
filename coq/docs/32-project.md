@@ -155,4 +155,4 @@ Coq：定义 + 定理                    OCaml：编译运行
 5. **想给语言加 if/while**：语法加个构造子容易，求值器加分支也容易——但 while 需要**终止性度量**或改用燃料（第 10 章 10.4），这是 Software Foundations《PLF》卷的入口，本书到此为止。
 
 ---
-上一章：[31 · 自反证明](31-reflection.md) ｜ 下一章：[33 · 映射：把函数当数据结构](33-maps.md) ｜ 返回：[README](../README.md)
+上一章：[31 · 自反证明](31-reflection.md) ｜ 下一章：[33 · 置换与排序推理](33-perm.md) ｜ 返回：[README](../README.md)
