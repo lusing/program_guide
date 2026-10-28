@@ -132,4 +132,4 @@ lemma ultra_exclusive:
 
 上一章：[第 91 章 马丁公理之合理性与迭代力迫](91-martin.md)
 
-下一章：[第 93 章 收官：五书总表与坑位总账](93-cheatsheet.md)
+下一章：[第 93 章 高阶无穷导引：无穷公理的层次](93-higherinfinity.md)

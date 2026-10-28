@@ -63,7 +63,7 @@ if ($Clean) {
 # lean：整工程 + 逐章文件点亮
 $leanDir = Join-Path $examples 'lean'
 $leanChapters = Get-ChildItem (Join-Path $leanDir 'Settheory') -Filter 'Ch*.lean' -ErrorAction SilentlyContinue |
-    ForEach-Object { ($_.BaseName -replace '^Ch(\d\d).*$', '$1') }
+    ForEach-Object { ($_.BaseName -replace '^Ch(\d+).*$', '$1') }
 
 # isabelle：解析 ROOT 得会话（会话名 STNN <-> 章 NN）
 $isaRoot = Join-Path $examples 'isabelle\ROOT'
@@ -86,10 +86,10 @@ function Find-ChannelUnits($sub, $pattern) {
     $d = Join-Path $examples $sub
     if (-not (Test-Path $d)) { return @() }
     Get-ChildItem $d -Filter $pattern -File | ForEach-Object {
-        # NN_*.jl / NN_*.py / NN_*.pl 用两位章号前缀；
+        # NN_*.jl / NN_*.py / NN_*.pl 用完整十进制章号前缀；
         # ChNN_*.v / ChNN_*.agda（模块名不能数字开头）用 Ch 前缀。
-        $ch = if ($_.BaseName -match '^Ch(\d\d)') { $Matches[1] }
-              else { ($_.BaseName -replace '^(\d\d).*$', '$1') }
+        $ch = if ($_.BaseName -match '^Ch(\d+)') { $Matches[1] }
+              else { ($_.BaseName -replace '^(\d+).*$', '$1') }
         [pscustomobject]@{ Chapter = $ch; Path = $_.FullName }
     }
 }
@@ -212,7 +212,7 @@ if ($wantLangs -contains 'julia') {
         if (-not (Test-ChapterWanted $u.Chapter)) { continue }
         Write-Host "[julia] $($u.Path)"
         $out = & julia --startup-file=no $u.Path 2>&1 | Out-String
-        $ok = ($LASTEXITCODE -eq 0 -and $out -match "==== $($u.Chapter)" -and $out -match 'END ====')
+        $ok = ($LASTEXITCODE -eq 0 -and $out -match "(?m)^==== $($u.Chapter)(?![0-9])" -and $out -match 'END ====')
         Add-Result $u.Chapter 'julia' (Split-Path -Leaf $u.Path) $ok ($out -split "`n" | Select-Object -Last 5)
         if (-not $ok) { Write-Host $out }
     }
@@ -225,7 +225,7 @@ if ($wantLangs -contains 'python') {
         if (-not (Test-ChapterWanted $u.Chapter)) { continue }
         Write-Host "[python] $($u.Path)"
         $out = & $pyExe -I $u.Path 2>&1 | Out-String
-        $ok = ($LASTEXITCODE -eq 0 -and $out -match "==== $($u.Chapter)" -and $out -match 'END ====')
+        $ok = ($LASTEXITCODE -eq 0 -and $out -match "(?m)^==== $($u.Chapter)(?![0-9])" -and $out -match 'END ====')
         Add-Result $u.Chapter 'python' (Split-Path -Leaf $u.Path) $ok ($out -split "`n" | Select-Object -Last 5)
         if (-not $ok) { Write-Host $out }
     }
