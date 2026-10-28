@@ -6,7 +6,7 @@ Set Warnings "-extraction-opaque-accessed,-extraction".
 Set Warnings "-notation-overridden,-parsing".
 
 From QuickChick Require Import QuickChick.
-From Stdlib Require Import List. Import ListNotations.
+From Stdlib Require Import List Arith. Import ListNotations.
 
 Module Ex74Deriving.
 
@@ -43,10 +43,6 @@ QCDerive EnumSized for Tree.
 
 Definition genTreeNat : G (Tree nat) := arbitrary.
 
-Sample genTreeNat.
-(* 形如 [Leaf, Node 2 Leaf (Node 5 Leaf Leaf), Leaf, ...]
-   —— 尺寸由 QuickChick 的 size 参数控制 *)
-
 (* 测试含等式的性质还需布尔相等：Dec_Eq 实例用库提供的 dec_eq 策略
    一行构造（注意用 Defined 而非 Qed 收尾，实例需要可计算）。 *)
 
@@ -64,24 +60,27 @@ Fixpoint mirror {A : Type} (t : Tree A) : Tree A :=
 Definition faulty_mirrorP (t : Tree nat) :=
   mirror t = t?.
 
-QuickChick faulty_mirrorP.
-(* *** Failed after 若干次测试与收缩，反例为左右不对称的小树，
-   形如 Node 0 (Node 0 Leaf Leaf) Leaf —— 派生的 ShrinkTree 会把
-   反例自动收缩到接近最小。 *)
-
-(* Arbitrary 也可一步派生（= GenSized + Shrink 两条命令的合体）。
-   注意：对同一类型不要既分别派生 GenSized/Shrink 又派生 Arbitrary，
-   否则同名实例重复定义会报错——Tree 上面已分别派生过，
-   故这里换一个小类型演示。 *)
+(* Arbitrary 可一步派生（QCDerive Arbitrary = GenSized + Shrink 两条
+   命令的合体）；但为了和上面 Tree 的逐条演示呼应、也为了能单独引用
+   GenSizedshape，这里照 Tree 的模式分步派生，Arbitrary 由库的
+   ArbitraryOfGenShrink 实例自动桥接——arbitrary / shrink / show 都可用。
+   另注意：对同一类型不要既分别派生 GenSized/Shrink 又派生 Arbitrary，
+   同名实例重复定义会报错。 *)
 
 Inductive shape := Point | Seg | Tri.
 
-QCDerive Arbitrary for shape.
-(* ==> GenSizedshape is defined
-   ==> Shrinkshape is defined *)
+QCDerive Show for shape.
+(* ==> Showshape is defined —— Sample 打印样本靠它；缺 Show 实例时
+   QuickChick 2.2 不报友好错误，而是触发 Rocq 异常 evar in typeops，
+   排查时先想想被 Sample 的类型有没有 Show。 *)
 
-Sample (arbitrary : G shape).
-(* 形如 [Seg, Point, Tri, Point, ...] *)
+QCDerive GenSized for shape.
+(* ==> GenSizedshape is defined *)
+
+QCDerive Shrink for shape.
+(* ==> Shrinkshape is defined *)
+
+Definition genShape : G shape := arbitrary.
 
 (* ---------- 74.2 派生代码的工作原理 ---------- *)
 
@@ -167,10 +166,6 @@ Check GenSizedSuchThatbalanced.
    genST P 调用 arbitraryST（GenSuchThat 类）——全局实例
    GenSuchThatOfBounded 会用 sized arbitrarySizeST 自动合成后者。 *)
 
-Sample (genST (fun t => balanced 1 t)).
-(* 形如 [Some Leaf; Some (Node 5 Leaf Leaf); Some (Node 0 Leaf Leaf); ...]
-   —— Leaf 与单节点树都满足 balanced 1 *)
-
 (* 健全性自检：对随机 n，派生生成的树都应通过派生检查器；
    forAllMaybe 把生成失败的 None 记为一次丢弃而非失败。 *)
 
@@ -179,9 +174,6 @@ Definition prop_gen_balanced_is_balanced :=
   forAll (choose (0,5)) (fun (n : nat) =>
   forAllMaybe (genSizedST (fun t => balanced n t) fuel) (fun (t : Tree nat) =>
     balanced n t ?? fuel)).
-
-QuickChick prop_gen_balanced_is_balanced.
-(* ==> +++ Passed 10000 tests (0 discards) *)
 
 (* 同一关系还可派生枚举器：EnumSizedSuchThat 提供
    enumSizeST : nat -> E (option A)，系统枚举而非随机采样。 *)
@@ -222,10 +214,6 @@ Eval compute in (sortedI [3; 1] ?? 10).
 QCDerive ArbitrarySizedSuchThat for (fun l => sortedI l).
 (* ==> GenSizedSuchThatsortedI is defined *)
 
-Sample (genST (fun l => sortedI l)).
-(* 形如 [Some []; Some [4]; Some [1; 1; 6; 9]; ...]
-   —— 每个 Some 里都是有序列表 *)
-
 (* 73 章用 ==> 测「insert 保持有序」时，随机列表几乎全无序，
    前提恒假导致大面积丢弃。现在让派生生成器直接产出满足前提的输入： *)
 
@@ -239,9 +227,6 @@ Definition prop_insert_keeps_sorted (x : nat) :=
   let fuel := 10 in
   forAllMaybe (genSizedST (fun l => sortedI l) fuel) (fun l =>
     sortedI (insert x l) ?? fuel).
-
-QuickChick prop_insert_keeps_sorted.
-(* ==> +++ Passed 10000 tests (0 discards) *)
 
 (* ---------- 74.5 练习解答：三叉树镜像 bug（原书 QC.v 练习的派生版） ---------- *)
 
@@ -310,11 +295,6 @@ Fixpoint tern_mirror (t : TernaryTree) : TernaryTree :=
 Definition tern_mirror_path_flip (t : TernaryTree) (p : list direction) :=
   traverse_path (map flip p) (tern_mirror t) = tern_mirror (traverse_path p t)?.
 
-QuickChick tern_mirror_path_flip.
-(* *** Failed —— 反例必含 Middle：只有路径走进中间子树时 bug 才显形。
-   注意派生的 Shrinkdirection 对零元构造子一律给 []（见 74.2），
-   收缩不会把 Middle 换成 Left——方向上的收缩想更聪明需手写 Shrink。 *)
-
 (* 修复：中间子树也递归镜像，回归测试通过。 *)
 
 Fixpoint tern_mirror_fixed (t : TernaryTree) : TernaryTree :=
@@ -328,7 +308,47 @@ Definition tern_mirror_path_flip_fixed (t : TernaryTree) (p : list direction) :=
   traverse_path (map flip p) (tern_mirror_fixed t)
   = tern_mirror_fixed (traverse_path p t)?.
 
-QuickChick tern_mirror_path_flip_fixed.
+End Ex74Deriving.
+
+(* 测试命令统一放在模块外：QuickChick 2.2 的抽取管线对模块内
+   上下文生成的 OCaml 引用缺少模块限定，会报 Unbound value
+   quickchick；命令放到模块外、Import 定义之后则一切正常。
+   QCDerive 派生命令本身不走抽取，留在模块内即可。 *)
+
+Import Ex74Deriving.
+
+Sample genTreeNat.
+(* 形如 [Leaf, Node 2 Leaf (Node 5 Leaf Leaf), Leaf, ...]
+   —— 尺寸由 QuickChick 的 size 参数控制 *)
+
+QuickChick faulty_mirrorP.
+(* *** Failed after 若干次测试与收缩，反例为左右不对称的小树，
+   形如 Node 0 (Node 0 Leaf Leaf) Leaf —— 派生的 ShrinkTree 会把
+   反例自动收缩到接近最小。 *)
+
+Sample genShape.
+(* 形如 [Seg, Point, Tri, Point, ...]
+   （生成器先用 Definition 具名：直接对内联的 arbitrary 表达式 Sample
+   会触发 Rocq 编译器异常 evar in typeops，见 72 章同类记录。） *)
+
+Sample (genST (fun t => balanced 1 t)).
+(* 形如 [Some Leaf; Some (Node 5 Leaf Leaf); Some (Node 0 Leaf Leaf); ...]
+   —— Leaf 与单节点树都满足 balanced 1 *)
+
+QuickChick prop_gen_balanced_is_balanced.
 (* ==> +++ Passed 10000 tests (0 discards) *)
 
-End Ex74Deriving.
+Sample (genST (fun l => sortedI l)).
+(* 形如 [Some []; Some [4]; Some [1; 1; 6; 9]; ...]
+   —— 每个 Some 里都是有序列表 *)
+
+QuickChick prop_insert_keeps_sorted.
+(* ==> +++ Passed 10000 tests (0 discards) *)
+
+QuickChick tern_mirror_path_flip.
+(* *** Failed —— 反例必含 Middle：只有路径走进中间子树时 bug 才显形。
+   注意派生的 Shrinkdirection 对零元构造子一律给 []（见 74.2），
+   收缩不会把 Middle 换成 Left——方向上的收缩想更聪明需手写 Shrink。 *)
+
+QuickChick tern_mirror_path_flip_fixed.
+(* ==> +++ Passed 10000 tests (0 discards) *)

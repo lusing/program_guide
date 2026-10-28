@@ -21,8 +21,8 @@ coq/
 ├── README.md        本文件
 ├── build.ps1        编译验证脚本（PowerShell）
 ├── build.sh         编译验证脚本（macOS / Linux，用法同 build.ps1）
-├── docs/            67 章教程（01 → 45 顺序阅读）
-├── examples/        66 个 .v 示例（章号 = 示例编号，01–67）
+├── docs/            75 章教程（01 → 76 顺序阅读，66 空缺）
+├── examples/        74 个 .v 示例（章号 = 示例编号，01–76，66/68 空缺）
 ├── tools/           文档核查脚本（check_docs_coverage.py）
 └── build/           编译输出（已 gitignore）
 ```
@@ -98,6 +98,14 @@ coq/
 | [65 STLC 规范化](docs/65-normalization.md) | 良类型 ⟹ 强终止、Cantor 式归纳 | `65_normalization.v` |
 | [67 引用与副作用](docs/67-references.md) | store、位置类型、引用安全 | `67_references.v` |
 | [68 坑清单与最佳实践](docs/68-pitfalls.md) | 110+ 条实测坑位与最佳实践总清单 | — |
+| [69 属性测试入门：QuickChick](docs/69-quickstart.md) | PBT 定位、removeP 反例与收缩、四要素 | `69_quickstart.v` |
+| [70 类型类机制](docs/70-typeclasses.md) | Class/Instance、隐式推广、实例搜索、Monad | `70_typeclasses.v` |
+| [71 随机生成器：G 单子](docs/71-generators.md) | returnGen/bind、choose、尺寸燃料、freq | `71_generators.v` |
+| [72 可检查性质与收缩](docs/72-checkers.md) | Checker/Checkable、forAll、贪心收缩、collect | `72_checkers.v` |
+| [73 条件性质与按规格生成](docs/73-conditional.md) | `==>` 与 discard 风暴、genSortedList、BST | `73_conditional.v` |
+| [74 QCDerive 自动派生](docs/74-deriving.md) | Show/Arbitrary/Shrink/SuchThat/DecOpt 派生 | `74_deriving.v` |
+| [75 案例：带类型的 Imp 的程序生成](docs/75-timp.md) | 按类型生成、backtrack、类型保持收缩 | `75_timp.v` |
+| [76 quickchick 命令行与变异测试](docs/76-cli.md) | `(*! *)` 注解、变异测试、mutant 生死 | `76_cli.v` |
 
 学习路线：01–05 语言与基本证明 → 06–10 数据建模（元组/匹配/列表/归纳/
 递归）→ 11–15 证明技法主线（归纳/重写/逻辑）→ 16–18 高阶与工程化 →
@@ -107,16 +115,22 @@ coq/
 多重集 → 可判定 → BST → 抽取 → 红黑树 → ADT → 优先队列 → 二项式堆 →
 Trie → Bag → 四色）** → **48–67 语言理论篇（映射 → 归纳原则 → 关系 → 记号 →
 Imp 三种语义 → 行为等价 → 解析 → Hoare 三连 → 自动化 → STLC → 类型检查 →
-子类型 → 规范化 → 引用）** → 68 坑清单（写代码前先查）。
+子类型 → 规范化 → 引用）** → 68 坑清单（写代码前先查）→ **69–76 属性测试篇
+（QuickChick：入门 → 类型类 → 生成器 → 检查器与收缩 → 条件性质 → 自动派生
+→ TImp 案例 → 命令行与变异测试）**。
 
 19–20 与 26–31 八章为 2026-09 按经典教材《交互式定理证明与程序开发：
 Coq 归纳构造演算的艺术》（Bertot & Casteran，中译本）扩充的「书本篇」；
 33–47 章为 2026-10 按 _Software Foundations_ 第三卷 _Verified Functional
 Algorithms_ 扩充的「验证算法篇」；48–67 章为 2026-10 按 _Software
-Foundations_（LF 卷 + PLF 卷精选）扩充的「语言理论篇」；三部分内容均已
-自包含提炼，无需翻阅原书。2026-10 起全书按
+Foundations_（LF 卷 + PLF 卷精选）扩充的「语言理论篇」；69–76 章为 2026-10
+按 _Software Foundations_ 第四卷 _QuickChick: Property-Based Testing in
+Rocq_（v2.1）扩充的「属性测试篇」（QuickChick 2.2.0，`Derive` 已更名
+`QCDerive`，测试命令置于模块外执行）；各部分内容均已自包含提炼，无需翻阅
+原书。2026-10 起全书按
 [Rocq 9.2.0 参考手册](https://rocq-prover.org/doc/V9.2.0/refman/index.html)
-校准，现以 rocq 9.3.0 + stdlib 9.2.0 实测复验（早期环境为 Coq 8.20.1）。
+校准，现以 rocq 9.3.0 + stdlib 9.2.0 实测复验（早期环境为 Coq 8.20.1）；
+属性测试篇以 rocq 9.1.1 + QuickChick 2.2.0 实测。
 
 ## 工具链
 
@@ -150,12 +164,14 @@ chmod +x build.sh
 ./build.sh -Clean                      # 清理 build/
 ```
 
-**判定标准**：全部 66 个示例 `rocq compile` 退出码 0；
+**判定标准**：全部 74 个示例 `rocq compile` 退出码 0；
 `python3 tools/check_docs_coverage.py NN --mutate` 对语言理论篇各章
-（33–67）报 missing 0 且 mutate 自检通过（正文必须引用示例的每一行代码；
-01–32 章为早期体例，不在此关卡内）。`32_project.v` 的
-`Recursive Extraction` 会向输出打印抽取的 OCaml 代码，全量编译耗时略长
-属正常。
+（33–67）与属性测试篇各章（69–76）报 missing 0 且 mutate 自检通过
+（正文必须引用示例的每一行代码；01–32 章为早期体例，不在此关卡内）。
+`32_project.v` 的 `Recursive Extraction` 会向输出打印抽取的 OCaml 代码；
+69–76 章的 `QuickChick`/`Sample` 命令在编译时抽取 OCaml 并当场运行随机
+测试（性质被证伪不影响退出码，需看输出中的 Passed/Failed），全量编译
+耗时略长属正常。
 
 ## 平台差异说明
 

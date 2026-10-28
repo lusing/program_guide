@@ -67,15 +67,10 @@ Fixpoint optimize (e : exp) : exp :=
 Definition optimize_correct_prop (e : exp) := eval (optimize e) = eval e?.
 
 (*! QuickChick optimize_correct_prop. *)
-
-QuickChick optimize_correct_prop.
-(* +++ Passed 10000 tests (0 discards)。这行是内嵌执行：每条 QuickChick 命令各自
-   触发一次抽取并当场编译运行；上方注解则把同名性质登记给 quickChick CLI，由它
-   汇总成单次抽取批量执行。内嵌命令允许匿名性质，注解必须具名——下一行内嵌
-   命令合法，却写不成注解： *)
-
-QuickChick (fun e => eval (optimize e) = eval e?).
-(* 同样 +++ Passed 10000 tests (0 discards) *)
+(* 注解把同名性质登记给 quickChick CLI；内嵌的执行版命令统一放在文件
+   末尾的执行区（模块外）——每条 QuickChick 命令各自触发一次抽取并
+   当场编译运行。内嵌命令允许匿名性质，注解必须具名——执行区最后
+   一条内嵌命令合法，却写不成注解。 *)
 
 (* ---------- 76.3 Stack：栈机、编译器填空作业与被抓个正着的新手错误 ---------- *)
 
@@ -112,14 +107,6 @@ Fixpoint compile (e : exp) : list sinstr :=
 
 Definition compiles_correctly (e : exp) := (execute [] (compile e)) = [eval e]?.
 
-QuickChick compiles_correctly.
-(* 一次实测（随机测试，数字每次会变）：
-     AMinus (ANum 0) (ANum 1)
-     *** Failed after 3 tests and 2 shrinks. (0 discards)
-   反例 e = 0 - 1：Rookie 版编译出 [SPush 0; SPush 1; SMinus]，SMinus 从栈顶
-   依次弹出 m=1、n=0，算得 1-0=1；而 eval (0-1) = 0。减法不交换——「左操作数
-   先压栈」让它沉入栈底，弹出时左右颠倒。 *)
-
 End StackRookie.
 
 (* ---------- 76.4 修复并记档：正确代码做 base，踩过的坑做成 mutant ---------- *)
@@ -148,12 +135,35 @@ Fixpoint compile (e : exp) : list sinstr :=
 Definition compiles_correctly (e : exp) := (execute [] (compile e)) = [eval e]?.
 
 (*! QuickChick compiles_correctly. *)
-
-QuickChick compiles_correctly.
-(* +++ Passed 10000 tests (0 discards)：修复后回归通过。变异测试的验收标准随之
-   反转——mutant「Wrong associativity」在这条性质下必须失败：被杀死才说明性质
-   灵敏；quickChick 的 -m 与 -tag 就是逐个验收 mutant 的开关。 *)
+(* 修复后回归通过（执行区验证）；变异测试的验收标准随之反转——mutant
+   「Wrong associativity」在这条性质下必须失败：被杀死才说明性质灵敏；
+   quickChick 的 -m 与 -tag 就是逐个验收 mutant 的开关。 *)
 
 End StackFixed.
 
 End Ex76Cli.
+
+(* 内嵌执行命令统一放在模块外：QuickChick 2.2 的抽取管线对模块内
+   上下文生成的 OCaml 引用缺少模块限定，会报 Unbound value
+   quickchick；命令放到模块外、引用模块内容则一切正常。
+   StackRookie 与 StackFixed 里的 compiles_correctly 重名，
+   用全限定名区分。 *)
+
+Import Ex76Cli.
+
+QuickChick optimize_correct_prop.
+(* +++ Passed 10000 tests (0 discards)。 *)
+
+QuickChick (fun e => eval (optimize e) = eval e?).
+(* 同样 +++ Passed 10000 tests (0 discards)。 *)
+
+QuickChick StackRookie.compiles_correctly.
+(* 一次实测（随机测试，数字每次会变）：
+     AMinus (ANum 0) (ANum 1)
+     *** Failed after 3 tests and 2 shrinks. (0 discards)
+   反例 e = 0 - 1：Rookie 版编译出 [SPush 0; SPush 1; SMinus]，SMinus 从栈顶
+   依次弹出 m=1、n=0，算得 1-0=1；而 eval (0-1) = 0。减法不交换——「左操作数
+   先压栈」让它沉入栈底，弹出时左右颠倒。 *)
+
+QuickChick StackFixed.compiles_correctly.
+(* +++ Passed 10000 tests (0 discards)：修复后回归通过。 *)

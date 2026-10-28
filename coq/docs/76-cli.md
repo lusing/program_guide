@@ -1,6 +1,6 @@
 # 76 · quickchick 命令行与变异测试
 
-对应示例：`../examples/76_cli.v`（`Module Ex76Cli`）
+对应示例：`../examples/76_cli.v`（`Module Ex76Cli`，rocq 9.1 + QuickChick 2.2.0 实测编译退出码 0）
 
 属性测试篇的收官章。69 章入门、70 章类型类、71 章生成器、72 章可检查性质、
 73 章条件性质、74 章 `QCDerive`、75 章综合案例，一路的工作方式都是：把
@@ -197,15 +197,10 @@ Fixpoint optimize (e : exp) : exp :=
 Definition optimize_correct_prop (e : exp) := eval (optimize e) = eval e?.
 
 (*! QuickChick optimize_correct_prop. *)
-
-QuickChick optimize_correct_prop.
-(* +++ Passed 10000 tests (0 discards)。这行是内嵌执行：每条 QuickChick 命令各自
-   触发一次抽取并当场编译运行；上方注解则把同名性质登记给 quickChick CLI，由它
-   汇总成单次抽取批量执行。内嵌命令允许匿名性质，注解必须具名——下一行内嵌
-   命令合法，却写不成注解： *)
-
-QuickChick (fun e => eval (optimize e) = eval e?).
-(* 同样 +++ Passed 10000 tests (0 discards) *)
+(* 注解把同名性质登记给 quickChick CLI；内嵌的执行版命令统一放在文件
+   末尾的执行区（模块外）——每条 QuickChick 命令各自触发一次抽取并
+   当场编译运行。内嵌命令允许匿名性质，注解必须具名——执行区最后
+   一条内嵌命令合法，却写不成注解。 *)
 ```
 
 测试注解 `(*! QuickChick optimize_correct_prop. *)` 把这条性质登记给命令行工
@@ -306,18 +301,11 @@ Fixpoint compile (e : exp) : list sinstr :=
   end.
 
 Definition compiles_correctly (e : exp) := (execute [] (compile e)) = [eval e]?.
-
-QuickChick compiles_correctly.
-(* 一次实测（随机测试，数字每次会变）：
-     AMinus (ANum 0) (ANum 1)
-     *** Failed after 3 tests and 2 shrinks. (0 discards)
-   反例 e = 0 - 1：Rookie 版编译出 [SPush 0; SPush 1; SMinus]，SMinus 从栈顶
-   依次弹出 m=1、n=0，算得 1-0=1；而 eval (0-1) = 0。减法不交换——「左操作数
-   先压栈」让它沉入栈底，弹出时左右颠倒。 *)
 ```
 
 正确性性质是「编译保持语义」：从空栈执行编译结果，应得到恰一个元素的栈，且
-该元素就是 `eval e`。`QuickChick` 当场证伪，3 次测试、2 次收缩就拿到最小反例
+该元素就是 `eval e`。执行区的 `QuickChick StackRookie.compiles_correctly`
+当场证伪，3 次测试、2 次收缩就拿到最小反例
 `AMinus (ANum 0) (ANum 1)`。顺手留一道口头练习：不跑 QuickChick，能看出 bug
 吗？答案藏在**减法不交换**里：`APlus`/`AMult` 是可交换的，两个分支怎么压栈
 都对；唯独 `AMinus` 会让左右操作数颠倒——所以失败的恰好是减法。
@@ -358,11 +346,9 @@ Fixpoint compile (e : exp) : list sinstr :=
 Definition compiles_correctly (e : exp) := (execute [] (compile e)) = [eval e]?.
 
 (*! QuickChick compiles_correctly. *)
-
-QuickChick compiles_correctly.
-(* +++ Passed 10000 tests (0 discards)：修复后回归通过。变异测试的验收标准随之
-   反转——mutant「Wrong associativity」在这条性质下必须失败：被杀死才说明性质
-   灵敏；quickChick 的 -m 与 -tag 就是逐个验收 mutant 的开关。 *)
+(* 修复后回归通过（执行区验证）；变异测试的验收标准随之反转——mutant
+   「Wrong associativity」在这条性质下必须失败：被杀死才说明性质灵敏；
+   quickChick 的 -m 与 -tag 就是逐个验收 mutant 的开关。 *)
 
 End StackFixed.
 
@@ -421,6 +407,44 @@ All tests produced the expected results
 
 对 75 章那样带类型语言的生成与性质套件，这套反向考核同样适用：生成器与性质
 写得越精心，越值得用 mutant 验一验成色。
+
+
+## 76.5 测试执行区：命令为何在模块外
+
+```coq
+(* 内嵌执行命令统一放在模块外：QuickChick 2.2 的抽取管线对模块内
+   上下文生成的 OCaml 引用缺少模块限定，会报 Unbound value
+   quickchick；命令放到模块外、引用模块内容则一切正常。
+   StackRookie 与 StackFixed 里的 compiles_correctly 重名，
+   用全限定名区分。 *)
+
+Import Ex76Cli.
+
+QuickChick optimize_correct_prop.
+(* +++ Passed 10000 tests (0 discards)。 *)
+
+QuickChick (fun e => eval (optimize e) = eval e?).
+(* 同样 +++ Passed 10000 tests (0 discards)。 *)
+
+QuickChick StackRookie.compiles_correctly.
+(* 一次实测（随机测试，数字每次会变）：
+     AMinus (ANum 0) (ANum 1)
+     *** Failed after 3 tests and 2 shrinks. (0 discards)
+   反例 e = 0 - 1：Rookie 版编译出 [SPush 0; SPush 1; SMinus]，SMinus 从栈顶
+   依次弹出 m=1、n=0，算得 1-0=1；而 eval (0-1) = 0。减法不交换——「左操作数
+   先压栈」让它沉入栈底，弹出时左右颠倒。 *)
+
+QuickChick StackFixed.compiles_correctly.
+(* +++ Passed 10000 tests (0 discards)：修复后回归通过。 *)
+```
+
+与前几章相同的结构约定（69 章 69.5 节详述）：定义住在模块里，内嵌执行命令
+统一放模块外。执行区四条命令对应本章三个教学时刻：`optimize_correct_prop`
+与它的匿名孪生（说明注解必须具名）、`StackRookie.compiles_correctly`
+（新手错误被 3 次测试 2 步收缩揭穿）、`StackFixed.compiles_correctly`
+（修复后 10000 次全过）。两个 `compiles_correctly` 重名，用子模块全限定名
+区分。注意这四条**只是编译期自检**；真正把注解组织起来批量执行、逐个考核
+mutant 的是 `quickChick` 命令行（76.0 与 76.6 节的 shell 演示）。
 
 ### 76.5 注解语法速查
 

@@ -6,16 +6,13 @@
 Set Warnings "-extraction-opaque-accessed,-extraction".
 Set Warnings "-notation-overridden,-parsing".
 
-From QuickChick Require Import QuickChick.
-From Stdlib Require Import List. Import ListNotations.
-From ExtLib.Structures Require Import Monads. Import MonadNotation.
-Import QcNotation.
+From QuickChick Require Import QuickChick. Import QcNotation.
+From Stdlib Require Import Arith Bool List ZArith. Import ListNotations.
+Require Export ExtLib.Structures.Monads.
+Export MonadNotation. Open Scope monad_scope.
+From Stdlib Require Import String. Local Open Scope string.
 
 Module Ex72Checkers.
-
-Open Scope qc_scope.
-Open Scope monad_scope.
-Local Open Scope string.
 
 (* ---------- 72.1 舞台素材：沿用 71 章的树与小性质 ---------- *)
 
@@ -40,12 +37,16 @@ Arguments Leaf {A}.
 Arguments Node {A} _ _ _.
 
 #[export] Instance showTree {A} `{_ : Show A} : Show (Tree A) :=
-{| show := showTreeAux |}
-where showTreeAux := fix aux (t : Tree A) : string :=
-  match t with
-  | Leaf => "Leaf"
-  | Node x l r => "Node (" ++ show x ++ ") (" ++ aux l ++ ") (" ++ aux r ++ ")"
-  end.
+  {| show := let fix aux t :=
+       match t with
+         | Leaf => "Leaf"
+         | Node x l r =>
+             "Node (" ++ show x ++ ") ("
+                      ++ aux l ++ ") ("
+                      ++ aux r ++ ")"
+       end
+     in aux
+  |}.
 
 Fixpoint genTreeSized {A} (sz : nat) (g : G A) : G (Tree A) :=
   match sz with
@@ -69,23 +70,12 @@ Fixpoint mirror {A : Type} (t : Tree A) : Tree A :=
   | Node x l r => Node x (mirror r) (mirror l)
   end.
 
-Fixpoint eq_dec_tree (t1 t2 : Tree nat) : {t1 = t2} + {t1 <> t2} :=
-  match t1, t2 with
-  | Leaf, Leaf => left eq_refl
-  | Node x1 l1 r1, Node x2 l2 r2 =>
-      if eq_dec x1 x2
-      then if eq_dec_tree l1 l2
-           then if eq_dec_tree r1 r2 then left _ else right _
-           else right _
-      else right _
-  | _, _ => right _
-  end.
+#[export] Instance eq_dec_tree (t1 t2 : Tree nat) : Dec (t1 = t2).
+Proof. constructor; dec_eq. Defined.
 
-Definition mirrorP {A} `{_ : Dec_Eq A} (t : Tree A) :=
-  mirror (mirror t) = t?.
+Definition mirrorP (t : Tree nat) := (mirror (mirror t)) = t?.
 
-Definition faultyMirrorP (t: Tree nat) :=
-  mirror t = t?.
+Definition faultyMirrorP (t : Tree nat) := (mirror t) = t ?.
 
 (* ---------- 72.2 CheckerPlayground1：Checker = G Result ---------- *)
 
@@ -98,7 +88,9 @@ Module CheckerPlayground1.
 Inductive Result := Success | Failure.
 
 #[export] Instance showResult : Show Result :=
-{| show r := match r with Success => "Success" | Failure => "Failure" end |}.
+  {
+    show r := match r with Success => "Success" | Failure => "Failure" end
+  }.
 
 Definition Checker := G Result.
 
@@ -110,19 +102,9 @@ Class Checkable (A : Type) : Type :=
   { checker : A -> Checker }.
 
 #[export] Instance checkableBool : Checkable bool :=
-  {| checker b := if b then ret Success else ret Failure |}.
-
-(* Sample 抽取运行这个迷你 Checker：随机种子不影响常生成器，
-   所以 (checker true) 每次都打印 11 个 Success，
-   (checker false) 每次都打印 11 个 Failure。 *)
-Sample (checker true).
-(* 形如：
-   [Success, Success, Success, Success, Success, Success, Success,
-    Success, Success, Success, Success] *)
-Sample (checker false).
-(* 形如：
-   [Failure, Failure, Failure, Failure, Failure, Failure, Failure,
-    Failure, Failure, Failure, Failure] *)
+  {
+    checker b := if b then ret Success else ret Failure
+  }.
 
 End CheckerPlayground1.
 
@@ -136,23 +118,17 @@ Module CheckerPlayground2.
 Export CheckerPlayground1.
 
 #[export] Instance checkableDec `{P : Prop} `{Dec P} : Checkable P :=
-  {| checker p := if P? then ret Success else ret Failure |}.
+  {
+    checker p := if P? then ret Success else ret Failure
+  }.
 
 (* 两个"猜想"：用 Conjecture 假设命题成立，QuickChick 来验算。
    Prop 在提取时被擦除，所以 checker c1 运行的是判定过程 0 = 42?，
    而不是去评估公理本身 —— 提取是安全的。 *)
 
 Conjecture c1 : 0 = 42.
-Conjecture c2 : 41 + 1 = 42.
 
-Sample (checker c1).
-(* 形如：
-   [Failure, Failure, Failure, Failure, Failure, Failure, Failure,
-    Failure, Failure, Failure, Failure] *)
-Sample (checker c2).
-(* 形如：
-   [Success, Success, Success, Success, Success, Success, Success,
-    Success, Success, Success, Success] *)
+Conjecture c2 : 41 + 1 = 42.
 
 End CheckerPlayground2.
 
@@ -178,80 +154,64 @@ Definition forAll {A B : Type} `{Checkable B} (g : G A) (f : A -> B)
   a <- g ;;
   checker (f a).
 
-Sample (forAll genColor isRed).
-(* 形如（红黄蓝绿等概率出现，isRed 只在 Red 上为真）：
-   [Failure, Failure, Failure, Failure, Failure, Success, Failure,
-    Failure, Success, Failure, Failure] *)
-
-Sample (forAll (genTreeSized 3 (choose (0, 3))) mirrorP).
-(* 形如：11 个 Success（镜像两次必复原） *)
-
-Sample (forAll (genTreeSized 3 (choose (0, 3))) faultyMirrorP).
-(* 形如（Success 与 Failure 混杂，只有对称树通过）：
-   [Success, Failure, Success, Failure, Success, Failure, Success,
-    Success, Success, Success, Failure] *)
-
 End CheckerPlayground3.
 
 (* ---------- 72.5 CheckerPlayground4：失败时打印反例 ---------- *)
 
 (* 第三间游乐场的失败只报 Failure，不知道输在哪。
-   第四间让 Failure 携带反例的字符串表示：
-   这需要生成侧的 A 有 Show 实例，但 Show 只用于打印，
-   提取后生成的 OCaml 代码不会用到被测性质里的 Show 信息。 *)
+   第四间让 Failure 携带反例本身：Failure 变成依赖构造子，
+   打包"任意可打印的值"。bool / Dec 检查器没有有用信息可记，
+   就拿 unit 的唯一居民 tt 当"失败原因"占位。 *)
 
 Module CheckerPlayground4.
 
 Export CheckerPlayground2.
 
 Inductive Result :=
-| Success : Result
-| Failure : forall {A} `{Show A}, A -> Result.
+  | Success : Result
+  | Failure : forall {A} `{Show A}, A -> Result.
 
 #[export] Instance showResult : Show Result :=
-{| show r := match r with Success => "Success" | Failure _ _ a => show a end |}.
+  {
+    show r := match r with
+                Success => "Success"
+              | Failure a => "Failure: " ++ show a
+              end
+  }.
 
 Definition Checker := G Result.
 
 Class Checkable (A : Type) : Type :=
   { checker : A -> Checker }.
 
+#[export] Instance showUnit : Show unit :=
+  {
+    show u := "tt"
+  }.
+
 #[export] Instance checkableBool : Checkable bool :=
-{| checker b := if b then ret Success else ret Failure |}.
+  {
+    checker b := if b then ret Success else ret (Failure tt)
+  }.
 
 #[export] Instance checkableDec `{P : Prop} `{Dec P} : Checkable P :=
-{| checker p := if P? then ret Success else ret Failure |}.
+  {
+    checker p := if P? then ret Success else ret (Failure tt)
+  }.
 
-#[export] Instance showUnit : Show unit :=
-{| show u := "tt" |}.
-
-(* 关键技巧：采样 a 后，把 (a, tt) 打包再包一层 checker。
-   成功时无妨（showUnit 打印 tt），失败时 Failure 携带的就是
-   反例 a 本身 —— pair 的 Show 实例会把 a 打印出来。 *)
+(* 关键改动在 forAll：先采样 a、再检查 f a 得到 r，
+   失败时不是丢掉 a，而是把 (a, b) 打包进新的 Failure ——
+   a 是让性质失败的输入，b 是失败原因。多个 forAll 连用时，
+   反例会累积成嵌套的元组，一层都不丢。 *)
 
 Definition forAll {A B : Type} `{Show A} `{Checkable B}
                   (g : G A) (f : A -> B) : Checker :=
   a <- g ;;
-  checker (f a, tt).
-
-Sample (forAll genColor isRed).
-(* 形如：失败项里直接带着反例颜色
-   [Failure (Blue, tt), Failure (Red? 不一定) …… 实为
-    Failure (Blue, tt), Failure (Yellow, tt), Success, Failure (Green, tt), …] *)
-
-Sample (forAll (genTreeSized 3 (choose (0, 3))) faultyMirrorP).
-(* 形如（反例树被打印出来）：
-   [Failure (Node (1) (Leaf) (Leaf), tt),
-    Failure (Node (0) (Node (2) (Leaf) (Leaf)) (Leaf), tt),
-    Success, Success,
-    Failure (Node (2) (Node (2) (Leaf) (Leaf)) (Leaf), tt), …] *)
-
-(* 真正的 QuickChick 命令驱动这套迷你 Checker：
-   库中的 QuickChick 命令只认库里的 Checker / Checkable，
-   这里的游乐场定义与库并不兼容，所以原书此处也是注释掉的。
-   若把同名定义放到库语境下运行，输出形如：
-   *** Failed after 1 tests and 0 shrinks. (0 discards) *)
-(* QuickChick (forAll (genTreeSized 5 (choose (0,5))) faultyMirrorP). *)
+  r <- checker (f a) ;;
+  match r with
+    Success => ret Success
+  | Failure b => ret (Failure (a,b))
+  end.
 
 End CheckerPlayground4.
 
@@ -298,21 +258,14 @@ Check @forAllProof.
 Definition treesMirrorP :=
   forAll (genTreeSized' 3 (choose (0, 3))) mirrorP.
 
-QuickChick treesMirrorP.
-(* 形如：
-   +++ Passed 10000 tests (0 discards) *)
+Definition faultyForAllP : Checker :=
+  forAll (genTreeSized' 3 (choose (0, 3))) faultyMirrorP.
 
-QuickChick (forAll (genTreeSized' 3 (choose (0, 3))) faultyMirrorP).
-(* 形如（不做收缩时反例可能很大）：
-   *** Failed after 1 tests and 0 shrinks. (0 discards)
-   Node (2) (Node (2) (Leaf) (Node (1) (Leaf) (Leaf))) (Leaf) *)
-
-(* unit 的 Checkable 实例表示"放弃本测试点"（discard 的另一入口）： *)
-QuickChick (forAll (ret 0) (fun _ : nat => tt)).
-(* 形如：
-   *** Gave up! Passed only 0 tests
-   Discarded: 20000
+(* unit 的 Checkable 实例表示"放弃本测试点"（discard 的另一入口），
    连续 20000 次（默认 maxDiscard）都放弃后，QuickChick 认输。 *)
+
+Definition giveUpP : Checker :=
+  forAll (ret 0) (fun _ : nat => tt).
 
 (* ---------- 72.7 Shrinking：收缩实例与收缩语义 ---------- *)
 
@@ -356,27 +309,24 @@ Print shrinkList.
 
 Open Scope list.
 
-#[export, program] Instance shrinkTreeAux {A} `{Shrink A} : Shrink (Tree A) :=
-  {| shrinkAux t :=
-       match t with
-       | Leaf => []
-       | Node x l r =>
-           [l] ++ [r]
-                ++ map (fun x' => Node x' l r) (shrink x)
-                ++ map (fun l' => Node x l' r) (shrink l)
-                ++ map (fun r' => Node x l r') (shrink r)
-       end |}.
+Fixpoint shrinkTreeAux {A}
+              (s : A -> list A) (t : Tree A)
+            : list (Tree A) :=
+  match t with
+    | Leaf => []
+    | Node x l r => [l] ++ [r] ++
+                    map (fun x' => Node x' l r) (s x) ++
+                    map (fun l' => Node x l' r) (shrinkTreeAux s l) ++
+                    map (fun r' => Node x l r') (shrinkTreeAux s r)
+  end.
 
 #[export] Instance shrinkTree {A} `{Shrink A} : Shrink (Tree A) :=
-  {| shrink x := shrinkAux x |}.
+  {| shrink x := shrinkTreeAux shrink x |}.
 
 (* forAllShrink 的完整循环：生成、发现失败、收缩到局部极小反例。 *)
 
-QuickChick (forAllShrink (genTreeSized' 5 (choose (0, 5))) shrink faultyMirrorP).
-(* 形如：
-   *** Failed after 1 tests and 8 shrinks. (0 discards)
-   Node (0) (Leaf) (Node (0) (Leaf) (Leaf))
-   8 步收缩把一棵大树砍成最小的非对称树。 *)
+Definition faultyShrinkP : Checker :=
+  forAllShrink (genTreeSized' 5 (choose (0, 5))) shrink faultyMirrorP.
 
 (* 有了 Gen + Shrink 两个实例，ArbitraryOfGenShrink 桥接出 Arbitrary，
    于是 faultyMirrorP 这种 nat -> Tree nat -> ... 形式的性质
@@ -384,11 +334,6 @@ QuickChick (forAllShrink (genTreeSized' 5 (choose (0, 5))) shrink faultyMirrorP)
 
 #[export] Instance genTree {A} `{Gen A} : GenSized (Tree A) :=
   {| arbitrarySized n := genTreeSized' n arbitrary |}.
-
-QuickChick faultyMirrorP.
-(* 形如：
-   *** Failed after 1 tests and 4 shrinks. (0 discards)
-   Node (0) (Node (0) (Leaf) (Leaf)) (Leaf) *)
 
 (* ---------- 72.8 TernaryTree 案例：生成 + 收缩 + 修复 ---------- *)
 
@@ -409,14 +354,17 @@ Fixpoint tern_mirror {A} (t : TernaryTree A) : TernaryTree A :=
   end.
 
 #[export] Instance showTernTree {A} `{Show A} : Show (TernaryTree A) :=
-{| show := showTernTreeAux |}
-where showTernTreeAux := fix aux (t : TernaryTree A) : string :=
-  match t with
-  | TLeaf => "TLeaf"
-  | TNode x l m r =>
-      ("TNode (" ++ show x ++ ") (" ++ aux l ++ ") ("
-                 ++ aux m ++ ") (" ++ aux r ++ ")")%string
-  end.
+  {| show := let fix aux t :=
+       match t with
+         | TLeaf => "TLeaf"
+         | TNode x l m r =>
+             ("TNode (" ++ show x ++ ") ("
+                      ++ aux l ++ ") ("
+                      ++ aux m ++ ") ("
+                      ++ aux r ++ ")")%string
+       end
+     in aux
+  |}.
 
 (* 三叉树生成器：没有 liftM4，嵌套 bind 即可。 *)
 
@@ -432,26 +380,22 @@ Fixpoint genTernTreeSized {A} (sz : nat) (g : G A) : G (TernaryTree A) :=
                   ret (TNode x l m r)) ]
   end.
 
-Sample (@genTernTreeSized nat 3 (choose (0, 10))).
-(* 形如：11 棵随机三叉树，深度受 sz=3 限制 *)
-
 (* 收缩三叉树：先砍成三棵子树之一，再收缩载荷与三棵子树。 *)
 
-#[export, program] Instance shrinkTernTreeAux {A} `{Shrink A}
-    : Shrink (TernaryTree A) :=
-  {| shrinkAux t :=
-       match t with
-       | TLeaf => []
-       | TNode x l m r =>
-           [l] ++ [m] ++ [r]
-                ++ map (fun x' => TNode x' l m r) (shrink x)
-                ++ map (fun l' => TNode x l' m r) (shrink l)
-                ++ map (fun m' => TNode x l m' r) (shrink m)
-                ++ map (fun r' => TNode x l m r') (shrink r)
-       end |}.
+Fixpoint shrinkTernTreeAux {A}
+              (s : A -> list A) (t : TernaryTree A)
+            : list (TernaryTree A) :=
+  match t with
+    | TLeaf => []
+    | TNode x l m r => [l] ++ [m] ++ [r] ++
+                    map (fun x' => TNode x' l m r) (s x) ++
+                    map (fun l' => TNode x l' m r) (shrinkTernTreeAux s l) ++
+                    map (fun m' => TNode x l m' r) (shrinkTernTreeAux s m) ++
+                    map (fun r' => TNode x l m r') (shrinkTernTreeAux s r)
+  end.
 
 #[export] Instance shrinkTernTree {A} `{Shrink A} : Shrink (TernaryTree A) :=
-  {| shrink x := shrinkAux x |}.
+  {| shrink x := shrinkTernTreeAux shrink x |}.
 
 Inductive direction := Left | Middle | Right.
 
@@ -483,44 +427,38 @@ Definition path := list direction.
 
 #[export] Instance shrinkPath : Shrink path := shrinkList.
 
-Fixpoint traverse_node (t : TernaryTree nat) (d : direction)
-    : option (TernaryTree nat) :=
-  match t, d with
-  | TLeaf, _ => None
-  | TNode _ l _ _, Left => Some l
-  | TNode _ _ m _, Middle => Some m
-  | TNode _ _ _ r, Right => Some r
+Definition traverse_node {A} (t : direction) (l m r : TernaryTree A) :=
+  match t with
+  | Left => l
+  | Middle => m
+  | Right => r
   end.
 
-Fixpoint traverse_path (t : TernaryTree nat) (p : path)
-    : option (TernaryTree nat) :=
-  match p with
-  | [] => Some t
-  | d :: p' =>
-      match traverse_node t d with
-      | Some t' => traverse_path t' p'
-      | None => None
-      end
+Fixpoint traverse_path {A} (p : path) (t : TernaryTree A) :=
+  match t with
+  | TLeaf =>
+    TLeaf
+  | TNode x l m r =>
+    match p with
+    | h :: tl => traverse_path tl (traverse_node h l m r)
+    | [] => t
+    end
   end.
 
-Definition path_mirror (t : TernaryTree nat) (p : path)
-    : option (TernaryTree nat) * option (TernaryTree nat) :=
-  (traverse_path t p, traverse_path (tern_mirror t) p).
+Definition path_mirror := map (fun t => match t with
+                                     | Left => Right
+                                     | Right => Left
+                                     | _ => t
+                                     end).
 
-Fixpoint eq_dec_tern_tree (t1 t2 : TernaryTree nat)
-    : {t1 = t2} + {t1 <> t2}.
-(* 判定树相等：逐节点比较载荷并递归比较三棵子树；
-   省略的实现细节与 eq_dec_tree 完全同构，此处用书上的略写占位。 *)
-Admitted.
+(* 判定三叉树相等：与 eq_dec_tree 一样走 Dec 实例 + dec_eq。 *)
+
+#[export] Instance eq_dec_tern_tree (t1 t2 : TernaryTree nat) : Dec (t1 = t2).
+Proof. constructor; dec_eq. Defined.
 
 Definition tern_mirror_path_flip (t : TernaryTree nat) (p : path) :=
-  let (l, r) := path_mirror t p in
-  match (l, r) with
-  | (Some l', Some r') =>
-      if eq_dec_tern_tree l' (tern_mirror r') then true else false
-  | (None, None) => true
-  | _ => false
-  end.
+  (  traverse_path p t
+   = tern_mirror (traverse_path (path_mirror p) (tern_mirror t))) ?.
 
 (* 手写的生成 + 收缩链路，看最小反例长什么样。 *)
 
@@ -529,14 +467,6 @@ Definition bug_finding_tern_tree : Checker :=
     (fun t =>
        forAllShrink (listOf genDirection) shrink
          (fun p => tern_mirror_path_flip t p)).
-
-QuickChick bug_finding_tern_tree.
-(* 形如：
-   *** Failed after N tests and M shrinks. (0 discards)
-   TNode 0 (TNode 0 TLeaf TLeaf TLeaf) TLeaf TLeaf
-   [Middle]
-   路径 [Middle] 把测试引到中子树，而 tern_mirror 没有镜像它，
-   于是 l' 与 tern_mirror r' 不等。 *)
 
 (* 修复：给中子树也套上 tern_mirror。 *)
 
@@ -548,18 +478,9 @@ Fixpoint tern_mirror_fixed {A} (t : TernaryTree A) : TernaryTree A :=
               (tern_mirror_fixed l)
   end.
 
-Definition path_mirror_fixed (t : TernaryTree nat) (p : path)
-    : option (TernaryTree nat) * option (TernaryTree nat) :=
-  (traverse_path t p, traverse_path (tern_mirror_fixed t) p).
-
 Definition tern_mirror_path_flip_fixed (t : TernaryTree nat) (p : path) :=
-  let (l, r) := path_mirror_fixed t p in
-  match (l, r) with
-  | (Some l', Some r') =>
-      if eq_dec_tern_tree l' (tern_mirror_fixed r') then true else false
-  | (None, None) => true
-  | _ => false
-  end.
+  (  traverse_path p t
+   = tern_mirror_fixed (traverse_path (path_mirror p) (tern_mirror_fixed t))) ?.
 
 Definition tern_tree_fixed_test : Checker :=
   forAllShrink (@genTernTreeSized nat 5 (choose (0, 10))) shrink
@@ -567,20 +488,11 @@ Definition tern_tree_fixed_test : Checker :=
        forAllShrink (listOf genDirection) shrink
          (fun p => tern_mirror_path_flip_fixed t p)).
 
-QuickChick tern_tree_fixed_test.
-(* 形如：
-   +++ Passed 10000 tests (0 discards) *)
-
 (* 注册类型类实例后，性质里的两个参数都能自动走
    "生成 + 收缩"的标准链路，一行 QuickChick 即可。 *)
 
 #[export] Instance genTernTree {A} `{Gen A} : GenSized (TernaryTree A) :=
   {| arbitrarySized n := genTernTreeSized n arbitrary |}.
-
-QuickChick tern_mirror_path_flip.
-(* 形如：
-   *** Failed after N tests and M shrinks. (0 discards)
-   TNode 0 TLeaf TLeaf (TNode 0 TLeaf TLeaf TLeaf)  ……之类的极小反例 *)
 
 (* ---------- 72.9 collect：观察测试数据分布 ---------- *)
 
@@ -599,39 +511,16 @@ Fixpoint size {A} (t : Tree A) : nat :=
 Definition treeProp (g : nat -> G nat -> G (Tree nat)) n :=
   forAll (g n (choose (0, n))) (fun t => collect (size t) true).
 
-QuickChick (treeProp genTreeSized 5).
-(* 形如（oneOf 各半，约一半测试点直接是 Leaf）：
-   4947x: 0
-   1258x: 1
-    673x: 2
-    464x: 6
-    ……
-   +++ Passed 10000 tests (0 discards) *)
-
-QuickChick (treeProp genTreeSized' 5).
-(* 形如（freq 偏向 Node，空树只占零头）：
-   1624x: 0
-   ……
-    571x: 10
-    564x: 8
-    562x: 9
-   +++ Passed 10000 tests (0 discards) *)
-
-(* 练习 genTreeSized''：彻底消灭空树 —— sz=0 时也给一棵
-   "载荷随机、子树全空"的最小 Node。 *)
+(* 练习 genTreeSized''（原书 2 星）：让空树更少。思路：只要还有
+   燃料（sz >= 1），根部就强制为 Node，空树率降到 0；子树退回
+   genTreeSized' 保持形状随机（子树仍可随机终止为 Leaf）。 *)
 
 Fixpoint genTreeSized'' {A} (sz : nat) (g : G A) : G (Tree A) :=
   match sz with
-  | O => liftM3 Node g (ret Leaf) (ret Leaf)
+  | O => ret Leaf
   | S sz' =>
-      freq [ (1,  ret Leaf) ;
-             (sz, liftM3 Node g (genTreeSized'' sz' g)
-                               (genTreeSized'' sz' g)) ]
+      liftM3 Node g (genTreeSized' sz' g) (genTreeSized' sz' g)
   end.
-
-QuickChick (treeProp genTreeSized'' 5).
-(* 形如：分布中完全没有 "Nx: 0" 这一行
-   +++ Passed 10000 tests (0 discards) *)
 
 (* ---------- 72.10 五个常用 Checker 组合子 ---------- *)
 
@@ -640,64 +529,35 @@ QuickChick (treeProp genTreeSized'' 5).
 Definition whenFailDemo : Checker :=
   whenFail "every color is Red?!" (forAll genColor isRed).
 
-QuickChick whenFailDemo.
-(* 形如：
-   *** Failed after 1 tests and 0 shrinks. (0 discards)
-   every color is Red?!
-   Green *)
-
 (* expectFailure：预期失败 —— 找到反例反而算通过；
    如果全部通过则以 "*** Failed! Passed N tests (expected Failure)" 报错。 *)
 
 Definition expectFailureDemo : Checker :=
   expectFailure (forAll genColor isRed).
 
-QuickChick expectFailureDemo.
-(* 形如：
-   +++ Failed (as expected) after 1 tests and 0 shrinks. (0 discards) *)
-
 Definition expectFailureAllPass : Checker :=
   expectFailure (forAll genColor (fun _ => true)).
-
-QuickChick expectFailureAllPass.
-(* 形如：
-   *** Failed! Passed 10000 tests (expected Failure) *)
 
 (* conjoin：所有 Checker 都成功才算成功（各自独立生成数据）。 *)
 
 Definition conjoinDemo : Checker :=
-  conjoin [ forAll (choose (0, 10)) (fun n => n <=? 10) ;
-            forAll (choose (0, 10)) (fun n => n <? 10) ].
-
-QuickChick conjoinDemo.
-(* 形如：第一个恒真、第二个在 n=10 处失败
-   *** Failed after … tests …
-   10 *)
+  conjoin [ forAll (choose (0, 10)) (fun n => (n <=? 10)%nat) ;
+            forAll (choose (0, 10)) (fun n => (n <? 10)%nat) ].
 
 (* disjoin：至少一个成功就算成功（第一个失败后才跑第二个）。 *)
 
 Definition disjoinDemo : Checker :=
-  disjoin [ forAll (choose (0, 10)) (fun n => n <? 0) ;
-            forAll (choose (0, 10)) (fun n => 0 <=? n) ].
-
-QuickChick disjoinDemo.
-(* 形如：
-   +++ Passed … *)
+  disjoin [ forAll (choose (0, 10)) (fun n => (n <? 0)%nat) ;
+            forAll (choose (0, 10)) (fun n => (0 <=? n)%nat) ].
 
 (* tag 与 collect 类似，但标签是手写的字符串而非 show 出来的值；
    适合把数据按"类别"分桶。下面这个例子把 nat 分成三桶：
    等于 3、大于 2、其余。 *)
 
 Definition tag_prop (x : nat) : Checker :=
-  collect x (if x = 3 ? then tag "3" false
-             else if 2 <? x then tag "more than 2" false
+  collect x (if (x =? 3)%nat then tag "3" false
+             else if (2 <? x)%nat then tag "more than 2" false
              else checker true).
-
-QuickChick tag_prop.
-(* 形如（tag "3" 的失败行带 Tag 前缀）：
-   *** Failed after … tests …
-   Tag: 3
-   3 *)
 
 (* ---------- 72.11 Args 调参与默认参数 ---------- *)
 
@@ -730,3 +590,158 @@ Check stdArgs.
    updMaxSize / updMaxSuccess / updAnalysis 三个更新函数可用。 *)
 
 End Ex72Checkers.
+
+(* 测试命令统一放在模块外：QuickChick / Sample 经 OCaml 抽取执行，
+   而抽取在 Module 内通常不工作（原书在 CheckerPlayground1 结尾
+   专门注明了这一点），会报 Unbound value quickchick。命令放到
+   模块外、引用模块内容则一切正常。
+
+   但游乐场的 Sample 仍然只能保持注释（与原书一致）：Sample 命令
+   只认库里的 Show / 生成器体系，对游乐场自定义的 Checker /
+   Checkable 抽取时会触发 Rocq 编译器异常（evar in typeops）——
+   教学玩具就停留在"读"的层面，真跑测试用下面的库版命令。 *)
+
+Import Ex72Checkers.
+
+(* 游乐场 1：随机种子不影响常生成器，(checker true) 每次都打印
+   11 个 Success，(checker false) 每次都打印 11 个 Failure。 *)
+(* Sample (CheckerPlayground1.checker true). *)
+(* 形如：
+   [Success, Success, Success, Success, Success, Success, Success,
+    Success, Success, Success, Success] *)
+(* Sample (CheckerPlayground1.checker false). *)
+(* 形如：
+   [Failure, Failure, Failure, Failure, Failure, Failure, Failure,
+    Failure, Failure, Failure, Failure] *)
+
+(* 游乐场 2：两个"猜想"的可判定检查。 *)
+(* Sample (CheckerPlayground2.checker CheckerPlayground2.c1). *)
+(* 形如：11 个 Failure *)
+(* Sample (CheckerPlayground2.checker CheckerPlayground2.c2). *)
+(* 形如：11 个 Success *)
+
+(* 游乐场 3：forAll 把生成器与性质粘在一起。 *)
+(* Sample (CheckerPlayground3.forAll genColor isRed). *)
+(* 形如（红黄蓝绿等概率出现，isRed 只在 Red 上为真）：
+   [Failure, Failure, Failure, Failure, Failure, Success, Failure,
+    Failure, Success, Failure, Failure] *)
+
+(* Sample (CheckerPlayground3.forAll (genTreeSized 3 (choose (0, 3))) mirrorP). *)
+(* 形如：11 个 Success（镜像两次必复原） *)
+
+(* Sample (CheckerPlayground3.forAll (genTreeSized 3 (choose (0, 3))) faultyMirrorP). *)
+(* 形如（Success 与 Failure 混杂，只有对称树通过）：
+   [Success, Failure, Success, Failure, Success, Failure, Success,
+    Success, Success, Success, Failure] *)
+
+(* 游乐场 4：失败携带反例本身。 *)
+(* Sample (CheckerPlayground4.forAll genColor isRed). *)
+(* 形如：失败项里直接带着反例颜色
+   [Failure: (Blue, tt), Failure: (Yellow, tt), Success, …] *)
+
+(* Sample (CheckerPlayground4.forAll (genTreeSized 3 (choose (0, 3))) faultyMirrorP). *)
+(* 形如（反例树被打印出来）：
+   [Failure: (Node (2) (Node (3) (Node (2) (Leaf) (Leaf)) (Leaf))
+                    (Node (0) (Node (2) (Leaf) (Leaf)) (Leaf)), tt),
+    Success, …] *)
+
+(* 库版命令。 *)
+QuickChick treesMirrorP.
+(* 形如：
+   +++ Passed 10000 tests (0 discards) *)
+
+QuickChick faultyForAllP.
+(* 形如（不做收缩时反例可能很大，一次实测）：
+   Node (2) (Node (3) (Leaf) (Node (2) (Leaf) (Leaf))) (Node (3) (Leaf) (Node (0) (Leaf) (Leaf)))
+   *** Failed after 3 tests and 0 shrinks. (0 discards) *)
+
+QuickChick giveUpP.
+(* 形如：
+   *** Gave up! Passed only 0 tests
+   Discarded: 20000 *)
+
+QuickChick faultyShrinkP.
+(* 形如（一次实测）：
+   Node (0) (Leaf) (Node (0) (Leaf) (Leaf))
+   *** Failed after 1 tests and 5 shrinks. (0 discards)
+   5 步收缩把一棵大树砍成最小的非对称树。 *)
+
+QuickChick faultyMirrorP.
+(* 形如（一次实测，Automatic 实例链自动走生成+收缩）：
+   Node (0) (Leaf) (Node (0) (Leaf) (Leaf))
+   *** Failed after 1 tests and 3 shrinks. (0 discards) *)
+
+Sample (@genTernTreeSized nat 3 (choose (0, 10))).
+(* 形如：11 棵随机三叉树，深度受 sz=3 限制 *)
+
+QuickChick bug_finding_tern_tree.
+(* 形如（一次实测）：
+   TNode (0) (TLeaf) (TNode (0) (TLeaf) (TLeaf) (TNode (3) (TLeaf) (TLeaf) (TLeaf))) (TNode (1) (TLeaf) (TLeaf) (TLeaf))
+   [Middle]
+   *** Failed after 3 tests and 12 shrinks. (0 discards)
+   路径 [Middle] 把测试引到中子树，而 tern_mirror 没有镜像它，
+   两边的子树不再对应。 *)
+
+QuickChick tern_tree_fixed_test.
+(* 形如：
+   +++ Passed 10000 tests (0 discards) *)
+
+QuickChick tern_mirror_path_flip.
+(* 形如（一次实测；实例链自动生成树与路径）：
+   TNode (0) (TLeaf) (TNode (3) (TLeaf) (TLeaf) (TNode (0) (TLeaf) (TLeaf) (TLeaf))) (TNode (3) (TLeaf) (TNode (0) (TLeaf) (TLeaf) (TLeaf)) (TNode (2) (TLeaf) (TLeaf) (TLeaf)))
+   [Middle]
+   *** Failed after 1 tests and 0 shrinks. (0 discards) *)
+
+QuickChick (treeProp genTreeSized 5).
+(* 形如（QuickChick 2.2 的 collect 报告格式是"次数 : 标签"；
+   oneOf 各半，约一半测试点直接是 Leaf，一次实测）：
+   5007 : 0
+   1259 : 1
+    627 : 2
+    472 : 5
+    ……
+   +++ Passed 10000 tests (0 discards) *)
+
+QuickChick (treeProp genTreeSized' 5).
+(* 形如（freq 偏向 Node，空树从约一半降到零头，一次实测）：
+   1657 : 0
+    601 : 12
+    600 : 11
+    580 : 13
+    ……
+   +++ Passed 10000 tests (0 discards) *)
+
+QuickChick (treeProp genTreeSized'' 5).
+(* 形如：分布中完全没有 "N : 0" 这一行（空树率 0）
+   +++ Passed 10000 tests (0 discards) *)
+
+QuickChick whenFailDemo.
+(* 形如（一次实测）：
+   every color is Red?!
+   Yellow
+   *** Failed after 1 tests and 0 shrinks. (0 discards) *)
+
+QuickChick expectFailureDemo.
+(* 形如：
+   +++ Failed (as expected) after 1 tests and 0 shrinks. (0 discards) *)
+
+QuickChick expectFailureAllPass.
+(* 形如：
+   *** Failed! Passed 10000 tests (expected Failure) *)
+
+QuickChick conjoinDemo.
+(* 形如：第一个恒真、第二个在 n=10 处失败
+   *** Failed after … tests …
+   10 *)
+
+QuickChick disjoinDemo.
+(* 形如：
+   +++ Passed … *)
+
+QuickChick tag_prop.
+(* 形如（一次实测；tag 的分布行带 Tag 前缀）：
+   4
+   4 : 0
+   1 : 2
+   Tag: more than 2
+   *** Failed after 6 tests and 0 shrinks. (0 discards) *)

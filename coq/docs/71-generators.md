@@ -1,5 +1,5 @@
 # 71 · 随机生成器：G 单子与按尺寸生成
-对应示例：`../examples/71_generators.v`（`Module Ex71Generators`）
+对应示例：`../examples/71_generators.v`（`Module Ex71Generators`，rocq 9.1 + QuickChick 2.2.0 实测编译退出码 0）
 
 第 69 章我们用库自带的生成器跑通了第一条 `QuickChick` 性质，第 70 章把
 `Show` / `Arbitrary` 钉进了类型类系统。但那些「自带」的随机生成器到底是怎么
@@ -122,11 +122,9 @@ Check @choose.
 (* ===> @choose : forall A : Type, ChoosableFromInterval A -> A * A -> G A
    （省去了 Producer 与序关系 le 两个隐式参数；nat 用 ChooseNat、Z 用 ChooseZ 实例） *)
 
-Sample (choose (0,10)).
-(* 形如 [1, 2, 1, 9, 8, 10, 3, 6, 0, 1, 8] —— 两端点都含在内 *)
+Definition genNat10 : G nat := choose (0,10).
 
-Sample (choose (-5, 5)%Z).
-(* ChooseZ 实例：形如 [-3, 5, 0, -1, 4, 2, -5, ...] *)
+Definition genZ5 : G Z := choose (-5, 5)%Z.
 
 (* 练习 cfi（1 星）：打印 ChoosableFromInterval 并读懂它 *)
 
@@ -190,11 +188,11 @@ Sample genPairNat'.
 Check listOf.
 (* ===> listOf : G ?A -> G (list ?A) *)
 
-Sample (listOf (choose (0,4))).
-(* 形如 [[0, 3, 2, 0], [1, 3, 4, 1, 0], [], [4, 2, 3], ...] —— 长度随机、受尺寸约束 *)
-
 Check vectorOf.
 (* ===> vectorOf : nat -> G ?A -> G (list ?A) *)
+
+Sample (listOf (choose (0,4))).
+(* 形如 [[0, 3, 2, 0], [1, 3, 4, 1, 0], [], [4, 2, 3], ...] —— 长度随机、受尺寸约束 *)
 
 Sample (vectorOf 3 (choose (0,4))).
 (* 形如 [[0, 1, 4], [1, 1, 0], [3, 3, 3], ...] —— 长度恒为 3 *)
@@ -313,10 +311,12 @@ Fixpoint genTreeSized {A} (sz : nat) (g : G A) : G (Tree A) :=
         ]
   end.
 
-Sample (genTreeSized 3 (choose(0,3))).
-(* 形如 [Leaf, Leaf, Node (3) (Node (0) (Leaf) (Leaf)) (...), Leaf, ...]
-   —— 每层一半概率立即 Leaf，树普遍偏小 *)
+Definition genTree3 : G (Tree nat) := genTreeSized 3 (choose(0,3)).
 ```
+
+`Sample genTree3`（执行区）形如
+`[Leaf, Leaf, Node (3) (Node (0) (Leaf) (Leaf)) (...), Leaf, ...]`
+—— 每层一半概率立即 `Leaf`，树普遍偏小。
 
 - 直接递归的 `genTree` 过不了终止性检查：`genTree g` 对 `g` 没有结构递减。
   更糟的是它在**语义上**也错：每层以 1/2 概率选 `Node` 并分裂出两棵子树，
@@ -344,9 +344,11 @@ Fixpoint genTreeSized' {A} (sz : nat) (g : G A) : G (Tree A) :=
              ]
   end.
 
-Sample (genTreeSized' 3 (choose(0,3))).
-(* Leaf 概率降为 1/(sz+1)：形如 [Node (...) (...) (...), Leaf, Node (...), ...] *)
+Definition genTree3' : G (Tree nat) := genTreeSized' 3 (choose(0,3)).
 ```
+
+`Sample genTree3'`（执行区）里 `Leaf` 概率降为 `1/(sz+1)`：形如
+`[Node (...) (...) (...), Leaf, Node (...), ...]`。
 
 `freq [(w1,g1); ...; (wn,gn)]` 的语义：设权重和 `W = Σwi`，以 `wi/W` 的概率
 执行 `gi`。`genTreeSized'` 在尺寸 `S n'` 时令 `Leaf : Node = 1 : sz`——尺寸越大
@@ -360,7 +362,7 @@ Sample (genTreeSized' 3 (choose(0,3))).
 
 Definition genSmallMaybe : G (option nat) :=
   n <- choose (0, 10) ;;
-  ret (if n <? 3 then Some n else None).
+  ret (if (n <? 3)%nat then Some n else None).
 
 Definition genSmallOr42 : G (option nat) :=
   backtrack [ (3, genSmallMaybe) ; (1, ret (Some 42)) ].
@@ -371,8 +373,9 @@ Sample genSmallOr42.
 ```
 
 - `genSmallMaybe : G (option nat)` 是「可能失败」的生成器：抽到 `0..2`
-  （约 3/11）给 `Some n`，否则给 `None` 表示这一轮放弃。`n <? 3` 是 `nat`
-  的 `<` 布尔版。
+  （约 3/11）给 `Some n`，否则给 `None` 表示这一轮放弃。`(n <? 3)%nat` 是
+  `nat` 的 `<` 布尔版——`%nat` 限定不能省：本章导入了 `String`，其字符串
+  比较记号会抢占裸写的 `<?`（72 章会再遇到这个坑）。
 - `backtrack [(w1,g1); ...]` 要求每个 `gi : G (option A)`：按权重逐个尝试，
   每项**至多跑一次**，遇到第一个 `Some x` 收工；全部 `None` 才整体返回 `None`。
 - 与 `freq` 的区别：`freq` 只选**一个**生成器执行；`backtrack` 会**依次**尝试
@@ -407,8 +410,7 @@ Sample genTreeAuto.
 Check @resize.
 (* ===> resize : nat -> G ?A -> G ?A —— 无视当前尺寸，强行钉成指定值 *)
 
-Sample (resize 1 (listOf (choose (0,9)))).
-(* 尺寸钉死为 1：形如 [[7], [], [2], [], [4], ...]，列表长度至多 1 *)
+Definition genListR1 : G (list nat) := resize 1 (listOf (choose (0,9))).
 ```
 
 - `DefineSized` 里的教学定义把 71.1 的直觉落成代码：`sized f` 收到外界传入的
@@ -472,9 +474,13 @@ End DefineGenSized.
 #[export] Instance genTree {A} `{Gen A} : GenSized (Tree A) :=
   {| arbitrarySized n := genTreeSized' n arbitrary |}.
 
-Sample (arbitrary : G color).
+(* 直接写 Sample (arbitrary : G color) 会触发 Rocq 抽取异常
+   （evar in typeops）——带类型标注的类方法投影不适合交给抽取；
+   先具名定义再采样即可规避。 *)
 
-Sample (arbitrary : G (Tree nat)).
+Definition genColorAuto : G color := arbitrary.
+
+Definition genTreeNatAuto : G (Tree nat) := arbitrary.
 (* Gen (Tree nat) 由桥接实例 GenOfGenSized 从 genTree 自动合成 *)
 ```
 
@@ -482,9 +488,12 @@ Sample (arbitrary : G (Tree nat)).
 - `genTree` 里裸写的 `arbitrary` 通过 `` `{Gen A} `` 解析到元素生成器——
   `Tree nat` 能用，是因为库自带 `Gen nat` 实例。`#[export]` 让实例随模块
   导出（70 章讲过它与 `Global` 的取舍）。
-- 两个 `Sample` 说明 `arbitrary` 可以脱离具体生成器名字使用：`G (Tree nat)`
-  的 `Gen` 实例由 `GenOfGenSized` 从 `genTree` 自动合成。`QuickChick` 命令
-  收集的正是这套实例。
+- `genColorAuto` / `genTreeNatAuto` 说明 `arbitrary` 可以脱离具体生成器名字
+  使用：`G (Tree nat)` 的 `Gen` 实例由 `GenOfGenSized` 从 `genTree` 自动合成。
+  `QuickChick` 命令收集的正是这套实例。注意注释里的坑：**内联写
+  `Sample (arbitrary : G color)` 会触发抽取异常**——类方法投影带着类型标注
+  一起被抽取时 Rocq 9 的内核会炸（evar in typeops），先具名定义再采样即可
+  规避；74 章还会遇到它的另一个变体（缺 `Show` 实例）。
 
 ## 71.10 练习解答
 
@@ -509,8 +518,7 @@ Fixpoint genListSized' {A} (sz : nat) (g : G A) : G (list A) :=
              ]
   end.
 
-Sample (genListSized' 3 (choose (0,3))).
-(* 形如 [[2, 0], [], [3, 1, 2], [], [1], ...] *)
+Definition genList3 : G (list nat) := genListSized' 3 (choose (0,3)).
 ```
 
 讲解：`liftM2 cons g (genListSized' sz' g)` 等价于
@@ -533,9 +541,6 @@ Definition genColorOption : G (option color) :=
          (3,  ret (Some Blue)) ;
          (3,  ret (Some Yellow)) ].
 
-Sample genColorOption.
-(* 形如 [Some Red, None, Some Red, Some Blue, Some Red, Some Red, ...] *)
-
 End Ex71Generators.
 ```
 
@@ -543,7 +548,75 @@ End Ex71Generators.
 `9/20`，其余三色各 `3/20`——恰为 3 倍关系。`freq` 按**比例**理解权重，
 nat 权重取整即可，不必约到最简。
 
-## 71.11 小结与下一步
+## 71.11 测试执行区：命令为何在模块外
+
+```coq
+(* Sample 命令统一放在模块外：QuickChick 2.2 的抽取管线对模块内
+   上下文生成的 OCaml 引用缺少模块限定，会报 Unbound value
+   quickchick；命令放到模块外、Import 定义之后则一切正常。 *)
+
+Import Ex71Generators.
+
+Sample (returnGen 42).
+(* 形如 [42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42] —— 常生成器无视尺寸与种子 *)
+
+Sample genNat10.
+(* 形如 [1, 2, 1, 9, 8, 10, 3, 6, 0, 1, 8] —— 两端点都含在内 *)
+
+Sample genZ5.
+(* ChooseZ 实例：形如 [-3, 5, 0, -1, 4, 2, -5, ...] *)
+
+Sample genPairNat'.
+(* 形如 [(1, 2), (0, 0), (3, 1), ...] —— 与 genPairNat 同分布 *)
+
+Sample (listOf (choose (0,4))).
+(* 形如 [[0, 3, 2, 0], [1, 3, 4, 1, 0], [], [4, 2, 3], ...] —— 长度随机、受尺寸约束 *)
+
+Sample (vectorOf 3 (choose (0,4))).
+(* 形如 [[0, 1, 4], [1, 1, 0], [3, 3, 3], ...] —— 长度恒为 3 *)
+
+Sample genColor'.
+(* 形如 [Red, Green, Blue, Blue, Red, Yellow, Blue, ...] *)
+
+Sample genColor.
+
+Sample genTree3.
+(* 形如 [Leaf, Leaf, Node (3) (Node (0) (Leaf) (Leaf)) (...), Leaf, ...]
+   —— 每层一半概率立即 Leaf，树普遍偏小 *)
+
+Sample genTree3'.
+(* Leaf 概率降为 1/(sz+1)：形如 [Node (...) (...) (...), Leaf, Node (...), ...] *)
+
+Sample genSmallOr42.
+(* 形如 [Some 42, Some 1, Some 42, Some 0, Some 42, ...]
+   —— 约两成落在 Some 0/1/2，失败则按权重换下一个，最后兜底 42 *)
+
+Sample genTreeAuto.
+(* 尺寸由 0 渐增：样本从 Leaf 起步，逐渐出现多层 Node *)
+
+Sample genListR1.
+(* 尺寸钉死为 1：形如 [[7], [], [2], [], [4], ...]，列表长度至多 1 *)
+
+Sample genColorAuto.
+
+Sample genTreeNatAuto.
+
+Sample genList3.
+(* 形如 [[2, 0], [], [3, 1, 2], [], [1], ...] *)
+
+Sample genColorOption.
+(* 形如 [Some Red, None, Some Red, Some Blue, Some Red, Some Red, ...] *)
+```
+
+与前几章相同的结构约定（69 章 69.5 节详述过）：定义住在模块里防重名，
+`Sample` / `QuickChick` 命令统一放模块外执行——QuickChick 2.2 的抽取管线
+对模块内上下文生成的 OCaml 引用缺少模块限定，会报 `Unbound value
+quickchick`。执行区按本章叙事顺序逐个采样：常生成器、区间、单子记号、
+列表组合子、颜色、两代树生成器、backtrack、尺寸调度、类方法投影，最后
+是两道练习的成品——一次 `build.sh -File 71_generators.v` 就是十七次
+抽样演示。
+
+## 71.12 小结与下一步
 
 - `G A` ≈ `nat -> RandomSeed -> A`：尺寸 + 可分裂种子 ⇒ 确定性可复现的
   「随机」。

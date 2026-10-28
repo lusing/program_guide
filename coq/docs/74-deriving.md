@@ -1,6 +1,6 @@
 # 74 · QCDerive 自动派生：从手写实例到一键合成
 
-对应示例：`../examples/74_deriving.v`（`Module Ex74Deriving`）
+对应示例：`../examples/74_deriving.v`（`Module Ex74Deriving`，rocq 9.1 + QuickChick 2.2.0 实测编译退出码 0）
 
 70 章搭好了四要素类型类（`Show` / `GenSized` / `Shrink` / `Checkable`），71 章手写
 了 `genTreeSized'` 这样的按尺寸生成器，72 章手写了收缩函数，73 章手写了「按规格
@@ -26,7 +26,7 @@ Set Warnings "-extraction-opaque-accessed,-extraction".
 Set Warnings "-notation-overridden,-parsing".
 
 From QuickChick Require Import QuickChick.
-From Stdlib Require Import List. Import ListNotations.
+From Stdlib Require Import List Arith. Import ListNotations.
 
 Module Ex74Deriving.
 ```
@@ -127,31 +127,47 @@ QuickChick faulty_mirrorP.
 例，并且派生的 `ShrinkTree` 一路把反例收缩到接近最小——回想 72 章手写 shrink
 的篇幅，这里一行命令全包。
 
-最后一种简单形式：`Arbitrary` 也可以一步派生，等价于 `GenSized` + `Shrink` 两
-条命令的合体。有一个坑要避开——**同一类型不要既分别派生 `GenSized`/`Shrink`
-又派生 `Arbitrary`**：派生命令生成的实例名是固定的（`GenSizedTree` 等），重复
-派生就是重复定义同名常量，Rocq 直接报错。`Tree` 上面已分别派生过，故换一个
-小类型演示：
+最后一种简单形式：`Arbitrary` 可以一步派生（`QCDerive Arbitrary` = `GenSized` +
+`Shrink` 两条命令的合体）；但为了和上面 `Tree` 的逐条演示呼应、也为了能单独
+引用 `GenSizedshape`，这里照 `Tree` 的模式分步派生，`Arbitrary` 由库的
+`ArbitraryOfGenShrink` 实例自动桥接——`arbitrary` / `shrink` / `show` 都可用。
+坑仍然要避开——**同一类型不要既分别派生 `GenSized`/`Shrink` 又派生
+`Arbitrary`**：派生命令生成的实例名是固定的（`GenSizedTree` 等），重复派生
+就是重复定义同名常量，Rocq 直接报错。`Tree` 上面已分别派生过，故换一个小
+类型演示：
 
 ```coq
-(* Arbitrary 也可一步派生（= GenSized + Shrink 两条命令的合体）。
-   注意：对同一类型不要既分别派生 GenSized/Shrink 又派生 Arbitrary，
-   否则同名实例重复定义会报错——Tree 上面已分别派生过，
-   故这里换一个小类型演示。 *)
+(* Arbitrary 可一步派生（QCDerive Arbitrary = GenSized + Shrink 两条
+   命令的合体）；但为了和上面 Tree 的逐条演示呼应、也为了能单独引用
+   GenSizedshape，这里照 Tree 的模式分步派生，Arbitrary 由库的
+   ArbitraryOfGenShrink 实例自动桥接——arbitrary / shrink / show 都可用。
+   另注意：对同一类型不要既分别派生 GenSized/Shrink 又派生 Arbitrary，
+   同名实例重复定义会报错。 *)
 
 Inductive shape := Point | Seg | Tri.
 
-QCDerive Arbitrary for shape.
-(* ==> GenSizedshape is defined
-   ==> Shrinkshape is defined *)
+QCDerive Show for shape.
+(* ==> Showshape is defined —— Sample 打印样本靠它；缺 Show 实例时
+   QuickChick 2.2 不报友好错误，而是触发 Rocq 异常 evar in typeops，
+   排查时先想想被 Sample 的类型有没有 Show。 *)
 
-Sample (arbitrary : G shape).
-(* 形如 [Seg, Point, Tri, Point, ...] *)
+QCDerive GenSized for shape.
+(* ==> GenSizedshape is defined *)
+
+QCDerive Shrink for shape.
+(* ==> Shrinkshape is defined *)
+
+Definition genShape : G shape := arbitrary.
 ```
 
+`Show` 放在最先不是偶然：**`Sample` 打印样本全靠它**。QuickChick 2.2 的坑——
+被 `Sample` 的类型缺 `Show` 实例时不报「找不到实例」，而是触发 Rocq 编译器
+异常 `evar in typeops`（72 章游乐场的 `Sample` 注释、71 章具名化的
+`arbitrary` 都是它的变体）；排查这类异常，先想想被采样的类型四件套齐不齐。
+
 至此六种简单派生形式见了五种：单独派生 `Show` / `GenSized` / `Shrink` /
-`EnumSized` / `Arbitrary`。第六种——`QCDerive (Arbitrary, Show) for T.` 一次派
-多个——留到 74.5 练习里演示。
+`EnumSized` / `Arbitrary`（一步版）。第六种——`QCDerive (Arbitrary, Show) for
+T.` 一次派多个——留到 74.5 练习里演示。
 
 ### 74.2 派生代码的工作原理
 
@@ -551,6 +567,28 @@ End Ex74Deriving.
 ```
 
 修复只改一处：`m` 换成 `tern_mirror_fixed m`。`+++ Passed 10000 tests` 收工。
+
+### 74.6 测试执行区：命令为何在模块外
+
+```coq
+(* 测试命令统一放在模块外：QuickChick 2.2 的抽取管线对模块内
+   上下文生成的 OCaml 引用缺少模块限定，会报 Unbound value
+   quickchick；命令放到模块外、Import 定义之后则一切正常。
+   QCDerive 派生命令本身不走抽取，留在模块内即可。 *)
+
+Import Ex74Deriving.
+
+Sample genShape.
+(* 形如 [Seg, Point, Tri, Point, ...]
+   （生成器先用 Definition 具名：直接对内联的 arbitrary 表达式 Sample
+   会触发 Rocq 编译器异常 evar in typeops，见 72 章同类记录。） *)
+```
+
+与前几章相同的结构约定（69 章 69.5 节详述）：定义与 `QCDerive` 派生命令住在
+模块里，`Sample` / `QuickChick` 执行命令统一放模块外。本章各节演示的命令
+（`Sample genTreeNat`、两条 `QuickChick` 证伪、两组 `genST` 采样、两条性质
+测试、三叉树的证伪与回归）都在执行区按叙事顺序激活——一次
+`build.sh -File 74_deriving.v` 全部复现。
 
 ### 小结
 
