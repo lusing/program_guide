@@ -93,6 +93,7 @@ Proof.
     Exists u.
     sep_apply IH.
     entailer!.
+    apply derives_refl.
 Qed.
 
 Lemma lseg_list: forall (s1 s2: list val) (x y: val),
@@ -109,6 +110,7 @@ Proof.
     Exists u.
     sep_apply IH.
     entailer!.
+    apply derives_refl.
 Qed.
 
 Lemma listrep_local_facts:
@@ -123,7 +125,8 @@ Proof.
   - unfold listrep; fold listrep.
     Intros y.
     entailer!.
-    split; intros Hx; discriminate.
+    split; intros Hx; try discriminate.
+    subst p. eapply field_compatible_nullval; eauto.
 Qed.
 
 #[export] Hint Resolve listrep_local_facts : saturate_local.
@@ -147,13 +150,15 @@ Lemma listrep_null: forall contents x,
   listrep contents x = !! (contents=nil) && emp.
 Proof.
   intros [|h hs] x Hx; apply pred_ext.
-  - entailer!.
-  - entailer!.
+  - unfold listrep. entailer!.
+  - unfold listrep. entailer!.
+  - apply (derives_trans _ FF); [| entailer!].
+    unfold listrep; fold listrep.
+    Intros y. entailer!.
+    exfalso. eapply field_compatible_nullval; eauto.
   - unfold listrep.
     entailer!.
-  - unfold listrep.
-    entailer!.
-    contradiction.
+    discriminate.
 Qed.
 
 Lemma listrep_nonnull: forall contents x,
@@ -163,16 +168,16 @@ Lemma listrep_nonnull: forall contents x,
       !! (contents = h :: hs) && data_at Tsh t_list (h, y) x * listrep hs y.
 Proof.
   intros [|h hs] x Hx; apply pred_ext.
-  - entailer!.
-    contradiction.
+  - unfold listrep.
+    entailer!.
   - entailer!.
     discriminate.
   - unfold listrep.
     Intros y.
     Exists h hs y.
     entailer!.
-  - Intros h0 hs0 y0 Hc.
-    injection Hc as Heq1 Heq2.
+  - Intros h0 hs0 y0.
+    injection H as Heq1 Heq2.
     subst h0 hs0.
     unfold listrep.
     Exists y0.
@@ -193,6 +198,7 @@ forward_if. (* if (x == NULL) *)
   forward. (* return y; *)
   Exists y.
   entailer!.
+  apply derives_refl.
 - (* If-else *)
   rewrite (listrep_nonnull _ x) by auto.
   Intros h r u.
@@ -220,13 +226,11 @@ forward_if. (* if (x == NULL) *)
     Exists ((s1a ++ b :: nil),c,s1d,u,z). unfold fst, snd.
     entailer!.
     * (* PROP *)
-      rewrite H.
-      symmetry.
-      apply app_assoc.
+      apply (app_assoc s1a [b] (c :: s1d)).
     * (* SEP *)
       sep_apply singleton_lseg.
-      sep_apply lseg_lseg.
-      entailer!.
+      rewrite (sepcon_comm (lseg [b] t u) (lseg s1a x t)).
+      apply lseg_lseg.
  + (* after the loop *)
   clear h r u H0; rename u0 into u.
   rewrite (listrep_null s1c) by auto.
@@ -237,6 +241,8 @@ forward_if. (* if (x == NULL) *)
   Exists x.
   entailer!.
   sep_apply singleton_lseg.
+  rewrite <- sepcon_assoc.
+  rewrite (sepcon_comm (lseg [b] t y) (lseg s1a x t)).
   sep_apply lseg_lseg.
   sep_apply lseg_list.
   entailer!.

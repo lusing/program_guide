@@ -159,34 +159,38 @@ Fail Inductive T_bad : Type := bad : (T_bad -> T_bad) -> T_bad.
 (* 反过来，(nat -> T_bad) -> T_bad 是合法的——
    T_bad 只出现在箭头右边（严格正位置） *)
 
-(* ---------- 27.8 9.2 新特性：Scheme All 与嵌套归纳的自动 IH ---------- *)
+(* ---------- 27.8 嵌套归纳的显式谓词与归纳原理 ---------- *)
 
-(* 给容器类型注册 All 方案：生成「每个元素都满足 P」的谓词 *)
-Scheme All for list.
-Check list_all.
-(* list_all : forall A : Type, (A -> Type) -> list A -> Type
-   构造子两个（Print list_all 实测）：
-     nil_all  : list_all A PA []
-     cons_all : forall a, PA a -> forall l, list_all A PA l
-                -> list_all A PA (a :: l) *)
+(* 当前 Rocq 不接受旧资料中的 Scheme All for list；直接定义等价的
+   「每个元素都满足 PA」谓词，接口与旧生成版本一致。 *)
+Inductive list_all (A : Type) (PA : A -> Type) : list A -> Type :=
+| nil_all : list_all A PA []
+| cons_all : forall a, PA a -> forall l, list_all A PA l ->
+             list_all A PA (a :: l).
 
-(* 关键顺序：先给容器注册 All，再定义嵌套类型——
-   自动生成的 rose_ind 直接带上嵌套 IH *)
 Inductive rose : Type :=
 | node : list rose -> rose.
 
 Check rose_ind.
-(* forall P : rose -> Prop,
-     (forall l : list rose, list_all rose P l -> P (node l)) ->
-     forall r : rose, P r
-   ——node 前提里有 list_all rose P l，IH 在场，不用手写原理了 *)
+(* 默认 rose_ind 不含列表中各子树的 IH，因此显式构造加强版。 *)
+Section RoseInd.
+  Variables (P : rose -> Prop) (Q : list rose -> Prop).
+  Hypotheses
+    (H : forall l : list rose, Q l -> P (node l))
+    (H0 : Q nil)
+    (H1 : forall (t : rose) (l : list rose),
+            P t -> Q l -> Q (cons t l)).
 
-(* 对照：如果定义 rose 之前没注册，会收到警告，且 rose_ind 退回残废版
-   （forall l : list rose, P (node l) —— node 前提没有 IH）：
-     Warning: rose is nested using list. No scheme for list is
-     registered as All. It can be generated using command "Scheme All"
-     e.g. "Scheme All for list.". [register-all,automation,default]
-   补救：Scheme All for list. 之后重新定义 rose，或手写原理 *)
+  Fixpoint rose_ind2 (r : rose) : P r :=
+    match r as x return P x with
+    | node l =>
+        H l ((fix l_ind (l' : list rose) : Q l' :=
+            match l' as y return Q y with
+            | nil => H0
+            | cons t tl => H1 t tl (rose_ind2 t) (l_ind tl)
+            end) l)
+    end.
+End RoseInd.
 
 Fixpoint rcount (r : rose) : nat :=
   match r with
@@ -197,12 +201,14 @@ Fixpoint rcount (r : rose) : nat :=
       end) l)
   end.
 
-(* induction 直接用：IH 自动以 list_all 形状出现在上下文里 *)
 Lemma rcount_pos : forall r : rose, 1 <= rcount r.
 Proof.
-  intros r. induction r as [l IH].
-  (* IH : list_all rose (fun r : rose => 1 <= rcount r) l *)
-  simpl. lia.
+  intros r.
+  induction r as [l IHl | | t IHt l IHl] using rose_ind2 with
+    (Q := fun _ => True).
+  - simpl. lia.
+  - exact I.
+  - exact I.
 Qed.
 
 (* 消费 list_all 的标准姿势：列表归纳 + inversion 拆 cons_all *)
@@ -219,13 +225,11 @@ Proof.
     lia.
 Qed.
 
-(* schemes 属性：控制定义时自动生成哪些方案（9.2 新增） *)
-#[schemes=none]
+(* 旧资料中的 schemes 属性在当前 Rocq 也不受支持；默认归纳原理仍会自动生成。 *)
 Inductive quietly : Type := q1 : quietly.
-Fail Check quietly_ind.   (* schemes=none：连 _ind 都不生成 *)
+Check quietly_ind.
 
-#[schemes=default]
 Inductive loudly : Type := l1 : loudly.
-Check loudly_ind.         (* schemes=default：照常生成 *)
+Check loudly_ind.
 
 End Ex27Mutual.

@@ -1,14 +1,14 @@
-# Coq 教程（Rocq 9.2/9.3）
+# Coq 教程（Rocq 9.1/9.2/9.3）
 
 面向**会编程（任意语言背景）、初学 Coq** 的读者：从证明助手的心智模型讲到
 类型系统、归纳类型、tactic 证明技法，再到 AST 求值器、插入排序正确性、
 列表定律等证明实战，继而是依赖类型、余归纳、一般递归、自反证明四大进阶
-主题与综合项目**表达式解释器与优化器**，最后进入两大篇：**验证算法篇**（33–47 章，VFA 卷）与**语言理论篇**（48–67 章，PLF 卷）。
-前者从置换与排序规格起步，验证插入/选择/归并排序、二叉搜索树、抽取、红黑树、
-Trie、优先队列与四色定理；后者从映射出发，亲手造出 Imp 语言、它的三种语义、
-Hoare 逻辑、解析器组合子，直到 λ 演算类型系统与引用副作用。
-**章号 = 示例编号**——除 68 章外每章对应 `examples/` 里一个经 `rocq compile`
-（rocq 9.3.0 + stdlib 9.2.0）编译验证的完整 .v 文件，67 章为 100+ 条实测坑位总清单。
+主题与综合项目**表达式解释器与优化器**，最后进入三大篇：**验证算法篇**
+（33–47 章，VFA 卷）、**语言理论篇**（48–67 章，PLF 卷）与**分离逻辑篇**
+（93–105 章，SLF 卷）。分离逻辑篇从堆谓词与三元组出发，逐步构造最弱前条件
+生成器并证明其可靠性，最后验证数组、快速排序与记录操作。
+**章号 = 示例编号**——除无独立示例的汇总章外，各章对应 `examples/` 里一个经
+`rocq compile` 编译验证的完整 .v 文件，84 章为 100+ 条实测坑位总清单。
 
 > 核心理念：**类型即命题，程序即证明。** Coq 把"写代码"和"证定理"变成
 > 同一种语言里的同一件事——编译通过就是定理成立；详见
@@ -21,8 +21,8 @@ coq/
 ├── README.md        本文件
 ├── build.ps1        编译验证脚本（PowerShell）
 ├── build.sh         编译验证脚本（macOS / Linux，用法同 build.ps1）
-├── docs/            75 章教程（01 → 76 顺序阅读，66 空缺）
-├── examples/        74 个 .v 示例（章号 = 示例编号，01–76，66/68 空缺）
+├── docs/            90 篇教程（按章号组织，部分章号空缺）
+├── examples/        91 个 .v 示例（章号 = 示例编号，部分章号空缺）
 ├── tools/           文档核查脚本（check_docs_coverage.py）
 └── build/           编译输出（已 gitignore）
 ```
@@ -106,6 +106,19 @@ coq/
 | [90 QCDerive 自动派生](docs/90-deriving.md) | Show/Arbitrary/Shrink/SuchThat/DecOpt 派生 | `90_deriving.v` |
 | [91 案例：带类型的 Imp 的程序生成](docs/91-timp.md) | 按类型生成、backtrack、类型保持收缩 | `91_timp.v` |
 | [92 quickchick 命令行与变异测试](docs/92-cli.md) | `(*! *)` 注解、变异测试、mutant 生死 | `92_cli.v` |
+| [93 分离逻辑入门](docs/93-slf-basic.md) | 三元组、堆规格与 x-tactics | `93_slf_basic.v` |
+| [94 表示谓词](docs/94-slf-repr.md) | 链表、树、栈与计数器的堆表示 | `94_slf_repr.v` |
+| [95 堆谓词](docs/95-slf-hprop.md) | 分离合取、纯事实、存在量词与堆语义 | `95_slf_hprop.v` |
+| [96 堆蕴含](docs/96-slf-himpl.md) | `==>`、推理引理与 xsimpl 自动化 | `96_slf_himpl.v` |
+| [97 三元组](docs/97-slf-triples.md) | Hoare 三元组语义、定义与结构规则 | `97_slf_triples.v` |
+| [98 推理规则](docs/98-slf-rules.md) | 语言构件、原语规格与手工验证 | `98_slf_rules.v` |
+| [99 魔法杖](docs/99-slf-wand.md) | hwand、qwand 与分支框架规则 | `99_slf_wand.v` |
+| [100 最弱前条件语义](docs/100-slf-wpsem.md) | wp 的语义、结构规则与 Texan 三元组 | `100_slf_wpsem.v` |
+| [101 最弱前条件生成器](docs/101-slf-wpgen.md) | wpgen、公式化简与 x-tactics 构造 | `101_slf_wpgen.v` |
+| [102 wpgen 可靠性](docs/102-slf-wpsound.md) | 生成器语义正确性与自动化可靠性证明 | `102_slf_wpsound.v` |
+| [103 仿射分离逻辑](docs/103-slf-affine.md) | 可丢弃资源、仿射三元组与 `\GC` | `103_slf_affine.v` |
+| [104 数组分离逻辑](docs/104-slf-arrays.md) | 数组区间、聚焦、借用与快速排序验证 | `104_slf_arrays.v` |
+| [105 记录分离逻辑](docs/105-slf-records.md) | 字段布局、三层访问规格与记录分配 | `105_slf_records.v` |
 
 学习路线：01–05 语言与基本证明 → 06–10 数据建模（元组/匹配/列表/归纳/
 递归）→ 11–15 证明技法主线（归纳/重写/逻辑）→ 16–18 高阶与工程化 →
@@ -115,28 +128,33 @@ coq/
 多重集 → 可判定 → BST → 抽取 → 红黑树 → ADT → 优先队列 → 二项式堆 →
 Trie → Bag → 四色）** → **48–67 语言理论篇（映射 → 归纳原则 → 关系 → 记号 →
 Imp 三种语义 → 行为等价 → 解析 → Hoare 三连 → 自动化 → STLC → 类型检查 →
-子类型 → 规范化 → 引用）** → 68 坑清单（写代码前先查）→ **69–76 属性测试篇
+子类型 → 规范化 → 引用）** → 84 坑清单（写代码前先查）→ **85–92 属性测试篇
 （QuickChick：入门 → 类型类 → 生成器 → 检查器与收缩 → 条件性质 → 自动派生
-→ TImp 案例 → 命令行与变异测试）**。
+→ TImp 案例 → 命令行与变异测试）** → **93–105 分离逻辑篇（SLF：三元组 →
+表示谓词 → 堆谓词与蕴含 → 推理规则 → 魔法杖 → 最弱前条件 → wpgen 与可靠性 →
+仿射逻辑 → 数组 → 记录）**。
 
 19–20 与 26–31 八章为 2026-09 按经典教材《交互式定理证明与程序开发：
 Coq 归纳构造演算的艺术》（Bertot & Casteran，中译本）扩充的「书本篇」；
 33–47 章为 2026-10 按 _Software Foundations_ 第三卷 _Verified Functional
 Algorithms_ 扩充的「验证算法篇」；48–67 章为 2026-10 按 _Software
-Foundations_（LF 卷 + PLF 卷精选）扩充的「语言理论篇」；69–76 章为 2026-10
+Foundations_（LF 卷 + PLF 卷精选）扩充的「语言理论篇」；85–92 章为 2026-10
 按 _Software Foundations_ 第四卷 _QuickChick: Property-Based Testing in
 Rocq_（v2.1）扩充的「属性测试篇」（QuickChick 2.2.0，`Derive` 已更名
-`QCDerive`，测试命令置于模块外执行）；各部分内容均已自包含提炼，无需翻阅
-原书。2026-10 起全书按
+`QCDerive`，测试命令置于模块外执行）；93–105 章为 2026-10 按 _Software
+Foundations_ 第六卷 _Separation Logic Foundations_（v1.0）扩充的「分离逻辑篇」。
+各部分内容均已自包含提炼，无需翻阅原书。2026-10 起全书按
 [Rocq 9.2.0 参考手册](https://rocq-prover.org/doc/V9.2.0/refman/index.html)
-校准，现以 rocq 9.3.0 + stdlib 9.2.0 实测复验（早期环境为 Coq 8.20.1）；
-属性测试篇以 rocq 9.1.1 + QuickChick 2.2.0 实测。
+校准，主体以 rocq 9.3.0 + stdlib 9.2.0 实测复验（早期环境为 Coq 8.20.1）；
+属性测试篇以 rocq 9.1.1 + QuickChick 2.2.0 实测，分离逻辑篇以 rocq 9.1.1
+和项目内 `lib/slf/` 库实测。
 
 ## 工具链
 
 | 组件 | 路径 / 版本 |
 |---|---|
 | prover（本教程实测环境，macOS + opam） | rocq 9.3.0（`opam install rocq-prover`，rocq-core 9.3.0）/ stdlib 9.2.0 |
+| 分离逻辑篇 | rocq 9.1.1 + 项目内 `lib/slf/` 库（示例使用 `@slf` 构建标志） |
 | Windows | Rocq Platform 2026.07.0（2026-07-30 版，主配 Rocq 9.1，可选 8.12.2–8.20.1 与 9.0） |
 | 编译器入口 | `rocq compile`（兼容名 coqc） |
 | 交互顶层 | `rocq repl`（兼容名 coqtop） |
@@ -164,14 +182,14 @@ chmod +x build.sh
 ./build.sh -Clean                      # 清理 build/
 ```
 
-**判定标准**：全部 74 个示例 `rocq compile` 退出码 0；
-`python3 tools/check_docs_coverage.py NN --mutate` 对语言理论篇各章
-（33–67）与属性测试篇各章（69–76）报 missing 0 且 mutate 自检通过
-（正文必须引用示例的每一行代码；01–32 章为早期体例，不在此关卡内）。
-`32_project.v` 的 `Recursive Extraction` 会向输出打印抽取的 OCaml 代码；
-69–76 章的 `QuickChick`/`Sample` 命令在编译时抽取 OCaml 并当场运行随机
-测试（性质被证伪不影响退出码，需看输出中的 Passed/Failed），全量编译
-耗时略长属正常。
+**判定标准**：全部 91 个示例 `rocq compile` 退出码 0，且不新增告警；
+对纳入覆盖关卡的章节运行 `python3 tools/check_docs_coverage.py NN --mutate`，
+其中分离逻辑篇 93–105 章必须逐章报 `missing 0` 且 `mutate check ok`
+（正文必须引用示例的每一行非空内容，包括中文注释；01–32 章为早期体例，
+不在此关卡内）。`32_project.v` 的 `Recursive Extraction` 会向输出打印抽取的
+OCaml 代码；85–92 章的 `QuickChick`/`Sample` 命令在编译时抽取 OCaml 并当场
+运行随机测试（性质被证伪不影响退出码，需看输出中的 Passed/Failed），全量
+编译耗时略长属正常。
 
 ## 平台差异说明
 
@@ -188,7 +206,7 @@ chmod +x build.sh
 
 - **章号 = 示例编号**：`docs/05-expressions.md` ↔ `examples/05_expressions.v`，
   每章开头一行"对应示例"标注。
-- 67 章无示例，是全教程坑位的汇总清单——写代码前先查它。
+- 84 章无示例，是全教程坑位的汇总清单——写代码前先查它。
 - 改示例后重跑对应文件：`.\build.ps1 -File NN_xxx.v`（macOS / Linux 用
   `./build.sh -File NN_xxx.v`）。
 

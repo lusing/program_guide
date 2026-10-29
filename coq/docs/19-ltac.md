@@ -113,7 +113,7 @@ Ltac number_goal := first [ reflexivity | lia | ring | congruence ].
 
 `Hint Rewrite 定理 : 库名.` 注册「永远从左往右」的重写规则，配合 `autorewrite with 库名` 一键展开。示例 19.7 的组合逻辑例子：S、K 两条重写规则注册后，`S K K` 被自动化简成恒等组合子——`autorewrite` 做完了所有该做的事。注意别注册会**互相点燃**的规则组，否则 autorewrite 不终止。
 
-实测提醒（9.2 起）：直接 `Hint Resolve ... : 新库名` 隐式创建数据库会触发弃用警告，先显式声明再注册——普通库用 `Create HintDb 库名.`，Rewrite 库用 `Create Rewrite HintDb 库名.`（示例里两个数据库分别按此写法）。
+实测提醒（9.2 起）：直接 `Hint Resolve ... : 新库名` 隐式创建数据库会触发弃用警告，先显式声明再注册。当前实测环境中，普通库与 Rewrite 库都用 `Create HintDb 库名.` 声明，再分别通过 `Hint Resolve` 或 `Hint Rewrite` 注册规则。
 
 ### 19.9 9.2 的 Ltac2 动态
 

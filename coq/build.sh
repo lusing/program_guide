@@ -72,6 +72,30 @@ fi
 
 mkdir -p "$buildExamplesDir"
 
+# SLF 库标志集：Software Foundations 第 6 卷 Separation Logic Foundations 的
+# 库（章节 .flags 里写 @slf 即可引用）。首次使用时把 lib/slf/*.v 按依赖序
+# 编译到 build/slf（后续复用，-Clean 后重建）。SLF_ORDER 即原书 Makefile 的库
+# 文件拓扑序；-w 抑制原书 _CoqProject 声明的四类告警。
+SLFSRC="$projectRoot/lib/slf"
+SLF_ORDER="LibAxioms LibTactics LibEqual LibLogic LibOperation LibBool LibReflect LibProd LibSum LibRelation LibOrder LibNat LibEpsilon LibInt LibMonoid LibContainer LibOption LibWf LibList LibListExec LibListZ LibMin LibSet LibChoice LibUnit LibFun LibString LibMultiset LibCore LibSepTLCbuffer LibSepFmap LibSepVar LibSepSimpl LibSepMinimal LibSepReference"
+slf_flags() {
+    local out="$buildDir/slf"
+    if [ ! -f "$out/LibSepReference.vo" ]; then
+        mkdir -p "$out"
+        cp "$SLFSRC"/*.v "$out/"
+        echo "[SLF] 首次构建 SLF 库（35 个文件，一次性）..." >&2
+        (cd "$out" && for f in $SLF_ORDER; do
+            if [ ! -f "$f.vo" ]; then
+                echo "[SLF] compile $f.v" >&2
+                rocq compile -q -Q . SLF \
+                  -w -implicit-core-hint-db,-ambiguous-paths,-notation-incompatible-prefix,-automatic-prop-lowering \
+                  "$f.v" || exit 1
+            fi
+        done) >&2
+    fi
+    printf '%s ' -Q "$out" SLF -w -implicit-core-hint-db,-ambiguous-paths,-notation-incompatible-prefix,-automatic-prop-lowering
+}
+
 # VST 标志集：供需要 Verified Software Toolchain 的章节（.flags 里写 @vst）。
 VSTDIR="${VSTDIR:-/Volumes/mac004/tutorialsrc/vst-2.16}"
 vst_flags() {
@@ -98,7 +122,8 @@ extra_flags() {
     while IFS= read -r line; do
         [ -z "$line" ] && continue
         case "$line" in
-            @vst) toks+=($(vst_flags)) ;;
+            @slf) toks+=($(slf_flags)) ;;
+        @vst) toks+=($(vst_flags)) ;;
             *)    toks+=($line) ;;
         esac
     done < "$flags_file"

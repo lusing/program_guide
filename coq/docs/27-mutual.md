@@ -76,61 +76,25 @@ Inductive ltree (A : Type) : Type :=
 | lnode : A -> list (ltree A) -> ltree A.
 ```
 
-类型更省，代价升级成两个：
+类型更省，代价是默认归纳原理照样没有列表中各子树的 IH。数节点也会遇到新限制：互 Fixpoint 跨 list 类型会被守卫检查拒绝，解法是在树上的递归里嵌一个列表上的匿名 `fix`（示例 27.6 的 `lcount`）。归纳原理同样可用嵌套 fix 手工构造；`ltree_ind2` 是「归纳原理就是递归函数」的现场演示。
 
-1. **默认归纳原理照样没用**（列表里的子树不产生 IH）；
-2. **9.2 之前 Scheme 也帮不了**——嵌套在别的类型里的递归，Scheme 视而不见；9.2 起有官方解法（Scheme All，见 27.5），手写原理降级为备选手艺。
+### 27.5 当前 Rocq 的兼容写法：显式谓词与嵌套归纳原理
 
-数节点都要新招：互 Fixpoint 跨 list 类型**会被守卫检查拒绝**（实测报 `Recursive call to lcount has principal argument equal to "t" instead of "l'"`）——解法是**内部不动点**：在树上的递归里嵌一个列表上的匿名 `fix`（示例 27.6 的 `lcount`）。归纳原理在 9.2 之前同样要手工造：`ltree_ind2` 用嵌套 fix 写出——这段代码值得逐行读，它是「归纳原理就是递归函数」的现场演示，也是忘记注册 All 时的兜底手艺。
-
-### 27.5 9.2 新特性：Scheme All 让嵌套归纳原理自动化
-
-9.2 把上一节的手工活收编了。机制分两半：先给**容器类型**注册一个 All 方案——「每个元素都满足 P」的谓词：
+旧资料可能使用 `Scheme All for list.` 自动注册「每个元素都满足 P」的谓词，或用 `#[schemes=...]` 控制方案生成；当前实测环境不接受这两种语法。兼容做法是把谓词直接写出来：
 
 ```coq
-Scheme All for list.
-```
+Inductive list_all (A : Type) (PA : A -> Type) : list A -> Type :=
+| nil_all : list_all A PA []
+| cons_all : forall a, PA a -> forall l, list_all A PA l ->
+             list_all A PA (a :: l).
 
-```text
-list_all : forall A : Type, (A -> Type) -> list A -> Type
-
-(* Print list_all 实测：两个构造子 *)
-nil_all  : list_all A PA []
-cons_all : forall a, PA a -> forall l, list_all A PA l -> list_all A PA (a :: l)
-```
-
-然后**再定义**嵌套类型（顺序很关键）：
-
-```coq
 Inductive rose : Type :=
 | node : list rose -> rose.
 ```
 
-9.2 自动生成的 `rose_ind` 直接带上嵌套 IH（实测）：
+默认 `rose_ind` 的 `node` 前提仍只有 `P (node l)`，没有子树 IH。因此示例仿照 `ltree_ind2` 构造 `rose_ind2`：树上的递归负责产生 `P r`，内部列表递归负责产生 `Q l`，两者在 `cons` 分支把 `P t` 与 `Q tl` 合成 `Q (t :: tl)`。使用 `induction ... using rose_ind2 with (Q := ...)` 即可得到完整归纳假设。
 
-```text
-rose_ind : forall P : rose -> Prop,
-  (forall l : list rose, list_all rose P l -> P (node l)) ->
-  forall r : rose, P r
-```
-
-`node` 前提里的 `list_all rose P l` 就是「列表里每棵子树都满足 P」——上一节手写 `ltree_ind2` 才有的东西，现在白送。`induction r as [l IH]` 之后 `IH : list_all rose (fun r => P r) l` 直接躺在上下文里；消费它就是普通的列表归纳，cons 分支用 `inversion` 拆开 `cons_all` 拿到头和尾的证明（示例 27.8 的 `rcount_node_ge` 是完整示范）。
-
-忘了先注册会怎样？定义 `rose` 时立刻收到警告，且生成的原理退回残废版（示例里 `ltree` 就是活标本，编译时能看到）：
-
-```text
-Warning: rose is nested using list. No scheme for list is registered as All.
-It can be generated using command "Scheme All" e.g. "Scheme All for list.".
-[register-all,automation,default]
-```
-
-配套小开关：`#[schemes=none]` 让定义时**一个方案都不生成**（连 `_ind` 都没有，给只需要类型本身的场景用），`#[schemes=default]` 是默认行为（示例 27.8 末尾有对照实测）。
-
-```coq
-#[schemes=none]
-Inductive quietly : Type := q1 : quietly.
-Fail Check quietly_ind.   (* 确实没生成 *)
-```
+消费 `list_all` 则是普通的列表归纳：空列表直接结束，`cons` 分支用 `inversion` 拆开 `cons_all`，分别取得头部元素的性质与尾部列表的性质。示例 27.8 的 `rcount_pos` 和 `rcount_node_ge` 给出了完整证明。
 
 ### 27.6 正性约束：不是什么归纳都能定义
 
@@ -152,7 +116,7 @@ Fail Inductive T_bad : Type := bad : (T_bad -> T_bad) -> T_bad.
 
 1. **默认归纳原理对互引/嵌套类型是摆设**：先把 `Print xxx_ind.` 打出来看一眼有没有 IH，没有就上 Scheme 或手工原理；
 2. **跨类型互 Fixpoint 被守卫拒绝**：ltree 式「树的列表」用内部不动点（嵌套匿名 fix）写；
-3. **嵌套归纳先注册 All 再定义类型（9.2 起）**：`Scheme All for list.` 放前面，自动生成的原理自带 `list_all` 形 IH；忘了注册会吃 `register-all` 警告且原理退成残废版——9.2 之前的办法是手写 `ltree_ind2` 式原理 + `induction ... using`；
+3. **嵌套归纳先检查 IH**：当前 Rocq 不接受旧资料的 `Scheme All` 与 `schemes` 属性；显式定义 `list_all`，并手写 `ltree_ind2`/`rose_ind2` 式原理，再用 `induction ... using`；
 4. **`induction ... using 自定义原理` 记得给 P0/Q 实例**：不指定的话元变量悬空，报错很隐晦；用 `as [a l IHl | | t IHt l IHl]` 命名 IH；
 5. **正性检查报错位置难懂**：`Non strictly positive occurrence` 指的是「被定义类型出现在自己构造子的负位置」——改型的方向是把递归挪到箭头右边；
 6. **`length_app` 的名字**：8.20 前 `app_length`，之后改名 `length_app`——旧资料先 Check。

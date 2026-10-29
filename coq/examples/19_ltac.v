@@ -142,7 +142,7 @@ Hypothesis S_rule : forall A B C : CL,
   App (App (App S A) B) C = App (App A C) (App B C).
 Hypothesis K_rule : forall A B : CL, App (App K A) B = A.
 
-Create Rewrite HintDb CL_rules.
+Create HintDb CL_rules.
 Hint Rewrite S_rule K_rule : CL_rules.
 
 Theorem obtain_I : forall A : CL, App (App (App S K) K) A = A.
