@@ -1,6 +1,6 @@
 # 69 · 属性测试入门：从 Example 到 QuickChick
 
-对应示例：`../examples/69_quickstart.v`（`Module Ex69Quickstart`，rocq 9.1 + QuickChick 2.2.0 实测编译退出码 0）
+对应示例：`../examples/85_quickstart.v`（`Module Ex69Quickstart`，rocq 9.1 + QuickChick 2.2.0 实测编译退出码 0）
 
 第 25 章建立了「编译即测试」的第一档：`Example` + `reflexivity` 钉住**具体值**；
 前面各章的 `Theorem` 是最高档：对**无穷个输入**给出机器检查的证明。两者之间有一
@@ -33,7 +33,7 @@ vernacular 命令**——`rocq compile` 编译到这个命令时，QuickChick �
 
 - 性质被证伪**不影响退出码**（仍为 0）——全绿不代表全通过，必须看输出里的
   `Passed` / `Failed`；
-- 因此本章起示例文件里这些命令是**激活**的，`build.sh -File 69_quickstart.v` 一次
+- 因此本章起示例文件里这些命令是**激活**的，`build.sh -File 85_quickstart.v` 一次
   编译就是一轮上万次的随机测试。
 
 示例文件头与前几章同一套（屏蔽抽取相关告警、导入、Module 包裹防重名）：

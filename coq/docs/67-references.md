@@ -1,4 +1,4 @@
-# 66 · 引用与副作用
+# 67 · 引用与副作用
 
 对应示例：`../examples/67_references.v`（`Module Ex67References`，rocq 9.3.0 + stdlib 9.2.0 实测编译退出码 0）
 
@@ -447,4 +447,4 @@ exists ST', extends ST' ST /\ empty;ST';empty |-- t' in T` 与
    的教材样本。
 
 ---
-上一章：[65 · STLC 规范化](65-normalization.md) ｜ 下一章：[68 · 坑清单与最佳实践](68-pitfalls.md) ｜ 返回：[README](../README.md)
+上一章：[65 · STLC 规范化](65-normalization.md) ｜ 下一章：[68 · VST 入门：数组求和的第一个验证](68-vst-intro.md) ｜ 返回：[README](../README.md)

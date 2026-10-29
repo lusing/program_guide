@@ -28,7 +28,14 @@ def find_pair(prefix):
         raise SystemExit(f"no docs file matching docs/{prefix}-*.md")
     if not exs:
         raise SystemExit(f"no example matching examples/{prefix}_*.v")
-    return exs[0], docs[0]
+    ex = exs[0]
+    if len(docs) > 1:
+        # 扩章后同一编号可能有多篇候选文档（如迁移期的 68-pitfalls.md 与
+        # 68-vst-intro.md）；优先配对正文引用了该示例文件的那篇。
+        referencing = [d for d in docs if ex.name in d.read_text(encoding="utf-8")]
+        if referencing:
+            docs = referencing
+    return ex, docs[0]
 
 
 def coq_lines(doc_path):

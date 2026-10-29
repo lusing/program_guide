@@ -12,7 +12,7 @@ Hoare 逻辑、解析器组合子，直到 λ 演算类型系统与引用副作�
 
 > 核心理念：**类型即命题，程序即证明。** Coq 把"写代码"和"证定理"变成
 > 同一种语言里的同一件事——编译通过就是定理成立；详见
-> [01 章](docs/01-intro.md) 与 [68 章](docs/68-pitfalls.md)。
+> [01 章](docs/01-intro.md) 与 [84 章](docs/84-pitfalls.md)。
 
 ## 目录结构
 
@@ -97,15 +97,15 @@ coq/
 | [64 子类型](docs/64-subtyping.md) | 宽度/深度子类型、包含、Records | `64_subtyping.v` |
 | [65 STLC 规范化](docs/65-normalization.md) | 良类型 ⟹ 强终止、Cantor 式归纳 | `65_normalization.v` |
 | [67 引用与副作用](docs/67-references.md) | store、位置类型、引用安全 | `67_references.v` |
-| [68 坑清单与最佳实践](docs/68-pitfalls.md) | 110+ 条实测坑位与最佳实践总清单 | — |
-| [69 属性测试入门：QuickChick](docs/69-quickstart.md) | PBT 定位、removeP 反例与收缩、四要素 | `69_quickstart.v` |
-| [70 类型类机制](docs/70-typeclasses.md) | Class/Instance、隐式推广、实例搜索、Monad | `70_typeclasses.v` |
-| [71 随机生成器：G 单子](docs/71-generators.md) | returnGen/bind、choose、尺寸燃料、freq | `71_generators.v` |
-| [72 可检查性质与收缩](docs/72-checkers.md) | Checker/Checkable、forAll、贪心收缩、collect | `72_checkers.v` |
-| [73 条件性质与按规格生成](docs/73-conditional.md) | `==>` 与 discard 风暴、genSortedList、BST | `73_conditional.v` |
-| [74 QCDerive 自动派生](docs/74-deriving.md) | Show/Arbitrary/Shrink/SuchThat/DecOpt 派生 | `74_deriving.v` |
-| [75 案例：带类型的 Imp 的程序生成](docs/75-timp.md) | 按类型生成、backtrack、类型保持收缩 | `75_timp.v` |
-| [76 quickchick 命令行与变异测试](docs/76-cli.md) | `(*! *)` 注解、变异测试、mutant 生死 | `76_cli.v` |
+| [84 坑清单与最佳实践](docs/84-pitfalls.md) | 110+ 条实测坑位与最佳实践总清单 | — |
+| [85 属性测试入门：QuickChick](docs/85-quickstart.md) | PBT 定位、removeP 反例与收缩、四要素 | `85_quickstart.v` |
+| [86 类型类机制](docs/86-typeclasses.md) | Class/Instance、隐式推广、实例搜索、Monad | `86_typeclasses.v` |
+| [87 随机生成器：G 单子](docs/87-generators.md) | returnGen/bind、choose、尺寸燃料、freq | `87_generators.v` |
+| [88 可检查性质与收缩](docs/88-checkers.md) | Checker/Checkable、forAll、贪心收缩、collect | `88_checkers.v` |
+| [89 条件性质与按规格生成](docs/89-conditional.md) | `==>` 与 discard 风暴、genSortedList、BST | `89_conditional.v` |
+| [90 QCDerive 自动派生](docs/90-deriving.md) | Show/Arbitrary/Shrink/SuchThat/DecOpt 派生 | `90_deriving.v` |
+| [91 案例：带类型的 Imp 的程序生成](docs/91-timp.md) | 按类型生成、backtrack、类型保持收缩 | `91_timp.v` |
+| [92 quickchick 命令行与变异测试](docs/92-cli.md) | `(*! *)` 注解、变异测试、mutant 生死 | `92_cli.v` |
 
 学习路线：01–05 语言与基本证明 → 06–10 数据建模（元组/匹配/列表/归纳/
 递归）→ 11–15 证明技法主线（归纳/重写/逻辑）→ 16–18 高阶与工程化 →

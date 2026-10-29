@@ -72,14 +72,76 @@ fi
 
 mkdir -p "$buildExamplesDir"
 
+# VST 标志集：供需要 Verified Software Toolchain 的章节（.flags 里写 @vst）。
+VSTDIR="${VSTDIR:-/Volumes/mac004/tutorialsrc/vst-2.16}"
+vst_flags() {
+    printf '%s ' \
+      -Q "$VSTDIR/msl" VST.msl \
+      -Q "$VSTDIR/veric" VST.veric \
+      -Q "$VSTDIR/floyd" VST.floyd \
+      -Q "$VSTDIR/zlist" VST.zlist \
+      -Q "$VSTDIR/sepcomp" VST.sepcomp \
+      -Q "$VSTDIR/compcert/lib" compcert.lib \
+      -Q "$VSTDIR/compcert/common" compcert.common \
+      -Q "$VSTDIR/compcert/x86_64" compcert.x86_64 \
+      -Q "$VSTDIR/compcert/x86" compcert.x86 \
+      -Q "$VSTDIR/compcert/cfrontend" compcert.cfrontend \
+      -Q "$VSTDIR/compcert/export" compcert.export \
+      -R "$VSTDIR/compcert/flocq" Flocq
+}
+
+# 读取 examples/NN_xxx.v.flags：额外 rocq 参数；首 token 可为 @vst 展开为 VST 标志集。
+extra_flags() {
+    local flags_file="$1"
+    [ -f "$flags_file" ] || return 0
+    local toks=()
+    while IFS= read -r line; do
+        [ -z "$line" ] && continue
+        case "$line" in
+            @vst) toks+=($(vst_flags)) ;;
+            *)    toks+=($line) ;;
+        esac
+    done < "$flags_file"
+    printf '%s ' "${toks[@]}"
+}
+
+# 预编译 examples/vc/ 下的依赖（如 Clight AST）：.deps 每行一个相对 examples/ 的路径，
+# 编到 build/vc/<path>.vo。用 mkdir 锁防并行代理同时编同一文件。
+compile_deps() {
+    local deps_file="$1" xflags="$2" dep dest vo
+    [ -f "$deps_file" ] || return 0
+    while IFS= read -r dep; do
+        [ -z "$dep" ] && continue
+        dest="$buildDir/$(dirname "$dep")"
+        vo="$dest/$(basename "${dep%.v}").vo"
+        mkdir -p "$dest"
+        if [ ! -f "$vo" ]; then
+            while ! mkdir "$buildDir/.dep_lock" 2>/dev/null; do sleep 1; done
+            if [ ! -f "$vo" ]; then
+                echo "[Dep] $dep"
+                cp "$examplesDir/$dep" "$dest/"
+                (cd "$dest" && rocq compile -q $xflags "$(basename "$dep")") || { rmdir "$buildDir/.dep_lock"; exit 1; }
+            fi
+            rmdir "$buildDir/.dep_lock"
+        fi
+    done < "$deps_file"
+}
+
 compile_one() {
     local src="$1"
     local name
     name="$(basename "$src")"
     local target="$buildExamplesDir/ex_$name"
+    local xflags
+    xflags="$(extra_flags "${src}.flags")"
+    if [ -f "${src}.deps" ]; then
+        mkdir -p "$buildDir/vc"
+        xflags="$xflags -Q $buildDir/vc VC"
+    fi
+    compile_deps "${src}.deps" "$xflags"
     cp "$src" "$target"
     echo "[Compile] ex_$name"
-    (cd "$buildExamplesDir" && rocq compile -q "ex_$name")
+    (cd "$buildExamplesDir" && rocq compile -q $xflags "ex_$name")
 }
 
 if [ "$ALL" -eq 1 ]; then

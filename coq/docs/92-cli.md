@@ -1,6 +1,6 @@
 # 76 · quickchick 命令行与变异测试
 
-对应示例：`../examples/76_cli.v`（`Module Ex76Cli`，rocq 9.1 + QuickChick 2.2.0 实测编译退出码 0）
+对应示例：`../examples/92_cli.v`（`Module Ex76Cli`，rocq 9.1 + QuickChick 2.2.0 实测编译退出码 0）
 
 属性测试篇的收官章。69 章入门、70 章类型类、71 章生成器、72 章可检查性质、
 73 章条件性质、74 章 `QCDerive`、75 章综合案例，一路的工作方式都是：把
@@ -539,7 +539,7 @@ Normal code                                      正确代码（base）
 本教程的定位是**单文件自包含**：每章一个 .v、`Module` 包裹、`build.sh` 复制到
 build/ 后逐个 `rocq compile`。QuickChick 命令内嵌执行、输出看 `Passed`/
 `Failed`——这套流程适合边写边测，本章示例也照此编译（注解全是注释，不影响
-`build.sh -File 76_cli.v`）。
+`build.sh -File 92_cli.v`）。
 
 `quickChick` 面向的是**目录即项目**的形态：`_CoqProject` + 构建命令。想在本教
 程里实操，搭一个 stack-compiler 式的最小目录即可，两个配置文件（官方原样）：
