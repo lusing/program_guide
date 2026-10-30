@@ -3,10 +3,12 @@
 面向**会编程（任意语言背景）、初学 Coq** 的读者：从证明助手的心智模型讲到
 类型系统、归纳类型、tactic 证明技法，再到 AST 求值器、插入排序正确性、
 列表定律等证明实战，继而是依赖类型、余归纳、一般递归、自反证明四大进阶
-主题与综合项目**表达式解释器与优化器**，最后进入三大篇：**验证算法篇**
-（33–47 章，VFA 卷）、**语言理论篇**（48–67 章，PLF 卷）与**分离逻辑篇**
-（93–105 章，SLF 卷）。分离逻辑篇从堆谓词与三元组出发，逐步构造最弱前条件
-生成器并证明其可靠性，最后验证数组、快速排序与记录操作。
+主题与综合项目**表达式解释器与优化器**，最后进入四大篇：**验证算法篇**
+（33–47 章，VFA 卷）、**语言理论篇**（48–67 章，PLF 卷）、**分离逻辑篇**
+（93–105 章，SLF 卷）与**安全基础篇**（106–111 章，SECF 卷）。分离逻辑篇
+从堆谓词与三元组出发，逐步构造最弱前条件生成器并证明其可靠性，最后验证
+数组、快速排序与记录操作；安全基础篇从非干扰与安全多执行讲到静态信息流、
+密码学常时、Spectre 和选择性 SLH，并给出完整安全定理证明。
 **章号 = 示例编号**——除无独立示例的汇总章外，各章对应 `examples/` 里一个经
 `rocq compile` 编译验证的完整 .v 文件，84 章为 100+ 条实测坑位总清单。
 
@@ -21,8 +23,8 @@ coq/
 ├── README.md        本文件
 ├── build.ps1        编译验证脚本（PowerShell）
 ├── build.sh         编译验证脚本（macOS / Linux，用法同 build.ps1）
-├── docs/            90 篇教程（按章号组织，部分章号空缺）
-├── examples/        91 个 .v 示例（章号 = 示例编号，部分章号空缺）
+├── docs/            96 篇教程（按章号组织，部分章号空缺）
+├── examples/        97 个 .v 示例（章号 = 示例编号，部分章号空缺）
 ├── tools/           文档核查脚本（check_docs_coverage.py）
 └── build/           编译输出（已 gitignore）
 ```
@@ -119,6 +121,12 @@ coq/
 | [103 仿射分离逻辑](docs/103-slf-affine.md) | 可丢弃资源、仿射三元组与 `\GC` | `103_slf_affine.v` |
 | [104 数组分离逻辑](docs/104-slf-arrays.md) | 数组区间、聚焦、借用与快速排序验证 | `104_slf_arrays.v` |
 | [105 记录分离逻辑](docs/105-slf-records.md) | 字段布局、三层访问规格与记录分配 | `105_slf_records.v` |
+| [106 非干扰与安全多执行](docs/106-noninterference.md) | 两次执行、公开等价、SME 与状态划分 | `106_noninterference.v` |
+| [107 Imp 的非干扰](docs/107-imp-noninterference.md) | TINI / TSNI、终止通道与 SME 透明性 | `107_imp_noninterference.v` |
+| [108 静态信息流类型系统](docs/108-static-ifc.md) | 标签汇合、CF / NI / TS 与类型检查器 | `108_static_ifc.v` |
+| [109 控制流与输出安全](docs/109-flow-output-security.md) | 分支轨迹、公开输出语义与安全主定理 | `109_flow_output_security.v` |
+| [110 密码学常时](docs/110-constant-time.md) | 观察轨迹、数组泄露、CCT 与常时条件表达式 | `110_constant_time.v` |
+| [111 Spectre、推测常时与选择性 SLH](docs/111-speculative-ct.md) | 推测语义、理想安全与反向编译正确性 | `111_speculative_ct.v` |
 
 学习路线：01–05 语言与基本证明 → 06–10 数据建模（元组/匹配/列表/归纳/
 递归）→ 11–15 证明技法主线（归纳/重写/逻辑）→ 16–18 高阶与工程化 →
@@ -132,7 +140,9 @@ Imp 三种语义 → 行为等价 → 解析 → Hoare 三连 → 自动化 → 
 （QuickChick：入门 → 类型类 → 生成器 → 检查器与收缩 → 条件性质 → 自动派生
 → TImp 案例 → 命令行与变异测试）** → **93–105 分离逻辑篇（SLF：三元组 →
 表示谓词 → 堆谓词与蕴含 → 推理规则 → 魔法杖 → 最弱前条件 → wpgen 与可靠性 →
-仿射逻辑 → 数组 → 记录）**。
+仿射逻辑 → 数组 → 记录）** → **106–111 安全基础篇（SECF：非干扰与 SME →
+Imp 的 TINI / TSNI → 静态 IFC → 控制流与输出安全 → 密码学常时 → Spectre
+与选择性 SLH）**。
 
 19–20 与 26–31 八章为 2026-09 按经典教材《交互式定理证明与程序开发：
 Coq 归纳构造演算的艺术》（Bertot & Casteran，中译本）扩充的「书本篇」；
@@ -142,12 +152,15 @@ Foundations_（LF 卷 + PLF 卷精选）扩充的「语言理论篇」；85–92
 按 _Software Foundations_ 第四卷 _QuickChick: Property-Based Testing in
 Rocq_（v2.1）扩充的「属性测试篇」（QuickChick 2.2.0，`Derive` 已更名
 `QCDerive`，测试命令置于模块外执行）；93–105 章为 2026-10 按 _Software
-Foundations_ 第六卷 _Separation Logic Foundations_（v1.0）扩充的「分离逻辑篇」。
-各部分内容均已自包含提炼，无需翻阅原书。2026-10 起全书按
+Foundations_ 第六卷 _Separation Logic Foundations_（v1.0）扩充的「分离逻辑篇」；
+106–111 章为 2026-10 按 _Software Foundations_ 第七卷 _Security Foundations_
+（v1.2）扩充的「安全基础篇」。各部分内容均已自包含提炼，无需翻阅原书。
+2026-10 起全书按
 [Rocq 9.2.0 参考手册](https://rocq-prover.org/doc/V9.2.0/refman/index.html)
 校准，主体以 rocq 9.3.0 + stdlib 9.2.0 实测复验（早期环境为 Coq 8.20.1）；
 属性测试篇以 rocq 9.1.1 + QuickChick 2.2.0 实测，分离逻辑篇以 rocq 9.1.1
-和项目内 `lib/slf/` 库实测。
+和项目内 `lib/slf/` 库实测，安全基础篇以 rocq 9.1.1 + Stdlib 实测且各章示例
+独立自包含。
 
 ## 工具链
 
@@ -155,6 +168,7 @@ Foundations_ 第六卷 _Separation Logic Foundations_（v1.0）扩充的「分�
 |---|---|
 | prover（本教程实测环境，macOS + opam） | rocq 9.3.0（`opam install rocq-prover`，rocq-core 9.3.0）/ stdlib 9.2.0 |
 | 分离逻辑篇 | rocq 9.1.1 + 项目内 `lib/slf/` 库（示例使用 `@slf` 构建标志） |
+| 安全基础篇 | rocq 9.1.1 + Stdlib（106–111 章示例各自独立，不依赖 SECF 或其他教程示例） |
 | Windows | Rocq Platform 2026.07.0（2026-07-30 版，主配 Rocq 9.1，可选 8.12.2–8.20.1 与 9.0） |
 | 编译器入口 | `rocq compile`（兼容名 coqc） |
 | 交互顶层 | `rocq repl`（兼容名 coqtop） |
@@ -182,11 +196,11 @@ chmod +x build.sh
 ./build.sh -Clean                      # 清理 build/
 ```
 
-**判定标准**：全部 91 个示例 `rocq compile` 退出码 0，且不新增告警；
+**判定标准**：全部 97 个示例 `rocq compile` 退出码 0，且不新增告警；
 对纳入覆盖关卡的章节运行 `python3 tools/check_docs_coverage.py NN --mutate`，
-其中分离逻辑篇 93–105 章必须逐章报 `missing 0` 且 `mutate check ok`
-（正文必须引用示例的每一行非空内容，包括中文注释；01–32 章为早期体例，
-不在此关卡内）。`32_project.v` 的 `Recursive Extraction` 会向输出打印抽取的
+其中分离逻辑篇 93–105 章与安全基础篇 106–111 章必须逐章报 `missing 0`
+且 `mutate check ok`（正文必须引用示例的每一行非空内容，包括中文注释；
+01–32 章为早期体例，不在此关卡内）。`32_project.v` 的 `Recursive Extraction` 会向输出打印抽取的
 OCaml 代码；85–92 章的 `QuickChick`/`Sample` 命令在编译时抽取 OCaml 并当场
 运行随机测试（性质被证伪不影响退出码，需看输出中的 Passed/Failed），全量
 编译耗时略长属正常。
