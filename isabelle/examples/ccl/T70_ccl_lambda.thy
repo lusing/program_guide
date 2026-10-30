@@ -457,7 +457,7 @@ text \<open>1. **CCL 不是 HOL**：没有 @{verbatim value}、没有
    所以 @{verbatim "<a,b> = lam x. f(x)"} 这类目标 simp 一步证伪；
    但**生成它们的 ML 在理论加载时跑**，改库源码要连 ML 一起重放。
 10. **@{verbatim "class prog"} 与 @{verbatim "default_sort prog"}
-    在 Isabelle2025-2 仍然有效**，但这是 1993 年的类型类用法：
+    在 Isabelle2026 仍然有效**，但这是 1993 年的类型类用法：
     排序推断失败时报的是 @{verbatim "prog"} 而非具体类型，
     读报错要先想"哪个类型变量该有 @{verbatim prog} 排序"。\<close>
 

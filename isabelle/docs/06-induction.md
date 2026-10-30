@@ -157,7 +157,7 @@ theorem shu_shu_shu: shu (shu (shu ?xs)) = shu ?xs
 4. **`then` 忘了写**：`case` 块里没 `then`，归纳前提就不在上下文里，`by simp` 会莫名其妙失败。
 5. **apply 风格缩进错位**：一个空格 vs 两个空格决定策略作用在哪个子目标上；缩错了要么报 `No subgoals`，要么"目标没变"却以为工具不行。
 6. **在 `cases` 上期待归纳假设**：`cases` 不给前提，需要前提就用 `induction`。
-7. **归纳对象选错**：对 `(c, s)` 这类**元组**做归纳时，要写 `proof (induction "(c, s)" rule: xxx.induct)`；只写 `induction c` 会得到错误的归纳谓词（第 18 章的 WHILE 就栽在这里）。
+7. **归纳对象选错**：对 `(c, s)` 这类**元组**做归纳时，要写 `proof (induction "(c, s)" rule: xxx.induct)`；只写 `induction c` 会丢掉状态分量，得到不符合目标的归纳谓词。
 8. **`induct` 规则名撞上函数名**：`lemmas` 与 `xxx.induct` 命名冲突会报 `Duplicate fact`。
 9. **`auto` 用了归纳假设却没化简**：先 `simp` 再 `auto`，或者把需要的引理用 `add:` 喂进去，顺序常常决定成败。
 10. **以为归纳万能**：归纳原理只对**归纳定义**（`datatype`、`inductive` 谓词）存在；`n + n`、`xs @ ys` 这种"非构造器形状"的项必须先泛化到构造器形状上才归纳得动。

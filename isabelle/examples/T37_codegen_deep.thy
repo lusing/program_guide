@@ -10,7 +10,7 @@ text \<open>第 19 章把 @{verbatim "export_code"} 当黑盒用过了。codegen
 
   1. 三种求值引擎的差异与选择（@{verbatim "value"} 的三档）；
   2. @{verbatim "[code_unfold]"} 预处理器：逻辑等价与执行等价分离；
-  3. @{verbatim "[code del]"} 与方程的挑选；
+  3. @{verbatim "[code drop]"} 与方程的挑选；
   4. @{verbatim "export_code"} 的目标语言与文件导出。\<close>
 
 ML \<open>writeln "==== 37 开始 ===="\<close>
@@ -63,18 +63,15 @@ text \<open>逻辑侧 @{verbatim "lfilter_len"} 还是原来的定义（证明�
 执行侧被替换成 @{verbatim "fold"} 版（求值/导出用它）。
 撤销：@{verbatim "[code_unfold del]"}。\<close>
 
-subsection \<open>37.4 方程的挑选与 code del\<close>
+subsection \<open>37.4 方程的挑选与 code drop\<close>
 
-text \<open>默认所有 @{verbatim "[code]"} 方程参与。可用的调控件：
+text \<open>Isabelle2026 已取消旧属性 @{verbatim "[code del]"}。现在按常量
+删除全部代码方程，使用 @{verbatim "[code drop]"} 或
+@{verbatim "[code drop: 常量名]"}；显式注册普通方程可写
+@{verbatim "[code]"} 或更明确的 @{verbatim "[code equation]"}。
+同一理论中显式声明的新方程会取代此前的默认方程。\<close>
 
-  - @{verbatim "[code]"}：注册方程（fun 定义自动全挂）；
-  - @{verbatim "[code del]"}：摘掉一条方程；
-  - @{verbatim "[code equation]"} 不存在（实测），等价物是
-    @{verbatim "declare foo.simps(2) [code del]"}；
-  - @{verbatim "[code drop: foo]"} 的 drop 属性在 HOL-Library
-    （@{verbatim "Code_Lazy"} 一族），Main 里没有。\<close>
-
-declare lfilter_len_def [code del]
+declare lfilter_len_def [code drop]
 
 text \<open>摘掉 @{verbatim "length (filter ...)"} 的默认展开后，37.3 的
 @{verbatim "[code_unfold]"} 成为唯一执行路径——先注册后摘除的顺序
@@ -116,8 +113,9 @@ subsection \<open>37.7 坑位清单（实测）\<close>
 
 text \<open>1. @{verbatim "value"} 对未注册 code 方程的常量报
 @{verbatim "No code equations"}（第 35 章 partial_function 同款）。
-2. @{verbatim "[code equation]"} 不是合法属性——用
-@{verbatim "declare foo.simps(2) [code]"}。
+2. Isabelle2026 已取消 @{verbatim "[code del]"}；删除某常量的
+代码方程用 @{verbatim "declare foo.simps [code drop]"}，
+普通代码方程也可显式写成 @{verbatim "[code equation]"}。
 3. @{verbatim "export_code"} 的 @{verbatim "file_prefix"} 相对于
 会话导出目录，不是当前目录；拿文件用
 @{verbatim "isabelle export -x"}。

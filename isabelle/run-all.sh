@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Isabelle/HOL 教程示例验证脚本（Isabelle2025-2，Windows/Cygwin + Linux + macOS 实测）
+# Isabelle/HOL 教程示例验证脚本（Isabelle2026，Windows/Cygwin + Linux + macOS 实测）
 # 用法:
 #   ./run-all.sh                       # 全量验证：build + 输出抽取 + 两遍比对
 #   ISABELLE=/path/to/isabelle ./run-all.sh   # 覆盖默认路径
@@ -62,7 +62,7 @@
 #       build 在跑。
 #   * ISABELLE_HOME_USER / ISABELLE_HEAPS **不能靠环境变量直接改**（实测：
 #     env ISABELLE_HOME_USER=/tmp/x isabelle getenv 仍然打印
-#     ~/.isabelle/Isabelle2025-2）—— etc/settings 里是**无条件**赋值，
+#     ~/.isabelle/Isabelle2026）—— etc/settings 里是**无条件**赋值，
 #     把传进来的值覆盖掉了。但它们都由 USER_HOME 派生，而 USER_HOME
 #     只在为空时才被赋值（lib/scripts/getsettings）。所以本脚本改的是
 #     **USER_HOME**。
@@ -79,7 +79,7 @@ cd "$(dirname "$0")"
 os=$(uname -s)
 if [[ "$os" == MINGW* || "$os" == MSYS* ]] && [[ -z "${ISABELLE_TUT_REEXEC:-}" ]]; then
   # Git Bash -> 自带 Cygwin 登录 shell -> 本脚本再跑一遍（ISABELLE_TUT_REEXEC 防套娃）
-  ISABELLE_WIN_DIR="${ISABELLE_WIN_DIR:-G:\\xulun3\\isabelle\\Isabelle2025-2}"
+  ISABELLE_WIN_DIR="${ISABELLE_WIN_DIR:-G:\\xulun3\\isabelle\\Isabelle2026}"
   CYG_BASH="$(cygpath -u "$ISABELLE_WIN_DIR")/contrib/cygwin/bin/bash"
   if [[ -x "$CYG_BASH" ]]; then
     TUT_WIN_DIR=$(cygpath -w "$(pwd)")
@@ -100,21 +100,21 @@ if [[ -z "${ISABELLE:-}" ]]; then
   case "$(uname -s)" in
     Darwin)
       for cand in \
-        /Applications/Isabelle2025-2.app/bin/isabelle \
-        "$HOME/Applications/Isabelle2025-2.app/bin/isabelle"; do
+        /Applications/Isabelle2026.app/bin/isabelle \
+        "$HOME/Applications/Isabelle2026.app/bin/isabelle"; do
         [[ -x "$cand" ]] && ISABELLE="$cand" && break
       done ;;
     CYGWIN*)
       for cand in \
-        /cygdrive/g/xulun3/isabelle/Isabelle2025-2/bin/isabelle \
-        /opt/Isabelle2025-2/bin/isabelle; do
+        /cygdrive/g/xulun3/isabelle/Isabelle2026/bin/isabelle \
+        /opt/Isabelle2026/bin/isabelle; do
         [[ -x "$cand" ]] && ISABELLE="$cand" && break
       done ;;
     Linux)
       for cand in \
-        /home/admin/hol/Isabelle2025-2/bin/isabelle \
-        /opt/Isabelle2025-2/bin/isabelle \
-        /usr/local/Isabelle2025-2/bin/isabelle; do
+        /home/admin/hol/Isabelle2026/bin/isabelle \
+        /opt/Isabelle2026/bin/isabelle \
+        /usr/local/Isabelle2026/bin/isabelle; do
         [[ -x "$cand" ]] && ISABELLE="$cand" && break
       done
       [[ -z "${ISABELLE:-}" ]] && command -v isabelle >/dev/null && ISABELLE="$(command -v isabelle)" ;;
@@ -131,7 +131,7 @@ export LANG="${LANG:-en_US.UTF-8}"
 # GBK 字节（bf aa ca bc）导致比对全灭。系统 etc/settings 是无条件赋值盖不动，
 # 唯一入口是用户级 settings（ISABELLE_HOME_USER/etc/settings，在系统
 # settings 之后执行）。守卫式追加，重复运行不叠加。
-US="$USER_HOME/.isabelle/Isabelle2025-2/etc"
+US="$USER_HOME/.isabelle/Isabelle2026/etc"
 if [[ -f "$US/settings" ]] && ! grep -q 'stdout.encoding' "$US/settings"; then
   printf '%s\n' 'ISABELLE_TOOL_JAVA_OPTIONS="$ISABELLE_TOOL_JAVA_OPTIONS -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8"' >> "$US/settings"
 elif [[ ! -f "$US/settings" ]]; then
@@ -190,6 +190,13 @@ if [[ -z "$ROOTMAP" ]]; then
   echo "!! 未能从 $EXAMPLES/ROOT 解析出任何会话分组" >&2
   exit 1
 fi
+# process_theories 的临时 Draft 会话只继承 -l 指定的一个父会话，不会读取
+# 主 ROOT 的额外 sessions 依赖。T18 导入 HOL-Hoare，因此输出抽取时单独
+# 使用 HOL-Hoare；构建仍按上面的 ROOTMAP 和原 ROOT 依赖执行。
+RUNMAP=$(awk -F'\t' 'BEGIN {OFS="\t"} {
+  if ($3 == "T18_hoare") $2 = "HOL-Hoare"
+  print
+}' <<<"$ROOTMAP")
 # 会话名 -> 其 ROOT 所在目录（用于给 process_theories 的 -d 找本地父堆）
 sess_dir() { awk -F'\t' -v s="$1" '$1==s {print $4; exit}' <<<"$ROOTMAP"; }
 # 只验 T 前缀的教程示例理论（CCL 库理论 Set/Lfp/... 不带标记区间，不参与判定）
@@ -211,13 +218,13 @@ extract() { # $1=run目录 $2=theory名 $3=输出文件
 run_once() { # $1=run目录
   mkdir -p "$1/out"
   : >"$1/run.log"
-  # 按 (父堆, 目录) 分组——同父堆可有多个目录（FOL: fol/ 与 ccl/ 并存），
+  # 按 (有效父堆, 目录) 分组——同父堆可有多个目录（FOL: fol/ 与 ccl/ 并存），
   # 旧版只按父堆取第一个目录，会把 T47 派到 examples/ccl 下去找文件。
   local pairs heap hdir hdir_slug ths dflags
-  pairs=$(awk -F'\t' '{print $2 "\t" $4}' <<<"$ROOTMAP" | awk '!seen[$0]++')
+  pairs=$(awk -F'\t' '{print $2 "\t" $4}' <<<"$RUNMAP" | awk '!seen[$0]++')
   while IFS=$'\t' read -r heap hdir; do
     [[ -z "$heap" ]] && continue
-    ths=$(examples_only "$(awk -F'\t' -v h="$heap" -v d="$hdir" '$2==h && $4==d {print $3}' <<<"$ROOTMAP")")
+    ths=$(examples_only "$(awk -F'\t' -v h="$heap" -v d="$hdir" '$2==h && $4==d {print $3}' <<<"$RUNMAP")")
     [[ -z "$ths" ]] && continue   # 纯库会话（如 cclbase）没有教程示例，跳过
     # 每个会话堆一路 process_theories：Draft 会话的父堆由 -l 指定。
     # -l HOL-Eisbach：T27 用了 Eisbach `method` DSL，Draft 会话必须有 HOL-Eisbach

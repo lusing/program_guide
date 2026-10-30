@@ -155,7 +155,7 @@ theorem
 
 1. **自定义类型与标准库重名**：打印出来会带理论名前缀（`T04_datatype.option.Some`）。不重名就只打短名——看到长名先怀疑是不是撞名了。
 2. **递归参数类型要加引号**：`Node "'a tree" 'a "'a tree"`，不加引号解析不过。
-3. **构造器名不要撞归纳规则名**：第 18 章的 `Skip`/`Assign` 事件——`inductive` 的规则名如果和 `datatype` 构造器同名，后者被遮蔽，报的错却完全看不出关联。
+3. **构造器名不要撞归纳规则名**：`inductive` 的规则名如果和 `datatype` 构造器同名，后者会被遮蔽，报错位置却常常看不出两者的关联；定义前先用 `find_theorems` 或 `print_theorems` 检查名字。
 4. **`case` 分支不穷尽 → `not exhaustive`**：宁可多写 `_ \<Rightarrow> undefined`，也别让它悄悄漏。
 5. **构造器参数多写/少写**：`Node l x r` 是三参数，写成 `Node l r` 报 `Type unification failed`，看起来像类型错其实是元数错。
 6. **`datatype` 会顺带生成一堆 `consts`**：`typerep_*`、`term_of_*`、`random_*` 这些是给代码生成器和 quickcheck 用的，不是你写的，忽略即可。

@@ -179,7 +179,7 @@ term "(\<lambda>x y :: 'a :: mg. x \<bullet> y)"
 1. **`instantiation list :: mg` 报 `Bad number of arguments for type constructor`**：list 是类型构造子，要写 `instantiation list :: (type) mg`。
 2. **`intro_class` 不是方法**：正确名字是 `intro_classes`（复数）。同理 `intro_locale` 应为 `intro_locales`。
 3. **类公理的 `thm` 输出带 `?inf2.0` 字段**：这是类参数字段的显式形态，不是错误。日常用 `simp add: inf2_assoc` 就够；`simp` 拒改时把它认出来是排错第一步。
-4. **`print_class` 不是命令**： Isabelle2025 里没有，`print_classes`（复数）打印所有类名，查单个类公理用 `thm mg.inf2_assoc`。
+4. **`print_class` 不是命令**： Isabelle2026 里没有，`print_classes`（复数）打印所有类名，查单个类公理用 `thm mg.inf2_assoc`。
 5. **同一个类不能给同一类型装两个实例**：`instantiation nat :: mg` 写第二遍就报冲突；要多种结构就用 `locale`（第 20 章）。
 6. **类里假设是"事实"，locale 里假设是"假设"**：`mg.inf2_assoc` 一旦建立，`simp` 在任何 `mg` 类型上都能用；`locale mg` 里的 `assoc` 只在 `interpretation` 之后按实例名生效。
 7. **`class` 只能出现在 `theory` 顶端**，不能包在 `locale ... begin ... end` 里。

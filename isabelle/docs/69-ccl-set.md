@@ -13,7 +13,7 @@
 集合论、不动点、传递闭包，最终得到一个**无类型函数语言**的指称语义，
 并附带自然数、列表、流、荷兰国旗四个可执行例子。
 
-它不是历史包袱——Isabelle2025-2 发行版仍然带着它，会话索引
+它不是历史包袱——Isabelle2026 发行版仍然带着它，会话索引
 `FOL/CCL` 一共列出 16 个理论：
 
 | 组 | 理论 | 本教程 |
@@ -243,7 +243,7 @@ Compl(?A) \<equiv> {x. \<not> x : ?A}
   知道 `¬c:A` 时用另一支，两支都通向 `?P`。这就是把经典推理压进
   一条消除规则的形态。
 - **`UnCI`**（第五条）前提是 `¬c:B ⟹ c:A`——反证法塞进引入规则。
-  HOL 用户熟悉的 `UnCI` 在 Isabelle2025-2 已改名 `Un_insert_left`，
+  HOL 用户熟悉的 `UnCI` 在 Isabelle2026 已改名 `Un_insert_left`，
   CCL 里还是 1993 年的老名字。
 
 三个小证明把它们跑通（第 127–140 行）：
@@ -335,7 +335,7 @@ definition
 ```
 
 `\<comment> \<open>...\<close>` 是给 PIDE（跳转 / 悬停提示）用的注释锚，对语义
-没有任何影响， Isabelle2025-2 仍然认它。
+没有任何影响， Isabelle2026 仍然认它。
 
 最小不动点 = 所有**前不动点**（`f(u) <= u`）的交。定义加四条定理
 （第 175–179 行）：
@@ -678,7 +678,7 @@ theorem Compl_Un_demo: Compl(?A Un ?B) = Compl(?A) Int Compl(?B)
 
 ## 69.10 坑位清单（实测）
 
-1. **Isabelle2025-2 的 CCL 会话只剩 5 个理论**——发行版
+1. **Isabelle2026 的 CCL 会话只剩 5 个理论**——发行版
    `src/CCL/ROOT` 只列 `Wfd` / `Fix` / `ex/Nat` / `ex/List` /
    `ex/Stream` / `ex/Flag`；`Set` / `Lfp` / `Gfp` / `CCL` /
    `Trancl` / `Term` / `Type` / `Hered` 是留在树里的遗留文件。
@@ -691,7 +691,7 @@ theorem Compl_Un_demo: Compl(?A Un ?B) = Compl(?A) Int Compl(?B)
    相撞，整个构建报 `Bad import of theory ... need to include
    sessions`。
 4. **ASCII 量词 `ALL` / `EX` / `INT` / `UN` 在 FOL 里可用**，但常量名
-   不能叫它们（词法层整词替换，第 18 章同款）；`SUM` / `PROD` /
+   不能叫它们（词法层整词替换，第 1 章有通用规则）；`SUM` / `PROD` /
    `INF` / `SUP` 在 CCL 里根本不存在。
 5. **应用必须写括号**：`P(a)` 不是 `P a`（FOL 旧应用语法，第 47 章
    同款坑）。

@@ -149,7 +149,7 @@ No type arity
 ```text
 Failed to apply initial proof method
 ```
-`proof (method)` 的开局方法没接住目标，通常是**归纳对象选错了**（第 18 章的 `hoare_While` 就是这样卡住的）。
+`proof (method)` 的开局方法没接住目标，通常是**归纳对象或归纳规则选错了**：先打印 `xxx.induct`，核对规则期望的主项与当前目标是否一致。
 
 <!-- 示意块：非构建产物，不参与输出比对 -->
 ```text
@@ -161,7 +161,7 @@ No subgoals!
 ```text
 Failed to parse prop
 ```
-语法层面失败，但位置常常指向 RHS 而不是真凶。真凶在多数例子里是**名字本身**——第 18 章的 `SUM` 事件：词法层把整词 `SUM` 替换成了求和号。
+语法层面失败，但位置常常指向 RHS 而不是真凶。真凶在多数例子里是**名字本身**——例如把 `SUM` 用作常量名时，词法层会先把整词替换成求和号；通用词法规则见第 1 章。
 
 <!-- 示意块：非构建产物，不参与输出比对 -->
 ```text
@@ -188,7 +188,7 @@ Draft FAILED / Unfinished session(s)
 7. **把 `simp_trace` 的输出留进比对区间**：含时间信息和步骤数，每次都不同。
 8. **把追踪开关忘了关**：之后所有证明都会刷屏。用完 `declare [[simp_trace = false]]`。
 9. **遇到 `At command "<malformed>"` 只看报错那行**：真凶在几十行之前的未配对 `\<close>`。
-10. **以为 `Failed to parse prop` 的 RHS 有问题**：`SUM` 事件说明真凶常常是 LHS 的名字本身。
+10. **以为 `Failed to parse prop` 的 RHS 有问题**：例如常量名 `SUM` 会被词法层替换，真凶在 LHS 的名字而不是报错位置附近的 RHS。
 
 ---
 

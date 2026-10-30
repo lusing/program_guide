@@ -23,7 +23,7 @@ Isabelle 的 kernel 不实现具体逻辑，而是实现一个极简的
 "用户级定义"嵌入。1999 年 Wenzel 的 Isar 把证明从
 tactic 脚本变成可读的声明式文本。2008 年后的工程革命
 加了 PIDE 交互前端、并行构建和会话堆——构成今天的
-Isabelle2025-2。
+Isabelle2026。
 
 这段历史解释了本教程的两条纪律：**为什么每个示例都要
 被内核逐条认可**（LCF 的遗产），**为什么输出必须逐字节
@@ -52,17 +52,17 @@ isabelle process_theories -O ...        # 捕获每个示例的输出消息
 先确认自己在哪个 Isabelle 里跑。下面这段输出直接来自 ML 端的 `getenv`（实测）：
 
 ```text
-Isabelle 版本标识: Isabelle2025-2
+Isabelle 版本标识: Isabelle2026
 ```
 
 本机工具链（写在 `run-all.sh` 顶部，按 `uname -s` 自动选路径，
-Linux 下优先 `/home/admin/hol/Isabelle2025-2/bin/isabelle`；`ISABELLE=…` 可覆盖）：
+Linux 下优先 `/home/admin/hol/Isabelle2026/bin/isabelle`；`ISABELLE=…` 可覆盖）：
 
 | 项 | 值 |
 |---|---|
-| 发行版 | Isabelle2025-2 |
-| 可执行文件（macOS） | `/Applications/Isabelle2025-2.app/bin/isabelle` |
-| 可执行文件（Linux） | `/home/admin/hol/Isabelle2025-2/bin/isabelle` |
+| 发行版 | Isabelle2026 |
+| 可执行文件（macOS） | `/Applications/Isabelle2026.app/bin/isabelle` |
+| 可执行文件（Linux） | `/home/admin/hol/Isabelle2026/bin/isabelle` |
 | ML 系统 | polyml-5.9.2，`x86_64_32-darwin` / `x86_64_32-linux` |
 | 会话 | `IsaTut`（见 `../examples/ROOT`，父会话 `"HOL-Eisbach"`） |
 
@@ -157,7 +157,7 @@ theorem and_swap: (?A \<and> ?B) = (?B \<and> ?A)
 
 1. **字面写 Unicode**：源文件里出现 `‹ › ∀ ∧ →`，报 `Malformed command syntax` 或 `Inner lexical error`。一律写 `\<open>` `\<close>` `\<forall>` `\<and>` `\<longrightarrow>`。
 2. **`@{verbatim xxx}` 忘了加引号**：报 `Bad arguments for document antiquotation`。必须写 `@{verbatim "xxx"}`。
-3. **`isabelle process` 不是命令**：Isabelle2025 里叫 `process_theories`；`isabelle help` 也不存在，直接裸跑 `isabelle` 看工具列表。
+3. **`isabelle process` 不是命令**：Isabelle2026 里叫 `process_theories`；`isabelle help` 也不存在，直接裸跑 `isabelle` 看工具列表。
 4. **build 报 `[SQLITE_ERROR] cannot commit` / `[SQLITE_IOERR_DELETE]`**：构建库是 SQLite，写库时要 `unlink` 掉 `-journal` 文件。macOS 上本机对 `~/` 下未签名二进制的 `unlink` 会返回 EPERM（Linux 无此问题）；脚本把 `USER_HOME` 指到 `/tmp` 下绕开，并在开跑前清掉上次留下的半截 journal。
 5. **改 `ISABELLE_HEAPS` 没用**：`etc/settings` 里写的是 `ISABELLE_HEAPS="$ISABELLE_HOME_USER/heaps"`，直接设会被覆盖。要改就改 `ISABELLE_HOME_USER`。
 6. **数字字面量不写类型标注**：报 `Wellsortedness error`，不是语法错误而是"不知道放哪个类型"。算术表达式永远写 `(1::nat)`。
