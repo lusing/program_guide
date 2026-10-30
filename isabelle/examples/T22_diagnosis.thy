@@ -104,8 +104,9 @@ Unicode 符号（@{verbatim "\<forall>"}、@{verbatim "\<lbrakk>"}）而不是 A
 解决了，又多写了一步。 @{verbatim "auto"} 是对**全部**目标生效的。
 
 @{verbatim "Failed to parse prop"} —— 语法层面的失败，但位置常常指向 RHS
-而不是真凶。真凶在多数例子里是**名字本身**（第 18 章的
-@{verbatim "SUM"} 事件：词法层的缩写替换）。
+而不是真凶。真凶在多数例子里是**名字本身**——例如把
+@{verbatim "SUM"} 用作常量名时，词法层会先把整词替换成求和号；
+通用词法规则见第 1 章。
 
 @{verbatim "At command <malformed>"} —— 上一处文本块的起止标记没配对：
 多写一个结束标记会让后面的命令全部失认，而报错地点远在几十行之后。

@@ -13,14 +13,15 @@ text \<open>第 17 章的代价阶梯走到 @{verbatim "metis"} 那一级：你�
   4. 回放（preplay）一条 Isabelle 能直接执行的命令
      ——@{verbatim "metis"}、@{verbatim "smt"}、@{verbatim "auto"} 等。
 
-全程本地：发行版 @{verbatim "contrib/"} 里打包了 @{verbatim "e-3.2"}、
-@{verbatim "cvc5-1.2.0"}、@{verbatim "z3-4.4.0pre"}、@{verbatim "verit"}、
-@{verbatim "minisat"}（后两个也服务 Nitpick/HTTP 之外的离线场景），
+全程本地：Isabelle2026 发行版 @{verbatim "contrib/"} 里打包了
+@{verbatim "e-3.2"}、@{verbatim "cvc5-1.3.4"}、
+@{verbatim "z3-4.4.0pre-8"}、@{verbatim "verit-2026.05"}、
+@{verbatim "minisat-2.2.1-2"}（后两个也服务 Nitpick 等离线场景），
 不需要网络。\<close>
 
 subsection \<open>32.2 第一个大坑：sledgehammer 是命令，不是方法\<close>
 
-text \<open>@{verbatim "sledgehammer"} 在 Isabelle2025-2 里**只有命令形态**
+text \<open>@{verbatim "sledgehammer"} 在 Isabelle2026 里**只有命令形态**
 （Outer_Syntax.command 注册，源码 @{verbatim "Sledgehammer/sledgehammer_commands.ML"}
 里搜不到任何 Method.setup）。三条实测：
 

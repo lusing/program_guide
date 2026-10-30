@@ -118,7 +118,7 @@ inductive ev_pos :: "nat ⇒ bool" where
 
 - 第 6 章结构归纳：规则归纳是它的推广（归纳对象从数据变成规则）。
 - 第 15 章良基：`star` 的归纳原理本质上就是沿关系走的良基归纳。
-- 第 18 章 IMP 大步语义：`inductive` 的第一个工程级应用。
+- 第 18 章 `HOL-Hoare`：内置大步语义 `Sem` 用归纳关系描述程序从初态到终态的执行。
 - 第 26 章 `codatatype`/`coinductive`：最大不动点那一半；
   共归纳谓词用 `coinductive` 命令，语法同款。
 - 第 51 章不动点理论：`inductive` 的数学原型是 `lfp`，

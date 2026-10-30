@@ -8,7 +8,7 @@ text \<open>1993 年，剑桥大学计算机实验室的 Martin Coen 为 Isabell
 @{verbatim CCL}（Classical Computational Logic，经典可计算逻辑）：
 在 FOL 之上造集合论、不动点、传递闭包，最终得到一个**无类型函数语言**
 的指称语义，并附带自然数、列表、流、荷兰国旗四个可执行例子。
-它不是历史包袱——Isabelle2025-2 发行版仍然带着它，会话索引
+它不是历史包袱——Isabelle2026 发行版仍然带着它，会话索引
 @{verbatim "FOL/CCL"} 一共列出 16 个理论：
 
   - @{verbatim IFOL} / @{verbatim FOL}：直觉主义 / 经典一阶逻辑（第 47 章）；
@@ -322,7 +322,7 @@ lemma Compl_Un_demo: "Compl(A Un B) = Compl(A) Int Compl(B)"
 
 subsection \<open>69.10 坑位清单（实测）\<close>
 
-text \<open>1. **Isabelle2025-2 的 CCL 会话只剩 5 个理论**——发行版
+text \<open>1. **Isabelle2026 的 CCL 会话只剩 5 个理论**——发行版
    @{verbatim "src/CCL/ROOT"} 只列 @{verbatim Wfd} / @{verbatim Fix} /
    @{verbatim "ex/Nat"} / @{verbatim "ex/List"} / @{verbatim "ex/Stream"} /
    @{verbatim "ex/Flag"}；@{verbatim Set} / @{verbatim Lfp} / @{verbatim Gfp} /
@@ -339,7 +339,7 @@ text \<open>1. **Isabelle2025-2 的 CCL 会话只剩 5 个理论**——发行�
    @{verbatim "Bad import of theory ... need to include sessions"}。
 4. **ASCII 量词 @{verbatim ALL} / @{verbatim EX} / @{verbatim INT} /
    @{verbatim UN} 在 FOL 里可用**，但常量名不能叫它们（词法层整词替换，
-   第 18 章同款）；@{verbatim SUM} / @{verbatim PROD} / @{verbatim INF} /
+   第 1 章有通用规则）；@{verbatim SUM} / @{verbatim PROD} / @{verbatim INF} /
    @{verbatim SUP} 在 CCL 里根本不存在。
 5. **应用必须写括号**：@{verbatim "P(a)"} 不是 @{verbatim "P a"}
    （FOL 旧应用语法，第 47 章同款坑）。

@@ -1,6 +1,6 @@
 # Isabelle/HOL 速查表
 
-Isabelle2025-2 / HOL，配套 `docs/01..72` 与 `examples/T01..T72`。
+Isabelle2026 / HOL，配套 `docs/01..73` 与 `examples/T01..T73`。
 本页分两部分：**语法速查**（按用途排列）与**实测坑位索引**（按症状排列，
 指向章号）。坑位总数是 629 条（73 章，详单见各章"坑位清单"），
 每条都在本机跑出来过。
@@ -24,7 +24,7 @@ Isabelle2025-2 / HOL，配套 `docs/01..72` 与 `examples/T01..T72`。
 - 分隔符一律 `\<open>` `\<close>`。字面 `‹ ›` → `Malformed command syntax`（即使内容全是 ASCII）。
 - 项里一律 `\<forall>` `\<in>` `\<longrightarrow>`。字面 `∀ ∈ ⟶` → `Inner lexical error`。
 - 散文里写字面符号能过，但发行版 1467 个 `.thy` 里一个字面符号都没有。
-- **8 个全大写词会被整词替换成符号**：`ALL EX SUM PROD INT UN INF SUP`。常量名不能用它们（第 18 章）。
+- **8 个全大写词会被整词替换成符号**：`ALL EX SUM PROD INT UN INF SUP`。常量名不能用它们（第 1、69 章）。
 
 ## 二、定义
 
@@ -144,10 +144,10 @@ Nat.add_le_mono                               单调性
 |---|---|---|
 | `Malformed command syntax` | 字面 cartouche 分隔符 `‹ ›` | 01 |
 | `Inner lexical error … Failed to parse prop` | 项里写了字面 Unicode 符号 | 01 |
-| `Failed to parse prop`，位置指向 RHS | 名字用了 `SUM`/`ALL`/… 被词法替换 | 18 |
+| `Failed to parse prop`，位置指向 RHS | 名字用了 `SUM`/`ALL`/… 被词法替换 | 01 / 69 |
 | `At command "<malformed>"`，位置在几十行后 | 前面有个未配对的 `\<close>` | 01 / 22 |
 | `Bad arguments for document antiquotation` | `@{verbatim xxx}` 参数没引号 | 01 |
-| mixfix 优先级冲突，报不到真凶 | 一长串表达式没拆片段 | 18 |
+| mixfix 优先级冲突，报不到真凶 | 一长串表达式没拆片段 | 22 |
 | `op +` 写法被拒 | 近年 Isabelle 不再推荐 `op` 前缀 | 20 |
 
 ### 类型类
@@ -165,8 +165,8 @@ Nat.add_le_mono                               单调性
 
 | 症状 | 真凶 | 章 |
 |---|---|---|
-| `No subgoals!` | `auto` 已解决全部目标，多写一步 | 18 / 22 |
-| `Failed to apply initial proof method` | 归纳对象选错（WHILE 被特化） | 18 |
+| `No subgoals!` | `auto` 已解决全部目标，多写一步 | 22 |
+| `vcg_tc` 留下终止性目标 | 只有 `INV` 不够，还要给每轮严格减小的 `VAR` | 18 |
 | `simp` 证不动 | `simp` 只重写不搜索；不等式传递要 `auto intro:` | 16 |
 | 归纳假设太弱 | 忘了 `arbitrary:` | 06 / 24 |
 | `case` 分支失败 | 少写参数：`case (Cons a xs)` 不是 `case Cons` | 06 |
@@ -192,7 +192,7 @@ Nat.add_le_mono                               单调性
 | 症状 | 真凶 | 章 |
 |---|---|---|
 | 打印成 `local.foo` | 引理名撞了库里的 | 15 / 23 |
-| `Seq c1 c2` 解析失败 | 归纳规则名遮蔽了构造器名，加前缀 `SeqS` | 18 |
+| 构建通过，输出工具却加载不了 `HOL-Hoare` | `process_theories` 也要用 `-l HOL-Hoare` 处理第 18 章 | 18 |
 | `find_theorems` 搜不到 | 匹配的是**形状**，方向反了就搜不到 | 22 |
 | 出了 context 用不了 `assoc` | 要写 `semigroup.assoc` | 20 |
 | `hide_const` 后短名失效 | 包括 `_def` 派生事实，要写全名 | 21 |
@@ -242,7 +242,7 @@ Nat.add_le_mono                               单调性
 | `[SQLITE_ERROR] cannot commit` / `[SQLITE_IOERR_DELETE]` | macOS 下构建库在 `~/` 且未签名二进制 `unlink` 被 EPERM（Linux 无此问题）；`USER_HOME` 指到 `/tmp` 都能规避 | 01 |
 | 设 `ISABELLE_HEAPS` 无效 | `etc/settings` 无条件赋值，只有 `USER_HOME` 能改 | 01 |
 | 两遍输出不一致 | `parallel_print` 没关 | 01 |
-| `isabelle process` 不存在 | Isabelle2025 叫 `process_theories` | 01 |
+| `isabelle process` 不存在 | Isabelle2026 叫 `process_theories` | 01 |
 
 ---
 
@@ -286,7 +286,7 @@ Nat.add_le_mono                               单调性
 | 自定义 codatatype 上友元默认策略打不动（`Tactic failed`） | 36 |
 | `simp add: foo.code` 对 corec 方程发散；`subst` 单步 | 36 |
 | 官方 LFilter 三引理环环相扣，少抄一条 `[simp]` 当场卡死 | 36 |
-| `[code equation]` 不存在；`file_prefix` 相对会话导出区 | 37 |
+| Isabelle2026 取消 `[code del]`；用 `[code drop]`，普通方程可写 `[code equation]` | 37 |
 | locale 定义要全限定名喂 value；interpret/interpretation 一字之差 | 38 |
 | `instantiation` 忘 `instance` 收尾：`Unfinished instantiation` | 39 |
 | `Max` 空集 undefined；`THE` 无唯一性不可计算 | 40 |
@@ -356,7 +356,7 @@ CCL（`IsaTutCCL`，FOL 之上的 1993 年"计算逻辑"库）专用坑，
 
 | 症状/要点 | 章 |
 |---|---|
-| Isabelle2025-2 的 CCL 会话只剩 5 个理论；Set/Lfp/Gfp/CCL/Trancl/Term/Type/Hered 是遗留文件，要自建会话 | 69 |
+| Isabelle2026 的 CCL 会话只剩 5 个理论；Set/Lfp/Gfp/CCL/Trancl/Term/Type/Hered 是遗留文件，要自建会话 | 69 |
 | Draft 会话里 `imports Set` 解析不到——必须限定导入 `"IsaTutCCL.Set"` | 69 |
 | 库理论绝不能标 `(global)`：会与 HOL/ZF/HOL-Library 同名理论相撞 | 69 |
 | ASCII 量词 `ALL`/`EX`/`INT`/`UN` 在 FOL 可用，但常量名不能叫它们 | 69 |

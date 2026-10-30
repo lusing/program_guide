@@ -216,4 +216,4 @@ sledgehammer [expect = 0]                       (* 断言"所有 ATP 都失败"�
 
 ---
 
-上一章：[16 · 函数定义深水区](16-functions-deep.md) ｜ 下一章：[18 · 案例：一个小语言的霍尔逻辑](18-hoare.md) ｜ 返回：[README](../README.md)
+上一章：[16 · 函数定义深水区](16-functions-deep.md) ｜ 下一章：[18 · HOL-Hoare：从三元组到可终止程序证明](18-hoare.md) ｜ 返回：[README](../README.md)

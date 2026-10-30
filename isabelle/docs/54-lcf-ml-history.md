@@ -102,7 +102,7 @@ LCF (1972, Milner, Edinburgh)
         |
       Isabelle/Isar (1999, Wenzel)
         |
-      Isabelle2025-2（本教程）
+      Isabelle2026（本教程）
 ```
 
 Isabelle 从 LCF 继承的核心不是某个具体逻辑，而是**架构**：极小内核 + 抽象类型 thm + 策略层自由组合。56 章会展开 Isabelle 在这套架构上加了什么。

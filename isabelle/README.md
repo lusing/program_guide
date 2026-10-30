@@ -1,4 +1,4 @@
-# Isabelle/HOL 教程（Isabelle2025-2）
+# Isabelle/HOL 教程（Isabelle2026）
 
 面向**会编程、初学证明助手**的读者：从"机器当裁判"的心智模型讲到项与类型、
 数据类型、递归与归纳、化简器、Isar 证明语言，再到霍尔逻辑与编译器正确性
@@ -80,7 +80,7 @@ isabelle/
 | [15 关系与良基](docs/15-relations-wf.md) | 闭包归纳、`measure`、手写 `termination` | `T15_relations_wf.thy` |
 | [16 函数定义深水区](docs/16-functions-deep.md) | 快排 / 欧几里得的终止性、结构递归改写 | `T16_functions_deep.thy` |
 | [17 自动化的边界](docs/17-automation.md) | simp→metis 的代价阶梯、`find_theorems` | `T17_automation.thy` |
-| [18 大案例：霍尔逻辑](docs/18-hoare.md) | IMP 语言、大步语义、五条 Hoare 规则 | `T18_hoare.thy` |
+| [18 大案例：霍尔逻辑](docs/18-hoare.md) | `HOL-Hoare`、部分/完全正确性、`INV`/`VAR` 与 VCG | `T18_hoare.thy` |
 | [19 代码生成](docs/19-codegen.md) | 三种求值引擎、`[code]`、`export_code` | `T19_codegen.thy` |
 | [20 Locale](docs/20-locales.md) | semigroup/monoid、`interpretation`、`sublocale` | `T20_locales.thy` |
 | [21 会话与工程组织](docs/21-sessions.md) | ROOT、名字空间、bundle、属性增删 | `T21_sessions.thy` |
@@ -151,18 +151,17 @@ isabelle/
 
 | 组件 | 值 |
 |---|---|
-| 发行版 | Isabelle2025-2 |
-| 可执行文件（Windows） | `G:\xulun3\isabelle\Isabelle2025-2\bin\isabelle`（**必须经自带 Cygwin**，见下） |
-| 可执行文件（macOS） | `/Applications/Isabelle2025-2.app/bin/isabelle` |
-| 可执行文件（Linux） | `/home/admin/hol/Isabelle2025-2/bin/isabelle`（本机 Ubuntu 22.04 实测路径） |
+| 发行版 | Isabelle2026 |
+| 可执行文件（Windows） | `G:\xulun3\isabelle\Isabelle2026\bin\isabelle`（**必须经自带 Cygwin**，见下） |
+| 可执行文件（macOS） | `/Applications/Isabelle2026.app/bin/isabelle` |
+| 可执行文件（Linux） | `/home/admin/hol/Isabelle2026/bin/isabelle`（本机 Ubuntu 22.04 实测路径） |
 | ML 系统 | polyml-5.9.2，`x86_64_32-windows` / `x86_64_32-darwin` / `x86_64_32-linux` |
-| 会话（六组） | `IsaTut`（HOL-Eisbach，examples/）/ `IsaTutLib`（HOL-Library，examples/lib/）/ `IsaTutFOL`（FOL，examples/fol/）/ `IsaTutZF`（ZF，examples/zf/）/ `IsaTutCCL`+`IsaTutCCLex`（FOL→CCL 库→CCL 教程示例，examples/cclbase/ + examples/ccl/）/ `IsaTutLCF`+`IsaTutLCFex`（FOL→LCF 库→LCF 教程示例，examples/lcfbase/ + examples/lcf/）——一个裸会话独占一个目录 |
+| 会话（六组） | `IsaTut`（HOL-Eisbach + HOL-Hoare，examples/）/ `IsaTutLib`（HOL-Library，examples/lib/）/ `IsaTutFOL`（FOL，examples/fol/）/ `IsaTutZF`（ZF，examples/zf/）/ `IsaTutCCL`+`IsaTutCCLex`（FOL→CCL 库→CCL 教程示例，examples/cclbase/ + examples/ccl/）/ `IsaTutLCF`+`IsaTutLCFex`（FOL→LCF 库→LCF 教程示例，examples/lcfbase/ + examples/lcf/）——一个裸会话独占一个目录 |
 | 交互前端 | `isabelle jedit`（随发行版自带） |
-| 本地 ATP/SAT | contrib 自带 `e-3.2` / `cvc5-1.2.0` / `z3-4.4.0pre` / `verit` / `minisat-2.2.1`（第 32/33 章全离线可用） |
+| 本地 ATP/SAT | contrib 自带 `e-3.2` / `cvc5-1.3.4` / `z3-4.4.0pre-8` / `verit-2026.05` / `minisat-2.2.1-2`（第 32/33 章全离线可用） |
 
-发行版自带预编译的 `Pure` / `HOL` 堆镜像；`HOL-Eisbach` / `HOL-Library` /
-`FOL` / `ZF` 四个堆需要现场构建一次（本机 Windows/Cygwin 实测：
-Eisbach 27 秒、Library 约 3 分钟、FOL/ZF 各约 1 分钟），之后全部命中缓存。
+发行版自带预编译的 `Pure` / `HOL` 堆镜像；`HOL-Eisbach` / `HOL-Hoare` /
+`HOL-Library` / `FOL` / `ZF` 五个堆需要现场构建一次，之后可命中缓存。
 CCL 堆（`IsaTutCCL`，即 `examples/cclbase/` 里的 14 个库理论）也需现场
 构建一次；`IsaTutCCLex` 只含 T69–T72 四个示例理论。
 `run-all.sh` 会按 `uname -s` 自选默认 `ISABELLE` 路径与重入方式；
@@ -185,10 +184,9 @@ cd isabelle
 
 **判定标准**（四关，全部通过才算过）：
 
-1. `isabelle build -D examples` 退出码 0（五个会话：IsaTut 及其
-   lib/fol/zf/cclbase/ccl 子目录里的四个附加会话），且日志无 `FAILED` /
-   `Unfinished session` / `^\*\*\*`——Isabelle/Scala 工具失败不一定让
-   进程退出码非 0，必须查日志；
+1. 脚本对每个含 `ROOT` 的目录执行 `isabelle build`，所有会话退出码 0，
+   且日志无 `FAILED` / `Unfinished session` / `^\*\*\*`——Isabelle/Scala
+   工具失败不一定让进程退出码非 0，必须查日志；
 2. `process_theories -O` 抽出的 `==== NN 开始 ====` / `==== NN 结束 ====`
    区间标记齐全、非空、无控制字符、无溃逃痕迹；
 3. 同一命令连跑两遍；
@@ -216,8 +214,8 @@ cd isabelle
 - **源文件一律 ASCII 转义**：分隔符写 `\<open>` `\<close>`，项里写
   `\<forall>` `\<in>` `\<longrightarrow>`。字面 `‹ › ∀` 会被拒（第 1 章
   有实测边界表）。
-- **常量名不能用 `ALL EX SUM PROD INT UN INF SUP`**：词法层整词替换成符号，
-  报 `Failed to parse prop` 且位置指向 RHS（第 18 章）。
+- **常量名不能用 `ALL EX SUM PROD INT UN INF SUP`**：词法层会把整词替换成符号，
+  可能报 `Failed to parse prop` 且位置指向 RHS（词法规则见第 1 章）。
 
 ## 示例怎么读
 

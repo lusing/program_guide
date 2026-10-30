@@ -840,7 +840,7 @@ theorem napply_demo: succ ^ succ(succ(zero)) ` zero = succ(succ(zero))
 9. **`ccl_dstncts` 是机器生成的 simp 规则**，所以
    `<a,b> = lam x. f(x)` 这类目标 simp 一步证伪；但**生成它们的
    ML 在理论加载时跑**，改库源码要连 ML 一起重放。
-10. **`class prog` 与 `default_sort prog` 在 Isabelle2025-2 仍然
+10. **`class prog` 与 `default_sort prog` 在 Isabelle2026 仍然
     有效**，但这是 1993 年的类型类用法：排序推断失败时报的是
     `prog` 而非具体类型，读报错要先想"哪个类型变量该有 `prog` 排序"。
 ## 70.12 与其他章的接口

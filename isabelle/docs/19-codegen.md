@@ -276,4 +276,4 @@ OCaml/Haskell/Scala`，高级形式留给读者。
 
 ---
 
-上一章：[18 · 案例：一个小语言的霍尔逻辑](18-hoare.md) ｜ 下一章：[20 · Locale 与类型类](20-locales.md) ｜ 返回：[README](../README.md)
+上一章：[18 · HOL-Hoare：从三元组到可终止程序证明](18-hoare.md) ｜ 下一章：[20 · Locale 与类型类](20-locales.md) ｜ 返回：[README](../README.md)

@@ -1,5 +1,7 @@
 session IsaTut = "HOL-Eisbach" +
   options [document = false]
+  sessions
+    "HOL-Hoare"
   theories
     T01_overview
     T02_first_theory

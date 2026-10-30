@@ -33,7 +33,7 @@ text \<open>FOL 没有 HOL 的丰富类型系统。只有两种类型：
   - @{verbatim "'a \<Rightarrow> o"}：谓词类型（从个体到真值的函数）。
 
 个体变量用类型变量 @{verbatim "'a"} 表示（多态），没有 @{verbatim "i"} 类型
-（老教程里的 @{verbatim "i"} 在 Isabelle2025-2 里已经不存在，实测报
+（老教程里的 @{verbatim "i"} 在 Isabelle2026 里已经不存在，实测报
 @{verbatim "Undefined type name"}）。
 
 声明谓词变量的正确写法：\<close>
@@ -607,7 +607,7 @@ subsection \<open>47.20 坑位清单（实测）\<close>
 
 text \<open>1. @{verbatim "i"} 类型不存在——个体用默认 sort 的类型变量 @{verbatim "'a"}，
    谓词 @{verbatim "'a \<Rightarrow> o"}。老教程里的 @{verbatim ":: i"} 写法在
-   Isabelle2025-2 里直接报错。
+   Isabelle2026 里直接报错。
 2. **@{verbatim "P x"} 空格应用解析失败**——用 @{verbatim "P(x)"}
   （ZF 同款，第 48 章）。@{verbatim "P x"} 在量词体里触发
    Inner syntax error，报错位置从 @{verbatim "x"} 开始——极具误导性。

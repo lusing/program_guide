@@ -6,12 +6,12 @@
 
 你提供目标，Sledgehammer 翻译成一阶逻辑、发给本地 ATP/SMT 求解器、
 拿到证明后最小化引理集、回放一条 `metis`/`smt`/`auto` 命令。
-全程离线：发行版 `contrib/` 打包了 `e-3.2`、`cvc5-1.2.0`、
-`z3-4.4.0pre`、`verit-2021.06`、`minisat-2.2.1`。
+全程离线：Isabelle 2026 发行版 `contrib/` 打包了 `e-3.2`、`cvc5-1.3.4`、
+`z3-4.4.0pre-8`、`verit-2026.05`、`minisat-2.2.1-2`。
 
 ## 32.2 第一个大坑：它是命令，不是方法
 
-Isabelle2025-2 的 `sledgehammer` **只有命令形态**（源码
+Isabelle2026 的 `sledgehammer` **只有命令形态**（源码
 `Sledgehammer/sledgehammer_commands.ML` 里是 `Outer_Syntax.command`，
 没有任何 `Method.setup`）。实测三种写法：
 
