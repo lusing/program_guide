@@ -557,3 +557,13 @@ session ST112 in "ST112" = "ZF-Constructible" +
   options [document = false]
   theories
     Sigma12
+
+session ST113 in "ST113" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Sigma13
+
+session ST114 in "ST114" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    Solovay
