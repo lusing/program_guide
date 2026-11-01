@@ -129,6 +129,10 @@ cppgui/imgui.ini
 .scratch/
 .scratch*/
 
+# settheory 冯琦扩充的过程性计划/设计稿（本地保留，不入库）
+docs/superpowers/plans/2026-10-26-settheory-fengqi-vol1-vol3.md
+docs/superpowers/specs/2026-10-26-settheory-fengqi-vol1-vol3-design.md
+
 # funanalysis tutorial build artifacts
 funanalysis/build/
 funanalysis/examples/lean/.lake/

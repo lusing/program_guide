@@ -1,4 +1,6 @@
 build/
+PLAN.md
+tools/
 examples/lean/.lake/
 examples/lean/lake-manifest.json.bak
 *.vo
