@@ -11,3 +11,7 @@ examples/lean/lake-manifest.json.bak
 examples/agda/_build/
 tools/text/
 tools/smoke/
+__pycache__/
+*.pyc
+*.qlf
+*.thy~
