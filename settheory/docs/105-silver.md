@@ -1437,4 +1437,4 @@ has_key 的截断与贪心的首值获胜的同构点（同一键的后续
 目标被忽略）与分流点（Prolog 可回溯查询链的中间形态、
 Julia 只得终点）。）
 
-上一章：[104 Prikry 力迫](104-prikry.md) · 下一章：[106 SCH 最小反例](106-sch.md)
+上一章：[104 Prikry 力迫](104-prikry.md) · 下一章：[106 SCH 最小反例](106-schcounter.md)
