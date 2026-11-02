@@ -148,6 +148,23 @@ P(⋃Aᵢ) = ΣP(Tᵢ) ≤ ΣP(Aᵢ)（每步用单调性）。**上界无需
 哲学：**公理的推论在小宇宙上成立，靠的不是证明而是
 数——而数恰恰是计算机最不会错的事**。
 
+核心谓词先把事件表示成点的列表，再逐点累加概率：
+
+```prolog
+prob([], 0).
+prob([X | Xs], P) :- p_prob(X, Q), prob(Xs, R), P is Q + R.
+
+check_inclusion_exclusion :-
+    Omega = [1, 2, 3, 4],
+    forall((subsets(Omega, A), subsets(Omega, B)),
+           (union(A, B, AuB), inter_list([A, B], Omega, AiB),
+            prob(A, P), prob(B, Q), prob(AiB, R), prob(AuB, U),
+            U is P + Q - R)).
+```
+
+`forall/2` 不是“尝试一个例子”，而是要求所有 256 对事件都成功；
+交集被多算一次，所以右端必须减去 `R`。
+
 **Python（`02_axioms.py`）——精确分数的定律实验**。骰子
 空间 Ω = {(i,j)}（36 点等概率）上：① P(A ∪ B) 的容斥
 账（A = "首骰 6"、B = "次骰 6"：11/36 = 1/6 + 1/6 − 1/36
@@ -156,11 +173,39 @@ P(⋃Aᵢ) = ΣP(Tᵢ) ≤ ΣP(Aᵢ)（每步用单调性）。**上界无需
 （上界与真值的间隙）。`Fraction` 让每个数字都是精确的
 有理数——公理的推论在数字层面零误差。
 
+容斥账的关键只有三行：先枚举 36 个等概率结果，再把事件谓词
+传给概率函数：
+
+```python
+OMEGA = list(product(range(1, 7), repeat=2))
+P = lambda A: Fraction(sum(1 for s in OMEGA if A(s)), 36)
+
+lhs = P(lambda s: A(s) or B(s))
+rhs = P(A) + P(B) - P(lambda s: A(s) and B(s))
+assert lhs == rhs == Fraction(11, 36)
+```
+
+`or` 计算并集，`and` 计算交集；`11/36 = 1/6 + 1/6 − 1/36`
+不是浮点近似，而是有理数相等。
+
 **Julia（`02_axioms.jl`）——频率视角**。把同一骰子空间
 模拟十万次：经验频率验证补律（freq(A) + freq(Aᶜ) ≈ 1 到
 第三位小数）、容斥（freq(A∪B) ≈ freq(A)+freq(B)−freq(A∩B)）。
 频率不是概率，但大数定律（第 18 章）保证它们越靠越近
 ——本章先享受这个事实，18 章再证明它。
+
+```julia
+samples = [(rand(1:6), rand(1:6)) for _ in 1:N]
+freq(A) = count(A, samples) / N
+
+fA, fB = freq(A_first6), freq(B_second6)
+fAiB = freq(s -> s[1] == 6 && s[2] == 6)
+fAuB = freq(s -> s[1] == 6 || s[2] == 6)
+@assert abs(fAuB - (fA + fB - fAiB)) < 0.001
+```
+
+这里断言的是固定样本下的近似，不是概率恒等式；它和 Python 的
+精确分数互为“直觉”和“终审”。
 
 **Lean（`Ch02Axioms.lean`）——公理的证明器原文**。mathlib
 的 `MeasureTheory.Measure` 就是三公理的化身（`measure_

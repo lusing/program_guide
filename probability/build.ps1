@@ -33,6 +33,7 @@ param(
     [string]$Lang = "",
     [switch]$List,
     [switch]$Clean,
+    [switch]$Docs,
     [switch]$ExtraProlog
 )
 
@@ -47,6 +48,14 @@ $buildDir = Join-Path $root 'build'
 $isaHome = 'G:\xulun3\isabelle\Isabelle2025-2'
 $isaBash = Join-Path $isaHome 'contrib\cygwin\bin\bash.exe'
 $python313 = 'G:\scoop\apps\python313\current\python.exe'
+
+# ---------- 文档检查 ----------
+if ($Docs) {
+    & $python313 -I -m unittest discover -s (Join-Path $root 'tools') -p 'test_*.py' -v
+    if ($LASTEXITCODE -ne 0) { exit 1 }
+    & $python313 -I (Join-Path $root 'tools\check_docs.py') --root $root
+    exit $LASTEXITCODE
+}
 
 # ---------- 清理 ----------
 if ($Clean) {

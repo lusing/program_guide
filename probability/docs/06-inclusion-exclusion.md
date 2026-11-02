@@ -86,16 +86,73 @@ Taylor 展开取 x = 1——交错级数收敛，且误差被下一项控制）�
 空间（36 点）的精确验证；④ 篮子问题 n=3、k=4 的容斥值
 vs 全枚举（3⁴ = 81 种投法穷举——终审法庭）。
 
+错排闭式与递推分别独立计算，再要求精确相等：
+
+```python
+def der_closed(n):
+    return factorial(n) * sum(Fraction((-1) ** k, factorial(k))
+                              for k in range(n + 1))
+
+def der_rec(n):
+    d = 1 if n == 0 else 0
+    for i in range(2, n + 1):
+        d = i * d + (-1) ** i
+    return d if n != 0 else 1
+
+assert [der_closed(n) for n in range(0, 8)] == [1, 0, 1, 2, 9, 44, 265, 1854]
+```
+
+篮子问题则同时用容斥公式和 `product(range(n), repeat=k)` 枚举
+全部 81 种投法；两端都得到 `36/81` 才算通过。
+
 **Julia（`06_inclusion_exclusion.jl`）**：① n = 10 的随机
 排列模拟"零固定点"频率 vs 1/e；② 篮子问题（n = 5、k = 20）
 的"全非空"模拟 vs 容斥公式；③ 至少一封装对的 1 − 1/e
 显影。
+
+容斥公式直接翻译成交错和，模拟端则逐球记录哪些篮子出现过：
+
+```julia
+ie_prob(n, k) = sum(j -> (-1)^j * binomial(n, j) * ((n - j) / n)^k, 0:n)
+
+function balls_all_covered(n, k, trials = 200_000)
+    hit = 0
+    for _ in 1:trials
+        seen = falses(n)
+        for _ in 1:k
+            seen[rand(1:n)] = true
+        end
+        count(seen) == n && (hit += 1)
+    end
+    hit / trials
+end
+```
+
+固定种子后，模拟频率与容斥值的差只按重复次数的 `1/√trials`
+缩小，因此断言使用小容差，而不是要求逐位相等。
 
 **Prolog（`06_inclusion_exclusion.pl`）**：小宇宙穷举——
 ① n = 4 的错排全枚举（4! = 24 个排列中数出 D₄ = 9——
 错排公式的终审）；② n = 3 篮 k = 4 球的 81 投法全枚举数
 "全非空"（对拍容斥）；③ 三事件容斥在 8 点玩具空间的
 逐点计账验证。
+
+```prolog
+check_balls :-
+    findall(Assign, (between(1,3,A1), between(1,3,B1), between(1,3,C1),
+                     between(1,3,D1),
+                     Assign = [A1,B1,C1,D1]), All),
+    length(All, 81),
+    include(all_distinct3, All, Full),
+    length(Full, NFull),
+    NFull =:= 36,
+    IE is 81 - 3 * 16 + 3 * 1,
+    IE =:= NFull.
+```
+
+四个 1–3 的选择给出 `3^4 = 81` 个有序投法；`sort/2` 去掉重复
+篮子后长度恰为 3，才表示三个篮子全被覆盖。交错和
+`81 − 3·16 + 3·1 = 36` 与穷举计数逐项对齐。
 
 **Lean（`Ch06InclusionExclusion.lean`）**：mathlib 的
 `Finset.inclusion_exclusion`?（组合版真名侦察：Finset 侧
