@@ -3,12 +3,11 @@
 
 逐批追加各章 import。
 -/
-import Probability.Ch01SignatureProblems
 import Probability.Ch02Axioms
 import Probability.Ch03Conditional
 import Probability.Ch05Counting
 import Probability.Ch06InclusionExclusion
-import Probability.Ch07Combinatorics
+import Probability.Ch07CountingLab
 import Probability.Ch08DiscreteRV
 import Probability.Ch09ContinuousRV
 import Probability.Ch10Expectation

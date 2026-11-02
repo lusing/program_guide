@@ -173,4 +173,4 @@ decide/norm_num 判决——三硬币表、二项定理归一的数值
 
 ---
 
-上一章：[07 高级组合](07-combinatorics.md) · 下一章：[09 连续随机变量](09-continuous-rv.md)
+上一章：[07 计数实验：扑克、生日与著名问题](07-counting-lab.md) · 下一章：[09 连续随机变量](09-continuous-rv.md)

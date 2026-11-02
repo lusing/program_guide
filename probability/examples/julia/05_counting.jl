@@ -53,4 +53,29 @@ end
 @assert sum(row) == 2 ^ 10
 println("Pascal row n=10: symmetric, sums to 2^10 = 1024: OK")
 
+# ④ 多项系数：5 个有标签位置分成 (3,1,1) 三组，共有 20 种分法。
+multinomial(n, groups) = factorial(n) ÷ prod(factorial.(groups))
+@assert multinomial(5, (3, 1, 1)) == 20
+@assert multinomial(11, (5, 3, 3)) == 9240
+println("multinomial coefficients 5!/(3!1!1!)=20 and 11!/(5!3!3!)=9240: OK")
+
+# 多项式定理：逐项枚举 a+b+c=5，与直接五次幂对拍。
+let total = 0//1, vals = (1//2, 3//1, -1//1)
+    for a in 0:5, b in 0:(5-a)
+        c = 5 - a - b
+        coef = multinomial(5, (a, b, c))//1
+        total += coef * vals[1]^a * vals[2]^b * vals[3]^c
+    end
+    @assert total == (vals[1] + vals[2] + vals[3])^5
+end
+println("multinomial theorem (x+y+z)^5 matches direct power: OK")
+
+# 3 个可辨球独立进 2 个桶，桶 1 恰有 j 球的分配数是 C(3,j)。
+hist = zeros(Int, 4)
+for b1 in 0:1, b2 in 0:1, b3 in 0:1
+    hist[b1 + b2 + b3 + 1] += 1
+end
+@assert hist == [1, 3, 3, 1]
+println("3 balls into 2 bins histogram [1,3,3,1] is a multinomial row: OK")
+
 println("END ====")

@@ -49,12 +49,28 @@ check_coins :-
 
 count_heads_2(S) :- include(=(h), S, Hs), length(Hs, 2).
 
+check_multinomial :-
+    fact(5, F5), fact(3, F3), fact(1, F1),
+    M is F5 // (F3 * F1 * F1),
+    M =:= 20,
+    findall(A, (between(0, 1, B1), between(0, 1, B2),
+                between(0, 1, B3), A = [B1, B2, B3]), All),
+    length(All, 8),
+    findall(J-C, (between(0, 3, J),
+                  findall(A, (member(A, All), count_ones(A, J)), As),
+                  length(As, C)), Hist),
+    Hist = [0-1, 1-3, 2-3, 3-1],
+    format("multinomial: 5!/(3!1!1!)=20; 3 balls 2 bins histogram [1,3,3,1]: OK~n").
+
+count_ones(A, J) :- include(=(1), A, Ones), length(Ones, J).
+
 main :-
     format("==== 05 counting~n", []),
     check_perms,
     check_combos,
     check_pascal,
     check_coins,
+    check_multinomial,
     format("END ====~n"), !.
 
 :- initialization(main).
