@@ -1,5 +1,5 @@
 :- encoding(utf8).
-% 05_conditional.pl —— 第 05 章：条件概率与 Monty Hall（Prolog 穷举）
+% 03_conditional.pl —— 第 03 章：条件概率与 Monty Hall（Prolog 穷举）
 %
 % ① Monty Hall 的 3（车门）×2（主持开门）全穷举：每行打印
 %    P(H|Ci) 与 Bayes 分子——悖论在 6 行账目面前无处藏身；
@@ -47,7 +47,7 @@ check_prisoners :-
     format("three prisoners: same structure, switch-to-b wins 2/3: OK~n").
 
 main :-
-    format("==== 05 conditional~n", []),
+    format("==== 03 conditional~n", []),
     check_monty,
     check_prisoners,
     format("END ====~n"), !.

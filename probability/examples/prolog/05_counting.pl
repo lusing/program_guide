@@ -1,5 +1,5 @@
 :- encoding(utf8).
-% 03_counting.pl —— 第 03 章：计数基础（Prolog 穷举通道）
+% 05_counting.pl —— 第 05 章：计数基础（Prolog 穷举通道）
 %
 % ① 4 物件的排列全枚举（4! = 24）与 4-选-2 组合全枚举
 %    （C(4,2) = 6——保序选取 = 顺序去重的代码化）；
@@ -50,7 +50,7 @@ check_coins :-
 count_heads_2(S) :- include(=(h), S, Hs), length(Hs, 2).
 
 main :-
-    format("==== 03 counting~n", []),
+    format("==== 05 counting~n", []),
     check_perms,
     check_combos,
     check_pascal,

@@ -178,4 +178,4 @@ check_balls :-
 
 ---
 
-上一章：[05 条件概率与 Bayes](05-conditional.md) · 下一章：[07 高级组合](07-combinatorics.md)
+上一章：[05 计数基础：阶乘与二项系数](05-counting.md) · 下一章：[07 高级组合](07-combinatorics.md)

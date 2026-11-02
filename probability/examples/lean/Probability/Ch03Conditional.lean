@@ -2,12 +2,12 @@ import Mathlib.Probability.ConditionalProbability
 import Mathlib.Tactic
 
 /-!
-# 第 05 章 条件概率、独立与 Bayes（Lean）
+# 第 03 章 条件概率与 Bayes（Lean）
 
 Miller ch4 的机器侧：mathlib 的 `MeasureTheory.cond`（条件
 测度）与 `cond_apply`（条件概率的定义式）、`cond_mul_eq_inter`
 （乘法链）。实弹：医学检验 Bayes 账的 ℚ 精确收割——正文
-05.2 的 1.9% 在 norm_num 下零误差。
+03.5 的 1.9% 在 norm_num 下零误差。
 -/
 
 open MeasureTheory

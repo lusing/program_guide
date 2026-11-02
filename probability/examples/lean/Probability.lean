@@ -5,8 +5,8 @@
 -/
 import Probability.Ch01SignatureProblems
 import Probability.Ch02Axioms
-import Probability.Ch03Counting
-import Probability.Ch05Conditional
+import Probability.Ch03Conditional
+import Probability.Ch05Counting
 import Probability.Ch06InclusionExclusion
 import Probability.Ch07Combinatorics
 import Probability.Ch08DiscreteRV

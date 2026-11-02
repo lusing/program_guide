@@ -1,8 +1,8 @@
-theory T05_Conditional
+theory T03_Conditional
   imports "HOL-Probability.Probability"
 begin
 
-section \<open>第 05 章：条件概率与 Bayes（Isabelle 锚点）\<close>
+section \<open>第 03 章：条件概率与 Bayes（Isabelle 锚点）\<close>
 
 text \<open>对应 Miller ch4。HOL-Probability 的条件概率：
 `conditional_prob`（实值定义 P(B|A) = P(A\<inter>B)/P(A)）与

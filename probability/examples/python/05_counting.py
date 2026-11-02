@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-print("==== 03 counting")
-# 第 03 章 Python：阶乘与二项系数的精确账（Fraction）。
+print("==== 05 counting")
+# 第 05 章 Python：阶乘与二项系数的精确账（Fraction）。
 # ① Pascal 递推表 vs 直接公式逐格对拍；② 二项定理恒等式；
 # ③ 顺序/无序的倍数账（陷阱一的数字形态）。
 from fractions import Fraction

@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-print("==== 05 conditional")
-# 第 05 章 Python：条件概率与 Bayes 的精确分数账（Fraction）。
+print("==== 03 conditional")
+# 第 03 章 Python：条件概率与 Bayes 的精确分数账（Fraction）。
 # ① 医学检验（每步中间量）；② Monty Hall 的全条件化；
-# ③ 两两独立 ≠ 相互独立（ε₁, ε₂, ε₁ε₂ 系统）；④ 乘法链
-#    的抽牌账。
+# ③ 25 点有限表上的双向条件概率；④ 乘法链的无放回抽牌账。
 from fractions import Fraction
-from itertools import product
 
 # ① 医学检验：病率 1/1000、灵敏度 95%、假阳率 5%
 prev = Fraction(1, 1000)
@@ -31,19 +29,13 @@ assert pH == Fraction(1, 2)
 assert post2 == Fraction(2, 3)
 print("Monty Hall exact: P(car-2 | open-3) = 2/3 via 3-case conditioning: OK")
 
-# ③ 两两独立 ≠ 相互独立：ε₁, ε₂ iid 公平硬币位，
-#    A = {ε₁=1}、B = {ε₂=1}、C = {ε₁ε₂=1}（异或取反）
-#    每个事件概率 1/2，每对独立，但 P(A∩B∩C) = 0 ≠ 1/8
-omega = list(product([0, 1], repeat=2))
-P = lambda E: Fraction(sum(1 for w in omega if E(w)), 4)
-A = lambda w: w[0] == 1
-B = lambda w: w[1] == 1
-C = lambda w: w[0] == w[1]                   # 两 bit 相同（含 (0,0)）
-assert P(A) == P(B) == P(C) == Fraction(1, 2)
-for X, Y in ((A, B), (A, C), (B, C)):
-    assert P(lambda w, x=X, y=Y: x(w) and y(w)) == Fraction(1, 4)  # 两两独立
-assert P(lambda w: A(w) and B(w) and C(w)) == Fraction(1, 4)        # ≠ 1/8
-print("pairwise-independent but NOT mutual: P(ABC) = 1/4 != 1/8: OK")
+# ③ 25 个等可能样本点的条件概率：P(A)=15/25，P(B)=7/25，P(A∩B)=5/25
+p_A = Fraction(15, 25)
+p_B = Fraction(7, 25)
+p_AB = Fraction(5, 25)
+assert p_AB / p_B == Fraction(5, 7)
+assert p_AB / p_A == Fraction(1, 3)
+print("finite table: P(A|B)=5/7 and P(B|A)=1/3: OK")
 
 # ④ 乘法链：无放回抽两张牌都是 A
 p_two_aces = Fraction(4, 52) * Fraction(3, 51)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-println("==== 05 conditional")
-# 第 05 章 Julia：条件概率与 Bayes 的模拟对拍。
+println("==== 03 conditional")
+# 第 03 章 Julia：条件概率与 Bayes 的模拟对拍。
 # ① Monty Hall 十万局（换门 ≈ 2/3）；② 不知情主持人变体
 #    （真 1/2——条件结构变则结论变）；③ 医学检验的阳性池
 #    分解（真阳/假阳比例显影）。

@@ -2,7 +2,7 @@ import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Tactic
 
 /-!
-# 第 03 章 计数基础（Lean）
+# 第 05 章 计数基础（Lean）
 
 Miller ch3.1 的机器侧：mathlib 的 `Nat.choose` = C(n,k)。
 本章登记 Pascal 递推与求和恒等式的机器版，并用 `decide`

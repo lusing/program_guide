@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-println("==== 03 counting")
-# 第 03 章 Julia：计数的频率视角（零依赖——环境无 Combinatorics）。
+println("==== 05 counting")
+# 第 05 章 Julia：计数的频率视角（零依赖——环境无 Combinatorics）。
 # ① 三抛硬币恰 2 正（陷阱一的现场）；② 10 人选 3 的枚举；
 # ③ Pascal 行的数值（与 Python 精确表互补）。
 using Random
