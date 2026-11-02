@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-print("==== 20 generating_functions")
-# 第 20 章 Python：母函数的精确账。
+print("==== 15 generating_functions")
+# 第 15 章 Python：母函数与矩生成函数的精确账。
 # ① Fibonacci 母函数系数恢复（s/(1−s−s²) 长除法 vs 递推）；
 # ② Binet 公式的整数性；③ 泊松卷积定理（枚举卷积 vs
 #    Pois(12) pmf）；④ 二项 (q+ps)³ 展开系数 vs 8 格枚举；
@@ -79,5 +79,40 @@ for (name, mgf, mu1, mu2) in [
     m2 = (mgf(h) - 2 * mgf(0.0) + mgf(-h)) / h ** 2
     assert abs(m1 - mu1) < 1e-4 and abs(m2 - mu2) < 1e-3
 print("moment extraction: M'(0)=mu, M''(0)=E[X^2] for normal/exp: OK")
+
+# ⑦ 二项 PGF 精确对账与 CF 乘积（原 15_cf.py 并入）
+from fractions import Fraction
+
+
+def close(a, b, tol=1e-12):
+    assert abs(a - b) <= tol * max(1.0, abs(b)), (a, b)
+
+
+n, p = 5, Fraction(1, 3)
+q = 1 - p
+for s in (Fraction(0), Fraction(1, 2), Fraction(2)):
+    direct = sum(Fraction(comb(n, k)) * p ** k * q ** (n - k) * s ** k
+                 for k in range(n + 1))
+    assert direct == (q + p * s) ** n
+# G'(1)=E[X]，G''(1)=E[X(X-1)]。
+mean_direct = sum(k * Fraction(comb(n, k)) * p ** k * q ** (n - k)
+                  for k in range(n + 1))
+fact2_direct = sum(k * (k - 1) * Fraction(comb(n, k)) * p ** k * q ** (n - k)
+                   for k in range(n + 1))
+assert mean_direct == n * p
+assert fact2_direct == n * (n - 1) * p ** 2
+assert fact2_direct + mean_direct - mean_direct ** 2 == n * p * q
+
+# Poisson PGF exp(lambda*(s-1))，独立和参数相加。
+lam1, lam2, s = 1.5, 2.25, 0.7
+close(exp(lam1 * (s - 1)) * exp(lam2 * (s - 1)),
+      exp((lam1 + lam2) * (s - 1)))
+
+# 正态/Cauchy CF 均总存在；独立和对应指数相加。
+for t in (-1.2, 0.0, 0.8):
+    close(exp(-t * t / 2) * exp(-3 * t * t / 2), exp(-2 * t * t))
+    close(exp(-abs(t)) * exp(-2 * abs(t)), exp(-3 * abs(t)))
+close(exp(0.0), 1.0)            # 任何分布在 t=0 的 CF 都是 1
+print("PGF coefficients/factorial moments and normal/Poisson/Cauchy CF products: OK")
 
 print("END ====")

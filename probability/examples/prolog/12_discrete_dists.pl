@@ -1,9 +1,9 @@
 :- encoding(utf8).
-% 13_discrete_dists.pl —— 第 13 章：离散分布族（Prolog 穷举）
+% 12_discrete_dists.pl —— 第 12 章：离散分布族（Prolog 穷举）
 %
 % ① 四骰赌局 1296 局全枚举 E = 239/1296；② 饼干 3⁶ = 729
 %    加权序列 → 3-2-1 概率；③ German Tank N = 8、k = 3 的
-%    56 组合全枚举 E[M] = 6 = k/(k+1)·(N+1)；④ 几何截断归一。
+%    56 组合全枚举 E[M] = 27/4 = k/(k+1)·(N+1)；④ 几何截断归一。
 
 % ① 四骰：押定 1（对称性不失一般），出现 k 次赢 k 元
 count_1s(Dice, K) :- include(=(1), Dice, Ones), length(Ones, K).
@@ -57,7 +57,7 @@ check_geometric :-
     format("geometric(1/2) truncated sum n<=8 = 255/256: OK~n").
 
 main :-
-    format("==== 13 discrete_dists~n", []),
+    format("==== 12 discrete_dists~n", []),
     check_die_game,
     check_cookies,
     check_tank,

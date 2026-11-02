@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-println("==== 14 uniform_exponential")
-# 第 14 章 Julia：均匀与指数的频率形态。
+println("==== 13 continuous_dists")
+# 第 13 章 Julia：连续分布族的频率形态。
 # ① 三角形密度模拟 vs 分段公式；② n=8 均匀和 vs 正态
 #    N(4, 8/12)（CLT 先声）；③ 指数 μ=λ、σ²=λ² 模拟；
 # ④ Erlang n=2/8/30 vs 密度与正态近似（n=30 仍偏）；
-# ⑤ 足球 e^{−3/2}；⑥ 逆变换采样直方图 vs 密度。
+# ⑤ 足球 e^{−3/2}；⑥ 逆变换采样直方图 vs 密度；
+# ⑦ Gamma；⑧ Weibull；⑨ Cauchy 稳定性（与第 14 章呼应）。
 using Random, Statistics
 
-Random.seed!(14)
+Random.seed!(13)
 
 # ① 三角形：Z = X+Y（独立 Unif(0,1)）
 tri(z) = 0 <= z <= 1 ? z : (1 < z <= 2 ? 2 - z : 0.0)
@@ -65,5 +66,46 @@ Y = [myexp(3.0) for _ in 1:200_000]
 @assert all(abs(quantile(Y, q) - (-3.0 * log(1 - q))) < 0.05
             for q in (0.25, 0.5, 0.75))
 println("inverse transform: quantiles match -lambda*log(1-q): OK")
+
+# ⑦ Gamma 族（原 13_gamma.jl 并入）：k 整数的 Gamma 即 Erlang
+sim_gamma(k, σ) = sum(myexp(σ) for _ in 1:k)
+G = [sim_gamma(2, 3.0) for _ in 1:400_000]
+@assert abs(mean(G) - 6) < 0.04
+@assert abs(var(G) - 18) < 0.4
+println("gamma(2,3): mean 6, var 18 by sampling: OK")
+
+E1 = [sim_gamma(1, 2.5) for _ in 1:300_000]
+for q in (0.25, 0.5, 0.75)
+    @assert abs(quantile(E1, q) - (-2.5 * log(1 - q))) < 0.06
+end
+println("gamma(1, sigma) = exponential: quantiles match -sigma*log(1-q): OK")
+
+# ⑧ Weibull(k, σ)：F(x) = 1 − e^{−(x/σ)^k} → x_q = σ(−log(1−q))^{1/k}
+sim_weibull(k, σ) = σ * (-log(rand())) ^ (1 / k)
+for k in (1.0, 2.0)
+    W = [sim_weibull(k, 3.0) for _ in 1:300_000]
+    for q in (0.5, 0.9)
+        xq = 3.0 * (-log(1 - q)) ^ (1 / k)
+        @assert abs(quantile(W, q) - xq) < 0.05 * xq
+    end
+end
+println("weibull k=1 (exp) and k=2 (rayleigh-ish) quantiles: OK")
+
+# ⑨ Cauchy 稳定性：X、Y 独立 Cauchy → (X+Y)/2 仍 Cauchy
+cauchy() = tan(pi * (rand() - 0.5))
+C1 = [cauchy() for _ in 1:200_000]
+Ch = [(cauchy() + cauchy()) / 2 for _ in 1:200_000]
+for thr in (1.0, 5.0, 20.0)
+    e1 = count(t -> abs(t) <= thr, C1) / length(C1)
+    e2 = count(t -> abs(t) <= thr, Ch) / length(Ch)
+    cdf_c = 2 / pi * atan(thr)
+    @assert abs(e1 - cdf_c) < 0.005
+    @assert abs(e2 - cdf_c) < 0.005          # 同一分布：稳定但方差无穷
+end
+Cs = [cauchy() for _ in 1:100_000]
+running = cumsum(Cs)
+means = [running[50_000] / 50_000, running[100_000] / 100_000]
+@assert abs(means[1] - means[2]) > 0.1      # 两段"均值"几乎必然不同
+println("cauchy: (X+Y)/2 same quantiles (stable); running mean drifts: OK")
 
 println("END ====")

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-println("==== 15 normal")
-# 第 15 章 Julia：正态分布的频率形态。
+println("==== 14 normal_stable")
+# 第 14 章 Julia：正态分布与稳定性的频率形态。
 # ① 标准正态样本均值 0、方差 1；② 偶矩 vs (2m−1)!!；
 # ③ 和稳定性模拟（X+Y 的矩 vs N(μX+μY, σX²+σY²)）；
 # ④ 68-95-99.7 经验频率；⑤ μ+a 对称性频率对照。
@@ -46,5 +46,16 @@ lo = count(<=(1.0), W) / length(W)
 hi = count(>=(3.0), W) / length(W)
 @assert abs(lo - hi) < 0.003
 println("symmetry about mu: P(X<=mu-a) = P(X>=mu+a): OK")
+
+# ⑥ 对数正态：E[Y]=exp(μ+σ²/2) 大于中位数 exp(μ)；Cauchy 样本均值不稳
+LN = exp.(0.4 .+ 0.7 .* randn(2_000_000))
+@assert abs(mean(LN) - exp(0.4 + 0.7^2 / 2)) < 0.02
+@assert abs(median(LN) - exp(0.4)) < 0.01
+@assert mean(LN) > median(LN)
+cauchy() = tan(pi * (rand() - 0.5))
+Cs = cumsum([cauchy() for _ in 1:200_000])
+m1, m2 = Cs[50_000] / 50_000, Cs[200_000] / 200_000
+println("lognormal mean>median: OK; cauchy running means ", round(m1, digits=3),
+        " vs ", round(m2, digits=3), " (no LLN)")
 
 println("END ====")

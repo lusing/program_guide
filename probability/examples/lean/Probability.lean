@@ -12,11 +12,11 @@ import Probability.Ch08RandomVariables
 import Probability.Ch09Expectation
 import Probability.Ch10Transformations
 import Probability.Ch11Inequalities
-import Probability.Ch12Differentiating
-import Probability.Ch13DiscreteDists
-import Probability.Ch14UniformExponential
-import Probability.Ch15Normal
-import Probability.Ch16Gamma
+import Probability.Ch12DiscreteDists
+import Probability.Ch13ContinuousDists
+import Probability.Ch13Gamma
+import Probability.Ch14NormalStable
+import Probability.Ch16Convolutions
 import Probability.Ch17ChiSquare
 import Probability.Ch18InequalitiesLLN
 import Probability.Ch21CLT

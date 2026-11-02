@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-print("==== 13 discrete_dists")
-# 第 13 章 Python：离散分布族的精确分数账。
+print("==== 12 discrete_dists")
+# 第 12 章 Python：离散分布族的精确分数账。
 # ① 五族 pmf 截断归一与矩；② 赌骰期望 239/1296；③ 饼干
 #    3-2-1 与三色边际 = Bin 检查；④ 几何黄紫球尾部；⑤ German
 #    Tank 全组合枚举 E[M] vs 公式；⑥ Poisson 邮局与 IKEA。
@@ -81,10 +81,10 @@ for S in combinations(range(1, Nt + 1), kt):
     total += max(S)
     cnt += 1
 assert cnt == comb(Nt, kt)
-assert Fraction(total, cnt) == Fraction(kt, kt + 1) * (Nt + 1)   # = 9
+assert Fraction(total, cnt) == Fraction(kt, kt + 1) * (Nt + 1)   # = 39/4
 est = Fraction(kt + 1, kt) * 9 - 1                                # m=9 反解
 assert est == 11
-print("German tank N=12,k=3: E[M]=9 = k/(k+1)(N+1) by 220 combos: OK")
+print("German tank N=12,k=3: E[M]=39/4 = k/(k+1)(N+1) by 220 combos: OK")
 
 # ⑥ Poisson 例：邮局 1−e^{−1/3}；IKEA P(<=3)
 assert abs((1 - exp(-1 / 3)) - 0.28346) < 1e-5

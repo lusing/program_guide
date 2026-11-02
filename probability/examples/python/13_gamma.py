@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-print("==== 16 gamma")
-# 第 16 章 Python：Γ 函数的数值账。
+print("==== 13 gamma")
+# 第 13 章 Python：Γ 函数与 Γ/Beta 分布的数值账。
 # ① Γ(s) 的 Simpson 积分表 s=1..8 vs (s−1)!；② Γ(1/2) 族
 #    vs √π 系；③ 函数方程数值链；④ Beta 基本关系；⑤ 余割
 #    恒等式；⑥ Gamma(k,σ) 密度归一与矩。

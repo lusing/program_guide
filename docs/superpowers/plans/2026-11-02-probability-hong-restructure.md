@@ -420,21 +420,23 @@ Run `build.ps1 -Chapter 08,09,10,11` 与 `build.ps1 -Docs`。Expected: PASS；�
 - Migrate: 旧 12–16、20 及卷积相关单元
 - Source: 洪书 PDF97–167；Miller 旧 11–16、20 章
 
-- [ ] **Step 1: 写 12–14 分布地图**
+- [x] **Step 1: 写 12–14 分布地图**
 
 12 完整覆盖 Bernoulli、二项、几何、负二项、Poisson，推导 pmf、矩与 Poisson 极限。13 覆盖均匀、指数、Weibull、Γ、广义 Γ、Beta、Laplace，说明参数化和无记忆性。14 覆盖正态、对数正态、Cauchy 与稳定分布，区分厚尾、均值不存在和正态稳定性。
 
-- [ ] **Step 2: 写 15–16 工具章**
+- [x] **Step 2: 写 15–16 工具章**
 
 15 并排讲 PGF／MGF／CF 的定义、存在域、矩提取、唯一性和独立和；Cauchy 无 MGF 但 CF 存在的对照不可省略。16 证明卷积公式与分组思想，展示参数求导提取阶乘矩和正态偶矩，注明积分／求导交换条件。
 
-- [ ] **Step 3: 校验数值与公式**
+- [x] **Step 3: 校验数值与公式**
 
 保留 Γ／Beta 归一化、正态标准化、Poisson 独立和、Fibonacci 生成函数、四骰卷积与微分恒等式。对重尾积分采用闭式配平或变量代换，不用大区间朴素 Simpson 冒充验证。
 
-- [ ] **Step 4: 验证并提交**
+- [x] **Step 4: 验证并提交**
 
 Run `build.ps1 -Chapter 12,13,14,15,16`、`build.ps1 -Docs` 和一次 `build.ps1 -All`。Expected: 本章及回归单元全部 PASS，记录实际单元总数。
+
+实际结果：`-Chapter 12,13,14,15,16` 中本批非 Lean 20/20 PASS、Lean 5 个目标均通过；`-Docs` PASS（0 errors）；隔离未跟踪的后续 Task 7/8 示例后，`-All` 为 92/92 PASS，随后已原样恢复 37 个隔离文件。
 
 ### Task 7: 新建多元随机结构主线（17–21）
 

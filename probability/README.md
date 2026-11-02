@@ -47,30 +47,26 @@
 | [09](docs/09-expectation.md) | 数学期望、矩、分位数与风险 | 可积性、方差、效用与组合风险 |
 | [10](docs/10-transformations.md) | 一元随机变量变换 | CDF 法、Jacobian、多支反函数与逆变换 |
 | [11](docs/11-inequalities.md) | 概率不等式与矩的界限 | Markov、Chebyshev、Jensen 与 Boole |
-| [12](docs/12-differentiating.md) | 微分恒等式 | 求导数出无穷级数的机器 |
+### 第三篇 分布族与独立和工具
 
-### 第三篇 分布族（Miller ch12-16）
-
-概率论的元素周期表：离散五族与连续四大件，Γ 函数贯穿其中。
+从常见离散、连续分布到稳定分布，再用生成函数、卷积和参数求导统一处理独立和与矩。
 
 | 章 | 标题 | 一句话 |
 |---|---|---|
-| [13](docs/13-discrete-dists.md) | 离散分布族 | Bernoulli/二项/几何/负二项/Poisson |
-| [14](docs/14-uniform-exponential.md) | 均匀与指数 | 无记忆性与最大值账 |
-| [15](docs/15-normal.md) | 正态分布 | 万能极限的身世 |
-| [16](docs/16-gamma.md) | Γ 函数与分布 | Γ/Beta/χ² 一家亲 |
-| [17](docs/17-chi-square.md) | 卡方分布 | 样本方差的分布 |
+| [12](docs/12-discrete-dists.md) | 离散分布族 | Bernoulli、二项、几何、负二项与 Poisson |
+| [13](docs/13-continuous-dists.md) | 连续分布族 | 均匀、指数、Weibull、Γ、Beta 与 Laplace |
+| [14](docs/14-normal-stable.md) | 正态、对数正态、柯西与稳定分布 | 尾部、矩、稳定性与尺度 |
+| [15](docs/15-generating-functions.md) | 母函数、矩生成函数与特征函数 | PGF/MGF/CF、矩与唯一性 |
+| [16](docs/16-convolutions.md) | 卷积与微分恒等式 | 独立和、分组与参数求导 |
 
-### 第四篇 极限定理（Miller ch17-21）
+### 第四篇 极限定理（后续按 44 章总表重排）
 
-大数世界的定律：不等式、Stirling、母函数、CLT 的完整证明与
-Fourier 视角。
+大数世界的定律：不等式、Stirling、CLT 的完整证明与 Fourier 视角。
 
 | 章 | 标题 | 一句话 |
 |---|---|---|
 | [18](docs/18-inequalities-lln.md) | 不等式与大数定律 | Markov/Chebyshev 与频率的收敛 |
 | [19](docs/19-stirling.md) | Stirling 公式 | n! 的渐近完全体 |
-| [20](docs/20-generating-functions.md) | 母函数与卷积 | 卷积的代数机器 |
 | [21](docs/21-clt.md) | 中心极限定理的证明 | 截尾-收敛-拼接三幕剧 |
 | [22](docs/22-fourier-clt.md) | Fourier 分析与 CLT | 特征函数的入门版 |
 

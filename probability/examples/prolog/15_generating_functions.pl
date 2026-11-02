@@ -1,5 +1,5 @@
 :- encoding(utf8).
-% 20_generating_functions.pl —— 第 20 章：母函数（Prolog 穷举）
+% 15_generating_functions.pl —— 第 15 章：母函数（Prolog 穷举）
 %
 % ① Fibonacci：递推 vs Binet 取整（bignum 精确）；② 多项式
 %    乘法 = pmf 卷积（骰子 pmf 平方 = 两骰三角形）；③ 母函数
@@ -44,7 +44,7 @@ check_gf :-
     format("gf 1/(1-s-s^2): c_10 = 89 = F_11 (shift by s): OK~n").
 
 main :-
-    format("==== 20 generating_functions~n", []),
+    format("==== 15 generating_functions~n", []),
     check_fib,
     check_conv,
     check_gf,

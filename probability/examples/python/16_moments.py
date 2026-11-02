@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-print("==== 12 differentiating")
-# 第 12 章 Python：微分恒等式的精确分数账。
+print("==== 16 moments")
+# 第 16 章 Python：卷积与微分恒等式的精确分数账。
 # ① 几何微分链（Σxⁿ → Σnxⁿ → Σn²xⁿ）Fraction 精确验证；
 # ② 组合收获的枚举审判（Σk·C(n,k) 与 Σk²·C(n,k)）；
 # ③ 二项矩账（np / np+n(n−1)p² / np(1−p) vs 直接求和）；

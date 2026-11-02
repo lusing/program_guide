@@ -131,4 +131,4 @@ N(20, 40)（CLT 预告的现场）。
 
 ---
 
-上一章：[16 Γ 函数与 Γ 分布](16-gamma.md) · 下一章：[18 不等式与大数定律](18-inequalities-lln.md)
+上一章：[16 卷积与微分恒等式](16-convolutions.md) · 下一章：[18 不等式与大数定律](18-inequalities-lln.md)

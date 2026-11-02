@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-println("==== 20 generating_functions")
-# 第 20 章 Julia：母函数的频率与数值形态。
+println("==== 15 generating_functions")
+# 第 15 章 Julia：母函数与矩生成函数的频率、数值形态。
 # ① 泊松和的模拟直方 vs Pois(12) pmf；② Fibonacci 三赛跑
 #    （递推 vs Binet vs 矩阵幂——Binet 大 n 浮点误差现场）；
 # ③ MGF 数值积分 vs 闭式；④ 几何和 vs NegBin pmf。

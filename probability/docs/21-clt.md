@@ -130,4 +130,4 @@ MGF 的导数判据（HasDerivAt 链）。
 
 ---
 
-上一章：[20 母函数](20-generating-functions.md) · 下一章：[22 Fourier 分析与 CLT](22-fourier-clt.md)
+上一章：[19 Stirling 公式](19-stirling.md) · 下一章：[22 Fourier 分析与 CLT](22-fourier-clt.md)

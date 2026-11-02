@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-println("==== 16 gamma")
-# 第 16 章 Julia：Γ 分布族与 Cauchy 的频率形态。
+println("==== 13 gamma")
+# 第 13 章 Julia：Γ 分布族与 Beta 关系的频率形态。
 # ① Gamma(k=2,σ=3) 采样矩 vs 6/18；② k=1 退化为指数的
 #    直方对照；③ Weibull k=1 vs 指数、k=2 分位数表；
 # ④ Cauchy 稳定性现场（和的一半仍 Cauchy；样本均值发散）。

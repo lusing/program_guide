@@ -286,4 +286,4 @@ example : (1 : ℚ) / (10 ^ 5 * (1 / 10) ^ 2) = 1 / 1000 := by norm_num
 
 ---
 
-上一章：[10 一元随机变量变换](10-transformations.md) · 下一章：[12 微分恒等式](12-differentiating.md)
+上一章：[10 一元随机变量变换](10-transformations.md) · 下一章：[12 离散分布族](12-discrete-dists.md)

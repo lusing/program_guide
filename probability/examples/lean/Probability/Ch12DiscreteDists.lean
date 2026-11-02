@@ -1,7 +1,7 @@
 import Mathlib.Tactic
 
 /-!
-# 第 13 章 离散分布族（Lean）
+# 第 12 章 离散分布族（Lean）
 
 Miller ch12 的机器侧：五族的 ℚ 标志账——Bernoulli 矩、
 几何截断归一与均值收敛、NegBin 前几项、赌骰 239/1296、

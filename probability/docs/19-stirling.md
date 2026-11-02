@@ -129,4 +129,4 @@ n!^{1/n} vs n/e 的收敛。
 
 ---
 
-上一章：[18 不等式与大数定律](18-inequalities-lln.md) · 下一章：[20 母函数](20-generating-functions.md)
+上一章：[18 不等式与大数定律](18-inequalities-lln.md) · 下一章：[21 中心极限定理](21-clt.md)

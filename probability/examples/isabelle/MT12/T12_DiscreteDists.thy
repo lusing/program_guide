@@ -1,9 +1,9 @@
-theory T13_DiscreteDists
+theory T12_DiscreteDists
   imports "HOL-Probability.Probability_Mass_Function"
 begin
 
 text \<open>
-  第 13 章（Miller ch12）离散分布族的 Isabelle 侧：PMF 库的
+  第 12 章离散分布族的 Isabelle 侧：PMF 库的
   分布族锚点正名（bernoulli / geometric / poisson / pmf_of_set），
   离散均匀的期望与二阶矩账（integral_pmf_of_set 供账）。
 \<close>
