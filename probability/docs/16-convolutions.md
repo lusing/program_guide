@@ -382,4 +382,4 @@ end
 
 ---
 
-上一章：[15 母函数、矩生成函数与特征函数](15-generating-functions.md) · 下一章：[17 卡方分布（待后续重排）](17-chi-square.md)
+上一章：[15 母函数、矩生成函数与特征函数](15-generating-functions.md) · 下一章：[17 联合、边际与条件分布](17-joint-distributions.md)

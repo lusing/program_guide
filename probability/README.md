@@ -59,18 +59,32 @@
 | [15](docs/15-generating-functions.md) | 母函数、矩生成函数与特征函数 | PGF/MGF/CF、矩与唯一性 |
 | [16](docs/16-convolutions.md) | 卷积与微分恒等式 | 独立和、分组与参数求导 |
 
-### 第四篇 极限定理（后续按 44 章总表重排）
+### 第四篇 多元随机变量与信息更新
 
-大数世界的定律：不等式、Stirling、CLT 的完整证明与 Fourier 视角。
+从联合分布走向条件期望、协方差矩阵和多元正态，强调零相关与独立的
+边界、信息更新以及线性变换下的封闭性。
 
 | 章 | 标题 | 一句话 |
 |---|---|---|
-| [18](docs/18-inequalities-lln.md) | 不等式与大数定律 | Markov/Chebyshev 与频率的收敛 |
-| [19](docs/19-stirling.md) | Stirling 公式 | n! 的渐近完全体 |
-| [21](docs/21-clt.md) | 中心极限定理的证明 | 截尾-收敛-拼接三幕剧 |
-| [22](docs/22-fourier-clt.md) | Fourier 分析与 CLT | 特征函数的入门版 |
+| [17](docs/17-joint-distributions.md) | 联合、边际与条件分布 | 联合 pmf/pdf、归一化、Bayes 与多项分布 |
+| [18](docs/18-multivariate-transformations.md) | 多元变换与 Jacobian | 行列式、和积商变换、极坐标与次序统计量 |
+| [19](docs/19-covariance.md) | 协方差、相关与独立 | Cauchy–Schwarz、半正定矩阵与投资组合 |
+| [20](docs/20-conditional-expectation.md) | 条件期望与条件方差 | 塔性质、全方差、L² 投影与鞅 |
+| [21](docs/21-multivariate-normal.md) | 二元与多元正态 | Schur 补、条件正态、Cholesky 与反例 |
 
-### 第五篇 统计与专题（Miller ch22-25 + 附录 A）
+### 第五篇 极限定理（旧稿，下一批按 22–30 重排）
+
+大数世界的定律：不等式、Stirling、CLT 的完整证明与 Fourier 视角；
+下列文件保留旧章号，随后续批次迁移。
+
+| 旧稿 | 标题 | 一句话 |
+|---|---|---|
+| [旧18](docs/18-inequalities-lln.md) | 不等式与大数定律 | Markov/Chebyshev 与频率的收敛 |
+| [旧19](docs/19-stirling.md) | Stirling 公式 | n! 的渐近完全体 |
+| [旧21](docs/21-clt.md) | 中心极限定理的证明 | 截尾-收敛-拼接三幕剧 |
+| [旧22](docs/22-fourier-clt.md) | Fourier 分析与 CLT | 特征函数的入门版 |
+
+### 第六篇 统计与专题旧稿（后续按 31–43 重排）
 
 | 章 | 标题 | 一句话 |
 |---|---|---|
