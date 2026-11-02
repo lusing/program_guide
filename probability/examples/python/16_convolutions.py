@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-print("==== 11 convolutions")
-# 第 11 章 Python：卷积与变量替换的精确分数账。
+print("==== 16 convolutions")
+# 第 16 章 Python：卷积与变量替换的精确分数账（待第 16 章融合重写）。
 # ① 两骰卷积分段公式 vs 36 格枚举；② 四骰 grouping 卷积
 #    （Fraction 精确）vs 1296 全枚举；③ 连续均匀自卷积的
 #    三角形密度（分段多项式精确 + Simpson 归一）；④ 换元例

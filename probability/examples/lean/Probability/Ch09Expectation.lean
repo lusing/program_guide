@@ -1,7 +1,7 @@
 import Mathlib.Tactic
 
 /-!
-# 第 10 章 期望工具（Lean）
+# 第 09 章 数学期望、矩、分位数与风险（Lean）
 
 Miller ch9 的机器侧：矩账（三硬币 / 骰子 / 两骰和）、
 方差捷径 Var = E[X²] − E[X]² 的逐笔对拍、线性性的

@@ -159,4 +159,4 @@ E[X] = 2、E[X²] = 5、Var = 1）。
 
 ---
 
-上一章：[11 卷积与变量替换](11-convolutions.md) · 下一章：[13 离散分布族](13-discrete-dists.md)
+上一章：[11 概率不等式与矩的界限](11-inequalities.md) · 下一章：[13 离散分布族](13-discrete-dists.md)

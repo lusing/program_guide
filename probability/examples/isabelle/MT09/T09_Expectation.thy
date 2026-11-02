@@ -1,9 +1,9 @@
-theory T10_Expectation
+theory T09_Expectation
   imports "HOL-Analysis.Interval_Integral"
 begin
 
 text \<open>
-  第 10 章（Miller ch9）期望工具的 Isabelle 侧：连续随机变量的
+  第 09 章 数学期望、矩、分位数与风险的 Isabelle 侧：连续随机变量的
   密度积分账。均匀分布以 \<open>lborel\<close> 体积为原文；密度 2x 与
   多项式密度 (6/11)(2+3x-5x^2) 的归一化、期望、二阶矩全部走
   \<open>interval_integral_FTC_finite\<close>（微积分基本定理的机器件）。
@@ -117,8 +117,8 @@ proof -
 qed
 
 text \<open>多项式密度的期望与二阶矩（9/22 与 5/22，即 x·f 与 x²·f 的积分）
-  在 Lean（Ch10Expectation.lean，ℚ 精确分数）与 Python
-  （10_expectation.py，Fraction 闭式逐 r 对拍）通道全量落地；
+  在 Lean（Ch09Expectation.lean，ℚ 精确分数）与 Python
+  （09_expectation.py，Fraction 闭式逐 r 对拍）通道全量落地；
   Isabelle 侧的 FTC 镜像约束（被积函数须与反导数值同构、标量步
   intro 不可靠）使此处性价比过低，仅保留归一化与方差账。\<close>
 

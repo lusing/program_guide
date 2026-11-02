@@ -8,10 +8,10 @@ session MT03 in "MT03" = "HOL-Probability" +
   theories
     T03_Conditional
 
-session MT10 in "MT10" = "HOL-Analysis" +
+session MT09 in "MT09" = "HOL-Analysis" +
   options [document = false]
   theories
-    T10_Expectation
+    T09_Expectation
 
 session MT13 in "MT13" = "HOL-Probability" +
   options [document = false]

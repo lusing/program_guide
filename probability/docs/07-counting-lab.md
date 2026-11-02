@@ -394,4 +394,4 @@ example : (11 : ℚ) / 24 = (1 : ℚ) / 4 * (1 + 1 / 2 + 1 / 3) := by norm_num
 
 ---
 
-上一章：[06 容斥与组合恒等式](06-inclusion-exclusion.md) · 下一章：[08 离散随机变量](08-discrete-rv.md)
+上一章：[06 容斥与组合恒等式](06-inclusion-exclusion.md) · 下一章：[08 随机变量、分布函数与密度](08-random-variables.md)

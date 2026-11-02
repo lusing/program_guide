@@ -37,17 +37,16 @@
 | [06](docs/06-inclusion-exclusion.md) | 容斥与组合恒等式 | 错排、占位数、Vandermonde 与曲棍球棒 |
 | [07](docs/07-counting-lab.md) | 计数实验 | 生日、扑克、桥牌与秘书问题 |
 
-### 第二篇 随机变量（Miller ch7-11）
+### 第二篇 一元随机变量与界限
 
-把随机性变成函数：离散与连续两大类、期望工具箱、卷积换元与
-微分恒等式三大变换技术。
+统一离散、连续与混合分布，经期望、变换和概率不等式建立一元工具箱。
 
 | 章 | 标题 | 一句话 |
 |---|---|---|
-| [08](docs/08-discrete-rv.md) | 离散随机变量 | pmf、CDF 与质量的语言 |
-| [09](docs/09-continuous-rv.md) | 连续随机变量 | 密度与积分的语言 |
-| [10](docs/10-expectation.md) | 期望工具箱 | 线性性、方差与协方差 |
-| [11](docs/11-convolutions.md) | 卷积与换元 | 和的分布与变量替换 |
+| [08](docs/08-random-variables.md) | 随机变量、分布函数与密度 | pmf、pdf、CDF 与混合型 |
+| [09](docs/09-expectation.md) | 数学期望、矩、分位数与风险 | 可积性、方差、效用与组合风险 |
+| [10](docs/10-transformations.md) | 一元随机变量变换 | CDF 法、Jacobian、多支反函数与逆变换 |
+| [11](docs/11-inequalities.md) | 概率不等式与矩的界限 | Markov、Chebyshev、Jensen 与 Boole |
 | [12](docs/12-differentiating.md) | 微分恒等式 | 求导数出无穷级数的机器 |
 
 ### 第三篇 分布族（Miller ch12-16）

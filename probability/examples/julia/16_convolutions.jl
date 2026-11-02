@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-println("==== 11 convolutions")
-# 第 11 章 Julia：卷积与变量替换的频率形态。
+println("==== 16 convolutions")
+# 第 16 章 Julia：卷积与变量替换（待第 16 章融合重写）。
 # ① 两骰卷积 vs 模拟；② 四骰 grouping 卷积 vs 1296 格模拟；
 # ③ 连续均匀 [−1/2,1/2] 自卷积的三角形密度 vs 模拟；
 # ④ Y = X²（X 均匀 [0,2]）模拟直方图 vs 1/(4√y)；

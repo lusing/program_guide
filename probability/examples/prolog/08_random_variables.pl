@@ -1,5 +1,5 @@
 :- encoding(utf8).
-% 08_discrete_rv.pl —— 第 08 章：离散随机变量（Prolog 穷举）
+% 08_random_variables.pl —— 第 08 章：随机变量与 CDF（Prolog 穷举）
 %
 % ① 三硬币 8 路径枚举 → pmf 表（1/8,3/8,3/8,1/8）与矩账；
 % ② 两骰 36 有序对 → 三角形 pmf 与均值 7、方差 35/6；
@@ -54,7 +54,7 @@ check_binom4 :-
     format("binomial(4): pmf [1,4,6,4,1]/16, CDF F(2)=11/16: OK~n").
 
 main :-
-    format("==== 08 discrete_rv~n", []),
+    format("==== 08 random_variables~n", []),
     check_three_coin,
     check_two_dice,
     check_binom4,

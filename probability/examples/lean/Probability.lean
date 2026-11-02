@@ -8,9 +8,10 @@ import Probability.Ch03Conditional
 import Probability.Ch05Counting
 import Probability.Ch06InclusionExclusion
 import Probability.Ch07CountingLab
-import Probability.Ch08DiscreteRV
-import Probability.Ch09ContinuousRV
-import Probability.Ch10Expectation
+import Probability.Ch08RandomVariables
+import Probability.Ch09Expectation
+import Probability.Ch10Transformations
+import Probability.Ch11Inequalities
 import Probability.Ch12Differentiating
 import Probability.Ch13DiscreteDists
 import Probability.Ch14UniformExponential
