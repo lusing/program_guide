@@ -844,4 +844,4 @@ h_1(T)=h_2(T)
 
 ---
 
-上一章：[22 随机样本与抽样分布](22-sampling-distributions.md) · 返回[教程目录](../README.md)
+上一章：[22 随机样本与抽样分布](22-sampling-distributions.md) · 下一章：[24 差分方程与 Markov 链](24-markov-chains.md)

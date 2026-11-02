@@ -82,19 +82,30 @@
 | [22](docs/22-sampling-distributions.md) | 随机样本与抽样分布 | Helmert 正交变换、\(\chi^2,t,F\)、双样本与顺序统计量 |
 | [23](docs/23-sufficiency.md) | 充分统计量与数据简化 | 因子分解、最小充分、完备性、Basu 定理与 Rao–Blackwell |
 
-### 第六篇 极限定理（旧稿，下一批按 24–30 重排）
+### 第六篇 随机序列与极限定理 I
 
-大数世界的定律：不等式、Stirling、CLT 的完整证明与 Fourier 视角；
-下列文件保留旧章号，随后续批次迁移。
+从时间齐次 Markov 链进入随机序列，区分四种收敛模式，再以弱律、强律和
+Monte Carlo 误差公式建立大样本平均的基本理论。
+
+| 章 | 标题 | 一句话 |
+|---|---|---|
+| [24](docs/24-markov-chains.md) | 差分方程与 Markov 链 | 转移矩阵、平稳分布、首达时间、Leslie 矩阵与遍历均值 |
+| [25](docs/25-convergence.md) | 随机变量序列的收敛 | \(L^p\)、几乎必然、依概率、依分布及 Borel–Cantelli 反例 |
+| [26](docs/26-lln.md) | 大数定律与 Monte Carlo | Chebyshev 弱律、Khinchin/Kolmogorov 强律、Cauchy 反例 |
+
+### 第七篇 渐近定理与工具旧稿（下一批按 27–30 重排）
+
+Stirling、CLT 的完整证明与 Fourier 视角；旧 18 中的不等式材料继续保留，
+收敛与大数定律部分已迁入新 25–26 章，随后续批次继续整合。
 
 | 旧稿 | 标题 | 一句话 |
 |---|---|---|
-| [旧18](docs/18-inequalities-lln.md) | 不等式与大数定律 | Markov/Chebyshev 与频率的收敛 |
+| [旧18](docs/18-inequalities-lln.md) | 不等式与大数定律 | Markov/Chebyshev 与频率的收敛（部分已迁移） |
 | [旧19](docs/19-stirling.md) | Stirling 公式 | n! 的渐近完全体 |
 | [旧21](docs/21-clt.md) | 中心极限定理的证明 | 截尾-收敛-拼接三幕剧 |
 | [旧22](docs/22-fourier-clt.md) | Fourier 分析与 CLT | 特征函数的入门版 |
 
-### 第七篇 统计与专题旧稿（后续按 31–43 重排）
+### 第八篇 统计与专题旧稿（后续按 31–43 重排）
 
 | 章 | 标题 | 一句话 |
 |---|---|---|

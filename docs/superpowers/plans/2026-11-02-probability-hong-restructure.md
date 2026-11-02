@@ -491,21 +491,23 @@ Run `build.ps1 -Chapter 12,13,14,15,16`、`build.ps1 -Docs` 和一次 `build.ps1
 - Migrate: 旧 24 的 Markov 部分、旧 18 的收敛与 LLN 部分
 - Source: 洪书 PDF297–319；Miller 旧 18、24 章
 
-- [ ] **Step 1: 写 24 Markov 链**
+- [x] **Step 1: 写 24 Markov 链**
 
 保留差分方程、转移矩阵、平稳分布、首次到达与 Leslie 矩阵例子；区分 Markov 链长期行为与后续 iid 极限定理，不混用平稳性和依分布收敛。
 
-- [ ] **Step 2: 写 25 四种收敛**
+- [x] **Step 2: 写 25 四种收敛**
 
 定义 Lp／均方、依概率、几乎处处、依分布收敛，画清蕴含方向，并用移动区间、独立序列和常数目标反例否定逆向。说明依分布收敛对 CDF 连续点的要求。
 
-- [ ] **Step 3: 写 26 大数定律**
+- [x] **Step 3: 写 26 大数定律**
 
 从 Chebyshev 证明 WLLN，陈述并比较 Khinchin 与 Kolmogorov SLLN 的条件；用固定路径和重复试验分别解释两种收敛。给 Monte Carlo 误差 1/√n 的解释，不宣称模拟证明 SLLN。
 
-- [ ] **Step 4: 验证并提交**
+- [x] **Step 4: 验证并提交**
 
 验证移动区间反例、四种收敛的有限样本指标、WLLN 偏差与 SLLN 路径、Cauchy 均值不收敛。Run `build.ps1 -Chapter 24,25,26`、`-Docs` 和 `-All`，PASS 后提交。
+
+实际结果：`-Docs` PASS（0 errors）；目标章 Lean 3/3、Julia 6/6、Python 6/6、Prolog 4/4 PASS（含旧同号章回归）；`-All` 129/129 PASS，其中 Lean 整工程增量构建 PASS（2.8s），五个 Isabelle 会话及全部 Julia/Python/Prolog 单元全绿。修复了 Ch24 的 `pn` 基例展开与有限量化 `decide` 归约问题，以及 Ch25 的多余 `field_simp`；修复后 Ch24/Ch25 单文件及整工程均通过。
 
 ### Task 10: 完成渐近工具链（27–30）
 
