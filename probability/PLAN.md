@@ -1,4 +1,77 @@
-# 概率论教程工作计划（The Probability Lifesaver 为纲）
+# 概率论教程工作计划（Miller + 洪永淼双主线重排）
+
+## 2026 洪永淼主线融合基线
+
+- **Baseline commit**: `806c75bb`
+- **Baseline verification**: `build.ps1 -All` 为 **88/88 PASS，FAIL 0**。
+  通道分布：Lean 18 个章模块（整工程一次构建，608.4s）、Isabelle 5 个
+  会话（MT02/05/10/13/21）、Julia 26、Python 26、Prolog 13。
+- **新结构清单**：`chapters.json` 是 00–43 共 44 章的编号、slug、标题
+  唯一来源；设计见
+  `docs/superpowers/specs/2026-11-02-probability-hong-restructure-design.md`，
+  实施计划见
+  `docs/superpowers/plans/2026-11-02-probability-hong-restructure.md`。
+
+### 洪永淼《概率论与统计学》取材页码
+
+PDF 为扫描件；正文书页与 PDF 页固定相差 16：
+
+| 洪书 | 书页 | PDF 页 | 新章 |
+|---|---:|---:|---|
+| 第 1 章 导论 | 1–9 | 17–25 | 00 |
+| 第 2 章 概率论基础 | 10–48 | 26–64 | 01–07 |
+| 第 3 章 随机变量和一元概率分布 | 49–115 | 65–131 | 08–16 |
+| 第 4 章 重要概率分布 | 116–151 | 132–167 | 12–14、22 |
+| 第 5 章 多元随机变量及其概率分布 | 152–237 | 168–253 | 17–21 |
+| 第 6 章 统计抽样理论导论 | 238–280 | 254–296 | 22–23 |
+| 第 7 章 收敛和极限定理 | 281–319 | 297–335 | 25–29 |
+| 第 8 章 参数估计和评估 | 320–369 | 336–385 | 31–35 |
+| 第 9 章 假设检验 | 370–397 | 386–413 | 36–37 |
+| 第 10 章 经典线性回归分析 | 398–448 | 414–464 | 38–41 |
+| 第 11 章 结论 | 449–452 | 465–468 | 42–43 |
+
+### 旧章与机器文件迁移映射
+
+旧 28 章内容均须从 baseline commit `806c75bb` 复读核对，禁止只凭
+文件名删除。主要去向：
+
+| 旧章 | 新章 | 机器文件去向 |
+|---|---|---|
+| 00 | 00 | 无代码，重写 |
+| 01 | 00、07、09、42 | Julia/Python/Prolog `01_signature_problems` 拆分 |
+| 02 | 01、02 | `Ch02Axioms`、MT02、`02_axioms` → 02 |
+| 03 | 05 | `Ch03Counting`、`03_counting` → 05 |
+| 04 | 07 | `04_cards` → 07；牌型穷举并入计数实验 |
+| 05 | 03、04 | `Ch05Conditional`、MT05、`05_conditional` → 03；独立性反例 → 04 |
+| 06 | 06 | `Ch06InclusionExclusion`、`06_inclusion_exclusion` → 06 |
+| 07 | 05、06 | `Ch07Combinatorics`、`07_combinatorics` 拆分到 05/06 |
+| 08 | 08 | `Ch08DiscreteRV`、`08_discrete_rv` → 08 |
+| 09 | 08、10 | `Ch09ContinuousRV` 与 `09_continuous_rv` 拆分 |
+| 10 | 09、19 | `Ch10Expectation`、MT10、`10_expectation` 拆分 |
+| 11 | 10、16、18 | `11_convolutions` 拆分 |
+| 12 | 16 | `Ch12Differentiating`、`12_differentiating` → 16 |
+| 13 | 12 | `Ch13DiscreteDists`、MT13、`13_discrete_dists` → 12 |
+| 14 | 13、14 | `Ch14UniformExponential`、`14_uniform_exponential` 拆分 |
+| 15 | 14、21、27 | `Ch15Normal`、`15_normal` 拆分 |
+| 16 | 13 | `Ch16Gamma`、`16_gamma` → 13 |
+| 17 | 22 | `Ch17ChiSquare`、`17_chi_square` → 22 |
+| 18 | 11、25、26 | `Ch18InequalitiesLLN`、`18_inequalities_lln` 拆分 |
+| 19 | 30 | `19_stirling` → 30 |
+| 20 | 15 | `20_generating_functions` → 15 |
+| 21 | 27 | `Ch21CLT`、MT21、`21_clt` → 27 |
+| 22 | 28 | `22_fourier_clt` → 28 |
+| 23 | 22、36、37、40 | `23_hypothesis_testing` 拆分到精确抽样、渐近检验、回归推断 |
+| 24 | 24、38 | `24_markov_least_squares` 拆分 |
+| 25 | 07、42 | `25_famous_problems` 拆分；Prolog 穷举随主题迁移 |
+| 26 | 42 | `Ch26ProofTechniques`、`26_proof_techniques` → 42 |
+| 27 | 43 | 速查内容改写并入最终定理地图 |
+
+重编号冲突文件先改 `.migrating`；Lean 模块名、`import`、Isabelle
+`ROOT`/会话目录、脚本哨兵与正文引用必须同步。
+
+---
+
+## 原始 Miller 线工作记录
 
 Steven J. Miller, *The Probability Lifesaver*（Princeton UP 2017，
 737 页，文字层 + 书签齐全——取材直接 `Read` PDF 页面，免 OCR）。
