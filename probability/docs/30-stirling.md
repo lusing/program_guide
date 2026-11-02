@@ -652,4 +652,4 @@ abs(h - n) <= sqrt(2n) && (inside += 1)
 
 ---
 
-上一章：[29 渐近拼接工具](29-asymptotic-tools.md) · 返回[教程目录](../README.md)
+上一章：[29 渐近拼接工具](29-asymptotic-tools.md) · 下一章：[31 参数模型、估计量与风险](31-estimation-models.md)

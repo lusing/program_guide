@@ -30,4 +30,6 @@ import Probability.Ch17ChiSquare
 import Probability.Ch18InequalitiesLLN
 import Probability.Ch27CLT
 import Probability.Ch29AsymptoticTools
+import Probability.Ch31EstimationModels
+import Probability.Ch32MLE
 import Probability.Ch26ProofTechniques
