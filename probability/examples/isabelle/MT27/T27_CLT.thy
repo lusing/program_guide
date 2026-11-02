@@ -1,9 +1,9 @@
-theory T21_CLT
+theory T27_CLT
   imports "HOL-Probability.Probability_Mass_Function"
 begin
 
 text \<open>
-  第 21 章（Miller ch20）CLT 的 Isabelle 侧：标准化的矩账
+  第 27 章 CLT 的 Isabelle 侧：标准化的矩账
   （有限情形的 pmf_of_set 组合）与 n 重和的方差可加原型。
 \<close>
 

@@ -18,7 +18,7 @@ session MT12 in "MT12" = "HOL-Probability" +
   theories
     T12_DiscreteDists
 
-session MT21 in "MT21" = "HOL-Probability" +
+session MT27 in "MT27" = "HOL-Probability" +
   options [document = false]
   theories
-    T21_CLT
+    T27_CLT

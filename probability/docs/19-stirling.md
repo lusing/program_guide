@@ -97,15 +97,15 @@ nⁿe^{−n}·e ≤ n! ≤ nⁿe^{−n}·eⁿ。
 
 ## 19.6 机器通道
 
-**Python（`19_stirling.py`）**：① Stirling 的相对误差表
+**Python（`30_stirling.py`）**：① Stirling 的相对误差表
 （n = 1..10⁶：主式误差 ~ 1/(12n)，带 1/(12n) 修正项后
 误差 ~ 1/(288n²) 的实证）；② C(2n,n)/4ⁿ vs 1/√(πn) 的
-精度（n = 100：0.5645 vs 0.0564 的三位对齐）；③ 平票
-双模型账（0.73% vs 10⁻⁵⁴ 的对数计算）；④ 穷汉上下界
-的夹逼演示（e 与 eⁿ 界的几何均值 vs √(2π)）；⑤
+精度（n = 100：精确值约 0.05635，主式约 0.05642 的对齐）；③ 平票
+双模型账（0.73% vs 10⁻⁵⁴ 的对数计算）；④ 严格积分夹逼
+   e(n/e)ⁿ ≤ n! ≤ en(n/e)ⁿ；⑤
 n!^{1/n} vs n/e 的收敛。
 
-**Julia（`19_stirling.jl`）**：① Stirling 误差的 log-log
+**Julia（`30_stirling.jl`）**：① Stirling 误差的 log-log
 斜率（−1 与 −2 的实证：主式与修正项的幂律）；② 2n 次掷
 币恰 n 正面的模拟 vs 1/√(πn)；③ CLT 特例现场：S₂N 的
 格点分布 vs 正态密度（N = 50、100）；④ σ = √n/2 活动
@@ -121,11 +121,11 @@ n!^{1/n} vs n/e 的收敛。
    = e^{t²/2} 的推导。
 4. 速率陷阱：(1±k/N)^N 的草率极限差一个 e^{k²/N}——
    对数展开 + 误差追踪是正解，∞·0 未定式要警觉。
-5. 穷汉 Stirling：log 单调配积分，主项免费、常数差 8%
-   （几何均值 2.718√n vs 2.5066√n）。
+5. 穷汉 Stirling：log 单调配积分只能先确定主项和几何平均；
+   完整 √(2πn) 常数仍需 Wallis 或更精细的分析（新第 30 章给出严格推导）。
 
-*对应示例：`examples/julia/19_stirling.jl`、
-`examples/python/19_stirling.py`。*
+*对应示例：`examples/julia/30_stirling.jl`、
+`examples/python/30_stirling.py`。*
 
 ---
 

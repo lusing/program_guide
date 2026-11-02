@@ -671,4 +671,4 @@ assert tail_sum <= EX
 
 ---
 
-上一章：[25 随机变量序列的收敛](25-convergence.md) · 返回[教程目录](../README.md)
+上一章：[25 随机变量序列的收敛](25-convergence.md) · 下一章：[27 中心极限定理](27-clt.md)

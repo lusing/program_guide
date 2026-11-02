@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-println("==== 19 stirling")
-# 第 19 章 Julia：Stirling 的频率与数值形态。
+println("==== 30 stirling")
+# 第 30 章 Julia：Stirling 的频率与数值形态。
 # ① 误差幂律的 log-log 斜率（−1 与 −2）；② 2n 掷币恰 n 正面
 #    的模拟 vs 1/√(πn)；③ S₂N 格点分布 vs 正态密度（CLT 特例）；
 # ④ σ = √n/2 的活动窗质量摊薄。
 using Random, Statistics
 
-Random.seed!(19)
+Random.seed!(30)
 
 # ① 误差幂律：log(err) vs log(n) 的斜率
 using Printf

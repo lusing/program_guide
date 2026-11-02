@@ -72,7 +72,7 @@ Unif(0,1) 的 e^{it/2}sinc(t/2)；Cauchy 的 e^{−|t|}；Poisson
 
 ## 22.5 机器通道
 
-**Python（`22_fourier_clt.py`）**：① 特征函数的数值积分
+**Python（`28_fourier_clt.py`）**：① 特征函数的数值积分
 vs 闭式表（正态 e^{−t²/2}、Unif 的 sinc、Cauchy 的 e^{−|t|}）；
 ② 卷积定理的数值验证：两个密度的数值卷积的 Fourier
 变换 vs 变换乘积（或等价地：反演回程对照）；③ CLT 的
@@ -80,7 +80,7 @@ vs 闭式表（正态 e^{−t²/2}、Unif 的 sinc、Cauchy 的 e^{−|t|}）；
 ④ Cauchy 稳定性的 φ 账（e^{−|t|}² = e^{−2|t|}）与和的模拟
 分布对照；⑤ |φ(t)| ≤ 1 的数值核查。
 
-**Julia（`22_fourier_clt.jl`）**：① 特征函数的蒙特卡洛
+**Julia（`28_fourier_clt.jl`）**：① 特征函数的蒙特卡洛
 估计 E[e^{itX}]（复平均）vs 闭式（正态/均匀/柯西三族，
 实虚双部）；② CLT 现场双版：标准化和的经验特征函数
 vs e^{−t²/2}（比直方更细的收敛判据）；③ Cauchy 稳定与
@@ -100,8 +100,8 @@ vs e^{−t²/2}（比直方更细的收敛判据）；③ Cauchy 稳定与
    正态的重尾哨兵。
 5. Gaussian 的 Fourier 自反性：钟形是变换域的不动点。
 
-*对应示例：`examples/julia/22_fourier_clt.jl`、
-`examples/python/22_fourier_clt.py`。*
+*对应示例：`examples/julia/28_fourier_clt.jl`、
+`examples/python/28_fourier_clt.py`。*
 
 ---
 

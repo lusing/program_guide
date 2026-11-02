@@ -93,17 +93,19 @@ Monte Carlo 误差公式建立大样本平均的基本理论。
 | [25](docs/25-convergence.md) | 随机变量序列的收敛 | \(L^p\)、几乎必然、依概率、依分布及 Borel–Cantelli 反例 |
 | [26](docs/26-lln.md) | 大数定律与 Monte Carlo | Chebyshev 弱律、Khinchin/Kolmogorov 强律、Cauchy 反例 |
 
-### 第七篇 渐近定理与工具旧稿（下一批按 27–30 重排）
+### 第七篇 渐近定理与工具 II
 
-Stirling、CLT 的完整证明与 Fourier 视角；旧 18 中的不等式材料继续保留，
-收敛与大数定律部分已迁入新 25–26 章，随后续批次继续整合。
+以特征函数完成有限方差 CLT，再用 Fourier 反演与 Lévy 连续性定理补齐接口；
+随后建立随机阶、Slutsky、Delta 方法和 Stirling 局部近似，把分布极限转化为可用的统计计算。
 
-| 旧稿 | 标题 | 一句话 |
+| 章 | 标题 | 一句话 |
 |---|---|---|
-| [旧18](docs/18-inequalities-lln.md) | 不等式与大数定律 | Markov/Chebyshev 与频率的收敛（部分已迁移） |
-| [旧19](docs/19-stirling.md) | Stirling 公式 | n! 的渐近完全体 |
-| [旧21](docs/21-clt.md) | 中心极限定理的证明 | 截尾-收敛-拼接三幕剧 |
-| [旧22](docs/22-fourier-clt.md) | Fourier 分析与 CLT | 特征函数的入门版 |
+| [27](docs/27-clt.md) | 中心极限定理 | iid 有限方差的特征函数证明、连续性修正与格距 |
+| [28](docs/28-fourier-clt.md) | Fourier 分析与特征函数 | 反演、唯一性、卷积、Lévy 连续性与稳定律 |
+| [29](docs/29-asymptotic-tools.md) | 渐近拼接工具 | \(O_p/o_p\)、连续映射、Slutsky 与 Delta 方法 |
+| [30](docs/30-stirling.md) | Stirling 公式与局部近似 | 积分夹逼、Wallis 常数、中心二项系数与有限误差 |
+
+旧 18 的不等式与大数定律材料仍作为历史稿保留，主体已迁入新 11、25、26 章。
 
 ### 第八篇 统计与专题旧稿（后续按 31–43 重排）
 

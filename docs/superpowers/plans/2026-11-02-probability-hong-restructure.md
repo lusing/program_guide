@@ -516,21 +516,23 @@ Run `build.ps1 -Chapter 12,13,14,15,16`、`build.ps1 -Docs` 和一次 `build.ps1
 - Migrate: 旧 19、21、22 章及示例
 - Source: 洪书 PDF297–335；Miller 旧 18–22 章
 
-- [ ] **Step 1: 写 27–28**
+- [x] **Step 1: 写 27–28**
 
 27 用特征函数完成 iid 有限方差 CLT 的证明，解释 Taylor 二阶项、标准化与极限乘积；给连续性修正和格点近似误差。28 讲 Fourier 核、反演、唯一性、卷积乘法、Gaussian 自反与 Cauchy 稳定性，并说明特征函数极限如何给出依分布收敛。
 
-- [ ] **Step 2: 写 29 渐近拼接工具**
+- [x] **Step 2: 写 29 渐近拼接工具**
 
 定义 Op／op，证明连续映射与 Slutsky，给 Delta 方法及渐近方差公式；至少计算样本均值函数、方差稳定化变换和估计量标准化三个例子，指出 Delta 方法在导数为零处失效。
 
-- [ ] **Step 3: 写 30 Stirling 与近似**
+- [x] **Step 3: 写 30 Stirling 与近似**
 
 推导 Stirling 主项并解释修正项，计算中心二项系数渐近；保留平票概率和有限尺寸效应，明确 n 小时的近似误差。
 
-- [ ] **Step 4: 验证并提交**
+- [x] **Step 4: 验证并提交**
 
 验证 CF 极限、格点桶效应、Delta 方差、Stirling 误差幂律。Run `build.ps1 -Chapter 27,28,29,30`、`-Docs`，PASS 后提交。
+
+实际结果：目标章 11/11 PASS（Lean 27/29、Isabelle MT27、Julia 27–30、Python 27–30），`-Docs` PASS（0 errors）。旧示例已映射为 27/28/30，新 29 增加 Delta 与二阶退化单元。修复 Lean 的多余 `ring` 与泛化 `simp` 副作用；数值断言按 Poisson `O(λ^-1/2)`、中心二项 `1/(8n)` 修正和有限样本偏态校准。Stirling 使用严格积分夹逼 `e(n/e)^n ≤ n! ≤ en(n/e)^n`，并以梯形误差和 Wallis 公式确定完整常数。
 
 ### Task 11: 建立统计模型与极大似然（31–32）
 

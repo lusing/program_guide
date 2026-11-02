@@ -83,7 +83,7 @@ n = 30 的现场）；离散分布加**连续性修正**（P(a ≤ S ≤ b)
 
 ## 21.6 机器通道
 
-**Python（`21_clt.py`**）：① Poisson 特例的 MGF 账：
+**Python（`27_clt.py`**）：① Poisson 特例的 MGF 账：
 M_{Z_λ}(t) 的数值积分 vs e^{t²/2}（λ = 5、50、500 的收敛）；
 ② CLT 模拟现场三族（均匀、指数、二项的和的标准化
 直方 vs φ 密度，n = 50）；③ (1 + t²/2N + …)^N → e^{t²/2}
@@ -91,20 +91,20 @@ M_{Z_λ}(t) 的数值积分 vs e^{t²/2}（λ = 5、50、500 的收敛）；
 的精确值 vs 修正/不修正的正态近似）；⑤ Berry–Esseen
 式的误差表（不同 n 的最大偏差）。
 
-**Julia（`21_clt.jl`）**：① 三族（均匀/指数/泊松）标准化
+**Julia（`27_clt.jl`）**：① 三族（均匀/指数/泊松）标准化
 和的经验 CDF vs Φ 的最大偏差随 n 衰减（log-log 斜率）；
 ② 1/√n 律：样本均值标准差的实测 vs σ/√n；③ CLT 的
 "形状无关"现场：偏态指数在 n = 50 时钟形化的直方对照；
 ④ 连续性修正的精度对比。
 
-**Lean（`Ch21CLT.lean`）**：判决侧——① (1+w/N)^N 的
+**Lean（`Ch27CLT.lean`）**：判决侧——① (1+w/N)^N 的
 极限常数账（数值形态：大 N 的 (1+t²/2N)^N 与 e^{t²/2}
 的接近度判决）；② 标准化的矩账（E = 0、Var = 1 的
 代数）；③ Poisson 特例的 Taylor 残差账（λ(e^{t/√λ}−1−
 t/√λ) → t²/2 的数值采样）；④ 正态 MGF 的 e^{t²/2} 与
 偶矩链的会师（(2m−1)!! = e^{t²/2} 的系数）。
 
-**Isabelle（`MT21/T21_CLT.thy`）**：CLT 的形式侧锚点——
+**Isabelle（`MT27/T27_CLT.thy`）**：CLT 的形式侧锚点——
 mathlib/Isabelle 的分布收敛记号与 `CLT` 定理名的 `#check`
 正名 + 标准化的矩账（pmf_of_set 的线性组合）+ 正态
 MGF 的导数判据（HasDerivAt 链）。
@@ -123,10 +123,10 @@ MGF 的导数判据（HasDerivAt 链）。
 5. 弧线：WLLN（收敛）→ CLT（形状）→ Berry–Esseen
    （速率）。
 
-*对应示例：`examples/lean/Probability/Ch21CLT.lean`、
-`examples/isabelle/MT21/T21_CLT.thy`、
-`examples/julia/21_clt.jl`、
-`examples/python/21_clt.py`。*
+*对应示例：`examples/lean/Probability/Ch27CLT.lean`、
+`examples/isabelle/MT27/T27_CLT.thy`、
+`examples/julia/27_clt.jl`、
+`examples/python/27_clt.py`。*
 
 ---
 

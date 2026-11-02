@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-println("==== 22 fourier_clt")
-# 第 22 章 Julia：特征函数的频率形态。
+println("==== 28 fourier_clt")
+# 第 28 章 Julia：特征函数的频率形态。
 # ① φ 的 MC 估计 vs 闭式（正态/均匀/Cauchy，实虚双部）；
 # ② CLT 双版：标准化和的经验 φ vs e^{−t²/2}；③ Cauchy 稳定
 #    与发散的 φ 对照；④ Box-Muller 生成器直方 vs φ。
 using Random, Statistics
 
-Random.seed!(22)
+Random.seed!(28)
 
 # ① 经验特征函数：E[e^{itX}] 的复平均
 ecf(Z, t) = sum(exp(im * t * z) for z in Z) / length(Z)
@@ -38,14 +38,19 @@ for t in (0.5, 1.5)
 end
 println("cauchy ecf = e^{-|t|} (heavy tail, slow MC): OK")
 
-# ② CLT：指数族的标准化和（N=500）经验 φ vs e^{−t²/2}
-N = 500
-Zn = [(sum(randexp() for _ in 1:N) - N) / sqrt(N) for _ in 1:100_000]
+# ② CLT：指数族标准化和的经验 φ。N=500 与 2000 的对照显示
+#    有限 N 的偏态虚部也随 N 缩小。
 for t in (0.5, 1.0)
-    v = ecf(Zn, t)
-    @assert abs(v - exp(-t * t / 2)) < 0.01
+    errors = Float64[]
+    for N in (500, 2000)
+        Zn = [(sum(randexp() for _ in 1:N) - N) / sqrt(N)
+              for _ in 1:100_000]
+        push!(errors, abs(ecf(Zn, t) - exp(-t * t / 2)))
+    end
+    @assert errors[2] < errors[1]
+    @assert errors[2] < 0.01
 end
-println("CLT ecf: standardized exp sums -> e^{-t^2/2}: OK")
+println("CLT ecf: errors decrease from N=500 to N=2000: OK")
 
 # ③ Cauchy 稳定 vs 均值发散的 φ 对照：
 #    (X+Y)/2 仍 Cauchy（ecf 同 e^{−|t|}）；样本均值 100 个的

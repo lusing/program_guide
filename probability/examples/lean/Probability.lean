@@ -28,5 +28,6 @@ import Probability.Ch24MarkovChains
 import Probability.Ch25Convergence
 import Probability.Ch17ChiSquare
 import Probability.Ch18InequalitiesLLN
-import Probability.Ch21CLT
+import Probability.Ch27CLT
+import Probability.Ch29AsymptoticTools
 import Probability.Ch26ProofTechniques

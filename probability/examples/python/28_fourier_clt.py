@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-print("==== 22 fourier_clt")
-# 第 22 章 Python：特征函数与 CLT。
+print("==== 28 fourier_clt")
+# 第 28 章 Python：特征函数、Fourier 反演与独立和。
 # ① φ 的数值积分 vs 闭式表（正态/均匀/Cauchy）；② |φ| ≤ 1；
 # ③ CLT 的 φ 收敛现场（三族 φ_{Z_N} vs e^{−t²/2}）；④ Cauchy
 #    稳定的 φ 账；⑤ 卷积定理数值验证（密度卷积的 φ vs 乘积）。
@@ -37,9 +37,25 @@ for t in (0.3, 1.0, 2.5):
     assert abs(phi_unif_abs(t)) <= 1
 print("phi closed forms: normal e^{-t^2/2} exact, |phi| <= 1: OK")
 
+# Fourier 反演：f(x)=(2pi)^-1 integral e^{-itx} phi(t) dt。
+# 正态为实偶函数，截断 [-20,20] 后虚部恒为零。
+for x in (0.0, 0.7, -1.2):
+    inverted = simpson(
+        lambda t: cos(t * x) * exp(-t * t / 2) / (2 * pi),
+        -20, 20, 4000)
+    assert abs(inverted - pdf_norm(x)) < 1e-9
+print("Fourier inversion recovers the normal density: OK")
+
+# 指数分布的 rate 参数必须出现在 t/lambda 中，而不是写成 1-i*lambda*t。
+for rate in (0.5, 2.0):
+    for t in (0.3, 1.0):
+        phi_exp = 1 / (1 - 1j * t / rate)
+        assert abs(abs(phi_exp) - 1 / sqrt(1 + (t / rate) ** 2)) < 1e-12
+print("Exponential(rate) CF = 1/(1-i*t/rate): OK")
+
 # Cauchy：φ(t) = e^{−|t|}（模拟估计：柯西无矩但 φ 有界可估）
 import random as _r
-_r.seed(22)
+_r.seed(28)
 for t in (0.5, 1.5):
     n = 400_000
     from math import tan
@@ -84,11 +100,9 @@ print("cauchy stability: phi((X+Y)/2) = e^{-|t|} = phi(X): OK")
 tri = lambda x: x if 0 <= x <= 1 else (2 - x if 1 < x <= 2 else 0.0)
 for t in (0.8, 1.6):
     lhs = simpson(lambda x: cos(t * x) * tri(x), 0, 2, 4000)
-    # 均匀的复 φ：e^{it/2}sinc(t/2)；平方的实部
+    # 精确：phi_U(t)=e^{it/2}sinc(t/2)；平方后实部为 cos(t)sinc^2。
     h = t / 2
     sinc = sin(h) / h
-    rhs = sinc ** 2                  # |e^{it/2}sinc|² 的实部 = cos(t)·sinc²?
-    # 精确：φ_U(t) = e^{it/2}sinc(t/2)；φ_U² = e^{it}sinc²；实部 = cos(t)·sinc²
     rhs = cos(t) * sinc ** 2
     assert abs(lhs - rhs) < 1e-9
 print("convolution theorem: phi_{Unif*Unif} = phi_Unif^2 (real parts): OK")

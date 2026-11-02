@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-print("==== 19 stirling")
-# 第 19 章 Python：Stirling 公式的精确与数值账。
+print("==== 30 stirling")
+# 第 30 章 Python：Stirling 公式的精确与数值账。
 # ① 主式与修正项的相对误差幂律（~1/12n 与 ~1/288n²）；②
 #    C(2n,n)/4ⁿ vs 1/√(πn)；③ 平票双模型（0.73% vs 10⁻⁵⁴）；
 # ④ 穷汉上下界与几何均值；⑤ n!^{1/n} vs n/e。
@@ -47,20 +47,21 @@ logp = (log(comb(2 * n, n)) + n * log(0.57) + n * log(0.43))
 assert abs(logp - log(1.877e-54)) < 0.01
 print("2008 primary tie: 0.73% (equal) vs 1.9e-54 (57-43): OK")
 
-# ④ 穷汉 Stirling：n^n e^{-n} e ≤ n! ≤ n^n e^{-n} e^n（对数域验证）
+# ④ 严格积分夹逼：e(n/e)^n <= n! <= en(n/e)^n（对数域验证）。
+# 下界是 ∫_1^n log(x)dx；上界把 log(n!) 写成 log(n)+Σ_{k<n}log(k)。
 for n in (10, 50, 200):
     lm = n * log(n) - n
     lf = lgamma(n + 1)
-    assert lm + 1 <= lf <= lm + n
-# 常数对照：几何均值的量级由 e 家族给出，与真常数 √(2π)
-# 相差约 8%（2.71828 vs 2.50663）——半程证明免费抓到主项
-assert abs(exp(1) / sqrt(2 * pi) - 1.0844) < 1e-4
-print("poor man's stirling: sandwich holds; constant e vs sqrt(2pi) 8.4% apart: OK")
+    assert lm + 1 <= lf <= lm + 1 + log(n)
+# 这个夹逼只确定几何平均的主项 n/e；因子 n 的缝隙不能推出 sqrt(2pi*n)。
+assert all(abs(exp((lgamma(n + 1)) / n) / (n / exp(1)) - 1) < 0.5
+           for n in (10, 100))
+print("integral sandwich: e(n/e)^n <= n! <= en(n/e)^n: OK")
 
 # ⑤ n!^{1/n} vs n/e
 for n in (10, 100):
     lhs = factorial(n) ** (1 / n)
     assert lhs > n / exp(1) and lhs < n / exp(1) * (1 + 4 / n)  # 差 ~log(2πn)/(2n)
-print("n!^{1/n} ~ n/e within 1+3/n: OK")
+print("n!^(1/n) ~ n/e within 1+4/n: OK")
 
 print("END ====")
