@@ -875,4 +875,4 @@ M(t)=\exp\left(t^T\mu+\frac12t^T\Sigma t\right),
 
 ---
 
-上一章：[20 条件期望与条件方差](20-conditional-expectation.md) · 返回[教程目录](../README.md)
+上一章：[20 条件期望与条件方差](20-conditional-expectation.md) · 下一章：[22 随机样本与抽样分布](22-sampling-distributions.md)

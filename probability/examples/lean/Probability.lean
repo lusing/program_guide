@@ -22,6 +22,8 @@ import Probability.Ch18MultivariateTransformations
 import Probability.Ch19Covariance
 import Probability.Ch20ConditionalExpectation
 import Probability.Ch21MultivariateNormal
+import Probability.Ch22SamplingDistributions
+import Probability.Ch23Sufficiency
 import Probability.Ch17ChiSquare
 import Probability.Ch18InequalitiesLLN
 import Probability.Ch21CLT
