@@ -40,6 +40,8 @@ Desktop.ini
 **/zig-out/
 **/.lake/build/
 **/.lake/packages/
+**/__pycache__/
+*.pyc
 *.fasl
 
 # Zig Windows binary artifact
