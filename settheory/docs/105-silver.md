@@ -3,24 +3,21 @@
 > 第 104 章 Prikry 力迫把可测基数的共尾度改成 ω 而不留痕迹；
 > 本章取材冯琦第三卷 §2.4（书页 161–172；PDF 181–192）搭起
 > SCH 反例的另一半：**在超紧基数 κ 上添加足够多子集使
-> \(2^\kappa=\kappa^{++}\) 而 κ 仍可测**（定理 2.10 Silver）。
+> $2^\kappa=\kappa^{++}$ 而 κ 仍可测**（定理 2.10 Silver）。
 > 与第 103 章 Lévy 崩塌「一击塌方」不同，Silver 力迫是**迭代
-> 工程**：沿 κ 之下的一切不可达基数 α 逐个添加 \(\alpha^{++}\)
-> 个子集（\(\mathbb Q_\alpha=\mathrm{Add}(\alpha,\alpha^{++})\)，
-> 条件是大小 \(<\alpha\) 的部分函数 \(f:\alpha\times\alpha^{++}
-> \to 2\)），极限步的取舍由**Easton 支撑**（定义 2.10：正则基数
+> 工程**：沿 κ 之下的一切不可达基数 α 逐个添加 $\alpha^{++}$
+> 个子集（$\mathbb Q_\alpha=\mathrm{Add}(\alpha,\alpha^{++})$，
+> 条件是大小 $<\alpha$ 的部分函数 $f:\alpha\times\alpha^{++} \to 2$），极限步的取舍由**Easton 支撑**（定义 2.10：正则基数
 > 处取正向极限、奇异处取反向极限——定义 2.8 两种极限的混合）
 > 统一调度。技术地基三件套：**链条件**（定理 2.9：正向极限 +
 > 荟萃多个正向极限点 ⟹ κ-cc 保持）、**λ-定向完全性**（定义
 > 2.11 + 引理 2.6 三款：乘积/正向极限/Easton 迭代下封闭）、
-> **分解引理**（引理 2.7：\(\mathbb P_{\alpha+\beta}=\mathbb
-> P_\alpha*\mathbb P^{(\alpha)}\)）。定理 2.10 的证明是全书
-> 嵌入提升机的集大成：取 \((\kappa,\kappa^{++})\)-超紧 \(j\)，
-> 在 M 中用分解引理切出 \(j(\mathbb P)=\mathbb P*\mathbb Q\)，
+> **分解引理**（引理 2.7：$\mathbb P_{\alpha+\beta}=\mathbb P_\alpha*\mathbb P^{(\alpha)}$）。定理 2.10 的证明是全书
+> 嵌入提升机的集大成：取 $(\kappa,\kappa^{++})$-超紧 $j$，
+> 在 M 中用分解引理切出 $j(\mathbb P)=\mathbb P*\mathbb Q$，
 > 用 M[G] 的 λ-封闭性造出**大拿**（master condition——D 的
-> 定向下界 \(a\in\mathbb Q\)，书 p171 原词「大拿」），据此把
-> \(j\) 提升成 \(j^*:V[G]\prec M[K]\)，\(U=\{X\mid\kappa\in
-> j^*(X)\}\) 即 \(V[G]\) 中的可测性见证。与定理 2.6（Prikry）
+> 定向下界 $a\in\mathbb Q$，书 p171 原词「大拿」），据此把
+> $j$ 提升成 $j^*:V[G]\prec M[K]$，$U=\{X\mid\kappa\in j^*(X)\}$ 即 $V[G]$ 中的可测性见证。与定理 2.6（Prikry）
 > 组合即得 cf(κ)=ω 的强极限基数处 SCH 失败（定理 2.11 的前奏）。
 >
 > 机器边界：迭代、Easton 调度、嵌入提升全在超穷层；七个通道做
@@ -44,35 +41,33 @@
 ## 105.1 战役地图：从超紧到 SCH 反例的两步走
 
 书 p161–162 的战役部署值得先看全貌。**目标**：造一个模型，
-其中 κ 是 cf(κ)=ω 的强极限基数且 \(2^\kappa=\kappa^{++}\)——
+其中 κ 是 cf(κ)=ω 的强极限基数且 $2^\kappa=\kappa^{++}$——
 SCH 在 κ 处失败的最小可能形态（第 78 章 Silver 定理已排除
 不可数共尾度；Jensen 覆盖引理把「无大基数」情形也排除）。
 **两步走**：
 
 - **第一步（本章）**：从 κ++-超紧出发，Easton 支撑迭代使
-  \(2^\kappa=\kappa^{++}\) 且 κ 仍可测——**先造出「违背 GCH
+  $2^\kappa=\kappa^{++}$ 且 κ 仍可测——**先造出「违背 GCH
   的可测基数」**。
 - **第二步（第 104 章已备好）**：Prikry 力迫把该可测基数化成
-  cf=ω 的强极限奇异基数——**可测性携 \(2^\kappa=\kappa^{++}\)
+  cf=ω 的强极限奇异基数——**可测性携 $2^\kappa=\kappa^{++}$
   一起度过共尾度手术**（定理 2.6 三款保证 κ 以下无新子集、
-  \(2^\kappa\) 不变）。
+  $2^\kappa$ 不变）。
 
 为什么必须迭代而不能一击？**Silver 定理（第 78 章定理 1.2.38）
 的自然启示**（书 p162）：在可测 κ 上破坏 GCH 之前，必须在 κ
 之下的不可数多个正则基数上破坏 GCH——一击式 Add(κ,κ⁺⁺) 会让
 κ 的可测性立即失效（超滤子的种子集被打乱）。迭代工程沿 κ 之下
-的每个不可达 α 逐点加工，每步只动 α 处的 \(2^\alpha\)，最终
-在 κ 处「凑齐」\(2^\kappa=\kappa^{++}\)。
+的每个不可达 α 逐点加工，每步只动 α 处的 $2^\alpha$，最终
+在 κ 处「凑齐」$2^\kappa=\kappa^{++}$。
 
 ### 105.1b 超紧预算：为什么起点是 κ⁺⁺-超紧而不是可测
 
 定理 2.10 的起点 κ⁺⁺-超紧看似过高（结论只要 κ 可测），
-实则每一级超紧性都有指定用途：**κ⁺⁺-超紧给 \({}^{
-\kappa^{++}}M\subseteq M\)**——第三幕用它证 P∈M 与
+实则每一级超紧性都有指定用途：**κ⁺⁺-超紧给 ${}^{ \kappa^{++}}M\subseteq M$**——第三幕用它证 P∈M 与
 G 的 M-泛型性（P 的定义在 V 与 M 中一致），第四幕用
 它证 λ-封闭断言（M[G] 的 λ-序列封闭回收 U 入 V[G]）。
-若只取 κ⁺⁺-强（或 λ-强），\({}^{\kappa^{++}}M\subseteq
-M\) 换成 V_{\kappa^{++}}^M⊆M——名字编码账断在「g:λ×P
+若只取 κ⁺⁺-强（或 λ-强），${}^{\kappa^{++}}M\subseteq M$ 换成 V_{\kappa^{++}}^M⊆M——名字编码账断在「g:λ×P
 → Ord 是类大小对象」这一步（P 不是 V_{\kappa^{++}} 的
 元素）。**超紧的序列封闭在力迫工程中的角色恰是「让 V
 与 M 对 |P|-大小的对象达成一致」**——第 100 章定理
@@ -93,30 +88,22 @@ j(P)=P*Q 的分解恰好把这些坐标装进 Q**；Q 的 λ-定向完全
 条件）回收大拿。「迭代不是权宜，是大拿存在性的结构保证」。
 ## 105.2 迭代力迫的一般定义与两种极限
 
-> **定义 2.7** 长度 α 的迭代力迫 \(\mathbb P_\alpha\)：
-> (a) α=1 时 \(\mathbb P_1=\mathbb Q_0\) 的条件单序列；(b)
-> 后继步 \(\mathbb P_{\alpha+1}=\mathbb P_\alpha*\dot{\mathbb
-> Q}_\alpha\)（条件 \(p\) 满足 \(p\upharpoonright\alpha\in
-> \mathbb P_\alpha\) 且 \(1\Vdash p(\alpha)\in\dot{\mathbb
-> Q}_\alpha\)）；(c) 极限步：常值序列 \(\langle1,1,\dots
-> \rangle\in\mathbb P_\alpha\)，且 \(p,q\) 的**融合**
-> \(r(p,q)\)（β 前取 q、β 后取 p）仍在 \(\mathbb P_\alpha\)，
-> 并且限制映射 \(\pi_\beta\) 保序。
+> **定义 2.7** 长度 α 的迭代力迫 $\mathbb P_\alpha$：
+> (a) α=1 时 $\mathbb P_1=\mathbb Q_0$ 的条件单序列；(b)
+> 后继步 $\mathbb P_{\alpha+1}=\mathbb P_\alpha*\dot{\mathbb Q}_\alpha$（条件 $p$ 满足 $p\upharpoonright\alpha\in \mathbb P_\alpha$ 且 $1\Vdash p(\alpha)\in\dot{\mathbb Q}_\alpha$）；(c) 极限步：常值序列 $\langle1,1,\dots \rangle\in\mathbb P_\alpha$，且 $p,q$ 的**融合**
+> $r(p,q)$（β 前取 q、β 后取 p）仍在 $\mathbb P_\alpha$，
+> 并且限制映射 $\pi_\beta$ 保序。
 
 定义 2.7 把第 91 章（马丁公理线）的有限支撑迭代推广到任意
 长度与任意极限方式。两个新部件：**融合**（fusion——两条条件
 「前半取一条后半取另一条」的缝合，是极限步封闭性的最低要求）
-与**限制映射族** \(\pi_\beta:\mathbb P_\alpha\to\mathbb
-P_\beta\)（截断）——后者保证迭代「越往后越长」的相容性。
+与**限制映射族** $\pi_\beta:\mathbb P_\alpha\to\mathbb P_\beta$（截断）——后者保证迭代「越往后越长」的相容性。
 
-> **定义 2.8** 设 \(\mathbb P_\alpha\) 是长度为极限序数 α
+> **定义 2.8** 设 $\mathbb P_\alpha$ 是长度为极限序数 α
 > 的迭代力迫。
-> (1) **正向极限**（direct limit）：\(p\in\mathbb P_\alpha
-> \iff\exists\beta<\alpha\,\forall\gamma\ge\beta\,(p(\gamma)=1)\)
+> (1) **正向极限**（direct limit）：$p\in\mathbb P_\alpha \iff\exists\beta<\alpha\,\forall\gamma\ge\beta\,(p(\gamma)=1)$
 > ——每条条件** eventual 平坦**（某点之后全取 1）。
-> (2) **反向极限**（inverse limit）：\(p\in\mathbb P_\alpha
-> \iff\forall\beta<\alpha\,(p\upharpoonright\beta\in\mathbb
-> P_\beta)\) ——一切截断都合法，**直取整个无穷乘积**。
+> (2) **反向极限**（inverse limit）：$p\in\mathbb P_\alpha \iff\forall\beta<\alpha\,(p\upharpoonright\beta\in\mathbb P_\beta)$ ——一切截断都合法，**直取整个无穷乘积**。
 
 两种极限的几何：正向极限是「**平坦极限**」（条件最终睡着
 了——只有有限/有界多的活跃坐标），反向极限是「**极端极限**」
@@ -126,9 +113,9 @@ P_\beta\)（截断）——后者保证迭代「越往后越长」的相容性�
 恰当力迫的主角）。
 
 > **定义 2.9/2.10** 条件 p 的**支撑** spt(p) = 非平凡坐标
-> 全体。\(\mathbb P_\alpha\) 是 **I-支撑**迭代 iff 一切
-> spt(p)∈I。**Easton 支撑**：对每个正则 \(\mu\le\alpha\)，
-> \(|\mathrm{spt}(p)\cap\mu|<\mu\)。等价刻画（事实 2.4.2）：
+> 全体。$\mathbb P_\alpha$ 是 **I-支撑**迭代 iff 一切
+> spt(p)∈I。**Easton 支撑**：对每个正则 $\mu\le\alpha$，
+> $|\mathrm{spt}(p)\cap\mu|<\mu$。等价刻画（事实 2.4.2）：
 > cf(δ) 正则处正向极限、cf(δ)<（相应正则基数的）处反向极限。
 
 Easton 支撑是**「在正则基数处吝啬、在奇异处慷慨」**的混合
@@ -149,8 +136,8 @@ Prikry 的信息向前生长，融合的信息**横向嫁接**。迭代力迫
 有限的条件下融合不增支撑，支撑 <μ 的条件下融合后仍 <μ。
 
 截断映射 π_β 的单调性（(c)(iii)）是「迭代=反向系统」的
-精确表述：\(\langle\mathbb P_\beta,\pi_{\beta,\gamma}\rangle\)
-构成以 \([\alpha]\) 为索引的反向系统，正向极限是它的**归纳
+精确表述：$\langle\mathbb P_\beta,\pi_{\beta,\gamma}\rangle$
+构成以 $[\alpha]$ 为索引的反向系统，正向极限是它的**归纳
 极限**（colimit）、反向极限是**投射极限**（limit）——
 范畴论的两个 universal 构造在力迫论里各领一种支撑调度。
 第 46–52 章 Viale 布尔值线的定向极限（第 100 章末的
@@ -189,11 +176,10 @@ limit/profinite 构造——p-进整数与 Cantor 空间的标准生成
 
 ## 105.3 链条件与 λ-定向完全性
 
-> **定理 2.9** κ 不可数正则、α 极限、\(\mathbb P_\alpha\)
-> 正向极限，且 \(\mathrm{cf}(\alpha)=\kappa\Rightarrow
-> \{\beta<\alpha\mid\mathbb P_\beta\) 正向极限\(\}\) 在 α
-> 荟萃。若每个 \(\mathbb P_\beta\) 满足 κ-cc，则
-> \(\mathbb P_\alpha\) 也满足。
+> **定理 2.9** κ 不可数正则、α 极限、$\mathbb P_\alpha$
+> 正向极限，且 $\mathrm{cf}(\alpha)=\kappa\Rightarrow \{\beta<\alpha\mid\mathbb P_\beta$ 正向极限$\}$ 在 α
+> 荟萃。若每个 $\mathbb P_\beta$ 满足 κ-cc，则
+> $\mathbb P_\alpha$ 也满足。
 
 证明（练习，参照有限支撑迭代的链条件定理）的关键新情形：
 cf(α)=κ 时，κ 个截断的「平坦化点」由 cf(α)=κ 的正则性选出
@@ -202,24 +188,24 @@ cf(α)=κ 时，κ 个截断的「平坦化点」由 cf(α)=κ 的正则性选�
 在不可达基数处自动提供的（不可达基数的正则性 + 定义 2.10
 的调度）。
 
-> **定义 2.11** \((\mathbb P,\le)\) 是 **λ-定向完全**的 iff
-> 每个大小 ≤λ 的定向子集 D（任意 \(p_1,p_2\in D\) 有公共
+> **定义 2.11** $(\mathbb P,\le)$ 是 **λ-定向完全**的 iff
+> 每个大小 ≤λ 的定向子集 D（任意 $p_1,p_2\in D$ 有公共
 > 延展）都有下界。
 
-> **引理 2.6** (a) \(\mathbb P\) 与 \(\Vdash\dot{\mathbb Q}\)
-> 都 λ-定向完全 ⟹ \(\mathbb P*\dot{\mathbb Q}\) 也是；
-> (b) cf(α)>λ 且 \(\mathbb P_\alpha\) 正向极限、每段 λ-定向
-> 完全 ⟹ \(\mathbb P_\alpha\) λ-定向完全；(c) Easton 支撑
-> 迭代、每步的 \(\dot{\mathbb Q}_\beta\) λ-定向完全、且凡
+> **引理 2.6** (a) $\mathbb P$ 与 $\Vdash\dot{\mathbb Q}$
+> 都 λ-定向完全 ⟹ $\mathbb P*\dot{\mathbb Q}$ 也是；
+> (b) cf(α)>λ 且 $\mathbb P_\alpha$ 正向极限、每段 λ-定向
+> 完全 ⟹ $\mathbb P_\alpha$ λ-定向完全；(c) Easton 支撑
+> 迭代、每步的 $\dot{\mathbb Q}_\beta$ λ-定向完全、且凡
 > cf(β)≤λ 的极限步取反向极限 ⟹ 全程 λ-定向完全。
 
-三款的机制：(a) 是**两条件缝合**——D 在 \(\mathbb P\) 侧的
-投影有下界 p，D 中以 p 为投影的 \(\dot{\mathbb Q}\)-侧元素
-（λ 个名字）用 \(\Vdash\)-侧的定向完全性取下界名字；(b) 是
+三款的机制：(a) 是**两条件缝合**——D 在 $\mathbb P$ 侧的
+投影有下界 p，D 中以 p 为投影的 $\dot{\mathbb Q}$-侧元素
+（λ 个名字）用 $\Vdash$-侧的定向完全性取下界名字；(b) 是
 **平坦段统一**——λ 个条件在 cf(α)>λ 下有共同平坦化点 β，
 截断到 β 用归纳，再平坦延伸到 α；(c) 是**反向极限处的逐段
-缝合**——沿 β 递归定义下界函数 \(p=\langle p_\beta\rangle\)，
-每步在 \(\mathbb P_\beta\) 内取当前段的下界；cf(β)≤λ 的极限
+缝合**——沿 β 递归定义下界函数 $p=\langle p_\beta\rangle$，
+每步在 $\mathbb P_\beta$ 内取当前段的下界；cf(β)≤λ 的极限
 步反向极限**保证任意逐段合法的函数都在迭代中**。机器通道的
 「两两相容族的并是公共下界」是 (a) 在有限层、值域 {0,1} 的
 最小样本。
@@ -227,14 +213,12 @@ cf(α)=κ 时，κ 个截断的「平坦化点」由 cf(α)=κ 的正则性选�
 ### 105.3b 链条件证明的荟萃账逐帧
 
 定理 2.9 的证明（练习，参照有限支撑版）在 cf(α)=κ 时的
-关键账：设 \(\langle p_\xi\mid\xi<\kappa\rangle\) 是
-\(\mathbb P_\alpha\) 的 κ-长序列。每个 \(p_\xi\) 的
-支撑有界（正向极限 ⟹ eventual 平坦），平坦化点 \(\beta_
-\xi<\alpha\)；κ 个点的上界由 cf(α)=κ 的正则性给出 δ<
+关键账：设 $\langle p_\xi\mid\xi<\kappa\rangle$ 是
+$\mathbb P_\alpha$ 的 κ-长序列。每个 $p_\xi$ 的
+支撑有界（正向极限 ⟹ eventual 平坦），平坦化点 $\beta_ \xi<\alpha$；κ 个点的上界由 cf(α)=κ 的正则性给出 δ<
 α。**正向极限点集在 α 荟萃**（假设）⟹ δ 之下有正向极限
-点 δ′——截断到 δ′（归纳假设 \(\mathbb P_{\delta′}\)
-κ-cc）取相容对 \((p_\xi\!\upharpoonright\delta′,
-p_\eta\!\upharpoonright\delta′)\)，再在 δ′ 处融合（两条
+点 δ′——截断到 δ′（归纳假设 $\mathbb P_{\delta′}$
+κ-cc）取相容对 $(p_\xi\!\upharpoonright\delta′, p_\eta\!\upharpoonright\delta′)$，再在 δ′ 处融合（两条
 平坦条件在共同平坦点之后全取 1，拼接仍 eventual 平坦）。
 **荟萃性的消费点恰在「κ 个有界支撑的公共上界不保证落在
 正向极限点」**——需要荟萃（而非无界）才能在任意 δ 之下
@@ -261,58 +245,47 @@ p_\eta\!\upharpoonright\delta′)\)，再在 δ′ 处融合（两条
 扉页上。
 ## 105.4 分解引理与 Silver 定理
 
-> **引理 2.7（分解引理）** \(\mathbb P_{\alpha+\beta}\)
+> **引理 2.7（分解引理）** $\mathbb P_{\alpha+\beta}$
 > 在 Easton 支撑与一致的极限调度下分解为
-> \(\mathbb P_{\alpha+\beta}=\mathbb P_\alpha*\mathbb
-> P^{(\alpha)}\)——后者是 \(V^{\mathbb P_\alpha}\) 中从 α
+> $\mathbb P_{\alpha+\beta}=\mathbb P_\alpha*\mathbb P^{(\alpha)}$——后者是 $V^{\mathbb P_\alpha}$ 中从 α
 > 起算的同款迭代。
 
 分解引理（证明对 β 归纳造同构 π，书 p167–168）与第 97 章
 迭代超幂的结合律、第 103 章定理 2.3 因子分解同一家族：
 **「先走 α 步再走 β 步 = 一次走 α+β 步」**。定理 2.10 的
-证明在 M 中于 \(j(\kappa)\) 处用它切出 \(j(\mathbb P)=
-\mathbb P*\mathbb Q\)——\(\mathbb Q\) 是 M 中从 κ⁺¹ 到
-\(j(\kappa)^{+1}\) 的尾巴迭代。
+证明在 M 中于 $j(\kappa)$ 处用它切出 $j(\mathbb P)= \mathbb P*\mathbb Q$——$\mathbb Q$ 是 M 中从 κ⁺¹ 到
+$j(\kappa)^{+1}$ 的尾巴迭代。
 
-> **定理 2.10（Silver）** κ 是 κ⁺⁺-超紧 ⟹ 存在 \(\mathbb
-> P\) 使 \(V[G]\models\)「κ 可测且 \(2^\kappa=\kappa^{++}\)」。
+> **定理 2.10（Silver）** κ 是 κ⁺⁺-超紧 ⟹ 存在 $\mathbb P$ 使 $V[G]\models$「κ 可测且 $2^\kappa=\kappa^{++}$」。
 
 **证明骨架**（书 p168–172，四幕）：
 
 - **第一幕（工程）**：Easton 支撑迭代至 κ+1，每个不可达
-  \(\alpha<\kappa\) 处放 \(\dot{\mathbb Q}_\alpha=
-  \mathrm{Add}(\alpha,\alpha^{++})^{\,V^{\mathbb
-  P_\alpha}}\)。κ-cc 由定理 2.9（T = 不可达基数的荟萃集
-  提供正向极限点）；\(|\mathbb P|=\kappa^{++}\)。
-- **第二幕（κ 侧）**：\(\mathbb P=\mathbb P_\kappa*
-  \dot{\mathbb Q}_\kappa\)，最后一步在 κ 处 Add(κ,κ⁺⁺)
-  ——保基数、\(2^\kappa=\kappa^{++}\)。到此只知道 κ 正则。
-- **第三幕（提升与大拿）**：取 \((\kappa,\kappa^{++})\)-超紧
-  \(j:V\to M\)（\({}^{\kappa^{++}}M\subseteq M\)）。M 中
-  分解 \(j(\mathbb P)=\mathbb P*\mathbb Q\)；\(\mathbb Q\)
-  在 M 中 λ-定向完全（引理 2.6(c)，λ=\(\kappa^{++}\)）。
-  关键一步：对每个 \(p\in G\)，\(j(p)\upharpoonright(
-  \kappa+1)=p\)（p 的支撑有界，κ⁺¹ 处已平坦）——于是
-  \(D=\{j(p)\upharpoonright\text{尾}\mid p\in G\}\) 在 M[G]
-  中是 \(\mathbb Q/G\) 的定向子集，大小 \(\le|\mathbb P|=
-  \kappa^{++}=\lambda\)；**定向完全性给 D 一个下界 a——
-  大拿**。含 a 的 \(\mathbb Q\)-泛型 H 使 \(M[G][H]=M[K]\)，
-  \(j^*(\tau_G)=(j(\tau))_K\) 良定义（名字无关性由 a 保证：
-  \(p\in G\Rightarrow j(p)\in K\)）。
-- **第四幕（可测性）**：\(U=\{X\subseteq\kappa\mid\kappa\in
-  j^*(X)\}\) 是 \(V[G]\) 中的 κ-完全超滤子。最后一个障碍：
-  U 要落在 \(V[G]\) 里——断言 \((M[G])^{\lambda}\cap V[G]
-  \subseteq M[G]\)（λ-封闭账：\(V[G]\) 的每个 λ-长序数函数
-  的名字被 \(|\mathbb P|=\lambda\) 个条件逐点编码，编码函数
-  \(g\in M\)，故 f∈M[G]）。U 由 \(j^*\) 与 \(\kappa\) 定义，
-  势 λ ⟹ \(U\in V[G]\)。∎
+  $\alpha<\kappa$ 处放 $\dot{\mathbb Q}_\alpha= \mathrm{Add}(\alpha,\alpha^{++})^{\,V^{\mathbb P_\alpha}}$。κ-cc 由定理 2.9（T = 不可达基数的荟萃集
+  提供正向极限点）；$|\mathbb P|=\kappa^{++}$。
+- **第二幕（κ 侧）**：$\mathbb P=\mathbb P_\kappa* \dot{\mathbb Q}_\kappa$，最后一步在 κ 处 Add(κ,κ⁺⁺)
+  ——保基数、$2^\kappa=\kappa^{++}$。到此只知道 κ 正则。
+- **第三幕（提升与大拿）**：取 $(\kappa,\kappa^{++})$-超紧
+  $j:V\to M$（${}^{\kappa^{++}}M\subseteq M$）。M 中
+  分解 $j(\mathbb P)=\mathbb P*\mathbb Q$；$\mathbb Q$
+  在 M 中 λ-定向完全（引理 2.6(c)，λ=$\kappa^{++}$）。
+  关键一步：对每个 $p\in G$，$j(p)\upharpoonright( \kappa+1)=p$（p 的支撑有界，κ⁺¹ 处已平坦）——于是
+  $D=\{j(p)\upharpoonright\text{尾}\mid p\in G\}$ 在 M[G]
+  中是 $\mathbb Q/G$ 的定向子集，大小 $\le|\mathbb P|= \kappa^{++}=\lambda$；**定向完全性给 D 一个下界 a——
+  大拿**。含 a 的 $\mathbb Q$-泛型 H 使 $M[G][H]=M[K]$，
+  $j^*(\tau_G)=(j(\tau))_K$ 良定义（名字无关性由 a 保证：
+  $p\in G\Rightarrow j(p)\in K$）。
+- **第四幕（可测性）**：$U=\{X\subseteq\kappa\mid\kappa\in j^*(X)\}$ 是 $V[G]$ 中的 κ-完全超滤子。最后一个障碍：
+  U 要落在 $V[G]$ 里——断言 $(M[G])^{\lambda}\cap V[G] \subseteq M[G]$（λ-封闭账：$V[G]$ 的每个 λ-长序数函数
+  的名字被 $|\mathbb P|=\lambda$ 个条件逐点编码，编码函数
+  $g\in M$，故 f∈M[G]）。U 由 $j^*$ 与 $\kappa$ 定义，
+  势 λ ⟹ $U\in V[G]$。∎
 
 **大拿（master condition）**是本章的明星概念：D 的下界 a
-「接管」了 G 中一切条件的 j-像，使 \(K=\{(r,q)\mid r\in G,
-q/G\in H\}\) 对 \(j[\mathbb P]\) 泛型。**没有 a，j-像们只是
+「接管」了 G 中一切条件的 j-像，使 $K=\{(r,q)\mid r\in G, q/G\in H\}$ 对 $j[\mathbb P]$ 泛型。**没有 a，j-像们只是
 一堆两两相容的条件；有了 a，它们被缝成一个泛型滤子**。与第
-103 章 \(j^*\) 提升机对照：那边 \(j(p)=p\)（小性免费），
-这边 \(j(p)\neq p\)（长度变了），必须用定向完全性**手工缝**
+103 章 $j^*$ 提升机对照：那边 $j(p)=p$（小性免费），
+这边 $j(p)\neq p$（长度变了），必须用定向完全性**手工缝**
 ——「大拿是定向完全性的消费凭证」。
 
 ### 105.4d 第一幕的工程细节：迭代在不可达点之外全是平凡步
@@ -388,8 +361,7 @@ Solovay——引理 2.6 的 λ-定向完全性正是他手中「可数封闭
 ## 105.5 与 Prikry 的合龙及三本账的更新
 
 > **定理 2.11（前奏，书 p173）** κ⁺⁺-超紧 ⟹ 存在力迫使
-> \(V[G]\models\)「κ 是 cf=ω 的强极限基数，\(2^{\aleph_0}=
-> \aleph_1\)，且 \(2^\kappa=\kappa^{++}\)」——SCH 在 κ 处
+> $V[G]\models$「κ 是 cf=ω 的强极限基数，$2^{\aleph_0}= \aleph_1$，且 $2^\kappa=\kappa^{++}$」——SCH 在 κ 处
 > 失败。
 
 组合：先小力迫成 CH（定理 2.1 保护超紧性），再 Silver 力迫
@@ -400,10 +372,10 @@ Solovay——引理 2.6 的 λ-定向完全性正是他手中「可数封闭
 
 | | 保基数 | 加子集 | 引擎 | 新维度 |
 |---|---|---|---|---|
-| 小力迫（103） | 全保 | 随意 | \(j^*\) 提升 | — |
+| 小力迫（103） | 全保 | 随意 | $j^*$ 提升 | — |
 | Lévy（103） | ≥κ 保 | 塌下方 | 逐值稠密 | — |
 | Prikry（104） | ≥κ⁺ 保 | 无有界 | 判定引理 | 改共尾度 |
-| **Silver（105）** | 全保 | **精确控制 \(2^\alpha\)** | **迭代 + 大拿** | **Easton 调度** |
+| **Silver（105）** | 全保 | **精确控制 $2^\alpha$** | **迭代 + 大拿** | **Easton 调度** |
 
 「精确控制连续统函数」是 Easton 工具书（第 89–91 章）在大
 基数环境下的复活：Easton 乘积只能动正则基数且要求 GCH 起点
@@ -1395,8 +1367,7 @@ Julia 的两处方向错账（Easton 断言反写、master 包含反写）
   上连续统函数的自由度）是本章迭代的原型——Easton 乘积要求
   GCH 预设、一次成型；Silver 迭代**边加工边保持**，每步的
   安全性由下一步回收（大拿论证）。第 103 章三本表 +
-  \(j^*\) 提升机是本章第四幕的模板——差别只在 \(j(p)\neq
-  p\)（长度变了），须用定向完全性手工缝合。
+  $j^*$ 提升机是本章第四幕的模板——差别只在 $j(p)\neq p$（长度变了），须用定向完全性手工缝合。
 - **横向（力迫谱系）**：Prikry（104）改共尾度不加子集；
   Silver（105）加子集保基数——两者**正交**，组合（定理
   2.11）得 cf=ω 强极限 + 2^κ=κ⁺⁺ 的 SCH 最小反例。第

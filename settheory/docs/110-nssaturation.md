@@ -1,57 +1,57 @@
 # 110 · NS 峭壁、饱和与投影光影原理
 
-> 第 109 章立起泛型超幂的全部机构：理想力迫 \(\mathbb P(I)\)、
+> 第 109 章立起泛型超幂的全部机构：理想力迫 $\mathbb P(I)$、
 > 泛型超滤子、Łoś、峭壁性的三等价刻画。本章取材冯琦第三卷 §2.7.2–
 > §2.7.4 与 §2.8 练习选讲（书页 220–249；PDF 241–270），把
-> 「\(\mathrm{NS}_{\omega_1}\) 的饱和性是合理的」这句纲领做实。
+> 「$\mathrm{NS}_{\omega_1}$ 的饱和性是合理的」这句纲领做实。
 > 三段主线：**§2.7.2 力迫 NS 峭壁**——定理 2.20（Mitchell）：可测
-> 基数 + Lévy 塌塌 \(\mathrm{Col}(\omega,<\kappa)\) 后 \(\omega_1\)
-> 上有 \(\sigma\)-完全非平凡正规峭壁理想；定理 2.21（Magidor）：
-> 在 \(L[U]\) 中迭代「对每个荟萃集的补集射入无界闭集」的力迫
-> \(Q_{\kappa^+}\)，最终模型里 \(\mathrm{NS}_{\omega_1}\) **本身**
+> 基数 + Lévy 塌塌 $\mathrm{Col}(\omega,<\kappa)$ 后 $\omega_1$
+> 上有 $\sigma$-完全非平凡正规峭壁理想；定理 2.21（Magidor）：
+> 在 $L[U]$ 中迭代「对每个荟萃集的补集射入无界闭集」的力迫
+> $Q_{\kappa^+}$，最终模型里 $\mathrm{NS}_{\omega_1}$ **本身**
 > 峭壁——六断言的递归构造。**§2.7.3 力迫 NS 饱和**——消反例
-> 力迫 \(\mathbb P_W\)（定义 2.27：给极大反链 W 添 \(\omega_1\)-长
+> 力迫 $\mathbb P_W$（定义 2.27：给极大反链 W 添 $\omega_1$-长
 > 列表）、半泛型条件与半恰当力迫（定义 2.29/2.30，恰当版 107 章
 > 的弱化）、谢拉赫**修订可数支撑迭代**的收敛性、定理 2.23
 > （Foreman–Magidor–Shelah：超紧基数下 MM 成立）、**马丁极大
-> 原理 MM**（定义 2.31：保持荟萃的力迫 + \(\aleph_1\) 个稠密集
+> 原理 MM**（定义 2.31：保持荟萃的力迫 + $\aleph_1$ 个稠密集
 > ⟹ 相遇滤子）、定理 2.24（MM ⟹ NS 饱和 + SCH）、定理 2.25
-> （Gitik–Shelah：\(\kappa\ge\omega_2\) 的 \(\mathrm{NS}_\kappa\)
-> **永不** \(\kappa^+\)-饱和——饱和只在 \(\omega_1\) 可能的对照
+> （Gitik–Shelah：$\kappa\ge\omega_2$ 的 $\mathrm{NS}_\kappa$
+> **永不** $\kappa^+$-饱和——饱和只在 $\omega_1$ 可能的对照
 > 面）、半恰当极大反链（定义 2.32/定理 2.26/2.27）、
-> \(\mathrm{Col}(\omega_1,<\kappa)\)（定义 2.33 + Lévy 事实
+> $\mathrm{Col}(\omega_1,<\kappa)$（定义 2.33 + Lévy 事实
 > 2.7.2）、**预饱和**与事实 2.7.3（Baumgartner：泛型超幂后果
-> 链——\(\mathrm{crit}(i_G)=\omega_1\)、\(i_G(\omega_1)=\omega_2\)、
+> 链——$\mathrm{crit}(i_G)=\omega_1$、$i_G(\omega_1)=\omega_2$、
 > 超幂对可数序列封闭）、定理 2.28（FMS：超紧塌塌后每个极大反链
 > 半恰当 + NS 预饱和），以及一周竞赛：定理 2.29（Woodin 超强）
 > → 谢拉赫基数 → 定理 2.30/2.31（武丁基数版）。**§2.7.4 投影
 > 荟萃集光影原理**——E-序列、投影荟萃集（定义 2.34：每个
-> \([\lambda]^\omega\)-club 的投影含 \(\omega_1\)-club，等价于对
-> 每个荟萃 \(T\subseteq\omega_1\) 切片 \(S_T\) 荟萃）、例 2.6
-> （\(S(W)\)——极大反链 W 造出的投影荟萃集）、PSRP（定义 2.35
-> 冯–Jech：投影荟萃集含 \(\omega_1\)-长 E-链）、引理 2.31（可数
+> $[\lambda]^\omega$-club 的投影含 $\omega_1$-club，等价于对
+> 每个荟萃 $T\subseteq\omega_1$ 切片 $S_T$ 荟萃）、例 2.6
+> （$S(W)$——极大反链 W 造出的投影荟萃集）、PSRP（定义 2.35
+> 冯–Jech：投影荟萃集含 $\omega_1$-长 E-链）、引理 2.31（可数
 > 长强链在 ZFC 内可取）、定理 2.32（MM ⟹ PSRP）、定理 2.33
 > （PSRP ⟹ NS 饱和/cf=ω 荟萃集含闭拷贝/SCH/RP 四款）、推论
 > 2.3、SRP（定义 2.36 Todorcevic）与定理 2.34（PSRP ⟺ SRP）。
 >
 > 机器边界：本体（大基数构造、超穷迭代、修订支撑、反射论证）
 > 全在超穷层；七个通道做**投影层**——沿 109 章位掩码宇宙
-> \(U=\{0,1,2\}\)、理想 \(I_0=\{\varnothing,\{0\}\}\)：①投影
-> \(\pi(X)=X\setminus\{0\}\)（光影原理 \(N\mapsto N\cap\omega_1\)
+> $U=\{0,1,2\}$、理想 $I_0=\{\varnothing,\{0\}\}$：①投影
+> $\pi(X)=X\setminus\{0\}$（光影原理 $N\mapsto N\cap\omega_1$
 > 的影子——坐标 0 是被理想抹平的部分）；②**核刻画**
-> \(X\in I_0\iff\pi(X)=\varnothing\)（四助理定理件：商代数
-> \(\mathcal P(U)/I_0\cong\mathcal P(\{1,2\})\) 的机制）；③
-> \(\pi\) 与交交换 + **不相容 ⟹ 投影不交**；④**有限饱和界**：
+> $X\in I_0\iff\pi(X)=\varnothing$（四助理定理件：商代数
+> $\mathcal P(U)/I_0\cong\mathcal P(\{1,2\})$ 的机制）；③
+> $\pi$ 与交交换 + **不相容 ⟹ 投影不交**；④**有限饱和界**：
 > 反链 ≤ 2（Lean 定理件 `antichain_bound`：min'-嵌入到
-> \(\{1,2\}\) + 鸽笼；Julia/Python **三理想饱和界表**：反链
+> $\{1,2\}$ + 鸽笼；Julia/Python **三理想饱和界表**：反链
 > 规模 = 商原子数——I₀/I₁/I₂ 三个理想的 sat = 3/4/2）；⑤
 > **反射可比对**（Julia/Python/Prolog：上向闭（有限 club 影子）
-> + 全投影（PS 影子）的族必含 \(N\subset N'\) 且投影不同——
+> + 全投影（PS 影子）的族必含 $N\subset N'$ 且投影不同——
 > 「从 PS 族走出一阶」的有限替身）。特别声明（Task 25 Step 3）：
 > **峭壁（precipitous）与饱和（saturated）是两个不同的逻辑
 > 内容**——峭壁问泛型超幂是否良基，饱和问商代数反链多长；
-> 饱和 ⟹ 峭壁（109 章例 2.3）而反向不成立，且 \(\kappa\ge\omega_2\)
-> 的 \(\mathrm{NS}_\kappa\) 永不饱和（定理 2.25）——本章标题把
+> 饱和 ⟹ 峭壁（109 章例 2.3）而反向不成立，且 $\kappa\ge\omega_2$
+> 的 $\mathrm{NS}_\kappa$ 永不饱和（定理 2.25）——本章标题把
 > 二者并列正是为了不混同。
 
 ## 110.1 全景：峭壁 ≠ 饱和
@@ -60,18 +60,18 @@
 
 | 维度 | 峭壁（precipitous） | 饱和（saturated） |
 |---|---|---|
-| 定义 | \(\Vdash_{\mathbb P(I)}\Pi(V,E)\) 良基 | \(\mathbb P(I)\) 满足 \(\omega_2\)-cc |
+| 定义 | $\Vdash_{\mathbb P(I)}\Pi(V,E)$ 良基 | $\mathbb P(I)$ 满足 $\omega_2$-cc |
 | 问的是 | 泛型超幂可否传递化 | 商代数反链长度 |
 | 逻辑内容 | 良基性（二阶、力迫语句） | 组合（一阶组合性质） |
 | 蕴涵关系 | ← 饱和（109 章例 2.3） | → 峭壁 |
-| 反向 | **不成立**：峭壁 \(\not\Rightarrow\) 饱和 | |
-| 在哪些 κ | \(\omega_1\) 上可造（Mitchell/Magidor） | **只在 \(\omega_1\)**：\(\kappa\ge\omega_2\) 的 \(\mathrm{NS}_\kappa\) 永不 \(\kappa^+\)-饱和（Gitik–Shelah 2.25） |
+| 反向 | **不成立**：峭壁 $\not\Rightarrow$ 饱和 | |
+| 在哪些 κ | $\omega_1$ 上可造（Mitchell/Magidor） | **只在 $\omega_1$**：$\kappa\ge\omega_2$ 的 $\mathrm{NS}_\kappa$ 永不 $\kappa^+$-饱和（Gitik–Shelah 2.25） |
 | 大基数底价 | 可测 | 超紧（MM 路线）/ 武丁（直接路线） |
 
 这张表是本章的地图。**峭壁**是泛型超幂论的门槛性质：没有它，
-超幂只是个 \((V,\in)\)-语句的模型，无法传递化、无法谈嵌入的
-像；**饱和**是组合性质：商代数 \(\mathcal P(\omega_1)/\mathrm{NS}\)
-的反链至多 \(\aleph_1\) 长——它一举送出峭壁（109 例 2.3）加
+超幂只是个 $(V,\in)$-语句的模型，无法传递化、无法谈嵌入的
+像；**饱和**是组合性质：商代数 $\mathcal P(\omega_1)/\mathrm{NS}$
+的反链至多 $\aleph_1$ 长——它一举送出峭壁（109 例 2.3）加
 三重馈赠（109 定理 2.19）。构造史的时间线：
 
 - **1980**：Jech–Magidor–Mitchell–Prikry（JSL 45）——峭壁
@@ -92,185 +92,192 @@
 
 ## 110.2 定理 2.20（Mitchell）：可测 ⟹ ω₁ 上有峭壁理想
 
-**定理 2.20（Mitchell）** 设 κ 可测，\(\mathbb P=
-\mathrm{Col}(\omega,<\kappa)\)（把 κ 以下全部可数化的 Lévy
-力迫），G 是 V 上的 \(\mathbb P\)-泛型超滤子。则在 \(V[G]\)
-中，\(\omega_1\)(=κ) 上存在 \(\sigma\)-完全非平凡正规峭壁理想。
+**定理 2.20（Mitchell）** 设 κ 可测，$\mathbb P= \mathrm{Col}(\omega,<\kappa)$（把 κ 以下全部可数化的 Lévy
+力迫），G 是 V 上的 $\mathbb P$-泛型超滤子。则在 $V[G]$
+中，$\omega_1$(=κ) 上存在 $\sigma$-完全非平凡正规峭壁理想。
 
-**构造**：设 U 是 κ 上的正规超滤子，\(j:V\to M=\mathrm{ult}
-(V,U)\)。在 \(V[G]\) 中定义
-\[X\in I\iff\exists Y\in U\ (X\cap Y=\varnothing)\]
+**构造**：设 U 是 κ 上的正规超滤子，$j:V\to M=\mathrm{ult} (V,U)$。在 $V[G]$ 中定义
+$$
+X\in I\iff\exists Y\in U\ (X\cap Y=\varnothing)
+$$
+
 ——I 是 U 的对偶理想的残余（「与某 U-大集无交」）。
 
-**非平凡**：设 \(\dot T\) 是名字且 \(1\Vdash\dot T\in I\)。由
-\(\mathbb P\) 的 κ-链条件，取 α<κ 使 \(1\Vdash\dot T=\dot
-T_\alpha\)——即 \(\dot T\) 的取值在某个 \(V_\alpha\) 层内；
-则 \((\kappa-\alpha)\in U\) 见证 \(\dot T/G\in I\) 不必然……
-准确地说（书 p221）：\((\kappa-\alpha)\in U\) 保证 \(\dot T/G
-\in I\) 的**反面**——若 \(1\Vdash\dot T\in I\) 则每个 \(Y\in U\)
-都与 \(\dot T\) 有交；κ-cc 让「\(\dot T\) 被 α 层内有界集控制」
-在 U-大集上失败，于是 \(V[G]\models\)「\(I\) 非平凡」：存在
-不在 I 中的集合（例如 \(\kappa\) 本身与任何 U-大集相交）。
+**非平凡**：设 $\dot T$ 是名字且 $1\Vdash\dot T\in I$。由
+$\mathbb P$ 的 κ-链条件，取 α<κ 使 $1\Vdash\dot T=\dot T_\alpha$——即 $\dot T$ 的取值在某个 $V_\alpha$ 层内；
+则 $(\kappa-\alpha)\in U$ 见证 $\dot T/G\in I$ 不必然……
+准确地说（书 p221）：$(\kappa-\alpha)\in U$ 保证 $\dot T/G \in I$ 的**反面**——若 $1\Vdash\dot T\in I$ 则每个 $Y\in U$
+都与 $\dot T$ 有交；κ-cc 让「$\dot T$ 被 α 层内有界集控制」
+在 U-大集上失败，于是 $V[G]\models$「$I$ 非平凡」：存在
+不在 I 中的集合（例如 $\kappa$ 本身与任何 U-大集相交）。
 
-**\(\sigma\)-完全**（书 p221–222）：设 \(\dot S_n\)（n<ω）是
-I 中集合的名字列。对每个 n 取名字 \(\dot X_n\in U\) 见证
-\(\dot S_n\cap\dot X_n=\varnothing\)。固定 n，令
-\[D_n=\{p\in\mathbb P\mid\exists X\ (p\Vdash\dot X_n=X)\},\]
-\(A_n\subseteq D_n\) 极大反链（\(|A_n|<\kappa\)）。取不可达
-\(\mu<\kappa\) 使 \(A_n\subseteq\mathrm{Col}(\omega,<\mu)\)；
-对每个 \(p\in A_n\) 取 \(X_p\in U\) 见证；令
-\(X_n=\bigcap(X_p\mid p\in A_n)\in U\)（U 的 κ-完全性吞下
-<κ 的交），再令 \(Y=\bigcap_n X_n\in U\)（σ-完全用在这里！
-可数交仍在 U 中）。于是 \(1\Vdash Y\cap\bigcup(\dot S_n\mid
-n<\omega)=\varnothing\)——\(V[G]\) 中 I 对可数并封闭。
+**$\sigma$-完全**（书 p221–222）：设 $\dot S_n$（n<ω）是
+I 中集合的名字列。对每个 n 取名字 $\dot X_n\in U$ 见证
+$\dot S_n\cap\dot X_n=\varnothing$。固定 n，令
+$$
+D_n=\{p\in\mathbb P\mid\exists X\ (p\Vdash\dot X_n=X)\},
+$$
 
-**正规**（书 p222）：对角和论证。设 \(1\Vdash\dot T\) 是
-\(\langle\dot T(\alpha)\mid\alpha<\kappa\rangle\) 的对角和
-（\(\dot T(\alpha)\subseteq\alpha\)）。对每个 α 取
-\(\dot X_\alpha\in U\) 见证 \(\dot T(\alpha)\cap\dot X_\alpha=
-\varnothing\)；令
-\[Y=\triangle_{\alpha<\kappa}\dot X_\alpha=\{\xi\mid\forall
-\alpha<\xi(\xi\in\dot X_\alpha)\}\in U\quad(\text{U 正规}).\]
-若某条件迫使 \(\xi\in\dot T\cap Y\)，取 β 使 \(\xi\in\dot T(\beta)\)
-（对角和的定义）——由 \(\xi\in Y\) 得 \(\xi\in\dot X_\beta\)，
-与 \(\dot T(\beta)\cap\dot X_\beta=\varnothing\) 矛盾。故
-\(1\Vdash\dot T\cap Y=\varnothing\)，\(\dot T\in I\)。
+$A_n\subseteq D_n$ 极大反链（$|A_n|<\kappa$）。取不可达
+$\mu<\kappa$ 使 $A_n\subseteq\mathrm{Col}(\omega,<\mu)$；
+对每个 $p\in A_n$ 取 $X_p\in U$ 见证；令
+$X_n=\bigcap(X_p\mid p\in A_n)\in U$（U 的 κ-完全性吞下
+<κ 的交），再令 $Y=\bigcap_n X_n\in U$（σ-完全用在这里！
+可数交仍在 U 中）。于是 $1\Vdash Y\cap\bigcup(\dot S_n\mid n<\omega)=\varnothing$——$V[G]$ 中 I 对可数并封闭。
+
+**正规**（书 p222）：对角和论证。设 $1\Vdash\dot T$ 是
+$\langle\dot T(\alpha)\mid\alpha<\kappa\rangle$ 的对角和
+（$\dot T(\alpha)\subseteq\alpha$）。对每个 α 取
+$\dot X_\alpha\in U$ 见证 $\dot T(\alpha)\cap\dot X_\alpha= \varnothing$；令
+$$
+Y=\triangle_{\alpha<\kappa}\dot X_\alpha=\{\xi\mid\forall
+\alpha<\xi(\xi\in\dot X_\alpha)\}\in U\quad(\text{U 正规}).
+$$
+
+若某条件迫使 $\xi\in\dot T\cap Y$，取 β 使 $\xi\in\dot T(\beta)$
+（对角和的定义）——由 $\xi\in Y$ 得 $\xi\in\dot X_\beta$，
+与 $\dot T(\beta)\cap\dot X_\beta=\varnothing$ 矛盾。故
+$1\Vdash\dot T\cap Y=\varnothing$，$\dot T\in I$。
 
 **峭壁性**（书 p222–223，本证明的技术高潮）：书先证一个稍弱
-（但够用）的结论——\(V[G]\) 中
-\[S_{\omega_1}(I)\cap\mathrm{NS}=\{\dot T\cap S\mid \dot T\in
-I, S\ \text{荟萃}\}\ \text{生成的理想是峭壁的}.\]
-做法：在 \(V[G]\) 中找一个具体的 \(S\)，使任何含 S 的
-\(I^+\)-泛型超滤子 H 都给出**有秩**超幂。关键装置是
+（但够用）的结论——$V[G]$ 中
+$$
+S_{\omega_1}(I)\cap\mathrm{NS}=\{\dot T\cap S\mid \dot T\in
+I, S\ \text{荟萃}\}\ \text{生成的理想是峭壁的}.
+$$
+
+做法：在 $V[G]$ 中找一个具体的 $S$，使任何含 S 的
+$I^+$-泛型超滤子 H 都给出**有秩**超幂。关键装置是
 **乘积分解**：对 ν<κ 令
-\[\mathbb P_{<\nu}=\{p\mid\mathrm{dom}(p)\subseteq\nu\times
+$$
+\mathbb P_{<\nu}=\{p\mid\mathrm{dom}(p)\subseteq\nu\times
 \omega\},\qquad\mathbb P_{\ge\nu}=\{p\mid\mathrm{dom}(p)
-\subseteq[\nu,\kappa)\times\omega\},\]
-则 \(\mathbb P\cong\mathbb P_{<\nu}\times\mathbb P_{\ge\nu}\)。
-在超幂 M 中看 \(j(\mathbb P)\)：由 \(j\upharpoonright\kappa=
-\mathrm{id}\)，
-\[j(\mathbb P)=\mathbb P\times\mathbb Q,\qquad\mathbb Q=
-j(\mathbb P_{\ge\kappa}),\]
-且 \(\mathbb Q\) 的每个条件 g 由 V 中函数 \(\langle g(\alpha)
-\mid\alpha<\kappa\rangle\)（\(g(\alpha)\in\mathbb P\)）表示。
-令 K 为 \(V[G]\) 上的 \(\mathbb Q\)-泛型滤子；\(G\times K\)
-是 V 上 \(\mathbb P\times\mathbb Q\)-泛型。扩张嵌入
-\[j^*:V[G]\to M[G\times K],\qquad j^*(\dot\tau/G)=(j(\dot\tau))
-/(G\times K)\]
-（良定义因为 \(p\in G\to j(p)\in G\times K\)）。在
-\(V[G\times K]\) 中定义 \(\kappa\) 上的超滤子
-\[H=\{X\subseteq\kappa\mid\kappa\in j^*(X)\}.\]
+\subseteq[\nu,\kappa)\times\omega\},
+$$
+
+则 $\mathbb P\cong\mathbb P_{<\nu}\times\mathbb P_{\ge\nu}$。
+在超幂 M 中看 $j(\mathbb P)$：由 $j\upharpoonright\kappa= \mathrm{id}$，
+$$
+j(\mathbb P)=\mathbb P\times\mathbb Q,\qquad\mathbb Q=
+j(\mathbb P_{\ge\kappa}),
+$$
+
+且 $\mathbb Q$ 的每个条件 g 由 V 中函数 $\langle g(\alpha) \mid\alpha<\kappa\rangle$（$g(\alpha)\in\mathbb P$）表示。
+令 K 为 $V[G]$ 上的 $\mathbb Q$-泛型滤子；$G\times K$
+是 V 上 $\mathbb P\times\mathbb Q$-泛型。扩张嵌入
+$$
+j^*:V[G]\to M[G\times K],\qquad j^*(\dot\tau/G)=(j(\dot\tau))
+/(G\times K)
+$$
+
+（良定义因为 $p\in G\to j(p)\in G\times K$）。在
+$V[G\times K]$ 中定义 $\kappa$ 上的超滤子
+$$
+H=\{X\subseteq\kappa\mid\kappa\in j^*(X)\}.
+$$
+
 两步收口：
 
-1. **H 给有秩超幂**：对 \(f:\kappa\to V\) 于 \(V[G]\)，令
-   \[k([f]_H)=(j^*(f))(\kappa)\]
-   ——这给出 \(\Pi(V[G],E)\to M[G\times K]\) 的映射，且
-   \(j^*=k\circ i_H\)（**交换图**）。像落在良基的传递类
-   \(M[G\times K]\) 中，故 \(\Pi(V[G],E)\) 无 \(\in\)-下降
+1. **H 给有秩超幂**：对 $f:\kappa\to V$ 于 $V[G]$，令
+   $k([f]_H)=(j^*(f))(\kappa)$
+
+   ——这给出 $\Pi(V[G],E)\to M[G\times K]$ 的映射，且
+   $j^*=k\circ i_H$（**交换图**）。像落在良基的传递类
+   $M[G\times K]$ 中，故 $\Pi(V[G],E)$ 无 $\in$-下降
    链——**有秩**。
-2. **H 是 \(I^+\)-泛型**：设 \(\langle\dot X_i\mid i<\omega_1
-   \rangle\) 是 κ 的 I-分割。反设有 \(p\in G\)、\(g\in K\)
-   迫使「这是分割且每个 \(X_i\notin H\)」。由表示函数，对每个
-   i 取 \(A_i\in U\) 见证 \(\forall\alpha\in A_i\ (p\cup
-   g(\alpha)\Vdash\kappa\notin j^*(\dot X_i))\)。在 \(V[G]\)
+2. **H 是 $I^+$-泛型**：设 $\langle\dot X_i\mid i<\omega_1 \rangle$ 是 κ 的 I-分割。反设有 $p\in G$、$g\in K$
+   迫使「这是分割且每个 $X_i\notin H$」。由表示函数，对每个
+   i 取 $A_i\in U$ 见证 $\forall\alpha\in A_i\ (p\cup g(\alpha)\Vdash\kappa\notin j^*(\dot X_i))$。在 $V[G]$
    中定义
-   \[T=\{\alpha<\kappa\mid g(\alpha)\in G\}.\]
-   **断言**：\(T\notin I\) 且 \(\forall i(T\cap X_i\in I)\)
-   ——这与「分割」矛盾（分割的并模 I 覆盖 κ）。\(T\notin I\)
-   的证明：任给 \(B\in U\)，由 B 在 κ 中无界、每个
-   \(g(\alpha)\in\mathbb P_{<\text{某层}}\)，集合
-   \(E_B=\{r\mid\exists\alpha\in B(r\le g(\alpha))\}\) 在
-   \(\mathbb P\) 中稠密，于是 \(G\cap E_B\neq\varnothing\)，
-   \(T\cap B\neq\varnothing\)——T 与每个 U-大集相交，故
+   $T=\{\alpha<\kappa\mid g(\alpha)\in G\}.$
+
+   **断言**：$T\notin I$ 且 $\forall i(T\cap X_i\in I)$
+   ——这与「分割」矛盾（分割的并模 I 覆盖 κ）。$T\notin I$
+   的证明：任给 $B\in U$，由 B 在 κ 中无界、每个
+   $g(\alpha)\in\mathbb P_{<\text{某层}}$，集合
+   $E_B=\{r\mid\exists\alpha\in B(r\le g(\alpha))\}$ 在
+   $\mathbb P$ 中稠密，于是 $G\cap E_B\neq\varnothing$，
+   $T\cap B\neq\varnothing$——T 与每个 U-大集相交，故
    T∉I（I 的定义的否定）。∎
 
 这个证明的骨架在 109 章例 2.4 已见过半身（正规性断言 + 真值
-集），新增的两件兵器是**乘积分解 + 扩张嵌入**（把 \(j(\mathbb P)\)
+集），新增的两件兵器是**乘积分解 + 扩张嵌入**（把 $j(\mathbb P)$
 切开，让泛型 K 在「j 的眼里」重放 V 的力迫）和**T 的稠密性
 论证**（表示函数把逐点力迫转成稠密集）。
 
 ## 110.3 定理 2.21（Magidor）：NS_{ω₁} 本身峭壁
 
-Mitchell 理想是「造出来的」，不必是 \(\mathrm{NS}_{\omega_1}\)。
+Mitchell 理想是「造出来的」，不必是 $\mathrm{NS}_{\omega_1}$。
 Magidor 的加强：
 
 **定理 2.21（Magidor）** 设 κ 可测。则存在力迫构思
-\(\mathbb P\)，使得在 \(V\) 的 \(\mathbb P\)-泛型扩张
-\(V[G]\) 中，\(\omega_1\) 上的**非荟萃集理想**是一个峭壁
+$\mathbb P$，使得在 $V$ 的 $\mathbb P$-泛型扩张
+$V[G]$ 中，$\omega_1$ 上的**非荟萃集理想**是一个峭壁
 理想。
 
-**准备**：先到 \(V=L[U]\)（κ 依旧可测且 \(2^\kappa=\kappa^+\)
+**准备**：先到 $V=L[U]$（κ 依旧可测且 $2^\kappa=\kappa^+$
 ——可测基数在 L[U] 中保持，GCH 在内模型中成立）。取
-\(\mathbb P=\mathrm{Col}(\omega,<\kappa)\)，G 泛型。在
-\(V[G]\) 中如同 Mitchell 定理定义理想 \(L_0\)（U 的对偶残余）
-——它是 \(\sigma\)-完全正规真理想，但**可能含有荟萃集**。
-核心想法（书 p225）：若 \(T\in L_0\) 荟萃，则 \(S=\kappa-T\)
+$\mathbb P=\mathrm{Col}(\omega,<\kappa)$，G 泛型。在
+$V[G]$ 中如同 Mitchell 定理定义理想 $L_0$（U 的对偶残余）
+——它是 $\sigma$-完全正规真理想，但**可能含有荟萃集**。
+核心想法（书 p225）：若 $T\in L_0$ 荟萃，则 $S=\kappa-T$
 （在对偶滤子中，含一个 club）也荟萃；用**例 II.3.13 的
-\(\omega\)-分配力迫 \(\mathbb P_S\)**（S 的有界闭子集、末端
-延展序）给 S 添一个 \(\omega_1\)-club，**T 就失去荟萃性**。
-迭代的每一步消掉一个 \(L_\beta\) 中的荟萃集。
+$\omega$-分配力迫 $\mathbb P_S$**（S 的有界闭子集、末端
+延展序）给 S 添一个 $\omega_1$-club，**T 就失去荟萃性**。
+迭代的每一步消掉一个 $L_\beta$ 中的荟萃集。
 
-**迭代设计**（书 p226–227）：\(\pi:\kappa^+\to\kappa^+\times
-\kappa^+\) 是首分量 ≤ α 的配对双射（**调度函数**——提前
-固定，名单随迭代生长）。\(Q_\alpha\) 的条件是长度 α 的序列
-\(q=\langle q_\beta\mid\beta<\alpha\rangle\)：(a) 支撑
-\(\{\beta\mid q_\beta\neq 1\}\) 可数；(b) 每个 \(q_\beta\) 是
-κ 的可数闭子集；(c) \(q_\beta\in Q_\beta\)；(d) 若
-\(\beta'\le\beta\) 则 \(q_{\beta'}=q_\beta\cap(\max(q_{\beta'})
-+1)\)（末端延展）。序为坐标延展。每一步 \(Q_{\alpha+1}=
-Q_\alpha*\mathbb P(S-A_\alpha)\)——对名单上的第 α 个集合
-\(A_\alpha\)（若 \(A_\alpha\in I_\alpha\)）射入 club。
+**迭代设计**（书 p226–227）：$\pi:\kappa^+\to\kappa^+\times \kappa^+$ 是首分量 ≤ α 的配对双射（**调度函数**——提前
+固定，名单随迭代生长）。$Q_\alpha$ 的条件是长度 α 的序列
+$q=\langle q_\beta\mid\beta<\alpha\rangle$：(a) 支撑
+$\{\beta\mid q_\beta\neq 1\}$ 可数；(b) 每个 $q_\beta$ 是
+κ 的可数闭子集；(c) $q_\beta\in Q_\beta$；(d) 若
+$\beta'\le\beta$ 则 $q_{\beta'}=q_\beta\cap(\max(q_{\beta'}) +1)$（末端延展）。序为坐标延展。每一步 $Q_{\alpha+1}= Q_\alpha*\mathbb P(S-A_\alpha)$——对名单上的第 α 个集合
+$A_\alpha$（若 $A_\alpha\in I_\alpha$）射入 club。
 
-**在 M 中找泛型**（书 p227–228）：在 \(V[G\times K]\) 中
-（K 为 \(j(\mathbb P_{\ge\kappa})\)-泛型，沿 Mitchell 的分解）
-有 \(j^*:V[G]\prec M[G\times K]\)。由 \(M^\kappa\cap V
-\subseteq M\) 型的封闭性（\(\kappa^{<\kappa}=\kappa\) + U 的
-完全性），\((Q_\alpha)^{V[G]}\) 在 \(V[G\times K]\) 中可数
-——于是存在 \(V[G]\) 上的 \(Q_\alpha\)-泛型滤子
-\(G_\alpha\in M[G\times K]\)。令 \(C_\beta=\bigcup(q(\beta)
-\mid q\in G_\alpha)\) 得 club 序列 \(\langle C_\beta\mid
-\beta<\alpha\rangle\)。**断言一**：拼装的 \(q^C\in j^*(Q_\alpha)
-\) 且强于一切 \(j^*(q)\)（q ∈ 适当滤子）——这是归纳定义
-\(I_\beta\) 的钥匙：\(X\in I_{\beta+1}\) 当且仅当某条件迫使
-「对每个 \(M[G]\) 上的 \(Q_\beta\)-泛型 C′ 都有
-\(j^*(Q_\beta)\) 力迫 \(X\notin j^{**}(\dot H)\)」型语句。
+**在 M 中找泛型**（书 p227–228）：在 $V[G\times K]$ 中
+（K 为 $j(\mathbb P_{\ge\kappa})$-泛型，沿 Mitchell 的分解）
+有 $j^*:V[G]\prec M[G\times K]$。由 $M^\kappa\cap V \subseteq M$ 型的封闭性（$\kappa^{<\kappa}=\kappa$ + U 的
+完全性），$(Q_\alpha)^{V[G]}$ 在 $V[G\times K]$ 中可数
+——于是存在 $V[G]$ 上的 $Q_\alpha$-泛型滤子
+$G_\alpha\in M[G\times K]$。令 $C_\beta=\bigcup(q(\beta) \mid q\in G_\alpha)$ 得 club 序列 $\langle C_\beta\mid \beta<\alpha\rangle$。**断言一**：拼装的 $q^C\in j^*(Q_\alpha)$ 且强于一切 $j^*(q)$（q ∈ 适当滤子）——这是归纳定义
+$I_\beta$ 的钥匙：$X\in I_{\beta+1}$ 当且仅当某条件迫使
+「对每个 $M[G]$ 上的 $Q_\beta$-泛型 C′ 都有
+$j^*(Q_\beta)$ 力迫 $X\notin j^{**}(\dot H)$」型语句。
 
 **六断言**（书 p228–231）：
 
-1. **断言一**（上文）\(q^C\in j^*(Q_\alpha)\)：验证条件 (d)
-   时的两情形（ξ<κ 与 ξ=κ）分别用归纳与 \(I_\beta\) 的定义
+1. **断言一**（上文）$q^C\in j^*(Q_\alpha)$：验证条件 (d)
+   时的两情形（ξ<κ 与 ξ=κ）分别用归纳与 $I_\beta$ 的定义
    收矛盾；
-2. **断言二**：\(Q_{\kappa^+}\) 满足 \(\kappa^+\)-链条件
+2. **断言二**：$Q_{\kappa^+}$ 满足 $\kappa^+$-链条件
    ——极大反链 W 中每个 q 的支撑有界，固定 α 后 W 实际落入
-   \(Q_\alpha\)，\(|W|\le\kappa\)；
-3. **断言三**：\(I_\beta=I_\alpha\cap V[G,C\upharpoonright\beta]\)
+   $Q_\alpha$，$|W|\le\kappa$；
+3. **断言三**：$I_\beta=I_\alpha\cap V[G,C\upharpoonright\beta]$
    ——理想沿迭代**单调**（旧理想在新模型中的痕迹恰好是旧值）
-   ；证明用 \(M[G\times K]\) 中 \(Q_\alpha\) 的可数性选
-   \(C''\supseteq\) 复合条件；
-4. **断言四**：\(I=\bigcup(I_\alpha\mid\alpha<\kappa^+)\)
-   在 \(V[G,\vec C]\) 中正规——对角和论证沿 Mitchell，但
-   要先由 κ⁺-cc 把函数 f 拉回某个 \(V[G,C\upharpoonright\alpha]\)；
-5. **断言五**：\(I=\mathrm{NS}_{\omega_1}\)。一方面每个
-   \(C_\alpha\) 是 club 且 \(C_\alpha\cap A_\alpha=\varnothing\)
-   （当 \(A_\alpha\in I_\alpha\)）——I 中集合非荟萃；另一方面
-   若 \(\dot C\) 是 club 的名字，用断言一式的论证取 \(\alpha\)
-   使 \(\dot C\in V[G,C\upharpoonright\alpha]\)，则
-   \(\kappa-\sup(\dot C)\) 型的集合……准确地说（书 p230–231）：
-   \(q^{C''}\Vdash j^*(\dot C)\cap\kappa\) 闭无界，从而
-   \(\{\xi\mid\xi\in\dot C\}\) 的补在 \(I_\alpha\) 中——每个
+   ；证明用 $M[G\times K]$ 中 $Q_\alpha$ 的可数性选
+   $C''\supseteq$ 复合条件；
+4. **断言四**：$I=\bigcup(I_\alpha\mid\alpha<\kappa^+)$
+   在 $V[G,\vec C]$ 中正规——对角和论证沿 Mitchell，但
+   要先由 κ⁺-cc 把函数 f 拉回某个 $V[G,C\upharpoonright\alpha]$；
+5. **断言五**：$I=\mathrm{NS}_{\omega_1}$。一方面每个
+   $C_\alpha$ 是 club 且 $C_\alpha\cap A_\alpha=\varnothing$
+   （当 $A_\alpha\in I_\alpha$）——I 中集合非荟萃；另一方面
+   若 $\dot C$ 是 club 的名字，用断言一式的论证取 $\alpha$
+   使 $\dot C\in V[G,C\upharpoonright\alpha]$，则
+   $\kappa-\sup(\dot C)$ 型的集合……准确地说（书 p230–231）：
+   $q^{C''}\Vdash j^*(\dot C)\cap\kappa$ 闭无界，从而
+   $\{\xi\mid\xi\in\dot C\}$ 的补在 $I_\alpha$ 中——每个
    非荟萃集都进 I；
-6. **断言六**：I 峭壁。\(R(I)\)（荟萃集力迫）的泛型滤子 D
-   按断言一的方式构造：取 \(V[G\times K]\) 上的 \(Q^*\)-
-   泛型 \(C^*\)，令 \(C=\{q\in Q_{\kappa^+}\mid j^*(q)\in
-   C^*\}\)，验证 (a) C 是 \(V[G]\)-泛型（稠密集 \(B_\alpha\)
-   论证）、\(C^*\) 是 \(M\)-泛型（支撑有界化），(b) D 是
-   \(R(I)\)-泛型（反设有 W 非稠密，用表示函数造 T 与
-   Mitchell 的 T-论证同型）。超幂有秩由交换图 \(j^{**}\) 给出。
+6. **断言六**：I 峭壁。$R(I)$（荟萃集力迫）的泛型滤子 D
+   按断言一的方式构造：取 $V[G\times K]$ 上的 $Q^*$-
+   泛型 $C^*$，令 $C=\{q\in Q_{\kappa^+}\mid j^*(q)\in C^*\}$，验证 (a) C 是 $V[G]$-泛型（稠密集 $B_\alpha$
+   论证）、$C^*$ 是 $M$-泛型（支撑有界化），(b) D 是
+   $R(I)$-泛型（反设有 W 非稠密，用表示函数造 T 与
+   Mitchell 的 T-论证同型）。超幂有秩由交换图 $j^{**}$ 给出。
 
 配对双射 π 的调度是这个构造的「拉弗函数」版本：迭代 κ⁺ 步、
 每步处理名单上第 α 个候选，κ⁺ 的正则性保证**每个**荟萃集
-迟早被点名（每步 |\(\mathbb Q_\alpha\)|≤κ 而 \(2^\kappa=
-\kappa^+\)，名单放得下）。与 108 章拉弗调度的差别：那边靠
+迟早被点名（每步 |$\mathbb Q_\alpha$|≤κ 而 $2^\kappa= \kappa^+$，名单放得下）。与 108 章拉弗调度的差别：那边靠
 **超紧嵌入的先知**保证命中，这边靠**内模型的 GCH + 正则基数
 的账本**穷举——大基数用量从超紧降到可测，代价是整个构造
 搬进 L[U]。
@@ -279,39 +286,34 @@ Q_\alpha*\mathbb P(S-A_\alpha)\)——对名单上的第 α 个集合
 
 ### 110.4a 消反例的力迫 P_W
 
-**定义 2.27** 设 \(W\subseteq\mathbb B=\mathcal P(\omega_1)
-/\mathrm{NS}\) 是极大冲突子集（极大反链）。力迫构思
-\(\mathbb P_W\)：条件是序对 \((f,c)\)：
+**定义 2.27** 设 $W\subseteq\mathbb B=\mathcal P(\omega_1) /\mathrm{NS}$ 是极大冲突子集（极大反链）。力迫构思
+$\mathbb P_W$：条件是序对 $(f,c)$：
 
-1. \(f:\alpha\to W\)（某 α<\(\omega_1\)）——给 W 的前 α 项
+1. $f:\alpha\to W$（某 α<$\omega_1$）——给 W 的前 α 项
    「登记户口」；
-2. \(\varnothing\neq c\subseteq\omega_1\) 闭；
-3. \(\forall\beta\in c\cap\mathrm{dom}(f)\ (\beta\in
-   \bigcap_{\xi<\beta,\ \xi\in\mathrm{dom}(f)}f(\xi))\)——c 的
+2. $\varnothing\neq c\subseteq\omega_1$ 闭；
+3. $\forall\beta\in c\cap\mathrm{dom}(f)\ (\beta\in \bigcap_{\xi<\beta,\ \xi\in\mathrm{dom}(f)}f(\xi))$——c 的
    每个已登记点落在之前所有登记集的交中。
 
-序：\((f_2,c_2)\le(f_1,c_1)\iff f_1\subseteq f_2\wedge c_1=
-c_2\cap(\max(c_1)+1)\)（末端延展）。
+序：$(f_2,c_2)\le(f_1,c_1)\iff f_1\subseteq f_2\wedge c_1= c_2\cap(\max(c_1)+1)$（末端延展）。
 
-直觉（书 p234）：\(\mathbb P_W\) 给 W 添加一条 \(\omega_1\)-
-长的列表 \(\langle A_\alpha\rangle\) 加一个 club C，使
-\(\forall\alpha\in C\exists\beta<\alpha(\alpha\in A_\beta)\)。
+直觉（书 p234）：$\mathbb P_W$ 给 W 添加一条 $\omega_1$-
+长的列表 $\langle A_\alpha\rangle$ 加一个 club C，使
+$\forall\alpha\in C\exists\beta<\alpha(\alpha\in A_\beta)$。
 若 W 在扩张中**依旧是**新商代数的极大反链，则 W 不再是饱和性
 反例——反例被「消解」。
 
-**例 2.5** 若 W 是两两不交的 \(\aleph_1\) 个荟萃集的族且
-\(\omega_1=\bigcup W\)，则 \(\mathbb P_W\) 恰当；且对任意极大
-反链 W：\(\mathbb P_W\) 恰当 ⟺ 存在 W 中序列 \(\langle
-A_\alpha\rangle\) 与 club C 见证 \(\forall\alpha\in C\exists
-\beta<\alpha(\alpha\in A_\beta)\)（练习）。
+**例 2.5** 若 W 是两两不交的 $\aleph_1$ 个荟萃集的族且
+$\omega_1=\bigcup W$，则 $\mathbb P_W$ 恰当；且对任意极大
+反链 W：$\mathbb P_W$ 恰当 ⟺ 存在 W 中序列 $\langle A_\alpha\rangle$ 与 club C 见证 $\forall\alpha\in C\exists \beta<\alpha(\alpha\in A_\beta)$（练习）。
 
-**定义 2.28** \(\mathbb P\) **保持 \(\omega_1\) 的荟萃集**
-⟺ 每个荟萃 \(S\subseteq\omega_1\) 在扩张中依旧荟萃——等价
-于对任何 club-名字 \(\dot C\) 与条件 p：\(S\cap\dot C\)
-的投影非空（书 p234 的展开式）。例 II.3.13 的 \(\mathbb P_S\)
-**不**保持（它杀死 \(\kappa-S\) 的荟萃性）。
+**定义 2.28** $\mathbb P$ **保持 $\omega_1$ 的荟萃集**
+⟺ 每个荟萃 $S\subseteq\omega_1$ 在扩张中依旧荟萃——等价
+于对任何 club-名字 $\dot C$ 与条件 p：$S\cap\dot C$
+的投影非空（书 p234 的展开式）。例 II.3.13 的 $\mathbb P_S$
+**不**保持（它杀死 $\kappa-S$ 的荟萃性）。
 
-**事实 2.7.1** 每个 \(\mathbb P_W\) 保持 \(\omega_1\) 的荟萃
+**事实 2.7.1** 每个 $\mathbb P_W$ 保持 $\omega_1$ 的荟萃
 集（练习）。——消反例的力迫「无害」：它不动荟萃结构，只动
 商代数的组合形状。
 
@@ -320,22 +322,23 @@ A_\alpha\rangle\) 与 club C 见证 \(\forall\alpha\in C\exists
 保持荟萃集本身对迭代不封闭（书 p235：「这个偏序集类对常用的
 迭代构造并不封闭」），于是谢拉赫**弱化泛型条件**：
 
-**定义 2.29** \(q\) 是 \((M,\mathbb P)\)-**半泛型条件**
-（semigeneric）⟺ 对每个序数名字 \(\dot\alpha\in M\)（
-\(1\Vdash\dot\alpha\le\omega_1\)）：
-\[\forall r\le q\ \exists s\le r\ \exists\alpha\in M\
-(s\Vdash\dot\alpha=\alpha).\]
+**定义 2.29** $q$ 是 $(M,\mathbb P)$-**半泛型条件**
+（semigeneric）⟺ 对每个序数名字 $\dot\alpha\in M$（
+$1\Vdash\dot\alpha\le\omega_1$）：
+$$
+\forall r\le q\ \exists s\le r\ \exists\alpha\in M\
+(s\Vdash\dot\alpha=\alpha).
+$$
+
 与 107 章定义 2.21 对照：泛型条件要求对 M 中**一切**极大反链
 准稠密，半泛型只要求对**序数名字**能逐点命中——「只保证序数
 可被 M 预测」，恰是保持荟萃所需的量。
 
-**定义 2.30** \(\mathbb P\) **半恰当**（semi-proper）⟺ 足够
-大的正则 λ，\(\{M\prec(H_\lambda,\in,\Delta,\dots)\mid
-|M|=\omega\wedge\forall p\in M\cap\mathbb P\ \exists q\le p
-(q\ \text{是}(M,\mathbb P)\text{-半泛型})\}\) 包含 club。
+**定义 2.30** $\mathbb P$ **半恰当**（semi-proper）⟺ 足够
+大的正则 λ，$\{M\prec(H_\lambda,\in,\Delta,\dots)\mid |M|=\omega\wedge\forall p\in M\cap\mathbb P\ \exists q\le p (q\ \text{是}(M,\mathbb P)\text{-半泛型})\}$ 包含 club。
 
-**定理 2.22** 半恰当 ⟹ 保持 \(\omega_1\) 荟萃集；反之保持
-荟萃集 + \(\omega^\omega\)-分配律 ⟹ 半恰当。——半恰当是
+**定理 2.22** 半恰当 ⟹ 保持 $\omega_1$ 荟萃集；反之保持
+荟萃集 + $\omega^\omega$-分配律 ⟹ 半恰当。——半恰当是
 「保持荟萃」的 certificates 版（对照 107 章定理 2.13 之于
 恰当）。
 
@@ -345,77 +348,73 @@ iteration）：支撑仍可数，但极限步的取法重写，使半恰当性�
 Improper Forcing 的第 XI 章级工程）。基于此：
 
 **定理 2.23（Foreman–Magidor–Shelah）** κ 超紧 ⟹ 存在
-半恰当力迫 \(\mathbb P\)：在 \(V[G]\) 中 (1) 半恰当 ⟺ 保持
-\(\omega_1\) 荟萃集；(2)（即 MM）保持荟萃的 \(\mathbb P\) 与
-\(\aleph_1\) 个稠密集的族有相遇滤子。
+半恰当力迫 $\mathbb P$：在 $V[G]$ 中 (1) 半恰当 ⟺ 保持
+$\omega_1$ 荟萃集；(2)（即 MM）保持荟萃的 $\mathbb P$ 与
+$\aleph_1$ 个稠密集的族有相遇滤子。
 
-**定义 2.31（马丁极大原理 MM）** 若 \(\mathbb P\) 保持
-\(\omega_1\) 的荟萃集、\(\{D_\alpha\mid\alpha<\omega_1\}\) 是
-其稠密集族，则存在与每个 \(D_\alpha\) 都有非空交的滤子
-\(F\subseteq\mathbb P\)。——把 MA 的「ccc」放宽到「保持
+**定义 2.31（马丁极大原理 MM）** 若 $\mathbb P$ 保持
+$\omega_1$ 的荟萃集、$\{D_\alpha\mid\alpha<\omega_1\}$ 是
+其稠密集族，则存在与每个 $D_\alpha$ 都有非空交的滤子
+$F\subseteq\mathbb P$。——把 MA 的「ccc」放宽到「保持
 荟萃」：受理类更大（含一切 σ-闭、一切恰当、一切半恰当），
 结论更强——MM 是「终极马丁公理」。
 
-**定理 2.24（FMS）** MM ⟹ (1) \(\mathrm{NS}_{\omega_1}\)
+**定理 2.24（FMS）** MM ⟹ (1) $\mathrm{NS}_{\omega_1}$
 饱和；(2) SCH 成立。（证明在 §2.7.4 由 PSRP 中转——见
 110.5。）
 
-**定理 2.25（Gitik–Shelah）** \(\kappa\ge\omega_2\) 正则 ⟹
-\(\mathrm{NS}_\kappa\) 不可能 \(\kappa^+\)-饱和：总存在长度
-\(\kappa^+\) 的模 NS 彼此几乎不相交的荟萃集序列。——**饱和
-现象专属 \(\omega_1\)**：这不是构造的局限而是定理。书 p236
+**定理 2.25（Gitik–Shelah）** $\kappa\ge\omega_2$ 正则 ⟹
+$\mathrm{NS}_\kappa$ 不可能 $\kappa^+$-饱和：总存在长度
+$\kappa^+$ 的模 NS 彼此几乎不相交的荟萃集序列。——**饱和
+现象专属 $\omega_1$**：这不是构造的局限而是定理。书 p236
 特别强调它与 MM 的对照；证明超出导引范围（Gitik–Shelah
 1997）。机器件④的三理想表恰是这个「只在底层可能」的有限
 回声：任何有限布尔代数的「饱和数」= 原子数 + 1，原子越少越
 「饱和」——而无限层的原子结构被 Gitik–Shelah 堵死在
-\(\omega_1\)。
+$\omega_1$。
 
 ### 110.4c 半恰当反链与预饱和
 
-**定义 2.32** \(W\subseteq\mathbb B\) 极大反链**半恰当**
-⟺ 对每个（含 W 与相关参数的）可数 \(X\prec M\)，存在可数
-\(Y\prec M\)：\(X\subseteq Y\)、\(X\cap\omega_1=Y\cap\omega_1\)
-（**ω₁-坐标不动**）、且 \(\exists S\in W\cap Y\ (Y\cap
-\omega_1\in S)\)。
+**定义 2.32** $W\subseteq\mathbb B$ 极大反链**半恰当**
+⟺ 对每个（含 W 与相关参数的）可数 $X\prec M$，存在可数
+$Y\prec M$：$X\subseteq Y$、$X\cap\omega_1=Y\cap\omega_1$
+（**ω₁-坐标不动**）、且 $\exists S\in W\cap Y\ (Y\cap \omega_1\in S)$。
 
-**定理 2.26** \(\mathbb P_W\) 半恰当 ⟺ W 半恰当。——消反例
+**定理 2.26** $\mathbb P_W$ 半恰当 ⟺ W 半恰当。——消反例
 力迫的品质完全由反链的组合形状决定。
 
-**定理 2.27** 若 \(\mathbb B\) 的每个极大反链都半恰当，则
-\(\mathrm{NS}\) 峭壁。——「每个反链半恰当」是比饱和弱、比
+**定理 2.27** 若 $\mathbb B$ 的每个极大反链都半恰当，则
+$\mathrm{NS}$ 峭壁。——「每个反链半恰当」是比饱和弱、比
 峭壁强的组合条件（书 p237 由「是否自动半恰当」的问题引出）。
 
-**定义 2.33** \(\mathrm{Col}(\omega_1,<\kappa)\)：条件 p，
-\(|p|<\omega_1\)、\(\mathrm{dom}(p)\subseteq\kappa\times\omega_1\)、
-\(\mathrm{rng}(p)\subseteq\kappa\)、\(p(\alpha,\xi)\in\alpha\)
-——以可数条件把不可达 κ 塌成 \(\omega_2\)。
+**定义 2.33** $\mathrm{Col}(\omega_1,<\kappa)$：条件 p，
+$|p|<\omega_1$、$\mathrm{dom}(p)\subseteq\kappa\times\omega_1$、
+$\mathrm{rng}(p)\subseteq\kappa$、$p(\alpha,\xi)\in\alpha$
+——以可数条件把不可达 κ 塌成 $\omega_2$。
 
-**事实 2.7.2（Lévy）** κ 不可达 ⟹ \(\mathrm{Col}(\omega_1,
-<\kappa)\) 是 \(<\omega_1\)-完备的且满足 κ-链条件（练习）。
+**事实 2.7.2（Lévy）** κ 不可达 ⟹ $\mathrm{Col}(\omega_1, <\kappa)$ 是 $<\omega_1$-完备的且满足 κ-链条件（练习）。
 
 **预饱和**（书 p237 内联定义）：NS 预饱和 ⟺ 对每个荟萃
-\(S\subseteq\omega_1\) 与可数个 \(\mathrm{NS}^+\) 的极大反链
-\(\langle W_i\mid i<\omega\rangle\)，存在荟萃 \(B\subseteq S\)
-使 \(\forall i\ |\{X\in W_i\mid X\cap B\notin\mathrm{NS}\}|
-\le\aleph_1\)——反链限制到 B 上只「剩 \(\aleph_1\) 层」。
+$S\subseteq\omega_1$ 与可数个 $\mathrm{NS}^+$ 的极大反链
+$\langle W_i\mid i<\omega\rangle$，存在荟萃 $B\subseteq S$
+使 $\forall i\ |\{X\in W_i\mid X\cap B\notin\mathrm{NS}\}| \le\aleph_1$——反链限制到 B 上只「剩 $\aleph_1$ 层」。
 
 **事实 2.7.3（Baumgartner）** NS 预饱和 ⟹ NS 峭壁，且
-G 是 \(\mathbb B\)-泛型时，泛型超幂嵌入
-\(i_G:V\to\mathrm{ult}(V,G)\) 满足：
+G 是 $\mathbb B$-泛型时，泛型超幂嵌入
+$i_G:V\to\mathrm{ult}(V,G)$ 满足：
 
-1. \(\mathrm{crit}(i_G)=\omega_1\)；
-2. \(i_G(\omega_1)=\omega_2\)；
-3. \({}^{\omega}\mathrm{ult}(V,G)\subseteq\mathrm{ult}(V,G)\)
-   ——超幂在 \(V[G]\) 中对可数序列封闭。
+1. $\mathrm{crit}(i_G)=\omega_1$；
+2. $i_G(\omega_1)=\omega_2$；
+3. ${}^{\omega}\mathrm{ult}(V,G)\subseteq\mathrm{ult}(V,G)$
+   ——超幂在 $V[G]$ 中对可数序列封闭。
 
 （练习。）——这是 109 章定理 2.19（饱和版三重馈赠）的预饱和
 版：临界点与像的账完全一致，封闭性略降（可数序列封闭而非
-\(\omega_1\)-封闭）。**泛型超幂后果的证明链**由此接通：
+$\omega_1$-封闭）。**泛型超幂后果的证明链**由此接通：
 峭壁（良基）→ 传递化 → 嵌入的临界行为 → 封闭性——110 章
 的构造（Mitchell/Magidor/FMS）都沿这条链结算。
 
-**定理 2.28（FMS）** κ 超紧，G 是 \(\mathrm{Col}(\omega_1,
-<\kappa)\)-泛型 ⟹ \(V[G]\) 中 (1) \(\mathbb B\) 的每个极大
+**定理 2.28（FMS）** κ 超紧，G 是 $\mathrm{Col}(\omega_1, <\kappa)$-泛型 ⟹ $V[G]$ 中 (1) $\mathbb B$ 的每个极大
 反链半恰当；(2) NS 预饱和。——MM 路线的中枢定理：超紧塌塌
 一步到位（不迭代！），修订迭代只在定理 2.23 的 MM 构造里用。
 
@@ -424,110 +423,99 @@ G 是 \(\mathbb B\)-泛型时，泛型超幂嵌入
 书 p238 的叙述极具戏剧性：「一场朝着不断弱化大基数假设的
 竞赛在谢拉赫和武丁之间展开」：
 
-**定理 2.29（Woodin）** κ 超强 ⟹ 存在 \(\omega^\omega\)-
-分配 + κ-cc 的力迫 \(\mathbb P\)：\(V[G]\) 中 κ = \(\omega_2\)
-且 \(\omega_1\) 上有 \(\sigma\)-完全非平凡 \(\omega_2\)-饱和
+**定理 2.29（Woodin）** κ 超强 ⟹ 存在 $\omega^\omega$-
+分配 + κ-cc 的力迫 $\mathbb P$：$V[G]$ 中 κ = $\omega_2$
+且 $\omega_1$ 上有 $\sigma$-完全非平凡 $\omega_2$-饱和
 正规理想。——大基数降到超强，直接（非迭代）造出饱和理想。
 
 随后谢拉赫把超强换成**谢拉赫基数**；武丁再换成**武丁基数**
 （101/102 章的老朋友）：
 
-**定理 2.30（Woodin）** κ 武丁，G 是 \(\mathrm{Col}(\omega_1,
-<\kappa)\)-泛型 ⟹ \(V[G]\) 中：(1) 对 \(\mathbb B\) 的准稠密
-子集序列 \(\langle W_\xi\mid\xi<\omega_1\rangle\)，存在 V 中
-不可达 \(\lambda<\kappa\) 见证 (a) 序列属于 \(V[G\upharpoonright
-\lambda]\)；(b) \(V[G\upharpoonright\lambda]\) 中每个
-\(W_\xi\cap V[G\upharpoonright\lambda]\) 半恰当准稠密；
+**定理 2.30（Woodin）** κ 武丁，G 是 $\mathrm{Col}(\omega_1, <\kappa)$-泛型 ⟹ $V[G]$ 中：(1) 对 $\mathbb B$ 的准稠密
+子集序列 $\langle W_\xi\mid\xi<\omega_1\rangle$，存在 V 中
+不可达 $\lambda<\kappa$ 见证 (a) 序列属于 $V[G\upharpoonright \lambda]$；(b) $V[G\upharpoonright\lambda]$ 中每个
+$W_\xi\cap V[G\upharpoonright\lambda]$ 半恰当准稠密；
 (2) NS 预饱和。——武丁基数的分层反射（102 章定理 1.36 的
-(a)↔(d)）在这里兑现：不可达层 \(\lambda\) 的存在把「整个
-\(\omega_1\)-长序列的半恰当性」**反射**到中间模型。
+(a)↔(d)）在这里兑现：不可达层 $\lambda$ 的存在把「整个
+$\omega_1$-长序列的半恰当性」**反射**到中间模型。
 
 **定理 2.31（Shelah–Woodin）** κ 武丁，G 为
-\(\mathrm{Col}(\omega_1,<\kappa)\)-泛型 ⟹ \(V[G]\) 中
-\(\omega_1\) 上存在 \(\sigma\)-完全非平凡正规**饱和**理想 I
-且 \(I\cap V=\mathrm{NS}\)（扩张旧理想！）。
+$\mathrm{Col}(\omega_1,<\kappa)$-泛型 ⟹ $V[G]$ 中
+$\omega_1$ 上存在 $\sigma$-完全非平凡正规**饱和**理想 I
+且 $I\cap V=\mathrm{NS}$（扩张旧理想！）。
 
-**证明概要**（书 p238–240）：在 \(V[G]\) 中对 \(A\subseteq
-\omega_1\) 令 \(A\in I_0\) ⟺ 存在 \(f:\omega_1\to\mathrm{NS}^+\)
-使 (1) \(A=\{\beta<\omega_1\mid\forall\alpha<\beta(\beta\notin
-f(\alpha))\}\)，且 rng(f) 落在某个 \(V[G\upharpoonright
-\mathrm{Col}(\omega_1,<\lambda)]\)（λ 是 V 中不可达）中、
-在那里半恰当准稠密；I 由 \(I_0\) 生成的正规闭包。
+**证明概要**（书 p238–240）：在 $V[G]$ 中对 $A\subseteq \omega_1$ 令 $A\in I_0$ ⟺ 存在 $f:\omega_1\to\mathrm{NS}^+$
+使 (1) $A=\{\beta<\omega_1\mid\forall\alpha<\beta(\beta\notin f(\alpha))\}$，且 rng(f) 落在某个 $V[G\upharpoonright \mathrm{Col}(\omega_1,<\lambda)]$（λ 是 V 中不可达）中、
+在那里半恰当准稠密；I 由 $I_0$ 生成的正规闭包。
 
-- **断言一（真理想）**：回到 V，取 \(X\prec(H_\kappa,\dots)\)
-  可数同质链构造，得条件 p 使 \(\{q\in X\cap\mathrm{Col}\mid
-  p\le q\}\) 是 X-泛型滤子；再取可数 \(Y\prec M[G]\) 使
-  \(X=Y\cap M\)——由 (b) 型反射，\(\forall A\in Y(Y\cap
-  \omega_1\notin A)\)，故 \(I_0\) 不含 \(\omega_1\)。
-- **断言二（饱和）**：\(W_0\subseteq I^+\) 极大反链；令
-  \(W=W_0\cup(I-\mathrm{NS})\subseteq\mathrm{NS}^+\) 准稠密。
-  用定理 2.30 取 λ 与半恰当性；取满射 \(f:\omega_1\to W\cap
-  V[G\upharpoonright\lambda]\)；则
-  \(A=\{\beta\mid\forall\alpha<\beta(\beta\notin f(\alpha))
-  \}\in I\)。由 I 正规，\(W_0\subseteq W\cap V[G\upharpoonright
-  \lambda]\)，故 \(|W_0|=\aleph_1\)。∎
-- \(I\cap V=\mathrm{NS}\)：构造 (X, p) 时可要求任意 p₀ ≥ p
-  与任意荟萃 S 使 \(S\in X\)、\(X\cap\omega_1\in S\)——正
+- **断言一（真理想）**：回到 V，取 $X\prec(H_\kappa,\dots)$
+  可数同质链构造，得条件 p 使 $\{q\in X\cap\mathrm{Col}\mid p\le q\}$ 是 X-泛型滤子；再取可数 $Y\prec M[G]$ 使
+  $X=Y\cap M$——由 (b) 型反射，$\forall A\in Y(Y\cap \omega_1\notin A)$，故 $I_0$ 不含 $\omega_1$。
+- **断言二（饱和）**：$W_0\subseteq I^+$ 极大反链；令
+  $W=W_0\cup(I-\mathrm{NS})\subseteq\mathrm{NS}^+$ 准稠密。
+  用定理 2.30 取 λ 与半恰当性；取满射 $f:\omega_1\to W\cap V[G\upharpoonright\lambda]$；则
+  $A=\{\beta\mid\forall\alpha<\beta(\beta\notin f(\alpha)) \}\in I$。由 I 正规，$W_0\subseteq W\cap V[G\upharpoonright \lambda]$，故 $|W_0|=\aleph_1$。∎
+- $I\cap V=\mathrm{NS}$：构造 (X, p) 时可要求任意 p₀ ≥ p
+  与任意荟萃 S 使 $S\in X$、$X\cap\omega_1\in S$——正
   方向；反向由 I 的定义型。
 
 这条线在第 3 章（谢拉赫–武丁定理 3.27）还要回来——书 p238
 的伏笔：「追求弱化大基数假设并以**不添加任何实数**的方式得
-到 \(\omega_1\) 上饱和理想的基本动机」。
+到 $\omega_1$ 上饱和理想的基本动机」。
 
 ## 110.5 §2.7.4 投影荟萃集光影原理
 
 ### 110.5a E-序列与投影荟萃集
 
-三个序列概念（书 p240）：\(\langle N_\alpha\mid\alpha<
-\theta\rangle\)（可数同质子模型列）：
+三个序列概念（书 p240）：$\langle N_\alpha\mid\alpha< \theta\rangle$（可数同质子模型列）：
 
-- **单调递增连续 E-序列**：\(N_\alpha\in N_\beta\)（α<β）、
-  极限步 \(N_\alpha=\bigcup_{\beta<\alpha}N_\beta\)；
-- **强单调**：再加 \(\langle N_\beta\mid\beta<\alpha\rangle
-  \in N_{\alpha+1}\)——序列的**前段**成为下一项的元素；
-- **C-序列**：\(\alpha\cap\omega_1\subseteq N_\alpha\) 型
+- **单调递增连续 E-序列**：$N_\alpha\in N_\beta$（α<β）、
+  极限步 $N_\alpha=\bigcup_{\beta<\alpha}N_\beta$；
+- **强单调**：再加 $\langle N_\beta\mid\beta<\alpha\rangle \in N_{\alpha+1}$——序列的**前段**成为下一项的元素；
+- **C-序列**：$\alpha\cap\omega_1\subseteq N_\alpha$ 型
   （ω₁-坐标吸收）。
 
-**定义 2.34（投影荟萃集）** \(\lambda\ge\omega_2\) 正则。
-\(S\subseteq[\lambda]^\omega\) **投影荟萃**（projective
-stationary）⟺ 对 \([\lambda]^\omega\) 的每个无界闭集 C，
-\((S\cap C)\upharpoonright\omega_1=\{N\cap\omega_1\mid N\in
-S\cap C\}\) 包含 \(\omega_1\) 的无界闭集。等价：对每个荟萃
-\(T\subseteq\omega_1\)，
-\[S_T=\{N\in S\mid N\cap\omega_1\in T\}\ \text{在}\
-[\lambda]^\omega\ \text{中荟萃}.\]
+**定义 2.34（投影荟萃集）** $\lambda\ge\omega_2$ 正则。
+$S\subseteq[\lambda]^\omega$ **投影荟萃**（projective
+stationary）⟺ 对 $[\lambda]^\omega$ 的每个无界闭集 C，
+$(S\cap C)\upharpoonright\omega_1=\{N\cap\omega_1\mid N\in S\cap C\}$ 包含 $\omega_1$ 的无界闭集。等价：对每个荟萃
+$T\subseteq\omega_1$，
+$$
+S_T=\{N\in S\mid N\cap\omega_1\in T\}\ \text{在}\
+[\lambda]^\omega\ \text{中荟萃}.
+$$
+
 ——**每个楼下的荟萃集都被楼上的切片反射**。包含关系（书
 p240）：每个 club 投影荟萃；投影荟萃 ⟹ 荟萃；反向皆不必然。
 
-**例 2.6** W 是 \(\omega_1\) 上模 NS 的荟萃集极大反链族，
-\(\lambda>(2^{\omega_1})\) 正则。令
-\[S(W)=\{N\in[\lambda]^\omega\mid N\prec(H_\lambda,\dots)
+**例 2.6** W 是 $\omega_1$ 上模 NS 的荟萃集极大反链族，
+$\lambda>(2^{\omega_1})$ 正则。令
+$$
+S(W)=\{N\in[\lambda]^\omega\mid N\prec(H_\lambda,\dots)
 \wedge\exists A\in W\ \forall N'\in N(N'\cap\omega_1\subseteq
-A)\}.\]
-则 S(W) 投影荟萃。——证明（书 p241）：对荟萃 T 取 \(A\in W\)
-使 \(A\cap T\) 荟萃；集合 \(D=\{N\mid\sup(N\cap\omega_1)\in
-A\cap T\}\) 型的 club 与 Skolem-闭包论证合龙。**注记**（书
-p241）：若 \(|W|>\aleph_1\) 则 S(W) **不含 club**——从
-club 出发只能递归出长度 \(\omega_1\) 的 E-序列，而投影荟萃集
+A)\}.
+$$
+
+则 S(W) 投影荟萃。——证明（书 p241）：对荟萃 T 取 $A\in W$
+使 $A\cap T$ 荟萃；集合 $D=\{N\mid\sup(N\cap\omega_1)\in A\cap T\}$ 型的 club 与 Skolem-闭包论证合龙。**注记**（书
+p241）：若 $|W|>\aleph_1$ 则 S(W) **不含 club**——从
+club 出发只能递归出长度 $\omega_1$ 的 E-序列，而投影荟萃集
 是否含这样的序列「也许有可能，也许没有可能」——这个悬而未
 决引出原理：
 
 **定义 2.35（冯–Jech）投影荟萃集光影原理 PSRP** 对每个
-正则 \(\lambda\ge\omega_2\)、每个投影荟萃 \(S\subseteq
-[\lambda]^\omega\)，存在长度 \(\omega_1\) 的单调递增连续
-E-序列 \(\langle N_\alpha\mid\alpha<\omega_1\rangle\) 使
-(a) \(\bigcup_\alpha N_\alpha=\lambda\)（共尾）；(b)
-\(\forall\alpha(N_\alpha\in S)\)。——「投影荟萃集不只是
+正则 $\lambda\ge\omega_2$、每个投影荟萃 $S\subseteq [\lambda]^\omega$，存在长度 $\omega_1$ 的单调递增连续
+E-序列 $\langle N_\alpha\mid\alpha<\omega_1\rangle$ 使
+(a) $\bigcup_\alpha N_\alpha=\lambda$（共尾）；(b)
+$\forall\alpha(N_\alpha\in S)$。——「投影荟萃集不只是
 大，还**走得通**：沿它能走出一条覆盖全楼的楼梯」。
 
-**引理 2.31**（1）荟萃 \(S\subseteq\omega_1\)、\(\alpha<
-\omega_1\) ⟹ S 含序型 α+1 的闭子集（经典）；(2) 荟萃
-\(S\subseteq[\lambda]^\omega\)、\(\alpha<\omega_1\) ⟹ S 中
+**引理 2.31**（1）荟萃 $S\subseteq\omega_1$、$\alpha< \omega_1$ ⟹ S 含序型 α+1 的闭子集（经典）；(2) 荟萃
+$S\subseteq[\lambda]^\omega$、$\alpha<\omega_1$ ⟹ S 中
 可取长度 α+1 的**强**单调 E-序列。——(2) 的证明（书
 p241–242）：在 α-完备的力迫扩张中验证即可（力迫是「序列
-条件、末端延展序」，泛型并 \(\bigcup G=f\) 是
-\([\lambda]^\omega\) 的 club 单一列举，\(T=\{\beta\mid
-f(\beta)\in S\}\) 荟萃，用 (1) 取闭拷贝，回到 V）——**可数
+条件、末端延展序」，泛型并 $\bigcup G=f$ 是
+$[\lambda]^\omega$ 的 club 单一列举，$T=\{\beta\mid f(\beta)\in S\}$ 荟萃，用 (1) 取闭拷贝，回到 V）——**可数
 长的强链在 ZFC 内白拿；不可数长才是 PSRP 的内容**。
 
 ### 110.5b 定理 2.32：MM ⟹ PSRP
@@ -535,29 +523,31 @@ f(\beta)\in S\}\) 荟萃，用 (1) 取闭拷贝，回到 V）——**可数
 **定理 2.32（冯–Jech）** MM ⟹ PSRP。
 
 **证明骨架**（书 p242–243）：设 S 投影荟萃。取力迫
-\[\mathbb P=\{\langle N_\beta\mid\beta\le\alpha\rangle\in S
+$$
+\mathbb P=\{\langle N_\beta\mid\beta\le\alpha\rangle\in S
 \mid\alpha<\omega_1\ \text{的强 E-序列}\},\qquad p\le q\iff
-q=p\upharpoonright\mathrm{dom}(p).\]
-稠密集：\(D_\alpha=\{p\mid\alpha\in\mathrm{dom}(p)\}\) 与
-\(E_c=\{p\mid\exists\alpha\in\mathrm{dom}(p)\ (c\in p(\alpha))
-\}\)（c<λ 任意）。
+q=p\upharpoonright\mathrm{dom}(p).
+$$
+
+稠密集：$D_\alpha=\{p\mid\alpha\in\mathrm{dom}(p)\}$ 与
+$E_c=\{p\mid\exists\alpha\in\mathrm{dom}(p)\ (c\in p(\alpha)) \}$（c<λ 任意）。
 
 - **断言一（稠密）**：给定 p 与目标，取
-  \(S_1=\{N\in S\mid p\cup\{(\eta,c)\}\subseteq N\}\) 荟萃
+  $S_1=\{N\in S\mid p\cup\{(\eta,c)\}\subseteq N\}$ 荟萃
   （投影荟萃性的切片 + Skolem 论证），用引理 2.31(2) 取强
-  链 \(\langle M_\beta\mid\beta\le\eta+\alpha\rangle\)，拼
-  \(q\le p\) 落入 \(D_\alpha\cap E_c\)。
-- **断言二（\(\mathbb P\) 保持荟萃集）**：设 T 荟萃、
-  \(\dot C\) 是 club-名字。取可数 \(N\prec(H_\theta,\dots)\)
-  含全部参数、\(N\cap\omega_1=\eta\in S^T\)（切片荟萃性）；
-  列出 N 中 \(\mathbb P\) 的稠密集 \(\langle D_n\rangle\)，
-  递归下降 \(p_{n+1}\in D_n\cap N\)；极限步由强单调性的
+  链 $\langle M_\beta\mid\beta\le\eta+\alpha\rangle$，拼
+  $q\le p$ 落入 $D_\alpha\cap E_c$。
+- **断言二（$\mathbb P$ 保持荟萃集）**：设 T 荟萃、
+  $\dot C$ 是 club-名字。取可数 $N\prec(H_\theta,\dots)$
+  含全部参数、$N\cap\omega_1=\eta\in S^T$（切片荟萃性）；
+  列出 N 中 $\mathbb P$ 的稠密集 $\langle D_n\rangle$，
+  递归下降 $p_{n+1}\in D_n\cap N$；极限步由强单调性的
   **序列-封闭**条款把整条链装进一个条件 q——q 强于每个
-  \(p_n\) 且 \(q\Vdash\eta\in\dot C\cap T\) 的论证由
-  \(N\)-泛型性给。故 \(1\Vdash\dot C\cap T\neq\varnothing\)。
-- 由 MM（\(\mathbb P\) 保持荟萃），取滤子 G 遇遍所有
-  \(D_\alpha\)，\(\bigcup G\) 即所要 E-序列（遇遍
-  \(E_c\) 保证共尾）。∎
+  $p_n$ 且 $q\Vdash\eta\in\dot C\cap T$ 的论证由
+  $N$-泛型性给。故 $1\Vdash\dot C\cap T\neq\varnothing$。
+- 由 MM（$\mathbb P$ 保持荟萃），取滤子 G 遇遍所有
+  $D_\alpha$，$\bigcup G$ 即所要 E-序列（遇遍
+  $E_c$ 保证共尾）。∎
 
 断言二的递归构造是 107 章引理 2.27 的「M-窗口」手法在
 **强**单调语境的重演：强单调条款（前段 ∈ 后继）正是为了让
@@ -568,49 +558,52 @@ q=p\upharpoonright\mathrm{dom}(p).\]
 
 **定理 2.33（冯–Jech）** PSRP ⟹
 
-**(1) \(\mathrm{NS}_{\omega_1}\) 饱和**。设 W 是极大反链。
-\(S(W)\)（例 2.6）投影荟萃，PSRP 给 E-序列
-\(\langle N_\alpha\rangle\subseteq S(W)\)。令
-\[C=\{\alpha<\omega_1\mid\alpha=N_\alpha\cap\omega_1\}\]
-（club——连续性）。令 \(X=\bigcup_\alpha N_\alpha\)（
-\(|X|=\aleph_1\)）。**验证 \(W\subseteq X\)**：反设
-\(A\in W\setminus X\)。取 Skolem 闭包 \(M_\alpha=\mathrm{SH}
-(N_\alpha\cup\{A\})\)；\(D=\{\alpha\in C\mid\alpha=
-M_\alpha\cap\omega_1\}\) 仍是 club。取 \(\alpha\in D\cap A\)
-（A 荟萃）。由 \(\alpha\in N_\alpha\) 与 W-极大反链性取
-\(B\in W\cap N_\alpha\) 使 \(\alpha\in B\)；B≠A ⟹
-\(A\cap B\) 非荟萃，由 \(M_\alpha\) 的同质性取 club
-\(E\in M_\alpha\) 使 \(E\cap A\cap B=\varnothing\)；但
-\(\alpha\in E\cap A\cap B\)（E、A、B 都含 α 且
-\(M_\alpha\cap\omega_1=\alpha\in E\)）——矛盾。故
-\(|W|\le|X|=\aleph_1\)。∎
+**(1) $\mathrm{NS}_{\omega_1}$ 饱和**。设 W 是极大反链。
+$S(W)$（例 2.6）投影荟萃，PSRP 给 E-序列
+$\langle N_\alpha\rangle\subseteq S(W)$。令
+$$
+C=\{\alpha<\omega_1\mid\alpha=N_\alpha\cap\omega_1\}
+$$
 
-**(2) cf=ω 的荟萃集含闭拷贝**。\(S=\{N\mid\sup(N\cap
-\kappa)\in E\}\) 投影荟萃（对角构造），PSRP 的序列给
-\(\{\sup(N_\alpha\cap\kappa)\mid\alpha<\omega_1\}\subseteq E\)
-——与 \(\omega_1\) 同构的闭子集。
+（club——连续性）。令 $X=\bigcup_\alpha N_\alpha$（
+$|X|=\aleph_1$）。**验证 $W\subseteq X$**：反设
+$A\in W\setminus X$。取 Skolem 闭包 $M_\alpha=\mathrm{SH} (N_\alpha\cup\{A\})$；$D=\{\alpha\in C\mid\alpha= M_\alpha\cap\omega_1\}$ 仍是 club。取 $\alpha\in D\cap A$
+（A 荟萃）。由 $\alpha\in N_\alpha$ 与 W-极大反链性取
+$B\in W\cap N_\alpha$ 使 $\alpha\in B$；B≠A ⟹
+$A\cap B$ 非荟萃，由 $M_\alpha$ 的同质性取 club
+$E\in M_\alpha$ 使 $E\cap A\cap B=\varnothing$；但
+$\alpha\in E\cap A\cap B$（E、A、B 都含 α 且
+$M_\alpha\cap\omega_1=\alpha\in E$）——矛盾。故
+$|W|\le|X|=\aleph_1$。∎
 
-**(3) SCH**。对每个正则 \(\lambda\ge\omega_2\)：取
-\(E=\{\alpha<\lambda\mid\mathrm{cf}(\alpha)=\omega\}\) 的
-荟萃分划 \(\langle E_\alpha\rangle\) 与 \(\omega_1\) 的
-极大几乎不交荟萃分划 \(\langle T_\alpha\rangle\)；对每个
-严格单调 \(f:\omega_1\to\lambda\)
-\[S_f=\{N\mid\forall\alpha<N\cap\omega_1\ (N\cap\omega_1
-\in T_\alpha\to\sup(N\cap\lambda)\in E_{f(\alpha)})\}\]
+**(2) cf=ω 的荟萃集含闭拷贝**。$S=\{N\mid\sup(N\cap \kappa)\in E\}$ 投影荟萃（对角构造），PSRP 的序列给
+$\{\sup(N_\alpha\cap\kappa)\mid\alpha<\omega_1\}\subseteq E$
+——与 $\omega_1$ 同构的闭子集。
+
+**(3) SCH**。对每个正则 $\lambda\ge\omega_2$：取
+$E=\{\alpha<\lambda\mid\mathrm{cf}(\alpha)=\omega\}$ 的
+荟萃分划 $\langle E_\alpha\rangle$ 与 $\omega_1$ 的
+极大几乎不交荟萃分划 $\langle T_\alpha\rangle$；对每个
+严格单调 $f:\omega_1\to\lambda$
+$$
+S_f=\{N\mid\forall\alpha<N\cap\omega_1\ (N\cap\omega_1
+\in T_\alpha\to\sup(N\cap\lambda)\in E_{f(\alpha)})\}
+$$
+
 投影荟萃；PSRP 序列给
-\(\{\sup(N_\alpha\cap\lambda)\}\subseteq\bigcup f(\alpha)\)
+$\{\sup(N_\alpha\cap\lambda)\}\subseteq\bigcup f(\alpha)$
 型的 club 拷贝。不同的 f 给**不同**的拷贝 ⟹
-\(\lambda^{\omega_1}=\lambda\)（否则两个 f 的拷贝重合）。
+$\lambda^{\omega_1}=\lambda$（否则两个 f 的拷贝重合）。
 再由 Silver 定理（第一卷 I.2.37）得 SCH。∎
 
-**(4) RP（荟萃集光影原理）**。对 \(S\subseteq[\lambda]^\omega\)
-定义诱导的投影荟萃集 \(p(S)\)（用「ST 非荟萃」的 T 的极小
+**(4) RP（荟萃集光影原理）**。对 $S\subseteq[\lambda]^\omega$
+定义诱导的投影荟萃集 $p(S)$（用「ST 非荟萃」的 T 的极小
 反链 W 参数化）；PSRP 序列落在 p(S) 中；断言：S 荟萃 ⟺
-\(\{\alpha\mid N_\alpha\cap\lambda\in S\}\) 荟萃——两个方向
+$\{\alpha\mid N_\alpha\cap\lambda\in S\}$ 荟萃——两个方向
 分别用 club-躲藏与 W 的极小性。特别地（取 S 为任意荟萃集）
-得 RP：S 荟萃 ⟹ 存在 \(M\)（势 \(\aleph_1\)）使
-\(S\cap[M]^\omega\) 在 \([M]^\omega\) 中荟萃——**荟萃性
-在 \(\aleph_1\)-大的子空间上留下光影**。
+得 RP：S 荟萃 ⟹ 存在 $M$（势 $\aleph_1$）使
+$S\cap[M]^\omega$ 在 $[M]^\omega$ 中荟萃——**荟萃性
+在 $\aleph_1$-大的子空间上留下光影**。
 
 **推论 2.3（FMS）** MM ⟹ 定理 2.33(1)–(4)。（经定理
 2.32 中转——书 p247：FMS 的原始证明不走 PSRP，这条新路
@@ -619,24 +612,26 @@ M_\alpha\cap\omega_1\}\) 仍是 club。取 \(\alpha\in D\cap A\)
 ### 110.5d SRP 与等价
 
 **定义 2.36（Todorcevic）强荟萃集光影原理 SRP** 对每个
-不可数基数 λ、每个 \(S\subseteq[\kappa]\)（κ 任意）、每个
-正则 \(\theta>\kappa\)，存在 \(\kappa\) 的可数同质子模型的
-长度 \(\omega_1\) 的单调递增连续 E-序列
-\(\langle N_\alpha\rangle\)：
-\[M=\bigcup N_\alpha\prec(H_\theta,\dots)\wedge\forall
+不可数基数 λ、每个 $S\subseteq[\kappa]$（κ 任意）、每个
+正则 $\theta>\kappa$，存在 $\kappa$ 的可数同质子模型的
+长度 $\omega_1$ 的单调递增连续 E-序列
+$\langle N_\alpha\rangle$：
+$$
+M=\bigcup N_\alpha\prec(H_\theta,\dots)\wedge\forall
 \beta\ (N_\beta\cap\kappa\in S\leftrightarrow
-N_\beta\cap\kappa\in S\cap M)\]
+N_\beta\cap\kappa\in S\cap M)
+$$
+
 型（精确形态见书 p247 的五条款）。——SRP 比 PSRP「更
 判定化」：序列直接**判** S（在 M 的范围内）。
 
 **定理 2.34（冯–Jech）** PSRP ⟺ SRP。**⇐**：设 S 投影
-荟萃；SRP 给判定 S 的序列；断言一（\(\{\alpha\mid
-N_\alpha\in S\}\) 含 club，否则其补 T 荟萃、T-切片荟萃、
+荟萃；SRP 给判定 S 的序列；断言一（$\{\alpha\mid N_\alpha\in S\}$ 含 club，否则其补 T 荟萃、T-切片荟萃、
 正规性造 D 中的反例）+ 投影荟萃性合龙。**⇒**：造判定集
-\(S^*\)（\(N\in S^*\) ⟺ 存在 \(M\)：\(N\subseteq_\kappa M\)、
-ω₁-坐标相同、\(M\cap\kappa\in S\to N\cap\kappa\in S\) 型的
-两条款）；断言二（\(S^*\) 投影荟萃——Skolem 项与 h-函数
-把 \(M\cap\kappa\subseteq N\cap\kappa\) 钉死）+ PSRP 序列
+$S^*$（$N\in S^*$ ⟺ 存在 $M$：$N\subseteq_\kappa M$、
+ω₁-坐标相同、$M\cap\kappa\in S\to N\cap\kappa\in S$ 型的
+两条款）；断言二（$S^*$ 投影荟萃——Skolem 项与 h-函数
+把 $M\cap\kappa\subseteq N\cap\kappa$ 钉死）+ PSRP 序列
 即判定序列。∎
 
 两条原理殊途同归（书 p247 的自述：「我们是在探讨**什么
@@ -647,19 +642,19 @@ PSRP 的」——而 Todorcevic 从强反射角度到达同一处）。第 3 章
 ## 110.6 练习选讲：练习 2.2
 
 **练习 2.2** κ 不可达、θ<κ 正则。若 κ 上存在 θ-饱和的
-κ-完全且含一切单点的理想 I，则存在 \(Z\in I^+\) 使
-\(I\upharpoonright Z\) 是 κ-完全非平凡**素**理想——从而
+κ-完全且含一切单点的理想 I，则存在 $Z\in I^+$ 使
+$I\upharpoonright Z$ 是 κ-完全非平凡**素**理想——从而
 κ 可测。
 
 **提示的展开**（书 p249 的二叉树）：反设这样的 Z 不存在。
 造 I⁺ 中集合的**分裂二叉树**：树根 κ；第 α 层每个节点
-\(X\in I^+\) 分裂为两个不交的 I⁺-元素 \(X=X_0\cup X_1\)；
+$X\in I^+$ 分裂为两个不交的 I⁺-元素 $X=X_0\cup X_1$；
 极限步 α：若某长度 α 的树枝的交仍在 I⁺，则以该交为节点延
 续，否则此枝死。由「无素化」假设，每个 I⁺-节点都**能**
 分裂（素化失败 ⟺ 一切二分都有 I⁺ 侧）。最后看有非空交的
 树枝全体：它们的交形成 κ 的分划，每块 ∈ I；由 θ-饱和（
 I⁺ 无 θ 个模 I 几乎不交元素）与 κ-完全性（<κ 并封闭）与
-κ 的不可达性（\(\theta^\omega<\kappa\) 型的账），分划块的
+κ 的不可达性（$\theta^\omega<\kappa$ 型的账），分划块的
 个数与大小两头堵——矛盾。
 
 这道练习把「饱和 ⟹ 可测型结构」的最小案例写成树论账：109
@@ -670,35 +665,34 @@ I⁺ 无 θ 个模 I 几乎不交元素）与 κ-完全性（<κ 并封闭）与
 
 ## 110.7 机器通道
 
-七个通道沿 109 章位掩码宇宙（\(U=\{0,1,2\}\)、
-\(I_0=\{\varnothing,\{0\}\}\)、正测集六个），新增**投影层**：
-\(\pi(X)=X\setminus\{0\}\)（位运算 `m & 0b110`）。五件：
+七个通道沿 109 章位掩码宇宙（$U=\{0,1,2\}$、
+$I_0=\{\varnothing,\{0\}\}$、正测集六个），新增**投影层**：
+$\pi(X)=X\setminus\{0\}$（位运算 `m & 0b110`）。五件：
 
 1. **π 与交交换**（Lean `proj_inter`、Coq `proj_inter_char`
    （成员刻画形）、Isabelle `proj_inter`（手写双向包含——
    ZF simp 没有 Diff-Int 分配律，实测坑））；
-2. **核刻画** \(X\in I_0\iff\pi(X)=\varnothing\)（四助理
+2. **核刻画** $X\in I_0\iff\pi(X)=\varnothing$（四助理
    各一版：Lean `mem_I₀_iff_proj`（展开 + subset_singleton
    二分）、Coq `kernel`（incl0_proj_nil / proj_nil_incl0
    双向）、Agda `kernel-forward/backward`（filter-mem 自建
    引理喂反向）、Isabelle `kernel`（两分案））——理想恰是
-   投影的核，商代数 \(\mathcal P(U)/I_0\cong\mathcal P(\{1,2\})\)
+   投影的核，商代数 $\mathcal P(U)/I_0\cong\mathcal P(\{1,2\})$
    的机制件；
 3. **不相容 ⟹ 投影不交**（四助理 + Julia/Python 全量）；
 4. **有限饱和界**：Lean 旗舰定理 `antichain_bound`——反链
-   成员的投影两两不交非空，min'-映射单射入 \(\{1,2\}\)，
-   \(|A|\le2\)（`Fintype.card_le_of_injective` 收口）；
+   成员的投影两两不交非空，min'-映射单射入 $\{1,2\}$，
+   $|A|\le2$（`Fintype.card_le_of_injective` 收口）；
    Isabelle `pigeon3`（三分案两同）+ `subset_lift`（提升）；
    Coq `pigeonhole12`（八分案 share_hit）；Julia/Python
    **三理想饱和界表**：I₀/I₁（平凡）/I₂ 的 mod-理想等价类
    （类代表取等价类最小元）→ 商原子数 = 最大反链规模 =
    2/3/1，饱和数 3/4/2——「反链 = 商原子」的有限账，Gitik–
-   Shelah「只在 \(\omega_1\) 可能」的对照件；
+   Shelah「只在 $\omega_1$ 可能」的对照件；
 5. **反射可比对**（Julia/Python 穷举 64 个族 + Prolog 查询）：
    **上向闭**（有限 club 的影子：N∈S、N⊆N′∈IPOS ⟹ N′∈S）
    且**全投影**（PS 的影子：三个非空投影 2/4/6 都被 S 的
-   成员取到）的族 S 必含 \(N\subset N'\) 且 \(\pi(N)\ne
-   \pi(N')\)——「从 PS 族走出一阶」的最小替身（实测恰 5
+   成员取到）的族 S 必含 $N\subset N'$ 且 $\pi(N)\ne \pi(N')$——「从 PS 族走出一阶」的最小替身（实测恰 5
    个这样的族，全部含反射对）。
 
 先看 Lean 版（`examples/lean/Settheory/Ch110Nssaturation.lean`）。
@@ -855,8 +849,8 @@ example : Proj {1} = {1} ∧ Proj {2} = {2} ∧ Proj U₀ = {1, 2} := by decide
 end Settheory.Ch110
 ```
 
-`antichain_bound` 的骨架与正文的「投影把反链送到 \(\{1,2\}
-的互异元素」逐字对齐：`hpsub`（投影落在 \(\{1,2\}\)——宇宙
+`antichain_bound` 的骨架与正文的「投影把反链送到 $\{1,2\}$
+的互异元素」逐字对齐：`hpsub`（投影落在 $\{1,2\}$——宇宙
 纪律 hsub 在这里用）、`hkey`（min' 相等 ⟹ 成员相等——投影
 不交的逆否）、嵌入 e 收口于 `Fintype.card_le_of_injective`。
 三个实测坑：`Finset.card`/`Finset.min'` **不在** Data.Finset.Basic
@@ -1248,8 +1242,8 @@ y D` 后再 `with h`，后续 `| no nyd` 被解析进内层 with 的 Σ
 分支——解法是「先按 h 分案、再分 inL-dec」的单层结构，
 `filter-mem` 的两条 clause 各挂一个 with）；**where 内对
 外层变量的 with 被禁**（WithOnFreeVariable——辅助引理
-`keep-no` 顶层化）；`here e` 的等式方向（Any \((x\equiv_)\)
-的头部证据是 \(x\equiv y\)，进 filter 的 here 直接用 e、
+`keep-no` 顶层化）；`here e` 的等式方向（Any $(x\equiv_)$
+的头部证据是 $x\equiv y$，进 filter 的 here 直接用 e、
 跨 filter 的搬运才要 `trans e`）。
 
 Isabelle 版（`examples/isabelle/ST110/Nssaturation.thy`）以
@@ -1520,12 +1514,12 @@ println("END ====")
 三个理想上同时成立（2/2、3/3、1/1）——有限布尔代数的饱和数
 = 原子数 + 1，这既是 `antichain_bound` 定理的推广版样本，也
 是「饱和 ⟺ 商代数组合形状」的最小演示。I₂ 的账最富教益：
-四个正测集 \(\{2\},\{0,2\},\{1,2\},U\) 在 mod-I₂ 下**全是一个
+四个正测集 $\{2\},\{0,2\},\{1,2\},U$ 在 mod-I₂ 下**全是一个
 类**（单位元）——反链按类去重后只剩 1，提醒我们「两两不相容
-的原始集合」与「商代数反链」是两层概念（I₂ 下 \(\{2\}\) 与
-\(\{0,2\}\) 不相容却同类）。实现坑两枚：类代表必须取**等价类
+的原始集合」与「商代数反链」是两层概念（I₂ 下 $\{2\}$ 与
+$\{0,2\}$ 不相容却同类）。实现坑两枚：类代表必须取**等价类
 最小元**（首版按「严格下方无元素」找原子，把同类的
-\(\{0,1\}\) 也数成原子——3 个假原子）；Julia 对 Int 没有
+$\{0,1\}$ 也数成原子——3 个假原子）；Julia 对 Int 没有
 `⊆` 运算（`2 ⊆ 6` 静默返回 false！），须自写位掩码包含
 `sub(m,n) = m & ~n == 0`。
 
@@ -1724,47 +1718,47 @@ Julia/Python 的 `quotient_atoms` 三方对拍同一笔账。`reflect_pair/1`
 **覆盖**（投影层，全部有限可判定）：
 
 - π 与交交换（三助理定理 + Isabelle 手写双向包含）；
-- 核刻画 \(I_0=\pi^{-1}(\varnothing)\)（四助理定理件）；
+- 核刻画 $I_0=\pi^{-1}(\varnothing)$（四助理定理件）；
 - 不相容 ⟹ 投影不交（四助理定理 + 数值全量）；
 - 有限饱和界：反链 ≤ 2 的定理件（Lean 嵌入法）与三理想
   饱和界表（Julia/Python/Prolog：反链 = 商原子）；
 - 提升引理（Coq `lifting`/Isabelle `subset_lift`/Agda
   `projL-keep`）；
 - 反射可比对的穷举核查（上向闭 + 全投影 ⟹ 存在
-  \(N\subset N'\) 且投影不同）。
+  $N\subset N'$ 且投影不同）。
 
 **不覆盖**（本体，超穷层）：
 
-- **Mitchell/Magidor 构造**：Lévy 塌塌、\(j^*\) 扩张、
-  \(q^C\) 拼装、六断言——大基数与超穷迭代的全部行李；
+- **Mitchell/Magidor 构造**：Lévy 塌塌、$j^*$ 扩张、
+  $q^C$ 拼装、六断言——大基数与超穷迭代的全部行李；
 - **修订可数支撑迭代**：半恰当性的收敛定理（谢拉赫 XI 章
   级工程，书 p235 一句带过）；
-- **MM 与 Gitik–Shelah**：\(\aleph_1\) 个稠密集的相遇在有限
-  宇宙退化为「全查 64 个族」；「\(\kappa\ge\omega_2\) 永不
-  饱和」的 \(\kappa^+\)-长反链构造不可有限化；
-- **PSRP/SRP**：长度 \(\omega_1\) 的 E-序列、强单调的
-  序列-封闭条款、反射论证——有限宇宙没有 \(\omega_1\)；
+- **MM 与 Gitik–Shelah**：$\aleph_1$ 个稠密集的相遇在有限
+  宇宙退化为「全查 64 个族」；「$\kappa\ge\omega_2$ 永不
+  饱和」的 $\kappa^+$-长反链构造不可有限化；
+- **PSRP/SRP**：长度 $\omega_1$ 的 E-序列、强单调的
+  序列-封闭条款、反射论证——有限宇宙没有 $\omega_1$；
 - **练习 2.2 的二叉树**：θ-饱和与 κ-完全的博弈在有限层
   无从展开。
 
 两处口径钉死：其一，机器的「反射可比对」是 PSRP 的**机制
 替身**（上向闭 ≈ 有限 club、全投影 ≈ 投影荟萃、「走出一步」
 ≈ E-序列的起步），不是 PSRP 的实例——PSRP 的序列长
-\(\omega_1\) 且每项都是可数同质子模型，有限宇宙造不出任何
+$\omega_1$ 且每项都是可数同质子模型，有限宇宙造不出任何
 一项。其二，三理想表的「反链 = 商原子」是有限布尔代数的
 恒等式（组合恒真），与「NS 饱和」的大基数内容（一致性强度、
 力迫构造）正交——表的价值在于把「饱和 ⟺ 商代数组合形状」
 的**定义层**演清楚，恰如 108 章的 32×32 穷举之于 PFA。
 
-还有一层对齐值得写明：\(\pi\) 的三个形式性质在正文的三个
-定理里各就各位。**核刻画**（\(I=\pi^{-1}(\varnothing)\)）
-是定理 2.33(1) 的骨架——「W ⊆ X = \(\bigcup N_\alpha\)」
+还有一层对齐值得写明：$\pi$ 的三个形式性质在正文的三个
+定理里各就各位。**核刻画**（$I=\pi^{-1}(\varnothing)$）
+是定理 2.33(1) 的骨架——「W ⊆ X = $\bigcup N_\alpha$」
 正是把反链装进投影的**像层**；**π 与交交换**是例 2.6 的
-机制——S(W) 的定义「\(N'\cap\omega_1\subseteq A\)」按坐标
+机制——S(W) 的定义「$N'\cap\omega_1\subseteq A$」按坐标
 切片，切片与交的交换律在每一步 Skolem 论证里默认使用；
 **不相容 ⟹ 投影不交**是定理 2.33(1) 收尾的结构——反链
-成员两两 \(A\cap B\) 非荟萃（投影层不交），于是 Skolem 壳
-\(M_\alpha\) 里的 club E 才能把 \(A\cap B\) 整体避开。换句
+成员两两 $A\cap B$ 非荟萃（投影层不交），于是 Skolem 壳
+$M_\alpha$ 里的 club E 才能把 $A\cap B$ 整体避开。换句
 话说：正文在超穷层用这三条性质时全部「免费」（集合论的
 平凡事实），机器把它们单独拎出来证明，是为了让「投影层
 承载饱和与反射」这句纲领话有可核对的齿轮——大定理的每个
@@ -1776,24 +1770,24 @@ Julia/Python 的 `quotient_atoms` 三方对拍同一笔账。`reflect_pair/1`
 
 1. **峭壁 ≠ 饱和**：峭壁问泛型超幂良基（二阶、力迫语句），
    饱和问商代数反链长（组合）；饱和 ⟹ 峭壁、反向不然、
-   \(\kappa\ge\omega_2\) 的 \(\mathrm{NS}_\kappa\) 永不饱和
-   （Gitik–Shelah）——饱和是 \(\omega_1\) 专属现象（110.1）。
+   $\kappa\ge\omega_2$ 的 $\mathrm{NS}_\kappa$ 永不饱和
+   （Gitik–Shelah）——饱和是 $\omega_1$ 专属现象（110.1）。
 2. Mitchell 定理：可测 + Lévy 塌塌 ⟹ ω₁ 上 σ-完全正规峭壁
-   理想——乘积分解 \(j(\mathbb P)=\mathbb P\times\mathbb Q\)、
+   理想——乘积分解 $j(\mathbb P)=\mathbb P\times\mathbb Q$、
    扩张嵌入 j*、H 的两步收口（交换图给有秩；T 的稠密性
    给泛型）（110.2）。
 3. Magidor 定理：L[U] 中 κ⁺-步迭代「补集射 club」，配对
-   双射 π 调度名单，最终 \(\mathrm{NS}_{\omega_1}\) 本身
+   双射 π 调度名单，最终 $\mathrm{NS}_{\omega_1}$ 本身
    峭壁——六断言（q^C/κ⁺-cc/理想单调/正规/等于 NS/峭壁）
    （110.3）。
-4. 消反例力迫 \(\mathbb P_W\) 与保持荟萃（定义 2.27/2.28/
+4. 消反例力迫 $\mathbb P_W$ 与保持荟萃（定义 2.27/2.28/
    例 2.5/事实 2.7.1）；半泛型/半恰当（2.29/2.30/定理 2.22）
    与修订可数支撑迭代；FMS 定理 2.23 + MM 定义 2.31 +
    定理 2.24（110.4a/b）。
 5. 半恰当反链（定义 2.32/定理 2.26/2.27）；
-   \(\mathrm{Col}(\omega_1,<\kappa)\) 与 Lévy 事实；预饱和 +
+   $\mathrm{Col}(\omega_1,<\kappa)$ 与 Lévy 事实；预饱和 +
    Baumgartner 事实 2.7.3（泛型超幂后果链：crit=ω₁、
-   \(i_G(\omega_1)=\omega_2\)、可数封闭）；定理 2.28；
+   $i_G(\omega_1)=\omega_2$、可数封闭）；定理 2.28；
    一周竞赛到武丁基数（定理 2.29/2.30/2.31——I∩V=NS 的
    扩张理想）（110.4c/d）。
 6. 投影荟萃集（定义 2.34 的 club-投影与切片两形态）与
@@ -1812,15 +1806,15 @@ Julia/Python 的 `quotient_atoms` 三方对拍同一笔账。`reflect_pair/1`
 （建议顺序：1–2 打牢概念分野，3–5 走峭壁线，6–7 走饱和线，
 8–10 走光影线，11–12 对照机器边界自查。）
 
-1. 用 110.1 的对照表说明：为什么「\(\mathrm{NS}_\kappa\)
-   （\(\kappa\ge\omega_2\)）永不饱和」与「\(\omega_1\) 上
+1. 用 110.1 的对照表说明：为什么「$\mathrm{NS}_\kappa$
+   （$\kappa\ge\omega_2$）永不饱和」与「$\omega_1$ 上
    饱和理想可造」不矛盾？（提示：两处的「饱和」基数参量
    不同。）
-2. Mitchell 证明中 \(T=\{\alpha\mid g(\alpha)\in G\}\) 的
+2. Mitchell 证明中 $T=\{\alpha\mid g(\alpha)\in G\}$ 的
    非理想性靠什么？把这一步与 109 章例 2.4 的「正规性断言」
    并排比较。
-3. Magidor 迭代为什么必须搬到 \(L[U]\)？（提示：
-   \(2^\kappa=\kappa^+\) 的名单账与「每个荟萃集被点名」。）
+3. Magidor 迭代为什么必须搬到 $L[U]$？（提示：
+   $2^\kappa=\kappa^+$ 的名单账与「每个荟萃集被点名」。）
    与 108 章拉弗调度的「命中保证」对比。
 4. 半泛型条件（定义 2.29）与泛型条件（107 章定义 2.21）
    的差别在哪里？为什么「只对序数名字负责」恰好够保持
@@ -1830,17 +1824,17 @@ Julia/Python 的 `quotient_atoms` 三方对拍同一笔账。`reflect_pair/1`
    偏序被 MM 新受理？
 6. 事实 2.7.3 的 (iii)（超幂对可数序列封闭）在 109 章
    定理 2.19(2) 的对应款是什么？两处各用什么理想性质？
-7. 定理 2.31 的理想满足 \(I\cap V=\mathrm{NS}\)——「扩张
+7. 定理 2.31 的理想满足 $I\cap V=\mathrm{NS}$——「扩张
    旧理想」与 Mitchell/Magidor 的「造新理想」在应用上有何
    差别？（提示：第 3 章不添实数的动机。）
 8. 投影荟萃集的两个定义（club-投影含 club / 每个荟萃 T
-   的切片荟萃）为什么等价？例 2.6 中 \(|W|>\aleph_1\) 时
+   的切片荟萃）为什么等价？例 2.6 中 $|W|>\aleph_1$ 时
    S(W) 为何不含 club？
-9. 引理 2.31(2) 的「可数强链白拿」与 PSRP 的「\(\omega_1\)-
+9. 引理 2.31(2) 的「可数强链白拿」与 PSRP 的「$\omega_1$-
    链要公理」的分界在哪里？强单调条款在定理 2.32 断言二的
    递归构造中起什么作用？
 10. 定理 2.33(3) 如何从「不同的 f 给不同拷贝」推出
-    \(\lambda^{\omega_1}=\lambda\)？再用 Silver 定理收 SCH 的
+    $\lambda^{\omega_1}=\lambda$？再用 Silver 定理收 SCH 的
     那一步用了什么（第一卷 I.2.37 的）假设？
 11. 机器件三理想表中 I₂ 的四个正测集全在一个类——这说明
     「两两不相容的集合族」与「商代数反链」差在哪一层？
@@ -1865,9 +1859,9 @@ reflection principle*, J. London Math. Soc. 58 (1998)。
 ---
 
 **一句话总结本章**：峭壁问超幂是否塌得回来，饱和问商代数
-反链有多短；可测基数把峭壁搬进 \(\omega_1\)（Mitchell–
+反链有多短；可测基数把峭壁搬进 $\omega_1$（Mitchell–
 Magidor），超紧把饱和搬进来（FMS→MM），武丁把代价再砍一刀
 （Shelah–Woodin）——而冯–Jech 的投影荟萃集光影原理把 MM 的
 组合内核提炼成一句「楼上的每个投影荟萃集都走得通一条
-\(\omega_1\)-长的楼梯」，饱和、闭拷贝、SCH、反射四重
+$\omega_1$-长的楼梯」，饱和、闭拷贝、SCH、反射四重
 馈赠皆由此出。
