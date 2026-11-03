@@ -100,4 +100,4 @@ mathlib 锚点 `IsCompactOperator`——谓词层面的紧算子理论。
 
 ---
 
-上一章：[27 算子伴随与 Banach-Stone](docs/27-adjoint-banach.md) · 下一章：[29 Banach 代数](docs/29-banach-algebra.md)
+上一章：[27 Banach 空间上的算子伴随与 Banach-Stone 定理](27-adjoint-banach.md) · 下一章：[29 Banach 代数：理想与商](29-banach-algebra.md)

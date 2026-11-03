@@ -228,4 +228,4 @@ Rellich 强收敛、双版 Morrey。**Python**：Morrey 数值、Poincaré
 
 ---
 
-上一章：[71 弱导数：从 δ 到 Sobolev 空间](docs/71-weak-derivatives.md) · 下一章：[73 弱解与 Galerkin 误差](docs/73-galerkin-cea.md)
+上一章：[71 弱导数：从 δ 到 Sobolev 空间 W^{k,p}](71-weak-derivatives.md) · 下一章：[73 弱解与 Galerkin 误差：边值问题的 Riesz 路线](73-galerkin-cea.md)

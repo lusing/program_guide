@@ -308,4 +308,4 @@ x₁ = x₂ = 0}。两个只差 M 中向量的代表元给出相同的"商内积
 
 ---
 
-上一章：[01 prelim](docs/01-prelim.md) · 下一章：[03 orthogonality](docs/03-orthogonality.md)
+上一章：[01 预备知识：拓扑、网、Zorn 与 Baire 纲](01-prelim.md) · 下一章：[03 正交性与投影定理](03-orthogonality.md)

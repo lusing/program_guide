@@ -211,4 +211,4 @@ Lax 的书在此章前后（19.5 节）还处理了解析函数代数 C(Δ̄)、
 
 ---
 
-上一章：[52 Riesz-Thorin 与 Hilbert 变换](docs/52-riesz-thorin.md) · 下一章：[54 Fredholm 行列式](docs/54-fredholm-determinant.md)
+上一章：[52 Riesz-Thorin 插值与 Hilbert 变换](52-riesz-thorin.md) · 下一章：[54 Fredholm 行列式](54-fredholm-determinant.md)

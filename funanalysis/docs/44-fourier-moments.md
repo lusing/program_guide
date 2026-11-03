@@ -112,4 +112,4 @@ H = (m_{i+j}) 全体半正定。
 
 ---
 
-上一章：[43 无界谱定理与 Stone 定理](docs/43-stone-unbounded.md) · 下一章：[45 Fredholm 算子与指标](docs/45-fredholm.md)
+上一章：[43 无界谱定理与 Stone 定理](43-stone-unbounded.md) · 下一章：[45 Fredholm 算子与指标](45-fredholm.md)

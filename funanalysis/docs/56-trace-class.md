@@ -216,4 +216,4 @@ tr = Σλ（Lidskii 的直接验证：代数重数计入）；‖T‖_tr = Σs �
 
 ---
 
-上一章：[55 Toeplitz 与 Hankel 算子](docs/55-toeplitz-hankel.md) · 下一章：[57 Herglotz 表示与自伴谱](docs/57-herglotz-spectral.md)
+上一章：[55 Toeplitz 算子与 Hankel 算子：绕数指标](55-toeplitz-hankel.md) · 下一章：[57 Herglotz 表示与自伴算子的谱分解](57-herglotz-spectral.md)

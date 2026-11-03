@@ -81,4 +81,4 @@
 
 ---
 
-上一章：[22 distributions](docs/22-distributions.md) · 下一章：[24 stone-cech](docs/24-stone-cech.md)
+上一章：[22 归纳极限与分布](22-distributions.md) · 下一章：[24 Stone-Čech 紧化](24-stone-cech.md)

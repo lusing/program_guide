@@ -98,4 +98,4 @@ Dom = ran(T + i)。
 
 ---
 
-上一章：[41 无界算子基础](docs/41-unbounded-basics.md) · 下一章：[43 无界谱定理与 Stone 定理](docs/43-stone-unbounded.md)
+上一章：[41 无界算子基础](41-unbounded-basics.md) · 下一章：[43 无界谱定理与 Stone 定理](43-stone-unbounded.md)

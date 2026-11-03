@@ -109,4 +109,4 @@ mathlib 锚点 `ContinuousLinearMap.norm_adjoint_comp_self`
 
 ---
 
-上一章：[33 Gelfand 理论](docs/33-gelfand.md) · 下一章：[35 正元与 GNS](docs/35-positive-elements.md)
+上一章：[33 交换 Banach 代数与 Gelfand 理论](33-gelfand.md) · 下一章：[35 正元、理想与 GNS 构造](35-positive-elements.md)

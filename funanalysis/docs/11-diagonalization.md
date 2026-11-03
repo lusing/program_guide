@@ -147,4 +147,4 @@ mathlib 中的核心是 `ContinuousLinearMap.eq_zero_of_forall_hasEigenvalue_eq_
 
 ---
 
-上一章：[10 compact-operators](docs/10-compact-operators.md) · 下一章：[12 sturm-liouville](docs/12-sturm-liouville.md)
+上一章：[10 紧算子](10-compact-operators.md) · 下一章：[12 应用：Sturm-Liouville 系统](12-sturm-liouville.md)

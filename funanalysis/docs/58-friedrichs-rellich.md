@@ -199,4 +199,4 @@ c 增大逼近临界；断言 c ≤ 1/8（离散安全区）时比值 < 0.9，
 
 ---
 
-上一章：[57 Herglotz 表示与自伴谱](docs/57-herglotz-spectral.md) · 下一章：[59 半群与 Hille-Yosida 定理](docs/59-semigroups.md)
+上一章：[57 Herglotz 表示与自伴算子的谱分解](57-herglotz-spectral.md) · 下一章：[59 半群与 Hille-Yosida 定理](59-semigroups.md)

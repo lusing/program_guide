@@ -74,4 +74,4 @@ mathlib 的 `SeparatingDual`——半范数族分离点 ⟺ 单射性。
 
 ---
 
-上一章：[19 uniform-boundedness](docs/19-uniform-boundedness.md) · 下一章：[21 separation](docs/21-separation.md)
+上一章：[19 一致有界原理](19-uniform-boundedness.md) · 下一章：[21 几何 Hahn-Banach：分离定理](21-separation.md)

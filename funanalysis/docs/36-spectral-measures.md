@@ -109,4 +109,4 @@ mathlib 锚点 `Submodule.orthogonalProjectionOnto`
 
 ---
 
-上一章：[35 正元与 GNS](docs/35-positive-elements.md) · 下一章：[37 谱定理](docs/37-spectral-theorem.md)
+上一章：[35 正元、理想与 GNS 构造](35-positive-elements.md) · 下一章：[37 谱定理](37-spectral-theorem.md)

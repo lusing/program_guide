@@ -113,4 +113,4 @@ T_φ Fredholm 且 index = -wind(φ)（绕数）。
 
 ---
 
-上一章：[45 Fredholm 算子与指标](docs/45-fredholm.md) · 下一章：[47 CHEATSheet](docs/47-cheatsheet.md)
+上一章：[45 Fredholm 算子与指标](45-fredholm.md) · 下一章：[47 CHEATSheet：全定理地图与通道速查](47-cheatsheet.md)

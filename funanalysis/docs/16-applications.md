@@ -87,4 +87,4 @@ Cesàro 均值（Banach 极限在收敛序列上的行为 = 极限；平移不�
 
 ---
 
-上一章：[15 hahn-banach](docs/15-hahn-banach.md) · 下一章：[17 duality](docs/17-duality.md)
+上一章：[15 线性泛函与 Hahn-Banach 定理](15-hahn-banach.md) · 下一章：[17 对偶理论：商、子空间、自反性与 L^p/C_0(X) 对偶](17-duality.md)

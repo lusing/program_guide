@@ -70,4 +70,4 @@ X **自反**，若 J 是满射（因此是等距同构）。
 
 ---
 
-上一章：[16 applications](docs/16-applications.md) · 下一章：[18 open-mapping](docs/18-open-mapping.md)
+上一章：[16 应用三讲：Banach 极限、Runge 定理、序空间](16-applications.md) · 下一章：[18 开映射、闭图像与补子空间](18-open-mapping.md)

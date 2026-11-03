@@ -298,4 +298,4 @@ max|xᵢ|（= ℓ∞ 范数，1.35(c) 实例）的计算。
 
 ---
 
-上一章：[63 Lax 篇收官 CHEATSheet](docs/63-lax-cheatsheet.md) · 下一章：[65 不动点定理群与 Haar 测度](docs/65-fixed-points-haar.md)
+上一章：[63 Lax 增补篇收官：CHEATSheet 与两书路线总对照](63-lax-cheatsheet.md) · 下一章：[65 不动点定理群与紧群的 Haar 测度](65-fixed-points-haar.md)

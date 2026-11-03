@@ -271,4 +271,4 @@ Markov-Kakutani 的平均压缩机制在实验 1。
 
 ---
 
-上一章：[64 拓扑向量空间与 Fréchet 空间](docs/64-tvs-frechet.md) · 下一章：[66 Banach 刚性与不可余子空间](docs/66-banach-rigidity.md)
+上一章：[64 拓扑向量空间：度量化、半范数与 Fréchet 空间](64-tvs-frechet.md) · 下一章：[66 Banach 刚性：Hellinger-Toeplitz、向量测度与不可余子空间](66-banach-rigidity.md)

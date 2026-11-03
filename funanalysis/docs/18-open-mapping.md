@@ -70,4 +70,4 @@ P² = P + ‖P‖ < ∞。
 
 ---
 
-上一章：[17 duality](docs/17-duality.md) · 下一章：[19 uniform-boundedness](docs/19-uniform-boundedness.md)
+上一章：[17 对偶理论：商、子空间、自反性与 L^p/C_0(X) 对偶](17-duality.md) · 下一章：[19 一致有界原理](19-uniform-boundedness.md)

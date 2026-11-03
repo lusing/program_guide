@@ -67,4 +67,4 @@ D_K → D(Ω) 连续的最强局部凸拓扑。
 
 ---
 
-上一章：[21 separation](docs/21-separation.md) · 下一章：[23 weak-topology](docs/23-weak-topology.md)
+上一章：[21 几何 Hahn-Banach：分离定理](21-separation.md) · 下一章：[23 弱拓扑、Alaoglu 定理与自反性再访](23-weak-topology.md)

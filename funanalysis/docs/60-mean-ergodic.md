@@ -189,4 +189,4 @@ Stone 定理的数值双向。
 
 ---
 
-上一章：[59 半群与 Hille-Yosida 定理](docs/59-semigroups.md) · 下一章：[61 Weyl 交换关系与散射理论](docs/61-weyl-scattering.md)
+上一章：[59 半群与 Hille-Yosida 定理](59-semigroups.md) · 下一章：[61 Weyl 交换关系与散射理论](61-weyl-scattering.md)

@@ -68,4 +68,4 @@ mathlib 的 `ContinuousLinearMap.isOpenMap`——开映射定理的机器形态�
 
 ---
 
-上一章：[18 open-mapping](docs/18-open-mapping.md) · 下一章：[20 locally-convex](docs/20-locally-convex.md)
+上一章：[18 开映射、闭图像与补子空间](18-open-mapping.md) · 下一章：[20 局部凸空间](20-locally-convex.md)

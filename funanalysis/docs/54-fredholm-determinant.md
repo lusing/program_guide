@@ -224,4 +224,4 @@ lemma det_trace_formula_2:
 
 ---
 
-上一章：[53 Wiener Tauberian 定理](docs/53-wiener-tauberian.md) · 下一章：[55 Toeplitz 与 Hankel 算子](docs/55-toeplitz-hankel.md)
+上一章：[53 Wiener Tauberian 定理](53-wiener-tauberian.md) · 下一章：[55 Toeplitz 算子与 Hankel 算子：绕数指标](55-toeplitz-hankel.md)

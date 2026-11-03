@@ -187,4 +187,4 @@ Bessel（9 ≤ 25）与"Gram-Schmidt 的起点"（两个不正交的具体向量
 
 ---
 
-上一章：[04 riesz](docs/04-riesz.md) · 下一章：[06 fourier-sums](docs/06-fourier-sums.md)
+上一章：[04 Riesz 表示定理](04-riesz.md) · 下一章：[06 同构分类、圆周 Fourier 变换与直和](06-fourier-sums.md)

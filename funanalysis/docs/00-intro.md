@@ -268,4 +268,4 @@ closest_point → completeness` 提醒我们：第 IX 章的宏伟建筑最终�
 
 ---
 
-上一章：（本书起点） · 下一章：[01 prelim](docs/01-prelim.md)
+下一章：[01 预备知识：拓扑、网、Zorn 与 Baire 纲](01-prelim.md)

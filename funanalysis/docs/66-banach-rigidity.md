@@ -217,4 +217,4 @@ L_n = ‖D_n‖₁/(2π)（n = 2^k）：数值积分 Dirichlet 核，验证
 
 ---
 
-上一章：[65 不动点定理群与 Haar 测度](docs/65-fixed-points-haar.md) · 下一章：[67 广义函数的 Fourier 变换与基本解](docs/67-distributions-fundamental.md)
+上一章：[65 不动点定理群与紧群的 Haar 测度](65-fixed-points-haar.md) · 下一章：[67 广义函数的 Fourier 变换与基本解](67-distributions-fundamental.md)

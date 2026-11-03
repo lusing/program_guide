@@ -161,4 +161,4 @@ mathlib 的 `IsCompactOperator` 谓词 + 有限维全紧 + 核心定理
 
 ---
 
-上一章：[09 projections](docs/09-projections.md) · 下一章：[11 diagonalization](docs/11-diagonalization.md)
+上一章：[09 投影、幂等与不变子空间](09-projections.md) · 下一章：[11 紧自伴算子的对角化](11-diagonalization.md)

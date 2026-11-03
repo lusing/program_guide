@@ -122,4 +122,4 @@ Sobolev 全章 + 4.5 内积计算应用**——正是 70-74 五章的选材。
 
 ---
 
-上一章：[74 内积的应用](docs/74-inner-product-apps.md) · [返回目录](../README.md) · 全书完
+上一章：[74 内积的应用：相关系数、Gram 矩阵与最佳逼近](74-inner-product-apps.md) · 下一章：（完）

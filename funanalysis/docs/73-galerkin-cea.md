@@ -231,4 +231,4 @@ Lax-Milgram 范数界 ‖y‖ ≤ ‖f‖/b 全过。
 
 ---
 
-上一章：[72 Poincaré 不等式与 Sobolev 嵌入](docs/72-poincare-embedding.md) · 下一章：[74 内积的应用：相关系数、Gram 矩阵与最佳逼近](docs/74-inner-product-apps.md)
+上一章：[72 Poincaré 不等式与 Sobolev 嵌入](72-poincare-embedding.md) · 下一章：[74 内积的应用：相关系数、Gram 矩阵与最佳逼近](74-inner-product-apps.md)

@@ -144,4 +144,4 @@ mathlib 中紧正规谱定理的完整形式化在 C\* 代数框架
 
 ---
 
-上一章：[12 sturm-liouville](docs/12-sturm-liouville.md) · 下一章：[14 banach-spaces](docs/14-banach-spaces.md)
+上一章：[12 应用：Sturm-Liouville 系统](12-sturm-liouville.md) · 下一章：[14 赋范空间与 Banach 空间](14-banach-spaces.md)

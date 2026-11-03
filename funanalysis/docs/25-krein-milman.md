@@ -64,4 +64,4 @@ mathlib 的 `closure_convexHull_extremePoints`（Krein-Milman 完整形式）+
 
 ---
 
-上一章：[24 stone-cech](docs/24-stone-cech.md) · 下一章：[26 fixed-points](docs/26-fixed-points.md)
+上一章：[24 Stone-Čech 紧化](24-stone-cech.md) · 下一章：[26 不变子空间与不动点定理](26-fixed-points.md)

@@ -229,4 +229,4 @@ d(x,y) = ‖x-y‖ 自动生成。Banach 空间 = 完备赋范空间。这是第
 
 ---
 
-上一章：[00 intro](docs/00-intro.md) · 下一章：[02 inner-product](docs/02-inner-product.md)
+上一章：[00 导引：泛函分析与机器证明](00-intro.md) · 下一章：[02 内积空间初步](02-inner-product.md)

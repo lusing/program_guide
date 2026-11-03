@@ -152,4 +152,4 @@ SS*（5.3 的代数，第 08 章的伏笔）；(2) **DFT 等距**：‖FFT(x)‖
 
 ---
 
-上一章：[05 orthonormal-bases](docs/05-orthonormal-bases.md) · 下一章：[07 bounded-operators](docs/07-bounded-operators.md)
+上一章：[05 标准正交集与基](05-orthonormal-bases.md) · 下一章：[07 有界算子与 B(ℋ)](07-bounded-operators.md)

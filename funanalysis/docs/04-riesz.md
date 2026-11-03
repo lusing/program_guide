@@ -212,4 +212,4 @@ L²[0,1] 的范数平方 = 5/8 = ½ + ⅛（正交频率的能量相加——勾
 
 ---
 
-上一章：[03 orthogonality](docs/03-orthogonality.md) · 下一章：[05 orthonormal-bases](docs/05-orthonormal-bases.md)
+上一章：[03 正交性与投影定理](03-orthogonality.md) · 下一章：[05 标准正交集与基](05-orthonormal-bases.md)

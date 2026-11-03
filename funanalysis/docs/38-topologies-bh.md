@@ -107,4 +107,4 @@ mathlib 对 SOT/WOT 无基础设施，以算子范数基本件锚定
 
 ---
 
-上一章：[37 谱定理](docs/37-spectral-theorem.md) · 下一章：[39 von Neumann 代数](docs/39-von-neumann.md)
+上一章：[37 谱定理](37-spectral-theorem.md) · 下一章：[39 von Neumann 代数与泛函演算终章](39-von-neumann.md)

@@ -108,4 +108,4 @@ Schrödinger 方程 = Stone 定理的微分侧。
 
 ---
 
-上一章：[42 对称、自伴与 Cayley 变换](docs/42-symmetric-selfadjoint.md) · 下一章：[44 Fourier 变换与矩问题](docs/44-fourier-moments.md)
+上一章：[42 对称、自伴与 Cayley 变换](42-symmetric-selfadjoint.md) · 下一章：[44 Fourier 变换、微分算子与矩问题](44-fourier-moments.md)

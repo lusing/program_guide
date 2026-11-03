@@ -115,4 +115,4 @@ mathlib 无 vN 代数基础设施，以算子复合结合律锚定，
 
 ---
 
-上一章：[38 B(H) 上的拓扑](docs/38-topologies-bh.md) · 下一章：[40 不变子空间与重数](docs/40-invariant-subspaces.md)
+上一章：[38 星循环算子、应用与 B(H) 上的拓扑](38-topologies-bh.md) · 下一章：[40 不变子空间与重数理论](40-invariant-subspaces.md)

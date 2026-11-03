@@ -255,4 +255,4 @@ f = exp(cos t)：对角系统 (in+1)ûₙ = f̂ₙ，系数按 |f̂ₙ| ~ e^{−
 
 ---
 
-上一章：[50 Müntz 与 Runge](docs/50-muntz-runge.md) · 下一章：[52 Riesz-Thorin 插值与 Hilbert 变换](docs/52-riesz-thorin.md)
+上一章：[50 对偶逼近：Müntz 定理与 Runge 定理](50-muntz-runge.md) · 下一章：[52 Riesz-Thorin 插值与 Hilbert 变换](52-riesz-thorin.md)

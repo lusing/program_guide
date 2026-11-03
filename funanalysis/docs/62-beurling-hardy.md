@@ -166,4 +166,4 @@ z²M… 的 Gram 矩阵对角（正交性验证，1e-13）；M 的维数 = 1。
 
 ---
 
-上一章：[61 Weyl 交换关系与散射理论](docs/61-weyl-scattering.md) · 下一章：[63 Lax 篇收官 CHEATSheet](docs/63-lax-cheatsheet.md)
+上一章：[61 Weyl 交换关系与散射理论](61-weyl-scattering.md) · 下一章：[63 Lax 增补篇收官：CHEATSheet 与两书路线总对照](63-lax-cheatsheet.md)

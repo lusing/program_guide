@@ -293,4 +293,4 @@ non-orthogonal pythagoras: correctly fails
 
 ---
 
-上一章：[02 inner-product](docs/02-inner-product.md) · 下一章：[04 riesz](docs/04-riesz.md)
+上一章：[02 内积空间初步](02-inner-product.md) · 下一章：[04 Riesz 表示定理](04-riesz.md)

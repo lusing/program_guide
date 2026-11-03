@@ -96,4 +96,4 @@ mathlib 的 `exists_extension_of_le_sublinear`（Hahn-Banach 的
 
 ---
 
-上一章：[14 banach-spaces](docs/14-banach-spaces.md) · 下一章：[16 applications](docs/16-applications.md)
+上一章：[14 赋范空间与 Banach 空间](14-banach-spaces.md) · 下一章：[16 应用三讲：Banach 极限、Runge 定理、序空间](16-applications.md)

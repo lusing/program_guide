@@ -122,4 +122,4 @@ L²[a,b] 的标准正交基 (eₙ)，使：
 
 ---
 
-上一章：[11 diagonalization](docs/11-diagonalization.md) · 下一章：[13 compact-normal](docs/13-compact-normal.md)
+上一章：[11 紧自伴算子的对角化](11-diagonalization.md) · 下一章：[13 紧正规算子的谱定理与泛函演算](13-compact-normal.md)

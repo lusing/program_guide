@@ -194,4 +194,4 @@ v4.33 的 numeral-type 组件求值与 `E x - E x = 0` simp 闭包
 
 ---
 
-上一章：[08 adjoint](docs/08-adjoint.md) · 下一章：[10 compact-operators](docs/10-compact-operators.md)
+上一章：[08 伴随算子](08-adjoint.md) · 下一章：[10 紧算子](10-compact-operators.md)

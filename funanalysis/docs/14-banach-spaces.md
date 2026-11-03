@@ -97,4 +97,4 @@ M = span{e₁} ⊂ ℝ³，‖x+M‖ = √13 精确；(3) **Riesz 引理的数�
 
 ---
 
-上一章：[13 compact-normal](docs/13-compact-normal.md) · 下一章：[15 hahn-banach](docs/15-hahn-banach.md)
+上一章：[13 紧正规算子的谱定理与泛函演算](13-compact-normal.md) · 下一章：[15 线性泛函与 Hahn-Banach 定理](15-hahn-banach.md)

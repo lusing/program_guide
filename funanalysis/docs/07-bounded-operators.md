@@ -166,4 +166,4 @@ k(x,y) = 1/(1.1−xy) 的积分算子，幂法迭代数值范数 1.449 ≤
 
 ---
 
-上一章：[06 fourier-sums](docs/06-fourier-sums.md) · 下一章：[08 adjoint](docs/08-adjoint.md)
+上一章：[06 同构分类、圆周 Fourier 变换与直和](06-fourier-sums.md) · 下一章：[08 伴随算子](08-adjoint.md)

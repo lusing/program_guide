@@ -294,4 +294,4 @@ map-像的界，不能直写 `⟨C, eventually⟩`——这是实测坑）。
 
 ---
 
-上一章：[48 Lax-Milgram 与变分法](docs/48-lax-milgram.md) · 下一章：[50 Müntz 与 Runge](docs/50-muntz-runge.md)
+上一章：[48 Lax-Milgram 引理与变分法](48-lax-milgram.md) · 下一章：[50 对偶逼近：Müntz 定理与 Runge 定理](50-muntz-runge.md)

@@ -106,4 +106,4 @@ K 紧 ⟹ I + K Fredholm 且 index 0 ⟹
 
 ---
 
-上一章：[44 Fourier 变换与矩问题](docs/44-fourier-moments.md) · 下一章：[46 本质谱](docs/46-essential-spectrum.md)
+上一章：[44 Fourier 变换、微分算子与矩问题](44-fourier-moments.md) · 下一章：[46 本质谱与谱的精细分析](46-essential-spectrum.md)

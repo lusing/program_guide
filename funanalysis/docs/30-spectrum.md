@@ -104,4 +104,4 @@ mathlib 锚点 `spectrum`、`resolvent`——
 
 ---
 
-上一章：[29 Banach 代数](docs/29-banach-algebra.md) · 下一章：[31 Riesz 泛函演算](docs/31-riesz-calculus.md)
+上一章：[29 Banach 代数：理想与商](29-banach-algebra.md) · 下一章：[31 Riesz 泛函演算](31-riesz-calculus.md)

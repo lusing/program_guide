@@ -188,4 +188,4 @@ Gram 距离公式 + 相关性判据、弱收敛对照。**Python**：500 组随�
 
 ---
 
-上一章：[73 弱解与 Galerkin 误差](docs/73-galerkin-cea.md) · 下一章：[75 工科篇收官：四书总对照](docs/75-gongke-cheatsheet.md)
+上一章：[73 弱解与 Galerkin 误差：边值问题的 Riesz 路线](73-galerkin-cea.md) · 下一章：[75 工科篇收官：四书总对照与全教程地图](75-gongke-cheatsheet.md)

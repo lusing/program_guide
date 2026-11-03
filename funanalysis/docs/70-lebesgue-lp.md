@@ -346,4 +346,4 @@ L²-Cauchy 列与 Parseval 尾项（实验 4）。
 
 ---
 
-上一章：[69 Rudin 篇收官 CHEATSheet](docs/69-rudin-cheatsheet.md) · 下一章：[71 弱导数：从 δ 到 Sobolev 空间](docs/71-weak-derivatives.md)
+上一章：[69 Rudin 篇收官：CHEATSheet 与三书路线总对照](69-rudin-cheatsheet.md) · 下一章：[71 弱导数：从 δ 到 Sobolev 空间 W^{k,p}](71-weak-derivatives.md)

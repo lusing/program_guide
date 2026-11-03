@@ -265,4 +265,4 @@ Lax (25) 的边值机制。
 
 ---
 
-上一章：[51 弱收敛的应用](docs/51-weak-applications.md) · 下一章：[53 Wiener Tauberian 定理](docs/53-wiener-tauberian.md)
+上一章：[51 弱收敛的应用：求和法、Fourier 发散、Galerkin 方法](51-weak-applications.md) · 下一章：[53 Wiener Tauberian 定理](53-wiener-tauberian.md)

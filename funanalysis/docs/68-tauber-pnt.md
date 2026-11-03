@@ -317,4 +317,4 @@ f = 指示函数：解 Φ(x) − Φ(x)*μ = f 的迭代数值解趋于周期 1 �
 
 ---
 
-上一章：[67 广义函数的 Fourier 变换与基本解](docs/67-distributions-fundamental.md) · 下一章：[69 Rudin 篇收官：三书总对照](docs/69-rudin-cheatsheet.md)
+上一章：[67 广义函数的 Fourier 变换与基本解](67-distributions-fundamental.md) · 下一章：[69 Rudin 篇收官：CHEATSheet 与三书路线总对照](69-rudin-cheatsheet.md)

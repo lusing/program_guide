@@ -70,4 +70,4 @@ K 与 X* 的每个球之交弱*紧。
 
 ---
 
-上一章：[25 krein-milman](docs/25-krein-milman.md) · 下一章：[27 adjoint-banach](docs/27-adjoint-banach.md)
+上一章：[25 Krein-Milman 定理与 Stone-Weierstrass 定理](25-krein-milman.md) · 下一章：[27 Banach 空间上的算子伴随与 Banach-Stone 定理](27-adjoint-banach.md)

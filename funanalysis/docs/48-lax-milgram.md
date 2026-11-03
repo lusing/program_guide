@@ -418,4 +418,4 @@ theorem lax_milgram_real2:
 
 ---
 
-上一章：[47 CHEATSheet（第一卷收官）](docs/47-cheatsheet.md) · 下一章：[49 Banach 极限与不变平均](docs/49-banach-limits.md)
+上一章：[47 CHEATSheet：全定理地图与通道速查](47-cheatsheet.md) · 下一章：[49 Banach 极限与不变平均](49-banach-limits.md)

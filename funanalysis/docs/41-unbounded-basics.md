@@ -88,4 +88,4 @@ mathlib 锚点 `LinearPMap.adjoint`（部分定义映射的伴随——
 
 ---
 
-上一章：[40 不变子空间与重数](docs/40-invariant-subspaces.md) · 下一章：[42 对称、自伴与 Cayley 变换](docs/42-symmetric-selfadjoint.md)
+上一章：[40 不变子空间与重数理论](40-invariant-subspaces.md) · 下一章：[42 对称、自伴与 Cayley 变换](42-symmetric-selfadjoint.md)

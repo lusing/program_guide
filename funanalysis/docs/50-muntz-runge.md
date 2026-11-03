@@ -245,4 +245,4 @@ Lean/Isabelle 的有限维影子过薄，诚实留空。）
 
 ---
 
-上一章：[49 Banach 极限与不变平均](docs/49-banach-limits.md) · 下一章：[51 弱收敛的应用](docs/51-weak-applications.md)
+上一章：[49 Banach 极限与不变平均](49-banach-limits.md) · 下一章：[51 弱收敛的应用：求和法、Fourier 发散、Galerkin 方法](51-weak-applications.md)

@@ -26,4 +26,4 @@ Stone-Čech 是纯拓扑构造，数值实验有限；Julia/Python 通道仅作�
 
 ---
 
-上一章：[23 weak-topology](docs/23-weak-topology.md) · 下一章：[25 krein-milman](docs/25-krein-milman.md)
+上一章：[23 弱拓扑、Alaoglu 定理与自反性再访](23-weak-topology.md) · 下一章：[25 Krein-Milman 定理与 Stone-Weierstrass 定理](25-krein-milman.md)

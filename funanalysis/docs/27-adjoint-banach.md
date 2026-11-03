@@ -98,4 +98,4 @@ CLM 的标准构造。
 
 ---
 
-上一章：[26 不动点与 Haar 测度](docs/26-fixed-points.md) · 下一章：[28 紧算子](docs/28-compact-banach.md)
+上一章：[26 不变子空间与不动点定理](26-fixed-points.md) · 下一章：[28 Banach 空间上的紧算子](28-compact-banach.md)

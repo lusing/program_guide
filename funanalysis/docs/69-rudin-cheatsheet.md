@@ -144,4 +144,4 @@ gauge/gaugeSeminormFamily 与 Haar 测度两块基础设施，其余按
 
 ---
 
-上一章：[68 Tauber 理论与素数定理](docs/68-tauber-pnt.md) · [返回目录](../README.md) · 下一章：[70 勒贝格积分与 L^p](docs/70-lebesgue-lp.md)
+上一章：[68 Tauber 理论与素数定理](68-tauber-pnt.md) · 下一章：[70 勒贝格积分与 L^p：从区间长度到完备化](70-lebesgue-lp.md)

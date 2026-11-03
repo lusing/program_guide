@@ -202,4 +202,4 @@ W(t) = e^{itB}e^{−itA} 的演化在"相位平均"意义下收敛的演示—�
 
 ---
 
-上一章：[60 平均遍历定理与 Koopman 群](docs/60-mean-ergodic.md) · 下一章：[62 Beurling 定理与 Hardy 空间](docs/62-beurling-hardy.md)
+上一章：[60 Stone 定理、平均遍历定理与 Koopman 群](60-mean-ergodic.md) · 下一章：[62 Beurling 定理与 Hardy 空间](62-beurling-hardy.md)

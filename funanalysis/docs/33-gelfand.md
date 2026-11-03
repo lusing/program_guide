@@ -104,4 +104,4 @@ mathlib 对极大理想空间尚无完整基础设施，以交换性基本件锚
 
 ---
 
-上一章：[32 紧算子的谱理论](docs/32-compact-spectrum.md) · 下一章：[34 C* 代数](docs/34-cstar-algebra.md)
+上一章：[32 紧算子的谱理论](32-compact-spectrum.md) · 下一章：[34 C* 代数与 Gelfand-Naimark 定理](34-cstar-algebra.md)

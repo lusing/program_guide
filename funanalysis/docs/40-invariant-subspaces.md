@@ -118,4 +118,4 @@ mathlib 锚点 `Submodule.map`（不变性 T V ⊆ V 的形式化）
 
 ---
 
-上一章：[39 von Neumann 代数](docs/39-von-neumann.md) · 下一章：[41 无界算子基础](docs/41-unbounded-basics.md)
+上一章：[39 von Neumann 代数与泛函演算终章](39-von-neumann.md) · 下一章：[41 无界算子基础](41-unbounded-basics.md)

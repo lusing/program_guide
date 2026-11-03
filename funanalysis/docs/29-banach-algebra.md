@@ -92,4 +92,4 @@ mathlib 锚点 `spectrum`——谱作为预解集的补，理想/商结构
 
 ---
 
-上一章：[28 紧算子](docs/28-compact-banach.md) · 下一章：[30 谱与预解式](docs/30-spectrum.md)
+上一章：[28 Banach 空间上的紧算子](28-compact-banach.md) · 下一章：[30 谱与预解式](30-spectrum.md)

@@ -104,4 +104,4 @@ mathlib 锚点 `eq_zero_of_forall_hasEigenvalue_eq_zero`
 
 ---
 
-上一章：[36 谱测度](docs/36-spectral-measures.md) · 下一章：[38 B(H) 上的拓扑](docs/38-topologies-bh.md)
+上一章：[36 谱测度与交换 C* 代数的表示](36-spectral-measures.md) · 下一章：[38 星循环算子、应用与 B(H) 上的拓扑](38-topologies-bh.md)

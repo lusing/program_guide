@@ -224,4 +224,4 @@ Gₙ = nGR(n) 的特征值随 n → ∞ 逼近 G 的特征值（每档 n 的
 
 ---
 
-上一章：[58 Friedrichs 扩张与 Rellich 扰动](docs/58-friedrichs-rellich.md) · 下一章：[60 平均遍历定理与 Koopman 群](docs/60-mean-ergodic.md)
+上一章：[58 Friedrichs 扩张与 Rellich 扰动定理](58-friedrichs-rellich.md) · 下一章：[60 Stone 定理、平均遍历定理与 Koopman 群](60-mean-ergodic.md)

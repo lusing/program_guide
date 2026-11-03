@@ -146,4 +146,4 @@ Lean 无 error:/warning:。每批次结束跑受影响章的对账，
 
 ---
 
-上一章：[46 本质谱](docs/46-essential-spectrum.md) · [返回目录](../README.md) · 下一章：[48 Lax-Milgram 与变分法](docs/48-lax-milgram.md)
+上一章：[46 本质谱与谱的精细分析](46-essential-spectrum.md) · 下一章：[48 Lax-Milgram 引理与变分法](48-lax-milgram.md)

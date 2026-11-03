@@ -108,4 +108,4 @@ mathlib 锚点 `ContinuousLinearMap.IsPositive`
 
 ---
 
-上一章：[34 C* 代数](docs/34-cstar-algebra.md) · 下一章：[36 谱测度](docs/36-spectral-measures.md)
+上一章：[34 C* 代数与 Gelfand-Naimark 定理](34-cstar-algebra.md) · 下一章：[36 谱测度与交换 C* 代数的表示](36-spectral-measures.md)

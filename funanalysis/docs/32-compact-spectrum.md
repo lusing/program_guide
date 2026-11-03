@@ -100,4 +100,4 @@ mathlib 锚点 `ContinuousLinearMap.eq_zero_of_forall_hasEigenvalue_eq_zero`
 
 ---
 
-上一章：[31 Riesz 泛函演算](docs/31-riesz-calculus.md) · 下一章：[33 Gelfand 理论](docs/33-gelfand.md)
+上一章：[31 Riesz 泛函演算](31-riesz-calculus.md) · 下一章：[33 交换 Banach 代数与 Gelfand 理论](33-gelfand.md)

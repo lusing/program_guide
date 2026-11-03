@@ -196,4 +196,4 @@ Fritz Noether 是 Emmy Noether 的兄弟，逃离纳粹德国前往苏联，
 
 ---
 
-上一章：[54 Fredholm 行列式](docs/54-fredholm-determinant.md) · 下一章：[56 迹类算子与 Lidskii 定理](docs/56-trace-class.md)
+上一章：[54 Fredholm 行列式](54-fredholm-determinant.md) · 下一章：[56 迹类算子与 Lidskii 迹公式](56-trace-class.md)

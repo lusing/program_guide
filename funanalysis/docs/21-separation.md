@@ -59,4 +59,4 @@ F(x) ≤ F(x₀) ∀x ∈ K（x₀ 处的**支撑超平面**）。
 
 ---
 
-上一章：[20 locally-convex](docs/20-locally-convex.md) · 下一章：[22 distributions](docs/22-distributions.md)
+上一章：[20 局部凸空间](20-locally-convex.md) · 下一章：[22 归纳极限与分布](22-distributions.md)

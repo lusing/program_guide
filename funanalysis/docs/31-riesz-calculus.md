@@ -93,4 +93,4 @@ mathlib 层面以算子演算的基本件锚定（幂级数作用的存在性）
 
 ---
 
-上一章：[30 谱与预解式](docs/30-spectrum.md) · 下一章：[32 紧算子的谱理论](docs/32-compact-spectrum.md)
+上一章：[30 谱与预解式](30-spectrum.md) · 下一章：[32 紧算子的谱理论](32-compact-spectrum.md)

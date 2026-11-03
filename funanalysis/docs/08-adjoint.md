@@ -187,4 +187,4 @@ k(x,y)=k(y,x)：⟨Kf,g⟩ = ⟨f,Kg⟩（自伴，2.8）；(2) 非对称核：
 
 ---
 
-上一章：[07 bounded-operators](docs/07-bounded-operators.md) · 下一章：[09 projections](docs/09-projections.md)
+上一章：[07 有界算子与 B(ℋ)](07-bounded-operators.md) · 下一章：[09 投影、幂等与不变子空间](09-projections.md)

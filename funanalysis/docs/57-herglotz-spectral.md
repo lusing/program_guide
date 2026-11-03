@@ -209,4 +209,4 @@ Cayler 映射下互相变换（42 章路线与本章路线的会师点）。
 
 ---
 
-上一章：[56 迹类算子与 Lidskii 定理](docs/56-trace-class.md) · 下一章：[58 Friedrichs 扩张与 Rellich 扰动](docs/58-friedrichs-rellich.md)
+上一章：[56 迹类算子与 Lidskii 迹公式](56-trace-class.md) · 下一章：[58 Friedrichs 扩张与 Rellich 扰动定理](58-friedrichs-rellich.md)

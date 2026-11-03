@@ -238,4 +238,4 @@ sin θ₂ 在轴上为零）：构造 f 使 Lu = f 的解 u 需要更差的正�
 
 ---
 
-上一章：[66 Banach 刚性与不可余子空间](docs/66-banach-rigidity.md) · 下一章：[68 Tauber 理论与素数定理](docs/68-tauber-pnt.md)
+上一章：[66 Banach 刚性：Hellinger-Toeplitz、向量测度与不可余子空间](66-banach-rigidity.md) · 下一章：[68 Tauber 理论与素数定理](68-tauber-pnt.md)

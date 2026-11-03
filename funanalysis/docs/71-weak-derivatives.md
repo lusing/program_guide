@@ -243,4 +243,4 @@ W 意义弱导数。查询即证明：`in_wp1(log_abs_r(3), 2)` 成功而
 
 ---
 
-上一章：[70 勒贝格积分与 L^p](docs/70-lebesgue-lp.md) · 下一章：[72 Poincaré 不等式与 Sobolev 嵌入](docs/72-poincare-embedding.md)
+上一章：[70 勒贝格积分与 L^p：从区间长度到完备化](70-lebesgue-lp.md) · 下一章：[72 Poincaré 不等式与 Sobolev 嵌入](72-poincare-embedding.md)
