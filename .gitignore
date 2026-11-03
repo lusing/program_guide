@@ -145,3 +145,7 @@ funanalysis/examples/lean/lake-packages/
 measuretheory/examples/lean/.lake/
 measuretheory/examples/lean/lake-manifest.json
 probability/examples/lean/.lake/
+
+# abstractalgebra tutorial build artifacts
+abstractalgebra/examples/lean/.lake/
+abstractalgebra/examples/lean/lake-manifest.json
