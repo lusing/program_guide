@@ -581,4 +581,4 @@ theorem gm_gap_nonneg (sigma : ℚ) (v : Fin 3 → ℚ) :
 
 ---
 
-上一章：[38 经典线性回归与普通最小二乘](38-ols.md) · 返回[教程目录](../README.md)
+上一章：[38 经典线性回归与普通最小二乘](38-ols.md) · 下一章：[40 OLS 抽样分布、t 检验与 F 检验](40-ols-inference.md)
