@@ -651,19 +651,19 @@ Run `build.ps1 -Chapter 12,13,14,15,16`、`build.ps1 -Docs` 和一次 `build.ps1
 - Migrate: 旧 25、26、27 的内容与机器单元
 - Verify: `probability/docs/`, `probability/examples/`, `probability/build.ps1`
 
-- [ ] **Step 1: 写 42 综合案例与证明方法**
+- [x] **Step 1: 写 42 综合案例与证明方法**
 
 用一个完整合成经济数据贯穿 DGP、抽样、MLE／GMM、检验和 OLS／GLS，公开全部生成参数和代码。将旧证明十一式及著名问题归入对应证明策略，强调反例、归纳、变换、生成函数、渐近展开和机器审计各自能证明什么。
 
-- [ ] **Step 2: 写 43 速查与定理地图**
+- [x] **Step 2: 写 43 速查与定理地图**
 
 按“模型假设 → 定理 → 可用结论 → 常见误用”整理全书法则；列出主要分布、矩、抽样分布、收敛关系、估计和检验公式、OLS 矩阵恒等式。验证索引只登记实际通过的单元。
 
-- [ ] **Step 3: 更新入口并清除旧编号残留**
+- [x] **Step 3: 更新入口并清除旧编号残留**
 
 将 `probability/README.md` 改为双书为纲的 44 章目录，根 `README.md` 摘要改为“概率模型、渐近推断、GMM 与经典回归”。搜索旧标题、旧 Isabelle 会话、旧示例名和 `.migrating`；每项残留必须改为新引用或说明其保留理由。
 
-- [ ] **Step 4: 执行最终文档检查**
+- [x] **Step 4: 执行最终文档检查**
 
 Run:
 
@@ -674,7 +674,7 @@ pwsh -NoProfile -Command '& ./probability/build.ps1 -Docs'
 
 Expected: `docs: PASS (0 errors)`。另外逐章人工核对：每个示例的核心代码确已出现在正文，证明链未指向原书，文字多于代码；自动检查不能替代这一项。
 
-- [ ] **Step 5: 执行全量五通道验证**
+- [x] **Step 5: 执行全量五通道验证**
 
 Run:
 
@@ -685,7 +685,7 @@ pwsh -NoProfile -Command '& ./probability/build.ps1 -List'
 
 Expected: 全量 PASS、FAIL 0；矩阵覆盖所有应有单元，无空章误判。把实际 PASS 数、工具版本和检查命令写入 README／PLAN／43 章。
 
-- [ ] **Step 6: 检查差异并提交收官**
+- [x] **Step 6: 检查差异并提交收官**
 
 Run:
 
@@ -697,3 +697,5 @@ git commit -m "probability: 完成洪永淼主线融合与44章重排" -m "Co-Au
 ```
 
 Expected: 工作区只剩用户明确保留的无关改动；最终提交包含 44 章、五通道、清单、检查器和双索引。
+
+实际结果：42 章以公开 DGP 的合成劳动力市场贯通全程（plim 短回归 1/5、IV 1/10、长回归无偏，MC 4000 次对账 0.2000/0.0992/0.1001；MSE 偏误主导 0.0101 vs 2.5e-4；WLS 方差 3.0e-5→2.6e-5），证明方法六族地图与名题复训收编旧 25/26；43 章速查含假设→定理→结论→误用总表、公式六表、坑账 20 条与验证状态。残留清理：5 篇旧 docs、22 个旧示例删除，Lean 三件按迁移映射改名（17→22、18→26、26→42）。收官验证：`check_docs.py --final` 首跑 0 errors；`-All` 145/145 PASS（Lean 39 模块/Isabelle 5/Julia 41/Python 43/Prolog 17）；`-List` 矩阵覆盖 00–42 章位（43 为纯文档章）。机器纠正两笔：MSE 误用 `.var()`（围绕均值而非真值，偏误被悄悄扣掉）；样本均值等式的容差须按 σ/√n 放宽（单样本 ε̄ ≠ 0）。提交 `92d01dd8`。
