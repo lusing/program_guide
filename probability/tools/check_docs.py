@@ -7,6 +7,38 @@ from pathlib import Path
 LANGS = {"julia": ".jl", "python": ".py", "prolog": ".pl"}
 FENCE = {"julia": "julia", "python": "python", "prolog": "prolog"}
 
+LEGACY_MATH = re.compile(r"\\[()[\]]")
+
+
+def check_math(text: str, doc: Path) -> list[str]:
+    """数学公式统一用 $...$/$$...$$（Codeberg/GitHub/VS Code 可渲染）。
+
+    围栏代码块与行内代码中的旧定界符 \\( \\) \\[ \\] 不算；
+    同时检查 $ 与 $$ 是否配对。
+    """
+    errors = []
+    in_fence = False
+    display = 0
+    inline = 0
+    for line in text.splitlines():
+        if line.lstrip().startswith("```") or line.lstrip().startswith("~~~"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        bare = re.sub(r"`+[^`\n]*`+", "", line)
+        if LEGACY_MATH.search(bare):
+            errors.append(
+                f"legacy math delimiter, use $...$/$$...$$: {doc}: {line.strip()[:60]}"
+            )
+        display += bare.count("$$")
+        inline += len(re.findall(r"(?<!\\)\$", bare.replace("$$", "")))
+    if display % 2:
+        errors.append(f"unbalanced display math $$: {doc}")
+    if inline % 2:
+        errors.append(f"unbalanced inline math $: {doc}")
+    return errors
+
 
 def check(root: Path, final: bool = False) -> list[str]:
     """Check chapter files, links, navigation, and example citations."""
@@ -21,6 +53,7 @@ def check(root: Path, final: bool = False) -> list[str]:
                 errors.append(f"missing chapter: {doc}")
             continue
         text = doc.read_text(encoding="utf-8")
+        errors.extend(check_math(text, doc))
         lines = text.splitlines()
         if final and len(lines) < 200:
             errors.append(f"short chapter: {doc} has {len(lines)} lines")
