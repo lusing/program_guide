@@ -10,7 +10,7 @@ $$
 
 中的 $|g'(y)|$ 表示微小区间长度的伸缩倍数。多维随机向量变换时，区间长度换成区域面积或体积，线性伸缩倍数换成 **Jacobian 行列式的绝对值**。
 
-设 $X=(X_1,\dots,X_n)$ 有密度 $f_X$，变换 $T$ 把 $x$ 映到 $y=T(x)$，逆映射为 $x=G(y)$。若在一个开区域上：
+设 $X=(X_1,\dots,X_n)$ 有密度 $f_X$ ，变换 $T$ 把 $x$ 映到 $y=T(x)$ ，逆映射为 $x=G(y)$ 。若在一个开区域上：
 
 1. $T$ 与 $G$ 连续可微；
 2. $T$ 是一一对应；
@@ -40,7 +40,7 @@ $$
 
 ## 18.2 行列式是线性变换的面积放大率
 
-对线性变换 $y=Ax$，Jacobian 矩阵就是常数矩阵 $A$。单位正方形经
+对线性变换 $y=Ax$ ，Jacobian 矩阵就是常数矩阵 $A$ 。单位正方形经
 
 $$
 A=\begin{pmatrix}2&1\\1&3\end{pmatrix}
@@ -52,7 +52,7 @@ $$
 |\det A|=|2\cdot3-1\cdot1|=5.
 $$
 
-若连续做两个线性变换 $A$ 与 $B$，则总面积放大率是乘积：
+若连续做两个线性变换 $A$ 与 $B$ ，则总面积放大率是乘积：
 
 $$
 \det(AB)=\det(A)\det(B).
@@ -138,7 +138,7 @@ $$
 f_{X+Y}(u)=\int_{-\infty}^{\infty}f_{X,Y}(w,u-w)\,dw.
 $$
 
-独立时就是 $f_X(w)f_Y(u-w)$。这说明第 16 章的连续卷积不是孤立公式，而是辅助变量变换的边际化结果。
+独立时就是 $f_X(w)f_Y(u-w)$ 。这说明第 16 章的连续卷积不是孤立公式，而是辅助变量变换的边际化结果。
 
 ### 18.3.2 积变换
 
@@ -177,7 +177,7 @@ $$
 f_{XY}(u)=\int\frac1{|w|}f_{X,Y}(w,u/w)\,dw.
 $$
 
-若 $X,Y$ 独立且都在 $(0,1)$ 上均匀，则 $0<u<1$、$u<w<1$，所以
+若 $X,Y$ 独立且都在 $(0,1)$ 上均匀，则 $0<u<1$ 、$u<w<1$ ，所以
 
 $$
 f_{XY}(u)=\int_u^1\frac{dw}{w}=-\log u.
@@ -212,7 +212,7 @@ W&U\\0&1
 \qquad \det=W.
 $$
 
-若 $X,Y>0$，绝对值就是 $w$，于是
+若 $X,Y>0$ ，绝对值就是 $w$ ，于是
 
 $$
 f_{X/Y}(u)=\int_0^\infty w f_{X,Y}(uw,w)\,dw.
@@ -229,7 +229,7 @@ f_Z(z)
 \end{aligned}
 $$
 
-这里使用了 $\int_0^\infty we^{-aw}dw=1/a^2$。CDF 为
+这里使用了 $\int_0^\infty we^{-aw}dw=1/a^2$ 。CDF 为
 
 $$
 F_Z(z)=P(X\le zY)=\frac{\lambda z}{\mu+\lambda z}.
@@ -273,7 +273,7 @@ end
 
 ## 18.4 正态商为什么是 Cauchy
 
-设 $X,Y$ 独立且都服从标准正态。令 $Z=X/Y$，辅助变量 $W=Y$。逆映射为 $X=ZW,Y=W$，Jacobian 绝对值为 $|w|$。因此
+设 $X,Y$ 独立且都服从标准正态。令 $Z=X/Y$ ，辅助变量 $W=Y$ 。逆映射为 $X=ZW,Y=W$ ，Jacobian 绝对值为 $|w|$ 。因此
 
 $$
 f_Z(z)=\int_{-\infty}^{\infty}|w|
@@ -289,7 +289,7 @@ f_Z(z)
 \exp\left(-\frac{1+z^2}{2}w^2\right)dw.
 $$
 
-令 $t=(1+z^2)w^2/2$，则 $dt=(1+z^2)w\,dw$，所以
+令 $t=(1+z^2)w^2/2$ ，则 $dt=(1+z^2)w\,dw$ ，所以
 
 $$
 f_Z(z)=\frac1{\pi(1+z^2)}.
@@ -325,7 +325,7 @@ $$
 =r(\cos^2\theta+\sin^2\theta)=r.
 $$
 
-所以面积元为 $dx\,dy=r\,dr\,d\theta$。单位圆盘面积为
+所以面积元为 $dx\,dy=r\,dr\,d\theta$ 。单位圆盘面积为
 
 $$
 \int_0^{2\pi}\int_0^1r\,dr\,d\theta=\pi.
@@ -345,7 +345,7 @@ $$
 \left(\int_{\mathbb R}e^{-x^2/2}dx\right)^2=2\pi,
 $$
 
-故一维标准正态归一化常数为 $1/\sqrt{2\pi}$。
+故一维标准正态归一化常数为 $1/\sqrt{2\pi}$ 。
 
 三维球坐标按程序中的坐标顺序写为
 
@@ -355,14 +355,14 @@ y=r\sin\phi\sin\theta,\quad
 z=r\cos\phi,
 $$
 
-其中 $0\le\phi\le\pi$。Jacobian 行列式为 $r^2\sin\phi$，所以单位球体积为
+其中 $0\le\phi\le\pi$ 。Jacobian 行列式为 $r^2\sin\phi$ ，所以单位球体积为
 
 $$
 \int_0^{2\pi}\int_0^\pi\int_0^1r^2\sin\phi\,dr\,d\phi\,d\theta
 =\frac{4\pi}{3}.
 $$
 
-Python 和 Julia 分别用符号 Jacobian、中心差分核对 $r$ 与 $r^2\sin\phi$：
+Python 和 Julia 分别用符号 Jacobian、中心差分核对 $r$ 与 $r^2\sin\phi$ ：
 
 ```python
 J_polar = sp.Matrix([r * sp.cos(th), r * sp.sin(th)]).jacobian([r, th])
@@ -403,7 +403,7 @@ $$
 X=UV,\qquad Y=U(1-V),
 $$
 
-其中 $u>0,0<v<1$。Jacobian 行列式为
+其中 $u>0,0<v<1$ 。Jacobian 行列式为
 
 $$
 \det
@@ -414,7 +414,7 @@ v&u\\
 =-u,
 $$
 
-绝对值为 $u$。于是
+绝对值为 $u$ 。于是
 
 $$
 \begin{aligned}
@@ -441,8 +441,8 @@ $$
 
 的乘积。因此：
 
-1. $U=X+Y\sim\Gamma(a+b,1)$；
-2. $V=X/(X+Y)\sim\operatorname{Beta}(a,b)$；
+1. $U=X+Y\sim\Gamma(a+b,1)$ ；
+2. $V=X/(X+Y)\sim\operatorname{Beta}(a,b)$ ；
 3. $U$ 与 $V$ 独立。
 
 Python 符号程序验证变换后联合密度与目标乘积之比恒为 1：
@@ -459,7 +459,7 @@ target = (uu ** (a + b - 1) * sp.exp(-uu) / sp.gamma(a + b)) * (
 assert sp.simplify(fuv / target) == 1
 ```
 
-Julia 用整数形状 Gamma 变量（独立指数变量之和）审计 $V\sim\operatorname{Beta}(2,3)$：
+Julia 用整数形状 Gamma 变量（独立指数变量之和）审计 $V\sim\operatorname{Beta}(2,3)$ ：
 
 ```julia
 Ga = gam(2, 100_000); Gb = gam(3, 100_000)
@@ -473,7 +473,7 @@ S = Ga .+ Gb; V = Ga ./ S
 
 ## 18.7 多对一变换：$U=X^2$ 与 $\chi^2_1$
 
-设 $X\sim N(0,1)$，令 $U=X^2$。对每个 $u>0$，有两个原像：
+设 $X\sim N(0,1)$ ，令 $U=X^2$ 。对每个 $u>0$ ，有两个原像：
 
 $$
 x=\sqrt u,\qquad x=-\sqrt u.
@@ -495,13 +495,13 @@ f_U(u)
 \end{aligned}
 $$
 
-因为 $\Gamma(1/2)=\sqrt\pi$，这正是
+因为 $\Gamma(1/2)=\sqrt\pi$ ，这正是
 
 $$
 \chi^2_1=\Gamma\left(\frac12,\frac12\right)
 $$
 
-的密度。若只取正根一个分支，总质量只有 $1/2$。程序明确检查这一点，防止漏掉分支：
+的密度。若只取正根一个分支，总质量只有 $1/2$ 。程序明确检查这一点，防止漏掉分支：
 
 ```python
 fU = sp.simplify(2 * phi(sp.sqrt(uq)) / (2 * sp.sqrt(uq)))
@@ -516,7 +516,7 @@ assert sp.simplify(sp.integrate(fU / 2, (uq, 0, sp.oo)) - sp.Rational(1, 2)) == 
 
 ### 18.8.1 连续次序统计量
 
-设 $X_1,\dots,X_n$ iid，具有 CDF $F$ 和密度 $f$。第 $k$ 次序统计量 $X_{(k)}$ 的密度为
+设 $X_1,\dots,X_n$ iid，具有 CDF $F$ 和密度 $f$ 。第 $k$ 次序统计量 $X_{(k)}$ 的密度为
 
 $$
 \boxed{
@@ -533,7 +533,7 @@ $$
 f(x)\,dx,\quad F(x)^{k-1},\quad (1-F(x))^{n-k}.
 $$
 
-若原始分布为 $U(0,1)$，则
+若原始分布为 $U(0,1)$ ，则
 
 $$
 X_{(k)}\sim\operatorname{Beta}(k,n-k+1),
@@ -551,13 +551,13 @@ $$
 f_{a,b}(a,b)=n(n-1)(b-a)^{n-2}f(a)f(b),\qquad a<b.
 $$
 
-对均匀分布，$f(a)f(b)=1$。Python 从 CDF
+对均匀分布，$f(a)f(b)=1$ 。Python 从 CDF
 
 $$
 F_{A,B}(a,b)=b^n-(b-a)^n
 $$
 
-连续求两个偏导得到 $n(n-1)(b-a)^{n-2}$：
+连续求两个偏导得到 $n(n-1)(b-a)^{n-2}$ ：
 
 ```python
 Fmm = bb**n - (bb - aa) ** n
@@ -571,17 +571,17 @@ $$
 P(\min_iX_i>t)=P(X_1>t,\dots,X_n>t)=e^{-nt},
 $$
 
-故 $\min_iX_i\sim\operatorname{Exp}(n)$。
+故 $\min_iX_i\sim\operatorname{Exp}(n)$ 。
 
 ### 18.8.2 两骰的离散 $(\min,\max)$
 
-令两个公平骰子为 $D_1,D_2$，变换为
+令两个公平骰子为 $D_1,D_2$ ，变换为
 
 $$
 L=\min(D_1,D_2),\qquad H=\max(D_1,D_2).
 $$
 
-当 $l<h$ 时，原像有两个：$(l,h)$ 与 $(h,l)$，所以概率为 $2/36$。当 $l=h$ 时，原像只有一个，概率为 $1/36$。共 21 个像点。
+当 $l<h$ 时，原像有两个：$(l,h)$ 与 $(h,l)$ ，所以概率为 $2/36$ 。当 $l=h$ 时，原像只有一个，概率为 $1/36$ 。共 21 个像点。
 
 Prolog 枚举 36 个等可能结果：
 
@@ -600,11 +600,11 @@ $$
 (S,D)=(X+Y,X-Y)
 $$
 
-在整数骰子空间上是一一对应，所以有 36 个像点，每个质量 $1/36$。这个对比清楚显示：Jacobian 处理连续空间的体积，离散变换处理原像个数；两者的共同原则都是“质量守恒”。
+在整数骰子空间上是一一对应，所以有 36 个像点，每个质量 $1/36$ 。这个对比清楚显示：Jacobian 处理连续空间的体积，离散变换处理原像个数；两者的共同原则都是“质量守恒”。
 
 ## 18.9 Box–Muller 变换
 
-若 $U_1,U_2$ 独立且均匀于 $(0,1)$，定义
+若 $U_1,U_2$ 独立且均匀于 $(0,1)$ ，定义
 
 $$
 R=\sqrt{-2\log U_1},\qquad \Theta=2\pi U_2,
@@ -616,13 +616,13 @@ $$
 
 则 $X,Y$ 是独立标准正态变量。
 
-其证明可用极坐标反向观察。若 $(X,Y)$ 是二维标准正态，则半径平方 $R^2=X^2+Y^2$ 独立于角度 $\Theta$，且
+其证明可用极坐标反向观察。若 $(X,Y)$ 是二维标准正态，则半径平方 $R^2=X^2+Y^2$ 独立于角度 $\Theta$ ，且
 
 $$
 P(R^2>t)=e^{-t/2},\qquad \Theta\sim U(0,2\pi).
 $$
 
-因此 $R^2$ 是速率为 $1/2$ 的指数变量。逆变换采样给出 $R^2=-2\log U_1$，角度给出 $\Theta=2\pi U_2$。
+因此 $R^2$ 是速率为 $1/2$ 的指数变量。逆变换采样给出 $R^2=-2\log U_1$ ，角度给出 $\Theta=2\pi U_2$ 。
 
 Python 检查逆映射的 Jacobian 绝对值如何把均匀密度 $1$ 变成二维高斯密度：
 
@@ -660,10 +660,10 @@ $$
 
 是二阶精度近似。它适合检查代码是否把变换写反、变量顺序是否搞错，例如：
 
-- 极坐标应返回 $r$；
-- 球坐标应返回 $r^2\sin\phi$；
-- 积变换逆映射应返回 $1/|v|$；
-- 商变换逆映射应返回 $|v|$。
+- 极坐标应返回 $r$ ；
+- 球坐标应返回 $r^2\sin\phi$ ；
+- 积变换逆映射应返回 $1/|v|$ ；
+- 商变换逆映射应返回 $|v|$ 。
 
 但数值差分不是解析证明。SymPy 的符号 Jacobian、Lean 的行列式恒等式和 Prolog 的离散原像枚举提供精确侧；Julia 模拟提供实现侧。二者结合能同时抓住数学错误和代码错误。
 
@@ -678,16 +678,16 @@ $$
 5. **积分换元合法**：密度非负且在新支撑上可积；边界、分段边界通常测度为零。
 6. **辅助变量最终积掉**：联合密度中的辅助变量不能残留在边际密度中。
 
-例如商变换要求 $Y\ne0$，但连续变量中 $P(Y=0)=0$，不影响密度；积变换要在 $W=0$ 外分区域积分；$X^2$ 必须加正负两个分支。
+例如商变换要求 $Y\ne0$ ，但连续变量中 $P(Y=0)=0$ ，不影响密度；积变换要在 $W=0$ 外分区域积分；$X^2$ 必须加正负两个分支。
 
 ## 18.12 本章要点
 
 1. 多元变量变换的密度多一个 Jacobian 行列式绝对值；线性变换时它就是面积或体积放大率。
 2. 复合变换的 Jacobian 行列式相乘，这是 $\det(AB)=\det A\det B$ 的概率版本。
 3. 和、积、商变换通过补辅助变量形成一一映射，再积分掉辅助变量。
-4. 独立指数变量的商具有 Logistic 型 CDF $\lambda z/(\mu+\lambda z)$；独立标准正态变量之商为 Cauchy。
+4. 独立指数变量的商具有 Logistic 型 CDF $\lambda z/(\mu+\lambda z)$ ；独立标准正态变量之商为 Cauchy。
 5. Gamma–Beta 变换说明 Gamma 和 $U=X+Y$ 与 Beta 比例 $V=X/(X+Y)$ 独立。
-6. 多对一变换必须枚举所有原像；$X^2$ 的两个分支给出 $\chi^2_1$。
+6. 多对一变换必须枚举所有原像；$X^2$ 的两个分支给出 $\chi^2_1$ 。
 7. 连续次序统计量用一个观测落入小区间、其余观测分置两边推导；离散变换则累加原像质量。
 
 *对应示例：`examples/lean/Probability/Ch18MultivariateTransformations.lean`、`examples/julia/18_multivariate_transformations.jl`、`examples/python/18_multivariate_transformations.py`、`examples/prolog/18_multivariate_transformations.pl`。*

@@ -8,10 +8,10 @@ $$
 \bar X_n=\frac1n\sum_{i=1}^nX_i
 $$
 
-为什么会靠近总体均值 $\mu$？大数定律把“长期频率趋于稳定”变成两类精确命题：
+为什么会靠近总体均值 $\mu$ ？大数定律把“长期频率趋于稳定”变成两类精确命题：
 
-- **弱大数定律（WLLN）**：$\bar X_n\xrightarrow{P}\mu$；
-- **强大数定律（SLLN）**：$\bar X_n\xrightarrow{a.s.}\mu$。
+- **弱大数定律（WLLN）**：$\bar X_n\xrightarrow{P}\mu$ ；
+- **强大数定律（SLLN）**：$\bar X_n\xrightarrow{a.s.}\mu$ 。
 
 由第 25 章，强律蕴含弱律，反向一般不成立。两者都在说样本均值的收敛，但弱律只控制固定 $n$ 的偏差概率，强律控制整条样本路径的最终行为。
 
@@ -19,7 +19,7 @@ $$
 
 ## 26.2 样本均值的两行矩账
 
-设 $X_1,\dots,X_n$ 独立，均值都为 $\mu$，方差都为 $\sigma^2<\infty$。期望线性性不需要独立性：
+设 $X_1,\dots,X_n$ 独立，均值都为 $\mu$ ，方差都为 $\sigma^2<\infty$ 。期望线性性不需要独立性：
 
 $$
 E[\bar X_n]
@@ -76,7 +76,7 @@ P(|Y-EY|\ge\varepsilon)
 \le\frac{\operatorname{Var}(Y)}{\varepsilon^2}.
 $$
 
-代入 $Y=\bar X_n$：
+代入 $Y=\bar X_n$ ：
 
 $$
 \boxed{
@@ -85,7 +85,7 @@ P(|\bar X_n-\mu|\ge\varepsilon)
 }
 $$
 
-固定 $\varepsilon>0$，令 $n\to\infty$，右端趋零，所以
+固定 $\varepsilon>0$ ，令 $n\to\infty$ ，右端趋零，所以
 
 $$
 \boxed{\bar X_n\xrightarrow{P}\mu.}
@@ -125,7 +125,7 @@ P\left(\left|\bar X_n-\frac12\right|\ge\varepsilon\right)
 \le\frac1{4n\varepsilon^2}.
 $$
 
-而 $n\bar X_n\sim\operatorname{Bin}(n,1/2)$，所以精确尾概率为
+而 $n\bar X_n\sim\operatorname{Bin}(n,1/2)$ ，所以精确尾概率为
 
 $$
 \sum_{\substack{0\le k\le n\\
@@ -147,7 +147,7 @@ cheb = F(1, 4) / (n * eps * eps)
 assert t <= min(F(1), cheb)
 ```
 
-对 $\varepsilon=1/10$ 和 $n=10,50,100,400$，精确尾均不超过 Chebyshev 界，并随 $n$ 严格下降。$n=400$ 时，Chebyshev 上界为
+对 $\varepsilon=1/10$ 和 $n=10,50,100,400$ ，精确尾均不超过 Chebyshev 界，并随 $n$ 严格下降。$n=400$ 时，Chebyshev 上界为
 
 $$
 \frac1{4\cdot400\cdot0.1^2}=0.0625,
@@ -171,8 +171,8 @@ $$
 
 因此：
 
-- 固定 $n$、重复许多次实验，是检验弱律偏差的自然方式；
-- 固定一条路径、观察所有后续 $m\ge n$，才触及强律的尾部要求。
+- 固定 $n$ 、重复许多次实验，是检验弱律偏差的自然方式；
+- 固定一条路径、观察所有后续 $m\ge n$ ，才触及强律的尾部要求。
 
 强律的形式化尾事件为
 
@@ -261,7 +261,7 @@ $$
 展开 $S_n^4$ 后，含单次或三次某个独立因子的项期望为零。只剩：
 
 - $n$ 个 $E[X_i^4]$ 项；
-- $3n(n-1)$ 个 $E[X_i^2X_j^2]$ 项，$i\ne j$。
+- $3n(n-1)$ 个 $E[X_i^2X_j^2]$ 项，$i\ne j$ 。
 
 因此
 
@@ -271,7 +271,7 @@ E[S_n^4]=n m_4+3n(n-1)\sigma^4.
 }
 $$
 
-由 $\sigma^4\le m_4$（Jensen 或 Cauchy–Schwarz），若 $m_4\le M$，则
+由 $\sigma^4\le m_4$ （Jensen 或 Cauchy–Schwarz），若 $m_4\le M$ ，则
 
 $$
 E[S_n^4]\le3n^2M.
@@ -293,7 +293,7 @@ $$
 
 ### 26.8.1 对称 $\pm1$ 变量的精确账
 
-若 $X_i$ 等概率取 $\pm1$，则 $m_4=\sigma^2=1$，所以
+若 $X_i$ 等概率取 $\pm1$ ，则 $m_4=\sigma^2=1$ ，所以
 
 $$
 E[S_n^4]=n+3n(n-1)=3n^2-2n.
@@ -322,7 +322,7 @@ end
 
 ## 26.9 固定路径与重复试验：两种模拟视角
 
-Python 和 Julia 都用固定种子 2026 生成 8 条指数分布路径，每条长度 $10^5$。指数分布均值为 1，程序计算累计均值：
+Python 和 Julia 都用固定种子 2026 生成 8 条指数分布路径，每条长度 $10^5$ 。指数分布均值为 1，程序计算累计均值：
 
 ```python
 paths = rng.exponential(1.0, size=(8, 100000))
@@ -363,7 +363,7 @@ $$
 I=E[g(X)]
 $$
 
-且 $\sigma_g^2=\operatorname{Var}(g(X))<\infty$。取 iid 样本 $X_1,\dots,X_n$，估计量
+且 $\sigma_g^2=\operatorname{Var}(g(X))<\infty$ 。取 iid 样本 $X_1,\dots,X_n$ ，估计量
 
 $$
 \widehat I_n=\frac1n\sum_{i=1}^ng(X_i)
@@ -389,7 +389,7 @@ $$
 B=\mathbf1\{U^2+V^2\le1\}.
 $$
 
-因为四分之一单位圆面积为 $\pi/4$，
+因为四分之一单位圆面积为 $\pi/4$ ，
 
 $$
 p=E[B]=\frac\pi4,
@@ -432,7 +432,7 @@ $$
 f(x)=\frac1{\pi(1+x^2)}.
 $$
 
-它不满足 $E|X|<\infty$，因为尾部按 $x^{-2}$ 衰减，$|x|f(x)$ 的积分呈对数发散。
+它不满足 $E|X|<\infty$ ，因为尾部按 $x^{-2}$ 衰减，$|x|f(x)$ 的积分呈对数发散。
 
 其特征函数为
 
@@ -492,7 +492,7 @@ $$
 F_n(x)=\frac1n\sum_{i=1}^n\mathbf1\{X_i\le x\}.
 $$
 
-对每个固定 $x$，指示变量 iid 且均值为 $F(x)$，强律给出
+对每个固定 $x$ ，指示变量 iid 且均值为 $F(x)$ ，强律给出
 
 $$
 F_n(x)\xrightarrow{a.s.}F(x).
@@ -507,7 +507,7 @@ D_n=\sup_{x\in\mathbb R}|F_n(x)-F(x)|
 }
 $$
 
-“逐点收敛”到“一致收敛”不是自动升级；定理需要同时控制所有 $x$。连续分布下常用顺序统计量和网格把问题化为有限多个点的控制。
+“逐点收敛”到“一致收敛”不是自动升级；定理需要同时控制所有 $x$ 。连续分布下常用顺序统计量和网格把问题化为有限多个点的控制。
 
 Python 对 $U(0,1)$ 样本计算 KS 距离：
 
@@ -518,7 +518,7 @@ ds.append(max(np.max(i / n - x),
               np.max(x - (i - 1) / n)))
 ```
 
-对 $n=50,500,5000,50000$，程序检查平均 $D_n$ 缩小且 $\sqrt nD_n$ 保持有界。后者是更精细的涨落尺度，不能由 Glivenko–Cantelli 的“趋于 0”单独推出。
+对 $n=50,500,5000,50000$ ，程序检查平均 $D_n$ 缩小且 $\sqrt nD_n$ 保持有界。后者是更精细的涨落尺度，不能由 Glivenko–Cantelli 的“趋于 0”单独推出。
 
 ## 26.13 Kolmogorov 最大不等式
 
@@ -576,7 +576,7 @@ $$
 Y_i=X_i\mathbf1\{|X_i|\le i\}.
 $$
 
-若原变量与截断变量不同，则必有 $|X_i|>i$。要使二者最终几乎必然相同，由第一 Borel–Cantelli 引理，只需
+若原变量与截断变量不同，则必有 $|X_i|>i$ 。要使二者最终几乎必然相同，由第一 Borel–Cantelli 引理，只需
 
 $$
 \sum_{i=1}^\infty P(|X_i|>i)<\infty.
@@ -588,7 +588,7 @@ $$
 \sum_{i=1}^\infty P(|X_1|>i).
 $$
 
-对任意非负随机变量 $W$，
+对任意非负随机变量 $W$ ，
 
 $$
 \sum_{i=1}^\infty P(W>i)
@@ -603,7 +603,7 @@ $$
 
 逐项取期望即可。因此有限一阶矩给出可求和条件。
 
-对形状 $\alpha=1.5$、下界 1 的 Pareto 分布，
+对形状 $\alpha=1.5$ 、下界 1 的 Pareto 分布，
 
 $$
 P(X>i)=i^{-1.5}\quad(i\ge1),
@@ -632,10 +632,10 @@ assert tail_sum <= EX
    这是强律的内容；弱律只控制每个固定 $n$ 的偏差概率。
 
 2. **误区：强律要求有限方差。**
-   Khinchin 只要求 iid 和 $E|X_1|<\infty$。
+   Khinchin 只要求 iid 和 $E|X_1|<\infty$ 。
 
-3. **误区：样本均值的标准差是 $\sigma/n$。**
-   正确为 $\sigma/\sqrt n$，方差才是 $\sigma^2/n$。
+3. **误区：样本均值的标准差是 $\sigma/n$ 。**
+   正确为 $\sigma/\sqrt n$ ，方差才是 $\sigma^2/n$ 。
 
 4. **误区：Chebyshev 界等于真实尾概率。**
    它只是弱假设下的上界，二项精确尾可小很多。
@@ -655,12 +655,12 @@ assert tail_sum <= EX
 ## 26.16 本章要点
 
 1. 弱大数定律是依概率收敛，强大数定律是几乎必然收敛。
-2. 独立或两两不相关同方差样本满足 $E[\bar X_n]=\mu$、$\operatorname{Var}(\bar X_n)=\sigma^2/n$。
-3. Chebyshev 给出 $P(|\bar X_n-\mu|\ge\varepsilon)\le\sigma^2/(n\varepsilon^2)$，直接证明有限方差 WLLN。
+2. 独立或两两不相关同方差样本满足 $E[\bar X_n]=\mu$ 、$\operatorname{Var}(\bar X_n)=\sigma^2/n$ 。
+3. Chebyshev 给出 $P(|\bar X_n-\mu|\ge\varepsilon)\le\sigma^2/(n\varepsilon^2)$ ，直接证明有限方差 WLLN。
 4. Khinchin 强律只需 iid 有限一阶矩；Kolmogorov 版本处理独立不同分布并要求方差级数收敛。
 5. 有限四阶矩时，$E[S_n^4]\le3n^2M$ 与 Borel–Cantelli 给出一条完整强律证明路线。
 6. 固定路径和重复试验分别适合展示强律尾部与弱律偏差，但都不是证明。
-7. Monte Carlo 无偏估计的 RMSE 为 $\sigma_g/\sqrt n$，样本量扩大 100 倍只把误差约缩小 10 倍。
+7. Monte Carlo 无偏估计的 RMSE 为 $\sigma_g/\sqrt n$ ，样本量扩大 100 倍只把误差约缩小 10 倍。
 8. 标准 Cauchy 均值始终同分布，是有限一阶矩条件失效的反例。
 9. Glivenko–Cantelli 把经验 CDF 的逐点强收敛提升为一致强收敛。
 10. Kolmogorov 最大不等式控制整段路径，截断级数 $\sum P(|X|>i)\le E|X|$ 连接有限一阶矩与强律证明。

@@ -2,14 +2,14 @@
 
 ## 39.1 拟合优度想度量什么
 
-第 38 章解决了“如何计算 $\hat\beta$”。
+第 38 章解决了“如何计算 $\hat\beta$ ”。
 
 应用者接着要问两个更深的问题：
 
 1. 这条回归线把 $y$ 的变异解释了多少？
 2. 在所有可用的估计量中，OLS 凭什么说是好的？
 
-第一个问题通向平方和分解与 $R^2$，以及为什么“样本内拟合更好”不等于“模型更好”。
+第一个问题通向平方和分解与 $R^2$ ，以及为什么“样本内拟合更好”不等于“模型更好”。
 
 第二个问题通向 Gauss–Markov 定理：在线性无偏估计类内、在球形扰动下，OLS 方差最小。
 
@@ -17,7 +17,7 @@
 
 ## 39.2 平方和分解的推导
 
-设模型含常数项（$X$ 第一列为全 1 向量 $\mathbf 1$）。
+设模型含常数项（$X$ 第一列为全 1 向量 $\mathbf 1$ ）。
 
 定义三个平方和：
 
@@ -36,7 +36,7 @@ $$
 \quad\text{（残差平方和）}.
 $$
 
-**分解定理。** $\mathrm{TSS}=\mathrm{ESS}+\mathrm{RSS}$。
+**分解定理。** $\mathrm{TSS}=\mathrm{ESS}+\mathrm{RSS}$ 。
 
 **证明。** 拆
 
@@ -44,9 +44,9 @@ $$
 y-\bar Y\mathbf 1=(\hat y-\bar Y\mathbf 1)+e.
 $$
 
-取范数平方后交叉项为 $(\hat y-\bar Y\mathbf 1)'e=\hat y'e-\bar Y\mathbf 1'e$。
+取范数平方后交叉项为 $(\hat y-\bar Y\mathbf 1)'e=\hat y'e-\bar Y\mathbf 1'e$ 。
 
-第 38 章已证 $\hat y'e=0$；而 $\mathbf 1'e=0$ 正是 $X'e=0$ 的第一行——**常数列在这里不可缺席**。
+第 38 章已证 $\hat y'e=0$ ；而 $\mathbf 1'e=0$ 正是 $X'e=0$ 的第一行——**常数列在这里不可缺席**。
 
 交叉项为零，分解成立。证毕。
 
@@ -58,7 +58,7 @@ $R^2$ 因此度量的是相对均值基线的改进。
 
 若回归不含常数列，$\mathbf 1'e=0$ 不再免费成立，分解失效。
 
-此时直接使用 $1-\mathrm{RSS}/\mathrm{TSS}$ 可能得到负的或大于 1 的“$R^2$”。
+此时直接使用 $1-\mathrm{RSS}/\mathrm{TSS}$ 可能得到负的或大于 1 的“$R^2$ ”。
 
 两种诚实做法：改用非中心化版本 $\mathrm{RSS}/\|y\|^2$ 并明确标注口径，或者不报告 $R^2$ 而报告 RSS 本身。
 
@@ -74,7 +74,7 @@ R^2=\frac{\mathrm{ESS}}{\mathrm{TSS}}=1-\frac{\mathrm{RSS}}{\mathrm{TSS}}.
 }
 $$
 
-由分解定理，含常数项时 $0\le R^2\le1$。
+由分解定理，含常数项时 $0\le R^2\le1$ 。
 
 三种读法：
 
@@ -136,7 +136,7 @@ $$
 
 加入一个变量时 $\bar R^2$ 上升，当且仅当该变量系数的 $t$ 统计量绝对值大于 1。
 
-推导：记小模型残差自由度 $n-k$、大模型 $n-k-1$，$\bar R^2$ 上升等价于
+推导：记小模型残差自由度 $n-k$ 、大模型 $n-k-1$ ，$\bar R^2$ 上升等价于
 
 $$
 \frac{\mathrm{RSS}_2}{n-k-1}<\frac{\mathrm{RSS}_1}{n-k}
@@ -144,7 +144,7 @@ $$
 \frac{\mathrm{RSS}_1-\mathrm{RSS}_2}{\mathrm{RSS}_2/(n-k-1)}=\ t^2>1.
 $$
 
-这解释了机器单元的两个方向：Python 的随机列 $t^2\approx0.20$，$\bar R^2$ 从 0.7598 降到 0.723；Julia 的随机列恰与 $y$ 相关较强，$t^2\approx4.15$，$\bar R^2$ 反而从 0.7549 升到 0.8392。
+这解释了机器单元的两个方向：Python 的随机列 $t^2\approx0.20$ ，$\bar R^2$ 从 0.7598 降到 0.723；Julia 的随机列恰与 $y$ 相关较强，$t^2\approx4.15$ ，$\bar R^2$ 反而从 0.7549 升到 0.8392。
 
 两列噪声在数据生成意义上同样“无关”，但样本内表现由实现值决定——这正是样本内准则的不可靠之处。
 
@@ -176,8 +176,8 @@ BIC 的罚项随 $n$ 增长，倾向选更简模型且有一致性；AIC 罚项�
 
 一句话总结分层：
 
-- RSS/$R^2$：样本内，几何上随加变量单调改进；
-- $\bar R^2$：样本内 + 自由度罚；
+- RSS/$R^2$ ：样本内，几何上随加变量单调改进；
+- $\bar R^2$ ：样本内 + 自由度罚；
 - AIC/BIC：似然 + 理论罚，预测导向；
 - 留出集误差：样本外，预测的直接证据。
 
@@ -218,7 +218,7 @@ $$
 
 ## 39.9 协方差矩阵：球形扰动怎么用
 
-由 $\hat\beta-\beta=(X'X)^{-1}X'\varepsilon$，固定 $X$ 并用 A4：
+由 $\hat\beta-\beta=(X'X)^{-1}X'\varepsilon$ ，固定 $X$ 并用 A4：
 
 $$
 \operatorname{Var}(\hat\beta|X)
@@ -236,7 +236,7 @@ $$
 =\frac{\sigma^2}{(1-R_j^2)\sum_t(X_{t,j}-\bar X_j)^2},
 $$
 
-其中 $R_j^2$ 是第 $j$ 个解释变量对其余变量回归的 $R^2$（方差膨胀因子的来源，第 41 章展开）。
+其中 $R_j^2$ 是第 $j$ 个解释变量对其余变量回归的 $R^2$ （方差膨胀因子的来源，第 41 章展开）。
 
 若 A4 破坏（异方差或序列相关），此式不再成立，须换稳健或 GLS 口径（第 35、41 章）。
 
@@ -258,9 +258,9 @@ $$
 \boxed{s^2=\frac{e'e}{n-k}=\frac{\mathrm{RSS}}{n-k}.}
 $$
 
-分母为什么是 $n-k$ 而不是 $n$？迹账给出答案。
+分母为什么是 $n-k$ 而不是 $n$ ？迹账给出答案。
 
-由 $MX=0$（第 38 章 $PX=X$ 的对偶）：
+由 $MX=0$ （第 38 章 $PX=X$ 的对偶）：
 
 $$
 e=My=M(X\beta+\varepsilon)=M\varepsilon,
@@ -268,7 +268,7 @@ e=My=M(X\beta+\varepsilon)=M\varepsilon,
 e'e=\varepsilon'M\varepsilon.
 $$
 
-对固定对称矩阵 $A$，$E(\varepsilon'A\varepsilon|X)=\sigma^2\operatorname{tr}(A)$（用 $E(\varepsilon\varepsilon'|X)=\sigma^2I$ 与迹的轮换性）。
+对固定对称矩阵 $A$ ，$E(\varepsilon'A\varepsilon|X)=\sigma^2\operatorname{tr}(A)$ （用 $E(\varepsilon\varepsilon'|X)=\sigma^2I$ 与迹的轮换性）。
 
 于是
 
@@ -286,7 +286,7 @@ $$
 
 ## 39.11 Gauss–Markov 定理：陈述
 
-**定理。** 在 A1–A4 下，对任意固定向量 $c\in\mathbb R^k$，在所有满足无偏性的线性估计量
+**定理。** 在 A1–A4 下，对任意固定向量 $c\in\mathbb R^k$ ，在所有满足无偏性的线性估计量
 
 $$
 c'\tilde\beta=a'y
@@ -298,7 +298,7 @@ $$
 \operatorname{Var}(c'\hat\beta|X)\le\operatorname{Var}(c'\tilde\beta|X).
 $$
 
-“线性”指估计量是 $y$ 的线性函数（系数可依赖 $X$）；“无偏”对一切 $\beta$ 成立。
+“线性”指估计量是 $y$ 的线性函数（系数可依赖 $X$ ）；“无偏”对一切 $\beta$ 成立。
 
 取 $c$ 为单位向量，结论覆盖每个系数。
 
@@ -310,7 +310,7 @@ BLUE（Best Linear Unbiased Estimator）即由此得名。
 
 **第一步：无偏性的矩阵刻画。**
 
-$E(c'\tilde\beta|X)=a'E(y|X)=a'X\beta$。
+$E(c'\tilde\beta|X)=a'E(y|X)=a'X\beta$ 。
 
 对一切 $\beta$ 无偏当且仅当
 
@@ -318,11 +318,11 @@ $$
 a'X=c'.
 $$
 
-OLS 对应 $a_0=X(X'X)^{-1}c$，验证 $a_0'X=c'(X'X)^{-1}X'X=c'$。✓
+OLS 对应 $a_0=X(X'X)^{-1}c$ ，验证 $a_0'X=c'(X'X)^{-1}X'X=c'$ 。✓
 
 **第二步：分解竞争者。**
 
-令 $d=a-a_0$，则 $d'X=0$，且 $a=a_0+d$。
+令 $d=a-a_0$ ，则 $d'X=0$ ，且 $a=a_0+d$ 。
 
 **第三步：方差展开。**
 
@@ -347,9 +347,9 @@ $$
 
 **第四步：结论。**
 
-$\|d\|^2\ge0$ 给出不等式；等号当且仅当 $d=0$，即竞争者与 OLS 相同。证毕。
+$\|d\|^2\ge0$ 给出不等式；等号当且仅当 $d=0$ ，即竞争者与 OLS 相同。证毕。
 
-证明只用了三件事：无偏刻画 $a'X=c'$、球形方差 $\sigma^2I$、平方和的非负性。
+证明只用了三件事：无偏刻画 $a'X=c'$ 、球形方差 $\sigma^2I$ 、平方和的非负性。
 
 第 39.9 节的 $a_0'a_0=c'(X'X)^{-1}c$ 与方差公式一致，自洽。
 
@@ -357,7 +357,7 @@ $\|d\|^2\ge0$ 给出不等式；等号当且仅当 $d=0$，即竞争者与 OLS �
 
 ## 39.13 等号条件与 BLUE 的边界
 
-等号 $\operatorname{Var}(c'\tilde\beta|X)=\operatorname{Var}(c'\hat\beta|X)$ 当且仅当 $d=0$。
+等号 $\operatorname{Var}(c'\tilde\beta|X)=\operatorname{Var}(c'\hat\beta|X)$ 当且仅当 $d=0$ 。
 
 即：在线性无偏类内，达到 OLS 方差的估计量就是 OLS 自身。
 
@@ -371,7 +371,7 @@ Gauss–Markov 的正确读法是**条件性陈述**：在给定类与给定扰�
 
 ## 39.14 三点例的方差账与对照估计
 
-沿用第 38 章 $x=0,1,2$ 的设计，取 $\sigma^2=1$。
+沿用第 38 章 $x=0,1,2$ 的设计，取 $\sigma^2=1$ 。
 
 OLS 斜率方差：
 
@@ -379,13 +379,13 @@ $$
 \operatorname{Var}(\hat\beta_2|X)=\sigma^2(X'X)^{-1}_{22}=\frac12.
 $$
 
-竞争者利用该设计的巧合 $\hat\beta_2=(Y_3-Y_1)/2$，考虑只用两个观测的估计量
+竞争者利用该设计的巧合 $\hat\beta_2=(Y_3-Y_1)/2$ ，考虑只用两个观测的估计量
 
 $$
 \tilde\beta_2=Y_2-Y_1.
 $$
 
-无偏性：$E(Y_2-Y_1)=(\beta_1+\beta_2)-\beta_1=\beta_2$。✓
+无偏性：$E(Y_2-Y_1)=(\beta_1+\beta_2)-\beta_1=\beta_2$ 。✓
 
 线性性显然。
 
@@ -446,7 +446,7 @@ assert r2_3 >= r2_2 - 1e-12
 nested fit: RSS 4.8419 -> 4.6528 ; R2 0.7941 -> 0.8022 ; adj 0.7598 -> 0.723
 ```
 
-Gauss–Markov 与 $s^2$ 的 Monte Carlo 用同一三点设计、$\sigma^2=1$、20,000 次重复：
+Gauss–Markov 与 $s^2$ 的 Monte Carlo 用同一三点设计、$\sigma^2=1$ 、20,000 次重复：
 
 ```python
 B = Eps @ Xf @ XtXi
@@ -487,9 +487,9 @@ adj = 1 - (RSS / (3 - 2)) / (TSS / (3 - 1))
 nested fit: RSS 4.0329 -> 2.2051 ; R2 0.7899 -> 0.8851 ; adj 0.7549 -> 0.8392
 ```
 
-RSS 依然下降、$R^2$ 依然上升（几何必然），而这列噪声恰与 $y$ 相关较强（$|t|>1$），调整 $R^2$ 也上升。
+RSS 依然下降、$R^2$ 依然上升（几何必然），而这列噪声恰与 $y$ 相关较强（$|t|>1$ ），调整 $R^2$ 也上升。
 
-两个方向合起来正好演示第 39.5 节的判据：加无关变量后 $\bar R^2$ 升降皆有可能，分界在 $|t|=1$。
+两个方向合起来正好演示第 39.5 节的判据：加无关变量后 $\bar R^2$ 升降皆有可能，分界在 $|t|=1$ 。
 
 Monte Carlo 部分把循环封装为函数（Julia 顶层循环的作用域纪律），断言与 Python 相同：
 
@@ -532,7 +532,7 @@ theorem gm_gap_nonneg (sigma : ℚ) (v : Fin 3 → ℚ) :
 
 它对应证明第四步：方差差 $\sigma^2\|d\|^2$ 是两个非负量之积。
 
-内层先把点积展开为逐项平方和（mathlib 4.33 中 `dotProduct` 已移出 `Matrix` 命名空间，记号 `⬝ᵥ` 不变），每一项 $v_i^2\ge0$，求和保持非负；外层是平方与正数的乘积。
+内层先把点积展开为逐项平方和（mathlib 4.33 中 `dotProduct` 已移出 `Matrix` 命名空间，记号 `⬝ᵥ` 不变），每一项 $v_i^2\ge0$ ，求和保持非负；外层是平方与正数的乘积。
 
 数值对照 `1/2 < 2` 同样由 `norm_num` 判决。
 
@@ -542,7 +542,7 @@ theorem gm_gap_nonneg (sigma : ℚ) (v : Fin 3 → ℚ) :
 
 ### 误区一：R² 高说明模型设定正确
 
-$R^2$ 只度量样本内拟合；伪回归、遗漏变量都可以有高 $R^2$。
+$R^2$ 只度量样本内拟合；伪回归、遗漏变量都可以有高 $R^2$ 。
 
 ### 误区二：调整 R² 总是比 R² 小
 
@@ -550,11 +550,11 @@ $R^2$ 只度量样本内拟合；伪回归、遗漏变量都可以有高 $R^2$�
 
 ### 误区三：无常数回归也能用同一个 R²
 
-分解依赖 $\mathbf 1'e=0$；去常数列后公式口径必须重选。
+分解依赖 $\mathbf 1'e=0$ ；去常数列后公式口径必须重选。
 
 ### 误区四：s² 分母用 n 更“有效”
 
-$n$ 分母给出 $\frac{n-k}{n}\sigma^2$ 的有偏估计；无偏性的代价恰是 $n-k$。
+$n$ 分母给出 $\frac{n-k}{n}\sigma^2$ 的有偏估计；无偏性的代价恰是 $n-k$ 。
 
 ### 误区五：Gauss–Markov 说 OLS 一切最优
 
@@ -570,14 +570,14 @@ $n$ 分母给出 $\frac{n-k}{n}\sigma^2$ 的有偏估计；无偏性的代价恰
 
 ## 39.19 本章要点
 
-1. 含常数项时 $\mathrm{TSS}=\mathrm{ESS}+\mathrm{RSS}$，交叉项为零用到 $\hat y'e=0$ 与 $\mathbf 1'e=0$。
-2. $R^2=1-\mathrm{RSS}/\mathrm{TSS}\in[0,1]$；嵌套加变量必不降——纯几何，与变量价值无关。
-3. 调整 $R^2$ 换成自由度均值；加单变量时上升当且仅当 $|t|>1$。
+1. 含常数项时 $\mathrm{TSS}=\mathrm{ESS}+\mathrm{RSS}$ ，交叉项为零用到 $\hat y'e=0$ 与 $\mathbf 1'e=0$ 。
+2. $R^2=1-\mathrm{RSS}/\mathrm{TSS}\in[0,1]$ ；嵌套加变量必不降——纯几何，与变量价值无关。
+3. 调整 $R^2$ 换成自由度均值；加单变量时上升当且仅当 $|t|>1$ 。
 4. AIC/BIC 以似然加罚项服务预测目标；样本内准则都须为复杂度付费。
 5. $E(\hat\beta|X)=\beta$ 只需外生性；$\operatorname{Var}(\hat\beta|X)=\sigma^2(X'X)^{-1}$ 需再加球形扰动。
-6. $E(s^2|X)=\sigma^2$ 的证明是迹账：$e=M\varepsilon$，$E(\varepsilon'M\varepsilon)=\sigma^2\operatorname{tr}(M)=\sigma^2(n-k)$。
-7. Gauss–Markov：无偏刻画 $a'X=c'$，交叉项 $a_0'd=0$，方差差 $\sigma^2\|d\|^2\ge0$；不需要正态。
-8. 三点例完整账：$R^2=27/28$，$\bar R^2=13/14$，$s^2=1/6$，OLS 斜率方差 $\sigma^2/2$ 对竞争者的 $2\sigma^2$。
+6. $E(s^2|X)=\sigma^2$ 的证明是迹账：$e=M\varepsilon$ ，$E(\varepsilon'M\varepsilon)=\sigma^2\operatorname{tr}(M)=\sigma^2(n-k)$ 。
+7. Gauss–Markov：无偏刻画 $a'X=c'$ ，交叉项 $a_0'd=0$ ，方差差 $\sigma^2\|d\|^2\ge0$ ；不需要正态。
+8. 三点例完整账：$R^2=27/28$ ，$\bar R^2=13/14$ ，$s^2=1/6$ ，OLS 斜率方差 $\sigma^2/2$ 对竞争者的 $2\sigma^2$ 。
 
 ---
 

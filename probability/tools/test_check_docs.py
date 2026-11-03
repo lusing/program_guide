@@ -54,6 +54,14 @@ class CheckDocsTest(unittest.TestCase):
         self.assertTrue(any("unbalanced" in e
                             for e in check_math("$x 元\n", Path("x.md"))))
 
+    def test_forgejo_adjacency_rule(self):
+        bad_close = check_math("记作 $\\Omega$，再见。\n", Path("x.md"))
+        self.assertTrue(any("after closing $" in e for e in bad_close), bad_close)
+        bad_open = check_math("Bernoulli$(p)$ 分布。\n", Path("x.md"))
+        self.assertTrue(any("before opening $" in e for e in bad_open), bad_open)
+        good = check_math("记作 $\\Omega$ ，再见 $x$ 。\n行尾 $x$\n", Path("x.md"))
+        self.assertEqual(good, [])
+
 
 if __name__ == "__main__":
     unittest.main()
