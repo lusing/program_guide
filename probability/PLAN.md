@@ -1,5 +1,19 @@
 # 概率论教程工作计划（Miller + 洪永淼双主线重排）
 
+## 2026-11-04 收官记录（Task 16 完成）
+
+- 44 章（00–43）全部建成并按洪永淼主线融合完毕；42 章综合案例
+  （合成劳动力市场 DGP 公开：plim 短回归 1/5、IV 1/10、长回归无偏，
+  MC 4000 次对账）+ 证明方法六族地图 + 名题复训；43 章速查与定理地图。
+- 旧编号残留清理完毕：docs/23-hypothesis-testing、24-markov-least-squares、
+  25-famous-problems、26-proof-techniques、27-cheatsheet 删除（内容已分别
+  迁入 36/38、24/38、42、42、43）；旧示例 22 个删除；Lean 按迁移映射改名
+  Ch17ChiSquare→Ch22ChiSquare、Ch18InequalitiesLLN→Ch26InequalitiesLLN、
+  Ch26ProofTechniques→Ch42Synthesis；无 `.migrating` 与旧 Isabelle 会话。
+- 收官验证：`build.ps1 -All` **145/145 PASS、FAIL 0**（Lean 39 模块 /
+  Isabelle 5 / Julia 41 / Python 43 / Prolog 17）；
+  `check_docs.py --final` 0 errors。验证状态登记于 docs/43-cheatsheet.md。
+
 ## 2026 洪永淼主线融合基线
 
 - **Baseline commit**: `806c75bb`

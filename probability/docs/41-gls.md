@@ -540,4 +540,4 @@ GLS 目标函数逐项非负，保证最小化问题良定义。
 
 ---
 
-上一章：[40 OLS 抽样分布、t 检验与 F 检验](40-ols-inference.md) · 返回[教程目录](../README.md)
+上一章：[40 OLS 抽样分布、t 检验与 F 检验](40-ols-inference.md) · 下一章：[42 综合案例与概率证明方法](42-synthesis.md)
