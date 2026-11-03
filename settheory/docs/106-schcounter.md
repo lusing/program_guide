@@ -17,19 +17,19 @@
 > $$
 >
 > 即 **SCH 第一次、且只在 $\aleph_\omega$ 处失败**。证明的
-> 工程量是全书之最：从 $\kappa^{++}$-强基数导出的张子 E 给出
-> 超滤子序列 $\langle U_\alpha\mid\kappa\le\alpha<\kappa^{++} \rangle$ 与 Rudin-Keisler 偏序 $\le_E$（定义 2.12）；控制
-> 函数（定义 2.16）以 $\le_E$-有限域调度这些坐标；力迫条件
-> $(f,T,\tau,H)$（定义 2.17）的**四个部件**——控制函数
-> $f$、$(m(f),f(m(f)))$-树 $T$（在 $U_{m(f)}$ 下
-> 测一分裂）、Lévy 塌缩有限序列 $\tau$、投影侧的塌缩函数
-> $H$——经十条延展条款（定义 2.18）织成一张巨网；Prikry
+> 工程量是全书之最：从 $\kappa^{++}$ -强基数导出的张子 E 给出
+> 超滤子序列 $\langle U_\alpha\mid\kappa\le\alpha<\kappa^{++} \rangle$ 与 Rudin-Keisler 偏序 $\le_E$ （定义 2.12）；控制
+> 函数（定义 2.16）以 $\le_E$ -有限域调度这些坐标；力迫条件
+> $(f,T,\tau,H)$ （定义 2.17）的**四个部件**——控制函数
+> $f$ 、$(m(f),f(m(f)))$ -树 $T$ （在 $U_{m(f)}$ 下
+> 测一分裂）、Lévy 塌缩有限序列 $\tau$ 、投影侧的塌缩函数
+> $H$ ——经十条延展条款（定义 2.18）织成一张巨网；Prikry
 > 条件（引理 2.17，三断言的嫁接构造）保证语句裁决不动
-> $f$；$\kappa^{++}$-cc（引理 2.15）与 $\kappa^{+++}$-
+> $f$ ；$\kappa^{++}$ -cc（引理 2.15）与 $\kappa^{+++}$ -
 > 完备（引理 2.16）双支撑；引理 2.18 给出**每一层坐标的
 > Prikry 序列**且相互交织（引理 2.20 位移支配）；引理 2.19
 > 保证 $\kappa^{++}$ 不塌；最终引理 2.21 + 定理 2.12 把
-> 基数账本结算到 $\aleph_\omega$。
+> 基数账本结算到 $\aleph_\omega$ 。
 >
 > 机器边界：整台机器（张子系统、树条件、嫁接论证、基数
 > 结算）全在超穷层；七个通道做**账簿层**——有限 SCH 账簿
@@ -56,17 +56,17 @@
 能否成为第一个反例**？Magidor 1977 从超紧造出肯定答案；
 Woodin 把假设降到强基数；Gitik 再改善——**GMW 定理**是
 这条线的终点。注意 $\aleph_\omega$ 处的约束比定理 2.11 严苛
-得多：不仅 $2^{\aleph_\omega}>\aleph_{\omega+1}$，还要求
-$\aleph_\omega$ **之下全域 GCH**（$\forall\mu<\aleph_\omega (2^\mu=\mu^+)$）——失败**精确地、第一次地**发生在
-$\aleph_\omega$。
+得多：不仅 $2^{\aleph_\omega}>\aleph_{\omega+1}$ ，还要求
+$\aleph_\omega$ **之下全域 GCH**（$\forall\mu<\aleph_\omega (2^\mu=\mu^+)$ ）——失败**精确地、第一次地**发生在
+$\aleph_\omega$ 。
 
-构造的直觉轮廓（书 p174–177 的准备）：取 $\kappa^{++}$-
+构造的直觉轮廓（书 p174–177 的准备）：取 $\kappa^{++}$ -
 强基数的张子 E，对每个 $\kappa\le\alpha<\kappa^{++}$ 定义
-$U_\alpha=\{X\subseteq\kappa\mid\alpha\in j(X)\}$——**一个
-张子展开成一串测度**，每个 $U_\alpha$ 都正规 $\kappa$-完全
-（事实 2.5.1–2.5.3 逐条验证，$B$=不可达基数的集合在每个
-$U_\alpha$ 中测一）。这串测度经 Rudin-Keisler 偏序 $\le_E$（定义 2.12：$U_\beta\le_{RK}U_\alpha\iff\exists f\,\forall X(X\in U_\beta\iff f^{-1}[X]\in U_\alpha)$）
-组织成 $\kappa^{++}$-共顶的偏序（事实 2.5.9）——$\le_E$
+$U_\alpha=\{X\subseteq\kappa\mid\alpha\in j(X)\}$ ——**一个
+张子展开成一串测度**，每个 $U_\alpha$ 都正规 $\kappa$ -完全
+（事实 2.5.1–2.5.3 逐条验证，$B$ =不可达基数的集合在每个
+$U_\alpha$ 中测一）。这串测度经 Rudin-Keisler 偏序 $\le_E$ （定义 2.12：$U_\beta\le_{RK}U_\alpha\iff\exists f\,\forall X(X\in U_\beta\iff f^{-1}[X]\in U_\alpha)$ ）
+组织成 $\kappa^{++}$ -共顶的偏序（事实 2.5.9）——$\le_E$
 的**共顶性**（每点上方有高点）是后续 Prikry 论证能在
 「足够高的坐标」进行的保证。
 
@@ -74,10 +74,10 @@ $U_\alpha$ 中测一）。这串测度经 Rudin-Keisler 偏序 $\le_E$（定义 
 
 从超紧到强基数的假设递降不只是「省」——每一级假设的
 **用途**被逐步回收。Magidor 1977 的超紧用于：序列封闭
-（${}^{\kappa^{++}}M\subseteq M$）保证张子展开的测度序列
-在 M 中可见；Woodin 的强基数只给 $V_{\kappa^{++}}\subseteq M$——够用因为本章只需 $\kappa^{++}$-层的坐标系统；Gitik
+（${}^{\kappa^{++}}M\subseteq M$ ）保证张子展开的测度序列
+在 M 中可见；Woodin 的强基数只给 $V_{\kappa^{++}}\subseteq M$ ——够用因为本章只需 $\kappa^{++}$ -层的坐标系统；Gitik
 的进一步改善把 GCH 起点也优化掉（书 p174 取 V ⊨ ZFC+GCH
-是为了列表构造的 $\kappa^\kappa=\kappa^+$——Gitik 的改善
+是为了列表构造的 $\kappa^\kappa=\kappa^+$ ——Gitik 的改善
 说明这个便利可以重造）。**假设的每次递降都逼出新技术**：
 超紧的序列封闭→强基数的秩层包含→本章的层内对角交系统。
 这条「递降史」与第 111 章以后的「递升史」（武丁基数→
@@ -86,48 +86,48 @@ $U_\alpha$ 中测一）。这串测度经 Rudin-Keisler 偏序 $\le_E$（定义 
 
 书 p174–180 的准备件按功能分四组，每组值得各记一笔：
 
-**(1) 因子分解族**。对每个 $\alpha$，$j=k_\alpha\circ i_\alpha$（$i_\alpha:V\to N_\alpha$ 是 $U_\alpha$-超幂、
+**(1) 因子分解族**。对每个 $\alpha$ ，$j=k_\alpha\circ i_\alpha$ （$i_\alpha:V\to N_\alpha$ 是 $U_\alpha$ -超幂、
 $k_\alpha:N_\alpha\to M$ 是因子映射）。事实 2.5.1 的
 $k_\alpha(\pi_\alpha([\mathrm{Id}]))=\alpha$ 是关键账：
 $\alpha$ 在 $N_\alpha$ 中由恒同函数表示。事实 2.5.3 的
-$\mathrm{Crit}(k_\alpha)=\kappa^{++}$（计算用函数
-$g:\kappa\to\kappa^{++}$ 与 GCH 的 $2^\kappa=\kappa^+$）
+$\mathrm{Crit}(k_\alpha)=\kappa^{++}$ （计算用函数
+$g:\kappa\to\kappa^{++}$ 与 GCH 的 $2^\kappa=\kappa^+$ ）
 说明每个 $U_\alpha$ 恰好「看见」$\kappa$ 到 $\kappa^{++}$
 这一段。
 
 **(2) RK 序的内部刻画**。$\beta\le_E\alpha$ 当且仅当存在
-投影函数 $\pi_{\alpha\beta}:\kappa\to\kappa$（$j(\pi)( \alpha)=\beta$ 型）把 $U_\alpha$ 拉回 $U_\beta$（事实
+投影函数 $\pi_{\alpha\beta}:\kappa\to\kappa$ （$j(\pi)( \alpha)=\beta$ 型）把 $U_\alpha$ 拉回 $U_\beta$ （事实
 2.5.5–2.5.7）。引理 2.8/2.9/2.10/2.11 把投影系统的协调性
-（$\pi_{\alpha\beta}\circ\pi_{\beta\gamma}$-型结合账与
+（$\pi_{\alpha\beta}\circ\pi_{\beta\gamma}$ -型结合账与
 Ulam 分离引理）逐条结清。
 
 **(3) 系统化的投影函数表**（定义 2.13 + 事实 2.5.8）。
-对每对 $\beta\le_E\alpha$ 选定见证 $\pi_{\alpha\beta}$，
-且在 $B$（不可达点）上取「降到最近不可达」的规范形状
-（$g(\xi)=\max\{\mu\le\xi\mid\mu$ 不可达$\}$）。事实
-2.5.8/2.5.9 的**共顶性**由 $\kappa^+$-长的列表逐层构造
-保证——每个 $\alpha<\kappa^{++}$ 上方有 $\le_E$-高的
+对每对 $\beta\le_E\alpha$ 选定见证 $\pi_{\alpha\beta}$ ，
+且在 $B$ （不可达点）上取「降到最近不可达」的规范形状
+（$g(\xi)=\max\{\mu\le\xi\mid\mu$ 不可达$\}$ ）。事实
+2.5.8/2.5.9 的**共顶性**由 $\kappa^+$ -长的列表逐层构造
+保证——每个 $\alpha<\kappa^{++}$ 上方有 $\le_E$ -高的
 公共上界。
 
-**(4) 事实 2.5.10–2.5.11 的正规性工具**。$\langle X_\beta\mid\beta<\alpha^{\circ}\rangle$（$\alpha^{\circ}$
+**(4) 事实 2.5.10–2.5.11 的正规性工具**。$\langle X_\beta\mid\beta<\alpha^{\circ}\rangle$ （$\alpha^{\circ}$
 是 $\alpha$ 在 $\kappa$ 侧的代表）逐层测一 ⟹ 对角交
-$X=\triangle_{\beta}X_\beta\in U_\alpha$——**层内对角交**
+$X=\triangle_{\beta}X_\beta\in U_\alpha$ ——**层内对角交**
 （第 94/100 章的对角交在此第三次工业化为坐标层内的常规
 操作）。
 
 ### 106.2b 事实 2.5.3 的 Crit(k_α) 计算逐帧
 
-事实 2.5.3 的证明（$\mathrm{Crit}(k_\alpha)=\kappa^{++}$）
+事实 2.5.3 的证明（$\mathrm{Crit}(k_\alpha)=\kappa^{++}$ ）
 是本章准备件里最精致的一笔算术。目标分三段：(i)
 $k_\alpha$ 固定 $\kappa$ 下方一切（由 $i_\alpha$
-已固定 + $k_\alpha$ 良基）；(ii) $k_\alpha(\kappa) =\kappa$（用 $g:\kappa\to\kappa^{++}$ 的表示——
+已固定 + $k_\alpha$ 良基）；(ii) $k_\alpha(\kappa) =\kappa$ （用 $g:\kappa\to\kappa^{++}$ 的表示——
 $j(g)(\alpha)=\kappa^{++}$ 型的边界账）；(iii)
-$k_\alpha(\kappa^{++})>\kappa^{++}$（值域封顶的反证：
-若 $k_\alpha(\kappa^{++})=\kappa^{++}$，则 $N_\alpha$
+$k_\alpha(\kappa^{++})>\kappa^{++}$ （值域封顶的反证：
+若 $k_\alpha(\kappa^{++})=\kappa^{++}$ ，则 $N_\alpha$
 中 $\kappa^{++}$ 个函数代表 $\kappa^{++}$ 个序数
 ——GCH 的 $\kappa^\kappa=\kappa^+$ 排除）。三段合读：
 $k_\alpha$ 恰在 $\kappa^{++}$ 处跳——$N_\alpha$
-与 M 的「分歧点」恰在 $\kappa^{++}$，这正是每个
+与 M 的「分歧点」恰在 $\kappa^{++}$ ，这正是每个
 $U_\alpha$ 的「管辖范围」的上缘。
 
 与第 94 章 Crit(j)=κ 的一阶情形对照：那里 j 是单个
@@ -135,13 +135,13 @@ $U_\alpha$ 的「管辖范围」的上缘。
 映射**（两个超幂之间）的临界点——同一套算术（函数
 表示 + GCH 封顶）在「映射的映射」层重演。因子映射
 的临界点谱系（$i_\alpha$ 的 κ、$k_\alpha$ 的
-$\kappa^{++}$、j 的复合）是张子理论的标志性账目。
+$\kappa^{++}$ 、j 的复合）是张子理论的标志性账目。
 
 ### 106.2a RK 序的语法与机器影子
 
 Rudin-Keisler 序 $U_\beta\le_{RK}U_\alpha\iff\exists f:\kappa\to\kappa\,\forall X(X\in U_\beta\iff f^{-1}[X]\in U_\alpha)$ 是超滤子论的标准比较（第 94 章练习线的
 回收）：「$U_\alpha$ 比 $U_\beta$ 细」——$U_\alpha$
-能经投影恢复 $U_\beta$。本章的用法是反向的：沿 $\le_E$ **向上**找高点（共顶性），在高点的分裂集中
+能经投影恢复 $U_\beta$ 。本章的用法是反向的：沿 $\le_E$ **向上**找高点（共顶性），在高点的分裂集中
 取整——**工作点越高、视野越宽**。Coq 通道的 `compose
 _cofinal` 把这个语法做成了有限影子：两个共顶序经合成
 传递仍共顶——RK 序的投影传递（事实 2.5.5 的复合版）的
@@ -156,71 +156,71 @@ _cofinal` 把这个语法做成了有限影子：两个共顶序经合成
 边界上重演」的技术化。
 ## 106.3 条件、延展与 Prikry 条件
 
-> **定义 2.14/2.15** $(\alpha,s)$-**树**：$D$=不可达
+> **定义 2.14/2.15** $(\alpha,s)$ -**树**：$D$ =不可达
 > 基数的有限递增序列的偏序；树 $T\subseteq(D,\le)$ 过
-> $s$、每个 $t\in T$ 的**分裂集** $\mathrm{HJ}_T(t) =\{\nu\in B\mid t^\frown\nu\in T\}\in U_\alpha$ 测一、
+> $s$ 、每个 $t\in T$ 的**分裂集** $\mathrm{HJ}_T(t) =\{\nu\in B\mid t^\frown\nu\in T\}\in U_\alpha$ 测一、
 > 分裂集沿链单调递减。引理 2.12：<κ 棵树的交仍是树（
 > $U_\alpha$ 的 κ-完全性）。投影 $\mathcal N_\alpha(T_s)$
 > 把树压回有限序列层。
 
-> **定义 2.16** **控制函数** $f$：域 $\in F$
-> （$\le_E$-有限集且含最大元 $m(f)$）、值域 $\subseteq D$、
+> **定义 2.16** **控制函数** $f$ ：域 $\in F$
+> （$\le_E$ -有限集且含最大元 $m(f)$ ）、值域 $\subseteq D$ 、
 > 且 $\pi_{m(f)}$ 把 $f(m(f))$ 投影到每个 $f(\xi)$
 > 上——**顶部的序列投影到底部的每个序列**。$\mathcal K_F$
 > = 全体控制函数。
 
-> **定义 2.17** $\mathbb P$ 的条件 $p=(f,T,\tau,H)$：
-> (1) $f\in\mathcal K_F$；(2) $T$ 是 $(m(f), f(m(f)))$-树；(3) $\tau$ 是 Lévy 塌缩的有限序列（把
-> $f(m(f))$ 的坐标逐段塌到 $\omega$）；(4) $H$ 在树
-> 投影上取值于 $\mathrm{Col}(\nu^{++},<\kappa)$。
+> **定义 2.17** $\mathbb P$ 的条件 $p=(f,T,\tau,H)$ ：
+> (1) $f\in\mathcal K_F$ ；(2) $T$ 是 $(m(f), f(m(f)))$ -树；(3) $\tau$ 是 Lévy 塌缩的有限序列（把
+> $f(m(f))$ 的坐标逐段塌到 $\omega$ ）；(4) $H$ 在树
+> 投影上取值于 $\mathrm{Col}(\nu^{++},<\kappa)$ 。
 
-四个部件的分工：$f$ 是**坐标骨架**（哪些 $\alpha$-层
+四个部件的分工：$f$ 是**坐标骨架**（哪些 $\alpha$ -层
 参与本条件）、$T$ 是**顶部的 Prikry 树**（未来泛型序列
 的约束，分裂测一保证 Prikry 性质）、$\tau$ 是**下方的
-Lévy 塌缩**（把有限多层的基数塌到 $\omega$——使
+Lévy 塌缩**（把有限多层的基数塌到 $\omega$ ——使
 $\aleph_n$ 链成形）、$H$ 是**投影侧的塌缩函数**（树上
 每个节点携带自己的塌缩指令）。$\mathbb P$ 同时做三件事：
 沿每层 $\alpha$ 添加 κ⁺⁺ 个 ω-序列（Prikry 型）、塌
 下方（Lévy 型）、保持 $\kappa^{++}$ 为基数（cc + 完备性）。
 
 > **定义 2.18/2.19** $p\le q$ 的**十条**与直接延展
-> $p\le^*q$（$f$ 不动）。
+> $p\le^*q$ （$f$ 不动）。
 
 引理 2.13 逐条验证传递性（书 p183–184 完整展开——十条中
 的四条需要复合投影的结合律）；引理 2.14 允许往 $f$ 的
-域里**加新高坐标**（树瘦身技术：用 $\le_E$-高处的分裂
+域里**加新高坐标**（树瘦身技术：用 $\le_E$ -高处的分裂
 集交 $C\in U_\alpha$ 收窄）；引理 2.15 证 κ⁺⁺-cc（Δ-
 系统式的三鸽笼：共同限制函数 + 公共树 + 公共 H）；引理
-2.16 证 $(\mathbb P/p)^{\ge}$ 在 $\le^*$ 下 $\kappa^{+++}$-
-完备（对 <κ⁺⁺⁺ 长的 $\le^*$-链取树的交）。
+2.16 证 $(\mathbb P/p)^{\ge}$ 在 $\le^*$ 下 $\kappa^{+++}$ -
+完备（对 <κ⁺⁺⁺ 长的 $\le^*$ -链取树的交）。
 
-> **引理 2.17（Prikry 条件）** 任何语句 $\varphi$、任何
-> 条件 $q$，存在 $p\le^* q$ 使 $p\Vdash\varphi$ 或
-> $p\Vdash\neg\varphi$。
+> **引理 2.17（Prikry 条件）** 任何语句 $\varphi$ 、任何
+> 条件 $q$ ，存在 $p\le^* q$ 使 $p\Vdash\varphi$ 或
+> $p\Vdash\neg\varphi$ 。
 
 证明（书 p187–195，**全书最长的单条证明**）的骨架：取
-充分大的 $\theta$ 与初等子模型 $N\prec H_\theta$（含
+充分大的 $\theta$ 与初等子模型 $N\prec H_\theta$ （含
 一切相关对象），取 $\alpha\in A$ 高于 $N\cap A$ 的一切
 （共顶性消费点）。**断言一**（在 $N$ 内造中间段控制函数
-$g$ 与树 $S$：以 $\langle(a_i,t_i,b_i)\rangle$-列表
-逐 $\nu\in B$ 递归——每个 $\nu^{\circ}$-层至多 $( \nu^\circ)^{++}$ 个新条件被处理，列表的重复性保证覆盖——
+$g$ 与树 $S$ ：以 $\langle(a_i,t_i,b_i)\rangle$ -列表
+逐 $\nu\in B$ 递归——每个 $\nu^{\circ}$ -层至多 $( \nu^\circ)^{++}$ 个新条件被处理，列表的重复性保证覆盖——
 得到 $p^*\le^*q$ 且 $N$ 中「再往下嫁接的任何条件都不
-裁决 $\varphi$」）。**断言二**（$\omega$-步 $\le^*$-
+裁决 $\varphi$ 」）。**断言二**（$\omega$ -步 $\le^*$ -
 递减序列逐层裁定：第 1 步把 $\mathrm{HJ}_S(\emptyset)$
 三染色（Yo/Y1/Y2 取测一者），第 2 步起对每个固定的第一
-坐标再染色——$\omega$ 步后取树的交，得到 $p^{**}\le^* p^*$ 使 $N$ 中任何「在 $p^{**}$ 下方力迫 $\varphi$」
+坐标再染色——$\omega$ 步后取树的交，得到 $p^{**}\le^* p^*$ 使 $N$ 中任何「在 $p^{**}$ 下方力迫 $\varphi$ 」
 的五元组都不存在）。**断言三**（反证收口：若有，把 $\alpha$ 换成 $N\cap A$ 上方的 $\beta$ 重演断言一的
 瘦身 + 投影，得到与断言二矛盾的新条件）。∎
 
 三断言的机制各值一笔。断言一的**列表递归**是「在每个
-$\nu^\circ$-层至多处理 $(\nu^\circ)^{++}$ 个条件」的
+$\nu^\circ$ -层至多处理 $(\nu^\circ)^{++}$ 个条件」的
 局部有限性——GCH 提供 $(\nu^\circ)^{++}<\kappa^{++}$ 的
 封顶，使递归在 <κ⁺⁺ 步内完成。断言二的**逐层染色**是
 第 104 章三染色的**多维版**：不只对 0 层染色，对树深 n
 的每一层依次染色，ω 步取交（κ-完全性保证交仍是树）——
 「判定不递归于树深」。断言三的**降坐标换演**（α→β）是
 反向极限式的回缩论证——把 $N$ 内的潜在见证压回 $N$
-自身可处理的坐标。嫁接（grafting）操作 $(g)^b$（把中间
+自身可处理的坐标。嫁接（grafting）操作 $(g)^b$ （把中间
 段函数在每个坐标处拼接 $b$ 的最长尾段）贯穿三断言。
 
 ### 106.3b 十条延展条款的分组读法
@@ -229,7 +229,7 @@ $\nu^\circ$-层至多处理 $(\nu^\circ)^{++}$ 个条件」的
 （(1) dom(g)⊆dom(f)、(2) 公共坐标函数值一致、(3) 顶部
 序列落入对方树）；**(II) 投影协调**（(4) 底部序列经
 $\pi_{m(g)}$ 的逐段重建、(5) 树投影包含、(6) 分裂集
-的投影等式——$\nu$ 高于 $f(\xi)$ 时 $\tau_{m(f)} (\nu)=\tau_{m(g)}(\pi(\nu))$）；**(III) 塌缩协调**
+的投影等式——$\nu$ 高于 $f(\xi)$ 时 $\tau_{m(f)} (\nu)=\tau_{m(g)}(\pi(\nu))$ ）；**(III) 塌缩协调**
 （(7) τ 的逐段包含、(8) H 的逐点包含、(9) 中间段的
 塌缩继承）；**(IV) 起点**（(10) 新坐标序列的底部高于
 旧塌缩的终点）。传递性验证（引理 2.13）逐组消化：I 组
@@ -238,15 +238,15 @@ $\pi_{m(g)}$ 的逐段重建、(5) 树投影包含、(6) 分裂集
 序数比较。书 p183–184 的完整验证值得对照读——十条中
 的四条（(4)(5)(6)(9)）都归结到投影结合律。
 
-直接延展 $\le^*$（定义 2.19）只加一条「$f$ 不动」
+直接延展 $\le^*$ （定义 2.19）只加一条「$f$ 不动」
 ——这是 Prikry 条件的「纯延长」方向：树收窄、塌缩加细
 但不换坐标骨架。引理 2.16 的 κ⁺⁺⁺-完备性正需要在
 $\le^*$ 方向（换坐标的延展会破坏链的下界存在性）。
 
 ### 106.3a 树条件的直观与分裂集的测一性
 
-$(\alpha,s)$-树的分裂集测一性（定义 2.14(2)）值得
-展开：每个节点 $t$ 的**子节点集** $\mathrm{HJ}_T(t) =\{\nu\in B\mid t^\frown\nu\in T\}\in U_\alpha$。这是
+$(\alpha,s)$ -树的分裂集测一性（定义 2.14(2)）值得
+展开：每个节点 $t$ 的**子节点集** $\mathrm{HJ}_T(t) =\{\nu\in B\mid t^\frown\nu\in T\}\in U_\alpha$ 。这是
 Prikry 力迫「测度一集当未来约束」的**树化**：Prikry 条件
 $(s,A)$ 的 $A\in D$ 对应本章树在根处的分裂集；树深
 $n$ 的每个节点各自携带自己的测一分裂集（且沿链单调
@@ -256,7 +256,7 @@ $n$ 的每个节点各自携带自己的测一分裂集（且沿链单调
 2.18）——第 104 章的单测度情形只是树退化为一根链。
 
 瘦身的几何也值得画：从 $t$ 出发递归地把每层分裂集与
-$C\in U_\alpha$（对角交所得）相交——**整棵树被「夹细」**
+$C\in U_\alpha$ （对角交所得）相交——**整棵树被「夹细」**
 但每层仍测一（κ-完全性）。嫁接 $(g)^b$ 则是横向操作：
 中间段函数在每个坐标处拼接 $b$ 中该坐标的最长尾段——
 「上层的序列往下投影」。树瘦身与嫁接一纵一横，构成引理
@@ -264,35 +264,35 @@ $C\in U_\alpha$（对角交所得）相交——**整棵树被「夹细」**
 ## 106.4 泛型对象与基数结算
 
 > **引理 2.18** $G_\alpha=\bigcup\{f(\alpha)\mid(f,T,\tau, H)\in G\}$ 是 $U_\alpha$ 的 Prikry 序列（序型 ω、
-> $\forall Y\in U_\alpha$|G_\alpha∖Y|<ω）；(2) $G_\kappa$
+> $\forall Y\in U_\alpha$ |G_\alpha∖Y|<ω）；(2) $G_\kappa$
 > 无界；(3) $\alpha<\beta\Rightarrow G_\beta$ 终段支配
-> $G_\alpha$（经 $\pi_{\alpha\beta}$）。
+> $G_\alpha$ （经 $\pi_{\alpha\beta}$ ）。
 
 > **引理 2.19** $\kappa^{++}$ 在 $V[G]$ 中仍是基数。
-> **引理 2.20（交织引理）** 单调递增列表 $\langle G_n \mid n<\omega\rangle$：对每个 $\alpha$，或 $\{n\mid G_\alpha(n)\ne G_{\alpha^{\circ}}(n)\}$ 有限（两列几乎
+> **引理 2.20（交织引理）** 单调递增列表 $\langle G_n \mid n<\omega\rangle$ ：对每个 $\alpha$ ，或 $\{n\mid G_\alpha(n)\ne G_{\alpha^{\circ}}(n)\}$ 有限（两列几乎
 > 相同），或 $\exists k(\alpha)$ 使 $n\mapsto G_\alpha (n+k)$ 与 $G_{\alpha^{\circ}}$ 几乎相同（**位移支配**）。
 > **引理 2.21** 基数区间账：若 $\aleph_\omega<\tau< \aleph_{\omega+\omega}$ 在 $V[G]$ 是基数，则 $\tau\in \{\aleph_{\omega+1},\aleph_{\omega+2}\}$ 一类的终端点。
 
 交织引理是本章的**组合心脏**：$\kappa^{++}$ 层坐标各自
 产生 Prikry 序列，若它们相互独立则基数账失控（任意两层的
 序列在无穷多处交错 ⟹ 中间值塌陷）；位移支配把「层间关系」
-钉死为**几乎平移**——$\aleph_n$-层的序列是 $\aleph_\omega$-
+钉死为**几乎平移**——$\aleph_n$ -层的序列是 $\aleph_\omega$ -
 层序列的有限移位。迁移变换（引理 2.20 后的 $\mu_n^{(\alpha)}$ 定义）把所有层统一到同一条主序列上，引理 2.21 的区间
 账由此结算。
 
-> **定理 2.12（Gitik-Magidor-Woodin）** $V[G]\models \big(\forall\mu<\aleph_\omega(2^\mu=\mu^+)\big)\wedge 2^{\aleph_\omega}=\aleph_{\omega+2}$。
+> **定理 2.12（Gitik-Magidor-Woodin）** $V[G]\models \big(\forall\mu<\aleph_\omega(2^\mu=\mu^+)\big)\wedge 2^{\aleph_\omega}=\aleph_{\omega+2}$ 。
 
 结算账：下方 GCH（Lévy 塌缩的精确设计——每层只塌到需要
 的位置，Silver 定理的「要动 κ 先动下方」在 $\aleph_\omega$
 处被改写为「下方全不动」——恰是本定理区别于第 105 章的
-关键）；$\aleph_\omega$ 处 $2^{\aleph_\omega}=\aleph_{ \omega+2}$（κ⁺⁺ 个 ω-序列的注入由控制函数的 $\le_E$-
+关键）；$\aleph_\omega$ 处 $2^{\aleph_\omega}=\aleph_{ \omega+2}$ （κ⁺⁺ 个 ω-序列的注入由控制函数的 $\le_E$ -
 坐标提供）；无中间塌陷（引理 2.19 + 2.21）。
 
 ### 106.4a 迁移变换与结算的最后一里
 
 引理 2.20 之后的迁移变换 $\mu_n^{(\alpha)}$ 定义值得逐条
 读：若形态 (1)（两列几乎相同），$\mu_n^{(\alpha)}=G_n^{ (\alpha)}$ 直接继承；若形态 (2)（位移支配），$n\ge k(\alpha)$ 时向前移位、$n<k(\alpha)$ 时向后移位——
-两种情形都把 $\mu^{(\alpha)}$ 统一到「$\aleph_n$-层的
+两种情形都把 $\mu^{(\alpha)}$ 统一到「$\aleph_n$ -层的
 规范代表」。结算等式 $\bigcup_n\mu_n^{(\alpha)}=\kappa_n$
 说明每层的主序列其实是同一条 κ-序列的**重排**——
 $\kappa^{++}$ 层坐标共享一个基数骨架，这正是「ℵ_ω 处
@@ -323,7 +323,7 @@ $\aleph_{\omega+\omega}$ 之间的基数若在 V[G] 存活，必落
 不再够用：κ⁺⁺ 层坐标各自有测度，语句的裁决可能依赖
 任意深的坐标组合——**逐层染色 + ω-步交**是「一次取整
 无法覆盖多维」的技术回应。断言二的递减序列 $p^{(n)}$
-（$n\le\omega$）在每步把当前层染色钉死，ω 步取交后
+（$n\le\omega$ ）在每步把当前层染色钉死，ω 步取交后
 **一切层的裁决已定**——κ-完全性保证交仍是条件。这是
 「拉姆齐性」在树上的推广：不再有单点整齐集，但有
 **整棵路径的整齐**。
@@ -996,7 +996,7 @@ n+2) (n + 0)` 的 β-归约）omega 看不见——须 `show` 手工
 
 **Agda**（`GMW` 归纳族 + `gmw-decompose` 分解）：
 `gmw-decompose` 是「最小失败归约」的构造版：从 GMW 证书
-**提取**全 GCH 前缀 $T$ 与等式 $B=T{+}{+}[1]$——
+**提取**全 GCH 前缀 $T$ 与等式 $B=T{+}{+}[1]$ ——
 存在性证明即分解算法；`shifts-trans` 的 `rew` 需双层
 rewrite（`+-assoc` + `+-comm`——项级 $n+k_2+k_1\equiv n+(k_1+k_2)$ 在 Agda 不是 refl）。
 
@@ -1044,11 +1044,11 @@ Julia/Python 的 2^n 穷举除了「每长度恰一 GMW」还有几笔
 ## 106.7 机器的边界
 
 1. **张子系统不可机化**：$\langle U_\alpha\rangle$ 是
-   $\kappa^{++}$-长的测度序列，RK 序 $\le_E$ 的共顶性
-   消费 GCH 的 $2^\kappa=\kappa^+$。有限影子只能做 RK
+   $\kappa^{++}$ -长的测度序列，RK 序 $\le_E$ 的共顶性
+   消费 GCH 的 $2^\kappa=\kappa^+$ 。有限影子只能做 RK
    序的语法（`compose_cofinal` 的合成账）。
-2. **树条件与嫁接不可机化**：$(\alpha,s)$-树的分裂集
-   测一、瘦身技术、嫁接操作 $(g)^b$、三断言的列表递归
+2. **树条件与嫁接不可机化**：$(\alpha,s)$ -树的分裂集
+   测一、瘦身技术、嫁接操作 $(g)^b$ 、三断言的列表递归
    全在超穷层——引理 2.17 是全书单条证明之最，机器连
    「陈述」都无法有限化。
 3. **交织引理的泛型性**：`shiftsAbove` 只验证「给定两列
@@ -1068,14 +1068,14 @@ Julia/Python 的 2^n 穷举除了「每长度恰一 GMW」还有几笔
 - **战役**：Silver 定理限制首败 cf=ω；定理 2.11 给出
   「某处失败」；GMW 定理 2.12 把失败推到 $\aleph_\omega$
   且下方全域 GCH——三步的假设从超紧（Magidor）降到
-  $\kappa^{++}$-强（Woodin-Gitik）。
-- **张子展开**：一个 $\kappa^{++}$-强张子 E 给出测度
-  序列 $\langle U_\alpha\mid\kappa\le\alpha<\kappa^{++} \rangle$；RK 序 $\le_E$ 共顶；投影函数表系统化
+  $\kappa^{++}$ -强（Woodin-Gitik）。
+- **张子展开**：一个 $\kappa^{++}$ -强张子 E 给出测度
+  序列 $\langle U_\alpha\mid\kappa\le\alpha<\kappa^{++} \rangle$ ；RK 序 $\le_E$ 共顶；投影函数表系统化
   （定义 2.13 的规范形状 + 事实 2.5.8 的共顶构造）。
-- **四部件条件**：(f,T,τ,H)——控制函数（$\le_E$-坐标
+- **四部件条件**：(f,T,τ,H)——控制函数（$\le_E$ -坐标
   骨架）、Prikry 树（测一分裂）、Lévy 塌缩序列、投影侧
   塌缩函数；十条延展 + 直接延展（f 不动）。
-- **三断言的 Prikry 条件**：列表递归（层内 $(\nu^\circ) ^{++}$-局部有限）+ 逐层染色（κ-完全交）+ 降坐标换演
+- **三断言的 Prikry 条件**：列表递归（层内 $(\nu^\circ) ^{++}$ -局部有限）+ 逐层染色（κ-完全交）+ 降坐标换演
   （α→β 回缩）——判定性引擎的第三次工业化。
 - **交织引理 2.20**：层间序列位移支配（几乎平移）——
   基数结算的组合心脏。
@@ -1133,10 +1133,10 @@ Julia/Python 的 2^n 穷举除了「每长度恰一 GMW」还有几笔
 
 （第 1 题查 $j(f)(\alpha)$ 值域封顶的 GCH 来源——
 $\kappa^\kappa=\kappa^+$ 在 2^κ>κ⁺ 时失效、(iii) 段
-崩；第 2 题查列表重复性保证「每个 $\nu^\circ$-层的
+崩；第 2 题查列表重复性保证「每个 $\nu^\circ$ -层的
 每个条件都被某 $b_i$ 覆盖」——不重复则覆盖缺口；
 第 3 题查引理 2.8 的有限翻转——$\pi_{\alpha\beta}$
-之下 $G_\alpha$ 与 $G_\beta$ 在测一集上 $\tau$-序
+之下 $G_\alpha$ 与 $G_\beta$ 在测一集上 $\tau$ -序
 一致，有限差后位移固定；第 4 题的组合证明：GMW 定义
 「非空+末位 1+其余全 0」在长度 n 的 2^n 张表中唯一——
 但真值层的「首败唯一可能在 ℵ_ω」还需「下方全域 GCH」

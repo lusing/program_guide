@@ -5,24 +5,24 @@
 > 论的主战场。本章取材冯琦第三卷 §3.1.1–§3.1.2（书页 251–271；
 > PDF 272–292），两条主线：
 >
-> **其一（精细分层）**：把古典的投影集层次 $\boldsymbol\Sigma^1_n$/
+> **其一（精细分层）**：把古典的投影集层次 $\boldsymbol\Sigma^1_n$ /
 > $\boldsymbol\Pi^1_n$ 按「定义式中实数参数的有无」精细分层——
-> 定义 3.1 的简体 $\Sigma^1_n(\alpha)$/$\Pi^1_n(\alpha)$/
-> $\Delta^1_n(\alpha)$（黑体 = 允许任意实参数、简体 = 递归无参
+> 定义 3.1 的简体 $\Sigma^1_n(\alpha)$ /$\Pi^1_n(\alpha)$ /
+> $\Delta^1_n(\alpha)$ （黑体 = 允许任意实参数、简体 = 递归无参
 > 数；$\Sigma^1_1(\alpha)$ 是「存在实数 y 使递归谓词 R 对
 > $(\alpha{\upharpoonright}n,y{\upharpoonright}n)$ 全 n 成立」
 > ——$\omega$ 上的存在量词接 $\omega^\omega$ 上的存在量词）。
 > 引理 3.1 记录各层的封闭性：布尔组合、数词与实词的交换与融合
 > ——证明的三件融合兵器是**位串分流**（u±：奇偶位拆两个实数）、
 > **后继配对**（h：m 与尾部 y 拼一个实数）与**选择交换**
-> （$\forall m\exists z\to\exists u\forall m$，依赖 $\mathrm{AC}_\omega$
+> （$\forall m\exists z\to\exists u\forall m$ ，依赖 $\mathrm{AC}_\omega$
 > 的递归同胚 H）——量词工程的全套工具。引理 3.2 给通用集。
 >
 > **其二（余解析集的树表示）**：定义 3.2 把树推广到 k-维
-> （$\mathrm{Seq}^k$ 等长序列组、前段封闭序 $\le_k$、
+> （$\mathrm{Seq}^k$ 等长序列组、前段封闭序 $\le_k$ 、
 > $[T]$ = 无穷树枝全体），引理 3.3 整合闭集树表示（第一卷
 > 定理 I.3.26）与解析集特征（引理 I.3.17）：**A 解析 ⟺ A =
-> $\pi[T]$（某二维树的投影）⟺ $\alpha\in A$ 当且仅当
+> $\pi[T]$ （某二维树的投影）⟺ $\alpha\in A$ 当且仅当
 > T(α) 无秩**。由此立即得**定理 3.1（Π₁¹-规范形式）**：A 余
 > 解析 ⟺ A = {α | T(α) 有秩}，与**定理 3.2（绝对性）**：
 > 足够强的理论下 Π₁¹(α) 性质对传递模型内外一致（有秩树有
@@ -40,7 +40,7 @@
 > 定义 3.4（范数与准秩序：传递 + 可比较 + 有秩）、定理 3.4
 > （**Π₁¹-准秩序性质**：每个 Π₁¹ 集有 Π₁¹-范数——Q 用
 > 「存在保序映射 f: T(α)→T(y)」、P 用「T(α) 有秩且
-> $\lVert T(y)\rVert\nless\lVert T(α)\rVert$」）；换视角
+> $\lVert T(y)\rVert\nless\lVert T(α)\rVert$ 」）；换视角
 > （U(α) 有秩 ⟺ 存在降到 ω₁ 的**降秩函数** g；ω×ω₁ 上的树
 > T 有**最小无穷树枝** g_α = 秩函数）引出**定义 3.5 标尺**
 > （范数序列 + 强制收敛性）与**定理 3.5（Π₁¹-标尺性质）**；
@@ -59,7 +59,7 @@
 > 博雷尔」的机制件）；③**完美子树构造**（Julia/Python：
 > 双子延伸的递归抽取——开区分特性断言二的有限替身）；④
 > **截面投影**（Julia/Python/Prolog：二维树 S 的截面 S(α)
-> 与投影 $\pi[S]$——对角树全域投影、单侧树半域投影）；⑤
+> 与投影 $\pi[S]$ ——对角树全域投影、单侧树半域投影）；⑤
 > **下降链**（Isabelle `minimal_no_descending`：极小元性质
 > ⟹ 无下降链——引理 3.4 的 WF 对偶刻画；Prolog desc/loop
 >
@@ -71,15 +71,15 @@ _witness 查询）。特别声明（Task 26 Step 3）：**余解析集 =
 
 ## 111.1 精细分层：从黑体到简体
 
-第 110 章的投影集层次用黑体 $\boldsymbol\Sigma^1_n$/
+第 110 章的投影集层次用黑体 $\boldsymbol\Sigma^1_n$ /
 $\boldsymbol\Pi^1_n$ 标识；本章（书 p252–254）按定义式的
 **参数与量词复杂度**精细分层。
 
 先交代舞台（书 p251–252 的开场白）：描述集合论的几乎全部
-内容都发生在贝尔空间 $\mathcal N=\omega^\omega$（及其乘积）
+内容都发生在贝尔空间 $\mathcal N=\omega^\omega$ （及其乘积）
 上；实数以 $\mathcal P(\omega)$ 即 $V_\omega$ 的子集
-呈现，$\mathbb R\subseteq V_{\omega+1}$、
-$\mathcal N\subseteq V_{\omega+1}$——按可定义性分析，
+呈现，$\mathbb R\subseteq V_{\omega+1}$ 、
+$\mathcal N\subseteq V_{\omega+1}$ ——按可定义性分析，
 它们都是传递模型 $(V_{\omega+1},\in)$ 上的可定义子集，
 从而都在 $V_{\omega+2}$ 之中。「分析 $V_{\omega+2}$ 的
 内涵」= 用集合论的工具审查实数子集的可定义性分层——
@@ -87,15 +87,15 @@ $\mathcal N\subseteq V_{\omega+1}$——按可定义性分析，
 
 记号总纲：
 
-- **黑体** $\boldsymbol\Sigma^1_n(\alpha)$：定义式允许任意
-  实参数 α；**简体** $\Sigma^1_n(\alpha)$：以 α 为**唯一**
+- **黑体** $\boldsymbol\Sigma^1_n(\alpha)$ ：定义式允许任意
+  实参数 α；**简体** $\Sigma^1_n(\alpha)$ ：以 α 为**唯一**
   参数、其余部分递归；
 - **上标 1**：定义式涉及实数变元的量词；**下标 n**：实数
   量词交错的次数（Σ 从 ∃ 开始、Π 从 ∀ 开始）；
-- 上标 0（$\Sigma^0_1$/$\Pi^0_1$）：只涉及自然数变元的
+- 上标 0（$\Sigma^0_1$ /$\Pi^0_1$ ）：只涉及自然数变元的
   量词——恰好是拓扑的开/闭（博雷尔层次的起点）。
 
-**定义 3.1**（书 p252–253，要点）设 $1\le k\in\omega$：
+**定义 3.1**（书 p252–253，要点）设 $1\le k\in\omega$ ：
 
 1. $A\subseteq\mathcal N$ 是 $\Sigma^1_k(\alpha)$ 集合
    ⟺ 存在（相对于 α 的）递归集 $R\subseteq\bigcup_n (\omega^n\times\omega^n)$ 使
@@ -104,11 +104,11 @@ $\mathcal N\subseteq V_{\omega+1}$——按可定义性分析，
    ——实数存在量词 $\exists y$ 后接一个 $\Pi^0_1$ 型
    算术条件。
 2. $A$ 是 $\Pi^1_k(\alpha)$ ⟺ $\mathcal N-A$ 是
-   $\Sigma^1_k(\alpha)$。**这就是「余解析 = 解析的补」的
+   $\Sigma^1_k(\alpha)$ 。**这就是「余解析 = 解析的补」的
    精确形式**；树表示将把它翻译成「有秩 ↔ 无秩」的对偶。
 3. $A$ 是 $\Sigma^1_{k+1}(\alpha)$ ⟺ A 是某
-   $\Pi^1_k(\alpha)$（乘积空间上的）集合的投影。
-4. $\Delta^1_k(\alpha)=\Sigma^1_k(\alpha)\cap\Pi^1_k(\alpha)$。
+   $\Pi^1_k(\alpha)$ （乘积空间上的）集合的投影。
+4. $\Delta^1_k(\alpha)=\Sigma^1_k(\alpha)\cap\Pi^1_k(\alpha)$ 。
 
 观察 $\Sigma^1_1$ 的形状（书 p253）：
 $$
@@ -138,23 +138,23 @@ $$
 精细分层的本义：**各层恰与「固定参数下定义式的复杂度」
 吻合**——黑体记号、上标、下标的含义全部落实；而「黑体
 = 允许实参数、简体 = 递归」的对照也解释了博雷尔层为什么
-用 $\Sigma^0_n$/$\Pi^0_n$ 起步（上标 0 = 定义式不涉及
+用 $\Sigma^0_n$ /$\Pi^0_n$ 起步（上标 0 = 定义式不涉及
 实数变元的量词——只涉及自然数）。
 
-**引理 3.1（封闭性）** $\Sigma^1_k(\alpha)$/$\Pi^1_k(\alpha)$/
+**引理 3.1（封闭性）** $\Sigma^1_k(\alpha)$ /$\Pi^1_k(\alpha)$ /
 $\Delta^1_k(\alpha)$ 对布尔组合、数词（∃m/∀m）、实词
 （∃β/∀β）封闭（$\Delta$ 还对否定封闭）。证明（书
 p255–258，n=1 情形）展示了**量词工程三兵器**：
 
-- **位串分流** u±（$\lambda n.\ u(2n)$ 与 $\lambda n. u(2n+1)$）：把 $\exists z_1\exists z_2$ 融合成
-  $\exists u$——$\mathcal N\to\mathcal N\times\mathcal N$
+- **位串分流** u±（$\lambda n.\ u(2n)$ 与 $\lambda n. u(2n+1)$ ）：把 $\exists z_1\exists z_2$ 融合成
+  $\exists u$ ——$\mathcal N\to\mathcal N\times\mathcal N$
   的递归同胚；
-- **后继配对** h（$h(u)=(u(0),u\circ S)$）：把数词 ∃m 与
+- **后继配对** h（$h(u)=(u(0),u\circ S)$ ）：把数词 ∃m 与
   实词 ∃z 融合成实词 ∃u；
-- **选择交换** H（$H(u)(m)(n)=u(g(m,n))$，g 递归配对）：
-  在 $\mathrm{ZF}+\mathrm{AC}_\omega$ 中把 $\forall m \exists z$ 交换成 $\exists u\forall m$（u 记录整列选择
+- **选择交换** H（$H(u)(m)(n)=u(g(m,n))$ ，g 递归配对）：
+  在 $\mathrm{ZF}+\mathrm{AC}_\omega$ 中把 $\forall m \exists z$ 交换成 $\exists u\forall m$ （u 记录整列选择
   函数），再配左右逆 $\alpha,\beta$ 把 $\forall m\forall n$
-  融合成 $\forall k$。
+  融合成 $\forall k$ 。
 
 这三件兵器在 108 章引理 2.27（名字链下钻）与 110 章定理 2.32
 （断言二的递归构造）都曾以变体出场；此处是它们的家谱源头。
@@ -162,18 +162,18 @@ p255–258，n=1 情形）展示了**量词工程三兵器**：
 把三件兵器各慢放一遍，因为它们是本章全部「封闭性」的齿轮：
 
 - **位串分流 u±** 的用法总是成对的：先把两个实数存在量词
-  $\exists z_1\exists z_2$ 合成一个 $\exists u$（u 的
+  $\exists z_1\exists z_2$ 合成一个 $\exists u$ （u 的
   偶数位给 z₁、奇数位给 z₂），递归谓词 R′ 按「第 n 位看
   u 的奇偶分流」重新定义——A∧B 的证明里两个 ∀n 合成
   一个 ∀n 正是用它。注意 u± 是**递归同胚**（不止是归约），
   所以它把 Σ¹₁(α) 关系映到 Σ¹₁(α) 关系而不升层。
 - **后继配对 h** 处理「数词混在实词旁边」的脏前缀：
   $(\exists m\in\omega\ \exists z\in\mathcal N)\ \varphi$
-  变成 $\exists u\ \varphi'(u)$，其中 u(0) 承担 m、
+  变成 $\exists u\ \varphi'(u)$ ，其中 u(0) 承担 m、
   u∘S 承担 z。A∨B 的证明用它把「选哪个析取支」的 ∃m
   织进实数 u 的首位。
 - **选择交换 H** 是最强的一件：$\forall m\exists z\varphi$
-  换成 $\exists u\forall m\varphi''$——u 把整列选择函数
+  换成 $\exists u\forall m\varphi''$ ——u 把整列选择函数
   $m\mapsto z_m$ 打包成一个实数（g(m,n) 配对后 u 逐位
   记录）。这一步**依赖 AC_ω**（每次选择一个自然数函数）；
   书 p257 特意注明「在理论 ZF+AC_ω 的基础上」——选择公理
@@ -181,8 +181,8 @@ p255–258，n=1 情形）展示了**量词工程三兵器**：
 
 引理 3.2：每层有简体通用集——层次非平凡的种子（第一卷
 引理 1.3.19 的加强：通用集本身取简体形态）。通用集配合
-对角化立即给出层次的严格性——$\Sigma^1_n\ne\Pi^1_n$、
-$\Delta^1_n\subsetneq\Sigma^1_n$；这正是 112 章以后一切
+对角化立即给出层次的严格性——$\Sigma^1_n\ne\Pi^1_n$ 、
+$\Delta^1_n\subsetneq\Sigma^1_n$ ；这正是 112 章以后一切
 「升层」论证的模板。
 
 ## 111.2 树表示：从闭集到解析与余解析
@@ -190,8 +190,8 @@ $\Delta^1_n\subsetneq\Sigma^1_n$；这正是 112 章以后一切
 **定义 3.2**（书 p258–259）$\mathrm{Seq}^k$ = 各分量等长的
 k 元有限序列组；$\vec s\le_k\vec t$ ⟺ 逐分量前段；T ⊆
 $\mathrm{Seq}^k$ 是 **k-维树** ⟺ 前段封闭；
-$[T]=\{\vec\alpha\in\mathcal N^k\mid\forall n(\vec\alpha {\upharpoonright}n\in T)\}$（无穷树枝全体）；T **有秩**
-（良基）⟺ $[T]=\varnothing$，**无秩** ⟺ $[T]\ne \varnothing$；截面 $T(\alpha)=\{\vec s\mid(\alpha{\upharpoonright} \mathrm{dom},\vec s)\in T\}$。
+$[T]=\{\vec\alpha\in\mathcal N^k\mid\forall n(\vec\alpha {\upharpoonright}n\in T)\}$ （无穷树枝全体）；T **有秩**
+（良基）⟺ $[T]=\varnothing$ ，**无秩** ⟺ $[T]\ne \varnothing$ ；截面 $T(\alpha)=\{\vec s\mid(\alpha{\upharpoonright} \mathrm{dom},\vec s)\in T\}$ 。
 
 **引理 3.3（解析集树表示）** (1) $[T]$ 是 $\mathcal N^k$
 的闭子集；反之每个闭集 F 有树 T 使 F=[T]。(2) $A\subseteq \mathcal N$ 解析 ⟺ 存在二维树 T 使 A = π[T]，即
@@ -214,7 +214,7 @@ $$
 
 **定理 3.2（绝对性）** 设 T₀ 足够强使「每个有秩树有赋秩函数」
 为其定理。若 P 是 $\Pi^1_1(\alpha)$ 性质、M ⊨ T₀ 传递、
-$\alpha\in M$，则 P 对 M 内外一致。**证明两行**（书 p262）：
+$\alpha\in M$ ，则 P 对 M 内外一致。**证明两行**（书 p262）：
 M 中无秩（有树枝）则在 V 中依旧有树枝——树枝是绝对的；
 M 中有秩则在 M 中有赋秩函数 ρ（T₀ 保证），ρ 在 V 中依旧是
 赋秩函数。——**良基性的半边（有树枝）向下绝对，另半边
@@ -241,7 +241,7 @@ M 中有秩则在 M 中有赋秩函数 ρ（T₀ 保证），ρ 在 V 中依旧�
 ## 111.3 应用一：开区分特性的第二个证明
 
 作为树表示的热身（书 p260–261），重证解析集的**开区分特性**
-（定理 I.3.32）：解析 A 对任何相对开 $K\subseteq[A]^2$，
+（定理 I.3.32）：解析 A 对任何相对开 $K\subseteq[A]^2$ ，
 要么 A 含完美子集、要么 A 是可数个闭整齐子集之并。设 T 为
 A 的表示树、K 相对开、A 非可数并。对 $(s,t)\in T$ 令
 T(s,t) 为节点生成的子树；剪枝 $T'=\{(s,t)\mid\pi[T(s,t)]$
@@ -249,25 +249,25 @@ T(s,t) 为节点生成的子树；剪枝 $T'=\{(s,t)\mid\pi[T(s,t)]$
 而某子节点 (σ,τ) ∉ T′，则 $\pi[T(s,t)]$ 是可数并——与
 (s,t) ∈ T′ 矛盾。**断言二（双子延伸）**：(s,t) ∈ T′ ⟹
 存在 T(s,t) 中两个节点 $(s_0,t_0),(s_1,t_1)$ 使
-$s_0\perp s_1$ 且 $\pi[T(s_0,t_0)]\times\pi[T(s_1,t_1)] \subseteq K$——由 K 开取足够大的 n 分离 $\alpha_0,\alpha_1$
-的邻域。递归应用断言二得完美子树 T*，$[T^*]^2\subseteq K$。
+$s_0\perp s_1$ 且 $\pi[T(s_0,t_0)]\times\pi[T(s_1,t_1)] \subseteq K$ ——由 K 开取足够大的 n 分离 $\alpha_0,\alpha_1$
+的邻域。递归应用断言二得完美子树 T*，$[T^*]^2\subseteq K$ 。
 机器件③（双子延伸的完美子树抽取）正是断言二的有限替身。
 
 ## 111.4 完全余解析集：WF 与 ZX
 
-**定义 3.3**（书 p262）固定递归配对双射 $\Gamma:\omega\times \omega\to\omega$。对 $\alpha\in\mathcal N$ 令
+**定义 3.3**（书 p262）固定递归配对双射 $\Gamma:\omega\times \omega\to\omega$ 。对 $\alpha\in\mathcal N$ 令
 $$
 E_\alpha=\{(m,n)\mid\alpha(\Gamma(m,n))=0\}
 $$
 
 ——α **记录**关系 E_α。则：
 
-- $\mathrm{WF}=\{\alpha\mid E_\alpha\ \text{有秩}\}$，
+- $\mathrm{WF}=\{\alpha\mid E_\alpha\ \text{有秩}\}$ ，
   $\lVert\alpha\rVert$ = E_α 的高度；
-- $\mathrm{ZX}=\{\alpha\mid E_\alpha\ \text{是}\ \omega\ \text{上的良序}\}$，$\lVert\alpha\rVert=\mathrm{ot} (\omega,E_\alpha)$；$\mathrm{LO}$（线序）是算术集。
+- $\mathrm{ZX}=\{\alpha\mid E_\alpha\ \text{是}\ \omega\ \text{上的良序}\}$ ，$\lVert\alpha\rVert=\mathrm{ot} (\omega,E_\alpha)$ ；$\mathrm{LO}$ （线序）是算术集。
 
 **引理 3.4** WF、ZX ∈ Π₁¹。**证明**（书 p263）：E_α 有秩
-⟺ 不存在 $f:\omega\to\omega$ 使 $\forall n((f(n+1), f(n))\in E_\alpha)$——**下降链的否定**：
+⟺ 不存在 $f:\omega\to\omega$ 使 $\forall n((f(n+1), f(n))\in E_\alpha)$ ——**下降链的否定**：
 $$
 \alpha\in\mathrm{WF}\iff\forall z\in\mathcal N\ \exists
 k\in\omega\ \big(\alpha(\Gamma(z(k+1),z(k)))\ne0\big).
@@ -285,19 +285,19 @@ Dependent Choice 对照）逐字对齐。机器件⑤（Isabelle
 最小种子）。两个 Ω 型性质（线序 LO 与良序 ZX）之差恰好是
 「无环」对「良基」——差一层 Π₁¹ 的厚度。
 
-还要给 ||·|| 的取值范围记一笔（书 p263）：$\mathrm{ZX} \subseteq\mathrm{WF}$，且
+还要给 ||·|| 的取值范围记一笔（书 p263）：$\mathrm{ZX} \subseteq\mathrm{WF}$ ，且
 $$
 \forall\omega\le\alpha<\omega_1\ \exists\alpha\in
 \mathrm{ZX}(\lVert\alpha\rVert=\alpha),\qquad
 \forall\alpha\in\mathrm{WF}(\lVert\alpha\rVert<\omega_1)
 $$
 
-——良序编码的秩**恰好**跑遍 $[\omega,\omega_1)$：每个
+——良序编码的秩**恰好**跑遍 $[\omega,\omega_1)$ ：每个
 可数序数都有一个编码（按序型直接造 E_α），而编码的秩至多
 是可数序数（E_α 定义在 ω 上）。「‖·‖: ZX → [ω,ω₁) 满」
 这行账是引理 3.5 与有界性推论的取值基础。
 
-**引理 3.5（秩有界部分博雷尔）** 对每个 $\alpha<\omega_1$：
+**引理 3.5（秩有界部分博雷尔）** 对每个 $\alpha<\omega_1$ ：
 $$
 \mathrm{WF}_\alpha=\{\alpha\in\mathrm{WF}\mid\lVert\alpha
 \rVert\le\alpha\},\qquad\mathrm{ZX}_\alpha=\{\cdots\}
@@ -313,12 +313,12 @@ $\bigcup_{\beta<\alpha}B_\beta$ 的前驱条件——**每固定一层
 **定理 3.3（完全性）** 每个黑体 Π₁¹ 集连续归结到 ZX（与
 WF）：设 C 由树 T 表示，$\langle t_m\rangle$ 为 Seq 的
 递归单一列表，令 f(α) 记录与 (T(α),≤) 同构的关系——则
-$\alpha\in C\iff f(\alpha)\in\mathrm{WF}$，且 f 连续
+$\alpha\in C\iff f(\alpha)\in\mathrm{WF}$ ，且 f 连续
 （T(α) 的成员资格只依赖 α 的有限前段）。**推论 3.2**：
 WF、ZX 不是 Σ₁¹（否则一切 Π₁¹ 连续前像解析——与「存在
 非解析的余解析集」矛盾），故非博雷尔。**推论 3.3（有界性
 引理）**：可数 $B\subseteq\mathrm{ZX}$ ⟹
-$\exists\gamma<\omega_1\forall\alpha\in B(\lVert\alpha \rVert<\gamma)$——否则 ZX 的秩切片写成 Σ₁¹，与推论 3.2
+$\exists\gamma<\omega_1\forall\alpha\in B(\lVert\alpha \rVert<\gamma)$ ——否则 ZX 的秩切片写成 Σ₁¹，与推论 3.2
 矛盾。**推论 3.4/引理 3.6**：Π₁¹/Σ₁¹ 集都是 $\aleph_1$
 个博雷尔集之并（C = ∪f⁻¹[WF_α]；A 侧对树的高度归纳）。
 **推论 3.5**：余解析集之势 ∈ {≤ℵ₀, ℵ₁, 2^ℵ₀}。
@@ -344,9 +344,9 @@ $\exists\gamma<\omega_1\forall\alpha\in B(\lVert\alpha \rVert<\gamma)$——否�
 ——这就是「可数」在投影层次里被消费的标准方式。
 
 再看完全性定理 3.3 的构造细节（书 p265）：把 Seq 的元素
-排成递归单列 $\langle t_m\rangle$，对每个 α 令 y = f(α)
+排成递归单列 $\langle t_m\rangle$ ，对每个 α 令 y = f(α)
 在坐标 $\Gamma(m,n)$ 上记录「$t_m,t_n\in T(\alpha)$
-且 $t_m<t_n$」的 0/1——y 编码的关系 E_y 与 (T(α),≤)
+且 $t_m<t_n$ 」的 0/1——y 编码的关系 E_y 与 (T(α),≤)
 同构，于是 y ∈ WF ⟺ T(α) 良基 ⟺ α ∈ C。**f 的连续性**
 由 T(α) 的成员资格只依赖 α 的有限前段给出：要决定
 f(α) 在坐标 Γ(m,n) 的值，只需知道 T(α) 是否包含长度
@@ -367,19 +367,19 @@ $$
 \iff P(\alpha,\beta)\iff Q(\alpha,\beta).
 $$
 
-**证明**（书 p268）：φ(α) = $\lVert T(\alpha)\rVert$。
+**证明**（书 p268）：φ(α) = $\lVert T(\alpha)\rVert$ 。
 Q(α,β) := 存在保序映射 f: T(α)→T(β)（Σ₁¹：f 是实数，
 保序是算术条件；练习：「f 存在 ⟺ T(β) 有树枝 或
-$\lVert T(\alpha)\rVert\le\lVert T(\beta)\rVert$」——在
+$\lVert T(\alpha)\rVert\le\lVert T(\beta)\rVert$ 」——在
 A 上只剩第二支）。P(α,β) := T(α) 有秩 且 并非
-$\lVert T(\beta)\rVert<\lVert T(\alpha)\rVert$（存在
+$\lVert T(\beta)\rVert<\lVert T(\alpha)\rVert$ （存在
 降秩函数 g: T(β)→T(α) 严格反映序——Π₁¹ 型）。P 与 Q 在
 A×A 上重合 ⟺ 秩序条件——**范数的 Π₁¹-可定义性**。
 
 **标尺**（书 p269–270）：换视角——U(α) 有秩 ⟺ 存在
 g: U(α)→ω₁ 使 s ⊂ t ⟹ g(s) > g(t)（**降秩函数**）。在
 ω×ω₁ 上定义树 T（h 记录每层 u_n 的秩上界）；对
-$\alpha\in\pi[T]$，截面 $T(\alpha)$ 有**最小无穷树枝**
+$\alpha\in\pi[T]$ ，截面 $T(\alpha)$ 有**最小无穷树枝**
 $$
 g_\alpha(n)=\rho_{U(\alpha)}(u_n)
 $$
@@ -390,7 +390,7 @@ $\beta_n(\alpha)=g_\alpha(n)$ 得范数序列 ⟨β_n⟩。
 **定义 3.5** A 上的**标尺**是具备**强制收敛性**的范数序列
 ⟨β_n⟩：若 $\langle\alpha_i\rangle\subseteq A$ 收敛于 α
 且每个 n 的 ⟨β_n(α_i)⟩ 最终常值 α_n，则 $\alpha\in A$ 且
-$\beta_n(\alpha)\le\alpha_n$。——收敛保成员资格 + 范数
+$\beta_n(\alpha)\le\alpha_n$ 。——收敛保成员资格 + 范数
 下半连续。
 
 **定理 3.5（Π₁¹-标尺性质）** 每个 Π₁¹ 集有 Π₁¹-标尺
@@ -399,7 +399,7 @@ $\beta_n(\alpha)\le\alpha_n$。——收敛保成员资格 + 范数
 有 Π₁¹ 展示函数 F ⊆ A（函数、同定义域）。**命题 3.1**
 （非空 Π₁¹ 集有 Π₁¹ 单点子集）的证明是标尺的标准消费：
 交替收缩 $A_{2n+1}=\{\beta_n\ \text{最小}\}$ 与
-$A_{2n+2}=\{\beta(n)\ \text{最小}\}$，极限点 α 由强制
+$A_{2n+2}=\{\beta(n)\ \text{最小}\}$ ，极限点 α 由强制
 收敛性落回 A，$\{\alpha\}=\bigcap A_n$ 是 Π₁¹。标尺
 与展示函数在第 113 章（Σ₁₃ 与广泛贝尔）将反复出场——
 这里是它们的出生地。
@@ -1366,7 +1366,7 @@ Prolog 本章两坑：`depthd` 的**缺守卫死循环**（C=0 时
 机器都挂在这棵树上。**
 
 1. 精细分层：黑体（任意实参数）↔ 简体（递归 + 单参数 α）；
-   Σ¹ₙ(α) 从 ∃实数 开头、Π¹ₙ(α) 是补；$\boldsymbol\Sigma^1_1 =\bigcup_\alpha\Sigma^1_1(\alpha)$（111.1）。
+   Σ¹ₙ(α) 从 ∃实数 开头、Π¹ₙ(α) 是补；$\boldsymbol\Sigma^1_1 =\bigcup_\alpha\Sigma^1_1(\alpha)$ （111.1）。
 2. 封闭性的量词工程三兵器：位串分流 u±、后继配对 h、选择
    交换 H（依赖 AC_ω）（111.1）。
 3. 树表示：闭集 = [T]；解析 = π[T]（α ∈ A ⟺ T(α) 无秩）；

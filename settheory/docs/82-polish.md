@@ -2,7 +2,7 @@
 
 > 第 81 章把三种正则性问到了博雷尔集为止；本章取材冯琦第一卷 §3.6
 > （书页 249–280；PDF 267–298），把舞台从实数轴搬到**贝尔空间**
-> $\mathcal N=\omega^\omega$。选择它的理由（原书明说）：在
+> $\mathcal N=\omega^\omega$ 。选择它的理由（原书明说）：在
 > $\mathcal N$ 上「往往可以直接写出所要的证据」。本章的主线是一张
 > 逐渐成形的图：**树枝 → 闭集 → 投影 → 解析集 → 正则性**。闭集是树的
 > 全体无穷树枝（定理 3.26）；解析集是闭集的投影（引理 3.17）；解析集
@@ -30,15 +30,15 @@ $$
 为基。距离用「首个分歧点」度量：
 
 > **定义 3.24** 对 $f\ne g$ 令
-> $\triangle(f,g)=\min\{n : f(n)\ne g(n)\}$，
+> $\triangle(f,g)=\min\{n : f(n)\ne g(n)\}$ ，
 > $$
 > d(f,g)=2^{-\triangle(f,g)},\qquad d(f,f)=0,
 > $$
 >
-> 并定义字典序 $f<_{\mathrm{lex}}g\iff f\ne g\wedge f(\triangle(f,g))<g(\triangle(f,g))$。
+> 并定义字典序 $f<_{\mathrm{lex}}g\iff f\ne g\wedge f(\triangle(f,g))<g(\triangle(f,g))$ 。
 
 > **命题 3.5** $d$ 是 $\omega^\omega$ 上的距离，诱导拓扑恰为
-> $\tau$；$(\mathcal N,d)$ 可分完备；$<_{\mathrm{lex}}$ 是线性序。
+> $\tau$ ；$(\mathcal N,d)$ 可分完备；$<_{\mathrm{lex}}$ 是线性序。
 
 **可分性**：全体**最终平坦**函数
 
@@ -46,9 +46,9 @@ $$
 D=\{f : \exists m\,\forall n\ (n\ge m\to f(n)=m)\}
 $$
 
-可数（编码于 $\omega\times\omega^{<\omega}$），且在任一非空
-$N_s$ 中取 $f_s=s{}^\frown mmm\cdots$（$m$ 任意固定）即
-$f_s\in N_s\cap D$。
+可数（编码于 $\omega\times\omega^{<\omega}$ ），且在任一非空
+$N_s$ 中取 $f_s=s{}^\frown mmm\cdots$ （$m$ 任意固定）即
+$f_s\in N_s\cap D$ 。
 
 **完备性**：设 $(f_n)$ 是柯西序列。递归取
 
@@ -58,7 +58,7 @@ $$
 
 其中 $a_n'$ 保证 $d(f_i,f_j)<2^{-(n+1)}$ 对一切
 $i,j\ge a$ 成立。令
-$I_n=\{i : a_n\le i<a_{n+1}\}$，定义
+$I_n=\{i : a_n\le i<a_{n+1}\}$ ，定义
 
 $$
 f=\bigcup_{n<\omega}(f_{a_n+1}\upharpoonright I_n),
@@ -79,15 +79,15 @@ $\mathbb R\setminus\mathbb Q$ 上」的事实，而写证据容易得多：一�
 > **定理 3.25（贝尔空间版贝尔纲）** 稠密开集序列
 > $(D_n)$ 之交在 $\mathcal N$ 中稠密。
 
-**证明**。不妨 $D_{n+1}\subseteq D_n$。给定 $N_{s_0}$，递归取
+**证明**。不妨 $D_{n+1}\subseteq D_n$ 。给定 $N_{s_0}$ ，递归取
 $s_{n+1}\supsetneq s_n$ 使 $N_{s_{n+1}}\subseteq D_n\cap N_{s_n}$
 （非空开集含某基本开集），则
-$f=\bigcup_n s_n\in N_{s_0}\cap\bigcap_n D_n$。∎
+$f=\bigcup_n s_n\in N_{s_0}\cap\bigcap_n D_n$ 。∎
 
-于是稀疏集构成含全部单点集的非平凡 $\sigma$-理想，贝尔性质、
-贝尔性质类是 $\sigma$-代数、博雷尔集全具贝尔性质——第 81 章的
+于是稀疏集构成含全部单点集的非平凡 $\sigma$ -理想，贝尔性质、
+贝尔性质类是 $\sigma$ -代数、博雷尔集全具贝尔性质——第 81 章的
 81.2–81.4 整段平移。测度也可搬：给单点 $n$ 权
-$\lambda(\{n\})=2^{-(n+1)}$，取乘积测度，基本开集的测度为
+$\lambda(\{n\})=2^{-(n+1)}$ ，取乘积测度，基本开集的测度为
 
 $$
 \lambda(N_s)=\prod_{k<\mathrm{dom}(s)}2^{-(s(k)+1)},
@@ -101,22 +101,22 @@ $\omega^{<\omega}$ 按延伸构成一棵**完备树**，$\mathcal N$ 恰是
 它的全体无穷树枝。子树给出闭集的标准表示：
 
 > **定义 3.25** $T\subseteq\omega^{<\omega}$ 是**树**，若
-> $t\in T\wedge i\le\mathrm{dom}(t)\Rightarrow t\upharpoonright i\in T$。
+> $t\in T\wedge i\le\mathrm{dom}(t)\Rightarrow t\upharpoonright i\in T$ 。
 > $[T]=\{f : \forall n\,(f\upharpoonright n\in T)\}$ 为其全体无穷树枝。
 
 > **定理 3.26** $X\subseteq\mathcal N$ 闭 $\iff$ $X=[T]$
-> 对某棵树 $T$。
+> 对某棵树 $T$ 。
 
-**证明**。（⇐）若 $f\notin[T]$，令
-$m=\min\{n : f\upharpoonright m\notin T\}$，则邻域
+**证明**。（⇐）若 $f\notin[T]$ ，令
+$m=\min\{n : f\upharpoonright m\notin T\}$ ，则邻域
 $N_{f\upharpoonright m}$ 与 $[T]$ 不交。（⇒）取**表示树**
 
 $$
 T_X=\{s : \exists f\in X\,(s\subseteq f)\},
 $$
 
-则 $X\subseteq[T_X]$；反之 $f\in[T_X]$ 时每个 $f\upharpoonright n$
-被某 $g_n\in X$ 延伸，$g_n\to f$，$X$ 闭故 $f\in X$。∎
+则 $X\subseteq[T_X]$ ；反之 $f\in[T_X]$ 时每个 $f\upharpoonright n$
+被某 $g_n\in X$ 延伸，$g_n\to f$ ，$X$ 闭故 $f\in X$ 。∎
 
 孤立点在树上显形为「无分叉」：$f$ 是闭集 $F$ 的孤立点 iff 某个
 $f\upharpoonright n$ 之后表示树只剩一条无穷路。于是：
@@ -126,19 +126,19 @@ $f\upharpoonright n$ 之后表示树只剩一条无穷路。于是：
 
 > **命题 3.6** 非空闭集 $X$ 是完备集 iff $T_X$ 是完备树。∎
 
-对树**求导**：$T'=\{t\in T : t$ 有两个不分歧的延伸于 $T\}$；
-$T$ 完备 iff $T'=T$。
+对树**求导**：$T'=\{t\in T : t$ 有两个不分歧的延伸于 $T\}$ ；
+$T$ 完备 iff $T'=T$ 。
 
 > **引理 3.13** $[T]-[T']$ 至多可数。
 
 **证明**。对 $f\in[T]-[T']$ 令
-$n_f=\min\{k : f\upharpoonright k\in T-T'\}$、
-$s_f=f\upharpoonright n_f$。若 $f\ne g$ 而 $s_f=s_g$，则
+$n_f=\min\{k : f\upharpoonright k\in T-T'\}$ 、
+$s_f=f\upharpoonright n_f$ 。若 $f\ne g$ 而 $s_f=s_g$ ，则
 $\triangle(f,g)\ge n_f$ 且 $s_f$ 之下两树不分歧，即
-$s_f\in T'$，矛盾。故 $f\mapsto s_f$ 单射到可数集。∎
+$s_f\in T'$ ，矛盾。故 $f\mapsto s_f$ 单射到可数集。∎
 
 **树版康托尔-本狄克森**（重证第 81 章定理 3.23）：对不可数闭集
-$F$ 的表示树递归求导 $T_0=T$、$T_{\alpha+1}=(T_\alpha)'$、
+$F$ 的表示树递归求导 $T_0=T$ 、$T_{\alpha+1}=(T_\alpha)'$ 、
 极限取交。树至多可数，过程在某个 $\xi<\omega_1$ 稳定；稳定处
 $T_\xi$ 是完备树（否则再导一次还会损失节点），且
 
@@ -154,22 +154,22 @@ $$
 > **定义 3.27** 拓扑空间是**波兰空间**，若它与某可分完备距离空间
 > 拓扑同胚。
 
-例 3.5：$\mathbb R$、$\mathcal N$、康托尔空间 $2^\omega$、
-$[0,1]$、单位圆、希尔伯特立方体 $[0,1]^\omega$，以及它们的
+例 3.5：$\mathbb R$ 、$\mathcal N$ 、康托尔空间 $2^\omega$ 、
+$[0,1]$ 、单位圆、希尔伯特立方体 $[0,1]^\omega$ ，以及它们的
 可数乘积、开子集、闭子集，都是波兰空间。
 
 > **引理 3.14** 每个波兰空间 $X$ 都是 $\mathcal N$ 的连续像：
-> 存在连续满射 $H:\mathcal N\to X$。
+> 存在连续满射 $H:\mathcal N\to X$ 。
 
-**证明**。取可数稠密 $D=\{a_i\}$。递归构造闭球树 $(C_s)$：
-$C_{\langle\rangle}=X$；给定 $C_s$（半径 $\le 2^{-(n+1)}$，
-$n=\mathrm{dom}(s)$），由稠密性 $D\cap C_s$ 无穷，按第 $s$-个
+**证明**。取可数稠密 $D=\{a_i\}$ 。递归构造闭球树 $(C_s)$ ：
+$C_{\langle\rangle}=X$ ；给定 $C_s$ （半径 $\le 2^{-(n+1)}$ ，
+$n=\mathrm{dom}(s)$ ），由稠密性 $D\cap C_s$ 无穷，按第 $s$ -个
 枚举取子列，令 $C_{s\frown k}$ 为以该子列中元素为中心、半径
-$\le 2^{-(n+2)}$ 的闭球，且 $C_s=\bigcup_k C_{s\frown k}$（有限
+$\le 2^{-(n+2)}$ 的闭球，且 $C_s=\bigcup_k C_{s\frown k}$ （有限
 个不行时取覆盖掉的稠密子列；半径趋于零保证并覆盖）。
 
-对 $f\in\mathcal N$，闭球套 $(C_{f\upharpoonright n})$ 半径趋于
-零，由完备性交集恰一点，令 $H(f)=\bigcap_n C_{f\upharpoonright n}$。
+对 $f\in\mathcal N$ ，闭球套 $(C_{f\upharpoonright n})$ 半径趋于
+零，由完备性交集恰一点，令 $H(f)=\bigcap_n C_{f\upharpoonright n}$ 。
 满射性来自每层球的并覆盖；连续性来自半径的几何衰减。∎
 
 （严格地说：覆盖式 $\bigcup_k$ 需要球心取遍稠密集的相应切片，
@@ -177,19 +177,19 @@ $\le 2^{-(n+2)}$ 的闭球，且 $C_s=\bigcup_k C_{s\frown k}$（有限
 
 ## 82.5 博雷尔层级（定义 3.28、命题 3.7）
 
-> **定义 3.28** 对 $1\le\alpha<\omega_1$：
-> $\Sigma^0_1$=开集，$\Pi^0_1$=闭集，
+> **定义 3.28** 对 $1\le\alpha<\omega_1$ ：
+> $\Sigma^0_1$ =开集，$\Pi^0_1$ =闭集，
 > $$
 > \Sigma^0_\alpha=\Big\{\bigcup_n A_n :
 > A_n\in\bigcup_{\beta<\alpha}\Pi^0_\beta\Big\},\qquad
 > \Pi^0_\alpha=\{X-A : A\in\Sigma^0_\alpha\}.
 > $$
 
-> **命题 3.7** (1) 每层都含于 $\mathcal B(X)$；(2) 层级单调递增
-> 且 $\Sigma$/$\Pi$ 互换地对偶；(3)
-> $\bigcup_{\alpha<\omega_1}(\Sigma^0_\alpha\cup\Pi^0_\alpha) =\mathcal B(X)$；(4) 每层对有限并、有限交封闭，连续原像保层。∎
+> **命题 3.7** (1) 每层都含于 $\mathcal B(X)$ ；(2) 层级单调递增
+> 且 $\Sigma$ /$\Pi$ 互换地对偶；(3)
+> $\bigcup_{\alpha<\omega_1}(\Sigma^0_\alpha\cup\Pi^0_\alpha) =\mathcal B(X)$ ；(4) 每层对有限并、有限交封闭，连续原像保层。∎
 
-(2) 中「开集是 $\Sigma^0_2$」用可数稠密集与距离有理数近似：每个
+(2) 中「开集是 $\Sigma^0_2$ 」用可数稠密集与距离有理数近似：每个
 开集是可数个闭球之并——这与第 81 章 81.6 事实 (7) 的论证同源。可数
 距离空间上博雷尔概念平凡（每个子集都博雷尔）；不可数波兰空间上
 层级**非平凡**，由下一节的通用集见证。
@@ -197,41 +197,41 @@ $\le 2^{-(n+2)}$ 的闭球，且 $C_s=\bigcup_k C_{s\frown k}$（有限
 ## 82.6 通用博雷尔集与层级的严格性（引理 3.15、推论 3.5）
 
 > **引理 3.15** 对每个 $1\le\alpha<\omega_1$ 存在
-> **通用集** $U_\alpha\subseteq\mathcal N^2$：
-> $U_\alpha\in\Sigma^0_\alpha(\mathcal N^2)$，且每个
+> **通用集** $U_\alpha\subseteq\mathcal N^2$ ：
+> $U_\alpha\in\Sigma^0_\alpha(\mathcal N^2)$ ，且每个
 > $A\in\Sigma^0_\alpha(\mathcal N)$ 都是某个竖截口：
-> $A=\{x : (x,a)\in U_\alpha\}$。
+> $A=\{x : (x,a)\in U_\alpha\}$ 。
 
-**构造**。归纳于 $\alpha$。$\alpha=1$：罗列基本开集
-$(G_k)$，令
-$(x,y)\in U_1\iff\exists n\,(x\in G_{y(n)})$——开集的并，而每个
+**构造**。归纳于 $\alpha$ 。$\alpha=1$ ：罗列基本开集
+$(G_k)$ ，令
+$(x,y)\in U_1\iff\exists n\,(x\in G_{y(n)})$ ——开集的并，而每个
 开集 $A=\bigcup_n G_{a(n)}$ 被截口实现。
 
-后继步 $\alpha=\beta+1$：由引理 3.14 取连续满射
-$f:\mathcal N\to\mathcal N^\omega$，用 $f$ 把竖坐标 $a$ 解码成
-一列码 $a(n)$；令
+后继步 $\alpha=\beta+1$ ：由引理 3.14 取连续满射
+$f:\mathcal N\to\mathcal N^\omega$ ，用 $f$ 把竖坐标 $a$ 解码成
+一列码 $a(n)$ ；令
 
 $$
 (x,y)\in U_\alpha\iff\exists n\,\big((x,y(n))\in U_\beta\big).
 $$
 
-若 $A=\bigcup_n A_n$、$A_n\in\Pi^0_\beta$，取 $a_n$ 使
-$\mathcal N-A_n=\{x:(x,a_n)\in U_\beta\}$，再取 $a$ 编码
-$(a_n)$。
+若 $A=\bigcup_n A_n$ 、$A_n\in\Pi^0_\beta$ ，取 $a_n$ 使
+$\mathcal N-A_n=\{x:(x,a_n)\in U_\beta\}$ ，再取 $a$ 编码
+$(a_n)$ 。
 
-极限步 $\alpha$：取递增趋于 $\alpha$ 的序列
-$\alpha_n$，同样解码后令
+极限步 $\alpha$ ：取递增趋于 $\alpha$ 的序列
+$\alpha_n$ ，同样解码后令
 $(x,y)\in U_\alpha\iff\forall n\,\big((x,y(n))\in U_{\alpha_n+1}\big)$ 型的交并组合实现「低层之并的交」。∎
 
-> **推论 3.5** 对 $1\le\alpha<\omega_1$，
-> $\Sigma^0_\alpha-\Pi^0_\alpha\ne\varnothing$。
+> **推论 3.5** 对 $1\le\alpha<\omega_1$ ，
+> $\Sigma^0_\alpha-\Pi^0_\alpha\ne\varnothing$ 。
 
 **证明**（对角论证）。令
-$A=\{a : (a,a)\in U_\alpha\}\in\Sigma^0_\alpha$。若
-$A\in\Pi^0_\alpha$，则 $\mathcal N-A\in\Sigma^0_\alpha$，取
-$a^*$ 使 $\mathcal N-A=\{x:(x,a^*)\in U_\alpha\}$。问
-$a^*\in A$？若是，则 $(a^*,a^*)\in U_\alpha$，故
-$a^*\notin\mathcal N-A$，即 $(a^*,a^*)\notin U_\alpha$，矛盾；
+$A=\{a : (a,a)\in U_\alpha\}\in\Sigma^0_\alpha$ 。若
+$A\in\Pi^0_\alpha$ ，则 $\mathcal N-A\in\Sigma^0_\alpha$ ，取
+$a^*$ 使 $\mathcal N-A=\{x:(x,a^*)\in U_\alpha\}$ 。问
+$a^*\in A$ ？若是，则 $(a^*,a^*)\in U_\alpha$ ，故
+$a^*\notin\mathcal N-A$ ，即 $(a^*,a^*)\notin U_\alpha$ ，矛盾；
 若否，同理矛盾。∎
 
 于是博雷尔集被切成 $\omega_1$ 层货真价实的复杂度阶梯——这条阶梯
@@ -239,15 +239,15 @@ $a^*\notin\mathcal N-A$，即 $(a^*,a^*)\notin U_\alpha$，矛盾；
 
 ## 82.7 解析集：连续像与投影（定义 3.29/3.30、引理 3.16/3.17）
 
-> **定义 3.29** $A\subseteq X$（波兰）是**解析集**，若
-> $A=f[\mathcal N]$ 对某连续 $f:\mathcal N\to X$。
+> **定义 3.29** $A\subseteq X$ （波兰）是**解析集**，若
+> $A=f[\mathcal N]$ 对某连续 $f:\mathcal N\to X$ 。
 
 （传说这概念源自一位年轻大学生指出：博雷尔集类对连续像**不**封闭
 ——成熟数学家看走眼的地方。）
 
 例 3.6：由引理 3.14，每个波兰空间是自身的解析子集；单点集解析。
 定义 3.30：乘积空间 $X\times Y$ 的子集 $A$ 在 $X$ 上的**投影**
-$\pi_Y(A)=\{x:\exists y\,(x,y)\in A\}$；投影是连续满射的伴生运算。
+$\pi_Y(A)=\{x:\exists y\,(x,y)\in A\}$ ；投影是连续满射的伴生运算。
 
 > **引理 3.16** (1) 闭集解析（闭子集自身是波兰空间，用引理 3.14）。
 > (2) 每个**博雷尔**集 $A\subseteq X$ 是 $X\times\mathcal N$ 上
@@ -261,8 +261,8 @@ $$
 $$
 
 闭集：$A=\pi_Y(A\times\mathcal N)$ ✓。**可数并**：
-$A_n=\pi_Y(F_n)$，取连续满射编码
-$c\mapsto(c(0),c(1),\ldots)$，则
+$A_n=\pi_Y(F_n)$ ，取连续满射编码
+$c\mapsto(c(0),c(1),\ldots)$ ，则
 
 $$
 \bigcup_n A_n=\pi_Y\big(\{(x,c) : (x,c(c(0)(0))?)\}\big)
@@ -277,17 +277,17 @@ $$
 $$
 
 同样闭。$\mathcal C$ 含闭集、对可数并交封闭，故
-$\mathcal B(X)\subseteq\mathcal C$。∎
+$\mathcal B(X)\subseteq\mathcal C$ 。∎
 
-> **引理 3.17（解析集四等价）** 对 $A\subseteq X$，TFAE：
-> (1) $A=f[\mathcal N]$（连续像）；(2) $A$ 是某波兰空间中博雷尔
+> **引理 3.17（解析集四等价）** 对 $A\subseteq X$ ，TFAE：
+> (1) $A=f[\mathcal N]$ （连续像）；(2) $A$ 是某波兰空间中博雷尔
 > 集的连续像；(3) $A$ 是某博雷尔集的投影；(4) $A$ 是
 > $X\times\mathcal N$ 上某**闭**集的投影。
 
 **证明**。(4)⇒(1)：闭集是波兰空间（可分完备的闭子空间），引理 3.14
 给连续满射，复合投影。(1)⇒(4)：$f$ 的反图
 $\{(f(\alpha),\alpha)\}$ 是 $X\times\mathcal N$ 中的闭集，其投影
-即 $A$（连续函数的图像闭）。（2)(3) 介于其间，由引理 3.16 与投影
+即 $A$ （连续函数的图像闭）。（2)(3) 介于其间，由引理 3.16 与投影
 的连续性串起。∎
 
 四等价中 (4) 最有用：**解析集 = 闭集的投影**。这正是「树枝—闭集
@@ -301,78 +301,78 @@ $\{(f(\alpha),\alpha)\}$ 是 $X\times\mathcal N$ 中的闭集，其投影
 > f(a\upharpoonright n).
 > $$
 >
-> 称 $f$ **单调递减**，若 $s\subseteq t\Rightarrow f(t)\subseteq f(s)$。（任意 $f$ 可用 $f^*(s)=\bigcap_{s\subseteq t}f(t)$
-> 单调化而不改变 $\mathcal A(f)$。）
+> 称 $f$ **单调递减**，若 $s\subseteq t\Rightarrow f(t)\subseteq f(s)$ 。（任意 $f$ 可用 $f^*(s)=\bigcap_{s\subseteq t}f(t)$
+> 单调化而不改变 $\mathcal A(f)$ 。）
 
 > **引理 3.18** $A$ 解析 $\iff$ 存在单调递减的
-> $f:\omega^{<\omega}\to\Pi^0_1(X)$（闭集值）使 $A=\mathcal A(f)$。
+> $f:\omega^{<\omega}\to\Pi^0_1(X)$ （闭集值）使 $A=\mathcal A(f)$ 。
 
-**证明**。（⇐）$x\in\mathcal A(f)\iff\exists a\,\forall n\, (x\in f(a\upharpoonright n))$，故 $A$ 是闭集
+**证明**。（⇐）$x\in\mathcal A(f)\iff\exists a\,\forall n\, (x\in f(a\upharpoonright n))$ ，故 $A$ 是闭集
 $\{(x,a):\forall n\, x\in f(a\upharpoonright n)\}$ 的投影——引理
-3.17(4)。（⇒）取 $h(s)=f[N_s]$（连续像下的闭？$N_s$ 闭、$f$
+3.17(4)。（⇒）取 $h(s)=f[N_s]$ （连续像下的闭？$N_s$ 闭、$f$
 连续，$f[N_s]$ 是解析的紧像——非闭！改为 $h(s)=\overline{f[N_s]}$?
-原书直接用 $f[N_s]$ 于 $\Pi^0_1$——**校勘**：$\mathcal N$ 的闭
+原书直接用 $f[N_s]$ 于 $\Pi^0_1$ ——**校勘**：$\mathcal N$ 的闭
 子集 $N_s$ 是波兰空间，$f[N_s]$ 是解析集而非必闭；正确读法是把
 $h(s)$ 视为「取值于解析集」的单调族，而 $\Pi^0_1$ 的要求属于
 (⇐) 方向的自然加强。按 $\mathcal A(h)=A$ 验证：
-$f[\mathcal N]=\bigcup_{a}\bigcap_n f[N_{a\upharpoonright}]= \bigcup_a\{f(a)\}^{\mathrm{cl}}$… 逐点地
-$\bigcap_n f[N_{a\upharpoonright n}]=\{f(a)\}$（半径趋于零的邻域
-套），故 $\mathcal A(h)=f[\mathcal N]$。∎
+$f[\mathcal N]=\bigcup_{a}\bigcap_n f[N_{a\upharpoonright}]= \bigcup_a\{f(a)\}^{\mathrm{cl}}$ … 逐点地
+$\bigcap_n f[N_{a\upharpoonright n}]=\{f(a)\}$ （半径趋于零的邻域
+套），故 $\mathcal A(h)=f[\mathcal N]$ 。∎
 
-> **命题 3.8** 解析集类 $\Sigma^1_1(X)$：含全体博雷尔集；对可数
+> **命题 3.8** 解析集类 $\Sigma^1_1(X)$ ：含全体博雷尔集；对可数
 > 并、可数交封闭；对连续像与原像封闭；**对苏斯林运算封闭**
-> （$f:\omega^{<\omega}\to\Sigma^1_1$ ⇒ $\mathcal A(f)\in \Sigma^1_1$）。∎（都由四等价 + 引理 3.16 的封闭类技巧直接组装；
+> （$f:\omega^{<\omega}\to\Sigma^1_1$ ⇒ $\mathcal A(f)\in \Sigma^1_1$ ）。∎（都由四等价 + 引理 3.16 的封闭类技巧直接组装；
 > 苏斯林封闭性把两层计数并交压成一层。）
 
 自然的问题：$\Sigma^1_1$ 对**补**封闭吗？若封闭，它就是含博雷尔
-的 $\sigma$-代数，层级失效。两个答案分两节给出。
+的 $\sigma$ -代数，层级失效。两个答案分两节给出。
 
 ## 82.9 投影层级与严格性（定义、引理 3.19、推论 3.6）
 
-> **投影层级**：$\Sigma^1_1$=解析集；$\Pi^1_1$=其余解析集；
-> $\Sigma^1_{n+1}=\{\pi_Y(A) : A\in\Sigma^1_n(X\times\mathcal N)\}$；
-> $\Pi^1_{n+1}$=补；$\Delta^1_n=\Sigma^1_n\cap\Pi^1_n$。
+> **投影层级**：$\Sigma^1_1$ =解析集；$\Pi^1_1$ =其余解析集；
+> $\Sigma^1_{n+1}=\{\pi_Y(A) : A\in\Sigma^1_n(X\times\mathcal N)\}$ ；
+> $\Pi^1_{n+1}$ =补；$\Delta^1_n=\Sigma^1_n\cap\Pi^1_n$ 。
 
-> **引理 3.19** 每层有通用集 $U_n\subseteq\mathcal N^2$。∎
+> **引理 3.19** 每层有通用集 $U_n\subseteq\mathcal N^2$ 。∎
 > （用同胚 $h:\mathcal N\times\mathcal N\to\mathcal N$ 折叠坐标，
 > 后继步取投影，与引理 3.15 同构。）
 
-> **推论 3.6** $\Sigma^1_n-\Pi^1_n\ne\varnothing$，且
-> $\Delta^1_n\subsetneq\Sigma^1_{n+1}\cap\Pi^1_{n+1}$。
+> **推论 3.6** $\Sigma^1_n-\Pi^1_n\ne\varnothing$ ，且
+> $\Delta^1_n\subsetneq\Sigma^1_{n+1}\cap\Pi^1_{n+1}$ 。
 > （对角论证同推论 3.5。）∎
 
-特别地 $\Sigma^1_1\ne\Pi^1_1$：解析集类**不**对补封闭，层级真实
+特别地 $\Sigma^1_1\ne\Pi^1_1$ ：解析集类**不**对补封闭，层级真实
 存在。但 $\Delta^1_1$ 是什么？下一节回答。
 
 ## 82.10 隔离引理与苏斯林定理（引理 3.20、定理 3.27）
 
 称不相交的 $A,B$ 被**博雷尔集隔离**，若有博雷尔 $D$ 使
-$A\subseteq D$、$B\subseteq X-D$。
+$A\subseteq D$ 、$B\subseteq X-D$ 。
 
 > **引理 3.20（隔离引理）** 任意两个不相交解析集被博雷尔集隔离。
 
 **证明**。先看可数分解的归约：若
-$A=\bigcup_n A_n$、$B=\bigcup_m B_m$ 且每对 $(A_n,B_m)$ 被隔离
-（隔离集 $D_{nm}$），则 $D=\bigcup_n\bigcap_m D_{nm}$ 隔离
-$A,B$。
+$A=\bigcup_n A_n$ 、$B=\bigcup_m B_m$ 且每对 $(A_n,B_m)$ 被隔离
+（隔离集 $D_{nm}$ ），则 $D=\bigcup_n\bigcap_m D_{nm}$ 隔离
+$A,B$ 。
 
-反设 $A=f[\mathcal N]$、$B=g[\mathcal N]$（连续）不被隔离。令
-$A_s=f[N_s]$、$B_s=g[N_s]$。若每对 $(A_s,B_t)$ 都被隔离，
+反设 $A=f[\mathcal N]$ 、$B=g[\mathcal N]$ （连续）不被隔离。令
+$A_s=f[N_s]$ 、$B_s=g[N_s]$ 。若每对 $(A_s,B_t)$ 都被隔离，
 则由归约 $A,B$ 被隔离——矛盾；故有 $s_0,t_0$ 使
-$A_{s_0},B_{t_0}$ 不被隔离。递归得 $s_0\subseteq s_1\subseteq \cdots$、$t_0\subseteq t_1\subseteq\cdots$，每步
-$(A_{s_n},B_{t_n})$ 不被隔离。令 $a=\bigcup s_n$、$b=\bigcup t_n$。因 $A\cap B=\varnothing$，$f(a)\ne g(b)$；取分离的开集
-$G_{f(a)},G_{g(b)}$，由连续性，充分长的
-$A_{s_n}\subseteq G_{f(a)}$、$B_{t_n}\subseteq G_{g(b)}$——被
+$A_{s_0},B_{t_0}$ 不被隔离。递归得 $s_0\subseteq s_1\subseteq \cdots$ 、$t_0\subseteq t_1\subseteq\cdots$ ，每步
+$(A_{s_n},B_{t_n})$ 不被隔离。令 $a=\bigcup s_n$ 、$b=\bigcup t_n$ 。因 $A\cap B=\varnothing$ ，$f(a)\ne g(b)$ ；取分离的开集
+$G_{f(a)},G_{g(b)}$ ，由连续性，充分长的
+$A_{s_n}\subseteq G_{f(a)}$ 、$B_{t_n}\subseteq G_{g(b)}$ ——被
 开集（从而博雷尔集）隔离，与构造矛盾。∎
 
-> **定理 3.27（苏斯林定理）** $\Delta^1_1=\mathcal B$：解析且余
+> **定理 3.27（苏斯林定理）** $\Delta^1_1=\mathcal B$ ：解析且余
 > 解析的集合是博雷尔集。
 
 **证明**。$A$ 与 $B=X-A$ 都解析，隔离集 $D$ 只能等于
-$A$。∎
+$A$ 。∎
 
 苏斯林定理是「解析层的第一个精确刻度」：博雷尔 = 双解析。它与第
-79 章的 Suslin 树问题 ($A$-运算是否超出博雷尔) 在同一人物名下
+79 章的 Suslin 树问题 ($A$ -运算是否超出博雷尔) 在同一人物名下
 会师。
 
 ## 82.11 解析集的三大正则性（定理 3.28、推论 3.7）
@@ -386,23 +386,23 @@ $A$。∎
 > $B\supseteq X$ 使 $B-X$ 的一切**可测**子集零测。
 > （外测度有限时取达因集；无限时按 $[i,i+1)$ 切片后并。）
 
-设 $A=f[\mathcal N]$，$A_s=f[N_s]$，则
+设 $A=f[\mathcal N]$ ，$A_s=f[N_s]$ ，则
 $A=\mathcal A(\langle A_s\rangle)$ 且
-$A_s=\bigcup_k A_{s\frown k}$。对每个 $s$ 取引理 3.21 的
-$B_s\supseteq A_s$（额外保证 $A_s\subseteq B_s\subseteq \overline{A_s}$ 的规范选取），则
-$A=\mathcal A(\langle B_s\rangle)=:B$。断言
-$B-A\subseteq\bigcup_s\big(B_s-\bigcup_k B_{s\frown k}\big)$：
-若 $x\in B_s$ 但对每支 $s$ 都有 $k$ 使 $x\in B_{s\frown k}$，从根出发递归选 $k_n$ 得树枝 $a$，$x\in\bigcap_n B_{a\upharpoonright n}\subseteq\bigcap_n\overline{A_{a\upharpoonright n}}=\{f(a)\}\subseteq A$。而每个
-$B_s-\bigcup_k B_{s\frown k}\subseteq B_s-\bigcup_k A_{s\frown k} =B_s-A_s$，是 $B_s-A_s$ 的可测子集，零测。可数并后 $B-A$
+$A_s=\bigcup_k A_{s\frown k}$ 。对每个 $s$ 取引理 3.21 的
+$B_s\supseteq A_s$ （额外保证 $A_s\subseteq B_s\subseteq \overline{A_s}$ 的规范选取），则
+$A=\mathcal A(\langle B_s\rangle)=:B$ 。断言
+$B-A\subseteq\bigcup_s\big(B_s-\bigcup_k B_{s\frown k}\big)$ ：
+若 $x\in B_s$ 但对每支 $s$ 都有 $k$ 使 $x\in B_{s\frown k}$ ，从根出发递归选 $k_n$ 得树枝 $a$ ，$x\in\bigcap_n B_{a\upharpoonright n}\subseteq\bigcap_n\overline{A_{a\upharpoonright n}}=\{f(a)\}\subseteq A$ 。而每个
+$B_s-\bigcup_k B_{s\frown k}\subseteq B_s-\bigcup_k A_{s\frown k} =B_s-A_s$ ，是 $B_s-A_s$ 的可测子集，零测。可数并后 $B-A$
 零测，$A=B-(B-A)$ 可测。∎
 
 **(2)** 用贝尔版极小覆盖（引理 3.22：任意 $Y$ 有具贝尔性质的
 $B\supseteq Y$ 使 $B-Y$ 的一切具贝尔性质的子集稀疏——取
-$D(Y)=\{x:$ 有基本开集 $U\ni x$ 使 $U\cap Y$ 非稀疏$\}$，
+$D(Y)=\{x:$ 有基本开集 $U\ni x$ 使 $U\cap Y$ 非稀疏$\}$ ，
 它闭，$B=Y\cup D(Y)$ 即所求），其余论证与 (1) 逐字平行。∎
 
 **(3)** 树法。设 $A=f[\mathcal N]$ 不可数，$f$ 连续。对树
-$T\subseteq\mathcal N^{<\omega}$（即 $\omega^{<\omega}$ 的子树）
+$T\subseteq\mathcal N^{<\omega}$ （即 $\omega^{<\omega}$ 的子树）
 定义**重数导数**
 
 $$
@@ -410,8 +410,8 @@ T'=\{t\in T : |[T_t]|>\aleph_0\}\qquad(T_t=\{s\in T : t\subseteq
 s\}),
 $$
 
-递归 $T(0)=\omega^{<\omega}$、$T(\alpha+1)=(T(\alpha))'$、极限
-取交，稳定于某 $T(\alpha^*)$。若 $T(\alpha^*)=\varnothing$，则
+递归 $T(0)=\omega^{<\omega}$ 、$T(\alpha+1)=(T(\alpha))'$ 、极限
+取交，稳定于某 $T(\alpha^*)$ 。若 $T(\alpha^*)=\varnothing$ ，则
 
 $$
 A=\bigcup\{f[[T_s]] : s\in(T(\beta)-T(\beta+1)),\ \beta<\alpha^*\},
@@ -419,12 +419,12 @@ $$
 
 每片可数（$[T_s]$ 在导掉的一步变为可数），$A$ 可数——矛盾。故
 $T(\alpha^*)\ne\varnothing$ 且处处重数不可数：每个节点可分出两个
-**不相交子树值**的后继。递归取 2-分叉子树 $U\cong 2^{<\omega}$，
-使 $f$ 在 $[U]$（紧集）上单射，$P=f[[U]]\subseteq A$ 紧、无
+**不相交子树值**的后继。递归取 2-分叉子树 $U\cong 2^{<\omega}$ ，
+使 $f$ 在 $[U]$ （紧集）上单射，$P=f[[U]]\subseteq A$ 紧、无
 孤立点——完备子集。∎
 
 > **推论 3.7** (1) $\Pi^1_1$ 集可测且具贝尔性质（取补用 (1)(2)）。
-> (2) 解析集（尤其博雷尔集）或可数或势 $2^{\aleph_0}$——**博雷尔
+> (2) 解析集（尤其博雷尔集）或可数或势 $2^{\aleph_0}$ ——**博雷尔
 > 集与解析集都不是连续统假设的反例**。∎
 
 剩余的两个大问题，原书明言留给最后一章/第三卷：
@@ -437,34 +437,34 @@ $T(\alpha^*)\ne\varnothing$ 且处处重数不可数：每个节点可分出两�
 ## 82.12 无穷博弈：策略与稳赢（定义 3.31–3.34）
 
 > **定义 3.31（赛局）** $A\subseteq\mathcal N$ 确定赛事
-> $\mathcal G_A$：张三、李四轮流写自然数
-> $a_0,b_0,a_1,b_1,\ldots$，得赛局
-> $x*y=(a_0,b_0,a_1,b_1,\ldots)$；$x*y\in A$ 则张三胜，否则
+> $\mathcal G_A$ ：张三、李四轮流写自然数
+> $a_0,b_0,a_1,b_1,\ldots$ ，得赛局
+> $x*y=(a_0,b_0,a_1,b_1,\ldots)$ ；$x*y\in A$ 则张三胜，否则
 > 李四胜。
 
 > **定义 3.32（策略）** 张三的策略是
-> $\sigma:\bigcup_n\omega^{2n}\to\omega$；李四的策略是
-> $\tau:\bigcup_n\omega^{2n+1}\to\omega$。称在本局中使用了 $\sigma$，
-> 若每步 $x(n)=\sigma(x*y\upharpoonright 2n)$（李四同理）。
+> $\sigma:\bigcup_n\omega^{2n}\to\omega$ ；李四的策略是
+> $\tau:\bigcup_n\omega^{2n+1}\to\omega$ 。称在本局中使用了 $\sigma$ ，
+> 若每步 $x(n)=\sigma(x*y\upharpoonright 2n)$ （李四同理）。
 
-若张三坚持 $\sigma$，赛局由李四的应对 $y$ 完全确定，记
-$\sigma*y$；同理 $\sigma*\tau$。于是：
+若张三坚持 $\sigma$ ，赛局由李四的应对 $y$ 完全确定，记
+$\sigma*y$ ；同理 $\sigma*\tau$ 。于是：
 
 > **定义 3.33（稳赢）** $\sigma$ 是张三在 $\mathcal G_A$ 中的
-> **胜算**， iff $\{\sigma*y : y\in\mathcal N\}\subseteq A$；
+> **胜算**， iff $\{\sigma*y : y\in\mathcal N\}\subseteq A$ ；
 > $\tau$ 是李四的胜算 iff
-> $\{\sigma*\tau:\sigma\}\cap A=\varnothing$。
+> $\{\sigma*\tau:\sigma\}\cap A=\varnothing$ 。
 
 > **定义 3.34** $A$ **胜负确定**，若 $\mathcal G_A$ 中有一方
 > 有胜算。
 
 **例 3.7（Banach–Mazur 赛事）**。由 $X\subseteq\mathcal N$ 确定
-的 $\mathcal G^{X}_{BM}$：双方轮流出示**有限序列**，后者必须延伸
+的 $\mathcal G^{X}_{BM}$ ：双方轮流出示**有限序列**，后者必须延伸
 前者，谁犯规谁输；都不犯规则得
-$x=\bigcup_i s_i=\bigcup_i t_i$，$x\in X$ 张三胜。经
-$\omega^{<\omega}$ 的递归单一列表 $(u_k)$，它可转化为标准赛事：
+$x=\bigcup_i s_i=\bigcup_i t_i$ ，$x\in X$ 张三胜。经
+$\omega^{<\omega}$ 的递归单一列表 $(u_k)$ ，它可转化为标准赛事：
 张三的每步是一个自然数，解码为有限序列；李四先犯规、或全程无犯规
-且合成点 $\in X$，分别对应转化后集合 $A$ 的两个析取支。转化保持
+且合成点 $\in X$ ，分别对应转化后集合 $A$ 的两个析取支。转化保持
 稳赢策略的存在性。
 
 > **定理 3.29（巴拿赫）** 在 Banach–Mazur 赛事
@@ -472,17 +472,17 @@ $\omega^{<\omega}$ 的递归单一列表 $(u_k)$，它可转化为标准赛事�
 > (1) 李四稳赢 iff $X$ 稀疏；(2) 张三稳赢 iff 有某个基本开集
 > $N_s$ 使 $N_s-X$ 稀疏。
 
-**证明**。(1) 充分性：设 $X\subseteq\bigcup_n F_n$、各 $F_n$
+**证明**。(1) 充分性：设 $X\subseteq\bigcup_n F_n$ 、各 $F_n$
 闭无处稠密，$G_n=\mathcal N-F_n$ 稠密开。李四的策略：张三出示
-$s$，李四取 $t$ 使 $N_t\subseteq N_s\cap G_n$（第 $n$ 轮）。
-合成点落在每个 $G_n$，故不在 $X$。
+$s$ ，李四取 $t$ 使 $N_t\subseteq N_s\cap G_n$ （第 $n$ 轮）。
+合成点落在每个 $G_n$ ，故不在 $X$ 。
 
 必要性：设 $\tau$ 是李四的胜算。称有限对局
 $p=(s_0,t_0,\ldots,s_n,t_n)$ 为**正确位**，若至今无犯规且李四各步
-依 $\tau$。**断言**：若 $\alpha\in\mathcal N$ 满足「对每个正确
-位 $p$，只要 $t_n\subseteq\alpha$ 就有延伸 $\tau(p\frown s) \subseteq\alpha$ 的 $s$」，则 $\alpha\in\mathcal N-X$。（沿
-$\alpha$ 构造正确位链，合成点收敛于 $\alpha$，李四依胜算赢，
-故 $\alpha\notin X$。）于是
+依 $\tau$ 。**断言**：若 $\alpha\in\mathcal N$ 满足「对每个正确
+位 $p$ ，只要 $t_n\subseteq\alpha$ 就有延伸 $\tau(p\frown s) \subseteq\alpha$ 的 $s$ 」，则 $\alpha\in\mathcal N-X$ 。（沿
+$\alpha$ 构造正确位链，合成点收敛于 $\alpha$ ，李四依胜算赢，
+故 $\alpha\notin X$ 。）于是
 
 $$
 X\subseteq\bigcup_p F_p,\qquad
@@ -493,7 +493,7 @@ $$
 而 $N_{t_p}-F_p$ 在 $N_{t_p}$ 中稠密开，$F_p$ 无处稠密闭；
 正确位可数，$X$ 稀疏。
 
-(2) 由对偶：张三先出示 $s$（若存在 $N_s-X$ 稀疏），此后李四在
+(2) 由对偶：张三先出示 $s$ （若存在 $N_s-X$ 稀疏），此后李四在
 以 $\mathcal N_s-X$ 为标的的赛事中处于 (1) 的李四地位。∎
 
 Banach–Mazur 赛事因此**用稳赢策略刻画贝尔性质**：$X$ 具贝尔性质
@@ -505,33 +505,33 @@ iff 某方在 $\mathcal G^{X}_{BM}$ 中稳赢 iff（恰在）$X$ 与某开集
 > **命题 3.9** $A$ 开。若张三在 $\mathcal G_A$ 中无胜算，则李四
 > 有胜算。
 
-**证明**（不败之地论证）。称位置 $p$（偶长前缀）为李四的**不败
+**证明**（不败之地论证）。称位置 $p$ （偶长前缀）为李四的**不败
 之地**，若张三在子赛事 $\mathcal G_A\upharpoonright p$ 中无胜算。
 根是不败之地。在张三刚走 $a$ 之后，若两个应对 $b$ 都使位置败
 北，则张三「走 $a$ 然后按胜算应对」——与无胜算矛盾；故李四总可
-取 $b$ 保持不败。设按此策略成局 $x*y\in A$：$A$ 开，某
-$N_{(x*y)\upharpoonright 2n}\subseteq A$，则张三在该位之后的任意
-应对都进 $A$——该位是不败之地的否定，矛盾。∎
+取 $b$ 保持不败。设按此策略成局 $x*y\in A$ ：$A$ 开，某
+$N_{(x*y)\upharpoonright 2n}\subseteq A$ ，则张三在该位之后的任意
+应对都进 $A$ ——该位是不败之地的否定，矛盾。∎
 
 > **命题 3.10** $A$ 闭。若李四无胜算，则张三有胜算。
 
 **证明**（对偶化）。李四在 $\mathcal G_A$ 中的策略与张三在
 $\mathcal G_{\mathcal N-A}$ 中的策略是同一族函数（偶长/奇长前缀到
-$\omega$），且「李四依 $\tau$ 应对使成果 $\notin A$」恰是
-「张三依 $\tau$ 应对使成果 $\in\mathcal N-A$」。故李四无胜算于
-$\mathcal G_A$ ⟺ 张三无胜算于 $\mathcal G_{\mathcal N-A}$；后者
-开，命题 3.9 给李四胜算于 $\mathcal G_{\mathcal N-A}$，再翻译回
-张三胜算于 $\mathcal G_A$。（原书另给沿表示树的直接构造：张三每
+$\omega$ ），且「李四依 $\tau$ 应对使成果 $\notin A$ 」恰是
+「张三依 $\tau$ 应对使成果 $\in\mathcal N-A$ 」。故李四无胜算于
+$\mathcal G_A$ ⟺ 张三无胜算于 $\mathcal G_{\mathcal N-A}$ ；后者
+开，命题 3.9 给李四胜算于 $\mathcal G_{\mathcal N-A}$ ，再翻译回
+张三胜算于 $\mathcal G_A$ 。（原书另给沿表示树的直接构造：张三每
 步选使「李四在闭子树赛事中仍无胜算」的延伸。）∎
 
 > **定理 3.30（Gale–Stewart，AC 下）** 存在胜负未定的集合。
 
 **证明**。全部策略只有 $2^{\aleph_0}$ 个，单一列表
-$(\sigma_\alpha)_{\alpha<2^{\aleph_0}}$、
-$(\tau_\alpha)_{\alpha<2^{\aleph_0}}$。递归取
+$(\sigma_\alpha)_{\alpha<2^{\aleph_0}}$ 、
+$(\tau_\alpha)_{\alpha<2^{\aleph_0}}$ 。递归取
 $x_\alpha\in\{\sigma_\alpha*y : y\}\setminus\{x_\xi:\xi<\alpha\}$
 与
-$y_\alpha\in\{\sigma*\tau_\alpha : \sigma\}\setminus\{y_\xi\}\cup \{x_\alpha\}$。令 $X=\{x_\alpha\}$：则 $X\cap\{y_\alpha\} =\varnothing$，且对每个 $\alpha$，$\sigma_\alpha$ 有应对落
+$y_\alpha\in\{\sigma*\tau_\alpha : \sigma\}\setminus\{y_\xi\}\cup \{x_\alpha\}$ 。令 $X=\{x_\alpha\}$ ：则 $X\cap\{y_\alpha\} =\varnothing$ ，且对每个 $\alpha$ ，$\sigma_\alpha$ 有应对落
 $X$ 外（不保张三胜）、$\tau_\alpha$ 有张三应对落 $X$ 内（不保
 李四胜）——无人稳赢。∎
 
@@ -547,32 +547,32 @@ $X$ 外（不保张三胜）、$\tau_\alpha$ 有张三应对落 $X$ 内（不保
 本节是原书自己的定理（Q. Feng, 1993）。
 
 > **定义 3.35（开区分特性）** $X\subseteq\mathbb R$ 非空，
-> $K\subseteq[X]^2$ **相对开**（$K=B\cap[X]^2$，$B$ 开）。
-> $X$ 具开区分特性，若对每个相对开 $K_0$：或有完备
-> $P\subseteq X$ 使 $[P]^2\subseteq K_0$（**开整齐**），或
-> $X=\bigcup_n X_n$ 且 $[X_n]^2\subseteq[X]^2-K_0$（**闭整齐**）。
+> $K\subseteq[X]^2$ **相对开**（$K=B\cap[X]^2$ ，$B$ 开）。
+> $X$ 具开区分特性，若对每个相对开 $K_0$ ：或有完备
+> $P\subseteq X$ 使 $[P]^2\subseteq K_0$ （**开整齐**），或
+> $X=\bigcup_n X_n$ 且 $[X_n]^2\subseteq[X]^2-K_0$ （**闭整齐**）。
 
 > **引理 3.23** 具开区分特性的集合类对可数并、连续像、
 > $|\triangle|\le\aleph_0$ 的改动封闭。∎（练习；组装性。）
 
-例 3.8（Todorcevic）：$K=\{(f,g) : \forall i\,(f\upharpoonright i \ne g\upharpoonright i\ \text{且反向})\}$-型的相对开划分，见证开/
+例 3.8（Todorcevic）：$K=\{(f,g) : \forall i\,(f\upharpoonright i \ne g\upharpoonright i\ \text{且反向})\}$ -型的相对开划分，见证开/
 闭整齐的**不对称性**不可消除。
 
 定理 3.32 的证明分三步：设计**开区分赛事** $\mathcal G(X,K)$
 （康托尔空间 $2^\omega$ 上，双方轮流出示序对
-$(s^0,s^1)$ 与选择 $i_n$，串接后收敛出实数；张三赢 iff 不犯规
-且成果 $\in X$）；引理 3.24：张三稳赢 iff $X$ 含完备开整齐
+$(s^0,s^1)$ 与选择 $i_n$ ，串接后收敛出实数；张三赢 iff 不犯规
+且成果 $\in X$ ）；引理 3.24：张三稳赢 iff $X$ 含完备开整齐
 子集；引理 3.25：李四稳赢 iff $X$ 是可数个闭整齐集之并。李四的
 赢是**有限步内**可见的（谁犯规谁输、且李四的犯规条件开），故对李四
 是开赛事——Gale–Stewart（命题 3.9 的无限版）给确定性，二选一即
-特性。四个「事实」把李四稳赢分解为闭整齐片 $F_p$（正确位 $p$
+特性。四个「事实」把李四稳赢分解为闭整齐片 $F_p$ （正确位 $p$
 处张三认输的节点集），事实三/四分别给出覆盖与整齐性。于是
 $2^\omega$ 具特性，经引理 3.23 传给 $\mathbb R,\mathcal N$ 与全
 体解析集。
 
 > **定理 3.32（冯）** 解析集具开区分特性。∎
 
-> **定义 3.36（OCA）** 不可数 $X$、相对开 $K$：或有不可数开整
+> **定义 3.36（OCA）** 不可数 $X$ 、相对开 $K$ ：或有不可数开整
 > 子集，或 $X$ 是可数个闭整齐集之并。
 
 OCA（Todorcevic 公理）作为公理与 MA 并列，是公理集合论组合原理
@@ -584,12 +584,12 @@ OCA（Todorcevic 公理）作为公理与 MA 并列，是公理集合论组合�
 
 | 环节 | 对象 | 关键定理 |
 |---|---|---|
-| 树枝 | $f\in\mathcal N$，$[T]$ | 完备性、区间套（80 章） |
+| 树枝 | $f\in\mathcal N$ ，$[T]$ | 完备性、区间套（80 章） |
 | 闭集 | $X=[T_X]$ | 定理 3.26；完备树=完备集（命题 3.6） |
-| 投影 | $\pi_Y(F)$，$F$ 闭 | 引理 3.16/3.17（解析=闭投影） |
-| 解析 | $f[\mathcal N]$、$\mathcal A(f)$ | 四等价；苏斯林 $\Delta^1_1=\mathcal B$ |
+| 投影 | $\pi_Y(F)$ ，$F$ 闭 | 引理 3.16/3.17（解析=闭投影） |
+| 解析 | $f[\mathcal N]$ 、$\mathcal A(f)$ | 四等价；苏斯林 $\Delta^1_1=\mathcal B$ |
 | 正则 | 可测、贝尔性质、完备子集 | 定理 3.28；开区分（定理 3.32） |
-| 博弈 | $\mathcal G_A$、BM 赛事 | 定理 3.29 刻画稀疏；3.9/3.10 开闭确定 |
+| 博弈 | $\mathcal G_A$ 、BM 赛事 | 定理 3.29 刻画稀疏；3.9/3.10 开闭确定 |
 
 反向读也成立：**未定集的存在（定理 3.30）标记了博弈方法在 ZFC 内
 的边界**；马丁定理把边界推到博雷尔层；解析层以上的确定性需要大基数
@@ -654,9 +654,9 @@ example {ι : Type*} [Countable ι] {U : ι → Set ℝ}
 end Settheory.Ch82
 ```
 
-`cantor_bendixson` 的结论形式（$C=V\cup D$、$V$ 可数、
+`cantor_bendixson` 的结论形式（$C=V\cup D$ 、$V$ 可数、
 $D$ 完备）与 82.3 树版求导的结论逐字对应；`cantor_injection` 把
-「完备集有连续统势」直接做成了**连续单射** $2^\omega\to C$，比势
+「完备集有连续统势」直接做成了**连续单射** $2^\omega\to C$ ，比势
 不等式更强（这正是 `Perfect.splitting` 分裂引理逐层构造的产物）。
 注意三个锚点都只要第二可数性/波兰性，不需要度量——树表示换成了
 mathlib 的核（kernel）分解。
@@ -737,7 +737,7 @@ End Ch82.
 ```
 
 对偶定理的第一版陈述曾写成「补赛事同方获胜」，被 Coq 当场驳回
-（$\neg c_1\vee\neg c_2\ne\neg(c_1\vee c_2)$）——修正为
+（$\neg c_1\vee\neg c_2\ne\neg(c_1\vee c_2)$ ）——修正为
 **换行棋方**后德摩根律逐层对上。这条对偶正是命题 3.10 由命题 3.9
 「翻译」得到的那个翻译（82.13 的证明用了一次），在有限侧它是可证
 定理而非隐喻。
@@ -976,8 +976,8 @@ println("END ====")
 `s = [s; a; pick(s)]`——`pick(s)` 在**对手落子前**的位置求值。
 李四的全 0 策略（S1）对此不敏感而漏网；奇偶敏感的 S8 把它当场抓
 住。修正为 `pick([s; a])` 后四组全绿。「策略必须在应对位置查询」
-与正文定义 3.32 的 $x(n)=\sigma(x*y\upharpoonright 2n)$（而非
-$2n{+}1$）是同一件事——有限实验在这里反哺了定义的读法。
+与正文定义 3.32 的 $x(n)=\sigma(x*y\upharpoonright 2n)$ （而非
+$2n{+}1$ ）是同一件事——有限实验在这里反哺了定义的读法。
 
 ## 82.21 机器通道六：Python——自底向上对拍
 
@@ -1110,14 +1110,14 @@ main :-
 定；张三位**存在**一步；李四位**无**反例步（`\+ (\+ ...)` 的双重
 否定实现「所有」）。其二，`[1,0]` 后 `\+ zwin(b, [1,0])` 给出李四
 的**具体杀招**（张三首手 1、李四应 0 后，四个剩余位最多再添两个
-1，凑不到 4）——这就是定理 3.29(1) 证明里「李四躲进 $G_n$」的
+1，凑不到 4）——这就是定理 3.29(1) 证明里「李四躲进 $G_n$ 」的
 有限翻版。其三，树部分验证前缀封闭与叶分解，`proj/2` 把「投影 =
 带见证的树叶选择」做成了查询——引理 3.17(4) 的有限影子。
 
 ## 82.23 机器的边界
 
 1. **贝尔空间本身缺席**。mathlib 无 $\omega^\omega$ 的
-   PolishSpace/度量实例；命题 3.5 的 $d=2^{-\triangle}$、完备性
+   PolishSpace/度量实例；命题 3.5 的 $d=2^{-\triangle}$ 、完备性
    证明、$\mathcal N\cong$ 无理数，全部只在正文。机器不模拟可分
    完备性。
 2. **确定性定理无机器版**。命题 3.9/3.10 的**无限**证明依赖「任取
@@ -1125,7 +1125,7 @@ main :-
    的影子。马丁定理（3.31）在 mathlib 中完全缺席；定理 3.30 的
    AC-对角构造是 $2^{\aleph_0}$ 规模的超穷递归。
 3. **正则性三定理不可穷举**。测度（定理 3.28(1)）的极小覆盖、贝
-   尔性质（(2)）的 $D(Y)$、完备子集（(3)）的 $\omega_1$ 长
+   尔性质（(2)）的 $D(Y)$ 、完备子集（(3)）的 $\omega_1$ 长
    求导，全部是无限对象上的超穷/可数构造；Julia/Python 的穷举只
    覆盖 $2^6$ 个点。
 4. **开区分赛事未机化**。引理 3.24/3.25 的策略-整齐对应依赖
@@ -1153,9 +1153,9 @@ main :-
 检查问题：
 
 1. 引理 3.13 的单射 $f\mapsto s_f$ 为什么必须取**最小**的
-   $n_f$？换成「任意一个进入 $T-T'$ 的深度」会在哪里失效？
+   $n_f$ ？换成「任意一个进入 $T-T'$ 的深度」会在哪里失效？
 2. 定理 3.28(1) 的关键包含
-   $B-A\subseteq\bigcup_s(B_s-\bigcup_kB_{s\frown k})$：请
+   $B-A\subseteq\bigcup_s(B_s-\bigcup_kB_{s\frown k})$ ：请
    复述「从 $x\in B_s$ 出发递归选树枝」的论证，并指出哪一步用
    了 $B_s$ 的**极小覆盖**性质。
 3. 命题 3.10 的对偶翻译里，「李四的策略 = 张三在补赛事中的策略」

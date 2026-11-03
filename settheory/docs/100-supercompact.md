@@ -4,8 +4,8 @@
 > 正规性带来的「天壤之别」。本章取材冯琦第三卷 §1.2.2（书页
 > 109–113；PDF 129–133）兑现这个预告：**超紧基数** = 每个
 > $\mathcal P_\kappa(\lambda)$ 上都有**正规**精良测度。定理
-> 1.29 把这个组合定义与初等嵌入定义缝合——$(\kappa, \lambda)$-超紧嵌入 $j:V\to M$（${}^\lambda M\subseteq M$）——证明的核心是一个漂亮的等式 $d=j``\lambda$（恒等
-> 函数的类恰是像集）。命题 1.2 给出反射后果：$2^\kappa$-超紧
+> 1.29 把这个组合定义与初等嵌入定义缝合——$(\kappa, \lambda)$ -超紧嵌入 $j:V\to M$ （${}^\lambda M\subseteq M$ ）——证明的核心是一个漂亮的等式 $d=j``\lambda$ （恒等
+> 函数的类恰是像集）。命题 1.2 给出反射后果：$2^\kappa$ -超紧
 > 基数是「第 $\kappa$ 个可测基数」。命题 1.3 展示超紧对连续统
 > 函数的全域控制。定理 1.30（Laver）以「通用反转函数」收束：
 > 超紧基数上存在 $f:\kappa\to V_\kappa$ 使任何集合都被某个
@@ -18,20 +18,20 @@
 
 ## 100.1 定义回顾与等价定理的表述
 
-> **定义 1.17（第 99 章）** $j:V\to M$ 是 $(\kappa, \lambda)$-**超紧嵌入**，当且仅当 $\kappa=\mathrm{Crit}(j)$、
-> $\lambda<j(\kappa)$、且 ${}^\lambda M\subseteq M$。
+> **定义 1.17（第 99 章）** $j:V\to M$ 是 $(\kappa, \lambda)$ -**超紧嵌入**，当且仅当 $\kappa=\mathrm{Crit}(j)$ 、
+> $\lambda<j(\kappa)$ 、且 ${}^\lambda M\subseteq M$ 。
 >
-> **定义 1.16(3)** $\kappa$ 是 $\lambda$-**超紧**基数：
+> **定义 1.16(3)** $\kappa$ 是 $\lambda$ -**超紧**基数：
 > $\mathcal P_\kappa(\lambda)$ 上存在正规测度。
 
-> **定理 1.29** $\kappa\le\lambda$。TFAE：
+> **定理 1.29** $\kappa\le\lambda$ 。TFAE：
 >
-> (1) 存在 $(\kappa,\lambda)$-超紧嵌入 $j:V\to M$；
+> (1) 存在 $(\kappa,\lambda)$ -超紧嵌入 $j:V\to M$ ；
 >
 > (2) $\kappa$ 不可数正则且 $\mathcal P_\kappa(\lambda)$ 上
 > 存在正规测度。
 
-先复位记号。$\mathcal P_\kappa(\lambda)=\{x\subseteq\lambda : |x|<\kappa\}$——$\lambda$ 的**小于 $\kappa$** 的子集全体。
+先复位记号。$\mathcal P_\kappa(\lambda)=\{x\subseteq\lambda : |x|<\kappa\}$ ——$\lambda$ 的**小于** $\kappa$ 的子集全体。
 它是三条线的共同推广：
 
 - $\lambda=\kappa$ 时 $\kappa\in\mathcal P_\kappa(\lambda)$
@@ -39,30 +39,30 @@
   测度（可测基数）；
 - $\kappa=\omega$ 时 $\mathcal P_\omega(\lambda)$ 是
   $\lambda$ 的有限子集全体——第 81 章 Martin 公理的
-  $\sigma$-有界闭包条件、第 83 章超幂 $\mathbb N^\mathbb N/I$ 的论域都是它；
+  $\sigma$ -有界闭包条件、第 83 章超幂 $\mathbb N^\mathbb N/I$ 的论域都是它；
 - 一般情形把「$\kappa$ 的子集」换成「$\lambda$ 的**小**
   子集」，测度的论域从一个基数搬到一个集合的幂片。这个
   「搬家」正是大基数公理从可测爬升到超紧的全部几何：
   $\mathcal P_\kappa(\lambda)$ 上的测度同时看见 $\kappa$
-  （小集的大小上界）与 $\lambda$（论域的广度）。
+  （小集的大小上界）与 $\lambda$ （论域的广度）。
 
 三条公理按强度排列：**精良**（fine，每个单点锥
 $A_x=\{y : x\subseteq y\}$ 测一）保证测度「覆盖每个小集的
-上方」；**$\kappa$-完全**（对 $<\kappa$ 个测一集之交封
+上方」；**$\kappa$ -完全**（对 $<\kappa$ 个测一集之交封
 闭）保证测度不退化为_principal 的碎片；**正规**（对对角线
 交封闭，等价地：任何测一集上的选择函数在测一子集上恒等于
 恒同）是最强的一条——它把「选择」钉死在恒同函数上。第 99
 章强紧只需要前两条；加上第三条，测度就能「代表 $\lambda$
-本身」而非仅仅「代表 $\kappa$」。
+本身」而非仅仅「代表 $\kappa$ 」。
 
 两个方向的证明各自漂亮，值得完整展开。
 
 ## 100.2 (1)⟹(2)：从嵌入提取正规测度
 
-设 $j:V\to M$ 超紧、$\kappa=\mathrm{Crit}(j)$、
-${}^\lambda M\subseteq M$。由 ${}^\lambda M\subseteq M$，
+设 $j:V\to M$ 超紧、$\kappa=\mathrm{Crit}(j)$ 、
+${}^\lambda M\subseteq M$ 。由 ${}^\lambda M\subseteq M$ ，
 **像集** $j``\lambda=\{j(\alpha):\alpha<\lambda\}$ 是 $M$
-的元素。且 $M\models|j``\lambda|=\lambda<j(\kappa)$（$j`` \lambda$ 与 $\lambda$ 传递同构）。
+的元素。且 $M\models|j``\lambda|=\lambda<j(\kappa)$ （$j`` \lambda$ 与 $\lambda$ 传递同构）。
 
 定义
 $$
@@ -74,26 +74,26 @@ $$
 
 **超滤子**：定义直接给出（$j$ 初等 ⟹ $j$ 保布尔运算）。
 
-**$\kappa$-完全**：设 $\langle X_\alpha:\alpha<\gamma\rangle \in U^\gamma$（$\gamma<\kappa$）。则
+**$\kappa$ -完全**：设 $\langle X_\alpha:\alpha<\gamma\rangle \in U^\gamma$ （$\gamma<\kappa$ ）。则
 $$
 j\Big(\bigcap_{\alpha<\gamma}X_\alpha\Big)
 =\bigcap_{\alpha<\gamma}j(X_\alpha)\ni j``\lambda
 $$
 
-（后者因 $\gamma<\kappa=\mathrm{Crit}(j)$：$j$ 固定
-$\gamma$，交可以逐项搬）。∎
+（后者因 $\gamma<\kappa=\mathrm{Crit}(j)$ ：$j$ 固定
+$\gamma$ ，交可以逐项搬）。∎
 
-**精良**：设 $x\in\mathcal P_\kappa(\lambda)$、
-$|x|<\kappa$。$j\upharpoonright x=\mathrm{id}$（临界点下方）
-且 $j``x\subseteq j``\lambda$（每个 $j(\xi)\in j``\lambda$，
-$\xi\in x\subseteq\lambda$）。由 $M\models j``\lambda\in j(A_x)$（$A_x=\{y : x\subseteq y\}$ 之上锥的像），故
-$A_x\in U$。∎
+**精良**：设 $x\in\mathcal P_\kappa(\lambda)$ 、
+$|x|<\kappa$ 。$j\upharpoonright x=\mathrm{id}$ （临界点下方）
+且 $j``x\subseteq j``\lambda$ （每个 $j(\xi)\in j``\lambda$ ，
+$\xi\in x\subseteq\lambda$ ）。由 $M\models j``\lambda\in j(A_x)$ （$A_x=\{y : x\subseteq y\}$ 之上锥的像），故
+$A_x\in U$ 。∎
 
-**正规**：设 $A\in U$、$f:A\to\lambda$ 选择函数。则
-$j``\lambda\in j(A)$、$j(f)$ 是 $j(A)$ 上的选择函数。
-$j(f)(j``\lambda)<j``\lambda$（$M$ 内 $|j``\lambda|= \lambda$，选择函数值 < 序数）。于是
-$j(f)(j``\lambda)=j(\alpha)$（某个 $\alpha<\lambda$），
-即 $j(f(\alpha))=j(\alpha)$，即
+**正规**：设 $A\in U$ 、$f:A\to\lambda$ 选择函数。则
+$j``\lambda\in j(A)$ 、$j(f)$ 是 $j(A)$ 上的选择函数。
+$j(f)(j``\lambda)<j``\lambda$ （$M$ 内 $|j``\lambda|= \lambda$ ，选择函数值 < 序数）。于是
+$j(f)(j``\lambda)=j(\alpha)$ （某个 $\alpha<\lambda$ ），
+即 $j(f(\alpha))=j(\alpha)$ ，即
 $$
 B=\{\alpha\in A : f(\alpha)=\alpha\}\in U
 $$
@@ -102,54 +102,54 @@ $$
 
 正规性一步的机制最值得记：$j``\lambda$ 是「 $M$ 中的
 $<j(\kappa)$ 大小代表 $\lambda$ 本身」；选择函数在
-$j``\lambda$ 上取值必回到某个 $j(\alpha)$，再由初等性拉回
-$\alpha$。**像集 $j``\lambda$ 是正规性的锚**。
+$j``\lambda$ 上取值必回到某个 $j(\alpha)$ ，再由初等性拉回
+$\alpha$ 。**像集 $j``\lambda$ 是正规性的锚**。
 
 四条验证里有一个不显眼但关键的收支：前两条（超滤子、
-$\kappa$-完全）**不需要** ${}^\lambda M\subseteq M$，
+$\kappa$ -完全）**不需要** ${}^\lambda M\subseteq M$ ，
 任何临界点为 $\kappa$ 的嵌入都能做；精良与正规**必须**
-$j``\lambda\in M$——而 $j``\lambda$ 是 $\lambda$-序列
-（对每个 $\alpha<\lambda$ 取 $j(\alpha)$），它落在
+$j``\lambda\in M$ ——而 $j``\lambda$ 是 $\lambda$ -序列
+（对每个 $\alpha<\lambda$ 取 $j(\alpha)$ ），它落在
 $M$ 里**正是** ${}^\lambda M\subseteq M$ 的内容。所以
 「超紧嵌入」定义里的封闭性条款不是外加的强化，而是「像集
 可测」的先决条件：没有封闭性，$U$ 的定义式
 $j``\lambda\in j(X)$ 连语法都写不出来（$j``\lambda$
 不在 $M$ 里，无法问 $M$ 它是否属于某集合）。第 99 章
-强紧嵌入（${}^{<\lambda}M\subseteq M$）处同样的账出现过
+强紧嵌入（${}^{<\lambda}M\subseteq M$ ）处同样的账出现过
 一次；超紧把「$<\lambda$ 长」升级为「$\lambda$ 长」，
 恰好够把 $j``\lambda$ 整个装进去。
 
 ## 100.3 (2)⟹(1)：从正规测度造超紧嵌入
 
 设 $U$ 是 $\mathcal P_\kappa(\lambda)$ 上正规测度。取超幂
-$\mathrm{ult}(V,U)$、传递化 $M$、典型嵌入
-$j=\pi\circ i:V\to M$。
+$\mathrm{ult}(V,U)$ 、传递化 $M$ 、典型嵌入
+$j=\pi\circ i:V\to M$ 。
 
-**关键等式**：令 $\mathrm{Id}$ 为 $\mathcal P_\kappa( \lambda)$ 上恒同函数、$d=\pi([\mathrm{Id}])$。则
+**关键等式**：令 $\mathrm{Id}$ 为 $\mathcal P_\kappa( \lambda)$ 上恒同函数、$d=\pi([\mathrm{Id}])$ 。则
 $$
 d=j``\lambda.
 $$
 
-「$\supseteq$」：精良性给 $A_\alpha=\{y : \alpha\in y\} \in U$（$\alpha<\lambda$），故 $[c_\alpha]\le[\mathrm{Id}]$（即 $d\supseteq\{j(\alpha)\}$ 对一切 $\alpha$）。
+「$\supseteq$ 」：精良性给 $A_\alpha=\{y : \alpha\in y\} \in U$ （$\alpha<\lambda$ ），故 $[c_\alpha]\le[\mathrm{Id}]$ （即 $d\supseteq\{j(\alpha)\}$ 对一切 $\alpha$ ）。
 
-「$\subseteq$」：设 $[f]\in[\mathrm{Id}]$。则
-$\{a : f(a)\in a\}\in U$，$f$ 在此测一集上是选择函数；
+「$\subseteq$ 」：设 $[f]\in[\mathrm{Id}]$ 。则
+$\{a : f(a)\in a\}\in U$ ，$f$ 在此测一集上是选择函数；
 正规性给 $B=\{a : f(a)=\alpha_a\}\in U$ 型的常值化（对某
-个固定的 $\alpha<\lambda$），于是 $[f]=[c_\alpha]$。∎
+个固定的 $\alpha<\lambda$ ），于是 $[f]=[c_\alpha]$ 。∎
 
-有了 $d=j``\lambda$，两件事直接落位：
+有了 $d=j``\lambda$ ，两件事直接落位：
 
-**(a) 临界点与 $\lambda<j(\kappa)$**：$\kappa$-完全性给
-$j(\gamma)=\gamma$（$\gamma<\kappa$），故
-$\kappa=\mathrm{Crit}(j)$。每个 $|l(a)|<\kappa$ 给
-$[c_\kappa]\not\ni[c_l]$，于是
-$\lambda=\mathrm{ot}(d)<j(\kappa)$。
+**(a) 临界点与** $\lambda<j(\kappa)$ ：$\kappa$ -完全性给
+$j(\gamma)=\gamma$ （$\gamma<\kappa$ ），故
+$\kappa=\mathrm{Crit}(j)$ 。每个 $|l(a)|<\kappa$ 给
+$[c_\kappa]\not\ni[c_l]$ ，于是
+$\lambda=\mathrm{ot}(d)<j(\kappa)$ 。
 
-**(b) ${}^\lambda M\subseteq M$**：给定序列
-$\langle a_\alpha:\alpha<\lambda\rangle\in M$（注意
-$\lambda<j(\kappa)$，序列是 $M$ 的外对象）。每个
+**(b)** ${}^\lambda M\subseteq M$ ：给定序列
+$\langle a_\alpha:\alpha<\lambda\rangle\in M$ （注意
+$\lambda<j(\kappa)$ ，序列是 $M$ 的外对象）。每个
 $a_\alpha=j(f_\alpha)(d)$ 型（$M$ 的元素由函数类给出）。
-定义 $f(a)=\langle f_\alpha(a) : \alpha\in a\rangle$（利用
+定义 $f(a)=\langle f_\alpha(a) : \alpha\in a\rangle$ （利用
 $a$ 是 $\lambda$ 的 $<\kappa$ 子集，序型 $<\kappa$ 的
 序列）。则
 $$
@@ -159,7 +159,7 @@ $$
 
 ——序列本身是 $M$ 的元素。∎
 
-(b) 的证明是本章构造的核心：把「$\lambda$-长序列」编码为
+(b) 的证明是本章构造的核心：把「$\lambda$ -长序列」编码为
 「**一个**函数在 $d$ 处的值」，而 $d=j``\lambda$ 恰好把
 $\lambda$ 的每个元素 $\alpha$ 编码进 $j$ 的像。**正规性
 = 恒等函数表示像集 = 序列封闭**——三个陈述一个机制。
@@ -172,28 +172,28 @@ $\lambda$ 的每个元素 $\alpha$ 编码进 $j$ 的像。**正规性
 
 | 测度侧公理 | 嵌入侧事实 | 用在哪一步 |
 |---|---|---|
-| 精良：$A_x\in U$ | $j``x\subseteq j``\lambda$ 且 $j\restriction x=\mathrm{id}$ | 关键等式「$\supseteq$」 |
-| $\kappa$-完全：$<\kappa$ 交封闭 | $j\restriction\mathrm{crit}^{-}=\mathrm{id}$ | 临界点 $=\kappa$ |
-| 正规：选择函数常值化 | $[f]<[\mathrm{Id}]\Rightarrow$ 常值 $\Rightarrow [f]=[c_\alpha]$ | 关键等式「$\subseteq$」与 (b) 的编码 |
+| 精良：$A_x\in U$ | $j``x\subseteq j``\lambda$ 且 $j\restriction x=\mathrm{id}$ | 关键等式「$\supseteq$ 」 |
+| $\kappa$ -完全：$<\kappa$ 交封闭 | $j\restriction\mathrm{crit}^{-}=\mathrm{id}$ | 临界点 $=\kappa$ |
+| 正规：选择函数常值化 | $[f]<[\mathrm{Id}]\Rightarrow$ 常值 $\Rightarrow [f]=[c_\alpha]$ | 关键等式「$\subseteq$ 」与 (b) 的编码 |
 
 反过来看更清楚：**若去掉精良**，$U$ 仍可定义但关键等式
-只剩「$\subseteq$」——超幂里 $d$ 严格大于 $j``\lambda$，
+只剩「$\subseteq$ 」——超幂里 $d$ 严格大于 $j``\lambda$ ，
 序列编码 $f(a)=\langle f_\alpha(a)\rangle$ 失去落点，
 ${}^\lambda M\subseteq M$ 断裂（强紧嵌入正是这种「宽度够、
-精度不够」的形态）。**若去掉正规**（只留精良 + $\kappa$-
+精度不够」的形态）。**若去掉正规**（只留精良 + $\kappa$ -
 完全），$d\supseteq j``\lambda$ 但可能严格更大：存在
-$[f]\in d\setminus j``\lambda$，即 $f$ 在测一集上取值
+$[f]\in d\setminus j``\lambda$ ，即 $f$ 在测一集上取值
 $\in a$ 却永无常值化——超幂多出「外来元素」，$\lambda$
--序列的编码同样失败。**若去掉 $\kappa$-完全**，临界点
-可能低于 $\kappa$，$\lambda<j(\kappa)$ 无从谈起。三条
+-序列的编码同样失败。**若去掉 $\kappa$ -完全**，临界点
+可能低于 $\kappa$ ，$\lambda<j(\kappa)$ 无从谈起。三条
 公理缺一不可，而它们合起来的奖励就是把整个 $\lambda$
--层的集合论装进 $M$。
+-层的集合论装进 $M$ 。
 
 ## 100.4 命题 1.2：超紧基数是第 κ 个可测基数
 
 ## 100.4 命题 1.2：超紧基数是第 κ 个可测基数
 
-> **命题 1.2** $\kappa$ 是 $2^\kappa$-超紧。则
+> **命题 1.2** $\kappa$ 是 $2^\kappa$ -超紧。则
 > $$
 > T=\{\alpha<\kappa : \alpha\text{ 可测}\}\subseteq\kappa
 > \text{ 是荟萃集（}\kappa\text{ 上某正规测度含 }T\text{）}.
@@ -201,17 +201,17 @@ $\in a$ 却永无常值化——超幂多出「外来元素」，$\lambda$
 >
 > 从而 $\kappa$ 是第 $\kappa$ 个可测基数。
 
-**证明**。取 $(\kappa,2^\kappa)$-超紧嵌入 $j:V\to M$，
-定义 $D=\{X\subseteq\kappa : \kappa\in j(X)\}$。则：
+**证明**。取 $(\kappa,2^\kappa)$ -超紧嵌入 $j:V\to M$ ，
+定义 $D=\{X\subseteq\kappa : \kappa\in j(X)\}$ 。则：
 
 1. $D$ 是 $\kappa$ 上正规测度（第 94 章引理 1.6 的翻版）。
-2. $|D|=2^\kappa$、$M$ 对 $2^\kappa$-序列封闭 ⟹
-   $D\in M$。于是
-   $M\models$**「$D$ 是 $\kappa$ 上正规测度 ⟹ $\kappa$
+2. $|D|=2^\kappa$ 、$M$ 对 $2^\kappa$ -序列封闭 ⟹
+   $D\in M$ 。于是
+   $M\models$ **「$D$ 是 $\kappa$ 上正规测度 ⟹ $\kappa$
    可测」**（初等性把 $V$ 中「正规测度 ⟹ 可测」搬进
-   $M$）。故 $M\models\kappa$ 可测。
-3. $M\models\kappa\in j(T)$（初等性：$T$ 的定义搬过去）。
-   由初等性拉回：$T\in D$。
+   $M$ ）。故 $M\models\kappa$ 可测。
+3. $M\models\kappa\in j(T)$ （初等性：$T$ 的定义搬过去）。
+   由初等性拉回：$T\in D$ 。
 4. 正规测度包含 $T$ ⟹ $T$ 荟萃（第 94 章命题：正规测度
    的成员都荟萃）。∎
 
@@ -220,11 +220,11 @@ $\kappa$ 个。与第 99 章 Magidor 的「最小强紧可以等于最小
 可测」对照——超紧比强紧在**下方结构**上强出整整一个数量级。
 
 证明里最值得逐帧回放的是第 2–3 步的「反射三段论」：
-$D\in M$（靠 $2^\kappa$-封闭）⟹ $M\models\kappa$ 可测
+$D\in M$ （靠 $2^\kappa$ -封闭）⟹ $M\models\kappa$ 可测
 （靠初等性：$V$ 中「有正规测度则可测」是关于参数 $D$
-的绝对陈述）⟹ $\kappa\in j(T)$（靠 $T$ 的定义式被 $j$
-搬运）⟹ $T\in D$（拉回）。链条的每一环都在消费一种资源：
-第一环消费**封闭性**（$D$ 是 $2^\kappa$-长的对象）、第二
+的绝对陈述）⟹ $\kappa\in j(T)$ （靠 $T$ 的定义式被 $j$
+搬运）⟹ $T\in D$ （拉回）。链条的每一环都在消费一种资源：
+第一环消费**封闭性**（$D$ 是 $2^\kappa$ -长的对象）、第二
 环消费**初等性**、第三环消费**可定义性**（$T$ 必须是带
 参数的可定义类，否则 $j(T)$ 无意义）。这个三段论模板在
 大基数反射论证中反复出现——第 102 章武丁基数的「对任意
@@ -232,33 +232,33 @@ $A\subseteq V_\lambda$ 的超强嵌入」是它的多重花样。
 
 ## 100.5 命题 1.3：超紧控制连续统函数
 
-> **命题 1.3** $\kappa$ 是 $\lambda$-超紧且
-> $\forall\alpha<\kappa(2^\alpha=\alpha^+)$。则
-> $\forall\alpha\le\lambda(2^\alpha=\alpha^+)$。
+> **命题 1.3** $\kappa$ 是 $\lambda$ -超紧且
+> $\forall\alpha<\kappa(2^\alpha=\alpha^+)$ 。则
+> $\forall\alpha\le\lambda(2^\alpha=\alpha^+)$ 。
 
-**证明**。取 $(\kappa,\lambda)$-超紧嵌入 $j:V\to M$、
-${}^\lambda M\subseteq M$。设 $\alpha\le\lambda$ 基数。
-$M$ 对 $\lambda$-序列封闭 ⟹ $M$ 的
-$\mathcal P(\alpha)$、$(2^\alpha)^M$ 与 $V$ 一致（子集
-即 $\alpha$-序列，封闭性搬进 $M$）。初等性给
+**证明**。取 $(\kappa,\lambda)$ -超紧嵌入 $j:V\to M$ 、
+${}^\lambda M\subseteq M$ 。设 $\alpha\le\lambda$ 基数。
+$M$ 对 $\lambda$ -序列封闭 ⟹ $M$ 的
+$\mathcal P(\alpha)$ 、$(2^\alpha)^M$ 与 $V$ 一致（子集
+即 $\alpha$ -序列，封闭性搬进 $M$ ）。初等性给
 $$
 (2^\alpha)^M=j(2^\alpha)^M\ge 2^\alpha
 \text{（实际等号）},
 $$
 
-且 $\alpha<\lambda<j(\kappa)$ 处 $M\models 2^\alpha=\alpha^+$（假设被 $j$ 搬到 $j(\kappa)$ 下方，
-而 $\alpha<j(\kappa)$；再由序列封闭 $(2^\alpha)^M= 2^\alpha$、$(\alpha^+)^M=\alpha^+$）。∎
+且 $\alpha<\lambda<j(\kappa)$ 处 $M\models 2^\alpha=\alpha^+$ （假设被 $j$ 搬到 $j(\kappa)$ 下方，
+而 $\alpha<j(\kappa)$ ；再由序列封闭 $(2^\alpha)^M= 2^\alpha$ 、$(\alpha^+)^M=\alpha^+$ ）。∎
 
 超紧性把「$\kappa$ 下方 GCH」反射到「$\lambda$ 下方
 GCH」——只要 $\kappa$ 足够超紧，全域连续统函数被钉死为最小
-可能值。这与第 99 章强紧的 SCH（$\lambda^{\mathrm{cf}}\le \lambda^+$）相比是更强的结论：强紧只约束奇异点，超紧约束
+可能值。这与第 99 章强紧的 SCH（$\lambda^{\mathrm{cf}}\le \lambda^+$ ）相比是更强的结论：强紧只约束奇异点，超紧约束
 一切点。
 
 注意证明的支出结构：强紧证 SCH 用的是「$\lambda$ 处的
 精良测度扩展」+「$\lambda^+$ 处再来一个」的组合技，本质
-是**局部**的；超紧证 GCH 用的是「$(\kappa,\lambda)$-超紧
-嵌入的 ${}^\lambda$-封闭」一杆子把 $\mathcal P(\alpha)$
-整体搬进 $M$，本质是**全局**的。「$\mathcal P(\alpha) \subseteq M$」是分水岭：强紧嵌入只保证 ${}^{<\lambda}M \subseteq M$，装不下 $\alpha$-子集全体；超紧嵌入装得下，
+是**局部**的；超紧证 GCH 用的是「$(\kappa,\lambda)$ -超紧
+嵌入的 ${}^\lambda$ -封闭」一杆子把 $\mathcal P(\alpha)$
+整体搬进 $M$ ，本质是**全局**的。「$\mathcal P(\alpha) \subseteq M$ 」是分水岭：强紧嵌入只保证 ${}^{<\lambda}M \subseteq M$ ，装不下 $\alpha$ -子集全体；超紧嵌入装得下，
 于是「$V$ 与 $M$ 在 $\lambda$ 以下的基数算术上完全
 一致」。一句话总结：**强紧控制指数函数的值，超紧控制幂集
 本身**。
@@ -266,7 +266,7 @@ GCH」——只要 $\kappa$ 足够超紧，全域连续统函数被钉死为最�
 还应与第 96 章覆盖引理对照：覆盖引理说「$L$ 中没有内嵌
 可测以上的大基数时，$V$ 被 $L$ 覆盖」；命题 1.3 的逆否
 是「若 $\kappa$ 下方已 GCH 而 $\lambda$ 处 $2^\alpha$
-跳跃，则 $\kappa$ 不是 $\lambda$-超紧」。两者合起来给
+跳跃，则 $\kappa$ 不是 $\lambda$ -超紧」。两者合起来给
 出超紧基数的**覆盖不可及性**：超紧存在 ⟹ 覆盖引理对
 $V$ 失效（至少在 $\kappa$ 以上）。这是「大基数 ⟹
 $V\ne L$ 型结论」谱系的最强形态之一。
@@ -274,8 +274,8 @@ $V\ne L$ 型结论」谱系的最强形态之一。
 ## 100.6 Laver 定理：通用反转函数
 
 > **定理 1.30（Laver）** $\kappa$ 超紧。则存在
-> $f:\kappa\to V_\kappa$ 使：对任何集合 $x$、任何基数
-> $\lambda>\max(\kappa,|\mathrm{TC}(x)|)$，存在
+> $f:\kappa\to V_\kappa$ 使：对任何集合 $x$ 、任何基数
+> $\lambda>\max(\kappa,|\mathrm{TC}(x)|)$ ，存在
 > $\mathcal P_\kappa(\lambda)$ 上正规测度 $U$ 见证
 > $$
 > j_U(f)(\kappa)=x.
@@ -283,12 +283,12 @@ $V\ne L$ 型结论」谱系的最强形态之一。
 
 **证明**（骨架）。反设不然。对每个 $f:\kappa\to V_\kappa$
 令 $\lambda_f\ge\kappa$ 为最小的「失败基数」：$\lambda_f$
-处没有任何正规测度命中 $f$。
+处没有任何正规测度命中 $f$ 。
 
-在 $M$ 内部用反射：命题 $(g,\lambda_g)$（「$g$ 的
-最小失败基数为 $\lambda_g$」）在 $V_\kappa$ 中可定义。
-构造 $f$ 使在每个成功点 $\alpha$（使
-$(f\!\restriction\alpha,\cdot)$ 已有见证的 $\alpha$）取
+在 $M$ 内部用反射：命题 $(g,\lambda_g)$ （「$g$ 的
+最小失败基数为 $\lambda_g$ 」）在 $V_\kappa$ 中可定义。
+构造 $f$ 使在每个成功点 $\alpha$ （使
+$(f\!\restriction\alpha,\cdot)$ 已有见证的 $\alpha$ ）取
 见证值，否则取 $\alpha$ 本身。荟萃集
 $$
 A=\{\alpha<\kappa : \alpha=[\alpha]\ \text{是某 }
@@ -298,8 +298,8 @@ $$
 保证取 $\alpha_0=\min A$ 处回填成功。
 
 **矛盾**：取 $U_0=\{X\subseteq\mathcal P_\kappa(\lambda_f) : j``\lambda_f\in j(X)\}$ 的正规测度、因子嵌入
-$k:N\to M$（$j=k\circ j_{U_0}$）。关键引理：
-$\forall\alpha\le\lambda_f(k(\alpha)=\alpha)$（$k$ 固定
+$k:N\to M$ （$j=k\circ j_{U_0}$ ）。关键引理：
+$\forall\alpha\le\lambda_f(k(\alpha)=\alpha)$ （$k$ 固定
 $\lambda_f$ 下方一切）。于是
 $$
 k(j_{U_0}(f)(\kappa))=j(f)(\kappa)=x=k(x)
@@ -312,11 +312,11 @@ Laver 函数的哲学：超紧嵌入虽不能被单个 $f$ 预测，但可以
 被一个**可定义的通用调度器**逼近——任何目标 $x$ 都在某个
 超幂的 $f(\kappa)$ 槽位被精确命中。这是「大基数假设提供
 全域掌控」的极致表述，也是后续「Laver Diamond」序列的起点
-（$\diamondsuit_\kappa^{\mathrm{Laver}}$）。
+（$\diamondsuit_\kappa^{\mathrm{Laver}}$ ）。
 
 骨架里三步的分工值得点破。**第一步（最小失败基数）**是反证
 法的锚：若 $f$ 失败，失败是「可测的」——存在最小的
-$\lambda_f$。**第二步（荟萃回填）**是构造的引擎：$f$ 在
+$\lambda_f$ 。**第二步（荟萃回填）**是构造的引擎：$f$ 在
 每个「成功前缀」的延拓点回填见证值，$\kappa$ 的不可数正则
 性保证成功点荟萃（否则 $\kappa$ 是至多 $\kappa$ 个非成功
 俱乐部的并，矛盾）。**第三步（因子嵌入）**是矛盾引爆点：
@@ -333,10 +333,10 @@ $j=k\circ j_{U_0}$ 中 $k$ 固定 $\lambda_f$ 下方一切，
 
 - **向前**：第 99 章的三张面孔 + 正规性 = 本章定理 1.29 的
   (2)；第 97 章迭代超幂的因子嵌入在 1.30 的证明中再演。
-- **向后**：$2^\kappa$-超紧给出「第 $\kappa$ 个可测」
+- **向后**：$2^\kappa$ -超紧给出「第 $\kappa$ 个可测」
   （命题 1.2）——内模型侧的 $L[U]$ 无法包含如此多的可测
   基数（引理 1.48 唯一性），这正是 Vopěnka 墙的深层原因。
-  第 101 章强基数与第 102 章武丁基数沿定义 1.18（${}^{>\lambda}M\subseteq M$）与张子（extender）两条线继续
+  第 101 章强基数与第 102 章武丁基数沿定义 1.18（${}^{>\lambda}M\subseteq M$ ）与张子（extender）两条线继续
   爬升。
 - **语法对应总账**（本章的核心教学）：
   非平凡 ⟷ 临界点存在；精良 ⟷ 恒等函数「逼近日集」；
@@ -628,9 +628,9 @@ println("回归 f=min 在宽锥上无常值、单点锥上恒值；前段锥对�
 println("END ====")
 ```
 
-初版的「尾锥给空对角线交」是**数学错账**——尾锥 $X_\alpha= \{\alpha,\ldots,n-1\}$ 太大（$\xi\ge\alpha$ 处总含 $\xi$），
+初版的「尾锥给空对角线交」是**数学错账**——尾锥 $X_\alpha= \{\alpha,\ldots,n-1\}$ 太大（$\xi\ge\alpha$ 处总含 $\xi$ ），
 对角线交反而是全集；断言当场抓获，改为**前段锥**
-$X_\alpha=\{0,\ldots,\alpha\}$ 才给 $\Delta=\{0\}$。这条
+$X_\alpha=\{0,\ldots,\alpha\}$ 才给 $\Delta=\{0\}$ 。这条
 账与正文「对角线交比普通交细」的直觉互为印证。
 
 ## 100.12 机器通道五：Python——独立对拍
@@ -801,7 +801,7 @@ main :-
 
 1. **定理 1.29 不可机化**：两个方向都在 $V$ 的超幂 / 初等
    嵌入上进行；等式 $d=j``\lambda$ 的证明用满正规性 + 精良
-   性 + $\kappa$-完全三件套。
+   性 + $\kappa$ -完全三件套。
 2. **${}^\lambda M\subseteq M$ 是关于真类 $M$ 的封闭性**
    陈述，任何有限影子都自动成立（有限模型对一切序列封闭），
    没有区分力。
@@ -819,20 +819,20 @@ main :-
    （所有通道）、主超滤不精良（Julia/Python 三点穷举）、
    回归函数常值化的最小与失败形态（Coq/Agda/Prolog 的
    `fmin`/`fHead`)、对角线交的前段锥样本（Julia/Python/
-   Prolog）。这些是定理 1.29 语法件（精良、正规、$\kappa$-
+   Prolog）。这些是定理 1.29 语法件（精良、正规、$\kappa$ -
    完全）的有限化，不是它的近似——恒等式在有限层**就是
    精确的**，不可机化的只是「恒等式在超穷高度的升级版」。
 
 ## 100.16 本章要点与检查问题
 
-- **等价定理 1.29**：正规精良测度 ⟷ $(\kappa,\lambda)$-超紧
-  嵌入。核心等式 $d=j``\lambda$（恒等函数表示像集）。
+- **等价定理 1.29**：正规精良测度 ⟷ $(\kappa,\lambda)$ -超紧
+  嵌入。核心等式 $d=j``\lambda$ （恒等函数表示像集）。
 - **三句语法对应**：非平凡 ⟷ 临界点；精良 ⟷ 恒等逼近日集；
   正规 ⟷ 恒等精确表示像集。每步收紧对应嵌入的新能力。
-- **反射后果**：命题 1.2（$2^\kappa$-超紧 ⟹ 第 $\kappa$
+- **反射后果**：命题 1.2（$2^\kappa$ -超紧 ⟹ 第 $\kappa$
   个可测——下方可测荟萃）；命题 1.3（超紧 + 下方 GCH ⟹
   $\lambda$ 下方 GCH——连续统函数全域钉死）。
-- **Laver 1.30**：通用反转函数 $f:\kappa\to V_\kappa$——
+- **Laver 1.30**：通用反转函数 $f:\kappa\to V_\kappa$ ——
   任何集合在某个超幂的 $f(\kappa)$ 槽位被命中。
 - **实测账**：Lean `Finset.Subset.trans` 大写、空集不等须
   `absurd` 链、未引用参数 `_`；Agda `⊆L-refl` 递归分支须
@@ -844,15 +844,15 @@ main :-
 检查问题：
 
 1. 定理 1.29 (1)⟹(2) 的正规性验证中，$j(f)(j``\lambda)$
-   为什么必须形如 $j(\alpha)$？这一步用了 ${}^\lambda M\subseteq M$ 的哪一条推论？
-2. 关键等式 $d=j``\lambda$ 的「$\subseteq$」方向把
+   为什么必须形如 $j(\alpha)$ ？这一步用了 ${}^\lambda M\subseteq M$ 的哪一条推论？
+2. 关键等式 $d=j``\lambda$ 的「$\subseteq$ 」方向把
    $[f]\in[\mathrm{Id}]$ 转化为「$f$ 在测一集上是选择
    函数」，再用正规性。若 $U$ 只是精良不正规，等式的哪一侧
    会失效？给出具体反例的函数形状。
 3. 命题 1.2 的证明用了「$D\in M$ ⟹ $M\models\kappa$
-   可测 ⟹ $T\in D$」。第一步 $D\in M$ 需要什么封闭性？
-   若只取 $\lambda=\kappa^+$（而非 $2^\kappa$），为什么
-   $D\notin M$？
+   可测 ⟹ $T\in D$ 」。第一步 $D\in M$ 需要什么封闭性？
+   若只取 $\lambda=\kappa^+$ （而非 $2^\kappa$ ），为什么
+   $D\notin M$ ？
 
 ---
 

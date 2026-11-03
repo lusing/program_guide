@@ -3,23 +3,23 @@
 > 第 102 章为止的大基数全谱都住在「向上反射」的世界：假设越强，
 > 下方景象越丰富。本章取材冯琦第三卷 §2.1–2.2（书页 145–155；
 > PDF 165–175）转向**力迫**：大基数与泛型扩张如何互动？定理
-> 2.1 给出第一个总答案——**小型力迫（$\mathbb P\in V_\kappa$）
+> 2.1 给出第一个总答案——**小型力迫（$\mathbb P\in V_\kappa$ ）
 > 改变不了任何大基数本质**：不可达、弱紧、拉姆齐、可测、强、
 > 武丁、超强、强紧、超紧九款性质全部保持（且逆命题成立——
 > 小型力迫也造不出原本没有的大基数）。证明的发动机是**嵌入
 > 提升机制**：$j:V\to M$ 固定 $\mathbb P$ 与 $\mathbb B$
-> （它们秩低于 $\kappa$），于是 $V$ 上的泛型滤子 $G$
-> 同时是 $M$-泛型的，且
+> （它们秩低于 $\kappa$ ），于是 $V$ 上的泛型滤子 $G$
+> 同时是 $M$ -泛型的，且
 > $$
 > j^*(\tau_G)=(j(\tau))_G
 > $$
 >
 > 良定义（与名字选取无关）——$j$ 由此延拓成
-> $j^*:V[G]\to M[G]$，九款保持律逐一复验。§2.2 反向出发：
-> **Lévy 崩塌** $\mathrm{Col}(\omega,<\kappa)$（定义 2.1：
-> 有限条件 $p\subseteq\kappa\times\omega$、$p(\alpha,n)\in \alpha$）把不可达 $\kappa$ 一步变成 $\omega_1$（定理
-> 2.2：$\kappa$-cc 保一切 $\ge\kappa$ 的基数与梯度；对每个
-> $\lambda<\kappa$、每个 $\beta<\lambda$，稠密集
+> $j^*:V[G]\to M[G]$ ，九款保持律逐一复验。§2.2 反向出发：
+> **Lévy 崩塌** $\mathrm{Col}(\omega,<\kappa)$ （定义 2.1：
+> 有限条件 $p\subseteq\kappa\times\omega$ 、$p(\alpha,n)\in \alpha$ ）把不可达 $\kappa$ 一步变成 $\omega_1$ （定理
+> 2.2：$\kappa$ -cc 保一切 $\ge\kappa$ 的基数与梯度；对每个
+> $\lambda<\kappa$ 、每个 $\beta<\lambda$ ，稠密集
 > $D_\beta$ 见证 $\omega\twoheadrightarrow\lambda$ 的满射）。
 > 定理 2.3 因子分解、定义 2.3–2.5 拟稠密/弱整齐/整齐、定理
 > 2.4 黑白分明律与定理 2.5 延拓引理把 $\mathrm{Col}$ 的完备
@@ -27,8 +27,8 @@
 > 的分析备好舞台。
 >
 > 机器边界：九款保持律与因子分解在超穷高度；七个通道做
-> $\mathrm{Col}$ 的**条件层**——Lévy 条件（键 $(\alpha,n)$、
-> 值 $\beta<\alpha$）的相容/拼接（Lean `unionC_cond`、Agda
+> $\mathrm{Col}$ 的**条件层**——Lévy 条件（键 $(\alpha,n)$ 、
+> 值 $\beta<\alpha$ ）的相容/拼接（Lean `unionC_cond`、Agda
 > `splice-out`、Isabelle `unionP_funct` 三构造）、稠密性
 > $D(\lambda,\beta)$ 的**书式新鲜槽号**（$n_0=1+\max$
 > 已用槽——书 p152 公式逐字落码，Lean/Coq/Agda 证明 +
@@ -39,23 +39,23 @@
 ## 103.1 定理 2.1：小型力迫不改变大基数
 
 先把「小型」的量纲说清：$\mathbb P\in V_\kappa$ 意味着
-$|\mathbb P|<\kappa$、$\mathbb P$ 的元素秩 $<\kappa$、
+$|\mathbb P|<\kappa$ 、$\mathbb P$ 的元素秩 $<\kappa$ 、
 其完备布尔代数 $\mathbb B$ 也住在 $V_\kappa$ 里。第 89–92
 章的力迫（CH 独立、MA 迭代、布尔值模型）大多**不满足**这个
 小条件——加 $\kappa^+$ 个实数的 $\mathrm{Add}(\omega, \kappa^+)$ 以 $\kappa^+$ 为大小，不在 $V_\kappa$ 中。
-定理 2.1 划出的领地是「**与 $\kappa$-层以下的宇宙相比微不足
+定理 2.1 划出的领地是「**与 $\kappa$ -层以下的宇宙相比微不足
 道**」的力迫——恰是大基数反射论证里允许扰动的那一层。
 
 > **定理 2.1** 设 $\kappa$ 是一个不可数基数，
-> $\mathbb P\in V_\kappa$。设 $[\kappa]$ 为下述命题之一：
+> $\mathbb P\in V_\kappa$ 。设 $[\kappa]$ 为下述命题之一：
 > (a) $\kappa$ 不可达；(b) 弱紧；(c) 拉姆齐；(d) 可测；
 > (e) 强；(f) 武丁；(g) 超强；(h) 强紧；(i) 超紧。如果
-> $[\kappa]$，那么 $\Vdash_{\mathbb P}[\kappa]$。且逆命题
+> $[\kappa]$ ，那么 $\Vdash_{\mathbb P}[\kappa]$ 。且逆命题
 > 成立（书 p145–146）。
 
 九款性质按证明机器分四组读：**(a)(b)(c) 组合组**（不可达、
 弱紧、拉姆齐）不消费嵌入，只用「$|\mathbb P|<\kappa$ 保基
-数/梯度 + 名字账把 $V[G]$ 的对象折回 $V$」；**(d) 嵌入
+数/梯度 + 名字账把 $V[G]$ 的对象折回 $V$ 」；**(d) 嵌入
 组**（可测）建立 $j^*$ 提升机；**(e)(f)(g) 张子组**（强、
 武丁、超强）复用 $j^*$ 加各自条款（武丁的名字账是本章的
 新组件）；**(h)(i) 测度搬运组**（强紧、超紧）把
@@ -69,7 +69,7 @@ Lévy–Solovay 1967 指出可测基数与 CH 独立——从可测 $\kappa$
 性。**其二（「小」是必要的）**：本章 §2.2 的 Lévy 崩塌
 $|\mathbb P|=\kappa$ 恰好把 $\kappa$ 变成 $\omega_1$
 ——可测性被**精确地**破坏在 $|\mathbb P|$ 触到 $\kappa$
-的那一点（引理 2.1 显示 $\kappa$-cc 还在，但 $\kappa$
+的那一点（引理 2.1 显示 $\kappa$ -cc 还在，但 $\kappa$
 已不是基数）。**其三（与第 104–105 章的接口）**：Prikry 与
 Silver 力迫将进一步展示「$>\kappa$ 大小的力迫仍然可以保
 留 $\kappa$ 的大性」——小不是必要条件，是**充分**条件；
@@ -79,66 +79,66 @@ Silver 力迫将进一步展示「$>\kappa$ 大小的力迫仍然可以保
 不被小力迫破坏——这条定理是「大基数对连续统假设无能为力」
 的技术根源：任何 $\mathbb P\in V_\kappa$ 的力迫（包括加
 $\kappa^+$ 个科恩实）都搬不动 $\kappa$ 的大基数性质，
-因此**单靠可测（或任何固定 $\kappa$-级）基数无法决定
+因此**单靠可测（或任何固定 $\kappa$ -级）基数无法决定
 CH**——CH 的独立性在大基数世界里仍然独立。
 
 **(a) 不可达**：$|\mathbb P|<\kappa$ 使一切 $\ge|\mathbb P|^+$
 的基数与梯度保持；$\lambda<\kappa$ 时
-$(2^\lambda)^{V[G]}\le|\mathbb B(\mathbb P)|^{V}\cdot 2^{\lambda{+}|\mathbb P|}<\kappa$（$\kappa$ 强极限）——
+$(2^\lambda)^{V[G]}\le|\mathbb B(\mathbb P)|^{V}\cdot 2^{\lambda{+}|\mathbb P|}<\kappa$ （$\kappa$ 强极限）——
 强极限与正则都保住。逆命题：$V[G]$ 中不可达直接下放。
 
 **(b) 弱紧**：$V[G]$ 中的划分 $\bar f:[\kappa]^2\to 2$
-有名字 $\tau\in V^{\mathbb B}$；逐点布尔值
+有名字 $\tau\in V^{\mathbb B}$ ；逐点布尔值
 $F(\{\alpha,\beta\})=\|\tau(\check\alpha,\check\beta)=0\|$
-落在 $V$ 的 $F:[\kappa]^2\to\mathbb B$（$|\mathbb B|< \kappa$，按 $\kappa$-cc 的弱紧不可解性取整为 2-值划分的
-一致），弱紧性给 $V$ 中的整齐集 $H$——验证 $H$ 在
+落在 $V$ 的 $F:[\kappa]^2\to\mathbb B$ （$|\mathbb B|< \kappa$ ，按 $\kappa$ -cc 的弱紧不可解性取整为 2-值划分的
+一致），弱紧性给 $V$ 中的整齐集 $H$ ——验证 $H$ 在
 $V[G]$ 中仍整齐（练习）。逆命题用「$V$ 的划分在
-$V[G]$ 中有整齐集 $K$，找一个 $p\in G$ 力迫
-$|\dot K|=\kappa$，取 $K_p=\{\alpha<p\Vdash\check\alpha \in\dot K\}$」。
+$V[G]$ 中有整齐集 $K$ ，找一个 $p\in G$ 力迫
+$|\dot K|=\kappa$ ，取 $K_p=\{\alpha<p\Vdash\check\alpha \in\dot K\}$ 」。
 
 (b) 的技巧是「**布尔值的逐点化**」：$V[G]$ 的 2-值划分
-的名字在 $V$ 中是 $\mathbb B$-值划分——把每个点对的
-真值提前算好，$V$ 侧的弱紧性作用于这个 $\mathbb B$-值
+的名字在 $V$ 中是 $\mathbb B$ -值划分——把每个点对的
+真值提前算好，$V$ 侧的弱紧性作用于这个 $\mathbb B$ -值
 版本（$|\mathbb B|<\kappa$ 使 $\Pi^1_1$ 反射仍然够用）。
 这与 (f) 的「逐值可能集」、逆命题的「素理想名字」共享同一
 模式：**$V[G]$ 的对象一律先翻译成 $V$ 的布尔/可能性
 数据，再用 $V$ 的反射机器**。(c) 拉姆齐同法（书 p148 留
-练习），组合组三款一气贯通。逆命题里的 $K_p$（按条件
+练习），组合组三款一气贯通。逆命题里的 $K_p$ （按条件
 $p$ 分层的整齐子集）是「**名字分层**」的最小样本——
 第 105 章 Silver 力迫与第 107 章恰当力迫的稠密性论证会把
 这套分层做得精细得多。
 
 **(d) 可测（完整证明——本章的枢纽）**：设 $j:V\to M$
-临界点 $\kappa$。三件观察奠基：(1) $\mathbb P,\mathbb B \in V_\kappa$ 被 $j$ **固定**（$j(\mathbb P)=\mathbb P$，
+临界点 $\kappa$ 。三件观察奠基：(1) $\mathbb P,\mathbb B \in V_\kappa$ 被 $j$ **固定**（$j(\mathbb P)=\mathbb P$ ，
 秩低于临界点的元素逐点不动）；(2) $V_\kappa=V_\kappa^M$
 使 $G\subseteq\mathbb P$ 的「与一切稠密集相交」在 $V$
-与 $M$ 中**等价**——$G$ 自动 $M$-泛型；(3) 名字解释
+与 $M$ 中**等价**——$G$ 自动 $M$ -泛型；(3) 名字解释
 吻合：$\tau^G=(j(\tau))^{G}$ 型的搬运在两个模型中算出同
 一集合。于是定义
 $$
 j^*(\tau_G)=(j(\tau))_G.
 $$
 
-**名字无关性**：若 $p\in G$ 力迫 $\dot\tau=\dot\sigma$，
-则 $M\models j(p)\Vdash j(\dot\tau)=j(\dot\sigma)$，而
-$j(p)=p\in G$，故 $(j(\dot\tau))_G=(j(\dot\sigma))_G$
+**名字无关性**：若 $p\in G$ 力迫 $\dot\tau=\dot\sigma$ ，
+则 $M\models j(p)\Vdash j(\dot\tau)=j(\dot\sigma)$ ，而
+$j(p)=p\in G$ ，故 $(j(\dot\tau))_G=(j(\dot\sigma))_G$
 ——$j^*$ 良定义。地基元素不动（$\check x$ 的搬运）给
-$j^*\supseteq j$，临界点仍是 $\kappa$；$j^*(G)=G$。
+$j^*\supseteq j$ ，临界点仍是 $\kappa$ ；$j^*(G)=G$ 。
 初等性：$V[G]\models\varphi(\bar a)$ 有 $p\in G$ 见证
-$p\Vdash\varphi(\dot{\bar a})$，$j$ 搬运后 $M\models p\Vdash\varphi(j(\dot{\bar a}))$，即
-$M[G]\models\varphi(j^*(\bar a))$——$\Vdash$ 的归纳
+$p\Vdash\varphi(\dot{\bar a})$ ，$j$ 搬运后 $M\models p\Vdash\varphi(j(\dot{\bar a}))$ ，即
+$M[G]\models\varphi(j^*(\bar a))$ ——$\Vdash$ 的归纳
  clauses 对 $j^*$ 逐条成立。∎
 
 $j^*$ 提升机的四个部件值得各自点名，因为后面每章都要回来
 取用：**(1) 固定件**——$\mathbb P,\mathbb B\in V_\kappa$
 被 $j$ 固定（临界点下方逐点不动，第 94 章练习 1.7 的账）；
 **(2) 双泛型件**——$V_\kappa=V_\kappa^M$ 使「稠密集」的
-判据在两模型重合，$G$ 免费获得 $M$-泛型性；**(3) 搬运
-件**——名字解释的交换律 $(j(\tau))_G$（$\tau$ 的 $j$
+判据在两模型重合，$G$ 免费获得 $M$ -泛型性；**(3) 搬运
+件**——名字解释的交换律 $(j(\tau))_G$ （$\tau$ 的 $j$
 像在 $G$ 下求值）；**(4) 无关件**——同一集合的两个名字
 搬运后仍给同一集合（$p\Vdash\dot\tau=\dot\sigma$ 经 $j$
-得 $p\Vdash j(\dot\tau)=j(\dot\sigma)$，$j(p)=p\in G$
-收口）。四件合起来是「**把 $V$-泛型滤子当成 $M$-泛型
+得 $p\Vdash j(\dot\tau)=j(\dot\sigma)$ ，$j(p)=p\in G$
+收口）。四件合起来是「**把 $V$ -泛型滤子当成 $M$ -泛型
 滤子用**」的完整许可证——第 104 章 Prikry 的对角论证与第
 110 章 NS 饱和的嵌入判据都以它为前提。
 
@@ -146,13 +146,13 @@ $j^*$ 提升机的四个部件值得各自点名，因为后面每章都要回�
 $V[G]$ 中的函数 $f:\delta\to\delta$ 不是 $V$ 的对象，
 但它的**逐值可能集**是：$A_\alpha=\{\beta<\delta\mid\exists p\,(p\Vdash\beta=\dot f(\alpha))\}$ 每个至多 $|\mathbb P|$
 元——因为若 $p,p'$ 都力迫不同值，它们冲突；把每个 $\beta$
-映到其极小见证条件，单射进 $\mathbb P$。于是
+映到其极小见证条件，单射进 $\mathbb P$ 。于是
 $g(\alpha)=\sup(A_\alpha)+1$ 是「$\dot f$ 在 $\alpha$
 处可能到达的高度」，其闭包点集 $C_g$ 是俱乐部。在 $C_g$
-上取武丁见证 $\kappa'>|\mathbb P|$：$\dot f``\alpha \subseteq\alpha$（可能值全在 $\alpha$ 内）且
+上取武丁见证 $\kappa'>|\mathbb P|$ ：$\dot f``\alpha \subseteq\alpha$ （可能值全在 $\alpha$ 内）且
 $V_{j(\dot f)(\kappa')}^M$ 装得下 $j^*$ 提升后的账。
 **名字账的哲学**：把 $V[G]$ 的对象按「各坐标的可能值」
-压缩回 $V$，使 $V$ 侧的反射机器照常运转——同一招在
+压缩回 $V$ ，使 $V$ 侧的反射机器照常运转——同一招在
 (b) 弱紧（划分的名字逐点布尔化）与逆命题（素理想的名字）
 里反复出现。
 
@@ -163,26 +163,26 @@ $$
 I=\{X\subseteq\kappa\mid\Vdash X\in\dot J\}.
 $$
 
-则 $I$ 是含单点的 $\kappa$-可加理想，且 **$I^+$ 中
+则 $I$ 是含单点的 $\kappa$ -可加理想，且 **$I^+$ 中
 不存在长 $|\mathbb P|^+$ 的模 $I$ 几乎不相交序列**（
 $X,Y\in I^+$ 相交于 $I^+$ 的条件与力迫冲突条件一一对应；
-素理想性封顶）——$I$ 是 $|\mathbb P|^+$-饱和的理想。
+素理想性封顶）——$I$ 是 $|\mathbb P|^+$ -饱和的理想。
 练习 2.2 把「$\kappa$ 上有饱和素理想的不可达性」升级成
 可测性（正则超滤子的 Ulam 树论证）。
 
 饱和账的两行值得放大，因为**理想饱和**是第 110 章 NS
 （非荟萃集理想）饱和性的预演。第一行（几乎不相交序列的
-缺失）：设 $\langle X_\alpha\mid\alpha<|\mathbb P|^+ \rangle$ 是 $I^+$ 中的序列。若 $X_\alpha\cap X_\eta\in I$，力迫条件「$X_\alpha\in\dot U$」与「$X_\eta\in\dot U$」
-冲突（它们的交在 $I$ 中，而超滤子不许同时含一个 $I$-
+缺失）：设 $\langle X_\alpha\mid\alpha<|\mathbb P|^+ \rangle$ 是 $I^+$ 中的序列。若 $X_\alpha\cap X_\eta\in I$ ，力迫条件「$X_\alpha\in\dot U$ 」与「$X_\eta\in\dot U$ 」
+冲突（它们的交在 $I$ 中，而超滤子不许同时含一个 $I$ -
 小集的补集对）——于是一个固定的 $p$ 至多见证一个
-$X_\alpha$；但每个 $X_\alpha\in I^+$ 都**被某 $p$ 力迫
-进 $\dot U$**（否则 $\Vdash X_\alpha\notin\dot U$ 即
-$X_\alpha\in I$），故 $|\mathbb P|\ge|\mathbb P|^+$——
+$X_\alpha$ ；但每个 $X_\alpha\in I^+$ 都**被某 $p$ 力迫进**
+$\dot U$ （否则 $\Vdash X_\alpha\notin\dot U$ 即
+$X_\alpha\in I$ ），故 $|\mathbb P|\ge|\mathbb P|^+$ ——
 矛盾。第二行（素性封顶）：对偶理想素 ⟹ 相交账二值化。
-合起来：$I$ 是 $|\mathbb P|^+$-饱和的**素**理想——
+合起来：$I$ 是 $|\mathbb P|^+$ -饱和的**素**理想——
 Solovay 引理（练习 2.2）说这已是可测性的等价形态。「
 **饱和 = 几乎不相交序列缺失**」这个组合判据在 NS 章会
-原样重演（NS 的 $\kappa^+$-饱和 ⟺ 无 $\kappa^+$-长
+原样重演（NS 的 $\kappa^+$ -饱和 ⟺ 无 $\kappa^+$ -长
 几乎不相交的反荟萃序列）。
 
 **(e)(f)(g) 强/武丁/超强**：同一 $j^*$ 提升机加各自条款。
@@ -190,48 +190,48 @@ Solovay 引理（练习 2.2）说这已是可测性的等价形态。「
 $f:\delta\to\delta$ 有名字，对每个 $\alpha$ 评估集
 $A_\alpha=\{\beta<\kappa\mid\exists p\in\mathbb P\, (p\Vdash\beta=\dot f(\alpha))\}$ 至多 $|\mathbb P|$ 元
 （每个 $\beta$ 至多占一个极小条件），$g(\alpha)=\sup A_\alpha+1$ 的闭包点俱乐部 $C_g$ 上的 $\alpha$ 满足
-$\dot f``\alpha\subseteq\alpha$——**名字账把 $V[G]$
+$\dot f``\alpha\subseteq\alpha$ ——**名字账把 $V[G]$
 的函数截断成 $V$ 的局部函数**，武丁见证 $\kappa'>|\mathbb P|$
 接手。**(h)(i) 强紧/超紧**：精良测度的**搬运**——$V$ 中
-$U$ 给出 $H=[d]\in M$（$d:\mathcal P_\kappa(\lambda) \to\mathcal P_\kappa(j(\lambda))$ 恒等映射的名字像），
-定义 $W=\{X\subseteq\mathcal P_\kappa(\lambda)\mid H\in j^*(X)\}$——非平凡、$\kappa$-完全、精良（$A_x\in W$ 的
-账由 $H$ 含 $j``x$ 型代表），正规时 $H=j``\lambda$。
+$U$ 给出 $H=[d]\in M$ （$d:\mathcal P_\kappa(\lambda) \to\mathcal P_\kappa(j(\lambda))$ 恒等映射的名字像），
+定义 $W=\{X\subseteq\mathcal P_\kappa(\lambda)\mid H\in j^*(X)\}$ ——非平凡、$\kappa$ -完全、精良（$A_x\in W$ 的
+账由 $H$ 含 $j``x$ 型代表），正规时 $H=j``\lambda$ 。
 
 (h)(i) 的搬运公式 $W=\{X\mid H\in j^*(X)\}$ 有个值得点破
 的机关：$H$ 不是 $j``\lambda$ 本身而是一个**名字像**
-$[d]$（$d$ 为恒等映射的名字）。差别在哪里？$j^*(X)$
-作用于 $V[G]$ 的集合 $X\subseteq\mathcal P_\kappa(\lambda) ^{V[G]}$，而 $j``\lambda\in M$ 是 $V$ 侧的对象——对
-$V[G]$ 的新子集 $X$，「$j``\lambda\in j^*(X)$」未必
-与 $V$ 侧的账对上；经 $[d]$（它在 $M[G]$ 中被求值）
+$[d]$ （$d$ 为恒等映射的名字）。差别在哪里？$j^*(X)$
+作用于 $V[G]$ 的集合 $X\subseteq\mathcal P_\kappa(\lambda) ^{V[G]}$ ，而 $j``\lambda\in M$ 是 $V$ 侧的对象——对
+$V[G]$ 的新子集 $X$ ，「$j``\lambda\in j^*(X)$ 」未必
+与 $V$ 侧的账对上；经 $[d]$ （它在 $M[G]$ 中被求值）
 中转，$W$ 的精良性可以逐点核对。这与定理 1.29（第 100
 章）的 $d=j``\lambda$ 是同一角色的**两个版本**：无泛型
-扰动时 $H=[d]=j``\lambda$；有扰动时必须走名字像。机器面
+扰动时 $H=[d]=j``\lambda$ ；有扰动时必须走名字像。机器面
 的 `unionC_set_eq`（名字无关性影子）正是这类中转合法性的
 最小模型。
 
 ## 103.2 Lévy 崩塌：定义与 κ-链条件
 
 > **定义 2.1（莱维偏序集）** 设 $\kappa$ 不可达。对
-> $p\subseteq\kappa\times\omega\times\kappa$：
+> $p\subseteq\kappa\times\omega\times\kappa$ ：
 > $$
 > p\in\mathrm{Col}(\omega,<\kappa) \iff |p|<\omega\wedge
 > \mathrm{dom}(p)\subseteq\kappa\times\omega\wedge
 > \forall(\alpha,n)\in\mathrm{dom}(p)\,(p(\alpha,n)\in\alpha),
 > $$
 >
-> $q\le p\iff p\subseteq q$（反向包含），$\mathbb 1= \emptyset$。一般版 $\mathrm{Col}(\mu,<\kappa)$ 把
-> $\omega$ 换成任意正则 $\mu$（定义 2.2）。
+> $q\le p\iff p\subseteq q$ （反向包含），$\mathbb 1= \emptyset$ 。一般版 $\mathrm{Col}(\mu,<\kappa)$ 把
+> $\omega$ 换成任意正则 $\mu$ （定义 2.2）。
 
 每个条件是一个**有限部分函数**：坐标 $(\alpha,n)$ 处放置
 一个 $<\alpha$ 的「占位值」。第 $\alpha$ 行有无穷多个
-槽位 $n$——正是这**行的无穷宽**让稠密性成立（见 103.3）。
+槽位 $n$ ——正是这**行的无穷宽**让稠密性成立（见 103.3）。
 
-「占位值 $<\alpha$」这个上界不是装饰：它让每一行的泛型
+「占位值 $<\alpha$ 」这个上界不是装饰：它让每一行的泛型
 并**自动成为一个从 $\omega$ 到 $\alpha$ 的函数**（第
-$\alpha$ 行的值域 $\subseteq\alpha$），无须再证良定性。
-一般版 $\mathrm{Col}(\mu,<\kappa)$（定义 2.2）把 $\omega$
-换成 $\mu$、条件大小 $<\mu$——$\kappa$ 变成 $\mu^+$。
-书 p150 建议读者自行推广，本教程聚焦 $\mu=\omega$（后续
+$\alpha$ 行的值域 $\subseteq\alpha$ ），无须再证良定性。
+一般版 $\mathrm{Col}(\mu,<\kappa)$ （定义 2.2）把 $\omega$
+换成 $\mu$ 、条件大小 $<\mu$ ——$\kappa$ 变成 $\mu^+$ 。
+书 p150 建议读者自行推广，本教程聚焦 $\mu=\omega$ （后续
 $L(\mathbb R)$ 分析用的正是这一版）。
 
 $\mathbb 1=\emptyset$ 提醒我们这是**反向包含**序（$q\le p$
@@ -240,83 +240,83 @@ $\mathbb 1=\emptyset$ 提醒我们这是**反向包含**序（$q\le p$
 读法。
 
 > **引理 2.1** $\mathrm{Col}(\omega,<\kappa)$ 满足
-> $\kappa$-链条件。
+> $\kappa$ -链条件。
 
-**证明**（书 p150–151，$\Delta$-系统式的荟萃账）：设
+**证明**（书 p150–151，$\Delta$ -系统式的荟萃账）：设
 $\langle p_\alpha\mid\alpha<\kappa\rangle$ 为条件的单一
 列。闭无界集
-$C=\{\delta<\kappa\mid\forall\beta<\delta(\beta+1<\delta) \wedge\forall\alpha<\delta(\mathrm{dom}(p_\alpha)\subseteq \delta\times\omega)\}$。每条件分裂
-$a_\alpha=\mathrm{dom}(p_\alpha)\cap(\alpha\times\omega)$、
-$b_\alpha=\mathrm{dom}(p_\alpha)\setminus a_\alpha$。
+$C=\{\delta<\kappa\mid\forall\beta<\delta(\beta+1<\delta) \wedge\forall\alpha<\delta(\mathrm{dom}(p_\alpha)\subseteq \delta\times\omega)\}$ 。每条件分裂
+$a_\alpha=\mathrm{dom}(p_\alpha)\cap(\alpha\times\omega)$ 、
+$b_\alpha=\mathrm{dom}(p_\alpha)\setminus a_\alpha$ 。
 对 $\delta\in C$ 令
-$g(\delta)=\max\{\beta\mid\exists n\,((\beta,n)\in a_\delta)\}$（$\delta>0$；否则 0）。取荟萃 $T\subseteq C$ 与
-$\beta<\kappa$ 使 $\forall\delta\in T\,(g(\delta)=\beta)$。
+$g(\delta)=\max\{\beta\mid\exists n\,((\beta,n)\in a_\delta)\}$ （$\delta>0$ ；否则 0）。取荟萃 $T\subseteq C$ 与
+$\beta<\kappa$ 使 $\forall\delta\in T\,(g(\delta)=\beta)$ 。
 由 $|C^{<\omega}|<\kappa$ 取 $\beta^+=\mu$ 使
-$p_\xi\upharpoonright(\mu\times\omega)$（$\xi\in T$）只有
+$p_\xi\upharpoonright(\mu\times\omega)$ （$\xi\in T$ ）只有
 $\le\mu$ 个不同值——再取荟萃 $T_0\subseteq T$ 上
 **完全相同**。于是 $\xi\ne\eta\in T_0$ 时
 $p_\xi\cup p_\eta$ 良定义（公共部分在 $\mu$ 以下一致，
 其余坐标不相交）——相容。∎
 
-这条证明其实是 **$\Delta$-系统引理的「荟萃平移」**：
-教科书标准证法对 $\kappa$ 个有限域做 $\Delta$-系统
+这条证明其实是 **$\Delta$ -系统引理的「荟萃平移」**：
+教科书标准证法对 $\kappa$ 个有限域做 $\Delta$ -系统
 抽取（根 $r$ 固定、叶两两不交）；书 p150–151 的版本把
 「根固定」替换成「$a_\delta$ 部分在固定 $\beta$ 下
 完全相同」（更强的平直化），把「叶不交」替换成「坐标
 $\ge\delta$ 自动不交」。**荟萃平移的代价是多了两层
 细化**（$g$ 压平 + $T_0$ 相同化），收益是证明与
-$\kappa$-cc 的使用方式（定理 2.2 引引理 I.3.34）无缝
+$\kappa$ -cc 的使用方式（定理 2.2 引引理 I.3.34）无缝
 衔接。两版对照读能看清「同一组合事实的不同表述强度」——
-第 89 章 ccc 的 $\Delta$-系统与第 91 章迭代力迫的支撑
+第 89 章 ccc 的 $\Delta$ -系统与第 91 章迭代力迫的支撑
 账在本章汇合。
 
 值得机器面对照的细节：$a_\alpha/b_\alpha$ 的分裂把
 条件的域切成「$\alpha$ 以下」（可能与兄弟条件相撞）与
 「$\alpha$ 以上」（自动不相交，因为 $\eta>\xi$ 的
-坐标 $\ge\eta>\xi$）——这正是 Agda `splice-out` 的
+坐标 $\ge\eta>\xi$ ）——这正是 Agda `splice-out` 的
 「键已覆盖则丢」在序数坐标下的几何版。`compat` 的公共键
-一致检查在有限宇宙是逐点比对，在 $\kappa$-层是**结构性
+一致检查在有限宇宙是逐点比对，在 $\kappa$ -层是**结构性
 不交**（域分裂保证）——有限影子只能照见「比对」照不见
 「不交的结构来源」。
 
 ## 103.3 定理 2.2：κ 变成 ω₁
 
 > **定理 2.2** 设 $M\models\mathrm{ZFC}$ 可数传递、
-> $\kappa$ 是 $M$ 中不可达。$\mathbb P= (\mathrm{Col}(\omega,<\kappa))^M$、$G$ 为
-> $M$-泛型。那么 (1) $M[G]\models\kappa=\omega_1$；
+> $\kappa$ 是 $M$ 中不可达。$\mathbb P= (\mathrm{Col}(\omega,<\kappa))^M$ 、$G$ 为
+> $M$ -泛型。那么 (1) $M[G]\models\kappa=\omega_1$ ；
 > (2) $M$ 中 $\mathrm{cf}(\lambda)\ge\kappa$ 的基数
-> $\lambda$ 在 $M[G]$ 中仍有 $\mathrm{cf}\ge\kappa$。
+> $\lambda$ 在 $M[G]$ 中仍有 $\mathrm{cf}\ge\kappa$ 。
 
-**(2)** 由引理 2.1 的 $\kappa$-cc：$\ge\kappa$ 的基数与
+**(2)** 由引理 2.1 的 $\kappa$ -cc：$\ge\kappa$ 的基数与
 梯度全保（引理 I.3.34 的引用）。**(1)** 的核心是**逐值稠密性**：
-对 $\lambda<\kappa$ 不可数、$\beta<\lambda$，令
+对 $\lambda<\kappa$ 不可数、$\beta<\lambda$ ，令
 $$
 D_\beta=\{p\mid\exists n\,((\lambda,n)\in\mathrm{dom}(p)
 \wedge p(\lambda,n)=\beta)\}.
 $$
 
 **$D_\beta$ 稠密**（书 p152 的构造，逐字落进机器通道）：
-给定 $q$，令
+给定 $q$ ，令
 $$
 n=1+\max\{m\mid\exists\alpha((\alpha,m)\in\mathrm{dom}(q))\},
 \quad p=q\cup\{((\lambda,n),\beta)\}.
 $$
 
-$n$ 新鲜（大于一切已用槽号）、$p\supseteq q$、
-$p(\lambda,n)=\beta<\lambda$ 合法——$p\in D_\beta$、
-$p\le q$。∎ 泛型相遇后：
+$n$ 新鲜（大于一切已用槽号）、$p\supseteq q$ 、
+$p(\lambda,n)=\beta<\lambda$ 合法——$p\in D_\beta$ 、
+$p\le q$ 。∎ 泛型相遇后：
 $$
 f_\lambda(n)=\beta\iff\exists p\in G\,(p(\lambda,n)=\beta)
 $$
 
 良定义且**满**（每个 $\beta$ 的 $D_\beta$ 都被 $G$
-击中）——$\omega\twoheadrightarrow\lambda$，$\lambda$
+击中）——$\omega\twoheadrightarrow\lambda$ ，$\lambda$
 可数。$\lambda<\kappa$ 任意，故 $\kappa$ 之下再无不可数
-基数；配合 (2)，$\kappa=\omega_1$。∎
+基数；配合 (2)，$\kappa=\omega_1$ 。∎
 
 良定义性的一行别放过：若 $p,p'\in G$ 都在坐标 $(\lambda,n)$
-上有值，滤子性给公共延伸 $q\supseteq p,p'$，部分函数性给
-$p(\lambda,n)=q(\lambda,n)=p'(\lambda,n)$——**同一个槽至
+上有值，滤子性给公共延伸 $q\supseteq p,p'$ ，部分函数性给
+$p(\lambda,n)=q(\lambda,n)=p'(\lambda,n)$ ——**同一个槽至
 多一个值**。这条「槽-值唯一性」正是机器通道 `compat`/`functP`
 所证的内容（条件层），泛型层只须再补「滤子两元必有公共
 延伸」（上定向性）。定理 2.2 的证明骨架因此是三层：条件层
@@ -327,7 +327,7 @@ $p(\lambda,n)=q(\lambda,n)=p'(\lambda,n)$——**同一个槽至
 机器通道把这四步做成了可执行件（Lean/Coq/Agda 的三份
 构造性证明 + Julia/Python/Prolog 的相遇与满射账，详见
 103.6）：`fresh_n`（书式
-$n_0=1+\max$）+ `extend_dense`（稠密性的**构造性证明**，
+$n_0=1+\max$ ）+ `extend_dense`（稠密性的**构造性证明**，
 Lean/Coq/Agda 三份）+ 贪心相遇（Julia/Python/Prolog 对稠密
 族 $\{D(\lambda,\beta)\}$ 逐目标扩展）+ $f_\lambda$ 满
 射还原。**定理 2.2 的机制全部有限化，只有「泛型性 = 与
@@ -336,20 +336,20 @@ Lean/Coq/Agda 三份）+ 贪心相遇（Julia/Python/Prolog 对稠密
 定理 2.2(2) 的另一半（$\mathrm{cf}(\lambda)\ge\kappa$ 保持）
 同样值得机器面对照：贪心相遇只对 $\lambda\le 4$ 个目标
 值扩展，每目标恰加一槽——**有限次扩展永不破坏有限条件**
-（`extend_dense` 的 `compat p q` 断言），这正是「$\kappa$-cc
+（`extend_dense` 的 `compat p q` 断言），这正是「$\kappa$ -cc
 下有限信息不塌」的影子。而「$\omega_1$ 之上不再有 $\kappa$
 以下的东西掉下来」的反面——**$\kappa$ 自身保住基数身份**——
 在机器面看不到：有限宇宙里 $\kappa=4$ 本来就是「最大」，
-「变成 $\omega_1$」与「保持原位」不可区分。边界条目 3
+「变成 $\omega_1$ 」与「保持原位」不可区分。边界条目 3
 会回到这一点。
 
 ## 103.4 因子分解与整齐性：L(ℝ) 的地基
 
 > **定理 2.3（因子分解引理）** $\kappa$ 不可达、
-> $\mathbb P=\mathrm{Col}(\omega,<\kappa)$、$G$
-> $V$-泛型。若 $X\in V[G]$ 是可数序数之集，则存在
-> $V[X]$ 上的 $\mathbb P$-泛型滤子 $H$ 使
-> $V[X][H]=V[G]$。
+> $\mathbb P=\mathrm{Col}(\omega,<\kappa)$ 、$G$
+> $V$ -泛型。若 $X\in V[G]$ 是可数序数之集，则存在
+> $V[X]$ 上的 $\mathbb P$ -泛型滤子 $H$ 使
+> $V[X][H]=V[G]$ 。
 
 这条引理读起来抽象，用途却极具体：**中间模型定理**。$V[X]$
 是 $V[G]$ 与 $V$ 之间的任意「小信息」模型——因子分解说
@@ -360,23 +360,23 @@ Lean/Coq/Agda 三份）+ 贪心相遇（Julia/Python/Prolog 对稠密
 『加参数』+『加剩余』两步 → 整齐性管第二步的真值」完全
 建立在这条引理上。
 
-证明（书 p152–153）的骨架：$\mathbb P\cong\mathbb P_\nu \times\mathbb P^\nu$（坐标 $\subseteq\nu\times\omega$ 与
+证明（书 p152–153）的骨架：$\mathbb P\cong\mathbb P_\nu \times\mathbb P^\nu$ （坐标 $\subseteq\nu\times\omega$ 与
 $\subseteq(\kappa-\nu)\times\omega$ 的分裂）；$X$ 的
 名字经满射 $\dot f:\omega\twoheadrightarrow X$ 用**极大
-冲突子集** $W_n$（每 $|W_n|<\kappa$，链条件）截断到某
+冲突子集** $W_n$ （每 $|W_n|<\kappa$ ，链条件）截断到某
 个 $\mathbb P_{\nu+1}$ 里；自分裂引理（推论 II.3.16）给
-$V[X]$ 上的余下泛型。**因子分解 = 把「依赖 $\kappa$-
+$V[X]$ 上的余下泛型。**因子分解 = 把「依赖 $\kappa$ -
 高度信息的对象」压进某个 $<\kappa$ 片段**——这正是
 $L(\mathbb R)$ 分析的地基：实数集是可数序数的信息，
 $L(\mathbb R)$ 的成员都能被 $\mathbb P_\nu$ 型的小力迫
 处理。
 
 极大冲突子集 $W_n$ 的账值得展开：$\dot f:\omega\twoheadrightarrow X$ 是满射的名字，每个 $n$ 处的值被一族两两冲突的条件
-瓜分（不同值必不同见证条件）；$\kappa$-cc 使每族
-$|W_n|<\kappa$，$\omega$ 个族的并仍 $<\kappa$——
+瓜分（不同值必不同见证条件）；$\kappa$ -cc 使每族
+$|W_n|<\kappa$ ，$\omega$ 个族的并仍 $<\kappa$ ——
 于是某个 $\nu<\kappa$ 把**全部见证条件**装进
-$\mathbb P_{\nu+1}$，$X$ 的名字即住在 $V[G\cap \mathbb P_{\nu+1}]$ 中。「**冲突族的小性 ⟹ 名字的有界性**」
-与定理 2.1(f) 的名字账（可能值集 $|A_\alpha|\le|\mathbb P|$）
+$\mathbb P_{\nu+1}$ ，$X$ 的名字即住在 $V[G\cap \mathbb P_{\nu+1}]$ 中。「**冲突族的小性 ⟹ 名字的有界性**」
+与定理 2.1(f) 的名字账（可能值集 $|A_\alpha|\le|\mathbb P|$ ）
 是同一枚硬币的两面：前者用 cc 数冲突，后者用条件数可能值——
 都是把 $V[G]$ 的对象压回 $V$ 的有界片段。
 
@@ -392,7 +392,7 @@ $\mathbb P_{\nu+1}$，$X$ 的名字即住在 $V[G\cap \mathbb P_{\nu+1}]$ 中。
 拟稠密（定义 2.3）的动机先说清：泛型滤子的判据「与一切
 稠密集相交」可以逐级削弱——「与一切稠密**开**集相交」（引理
 2.3(b)，开性来自序结构）、「与一切**拟稠密**集相交」（(c)：
-拟稠密 = $\forall p\,\exists q\le p\,(q\in E)$，即在每个
+拟稠密 = $\forall p\,\exists q\le p\,(q\in E)$ ，即在每个
 点附近都有 $E$ 的元素**或其上方等价物**）、「与一切**极大
 冲突**集相交」（(d)：冲突 = 无公共延伸）。四条判据等价（引
 理 2.2/2.3，练习）——**泛型滤子是「躲不开的滤子」**：无论
@@ -404,21 +404,21 @@ $\mathbb P_{\nu+1}$，$X$ 的名字即住在 $V[G\cap \mathbb P_{\nu+1}]$ 中。
 坐标网是对称的**——任何两个条件（非零布尔元）都能被某个
 自同构搬运，因为它们都只是「有限张网」，网与网无本质区别。
 黑白分明律由此而来：$\varphi(\bar a)$ 的布尔值被一切自同构
-固定（自同构固定地基参数 $\bar a$），而整理布尔代数中被
+固定（自同构固定地基参数 $\bar a$ ），而整理布尔代数中被
 一切自同构固定的元素只有 0 与 1。**第 111 章起
 $L(\mathbb R)$ 中「$\varphi$ 的真值与泛型选取无关」
 的全部论证都吃这台机器的红利**。
 
 延拓引理（定理 2.5）的证明是**往返阶梯**：给定同构
-$\pi_0:\mathbb B_0\cong\mathbb B_1$（两个 $<\kappa$ 大小
-的完备子代数），交替扩大定义域/值域（$\nu_1<\nu_2<\cdots< \kappa$），每步用协调性引理（引理 I.3.94）把部分同构延拓
-到更大的 $\mathbb B_{\nu_n}$；$\omega$ 步后取并，得
+$\pi_0:\mathbb B_0\cong\mathbb B_1$ （两个 $<\kappa$ 大小
+的完备子代数），交替扩大定义域/值域（$\nu_1<\nu_2<\cdots< \kappa$ ），每步用协调性引理（引理 I.3.94）把部分同构延拓
+到更大的 $\mathbb B_{\nu_n}$ ；$\omega$ 步后取并，得
 $\mathbb B_{<\kappa}$ 的自同构。往返的可行性完全依赖
-$\kappa$ **不可达**（每步的代数大小 $<\kappa$，并也
-$<\kappa$）——这是 Lévy 崩塌要求不可达而非 merely 正则
+$\kappa$ **不可达**（每步的代数大小 $<\kappa$ ，并也
+$<\kappa$ ）——这是 Lévy 崩塌要求不可达而非 merely 正则
 的深层原因之一。**往返构造**在第 97 章迭代超幂（交替扩张
 模型链）与第 119 章迭代树（交替 ultrapower 分支）会以不同
-姿态重演——「$\omega$-长往返 + 不可达封顶」是大基数技术
+姿态重演——「$\omega$ -长往返 + 不可达封顶」是大基数技术
 的又一台通用发动机。
 
 ## 103.5 三本账：保持基数 / 可数化 / 保持见证
@@ -428,9 +428,9 @@ Task 18 Step 3 的对照表——本章三种「改变或不改变」的机制
 
 | 账本 | 机制 | 量词位置 | 机器件 |
 |---|---|---|---|
-| **保持基数与梯度** | $\kappa$-cc（引理 2.1 的荟萃账）：反链 $<\kappa$ ⟹ $\ge\kappa$ 的势不塌 | 泛型前的组合论 | Agda/Isabelle 的拼接功能性（条件层的「部分函数」守恒） |
-| **把旧基数可数化** | 逐值稠密 $D_\beta$（行无穷宽 + 新鲜槽号）：每个 $\beta<\lambda$ 被某槽击中 | 泛型相遇的存在性 | Lean/Coq 的 `extend_dense` + Julia/Python 贪心 + $f_\lambda$ 还原 |
-| **保持大基数见证** | $j^*$ 提升（$j$ 固定 $\mathbb P$、名字无关性、初等性搬运）：九款条款逐一复验 | 嵌入层（非组合层） | `unionC_set_eq` 名字无关性影子（并的集级交换） |
+| **保持基数与梯度** | $\kappa$ -cc（引理 2.1 的荟萃账）：反链 $<\kappa$ ⟹ $\ge\kappa$ 的势不塌 | 泛型前的组合论 | Agda/Isabelle 的拼接功能性（条件层的「部分函数」守恒） |
+| **把旧基数可数化** | 逐值稠密 $D_\beta$ （行无穷宽 + 新鲜槽号）：每个 $\beta<\lambda$ 被某槽击中 | 泛型相遇的存在性 | Lean/Coq 的 `extend_dense` + Julia/Python 贪心 + $f_\lambda$ 还原 |
+| **保持大基数见证** | $j^*$ 提升（$j$ 固定 $\mathbb P$ 、名字无关性、初等性搬运）：九款条款逐一复验 | 嵌入层（非组合层） | `unionC_set_eq` 名字无关性影子（并的集级交换） |
 
 三行机制的正交性：cc 是**纯组合**（不涉及嵌入）；可数化是
 **稠密性工程**（不涉及 cc——$\mathrm{Col}$ 恰好两者兼备但
@@ -459,8 +459,8 @@ $\kappa=\omega_1$ 的舞台——**崩塌不是破坏，是布景**；
 
 ## 103.6 机器通道
 
-七通道共享同一组数据件：条件 = （键 $(\alpha,n)$、值
-$\beta<\alpha$）的有限函数（有限宇宙 $\alpha\in[1,4]$，
+七通道共享同一组数据件：条件 = （键 $(\alpha,n)$ 、值
+$\beta<\alpha$ ）的有限函数（有限宇宙 $\alpha\in[1,4]$ ，
 槽号 $n$ 无界——书式新鲜槽号可整段落码）；`compat`/
 `extend_dense`/贪心相遇三件在七个语言里各有一份实现。
 分工：**Lean**（拼接 + 稠密 + 名字无关性，证明最全）、
@@ -1364,13 +1364,13 @@ poly 孤儿进程各占 2–6 GB 内存（须 Stop-Process 清场，否则
 ## 103.7 机器的边界
 
 1. **九款保持律不可机化**：$j^*$ 提升机的三件观察
-   （$j$ 固定 $\mathbb P$、双泛型性、名字解释吻合）与
+   （$j$ 固定 $\mathbb P$ 、双泛型性、名字解释吻合）与
    初等性搬运全在类嵌入层；机器件只锚条件层。
 2. **泛型性的无穷量词留在正文**：贪心相遇只模拟「对有限
    稠密族」的击中；「与 $V$ 的一切稠密集相交」是
    $\mathcal P(\mathcal P(\mathbb P))$ 级量词。
-3. **引理 2.1 的荟萃账不可见**：$\Delta$-系统式论证消费
-   $\kappa$-cc 的「任意 $\kappa$-列」——有限影子中
+3. **引理 2.1 的荟萃账不可见**：$\Delta$ -系统式论证消费
+   $\kappa$ -cc 的「任意 $\kappa$ -列」——有限影子中
    反链条件自动真。
 4. **因子分解（定理 2.3）与整齐性（定理 2.5）**：极大冲突
    子集 $W_n$ 的截断、完备子代数的往返延拓都在超穷
@@ -1392,8 +1392,8 @@ poly 孤儿进程各占 2–6 GB 内存（须 Stop-Process 清场，否则
    参数序），是机器数学的独立研究对象。
 
 把全章收进五句话：**小型力迫改不动大基数的本质**（定理 2.1
-九款 + 逆命题，$j^*$ 提升机四部件），**Lévy 崩塌把不可达
-变成 $\omega_1$**（$\kappa$-cc 保上 + 逐值稠密塌下），
+九款 + 逆命题，$j^*$ 提升机四部件），**Lévy 崩塌把不可达变成**
+$\omega_1$ （$\kappa$ -cc 保上 + 逐值稠密塌下），
 **因子分解把可数信息压进小片段**（定理 2.3，$L(\mathbb R)$
 的地基），**整齐布尔代数让真值黑白分明**（定理 2.4/2.5 +
 推论 2.1/2.2），**三本账（保基数/可数化/保见证）机制正交**
@@ -1407,17 +1407,17 @@ $\omega_1$ 舞台），后两章的 Prikry/Silver 型力迫则展示
 
 ## 103.8 本章要点与检查问题
 
-- **定理 2.1**：小型力迫（$\mathbb P\in V_\kappa$）保持
+- **定理 2.1**：小型力迫（$\mathbb P\in V_\kappa$ ）保持
   九款大基数性质且造不出新的大基数——Lévy–Solovay 历史线，
   「大基数对 CH 无能为力」的技术根源。
 - **$j^*$ 提升机**：$j$ 固定 $\mathbb P$ ⟹
   $G$ 双泛型 ⟹ $j^*(	au_G)=(j(	au))_G$ 良定义
   （名字无关性）⟹ 初等性搬运——九款复验共用一台发动机。
-  逆命题走理想饱和（$|\mathbb P|^+$-饱和素理想 ⟹ 可测）。
-- **引理 2.1 + 定理 2.2**：$\kappa$-cc（荟萃 $\Delta$-
-  账）保 $\ge\kappa$ 侧；逐值稠密 $D_\eta$（行无穷
-  宽 + 新鲜槽号 $n_0=1+\max$）把 $<\kappa$ 侧全体
-  可数化——$\kappa=\omega_1$。
+  逆命题走理想饱和（$|\mathbb P|^+$ -饱和素理想 ⟹ 可测）。
+- **引理 2.1 + 定理 2.2**：$\kappa$ -cc（荟萃 $\Delta$ -
+  账）保 $\ge\kappa$ 侧；逐值稠密 $D_\eta$ （行无穷
+  宽 + 新鲜槽号 $n_0=1+\max$ ）把 $<\kappa$ 侧全体
+  可数化——$\kappa=\omega_1$ 。
 - **因子分解与整齐性**：定理 2.3 把可数信息压进
   $<\kappa$ 片段（$L(\mathbb R)$ 的地基）；定理 2.4/2.5
   黑白分明律 + 整齐布尔代数（推论 2.2：布尔值非 0 即 1）。
@@ -1440,29 +1440,29 @@ $\omega_1$ 舞台），后两章的 Prikry/Silver 型力迫则展示
 对应，第 2 题查荟萃平移的域分裂，第 3 题查行宽与稠密性的
 交换，第 4 题查因子分解与名字有界性。）
 
-1. 定理 2.1(d) 的逆命题中，如果 $|\mathbb P|\ge\kappa$，
+1. 定理 2.1(d) 的逆命题中，如果 $|\mathbb P|\ge\kappa$ ，
    「$I^+$ 中无长 $|\mathbb P|^+$ 的几乎不相交序列」
    这一步在哪里失效？（提示：冲突条件与力迫条件的一一对应
    需要 $X\cap Y\in I^+$ 的账——$\mathbb P$ 大时
    稠密性结构如何变化？）
 2. 引理 2.1 的证明取 $g(\delta)=\max\{\eta\mid\cdots\}$
-   并压平到固定 $\eta$。若 $\mathrm{Col}(\omega,<\kappa)$
-   的条件允许无穷域（但 $<\kappa$），论证哪一步断？
+   并压平到固定 $\eta$ 。若 $\mathrm{Col}(\omega,<\kappa)$
+   的条件允许无穷域（但 $<\kappa$ ），论证哪一步断？
 3. 定理 2.2 的 $f_\lambda$ 满射依赖「每 $\eta$ 的
    $D_\eta$ 被击中」。若槽号 $n$ 限定为单槽
    （每行一个位置），$D_\eta$ 对哪些 $(\lambda,\eta)$
    仍稠密？（联系 Julia 通道的「每 $\lambda$ 恰用
    $\lambda$ 槽」断言。）
 
-5. 定理 2.3 的证明把 $X$ 的名字压进 $\mathbb P_{\nu+1}$。
+5. 定理 2.3 的证明把 $X$ 的名字压进 $\mathbb P_{\nu+1}$ 。
 若把「可数序数之集」换成「$\omega_1$ 个序数的集」
-（$\omega_1<\kappa$），论证在哪一步需要补强？（极大冲突
+（$\omega_1<\kappa$ ），论证在哪一步需要补强？（极大冲突
    族的大小账从 $\omega$ 组变成 $\omega_1$ 组——$\kappa$
    的不可达性还够用吗？）
 
 6. Isabelle 通道的 `functP`/`compatP`/`unionP` 是条件层的
    功能性三件套。用自然语言说明：为什么 `unionP_funct` 的
-   四案证明中，「$x\in q$、$y\in p$」一案不能从
+   四案证明中，「$x\in q$ 、$y\in p$ 」一案不能从
    `compatP(p,q)` 直接得出而必须走「键不交冲突」？（提示：
    `compatP` 的量词方向。）
 
@@ -1477,7 +1477,7 @@ Coq `in_map_iff` 三元参、Agda 列表逗号语法、Julia Unicode
    的成员是 $V[G]$ 的实数——不是地基参数——为什么第
    111 章之后仍然能用整齐性论证 $L(\mathbb R)$ 的理论
    稳定？（提示：定理 2.3 因子分解把实数信息压回
-   $V[X]$。）
+   $V[X]$ 。）
 
 补一行总括：本章七份源码共 ~750 行，覆盖定理 2.2 的全部
 机制件与定理 2.1 的最小影子（名字无关性）；未机化的本体
