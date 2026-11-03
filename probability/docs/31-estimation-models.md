@@ -22,33 +22,33 @@
 
 一个参数化统计模型写成
 
-\[
+$$
 \mathcal P=\{P_\theta:\theta\in\Theta\}.
-\]
+$$
 
-这里 \(\Theta\) 称为**参数空间**，每个 \(\theta\) 对应样本空间上的一个概率分布。
+这里 $\Theta$ 称为**参数空间**，每个 $\theta$ 对应样本空间上的一个概率分布。
 
-若数据为 \(X=(X_1,\ldots,X_n)\)，则每个 \(P_\theta\) 给出的是整个随机向量的联合分布，而不只是单个分量的边际分布。
+若数据为 $X=(X_1,\ldots,X_n)$，则每个 $P_\theta$ 给出的是整个随机向量的联合分布，而不只是单个分量的边际分布。
 
 在 iid 情形下，
 
-\[
+$$
 X_1,\ldots,X_n\overset{\mathrm{iid}}{\sim}F_\theta,
-\]
+$$
 
 所以联合分布由共同边际分布和独立性一起确定。
 
 离散模型常写
 
-\[
+$$
 P_\theta(X=x)=\prod_{i=1}^n f(x_i;\theta),
-\]
+$$
 
 连续模型则用联合密度
 
-\[
+$$
 f_X(x;\theta)=\prod_{i=1}^n f(x_i;\theta).
-\]
+$$
 
 这里密度必须相对于同一个参考测度理解。
 
@@ -61,42 +61,42 @@ f_X(x;\theta)=\prod_{i=1}^n f(x_i;\theta).
 
 ## 31.3 总体、真参数与参数空间
 
-在频率派推断中，通常把数据看成来自一个固定但未知的分布 \(P_0\)。
+在频率派推断中，通常把数据看成来自一个固定但未知的分布 $P_0$。
 
-若存在 \(\theta_0\in\Theta\) 使
+若存在 $\theta_0\in\Theta$ 使
 
-\[
+$$
 P_0=P_{\theta_0},
-\]
+$$
 
-就称模型**正确设定**，并称 \(\theta_0\) 为真参数。
+就称模型**正确设定**，并称 $\theta_0$ 为真参数。
 
 参数空间不是纯数学装饰，而是模型假设的一部分。
 
-例如 Bernoulli 成功概率必须满足 \(0\le p\le1\)；正态方差参数若使用普通密度，必须满足 \(v>0\)。
+例如 Bernoulli 成功概率必须满足 $0\le p\le1$；正态方差参数若使用普通密度，必须满足 $v>0$。
 
-把 \(p=1\) 排除在外，还是把它纳入参数空间，会直接影响全成功样本的极大似然估计是否存在。
+把 $p=1$ 排除在外，还是把它纳入参数空间，会直接影响全成功样本的极大似然估计是否存在。
 
 因此，在写出估计量之前，必须先写清楚：
 
-\[
+$$
 \text{样本是什么，}\quad
 \text{参数是什么，}\quad
 \text{参数允许取什么值。}
-\]
+$$
 
 ## 31.4 参数、参数函数与估计目标
 
-有时整个 \(\theta\) 都是研究对象，有时只关心它的某个函数
+有时整个 $\theta$ 都是研究对象，有时只关心它的某个函数
 
-\[
+$$
 \psi=g(\theta).
-\]
+$$
 
 例如：
 
-- Bernoulli 模型中关心成功概率 \(p\)；
-- 正态模型中可能只关心均值 \(\mu\)，方差是 nuisance parameter；
+- Bernoulli 模型中关心成功概率 $p$；
+- 正态模型中可能只关心均值 $\mu$，方差是 nuisance parameter；
 - Logit 模型中可能关心优势比，而不是线性预测子中的回归系数；
 - 持续时长模型中可能关心风险率，而不是完整生存分布。
 
@@ -110,13 +110,13 @@ P_0=P_{\theta_0},
 
 **可识别性**是统计推断的逻辑起点。
 
-称参数 \(\theta\) 可识别，如果对任意 \(\theta_1,\theta_2\in\Theta\)，
+称参数 $\theta$ 可识别，如果对任意 $\theta_1,\theta_2\in\Theta$，
 
-\[
+$$
 P_{\theta_1}=P_{\theta_2}
 \quad\Longrightarrow\quad
 \theta_1=\theta_2.
-\]
+$$
 
 等价地，不同参数必须产生不同的抽样分布。
 
@@ -124,13 +124,13 @@ P_{\theta_1}=P_{\theta_2}
 
 增加样本量可以减少随机波动，却不能创造模型中本来没有的信息。
 
-更一般地，参数函数 \(\psi=g(\theta)\) 可识别，如果
+更一般地，参数函数 $\psi=g(\theta)$ 可识别，如果
 
-\[
+$$
 P_{\theta_1}=P_{\theta_2}
 \quad\Longrightarrow\quad
 g(\theta_1)=g(\theta_2).
-\]
+$$
 
 所以整个参数向量不可识别时，它的某些函数仍然可能可识别。
 
@@ -140,14 +140,14 @@ g(\theta_1)=g(\theta_2).
 
 设
 
-\[
+$$
 X\mid a,b\sim\operatorname{Bernoulli}
 \left(\frac1{1+e^{-(a+b)}}\right).
-\]
+$$
 
-参数 \((a,b)=(0.2,0.3)\) 与 \((0.5,0)\) 给出同一个分布。
+参数 $(a,b)=(0.2,0.3)$ 与 $(0.5,0)$ 给出同一个分布。
 
-因此 \(a\) 和 \(b\) 单独都不可识别，而 \(a+b\) 可识别。
+因此 $a$ 和 $b$ 单独都不可识别，而 $a+b$ 可识别。
 
 Python 单元直接比较两个概率：
 
@@ -161,21 +161,21 @@ assert linked_bernoulli_probability(0.2, 0.3) != linked_bernoulli_probability(0.
 
 第一条断言是分布恒等的数值实例，不是一般识别定理的证明。
 
-一般结论来自模型公式：分布只通过 \(a+b\) 依赖参数。
+一般结论来自模型公式：分布只通过 $a+b$ 依赖参数。
 
 ### 混合模型的标签交换
 
 两分量混合模型
 
-\[
+$$
 \tfrac12N(\mu_1,1)+\tfrac12N(\mu_2,1)
-\]
+$$
 
-在交换 \((\mu_1,\mu_2)\) 后不变。
+在交换 $(\mu_1,\mu_2)$ 后不变。
 
 如果两个分量没有额外标签含义，那么有序参数对和交换后的参数对代表同一分布。
 
-可以通过规定 \(\mu_1\le\mu_2\) 消除标签自由度，但这不是数据自己提供的约束。
+可以通过规定 $\mu_1\le\mu_2$ 消除标签自由度，但这不是数据自己提供的约束。
 
 识别问题应先于优化算法处理；优化器在某个点收敛，并不能证明参数唯一。
 
@@ -187,15 +187,15 @@ assert linked_bernoulli_probability(0.2, 0.3) != linked_bernoulli_probability(0.
 
 在适当条件下，极大似然往往靠近使 Kullback–Leibler 散度最小的参数：
 
-\[
+$$
 \theta_*=
 \arg\min_{\theta\in\Theta}
 D_{\mathrm{KL}}(P_0\Vert P_\theta).
-\]
+$$
 
-这个 \(\theta_*\) 称为**伪真参数**。
+这个 $\theta_*$ 称为**伪真参数**。
 
-它是模型族中对真实分布的最佳投影，不必使 \(P_{\theta_*}=P_0\)。
+它是模型族中对真实分布的最佳投影，不必使 $P_{\theta_*}=P_0$。
 
 例如真实数据具有过度离散的计数分布，而我们只用 Poisson 模型拟合。
 
@@ -214,21 +214,21 @@ D_{\mathrm{KL}}(P_0\Vert P_\theta).
 
 例如
 
-\[
+$$
 \bar X_n=\frac1n\sum_{i=1}^nX_i,
 \qquad
 S_n^2=\frac1{n-1}\sum_{i=1}^n(X_i-\bar X_n)^2.
-\]
+$$
 
-当统计量被用来估计参数 \(\theta\) 时，称为估计量，记作 \(\hat\theta_n(X)\)。
+当统计量被用来估计参数 $\theta$ 时，称为估计量，记作 $\hat\theta_n(X)$。
 
 估计量是随机变量，因为它随样本变化。
 
-代入一次已经观察到的数据 \(x\) 后，得到
+代入一次已经观察到的数据 $x$ 后，得到
 
-\[
+$$
 \hat\theta_n(x),
-\]
+$$
 
 称为估计值，是一个确定的数或向量。
 
@@ -238,23 +238,23 @@ S_n^2=\frac1{n-1}\sum_{i=1}^n(X_i-\bar X_n)^2.
 
 ## 31.9 损失函数把错误变成决策问题
 
-设动作 \(a\) 是对参数的估计，损失函数为
+设动作 $a$ 是对参数的估计，损失函数为
 
-\[
+$$
 L(\theta,a)\ge0.
-\]
+$$
 
 常见例子有：
 
-\[
+$$
 L(\theta,a)=(a-\theta)^2
-\]
+$$
 
 的平方误差，
 
-\[
+$$
 L(\theta,a)=|a-\theta|
-\]
+$$
 
 的绝对误差，以及分类问题中的零一损失。
 
@@ -268,23 +268,23 @@ L(\theta,a)=|a-\theta|
 
 ## 31.10 风险是抽样平均损失
 
-估计量 \(\hat\theta\) 在参数 \(\theta\) 处的风险定义为
+估计量 $\hat\theta$ 在参数 $\theta$ 处的风险定义为
 
-\[
+$$
 R(\theta,\hat\theta)
 =E_\theta[L(\theta,\hat\theta(X))].
-\]
+$$
 
 期望对数据的抽样分布计算，不是把参数当作随机变量。
 
 平方误差下的风险又叫均方误差：
 
-\[
+$$
 \operatorname{MSE}_\theta(\hat\theta)
 =E_\theta[(\hat\theta-\theta)^2].
-\]
+$$
 
-一个估计量在不同 \(\theta\) 处可以有不同表现。
+一个估计量在不同 $\theta$ 处可以有不同表现。
 
 所以“估计量 A 优于 B”必须说明：
 
@@ -296,19 +296,19 @@ R(\theta,\hat\theta)
 
 估计量的偏差为
 
-\[
+$$
 \operatorname{Bias}_\theta(\hat\theta)
 =E_\theta[\hat\theta]-\theta.
-\]
+$$
 
 若偏差恒为零，就称估计量无偏。
 
 方差为
 
-\[
+$$
 \operatorname{Var}_\theta(\hat\theta)
 =E_\theta\left[(\hat\theta-E_\theta\hat\theta)^2\right].
-\]
+$$
 
 偏差描述抽样分布的中心偏离目标多少，方差描述它围绕自己的中心波动多大。
 
@@ -320,21 +320,21 @@ R(\theta,\hat\theta)
 
 记
 
-\[
+$$
 m=E_\theta[\hat\theta],
 \qquad
 B=m-\theta.
-\]
+$$
 
-加入并减去 \(m\)：
+加入并减去 $m$：
 
-\[
+$$
 \hat\theta-\theta=(\hat\theta-m)+B.
-\]
+$$
 
 平方并取期望：
 
-\[
+$$
 \begin{aligned}
 \operatorname{MSE}_\theta(\hat\theta)
 &=E_\theta[(\hat\theta-m)^2]
@@ -342,53 +342,53 @@ B=m-\theta.
 &=\operatorname{Var}_\theta(\hat\theta)
 +\operatorname{Bias}_\theta(\hat\theta)^2.
 \end{aligned}
-\]
+$$
 
-交叉项为零，因为 \(E_\theta[\hat\theta-m]=0\)。
+交叉项为零，因为 $E_\theta[\hat\theta-m]=0$。
 
 所以
 
-\[
+$$
 \boxed{
 \operatorname{MSE}
 =\operatorname{Bias}^2+\operatorname{Var}.
 }
-\]
+$$
 
 这条恒等式解释了为什么有偏估计可能优于无偏估计：少量偏差有时能换来更大的方差下降。
 
 对向量估计量，相应分解为
 
-\[
+$$
 E_\theta\|\hat{\boldsymbol\theta}-\boldsymbol\theta\|^2
 =\|\operatorname{Bias}_\theta(\hat{\boldsymbol\theta})\|^2
 +\operatorname{tr}\operatorname{Cov}_\theta(\hat{\boldsymbol\theta}).
-\]
+$$
 
 ## 31.13 一个完全算清的有偏估计例
 
-设 \(\bar X_n\) 的均值为 \(\mu\)、方差为 \(\sigma^2/n\)，考虑
+设 $\bar X_n$ 的均值为 $\mu$、方差为 $\sigma^2/n$，考虑
 
-\[
+$$
 \hat\mu=a\bar X_n.
-\]
+$$
 
 则
 
-\[
+$$
 \operatorname{Bias}(\hat\mu)=(a-1)\mu,
 \qquad
 \operatorname{Var}(\hat\mu)=a^2\sigma^2/n.
-\]
+$$
 
 因此
 
-\[
+$$
 \operatorname{MSE}(\hat\mu)
 =(a-1)^2\mu^2+\frac{a^2\sigma^2}{n}.
-\]
+$$
 
-Python 用有理数检查 \(\mu=2,\sigma^2=5,n=10,a=3/4\)：
+Python 用有理数检查 $\mu=2,\sigma^2=5,n=10,a=3/4$：
 
 ```python
 a, mu, sigma2, size = Fraction(3, 4), Fraction(2), Fraction(5), 10
@@ -398,7 +398,7 @@ direct_risk = (a - 1) ** 2 * mu ** 2 + a ** 2 * sigma2 / size
 assert bias ** 2 + variance == direct_risk == Fraction(17, 32)
 ```
 
-无偏的 \(a=1\) 方差项最小系数为 \(1\)，但其他 \(a\) 可能在某些 \(\mu\) 处有更低总风险。
+无偏的 $a=1$ 方差项最小系数为 $1$，但其他 $a$ 可能在某些 $\mu$ 处有更低总风险。
 
 这不是说随意缩小都好；若参数范围或损失改变，结论也会改变。
 
@@ -406,106 +406,106 @@ assert bias ** 2 + variance == direct_risk == Fraction(17, 32)
 
 设
 
-\[
+$$
 X_1,\ldots,X_n\overset{\mathrm{iid}}{\sim}N(\mu,\sigma^2),
-\]
+$$
 
-并令 \(\nu=n-1\)。
+并令 $\nu=n-1$。
 
 第 22 章已经证明
 
-\[
+$$
 Q:=\frac{\nu S^2}{\sigma^2}\sim\chi^2_\nu,
 \qquad
 E[Q]=\nu,
 \qquad
 \operatorname{Var}(Q)=2\nu.
-\]
+$$
 
 考虑一族估计量
 
-\[
+$$
 \hat\sigma_c^2=cS^2.
-\]
+$$
 
-因为 \(S^2=\sigma^2Q/\nu\)，有
+因为 $S^2=\sigma^2Q/\nu$，有
 
-\[
+$$
 E[\hat\sigma_c^2]=c\sigma^2,
 \qquad
 \operatorname{Bias}(\hat\sigma_c^2)=(c-1)\sigma^2.
-\]
+$$
 
 并且
 
-\[
+$$
 \operatorname{Var}(\hat\sigma_c^2)
 =\frac{2c^2\sigma^4}{\nu}.
-\]
+$$
 
 由偏差—方差分解，标准化风险为
 
-\[
+$$
 \boxed{
 \frac{E[(\hat\sigma_c^2-\sigma^2)^2]}{\sigma^4}
 =(c-1)^2+\frac{2c^2}{\nu}
 =\left(1+\frac2\nu\right)c^2-2c+1.
 }
-\]
+$$
 
-这是 \(c\) 的严格凸二次函数。
+这是 $c$ 的严格凸二次函数。
 
 配方可得最优系数
 
-\[
+$$
 \boxed{c_*=\frac{\nu}{\nu+2}=\frac{n-1}{n+1}.}
-\]
+$$
 
 对应最小标准化风险为
 
-\[
+$$
 R(c_*)=\frac2{\nu+2}=\frac2{n+1}.
-\]
+$$
 
-这个“最优”仅指正态模型、平方误差和 \(cS^2\) 这一族，不是对所有可能估计量的无条件宣称。
+这个“最优”仅指正态模型、平方误差和 $cS^2$ 这一族，不是对所有可能估计量的无条件宣称。
 
 ## 31.15 无偏、MLE 与风险最优并不相同
 
 三个常见选择是
 
-\[
+$$
 c_{\mathrm U}=1,
 \qquad
 c_{\mathrm{MLE}}=\frac{n-1}{n},
 \qquad
 c_*=\frac{n-1}{n+1}.
-\]
+$$
 
 分别对应：
 
-- \(S^2\)：无偏样本方差；
-- \(\hat\sigma_{\mathrm{MLE}}^2=n^{-1}\sum_i(X_i-\bar X)^2\)：下一章推导的 MLE；
-- \((n-1)S^2/(n+1)\)：本族平方误差风险最优者。
+- $S^2$：无偏样本方差；
+- $\hat\sigma_{\mathrm{MLE}}^2=n^{-1}\sum_i(X_i-\bar X)^2$：下一章推导的 MLE；
+- $(n-1)S^2/(n+1)$：本族平方误差风险最优者。
 
 标准化风险依次为
 
-\[
+$$
 R_{\mathrm U}=\frac2{n-1},
 \qquad
 R_{\mathrm{MLE}}=\frac{2n-1}{n^2},
 \qquad
 R_*=\frac2{n+1}.
-\]
+$$
 
-在 \(n=10\) 时，
+在 $n=10$ 时，
 
-\[
+$$
 R_{\mathrm U}=\frac29\approx0.2222,
 \quad
 R_{\mathrm{MLE}}=\frac{19}{100}=0.19,
 \quad
 R_*=\frac2{11}\approx0.1818.
-\]
+$$
 
 Python 的精确账与文件中的实现一致：
 
@@ -526,7 +526,7 @@ risks = {name: scaled_variance_risk(c, n)
 assert risks["risk_optimal"] < risks["mle"] < risks["unbiased"]
 ```
 
-这里的 `Fraction` 让 \(2/9\)、\(19/100\)、\(2/11\) 保持精确有理数，不发生二进制浮点舍入。
+这里的 `Fraction` 让 $2/9$、$19/100$、$2/11$ 保持精确有理数，不发生二进制浮点舍入。
 
 无偏性是中心位置条件，MLE 是一种构造原则，风险最优是特定决策准则；三者没有理由总是重合。
 
@@ -545,9 +545,9 @@ theorem risk_gap (c ν : ℚ) (hν : ν ≠ 0) (hν2 : ν + 2 ≠ 0) :
   ring
 ```
 
-当 \(\nu>0\) 时，右侧系数 \(1+2/\nu>0\)，平方项非负。
+当 $\nu>0$ 时，右侧系数 $1+2/\nu>0$，平方项非负。
 
-因此任何 \(c\) 的风险都不低于 \(c_*\) 的风险，并且只有 \(c=c_*\) 时等号成立。
+因此任何 $c$ 的风险都不低于 $c_*$ 的风险，并且只有 $c=c_*$ 时等号成立。
 
 同一文件还证明
 
@@ -565,7 +565,7 @@ theorem normal_mle_risk (n : ℚ) (hn : n ≠ 0) (hn1 : n - 1 ≠ 0) :
 
 ## 31.17 风险随参数变化：三种比较原则
 
-若 \(R(\theta,\hat\theta)\) 随 \(\theta\) 改变，逐点比较可能出现交叉。
+若 $R(\theta,\hat\theta)$ 随 $\theta$ 改变，逐点比较可能出现交叉。
 
 常见决策原则有：
 
@@ -581,9 +581,9 @@ theorem normal_mle_risk (n : ℚ) (hn : n ≠ 0) (hn1 : n - 1 ≠ 0) :
 
 定义
 
-\[
+$$
 R_{\max}(\hat\theta)=\sup_{\theta\in\Theta}R(\theta,\hat\theta).
-\]
+$$
 
 最小化最大风险给出 minimax 原则。
 
@@ -591,11 +591,11 @@ R_{\max}(\hat\theta)=\sup_{\theta\in\Theta}R(\theta,\hat\theta).
 
 ### 平均风险
 
-给定参数上的权重或先验 \(\pi\)，定义 Bayes 风险
+给定参数上的权重或先验 $\pi$，定义 Bayes 风险
 
-\[
+$$
 r_\pi(\hat\theta)=\int R(\theta,\hat\theta)\,\pi(d\theta).
-\]
+$$
 
 这与前面的频率派风险不同：这里额外对参数平均。
 
@@ -605,19 +605,19 @@ r_\pi(\hat\theta)=\int R(\theta,\hat\theta)\,\pi(d\theta).
 
 若损失改为绝对误差，风险为
 
-\[
+$$
 E_\theta|\hat\theta-\theta|.
-\]
+$$
 
-对直接预测一个随机变量 \(Y\) 的问题，平方损失的最优常数预测是均值 \(E[Y]\)，绝对损失的最优常数预测是中位数。
+对直接预测一个随机变量 $Y$ 的问题，平方损失的最优常数预测是均值 $E[Y]$，绝对损失的最优常数预测是中位数。
 
-证明绝对损失结论可比较候选点 \(a\) 左右移动时两侧概率质量的变化；最优条件在平滑情形下为
+证明绝对损失结论可比较候选点 $a$ 左右移动时两侧概率质量的变化；最优条件在平滑情形下为
 
-\[
+$$
 P(Y\le a)\ge\frac12,
 \qquad
 P(Y\ge a)\ge\frac12.
-\]
+$$
 
 所以损失函数不仅改变风险数值，也可能改变最优统计动作。
 
@@ -629,7 +629,7 @@ P(Y\ge a)\ge\frac12.
 
 模拟的作用是检查实现、展示有限样本频率，并帮助形成直觉。
 
-Python 使用固定种子和 \(n=10\)：
+Python 使用固定种子和 $n=10$：
 
 ```python
 rng = np.random.default_rng(31)
@@ -644,7 +644,7 @@ for name, c in coefficients.items():
 
 `ddof=1` 使 `s2` 对应无偏样本方差。
 
-三个估计量随后使用不同系数 \(c\)，模拟风险除以 \(\sigma^4\) 与理论标准化风险比较。
+三个估计量随后使用不同系数 $c$，模拟风险除以 $\sigma^4$ 与理论标准化风险比较。
 
 阈值只用于这次固定规模实验的回归检查，不是普遍误差界。
 
@@ -702,7 +702,7 @@ Python 和 Julia 的有理数计算验证具体代数，Lean 验证一般恒等�
 3. 估计量是随机变量，估计值是代入数据后的实现。
 4. 损失衡量一次错误，风险衡量该参数下的抽样平均损失。
 5. 均方误差严格分解为偏差平方加方差，无偏不等于低风险。
-6. 正态方差族 \(cS^2\) 的风险最优系数是 \((n-1)/(n+1)\)，不同于无偏系数和 MLE 系数。
+6. 正态方差族 $cS^2$ 的风险最优系数是 $(n-1)/(n+1)$，不同于无偏系数和 MLE 系数。
 7. 模型误设与抽样波动来源不同；风险比较必须说明参数范围、损失和限制类别。
 
 ---

@@ -74,12 +74,12 @@
 
 ### 第五篇 抽样分布与统计信息
 
-从 iid 样本和统计量出发，建立正态样本的 \(\chi^2,t,F\) 抽样分布，
+从 iid 样本和统计量出发，建立正态样本的 $\chi^2,t,F$ 抽样分布，
 再用条件分布和因子分解理解数据简化、最小充分性、完备性与 Rao–Blackwell 化。
 
 | 章 | 标题 | 一句话 |
 |---|---|---|
-| [22](docs/22-sampling-distributions.md) | 随机样本与抽样分布 | Helmert 正交变换、\(\chi^2,t,F\)、双样本与顺序统计量 |
+| [22](docs/22-sampling-distributions.md) | 随机样本与抽样分布 | Helmert 正交变换、$\chi^2,t,F$、双样本与顺序统计量 |
 | [23](docs/23-sufficiency.md) | 充分统计量与数据简化 | 因子分解、最小充分、完备性、Basu 定理与 Rao–Blackwell |
 
 ### 第六篇 随机序列与极限定理 I
@@ -90,7 +90,7 @@ Monte Carlo 误差公式建立大样本平均的基本理论。
 | 章 | 标题 | 一句话 |
 |---|---|---|
 | [24](docs/24-markov-chains.md) | 差分方程与 Markov 链 | 转移矩阵、平稳分布、首达时间、Leslie 矩阵与遍历均值 |
-| [25](docs/25-convergence.md) | 随机变量序列的收敛 | \(L^p\)、几乎必然、依概率、依分布及 Borel–Cantelli 反例 |
+| [25](docs/25-convergence.md) | 随机变量序列的收敛 | $L^p$、几乎必然、依概率、依分布及 Borel–Cantelli 反例 |
 | [26](docs/26-lln.md) | 大数定律与 Monte Carlo | Chebyshev 弱律、Khinchin/Kolmogorov 强律、Cauchy 反例 |
 
 ### 第七篇 渐近定理与工具 II
@@ -102,7 +102,7 @@ Monte Carlo 误差公式建立大样本平均的基本理论。
 |---|---|---|
 | [27](docs/27-clt.md) | 中心极限定理 | iid 有限方差的特征函数证明、连续性修正与格距 |
 | [28](docs/28-fourier-clt.md) | Fourier 分析与特征函数 | 反演、唯一性、卷积、Lévy 连续性与稳定律 |
-| [29](docs/29-asymptotic-tools.md) | 渐近拼接工具 | \(O_p/o_p\)、连续映射、Slutsky 与 Delta 方法 |
+| [29](docs/29-asymptotic-tools.md) | 渐近拼接工具 | $O_p/o_p$、连续映射、Slutsky 与 Delta 方法 |
 | [30](docs/30-stirling.md) | Stirling 公式与局部近似 | 积分夹逼、Wallis 常数、中心二项系数与有限误差 |
 
 ### 第八篇 统计模型与估计
