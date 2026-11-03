@@ -115,6 +115,9 @@ Monte Carlo 误差公式建立大样本平均的基本理论。
 |---|---|---|
 | [31](docs/31-estimation-models.md) | 参数模型、估计量与风险 | 识别、模型误设、偏差—方差分解与风险比较 |
 | [32](docs/32-mle.md) | 极大似然估计 | 似然、得分、Fisher 信息、Newton 优化与不变性 |
+| [33](docs/33-gmm.md) | 矩估计与广义矩方法 | 恰好/过度识别、最优权重、两步 GMM 与 J 统计量 |
+| [34](docs/34-efficiency.md) | UMVU 与信息下界 | Rao–Blackwell、Lehmann–Scheffé、Cramér–Rao 与等号条件 |
+| [35](docs/35-asymptotic-estimation.md) | 一致性与渐近方差 | MLE/GMM 展开、伪真参数、sandwich 与稳健标准误 |
 
 ### 统计与专题历史稿（后续按 33–43 重排）
 

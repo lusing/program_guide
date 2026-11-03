@@ -1075,4 +1075,4 @@ Q(\theta_0)-Q(\theta)
 
 ---
 
-上一章：[31 参数模型、估计量与风险](31-estimation-models.md) · 返回[教程目录](../README.md)
+上一章：[31 参数模型、估计量与风险](31-estimation-models.md) · 下一章：[33 矩估计与广义矩方法](33-gmm.md)

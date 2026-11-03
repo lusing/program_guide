@@ -32,4 +32,7 @@ import Probability.Ch27CLT
 import Probability.Ch29AsymptoticTools
 import Probability.Ch31EstimationModels
 import Probability.Ch32MLE
+import Probability.Ch33GMM
+import Probability.Ch34Efficiency
+import Probability.Ch35AsymptoticEstimation
 import Probability.Ch26ProofTechniques

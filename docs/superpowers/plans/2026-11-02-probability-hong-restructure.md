@@ -562,21 +562,23 @@ Run `build.ps1 -Chapter 12,13,14,15,16`、`build.ps1 -Docs` 和一次 `build.ps1
 - Create: GMM／信息不等式／sandwich 的 Julia、Python 单元与至少一个形式化代数锚
 - Source: 洪书 PDF353–385
 
-- [ ] **Step 1: 写 33 矩估计与 GMM**
+- [x] **Step 1: 写 33 矩估计与 GMM**
 
 由总体矩条件推导样本矩估计，区分恰好识别与过度识别；定义 GMM 目标函数，推导一步、两步和最优权重，解释权重矩阵维数及奇异矩阵处理。给线性矩条件的完整数值例子。
 
-- [ ] **Step 2: 写 34 UMVU 与信息下界**
+- [x] **Step 2: 写 34 UMVU 与信息下界**
 
 证明 Rao–Blackwell 改进方向，说明完备充分统计量如何给出 UMVU；在正则条件下推导 Cramér–Rao 下界，明确得分与参数求导交换的关键一步，并用 Bernoulli／正态例计算有效性。
 
-- [ ] **Step 3: 写 35 渐近性质**
+- [x] **Step 3: 写 35 渐近性质**
 
 定义一致性、渐近正态和渐近有效性；用“得分均值 + 导数项 + 余项”推导 MLE 渐近分布，用矩条件展开推导 GMM sandwich 方差。解释模型误设时伪真值和稳健方差，不把正确模型下的信息矩阵等式机械套用。
 
-- [ ] **Step 4: 验证并提交**
+- [x] **Step 4: 验证并提交**
 
 验证偏差—方差账、CR 下界等号条件、最优 GMM 权重、J 统计量自由度、MLE／GMM 渐近方差矩阵。Run `build.ps1 -Chapter 33,34,35`、`-Docs` 和 `-All`，PASS 后提交。
+
+实际结果：目标章 9/9 PASS（Lean/Julia/Python 各 3 章），`-Docs` PASS（0 errors），全量 `-All` 147/147 PASS、FAIL 0。第 33 章用线性两矩一例精确核对一步、两步和最优 GMM，Lean 证明逆方差权重的完全平方最优性；第 34 章精确枚举 Rao–Blackwell 改进与 Bernoulli CR 等号，并区分正态方差“未达到下界”与“仍是 UMVU”；第 35 章推导 MLE/GMM sandwich，固定种子模拟显示误设正态标准误覆盖率约 0.67、稳健覆盖率约 0.94。精确代数检查纠正了 Poisson 伪似然方差中重复除以 λ² 的初稿错误：最终 \(\sqrt n\) 渐近方差为真实 Var(X)。
 
 ### Task 13: 重建假设检验与置信推断（36–37）
 
