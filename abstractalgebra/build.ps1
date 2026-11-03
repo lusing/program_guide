@@ -182,14 +182,16 @@ if ($wantLangs -contains 'julia') {
 if ($wantLangs -contains 'python') {
     $env:PYTHONIOENCODING = 'utf-8'
     # 解释器自愈：默认 python 缺 sympy 时改用 scoop python313
-    if (-not (& python -I -c "import sympy" *> $null)) {
+    # 注意：必须用退出码判断（& cmd *> $null 的"输出"恒为 null，-not 会误判）
+    & python -I -X utf8 -c "import sympy" *> $null
+    if ($LASTEXITCODE -ne 0) {
         $pyFallback = 'G:\scoop\apps\python313\current'
         if (Test-Path (Join-Path $pyFallback 'python.exe')) {
             Write-Host "[python] 默认 python 缺 sympy，改用 $pyFallback"
             $env:PATH = "$pyFallback;$env:PATH"
         }
     }
-    Invoke-ScriptUnit $pyUnits 'python' { param($p) & python -I $p }
+    Invoke-ScriptUnit $pyUnits 'python' { param($p) & python -I -X utf8 $p }
 }
 if ($wantLangs -contains 'prolog') {
     Invoke-ScriptUnit $plUnits 'prolog' { param($p) & swipl -q -f $p -g main -t halt }
