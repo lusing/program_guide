@@ -35,4 +35,6 @@ import Probability.Ch32MLE
 import Probability.Ch33GMM
 import Probability.Ch34Efficiency
 import Probability.Ch35AsymptoticEstimation
+import Probability.Ch36HypothesisTesting
+import Probability.Ch37AsymptoticTests
 import Probability.Ch26ProofTechniques

@@ -119,7 +119,17 @@ Monte Carlo 误差公式建立大样本平均的基本理论。
 | [34](docs/34-efficiency.md) | UMVU 与信息下界 | Rao–Blackwell、Lehmann–Scheffé、Cramér–Rao 与等号条件 |
 | [35](docs/35-asymptotic-estimation.md) | 一致性与渐近方差 | MLE/GMM 展开、伪真参数、sandwich 与稳健标准误 |
 
-### 统计与专题历史稿（后续按 33–43 重排）
+### 第九篇 假设检验与置信推断
+
+从两类错误和 Neyman–Pearson 最优性出发，建立 Wald、LM、LR
+三大渐近检验，并以检验—置信集对偶统一 p 值、功效与区间解释。
+
+| 章 | 标题 | 一句话 |
+|---|---|---|
+| [36](docs/36-hypothesis-testing.md) | 假设检验与 Neyman–Pearson 理论 | 两类错误、size/power、UMP、p 值与经典 z/t/χ² 检验 |
+| [37](docs/37-asymptotic-tests.md) | Wald、LM、LR 检验与置信区间 | 渐近卡方、局部功效、检验—区间对偶与多重比较 |
+
+### 统计与专题历史稿（后续按 38–43 重排）
 
 | 章 | 标题 | 一句话 |
 |---|---|---|

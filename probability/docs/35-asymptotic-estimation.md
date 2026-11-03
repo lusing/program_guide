@@ -1017,4 +1017,4 @@ theorem linearized_estimation_error
 
 ---
 
-上一章：[34 UMVU 与信息下界](34-efficiency.md) · 返回[教程目录](../README.md)
+上一章：[34 UMVU 与信息下界](34-efficiency.md) · 下一章：[36 假设检验与 Neyman–Pearson 理论](36-hypothesis-testing.md)
