@@ -30,17 +30,17 @@ category/
 
 | 章 | 主题 | 示例 |
 |---|---|---|
-| [02 认识范畴论](docs/01-intro.md) | Category record；结构集配方（Pno）；预层一瞥 | 三家 |
-| [03 反范畴与对偶](docs/02-opposite.md) | 定律互译；范畴 2 与主截面 | 三家 |
-| [04 特殊态射](docs/03-arrows.md) | mono/epi 全谱；消去封闭；平衡反例 | 三家 |
-| [05 图与交换图](docs/04-diagrams.md) | 图→自由范畴；**五角星绕两圈** | 三家 |
-| [06 函子](docs/05-functors.md) | List/hom；**幂集三函子 ∃/I/∀** | 三家 |
-| [07 自然变换](docs/06-natural.md) | Godement 积；eval 双对偶 | 三家 |
-| [08 范畴等价](docs/07-equivalence.md) | 全忠实+本质满；Pfn≃Set⊥ | 三家 |
-| [09 Yoneda 引理](docs/08-yoneda.md) | **旗舰**：往返双程完整机器 | 三家 |
-| [10 逗号范畴](docs/09-comma.md) | (U↓L)；切片/箭头范畴/截面三合一 | 三家 |
-| [11 积与余积](docs/10-products.md) | 泛性质唯一到同构；Set 余积=不交并 | 三家 |
-| [12 等化子与拉回](docs/11-pullbacks.md) | 拉回保 mono；余等化子/核对全家福 | 三家 |
+| [01 认识范畴论](docs/01-intro.md) | Category record；结构集配方（Pno）；预层一瞥 | 三家 |
+| [02 反范畴与对偶](docs/02-opposite.md) | 定律互译；范畴 2 与主截面 | 三家 |
+| [03 特殊态射](docs/03-arrows.md) | mono/epi 全谱；消去封闭；平衡反例 | 三家 |
+| [04 图与交换图](docs/04-diagrams.md) | 图→自由范畴；**五角星绕两圈** | 三家 |
+| [05 函子](docs/05-functors.md) | List/hom；**幂集三函子 ∃/I/∀** | 三家 |
+| [06 自然变换](docs/06-natural.md) | Godement 积；eval 双对偶 | 三家 |
+| [07 范畴等价](docs/07-equivalence.md) | 全忠实+本质满；Pfn≃Set⊥ | 三家 |
+| [08 Yoneda 引理](docs/08-yoneda.md) | **旗舰**：往返双程完整机器 | 三家 |
+| [09 逗号范畴](docs/09-comma.md) | (U↓L)；切片/箭头范畴/截面三合一 | 三家 |
+| [10 积与余积](docs/10-products.md) | 泛性质唯一到同构；Set 余积=不交并 | 三家 |
+| [11 等化子与拉回](docs/11-pullbacks.md) | 拉回保 mono；余等化子/核对全家福 | 三家 |
 | [12 子对象、商对象与射影](docs/12-subobjects.md) | 良幂/收缩/**射影与单射**（提升公理化） | 三家 |
 | [13 极限一般理论](docs/13-limits.md) | 线程法；**双塔：极限 1 / 余极限 D** | 双语 |
 | [14 合流余极限](docs/14-confluent.md) | 块与结构搬运（R-集/幺半群） | Coq |
@@ -76,11 +76,11 @@ pwsh -NoProfile -Command '& ./build.ps1 -All'
 
 ## 已知边界（诚实清单）
 
-- **record 相等三文化**（07/09 章核心）：NT 的 nlaw 字段依赖
+- **record 相等三文化**（06/08 章核心）：NT 的 nlaw 字段依赖
   ncomp——Coq 止步于分量级、Agda 走 setoid（_≈NT_）、Lean 用
   结构 η+内核 PI 拿到完整 record 相等；Yoneda 往返 2 的完整版
   仅 Lean。
-- Agda 的 TyCat 纤维积唯一性需证明无关性——12 章 Agda 版止步
+- Agda 的 TyCat 纤维积唯一性需证明无关性——11 章 Agda 版止步
   于抽象定理。
 - 17/19/21/22/26/27 为文档章：RAPL、Beck 定理、五边形连贯性、
   反变伴随与层化的机器化需要函子范畴的完整 record 级相等 +

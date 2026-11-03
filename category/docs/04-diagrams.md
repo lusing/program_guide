@@ -1,4 +1,4 @@
-# 05 图与交换图
+# 04 图与交换图
 
 > 对书：《高级范畴论》1.2（图、图同态与图自然变换——全书独有的
 > 前置章）/ Simmons 2.1（Diagram chasing）。
@@ -37,7 +37,7 @@ Inductive Path (G : Graph) : V G -> V G -> Type :=
 | pcat : forall (e : E G) (w : V G), Path G (tgt G e) w -> Path G (src G e) w.
 ```
 
-拼接 `papp` 递归在第一条路。Coq 又一次撞索引 match 的墙（03 章
+拼接 `papp` 递归在第一条路。Coq 又一次撞索引 match 的墙（02 章
 同款）：Fixpoint 写不出，走 `revert + induction + Defined`；定律
 `papp_idR`/`papp_assoc` 对第一条路归纳。Agda/Lean 的模式匹配自动
 处理索引，直接双模式完事。
@@ -51,7 +51,7 @@ Example plen_direct : plen pDirect2 = 1 := eq_refl.
 ```
 
 `freeCat` 是「泛构造」的第一实例：任何图免费生成范畴——
-11 章的自由幺半群、17 章的自由-遗忘伴随都是它的重演。
+10 章的自由幺半群、17 章的自由-遗忘伴随都是它的重演。
 
 ## 4.2 交换图 = 方程组
 
@@ -172,7 +172,7 @@ Lean 版则是 `simp only [← C.assoc]` 一步规范化 + 五条 rw，
 - 《高级范畴论》1.2 讲图同态与「图自然变换」——预层理论的伏笔
   （28 章 presheaf = 图/层的推广）；
 - Simmons 2.1 的 chasing 技法服务于 2.5–2.7 的方块图
-  （拉回、推出）——12 章正式重逢；
+  （拉回、推出）——11 章正式重逢；
 - 贺伟本不单独讲图，极限（第 2 章）直接以「图表 = 函子」开题
   ——13 章采纳这个更抽象的进路。
 
@@ -224,4 +224,4 @@ Lean 版则是 `simp only [← C.assoc]` 一步规范化 + 五条 rw，
 
 ---
 
-上一章：[04 特殊态射与特殊对象](03-arrows.md) · 下一章：[06 函子](05-functors.md)
+上一章：[03 特殊态射与特殊对象](03-arrows.md) · 下一章：[05 函子](05-functors.md)

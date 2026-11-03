@@ -1,33 +1,33 @@
 # 30 坑位总清单与三书导读
 
 ## 30.1 Coq 高频坑
-1. **Set Implicit Arguments 连锁**：范畴参数被隐化后显式应用要 @（06–17 章连环踩）；
+1. **Set Implicit Arguments 连锁**：范畴参数被隐化后显式应用要 @（05–17 章连环踩）；
    构造子/投影的模式槽数随参数隐化变化（17 章 pcat 的 2/4 槽之谜）。
-2. **真宇宙多态**要 `Set Universe Polymorphism`——默认 @{u v} 只是命名全局宇宙（06 章实锤）；
+2. **真宇宙多态**要 `Set Universe Polymorphism`——默认 @{u v} 只是命名全局宇宙（05 章实锤）；
    实例分隔符是空格、代数层（Set+1）在实例位置被拒。
 3. 字段值要连隐式 binder 一起绑定（comp 5 个、assoc 7 个下划线）。
 4. 依赖位 rewrite 弄病 motive：换 transitivity 桥接、sig_ext 只比第一分量、
-   destruct eqn + f_equal 投影同行（12 章三连踩）。
-5. `*` 默认解析 nat 乘法——类型位置写 prod（11 章）；[x] 记号在 refine 里要 (x :: nil)（21 章）。
-6. 索引族递归定义走 revert+induction+Defined（03/17 章）；Qed 挡 delta。
-7. 子弹层级嵌套：外层 `-` 里用 `+`（12 章）。
+   destruct eqn + f_equal 投影同行（11 章三连踩）。
+5. `*` 默认解析 nat 乘法——类型位置写 prod（10 章）；[x] 记号在 refine 里要 (x :: nil)（21 章）。
+6. 索引族递归定义走 revert+induction+Defined（02/17 章）；Qed 挡 delta。
+7. 子弹层级嵌套：外层 `-` 里用 `+`（11 章）。
 8. concat 的 A 显式——map concat 要钉实例（21 章）。
 
 ## 30.2 Agda 高频坑
-1. 子句体只能引用模式绑定的变量：隐式 C/D/F/G 全部具名绑定（07/12 章连环踩）。
+1. 子句体只能引用模式绑定的变量：隐式 C/D/F/G 全部具名绑定（06/11 章连环踩）。
 2. where 块不能模式绑定——搬 let；where 看不见外层子句的隐式。
-3. suc 双义（Level/ℕ）→ renaming；stdlib 的 * 递归在第一参数、*-suc 右端反方向（05 章）。
-4. 死 meta：FHom _ f 的下划线一律具名；显式钉 F/a 才能解锁（09 章 yoneda-round1）。
-5. Mono/Epi 量化对象落在 o⊔ℓ；Σ 的谓词是 Prop 值时层级要算细（04 章）。
+3. suc 双义（Level/ℕ）→ renaming；stdlib 的 * 递归在第一参数、*-suc 右端反方向（04 章）。
+4. 死 meta：FHom _ f 的下划线一律具名；显式钉 F/a 才能解锁（08 章 yoneda-round1）。
+5. Mono/Epi 量化对象落在 o⊔ℓ；Σ 的谓词是 Prop 值时层级要算细（03 章）。
 
 ## 30.3 Lean 高频坑
 1. `/-!` 模块文档注释内容不能以 - 开头（4.25 扫描器误判 unterminated comment）。
 2. OfNat 在结构投影下推不出——(2 : Nat) 标注；具名隐式 (a := ())。
-3. 方程式定义返回「第一参数」要具名（| p, .refl _ => p）——.refl _ 留 meta 卡死 iota（03 章）。
-4. rw 看不见 iota 折叠子项——simp only [f] 先暴露；投影链用 show 折叠（09/16 章）。
-5. Σ 不收 Prop 分量：泛性质按「Prop 性质 / structure 数据 / Σ' 混居」三分（04/11 章）；
+3. 方程式定义返回「第一参数」要具名（| p, .refl _ => p）——.refl _ 留 meta 卡死 iota（02 章）。
+4. rw 看不见 iota 折叠子项——simp only [f] 先暴露；投影链用 show 折叠（08/16 章）。
+5. Σ 不收 Prop 分量：泛性质按「Prop 性质 / structure 数据 / Σ' 混居」三分（03/10 章）；
    方程对用 ∧ 非 ×。
-6. 核心库占用：Functor/Categories → FunctorC；cases+congr 1 是依赖字段 record 相等的官方通道（07 章）。
+6. 核心库占用：Functor/Categories → FunctorC；cases+congr 1 是依赖字段 record 相等的官方通道（06 章）。
 
 （Simmons 线新增）带参数 Record 的构造子/投影参数显隐；
 f_equal 的目标数错位；依赖函数字段要 funext_dep；rewrite

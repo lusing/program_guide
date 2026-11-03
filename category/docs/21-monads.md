@@ -125,4 +125,4 @@ Lemma split_coeq_mediate : forall (C : Category) (a b c d : Obj C)
 
 ---
 
-上一章：[20 λ 演算与演绎系统构成的范畴](20-stlc.md) · 下一章：[22 幺半范畴与富范畴](22-monoidal.md)
+上一章：[20 函数式语言、演绎系统与 λ 演算的范畴](20-stlc.md) · 下一章：[22 幺半范畴与富范畴](22-monoidal.md)
