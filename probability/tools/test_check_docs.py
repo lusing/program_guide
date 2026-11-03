@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from check_docs import check
+from check_docs import check, check_math
 
 
 class CheckDocsTest(unittest.TestCase):
@@ -35,6 +35,24 @@ class CheckDocsTest(unittest.TestCase):
         (root / "docs" / "00-intro.md").write_text(
             "[下一章](01-events.md)\n", encoding="utf-8")
         self.assertTrue(any("dangling link" in e for e in check(root)))
+
+    def test_legacy_math_delimiter_fails(self):
+        text = "价格是 `\\(x\\)` 代码不算，\n但正文 \\(x\\) 要报错。\n"
+        errors = check_math(text, Path("x.md"))
+        self.assertTrue(any("legacy math delimiter" in e for e in errors), errors)
+
+    def test_balanced_dollar_math_passes(self):
+        text = (
+            "行内 $x+y$ 与货币 \\$60，000。\n\n"
+            "$$\na^2+b^2=c^2\n$$\n"
+        )
+        self.assertEqual(check_math(text, Path("x.md")), [])
+
+    def test_unbalanced_dollar_fails(self):
+        self.assertTrue(any("unbalanced" in e
+                            for e in check_math("$$\na\n", Path("x.md"))))
+        self.assertTrue(any("unbalanced" in e
+                            for e in check_math("$x 元\n", Path("x.md"))))
 
 
 if __name__ == "__main__":
