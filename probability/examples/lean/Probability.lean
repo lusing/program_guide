@@ -37,4 +37,6 @@ import Probability.Ch34Efficiency
 import Probability.Ch35AsymptoticEstimation
 import Probability.Ch36HypothesisTesting
 import Probability.Ch37AsymptoticTests
+import Probability.Ch38OLS
+import Probability.Ch39OLSProperties
 import Probability.Ch26ProofTechniques

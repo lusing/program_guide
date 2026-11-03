@@ -896,4 +896,4 @@ LR 的参考分布需要单独校准，不能沿用信息等式下的普通卡�
 
 ---
 
-上一章：[36 假设检验与 Neyman–Pearson 理论](36-hypothesis-testing.md) · [返回教程目录](../README.md)
+上一章：[36 假设检验与 Neyman–Pearson 理论](36-hypothesis-testing.md) · 下一章：[38 经典线性回归与普通最小二乘](38-ols.md)

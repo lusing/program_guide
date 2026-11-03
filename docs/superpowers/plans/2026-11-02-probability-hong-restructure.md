@@ -608,17 +608,19 @@ Run `build.ps1 -Chapter 12,13,14,15,16`、`build.ps1 -Docs` 和一次 `build.ps1
 - Migrate: 旧 24 最小二乘代码到 38，新增矩阵与 Monte Carlo 单元
 - Source: 洪书 PDF414–440
 
-- [ ] **Step 1: 写 38 OLS**
+- [x] **Step 1: 写 38 OLS**
 
 逐条说明经典线性模型假设，区分随机生成假设与代数计算；由投影几何和正规方程两条路线推导 β̂，定义 P、M、拟合值与残差，证明 X′e=0、P+M=I、幂等和对称性。
 
-- [ ] **Step 2: 写 39 拟合与 Gauss–Markov**
+- [x] **Step 2: 写 39 拟合与 Gauss–Markov**
 
 推导 TSS／ESS／RSS 与 R² 的成立条件，解释调整 R² 和模型选择；证明 OLS 无偏、协方差矩阵 σ²(X′X)⁻¹ 和 Gauss–Markov，指出无偏依赖外生性而投影恒等式不依赖。
 
-- [ ] **Step 3: 验证并提交**
+- [x] **Step 3: 验证并提交**
 
 用固定小矩阵手算 β̂、e、P、M，再由 SciPy／Julia 对拍；验证扰动使 X′e=0 但无偏性失效的例子。Run `build.ps1 -Chapter 38,39`、`-Docs`，PASS 后提交。
+
+实际结果：目标章 6/6 PASS（Lean/Julia/Python 各 2 章），`-Docs` PASS（0 errors）。三点固定例全程精确分数：β̂=(5/6,3/2)、e=(1/6,-1/3,1/6)、e'e=1/6、P=(1/6)[[5,2,-1],[2,2,2],[-1,2,5]]、tr P=2、TSS=14/3=ESS 9/2+RSS 1/6、R²=27/28、调整 R²=13/14、s²=1/6。Gauss–Markov 完整证明加对照估计（OLS 斜率方差 σ²/2 对 y₂-y₁ 的 2σ²，MC 0.499 vs 2.008）；内生性例 plim=2.5 的 MC 均值 2.499 且逐样本 X'e=0 成立。机器纠正三处：E2/E3 对照数据的残差须偏斜（对称数据两度量截距重合）；Julia 顶层循环赋值须封装函数；Lean 矩阵断言 kernel decide 对 Rat 链式求和停滞，改 native_decide（10s 全绿），另修 `•` 整数矩阵类型不合、正规方程括号（`*ᵥ` 结合力高于 `*`）与 mathlib 4.33 `dotProduct` 移出 Matrix 命名空间。
 
 ### Task 15: 完成 OLS 推断、约束与 GLS（40–41）
 
