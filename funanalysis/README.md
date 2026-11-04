@@ -1,15 +1,18 @@
 # 泛函分析：编程与自动证明教程
 
 以 John B. Conway《A Course in Functional Analysis》（第二版，GTM 96）、
-Peter D. Lax《Functional Analysis》（Wiley 2002）与 Walter Rudin
-《泛函分析》（第二版，刘培德译）三卷为纲的
-中文泛函分析教程。全书 11 章 + 附录全覆盖（48 章，已收官），每个定理
-有三种化身：**机器证明**（Lean 4 + mathlib4 主证、Isabelle/HOL 对拍）、
+Peter D. Lax《Functional Analysis》（Wiley 2002）、Walter Rudin
+《泛函分析》（第二版，刘培德译）与《工科泛函分析基础》（2019）四书
+为纲的中文泛函分析教程。全书 75 章已收官，每个定理有三种化身：
+**机器证明**（Lean 4 + mathlib4 主证、Isabelle/HOL 对拍）、
 **精确离散模型**（Prolog 有限维影子）、**数值实验**（Julia + Python/scipy）。
 
 ## 目录
 
 - [总体规划（章表 × 通道矩阵）](PLAN.md)
+
+### 第一卷 · Conway 篇（00–47）
+
 - [00 导引：泛函分析与机器证明](docs/00-intro.md)
 - [01 预备知识：拓扑、网、Zorn 与 Baire 纲](docs/01-prelim.md)
 - [02 内积空间初步](docs/02-inner-product.md)
@@ -26,26 +29,26 @@ Peter D. Lax《Functional Analysis》（Wiley 2002）与 Walter Rudin
 - [13 紧正规算子的谱定理与泛函演算](docs/13-compact-normal.md)
 - [14 赋范空间与 Banach 空间](docs/14-banach-spaces.md)
 - [15 线性泛函与 Hahn-Banach 定理](docs/15-hahn-banach.md)
-- [16 应用三讲](docs/16-applications.md)
-- [17 对偶理论](docs/17-duality.md)
-- [18 开映射与闭图像定理](docs/18-open-mapping.md)
+- [16 应用三讲：Banach 极限、Runge 定理、序空间](docs/16-applications.md)
+- [17 对偶理论：商、子空间、自反性与 L^p/C_0(X) 对偶](docs/17-duality.md)
+- [18 开映射、闭图像与补子空间](docs/18-open-mapping.md)
 - [19 一致有界原理](docs/19-uniform-boundedness.md)
 - [20 局部凸空间](docs/20-locally-convex.md)
 - [21 几何 Hahn-Banach：分离定理](docs/21-separation.md)
 - [22 归纳极限与分布](docs/22-distributions.md)
-- [23 弱拓扑与 Alaoglu 定理](docs/23-weak-topology.md)
+- [23 弱拓扑、Alaoglu 定理与自反性再访](docs/23-weak-topology.md)
 - [24 Stone-Čech 紧化](docs/24-stone-cech.md)
-- [25 Krein-Milman 与 Stone-Weierstrass](docs/25-krein-milman.md)
-- [26 不变子空间与不动点](docs/26-fixed-points.md)
-- [27 算子的伴随与 Banach-Stone 定理](docs/27-adjoint-banach.md)
-- [28 紧算子、不变子空间与弱紧算子](docs/28-compact-banach.md)
+- [25 Krein-Milman 定理与 Stone-Weierstrass 定理](docs/25-krein-milman.md)
+- [26 不变子空间与不动点定理](docs/26-fixed-points.md)
+- [27 Banach 空间上的算子伴随与 Banach-Stone 定理](docs/27-adjoint-banach.md)
+- [28 Banach 空间上的紧算子](docs/28-compact-banach.md)
 - [29 Banach 代数：理想与商](docs/29-banach-algebra.md)
 - [30 谱与预解式](docs/30-spectrum.md)
 - [31 Riesz 泛函演算](docs/31-riesz-calculus.md)
 - [32 紧算子的谱理论](docs/32-compact-spectrum.md)
 - [33 交换 Banach 代数与 Gelfand 理论](docs/33-gelfand.md)
 - [34 C* 代数与 Gelfand-Naimark 定理](docs/34-cstar-algebra.md)
-- [35 正元、理想、表示与 GNS 构造](docs/35-positive-elements.md)
+- [35 正元、理想与 GNS 构造](docs/35-positive-elements.md)
 - [36 谱测度与交换 C* 代数的表示](docs/36-spectral-measures.md)
 - [37 谱定理](docs/37-spectral-theorem.md)
 - [38 星循环算子、应用与 B(H) 上的拓扑](docs/38-topologies-bh.md)
@@ -59,46 +62,45 @@ Peter D. Lax《Functional Analysis》（Wiley 2002）与 Walter Rudin
 - [46 本质谱与谱的精细分析](docs/46-essential-spectrum.md)
 - [47 CHEATSheet：全定理地图与通道速查](docs/47-cheatsheet.md)
 
-### 第二卷 · Lax 增补篇（48-63）
+### 第二卷 · Lax 增补篇（48–63）
 
-48 [Lax-Milgram 与变分法](docs/48-lax-milgram.md) ·
-49 [Banach 极限与不变平均](docs/49-banach-limits.md) ·
-50 [Müntz 与 Runge](docs/50-muntz-runge.md) ·
-51 [弱收敛的应用](docs/51-weak-applications.md) ·
-52 [Riesz-Thorin 插值与 Hilbert 变换](docs/52-riesz-thorin.md) ·
-53 [Wiener Tauberian 定理](docs/53-wiener-tauberian.md) ·
-54 [Fredholm 行列式](docs/54-fredholm-determinant.md) ·
-55 [Toeplitz 与 Hankel 算子](docs/55-toeplitz-hankel.md) ·
-56 [迹类算子与 Lidskii 定理](docs/56-trace-class.md) ·
-57 [Herglotz 表示与自伴谱](docs/57-herglotz-spectral.md) ·
-58 [Friedrichs 扩张与 Rellich 扰动](docs/58-friedrichs-rellich.md) ·
-59 [半群与 Hille-Yosida 定理](docs/59-semigroups.md) ·
-60 [平均遍历定理与 Koopman 群](docs/60-mean-ergodic.md) ·
-61 [Weyl 交换关系与散射理论](docs/61-weyl-scattering.md) ·
-62 [Beurling 定理与 Hardy 空间](docs/62-beurling-hardy.md) ·
-63 [Lax 篇收官 CHEATSheet](docs/63-lax-cheatsheet.md)
+- [48 Lax-Milgram 引理与变分法](docs/48-lax-milgram.md)
+- [49 Banach 极限与不变平均](docs/49-banach-limits.md)
+- [50 对偶逼近：Müntz 定理与 Runge 定理](docs/50-muntz-runge.md)
+- [51 弱收敛的应用：求和法、Fourier 发散、Galerkin 方法](docs/51-weak-applications.md)
+- [52 Riesz-Thorin 插值与 Hilbert 变换](docs/52-riesz-thorin.md)
+- [53 Wiener Tauberian 定理](docs/53-wiener-tauberian.md)
+- [54 Fredholm 行列式](docs/54-fredholm-determinant.md)
+- [55 Toeplitz 算子与 Hankel 算子：绕数指标](docs/55-toeplitz-hankel.md)
+- [56 迹类算子与 Lidskii 迹公式](docs/56-trace-class.md)
+- [57 Herglotz 表示与自伴算子的谱分解](docs/57-herglotz-spectral.md)
+- [58 Friedrichs 扩张与 Rellich 扰动定理](docs/58-friedrichs-rellich.md)
+- [59 半群与 Hille-Yosida 定理](docs/59-semigroups.md)
+- [60 Stone 定理、平均遍历定理与 Koopman 群](docs/60-mean-ergodic.md)
+- [61 Weyl 交换关系与散射理论](docs/61-weyl-scattering.md)
+- [62 Beurling 定理与 Hardy 空间](docs/62-beurling-hardy.md)
+- [63 Lax 增补篇收官：CHEATSheet 与两书路线总对照](docs/63-lax-cheatsheet.md)
 
+### 第三卷 · Rudin 增补篇（64–69）
 
-### 第三卷 · Rudin 增补篇（64-69）
+- [64 拓扑向量空间：度量化、半范数与 Fréchet 空间](docs/64-tvs-frechet.md)
+- [65 不动点定理群与紧群的 Haar 测度](docs/65-fixed-points-haar.md)
+- [66 Banach 刚性：Hellinger-Toeplitz、向量测度与不可余子空间](docs/66-banach-rigidity.md)
+- [67 广义函数的 Fourier 变换与基本解](docs/67-distributions-fundamental.md)
+- [68 Tauber 理论与素数定理](docs/68-tauber-pnt.md)
+- [69 Rudin 篇收官：CHEATSheet 与三书路线总对照](docs/69-rudin-cheatsheet.md)
 
-64 [拓扑向量空间与 Fréchet 空间](docs/64-tvs-frechet.md) ·
-65 [不动点定理群与 Haar 测度](docs/65-fixed-points-haar.md) ·
-66 [Banach 刚性与不可余子空间](docs/66-banach-rigidity.md) ·
-67 [广义函数的 Fourier 变换与基本解](docs/67-distributions-fundamental.md) ·
-68 [Tauber 理论与素数定理](docs/68-tauber-pnt.md) ·
-69 [Rudin 篇收官：三书总对照](docs/69-rudin-cheatsheet.md)
+### 第四卷 · 工科篇（《工科泛函分析基础》增补，70–75）
 
-### 第四卷 · 工科篇（《工科泛函分析基础》增补，70-75）
+- [70 勒贝格积分与 L^p：从区间长度到完备化](docs/70-lebesgue-lp.md)
+- [71 弱导数：从 δ 到 Sobolev 空间 W^{k,p}](docs/71-weak-derivatives.md)
+- [72 Poincaré 不等式与 Sobolev 嵌入](docs/72-poincare-embedding.md)
+- [73 弱解与 Galerkin 误差：边值问题的 Riesz 路线](docs/73-galerkin-cea.md)
+- [74 内积的应用：相关系数、Gram 矩阵与最佳逼近](docs/74-inner-product-apps.md)
+- [75 工科篇收官：四书总对照与全教程地图](docs/75-gongke-cheatsheet.md)
 
-70 [勒贝格积分与 L^p](docs/70-lebesgue-lp.md) ·
-71 [弱导数：从 δ 到 Sobolev 空间](docs/71-weak-derivatives.md) ·
-72 [Poincaré 不等式与 Sobolev 嵌入](docs/72-poincare-embedding.md) ·
-73 [弱解与 Galerkin/Céa 误差](docs/73-galerkin-cea.md) ·
-74 [内积的应用：相关系数、Gram 矩阵与最佳逼近](docs/74-inner-product-apps.md) ·
-75 [工科篇收官：四书总对照](docs/75-gongke-cheatsheet.md)
-
-全书 75 章（Conway 卷 01-47 + Lax 增补卷 48-63 + Rudin 增补卷
-64-69 + 工科增补卷 70-75）。第四卷以《工科泛函分析基础》（2019）
+全书 75 章（Conway 卷 00–47 + Lax 增补卷 48–63 + Rudin 增补卷
+64–69 + 工科增补卷 70–75）。第四卷以《工科泛函分析基础》（2019）
 为纲：勒贝格积分自包含重建（前三卷未覆盖）、分布的工科导引与
 弱导数/W^{k,p}、Poincaré 与嵌入定理（书第 6 章，前三卷唯一空白
 领地）、弱解变分路线 + Céa 引理（Lean 全证）、内积的工程应用
