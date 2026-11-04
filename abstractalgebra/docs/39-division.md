@@ -61,7 +61,7 @@ f 就在理想中。多元余式因此**不能**当理想成员判据。第 40 �
 
 ## 39.4 机器验证一：Lean——恒等式证书
 
-**文件：`examples/lean/Abstractalgebra/Ch38Division.lean`**。
+**文件：`examples/lean/Abstractalgebra/Ch39Division.lean`**。
 除法算法本身是程序性的（三通道实现），Lean 通道验证它输出的
 **分解恒等式**（定理 7.60 的核心承诺 f = Σqᵢgᵢ + r）：
 
@@ -125,7 +125,7 @@ divide(f, fs, ord) 双循环（先到先得），商累积在 quot[j]。
 4. 修复方案预告：让"每一步的消首都不再回头"的基 = Grobner 基
    （下一章）——余式唯一、成员判定完备、消元三角形。
 
-*对应示例：`examples/lean/Abstractalgebra/Ch38Division.lean`、
+*对应示例：`examples/lean/Abstractalgebra/Ch39Division.lean`、
 `examples/julia/39_division.jl`、`examples/python/39_division.py`、
 `examples/prolog/39_division.pl`。*
 

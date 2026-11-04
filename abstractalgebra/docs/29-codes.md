@@ -66,7 +66,7 @@ n 位码字（n > k），让接收方能检测甚至**纠正**有限个错误。
 
 ## 29.5 机器验证一：Lean——线性码的代数骨架
 
-**文件：`examples/lean/Abstractalgebra/Ch28Codes.lean`。**
+**文件：`examples/lean/Abstractalgebra/Ch29Codes.lean`。**
 mathlib 已有编码理论库（`Mathlib.Data.Code`? 线性码以子空间 +
 矩阵工具自建）：
 
@@ -159,7 +159,7 @@ decode74(Y, Z) :-
    检错）+ 有限域（GF(2) 的比特对齐）——抽象代数第一次扛起了
    工程负荷。
 
-*对应示例：`examples/lean/Abstractalgebra/Ch28Codes.lean`、
+*对应示例：`examples/lean/Abstractalgebra/Ch29Codes.lean`、
 `examples/julia/29_codes.jl`、`examples/python/29_codes.py`、
 `examples/prolog/29_codes.pl`。*
 

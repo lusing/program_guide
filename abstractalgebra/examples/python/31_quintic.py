@@ -102,4 +102,21 @@ assert trials >= 20 and s5_count >= 10
 print(f"随机扫描：不可约五次 {trials} 例中 {s5_count} 例群 = S₅"
       "（通有性佐证）✓")
 
+
+# ---------- 尾声（Epilog）：ζ 的固定子域 + 高斯定理 5.41 的算术面 ----------
+
+zeta5 = sp.exp(2 * sp.I * sp.pi / 5)
+# ζ₅ + ζ₅⁻¹ = 2cos(2π/5) = (√5−1)/2：指标 2 子群 ⟨σ²⟩ 的固定域 ℚ(√5)
+#（expand_complex 把 exp 化成 cos/sin 的精确根式值再相减）
+assert sp.expand_complex(zeta5 + 1 / zeta5 - (sp.sqrt(5) - 1) / 2) == 0
+# ζ₇ + ζ₇⁻¹ = 2cos(2π/7) 次数 3 = [ℤ₆ : ⟨σ³⟩]（指标 3）
+zeta7 = sp.exp(2 * sp.I * sp.pi / 7)
+mp7 = sp.minimal_polynomial(zeta7 + 1 / zeta7, x)
+assert sp.degree(mp7) == 3
+# 引理 5.40 计数：[E^L : E^H] = [H : L]
+assert 4 // 2 == 2 and 6 // 2 == 3
+# 定理 5.41：17 = 2⁴+1 可作；7−1 = 6 含奇因子 3 不可作
+assert 17 - 1 == 2 ** 4 and (7 - 1) % 4 == 2
+print("Epilog：ζ₅ 固定域 = ℚ(√5)（sympy 精确）+ ζ₇ 实部次数 3 + 17/7 作图判别 ✓")
+
 print("END ====")

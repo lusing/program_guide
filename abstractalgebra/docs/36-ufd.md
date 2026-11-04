@@ -79,7 +79,7 @@ aᵢ、bⱼ 分别是 f、g 中**最前的**不被 p 整除的系数，则 (fg)_
 
 ## 36.4 机器验证一：Lean——数值面
 
-**文件：`examples/lean/Abstractalgebra/Ch35Ufd.lean`**。
+**文件：`examples/lean/Abstractalgebra/Ch36Ufd.lean`**。
 分解唯一性与高斯引理的完整证明在 mathlib 中都有正式化，本章取
 可 decide 的数值面：360 的两套分解重组相等、gcd = min 指数
 （gcd(72, 108) = 2²·3² = 36——注意指数取 min 是 2 与 2，
@@ -138,7 +138,7 @@ gcd_，漏进子句 3 触发 mod 0——`abs` 必须经 `is` 求值
 5. UFD ≠ PID：k[x,y] 有唯一分解但 (x,y) 不是主理想——
    下一章（诺特条件）恰好补上"有限生成"这一层。
 
-*对应示例：`examples/lean/Abstractalgebra/Ch35Ufd.lean`、
+*对应示例：`examples/lean/Abstractalgebra/Ch36Ufd.lean`、
 `examples/julia/36_ufd.jl`、`examples/python/36_ufd.py`、
 `examples/prolog/36_ufd.pl`。*
 

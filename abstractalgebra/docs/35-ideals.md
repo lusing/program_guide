@@ -63,7 +63,7 @@ p 素 ⟺ p 不可约 ⟹ d 与 p 相伴或 d 是单位——没有中间层。�
 
 ## 35.4 机器验证一：Lean——域实例与零因子
 
-**文件：`examples/lean/Abstractalgebra/Ch34Ideals.lean`。**
+**文件：`examples/lean/Abstractalgebra/Ch35Ideals.lean`。**
 ℤ/p 是域在 mathlib 里是带条件实例（需要 `Fact (Nat.Prime p)`）：
 
 ```lean
@@ -130,7 +130,7 @@ end
 5. (x₁−a₁,…,xₙ−aₙ) 型极大理想（推论 7.10）是"求值同态"的核，
    为第 38 章的 ℂ[x] 极大理想完全分类埋线。
 
-*对应示例：`examples/lean/Abstractalgebra/Ch34Ideals.lean`、
+*对应示例：`examples/lean/Abstractalgebra/Ch35Ideals.lean`、
 `examples/julia/35_ideals.jl`、`examples/python/35_ideals.py`、
 `examples/prolog/35_ideals.pl`。*
 

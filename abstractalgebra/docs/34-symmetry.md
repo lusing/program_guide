@@ -105,7 +105,7 @@ n = 5 的迹是 (√5−1)/2（黄金比倒数，无理）——**五折对称�
 
 ## 34.5 机器验证一：Lean——等距的函数代数
 
-**文件：`examples/lean/Abstractalgebra/Ch33Symmetry.lean`**。
+**文件：`examples/lean/Abstractalgebra/Ch34Symmetry.lean`**。
 五个等距定义为 ℚ² 上的具体函数，34.1 的关系表逐条变成
 函数等式——每个证明都是 `funext + simp (+ ring)`：
 
@@ -178,7 +178,7 @@ const RHO = (ALPHA, [0.5, 0.0])   # 滑动反射 ρ
 5. 晶体学限制：格旋转的迹必须取整 ⟹ 阶 ∈ {1,2,3,4,6}，
    五折对称被 (√5−1)/2 的无理性排除。
 
-*对应示例：`examples/lean/Abstractalgebra/Ch33Symmetry.lean`、
+*对应示例：`examples/lean/Abstractalgebra/Ch34Symmetry.lean`、
 `examples/julia/34_symmetry.jl`、`examples/python/34_symmetry.py`、
 `examples/prolog/34_symmetry.pl`。*
 

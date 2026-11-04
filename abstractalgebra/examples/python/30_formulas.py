@@ -115,4 +115,26 @@ assert sp.factor(x**4 - 9 * x**2 + 4 * x + 12) == (x + 3) * (x + 1) * (x - 2) **
 assert sp.factor(x**4 - 5 * x**2 + 4) == (x - 1) * (x + 1) * (x - 2) * (x + 2)
 print("对拍：sympy.factor 与费拉里四根一致 ✓")
 
+
+# ---------- 韦达三次公式（定理 5.12）：替换恒等式 + sympy 对拍 ----------
+
+q_, r_, t_, u_, c_ = sp.symbols("q r t u c")
+# 替换的代数核心（精确多项式恒等式）：
+# q = −3t²/4、r = −t³c/4 代入 (tu)³ + q(tu) + r，恰为 t³(4u³−3u−c)/4
+expr = sp.expand((t_ * u_) ** 3 + (-3 * t_ ** 2 / 4) * (t_ * u_) + (-(t_ ** 3) * c_ / 4))
+assert sp.expand(expr - t_ ** 3 * (4 * u_ ** 3 - 3 * u_ - c_) / 4) == 0
+print("定理 5.12 恒等式：(tu)³ + q(tu) + r = t³(4u³−3u−c)/4（多项式证书）✓")
+
+# 整数例：x³ − 3x − 2 = (x−2)(x+1)²（t = 2、cos3θ = 1、cos 表 {1,−1,−1}）
+assert sp.factor(x**3 - 3 * x - 2) == (x - 2) * (x + 1) ** 2
+assert sp.roots(x**3 - 3 * x - 2) == {2: 1, -1: 2}        # 重根保留（solve 会去重，用 roots）
+# 原书例 5.13：x³ − 7x + 6 的韦达三根与 sympy 标准答案对拍
+import math
+t7 = math.sqrt(28 / 3)
+theta7 = math.acos(-24 / t7**3) / 3
+viete_roots = sorted(t7 * math.cos(theta7 + 2 * math.pi * k / 3) for k in range(3))
+exact_roots = sorted(float(s) for s in sp.roots(x**3 - 7 * x + 6))
+assert all(abs(a - b) < 1e-8 for a, b in zip(viete_roots, exact_roots))
+print("例 5.13：韦达三根 = sympy 三根（x³−7x+6 → {−3, 1, 2}）✓")
+
 print("END ====")

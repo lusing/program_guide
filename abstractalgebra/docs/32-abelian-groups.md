@@ -118,7 +118,7 @@ U_p(n, G) 可反解，初等因子可重建）。
 
 ## 32.5 机器验证一：Lean——不变量的 decide 面
 
-**文件：`examples/lean/Abstractalgebra/Ch31AbelianGroups.lean`。**
+**文件：`examples/lean/Abstractalgebra/Ch32AbelianGroups.lean`。**
 三件事各自几行：
 
 ```lean
@@ -206,7 +206,7 @@ CRT 36+6 对、循环判据双向）。一个 Prolog 细节：gcd 的零分支�
 5. 阶档案（各阶元素的个数）是完全不变量的可计算形态——机器通道
    用它区分所有同阶不同构的阿贝尔群。
 
-*对应示例：`examples/lean/Abstractalgebra/Ch31AbelianGroups.lean`、
+*对应示例：`examples/lean/Abstractalgebra/Ch32AbelianGroups.lean`、
 `examples/julia/32_abelian_groups.jl`、
 `examples/python/32_abelian_groups.py`、
 `examples/prolog/32_abelian_groups.pl`。*

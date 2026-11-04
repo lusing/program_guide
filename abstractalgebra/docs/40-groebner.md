@@ -66,7 +66,7 @@ Singular、sympy 的 `groebner`）的心脏。
 
 ## 40.4 机器验证一：Lean——证书式验证
 
-**文件：`examples/lean/Abstractalgebra/Ch39Groebner.lean`**。
+**文件：`examples/lean/Abstractalgebra/Ch40Groebner.lean`**。
 Grobner 基的算法性内容由计算通道承担，Lean 验证每一步的**恒等式
 证书**（全部一行 `ring`）：S-多项式的消首
 `y(x²+1) − x(xy−1) = x+y`；补基步 `S(xy−1, x+y) = −(y²+1)`；
@@ -124,7 +124,7 @@ end
    与不可解性）→ 计算代数（序、除法、基）——抽象结构与算法
    在 Grobner 基处会师。
 
-*对应示例：`examples/lean/Abstractalgebra/Ch39Groebner.lean`、
+*对应示例：`examples/lean/Abstractalgebra/Ch40Groebner.lean`、
 `examples/julia/40_groebner.jl`、`examples/python/40_groebner.py`、
 `examples/prolog/40_groebner.pl`。*
 

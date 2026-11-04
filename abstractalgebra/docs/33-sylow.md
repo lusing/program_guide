@@ -120,7 +120,7 @@ p^e | |G_B|；另一方面单射 G_B → B（g ↦ gb）给出 |G_B| ≤ p^e。
 
 ## 33.6 机器验证一：Lean——候选枚举与计数算术
 
-**文件：`examples/lean/Abstractalgebra/Ch32Sylow.lean`**。
+**文件：`examples/lean/Abstractalgebra/Ch33Sylow.lean`**。
 西罗计数条件 n_p | m ∧ n_p ≡ 1 (mod p) 是纯整数量词于有界集，
 `decide` 直接枚举：
 
@@ -202,7 +202,7 @@ def sylow_count(G, p):
 5. UT(3, 𝔽_p) 家族：西罗子群的天然标本（定理 6.32）+
    阶档案非不变性的最短反例（奇 p）；p = 2 时 ≅ D₄。
 
-*对应示例：`examples/lean/Abstractalgebra/Ch32Sylow.lean`、
+*对应示例：`examples/lean/Abstractalgebra/Ch33Sylow.lean`、
 `examples/julia/33_sylow.jl`、`examples/python/33_sylow.py`、
 `examples/prolog/33_sylow.pl`。*
 

@@ -47,7 +47,7 @@ trace(A) = α + α² = 1（系数和），det(A) = α·α² = α³——特征�
 
 ## 28.4 机器验证一：Lean——特征多项式
 
-**文件：`examples/lean/Abstractalgebra/Ch27Eigenvalues.lean`。**
+**文件：`examples/lean/Abstractalgebra/Ch28Eigenvalues.lean`。**
 
 ```lean
 -- 凯莱–哈密顿的 mathlib 正式化（Matrix.aeval_self_charpoly）
@@ -136,7 +136,7 @@ eigen2_p(P, A, B, C, D, Lam) :-
 5. 凯莱–哈密顿 p_A(A) = 0；GF(2) 矩阵的谱可住 GF(4)，但 trace/det
    （对称函数）落回基域——伽罗瓦的前奏。
 
-*对应示例：`examples/lean/Abstractalgebra/Ch27Eigenvalues.lean`、
+*对应示例：`examples/lean/Abstractalgebra/Ch28Eigenvalues.lean`、
 `examples/julia/28_eigenvalues.jl`、`examples/python/28_eigenvalues.py`、
 `examples/prolog/28_eigenvalues.pl`。*
 

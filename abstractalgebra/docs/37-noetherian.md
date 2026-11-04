@@ -65,7 +65,7 @@ Gordan 的著名抱怨是"这不是数学，这是神学"——不构造解、�
 
 ## 37.4 机器验证一：Lean——链与计数的数值面
 
-**文件：`examples/lean/Abstractalgebra/Ch36Noetherian.lean`**。
+**文件：`examples/lean/Abstractalgebra/Ch37Noetherian.lean`**。
 ℤ 的理想链 (60) ⊂ (30) ⊂ (15) ⊂ (5) ⊂ (1) 四步到顶（整除链
 60 | 30 | 15 | 5 | 1 的数值面）；链长受因子个数限制——τ(60) = 12
 由 `(List.range 61).filter (60 % · == 0)` 枚举；商环遗传
@@ -125,7 +125,7 @@ end
 5. 层级图收束：域 ⊂ PID ⊂ UFD ⊂ 诺特整环，每步不可逆的
    反例各就各位（k[x,y]、ℤ[√−5]、无穷变元环）。
 
-*对应示例：`examples/lean/Abstractalgebra/Ch36Noetherian.lean`、
+*对应示例：`examples/lean/Abstractalgebra/Ch37Noetherian.lean`、
 `examples/julia/37_noetherian.jl`、`examples/python/37_noetherian.py`、
 `examples/prolog/37_noetherian.pl`。*
 

@@ -147,4 +147,31 @@ reals = sort([real(z) for z in r4b])
         abs(reals[3] - 1) < 1e-5 && abs(reals[4] - 2) < 1e-5
 println("费拉里：x⁴−5x²+4（q = 0 退化）回收四根 {−2, −1, 1, 2} ✓")
 
+
+# ---------- 韦达三次公式（定理 5.12）：casus irreducibilis 的三角解 ----------
+
+"""韦达解：x³ + qx + r = 0（27r² + 4q³ ≤ 0 时）的根 = t·cos(θ + 120°k)。
+t = √(−4q/3)，cos 3θ = −4r/t³。返回 (根三元组, t, θ)。"""
+function viete(q, r)
+    @assert 27 * r^2 + 4 * q^3 <= 0 "casus irreducibilis 才适用（三实根）"
+    t = sqrt(-4 * q / 3)
+    θ = acos(clamp(-4 * r / t^3, -1, 1)) / 3
+    ([t * cos(θ + 2π * k / 3) for k in 0:2], t, θ)
+end
+
+# 整数展示例：x³ − 3x − 2 = (x−2)(x+1)²——韦达参数 t = 2、cos3θ = 1
+#（θ = 0°, 120°, 240°），cos 表 {1, −1, −1} 给出根 {2, −1, −1}
+@assert isapprox(2 * cos(0), 2) && isapprox(2 * cos(2π / 3), -1) &&
+        isapprox(2 * cos(4π / 3), -1)
+for v in (2, -1)
+    @assert v^3 - 3v - 2 == 0
+end
+# 原书例 5.13：x³ − 7x + 6（判别式 27·36 + 4·(−343) = −400 ≤ 0）
+roots, t7, θ7 = viete(-7, 6)
+for x in roots
+    @assert abs(x^3 - 7x + 6) < 1e-10           # 数值残差（三角表精度）
+end
+@assert maximum(abs.(sort(round.(roots, digits = 6)) .- [-3.0, 1.0, 2.0])) < 1e-5
+println("定理 5.12（韦达）：整数例 {2,−1,−1} 精确；x³−7x+6 三根 ≈ {−3,1,2}（t = √(28/3)）✓")
+
 println("END ====")

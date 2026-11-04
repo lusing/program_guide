@@ -62,7 +62,7 @@
 
 ## 38.4 机器验证一：Lean——成员面的证明
 
-**文件：`examples/lean/Abstractalgebra/Ch37Varieties.lean`**。
+**文件：`examples/lean/Abstractalgebra/Ch38Varieties.lean`**。
 拓扑等式的**成员面**证明（V(IJ) = V(I)∪V(J) 的一侧）：
 
 ```lean
@@ -139,7 +139,7 @@ V(x²) = V(x) = 直线 x = 0 的 7 个格点（**重根不增零点**——
 5. 幂零元是几何的盲区：√ 把重数抹平，Nullstellensatz 说
    这正是全部盲区。
 
-*对应示例：`examples/lean/Abstractalgebra/Ch37Varieties.lean`、
+*对应示例：`examples/lean/Abstractalgebra/Ch38Varieties.lean`、
 `examples/julia/38_varieties.jl`、`examples/python/38_varieties.py`、
 `examples/prolog/38_varieties.pl`。*
 
