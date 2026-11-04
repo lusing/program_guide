@@ -145,7 +145,7 @@ theorem delta0_absolute (M : Set ZFSet) (hM : TransSet M)
       intro x hx l
       by_cases h : l = i
       · rw [h]; simpa using hx
-      · rw [Function.update_apply, if_neg h]; exact henv l
+      · rw [Function.update_apply, ite_eq_right h]; exact henv l
     constructor
     · intro h x _ hx
       have xM : x ∈ M := hM hx (henv j)

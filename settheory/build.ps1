@@ -11,9 +11,10 @@
 
     通道判定:
       lean     : examples/lean 单一 lake 工程（mathlib 路径依赖
-                 F:/github/mathlib4 钉版 commit，lean-toolchain 对齐
-                 v4.21.0-rc3），`lake build` 退出码 0 且
-                 输出无 error:/warning:。整工程一次构建，
+                 E:/lang/mathlib4-4.35.0 钉版发布，lean-toolchain 对齐
+                 v4.35.0），`lake build` 退出码 0 且
+                 输出无 error:/warning:（module system 建议性警告豁免）。
+                 整工程一次构建，
                  报告时把 Settheory/ChNN*.lean 逐章点亮。
       isabelle : 每章一个会话（examples/isabelle/ROOT 里
                  session STNN in "STNN"），ZF object-logic；经 Isabelle2026
@@ -150,12 +151,16 @@ function Add-Result($ch, $lang, $desc, $ok, $detail) {
 # --- lean：整工程一次构建 ---
 $leanBuilt = $false
 if ($wantLangs -contains 'lean' -and $leanChapters.Count -gt 0) {
-    Write-Host '[lean] lake build（mathlib 钉版 F:/github/mathlib4，v4.21.0-rc3）...'
+    Write-Host '[lean] lake build（mathlib 钉版 E:/lang/mathlib4-4.35.0，v4.35.0）...'
     Push-Location $leanDir
     try {
         $out = & lake build 2>&1 | Out-String
         $code = $LASTEXITCODE
-        $leanBuilt = ($code -eq 0 -and $out -notmatch '(?m)^(error|warning)[: ]')
+        # mathlib 4.35 起对每个文件发 module system 建议性警告，属工具链
+        # 新行为而非工程缺陷，予以豁免；其余 warning/error 仍判失败。
+        $badLines = $out -split "`n" | Select-String -Pattern '(?m)^(error|warning)[: ]' |
+            Where-Object { $_.Line -notmatch 'module system' }
+        $leanBuilt = ($code -eq 0 -and -not $badLines)
         Add-Result 'lean' 'lean' 'lake build 整工程' $leanBuilt ($out -split "`n" | Select-Object -Last 5)
         if (-not $leanBuilt) { Write-Host $out }
         # 逐章点亮（文件存在即视为该章有 lean 单元；构建失败已在上面记账）

@@ -1,5 +1,4 @@
 import Mathlib.Order.Zorn
-import Mathlib.Logic.Basic
 
 /-!
 # 第 05 章 · 选择公理：Zorn 与良序定理

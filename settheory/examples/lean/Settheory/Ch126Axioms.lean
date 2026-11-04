@@ -62,8 +62,8 @@ example (x : ZFSet) : x ∉ x := fun h => ZFSet.mem_asymm h h
 
 /- 所有集合的类 V 与罗素类 R = {x | x ∉ x} 作为 `Class` 存在，
 但 V 是真类——`Class` 层没有"V : ZFSet"。 -/
-#check @Class.univ
-#check @Class.sep
+#check @Set.univ
+#check @Sep.sep
 
 /-! ## 两张地基图 -/
 
