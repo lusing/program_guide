@@ -1,7 +1,7 @@
 # 第 19 章 · 根与因子 —— Python 通道
 
 from random import seed, randint
-from sympy import Poly, symbols, div, GF, divisors, Rational, interpolate
+from sympy import Poly, symbols, div, GF, divisors, Rational, interpolate, factorint
 
 print("==== 19 从数到多项式")
 
@@ -115,5 +115,55 @@ pts = [(1, 2), (2, 4), (3, 0)]
 p_poly = interpolate(pts, x)
 assert p_poly.subs(x, 1) == 2 and p_poly.subs(x, 2) == 4 and p_poly.subs(x, 3) == 0
 print("拉格朗日插值：sympy interpolate 过三点 ✓")
+
+# ---------- 高斯整数 ℤ[i]：欧几里得除法、四商例与二平方和 ----------
+
+def gi_norm(a, b):
+    return a * a + b * b
+
+def nearest(q):
+    """最近整数（有理数四舍五入；±1/2 居中任取一侧——商本就不唯一）。"""
+    fl = q.numerator // q.denominator
+    return fl + 1 if (q - fl) * 2 > 1 else fl
+
+def gauss_divide(a1, b1, a2, b2):
+    """α = βq + r（例 3.77 的最近整点路线），返回 (m, n, ra, rb)。"""
+    from fractions import Fraction as Fr
+    d = gi_norm(a2, b2)
+    xr = Fr(a1 * a2 + b1 * b2, d)     # α/β = αβ̄/∂(β)
+    yr = Fr(b1 * a2 - a1 * b2, d)
+    m, n = nearest(xr), nearest(yr)
+    ra, rb = a1 - (a2 * m - b2 * n), b1 - (a2 * n + b2 * m)
+    return (m, n, ra, rb)
+
+# 书例四商：3+5i = 2q + r 的四种分解（每个 ∂(r) = 2 < 4）
+for (m, n, ra, rb) in [(1, 2, 1, 1), (1, 3, 1, -1), (2, 2, -1, 1), (2, 3, -1, -1)]:
+    assert complex(3, 5) == complex(2, 0) * complex(m, n) + complex(ra, rb)
+    assert gi_norm(ra, rb) < gi_norm(2, 0)
+# 欧几里得公理 (ii)：40 对随机 α, β（精确有理最近整点）
+from random import randint
+for _ in range(40):
+    a1, b1, a2, b2 = (randint(-9, 9) for _ in range(4))
+    if (a2, b2) == (0, 0):
+        continue
+    m, n, ra, rb = gauss_divide(a1, b1, a2, b2)
+    assert complex(a1, b1) == complex(a2, b2) * complex(m, n) + complex(ra, rb)
+    assert gi_norm(ra, rb) < gi_norm(a2, b2)
+# 公理 (i)：范数乘性
+for _ in range(20):
+    a1, b1, a2, b2 = (randint(-6, 6) for _ in range(4))
+    assert gi_norm(a1 * a2 - b1 * b2, a1 * b2 + b1 * a2) == gi_norm(a1, b1) * gi_norm(a2, b2)
+print("例 3.77：四商恒等式 + 40 对随机高斯除法 + 范数乘性 ✓")
+
+# 费马二平方和（定理 3.83）+ 引理 3.82 见证 + sympy 对拍
+for (p, m) in [(5, 2), (13, 5), (17, 4), (29, 12), (41, 9), (61, 11)]:
+    assert p % 4 == 1 and (m * m) % p == p - 1
+    rep = next((a, b) for a in range(1, p) for b in range(a + 1) if a * a + b * b == p)
+    assert sum(t * t for t in rep) == p
+    assert factorint(p)[p] == 1 and rep[0] ** 2 + rep[1] ** 2 == p     # sympy 复核素性与表示
+for p in (3, 7, 11, 19):
+    assert p % 4 == 3
+    assert not any(a * a + b * b == p for a in range(p) for b in range(a + 1))
+print("定理 3.83：p ≡ 1 (mod 4) 六例有表示（引理 3.82 见证 m）；p ≡ 3 (mod 4) 四例无表示 ✓")
 
 print("END ====")

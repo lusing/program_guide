@@ -18,6 +18,10 @@ divisor_of(N, D) :- N > 0, between(1, N, D), N mod D =:= 0.
 gcd_p(A, 0, A) :- !.
 gcd_p(A, B, D) :- C is A mod B, gcd_p(B, C, D).
 
+% ---------- 高斯整数辅助谓词（例 3.77 / 定理 3.83） ----------
+gi_norm(A, B, N) :- N is A * A + B * B.
+gi_mul(A1, B1, A2, B2, C, D) :- C is A1 * A2 - B1 * B2, D is A1 * B2 + B1 * A2.
+
 main :-
     format("==== 19 从数到多项式~n"),
 
@@ -39,5 +43,21 @@ main :-
     gcd_p(326, 78, 2),
     gcd_p(1071, 462, 21),
     format("整数 gcd 复核（欧几里得内核）：gcd(326,78) = 2；gcd(1071,462) = 21 ✓~n"),
+
+    % ---------- 高斯整数 ℤ[i]：四商例 + 二平方和（例 3.77 / 定理 3.83） ----------
+    % 3+5i = 2q + r 的四种分解（每个 ∂(r) = 2 < 4 = ∂(2)）
+    forall(member(m-n-ra-rb, [1-2-1-1, 1-3-1-(-1), 2-2-(-1)-1, 2-3-(-1)-(-1)]),
+           (gi_norm(ra, rb, N2), N2 = 2,
+            gi_mul(2, 0, m, n, Q1, Q2),
+            A is 3 - (Q1 + ra), B is 5 - (Q2 + rb), A = 0, B = 0)),
+    format("例 3.77：3+5i = 2q+r 的四商恒等式全过（余范数 = 2 < 4）✓~n"),
+    % 引理 3.82 见证 + 定理 3.83 正反向
+    forall(member(P-M, [5-2, 13-5, 17-4, 29-12, 41-9, 61-11]),
+           (P mod 4 =:= 1, M * M mod P =:= P - 1,
+            once((between(1, P, A), between(0, A, B), A*A + B*B =:= P)))),
+    forall(member(P, [3, 7, 11, 19]),
+           (P mod 4 =:= 3,
+            \+ (between(0, P, A), between(0, A, B), A*A + B*B =:= P))),
+    format("定理 3.83：p ≡ 1 (mod 4) 六例有表示（见证 m² ≡ −1）；p ≡ 3 (mod 4) 四例无表示 ✓~n"),
 
     format("END ====~n").

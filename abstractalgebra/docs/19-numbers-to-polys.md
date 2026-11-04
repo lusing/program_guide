@@ -172,6 +172,24 @@ example {R : Type*} [CommRing R] [IsDomain R] (f : Polynomial R) :
     Fintype.card f.roots ≤ f.natDegree := ...
 ```
 
+本章新增的欧几里得环单元用的是 mathlib 的高斯整数库
+（`NumberTheory.Zsqrtd.GaussianInt`；`ℤ[i]` 记法在该文件内是 local 的，
+本教程文件里须写 `GaussianInt` 全名）。**例 3.77 的除法算式在 mathlib
+里就是 `norm_mod_lt`**——
+
+```lean
+/-- 例 3.77 的核心：高斯整数的除法算式（mathlib 正式化）。 -/
+example (x : GaussianInt) {y : GaussianInt} (hy : y ≠ 0) :
+    Zsqrtd.norm (x % y) < Zsqrtd.norm y :=
+  GaussianInt.norm_mod_lt x hy
+```
+
+四商恒等式两条以 `decide` 直接收口；**定理 3.83 的 mathlib 正式化**
+在 `NumberTheory.SumTwoSquares`：`Nat.Prime.sq_add_sq : p % 4 ≠ 3 →
+∃ a b, a² + b² = p`——费马二平方和是现成的证明对象，不只是计算对象。
+引理 3.82 的三个见证以 ZMod 上的 `decide` 核验（2²≡−1 mod 5、
+5²≡−1 mod 13、12²≡−1 mod 29）。
+
 （`X_sub_C_dvd_iff_eval_eq_zero` 正是因子定理的正式化；根集
 `Polynomial.roots` 在整环上的基数不等式由 `Polynomial.card_roots'`
 承担。）具体轨道：x³ − x 在 ℚ 上 3 根（−1, 0, 1）、在 ℤ/8ℤ 模型上
@@ -206,14 +224,21 @@ end
 sf + tg = d（系数 mod 5 逐项核对）；(4) gcd 幂等：
 gcd(f, g) = gcd(g, f mod g) 递归正确性（50 组随机对拍）；
 (5) **拉格朗日插值**：ℤ₇ 上过 (1,2), (2,4), (3,0) 的二次多项式
-存在且唯一（解线性方程组 vs CRT 公式双路）。
+存在且唯一（解线性方程组 vs CRT 公式双路）；(6) **高斯整数**
+（例 3.77）：`gauss_divide` 用最近整点实现高斯除法（α/β = αβ̄/∂(β)
+的实虚部分别取最近整点），断言四商恒等式、40 对随机 α, β 的
+∂(r) < ∂(β)、20 对范数乘性；(7) **二平方和**（定理 3.83）：六个
+p ≡ 1 (mod 4) 的素数各搜出表示 (a, b) 并核验，引理 3.82 的见证 m
+一并断言，四个 p ≡ 3 (mod 4) 的素数穷举无表示。
 
 ## 19.9 机器验证三：Python 与 Prolog
 
 **文件：`examples/python/19_roots.py`**：sympy 通道——`sympy.roots`
 对拍穷举（ℤ_p 手写求值）；`Poly.gcd_list`（欧几里得）与自实现
 poly_extgcd 对拍；有理根定理用 `sympy.divisors` 枚举候选；
-拉格朗日插值与 `sympy.interpolate` 对拍。
+拉格朗日插值与 `sympy.interpolate` 对拍。高斯整数与二平方和部分
+与 Julia 同构（`Fraction` 精确最近整点），另用 `sympy.factorint`
+复核素性。
 
 **文件：`examples/prolog/19_roots.pl`**：
 
@@ -225,7 +250,9 @@ root(P, F, A) :- between(0, P, A0), A is A0 mod P,
 
 文件断言：ℤ₇ 上 x³−x 恰 3 根、ℤ₈ 上 x²−1 恰 4 栓（反例）、
 ℤ₅ 上 x²+1 无根（−1 非平方剩余——第 22 章 GF(25) 的引子）、
-有理根候选枚举（divisor 对生成器）。
+有理根候选枚举（divisor 对生成器）。新增：四商恒等式（`gi_norm`/
+`gi_mul` 辅助谓词）与二平方和正反向（`once((between(1,P,A),
+between(0,A,B), A*A+B*B =:= P))` 的存在性、`\+` 穷举否定）。
 
 ## 19.10 要点回顾
 
@@ -237,6 +264,11 @@ root(P, F, A) :- between(0, P, A0), A is A0 mod P,
 4. 多项式欧几里得 + 回代给出贝祖 s(x)f + t(x)g = d(x)；lcm、
    部分分式、插值全是它的下游。
 5. ℂ[x] 的 n 次多项式恰 n 根（计重数）——代数基本定理的实用形态。
+6. 欧几里得环 = 度函数公理化（∂(f) ≤ ∂(fg) + 除法算式）；域、ℤ、
+   k[x]、ℤ[i] 四大样本；商余不唯一（3+5i ÷ 2 四商）；欧几里得
+   ⟹ PID（命题 3.78），逆命题假（Motzkin 的 ℤ[(1+√−19)/2]）。
+7. 费马二平方和（定理 3.83）：p ≡ 1 (mod 4) ⟺ p = a²+b²——ℤ[i]
+   范数乘性 + 引理 3.82（m² ≡ −1）+ 欧几里得引理的三步合奏。
 
 *对应示例：`examples/lean/Abstractalgebra/Ch19Roots.lean`、
 `examples/julia/19_roots.jl`、`examples/python/19_roots.py`、

@@ -120,4 +120,57 @@ end
 @assert all(peval(coef, a, 7) == v for (a, v) in points)
 println("拉格朗日插值：过 (1,2),(2,4),(3,0) 的二次多项式 = $(coef)（ℤ₇ 克莱姆）✓")
 
+# ---------- (6) 高斯整数 ℤ[i]：欧几里得除法与四商例（例 3.77） ----------
+
+gi_norm(a, b) = a^2 + b^2
+
+"""最近整点（±1/2 恰居中时任取一侧都合法——商本就不唯一）。"""
+nearest(q::Rational{Int}) = isinteger(q) ? Int(q) :
+    (q - floor(q) > 1//2 ? Int(floor(q)) + 1 : Int(floor(q)))
+
+"""高斯除法 α = βq + r（最近整点实现，例 3.77 的证明路线）。"""
+function gauss_divide(a1, b1, a2, b2)
+    d = gi_norm(a2, b2)
+    xr = (a1 * a2 + b1 * b2) // d      # α/β = αβ̄/∂(β) 的实部
+    yr = (b1 * a2 - a1 * b2) // d      # 虚部
+    m, n = nearest(xr), nearest(yr)
+    ra, rb = a1 - (a2 * m - b2 * n), b1 - (a2 * n + b2 * m)
+    return (m, n, ra, rb)
+end
+
+# 书例：3+5i 除以 2 的四个商，每个余数 ∂ = 2 < 4 = ∂(2)
+for (q, r) in [((1, 2), (1, 1)), ((1, 3), (1, -1)), ((2, 2), (-1, 1)), ((2, 3), (-1, -1))]
+    @assert 3 + 5im == 2 * (q[1] + q[2] * im) + (r[1] + r[2] * im)
+    @assert gi_norm(r...) < gi_norm(2, 0)
+end
+# 公理 (ii)：随机 40 对 α, β 验证 α = βq + r 且 ∂(r) < ∂(β)
+for _ in 1:40
+    a1, b1, a2, b2 = rand(-9:9, 4)
+    (a2, b2) == (0, 0) && continue
+    m, n, ra, rb = gauss_divide(a1, b1, a2, b2)
+    @assert a1 + b1 * im == (a2 + b2 * im) * (m + n * im) + (ra + rb * im)
+    @assert gi_norm(ra, rb) < gi_norm(a2, b2)
+end
+# 公理 (i)：范数乘性 ∂(αβ) = ∂(α)∂(β)
+for _ in 1:20
+    a1, b1, a2, b2 = rand(-6:6, 4)
+    @assert gi_norm(a1 * a2 - b1 * b2, a1 * b2 + b1 * a2) == gi_norm(a1, b1) * gi_norm(a2, b2)
+end
+println("例 3.77：四商恒等式 + 40 对随机高斯除法（∂(r) < ∂(β)）+ 范数乘性 20 对 ✓")
+
+# ---------- (7) 费马二平方和（定理 3.83）：ℤ[i] 的第一份红利 ----------
+
+# 引理 3.82 的见证：p ≡ 1 (mod 4) 时 m² ≡ −1 (mod p)
+for (p, m) in [(5, 2), (13, 5), (17, 4), (29, 12), (41, 9), (61, 11)]
+    @assert p % 4 == 1 && m^2 % p == p - 1
+    a, b = first((a, b) for a in 1:isqrt(p) for b in 0:a if a^2 + b^2 == p)
+    @assert a^2 + b^2 == p                   # 定理 3.83 正向：表示存在
+end
+# 反向：p ≡ 3 (mod 4) 时无表示（平方 mod 4 ∈ {0,1} 的穷举版）
+for p in (3, 7, 11, 19)
+    @assert p % 4 == 3
+    @assert isempty([(a, b) for a in 0:isqrt(p) for b in 0:a if a^2 + b^2 == p])
+end
+println("定理 3.83：p ≡ 1 (mod 4) 六例有表示（含引理 3.82 见证）；p ≡ 3 (mod 4) 四例穷举无表示 ✓")
+
 println("END ====")
