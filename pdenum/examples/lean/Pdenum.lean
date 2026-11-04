@@ -13,3 +13,5 @@ import Pdenum.Ch21Elliptic
 import Pdenum.Ch22MaxPrinciple
 import Pdenum.Ch24Variational
 import Pdenum.Ch27RitzGalerkin
+import Pdenum.Ch28Fem1d
+import Pdenum.Ch29Fem2d
