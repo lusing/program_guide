@@ -1,0 +1,6 @@
+build/
+examples/lean/.lake/
+examples/lean/build/
+*.exe
+*.obj
+__pycache__/
