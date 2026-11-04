@@ -22,8 +22,9 @@
                  退出码 0 且输出无 failed/Failed/FAILED。
       coq      : Rocq 9.1（E:\lang\Rocq-Platform~9.1~2026.01）
                  `coqc -Q examples/coq Settheory NN_*.v` 逐文件，退出码 0。
-      agda     : WSL Ubuntu-26.04 `agda -i /usr/share/agda-stdlib/src -i <wsl路径>`
-                 逐文件，退出码 0。
+      agda     : Agda 2.8.0.2 win64（E:\lang\Agda-v2.8.0.2-win64\agda.exe）
+                 + stdlib（E:\github\agda\std-lib\src）
+                 `agda -i <stdlib> -i examples/agda <文件>` 逐文件，退出码 0。
       julia    : `julia --startup-file=no NN_*.jl`，退出码 0 且
                  stdout 含 "==== NN" 与 "END ====" 标记。
       python   : `python -I NN_*.py`（python313 + scipy），
@@ -196,16 +197,15 @@ if ($wantLangs -contains 'coq') {
     }
 }
 
-# --- agda：逐文件（WSL） ---
+# --- agda：逐文件 ---
 if ($wantLangs -contains 'agda') {
+    $agdaExe = 'E:\lang\Agda-v2.8.0.2-win64\agda.exe'
+    $agdaStdlib = 'E:\github\agda\std-lib\src'
+    $agdaDir = Join-Path $examples 'agda'
     foreach ($u in $agdaUnits | Sort-Object Chapter, Path) {
         if (-not (Test-ChapterWanted $u.Chapter)) { continue }
-        $fwd = $u.Path -replace '\\', '/'
-        $wslPath = (wsl -d Ubuntu-26.04 wslpath -a $fwd | Select-Object -First 1).Trim()
-        $wslDir = $wslPath.Substring(0, $wslPath.LastIndexOf('/'))
-        Write-Host "[agda] $wslPath"
-        $cmd = "agda -i /usr/share/agda-stdlib/src -i $wslDir $wslPath"
-        $out = & wsl -d Ubuntu-26.04 bash -lc $cmd 2>&1 | Out-String
+        Write-Host "[agda] $($u.Path)"
+        $out = & $agdaExe -i $agdaStdlib -i $agdaDir $u.Path 2>&1 | Out-String
         $ok = ($LASTEXITCODE -eq 0)
         Add-Result $u.Chapter 'agda' (Split-Path -Leaf $u.Path) $ok ($out -split "`n" | Select-Object -Last 5)
         if (-not $ok) { Write-Host $out }

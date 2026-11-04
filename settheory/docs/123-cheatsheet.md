@@ -757,10 +757,10 @@ $$869+79=948.$$
 
 最终验收必须引用 `build.ps1 -All` 的真实 PASS/FAIL 输出。
 
-本次回归中 isabelle、coq、julia、python、prolog 五通道 683 单元
-全绿（含第十三篇全部非 lean 单元）；lean 与 agda 通道因本机环境
-（mathlib 工作区损坏、WSL 未装 agda）暂缓补验，修复后以
-`build.ps1 -Lang lean` 与 `-Lang agda` 补齐。
+本次回归中 isabelle、coq、agda、julia、python、prolog 六通道
+807 单元全绿（含第十三篇全部非 lean 单元）；lean 通道因
+mathlib 工作区损坏（26 个源文件被外部数据覆盖）暂缓补验，
+修复后以 `build.ps1 -Lang lean` 补齐。
 
 ## 23. 七通道职责总表
 

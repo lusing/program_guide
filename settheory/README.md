@@ -278,9 +278,10 @@ Borel 集与解析集、Baire 空间与投影层级、L 中的投影集、Solova
 
 总账 **948 单元 = 前十二篇 869 + 第十三篇 79**（郝/杨跃篇通道分布：
 lean 16、isabelle 8、coq 6、julia 15、python 24、prolog 10，无 Agda）。
-本次回归：isabelle 132 / coq 130 / julia 139 / python 148 / prolog 134
-全绿（含第十三篇全部非 lean 单元）；lean 141 单元与 agda 124 单元
-因本机环境（mathlib 工作区损坏、WSL 未装 agda）暂缓补验。
+本次回归：isabelle 132 / coq 130 / agda 124 / julia 139 / python 148 /
+prolog 134 全绿（含第十三篇全部非 lean 单元）；lean 141 单元
+因 mathlib 工作区损坏（26 个源文件被外部数据覆盖）暂缓补验，
+修复后 `build.ps1 -Lang lean` 补齐。
 
 ```pwsh
 pwsh -NoProfile -Command '& ./build.ps1 -All'        # 全量对账（单元数以当前报告为准）
