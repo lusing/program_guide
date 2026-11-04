@@ -70,7 +70,16 @@
 | [22](docs/22-maximum-principle.md) | 极值原理 | 传播矛盾、特征值闭式全谱对账、闸函数收敛 |
 | [23](docs/23-elliptic-boundary-varcoeff.md) | 边界、变系数、双调和、特征值 | 通量格式 O(h²)、13 点模板、λ_min→2π² |
 
-（后续批次随构建展开：24–27 变分、28–30 有限元、31–34 专题与总结。）
+### 第六篇 变分原理（书第 6 章，B5 批次）
+
+| 章 | 标题 | 一句话 |
+|---|---|---|
+| [24](docs/24-variational-classical.md) | 古典变分 | 最速降线三重对账、Euler 方程残差、能量直接法 |
+| [25](docs/25-twopoint-variational.md) | 两点边值变分 | hat 基 D 闭式逐位、刚度正定、能量最优 |
+| [26](docs/26-multidim-variational.md) | 高维变分 | 能量最小数值版、提升、界面吸收、Poincaré |
+| [27](docs/27-ritz-galerkin.md) | Ritz/Galerkin/权余量 | 正弦基谱收敛、同一性、配点对照、权家族 |
+
+（后续批次随构建展开：28–30 有限元、31–34 专题与总结。）
 
 ## 构建与验证
 

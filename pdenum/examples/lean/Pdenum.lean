@@ -11,3 +11,5 @@ import Pdenum.Ch15ThreeLayer
 import Pdenum.Ch17ConvectionDiffusion
 import Pdenum.Ch21Elliptic
 import Pdenum.Ch22MaxPrinciple
+import Pdenum.Ch24Variational
+import Pdenum.Ch27RitzGalerkin
