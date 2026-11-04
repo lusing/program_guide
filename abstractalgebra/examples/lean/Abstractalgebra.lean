@@ -30,3 +30,5 @@ import Abstractalgebra.Ch25Constructions
 import Abstractalgebra.Ch26LinearMaps
 import Abstractalgebra.Ch27Eigenvalues
 import Abstractalgebra.Ch28Codes
+import Abstractalgebra.Ch29Formulas
+import Abstractalgebra.Ch30Quintic
