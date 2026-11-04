@@ -114,8 +114,7 @@
 | [数理逻辑](./mathlogic) | 命题、一阶逻辑、证明论、模型论、可计算性与模态逻辑 |
 | [测度论](./measuretheory) | 从测度与积分进入乘积空间、拓扑测度、鞅和极限定理 |
 | [概率论](./probability) | 概率模型、渐近推断、GMM 与经典回归的 44 章研究生教程（洪永淼主线 + Miller 计算证明传统） |
-| [集合论（冯琦）](./settheory) | 研究生向集合论，深入力迫、大基数、内模型与描述集合论 |
-| [集合论教程（郝兆宽·杨跃）](./settheory-hao) | 入门集合论，从 ZFC、序数与基数学到可构成集与力迫 |
+| [集合论](./settheory) | 集合论全书：郝/杨跃入门坡道 + 冯琦/Jech/Viale 研究生线，深入力迫、大基数、内模型与描述集合论 |
 | [类型论](./typetheory) | 从 λ 演算进入依赖类型、Martin-Löf、现代类型论与同伦 |
 
 ## A–Z 完整索引
@@ -126,7 +125,7 @@
 - **D–F**：[`dart`](./dart) · [`datastruct`](./datastruct) · [`designpattern`](./designpattern) · [`dlang`](./dlang) · [`dotnet`](./dotnet) · [`elixir`](./elixir) · [`emacs`](./emacs) · [`erlang`](./erlang) · [`flutter`](./flutter) · [`forth`](./forth) · [`fortran`](./fortran) · [`freebasic`](./freebasic) · [`freepascal`](./freepascal) · [`fsharp`](./fsharp) · [`funanalysis`](./funanalysis)
 - **G–L**：[`go`](./go) · [`godot`](./godot) · [`haskell`](./haskell) · [`hol4`](./hol4) · [`io`](./io) · [`iosdev`](./iosdev) · [`isabelle`](./isabelle) · [`julia`](./julia) · [`kotlin`](./kotlin) · [`lean4`](./lean4) · [`llvm`](./llvm)
 - **M–P**：[`macosdev`](./macosdev) · [`mathlogic`](./mathlogic) · [`measuretheory`](./measuretheory) · [`mfc`](./mfc) · [`ocaml`](./ocaml) · [`OpenCL`](./OpenCL) · [`powershell`](./powershell) · [`probability`](./probability) · [`prolog`](./prolog)
-- **R–T**：[`renpy`](./renpy) · [`ruby`](./ruby) · [`rust`](./rust) · [`rustgui`](./rustgui) · [`sdl2`](./sdl2) · [`sel4`](./sel4) · [`settheory`](./settheory) · [`settheory-hao`](./settheory-hao) · [`sml`](./sml) · [`swift`](./swift) · [`tla`](./tla) · [`typetheory`](./typetheory)
+- **R–T**：[`renpy`](./renpy) · [`ruby`](./ruby) · [`rust`](./rust) · [`rustgui`](./rustgui) · [`sdl2`](./sdl2) · [`sel4`](./sel4) · [`settheory`](./settheory) · [`sml`](./sml) · [`swift`](./swift) · [`tla`](./tla) · [`typetheory`](./typetheory)
 - **W–Z**：[`win32`](./win32) · [`winforms`](./winforms) · [`WinUI3`](./WinUI3) · [`wpf`](./wpf) · [`zig`](./zig)
 
 ## 使用与验证
