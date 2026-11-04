@@ -33,12 +33,7 @@ $L$ 是**对一切传递类绝对的**最小内模型，于是出现一个漂亮
 绝对，且 $M$ 含全体序数）。于是对每个公式 $\varphi$ 与
 $\vec a\in L$ ：
 
-$$
-L\models\varphi[\vec a]
-\ \Longleftrightarrow\ V\models\varphi^{L}[\vec a]
-\ \Longleftrightarrow\ M\models\varphi^{(L)^M}[j\vec a]
-\ \Longleftrightarrow\ L\models\varphi[j\vec a],
-$$
+$$L\models\varphi[\vec a] \ \Longleftrightarrow\ V\models\varphi^{L}[\vec a] \ \Longleftrightarrow\ M\models\varphi^{(L)^M}[j\vec a] \ \Longleftrightarrow\ L\models\varphi[j\vec a],$$
 
 第一个与第三个等号分别是「$L$ 的定义在 $V$ 与 $M$ 中展开
 相同」，中间的等号是 $j$ 的初等性。所以限制映射保持一切一阶
@@ -58,35 +53,25 @@ $\kappa\in L$ ，限制非平凡。∎
 $\Phi(v_0,v_1)$ ，在 $L$ 中定义良序 $<_L$ ：对极限序数
 $\alpha>\omega$ 与 $x,y\in L_\alpha$ ，
 
-$$
-x<_L y \iff (L_\alpha,E)\models\Phi[x,y].
-$$
+$$x<_L y \iff (L_\alpha,E)\models\Phi[x,y].$$
 
 > **定义 1.6（典型斯科伦项）** 对每个表达式
 > $\beta(v_0,v_1,\ldots,v_n)$ ，定义典型斯科伦项
 > $t_\beta$ 为「在 $<_L$ 下最小的见证」：
 
-$$
-t_\beta(v_0,v_1,\ldots,v_n) =
-\min{}_{<_L}\{v_0 : \beta(v_0,v_1,\ldots,v_n)\}.
-$$
+$$t_\beta(v_0,v_1,\ldots,v_n) = \min{}_{<_L}\{v_0 : \beta(v_0,v_1,\ldots,v_n)\}.$$
 
 斯科伦项的集合可数、对复合封闭，因此在任何携带 $<_L$ 的结构
 $(M,E)$ 中解释为**完备**斯科伦函数集：由 $X\subseteq M$ 生成
 的同质子模型是
 
-$$
-\mathrm{SH}^{(M,E)}(X)=\{t^{(M,E)}(c_1,\ldots,c_n) :
-t\text{ 斯科伦项},\ c_1,\ldots,c_n\in X\}.
-$$
+$$\mathrm{SH}^{(M,E)}(X)=\{t^{(M,E)}(c_1,\ldots,c_n) : t\text{ 斯科伦项},\ c_1,\ldots,c_n\in X\}.$$
 
 > **引理 1.8（交换性）** 设 $k:L_\alpha\to L_\beta$ 非平凡初等
 > （$\omega<\alpha<\beta$ 极限），$t$ 是典型斯科伦项。则对
 > $\vec a\in L_\alpha$ ：
 
-$$
-t^{L_\beta}(k(a_1),\ldots,k(a_n)) = k\big(t^{L_\alpha}(a_1,\ldots,a_n)\big).
-$$
+$$t^{L_\beta}(k(a_1),\ldots,k(a_n)) = k\big(t^{L_\alpha}(a_1,\ldots,a_n)\big).$$
 
 **证明**。$k$ 初等，故 $L_\alpha\models\beta[y,\vec a]$ 当且
 仅当 $L_\beta\models\beta[k(y),k\vec a]$ ；候选集互相对应。又
@@ -116,9 +101,7 @@ $L$ 能看见它，与后面推出的一切矛盾）。为谈论「外部」的�
 
 > **引理 1.9** (1) $j:L\to L$ 非平凡、$\kappa=\mathrm{Crit}(j)$
 > 时，
-> $$
-> D=\{X\subseteq\kappa : X\in L\wedge\kappa\in j(X)\}
-> $$
+> $$D=\{X\subseteq\kappa : X\in L\wedge\kappa\in j(X)\}$$
 >
 > 是非平凡 $\kappa$ -完全正规 $L$ -超滤子，且 $\kappa$ 在
 > $L$ 中不可数、正则。
@@ -136,9 +119,7 @@ $[f]\in^*[g]$ 当且仅当 $\{\alpha:f(\alpha)\in g(\alpha)\}\in D$ 。
 外部函数仍可能造出 $\in^*$ -下降链。若 $D$ 由 $j:M\to N$
 导出，则因子映射
 
-$$
-k:\mathrm{ult}(M,D)\to N,\qquad k([f])=j(f)(\kappa)
-$$
+$$k:\mathrm{ult}(M,D)\to N,\qquad k([f])=j(f)(\kappa)$$
 
 良定义且初等（第 94 章因子嵌入的同一构造），于是 $\in^*$ 的下降
 链被 $k$ 搬成 $N$ 内序数的真下降链，矛盾。故：
@@ -168,9 +149,7 @@ $A_n:=\{s<\kappa : f_{n+1}(s)\in f_n(s)\}\in D$ 。取极限序数
 $\lambda$ 使诸 $f_n\in L_\lambda$ 。令
 $X=\bigcup_n\operatorname{ran}(f_n)$ （可数），取
 
-$$
-X\cup\kappa\subseteq M\prec L_\lambda,\qquad |M|=\max(\aleph_0,\kappa)=\kappa.
-$$
+$$X\cup\kappa\subseteq M\prec L_\lambda,\qquad |M|=\max(\aleph_0,\kappa)=\kappa.$$
 
 （生成元取全部 $s<\kappa$ ，故 $M$ 逐点包含 $\kappa$ 。）由
 凝聚化引理（第一卷定理 I.2.10），传递化 $\pi[M]=L_\eta$ ，且
@@ -181,17 +160,13 @@ $|\eta|=|M|=\kappa<|\alpha|$ ，从而 $\eta<\alpha$ （基数随序数
 全是生成元，且 $f_n(s)\in M$ ——$M\prec L_\lambda$ 对可定义
 运算封闭），故
 
-$$
-\{s<\kappa : g_{n+1}(s)\in g_n(s)\}=A_n\in D.
-$$
+$$\{s<\kappa : g_{n+1}(s)\in g_n(s)\}=A_n\in D.$$
 
 其二，$A_n\in L_\eta'\subseteq L_\alpha$ （由 $g$ 's 经 $\Delta_0$
 定义），故 $k(A_n)$ 有意义且 $\kappa\in k(A_n)$ 。把 $k$ 应用
 到陈述「$\forall s\in A_n\ (g_{n+1}(s)\in g_n(s))$ 」上：
 
-$$
-k(g_{n+1})(\kappa)\in k(g_n)(\kappa)\qquad(n<\omega),
-$$
+$$k(g_{n+1})(\kappa)\in k(g_n)(\kappa)\qquad(n<\omega),$$
 
 这是传递模型 $L_\beta$ 内序数的无穷 $\in$ -下降链，矛盾。∎
 
@@ -207,9 +182,7 @@ $\mathrm{cf}(\lambda)>\kappa$ ，$\operatorname{ran}(f)$ 有界
 （此论证在 $V$ 中做即可）。于是每个 $[f]<i(\lambda)$ 的代表
 都等价于某个常值函数 $[c_\alpha]$ ，$\alpha<\lambda$ ：
 
-$$
-i(\lambda)=\sup_{\alpha<\lambda}i(\alpha).
-$$
+$$i(\lambda)=\sup_{\alpha<\lambda}i(\alpha).$$
 
 再证每个 $i(\alpha)<\lambda$ 。$L\models\mathrm{GCH}$ ，故
 $\lambda$ 在 $L$ 中是强极限基数；$i(\alpha)$ 的 $L$ -基数
@@ -220,11 +193,7 @@ $\ge\lambda$ 由单调性（$i(\alpha)\ge\alpha$ ）立得。∎
 
 由此铺设阶梯：
 
-$$
-U_0=\{\lambda : \lambda\text{ 极限基数且}\ \mathrm{cf}(\lambda)>\kappa\},
-\qquad U_{\alpha+1}=\{\lambda\in U_\alpha : |\lambda\cap U_\alpha|=\lambda\},
-\qquad U_\delta=\bigcap_{\alpha<\delta}U_\alpha.
-$$
+$$U_0=\{\lambda : \lambda\text{ 极限基数且}\ \mathrm{cf}(\lambda)>\kappa\}, \qquad U_{\alpha+1}=\{\lambda\in U_\alpha : |\lambda\cap U_\alpha|=\lambda\}, \qquad U_\delta=\bigcap_{\alpha<\delta}U_\alpha.$$
 
 **阶梯事实**（本文按下游需要重述原书断言一，证明更短）：
 
@@ -248,9 +217,7 @@ $\lambda$ 、序型为 $\lambda$ 的子集。
 $j=k\circ i$ ，$i:L\to L$ ，$\kappa=\mathrm{Crit}(i)$ ；由
 引理 1.11，$i(\lambda)=\lambda$ ，故限制
 
-$$
-h:=i\upharpoonright L_\lambda : (L_\lambda,E)\to(L_\lambda,E)
-$$
+$$h:=i\upharpoonright L_\lambda : (L_\lambda,E)\to(L_\lambda,E)$$
 
 是初等自嵌入，且由不动点引理，$h$ **逐点固定**每个
 $\eta\in U_0\cap\lambda$ （都是梯度 $>\kappa$ 的极限基数），
@@ -259,12 +226,7 @@ $\eta\in U_0\cap\lambda$ （都是梯度 $>\kappa$ 的极限基数），
 对每个 $\alpha<\omega_1$ ，令 $X_\alpha=\lambda\cap U_\alpha$ ，
 取同质子模型及其传递化：
 
-$$
-M_\alpha=\mathrm{SH}^{L_\lambda}(\{\kappa\}\cup X_\alpha),\qquad
-\pi_\alpha[M_\alpha]=L_\lambda,\qquad
-h_\alpha:=\pi_\alpha^{-1}:L_\lambda\to L_\lambda,\qquad
-K_\alpha:=h_\alpha(\kappa).
-$$
+$$M_\alpha=\mathrm{SH}^{L_\lambda}(\{\kappa\}\cup X_\alpha),\qquad \pi_\alpha[M_\alpha]=L_\lambda,\qquad h_\alpha:=\pi_\alpha^{-1}:L_\lambda\to L_\lambda,\qquad K_\alpha:=h_\alpha(\kappa).$$
 
 $\pi_\alpha[M_\alpha]=L_\lambda$ 的理由：$\mathrm{Ord}\cap M_\alpha\supseteq X_\alpha$ 且 $\operatorname{otp}(X_\alpha)=\lambda$
 （基数为 $\lambda$ 的 $\lambda$ 的子集序型恰为 $\lambda$ ），
@@ -278,9 +240,7 @@ $|\eta\cap U_\alpha|=\eta$ ；又 $\eta\cap U_\alpha=X_\alpha\cap\eta$ ，
 $\eta$ 是 $\mathrm{Ord}\cap M_\alpha$ 增枚举中第 $\eta$
 个元素：
 
-$$
-h_\alpha(\eta)=\pi_\alpha^{-1}(\eta)=\eta.
-$$
+$$h_\alpha(\eta)=\pi_\alpha^{-1}(\eta)=\eta.$$
 
 于是 $h_\alpha$ 逐点固定 $X_\beta$ 的每个元素。再由引理 1.8，
 对任何以「$\le\kappa$ 的序数与 $X_\beta$ 中元素」为参数的
@@ -343,11 +303,7 @@ $\max\{\alpha_n,\beta_n\}<\zeta_1$ 。逐次应用
 $h_{\alpha_n,\zeta_n},h_{\alpha_{n-1},\zeta_{n-1}},\ldots, h_{\alpha_1,\zeta_1}$ ：第 $l$ 步把 $K_{\alpha_l}$ 换成
 $K_{\zeta_l}$ 而固定已换好的与未动的（由引理 1.13(i)），得
 
-$$
-(L_\lambda,E)\models\varphi[K_{\alpha_1},\ldots,K_{\alpha_n}]
-\iff
-(L_\lambda,E)\models\varphi[K_{\zeta_1},\ldots,K_{\zeta_n}].
-$$
+$$(L_\lambda,E)\models\varphi[K_{\alpha_1},\ldots,K_{\alpha_n}] \iff (L_\lambda,E)\models\varphi[K_{\zeta_1},\ldots,K_{\zeta_n}].$$
 
 对 $\beta$ 's 同理，两组都化归到公共的 $\zeta$ 's。∎
 
@@ -362,10 +318,7 @@ $$
 > 称 $I$ 为 $\mathfrak A$ 的**不可辨别元集合**，若对每个
 > $n<\omega$ 、每个表达式 $\varphi(v_1,\ldots,v_n)$ 与
 > $I$ 中任意两组递增 $n$ 元组：
-> $$
-> \mathfrak A\models\varphi[\alpha_1,\ldots,\alpha_n]
-> \iff \mathfrak A\models\varphi[\beta_1,\ldots,\beta_n].
-> $$
+> $$\mathfrak A\models\varphi[\alpha_1,\ldots,\alpha_n] \iff \mathfrak A\models\varphi[\beta_1,\ldots,\beta_n].$$
 
 「无差别」的字面含义：一阶语言无法区分 $I$ 的成员，只能看见
 它们的次序。供给这类集合的通用机器是拉姆齐基数。
@@ -376,10 +329,7 @@ $$
 **证明**。设 $f:[\kappa]^{<\omega}\to\lambda$ 。定义
 $F:[\kappa]^{<\omega}\to 2$ ：
 
-$$
-F(\{\alpha_1<\cdots<\alpha_{2k}\})=1 \iff
-f(\{\alpha_1,\ldots,\alpha_k\})=f(\{\alpha_{k+1},\ldots,\alpha_{2k}\}),
-$$
+$$F(\{\alpha_1<\cdots<\alpha_{2k}\})=1 \iff f(\{\alpha_1,\ldots,\alpha_k\})=f(\{\alpha_{k+1},\ldots,\alpha_{2k}\}),$$
 
 奇数大小（及空隙情形）一律取 $0$ 。由拉姆齐性取 $F$ 的齐一
 $H\in[\kappa]^\kappa$ （每个 $n$ 上各常值）。断言每个偶层
@@ -392,9 +342,7 @@ $F=1$ 。
 $\{\alpha_1<\cdots<\alpha_k\},\{\beta_1<\cdots<\beta_k\}\subseteq H$ ，取 $\{\xi_1<\cdots<\xi_k\}\subseteq H$ 在两者之上。由
 $F(\vec\alpha\!\frown\!\vec\xi)=F(\vec\beta\!\frown\!\vec\xi)=1$ ：
 
-$$
-f(\vec\alpha)=f(\vec\xi)=f(\vec\beta).
-$$
+$$f(\vec\alpha)=f(\vec\xi)=f(\vec\beta).$$
 
 对每个 $k$ 如此，得 $<\omega$ -齐一。∎
 
@@ -409,11 +357,7 @@ $$
 $|\Phi|=\max(\aleph_0,|\mathcal L|)<\kappa$ ；由拉姆齐基数的
 不可达性（强极限），$|\mathcal P(\Phi)|<\kappa$ 。定义
 
-$$
-f:[\kappa]^{<\omega}\to\mathcal P(\Phi),\qquad
-f(\{\alpha_1,\ldots,\alpha_n\})=\{\varphi :
-\mathfrak A\models\varphi[\alpha_1,\ldots,\alpha_n]\}.
-$$
+$$f:[\kappa]^{<\omega}\to\mathcal P(\Phi),\qquad f(\{\alpha_1,\ldots,\alpha_n\})=\{\varphi : \mathfrak A\models\varphi[\alpha_1,\ldots,\alpha_n]\}.$$
 
 引理 1.15 给出 $f$ -齐一的 $H\in[\kappa]^\kappa$ ：同长递增
 元组有相同 $\Phi$ -型，即 $H$ 不可辨别。∎
@@ -451,9 +395,7 @@ $I=\{\alpha_k:k<\omega\}$ 是 $(L_\lambda,E)$ 的不可辨别元
 > 唯一的**基本模型** $M(T,\alpha)=(M,E)$ ：携带序型 $\alpha$
 > 的不可辨别元集合 $X$ 、$M=\mathrm{SH}^{(M,E)}(X)$ ，且对
 > 递增 $n$ 元组 $\vec a\subseteq X$ ：
-> $$
-> (M,E)\models\varphi[\vec a] \iff \varphi(c_0,\ldots,c_{n-1})\in T.
-> $$
+> $$(M,E)\models\varphi[\vec a] \iff \varphi(c_0,\ldots,c_{n-1})\in T.$$
 >
 > (2) $\omega<\alpha<\beta$ 极限、$j:\alpha\to\beta$ 单调
 > 递增，则 $j$ 延拓为初等嵌入 $M(T,\alpha)\to M(T,\beta)$ 。
@@ -515,10 +457,7 @@ $y\in a_{n+1}$ 。∎
 > $Y=$ 前 $\xi$ 个元素之集，每个 $M$ 中 $<y_\xi$ 的序数
 > 都在 $\mathrm{SH}^{(M,E)}(Y)$ 中；(3) $T$ 含全部语句：
 > 「若 $t(c_1,\ldots,c_{m+n})\in c_{m+1}$ 是序数，则
-> $$
-> t(c_1,\ldots,c_{m+n}) =
-> t(c_1,\ldots,c_m,c_{m+n+1},\ldots,c_{m+2n}).
-> $$
+> $$t(c_1,\ldots,c_{m+n}) = t(c_1,\ldots,c_m,c_{m+n+1},\ldots,c_{m+2n}).$$
 > 」
 >
 > 且此时前 $\xi$ 个不可辨别元生成的子模型就是
@@ -634,10 +573,7 @@ $I=\bigcup_{\kappa}I_\kappa$ 。此后 $I$ 的元素称为 **Silver
 与任一非平凡保序映射 $\sigma:I\to I$ （如整体上移一位）。
 **定义**
 
-$$
-j\big(t^L(\iota_1,\ldots,\iota_m)\big) :=
-t^L\big(\sigma(\iota_1),\ldots,\sigma(\iota_m)\big).
-$$
+$$j\big(t^L(\iota_1,\ldots,\iota_m)\big) := t^L\big(\sigma(\iota_1),\ldots,\sigma(\iota_m)\big).$$
 
 良定义：等式 $t[\vec\iota]=t'[\vec\iota'\,]$ 与
 $t[\vec\iota]\in t'[\vec\iota'\,]$ 是关于 $I$ 中递增组的
@@ -681,10 +617,7 @@ $j(\iota_0)=\sigma(\iota_0)\ne\iota_0$ 。∎
 
 0# 也可以定义为纯语言对象：集合论纯语言表达式的极大可满足集
 
-$$
-0\#=\bigcup\{\ulcorner\varphi(v_1,\ldots,v_n)\urcorner :
-(L_{\aleph_\omega},E)\models\varphi[\aleph_1,\ldots,\aleph_n]\},
-$$
+$$0\#=\bigcup\{\ulcorner\varphi(v_1,\ldots,v_n)\urcorner : (L_{\aleph_\omega},E)\models\varphi[\aleph_1,\ldots,\aleph_n]\},$$
 
 即「把递增 $\omega$ -列的前 $n$ 个代入 $v_1,\ldots,v_n$ 后
 为真」的表达式代码之集。作为自然数子集，0# 是**一个实数**。
@@ -695,9 +628,7 @@ $$
 一元谓词解释 $a$ ，典型结构取 $(L_\lambda[a],E,a,\alpha_k)_{ k<\omega}$ ，得到**唯一的**满足有秩条件的神奇蓝图 $a\#$ 、
 相对 Silver 类 $I^a$ ，以及
 
-$$
-a\#\text{ 存在} \iff \text{存在非平凡 } j:L[a]\to L[a].
-$$
+$$a\#\text{ 存在} \iff \text{存在非平凡 } j:L[a]\to L[a].$$
 
 注意两点（原书明示的基础事实）：其一 $a\in L[a]$ （因
 $a\subseteq\omega$ ）；其二典型结构不受谓词解释影响，因为

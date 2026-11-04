@@ -8,9 +8,7 @@
 
 极大似然估计选择使这份已观察数据最“可能”的参数：
 
-$$
-\hat\theta\in\arg\max_{\theta\in\Theta}L(\theta\mid x).
-$$
+$$\hat\theta\in\arg\max_{\theta\in\Theta}L(\theta\mid x).$$
 
 这里 $L(\theta\mid x)$ 是似然函数。
 
@@ -24,19 +22,13 @@ $$
 
 对固定参数 $\theta$ ，联合 PMF 或 PDF
 
-$$
-f_X(x;\theta)
-$$
+$$f_X(x;\theta)$$
 
 被看成数据 $x$ 的函数，用来描述抽样分布。
 
 数据观察以后，把它固定为 $x$ ，改把 $\theta$ 看成变量：
 
-$$
-\boxed{
-L(\theta\mid x)=f_X(x;\theta).
-}
-$$
+$$\boxed{ L(\theta\mid x)=f_X(x;\theta). }$$
 
 公式相同，角色不同。
 
@@ -44,9 +36,7 @@ $$
 
 因此
 
-$$
-\int_\Theta L(\theta\mid x)\,d\theta=1
-$$
+$$\int_\Theta L(\theta\mid x)\,d\theta=1$$
 
 一般不成立。
 
@@ -56,22 +46,15 @@ $$
 
 若 $X_1,\ldots,X_n$ 独立，且第 $i$ 个观测的密度为 $f_i(x_i;\theta)$ ，则
 
-$$
-L(\theta\mid x)=\prod_{i=1}^n f_i(x_i;\theta).
-$$
+$$L(\theta\mid x)=\prod_{i=1}^n f_i(x_i;\theta).$$
 
 iid 时进一步写成
 
-$$
-L(\theta\mid x)=\prod_{i=1}^n f(x_i;\theta).
-$$
+$$L(\theta\mid x)=\prod_{i=1}^n f(x_i;\theta).$$
 
 当似然为正时，定义对数似然
 
-$$
-\ell(\theta\mid x)=\log L(\theta\mid x)
-=\sum_{i=1}^n\log f(x_i;\theta).
-$$
+$$\ell(\theta\mid x)=\log L(\theta\mid x) =\sum_{i=1}^n\log f(x_i;\theta).$$
 
 因为对数严格递增，最大化 $L$ 与最大化 $\ell$ 给出相同极大点。
 
@@ -83,10 +66,7 @@ $$
 
 极大似然估计量定义为
 
-$$
-\hat\theta(X)\in
-\arg\max_{\theta\in\Theta}L(\theta\mid X).
-$$
+$$\hat\theta(X)\in \arg\max_{\theta\in\Theta}L(\theta\mid X).$$
 
 代入观察数据后得到估计值。
 
@@ -109,36 +89,23 @@ $$
 
 设
 
-$$
-X_1,\ldots,X_n\overset{\mathrm{iid}}{\sim}
-\operatorname{Bernoulli}(p),
-\qquad 0<p<1.
-$$
+$$X_1,\ldots,X_n\overset{\mathrm{iid}}{\sim} \operatorname{Bernoulli}(p), \qquad 0<p<1.$$
 
 单观测 PMF 为
 
-$$
-f(x;p)=p^x(1-p)^{1-x},
-\qquad x\in\{0,1\}.
-$$
+$$f(x;p)=p^x(1-p)^{1-x}, \qquad x\in\{0,1\}.$$
 
 令成功数
 
-$$
-k=\sum_{i=1}^n x_i.
-$$
+$$k=\sum_{i=1}^n x_i.$$
 
 联合概率为
 
-$$
-L(p\mid x)=p^k(1-p)^{n-k}.
-$$
+$$L(p\mid x)=p^k(1-p)^{n-k}.$$
 
 对数似然为
 
-$$
-\ell(p)=k\log p+(n-k)\log(1-p).
-$$
+$$\ell(p)=k\log p+(n-k)\log(1-p).$$
 
 这里组合数 $\binom nk$ 不出现，因为数据是**有序观测向量**；若只观察到总成功数 $K\sim\operatorname{Bin}(n,p)$ ，似然才会多出与 $p$ 无关的 $\binom nk$ 。
 
@@ -148,29 +115,19 @@ $$
 
 对内点 $0<p<1$ ，求导得
 
-$$
-\ell'(p)=\frac kp-\frac{n-k}{1-p}.
-$$
+$$\ell'(p)=\frac kp-\frac{n-k}{1-p}.$$
 
 通分：
 
-$$
-\boxed{
-\ell'(p)=\frac{k-np}{p(1-p)}.
-}
-$$
+$$\boxed{ \ell'(p)=\frac{k-np}{p(1-p)}. }$$
 
 若 $0<k<n$ ，置零得到唯一候选点
 
-$$
-\hat p=\frac kn=\bar x.
-$$
+$$\hat p=\frac kn=\bar x.$$
 
 二阶导数为
 
-$$
-\ell''(p)=-\frac k{p^2}-\frac{n-k}{(1-p)^2}<0.
-$$
+$$\ell''(p)=-\frac k{p^2}-\frac{n-k}{(1-p)^2}<0.$$
 
 因此 $\ell$ 在 $(0,1)$ 上严格凹，$\hat p=k/n$ 是唯一全局最大点。
 
@@ -192,9 +149,7 @@ theorem bernoulli_score_numerator (k n p : ℚ) (hp : p ≠ 0) (hp1 : 1 - p ≠ 
 
 若 $k=0$ ，则
 
-$$
-L(p)=(1-p)^n,
-$$
+$$L(p)=(1-p)^n,$$
 
 它在 $p\ge0$ 上递减。
 
@@ -212,48 +167,29 @@ $$
 
 设
 
-$$
-X_i\overset{\mathrm{iid}}{\sim}\operatorname{Poisson}(\lambda),
-\qquad \lambda>0.
-$$
+$$X_i\overset{\mathrm{iid}}{\sim}\operatorname{Poisson}(\lambda), \qquad \lambda>0.$$
 
 单观测 PMF 是
 
-$$
-f(x;\lambda)=e^{-\lambda}\frac{\lambda^x}{x!},
-\qquad x=0,1,2,\ldots
-$$
+$$f(x;\lambda)=e^{-\lambda}\frac{\lambda^x}{x!}, \qquad x=0,1,2,\ldots$$
 
 记 $s=\sum_i x_i$ 。
 
 联合似然为
 
-$$
-L(\lambda)=
-e^{-n\lambda}\lambda^s
-\left(\prod_{i=1}^n x_i!\right)^{-1}.
-$$
+$$L(\lambda)= e^{-n\lambda}\lambda^s \left(\prod_{i=1}^n x_i!\right)^{-1}.$$
 
 对数似然为
 
-$$
-\ell(\lambda)=-n\lambda+s\log\lambda
--\sum_{i=1}^n\log(x_i!).
-$$
+$$\ell(\lambda)=-n\lambda+s\log\lambda -\sum_{i=1}^n\log(x_i!).$$
 
 最后一项与 $\lambda$ 无关，求导时消失：
 
-$$
-\ell'(\lambda)=\frac{s}{\lambda}-n,
-\qquad
-\ell''(\lambda)=-\frac{s}{\lambda^2}.
-$$
+$$\ell'(\lambda)=\frac{s}{\lambda}-n, \qquad \ell''(\lambda)=-\frac{s}{\lambda^2}.$$
 
 若 $s>0$ ，唯一内点解为
 
-$$
-\boxed{\hat\lambda=\frac sn=\bar x.}
-$$
+$$\boxed{\hat\lambda=\frac sn=\bar x.}$$
 
 当 $\lambda\to0$ 或 $\lambda\to\infty$ 时，对数似然都趋于 $-\infty$ ，所以该驻点是全局最大点。
 
@@ -265,65 +201,37 @@ $$
 
 设
 
-$$
-X_i\overset{\mathrm{iid}}{\sim}N(\mu,v),
-\qquad v=\sigma^2>0.
-$$
+$$X_i\overset{\mathrm{iid}}{\sim}N(\mu,v), \qquad v=\sigma^2>0.$$
 
 把 $v$ 本身当作参数，比把 $\sigma$ 当作参数求导更整齐。
 
 联合对数似然为
 
-$$
-\boxed{
-\ell(\mu,v)
-=-\frac n2\log(2\pi)
--\frac n2\log v
--\frac1{2v}\sum_{i=1}^n(x_i-\mu)^2.
-}
-$$
+$$\boxed{ \ell(\mu,v) =-\frac n2\log(2\pi) -\frac n2\log v -\frac1{2v}\sum_{i=1}^n(x_i-\mu)^2. }$$
 
 分别求偏导：
 
-$$
-\frac{\partial\ell}{\partial\mu}
-=\frac1v\sum_{i=1}^n(x_i-\mu),
-$$
+$$\frac{\partial\ell}{\partial\mu} =\frac1v\sum_{i=1}^n(x_i-\mu),$$
 
-$$
-\frac{\partial\ell}{\partial v}
-=-\frac n{2v}
-+\frac1{2v^2}\sum_{i=1}^n(x_i-\mu)^2.
-$$
+$$\frac{\partial\ell}{\partial v} =-\frac n{2v} +\frac1{2v^2}\sum_{i=1}^n(x_i-\mu)^2.$$
 
 第一式给出
 
-$$
-\hat\mu=\bar x.
-$$
+$$\hat\mu=\bar x.$$
 
 令
 
-$$
-q=\sum_{i=1}^n(x_i-\bar x)^2.
-$$
+$$q=\sum_{i=1}^n(x_i-\bar x)^2.$$
 
 若 $q>0$ ，第二式给出
 
-$$
-\boxed{
-\hat v=\frac qn
-=\frac1n\sum_{i=1}^n(x_i-\bar x)^2.
-}
-$$
+$$\boxed{ \hat v=\frac qn =\frac1n\sum_{i=1}^n(x_i-\bar x)^2. }$$
 
 注意分母是 $n$ ，不是无偏样本方差的 $n-1$ 。
 
 所以 MLE 通常有偏差：
 
-$$
-E_\theta[\hat v]=\frac{n-1}{n}v.
-$$
+$$E_\theta[\hat v]=\frac{n-1}{n}v.$$
 
 上一章已经看到，这个有偏 MLE 在平方误差风险上还可以优于无偏 $S^2$ 。
 
@@ -331,19 +239,13 @@ $$
 
 对任意固定 $v>0$ ，平方和满足
 
-$$
-\sum_i(x_i-\mu)^2
-=q+n(\mu-\bar x)^2\ge q.
-$$
+$$\sum_i(x_i-\mu)^2 =q+n(\mu-\bar x)^2\ge q.$$
 
 因此对数似然在 $\mu=\bar x$ 处最大。
 
 代入后得到 profile 对数似然：
 
-$$
-\ell(\bar x,v)
-=C-\frac n2\log v-\frac q{2v}.
-$$
+$$\ell(\bar x,v) =C-\frac n2\log v-\frac q{2v}.$$
 
 当 $q>0$ 时，它对 $v$ 的唯一驻点为 $v=q/n$ 。
 
@@ -351,12 +253,7 @@ $$
 
 在 $(\hat\mu,\hat v)$ 处 Hessian 为
 
-$$
-\begin{pmatrix}
--n/\hat v&0\\
-0&-n/(2\hat v^2)
-\end{pmatrix},
-$$
+$$\begin{pmatrix} -n/\hat v&0\\ 0&-n/(2\hat v^2) \end{pmatrix},$$
 
 负定，与上述全局论证一致。
 
@@ -368,9 +265,7 @@ $$
 
 代入后，
 
-$$
-\ell(c,v)=C-\frac n2\log v.
-$$
+$$\ell(c,v)=C-\frac n2\log v.$$
 
 当 $v\downarrow0$ 时，它趋于 $+\infty$ 。
 
@@ -388,24 +283,15 @@ $$
 
 对数似然关于参数的梯度称为**得分**：
 
-$$
-S_n(\theta)=
-\nabla_\theta\ell_n(\theta\mid X).
-$$
+$$S_n(\theta)= \nabla_\theta\ell_n(\theta\mid X).$$
 
 iid 样本中，
 
-$$
-S_n(\theta)=\sum_{i=1}^n s(X_i;\theta),
-\qquad
-s(x;\theta)=\nabla_\theta\log f(x;\theta).
-$$
+$$S_n(\theta)=\sum_{i=1}^n s(X_i;\theta), \qquad s(x;\theta)=\nabla_\theta\log f(x;\theta).$$
 
 内点且可微的最大值必须满足
 
-$$
-S_n(\hat\theta)=0.
-$$
+$$S_n(\hat\theta)=0.$$
 
 这只是必要条件。
 
@@ -419,46 +305,31 @@ $$
 
 在正确设定且正则的模型中，对
 
-$$
-\int f(x;\theta)\,dx=1
-$$
+$$\int f(x;\theta)\,dx=1$$
 
 关于 $\theta$ 求导。
 
 若可以交换求导和积分，得到
 
-$$
-\int \nabla_\theta f(x;\theta)\,dx=0.
-$$
+$$\int \nabla_\theta f(x;\theta)\,dx=0.$$
 
 由于
 
-$$
-\nabla_\theta\log f
-=\frac{\nabla_\theta f}{f},
-$$
+$$\nabla_\theta\log f =\frac{\nabla_\theta f}{f},$$
 
 所以
 
-$$
-E_\theta[s(X;\theta)]
-=\int s(x;\theta)f(x;\theta)\,dx
-=0.
-$$
+$$E_\theta[s(X;\theta)] =\int s(x;\theta)f(x;\theta)\,dx =0.$$
 
 因此
 
-$$
-\boxed{E_{\theta_0}[s(X;\theta_0)]=0.}
-$$
+$$\boxed{E_{\theta_0}[s(X;\theta_0)]=0.}$$
 
 下标非常重要：得分在参数 $\theta$ 处构造，期望也在同一个 $P_\theta$ 下计算。
 
 若真实分布是 $P_0$ ，而我们在别的 $\theta$ 处评估得分，一般没有
 
-$$
-E_0[s(X;\theta)]=0.
-$$
+$$E_0[s(X;\theta)]=0.$$
 
 正则条件包括适当的可微性、可积控制，以及通常要求支撑不随参数作会破坏求导的变化。
 
@@ -466,16 +337,11 @@ $$
 
 单观测得分为
 
-$$
-s(x;p)=\frac{x}{p}-\frac{1-x}{1-p}.
-$$
+$$s(x;p)=\frac{x}{p}-\frac{1-x}{1-p}.$$
 
 因为 $E_p[X]=p$ ，直接有
 
-$$
-E_p[s(X;p)]
-=\frac pp-\frac{1-p}{1-p}=0.
-$$
+$$E_p[s(X;p)] =\frac pp-\frac{1-p}{1-p}=0.$$
 
 Python 在 $p=1/3$ 时保留全部有理数：
 
@@ -492,9 +358,7 @@ assert (1 - p) * scores[0] + p * scores[1] == 0
 
 Poisson 的同一结论也由 $E_\lambda[X]=\lambda$ 得到：
 
-$$
-E_\lambda\left[\frac X\lambda-1\right]=0.
-$$
+$$E_\lambda\left[\frac X\lambda-1\right]=0.$$
 
 这些恒等式说明总体得分在真参数处平均为零；一个具体样本的得分通常不为零，MLE 正是在样本总得分为零的参数处寻找拟合。
 
@@ -502,34 +366,21 @@ $$
 
 单观测 Fisher 信息定义为得分方差：
 
-$$
-I(\theta)
-=\operatorname{Var}_\theta[s(X;\theta)].
-$$
+$$I(\theta) =\operatorname{Var}_\theta[s(X;\theta)].$$
 
 由于真参数处得分均值为零，也可写成
 
-$$
-I(\theta)=E_\theta[s(X;\theta)s(X;\theta)^\top].
-$$
+$$I(\theta)=E_\theta[s(X;\theta)s(X;\theta)^\top].$$
 
 标量情形就是 $E_\theta[s(X;\theta)^2]$ 。
 
 对 iid 样本，独立性和零均值给出
 
-$$
-\operatorname{Var}_\theta[S_n(\theta)]
-=nI(\theta).
-$$
+$$\operatorname{Var}_\theta[S_n(\theta)] =nI(\theta).$$
 
 在更强的二阶正则条件下，还有**信息矩阵等式**
 
-$$
-\boxed{
-I(\theta)=-E_\theta[
-\nabla_\theta^2\log f(X;\theta)].
-}
-$$
+$$\boxed{ I(\theta)=-E_\theta[ \nabla_\theta^2\log f(X;\theta)]. }$$
 
 它把“得分波动”与“对数似然平均曲率”联系起来。
 
@@ -539,42 +390,23 @@ $$
 
 从
 
-$$
-0=\int \nabla_\theta f(x;\theta)\,dx
-=\int s(x;\theta)f(x;\theta)\,dx
-$$
+$$0=\int \nabla_\theta f(x;\theta)\,dx =\int s(x;\theta)f(x;\theta)\,dx$$
 
 再次求导。
 
 标量情形，被积函数的导数为
 
-$$
-\frac{\partial}{\partial\theta}
-\left[
-\frac{\partial\log f}{\partial\theta}f
-\right]
-=
-\frac{\partial^2\log f}{\partial\theta^2}f
-+
-\frac{\partial\log f}{\partial\theta}
-\frac{\partial f}{\partial\theta}.
-$$
+$$\frac{\partial}{\partial\theta} \left[ \frac{\partial\log f}{\partial\theta}f \right] = \frac{\partial^2\log f}{\partial\theta^2}f + \frac{\partial\log f}{\partial\theta} \frac{\partial f}{\partial\theta}.$$
 
 利用 $\partial_\theta f=(\partial_\theta\log f)f$ ，积分后得到
 
-$$
-0=E_\theta[\ell''(X;\theta)]
-+E_\theta[s(X;\theta)^2].
-$$
+$$0=E_\theta[\ell''(X;\theta)] +E_\theta[s(X;\theta)^2].$$
 
 移项即 $I(\theta)=-E_\theta[\ell'']$ 。
 
 向量情形逐分量求导，得到矩阵形式
 
-$$
-E_\theta[SS^\top]
-=-E_\theta[\nabla^2_\theta\log f].
-$$
+$$E_\theta[SS^\top] =-E_\theta[\nabla^2_\theta\log f].$$
 
 证明中使用两次交换求导与积分。
 
@@ -588,15 +420,11 @@ $$
 
 由
 
-$$
-s(x;p)=\frac{x-p}{p(1-p)}
-$$
+$$s(x;p)=\frac{x-p}{p(1-p)}$$
 
 以及 $\operatorname{Var}(X)=p(1-p)$ ，得到
 
-$$
-\boxed{I(p)=\frac1{p(1-p)}.}
-$$
+$$\boxed{I(p)=\frac1{p(1-p)}.}$$
 
 样本量为 $n$ 时，总信息为 $n/[p(1-p)]$ 。
 
@@ -615,31 +443,17 @@ assert score_variance == expected_negative_curvature == bernoulli_information(p)
 
 由 $s(x;\lambda)=x/\lambda-1$ ，得
 
-$$
-I(\lambda)
-=\frac{\operatorname{Var}(X)}{\lambda^2}
-=\frac1\lambda.
-$$
+$$I(\lambda) =\frac{\operatorname{Var}(X)}{\lambda^2} =\frac1\lambda.$$
 
 另一方面，$\ell''=-X/\lambda^2$ ，所以
 
-$$
--E_\lambda[\ell'']=1/\lambda.
-$$
+$$-E_\lambda[\ell'']=1/\lambda.$$
 
 ### 正态 $(\mu,v)$
 
 单观测信息矩阵为
 
-$$
-\boxed{
-I(\mu,v)=
-\begin{pmatrix}
-1/v&0\\
-0&1/(2v^2)
-\end{pmatrix}.
-}
-$$
+$$\boxed{ I(\mu,v)= \begin{pmatrix} 1/v&0\\ 0&1/(2v^2) \end{pmatrix}. }$$
 
 非对角元为零，因为正态奇中心矩为零。
 
@@ -659,10 +473,7 @@ data = [1, 0, 1, 1, 0, 1, 0, 1, 1, 1]
 
 Newton 法求得分方程 $\ell'(p)=0$ ，迭代为
 
-$$
-p_{m+1}
-=p_m-\frac{\ell'(p_m)}{\ell''(p_m)}.
-$$
+$$p_{m+1} =p_m-\frac{\ell'(p_m)}{\ell''(p_m)}.$$
 
 Python 单元完整实现如下；对数似然单独避免空项求对数：
 
@@ -702,15 +513,7 @@ def bernoulli_newton(observations, start=0.2, tolerance=1e-12):
 
 从 $p_0=0.2$ 出发，实际历史约为
 
-$$
-0.2,
-0.37391304,
-0.61523376,
-0.70762474,
-0.70011493,
-0.70000003,
-0.7.
-$$
+$$0.2, 0.37391304, 0.61523376, 0.70762474, 0.70011493, 0.70000003, 0.7.$$
 
 迭代在第三步略超过 $0.7$ ，随后回到精确解附近。
 
@@ -738,38 +541,23 @@ Julia 实现使用相同更新公式，并产生同样的迭代序列；这不�
 
 新参数下的似然定义为
 
-$$
-L^*(\tau\mid x)=L(h(\tau)\mid x).
-$$
+$$L^*(\tau\mid x)=L(h(\tau)\mid x).$$
 
 若 $\hat\theta$ 使 $L$ 达到全局最大，则对任意 $\tau$ ，
 
-$$
-L^*(g(\hat\theta))
-=L(\hat\theta)
-\ge L(h(\tau))
-=L^*(\tau).
-$$
+$$L^*(g(\hat\theta)) =L(\hat\theta) \ge L(h(\tau)) =L^*(\tau).$$
 
 所以
 
-$$
-\boxed{\widehat{g(\theta)}=g(\hat\theta).}
-$$
+$$\boxed{\widehat{g(\theta)}=g(\hat\theta).}$$
 
 例如正态模型先得到方差 MLE $\hat v$ ，标准差 MLE 就是
 
-$$
-\hat\sigma=\sqrt{\hat v}.
-$$
+$$\hat\sigma=\sqrt{\hat v}.$$
 
 Bernoulli 模型中，odds 参数为
 
-$$
-\tau=\frac p{1-p},
-\qquad
-p=\frac\tau{1+\tau}.
-$$
+$$\tau=\frac p{1-p}, \qquad p=\frac\tau{1+\tau}.$$
 
 固定数据给出 $\hat p=0.7$ ，所以 $\hat\tau=0.7/0.3=7/3$ 。
 
@@ -786,10 +574,7 @@ assert abs(odds_hat / (1 + odds_hat) - phat) < 1e-12
 
 若 $g$ 不是一一映射，仍可用诱导似然定义
 
-$$
-\widetilde L(\eta)
-=\sup_{\theta:g(\theta)=\eta}L(\theta).
-$$
+$$\widetilde L(\eta) =\sup_{\theta:g(\theta)=\eta}L(\theta).$$
 
 若 $\hat\theta$ 是原问题的全局最大点，则 $g(\hat\theta)$ 最大化这个诱导似然。
 
@@ -836,19 +621,13 @@ theorem mle_invariance {Θ Γ : Type} (g : Θ → Γ) (h : Γ → Θ)
 
 若 $T(X)$ 是充分统计量，Neyman–Fisher 因子分解给出
 
-$$
-L(\theta\mid x)
-=g_\theta(T(x))h(x),
-$$
+$$L(\theta\mid x) =g_\theta(T(x))h(x),$$
 
 其中 $h(x)$ 不依赖 $\theta$ 。
 
 所以
 
-$$
-\ell(\theta\mid x)
-=\log g_\theta(T(x))+\log h(x).
-$$
+$$\ell(\theta\mid x) =\log g_\theta(T(x))+\log h(x).$$
 
 最大化时，最后一项可以删去。
 
@@ -862,31 +641,21 @@ Bernoulli 中的 $k$ 、Poisson 中的 $s$ 、正态中的 $(\sum x_i,\sum x_i^2
 
 考虑
 
-$$
-X_i\overset{\mathrm{iid}}{\sim}U(0,\theta),
-\qquad \theta>0.
-$$
+$$X_i\overset{\mathrm{iid}}{\sim}U(0,\theta), \qquad \theta>0.$$
 
 联合密度为
 
-$$
-L(\theta)=
-\theta^{-n}\mathbf1_{\{\theta\ge x_{(n)}\}},
-$$
+$$L(\theta)= \theta^{-n}\mathbf1_{\{\theta\ge x_{(n)}\}},$$
 
 其中 $x_{(n)}=\max_i x_i$ ，并假设所有观测非负。
 
 在 $\theta\ge x_{(n)}$ 上，$\theta^{-n}$ 随 $\theta$ 递减，所以
 
-$$
-\boxed{\hat\theta=x_{(n)}.}
-$$
+$$\boxed{\hat\theta=x_{(n)}.}$$
 
 内部导数为
 
-$$
-\ell'(\theta)=-\frac n\theta<0,
-$$
+$$\ell'(\theta)=-\frac n\theta<0,$$
 
 永远没有零点。
 
@@ -902,10 +671,7 @@ $$
 
 例如对称混合模型
 
-$$
-f(x;\mu)=\tfrac12\varphi(x-\mu)
-+\tfrac12\varphi(x+\mu)
-$$
+$$f(x;\mu)=\tfrac12\varphi(x-\mu) +\tfrac12\varphi(x+\mu)$$
 
 满足 $f(x;\mu)=f(x;-\mu)$ 。
 
@@ -991,11 +757,7 @@ lambda_hat = sum(poisson_data) // length(poisson_data)
 
 因此可以精确得到
 
-$$
-E_p[\hat p]=p,
-\qquad
-\operatorname{Var}_p(\hat p)=\frac{p(1-p)}n.
-$$
+$$E_p[\hat p]=p, \qquad \operatorname{Var}_p(\hat p)=\frac{p(1-p)}n.$$
 
 Python 对 $n=8,p=1/4$ 枚举全部九个成功数：
 
@@ -1020,17 +782,11 @@ assert second_moment - mean_phat ** 2 == p * (1 - p) / n
 
 若真实分布为 $P_0$ ，单个观测的总体平均对数似然为
 
-$$
-Q(\theta)=E_0[\log f(X;\theta)].
-$$
+$$Q(\theta)=E_0[\log f(X;\theta)].$$
 
 当模型包含真实密度 $f_{\theta_0}=f_0$ 时，
 
-$$
-Q(\theta_0)-Q(\theta)
-=E_0\left[\log\frac{f_0(X)}{f(X;\theta)}\right]
-=D_{\mathrm{KL}}(P_0\Vert P_\theta)\ge0.
-$$
+$$Q(\theta_0)-Q(\theta) =E_0\left[\log\frac{f_0(X)}{f(X;\theta)}\right] =D_{\mathrm{KL}}(P_0\Vert P_\theta)\ge0.$$
 
 所以真参数最大化总体对数似然。
 

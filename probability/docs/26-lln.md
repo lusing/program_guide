@@ -4,9 +4,7 @@
 
 重复独立试验中，样本均值
 
-$$
-\bar X_n=\frac1n\sum_{i=1}^nX_i
-$$
+$$\bar X_n=\frac1n\sum_{i=1}^nX_i$$
 
 为什么会靠近总体均值 $\mu$ ？大数定律把“长期频率趋于稳定”变成两类精确命题：
 
@@ -21,29 +19,15 @@ $$
 
 设 $X_1,\dots,X_n$ 独立，均值都为 $\mu$ ，方差都为 $\sigma^2<\infty$ 。期望线性性不需要独立性：
 
-$$
-E[\bar X_n]
-=\frac1n\sum_iE[X_i]
-=\mu.
-$$
+$$E[\bar X_n] =\frac1n\sum_iE[X_i] =\mu.$$
 
 方差计算中，独立性使交叉协方差消失：
 
-$$
-\operatorname{Var}(\bar X_n)
-=\frac1{n^2}\operatorname{Var}\left(\sum_iX_i\right)
-=\frac1{n^2}\sum_i\operatorname{Var}(X_i)
-=\frac{\sigma^2}{n}.
-$$
+$$\operatorname{Var}(\bar X_n) =\frac1{n^2}\operatorname{Var}\left(\sum_iX_i\right) =\frac1{n^2}\sum_i\operatorname{Var}(X_i) =\frac{\sigma^2}{n}.$$
 
 因此
 
-$$
-\boxed{
-E[\bar X_n]=\mu,\qquad
-\operatorname{Var}(\bar X_n)=\frac{\sigma^2}{n}.
-}
-$$
+$$\boxed{ E[\bar X_n]=\mu,\qquad \operatorname{Var}(\bar X_n)=\frac{\sigma^2}{n}. }$$
 
 只两两不相关也足以得到方差公式；完整独立性在后续强律或精确分布计算中才发挥更多作用。
 
@@ -55,9 +39,7 @@ example : ((3 : ℚ)) / 12 = 1 / 4 := by norm_num
 
 标准差则是
 
-$$
-\operatorname{SD}(\bar X_n)=\frac{\sigma}{\sqrt n}.
-$$
+$$\operatorname{SD}(\bar X_n)=\frac{\sigma}{\sqrt n}.$$
 
 Lean 检查“精度翻倍需四倍样本”的方差形式：
 
@@ -71,33 +53,19 @@ example (v n : ℚ) : v / (4 * n) = (v / n) / 4 := by ring
 
 Chebyshev 不等式为
 
-$$
-P(|Y-EY|\ge\varepsilon)
-\le\frac{\operatorname{Var}(Y)}{\varepsilon^2}.
-$$
+$$P(|Y-EY|\ge\varepsilon) \le\frac{\operatorname{Var}(Y)}{\varepsilon^2}.$$
 
 代入 $Y=\bar X_n$ ：
 
-$$
-\boxed{
-P(|\bar X_n-\mu|\ge\varepsilon)
-\le\frac{\sigma^2}{n\varepsilon^2}.
-}
-$$
+$$\boxed{ P(|\bar X_n-\mu|\ge\varepsilon) \le\frac{\sigma^2}{n\varepsilon^2}. }$$
 
 固定 $\varepsilon>0$ ，令 $n\to\infty$ ，右端趋零，所以
 
-$$
-\boxed{\bar X_n\xrightarrow{P}\mu.}
-$$
+$$\boxed{\bar X_n\xrightarrow{P}\mu.}$$
 
 这就是有限方差 iid 样本的弱大数定律。证明链为
 
-$$
-\text{Markov}\Longrightarrow
-\text{Chebyshev}\Longrightarrow
-\text{WLLN}.
-$$
+$$\text{Markov}\Longrightarrow \text{Chebyshev}\Longrightarrow \text{WLLN}.$$
 
 Lean 检查 $\sigma^2=1,\varepsilon=1/10$ 时，$n=10^5$ 与 $10^6$ 的上界：
 
@@ -113,25 +81,15 @@ example : ((1 : ℚ)) / 10000 < 1 / 1000 := by norm_num
 
 对公平 Bernoulli 样本，
 
-$$
-X_i\in\{0,1\},\qquad p=\frac12,
-\qquad \operatorname{Var}(X_i)=\frac14.
-$$
+$$X_i\in\{0,1\},\qquad p=\frac12, \qquad \operatorname{Var}(X_i)=\frac14.$$
 
 Chebyshev 给出
 
-$$
-P\left(\left|\bar X_n-\frac12\right|\ge\varepsilon\right)
-\le\frac1{4n\varepsilon^2}.
-$$
+$$P\left(\left|\bar X_n-\frac12\right|\ge\varepsilon\right) \le\frac1{4n\varepsilon^2}.$$
 
 而 $n\bar X_n\sim\operatorname{Bin}(n,1/2)$ ，所以精确尾概率为
 
-$$
-\sum_{\substack{0\le k\le n\\
-|k/n-1/2|\ge\varepsilon}}
-\frac{\binom nk}{2^n}.
-$$
+$$\sum_{\substack{0\le k\le n\\ |k/n-1/2|\ge\varepsilon}} \frac{\binom nk}{2^n}.$$
 
 Python 用 `Fraction` 精确枚举：
 
@@ -149,9 +107,7 @@ assert t <= min(F(1), cheb)
 
 对 $\varepsilon=1/10$ 和 $n=10,50,100,400$ ，精确尾均不超过 Chebyshev 界，并随 $n$ 严格下降。$n=400$ 时，Chebyshev 上界为
 
-$$
-\frac1{4\cdot400\cdot0.1^2}=0.0625,
-$$
+$$\frac1{4\cdot400\cdot0.1^2}=0.0625,$$
 
 而精确尾远小于它。
 
@@ -161,9 +117,7 @@ Julia 用 `BigInt` 二项系数和有理数独立核对同一关系。这说明 
 
 弱律
 
-$$
-P(|\bar X_n-\mu|\ge\varepsilon)\to0
-$$
+$$P(|\bar X_n-\mu|\ge\varepsilon)\to0$$
 
 是对每个固定 $n$ 的概率陈述。它允许某些坏事件在不同 $n$ 上反复出现，只要它们各自的概率趋零。
 
@@ -176,10 +130,7 @@ $$
 
 强律的形式化尾事件为
 
-$$
-P\left(\bigcap_{n=1}^\infty\bigcup_{m\ge n}
-\{|\bar X_m-\mu|\ge\varepsilon\}\right)=0.
-$$
+$$P\left(\bigcap_{n=1}^\infty\bigcup_{m\ge n} \{|\bar X_m-\mu|\ge\varepsilon\}\right)=0.$$
 
 弱律只处理内层事件的单项概率，强律处理整个并集。
 
@@ -187,13 +138,7 @@ $$
 
 Khinchin 强律只需 iid 和有限一阶矩：
 
-$$
-\boxed{
-X_1,X_2,\dots\ \text{iid},\quad E|X_1|<\infty,\quad E[X_1]=\mu
-\Longrightarrow
-\bar X_n\xrightarrow{a.s.}\mu.
-}
-$$
+$$\boxed{ X_1,X_2,\dots\ \text{iid},\quad E|X_1|<\infty,\quad E[X_1]=\mu \Longrightarrow \bar X_n\xrightarrow{a.s.}\mu. }$$
 
 它不要求有限方差。因此 Chebyshev 的证明虽然简单，却不是最强结论。
 
@@ -211,27 +156,15 @@ $$
 
 Kolmogorov 强律允许独立但不同分布的变量。设 $X_i$ 独立、各均值和方差有限，若
 
-$$
-\boxed{
-\sum_{i=1}^\infty\frac{\operatorname{Var}(X_i)}{i^2}<\infty,
-}
-$$
+$$\boxed{ \sum_{i=1}^\infty\frac{\operatorname{Var}(X_i)}{i^2}<\infty, }$$
 
 则
 
-$$
-\boxed{
-\frac1n\sum_{i=1}^n(X_i-E[X_i])
-\xrightarrow{a.s.}0.
-}
-$$
+$$\boxed{ \frac1n\sum_{i=1}^n(X_i-E[X_i]) \xrightarrow{a.s.}0. }$$
 
 对 iid 有限方差变量，条件变为
 
-$$
-\sum_i\frac{\sigma^2}{i^2}
-=\sigma^2\sum_i\frac1{i^2}<\infty,
-$$
+$$\sum_i\frac{\sigma^2}{i^2} =\sigma^2\sum_i\frac1{i^2}<\infty,$$
 
 所以立即得到 iid 有限方差强律。
 
@@ -248,15 +181,11 @@ Kolmogorov 的版本更灵活，但方差级数条件可能比有限一阶矩更
 
 若 iid 变量中心化后有有限四阶矩，可以给强律一个较短证明。令
 
-$$
-E[X_i]=0,\qquad S_n=\sum_{i=1}^nX_i,
-$$
+$$E[X_i]=0,\qquad S_n=\sum_{i=1}^nX_i,$$
 
 并记
 
-$$
-\sigma^2=E[X_i^2],\qquad m_4=E[X_i^4].
-$$
+$$\sigma^2=E[X_i^2],\qquad m_4=E[X_i^4].$$
 
 展开 $S_n^4$ 后，含单次或三次某个独立因子的项期望为零。只剩：
 
@@ -265,39 +194,25 @@ $$
 
 因此
 
-$$
-\boxed{
-E[S_n^4]=n m_4+3n(n-1)\sigma^4.
-}
-$$
+$$\boxed{ E[S_n^4]=n m_4+3n(n-1)\sigma^4. }$$
 
 由 $\sigma^4\le m_4$ （Jensen 或 Cauchy–Schwarz），若 $m_4\le M$ ，则
 
-$$
-E[S_n^4]\le3n^2M.
-$$
+$$E[S_n^4]\le3n^2M.$$
 
 对 $|S_n/n|\ge\varepsilon$ 使用四阶 Markov：
 
-$$
-P(|S_n/n|\ge\varepsilon)
-\le\frac{E[S_n^4]}{n^4\varepsilon^4}
-\le\frac{3M}{n^2\varepsilon^4}.
-$$
+$$P(|S_n/n|\ge\varepsilon) \le\frac{E[S_n^4]}{n^4\varepsilon^4} \le\frac{3M}{n^2\varepsilon^4}.$$
 
 右端关于 $n$ 可求和，第一 Borel–Cantelli 引理给出
 
-$$
-S_n/n\xrightarrow{a.s.}0.
-$$
+$$S_n/n\xrightarrow{a.s.}0.$$
 
 ### 26.8.1 对称 $\pm1$ 变量的精确账
 
 若 $X_i$ 等概率取 $\pm1$ ，则 $m_4=\sigma^2=1$ ，所以
 
-$$
-E[S_n^4]=n+3n(n-1)=3n^2-2n.
-$$
+$$E[S_n^4]=n+3n(n-1)=3n^2-2n.$$
 
 Python 对 $n\le12$ 穷举所有符号向量：
 
@@ -340,9 +255,7 @@ assert sup_tail[:, 1000].max() > sup_tail[:, 50000].max()
 
 `sup_tail[:, n]` 对应
 
-$$
-\sup_{m\ge n}|\bar X_m-1|
-$$
+$$\sup_{m\ge n}|\bar X_m-1|$$
 
 在已生成长度内的截断版本。它比只报告最后一个均值更接近强律的尾部语言。
 
@@ -359,25 +272,15 @@ $$
 
 设要估计
 
-$$
-I=E[g(X)]
-$$
+$$I=E[g(X)]$$
 
 且 $\sigma_g^2=\operatorname{Var}(g(X))<\infty$ 。取 iid 样本 $X_1,\dots,X_n$ ，估计量
 
-$$
-\widehat I_n=\frac1n\sum_{i=1}^ng(X_i)
-$$
+$$\widehat I_n=\frac1n\sum_{i=1}^ng(X_i)$$
 
 满足
 
-$$
-E[\widehat I_n]=I,
-\qquad
-\operatorname{Var}(\widehat I_n)=\frac{\sigma_g^2}{n},
-\qquad
-\operatorname{RMSE}(\widehat I_n)=\frac{\sigma_g}{\sqrt n}.
-$$
+$$E[\widehat I_n]=I, \qquad \operatorname{Var}(\widehat I_n)=\frac{\sigma_g^2}{n}, \qquad \operatorname{RMSE}(\widehat I_n)=\frac{\sigma_g}{\sqrt n}.$$
 
 大数定律给一致性，方差公式给误差尺度。两者不是同一件事：WLLN 只说误差概率趋零，$1/\sqrt n$ 进一步说明典型误差如何随样本量下降。
 
@@ -385,29 +288,19 @@ $$
 
 在正方形 $[0,1]^2$ 均匀取点，令
 
-$$
-B=\mathbf1\{U^2+V^2\le1\}.
-$$
+$$B=\mathbf1\{U^2+V^2\le1\}.$$
 
 因为四分之一单位圆面积为 $\pi/4$ ，
 
-$$
-p=E[B]=\frac\pi4,
-\qquad \pi=4E[B].
-$$
+$$p=E[B]=\frac\pi4, \qquad \pi=4E[B].$$
 
 估计量为
 
-$$
-\widehat\pi_n=4\bar B_n.
-$$
+$$\widehat\pi_n=4\bar B_n.$$
 
 其标准误差为
 
-$$
-\sigma_{\widehat\pi}
-=\frac{4\sqrt{p(1-p)}}{\sqrt n}.
-$$
+$$\sigma_{\widehat\pi} =\frac{4\sqrt{p(1-p)}}{\sqrt n}.$$
 
 Python 对 $n=100,10^4,10^6$ 重复实验并比较 RMSE：
 
@@ -428,45 +321,27 @@ assert 0.6 * sig / sqrt(n) < rmse < 1.5 * sig / sqrt(n)
 
 标准 Cauchy 分布密度为
 
-$$
-f(x)=\frac1{\pi(1+x^2)}.
-$$
+$$f(x)=\frac1{\pi(1+x^2)}.$$
 
 它不满足 $E|X|<\infty$ ，因为尾部按 $x^{-2}$ 衰减，$|x|f(x)$ 的积分呈对数发散。
 
 其特征函数为
 
-$$
-\varphi_X(t)=E[e^{itX}]=e^{-|t|}.
-$$
+$$\varphi_X(t)=E[e^{itX}]=e^{-|t|}.$$
 
 若 $X_1,\dots,X_n$ 为独立标准 Cauchy，样本均值的特征函数为
 
-$$
-\begin{aligned}
-\varphi_{\bar X_n}(t)
-&=E\left[e^{it(X_1+\cdots+X_n)/n}\right]\\
-&=\prod_{i=1}^n\varphi_X(t/n)\\
-&=\left(e^{-|t|/n}\right)^n
-=e^{-|t|}.
-\end{aligned}
-$$
+$$\begin{aligned} \varphi_{\bar X_n}(t) &=E\left[e^{it(X_1+\cdots+X_n)/n}\right]\\ &=\prod_{i=1}^n\varphi_X(t/n)\\ &=\left(e^{-|t|/n}\right)^n =e^{-|t|}. \end{aligned}$$
 
 由特征函数唯一性，
 
-$$
-\boxed{\bar X_n\overset d=X_1}
-$$
+$$\boxed{\bar X_n\overset d=X_1}$$
 
 对每个 $n$ 成立。样本均值的分布完全没有收缩，因此不可能依概率或几乎必然收敛到常数。
 
 特别地，
 
-$$
-P(|\bar X_n|>1)=P(|X_1|>1)
-=2\left(1-\left(\frac12+\frac{\arctan1}{\pi}\right)\right)
-=\frac12.
-$$
+$$P(|\bar X_n|>1)=P(|X_1|>1) =2\left(1-\left(\frac12+\frac{\arctan1}{\pi}\right)\right) =\frac12.$$
 
 Python 对 $n=10$ 与 $1000$ 做固定种子模拟：
 
@@ -478,9 +353,7 @@ assert abs(p10 - 0.5) < 0.05 and abs(p1000 - 0.5) < 0.05
 
 Julia 用逆变换
 
-$$
-X=\tan(\pi(U-1/2))
-$$
+$$X=\tan(\pi(U-1/2))$$
 
 生成 Cauchy 变量，独立检查同一结论。这个反例直接对应 Khinchin 强律的一阶矩条件。
 
@@ -488,24 +361,15 @@ $$
 
 样本均值只估计一个期望。经验分布函数则试图恢复整个 CDF：
 
-$$
-F_n(x)=\frac1n\sum_{i=1}^n\mathbf1\{X_i\le x\}.
-$$
+$$F_n(x)=\frac1n\sum_{i=1}^n\mathbf1\{X_i\le x\}.$$
 
 对每个固定 $x$ ，指示变量 iid 且均值为 $F(x)$ ，强律给出
 
-$$
-F_n(x)\xrightarrow{a.s.}F(x).
-$$
+$$F_n(x)\xrightarrow{a.s.}F(x).$$
 
 Glivenko–Cantelli 定理进一步加强为一致收敛：
 
-$$
-\boxed{
-D_n=\sup_{x\in\mathbb R}|F_n(x)-F(x)|
-\xrightarrow{a.s.}0.
-}
-$$
+$$\boxed{ D_n=\sup_{x\in\mathbb R}|F_n(x)-F(x)| \xrightarrow{a.s.}0. }$$
 
 “逐点收敛”到“一致收敛”不是自动升级；定理需要同时控制所有 $x$ 。连续分布下常用顺序统计量和网格把问题化为有限多个点的控制。
 
@@ -524,25 +388,15 @@ ds.append(max(np.max(i / n - x),
 
 强律证明常需要控制一段部分和路径的最大值，而不只是终点。设 $X_i$ 独立、均值为 0、方差有限，令
 
-$$
-S_k=X_1+\cdots+X_k.
-$$
+$$S_k=X_1+\cdots+X_k.$$
 
 Kolmogorov 不等式为
 
-$$
-\boxed{
-P\left(\max_{1\le k\le n}|S_k|\ge\lambda\right)
-\le\frac{\operatorname{Var}(S_n)}{\lambda^2}
-=\frac{\sum_{i=1}^n\operatorname{Var}(X_i)}{\lambda^2}.
-}
-$$
+$$\boxed{ P\left(\max_{1\le k\le n}|S_k|\ge\lambda\right) \le\frac{\operatorname{Var}(S_n)}{\lambda^2} =\frac{\sum_{i=1}^n\operatorname{Var}(X_i)}{\lambda^2}. }$$
 
 若只控制终点，Chebyshev 只给
 
-$$
-P(|S_n|\ge\lambda)\le\frac{\operatorname{Var}(S_n)}{\lambda^2}.
-$$
+$$P(|S_n|\ge\lambda)\le\frac{\operatorname{Var}(S_n)}{\lambda^2}.$$
 
 Kolmogorov 把左侧换成整个路径最大值，而右侧不增加因子，是强收敛证明的重要工具。
 
@@ -561,10 +415,7 @@ assert prob <= F(n, lam * lam)
 
 同时检查
 
-$$
-P\left(\max_{k\le n}|S_k|\ge\lambda\right)
-\ge P(|S_n|\ge\lambda),
-$$
+$$P\left(\max_{k\le n}|S_k|\ge\lambda\right) \ge P(|S_n|\ge\lambda),$$
 
 因为终点越界本身就是路径最大值越界的一种情况。这里的有限枚举验证实现，不是一般独立非对称情形的证明。
 
@@ -572,49 +423,33 @@ $$
 
 Khinchin 强律的核心截断为
 
-$$
-Y_i=X_i\mathbf1\{|X_i|\le i\}.
-$$
+$$Y_i=X_i\mathbf1\{|X_i|\le i\}.$$
 
 若原变量与截断变量不同，则必有 $|X_i|>i$ 。要使二者最终几乎必然相同，由第一 Borel–Cantelli 引理，只需
 
-$$
-\sum_{i=1}^\infty P(|X_i|>i)<\infty.
-$$
+$$\sum_{i=1}^\infty P(|X_i|>i)<\infty.$$
 
 iid 时，这个级数为
 
-$$
-\sum_{i=1}^\infty P(|X_1|>i).
-$$
+$$\sum_{i=1}^\infty P(|X_1|>i).$$
 
 对任意非负随机变量 $W$ ，
 
-$$
-\sum_{i=1}^\infty P(W>i)
-\le E[W].
-$$
+$$\sum_{i=1}^\infty P(W>i) \le E[W].$$
 
 可以用指示函数和 Tonelli 定理看出：
 
-$$
-\sum_{i=1}^\infty\mathbf1\{W>i\}\le W,
-$$
+$$\sum_{i=1}^\infty\mathbf1\{W>i\}\le W,$$
 
 逐项取期望即可。因此有限一阶矩给出可求和条件。
 
 对形状 $\alpha=1.5$ 、下界 1 的 Pareto 分布，
 
-$$
-P(X>i)=i^{-1.5}\quad(i\ge1),
-\qquad E[X]=\frac\alpha{\alpha-1}=3.
-$$
+$$P(X>i)=i^{-1.5}\quad(i\ge1), \qquad E[X]=\frac\alpha{\alpha-1}=3.$$
 
 所以
 
-$$
-\sum_{i=1}^\infty P(X>i)=\zeta(1.5)\approx2.612<3.
-$$
+$$\sum_{i=1}^\infty P(X>i)=\zeta(1.5)\approx2.612<3.$$
 
 Python 计算长有限和并检查上界：
 

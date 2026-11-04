@@ -57,11 +57,7 @@ $<\kappa$ 大小的碎片。这与第 94 章可测基数的情形形成维度跃
 那里 $\lambda=\kappa$ 、小集是单点、精良退化为非平凡性
 （单点集的上锥 = 非平凡性条件）。换言之：
 
-$$
-\text{非平凡}:\ \kappa\text{-完全超滤}\quad\longrightarrow\quad
-\text{精良}:\ \text{上锥全测一}\quad\longrightarrow\quad
-\text{正规}:\ \text{回归函数常值化}.
-$$
+$$\text{非平凡}:\ \kappa\text{-完全超滤}\quad\longrightarrow\quad \text{精良}:\ \text{上锥全测一}\quad\longrightarrow\quad \text{正规}:\ \text{回归函数常值化}.$$
 
 三层要求的强度逐级递增，而它们的**超幂语法**逐级对应：非平凡
 对应临界点存在；精良对应恒同函数表示 $\sup j``\lambda$ 附近的
@@ -87,11 +83,7 @@ $\lambda<j(\kappa)$ 、且 $M$ 对 $\lambda$ -序列封闭
 > 的每个 $<\kappa$ 子集有模型 ⟹ $\Sigma$ 有模型。
 
 **(2)⟹(1)**：在 $X=\mathcal P_\kappa(\lambda)$ 上取滤子
-$$
-F=\{x\subseteq\mathcal P_\kappa(\lambda) : \exists y
-\in\mathcal P_\kappa(\lambda)\ \forall z\ (y\subseteq z\to
-z\in x)\}
-$$
+$$F=\{x\subseteq\mathcal P_\kappa(\lambda) : \exists y \in\mathcal P_\kappa(\lambda)\ \forall z\ (y\subseteq z\to z\in x)\}$$
 
 （「含某个固定小集的扩张集」）。$|\mathcal P_\kappa(\lambda)|< \kappa$ 的理想是 $\kappa$ -可加的，故 $F$ 是 $\kappa$ -完全
 滤子；扩展成 $\kappa$ -完全超滤子 $U$ 后，精良性立得。∎
@@ -102,9 +94,7 @@ $U_1$ ，经双射搬到 $\mathcal P_\kappa(\lambda)$ 的索引集合上得
 $U$ 。对每个 $s\in\mathcal P_\kappa(\lambda)$ 令
 $\mathfrak A_s$ 为 $\Sigma_s$ （$s$ 编码的 $<\kappa$ 子集）
 的模型。取超积
-$$
-\mathfrak A=\prod_U\mathfrak A_s.
-$$
+$$\mathfrak A=\prod_U\mathfrak A_s.$$
 
 **$\mathcal L_{\kappa,\omega}$ 版 Łoś 定理**：对
 $\mathcal L_{\kappa,\omega}$ 语句（合取/析取长度 $<\kappa$ ），
@@ -121,14 +111,10 @@ $\Sigma$ 包含：结构 $(X,\langle a\rangle)_{a\in X}$ 的
 $|\Sigma_0|<\kappa$ 的子集有模型——取
 $A_{\Sigma_0}=\bigcap\{[P_a(d)\in\Sigma_0]\}\supseteq \bigcap a\in F$ 非空（$\kappa$ -完全性），用其中一点解释
 $d$ 。由 (3) 取整模型
-$$
-\mathfrak A=(X,\langle a\rangle,\ d)_{a\in X},
-$$
+$$\mathfrak A=(X,\langle a\rangle,\ d)_{a\in X},$$
 
 定义
-$$
-U=\{a\subseteq X : \mathfrak A\models P_a(d)\}.
-$$
+$$U=\{a\subseteq X : \mathfrak A\models P_a(d)\}.$$
 
 **断言二**：$F\subseteq U$ 且 $U$ 是 $\kappa$ -完全超滤子——
 四条逐一验证（完全性：$<\kappa$ 长 $P_a$ 合取仍是
@@ -158,10 +144,7 @@ $\mathcal L_{\kappa,\omega}$ 语句，在 $\mathfrak A$ 中为真；
 **证明**。反设 $V=L[A]$ （WLOG $A$ 是序数集），$\kappa$
 强紧，$\lambda\ge\kappa$ 足够大使 $A\subseteq\lambda$ 。
 在 $\lambda^{+}$ 上取 $\lambda^{+}$ -完全滤子
-$$
-F=\{x\subseteq\lambda^{+} : |\lambda^{+}\setminus x|\le
-\lambda\}
-$$
+$$F=\{x\subseteq\lambda^{+} : |\lambda^{+}\setminus x|\le \lambda\}$$
 （余 $\le\lambda$ 集滤子），用定理 1.26(2) 扩
 成 $\lambda^{+}$ -完全超滤子 $U$ 。则
 $\bigcap U\ni X$ （$|X|=\lambda^{+}$ ），$U$ 的 $\kappa$ -
@@ -204,10 +187,7 @@ Laver Diamond（第 100 章）中还会重演。
 > $x\subseteq\lambda$ 都有
 > $\{\alpha : x\cap\alpha\in M_\alpha\}\in D$ ——弱钻石序列。
 > 由此
-> $$
-> \mathcal P(\lambda)=\bigcup_{\alpha<\lambda}\mathcal
-> P(M_\alpha),\qquad 2^\lambda\le\lambda^{<\kappa}=\lambda^+.
-> $$
+> $$\mathcal P(\lambda)=\bigcup_{\alpha<\lambda}\mathcal P(M_\alpha),\qquad 2^\lambda\le\lambda^{<\kappa}=\lambda^+.$$
 
 **证明**（骨架）。(a) $D$ 的存在性：在
 $\mathcal P_\kappa(\lambda)$ 上取精良测度 $U$ ；在超幂中取

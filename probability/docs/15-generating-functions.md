@@ -8,23 +8,17 @@
 
 若 $X$ 取非负整数值，定义
 
-$$
-G_X(s)=E[s^X]=\sum_{k=0}^{\infty}P(X=k)s^k.
-$$
+$$G_X(s)=E[s^X]=\sum_{k=0}^{\infty}P(X=k)s^k.$$
 
 当 $|s|\le1$ 时，
 
-$$
-\sum_kP(X=k)|s|^k\le\sum_kP(X=k)=1,
-$$
+$$\sum_kP(X=k)|s|^k\le\sum_kP(X=k)=1,$$
 
 所以级数至少单位圆盘上绝对收敛。对某些分布，收敛域可以更大。
 
 PGF 的系数直接恢复 pmf：
 
-$$
-P(X=k)=\frac{G_X^{(k)}(0)}{k!}.
-$$
+$$P(X=k)=\frac{G_X^{(k)}(0)}{k!}.$$
 
 因此若两个 PGF 在 0 的某个邻域内作为幂级数相等，则全部概率逐一相等。这里使用了解析函数系数唯一性，而不是只比较函数在某个点的值。
 
@@ -39,11 +33,7 @@ $$
 
 在允许逐项求导的区域内，
 
-$$
-G_X'(1)=E[X],
-\qquad
-G_X''(1)=E[X(X-1)].
-$$
+$$G_X'(1)=E[X], \qquad G_X''(1)=E[X(X-1)].$$
 
 更一般地，第 $r$ 阶导数给出阶乘矩 $E[X(X-1)\cdots(X-r+1)]$ 。若端点导数不直接存在，需要在适当条件下取 $s\uparrow1$ 的极限；不能无条件交换无穷求和与求导。
 
@@ -62,30 +52,17 @@ assert fact2_direct == n * (n - 1) * p ** 2
 
 若 $X,Y$ 独立且都取非负整数值，则
 
-$$
-\begin{aligned}
-G_{X+Y}(s)
-&=E[s^{X+Y}]
-=E[s^X]E[s^Y]\\
-&=G_X(s)G_Y(s).
-\end{aligned}
-$$
+$$\begin{aligned} G_{X+Y}(s) &=E[s^{X+Y}] =E[s^X]E[s^Y]\\ &=G_X(s)G_Y(s). \end{aligned}$$
 
 期望可分解的关键是独立性。乘积级数中 $s^k$ 的系数为
 
-$$
-\sum_{j=0}^kP(X=j)P(Y=k-j),
-$$
+$$\sum_{j=0}^kP(X=j)P(Y=k-j),$$
 
 恰是独立和的卷积公式。这解释了为什么生成函数能把逐点卷积变成代数乘法。
 
 对独立 Poisson 变量，
 
-$$
-G_{X+Y}(s)
-=e^{\lambda_X(s-1)}e^{\lambda_Y(s-1)}
-=e^{(\lambda_X+\lambda_Y)(s-1)}.
-$$
+$$G_{X+Y}(s) =e^{\lambda_X(s-1)}e^{\lambda_Y(s-1)} =e^{(\lambda_X+\lambda_Y)(s-1)}.$$
 
 由 PGF 唯一性，$X+Y\sim\operatorname{Poisson}(\lambda_X+\lambda_Y)$ 。这同时给出分布形状和参数，不只是均值相加。
 
@@ -104,35 +81,25 @@ for k in range(0, 25):
 
 PGF 是普通生成函数的概率特例。对数列 $a_0,a_1,\ldots$ ，定义
 
-$$
-G_a(s)=\sum_{n\ge0}a_ns^n
-$$
+$$G_a(s)=\sum_{n\ge0}a_ns^n$$
 
 （在其收敛域内）。生成函数不仅处理概率，也能把递推变成代数方程。
 
 设 $F_0=0,F_1=1,F_n=F_{n-1}+F_{n-2}$ 。令 $G(s)=\sum_{n\ge0}F_ns^n$ 。递推给出
 
-$$
-G(s)-s=sG(s)+s^2G(s),
-$$
+$$G(s)-s=sG(s)+s^2G(s),$$
 
 所以
 
-$$
-G(s)=\frac{s}{1-s-s^2}.
-$$
+$$G(s)=\frac{s}{1-s-s^2}.$$
 
 令
 
-$$
-\phi=\frac{1+\sqrt5}{2},\qquad \psi=\frac{1-\sqrt5}{2}.
-$$
+$$\phi=\frac{1+\sqrt5}{2},\qquad \psi=\frac{1-\sqrt5}{2}.$$
 
 因 $1-s-s^2=(1-\phi s)(1-\psi s)$ ，部分分式和几何级数展开给出 Binet 公式
 
-$$
-F_n=\frac{\phi^n-\psi^n}{\sqrt5}.
-$$
+$$F_n=\frac{\phi^n-\psi^n}{\sqrt5}.$$
 
 无理数表达式组合后仍是整数。推导中的级数等式先在 $|s|<1/\phi$ 内成立，保证收敛。
 
@@ -152,47 +119,29 @@ assert all(fib[n] == coeffs[n - 1] for n in range(1, 30))
 
 对一般实随机变量，定义
 
-$$
-M_X(t)=E[e^{tX}]
-$$
+$$M_X(t)=E[e^{tX}]$$
 
 于使期望有限的实数 $t$ 。由于 $e^{0X}=1$ ，总有 $M_X(0)=1$ 。但除 $t=0$ 外，期望可能为无穷。
 
 若 MGF 在某个 $(-\delta,\delta)$ 内有限，则可以在该邻域展开
 
-$$
-M_X(t)=E\left[\sum_{n=0}^{\infty}\frac{t^nX^n}{n!}\right]
-=\sum_{n=0}^{\infty}E[X^n]\frac{t^n}{n!}.
-$$
+$$M_X(t)=E\left[\sum_{n=0}^{\infty}\frac{t^nX^n}{n!}\right] =\sum_{n=0}^{\infty}E[X^n]\frac{t^n}{n!}.$$
 
 这里指数矩提供了交换期望与求和所需的控制。于是
 
-$$
-M_X^{(n)}(0)=E[X^n],
-\qquad
-\operatorname{Var}(X)=M_X''(0)-M_X'(0)^2.
-$$
+$$M_X^{(n)}(0)=E[X^n], \qquad \operatorname{Var}(X)=M_X''(0)-M_X'(0)^2.$$
 
 常见闭式包括
 
-$$
-M_{N(\mu,\sigma^2)}(t)=e^{\mu t+\sigma^2t^2/2},
-$$
+$$M_{N(\mu,\sigma^2)}(t)=e^{\mu t+\sigma^2t^2/2},$$
 
-$$
-M_{\operatorname{Pois}(\lambda)}(t)=e^{\lambda(e^t-1)},
-$$
+$$M_{\operatorname{Pois}(\lambda)}(t)=e^{\lambda(e^t-1)},$$
 
-$$
-M_{\operatorname{Gamma}(k,\theta)}(t)=(1-\theta t)^{-k},
-\qquad t<1/\theta.
-$$
+$$M_{\operatorname{Gamma}(k,\theta)}(t)=(1-\theta t)^{-k}, \qquad t<1/\theta.$$
 
 若 $X,Y$ 独立，且相应 MGF 存在，则
 
-$$
-M_{X+Y}(t)=M_X(t)M_Y(t).
-$$
+$$M_{X+Y}(t)=M_X(t)M_Y(t).$$
 
 **唯一性定理**：若两个分布在 0 的某个邻域内都有有限且相等的 MGF，则它们同分布。仅知道 MGF 在某个非零点相等，或只知道若干矩相等，不满足这个定理的条件。
 
@@ -212,9 +161,7 @@ m2 = (mgf(h) - 2 * mgf(0.0) + mgf(-h)) / h ** 2
 
 对标准 Cauchy，若 $t>0$ ，在正尾部 $e^{tx}/(1+x^2)$ 增长很快，因而
 
-$$
-E[e^{tX}]=\infty.
-$$
+$$E[e^{tX}]=\infty.$$
 
 若 $t<0$ ，负尾部同样使期望发散。所以其 MGF 只在 $t=0$ 有定义，根本不存在 0 的开邻域，不能使用 MGF 求矩或唯一性定理。
 
@@ -226,49 +173,29 @@ $$
 
 定义
 
-$$
-\varphi_X(t)=E[e^{itX}]
-=E[\cos(tX)]+iE[\sin(tX)],\qquad t\in\mathbb R.
-$$
+$$\varphi_X(t)=E[e^{itX}] =E[\cos(tX)]+iE[\sin(tX)],\qquad t\in\mathbb R.$$
 
 由于
 
-$$
-|e^{itX}|=\sqrt{\cos^2(tX)+\sin^2(tX)}=1,
-$$
+$$|e^{itX}|=\sqrt{\cos^2(tX)+\sin^2(tX)}=1,$$
 
 两个实部积分都绝对可积，所以每个实随机变量的 CF 都在整个实轴上存在。并且
 
-$$
-\varphi_X(0)=1,
-\qquad
-|\varphi_X(t)|\le1,
-\qquad
-\varphi_X(-t)=\overline{\varphi_X(t)}.
-$$
+$$\varphi_X(0)=1, \qquad |\varphi_X(t)|\le1, \qquad \varphi_X(-t)=\overline{\varphi_X(t)}.$$
 
 若 $E|X^n|<\infty$ ，可在导数条件下得到
 
-$$
-\varphi_X^{(n)}(0)=i^nE[X^n].
-$$
+$$\varphi_X^{(n)}(0)=i^nE[X^n].$$
 
 与 MGF 相比，矩不存在时 CF 依然存在，只是相应的零点导数公式不可用。
 
 独立和仍满足
 
-$$
-\varphi_{X+Y}(t)=\varphi_X(t)\varphi_Y(t).
-$$
+$$\varphi_{X+Y}(t)=\varphi_X(t)\varphi_Y(t).$$
 
 例如
 
-$$
-\varphi_{N(\mu,\sigma^2)}(t)
-=\exp(i\mu t-\sigma^2t^2/2),
-\qquad
-\varphi_{\operatorname{Cauchy}}(t)=e^{-|t|}.
-$$
+$$\varphi_{N(\mu,\sigma^2)}(t) =\exp(i\mu t-\sigma^2t^2/2), \qquad \varphi_{\operatorname{Cauchy}}(t)=e^{-|t|}.$$
 
 两式立刻给出正态和 Cauchy 的独立和稳定性。同文件 ⑦ 节用实值闭式检查乘积：
 

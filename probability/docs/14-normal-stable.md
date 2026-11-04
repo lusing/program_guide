@@ -8,35 +8,23 @@
 
 若 $\mu\in\mathbb R$ 、$\sigma>0$ ，正态分布 $N(\mu,\sigma^2)$ 的密度为
 
-$$
-f(x)=\frac1{\sqrt{2\pi\sigma^2}}
-\exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right).
-$$
+$$f(x)=\frac1{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right).$$
 
 先考虑标准正态
 
-$$
-\varphi(x)=\frac1{\sqrt{2\pi}}e^{-x^2/2}.
-$$
+$$\varphi(x)=\frac1{\sqrt{2\pi}}e^{-x^2/2}.$$
 
 要证明归一化常数，令
 
-$$
-I=\int_{-\infty}^{\infty}e^{-x^2/2}\,dx.
-$$
+$$I=\int_{-\infty}^{\infty}e^{-x^2/2}\,dx.$$
 
 被积函数为正，可以把 $I^2$ 写成平面上的二重积分：
 
-$$
-I^2=\iint_{\mathbb R^2}e^{-(x^2+y^2)/2}\,dx\,dy.
-$$
+$$I^2=\iint_{\mathbb R^2}e^{-(x^2+y^2)/2}\,dx\,dy.$$
 
 改用极坐标，面积元为 $r\,dr\,d\theta$ ，所以
 
-$$
-I^2=\int_0^{2\pi}\int_0^\infty e^{-r^2/2}r\,dr\,d\theta
-=2\pi[-e^{-r^2/2}]_0^\infty=2\pi.
-$$
+$$I^2=\int_0^{2\pi}\int_0^\infty e^{-r^2/2}r\,dr\,d\theta =2\pi[-e^{-r^2/2}]_0^\infty=2\pi.$$
 
 因为 $I>0$ ，故 $I=\sqrt{2\pi}$ 。这里 Jacobian 中的 $r$ 使径向积分具有初等原函数，这是极坐标方法有效的关键。
 
@@ -56,36 +44,23 @@ for R in (3.0, 5.0):
 
 若 $Z\sim N(0,1)$ ，则
 
-$$
-X=\mu+\sigma Z\sim N(\mu,\sigma^2).
-$$
+$$X=\mu+\sigma Z\sim N(\mu,\sigma^2).$$
 
 反之 $Z=(X-\mu)/\sigma$ 。标准正态关于 0 对称，所以所有存在的奇数阶中心矩均为 0。由分部积分，
 
-$$
-E[Z^{2m}]=(2m-1)E[Z^{2m-2}],
-$$
+$$E[Z^{2m}]=(2m-1)E[Z^{2m-2}],$$
 
 从而
 
-$$
-E[Z^{2m}]=(2m-1)!!,
-\qquad m=0,1,2,\ldots.
-$$
+$$E[Z^{2m}]=(2m-1)!!, \qquad m=0,1,2,\ldots.$$
 
 前几项为 $1,1,3,15,105,945$ 。第 16 章会用对尺度参数求导再次得到这条链。
 
 常用区间概率为
 
-$$
-P(|Z|\le1)\approx0.6827,
-$$
+$$P(|Z|\le1)\approx0.6827,$$
 
-$$
-P(|Z|\le2)\approx0.9545,
-\qquad
-P(|Z|\le3)\approx0.9973.
-$$
+$$P(|Z|\le2)\approx0.9545, \qquad P(|Z|\le3)\approx0.9973.$$
 
 这些是数值积分结果，不是恰好等于 68%、95%、99.7% 的定义。Python 代码同时检查归一化、均值、方差和双阶乘：
 
@@ -103,15 +78,11 @@ for m in range(1, 7):
 
 设 $X\sim N(\mu_X,\sigma_X^2)$ 、$Y\sim N(\mu_Y,\sigma_Y^2)$ 且独立，则
 
-$$
-X+Y\sim N(\mu_X+\mu_Y,\sigma_X^2+\sigma_Y^2).
-$$
+$$X+Y\sim N(\mu_X+\mu_Y,\sigma_X^2+\sigma_Y^2).$$
 
 先看两个独立标准正态。其和密度的卷积指数为
 
-$$
-t^2+(z-t)^2=2(t-z/2)^2+\frac{z^2}{2}.
-$$
+$$t^2+(z-t)^2=2(t-z/2)^2+\frac{z^2}{2}.$$
 
 配方后，依赖 $t$ 的部分仍是一个高斯积分，剩下关于 $z$ 的因子恰为 $N(0,2)$ 的密度。一般情形可经标准化和平移归到这一计算；第 15 章也会用特征函数一行证明。
 
@@ -131,42 +102,27 @@ for z in (-2, -1, 0, 1, 2, 3, 4, 5, 8):
 
 若 $X\sim N(\mu,\sigma^2)$ ，则
 
-$$
-Y=e^X
-$$
+$$Y=e^X$$
 
 服从参数为 $(\mu,\sigma^2)$ 的对数正态分布。因为 $Y>0$ ，它常用于价格、规模和收入等正变量模型，但是否合适必须检查数据生成机制。
 
 对 $y>0$ ，$X=\log Y$ 的 Jacobian 为 $1/y$ ，故密度为
 
-$$
-f_Y(y)=\frac1{y\sigma\sqrt{2\pi}}
-\exp\left(-\frac{(\log y-\mu)^2}{2\sigma^2}\right).
-$$
+$$f_Y(y)=\frac1{y\sigma\sqrt{2\pi}} \exp\left(-\frac{(\log y-\mu)^2}{2\sigma^2}\right).$$
 
 由正态 MGF 或配方，
 
-$$
-E[Y^r]=E[e^{rX}]
-=\exp\left(r\mu+\frac12r^2\sigma^2\right).
-$$
+$$E[Y^r]=E[e^{rX}] =\exp\left(r\mu+\frac12r^2\sigma^2\right).$$
 
 所以
 
-$$
-E[Y]=e^{\mu+\sigma^2/2},
-$$
+$$E[Y]=e^{\mu+\sigma^2/2},$$
 
-$$
-\operatorname{Var}(Y)
-=(e^{\sigma^2}-1)e^{2\mu+\sigma^2}.
-$$
+$$\operatorname{Var}(Y) =(e^{\sigma^2}-1)e^{2\mu+\sigma^2}.$$
 
 中位数却是 $e^\mu$ ，因为单调变换保持中位数。于是
 
-$$
-\operatorname{median}(Y)=e^\mu<E[Y],
-$$
+$$\operatorname{median}(Y)=e^\mu<E[Y],$$
 
 右偏分布的均值被右尾拉高。不能把对数尺度的 $\mu$ 直接当作原尺度均值的对数。
 
@@ -182,9 +138,7 @@ assert mean_ln > exp(mu)
 
 对数正态虽然所有阶矩都存在，但对任意 $t>0$ ，
 
-$$
-E[e^{tY}]=E[\exp(te^X)]=\infty,
-$$
+$$E[e^{tY}]=E[\exp(te^X)]=\infty,$$
 
 因为 $te^x$ 最终远大于 $x^2$ 的线性量级不足以抵消高斯指数。故其 MGF 不存在。这是“所有矩存在”与“矩生成函数存在”之间的重要区别。
 
@@ -192,35 +146,23 @@ $$
 
 标准 Cauchy 密度为
 
-$$
-f(x)=\frac1{\pi(1+x^2)},\qquad x\in\mathbb R.
-$$
+$$f(x)=\frac1{\pi(1+x^2)},\qquad x\in\mathbb R.$$
 
 归一化来自
 
-$$
-\int_{-\infty}^{\infty}\frac{dx}{\pi(1+x^2)}
-=\frac1\pi[\arctan x]_{-\infty}^{\infty}=1.
-$$
+$$\int_{-\infty}^{\infty}\frac{dx}{\pi(1+x^2)} =\frac1\pi[\arctan x]_{-\infty}^{\infty}=1.$$
 
 CDF 与中位数分别为
 
-$$
-F(x)=\frac12+\frac1\pi\arctan x,
-\qquad \operatorname{median}(X)=0.
-$$
+$$F(x)=\frac12+\frac1\pi\arctan x, \qquad \operatorname{median}(X)=0.$$
 
 但
 
-$$
-E|X|=\int_{-\infty}^{\infty}\frac{|x|}{\pi(1+x^2)}dx=\infty,
-$$
+$$E|X|=\int_{-\infty}^{\infty}\frac{|x|}{\pi(1+x^2)}dx=\infty,$$
 
 因为当 $|x|$ 大时，被积函数与 $1/(\pi|x|)$ 同阶。因此 $E[X]$ 不存在，而不是“均值为 0”。密度关于 0 对称只说明柯西主值为 0：
 
-$$
-\lim_{A\to\infty}\int_{-A}^A\frac{x}{\pi(1+x^2)}dx=0.
-$$
+$$\lim_{A\to\infty}\int_{-A}^A\frac{x}{\pi(1+x^2)}dx=0.$$
 
 对称窗口的特殊抵消不能代替绝对可积条件。
 
@@ -239,9 +181,7 @@ $[\log(1+x^2)]_1^B/(2\pi)$ ，随 $B$ 对数发散。窗口从 10 增到 100 时
 
 称非退化随机变量 $X$ 的分布为**严格稳定分布**，若对任意独立同分布副本 $X_1,\ldots,X_n$ ，存在 $a_n>0$ 和 $b_n$ ，使得
 
-$$
-X_1+\cdots+X_n\overset d=a_nX+b_n.
-$$
+$$X_1+\cdots+X_n\overset d=a_nX+b_n.$$
 
 通常还要求适当对称或中心化为严格稳定；更一般的稳定分布定义允许中心项。常见例子有：
 
@@ -250,16 +190,11 @@ $$
 
 Cauchy 的特征函数是
 
-$$
-\varphi_X(t)=E[e^{itX}]=e^{-|t|}.
-$$
+$$\varphi_X(t)=E[e^{itX}]=e^{-|t|}.$$
 
 独立和的特征函数为
 
-$$
-\varphi_{S_n}(t)=e^{-n|t|}
-=\varphi_X(nt),
-$$
+$$\varphi_{S_n}(t)=e^{-n|t|} =\varphi_X(nt),$$
 
 这正是 $S_n\overset d=nX$ 。同文件对两个独立 Cauchy 检查同一闭式：
 

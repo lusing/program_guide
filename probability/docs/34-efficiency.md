@@ -27,19 +27,13 @@
 
 估计量 $T$ 无偏，是指
 
-$$
-E_\theta[T]=\tau(\theta),
-\qquad \text{对所有 }\theta\in\Theta.
-$$
+$$E_\theta[T]=\tau(\theta), \qquad \text{对所有 }\theta\in\Theta.$$
 
 无偏性是整个参数空间上的约束，不是只在某一个 guessed 真值处成立。
 
 若 $\mathcal U_\tau$ 是所有具有有限二阶矩的无偏估计量之集合，而 $T^*\in\mathcal U_\tau$ 满足
 
-$$
-\operatorname{Var}_\theta(T^*)
-\le \operatorname{Var}_\theta(T)
-$$
+$$\operatorname{Var}_\theta(T^*) \le \operatorname{Var}_\theta(T)$$
 
 对所有 $\theta$ 和所有 $T\in\mathcal U_\tau$ 成立，则称 $T^*$ 为一致最小方差无偏估计量，简称 UMVU。
 
@@ -65,9 +59,7 @@ UMVU 不排除某个有偏估计具有更小 MSE。
 
 定义条件化估计量
 
-$$
-U=E[T\mid S].
-$$
+$$U=E[T\mid S].$$
 
 充分性保证给定 $S$ 后数据条件分布不依赖 $\theta$ ，所以 $U$ 可以作为不依赖未知参数的统计量实际计算。
 
@@ -77,12 +69,7 @@ $$
 
 由塔性质，
 
-$$
-E_\theta[U]
-=E_\theta[E[T\mid S]]
-=E_\theta[T]
-=\tau(\theta).
-$$
+$$E_\theta[U] =E_\theta[E[T\mid S]] =E_\theta[T] =\tau(\theta).$$
 
 所以条件化保持无偏。
 
@@ -90,22 +77,11 @@ $$
 
 由全方差公式，
 
-$$
-\operatorname{Var}_\theta(T)
-=\operatorname{Var}_\theta(E[T\mid S])
-+E_\theta[\operatorname{Var}_\theta(T\mid S)].
-$$
+$$\operatorname{Var}_\theta(T) =\operatorname{Var}_\theta(E[T\mid S]) +E_\theta[\operatorname{Var}_\theta(T\mid S)].$$
 
 即
 
-$$
-\boxed{
-\operatorname{Var}_\theta(T)
-=\operatorname{Var}_\theta(U)
-+E_\theta[\operatorname{Var}_\theta(T\mid S)]
-\ge \operatorname{Var}_\theta(U).
-}
-$$
+$$\boxed{ \operatorname{Var}_\theta(T) =\operatorname{Var}_\theta(U) +E_\theta[\operatorname{Var}_\theta(T\mid S)] \ge \operatorname{Var}_\theta(U). }$$
 
 减少的部分恰是“给定充分统计量后仍残留的随机性”。
 
@@ -121,41 +97,29 @@ $$
 
 最简单的无偏估计量是
 
-$$
-T=X_1.
-$$
+$$T=X_1.$$
 
 它满足 $E_p[T]=p$ ，但完全丢弃了其余 $n-1$ 个观测。
 
 令
 
-$$
-K=\sum_{i=1}^nX_i.
-$$
+$$K=\sum_{i=1}^nX_i.$$
 
 $K$ 是充分统计量。
 
 由交换对称性，给定 $K=k$ 时，所有恰有 $k$ 个 1 的序列等可能，因此
 
-$$
-E[X_1\mid K=k]=\frac kn.
-$$
+$$E[X_1\mid K=k]=\frac kn.$$
 
 于是 Rao–Blackwell 化得到
 
-$$
-U=E[X_1\mid K]=\frac Kn=\bar X.
-$$
+$$U=E[X_1\mid K]=\frac Kn=\bar X.$$
 
 两者的方差分别为
 
-$$
-\operatorname{Var}_p(X_1)=p(1-p),
-$$
+$$\operatorname{Var}_p(X_1)=p(1-p),$$
 
-$$
-\operatorname{Var}_p(\bar X)=\frac{p(1-p)}n.
-$$
+$$\operatorname{Var}_p(\bar X)=\frac{p(1-p)}n.$$
 
 Python 通过完整枚举 $2^4$ 个样本点验证这条改进，而不是模拟近似：
 
@@ -190,13 +154,7 @@ assert rb_variance == p * (1 - p) / n
 
 统计量 $S$ 完备，是指对任意满足可积条件的函数 $h$ ，
 
-$$
-E_\theta[h(S)]=0
-\quad\text{对所有 }\theta
-\quad\Longrightarrow\quad
-h(S)=0
-\quad\text{几乎必然，对每个 }\theta.
-$$
+$$E_\theta[h(S)]=0 \quad\text{对所有 }\theta \quad\Longrightarrow\quad h(S)=0 \quad\text{几乎必然，对每个 }\theta.$$
 
 完备性不是说“数据被完整记录”，而是说该统计量的分布族没有非平凡的、在所有参数下均值为零的函数。
 
@@ -206,38 +164,25 @@ $$
 
 定义
 
-$$
-U^*=E[T_0\mid S].
-$$
+$$U^*=E[T_0\mid S].$$
 
 对任意另一个无偏估计量 $T$ ，定义
 
-$$
-U_T=E[T\mid S].
-$$
+$$U_T=E[T\mid S].$$
 
 两者都无偏，所以
 
-$$
-E_\theta[U^*-U_T]=0
-\qquad \forall\theta.
-$$
+$$E_\theta[U^*-U_T]=0 \qquad \forall\theta.$$
 
 而 $U^*-U_T$ 是 $S$ 的函数。
 
 由完备性，
 
-$$
-U^*=U_T\quad\text{几乎必然}.
-$$
+$$U^*=U_T\quad\text{几乎必然}.$$
 
 Rao–Blackwell 又给出
 
-$$
-\operatorname{Var}_\theta(U^*)
-=\operatorname{Var}_\theta(U_T)
-\le \operatorname{Var}_\theta(T).
-$$
+$$\operatorname{Var}_\theta(U^*) =\operatorname{Var}_\theta(U_T) \le \operatorname{Var}_\theta(T).$$
 
 因此 $U^*$ 是 UMVU。
 
@@ -251,15 +196,11 @@ $$
 
 Bernoulli 样本中
 
-$$
-K=\sum_iX_i\sim\operatorname{Bin}(n,p).
-$$
+$$K=\sum_iX_i\sim\operatorname{Bin}(n,p).$$
 
 若
 
-$$
-E_p[h(K)]=\sum_{k=0}^n h(k)\binom nk p^k(1-p)^{n-k}=0
-$$
+$$E_p[h(K)]=\sum_{k=0}^n h(k)\binom nk p^k(1-p)^{n-k}=0$$
 
 对所有 $0<p<1$ 成立，除以 $(1-p)^n$ ，可知一个关于 $p/(1-p)$ 的多项式恒为零。
 
@@ -279,15 +220,11 @@ $$
 
 完整双参数正态族给出完备充分统计量
 
-$$
-\left(\bar X,\sum_i(X_i-\bar X)^2\right).
-$$
+$$\left(\bar X,\sum_i(X_i-\bar X)^2\right).$$
 
 无偏样本方差
 
-$$
-S^2=\frac1{n-1}\sum_i(X_i-\bar X)^2
-$$
+$$S^2=\frac1{n-1}\sum_i(X_i-\bar X)^2$$
 
 是第二个分量的函数，并满足 $E[S^2]=v$ 。
 
@@ -295,12 +232,7 @@ $$
 
 然而后面的信息计算会给出
 
-$$
-\operatorname{Var}(S^2)=\frac{2v^2}{n-1}
->
-\frac{2v^2}{n}
-=\text{Cramér–Rao 下界}.
-$$
+$$\operatorname{Var}(S^2)=\frac{2v^2}{n-1} > \frac{2v^2}{n} =\text{Cramér–Rao 下界}.$$
 
 这不是矛盾。
 
@@ -316,17 +248,11 @@ CR 下界只是所有正则无偏估计的一个下界，可能不可达。
 
 得分为
 
-$$
-S_n(\theta)
-=\frac{\partial}{\partial\theta}\log f_n(X;\theta)
-=\frac{\partial_\theta f_n(X;\theta)}{f_n(X;\theta)}.
-$$
+$$S_n(\theta) =\frac{\partial}{\partial\theta}\log f_n(X;\theta) =\frac{\partial_\theta f_n(X;\theta)}{f_n(X;\theta)}.$$
 
 联合 Fisher 信息定义为
 
-$$
-I_n(\theta)=E_\theta[S_n(\theta)^2].
-$$
+$$I_n(\theta)=E_\theta[S_n(\theta)^2].$$
 
 若 $E_\theta[S_n]=0$ ，这也等于 $\operatorname{Var}_\theta(S_n)$ 。
 
@@ -348,17 +274,11 @@ Cramér–Rao 推导不是纯代数。
 
 最关键的两个等式是
 
-$$
-\frac{d}{d\theta}\int f_n(x;\theta)\,dx
-=\int \partial_\theta f_n(x;\theta)\,dx
-$$
+$$\frac{d}{d\theta}\int f_n(x;\theta)\,dx =\int \partial_\theta f_n(x;\theta)\,dx$$
 
 和
 
-$$
-\frac{d}{d\theta}\int T(x)f_n(x;\theta)\,dx
-=\int T(x)\partial_\theta f_n(x;\theta)\,dx.
-$$
+$$\frac{d}{d\theta}\int T(x)f_n(x;\theta)\,dx =\int T(x)\partial_\theta f_n(x;\theta)\,dx.$$
 
 它们不是由“函数看起来光滑”自动保证。
 
@@ -370,30 +290,19 @@ $$
 
 由于密度总质量为 1，
 
-$$
-\int f_n(x;\theta)\,dx=1.
-$$
+$$\int f_n(x;\theta)\,dx=1.$$
 
 对参数求导并交换顺序：
 
-$$
-0
-=\frac{d}{d\theta}\int f_n(x;\theta)\,dx
-=\int\partial_\theta f_n(x;\theta)\,dx.
-$$
+$$0 =\frac{d}{d\theta}\int f_n(x;\theta)\,dx =\int\partial_\theta f_n(x;\theta)\,dx.$$
 
 利用
 
-$$
-\partial_\theta f_n
-=\left(\partial_\theta\log f_n\right)f_n,
-$$
+$$\partial_\theta f_n =\left(\partial_\theta\log f_n\right)f_n,$$
 
 得到
 
-$$
-\boxed{E_\theta[S_n(\theta)]=0.}
-$$
+$$\boxed{E_\theta[S_n(\theta)]=0.}$$
 
 这一步也解释了为什么支撑不能随意依赖参数。
 
@@ -407,25 +316,15 @@ $$
 
 令
 
-$$
-\psi(\theta)=E_\theta[T].
-$$
+$$\psi(\theta)=E_\theta[T].$$
 
 在第二个交换条件下，
 
-$$
-\psi'(\theta)
-=\int T(x)\partial_\theta f_n(x;\theta)\,dx
-=E_\theta[T S_n].
-$$
+$$\psi'(\theta) =\int T(x)\partial_\theta f_n(x;\theta)\,dx =E_\theta[T S_n].$$
 
 由于 $E_\theta[S_n]=0$ ，
 
-$$
-\boxed{
-\psi'(\theta)=\operatorname{Cov}_\theta(T,S_n).
-}
-$$
+$$\boxed{ \psi'(\theta)=\operatorname{Cov}_\theta(T,S_n). }$$
 
 若 $T$ 无偏估计 $\tau(\theta)$ ，则 $\psi=\tau$ ，所以左边就是 $\tau'(\theta)$ 。
 
@@ -437,42 +336,19 @@ $$
 
 对 $T$ 与 $S_n$ 使用 Cauchy–Schwarz：
 
-$$
-\operatorname{Cov}_\theta(T,S_n)^2
-\le
-\operatorname{Var}_\theta(T)
-\operatorname{Var}_\theta(S_n).
-$$
+$$\operatorname{Cov}_\theta(T,S_n)^2 \le \operatorname{Var}_\theta(T) \operatorname{Var}_\theta(S_n).$$
 
 代入前两节结果：
 
-$$
-[\psi'(\theta)]^2
-\le
-\operatorname{Var}_\theta(T)I_n(\theta).
-$$
+$$[\psi'(\theta)]^2 \le \operatorname{Var}_\theta(T)I_n(\theta).$$
 
 因为 $I_n>0$ ，得到一般信息不等式
 
-$$
-\boxed{
-\operatorname{Var}_\theta(T)
-\ge
-\frac{[\psi'(\theta)]^2}{I_n(\theta)},
-\qquad
-\psi(\theta)=E_\theta[T].
-}
-$$
+$$\boxed{ \operatorname{Var}_\theta(T) \ge \frac{[\psi'(\theta)]^2}{I_n(\theta)}, \qquad \psi(\theta)=E_\theta[T]. }$$
 
 若 $T$ 无偏估计 $\tau(\theta)$ ，则
 
-$$
-\boxed{
-\operatorname{Var}_\theta(T)
-\ge
-\frac{[\tau'(\theta)]^2}{I_n(\theta)}.
-}
-$$
+$$\boxed{ \operatorname{Var}_\theta(T) \ge \frac{[\tau'(\theta)]^2}{I_n(\theta)}. }$$
 
 特别地，直接估计标量参数 $\theta$ 且无偏时，$\tau'=1$ ，下界为 $1/I_n$ 。
 
@@ -480,28 +356,15 @@ $$
 
 若样本 iid，则
 
-$$
-f_n(x;\theta)=\prod_{i=1}^nf(x_i;\theta),
-\qquad
-S_n(\theta)=\sum_{i=1}^ns(X_i;\theta).
-$$
+$$f_n(x;\theta)=\prod_{i=1}^nf(x_i;\theta), \qquad S_n(\theta)=\sum_{i=1}^ns(X_i;\theta).$$
 
 各观测得分均值为零且相互独立，所以
 
-$$
-I_n(\theta)
-=\operatorname{Var}_\theta\left(\sum_i s(X_i;\theta)\right)
-=nI_1(\theta).
-$$
+$$I_n(\theta) =\operatorname{Var}_\theta\left(\sum_i s(X_i;\theta)\right) =nI_1(\theta).$$
 
 因此无偏估计 $\tau(\theta)$ 的下界为
 
-$$
-\boxed{
-\operatorname{Var}_\theta(T)
-\ge\frac{[\tau'(\theta)]^2}{nI_1(\theta)}.
-}
-$$
+$$\boxed{ \operatorname{Var}_\theta(T) \ge\frac{[\tau'(\theta)]^2}{nI_1(\theta)}. }$$
 
 这解释了正则估计通常具有 $1/n$ 方差尺度。
 
@@ -515,26 +378,17 @@ Cauchy–Schwarz 取等号，当且仅当两个中心化变量几乎必然成比
 
 因此在固定 $\theta$ 处，达到 CR 下界等价于存在常数 $a(\theta)$ ，使
 
-$$
-\boxed{
-T-\psi(\theta)=a(\theta)S_n(\theta)
-\quad\text{几乎必然}.
-}
-$$
+$$\boxed{ T-\psi(\theta)=a(\theta)S_n(\theta) \quad\text{几乎必然}. }$$
 
 由协方差计算，非退化时
 
-$$
-a(\theta)=\frac{\psi'(\theta)}{I_n(\theta)}.
-$$
+$$a(\theta)=\frac{\psi'(\theta)}{I_n(\theta)}.$$
 
 所以等号不是“方差公式碰巧相等”的神秘事件，而是估计误差与得分完全线性对齐。
 
 对无偏估计 $\tau(\theta)$ ，这写为
 
-$$
-T-\tau(\theta)=a(\theta)S_n(\theta).
-$$
+$$T-\tau(\theta)=a(\theta)S_n(\theta).$$
 
 指数族之所以经常达到下界，是因为其自然形式使得分是充分统计量的仿射函数。
 
@@ -544,51 +398,33 @@ $$
 
 单个 Bernoulli 观测的对数概率为
 
-$$
-\ell(X;p)=X\log p+(1-X)\log(1-p).
-$$
+$$\ell(X;p)=X\log p+(1-X)\log(1-p).$$
 
 得分为
 
-$$
-s(X;p)=\frac Xp-\frac{1-X}{1-p}
-=\frac{X-p}{p(1-p)}.
-$$
+$$s(X;p)=\frac Xp-\frac{1-X}{1-p} =\frac{X-p}{p(1-p)}.$$
 
 所以
 
-$$
-I_1(p)
-=E\left[\frac{(X-p)^2}{p^2(1-p)^2}\right]
-=\frac1{p(1-p)}.
-$$
+$$I_1(p) =E\left[\frac{(X-p)^2}{p^2(1-p)^2}\right] =\frac1{p(1-p)}.$$
 
 对 $n$ 个 iid 观测，
 
-$$
-I_n(p)=\frac{n}{p(1-p)}.
-$$
+$$I_n(p)=\frac{n}{p(1-p)}.$$
 
 无偏估计 $p$ 的 CR 下界为
 
-$$
-\frac1{I_n(p)}=\frac{p(1-p)}n.
-$$
+$$\frac1{I_n(p)}=\frac{p(1-p)}n.$$
 
 而样本均值的方差恰好就是 $p(1-p)/n$ ，所以等号成立。
 
 从等号条件也能直接看：
 
-$$
-S_n(p)=\frac{\sum_iX_i-np}{p(1-p)}
-=\frac{n(\bar X-p)}{p(1-p)}.
-$$
+$$S_n(p)=\frac{\sum_iX_i-np}{p(1-p)} =\frac{n(\bar X-p)}{p(1-p)}.$$
 
 所以
 
-$$
-\bar X-p=\frac{p(1-p)}n S_n(p),
-$$
+$$\bar X-p=\frac{p(1-p)}n S_n(p),$$
 
 完全符合得分的仿射形式。
 
@@ -622,32 +458,19 @@ Julia 的 `p`、`n` 和 `cr_bound` 在此均为有理数，所以 `==` 是精确
 
 若 $X_i$ iid 服从 Poisson $(\lambda)$ ，单观测得分为
 
-$$
-s(X;\lambda)=\frac X\lambda-1
-=\frac{X-\lambda}{\lambda}.
-$$
+$$s(X;\lambda)=\frac X\lambda-1 =\frac{X-\lambda}{\lambda}.$$
 
 所以
 
-$$
-I_1(\lambda)
-=\frac{\operatorname{Var}(X)}{\lambda^2}
-=\frac1\lambda.
-$$
+$$I_1(\lambda) =\frac{\operatorname{Var}(X)}{\lambda^2} =\frac1\lambda.$$
 
 无偏估计 $\lambda$ 的 CR 下界是
 
-$$
-\frac1{nI_1(\lambda)}=\frac\lambda n.
-$$
+$$\frac1{nI_1(\lambda)}=\frac\lambda n.$$
 
 样本均值满足
 
-$$
-E[\bar X]=\lambda,
-\qquad
-\operatorname{Var}(\bar X)=\frac\lambda n.
-$$
+$$E[\bar X]=\lambda, \qquad \operatorname{Var}(\bar X)=\frac\lambda n.$$
 
 因此 $\bar X$ 达到下界。
 
@@ -657,24 +480,15 @@ $$
 
 若 $X_i\sim N(\mu,v)$ ，且 $v$ 已知，则单观测关于 $\mu$ 的得分为
 
-$$
-\frac{\partial}{\partial\mu}
-\left[-\frac{(X-\mu)^2}{2v}\right]
-=\frac{X-\mu}{v}.
-$$
+$$\frac{\partial}{\partial\mu} \left[-\frac{(X-\mu)^2}{2v}\right] =\frac{X-\mu}{v}.$$
 
 因此
 
-$$
-I_1(\mu)=\frac{\operatorname{Var}(X)}{v^2}=\frac1v.
-$$
+$$I_1(\mu)=\frac{\operatorname{Var}(X)}{v^2}=\frac1v.$$
 
 样本均值无偏，且
 
-$$
-\operatorname{Var}(\bar X)=\frac vn
-=\frac1{nI_1(\mu)}.
-$$
+$$\operatorname{Var}(\bar X)=\frac vn =\frac1{nI_1(\mu)}.$$
 
 所以 $\bar X$ 达到 CR 下界。
 
@@ -686,36 +500,23 @@ $$
 
 正态双参数模型关于 $v$ 的单观测信息为
 
-$$
-I_{vv,1}=\frac1{2v^2}.
-$$
+$$I_{vv,1}=\frac1{2v^2}.$$
 
 参数函数 $\tau(\mu,v)=v$ 对 $v$ 的导数为 1，因此样本下界是
 
-$$
-B_n=\frac{2v^2}{n}.
-$$
+$$B_n=\frac{2v^2}{n}.$$
 
 另一方面，
 
-$$
-\frac{(n-1)S^2}{v}\sim\chi^2_{n-1},
-$$
+$$\frac{(n-1)S^2}{v}\sim\chi^2_{n-1},$$
 
 而卡方变量方差为自由度的 2 倍，所以
 
-$$
-\operatorname{Var}(S^2)=\frac{2v^2}{n-1}.
-$$
+$$\operatorname{Var}(S^2)=\frac{2v^2}{n-1}.$$
 
 两者差为
 
-$$
-\boxed{
-\operatorname{Var}(S^2)-B_n
-=\frac{2v^2}{n(n-1)}>0.
-}
-$$
+$$\boxed{ \operatorname{Var}(S^2)-B_n =\frac{2v^2}{n(n-1)}>0. }$$
 
 因此 $S^2$ 未达到 CR 下界。
 
@@ -723,11 +524,7 @@ $$
 
 这正说明：
 
-$$
-\boxed{
-\text{未达到 CR 下界}\not\Longrightarrow\text{不是 UMVU}.
-}
-$$
+$$\boxed{ \text{未达到 CR 下界}\not\Longrightarrow\text{不是 UMVU}. }$$
 
 若把“下界不可达”误判为“还有另一个无偏估计能达到”，就会去寻找不存在的估计量。
 
@@ -737,15 +534,11 @@ $$
 
 此时
 
-$$
-T_\mu=\frac1n\sum_{i=1}^n(X_i-\mu)^2
-$$
+$$T_\mu=\frac1n\sum_{i=1}^n(X_i-\mu)^2$$
 
 无偏，且
 
-$$
-\operatorname{Var}(T_\mu)=\frac{2v^2}{n}.
-$$
+$$\operatorname{Var}(T_\mu)=\frac{2v^2}{n}.$$
 
 它达到已知均值模型的下界。
 
@@ -755,13 +548,7 @@ $$
 
 取 $n=10,v=3$ ，则
 
-$$
-\operatorname{Var}(S^2)=2,
-\qquad
-B_n=\frac95,
-\qquad
-\operatorname{Var}(S^2)-B_n=\frac15.
-$$
+$$\operatorname{Var}(S^2)=2, \qquad B_n=\frac95, \qquad \operatorname{Var}(S^2)-B_n=\frac15.$$
 
 Python 和 Julia 都精确检查：
 
@@ -775,10 +562,7 @@ assert var_s2 - cr_v == F(1, 5)
 
 下界与实际方差之比为
 
-$$
-\frac{B_n}{\operatorname{Var}(S^2)}
-=\frac{n-1}{n}=\frac9{10}.
-$$
+$$\frac{B_n}{\operatorname{Var}(S^2)} =\frac{n-1}{n}=\frac9{10}.$$
 
 这只是有限样本 CR 效率比，不是对 UMVU 结论的否定。
 
@@ -786,43 +570,29 @@ $$
 
 若 $\theta\in\mathbb R^p$ ，得分是列向量
 
-$$
-S_n=\nabla_\theta\log f_n(X;\theta),
-$$
+$$S_n=\nabla_\theta\log f_n(X;\theta),$$
 
 信息矩阵为
 
-$$
-I_n=E[S_nS_n'].
-$$
+$$I_n=E[S_nS_n'].$$
 
 设 $T$ 估计 $r$ 维参数函数 $\tau(\theta)$ ，且 $E[T]=\psi(\theta)$ 。
 
 令
 
-$$
-D=\frac{\partial\psi(\theta)}{\partial\theta'}
-$$
+$$D=\frac{\partial\psi(\theta)}{\partial\theta'}$$
 
 为 $r\times p$ Jacobi 矩阵。
 
 在相应正则条件下，矩阵信息不等式为
 
-$$
-\boxed{
-\operatorname{Cov}_\theta(T)
-\succeq D I_n(\theta)^{-1}D'.
-}
-$$
+$$\boxed{ \operatorname{Cov}_\theta(T) \succeq D I_n(\theta)^{-1}D'. }$$
 
 这里 $A\succeq B$ 表示 $A-B$ 半正定。
 
 等价地，对任意 $c\in\mathbb R^r$ ，
 
-$$
-\operatorname{Var}(c'T)
-\ge c'DI_n^{-1}D'c.
-$$
+$$\operatorname{Var}(c'T) \ge c'DI_n^{-1}D'c.$$
 
 矩阵下界不是把每个分量分别下界后就结束；它还包含不同估计分量之间的协方差约束。
 
@@ -834,9 +604,7 @@ $$
 
 密度为
 
-$$
-f(x;\theta)=\frac1\theta\mathbf 1\{0<x<\theta\}.
-$$
+$$f(x;\theta)=\frac1\theta\mathbf 1\{0<x<\theta\}.$$
 
 支撑随 $\theta$ 移动。
 

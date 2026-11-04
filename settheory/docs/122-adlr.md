@@ -46,9 +46,7 @@
 
 假设存在严格递增的武丁基数序列
 
-$$
-\langle\kappa_n:n<\omega\rangle,\qquad \kappa=\sup_n\kappa_n,
-$$
+$$\langle\kappa_n:n<\omega\rangle,\qquad \kappa=\sup_n\kappa_n,$$
 
 并且存在一个可测基数高于 $\kappa$ 。
 
@@ -56,9 +54,7 @@ $$
 
 换句话说，
 
-$$
-L(\mathbb R)\models\forall A\subseteq\mathbb R\;(A\text{ 确定}).
-$$
+$$L(\mathbb R)\models\forall A\subseteq\mathbb R\;(A\text{ 确定}).$$
 
 这就是本章所说的 AD^{L(ℝ)}。
 
@@ -92,11 +88,7 @@ $L(\mathbb R)$ 是从全部实数出发的可构造闭包。
 
 对公式与参数组成的对 $\langle\varphi,a\rangle$ ，称 $X$ 是 $(<\kappa)$ -泛型正确的，直观要求是：在有关的小力迫泛型扩张中，
 
-$$
-M_X[g]\models\varphi[y,\pi_X(a)]
-\quad\Longleftrightarrow\quad
-V\models\varphi[y,a].
-$$
+$$M_X[g]\models\varphi[y,\pi_X(a)] \quad\Longleftrightarrow\quad V\models\varphi[y,a].$$
 
 这里有两个方向，不能只记其中一半。
 
@@ -118,9 +110,7 @@ $$
 
 若只在基模型中有
 
-$$
-p[T]=A,\qquad p[U]=\mathbb R\setminus A,
-$$
+$$p[T]=A,\qquad p[U]=\mathbb R\setminus A,$$
 
 还不能保证力迫后加入的新实数也被正确分类。
 
@@ -438,9 +428,7 @@ ZFC 的外部论域继续服从 AC；内部的 $L(\mathbb R)$ 则呈现 AD 世�
 
 把四步历史 $(x_0,x_1,x_2,x_3)$ 编码为
 
-$$
-k=x_0+2x_1+4x_2+8x_3.
-$$
+$$k=x_0+2x_1+4x_2+8x_3.$$
 
 因此开局动作位于最低位，最后一个动作位于最高位。
 
@@ -472,9 +460,7 @@ Julia 与 Python 都显式检查了这个归并结果。
 
 第二次回应只需针对四个相关历史 $(a_0,a_2)$ 准备
 
-$$
-q_{000},q_{001},q_{100},q_{101}.
-$$
+$$q_{000},q_{001},q_{100},q_{101}.$$
 
 其中第一次回应已经由 $a_0$ 决定，不再作为独立坐标重复计数。
 
@@ -484,9 +470,7 @@ $$
 
 不同策略对总数因此是
 
-$$
-8\times64=512.
-$$
+$$8\times64=512.$$
 
 ## 30. 自底向上填表必须保持量词次序
 
@@ -544,9 +528,7 @@ Python 通道专门使用这一算法，与 Julia 的递归对弈求值相互独
 
 于是
 
-$$
-|A|\le 2^n-2^{n-d}.
-$$
+$$|A|\le 2^n-2^{n-d}.$$
 
 这个证明只使用有限柱分解，却准确展示了“没有完美子树”如何转为密度上限。
 
@@ -562,9 +544,7 @@ $$
 
 集合大小恰为
 
-$$
-2^n-2^{n-d}.
-$$
+$$2^n-2^{n-d}.$$
 
 四个证明与计算通道都检查了相应的紧例形式。
 
@@ -580,9 +560,7 @@ Julia 和 Python 还检查更大的有限 $n$ ，其中 Julia 使用任意精度
 
 取 $p<8$ 、$a<16$ ，定义
 
-$$
-\operatorname{enc}(p,a)=16p+a.
-$$
+$$\operatorname{enc}(p,a)=16p+a.$$
 
 解码分别为整除 16 与模 16。
 

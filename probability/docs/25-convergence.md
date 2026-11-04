@@ -4,9 +4,7 @@
 
 确定性数列 $x_n\to x$ 只有一种逐点意义；随机变量序列则同时带有样本路径和概率分布两层结构。说
 
-$$
-X_n\to X
-$$
+$$X_n\to X$$
 
 而不说明收敛模式，可能指完全不同的事情：
 
@@ -17,34 +15,15 @@ $$
 
 本章使用四种主要模式：
 
-$$
-L^p\text{ 收敛},\qquad
-\text{几乎必然收敛},\qquad
-\text{依概率收敛},\qquad
-\text{依分布收敛}.
-$$
+$$L^p\text{ 收敛},\qquad \text{几乎必然收敛},\qquad \text{依概率收敛},\qquad \text{依分布收敛}.$$
 
 核心关系是
 
-$$
-\boxed{
-X_n\xrightarrow{a.s.}X
-\ \Longrightarrow\
-X_n\xrightarrow{P}X
-\ \Longrightarrow\
-X_n\xrightarrow{d}X,
-}
-$$
+$$\boxed{ X_n\xrightarrow{a.s.}X \ \Longrightarrow\ X_n\xrightarrow{P}X \ \Longrightarrow\ X_n\xrightarrow{d}X, }$$
 
 以及对 $p\ge1$ 的
 
-$$
-\boxed{
-X_n\xrightarrow{L^p}X
-\ \Longrightarrow\
-X_n\xrightarrow{P}X.
-}
-$$
+$$\boxed{ X_n\xrightarrow{L^p}X \ \Longrightarrow\ X_n\xrightarrow{P}X. }$$
 
 除特别情形外，反向都不成立。理解这些箭头最好的方式不是背图，而是掌握反例。
 
@@ -54,15 +33,11 @@ $$
 
 设 $p\ge1$ ，且 $E|X_n|^p,E|X|^p<\infty$ 。若
 
-$$
-\boxed{E|X_n-X|^p\to0,}
-$$
+$$\boxed{E|X_n-X|^p\to0,}$$
 
 则称 $X_n$ 在 $L^p$ 中收敛到 $X$ 。$p=2$ 时称均方收敛：
 
-$$
-E|X_n-X|^2\to0.
-$$
+$$E|X_n-X|^2\to0.$$
 
 $L^p$ 收敛是范数收敛，关心误差整个分布的大小，尤其惩罚少见但极大的误差。
 
@@ -70,20 +45,13 @@ $L^p$ 收敛是范数收敛，关心误差整个分布的大小，尤其惩罚�
 
 若
 
-$$
-\boxed{
-P\left(\left\{\omega:\lim_{n\to\infty}X_n(\omega)=X(\omega)\right\}\right)=1,
-}
-$$
+$$\boxed{ P\left(\left\{\omega:\lim_{n\to\infty}X_n(\omega)=X(\omega)\right\}\right)=1, }$$
 
 则称 $X_n$ 几乎必然收敛到 $X$ ，记作 $X_n\xrightarrow{a.s.}X$ 。
 
 也可以写成尾事件形式：对每个 $\varepsilon>0$ ，
 
-$$
-P\left(\bigcap_{N=1}^\infty\bigcup_{n\ge N}
-\{|X_n-X|\ge\varepsilon\}\right)=0.
-$$
+$$P\left(\bigcap_{N=1}^\infty\bigcup_{n\ge N} \{|X_n-X|\ge\varepsilon\}\right)=0.$$
 
 即“任意大误差还会在未来出现”的事件概率为零。
 
@@ -93,11 +61,7 @@ $$
 
 若对每个 $\varepsilon>0$ ，
 
-$$
-\boxed{
-P(|X_n-X|\ge\varepsilon)\to0,
-}
-$$
+$$\boxed{ P(|X_n-X|\ge\varepsilon)\to0, }$$
 
 则称 $X_n$ 依概率收敛到 $X$ ，记作 $X_n\xrightarrow{P}X$ 。
 
@@ -107,9 +71,7 @@ $$
 
 设 $F_n,F$ 分别为 $X_n,X$ 的 CDF。若对 $F$ 的每个连续点 $x$ ，
 
-$$
-\boxed{F_n(x)\to F(x),}
-$$
+$$\boxed{F_n(x)\to F(x),}$$
 
 则称 $X_n$ 依分布收敛到 $X$ ，记作 $X_n\xrightarrow{d}X$ 。
 
@@ -123,27 +85,19 @@ $$
 
 若固定一条最终收敛的路径，则对任意 $\varepsilon>0$ ，从某个时刻起都有
 
-$$
-|X_n(\omega)-X(\omega)|<\varepsilon.
-$$
+$$|X_n(\omega)-X(\omega)|<\varepsilon.$$
 
 所以事件
 
-$$
-A_N=\bigcup_{n\ge N}\{|X_n-X|\ge\varepsilon\}
-$$
+$$A_N=\bigcup_{n\ge N}\{|X_n-X|\ge\varepsilon\}$$
 
 随 $N$ 下降，其交集只包含不收敛路径。几乎必然收敛给出
 
-$$
-P(A_N)\to0.
-$$
+$$P(A_N)\to0.$$
 
 而
 
-$$
-\{|X_N-X|\ge\varepsilon\}\subset A_N,
-$$
+$$\{|X_N-X|\ge\varepsilon\}\subset A_N,$$
 
 故 $P(|X_N-X|\ge\varepsilon)\to0$ 。
 
@@ -153,10 +107,7 @@ $$
 
 由 Markov 不等式，
 
-$$
-P(|X_n-X|\ge\varepsilon)
-\le\frac{E|X_n-X|^p}{\varepsilon^p}\to0.
-$$
+$$P(|X_n-X|\ge\varepsilon) \le\frac{E|X_n-X|^p}{\varepsilon^p}\to0.$$
 
 因此均方误差趋零足以推出偏离概率趋零。
 
@@ -164,9 +115,7 @@ $$
 
 固定 $x$ 与 $\delta>0$ 。在 $\{|X_n-X|<\delta\}$ 上，
 
-$$
-X_n\le x\quad\Longrightarrow\quad X\le x+\delta.
-$$
+$$X_n\le x\quad\Longrightarrow\quad X\le x+\delta.$$
 
 将坏事件的概率分出，再令 $\delta\downarrow0$ ，利用 CDF 在连续点的右连续和左侧极限，可得 $F_n(x)\to F(x)$ 。
 
@@ -176,22 +125,15 @@ $$
 
 在概率空间 $([0,1],\mathcal B,\mathrm{Leb})$ 上构造移动区间指标。第 $k$ 层有 $2^k$ 个小区间：
 
-$$
-I_{k,i}=\left[\frac i{2^k},\frac{i+1}{2^k}\right],
-\qquad i=0,\dots,2^k-1.
-$$
+$$I_{k,i}=\left[\frac i{2^k},\frac{i+1}{2^k}\right], \qquad i=0,\dots,2^k-1.$$
 
 按层依次排列，记第 $n$ 项为 $Z_n=\mathbf1_{I_n}$ 。令
 
-$$
-k=\lfloor\log_2n\rfloor,\qquad i=n-2^k,
-$$
+$$k=\lfloor\log_2n\rfloor,\qquad i=n-2^k,$$
 
 则
 
-$$
-I_n=\left[\frac i{2^k},\frac{i+1}{2^k}\right].
-$$
+$$I_n=\left[\frac i{2^k},\frac{i+1}{2^k}\right].$$
 
 Python 用精确分数实现：
 
@@ -204,38 +146,25 @@ def typewriter(n):
 
 区间长度为 $2^{-k}$ ，所以
 
-$$
-P(Z_n=1)=2^{-k}\to0.
-$$
+$$P(Z_n=1)=2^{-k}\to0.$$
 
 因此对任意 $0<\varepsilon\le1$ ，
 
-$$
-P(|Z_n|\ge\varepsilon)=2^{-k}\to0,
-$$
+$$P(|Z_n|\ge\varepsilon)=2^{-k}\to0,$$
 
 即 $Z_n\xrightarrow{P}0$ 。同时 $Z_n\in\{0,1\}$ ，故对任意 $p\ge1$ ，
 
-$$
-E|Z_n|^p=P(Z_n=1)=2^{-k}\to0,
-$$
+$$E|Z_n|^p=P(Z_n=1)=2^{-k}\to0,$$
 
 所以也有 $Z_n\xrightarrow{L^p}0$ 。
 
 但对每个固定 $s\in[0,1]$ ，每一层都有一个小区间覆盖 $s$ ，也有小区间不覆盖 $s$ 。因此
 
-$$
-Z_n(s)=1\quad\text{无穷多次},
-\qquad
-Z_n(s)=0\quad\text{无穷多次}.
-$$
+$$Z_n(s)=1\quad\text{无穷多次}, \qquad Z_n(s)=0\quad\text{无穷多次}.$$
 
 于是
 
-$$
-\limsup_nZ_n(s)=1,\qquad
-\liminf_nZ_n(s)=0.
-$$
+$$\limsup_nZ_n(s)=1,\qquad \liminf_nZ_n(s)=0.$$
 
 **每一个点都不收敛**，而不只是在一个零测集上不收敛。
 
@@ -276,29 +205,21 @@ Zn(n, s) = (lo_hi = typewriter(n);
 
 这个反例同时否定：
 
-$$
-L^p\nRightarrow a.s.,\qquad P\nRightarrow a.s.
-$$
+$$L^p\nRightarrow a.s.,\qquad P\nRightarrow a.s.$$
 
 ## 25.5 为什么第一 Borel–Cantelli 不能直接挽救移动区间
 
 第一 Borel–Cantelli 引理说：若
 
-$$
-\sum_nP(A_n)<\infty,
-$$
+$$\sum_nP(A_n)<\infty,$$
 
 则
 
-$$
-P(A_n\ \text{无穷多次发生})=0.
-$$
+$$P(A_n\ \text{无穷多次发生})=0.$$
 
 移动区间每一层的概率总和为
 
-$$
-\sum_{i=0}^{2^k-1}2^{-k}=1.
-$$
+$$\sum_{i=0}^{2^k-1}2^{-k}=1.$$
 
 因此前 $K+1$ 层总和为 $K+1$ ，整体级数发散。第一 Borel–Cantelli 的前提不满足，不能据此推出最终不再发生。
 
@@ -326,41 +247,29 @@ theorem levels_sum (K : ℕ) :
 
 仍在 $[0,1]$ 均匀概率空间上，定义
 
-$$
-Z_n=e^n\mathbf1\{s>1-n^{-2}\}.
-$$
+$$Z_n=e^n\mathbf1\{s>1-n^{-2}\}.$$
 
 非零概率为
 
-$$
-P(Z_n\ne0)=n^{-2}.
-$$
+$$P(Z_n\ne0)=n^{-2}.$$
 
 因为
 
-$$
-\sum_{n=1}^\infty n^{-2}<\infty,
-$$
+$$\sum_{n=1}^\infty n^{-2}<\infty,$$
 
 第一 Borel–Cantelli 引理说明，几乎必然只有有限多个 $Z_n$ 非零。因此
 
-$$
-Z_n\xrightarrow{a.s.}0.
-$$
+$$Z_n\xrightarrow{a.s.}0.$$
 
 然而
 
-$$
-E[Z_n]=e^n n^{-2}\to\infty.
-$$
+$$E[Z_n]=e^n n^{-2}\to\infty.$$
 
 所以它不仅不 $L^1$ 收敛到 0，期望甚至发散到无穷。几乎必然收敛不排除零概率附近出现越来越高的尖峰。
 
 本例的非零事件还随 $n$ 嵌套：
 
-$$
-\{s>1-(n+1)^{-2}\}\subset\{s>1-n^{-2}\}.
-$$
+$$\{s>1-(n+1)^{-2}\}\subset\{s>1-n^{-2}\}.$$
 
 从 $m$ 开始的并集就是第 $m$ 个事件，其概率恰为 $m^{-2}$ 。这给出比单纯级数收敛更直接的尾部描述。
 
@@ -375,16 +284,11 @@ assert exp(30) / 900 > 1e10
 
 这里使用望远镜界
 
-$$
-\frac1{n^2}\le\frac1{n-1}-\frac1n,
-\qquad n\ge2,
-$$
+$$\frac1{n^2}\le\frac1{n-1}-\frac1n, \qquad n\ge2,$$
 
 所以
 
-$$
-\sum_{n=m}^\infty\frac1{n^2}\le\frac1{m-1}.
-$$
+$$\sum_{n=m}^\infty\frac1{n^2}\le\frac1{m-1}.$$
 
 Lean 用归纳证明部分和统一有界：
 
@@ -410,46 +314,31 @@ theorem spike_sum_bounded (N : ℕ) :
 
 `key` 是相邻项的望远镜界，`ih` 是前一段部分和界，二者相加完成归纳。这个例子给出
 
-$$
-a.s.\nRightarrow L^1.
-$$
+$$a.s.\nRightarrow L^1.$$
 
 ## 25.7 独立 Bernoulli：依概率但不几乎必然的另一机制
 
 设事件 $A_n$ 相互独立，且
 
-$$
-P(A_n)=\frac1n.
-$$
+$$P(A_n)=\frac1n.$$
 
 令 $Z_n=\mathbf1_{A_n}$ 。因为 $1/n\to0$ ，有
 
-$$
-Z_n\xrightarrow{P}0.
-$$
+$$Z_n\xrightarrow{P}0.$$
 
 但
 
-$$
-\sum_nP(A_n)=\sum_n\frac1n=\infty.
-$$
+$$\sum_nP(A_n)=\sum_n\frac1n=\infty.$$
 
 第二 Borel–Cantelli 引理利用独立性说明
 
-$$
-P(A_n\ \text{无穷多次发生})=1.
-$$
+$$P(A_n\ \text{无穷多次发生})=1.$$
 
 因此 $Z_n$ 几乎必然不收敛到 0。
 
 不必引用完整第二引理也能算。对 $m\ge2$ ，
 
-$$
-P\left(\bigcap_{n=m}^NA_n^c\right)
-=\prod_{n=m}^N\left(1-\frac1n\right)
-=\prod_{n=m}^N\frac{n-1}{n}
-=\frac{m-1}{N}\to0.
-$$
+$$P\left(\bigcap_{n=m}^NA_n^c\right) =\prod_{n=m}^N\left(1-\frac1n\right) =\prod_{n=m}^N\frac{n-1}{n} =\frac{m-1}{N}\to0.$$
 
 因此从任意 $m$ 起全部不发生的概率为 0，未来仍会发生事件的概率为 1。
 
@@ -486,25 +375,15 @@ theorem no_event_prod (N : ℕ) :
 
 虽然依概率不蕴含几乎必然，但有重要补救：
 
-$$
-\boxed{
-X_n\xrightarrow{P}X
-\Longrightarrow
-\text{存在子列 }X_{n_j}\xrightarrow{a.s.}X.
-}
-$$
+$$\boxed{ X_n\xrightarrow{P}X \Longrightarrow \text{存在子列 }X_{n_j}\xrightarrow{a.s.}X. }$$
 
 构造方法：对每个 $j$ ，利用依概率收敛选择 $n_j$ ，使
 
-$$
-P\left(|X_{n_j}-X|>\frac1j\right)<2^{-j},
-$$
+$$P\left(|X_{n_j}-X|>\frac1j\right)<2^{-j},$$
 
 并保证 $n_j$ 严格递增。因为
 
-$$
-\sum_j2^{-j}<\infty,
-$$
+$$\sum_j2^{-j}<\infty,$$
 
 第一 Borel–Cantelli 引理给出：几乎必然地，只有有限多个子列误差超过 $1/j$ ，故子列几乎必然收敛。
 
@@ -530,37 +409,23 @@ def choose_subsequence(prob_exceed, J):
 
 令
 
-$$
-Z_n\sim N(0,1/n).
-$$
+$$Z_n\sim N(0,1/n).$$
 
 当 $n\to\infty$ ，分布越来越集中于 0，所以直觉上应依分布收敛到点质量 $\delta_0$ 。其极限 CDF 为
 
-$$
-F(x)=
-\begin{cases}
-0,&x<0,\\
-1,&x\ge0.
-\end{cases}
-$$
+$$F(x)= \begin{cases} 0,&x<0,\\ 1,&x\ge0. \end{cases}$$
 
 对 $x>0$ ，
 
-$$
-F_n(x)=\Phi(\sqrt n\,x)\to1;
-$$
+$$F_n(x)=\Phi(\sqrt n\,x)\to1;$$
 
 对 $x<0$ ，
 
-$$
-F_n(x)=\Phi(\sqrt n\,x)\to0.
-$$
+$$F_n(x)=\Phi(\sqrt n\,x)\to0.$$
 
 但在 $x=0$ ，由对称性，
 
-$$
-F_n(0)=\frac12
-$$
+$$F_n(0)=\frac12$$
 
 对所有 $n$ 成立，并不趋于 $F(0)=1$ 。
 
@@ -585,37 +450,21 @@ assert Phi(-sqrt(n) * 0.5) <= 2 * exp(-n / 8)
 
 若 $c$ 是常数，则
 
-$$
-\boxed{
-X_n\xrightarrow{d}c
-\iff
-X_n\xrightarrow{P}c.
-}
-$$
+$$\boxed{ X_n\xrightarrow{d}c \iff X_n\xrightarrow{P}c. }$$
 
 因为点质量 $\delta_c$ 的 CDF 在 $c-\varepsilon$ 和 $c+\varepsilon$ 都连续。依分布收敛给出
 
-$$
-F_n(c-\varepsilon)\to0,
-\qquad
-F_n(c+\varepsilon)\to1.
-$$
+$$F_n(c-\varepsilon)\to0, \qquad F_n(c+\varepsilon)\to1.$$
 
 所以
 
-$$
-P(|X_n-c|\le\varepsilon)
-\ge F_n(c+\varepsilon)-F_n(c-\varepsilon)\to1.
-$$
+$$P(|X_n-c|\le\varepsilon) \ge F_n(c+\varepsilon)-F_n(c-\varepsilon)\to1.$$
 
 反向由一般的依概率蕴含依分布得到。
 
 例如 $Z_n=X/\sqrt n$ ，其中 $X\sim N(0,1)$ 。则 $Z_n\sim N(0,1/n)$ ，依分布收敛到 0；同时
 
-$$
-P(|Z_n|>\varepsilon)
-=2[1-\Phi(\varepsilon\sqrt n)]\to0,
-$$
+$$P(|Z_n|>\varepsilon) =2[1-\Phi(\varepsilon\sqrt n)]\to0,$$
 
 故也依概率收敛到 0。
 
@@ -625,27 +474,19 @@ $$
 
 设 $X\sim N(0,1)$ ，令
 
-$$
-Z_n=-X\qquad\text{对所有 }n.
-$$
+$$Z_n=-X\qquad\text{对所有 }n.$$
 
 由对称性，$-X$ 与 $X$ 同分布，所以
 
-$$
-Z_n\xrightarrow{d}X.
-$$
+$$Z_n\xrightarrow{d}X.$$
 
 但
 
-$$
-|Z_n-X|=2|X|,
-$$
+$$|Z_n-X|=2|X|,$$
 
 因此对任意 $\varepsilon>0$ ，
 
-$$
-P(|Z_n-X|>\varepsilon)=P(2|X|>\varepsilon)
-$$
+$$P(|Z_n-X|>\varepsilon)=P(2|X|>\varepsilon)$$
 
 是不随 $n$ 改变的正常数，不趋于 0。所以 $Z_n$ 不依概率收敛到 $X$ 。
 
@@ -662,49 +503,31 @@ assert p_far > 0.8
 
 几乎必然或依概率收敛并不自动给出
 
-$$
-E[X_n]\to E[X].
-$$
+$$E[X_n]\to E[X].$$
 
 除控制收敛外，常用条件是一致可积。随机变量族 $\{X_n\}$ 一致可积，若
 
-$$
-\boxed{
-\lim_{M\to\infty}\sup_n
-E\left[|X_n|\mathbf1\{|X_n|>M\}\right]=0.
-}
-$$
+$$\boxed{ \lim_{M\to\infty}\sup_n E\left[|X_n|\mathbf1\{|X_n|>M\}\right]=0. }$$
 
 在有限测度空间上，若 $X_n\xrightarrow{P}X$ 且族一致可积，则
 
-$$
-E|X_n-X|\to0,
-\qquad E[X_n]\to E[X].
-$$
+$$E|X_n-X|\to0, \qquad E[X_n]\to E[X].$$
 
 典型反例是
 
-$$
-Z_n=n\mathbf1\{U<1/n\},\qquad U\sim U(0,1).
-$$
+$$Z_n=n\mathbf1\{U<1/n\},\qquad U\sim U(0,1).$$
 
 对每个固定 $U>0$ ，最终 $1/n<U$ ，故
 
-$$
-Z_n\xrightarrow{a.s.}0.
-$$
+$$Z_n\xrightarrow{a.s.}0.$$
 
 但
 
-$$
-E[Z_n]=n\cdot\frac1n=1.
-$$
+$$E[Z_n]=n\cdot\frac1n=1.$$
 
 若 $5<M<n$ ，则
 
-$$
-E[Z_n\mathbf1\{Z_n>M\}]=1.
-$$
+$$E[Z_n\mathbf1\{Z_n>M\}]=1.$$
 
 故 supremum 不随 $M$ 消失，族不一致可积。
 
@@ -720,16 +543,11 @@ assert tail == (1 if n > M else 0)
 
 若族有统一 $L^2$ 界
 
-$$
-E[Z_n^2]\le C,
-$$
+$$E[Z_n^2]\le C,$$
 
 则由 Cauchy–Schwarz 或 Markov 可控制高值尾部，例如
 
-$$
-E[|Z_n|\mathbf1\{|Z_n|>M\}]
-\le\frac{C}{M}.
-$$
+$$E[|Z_n|\mathbf1\{|Z_n|>M\}] \le\frac{C}{M}.$$
 
 所以统一二阶矩界是一致可积的充分条件，不是必要条件。
 
@@ -737,42 +555,25 @@ $$
 
 依分布收敛看似最弱，但 Skorokhod 表示定理在常见 Polish 空间上给出强大翻译：若
 
-$$
-X_n\xrightarrow{d}X,
-$$
+$$X_n\xrightarrow{d}X,$$
 
 则可以构造同一概率空间上的新变量 $\widetilde X_n,\widetilde X$ ，使
 
-$$
-\widetilde X_n\overset d=X_n,
-\qquad
-\widetilde X\overset d=X,
-\qquad
-\widetilde X_n\xrightarrow{a.s.}\widetilde X.
-$$
+$$\widetilde X_n\overset d=X_n, \qquad \widetilde X\overset d=X, \qquad \widetilde X_n\xrightarrow{a.s.}\widetilde X.$$
 
 新变量不是原变量，不能从表示定理反推原序列几乎必然收敛。
 
 一维实变量可用分位数耦合。取 $U\sim U(0,1)$ ，令
 
-$$
-\widetilde X_n=F_n^{-1}(U),\qquad
-\widetilde X=F^{-1}(U).
-$$
+$$\widetilde X_n=F_n^{-1}(U),\qquad \widetilde X=F^{-1}(U).$$
 
 Python 用指数分布演示。若
 
-$$
-F_n=\operatorname{Exp}(1+1/n),
-\qquad F=\operatorname{Exp}(1),
-$$
+$$F_n=\operatorname{Exp}(1+1/n), \qquad F=\operatorname{Exp}(1),$$
 
 则
 
-$$
-F_n^{-1}(u)=-\frac{\log(1-u)}{1+1/n}
-\longrightarrow-\log(1-u)=F^{-1}(u).
-$$
+$$F_n^{-1}(u)=-\frac{\log(1-u)}{1+1/n} \longrightarrow-\log(1-u)=F^{-1}(u).$$
 
 程序对固定 $u$ 检查耦合变量逐点靠近：
 
@@ -787,9 +588,7 @@ assert d[0] > d[1] > d[2] or z < 1e-12
 
 若 $X_n\xrightarrow{d}X$ ，$g$ 在 $X$ 的分布不连续点集之外连续，尤其 $P(X\in D_g)=0$ ，则
 
-$$
-\boxed{g(X_n)\xrightarrow{d}g(X).}
-$$
+$$\boxed{g(X_n)\xrightarrow{d}g(X).}$$
 
 同样结论对依概率和几乎必然收敛也成立，条件需相应解释。
 
@@ -812,10 +611,7 @@ $$
 
 程序用二项到 Poisson 的极限作数值核对：
 
-$$
-\operatorname{Bin}(n,\lambda/n)
-\xrightarrow{d}\operatorname{Poisson}(\lambda).
-$$
+$$\operatorname{Bin}(n,\lambda/n) \xrightarrow{d}\operatorname{Poisson}(\lambda).$$
 
 Python 比较前十二个点的 pmf：
 
@@ -832,36 +628,19 @@ assert errs[0] > errs[1] > errs[2] and errs[2] < 2e-3
 
 设
 
-$$
-U_1,\dots,U_n\stackrel{iid}{\sim}U(0,\theta),
-\qquad M_n=\max_iU_i.
-$$
+$$U_1,\dots,U_n\stackrel{iid}{\sim}U(0,\theta), \qquad M_n=\max_iU_i.$$
 
 最大值本身依概率趋近 $\theta$ ，但若研究缩放后的差距
 
-$$
-Y_n=n(\theta-M_n),
-$$
+$$Y_n=n(\theta-M_n),$$
 
 对固定 $x>0$ 且 $n$ 足够大，
 
-$$
-\begin{aligned}
-P(Y_n>x)
-&=P(M_n<\theta-x/n)\\
-&=\left(1-\frac{x}{n\theta}\right)^n
-\to e^{-x/\theta}.
-\end{aligned}
-$$
+$$\begin{aligned} P(Y_n>x) &=P(M_n<\theta-x/n)\\ &=\left(1-\frac{x}{n\theta}\right)^n \to e^{-x/\theta}. \end{aligned}$$
 
 因此
 
-$$
-\boxed{
-n(\theta-M_n)\xrightarrow{d}Y,
-\qquad P(Y>x)=e^{-x/\theta}.
-}
-$$
+$$\boxed{ n(\theta-M_n)\xrightarrow{d}Y, \qquad P(Y>x)=e^{-x/\theta}. }$$
 
 极限是尺度为 $\theta$ 的指数分布。Python 同时检查精确尾概率和误差上界：
 

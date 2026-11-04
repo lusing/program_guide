@@ -6,11 +6,7 @@
 
 应用统计更常见的是复合约束：
 
-$$
-H_0:g(\theta_0)=0,
-\qquad
-H_A:g(\theta_0)\ne0,
-$$
+$$H_0:g(\theta_0)=0, \qquad H_A:g(\theta_0)\ne0,$$
 
 其中 $\theta\in\mathbb R^p$ ，$g:\mathbb R^p\to\mathbb R^q$ 。
 
@@ -34,28 +30,19 @@ $$
 
 本章采用平均对数似然
 
-$$
-\bar\ell_n(\theta)=\frac1n\sum_{i=1}^n\ell(X_i;\theta).
-$$
+$$\bar\ell_n(\theta)=\frac1n\sum_{i=1}^n\ell(X_i;\theta).$$
 
 无约束 MLE 为
 
-$$
-\hat\theta=\arg\max_{\theta\in\Theta}\bar\ell_n(\theta).
-$$
+$$\hat\theta=\arg\max_{\theta\in\Theta}\bar\ell_n(\theta).$$
 
 受约束 MLE 为
 
-$$
-\tilde\theta
-=\arg\max_{\theta\in\Theta,\,g(\theta)=0}\bar\ell_n(\theta).
-$$
+$$\tilde\theta =\arg\max_{\theta\in\Theta,\,g(\theta)=0}\bar\ell_n(\theta).$$
 
 记约束的 Jacobian 为
 
-$$
-G(\theta)=\frac{\partial g(\theta)}{\partial\theta'},
-$$
+$$G(\theta)=\frac{\partial g(\theta)}{\partial\theta'},$$
 
 它是 $q\times p$ 矩阵。
 
@@ -76,43 +63,27 @@ $$
 
 第 35 章给出
 
-$$
-\sqrt n(\hat\theta-\theta_0)\xrightarrow{d}N(0,V).
-$$
+$$\sqrt n(\hat\theta-\theta_0)\xrightarrow{d}N(0,V).$$
 
 在 $H_0$ 下，$g(\theta_0)=0$ 。
 
 由 Delta 方法，
 
-$$
-\sqrt n\,g(\hat\theta)
-\xrightarrow{d}
-N\left(0,G(\theta_0)VG(\theta_0)'\right).
-$$
+$$\sqrt n\,g(\hat\theta) \xrightarrow{d} N\left(0,G(\theta_0)VG(\theta_0)'\right).$$
 
 因此定义 Wald 统计量
 
-$$
-\boxed{
-W=n\,g(\hat\theta)'
-\left[\widehat G\widehat V\widehat G'\right]^{-1}
-g(\hat\theta),
-}
-$$
+$$\boxed{ W=n\,g(\hat\theta)' \left[\widehat G\widehat V\widehat G'\right]^{-1} g(\hat\theta), }$$
 
 其中 $\widehat G,\widehat V$ 是一致估计。
 
 若 $Z\xrightarrow{d}N(0,\Sigma)$ 且 $\Sigma$ 正定，则
 
-$$
-Z'\Sigma^{-1}Z\xrightarrow{d}\chi^2_q.
-$$
+$$Z'\Sigma^{-1}Z\xrightarrow{d}\chi^2_q.$$
 
 所以在原假设下，
 
-$$
-\boxed{W\xrightarrow{d}\chi^2_q.}
-$$
+$$\boxed{W\xrightarrow{d}\chi^2_q.}$$
 
 自由度等于独立约束的个数 $q$ ，不是参数总维数 $p$ 。
 
@@ -124,24 +95,15 @@ Wald 的优点是只需要无约束估计及其方差。
 
 在无约束最大值点，内点一阶条件为
 
-$$
-\nabla\bar\ell_n(\hat\theta)=0.
-$$
+$$\nabla\bar\ell_n(\hat\theta)=0.$$
 
 受约束最大化引入 Lagrange 函数
 
-$$
-\mathcal L(\theta,\lambda)
-=\bar\ell_n(\theta)+\lambda'g(\theta).
-$$
+$$\mathcal L(\theta,\lambda) =\bar\ell_n(\theta)+\lambda'g(\theta).$$
 
 一阶条件为
 
-$$
-\nabla\bar\ell_n(\tilde\theta)+G(\tilde\theta)'\tilde\lambda=0,
-\qquad
-g(\tilde\theta)=0.
-$$
+$$\nabla\bar\ell_n(\tilde\theta)+G(\tilde\theta)'\tilde\lambda=0, \qquad g(\tilde\theta)=0.$$
 
 若约束与数据相容，受约束估计附近的平均得分应很小，乘子也接近零。
 
@@ -151,25 +113,15 @@ $$
 
 对完全约束 $\theta=\theta_0$ ，单观测信息矩阵为 $I(\theta_0)$ ，常用 score 统计量为
 
-$$
-\boxed{
-LM=n\,\bar s_n(\theta_0)'I(\theta_0)^{-1}\bar s_n(\theta_0),
-}
-$$
+$$\boxed{ LM=n\,\bar s_n(\theta_0)'I(\theta_0)^{-1}\bar s_n(\theta_0), }$$
 
 其中
 
-$$
-\bar s_n(\theta)=\nabla\bar\ell_n(\theta).
-$$
+$$\bar s_n(\theta)=\nabla\bar\ell_n(\theta).$$
 
 在一般的 $q$ 个约束下，可用乘子形式
 
-$$
-LM=n\tilde\lambda'
-\left[\tilde G\tilde I^{-1}\tilde G'\right]
-\tilde\lambda.
-$$
+$$LM=n\tilde\lambda' \left[\tilde G\tilde I^{-1}\tilde G'\right] \tilde\lambda.$$
 
 实际软件也可能使用观测信息、外积信息或稳健协方差。
 
@@ -183,17 +135,11 @@ LM 的突出优点是只需要受约束模型。
 
 定义广义似然比统计量
 
-$$
-\boxed{
-LR=2n\left[\bar\ell_n(\hat\theta)-\bar\ell_n(\tilde\theta)\right].
-}
-$$
+$$\boxed{ LR=2n\left[\bar\ell_n(\hat\theta)-\bar\ell_n(\tilde\theta)\right]. }$$
 
 因为无约束可行集包含受约束可行集，
 
-$$
-\bar\ell_n(\hat\theta)\ge\bar\ell_n(\tilde\theta),
-$$
+$$\bar\ell_n(\hat\theta)\ge\bar\ell_n(\tilde\theta),$$
 
 所以 $LR\ge0$ 。
 
@@ -201,31 +147,19 @@ $$
 
 在正则条件下，Wilks 定理给出
 
-$$
-\boxed{LR\xrightarrow{d}\chi^2_q.}
-$$
+$$\boxed{LR\xrightarrow{d}\chi^2_q.}$$
 
 证明骨架是在无约束 MLE 附近作二阶展开。
 
 由于无约束得分为零，
 
-$$
-\bar\ell_n(\tilde\theta)-\bar\ell_n(\hat\theta)
-\approx
-\frac12(\tilde\theta-\hat\theta)'
-H_n(\hat\theta)
-(\tilde\theta-\hat\theta),
-$$
+$$\bar\ell_n(\tilde\theta)-\bar\ell_n(\hat\theta) \approx \frac12(\tilde\theta-\hat\theta)' H_n(\hat\theta) (\tilde\theta-\hat\theta),$$
 
 其中 $H_n$ 是 Hessian，且 $H_n\to-I$ 。
 
 所以
 
-$$
-LR\approx
-n(\hat\theta-\tilde\theta)'I(\theta_0)
-(\hat\theta-\tilde\theta).
-$$
+$$LR\approx n(\hat\theta-\tilde\theta)'I(\theta_0) (\hat\theta-\tilde\theta).$$
 
 再用受约束与无约束估计的一阶展开，可把右侧化为一个 $q$ 维标准正态向量的平方长度。
 
@@ -239,10 +173,7 @@ LR 只需要两个最大对数似然值，并且对标量光滑重参数化保�
 
 约束函数局部近似为线性：
 
-$$
-g(\hat\theta)
-\approx G(\theta_0)(\hat\theta-\theta_0).
-$$
+$$g(\hat\theta) \approx G(\theta_0)(\hat\theta-\theta_0).$$
 
 Hessian 局部近似为固定信息矩阵。
 
@@ -264,20 +195,13 @@ Hessian 局部近似为固定信息矩阵。
 
 设 $X_1,\ldots,X_n$ iid 服从 Bernoulli $(p)$ ，检验
 
-$$
-H_0:p=p_0,
-\qquad
-H_A:p\ne p_0.
-$$
+$$H_0:p=p_0, \qquad H_A:p\ne p_0.$$
 
 令 $K=\sum_iX_i$ ，$\hat p=K/n$ 。
 
 平均对数似然为
 
-$$
-\bar\ell_n(p)
-=\hat p\log p+(1-\hat p)\log(1-p).
-$$
+$$\bar\ell_n(p) =\hat p\log p+(1-\hat p)\log(1-p).$$
 
 无约束 MLE 是 $\hat p$ ，受约束 MLE 是 $p_0$ 。
 
@@ -285,36 +209,23 @@ $$
 
 单个 Bernoulli 观测的信息为
 
-$$
-I(p)=\frac1{p(1-p)}.
-$$
+$$I(p)=\frac1{p(1-p)}.$$
 
 均值 $\hat p$ 的 $\sqrt n$ 渐近方差是 $p(1-p)$ 。
 
 在 $\hat p$ 处估计方差，得到
 
-$$
-\boxed{
-W=\frac{n(\hat p-p_0)^2}{\hat p(1-\hat p)}.
-}
-$$
+$$\boxed{ W=\frac{n(\hat p-p_0)^2}{\hat p(1-\hat p)}. }$$
 
 ### LM/score
 
 平均得分为
 
-$$
-\bar s_n(p)=\frac{\hat p}{p}-\frac{1-\hat p}{1-p}
-=\frac{\hat p-p}{p(1-p)}.
-$$
+$$\bar s_n(p)=\frac{\hat p}{p}-\frac{1-\hat p}{1-p} =\frac{\hat p-p}{p(1-p)}.$$
 
 在 $p_0$ 处使用期望信息 $I(p_0)$ ，得到
 
-$$
-\boxed{
-LM=\frac{n(\hat p-p_0)^2}{p_0(1-p_0)}.
-}
-$$
+$$\boxed{ LM=\frac{n(\hat p-p_0)^2}{p_0(1-p_0)}. }$$
 
 它与 Wald 的唯一差别是分母使用原假设方差还是无约束估计方差。
 
@@ -324,14 +235,7 @@ $$
 
 直接代入两个最大平均对数似然：
 
-$$
-\boxed{
-LR=2n\left[
-\hat p\log\frac{\hat p}{p_0}
-+(1-\hat p)\log\frac{1-\hat p}{1-p_0}
-\right].
-}
-$$
+$$\boxed{ LR=2n\left[ \hat p\log\frac{\hat p}{p_0} +(1-\hat p)\log\frac{1-\hat p}{1-p_0} \right]. }$$
 
 方括号是 Bernoulli $(\hat p)$ 相对 Bernoulli $(p_0)$ 的 KL 散度。
 
@@ -343,31 +247,19 @@ $$
 
 取
 
-$$
-n=20,\qquad K=12,\qquad p_0=1/2,
-\qquad \hat p=3/5.
-$$
+$$n=20,\qquad K=12,\qquad p_0=1/2, \qquad \hat p=3/5.$$
 
 Wald 统计量为
 
-$$
-W=\frac{20(3/5-1/2)^2}{(3/5)(2/5)}
-=\boxed{\frac56}.
-$$
+$$W=\frac{20(3/5-1/2)^2}{(3/5)(2/5)} =\boxed{\frac56}.$$
 
 LM 统计量为
 
-$$
-LM=\frac{20(1/10)^2}{1/4}
-=\boxed{\frac45}.
-$$
+$$LM=\frac{20(1/10)^2}{1/4} =\boxed{\frac45}.$$
 
 LR 为
 
-$$
-LR=2\left[12\log\frac65+8\log\frac45\right]
-\approx\boxed{0.8054205420}.
-$$
+$$LR=2\left[12\log\frac65+8\log\frac45\right] \approx\boxed{0.8054205420}.$$
 
 三者不同，但都很小。
 
@@ -383,14 +275,9 @@ $$
 
 若改为 $K=16$ ，则 $\hat p=4/5$ ，并且
 
-$$
-W=\frac{45}{4}=11.25,
-\qquad LM=\frac{36}{5}=7.2,
-$$
+$$W=\frac{45}{4}=11.25, \qquad LM=\frac{36}{5}=7.2,$$
 
-$$
-LR\approx7.7097902809.
-$$
+$$LR\approx7.7097902809.$$
 
 此时三者都拒绝，但数值差异已经很明显。
 
@@ -477,10 +364,7 @@ def bernoulliScore (n phat p0 : ℚ) : ℚ :=
 
 当 $p_0=1/2$ 时，Lean 证明：
 
-$$
-LM=
-\frac{\hat p(1-\hat p)}{p_0(1-p_0)}W.
-$$
+$$LM= \frac{\hat p(1-\hat p)}{p_0(1-p_0)}W.$$
 
 对应形式化为：
 
@@ -506,16 +390,11 @@ theorem bernoulli_wald_score_relation (n phat : ℚ)
 
 若真参数固定满足 $g(\theta_*)\ne0$ ，在适当条件下
 
-$$
-g(\hat\theta)\xrightarrow{p}g(\theta_*).
-$$
+$$g(\hat\theta)\xrightarrow{p}g(\theta_*).$$
 
 于是 Wald 统计量通常满足
 
-$$
-\frac Wn\xrightarrow{p}
-g(\theta_*)'[G V G']^{-1}g(\theta_*)>0.
-$$
+$$\frac Wn\xrightarrow{p} g(\theta_*)'[G V G']^{-1}g(\theta_*)>0.$$
 
 所以 $W\to\infty$ ，固定临界值下的拒绝概率趋于一。
 
@@ -525,9 +404,7 @@ LR 和 LM 在相应条件下也具有一致性。
 
 为了研究靠近原假设的备择，取局部序列
 
-$$
-\theta_n=\theta_0+\frac{h}{\sqrt n}.
-$$
+$$\theta_n=\theta_0+\frac{h}{\sqrt n}.$$
 
 此时约束偏差是 $O(1/\sqrt n)$ ，标准化统计量不会简单退化为原假设下的中心卡方。
 
@@ -535,11 +412,7 @@ $$
 
 例如标量约束且 $V$ 是 $\sqrt n$ 误差的渐近方差时，
 
-$$
-W\Rightarrow\chi^2_1(\lambda),
-\qquad
-\lambda=h^2/V.
-$$
+$$W\Rightarrow\chi^2_1(\lambda), \qquad \lambda=h^2/V.$$
 
 第 36 章的正态功效曲线是这一思想的精确有限样本版本：功效随非中心位移增加，而不是只由 p 值决定。
 
@@ -547,40 +420,23 @@ $$
 
 对每个候选参数值 $\theta_0$ ，构造检验
 
-$$
-H_0:\theta=\theta_0.
-$$
+$$H_0:\theta=\theta_0.$$
 
 设水平为 $\alpha$ 的不拒绝域由统计量 $T(X;\theta_0)\le c_\alpha(\theta_0)$ 给出。
 
 定义置信集
 
-$$
-\boxed{
-C_{1-\alpha}(X)
-=\{\theta_0:T(X;\theta_0)\le c_\alpha(\theta_0)\}.
-}
-$$
+$$\boxed{ C_{1-\alpha}(X) =\{\theta_0:T(X;\theta_0)\le c_\alpha(\theta_0)\}. }$$
 
 则由定义立即有
 
-$$
-\boxed{
-\theta_0\in C_{1-\alpha}(X)
-\iff
-\text{在水平 }\alpha\text{ 下不拒绝 }H_0:\theta=\theta_0.
-}
-$$
+$$\boxed{ \theta_0\in C_{1-\alpha}(X) \iff \text{在水平 }\alpha\text{ 下不拒绝 }H_0:\theta=\theta_0. }$$
 
 这不是数值近似，而是同一个不等式的两种读法。
 
 若每个 $\theta_0$ 的检验都精确校准，则
 
-$$
-P_{\theta_0}\{\theta_0\in C_{1-\alpha}(X)\}
-=1-P_{\theta_0}(\text{拒绝 }\theta_0)
-=1-\alpha.
-$$
+$$P_{\theta_0}\{\theta_0\in C_{1-\alpha}(X)\} =1-P_{\theta_0}(\text{拒绝 }\theta_0) =1-\alpha.$$
 
 若检验只有渐近水平，则得到的是渐近覆盖率。
 
@@ -592,34 +448,21 @@ $$
 
 对候选值 $\mu_0$ ，双侧检验不拒绝当且仅当
 
-$$
-\left|\frac{\bar X-\mu_0}{\sigma/\sqrt n}\right|
-\le z_{\alpha/2}.
-$$
+$$\left|\frac{\bar X-\mu_0}{\sigma/\sqrt n}\right| \le z_{\alpha/2}.$$
 
 整理关于 $\mu_0$ 的不等式：
 
-$$
-\bar X-z_{\alpha/2}\frac\sigma{\sqrt n}
-\le\mu_0\le
-\bar X+z_{\alpha/2}\frac\sigma{\sqrt n}.
-$$
+$$\bar X-z_{\alpha/2}\frac\sigma{\sqrt n} \le\mu_0\le \bar X+z_{\alpha/2}\frac\sigma{\sqrt n}.$$
 
 因此
 
-$$
-\boxed{
-\bar X\pm z_{\alpha/2}\frac\sigma{\sqrt n}
-}
-$$
+$$\boxed{ \bar X\pm z_{\alpha/2}\frac\sigma{\sqrt n} }$$
 
 就是所有不被双侧 z 检验拒绝的候选均值。
 
 继续第 36 章的数值：$n=16,\sigma=4,\bar x=11.5$ ，标准误为 1，所以 95% 区间为
 
-$$
-(9.5400360155,\ 13.4599639845).
-$$
+$$(9.5400360155,\ 13.4599639845).$$
 
 $\mu_0=10$ 和 12 都在区间内，因此不被拒绝；$\mu_0=14$ 在区间外，因此被双侧 5% 检验拒绝。
 
@@ -629,36 +472,23 @@ $\mu_0=10$ 和 12 都在区间内，因此不被拒绝；$\mu_0=14$ 在区间外
 
 若正态样本方差未知，候选 $\mu_0$ 的双侧 t 检验不拒绝当且仅当
 
-$$
-|\bar X-\mu_0|
-\le t_{n-1,1-\alpha/2}\frac{S}{\sqrt n}.
-$$
+$$|\bar X-\mu_0| \le t_{n-1,1-\alpha/2}\frac{S}{\sqrt n}.$$
 
 反演得到
 
-$$
-\boxed{
-\bar X\pm t_{n-1,1-\alpha/2}\frac{S}{\sqrt n}.
-}
-$$
+$$\boxed{ \bar X\pm t_{n-1,1-\alpha/2}\frac{S}{\sqrt n}. }$$
 
 出餐时间例中，$n=20,\bar x=48,s=8$ ，且
 
-$$
-t_{19,0.975}=2.0930240544.
-$$
+$$t_{19,0.975}=2.0930240544.$$
 
 区间半宽为
 
-$$
-2.0930240544\frac8{\sqrt{20}}\approx3.74411525.
-$$
+$$2.0930240544\frac8{\sqrt{20}}\approx3.74411525.$$
 
 所以 95% 区间为
 
-$$
-(44.25588475,\ 51.74411525).
-$$
+$$(44.25588475,\ 51.74411525).$$
 
 它包含 45，与双侧 5% t 检验不拒绝 $H_0:\mu=45$ 一致。
 
@@ -764,11 +594,7 @@ Julia 得到 0.94790 和 0.95015。
 
 若每个检验在相应原假设下的水平为 $\alpha/m$ ，Boole 不等式给出
 
-$$
-P\left(\bigcup_{j=1}^m A_j\right)
-\le\sum_{j=1}^mP(A_j)
-\le m\frac\alpha m=\alpha.
-$$
+$$P\left(\bigcup_{j=1}^m A_j\right) \le\sum_{j=1}^mP(A_j) \le m\frac\alpha m=\alpha.$$
 
 这就是 Bonferroni 校正。
 
@@ -776,15 +602,11 @@ $$
 
 若 20 个独立真原假设各用 0.05 水平，至少一个假拒绝的概率为
 
-$$
-1-0.95^{20}=0.6415140776.
-$$
+$$1-0.95^{20}=0.6415140776.$$
 
 若改用 Bonferroni，每个检验使用
 
-$$
-\alpha_j=0.05/20=0.0025.
-$$
+$$\alpha_j=0.05/20=0.0025.$$
 
 Python 和 Julia 都对这两个数值作了断言。
 

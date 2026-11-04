@@ -7,15 +7,11 @@
 
 离散随机变量的期望定义为
 
-$$
-E[X]=\sum_xxp_X(x),
-$$
+$$E[X]=\sum_xxp_X(x),$$
 
 连续有密度时定义为
 
-$$
-E[X]=\int_{-\infty}^{\infty}xf_X(x)\,dx.
-$$
+$$E[X]=\int_{-\infty}^{\infty}xf_X(x)\,dx.$$
 
 只要 $E|X|<\infty$ ，称 $X$ 可积，此时期望存在且为有限实数。
 这个绝对收敛条件不是技术洁癖：若正部和负部都为无穷，
@@ -23,15 +19,11 @@ $$
 
 更一般地，对函数 $g$ ，无意识统计学家公式（LOTUS）给出
 
-$$
-E[g(X)]=\sum_xg(x)p_X(x)
-$$
+$$E[g(X)]=\sum_xg(x)p_X(x)$$
 
 或
 
-$$
-E[g(X)]=\int g(x)f_X(x)\,dx,
-$$
+$$E[g(X)]=\int g(x)f_X(x)\,dx,$$
 
 前提是 $E|g(X)|<\infty$ 。
 它的意义是：不必先求 $g(X)$ 的分布，直接在原分布上加权即可。
@@ -39,9 +31,7 @@ $$
 
 期望的线性性为
 
-$$
-E[aX+bY+c]=aE[X]+bE[Y]+c.
-$$
+$$E[aX+bY+c]=aE[X]+bE[Y]+c.$$
 
 证明只需展开求和或积分；不需要 $X,Y$ 独立。
 例如任何可积随机变量都有 $E[3X+2]=3E[X]+2$ 。
@@ -51,26 +41,15 @@ $$
 $r$ 阶矩为 $E[X^r]$ ，$r$ 阶中心矩为 $E[(X-\mu)^r]$ ，其中 $\mu=E[X]$ 。
 一阶矩是重心，二阶中心矩是方差：
 
-$$
-\operatorname{Var}(X)=E[(X-\mu)^2].
-$$
+$$\operatorname{Var}(X)=E[(X-\mu)^2].$$
 
 展开平方并使用线性性：
 
-$$
-\begin{aligned}
-\operatorname{Var}(X)
-&=E[X^2-2\mu X+\mu^2]\\
-&=E[X^2]-2\mu E[X]+\mu^2\\
-&=E[X^2]-\mu^2.
-\end{aligned}
-$$
+$$\begin{aligned} \operatorname{Var}(X) &=E[X^2-2\mu X+\mu^2]\\ &=E[X^2]-2\mu E[X]+\mu^2\\ &=E[X^2]-\mu^2. \end{aligned}$$
 
 所以
 
-$$
-\boxed{\operatorname{Var}(X)=E[X^2]-E[X]^2}.
-$$
+$$\boxed{\operatorname{Var}(X)=E[X^2]-E[X]^2}.$$
 
 方差非负，因此也得到 $E[X^2]\ge E[X]^2$ 。
 标准差 $\sigma=\sqrt{\operatorname{Var}(X)}$ 与 $X$ 同单位，
@@ -78,26 +57,18 @@ $$
 
 平移伸缩满足
 
-$$
-E[aX+b]=a\mu+b,\qquad
-\operatorname{Var}(aX+b)=a^2\operatorname{Var}(X).
-$$
+$$E[aX+b]=a\mu+b,\qquad \operatorname{Var}(aX+b)=a^2\operatorname{Var}(X).$$
 
 常数 $b$ 只搬动整体，不改变围绕均值的散布；
 系数 $a$ 在平方后进入方差。
 
 公平骰子的账为
 
-$$
-E[X]=\frac{1+\cdots+6}{6}=\frac72,
-\qquad E[X^2]=\frac{91}{6},
-$$
+$$E[X]=\frac{1+\cdots+6}{6}=\frac72, \qquad E[X^2]=\frac{91}{6},$$
 
 故
 
-$$
-\operatorname{Var}(X)=\frac{91}{6}-\frac{49}{4}=\frac{35}{12}.
-$$
+$$\operatorname{Var}(X)=\frac{91}{6}-\frac{49}{4}=\frac{35}{12}.$$
 
 两骰之和 $R$ 的 pmf 关于 7 对称，所以 $E[R]=7$ ；
 直接求和得 $\operatorname{Var}(R)=35/6$ ，恰是两颗独立骰子的方差之和。
@@ -106,46 +77,28 @@ $$
 
 继续使用第 08 章的密度
 
-$$
-f(x)=\frac6{11}(2+3x-5x^2),\qquad0\le x\le1.
-$$
+$$f(x)=\frac6{11}(2+3x-5x^2),\qquad0\le x\le1.$$
 
 对非负整数 $r$ ，
 
-$$
-\begin{aligned}
-E[X^r]
-&=\frac6{11}\int_0^1x^r(2+3x-5x^2)\,dx\\
-&=\frac6{11}\left(\frac2{r+1}+\frac3{r+2}-\frac5{r+3}\right)\\
-&=\frac6{11}\frac{7r+11}{(r+1)(r+2)(r+3)}.
-\end{aligned}
-$$
+$$\begin{aligned} E[X^r] &=\frac6{11}\int_0^1x^r(2+3x-5x^2)\,dx\\ &=\frac6{11}\left(\frac2{r+1}+\frac3{r+2}-\frac5{r+3}\right)\\ &=\frac6{11}\frac{7r+11}{(r+1)(r+2)(r+3)}. \end{aligned}$$
 
 代入 $r=1$ 得
 
-$$
-E[X]=\frac9{22}.
-$$
+$$E[X]=\frac9{22}.$$
 
 代入 $r=2$ 得 $E[X^2]=5/22$ ，所以
 
-$$
-\operatorname{Var}(X)=\frac5{22}-\left(\frac9{22}\right)^2
-=\frac{29}{484}.
-$$
+$$\operatorname{Var}(X)=\frac5{22}-\left(\frac9{22}\right)^2 =\frac{29}{484}.$$
 
 这里“有密度”只保证总质量可积，不保证任意函数都可积。
 例如
 
-$$
-E[1/X]=\frac6{11}\int_0^1\frac{2+3x-5x^2}{x}\,dx
-$$
+$$E[1/X]=\frac6{11}\int_0^1\frac{2+3x-5x^2}{x}\,dx$$
 
 不存在，因为靠近 0 时被积函数的主项为 $2/x$ ，而
 
-$$
-\int_\varepsilon^1\frac{2}{x}\,dx=-2\log\varepsilon\to\infty.
-$$
+$$\int_\varepsilon^1\frac{2}{x}\,dx=-2\log\varepsilon\to\infty.$$
 
 同一随机变量的均值有限，但 $1/X$ 的期望为 $+\infty$ 。
 任何涉及倒数、对数或高次幂的期望，都应重新检查尾部与奇点。
@@ -154,32 +107,22 @@ $$
 
 标准 Cauchy 密度为
 
-$$
-f(x)=\frac1{\pi(1+x^2)},\qquad x\in\mathbb R.
-$$
+$$f(x)=\frac1{\pi(1+x^2)},\qquad x\in\mathbb R.$$
 
 它合法归一，但
 
-$$
-E|X|=\frac2\pi\int_0^\infty\frac{x}{1+x^2}\,dx=\infty,
-$$
+$$E|X|=\frac2\pi\int_0^\infty\frac{x}{1+x^2}\,dx=\infty,$$
 
 因为原函数是 $\log(1+x^2)/2$ 。
 所以 Cauchy 均值不存在。
 
 有人会用奇函数对称性写成
 
-$$
-\lim_{A\to\infty}\int_{-A}^{A}\frac{x}{\pi(1+x^2)}\,dx=0.
-$$
+$$\lim_{A\to\infty}\int_{-A}^{A}\frac{x}{\pi(1+x^2)}\,dx=0.$$
 
 这只是对称主值，不是期望。改取不对称区间：
 
-$$
-\int_{-A}^{2A}\frac{x}{\pi(1+x^2)}\,dx
-=\frac1{2\pi}\log\frac{1+4A^2}{1+A^2}
-\to\frac{\log2}{\pi}\ne0.
-$$
+$$\int_{-A}^{2A}\frac{x}{\pi(1+x^2)}\,dx =\frac1{2\pi}\log\frac{1+4A^2}{1+A^2} \to\frac{\log2}{\pi}\ne0.$$
 
 积分路径改变，极限就改变，正是绝对可积条件要排除的情况。
 “分布关于 0 对称”与“均值为 0”不是同一命题。
@@ -188,9 +131,7 @@ $$
 
 对 $0<u<1$ ，下分位数定义为
 
-$$
-q_u=F^-(u)=\inf\{x:F(x)\ge u\}.
-$$
+$$q_u=F^-(u)=\inf\{x:F(x)\ge u\}.$$
 
 若 $F$ 连续且严格增，这就是通常反函数 $F^{-1}(u)$ 。
 中位数是 $q_{1/2}$ 。它只要求一半质量在左侧、一半在右侧，
@@ -198,9 +139,7 @@ $$
 
 对密度 $2x$ （$0<x<1$ ），$F(x)=x^2$ ，所以
 
-$$
-q_u=\sqrt u,\qquad q_{1/2}=1/\sqrt2\approx0.7071.
-$$
+$$q_u=\sqrt u,\qquad q_{1/2}=1/\sqrt2\approx0.7071.$$
 
 均值为 $2/3$ ，中位数却更大：分布的质量向 1 端集中，
 但左尾把加权平均拉低。均值、中位数和众数回答不同问题，不应相互替代。
@@ -220,16 +159,11 @@ $$
 组合风险则展示方差如何进入决策。设两个独立收益 $X_1,X_2$
 均有均值 3、方差 2，组合
 
-$$
-S_w=wX_1+(1-w)X_2.
-$$
+$$S_w=wX_1+(1-w)X_2.$$
 
 均值恒为 3。独立性使交叉协方差为零，故
 
-$$
-\operatorname{Var}(S_w)=2\bigl(w^2+(1-w)^2\bigr)
-=4\left(w-\frac12\right)^2+1.
-$$
+$$\operatorname{Var}(S_w)=2\bigl(w^2+(1-w)^2\bigr) =4\left(w-\frac12\right)^2+1.$$
 
 因此 $w=1/2$ 时方差最小，为 1。
 等权分散把方差减半而不改变均值，但这个结论使用了独立性与有限二阶矩；

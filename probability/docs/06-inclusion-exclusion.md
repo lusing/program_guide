@@ -10,23 +10,14 @@
 
 对两个事件，
 
-$$
-P(A\cup B)=P(A)+P(B)-P(A\cap B).
-$$
+$$P(A\cup B)=P(A)+P(B)-P(A\cap B).$$
 
 只属于 $A$ 或只属于 $B$ 的点被计算一次，同时属于二者的点先被计算两次，
 再减去一次。
 
 对三个事件，公式变成
 
-$$
-\begin{aligned}
-P(A\cup B\cup C)
-={}&P(A)+P(B)+P(C)\\
-&-P(A\cap B)-P(A\cap C)-P(B\cap C)\\
-&+P(A\cap B\cap C).
-\end{aligned}
-$$
+$$\begin{aligned} P(A\cup B\cup C) ={}&P(A)+P(B)+P(C)\\ &-P(A\cap B)-P(A\cap C)-P(B\cap C)\\ &+P(A\cap B\cap C). \end{aligned}$$
 
 为什么三重交最后又要加回来？一个属于三个事件的点在第一行被加了三次，在
 第二行被减了三次，总贡献暂时为零；它本来应贡献一次，所以最后要加一次。
@@ -40,10 +31,7 @@ $$
 三个事件各含 6 个有序结果，三个双交各含 1 个结果，三重交也含 1 个结果，
 所以
 
-$$
-|A\cup B\cup C|
-=6+6+6-1-1-1+1=16,
-$$
+$$|A\cup B\cup C| =6+6+6-1-1-1+1=16,$$
 
 概率为 $16/36$ 。
 
@@ -51,27 +39,15 @@ $$
 
 设 $A_1,\ldots,A_m$ 是同一有限样本空间中的事件。记
 
-$$
-S_r=\sum_{1\le i_1<\cdots<i_r\le m}
-\left|A_{i_1}\cap\cdots\cap A_{i_r}\right|.
-$$
+$$S_r=\sum_{1\le i_1<\cdots<i_r\le m} \left|A_{i_1}\cap\cdots\cap A_{i_r}\right|.$$
 
 则
 
-$$
-\left|A_1\cup\cdots\cup A_m\right|
-=S_1-S_2+S_3-\cdots+(-1)^{m+1}S_m.
-$$
+$$\left|A_1\cup\cdots\cup A_m\right| =S_1-S_2+S_3-\cdots+(-1)^{m+1}S_m.$$
 
 概率版本为
 
-$$
-P\left(\bigcup_{i=1}^m A_i\right)
-=
-\sum_{r=1}^m(-1)^{r+1}
-\sum_{1\le i_1<\cdots<i_r\le m}
-P(A_{i_1}\cap\cdots\cap A_{i_r}).
-$$
+$$P\left(\bigcup_{i=1}^m A_i\right) = \sum_{r=1}^m(-1)^{r+1} \sum_{1\le i_1<\cdots<i_r\le m} P(A_{i_1}\cap\cdots\cap A_{i_r}).$$
 
 ### 逐点覆盖次数证明
 
@@ -81,23 +57,15 @@ $$
 - 若 $t\ge1$ ，在计算所有 $r$ 重交时，包含 $\omega$ 的 $r$ 个事件
   组合共有 $\binom tr$ 个。因此右端给它的总系数是
 
-$$
-\binom t1-\binom t2+\binom t3-\cdots+(-1)^{t+1}\binom tt.
-$$
+$$\binom t1-\binom t2+\binom t3-\cdots+(-1)^{t+1}\binom tt.$$
 
 由二项定理，
 
-$$
-(1-1)^t
-=\sum_{r=0}^t(-1)^r\binom tr
-=1-\sum_{r=1}^t(-1)^{r+1}\binom tr.
-$$
+$$(1-1)^t =\sum_{r=0}^t(-1)^r\binom tr =1-\sum_{r=1}^t(-1)^{r+1}\binom tr.$$
 
 因为 $t\ge1$ 时 $(1-1)^t=0$ ，所以
 
-$$
-\sum_{r=1}^t(-1)^{r+1}\binom tr=1.
-$$
+$$\sum_{r=1}^t(-1)^{r+1}\binom tr=1.$$
 
 于是每个属于并集的点恰好计算一次，不属于并集的点计算零次，公式成立。
 
@@ -108,25 +76,15 @@ $$
 
 若想计算“所有坏事件都不发生”的概率，容斥常写成补事件形式。令
 
-$$
-N_0=\left|A_1^c\cap\cdots\cap A_m^c\right|,
-$$
+$$N_0=\left|A_1^c\cap\cdots\cap A_m^c\right|,$$
 
 则
 
-$$
-N_0=N-S_1+S_2-\cdots+(-1)^mS_m.
-$$
+$$N_0=N-S_1+S_2-\cdots+(-1)^mS_m.$$
 
 除以 $N=|\Omega|$ 得
 
-$$
-P(A_1^c\cap\cdots\cap A_m^c)
-=
-1-\sum_iP(A_i)
-+\sum_{i<j}P(A_i\cap A_j)
--\cdots+(-1)^mP(A_1\cap\cdots\cap A_m).
-$$
+$$P(A_1^c\cap\cdots\cap A_m^c) = 1-\sum_iP(A_i) +\sum_{i<j}P(A_i\cap A_j) -\cdots+(-1)^mP(A_1\cap\cdots\cap A_m).$$
 
 生日问题中“至少一对生日相同”的补事件是“所有人生日互不相同”；占位数
 问题中“至少一个空桶”的补事件是“所有桶都非空”。这类存在性问题往往先
@@ -140,41 +98,23 @@ $n$ 封信和 $n$ 个写好地址的信封随机配对。若没有任何一封�
 令 $A_i$ 表示第 $i$ 封信进入正确信封。指定某 $r$ 封信都正确时，其余
 $n-r$ 封可任意排列，所以
 
-$$
-|A_{i_1}\cap\cdots\cap A_{i_r}|=(n-r)!.
-$$
+$$|A_{i_1}\cap\cdots\cap A_{i_r}|=(n-r)!.$$
 
 这样的 $r$ 重交有 $\binom nr$ 个。由补事件形式，
 
-$$
-\begin{aligned}
-D_n
-&=\sum_{r=0}^n(-1)^r\binom nr(n-r)!\\
-&=n!\sum_{r=0}^n\frac{(-1)^r}{r!}.
-\end{aligned}
-$$
+$$\begin{aligned} D_n &=\sum_{r=0}^n(-1)^r\binom nr(n-r)!\\ &=n!\sum_{r=0}^n\frac{(-1)^r}{r!}. \end{aligned}$$
 
 因此
 
-$$
-\frac{D_n}{n!}
-=1-\frac1{1!}+\frac1{2!}-\cdots+\frac{(-1)^n}{n!}.
-$$
+$$\frac{D_n}{n!} =1-\frac1{1!}+\frac1{2!}-\cdots+\frac{(-1)^n}{n!}.$$
 
 前几个值为
 
-$$
-D_0=1,\quad D_1=0,\quad D_2=1,\quad D_3=2,\quad
-D_4=9,\quad D_5=44,\quad D_6=265,\quad D_7=1854.
-$$
+$$D_0=1,\quad D_1=0,\quad D_2=1,\quad D_3=2,\quad D_4=9,\quad D_5=44,\quad D_6=265,\quad D_7=1854.$$
 
 当 $n\to\infty$ 时，由指数函数的 Taylor 展开，
 
-$$
-\lim_{n\to\infty}\frac{D_n}{n!}
-=\sum_{r=0}^{\infty}\frac{(-1)^r}{r!}
-=e^{-1}.
-$$
+$$\lim_{n\to\infty}\frac{D_n}{n!} =\sum_{r=0}^{\infty}\frac{(-1)^r}{r!} =e^{-1}.$$
 
 所以随机排列没有一个固定点的概率约为 $36.79\%$ ，至少有一个固定点的概率
 约为 $63.21\%$ 。这个极限收敛很快；例如 $D_4/4!=9/24=0.375$ ，已经接近
@@ -207,30 +147,19 @@ $n$ 个可辨球独立等概率地进入 $r$ 个可辨篮。所有篮子都非�
 总分配数为 $r^n$ 。令 $A_j$ 表示第 $j$ 个篮子为空。指定 $s$ 个篮子
 为空时，每个球只能进入其余 $r-s$ 个篮子，所以
 
-$$
-|A_{j_1}\cap\cdots\cap A_{j_s}|=(r-s)^n.
-$$
+$$|A_{j_1}\cap\cdots\cap A_{j_s}|=(r-s)^n.$$
 
 空篮集合有 $\binom rs$ 种。由补事件形式，全非空分配数为
 
-$$
-N_{r,n}^{\mathrm{full}}
-=\sum_{s=0}^r(-1)^s\binom rs(r-s)^n,
-$$
+$$N_{r,n}^{\mathrm{full}} =\sum_{s=0}^r(-1)^s\binom rs(r-s)^n,$$
 
 概率为
 
-$$
-P(\text{所有篮非空})
-=\frac1{r^n}\sum_{s=0}^r(-1)^s\binom rs(r-s)^n.
-$$
+$$P(\text{所有篮非空}) =\frac1{r^n}\sum_{s=0}^r(-1)^s\binom rs(r-s)^n.$$
 
 例如 $r=3,n=4$ ：
 
-$$
-3^4-\binom31 2^4+\binom32 1^4
-=81-48+3=36.
-$$
+$$3^4-\binom31 2^4+\binom32 1^4 =81-48+3=36.$$
 
 所以概率为 $36/81=4/9$ 。这也是满射函数的个数：从 $n$ 个球组成的集合
 到 $r$ 个篮子组成的集合，共有多少个函数把每个篮子都覆盖到。
@@ -253,9 +182,7 @@ IE is 81 - 3 * 16 + 3 * 1.
 
 Vandermonde 恒等式为
 
-$$
-\sum_{j=0}^k\binom mj\binom n{k-j}=\binom{m+n}{k}.
-$$
+$$\sum_{j=0}^k\binom mj\binom n{k-j}=\binom{m+n}{k}.$$
 
 ### 组合证明
 
@@ -265,32 +192,23 @@ $$
 若选出的 $k$ 人中恰有 $j$ 人来自甲组，则另外 $k-j$ 人来自乙组，方案
 数为
 
-$$
-\binom mj\binom n{k-j}.
-$$
+$$\binom mj\binom n{k-j}.$$
 
 不同 $j$ 对应互斥情况，对 $j$ 求和即得恒等式。
 
 例如 $m=3,n=2,k=2$ ：
 
-$$
-\binom30\binom22+\binom31\binom21+\binom32\binom20
-=1+6+3=10=\binom52.
-$$
+$$\binom30\binom22+\binom31\binom21+\binom32\binom20 =1+6+3=10=\binom52.$$
 
 ### 生成函数证明
 
 由二项定理，
 
-$$
-(1+x)^m(1+x)^n=(1+x)^{m+n}.
-$$
+$$(1+x)^m(1+x)^n=(1+x)^{m+n}.$$
 
 左端 $x^k$ 的系数是所有次数组合 $j+(k-j)=k$ 的系数之和：
 
-$$
-\sum_j\binom mj\binom n{k-j}.
-$$
+$$\sum_j\binom mj\binom n{k-j}.$$
 
 右端 $x^k$ 的系数是 $\binom{m+n}{k}$ 。同一形式幂级数中的系数相等，
 故恒等式成立。
@@ -299,30 +217,21 @@ $$
 
 曲棍球棒（hockey-stick）恒等式为
 
-$$
-\sum_{i=r}^{n}\binom ir=\binom{n+1}{r+1}.
-$$
+$$\sum_{i=r}^{n}\binom ir=\binom{n+1}{r+1}.$$
 
 它的组合证明盯住“最大元素”。从
 
-$$
-\{0,1,\ldots,n\}
-$$
+$$\{0,1,\ldots,n\}$$
 
 中选 $r+1$ 个元素，共有 $\binom{n+1}{r+1}$ 种。设选出的最大元素为
 $i$ 。因为最大元素是 $i$ ，其余 $r$ 个元素必须从 $\{0,\ldots,i-1\}$
 中选择，共有 $\binom ir$ 种。最大元素可取 $r,r+1,\ldots,n$ ，故
 
-$$
-\binom{n+1}{r+1}=\sum_{i=r}^{n}\binom ir.
-$$
+$$\binom{n+1}{r+1}=\sum_{i=r}^{n}\binom ir.$$
 
 例如
 
-$$
-\binom22+\binom32+\binom42+\binom52+\binom62
-=1+3+6+10+15=35=\binom73.
-$$
+$$\binom22+\binom32+\binom42+\binom52+\binom62 =1+3+6+10+15=35=\binom73.$$
 
 Prolog 枚举 $\{0,\ldots,6\}$ 的全部 35 个三元子集，再按最大元素分类：
 
@@ -344,21 +253,15 @@ Counts = [1, 3, 6, 10, 15].
 
 对 $n$ 元素集合的所有子集求大小之和：
 
-$$
-\sum_{k=0}^n k\binom nk=n2^{n-1}.
-$$
+$$\sum_{k=0}^n k\binom nk=n2^{n-1}.$$
 
 第一种证明是代数求导：由
 
-$$
-(1+x)^n=\sum_{k=0}^n\binom nkx^k
-$$
+$$(1+x)^n=\sum_{k=0}^n\binom nkx^k$$
 
 两边求导并令 $x=1$ ，得到
 
-$$
-n2^{n-1}=\sum_{k=0}^nk\binom nk.
-$$
+$$n2^{n-1}=\sum_{k=0}^nk\binom nk.$$
 
 第二种证明是双计数。考虑“选一个子集，再在该子集中指定一个特殊元素”的
 有序对。若子集大小为 $k$ ，有 $k$ 种指定方式，左端为
@@ -369,9 +272,7 @@ $\sum_k k\binom nk$ 。反过来，先指定特殊元素，有 $n$ 种；其余 
 
 常用恒等式
 
-$$
-\binom nk\binom kj=\binom nj\binom{n-j}{k-j}.
-$$
+$$\binom nk\binom kj=\binom nj\binom{n-j}{k-j}.$$
 
 左端表示先从 $n$ 人中选 $k$ 人，再从这 $k$ 人中选 $j$ 个核心成员。
 右端先直接选出 $j$ 个核心成员，再从剩余 $n-j$ 人中选 $k-j$ 个普通

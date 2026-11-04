@@ -23,17 +23,13 @@
 
 在 $\omega^\omega$ 上，拓扑 $\tau$ 以基本开集
 
-$$
-N_s=\{f\in\omega^\omega : s\subseteq f\}\qquad(s\in\omega^{<\omega})
-$$
+$$N_s=\{f\in\omega^\omega : s\subseteq f\}\qquad(s\in\omega^{<\omega})$$
 
 为基。距离用「首个分歧点」度量：
 
 > **定义 3.24** 对 $f\ne g$ 令
 > $\triangle(f,g)=\min\{n : f(n)\ne g(n)\}$ ，
-> $$
-> d(f,g)=2^{-\triangle(f,g)},\qquad d(f,f)=0,
-> $$
+> $$d(f,g)=2^{-\triangle(f,g)},\qquad d(f,f)=0,$$
 >
 > 并定义字典序 $f<_{\mathrm{lex}}g\iff f\ne g\wedge f(\triangle(f,g))<g(\triangle(f,g))$ 。
 
@@ -42,9 +38,7 @@ $$
 
 **可分性**：全体**最终平坦**函数
 
-$$
-D=\{f : \exists m\,\forall n\ (n\ge m\to f(n)=m)\}
-$$
+$$D=\{f : \exists m\,\forall n\ (n\ge m\to f(n)=m)\}$$
 
 可数（编码于 $\omega\times\omega^{<\omega}$ ），且在任一非空
 $N_s$ 中取 $f_s=s{}^\frown mmm\cdots$ （$m$ 任意固定）即
@@ -52,17 +46,13 @@ $f_s\in N_s\cap D$ 。
 
 **完备性**：设 $(f_n)$ 是柯西序列。递归取
 
-$$
-a_n=\min\{a>a_n' : a>\max\{a_0,\ldots,a_{n-1}\}\},
-$$
+$$a_n=\min\{a>a_n' : a>\max\{a_0,\ldots,a_{n-1}\}\},$$
 
 其中 $a_n'$ 保证 $d(f_i,f_j)<2^{-(n+1)}$ 对一切
 $i,j\ge a$ 成立。令
 $I_n=\{i : a_n\le i<a_{n+1}\}$ ，定义
 
-$$
-f=\bigcup_{n<\omega}(f_{a_n+1}\upharpoonright I_n),
-$$
+$$f=\bigcup_{n<\omega}(f_{a_n+1}\upharpoonright I_n),$$
 
 则 $d(f_{a},f)<2^{-(n+1)}$ 对 $a\ge a_n$ 成立，即 $f$ 是极限。
 （在每个块 $I_n$ 上柯西列已经稳定到误差 $2^{-(n+1)}$ 之内。）∎
@@ -89,9 +79,7 @@ $f=\bigcup_n s_n\in N_{s_0}\cap\bigcap_n D_n$ 。∎
 81.2–81.4 整段平移。测度也可搬：给单点 $n$ 权
 $\lambda(\{n\})=2^{-(n+1)}$ ，取乘积测度，基本开集的测度为
 
-$$
-\lambda(N_s)=\prod_{k<\mathrm{dom}(s)}2^{-(s(k)+1)},
-$$
+$$\lambda(N_s)=\prod_{k<\mathrm{dom}(s)}2^{-(s(k)+1)},$$
 
 再按可数可加性延拓到全体开集与博雷尔集。零测理想同样非平凡。
 
@@ -111,9 +99,7 @@ $\omega^{<\omega}$ 按延伸构成一棵**完备树**，$\mathcal N$ 恰是
 $m=\min\{n : f\upharpoonright m\notin T\}$ ，则邻域
 $N_{f\upharpoonright m}$ 与 $[T]$ 不交。（⇒）取**表示树**
 
-$$
-T_X=\{s : \exists f\in X\,(s\subseteq f)\},
-$$
+$$T_X=\{s : \exists f\in X\,(s\subseteq f)\},$$
 
 则 $X\subseteq[T_X]$ ；反之 $f\in[T_X]$ 时每个 $f\upharpoonright n$
 被某 $g_n\in X$ 延伸，$g_n\to f$ ，$X$ 闭故 $f\in X$ 。∎
@@ -142,9 +128,7 @@ $F$ 的表示树递归求导 $T_0=T$ 、$T_{\alpha+1}=(T_\alpha)'$ 、
 极限取交。树至多可数，过程在某个 $\xi<\omega_1$ 稳定；稳定处
 $T_\xi$ 是完备树（否则再导一次还会损失节点），且
 
-$$
-[T]-[T_\xi]=\bigcup_{\alpha<\xi}\big([T_\alpha]-[T_{\alpha+1}]\big)
-$$
+$$[T]-[T_\xi]=\bigcup_{\alpha<\xi}\big([T_\alpha]-[T_{\alpha+1}]\big)$$
 
 是可数并的可数集（引理 3.13），故 $[T_\xi]\subseteq F$ 是非空
 完备子集。∎
@@ -179,11 +163,7 @@ $\le 2^{-(n+2)}$ 的闭球，且 $C_s=\bigcup_k C_{s\frown k}$ （有限
 
 > **定义 3.28** 对 $1\le\alpha<\omega_1$ ：
 > $\Sigma^0_1$ =开集，$\Pi^0_1$ =闭集，
-> $$
-> \Sigma^0_\alpha=\Big\{\bigcup_n A_n :
-> A_n\in\bigcup_{\beta<\alpha}\Pi^0_\beta\Big\},\qquad
-> \Pi^0_\alpha=\{X-A : A\in\Sigma^0_\alpha\}.
-> $$
+> $$\Sigma^0_\alpha=\Big\{\bigcup_n A_n : A_n\in\bigcup_{\beta<\alpha}\Pi^0_\beta\Big\},\qquad \Pi^0_\alpha=\{X-A : A\in\Sigma^0_\alpha\}.$$
 
 > **命题 3.7** (1) 每层都含于 $\mathcal B(X)$ ；(2) 层级单调递增
 > 且 $\Sigma$ /$\Pi$ 互换地对偶；(3)
@@ -211,9 +191,7 @@ $(x,y)\in U_1\iff\exists n\,(x\in G_{y(n)})$ ——开集的并，而每个
 $f:\mathcal N\to\mathcal N^\omega$ ，用 $f$ 把竖坐标 $a$ 解码成
 一列码 $a(n)$ ；令
 
-$$
-(x,y)\in U_\alpha\iff\exists n\,\big((x,y(n))\in U_\beta\big).
-$$
+$$(x,y)\in U_\alpha\iff\exists n\,\big((x,y(n))\in U_\beta\big).$$
 
 若 $A=\bigcup_n A_n$ 、$A_n\in\Pi^0_\beta$ ，取 $a_n$ 使
 $\mathcal N-A_n=\{x:(x,a_n)\in U_\beta\}$ ，再取 $a$ 编码
@@ -255,26 +233,19 @@ $\pi_Y(A)=\{x:\exists y\,(x,y)\in A\}$ ；投影是连续满射的伴生运算�
 
 **证明**（(2) 的封闭类论证）。令
 
-$$
-\mathcal C=\{A : \exists F\subseteq X\times\mathcal N\text{ 闭},
-\ A=\pi_Y(F)\}.
-$$
+$$\mathcal C=\{A : \exists F\subseteq X\times\mathcal N\text{ 闭}, \ A=\pi_Y(F)\}.$$
 
 闭集：$A=\pi_Y(A\times\mathcal N)$ ✓。**可数并**：
 $A_n=\pi_Y(F_n)$ ，取连续满射编码
 $c\mapsto(c(0),c(1),\ldots)$ ，则
 
-$$
-\bigcup_n A_n=\pi_Y\big(\{(x,c) : (x,c(c(0)(0))?)\}\big)
-$$
+$$\bigcup_n A_n=\pi_Y\big(\{(x,c) : (x,c(c(0)(0))?)\}\big)$$
 
 ——具体地，$\bigcup_n A_n=\pi_Y(\{(x,c):(x,c(c(0)))\in F_{c(0)}\})$
 型：第一个坐标选择分量，剩下的当作该分量的见证，大括号内的集是闭集
 （连续原像保持闭性）。**可数交**：
 
-$$
-\bigcap_n A_n=\pi_Y\big(\{(x,c) : \forall n\,(x,c(n))\in F_n\}\big),
-$$
+$$\bigcap_n A_n=\pi_Y\big(\{(x,c) : \forall n\,(x,c(n))\in F_n\}\big),$$
 
 同样闭。$\mathcal C$ 含闭集、对可数并交封闭，故
 $\mathcal B(X)\subseteq\mathcal C$ 。∎
@@ -296,10 +267,7 @@ $\{(f(\alpha),\alpha)\}$ 是 $X\times\mathcal N$ 中的闭集，其投影
 ## 82.8 苏斯林运算（引理 3.18、命题 3.8）
 
 > 对 $f:\omega^{<\omega}\to V$ 定义**苏斯林运算**
-> $$
-> \mathcal A(f)=\bigcup_{a\in\mathcal N}\bigcap_{n<\omega}
-> f(a\upharpoonright n).
-> $$
+> $$\mathcal A(f)=\bigcup_{a\in\mathcal N}\bigcap_{n<\omega} f(a\upharpoonright n).$$
 >
 > 称 $f$ **单调递减**，若 $s\subseteq t\Rightarrow f(t)\subseteq f(s)$ 。（任意 $f$ 可用 $f^*(s)=\bigcap_{s\subseteq t}f(t)$
 > 单调化而不改变 $\mathcal A(f)$ 。）
@@ -405,17 +373,12 @@ $D(Y)=\{x:$ 有基本开集 $U\ni x$ 使 $U\cap Y$ 非稀疏$\}$ ，
 $T\subseteq\mathcal N^{<\omega}$ （即 $\omega^{<\omega}$ 的子树）
 定义**重数导数**
 
-$$
-T'=\{t\in T : |[T_t]|>\aleph_0\}\qquad(T_t=\{s\in T : t\subseteq
-s\}),
-$$
+$$T'=\{t\in T : |[T_t]|>\aleph_0\}\qquad(T_t=\{s\in T : t\subseteq s\}),$$
 
 递归 $T(0)=\omega^{<\omega}$ 、$T(\alpha+1)=(T(\alpha))'$ 、极限
 取交，稳定于某 $T(\alpha^*)$ 。若 $T(\alpha^*)=\varnothing$ ，则
 
-$$
-A=\bigcup\{f[[T_s]] : s\in(T(\beta)-T(\beta+1)),\ \beta<\alpha^*\},
-$$
+$$A=\bigcup\{f[[T_s]] : s\in(T(\beta)-T(\beta+1)),\ \beta<\alpha^*\},$$
 
 每片可数（$[T_s]$ 在导掉的一步变为可数），$A$ 可数——矛盾。故
 $T(\alpha^*)\ne\varnothing$ 且处处重数不可数：每个节点可分出两个
@@ -484,11 +447,7 @@ $p=(s_0,t_0,\ldots,s_n,t_n)$ 为**正确位**，若至今无犯规且李四各�
 $\alpha$ 构造正确位链，合成点收敛于 $\alpha$ ，李四依胜算赢，
 故 $\alpha\notin X$ 。）于是
 
-$$
-X\subseteq\bigcup_p F_p,\qquad
-F_p=\{\alpha : t_p\subseteq\alpha\wedge\forall s\supseteq t_p\,
-(\tau(p\frown s)\not\subseteq\alpha)\},
-$$
+$$X\subseteq\bigcup_p F_p,\qquad F_p=\{\alpha : t_p\subseteq\alpha\wedge\forall s\supseteq t_p\, (\tau(p\frown s)\not\subseteq\alpha)\},$$
 
 而 $N_{t_p}-F_p$ 在 $N_{t_p}$ 中稠密开，$F_p$ 无处稠密闭；
 正确位可数，$X$ 稀疏。

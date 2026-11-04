@@ -29,9 +29,7 @@
 > 在 $V$ 中存在一个 $(\kappa,V_{\lambda+1})$ -张子
 > $\varepsilon$ 以至于由 $\varepsilon$ 所确定的超幂嵌入映射
 > $j_\varepsilon:V\to M_\varepsilon$ 满足等式
-> $$
-> A\cap V_\lambda \;=\; j_\varepsilon(A)\cap V_\lambda.
-> $$
+> $$A\cap V_\lambda \;=\; j_\varepsilon(A)\cap V_\lambda.$$
 
 先读懂量词的形状。外层是对 $A$ 与 $\beta$ 的全称（「无论
 你给哪块 $V_\delta$ 的子集、无论你把下界抬多高」），中层是
@@ -95,9 +93,7 @@ $\alpha<\mathrm{cf}(\delta)$ 使 $A(\alpha)>\kappa$ （收敛列
 取 $(\kappa,\lambda)$ -强嵌入 $j$ 使 $A\cap V_\lambda= j(A)\cap V_\lambda$ 且 $j(\kappa)>\lambda$ 。现在看序对
 $(\alpha,A(\alpha))\in A$ ：两坐标都 $<\lambda$ ，故
 $(\alpha,A(\alpha))\in A\cap V_\lambda$ 。但
-$$
-j(A)(\alpha)=j(A)(j(\alpha))=j(A(\alpha))>A(\alpha)
-$$
+$$j(A)(\alpha)=j(A)(j(\alpha))=j(A(\alpha))>A(\alpha)$$
 
 （$A(\alpha)>\kappa=\mathrm{Crit}(j)$ ，故 $j(A(\alpha))> A(\alpha)$ ；而 $\alpha<\mathrm{cf}(\delta)<\kappa$ 被 $j$
 固定）。于是 $(\alpha,A(\alpha))\notin j(A)\cap V_\lambda$ ——
@@ -176,10 +172,7 @@ $f``\kappa\subseteq\kappa$ ——$\kappa$ 是 $f$ 的「不动
 （$\delta$ 由 (a) 已不可达）。视 $A=f$ （函数是其图的
 子集，$\subseteq V_\delta$ ）。取见证 $\kappa$ ，选
 $\lambda<\delta$ 足够大：
-$$
-\lambda \;>\; |V_{j(f)(\kappa)}|+\kappa^+ +
-\sup\{f(\alpha)\mid\alpha\le\kappa\}
-$$
+$$\lambda \;>\; |V_{j(f)(\kappa)}|+\kappa^+ + \sup\{f(\alpha)\mid\alpha\le\kappa\}$$
 
 （由 $\delta$ 不可达，这样的 $\lambda$ 存在）。取
 $(\kappa,\lambda)$ -强嵌入 $j$ 使 $V_{j(f)(\kappa)} \subseteq M$ 且 $A\cap V_\lambda=j(A)\cap V_\lambda$ 。
@@ -208,11 +201,7 @@ $f$ 的定义 $\lambda\le j(f)(\kappa)$ ；取 $j$ 导出的
 $(\kappa,\lambda)$ -张子 $\varepsilon$ ——关键三连：
 $\varepsilon\in M$ （编码序列被 $V_{j(f)(\kappa)} \subseteq M$ 装下）；在 $M$ 中 $\varepsilon$ 是
 $(\kappa,\lambda)$ -张子且 $(V_\lambda)^M=V_\lambda \subseteq\mathrm{ult}(M,\varepsilon)$ ；核心等式链
-$$
-j_\varepsilon^M(j(A))\cap V_\lambda
-\overset{引理1.59}{=}(j(A)\cap V_\lambda)^M
-= j(A\cap V_\lambda) = \cdots = j(A)\cap V_\lambda
-$$
+$$j_\varepsilon^M(j(A))\cap V_\lambda \overset{引理1.59}{=}(j(A)\cap V_\lambda)^M = j(A\cap V_\lambda) = \cdots = j(A)\cap V_\lambda$$
 
 把 $M$ 内的「$\kappa$ 保持 $j(A)$ 作用」拉回 $V$ 中
 「$\kappa$ 保持 $A$ 作用」。矛盾于反例最小性，断言得证，
@@ -247,9 +236,7 @@ $V_\delta$ **内部**——实数正则性论证只需要 $V_\delta$
 **证明**一行见底：$V_{j(\kappa)}\subseteq M$ （超强）且对
 任意 $f:\kappa\to\kappa$ 有 $j(f)(\kappa)<j(\kappa)$ （像
 函数在 $j(\kappa)$ 处取值必 $<j(\kappa)$ ，因为 $j(f): j(\kappa)\to j(\kappa)$ ），故
-$$
-V_{j(f)(\kappa)}\subseteq V_{j(\kappa)}\subseteq M.
-$$
+$$V_{j(f)(\kappa)}\subseteq V_{j(\kappa)}\subseteq M.$$
 
 荟萃部分照抄第 101 章定理 1.35 的三行账：导出张子
 $\varepsilon(\kappa,Y)\in V_{j(\kappa)}\subseteq M$ ，
@@ -260,10 +247,7 @@ $M$ 内自举「$\kappa$ 是 $f$ -谢拉赫」，拉回正规测度。∎
 
 **证明**的妙笔是**换函数**：设 $f:\delta\to\delta$ （要证
 武丁的那个 $\delta=\kappa$ ）。定义
-$$
-g(\alpha)=\text{最小的严格大于 }f(\alpha)+\alpha\text{
-的不可达基数}.
-$$
+$$g(\alpha)=\text{最小的严格大于 }f(\alpha)+\alpha\text{ 的不可达基数}.$$
 
 取 $g$ -谢拉赫嵌入 $j$ （$V_{j(g)(\kappa)}\subseteq M$ ）。
 由 $g``\kappa\subseteq\kappa$ 型的闭包（$g(\alpha)>\alpha$
@@ -271,9 +255,7 @@ $$
 $g$ 封闭因 $g(\alpha)<\kappa$ 对 $\alpha<\kappa$ ，由
 $g$ -谢拉赫见证的闭包款），导出张子
 $\varepsilon(\kappa,Y)\in V_{j(g)(\kappa)}\subseteq M$ ，且
-$$
-j_\varepsilon(f)(\kappa)=j(f)(\kappa)
-$$
+$$j_\varepsilon(f)(\kappa)=j(f)(\kappa)$$
 
 （因子映射 $k_\varepsilon$ 固定 $j(f)(\kappa)$ ——第 101
 章的账）。于是 $M\models$ 「$\varepsilon(\kappa,Y)$ 见证

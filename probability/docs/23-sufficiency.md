@@ -4,9 +4,7 @@
 
 一个容量为 $n$ 的样本是
 
-$$
-X=(X_1,\dots,X_n).
-$$
+$$X=(X_1,\dots,X_n).$$
 
 直接保留全部原始值当然信息最多，但统计分析通常希望用更少的数概括样本。例如：
 
@@ -33,21 +31,15 @@ $$
 
 设样本 $X$ 的联合分布属于参数族
 
-$$
-\mathcal P=\{P_\theta:\theta\in\Theta\}.
-$$
+$$\mathcal P=\{P_\theta:\theta\in\Theta\}.$$
 
 离散模型中写联合概率质量函数
 
-$$
-p_\theta(x)=P_\theta(X=x);
-$$
+$$p_\theta(x)=P_\theta(X=x);$$
 
 连续模型中写联合密度
 
-$$
-f_\theta(x).
-$$
+$$f_\theta(x).$$
 
 二者可以统一写成关于公共参考测度的密度。若模型没有公共参考测度，或不同 $\theta$ 的支撑随参数剧烈变化，因子分解定理的严格表述需要额外注意；本章的均匀模型把支撑指标函数显式写入密度，正是为了避免这个坑。
 
@@ -57,9 +49,7 @@ $$
 
 称统计量 $T$ 对 $\theta$ 充分，如果对每个可观测样本 $x$ 和每个可能的统计量值 $t$ ，条件分布
 
-$$
-P_\theta(X=x\mid T(X)=t)
-$$
+$$P_\theta(X=x\mid T(X)=t)$$
 
 都不依赖 $\theta$ （在条件事件有正概率时可逐点解释；一般模型中解释为条件分布的一个版本对所有 $\theta$ 相同）。
 
@@ -79,38 +69,23 @@ $$
 
 设
 
-$$
-X_i\stackrel{iid}{\sim}\operatorname{Bernoulli}(p),
-$$
+$$X_i\stackrel{iid}{\sim}\operatorname{Bernoulli}(p),$$
 
 样本和为
 
-$$
-T=\sum_{i=1}^nX_i.
-$$
+$$T=\sum_{i=1}^nX_i.$$
 
 任取二进制向量 $x=(x_1,\dots,x_n)$ ，联合似然为
 
-$$
-p_p(x)
-=\prod_{i=1}^np^{x_i}(1-p)^{1-x_i}
-=p^{T(x)}(1-p)^{n-T(x)}.
-$$
+$$p_p(x) =\prod_{i=1}^np^{x_i}(1-p)^{1-x_i} =p^{T(x)}(1-p)^{n-T(x)}.$$
 
 给定 $T=t$ ，共有 $\binom nt$ 个样本向量，每个向量的联合概率都相同：
 
-$$
-p^t(1-p)^{n-t}.
-$$
+$$p^t(1-p)^{n-t}.$$
 
 因此
 
-$$
-\boxed{
-P_p(X=x\mid T=t)=\frac1{\binom nt},
-\qquad T(x)=t.
-}
-$$
+$$\boxed{ P_p(X=x\mid T=t)=\frac1{\binom nt}, \qquad T(x)=t. }$$
 
 这是一个在所有 $t$ 个位置等可能放置成功数的均匀分布，完全不依赖 $p$ 。
 
@@ -136,15 +111,11 @@ check_cond(N, P, T) :-
 
 Lean 对 $n=3$ 的 $T=1$ 情形做无小数证明。三个样本 $(1,0,0),(0,1,0),(0,0,1)$ 的似然都是
 
-$$
-q=p(1-p)^2,
-$$
+$$q=p(1-p)^2,$$
 
 故条件概率为
 
-$$
-\frac{q}{q+q+q}=\frac13.
-$$
+$$\frac{q}{q+q+q}=\frac13.$$
 
 对应代码为：
 
@@ -179,15 +150,11 @@ for p in (Fraction(1, 3), Fraction(1, 2),
 
 只看前两次试验的和
 
-$$
-T'=X_1+X_2
-$$
+$$T'=X_1+X_2$$
 
 并不充分，因为剩余试验仍携带关于 $p$ 的信息。例如
 
-$$
-P_p(X_3=1\mid X_1=1)=p.
-$$
+$$P_p(X_3=1\mid X_1=1)=p.$$
 
 Lean 只验证这个比值：
 
@@ -202,11 +169,7 @@ example (p : ℚ) (hp : p ≠ 0) : (p * p) / p = p := by
 
 若样本的联合密度或概率质量函数可以写成
 
-$$
-\boxed{
-f_\theta(x)=g_\theta(T(x))\,h(x),
-}
-$$
+$$\boxed{ f_\theta(x)=g_\theta(T(x))\,h(x), }$$
 
 其中：
 
@@ -217,13 +180,7 @@ $$
 
 离散情形最直观：给定 $T=t$ ，所有使 $T(x)=t$ 的样本有相同参数因子 $g_\theta(t)$ ，条件概率中它被约掉：
 
-$$
-P_\theta(X=x\mid T=t)
-=\frac{g_\theta(t)h(x)}
-{\sum_{y:T(y)=t}g_\theta(t)h(y)}
-=\frac{h(x)}
-{\sum_{y:T(y)=t}h(y)}.
-$$
+$$P_\theta(X=x\mid T=t) =\frac{g_\theta(t)h(x)} {\sum_{y:T(y)=t}g_\theta(t)h(y)} =\frac{h(x)} {\sum_{y:T(y)=t}h(y)}.$$
 
 连续情形的严格证明需要条件密度和参考测度，但直觉相同：参数因子在条件密度的分子分母中约去。
 
@@ -246,53 +203,29 @@ example (p : ℚ) (a b c : Fin 2) :
 
 设
 
-$$
-X_i\stackrel{iid}{\sim}\operatorname{Poisson}(\lambda).
-$$
+$$X_i\stackrel{iid}{\sim}\operatorname{Poisson}(\lambda).$$
 
 联合似然为
 
-$$
-p_\lambda(x)
-=\prod_{i=1}^n\frac{e^{-\lambda}\lambda^{x_i}}{x_i!}
-=e^{-n\lambda}\lambda^{\sum_ix_i}
-\prod_{i=1}^n\frac1{x_i!}.
-$$
+$$p_\lambda(x) =\prod_{i=1}^n\frac{e^{-\lambda}\lambda^{x_i}}{x_i!} =e^{-n\lambda}\lambda^{\sum_ix_i} \prod_{i=1}^n\frac1{x_i!}.$$
 
 因此样本和
 
-$$
-T=\sum_iX_i
-$$
+$$T=\sum_iX_i$$
 
 充分。
 
 更具体地，独立 Poisson 变量之和满足
 
-$$
-T\sim\operatorname{Poisson}(n\lambda).
-$$
+$$T\sim\operatorname{Poisson}(n\lambda).$$
 
 给定 $T=t$ ，条件概率为
 
-$$
-\begin{aligned}
-P_\lambda(X_1=x_1,\dots,X_n=x_n\mid T=t)
-&=
-\frac{\prod_i e^{-\lambda}\lambda^{x_i}/x_i!}
-{e^{-n\lambda}(n\lambda)^t/t!}\\
-&=
-\frac{t!}{x_1!\cdots x_n!}
-\left(\frac1n\right)^{x_1}\cdots
-\left(\frac1n\right)^{x_n}.
-\end{aligned}
-$$
+$$\begin{aligned} P_\lambda(X_1=x_1,\dots,X_n=x_n\mid T=t) &= \frac{\prod_i e^{-\lambda}\lambda^{x_i}/x_i!} {e^{-n\lambda}(n\lambda)^t/t!}\\ &= \frac{t!}{x_1!\cdots x_n!} \left(\frac1n\right)^{x_1}\cdots \left(\frac1n\right)^{x_n}. \end{aligned}$$
 
 这是
 
-$$
-\operatorname{Multinomial}\left(t;\frac1n,\dots,\frac1n\right),
-$$
+$$\operatorname{Multinomial}\left(t;\frac1n,\dots,\frac1n\right),$$
 
 与 $\lambda$ 完全无关。
 
@@ -311,16 +244,11 @@ for c in cells:
 
 最终每个三元组的概率为
 
-$$
-\frac{5!}{x_1!x_2!x_3!}\frac1{3^5}.
-$$
+$$\frac{5!}{x_1!x_2!x_3!}\frac1{3^5}.$$
 
 Julia 从另一方向审计：似然比只通过样本和依赖数据。若两个样本总和相同，它们的 Poisson 似然比为
 
-$$
-\frac{p_\lambda(x)}{p_\lambda(y)}
-=\frac{\prod_i1/x_i!}{\prod_i1/y_i!},
-$$
+$$\frac{p_\lambda(x)}{p_\lambda(y)} =\frac{\prod_i1/x_i!}{\prod_i1/y_i!},$$
 
 不随 $\lambda$ 改变。
 
@@ -330,24 +258,15 @@ $$
 
 若
 
-$$
-X_i\stackrel{iid}{\sim}N(\mu,\sigma_0^2)
-$$
+$$X_i\stackrel{iid}{\sim}N(\mu,\sigma_0^2)$$
 
 且 $\sigma_0^2$ 已知，则联合密度为
 
-$$
-f_\mu(x)
-=(2\pi\sigma_0^2)^{-n/2}
-\exp\left[-\frac1{2\sigma_0^2}\sum_i(x_i-\mu)^2\right].
-$$
+$$f_\mu(x) =(2\pi\sigma_0^2)^{-n/2} \exp\left[-\frac1{2\sigma_0^2}\sum_i(x_i-\mu)^2\right].$$
 
 展开平方：
 
-$$
-\sum_i(x_i-\mu)^2
-=\sum_ix_i^2-2\mu\sum_ix_i+n\mu^2.
-$$
+$$\sum_i(x_i-\mu)^2 =\sum_ix_i^2-2\mu\sum_ix_i+n\mu^2.$$
 
 在固定已知 $\sigma_0^2$ 下，$\sum_ix_i^2$ 可进入 $h(x)$ ，参数只通过 $\sum_ix_i$ 或 $\bar X$ 进入。因此 $\bar X$ 对 $\mu$ 充分。
 
@@ -355,42 +274,23 @@ $$
 
 若
 
-$$
-X_i\stackrel{iid}{\sim}N(\mu,\sigma^2),\qquad(\mu,\sigma^2)\in\Theta,
-$$
+$$X_i\stackrel{iid}{\sim}N(\mu,\sigma^2),\qquad(\mu,\sigma^2)\in\Theta,$$
 
 联合密度为
 
-$$
-f_{\mu,\sigma^2}(x)
-=(2\pi\sigma^2)^{-n/2}
-\exp\left[
--\frac1{2\sigma^2}
-\left(\sum_ix_i^2-2\mu\sum_ix_i+n\mu^2\right)
-\right].
-$$
+$$f_{\mu,\sigma^2}(x) =(2\pi\sigma^2)^{-n/2} \exp\left[ -\frac1{2\sigma^2} \left(\sum_ix_i^2-2\mu\sum_ix_i+n\mu^2\right) \right].$$
 
 此时一个数不够，因为需要同时确定位置和尺度。二维统计量
 
-$$
-\boxed{
-T(X)=\left(\sum_iX_i,\sum_iX_i^2\right)
-}
-$$
+$$\boxed{ T(X)=\left(\sum_iX_i,\sum_iX_i^2\right) }$$
 
 充分。等价地，也可使用
 
-$$
-(\bar X,S^2)
-$$
+$$(\bar X,S^2)$$
 
 作为充分统计量，因为这两个向量之间存在一一可测变换：
 
-$$
-\bar X=\frac1n\sum_iX_i,
-\qquad
-S^2=\frac{\sum_iX_i^2-n\bar X^2}{n-1}.
-$$
+$$\bar X=\frac1n\sum_iX_i, \qquad S^2=\frac{\sum_iX_i^2-n\bar X^2}{n-1}.$$
 
 Python 用两个不同样本 `[1,5,6]` 与 `[2,3,7]` 说明充分统计量相等意味着似然处处相等：
 
@@ -409,47 +309,29 @@ Julia 独立验证：只要两个样本的一阶和与二阶和相同，任意 $
 
 设
 
-$$
-X_i\stackrel{iid}{\sim}U(0,\theta),\qquad \theta>0.
-$$
+$$X_i\stackrel{iid}{\sim}U(0,\theta),\qquad \theta>0.$$
 
 联合密度不能只写 $1/\theta^n$ ，还必须写支撑条件：
 
-$$
-f_\theta(x)
-=\theta^{-n}\mathbf 1\{0\le x_i\le\theta,\ i=1,\dots,n\}.
-$$
+$$f_\theta(x) =\theta^{-n}\mathbf 1\{0\le x_i\le\theta,\ i=1,\dots,n\}.$$
 
 因为所有 $x_i\le\theta$ 等价于
 
-$$
-M(x)=\max_i x_i\le\theta,
-$$
+$$M(x)=\max_i x_i\le\theta,$$
 
 所以
 
-$$
-f_\theta(x)
-=\theta^{-n}\mathbf 1\{M(x)\le\theta\}
-\mathbf 1\{0\le\min_i x_i\}.
-$$
+$$f_\theta(x) =\theta^{-n}\mathbf 1\{M(x)\le\theta\} \mathbf 1\{0\le\min_i x_i\}.$$
 
 故最大值
 
-$$
-X_{(n)}=\max_iX_i
-$$
+$$X_{(n)}=\max_iX_i$$
 
 对 $\theta$ 充分。
 
 最大值的 CDF 为
 
-$$
-P_\theta(X_{(n)}\le m)
-=P_\theta(X_1\le m,\dots,X_n\le m)
-=\left(\frac m\theta\right)^n,
-\qquad 0\le m\le\theta.
-$$
+$$P_\theta(X_{(n)}\le m) =P_\theta(X_1\le m,\dots,X_n\le m) =\left(\frac m\theta\right)^n, \qquad 0\le m\le\theta.$$
 
 给定最大值 $M=m$ ，其余点在 $[0,m]$ 中；缩放为 $X_i/m$ 后，条件分布不再依赖 $\theta$ 。Python 比较不同 $\theta$ 下 $X_i/M$ 的经验分布：
 
@@ -467,15 +349,11 @@ for q in (0.25, 0.5, 0.75):
 
 若两个样本有相同均值但最大值不同，则存在 $\theta$ 使一个样本可能而另一个不可能。取
 
-$$
-x=(1,5),\qquad y=(2,4),
-$$
+$$x=(1,5),\qquad y=(2,4),$$
 
 二者均值均为 3，但最大值不同。当
 
-$$
-5<\theta<6
-$$
+$$5<\theta<6$$
 
 时，$x$ 的似然为 $\theta^{-2}>0$ ，而含 6 的另一个样本似然为 0。仅知道均值无法区分这种支撑差异，所以均值不充分。
 
@@ -487,12 +365,7 @@ $$
 
 常用似然比准则：若关系
 
-$$
-x\sim y
-\iff
-\frac{f_\theta(x)}{f_\theta(y)}
-\text{ 作为 }\theta\text{ 的函数为常数}
-$$
+$$x\sim y \iff \frac{f_\theta(x)}{f_\theta(y)} \text{ 作为 }\theta\text{ 的函数为常数}$$
 
 构成良好等价关系，则把样本映射到其等价类的统计量最小充分。直观地说：
 
@@ -501,10 +374,7 @@ $$
 
 对 Bernoulli，
 
-$$
-\frac{p_p(x)}{p_p(y)}
-=p^{T(x)-T(y)}(1-p)^{(n-T(x))-(n-T(y))}.
-$$
+$$\frac{p_p(x)}{p_p(y)} =p^{T(x)-T(y)}(1-p)^{(n-T(x))-(n-T(y))}.$$
 
 只有 $T(x)=T(y)$ 时，该比值才对所有 $p$ 恒为常数。因此样本和最小充分。
 
@@ -533,9 +403,7 @@ example : lik3 (1 / 5) 1 0 0 / lik3 (1 / 5) 1 1 0 = 4 ∧
 
 典型例子是位置模型 $X_i=\theta+\varepsilon_i$ 中的样本极差
 
-$$
-X_{(n)}-X_{(1)}.
-$$
+$$X_{(n)}-X_{(1)}.$$
 
 平移 $\theta$ 不改变差值，因此其分布与 $\theta$ 无关。
 
@@ -545,15 +413,11 @@ $$
 
 统计量 $T$ 称为完备的，如果对任意可测函数 $g$ ，
 
-$$
-E_\theta[g(T)]=0\quad\text{对所有 }\theta\in\Theta
-$$
+$$E_\theta[g(T)]=0\quad\text{对所有 }\theta\in\Theta$$
 
 都蕴含
 
-$$
-P_\theta(g(T)=0)=1\quad\text{对所有 }\theta\in\Theta.
-$$
+$$P_\theta(g(T)=0)=1\quad\text{对所有 }\theta\in\Theta.$$
 
 换句话说，$T$ 的分布族中不存在非退化的零均值函数。
 
@@ -561,16 +425,11 @@ $$
 
 Bernoulli 样本和 $T\sim\operatorname{Bin}(n,p)$ 是完备的。若对所有 $p\in[0,1]$ ，
 
-$$
-E_p[g(T)]
-=\sum_{t=0}^n g(t)\binom nt p^t(1-p)^{n-t}=0,
-$$
+$$E_p[g(T)] =\sum_{t=0}^n g(t)\binom nt p^t(1-p)^{n-t}=0,$$
 
 乘以 $(1-p)^{-n}$ 后得到关于
 
-$$
-r=\frac p{1-p}
-$$
+$$r=\frac p{1-p}$$
 
 的 $n$ 次多项式恒为零，因此所有系数 $g(t)\binom nt=0$ 。Python 构造从 $g(0),\dots,g(n)$ 到多项式系数的 Vandermonde 型矩阵并检查满秩：
 
@@ -585,29 +444,21 @@ assert abs(np.linalg.det(mat)) > 1e-10
 
 $T=(X_1,X_2)$ 在 Bernoulli 模型中充分，因为它保留了完整样本的前两维——更准确地说，完整样本当然充分，而任意保留全部原始数据的表示也充分——但它不是最小且不完备。例如
 
-$$
-g(T)=X_1-X_2
-$$
+$$g(T)=X_1-X_2$$
 
 对所有 $p$ 都满足
 
-$$
-E_p[X_1-X_2]=p-p=0,
-$$
+$$E_p[X_1-X_2]=p-p=0,$$
 
 但 $X_1-X_2$ 并非恒为零。
 
 更微妙的是，最小充分统计量也不一定完备。在模型
 
-$$
-X_i\stackrel{iid}{\sim}N(\theta,\theta^2)
-$$
+$$X_i\stackrel{iid}{\sim}N(\theta,\theta^2)$$
 
 中，似然通过 $(\sum_iX_i,\sum_iX_i^2)$ 依赖数据，因而二维统计量最小充分；但程序构造函数
 
-$$
-g(T)=\frac{n}{n+1}\bar X^2-S^2,
-$$
+$$g(T)=\frac{n}{n+1}\bar X^2-S^2,$$
 
 其期望对所有 $\theta$ 为零。这说明“最小充分”和“完备”是两种不同性质。
 
@@ -617,23 +468,17 @@ Basu 定理：若 $T$ 是完备充分统计量，$A$ 是辅助统计量，则在
 
 证明思想很简洁。对任意事件 $B$ ，令
 
-$$
-g(t)=P_\theta(A\in B\mid T=t)-P_\theta(A\in B).
-$$
+$$g(t)=P_\theta(A\in B\mid T=t)-P_\theta(A\in B).$$
 
 因为 $T$ 充分，条件概率不依赖 $\theta$ ，可定义固定函数 $g(T)$ 。又因为 $A$ 辅助，$P_\theta(A\in B)$ 不依赖 $\theta$ 。全期望公式给出
 
-$$
-E_\theta[g(T)]=0
-$$
+$$E_\theta[g(T)]=0$$
 
 对所有 $\theta$ 成立。完备性说明 $g(T)=0$ 几乎必然，因此条件概率等于无条件概率，即独立。
 
 正态模型
 
-$$
-X_i\sim N(\mu,1)
-$$
+$$X_i\sim N(\mu,1)$$
 
 中，$\bar X$ 是完备充分统计量，而 $S^2$ 的分布不依赖 $\mu$ ，故二者独立。这也从信息论角度解释了第 22 章 Helmert 证明的独立性。
 
@@ -653,39 +498,21 @@ for a, b in bins_a:
 
 设目标是估计参数函数 $\tau(\theta)$ ，统计量 $T$ 充分，而 $\delta(X)$ 是一个无偏估计量。定义条件期望估计量
 
-$$
-\delta^*(T)=E_\theta[\delta(X)\mid T].
-$$
+$$\delta^*(T)=E_\theta[\delta(X)\mid T].$$
 
 因为 $T$ 充分，这个条件期望不依赖 $\theta$ ，所以它确实是统计量。由塔性质，
 
-$$
-E_\theta[\delta^*(T)]
-=E_\theta[E_\theta[\delta(X)\mid T]]
-=E_\theta[\delta(X)]
-=\tau(\theta).
-$$
+$$E_\theta[\delta^*(T)] =E_\theta[E_\theta[\delta(X)\mid T]] =E_\theta[\delta(X)] =\tau(\theta).$$
 
 因此无偏性保留。
 
 由全方差公式，
 
-$$
-\operatorname{Var}_\theta(\delta(X))
-=
-E_\theta[\operatorname{Var}_\theta(\delta(X)\mid T)]
-+
-\operatorname{Var}_\theta(E_\theta[\delta(X)\mid T]).
-$$
+$$\operatorname{Var}_\theta(\delta(X)) = E_\theta[\operatorname{Var}_\theta(\delta(X)\mid T)] + \operatorname{Var}_\theta(E_\theta[\delta(X)\mid T]).$$
 
 右边第一项非负，所以
 
-$$
-\boxed{
-\operatorname{Var}_\theta(\delta^*(T))
-\le \operatorname{Var}_\theta(\delta(X)).
-}
-$$
+$$\boxed{ \operatorname{Var}_\theta(\delta^*(T)) \le \operatorname{Var}_\theta(\delta(X)). }$$
 
 只要 $\delta$ 不是已经几乎必然等于 $T$ 的函数，通常严格改进。这就是 Rao–Blackwell 定理。
 
@@ -693,33 +520,23 @@ $$
 
 只用第一次试验估计 $p$ ：
 
-$$
-\delta(X)=X_1.
-$$
+$$\delta(X)=X_1.$$
 
 它无偏，但给定成功总次数 $T=t$ ，
 
-$$
-E_p[X_1\mid T=t]=\frac tn.
-$$
+$$E_p[X_1\mid T=t]=\frac tn.$$
 
 改进后的估计量为
 
-$$
-\delta^*(T)=\frac{T}{n}=\bar X.
-$$
+$$\delta^*(T)=\frac{T}{n}=\bar X.$$
 
 方差从
 
-$$
-p(1-p)
-$$
+$$p(1-p)$$
 
 降为
 
-$$
-\frac{p(1-p)}n.
-$$
+$$\frac{p(1-p)}n.$$
 
 Lean 验证方差账：
 
@@ -741,43 +558,29 @@ X = rand(5, N) .< p
 
 估计量
 
-$$
-\delta(X)=\mathbf 1\{X_1=0\}
-$$
+$$\delta(X)=\mathbf 1\{X_1=0\}$$
 
 无偏估计 $e^{-\lambda}$ 。给定总和 $T=t$ ，有
 
-$$
-P_\lambda(X_1=0\mid T=t)
-=\left(1-\frac1n\right)^t.
-$$
+$$P_\lambda(X_1=0\mid T=t) =\left(1-\frac1n\right)^t.$$
 
 因此 Rao–Blackwell 估计量为
 
-$$
-\delta^*(T)=\left(1-\frac1n\right)^T.
-$$
+$$\delta^*(T)=\left(1-\frac1n\right)^T.$$
 
 ### 23.12.3 均匀尺度估计
 
 对 $U(0,\theta)$ ，矩估计 $2\bar X$ 无偏，但它不是充分统计量的函数。给定最大值 $X_{(n)}=m$ 条件化后得到
 
-$$
-E[2\bar X\mid X_{(n)}=m]
-=\frac{n+1}{n}m.
-$$
+$$E[2\bar X\mid X_{(n)}=m] =\frac{n+1}{n}m.$$
 
 该估计量仍无偏，方差从 $2\bar X$ 的
 
-$$
-\frac{\theta^2}{3n}
-$$
+$$\frac{\theta^2}{3n}$$
 
 降为
 
-$$
-\frac{\theta^2}{n(n+2)}.
-$$
+$$\frac{\theta^2}{n(n+2)}.$$
 
 这说明数据简化不是为了“少存几个数”而已；在无偏估计问题中，对充分统计量条件化可严格降低方差。
 
@@ -787,15 +590,11 @@ Rao–Blackwell 定理说明：任何无偏估计量都应对充分统计量条�
 
 设 $h_1(T)$ 和 $h_2(T)$ 都无偏估计 $\tau(\theta)$ ，则
 
-$$
-E_\theta[h_1(T)-h_2(T)]=0
-$$
+$$E_\theta[h_1(T)-h_2(T)]=0$$
 
 对所有 $\theta$ 成立。完备性推出
 
-$$
-h_1(T)=h_2(T)
-$$
+$$h_1(T)=h_2(T)$$
 
 几乎必然。因此在完备充分统计量存在时，Rao–Blackwell 化得到的无偏估计量是唯一的，并将在第 34 章与 Lehmann–Scheffé 定理、UMVU/UMVUE 理论连接。
 

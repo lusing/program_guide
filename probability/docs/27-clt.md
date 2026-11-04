@@ -8,41 +8,27 @@
 
 设 $X_1,X_2,\ldots$ 独立同分布，记
 
-$$
-E[X_i]=\mu,\qquad \operatorname{Var}(X_i)=\sigma^2,
-$$
+$$E[X_i]=\mu,\qquad \operatorname{Var}(X_i)=\sigma^2,$$
 
 并假设
 
-$$
-0<\sigma^2<\infty.
-$$
+$$0<\sigma^2<\infty.$$
 
 令
 
-$$
-S_n=\sum_{i=1}^nX_i,
-\qquad
-Z_n=\frac{S_n-n\mu}{\sigma\sqrt n}.
-$$
+$$S_n=\sum_{i=1}^nX_i, \qquad Z_n=\frac{S_n-n\mu}{\sigma\sqrt n}.$$
 
 则对标准正态变量 $Z$ ，有
 
-$$
-\boxed{Z_n\xrightarrow{d}N(0,1).}
-$$
+$$\boxed{Z_n\xrightarrow{d}N(0,1).}$$
 
 等价地，对每个 $x\in\mathbb R$ ，
 
-$$
-P(Z_n\le x)\longrightarrow \Phi(x),
-$$
+$$P(Z_n\le x)\longrightarrow \Phi(x),$$
 
 其中
 
-$$
-\Phi(x)=\int_{-\infty}^x\frac1{\sqrt{2\pi}}e^{-u^2/2}\,du.
-$$
+$$\Phi(x)=\int_{-\infty}^x\frac1{\sqrt{2\pi}}e^{-u^2/2}\,du.$$
 
 这里只要求有限方差。
 
@@ -58,19 +44,13 @@ Cauchy 分布不在其中，因为它连一阶矩都没有。
 
 独立性给出
 
-$$
-\operatorname{Var}(S_n)=n\sigma^2.
-$$
+$$\operatorname{Var}(S_n)=n\sigma^2.$$
 
 因此 $S_n-n\mu$ 的典型尺度是 $\sigma\sqrt n$ 。
 
 除以这个尺度后，
 
-$$
-E[Z_n]=0,
-\qquad
-\operatorname{Var}(Z_n)=1.
-$$
+$$E[Z_n]=0, \qquad \operatorname{Var}(Z_n)=1.$$
 
 如果除以 $n$ ，得到的是大数定律中的 $\bar X_n-\mu$ ，其方差为 $\sigma^2/n$ ，会缩到零。
 
@@ -104,10 +84,7 @@ theorem standardize_scale (x μ σ : ℚ) (hσ : σ ≠ 0) :
 
 随机变量 $Y$ 的特征函数定义为
 
-$$
-\phi_Y(t)=E[e^{itY}],
-\qquad t\in\mathbb R.
-$$
+$$\phi_Y(t)=E[e^{itY}], \qquad t\in\mathbb R.$$
 
 因为 $|e^{itY}|=1$ ，期望总存在。
 
@@ -132,52 +109,33 @@ $$
 
 先令
 
-$$
-Y_i=\frac{X_i-\mu}{\sigma}.
-$$
+$$Y_i=\frac{X_i-\mu}{\sigma}.$$
 
 于是
 
-$$
-E[Y_i]=0,\qquad E[Y_i^2]=1.
-$$
+$$E[Y_i]=0,\qquad E[Y_i^2]=1.$$
 
 固定实数 $u$ ，对 $e^{iuY}$ 作二阶 Taylor 展开：
 
-$$
-e^{iuY}=1+iuY-\frac{u^2Y^2}{2}+R(uY).
-$$
+$$e^{iuY}=1+iuY-\frac{u^2Y^2}{2}+R(uY).$$
 
 取期望得
 
-$$
-\phi_Y(u)
-=1+iuE[Y]-\frac{u^2}{2}E[Y^2]+E[R(uY)].
-$$
+$$\phi_Y(u) =1+iuE[Y]-\frac{u^2}{2}E[Y^2]+E[R(uY)].$$
 
 利用标准化后的两阶矩，
 
-$$
-\phi_Y(u)=1-\frac{u^2}{2}+E[R(uY)].
-$$
+$$\phi_Y(u)=1-\frac{u^2}{2}+E[R(uY)].$$
 
 关键是：没有三阶矩时，为什么余项仍是 $o(u^2)$ ？
 
 对实数 $x$ ，Taylor 积分余项给出可用的估计
 
-$$
-|R(x)|\le \min\left\{\frac{|x|^3}{6},x^2\right\}.
-$$
+$$|R(x)|\le \min\left\{\frac{|x|^3}{6},x^2\right\}.$$
 
 因此
 
-$$
-\frac{|E[R(uY)]|}{u^2}
-\le
-E\left[
-Y^2\min\left\{\frac{|u|\,|Y|}{6},1\right\}
-\right].
-$$
+$$\frac{|E[R(uY)]|}{u^2} \le E\left[ Y^2\min\left\{\frac{|u|\,|Y|}{6},1\right\} \right].$$
 
 期望内的随机变量满足两条性质：
 
@@ -188,12 +146,7 @@ $$
 
 所以
 
-$$
-\boxed{
-\phi_Y(u)=1-\frac{u^2}{2}+o(u^2)
-\quad(u\to0).
-}
-$$
+$$\boxed{ \phi_Y(u)=1-\frac{u^2}{2}+o(u^2) \quad(u\to0). }$$
 
 这一步是有限方差证明的核心。
 
@@ -203,61 +156,35 @@ $$
 
 由 $S_n-n\mu=\sigma\sum_{i=1}^nY_i$ ，得
 
-$$
-Z_n=\frac1{\sqrt n}\sum_{i=1}^nY_i.
-$$
+$$Z_n=\frac1{\sqrt n}\sum_{i=1}^nY_i.$$
 
 因此
 
-$$
-\begin{aligned}
-\phi_{Z_n}(t)
-&=E\left[\exp\left(\frac{it}{\sqrt n}\sum_{j=1}^nY_j\right)\right]\\
-&=E\left[\prod_{j=1}^n e^{itY_j/\sqrt n}\right]\\
-&=\prod_{j=1}^nE[e^{itY_j/\sqrt n}]\\
-&=\left[\phi_Y(t/\sqrt n)\right]^n.
-\end{aligned}
-$$
+$$\begin{aligned} \phi_{Z_n}(t) &=E\left[\exp\left(\frac{it}{\sqrt n}\sum_{j=1}^nY_j\right)\right]\\ &=E\left[\prod_{j=1}^n e^{itY_j/\sqrt n}\right]\\ &=\prod_{j=1}^nE[e^{itY_j/\sqrt n}]\\ &=\left[\phi_Y(t/\sqrt n)\right]^n. \end{aligned}$$
 
 第三行使用独立性，第四行使用同分布。
 
 代入上一节的展开：
 
-$$
-\phi_Y(t/\sqrt n)
-=1-\frac{t^2}{2n}+o(1/n).
-$$
+$$\phi_Y(t/\sqrt n) =1-\frac{t^2}{2n}+o(1/n).$$
 
 于是
 
-$$
-\phi_{Z_n}(t)
-=\left(1-\frac{t^2}{2n}+o(1/n)\right)^n.
-$$
+$$\phi_{Z_n}(t) =\left(1-\frac{t^2}{2n}+o(1/n)\right)^n.$$
 
 固定 $t$ ，令
 
-$$
-a_n=-\frac{t^2}{2n}+o(1/n).
-$$
+$$a_n=-\frac{t^2}{2n}+o(1/n).$$
 
 则 $n a_n\to-t^2/2$ 。
 
 当 $n$ 足够大时，$1+a_n$ 落在复对数主支的定义域内，并且
 
-$$
-n\log(1+a_n)
-=n a_n+O(n|a_n|^2)
-\longrightarrow-\frac{t^2}{2}.
-$$
+$$n\log(1+a_n) =n a_n+O(n|a_n|^2) \longrightarrow-\frac{t^2}{2}.$$
 
 取指数得到
 
-$$
-\boxed{
-\phi_{Z_n}(t)\longrightarrow e^{-t^2/2}.
-}
-$$
+$$\boxed{ \phi_{Z_n}(t)\longrightarrow e^{-t^2/2}. }$$
 
 注意这里先固定 $t$ ，再令 $n\to\infty$ 。
 
@@ -280,24 +207,17 @@ for t in (0.5, 1.0):
 
 标准正态的特征函数是
 
-$$
-E[e^{itZ}]=e^{-t^2/2}.
-$$
+$$E[e^{itZ}]=e^{-t^2/2}.$$
 
 我们已经得到
 
-$$
-\phi_{Z_n}(t)\to e^{-t^2/2}
-\qquad\text{对每个固定的 }t.
-$$
+$$\phi_{Z_n}(t)\to e^{-t^2/2} \qquad\text{对每个固定的 }t.$$
 
 Lévy 连续性定理说：若一列概率分布的特征函数逐点收敛，并且极限函数在 $0$ 连续，那么这列分布依分布收敛到以该极限函数为特征函数的概率分布。
 
 这里 $e^{-t^2/2}$ 显然在 $0$ 连续，所以
 
-$$
-Z_n\xrightarrow{d}N(0,1).
-$$
+$$Z_n\xrightarrow{d}N(0,1).$$
 
 证明至此完成。
 
@@ -309,43 +229,27 @@ $$
 
 设 $X_\lambda\sim\operatorname{Poisson}(\lambda)$ ，则
 
-$$
-E[e^{itX_\lambda}]
-=\exp\{\lambda(e^{it}-1)\}.
-$$
+$$E[e^{itX_\lambda}] =\exp\{\lambda(e^{it}-1)\}.$$
 
 标准化变量为
 
-$$
-Z_\lambda=\frac{X_\lambda-\lambda}{\sqrt\lambda}.
-$$
+$$Z_\lambda=\frac{X_\lambda-\lambda}{\sqrt\lambda}.$$
 
 其特征函数是
 
-$$
-\phi_{Z_\lambda}(t)
-=e^{-it\sqrt\lambda}
-\exp\{\lambda(e^{it/\sqrt\lambda}-1)\}.
-$$
+$$\phi_{Z_\lambda}(t) =e^{-it\sqrt\lambda} \exp\{\lambda(e^{it/\sqrt\lambda}-1)\}.$$
 
 取对数，指数部分化为
 
-$$
-\lambda\left(e^{it/\sqrt\lambda}-1-\frac{it}{\sqrt\lambda}\right).
-$$
+$$\lambda\left(e^{it/\sqrt\lambda}-1-\frac{it}{\sqrt\lambda}\right).$$
 
 展开到二阶：
 
-$$
-e^{iu}-1-iu=-\frac{u^2}{2}+O(u^3).
-$$
+$$e^{iu}-1-iu=-\frac{u^2}{2}+O(u^3).$$
 
 令 $u=t/\sqrt\lambda$ ，得
 
-$$
-\log\phi_{Z_\lambda}(t)
-=-\frac{t^2}{2}+O(\lambda^{-1/2}).
-$$
+$$\log\phi_{Z_\lambda}(t) =-\frac{t^2}{2}+O(\lambda^{-1/2}).$$
 
 所以 $\phi_{Z_\lambda}(t)\to e^{-t^2/2}$ 。
 
@@ -427,27 +331,17 @@ empirical = count(x -> lo <= x < hi, z) / reps
 
 设 $S\sim\operatorname{Bin}(n,p)$ ，要近似
 
-$$
-P(a\le S\le b),
-$$
+$$P(a\le S\le b),$$
 
 其中 $a,b$ 是整数。
 
 整数 $a$ 到 $b$ 对应的实数桶是
 
-$$
-[a-\tfrac12,b+\tfrac12].
-$$
+$$[a-\tfrac12,b+\tfrac12].$$
 
 所以应使用
 
-$$
-P(a\le S\le b)
-\approx
-\Phi\left(\frac{b+1/2-np}{\sqrt{np(1-p)}}\right)
--
-\Phi\left(\frac{a-1/2-np}{\sqrt{np(1-p)}}\right).
-$$
+$$P(a\le S\le b) \approx \Phi\left(\frac{b+1/2-np}{\sqrt{np(1-p)}}\right) - \Phi\left(\frac{a-1/2-np}{\sqrt{np(1-p)}}\right).$$
 
 若直接用 $a,b$ 作为正态端点，就把两侧各半格的质量错误地删掉了。
 
@@ -468,10 +362,7 @@ assert abs(corrected - exact) < abs(raw - exact)
 
 若整数格点分布的标准差为 $\tau$ ，在中心附近，局部正态近似通常要写成
 
-$$
-P(S=k)\approx \frac{h}{\tau}
-\varphi\left(\frac{k-m}{\tau}\right),
-$$
+$$P(S=k)\approx \frac{h}{\tau} \varphi\left(\frac{k-m}{\tau}\right),$$
 
 其中 $h$ 是相邻可达点之间的距离，$\varphi$ 是标准正态密度。
 
@@ -509,9 +400,7 @@ CLT 是极限定理，不提供某个固定 $n$ 的统一误差数值。
 
 若再假设 $E|X-\mu|^3<\infty$ ，Berry–Esseen 定理给出 Kolmogorov 距离的上界，量级为
 
-$$
-\frac{E|X-\mu|^3}{\sigma^3\sqrt n}.
-$$
+$$\frac{E|X-\mu|^3}{\sigma^3\sqrt n}.$$
 
 因此偏态越强、标准化三阶绝对矩越大，有限样本近似往往越差。
 

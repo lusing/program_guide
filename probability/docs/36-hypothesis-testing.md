@@ -25,11 +25,7 @@
 
 把参数空间分成两个互斥部分：
 
-$$
-H_0:\theta\in\Theta_0,
-\qquad
-H_A:\theta\in\Theta_A,
-$$
+$$H_0:\theta\in\Theta_0, \qquad H_A:\theta\in\Theta_A,$$
 
 通常 $\Theta_A=\Theta\setminus\Theta_0$ 。
 
@@ -43,17 +39,13 @@ $H_0$ 称为原假设，$H_A$ 称为备择假设。
 
 若 $\Theta_0$ 只含一个参数值，例如
 
-$$
-H_0:p=1/4,
-$$
+$$H_0:p=1/4,$$
 
 则称原假设是简单假设。
 
 若它含有多个参数值，例如
 
-$$
-H_0:p\le 1/4,
-$$
+$$H_0:p\le 1/4,$$
 
 则称原假设是复合假设。
 
@@ -65,19 +57,13 @@ $$
 
 对标量参数，常见形式有：
 
-$$
-H_0:\theta=\theta_0,\quad H_A:\theta>\theta_0;
-$$
+$$H_0:\theta=\theta_0,\quad H_A:\theta>\theta_0;$$
 
-$$
-H_0:\theta\le\theta_0,\quad H_A:\theta>\theta_0;
-$$
+$$H_0:\theta\le\theta_0,\quad H_A:\theta>\theta_0;$$
 
 以及
 
-$$
-H_0:\theta=\theta_0,\quad H_A:\theta\ne\theta_0.
-$$
+$$H_0:\theta=\theta_0,\quad H_A:\theta\ne\theta_0.$$
 
 前两类是单侧检验，最后一类是双侧检验。
 
@@ -99,9 +85,7 @@ $$
 
 对样本空间中的一个可测集合 $C$ ，规则
 
-$$
-X\in C\Longrightarrow\text{拒绝 }H_0
-$$
+$$X\in C\Longrightarrow\text{拒绝 }H_0$$
 
 称为具有拒绝域 $C$ 的检验。
 
@@ -113,10 +97,7 @@ $$
 
 为此引入随机化检验函数
 
-$$
-\phi(x)=P(\text{观察到 }x\text{ 后拒绝 }H_0),
-\qquad 0\le\phi(x)\le1.
-$$
+$$\phi(x)=P(\text{观察到 }x\text{ 后拒绝 }H_0), \qquad 0\le\phi(x)\le1.$$
 
 $\phi(x)=1$ 表示必拒绝，$\phi(x)=0$ 表示不拒绝，中间值表示用独立随机机制决定。
 
@@ -135,11 +116,7 @@ $\phi(x)=1$ 表示必拒绝，$\phi(x)=0$ 表示不拒绝，中间值表示用�
 
 对拒绝域 $C$ ，定义功效函数
 
-$$
-\boxed{
-\pi(\theta)=P_\theta(X\in C).
-}
-$$
+$$\boxed{ \pi(\theta)=P_\theta(X\in C). }$$
 
 当 $\theta\in\Theta_0$ 时，$\pi(\theta)$ 是在该参数处犯第一类错误的概率。
 
@@ -147,9 +124,7 @@ $$
 
 第二类错误率为
 
-$$
-\beta(\theta)=1-\pi(\theta),\qquad \theta\in\Theta_A.
-$$
+$$\beta(\theta)=1-\pi(\theta),\qquad \theta\in\Theta_A.$$
 
 所以“第二类错误率是 0.1”通常不是完整说法。
 
@@ -157,11 +132,7 @@ $$
 
 检验的 size 是原假设上最大的第一类错误概率：
 
-$$
-\boxed{
-\operatorname{size}=\sup_{\theta\in\Theta_0}\pi(\theta).
-}
-$$
+$$\boxed{ \operatorname{size}=\sup_{\theta\in\Theta_0}\pi(\theta). }$$
 
 若 size 不超过预先给定的 $\alpha$ ，称检验具有 level $\alpha$ 。
 
@@ -193,11 +164,7 @@ Neyman–Pearson 理论先固定第一类错误预算，再寻找最大功效，
 
 先考虑两个简单假设：
 
-$$
-H_0:\theta=\theta_0,
-\qquad
-H_A:\theta=\theta_1.
-$$
+$$H_0:\theta=\theta_0, \qquad H_A:\theta=\theta_1.$$
 
 设样本在两个分布下分别有密度或概率质量函数 $f_0,f_1$ 。
 
@@ -205,14 +172,7 @@ $$
 
 取常数 $k\ge0$ ，定义似然比检验：
 
-$$
-\phi(x)=
-\begin{cases}
-1,&f_1(x)>kf_0(x),\\
-\gamma(x),&f_1(x)=kf_0(x),\\
-0,&f_1(x)<kf_0(x).
-\end{cases}
-$$
+$$\phi(x)= \begin{cases} 1,&f_1(x)>kf_0(x),\\ \gamma(x),&f_1(x)=kf_0(x),\\ 0,&f_1(x)<kf_0(x). \end{cases}$$
 
 边界随机化 $\gamma(x)$ 用来调节 size。
 
@@ -226,32 +186,21 @@ Neyman–Pearson 引理把这个直觉变成最优性定理。
 
 **定理。** 若上述似然比检验满足
 
-$$
-E_0[\phi(X)]=\alpha,
-$$
+$$E_0[\phi(X)]=\alpha,$$
 
 而任意其他检验 $\psi$ 满足
 
-$$
-E_0[\psi(X)]\le\alpha,
-\qquad 0\le\psi\le1,
-$$
+$$E_0[\psi(X)]\le\alpha, \qquad 0\le\psi\le1,$$
 
 则
 
-$$
-E_1[\phi(X)]\ge E_1[\psi(X)].
-$$
+$$E_1[\phi(X)]\ge E_1[\psi(X)].$$
 
 即在所有 level $\alpha$ 的检验中，$\phi$ 对 $\theta_1$ 的功效最大。
 
 **证明的关键只有一条逐点不等式：**
 
-$$
-\boxed{
-[\phi(x)-\psi(x)]\,[f_1(x)-kf_0(x)]\ge0.
-}
-$$
+$$\boxed{ [\phi(x)-\psi(x)]\,[f_1(x)-kf_0(x)]\ge0. }$$
 
 分三种情况核对。
 
@@ -265,17 +214,11 @@ $$
 
 积分后得到
 
-$$
-E_1[\phi]-E_1[\psi]
-\ge
-k\left(E_0[\phi]-E_0[\psi]\right).
-$$
+$$E_1[\phi]-E_1[\psi] \ge k\left(E_0[\phi]-E_0[\psi]\right).$$
 
 右边为
 
-$$
-k(\alpha-E_0[\psi])\ge0.
-$$
+$$k(\alpha-E_0[\psi])\ge0.$$
 
 故 $E_1[\phi]\ge E_1[\psi]$ ，证毕。
 
@@ -291,15 +234,11 @@ $$
 
 若 $T(X)$ 对两个参数都是充分统计量，因子分解给出
 
-$$
-f_j(x)=g_j(T(x))h(x),\qquad j=0,1.
-$$
+$$f_j(x)=g_j(T(x))h(x),\qquad j=0,1.$$
 
 共同的 $h(x)$ 在比较
 
-$$
-f_1(x)-kf_0(x)
-$$
+$$f_1(x)-kf_0(x)$$
 
 时消去，所以最优拒绝域可以只用 $T$ 表示。
 
@@ -313,27 +252,17 @@ NP 引理处理的是两个简单假设。
 
 设 $X_1,\ldots,X_5$ iid 服从 Bernoulli $(p)$ ，检验
 
-$$
-H_0:p=1/4,
-\qquad
-H_A:p=3/4.
-$$
+$$H_0:p=1/4, \qquad H_A:p=3/4.$$
 
 令 $K=\sum_iX_i$ 。
 
 样本似然为
 
-$$
-L(p)=p^K(1-p)^{5-K}.
-$$
+$$L(p)=p^K(1-p)^{5-K}.$$
 
 所以似然比为
 
-$$
-\frac{L(3/4)}{L(1/4)}
-=3^K\left(\frac13\right)^{5-K}
-=\boxed{3^{2K-5}}.
-$$
+$$\frac{L(3/4)}{L(1/4)} =3^K\left(\frac13\right)^{5-K} =\boxed{3^{2K-5}}.$$
 
 它严格随 $K$ 增大，因此拒绝域必为 $K\ge k_c$ ，边界可能随机化。
 
@@ -360,51 +289,31 @@ $$
 
 其 size 为
 
-$$
-P_{1/4}(K\ge4)
-=\frac{15+1}{1024}
-=\boxed{\frac1{64}}.
-$$
+$$P_{1/4}(K\ge4) =\frac{15+1}{1024} =\boxed{\frac1{64}}.$$
 
 在备择下的功效为
 
-$$
-P_{3/4}(K\ge4)
-=\frac{405+243}{1024}
-=\boxed{\frac{81}{128}}.
-$$
+$$P_{3/4}(K\ge4) =\frac{405+243}{1024} =\boxed{\frac{81}{128}}.$$
 
 第二类错误率为
 
-$$
-\beta(3/4)=1-\frac{81}{128}=\frac{47}{128}.
-$$
+$$\beta(3/4)=1-\frac{81}{128}=\frac{47}{128}.$$
 
 若在 $K=3$ 时再以 $1/5$ 的概率拒绝，size 增加
 
-$$
-\frac15P_{1/4}(K=3)
-=\frac15\frac{90}{1024}
-=\frac{18}{1024},
-$$
+$$\frac15P_{1/4}(K=3) =\frac15\frac{90}{1024} =\frac{18}{1024},$$
 
 故新的 size 为
 
-$$
-\frac{16+18}{1024}=\frac{17}{512}.
-$$
+$$\frac{16+18}{1024}=\frac{17}{512}.$$
 
 功效增加
 
-$$
-\frac15\frac{270}{1024}=\frac{54}{1024},
-$$
+$$\frac15\frac{270}{1024}=\frac{54}{1024},$$
 
 故新的功效为
 
-$$
-\frac{648+54}{1024}=\frac{351}{512}.
-$$
+$$\frac{648+54}{1024}=\frac{351}{512}.$$
 
 随机化不是凭空调高功效；它同时使用了更多第一类错误预算。
 
@@ -513,20 +422,13 @@ example : ((5 : ℚ) * 3 ^ 4 + 3 ^ 5) / 4 ^ 5 = 81 / 128 := by norm_num
 
 对数似然比为
 
-$$
-\log\frac{L(\mu_1)}{L(\mu_0)}
-=
-\frac{n(\mu_1-\mu_0)}{\sigma^2}
-\left(\bar X-\frac{\mu_0+\mu_1}{2}\right).
-$$
+$$\log\frac{L(\mu_1)}{L(\mu_0)} = \frac{n(\mu_1-\mu_0)}{\sigma^2} \left(\bar X-\frac{\mu_0+\mu_1}{2}\right).$$
 
 因为 $\mu_1-\mu_0>0$ ，似然比大等价于 $\bar X$ 大。
 
 因此 NP 拒绝域可写为
 
-$$
-Z=\frac{\bar X-\mu_0}{\sigma/\sqrt n}>z_\alpha,
-$$
+$$Z=\frac{\bar X-\mu_0}{\sigma/\sqrt n}>z_\alpha,$$
 
 其中 $P(N(0,1)>z_\alpha)=\alpha$ 。
 
@@ -542,50 +444,33 @@ $$
 
 取
 
-$$
-n=16,\qquad \sigma=4,\qquad \mu_0=10,
-$$
+$$n=16,\qquad \sigma=4,\qquad \mu_0=10,$$
 
 则 $\sigma/\sqrt n=1$ 。
 
 右侧 5% 临界值为
 
-$$
-z_{0.05}=1.64485362695.
-$$
+$$z_{0.05}=1.64485362695.$$
 
 在一般 $\mu$ 下，
 
-$$
-Z\sim N\left(\frac{\sqrt n(\mu-\mu_0)}{\sigma},1\right).
-$$
+$$Z\sim N\left(\frac{\sqrt n(\mu-\mu_0)}{\sigma},1\right).$$
 
 记非中心位移
 
-$$
-\delta=\frac{\sqrt n(\mu-\mu_0)}{\sigma},
-$$
+$$\delta=\frac{\sqrt n(\mu-\mu_0)}{\sigma},$$
 
 功效函数就是
 
-$$
-\boxed{
-\pi(\mu)=P_\mu(Z>z_\alpha)
-=\Phi(\delta-z_\alpha).
-}
-$$
+$$\boxed{ \pi(\mu)=P_\mu(Z>z_\alpha) =\Phi(\delta-z_\alpha). }$$
 
 在 $\mu=12$ 时，
 
-$$
-\delta=\frac{4(12-10)}4=2,
-$$
+$$\delta=\frac{4(12-10)}4=2,$$
 
 所以
 
-$$
-\pi(12)=\Phi(2-1.64485362695)\approx0.638760.
-$$
+$$\pi(12)=\Phi(2-1.64485362695)\approx0.638760.$$
 
 功效曲线上的几个点为：
 
@@ -615,9 +500,7 @@ $$
 
 在正态均值问题中，常见规则是
 
-$$
-|Z|>z_{\alpha/2}.
-$$
+$$|Z|>z_{\alpha/2}.$$
 
 它不是整个无限制检验类中的 UMP，而是双侧无偏、对称或不变检验类中的自然最优规则之一。
 
@@ -629,19 +512,11 @@ $$
 
 简单原假设下，观测到 $T=t_{\mathrm{obs}}$ 后的上尾 p 值为
 
-$$
-\boxed{
-p(t_{\mathrm{obs}})=P_{H_0}(T\ge t_{\mathrm{obs}}).
-}
-$$
+$$\boxed{ p(t_{\mathrm{obs}})=P_{H_0}(T\ge t_{\mathrm{obs}}). }$$
 
 复合原假设下，通常定义为
 
-$$
-p(t_{\mathrm{obs}})
-=\sup_{\theta\in\Theta_0}
-P_\theta(T\ge t_{\mathrm{obs}}).
-$$
+$$p(t_{\mathrm{obs}}) =\sup_{\theta\in\Theta_0} P_\theta(T\ge t_{\mathrm{obs}}).$$
 
 它是“若原假设成立，得到至少这么极端结果的概率”。
 
@@ -661,21 +536,15 @@ $$
 
 本章正态例观测 $\bar x=11.5$ ，所以
 
-$$
-z_{\mathrm{obs}}=1.5.
-$$
+$$z_{\mathrm{obs}}=1.5.$$
 
 右侧 p 值为
 
-$$
-1-\Phi(1.5)=0.0668072.
-$$
+$$1-\Phi(1.5)=0.0668072.$$
 
 双侧 p 值为
 
-$$
-2\{1-\Phi(|1.5|)\}=0.1336144.
-$$
+$$2\{1-\Phi(|1.5|)\}=0.1336144.$$
 
 两者都在 0.05 以上，因此相应检验不拒绝 $H_0$ 。
 
@@ -685,10 +554,7 @@ $$
 
 上述正态例的 95% 双侧区间为
 
-$$
-11.5\pm1.95996398454
-=(9.5400360,13.4599640).
-$$
+$$11.5\pm1.95996398454 =(9.5400360,13.4599640).$$
 
 它同时包含 $\mu=10$ 和 $\mu=12$ 。
 
@@ -726,27 +592,19 @@ $$
 
 正态均值且 $\sigma$ 已知时，
 
-$$
-Z=\frac{\bar X-\mu_0}{\sigma/\sqrt n}\sim N(0,1).
-$$
+$$Z=\frac{\bar X-\mu_0}{\sigma/\sqrt n}\sim N(0,1).$$
 
 若 $\sigma$ 未知，用
 
-$$
-S^2=\frac1{n-1}\sum_{i=1}^n(X_i-\bar X)^2
-$$
+$$S^2=\frac1{n-1}\sum_{i=1}^n(X_i-\bar X)^2$$
 
 代替，得到
 
-$$
-T=\frac{\bar X-\mu_0}{S/\sqrt n}.
-$$
+$$T=\frac{\bar X-\mu_0}{S/\sqrt n}.$$
 
 在正态样本和 $H_0$ 下，第 22 章已经给出
 
-$$
-T\sim t_{n-1}.
-$$
+$$T\sim t_{n-1}.$$
 
 t 分布尾部更厚，因为分母也随机。
 
@@ -754,9 +612,7 @@ t 分布尾部更厚，因为分母也随机。
 
 沿用旧章的出餐时间例：$n=20,\bar x=48,s=8,\mu_0=45$ ，则
 
-$$
-t=\frac{48-45}{8/\sqrt{20}}=1.67705.
-$$
+$$t=\frac{48-45}{8/\sqrt{20}}=1.67705.$$
 
 若把 $s=8$ 当作已知 $\sigma$ ，右侧正态 p 值为 0.046766。
 
@@ -794,11 +650,7 @@ p_upper = 1 - Phi(1.5)
 
 对 $t_{19}$ ，程序利用
 
-$$
-\Gamma(10)=9!,
-\qquad
-\Gamma(19/2)=\frac{17!!}{2^9}\sqrt\pi
-$$
+$$\Gamma(10)=9!, \qquad \Gamma(19/2)=\frac{17!!}{2^9}\sqrt\pi$$
 
 写出精确归一化常数，再数值积分右尾。
 
@@ -812,15 +664,11 @@ $$
 
 Pearson 统计量为
 
-$$
-X^2=\sum_{j=1}^k\frac{(O_j-E_j)^2}{E_j}.
-$$
+$$X^2=\sum_{j=1}^k\frac{(O_j-E_j)^2}{E_j}.$$
 
 在没有额外估计参数且期望计数足够大时，常用近似为
 
-$$
-X^2\approx\chi^2_{k-1}.
-$$
+$$X^2\approx\chi^2_{k-1}.$$
 
 自由度少一来自 $\sum_jO_j=\sum_jE_j=n$ 的约束。
 
@@ -828,10 +676,7 @@ $$
 
 旧章的 12 个月生日计数给出
 
-$$
-n=4515,\qquad E_j=376.25,
-\qquad X^2=93.0718.
-$$
+$$n=4515,\qquad E_j=376.25, \qquad X^2=93.0718.$$
 
 在 11 个自由度下，右尾 p 值小于 $10^{-12}$ 。
 
@@ -853,25 +698,17 @@ assert chi2.sf(chi2_stat, 11) < 1e-12
 
 未知且可能不等的方差下，Welch 统计量的分母是
 
-$$
-\sqrt{\frac{S_X^2}{n_X}+\frac{S_Y^2}{n_Y}}.
-$$
+$$\sqrt{\frac{S_X^2}{n_X}+\frac{S_Y^2}{n_Y}}.$$
 
 近似自由度为
 
-$$
-\nu=
-\frac{(S_X^2/n_X+S_Y^2/n_Y)^2}
-{S_X^4/[n_X^2(n_X-1)]+S_Y^4/[n_Y^2(n_Y-1)]}.
-$$
+$$\nu= \frac{(S_X^2/n_X+S_Y^2/n_Y)^2} {S_X^4/[n_X^2(n_X-1)]+S_Y^4/[n_Y^2(n_Y-1)]}.$$
 
 它不必是整数。
 
 沿用旧例数据，程序得到 $\nu\approx22.5085$ ，并验证
 
-$$
-13\le\nu\le26.
-$$
+$$13\le\nu\le26.$$
 
 Python 中的计算直接逐项实现公式：
 
@@ -926,9 +763,7 @@ rejections += xbar - 10 > zcrit
 
 若有 20 个相互独立且都成立的原假设，每个都以 0.05 水平检验，则至少一个假拒绝的概率为
 
-$$
-1-0.95^{20}\approx0.641514.
-$$
+$$1-0.95^{20}\approx0.641514.$$
 
 所以“做了 20 次，终于有一个显著”不能按单次 5% 检验解释。
 

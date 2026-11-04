@@ -28,15 +28,11 @@
 
 估计量序列 $\hat\theta_n$ 对 $\theta_0$ 弱一致，是指
 
-$$
-\hat\theta_n\xrightarrow{p}\theta_0.
-$$
+$$\hat\theta_n\xrightarrow{p}\theta_0.$$
 
 即对任意 $\varepsilon>0$ ，
 
-$$
-P(\|\hat\theta_n-\theta_0\|>\varepsilon)\to0.
-$$
+$$P(\|\hat\theta_n-\theta_0\|>\varepsilon)\to0.$$
 
 若几乎必然收敛，则称强一致。
 
@@ -48,12 +44,7 @@ $$
 
 若存在正定矩阵 $V$ ，使
 
-$$
-\boxed{
-\sqrt n(\hat\theta_n-\theta_0)
-\xrightarrow{d}N(0,V),
-}
-$$
+$$\boxed{ \sqrt n(\hat\theta_n-\theta_0) \xrightarrow{d}N(0,V), }$$
 
 则称估计量具有 $\sqrt n$ 渐近正态性。
 
@@ -61,9 +52,7 @@ $$
 
 对估计量本身，常用近似是
 
-$$
-\hat\theta_n\approx N(\theta_0,V/n).
-$$
+$$\hat\theta_n\approx N(\theta_0,V/n).$$
 
 把 $V$ 与 $V/n$ 混写，会让标准误相差 $\sqrt n$ 倍。
 
@@ -71,9 +60,7 @@ $$
 
 在正则参数模型中，若某类一致渐近正态估计量的渐近方差达到信息矩阵下界
 
-$$
-V=I(\theta_0)^{-1},
-$$
+$$V=I(\theta_0)^{-1},$$
 
 则称它渐近有效。
 
@@ -87,22 +74,11 @@ $$
 
 MLE 最大化平均对数似然
 
-$$
-\hat\theta_n=\arg\max_{\theta\in\Theta}
-\frac1n\sum_{i=1}^n\ell(X_i;\theta).
-$$
+$$\hat\theta_n=\arg\max_{\theta\in\Theta} \frac1n\sum_{i=1}^n\ell(X_i;\theta).$$
 
 在正确设定模型 $P_{\theta_0}$ 下，由 Jensen 不等式，
 
-$$
-E_{\theta_0}\left[
-\log\frac{f(X;\theta)}{f(X;\theta_0)}
-\right]
-\le
-\log E_{\theta_0}\left[
-\frac{f(X;\theta)}{f(X;\theta_0)}
-\right]\le0.
-$$
+$$E_{\theta_0}\left[ \log\frac{f(X;\theta)}{f(X;\theta_0)} \right] \le \log E_{\theta_0}\left[ \frac{f(X;\theta)}{f(X;\theta_0)} \right]\le0.$$
 
 所以总体对数似然在 $\theta_0$ 处最大。
 
@@ -127,47 +103,29 @@ $$
 
 定义单观测得分
 
-$$
-s(X;\theta)=\nabla_\theta\ell(X;\theta),
-$$
+$$s(X;\theta)=\nabla_\theta\ell(X;\theta),$$
 
 以及样本平均得分
 
-$$
-\bar s_n(\theta)=\frac1n\sum_{i=1}^ns(X_i;\theta).
-$$
+$$\bar s_n(\theta)=\frac1n\sum_{i=1}^ns(X_i;\theta).$$
 
 内点 MLE 满足
 
-$$
-\bar s_n(\hat\theta_n)=0.
-$$
+$$\bar s_n(\hat\theta_n)=0.$$
 
 在真参数附近展开：
 
-$$
-\boxed{
-0=\bar s_n(\hat\theta_n)
-=\bar s_n(\theta_0)
-+H_n(\tilde\theta_n)(\hat\theta_n-\theta_0),
-}
-$$
+$$\boxed{ 0=\bar s_n(\hat\theta_n) =\bar s_n(\theta_0) +H_n(\tilde\theta_n)(\hat\theta_n-\theta_0), }$$
 
 其中
 
-$$
-H_n(\theta)=\frac1n\sum_{i=1}^n
-\nabla_{\theta\theta'}^2\ell(X_i;\theta),
-$$
+$$H_n(\theta)=\frac1n\sum_{i=1}^n \nabla_{\theta\theta'}^2\ell(X_i;\theta),$$
 
 而 $\tilde\theta_n$ 位于 $\hat\theta_n$ 与 $\theta_0$ 之间。
 
 若使用带余项的 Taylor 展开，也可写为
 
-$$
-0=\bar s_n(\theta_0)
-+H_n(\theta_0)(\hat\theta_n-\theta_0)+r_n.
-$$
+$$0=\bar s_n(\theta_0) +H_n(\theta_0)(\hat\theta_n-\theta_0)+r_n.$$
 
 “得分均值 + 导数项 + 余项”就是这一条。
 
@@ -181,24 +139,15 @@ $$
 
 在正确模型和正则条件下，
 
-$$
-E_{\theta_0}[s(X;\theta_0)]=0.
-$$
+$$E_{\theta_0}[s(X;\theta_0)]=0.$$
 
 定义得分协方差
 
-$$
-J=\operatorname{Var}_{\theta_0}(s(X;\theta_0))
-=E_{\theta_0}[ss'].
-$$
+$$J=\operatorname{Var}_{\theta_0}(s(X;\theta_0)) =E_{\theta_0}[ss'].$$
 
 若得分有有限二阶矩，iid 多元 CLT 给出
 
-$$
-\sqrt n\,\bar s_n(\theta_0)
-=\frac1{\sqrt n}\sum_{i=1}^ns(X_i;\theta_0)
-\xrightarrow{d}N(0,J).
-$$
+$$\sqrt n\,\bar s_n(\theta_0) =\frac1{\sqrt n}\sum_{i=1}^ns(X_i;\theta_0) \xrightarrow{d}N(0,J).$$
 
 这一步不要求信息矩阵等式。
 
@@ -208,42 +157,25 @@ $$
 
 定义总体期望 Hessian
 
-$$
-A=E\left[\nabla_{\theta\theta'}^2
-\ell(X;\theta_0)\right].
-$$
+$$A=E\left[\nabla_{\theta\theta'}^2 \ell(X;\theta_0)\right].$$
 
 在连续性、可积控制和一致性条件下，
 
-$$
-H_n(\tilde\theta_n)\xrightarrow{p}A.
-$$
+$$H_n(\tilde\theta_n)\xrightarrow{p}A.$$
 
 若 $A$ 非奇异，从估计方程展开得到
 
-$$
-\sqrt n(\hat\theta_n-\theta_0)
-=(-H_n(\tilde\theta_n))^{-1}
-\sqrt n\,\bar s_n(\theta_0).
-$$
+$$\sqrt n(\hat\theta_n-\theta_0) =(-H_n(\tilde\theta_n))^{-1} \sqrt n\,\bar s_n(\theta_0).$$
 
 由连续映射和 Slutsky 定理，
 
-$$
-\boxed{
-\sqrt n(\hat\theta_n-\theta_0)
-\xrightarrow{d}
-N(0,A^{-1}JA^{-1}),
-}
-$$
+$$\boxed{ \sqrt n(\hat\theta_n-\theta_0) \xrightarrow{d} N(0,A^{-1}JA^{-1}), }$$
 
 这里利用 $A$ 对称，将一般形式 $A^{-1}J(A^{-1})'$ 简写为 $A^{-1}JA^{-1}$ 。
 
 这就是 MLE 的 sandwich 渐近方差：
 
-$$
-\boxed{V=A^{-1}JA^{-1}.}
-$$
+$$\boxed{V=A^{-1}JA^{-1}.}$$
 
 - 中间 $J$ 记录得分波动；
 - 两侧 $A^{-1}$ 记录曲率如何把得分波动映射成参数波动；
@@ -253,28 +185,15 @@ $$
 
 在正确设定的正则模型中，信息矩阵等式为
 
-$$
-J=I,
-\qquad
-A=-I.
-$$
+$$J=I, \qquad A=-I.$$
 
 代入 sandwich：
 
-$$
-V=A^{-1}JA^{-1}
-=(-I)^{-1}I(-I)^{-1}
-=I^{-1}.
-$$
+$$V=A^{-1}JA^{-1} =(-I)^{-1}I(-I)^{-1} =I^{-1}.$$
 
 因此
 
-$$
-\boxed{
-\sqrt n(\hat\theta_n-\theta_0)
-\xrightarrow{d}N(0,I(\theta_0)^{-1}).
-}
-$$
+$$\boxed{ \sqrt n(\hat\theta_n-\theta_0) \xrightarrow{d}N(0,I(\theta_0)^{-1}). }$$
 
 MLE 在此意义下渐近达到信息下界。
 
@@ -289,28 +208,17 @@ MLE 在此意义下渐近达到信息下界。
 
 假设真实数据分布为 $Q$ ，而工作模型是
 
-$$
-\mathcal P=\{P_\theta:\theta\in\Theta\},
-\qquad Q\notin\mathcal P.
-$$
+$$\mathcal P=\{P_\theta:\theta\in\Theta\}, \qquad Q\notin\mathcal P.$$
 
 准极大似然估计仍最大化工作对数似然。
 
 在适当条件下，它收敛到
 
-$$
-\boxed{
-\theta_*
-=\arg\max_{\theta\in\Theta}E_Q[\ell(X;\theta)].
-}
-$$
+$$\boxed{ \theta_* =\arg\max_{\theta\in\Theta}E_Q[\ell(X;\theta)]. }$$
 
 等价地，若密度与 KL 散度定义良好，
 
-$$
-\theta_*=\arg\min_{\theta\in\Theta}
-D_{\mathrm{KL}}(Q\|P_\theta).
-$$
+$$\theta_*=\arg\min_{\theta\in\Theta} D_{\mathrm{KL}}(Q\|P_\theta).$$
 
 因此 $\theta_*$ 是 KL 意义下最接近真实分布的工作模型参数，称为伪真参数。
 
@@ -318,25 +226,15 @@ $$
 
 在伪真参数的内点一阶条件下，
 
-$$
-E_Q[s(X;\theta_*)]=0.
-$$
+$$E_Q[s(X;\theta_*)]=0.$$
 
 于是仍可用同样的展开，但矩阵改为
 
-$$
-A_Q=E_Q[\nabla^2\ell(X;\theta_*)],
-\qquad
-J_Q=\operatorname{Var}_Q(s(X;\theta_*)).
-$$
+$$A_Q=E_Q[\nabla^2\ell(X;\theta_*)], \qquad J_Q=\operatorname{Var}_Q(s(X;\theta_*)).$$
 
 渐近方差为
 
-$$
-\boxed{
-V_Q=A_Q^{-1}J_QA_Q^{-1}.
-}
-$$
+$$\boxed{ V_Q=A_Q^{-1}J_QA_Q^{-1}. }$$
 
 除非另有证明，不应假设 $A_Q=-J_Q$ 。
 
@@ -344,62 +242,39 @@ $$
 
 设工作模型为
 
-$$
-N(\mu,1),
-$$
+$$N(\mu,1),$$
 
 但真实分布 $Q$ 不一定是正态，也不要求方差为 1。
 
 工作对数似然去掉常数后是
 
-$$
-\ell(X;\mu)=-\frac12(X-\mu)^2.
-$$
+$$\ell(X;\mu)=-\frac12(X-\mu)^2.$$
 
 得分与二阶导数为
 
-$$
-s(X;\mu)=X-\mu,
-\qquad
-\ell''(X;\mu)=-1.
-$$
+$$s(X;\mu)=X-\mu, \qquad \ell''(X;\mu)=-1.$$
 
 总体一阶条件
 
-$$
-E_Q[X-\mu_*]=0
-$$
+$$E_Q[X-\mu_*]=0$$
 
 给出
 
-$$
-\mu_*=E_Q[X].
-$$
+$$\mu_*=E_Q[X].$$
 
 准 MLE 仍是
 
-$$
-\hat\mu=\bar X.
-$$
+$$\hat\mu=\bar X.$$
 
 所以即使工作正态模型错误，只要关心的是总体均值，$\bar X$ 仍一致。
 
 但现在
 
-$$
-A_Q=-1,
-\qquad
-J_Q=\operatorname{Var}_Q(X-\mu_*)=\operatorname{Var}_Q(X).
-$$
+$$A_Q=-1, \qquad J_Q=\operatorname{Var}_Q(X-\mu_*)=\operatorname{Var}_Q(X).$$
 
 故
 
-$$
-\boxed{
-\sqrt n(\bar X-\mu_*)
-\xrightarrow{d}N(0,\operatorname{Var}_Q(X)).
-}
-$$
+$$\boxed{ \sqrt n(\bar X-\mu_*) \xrightarrow{d}N(0,\operatorname{Var}_Q(X)). }$$
 
 若真实方差为 4，稳健渐近方差就是 4。
 
@@ -422,56 +297,35 @@ assert scalar_sandwich(F(-1), F(1)) == F(1)
 
 考虑 Poisson 工作对数似然
 
-$$
-\ell(X;\lambda)=X\log\lambda-\lambda-\log(X!).
-$$
+$$\ell(X;\lambda)=X\log\lambda-\lambda-\log(X!).$$
 
 即使真实分布不是 Poisson，准 MLE 仍满足
 
-$$
-\sum_i\left(\frac{X_i}{\hat\lambda}-1\right)=0,
-$$
+$$\sum_i\left(\frac{X_i}{\hat\lambda}-1\right)=0,$$
 
 所以
 
-$$
-\hat\lambda=\bar X.
-$$
+$$\hat\lambda=\bar X.$$
 
 伪真值为
 
-$$
-\lambda_*=E_Q[X].
-$$
+$$\lambda_*=E_Q[X].$$
 
 在伪真值处，
 
-$$
-A_Q
-=E_Q\left[-\frac X{\lambda_*^2}\right]
-=-\frac1{\lambda_*}.
-$$
+$$A_Q =E_Q\left[-\frac X{\lambda_*^2}\right] =-\frac1{\lambda_*}.$$
 
 得分是
 
-$$
-s(X;\lambda_*)=\frac{X-\lambda_*}{\lambda_*},
-$$
+$$s(X;\lambda_*)=\frac{X-\lambda_*}{\lambda_*},$$
 
 因此
 
-$$
-J_Q=\frac{\operatorname{Var}_Q(X)}{\lambda_*^2}.
-$$
+$$J_Q=\frac{\operatorname{Var}_Q(X)}{\lambda_*^2}.$$
 
 代入 sandwich：
 
-$$
-V_Q
-=\frac{J_Q}{A_Q^2}
-=\frac{\operatorname{Var}_Q(X)/\lambda_*^2}{1/\lambda_*^2}
-=\boxed{\operatorname{Var}_Q(X)}.
-$$
+$$V_Q =\frac{J_Q}{A_Q^2} =\frac{\operatorname{Var}_Q(X)/\lambda_*^2}{1/\lambda_*^2} =\boxed{\operatorname{Var}_Q(X)}.$$
 
 这与 $\hat\lambda=\bar X$ 的直接 CLT 完全一致。
 
@@ -516,44 +370,27 @@ assert lam == F(2)
 
 回到第 33 章的 GMM：
 
-$$
-Q_n(\theta;W)=\bar m_n(\theta)'W\bar m_n(\theta).
-$$
+$$Q_n(\theta;W)=\bar m_n(\theta)'W\bar m_n(\theta).$$
 
 为简化展示，先取固定权重 $W$ 。
 
 内点一阶条件为
 
-$$
-\widehat G(\hat\theta)'W\bar m_n(\hat\theta)=0,
-$$
+$$\widehat G(\hat\theta)'W\bar m_n(\hat\theta)=0,$$
 
 其中
 
-$$
-\widehat G(\theta)
-=\frac{\partial\bar m_n(\theta)}{\partial\theta'}
-$$
+$$\widehat G(\theta) =\frac{\partial\bar m_n(\theta)}{\partial\theta'}$$
 
 是 $q\times p$ 矩阵。
 
 在 $\theta_0$ 附近展开：
 
-$$
-\bar m_n(\hat\theta)
-=\bar m_n(\theta_0)
-+\widehat G(\tilde\theta)(\hat\theta-\theta_0).
-$$
+$$\bar m_n(\hat\theta) =\bar m_n(\theta_0) +\widehat G(\tilde\theta)(\hat\theta-\theta_0).$$
 
 代入一阶条件并整理：
 
-$$
-\boxed{
-\hat\theta-\theta_0
-\approx
--(G'WG)^{-1}G'W\bar m_n(\theta_0).
-}
-$$
+$$\boxed{ \hat\theta-\theta_0 \approx -(G'WG)^{-1}G'W\bar m_n(\theta_0). }$$
 
 严格证明中，需要把 $\widehat G(\hat\theta)$ 、$\widehat G(\tilde\theta)$ 、$\widehat W$ 与极限 $G,G,W$ 的差全部纳入余项，并证明标准化后消失。
 
@@ -563,45 +400,27 @@ $$
 
 在真参数处
 
-$$
-E[m(X,\theta_0)]=0.
-$$
+$$E[m(X,\theta_0)]=0.$$
 
 定义
 
-$$
-S=\operatorname{Var}(m(X,\theta_0)).
-$$
+$$S=\operatorname{Var}(m(X,\theta_0)).$$
 
 由多元 CLT，
 
-$$
-\sqrt n\,\bar m_n(\theta_0)
-\xrightarrow{d}N(0,S).
-$$
+$$\sqrt n\,\bar m_n(\theta_0) \xrightarrow{d}N(0,S).$$
 
 把线性化映射
 
-$$
-\Psi=(G'WG)^{-1}G'W
-$$
+$$\Psi=(G'WG)^{-1}G'W$$
 
 作用于该极限，得到
 
-$$
-\sqrt n(\hat\theta_W-\theta_0)
-\xrightarrow{d}N(0,\Omega(W)),
-$$
+$$\sqrt n(\hat\theta_W-\theta_0) \xrightarrow{d}N(0,\Omega(W)),$$
 
 其中
 
-$$
-\boxed{
-\Omega(W)
-=\Psi S\Psi'
-=(G'WG)^{-1}G'WSWG(G'WG)^{-1}.
-}
-$$
+$$\boxed{ \Omega(W) =\Psi S\Psi' =(G'WG)^{-1}G'WSWG(G'WG)^{-1}. }$$
 
 这与 MLE sandwich 的结构相同：
 
@@ -611,17 +430,11 @@ $$
 
 若 $W=S^{-1}$ ，则
 
-$$
-\Psi_*=(G'S^{-1}G)^{-1}G'S^{-1},
-$$
+$$\Psi_*=(G'S^{-1}G)^{-1}G'S^{-1},$$
 
 从而
 
-$$
-\boxed{
-\Omega_*=(G'S^{-1}G)^{-1}.
-}
-$$
+$$\boxed{ \Omega_*=(G'S^{-1}G)^{-1}. }$$
 
 Python 用第 33 章的二维矩阵直接计算一般式和化简式：
 
@@ -671,19 +484,11 @@ GMM 不需要完整分布正确，但需要所依赖的矩条件在目标参数�
 
 若不存在任何 $\theta$ 使
 
-$$
-E_Q[m(X,\theta)]=0,
-$$
+$$E_Q[m(X,\theta)]=0,$$
 
 那么固定权重 $W$ 下的 GMM 通常收敛到
 
-$$
-\theta_W^*
-=\arg\min_\theta
-\mu(\theta)'W\mu(\theta),
-\qquad
-\mu(\theta)=E_Q[m(X,\theta)].
-$$
+$$\theta_W^* =\arg\min_\theta \mu(\theta)'W\mu(\theta), \qquad \mu(\theta)=E_Q[m(X,\theta)].$$
 
 它是特定权重下的伪真参数，而不是自动具有结构解释的真参数。
 
@@ -700,10 +505,7 @@ $$
 
 若矩条件正确、参数恰好由 $\theta_0$ 识别、最优权重一致估计 $S^{-1}$ ，且常规正则条件成立，则
 
-$$
-J_n=n\bar m_n(\hat\theta)'\widehat S^{-1}\bar m_n(\hat\theta)
-\xrightarrow{d}\chi^2_{q-p}.
-$$
+$$J_n=n\bar m_n(\hat\theta)'\widehat S^{-1}\bar m_n(\hat\theta) \xrightarrow{d}\chi^2_{q-p}.$$
 
 原因是：
 
@@ -728,41 +530,21 @@ assert q - p == 1
 
 在准 MLE 中，可构造
 
-$$
-\widehat A
-=\frac1n\sum_i\nabla^2\ell(X_i;\hat\theta),
-$$
+$$\widehat A =\frac1n\sum_i\nabla^2\ell(X_i;\hat\theta),$$
 
-$$
-\widehat J
-=\frac1n\sum_i
-s(X_i;\hat\theta)s(X_i;\hat\theta)'.
-$$
+$$\widehat J =\frac1n\sum_i s(X_i;\hat\theta)s(X_i;\hat\theta)'.$$
 
 然后使用
 
-$$
-\widehat V=\widehat A^{-1}\widehat J\widehat A^{-1},
-\qquad
-\widehat{\operatorname{Var}}(\hat\theta)
-=\frac1n\widehat V.
-$$
+$$\widehat V=\widehat A^{-1}\widehat J\widehat A^{-1}, \qquad \widehat{\operatorname{Var}}(\hat\theta) =\frac1n\widehat V.$$
 
 在 GMM 中对应为
 
-$$
-\widehat\Omega
-=(\widehat G'\widehat W\widehat G)^{-1}
-\widehat G'\widehat W\widehat S\widehat W\widehat G
-(\widehat G'\widehat W\widehat G)^{-1}.
-$$
+$$\widehat\Omega =(\widehat G'\widehat W\widehat G)^{-1} \widehat G'\widehat W\widehat S\widehat W\widehat G (\widehat G'\widehat W\widehat G)^{-1}.$$
 
 若已取 $\widehat W=\widehat S^{-1}$ ，可化简为
 
-$$
-\widehat\Omega_*
-=(\widehat G'\widehat S^{-1}\widehat G)^{-1}.
-$$
+$$\widehat\Omega_* =(\widehat G'\widehat S^{-1}\widehat G)^{-1}.$$
 
 实际报告标准误时，取 $\widehat V/n$ 或 $\widehat\Omega/n$ 的对角元素再开平方。
 
@@ -772,17 +554,13 @@ $$
 
 本章默认 iid，因此
 
-$$
-S=E[m_im_i'].
-$$
+$$S=E[m_im_i'].$$
 
 若观测独立但不同分布，或存在条件异方差，得分与矩协方差要按相应结构估计。
 
 若数据时间相关，则
 
-$$
-\operatorname{Var}\left(\frac1{\sqrt n}\sum_{i=1}^nm_i\right)
-$$
+$$\operatorname{Var}\left(\frac1{\sqrt n}\sum_{i=1}^nm_i\right)$$
 
 还包含滞后协方差。
 
@@ -794,17 +572,11 @@ $$
 
 考虑真实数据
 
-$$
-X=1+2E,\qquad E\sim\operatorname{Exp}(1).
-$$
+$$X=1+2E,\qquad E\sim\operatorname{Exp}(1).$$
 
 于是
 
-$$
-E_QX=3,
-\qquad
-\operatorname{Var}_Q(X)=4.
-$$
+$$E_QX=3, \qquad \operatorname{Var}_Q(X)=4.$$
 
 工作模型仍是 $N(\mu,1)$ 。
 

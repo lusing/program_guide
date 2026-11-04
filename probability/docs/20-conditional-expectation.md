@@ -6,19 +6,11 @@
 
 离散情形下，若 $P(X=x)>0$ ，
 
-$$
-\boxed{
-g(x)=E[Y\mid X=x]
-=\sum_y y\,P(Y=y\mid X=x)
-=\frac{\sum_y yP(X=x,Y=y)}{P(X=x)}.
-}
-$$
+$$\boxed{ g(x)=E[Y\mid X=x] =\sum_y y\,P(Y=y\mid X=x) =\frac{\sum_y yP(X=x,Y=y)}{P(X=x)}. }$$
 
 把观测到的随机量 $X$ 代回，得到随机变量
 
-$$
-\boxed{E[Y\mid X]=g(X).}
-$$
+$$\boxed{E[Y\mid X]=g(X).}$$
 
 这就是条件期望最重要的类型：给定一个随机变量的条件期望。更一般的研究生写法是 $E[Y\mid\mathcal G]$ ，其中 $\mathcal G$ 是已知信息组成的 $\sigma$ -代数；本章先从 $X$ 和有限路径建立直观，最后再过渡到信息族。
 
@@ -34,27 +26,15 @@ $$
 
 逐行计算：
 
-$$
-E[Y\mid X=0]
-=\frac{0\cdot2+1\cdot3+3\cdot1}{6}=1,
-$$
+$$E[Y\mid X=0] =\frac{0\cdot2+1\cdot3+3\cdot1}{6}=1,$$
 
-$$
-E[Y\mid X=1]
-=\frac{0\cdot1+1\cdot4+3\cdot3}{8}=\frac{13}{8},
-$$
+$$E[Y\mid X=1] =\frac{0\cdot1+1\cdot4+3\cdot3}{8}=\frac{13}{8},$$
 
-$$
-E[Y\mid X=2]
-=\frac{0\cdot4+1\cdot2+3\cdot4}{10}=\frac75.
-$$
+$$E[Y\mid X=2] =\frac{0\cdot4+1\cdot2+3\cdot4}{10}=\frac75.$$
 
 因此
 
-$$
-E[Y\mid X]=g(X),\qquad
-g(0)=1,\quad g(1)=\frac{13}{8},\quad g(2)=\frac75.
-$$
+$$E[Y\mid X]=g(X),\qquad g(0)=1,\quad g(1)=\frac{13}{8},\quad g(2)=\frac75.$$
 
 Python 用 `Fraction` 精确做这套计算：
 
@@ -97,35 +77,21 @@ example : ((0 : ℚ) * 1 + 1 * 4 + 3 * 3) / 8 = 13 / 8 := by
 
 因为 $E[Y\mid X]$ 是 $X$ 的函数，对 $X$ 再取平均会得到无条件期望：
 
-$$
-\boxed{
-E[Y]=E\!\left[E[Y\mid X]\right].
-}
-$$
+$$\boxed{ E[Y]=E\!\left[E[Y\mid X]\right]. }$$
 
 离散情形中这只是交换求和次序：
 
-$$
-\sum_xP(X=x)\sum_y y\frac{P(X=x,Y=y)}{P(X=x)}
-=\sum_{x,y}yP(X=x,Y=y)=E[Y].
-$$
+$$\sum_xP(X=x)\sum_y y\frac{P(X=x,Y=y)}{P(X=x)} =\sum_{x,y}yP(X=x,Y=y)=E[Y].$$
 
 上表的边际概率为 $(6,8,10)/24$ ，所以
 
-$$
-E\!\left[E[Y\mid X]\right]
-=\frac6{24}\cdot1+\frac8{24}\cdot\frac{13}{8}
-+\frac{10}{24}\cdot\frac75
-=\frac{11}{8}.
-$$
+$$E\!\left[E[Y\mid X]\right] =\frac6{24}\cdot1+\frac8{24}\cdot\frac{13}{8} +\frac{10}{24}\cdot\frac75 =\frac{11}{8}.$$
 
 直接按联合表计算 $E[Y]$ 也等于 $11/8$ 。
 
 在更一般的理论中，若 $\mathcal H\subseteq\mathcal G$ ，则
 
-$$
-E[E[Y\mid\mathcal G]\mid\mathcal H]=E[Y\mid\mathcal H].
-$$
+$$E[E[Y\mid\mathcal G]\mid\mathcal H]=E[Y\mid\mathcal H].$$
 
 这条性质称为塔性质（tower property）。把外层信息取到最小的平凡信息族，就得到全期望公式。
 
@@ -142,48 +108,31 @@ assert sum(pX[x] * m[x] for x in xs) == EY == F(11, 8)
 
 给定 $X=x$ ，条件方差定义为
 
-$$
-\operatorname{Var}(Y\mid X=x)
-=E\!\left[(Y-E[Y\mid X=x])^2\mid X=x\right].
-$$
+$$\operatorname{Var}(Y\mid X=x) =E\!\left[(Y-E[Y\mid X=x])^2\mid X=x\right].$$
 
 它也是 $x$ 的函数。随机变量 $\operatorname{Var}(Y\mid X)$ 衡量“在每个已知条件内部，还剩多少波动”。
 
 上表三个条件方差为
 
-$$
-1,\qquad \frac{79}{64},\qquad \frac{46}{25}.
-$$
+$$1,\qquad \frac{79}{64},\qquad \frac{46}{25}.$$
 
 例如第一行中 $Y$ 的条件分布为 $(2,3,1)/6$ ，均值为 1，故方差为 1。
 
 全方差公式是
 
-$$
-\boxed{
-\operatorname{Var}(Y)
-=E\!\left[\operatorname{Var}(Y\mid X)\right]
-+\operatorname{Var}\!\left(E[Y\mid X]\right).
-}
-$$
+$$\boxed{ \operatorname{Var}(Y) =E\!\left[\operatorname{Var}(Y\mid X)\right] +\operatorname{Var}\!\left(E[Y\mid X]\right). }$$
 
 第一项是组内平均方差，表示条件分布内部的不可解释波动；第二项是条件均值自身的波动，表示知道 $X$ 后能通过均值变化解释的部分。
 
 对上表：
 
-$$
-E[\operatorname{Var}(Y\mid X)]=\frac{457}{320},
-$$
+$$E[\operatorname{Var}(Y\mid X)]=\frac{457}{320},$$
 
-$$
-\operatorname{Var}(E[Y\mid X])=\frac9{160},
-$$
+$$\operatorname{Var}(E[Y\mid X])=\frac9{160},$$
 
 二者相加：
 
-$$
-\frac{457}{320}+\frac9{160}=\frac{475}{320}=\frac{95}{64}.
-$$
+$$\frac{457}{320}+\frac9{160}=\frac{475}{320}=\frac{95}{64}.$$
 
 而直接计算 $\operatorname{Var}(Y)=E[Y^2]-(E[Y])^2$ 也得到 $95/64$ 。
 
@@ -210,43 +159,27 @@ example (w m₁ m₂ v₁ v₂ : ℚ) :
 
 令
 
-$$
-m(X)=E[Y\mid X],\qquad \varepsilon=Y-m(X).
-$$
+$$m(X)=E[Y\mid X],\qquad \varepsilon=Y-m(X).$$
 
 则
 
-$$
-Y-m= \varepsilon,
-$$
+$$Y-m= \varepsilon,$$
 
 无条件中心化也可写成
 
-$$
-Y-E[Y]=\varepsilon+(m(X)-E[Y]).
-$$
+$$Y-E[Y]=\varepsilon+(m(X)-E[Y]).$$
 
 平方后取期望：
 
-$$
-\operatorname{Var}(Y)
-=E[\varepsilon^2]
-+E[(m(X)-E[Y])^2]
-+2E[\varepsilon(m(X)-E[Y])].
-$$
+$$\operatorname{Var}(Y) =E[\varepsilon^2] +E[(m(X)-E[Y])^2] +2E[\varepsilon(m(X)-E[Y])].$$
 
 条件期望的残差性质保证交叉项为 0。逐条件看，
 
-$$
-E[\varepsilon\mid X]=E[Y-m(X)\mid X]=0.
-$$
+$$E[\varepsilon\mid X]=E[Y-m(X)\mid X]=0.$$
 
 由于 $m(X)-E[Y]$ 在给定 $X$ 后是常数，可以把它拿出条件期望：
 
-$$
-E[\varepsilon(m(X)-E[Y])\mid X]
-=(m(X)-E[Y])E[\varepsilon\mid X]=0.
-$$
+$$E[\varepsilon(m(X)-E[Y])\mid X] =(m(X)-E[Y])E[\varepsilon\mid X]=0.$$
 
 再取期望，交叉项为 0。于是：
 
@@ -259,11 +192,7 @@ $$
 
 若 $h(X)$ 的二阶矩足够，条件期望满足
 
-$$
-\boxed{
-E[h(X)Y\mid X]=h(X)E[Y\mid X].
-}
-$$
+$$\boxed{ E[h(X)Y\mid X]=h(X)E[Y\mid X]. }$$
 
 因为在给定 $X=x$ 的条件分布中，$h(x)$ 是常数。Python 对联合表检查：
 
@@ -289,30 +218,19 @@ forall(member(Hc, [1, x, x2, cube]),
 
 假设我们要用 $X$ 的某个函数 $g(X)$ 预测 $Y$ ，并用均方误差
 
-$$
-\operatorname{MSE}(g)=E[(Y-g(X))^2]
-$$
+$$\operatorname{MSE}(g)=E[(Y-g(X))^2]$$
 
 衡量预测质量。那么在所有可测且平方可积的预测函数中，最优者正是
 
-$$
-g^*(X)=E[Y\mid X].
-$$
+$$g^*(X)=E[Y\mid X].$$
 
 证明使用勾股分解。令 $m(X)=E[Y\mid X]$ ，则
 
-$$
-Y-g(X)=(Y-m(X))+(m(X)-g(X)).
-$$
+$$Y-g(X)=(Y-m(X))+(m(X)-g(X)).$$
 
 平方展开并取期望，交叉项为 0，所以
 
-$$
-\boxed{
-E[(Y-g(X))^2]
-=E[(Y-m(X))^2]+E[(m(X)-g(X))^2].
-}
-$$
+$$\boxed{ E[(Y-g(X))^2] =E[(Y-m(X))^2]+E[(m(X)-g(X))^2]. }$$
 
 第二项非负，并且当 $g=m$ 时为 0。Lean 验证逐点代数展开：
 
@@ -327,9 +245,7 @@ example (y m g : ℚ) :
 
 条件期望把交叉项消掉，因此得到投影几何中的勾股定理。$L^2$ 空间以内积
 
-$$
-\langle U,V\rangle=E[UV]
-$$
+$$\langle U,V\rangle=E[UV]$$
 
 成为内积空间；所有 $X$ 的函数组成一个子空间，条件期望就是 $Y$ 到这个子空间的正交投影。
 
@@ -337,21 +253,15 @@ $$
 
 有限表中，子空间的一组基可以取为示性函数
 
-$$
-\mathbf 1_{\{X=a\}},\qquad a\in\{0,1,2\}.
-$$
+$$\mathbf 1_{\{X=a\}},\qquad a\in\{0,1,2\}.$$
 
 最优预测满足残差与每个基函数正交：
 
-$$
-E[(Y-g(X))\mathbf 1_{\{X=a\}}]=0.
-$$
+$$E[(Y-g(X))\mathbf 1_{\{X=a\}}]=0.$$
 
 左边除以 $P(X=a)$ ，得到
 
-$$
-g(a)=E[Y\mid X=a].
-$$
+$$g(a)=E[Y\mid X=a].$$
 
 Python 用正规方程重新求出预测函数：
 
@@ -368,23 +278,17 @@ assert g == m
 
 第 19 章的最优线性预测只允许
 
-$$
-a+bX
-$$
+$$a+bX$$
 
 形式；条件期望允许任意函数 $m(X)$ 。因此条件期望的均方误差不大于最优线性预测。
 
 令 $X$ 在 $\{-1,0,1\}$ 上等概率，$Y=X^2$ 。分布关于 0 对称，所以
 
-$$
-\operatorname{Cov}(X,Y)=E[X^3]=0.
-$$
+$$\operatorname{Cov}(X,Y)=E[X^3]=0.$$
 
 最优线性预测是常数 $E[Y]=2/3$ ，均方误差为 $\operatorname{Var}(Y)=2/9$ 。但条件期望为
 
-$$
-E[Y\mid X]=X^2,
-$$
+$$E[Y\mid X]=X^2,$$
 
 它完全预测 $Y$ ，均方误差为 0。
 
@@ -409,21 +313,15 @@ Yq = Xq .^ 2
 
 还要注意：误差与预测变量零相关，并不足以保证它在条件意义下均值为零。程序构造
 
-$$
-\varepsilon=(X^2-1)+U,
-$$
+$$\varepsilon=(X^2-1)+U,$$
 
 其中 $U\in\{-1,1\}$ 等概率且与 $X$ 独立。可以有
 
-$$
-E[X\varepsilon]=0,
-$$
+$$E[X\varepsilon]=0,$$
 
 但在 $X=0$ 时，
 
-$$
-E[\varepsilon\mid X=0]=-1.
-$$
+$$E[\varepsilon\mid X=0]=-1.$$
 
 因此线性回归的一阶正交条件比条件期望要求的“对 $X$ 的所有函数正交”弱得多。
 
@@ -431,15 +329,11 @@ $$
 
 若 $X,Y$ 独立，则给定 $X$ 不会改变 $Y$ 的分布：
 
-$$
-P(Y\in A\mid X=x)=P(Y\in A),
-$$
+$$P(Y\in A\mid X=x)=P(Y\in A),$$
 
 因而
 
-$$
-\boxed{E[Y\mid X]=E[Y].}
-$$
+$$\boxed{E[Y\mid X]=E[Y].}$$
 
 程序用因子分解 $P(X=x,Y=y)=q_X(x)q_Y(y)$ 检查每个条件均值都等于同一个 $E[Y]=4/3$ 。
 
@@ -447,27 +341,19 @@ $$
 
 取如下联合分布：
 
-$$
-P(X=0,Y=0)=\frac13,
-$$
+$$P(X=0,Y=0)=\frac13,$$
 
 并且当 $X\in\{-1,1\}$ 时，$Y\in\{-1,1\}$ 的四个格点各有概率 $1/6$ 。给定任意 $X=x$ ，$Y$ 的条件均值都是 0，所以
 
-$$
-E[Y\mid X]=0.
-$$
+$$E[Y\mid X]=0.$$
 
 然而
 
-$$
-P(X=0,Y=0)=\frac13,
-$$
+$$P(X=0,Y=0)=\frac13,$$
 
 而
 
-$$
-P(X=0)P(Y=0)=\frac13\cdot\frac13=\frac19.
-$$
+$$P(X=0)P(Y=0)=\frac13\cdot\frac13=\frac19.$$
 
 因此不独立。Prolog 精确比较这两个数：
 
@@ -478,10 +364,7 @@ P00 =\= PX0 * PY0
 
 逻辑层级应记清楚：
 
-$$
-\text{独立}\Longrightarrow\text{均值独立}
-\Longrightarrow\text{零相关},
-$$
+$$\text{独立}\Longrightarrow\text{均值独立} \Longrightarrow\text{零相关},$$
 
 但反向一般都不成立。只有在联合正态等特殊结构下，零相关才会强到等价于独立。
 
@@ -489,32 +372,19 @@ $$
 
 令 $(X,Y)$ 的密度为
 
-$$
-f_{X,Y}(x,y)=e^{-y},\qquad 0<x<y<\infty.
-$$
+$$f_{X,Y}(x,y)=e^{-y},\qquad 0<x<y<\infty.$$
 
 先求 $X$ 的边际密度：
 
-$$
-f_X(x)=\int_x^\infty e^{-y}\,dy=e^{-x},\qquad x>0.
-$$
+$$f_X(x)=\int_x^\infty e^{-y}\,dy=e^{-x},\qquad x>0.$$
 
 所以 $X\sim\operatorname{Exp}(1)$ 。条件密度为
 
-$$
-f_{Y\mid X}(y\mid x)
-=\frac{e^{-y}}{e^{-x}}
-=e^{-(y-x)},\qquad y>x.
-$$
+$$f_{Y\mid X}(y\mid x) =\frac{e^{-y}}{e^{-x}} =e^{-(y-x)},\qquad y>x.$$
 
 令 $E=Y-x$ ，则给定 $X=x$ 时 $E\sim\operatorname{Exp}(1)$ 。因此
 
-$$
-\boxed{
-E[Y\mid X=x]=x+1,\qquad
-\operatorname{Var}(Y\mid X=x)=1.
-}
-$$
+$$\boxed{ E[Y\mid X=x]=x+1,\qquad \operatorname{Var}(Y\mid X=x)=1. }$$
 
 SymPy 直接积分：
 
@@ -531,22 +401,15 @@ assert sp.simplify(EY2gx - EYgx ** 2 - 1) == 0
 
 由全期望公式，
 
-$$
-E[Y]=E[1+X]=1+1=2.
-$$
+$$E[Y]=E[1+X]=1+1=2.$$
 
 由全方差公式，
 
-$$
-\operatorname{Var}(Y)
-=E[1]+\operatorname{Var}(1+X)=1+1=2.
-$$
+$$\operatorname{Var}(Y) =E[1]+\operatorname{Var}(1+X)=1+1=2.$$
 
 事实上 $Y\sim\operatorname{Gamma}(2,1)$ 。这个例子展示了连续条件期望的生成机制：先抽 $X$ ，再令
 
-$$
-Y=X+E,
-$$
+$$Y=X+E,$$
 
 其中未来增量 $E$ 与 $X$ 独立。
 
@@ -569,41 +432,25 @@ end
 
 设
 
-$$
-N\sim\operatorname{Poisson}(\lambda),
-$$
+$$N\sim\operatorname{Poisson}(\lambda),$$
 
 给定 $N=n$ ，令
 
-$$
-Y\mid N=n\sim\operatorname{Binomial}(n,p).
-$$
+$$Y\mid N=n\sim\operatorname{Binomial}(n,p).$$
 
 这可解释为：先有 $N$ 个潜在事件，每个事件独立以概率 $p$ 被保留。
 
 条件期望和条件方差为
 
-$$
-E[Y\mid N]=pN,\qquad
-\operatorname{Var}(Y\mid N)=Np(1-p).
-$$
+$$E[Y\mid N]=pN,\qquad \operatorname{Var}(Y\mid N)=Np(1-p).$$
 
 因为 $E[N]=\operatorname{Var}(N)=\lambda$ ，全期望公式给出
 
-$$
-E[Y]=E[pN]=p\lambda.
-$$
+$$E[Y]=E[pN]=p\lambda.$$
 
 全方差公式给出
 
-$$
-\begin{aligned}
-\operatorname{Var}(Y)
-&=E[Np(1-p)]+\operatorname{Var}(pN)\\
-&=\lambda p(1-p)+p^2\lambda\\
-&=\lambda p.
-\end{aligned}
-$$
+$$\begin{aligned} \operatorname{Var}(Y) &=E[Np(1-p)]+\operatorname{Var}(pN)\\ &=\lambda p(1-p)+p^2\lambda\\ &=\lambda p. \end{aligned}$$
 
 均值和方差都为 $\lambda p$ ，而 Poisson 稀疏化定理表明 $Y\sim\operatorname{Poisson}(\lambda p)$ 。Lean 只验证全方差中的关键代数：
 
@@ -615,18 +462,11 @@ example (lam p : ℚ) :
 
 更一般地，若随机和
 
-$$
-S=\sum_{i=1}^N Z_i
-$$
+$$S=\sum_{i=1}^N Z_i$$
 
 中 $N$ 与 $Z_i$ 独立，$E[Z_i]=m$ 、$\operatorname{Var}(Z_i)=v$ ，且 $E[N]=\mu_N$ 、$\operatorname{Var}(N)=\sigma_N^2$ ，则
 
-$$
-\boxed{
-E[S]=m\mu_N,\qquad
-\operatorname{Var}(S)=\mu_Nv+\sigma_N^2m^2.
-}
-$$
+$$\boxed{ E[S]=m\mu_N,\qquad \operatorname{Var}(S)=\mu_Nv+\sigma_N^2m^2. }$$
 
 第一项是随机个数内部波动，第二项是个数本身不确定带来的波动。
 
@@ -634,21 +474,15 @@ $$
 
 条件期望为常数并不意味着条件方差也为常数。设 $X,Z$ 独立，$E[Z]=0$ 、$\operatorname{Var}(Z)=1$ ，并令
 
-$$
-Y=Z\sqrt{1+X^2}.
-$$
+$$Y=Z\sqrt{1+X^2}.$$
 
 给定 $X=x$ ，尺度因子 $\sqrt{1+x^2}$ 是常数，因此
 
-$$
-E[Y\mid X=x]=0,
-$$
+$$E[Y\mid X=x]=0,$$
 
 而
 
-$$
-\operatorname{Var}(Y\mid X=x)=1+x^2.
-$$
+$$\operatorname{Var}(Y\mid X=x)=1+x^2.$$
 
 Python 用 $Z\in\{-1,1\}$ 等概率精确验证：
 
@@ -661,12 +495,7 @@ assert sp.simplify(E_Y2 - s ** 2) == 0
 
 若 $X$ 在 $\{-1,0,1,2\}$ 上等概率，则
 
-$$
-\operatorname{Var}(Y)
-=E[1+X^2]
-=1+\frac{1+0+1+4}{4}
-=\frac52,
-$$
+$$\operatorname{Var}(Y) =E[1+X^2] =1+\frac{1+0+1+4}{4} =\frac52,$$
 
 而 $\operatorname{Var}(E[Y\mid X])=0$ 。所有波动都来自条件方差。
 
@@ -676,26 +505,15 @@ $$
 
 令 $X_1,\dots,X_n$ 为独立公平 Bernoulli(1/2) 变量，
 
-$$
-S_k=X_1+\cdots+X_k.
-$$
+$$S_k=X_1+\cdots+X_k.$$
 
 若已经观测前 $k$ 次，则总和 $S_n$ 的条件期望为
 
-$$
-\boxed{
-E[S_n\mid X_1,\dots,X_k]
-=S_k+\frac{n-k}{2}.
-}
-$$
+$$\boxed{ E[S_n\mid X_1,\dots,X_k] =S_k+\frac{n-k}{2}. }$$
 
 因为前 $k$ 次已经确定，未来 $n-k$ 次每次平均贡献 $1/2$ 。条件方差为
 
-$$
-\boxed{
-\operatorname{Var}(S_n\mid X_1,\dots,X_k)=\frac{n-k}{4}.
-}
-$$
+$$\boxed{ \operatorname{Var}(S_n\mid X_1,\dots,X_k)=\frac{n-k}{4}. }$$
 
 Python 枚举 $n=4$ 的全部 $2^4=16$ 条路径，对每个前缀精确验证：
 
@@ -713,16 +531,11 @@ for k in range(n + 1):
 
 定义
 
-$$
-M_k=E[S_n\mid\mathcal F_k]
-=S_k+\frac{n-k}{2},
-$$
+$$M_k=E[S_n\mid\mathcal F_k] =S_k+\frac{n-k}{2},$$
 
 其中 $\mathcal F_k$ 表示前 $k$ 次结果提供的信息。塔性质给出
 
-$$
-E[M_{k+1}\mid\mathcal F_k]=M_k.
-$$
+$$E[M_{k+1}\mid\mathcal F_k]=M_k.$$
 
 这就是鞅性：当前信息对未来条件期望的最佳预测就是当前值。程序逐前缀检查这条性质。
 
@@ -740,9 +553,7 @@ example (s r : ℚ) :
 
 另一个有用的更新方向是给定总和。对公平可交换硬币，
 
-$$
-E[X_1\mid S_n=s]=\frac{s}{n}.
-$$
+$$E[X_1\mid S_n=s]=\frac{s}{n}.$$
 
 知道总和为 $s$ 后，成功在各次试验间对称分布，每次平均承担 $s/n$ 。当 $n=4,s=2$ 时，共有 $\binom42=6$ 条路径，第一位为 1 的有 3 条，所以条件均值为 $1/2$ 。
 
@@ -750,13 +561,7 @@ $$
 
 条件化也给出协方差分解。对任意 $U,V$ ，
 
-$$
-\boxed{
-\operatorname{Cov}(U,V)
-=E[\operatorname{Cov}(U,V\mid X)]
-+\operatorname{Cov}(E[U\mid X],E[V\mid X]).
-}
-$$
+$$\boxed{ \operatorname{Cov}(U,V) =E[\operatorname{Cov}(U,V\mid X)] +\operatorname{Cov}(E[U\mid X],E[V\mid X]). }$$
 
 它是全方差公式的双变量版本。第二项衡量条件均值共同运动产生的协方差，第一项衡量各条件内部的平均协方差。
 

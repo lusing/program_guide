@@ -33,9 +33,7 @@ $0\#$ 不存在而仍有 $V\ne L$ （例如第 90 章的科恩扩张），差别
 > **定理 1.21（Jensen 覆盖引理）** 如果 $0\#$ 不存在，那么任何
 > 不可数的序数之集 $X$ 都被某个 $L$ 中的与 $X$ 等势的 $Y$
 > 覆盖：
-> $$
-> X\subseteq Y\in L\ \wedge\ |Y|=|X|.
-> $$
+> $$X\subseteq Y\in L\ \wedge\ |Y|=|X|.$$
 
 两条边注。其一，「不可数」不可省略：在第 II 卷例 II.3.36 的延波
 偏序（Suslin 树的孪生）$P\in L$ 与 $L$ -泛型 $G$ 之下，
@@ -43,9 +41,7 @@ $V=L[G]$ 中 $\omega_1$ 的梯度是 $\omega$ ，它的任何可数无界
 子集都不能被 $L$ 中任何可数序数集覆盖。其二，等势版本有个
  universally 可用的松弛：
 
-$$
-X\subseteq Y\in L\ \wedge\ |Y|\le|X|+\aleph_1,
-$$
+$$X\subseteq Y\in L\ \wedge\ |Y|\le|X|+\aleph_1,$$
 
 且这里的 $\aleph_1$ 不可改进——它正来自上面延波例子中
 $\mathrm{cf}^{L[G]}(\omega_1^L)=\omega$ 的现象。
@@ -67,10 +63,7 @@ V 的基数算术**。下面的推论 1.8 把这句话展开成可用的定理�
 Silver 不可辨别元，从而是 $L$ -正则基数。同样每个 $\iota_\xi$
 都 $L$ -正则。取
 
-$$
-X=\omega_1\cup\{\iota_{\omega_1+n} : n<\omega\},\qquad
-|X|=\aleph_1,
-$$
+$$X=\omega_1\cup\{\iota_{\omega_1+n} : n<\omega\},\qquad |X|=\aleph_1,$$
 
 其中尾巴列收敛于 $\lambda=\iota_{\omega_1+\omega}\in I$
 （$I$ 闭）。反设 $Y\in L$ 、$X\subseteq Y$ 、
@@ -80,17 +73,13 @@ $|Y|^V=\aleph_1$ 。三个可完全验证的步骤：
 在 $L$ 中，$\lambda$ 是正则基数，而正则基数中任何 $L$ -势
 $<\lambda$ 的子集都有界——故
 
-$$
-|Y|^L\ge\lambda>\omega_1.
-$$
+$$|Y|^L\ge\lambda>\omega_1.$$
 
 （二）取 $L$ -双射 $f\in L$ 、$f:\mu\approx Y$ ，其中
 $\mu=|Y|^L$ 是 $L$ -基数、$\mu\ge\lambda>\omega_1$ 。$f$
 在 $V$ 中仍是双射，故
 
-$$
-|\mu|^V=|Y|^V=\aleph_1.
-$$
+$$|\mu|^V=|Y|^V=\aleph_1.$$
 
 （三）矛盾将在「$\mu$ 是 $>\omega_1$ 的 $L$ -基数却有
 $\aleph_1$ 的 $V$ -势」处闭合：由不可辨别性，$L$ -基数在
@@ -114,10 +103,7 @@ $L$ -可数（从而 $V$ -可数）的集合在 $L$ 中双射于 $\mu$ ——
 
 把两个方向合起来，得到**等价总账**：
 
-$$
-0\#\text{ 存在}\iff\text{某个（从而每个）奇异基数在 }L\text{ 中正则}；
-\qquad 0\#\text{ 不存在}\iff\text{奇异基数在 }L\text{ 中仍奇异}.
-$$
+$$0\#\text{ 存在}\iff\text{某个（从而每个）奇异基数在 }L\text{ 中正则}； \qquad 0\#\text{ 不存在}\iff\text{奇异基数在 }L\text{ 中仍奇异}.$$
 
 （⇐：奇异版给出不可覆盖集，逆命题给出 0#；⇒：推论 1.8(2) 下面
 即证。）这一总账是「$0\#$ 是 $L$ 与 $V$ 之间唯一裂缝」的
@@ -150,17 +136,13 @@ $Y,\lambda\in L$ ）且含 $A$ 、在 $\lambda$ 中无界。在 $L$
 中，正则基数 $\lambda$ 的任何 $L$ -势 $<\lambda$ 的子集都有界
 （按 $L$ -正则性的定义逐点核对），故
 
-$$
-|Y|^L\ \ge\ |Y\cap\lambda|^L\ \ge\ \lambda.
-$$
+$$|Y|^L\ \ge\ |Y\cap\lambda|^L\ \ge\ \lambda.$$
 
 第二步（双射搬运）：取 $L$ -双射 $f\in L$ 、$f:\mu\approx Y$ ，
 其中 $\mu=|Y|^L$ 是 $L$ -基数、$\mu\ge\lambda$ 。
 $f\in L\subseteq V$ 仍是双射，故
 
-$$
-|\mu|^V=|Y|^V=|X|.
-$$
+$$|\mu|^V=|Y|^V=|X|.$$
 
 第三步（序数尺寸账）：$\mu\ge\lambda\ge\omega_2$ 是序数，故
 $|\mu|^V\ge\aleph_2$ （$\omega_2$ 是最小的势 $\ge\aleph_2$ 的
@@ -169,10 +151,7 @@ $\max(\aleph_1,\mathrm{cf}(\lambda))\ge\aleph_2$ ，故
 $\mathrm{cf}(\lambda)\ge\aleph_2$ 。最后由
 $\lambda\le\mu$ （序数比较）：
 
-$$
-|\lambda|^V\ \le\ |\mu|^V\ =\ |X|\ =\ \mathrm{cf}(\lambda)
-\ \le\ |\lambda|^V,
-$$
+$$|\lambda|^V\ \le\ |\mu|^V\ =\ |X|\ =\ \mathrm{cf}(\lambda) \ \le\ |\lambda|^V,$$
 
 得 $\mathrm{cf}(\lambda)=|\lambda|$ 。(1) 得证。∎
 
@@ -205,10 +184,7 @@ $A=[\kappa]^{\mathrm{cf}(\kappa)}$ 。对每个 $X\in A$ 覆盖引理
 给 $Y_X\in L$ 、
 $|Y_X|^V\le\mathrm{cf}(\kappa)\cdot\aleph_1$ 。令
 
-$$
-C=\{Y\in L : Y\subseteq\kappa\ \wedge\
-|Y|^V\le\mathrm{cf}(\kappa)\cdot\aleph_1\}.
-$$
+$$C=\{Y\in L : Y\subseteq\kappa\ \wedge\ |Y|^V\le\mathrm{cf}(\kappa)\cdot\aleph_1\}.$$
 
 则 $A\subseteq\bigcup\{[Y]^{\mathrm{cf}(\kappa)}:Y\in C\}$ 。
 片账：$|[Y]^{\mathrm{cf}(\kappa)}|\le|Y|^{\mathrm{cf}(\kappa)} \le(\mathrm{cf}(\kappa)\cdot\aleph_1)^{\mathrm{cf}(\kappa)} =2^{\mathrm{cf}(\kappa)}<\kappa$ （用
@@ -219,11 +195,7 @@ $\alpha$ 的 $L$ -子集（$(\alpha^+)^L$ 个）编码，逐层求和后由
 (2) 的 $(\kappa^+)^L=\kappa^+$ 收口——故
 $|C|\le\kappa^+$ 。合账（96.12 的 Lean 锚点即此不等式的骨架）：
 
-$$
-\kappa^{\mathrm{cf}(\kappa)}=|A|\le|C|\cdot
-\sup_{Y\in C}|[Y]^{\mathrm{cf}(\kappa)}|
-\le\kappa^+\cdot\kappa=\kappa^+.
-$$
+$$\kappa^{\mathrm{cf}(\kappa)}=|A|\le|C|\cdot \sup_{Y\in C}|[Y]^{\mathrm{cf}(\kappa)}| \le\kappa^+\cdot\kappa=\kappa^+.$$
 
 反向 $\kappa^+\le\kappa^{\mathrm{cf}(\kappa)}$ 恒成立
 （$\mathrm{cf}(\kappa)\ge 2$ 时对角嵌入单射）。故 SCH 成立。∎
@@ -242,9 +214,7 @@ $X=\pi^{-1}[Z]\in L$ （$\pi^{-1}\in L$ ）。断言得证。
 $\kappa=\sup_{\xi<\mathrm{cf}(\kappa)}\kappa_\xi$
 （$\langle\kappa_\xi\rangle\in L$ ，如按 $L$ -典范列）。则
 
-$$
-A=\bigcup_{\xi<\mathrm{cf}(\kappa)}(A\cap\kappa_\xi),
-$$
+$$A=\bigcup_{\xi<\mathrm{cf}(\kappa)}(A\cap\kappa_\xi),$$
 
 每片 $A\cap\kappa_\xi\subseteq\kappa_\xi$ 有界，若每片
 $\in L$ 则由 $L$ -替换与并公理 $A\in L$ ——逆否即得 (4)：若
@@ -297,9 +267,7 @@ $n=\infty$ ）。注意 $\Sigma_n$ 斯科伦函数未必是 $\Sigma_n$
 > **引理 1.32** (1) 若 $j:L_\alpha\to L_\beta$ 是 $\Sigma_n$ -初等
 > （只保持 $\Sigma_n$ 公式），则对每个 $k$ 元 $\Sigma_n$
 > 斯科伦项 $t$ 与 $\vec a\in L_\alpha$ ：
-> $$
-> t^{L_\alpha}[\vec a]=y\iff t^{L_\beta}[j\vec a]=j(y),
-> $$
+> $$t^{L_\alpha}[\vec a]=y\iff t^{L_\beta}[j\vec a]=j(y),$$
 >
 > 即 $\Sigma_n$ 斯科伦函数与 $\Sigma_n$ -初等映射交换。
 > (2) $\mathrm{SH}^n_{L_\rho}(Z)\prec_{\Sigma_n}(L_\rho,E)$ 。
@@ -322,9 +290,7 @@ $\mathrm{Crit}(k)<|\alpha|$ 。
 取**最小**的 $\tau$ ：某个不可数 $X\subseteq\tau$ 无等势
 $L$ -覆盖；再取最小的势 $\nu$ 与相应的 $X$ ：
 
-$$
-|X|=\nu<\tau,\qquad X\text{ 无等势 }L\text{-覆盖}.
-$$
+$$|X|=\nu<\tau,\qquad X\text{ 无等势 }L\text{-覆盖}.$$
 
 > **事实 1.1.1** （i）$\tau$ 是 $L$ -基数；（ii）若
 > $Y\in L$ 、$X\subseteq Y$ ，则 $|Y|^L\ge\tau$ ；（iii）
@@ -351,17 +317,13 @@ $|X\cap\tau_\xi|<\nu$ ；至少 $\le\nu$ ）。令
 $\langle E_\alpha:\alpha<\tau\rangle\in L$ 单一罗列
 $\tau$ 的全体可构造**有界**子集。令
 
-$$
-Z=\{\alpha<\tau : \exists\xi<\mathrm{cf}(\tau)\ (E_\alpha=Y_\xi)\}.
-$$
+$$Z=\{\alpha<\tau : \exists\xi<\mathrm{cf}(\tau)\ (E_\alpha=Y_\xi)\}.$$
 
 $|Z|\le\mathrm{cf}(\tau)$ 。由 $\nu$ 的极小性，$Z$ （势
 $\le\mathrm{cf}(\tau)<\nu$ ）**有**等势覆盖
 $W\in L$ 、$|W|\le\mathrm{cf}(\tau)\cdot\aleph_1$ 。令
 
-$$
-Y'=\bigcup_{\alpha\in W}E_\alpha\in L.
-$$
+$$Y'=\bigcup_{\alpha\in W}E_\alpha\in L.$$
 
 则 $|Y'|\le|W|\cdot\sup_\alpha|E_\alpha|$ -每个 $E_\alpha$
 有界，其 $L$ -势 $<\tau$ ——但此路要小心。按原书：直接取
@@ -373,10 +335,7 @@ $X\cap\tau_\xi\subseteq Y_\xi=E_{\alpha(x)}$ 、
 $\alpha(x)\in Z\subseteq W$ ，故 $x\in E_{\alpha(x)}\subseteq Y$ 。
 于是 $X\subseteq Y\in L$ ，而
 
-$$
-|Y|\le|W|\cdot\aleph_1\cdot\text{(片大小上界)}\le
-\mathrm{cf}(\tau)\cdot\aleph_1\cdot\nu=\nu,
-$$
+$$|Y|\le|W|\cdot\aleph_1\cdot\text{(片大小上界)}\le \mathrm{cf}(\tau)\cdot\aleph_1\cdot\nu=\nu,$$
 
 精确地：$|W|\le\mathrm{cf}(\tau)\cdot\aleph_1$ ，每片
 $|E_\alpha|\le\sup_\xi|Y_\xi|\le\nu\cdot\aleph_1$ ，故
@@ -408,9 +367,7 @@ $\eta<\tau$ ，$j$ 非平凡。记 $\kappa_0=\mathrm{Crit}(j)<\eta$ 。
 
 **构造**（定向系统 (A)）。令
 
-$$
-D_1=\{(\alpha,p) : \alpha<\eta\ \wedge\ p\in[L_\theta]^{<\omega}\}
-$$
+$$D_1=\{(\alpha,p) : \alpha<\eta\ \wedge\ p\in[L_\theta]^{<\omega}\}$$
 
 （(α,p)≤(β,q) ⟺ α≤β ∧ p⊆q）。对 $i=(\alpha,p)$ ，令
 $M_i=\mathrm{SH}^{L_\theta}(\alpha\cup p)$ 、
@@ -426,10 +383,7 @@ $\pi_i,\pi_k$ 的相关参数皆 $\in L_\eta$ ）。
 由引理 1.31，极限 $=L_\varepsilon$ 。典范极限映射
 $\bar e_i:j(L_{\eta_i})\to L_\varepsilon$ 相容，于是定义
 
-$$
-J(\theta\text{-元素 } c)=\bar e_i\big(j(e_i^{-1}(c))\big)
-\quad(c\in M_i).
-$$
+$$J(\theta\text{-元素 } c)=\bar e_i\big(j(e_i^{-1}(c))\big) \quad(c\in M_i).$$
 
 无歧义、初等、且 $J\upharpoonright L_\eta=j$ （取含 $c$ 的
 $L_\alpha$ 型指标即见 $\bar e_i$ 在相应段上是恒等）。∎

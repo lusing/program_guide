@@ -8,40 +8,21 @@
 
 若 $a<b$ ，$X\sim U[a,b]$ 的密度为
 
-$$
-f(x)=\frac1{b-a},\qquad a\le x\le b.
-$$
+$$f(x)=\frac1{b-a},\qquad a\le x\le b.$$
 
 它的分布函数是
 
-$$
-F(x)=
-\begin{cases}
-0,&x<a,\\
-(x-a)/(b-a),&a\le x\le b,\\
-1,&x>b.
-\end{cases}
-$$
+$$F(x)= \begin{cases} 0,&x<a,\\ (x-a)/(b-a),&a\le x\le b,\\ 1,&x>b. \end{cases}$$
 
 直接积分得到
 
-$$
-E[X]=\frac{a+b}{2},
-\qquad
-\operatorname{Var}(X)=\frac{(b-a)^2}{12}.
-$$
+$$E[X]=\frac{a+b}{2}, \qquad \operatorname{Var}(X)=\frac{(b-a)^2}{12}.$$
 
 若 $U\sim U[0,1]$ ，则 $X=a+(b-a)U\sim U[a,b]$ 。因此 $a$ 是位置参数，$b-a$ 是尺度参数；整个族都可以由标准均匀分布生成。
 
 两个独立 $U[0,1]$ 变量之和不再均匀。第 16 章将完整推出其三角密度
 
-$$
-f_{X+Y}(z)=
-\begin{cases}
-z,&0\le z\le1,\\
-2-z,&1\le z\le2.
-\end{cases}
-$$
+$$f_{X+Y}(z)= \begin{cases} z,&0\le z\le1,\\ 2-z,&1\le z\le2. \end{cases}$$
 
 这提醒我们：“矩能相加”不表示“分布形状保持不变”。
 
@@ -60,55 +41,37 @@ assert tri_cdf(1) == Fraction(1, 2)
 
 本章采用**尺度参数** $\theta>0$ ：
 
-$$
-X\sim\operatorname{Exp}(\theta),\qquad
-f(x)=\frac1\theta e^{-x/\theta},\quad x\ge0.
-$$
+$$X\sim\operatorname{Exp}(\theta),\qquad f(x)=\frac1\theta e^{-x/\theta},\quad x\ge0.$$
 
 有些资料采用速率 $\lambda=1/\theta$ ，密度写成 $\lambda e^{-\lambda x}$ 。比较公式前必须统一参数化。这里
 
-$$
-F(x)=1-e^{-x/\theta},\qquad
-P(X>x)=e^{-x/\theta},\qquad x\ge0.
-$$
+$$F(x)=1-e^{-x/\theta},\qquad P(X>x)=e^{-x/\theta},\qquad x\ge0.$$
 
 由分部积分或第 16 章的参数求导，
 
-$$
-E[X^r]=r!\theta^r\quad(r\in\mathbb N),
-$$
+$$E[X^r]=r!\theta^r\quad(r\in\mathbb N),$$
 
 特别地
 
-$$
-E[X]=\theta,\qquad \operatorname{Var}(X)=\theta^2.
-$$
+$$E[X]=\theta,\qquad \operatorname{Var}(X)=\theta^2.$$
 
 ### 无记忆性
 
 对 $s,t\ge0$ ，
 
-$$
-P(X>s+t\mid X>s)
-=\frac{e^{-(s+t)/\theta}}{e^{-s/\theta}}
-=e^{-t/\theta}=P(X>t).
-$$
+$$P(X>s+t\mid X>s) =\frac{e^{-(s+t)/\theta}}{e^{-s/\theta}} =e^{-t/\theta}=P(X>t).$$
 
 指数分布因此适合描述“下一个事件在任意短区间内的风险率恒定”的模型。它不适合必然老化的部件：已知已经使用很久仍不改变剩余寿命，正是模型假设，不是自然定律。
 
 风险率为
 
-$$
-h(x)=\frac{f(x)}{P(X>x)}=\frac1\theta.
-$$
+$$h(x)=\frac{f(x)}{P(X>x)}=\frac1\theta.$$
 
 反之，若连续非负随机变量具有正常数风险率，解微分方程便回到指数生存函数。恒定风险率与无记忆性是同一件事的两面。
 
 由 $F(x)=u$ 反解得到逆变换采样公式
 
-$$
-x=-\theta\log(1-u).
-$$
+$$x=-\theta\log(1-u).$$
 
 因为 $1-U$ 与 $U$ 同分布，也常写成 $-\theta\log U$ 。Python 检查的核心是解析尾部比：
 
@@ -123,42 +86,25 @@ assert abs((1 - F(6)) / (1 - F(3)) - (1 - F(3))) < 1e-12
 
 对 $s>0$ ，定义
 
-$$
-\Gamma(s)=\int_0^\infty x^{s-1}e^{-x}\,dx.
-$$
+$$\Gamma(s)=\int_0^\infty x^{s-1}e^{-x}\,dx.$$
 
 必须先检查两个端点。在 0 附近，$e^{-x}$ 有正上下界，可积性由 $x^{s-1}$ 决定，因此需要 $s>0$ 。在无穷端，指数衰减快于任何多项式增长，所以积分收敛。
 
 分部积分给出函数方程
 
-$$
-\begin{aligned}
-\Gamma(s+1)
-&=\int_0^\infty x^s e^{-x}\,dx\\
-&=[-x^se^{-x}]_0^\infty+s\int_0^\infty x^{s-1}e^{-x}\,dx
-=s\Gamma(s).
-\end{aligned}
-$$
+$$\begin{aligned} \Gamma(s+1) &=\int_0^\infty x^s e^{-x}\,dx\\ &=[-x^se^{-x}]_0^\infty+s\int_0^\infty x^{s-1}e^{-x}\,dx =s\Gamma(s). \end{aligned}$$
 
 由 $\Gamma(1)=1$ 归纳得到
 
-$$
-\Gamma(n+1)=n!,\qquad n=0,1,2,\ldots.
-$$
+$$\Gamma(n+1)=n!,\qquad n=0,1,2,\ldots.$$
 
 另一个关键值是
 
-$$
-\Gamma(1/2)=\sqrt\pi.
-$$
+$$\Gamma(1/2)=\sqrt\pi.$$
 
 在积分中令 $x=u^2$ ，就把 $\Gamma(1/2)$ 化为高斯积分。于是
 
-$$
-\Gamma(3/2)=\frac{\sqrt\pi}{2},\qquad
-\Gamma(5/2)=\frac{3\sqrt\pi}{4},\qquad
-\Gamma(7/2)=\frac{15\sqrt\pi}{8}.
-$$
+$$\Gamma(3/2)=\frac{\sqrt\pi}{2},\qquad \Gamma(5/2)=\frac{3\sqrt\pi}{4},\qquad \Gamma(7/2)=\frac{15\sqrt\pi}{8}.$$
 
 同一 Python 文件 `examples/python/13_continuous_dists.py` 的 ⑥ 节（原先独立的 Γ 函数脚本已并入）在 0 端采用变量代换，而不是直接把奇异点塞给 Simpson：
 
@@ -186,25 +132,15 @@ for s in range(1, 9):
 
 对形状 $k>0$ 、尺度 $\theta>0$ ，定义
 
-$$
-X\sim\operatorname{Gamma}(k,\theta),\qquad
-f(x)=\frac{x^{k-1}e^{-x/\theta}}{\Gamma(k)\theta^k},\quad x\ge0.
-$$
+$$X\sim\operatorname{Gamma}(k,\theta),\qquad f(x)=\frac{x^{k-1}e^{-x/\theta}}{\Gamma(k)\theta^k},\quad x\ge0.$$
 
 令 $t=x/\theta$ ，归一化立即化成 $\Gamma(k)$ 的定义。用同一代换，
 
-$$
-E[X^r]
-=\theta^r\frac{\Gamma(k+r)}{\Gamma(k)}
-=\theta^r k(k+1)\cdots(k+r-1)
-$$
+$$E[X^r] =\theta^r\frac{\Gamma(k+r)}{\Gamma(k)} =\theta^r k(k+1)\cdots(k+r-1)$$
 
 （最后一式对整数 $r\ge1$ 成立）。因此
 
-$$
-E[X]=k\theta,\qquad
-\operatorname{Var}(X)=k\theta^2.
-$$
+$$E[X]=k\theta,\qquad \operatorname{Var}(X)=k\theta^2.$$
 
 当 $k=1$ 时就是指数分布。当 $k=n$ 为正整数时称为 Erlang 分布；它也是 $n$ 个独立同尺度指数变量之和。独立 Gamma 变量若尺度相同，形状参数相加，这一点在第 15 章用 MGF 证明最简洁。
 
@@ -222,41 +158,27 @@ assert abs(simpson(lambda x: x * fk(x), 1e-9, 80, 20000) - k * sig) < 5e-3
 
 Weibull 分布由指数分布的幂变换生成。若 $E\sim\operatorname{Exp}(1)$ ，令
 
-$$
-X=\theta E^{1/p},\qquad \theta>0,\ p>0,
-$$
+$$X=\theta E^{1/p},\qquad \theta>0,\ p>0,$$
 
 则
 
-$$
-P(X>x)=P(E>(x/\theta)^p)=e^{-(x/\theta)^p},
-$$
+$$P(X>x)=P(E>(x/\theta)^p)=e^{-(x/\theta)^p},$$
 
 所以
 
-$$
-f(x)=\frac p\theta\left(\frac x\theta\right)^{p-1}
-e^{-(x/\theta)^p},\qquad x\ge0.
-$$
+$$f(x)=\frac p\theta\left(\frac x\theta\right)^{p-1} e^{-(x/\theta)^p},\qquad x\ge0.$$
 
 风险率与 $(x/\theta)^{p-1}$ 成正比：$p>1$ 时递增，$0<p<1$ 时递减，$p=1$ 时回到指数分布。矩为
 
-$$
-E[X^r]=\theta^r\Gamma(1+r/p).
-$$
+$$E[X^r]=\theta^r\Gamma(1+r/p).$$
 
 广义 Gamma 进一步允许幂外再乘一个 Gamma 形状参数：
 
-$$
-f(x)=\frac{p}{\Gamma(k)\theta^{kp}}x^{kp-1}
-e^{-(x/\theta)^p},\qquad x\ge0,
-$$
+$$f(x)=\frac{p}{\Gamma(k)\theta^{kp}}x^{kp-1} e^{-(x/\theta)^p},\qquad x\ge0,$$
 
 其中 $k,p,\theta>0$ 。作 $t=(x/\theta)^p$ ，得到
 
-$$
-E[X^r]=\theta^r\frac{\Gamma(k+r/p)}{\Gamma(k)}.
-$$
+$$E[X^r]=\theta^r\frac{\Gamma(k+r/p)}{\Gamma(k)}.$$
 
 它包含 Gamma（$p=1$ ）和 Weibull（$k=1$ ）。同文件 ⑦ 节先作同一代换，再对变换后的积分作确定性数值审计：
 
@@ -274,41 +196,27 @@ close(numerical, closed, 1e-9)
 
 对 $a,b>0$ ，定义
 
-$$
-B(a,b)=\int_0^1t^{a-1}(1-t)^{b-1}\,dt
-=\frac{\Gamma(a)\Gamma(b)}{\Gamma(a+b)}.
-$$
+$$B(a,b)=\int_0^1t^{a-1}(1-t)^{b-1}\,dt =\frac{\Gamma(a)\Gamma(b)}{\Gamma(a+b)}.$$
 
 第二个等式可从 $\Gamma(a)\Gamma(b)$ 的二重积分出发，作
 
-$$
-u=x+y,\qquad t=x/(x+y)
-$$
+$$u=x+y,\qquad t=x/(x+y)$$
 
 得到；Jacobian 分离出 $u^{a+b-1}$ 与 $t^{a-1}(1-t)^{b-1}$ 。当 $a<1$ 或 $b<1$ 时，积分在端点奇异但仍可积。
 
 Beta 分布的密度为
 
-$$
-f(x)=\frac{x^{a-1}(1-x)^{b-1}}{B(a,b)},\qquad0<x<1.
-$$
+$$f(x)=\frac{x^{a-1}(1-x)^{b-1}}{B(a,b)},\qquad0<x<1.$$
 
 利用 $E[X^r]=B(a+r,b)/B(a,b)$ 与 Γ 函数方程，
 
-$$
-E[X]=\frac a{a+b},
-$$
+$$E[X]=\frac a{a+b},$$
 
-$$
-\operatorname{Var}(X)
-=\frac{ab}{(a+b)^2(a+b+1)}.
-$$
+$$\operatorname{Var}(X) =\frac{ab}{(a+b)^2(a+b+1)}.$$
 
 同文件对 $B(1/2,1/2)$ 采用 $t=\sin^2\theta$ 。此时 $dt=2\sin\theta\cos\theta\,d\theta$ ，两端奇异性被消去，积分化为
 
-$$
-B(1/2,1/2)=2\int_0^{\pi/2}d\theta=\pi.
-$$
+$$B(1/2,1/2)=2\int_0^{\pi/2}d\theta=\pi.$$
 
 对应代码 deliberately 积分常数 2，而不是在 0、1 附近硬切小区间：
 
@@ -322,21 +230,15 @@ assert abs(B_half - rhs_half) < 2e-4 * rhs_half
 
 位置 $\mu\in\mathbb R$ 、尺度 $b>0$ 的 Laplace 密度是
 
-$$
-f(x)=\frac1{2b}e^{-|x-\mu|/b}.
-$$
+$$f(x)=\frac1{2b}e^{-|x-\mu|/b}.$$
 
 把 $X-\mu$ 看成随机符号乘以独立指数变量，立得
 
-$$
-E[X]=\mu,\qquad \operatorname{Var}(X)=2b^2.
-$$
+$$E[X]=\mu,\qquad \operatorname{Var}(X)=2b^2.$$
 
 当 $x\ge\mu$ 时，
 
-$$
-F(x)=1-\frac12e^{-(x-\mu)/b}.
-$$
+$$F(x)=1-\frac12e^{-(x-\mu)/b}.$$
 
 它关于 $\mu$ 对称，但在 $\mu$ 处密度不可导；绝对值也使样本均值的似然分析与正态模型不同。其尾部是指数级，仍有所有阶矩，不能称为 Cauchy 那种均值不存在的重尾。
 

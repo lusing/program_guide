@@ -22,9 +22,7 @@
 
 一个参数化统计模型写成
 
-$$
-\mathcal P=\{P_\theta:\theta\in\Theta\}.
-$$
+$$\mathcal P=\{P_\theta:\theta\in\Theta\}.$$
 
 这里 $\Theta$ 称为**参数空间**，每个 $\theta$ 对应样本空间上的一个概率分布。
 
@@ -32,23 +30,17 @@ $$
 
 在 iid 情形下，
 
-$$
-X_1,\ldots,X_n\overset{\mathrm{iid}}{\sim}F_\theta,
-$$
+$$X_1,\ldots,X_n\overset{\mathrm{iid}}{\sim}F_\theta,$$
 
 所以联合分布由共同边际分布和独立性一起确定。
 
 离散模型常写
 
-$$
-P_\theta(X=x)=\prod_{i=1}^n f(x_i;\theta),
-$$
+$$P_\theta(X=x)=\prod_{i=1}^n f(x_i;\theta),$$
 
 连续模型则用联合密度
 
-$$
-f_X(x;\theta)=\prod_{i=1}^n f(x_i;\theta).
-$$
+$$f_X(x;\theta)=\prod_{i=1}^n f(x_i;\theta).$$
 
 这里密度必须相对于同一个参考测度理解。
 
@@ -65,9 +57,7 @@ $$
 
 若存在 $\theta_0\in\Theta$ 使
 
-$$
-P_0=P_{\theta_0},
-$$
+$$P_0=P_{\theta_0},$$
 
 就称模型**正确设定**，并称 $\theta_0$ 为真参数。
 
@@ -79,19 +69,13 @@ $$
 
 因此，在写出估计量之前，必须先写清楚：
 
-$$
-\text{样本是什么，}\quad
-\text{参数是什么，}\quad
-\text{参数允许取什么值。}
-$$
+$$\text{样本是什么，}\quad \text{参数是什么，}\quad \text{参数允许取什么值。}$$
 
 ## 31.4 参数、参数函数与估计目标
 
 有时整个 $\theta$ 都是研究对象，有时只关心它的某个函数
 
-$$
-\psi=g(\theta).
-$$
+$$\psi=g(\theta).$$
 
 例如：
 
@@ -112,11 +96,7 @@ $$
 
 称参数 $\theta$ 可识别，如果对任意 $\theta_1,\theta_2\in\Theta$ ，
 
-$$
-P_{\theta_1}=P_{\theta_2}
-\quad\Longrightarrow\quad
-\theta_1=\theta_2.
-$$
+$$P_{\theta_1}=P_{\theta_2} \quad\Longrightarrow\quad \theta_1=\theta_2.$$
 
 等价地，不同参数必须产生不同的抽样分布。
 
@@ -126,11 +106,7 @@ $$
 
 更一般地，参数函数 $\psi=g(\theta)$ 可识别，如果
 
-$$
-P_{\theta_1}=P_{\theta_2}
-\quad\Longrightarrow\quad
-g(\theta_1)=g(\theta_2).
-$$
+$$P_{\theta_1}=P_{\theta_2} \quad\Longrightarrow\quad g(\theta_1)=g(\theta_2).$$
 
 所以整个参数向量不可识别时，它的某些函数仍然可能可识别。
 
@@ -140,10 +116,7 @@ $$
 
 设
 
-$$
-X\mid a,b\sim\operatorname{Bernoulli}
-\left(\frac1{1+e^{-(a+b)}}\right).
-$$
+$$X\mid a,b\sim\operatorname{Bernoulli} \left(\frac1{1+e^{-(a+b)}}\right).$$
 
 参数 $(a,b)=(0.2,0.3)$ 与 $(0.5,0)$ 给出同一个分布。
 
@@ -167,9 +140,7 @@ assert linked_bernoulli_probability(0.2, 0.3) != linked_bernoulli_probability(0.
 
 两分量混合模型
 
-$$
-\tfrac12N(\mu_1,1)+\tfrac12N(\mu_2,1)
-$$
+$$\tfrac12N(\mu_1,1)+\tfrac12N(\mu_2,1)$$
 
 在交换 $(\mu_1,\mu_2)$ 后不变。
 
@@ -187,11 +158,7 @@ $$
 
 在适当条件下，极大似然往往靠近使 Kullback–Leibler 散度最小的参数：
 
-$$
-\theta_*=
-\arg\min_{\theta\in\Theta}
-D_{\mathrm{KL}}(P_0\Vert P_\theta).
-$$
+$$\theta_*= \arg\min_{\theta\in\Theta} D_{\mathrm{KL}}(P_0\Vert P_\theta).$$
 
 这个 $\theta_*$ 称为**伪真参数**。
 
@@ -214,11 +181,7 @@ $$
 
 例如
 
-$$
-\bar X_n=\frac1n\sum_{i=1}^nX_i,
-\qquad
-S_n^2=\frac1{n-1}\sum_{i=1}^n(X_i-\bar X_n)^2.
-$$
+$$\bar X_n=\frac1n\sum_{i=1}^nX_i, \qquad S_n^2=\frac1{n-1}\sum_{i=1}^n(X_i-\bar X_n)^2.$$
 
 当统计量被用来估计参数 $\theta$ 时，称为估计量，记作 $\hat\theta_n(X)$ 。
 
@@ -226,9 +189,7 @@ $$
 
 代入一次已经观察到的数据 $x$ 后，得到
 
-$$
-\hat\theta_n(x),
-$$
+$$\hat\theta_n(x),$$
 
 称为估计值，是一个确定的数或向量。
 
@@ -240,21 +201,15 @@ $$
 
 设动作 $a$ 是对参数的估计，损失函数为
 
-$$
-L(\theta,a)\ge0.
-$$
+$$L(\theta,a)\ge0.$$
 
 常见例子有：
 
-$$
-L(\theta,a)=(a-\theta)^2
-$$
+$$L(\theta,a)=(a-\theta)^2$$
 
 的平方误差，
 
-$$
-L(\theta,a)=|a-\theta|
-$$
+$$L(\theta,a)=|a-\theta|$$
 
 的绝对误差，以及分类问题中的零一损失。
 
@@ -270,19 +225,13 @@ $$
 
 估计量 $\hat\theta$ 在参数 $\theta$ 处的风险定义为
 
-$$
-R(\theta,\hat\theta)
-=E_\theta[L(\theta,\hat\theta(X))].
-$$
+$$R(\theta,\hat\theta) =E_\theta[L(\theta,\hat\theta(X))].$$
 
 期望对数据的抽样分布计算，不是把参数当作随机变量。
 
 平方误差下的风险又叫均方误差：
 
-$$
-\operatorname{MSE}_\theta(\hat\theta)
-=E_\theta[(\hat\theta-\theta)^2].
-$$
+$$\operatorname{MSE}_\theta(\hat\theta) =E_\theta[(\hat\theta-\theta)^2].$$
 
 一个估计量在不同 $\theta$ 处可以有不同表现。
 
@@ -296,19 +245,13 @@ $$
 
 估计量的偏差为
 
-$$
-\operatorname{Bias}_\theta(\hat\theta)
-=E_\theta[\hat\theta]-\theta.
-$$
+$$\operatorname{Bias}_\theta(\hat\theta) =E_\theta[\hat\theta]-\theta.$$
 
 若偏差恒为零，就称估计量无偏。
 
 方差为
 
-$$
-\operatorname{Var}_\theta(\hat\theta)
-=E_\theta\left[(\hat\theta-E_\theta\hat\theta)^2\right].
-$$
+$$\operatorname{Var}_\theta(\hat\theta) =E_\theta\left[(\hat\theta-E_\theta\hat\theta)^2\right].$$
 
 偏差描述抽样分布的中心偏离目标多少，方差描述它围绕自己的中心波动多大。
 
@@ -320,73 +263,41 @@ $$
 
 记
 
-$$
-m=E_\theta[\hat\theta],
-\qquad
-B=m-\theta.
-$$
+$$m=E_\theta[\hat\theta], \qquad B=m-\theta.$$
 
 加入并减去 $m$ ：
 
-$$
-\hat\theta-\theta=(\hat\theta-m)+B.
-$$
+$$\hat\theta-\theta=(\hat\theta-m)+B.$$
 
 平方并取期望：
 
-$$
-\begin{aligned}
-\operatorname{MSE}_\theta(\hat\theta)
-&=E_\theta[(\hat\theta-m)^2]
-+2BE_\theta[\hat\theta-m]+B^2\\
-&=\operatorname{Var}_\theta(\hat\theta)
-+\operatorname{Bias}_\theta(\hat\theta)^2.
-\end{aligned}
-$$
+$$\begin{aligned} \operatorname{MSE}_\theta(\hat\theta) &=E_\theta[(\hat\theta-m)^2] +2BE_\theta[\hat\theta-m]+B^2\\ &=\operatorname{Var}_\theta(\hat\theta) +\operatorname{Bias}_\theta(\hat\theta)^2. \end{aligned}$$
 
 交叉项为零，因为 $E_\theta[\hat\theta-m]=0$ 。
 
 所以
 
-$$
-\boxed{
-\operatorname{MSE}
-=\operatorname{Bias}^2+\operatorname{Var}.
-}
-$$
+$$\boxed{ \operatorname{MSE} =\operatorname{Bias}^2+\operatorname{Var}. }$$
 
 这条恒等式解释了为什么有偏估计可能优于无偏估计：少量偏差有时能换来更大的方差下降。
 
 对向量估计量，相应分解为
 
-$$
-E_\theta\|\hat{\boldsymbol\theta}-\boldsymbol\theta\|^2
-=\|\operatorname{Bias}_\theta(\hat{\boldsymbol\theta})\|^2
-+\operatorname{tr}\operatorname{Cov}_\theta(\hat{\boldsymbol\theta}).
-$$
+$$E_\theta\|\hat{\boldsymbol\theta}-\boldsymbol\theta\|^2 =\|\operatorname{Bias}_\theta(\hat{\boldsymbol\theta})\|^2 +\operatorname{tr}\operatorname{Cov}_\theta(\hat{\boldsymbol\theta}).$$
 
 ## 31.13 一个完全算清的有偏估计例
 
 设 $\bar X_n$ 的均值为 $\mu$ 、方差为 $\sigma^2/n$ ，考虑
 
-$$
-\hat\mu=a\bar X_n.
-$$
+$$\hat\mu=a\bar X_n.$$
 
 则
 
-$$
-\operatorname{Bias}(\hat\mu)=(a-1)\mu,
-\qquad
-\operatorname{Var}(\hat\mu)=a^2\sigma^2/n.
-$$
+$$\operatorname{Bias}(\hat\mu)=(a-1)\mu, \qquad \operatorname{Var}(\hat\mu)=a^2\sigma^2/n.$$
 
 因此
 
-$$
-\operatorname{MSE}(\hat\mu)
-=(a-1)^2\mu^2+\frac{a^2\sigma^2}{n}.
-$$
+$$\operatorname{MSE}(\hat\mu) =(a-1)^2\mu^2+\frac{a^2\sigma^2}{n}.$$
 
 Python 用有理数检查 $\mu=2,\sigma^2=5,n=10,a=3/4$ ：
 
@@ -406,66 +317,39 @@ assert bias ** 2 + variance == direct_risk == Fraction(17, 32)
 
 设
 
-$$
-X_1,\ldots,X_n\overset{\mathrm{iid}}{\sim}N(\mu,\sigma^2),
-$$
+$$X_1,\ldots,X_n\overset{\mathrm{iid}}{\sim}N(\mu,\sigma^2),$$
 
 并令 $\nu=n-1$ 。
 
 第 22 章已经证明
 
-$$
-Q:=\frac{\nu S^2}{\sigma^2}\sim\chi^2_\nu,
-\qquad
-E[Q]=\nu,
-\qquad
-\operatorname{Var}(Q)=2\nu.
-$$
+$$Q:=\frac{\nu S^2}{\sigma^2}\sim\chi^2_\nu, \qquad E[Q]=\nu, \qquad \operatorname{Var}(Q)=2\nu.$$
 
 考虑一族估计量
 
-$$
-\hat\sigma_c^2=cS^2.
-$$
+$$\hat\sigma_c^2=cS^2.$$
 
 因为 $S^2=\sigma^2Q/\nu$ ，有
 
-$$
-E[\hat\sigma_c^2]=c\sigma^2,
-\qquad
-\operatorname{Bias}(\hat\sigma_c^2)=(c-1)\sigma^2.
-$$
+$$E[\hat\sigma_c^2]=c\sigma^2, \qquad \operatorname{Bias}(\hat\sigma_c^2)=(c-1)\sigma^2.$$
 
 并且
 
-$$
-\operatorname{Var}(\hat\sigma_c^2)
-=\frac{2c^2\sigma^4}{\nu}.
-$$
+$$\operatorname{Var}(\hat\sigma_c^2) =\frac{2c^2\sigma^4}{\nu}.$$
 
 由偏差—方差分解，标准化风险为
 
-$$
-\boxed{
-\frac{E[(\hat\sigma_c^2-\sigma^2)^2]}{\sigma^4}
-=(c-1)^2+\frac{2c^2}{\nu}
-=\left(1+\frac2\nu\right)c^2-2c+1.
-}
-$$
+$$\boxed{ \frac{E[(\hat\sigma_c^2-\sigma^2)^2]}{\sigma^4} =(c-1)^2+\frac{2c^2}{\nu} =\left(1+\frac2\nu\right)c^2-2c+1. }$$
 
 这是 $c$ 的严格凸二次函数。
 
 配方可得最优系数
 
-$$
-\boxed{c_*=\frac{\nu}{\nu+2}=\frac{n-1}{n+1}.}
-$$
+$$\boxed{c_*=\frac{\nu}{\nu+2}=\frac{n-1}{n+1}.}$$
 
 对应最小标准化风险为
 
-$$
-R(c_*)=\frac2{\nu+2}=\frac2{n+1}.
-$$
+$$R(c_*)=\frac2{\nu+2}=\frac2{n+1}.$$
 
 这个“最优”仅指正态模型、平方误差和 $cS^2$ 这一族，不是对所有可能估计量的无条件宣称。
 
@@ -473,13 +357,7 @@ $$
 
 三个常见选择是
 
-$$
-c_{\mathrm U}=1,
-\qquad
-c_{\mathrm{MLE}}=\frac{n-1}{n},
-\qquad
-c_*=\frac{n-1}{n+1}.
-$$
+$$c_{\mathrm U}=1, \qquad c_{\mathrm{MLE}}=\frac{n-1}{n}, \qquad c_*=\frac{n-1}{n+1}.$$
 
 分别对应：
 
@@ -489,23 +367,11 @@ $$
 
 标准化风险依次为
 
-$$
-R_{\mathrm U}=\frac2{n-1},
-\qquad
-R_{\mathrm{MLE}}=\frac{2n-1}{n^2},
-\qquad
-R_*=\frac2{n+1}.
-$$
+$$R_{\mathrm U}=\frac2{n-1}, \qquad R_{\mathrm{MLE}}=\frac{2n-1}{n^2}, \qquad R_*=\frac2{n+1}.$$
 
 在 $n=10$ 时，
 
-$$
-R_{\mathrm U}=\frac29\approx0.2222,
-\quad
-R_{\mathrm{MLE}}=\frac{19}{100}=0.19,
-\quad
-R_*=\frac2{11}\approx0.1818.
-$$
+$$R_{\mathrm U}=\frac29\approx0.2222, \quad R_{\mathrm{MLE}}=\frac{19}{100}=0.19, \quad R_*=\frac2{11}\approx0.1818.$$
 
 Python 的精确账与文件中的实现一致：
 
@@ -581,9 +447,7 @@ theorem normal_mle_risk (n : ℚ) (hn : n ≠ 0) (hn1 : n - 1 ≠ 0) :
 
 定义
 
-$$
-R_{\max}(\hat\theta)=\sup_{\theta\in\Theta}R(\theta,\hat\theta).
-$$
+$$R_{\max}(\hat\theta)=\sup_{\theta\in\Theta}R(\theta,\hat\theta).$$
 
 最小化最大风险给出 minimax 原则。
 
@@ -593,9 +457,7 @@ $$
 
 给定参数上的权重或先验 $\pi$ ，定义 Bayes 风险
 
-$$
-r_\pi(\hat\theta)=\int R(\theta,\hat\theta)\,\pi(d\theta).
-$$
+$$r_\pi(\hat\theta)=\int R(\theta,\hat\theta)\,\pi(d\theta).$$
 
 这与前面的频率派风险不同：这里额外对参数平均。
 
@@ -605,19 +467,13 @@ $$
 
 若损失改为绝对误差，风险为
 
-$$
-E_\theta|\hat\theta-\theta|.
-$$
+$$E_\theta|\hat\theta-\theta|.$$
 
 对直接预测一个随机变量 $Y$ 的问题，平方损失的最优常数预测是均值 $E[Y]$ ，绝对损失的最优常数预测是中位数。
 
 证明绝对损失结论可比较候选点 $a$ 左右移动时两侧概率质量的变化；最优条件在平滑情形下为
 
-$$
-P(Y\le a)\ge\frac12,
-\qquad
-P(Y\ge a)\ge\frac12.
-$$
+$$P(Y\le a)\ge\frac12, \qquad P(Y\ge a)\ge\frac12.$$
 
 所以损失函数不仅改变风险数值，也可能改变最优统计动作。
 

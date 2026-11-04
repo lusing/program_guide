@@ -65,20 +65,14 @@ ${}^\lambda M\subseteq M$ 。由 ${}^\lambda M\subseteq M$ ，
 的元素。且 $M\models|j``\lambda|=\lambda<j(\kappa)$ （$j`` \lambda$ 与 $\lambda$ 传递同构）。
 
 定义
-$$
-U=\{X\subseteq\mathcal P_\kappa(\lambda) :
-j``\lambda\in j(X)\}.
-$$
+$$U=\{X\subseteq\mathcal P_\kappa(\lambda) : j``\lambda\in j(X)\}.$$
 
 四条验证。
 
 **超滤子**：定义直接给出（$j$ 初等 ⟹ $j$ 保布尔运算）。
 
 **$\kappa$ -完全**：设 $\langle X_\alpha:\alpha<\gamma\rangle \in U^\gamma$ （$\gamma<\kappa$ ）。则
-$$
-j\Big(\bigcap_{\alpha<\gamma}X_\alpha\Big)
-=\bigcap_{\alpha<\gamma}j(X_\alpha)\ni j``\lambda
-$$
+$$j\Big(\bigcap_{\alpha<\gamma}X_\alpha\Big) =\bigcap_{\alpha<\gamma}j(X_\alpha)\ni j``\lambda$$
 
 （后者因 $\gamma<\kappa=\mathrm{Crit}(j)$ ：$j$ 固定
 $\gamma$ ，交可以逐项搬）。∎
@@ -94,9 +88,7 @@ $j``\lambda\in j(A)$ 、$j(f)$ 是 $j(A)$ 上的选择函数。
 $j(f)(j``\lambda)<j``\lambda$ （$M$ 内 $|j``\lambda|= \lambda$ ，选择函数值 < 序数）。于是
 $j(f)(j``\lambda)=j(\alpha)$ （某个 $\alpha<\lambda$ ），
 即 $j(f(\alpha))=j(\alpha)$ ，即
-$$
-B=\{\alpha\in A : f(\alpha)=\alpha\}\in U
-$$
+$$B=\{\alpha\in A : f(\alpha)=\alpha\}\in U$$
 
 ——$f$ 在测一集上恒等于恒同。∎
 
@@ -126,9 +118,7 @@ $\mathrm{ult}(V,U)$ 、传递化 $M$ 、典型嵌入
 $j=\pi\circ i:V\to M$ 。
 
 **关键等式**：令 $\mathrm{Id}$ 为 $\mathcal P_\kappa( \lambda)$ 上恒同函数、$d=\pi([\mathrm{Id}])$ 。则
-$$
-d=j``\lambda.
-$$
+$$d=j``\lambda.$$
 
 「$\supseteq$ 」：精良性给 $A_\alpha=\{y : \alpha\in y\} \in U$ （$\alpha<\lambda$ ），故 $[c_\alpha]\le[\mathrm{Id}]$ （即 $d\supseteq\{j(\alpha)\}$ 对一切 $\alpha$ ）。
 
@@ -152,10 +142,7 @@ $a_\alpha=j(f_\alpha)(d)$ 型（$M$ 的元素由函数类给出）。
 定义 $f(a)=\langle f_\alpha(a) : \alpha\in a\rangle$ （利用
 $a$ 是 $\lambda$ 的 $<\kappa$ 子集，序型 $<\kappa$ 的
 序列）。则
-$$
-j(f)(d)=\langle j(f_\alpha)(d) : \alpha<\lambda\rangle
-=\langle a_\alpha:\alpha<\lambda\rangle\in M
-$$
+$$j(f)(d)=\langle j(f_\alpha)(d) : \alpha<\lambda\rangle =\langle a_\alpha:\alpha<\lambda\rangle\in M$$
 
 ——序列本身是 $M$ 的元素。∎
 
@@ -194,10 +181,7 @@ $\in a$ 却永无常值化——超幂多出「外来元素」，$\lambda$
 ## 100.4 命题 1.2：超紧基数是第 κ 个可测基数
 
 > **命题 1.2** $\kappa$ 是 $2^\kappa$ -超紧。则
-> $$
-> T=\{\alpha<\kappa : \alpha\text{ 可测}\}\subseteq\kappa
-> \text{ 是荟萃集（}\kappa\text{ 上某正规测度含 }T\text{）}.
-> $$
+> $$T=\{\alpha<\kappa : \alpha\text{ 可测}\}\subseteq\kappa \text{ 是荟萃集（}\kappa\text{ 上某正规测度含 }T\text{）}.$$
 >
 > 从而 $\kappa$ 是第 $\kappa$ 个可测基数。
 
@@ -241,10 +225,7 @@ ${}^\lambda M\subseteq M$ 。设 $\alpha\le\lambda$ 基数。
 $M$ 对 $\lambda$ -序列封闭 ⟹ $M$ 的
 $\mathcal P(\alpha)$ 、$(2^\alpha)^M$ 与 $V$ 一致（子集
 即 $\alpha$ -序列，封闭性搬进 $M$ ）。初等性给
-$$
-(2^\alpha)^M=j(2^\alpha)^M\ge 2^\alpha
-\text{（实际等号）},
-$$
+$$(2^\alpha)^M=j(2^\alpha)^M\ge 2^\alpha \text{（实际等号）},$$
 
 且 $\alpha<\lambda<j(\kappa)$ 处 $M\models 2^\alpha=\alpha^+$ （假设被 $j$ 搬到 $j(\kappa)$ 下方，
 而 $\alpha<j(\kappa)$ ；再由序列封闭 $(2^\alpha)^M= 2^\alpha$ 、$(\alpha^+)^M=\alpha^+$ ）。∎
@@ -277,9 +258,7 @@ $V\ne L$ 型结论」谱系的最强形态之一。
 > $f:\kappa\to V_\kappa$ 使：对任何集合 $x$ 、任何基数
 > $\lambda>\max(\kappa,|\mathrm{TC}(x)|)$ ，存在
 > $\mathcal P_\kappa(\lambda)$ 上正规测度 $U$ 见证
-> $$
-> j_U(f)(\kappa)=x.
-> $$
+> $$j_U(f)(\kappa)=x.$$
 
 **证明**（骨架）。反设不然。对每个 $f:\kappa\to V_\kappa$
 令 $\lambda_f\ge\kappa$ 为最小的「失败基数」：$\lambda_f$
@@ -290,10 +269,7 @@ $V\ne L$ 型结论」谱系的最强形态之一。
 构造 $f$ 使在每个成功点 $\alpha$ （使
 $(f\!\restriction\alpha,\cdot)$ 已有见证的 $\alpha$ ）取
 见证值，否则取 $\alpha$ 本身。荟萃集
-$$
-A=\{\alpha<\kappa : \alpha=[\alpha]\ \text{是某 }
-(g,\lambda_g)\text{ 的}\ \alpha_0\}\in U
-$$
+$$A=\{\alpha<\kappa : \alpha=[\alpha]\ \text{是某 } (g,\lambda_g)\text{ 的}\ \alpha_0\}\in U$$
 
 保证取 $\alpha_0=\min A$ 处回填成功。
 
@@ -301,10 +277,7 @@ $$
 $k:N\to M$ （$j=k\circ j_{U_0}$ ）。关键引理：
 $\forall\alpha\le\lambda_f(k(\alpha)=\alpha)$ （$k$ 固定
 $\lambda_f$ 下方一切）。于是
-$$
-k(j_{U_0}(f)(\kappa))=j(f)(\kappa)=x=k(x)
-\Longrightarrow j_{U_0}(f)(\kappa)=x,
-$$
+$$k(j_{U_0}(f)(\kappa))=j(f)(\kappa)=x=k(x) \Longrightarrow j_{U_0}(f)(\kappa)=x,$$
 
 与 $\lambda_f$ 的最小性矛盾。∎
 

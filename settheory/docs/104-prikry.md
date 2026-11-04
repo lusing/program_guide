@@ -39,10 +39,7 @@ Jensen 覆盖引理（第 96 章），没有 $0^\#$ 就没有这种可能
 
 > **定义 2.6** 设 $\kappa$ 可测，$D$ 是 $\kappa$ 上
 > 非平凡 $\kappa$ -完全正规超滤子。令
-> $$
-> \mathbb P=\{(s,A)\mid s\in[\kappa]^{<\omega},\,A\in
-> D\},
-> $$
+> $$\mathbb P=\{(s,A)\mid s\in[\kappa]^{<\omega},\,A\in D\},$$
 >
 > $(s,A)\le(t,B)\iff$ ($t=s\cap\alpha$ 型初始段)$\wedge A\subseteq B\wedge(s\setminus t)\subseteq B$ 。
 
@@ -97,14 +94,9 @@ $\kappa^{<\omega}=\kappa$ 内封顶，故 $\mathbb P$ 的
 
 **证明**（书 p157）的机制值得逐帧。把 $[\kappa]^{<\omega}$
 三染色：
-$$
-T^+=\{s\mid\exists B\in D\,((s,B)\Vdash\varphi)\},\quad
-T^-=\{s\mid\exists B\in D\,((s,B)\Vdash\neg\varphi)\},
-$$
+$$T^+=\{s\mid\exists B\in D\,((s,B)\Vdash\varphi)\},\quad T^-=\{s\mid\exists B\in D\,((s,B)\Vdash\neg\varphi)\},$$
 
-$$
-T^0=[\kappa]^{<\omega}\setminus(T^+\cup T^-).
-$$
+$$T^0=[\kappa]^{<\omega}\setminus(T^+\cup T^-).$$
 
 由第 94 章定理 1.6（可测 ⟹ $\kappa$ -拉姆齐：$\kappa$
 的任何有限维染色有测一整齐集），取 $A\in D$ 使每个
@@ -198,9 +190,7 @@ Lévy 崩塌塌下方（动了整个 $\kappa$ -层）、小力迫保一切
 合起来就是 SCH 反例的全套零件。
 
 $W_\alpha$ 的稠密性（(2) 的引擎）值得展开一行：
-$$
-W_\alpha=\{(s,A)\in\mathbb P\mid\alpha<\min A\}
-$$
+$$W_\alpha=\{(s,A)\in\mathbb P\mid\alpha<\min A\}$$
 
 「未来全在 $\alpha$ 之上」的条件稠密——给定任何 $(t,B)$ ，
 由 $D$ 的非主性取 $A\subseteq B\setminus(\alpha+1)$
@@ -222,9 +212,7 @@ cf=ω 的强极限奇异基数——SCH 反例的坯子（第 105 章 Silver
 ## 104.4 Prikry 序列与 Mathias 定理
 
 泛型相遇后，stems 的并 $X$ 具有**三重身份**：
-$$
-X=\bigcup\{s\mid\exists A\,((s,A)\in G)\}
-$$
+$$X=\bigcup\{s\mid\exists A\,((s,A)\in G)\}$$
 
 是 (i) 序型 ω 的递增列；(ii) $\kappa$ 的无界子集；(iii)
 对每个 $B\in D$ ，$|X\setminus B|<\omega$ （几乎含于每个

@@ -25,9 +25,7 @@
 $U\cap[\omega]^{<\omega}=\varnothing$ ）。
 
 > **定义 3.37** 对 $f,g\in\mathbb N^\omega$ ：
-> $$
-> f\equiv_U g \iff \{n : f(n)=g(n)\}\in U.
-> $$
+> $$f\equiv_U g \iff \{n : f(n)=g(n)\}\in U.$$
 
 > **引理 3.26** $\equiv_U$ 是等价关系。**证明**：只需验传递性。
 > $X=\{n:f(n)=g(n)\}$ 、$Y=\{n:g(n)=h(n)\}$ 都在 $U$ ；滤子
@@ -35,9 +33,7 @@ $U\cap[\omega]^{<\omega}=\varnothing$ ）。
 
 > **定义 3.38** $[f]_U=\{g : g\equiv_U f\}$ ，
 > $\Pi_U\mathbb N=\mathbb N^\omega/U$ 。
-> $$
-> [f]_U\in^*[g]_U \iff \{n : f(n)\in g(n)\}\in U.
-> $$
+> $$[f]_U\in^*[g]_U \iff \{n : f(n)\in g(n)\}\in U.$$
 
 > **引理 3.27**（无歧义性）$f\equiv_U g$ 、$e\equiv_U h$ 时
 > $[f]_U\in^*[e]_U\iff[g]_U\in^*[h]_U$ 。**证明**：四个坐标集
@@ -96,9 +92,7 @@ $\varphi$ ，Łoś 定理给出 $\Pi_U\mathbb N\models\varphi\iff \mathbb N\mode
 
 > **事实**（无穷下降链）令 $f_0=\mathrm{Id}$ 、
 > $f_{n+1}(k)=\max(k-n-1,0)$ 。则
-> $$
-> [f_{n+1}]_U\in^*[f_n]_U\qquad(n<\omega),
-> $$
+> $$[f_{n+1}]_U\in^*[f_n]_U\qquad(n<\omega),$$
 >
 > 因为 $\{k:n+1<k\}\in U$ （余有限）。故
 > $(\Pi_U\mathbb N,\in^*)$ **不是有秩的**。∎
@@ -125,14 +119,10 @@ $\jmath:r\mapsto r^*=[c_r]_U$ 。所有引理逐字平移（线性序的
 
 > **定理 3.34** $\jmath:\mathbb R\to\Pi_U\mathbb R$ 保持
 > $0,1$ 、加乘与序，且
-> $$
-> \forall r\in\mathbb R\ (r^*<^*[\mathrm{Id}]_U),
-> $$
+> $$\forall r\in\mathbb R\ (r^*<^*[\mathrm{Id}]_U),$$
 >
 > 若 $r>0$ 则
-> $$
-> 0^*<^*\frac{1^*}{[\mathrm{Id}]_U}<^*r^*.
-> $$
+> $$0^*<^*\frac{1^*}{[\mathrm{Id}]_U}<^*r^*.$$
 
 **证明**（(5)）：$\{k : 0<1/k<r\}$ 余有限（阿基米德性质！
 有趣之处正在这里：**实数轴的阿基米德性质在坐标层被用来证明超实

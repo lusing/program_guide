@@ -18,9 +18,7 @@
 ## 80.1 从有理数到实数：Dedekind 下截断
 
 有理数轴处处稠密，却有「洞」。例如
-$$
-L=\{q\in\mathbb Q\mid q<0\ \text{或}\ q^2<2\}
-$$
+$$L=\{q\in\mathbb Q\mid q<0\ \text{或}\ q^2<2\}$$
 
 在 $\mathbb Q$ 中没有上确界：任何比它大的有理数还能再往下压，任何
 属于它的有理数还能再往上抬。Dedekind 的思想不是先发明一个点填洞，
@@ -101,9 +99,7 @@ $X$ 中稠密，可在 $(d,e)$ 内取 $D$ 的点；无端点同理。由第 1 �
 康托尔往返延拓定理，存在序同构 $f:(D,<)\to(\mathbb Q,<)$ 。
 
 接着把 $f$ 延拓到 $X$ 。对 $x\in X$ ，定义严格下截断
-$$
-F(x)=\{q\in\mathbb Q\mid \exists d\in D\;(d<x\ \land\ q<f(d))\}.
-$$
+$$F(x)=\{q\in\mathbb Q\mid \exists d\in D\;(d<x\ \land\ q<f(d))\}.$$
 
 这里必须写 $d<x$ ，不能写 $d\le x$ 。后者会把 $f(x)$ 放进
 $F(x)$ （当 $x\in D$ 时），并可能制造最大元，与定义 3.1 冲突。
@@ -121,9 +117,7 @@ $F(x)\subseteq\{q:q<f(d)\}\subsetneq F(y)$ ，即 $F$ 严格保序，
 特别是单射。
 
 最后证满射。任给下截断 $A$ ，令
-$$
-S_A=\{d\in D:f(d)\in A\},\qquad x=\sup_X S_A.
-$$
+$$S_A=\{d\in D:f(d)\in A\},\qquad x=\sup_X S_A.$$
 
 因 $f$ 是满射且 $A$ 非空，$S_A$ 非空；取 $A$ 外的一个有理上界
 并沿 $f^{-1}$ 拉回，得 $S_A$ 的上界，所以 $x$ 存在。
@@ -148,9 +142,7 @@ ZFC 定理的「是」或「否」。
 ## 80.4 截断加法与相反数
 
 对下截断 $A,B$ ，定义
-$$
-A+B=\{x+y:x\in A,\ y\in B\}.
-$$
+$$A+B=\{x+y:x\in A,\ y\in B\}.$$
 
 它非空；若 $u,v$ 分别是不属于 $A,B$ 的上界，则 $u+v$ 是
 $A+B$ 的上界；有理加法保序给出向下封闭；若 $x+y\in A+B$ ，在
@@ -162,9 +154,7 @@ $b\in B$ ，取 $b'\in B$ 使 $b<b'$ ，写 $b=(b-b')+b'$ ，即得反向
 包含。
 
 相反数可用一个**统一公式**，不必把有理截断另列特例：
-$$
--A=\{q\in\mathbb Q\mid \exists s\in\mathbb Q\setminus A,\ q<-s\}.
-$$
+$$-A=\{q\in\mathbb Q\mid \exists s\in\mathbb Q\setminus A,\ q<-s\}.$$
 
 非空与向下封闭直接可见；固定一个 $s\notin A$ 就能在任何
 $q<-s$ 之上再取一点，所以无最大元。若 $a\in A$ ，任何
@@ -193,10 +183,7 @@ $r\mapsto A_r$ 是有序群嵌入。
 
 记 $\mathbb R^+=\{A:A_0<A\}$ 。对 $A,B\in\mathbb R^+$ ，采用与
 「无最大元」最顺手的严格形式：
-$$
-A\cdot B=\{q:\exists a\in A\,\exists b\in B\,
-(0<a,\ 0<b,\ q<ab)\}.
-$$
+$$A\cdot B=\{q:\exists a\in A\,\exists b\in B\, (0<a,\ 0<b,\ q<ab)\}.$$
 
 所有负数自动属于乘积；正元素则由正因子乘积的下方组成。它有上界：
 取不属于 $A,B$ 的正上界 $u,v$ ，则 $uv$ 为上界。向下封闭与无最大元
@@ -208,9 +195,7 @@ $q<a$ ，所以 $A\cdot A_1\subseteq A$ 。反向若 $q\in A$ 且 $q\le0$ ，
 $b\in(q/a,1)$ ，便得 $q<ab$ 。因此 $A\cdot A_1=A$ 。
 
 正截断的倒数也有统一公式：
-$$
-A^{-1}=\{r:\exists s\in\mathbb Q\setminus A,\ 0<s,\ r<1/s\}.
-$$
+$$A^{-1}=\{r:\exists s\in\mathbb Q\setminus A,\ 0<s,\ r<1/s\}.$$
 
 因 $A>A_0$ ，补集中的点必为正，所以条件 $0<s$ 是说明重点而非额外
 限制。它非空、向下封闭、无最大元；任取正的 $a\in A$ ，则所有
@@ -221,10 +206,7 @@ $s\notin A$ 都有 $a<s$ ，故 $1/a$ 是上界。
 $A_1$ 。反向只需处理 $0<q<1$ 。利用小间隙引理，并固定一个正下界
 $a_0\in A$ ，可在截断边界附近取 $a\in A,s\notin A$ ，使
 $a_0<a<s$ 且 $s-a<a_0(q^{-1}-1)$ 。于是
-$$
-\frac sa=1+\frac{s-a}{a}<1+\frac{s-a}{a_0}<\frac1q,
-\qquad q<\frac as.
-$$
+$$\frac sa=1+\frac{s-a}{a}<1+\frac{s-a}{a_0}<\frac1q, \qquad q<\frac as.$$
 
 在 $(q/a,1/s)$ 中取 $r$ ，就有 $r\in A^{-1}$ 且 $q<ar$ 。
 这正是「截断两侧可以任意接近」在乘法中的版本。
@@ -232,14 +214,7 @@ $$
 结合律、分配律与正数保序性都归结为同一模式：先把截断元素写成适当
 因子的下方，再用有理恒等式变形；反向包含需要严格性时，用无最大元或
 小间隙引理留出余量。最后按符号扩展到全部实数：
-$$
-A\cdot B=\begin{cases}
-A_0,&A=A_0\ \text{或}\ B=A_0,\\
-(-A)(-B),&A,B<A_0,\\
--(A(-B)),&A_0<A,\ B<A_0,\\
--((-A)B),&A<A_0,\ A_0<B.
-\end{cases}
-$$
+$$A\cdot B=\begin{cases} A_0,&A=A_0\ \text{或}\ B=A_0,\\ (-A)(-B),&A,B<A_0,\\ -(A(-B)),&A_0<A,\ B<A_0,\\ -((-A)B),&A<A_0,\ A_0<B. \end{cases}$$
 
 负数的倒数定义为 $A^{-1}=-(-A)^{-1}$ 。于是
 $(\mathbb R,A_0,A_1,+,\cdot,<)$ 是有序域，且 $r\mapsto A_r$ 是有序域
@@ -249,17 +224,12 @@ $-(-A)=A$ 推出。
 ## 80.6 连续统的势：$|\mathbb R|=2^{\aleph_0}$
 
 > **定理 3.7—3.9（合并叙述）** 实数不可数，并且
-> $$
-> |\mathbb R|=|(0,1)|=|[0,1]|=2^{\aleph_0},
-> \qquad |\mathbb R\times\mathbb R|=|\mathbb R|.
-> $$
+> $$|\mathbb R|=|(0,1)|=|[0,1]|=2^{\aleph_0}, \qquad |\mathbb R\times\mathbb R|=|\mathbb R|.$$
 
 每个实数 $A$ 是 $\mathbb Q$ 的子集，且不同实数是不同子集，所以
 $|\mathbb R|\le|\mathcal P(\mathbb Q)|=2^{\aleph_0}$ 。反方向，对
 $f:\omega\to\{0,1\}$ ，令
-$$
-t_f=\sum_{n=0}^{\infty}\frac{2f(n)}{3^{n+1}}.
-$$
+$$t_f=\sum_{n=0}^{\infty}\frac{2f(n)}{3^{n+1}}.$$
 
 三进制 Cantor 型展开不会因进位把不同序列识别为同一点，故
 $f\mapsto t_f$ 是 $2^\omega\to\mathbb R$ 的单射。由
@@ -276,9 +246,7 @@ $[0,1]$ 与 $(0,1)$ 的双射。
 的整数对集合，得 $|\mathbb N^{\mathbb N}|\le2^{\aleph_0}$ ；而
 $2^{\mathbb N}\subseteq\mathbb N^{\mathbb N}$ ，故两者等势。
 交错配对
-$$
-(f*g)(2n)=f(n),\qquad (f*g)(2n+1)=g(n)
-$$
+$$(f*g)(2n)=f(n),\qquad (f*g)(2n+1)=g(n)$$
 
 是 $\mathbb N^{\mathbb N}\times\mathbb N^{\mathbb N}\to \mathbb N^{\mathbb N}$ 的双射。因此
 $2^{\aleph_0}\cdot2^{\aleph_0}=2^{\aleph_0}$ ，也就有
@@ -316,10 +284,7 @@ $(x-\varepsilon,x+\varepsilon)\subseteq U$ 。空集与全空间开；开集的
 来自 $a+b\le|a|+|b|$ 及其负数版本；反向三角不等式
 $\big||a|-|b|\big|\le|a-b|$ 则由两次三角不等式得到。距离具有非负性、
 $d(x,y)=0\iff x=y$ 、对称性与三角不等式，而且开球
-$$
-O(x,\varepsilon)=\{y:|x-y|<\varepsilon\}
-=(x-\varepsilon,x+\varepsilon).
-$$
+$$O(x,\varepsilon)=\{y:|x-y|<\varepsilon\} =(x-\varepsilon,x+\varepsilon).$$
 
 所以距离拓扑与序拓扑逐点相同：任何序开区间是以中点为中心的开球，
 任何开球本身就是序开区间。这证明定理 3.12 的可距离化结论。
@@ -335,19 +300,14 @@ $\varepsilon$ -$\delta$ 定义：给定 $a$ 与 $\varepsilon>0$ ，
 ## 80.8 柯西完备性：原证明的缝隙与正确尾部论证
 
 序列 $(a_n)$ 是柯西序列，是指
-$$
-\forall\varepsilon>0\,\exists N\,\forall m,n\ge N\;
-|a_m-a_n|<\varepsilon.
-$$
+$$\forall\varepsilon>0\,\exists N\,\forall m,n\ge N\; |a_m-a_n|<\varepsilon.$$
 
 它收敛于 $L$ ，则把 $a_n-L$ 的绝对值控制为任意小。先记一个有界性
 事实：取 $\varepsilon=1$ ，第 $N$ 项以后都落在
 $(a_N-1,a_N+1)$ ，再把前面有限项的绝对值并入最大值，即得全序列有界。
 
 **为什么不能直接取整个值域的上、下确界？** 定义
-$$
-a_n=1+\frac{(-1)^n}{n+1}\qquad(n\ge0),
-$$
+$$a_n=1+\frac{(-1)^n}{n+1}\qquad(n\ge0),$$
 
 即 $2,1/2,4/3,3/4,6/5,\ldots$ 。它收敛于 1，因而是柯西序列；但整个
 值域的上确界为 2，下确界为 1/2，根本不相等。问题不在柯西性，而在于
@@ -356,9 +316,7 @@ $$
 > **定理 3.13（距离完备性，校订证明）** 实数轴上的每个柯西序列收敛。
 
 令
-$$
-u_n=\sup\{a_k:k\ge n\},\qquad v_n=\inf\{a_k:k\ge n\}.
-$$
+$$u_n=\sup\{a_k:k\ge n\},\qquad v_n=\inf\{a_k:k\ge n\}.$$
 
 有界性保证两者都存在。尾部随 $n$ 缩小，所以 $u_n$ 单调不增、
 $v_n$ 单调不减，而且 $v_n\le a_n\le u_n$ 。
@@ -382,10 +340,7 @@ $v_n\le a_n\le u_n$ ，得 $a_n\to L$ 。∎
 $a_n\le a_{n+1}\le b_{n+1}\le b_n$ 。任意 $a_n$ 都不超过任意
 $b_m$ ：取 $k=\max\{m,n\}$ ，则 $a_n\le a_k\le b_k\le b_m$ 。
 所以
-$$
-a=\sup_n a_n\le b=\inf_n b_n,
-\qquad \bigcap_n[a_n,b_n]=[a,b]\ne\varnothing.
-$$
+$$a=\sup_n a_n\le b=\inf_n b_n, \qquad \bigcap_n[a_n,b_n]=[a,b]\ne\varnothing.$$
 
 这就是定理 3.15。若再有 $b_n-a_n\to0$ ，则 $a=b$ ，交为单点集。
 
@@ -420,9 +375,7 @@ $I_n$ 都含于该开球，从而被单独一个 $U$ 覆盖，与「坏」矛盾
 固定 $A_0\in\mathcal F$ 。若 $\bigcap\mathcal F=\varnothing$ ，则
 集合 $A_0\setminus A$ （$A\in\mathcal F$ ）构成紧致空间 $A_0$
 的开覆盖。取有限子覆盖，便有
-$$
-A_0\cap A_1\cap\cdots\cap A_n=\varnothing,
-$$
+$$A_0\cap A_1\cap\cdots\cap A_n=\varnothing,$$
 
 恰与 FIP 矛盾。这个版本比先假定所有集合都含于同一区间更直接：固定
 一个 $A_0$ 就把整个问题相对化到紧致空间。

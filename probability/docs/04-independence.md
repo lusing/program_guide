@@ -10,17 +10,11 @@
 设 $(\Omega,\mathcal F,P)$ 是概率空间。事件 $A,B\in\mathcal F$
 **相互独立**定义为
 
-$$
-P(A\cap B)=P(A)P(B).
-$$
+$$P(A\cap B)=P(A)P(B).$$
 
 若 $P(B)>0$ ，由条件概率定义可得
 
-$$
-P(A\mid B)=\frac{P(A\cap B)}{P(B)}
-=\frac{P(A)P(B)}{P(B)}
-=P(A).
-$$
+$$P(A\mid B)=\frac{P(A\cap B)}{P(B)} =\frac{P(A)P(B)}{P(B)} =P(A).$$
 
 同理，若 $P(A)>0$ ，则 $P(B\mid A)=P(B)$ 。所以在正概率情形下，
 独立的直觉读法是：观测到 $B$ 不改变 $A$ 的概率，观测到 $A$ 也
@@ -41,15 +35,11 @@ $P(B)=0$ ，由单调性 $P(A\cap B)=0$ ，所以零概率事件与任意事件�
 
 若 $A\cap B=\varnothing$ ，则
 
-$$
-P(A\cap B)=0.
-$$
+$$P(A\cap B)=0.$$
 
 但 $P(A)>0$ 、$P(B)>0$ 时，
 
-$$
-P(A)P(B)>0,
-$$
+$$P(A)P(B)>0,$$
 
 所以 $P(A\cap B)\ne P(A)P(B)$ 。互斥意味着知道 $A$ 发生就立刻
 知道 $B$ 不可能发生，这是非常强的信息，而不是“没有信息”。
@@ -57,44 +47,31 @@ $$
 例如抛两枚公平硬币，令 $A$ 为第一枚正面，$B$ 为第二枚正面。四个
 结果 $(0,0),(0,1),(1,0),(1,1)$ 等可能，则
 
-$$
-P(A)=P(B)=\frac12,\qquad
-P(A\cap B)=\frac14=P(A)P(B).
-$$
+$$P(A)=P(B)=\frac12,\qquad P(A\cap B)=\frac14=P(A)P(B).$$
 
 这两个独立事件可以同时发生。另一方面，第一枚正面事件 $A$ 与“两枚
 都反面”事件 $D$ 互斥，且
 
-$$
-P(A\cap D)=0\ne\frac12\cdot\frac14=P(A)P(D).
-$$
+$$P(A\cap D)=0\ne\frac12\cdot\frac14=P(A)P(D).$$
 
 ## 04.3 两两独立不等于相互独立
 
 对一族事件 $A_1,\ldots,A_n$ ，**两两独立**只要求任意两个事件独立：
 
-$$
-P(A_i\cap A_j)=P(A_i)P(A_j)\qquad(i\ne j).
-$$
+$$P(A_i\cap A_j)=P(A_i)P(A_j)\qquad(i\ne j).$$
 
 **相互独立**要求任意非空子集 $I\subseteq\{1,\ldots,n\}$ 都满足
 
-$$
-P\left(\bigcap_{i\in I}A_i\right)=\prod_{i\in I}P(A_i).
-$$
+$$P\left(\bigcap_{i\in I}A_i\right)=\prod_{i\in I}P(A_i).$$
 
 因此三个事件相互独立不仅要求三个二元等式，还要求
 
-$$
-P(A_1\cap A_2\cap A_3)=P(A_1)P(A_2)P(A_3).
-$$
+$$P(A_1\cap A_2\cap A_3)=P(A_1)P(A_2)P(A_3).$$
 
 两两独立不保证最后这个三元等式。洪永淼教材给出了一个非常清楚的 9 点
 反例。令
 
-$$
-\Omega=\{aaa,bbb,ccc,abc,bca,cba,acb,bac,cab\},
-$$
+$$\Omega=\{aaa,bbb,ccc,abc,bca,cba,acb,bac,cab\},$$
 
 每个点等可能，概率均为 $1/9$ 。令 $A_i$ 表示第 $i$ 个位置的字母
 是 `a`。
@@ -105,19 +82,11 @@ $$
 
 任意两个位置同时为 `a` 的点只有 `aaa`，因此
 
-$$
-P(A_i\cap A_j)=\frac19
-=\frac13\cdot\frac13.
-$$
+$$P(A_i\cap A_j)=\frac19 =\frac13\cdot\frac13.$$
 
 但三个位置同时为 `a` 的点也只有 `aaa`：
 
-$$
-P(A_1\cap A_2\cap A_3)=\frac19
-\ne
-\frac1{27}
-=P(A_1)P(A_2)P(A_3).
-$$
+$$P(A_1\cap A_2\cap A_3)=\frac19 \ne \frac1{27} =P(A_1)P(A_2)P(A_3).$$
 
 因此它们两两独立，却不相互独立。
 
@@ -155,9 +124,7 @@ Julia 文件 `examples/julia/04_independence.jl` 使用 `Rational{Int}`
 
 若 $P(C)>0$ ，称事件 $A,B$ 在给定 $C$ 时**条件独立**，如果
 
-$$
-P(A\cap B\mid C)=P(A\mid C)P(B\mid C).
-$$
+$$P(A\cap B\mid C)=P(A\mid C)P(B\mid C).$$
 
 它表示在信息 $C$ 已知后，再知道 $A$ 不会改变 $B$ 的条件概率。
 条件独立不是普通独立的推论，普通独立也不是条件独立的推论。二者描述的
@@ -171,28 +138,17 @@ $$
 
 在每个状态内部，两个信号独立。但边际地把两个状态混合后：
 
-$$
-P(A=1)=\frac12\cdot\frac15+\frac12\cdot\frac45=\frac12,
-$$
+$$P(A=1)=\frac12\cdot\frac15+\frac12\cdot\frac45=\frac12,$$
 
-$$
-P(B=1)=\frac12,
-$$
+$$P(B=1)=\frac12,$$
 
 而
 
-$$
-P(A=1,B=1)
-=\frac12\left(\frac15\right)^2
-+\frac12\left(\frac45\right)^2
-=\frac{17}{50}.
-$$
+$$P(A=1,B=1) =\frac12\left(\frac15\right)^2 +\frac12\left(\frac45\right)^2 =\frac{17}{50}.$$
 
 由于
 
-$$
-\frac{17}{50}\ne\frac14=P(A=1)P(B=1),
-$$
+$$\frac{17}{50}\ne\frac14=P(A=1)P(B=1),$$
 
 $A,B$ 边际不独立。共同状态像一个不可观测因子：它在每个状态内部解释
 了两个信号的同步变化；忽略这个状态，只看边际分布，就会看到相关性。
@@ -223,34 +179,23 @@ end
 
 第二个方向同样重要。设 $A,B$ 是两枚公平硬币的结果，令
 
-$$
-C=A\oplus B
-$$
+$$C=A\oplus B$$
 
 为异或结果。四个点 $(A,B,C)$ 等可能：
 
-$$
-(0,0,0),\quad(0,1,1),\quad(1,0,1),\quad(1,1,0).
-$$
+$$(0,0,0),\quad(0,1,1),\quad(1,0,1),\quad(1,1,0).$$
 
 边际地有
 
-$$
-P(A=1,B=1)=\frac14=P(A=1)P(B=1),
-$$
+$$P(A=1,B=1)=\frac14=P(A=1)P(B=1),$$
 
 所以 $A,B$ 独立。但给定 $C=1$ ，只剩 $(1,0)$ 与 $(0,1)$ ，于是
 
-$$
-P(A=1,B=1\mid C=1)=0,
-$$
+$$P(A=1,B=1\mid C=1)=0,$$
 
 而
 
-$$
-P(A=1\mid C=1)P(B=1\mid C=1)
-=\frac12\cdot\frac12=\frac14.
-$$
+$$P(A=1\mid C=1)P(B=1\mid C=1) =\frac12\cdot\frac12=\frac14.$$
 
 因此给定 $C=1$ 后它们不独立。知道 $C=1$ 且看到 $A=1$ ，就能确定
 $B=0$ 。
@@ -275,47 +220,33 @@ xor_point(1, 1, 0).
 
 对随机变量 $X,Y$ ，若协方差
 
-$$
-\operatorname{Cov}(X,Y)=E[(X-E X)(Y-E Y)]
-$$
+$$\operatorname{Cov}(X,Y)=E[(X-E X)(Y-E Y)]$$
 
 存在且等于零，称二者不相关或零相关。零相关只排除线性共变，不排除非线性
 依赖。
 
 取四个值等可能：
 
-$$
-X\in\{-2,-1,1,2\},\qquad Y=X^2.
-$$
+$$X\in\{-2,-1,1,2\},\qquad Y=X^2.$$
 
 则
 
-$$
-E[X]=\frac{-2-1+1+2}{4}=0,
-$$
+$$E[X]=\frac{-2-1+1+2}{4}=0,$$
 
 且
 
-$$
-E[XY]=E[X^3]
-=\frac{(-2)^3+(-1)^3+1^3+2^3}{4}=0.
-$$
+$$E[XY]=E[X^3] =\frac{(-2)^3+(-1)^3+1^3+2^3}{4}=0.$$
 
 因此
 
-$$
-\operatorname{Cov}(X,Y)=E[XY]-E[X]E[Y]=0.
-$$
+$$\operatorname{Cov}(X,Y)=E[XY]-E[X]E[Y]=0.$$
 
 但 $Y$ 由 $X$ 完全决定。例如 $X=2$ 时 $Y=4$ 的条件概率为 1，
 而边际上 $P(Y=4)=1/2$ 。这就是“零相关但完全依赖”的四点反例。
 
 对两个事件的指示变量，零相关确实等价于独立，因为
 
-$$
-\operatorname{Cov}(\mathbf 1_A,\mathbf 1_B)
-=P(A\cap B)-P(A)P(B).
-$$
+$$\operatorname{Cov}(\mathbf 1_A,\mathbf 1_B) =P(A\cap B)-P(A)P(B).$$
 
 但一般随机变量有平方、阈值、波动率聚集、区制转换和高阶矩依赖，不能从
 零协方差推出独立。经济金融研究中，“收益率一阶自相关接近零”最多说明
@@ -323,9 +254,7 @@ $$
 
 第 00 章的 logistic 序列是同一教训的动力系统版本。它的下一期值满足
 
-$$
-x_t=4x_{t-1}(1-x_{t-1}),
-$$
+$$x_t=4x_{t-1}(1-x_{t-1}),$$
 
 知道 $x_{t-1}$ 就能精确计算 $x_t$ ；但很长一段序列的一阶滞后相关可以
 接近零。零相关与可预测性在这里明确分离。
@@ -349,17 +278,13 @@ assert cov == 0
 为止的历史信息集，强形式的不可预测性要求未来冲击 $X_t$ 与
 $\mathcal F_{t-1}$ 中所有事件独立。这比
 
-$$
-\operatorname{Corr}(X_t,X_{t-1})=0
-$$
+$$\operatorname{Corr}(X_t,X_{t-1})=0$$
 
 强得多。
 
 几何随机游走
 
-$$
-\ln P_t=\ln P_{t-1}+X_t
-$$
+$$\ln P_t=\ln P_{t-1}+X_t$$
 
 若增量 $X_t$ 相互独立且均值为零，则历史价格路径不能提供未来增量的
 概率信息。有效市场假说的严格形式通常需要这种 martingale 或独立增量类
