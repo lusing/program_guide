@@ -276,11 +276,15 @@ Borel 集与解析集、Baire 空间与投影层级、L 中的投影集、Solova
 
 ## 验证
 
-最终顺序全量回归：**869 单元，PASS 869 / FAIL 0**（退出码 0）。
+总账 **948 单元 = 前十二篇 869 + 第十三篇 79**（郝/杨跃篇通道分布：
+lean 16、isabelle 8、coq 6、julia 15、python 24、prolog 10，无 Agda）。
+本次回归：isabelle 132 / coq 130 / julia 139 / python 148 / prolog 134
+全绿（含第十三篇全部非 lean 单元）；lean 141 单元与 agda 124 单元
+因本机环境（mathlib 工作区损坏、WSL 未装 agda）暂缓补验。
 
 ```pwsh
 pwsh -NoProfile -Command '& ./build.ps1 -All'        # 全量对账（单元数以当前报告为准）
-pwsh -NoProfile -Command '& ./build.ps1 -Chapter 02' # 只验一章
+pwsh -NoProfile -Command '& ./build.ps1 -Chapter 126' # 只验一章
 pwsh -NoProfile -Command '& ./build.ps1 -List'       # 列出全部验证单元
 ```
 

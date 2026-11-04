@@ -183,6 +183,8 @@ if ($wantLangs -contains 'isabelle') {
 
 # --- coq：逐文件 ---
 if ($wantLangs -contains 'coq') {
+    # coqc 9.1 需要自身 bin 在 PATH 上（否则工作进程 DLL 解析失败）
+    $env:PATH = (Split-Path $coqc) + ';' + $env:PATH
     $coqDir = Join-Path $examples 'coq'
     foreach ($u in $coqUnits | Sort-Object Chapter, Path) {
         if (-not (Test-ChapterWanted $u.Chapter)) { continue }

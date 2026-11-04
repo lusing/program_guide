@@ -757,11 +757,10 @@ $$869+79=948.$$
 
 最终验收必须引用 `build.ps1 -All` 的真实 PASS/FAIL 输出。
 
-本次只运行一个顺序全量构建，最终退出码为 0，真实汇总为：
-
-> 总计 948 单元：PASS 948 / FAIL 0
->
-> 全绿。
+本次回归中 isabelle、coq、julia、python、prolog 五通道 683 单元
+全绿（含第十三篇全部非 lean 单元）；lean 与 agda 通道因本机环境
+（mathlib 工作区损坏、WSL 未装 agda）暂缓补验，修复后以
+`build.ps1 -Lang lean` 与 `-Lang agda` 补齐。
 
 ## 23. 七通道职责总表
 
