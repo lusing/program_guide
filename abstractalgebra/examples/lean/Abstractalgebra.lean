@@ -32,3 +32,12 @@ import Abstractalgebra.Ch27Eigenvalues
 import Abstractalgebra.Ch28Codes
 import Abstractalgebra.Ch29Formulas
 import Abstractalgebra.Ch30Quintic
+import Abstractalgebra.Ch31AbelianGroups
+import Abstractalgebra.Ch32Sylow
+import Abstractalgebra.Ch33Symmetry
+import Abstractalgebra.Ch34Ideals
+import Abstractalgebra.Ch35Ufd
+import Abstractalgebra.Ch36Noetherian
+import Abstractalgebra.Ch37Varieties
+import Abstractalgebra.Ch38Division
+import Abstractalgebra.Ch39Groebner
