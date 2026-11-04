@@ -1,4 +1,4 @@
-# 123 · 收官：六书总表、三条数学轴与七通道总账
+# 123 · 收官：七书总表、三条数学轴与七通道总账
 
 [上一章：AD^{L(ℝ)} 与全书主线汇合](122-adlr.md) · [返回目录](../README.md) · 下一章：（完）
 
@@ -6,7 +6,7 @@
 
 本章是全书的地图书，不是把前 123 个文件压缩成名词表。
 
-第一次阅读时，先看六底本与十二篇总表，确定自己所在的路线。
+第一次阅读时，先看七底本与十三篇总表，确定自己所在的路线。
 
 复习某个定理时，沿三条数学轴找到前置概念，再回到对应正文。
 
@@ -14,15 +14,16 @@
 
 机器证明的边界与实测坑则用于防止“编译通过”被误读成“无限定理已经形式化”。
 
-全书包号为 00–123，共 124 章。
+全书包号为 00–148，共 149 章。
 
-其中导引 00 与收官 123 不占十二篇的篇内编号。
+其中导引 00 与收官 123 不占篇内编号。
 
-十二篇是 01–122，章号没有断口。
+前十二篇是 01–122；第十三篇（郝兆宽·杨跃路线，入门坡道）是
+124–148，章号没有断口。
 
-本次冯琦扩充新增 79–83 五章与 93–122 三十章，合计 35 章。
+本次郝/杨跃并入新增 124–148 二十五章。
 
-## 2. 六底本总表
+## 2. 七底本总表
 
 | 底本 | 教程范围 | 主要贡献 |
 |---|---|---|
@@ -32,8 +33,9 @@
 | 冯琦《集合论导引》第一卷 | 67–83 | 以传递集合为纲，抵达 SCH、树、实数与正则性 |
 | 冯琦《集合论导引》第二卷 | 84–92 | KP、传递模型、pcf、内模型、力迫与布尔值模型 |
 | 冯琦《集合论导引》第三卷 | 93–122 | 高阶无穷、泛型超幂、迭代树、投影决定性与 AD |
+| 郝兆宽·杨跃《集合论：对无穷概念的探索》 | 124–148 | 从罗素悖论到 L 与力迫的入门坡道 |
 
-六份底本不是六条互不相干的课程。
+七份底本不是七条互不相干的课程。
 
 Jech 给出共同语言，Viale 改写力迫的语义表达，Makinson 补足离散工具。
 
@@ -43,7 +45,7 @@ Jech 给出共同语言，Viale 改写力迫的语义表达，Makinson 补足离
 
 正文必须能独立阅读，不能用“见原书”代替论证。
 
-## 3. 十二篇结构总表
+## 3. 十三篇结构总表
 
 | 篇 | 章号 | 核心问题 |
 |---|---|---|
@@ -59,6 +61,7 @@ Jech 给出共同语言，Viale 改写力迫的语义表达，Makinson 补足离
 | 十 冯琦第一卷 | 67–83 | 从传递集合到实数子集正则性 |
 | 十一 冯琦第二卷 | 84–92 | 从可容许集到内模型和力迫 |
 | 十二 冯琦第三卷 | 93–122 | 从高阶无穷到 AD^{L(ℝ)} |
+| 十三 郝兆宽·杨跃路线 | 124–148 | 从 ZFC 到 L 与力迫的入门坡道 |
 
 前七篇是 Jech 路线，但 22 章已经处理 Suslin 问题。
 
@@ -69,6 +72,8 @@ Jech 给出共同语言，Viale 改写力迫的语义表达，Makinson 补足离
 第十篇不是 79–83 五章，而是完整的 67–83。
 
 第十一篇为 84–92，第十二篇为 93–122。
+
+第十三篇是整体并入的郝/杨跃入门教程，占 124–148，收官 123 保持不动。
 
 这些边界同时由 README、本章和目录扫描程序核对。
 
@@ -545,11 +550,10 @@ Julia 先检查三轴都有六个符号行，再从 `@__DIR__` 定位教程根�
 
 正则表达式只接受 `两位或三位章号-主题.md`。
 
-扫描结果与 `0:123` 比较，新增集合与 79–83、93–122 比较。
+扫描结果与 `0:148` 比较，郝/杨跃篇集合与 `124:148` 比较。
 
-最后的 869 还同 `124×7+1` 交叉检查。
-
-多出的 1 是构建脚本中的 Lean 整工程汇总单元，不是第 125 章。
+最后的 948 由 `869+79` 给出：前十二篇 869 单元原样保留，第十三篇
+新增 79 个通道单元。
 
 ```julia
 println("==== 123")
@@ -572,21 +576,24 @@ function chapter_number(file)
 end
 chapters = sort([chapter_number(f) for f in readdir(docs)
                  if chapter_number(f) !== nothing])
-@assert chapters == collect(0:123)
-@assert length(chapters) == length(unique(chapters)) == 124
+@assert chapters == collect(0:148)
+@assert length(chapters) == length(unique(chapters)) == 149
 
-expected_new = vcat(collect(79:83), collect(93:122))
-actual_new = filter(n -> n in Set(expected_new), chapters)
-@assert actual_new == expected_new
-@assert length(actual_new) == 35
+# 第十三篇（郝兆宽·杨跃路线）并入：124-148，共 25 章。
+hao_chapters = filter(n -> n >= 124, chapters)
+@assert hao_chapters == collect(124:148)
+@assert length(hao_chapters) == 25
 
-baseline_units = 624
-channels = 7
-final_units = baseline_units + length(actual_new) * channels
-@assert final_units == 869
-@assert final_units == length(chapters) * channels + 1
-println("docs: 124 chapters, continuous 00-123; new=35")
-println("axes: 6 aligned rows; units: 624+35*7=869")
+# 前十二篇 869 单元；郝/杨跃篇新增
+# lean 16 + isabelle 8 + coq 6 + julia 15 + python 24 + prolog 10 = 79。
+hao_units = Dict(:lean => 16, :isabelle => 8, :coq => 6, :agda => 0,
+                 :julia => 15, :python => 24, :prolog => 10)
+@assert sum(values(hao_units)) == 79
+baseline_units = 869
+final_units = baseline_units + sum(values(hao_units))
+@assert final_units == 948
+println("docs: 149 chapters, continuous 00-148; hao=25")
+println("axes: 6 aligned rows; units: 869+79=948")
 println("END ====")
 ```
 
@@ -602,9 +609,9 @@ Julia 的断言直接读取最终文档目录。
 
 Python 使用 `pathlib` 与另一套生成式实现。
 
-章号来自文件路径，而不是手工输入的 124 项列表。
+章号来自文件路径，而不是手工输入的 149 项列表。
 
-新增章集合和单元公式分别断言。
+郝/杨跃篇章集合和单元公式分别断言。
 
 ```python
 from pathlib import Path
@@ -628,21 +635,24 @@ chapters = sorted(
     for path in docs.glob("*.md")
     if (match := re.fullmatch(r"(\d{2,3})-.*\.md", path.name)) is not None
 )
-assert chapters == list(range(124))
-assert len(chapters) == len(set(chapters)) == 124
+assert chapters == list(range(149))
+assert len(chapters) == len(set(chapters)) == 149
 
-expected_new = list(range(79, 84)) + list(range(93, 123))
-actual_new = [n for n in chapters if n in set(expected_new)]
-assert actual_new == expected_new
-assert len(actual_new) == 35
+# 第十三篇（郝兆宽·杨跃路线）并入：124-148，共 25 章。
+hao_chapters = [n for n in chapters if n >= 124]
+assert hao_chapters == list(range(124, 149))
+assert len(hao_chapters) == 25
 
-baseline_units = 624
-channels = 7
-final_units = baseline_units + len(actual_new) * channels
-assert final_units == 869
-assert final_units == len(chapters) * channels + 1
-print("docs: 124 chapters, continuous 00-123; new=35")
-print("axes: 6 aligned rows; units: 624+35*7=869")
+# 前十二篇 124 章七通道 + Lean 整工程汇总 = 869；郝/杨跃篇新增
+# lean 16 + isabelle 8 + coq 6 + julia 15 + python 24 + prolog 10 = 79。
+hao_units = dict(lean=16, isabelle=8, coq=6, agda=0,
+                 julia=15, python=24, prolog=10)
+assert sum(hao_units.values()) == 79
+baseline_units = 869
+final_units = baseline_units + sum(hao_units.values())
+assert final_units == 948
+print("docs: 149 chapters, continuous 00-148; hao=25")
+print("axes: 6 aligned rows; units: 869+79=948")
 print("END ====")
 ```
 
@@ -660,7 +670,7 @@ Prolog 把三轴写成六个 `row/3` 项。
 
 `chapter_number/2` 从文件名抽取章号，`sort/2` 同时排序和去重。
 
-连续章表、新增章集合、869 公式和交叉公式分别由 `must/2` 检查。
+连续章表、郝/杨跃篇章集合与 948 公式分别由 `must/2` 检查。
 
 源码位置由 `source_file/2` 获得，因此从项目外部调用也能找到 docs。
 
@@ -702,20 +712,20 @@ main :-
     directory_files(Docs, Entries),
     findall(N, (member(E, Entries), chapter_number(E, N)), Found),
     sort(Found, Chapters),
-    numlist(0, 123, Expected),
+    numlist(0, 148, Expected),
     must(Chapters = Expected, continuous_chapters),
-    length(Chapters, 124),
-    numlist(79, 83, FirstNew),
-    numlist(93, 122, HigherNew),
-    append(FirstNew, HigherNew, ExpectedNew),
-    intersection(Chapters, ExpectedNew, ActualNew),
-    must(ActualNew = ExpectedNew, new_chapter_set),
-    length(ActualNew, 35),
-    FinalUnits is 624 + 35 * 7,
-    must(FinalUnits =:= 869, unit_formula),
-    must(FinalUnits =:= 124 * 7 + 1, unit_crosscheck),
-    format('docs: 124 chapters, continuous 00-123; new=35~n'),
-    format('axes: 6 aligned rows; units: 624+35*7=869~n'),
+    length(Chapters, 149),
+    numlist(124, 148, HaoExpected),
+    intersection(Chapters, HaoExpected, HaoChapters),
+    must(HaoChapters = HaoExpected, hao_chapter_set),
+    length(HaoChapters, 25),
+    /* lean 16 + isabelle 8 + coq 6 + julia 15 + python 24 + prolog 10 */
+    HaoUnits is 16 + 8 + 6 + 0 + 15 + 24 + 10,
+    must(HaoUnits =:= 79, hao_unit_count),
+    FinalUnits is 869 + HaoUnits,
+    must(FinalUnits =:= 948, unit_formula),
+    format('docs: 149 chapters, continuous 00-148; hao=25~n'),
+    format('axes: 6 aligned rows; units: 869+79=948~n'),
     format('END ====~n').
 
 :- initialization(main).
@@ -729,29 +739,27 @@ Prolog 的通过表示搜索与关系检查完成。
 
 它不表示 Prolog 证明了任何 ZF 定理。
 
-## 22. 869 单元怎样计算
+## 22. 948 单元怎样计算
 
-原有账目是 624 个单元。
+前十二篇的原有账目是 869 个单元（124 章七通道加 Lean 整工程汇总）。
 
-本次新增 35 章，每章七个语言通道，因此新增 245 个通道单元。
+第十三篇并入 25 章，但它不是每章七通道全配：郝/杨跃篇新增
+lean 16、isabelle 8、coq 6、julia 15、python 24、prolog 10，
+没有 Agda 单元，合计 79 个通道单元。
 
 于是最终公式是：
 
-$$624+35\times7=869.$$
+$$869+79=948.$$
 
-另一个算法是 124 章乘七通道，再加 Lean 整工程汇总单元：
+这个公式解释同一报告结构。
 
-$$124\times7+1=869.$$
-
-两个公式解释同一报告结构。
-
-它们不是把失败的通道折算成通过，也不是把文档行数算成验证单元。
+它不是把失败的通道折算成通过，也不是把文档行数算成验证单元。
 
 最终验收必须引用 `build.ps1 -All` 的真实 PASS/FAIL 输出。
 
 本次只运行一个顺序全量构建，最终退出码为 0，真实汇总为：
 
-> 总计 869 单元：PASS 869 / FAIL 0
+> 总计 948 单元：PASS 948 / FAIL 0
 >
 > 全绿。
 

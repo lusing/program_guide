@@ -18,19 +18,22 @@ function chapter_number(file)
 end
 chapters = sort([chapter_number(f) for f in readdir(docs)
                  if chapter_number(f) !== nothing])
-@assert chapters == collect(0:123)
-@assert length(chapters) == length(unique(chapters)) == 124
+@assert chapters == collect(0:148)
+@assert length(chapters) == length(unique(chapters)) == 149
 
-expected_new = vcat(collect(79:83), collect(93:122))
-actual_new = filter(n -> n in Set(expected_new), chapters)
-@assert actual_new == expected_new
-@assert length(actual_new) == 35
+# 第十三篇（郝兆宽·杨跃路线）并入：124-148，共 25 章。
+hao_chapters = filter(n -> n >= 124, chapters)
+@assert hao_chapters == collect(124:148)
+@assert length(hao_chapters) == 25
 
-baseline_units = 624
-channels = 7
-final_units = baseline_units + length(actual_new) * channels
-@assert final_units == 869
-@assert final_units == length(chapters) * channels + 1
-println("docs: 124 chapters, continuous 00-123; new=35")
-println("axes: 6 aligned rows; units: 624+35*7=869")
+# 前十二篇 869 单元；郝/杨跃篇新增
+# lean 16 + isabelle 8 + coq 6 + julia 15 + python 24 + prolog 10 = 79。
+hao_units = Dict(:lean => 16, :isabelle => 8, :coq => 6, :agda => 0,
+                 :julia => 15, :python => 24, :prolog => 10)
+@assert sum(values(hao_units)) == 79
+baseline_units = 869
+final_units = baseline_units + sum(values(hao_units))
+@assert final_units == 948
+println("docs: 149 chapters, continuous 00-148; hao=25")
+println("axes: 6 aligned rows; units: 869+79=948")
 println("END ====")

@@ -11,14 +11,17 @@
 
     通道判定:
       lean     : examples/lean 单一 lake 工程（mathlib 路径依赖
-                 H:/Lang/lean4/mathlib4-4.33.1 钉版发布），`lake build` 退出码 0 且
+                 F:/github/mathlib4 钉版 commit，lean-toolchain 对齐
+                 v4.21.0-rc3），`lake build` 退出码 0 且
                  输出无 error:/warning:。整工程一次构建，
                  报告时把 Settheory/ChNN*.lean 逐章点亮。
       isabelle : 每章一个会话（examples/isabelle/ROOT 里
-                 session STNN in "STNN"），ZF object-logic；经 Isabelle2025-2 自带
-                 Cygwin bash -lc 调 `isabelle build -d <dir> STNN`；
+                 session STNN in "STNN"），ZF object-logic；经 Isabelle2026
+                 （E:\lang\Isabelle2026）自带 Cygwin bash -lc 调
+                 `isabelle build -d <dir> STNN`；
                  退出码 0 且输出无 failed/Failed/FAILED。
-      coq      : `coqc -Q examples/coq Settheory NN_*.v` 逐文件，退出码 0。
+      coq      : Rocq 9.1（E:\lang\Rocq-Platform~9.1~2026.01）
+                 `coqc -Q examples/coq Settheory NN_*.v` 逐文件，退出码 0。
       agda     : WSL Ubuntu-26.04 `agda -i /usr/share/agda-stdlib/src -i <wsl路径>`
                  逐文件，退出码 0。
       julia    : `julia --startup-file=no NN_*.jl`，退出码 0 且
@@ -45,9 +48,11 @@ $examples = Join-Path $root 'examples'
 $buildDir = Join-Path $root 'build'
 
 # 工具定位
-$isaHome = 'G:\xulun3\isabelle\Isabelle2025-2'
+$isaHome = 'E:\lang\Isabelle2026'
 $isaBash = Join-Path $isaHome 'contrib\cygwin\bin\bash.exe'
-$pyExe = 'G:\scoop\apps\python313\current\python.exe'
+$isaCygBin = '/cygdrive/e/lang/Isabelle2026/bin/isabelle'
+$coqc = 'E:\lang\Rocq-Platform~9.1~2026.01\bin\coqc.exe'
+$pyExe = 'D:\scoop\apps\python313\current\python.exe'
 
 # ---------- 清理 ----------
 if ($Clean) {
@@ -144,7 +149,7 @@ function Add-Result($ch, $lang, $desc, $ok, $detail) {
 # --- lean：整工程一次构建 ---
 $leanBuilt = $false
 if ($wantLangs -contains 'lean' -and $leanChapters.Count -gt 0) {
-    Write-Host '[lean] lake build（mathlib 钉版 H:/Lang/lean4/mathlib4-4.33.1）...'
+    Write-Host '[lean] lake build（mathlib 钉版 F:/github/mathlib4，v4.21.0-rc3）...'
     Push-Location $leanDir
     try {
         $out = & lake build 2>&1 | Out-String
@@ -165,11 +170,10 @@ if ($wantLangs -contains 'lean' -and $leanChapters.Count -gt 0) {
 if ($wantLangs -contains 'isabelle') {
     foreach ($s in $isaSessions | Sort-Object Chapter) {
         if (-not (Test-ChapterWanted $s.Chapter)) { continue }
-        $dirW = $s.Dir -replace '\\', '/'
-        $cygDir = '/cygdrive/' + $dirW.Substring(0, 1).ToLower() + $dirW.Substring(2)
-        $cmd = "$cygDir"
+        $isaDirW = (Join-Path $examples 'isabelle') -replace '\\', '/'
+        $isaCygDir = '/cygdrive/' + $isaDirW.Substring(0, 1).ToLower() + $isaDirW.Substring(2)
         Write-Host "[isabelle] build $($s.Session)..."
-        $out = & pwsh -NoProfile -Command "& '$isaBash' -lc '/cygdrive/g/xulun3/isabelle/Isabelle2025-2/bin/isabelle build -d /cygdrive/g/code/guide/settheory/examples/isabelle $($s.Session)'" 2>&1 | Out-String
+        $out = & pwsh -NoProfile -Command "& '$isaBash' -lc '$isaCygBin build -d $isaCygDir $($s.Session)'" 2>&1 | Out-String
         $code = $LASTEXITCODE
         $ok = ($code -eq 0 -and $out -notmatch '(?i)failed')
         Add-Result $s.Chapter 'isabelle' $s.Session $ok ($out -split "`n" | Select-Object -Last 5)
@@ -183,7 +187,7 @@ if ($wantLangs -contains 'coq') {
     foreach ($u in $coqUnits | Sort-Object Chapter, Path) {
         if (-not (Test-ChapterWanted $u.Chapter)) { continue }
         Write-Host "[coq] $($u.Path)"
-        $out = & coqc -Q $coqDir Settheory $u.Path 2>&1 | Out-String
+        $out = & $coqc -Q $coqDir Settheory $u.Path 2>&1 | Out-String
         $ok = ($LASTEXITCODE -eq 0)
         Add-Result $u.Chapter 'coq' (Split-Path -Leaf $u.Path) $ok ($out -split "`n" | Select-Object -Last 5)
         if (-not $ok) { Write-Host $out }
