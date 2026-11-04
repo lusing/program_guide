@@ -11,9 +11,10 @@
 
     通道判定:
       lean     : examples/lean 单一 lake 工程（mathlib 路径依赖
-                 F:/github/mathlib4 钉版 commit，lean-toolchain 对齐
-                 v4.21.0-rc3），`lake build` 退出码 0 且
-                 输出无 error:/warning:。整工程一次构建，
+                 E:/lang/mathlib4-4.35.0 钉版发布，lean-toolchain 对齐
+                 v4.35.0），`lake build` 退出码 0 且
+                 输出无 error:/warning:（module system 建议性警告豁免）。
+                 整工程一次构建，
                  报告时把 Settheory/ChNN*.lean 逐章点亮。
       isabelle : 每章一个会话（examples/isabelle/ROOT 里
                  session STNN in "STNN"），ZF object-logic；经 Isabelle2026
@@ -22,8 +23,9 @@
                  退出码 0 且输出无 failed/Failed/FAILED。
       coq      : Rocq 9.1（E:\lang\Rocq-Platform~9.1~2026.01）
                  `coqc -Q examples/coq Settheory NN_*.v` 逐文件，退出码 0。
-      agda     : WSL Ubuntu-26.04 `agda -i /usr/share/agda-stdlib/src -i <wsl路径>`
-                 逐文件，退出码 0。
+      agda     : Agda 2.8.0.2 win64（E:\lang\Agda-v2.8.0.2-win64\agda.exe）
+                 + stdlib（E:\github\agda\std-lib\src）
+                 `agda -i <stdlib> -i examples/agda <文件>` 逐文件，退出码 0。
       julia    : `julia --startup-file=no NN_*.jl`，退出码 0 且
                  stdout 含 "==== NN" 与 "END ====" 标记。
       python   : `python -I NN_*.py`（python313 + scipy），
@@ -149,12 +151,16 @@ function Add-Result($ch, $lang, $desc, $ok, $detail) {
 # --- lean：整工程一次构建 ---
 $leanBuilt = $false
 if ($wantLangs -contains 'lean' -and $leanChapters.Count -gt 0) {
-    Write-Host '[lean] lake build（mathlib 钉版 F:/github/mathlib4，v4.21.0-rc3）...'
+    Write-Host '[lean] lake build（mathlib 钉版 E:/lang/mathlib4-4.35.0，v4.35.0）...'
     Push-Location $leanDir
     try {
         $out = & lake build 2>&1 | Out-String
         $code = $LASTEXITCODE
-        $leanBuilt = ($code -eq 0 -and $out -notmatch '(?m)^(error|warning)[: ]')
+        # mathlib 4.35 起对每个文件发 module system 建议性警告，属工具链
+        # 新行为而非工程缺陷，予以豁免；其余 warning/error 仍判失败。
+        $badLines = $out -split "`n" | Select-String -Pattern '(?m)^(error|warning)[: ]' |
+            Where-Object { $_.Line -notmatch 'module system' }
+        $leanBuilt = ($code -eq 0 -and -not $badLines)
         Add-Result 'lean' 'lean' 'lake build 整工程' $leanBuilt ($out -split "`n" | Select-Object -Last 5)
         if (-not $leanBuilt) { Write-Host $out }
         # 逐章点亮（文件存在即视为该章有 lean 单元；构建失败已在上面记账）
@@ -183,6 +189,8 @@ if ($wantLangs -contains 'isabelle') {
 
 # --- coq：逐文件 ---
 if ($wantLangs -contains 'coq') {
+    # coqc 9.1 需要自身 bin 在 PATH 上（否则工作进程 DLL 解析失败）
+    $env:PATH = (Split-Path $coqc) + ';' + $env:PATH
     $coqDir = Join-Path $examples 'coq'
     foreach ($u in $coqUnits | Sort-Object Chapter, Path) {
         if (-not (Test-ChapterWanted $u.Chapter)) { continue }
@@ -194,16 +202,15 @@ if ($wantLangs -contains 'coq') {
     }
 }
 
-# --- agda：逐文件（WSL） ---
+# --- agda：逐文件 ---
 if ($wantLangs -contains 'agda') {
+    $agdaExe = 'E:\lang\Agda-v2.8.0.2-win64\agda.exe'
+    $agdaStdlib = 'E:\github\agda\std-lib\src'
+    $agdaDir = Join-Path $examples 'agda'
     foreach ($u in $agdaUnits | Sort-Object Chapter, Path) {
         if (-not (Test-ChapterWanted $u.Chapter)) { continue }
-        $fwd = $u.Path -replace '\\', '/'
-        $wslPath = (wsl -d Ubuntu-26.04 wslpath -a $fwd | Select-Object -First 1).Trim()
-        $wslDir = $wslPath.Substring(0, $wslPath.LastIndexOf('/'))
-        Write-Host "[agda] $wslPath"
-        $cmd = "agda -i /usr/share/agda-stdlib/src -i $wslDir $wslPath"
-        $out = & wsl -d Ubuntu-26.04 bash -lc $cmd 2>&1 | Out-String
+        Write-Host "[agda] $($u.Path)"
+        $out = & $agdaExe -i $agdaStdlib -i $agdaDir $u.Path 2>&1 | Out-String
         $ok = ($LASTEXITCODE -eq 0)
         Add-Result $u.Chapter 'agda' (Split-Path -Leaf $u.Path) $ok ($out -split "`n" | Select-Object -Last 5)
         if (-not $ok) { Write-Host $out }

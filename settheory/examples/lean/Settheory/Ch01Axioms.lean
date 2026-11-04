@@ -1,5 +1,6 @@
 import Mathlib.SetTheory.ZFC.PSet
 import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
 
 /-!
 # 第 01 章 · 公理：从 Cantor 到 Russell 悖论
@@ -16,7 +17,7 @@ variable {α : Type}
 
 /-- **配对公理** → Type 世界的构造：{a, b} 直接存在。 -/
 example (a b : α) : ∃ c : Set α, ∀ x, x ∈ c ↔ x = a ∨ x = b :=
-  ⟨{a, b}, by simp⟩
+  ⟨{a, b}, fun x => by rw [Set.mem_insert_iff, Set.mem_singleton_iff]⟩
 
 /-- **并公理** → ⋃₀ X 直接存在（成员条件按定义成立）。 -/
 example (X : Set (Set α)) : ∃ c : Set α, ∀ u, u ∈ c ↔ ∃ z, z ∈ X ∧ u ∈ z :=
@@ -24,7 +25,7 @@ example (X : Set (Set α)) : ∃ c : Set α, ∀ u, u ∈ c ↔ ∃ z, z ∈ X �
 
 /-- **分离模式** → 对任何谓词 p，{x ∈ X | p x} 存在（setOf 构造）。 -/
 example (p : α → Prop) (X : Set α) : ∃ Y : Set α, ∀ u, u ∈ Y ↔ u ∈ X ∧ p u :=
-  ⟨{x ∈ X | p x}, fun _ => by simp⟩
+  ⟨{x ∈ X | p x}, fun _ => Iff.rfl⟩
 
 /-- **幂集公理** → X.powerset 存在。 -/
 example (X : Set α) : ∃ Y : Set (Set α), ∀ u, u ∈ Y ↔ u ⊆ X :=

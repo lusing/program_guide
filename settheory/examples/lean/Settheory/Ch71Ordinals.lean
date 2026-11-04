@@ -34,8 +34,8 @@ example (a : Ordinal) : a < Order.succ a :=
 /-- 序数的非空集合有最小元：良基（Φ₂ 的另一半）给出选择元。 -/
 theorem min_of_nonempty {s : Set Ordinal} (h : s.Nonempty) :
     ∃ m ∈ s, ∀ b ∈ s, m ≤ b :=
-  ⟨Ordinal.wellFoundedLT.wf.min s h, WellFounded.min_mem _ s h,
-    fun _ hb => WellFounded.min_le _ hb⟩
+  ⟨wellFounded_lt.min s h, WellFounded.min_mem _ s h,
+    fun _ hb => WellFoundedLT.min_le hb⟩
 
 -- ---------- 例 1.20 与定理 1.52：极限序数 ----------
 

@@ -26,7 +26,7 @@ def fsucc : ℕ → ℕ := fun i => if i ≤ 3 then i + 1 else 5
 theorem fsucc_gt (i : ℕ) (h : i < 5) : i < fsucc i := by
   by_cases h4 : i ≤ 3
   · simp [fsucc, h4]
-  · simp only [fsucc, if_neg h4]
+  · simp only [fsucc, ite_eq_right h4]
     omega
 
 /-- 后继函数在 1..5 处闭包全部失败：fsucc(κ-1) 恰落在
