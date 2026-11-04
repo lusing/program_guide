@@ -8,3 +8,11 @@ import Abstractalgebra.Ch02Binomial
 import Abstractalgebra.Ch03Gcd
 import Abstractalgebra.Ch04Fta
 import Abstractalgebra.Ch05Congruence
+import Abstractalgebra.Ch07SetsFunctions
+import Abstractalgebra.Ch08Permutations
+import Abstractalgebra.Ch09Groups
+import Abstractalgebra.Ch10Lagrange
+import Abstractalgebra.Ch11Homomorphisms
+import Abstractalgebra.Ch12QuotientGroups
+import Abstractalgebra.Ch13Actions
+import Abstractalgebra.Ch14Computing
