@@ -6,3 +6,6 @@ import Pdenum.Ch06OtherMethods
 import Pdenum.Ch07Advection
 import Pdenum.Ch08CflLeapfrog
 import Pdenum.Ch10Wave
+import Pdenum.Ch14Diffusion
+import Pdenum.Ch15ThreeLayer
+import Pdenum.Ch17ConvectionDiffusion

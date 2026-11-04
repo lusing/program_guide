@@ -50,8 +50,20 @@
 | [12](docs/12-2d-hyperbolic.md) | 二维与分数步长 | λ²(a²+b²)≤1/2、LOD 回一维条件、|G|≡1 |
 | [13](docs/13-conservation-laws.md) | 守恒律 | RH 速度对账（非守恒差 100 格）、熵条件、稀疏波 |
 
-（后续批次随构建展开：14–20 抛物、21–23 椭圆差分、24–27 变分、
-28–30 有限元、31–34 专题与总结。）
+### 第四篇 抛物方程（书第 4 章，B3 批次）
+
+| 章 | 标题 | 一句话 |
+|---|---|---|
+| [14](docs/14-diffusion-basic.md) | 显式、隐式与加权隐式 | 表 4.1 复现（含勘误）、2r(1−2θ)≤1、CN 大 λ 失真 |
+| [15](docs/15-three-layer.md) | Richardson、DFF 与跳点 | DFF 条件相容（误差停在 0.75）、跳点≡DFF 逐位一致 |
+| [16](docs/16-ibvp-saulev.md) | 边界处理、Saul'ev 与 GE | 二阶边界好 137 倍、扫描式半隐、并行点对 |
+| [17](docs/17-convection-diffusion.md) | 对流扩散 | λ²≤2μ≤1 双条件、网格 Peclet、迎风人工扩散 |
+| [18](docs/18-variable-coeff.md) | 变系数、盒式与有限体积 | 通量形式、界面调和平均对分段线性解精确 |
+| [19](docs/19-multidim-parabolic.md) | 多维：ADI 与 LOD | r≤1/4、PR-ADI 二阶无条件稳、测阶/验稳分参数 |
+| [20](docs/20-nonlinear-parabolic.md) | 非线性抛物 | Richtmyer 线性化、预估-校正、稳定裕度随 k(u) 缩水 |
+
+（后续批次随构建展开：21–23 椭圆差分、24–27 变分、28–30 有限元、
+31–34 专题与总结。）
 
 ## 构建与验证
 
