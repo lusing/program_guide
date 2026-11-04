@@ -19,19 +19,22 @@ chapters = sorted(
     for path in docs.glob("*.md")
     if (match := re.fullmatch(r"(\d{2,3})-.*\.md", path.name)) is not None
 )
-assert chapters == list(range(124))
-assert len(chapters) == len(set(chapters)) == 124
+assert chapters == list(range(149))
+assert len(chapters) == len(set(chapters)) == 149
 
-expected_new = list(range(79, 84)) + list(range(93, 123))
-actual_new = [n for n in chapters if n in set(expected_new)]
-assert actual_new == expected_new
-assert len(actual_new) == 35
+# 第十三篇（郝兆宽·杨跃路线）并入：124-148，共 25 章。
+hao_chapters = [n for n in chapters if n >= 124]
+assert hao_chapters == list(range(124, 149))
+assert len(hao_chapters) == 25
 
-baseline_units = 624
-channels = 7
-final_units = baseline_units + len(actual_new) * channels
-assert final_units == 869
-assert final_units == len(chapters) * channels + 1
-print("docs: 124 chapters, continuous 00-123; new=35")
-print("axes: 6 aligned rows; units: 624+35*7=869")
+# 前十二篇 124 章七通道 + Lean 整工程汇总 = 869；郝/杨跃篇新增
+# lean 16 + isabelle 8 + coq 6 + julia 15 + python 24 + prolog 10 = 79。
+hao_units = dict(lean=16, isabelle=8, coq=6, agda=0,
+                 julia=15, python=24, prolog=10)
+assert sum(hao_units.values()) == 79
+baseline_units = 869
+final_units = baseline_units + sum(hao_units.values())
+assert final_units == 948
+print("docs: 149 chapters, continuous 00-148; hao=25")
+print("axes: 6 aligned rows; units: 869+79=948")
 print("END ====")

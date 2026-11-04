@@ -607,3 +607,43 @@ session ST122 in "ST122" = "ZF-Constructible" +
   options [document = false]
   theories
     Adlr
+
+session ST126 in "ST126" = "ZF" +
+  options [document = false]
+  theories
+    Axioms
+
+session ST129 in "ST129" = "ZF" +
+  options [document = false]
+  theories
+    Naturals
+
+session ST133 in "ST133" = "ZF" +
+  options [document = false]
+  theories
+    Wellorders
+
+session ST134 in "ST134" = "ZF" +
+  options [document = false]
+  theories
+    Ordinals
+
+session ST137 in "ST137" = "ZF-AC" +
+  options [document = false]
+  theories
+    Choice
+
+session ST138 in "ST138" = "ZF" +
+  options [document = false]
+  theories
+    Cardinals
+
+session ST144 in "ST144" = "ZF" +
+  options [document = false]
+  theories
+    Foundation
+
+session ST146 in "ST146" = "ZF-Constructible" +
+  options [document = false]
+  theories
+    ConstructibleSets
