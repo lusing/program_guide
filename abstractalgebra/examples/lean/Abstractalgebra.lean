@@ -25,3 +25,8 @@ import Abstractalgebra.Ch20UFD
 import Abstractalgebra.Ch21Irreducibility
 import Abstractalgebra.Ch22QuotientRings
 import Abstractalgebra.Ch23Designs
+import Abstractalgebra.Ch24VectorSpaces
+import Abstractalgebra.Ch25Constructions
+import Abstractalgebra.Ch26LinearMaps
+import Abstractalgebra.Ch27Eigenvalues
+import Abstractalgebra.Ch28Codes
