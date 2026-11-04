@@ -16,3 +16,12 @@ import Abstractalgebra.Ch11Homomorphisms
 import Abstractalgebra.Ch12QuotientGroups
 import Abstractalgebra.Ch13Actions
 import Abstractalgebra.Ch14Computing
+import Abstractalgebra.Ch15Rings
+import Abstractalgebra.Ch16Fields
+import Abstractalgebra.Ch17Polynomials
+import Abstractalgebra.Ch18RingHoms
+import Abstractalgebra.Ch19Roots
+import Abstractalgebra.Ch20UFD
+import Abstractalgebra.Ch21Irreducibility
+import Abstractalgebra.Ch22QuotientRings
+import Abstractalgebra.Ch23Designs
