@@ -16,7 +16,7 @@ A \subseteq B \;:\Longleftrightarrow\; \forall x, \; x \in A \Rightarrow x \in B
 $$
 
 注意这个定义把集合间的关系化归为元素间的逻辑蕴涵。证明
-$A \subseteq B$ 的标准套路从此固定下来：**任取 $x \in A$，证明
+$A \subseteq B$ 的标准套路从此固定下来：**任取 $x \in A$ ，证明
 $x \in B$**。这个“任取元素”的动作在 Lean 里就是 `intro x hx`，
 在 Isabelle 里是 `fix x assume`，在纸面上是“Let $x \in A$.”。
 
@@ -31,7 +31,7 @@ $$
 助手各自表达了这一点。Lean（`examples/lean/Realanalysis/Ch02Sets.lean`）
 直接引用库定理 `empty_subset`；Coq 的 Ensemble 库里对应
 `Included_Empty`；Agda 通道（`examples/agda/Ch02_sets.agda`）最直白——
-空集的特征函数恒为 `false`，而 `T false` 就是空类型 $\bot$，
+空集的特征函数恒为 `false`，而 `T false` 就是空类型 $\bot$ ，
 
 ```agda
 empty-subset : ∀ {X} (A : Setᶠ X) → ∅ᶠ ⊆ᶠ A
@@ -45,11 +45,11 @@ empty-subset A x ()
 
 原书定理 3.12 汇集了并交的基本代数性质，其中前几条是：
 
-1. $A \subseteq A \cup B$，且 $A \cap B \subseteq A$；
-2. $A \subseteq B \iff A \cup B = B$；
-3. $A \subseteq B \iff A \cap B = A$；
-4. $A \cup (B \cap C) = (A \cup B) \cap (A \cup C)$（并对交的分配）；
-5. $A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$（交对并的分配）。
+1. $A \subseteq A \cup B$ ，且 $A \cap B \subseteq A$ ；
+2. $A \subseteq B \iff A \cup B = B$ ；
+3. $A \subseteq B \iff A \cap B = A$ ；
+4. $A \cup (B \cap C) = (A \cup B) \cap (A \cup C)$ （并对交的分配）；
+5. $A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$ （交对并的分配）。
 
 Lean 通道逐条对应：
 
@@ -65,7 +65,7 @@ example : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := inter_union_distrib_left 
 第一条值得细看：`fun _ hx => Or.inl hx` 把子集证明展开为成员级
 推理——对任意元素（`_` 表示不用给它起名）与成员证据
 `hx : x ∈ A`，返回 `Or.inl hx : x ∈ A ∨ x ∈ B`。mathlib 把
-$x \in A \cup B$ 定义为析取 $x \in A \lor x \in B$，所以集合的并
+$x \in A \cup B$ 定义为析取 $x \in A \lor x \in B$ ，所以集合的并
 **就是**逻辑的或，集合的交就是逻辑的与。这不是类比，而是定义。
 
 Coq 通道（`examples/coq/Ch02_sets.v`）把分配律的证明完全展开，
@@ -91,7 +91,7 @@ compl-union A B x = deMorgan∨ (A x) (B x)
 
 ## 2.3 补集与德摩根律
 
-固定论域 $U$（比如后面最常用的 $U = \mathbb{R}$），$A$ 的补集是
+固定论域 $U$ （比如后面最常用的 $U = \mathbb{R}$ ），$A$ 的补集是
 
 $$
 A^c = \{ x \in U \mid x \notin A \}.
@@ -108,7 +108,7 @@ $$
 Lean 中就是 `compl_union` 与 `compl_inter`。Coq 通道把两条定律的
 逻辑含量分开了：第一条构造性可证（$\lnot (P \lor Q)$ 与
 $\lnot P \land \lnot Q$ 直觉主义等价），第二条需要经典逻辑——
-它的正向“从 $\lnot (P \land Q)$ 推出 $\lnot P \lor \lnot Q$”
+它的正向“从 $\lnot (P \land Q)$ 推出 $\lnot P \lor \lnot Q$ ”
 本质上是排中律的变形，Coq 证明里的 `apply NNPP`（双重否定消除）
 标记了这个逻辑强度。
 
@@ -133,8 +133,8 @@ Prolog 通道（`examples/prolog/02_sets.pl`）则把集合实现为无序列表
 ## 2.4 区间：实数集上最常用的集合
 
 原书在这里引入区间记号。开区间
-$(a, b) = \{ x \in \mathbb{R} \mid a < x < b \}$，
-闭区间 $[a, b]$ 把端点包含进来，半开区间 $[a, b)$、$(a, b]$
+$(a, b) = \{ x \in \mathbb{R} \mid a < x < b \}$ ，
+闭区间 $[a, b]$ 把端点包含进来，半开区间 $[a, b)$ 、$(a, b]$
 各含一端。Lean 中对应 `Set.Ioo`、`Set.Icc`、`Set.Ico`、`Set.Ioc`。
 
 原书强调的一个细节：并集不“缝合”端点处的洞——
@@ -155,10 +155,10 @@ example : Set.Ioo (1 : ℝ) 3 ∪ Set.Ioo 3 5 ≠ Set.Ioo 1 5 := by
   rcases h3 with ⟨-, h⟩ | ⟨h, -⟩ <;> linarith
 ```
 
-假设两集相等，则 $3$（显然属于右边）必须属于左边的并集；于是
-$3$ 要么满足 $1 < 3 < 3$ 要么满足 $3 < 3 < 5$，两种情形都被
-`linarith` 判为矛盾。对偶地，$(1, 3) \cap (3, 5) = \emptyset$：
-任何实数不可能同时严格小于且严格大于 $3$。
+假设两集相等，则 $3$ （显然属于右边）必须属于左边的并集；于是
+$3$ 要么满足 $1 < 3 < 3$ 要么满足 $3 < 3 < 5$ ，两种情形都被
+`linarith` 判为矛盾。对偶地，$(1, 3) \cap (3, 5) = \emptyset$ ：
+任何实数不可能同时严格小于且严格大于 $3$ 。
 
 Python 通道用有理数网格把这个“洞”可视化：在步长 $\frac{1}{4}$
 的格点上枚举两个开区间的成员，断言 $3$ 不在并集里但在大区间里。
@@ -168,8 +168,8 @@ Python 通道用有理数网格把这个“洞”可视化：在步长 $\frac{1}
 
 ## 2.5 索引族：无限并与无限交
 
-本章的重头戏。设 $I$ 是索引集（最常见的是 $I = \mathbb{N}$），
-对每个 $i \in I$ 有一个集合 $A_i$，则
+本章的重头戏。设 $I$ 是索引集（最常见的是 $I = \mathbb{N}$ ），
+对每个 $i \in I$ 有一个集合 $A_i$ ，则
 
 $$
 \bigcup_{i \in I} A_i = \{ x \mid \exists i, \, x \in A_i \},
@@ -197,8 +197,8 @@ example (I : Type*) (E : I → Set α) : (⋃ i, E i)ᶜ = ⋂ i, (E i)ᶜ :=
 原书例 3.14 给出三组区间族，把“无限并/交可能产生单个集合
 给不出的形状”这件事讲得淋漓尽致。我们逐个看。
 
-**族一**：$A_n = \left(-\frac{1}{n+1}, \frac{1}{n+1}\right)$，
-$n = 0, 1, 2, \dots$（原书从 $n \ge 1$ 起，Lean 的自然数从 $0$
+**族一**：$A_n = \left(-\frac{1}{n+1}, \frac{1}{n+1}\right)$ ，
+$n = 0, 1, 2, \dots$ （原书从 $n \ge 1$ 起，Lean 的自然数从 $0$
 起，故用 $n + 1$ 对齐）。这是**递减**嵌套族：每个区间都含在
 前一个里。所以并集就是最大的那个：
 
@@ -207,16 +207,16 @@ $$
 $$
 
 Lean 证明（`union_Aseq`）按“互相包含”展开：正向，任何
-$A_n$ 的成员都落在 $(-1, 1)$ 里（因为 $\frac{1}{n+1} \le 1$）；
+$A_n$ 的成员都落在 $(-1, 1)$ 里（因为 $\frac{1}{n+1} \le 1$ ）；
 反向，$(-1, 1) = A_0$ 的成员直接落进并集。这里有一个值得记住的
 工程细节：$\frac{1}{n+1} \le 1$ 这一步用 `div_le_one` 定理完成，
-而源文件里的 $-\frac{1}{n+1}$ 被 Lean 解析为 $\frac{-1}{n+1}$，
+而源文件里的 $-\frac{1}{n+1}$ 被 Lean 解析为 $\frac{-1}{n+1}$ ，
 与 $\frac{1}{n+1}$ 是两个不同的除法表达式——证明里必须用
 `neg_div` 显式建立两者的联系，`linarith` 才能贯通。形式化把我们
 在纸上随手跳过的“显然”全部逼了出来。
 
-**族二**：$B_n = \left[0, 2 - \frac{1}{n+1}\right]$。这是**递增**族，
-右端点单调逼近 $2$ 但永远到不了 $2$。于是：
+**族二**：$B_n = \left[0, 2 - \frac{1}{n+1}\right]$ 。这是**递增**族，
+右端点单调逼近 $2$ 但永远到不了 $2$ 。于是：
 
 $$
 \bigcup_{n=0}^{\infty} B_n = [0, 2),
@@ -225,10 +225,10 @@ $$
 $$
 
 并集的证明（`union_Bseq`）是本章最精彩的一段。正向容易：
-$B_n$ 的成员满足 $x \le 2 - \frac{1}{n+1} < 2$。反向是分析学的
-第一次真功夫：任取 $x \in [0, 2)$，要找到某个 $n$ 使
-$x \in B_n$，即 $x \le 2 - \frac{1}{n+1}$，也就是
-$\frac{1}{n+1} < 2 - x$。因为 $x < 2$，右端是**正数**——这正是
+$B_n$ 的成员满足 $x \le 2 - \frac{1}{n+1} < 2$ 。反向是分析学的
+第一次真功夫：任取 $x \in [0, 2)$ ，要找到某个 $n$ 使
+$x \in B_n$ ，即 $x \le 2 - \frac{1}{n+1}$ ，也就是
+$\frac{1}{n+1} < 2 - x$ 。因为 $x < 2$ ，右端是**正数**——这正是
 Archimedean 性质的用武之地（第 00 章预告的
 `exists_nat_one_div_lt`）：
 
@@ -240,16 +240,16 @@ refine mem_iUnion.mpr ⟨n, ?_⟩
 
 “$2$ 不属于并集”与“每个比 $2$ 小的点都属于并集”合起来，
 正是半开区间 $[0, 2)$ 的定义。计算通道在这里展现了它最诚实的
-局限：Julia 与 Python 都只能把并截断到 $N = 100$，得到的最大
-右端点是 $\frac{201}{101} < 2$——**极限点永远差一步**。
+局限：Julia 与 Python 都只能把并截断到 $N = 100$ ，得到的最大
+右端点是 $\frac{201}{101} < 2$ ——**极限点永远差一步**。
 这一差距不是精度问题，而是有限与无限的本质鸿沟；
 跨过它的唯一工具是证明。
 
-**族三**（交集方向）：同一个递增族的交集等于最小的 $B_0 = [0, 1]$。
+**族三**（交集方向）：同一个递增族的交集等于最小的 $B_0 = [0, 1]$ 。
 Lean 证明（`inter_Bseq`）里有一个形式化特有的陷阱：对
 `mem_iInter` 引入全称量词时如果不标注类型（`intro (n : ℕ)`），
 `intro` 会错误地捕获一个 `Set ℝ`——证明助手对 binder 的字面
-解读逼我们把纸上的“显然对所有 $n$”写成精确的变量声明。
+解读逼我们把纸上的“显然对所有 $n$ ”写成精确的变量声明。
 
 ## 2.6 索引族德摩根律的有限影子
 

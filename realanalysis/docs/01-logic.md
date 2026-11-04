@@ -8,8 +8,8 @@
 ## 1.1 命题、连接词与真值表
 
 数学陈述的最小单位是**命题**（proposition）：一个非真即假的陈述。
-命题之间用连接词组合：与（$\land$）、或（$\lor$）、非（$\lnot$）、
-蕴涵（$\Rightarrow$）。其中蕴涵最容易被误用：$A \Rightarrow B$ 只在
+命题之间用连接词组合：与（$\land$ ）、或（$\lor$ ）、非（$\lnot$ ）、
+蕴涵（$\Rightarrow$ ）。其中蕴涵最容易被误用：$A \Rightarrow B$ 只在
 $A$ 真而 $B$ 假时为假，其余三种情况都为真。特别地，“假命题蕴涵
 任何命题”——这在日常语言里反直觉，但在数学里是唯一自洽的选择。
 
@@ -33,7 +33,7 @@ for a, b in itertools.product((True, False), repeat=2):
 
 （最后一行中 $A \Rightarrow B$ 用 $\lnot A \lor B$ 表示——这正是蕴涵
 在经典逻辑里的展开式，而 $\lnot B \Rightarrow \lnot A$ 展开为
-$B \lor \lnot A$，两者逐项相同。）Prolog 通道
+$B \lor \lnot A$ ，两者逐项相同。）Prolog 通道
 （`examples/prolog/01_logic.pl`）用谓词实现了同一张真值表，
 布尔连接词被显式编码为数值函数：
 
@@ -68,9 +68,9 @@ example : ¬ (∃ y : ℝ, ∀ x : ℝ, y > x) := by
   linarith
 ```
 
-第一个证明是一个**函数**：给定 $x$，返回见证 $y = x + 1$ 和证明
-$x + 1 > x$。第二个证明把假设解构出 $y$ 和它的“压过一切”性质
-`hy`，然后把 `hy` 应用到 $y + 1$ 上——得到 $y > y + 1$，`linarith`
+第一个证明是一个**函数**：给定 $x$ ，返回见证 $y = x + 1$ 和证明
+$x + 1 > x$ 。第二个证明把假设解构出 $y$ 和它的“压过一切”性质
+`hy`，然后把 `hy` 应用到 $y + 1$ 上——得到 $y > y + 1$ ，`linarith`
 立刻发现这与实数序的公理矛盾。注意这个反证的核心动作就是
 “用假设自己的结论攻击假设”，第 00 章 Coq 通道里 Cantor 式的
 自指论证与此一脉相承。
@@ -106,12 +106,12 @@ grid = list(range(-5, 5))
 assert not any(all(y > x for x in grid) for y in grid)
 ```
 
-第一行在整数上验证“每个 $x$ 都有后继 $x + 1$”；第二行验证有限
+第一行在整数上验证“每个 $x$ 都有后继 $x + 1$ ”；第二行验证有限
 网格里不存在“压过所有元素的元素”——最大值就是反例。
 
 ## 1.3 蕴涵的三种亲属：逆命题、否命题、逆否命题
 
-给定 $A \Rightarrow B$，可以造出三个亲属：
+给定 $A \Rightarrow B$ ，可以造出三个亲属：
 
 - **逆命题**（converse）：$B \Rightarrow A$ —— 不被原命题保证；
 - **否命题**（inverse）：$\lnot A \Rightarrow \lnot B$ —— 同样不被保证；
@@ -119,7 +119,7 @@ assert not any(all(y > x for x in grid) for y in grid)
   与原命题**逻辑等价**。
 
 原书用的例子：若 $n = 5$ 则 $n$ 是自然数（真）；反过来“若 $n$ 是
-自然数则 $n = 5$”显然是假的，$n = 42$ 就是反例。Lean 通道把这个
+自然数则 $n = 5$ ”显然是假的，$n = 42$ 就是反例。Lean 通道把这个
 反例写成存在性证明：
 
 ```lean
@@ -138,9 +138,9 @@ Proof.
 Qed.
 ```
 
-正向是构造性的：有 $A \to B$ 和 $\lnot B$，对任何 $a : A$ 都有
-$B$，与 $\lnot B$ 矛盾。反向必须借助经典逻辑：NNPP（双重否定
-消除）说 $\lnot \lnot B \to B$，于是我们证明 $\lnot \lnot B$ 就够了——
+正向是构造性的：有 $A \to B$ 和 $\lnot B$ ，对任何 $a : A$ 都有
+$B$ ，与 $\lnot B$ 矛盾。反向必须借助经典逻辑：NNPP（双重否定
+消除）说 $\lnot \lnot B \to B$ ，于是我们证明 $\lnot \lnot B$ 就够了——
 这正是“逆否证明”在构造主义里不合法、在经典数学里合法的精确分界。
 Agda 通道只写了构造性的那一半，并诚实地把它命名为
 `contraposition : (A → B) → ¬ B → ¬ A`——在 Agda 的世界里，
@@ -158,10 +158,10 @@ Agda 通道只写了构造性的那一半，并诚实地把它命名为
 
 ### 技巧二：逆否证明（Contrapositive）
 
-要证 $A \Rightarrow B$，改证 $\lnot B \Rightarrow \lnot A$。原书例 2.2
+要证 $A \Rightarrow B$ ，改证 $\lnot B \Rightarrow \lnot A$ 。原书例 2.2
 是它的经典应用：
 
-> $x = y$ 当且仅当对任意 $\varepsilon > 0$ 都有 $|x - y| < \varepsilon$。
+> $x = y$ 当且仅当对任意 $\varepsilon > 0$ 都有 $|x - y| < \varepsilon$ 。
 
 Lean 通道的完整证明：
 
@@ -179,9 +179,9 @@ example (x y : ℝ) : x = y ↔ ∀ ε : ℝ, 0 < ε → |x - y| < ε := by
       exact False.elim (lt_irrefl _ hcont)
 ```
 
-正向是直接的：代入 $x = y$ 后 $|x - y| = 0 < \varepsilon$。反向正是
-逆否思路：设 $x \neq y$，则 $|x - y| > 0$，把这个正数**自己**作为
-$\varepsilon$ 代回假设，得到 $|x - y| < |x - y|$——一个数严格小于
+正向是直接的：代入 $x = y$ 后 $|x - y| = 0 < \varepsilon$ 。反向正是
+逆否思路：设 $x \neq y$ ，则 $|x - y| > 0$ ，把这个正数**自己**作为
+$\varepsilon$ 代回假设，得到 $|x - y| < |x - y|$ ——一个数严格小于
 自己，`lt_irrefl` 给出矛盾。这个“任意接近即相等”的原理是分析学
 最常用的工具之一：要证两个量相等，只需证它们的差比任何正数都小。
 
@@ -195,7 +195,7 @@ assert all(abs(x - y) < eps for eps in (1.0, 1e-6, 1e-12, 1e-15))
 
 ### 技巧三：反证法（Contradiction）
 
-要证 $P$，假设 $\lnot P$ 并推出矛盾。第 00 章已经完整演示过：
+要证 $P$ ，假设 $\lnot P$ 并推出矛盾。第 00 章已经完整演示过：
 $\sqrt{2}$ 无理性的三层证明（Coq 通道 `no_double_square` →
 `z_no_double_square` → `sqrt2_irrational`）就是原书例 2.3 的
 机器版。值得回顾的是证明的发动机：**偶数性在平方下封闭**
@@ -204,8 +204,8 @@ $\sqrt{2}$ 无理性的三层证明（Coq 通道 `no_double_square` →
 
 ### 技巧四：归纳法（Induction）
 
-要证对所有自然数成立的命题 $P(n)$：证 $P(0)$（基例），再证
-$P(n) \Rightarrow P(n+1)$（归纳步）。原书例 2.4 是求和公式：
+要证对所有自然数成立的命题 $P(n)$ ：证 $P(0)$ （基例），再证
+$P(n) \Rightarrow P(n+1)$ （归纳步）。原书例 2.4 是求和公式：
 
 $$
 1 + 2 + \cdots + n = \frac{n(n+1)}{2}.
@@ -266,8 +266,8 @@ $$
 \lim_{x \to 2} (3x + 1) = 7.
 $$
 
-按定义，要证：对任意 $\varepsilon > 0$，存在 $\delta > 0$，使得
-$|x - 2| < \delta$ 蕴含 $|(3x + 1) - 7| < \varepsilon$。关键观察是
+按定义，要证：对任意 $\varepsilon > 0$ ，存在 $\delta > 0$ ，使得
+$|x - 2| < \delta$ 蕴含 $|(3x + 1) - 7| < \varepsilon$ 。关键观察是
 
 $$
 |(3x + 1) - 7| = |3x - 6| = 3|x - 2|,
@@ -290,7 +290,7 @@ example : ∀ ε : ℝ, 0 < ε →
 ```
 
 注意这个证明的结构与纸上证明逐行对应：报出 $\delta$ 的取值，
-验证 $\delta > 0$，然后对任意满足 $|x - 2| < \delta$ 的 $x$ 展开
+验证 $\delta > 0$ ，然后对任意满足 $|x - 2| < \delta$ 的 $x$ 展开
 代数恒等式，最后用线性算术收尾。Coq 通道用 `replace ... by ring`
 做同样的恒等变形，Isabelle 通道（`examples/isabelle/RA01/Logic.thy`）
 则展示了结构化证明语言 Isar 的版本——`fix`/`assume`/`show` 关键词
@@ -311,8 +311,8 @@ for eps in (0.1, 0.01, 0.001, 1e-6)
 end
 ```
 
-然后做了一个更有教益的反面实验：故意取过大的 $\delta = \varepsilon$，
-在网格上能找到违反结论的 $x$——
+然后做了一个更有教益的反面实验：故意取过大的 $\delta = \varepsilon$ ，
+在网格上能找到违反结论的 $x$ ——
 
 ```julia
 found = false
