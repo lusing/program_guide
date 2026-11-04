@@ -45,9 +45,7 @@
 集合」，如 $A=[\kappa]^\omega$ 或 $A=\omega_1$ 的子集族），
 $I$ 是 $\bigcup A$ 上的理想；商代数
 $\mathcal P(\bigcup A)/I$ 的「正测元」是 $I^+=\{X\subseteq \bigcup A\mid X\notin I\}$ ，序为
-$$
-C\le D\iff C-D\in I.
-$$
+$$C\le D\iff C-D\in I.$$
 
 书 p210 的开篇问题因此是：$\mathcal P(\omega_1)/\mathrm{NS} _{\omega_1}$ 的泛型扩张长什么样？其中 $\mathrm{NS}_{\omega_1}$
 是 $\omega_1$ 上的**非荟萃集理想**（全体非荟萃子集）——它的
@@ -145,25 +143,18 @@ $\bigcup A$ 上的 **V-超滤子**（书 p211 四公理）：
 **构造**（书 p211）：在 $V[G]$ 中，对 V 中定义在 $\bigcup A$
 上的函数 $f,g$ ：
 
-$$
-f\sim_G g\iff\{\alpha\in\textstyle\bigcup A\mid f(\alpha)=g(\alpha)\}\in G,
-$$
+$$f\sim_G g\iff\{\alpha\in\textstyle\bigcup A\mid f(\alpha)=g(\alpha)\}\in G,$$
 
 $[f]_G$ 取等价类中秩最小的代表；
 $[f]_G\ E_G\ [g]_G\iff\{\alpha\mid f(\alpha)\in g(\alpha)\}\in G$ 。
 泛型超幂
-$$
-\Pi(V,E)=\big([f]_G,\ E_G\big)_{f\in V,\ f:\bigcup A\to V},
-$$
+$$\Pi(V,E)=\big([f]_G,\ E_G\big)_{f\in V,\ f:\bigcup A\to V},$$
 
 常值函数给出同质嵌入 $i_G:V\to\Pi(V,E)$ 。
 
 **定理 2.18（Łoś）** 对集合论纯语言的公式
 $\varphi(v_1,\dots,v_n)$ ：
-$$
-\Pi(V,E)\models\varphi([f_1],\dots,[f_n])\iff
-\{\alpha\mid(V,\in)\models\varphi(f_1(\alpha),\dots,f_n(\alpha))\}\in G.
-$$
+$$\Pi(V,E)\models\varphi([f_1],\dots,[f_n])\iff \{\alpha\mid(V,\in)\models\varphi(f_1(\alpha),\dots,f_n(\alpha))\}\in G.$$
 
 从而 $i_G$ 同质（书 p212 证明从略——按原子公式的真值集
 定义加上对逻辑连接词与量词的归纳；机器件四核查的正是原子
@@ -232,9 +223,7 @@ $\forall a\in\bigcup A\ (\{Y\in A\mid a\in Y\}\in F)$ 。
 
 **引理 2.29** 设 $I$ 是 $\sigma$ -完全非平凡精良正规理想，
 G 泛型，$\Pi(V,E)$ 有秩。则
-$$
-\pi_G([\mathrm{Id}]_G)=i_G''\bigcup A.
-$$
+$$\pi_G([\mathrm{Id}]_G)=i_G''\bigcup A.$$
 
 **证明骨架**：$\supseteq$ ——对 $a\in\bigcup A$ ，精良性给
 $\{Y\mid a\in Y\}\in G$ ，于是 $[c_a]_G\ E_G\ [\mathrm{Id}]_G$ ，
@@ -264,9 +253,7 @@ club 集对对角交封闭（第一卷 II 的标准账），这也是例 2.4
 
 **定义 2.25（峭壁，precipitous；Jech–Prikry 1976）**
 理想 $I$ 峭壁 ⟺
-$$
-\bigcup A\Vdash_{\mathbb P(I)}\ \Pi(V,E)\ \text{有秩}.
-$$
+$$\bigcup A\Vdash_{\mathbb P(I)}\ \Pi(V,E)\ \text{有秩}.$$
 
 （书 p213 的译名脚注即 precipitous——「峭壁」取「越坠越深而
 不回弹」的意象：良基即无 $\in$ -下降链。）

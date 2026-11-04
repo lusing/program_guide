@@ -139,9 +139,7 @@ $j$ 在「坐标 $a$ 」上的一个截面，整族合起来恢复 $j$ 的
 点，$\kappa\le\lambda\le j(\kappa)$ 。对每个 $a\in [\lambda]^{<\omega}$ （$\lambda$ 的非空有限子集），定义
 $[k]^{|a|}$ （即 $[\kappa]^{|a|}$ ）上的超滤子：
 
-$$
-X\in E_a \iff a\in j(X),\qquad X\subseteq[\kappa]^{|a|}.
-$$
+$$X\in E_a \iff a\in j(X),\qquad X\subseteq[\kappa]^{|a|}.$$
 
 记 $\varepsilon=\{E_a\mid a\in[\lambda]^{<\omega}\}$ 。直观：
 $j(X)$ 是 $X$ 在 $M$ 中的像，而 $a$ 是 $\lambda$ 中
@@ -158,9 +156,7 @@ $a$ 的原像」这件事。
 $\kappa$ -完全超滤子（$j$ 保布尔运算 + 临界点下方不动）；但
 $E_{\{\kappa\}}$ 不是 $\kappa^+$ -完全的；且对每个
 $\alpha<\kappa$ ，令 $a=\{\alpha,\kappa\}$ ，则
-$$
-\{\beta\;:\;\alpha<\beta<\kappa\}\text{ 型尾段}\in E_a
-$$
+$$\{\beta\;:\;\alpha<\beta<\kappa\}\text{ 型尾段}\in E_a$$
 
 —— $E_a$ 能「看见」$\kappa$ 的尾段，保证后续超幂的临界点
 恰为 $\kappa$ 而非更低。（书中还注记 $a=\{\kappa\}$ 时
@@ -170,9 +166,7 @@ $E_a$ 是平凡超滤子，它确定的自同构超幂就是 $V$ 自身——
 **(b) 协调性**。$a\subseteq b$ 时，按单调排列写出投影
 $\pi_{b,a}:[\kappa]^{|b|}\to[\kappa]^{|a|}$ （从 $b$ 的
 枚举中挑出 $a$ 的位置）。则
-$$
-X\in E_a \iff \pi_{b,a}^{-1}(X)\in E_b.
-$$
+$$X\in E_a \iff \pi_{b,a}^{-1}(X)\in E_b.$$
 
 即**低坐标的测量与高坐标的测量一致**：在 $E_b$ 中测「投
 影回 $a$ 后落进 $X$ 」等价于在 $E_a$ 中直接测 $X$ 。这
@@ -182,15 +176,11 @@ $$
 
 **(c) 正规性**。对非空 $a\in[\lambda]^{<\omega}$ 、
 $f:[\kappa]^{|a|}\to\kappa$ ，若
-$$
-A_0=\{s : f(s)\in\max(s)\}\in E_a,
-$$
+$$A_0=\{s : f(s)\in\max(s)\}\in E_a,$$
 
 则存在 $b\supseteq a$ （$\max(a)<\min(b\setminus a)$ 型的
 **加高**）使
-$$
-\{t\in[\kappa]^{|b|} : (f\circ\pi_{b,a})(t)\in t\}\in E_b.
-$$
+$$\{t\in[\kappa]^{|b|} : (f\circ\pi_{b,a})(t)\in t\}\in E_b.$$
 
 证明一行见底蕴：令 $b=a\cup\{j(f)(a)\}$ 。由 $\max(a)< \lambda<j(\kappa)$ 有 $b\in[\lambda]^{<\omega}$ ；由
 $(f\circ\pi_{b,a})(b)=j(f)(a)\in b$ 立得测一。**正规性 = 「回归
@@ -201,9 +191,7 @@ $(f\circ\pi_{b,a})(b)=j(f)(a)\in b$ 立得测一。**正规性 = 「回归
 **(d) ω-完全性**。对任意序列 $a_n\in[\lambda]^{<\omega}$ 、
 $X_n\in E_{a_n}$ （$n<\omega$ ），存在保序映射
 $g:\bigcup_n a_n\to\kappa$ 使
-$$
-\forall n<\omega\;(g``a_n\in X_n).
-$$
+$$\forall n<\omega\;(g``a_n\in X_n).$$
 
 证明是本章的**树论证**（书 p116–117）：令 $A=\bigcup_n a_n$
 （$\subseteq\lambda$ ，序型 $\alpha<\omega_1$ ——$\lambda$
@@ -242,29 +230,19 @@ $\in^*$ 传递性用余有限滤子的有限交）、第 97 章（Gaifman
 
 **(e) 因子分解**（书 p117–118）。每个 $E_a$ 单独可用：
 $\mathrm{ult}(V,E_a)$ 、传递化 $N_a$ 、因子映射
-$$
-k_a([f]_{E_a})=j(f)(a)
-$$
+$$k_a([f]_{E_a})=j(f)(a)$$
 
 满足 $j=k_a\circ\pi_a\circ i_a$ 。协调性 (b) 保证 $a\subseteq b$ 时有 $i_{a,b}:N_a\to N_b$ 架起**定向系统**
 $\langle N_a,i_{a,b}\mid a\subseteq b\in[\lambda]^{<\omega} \rangle$ ，其定向极限嵌入 $M$ （经 $k_\varepsilon=\lim_a k_a$ ）。于是 $j=k_\varepsilon\circ\pi_\varepsilon\circ j_\varepsilon$ ——第 100 章末尾因子分解的**系统版**：不是
 一次分解，而是一整张交换图。
 
 **张子超幂的显式构造**（定义 1.20，书 p122）。论域
-$$
-\mathcal D=\{(a,f)\mid a\in[\lambda]^{<\omega},\;
-f:[\kappa]^{|a|}\to V\},
-$$
+$$\mathcal D=\{(a,f)\mid a\in[\lambda]^{<\omega},\; f:[\kappa]^{|a|}\to V\},$$
 
-$$
-(a,f)\equiv(b,g) \iff \{s\in[\kappa]^{|a\cup b|} :
-(f\circ\pi)(s)=(g\circ\pi)(s)\}\in E_{a\cup b},
-$$
+$$(a,f)\equiv(b,g) \iff \{s\in[\kappa]^{|a\cup b|} : (f\circ\pi)(s)=(g\circ\pi)(s)\}\in E_{a\cup b},$$
 
 $\in_\varepsilon$ 同理。核心断言（书 p119）：
-$$
-[(a,f)]\in_\varepsilon[(b,g)] \iff j(f)(a)\in j(g)(b).
-$$
+$$[(a,f)]\in_\varepsilon[(b,g)] \iff j(f)(a)\in j(g)(b).$$
 
 这个断言把**抽象商结构与嵌入的具体行为**焊接——它是后面一切
 （因子映射良定义、Łoś、典型表示）的单点锚。
@@ -274,18 +252,11 @@ $$
 $k_\varepsilon$ 嵌入传递模型 $(M,\in)$ ，良基性遗传。第二证
 （**放弃** $j$ ——为独立公理化而战）：反设有降链
 $[(a_{n+1},f_{n+1})]\in_\varepsilon[(a_n,f_n)]$ ，令
-$$
-X_n=\{s\in[\kappa]^{|a_n\cup a_{n+1}|} :
-(f_n\circ\pi)(s)\in(f_{n+1}\circ\pi)(s)\}\in
-E_{a_n\cup a_{n+1}},
-$$
+$$X_n=\{s\in[\kappa]^{|a_n\cup a_{n+1}|} : (f_n\circ\pi)(s)\in(f_{n+1}\circ\pi)(s)\}\in E_{a_n\cup a_{n+1}},$$
 
 由 (d) 取保序 $g:\bigcup a_n\to\kappa$ 使 $g``(a_n\cup a_{n+1})\in X_n$ 一切 $n$ 。矛盾：$g$ 把无穷降链压成自然
 数上的严格降列
-$$
-\cdots (f_{n+1}\circ\pi)(g``a_{n+1})\in
-(f_n\circ\pi)(g``a_n)\in\cdots
-$$
+$$\cdots (f_{n+1}\circ\pi)(g``a_{n+1})\in (f_n\circ\pi)(g``a_n)\in\cdots$$
 
 （每项是 $V$ 中真实的集合，因为 $g``a_n\in[\kappa]^{|a_n|} =\mathrm{dom}(f_n)$ ）。**ω-完全性 ⟹ 有秩性**的因果链在此
 完全显形：公理 (d) 的树论证保证「有限段可协调」，协调的极限
@@ -404,10 +375,7 @@ $L$ 的可构造序在 $\kappa$ 以上不是$V$ 的骨架**。第 98
 定义 1.18 把 $\lambda<j(\kappa)$ 钉死。书中 p126 澄清了
 为什么这不是 Kunen 定理（第 94 章定理 1.11）的警示：Kunen
 排除的是
-$$
-j:V\to M,\quad\kappa=\mathrm{Crit}(j),\quad
-\lambda\ge\sup_n j^n(\kappa),\quad V_{\lambda+3}\subseteq M,
-$$
+$$j:V\to M,\quad\kappa=\mathrm{Crit}(j),\quad \lambda\ge\sup_n j^n(\kappa),\quad V_{\lambda+3}\subseteq M,$$
 
 而 $\lambda=j(\kappa)$ 、$V_{j(\kappa)}\subseteq M$ 型嵌入
 **不在被排除之列**——避开 $j(\kappa)$ 纯粹是**技术原因**：
@@ -425,9 +393,7 @@ $$
 到 $\mathrm{dom}(a)$ 恰为 $a$ ）、拼接 $a+b$ 、投影
 $\pi_{b,a}$ （经 $\mathrm{dom}(b)$ 的置换）。对
 $X\subseteq V_{\mathrm{dom}(a)}$ 定义
-$$
-X\in E_a \iff a\in j(X).
-$$
+$$X\in E_a \iff a\in j(X).$$
 
 命题 1.5 逐条验证 (a)–(d) 的序列版：超滤子性（$j$ 保布尔
 运算 + $j(V_\kappa)$ 与 $j$ 值域不交的非平凡性论证）、
@@ -451,10 +417,7 @@ $j(T)$ 的降树枝由 $f\in Y^\omega$ 直接给出）。
 证明）：正规性 (c)(i) 处理单点层（$y\in z$ 的双向），(c)(ii)
 把 $[ (a,g)]\in_\varepsilon[(\langle y\rangle,f)]$ 常值化为
 某个 $z\in y$ 的代表——结论
-$$
-(Y,\in)\cong\{[(\langle z\rangle,f)]\mid z\in Y\},\qquad
-Y\subseteq M_\varepsilon.
-$$
+$$(Y,\in)\cong\{[(\langle z\rangle,f)]\mid z\in Y\},\qquad Y\subseteq M_\varepsilon.$$
 
 **支撑集合整块进入超幂**——这就是「正规性是为了保证张子的
 支撑集合的每一个元素在超幂中都有非常典型的表示」（书 p124
@@ -540,12 +503,7 @@ Task 要求的对照表——三种「强度陈述」的真值条件与结构后
 
 三行强度阶梯（严格递增）：
 
-$$
-\text{可测} \;\xrightarrow{\;V_{\kappa+1}\;}\; (\kappa,\kappa{+}1)\text{-强}
-\;\xrightarrow{\;\forall\lambda\;}\; \text{强}
-\;\xrightarrow[\text{定理 1.35}]{\text{下方荟萃}}\;
-2^\kappa\text{-超紧（且强）},
-$$
+$$\text{可测} \;\xrightarrow{\;V_{\kappa+1}\;}\; (\kappa,\kappa{+}1)\text{-强} \;\xrightarrow{\;\forall\lambda\;}\; \text{强} \;\xrightarrow[\text{定理 1.35}]{\text{下方荟萃}}\; 2^\kappa\text{-超紧（且强）},$$
 
 而**超强**在另一根轴上（$\lambda=j(\kappa)$ 一次性封顶）：
 单个超强基数的下方未必有可测基数之外的任何东西；但定理 1.35

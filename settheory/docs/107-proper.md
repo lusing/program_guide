@@ -86,10 +86,7 @@ $1\mathbb{1}\Vdash S$ 依旧荟萃。
 
 **(1) 的证明骨架（压回去）**：给定 $\dot C$ 与 $p$ ，令
 
-$$
-D=\{\alpha<\kappa\mid\forall q\le p\,
-\exists\beta\ge\alpha\,(q\Vdash\beta\in\dot C)\}
-$$
+$$D=\{\alpha<\kappa\mid\forall q\le p\, \exists\beta\ge\alpha\,(q\Vdash\beta\in\dot C)\}$$
 
 $D$ 自然是闭的（对上确界封闭）；关键是证 $D$ 无界。
 给定 $\alpha_0<\kappa$ ，注意
@@ -200,19 +197,14 @@ $\kappa$ ，可数范围 $[\kappa]^\omega$ 上的任何一个荟萃
 **引理 2.23**（书 p201） 设 $\mathbb P$ 恰当，$G$ 是
 $V$ 上的 $\mathbb P$ -泛型滤子。则 $V[G]$ 中任何序数
 的可数集合一定被 $V$ 中序数的可数集合所覆盖：
-$$
-\forall X\in([\mathrm{Ord}]^\omega)^{V[G]}\,
-\exists Y\in([\mathrm{Ord}]^\omega)^V\,(X\subseteq Y).
-$$
+$$\forall X\in([\mathrm{Ord}]^\omega)^{V[G]}\, \exists Y\in([\mathrm{Ord}]^\omega)^V\,(X\subseteq Y).$$
 
 **证明骨架**：设 $X$ 是 $V[G]$ 中序数的可数集，令
 $\lambda>\sup X$ 为不可数基数。由恰当性，
 $[\lambda]^\omega$ 的 club 全体在 $V[G]$ 中依旧生成
 同样的滤子骨架，特别地 $[\lambda]^\omega$ **本身**依旧
 荟萃（全集是 club）。而集合
-$$
-\{Y\in[\lambda]^\omega\mid X\subseteq Y\}
-$$
+$$\{Y\in[\lambda]^\omega\mid X\subseteq Y\}$$
 
 在 $V[G]$ 中是无界闭集（闭：递增链的并仍盖 $X$ 的
 可数枚举；无界：往任何 $x$ 里逐个添 $X$ 的元素）。荟萃
@@ -321,10 +313,7 @@ $M$ 。107.6 主条件刻画的充分性证明用的正是这一形态。
 **定理 2.13**（书 p203） $\mathbb P$ 恰当的充要条件是：
 对任意足够大（$>2^{|P|}$ ）的正则基数 $\lambda$ ，由所有
 满足
-$$
-|M|=\omega\ \wedge\ \forall p\in M\cap P\,\exists q\le p
-\ (q\ \text{是}(M,\mathbb P)\text{-泛型条件})
-$$
+$$|M|=\omega\ \wedge\ \forall p\in M\cap P\,\exists q\le p \ (q\ \text{是}(M,\mathbb P)\text{-泛型条件})$$
 
 的 $M\prec(H_\lambda,\in,\Delta,\dots)$ 组成的集合
 $C_\lambda$ 包含 $C[\lambda]$ 的一个无界闭子集。
@@ -332,10 +321,7 @@ $C_\lambda$ 包含 $C[\lambda]$ 的一个无界闭子集。
 **必要性（反证骨架）**：设 $\mathbb P$ 恰当而 $C_\lambda$
 不含 club，则补集荟萃。由无界闭子集滤子的正则性，取
 $p\in P$ 与荟萃集 $S\subseteq C[\lambda]$ 使
-$$
-\forall M\in S\ (p\in M\ \wedge\ \forall q\le p\
-(q\ \text{不是}(M,\mathbb P)\text{-泛型条件})).
-$$
+$$\forall M\in S\ (p\in M\ \wedge\ \forall q\le p\ (q\ \text{不是}(M,\mathbb P)\text{-泛型条件})).$$
 
 取 $V$ 上的泛型滤子 $G\ni p$ ，在 $V[G]$ 中讨论：
 对 $p$ 之下的每个极大冲突子集 $A\in V$ ，$A\cap G$

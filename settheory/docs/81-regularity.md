@@ -58,10 +58,7 @@ $\sigma$ -可加性；这正是贝尔纲定理的内容（推论 3.3）。于是
 区间套：令 $I_0=I$ 。给定非空开区间 $I_n$ ，$B_n\cap I_n$ 是非空
 开集，于是可取有理开区间使其**闭包**整个落在 $B_n\cap I_n$ 内；令
 
-$$
-m=\min\{k<\omega : \overline{J_k}\subseteq B_n\cap I_n\},\qquad
-I_{n+1}=J_m .
-$$
+$$m=\min\{k<\omega : \overline{J_k}\subseteq B_n\cap I_n\},\qquad I_{n+1}=J_m .$$
 
 这样 $\overline{I_{n+1}}\subseteq B_n\cap I_n\subseteq I_n$ ，闭包
 $\langle\overline{I_n}\mid 1\le n<\omega\rangle$ 构成递降的有界闭
@@ -153,10 +150,7 @@ $E_i'$ 中的 $A_\alpha$ ，合并后仍避开。有理端点有限并只有可�
 $\mathrm{MA}_\kappa$ 给出与全体 $C_\alpha$ 、$D_{i,k}$ 相交的
 滤子 $G$ 。令
 
-$$
-H_i=\bigcup\{U_i : \exists p\in G,\ i\le\mathrm{dom}(p),\
-p(i)=(U_i,E_i)\}.
-$$
+$$H_i=\bigcup\{U_i : \exists p\in G,\ i\le\mathrm{dom}(p),\ p(i)=(U_i,E_i)\}.$$
 
 由 $D_{i,k}$ ，每个 $H_i$ 与每个 $I_k$ 相交，故稠密开。固定
 $\alpha<\kappa$ ，取 $p\in G\cap C_\alpha$ ，设 $\alpha\in E_i$
@@ -166,11 +160,7 @@ $\alpha<\kappa$ ，取 $p\in G\cap C_\alpha$ ，设 $\alpha\in E_i$
 $U^q_i\cap A_\alpha=\varnothing$ 。对 $q$ 取并得
 $H_i\cap A_\alpha=\varnothing$ 。于是
 
-$$
-A\cap\bigcap_{i<\omega}H_i
-=\bigcup_{\alpha<\kappa}A_\alpha\cap\bigcap_{i<\omega}H_i
-=\varnothing.
-$$
+$$A\cap\bigcap_{i<\omega}H_i =\bigcup_{\alpha<\kappa}A_\alpha\cap\bigcap_{i<\omega}H_i =\varnothing.$$
 
 （严格地说应取那个见证 $\alpha$ 的固定 $i$ ；上面已证该
 $H_i$ 与 $A_\alpha$ 不交，对 $\alpha$ 求并即得。）∎
@@ -211,10 +201,7 @@ $O\triangle O=\varnothing$ ，故 $O\in\mathcal C$ 。
 
 对补封闭：设 $A\triangle B\in\mathcal I_c$ ，$B$ 开。则
 
-$$
-(\mathbb R\setminus A)\triangle(\mathbb R\setminus B)
-=A\triangle B\in\mathcal I_c,
-$$
+$$(\mathbb R\setminus A)\triangle(\mathbb R\setminus B) =A\triangle B\in\mathcal I_c,$$
 
 而 $\mathbb R\setminus B$ 是闭集。这里「闭集也几乎开」的隐性事实
 是：开集 $O$ 满足 $\overline O\setminus O$ 无处稠密，故闭集
@@ -222,10 +209,7 @@ $F=\overline F$ 与开集 $\mathbb R\setminus\overline{\mathbb R \setminus F}$ �
 
 对可数并封闭：设 $A_n\triangle B_n$ 各稀疏，$B_n$ 开。则
 
-$$
-\Big(\bigcup_n A_n\Big)\triangle\Big(\bigcup_n B_n\Big)
-\subseteq\bigcup_n(A_n\triangle B_n)\in\mathcal I_c,
-$$
+$$\Big(\bigcup_n A_n\Big)\triangle\Big(\bigcup_n B_n\Big) \subseteq\bigcup_n(A_n\triangle B_n)\in\mathcal I_c,$$
 
 且 $\bigcup_n B_n$ 开。∎
 
@@ -260,9 +244,7 @@ $\mathcal B(\mathbb R)\subseteq\mathcal C$ 。∎
 情形一：$A\in\mathcal I_c$ 。平移是同胚，保持稀疏性；$\mathbb Q$
 可数，故
 
-$$
-\mathbb R=\bigcup_{q\in\mathbb Q}(A+q)\in\mathcal I_c
-$$
+$$\mathbb R=\bigcup_{q\in\mathbb Q}(A+q)\in\mathcal I_c$$
 
 （每个实数都与某个代表同类，故等号成立；可数并封闭即推论 3.3）。
 但 $\mathbb R$ 是非空开集，与推论 3.2 矛盾。
@@ -297,16 +279,11 @@ $x=a+\delta$ （$a\in A$ ），于是 $a,x$ 是同类的两个不同元素
 文按并陈述。OCR 对此同样无法辨认，公式一律回读页面图像。
 
 > 对 $X\subseteq\mathbb R$ ，定义**外测度**
-> $$
-> \mu^*(X)=\inf\Big\{\sum_{k<\omega}(b_k-a_k) :
-> X\subseteq\bigcup_{k<\omega}(a_k,b_k)\Big\}.
-> $$
+> $$\mu^*(X)=\inf\Big\{\sum_{k<\omega}(b_k-a_k) : X\subseteq\bigcup_{k<\omega}(a_k,b_k)\Big\}.$$
 >
 > 称 $X$ 零测，若 $\mu^*(X)=0$ 。称 $A\subseteq\mathbb R$
 > **勒贝格可测**，当且仅当对一切 $X\subseteq\mathbb R$
-> $$
-> \mu^*(X)=\mu^*(X\cap A)+\mu^*(X\setminus A)
-> $$
+> $$\mu^*(X)=\mu^*(X\cap A)+\mu^*(X\setminus A)$$
 >
 > （卡拉泰奥多里判据；原书以全体实数子集为测试集）。可测集的测度
 > 取 $\mu(A)=\mu^*(A)$ 。
@@ -361,10 +338,7 @@ $\sum_q c\le 2n+2$ ，左边是无穷，矛盾。∎
 **证明**。设 $\langle A_\alpha\mid\alpha<\kappa\rangle$ 零测，
 $A=\bigcup_\alpha A_\alpha$ ，固定 $\varepsilon>0$ 。取偏序集
 
-$$
-P=\{p\subseteq\mathbb R : p\text{ 开且}\ \mu(p)<\varepsilon\},
-\qquad p\le q \iff q\subseteq p,
-$$
+$$P=\{p\subseteq\mathbb R : p\text{ 开且}\ \mu(p)<\varepsilon\}, \qquad p\le q \iff q\subseteq p,$$
 
 即 **$p$ 比 $q$ 强当且仅当** $q\subseteq p$ ：强条件是超集。
 （书页 240 这一行 OCR 完全丢失；按原页图像与下文「滤子有限并仍在
@@ -380,19 +354,11 @@ $\delta_q$ 同理。由 $\mu(r)\le\mu(p)+\delta_p =\tfrac13\varepsilon+\tfrac23\
 $\mu(p)>\tfrac{3\mu(r)-\varepsilon}{2}$ ，对 $q$ 同理。代回误差
 定义：
 
-$$
-\delta_p=\tfrac13\big(\varepsilon-\mu(p)\big)
-<\tfrac13\Big(\varepsilon-\tfrac{3\mu(r)-\varepsilon}{2}\Big)
-=\tfrac{\varepsilon-\mu(r)}{2},
-$$
+$$\delta_p=\tfrac13\big(\varepsilon-\mu(p)\big) <\tfrac13\Big(\varepsilon-\tfrac{3\mu(r)-\varepsilon}{2}\Big) =\tfrac{\varepsilon-\mu(r)}{2},$$
 
 $\delta_q$ 同样。于是
 
-$$
-\mu(p\cup q)\le\mu(r)+\mu(p\setminus r)+\mu(q\setminus r)
-<\mu(r)+\delta_p+\delta_q<\mu(r)+2\cdot\tfrac{\varepsilon-\mu(r)}{2}
-=\varepsilon.
-$$
+$$\mu(p\cup q)\le\mu(r)+\mu(p\setminus r)+\mu(q\setminus r) <\mu(r)+\delta_p+\delta_q<\mu(r)+2\cdot\tfrac{\varepsilon-\mu(r)}{2} =\varepsilon.$$
 
 故 $p\cup q\in P$ 且是 $p,q$ 的公共强条件（它同时是两者的超集）：
 $W$ 不是反链。
@@ -410,9 +376,7 @@ $\mu(p_1\cup\cdots\cup p_n)\le\mu(r)<\varepsilon$ 。实轴第二可数，
 $U$ 可被 $G$ 的可数子族 $H$ 覆盖（林德勒夫性质）；把 $H$
 排成序列，由测度的下连续性，
 
-$$
-\mu(U)=\sup_n\mu\Big(\bigcup_{i\le n}H_i\Big)\le\varepsilon.
-$$
+$$\mu(U)=\sup_n\mu\Big(\bigcup_{i\le n}H_i\Big)\le\varepsilon.$$
 
 $\varepsilon$ 任意，故 $\mu^*(A)=0$ 。∎
 
@@ -432,10 +396,7 @@ $\varepsilon$ 任意，故 $\mu^*(A)=0$ 。∎
 最著名的完备集是康托尔三分集。用第 79 章的二叉树
 $\mathrm{Seq}(\{0,1\})$ 递归定义闭区间 $P_s$ ：$P_{\langle\rangle} =[0,1]$ ；给定 $P_s=[a,b]$ ，令
 
-$$
-P_{s\frown 0}=\Big[a,\ a+\tfrac{b-a}{3}\Big],\qquad
-P_{s\frown 1}=\Big[b-\tfrac{b-a}{3},\ b\Big].
-$$
+$$P_{s\frown 0}=\Big[a,\ a+\tfrac{b-a}{3}\Big],\qquad P_{s\frown 1}=\Big[b-\tfrac{b-a}{3},\ b\Big].$$
 
 $F_n=\bigcup\{P_s:s\in 2^n\}$ 是 $2^n$ 个互不相交闭区间之并，
 $F_{n+1}\subseteq F_n$ ，闭包套递降。$C=\bigcap_n F_n$ 是闭集。
@@ -585,10 +546,7 @@ $\operatorname{card}(F)=\operatorname{card}(F^*)=2^{\aleph_0}$
 
 康托尔**求导**过程把这件事变成超穷迭代：
 
-$$
-A^{(0)}=A,\qquad A^{(\alpha+1)}=(A^{(\alpha)})',\qquad
-A^{(\lambda)}=\bigcap_{\alpha<\lambda}A^{(\alpha)}.
-$$
+$$A^{(0)}=A,\qquad A^{(\alpha+1)}=(A^{(\alpha)})',\qquad A^{(\lambda)}=\bigcap_{\alpha<\lambda}A^{(\alpha)}.$$
 
 对闭集 $F$ ，每一步严格下降至少去掉一个孤立点，而 $F\setminus F^*$ 可数，故在某个 $\alpha<\omega_1$ 处稳定：$F^{(\alpha)}= F^{(\alpha+1)}=F^*$ （可数闭集在可数步内耗尽，一般闭集因
 $F\setminus F^*$ 可数也不超过 $\omega_1$ 步）。这正是「序数被
@@ -609,16 +567,9 @@ $F\setminus F^*$ 可数也不超过 $\omega_1$ 步）。这正是「序数被
 全体非空完备集，$\langle a^\alpha_\beta\mid\beta<2^{\aleph_0}\rangle$ 列出 $P_\alpha$ 的元素。递归定义两个不相交序列
 $\langle b_\alpha,c_\alpha\mid\alpha<2^{\aleph_0}\rangle$ ：
 
-$$
-\beta_0=\min\{\beta: a^\alpha_\beta\notin
-\{b_\xi,c_\xi:\xi<\alpha\}\},\qquad b_\alpha=a^\alpha_{\beta_0},
-$$
+$$\beta_0=\min\{\beta: a^\alpha_\beta\notin \{b_\xi,c_\xi:\xi<\alpha\}\},\qquad b_\alpha=a^\alpha_{\beta_0},$$
 
-$$
-\beta_1=\min\{\beta: a^\alpha_\beta\notin
-\{b_\alpha\}\cup\{b_\xi,c_\xi:\xi<\alpha\}\},\qquad
-c_\alpha=a^\alpha_{\beta_1}.
-$$
+$$\beta_1=\min\{\beta: a^\alpha_\beta\notin \{b_\alpha\}\cup\{b_\xi,c_\xi:\xi<\alpha\}\},\qquad c_\alpha=a^\alpha_{\beta_1}.$$
 
 每个 $P_\alpha$ 有 $2^{\aleph_0}$ 个元素（定理 3.22），而已排除
 的不足 $2^{\aleph_0}$ 个，故 $\beta_0,\beta_1$ 存在。令

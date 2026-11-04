@@ -111,10 +111,7 @@ $\mathcal N\subseteq V_{\omega+1}$ ——按可定义性分析，
 4. $\Delta^1_k(\alpha)=\Sigma^1_k(\alpha)\cap\Pi^1_k(\alpha)$ 。
 
 观察 $\Sigma^1_1$ 的形状（书 p253）：
-$$
-B=\{(\beta,y)\mid\forall n\ R(\beta{\upharpoonright}n,
-y{\upharpoonright}n)\}
-$$
+$$B=\{(\beta,y)\mid\forall n\ R(\beta{\upharpoonright}n, y{\upharpoonright}n)\}$$
 
 的补是开的（反例 n 即开邻域），故 B 闭、A = π[B] 是闭集的
 投影——解析集的经典定义自动浮现。这段「观察」值得慢读：
@@ -123,17 +120,10 @@ $$
 只看有限前段，否定是开邻域），∃y 的实数量词对应投影。
 从此每个投影层都有两张名片：逻辑的（量词前缀形状）与
 拓扑的（闭集投影、余解析、……）。精细分层据此展开：
-$$
-\boldsymbol\Sigma^1_1=\bigcup_{\alpha\in\mathcal N}
-\Sigma^1_1(\alpha),\qquad\boldsymbol\Pi^1_1=
-\bigcup_{\alpha}\Pi^1_1(\alpha),
-$$
+$$\boldsymbol\Sigma^1_1=\bigcup_{\alpha\in\mathcal N} \Sigma^1_1(\alpha),\qquad\boldsymbol\Pi^1_1= \bigcup_{\alpha}\Pi^1_1(\alpha),$$
 
 更一般地对每个 n：
-$$
-\boldsymbol\Sigma^1_n=\bigcup_\alpha\Sigma^1_n(\alpha),
-\qquad\boldsymbol\Pi^1_n=\bigcup_\alpha\Pi^1_n(\alpha).
-$$
+$$\boldsymbol\Sigma^1_n=\bigcup_\alpha\Sigma^1_n(\alpha), \qquad\boldsymbol\Pi^1_n=\bigcup_\alpha\Pi^1_n(\alpha).$$
 
 精细分层的本义：**各层恰与「固定参数下定义式的复杂度」
 吻合**——黑体记号、上标、下标的含义全部落实；而「黑体
@@ -195,18 +185,14 @@ $[T]=\{\vec\alpha\in\mathcal N^k\mid\forall n(\vec\alpha {\upharpoonright}n\in T
 
 **引理 3.3（解析集树表示）** (1) $[T]$ 是 $\mathcal N^k$
 的闭子集；反之每个闭集 F 有树 T 使 F=[T]。(2) $A\subseteq \mathcal N$ 解析 ⟺ 存在二维树 T 使 A = π[T]，即
-$$
-\forall\alpha\ (\alpha\in A\iff T(\alpha)\ \text{无秩});
-$$
+$$\forall\alpha\ (\alpha\in A\iff T(\alpha)\ \text{无秩});$$
 
 更一般地 A 是 $\Sigma^1_1(\alpha)$ ⟺ 有 α-递归二维树 T
 实现上式。（练习——整合第一卷 I.3.26 与 I.3.17。）
 
 **定理 3.1（Π₁¹-规范形式）** A 是简体 Π₁¹ ⟺ 存在递归二维
 树 T 使映射 α ↦ T(α) 递归且
-$$
-\forall\alpha\ (\alpha\in A\iff T(\alpha)\ \text{有秩}).
-$$
+$$\forall\alpha\ (\alpha\in A\iff T(\alpha)\ \text{有秩}).$$
 
 （乘积版本与参数化版本同理。）——**解析集的补 = 树的良基化**：
 余解析集正是「让树失去无穷树枝」的那些 α。这是本章全部
@@ -256,9 +242,7 @@ $s_0\perp s_1$ 且 $\pi[T(s_0,t_0)]\times\pi[T(s_1,t_1)] \subseteq K$ ——由 
 ## 111.4 完全余解析集：WF 与 ZX
 
 **定义 3.3**（书 p262）固定递归配对双射 $\Gamma:\omega\times \omega\to\omega$ 。对 $\alpha\in\mathcal N$ 令
-$$
-E_\alpha=\{(m,n)\mid\alpha(\Gamma(m,n))=0\}
-$$
+$$E_\alpha=\{(m,n)\mid\alpha(\Gamma(m,n))=0\}$$
 
 ——α **记录**关系 E_α。则：
 
@@ -268,10 +252,7 @@ $$
 
 **引理 3.4** WF、ZX ∈ Π₁¹。**证明**（书 p263）：E_α 有秩
 ⟺ 不存在 $f:\omega\to\omega$ 使 $\forall n((f(n+1), f(n))\in E_\alpha)$ ——**下降链的否定**：
-$$
-\alpha\in\mathrm{WF}\iff\forall z\in\mathcal N\ \exists
-k\in\omega\ \big(\alpha(\Gamma(z(k+1),z(k)))\ne0\big).
-$$
+$$\alpha\in\mathrm{WF}\iff\forall z\in\mathcal N\ \exists k\in\omega\ \big(\alpha(\Gamma(z(k+1),z(k)))\ne0\big).$$
 
 内层是 Σ⁰₁（算术），整体是 Π₁¹ 型。
 
@@ -286,11 +267,7 @@ Dependent Choice 对照）逐字对齐。机器件⑤（Isabelle
 「无环」对「良基」——差一层 Π₁¹ 的厚度。
 
 还要给 ||·|| 的取值范围记一笔（书 p263）：$\mathrm{ZX} \subseteq\mathrm{WF}$ ，且
-$$
-\forall\omega\le\alpha<\omega_1\ \exists\alpha\in
-\mathrm{ZX}(\lVert\alpha\rVert=\alpha),\qquad
-\forall\alpha\in\mathrm{WF}(\lVert\alpha\rVert<\omega_1)
-$$
+$$\forall\omega\le\alpha<\omega_1\ \exists\alpha\in \mathrm{ZX}(\lVert\alpha\rVert=\alpha),\qquad \forall\alpha\in\mathrm{WF}(\lVert\alpha\rVert<\omega_1)$$
 
 ——良序编码的秩**恰好**跑遍 $[\omega,\omega_1)$ ：每个
 可数序数都有一个编码（按序型直接造 E_α），而编码的秩至多
@@ -298,10 +275,7 @@ $$
 这行账是引理 3.5 与有界性推论的取值基础。
 
 **引理 3.5（秩有界部分博雷尔）** 对每个 $\alpha<\omega_1$ ：
-$$
-\mathrm{WF}_\alpha=\{\alpha\in\mathrm{WF}\mid\lVert\alpha
-\rVert\le\alpha\},\qquad\mathrm{ZX}_\alpha=\{\cdots\}
-$$
+$$\mathrm{WF}_\alpha=\{\alpha\in\mathrm{WF}\mid\lVert\alpha \rVert\le\alpha\},\qquad\mathrm{ZX}_\alpha=\{\cdots\}$$
 
 都是博雷尔集。**证明**（书 p263–264）对 α 归纳：$(\alpha,n)\in B_\alpha$ ⟺ E_α 限制在 {m | (m,n) ∈ E_α}
 上是序型 ≤ α 的良序；归纳步把 $B_\alpha$ 写成
@@ -362,10 +336,7 @@ f(α) 在坐标 Γ(m,n) 的值，只需知道 T(α) 是否包含长度
 
 **定理 3.4（Π₁¹-准秩序性质）** 每个 Π₁¹ 集有 Π₁¹-范数：
 存在 Π₁¹ 关系 P 与 Σ₁¹ 关系 Q 使
-$$
-\alpha,\beta\in A:\quad\varphi(\alpha)\le\varphi(\beta)
-\iff P(\alpha,\beta)\iff Q(\alpha,\beta).
-$$
+$$\alpha,\beta\in A:\quad\varphi(\alpha)\le\varphi(\beta) \iff P(\alpha,\beta)\iff Q(\alpha,\beta).$$
 
 **证明**（书 p268）：φ(α) = $\lVert T(\alpha)\rVert$ 。
 Q(α,β) := 存在保序映射 f: T(α)→T(β)（Σ₁¹：f 是实数，
@@ -380,9 +351,7 @@ A×A 上重合 ⟺ 秩序条件——**范数的 Π₁¹-可定义性**。
 g: U(α)→ω₁ 使 s ⊂ t ⟹ g(s) > g(t)（**降秩函数**）。在
 ω×ω₁ 上定义树 T（h 记录每层 u_n 的秩上界）；对
 $\alpha\in\pi[T]$ ，截面 $T(\alpha)$ 有**最小无穷树枝**
-$$
-g_\alpha(n)=\rho_{U(\alpha)}(u_n)
-$$
+$$g_\alpha(n)=\rho_{U(\alpha)}(u_n)$$
 
 （ρ 最小赋秩函数；其余树枝逐点 ≥ g_α）。令
 $\beta_n(\alpha)=g_\alpha(n)$ 得范数序列 ⟨β_n⟩。

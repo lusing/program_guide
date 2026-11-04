@@ -10,9 +10,7 @@
 > 提升机制**：$j:V\to M$ 固定 $\mathbb P$ 与 $\mathbb B$
 > （它们秩低于 $\kappa$ ），于是 $V$ 上的泛型滤子 $G$
 > 同时是 $M$ -泛型的，且
-> $$
-> j^*(\tau_G)=(j(\tau))_G
-> $$
+> $$j^*(\tau_G)=(j(\tau))_G$$
 >
 > 良定义（与名字选取无关）——$j$ 由此延拓成
 > $j^*:V[G]\to M[G]$ ，九款保持律逐一复验。§2.2 反向出发：
@@ -115,9 +113,7 @@ $p$ 分层的整齐子集）是「**名字分层**」的最小样本——
 与 $M$ 中**等价**——$G$ 自动 $M$ -泛型；(3) 名字解释
 吻合：$\tau^G=(j(\tau))^{G}$ 型的搬运在两个模型中算出同
 一集合。于是定义
-$$
-j^*(\tau_G)=(j(\tau))_G.
-$$
+$$j^*(\tau_G)=(j(\tau))_G.$$
 
 **名字无关性**：若 $p\in G$ 力迫 $\dot\tau=\dot\sigma$ ，
 则 $M\models j(p)\Vdash j(\dot\tau)=j(\dot\sigma)$ ，而
@@ -159,9 +155,7 @@ $V_{j(\dot f)(\kappa')}^M$ 装得下 $j^*$ 提升后的账。
 逆命题（$V[G]$ 可测 ⟹ $V$ 可测）走**理想饱和**：设
 $U\in V[G]$ 是 $\kappa$ 上正规超滤子、$J$ 对偶素理想、
 $\dot J\in V^{\mathbb P}$ 其名字。定义
-$$
-I=\{X\subseteq\kappa\mid\Vdash X\in\dot J\}.
-$$
+$$I=\{X\subseteq\kappa\mid\Vdash X\in\dot J\}.$$
 
 则 $I$ 是含单点的 $\kappa$ -可加理想，且 **$I^+$ 中
 不存在长 $|\mathbb P|^+$ 的模 $I$ 几乎不相交序列**（
@@ -213,11 +207,7 @@ $V[G]$ 的新子集 $X$ ，「$j``\lambda\in j^*(X)$ 」未必
 
 > **定义 2.1（莱维偏序集）** 设 $\kappa$ 不可达。对
 > $p\subseteq\kappa\times\omega\times\kappa$ ：
-> $$
-> p\in\mathrm{Col}(\omega,<\kappa) \iff |p|<\omega\wedge
-> \mathrm{dom}(p)\subseteq\kappa\times\omega\wedge
-> \forall(\alpha,n)\in\mathrm{dom}(p)\,(p(\alpha,n)\in\alpha),
-> $$
+> $$p\in\mathrm{Col}(\omega,<\kappa) \iff |p|<\omega\wedge \mathrm{dom}(p)\subseteq\kappa\times\omega\wedge \forall(\alpha,n)\in\mathrm{dom}(p)\,(p(\alpha,n)\in\alpha),$$
 >
 > $q\le p\iff p\subseteq q$ （反向包含），$\mathbb 1= \emptyset$ 。一般版 $\mathrm{Col}(\mu,<\kappa)$ 把
 > $\omega$ 换成任意正则 $\mu$ （定义 2.2）。
@@ -290,24 +280,16 @@ $\kappa$ -cc 的使用方式（定理 2.2 引引理 I.3.34）无缝
 **(2)** 由引理 2.1 的 $\kappa$ -cc：$\ge\kappa$ 的基数与
 梯度全保（引理 I.3.34 的引用）。**(1)** 的核心是**逐值稠密性**：
 对 $\lambda<\kappa$ 不可数、$\beta<\lambda$ ，令
-$$
-D_\beta=\{p\mid\exists n\,((\lambda,n)\in\mathrm{dom}(p)
-\wedge p(\lambda,n)=\beta)\}.
-$$
+$$D_\beta=\{p\mid\exists n\,((\lambda,n)\in\mathrm{dom}(p) \wedge p(\lambda,n)=\beta)\}.$$
 
 **$D_\beta$ 稠密**（书 p152 的构造，逐字落进机器通道）：
 给定 $q$ ，令
-$$
-n=1+\max\{m\mid\exists\alpha((\alpha,m)\in\mathrm{dom}(q))\},
-\quad p=q\cup\{((\lambda,n),\beta)\}.
-$$
+$$n=1+\max\{m\mid\exists\alpha((\alpha,m)\in\mathrm{dom}(q))\}, \quad p=q\cup\{((\lambda,n),\beta)\}.$$
 
 $n$ 新鲜（大于一切已用槽号）、$p\supseteq q$ 、
 $p(\lambda,n)=\beta<\lambda$ 合法——$p\in D_\beta$ 、
 $p\le q$ 。∎ 泛型相遇后：
-$$
-f_\lambda(n)=\beta\iff\exists p\in G\,(p(\lambda,n)=\beta)
-$$
+$$f_\lambda(n)=\beta\iff\exists p\in G\,(p(\lambda,n)=\beta)$$
 
 良定义且**满**（每个 $\beta$ 的 $D_\beta$ 都被 $G$
 击中）——$\omega\twoheadrightarrow\lambda$ ，$\lambda$

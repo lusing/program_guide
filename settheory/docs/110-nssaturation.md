@@ -97,9 +97,7 @@
 中，$\omega_1$ (=κ) 上存在 $\sigma$ -完全非平凡正规峭壁理想。
 
 **构造**：设 U 是 κ 上的正规超滤子，$j:V\to M=\mathrm{ult} (V,U)$ 。在 $V[G]$ 中定义
-$$
-X\in I\iff\exists Y\in U\ (X\cap Y=\varnothing)
-$$
+$$X\in I\iff\exists Y\in U\ (X\cap Y=\varnothing)$$
 
 ——I 是 U 的对偶理想的残余（「与某 U-大集无交」）。
 
@@ -114,9 +112,7 @@ $\mathbb P$ 的 κ-链条件，取 α<κ 使 $1\Vdash\dot T=\dot T_\alpha$ —�
 **$\sigma$ -完全**（书 p221–222）：设 $\dot S_n$ （n<ω）是
 I 中集合的名字列。对每个 n 取名字 $\dot X_n\in U$ 见证
 $\dot S_n\cap\dot X_n=\varnothing$ 。固定 n，令
-$$
-D_n=\{p\in\mathbb P\mid\exists X\ (p\Vdash\dot X_n=X)\},
-$$
+$$D_n=\{p\in\mathbb P\mid\exists X\ (p\Vdash\dot X_n=X)\},$$
 
 $A_n\subseteq D_n$ 极大反链（$|A_n|<\kappa$ ）。取不可达
 $\mu<\kappa$ 使 $A_n\subseteq\mathrm{Col}(\omega,<\mu)$ ；
@@ -129,10 +125,7 @@ $X_n=\bigcap(X_p\mid p\in A_n)\in U$ （U 的 κ-完全性吞下
 $\langle\dot T(\alpha)\mid\alpha<\kappa\rangle$ 的对角和
 （$\dot T(\alpha)\subseteq\alpha$ ）。对每个 α 取
 $\dot X_\alpha\in U$ 见证 $\dot T(\alpha)\cap\dot X_\alpha= \varnothing$ ；令
-$$
-Y=\triangle_{\alpha<\kappa}\dot X_\alpha=\{\xi\mid\forall
-\alpha<\xi(\xi\in\dot X_\alpha)\}\in U\quad(\text{U 正规}).
-$$
+$$Y=\triangle_{\alpha<\kappa}\dot X_\alpha=\{\xi\mid\forall \alpha<\xi(\xi\in\dot X_\alpha)\}\in U\quad(\text{U 正规}).$$
 
 若某条件迫使 $\xi\in\dot T\cap Y$ ，取 β 使 $\xi\in\dot T(\beta)$
 （对角和的定义）——由 $\xi\in Y$ 得 $\xi\in\dot X_\beta$ ，
@@ -141,40 +134,25 @@ $1\Vdash\dot T\cap Y=\varnothing$ ，$\dot T\in I$ 。
 
 **峭壁性**（书 p222–223，本证明的技术高潮）：书先证一个稍弱
 （但够用）的结论——$V[G]$ 中
-$$
-S_{\omega_1}(I)\cap\mathrm{NS}=\{\dot T\cap S\mid \dot T\in
-I, S\ \text{荟萃}\}\ \text{生成的理想是峭壁的}.
-$$
+$$S_{\omega_1}(I)\cap\mathrm{NS}=\{\dot T\cap S\mid \dot T\in I, S\ \text{荟萃}\}\ \text{生成的理想是峭壁的}.$$
 
 做法：在 $V[G]$ 中找一个具体的 $S$ ，使任何含 S 的
 $I^+$ -泛型超滤子 H 都给出**有秩**超幂。关键装置是
 **乘积分解**：对 ν<κ 令
-$$
-\mathbb P_{<\nu}=\{p\mid\mathrm{dom}(p)\subseteq\nu\times
-\omega\},\qquad\mathbb P_{\ge\nu}=\{p\mid\mathrm{dom}(p)
-\subseteq[\nu,\kappa)\times\omega\},
-$$
+$$\mathbb P_{<\nu}=\{p\mid\mathrm{dom}(p)\subseteq\nu\times \omega\},\qquad\mathbb P_{\ge\nu}=\{p\mid\mathrm{dom}(p) \subseteq[\nu,\kappa)\times\omega\},$$
 
 则 $\mathbb P\cong\mathbb P_{<\nu}\times\mathbb P_{\ge\nu}$ 。
 在超幂 M 中看 $j(\mathbb P)$ ：由 $j\upharpoonright\kappa= \mathrm{id}$ ，
-$$
-j(\mathbb P)=\mathbb P\times\mathbb Q,\qquad\mathbb Q=
-j(\mathbb P_{\ge\kappa}),
-$$
+$$j(\mathbb P)=\mathbb P\times\mathbb Q,\qquad\mathbb Q= j(\mathbb P_{\ge\kappa}),$$
 
 且 $\mathbb Q$ 的每个条件 g 由 V 中函数 $\langle g(\alpha) \mid\alpha<\kappa\rangle$ （$g(\alpha)\in\mathbb P$ ）表示。
 令 K 为 $V[G]$ 上的 $\mathbb Q$ -泛型滤子；$G\times K$
 是 V 上 $\mathbb P\times\mathbb Q$ -泛型。扩张嵌入
-$$
-j^*:V[G]\to M[G\times K],\qquad j^*(\dot\tau/G)=(j(\dot\tau))
-/(G\times K)
-$$
+$$j^*:V[G]\to M[G\times K],\qquad j^*(\dot\tau/G)=(j(\dot\tau)) /(G\times K)$$
 
 （良定义因为 $p\in G\to j(p)\in G\times K$ ）。在
 $V[G\times K]$ 中定义 $\kappa$ 上的超滤子
-$$
-H=\{X\subseteq\kappa\mid\kappa\in j^*(X)\}.
-$$
+$$H=\{X\subseteq\kappa\mid\kappa\in j^*(X)\}.$$
 
 两步收口：
 
@@ -325,10 +303,7 @@ $\omega_1=\bigcup W$ ，则 $\mathbb P_W$ 恰当；且对任意极大
 **定义 2.29** $q$ 是 $(M,\mathbb P)$ -**半泛型条件**
 （semigeneric）⟺ 对每个序数名字 $\dot\alpha\in M$ （
 $1\Vdash\dot\alpha\le\omega_1$ ）：
-$$
-\forall r\le q\ \exists s\le r\ \exists\alpha\in M\
-(s\Vdash\dot\alpha=\alpha).
-$$
+$$\forall r\le q\ \exists s\le r\ \exists\alpha\in M\ (s\Vdash\dot\alpha=\alpha).$$
 
 与 107 章定义 2.21 对照：泛型条件要求对 M 中**一切**极大反链
 准稠密，半泛型只要求对**序数名字**能逐点命中——「只保证序数
@@ -480,21 +455,14 @@ $S\subseteq[\lambda]^\omega$ **投影荟萃**（projective
 stationary）⟺ 对 $[\lambda]^\omega$ 的每个无界闭集 C，
 $(S\cap C)\upharpoonright\omega_1=\{N\cap\omega_1\mid N\in S\cap C\}$ 包含 $\omega_1$ 的无界闭集。等价：对每个荟萃
 $T\subseteq\omega_1$ ，
-$$
-S_T=\{N\in S\mid N\cap\omega_1\in T\}\ \text{在}\
-[\lambda]^\omega\ \text{中荟萃}.
-$$
+$$S_T=\{N\in S\mid N\cap\omega_1\in T\}\ \text{在}\ [\lambda]^\omega\ \text{中荟萃}.$$
 
 ——**每个楼下的荟萃集都被楼上的切片反射**。包含关系（书
 p240）：每个 club 投影荟萃；投影荟萃 ⟹ 荟萃；反向皆不必然。
 
 **例 2.6** W 是 $\omega_1$ 上模 NS 的荟萃集极大反链族，
 $\lambda>(2^{\omega_1})$ 正则。令
-$$
-S(W)=\{N\in[\lambda]^\omega\mid N\prec(H_\lambda,\dots)
-\wedge\exists A\in W\ \forall N'\in N(N'\cap\omega_1\subseteq
-A)\}.
-$$
+$$S(W)=\{N\in[\lambda]^\omega\mid N\prec(H_\lambda,\dots) \wedge\exists A\in W\ \forall N'\in N(N'\cap\omega_1\subseteq A)\}.$$
 
 则 S(W) 投影荟萃。——证明（书 p241）：对荟萃 T 取 $A\in W$
 使 $A\cap T$ 荟萃；集合 $D=\{N\mid\sup(N\cap\omega_1)\in A\cap T\}$ 型的 club 与 Skolem-闭包论证合龙。**注记**（书
@@ -523,11 +491,7 @@ $[\lambda]^\omega$ 的 club 单一列举，$T=\{\beta\mid f(\beta)\in S\}$ 荟�
 **定理 2.32（冯–Jech）** MM ⟹ PSRP。
 
 **证明骨架**（书 p242–243）：设 S 投影荟萃。取力迫
-$$
-\mathbb P=\{\langle N_\beta\mid\beta\le\alpha\rangle\in S
-\mid\alpha<\omega_1\ \text{的强 E-序列}\},\qquad p\le q\iff
-q=p\upharpoonright\mathrm{dom}(p).
-$$
+$$\mathbb P=\{\langle N_\beta\mid\beta\le\alpha\rangle\in S \mid\alpha<\omega_1\ \text{的强 E-序列}\},\qquad p\le q\iff q=p\upharpoonright\mathrm{dom}(p).$$
 
 稠密集：$D_\alpha=\{p\mid\alpha\in\mathrm{dom}(p)\}$ 与
 $E_c=\{p\mid\exists\alpha\in\mathrm{dom}(p)\ (c\in p(\alpha)) \}$ （c<λ 任意）。
@@ -561,9 +525,7 @@ $E_c=\{p\mid\exists\alpha\in\mathrm{dom}(p)\ (c\in p(\alpha)) \}$ （c<λ 任意
 **(1) $\mathrm{NS}_{\omega_1}$ 饱和**。设 W 是极大反链。
 $S(W)$ （例 2.6）投影荟萃，PSRP 给 E-序列
 $\langle N_\alpha\rangle\subseteq S(W)$ 。令
-$$
-C=\{\alpha<\omega_1\mid\alpha=N_\alpha\cap\omega_1\}
-$$
+$$C=\{\alpha<\omega_1\mid\alpha=N_\alpha\cap\omega_1\}$$
 
 （club——连续性）。令 $X=\bigcup_\alpha N_\alpha$ （
 $|X|=\aleph_1$ ）。**验证** $W\subseteq X$ ：反设
@@ -585,10 +547,7 @@ $E=\{\alpha<\lambda\mid\mathrm{cf}(\alpha)=\omega\}$ 的
 荟萃分划 $\langle E_\alpha\rangle$ 与 $\omega_1$ 的
 极大几乎不交荟萃分划 $\langle T_\alpha\rangle$ ；对每个
 严格单调 $f:\omega_1\to\lambda$
-$$
-S_f=\{N\mid\forall\alpha<N\cap\omega_1\ (N\cap\omega_1
-\in T_\alpha\to\sup(N\cap\lambda)\in E_{f(\alpha)})\}
-$$
+$$S_f=\{N\mid\forall\alpha<N\cap\omega_1\ (N\cap\omega_1 \in T_\alpha\to\sup(N\cap\lambda)\in E_{f(\alpha)})\}$$
 
 投影荟萃；PSRP 序列给
 $\{\sup(N_\alpha\cap\lambda)\}\subseteq\bigcup f(\alpha)$
@@ -616,11 +575,7 @@ $S\cap[M]^\omega$ 在 $[M]^\omega$ 中荟萃——**荟萃性
 正则 $\theta>\kappa$ ，存在 $\kappa$ 的可数同质子模型的
 长度 $\omega_1$ 的单调递增连续 E-序列
 $\langle N_\alpha\rangle$ ：
-$$
-M=\bigcup N_\alpha\prec(H_\theta,\dots)\wedge\forall
-\beta\ (N_\beta\cap\kappa\in S\leftrightarrow
-N_\beta\cap\kappa\in S\cap M)
-$$
+$$M=\bigcup N_\alpha\prec(H_\theta,\dots)\wedge\forall \beta\ (N_\beta\cap\kappa\in S\leftrightarrow N_\beta\cap\kappa\in S\cap M)$$
 
 型（精确形态见书 p247 的五条款）。——SRP 比 PSRP「更
 判定化」：序列直接**判** S（在 M 的范围内）。

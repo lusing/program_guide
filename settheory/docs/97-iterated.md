@@ -33,17 +33,9 @@ $\kappa_0\in M_0$ 可测、$U_0\in M_0$ 非平凡 $\kappa_0$ -完全）
 
 直接极限的构造（书页 68–70）：令
 
-$$
-A=\{(\beta,a) : \beta<\alpha,\ a\in M_\beta\},\qquad
-(\beta,a)\equiv(\gamma,b)\iff\exists\delta\!>\!\beta,\gamma\
-(j_{\beta,\delta}(a)=j_{\gamma,\delta}(b)),
-$$
+$$A=\{(\beta,a) : \beta<\alpha,\ a\in M_\beta\},\qquad (\beta,a)\equiv(\gamma,b)\iff\exists\delta\!>\!\beta,\gamma\ (j_{\beta,\delta}(a)=j_{\gamma,\delta}(b)),$$
 
-$$
-[(\beta,a)]\in^*[(
-\gamma,b)]\iff\exists\delta\!
->\!\beta,\gamma\ (j_{\beta,\delta}(a)\in j_{\gamma,\delta}(b)).
-$$
+$$[(\beta,a)]\in^*[( \gamma,b)]\iff\exists\delta\! >\!\beta,\gamma\ (j_{\beta,\delta}(a)\in j_{\gamma,\delta}(b)).$$
 
 $N_\alpha=A/\equiv$ ；若 $\in^*$ 良基则传递化为 $M_\alpha$ ，
 $j_{\beta,\alpha}=\pi_\alpha\circ J_\beta$ ，且
@@ -77,11 +69,7 @@ $j_{\beta,\alpha}$ 固定（它们早已在某个 $M_\beta$ 的「已越过
 > **引理 1.37（分解引理）** 设 $\alpha$ 极限、
 > $\mathrm{ult}^{(\alpha)}(M_0,U_0)$ 有定义。则对任意序数
 > $\varepsilon$ ：
-> $$
-> \mathrm{ult}^{(\varepsilon)}\big(\mathrm{ult}^{(\alpha)}
-> (M_0,U_0),\ U_\alpha\big)\ \cong\
-> \mathrm{ult}^{(\alpha+\varepsilon)}(M_0,U_0),
-> $$
+> $$\mathrm{ult}^{(\varepsilon)}\big(\mathrm{ult}^{(\alpha)} (M_0,U_0),\ U_\alpha\big)\ \cong\ \mathrm{ult}^{(\alpha+\varepsilon)}(M_0,U_0),$$
 >
 > 且典型嵌入合成一致（交换图）。
 
@@ -159,9 +147,7 @@ $\alpha_0$ 的序数成秩序集，与 $\varsigma$ 最小性矛盾。∎
 > $\kappa_\lambda=\sup_{\beta<\lambda}\kappa_\beta$ ）；且
 > $X\in U_\alpha$ （$X\subseteq\kappa_\alpha$ 、
 > $X\in M_{\alpha+1}$ ）时对一切 $\beta>\alpha$ ：
-> $$
-> X=\kappa_\alpha\cap j_{\alpha,\beta}(X).
-> $$
+> $$X=\kappa_\alpha\cap j_{\alpha,\beta}(X).$$
 > ∎
 >
 
@@ -174,10 +160,7 @@ $\alpha_0$ 的序数成秩序集，与 $\varsigma$ 最小性矛盾。∎
 
 > **引理 1.38** $U$ 正规、$\alpha>0$ 极限。则对每个
 > $X\in M_\alpha$ 、$X\subseteq\kappa_\alpha$ ：
-> $$
-> X\in U_\alpha\iff\{\xi<\alpha : \kappa_\xi\in X\}
-> \text{ 在 }\alpha\text{ 中无界}.
-> $$
+> $$X\in U_\alpha\iff\{\xi<\alpha : \kappa_\xi\in X\} \text{ 在 }\alpha\text{ 中无界}.$$
 
 **证明**（⇐ 方向）。设 $X=j_{\beta,\alpha}(Y)$ 、$Y\in U_\beta$ 。对 $\beta\le\xi<\alpha$ ：令 $Z=j_{\beta,\xi}(Y)\in U_\xi\subseteq M_\xi$ ；$U_\xi$ 在 $M_\xi$ 中正规，故
 $\kappa_\xi\in j_{\xi,\xi+1}(Z)$ ；而
@@ -191,17 +174,10 @@ $L[U]$ 分析里「迭代即沿临界点序列走」的根据。
 
 把 $\alpha$ 步迭代超幂表示成**一个**超幂。先看有限步。记
 
-$$
-\forall^*\!\alpha\ \varphi(\alpha)\ :\iff\
-\{\alpha<\kappa : \varphi(\alpha)\}\in U.
-$$
+$$\forall^*\!\alpha\ \varphi(\alpha)\ :\iff\ \{\alpha<\kappa : \varphi(\alpha)\}\in U.$$
 
 > **定义** $U^1=U$ ；
-> $$
-> X\in U^{n+1}\iff\forall^*\!\alpha\big(X(\alpha)\in U^n\big),
-> \qquad X(\alpha)=\{(\alpha_1,\ldots,\alpha_n) :
-> (\alpha,\alpha_1,\ldots,\alpha_n)\in X\}.
-> $$
+> $$X\in U^{n+1}\iff\forall^*\!\alpha\big(X(\alpha)\in U^n\big), \qquad X(\alpha)=\{(\alpha_1,\ldots,\alpha_n) : (\alpha,\alpha_1,\ldots,\alpha_n)\in X\}.$$
 
 > **断言一** $U^n$ 是 $\kappa^n$ 上非平凡 $\kappa$ -完全超
 > 滤子（$n=2$ 直接验证：向上封闭用「大集的每片大」、二分性用
@@ -255,9 +231,7 @@ $E\subseteq F$ 时柱扩张 $B_h^{E,F}$ 保超滤子性（引理 1.42，
 $Z=B_h^{E,\alpha}(X)$ 。全体有限支撑集构成布尔代数
 $\mathcal B_\alpha$ ；在其上定义
 
-$$
-Z= B_h^{E,\alpha}(X)\in U_\alpha\ :\iff\ X\in U_E
-$$
+$$Z= B_h^{E,\alpha}(X)\in U_\alpha\ :\iff\ X\in U_E$$
 
 （引理 1.42 保证与支撑选取无关）。函数侧同样只看有限支撑函数
 （$f(s)=f(t)$ 只要 $s\!\restriction\! E=t\!\restriction\! E$ ），
@@ -270,11 +244,7 @@ $$
 > 相容。（练习——全部是 97.5 论证的有限支撑版。）∎
 
 > **引理 1.44（迭代超幂表示）** 对任意无穷序数 $\alpha$ ：
-> $$
-> \mathrm{ult}(V,U_\alpha)\ \cong\
-> \mathrm{ult}^{(\alpha)}(V,U),\qquad
-> j_{0,\alpha}=\pi_\alpha\circ e_\alpha\circ j_\alpha.
-> $$
+> $$\mathrm{ult}(V,U_\alpha)\ \cong\ \mathrm{ult}^{(\alpha)}(V,U),\qquad j_{0,\alpha}=\pi_\alpha\circ e_\alpha\circ j_\alpha.$$
 
 **证明**骨架与 1.40 相同：$\kappa^{\alpha+1}$ 上的有限支撑函数
 按尾坐标切片成 $\mathrm{ult}(V,U_\alpha)$ 中的函数，归纳假设

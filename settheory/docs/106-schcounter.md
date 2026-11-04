@@ -10,11 +10,7 @@
 > 出 $\aleph_\omega$ 处 SCH 失败的模型（从超紧出发）；武丁把
 > 大基数假设减弱到**强基数**；Gitik 进一步改善——书的定理
 > 2.12（**Gitik-Magidor-Woodin**）呈现综合结果：
-> $$
-> \kappa\ \kappa^{++}\text{-强} \Longrightarrow \exists\mathbb P:
-> V[G]\models\big(\forall\mu<\aleph_\omega\,(2^\mu=\mu^+)\big)
-> \wedge 2^{\aleph_\omega}=\aleph_{\omega+2}.
-> $$
+> $$\kappa\ \kappa^{++}\text{-强} \Longrightarrow \exists\mathbb P: V[G]\models\big(\forall\mu<\aleph_\omega\,(2^\mu=\mu^+)\big) \wedge 2^{\aleph_\omega}=\aleph_{\omega+2}.$$
 >
 > 即 **SCH 第一次、且只在 $\aleph_\omega$ 处失败**。证明的
 > 工程量是全书之最：从 $\kappa^{++}$ -强基数导出的张子 E 给出

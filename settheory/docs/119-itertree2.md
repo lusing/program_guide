@@ -37,9 +37,7 @@
 临界点是 $\delta$ ，并且 $\eta<j(\delta)$ 。
 模型包含所需层级，即 $V_\eta\subset M$ 。
 最关键的是吻合等式
-$$
-j(A)\cap V_\eta=A\cap V_\eta.
-$$
+$$j(A)\cap V_\eta=A\cap V_\eta.$$
 
 定理 3.50 把由一般嵌入给出的见证改写成由张子给出的见证。
 在 $\kappa$ 为强极限基数、$A\subset V_\kappa$ 的假设下，可以在 $V_\kappa$ 内找到这样的张子 $E$ 。
@@ -64,9 +62,7 @@ $$
 
 定理 3.51 给出武丁基数的等价刻画。
 对固定的 $\beta$ 和 $z\in V_{\kappa+\beta}^{<\omega}$ ，定义
-$$
-X(\beta,z)=\{\delta<\kappa:\delta\text{ 保持 }z\text{ 在 }(\kappa+\beta)\text{ 上的型}\}.
-$$
+$$X(\beta,z)=\{\delta<\kappa:\delta\text{ 保持 }z\text{ 在 }(\kappa+\beta)\text{ 上的型}\}.$$
 
 第一个方向说，若 $\kappa$ 是武丁基数，则每个这样的 $X(\beta,z)$ 都在 $\kappa$ 中无界。
 最弱的反向假设只说：对每个 $z\in V_{\kappa+1}^{<\omega}$ ，集合 $X(1,z)$ 非空。
@@ -84,11 +80,7 @@ $$
 第二，$E$ 的强度至少达到 $\alpha$ ，也就是 $V_\alpha\subset\operatorname{Ult}(V,E)$ 。
 第三，$\alpha<i_E(\delta)$ 。
 第四，原参数与像参数在相应高度具有相同类型：
-$$
-\operatorname{tp}^{\alpha}_{(\kappa,\beta)}(z)
-=
-\left(\operatorname{tp}^{\alpha}_{(i_E(\kappa),i_E(\beta))}\right)^{\operatorname{Ult}(V,E)}(i_E(z)).
-$$
+$$\operatorname{tp}^{\alpha}_{(\kappa,\beta)}(z) = \left(\operatorname{tp}^{\alpha}_{(i_E(\kappa),i_E(\beta))}\right)^{\operatorname{Ult}(V,E)}(i_E(z)).$$
 
 临界点决定哪些小对象不动。
 强度决定超幂能看到多少集合。
@@ -176,18 +168,12 @@ $\alpha<i_E(\delta)$ 保证新临界点把所需高度推到上方。
 设 $(T,\langle U_p:p\in\mathbb N^{<\omega}\rangle)$ 是一棵 $\kappa^+$ -整齐苏斯林树。
 引理 3.88 给出四个序数 $(\nu,\xi_0,\xi_1,\rho)$ 。
 它们满足
-$$
-\nu<\xi_0<\xi_1<\rho.
-$$
+$$\nu<\xi_0<\xi_1<\rho.$$
 
 四个参数都是梯度严格大于 $\kappa$ 的强极限基数。
 树本身满足 $T\in V_\nu$ 。
 最关键的类型等式是
-$$
-\operatorname{tp}^{\nu}_{(\rho,0)}(\langle\xi_0\rangle)
-=
-\operatorname{tp}^{\nu}_{(\rho,0)}(\langle\xi_1\rangle).
-$$
+$$\operatorname{tp}^{\nu}_{(\rho,0)}(\langle\xi_0\rangle) = \operatorname{tp}^{\nu}_{(\rho,0)}(\langle\xi_1\rangle).$$
 
 证明使用类型数量的上界。
 在足够多的强极限基数中，不可能每个候选都占有不同类型。
@@ -199,11 +185,7 @@ $$
 引理 3.89 首先指出，对 $V_\kappa$ 中的相关张子，四元组中的每个序数都是 $i_E$ 的不动点。
 这使嵌入不会破坏刚选好的无差别环境。
 接着，对 $z\in V_\nu^{<\omega}$ 和 $\alpha<\kappa$ ，有
-$$
-\operatorname{tp}^{\alpha}_{(\kappa,\xi_0)}(z)
-=
-\operatorname{tp}^{\alpha}_{(\kappa,\xi_1)}(z).
-$$
+$$\operatorname{tp}^{\alpha}_{(\kappa,\xi_0)}(z) = \operatorname{tp}^{\alpha}_{(\kappa,\xi_1)}(z).$$
 
 证明把“某序列属于该类型”的语句交给 `LeiXing_n` 表达。
 再利用引理 3.88 中关于 $\xi_0,\xi_1$ 的类型等式完成替换。
@@ -227,13 +209,7 @@ $$
 
 构造不只是让链条无限延长，还刻意在 Even 方向制造下降。
 关键不等式为
-$$
-\beta_{k+1}=\xi^*
-<
-i_E^{M_{2k}}(\beta_k)
-=
-j_{2k,2k+2}(\beta_k).
-$$
+$$\beta_{k+1}=\xi^* < i_E^{M_{2k}}(\beta_k) = j_{2k,2k+2}(\beta_k).$$
 
 这里左边是下一阶段选出的参数，右边是旧参数沿 Even 边嵌入后的像。
 把这一不等式运输到 Even 枝的直接极限后，后一阶段的像严格小于前一阶段的像。
@@ -294,14 +270,10 @@ $$
 策略选择一个目标 $p$ ，新节点 $M_{k+1}$ 就记录父节点 $p$ 。
 合法目标必须满足 $p\le k$ ，并通过本章给定的有限吻合表。
 吻合表只允许 $p=c(k)$ ，其中
-$$
-c(0)=0,\qquad c(k)=k-1\quad(k>0).
-$$
+$$c(0)=0,\qquad c(k)=k-1\quad(k>0).$$
 
 因此六个目标依次是
-$$
-[0,0,1,2,3,4].
-$$
+$$[0,0,1,2,3,4].$$
 
 这正好恢复第 118 章的交错链父表。
 第一个张子作用于根，第二个也作用于根，第三个作用于 $M_1$ ，依此类推。
@@ -327,9 +299,7 @@ Agda 因而由结构递归保证总函数性，六步等式则给出具体终止
 只测试一个好策略和一个坏策略，不能排除其他六步表意外完成。
 所以 Julia 和 Python 各自枚举每个位置取 $0,\ldots,6$ 的所有策略表。
 表的总数是
-$$
-7^6=117649.
-$$
+$$7^6=117649.$$
 
 在每个位置，吻合表只允许唯一目标。
 因此完整运行到 `done` 的表必须逐项等于 $(0,0,1,2,3,4)$ 。
