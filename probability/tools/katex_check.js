@@ -1,7 +1,8 @@
 // 用 KaTeX 逐段渲染 docs/*.md 与 README.md 中的全部数学公式，
 // throwOnError 抓 TeX 语法问题。用法：bun katex_check.js <root>
 // 依赖仅在临时目录安装；本脚本不进仓库常规流程。
-const { readdirSync, readFileSync, statSync } = require("fs");
+// 展示公式为单行 $$…$$（Codeberg 不认多行 $$ 块）。
+const { readdirSync, readFileSync, statSync, existsSync } = require("fs");
 const path = require("path");
 const katex = require("katex");
 
@@ -24,42 +25,36 @@ function stripCode(text) {
   return text;
 }
 
+const DISPLAY_ONE_LINE = /^\s*\$\$(.+)\$\$\s*$/;
+
 const errors = [];
 let nInline = 0, nDisplay = 0;
 
 for (const file of walk(path.join(root, "docs"))) checkFile(file);
-checkFile(path.join(root, "README.md"));
+const readme = path.join(root, "README.md");
+if (existsSync(readme)) checkFile(readme);
 
 function checkFile(file) {
-  const text = stripCode(readFileSync(file, "utf8"));
+  const text = stripCode(readFileSync(file, "utf8").replace(/\r\n/g, "\n"));
   const lines = text.split("\n");
+  const inDisplay = new Array(lines.length).fill(false);
 
-  // 展示公式：$$ 独占行
+  // 展示公式：$$…$$ 单行（Codeberg 不解析多行 $$ 块）
   for (let i = 0; i < lines.length; i++) {
-    if (/^\$\$\s*$/.test(lines[i])) {
-      const body = [];
-      let j = i + 1;
-      while (j < lines.length && !/^\$\$\s*$/.test(lines[j])) {
-        body.push(lines[j]);
-        j++;
-      }
-      if (j >= lines.length) {
-        errors.push(`${file}:${i + 1}: unclosed display block`);
-        break;
-      }
+    const m = lines[i].match(DISPLAY_ONE_LINE);
+    if (m) {
+      inDisplay[i] = true;
       nDisplay++;
-      render(file, i + 1, body.join("\n"), true);
-      i = j;
+      render(file, i + 1, m[1], true);
     } else if (lines[i].includes("$$")) {
-      errors.push(`${file}:${i + 1}: inline $$ outside fence: ${lines[i].slice(0, 60)}`);
+      errors.push(`${file}:${i + 1}: $$ not single-line display: ${lines[i].slice(0, 60)}`);
     }
   }
 
-  // 行内公式（逐行，跨行对仅 1 处且已合并）
+  // 行内公式
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    if (/^\$\$/.test(line)) continue;
-    for (const m of line.matchAll(/(?<!\\)\$([^$\n]+)(?<!\\)\$/g)) {
+    if (inDisplay[i]) continue;
+    for (const m of lines[i].matchAll(/(?<!\\)\$([^$\n]+)(?<!\\)\$/g)) {
       nInline++;
       render(file, i + 1, m[1], false);
     }
@@ -75,7 +70,7 @@ function render(file, line, tex, display) {
       output: "html",
     });
   } catch (e) {
-    errors.push(`${file}:${line}: ${e.message.split("\n")[0]} :: ${tex.slice(0, 80).replace(/\n/g, " ")}`);
+    errors.push(`${file}:${line}: ${e.message.split("\n")[0]} :: ${tex.slice(0, 100).replace(/\n/g, " ")}`);
   }
 }
 

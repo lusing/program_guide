@@ -4,9 +4,7 @@
 
 第 10 章处理一元随机变量变换时，核心是 CDF 法或导数公式。一维公式
 
-$$
-f_Y(y)=f_X(g(y))|g'(y)|,\qquad y=T(x),\ x=g(y),
-$$
+$$f_Y(y)=f_X(g(y))|g'(y)|,\qquad y=T(x),\ x=g(y),$$
 
 中的 $|g'(y)|$ 表示微小区间长度的伸缩倍数。多维随机向量变换时，区间长度换成区域面积或体积，线性伸缩倍数换成 **Jacobian 行列式的绝对值**。
 
@@ -18,23 +16,15 @@ $$
 
 则
 
-$$
-\boxed{
-f_Y(y)=f_X(G(y))\left|\det DG(y)\right|.
-}
-$$
+$$\boxed{ f_Y(y)=f_X(G(y))\left|\det DG(y)\right|. }$$
 
 也可以写成正向形式：
 
-$$
-f_Y(T(x))=f_X(x)\left|\det DT(x)\right|^{-1}.
-$$
+$$f_Y(T(x))=f_X(x)\left|\det DT(x)\right|^{-1}.$$
 
 边界和零测集不影响密度，可以忽略。若变换不是一一对应，就要把所有原像分区的贡献相加：
 
-$$
-f_Y(y)=\sum_{x:T(x)=y}f_X(x)\left|\det DT(x)\right|^{-1}.
-$$
+$$f_Y(y)=\sum_{x:T(x)=y}f_X(x)\left|\det DT(x)\right|^{-1}.$$
 
 这是多元变量变换中最重要的安全规则：**一一映射用一个分支，多对一映射要枚举所有分支。**
 
@@ -42,33 +32,23 @@ $$
 
 对线性变换 $y=Ax$ ，Jacobian 矩阵就是常数矩阵 $A$ 。单位正方形经
 
-$$
-A=\begin{pmatrix}2&1\\1&3\end{pmatrix}
-$$
+$$A=\begin{pmatrix}2&1\\1&3\end{pmatrix}$$
 
 映为平行四边形，其面积为
 
-$$
-|\det A|=|2\cdot3-1\cdot1|=5.
-$$
+$$|\det A|=|2\cdot3-1\cdot1|=5.$$
 
 若连续做两个线性变换 $A$ 与 $B$ ，则总面积放大率是乘积：
 
-$$
-\det(AB)=\det(A)\det(B).
-$$
+$$\det(AB)=\det(A)\det(B).$$
 
 这正是多元链式法则的代数核心：
 
-$$
-D(G\circ H)(z)=DG(H(z))DH(z),
-$$
+$$D(G\circ H)(z)=DG(H(z))DH(z),$$
 
 所以
 
-$$
-\det D(G\circ H)(z)=\det DG(H(z))\det DH(z).
-$$
+$$\det D(G\circ H)(z)=\det DG(H(z))\det DH(z).$$
 
 `examples/lean/Probability/Ch18MultivariateTransformations.lean` 在有理数上直接验证乘法恒等式：
 
@@ -103,40 +83,23 @@ check_det :-
 
 令
 
-$$
-U=X+Y,\qquad W=X.
-$$
+$$U=X+Y,\qquad W=X.$$
 
 逆映射为
 
-$$
-X=W,\qquad Y=U-W.
-$$
+$$X=W,\qquad Y=U-W.$$
 
 Jacobian 矩阵为
 
-$$
-\frac{\partial(X,Y)}{\partial(U,W)}
-=
-\begin{pmatrix}
-0&1\\
-1&-1
-\end{pmatrix},
-\qquad
-\left|\det\right|=1.
-$$
+$$\frac{\partial(X,Y)}{\partial(U,W)} = \begin{pmatrix} 0&1\\ 1&-1 \end{pmatrix}, \qquad \left|\det\right|=1.$$
 
 因此
 
-$$
-f_{U,W}(u,w)=f_{X,Y}(w,u-w),
-$$
+$$f_{U,W}(u,w)=f_{X,Y}(w,u-w),$$
 
 从而得到熟悉的卷积公式
 
-$$
-f_{X+Y}(u)=\int_{-\infty}^{\infty}f_{X,Y}(w,u-w)\,dw.
-$$
+$$f_{X+Y}(u)=\int_{-\infty}^{\infty}f_{X,Y}(w,u-w)\,dw.$$
 
 独立时就是 $f_X(w)f_Y(u-w)$ 。这说明第 16 章的连续卷积不是孤立公式，而是辅助变量变换的边际化结果。
 
@@ -144,96 +107,57 @@ $$
 
 令
 
-$$
-U=XY,\qquad W=X.
-$$
+$$U=XY,\qquad W=X.$$
 
 当 $W\ne0$ 时，
 
-$$
-X=W,\qquad Y=U/W.
-$$
+$$X=W,\qquad Y=U/W.$$
 
 Jacobian 行列式为
 
-$$
-\det
-\begin{pmatrix}
-0&1\\
-1/W&-U/W^2
-\end{pmatrix}
-=-\frac1W.
-$$
+$$\det \begin{pmatrix} 0&1\\ 1/W&-U/W^2 \end{pmatrix} =-\frac1W.$$
 
 故
 
-$$
-f_{U,W}(u,w)=f_{X,Y}(w,u/w)\frac1{|w|},
-$$
+$$f_{U,W}(u,w)=f_{X,Y}(w,u/w)\frac1{|w|},$$
 
 边际密度为
 
-$$
-f_{XY}(u)=\int\frac1{|w|}f_{X,Y}(w,u/w)\,dw.
-$$
+$$f_{XY}(u)=\int\frac1{|w|}f_{X,Y}(w,u/w)\,dw.$$
 
 若 $X,Y$ 独立且都在 $(0,1)$ 上均匀，则 $0<u<1$ 、$u<w<1$ ，所以
 
-$$
-f_{XY}(u)=\int_u^1\frac{dw}{w}=-\log u.
-$$
+$$f_{XY}(u)=\int_u^1\frac{dw}{w}=-\log u.$$
 
 其归一化为
 
-$$
-\int_0^1-\log u\,du=1.
-$$
+$$\int_0^1-\log u\,du=1.$$
 
 ### 18.3.3 商变换
 
 令
 
-$$
-U=X/Y,\qquad W=Y.
-$$
+$$U=X/Y,\qquad W=Y.$$
 
 逆映射为
 
-$$
-X=UW,\qquad Y=W.
-$$
+$$X=UW,\qquad Y=W.$$
 
 Jacobian 矩阵为
 
-$$
-\begin{pmatrix}
-W&U\\0&1
-\end{pmatrix},
-\qquad \det=W.
-$$
+$$\begin{pmatrix} W&U\\0&1 \end{pmatrix}, \qquad \det=W.$$
 
 若 $X,Y>0$ ，绝对值就是 $w$ ，于是
 
-$$
-f_{X/Y}(u)=\int_0^\infty w f_{X,Y}(uw,w)\,dw.
-$$
+$$f_{X/Y}(u)=\int_0^\infty w f_{X,Y}(uw,w)\,dw.$$
 
 若 $X,Y$ 独立，分别服从速率 $\lambda,\mu$ 的指数分布，则
 
-$$
-\begin{aligned}
-f_Z(z)
-&=\int_0^\infty w\,\lambda e^{-\lambda zw}\mu e^{-\mu w}\,dw\\
-&=\lambda\mu\int_0^\infty w e^{-(\mu+\lambda z)w}\,dw\\
-&=\frac{\lambda\mu}{(\mu+\lambda z)^2},\qquad z>0.
-\end{aligned}
-$$
+$$\begin{aligned} f_Z(z) &=\int_0^\infty w\,\lambda e^{-\lambda zw}\mu e^{-\mu w}\,dw\\ &=\lambda\mu\int_0^\infty w e^{-(\mu+\lambda z)w}\,dw\\ &=\frac{\lambda\mu}{(\mu+\lambda z)^2},\qquad z>0. \end{aligned}$$
 
 这里使用了 $\int_0^\infty we^{-aw}dw=1/a^2$ 。CDF 为
 
-$$
-F_Z(z)=P(X\le zY)=\frac{\lambda z}{\mu+\lambda z}.
-$$
+$$F_Z(z)=P(X\le zY)=\frac{\lambda z}{\mu+\lambda z}.$$
 
 它对尺度同比缩放不敏感：把 $\lambda,\mu$ 同时乘以同一个正数，商分布不变。
 
@@ -275,25 +199,15 @@ end
 
 设 $X,Y$ 独立且都服从标准正态。令 $Z=X/Y$ ，辅助变量 $W=Y$ 。逆映射为 $X=ZW,Y=W$ ，Jacobian 绝对值为 $|w|$ 。因此
 
-$$
-f_Z(z)=\int_{-\infty}^{\infty}|w|
-\frac{e^{-(zw)^2/2}}{\sqrt{2\pi}}
-\frac{e^{-w^2/2}}{\sqrt{2\pi}}\,dw.
-$$
+$$f_Z(z)=\int_{-\infty}^{\infty}|w| \frac{e^{-(zw)^2/2}}{\sqrt{2\pi}} \frac{e^{-w^2/2}}{\sqrt{2\pi}}\,dw.$$
 
 被积函数关于 $w$ 偶：
 
-$$
-f_Z(z)
-=\frac{1}{\pi}\int_0^\infty w
-\exp\left(-\frac{1+z^2}{2}w^2\right)dw.
-$$
+$$f_Z(z) =\frac{1}{\pi}\int_0^\infty w \exp\left(-\frac{1+z^2}{2}w^2\right)dw.$$
 
 令 $t=(1+z^2)w^2/2$ ，则 $dt=(1+z^2)w\,dw$ ，所以
 
-$$
-f_Z(z)=\frac1{\pi(1+z^2)}.
-$$
+$$f_Z(z)=\frac1{\pi(1+z^2)}.$$
 
 这就是标准 Cauchy 密度。这个推导再次解释了第 14 章的结论：两个正态变量的商并不具有正态尾部，而具有 $1/z^2$ 厚尾，甚至没有有限均值。
 
@@ -310,57 +224,33 @@ assert sp.simplify(fc - 1 / (sp.pi * (1 + zr**2))) == 0
 
 二维极坐标为
 
-$$
-x=r\cos\theta,\qquad y=r\sin\theta.
-$$
+$$x=r\cos\theta,\qquad y=r\sin\theta.$$
 
 Jacobian 行列式为
 
-$$
-\det
-\begin{pmatrix}
-\cos\theta&-r\sin\theta\\
-\sin\theta&r\cos\theta
-\end{pmatrix}
-=r(\cos^2\theta+\sin^2\theta)=r.
-$$
+$$\det \begin{pmatrix} \cos\theta&-r\sin\theta\\ \sin\theta&r\cos\theta \end{pmatrix} =r(\cos^2\theta+\sin^2\theta)=r.$$
 
 所以面积元为 $dx\,dy=r\,dr\,d\theta$ 。单位圆盘面积为
 
-$$
-\int_0^{2\pi}\int_0^1r\,dr\,d\theta=\pi.
-$$
+$$\int_0^{2\pi}\int_0^1r\,dr\,d\theta=\pi.$$
 
 二维标准高斯归一化也立即得到：
 
-$$
-\int_{\mathbb R^2}e^{-(x^2+y^2)/2}\,dx\,dy
-=\int_0^{2\pi}\int_0^\infty e^{-r^2/2}r\,dr\,d\theta
-=2\pi.
-$$
+$$\int_{\mathbb R^2}e^{-(x^2+y^2)/2}\,dx\,dy =\int_0^{2\pi}\int_0^\infty e^{-r^2/2}r\,dr\,d\theta =2\pi.$$
 
 由于二维积分可以写成两个一维高斯积分的平方，
 
-$$
-\left(\int_{\mathbb R}e^{-x^2/2}dx\right)^2=2\pi,
-$$
+$$\left(\int_{\mathbb R}e^{-x^2/2}dx\right)^2=2\pi,$$
 
 故一维标准正态归一化常数为 $1/\sqrt{2\pi}$ 。
 
 三维球坐标按程序中的坐标顺序写为
 
-$$
-x=r\sin\phi\cos\theta,\quad
-y=r\sin\phi\sin\theta,\quad
-z=r\cos\phi,
-$$
+$$x=r\sin\phi\cos\theta,\quad y=r\sin\phi\sin\theta,\quad z=r\cos\phi,$$
 
 其中 $0\le\phi\le\pi$ 。Jacobian 行列式为 $r^2\sin\phi$ ，所以单位球体积为
 
-$$
-\int_0^{2\pi}\int_0^\pi\int_0^1r^2\sin\phi\,dr\,d\phi\,d\theta
-=\frac{4\pi}{3}.
-$$
+$$\int_0^{2\pi}\int_0^\pi\int_0^1r^2\sin\phi\,dr\,d\phi\,d\theta =\frac{4\pi}{3}.$$
 
 Python 和 Julia 分别用符号 Jacobian、中心差分核对 $r$ 与 $r^2\sin\phi$ ：
 
@@ -378,66 +268,35 @@ assert sp.simplify(J_sph.det() - r**2 * sp.sin(ph)) == 0
 
 设
 
-$$
-X\sim\Gamma(a,1),\qquad Y\sim\Gamma(b,1),
-$$
+$$X\sim\Gamma(a,1),\qquad Y\sim\Gamma(b,1),$$
 
 且二者独立。它们的联合密度（速率参数为 1）为
 
-$$
-f_{X,Y}(x,y)
-=\frac{x^{a-1}e^{-x}}{\Gamma(a)}
- \frac{y^{b-1}e^{-y}}{\Gamma(b)},
-\qquad x,y>0.
-$$
+$$f_{X,Y}(x,y) =\frac{x^{a-1}e^{-x}}{\Gamma(a)} \frac{y^{b-1}e^{-y}}{\Gamma(b)}, \qquad x,y>0.$$
 
 令
 
-$$
-U=X+Y,\qquad V=\frac{X}{X+Y}.
-$$
+$$U=X+Y,\qquad V=\frac{X}{X+Y}.$$
 
 逆映射为
 
-$$
-X=UV,\qquad Y=U(1-V),
-$$
+$$X=UV,\qquad Y=U(1-V),$$
 
 其中 $u>0,0<v<1$ 。Jacobian 行列式为
 
-$$
-\det
-\begin{pmatrix}
-v&u\\
-1-v&-u
-\end{pmatrix}
-=-u,
-$$
+$$\det \begin{pmatrix} v&u\\ 1-v&-u \end{pmatrix} =-u,$$
 
 绝对值为 $u$ 。于是
 
-$$
-\begin{aligned}
-f_{U,V}(u,v)
-&=f_{X,Y}(uv,u(1-v))u\\
-&=\frac{u^{a+b-1}e^{-u}}{\Gamma(a+b)}
- \cdot
- \frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}
- v^{a-1}(1-v)^{b-1}.
-\end{aligned}
-$$
+$$\begin{aligned} f_{U,V}(u,v) &=f_{X,Y}(uv,u(1-v))u\\ &=\frac{u^{a+b-1}e^{-u}}{\Gamma(a+b)} \cdot \frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)} v^{a-1}(1-v)^{b-1}. \end{aligned}$$
 
 它恰好分解为
 
-$$
-f_U(u)=\frac{u^{a+b-1}e^{-u}}{\Gamma(a+b)}
-$$
+$$f_U(u)=\frac{u^{a+b-1}e^{-u}}{\Gamma(a+b)}$$
 
 与
 
-$$
-f_V(v)=\frac{v^{a-1}(1-v)^{b-1}}{B(a,b)}
-$$
+$$f_V(v)=\frac{v^{a-1}(1-v)^{b-1}}{B(a,b)}$$
 
 的乘积。因此：
 
@@ -475,31 +334,19 @@ S = Ga .+ Gb; V = Ga ./ S
 
 设 $X\sim N(0,1)$ ，令 $U=X^2$ 。对每个 $u>0$ ，有两个原像：
 
-$$
-x=\sqrt u,\qquad x=-\sqrt u.
-$$
+$$x=\sqrt u,\qquad x=-\sqrt u.$$
 
 由逆函数 $x=\pm\sqrt u$ 得
 
-$$
-\left|\frac{dx}{du}\right|=\frac1{2\sqrt u}.
-$$
+$$\left|\frac{dx}{du}\right|=\frac1{2\sqrt u}.$$
 
 两个分支贡献相同，因此
 
-$$
-\begin{aligned}
-f_U(u)
-&=2\frac{e^{-u/2}}{\sqrt{2\pi}}\frac1{2\sqrt u}\\
-&=\frac{u^{-1/2}e^{-u/2}}{\sqrt{2\pi}}.
-\end{aligned}
-$$
+$$\begin{aligned} f_U(u) &=2\frac{e^{-u/2}}{\sqrt{2\pi}}\frac1{2\sqrt u}\\ &=\frac{u^{-1/2}e^{-u/2}}{\sqrt{2\pi}}. \end{aligned}$$
 
 因为 $\Gamma(1/2)=\sqrt\pi$ ，这正是
 
-$$
-\chi^2_1=\Gamma\left(\frac12,\frac12\right)
-$$
+$$\chi^2_1=\Gamma\left(\frac12,\frac12\right)$$
 
 的密度。若只取正根一个分支，总质量只有 $1/2$ 。程序明确检查这一点，防止漏掉分支：
 
@@ -518,44 +365,27 @@ assert sp.simplify(sp.integrate(fU / 2, (uq, 0, sp.oo)) - sp.Rational(1, 2)) == 
 
 设 $X_1,\dots,X_n$ iid，具有 CDF $F$ 和密度 $f$ 。第 $k$ 次序统计量 $X_{(k)}$ 的密度为
 
-$$
-\boxed{
-f_{X_{(k)}}(x)
-=
-\frac{n!}{(k-1)!(n-k)!}
-F(x)^{k-1}(1-F(x))^{n-k}f(x).
-}
-$$
+$$\boxed{ f_{X_{(k)}}(x) = \frac{n!}{(k-1)!(n-k)!} F(x)^{k-1}(1-F(x))^{n-k}f(x). }$$
 
 理由是：在微小区间 $[x,x+dx)$ 中恰有一个观测，$k-1$ 个观测在 $x$ 左侧，$n-k$ 个在右侧；多项式系数给出排列数，三个概率分别为
 
-$$
-f(x)\,dx,\quad F(x)^{k-1},\quad (1-F(x))^{n-k}.
-$$
+$$f(x)\,dx,\quad F(x)^{k-1},\quad (1-F(x))^{n-k}.$$
 
 若原始分布为 $U(0,1)$ ，则
 
-$$
-X_{(k)}\sim\operatorname{Beta}(k,n-k+1),
-$$
+$$X_{(k)}\sim\operatorname{Beta}(k,n-k+1),$$
 
 所以
 
-$$
-E[X_{(k)}]=\frac{k}{n+1}.
-$$
+$$E[X_{(k)}]=\frac{k}{n+1}.$$
 
 最小值与最大值的联合密度为
 
-$$
-f_{a,b}(a,b)=n(n-1)(b-a)^{n-2}f(a)f(b),\qquad a<b.
-$$
+$$f_{a,b}(a,b)=n(n-1)(b-a)^{n-2}f(a)f(b),\qquad a<b.$$
 
 对均匀分布，$f(a)f(b)=1$ 。Python 从 CDF
 
-$$
-F_{A,B}(a,b)=b^n-(b-a)^n
-$$
+$$F_{A,B}(a,b)=b^n-(b-a)^n$$
 
 连续求两个偏导得到 $n(n-1)(b-a)^{n-2}$ ：
 
@@ -567,9 +397,7 @@ assert sp.simplify(
 
 对 $n$ 个独立 $\operatorname{Exp}(1)$ 变量，最小值的生存函数为
 
-$$
-P(\min_iX_i>t)=P(X_1>t,\dots,X_n>t)=e^{-nt},
-$$
+$$P(\min_iX_i>t)=P(X_1>t,\dots,X_n>t)=e^{-nt},$$
 
 故 $\min_iX_i\sim\operatorname{Exp}(n)$ 。
 
@@ -577,9 +405,7 @@ $$
 
 令两个公平骰子为 $D_1,D_2$ ，变换为
 
-$$
-L=\min(D_1,D_2),\qquad H=\max(D_1,D_2).
-$$
+$$L=\min(D_1,D_2),\qquad H=\max(D_1,D_2).$$
 
 当 $l<h$ 时，原像有两个：$(l,h)$ 与 $(h,l)$ ，所以概率为 $2/36$ 。当 $l=h$ 时，原像只有一个，概率为 $1/36$ 。共 21 个像点。
 
@@ -596,9 +422,7 @@ image_mass(Map, Image, Mass) :-
 
 它检查 $(\min,\max)$ 的 21 个像点总质量为 1，而线性变换
 
-$$
-(S,D)=(X+Y,X-Y)
-$$
+$$(S,D)=(X+Y,X-Y)$$
 
 在整数骰子空间上是一一对应，所以有 36 个像点，每个质量 $1/36$ 。这个对比清楚显示：Jacobian 处理连续空间的体积，离散变换处理原像个数；两者的共同原则都是“质量守恒”。
 
@@ -606,21 +430,15 @@ $$
 
 若 $U_1,U_2$ 独立且均匀于 $(0,1)$ ，定义
 
-$$
-R=\sqrt{-2\log U_1},\qquad \Theta=2\pi U_2,
-$$
+$$R=\sqrt{-2\log U_1},\qquad \Theta=2\pi U_2,$$
 
-$$
-X=R\cos\Theta,\qquad Y=R\sin\Theta.
-$$
+$$X=R\cos\Theta,\qquad Y=R\sin\Theta.$$
 
 则 $X,Y$ 是独立标准正态变量。
 
 其证明可用极坐标反向观察。若 $(X,Y)$ 是二维标准正态，则半径平方 $R^2=X^2+Y^2$ 独立于角度 $\Theta$ ，且
 
-$$
-P(R^2>t)=e^{-t/2},\qquad \Theta\sim U(0,2\pi).
-$$
+$$P(R^2>t)=e^{-t/2},\qquad \Theta\sim U(0,2\pi).$$
 
 因此 $R^2$ 是速率为 $1/2$ 的指数变量。逆变换采样给出 $R^2=-2\log U_1$ ，角度给出 $\Theta=2\pi U_2$ 。
 
@@ -652,11 +470,7 @@ end
 
 `examples/julia/18_multivariate_transformations.jl` 的中心差分
 
-$$
-\frac{\partial f_i}{\partial x_j}(p)
-\approx
-\frac{f_i(p+he_j)-f_i(p-he_j)}{2h}
-$$
+$$\frac{\partial f_i}{\partial x_j}(p) \approx \frac{f_i(p+he_j)-f_i(p-he_j)}{2h}$$
 
 是二阶精度近似。它适合检查代码是否把变换写反、变量顺序是否搞错，例如：
 

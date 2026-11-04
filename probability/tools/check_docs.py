@@ -15,6 +15,7 @@ LEGACY_MATH = re.compile(r"\\[()[\]]")
 MATH_OPEN_BAD = re.compile(r"[a-zA-Z0-9.!?,;:]")
 MATH_CLOSE_OK = frozenset(" ).!?,;:")
 INLINE_MATH = re.compile(r"(?<!\\)\$([^$\n]+)(?<!\\)\$")
+DISPLAY_ONE_LINE = re.compile(r"^\s*(?:>\s*)*\$\$.+\$\$\s*$")
 DISPLAY_OWN_LINE = re.compile(r"^\s*(?:>\s*)*\$\$\s*$")
 
 
@@ -22,7 +23,8 @@ def check_math(text: str, doc: Path) -> list[str]:
     """数学公式统一用 $...$/$$...$$（Codeberg/GitHub/VS Code 可渲染）。
 
     围栏代码块与行内代码中的旧定界符 \\( \\) \\[ \\] 不算；
-    同时检查 $ 与 $$ 是否配对、行内公式邻接是否满足 Forgejo 规则。
+    同时检查 $ 与 $$ 是否配对、行内公式邻接是否满足 Forgejo 规则、
+    展示公式是否为单行 $$…$$（Codeberg 不解析多行 $$ 块）。
     """
     errors = []
     in_fence = False
@@ -41,7 +43,13 @@ def check_math(text: str, doc: Path) -> list[str]:
             )
         display += bare.count("$$")
         inline += len(re.findall(r"(?<!\\)\$", bare.replace("$$", "")))
-        if not DISPLAY_OWN_LINE.match(bare):
+        if DISPLAY_OWN_LINE.match(bare):
+            errors.append(
+                f"display math must be single-line $$...$$ for Forgejo: "
+                f"{doc}: {line.strip()[:60]}"
+            )
+            continue
+        if not DISPLAY_ONE_LINE.match(bare):
             for m in INLINE_MATH.finditer(bare.replace("$$", "")):
                 prev = bare[m.start() - 1] if m.start() > 0 else "\n"
                 nxt = bare[m.end()] if m.end() < len(bare) else "\n"

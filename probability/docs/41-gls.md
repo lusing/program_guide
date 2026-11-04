@@ -18,30 +18,19 @@
 
 Lagrange 函数
 
-$$
-\mathcal L(\beta,\lambda)=\|y-X\beta\|^2+2\lambda'(R\beta-r)
-$$
+$$\mathcal L(\beta,\lambda)=\|y-X\beta\|^2+2\lambda'(R\beta-r)$$
 
 的一阶条件
 
-$$
--2X'y+2X'X\beta+2R'\lambda=0,\qquad R\beta=r.
-$$
+$$-2X'y+2X'X\beta+2R'\lambda=0,\qquad R\beta=r.$$
 
 无约束解 $\hat\beta=(X'X)^{-1}X'y$ 已知，把第一式改写为
 
-$$
-X'X(\beta-\hat\beta)=-R'\lambda.
-$$
+$$X'X(\beta-\hat\beta)=-R'\lambda.$$
 
 左乘 $(X'X)^{-1}$ 再左乘 $R$ ，用 $R\beta=r$ 解出乘子，代回得
 
-$$
-\boxed{
-\tilde\beta=\hat\beta-(X'X)^{-1}R'
-\left[R(X'X)^{-1}R'\right]^{-1}(R\hat\beta-r).
-}
-$$
+$$\boxed{ \tilde\beta=\hat\beta-(X'X)^{-1}R' \left[R(X'X)^{-1}R'\right]^{-1}(R\hat\beta-r). }$$
 
 调整量完全由“无约束解违反约束多少”与“参数协方差的几何”决定。
 
@@ -49,45 +38,30 @@ $$
 
 **命题。**
 
-$$
-\mathrm{RSS}_R=\mathrm{RSS}_U+(R\hat\beta-r)'
-\left[R(X'X)^{-1}R'\right]^{-1}(R\hat\beta-r).
-$$
+$$\mathrm{RSS}_R=\mathrm{RSS}_U+(R\hat\beta-r)' \left[R(X'X)^{-1}R'\right]^{-1}(R\hat\beta-r).$$
 
 **证明。**
 记 $e=y-X\hat\beta$ ，$\delta=\tilde\beta-\hat\beta$ 。受约束残差
 
-$$
-y-X\tilde\beta=e-X\delta.
-$$
+$$y-X\tilde\beta=e-X\delta.$$
 
 展开范数平方：
 
-$$
-\mathrm{RSS}_R=\|e\|^2-2e'X\delta+\delta'X'X\delta.
-$$
+$$\mathrm{RSS}_R=\|e\|^2-2e'X\delta+\delta'X'X\delta.$$
 
 交叉项 $e'X\delta=(X'e)'\delta=0$ （第 38 章残差正交）。故
 
-$$
-\mathrm{RSS}_R-\mathrm{RSS}_U=\delta'X'X\delta.
-$$
+$$\mathrm{RSS}_R-\mathrm{RSS}_U=\delta'X'X\delta.$$
 
 代入 41.2 的 $\delta=-\left(X'X\right)^{-1}R'\left[R(X'X)^{-1}R'\right]^{-1}(R\hat\beta-r)$ ：
 
-$$
-\delta'X'X\delta=(R\hat\beta-r)'\left[R(X'X)^{-1}R'\right]^{-1}
-\left[R(X'X)^{-1}R'\right]^{-1}R(X'X)^{-1}X'X(X'X)^{-1}R'
-\left[R(X'X)^{-1}R'\right]^{-1}(R\hat\beta-r),
-$$
+$$\delta'X'X\delta=(R\hat\beta-r)'\left[R(X'X)^{-1}R'\right]^{-1} \left[R(X'X)^{-1}R'\right]^{-1}R(X'X)^{-1}X'X(X'X)^{-1}R' \left[R(X'X)^{-1}R'\right]^{-1}(R\hat\beta-r),$$
 
 中间连乘恰好收缩回一个逆。证毕。
 
 这个恒等式把第 40 章 F 的两种算法焊接在一起：
 
-$$
-F=\frac{(\mathrm{RSS}_R-\mathrm{RSS}_U)/q}{\mathrm{RSS}_U/(n-k)}.
-$$
+$$F=\frac{(\mathrm{RSS}_R-\mathrm{RSS}_U)/q}{\mathrm{RSS}_U/(n-k)}.$$
 
 约束越被数据反对，残差上升越多，F 越大。
 
@@ -97,42 +71,25 @@ $$
 
 无约束解 $\hat\beta=(7/5,4/5)$ ，违反约束
 
-$$
-R\hat\beta-r=-\frac15.
-$$
+$$R\hat\beta-r=-\frac15.$$
 
-$$
-(X'X)^{-1}R'=\begin{pmatrix}-1/5\\1/10\end{pmatrix},
-\qquad
-R(X'X)^{-1}R'=\frac1{10}.
-$$
+$$(X'X)^{-1}R'=\begin{pmatrix}-1/5\\1/10\end{pmatrix}, \qquad R(X'X)^{-1}R'=\frac1{10}.$$
 
 代入闭式：
 
-$$
-\tilde\beta=\begin{pmatrix}7/5\\4/5\end{pmatrix}
--\begin{pmatrix}-1/5\\1/10\end{pmatrix}\cdot10\cdot\Big(-\frac15\Big)
-=\begin{pmatrix}1\\1\end{pmatrix}.
-$$
+$$\tilde\beta=\begin{pmatrix}7/5\\4/5\end{pmatrix} -\begin{pmatrix}-1/5\\1/10\end{pmatrix}\cdot10\cdot\Big(-\frac15\Big) =\begin{pmatrix}1\\1\end{pmatrix}.$$
 
 受约束拟合为 $1+x$ ，残差 $(0,1,-1,1,-1)$ ：
 
-$$
-\mathrm{RSS}_R=4,\qquad
-\mathrm{RSS}_R-\mathrm{RSS}_U=4-\frac{18}5=\frac25,
-$$
+$$\mathrm{RSS}_R=4,\qquad \mathrm{RSS}_R-\mathrm{RSS}_U=4-\frac{18}5=\frac25,$$
 
 二次型核对：
 
-$$
-\frac{(-1/5)^2}{1/10}=\frac{2}{5}\quad\checkmark.
-$$
+$$\frac{(-1/5)^2}{1/10}=\frac{2}{5}\quad\checkmark.$$
 
 约束 F：
 
-$$
-F=\frac{(2/5)/1}{(18/5)/3}=\boxed{\frac13}\approx0.33,
-$$
+$$F=\frac{(2/5)/1}{(18/5)/3}=\boxed{\frac13}\approx0.33,$$
 
 远低于 $F_{0.95}(1,3)=10.128$ ——数据与 $\beta_2=1$ 高度相容，拒绝它毫无道理。
 
@@ -140,27 +97,17 @@ $$
 
 真实模型（长模型）
 
-$$
-y=X_1\beta_1+X_2\beta_2+\varepsilon,
-\qquad
-E(\varepsilon|X)=0,
-$$
+$$y=X_1\beta_1+X_2\beta_2+\varepsilon, \qquad E(\varepsilon|X)=0,$$
 
 却估计了短模型（只用 $X_1$ ）。
 
 短模型 OLS 为 $\hat\beta_s=(X_1'X_1)^{-1}X_1'y$ ，代入真模型：
 
-$$
-E(\hat\beta_s|X)=\beta_1+(X_1'X_1)^{-1}X_1'X_2\,\beta_2.
-$$
+$$E(\hat\beta_s|X)=\beta_1+(X_1'X_1)^{-1}X_1'X_2\,\beta_2.$$
 
 第二项即**遗漏变量偏误**：
 
-$$
-\boxed{
-\operatorname{bias}=(X_1'X_1)^{-1}X_1'X_2\,\beta_2.
-}
-$$
+$$\boxed{ \operatorname{bias}=(X_1'X_1)^{-1}X_1'X_2\,\beta_2. }$$
 
 三个因素共同决定偏误：遗漏变量的真实作用 $\beta_2$ 、它与已包含变量的样本相关性 $X_1'X_2$ 、已包含变量的散布 $(X_1'X_1)^{-1}$ 。
 
@@ -170,16 +117,9 @@ $$
 
 取遗漏变量 $z=(0,0,1,1,2)$ ，真实 $\beta_3=2$ ：
 
-$$
-(X_1'X_1)^{-1}X_1'z=\begin{pmatrix}3/5&-1/5\\-1/5&1/10\end{pmatrix}
-\begin{pmatrix}4\\13\end{pmatrix}
-=\begin{pmatrix}-1/5\\1/2\end{pmatrix},
-$$
+$$(X_1'X_1)^{-1}X_1'z=\begin{pmatrix}3/5&-1/5\\-1/5&1/10\end{pmatrix} \begin{pmatrix}4\\13\end{pmatrix} =\begin{pmatrix}-1/5\\1/2\end{pmatrix},$$
 
-$$
-\operatorname{bias}=2\begin{pmatrix}-1/5\\1/2\end{pmatrix}
-=\begin{pmatrix}-2/5\\1\end{pmatrix}.
-$$
+$$\operatorname{bias}=2\begin{pmatrix}-1/5\\1/2\end{pmatrix} =\begin{pmatrix}-2/5\\1\end{pmatrix}.$$
 
 短模型斜率的期望是 $1+1=2$ 而非 1：z 与 x 正相关且 $\beta_3>0$ ，斜率被抬高一整截。
 
@@ -202,26 +142,17 @@ Monte Carlo（50,000 次重复，$\sigma=1$ ）：
 
 分块逆的标准结果（Frisch–Waugh 的推论）：长模型中 $\hat\beta_x$ 的方差
 
-$$
-\operatorname{Var}(\hat\beta_x^{\text{长}})=
-\sigma^2\left[(X_1'X_1)^{-1}+(X_1'X_1)^{-1}X_1'z\big(M_1z\big)^{-1}z'X_1(X_1'X_1)^{-1}\right],
-$$
+$$\operatorname{Var}(\hat\beta_x^{\text{长}})= \sigma^2\left[(X_1'X_1)^{-1}+(X_1'X_1)^{-1}X_1'z\big(M_1z\big)^{-1}z'X_1(X_1'X_1)^{-1}\right],$$
 
 第二项半正定——**多余变量的代价以方差计价**。
 
 五点例：加入 $z=(0,0,1,1,2)$ （其真实系数为零）后
 
-$$
-[(X'X)^{-1}]_{22}=\frac{14}{15},
-\qquad
-\text{短模型 }[(X_1'X_1)^{-1}]_{22}=\frac1{10},
-$$
+$$[(X'X)^{-1}]_{22}=\frac{14}{15}, \qquad \text{短模型 }[(X_1'X_1)^{-1}]_{22}=\frac1{10},$$
 
 方差膨胀
 
-$$
-\frac{14/15}{1/10}=\frac{28}{3}\approx9.33
-$$
+$$\frac{14/15}{1/10}=\frac{28}{3}\approx9.33$$
 
 倍——z 与 x 高度相关，等于让 x 的信息被分走一大半。
 
@@ -235,23 +166,17 @@ $$
 
 放松 A4：
 
-$$
-\operatorname{Cov}(\varepsilon|X)=\sigma^2\Omega,\qquad \Omega\ \text{已知、对称正定}.
-$$
+$$\operatorname{Cov}(\varepsilon|X)=\sigma^2\Omega,\qquad \Omega\ \text{已知、对称正定}.$$
 
 OLS 的位置：
 
-$$
-E(\hat\beta|X)=\beta+ (X'X)^{-1}X'E(\varepsilon|X)=\beta
-$$
+$$E(\hat\beta|X)=\beta+ (X'X)^{-1}X'E(\varepsilon|X)=\beta$$
 
 ——外生性未动，无偏仍在。
 
 但真实方差变成
 
-$$
-\operatorname{Var}(\hat\beta|X)=\sigma^2(X'X)^{-1}X'\Omega X(X'X)^{-1},
-$$
+$$\operatorname{Var}(\hat\beta|X)=\sigma^2(X'X)^{-1}X'\Omega X(X'X)^{-1},$$
 
 且 Gauss–Markov 的球形条件失效：OLS 在线性无偏类中不再最小方差（第 39 章证明里 $a'y$ 的方差 $\sigma^2a'a$ 这一步不再成立）。
 
@@ -259,25 +184,15 @@ $$
 
 $\Omega$ 正定故存在对称可逆的 $\Omega^{-1/2}$ 。变换
 
-$$
-y^*=\Omega^{-1/2}y,\qquad X^*=\Omega^{-1/2}X,\qquad \varepsilon^*=\Omega^{-1/2}\varepsilon.
-$$
+$$y^*=\Omega^{-1/2}y,\qquad X^*=\Omega^{-1/2}X,\qquad \varepsilon^*=\Omega^{-1/2}\varepsilon.$$
 
 新扰动的协方差
 
-$$
-\operatorname{Cov}(\varepsilon^*|X)=\Omega^{-1/2}\sigma^2\Omega\,\Omega^{-1/2}=\sigma^2I.
-$$
+$$\operatorname{Cov}(\varepsilon^*|X)=\Omega^{-1/2}\sigma^2\Omega\,\Omega^{-1/2}=\sigma^2I.$$
 
 对变换后模型做 OLS，得到**广义最小二乘**：
 
-$$
-\boxed{
-\hat\beta_{GLS}=(X'\Omega^{-1}X)^{-1}X'\Omega^{-1}y,
-\qquad
-\operatorname{Var}(\hat\beta_{GLS}|X)=\sigma^2(X'\Omega^{-1}X)^{-1}.
-}
-$$
+$$\boxed{ \hat\beta_{GLS}=(X'\Omega^{-1}X)^{-1}X'\Omega^{-1}y, \qquad \operatorname{Var}(\hat\beta_{GLS}|X)=\sigma^2(X'\Omega^{-1}X)^{-1}. }$$
 
 **Aitken 定理。** 外生性 + $\operatorname{Cov}(\varepsilon|X)=\sigma^2\Omega$ 下，GLS 在线性无偏估计类中方差最小。
 
@@ -289,9 +204,7 @@ $$
 
 $\Omega=\operatorname{diag}(w_1,\ldots,w_n)$ （异方差、无自相关）时
 
-$$
-\hat\beta_{WLS}=\arg\min_b\sum_t\frac{(y_t-x_t'b)^2}{w_t},
-$$
+$$\hat\beta_{WLS}=\arg\min_b\sum_t\frac{(y_t-x_t'b)^2}{w_t},$$
 
 权重 $1/w_t$ 直接进入目标函数；等价地，把每个观测除以 $\sqrt{w_t}$ （**常数列也要除**）再做 OLS。
 
@@ -301,23 +214,15 @@ $$
 
 加权正规方程的元素（$w_t^{-1}=(1,1,1,\tfrac14,\tfrac14)$ ）：
 
-$$
-X'\Omega^{-1}X=\begin{pmatrix}7/2&19/4\\19/4&45/4\end{pmatrix},
-\qquad
-X'\Omega^{-1}y=\begin{pmatrix}33/4\\59/4\end{pmatrix}.
-$$
+$$X'\Omega^{-1}X=\begin{pmatrix}7/2&19/4\\19/4&45/4\end{pmatrix}, \qquad X'\Omega^{-1}y=\begin{pmatrix}33/4\\59/4\end{pmatrix}.$$
 
 行列式
 
-$$
-\det=\frac{7}{2}\cdot\frac{45}4-\Big(\frac{19}4\Big)^2=\frac{269}{16}.
-$$
+$$\det=\frac{7}{2}\cdot\frac{45}4-\Big(\frac{19}4\Big)^2=\frac{269}{16}.$$
 
 解：
 
-$$
-\hat\beta_{GLS}=\left(\frac{364}{269},\ \frac{199}{269}\right)\approx(1.353,\ 0.740).
-$$
+$$\hat\beta_{GLS}=\left(\frac{364}{269},\ \frac{199}{269}\right)\approx(1.353,\ 0.740).$$
 
 （无约束 OLS 为 $(1.4,0.8)$ ：低方差的前三个点把直线拉向自己。）
 
@@ -325,21 +230,13 @@ $$
 
 方差对照（$\sigma^2=1$ ）：
 
-$$
-\operatorname{Var}(\hat\beta_{OLS,2})=(X'X)^{-1}X'\Omega X(X'X)^{-1}\Big|_{22}
-=\frac14=0.25,
-$$
+$$\operatorname{Var}(\hat\beta_{OLS,2})=(X'X)^{-1}X'\Omega X(X'X)^{-1}\Big|_{22} =\frac14=0.25,$$
 
 其中 $X'\Omega X=\begin{pmatrix}11&31\\31&105\end{pmatrix}$ ；
 
-$$
-\operatorname{Var}(\hat\beta_{GLS,2})=\left[(X'\Omega^{-1}X)^{-1}\right]_{22}
-=\frac{7/2}{269/16}=\frac{56}{269}\approx0.208.
-$$
+$$\operatorname{Var}(\hat\beta_{GLS,2})=\left[(X'\Omega^{-1}X)^{-1}\right]_{22} =\frac{7/2}{269/16}=\frac{56}{269}\approx0.208.$$
 
-$$
-\frac{56}{269}<\frac14\quad\checkmark
-$$
+$$\frac{56}{269}<\frac14\quad\checkmark$$
 
 Aitken 的数值现场。
 

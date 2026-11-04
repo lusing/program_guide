@@ -15,53 +15,27 @@
 **DGP（全部公开）。**
 四个相互独立的标准正态源 $A,D,U,\varepsilon'$ ，$\varepsilon=\tfrac12\varepsilon'$ ：
 
-$$
-\boxed{
-\begin{aligned}
-\text{能力 }&A\sim N(0,1),\\
-\text{教育 }&E=10+2A+1.0\,D+U,\\
-\text{对数工资 }&W=4.6+0.1\,E+0.3\,A+\varepsilon,
-\qquad \varepsilon\sim N(0,\tfrac14).
-\end{aligned}}
-$$
+$$\boxed{ \begin{aligned} \text{能力 }&A\sim N(0,1),\\ \text{教育 }&E=10+2A+1.0\,D+U,\\ \text{对数工资 }&W=4.6+0.1\,E+0.3\,A+\varepsilon, \qquad \varepsilon\sim N(0,\tfrac14). \end{aligned}}$$
 
 读法：能力既直接提高工资（系数 0.3），又推高教育（系数 2）；学校距离 $D$ 只影响教育（系数 1），不影响工资——这是工具变量的原型。
 
 **总体量（精确分数）。**
 
-$$
-\operatorname{Var}(E)=4+1+1=6,
-\qquad
-\operatorname{Cov}(E,A)=2,
-\qquad
-\operatorname{Cov}(D,E)=1,
-\qquad
-\operatorname{Cov}(D,W)=0.1.
-$$
+$$\operatorname{Var}(E)=4+1+1=6, \qquad \operatorname{Cov}(E,A)=2, \qquad \operatorname{Cov}(D,E)=1, \qquad \operatorname{Cov}(D,W)=0.1.$$
 
 三个关键估计量的总体身份，全部可写成精确分数：
 
 **（1）短回归（遗漏能力）的概率极限。**
 由第 41 章偏误公式：
 
-$$
-\operatorname{plim}\hat\beta_E^{\text{短}}
-=0.1+0.3\cdot\frac{\operatorname{Cov}(E,A)}{\operatorname{Var}(E)}
-=0.1+0.3\cdot\frac{2}{6}
-=\frac1{10}+\frac1{10}
-=\boxed{\frac15}.
-$$
+$$\operatorname{plim}\hat\beta_E^{\text{短}} =0.1+0.3\cdot\frac{\operatorname{Cov}(E,A)}{\operatorname{Var}(E)} =0.1+0.3\cdot\frac{2}{6} =\frac1{10}+\frac1{10} =\boxed{\frac15}.$$
 
 教育回报被高估一倍——0.2 里有一半是能力的功劳。
 
 **（2）工具变量估计量的识别。**
 恰好识别的 IV（第 38/41 章的矩条件 $E[D(W-\beta_1-\beta_2E)]=0$ ）：
 
-$$
-\beta_{IV}=\frac{\operatorname{Cov}(D,W)}{\operatorname{Cov}(D,E)}
-=\frac{0.1}{1}
-=\boxed{\frac1{10}}.
-$$
+$$\beta_{IV}=\frac{\operatorname{Cov}(D,W)}{\operatorname{Cov}(D,E)} =\frac{0.1}{1} =\boxed{\frac1{10}}.$$
 
 距离只通过教育影响工资，于是"距离造成的工资差异 ÷ 距离造成的教育差异"恰好剥离了能力的污染。
 
@@ -89,9 +63,7 @@ $$
 
 长模型的 t 检验（第 40 章）：
 
-$$
-t_{\text{educ}}\approx5.0,\qquad t_{\text{ability}}\approx7.9,
-$$
+$$t_{\text{educ}}\approx5.0,\qquad t_{\text{ability}}\approx7.9,$$
 
 教育与能力都高度显著——$n=500$ 足以让 0.1 的系数从 $0.5/\sqrt{1000}\approx0.016$ 的标准误里站起来。
 
@@ -109,19 +81,11 @@ $$
 
 更细的一层账是**偏差—方差权衡的现场**：
 
-$$
-\operatorname{Var}(\hat\beta^{\text{短}})\approx9\times10^{-5}
-<
-\operatorname{Var}(\hat\beta_E^{\text{长}})\approx2.5\times10^{-4},
-$$
+$$\operatorname{Var}(\hat\beta^{\text{短}})\approx9\times10^{-5} < \operatorname{Var}(\hat\beta_E^{\text{长}})\approx2.5\times10^{-4},$$
 
 短回归确实更"稳"（它把能力塞进残差，斜率的条件方差更小）；但围绕真值的均方误差
 
-$$
-\mathrm{MSE}^{\text{短}}\approx0.0101
-\gg
-\mathrm{MSE}^{\text{长}}\approx2.5\times10^{-4}
-$$
+$$\mathrm{MSE}^{\text{短}}\approx0.0101 \gg \mathrm{MSE}^{\text{长}}\approx2.5\times10^{-4}$$
 
 偏误 $0.1^2=0.01$ 主宰一切——**稳定的有偏估计毫无用处**，这是第 41 章遗漏变量理论的频率版铁证。
 
@@ -143,11 +107,7 @@ for delta in (0.01, -0.01, 0.02):
 
 模型比较（第 39 章）用同一次抽样：
 
-$$
-\mathrm{AIC}^{\text{长}}=730.6<\mathrm{AIC}^{\text{短}}=788.5,
-\qquad
-\mathrm{BIC}^{\text{长}}=743.2<\mathrm{BIC}^{\text{短}}=796.9.
-$$
+$$\mathrm{AIC}^{\text{长}}=730.6<\mathrm{AIC}^{\text{短}}=788.5, \qquad \mathrm{BIC}^{\text{长}}=743.2<\mathrm{BIC}^{\text{短}}=796.9.$$
 
 两个准则同向：能力变量值得纳入——这与 t 检验（7.95）的判断一致，但出发点是预测质量而非显著性。
 
@@ -157,17 +117,9 @@ $$
 
 理论（$\sigma^2=1$ ）：
 
-$$
-\operatorname{Var}(\hat\beta^{\text{OLS}}_2)=
-\left[(X'X)^{-1}X'\Omega X(X'X)^{-1}\right]_{22}
-=3.0\times10^{-5},
-$$
+$$\operatorname{Var}(\hat\beta^{\text{OLS}}_2)= \left[(X'X)^{-1}X'\Omega X(X'X)^{-1}\right]_{22} =3.0\times10^{-5},$$
 
-$$
-\operatorname{Var}(\hat\beta^{\text{WLS}}_2)=
-\left[(X'\Omega^{-1}X)^{-1}\right]_{22}
-=2.6\times10^{-5}.
-$$
+$$\operatorname{Var}(\hat\beta^{\text{WLS}}_2)= \left[(X'\Omega^{-1}X)^{-1}\right]_{22} =2.6\times10^{-5}.$$
 
 4,000 次 Monte Carlo：Python 经验方差 $2.9\times10^{-5}$ 对 $2.5\times10^{-5}$ ，Julia $3.0$ 对 $2.6$ ，双双贴住理论、WLS 稳定胜出约 13%。
 
@@ -315,9 +267,7 @@ Stirling、Taylor、Chebyshev/Markov——每一个近似都注明误差阶（�
 **秘书问题（最优停止）。**
 只能看相对排名、当场拍板。最优策略：前 $k$ 人纯观察，此后录用第一个超过前 $k$ 最佳者。成功概率
 
-$$
-P(k)=\frac kn\sum_{m=k}^{n-1}\frac1m\approx\frac kn\log\frac nk,
-$$
+$$P(k)=\frac kn\sum_{m=k}^{n-1}\frac1m\approx\frac kn\log\frac nk,$$
 
 对 $x=n/k$ 最大化 $\log x/x$ 得 $x=e$ ：**观察 $n/e\approx37\%$ ，命中概率** $1/e\approx36.8\%$ ，且 $n\to\infty$ 不衰减。条件概率 $k/m$ （最优在 $m+1$ 时赢当且仅当前 $m$ 的最佳落在前 $k$ ）是全部精巧所在——一题两算的典范。
 

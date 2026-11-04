@@ -4,29 +4,21 @@
 
 第 27 章把 CLT 的证明压缩成一句特征函数极限：
 
-$$
-\phi_{Z_n}(t)\to e^{-t^2/2}.
-$$
+$$\phi_{Z_n}(t)\to e^{-t^2/2}.$$
 
 本章补齐这句话背后的分析工具。
 
 对实随机变量 $X$ ，定义
 
-$$
-\boxed{\phi_X(t)=E[e^{itX}],\qquad t\in\mathbb R.}
-$$
+$$\boxed{\phi_X(t)=E[e^{itX}],\qquad t\in\mathbb R.}$$
 
 若 $X$ 有密度 $f$ ，则
 
-$$
-\phi_X(t)=\int_{-\infty}^{\infty}e^{itx}f(x)\,dx.
-$$
+$$\phi_X(t)=\int_{-\infty}^{\infty}e^{itx}f(x)\,dx.$$
 
 若 $X$ 是离散变量，则
 
-$$
-\phi_X(t)=\sum_x e^{itx}P(X=x).
-$$
+$$\phi_X(t)=\sum_x e^{itx}P(X=x).$$
 
 特征函数是分布的 Fourier 变换。
 
@@ -34,15 +26,11 @@ $$
 
 由于
 
-$$
-|e^{itX}|=1,
-$$
+$$|e^{itX}|=1,$$
 
 特征函数对每个实随机变量、每个实数 $t$ 都存在，并且
 
-$$
-|\phi_X(t)|\le E|e^{itX}|=1.
-$$
+$$|\phi_X(t)|\le E|e^{itX}|=1.$$
 
 这正是它比矩生成函数更适合一般分布的原因。
 
@@ -50,15 +38,11 @@ $$
 
 Euler 公式给出
 
-$$
-e^{itx}=\cos(tx)+i\sin(tx).
-$$
+$$e^{itx}=\cos(tx)+i\sin(tx).$$
 
 所以
 
-$$
-\phi_X(t)=E[\cos(tX)]+iE[\sin(tX)].
-$$
+$$\phi_X(t)=E[\cos(tX)]+iE[\sin(tX)].$$
 
 固定 $t$ 时，$e^{itx}$ 是 $x$ 的周期波。
 
@@ -70,25 +54,17 @@ $E[e^{itX}]$ 测量分布在这个频率上的复振幅。
 
 例如 $X+a$ 的特征函数为
 
-$$
-\phi_{X+a}(t)=e^{ita}\phi_X(t).
-$$
+$$\phi_{X+a}(t)=e^{ita}\phi_X(t).$$
 
 平移只改变相位，不改变模长。
 
 尺度变换满足
 
-$$
-\phi_{aX}(t)=\phi_X(at).
-$$
+$$\phi_{aX}(t)=\phi_X(at).$$
 
 此外
 
-$$
-\phi_X(0)=1,
-\qquad
-\phi_X(-t)=\overline{\phi_X(t)}.
-$$
+$$\phi_X(0)=1, \qquad \phi_X(-t)=\overline{\phi_X(t)}.$$
 
 这些基本性质常用于检查闭式公式是否写错。
 
@@ -96,29 +72,21 @@ $$
 
 由 $|e^{itX}|=1$ 和控制收敛定理，
 
-$$
-t\mapsto\phi_X(t)
-$$
+$$t\mapsto\phi_X(t)$$
 
 在全实线上连续，实际上还是一致连续的。
 
 若 $E|X|<\infty$ ，可以对期望求导：
 
-$$
-\phi_X'(0)=iE[X].
-$$
+$$\phi_X'(0)=iE[X].$$
 
 若 $E[X^2]<\infty$ ，则
 
-$$
-\phi_X''(0)=-E[X^2].
-$$
+$$\phi_X''(0)=-E[X^2].$$
 
 一般地，若 $E|X|^k<\infty$ ，则
 
-$$
-\phi_X^{(k)}(0)=i^kE[X^k].
-$$
+$$\phi_X^{(k)}(0)=i^kE[X^k].$$
 
 导数公式反过来也提醒我们：没有相应矩时，不能机械地对特征函数反复求导。
 
@@ -126,10 +94,7 @@ Cauchy 分布的特征函数是 $e^{-|t|}$ ，它在零点左右导数不相等�
 
 有限方差下最重要的展开是
 
-$$
-\phi_X(t)
-=1+itE[X]-\frac{t^2}{2}E[X^2]+o(t^2).
-$$
+$$\phi_X(t) =1+itE[X]-\frac{t^2}{2}E[X^2]+o(t^2).$$
 
 第 27 章已经用积分余项和控制收敛证明了这一点。
 
@@ -143,9 +108,7 @@ $$
 
 若 $P(X=a)=1$ ，则
 
-$$
-\phi_X(t)=e^{iat}.
-$$
+$$\phi_X(t)=e^{iat}.$$
 
 其模恒为 $1$ ，说明全部质量集中在一个相位轨道上。
 
@@ -153,43 +116,27 @@ $$
 
 若 $P(X=1)=p$ 、$P(X=0)=1-p$ ，则
 
-$$
-\phi_X(t)=1-p+pe^{it}.
-$$
+$$\phi_X(t)=1-p+pe^{it}.$$
 
 二项分布 $\operatorname{Bin}(n,p)$ 是 $n$ 个独立 Bernoulli 之和，所以
 
-$$
-\phi(t)=(1-p+pe^{it})^n.
-$$
+$$\phi(t)=(1-p+pe^{it})^n.$$
 
 ### Poisson
 
 若 $X\sim\operatorname{Poisson}(\lambda)$ ，则
 
-$$
-\begin{aligned}
-\phi_X(t)
-&=\sum_{k=0}^{\infty}e^{itk}e^{-\lambda}\frac{\lambda^k}{k!}\\
-&=\exp\{\lambda(e^{it}-1)\}.
-\end{aligned}
-$$
+$$\begin{aligned} \phi_X(t) &=\sum_{k=0}^{\infty}e^{itk}e^{-\lambda}\frac{\lambda^k}{k!}\\ &=\exp\{\lambda(e^{it}-1)\}. \end{aligned}$$
 
 ### 均匀分布
 
 若 $X\sim U(0,1)$ ，则
 
-$$
-\phi_X(t)
-=\int_0^1e^{itx}\,dx
-=\frac{e^{it}-1}{it}.
-$$
+$$\phi_X(t) =\int_0^1e^{itx}\,dx =\frac{e^{it}-1}{it}.$$
 
 也可写成
 
-$$
-\phi_X(t)=e^{it/2}\frac{\sin(t/2)}{t/2},
-$$
+$$\phi_X(t)=e^{it/2}\frac{\sin(t/2)}{t/2},$$
 
 其中 $t=0$ 处按连续极限取 $1$ 。
 
@@ -197,9 +144,7 @@ $$
 
 若 $X$ 的密度为 $\lambda e^{-\lambda x}\mathbf1_{x\ge0}$ ，则
 
-$$
-\boxed{\phi_X(t)=\frac1{1-it/\lambda}.}
-$$
+$$\boxed{\phi_X(t)=\frac1{1-it/\lambda}.}$$
 
 这里 $\lambda$ 是 rate。
 
@@ -216,15 +161,11 @@ assert abs(abs(phi_exp) - 1 / sqrt(1 + (t / rate) ** 2)) < 1e-12
 
 标准正态为
 
-$$
-\phi_Z(t)=e^{-t^2/2}.
-$$
+$$\phi_Z(t)=e^{-t^2/2}.$$
 
 标准 Cauchy 为
 
-$$
-\phi_C(t)=e^{-|t|}.
-$$
+$$\phi_C(t)=e^{-|t|}.$$
 
 两者模长都随 $|t|$ 衰减，但原点附近的正则性完全不同。
 
@@ -232,34 +173,21 @@ $$
 
 标准正态密度为
 
-$$
-f(x)=\frac1{\sqrt{2\pi}}e^{-x^2/2}.
-$$
+$$f(x)=\frac1{\sqrt{2\pi}}e^{-x^2/2}.$$
 
 其特征函数可以用微分方程简洁地推导。
 
 先写
 
-$$
-\phi(t)=\int_{\mathbb R}e^{itx}f(x)\,dx.
-$$
+$$\phi(t)=\int_{\mathbb R}e^{itx}f(x)\,dx.$$
 
 对 $t$ 求导，再对 $xf(x)=-f'(x)$ 使用分部积分：
 
-$$
-\begin{aligned}
-\phi'(t)
-&=\int ix e^{itx}f(x)\,dx\\
-&=-i\int e^{itx}f'(x)\,dx\\
-&=-t\phi(t).
-\end{aligned}
-$$
+$$\begin{aligned} \phi'(t) &=\int ix e^{itx}f(x)\,dx\\ &=-i\int e^{itx}f'(x)\,dx\\ &=-t\phi(t). \end{aligned}$$
 
 结合 $\phi(0)=1$ ，得到
 
-$$
-\phi(t)=e^{-t^2/2}.
-$$
+$$\phi(t)=e^{-t^2/2}.$$
 
 所以非归一化函数 $e^{-x^2/2}$ 的 Fourier 形状仍是 $e^{-t^2/2}$ 。
 
@@ -269,11 +197,7 @@ $$
 
 本教程采用
 
-$$
-\widehat f(t)=\int e^{itx}f(x)\,dx,
-\qquad
-f(x)=\frac1{2\pi}\int e^{-itx}\widehat f(t)\,dt.
-$$
+$$\widehat f(t)=\int e^{itx}f(x)\,dx, \qquad f(x)=\frac1{2\pi}\int e^{-itx}\widehat f(t)\,dt.$$
 
 若使用角频率或单位化 Fourier 变换，$2\pi$ 的位置会改变；推导时必须固定约定。
 
@@ -283,40 +207,21 @@ $$
 
 则
 
-$$
-\begin{aligned}
-\phi_S(t)
-&=E[e^{it(X+Y)}]\\
-&=E[e^{itX}e^{itY}]\\
-&=E[e^{itX}]E[e^{itY}]\\
-&=\phi_X(t)\phi_Y(t).
-\end{aligned}
-$$
+$$\begin{aligned} \phi_S(t) &=E[e^{it(X+Y)}]\\ &=E[e^{itX}e^{itY}]\\ &=E[e^{itX}]E[e^{itY}]\\ &=\phi_X(t)\phi_Y(t). \end{aligned}$$
 
 在密度语言中，$X+Y$ 的密度是卷积
 
-$$
-f_{X+Y}(s)=\int f_X(x)f_Y(s-x)\,dx.
-$$
+$$f_{X+Y}(s)=\int f_X(x)f_Y(s-x)\,dx.$$
 
 所以上式就是 Fourier 分析的卷积定理：
 
-$$
-\boxed{\widehat{f_X*f_Y}=\widehat f_X\,\widehat f_Y.}
-$$
+$$\boxed{\widehat{f_X*f_Y}=\widehat f_X\,\widehat f_Y.}$$
 
 这条性质解释了为什么独立和在原空间中可能很复杂，在频率域中却只是普通乘法。
 
 两个独立 $U(0,1)$ 的和具有三角密度
 
-$$
-f(s)=
-\begin{cases}
-s,&0\le s\le1,\\
-2-s,&1<s\le2,\\
-0,&\text{其他}.
-\end{cases}
-$$
+$$f(s)= \begin{cases} s,&0\le s\le1,\\ 2-s,&1<s\le2,\\ 0,&\text{其他}. \end{cases}$$
 
 Python 对这个密度直接积分，并与均匀特征函数平方的实部比较：
 
@@ -335,11 +240,7 @@ assert abs(lhs - rhs) < 1e-9
 
 若 $X$ 有密度 $f$ ，且 $\phi_X$ 在实线上可积，则 $f$ 可取连续版本，并满足
 
-$$
-\boxed{
-f(x)=\frac1{2\pi}\int_{-\infty}^{\infty}e^{-itx}\phi_X(t)\,dt.
-}
-$$
+$$\boxed{ f(x)=\frac1{2\pi}\int_{-\infty}^{\infty}e^{-itx}\phi_X(t)\,dt. }$$
 
 指数符号与正向变换相反，外面的 $1/(2\pi)$ 来自本教程的 Fourier 约定。
 
@@ -383,26 +284,13 @@ assert abs(inverted - pdf_norm(x)) < 1e-9
 
 若 $a<b$ 且 $a,b$ 都是 $F$ 的连续点，则
 
-$$
-F(b)-F(a)
-=
-\lim_{T\to\infty}
-\frac1{2\pi}
-\int_{-T}^{T}
-\frac{e^{-ita}-e^{-itb}}{it}
-\phi(t)\,dt.
-$$
+$$F(b)-F(a) = \lim_{T\to\infty} \frac1{2\pi} \int_{-T}^{T} \frac{e^{-ita}-e^{-itb}}{it} \phi(t)\,dt.$$
 
 端点排除原子是为了避免半质量归属问题。
 
 在单点 $a$ ，还可通过平均小区间恢复原子质量：
 
-$$
-P(X=a)
-=
-\lim_{T\to\infty}\frac1{2T}
-\int_{-T}^{T}e^{-ita}\phi(t)\,dt.
-$$
+$$P(X=a) = \lim_{T\to\infty}\frac1{2T} \int_{-T}^{T}e^{-ita}\phi(t)\,dt.$$
 
 例如点质量 $a$ 的特征函数为 $e^{iat}$ ，代入后积分为 $2T$ ，结果恰为 $1$ 。
 
@@ -432,24 +320,15 @@ $$
 
 若对每个 $t$ ，
 
-$$
-\phi_n(t)\to\phi(t),
-$$
+$$\phi_n(t)\to\phi(t),$$
 
 并且 $\phi$ 在 $0$ 连续，则存在随机变量 $X$ ，使得
 
-$$
-X_n\xrightarrow{d}X,
-\qquad
-\phi_X=\phi.
-$$
+$$X_n\xrightarrow{d}X, \qquad \phi_X=\phi.$$
 
 反向也成立：若 $X_n\xrightarrow{d}X$ ，则由有界连续函数期望的定义，
 
-$$
-\phi_n(t)=E[e^{itX_n}]
-\to E[e^{itX}]=\phi_X(t).
-$$
+$$\phi_n(t)=E[e^{itX_n}] \to E[e^{itX}]=\phi_X(t).$$
 
 因此特征函数提供了一套与依分布收敛相匹配的频率语言。
 
@@ -465,15 +344,11 @@ $$
 
 依分布收敛的定义是：对所有有界连续函数 $h$ ，
 
-$$
-E[h(X_n)]\to E[h(X)].
-$$
+$$E[h(X_n)]\to E[h(X)].$$
 
 对每个固定 $t$ ，函数
 
-$$
-x\mapsto e^{itx}
-$$
+$$x\mapsto e^{itx}$$
 
 正是有界连续函数，只是取复值。
 
@@ -491,23 +366,15 @@ Lévy 连续性定理给出肯定回答，但前提是极限在零点连续。
 
 设 $C_1,C_2$ 独立标准 Cauchy，则
 
-$$
-\phi_{C_1+C_2}(t)
-=e^{-|t|}e^{-|t|}
-=e^{-2|t|}.
-$$
+$$\phi_{C_1+C_2}(t) =e^{-|t|}e^{-|t|} =e^{-2|t|}.$$
 
 右边是 $2C$ 的特征函数，所以
 
-$$
-C_1+C_2\overset d=2C.
-$$
+$$C_1+C_2\overset d=2C.$$
 
 进一步，
 
-$$
-\frac{C_1+C_2}{2}\overset d=C.
-$$
+$$\frac{C_1+C_2}{2}\overset d=C.$$
 
 归纳可得，iid Cauchy 样本均值仍与单个 Cauchy 同分布。
 
@@ -535,17 +402,13 @@ Cauchy 原始样本具有极重尾，估计 $E[C]$ 根本没有意义。
 
 但对固定 $t$ ，
 
-$$
-\cos(tC),\qquad \sin(tC)
-$$
+$$\cos(tC),\qquad \sin(tC)$$
 
 都被限制在 $[-1,1]$ 。
 
 因此经验特征函数
 
-$$
-\widehat\phi_n(t)=\frac1n\sum_{j=1}^n e^{itC_j}
-$$
+$$\widehat\phi_n(t)=\frac1n\sum_{j=1}^n e^{itC_j}$$
 
 始终是有界随机变量的平均，方差至多按 $1/n$ 缩小。
 

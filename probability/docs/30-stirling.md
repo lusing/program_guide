@@ -4,15 +4,11 @@
 
 阶乘本身不是概率，却频繁出现在离散分布中：
 
-$$
-P(S_n=k)=\binom nk p^k(1-p)^{n-k}
-$$
+$$P(S_n=k)=\binom nk p^k(1-p)^{n-k}$$
 
 里有二项系数，Poisson 概率
 
-$$
-P(X=k)=e^{-\lambda}\frac{\lambda^k}{k!}
-$$
+$$P(X=k)=e^{-\lambda}\frac{\lambda^k}{k!}$$
 
 里有阶乘，随机游走返回原点的概率也含中心二项系数。
 
@@ -32,51 +28,31 @@ Stirling 公式把阶乘转成幂、指数和平方根，使我们能看清概�
 
 对每个 $k\ge2$ ，在区间 $[k-1,k]$ 上有 $\log x\le\log k$ ，所以
 
-$$
-\int_{k-1}^{k}\log x\,dx\le\log k.
-$$
+$$\int_{k-1}^{k}\log x\,dx\le\log k.$$
 
 对 $k=2,\ldots,n$ 求和：
 
-$$
-\int_1^n\log x\,dx\le\log n!.
-$$
+$$\int_1^n\log x\,dx\le\log n!.$$
 
 由于
 
-$$
-\int\log x\,dx=x\log x-x,
-$$
+$$\int\log x\,dx=x\log x-x,$$
 
 得到
 
-$$
-n\log n-n+1\le\log n!.
-$$
+$$n\log n-n+1\le\log n!.$$
 
 另一方面，在 $[k,k+1]$ 上有 $\log k\le\log x$ ，故
 
-$$
-\log k\le\int_k^{k+1}\log x\,dx.
-$$
+$$\log k\le\int_k^{k+1}\log x\,dx.$$
 
 对 $k=1,\ldots,n-1$ 求和，再加上 $\log n$ ，得
 
-$$
-\log n!
-\le \log n+\int_1^n\log x\,dx
-=n\log n-n+1+\log n.
-$$
+$$\log n! \le \log n+\int_1^n\log x\,dx =n\log n-n+1+\log n.$$
 
 取指数，得到完全初等且严格的夹逼：
 
-$$
-\boxed{
-e\left(\frac ne\right)^n
-\le n!
-\le en\left(\frac ne\right)^n.
-}
-$$
+$$\boxed{ e\left(\frac ne\right)^n \le n! \le en\left(\frac ne\right)^n. }$$
 
 Python 在对数域检查同一结论：
 
@@ -93,17 +69,11 @@ for n in (10, 50, 200):
 
 对上述不等式取 $1/n$ 次幂：
 
-$$
-e^{1/n}\frac ne
-\le n!^{1/n}
-\le (en)^{1/n}\frac ne.
-$$
+$$e^{1/n}\frac ne \le n!^{1/n} \le (en)^{1/n}\frac ne.$$
 
 因为 $e^{1/n}\to1$ 且 $(en)^{1/n}\to1$ ，所以
 
-$$
-\boxed{n!^{1/n}\sim\frac ne.}
-$$
+$$\boxed{n!^{1/n}\sim\frac ne.}$$
 
 这已经给出阶乘几何平均的主项。
 
@@ -127,85 +97,53 @@ for n in (10, 100):
 
 考虑区间 $[k,k+1]$ 上的梯形近似
 
-$$
-T_k=\frac{\log k+\log(k+1)}2.
-$$
+$$T_k=\frac{\log k+\log(k+1)}2.$$
 
 因为 $\log x$ 是凹函数，梯形位于函数图像下方，所以
 
-$$
-\delta_k:=\int_k^{k+1}\log x\,dx-T_k>0.
-$$
+$$\delta_k:=\int_k^{k+1}\log x\,dx-T_k>0.$$
 
 对 $k=1,\ldots,n-1$ 求和：
 
-$$
-\int_1^n\log x\,dx
-=\log n!-\frac12\log n+\sum_{k=1}^{n-1}\delta_k.
-$$
+$$\int_1^n\log x\,dx =\log n!-\frac12\log n+\sum_{k=1}^{n-1}\delta_k.$$
 
 整理得
 
-$$
-\log n!
-=n\log n-n+1+\frac12\log n
--\sum_{k=1}^{n-1}\delta_k.
-$$
+$$\log n! =n\log n-n+1+\frac12\log n -\sum_{k=1}^{n-1}\delta_k.$$
 
 由带误差的梯形公式，存在 $\xi_k\in(k,k+1)$ 使
 
-$$
-\delta_k=-\frac{(\log)''(\xi_k)}{12}
-=\frac1{12\xi_k^2}.
-$$
+$$\delta_k=-\frac{(\log)''(\xi_k)}{12} =\frac1{12\xi_k^2}.$$
 
 因此
 
-$$
-0<\delta_k\le\frac1{12k^2}.
-$$
+$$0<\delta_k\le\frac1{12k^2}.$$
 
 级数 $\sum_k\delta_k$ 收敛。
 
 令
 
-$$
-A=\sum_{k=1}^{\infty}\delta_k,
-\qquad
-C=1-A.
-$$
+$$A=\sum_{k=1}^{\infty}\delta_k, \qquad C=1-A.$$
 
 则
 
-$$
-\log n!
-=n\log n-n+\frac12\log n+C+R_n,
-$$
+$$\log n! =n\log n-n+\frac12\log n+C+R_n,$$
 
 其中
 
-$$
-R_n=\sum_{k=n}^{\infty}\delta_k.
-$$
+$$R_n=\sum_{k=n}^{\infty}\delta_k.$$
 
 由 $\delta_k\asymp1/(12k^2)$ ，尾部主项为
 
-$$
-R_n\sim\frac1{12n}.
-$$
+$$R_n\sim\frac1{12n}.$$
 
 于是存在常数 $C$ ，使
 
-$$
-\log n!
-=n\log n-n+\frac12\log n+C+\frac1{12n}+O(n^{-3}).
-$$
+$$\log n! =n\log n-n+\frac12\log n+C+\frac1{12n}+O(n^{-3}).$$
 
 取指数：
 
-$$
-n!\sim e^C\sqrt n\left(\frac ne\right)^n.
-$$
+$$n!\sim e^C\sqrt n\left(\frac ne\right)^n.$$
 
 剩下唯一的问题是确定 $e^C$ 。
 
@@ -213,78 +151,45 @@ $$
 
 定义
 
-$$
-I_m=\int_0^{\pi/2}\sin^m x\,dx.
-$$
+$$I_m=\int_0^{\pi/2}\sin^m x\,dx.$$
 
 分部积分得到递推
 
-$$
-I_m=\frac{m-1}{m}I_{m-2},
-\qquad m\ge2.
-$$
+$$I_m=\frac{m-1}{m}I_{m-2}, \qquad m\ge2.$$
 
 初值为
 
-$$
-I_0=\frac\pi2,
-\qquad I_1=1.
-$$
+$$I_0=\frac\pi2, \qquad I_1=1.$$
 
 所以偶数阶与奇数阶积分分别是
 
-$$
-I_{2n}
-=\frac{(2n-1)!!}{(2n)!!}\frac\pi2,
-$$
+$$I_{2n} =\frac{(2n-1)!!}{(2n)!!}\frac\pi2,$$
 
-$$
-I_{2n+1}
-=\frac{(2n)!!}{(2n+1)!!}.
-$$
+$$I_{2n+1} =\frac{(2n)!!}{(2n+1)!!}.$$
 
 在 $[0,\pi/2]$ 上，
 
-$$
-\sin^{2n+1}x\le\sin^{2n}x\le\sin^{2n-1}x.
-$$
+$$\sin^{2n+1}x\le\sin^{2n}x\le\sin^{2n-1}x.$$
 
 积分后取比值，并用递推式，可得
 
-$$
-\frac{I_{2n}}{I_{2n+1}}\to1.
-$$
+$$\frac{I_{2n}}{I_{2n+1}}\to1.$$
 
 代入上面的闭式，就得到 Wallis 极限，并可改写为中心二项系数形式：
 
-$$
-\boxed{
-\frac1{4^n}\binom{2n}{n}\sim\frac1{\sqrt{\pi n}}.
-}
-$$
+$$\boxed{ \frac1{4^n}\binom{2n}{n}\sim\frac1{\sqrt{\pi n}}. }$$
 
 另一方面，将尚未确定常数的 Stirling 形式代入中心二项系数：
 
-$$
-\frac{(2n)!}{4^n(n!)^2}
-\sim
-\frac{e^C\sqrt{2n}(2n/e)^{2n}}
-{4^n e^{2C}n(n/e)^{2n}}
-=
-\frac{\sqrt2}{e^C\sqrt n}.
-$$
+$$\frac{(2n)!}{4^n(n!)^2} \sim \frac{e^C\sqrt{2n}(2n/e)^{2n}} {4^n e^{2C}n(n/e)^{2n}} = \frac{\sqrt2}{e^C\sqrt n}.$$
 
 与 Wallis 结果比较：
 
-$$
-\frac{\sqrt2}{e^C}=\frac1{\sqrt\pi}.
-$$
+$$\frac{\sqrt2}{e^C}=\frac1{\sqrt\pi}.$$
 
 故
 
-$$
-e^C=\sqrt{2\pi}.
-$$
+$$e^C=\sqrt{2\pi}.$$
 
 常数不是凭空记住的，而是由 Wallis 积分唯一确定。
 
@@ -292,47 +197,25 @@ $$
 
 代入 $C=\frac12\log(2\pi)$ ，得到
 
-$$
-\boxed{
-n!\sim\sqrt{2\pi n}\left(\frac ne\right)^n.
-}
-$$
+$$\boxed{ n!\sim\sqrt{2\pi n}\left(\frac ne\right)^n. }$$
 
 对数形式为
 
-$$
-\boxed{
-\log n!
-=n\log n-n+\frac12\log(2\pi n)
-+\frac1{12n}+O(n^{-3}).
-}
-$$
+$$\boxed{ \log n! =n\log n-n+\frac12\log(2\pi n) +\frac1{12n}+O(n^{-3}). }$$
 
 因此一个常用的乘法修正是
 
-$$
-n!\approx
-\sqrt{2\pi n}\left(\frac ne\right)^n
-\left(1+\frac1{12n}\right).
-$$
+$$n!\approx \sqrt{2\pi n}\left(\frac ne\right)^n \left(1+\frac1{12n}\right).$$
 
 更精细的渐近级数常写为
 
-$$
-n!
-=\sqrt{2\pi n}\left(\frac ne\right)^n
-\left(1+\frac1{12n}+\frac1{288n^2}+O(n^{-3})\right).
-$$
+$$n! =\sqrt{2\pi n}\left(\frac ne\right)^n \left(1+\frac1{12n}+\frac1{288n^2}+O(n^{-3})\right).$$
 
 这是渐近级数，不应在固定 $n$ 时无限添加项并声称必然收敛。
 
 对数值计算，对数形式通常最稳定：
 
-$$
-\log n!
-\approx n\log n-n+\frac12\log(2\pi n)
-+\log\left(1+\frac1{12n}\right).
-$$
+$$\log n! \approx n\log n-n+\frac12\log(2\pi n) +\log\left(1+\frac1{12n}\right).$$
 
 Python 正是这样实现（导入为 `from math import log, log1p, pi`）：
 
@@ -352,10 +235,7 @@ def stirling(n, corrected=True):
 
 主式的对数误差主项为 $1/(12n)$ ，所以相对误差也近似为
 
-$$
-\frac{\sqrt{2\pi n}(n/e)^n-n!}{n!}
-\approx\frac1{12n}
-$$
+$$\frac{\sqrt{2\pi n}(n/e)^n-n!}{n!} \approx\frac1{12n}$$
 
 （符号取决于用精确值还是近似值作分母，主阶不变）。
 
@@ -415,55 +295,29 @@ Stirling 是渐近公式，但修正版在相当小的 $n$ 已经有用。
 
 将 Stirling 公式代入
 
-$$
-\binom{2n}{n}=\frac{(2n)!}{(n!)^2},
-$$
+$$\binom{2n}{n}=\frac{(2n)!}{(n!)^2},$$
 
 得到
 
-$$
-\binom{2n}{n}
-\sim
-\frac{\sqrt{2\pi\cdot2n}(2n/e)^{2n}}
-{2\pi n(n/e)^{2n}}
-=\frac{4^n}{\sqrt{\pi n}}.
-$$
+$$\binom{2n}{n} \sim \frac{\sqrt{2\pi\cdot2n}(2n/e)^{2n}} {2\pi n(n/e)^{2n}} =\frac{4^n}{\sqrt{\pi n}}.$$
 
 所以
 
-$$
-\boxed{
-\frac1{4^n}\binom{2n}{n}
-\sim\frac1{\sqrt{\pi n}}.
-}
-$$
+$$\boxed{ \frac1{4^n}\binom{2n}{n} \sim\frac1{\sqrt{\pi n}}. }$$
 
 修正项也可由对数展开计算。
 
 若
 
-$$
-\log n!=L(n)+\frac1{12n}+O(n^{-3}),
-$$
+$$\log n!=L(n)+\frac1{12n}+O(n^{-3}),$$
 
 其中 $L(n)=n\log n-n+\frac12\log(2\pi n)$ ，则
 
-$$
-\log\binom{2n}{n}-2n\log2+\frac12\log(\pi n)
-=
-\frac1{24n}-\frac2{12n}+O(n^{-3})
-=-\frac1{8n}+O(n^{-3}).
-$$
+$$\log\binom{2n}{n}-2n\log2+\frac12\log(\pi n) = \frac1{24n}-\frac2{12n}+O(n^{-3}) =-\frac1{8n}+O(n^{-3}).$$
 
 取指数得
 
-$$
-\boxed{
-\frac1{4^n}\binom{2n}{n}
-=\frac1{\sqrt{\pi n}}
-\left(1-\frac1{8n}+O(n^{-2})\right).
-}
-$$
+$$\boxed{ \frac1{4^n}\binom{2n}{n} =\frac1{\sqrt{\pi n}} \left(1-\frac1{8n}+O(n^{-2})\right). }$$
 
 Python 对精确大整数与主式比较：
 
@@ -483,19 +337,13 @@ assert abs(lhs / rhs - 1) < 1 / (8 * n)
 
 两方票数完全相等的概率是
 
-$$
-P(\text{tie})=\binom{2n}{n}p^n(1-p)^n.
-$$
+$$P(\text{tie})=\binom{2n}{n}p^n(1-p)^n.$$
 
 ### 等可能模型
 
 若 $p=1/2$ ，则
 
-$$
-P(\text{tie})
-=\frac1{4^n}\binom{2n}{n}
-\sim\frac1{\sqrt{\pi n}}.
-$$
+$$P(\text{tie}) =\frac1{4^n}\binom{2n}{n} \sim\frac1{\sqrt{\pi n}}.$$
 
 取 $n=6001$ ，即总票数 $12002$ ，Python 计算
 
@@ -511,16 +359,11 @@ assert abs(p_equal - 0.0072829) < 1e-7
 
 若 $p=0.57$ ，则
 
-$$
-P(\text{tie})
-=\binom{2n}{n}(0.57\times0.43)^n.
-$$
+$$P(\text{tie}) =\binom{2n}{n}(0.57\times0.43)^n.$$
 
 组合因子提供 $4^n/\sqrt{\pi n}$ 量级，而
 
-$$
-4p(1-p)=4\times0.57\times0.43=0.9804<1.
-$$
+$$4p(1-p)=4\times0.57\times0.43=0.9804<1.$$
 
 所以概率还带有指数衰减因子 $0.9804^n$ 。
 
@@ -547,42 +390,25 @@ $p=1/2$ 让平票位于分布中心；$p=0.57$ 让平票成为远离均值的极
 
 对三个阶乘都使用带对数修正的 Stirling 公式，再展开
 
-$$
-\log(1+k/n),\qquad \log(1-k/n),
-$$
+$$\log(1+k/n),\qquad \log(1-k/n),$$
 
 可得到局部近似
 
-$$
-P(K=n+k)
-\approx
-\frac1{\sqrt{\pi n}}e^{-k^2/n}.
-$$
+$$P(K=n+k) \approx \frac1{\sqrt{\pi n}}e^{-k^2/n}.$$
 
 这里 $\operatorname{Var}(K)=n/2$ ，标准正态密度在对应尺度上的结果与此一致。
 
 更一般地，若 $S_{2n}$ 是 $2n$ 个独立 $\pm1$ 变量的和，则
 
-$$
-S_{2n}=2K-2n.
-$$
+$$S_{2n}=2K-2n.$$
 
 当 $S_{2n}=2k$ 时，
 
-$$
-P(S_{2n}=2k)
-\approx
-\frac1{\sqrt{\pi n}}e^{-k^2/n}.
-$$
+$$P(S_{2n}=2k) \approx \frac1{\sqrt{\pi n}}e^{-k^2/n}.$$
 
 标准差为 $\sqrt{2n}$ ，格距为 $2$ ，所以也可写为
 
-$$
-P(S_{2n}=2k)
-\approx
-\frac2{\sqrt{2n}}
-\varphi\left(\frac{2k}{\sqrt{2n}}\right).
-$$
+$$P(S_{2n}=2k) \approx \frac2{\sqrt{2n}} \varphi\left(\frac{2k}{\sqrt{2n}}\right).$$
 
 这与第 27 章的格距规则完全一致。
 

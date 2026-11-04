@@ -40,10 +40,7 @@
 **事件** $A$ 是样本空间的一个子集。若试验结果 $\omega\in A$ ，称
 事件 $A$ 发生。例如骰子空间中
 
-$$
-A=\{\text{偶数}\}=\{2,4,6\},\qquad
-B=\{\text{至少为 }4\}=\{4,5,6\}.
-$$
+$$A=\{\text{偶数}\}=\{2,4,6\},\qquad B=\{\text{至少为 }4\}=\{4,5,6\}.$$
 
 单次试验只有一个样本点，但这个样本点可以同时属于多个事件。结果 4 同时
 属于 $A$ 和 $B$ ，所以两个事件可以同时发生。事件不是与样本点并列的
@@ -79,28 +76,17 @@ $$
 
 集合运算的基本定律包括：
 
-$$
-A\cup B=B\cup A,\qquad A\cap B=B\cap A,
-$$
+$$A\cup B=B\cup A,\qquad A\cap B=B\cap A,$$
 
-$$
-(A\cup B)\cup C=A\cup(B\cup C),
-$$
+$$(A\cup B)\cup C=A\cup(B\cup C),$$
 
-$$
-A\cap(B\cup C)=(A\cap B)\cup(A\cap C),
-$$
+$$A\cap(B\cup C)=(A\cap B)\cup(A\cap C),$$
 
-$$
-A\cup(B\cap C)=(A\cup B)\cap(A\cup C).
-$$
+$$A\cup(B\cap C)=(A\cup B)\cap(A\cup C).$$
 
 最重要的是 De Morgan 律：
 
-$$
-(A\cup B)^c=A^c\cap B^c,\qquad
-(A\cap B)^c=A^c\cup B^c.
-$$
+$$(A\cup B)^c=A^c\cap B^c,\qquad (A\cap B)^c=A^c\cup B^c.$$
 
 它的逐点证明很短。若 $\omega\in(A\cup B)^c$ ，则 $\omega$ 不属于
 $A$ ，也不属于 $B$ ，所以 $\omega\in A^c\cap B^c$ 。反方向同理。
@@ -116,9 +102,7 @@ De Morgan 律的概率读法是：把“或”翻译成“且”，同时否定�
 一个事件不仅是集合，也可以理解为一个“是/否问题”的答案。观测到事件
 $A$ 是否发生后，我们最多得到四种与 $A$ 相容的信息状态：
 
-$$
-\varnothing,\quad A,\quad A^c,\quad\Omega.
-$$
+$$\varnothing,\quad A,\quad A^c,\quad\Omega.$$
 
 - $\varnothing$ ：不可能状态；
 - $A$ ：答案为“是”；
@@ -155,19 +139,13 @@ $(\Omega,\mathcal B)$ 称为可测空间。
 由前两条和 De Morgan 律还可推出 $\Omega\in\mathcal B$ ，且 σ 代数对
 可数交封闭：
 
-$$
-\bigcap_{i=1}^{\infty}A_i
-=
-\left(\bigcup_{i=1}^{\infty}A_i^c\right)^c.
-$$
+$$\bigcap_{i=1}^{\infty}A_i = \left(\bigcup_{i=1}^{\infty}A_i^c\right)^c.$$
 
 最小的 σ 代数是 $\{\varnothing,\Omega\}$ ，它不提供任何实质信息。
 最大的有限空间 σ 代数是幂集，即所有子集构成的族。由一个事件 $A$
 生成的 σ 代数是
 
-$$
-\sigma(A)=\{\varnothing,A,A^c,\Omega\}.
-$$
+$$\sigma(A)=\{\varnothing,A,A^c,\Omega\}.$$
 
 本章不要求掌握一般可测集的构造。读者只需建立一个概念：**概率不是直接
 定义在任意“描述”上，而是定义在 σ 代数中的事件上**。在本教程的大多数
@@ -178,10 +156,7 @@ $$
 
 一个分割
 
-$$
-\{B_1,\ldots,B_n\},\qquad B_i\cap B_j=\varnothing\ (i\ne j),\qquad
-\bigcup_{i=1}^n B_i=\Omega
-$$
+$$\{B_1,\ldots,B_n\},\qquad B_i\cap B_j=\varnothing\ (i\ne j),\qquad \bigcup_{i=1}^n B_i=\Omega$$
 
 把世界分成互斥且穷尽的情况。由这个分割可生成一个有限 σ 代数：它由
 $B_1,\ldots,B_n$ 的任意并组成，共有 $2^n$ 个事件（包括空集和全空间）。
@@ -189,9 +164,7 @@ $B_1,\ldots,B_n$ 的任意并组成，共有 $2^n$ 个事件（包括空集和�
 例如把借款人信用分成“低风险、中风险、高风险”三类，所有可由这三类
 任意并表达的事件构成一个 8 元素事件族：
 
-$$
-\varnothing,\ L,\ M,\ H,\ L\cup M,\ L\cup H,\ M\cup H,\ \Omega.
-$$
+$$\varnothing,\ L,\ M,\ H,\ L\cup M,\ L\cup H,\ M\cup H,\ \Omega.$$
 
 如果还知道“是否违约”，且违约事件横切三类，就需要更细的 σ 代数。
 条件概率中的“更新信息”，常可理解为从较粗的分割切换到较细的分割。
@@ -201,16 +174,11 @@ $$
 若有限样本空间 $\Omega=\{\omega_1,\ldots,\omega_n\}$ 中每个基本结果
 等可能，则事件 $A$ 的概率将在下一章定义为
 
-$$
-P(A)=\frac{|A|}{|\Omega|}.
-$$
+$$P(A)=\frac{|A|}{|\Omega|}.$$
 
 本章先不系统介绍公理，只用这个公式检查事件运算。骰子例子中
 
-$$
-P(A)=\frac{3}{6}=\frac12,\qquad
-P(A\cap B)=\frac{|\{4,6\}|}{6}=\frac13.
-$$
+$$P(A)=\frac{3}{6}=\frac12,\qquad P(A\cap B)=\frac{|\{4,6\}|}{6}=\frac13.$$
 
 需要注意，等可能性不是“我没有信息所以每个结果都一样可能”这种主观愿望，
 而是模型假设。公平骰子、均匀洗牌、随机数生成器都在近似实现该假设；

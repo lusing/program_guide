@@ -8,13 +8,7 @@
 
 例如
 
-$$
-\sqrt n(\bar X_n^2-\mu^2),
-\qquad
-\frac{\sqrt n(\bar X_n-\mu)}{S_n},
-\qquad
-\log\frac{\hat p}{1-\hat p}.
-$$
+$$\sqrt n(\bar X_n^2-\mu^2), \qquad \frac{\sqrt n(\bar X_n-\mu)}{S_n}, \qquad \log\frac{\hat p}{1-\hat p}.$$
 
 它们都不是单独的 CLT 公式。
 
@@ -30,29 +24,19 @@ $$
 
 对数列 $a_n,b_n$ ，若存在常数 $C$ 和 $N$ ，使 $n\ge N$ 时
 
-$$
-|a_n|\le C|b_n|,
-$$
+$$|a_n|\le C|b_n|,$$
 
 则写 $a_n=O(b_n)$ 。
 
 若
 
-$$
-\frac{a_n}{b_n}\to0,
-$$
+$$\frac{a_n}{b_n}\to0,$$
 
 则写 $a_n=o(b_n)$ 。
 
 例如
 
-$$
-\frac1n=o(1),
-\qquad
-2+\frac3n=O(1),
-\qquad
-\frac1n=o(1/\sqrt n).
-$$
+$$\frac1n=o(1), \qquad 2+\frac3n=O(1), \qquad \frac1n=o(1/\sqrt n).$$
 
 这些符号表达尺度，不表达某个固定 $n$ 的精确值。
 
@@ -64,15 +48,11 @@ $a_n=o(1)$ 则明确说趋于零。
 
 随机序列 $A_n$ 称为**依概率有界**，记作
 
-$$
-A_n=O_p(1),
-$$
+$$A_n=O_p(1),$$
 
 如果对每个 $\varepsilon>0$ ，存在有限常数 $M$ 和 $N$ ，使 $n\ge N$ 时
 
-$$
-P(|A_n|>M)<\varepsilon.
-$$
+$$P(|A_n|>M)<\varepsilon.$$
 
 等价地，对每个 $\varepsilon>0$ ，可以选择一个足够大的区间 $[-M,M]$ ，使所有充分靠后的分布都把至少 $1-\varepsilon$ 的概率放在其中。
 
@@ -82,15 +62,11 @@ $$
 
 若
 
-$$
-A_n\xrightarrow{P}0,
-$$
+$$A_n\xrightarrow{P}0,$$
 
 则写
 
-$$
-A_n=o_p(1).
-$$
+$$A_n=o_p(1).$$
 
 相应地，$A_n/B_n=o_p(1)$ 表示 $A_n/B_n\xrightarrow{P}0$ 。
 
@@ -102,27 +78,19 @@ $$
 
 若 $E[A_n^2]=O(a_n^2)$ ，Chebyshev 或 Markov 不等式通常给出
 
-$$
-A_n=O_p(a_n).
-$$
+$$A_n=O_p(a_n).$$
 
 例如有限方差 iid 样本满足
 
-$$
-\bar X_n-\mu=O_p(n^{-1/2}),
-$$
+$$\bar X_n-\mu=O_p(n^{-1/2}),$$
 
 因为
 
-$$
-\operatorname{Var}(\bar X_n)=\sigma^2/n.
-$$
+$$\operatorname{Var}(\bar X_n)=\sigma^2/n.$$
 
 进一步，大数定律给出
 
-$$
-\bar X_n-\mu=o_p(1).
-$$
+$$\bar X_n-\mu=o_p(1).$$
 
 同一序列因此有两个不同层次的描述：
 
@@ -143,23 +111,15 @@ assert all(abs(2 + 3 * scale) <= 5 for scale in scales)
 
 常用法则包括
 
-$$
-o_p(1)+o_p(1)=o_p(1),
-$$
+$$o_p(1)+o_p(1)=o_p(1),$$
 
-$$
-O_p(1)+O_p(1)=O_p(1),
-$$
+$$O_p(1)+O_p(1)=O_p(1),$$
 
-$$
-O_p(1)o_p(1)=o_p(1),
-$$
+$$O_p(1)o_p(1)=o_p(1),$$
 
 以及
 
-$$
-O_p(a_n)O_p(b_n)=O_p(a_nb_n).
-$$
+$$O_p(a_n)O_p(b_n)=O_p(a_nb_n).$$
 
 这些法则的证明与非随机阶类似，只是把绝对值界改成以任意接近 $1$ 的概率成立。
 
@@ -173,33 +133,21 @@ $$
 
 若
 
-$$
-X_n\xrightarrow{d}X,
-$$
+$$X_n\xrightarrow{d}X,$$
 
 且 $g$ 在极限分布的支撑附近连续，则
 
-$$
-g(X_n)\xrightarrow{d}g(X).
-$$
+$$g(X_n)\xrightarrow{d}g(X).$$
 
 更精确的条件是：极限分布给 $g$ 的不连续点集合赋零概率。
 
 依概率和几乎必然版本也成立：
 
-$$
-X_n\xrightarrow{P}c
-\quad\Longrightarrow\quad
-g(X_n)\xrightarrow{P}g(c)
-$$
+$$X_n\xrightarrow{P}c \quad\Longrightarrow\quad g(X_n)\xrightarrow{P}g(c)$$
 
 只要 $g$ 在 $c$ 连续；
 
-$$
-X_n\xrightarrow{a.s.}X
-\quad\Longrightarrow\quad
-g(X_n)\xrightarrow{a.s.}g(X)
-$$
+$$X_n\xrightarrow{a.s.}X \quad\Longrightarrow\quad g(X_n)\xrightarrow{a.s.}g(X)$$
 
 只需逐条样本路径应用连续性。
 
@@ -215,37 +163,21 @@ $$
 
 设
 
-$$
-X_n\xrightarrow{d}X,
-\qquad
-Y_n\xrightarrow{P}c,
-$$
+$$X_n\xrightarrow{d}X, \qquad Y_n\xrightarrow{P}c,$$
 
 其中 $c$ 是常数。
 
 则联合收敛成立：
 
-$$
-(X_n,Y_n)\xrightarrow{d}(X,c).
-$$
+$$(X_n,Y_n)\xrightarrow{d}(X,c).$$
 
 于是由连续映射，
 
-$$
-\boxed{
-X_n+Y_n\xrightarrow{d}X+c,
-\qquad
-X_nY_n\xrightarrow{d}cX.
-}
-$$
+$$\boxed{ X_n+Y_n\xrightarrow{d}X+c, \qquad X_nY_n\xrightarrow{d}cX. }$$
 
 若 $c\ne0$ ，还有
 
-$$
-\boxed{
-X_n/Y_n\xrightarrow{d}X/c.
-}
-$$
+$$\boxed{ X_n/Y_n\xrightarrow{d}X/c. }$$
 
 关键是第二项必须趋于**常数**。
 
@@ -257,29 +189,19 @@ Slutsky 的证明思路是：$Y_n$ 与常数 $c$ 的差是 $o_p(1)$ ，先证明
 
 设
 
-$$
-\sqrt n(\hat\theta_n-\theta)
-\xrightarrow{d}N(0,v),
-$$
+$$\sqrt n(\hat\theta_n-\theta) \xrightarrow{d}N(0,v),$$
 
 并且 $\hat v_n\xrightarrow{P}v>0$ 。
 
 则
 
-$$
-\sqrt{\hat v_n}\xrightarrow{P}\sqrt v
-$$
+$$\sqrt{\hat v_n}\xrightarrow{P}\sqrt v$$
 
 由连续映射成立。
 
 再由 Slutsky，
 
-$$
-\boxed{
-\frac{\sqrt n(\hat\theta_n-\theta)}{\sqrt{\hat v_n}}
-\xrightarrow{d}N(0,1).
-}
-$$
+$$\boxed{ \frac{\sqrt n(\hat\theta_n-\theta)}{\sqrt{\hat v_n}} \xrightarrow{d}N(0,1). }$$
 
 这就是插入估计标准误后仍可使用标准正态临界值的依据。
 
@@ -299,53 +221,33 @@ theorem plugin_cancel (a b c : ℚ) (hb : b ≠ 0) (hc : c ≠ 0) :
 
 设
 
-$$
-\sqrt n(T_n-\theta)\xrightarrow{d}N(0,v),
-$$
+$$\sqrt n(T_n-\theta)\xrightarrow{d}N(0,v),$$
 
 且 $g$ 在 $\theta$ 可微。
 
 则
 
-$$
-\boxed{
-\sqrt n\{g(T_n)-g(\theta)\}
-\xrightarrow{d}
-N\left(0,[g'(\theta)]^2v\right).
-}
-$$
+$$\boxed{ \sqrt n\{g(T_n)-g(\theta)\} \xrightarrow{d} N\left(0,[g'(\theta)]^2v\right). }$$
 
 证明只需要一阶 Taylor 展开：
 
-$$
-g(T_n)-g(\theta)
-=g'(\theta)(T_n-\theta)+R_n.
-$$
+$$g(T_n)-g(\theta) =g'(\theta)(T_n-\theta)+R_n.$$
 
 可微性给出
 
-$$
-R_n=o(|T_n-\theta|).
-$$
+$$R_n=o(|T_n-\theta|).$$
 
 由于 $T_n-\theta=O_p(n^{-1/2})$ ，有
 
-$$
-R_n=o_p(n^{-1/2}).
-$$
+$$R_n=o_p(n^{-1/2}).$$
 
 所以
 
-$$
-\sqrt nR_n=o_p(1).
-$$
+$$\sqrt nR_n=o_p(1).$$
 
 因此
 
-$$
-\sqrt n\{g(T_n)-g(\theta)\}
-=g'(\theta)\sqrt n(T_n-\theta)+o_p(1).
-$$
+$$\sqrt n\{g(T_n)-g(\theta)\} =g'(\theta)\sqrt n(T_n-\theta)+o_p(1).$$
 
 第一项趋于 $N(0,[g'(\theta)]^2v)$ ，第二项由 Slutsky 不影响极限。
 
@@ -355,20 +257,13 @@ Delta 方法不是神秘的近似公式，而是“局部线性化 + 随机阶�
 
 设 iid 样本均值为 $\mu$ 、方差为 $\sigma^2$ ，则
 
-$$
-\sqrt n(\bar X_n-\mu)\xrightarrow{d}N(0,\sigma^2).
-$$
+$$\sqrt n(\bar X_n-\mu)\xrightarrow{d}N(0,\sigma^2).$$
 
 取 $g(x)=x^2$ ，有 $g'(\mu)=2\mu$ 。
 
 若 $\mu\ne0$ ，Delta 方法给出
 
-$$
-\boxed{
-\sqrt n(\bar X_n^2-\mu^2)
-\xrightarrow{d}N(0,4\mu^2\sigma^2).
-}
-$$
+$$\boxed{ \sqrt n(\bar X_n^2-\mu^2) \xrightarrow{d}N(0,4\mu^2\sigma^2). }$$
 
 Python 用 SymPy 计算导数和方差，避免手工抄错系数。符号 `mu`、`variance` 都声明为正数，后一例的 `p` 同理：
 
@@ -397,37 +292,21 @@ theorem delta_square (μ σ2 : ℚ) :
 
 若单个观测来自均值为 $\lambda$ 的 Poisson 分布，则样本均值满足
 
-$$
-\sqrt n(\bar X_n-\lambda)
-\xrightarrow{d}N(0,\lambda).
-$$
+$$\sqrt n(\bar X_n-\lambda) \xrightarrow{d}N(0,\lambda).$$
 
 极限方差随 $\lambda$ 改变。
 
 取
 
-$$
-g(\lambda)=\sqrt\lambda,
-\qquad
-g'(\lambda)=\frac1{2\sqrt\lambda}.
-$$
+$$g(\lambda)=\sqrt\lambda, \qquad g'(\lambda)=\frac1{2\sqrt\lambda}.$$
 
 Delta 方差为
 
-$$
-[g'(\lambda)]^2\lambda
-=\frac1{4\lambda}\lambda
-=\frac14.
-$$
+$$[g'(\lambda)]^2\lambda =\frac1{4\lambda}\lambda =\frac14.$$
 
 所以
 
-$$
-\boxed{
-\sqrt n(\sqrt{\bar X_n}-\sqrt\lambda)
-\xrightarrow{d}N(0,1/4).
-}
-$$
+$$\boxed{ \sqrt n(\sqrt{\bar X_n}-\sqrt\lambda) \xrightarrow{d}N(0,1/4). }$$
 
 变换后的渐近方差不再依赖 $\lambda$ ，这就是方差稳定化。
 
@@ -455,32 +334,15 @@ theorem delta_poisson_sqrt (q : ℚ) (hq : q ≠ 0) :
 
 CLT 给出
 
-$$
-\sqrt n(\hat p_n-p)
-\xrightarrow{d}N(0,p(1-p)).
-$$
+$$\sqrt n(\hat p_n-p) \xrightarrow{d}N(0,p(1-p)).$$
 
 取 logit 变换
 
-$$
-g(p)=\log\frac{p}{1-p},
-\qquad
-g'(p)=\frac1{p(1-p)}.
-$$
+$$g(p)=\log\frac{p}{1-p}, \qquad g'(p)=\frac1{p(1-p)}.$$
 
 Delta 方法得到
 
-$$
-\boxed{
-\sqrt n\left(
-\log\frac{\hat p_n}{1-\hat p_n}
--
-\log\frac{p}{1-p}
-\right)
-\xrightarrow{d}
-N\left(0,\frac1{p(1-p)}\right).
-}
-$$
+$$\boxed{ \sqrt n\left( \log\frac{\hat p_n}{1-\hat p_n} - \log\frac{p}{1-p} \right) \xrightarrow{d} N\left(0,\frac1{p(1-p)}\right). }$$
 
 Python 的符号断言是（`p = sp.symbols("p", positive=True)`）：
 
@@ -491,11 +353,7 @@ assert sp.simplify(logit_variance - 1 / (p * (1 - p))) == 0
 
 若把分母 $p(1-p)$ 换成一致估计 $\hat p_n(1-\hat p_n)$ ，由 Slutsky，
 
-$$
-\frac{\sqrt n\{g(\hat p_n)-g(p)\}}
-{\sqrt{1/[\hat p_n(1-\hat p_n)]}}
-\xrightarrow{d}N(0,1).
-$$
+$$\frac{\sqrt n\{g(\hat p_n)-g(p)\}} {\sqrt{1/[\hat p_n(1-\hat p_n)]}} \xrightarrow{d}N(0,1).$$
 
 这就是“估计量标准化”的完整链条：CLT 给未标准化极限，Delta 给变换方差，连续映射处理分母，Slutsky 完成插入。
 
@@ -515,25 +373,15 @@ assert abs(observed / predicted - 1) < 0.08
 
 若 $\mathbf T_n\in\mathbb R^k$ 满足
 
-$$
-\sqrt n(\mathbf T_n-\boldsymbol\theta)
-\xrightarrow{d}N_k(\mathbf0,\Sigma),
-$$
+$$\sqrt n(\mathbf T_n-\boldsymbol\theta) \xrightarrow{d}N_k(\mathbf0,\Sigma),$$
 
 且 $g:\mathbb R^k\to\mathbb R^m$ 在 $\boldsymbol\theta$ 可微，则
 
-$$
-\sqrt n\{g(\mathbf T_n)-g(\boldsymbol\theta)\}
-\xrightarrow{d}
-N_m(\mathbf0,D\Sigma D^\top),
-$$
+$$\sqrt n\{g(\mathbf T_n)-g(\boldsymbol\theta)\} \xrightarrow{d} N_m(\mathbf0,D\Sigma D^\top),$$
 
 其中
 
-$$
-D=\left.\frac{\partial g}{\partial\boldsymbol\theta^\top}
-\right|_{\boldsymbol\theta}
-$$
+$$D=\left.\frac{\partial g}{\partial\boldsymbol\theta^\top} \right|_{\boldsymbol\theta}$$
 
 是 $m\times k$ Jacobi 矩阵。
 
@@ -553,23 +401,17 @@ $$
 
 此时
 
-$$
-g'(0)=0.
-$$
+$$g'(0)=0.$$
 
 一阶 Delta 公式只会给出渐近方差 $0$ ，无法描述非退化极限。
 
 若单个样本来自 $N(0,1)$ ，则
 
-$$
-\bar X_n\sim N(0,1/n).
-$$
+$$\bar X_n\sim N(0,1/n).$$
 
 因此
 
-$$
-n\bar X_n^2\sim\chi_1^2
-$$
+$$n\bar X_n^2\sim\chi_1^2$$
 
 对每个 $n$ 都精确成立，而不只是渐近成立。
 
@@ -577,26 +419,15 @@ $$
 
 一般地，若
 
-$$
-\sqrt n(T_n-\theta)\xrightarrow{d}\sigma Z,
-$$
+$$\sqrt n(T_n-\theta)\xrightarrow{d}\sigma Z,$$
 
 且 $g'(\theta)=0$ 、$g''(\theta)\ne0$ ，二阶 Taylor 展开给出
 
-$$
-g(T_n)-g(\theta)
-=\frac12g''(\theta)(T_n-\theta)^2+o_p((T_n-\theta)^2).
-$$
+$$g(T_n)-g(\theta) =\frac12g''(\theta)(T_n-\theta)^2+o_p((T_n-\theta)^2).$$
 
 乘以 $n$ 后，
 
-$$
-\boxed{
-n\{g(T_n)-g(\theta)\}
-\xrightarrow{d}
-\frac12g''(\theta)\sigma^2Z^2.
-}
-$$
+$$\boxed{ n\{g(T_n)-g(\theta)\} \xrightarrow{d} \frac12g''(\theta)\sigma^2Z^2. }$$
 
 极限通常是非中心位置被缩放的 $\chi_1^2$ ，不是均值为零的 Gaussian。
 

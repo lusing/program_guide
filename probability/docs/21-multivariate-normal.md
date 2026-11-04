@@ -14,35 +14,23 @@
 
 设 $Z=(Z_1,\dots,Z_r)^T$ ，其中各 $Z_i$ 相互独立且都服从 $N(0,1)$ 。若
 
-$$
-\boxed{X=\mu+AZ}
-$$
+$$\boxed{X=\mu+AZ}$$
 
 是某个固定向量 $\mu\in\mathbb R^p$ 和固定 $p\times r$ 矩阵 $A$ 的仿射变换，则称 $X$ 服从多元正态分布。
 
 此时
 
-$$
-E[X]=\mu,\qquad \operatorname{Cov}(X)=AA^T=:\Sigma.
-$$
+$$E[X]=\mu,\qquad \operatorname{Cov}(X)=AA^T=:\Sigma.$$
 
 协方差矩阵 $\Sigma$ 半正定。若 $\Sigma$ 正定，则 $X$ 有 $p$ 维密度
 
-$$
-\boxed{
-f_X(x)
-=\frac1{(2\pi)^{p/2}\sqrt{\det\Sigma}}
-\exp\left[-\frac12(x-\mu)^T\Sigma^{-1}(x-\mu)\right].
-}
-$$
+$$\boxed{ f_X(x) =\frac1{(2\pi)^{p/2}\sqrt{\det\Sigma}} \exp\left[-\frac12(x-\mu)^T\Sigma^{-1}(x-\mu)\right]. }$$
 
 若 $\Sigma$ 只是半正定而非正定，则随机向量被限制在某个低维仿射子空间上，不存在通常的 $p$ 维 Lebesgue 密度，但仿射变换定义仍然有效。
 
 矩阵 $\Sigma^{-1}$ 称为精度矩阵，二次型
 
-$$
-D^2(x)=(x-\mu)^T\Sigma^{-1}(x-\mu)
-$$
+$$D^2(x)=(x-\mu)^T\Sigma^{-1}(x-\mu)$$
 
 称为 Mahalanobis 平方距离。密度等高线不是圆，而是由 $D^2(x)=\text{常数}$ 给出的椭球。
 
@@ -50,29 +38,17 @@ $$
 
 多元正态的矩母函数为
 
-$$
-\boxed{
-M_X(t)=E[e^{t^TX}]
-=\exp\left(t^T\mu+\frac12t^T\Sigma t\right).
-}
-$$
+$$\boxed{ M_X(t)=E[e^{t^TX}] =\exp\left(t^T\mu+\frac12t^T\Sigma t\right). }$$
 
 这个公式也可作为协方差矩阵为 $\Sigma$ 的非退化多元正态定义；在奇异情形使用特征函数版本即可。
 
 下面给出密度情形的配方。由
 
-$$
-(x-\mu)^T\Sigma^{-1}(x-\mu)-2t^Tx
-$$
+$$(x-\mu)^T\Sigma^{-1}(x-\mu)-2t^Tx$$
 
 配成
 
-$$
-\begin{aligned}
-&(x-\mu-\Sigma t)^T\Sigma^{-1}(x-\mu-\Sigma t)\\
-&\qquad -2t^T\mu-t^T\Sigma t.
-\end{aligned}
-$$
+$$\begin{aligned} &(x-\mu-\Sigma t)^T\Sigma^{-1}(x-\mu-\Sigma t)\\ &\qquad -2t^T\mu-t^T\Sigma t. \end{aligned}$$
 
 把与 $x$ 无关的因子提出积分号，剩下的是一个平移后的正态密度积分，等于 1，于是得到上述 MGF。
 
@@ -92,46 +68,27 @@ MGF 显示分布只依赖 $\mu,\Sigma$ ，也解释了为什么多元正态的�
 
 二元正态有五个参数：
 
-$$
-\mu_1,\quad \mu_2,\quad \sigma_1>0,\quad \sigma_2>0,\quad -1<\rho<1.
-$$
+$$\mu_1,\quad \mu_2,\quad \sigma_1>0,\quad \sigma_2>0,\quad -1<\rho<1.$$
 
 协方差矩阵为
 
-$$
-\Sigma=
-\begin{pmatrix}
-\sigma_1^2 & \rho\sigma_1\sigma_2\\
-\rho\sigma_1\sigma_2 & \sigma_2^2
-\end{pmatrix}.
-$$
+$$\Sigma= \begin{pmatrix} \sigma_1^2 & \rho\sigma_1\sigma_2\\ \rho\sigma_1\sigma_2 & \sigma_2^2 \end{pmatrix}.$$
 
 其行列式为
 
-$$
-\det\Sigma=\sigma_1^2\sigma_2^2(1-\rho^2).
-$$
+$$\det\Sigma=\sigma_1^2\sigma_2^2(1-\rho^2).$$
 
 令
 
-$$
-a=\frac{x-\mu_1}{\sigma_1},\qquad
-b=\frac{y-\mu_2}{\sigma_2}.
-$$
+$$a=\frac{x-\mu_1}{\sigma_1},\qquad b=\frac{y-\mu_2}{\sigma_2}.$$
 
 密度指数中的二次型为
 
-$$
-q=\frac{a^2-2\rho ab+b^2}{1-\rho^2}.
-$$
+$$q=\frac{a^2-2\rho ab+b^2}{1-\rho^2}.$$
 
 密度写成
 
-$$
-f_{X,Y}(x,y)
-=\frac1{2\pi\sigma_1\sigma_2\sqrt{1-\rho^2}}
-e^{-q/2}.
-$$
+$$f_{X,Y}(x,y) =\frac1{2\pi\sigma_1\sigma_2\sqrt{1-\rho^2}} e^{-q/2}.$$
 
 参数 $\rho$ 正是 $X,Y$ 的相关系数。
 
@@ -139,12 +96,7 @@ $$
 
 条件分布推导的关键恒等式是
 
-$$
-\boxed{
-\frac{a^2-2\rho ab+b^2}{1-\rho^2}
-=a^2+\frac{(b-\rho a)^2}{1-\rho^2}.
-}
-$$
+$$\boxed{ \frac{a^2-2\rho ab+b^2}{1-\rho^2} =a^2+\frac{(b-\rho a)^2}{1-\rho^2}. }$$
 
 Lean 对该恒等式做机器检查：
 
@@ -158,55 +110,29 @@ example (a b ρ : ℚ) (h : 1 - ρ ^ 2 ≠ 0) :
 
 而
 
-$$
-b-\rho a
-=\frac{(y-\mu_2)-\rho\frac{\sigma_2}{\sigma_1}(x-\mu_1)}
-{\sigma_2}.
-$$
+$$b-\rho a =\frac{(y-\mu_2)-\rho\frac{\sigma_2}{\sigma_1}(x-\mu_1)} {\sigma_2}.$$
 
 因此联合密度可以分解为边际密度乘条件密度：
 
-$$
-f_{X,Y}(x,y)=f_X(x)f_{Y\mid X}(y\mid x),
-$$
+$$f_{X,Y}(x,y)=f_X(x)f_{Y\mid X}(y\mid x),$$
 
 其中
 
-$$
-f_X(x)=\frac1{\sqrt{2\pi}\sigma_1}
-\exp\left[-\frac{(x-\mu_1)^2}{2\sigma_1^2}\right],
-$$
+$$f_X(x)=\frac1{\sqrt{2\pi}\sigma_1} \exp\left[-\frac{(x-\mu_1)^2}{2\sigma_1^2}\right],$$
 
 且
 
-$$
-\boxed{
-Y\mid X=x\sim N\left(
-\mu_2+\rho\frac{\sigma_2}{\sigma_1}(x-\mu_1),
-\sigma_2^2(1-\rho^2)
-\right).
-}
-$$
+$$\boxed{ Y\mid X=x\sim N\left( \mu_2+\rho\frac{\sigma_2}{\sigma_1}(x-\mu_1), \sigma_2^2(1-\rho^2) \right). }$$
 
 条件均值是 $x$ 的仿射函数：
 
-$$
-E[Y\mid X=x]
-=\mu_2+\beta(x-\mu_1),
-\qquad
-\beta=\frac{\rho\sigma_2}{\sigma_1}.
-$$
+$$E[Y\mid X=x] =\mu_2+\beta(x-\mu_1), \qquad \beta=\frac{\rho\sigma_2}{\sigma_1}.$$
 
 这正是一元线性回归中的回归系数；在二元正态模型中，最优条件期望恰好是直线。
 
 条件方差为
 
-$$
-\boxed{
-\operatorname{Var}(Y\mid X=x)
-=\sigma_2^2(1-\rho^2).
-}
-$$
+$$\boxed{ \operatorname{Var}(Y\mid X=x) =\sigma_2^2(1-\rho^2). }$$
 
 它不依赖 $x$ 。相关性越强，知道 $X$ 后剩余的方差越小；$|\rho|\to1$ 时条件方差趋于 0。
 
@@ -230,31 +156,19 @@ assert sp.simplify(ratio - 1) == 0
 
 取
 
-$$
-\sigma_1=2,\qquad \sigma_2=3,\qquad \rho=\frac12.
-$$
+$$\sigma_1=2,\qquad \sigma_2=3,\qquad \rho=\frac12.$$
 
 则
 
-$$
-\Sigma=
-\begin{pmatrix}
-4&3\\3&9
-\end{pmatrix},
-\qquad \det\Sigma=36-9=27.
-$$
+$$\Sigma= \begin{pmatrix} 4&3\\3&9 \end{pmatrix}, \qquad \det\Sigma=36-9=27.$$
 
 条件方差为
 
-$$
-9\left(1-\frac14\right)=\frac{27}{4},
-$$
+$$9\left(1-\frac14\right)=\frac{27}{4},$$
 
 回归斜率为
 
-$$
-\beta=\frac{3}{4}.
-$$
+$$\beta=\frac{3}{4}.$$
 
 Prolog 用有理数精确检查：
 
@@ -278,10 +192,7 @@ example : (4 : ℚ) * 9 - 3 * 3 = 27
 
 条件均值解释了一部分方差：
 
-$$
-\beta^2\sigma_1^2+\sigma_2^2(1-\rho^2)
-=\sigma_2^2.
-$$
+$$\beta^2\sigma_1^2+\sigma_2^2(1-\rho^2) =\sigma_2^2.$$
 
 这正是第 20 章全方差公式在正态模型中的形式。
 
@@ -289,77 +200,29 @@ $$
 
 把随机向量分成两块：
 
-$$
-X=
-\begin{pmatrix}
-X_A\\X_B
-\end{pmatrix},
-\qquad
-\Sigma=
-\begin{pmatrix}
-\Sigma_{AA}&\Sigma_{AB}\\
-\Sigma_{BA}&\Sigma_{BB}
-\end{pmatrix}.
-$$
+$$X= \begin{pmatrix} X_A\\X_B \end{pmatrix}, \qquad \Sigma= \begin{pmatrix} \Sigma_{AA}&\Sigma_{AB}\\ \Sigma_{BA}&\Sigma_{BB} \end{pmatrix}.$$
 
 假设 $\Sigma_{BB}$ 可逆。则
 
-$$
-\boxed{
-X_A\mid X_B=x_B
-\sim N\left(
-\mu_A+\Sigma_{AB}\Sigma_{BB}^{-1}(x_B-\mu_B),
-\Sigma_{AA}-\Sigma_{AB}\Sigma_{BB}^{-1}\Sigma_{BA}
-\right).
-}
-$$
+$$\boxed{ X_A\mid X_B=x_B \sim N\left( \mu_A+\Sigma_{AB}\Sigma_{BB}^{-1}(x_B-\mu_B), \Sigma_{AA}-\Sigma_{AB}\Sigma_{BB}^{-1}\Sigma_{BA} \right). }$$
 
 矩阵
 
-$$
-\boxed{
-\Sigma_{A\mid B}
-=\Sigma_{AA}-\Sigma_{AB}\Sigma_{BB}^{-1}\Sigma_{BA}
-}
-$$
+$$\boxed{ \Sigma_{A\mid B} =\Sigma_{AA}-\Sigma_{AB}\Sigma_{BB}^{-1}\Sigma_{BA} }$$
 
 称为 Schur 补。它是条件协方差矩阵。
 
 考虑
 
-$$
-\Sigma=
-\begin{pmatrix}
-4&2&1\\
-2&3&\frac12\\
-1&\frac12&2
-\end{pmatrix}.
-$$
+$$\Sigma= \begin{pmatrix} 4&2&1\\ 2&3&\frac12\\ 1&\frac12&2 \end{pmatrix}.$$
 
 给定 $X_3$ 后，$(X_1,X_2)$ 的条件协方差为
 
-$$
-\begin{pmatrix}
-4&2\\2&3
-\end{pmatrix}
--
-\begin{pmatrix}1\\1/2\end{pmatrix}
-\frac12
-\begin{pmatrix}1&1/2\end{pmatrix}
-=
-\begin{pmatrix}
-7/2&7/4\\
-7/4&23/8
-\end{pmatrix}.
-$$
+$$\begin{pmatrix} 4&2\\2&3 \end{pmatrix} - \begin{pmatrix}1\\1/2\end{pmatrix} \frac12 \begin{pmatrix}1&1/2\end{pmatrix} = \begin{pmatrix} 7/2&7/4\\ 7/4&23/8 \end{pmatrix}.$$
 
 条件均值对 $X_3$ 的回归系数为
 
-$$
-\Sigma_{AB}\Sigma_{BB}^{-1}
-=
-\begin{pmatrix}1/2\\1/4\end{pmatrix}.
-$$
+$$\Sigma_{AB}\Sigma_{BB}^{-1} = \begin{pmatrix}1/2\\1/4\end{pmatrix}.$$
 
 Prolog 逐个元素计算 Schur 补：
 
@@ -374,22 +237,15 @@ schur(I, J, V) :-
 
 Python 用精确有理数矩阵进一步验证了精度矩阵关系：若 $\Lambda=\Sigma^{-1}$ ，则
 
-$$
-\Sigma_{A\mid B}=(\Lambda_{AA})^{-1},
-$$
+$$\Sigma_{A\mid B}=(\Lambda_{AA})^{-1},$$
 
 且回归系数满足
 
-$$
-\Sigma_{AB}\Sigma_{BB}^{-1}
-=-(\Lambda_{AA})^{-1}\Lambda_{AB}.
-$$
+$$\Sigma_{AB}\Sigma_{BB}^{-1} =-(\Lambda_{AA})^{-1}\Lambda_{AB}.$$
 
 Schur 补与原协方差矩阵之差为
 
-$$
-\Sigma_{AB}\Sigma_{BB}^{-1}\Sigma_{BA}\succeq0,
-$$
+$$\Sigma_{AB}\Sigma_{BB}^{-1}\Sigma_{BA}\succeq0,$$
 
 所以条件协方差矩阵在半正定序意义下不大于原协方差矩阵。对上述例子，条件方差 $7/2\le4$ 、$23/8\le3$ 。这与第 20 章的全方差公式一致：条件信息不会增加最优预测的最小均方误差。
 
@@ -397,21 +253,15 @@ $$
 
 任何正定矩阵都可分解为
 
-$$
-\Sigma=LL^T,
-$$
+$$\Sigma=LL^T,$$
 
 其中 $L$ 是下三角矩阵，且对角元为正。若 $Z$ 是独立标准正态向量，则
 
-$$
-\boxed{X=\mu+LZ}
-$$
+$$\boxed{X=\mu+LZ}$$
 
 有均值 $\mu$ 和协方差
 
-$$
-\operatorname{Cov}(X)=LIL^T=LL^T=\Sigma.
-$$
+$$\operatorname{Cov}(X)=LIL^T=LL^T=\Sigma.$$
 
 这给出多元正态的标准生成算法。Julia 程序使用
 
@@ -437,29 +287,19 @@ Python 的固定种子版本同样先验证 `L @ L.T = Sigma`，再生成样本�
 
 若 $X\sim N(\mu,\Sigma)$ ，且 $\Sigma$ 正定，则
 
-$$
-\boxed{
-D^2=(X-\mu)^T\Sigma^{-1}(X-\mu)\sim\chi^2_p.
-}
-$$
+$$\boxed{ D^2=(X-\mu)^T\Sigma^{-1}(X-\mu)\sim\chi^2_p. }$$
 
 证明使用 Cholesky 分解。令
 
-$$
-Z=L^{-1}(X-\mu).
-$$
+$$Z=L^{-1}(X-\mu).$$
 
 则 $Z$ 的各分量独立且为标准正态，所以
 
-$$
-D^2=Z^TZ=\sum_{j=1}^pZ_j^2.
-$$
+$$D^2=Z^TZ=\sum_{j=1}^pZ_j^2.$$
 
 按定义，这就是 $\chi_p^2$ 随机变量。因此
 
-$$
-E[D^2]=p,\qquad \operatorname{Var}(D^2)=2p.
-$$
+$$E[D^2]=p,\qquad \operatorname{Var}(D^2)=2p.$$
 
 Lean 文件只保留最基本的矩恒等式：
 
@@ -486,41 +326,25 @@ Python 还对经验分布做 Kolmogorov–Smirnov 检查。该检验只用于捕
 
 若
 
-$$
-X\sim N(\mu,\Sigma)
-$$
+$$X\sim N(\mu,\Sigma)$$
 
 且 $A$ 是 $q\times p$ 固定矩阵，$b\in\mathbb R^q$ ，则
 
-$$
-\boxed{
-AX+b\sim N(A\mu+b,A\Sigma A^T).
-}
-$$
+$$\boxed{ AX+b\sim N(A\mu+b,A\Sigma A^T). }$$
 
 由仿射定义最容易证明：若 $X=\mu+LZ$ ，则
 
-$$
-AX+b=(A\mu+b)+(AL)Z,
-$$
+$$AX+b=(A\mu+b)+(AL)Z,$$
 
 它仍是独立标准正态变量的仿射变换，协方差为
 
-$$
-(AL)(AL)^T=A(LL^T)A^T=A\Sigma A^T.
-$$
+$$(AL)(AL)^T=A(LL^T)A^T=A\Sigma A^T.$$
 
 取选择矩阵即可得到：多元正态的任意子向量仍为多元正态；因此每个边际分量都是一元正态。
 
 程序用
 
-$$
-A=
-\begin{pmatrix}
-1&-1&0\\
-1/2&1/2&2
-\end{pmatrix}
-$$
+$$A= \begin{pmatrix} 1&-1&0\\ 1/2&1/2&2 \end{pmatrix}$$
 
 生成两个线性组合，并检查样本协方差接近 $A\Sigma A^T$ ：
 
@@ -532,11 +356,7 @@ Y = X * A'
 
 对两个联合正态变量，
 
-$$
-X_1+X_2
-\sim N(\mu_1+\mu_2,
-\sigma_1^2+\sigma_2^2+2\rho\sigma_1\sigma_2).
-$$
+$$X_1+X_2 \sim N(\mu_1+\mu_2, \sigma_1^2+\sigma_2^2+2\rho\sigma_1\sigma_2).$$
 
 独立时交叉项为零，又回到独立正态变量和的公式。
 
@@ -546,41 +366,27 @@ $$
 
 若 $X,Y$ 联合正态且 $\rho=0$ ，二元密度的二次型变成
 
-$$
-a^2+b^2,
-$$
+$$a^2+b^2,$$
 
 归一化常数也分解：
 
-$$
-2\pi\sigma_1\sigma_2
-=\sqrt{2\pi\sigma_1^2}\sqrt{2\pi\sigma_2^2}.
-$$
+$$2\pi\sigma_1\sigma_2 =\sqrt{2\pi\sigma_1^2}\sqrt{2\pi\sigma_2^2}.$$
 
 于是
 
-$$
-f_{X,Y}(x,y)=f_X(x)f_Y(y),
-$$
+$$f_{X,Y}(x,y)=f_X(x)f_Y(y),$$
 
 所以 $X,Y$ 独立。
 
 一般多元正态中，若两个分块的交叉协方差矩阵为零，
 
-$$
-\Sigma_{AB}=0,
-$$
+$$\Sigma_{AB}=0,$$
 
 则密度或 MGF 按分块因子分解，两个分块独立。
 
 反向方向对任何具有有限二阶矩的独立随机变量都成立：独立意味着零协方差。因此在**联合正态**前提下，
 
-$$
-\boxed{
-\operatorname{Cov}(X_A,X_B)=0
-\iff X_A\perp\!\!\!\perp X_B.
-}
-$$
+$$\boxed{ \operatorname{Cov}(X_A,X_B)=0 \iff X_A\perp\!\!\!\perp X_B. }$$
 
 Lean 检查 $\rho=0$ 时二次型分裂的代数核心：
 
@@ -597,30 +403,21 @@ example (a b : ℚ) :
 
 令
 
-$$
-X\sim N(0,1),
-$$
+$$X\sim N(0,1),$$
 
 令 $S\in\{-1,1\}$ 等概率且与 $X$ 独立，定义
 
-$$
-Y=SX.
-$$
+$$Y=SX.$$
 
 ### 21.11.1 $Y$ 的边际仍是标准正态
 
 对任意 Borel 集 $B$ ，由全概率公式，
 
-$$
-P(Y\in B)
-=\frac12P(X\in B)+\frac12P(-X\in B).
-$$
+$$P(Y\in B) =\frac12P(X\in B)+\frac12P(-X\in B).$$
 
 因为 $X\stackrel d=-X$ ，所以
 
-$$
-P(Y\in B)=P(X\in B).
-$$
+$$P(Y\in B)=P(X\in B).$$
 
 故 $Y\sim N(0,1)$ 。
 
@@ -628,49 +425,35 @@ $$
 
 由于 $E[S]=0$ ，
 
-$$
-E[XY]=E[SX^2]=E[S]E[X^2]=0.
-$$
+$$E[XY]=E[SX^2]=E[S]E[X^2]=0.$$
 
 两者均值都为 0，所以
 
-$$
-\operatorname{Cov}(X,Y)=0.
-$$
+$$\operatorname{Cov}(X,Y)=0.$$
 
 ### 21.11.3 但二者不独立
 
 总有
 
-$$
-|Y|=|X|,
-$$
+$$|Y|=|X|,$$
 
 所以 $X$ 与 $Y$ 强烈相依。并且当 $S=-1$ 时，
 
-$$
-X+Y=X-X=0.
-$$
+$$X+Y=X-X=0.$$
 
 因此
 
-$$
-P(X+Y=0)=\frac12.
-$$
+$$P(X+Y=0)=\frac12.$$
 
 若 $(X,Y)$ 是二元正态，则 $X+Y$ 作为线性组合应是一元正态连续变量，在任意单点概率为 0。这与 $P(X+Y=0)=1/2$ 矛盾。故 $(X,Y)$ 不是联合正态。
 
 还可看平方：
 
-$$
-E[X^2Y^2]=E[X^4]=3,
-$$
+$$E[X^2Y^2]=E[X^4]=3,$$
 
 而独立时应为
 
-$$
-E[X^2]E[Y^2]=1\cdot1=1.
-$$
+$$E[X^2]E[Y^2]=1\cdot1=1.$$
 
 Python 使用固定种子 21 模拟并审计这些事实：
 
@@ -697,15 +480,11 @@ Julia 还检查 $X^2$ 与 $Y^2$ 的样本相关几乎为 1：
 
 此时
 
-$$
-P(X=0,Y=0)=\frac13,
-$$
+$$P(X=0,Y=0)=\frac13,$$
 
 但
 
-$$
-P(X=0)P(Y=0)=\frac13\cdot\frac13=\frac19.
-$$
+$$P(X=0)P(Y=0)=\frac13\cdot\frac13=\frac19.$$
 
 Prolog 枚举六个等概率结果：
 
@@ -725,9 +504,7 @@ P00 =\= PX0 * PY0
 
 设 $\phi$ 为标准正态密度，定义
 
-$$
-f_{X,Y}(x,y)=2\phi(x)\phi(y)\mathbf 1_{\{xy>0\}}.
-$$
+$$f_{X,Y}(x,y)=2\phi(x)\phi(y)\mathbf 1_{\{xy>0\}}.$$
 
 即密度只在第一、第三象限非零，且在这两个象限中的密度是独立标准正态密度的两倍。
 
@@ -735,10 +512,7 @@ $$
 
 固定 $x>0$ ，只对 $y>0$ 积分：
 
-$$
-f_X(x)=\int_0^\infty 2\phi(x)\phi(y)\,dy
-=2\phi(x)\cdot\frac12=\phi(x).
-$$
+$$f_X(x)=\int_0^\infty 2\phi(x)\phi(y)\,dy =2\phi(x)\cdot\frac12=\phi(x).$$
 
 固定 $x<0$ ，只对 $y<0$ 积分，结果相同。因此 $X\sim N(0,1)$ 。由对称性，$Y\sim N(0,1)$ 。
 
@@ -759,23 +533,15 @@ assert abs(fx_neg - phi(-1.3)) < 1e-10
 
 其协方差不为零。由第一、第三象限的对称性，
 
-$$
-E[XY]
-=4\left(\int_0^\infty x\phi(x)\,dx\right)
-\left(\int_0^\infty y\phi(y)\,dy\right).
-$$
+$$E[XY] =4\left(\int_0^\infty x\phi(x)\,dx\right) \left(\int_0^\infty y\phi(y)\,dy\right).$$
 
 又因为
 
-$$
-\int_0^\infty x\phi(x)\,dx=\frac1{\sqrt{2\pi}},
-$$
+$$\int_0^\infty x\phi(x)\,dx=\frac1{\sqrt{2\pi}},$$
 
 所以
 
-$$
-\operatorname{Cov}(X,Y)=E[XY]=\frac2\pi.
-$$
+$$\operatorname{Cov}(X,Y)=E[XY]=\frac2\pi.$$
 
 程序数值核对该精确值：
 
@@ -794,20 +560,11 @@ assert abs(cov_num - 2 / np.pi) < 1e-10
 
 在一般分块条件公式中，定义条件残差
 
-$$
-R_A=X_A-\mu_A-\Sigma_{AB}\Sigma_{BB}^{-1}(X_B-\mu_B).
-$$
+$$R_A=X_A-\mu_A-\Sigma_{AB}\Sigma_{BB}^{-1}(X_B-\mu_B).$$
 
 它与 $X_B$ 的协方差为
 
-$$
-\begin{aligned}
-\operatorname{Cov}(R_A,X_B)
-&=\Sigma_{AB}
--\Sigma_{AB}\Sigma_{BB}^{-1}\Sigma_{BB}\\
-&=0.
-\end{aligned}
-$$
+$$\begin{aligned} \operatorname{Cov}(R_A,X_B) &=\Sigma_{AB} -\Sigma_{AB}\Sigma_{BB}^{-1}\Sigma_{BB}\\ &=0. \end{aligned}$$
 
 在线性回归中，残差与解释变量零相关通常只是投影性质；由于这里整个向量联合正态，$(R_A,X_B)$ 也联合正态，所以该零相关进一步推出独立。这就是为什么正态线性模型中的回归残差与回归项独立（在固定设计之外的随机正态设计情形中），而一般模型通常只能得到不相关。
 
@@ -825,26 +582,17 @@ Python 同时检查样本相关接近零。再次强调：这里的独立结论�
 
 并非所有多元正态都有密度。例如令 $Z\sim N(0,1)$ ，定义
 
-$$
-(X_1,X_2)=(Z,Z).
-$$
+$$(X_1,X_2)=(Z,Z).$$
 
 二者是同一个随机变量，协方差矩阵为
 
-$$
-\Sigma=
-\begin{pmatrix}
-1&1\\1&1
-\end{pmatrix},
-$$
+$$\Sigma= \begin{pmatrix} 1&1\\1&1 \end{pmatrix},$$
 
 其行列式为 0。随机向量全落在直线 $x_1=x_2$ 上，二维密度不存在，但它完全符合仿射定义。
 
 奇异情形仍可使用 MGF：
 
-$$
-M(t)=\exp\left(t^T\mu+\frac12t^T\Sigma t\right),
-$$
+$$M(t)=\exp\left(t^T\mu+\frac12t^T\Sigma t\right),$$
 
 也可以使用线性变换性质。条件公式则需要被条件的分块协方差可逆；若 $\Sigma_{BB}$ 奇异，应先去掉确定性线性关系，或使用广义逆并额外注意可识别条件。
 

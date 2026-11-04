@@ -21,28 +21,17 @@
 
 定义三个平方和：
 
-$$
-\mathrm{TSS}=\sum_t(Y_t-\bar Y)^2=\|y-\bar Y\mathbf 1\|^2
-\quad\text{（总平方和）},
-$$
+$$\mathrm{TSS}=\sum_t(Y_t-\bar Y)^2=\|y-\bar Y\mathbf 1\|^2 \quad\text{（总平方和）},$$
 
-$$
-\mathrm{ESS}=\sum_t(\hat Y_t-\bar Y)^2=\|\hat y-\bar Y\mathbf 1\|^2
-\quad\text{（解释平方和）},
-$$
+$$\mathrm{ESS}=\sum_t(\hat Y_t-\bar Y)^2=\|\hat y-\bar Y\mathbf 1\|^2 \quad\text{（解释平方和）},$$
 
-$$
-\mathrm{RSS}=\sum_te_t^2=\|e\|^2
-\quad\text{（残差平方和）}.
-$$
+$$\mathrm{RSS}=\sum_te_t^2=\|e\|^2 \quad\text{（残差平方和）}.$$
 
 **分解定理。** $\mathrm{TSS}=\mathrm{ESS}+\mathrm{RSS}$ 。
 
 **证明。** 拆
 
-$$
-y-\bar Y\mathbf 1=(\hat y-\bar Y\mathbf 1)+e.
-$$
+$$y-\bar Y\mathbf 1=(\hat y-\bar Y\mathbf 1)+e.$$
 
 取范数平方后交叉项为 $(\hat y-\bar Y\mathbf 1)'e=\hat y'e-\bar Y\mathbf 1'e$ 。
 
@@ -68,11 +57,7 @@ $R^2$ 因此度量的是相对均值基线的改进。
 
 定义
 
-$$
-\boxed{
-R^2=\frac{\mathrm{ESS}}{\mathrm{TSS}}=1-\frac{\mathrm{RSS}}{\mathrm{TSS}}.
-}
-$$
+$$\boxed{ R^2=\frac{\mathrm{ESS}}{\mathrm{TSS}}=1-\frac{\mathrm{RSS}}{\mathrm{TSS}}. }$$
 
 由分解定理，含常数项时 $0\le R^2\le1$ 。
 
@@ -92,21 +77,15 @@ $$
 
 设 $X_2$ 的列是 $X_1$ 列的子集（嵌套），则
 
-$$
-\operatorname{col}(X_1)\subseteq\operatorname{col}(X_2).
-$$
+$$\operatorname{col}(X_1)\subseteq\operatorname{col}(X_2).$$
 
 投影到更大子空间只会更近：
 
-$$
-\mathrm{RSS}_2\le\mathrm{RSS}_1.
-$$
+$$\mathrm{RSS}_2\le\mathrm{RSS}_1.$$
 
 TSS 与模型无关，故
 
-$$
-\boxed{R_2^2\ge R_1^2.}
-$$
+$$\boxed{R_2^2\ge R_1^2.}$$
 
 这是纯几何事实，与新增变量是否有用无关——即使加入一列纯噪声，样本内 $R^2$ 也不降。
 
@@ -122,11 +101,7 @@ $R^2$ 的缺陷源于它不为新参数付代价。
 
 调整 $R^2$ 把每消耗一个自由度计入：
 
-$$
-\boxed{
-\bar R^2=1-\frac{\mathrm{RSS}/(n-k)}{\mathrm{TSS}/(n-1)}.
-}
-$$
+$$\boxed{ \bar R^2=1-\frac{\mathrm{RSS}/(n-k)}{\mathrm{TSS}/(n-1)}. }$$
 
 分母换成了各自的自由度均值。
 
@@ -138,11 +113,7 @@ $$
 
 推导：记小模型残差自由度 $n-k$ 、大模型 $n-k-1$ ，$\bar R^2$ 上升等价于
 
-$$
-\frac{\mathrm{RSS}_2}{n-k-1}<\frac{\mathrm{RSS}_1}{n-k}
-\iff
-\frac{\mathrm{RSS}_1-\mathrm{RSS}_2}{\mathrm{RSS}_2/(n-k-1)}=\ t^2>1.
-$$
+$$\frac{\mathrm{RSS}_2}{n-k-1}<\frac{\mathrm{RSS}_1}{n-k} \iff \frac{\mathrm{RSS}_1-\mathrm{RSS}_2}{\mathrm{RSS}_2/(n-k-1)}=\ t^2>1.$$
 
 这解释了机器单元的两个方向：Python 的随机列 $t^2\approx0.20$ ，$\bar R^2$ 从 0.7598 降到 0.723；Julia 的随机列恰与 $y$ 相关较强，$t^2\approx4.15$ ，$\bar R^2$ 反而从 0.7549 升到 0.8392。
 
@@ -152,11 +123,7 @@ $$
 
 预测导向的模型选择常用信息准则：
 
-$$
-\mathrm{AIC}=n\log\frac{\mathrm{RSS}}n+2k,
-\qquad
-\mathrm{BIC}=n\log\frac{\mathrm{RSS}}n+k\log n,
-$$
+$$\mathrm{AIC}=n\log\frac{\mathrm{RSS}}n+2k, \qquad \mathrm{BIC}=n\log\frac{\mathrm{RSS}}n+k\log n,$$
 
 取最小者。
 
@@ -187,16 +154,11 @@ BIC 的罚项随 $n$ 增长，倾向选更简模型且有一致性；AIC 罚项�
 
 把第 38 章的解代入模型：
 
-$$
-\hat\beta=(X'X)^{-1}X'(X\beta+\varepsilon)
-=\beta+(X'X)^{-1}X'\varepsilon.
-$$
+$$\hat\beta=(X'X)^{-1}X'(X\beta+\varepsilon) =\beta+(X'X)^{-1}X'\varepsilon.$$
 
 在 A2、A3 下取条件期望：
 
-$$
-E(\hat\beta|X)=\beta+(X'X)^{-1}X'E(\varepsilon|X)=\beta.
-$$
+$$E(\hat\beta|X)=\beta+(X'X)^{-1}X'E(\varepsilon|X)=\beta.$$
 
 两行就完成证明——**无偏性的全部代价是外生性**。
 
@@ -204,37 +166,23 @@ $$
 
 反过来，内生性下
 
-$$
-E(\hat\beta|X)=\beta+(X'X)^{-1}X'E(\varepsilon|X)\ne\beta,
-$$
+$$E(\hat\beta|X)=\beta+(X'X)^{-1}X'E(\varepsilon|X)\ne\beta,$$
 
 偏差项是可计算的；第 38.16 节的 $2+1/2=2.5$ 是其一元版本。
 
 无条件期望由重期望公式得到：
 
-$$
-E(\hat\beta)=E[E(\hat\beta|X)]=\beta.
-$$
+$$E(\hat\beta)=E[E(\hat\beta|X)]=\beta.$$
 
 ## 39.9 协方差矩阵：球形扰动怎么用
 
 由 $\hat\beta-\beta=(X'X)^{-1}X'\varepsilon$ ，固定 $X$ 并用 A4：
 
-$$
-\operatorname{Var}(\hat\beta|X)
-=(X'X)^{-1}X'\,\sigma^2I_n\,X(X'X)^{-1}
-=\sigma^2(X'X)^{-1}.
-\boxed{
-\operatorname{Var}(\hat\beta|X)=\sigma^2(X'X)^{-1}.
-}
-$$
+$$\operatorname{Var}(\hat\beta|X) =(X'X)^{-1}X'\,\sigma^2I_n\,X(X'X)^{-1} =\sigma^2(X'X)^{-1}. \boxed{ \operatorname{Var}(\hat\beta|X)=\sigma^2(X'X)^{-1}. }$$
 
 分解到单个系数：
 
-$$
-\operatorname{Var}(\hat\beta_j|X)=\sigma^2[(X'X)^{-1}]_{jj}
-=\frac{\sigma^2}{(1-R_j^2)\sum_t(X_{t,j}-\bar X_j)^2},
-$$
+$$\operatorname{Var}(\hat\beta_j|X)=\sigma^2[(X'X)^{-1}]_{jj} =\frac{\sigma^2}{(1-R_j^2)\sum_t(X_{t,j}-\bar X_j)^2},$$
 
 其中 $R_j^2$ 是第 $j$ 个解释变量对其余变量回归的 $R^2$ （方差膨胀因子的来源，第 41 章展开）。
 
@@ -242,11 +190,7 @@ $$
 
 三点例的账（把第 38 章的 $(X'X)^{-1}$ 代入）：
 
-$$
-\operatorname{Var}(\hat\beta_1|X)=\sigma^2\cdot\frac56,
-\qquad
-\operatorname{Var}(\hat\beta_2|X)=\sigma^2\cdot\frac3 6=\frac{\sigma^2}{2}.
-$$
+$$\operatorname{Var}(\hat\beta_1|X)=\sigma^2\cdot\frac56, \qquad \operatorname{Var}(\hat\beta_2|X)=\sigma^2\cdot\frac3 6=\frac{\sigma^2}{2}.$$
 
 ## 39.10 s² 的无偏性：迹账
 
@@ -254,31 +198,21 @@ $\sigma^2$ 未知，用残差估计。
 
 定义
 
-$$
-\boxed{s^2=\frac{e'e}{n-k}=\frac{\mathrm{RSS}}{n-k}.}
-$$
+$$\boxed{s^2=\frac{e'e}{n-k}=\frac{\mathrm{RSS}}{n-k}.}$$
 
 分母为什么是 $n-k$ 而不是 $n$ ？迹账给出答案。
 
 由 $MX=0$ （第 38 章 $PX=X$ 的对偶）：
 
-$$
-e=My=M(X\beta+\varepsilon)=M\varepsilon,
-\qquad
-e'e=\varepsilon'M\varepsilon.
-$$
+$$e=My=M(X\beta+\varepsilon)=M\varepsilon, \qquad e'e=\varepsilon'M\varepsilon.$$
 
 对固定对称矩阵 $A$ ，$E(\varepsilon'A\varepsilon|X)=\sigma^2\operatorname{tr}(A)$ （用 $E(\varepsilon\varepsilon'|X)=\sigma^2I$ 与迹的轮换性）。
 
 于是
 
-$$
-E(e'e|X)=\sigma^2\operatorname{tr}(M)=\sigma^2(n-k),
-$$
+$$E(e'e|X)=\sigma^2\operatorname{tr}(M)=\sigma^2(n-k),$$
 
-$$
-\boxed{E(s^2|X)=\sigma^2.}
-$$
+$$\boxed{E(s^2|X)=\sigma^2.}$$
 
 第 38 章的 $\operatorname{tr}(M)=n-k$ 在这里从代数身份变成统计内容：**$n-k$ 正是数据里剩下的独立信息量**——$k$ 个参数的估计已经消耗了 $k$ 个自由度。
 
@@ -288,15 +222,11 @@ $$
 
 **定理。** 在 A1–A4 下，对任意固定向量 $c\in\mathbb R^k$ ，在所有满足无偏性的线性估计量
 
-$$
-c'\tilde\beta=a'y
-$$
+$$c'\tilde\beta=a'y$$
 
 中，OLS 泛函 $c'\hat\beta=c'(X'X)^{-1}X'y$ 的条件方差最小：
 
-$$
-\operatorname{Var}(c'\hat\beta|X)\le\operatorname{Var}(c'\tilde\beta|X).
-$$
+$$\operatorname{Var}(c'\hat\beta|X)\le\operatorname{Var}(c'\tilde\beta|X).$$
 
 “线性”指估计量是 $y$ 的线性函数（系数可依赖 $X$ ）；“无偏”对一切 $\beta$ 成立。
 
@@ -314,9 +244,7 @@ $E(c'\tilde\beta|X)=a'E(y|X)=a'X\beta$ 。
 
 对一切 $\beta$ 无偏当且仅当
 
-$$
-a'X=c'.
-$$
+$$a'X=c'.$$
 
 OLS 对应 $a_0=X(X'X)^{-1}c$ ，验证 $a_0'X=c'(X'X)^{-1}X'X=c'$ 。✓
 
@@ -326,24 +254,15 @@ OLS 对应 $a_0=X(X'X)^{-1}c$ ，验证 $a_0'X=c'(X'X)^{-1}X'X=c'$ 。✓
 
 **第三步：方差展开。**
 
-$$
-\operatorname{Var}(a'y|X)=\sigma^2a'a
-=\sigma^2(a_0'a_0+2a_0'd+d'd).
-$$
+$$\operatorname{Var}(a'y|X)=\sigma^2a'a =\sigma^2(a_0'a_0+2a_0'd+d'd).$$
 
 交叉项
 
-$$
-a_0'd=c'(X'X)^{-1}X'd=c'(X'X)^{-1}(X'd)=0.
-$$
+$$a_0'd=c'(X'X)^{-1}X'd=c'(X'X)^{-1}(X'd)=0.$$
 
 故
 
-$$
-\operatorname{Var}(c'\tilde\beta|X)
-=\sigma^2a_0'a_0+\sigma^2d'd
-=\operatorname{Var}(c'\hat\beta|X)+\sigma^2\|d\|^2.
-$$
+$$\operatorname{Var}(c'\tilde\beta|X) =\sigma^2a_0'a_0+\sigma^2d'd =\operatorname{Var}(c'\hat\beta|X)+\sigma^2\|d\|^2.$$
 
 **第四步：结论。**
 
@@ -375,15 +294,11 @@ Gauss–Markov 的正确读法是**条件性陈述**：在给定类与给定扰�
 
 OLS 斜率方差：
 
-$$
-\operatorname{Var}(\hat\beta_2|X)=\sigma^2(X'X)^{-1}_{22}=\frac12.
-$$
+$$\operatorname{Var}(\hat\beta_2|X)=\sigma^2(X'X)^{-1}_{22}=\frac12.$$
 
 竞争者利用该设计的巧合 $\hat\beta_2=(Y_3-Y_1)/2$ ，考虑只用两个观测的估计量
 
-$$
-\tilde\beta_2=Y_2-Y_1.
-$$
+$$\tilde\beta_2=Y_2-Y_1.$$
 
 无偏性：$E(Y_2-Y_1)=(\beta_1+\beta_2)-\beta_1=\beta_2$ 。✓
 
@@ -391,15 +306,11 @@ $$
 
 方差：
 
-$$
-\operatorname{Var}(Y_2-Y_1)=\sigma^2+\sigma^2=2.
-$$
+$$\operatorname{Var}(Y_2-Y_1)=\sigma^2+\sigma^2=2.$$
 
 对照：
 
-$$
-2=4\times\frac12,
-$$
+$$2=4\times\frac12,$$
 
 竞争者方差是 OLS 的四倍——Gauss–Markov 不等式的具体现场。
 

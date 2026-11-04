@@ -16,11 +16,7 @@
 
 **条件与更新**：
 
-$$
-P(A|B)=\frac{P(A\cap B)}{P(B)},\qquad
-\text{全概率 }P(B)=\textstyle\sum_iP(B|A_i)P(A_i),\qquad
-\text{Bayes }P(A|B)=\frac{P(B|A)P(A)}{P(B)}.
-$$
+$$P(A|B)=\frac{P(A\cap B)}{P(B)},\qquad \text{全概率 }P(B)=\textstyle\sum_iP(B|A_i)P(A_i),\qquad \text{Bayes }P(A|B)=\frac{P(B|A)P(A)}{P(B)}.$$
 
 **独立性三重警示**：两两独立 ⇏ 相互独立；零协方差 ⇏ 独立（$Y=X^2$ 四点表）；独立 ⇏ 条件独立（共同原因与对撞）。
 
@@ -66,9 +62,7 @@ $$
 
 **四模式关系**：
 
-$$
-L^p\Rightarrow a.s.\Rightarrow \xrightarrow{p}\Rightarrow \xrightarrow{d},
-$$
+$$L^p\Rightarrow a.s.\Rightarrow \xrightarrow{p}\Rightarrow \xrightarrow{d},$$
 
 全部不可逆；反例账：$L^p$ 要求矩（Cauchy 出局）、a.s. 与 p 互不蕴含（滑行示性函数）、依分布最弱（只看分布函数）。
 
@@ -127,17 +121,9 @@ $$
 
 **矩阵恒等式**（$P=X(X'X)^{-1}X'$ 、$M=I-P$ ）：
 
-$$
-\hat\beta=(X'X)^{-1}X'y,\quad
-\hat y=Py,\ e=My,\quad
-P+M=I,\ PM=0,\ P^2=P,
-$$
+$$\hat\beta=(X'X)^{-1}X'y,\quad \hat y=Py,\ e=My,\quad P+M=I,\ PM=0,\ P^2=P,$$
 
-$$
-X'e=0,\quad
-\operatorname{tr}P=k,\ \operatorname{tr}M=n-k,\quad
-\|y\|^2=\|\hat y\|^2+\|e\|^2.
-$$
+$$X'e=0,\quad \operatorname{tr}P=k,\ \operatorname{tr}M=n-k,\quad \|y\|^2=\|\hat y\|^2+\|e\|^2.$$
 
 （全部纯代数，与随机假设无关。）
 

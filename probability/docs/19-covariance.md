@@ -6,32 +6,19 @@
 
 设 $X,Y$ 的二阶矩有限，记
 
-$$
-\mu_X=E[X],\qquad \mu_Y=E[Y].
-$$
+$$\mu_X=E[X],\qquad \mu_Y=E[Y].$$
 
 协方差定义为
 
-$$
-\boxed{\operatorname{Cov}(X,Y)
-=E[(X-\mu_X)(Y-\mu_Y)].}
-$$
+$$\boxed{\operatorname{Cov}(X,Y) =E[(X-\mu_X)(Y-\mu_Y)].}$$
 
 利用期望的线性性，
 
-$$
-\begin{aligned}
-E[(X-\mu_X)(Y-\mu_Y)]
-&=E[XY-\mu_XY-X\mu_Y+\mu_X\mu_Y]\\
-&=E[XY]-\mu_X\mu_Y.
-\end{aligned}
-$$
+$$\begin{aligned} E[(X-\mu_X)(Y-\mu_Y)] &=E[XY-\mu_XY-X\mu_Y+\mu_X\mu_Y]\\ &=E[XY]-\mu_X\mu_Y. \end{aligned}$$
 
 所以常用的等价公式是
 
-$$
-\operatorname{Cov}(X,Y)=E[XY]-E[X]E[Y].
-$$
+$$\operatorname{Cov}(X,Y)=E[XY]-E[X]E[Y].$$
 
 若协方差为正，$X$ 高于均值时 $Y$ 也倾向于高于均值；若为负，则倾向反向波动；若为零，只说明二者**没有线性共同波动**，不说明它们独立。
 
@@ -39,32 +26,19 @@ $$
 
 协方差对两个参数都是线性的：
 
-$$
-\operatorname{Cov}(aX+b,cY+d)=ac\,\operatorname{Cov}(X,Y).
-$$
+$$\operatorname{Cov}(aX+b,cY+d)=ac\,\operatorname{Cov}(X,Y).$$
 
 常数平移不影响协方差，尺度相乘。更一般地，
 
-$$
-\operatorname{Cov}\left(\sum_i a_iX_i,\sum_j b_jY_j\right)
-=\sum_{i,j}a_ib_j\operatorname{Cov}(X_i,Y_j).
-$$
+$$\operatorname{Cov}\left(\sum_i a_iX_i,\sum_j b_jY_j\right) =\sum_{i,j}a_ib_j\operatorname{Cov}(X_i,Y_j).$$
 
 同一变量的协方差就是方差：
 
-$$
-\operatorname{Cov}(X,X)=\operatorname{Var}(X).
-$$
+$$\operatorname{Cov}(X,X)=\operatorname{Var}(X).$$
 
 因此两个变量和的方差为
 
-$$
-\boxed{
-\operatorname{Var}(X+Y)
-=\operatorname{Var}(X)+\operatorname{Var}(Y)
-+2\operatorname{Cov}(X,Y).
-}
-$$
+$$\boxed{ \operatorname{Var}(X+Y) =\operatorname{Var}(X)+\operatorname{Var}(Y) +2\operatorname{Cov}(X,Y). }$$
 
 独立时协方差为零，于是回到第 16 章用过的方差可加性。但反向不成立：零协方差只代表线性不相关。
 
@@ -85,11 +59,7 @@ assert vsum == vx + vy + 2 * c_def
 
 Prolog 对同一张表给出精确分数：
 
-$$
-\operatorname{Cov}(X,Y)=\frac1{64},\quad
-\operatorname{Var}(X)=\frac{23}{64},\quad
-\operatorname{Var}(Y)=\frac{39}{64}.
-$$
+$$\operatorname{Cov}(X,Y)=\frac1{64},\quad \operatorname{Var}(X)=\frac{23}{64},\quad \operatorname{Var}(Y)=\frac{39}{64}.$$
 
 Lean 则只保留证明中真正需要的代数骨架：
 
@@ -106,20 +76,11 @@ example (a b c d μ ν m : ℚ) :
 
 若 $\operatorname{Var}(X)>0$ 、$\operatorname{Var}(Y)>0$ ，定义相关系数
 
-$$
-\boxed{
-\rho_{X,Y}
-=\frac{\operatorname{Cov}(X,Y)}
-{\sqrt{\operatorname{Var}(X)\operatorname{Var}(Y)}}.
-}
-$$
+$$\boxed{ \rho_{X,Y} =\frac{\operatorname{Cov}(X,Y)} {\sqrt{\operatorname{Var}(X)\operatorname{Var}(Y)}}. }$$
 
 标准化变量
 
-$$
-U=\frac{X-\mu_X}{\sigma_X},\qquad
-V=\frac{Y-\mu_Y}{\sigma_Y}
-$$
+$$U=\frac{X-\mu_X}{\sigma_X},\qquad V=\frac{Y-\mu_Y}{\sigma_Y}$$
 
 都有方差 1，且 $\rho=\operatorname{Cov}(U,V)$ 。
 
@@ -127,35 +88,23 @@ $$
 
 对任意实数 $t$ ，
 
-$$
-\operatorname{Var}(t(X-\mu_X)+(Y-\mu_Y))\ge0.
-$$
+$$\operatorname{Var}(t(X-\mu_X)+(Y-\mu_Y))\ge0.$$
 
 展开得到二次函数
 
-$$
-q(t)=\operatorname{Var}(X)t^2
-+2\operatorname{Cov}(X,Y)t+\operatorname{Var}(Y)\ge0.
-$$
+$$q(t)=\operatorname{Var}(X)t^2 +2\operatorname{Cov}(X,Y)t+\operatorname{Var}(Y)\ge0.$$
 
 一个恒非负的二次多项式 $at^2+2ct+b$ 在 $a>0$ 时判别式非正，所以
 
-$$
-4c^2-4ab\le0.
-$$
+$$4c^2-4ab\le0.$$
 
 即
 
-$$
-\operatorname{Cov}(X,Y)^2
-\le \operatorname{Var}(X)\operatorname{Var}(Y).
-$$
+$$\operatorname{Cov}(X,Y)^2 \le \operatorname{Var}(X)\operatorname{Var}(Y).$$
 
 这就是概率中的 Cauchy–Schwarz 不等式。除以两个方差得
 
-$$
-\rho^2\le1,\qquad -1\le\rho\le1.
-$$
+$$\rho^2\le1,\qquad -1\le\rho\le1.$$
 
 Lean 用代换 $t=-c/v_a$ 的方式构造证明，而不是调用二次方程结论：
 
@@ -172,9 +121,7 @@ example (va vb c : ℚ) (hva : 0 < va)
 
 取等时，存在 $t$ 使一个非负随机变量的方差为 0，于是它几乎处处为常数。也就是说，在二阶矩有限且两方差异格为正的条件下，$|\rho|=1$ 等价于 $Y$ 是 $X$ 的仿射函数：
 
-$$
-Y=aX+b,\qquad a\ne0,
-$$
+$$Y=aX+b,\qquad a\ne0,$$
 
 且 $\rho=\operatorname{sign}(a)$ 。
 
@@ -193,9 +140,7 @@ Julia 的 200 组随机样本只用于检查样本相关系数数值上不超过
 
 若 $X,Y$ 独立且二阶矩可积，则
 
-$$
-E[XY]=E[X]E[Y],
-$$
+$$E[XY]=E[X]E[Y],$$
 
 所以 $\operatorname{Cov}(X,Y)=0$ 。但零协方差只排除线性关系，不排除非线性函数关系。
 
@@ -203,27 +148,19 @@ $$
 
 令 $X$ 在 $\{-1,0,1\}$ 上均匀，令 $Y=X^2$ 。则
 
-$$
-E[X]=0,\qquad E[XY]=E[X^3]=0,
-$$
+$$E[X]=0,\qquad E[XY]=E[X^3]=0,$$
 
 故
 
-$$
-\operatorname{Cov}(X,Y)=0.
-$$
+$$\operatorname{Cov}(X,Y)=0.$$
 
 但 $Y$ 完全由 $X$ 决定，显然不独立。例如
 
-$$
-P(X=0,Y=0)=\frac13,
-$$
+$$P(X=0,Y=0)=\frac13,$$
 
 而
 
-$$
-P(X=0)P(Y=0)=\frac13\cdot\frac13=\frac19.
-$$
+$$P(X=0)P(Y=0)=\frac13\cdot\frac13=\frac19.$$
 
 Prolog 的表 A 精确记录这一反例：
 
@@ -250,16 +187,11 @@ example : cex 0 0 ≠ (1 / 3) * (1 / 3) := by
 
 连续情形同样成立：
 
-$$
-E[XY]=E[X^3]=\frac12\int_{-1}^1x^3dx=0.
-$$
+$$E[XY]=E[X^3]=\frac12\int_{-1}^1x^3dx=0.$$
 
 但事件 $\{|X|<1/2\}$ 与 $\{Y>1/2\}$ 不可能同时发生，因为 $|X|<1/2$ 时 $Y<1/4$ 。另一方面，
 
-$$
-P(|X|<1/2)P(X^2>1/2)
-=\frac12\left(1-\frac1{\sqrt2}\right)>0.
-$$
+$$P(|X|<1/2)P(X^2>1/2) =\frac12\left(1-\frac1{\sqrt2}\right)>0.$$
 
 联合概率为 0、概率积为正，因此不独立。
 
@@ -281,26 +213,15 @@ pp = mean(abs.(U) .< 0.5) * mean(V .> 0.5)
 
 设
 
-$$
-p_1=P(X=1),\qquad p_2=P(Y=1),\qquad
-c=\operatorname{Cov}(X,Y).
-$$
+$$p_1=P(X=1),\qquad p_2=P(Y=1),\qquad c=\operatorname{Cov}(X,Y).$$
 
 由于 $XY=1$ 当且仅当 $X=Y=1$ ，
 
-$$
-P(X=1,Y=1)=E[XY]=p_1p_2+c.
-$$
+$$P(X=1,Y=1)=E[XY]=p_1p_2+c.$$
 
 其余三个格点概率由边际约束唯一确定：
 
-$$
-\begin{aligned}
-p_{10}&=p_1(1-p_2)-c,\\
-p_{01}&=(1-p_1)p_2-c,\\
-p_{00}&=(1-p_1)(1-p_2)+c.
-\end{aligned}
-$$
+$$\begin{aligned} p_{10}&=p_1(1-p_2)-c,\\ p_{01}&=(1-p_1)p_2-c,\\ p_{00}&=(1-p_1)(1-p_2)+c. \end{aligned}$$
 
 当 $c=0$ 时，四个格点全部等于边际概率乘积，因此两个 Bernoulli 变量独立。
 
@@ -323,47 +244,29 @@ forall(member(P1-P2, [(1 rdiv 2)-(1 rdiv 3),
 
 对随机向量 $X=(X_1,\dots,X_d)^T$ ，均值向量和协方差矩阵为
 
-$$
-\mu=E[X],\qquad
-\Sigma=E[(X-\mu)(X-\mu)^T].
-$$
+$$\mu=E[X],\qquad \Sigma=E[(X-\mu)(X-\mu)^T].$$
 
 矩阵元素为
 
-$$
-\Sigma_{ij}=\operatorname{Cov}(X_i,X_j).
-$$
+$$\Sigma_{ij}=\operatorname{Cov}(X_i,X_j).$$
 
 对任意固定权重向量 $w$ ，线性组合 $w^TX$ 的方差为
 
-$$
-\boxed{\operatorname{Var}(w^TX)=w^T\Sigma w.}
-$$
+$$\boxed{\operatorname{Var}(w^TX)=w^T\Sigma w.}$$
 
 因为方差非负，所以
 
-$$
-w^T\Sigma w\ge0\qquad\text{对所有 }w\in\mathbb R^d.
-$$
+$$w^T\Sigma w\ge0\qquad\text{对所有 }w\in\mathbb R^d.$$
 
 这就是协方差矩阵半正定。若存在 $w\ne0$ 使 $w^T\Sigma w=0$ ，则 $w^TX$ 几乎处处为常数，随机向量被约束在一个低维仿射子空间上。
 
 例如 $Y=2X+1$ 时，
 
-$$
-\Sigma=
-\begin{pmatrix}
-v&2v\\
-2v&4v
-\end{pmatrix},
-\qquad \det\Sigma=0,
-$$
+$$\Sigma= \begin{pmatrix} v&2v\\ 2v&4v \end{pmatrix}, \qquad \det\Sigma=0,$$
 
 且向量 $(2,-1)$ 满足
 
-$$
-(2,-1)\Sigma(2,-1)^T=0.
-$$
+$$(2,-1)\Sigma(2,-1)^T=0.$$
 
 Python 对三维二次型展开做符号核对：
 
@@ -394,16 +297,11 @@ X = Z * L'
 
 三维相关矩阵必须半正定。其行列式条件为
 
-$$
-1+2r_{12}r_{13}r_{23}
--r_{12}^2-r_{13}^2-r_{23}^2\ge0.
-$$
+$$1+2r_{12}r_{13}r_{23} -r_{12}^2-r_{13}^2-r_{23}^2\ge0.$$
 
 若取
 
-$$
-r_{12}=0.9,\qquad r_{23}=0.9,\qquad r_{13}=-0.9,
-$$
+$$r_{12}=0.9,\qquad r_{23}=0.9,\qquad r_{13}=-0.9,$$
 
 则前两对高度正相关、第三对高度负相关，结构互相矛盾，行列式为负。这样的“相关矩阵”不可能由任何随机向量产生。Python 精确计算该行列式并断言其小于 0。
 
@@ -411,67 +309,41 @@ $$
 
 考虑两个资产收益率 $R_1,R_2$ ，参数为
 
-$$
-\sigma_1^2=\operatorname{Var}(R_1),\quad
-\sigma_2^2=\operatorname{Var}(R_2),\quad
-\rho=\operatorname{Corr}(R_1,R_2).
-$$
+$$\sigma_1^2=\operatorname{Var}(R_1),\quad \sigma_2^2=\operatorname{Var}(R_2),\quad \rho=\operatorname{Corr}(R_1,R_2).$$
 
 若把财富比例 $w$ 投资于资产 1、$1-w$ 投资于资产 2，则组合收益率为
 
-$$
-R_w=wR_1+(1-w)R_2,
-$$
+$$R_w=wR_1+(1-w)R_2,$$
 
 方差为
 
-$$
-V(w)=w^2\sigma_1^2+(1-w)^2\sigma_2^2
-+2w(1-w)\rho\sigma_1\sigma_2.
-$$
+$$V(w)=w^2\sigma_1^2+(1-w)^2\sigma_2^2 +2w(1-w)\rho\sigma_1\sigma_2.$$
 
 令 $c=\rho\sigma_1\sigma_2$ 。求导 $V'(w)=0$ 得
 
-$$
-\boxed{
-w^*=\frac{\sigma_2^2-c}{\sigma_1^2+\sigma_2^2-2c}.
-}
-$$
+$$\boxed{ w^*=\frac{\sigma_2^2-c}{\sigma_1^2+\sigma_2^2-2c}. }$$
 
 当 $\rho<1$ 且分母为正时，最小方差为
 
-$$
-V(w^*)=
-\frac{\sigma_1^2\sigma_2^2(1-\rho^2)}
-{\sigma_1^2+\sigma_2^2-2\rho\sigma_1\sigma_2}.
-$$
+$$V(w^*)= \frac{\sigma_1^2\sigma_2^2(1-\rho^2)} {\sigma_1^2+\sigma_2^2-2\rho\sigma_1\sigma_2}.$$
 
 程序取
 
-$$
-\sigma_1=0.2,\qquad \sigma_2=0.3,\qquad \rho=0.5.
-$$
+$$\sigma_1=0.2,\qquad \sigma_2=0.3,\qquad \rho=0.5.$$
 
 于是 $c=0.03$ ，
 
-$$
-w^*=\frac{0.09-0.03}{0.04+0.09-0.06}=\frac67,
-$$
+$$w^*=\frac{0.09-0.03}{0.04+0.09-0.06}=\frac67,$$
 
 且
 
-$$
-V(w^*)=\frac{27}{700}\approx0.03857.
-$$
+$$V(w^*)=\frac{27}{700}\approx0.03857.$$
 
 它比单独持有资产 1 的方差 0.04 还小，说明分散化可以降低风险。
 
 Lean 不用求导，而用完全平方恒等式证明全局最小：
 
-$$
-V(w)-V(w^*)
-=(\sigma_1^2+\sigma_2^2-2c)(w-w^*)^2.
-$$
+$$V(w)-V(w^*) =(\sigma_1^2+\sigma_2^2-2c)(w-w^*)^2.$$
 
 ```lean
 example (s1 s2 c w : ℚ) (hd : s1 + s2 - 2 * c ≠ 0) :
@@ -490,22 +362,15 @@ Lean 中的 `s1,s2` 表示方差而不是标准差；与正文的 $\sigma_1^2,\s
 
 若 $\rho=-1$ ，两个风险可以完全对冲。最小方差可为 0，权重为
 
-$$
-w^*=\frac{\sigma_2}{\sigma_1+\sigma_2}.
-$$
+$$w^*=\frac{\sigma_2}{\sigma_1+\sigma_2}.$$
 
 若 $\rho=1$ ，则
 
-$$
-\operatorname{Var}(wR_1+(1-w)R_2)
-=(w\sigma_1+(1-w)\sigma_2)^2,
-$$
+$$\operatorname{Var}(wR_1+(1-w)R_2) =(w\sigma_1+(1-w)\sigma_2)^2,$$
 
 分散化不再降低风险。等相关 $n$ 资产组合的平均方差为
 
-$$
-\frac{\sigma^2}{n}+\left(1-\frac1n\right)\rho\sigma^2,
-$$
+$$\frac{\sigma^2}{n}+\left(1-\frac1n\right)\rho\sigma^2,$$
 
 当 $n\to\infty$ 时趋于 $\rho\sigma^2$ 。第一项是可分散的个体风险，剩余项是不能靠分散化消除的共同风险。
 
@@ -513,44 +378,29 @@ $$
 
 从容量为 $N$ 的总体中不放回抽取 $n$ 次，总体中有 $K$ 个成功。令
 
-$$
-p=\frac KN,
-$$
+$$p=\frac KN,$$
 
 并令 $I_i=1$ 表示第 $i$ 次抽到成功。单个指示变量满足
 
-$$
-E[I_i]=p,\qquad \operatorname{Var}(I_i)=p(1-p).
-$$
+$$E[I_i]=p,\qquad \operatorname{Var}(I_i)=p(1-p).$$
 
 但不同次抽取不独立：
 
-$$
-E[I_iI_j]=P(I_i=1,I_j=1)=\frac{K(K-1)}{N(N-1)}.
-$$
+$$E[I_iI_j]=P(I_i=1,I_j=1)=\frac{K(K-1)}{N(N-1)}.$$
 
 因此
 
-$$
-\operatorname{Cov}(I_i,I_j)
-=\frac{K(K-1)}{N(N-1)}-p^2
-=-\frac{p(1-p)}{N-1}.
-$$
+$$\operatorname{Cov}(I_i,I_j) =\frac{K(K-1)}{N(N-1)}-p^2 =-\frac{p(1-p)}{N-1}.$$
 
 负号来自不放回抽样：第一次抽走成功后，第二次抽到成功的概率略降。把 $n$ 项方差和两两协方差相加，得到
 
-$$
-\operatorname{Var}\left(\sum_{i=1}^nI_i\right)
-=np(1-p)\frac{N-n}{N-1}.
-$$
+$$\operatorname{Var}\left(\sum_{i=1}^nI_i\right) =np(1-p)\frac{N-n}{N-1}.$$
 
 因子 $(N-n)/(N-1)$ 称为有限总体修正。当 $N\to\infty$ 而抽样比例很小，它趋于 1，超几何分布接近二项分布。
 
 Python 对 $N=7,K=3,n=4$ 枚举全部超几何概率，并精确断言方差为
 
-$$
-4\cdot\frac37\cdot\frac47\cdot\frac{3}{6}.
-$$
+$$4\cdot\frac37\cdot\frac47\cdot\frac{3}{6}.$$
 
 ```python
 pmf_h = {k: F(comb(Kv, k) * comb(Nv - Kv, nv - k), comb(Nv, nv))
@@ -566,23 +416,15 @@ assert var_enum == nv * pv * (1 - pv) * F(Nv - nv, Nv - 1)
 
 若随机向量 $X$ 的均值为 $\mu$ 、协方差矩阵 $\Sigma$ 正定，定义 Mahalanobis 平方距离
 
-$$
-D^2=(X-\mu)^T\Sigma^{-1}(X-\mu).
-$$
+$$D^2=(X-\mu)^T\Sigma^{-1}(X-\mu).$$
 
 令 $Z=\Sigma^{-1/2}(X-\mu)$ ，则 $\operatorname{Cov}(Z)=I$ ，且 $D^2=Z^TZ$ 。因此
 
-$$
-E[D^2]=\sum_{j=1}^dE[Z_j^2]=d.
-$$
+$$E[D^2]=\sum_{j=1}^dE[Z_j^2]=d.$$
 
 对 $D^2$ 使用 Markov 不等式，得到多元 Chebyshev 界：
 
-$$
-\boxed{
-P(D^2\ge t)\le\frac dt.
-}
-$$
+$$\boxed{ P(D^2\ge t)\le\frac dt. }$$
 
 Python 在一个六点离散分布上精确计算 $E[D^2]=2$ ，并对多个 $t$ 检查尾概率：
 

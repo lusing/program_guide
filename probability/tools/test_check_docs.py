@@ -44,9 +44,13 @@ class CheckDocsTest(unittest.TestCase):
     def test_balanced_dollar_math_passes(self):
         text = (
             "行内 $x+y$ 与货币 \\$60，000。\n\n"
-            "$$\na^2+b^2=c^2\n$$\n"
+            "$$a^2+b^2=c^2$$\n"
         )
         self.assertEqual(check_math(text, Path("x.md")), [])
+
+    def test_multiline_display_fails(self):
+        errors = check_math("$$\na^2+b^2\n$$\n", Path("x.md"))
+        self.assertTrue(any("single-line" in e for e in errors), errors)
 
     def test_unbalanced_dollar_fails(self):
         self.assertTrue(any("unbalanced" in e

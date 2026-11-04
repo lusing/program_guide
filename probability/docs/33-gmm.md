@@ -32,22 +32,15 @@
 
 若理论模型给出第 $r$ 阶总体矩
 
-$$
-M_r(\theta)=E_\theta[X^r],
-$$
+$$M_r(\theta)=E_\theta[X^r],$$
 
 相应样本矩是
 
-$$
-\widehat M_r=\frac1n\sum_{i=1}^nX_i^r.
-$$
+$$\widehat M_r=\frac1n\sum_{i=1}^nX_i^r.$$
 
 经典矩估计选择 $\theta$ ，使若干总体矩与样本矩匹配：
 
-$$
-M_r(\hat\theta)=\widehat M_r,
-\qquad r=1,\ldots,p.
-$$
+$$M_r(\hat\theta)=\widehat M_r, \qquad r=1,\ldots,p.$$
 
 这里默认参数是 $p$ 维，并选了足够多的独立矩方程。
 
@@ -57,15 +50,11 @@ $$
 
 若 $X_i$ iid 服从均值为 $\theta>0$ 的指数分布，则
 
-$$
-E_\theta[X]=\theta.
-$$
+$$E_\theta[X]=\theta.$$
 
 匹配一阶矩立即得到
 
-$$
-\hat\theta_{\mathrm{MME}}=\bar X.
-$$
+$$\hat\theta_{\mathrm{MME}}=\bar X.$$
 
 在这个模型中，它也恰好是 MLE。
 
@@ -75,19 +64,11 @@ $$
 
 若 $X_i\sim N(\mu,\sigma^2)$ ，匹配前两阶矩：
 
-$$
-\hat\mu=\bar X,
-\qquad
-\frac1n\sum_iX_i^2=\hat\sigma^2+\hat\mu^2.
-$$
+$$\hat\mu=\bar X, \qquad \frac1n\sum_iX_i^2=\hat\sigma^2+\hat\mu^2.$$
 
 所以
 
-$$
-\hat\mu=\bar X,
-\qquad
-\hat\sigma^2=\frac1n\sum_i(X_i-\bar X)^2.
-$$
+$$\hat\mu=\bar X, \qquad \hat\sigma^2=\frac1n\sum_i(X_i-\bar X)^2.$$
 
 这里的方差估计除以 $n$ ，不是除以 $n-1$ 。
 
@@ -109,23 +90,17 @@ GMM 则统一写成零均值条件。
 
 假设存在真参数 $\theta_0$ ，使
 
-$$
-\boxed{E[m(X,\theta_0)]=0.}
-$$
+$$\boxed{E[m(X,\theta_0)]=0.}$$
 
 这里 $0$ 是 $q$ 维零向量。
 
 样本矩向量是
 
-$$
-\bar m_n(\theta)=\frac1n\sum_{i=1}^nm(X_i,\theta).
-$$
+$$\bar m_n(\theta)=\frac1n\sum_{i=1}^nm(X_i,\theta).$$
 
 对每个固定的 $\theta$ ，大数定律在适当可积条件下给出
 
-$$
-\bar m_n(\theta)\xrightarrow{p}E[m(X,\theta)].
-$$
+$$\bar m_n(\theta)\xrightarrow{p}E[m(X,\theta)].$$
 
 但“对每个固定参数收敛”并不自动推出整个最小化问题的一致性。
 
@@ -135,39 +110,27 @@ $$
 
 考虑线性结构方程
 
-$$
-Y=X'\beta_0+\varepsilon.
-$$
+$$Y=X'\beta_0+\varepsilon.$$
 
 若解释变量与误差满足
 
-$$
-E[X\varepsilon]=0,
-$$
+$$E[X\varepsilon]=0,$$
 
 就有
 
-$$
-E[X(Y-X'\beta_0)]=0.
-$$
+$$E[X(Y-X'\beta_0)]=0.$$
 
 此时矩函数可以取
 
-$$
-m((Y,X),\beta)=X(Y-X'\beta).
-$$
+$$m((Y,X),\beta)=X(Y-X'\beta).$$
 
 若某些解释变量与误差相关，而另有工具变量 $Z$ 满足外生性和相关性，则可使用
 
-$$
-m((Y,X,Z),\beta)=Z(Y-X'\beta).
-$$
+$$m((Y,X,Z),\beta)=Z(Y-X'\beta).$$
 
 外生性给出
 
-$$
-E[m(\beta_0)]=0;
-$$
+$$E[m(\beta_0)]=0;$$
 
 相关性则用于保证矩条件确实包含关于 $\beta_0$ 的方向信息。
 
@@ -183,9 +146,7 @@ $$
 
 若 $q=p$ ，常尝试直接解
 
-$$
-\bar m_n(\hat\theta)=0.
-$$
+$$\bar m_n(\hat\theta)=0.$$
 
 但方程数等于未知数并不保证解存在或唯一。
 
@@ -209,9 +170,7 @@ GMM 改为让加权后的矩向量尽量接近零。
 
 真正关键的是 Jacobi 矩阵
 
-$$
-G(\theta)=E\left[\frac{\partial m(X,\theta)}{\partial\theta'}\right]
-$$
+$$G(\theta)=E\left[\frac{\partial m(X,\theta)}{\partial\theta'}\right]$$
 
 在真参数附近是否具有列满秩 $p$ 。
 
@@ -225,16 +184,7 @@ $$
 
 GMM 估计量定义为
 
-$$
-\boxed{
-\hat\theta_W
-=\arg\min_{\theta\in\Theta}
-Q_n(\theta;W),
-\qquad
-Q_n(\theta;W)
-=\bar m_n(\theta)'W\bar m_n(\theta).
-}
-$$
+$$\boxed{ \hat\theta_W =\arg\min_{\theta\in\Theta} Q_n(\theta;W), \qquad Q_n(\theta;W) =\bar m_n(\theta)'W\bar m_n(\theta). }$$
 
 本书把权重矩阵记为 $W$ ，最优时再取 $W=S^{-1}$ 。
 
@@ -261,46 +211,29 @@ $$
 
 设矩函数关于参数线性：
 
-$$
-m(X_i,\theta)=a(X_i)-G_i\theta.
-$$
+$$m(X_i,\theta)=a(X_i)-G_i\theta.$$
 
 为突出矩阵结构，先考虑 $G_i=G$ 不随观测变化的简单情形。
 
 记
 
-$$
-\bar a=\frac1n\sum_i a(X_i),
-\qquad
-\bar m_n(\theta)=\bar a-G\theta.
-$$
+$$\bar a=\frac1n\sum_i a(X_i), \qquad \bar m_n(\theta)=\bar a-G\theta.$$
 
 目标为
 
-$$
-Q_n(\theta)=(\bar a-G\theta)'W(\bar a-G\theta).
-$$
+$$Q_n(\theta)=(\bar a-G\theta)'W(\bar a-G\theta).$$
 
 对 $\theta$ 求梯度：
 
-$$
-\nabla_\theta Q_n
-=-2G'W(\bar a-G\theta).
-$$
+$$\nabla_\theta Q_n =-2G'W(\bar a-G\theta).$$
 
 内点解满足正规方程
 
-$$
-G'WG\hat\theta=G'W\bar a.
-$$
+$$G'WG\hat\theta=G'W\bar a.$$
 
 若 $G'WG$ 可逆，则
 
-$$
-\boxed{
-\hat\theta_W=(G'WG)^{-1}G'W\bar a.
-}
-$$
+$$\boxed{ \hat\theta_W=(G'WG)^{-1}G'W\bar a. }$$
 
 这个公式与加权最小二乘相似，但对象是“样本矩向量”，不是直接把每条原始观测都等权处理。
 
@@ -321,32 +254,19 @@ def linear_gmm(a_array, g_array, w_array):
 
 为看清每一步，考虑三个成对观测
 
-$$
-(X_{i1},X_{i2})=(1,2),(3,6),(2,1).
-$$
+$$(X_{i1},X_{i2})=(1,2),(3,6),(2,1).$$
 
 假设真参数 $\theta_0$ 满足
 
-$$
-E[X_1-\theta_0]=0,
-\qquad
-E[X_2-\theta_0]=0.
-$$
+$$E[X_1-\theta_0]=0, \qquad E[X_2-\theta_0]=0.$$
 
 于是
 
-$$
-m(X_i,\theta)=
-\begin{pmatrix}X_{i1}-\theta\\X_{i2}-\theta\end{pmatrix},
-\qquad
-G=\begin{pmatrix}1\\1\end{pmatrix}.
-$$
+$$m(X_i,\theta)= \begin{pmatrix}X_{i1}-\theta\\X_{i2}-\theta\end{pmatrix}, \qquad G=\begin{pmatrix}1\\1\end{pmatrix}.$$
 
 样本均值向量是
 
-$$
-\bar a=\begin{pmatrix}2\\3\end{pmatrix}.
-$$
+$$\bar a=\begin{pmatrix}2\\3\end{pmatrix}.$$
 
 参数只有一个，而矩有两个，所以 $q=2,p=1$ ，属于过度识别。
 
@@ -366,15 +286,11 @@ assert a == [F(2), F(3)]
 
 取 $W=I$ ，即最小化
 
-$$
-(2-\theta)^2+(3-\theta)^2.
-$$
+$$(2-\theta)^2+(3-\theta)^2.$$
 
 直接求导，或代入线性公式，得到
 
-$$
-\hat\theta_I=\frac{2+3}{2}=\frac52.
-$$
+$$\hat\theta_I=\frac{2+3}{2}=\frac52.$$
 
 等权目标的直觉很清楚：两个矩方向的样本偏差平方和最小。
 
@@ -384,27 +300,17 @@ $$
 
 假设在真参数处
 
-$$
-S=\operatorname{Var}(m(X,\theta_0))
-=\begin{pmatrix}1&0\\0&4\end{pmatrix}.
-$$
+$$S=\operatorname{Var}(m(X,\theta_0)) =\begin{pmatrix}1&0\\0&4\end{pmatrix}.$$
 
 也就是第二个矩的噪声方差为 4，是第一个的 4 倍，且两者不相关。
 
 取
 
-$$
-W_*=S^{-1}=
-\begin{pmatrix}1&0\\0&1/4\end{pmatrix}.
-$$
+$$W_*=S^{-1}= \begin{pmatrix}1&0\\0&1/4\end{pmatrix}.$$
 
 线性 GMM 公式给出
 
-$$
-\hat\theta_*
-=\frac{1\cdot2+\frac14\cdot3}{1+\frac14}
-=\frac{11}{5}.
-$$
+$$\hat\theta_* =\frac{1\cdot2+\frac14\cdot3}{1+\frac14} =\frac{11}{5}.$$
 
 Python 的标量精确计算对应为：
 
@@ -441,61 +347,35 @@ theta_star = scalar_linear_gmm(a, g, known_precision)
 
 定义
 
-$$
-G=E\left[\frac{\partial m(X,\theta_0)}{\partial\theta'}\right],
-\qquad
-S=\operatorname{Var}(m(X,\theta_0)).
-$$
+$$G=E\left[\frac{\partial m(X,\theta_0)}{\partial\theta'}\right], \qquad S=\operatorname{Var}(m(X,\theta_0)).$$
 
 第 35 章将推导一般公式：
 
-$$
-\sqrt n(\hat\theta_W-\theta_0)
-\xrightarrow{d}N(0,\Omega(W)),
-$$
+$$\sqrt n(\hat\theta_W-\theta_0) \xrightarrow{d}N(0,\Omega(W)),$$
 
 其中
 
-$$
-\boxed{
-\Omega(W)=
-(G'WG)^{-1}G'WSWG(G'WG)^{-1}.
-}
-$$
+$$\boxed{ \Omega(W)= (G'WG)^{-1}G'WSWG(G'WG)^{-1}. }$$
 
 若 $W=S^{-1}$ ，中间的三明治收缩为
 
-$$
-\boxed{
-\Omega_*=(G'S^{-1}G)^{-1}.
-}
-$$
+$$\boxed{ \Omega_*=(G'S^{-1}G)^{-1}. }$$
 
 本例中
 
-$$
-G'G=2,
-\qquad
-G'SG=1+4=5,
-$$
+$$G'G=2, \qquad G'SG=1+4=5,$$
 
 所以等权权重的渐近方差为
 
-$$
-\Omega(I)=\frac5{2^2}=\frac54.
-$$
+$$\Omega(I)=\frac5{2^2}=\frac54.$$
 
 而
 
-$$
-G'S^{-1}G=1+\frac14=\frac54,
-$$
+$$G'S^{-1}G=1+\frac14=\frac54,$$
 
 故最优权重给出
 
-$$
-\Omega_*=\frac45.
-$$
+$$\Omega_*=\frac45.$$
 
 计算单元同时检查这两个值和最优权重的化简：
 
@@ -520,45 +400,29 @@ assert omega_star == F(4, 5)
 
 归一化线性组合
 
-$$
-T_a=aT_1+(1-a)T_2
-$$
+$$T_a=aT_1+(1-a)T_2$$
 
 仍无偏，其方差为
 
-$$
-V(a)=a^2s_1+(1-a)^2s_2.
-$$
+$$V(a)=a^2s_1+(1-a)^2s_2.$$
 
 令
 
-$$
-a_*=\frac{s_2}{s_1+s_2}.
-$$
+$$a_*=\frac{s_2}{s_1+s_2}.$$
 
 它对应的两个权重比例为
 
-$$
-a_*:1-a_*
-=\frac{s_2}{s_1+s_2}:\frac{s_1}{s_1+s_2}
-=s_1^{-1}:s_2^{-1}.
-$$
+$$a_*:1-a_* =\frac{s_2}{s_1+s_2}:\frac{s_1}{s_1+s_2} =s_1^{-1}:s_2^{-1}.$$
 
 直接展开可得完全平方恒等式
 
-$$
-\boxed{
-V(a)-V(a_*)=(s_1+s_2)(a-a_*)^2.
-}
-$$
+$$\boxed{ V(a)-V(a_*)=(s_1+s_2)(a-a_*)^2. }$$
 
 只要方差为正，就有 $V(a)\ge V(a_*)$ ，等号仅在 $a=a_*$ 时成立。
 
 最优值为
 
-$$
-V(a_*)=\frac{s_1s_2}{s_1+s_2}.
-$$
+$$V(a_*)=\frac{s_1s_2}{s_1+s_2}.$$
 
 代入 $s_1=1,s_2=4$ ，得到 $a_*=4/5$ 和 $V(a_*)=4/5$ 。
 
@@ -566,9 +430,7 @@ $$
 
 对一般 $W$ ，定义线性化矩到参数的映射
 
-$$
-\Psi_W=(G'WG)^{-1}G'W.
-$$
+$$\Psi_W=(G'WG)^{-1}G'W.$$
 
 它满足 $\Psi_WG=I$ 。
 
@@ -576,13 +438,7 @@ $$
 
 利用 $\Psi_*S(\Psi_W-\Psi_*)'=0$ ，可分解
 
-$$
-\boxed{
-\Omega(W)-\Omega_*
-=(\Psi_W-\Psi_*)S(\Psi_W-\Psi_*)'
-\succeq0.
-}
-$$
+$$\boxed{ \Omega(W)-\Omega_* =(\Psi_W-\Psi_*)S(\Psi_W-\Psi_*)' \succeq0. }$$
 
 所以最优不是“数值上看起来更小”，而是在 Loewner 半正定序下最小。
 
@@ -606,36 +462,19 @@ $$
 
 在 iid 且真矩均值为零时，常用非中心估计
 
-$$
-\widehat S
-=\frac1n\sum_{i=1}^n
-m(X_i,\hat\theta^{(1)})m(X_i,\hat\theta^{(1)})'.
-$$
+$$\widehat S =\frac1n\sum_{i=1}^n m(X_i,\hat\theta^{(1)})m(X_i,\hat\theta^{(1)})'.$$
 
 然后取
 
-$$
-W^{(2)}=\widehat S^{-1},
-\qquad
-\hat\theta^{(2)}
-=\arg\min_\theta\bar m_n(\theta)'\widehat S^{-1}\bar m_n(\theta).
-$$
+$$W^{(2)}=\widehat S^{-1}, \qquad \hat\theta^{(2)} =\arg\min_\theta\bar m_n(\theta)'\widehat S^{-1}\bar m_n(\theta).$$
 
 本例的一步估计为 $5/2$ ，逐观测矩向量构成
 
-$$
-(X_{i1}-5/2,X_{i2}-5/2).
-$$
+$$(X_{i1}-5/2,X_{i2}-5/2).$$
 
 精确计算得到
 
-$$
-\widehat S=
-\begin{pmatrix}
-11/12&13/12\\
-13/12&59/12
-\end{pmatrix}.
-$$
+$$\widehat S= \begin{pmatrix} 11/12&13/12\\ 13/12&59/12 \end{pmatrix}.$$
 
 其行列式为 $10/3$ ，所以可逆。
 
@@ -677,9 +516,7 @@ assert theta_two == F(43, 22)
 
 **连续更新 GMM（CU-GMM）**：把权重也看成参数的函数，直接最小化
 
-$$
-\bar m_n(\theta)'S_n(\theta)^{-1}\bar m_n(\theta).
-$$
+$$\bar m_n(\theta)'S_n(\theta)^{-1}\bar m_n(\theta).$$
 
 三者共享同一总体最优权重思想，但有限样本目标并不相同。
 
@@ -691,19 +528,11 @@ $$
 
 在矩条件正确、最优权重一致估计 $S^{-1}$ 、参数内点且满足常规正则条件时，
 
-$$
-\boxed{
-J=nQ_n(\hat\theta;\widehat S^{-1})
-=n\bar m_n(\hat\theta)'\widehat S^{-1}\bar m_n(\hat\theta)
-\xrightarrow{d}\chi^2_{q-p}.
-}
-$$
+$$\boxed{ J=nQ_n(\hat\theta;\widehat S^{-1}) =n\bar m_n(\hat\theta)'\widehat S^{-1}\bar m_n(\hat\theta) \xrightarrow{d}\chi^2_{q-p}. }$$
 
 自由度是
 
-$$
-q-p,
-$$
+$$q-p,$$
 
 不是 $q$ ，也不是 $p$ 。
 
@@ -713,21 +542,11 @@ $$
 
 使用已知最优权重和 $\hat\theta_*=11/5$ ，残差样本矩为
 
-$$
-\bar a-G\hat\theta_*
-=\begin{pmatrix}-1/5\\4/5\end{pmatrix}.
-$$
+$$\bar a-G\hat\theta_* =\begin{pmatrix}-1/5\\4/5\end{pmatrix}.$$
 
 因此
 
-$$
-Q_*=
-\left(-\frac15\right)^2
-+\frac14\left(\frac45\right)^2
-=\frac15,
-\qquad
-J=3Q_*=\frac35.
-$$
+$$Q_*= \left(-\frac15\right)^2 +\frac14\left(\frac45\right)^2 =\frac15, \qquad J=3Q_*=\frac35.$$
 
 Python 精确核对：
 
@@ -823,9 +642,7 @@ theorem two_measurement_variance_gap
 
 若完整参数模型正确，单个观测的得分满足
 
-$$
-E_\theta[\nabla_\theta\log f(X;\theta)]=0.
-$$
+$$E_\theta[\nabla_\theta\log f(X;\theta)]=0.$$
 
 因此得分方程本身就是一组矩条件。
 

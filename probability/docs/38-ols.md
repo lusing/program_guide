@@ -8,18 +8,11 @@
 
 回归分析把这个一般问题化为参数模型：
 
-$$
-E(Y|X_1,\ldots,X_{k-1})
-\approx \beta_1+\beta_2X_1+\cdots+\beta_kX_{k-1}.
-$$
+$$E(Y|X_1,\ldots,X_{k-1}) \approx \beta_1+\beta_2X_1+\cdots+\beta_kX_{k-1}.$$
 
 本章起把样本写成矩阵形式，研究经典线性回归模型
 
-$$
-\boxed{
-y=X\beta+\varepsilon
-}
-$$
+$$\boxed{ y=X\beta+\varepsilon }$$
 
 的最小二乘估计。
 
@@ -27,9 +20,7 @@ $$
 
 普通最小二乘（OLS）只做一件事：
 
-$$
-\hat\beta=\arg\min_{b\in\mathbb R^k}\|y-Xb\|^2.
-$$
+$$\hat\beta=\arg\min_{b\in\mathbb R^k}\|y-Xb\|^2.$$
 
 它不假设正态，不假设独立，甚至暂时不假设任何分布。
 
@@ -41,23 +32,11 @@ $$
 
 第 $t$ 个观测写作
 
-$$
-Y_t=\beta_1+\beta_2X_{t1}+\cdots+\beta_kX_{t,k-1}+\varepsilon_t.
-$$
+$$Y_t=\beta_1+\beta_2X_{t1}+\cdots+\beta_kX_{t,k-1}+\varepsilon_t.$$
 
 按行堆叠成矩阵：
 
-$$
-y=\begin{pmatrix}Y_1\\\vdots\\Y_n\end{pmatrix},
-\qquad
-X=\begin{pmatrix}
-1&X_{11}&\cdots&X_{1,k-1}\\
-\vdots&\vdots&&\vdots\\
-1&X_{n1}&\cdots&X_{n,k-1}
-\end{pmatrix},
-\qquad
-\varepsilon=\begin{pmatrix}\varepsilon_1\\\vdots\\\varepsilon_n\end{pmatrix}.
-$$
+$$y=\begin{pmatrix}Y_1\\\vdots\\Y_n\end{pmatrix}, \qquad X=\begin{pmatrix} 1&X_{11}&\cdots&X_{1,k-1}\\ \vdots&\vdots&&\vdots\\ 1&X_{n1}&\cdots&X_{n,k-1} \end{pmatrix}, \qquad \varepsilon=\begin{pmatrix}\varepsilon_1\\\vdots\\\varepsilon_n\end{pmatrix}.$$
 
 约定：
 
@@ -92,9 +71,7 @@ $\operatorname{rank}(X)=k$ ，等价于 $X'X$ 可逆。
 
 **假设 A3（严格外生性）。**
 
-$$
-E(\varepsilon|X)=0.
-$$
+$$E(\varepsilon|X)=0.$$
 
 解释变量包含了扰动的全部条件均值信息。
 
@@ -102,9 +79,7 @@ $$
 
 **假设 A4（球形扰动）。**
 
-$$
-E(\varepsilon\varepsilon'|X)=\sigma^2I_n.
-$$
+$$E(\varepsilon\varepsilon'|X)=\sigma^2I_n.$$
 
 对角线给出同方差 $E(\varepsilon_t^2|X)=\sigma^2$ ，非对角线给出不自相关 $E(\varepsilon_s\varepsilon_t|X)=0$ （$s\ne t$ ）。
 
@@ -114,9 +89,7 @@ $$
 
 **假设 A5（正态扰动）。**
 
-$$
-\varepsilon|X\sim N(0,\sigma^2I_n).
-$$
+$$\varepsilon|X\sim N(0,\sigma^2I_n).$$
 
 正态性用于第 40 章的精确 $t$ 、$F$ 推断，本章与第 39 章完全不需要它。
 
@@ -178,25 +151,19 @@ E3 胜出的原因是数学便利与第 40 章将看到的与正态理论的契�
 
 **断言：** 若 $\hat y=X\hat\beta\in\operatorname{col}(X)$ 满足 $y-\hat y\perp\operatorname{col}(X)$ ，即
 
-$$
-X'(y-X\hat\beta)=0,
-$$
+$$X'(y-X\hat\beta)=0,$$
 
 则 $\hat y$ 是 $\operatorname{col}(X)$ 中到 $y$ 的最近点。
 
 **证明。** 对任意 $Xb\in\operatorname{col}(X)$ ，拆
 
-$$
-y-Xb=(y-\hat y)+(\hat y-Xb).
-$$
+$$y-Xb=(y-\hat y)+(\hat y-Xb).$$
 
 第一项与 $\operatorname{col}(X)$ 中每个向量正交，第二项在 $\operatorname{col}(X)$ 中，故两项正交。
 
 勾股定理给出
 
-$$
-\|y-Xb\|^2=\|y-\hat y\|^2+\|\hat y-Xb\|^2\ge\|y-\hat y\|^2,
-$$
+$$\|y-Xb\|^2=\|y-\hat y\|^2+\|\hat y-Xb\|^2\ge\|y-\hat y\|^2,$$
 
 等号当且仅当 $Xb=\hat y$ 。证毕。
 
@@ -210,35 +177,25 @@ $$
 
 目标函数
 
-$$
-S(b)=(y-Xb)'(y-Xb)=y'y-2b'X'y+b'X'Xb
-$$
+$$S(b)=(y-Xb)'(y-Xb)=y'y-2b'X'y+b'X'Xb$$
 
 是 $b$ 的二次凸函数。
 
 一阶条件
 
-$$
-\frac{\partial S}{\partial b}=-2X'y+2X'Xb=0
-$$
+$$\frac{\partial S}{\partial b}=-2X'y+2X'Xb=0$$
 
 给出**正规方程**
 
-$$
-\boxed{X'X\hat\beta=X'y.}
-$$
+$$\boxed{X'X\hat\beta=X'y.}$$
 
 A2 下 $X'X$ 可逆，解为
 
-$$
-\boxed{\hat\beta=(X'X)^{-1}X'y.}
-$$
+$$\boxed{\hat\beta=(X'X)^{-1}X'y.}$$
 
 也可用配方法直接写出：
 
-$$
-S(b)=S(\hat\beta)+(\hat\beta-b)'X'X(\hat\beta-b),
-$$
+$$S(b)=S(\hat\beta)+(\hat\beta-b)'X'X(\hat\beta-b),$$
 
 展开即验。
 
@@ -252,28 +209,17 @@ $$
 
 $k=2$ （常数加一个解释变量）时，记 $\bar x,\bar y$ 为样本均值，
 
-$$
-S_{xx}=\sum_t(X_t-\bar x)^2,\qquad
-S_{xy}=\sum_t(X_t-\bar x)(Y_t-\bar y).
-$$
+$$S_{xx}=\sum_t(X_t-\bar x)^2,\qquad S_{xy}=\sum_t(X_t-\bar x)(Y_t-\bar y).$$
 
 解正规方程给出教科书公式
 
-$$
-\boxed{
-\hat\beta_2=\frac{S_{xy}}{S_{xx}},
-\qquad
-\hat\beta_1=\bar y-\hat\beta_2\bar x.
-}
-$$
+$$\boxed{ \hat\beta_2=\frac{S_{xy}}{S_{xx}}, \qquad \hat\beta_1=\bar y-\hat\beta_2\bar x. }$$
 
 斜率是样本协方差与样本方差之比。
 
 旧章的行列式身份在此重现：
 
-$$
-N\sum_tX_t^2-\Big(\sum_tX_t\Big)^2=N^2\hat\sigma_x^2,
-$$
+$$N\sum_tX_t^2-\Big(\sum_tX_t\Big)^2=N^2\hat\sigma_x^2,$$
 
 其中 $\hat\sigma_x^2=S_{xx}/N$ 。
 
@@ -281,20 +227,11 @@ $$
 
 本章固定三点例的账：$x=0,1,2$ ，$y=1,2,4$ ，$\bar x=1$ ，$\bar y=7/3$ ，
 
-$$
-S_{xx}=(0-1)^2+0+(2-1)^2=2,
-$$
+$$S_{xx}=(0-1)^2+0+(2-1)^2=2,$$
 
-$$
-S_{xy}=(-1)\Big(1-\frac73\Big)+0+(1)\Big(4-\frac73\Big)
-=\frac43+\frac53=3,
-$$
+$$S_{xy}=(-1)\Big(1-\frac73\Big)+0+(1)\Big(4-\frac73\Big) =\frac43+\frac53=3,$$
 
-$$
-\hat\beta_2=\frac32,
-\qquad
-\hat\beta_1=\frac73-\frac32\cdot1=\frac56.
-$$
+$$\hat\beta_2=\frac32, \qquad \hat\beta_1=\frac73-\frac32\cdot1=\frac56.$$
 
 下面所有机器单元都围绕这组数。
 
@@ -302,33 +239,17 @@ $$
 
 把解代入定义：
 
-$$
-\hat y=X\hat\beta=X(X'X)^{-1}X'y\equiv Py,
-\qquad
-e=y-\hat y=(I-P)y\equiv My.
-$$
+$$\hat y=X\hat\beta=X(X'X)^{-1}X'y\equiv Py, \qquad e=y-\hat y=(I-P)y\equiv My.$$
 
 矩阵
 
-$$
-\boxed{
-P=X(X'X)^{-1}X',
-\qquad
-M=I_n-P
-}
-$$
+$$\boxed{ P=X(X'X)^{-1}X', \qquad M=I_n-P }$$
 
 分别称为帽子矩阵（$P$ 给 $y$ 戴上帽子）与残差制造矩阵（$M$ 造出残差）。
 
 它们把 $\mathbb R^n$ 分解为两个正交的部分：
 
-$$
-\operatorname{col}(P)=\operatorname{col}(X),
-\qquad
-\operatorname{col}(M)=\operatorname{col}(X)^\perp,
-\qquad
-\mathbb R^n=\operatorname{col}(X)\oplus\operatorname{col}(X)^\perp.
-$$
+$$\operatorname{col}(P)=\operatorname{col}(X), \qquad \operatorname{col}(M)=\operatorname{col}(X)^\perp, \qquad \mathbb R^n=\operatorname{col}(X)\oplus\operatorname{col}(X)^\perp.$$
 
 ## 38.10 P 与 M 的性质清单及证明
 
@@ -338,9 +259,7 @@ $$
 
 **(2) 幂等。**
 
-$$
-P^2=X(X'X)^{-1}X'X(X'X)^{-1}X'=X(X'X)^{-1}X'=P,
-$$
+$$P^2=X(X'X)^{-1}X'X(X'X)^{-1}X'=X(X'X)^{-1}X'=P,$$
 
 $M^2=(I-P)^2=I-2P+P^2=I-P=M$ 。
 
@@ -348,9 +267,7 @@ $M^2=(I-P)^2=I-2P+P^2=I-P=M$ 。
 
 **(4) 残差正交。**
 
-$$
-X'e=X'My=X'(I-P)y=X'y-X'X(X'X)^{-1}X'y=0.
-$$
+$$X'e=X'My=X'(I-P)y=X'y-X'X(X'X)^{-1}X'y=0.$$
 
 这就是“残差与每个解释变量（含常数列）的样本内积为零”。
 
@@ -358,23 +275,15 @@ $$
 
 **(5) 拟合与残差正交。**
 
-$$
-\hat y'e=(Py)'(My)=y'PMy=0.
-$$
+$$\hat y'e=(Py)'(My)=y'PMy=0.$$
 
 **(6) P 不动列空间中的向量。** $PX=X$ ：已经在 $\operatorname{col}(X)$ 中的向量投影后不变。
 
 **(7) 秩等于迹。** 幂等矩阵特征值只能是 0 或 1，故
 
-$$
-\operatorname{rank}(P)=\operatorname{tr}(P)
-=\operatorname{tr}\big((X'X)^{-1}X'X\big)
-=\operatorname{tr}(I_k)=k,
-$$
+$$\operatorname{rank}(P)=\operatorname{tr}(P) =\operatorname{tr}\big((X'X)^{-1}X'X\big) =\operatorname{tr}(I_k)=k,$$
 
-$$
-\operatorname{rank}(M)=\operatorname{tr}(M)=n-\operatorname{tr}(P)=n-k.
-$$
+$$\operatorname{rank}(M)=\operatorname{tr}(M)=n-\operatorname{tr}(P)=n-k.$$
 
 迹的轮换性质 $\operatorname{tr}(AB)=\operatorname{tr}(BA)$ 用了一次。
 
@@ -382,11 +291,7 @@ $$
 
 **(8) 勾股分解。**
 
-$$
-\boxed{
-\|y\|^2=\|\hat y\|^2+\|e\|^2.
-}
-$$
+$$\boxed{ \|y\|^2=\|\hat y\|^2+\|e\|^2. }$$
 
 **(9) 杠杆值。** 对角元 $P_{tt}\in[0,1]$ ，$\sum_tP_{tt}=k$ ，且 $\operatorname{Var}(e_t|X)=\sigma^2M_{tt}=\sigma^2(1-P_{tt})$ 。
 
@@ -400,58 +305,27 @@ $P_{tt}$ 度量第 $t$ 个观测在决定自身拟合值时的权重，称为杠
 
 固定设计
 
-$$
-X=\begin{pmatrix}1&0\\1&1\\1&2\end{pmatrix},
-\qquad
-y=\begin{pmatrix}1\\2\\4\end{pmatrix}.
-$$
+$$X=\begin{pmatrix}1&0\\1&1\\1&2\end{pmatrix}, \qquad y=\begin{pmatrix}1\\2\\4\end{pmatrix}.$$
 
 逐步计算：
 
-$$
-X'X=\begin{pmatrix}3&3\\3&5\end{pmatrix},
-\qquad
-X'y=\begin{pmatrix}7\\10\end{pmatrix},
-\qquad
-\det(X'X)=6,
-$$
+$$X'X=\begin{pmatrix}3&3\\3&5\end{pmatrix}, \qquad X'y=\begin{pmatrix}7\\10\end{pmatrix}, \qquad \det(X'X)=6,$$
 
-$$
-(X'X)^{-1}=\frac16\begin{pmatrix}5&-3\\-3&3\end{pmatrix},
-\qquad
-\hat\beta=\frac16\begin{pmatrix}5\cdot7-3\cdot10\\-3\cdot7+3\cdot10\end{pmatrix}
-=\begin{pmatrix}5/6\\3/2\end{pmatrix}.
-$$
+$$(X'X)^{-1}=\frac16\begin{pmatrix}5&-3\\-3&3\end{pmatrix}, \qquad \hat\beta=\frac16\begin{pmatrix}5\cdot7-3\cdot10\\-3\cdot7+3\cdot10\end{pmatrix} =\begin{pmatrix}5/6\\3/2\end{pmatrix}.$$
 
 拟合值与残差：
 
-$$
-\hat y=\begin{pmatrix}5/6\\7/3\\23/6\end{pmatrix},
-\qquad
-e=\begin{pmatrix}1/6\\-1/3\\1/6\end{pmatrix},
-\qquad
-e'e=\frac16+\frac19+\frac1 6=\frac16.
-$$
+$$\hat y=\begin{pmatrix}5/6\\7/3\\23/6\end{pmatrix}, \qquad e=\begin{pmatrix}1/6\\-1/3\\1/6\end{pmatrix}, \qquad e'e=\frac16+\frac19+\frac1 6=\frac16.$$
 
 验证 $X'e$ ：
 
-$$
-\sum_te_t=\frac16-\frac13+\frac16=0,
-\qquad
-\sum_tX_te_t=0\cdot\frac16+1\cdot\Big(-\frac13\Big)+2\cdot\frac16=0.
-$$
+$$\sum_te_t=\frac16-\frac13+\frac16=0, \qquad \sum_tX_te_t=0\cdot\frac16+1\cdot\Big(-\frac13\Big)+2\cdot\frac16=0.$$
 
 投影矩阵：
 
-$$
-P=X(X'X)^{-1}X'=\frac16
-\begin{pmatrix}5&2&-1\\2&2&2\\-1&2&5\end{pmatrix},
-$$
+$$P=X(X'X)^{-1}X'=\frac16 \begin{pmatrix}5&2&-1\\2&2&2\\-1&2&5\end{pmatrix},$$
 
-$$
-M=I-P=\frac16
-\begin{pmatrix}1&-2&1\\-2&4&-2\\1&-2&1\end{pmatrix}.
-$$
+$$M=I-P=\frac16 \begin{pmatrix}1&-2&1\\-2&4&-2\\1&-2&1\end{pmatrix}.$$
 
 核对：$\operatorname{tr}(P)=(5+2+5)/6=2=k$ ，$\operatorname{tr}(M)=(1+4+1)/6=1=n-k$ 。
 
@@ -459,9 +333,7 @@ $$
 
 一个巧合值得单独指出：对这个设计
 
-$$
-\hat\beta_2=\frac{(Y_3-Y_1)}{2},
-$$
+$$\hat\beta_2=\frac{(Y_3-Y_1)}{2},$$
 
 因为 $(X'X)^{-1}X'$ 的第二行是 $\frac16(-3,0,3)$ 。
 
@@ -619,11 +491,7 @@ example : betaHat 1 = (yVec 2 - yVec 0) / 2 := by native_decide
 
 在 A1–A4 下有（第 39 章证明）
 
-$$
-E(\hat\beta|X)=\beta,
-\qquad
-\operatorname{Var}(\hat\beta|X)=\sigma^2(X'X)^{-1}.
-$$
+$$E(\hat\beta|X)=\beta, \qquad \operatorname{Var}(\hat\beta|X)=\sigma^2(X'X)^{-1}.$$
 
 Python 单元用固定设计 $x=1,\ldots,30$ 、真值 $\beta=(1,2)$ 、$\sigma=1.5$ 、20,000 次重复审计：
 
@@ -636,9 +504,7 @@ assert np.allclose(np.cov(B.T), sigma ** 2 * XtXi, atol=0.02)
 
 理论协方差：$\det(X'X)=67425$ ，
 
-$$
-(X'X)^{-1}=\frac1{67425}\begin{pmatrix}9455&-465\\-465&30\end{pmatrix},
-$$
+$$(X'X)^{-1}=\frac1{67425}\begin{pmatrix}9455&-465\\-465&30\end{pmatrix},$$
 
 对角元乘 $\sigma^2=2.25$ 得 $(0.31550,\ 0.001001)$ 。
 
@@ -652,30 +518,19 @@ $$
 
 设真实模型仍是 $Y=1+2X+\varepsilon$ ，但让解释变量与扰动相关：
 
-$$
-X=\varepsilon+v,\qquad \varepsilon,v\ \text{独立标准正态}.
-$$
+$$X=\varepsilon+v,\qquad \varepsilon,v\ \text{独立标准正态}.$$
 
 代入斜率公式：
 
-$$
-\hat\beta_2
-=2+\frac{\sum_t(X_t-\bar X)(\varepsilon_t-\bar\varepsilon)}
-{\sum_t(X_t-\bar X)^2},
-$$
+$$\hat\beta_2 =2+\frac{\sum_t(X_t-\bar X)(\varepsilon_t-\bar\varepsilon)} {\sum_t(X_t-\bar X)^2},$$
 
 由大数定律（第 26 章），第二项依概率收敛到
 
-$$
-\frac{\operatorname{Cov}(X,\varepsilon)}{\operatorname{Var}(X)}
-=\frac{1}{2},
-$$
+$$\frac{\operatorname{Cov}(X,\varepsilon)}{\operatorname{Var}(X)} =\frac{1}{2},$$
 
 故
 
-$$
-\operatorname{plim}\hat\beta_2=2.5\ne\beta_2.
-$$
+$$\operatorname{plim}\hat\beta_2=2.5\ne\beta_2.$$
 
 OLS 不再一致。
 

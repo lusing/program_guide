@@ -11,9 +11,7 @@
 设 $(\Omega,\mathcal F,P)$ 是概率空间，$A,B\in\mathcal F$ ，且
 $P(B)>0$ 。给定 $B$ 已发生时，$A$ 的条件概率定义为
 
-$$
-P(A\mid B)=\frac{P(A\cap B)}{P(B)}.
-$$
+$$P(A\mid B)=\frac{P(A\cap B)}{P(B)}.$$
 
 这个定义有三个关键点。
 
@@ -30,16 +28,11 @@ $$
 若有一个含 25 个等可能点的有限空间，事件 $A$ 含 15 点，$B$ 含
 7 点，$A\cap B$ 含 5 点，则
 
-$$
-P(A)=\frac{15}{25},\quad P(B)=\frac7{25},\quad P(A\cap B)=\frac5{25},
-$$
+$$P(A)=\frac{15}{25},\quad P(B)=\frac7{25},\quad P(A\cap B)=\frac5{25},$$
 
 因而
 
-$$
-P(A\mid B)=\frac{5/25}{7/25}=\frac57,\qquad
-P(B\mid A)=\frac{5/25}{15/25}=\frac13.
-$$
+$$P(A\mid B)=\frac{5/25}{7/25}=\frac57,\qquad P(B\mid A)=\frac{5/25}{15/25}=\frac13.$$
 
 这说明 $P(A\mid B)$ 与 $P(B\mid A)$ 一般不相等。医学诊断中
 “患者呈阳性时患病的概率”和“患者患病时呈阳性的概率”方向相反；
@@ -55,26 +48,16 @@ $$
 - 若 $A_1,A_2,\ldots$ 两两不交，则
   $(A_i\cap B)$ 也两两不交，故
 
-$$
-Q\left(\bigcup_i A_i\right)
-=\frac{P((\bigcup_i A_i)\cap B)}{P(B)}
-=\sum_i\frac{P(A_i\cap B)}{P(B)}
-=\sum_i Q(A_i).
-$$
+$$Q\left(\bigcup_i A_i\right) =\frac{P((\bigcup_i A_i)\cap B)}{P(B)} =\sum_i\frac{P(A_i\cap B)}{P(B)} =\sum_i Q(A_i).$$
 
 因此无条件概率成立的补律、加法公式、Boole 不等式等，在条件概率中也
 成立。例如
 
-$$
-P(A^c\mid B)=1-P(A\mid B).
-$$
+$$P(A^c\mid B)=1-P(A\mid B).$$
 
 证明为
 
-$$
-P(B)=P((A\cup A^c)\cap B)
-=P(A\cap B)+P(A^c\cap B),
-$$
+$$P(B)=P((A\cup A^c)\cap B) =P(A\cap B)+P(A^c\cap B),$$
 
 两边除以 $P(B)$ 即得。
 
@@ -85,37 +68,24 @@ $\Omega$ ；观测到 $B$ 后，所有概率都在新的信息集 $B$ 中重算�
 
 由定义移项得到乘法法则：
 
-$$
-P(A\cap B)=P(A\mid B)P(B)\qquad(P(B)>0),
-$$
+$$P(A\cap B)=P(A\mid B)P(B)\qquad(P(B)>0),$$
 
 或等价地
 
-$$
-P(A\cap B)=P(B\mid A)P(A)\qquad(P(A)>0).
-$$
+$$P(A\cap B)=P(B\mid A)P(A)\qquad(P(A)>0).$$
 
 它把联合概率拆成“某事件概率”乘“已知该事件后另一事件概率”。
 
 从 52 张牌中无放回抽取两张，两张都是 A 的概率为
 
-$$
-P(A_1\cap A_2)=P(A_1)P(A_2\mid A_1)
-=\frac4{52}\cdot\frac3{51}
-=\frac1{221}.
-$$
+$$P(A_1\cap A_2)=P(A_1)P(A_2\mid A_1) =\frac4{52}\cdot\frac3{51} =\frac1{221}.$$
 
 第一张是 A 后，牌堆只剩 51 张，其中只有 3 张 A。条件结构精确反映了
 无放回抽样导致的概率变化。
 
 一般地，若所需条件概率都有定义，则有链式法则：
 
-$$
-P(A_1\cap A_2\cap\cdots\cap A_n)
-=
-P(A_1)P(A_2\mid A_1)P(A_3\mid A_1\cap A_2)\cdots
-P(A_n\mid A_1\cap\cdots\cap A_{n-1}).
-$$
+$$P(A_1\cap A_2\cap\cdots\cap A_n) = P(A_1)P(A_2\mid A_1)P(A_3\mid A_1\cap A_2)\cdots P(A_n\mid A_1\cap\cdots\cap A_{n-1}).$$
 
 它按信息到达顺序展开联合概率。时间序列分析中，$P(A_t\mid A_1,\ldots,A_{t-1})$ 可解释为在历史信息集下预测下一期事件；似然函数也常通过
 链式法则写成一串条件概率或条件密度的乘积。
@@ -124,36 +94,24 @@ $$
 
 若事件 $B_1,\ldots,B_n$ 两两不交且
 
-$$
-\bigcup_{i=1}^n B_i=\Omega,
-$$
+$$\bigcup_{i=1}^n B_i=\Omega,$$
 
 则它们构成 $\Omega$ 的一个分割。若再要求 $P(B_i)>0$ ，对任意事件
 $A$ 有有限全概率公式：
 
-$$
-P(A)=\sum_{i=1}^n P(A\mid B_i)P(B_i).
-$$
+$$P(A)=\sum_{i=1}^n P(A\mid B_i)P(B_i).$$
 
 可数分割版本为
 
-$$
-P(A)=\sum_{i=1}^{\infty}P(A\mid B_i)P(B_i).
-$$
+$$P(A)=\sum_{i=1}^{\infty}P(A\mid B_i)P(B_i).$$
 
 证明分两步。先由分割得到
 
-$$
-A=A\cap\Omega
-=A\cap\left(\bigcup_i B_i\right)
-=\bigcup_i(A\cap B_i).
-$$
+$$A=A\cap\Omega =A\cap\left(\bigcup_i B_i\right) =\bigcup_i(A\cap B_i).$$
 
 这些 $A\cap B_i$ 两两不交，所以由可加性
 
-$$
-P(A)=\sum_iP(A\cap B_i).
-$$
+$$P(A)=\sum_iP(A\cap B_i).$$
 
 再用乘法法则 $P(A\cap B_i)=P(A\mid B_i)P(B_i)$ 。
 
@@ -168,20 +126,11 @@ $$
 
 在同样的分割下，Bayes 公式为
 
-$$
-P(B_j\mid A)
-=
-\frac{P(A\mid B_j)P(B_j)}
-{\sum_iP(A\mid B_i)P(B_i)}.
-$$
+$$P(B_j\mid A) = \frac{P(A\mid B_j)P(B_j)} {\sum_iP(A\mid B_i)P(B_i)}.$$
 
 分母就是全概率公式给出的 $P(A)$ 。证明只有两行：
 
-$$
-P(B_j\mid A)=\frac{P(B_j\cap A)}{P(A)},
-\qquad
-P(B_j\cap A)=P(A\mid B_j)P(B_j).
-$$
+$$P(B_j\mid A)=\frac{P(B_j\cap A)}{P(A)}, \qquad P(B_j\cap A)=P(A\mid B_j)P(B_j).$$
 
 Bayes 公式中的四项各有名称：
 
@@ -198,32 +147,20 @@ Bayes 更新不是“凭结果倒推因果”。条件概率表示预测和证�
 
 设某种病在人群中的患病率为
 
-$$
-P(H)=\frac1{1000},
-$$
+$$P(H)=\frac1{1000},$$
 
 检验灵敏度为 $P(+\mid H)=0.95$ ，假阳性率为 $P(+\mid H^c)=0.05$ 。
 若某人检验呈阳性，真正患病的概率是多少？
 
 真正阳性和假阳性的联合概率分别为
 
-$$
-P(H\cap +)=0.95\cdot\frac1{1000}=\frac{95}{100000},
-$$
+$$P(H\cap +)=0.95\cdot\frac1{1000}=\frac{95}{100000},$$
 
-$$
-P(H^c\cap +)=0.05\cdot\frac{999}{1000}
-=\frac{4995}{100000}.
-$$
+$$P(H^c\cap +)=0.05\cdot\frac{999}{1000} =\frac{4995}{100000}.$$
 
 因此
 
-$$
-P(H\mid +)
-=\frac{95}{95+4995}
-=\frac{19}{1018}
-\approx0.0187.
-$$
+$$P(H\mid +) =\frac{95}{95+4995} =\frac{19}{1018} \approx0.0187.$$
 
 即使检验“95% 灵敏”，阳性后真病概率仍只有约 1.87%，因为健康人基数
 远大于患者基数，5% 的假阳性落在大量健康人上会产生许多假阳性。这个
@@ -255,9 +192,7 @@ $P(A\mid B)=5/7$ 与无放回两张 A 的 $1/221$ 。
 
 令 $C_i$ 表示车在第 $i$ 扇门后，先验为
 
-$$
-P(C_1)=P(C_2)=P(C_3)=\frac13.
-$$
+$$P(C_1)=P(C_2)=P(C_3)=\frac13.$$
 
 令 $H$ 表示主持人按规则打开 3 号门。
 
@@ -269,15 +204,9 @@ $$
 
 于是
 
-$$
-P(H)=\frac12\cdot\frac13+1\cdot\frac13+0\cdot\frac13=\frac12,
-$$
+$$P(H)=\frac12\cdot\frac13+1\cdot\frac13+0\cdot\frac13=\frac12,$$
 
-$$
-P(C_2\mid H)
-=\frac{1\cdot1/3}{1/2}
-=\frac23.
-$$
+$$P(C_2\mid H) =\frac{1\cdot1/3}{1/2} =\frac23.$$
 
 换门赢车概率是 $2/3$ ，不换只有 $1/3$ 。错误答案“两门各 1/2”
 忽略了主持人不是随机开门：他必须避开车门和玩家选择的门。这个规则

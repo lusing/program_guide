@@ -8,21 +8,13 @@
 
 若一次试验只有成功和失败两种结果，令成功时 $X=1$ ，失败时 $X=0$ ，且 $P(X=1)=p$ ，则
 
-$$
-X\sim\operatorname{Bernoulli}(p),\qquad
-P(X=x)=p^x(1-p)^{1-x},\quad x\in\{0,1\}.
-$$
+$$X\sim\operatorname{Bernoulli}(p),\qquad P(X=x)=p^x(1-p)^{1-x},\quad x\in\{0,1\}.$$
 
 直接由定义得到
 
-$$
-E[X]=0(1-p)+1p=p,
-$$
+$$E[X]=0(1-p)+1p=p,$$
 
-$$
-E[X^2]=p,\qquad
-\operatorname{Var}(X)=p-p^2=p(1-p).
-$$
+$$E[X^2]=p,\qquad \operatorname{Var}(X)=p-p^2=p(1-p).$$
 
 这里用了 $X^2=X$ ，因为 $X$ 只取 0 和 1。方差在 $p=1/2$ 时最大，在 $p\to0$ 或 $p\to1$ 时趋于 0：结果越确定，波动越小。
 
@@ -40,36 +32,25 @@ assert (1 - p) ** 2 * p + p ** 2 * (1 - p) == p * (1 - p)
 
 进行 $n$ 次独立试验，每次成功概率都是 $p$ 。一个有 $k$ 次成功的指定序列，其概率为 $p^kq^{n-k}$ ；成功位置有 $\binom nk$ 种，所以
 
-$$
-X\sim\operatorname{Bin}(n,p),\qquad
-P(X=k)=\binom nkp^kq^{n-k},\quad k=0,\ldots,n.
-$$
+$$X\sim\operatorname{Bin}(n,p),\qquad P(X=k)=\binom nkp^kq^{n-k},\quad k=0,\ldots,n.$$
 
 二项定理立即给出归一化：
 
-$$
-\sum_{k=0}^nP(X=k)=\sum_{k=0}^n\binom nkp^kq^{n-k}=(p+q)^n=1.
-$$
+$$\sum_{k=0}^nP(X=k)=\sum_{k=0}^n\binom nkp^kq^{n-k}=(p+q)^n=1.$$
 
 ### 用示性变量求矩
 
 把 $X$ 写成
 
-$$
-X=I_1+\cdots+I_n,
-$$
+$$X=I_1+\cdots+I_n,$$
 
 其中 $I_j$ 是第 $j$ 次试验成功的指示变量。期望线性性不需要独立性，故
 
-$$
-E[X]=np.
-$$
+$$E[X]=np.$$
 
 计算方差时才使用独立性：独立随机变量之和的方差等于方差之和，因此
 
-$$
-\operatorname{Var}(X)=np(1-p).
-$$
+$$\operatorname{Var}(X)=np(1-p).$$
 
 这条分解路线比直接求 $\sum k^2P(X=k)$ 更能说明公式来自哪里。第 16 章还会用参数求导独立推出相同结果。
 
@@ -91,11 +72,7 @@ assert sum(k * k * pmf_bin[k] for k in range(n + 1)) - (n * p) ** 2 \
 
 若每次试验有 $m$ 种互斥结果，概率为 $p_1,\ldots,p_m$ ，在 $n$ 次独立试验中第 $i$ 类出现 $x_i$ 次，则
 
-$$
-P(X_1=x_1,\ldots,X_m=x_m)
-=\frac{n!}{x_1!\cdots x_m!}\prod_{i=1}^mp_i^{x_i},
-\qquad \sum_i x_i=n.
-$$
+$$P(X_1=x_1,\ldots,X_m=x_m) =\frac{n!}{x_1!\cdots x_m!}\prod_{i=1}^mp_i^{x_i}, \qquad \sum_i x_i=n.$$
 
 系数记录同一计数模式对应多少条有顺序的试验序列。只观察第 $i$ 类，把其余类别合并为“非 $i$ ”，便有 $X_i\sim\operatorname{Bin}(n,p_i)$ 。不同分量一般不独立，因为它们受 $\sum_iX_i=n$ 约束。
 
@@ -103,44 +80,31 @@ $$
 
 设 $T$ 是首次成功所需的试验次数。第 $t$ 次才首次成功，意味着前 $t-1$ 次失败、最后一次成功，故
 
-$$
-P(T=t)=q^{t-1}p,\qquad t=1,2,\ldots.
-$$
+$$P(T=t)=q^{t-1}p,\qquad t=1,2,\ldots.$$
 
 由几何级数，
 
-$$
-\sum_{t=1}^{\infty}q^{t-1}p=p\frac1{1-q}=1.
-$$
+$$\sum_{t=1}^{\infty}q^{t-1}p=p\frac1{1-q}=1.$$
 
 尾部尤其简单：
 
-$$
-P(T>t)=P(\text{前 }t\text{ 次全失败})=q^t.
-$$
+$$P(T>t)=P(\text{前 }t\text{ 次全失败})=q^t.$$
 
 ### 无记忆性
 
 对非负整数 $s,t$ ，
 
-$$
-P(T>s+t\mid T>s)
-=\frac{q^{s+t}}{q^s}=q^t=P(T>t).
-$$
+$$P(T>s+t\mid T>s) =\frac{q^{s+t}}{q^s}=q^t=P(T>t).$$
 
 已知前 $s$ 次失败后，剩余等待时间的分布不变。这不表示各次试验“会补偿坏运气”，而恰恰是独立试验的结果：过去失败不改变下一次成功概率。
 
 用首步分解求均值。设 $\mu=E[T]$ ，首次成功则以 1 次结束；首次失败则已经花去 1 次，剩余期望仍为 $\mu$ ：
 
-$$
-\mu=p\cdot1+q(1+\mu).
-$$
+$$\mu=p\cdot1+q(1+\mu).$$
 
 所以 $\mu=1/p$ 。类似地对二阶矩作首步分解，或利用第 16 章的微分恒等式，可得
 
-$$
-\operatorname{Var}(T)=\frac{q}{p^2}.
-$$
+$$\operatorname{Var}(T)=\frac{q}{p^2}.$$
 
 Python 截断到 60 项审计 $p=1/3$ 的归一化和均值：
 
@@ -158,15 +122,11 @@ assert abs(float(mu_geo) - 3.0) < 5e-9
 
 对二阶矩同样做首步分解。设 $m_2=E[T^2]$ 。首次成功（概率 $p$ ）时 $T=1$ ；首次失败（概率 $q$ ）时 $T=1+T'$ ，其中 $T'$ 与 $T$ 同分布且与首步独立。于是
 
-$$
-m_2=p\cdot1+q\,E[(1+T')^2]=p+q\,(1+2\mu+m_2).
-$$
+$$m_2=p\cdot1+q\,E[(1+T')^2]=p+q\,(1+2\mu+m_2).$$
 
 移项得 $p\,m_2=p+q+2q\mu=1+2q/p$ ，故 $m_2=(p+2q)/p^2=(2-p)/p^2$ 。因此
 
-$$
-\operatorname{Var}(T)=m_2-\mu^2=\frac{2-p}{p^2}-\frac1{p^2}=\frac{1-p}{p^2}=\frac q{p^2}.
-$$
+$$\operatorname{Var}(T)=m_2-\mu^2=\frac{2-p}{p^2}-\frac1{p^2}=\frac{1-p}{p^2}=\frac q{p^2}.$$
 
 一个数值感受：$p=1/4$ 时均值 4、方差 $0.75/0.0625=12$ ，标准差约 3.46，与均值同量级——等待时间的波动非常大，“平均 4 次”远不等于“差不多 4 次”。
 
@@ -203,18 +163,11 @@ G = sim_geometric(0.25, 200_000)
 
 若 $X=k$ ，最后一次试验必须是第 $r$ 次失败；此前 $k+r-1$ 次中恰有 $k$ 次成功和 $r-1$ 次失败。因此
 
-$$
-P(X=k)=\binom{k+r-1}{k}p^kq^r,
-\qquad k=0,1,2,\ldots.
-$$
+$$P(X=k)=\binom{k+r-1}{k}p^kq^r, \qquad k=0,1,2,\ldots.$$
 
 把过程分成 $r$ 段：每段记录一次失败前的成功数。各段独立且同分布，均值均为 $p/q$ ，于是
 
-$$
-E[X]=\frac{rp}{q},
-\qquad
-\operatorname{Var}(X)=\frac{rp}{q^2}.
-$$
+$$E[X]=\frac{rp}{q}, \qquad \operatorname{Var}(X)=\frac{rp}{q^2}.$$
 
 当 $r=1$ 时，$X=T-1$ ，其中 $T$ 是上节的几何等待时间；这也解释了两种常见负二项参数化之间只差一个平移。
 
@@ -262,39 +215,23 @@ NB = sim_negbin(3, 0.7, 200_000)
 
 若
 
-$$
-X\sim\operatorname{Poisson}(\lambda),\qquad \lambda>0,
-$$
+$$X\sim\operatorname{Poisson}(\lambda),\qquad \lambda>0,$$
 
 则
 
-$$
-P(X=k)=e^{-\lambda}\frac{\lambda^k}{k!},
-\qquad k=0,1,2,\ldots.
-$$
+$$P(X=k)=e^{-\lambda}\frac{\lambda^k}{k!}, \qquad k=0,1,2,\ldots.$$
 
 指数级数给出归一化：
 
-$$
-\sum_{k=0}^{\infty}e^{-\lambda}\frac{\lambda^k}{k!}
-=e^{-\lambda}e^\lambda=1.
-$$
+$$\sum_{k=0}^{\infty}e^{-\lambda}\frac{\lambda^k}{k!} =e^{-\lambda}e^\lambda=1.$$
 
 均值可直接提出一项：
 
-$$
-E[X]=e^{-\lambda}\sum_{k=1}^{\infty}\frac{\lambda^k}{(k-1)!}
-=\lambda e^{-\lambda}\sum_{j=0}^{\infty}\frac{\lambda^j}{j!}
-=\lambda.
-$$
+$$E[X]=e^{-\lambda}\sum_{k=1}^{\infty}\frac{\lambda^k}{(k-1)!} =\lambda e^{-\lambda}\sum_{j=0}^{\infty}\frac{\lambda^j}{j!} =\lambda.$$
 
 同理 $E[X(X-1)]=\lambda^2$ ，所以
 
-$$
-E[X^2]=\lambda^2+\lambda,
-\qquad
-\operatorname{Var}(X)=\lambda.
-$$
+$$E[X^2]=\lambda^2+\lambda, \qquad \operatorname{Var}(X)=\lambda.$$
 
 均值等于方差是 Poisson 模型的重要诊断线索，但实测数据中“样本均值接近样本方差”本身并不证明数据服从 Poisson。
 
@@ -302,23 +239,11 @@ $$
 
 固定 $\lambda>0$ ，令 $p_n=\lambda/n$ ，$X_n\sim\operatorname{Bin}(n,p_n)$ 。对固定 $k$ ，
 
-$$
-\begin{aligned}
-P(X_n=k)
-&=\binom nk\left(\frac\lambda n\right)^k
-  \left(1-\frac\lambda n\right)^{n-k}\\
-&=\frac{\lambda^k}{k!}
-  \frac{n(n-1)\cdots(n-k+1)}{n^k}
-  \left(1-\frac\lambda n\right)^{-k}
-  \left(1-\frac\lambda n\right)^n.
-\end{aligned}
-$$
+$$\begin{aligned} P(X_n=k) &=\binom nk\left(\frac\lambda n\right)^k \left(1-\frac\lambda n\right)^{n-k}\\ &=\frac{\lambda^k}{k!} \frac{n(n-1)\cdots(n-k+1)}{n^k} \left(1-\frac\lambda n\right)^{-k} \left(1-\frac\lambda n\right)^n. \end{aligned}$$
 
 当 $n\to\infty$ 时，中间两个因子分别趋于 1，最后一个因子趋于 $e^{-\lambda}$ 。因此
 
-$$
-P(X_n=k)\longrightarrow e^{-\lambda}\frac{\lambda^k}{k!}.
-$$
+$$P(X_n=k)\longrightarrow e^{-\lambda}\frac{\lambda^k}{k!}.$$
 
 这里 $n$ 增大而 $np_n=\lambda$ 固定：单次事件越来越稀有，但总期望发生数不变。这就是 Poisson 近似的准确含义，不是笼统一句“$n$ 大、$p$ 小”。
 
@@ -334,11 +259,7 @@ assert abs(ikea - 0.998) < 5e-4
 
 第 15 章将用概率母函数一行证明独立 Poisson 之和仍为 Poisson，参数相加。这里先给一个不用母函数的直接证明：若 $X\sim\operatorname{Poi}(\lambda)$ 、$Y\sim\operatorname{Poi}(\mu)$ 独立，则
 
-$$
-P(X+Y=n)=\sum_{k=0}^n e^{-\lambda}\frac{\lambda^k}{k!}\,e^{-\mu}\frac{\mu^{n-k}}{(n-k)!}
-=\frac{e^{-(\lambda+\mu)}}{n!}\sum_{k=0}^n\binom nk\lambda^k\mu^{n-k}
-=e^{-(\lambda+\mu)}\frac{(\lambda+\mu)^n}{n!}.
-$$
+$$P(X+Y=n)=\sum_{k=0}^n e^{-\lambda}\frac{\lambda^k}{k!}\,e^{-\mu}\frac{\mu^{n-k}}{(n-k)!} =\frac{e^{-(\lambda+\mu)}}{n!}\sum_{k=0}^n\binom nk\lambda^k\mu^{n-k} =e^{-(\lambda+\mu)}\frac{(\lambda+\mu)^n}{n!}.$$
 
 最后一步就是二项定理。另一个常用事实是“稀疏化”：把 $\operatorname{Poi}(\lambda)$ 个事件各以概率 $p$ 独立保留，则保留下来的个数仍是 Poisson，参数为 $\lambda p$ 。
 
@@ -346,9 +267,7 @@ $$
 
 “$n\to\infty$ 时 pmf 逐点收敛”并没有说近似有多好。Le Cam 不等式给出一致的定量界：若 $X=\sum_{i=1}^n I_i$ ，$I_i$ 独立 Bernoulli $(p_i)$ ，则对 $\lambda=\sum p_i$ ，
 
-$$
-d_{TV}\big(X,\operatorname{Poi}(\lambda)\big)=\tfrac12\sum_k\big|P(X=k)-P(\operatorname{Poi}(\lambda)=k)\big|\le\sum_i p_i^2.
-$$
+$$d_{TV}\big(X,\operatorname{Poi}(\lambda)\big)=\tfrac12\sum_k\big|P(X=k)-P(\operatorname{Poi}(\lambda)=k)\big|\le\sum_i p_i^2.$$
 
 对 $\operatorname{Bin}(n,\lambda/n)$ ，右端是 $\lambda^2/n$ ，误差以 $1/n$ 速度趋零。Julia 单元的第四节用 pmf 递推把总变差算出来：
 
@@ -412,27 +331,17 @@ $P(X\ge1)=1-e^{-\lambda}=1-e^{-1/3}\approx0.2835$ 。频率与这个闭式相符
 
 从编号 $1,\ldots,N$ 中无放回抽取 $k$ 个，令最大编号为 $M$ 。事件 $M=m$ 要求 $m$ 被抽中，其余 $k-1$ 个来自 $1,\ldots,m-1$ ，所以
 
-$$
-P(M=m)=\frac{\binom{m-1}{k-1}}{\binom Nk},
-\qquad m=k,\ldots,N.
-$$
+$$P(M=m)=\frac{\binom{m-1}{k-1}}{\binom Nk}, \qquad m=k,\ldots,N.$$
 
 先验证它是 pmf：$\sum_{m=k}^N\binom{m-1}{k-1}=\binom Nk$ （hockey-stick 恒等式，等价于按最大值对全部 $k$ -子集分类计数）。再算期望，关键是吸收恒等式 $m\binom{m-1}{k-1}=k\binom mk$ ：
 
-$$
-E[M]=\frac1{\binom Nk}\sum_{m=k}^N m\binom{m-1}{k-1}
-=\frac{k}{\binom Nk}\sum_{m=k}^N\binom mk
-=\frac{k\binom{N+1}{k+1}}{\binom Nk}
-=\frac{k}{k+1}(N+1).
-$$
+$$E[M]=\frac1{\binom Nk}\sum_{m=k}^N m\binom{m-1}{k-1} =\frac{k}{\binom Nk}\sum_{m=k}^N\binom mk =\frac{k\binom{N+1}{k+1}}{\binom Nk} =\frac{k}{k+1}(N+1).$$
 
 第三个等号再次用 hockey-stick：$\sum_{m=k}^N\binom mk=\binom{N+1}{k+1}$ ；最后一步由 $\binom{N+1}{k+1}=\frac{N+1}{k+1}\binom Nk$ 。
 
 直觉：在 $0,1,\ldots,N+1$ 这条线上放 $k$ 个随机点，它们与两端点一起把线段切成 $k+1$ 个空隙，由对称性每个空隙平均长度相同（$(N+1)/(k+1)$ ）；最大值等于总长减去最右空隙，所以平均为 $(N+1)\,k/(k+1)$ 。反解上式，基于观测最大值 $m$ 的估计量为
 
-$$
-\widehat N=\frac{k+1}{k}m-1.
-$$
+$$\widehat N=\frac{k+1}{k}m-1.$$
 
 代入 $E[M]$ 可得 $E[\widehat N]=N$ ，所以它在该抽样模型下无偏。
 

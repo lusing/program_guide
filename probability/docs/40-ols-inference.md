@@ -11,13 +11,7 @@
 
 本章加入假设 A5（$\varepsilon|X\sim N(0,\sigma^2I_n)$ ），补上有限样本的精确理论：
 
-$$
-\hat\beta|X\sim N(\beta,\sigma^2(X'X)^{-1}),
-\qquad
-\frac{(n-k)s^2}{\sigma^2}\sim\chi^2_{n-k},
-\qquad
-\hat\beta\perp s^2\mid X.
-$$
+$$\hat\beta|X\sim N(\beta,\sigma^2(X'X)^{-1}), \qquad \frac{(n-k)s^2}{\sigma^2}\sim\chi^2_{n-k}, \qquad \hat\beta\perp s^2\mid X.$$
 
 在这三个事实上，单系数推断得到精确的 $t$ 分布，一般线性约束得到精确的 $F$ 分布。
 
@@ -29,9 +23,7 @@ $\hat\beta=\beta+(X'X)^{-1}X'\varepsilon$ 是正态向量的线性变换，故�
 **（2）残差平方和的卡方。**
 由 $e=My=M\varepsilon$ ，
 
-$$
-\frac{(n-k)s^2}{\sigma^2}=\frac{\varepsilon'M\varepsilon}{\sigma^2}.
-$$
+$$\frac{(n-k)s^2}{\sigma^2}=\frac{\varepsilon'M\varepsilon}{\sigma^2}.$$
 
 标准正态向量 $\varepsilon/\sigma$ 的二次型 $z'Mz$ ，当 $M$ 对称幂等时服从 $\chi^2_{\operatorname{rank}(M)}$ ——把 $M$ 正交对角化，$z'Mz=\sum_{i=1}^{n-k}\tilde z_i^2$ 恰是 $n-k$ 个独立标准正态的平方和。
 
@@ -40,9 +32,7 @@ $$
 **（3）独立。**
 $\hat\beta$ 只依赖 $Py$ ，$s^2$ 只依赖 $My$ 。二者联合正态，且
 
-$$
-\operatorname{Cov}(Py,My|X)=P\cdot\sigma^2I\cdot M=\sigma^2PM=0.
-$$
+$$\operatorname{Cov}(Py,My|X)=P\cdot\sigma^2I\cdot M=\sigma^2PM=0.$$
 
 联合正态下零协方差蕴含独立（第 21 章），故 $\hat\beta$ 与 $s^2$ 条件独立。
 
@@ -52,33 +42,21 @@ $$
 
 对第 $j$ 个系数检验
 
-$$
-H_0:\beta_j=\beta_{j0}.
-$$
+$$H_0:\beta_j=\beta_{j0}.$$
 
 记 $c_{jj}=[(X'X)^{-1}]_{jj}$ ，标准误 $se(\hat\beta_j)=s\sqrt{c_{jj}}$ 。在 $H_0$ 下
 
-$$
-\frac{\hat\beta_j-\beta_{j0}}{\sigma\sqrt{c_{jj}}}\sim N(0,1),
-\qquad
-\frac{s^2}{\sigma^2}=\frac{\chi^2_{n-k}}{n-k},
-$$
+$$\frac{\hat\beta_j-\beta_{j0}}{\sigma\sqrt{c_{jj}}}\sim N(0,1), \qquad \frac{s^2}{\sigma^2}=\frac{\chi^2_{n-k}}{n-k},$$
 
 且分子分母独立，按第 22 章 t 分布的定义
 
-$$
-\boxed{
-T_j=\frac{\hat\beta_j-\beta_{j0}}{s\sqrt{c_{jj}}}\sim t_{n-k}.
-}
-$$
+$$\boxed{ T_j=\frac{\hat\beta_j-\beta_{j0}}{s\sqrt{c_{jj}}}\sim t_{n-k}. }$$
 
 双侧 5% 检验拒绝当 $|T_j|>t_{n-k,0.975}$ 。
 
 置信区间由第 37 章的对偶反演：
 
-$$
-\hat\beta_j\pm t_{n-k,0.975}\,s\sqrt{c_{jj}}.
-$$
+$$\hat\beta_j\pm t_{n-k,0.975}\,s\sqrt{c_{jj}}.$$
 
 正态线性模型里这不是渐近近似：区间覆盖率的错误概率恰好是 $\alpha$ 。
 
@@ -86,20 +64,11 @@ $$
 
 沿用 $x=(0,1,2,3,4)$ 、$y=(1,3,2,5,4)$ （第 38–39 章同一组数）：
 
-$$
-\hat\beta=(7/5,\ 4/5),\qquad
-s^2=\frac{18/5}{3}=\frac65,
-\qquad
-(X'X)^{-1}=\begin{pmatrix}3/5&-1/5\\-1/5&1/10\end{pmatrix}.
-$$
+$$\hat\beta=(7/5,\ 4/5),\qquad s^2=\frac{18/5}{3}=\frac65, \qquad (X'X)^{-1}=\begin{pmatrix}3/5&-1/5\\-1/5&1/10\end{pmatrix}.$$
 
 两个 t 统计量的平方：
 
-$$
-T_1^2=\frac{(7/5)^2}{(6/5)(3/5)}=\boxed{\frac{49}{18}}\approx2.72,
-\qquad
-T_2^2=\frac{(4/5)^2}{(6/5)(1/10)}=\boxed{\frac{16}{3}}\approx5.33.
-$$
+$$T_1^2=\frac{(7/5)^2}{(6/5)(3/5)}=\boxed{\frac{49}{18}}\approx2.72, \qquad T_2^2=\frac{(4/5)^2}{(6/5)(1/10)}=\boxed{\frac{16}{3}}\approx5.33.$$
 
 自由度 $n-k=3$ ，双侧 5% 临界值 $t_{3,0.975}=3.1824$ ，平方为 $10.128$ 。
 
@@ -107,19 +76,13 @@ $$
 
 $\beta_2$ 的 95% 区间：
 
-$$
-\frac45\pm3.1824\sqrt{\frac65\cdot\frac1{10}}
-=0.8\pm1.1024
-=(-0.3024,\ 1.9024),
-$$
+$$\frac45\pm3.1824\sqrt{\frac65\cdot\frac1{10}} =0.8\pm1.1024 =(-0.3024,\ 1.9024),$$
 
 包含 0，与检验结论一致。
 
 Julia 通道用 $t_3$ 密度的闭式常数
 
-$$
-\frac{\Gamma(2)}{\sqrt{3\pi}\,\Gamma(3/2)}=\frac{2}{\pi\sqrt3}
-$$
+$$\frac{\Gamma(2)}{\sqrt{3\pi}\,\Gamma(3/2)}=\frac{2}{\pi\sqrt3}$$
 
 数值积分右尾：$T_2=4/\sqrt3\approx2.3094$ 的双侧 p 值为 0.1041。
 
@@ -133,20 +96,13 @@ $$
 
 统一写成
 
-$$
-H_0:R\beta=r,
-$$
+$$H_0:R\beta=r,$$
 
 其中 $R\in\mathbb R^{q\times k}$ 满行秩，$r\in\mathbb R^q$ ，$q\le k$ 。
 
 在 $H_0$ 下 $R\hat\beta-r\sim N(0,\sigma^2R(X'X)^{-1}R')$ ，标准二次型除以 $\sigma^2$ 得 $\chi^2_q$ ；再除以独立的 $s^2/\sigma^2\sim\chi^2_{n-k}/(n-k)$ ，按 F 分布定义：
 
-$$
-\boxed{
-F=\frac{(R\hat\beta-r)'\left[R(X'X)^{-1}R'\right]^{-1}(R\hat\beta-r)/q}{s^2}
-\sim F(q,\ n-k).
-}
-$$
+$$\boxed{ F=\frac{(R\hat\beta-r)'\left[R(X'X)^{-1}R'\right]^{-1}(R\hat\beta-r)/q}{s^2} \sim F(q,\ n-k). }$$
 
 自由度：分子 $q$ （约束个数），分母 $n-k$ （残差自由度）。
 
@@ -154,18 +110,11 @@ $$
 
 第 41 章将证明恒等式
 
-$$
-\mathrm{RSS}_R-\mathrm{RSS}_U
-=(R\hat\beta-r)'\left[R(X'X)^{-1}R'\right]^{-1}(R\hat\beta-r),
-$$
+$$\mathrm{RSS}_R-\mathrm{RSS}_U =(R\hat\beta-r)'\left[R(X'X)^{-1}R'\right]^{-1}(R\hat\beta-r),$$
 
 于是
 
-$$
-\boxed{
-F=\frac{(\mathrm{RSS}_R-\mathrm{RSS}_U)/q}{\mathrm{RSS}_U/(n-k)}.
-}
-$$
+$$\boxed{ F=\frac{(\mathrm{RSS}_R-\mathrm{RSS}_U)/q}{\mathrm{RSS}_U/(n-k)}. }$$
 
 两个公式算同一个数；实践中哪个顺手用哪个（嵌套模型回归输出常给后者，矩阵约束常给前者）。
 
@@ -173,24 +122,17 @@ $$
 
 特例 $R=(0,\ I_{k-1})$ 、$r=0$ （所有斜率为零）给出回归摘要里的“F 统计量”。用第 39 章的分解 $\mathrm{ESS}=TSS-\mathrm{RSS}$ ：
 
-$$
-F=\frac{\mathrm{ESS}/(k-1)}{\mathrm{RSS}/(n-k)}
-=\frac{R^2/(k-1)}{(1-R^2)/(n-k)}.
-$$
+$$F=\frac{\mathrm{ESS}/(k-1)}{\mathrm{RSS}/(n-k)} =\frac{R^2/(k-1)}{(1-R^2)/(n-k)}.$$
 
 五点例（$k=2$ 时“全部斜率”就是单个 $\beta_2$ ，$q=1$ ）：
 
-$$
-F=\frac{32/5}{(18/5)/3}=\frac{16}{3},
-$$
+$$F=\frac{32/5}{(18/5)/3}=\frac{16}{3},$$
 
 与 $T_2^2$ 完全一致——下文解释这不是巧合。
 
 若把截距也约束为零（$R=I_2$ ），则受约束模型拟合为零向量，$\mathrm{RSS}_R=y'y=55$ ：
 
-$$
-F=\frac{(55-18/5)/2}{(18/5)/3}=\frac{257}{12}\approx21.4.
-$$
+$$F=\frac{(55-18/5)/2}{(18/5)/3}=\frac{257}{12}\approx21.4.$$
 
 同一组数据，问不同的问题，得到不同的 F。
 
@@ -198,10 +140,7 @@ $$
 
 $q=1$ 时把 $R$ 记为行向量 $R'$ ，二次型退化为平方：
 
-$$
-F=\frac{(R'\hat\beta-r)^2}{s^2\,R'(X'X)^{-1}R}
-=\left(\frac{R'\hat\beta-r}{s\sqrt{R'(X'X)^{-1}R}}\right)^2=T^2.
-$$
+$$F=\frac{(R'\hat\beta-r)^2}{s^2\,R'(X'X)^{-1}R} =\left(\frac{R'\hat\beta-r}{s\sqrt{R'(X'X)^{-1}R}}\right)^2=T^2.$$
 
 取 $R'$ 为单位向量即单系数检验。
 
@@ -209,9 +148,7 @@ $$
 
 **临界值对应关系要认清方向**：$F(1,\nu)$ 的 5% 上侧临界值等于 $t_\nu$ 的**双侧** 5% 临界值之平方：
 
-$$
-F_{0.95}(1,3)=10.128=3.1824^2=t_{3,0.975}^2.
-$$
+$$F_{0.95}(1,3)=10.128=3.1824^2=t_{3,0.975}^2.$$
 
 它与单侧 t 临界值 $t_{3,0.95}=2.3534$ 的平方并不相等——本章机器单元的初版就写错过这一行，被断言当场抓住。
 

@@ -15,20 +15,20 @@ import pathlib
 import re
 
 BACKTICK_RUN = re.compile(r"`+")
-DISPLAY_OWN_LINE = re.compile(r"^\s*(?:>\s*)*\$\$\s*$")
+DISPLAY_LINE = re.compile(r"^\s*(?:>\s*)*\$\$")  # 单行 $$…$$ 或独占行 $$
 OPEN_BAD = re.compile(r"[a-zA-Z0-9.!?,;:]")
 CLOSE_OK = frozenset(" \n).!?,;:")
 
 
 def mask(text: str) -> str:
-    """围栏块与独占行 $$ 等长挖空（位置对齐）。"""
+    """围栏块与展示公式行（$$ 开头，含 > 前缀）等长挖空（位置对齐）。"""
     out, in_fence = [], False
     for line in text.split("\n"):
         if line.lstrip().startswith(("```", "~~~")):
             in_fence = not in_fence
             out.append(" " * len(line))
             continue
-        if in_fence or DISPLAY_OWN_LINE.match(line):
+        if in_fence or DISPLAY_LINE.match(line):
             out.append(" " * len(line))
         else:
             out.append(line)

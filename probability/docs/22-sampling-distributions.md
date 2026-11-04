@@ -4,9 +4,7 @@
 
 统计推断的出发点不是一个随机变量，而是一组重复观测。设总体分布依赖于参数 $\theta$ ，随机样本为
 
-$$
-X_1,X_2,\dots,X_n.
-$$
+$$X_1,X_2,\dots,X_n.$$
 
 最常见的独立同分布样本满足：
 
@@ -18,17 +16,11 @@ $$
 
 **统计量**是样本的可测函数
 
-$$
-T=T(X_1,\dots,X_n),
-$$
+$$T=T(X_1,\dots,X_n),$$
 
 其中不能含有未知参数。例如样本均值和无偏样本方差是统计量：
 
-$$
-\bar X=\frac1n\sum_{i=1}^nX_i,
-\qquad
-S^2=\frac1{n-1}\sum_{i=1}^n(X_i-\bar X)^2.
-$$
+$$\bar X=\frac1n\sum_{i=1}^nX_i, \qquad S^2=\frac1{n-1}\sum_{i=1}^n(X_i-\bar X)^2.$$
 
 注意 $S^2$ 是统计量；而 $(\bar X-\mu)/\sigma$ 在 $\mu,\sigma$ 未知时不是统计量。
 
@@ -43,33 +35,21 @@ $$
 
 若
 
-$$
-X_i\stackrel{iid}{\sim}N(\mu,\sigma^2),
-$$
+$$X_i\stackrel{iid}{\sim}N(\mu,\sigma^2),$$
 
 独立正态变量的和仍为正态，所以
 
-$$
-\bar X\sim N\left(\mu,\frac{\sigma^2}{n}\right).
-$$
+$$\bar X\sim N\left(\mu,\frac{\sigma^2}{n}\right).$$
 
 标准化后
 
-$$
-\boxed{
-Z=\frac{\bar X-\mu}{\sigma/\sqrt n}
-=\frac{\sqrt n(\bar X-\mu)}{\sigma}\sim N(0,1).
-}
-$$
+$$\boxed{ Z=\frac{\bar X-\mu}{\sigma/\sqrt n} =\frac{\sqrt n(\bar X-\mu)}{\sigma}\sim N(0,1). }$$
 
 均值公式说明样本均值围绕总体均值居中；标准差公式说明均值的波动按 $1/\sqrt n$ 缩小。这是 z 检验和正态均值置信区间的基础。
 
 正态假设在这里非常强。即使总体不是正态，独立样本均值的均值和方差仍为
 
-$$
-E[\bar X]=\mu,\qquad
-\operatorname{Var}(\bar X)=\frac{\sigma^2}{n},
-$$
+$$E[\bar X]=\mu,\qquad \operatorname{Var}(\bar X)=\frac{\sigma^2}{n},$$
 
 因为这两个结论只使用期望线性性、独立性和有限方差。但 $\bar X$ 未必精确正态；大样本时才由中心极限定理得到近似正态。
 
@@ -77,34 +57,19 @@ $$
 
 先处理一个纯代数恒等式。对任意实数 $x_1,\dots,x_n$ 和 $\mu$ ，
 
-$$
-\boxed{
-\sum_{i=1}^n(x_i-\mu)^2
-=
-\sum_{i=1}^n(x_i-\bar x)^2+n(\bar x-\mu)^2.
-}
-$$
+$$\boxed{ \sum_{i=1}^n(x_i-\mu)^2 = \sum_{i=1}^n(x_i-\bar x)^2+n(\bar x-\mu)^2. }$$
 
 证明只需展开：
 
-$$
-x_i-\mu=(x_i-\bar x)+(\bar x-\mu),
-$$
+$$x_i-\mu=(x_i-\bar x)+(\bar x-\mu),$$
 
 于是
 
-$$
-\sum_i(x_i-\mu)^2
-=\sum_i(x_i-\bar x)^2
-+2(\bar x-\mu)\sum_i(x_i-\bar x)
-+n(\bar x-\mu)^2.
-$$
+$$\sum_i(x_i-\mu)^2 =\sum_i(x_i-\bar x)^2 +2(\bar x-\mu)\sum_i(x_i-\bar x) +n(\bar x-\mu)^2.$$
 
 而样本均值的定义给出交叉项
 
-$$
-\sum_i(x_i-\bar x)=\sum_ix_i-n\bar x=0.
-$$
+$$\sum_i(x_i-\bar x)=\sum_ix_i-n\bar x=0.$$
 
 Python 程序用精确分数核对这个恒等式：
 
@@ -134,38 +99,23 @@ example (x₁ x₂ x₃ μ : ℚ) :
 
 平方和分解的几何意义是正交投影。以 $n=4$ 为例，取未归一 Helmert 行：
 
-$$
-\begin{pmatrix}
-1&1&1&1\\
-1&-1&0&0\\
-1&1&-2&0\\
-1&1&1&-3
-\end{pmatrix}.
-$$
+$$\begin{pmatrix} 1&1&1&1\\ 1&-1&0&0\\ 1&1&-2&0\\ 1&1&1&-3 \end{pmatrix}.$$
 
 各行两两正交，行长度平方分别为
 
-$$
-4,\quad 2,\quad 6,\quad 12.
-$$
+$$4,\quad 2,\quad 6,\quad 12.$$
 
 归一化后得到正交矩阵 $H$ ，满足
 
-$$
-HH^T=I,\qquad |\det H|=1.
-$$
+$$HH^T=I,\qquad |\det H|=1.$$
 
 第一行是 $(1/\sqrt n,\dots,1/\sqrt n)$ ，所以
 
-$$
-Y_1=\sqrt n\,\bar X.
-$$
+$$Y_1=\sqrt n\,\bar X.$$
 
 其余 $n-1$ 个坐标恰好表示离差向量，且
 
-$$
-\sum_{i=1}^n(X_i-\bar X)^2=\sum_{j=2}^nY_j^2.
-$$
+$$\sum_{i=1}^n(X_i-\bar X)^2=\sum_{j=2}^nY_j^2.$$
 
 Python 在 $n=4$ 时构造归一化矩阵：
 
@@ -212,27 +162,19 @@ example : helmert4 * helmert4.transpose =
 
 若 $Z=(Z_1,\dots,Z_n)^T$ 的分量独立同分布于 $N(0,1)$ ，且 $H$ 为正交矩阵，令
 
-$$
-Y=HZ.
-$$
+$$Y=HZ.$$
 
 则 $Y$ 仍为多元标准正态。用密度可以直接看出：
 
-$$
-f_Z(z)=(2\pi)^{-n/2}\exp\left(-\frac12z^Tz\right).
-$$
+$$f_Z(z)=(2\pi)^{-n/2}\exp\left(-\frac12z^Tz\right).$$
 
 因为 $H^TH=I$ ，正交变换保持内积：
 
-$$
-z^Tz=(H^Ty)^T(H^Ty)=y^Ty.
-$$
+$$z^Tz=(H^Ty)^T(H^Ty)=y^Ty.$$
 
 又因为 $|\det H|=1$ ，Jacobian 不改变密度常数。因此
 
-$$
-f_Y(y)=(2\pi)^{-n/2}\exp\left(-\frac12y^Ty\right).
-$$
+$$f_Y(y)=(2\pi)^{-n/2}\exp\left(-\frac12y^Ty\right).$$
 
 所以 $Y_1,\dots,Y_n$ 仍相互独立且都为 $N(0,1)$ 。
 
@@ -247,61 +189,35 @@ $$
 
 若 $Z_1,\dots,Z_\nu$ 独立且都服从 $N(0,1)$ ，定义
 
-$$
-V=Z_1^2+\cdots+Z_\nu^2,
-$$
+$$V=Z_1^2+\cdots+Z_\nu^2,$$
 
 则称 $V$ 服从自由度为 $\nu$ 的卡方分布，记作
 
-$$
-V\sim\chi^2(\nu).
-$$
+$$V\sim\chi^2(\nu).$$
 
 其密度为
 
-$$
-\boxed{
-f_V(v)=
-\frac{v^{\nu/2-1}e^{-v/2}}
-{2^{\nu/2}\Gamma(\nu/2)},
-\qquad v>0.
-}
-$$
+$$\boxed{ f_V(v)= \frac{v^{\nu/2-1}e^{-v/2}} {2^{\nu/2}\Gamma(\nu/2)}, \qquad v>0. }$$
 
 也就是说，
 
-$$
-\chi^2(\nu)=\operatorname{Gamma}\left(\frac{\nu}{2},\text{scale}=2\right).
-$$
+$$\chi^2(\nu)=\operatorname{Gamma}\left(\frac{\nu}{2},\text{scale}=2\right).$$
 
 一元情形 $Z^2\sim\chi^2(1)$ 来自双支反函数。对 $v>0$ ，
 
-$$
-P(Z^2\le v)=P(-\sqrt v\le Z\le\sqrt v),
-$$
+$$P(Z^2\le v)=P(-\sqrt v\le Z\le\sqrt v),$$
 
 求导得到两个分支贡献之和：
 
-$$
-f_{Z^2}(v)
-=\frac{1}{\sqrt{2\pi v}}e^{-v/2}
-=\frac{v^{-1/2}e^{-v/2}}{2^{1/2}\Gamma(1/2)}.
-$$
+$$f_{Z^2}(v) =\frac{1}{\sqrt{2\pi v}}e^{-v/2} =\frac{v^{-1/2}e^{-v/2}}{2^{1/2}\Gamma(1/2)}.$$
 
 这里使用
 
-$$
-\Gamma(1/2)=\sqrt\pi.
-$$
+$$\Gamma(1/2)=\sqrt\pi.$$
 
 独立卡方变量具有可加性：
 
-$$
-V_1\sim\chi^2(\nu_1),\quad V_2\sim\chi^2(\nu_2),
-\quad V_1\perp V_2
-\Longrightarrow
-V_1+V_2\sim\chi^2(\nu_1+\nu_2).
-$$
+$$V_1\sim\chi^2(\nu_1),\quad V_2\sim\chi^2(\nu_2), \quad V_1\perp V_2 \Longrightarrow V_1+V_2\sim\chi^2(\nu_1+\nu_2).$$
 
 从 Gamma 角度看，这是独立 Gamma 变量在相同尺度参数下形状参数相加；从标准正态平方角度看，这是把两组独立平方项接成一组。
 
@@ -332,42 +248,27 @@ for z in (1.0, 5.0, 9.0):
 
 其均值和方差为
 
-$$
-\boxed{E[V]=\nu,\qquad \operatorname{Var}(V)=2\nu.}
-$$
+$$\boxed{E[V]=\nu,\qquad \operatorname{Var}(V)=2\nu.}$$
 
 ## 22.7 正态样本方差的抽样分布
 
 由 Helmert 变换，
 
-$$
-\frac1{\sigma^2}\sum_{i=1}^n(X_i-\bar X)^2
-=\sum_{j=2}^n\left(\frac{Y_j}{\sigma}\right)^2.
-$$
+$$\frac1{\sigma^2}\sum_{i=1}^n(X_i-\bar X)^2 =\sum_{j=2}^n\left(\frac{Y_j}{\sigma}\right)^2.$$
 
 因为 $Y_j/\sigma\sim N(0,1)$ 且相互独立，所以
 
-$$
-\boxed{
-\frac{(n-1)S^2}{\sigma^2}
-=\frac1{\sigma^2}\sum_{i=1}^n(X_i-\bar X)^2
-\sim\chi^2(n-1).
-}
-$$
+$$\boxed{ \frac{(n-1)S^2}{\sigma^2} =\frac1{\sigma^2}\sum_{i=1}^n(X_i-\bar X)^2 \sim\chi^2(n-1). }$$
 
 自由度是 $n-1$ ，不是 $n$ 。样本均值吃掉了一个方向；残差向量落在
 
-$$
-\sum_i(x_i-\bar x)=0
-$$
+$$\sum_i(x_i-\bar x)=0$$
 
 的 $n-1$ 维子空间中。
 
 同时，
 
-$$
-\frac{\sqrt n(\bar X-\mu)}{\sigma}\sim N(0,1),
-$$
+$$\frac{\sqrt n(\bar X-\mu)}{\sigma}\sim N(0,1),$$
 
 并且它与 $S^2$ 独立。这个独立性是正态样本的特殊性质，来自正交变换后两个方向相互独立。
 
@@ -393,22 +294,15 @@ KS 统计量很小只说明模拟实现与 $\chi^2(7)$ 一致；真正的分布�
 
 因为
 
-$$
-E\left[\frac{(n-1)S^2}{\sigma^2}\right]=n-1,
-$$
+$$E\left[\frac{(n-1)S^2}{\sigma^2}\right]=n-1,$$
 
 所以
 
-$$
-E[S^2]=\sigma^2.
-$$
+$$E[S^2]=\sigma^2.$$
 
 除以 $n$ 的二阶矩估计量 $\widehat\sigma_n^2=n^{-1}\sum_i(X_i-\bar X)^2$ 满足
 
-$$
-E[\widehat\sigma_n^2]
-=\frac{n-1}{n}\sigma^2,
-$$
+$$E[\widehat\sigma_n^2] =\frac{n-1}{n}\sigma^2,$$
 
 因而有偏。程序检查这一点：
 
@@ -432,16 +326,11 @@ assert r_exp > 0.3
 
 对指数分布，第三阶中心矩为正。一般地，
 
-$$
-\operatorname{Cov}(\bar X,S^2)=\frac{\mu_3}{n},
-$$
+$$\operatorname{Cov}(\bar X,S^2)=\frac{\mu_3}{n},$$
 
 而指数分布的偏度使该协方差为正。程序还检查
 
-$$
-\operatorname{Var}(S^2)
-\approx \sigma^4\left(\frac{2}{n-1}+\frac{\kappa}{n}\right),
-$$
+$$\operatorname{Var}(S^2) \approx \sigma^4\left(\frac{2}{n-1}+\frac{\kappa}{n}\right),$$
 
 其中 $\kappa$ 为超额峰度；指数分布的 $\kappa=6$ 。
 
@@ -453,15 +342,11 @@ $$
 
 因此
 
-$$
-P(\bar X=1/2,S^2=1/2)=\frac12,
-$$
+$$P(\bar X=1/2,S^2=1/2)=\frac12,$$
 
 而
 
-$$
-P(\bar X=1/2)P(S^2=1/2)=\frac12\cdot\frac12=\frac14.
-$$
+$$P(\bar X=1/2)P(S^2=1/2)=\frac12\cdot\frac12=\frac14.$$
 
 二者不独立。正态理论中的 $\bar X\perp S^2$ 绝不能随手推广。
 
@@ -469,44 +354,23 @@ $$
 
 设
 
-$$
-Z\sim N(0,1),\qquad V\sim\chi^2(\nu),
-\qquad Z\perp V.
-$$
+$$Z\sim N(0,1),\qquad V\sim\chi^2(\nu), \qquad Z\perp V.$$
 
 定义
 
-$$
-\boxed{
-T=\frac{Z}{\sqrt{V/\nu}}.
-}
-$$
+$$\boxed{ T=\frac{Z}{\sqrt{V/\nu}}. }$$
 
 则 $T$ 服从自由度为 $\nu$ 的 Student $t$ 分布。其密度为
 
-$$
-f_T(t)=
-\frac{\Gamma((\nu+1)/2)}
-{\sqrt{\nu\pi}\Gamma(\nu/2)}
-\left(1+\frac{t^2}{\nu}\right)^{-(\nu+1)/2}.
-$$
+$$f_T(t)= \frac{\Gamma((\nu+1)/2)} {\sqrt{\nu\pi}\Gamma(\nu/2)} \left(1+\frac{t^2}{\nu}\right)^{-(\nu+1)/2}.$$
 
 在正态样本中，当 $\sigma$ 未知时，用 $S$ 代替：
 
-$$
-\frac{\bar X-\mu}{S/\sqrt n}
-=
-\frac{\sqrt n(\bar X-\mu)/\sigma}
-{\sqrt{(n-1)S^2/[\sigma^2(n-1)]}}.
-$$
+$$\frac{\bar X-\mu}{S/\sqrt n} = \frac{\sqrt n(\bar X-\mu)/\sigma} {\sqrt{(n-1)S^2/[\sigma^2(n-1)]}}.$$
 
 分子为 $N(0,1)$ ，分母根号内为独立的 $\chi^2(n-1)/(n-1)$ ，所以
 
-$$
-\boxed{
-\frac{\bar X-\mu}{S/\sqrt n}\sim t(n-1).
-}
-$$
+$$\boxed{ \frac{\bar X-\mu}{S/\sqrt n}\sim t(n-1). }$$
 
 $t$ 分布比标准正态尾更厚，因为分母有随机波动。自由度增大时，$S^2$ 更集中于 $\sigma^2$ ，$t$ 分布趋于标准正态。
 
@@ -539,41 +403,23 @@ tpdf(x, ν) =
 
 设
 
-$$
-U\sim\chi^2(d_1),\qquad V\sim\chi^2(d_2),\qquad U\perp V.
-$$
+$$U\sim\chi^2(d_1),\qquad V\sim\chi^2(d_2),\qquad U\perp V.$$
 
 定义
 
-$$
-\boxed{
-F=\frac{U/d_1}{V/d_2}.
-}
-$$
+$$\boxed{ F=\frac{U/d_1}{V/d_2}. }$$
 
 则 $F\sim F(d_1,d_2)$ 。其密度为
 
-$$
-f_F(x)=
-\frac{\Gamma((d_1+d_2)/2)}
-{\Gamma(d_1/2)\Gamma(d_2/2)}
-\left(\frac{d_1}{d_2}\right)^{d_1/2}
-x^{d_1/2-1}
-\left(1+\frac{d_1}{d_2}x\right)^{-(d_1+d_2)/2},
-\quad x>0.
-$$
+$$f_F(x)= \frac{\Gamma((d_1+d_2)/2)} {\Gamma(d_1/2)\Gamma(d_2/2)} \left(\frac{d_1}{d_2}\right)^{d_1/2} x^{d_1/2-1} \left(1+\frac{d_1}{d_2}x\right)^{-(d_1+d_2)/2}, \quad x>0.$$
 
 若 $T\sim t(\nu)$ ，则
 
-$$
-T^2=\frac{Z^2/1}{V/\nu}.
-$$
+$$T^2=\frac{Z^2/1}{V/\nu}.$$
 
 因为 $Z^2\sim\chi^2(1)$ ，所以
 
-$$
-\boxed{T^2\sim F(1,\nu).}
-$$
+$$\boxed{T^2\sim F(1,\nu).}$$
 
 Lean 验证代数形式：
 
@@ -585,9 +431,7 @@ example (z v ν : ℝ) (hv : 0 < v) (hν : 0 < ν) :
 
 Python 检查分位数恒等式：对 $q>1/2$ ，
 
-$$
-F_{1,\nu}^{-1}(q)=\left(t_\nu^{-1}\left(\frac{1+q}{2}\right)\right)^2.
-$$
+$$F_{1,\nu}^{-1}(q)=\left(t_\nu^{-1}\left(\frac{1+q}{2}\right)\right)^2.$$
 
 ```python
 for nu in (1, 2, 5, 12, 40):
@@ -602,13 +446,9 @@ $F$ 分布主要用于比较两个独立方差，也是回归和方差分析中�
 
 设
 
-$$
-X_i\stackrel{iid}{\sim}N(\mu_X,\sigma_X^2),\quad i=1,\dots,n_X,
-$$
+$$X_i\stackrel{iid}{\sim}N(\mu_X,\sigma_X^2),\quad i=1,\dots,n_X,$$
 
-$$
-Y_j\stackrel{iid}{\sim}N(\mu_Y,\sigma_Y^2),\quad j=1,\dots,n_Y,
-$$
+$$Y_j\stackrel{iid}{\sim}N(\mu_Y,\sigma_Y^2),\quad j=1,\dots,n_Y,$$
 
 且两组样本独立。
 
@@ -616,13 +456,7 @@ $$
 
 样本均值差服从
 
-$$
-\bar X-\bar Y
-\sim N\left(
-\mu_X-\mu_Y,
-\frac{\sigma_X^2}{n_X}+\frac{\sigma_Y^2}{n_Y}
-\right).
-$$
+$$\bar X-\bar Y \sim N\left( \mu_X-\mu_Y, \frac{\sigma_X^2}{n_X}+\frac{\sigma_Y^2}{n_Y} \right).$$
 
 方差已知时可直接构造标准正态统计量。
 
@@ -630,20 +464,11 @@ $$
 
 两个独立样本方差满足
 
-$$
-\frac{(n_X-1)S_X^2}{\sigma_X^2}\sim\chi^2(n_X-1),
-\qquad
-\frac{(n_Y-1)S_Y^2}{\sigma_Y^2}\sim\chi^2(n_Y-1),
-$$
+$$\frac{(n_X-1)S_X^2}{\sigma_X^2}\sim\chi^2(n_X-1), \qquad \frac{(n_Y-1)S_Y^2}{\sigma_Y^2}\sim\chi^2(n_Y-1),$$
 
 所以
 
-$$
-\boxed{
-\frac{S_X^2/S_Y^2}{\sigma_X^2/\sigma_Y^2}
-\sim F(n_X-1,n_Y-1).
-}
-$$
+$$\boxed{ \frac{S_X^2/S_Y^2}{\sigma_X^2/\sigma_Y^2} \sim F(n_X-1,n_Y-1). }$$
 
 当 $\sigma_X^2=\sigma_Y^2$ 时，比值 $S_X^2/S_Y^2\sim F(n_X-1,n_Y-1)$ 。
 
@@ -651,21 +476,11 @@ $$
 
 若两个总体方差相同但未知，记共同方差为 $\sigma^2$ ，定义合并方差
 
-$$
-\boxed{
-S_p^2=
-\frac{(n_X-1)S_X^2+(n_Y-1)S_Y^2}
-{n_X+n_Y-2}.
-}
-$$
+$$\boxed{ S_p^2= \frac{(n_X-1)S_X^2+(n_Y-1)S_Y^2} {n_X+n_Y-2}. }$$
 
 这是自由度加权平均，不是普通算术平均。权重为
 
-$$
-\frac{n_X-1}{n_X+n_Y-2},
-\qquad
-\frac{n_Y-1}{n_X+n_Y-2}.
-$$
+$$\frac{n_X-1}{n_X+n_Y-2}, \qquad \frac{n_Y-1}{n_X+n_Y-2}.$$
 
 Lean 验证权重之和为 1：
 
@@ -688,12 +503,7 @@ assert sp2 != (svar(xa) + svar(ya)) / 2
 
 在同方差正态模型下，
 
-$$
-T_p=
-\frac{(\bar X-\bar Y)-(\mu_X-\mu_Y)}
-{S_p\sqrt{1/n_X+1/n_Y}}
-\sim t(n_X+n_Y-2).
-$$
+$$T_p= \frac{(\bar X-\bar Y)-(\mu_X-\mu_Y)} {S_p\sqrt{1/n_X+1/n_Y}} \sim t(n_X+n_Y-2).$$
 
 程序用固定种子模拟确认 KS 距离很小：
 
@@ -709,27 +519,15 @@ assert stats.kstest(va / vb, stats.f(nx - 1, ny - 1).cdf).statistic < 0.005
 
 如果两个总体方差不相等，合并方差就不再估计一个共同参数，合并 $t$ 也没有精确 $t(n_X+n_Y-2)$ 分布。Welch 方法使用
 
-$$
-T_W=\frac{\bar X-\bar Y}
-{\sqrt{S_X^2/n_X+S_Y^2/n_Y}},
-$$
+$$T_W=\frac{\bar X-\bar Y} {\sqrt{S_X^2/n_X+S_Y^2/n_Y}},$$
 
 并用近似自由度
 
-$$
-\boxed{
-\nu_W=
-\frac{(S_X^2/n_X+S_Y^2/n_Y)^2}
-{\frac{(S_X^2/n_X)^2}{n_X-1}
-+\frac{(S_Y^2/n_Y)^2}{n_Y-1}}.
-}
-$$
+$$\boxed{ \nu_W= \frac{(S_X^2/n_X+S_Y^2/n_Y)^2} {\frac{(S_X^2/n_X)^2}{n_X-1} +\frac{(S_Y^2/n_Y)^2}{n_Y-1}}. }$$
 
 它满足
 
-$$
-\min(n_X-1,n_Y-1)\le\nu_W\le n_X+n_Y-2.
-$$
+$$\min(n_X-1,n_Y-1)\le\nu_W\le n_X+n_Y-2.$$
 
 程序对一组精确有理样本计算 Welch 自由度并检查该范围：
 
@@ -765,46 +563,27 @@ assert 0.04 < rej_t < 0.12
 
 样本统计量不限于均值和方差。令
 
-$$
-X_{(1)}\le X_{(2)}\le\cdots\le X_{(n)}
-$$
+$$X_{(1)}\le X_{(2)}\le\cdots\le X_{(n)}$$
 
 为顺序统计量。若总体 CDF 为 $F$ 、密度为 $f$ ，则第 $k$ 顺序统计量的密度为
 
-$$
-\boxed{
-f_{X_{(k)}}(x)
-=
-\frac{n!}{(k-1)!(n-k)!}
-F(x)^{k-1}[1-F(x)]^{n-k}f(x).
-}
-$$
+$$\boxed{ f_{X_{(k)}}(x) = \frac{n!}{(k-1)!(n-k)!} F(x)^{k-1}[1-F(x)]^{n-k}f(x). }$$
 
 推导采用多项划分：在很小的区间 $[x,x+dx]$ 中放约一个观测，$k-1$ 个观测在 $x$ 左侧，其余在右侧。
 
 对均匀分布 $U(0,1)$ ，$F(x)=x,f(x)=1$ ，所以
 
-$$
-U_{(k)}\sim\operatorname{Beta}(k,n-k+1).
-$$
+$$U_{(k)}\sim\operatorname{Beta}(k,n-k+1).$$
 
 其均值和方差为
 
-$$
-E[U_{(k)}]=\frac{k}{n+1},
-$$
+$$E[U_{(k)}]=\frac{k}{n+1},$$
 
-$$
-\operatorname{Var}(U_{(k)})
-=\frac{k(n-k+1)}{(n+1)^2(n+2)}.
-$$
+$$\operatorname{Var}(U_{(k)}) =\frac{k(n-k+1)}{(n+1)^2(n+2)}.$$
 
 CDF 的二项尾形式为
 
-$$
-P(U_{(k)}\le x)
-=\sum_{j=k}^n\binom njx^j(1-x)^{n-j}.
-$$
+$$P(U_{(k)}\le x) =\sum_{j=k}^n\binom njx^j(1-x)^{n-j}.$$
 
 Python 精确比较二项尾和 Beta CDF：
 

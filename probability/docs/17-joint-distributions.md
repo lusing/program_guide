@@ -16,36 +16,23 @@
 
 设 $X$ 和 $Y$ 都是离散随机变量。联合概率质量函数为
 
-$$
-p_{X,Y}(x,y)=P(X=x,Y=y).
-$$
+$$p_{X,Y}(x,y)=P(X=x,Y=y).$$
 
 若两个变量的取值集分别为 $\mathcal X,\mathcal Y$ ，则归一化条件是
 
-$$
-\sum_{x\in\mathcal X}\sum_{y\in\mathcal Y}p_{X,Y}(x,y)=1.
-$$
+$$\sum_{x\in\mathcal X}\sum_{y\in\mathcal Y}p_{X,Y}(x,y)=1.$$
 
 两个边际质量函数分别为
 
-$$
-p_X(x)=\sum_{y\in\mathcal Y}p_{X,Y}(x,y),\qquad
-p_Y(y)=\sum_{x\in\mathcal X}p_{X,Y}(x,y).
-$$
+$$p_X(x)=\sum_{y\in\mathcal Y}p_{X,Y}(x,y),\qquad p_Y(y)=\sum_{x\in\mathcal X}p_{X,Y}(x,y).$$
 
 当 $p_X(x)>0$ 时，给定 $X=x$ ，$Y$ 的条件质量函数是
 
-$$
-p_{Y|X}(y|x)=\frac{p_{X,Y}(x,y)}{p_X(x)}.
-$$
+$$p_{Y|X}(y|x)=\frac{p_{X,Y}(x,y)}{p_X(x)}.$$
 
 它自动归一，因为
 
-$$
-\sum_y p_{Y|X}(y|x)
-=\frac{\sum_y p_{X,Y}(x,y)}{p_X(x)}
-=\frac{p_X(x)}{p_X(x)}=1.
-$$
+$$\sum_y p_{Y|X}(y|x) =\frac{\sum_y p_{X,Y}(x,y)}{p_X(x)} =\frac{p_X(x)}{p_X(x)}=1.$$
 
 同理，$p_{X|Y}(x|y)=p_{X,Y}(x,y)/p_Y(y)$ 。
 
@@ -53,27 +40,15 @@ $$
 
 本章所有有限程序都使用下面这张 $3\times3$ 表：
 
-$$
-\begin{array}{c|ccc|c}
- &Y=0&Y=1&Y=2&p_X\\\hline
-X=0&1/12&1/12&1/6&1/3\\
-X=1&1/12&1/6&1/12&1/3\\
-X=2&1/6&1/12&1/12&1/3\\\hline
-p_Y&1/3&1/3&1/3&1
-\end{array}
-$$
+$$\begin{array}{c|ccc|c} &Y=0&Y=1&Y=2&p_X\\\hline X=0&1/12&1/12&1/6&1/3\\ X=1&1/12&1/6&1/12&1/3\\ X=2&1/6&1/12&1/12&1/3\\\hline p_Y&1/3&1/3&1/3&1 \end{array}$$
 
 九格之和为 1，两个边际都均匀。但边际均匀并不意味着独立。例如
 
-$$
-p_{X,Y}(0,2)=\frac16,\qquad p_X(0)p_Y(2)=\frac13\cdot\frac13=\frac19.
-$$
+$$p_{X,Y}(0,2)=\frac16,\qquad p_X(0)p_Y(2)=\frac13\cdot\frac13=\frac19.$$
 
 因此 $p_{X,Y}(0,2)\ne p_X(0)p_Y(2)$ 。另一方面，给定 $X=0$ ，
 
-$$
-P(Y=2\mid X=0)=\frac{1/6}{1/3}=\frac12.
-$$
+$$P(Y=2\mid X=0)=\frac{1/6}{1/3}=\frac12.$$
 
 这与无条件概率 $P(Y=2)=1/3$ 不同，正说明 $Y$ 的预测会随 $X$ 的信息改变。
 
@@ -128,72 +103,44 @@ Prolog 和 Python 是可执行枚举；Lean 这里是关于有限表的形式化
 
 若随机向量 $(X,Y)$ 有联合概率密度 $f_{X,Y}$ ，则对平面上可测区域 $A$ ，
 
-$$
-P((X,Y)\in A)=\iint_A f_{X,Y}(x,y)\,dx\,dy,
-$$
+$$P((X,Y)\in A)=\iint_A f_{X,Y}(x,y)\,dx\,dy,$$
 
 且
 
-$$
-\int_{\mathbb R^2}f_{X,Y}(x,y)\,dx\,dy=1.
-$$
+$$\int_{\mathbb R^2}f_{X,Y}(x,y)\,dx\,dy=1.$$
 
 边际密度由积分得到：
 
-$$
-f_X(x)=\int_{\mathbb R}f_{X,Y}(x,y)\,dy,\qquad
-f_Y(y)=\int_{\mathbb R}f_{X,Y}(x,y)\,dx.
-$$
+$$f_X(x)=\int_{\mathbb R}f_{X,Y}(x,y)\,dy,\qquad f_Y(y)=\int_{\mathbb R}f_{X,Y}(x,y)\,dx.$$
 
 当 $f_X(x)>0$ 时，给定 $X=x$ 的条件密度定义为
 
-$$
-f_{Y|X}(y|x)=\frac{f_{X,Y}(x,y)}{f_X(x)}.
-$$
+$$f_{Y|X}(y|x)=\frac{f_{X,Y}(x,y)}{f_X(x)}.$$
 
 这里的“给定 $X=x$ ”在连续情形中是一个概率为零的事件，不能机械地代入初等条件概率公式。严格理解需要正则条件分布或极限族；在密度存在且 $f_X(x)>0$ 的点，上式给出标准版本。
 
 条件密度的归一化仍然成立：
 
-$$
-\int f_{Y|X}(y|x)\,dy
-=\frac{1}{f_X(x)}\int f_{X,Y}(x,y)\,dy=1.
-$$
+$$\int f_{Y|X}(y|x)\,dy =\frac{1}{f_X(x)}\int f_{X,Y}(x,y)\,dy=1.$$
 
 ### 17.3.1 单位圆盘上的均匀分布
 
 令 $(X,Y)$ 在单位圆盘 $D=\{(x,y):x^2+y^2\le1\}$ 上均匀。圆盘面积是 $\pi$ ，所以
 
-$$
-f_{X,Y}(x,y)=
-\begin{cases}
-1/\pi,&x^2+y^2\le1,\\
-0,&\text{其他}.
-\end{cases}
-$$
+$$f_{X,Y}(x,y)= \begin{cases} 1/\pi,&x^2+y^2\le1,\\ 0,&\text{其他}. \end{cases}$$
 
 固定 $x\in[-1,1]$ ，$y$ 的合法范围是
 $-\sqrt{1-x^2}\le y\le\sqrt{1-x^2}$ ，故
 
-$$
-f_X(x)=\int_{-\sqrt{1-x^2}}^{\sqrt{1-x^2}}\frac1\pi\,dy
-=\frac{2}{\pi}\sqrt{1-x^2}.
-$$
+$$f_X(x)=\int_{-\sqrt{1-x^2}}^{\sqrt{1-x^2}}\frac1\pi\,dy =\frac{2}{\pi}\sqrt{1-x^2}.$$
 
 其积分为圆盘面积除以 $\pi$ ：
 
-$$
-\int_{-1}^1\frac2\pi\sqrt{1-x^2}\,dx=1.
-$$
+$$\int_{-1}^1\frac2\pi\sqrt{1-x^2}\,dx=1.$$
 
 给定 $X=x$ ，条件密度为
 
-$$
-f_{Y|X}(y|x)
-=\frac{1/\pi}{(2/\pi)\sqrt{1-x^2}}
-=\frac1{2\sqrt{1-x^2}},
-\quad |y|\le\sqrt{1-x^2}.
-$$
+$$f_{Y|X}(y|x) =\frac{1/\pi}{(2/\pi)\sqrt{1-x^2}} =\frac1{2\sqrt{1-x^2}}, \quad |y|\le\sqrt{1-x^2}.$$
 
 所以 $Y|X=x$ 在长度为 $2\sqrt{1-x^2}$ 的区间上均匀。但 $X,Y$ 并不独立：圆盘外点 $(0.9,0.9)$ 的联合密度为 0，而两个边际密度在这些点都为正。
 
@@ -228,52 +175,35 @@ emp = count(x -> 0.4 <= x < 0.5, xs) / N
 
 令
 
-$$
-f_{X,Y}(x,y)=e^{-y},\qquad 0<x<y<\infty.
-$$
+$$f_{X,Y}(x,y)=e^{-y},\qquad 0<x<y<\infty.$$
 
 先验归一化：
 
-$$
-\int_0^\infty\int_x^\infty e^{-y}\,dy\,dx
-=\int_0^\infty e^{-x}\,dx=1.
-$$
+$$\int_0^\infty\int_x^\infty e^{-y}\,dy\,dx =\int_0^\infty e^{-x}\,dx=1.$$
 
 两个边际密度是
 
-$$
-f_X(x)=\int_x^\infty e^{-y}\,dy=e^{-x},\qquad x>0,
-$$
+$$f_X(x)=\int_x^\infty e^{-y}\,dy=e^{-x},\qquad x>0,$$
 
-$$
-f_Y(y)=\int_0^y e^{-y}\,dx=ye^{-y},\qquad y>0.
-$$
+$$f_Y(y)=\int_0^y e^{-y}\,dx=ye^{-y},\qquad y>0.$$
 
 因此 $X\sim\operatorname{Exp}(1)$ ，而 $Y\sim\Gamma(2,1)$ 。条件密度为
 
-$$
-f_{Y|X}(y|x)=e^{-(y-x)},\quad y>x,
-$$
+$$f_{Y|X}(y|x)=e^{-(y-x)},\quad y>x,$$
 
 以及
 
-$$
-f_{X|Y}(x|y)=\frac1y,\quad 0<x<y.
-$$
+$$f_{X|Y}(x|y)=\frac1y,\quad 0<x<y.$$
 
 第一个条件分布表示 $Y-X\mid X=x\sim\operatorname{Exp}(1)$ ，所以它具有无记忆性；第二个条件分布表示 $X\mid Y=y\sim U(0,y)$ 。
 
 还能用两种方法算 $E[Y]$ ：
 
-$$
-E[Y]=\int_0^\infty y\,ye^{-y}\,dy=\Gamma(3)=2,
-$$
+$$E[Y]=\int_0^\infty y\,ye^{-y}\,dy=\Gamma(3)=2,$$
 
 或者使用全期望公式：
 
-$$
-E[Y]=E[E[Y|X]]=E[X+1]=2.
-$$
+$$E[Y]=E[E[Y|X]]=E[X+1]=2.$$
 
 Python 对这两个条件密度及无记忆尾概率做符号积分：
 
@@ -302,65 +232,41 @@ selX = X[abs.(Y .- 2) .< 0.05]
 
 离散随机变量 $X,Y$ 独立，当且仅当对所有 $x,y$ ，
 
-$$
-p_{X,Y}(x,y)=p_X(x)p_Y(y).
-$$
+$$p_{X,Y}(x,y)=p_X(x)p_Y(y).$$
 
 对有密度的随机变量，独立当且仅当
 
-$$
-f_{X,Y}(x,y)=f_X(x)f_Y(y)
-$$
+$$f_{X,Y}(x,y)=f_X(x)f_Y(y)$$
 
 几乎处处成立。由此可得两个重要结论。
 
 第一，独立时条件分布等于边际分布：
 
-$$
-p_{Y|X}(y|x)=\frac{p_X(x)p_Y(y)}{p_X(x)}=p_Y(y),
-$$
+$$p_{Y|X}(y|x)=\frac{p_X(x)p_Y(y)}{p_X(x)}=p_Y(y),$$
 
 连续情形同理有 $f_{Y|X}(y|x)=f_Y(y)$ 。
 
 第二，矩形概率可以分解。离散情形中，
 
-$$
-P(a<X\le b,c<Y\le d)
-=P(a<X\le b)P(c<Y\le d).
-$$
+$$P(a<X\le b,c<Y\le d) =P(a<X\le b)P(c<Y\le d).$$
 
 连续情形中，联合 CDF 为
 
-$$
-F_{X,Y}(x,y)=F_X(x)F_Y(y),
-$$
+$$F_{X,Y}(x,y)=F_X(x)F_Y(y),$$
 
 矩形概率为二阶差分
 
-$$
-P(a<X\le b,c<Y\le d)
-=F(b,d)-F(a,d)-F(b,c)+F(a,c).
-$$
+$$P(a<X\le b,c<Y\le d) =F(b,d)-F(a,d)-F(b,c)+F(a,c).$$
 
 ### 17.4.1 独立指数与 $P(X<Y)$
 
 设 $X\sim\operatorname{Exp}(\lambda)$ 、$Y\sim\operatorname{Exp}(\mu)$ 且独立，则
 
-$$
-f_{X,Y}(x,y)=\lambda\mu e^{-\lambda x-\mu y},\qquad x,y>0.
-$$
+$$f_{X,Y}(x,y)=\lambda\mu e^{-\lambda x-\mu y},\qquad x,y>0.$$
 
 事件 $X<Y$ 的概率为
 
-$$
-\begin{aligned}
-P(X<Y)
-&=\int_0^\infty\int_x^\infty
-\lambda\mu e^{-\lambda x-\mu y}\,dy\,dx\\
-&=\int_0^\infty \lambda e^{-(\lambda+\mu)x}\,dx
-=\frac{\lambda}{\lambda+\mu}.
-\end{aligned}
-$$
+$$\begin{aligned} P(X<Y) &=\int_0^\infty\int_x^\infty \lambda\mu e^{-\lambda x-\mu y}\,dy\,dx\\ &=\int_0^\infty \lambda e^{-(\lambda+\mu)x}\,dx =\frac{\lambda}{\lambda+\mu}. \end{aligned}$$
 
 对称地，$P(Y<X)=\mu/(\lambda+\mu)$ ，两者之和为 1。连续独立变量满足 $P(X=Y)=0$ 。
 
@@ -387,45 +293,29 @@ Xe = -log.(rand(N)) ./ λ; Ye = -log.(rand(N)) ./ μ
 
 设 $Z\in\{0,1\}$ 是离散潜变量，而 $Y$ 在给定 $Z$ 后连续。若
 
-$$
-P(Z=1)=\pi,\quad f_{Y|Z}(y|1)=f_1(y),\quad
-f_{Y|Z}(y|0)=f_0(y),
-$$
+$$P(Z=1)=\pi,\quad f_{Y|Z}(y|1)=f_1(y),\quad f_{Y|Z}(y|0)=f_0(y),$$
 
 则 $Y$ 的边际密度是混合密度
 
-$$
-f_Y(y)=(1-\pi)f_0(y)+\pi f_1(y).
-$$
+$$f_Y(y)=(1-\pi)f_0(y)+\pi f_1(y).$$
 
 连续形式的 Bayes 公式为
 
-$$
-P(Z=1\mid Y=y)=\frac{\pi f_1(y)}
-{(1-\pi)f_0(y)+\pi f_1(y)}.
-$$
+$$P(Z=1\mid Y=y)=\frac{\pi f_1(y)} {(1-\pi)f_0(y)+\pi f_1(y)}.$$
 
 这不是“除以概率 $P(Y=y)$ ”，因为 $P(Y=y)=0$ ；它来自密度层面的乘法公式和正则条件分布。
 
 程序取 $\pi=1/3$ 、$f_0(y)=e^{-y}$ 、$f_1(y)=3e^{-3y}$ 。于是
 
-$$
-f_Y(y)=\frac23e^{-y}+\frac13\cdot3e^{-3y}
-=\frac23e^{-y}+e^{-3y},
-$$
+$$f_Y(y)=\frac23e^{-y}+\frac13\cdot3e^{-3y} =\frac23e^{-y}+e^{-3y},$$
 
 且
 
-$$
-P(Z=1\mid Y=y)
-=\frac{e^{-3y}}{\frac23e^{-y}+e^{-3y}}.
-$$
+$$P(Z=1\mid Y=y) =\frac{e^{-3y}}{\frac23e^{-y}+e^{-3y}}.$$
 
 当 $y\to0^+$ 时，后验概率为
 
-$$
-\frac{1}{2/3+1}=\frac35,
-$$
+$$\frac{1}{2/3+1}=\frac35,$$
 
 而当 $y\to\infty$ 时，因 $e^{-3y}$ 比 $e^{-y}$ 下降更快，后验趋于 0。Python 精确检查这两个极限和全概率积分：
 
@@ -438,9 +328,7 @@ assert sp.simplify(sp.integrate(post1 * fY, (y, 0, sp.oo)) - pz1) == 0
 
 最后一个等式是连续全概率公式：
 
-$$
-\int P(Z=1\mid Y=y)f_Y(y)\,dy=P(Z=1).
-$$
+$$\int P(Z=1\mid Y=y)f_Y(y)\,dy=P(Z=1).$$
 
 ## 17.6 条件化在零概率事件上的陷阱
 
@@ -448,26 +336,19 @@ $$
 
 第一种使用 $V=Y-X$ 并条件化 $V=0$ 。从 $(x,v)$ 到 $(x,y)$ 的变换为 $y=x+v$ ，Jacobian 绝对值为 1，所以
 
-$$
-f_{X,V}(x,v)=e^{-2x-v},\qquad x>0,\ v>-x.
-$$
+$$f_{X,V}(x,v)=e^{-2x-v},\qquad x>0,\ v>-x.$$
 
 在 $v=0$ 的切片上，$f_{X|V=0}(x|0)\propto e^{-2x}$ ，即 $\operatorname{Exp}(2)$ 。
 
 第二种使用 $W=Y/X$ 并条件化 $W=1$ 。由 $y=xw$ 得 Jacobian 绝对值为 $x$ ，所以
 
-$$
-f_{X,W}(x,w)=x e^{-x(1+w)},\qquad x,w>0.
-$$
+$$f_{X,W}(x,w)=x e^{-x(1+w)},\qquad x,w>0.$$
 
 在 $w=1$ 的切片上，$f_{X|W=1}(x|1)\propto xe^{-2x}$ ，即形状为 2、速率为 2 的 Gamma 分布。
 
 二者不同：
 
-$$
-X\mid(Y-X=0)\sim\operatorname{Exp}(2),\qquad
-X\mid(Y/X=1)\sim\Gamma(2,2).
-$$
+$$X\mid(Y-X=0)\sim\operatorname{Exp}(2),\qquad X\mid(Y/X=1)\sim\Gamma(2,2).$$
 
 这并不矛盾。事件 $\{Y-X=0\}$ 与 $\{Y/X=1\}$ 作为集合相同，但条件分布不是只由一个抽象的零概率集合决定；它依赖把该集合嵌入哪一族邻近事件。下一章学会 Jacobian 后，这个计算会更加自然。
 
@@ -490,33 +371,19 @@ assert sp.simplify(cond_w - 4 * xp * sp.exp(-2 * xp)) == 0
 
 设一次试验有三个类别，概率为 $p_1,p_2,p_3$ ，和为 1。独立重复 $n$ 次，计数向量 $(N_1,N_2,N_3)$ 服从多项分布：
 
-$$
-P(N_1=k_1,N_2=k_2,N_3=k_3)
-=
-\frac{n!}{k_1!k_2!k_3!}
-p_1^{k_1}p_2^{k_2}p_3^{k_3},
-\qquad k_1+k_2+k_3=n.
-$$
+$$P(N_1=k_1,N_2=k_2,N_3=k_3) = \frac{n!}{k_1!k_2!k_3!} p_1^{k_1}p_2^{k_2}p_3^{k_3}, \qquad k_1+k_2+k_3=n.$$
 
 把第 2、3 类合并成“非第 1 类”，立即得到
 
-$$
-N_1\sim\operatorname{Bin}(n,p_1).
-$$
+$$N_1\sim\operatorname{Bin}(n,p_1).$$
 
 给定 $N_2=k_2$ ，剩余 $n-k_2$ 次试验只可能落入第 1、3 类。在原来“不是第 2 类”的条件下，第 1 类的条件概率是
 
-$$
-\frac{p_1}{p_1+p_3}=\frac{p_1}{1-p_2}.
-$$
+$$\frac{p_1}{p_1+p_3}=\frac{p_1}{1-p_2}.$$
 
 因此
 
-$$
-N_1\mid N_2=k_2
-\sim
-\operatorname{Bin}\left(n-k_2,\frac{p_1}{1-p_2}\right).
-$$
+$$N_1\mid N_2=k_2 \sim \operatorname{Bin}\left(n-k_2,\frac{p_1}{1-p_2}\right).$$
 
 虽然边际计数可以写成二项分布，但 $N_1,N_2$ 并不独立：约束 $N_1+N_2\le n$ 使 $(4,4)$ 在 $n=4$ 时不可能，即使两个边际积为正。
 
@@ -552,9 +419,7 @@ cell(K1, K2, K3) :-
 
 Julia 的固定种子重复抽样则检查条件均值公式
 
-$$
-E[N_1\mid N_2=k_2]=(n-k_2)\frac{p_1}{1-p_2}.
-$$
+$$E[N_1\mid N_2=k_2]=(n-k_2)\frac{p_1}{1-p_2}.$$
 
 有限枚举和多项公式是精确账；Julia 抽样是对采样器的审计。
 
@@ -562,15 +427,11 @@ $$
 
 对任意随机向量，可以先定义联合分布函数
 
-$$
-F_{X,Y}(x,y)=P(X\le x,Y\le y).
-$$
+$$F_{X,Y}(x,y)=P(X\le x,Y\le y).$$
 
 离散和连续随机变量都能使用这个函数。矩形 $(a,b]\times(c,d]$ 的概率为
 
-$$
-F(b,d)-F(a,d)-F(b,c)+F(a,c).
-$$
+$$F(b,d)-F(a,d)-F(b,c)+F(a,c).$$
 
 这个公式来自平面区域的包含—排除：先加上右上角，减去两个被多算的条带，再把减了两次的左下角加回来。它也是第 18 章多元变量变换和第 22 章从联合分布积分求抽样分布的基础。
 
