@@ -10,7 +10,7 @@ Computing》（Springer UTiCS，第三版 2020）为计算视角篇第三底本�
 与描述集合论，再到布尔值语义重建、计算者的离散数学工具箱与传递集合
 为纲的基本理论——七底本、十三篇、149 章（00–148）全部收官。
 冯琦三卷与郝/杨跃入门线完整汇入；每章正文自包含（只读 docs 即可学习）。
-第十三篇（124–148）是原 settheory-hao 教程的整体并入，作为全书的
+第十三篇（123–147）是原 settheory-hao 教程的整体并入，作为全书的
 入门坡道，独立可读。
 
 七通道机器验证（单元逐章点亮，全量对账见 `build.ps1 -All`）：
@@ -242,37 +242,37 @@ Borel 集与解析集、Baire 空间与投影层级、L 中的投影集、Solova
 
 | 章 | 标题 | 一句话 |
 |---|---|---|
-| [124](docs/124-intro.md) | 导引：欢迎来到康托乐园 | 潜无穷/实无穷、对角线、CH 悬案与全篇地图 |
-| [125](docs/125-russell-logic.md) | 罗素悖论与一点数理逻辑 | 概括原则的崩塌与理论作为数学对象 |
-| [126](docs/126-axioms.md) | ZFC 公理 | 九条公理逐条讲透：用途与危险性 |
-| [127](docs/127-relations-functions.md) | 关系与函数 | 有序对、关系运算律、相容系统 |
-| [128](docs/128-equivalence-order.md) | 等价、划分与序 | 商构造、偏序/线序、三个格 |
-| [129](docs/129-naturals-recursion.md) | 自然数与递归定理 | 最小归纳集唯一；递归定义合法性 |
-| [130](docs/130-equipollence.md) | 等势与可数 | CSB 定理、鸽笼、配对函数 |
-| [131](docs/131-reals.md) | 整数、有理数、实数 | ℤ/ℚ 商构造、魔法公式、戴德金分割 |
-| [132](docs/132-uncountable.md) | 不可数集合 | 对角线法、康托集、三进地址 |
-| [133](docs/133-wellorders.md) | 良序集 | 前段引理、三歧性、ord_iso_map |
-| [134](docs/134-ordinals.md) | 序数与超穷归纳 | von Neumann 序数、Hartogs 数 |
-| [135](docs/135-ordinal-arith.md) | 超穷递归与序数算术 | +·^ 的递归定义与吸收边界 |
-| [136](docs/136-goodstein.md) | 古德斯坦定理 | 遗传记数法与 PA 不可证性 |
-| [137](docs/137-choice.md) | 选择公理 | AC/Zorn/良序等价网络；Vitali 反例 |
-| [138](docs/138-cardinals.md) | 基数 | 初始序数、ℵ 序列、CSB 升格 |
-| [139](docs/139-cardinal-arith.md) | 基数算术 | ⊞/⊙/幂三运算的温顺与狂野 |
-| [140](docs/140-cofinality.md) | 共尾与无穷和积 | cf(κ)、König 不等式 |
-| [141](docs/141-cardinal-power.md) | 基数幂与连续统 | CH/GCH、Easton 自由度 |
-| [142](docs/142-filters-club.md) | 滤、理想与无界闭集 | club、对角交与 Fodor 预告 |
-| [143](docs/143-cumulative-hierarchy.md) | 层垒谱系与绝对性 | V_α、rank、Δ₀ 绝对性 |
-| [144](docs/144-foundation-wellfounded.md) | 基础公理与良基归纳 | Con(ZF⁻)→Con(ZF)、Mostowski |
-| [145](docs/145-inaccessible-reflection.md) | 不可达基数与反映定理 | V_κ⊨ZFC、ZF 不可有穷化 |
-| [146](docs/146-constructible.md) | 可构成集 L | Def、哥德尔运算、V=L+AC+GCH |
-| [147](docs/147-forcing.md) | 力迫与 CH 独立性 | 偏序/脱殊滤/名字/M[G]、¬CH |
-| [148](docs/148-cheatsheet.md) | 收官速查表 | 公理表、方法表、篇内索引 |
+| [123](docs/123-intro.md) | 导引：欢迎来到康托乐园 | 潜无穷/实无穷、对角线、CH 悬案与全篇地图 |
+| [124](docs/124-russell-logic.md) | 罗素悖论与一点数理逻辑 | 概括原则的崩塌与理论作为数学对象 |
+| [125](docs/125-axioms.md) | ZFC 公理 | 九条公理逐条讲透：用途与危险性 |
+| [126](docs/126-relations-functions.md) | 关系与函数 | 有序对、关系运算律、相容系统 |
+| [127](docs/127-equivalence-order.md) | 等价、划分与序 | 商构造、偏序/线序、三个格 |
+| [128](docs/128-naturals-recursion.md) | 自然数与递归定理 | 最小归纳集唯一；递归定义合法性 |
+| [129](docs/129-equipollence.md) | 等势与可数 | CSB 定理、鸽笼、配对函数 |
+| [130](docs/130-reals.md) | 整数、有理数、实数 | ℤ/ℚ 商构造、魔法公式、戴德金分割 |
+| [131](docs/131-uncountable.md) | 不可数集合 | 对角线法、康托集、三进地址 |
+| [132](docs/132-wellorders.md) | 良序集 | 前段引理、三歧性、ord_iso_map |
+| [133](docs/133-ordinals.md) | 序数与超穷归纳 | von Neumann 序数、Hartogs 数 |
+| [134](docs/134-ordinal-arith.md) | 超穷递归与序数算术 | +·^ 的递归定义与吸收边界 |
+| [135](docs/135-goodstein.md) | 古德斯坦定理 | 遗传记数法与 PA 不可证性 |
+| [136](docs/136-choice.md) | 选择公理 | AC/Zorn/良序等价网络；Vitali 反例 |
+| [137](docs/137-cardinals.md) | 基数 | 初始序数、ℵ 序列、CSB 升格 |
+| [138](docs/138-cardinal-arith.md) | 基数算术 | ⊞/⊙/幂三运算的温顺与狂野 |
+| [139](docs/139-cofinality.md) | 共尾与无穷和积 | cf(κ)、König 不等式 |
+| [140](docs/140-cardinal-power.md) | 基数幂与连续统 | CH/GCH、Easton 自由度 |
+| [141](docs/141-filters-club.md) | 滤、理想与无界闭集 | club、对角交与 Fodor 预告 |
+| [142](docs/142-cumulative-hierarchy.md) | 层垒谱系与绝对性 | V_α、rank、Δ₀ 绝对性 |
+| [143](docs/143-foundation-wellfounded.md) | 基础公理与良基归纳 | Con(ZF⁻)→Con(ZF)、Mostowski |
+| [144](docs/144-inaccessible-reflection.md) | 不可达基数与反映定理 | V_κ⊨ZFC、ZF 不可有穷化 |
+| [145](docs/145-constructible.md) | 可构成集 L | Def、哥德尔运算、V=L+AC+GCH |
+| [146](docs/146-forcing.md) | 力迫与 CH 独立性 | 偏序/脱殊滤/名字/M[G]、¬CH |
+| [147](docs/147-cheatsheet.md) | 收官速查表 | 公理表、方法表、篇内索引 |
 
 ### 收官
 
 | 章 | 标题 | 一句话 |
 |---|---|---|
-| [123](docs/123-cheatsheet.md) | 收官 CHEATSheet | 六底本与冯琦三卷总表、三条数学轴、七通道边界与全书坑位索引 |
+| [148](docs/148-cheatsheet.md) | 收官 CHEATSheet | 六底本与冯琦三卷总表、三条数学轴、七通道边界与全书坑位索引 |
 
 ## 验证
 
@@ -285,7 +285,7 @@ python 148 / prolog 134。
 
 ```pwsh
 pwsh -NoProfile -Command '& ./build.ps1 -All'        # 全量对账（单元数以当前报告为准）
-pwsh -NoProfile -Command '& ./build.ps1 -Chapter 126' # 只验一章
+pwsh -NoProfile -Command '& ./build.ps1 -Chapter 125' # 只验一章
 pwsh -NoProfile -Command '& ./build.ps1 -List'       # 列出全部验证单元
 ```
 
@@ -298,8 +298,8 @@ pwsh -NoProfile -Command '& ./build.ps1 -List'       # 列出全部验证单元
 | David Makinson, *Sets, Logic and Maths for Computing* | Springer UTiCS, 3rd ed. 2020 | 全书 3 部 11 章 |
 | 冯琦, *集合论导引（第一卷）基本理论* | 324 页扫描版（rapidocr 取材） | 全书收官：引言 + 第 1 章 + 第 2 章 + 第 3 章 §3.1-3.8（第十篇 67-83 全部建成） |
 | 冯琦, *集合论导引（第二卷）* | 415 页扫描版（rapidocr 取材） | 第 1 章传递模型 + 第 2 章内模型 + 第 3 章力迫论（第十一篇 84-92 已收官） |
-| 冯琦, *集合论导引（第三卷）高阶无穷* | 515 页扫描版（rapidocr 取材） | 引言与大基数、力迫、实数正则性全谱（第十二篇 93-122；123 全书收官） |
-| 郝兆宽、杨跃, *集合论：对无穷概念的探索* | 复旦大学出版社 2014 | 全书九章（第十三篇 124-148 整体并入；原 settheory-hao 仓库退役） |
+| 冯琦, *集合论导引（第三卷）高阶无穷* | 515 页扫描版（rapidocr 取材） | 引言与大基数、力迫、实数正则性全谱（第十二篇 93-122；148 全书收官） |
+| 郝兆宽、杨跃, *集合论：对无穷概念的探索* | 复旦大学出版社 2014 | 全书九章（第十三篇 123-147 整体并入；原 settheory-hao 仓库退役） |
 
 每章正文中底本编号（如 "Jech §12"）仅作溯源注记，不构成阅读依赖；
 全部定理给完整证明或完整讲解，自包含可读。
