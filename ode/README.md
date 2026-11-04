@@ -97,5 +97,7 @@
     pwsh -NoProfile -Command '& ./build.ps1 -Chapter 03' # 单章
     pwsh -NoProfile -Command '& ./build.ps1 -Lang lean'  # 单通道
 
-B0 批次（00–08）：35 单元全绿（lean 7 / julia 9 / python 9 /
-prolog 9 / fortran …滚动更新中）。
+**收官：117/117 单元全绿**（lean 16 / julia 33 / python 33 /
+prolog 28 / fortran 7），七批提交（B0 基建+一阶篇、B1 二阶篇、
+B2 方程组篇、B3 定性篇、B4 级数变换篇、B5 边值特殊函数篇、
+B6 收官篇），覆盖原书 ch1–ch13 全部核心内容。
