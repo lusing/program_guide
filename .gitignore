@@ -149,3 +149,8 @@ probability/examples/lean/.lake/
 # abstractalgebra tutorial build artifacts
 abstractalgebra/examples/lean/.lake/
 abstractalgebra/examples/lean/lake-manifest.json
+
+# ode tutorial build artifacts
+ode/examples/lean/.lake/
+ode/examples/lean/lake-manifest.json
+ode/build/
