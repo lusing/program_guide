@@ -9,12 +9,20 @@ FENCE = {"julia": "julia", "python": "python", "prolog": "prolog"}
 
 LEGACY_MATH = re.compile(r"\\[()[\]]")
 
+# Forgejo/Gitea 行内数学邻接规则（modules/markup/markdown/math/inline_parser.go）：
+# 开 $ 前不得是 ASCII 字母数字或 .!?,;:；
+# 闭 $ 后必须是空格/换行/)/./!/?/,/;/: 或行尾。
+MATH_OPEN_BAD = re.compile(r"[a-zA-Z0-9.!?,;:]")
+MATH_CLOSE_OK = frozenset(" ).!?,;:")
+INLINE_MATH = re.compile(r"(?<!\\)\$([^$\n]+)(?<!\\)\$")
+DISPLAY_OWN_LINE = re.compile(r"^\s*(?:>\s*)*\$\$\s*$")
+
 
 def check_math(text: str, doc: Path) -> list[str]:
     """数学公式统一用 $...$/$$...$$（Codeberg/GitHub/VS Code 可渲染）。
 
     围栏代码块与行内代码中的旧定界符 \\( \\) \\[ \\] 不算；
-    同时检查 $ 与 $$ 是否配对。
+    同时检查 $ 与 $$ 是否配对、行内公式邻接是否满足 Forgejo 规则。
     """
     errors = []
     in_fence = False
@@ -33,6 +41,20 @@ def check_math(text: str, doc: Path) -> list[str]:
             )
         display += bare.count("$$")
         inline += len(re.findall(r"(?<!\\)\$", bare.replace("$$", "")))
+        if not DISPLAY_OWN_LINE.match(bare):
+            for m in INLINE_MATH.finditer(bare.replace("$$", "")):
+                prev = bare[m.start() - 1] if m.start() > 0 else "\n"
+                nxt = bare[m.end()] if m.end() < len(bare) else "\n"
+                if MATH_OPEN_BAD.match(prev):
+                    errors.append(
+                        f"char before opening $ breaks Forgejo math, add space: "
+                        f"{doc}: {line.strip()[:60]}"
+                    )
+                if nxt != "\n" and nxt not in MATH_CLOSE_OK:
+                    errors.append(
+                        f"char after closing $ breaks Forgejo math, add space: "
+                        f"{doc}: {line.strip()[:60]}"
+                    )
     if display % 2:
         errors.append(f"unbalanced display math $$: {doc}")
     if inline % 2:

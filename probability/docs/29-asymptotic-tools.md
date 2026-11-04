@@ -1,4 +1,4 @@
-# 第 29 章 渐近拼接工具：$O_p/o_p$、Slutsky 与 Delta 方法
+# 第 29 章 渐近拼接工具：$O_p/o_p$ 、Slutsky 与 Delta 方法
 
 ## 29.1 为什么需要“拼接”
 
@@ -28,13 +28,13 @@ $$
 
 ## 29.2 非随机 $O$ 与 $o$ 的复习
 
-对数列 $a_n,b_n$，若存在常数 $C$ 和 $N$，使 $n\ge N$ 时
+对数列 $a_n,b_n$ ，若存在常数 $C$ 和 $N$ ，使 $n\ge N$ 时
 
 $$
 |a_n|\le C|b_n|,
 $$
 
-则写 $a_n=O(b_n)$。
+则写 $a_n=O(b_n)$ 。
 
 若
 
@@ -42,7 +42,7 @@ $$
 \frac{a_n}{b_n}\to0,
 $$
 
-则写 $a_n=o(b_n)$。
+则写 $a_n=o(b_n)$ 。
 
 例如
 
@@ -68,17 +68,17 @@ $$
 A_n=O_p(1),
 $$
 
-如果对每个 $\varepsilon>0$，存在有限常数 $M$ 和 $N$，使 $n\ge N$ 时
+如果对每个 $\varepsilon>0$ ，存在有限常数 $M$ 和 $N$ ，使 $n\ge N$ 时
 
 $$
 P(|A_n|>M)<\varepsilon.
 $$
 
-等价地，对每个 $\varepsilon>0$，可以选择一个足够大的区间 $[-M,M]$，使所有充分靠后的分布都把至少 $1-\varepsilon$ 的概率放在其中。
+等价地，对每个 $\varepsilon>0$ ，可以选择一个足够大的区间 $[-M,M]$ ，使所有充分靠后的分布都把至少 $1-\varepsilon$ 的概率放在其中。
 
 这也称为该序列 tight。
 
-更一般地，若 $A_n/B_n=O_p(1)$，就写 $A_n=O_p(B_n)$。
+更一般地，若 $A_n/B_n=O_p(1)$ ，就写 $A_n=O_p(B_n)$ 。
 
 若
 
@@ -92,15 +92,15 @@ $$
 A_n=o_p(1).
 $$
 
-相应地，$A_n/B_n=o_p(1)$ 表示 $A_n/B_n\xrightarrow{P}0$。
+相应地，$A_n/B_n=o_p(1)$ 表示 $A_n/B_n\xrightarrow{P}0$ 。
 
-由依概率收敛的定义，$o_p(1)$ 一定推出 $O_p(1)$，反向不成立。
+由依概率收敛的定义，$o_p(1)$ 一定推出 $O_p(1)$ ，反向不成立。
 
-例如非退化正态序列 $Z_n\sim N(0,1)$ 是 $O_p(1)$，却不趋于零。
+例如非退化正态序列 $Z_n\sim N(0,1)$ 是 $O_p(1)$ ，却不趋于零。
 
 ## 29.4 常见尺度从哪里来
 
-若 $E[A_n^2]=O(a_n^2)$，Chebyshev 或 Markov 不等式通常给出
+若 $E[A_n^2]=O(a_n^2)$ ，Chebyshev 或 Markov 不等式通常给出
 
 $$
 A_n=O_p(a_n).
@@ -163,7 +163,7 @@ $$
 
 这些法则的证明与非随机阶类似，只是把绝对值界改成以任意接近 $1$ 的概率成立。
 
-例如若 $A_n=O_p(1)$、$B_n=o_p(1)$，先在一个大概率事件上把 $|A_n|$ 控制在 $M$，再利用 $B_n\to0$ 依概率，即可得到 $A_nB_n\to0$ 依概率。
+例如若 $A_n=O_p(1)$ 、$B_n=o_p(1)$ ，先在一个大概率事件上把 $|A_n|$ 控制在 $M$ ，再利用 $B_n\to0$ 依概率，即可得到 $A_nB_n\to0$ 依概率。
 
 在 Taylor 展开中，这些法则允许我们把余项从主要项中分离出去。
 
@@ -203,13 +203,13 @@ $$
 
 只需逐条样本路径应用连续性。
 
-依分布版本的证明可以通过 Skorokhod 表示理解：在一个新概率空间上，用同分布的 $\widetilde X_n\overset d=X_n$、$\widetilde X\overset d=X$ 实现几乎必然收敛，再对每条收敛路径使用连续性。
+依分布版本的证明可以通过 Skorokhod 表示理解：在一个新概率空间上，用同分布的 $\widetilde X_n\overset d=X_n$ 、$\widetilde X\overset d=X$ 实现几乎必然收敛，再对每条收敛路径使用连续性。
 
 连续映射定理并不要求 $g$ 在所有点都连续。
 
 若极限 $X$ 以正概率落在不连续点，结论可能失败。
 
-例如 $g(x)=\mathbf1_{x\ge0}$，且极限在 $0$ 有点质量时，就必须单独检查边界。
+例如 $g(x)=\mathbf1_{x\ge0}$ ，且极限在 $0$ 有点质量时，就必须单独检查边界。
 
 ## 29.7 Slutsky 定理：随机序列与常数极限可以拼接
 
@@ -239,7 +239,7 @@ X_nY_n\xrightarrow{d}cX.
 }
 $$
 
-若 $c\ne0$，还有
+若 $c\ne0$ ，还有
 
 $$
 \boxed{
@@ -249,9 +249,9 @@ $$
 
 关键是第二项必须趋于**常数**。
 
-若 $Y_n\xrightarrow{d}Y$ 且 $Y$ 非退化，仅凭两个边际收敛通常不能决定联合极限；相关结构会影响 $X_nY_n$ 或 $X_n/Y_n$。
+若 $Y_n\xrightarrow{d}Y$ 且 $Y$ 非退化，仅凭两个边际收敛通常不能决定联合极限；相关结构会影响 $X_nY_n$ 或 $X_n/Y_n$ 。
 
-Slutsky 的证明思路是：$Y_n$ 与常数 $c$ 的差是 $o_p(1)$，先证明它不改变连续测试函数的极限，再把 $(X_n,c)$ 代入连续映射定理。
+Slutsky 的证明思路是：$Y_n$ 与常数 $c$ 的差是 $o_p(1)$ ，先证明它不改变连续测试函数的极限，再把 $(X_n,c)$ 代入连续映射定理。
 
 ## 29.8 插入标准误为什么合法
 
@@ -262,7 +262,7 @@ $$
 \xrightarrow{d}N(0,v),
 $$
 
-并且 $\hat v_n\xrightarrow{P}v>0$。
+并且 $\hat v_n\xrightarrow{P}v>0$ 。
 
 则
 
@@ -328,7 +328,7 @@ $$
 R_n=o(|T_n-\theta|).
 $$
 
-由于 $T_n-\theta=O_p(n^{-1/2})$，有
+由于 $T_n-\theta=O_p(n^{-1/2})$ ，有
 
 $$
 R_n=o_p(n^{-1/2}).
@@ -347,21 +347,21 @@ $$
 =g'(\theta)\sqrt n(T_n-\theta)+o_p(1).
 $$
 
-第一项趋于 $N(0,[g'(\theta)]^2v)$，第二项由 Slutsky 不影响极限。
+第一项趋于 $N(0,[g'(\theta)]^2v)$ ，第二项由 Slutsky 不影响极限。
 
 Delta 方法不是神秘的近似公式，而是“局部线性化 + 随机阶余项 + Slutsky”。
 
 ## 29.10 例一：样本均值的平方
 
-设 iid 样本均值为 $\mu$、方差为 $\sigma^2$，则
+设 iid 样本均值为 $\mu$ 、方差为 $\sigma^2$ ，则
 
 $$
 \sqrt n(\bar X_n-\mu)\xrightarrow{d}N(0,\sigma^2).
 $$
 
-取 $g(x)=x^2$，有 $g'(\mu)=2\mu$。
+取 $g(x)=x^2$ ，有 $g'(\mu)=2\mu$ 。
 
-若 $\mu\ne0$，Delta 方法给出
+若 $\mu\ne0$ ，Delta 方法给出
 
 $$
 \boxed{
@@ -429,7 +429,7 @@ $$
 }
 $$
 
-变换后的渐近方差不再依赖 $\lambda$，这就是方差稳定化。
+变换后的渐近方差不再依赖 $\lambda$ ，这就是方差稳定化。
 
 Python 中对应
 
@@ -447,11 +447,11 @@ theorem delta_poisson_sqrt (q : ℚ) (hq : q ≠ 0) :
   ring
 ```
 
-有限样本中，若 $\bar X_n=0$，开方仍有定义；但对数或 logit 变换可能出现更严重的边界问题。
+有限样本中，若 $\bar X_n=0$ ，开方仍有定义；但对数或 logit 变换可能出现更严重的边界问题。
 
 ## 29.12 例三：Bernoulli logit 与标准化
 
-设 $\hat p_n$ 是 iid Bernoulli$(p)$ 样本均值，$0<p<1$。
+设 $\hat p_n$ 是 iid Bernoulli $(p)$ 样本均值，$0<p<1$ 。
 
 CLT 给出
 
@@ -489,7 +489,7 @@ logit_variance = delta_variance(sp.log(p / (1 - p)), p, p * (1 - p))
 assert sp.simplify(logit_variance - 1 / (p * (1 - p))) == 0
 ```
 
-若把分母 $p(1-p)$ 换成一致估计 $\hat p_n(1-\hat p_n)$，由 Slutsky，
+若把分母 $p(1-p)$ 换成一致估计 $\hat p_n(1-\hat p_n)$ ，由 Slutsky，
 
 $$
 \frac{\sqrt n\{g(\hat p_n)-g(p)\}}
@@ -541,15 +541,15 @@ $$
 
 矩阵维数提供了检查公式是否写反的快速方法：
 
-- $D$ 是 $m\times k$；
-- $\Sigma$ 是 $k\times k$；
-- $D\Sigma D^\top$ 是 $m\times m$。
+- $D$ 是 $m\times k$ ；
+- $\Sigma$ 是 $k\times k$ ；
+- $D\Sigma D^\top$ 是 $m\times m$ 。
 
 多元情形下不能只对每个分量分别求导后相加；交叉协方差由 $D\Sigma D^\top$ 自动保留。
 
 ## 29.14 导数为零时，一阶 Delta 方法失效
 
-回到 $g(x)=x^2$，但这次令 $\mu=0$。
+回到 $g(x)=x^2$ ，但这次令 $\mu=0$ 。
 
 此时
 
@@ -557,9 +557,9 @@ $$
 g'(0)=0.
 $$
 
-一阶 Delta 公式只会给出渐近方差 $0$，无法描述非退化极限。
+一阶 Delta 公式只会给出渐近方差 $0$ ，无法描述非退化极限。
 
-若单个样本来自 $N(0,1)$，则
+若单个样本来自 $N(0,1)$ ，则
 
 $$
 \bar X_n\sim N(0,1/n).
@@ -573,7 +573,7 @@ $$
 
 对每个 $n$ 都精确成立，而不只是渐近成立。
 
-注意尺度已经从 $\sqrt n$ 改为 $n$。
+注意尺度已经从 $\sqrt n$ 改为 $n$ 。
 
 一般地，若
 
@@ -581,7 +581,7 @@ $$
 \sqrt n(T_n-\theta)\xrightarrow{d}\sigma Z,
 $$
 
-且 $g'(\theta)=0$、$g''(\theta)\ne0$，二阶 Taylor 展开给出
+且 $g'(\theta)=0$ 、$g''(\theta)\ne0$ ，二阶 Taylor 展开给出
 
 $$
 g(T_n)-g(\theta)
@@ -598,9 +598,9 @@ n\{g(T_n)-g(\theta)\}
 }
 $$
 
-极限通常是非中心位置被缩放的 $\chi_1^2$，不是均值为零的 Gaussian。
+极限通常是非中心位置被缩放的 $\chi_1^2$ ，不是均值为零的 Gaussian。
 
-Python 和 Julia 都检查 $n\bar X_n^2$ 的均值接近 $1$、方差接近 $2$：
+Python 和 Julia 都检查 $n\bar X_n^2$ 的均值接近 $1$ 、方差接近 $2$ ：
 
 ```julia
 q = [size * (sum(randn() for _ in 1:size) / size)^2
@@ -615,11 +615,11 @@ q = [size * (sum(randn() for _ in 1:size) / size)^2
 
 Delta 方法的可微性必须相对于参数空间中的正确方向理解。
 
-若 $p=0$ 或 $p=1$，Bernoulli 方差本身为零，普通 $\sqrt n$ 正态极限退化，logit 也没有有限定义。
+若 $p=0$ 或 $p=1$ ，Bernoulli 方差本身为零，普通 $\sqrt n$ 正态极限退化，logit 也没有有限定义。
 
 若参数位于约束边界，估计量可能频繁粘在边界上，渐近分布往往不是普通正态。
 
-若 $g'(\theta)=0$、$g''(\theta)=0$，就需要继续展开到第一个非零项，尺度也会进一步改变。
+若 $g'(\theta)=0$ 、$g''(\theta)=0$ ，就需要继续展开到第一个非零项，尺度也会进一步改变。
 
 因此“套 Delta 公式”之前应先检查：
 
@@ -650,7 +650,7 @@ Lean 文件 `examples/lean/Probability/Ch29AsymptoticTools.lean` 证明方差系
 1. $O_p(1)$ 表示依概率有界，$o_p(1)$ 表示依概率趋于零。
 2. 连续映射把收敛传递到连续函数，Slutsky 把依分布序列与趋于常数的序列拼接。
 3. Delta 方法的证明是一阶 Taylor、随机阶余项和 Slutsky 的组合。
-4. 一维渐近方差是 $[g'(\theta)]^2v$，多元形式是 $D\Sigma D^\top$。
+4. 一维渐近方差是 $[g'(\theta)]^2v$ ，多元形式是 $D\Sigma D^\top$ 。
 5. 样本均值平方、Poisson 开方和 Bernoulli logit 分别展示函数变换、方差稳定化和估计量标准化。
 6. 导数为零时必须提高 Taylor 阶数，并把尺度从 $\sqrt n$ 改为 $n$ 或更高阶。
 7. 模拟只检查有限样本；参数边界和退化方差必须另行分析。

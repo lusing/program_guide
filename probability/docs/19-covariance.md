@@ -100,11 +100,11 @@ example (a b c d μ ν m : ℚ) :
     = a * c * (m - μ * ν) := by ring
 ```
 
-这里 $m=E[XY]$、$\mu=E[X]$、$\nu=E[Y]$。把统计语言翻译成期望后，双线性公式只是 `ring` 能判决的恒等式。
+这里 $m=E[XY]$ 、$\mu=E[X]$ 、$\nu=E[Y]$ 。把统计语言翻译成期望后，双线性公式只是 `ring` 能判决的恒等式。
 
 ## 19.3 相关系数与 Cauchy–Schwarz
 
-若 $\operatorname{Var}(X)>0$、$\operatorname{Var}(Y)>0$，定义相关系数
+若 $\operatorname{Var}(X)>0$ 、$\operatorname{Var}(Y)>0$ ，定义相关系数
 
 $$
 \boxed{
@@ -121,11 +121,11 @@ U=\frac{X-\mu_X}{\sigma_X},\qquad
 V=\frac{Y-\mu_Y}{\sigma_Y}
 $$
 
-都有方差 1，且 $\rho=\operatorname{Cov}(U,V)$。
+都有方差 1，且 $\rho=\operatorname{Cov}(U,V)$ 。
 
 ### 19.3.1 $|\rho|\le1$ 的证明
 
-对任意实数 $t$，
+对任意实数 $t$ ，
 
 $$
 \operatorname{Var}(t(X-\mu_X)+(Y-\mu_Y))\ge0.
@@ -176,9 +176,9 @@ $$
 Y=aX+b,\qquad a\ne0,
 $$
 
-且 $\rho=\operatorname{sign}(a)$。
+且 $\rho=\operatorname{sign}(a)$ 。
 
-Python 程序用四张等概率点分别检查 $Y=2X+1$ 给出 $\rho=1$、$Y=-3X+1$ 给出 $\rho=-1$：
+Python 程序用四张等概率点分别检查 $Y=2X+1$ 给出 $\rho=1$ 、$Y=-3X+1$ 给出 $\rho=-1$ ：
 
 ```python
 pm = {(x, 2 * x + 1): F(1, 4) for x in (0, 1, 2, 3)}
@@ -197,11 +197,11 @@ $$
 E[XY]=E[X]E[Y],
 $$
 
-所以 $\operatorname{Cov}(X,Y)=0$。但零协方差只排除线性关系，不排除非线性函数关系。
+所以 $\operatorname{Cov}(X,Y)=0$ 。但零协方差只排除线性关系，不排除非线性函数关系。
 
 ### 19.4.1 离散反例：$Y=X^2$
 
-令 $X$ 在 $\{-1,0,1\}$ 上均匀，令 $Y=X^2$。则
+令 $X$ 在 $\{-1,0,1\}$ 上均匀，令 $Y=X^2$ 。则
 
 $$
 E[X]=0,\qquad E[XY]=E[X^3]=0,
@@ -246,7 +246,7 @@ example : cex 0 0 ≠ (1 / 3) * (1 / 3) := by
   simp [cex]
 ```
 
-### 19.4.2 连续反例：$X\sim U(-1,1)$，$Y=X^2$
+### 19.4.2 连续反例：$X\sim U(-1,1)$ ，$Y=X^2$
 
 连续情形同样成立：
 
@@ -254,7 +254,7 @@ $$
 E[XY]=E[X^3]=\frac12\int_{-1}^1x^3dx=0.
 $$
 
-但事件 $\{|X|<1/2\}$ 与 $\{Y>1/2\}$ 不可能同时发生，因为 $|X|<1/2$ 时 $Y<1/4$。另一方面，
+但事件 $\{|X|<1/2\}$ 与 $\{Y>1/2\}$ 不可能同时发生，因为 $|X|<1/2$ 时 $Y<1/4$ 。另一方面，
 
 $$
 P(|X|<1/2)P(X^2>1/2)
@@ -286,7 +286,7 @@ p_1=P(X=1),\qquad p_2=P(Y=1),\qquad
 c=\operatorname{Cov}(X,Y).
 $$
 
-由于 $XY=1$ 当且仅当 $X=Y=1$，
+由于 $XY=1$ 当且仅当 $X=Y=1$ ，
 
 $$
 P(X=1,Y=1)=E[XY]=p_1p_2+c.
@@ -321,7 +321,7 @@ forall(member(P1-P2, [(1 rdiv 2)-(1 rdiv 3),
 
 ## 19.6 协方差矩阵与半正定性
 
-对随机向量 $X=(X_1,\dots,X_d)^T$，均值向量和协方差矩阵为
+对随机向量 $X=(X_1,\dots,X_d)^T$ ，均值向量和协方差矩阵为
 
 $$
 \mu=E[X],\qquad
@@ -334,7 +334,7 @@ $$
 \Sigma_{ij}=\operatorname{Cov}(X_i,X_j).
 $$
 
-对任意固定权重向量 $w$，线性组合 $w^TX$ 的方差为
+对任意固定权重向量 $w$ ，线性组合 $w^TX$ 的方差为
 
 $$
 \boxed{\operatorname{Var}(w^TX)=w^T\Sigma w.}
@@ -346,7 +346,7 @@ $$
 w^T\Sigma w\ge0\qquad\text{对所有 }w\in\mathbb R^d.
 $$
 
-这就是协方差矩阵半正定。若存在 $w\ne0$ 使 $w^T\Sigma w=0$，则 $w^TX$ 几乎处处为常数，随机向量被约束在一个低维仿射子空间上。
+这就是协方差矩阵半正定。若存在 $w\ne0$ 使 $w^T\Sigma w=0$ ，则 $w^TX$ 几乎处处为常数，随机向量被约束在一个低维仿射子空间上。
 
 例如 $Y=2X+1$ 时，
 
@@ -409,7 +409,7 @@ $$
 
 ## 19.7 投资组合：最小方差权重
 
-考虑两个资产收益率 $R_1,R_2$，参数为
+考虑两个资产收益率 $R_1,R_2$ ，参数为
 
 $$
 \sigma_1^2=\operatorname{Var}(R_1),\quad
@@ -430,7 +430,7 @@ V(w)=w^2\sigma_1^2+(1-w)^2\sigma_2^2
 +2w(1-w)\rho\sigma_1\sigma_2.
 $$
 
-令 $c=\rho\sigma_1\sigma_2$。求导 $V'(w)=0$ 得
+令 $c=\rho\sigma_1\sigma_2$ 。求导 $V'(w)=0$ 得
 
 $$
 \boxed{
@@ -452,7 +452,7 @@ $$
 \sigma_1=0.2,\qquad \sigma_2=0.3,\qquad \rho=0.5.
 $$
 
-于是 $c=0.03$，
+于是 $c=0.03$ ，
 
 $$
 w^*=\frac{0.09-0.03}{0.04+0.09-0.06}=\frac67,
@@ -488,13 +488,13 @@ Lean 中的 `s1,s2` 表示方差而不是标准差；与正文的 $\sigma_1^2,\s
 
 ### 19.7.1 完全负相关与完全正相关
 
-若 $\rho=-1$，两个风险可以完全对冲。最小方差可为 0，权重为
+若 $\rho=-1$ ，两个风险可以完全对冲。最小方差可为 0，权重为
 
 $$
 w^*=\frac{\sigma_2}{\sigma_1+\sigma_2}.
 $$
 
-若 $\rho=1$，则
+若 $\rho=1$ ，则
 
 $$
 \operatorname{Var}(wR_1+(1-w)R_2)
@@ -507,7 +507,7 @@ $$
 \frac{\sigma^2}{n}+\left(1-\frac1n\right)\rho\sigma^2,
 $$
 
-当 $n\to\infty$ 时趋于 $\rho\sigma^2$。第一项是可分散的个体风险，剩余项是不能靠分散化消除的共同风险。
+当 $n\to\infty$ 时趋于 $\rho\sigma^2$ 。第一项是可分散的个体风险，剩余项是不能靠分散化消除的共同风险。
 
 ## 19.8 超几何抽样：负协方差与有限总体修正
 
@@ -564,13 +564,13 @@ assert var_enum == nv * pv * (1 - pv) * F(Nv - nv, Nv - 1)
 
 ## 19.9 多元 Chebyshev 与 Mahalanobis 距离
 
-若随机向量 $X$ 的均值为 $\mu$、协方差矩阵 $\Sigma$ 正定，定义 Mahalanobis 平方距离
+若随机向量 $X$ 的均值为 $\mu$ 、协方差矩阵 $\Sigma$ 正定，定义 Mahalanobis 平方距离
 
 $$
 D^2=(X-\mu)^T\Sigma^{-1}(X-\mu).
 $$
 
-令 $Z=\Sigma^{-1/2}(X-\mu)$，则 $\operatorname{Cov}(Z)=I$，且 $D^2=Z^TZ$。因此
+令 $Z=\Sigma^{-1/2}(X-\mu)$ ，则 $\operatorname{Cov}(Z)=I$ ，且 $D^2=Z^TZ$ 。因此
 
 $$
 E[D^2]=\sum_{j=1}^dE[Z_j^2]=d.
@@ -584,7 +584,7 @@ P(D^2\ge t)\le\frac dt.
 }
 $$
 
-Python 在一个六点离散分布上精确计算 $E[D^2]=2$，并对多个 $t$ 检查尾概率：
+Python 在一个六点离散分布上精确计算 $E[D^2]=2$ ，并对多个 $t$ 检查尾概率：
 
 ```python
 def D2(a, b):
@@ -599,7 +599,7 @@ for t in (F(1), F(2), F(4), F(6)):
     assert tail <= ED2 / t
 ```
 
-Julia 对三维高斯模拟检查 $E[D^2]\approx3$。在真正的联合正态中还有更强结论 $D^2\sim\chi^2_d$，但上面的期望和 Markov 界只需要二阶矩和正定协方差，适用于更广的分布。
+Julia 对三维高斯模拟检查 $E[D^2]\approx3$ 。在真正的联合正态中还有更强结论 $D^2\sim\chi^2_d$ ，但上面的期望和 Markov 界只需要二阶矩和正定协方差，适用于更广的分布。
 
 ## 19.10 相关系数能说什么、不能说什么
 
@@ -615,8 +615,8 @@ Julia 对三维高斯模拟检查 $E[D^2]\approx3$。在真正的联合正态中
 
 ## 19.11 本章要点
 
-1. 协方差是中心化乘积的期望，也等于 $E[XY]-E[X]E[Y]$。
-2. 方差和必须包含交叉项；矩阵形式为 $\operatorname{Var}(w^TX)=w^T\Sigma w$。
+1. 协方差是中心化乘积的期望，也等于 $E[XY]-E[X]E[Y]$ 。
+2. 方差和必须包含交叉项；矩阵形式为 $\operatorname{Var}(w^TX)=w^T\Sigma w$ 。
 3. $|\rho|\le1$ 来自 $L^2$ 空间的 Cauchy–Schwarz 不等式或二次型判别式。
 4. 独立推出不相关，但不相关一般不推出独立；$Y=X^2$ 是基本反例。
 5. 对两个 Bernoulli 变量，零协方差足以推出独立，因为四个联合格点由两个边际和协方差唯一确定。

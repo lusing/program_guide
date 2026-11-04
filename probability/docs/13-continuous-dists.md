@@ -2,11 +2,11 @@
 
 连续分布族的公式看似繁多，实际主要由三种机制生成：区间上的等密度、等待时间与指数衰减、正次数变量的幂律形状。理解参数的位置比背公式更重要：位置参数平移分布，尺度参数拉伸分布，形状参数改变尾部或峰形。
 
-本章把密度写成 $f$，分布函数写成 $F$。所有密度都默认为在支撑集之外取 0。数值积分用于核对已经推出的归一化和矩，不用有限窗口的计算代替无穷区间上的证明。
+本章把密度写成 $f$ ，分布函数写成 $F$ 。所有密度都默认为在支撑集之外取 0。数值积分用于核对已经推出的归一化和矩，不用有限窗口的计算代替无穷区间上的证明。
 
 ## 13.1 均匀分布：位置与尺度
 
-若 $a<b$，$X\sim U[a,b]$ 的密度为
+若 $a<b$ ，$X\sim U[a,b]$ 的密度为
 
 $$
 f(x)=\frac1{b-a},\qquad a\le x\le b.
@@ -31,7 +31,7 @@ E[X]=\frac{a+b}{2},
 \operatorname{Var}(X)=\frac{(b-a)^2}{12}.
 $$
 
-若 $U\sim U[0,1]$，则 $X=a+(b-a)U\sim U[a,b]$。因此 $a$ 是位置参数，$b-a$ 是尺度参数；整个族都可以由标准均匀分布生成。
+若 $U\sim U[0,1]$ ，则 $X=a+(b-a)U\sim U[a,b]$ 。因此 $a$ 是位置参数，$b-a$ 是尺度参数；整个族都可以由标准均匀分布生成。
 
 两个独立 $U[0,1]$ 变量之和不再均匀。第 16 章将完整推出其三角密度
 
@@ -58,14 +58,14 @@ assert tri_cdf(1) == Fraction(1, 2)
 
 ## 13.2 指数分布：无记忆的连续等待时间
 
-本章采用**尺度参数** $\theta>0$：
+本章采用**尺度参数** $\theta>0$ ：
 
 $$
 X\sim\operatorname{Exp}(\theta),\qquad
 f(x)=\frac1\theta e^{-x/\theta},\quad x\ge0.
 $$
 
-有些资料采用速率 $\lambda=1/\theta$，密度写成 $\lambda e^{-\lambda x}$。比较公式前必须统一参数化。这里
+有些资料采用速率 $\lambda=1/\theta$ ，密度写成 $\lambda e^{-\lambda x}$ 。比较公式前必须统一参数化。这里
 
 $$
 F(x)=1-e^{-x/\theta},\qquad
@@ -86,7 +86,7 @@ $$
 
 ### 无记忆性
 
-对 $s,t\ge0$，
+对 $s,t\ge0$ ，
 
 $$
 P(X>s+t\mid X>s)
@@ -110,24 +110,24 @@ $$
 x=-\theta\log(1-u).
 $$
 
-因为 $1-U$ 与 $U$ 同分布，也常写成 $-\theta\log U$。Python 检查的核心是解析尾部比：
+因为 $1-U$ 与 $U$ 同分布，也常写成 $-\theta\log U$ 。Python 检查的核心是解析尾部比：
 
 ```python
 F = lambda x: 1 - exp(-x / lam)
 assert abs((1 - F(6)) / (1 - F(3)) - (1 - F(3))) < 1e-12
 ```
 
-这段代码对应 $P(X>60)/P(X>30)=P(X>30)$；它不能反向证明所有具有此样本特征的分布都是指数分布。
+这段代码对应 $P(X>60)/P(X>30)=P(X>30)$ ；它不能反向证明所有具有此样本特征的分布都是指数分布。
 
 ## 13.3 Γ 函数：指数衰减下的统一矩账户
 
-对 $s>0$，定义
+对 $s>0$ ，定义
 
 $$
 \Gamma(s)=\int_0^\infty x^{s-1}e^{-x}\,dx.
 $$
 
-必须先检查两个端点。在 0 附近，$e^{-x}$ 有正上下界，可积性由 $x^{s-1}$ 决定，因此需要 $s>0$。在无穷端，指数衰减快于任何多项式增长，所以积分收敛。
+必须先检查两个端点。在 0 附近，$e^{-x}$ 有正上下界，可积性由 $x^{s-1}$ 决定，因此需要 $s>0$ 。在无穷端，指数衰减快于任何多项式增长，所以积分收敛。
 
 分部积分给出函数方程
 
@@ -152,7 +152,7 @@ $$
 \Gamma(1/2)=\sqrt\pi.
 $$
 
-在积分中令 $x=u^2$，就把 $\Gamma(1/2)$ 化为高斯积分。于是
+在积分中令 $x=u^2$ ，就把 $\Gamma(1/2)$ 化为高斯积分。于是
 
 $$
 \Gamma(3/2)=\frac{\sqrt\pi}{2},\qquad
@@ -170,7 +170,7 @@ if s < 1:
         0, 1, n // 2)
 ```
 
-这里 $x=t^m$，所以 $dx=mt^{m-1}dt$，原被积函数变为 $mt^{ms-1}e^{-t^m}$。选择 $ms\ge1$ 后，0 端不再奇异。这是变量代换改善数值问题条件的实例。
+这里 $x=t^m$ ，所以 $dx=mt^{m-1}dt$ ，原被积函数变为 $mt^{ms-1}e^{-t^m}$ 。选择 $ms\ge1$ 后，0 端不再奇异。这是变量代换改善数值问题条件的实例。
 
 程序还检查
 
@@ -184,14 +184,14 @@ for s in range(1, 9):
 
 ## 13.4 Gamma 分布与 Erlang 分布
 
-对形状 $k>0$、尺度 $\theta>0$，定义
+对形状 $k>0$ 、尺度 $\theta>0$ ，定义
 
 $$
 X\sim\operatorname{Gamma}(k,\theta),\qquad
 f(x)=\frac{x^{k-1}e^{-x/\theta}}{\Gamma(k)\theta^k},\quad x\ge0.
 $$
 
-令 $t=x/\theta$，归一化立即化成 $\Gamma(k)$ 的定义。用同一代换，
+令 $t=x/\theta$ ，归一化立即化成 $\Gamma(k)$ 的定义。用同一代换，
 
 $$
 E[X^r]
@@ -220,7 +220,7 @@ assert abs(simpson(lambda x: x * fk(x), 1e-9, 80, 20000) - k * sig) < 5e-3
 
 ## 13.5 Weibull 与广义 Gamma：把形状放进指数
 
-Weibull 分布由指数分布的幂变换生成。若 $E\sim\operatorname{Exp}(1)$，令
+Weibull 分布由指数分布的幂变换生成。若 $E\sim\operatorname{Exp}(1)$ ，令
 
 $$
 X=\theta E^{1/p},\qquad \theta>0,\ p>0,
@@ -252,13 +252,13 @@ f(x)=\frac{p}{\Gamma(k)\theta^{kp}}x^{kp-1}
 e^{-(x/\theta)^p},\qquad x\ge0,
 $$
 
-其中 $k,p,\theta>0$。作 $t=(x/\theta)^p$，得到
+其中 $k,p,\theta>0$ 。作 $t=(x/\theta)^p$ ，得到
 
 $$
 E[X^r]=\theta^r\frac{\Gamma(k+r/p)}{\Gamma(k)}.
 $$
 
-它包含 Gamma（$p=1$）和 Weibull（$k=1$）。同文件 ⑦ 节先作同一代换，再对变换后的积分作确定性数值审计：
+它包含 Gamma（$p=1$ ）和 Weibull（$k=1$ ）。同文件 ⑦ 节先作同一代换，再对变换后的积分作确定性数值审计：
 
 ```python
 numerical = theta ** r * quad(
@@ -272,7 +272,7 @@ close(numerical, closed, 1e-9)
 
 ## 13.6 Beta 函数与 Beta 分布
 
-对 $a,b>0$，定义
+对 $a,b>0$ ，定义
 
 $$
 B(a,b)=\int_0^1t^{a-1}(1-t)^{b-1}\,dt
@@ -285,7 +285,7 @@ $$
 u=x+y,\qquad t=x/(x+y)
 $$
 
-得到；Jacobian 分离出 $u^{a+b-1}$ 与 $t^{a-1}(1-t)^{b-1}$。当 $a<1$ 或 $b<1$ 时，积分在端点奇异但仍可积。
+得到；Jacobian 分离出 $u^{a+b-1}$ 与 $t^{a-1}(1-t)^{b-1}$ 。当 $a<1$ 或 $b<1$ 时，积分在端点奇异但仍可积。
 
 Beta 分布的密度为
 
@@ -304,7 +304,7 @@ $$
 =\frac{ab}{(a+b)^2(a+b+1)}.
 $$
 
-同文件对 $B(1/2,1/2)$ 采用 $t=\sin^2\theta$。此时 $dt=2\sin\theta\cos\theta\,d\theta$，两端奇异性被消去，积分化为
+同文件对 $B(1/2,1/2)$ 采用 $t=\sin^2\theta$ 。此时 $dt=2\sin\theta\cos\theta\,d\theta$ ，两端奇异性被消去，积分化为
 
 $$
 B(1/2,1/2)=2\int_0^{\pi/2}d\theta=\pi.
@@ -320,7 +320,7 @@ assert abs(B_half - rhs_half) < 2e-4 * rhs_half
 
 ## 13.7 Laplace：双侧指数与重尾对照
 
-位置 $\mu\in\mathbb R$、尺度 $b>0$ 的 Laplace 密度是
+位置 $\mu\in\mathbb R$ 、尺度 $b>0$ 的 Laplace 密度是
 
 $$
 f(x)=\frac1{2b}e^{-|x-\mu|/b}.
@@ -351,7 +351,7 @@ close(2 * scale ** 2, 8.0)
 
 ## 13.8 Julia：用固定种子样本审计连续模型
 
-`examples/julia/13_continuous_dists.jl` 用模拟对拍，不替代上面的推导。第一段按逆变换公式生成指数样本，检验均值 $\theta$、方差 $\theta^2$ 与"半场无球"的概率 $e^{-3/2}$：
+`examples/julia/13_continuous_dists.jl` 用模拟对拍，不替代上面的推导。第一段按逆变换公式生成指数样本，检验均值 $\theta$ 、方差 $\theta^2$ 与"半场无球"的概率 $e^{-3/2}$ ：
 
 ```julia
 myexp(λ) = -λ * log(rand())
@@ -364,7 +364,7 @@ emp = count(>(45), goals) / length(goals)
 @assert abs(emp - exp(-1.5)) < 0.004
 ```
 
-整数形状的 Gamma 就是独立指数之和，因此可以直接"累加"来验证 $\operatorname{Gamma}(2,3)$ 的 $k\theta=6$、$k\theta^2=18$；Weibull 用 $X=\sigma(-\log U)^{1/k}$ 生成，并核对分位数公式：
+整数形状的 Gamma 就是独立指数之和，因此可以直接"累加"来验证 $\operatorname{Gamma}(2,3)$ 的 $k\theta=6$ 、$k\theta^2=18$ ；Weibull 用 $X=\sigma(-\log U)^{1/k}$ 生成，并核对分位数公式：
 
 ```julia
 sim_gamma(k, σ) = sum(myexp(σ) for _ in 1:k)
@@ -382,7 +382,7 @@ for k in (1.0, 2.0)
 end
 ```
 
-最后一段是第 14 章的预告：标准 Cauchy 变量的平均 $(X+Y)/2$ 仍是 Cauchy，经验区间概率都等于 $\frac2\pi\arctan(\text{thr})$，而运行均值并不收敛：
+最后一段是第 14 章的预告：标准 Cauchy 变量的平均 $(X+Y)/2$ 仍是 Cauchy，经验区间概率都等于 $\frac2\pi\arctan(\text{thr})$ ，而运行均值并不收敛：
 
 ```julia
 cauchy() = tan(pi * (rand() - 0.5))
@@ -411,7 +411,7 @@ example : Real.Gamma (3 / 2) = Real.sqrt Real.pi / 2 := by
   ring
 ```
 
-第一条是 $\Gamma(n+1)=n!$，第二条是 13.3 的分部积分结论，第三条是半整数链的一步。Gamma 方差 $k\theta^2$ 的参数账同样固定为有理数等式（如 $2\cdot3^2=18$）。机器证明的是这些具体事实，Gamma 密度归一化的积分推导仍以正文为准。
+第一条是 $\Gamma(n+1)=n!$ ，第二条是 13.3 的分部积分结论，第三条是半整数链的一步。Gamma 方差 $k\theta^2$ 的参数账同样固定为有理数等式（如 $2\cdot3^2=18$ ）。机器证明的是这些具体事实，Gamma 密度归一化的积分推导仍以正文为准。
 
 ## 13.10 本章要点
 
@@ -419,7 +419,7 @@ example : Real.Gamma (3 / 2) = Real.sqrt Real.pi / 2 := by
 2. 指数无记忆性等价于常风险率，真实系统是否满足该假设必须另行论证。
 3. $\Gamma(s+1)=s\Gamma(s)$ 统一了阶乘、Gamma 矩、Beta 归一化和正态偶矩。
 4. Weibull 与广义 Gamma 通过幂变换改变风险率和形状；换元 $t=(x/\theta)^p$ 是统一入口。
-5. Beta 分布的矩来自 Beta 函数比值；Laplace 是双侧指数，方差为 $2b^2$。
+5. Beta 分布的矩来自 Beta 函数比值；Laplace 是双侧指数，方差为 $2b^2$ 。
 6. 端点奇异的积分优先换元；固定窗口数值计算只在尾部有解析控制时才有意义。
 
 *对应示例：`examples/lean/Probability/Ch13ContinuousDists.lean`、`examples/julia/13_continuous_dists.jl`、`examples/python/13_continuous_dists.py`。*

@@ -4,16 +4,16 @@
 > 「公理」。本章取材冯琦第三卷 §2.6（书页 197–205；PDF
 > 218–225）：谢拉赫（S. Shelah, *Proper Forcing*, LNM 940,
 > 1982）为回答「什么样的力迫经可数支撑迭代后不会把
-> \(\omega_1\) 可数化」而引进**恰当力迫**，鲍姆嘎特勒
+> $\omega_1$ 可数化」而引进**恰当力迫**，鲍姆嘎特勒
 > （J. Baumgartner, 1984）在此之上提炼**恰当力迫公理 PFA**。
 > 谢拉赫的识别标准是一句话：**保持所有可数范围上的荟萃集
 > 特性**。路线图：命题 2.1 先证明两条古典充分类——κ-链
 > 条件与 <κ-闭包——都保 κ 上的荟萃集；引理 2.22 把结论从
-> \(\kappa\) 推广到可数范围 \([\kappa]^{\omega}\)；定义 2.20
-> 把「保一切 \([\kappa]^\omega\) 荟萃」立为恰当性的定义；
-> 引理 2.23 给出可数覆盖性质（恰当力迫不把 \(\omega_1\)
+> $\kappa$ 推广到可数范围 $[\kappa]^{\omega}$ ；定义 2.20
+> 把「保一切 $[\kappa]^\omega$ 荟萃」立为恰当性的定义；
+> 引理 2.23 给出可数覆盖性质（恰当力迫不把 $\omega_1$
 > 可数化）；定义 2.21 + 引理 2.24 把恰当性翻译成**局部
-> 证书**语言——\((M,\mathbb P)\)-泛型条件及其三等价刻画；
+> 证书**语言——$(M,\mathbb P)$ -泛型条件及其三等价刻画；
 > 定理 2.13/2.14 把局部证书装配成**全局主条件刻画**（恰
 > 当 ⟺ 泛型条件在可数同质子模型的无界闭类上、甚至处处
 > 存在）；引理 2.25/2.26 与定理 2.15 预告恰当性对迭代封闭
@@ -33,88 +33,83 @@
 ## 107.1 动机：荟萃性为何脆弱
 
 第 105、106 两章的力迫（Silver 力迫、GMW 力迫）关心的
-是**基数账本**——造出 \(2^\kappa\) 的特定值。本章回到一个
+是**基数账本**——造出 $2^\kappa$ 的特定值。本章回到一个
 更早就浮出的问题（书 p198）：**什么样的力迫构思会保持什么
 样的子集合的荟萃特性**？
 
-对于不可数正则基数 \(\kappa\)，我们关心两类子集合：无界闭
+对于不可数正则基数 $\kappa$ ，我们关心两类子集合：无界闭
 子集（club）与荟萃子集（stationary）。两者的根本差别在于
 逻辑复杂度：
 
-- 「\(C\) 是 \(\kappa\) 的无界闭子集」是 \(\kappa\) 上的
-  一阶 \(\Pi_1\) 性质——
-  \((\kappa,\in)\models\forall\alpha\big((\beta\in C\to
-  \alpha\le\beta)\wedge(\forall_{\xi<\alpha}\beta\in C\to
-  \alpha\in C)\big)\)；
-- 「\(S\) 是 \(\kappa\) 的荟萃子集」则本质上是二阶性质——
-  它要求 \(S\) 与**每一个**无界闭子集相交，而量化「每一个
-  无界闭子集」就是量化 \(\kappa\) 的子集的子集。
+- 「$C$ 是 $\kappa$ 的无界闭子集」是 $\kappa$ 上的
+  一阶 $\Pi_1$ 性质——
+  $(\kappa,\in)\models\forall\alpha\big((\beta\in C\to \alpha\le\beta)\wedge(\forall_{\xi<\alpha}\beta\in C\to \alpha\in C)\big)$ ；
+- 「$S$ 是 $\kappa$ 的荟萃子集」则本质上是二阶性质——
+  它要求 $S$ 与**每一个**无界闭子集相交，而量化「每一个
+  无界闭子集」就是量化 $\kappa$ 的子集的子集。
 
-\(\Pi_1\) 性质对传递模型是绝对的：若 \(N\subseteq M\) 都
-传递，则 \(\Pi_1\) 性质从 \(N\) 到 \(M\) 不变。所以 club
-性从 \(V\) 到 \(V[G]\) **自动保持**——即使在 \(V[G]\) 中
-\(\kappa\) 的梯度（共尾度或基数身份）发生变化。但荟萃性
-**没有**这道保险：力迫可能添进一个全新的无界闭子集 \(C\)，
-而 \(C\cap S=\varnothing\)——第一卷例 II.3.13 正是这样的
+$\Pi_1$ 性质对传递模型是绝对的：若 $N\subseteq M$ 都
+传递，则 $\Pi_1$ 性质从 $N$ 到 $M$ 不变。所以 club
+性从 $V$ 到 $V[G]$ **自动保持**——即使在 $V[G]$ 中
+$\kappa$ 的梯度（共尾度或基数身份）发生变化。但荟萃性
+**没有**这道保险：力迫可能添进一个全新的无界闭子集 $C$ ，
+而 $C\cap S=\varnothing$ ——第一卷例 II.3.13 正是这样的
 例子。于是自然要问：**哪些力迫保证旧荟萃集不被新 club 回避**？
 
 谢拉赫展开分析之前，两条古典答案早已为人所知（书 p198）：
 链条件与闭包。本章从这两条出发。
 
 一个记号约定（全书力迫章通用，本章反复使用）：条件序
-\(r\le q\) 读作「\(r\) **强于** \(q\)」（\(r\) 延展 \(q\)）；
-「\(r\) 与 \(p\) 有公共下界」指存在 \(s\) 同时 \(s\le r\)、
-\(s\le p\)——两条件**相容**。机器通道的偏序数据以**延展集**
-\(\mathrm{ext}(q)=\{r\mid r\le q\}\)（含 \(q\) 自身）给出，
+$r\le q$ 读作「$r$ **强于** $q$ 」（$r$ 延展 $q$ ）；
+「$r$ 与 $p$ 有公共下界」指存在 $s$ 同时 $s\le r$ 、
+$s\le p$ ——两条件**相容**。机器通道的偏序数据以**延展集**
+$\mathrm{ext}(q)=\{r\mid r\le q\}$ （含 $q$ 自身）给出，
 与这个约定严格对齐。
 
 ## 107.2 命题 2.1：cc 与闭包的荟萃保持
 
-**命题 2.1**（书 p198–200） 设 \(\kappa\) 是不可数正则基数。
+**命题 2.1**（书 p198–200） 设 $\kappa$ 是不可数正则基数。
 
-**(1)** 若 \(\mathbb P=(P,\le)\) 满足 \(\kappa\)-链条件，
-\(\dot C\) 是 \(\kappa\) 的无界闭子集的名字（即
-\(1\mathbb{1}\Vdash\dot C\) 是 \(\kappa\) 的无界闭子集），
-则对任意条件 \(p\in P\)，存在 \(V\) 中 \(\kappa\) 的无界闭
-子集 \(D\subseteq\kappa\) 使 \(p\Vdash D\subseteq\dot C\)。
-从而若 \(S\subseteq\kappa\) 荟萃，则
-\(1\mathbb{1}\Vdash S\) 依旧荟萃。
+**(1)** 若 $\mathbb P=(P,\le)$ 满足 $\kappa$ -链条件，
+$\dot C$ 是 $\kappa$ 的无界闭子集的名字（即
+$1\mathbb{1}\Vdash\dot C$ 是 $\kappa$ 的无界闭子集），
+则对任意条件 $p\in P$ ，存在 $V$ 中 $\kappa$ 的无界闭
+子集 $D\subseteq\kappa$ 使 $p\Vdash D\subseteq\dot C$ 。
+从而若 $S\subseteq\kappa$ 荟萃，则
+$1\mathbb{1}\Vdash S$ 依旧荟萃。
 
-**(2)** 若 \(\mathbb P\) 是 **<κ-闭合**的（任何长度 <κ 的
-单调递减条件序列必有下界），\(S\subseteq\kappa\) 荟萃，则
-\(1\mathbb{1}\Vdash S\) 依旧荟萃。
+**(2)** 若 $\mathbb P$ 是 **<κ-闭合**的（任何长度 <κ 的
+单调递减条件序列必有下界），$S\subseteq\kappa$ 荟萃，则
+$1\mathbb{1}\Vdash S$ 依旧荟萃。
 
 两半的策略截然不同，值得并排细看。
 
-**(1) 的证明骨架（压回去）**：给定 \(\dot C\) 与 \(p\)，令
+**(1) 的证明骨架（压回去）**：给定 $\dot C$ 与 $p$ ，令
 
-\[D=\{\alpha<\kappa\mid\forall q\le p\,
-\exists\beta\ge\alpha\,(q\Vdash\beta\in\dot C)\}\]
+$$
+D=\{\alpha<\kappa\mid\forall q\le p\,
+\exists\beta\ge\alpha\,(q\Vdash\beta\in\dot C)\}
+$$
 
-\(D\) 自然是闭的（对上确界封闭）；关键是证 \(D\) 无界。
-给定 \(\alpha_0<\kappa\)，注意
-\(p\Vdash\exists\beta>\alpha_0(\beta\in\dot C)\)，取极大
-冲突子集 \(W_0\)（势 <κ，由 κ-链条件）见证这一语句的稠密
-性，令 \(\alpha_1=\sup\{\beta\mid q\in W_0\ \text{且}\
-q\Vdash\beta\in\dot C\}\)，则 \(\alpha_0<\alpha_1<\kappa\)
-且 \(1\mathbb{1}\Vdash\dot C\cap(\alpha_0,\alpha_1]\neq
-\varnothing\)。对 \(\alpha_1\) 重复得 \(W_1,\alpha_2,\dots\)；
-\(\omega\) 步后 \(\alpha_\omega=\sup_n\alpha_n\in D\) 且
-\(\alpha_\omega>\alpha_0\)。**链条件的作用**是把「无数个
-承诺的 \(\beta\)」装进 <κ 的上确界里——每一步的冲突子集
-只有 <κ 个成员，sup 才不会越过 \(\kappa\)。
+$D$ 自然是闭的（对上确界封闭）；关键是证 $D$ 无界。
+给定 $\alpha_0<\kappa$ ，注意
+$p\Vdash\exists\beta>\alpha_0(\beta\in\dot C)$ ，取极大
+冲突子集 $W_0$ （势 <κ，由 κ-链条件）见证这一语句的稠密
+性，令 $\alpha_1=\sup\{\beta\mid q\in W_0\ \text{且}\ q\Vdash\beta\in\dot C\}$ ，则 $\alpha_0<\alpha_1<\kappa$
+且 $1\mathbb{1}\Vdash\dot C\cap(\alpha_0,\alpha_1]\neq \varnothing$ 。对 $\alpha_1$ 重复得 $W_1,\alpha_2,\dots$ ；
+$\omega$ 步后 $\alpha_\omega=\sup_n\alpha_n\in D$ 且
+$\alpha_\omega>\alpha_0$ 。**链条件的作用**是把「无数个
+承诺的 $\beta$ 」装进 <κ 的上确界里——每一步的冲突子集
+只有 <κ 个成员，sup 才不会越过 $\kappa$ 。
 
-**(2) 的证明骨架（钻下去）**：设 \(p\Vdash\dot f:\kappa\to
-\kappa\) 是Normal函数（无界闭集的特征：连续严格递增）。递归
-构造长度 κ 的单调递增连续序数序列 \(\langle\alpha_\xi\mid
-\xi<\kappa\rangle\) 与单调递减条件序列
-\(\langle p_\xi\mid\xi<\kappa\rangle\)：\(p_0=p\)；每步
-\(p_{\xi+1}\Vdash\alpha_{\xi+1}\in\dot C\)（用稠密性换强
-条件）；极限步 \(\xi\) 取 \(\alpha_\xi=\sup_{\beta<\xi}
-\alpha_\beta\)，用 <κ-闭包取 \(p_\xi\) 为
-\(\langle p_\beta\mid\beta<\xi\rangle\) 的下界。序数序列
-的值域是 club，与 \(S\) 相交；取极限点 \(\alpha_\xi\in S\)，
-则 \(p_\xi\Vdash\alpha_\xi\in\dot C\)。**闭包的作用**是在
+**(2) 的证明骨架（钻下去）**：设 $p\Vdash\dot f:\kappa\to \kappa$ 是Normal函数（无界闭集的特征：连续严格递增）。递归
+构造长度 κ 的单调递增连续序数序列 $\langle\alpha_\xi\mid \xi<\kappa\rangle$ 与单调递减条件序列
+$\langle p_\xi\mid\xi<\kappa\rangle$ ：$p_0=p$ ；每步
+$p_{\xi+1}\Vdash\alpha_{\xi+1}\in\dot C$ （用稠密性换强
+条件）；极限步 $\xi$ 取 $\alpha_\xi=\sup_{\beta<\xi} \alpha_\beta$ ，用 <κ-闭包取 $p_\xi$ 为
+$\langle p_\beta\mid\beta<\xi\rangle$ 的下界。序数序列
+的值域是 club，与 $S$ 相交；取极限点 $\alpha_\xi\in S$ ，
+则 $p_\xi\Vdash\alpha_\xi\in\dot C$ 。**闭包的作用**是在
 极限步续命——没有下界，递减链在第一个极限序数处就断了。
 
 两个证明一压一钻：链条件把新 club **压**进旧集合的骨架，
@@ -136,55 +131,49 @@ Cohen 力迫与 Lévy 塌缩都靠它保基数；它对**方向**没有要求，
 
 ## 107.3 引理 2.22：推广到 [κ]^ω
 
-可数范围 \([\kappa]^{\omega}\)（\(\kappa\) 的可数无穷子集
+可数范围 $[\kappa]^{\omega}$ （$\kappa$ 的可数无穷子集
 全体）上的 club 与荟萃结构是第一卷 §I.2.4 的主题（提升与
 降落定理 I.2.35 反复被引用）。命题 2.1 可以整体搬到
-\([\kappa]^\omega\) 上：
+$[\kappa]^\omega$ 上：
 
-**引理 2.22**（书 p200–201） 设 \(\kappa\) 是不可数基数。
+**引理 2.22**（书 p200–201） 设 $\kappa$ 是不可数基数。
 
-**(1)** 若 \(\mathbb P\) 满足**可数链条件**，\(G\) 是
-\(V\) 上的泛型滤子，\(C\) 是 \(V[G]\) 中 \([\kappa]^\omega\)
-的无界闭子集，则 \(V\) 中有 \([\kappa]^\omega\) 的无界闭
-子集 \(D\) 满足 \(D\subseteq C\)。从而
-\(S\subseteq[\kappa]^\omega\) 荟萃 ⟹ \(S\) 在 \(V[G]\) 中
+**(1)** 若 $\mathbb P$ 满足**可数链条件**，$G$ 是
+$V$ 上的泛型滤子，$C$ 是 $V[G]$ 中 $[\kappa]^\omega$
+的无界闭子集，则 $V$ 中有 $[\kappa]^\omega$ 的无界闭
+子集 $D$ 满足 $D\subseteq C$ 。从而
+$S\subseteq[\kappa]^\omega$ 荟萃 ⟹ $S$ 在 $V[G]$ 中
 依旧荟萃。
 
-**(2)** 若 \(\mathbb P\) 是 **σ-闭合**的（可数递减链有下
-界），\(S\subseteq[\kappa]^\omega\) 荟萃，则 \(S\) 在
-\(V\) 的 \(\mathbb P\)-力迫扩张中依旧荟萃。
+**(2)** 若 $\mathbb P$ 是 **σ-闭合**的（可数递减链有下
+界），$S\subseteq[\kappa]^\omega$ 荟萃，则 $S$ 在
+$V$ 的 $\mathbb P$ -力迫扩张中依旧荟萃。
 
-**(1) 的骨架**：\([\kappa]^\omega\) 上 club 的标准生成元
-是函数 \(f:[\kappa]^{<\omega}\to[\kappa]^\omega\)——
-\(C_f=\{x\in[\kappa]^\omega\mid\forall\epsilon\in[x]^{<\omega}
-(f(\epsilon)\subseteq x)\}\) 是 club，且每个 club 包含某个
-\(C_f\)。对 \(f\) 的名字 \(\dot f\) 与 \(p\Vdash
-\dot f\) 见证 club，定义（在 \(V\) 中）
-\(g(\epsilon)=\{\alpha\mid\) 某个 \(q\) 力迫
-\(\dot f(\epsilon)=\alpha\) 加一\(\}\)——**ccc 保证
-\(g(\epsilon)\) 可数**（至多 \(|P|\) 个条件、每个至多承诺
-一个 \(\alpha\) 的一点点穷尽，可数并仍可数），故
-\(g:[\kappa]^{<\omega}\to[\kappa]^\omega\) 真是 \(V\) 中
-的函数。取 \(D=C_g\)：若 \(x\in D\)，则对每个
-\(\epsilon\in[x]^{<\omega}\)，\(p\Vdash\dot f(\epsilon)
-\subseteq g(\epsilon)\subseteq x\)，即 \(p\Vdash x\in
-C_{\dot f}\subseteq C\)。
+**(1) 的骨架**：$[\kappa]^\omega$ 上 club 的标准生成元
+是函数 $f:[\kappa]^{<\omega}\to[\kappa]^\omega$ ——
+$C_f=\{x\in[\kappa]^\omega\mid\forall\epsilon\in[x]^{<\omega} (f(\epsilon)\subseteq x)\}$ 是 club，且每个 club 包含某个
+$C_f$ 。对 $f$ 的名字 $\dot f$ 与 $p\Vdash \dot f$ 见证 club，定义（在 $V$ 中）
+$g(\epsilon)=\{\alpha\mid$ 某个 $q$ 力迫
+$\dot f(\epsilon)=\alpha$ 加一$\}$ ——**ccc 保证
+$g(\epsilon)$ 可数**（至多 $|P|$ 个条件、每个至多承诺
+一个 $\alpha$ 的一点点穷尽，可数并仍可数），故
+$g:[\kappa]^{<\omega}\to[\kappa]^\omega$ 真是 $V$ 中
+的函数。取 $D=C_g$ ：若 $x\in D$ ，则对每个
+$\epsilon\in[x]^{<\omega}$ ，$p\Vdash\dot f(\epsilon) \subseteq g(\epsilon)\subseteq x$ ，即 $p\Vdash x\in C_{\dot f}\subseteq C$ 。
 
-**(2) 的骨架**：设 \(p\Vdash\dot f:[\kappa]^{<\omega}\to
-[\kappa]^\omega\) 见证 club，要找 \(q\le p\) 与 \(x\in S\)
-使 \(q\Vdash x\in C_{\dot f}\)。取足够大的正则基数
-\(\lambda\ge\max((2^\kappa)^+,(2^{|P|})^+)\)，令
-\(M\prec(H_\lambda,\in,\Delta,\dots)\) 可数（\(\Delta\)
-是 \(H_\lambda\) 上的一个固定秩序，由此 \(M\) 有可定义的
-斯科伦函数；相关参数都在 \(M\) 中）。令 \(\alpha=M\cap
-\kappa\)。把 \([\kappa]^{<\omega}\) 的元素罗列为
-\(\langle\epsilon_n\mid n<\omega\rangle\)，用
-\(M\prec H_\lambda\) 递归定义单调递减链
-\(p_0=p\ge p_1\ge\cdots\) 使 \(p_{n+1}\) 决定
-\(\dot f(\epsilon_n)\) 的值属于 \(M\cap\kappa=\alpha\)；
-令 \(q\) 为链的下界（σ-闭合！），\(x=\alpha\cup\{\alpha\}\)
-型的可数集落在 \(S\) 的某个提升里（定理 I.2.35），则
-\(q\Vdash x\in C_{\dot f}\)。
+**(2) 的骨架**：设 $p\Vdash\dot f:[\kappa]^{<\omega}\to [\kappa]^\omega$ 见证 club，要找 $q\le p$ 与 $x\in S$
+使 $q\Vdash x\in C_{\dot f}$ 。取足够大的正则基数
+$\lambda\ge\max((2^\kappa)^+,(2^{|P|})^+)$ ，令
+$M\prec(H_\lambda,\in,\Delta,\dots)$ 可数（$\Delta$
+是 $H_\lambda$ 上的一个固定秩序，由此 $M$ 有可定义的
+斯科伦函数；相关参数都在 $M$ 中）。令 $\alpha=M\cap \kappa$ 。把 $[\kappa]^{<\omega}$ 的元素罗列为
+$\langle\epsilon_n\mid n<\omega\rangle$ ，用
+$M\prec H_\lambda$ 递归定义单调递减链
+$p_0=p\ge p_1\ge\cdots$ 使 $p_{n+1}$ 决定
+$\dot f(\epsilon_n)$ 的值属于 $M\cap\kappa=\alpha$ ；
+令 $q$ 为链的下界（σ-闭合！），$x=\alpha\cup\{\alpha\}$
+型的可数集落在 $S$ 的某个提升里（定理 I.2.35），则
+$q\Vdash x\in C_{\dot f}$ 。
 
 注意 (2) 的骨架正是本章机器里 `generic_strengthen` 的
 「递归换强条件」直觉：**泛型条件 = 一条能对所有要求递归
@@ -194,201 +183,206 @@ C_{\dot f}\subseteq C\)。
 
 两条充分类到手，立定义的时机成熟：
 
-**定义 2.20**（书 p201） 称力迫构思 \(\mathbb P=(P,\le)\)
+**定义 2.20**（书 p201） 称力迫构思 $\mathbb P=(P,\le)$
 为**恰当力迫构思**（proper）当且仅当对每一个不可数基数
-\(\kappa\)，可数范围 \([\kappa]^\omega\) 上的任何一个荟萃
-子集 \(S\) 在基础模型 \(V\) 上经 \(\mathbb P\) 的力迫扩张
-模型 \(V^{\mathbb P}\) 中依旧是荟萃集。
+$\kappa$ ，可数范围 $[\kappa]^\omega$ 上的任何一个荟萃
+子集 $S$ 在基础模型 $V$ 上经 $\mathbb P$ 的力迫扩张
+模型 $V^{\mathbb P}$ 中依旧是荟萃集。
 
 由引理 2.22 立得两个充分类：**一切 ccc 力迫与一切 σ-闭合
 力迫都是恰当力迫**。这两个类在第七、八章反复出场（Cohen
 力迫 ccc；Lévy 塌缩列在适当位置 σ-闭），本章把它们与迭代
 封闭性接通。
 
-恰当力迫不会把 \(\omega_1\) 可数化——事实上有更强、更
+恰当力迫不会把 $\omega_1$ 可数化——事实上有更强、更
 有趣的**可数覆盖性质**：
 
-**引理 2.23**（书 p201） 设 \(\mathbb P\) 恰当，\(G\) 是
-\(V\) 上的 \(\mathbb P\)-泛型滤子。则 \(V[G]\) 中任何序数
-的可数集合一定被 \(V\) 中序数的可数集合所覆盖：
-\[\forall X\in([\mathrm{Ord}]^\omega)^{V[G]}\,
-\exists Y\in([\mathrm{Ord}]^\omega)^V\,(X\subseteq Y).\]
+**引理 2.23**（书 p201） 设 $\mathbb P$ 恰当，$G$ 是
+$V$ 上的 $\mathbb P$ -泛型滤子。则 $V[G]$ 中任何序数
+的可数集合一定被 $V$ 中序数的可数集合所覆盖：
+$$
+\forall X\in([\mathrm{Ord}]^\omega)^{V[G]}\,
+\exists Y\in([\mathrm{Ord}]^\omega)^V\,(X\subseteq Y).
+$$
 
-**证明骨架**：设 \(X\) 是 \(V[G]\) 中序数的可数集，令
-\(\lambda>\sup X\) 为不可数基数。由恰当性，
-\([\lambda]^\omega\) 的 club 全体在 \(V[G]\) 中依旧生成
-同样的滤子骨架，特别地 \([\lambda]^\omega\) **本身**依旧
+**证明骨架**：设 $X$ 是 $V[G]$ 中序数的可数集，令
+$\lambda>\sup X$ 为不可数基数。由恰当性，
+$[\lambda]^\omega$ 的 club 全体在 $V[G]$ 中依旧生成
+同样的滤子骨架，特别地 $[\lambda]^\omega$ **本身**依旧
 荟萃（全集是 club）。而集合
-\[\{Y\in[\lambda]^\omega\mid X\subseteq Y\}\]
-在 \(V[G]\) 中是无界闭集（闭：递增链的并仍盖 \(X\) 的
-可数枚举；无界：往任何 \(x\) 里逐个添 \(X\) 的元素）。荟萃
-集与 club 相交，取交点 \(Y\) 即为所求——\(Y\in V[G]\) 但
-\(Y\in[\lambda]^\omega\) 且 \(X\subseteq Y\)，配合
-\([\lambda]^\omega\cap V\) 在恰当力迫下的覆盖论证（对
-\([\lambda]^\omega\) 的 club 取交）给出 \(Y\) 可取自
-\(V\)。
+$$
+\{Y\in[\lambda]^\omega\mid X\subseteq Y\}
+$$
+
+在 $V[G]$ 中是无界闭集（闭：递增链的并仍盖 $X$ 的
+可数枚举；无界：往任何 $x$ 里逐个添 $X$ 的元素）。荟萃
+集与 club 相交，取交点 $Y$ 即为所求——$Y\in V[G]$ 但
+$Y\in[\lambda]^\omega$ 且 $X\subseteq Y$ ，配合
+$[\lambda]^\omega\cap V$ 在恰当力迫下的覆盖论证（对
+$[\lambda]^\omega$ 的 club 取交）给出 $Y$ 可取自
+$V$ 。
 
 这句话读起来平淡，威力在下一章：**PFA 下每个「新」可数
 序数集都装在某个「旧」可数集里**，这使得
-\(\omega_1\)-保持的论证成为例行公事。
+$\omega_1$ -保持的论证成为例行公事。
 
 ## 107.5 定义 2.21 与引理 2.24：(M,P)-泛型条件
 
-恰当性的定义是对**一切** \([\kappa]^\omega\) 荟萃集的全程
+恰当性的定义是对**一切** $[\kappa]^\omega$ 荟萃集的全程
 量词，直接验证几乎不可能。谢拉赫的核心贡献是把它翻译成
 **局部证书**：只需在每个可数同质子模型里找到一条好条件。
 
-固定语言装置（书 p201–202）：\(\chi>2^{|P|}\) 正则，
-\(H_\chi\) 是遗传势 \(\le\chi\) 的集合全体；\(\Delta\) 是
-\(H_\chi\) 上的一个固定秩序，由此每个
-\(M\prec(H_\chi,\in,\Delta,\dots)\) 都有按 \(\Delta\)
-可定义的斯科伦函数。**可数**同质子模型 \(M\) 的全体记
-\(C[\chi]\)（这是 \([H_\chi]^\omega\) 的 club 子集，第一
+固定语言装置（书 p201–202）：$\chi>2^{|P|}$ 正则，
+$H_\chi$ 是遗传势 $\le\chi$ 的集合全体；$\Delta$ 是
+$H_\chi$ 上的一个固定秩序，由此每个
+$M\prec(H_\chi,\in,\Delta,\dots)$ 都有按 $\Delta$
+可定义的斯科伦函数。**可数**同质子模型 $M$ 的全体记
+$C[\chi]$ （这是 $[H_\chi]^\omega$ 的 club 子集，第一
 卷定理 I.2.34/2.35 的标准对象）。
 
-**定义 2.21**（书 p201） 设 \(\mathbb P=(P,\le)\) 是力迫
-构思，\(\lambda>2^{|P|}\) 正则，\(M\prec(H_\lambda,\in,
-\Delta,\dots)\) 可数且 \(P\in M\)。称条件 \(q\in P\) 为一个
-**\((M,\mathbb P)\)-泛型条件**当且仅当：对于 \(M\) 中任何
-一个 \(\mathbb P\) 的**极大冲突子集**（极大反链）\(A\) 而
-言，子集合 \(A\cap M\) 都在 \(q\) 之下是**准稠密**的：
-对于 \(\mathbb P\) 中的任何 \(r\le q\)，都有一个
-\(p\in A\cap M\) 来保证 \(r\) 与 \(p\) 有公共下界。
+**定义 2.21**（书 p201） 设 $\mathbb P=(P,\le)$ 是力迫
+构思，$\lambda>2^{|P|}$ 正则，$M\prec(H_\lambda,\in, \Delta,\dots)$ 可数且 $P\in M$ 。称条件 $q\in P$ 为一个
+**$(M,\mathbb P)$ -泛型条件**当且仅当：对于 $M$ 中任何
+一个 $\mathbb P$ 的**极大冲突子集**（极大反链）$A$ 而
+言，子集合 $A\cap M$ 都在 $q$ 之下是**准稠密**的：
+对于 $\mathbb P$ 中的任何 $r\le q$ ，都有一个
+$p\in A\cap M$ 来保证 $r$ 与 $p$ 有公共下界。
 
 三个角色的分工值得咀嚼：
 
-- **\(A\in M\)** 是 \(M\) **看得见的**极大反链——泛型滤子
-  遇见 \(A\) 时选出的那个元素 \(q_A\) 是 \(M\) 可定义的；
-- **\(A\cap M\)** 只保留 \(M\) 内的候选——绝大多数成员被
-  截掉，剩下的部分只在 \(q\) **下方**稠密，不再全域稠密；
-- **\(q\)** 是证书持有人——它承诺：任何往下的细化 \(r\)
-  都还能跟 \(M\) 内的某个候选会合。
+- **$A\in M$ 是** $M$ **看得见的**极大反链——泛型滤子
+  遇见 $A$ 时选出的那个元素 $q_A$ 是 $M$ 可定义的；
+- **$A\cap M$ 只保留** $M$ 内的候选——绝大多数成员被
+  截掉，剩下的部分只在 $q$ **下方**稠密，不再全域稠密；
+- **$q$ 是证书持有人**——它承诺：任何往下的细化 $r$
+  都还能跟 $M$ 内的某个候选会合。
 
 准稠密（predense below q）弱于稠密（dense）：全域稠密要求
-每个 \(r\in P\) 都相容于 \(A\)；准稠密只要求 \(q\) 下方的
-\(r\)。**\(q\) 越强（延展集越小），准稠密越容易满足**——
+每个 $r\in P$ 都相容于 $A$ ；准稠密只要求 $q$ 下方的
+$r$ 。**$q$ 越强（延展集越小），准稠密越容易满足**——
 这正是机器通道 `generic_strengthen` 证书下放的方向：条件
-复合（取更强的条件）不会丢失证书。反过来，\(q\) 弱到域底
+复合（取更强的条件）不会丢失证书。反过来，$q$ 弱到域底
 时准稠密退化成全域稠密——大多数反链做不到，所以泛型条件
 是稀有的、结构性的。
 
 把定义与定理 2.14 连读还能读出一层「义务账」：要证明
-\(\mathbb P\) 恰当，(i) 对每个**给定的**可数 \(M\) 与
-\(p\)，要**造出**一条 \(q\le p\) 并对 \(M\) 的**每一个**
+$\mathbb P$ 恰当，(i) 对每个**给定的**可数 $M$ 与
+$p$ ，要**造出**一条 $q\le p$ 并对 $M$ 的**每一个**
 极大反链验证准稠密——义务在构造方；而应用 PFA 时方向反过
-来：(ii) 泛型滤子 \(G\) 遇见 \(M\) 的每个极大反链 \(A\)
-后，交点 \(G\cap A\) 的那个元素自动落进 \(M\) 可定义的
+来：(ii) 泛型滤子 $G$ 遇见 $M$ 的每个极大反链 $A$
+后，交点 $G\cap A$ 的那个元素自动落进 $M$ 可定义的
 位置——义务由证书代偿。引理 2.24 的三个等价形态正是这两种
 义务的记账语言互换。
 
-1. \(q\) 是 \((M,\mathbb P)\)-泛型条件；
-2. 对每个序数的名字 \(\dot\alpha\in M\)：
-   \(q\Vdash_M\dot\alpha\in M\)（记号：\(q\Vdash
-   \dot\alpha\in\tilde M\)——名字在 \(M\) 内，则其力迫值
-   被 \(M\) 的序数界定）；
-3. \(q\Vdash\dot G\cap M\) 是 \(M\) 之上的一个
-   \(\mathbb P\)-泛型滤子（即与 \(P\cap M\) 的每个
-   \(M\)-内稠密集相交）。
+1. $q$ 是 $(M,\mathbb P)$ -泛型条件；
+2. 对每个序数的名字 $\dot\alpha\in M$ ：
+   $q\Vdash_M\dot\alpha\in M$ （记号：$q\Vdash \dot\alpha\in\tilde M$ ——名字在 $M$ 内，则其力迫值
+   被 $M$ 的序数界定）；
+3. $q\Vdash\dot G\cap M$ 是 $M$ 之上的一个
+   $\mathbb P$ -泛型滤子（即与 $P\cap M$ 的每个
+   $M$ -内稠密集相交）。
 
 **证明骨架**：
 
-**(1)→(2)** 设 \(\dot\alpha\in M\) 是序数的名字。令
-\(D=\{r\mid\exists\beta\, r\Vdash\dot\alpha=\beta\}\in M\)
-（由 \(\Delta\)-可定义性），\(D\) 稠密。令 \(A\supseteq D\)
-为秩序 \(\Delta\) 之下的**最小**极大冲突子集——最小性保证
-\(A\in M\)。由 (1)，\(A\cap M\) 在 \(q\) 之下准稠密：任取
-\(r\le q\)，有 \(p\in A\cap M\) 与公共下界
-\(s\le r,\ s\le p\)。\(p\in A\cap M\) 力迫
-\(\dot\alpha=\beta\)（\(A\) 的成员都决定 \(\dot\alpha\)
-的值）于某个 \(\beta\)；由 \(p,\dot\alpha\in M\) 与
-\(\Delta\)-可定义性，\(\beta\in M\)。于是
-\(s\Vdash\dot\alpha=\beta\in M\)。这些 \(s\) 在 \(q\)
-下方稠密，得 \(q\Vdash\dot\alpha\in\tilde M\)。
+**(1)→(2)** 设 $\dot\alpha\in M$ 是序数的名字。令
+$D=\{r\mid\exists\beta\, r\Vdash\dot\alpha=\beta\}\in M$
+（由 $\Delta$ -可定义性），$D$ 稠密。令 $A\supseteq D$
+为秩序 $\Delta$ 之下的**最小**极大冲突子集——最小性保证
+$A\in M$ 。由 (1)，$A\cap M$ 在 $q$ 之下准稠密：任取
+$r\le q$ ，有 $p\in A\cap M$ 与公共下界
+$s\le r,\ s\le p$ 。$p\in A\cap M$ 力迫
+$\dot\alpha=\beta$ （$A$ 的成员都决定 $\dot\alpha$
+的值）于某个 $\beta$ ；由 $p,\dot\alpha\in M$ 与
+$\Delta$ -可定义性，$\beta\in M$ 。于是
+$s\Vdash\dot\alpha=\beta\in M$ 。这些 $s$ 在 $q$
+下方稠密，得 $q\Vdash\dot\alpha\in\tilde M$ 。
 
 **(2)→(1)** 练习（对偶地把极大反链的「被选中者」当作名字
 处理）。
 
-**(1)→(3)** 设 \(A\in M\) 是 \(P\cap M\) 的准稠密子集。
-由 \(M\prec H_\lambda\) 与 \(P,A\in M\)，「\(A\) 在
-\(P\cap M\) 中准稠密」这一性质反射进 \(M\)：
-\(M\models\)「\(A\) 是 \(P\) 的准稠密子集」。于是 \(A\)
-可扩成 \(M\) 中的极大冲突子集
-\(A'\supseteq A,\ A'\in M\)（\(\Delta\)-最小扩法）。由
-(1)，\(A'\cap M\) 在 \(q\) 之下准稠密；若 \(q\in G\)，
-则 \(G\cap A'\cap M\neq\varnothing\)，特别地
-\(G\cap A\neq\varnothing\)。
+**(1)→(3)** 设 $A\in M$ 是 $P\cap M$ 的准稠密子集。
+由 $M\prec H_\lambda$ 与 $P,A\in M$ ，「$A$ 在
+$P\cap M$ 中准稠密」这一性质反射进 $M$ ：
+$M\models$ 「$A$ 是 $P$ 的准稠密子集」。于是 $A$
+可扩成 $M$ 中的极大冲突子集
+$A'\supseteq A,\ A'\in M$ （$\Delta$ -最小扩法）。由
+(1)，$A'\cap M$ 在 $q$ 之下准稠密；若 $q\in G$ ，
+则 $G\cap A'\cap M\neq\varnothing$ ，特别地
+$G\cap A\neq\varnothing$ 。
 
-**(3)→(1)** 练习（把极大反链的准稠密性翻译成 \(M\)-内
+**(3)→(1)** 练习（把极大反链的准稠密性翻译成 $M$ -内
 稠密集的相交要求）。
 
-(2) 是「泛型条件 = 名言录」的形态：\(M\) 内名字的值逃不出
-\(M\)。107.6 主条件刻画的充分性证明用的正是这一形态。
+(2) 是「泛型条件 = 名言录」的形态：$M$ 内名字的值逃不出
+$M$ 。107.6 主条件刻画的充分性证明用的正是这一形态。
 
 ## 107.6 定理 2.13/2.14：主条件刻画
 
-**定理 2.13**（书 p203） \(\mathbb P\) 恰当的充要条件是：
-对任意足够大（\(>2^{|P|}\)）的正则基数 \(\lambda\)，由所有
+**定理 2.13**（书 p203） $\mathbb P$ 恰当的充要条件是：
+对任意足够大（$>2^{|P|}$ ）的正则基数 $\lambda$ ，由所有
 满足
-\[|M|=\omega\ \wedge\ \forall p\in M\cap P\,\exists q\le p
-\ (q\ \text{是}(M,\mathbb P)\text{-泛型条件})\]
-的 \(M\prec(H_\lambda,\in,\Delta,\dots)\) 组成的集合
-\(C_\lambda\) 包含 \(C[\lambda]\) 的一个无界闭子集。
+$$
+|M|=\omega\ \wedge\ \forall p\in M\cap P\,\exists q\le p
+\ (q\ \text{是}(M,\mathbb P)\text{-泛型条件})
+$$
 
-**必要性（反证骨架）**：设 \(\mathbb P\) 恰当而 \(C_\lambda\)
+的 $M\prec(H_\lambda,\in,\Delta,\dots)$ 组成的集合
+$C_\lambda$ 包含 $C[\lambda]$ 的一个无界闭子集。
+
+**必要性（反证骨架）**：设 $\mathbb P$ 恰当而 $C_\lambda$
 不含 club，则补集荟萃。由无界闭子集滤子的正则性，取
-\(p\in P\) 与荟萃集 \(S\subseteq C[\lambda]\) 使
-\[\forall M\in S\ (p\in M\ \wedge\ \forall q\le p\
-(q\ \text{不是}(M,\mathbb P)\text{-泛型条件})).\]
-取 \(V\) 上的泛型滤子 \(G\ni p\)，在 \(V[G]\) 中讨论：
-对 \(p\) 之下的每个极大冲突子集 \(A\in V\)，\(A\cap G\)
-恰有一个元素 \(q_A\)。令
-\(D=\{M\mid A\in M\ \text{是}p\text{之下极大冲突子集}\Rightarrow
-q_A\in M\}\)——这是 \(V[G]\) 中的 club（每条要求都反射）。
-取 \(M\in D\cap S\)（\(S\) 在 \(V[G]\) 中依旧荟萃——恰当
-性！）。对 \(M\) 中 \(p\) 之下的每个极大反链 \(A\)：
-\(q_A\in M\)，且 \(q_A\le\bigwedge(A\cap M)\) 型的下达条件
-使 \(\Sigma(A\cap M)\in G\)。令
-\(q\le p\) 强于所有这些 \(\Sigma(A\cap M)\)（\(M\) 可数，
-有限特征足够），则 \(q\) 就是 \((M,\mathbb P)\)-泛型条件
-——与 \(M\in S\) 矛盾。
+$p\in P$ 与荟萃集 $S\subseteq C[\lambda]$ 使
+$$
+\forall M\in S\ (p\in M\ \wedge\ \forall q\le p\
+(q\ \text{不是}(M,\mathbb P)\text{-泛型条件})).
+$$
 
-**充分性（反射骨架）**：设每个 \(C_\lambda\) 含 club。取
-不可数 \(\kappa\) 与荟萃 \(S\subseteq[\kappa]^\omega\)，
-\(\dot f\) 名字，\(p\Vdash\dot f:[\kappa]^{<\omega}\to
-[\kappa]^\omega\)。取 \(\lambda>\kappa\) 足够大正则；由
+取 $V$ 上的泛型滤子 $G\ni p$ ，在 $V[G]$ 中讨论：
+对 $p$ 之下的每个极大冲突子集 $A\in V$ ，$A\cap G$
+恰有一个元素 $q_A$ 。令
+$D=\{M\mid A\in M\ \text{是}p\text{之下极大冲突子集}\Rightarrow q_A\in M\}$ ——这是 $V[G]$ 中的 club（每条要求都反射）。
+取 $M\in D\cap S$ （$S$ 在 $V[G]$ 中依旧荟萃——恰当
+性！）。对 $M$ 中 $p$ 之下的每个极大反链 $A$ ：
+$q_A\in M$ ，且 $q_A\le\bigwedge(A\cap M)$ 型的下达条件
+使 $\Sigma(A\cap M)\in G$ 。令
+$q\le p$ 强于所有这些 $\Sigma(A\cap M)$ （$M$ 可数，
+有限特征足够），则 $q$ 就是 $(M,\mathbb P)$ -泛型条件
+——与 $M\in S$ 矛盾。
+
+**充分性（反射骨架）**：设每个 $C_\lambda$ 含 club。取
+不可数 $\kappa$ 与荟萃 $S\subseteq[\kappa]^\omega$ ，
+$\dot f$ 名字，$p\Vdash\dot f:[\kappa]^{<\omega}\to [\kappa]^\omega$ 。取 $\lambda>\kappa$ 足够大正则；由
 假设与提升降落定理（I.2.35），
-\(\{M\mid M\cap\kappa\in S\ \wedge\ M\in C_\lambda\}\) 在
-\([\lambda]^\omega\) 中荟萃，取出这样的 \(M\)。令
-\(\alpha=M\cap\kappa\)，取 \(q\le p\) 为 \((M,\mathbb P)\)-
-泛型条件。断言 \(q\Vdash\mathrm{ran}(\dot f)\!\upharpoonright\!
-[\alpha]^{<\omega}\subseteq\alpha\) 的封套型语句：对
-\(\epsilon\in[\alpha]^{<\omega}\)，\(M\) 内有极大反链
-\(A\) 完全确定 \(\dot f(\epsilon)\) 的取值；由 \(A\cap M\)
-在 \(q\) 之下准稠密，任何 \(r\le q\) 与某个
-\(s\in A\cap M\) 相容，\(s\) 力迫 \(\dot f(\epsilon)=x_s\)，
-而 \(x_s\) 由 \(s,f,\epsilon\in M\) 可定义，故
-\(x_s\in M\)、\(x_s\subseteq\alpha\)。于是
-\(q\Vdash\alpha\cup\{\alpha\}\) 型封套落在 \(C_{\dot f}\)
-中，即 \(q\) 力迫 \(S\) 的某点进入 club——荟萃性保持。
+$\{M\mid M\cap\kappa\in S\ \wedge\ M\in C_\lambda\}$ 在
+$[\lambda]^\omega$ 中荟萃，取出这样的 $M$ 。令
+$\alpha=M\cap\kappa$ ，取 $q\le p$ 为 $(M,\mathbb P)$ -
+泛型条件。断言 $q\Vdash\mathrm{ran}(\dot f)\!\upharpoonright\! [\alpha]^{<\omega}\subseteq\alpha$ 的封套型语句：对
+$\epsilon\in[\alpha]^{<\omega}$ ，$M$ 内有极大反链
+$A$ 完全确定 $\dot f(\epsilon)$ 的取值；由 $A\cap M$
+在 $q$ 之下准稠密，任何 $r\le q$ 与某个
+$s\in A\cap M$ 相容，$s$ 力迫 $\dot f(\epsilon)=x_s$ ，
+而 $x_s$ 由 $s,f,\epsilon\in M$ 可定义，故
+$x_s\in M$ 、$x_s\subseteq\alpha$ 。于是
+$q\Vdash\alpha\cup\{\alpha\}$ 型封套落在 $C_{\dot f}$
+中，即 $q$ 力迫 $S$ 的某点进入 club——荟萃性保持。
 
 定理 2.13 的 club 形态在应用中还不顺手（要验证一个 club），
 谢拉赫把它加强成**处处存在**的形态：
 
-**定理 2.14**（书 p204） \(\mathbb P\) 恰当的充要条件是：
-对任意 \(p\in P\)、任意足够大的正则 \(\lambda\)、任意包含
-\(\{p,P\}\) 的可数 \(M\prec(H_\lambda,\in,\Delta,\dots)\)，
-都存在 \(q\le p\) 是 \((M,\mathbb P)\)-泛型条件。
+**定理 2.14**（书 p204） $\mathbb P$ 恰当的充要条件是：
+对任意 $p\in P$ 、任意足够大的正则 $\lambda$ 、任意包含
+$\{p,P\}$ 的可数 $M\prec(H_\lambda,\in,\Delta,\dots)$ ，
+都存在 $q\le p$ 是 $(M,\mathbb P)$ -泛型条件。
 
 **证明骨架**：充分性显然——
-\(\{M\prec(H_\lambda,\dots)\mid p,P\in M\ \wedge\ |M|=\omega\}\)
+$\{M\prec(H_\lambda,\dots)\mid p,P\in M\ \wedge\ |M|=\omega\}$
 本来就是无界闭集。必要性：令
-\(C_\mu=\{M\mid M\cap\mu\in C_\lambda\}\)（\(\mu=
-(2^{|P|})^+\)），由定理 2.13 与提升降落定理，\(C_\mu\) 包含
-\([\mu]^\omega\) 的 club。于是存在 \(f:[\mu]^{<\omega}\to\mu\)
-使 \(C_f\subseteq C_\mu\)；在 \(\Delta\) 下**最小的**这样
-的 \(f\) 必属于每个可数同质子模型 \(M\)。于是若
-\(\{p,P\}\subseteq M\)，则 \(M\) 关于 \(f\) 封闭，
-\(M\in C_\mu\)，即存在 \(q\le p\) 泛型。
+$C_\mu=\{M\mid M\cap\mu\in C_\lambda\}$ （$\mu= (2^{|P|})^+$ ），由定理 2.13 与提升降落定理，$C_\mu$ 包含
+$[\mu]^\omega$ 的 club。于是存在 $f:[\mu]^{<\omega}\to\mu$
+使 $C_f\subseteq C_\mu$ ；在 $\Delta$ 下**最小的**这样
+的 $f$ 必属于每个可数同质子模型 $M$ 。于是若
+$\{p,P\}\subseteq M$ ，则 $M$ 关于 $f$ 封闭，
+$M\in C_\mu$ ，即存在 $q\le p$ 泛型。
 
 定理 2.14 就是 PFA 的直接工作形态：**泛型条件不仅存在，
 而且在每个条件下方都存在**——「求一条好条件」成为可以
@@ -396,52 +390,48 @@ q_A\in M\}\)——这是 \(V[G]\) 中的 club（每条要求都反射）。
 
 ## 107.7 迭代封闭：引理 2.25/2.26 与定理 2.15 预告
 
-**引理 2.25**（书 p204） 设 \(\mathbb P\) 恰当，\(\dot Q\)
-是名字且 \(1\mathbb{1}\Vdash\dot Q\) 恰当。则两步迭代
-\(\mathbb P*\dot Q\) 也恰当。
+**引理 2.25**（书 p204） 设 $\mathbb P$ 恰当，$\dot Q$
+是名字且 $1\mathbb{1}\Vdash\dot Q$ 恰当。则两步迭代
+$\mathbb P*\dot Q$ 也恰当。
 
-**证明骨架**：设 \(\kappa\) 不可数，\(S\subseteq
-[\kappa]^\omega\) 荟萃。设 \(G\) 是 \(V\) 上 \(\mathbb P\)-
-泛型滤子、\(H\) 是 \(V[G]\) 上 \(\dot Q/G\)-泛型滤子。由
-\(\mathbb P\) 恰当，\(S\) 在 \(V[G]\) 中依旧荟萃；由
-\(1\Vdash\dot Q\) 恰当，\(S\) 在 \(V[G][H]\) 中依旧荟萃。
+**证明骨架**：设 $\kappa$ 不可数，$S\subseteq [\kappa]^\omega$ 荟萃。设 $G$ 是 $V$ 上 $\mathbb P$ -
+泛型滤子、$H$ 是 $V[G]$ 上 $\dot Q/G$ -泛型滤子。由
+$\mathbb P$ 恰当，$S$ 在 $V[G]$ 中依旧荟萃；由
+$1\Vdash\dot Q$ 恰当，$S$ 在 $V[G][H]$ 中依旧荟萃。
 两步荟萃保持串联即得。
 
-更进一步的分析需要**复合证书**——把 \((M,\mathbb P)\)-
-泛型条件与 \((M,\mathbb P*\dot Q)\)-泛型条件焊接起来：
+更进一步的分析需要**复合证书**——把 $(M,\mathbb P)$ -
+泛型条件与 $(M,\mathbb P*\dot Q)$ -泛型条件焊接起来：
 
-**引理 2.26**（书 p205） 设 \(\mathbb P\) 恰当，
-\(1\mathbb{1}\Vdash\dot Q\) 恰当，\(\mathbb R=\mathbb P*
-\dot Q\)，\(\lambda\) 足够大正则，\(M\prec(H_\lambda,\dots)\)
-可数。则对每个 \((M,\mathbb P)\)-泛型条件 \(q_0\)、每个
-满足 \(q_0\Vdash\dot p\in(\mathbb R\cap M)[\dot G]\) 的
-\(\dot p\)，存在 \((M,\mathbb R)\)-泛型条件
-\((q_0,q_1)\in\mathbb R\) 使 \((q_0,q_1)\Vdash\dot p\in
-\dot G*\dot H\)。
+**引理 2.26**（书 p205） 设 $\mathbb P$ 恰当，
+$1\mathbb{1}\Vdash\dot Q$ 恰当，$\mathbb R=\mathbb P* \dot Q$ ，$\lambda$ 足够大正则，$M\prec(H_\lambda,\dots)$
+可数。则对每个 $(M,\mathbb P)$ -泛型条件 $q_0$ 、每个
+满足 $q_0\Vdash\dot p\in(\mathbb R\cap M)[\dot G]$ 的
+$\dot p$ ，存在 $(M,\mathbb R)$ -泛型条件
+$(q_0,q_1)\in\mathbb R$ 使 $(q_0,q_1)\Vdash\dot p\in \dot G*\dot H$ 。
 
-**骨架**：设 \(G\ni q_0\)，在 \(V[G]\) 中解析
-\(\dot p\)：\(p_1=\dot p/G\)，\(\mathbb Q=\dot Q/G\)。由
-\(\mathbb Q\) 在 \(V[G]\) 中恰当，取 \(q_1\le p_1\) 为
-\((M[G],\mathbb Q)\)-泛型条件（其中
-\(M[G]=\{\dot\tau/G\mid\dot\tau\in M\}\)）。为 \(q_1\)
-取名字 \(\dot q_1\)，则 \((q_0,\dot q_1)\) 即所求：\(q_0\)
-的证书管第一步的极大反链，\(q_1\) 的证书管第二步——
+**骨架**：设 $G\ni q_0$ ，在 $V[G]$ 中解析
+$\dot p$ ：$p_1=\dot p/G$ ，$\mathbb Q=\dot Q/G$ 。由
+$\mathbb Q$ 在 $V[G]$ 中恰当，取 $q_1\le p_1$ 为
+$(M[G],\mathbb Q)$ -泛型条件（其中
+$M[G]=\{\dot\tau/G\mid\dot\tau\in M\}$ ）。为 $q_1$
+取名字 $\dot q_1$ ，则 $(q_0,\dot q_1)$ 即所求：$q_0$
+的证书管第一步的极大反链，$q_1$ 的证书管第二步——
 **证书的复合**。机器通道的 `generic_strengthen` 下放核查
-（Julia/Python 全域穷举「\(p\) 泛型 ∧ \(q\) 强于 \(p\)
-⟹ \(q\) 泛型」）正是这一复合保持的有限影子。
+（Julia/Python 全域穷举「$p$ 泛型 ∧ $q$ 强于 $p$
+⟹ $q$ 泛型」）正是这一复合保持的有限影子。
 
 **定理 2.15（Shelah，书 p205，下一章主角）** 若
-\(\langle\mathbb P_\alpha,\dot{\mathbb Q}_\beta\mid
-\beta<\alpha\rangle\) 是可数支撑迭代且每一步
-\(1\Vdash_{\mathbb P_\beta}\dot{\mathbb Q}_\beta\) 恰当，
-则 \(\mathbb P_\alpha\) 恰当。
+$\langle\mathbb P_\alpha,\dot{\mathbb Q}_\beta\mid \beta<\alpha\rangle$ 是可数支撑迭代且每一步
+$1\Vdash_{\mathbb P_\beta}\dot{\mathbb Q}_\beta$ 恰当，
+则 $\mathbb P_\alpha$ 恰当。
 
 引理 2.25 处理一步，定理 2.15 处理超穷步——可数支撑
 （countable support）的取法正是为了在极限步维持证书：每个
 泛型条件只需与可数多个先前坐标的信息会合。这是谢拉赫
 引进恰当性的**根本动机**，也是下一章 PFA 相对超紧基数
 合理性的引擎。PFA 本身（Baumgartner 1984）：**对每个恰当
-力迫 \(\mathbb P\) 与每个至多 \(\aleph_1\) 个稠密集的族，
+力迫 $\mathbb P$ 与每个至多 $\aleph_1$ 个稠密集的族，
 存在滤子与每个稠密集相交**——MA 把「ccc」放宽到「恰当」，
 代价是相容性证明需要超紧基数与超长的可数支撑迭代。
 
@@ -449,10 +439,10 @@ q_A\in M\}\)——这是 \(V[G]\) 中的 club（每条要求都反射）。
 
 | 维度 | 105 Silver | 106 GMW | 107 恰当 |
 |---|---|---|---|
-| 目标 | \(2^\kappa=\kappa^{++}\) | \(\aleph_\omega\) 处首败 | 保 \([\kappa]^\omega\) 荟萃 |
-| 力迫类型 | Easton 支撑迭代 | \((f,T,\tau,H)\) 四部件 | 全类（抽象性质） |
+| 目标 | $2^\kappa=\kappa^{++}$ | $\aleph_\omega$ 处首败 | 保 $[\kappa]^\omega$ 荟萃 |
+| 力迫类型 | Easton 支撑迭代 | $(f,T,\tau,H)$ 四部件 | 全类（抽象性质） |
 | 关键引理 | λ-定向完全 2.6 | Prikry 条件 2.17 | 主条件刻画 2.13/2.14 |
-| 基数账本 | κ 处跳档 | \(\aleph_{\omega+2}\) | 不动 \(\omega_1\) |
+| 基数账本 | κ 处跳档 | $\aleph_{\omega+2}$ | 不动 $\omega_1$ |
 | 迭代封闭 | — | — | 可数支撑（定理 2.15） |
 | 机器影子 | 序函数账簿 | 位移支配 | 证书四件套 + 下放 |
 
@@ -465,25 +455,21 @@ q_A\in M\}\)——这是 \(V[G]\) 中的 club（每条要求都反射）。
 
 七个通道共享一个三层设计：
 
-1. **偏序数据**：延展集 \(\mathrm{ext}:q\mapsto\{r\mid r\le
-   q\}\)（含 \(q\) 自身）。样本宇宙 `extT` 取根 0 分叉到
+1. **偏序数据**：延展集 $\mathrm{ext}:q\mapsto\{r\mid r\le q\}$ （含 $q$ 自身）。样本宇宙 `extT` 取根 0 分叉到
    终端 1、2 的三点偏序：`extT(0)={0,1,2}`、`extT(1)={1}`、
-   `extT(2)={2}`、其余为空。反链 \(\{1,2\}\) 是这个宇宙
+   `extT(2)={2}`、其余为空。反链 $\{1,2\}$ 是这个宇宙
    里唯一的 2 元冲突对。
 2. **四件套定义**（严格对齐正文）：
    - `Compat r p`：相容——有公共延展
-     \(\exists s\,(s\in\mathrm{ext}\,r\wedge s\in
-     \mathrm{ext}\,p)\)；
+     $\exists s\,(s\in\mathrm{ext}\,r\wedge s\in \mathrm{ext}\,p)$ ；
    - `Antichain A`：冲突子集——两两不相容；
-   - `PredenseBelow A q`：准稠密——\(\forall r\in
-     \mathrm{ext}\,q,\ \exists p\in A,\ \mathrm{Compat}\
-     r\ p\)（定义 2.21 的内核）；
-   - `GenericCond 𝒜 q`：证书——对反链族里每个 \(A\) 都
+   - `PredenseBelow A q`：准稠密——$\forall r\in \mathrm{ext}\,q,\ \exists p\in A,\ \mathrm{Compat}\ r\ p$ （定义 2.21 的内核）；
+   - `GenericCond 𝒜 q`：证书——对反链族里每个 $A$ 都
      准稠密。
 3. **两个定理件**：
    - `generic_strengthen`（Task 22 Step 2 指定件）：
-     \(\mathrm{ext}\,q'\subseteq\mathrm{ext}\,q\)
-     （\(q'\) 强于 \(q\)）⟹ 证书下放——引理 2.26 复合
+     $\mathrm{ext}\,q'\subseteq\mathrm{ext}\,q$
+     （$q'$ 强于 $q$ ）⟹ 证书下放——引理 2.26 复合
      证书的有限影子；
    - 泛型条件搜索（Julia/Python）与链样本
      `chain_predense`（Isabelle）——命题 2.1(2) 的闭包
@@ -495,7 +481,7 @@ Lean 用 `Finset ℕ`（成员可判定、`decide` 一键关账）、Coq
 成员 `inL` 走可判定路线）、Julia/Python 用集合类型（交并
 包含直接写）、Prolog 用表加 `member/2` 回溯、Isabelle 干脆
 用 ZF 集合本体（`⊆`、`∩` 直接来自 `ZF.equalities`）。无论
-表示如何，「\(q\) 的延展集」这一**偏序数据**与四件套的
+表示如何，「$q$ 的延展集」这一**偏序数据**与四件套的
 **量词形状**逐字一致——这正是跨通道对拍有意义的前提：七
 份代码证的是同一个数学命题，而不是七个相似的程序。
 
@@ -613,7 +599,7 @@ end Settheory.Ch107
 
 注意 `generic_strengthen` 的证明只有两行：证书下放的本质
 就是「延展集的包含关系顺着量词传递」——`hsub hr'` 把
-\(r\in\mathrm{ext}\,q'\) 转成 \(r\in\mathrm{ext}\,q\)，旧
+$r\in\mathrm{ext}\,q'$ 转成 $r\in\mathrm{ext}\,q$ ，旧
 证书直接可用。 Lean 里 `example` 两条见证了定理 2.14 的
 有限形态：**强条件处泛型条件存在**（1、2 都是 0 的细化，
 都继承证书）。
@@ -866,17 +852,16 @@ generic-2 = generic-strengthen extT (A12 ∷ []) zero (suc (suc zero))
   extT-mono-20 generic-0
 ```
 
-`antichain-12` 的七个子句值得读一遍：前六个按 \(p,q\in
-\{1,2\}\) 的具体值分案——对角情形（\(p=q\)）由 `hne refl`
-（矛盾于 \(p\ne q\)）关闭；非对角情形的相容见证 \(s\) 只能
+`antichain-12` 的七个子句值得读一遍：前六个按 $p,q\in \{1,2\}$ 的具体值分案——对角情形（$p=q$ ）由 `hne refl`
+（矛盾于 $p\ne q$ ）关闭；非对角情形的相容见证 $s$ 只能
 是 1 或 2，而 `extT` 里 1 与 2 的延展集不相交，两个子句各
-用一个**荒谬模式** `()` 关闭。末两个子句处理 \(p\) 或 \(q\)
+用一个**荒谬模式** `()` 关闭。末两个子句处理 $p$ 或 $q$
 ≥3（不在 `A12` 中）的荒谬。这是索引族成员证明在 Agda 里的
 标准形状：**先具体化、再荒谬化**。
 
 Isabelle 版（`examples/isabelle/ST107/Proper.thy`）是七份
 中最「纯集论」的一份：不用延展集函数，直接以集合运算陈述
-证书（\(q\) 本身就是延展集），全部证明走 103 章立下的
+证书（$q$ 本身就是延展集），全部证明走 103 章立下的
 **确定性规则链**纪律（`rule`/`OF`/`THEN` 零搜索），并附
 上命题 2.1(2) 的闭包影子 `chain_predense`：
 
@@ -973,11 +958,11 @@ qed
 end
 ```
 
-`chain_predense` 的假设是「\(q\) 的每个延展都包含 \(p\)」
-——一条以 \(p\) 为底部的链——结论是 \(\{p\}\) 在 \(q\)
-之下准稠密。证明是命题 2.1(2) 的浓缩：若 \(r\) 与 \(p\)
-不相容（\(r\cap p=0\)），则 \(p\subseteq r\cap p=0\) 与
-\(p\neq 0\) 矛盾。**链条件自动制造准稠密**——闭包论证的
+`chain_predense` 的假设是「$q$ 的每个延展都包含 $p$ 」
+——一条以 $p$ 为底部的链——结论是 $\{p\}$ 在 $q$
+之下准稠密。证明是命题 2.1(2) 的浓缩：若 $r$ 与 $p$
+不相容（$r\cap p=0$ ），则 $p\subseteq r\cap p=0$ 与
+$p\neq 0$ 矛盾。**链条件自动制造准稠密**——闭包论证的
 有限替身。注意 `hsub1` 一行用 `Int_greatest [OF hpr
 subset_refl]` 直接合成而不能写成 `from hpr … proof` 块再
 内层 `by (rule hpr)`：带链式事实的 `by (rule thm)` 要求
@@ -1068,11 +1053,10 @@ println("END ====")
 ```
 
 三个搜索结果各有教益：`[A12]` 下 0..2 全泛型（反链足够
-「宽」——每个 \(r\) 都与 1 或 2 相容）；把宇宙扩到 0:5
+「宽」——每个 $r$ 都与 1 或 2 相容）；把宇宙扩到 0:5
 后 3..5 也泛型——它们的延展集为空，量词空真，这是
 **平凡泛型**（有限替身：闭包取到底部的条件）；单点反链
-\(\{1\}\) 下只有 1 泛型——准稠密要求 \(\mathrm{ext}(0)=
-\{0,1,2\}\) 里的每个 \(r\) 与 1 相容，而 2 与 1 不相容。
+$\{1\}$ 下只有 1 泛型——准稠密要求 $\mathrm{ext}(0)= \{0,1,2\}$ 里的每个 $r$ 与 1 相容，而 2 与 1 不相容。
 `max_antichain_size == 2` 是 cc 影子：这个宇宙里**没有
 3-元反链**。
 
@@ -1264,9 +1248,9 @@ main :-
 
 - 命题 2.1/引理 2.22 的**超穷递归**（长度 κ 的递减链、
   极大冲突子集的 sup 装箱）——有限宇宙里没有 κ；
-- 定义 2.20 的**全程量词**（对一切 \([\kappa]^\omega\) 荟萃
+- 定义 2.20 的**全程量词**（对一切 $[\kappa]^\omega$ 荟萃
   集）——机器只查固定反链族的证书；
-- 引理 2.24 的**名字演算**（\(q\Vdash\dot\alpha\in\tilde M\)
+- 引理 2.24 的**名字演算**（$q\Vdash\dot\alpha\in\tilde M$
   的力迫语义）——机器没有力迫语言；
 - 定理 2.13 的 **club 论证**与提升降落（I.2.35）——同态
   子模型的荟萃层结构不在有限宇宙里；
@@ -1282,16 +1266,16 @@ main :-
 **要点**：
 
 1. 荟萃性是二阶性质，对力迫扩张**不**绝对；club 性是
-   \(\Pi_1\) 的，自动绝对（107.1）。
+   $\Pi_1$ 的，自动绝对（107.1）。
 2. 命题 2.1：κ-链条件把新 club **压**回旧骨架；<κ-闭包
    让旧荟萃集在极限点**钻**进新 club（107.2）。
-3. 引理 2.22 把两条充分类整体搬到 \([\kappa]^\omega\)
+3. 引理 2.22 把两条充分类整体搬到 $[\kappa]^\omega$
    （107.3）；定义 2.20 立「保一切可数范围荟萃」为恰当性
    （107.4）；ccc 与 σ-闭是两个直接充分类。
 4. 引理 2.23 可数覆盖：恰当力迫下每个新可数序数集装在
-   旧可数集里——\(\omega_1\) 不被可数化（107.4）。
-5. 定义 2.21 \((M,\mathbb P)\)-泛型条件把恰当性翻译成局部
-   证书：\(M\)-内极大反链截断后仍在 \(q\) 下方准稠密
+   旧可数集里——$\omega_1$ 不被可数化（107.4）。
+5. 定义 2.21 $(M,\mathbb P)$ -泛型条件把恰当性翻译成局部
+   证书：$M$ -内极大反链截断后仍在 $q$ 下方准稠密
    （107.5）；引理 2.24 给出名字形态与滤子形态两个等价
    刻画。
 6. 定理 2.13/2.14：恰当 ⟺ 泛型条件在 club 上/处处存在
@@ -1301,23 +1285,22 @@ main :-
 
 **检查问题**：
 
-1. 为什么「club 性是 \(\Pi_1\)」蕴涵它对力迫扩张绝对，
+1. 为什么「club 性是 $\Pi_1$ 」蕴涵它对力迫扩张绝对，
    而「荟萃性」没有这道保险？
 2. 命题 2.1(1) 的证明里，κ-链条件在哪一步被用到？换成
    σ-闭条件还能这么证吗？
-3. 写出 \([\kappa]^\omega\) 上由 \(f:[\kappa]^{<\omega}\to
-   [\kappa]^\omega\) 生成的 club \(C_f\) 的定义，并验证
-   每个 club 包含某个 \(C_f\)。
-4. \((M,\mathbb P)\)-泛型条件定义里，「\(A\in M\)」和
-   「\(A\cap M\) 只在 \(q\) 之下准稠密」两个限定各挡住
+3. 写出 $[\kappa]^\omega$ 上由 $f:[\kappa]^{<\omega}\to [\kappa]^\omega$ 生成的 club $C_f$ 的定义，并验证
+   每个 club 包含某个 $C_f$ 。
+4. $(M,\mathbb P)$ -泛型条件定义里，「$A\in M$ 」和
+   「$A\cap M$ 只在 $q$ 之下准稠密」两个限定各挡住
    什么反例？
 5. 用引理 2.24(2) 的名字形态直接说明：恰当力迫不添加
-   「逃逸」\(M\) 的可数序数序列。
+   「逃逸」$M$ 的可数序数序列。
 6. 定理 2.14 与定理 2.13 的差别为什么在应用上至关重要
-   （提示：PFA 的稠密集大小是 \(\aleph_1\)）？
+   （提示：PFA 的稠密集大小是 $\aleph_1$ ）？
 7. 机器通道里 `generic_strengthen` 的假设是
-   \(\mathrm{ext}\,q'\subseteq\mathrm{ext}\,q\)。它与正文
-   「\(q'\) 强于 \(q\)」的对应关系是什么？为什么下放方向
+   $\mathrm{ext}\,q'\subseteq\mathrm{ext}\,q$ 。它与正文
+   「$q'$ 强于 $q$ 」的对应关系是什么？为什么下放方向
    只有一边成立？
 
 ---
