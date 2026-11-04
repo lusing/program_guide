@@ -9,3 +9,5 @@ import Pdenum.Ch10Wave
 import Pdenum.Ch14Diffusion
 import Pdenum.Ch15ThreeLayer
 import Pdenum.Ch17ConvectionDiffusion
+import Pdenum.Ch21Elliptic
+import Pdenum.Ch22MaxPrinciple
