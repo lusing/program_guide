@@ -87,7 +87,26 @@
 | [29](docs/29-fem-2d-triangle.md) | 二维三角形线性元 | 面积坐标闭式、零模式、P1 与五点差分同阶 |
 | [30](docs/30-high-order-isoparametric.md) | 高次元与等参元 | 二次元 O(h³)（比值 16.2）、Hermite C¹、等参映射 |
 
-（后续批次随构建展开：31–34 专题与总结。）
+### 第八篇 专题与总结（书第 8 章，B7 批次）
+
+| 章 | 标题 | 一句话 |
+|---|---|---|
+| [31](docs/31-variational-diffusion-parabolic-fem.md) | 变分差分与抛物 FEM | Galerkin 列差分、CN-Galerkin 无条件稳定 |
+| [32](docs/32-eigenvalue-inequality.md) | 特征值与变分不等方程 | Kc=λMc 从上方逼近、障碍问题投影 SOR |
+| [33](docs/33-bem-multigrid.md) | 边界元与多重网格 | Green 降维、V 循环因子 0.014 vs Jacobi 0.994 |
+| [34](docs/34-summary.md) | 总结 | 三条路交叉对账、方法选择树、坑账索引 |
+
+## 构建与验证
+
+    pwsh -NoProfile -Command '& ./build.ps1 -All'        # 全量验证
+    pwsh -NoProfile -Command '& ./build.ps1 -Chapter 03' # 单章
+    pwsh -NoProfile -Command '& ./build.ps1 -Lang lean'  # 单通道
+
+**收官：114/114 单元全绿**（lean 18 / julia 34 / python 34 /
+prolog 17 / fortran 8 + lean 早期 2 单元含 00/01），八批提交
+（B0 预备、B1 差分基础、B2 双曲、B3 抛物、B4 椭圆差分、B5 变分、
+B6 有限元、B7 收官），覆盖原书 ch1–ch8 全部核心内容。
+
 
 ## 构建与验证
 
