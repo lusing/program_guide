@@ -4,7 +4,7 @@
 对应原书 §2.2。机器验证：
 1. sign 的乘法性（定理 2.39）与对换符号（引理 2.38）；
 2. 完全分解的具体算例：α = (0 1 2)(3 4) ∈ S₅，阶 = lcm(3,2) = 6
-   （命题 2.55）；
+   （命题 2.54）；
 3. A₅ 的元素个数 = 60 = 5!/2。
 -/
 
@@ -34,7 +34,7 @@ example {α : Type*} [Fintype α] [DecidableEq α] (x y : α) (h : x ≠ y) :
 def alpha5 : Equiv.Perm (Fin 5) :=
   (List.formPerm [0, 1, 2] * List.formPerm [3, 4] : Equiv.Perm (Fin 5))
 
--- 命题 2.55（阶 = lcm(3,2) = 6）的幂轨迹版：α⁶ = 1 且更小幂 ≠ 1
+-- 命题 2.54（阶 = lcm(3,2) = 6）的幂轨迹版：α⁶ = 1 且更小幂 ≠ 1
 set_option maxRecDepth 20000 in
 example : alpha5 ^ 6 = 1 := by decide
 

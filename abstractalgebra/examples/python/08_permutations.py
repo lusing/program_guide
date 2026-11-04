@@ -48,10 +48,10 @@ assert cycles((2, 1, 3)) == ((1, 2),)
 assert compose((2, 1, 3), (1, 3, 2)) == (2, 3, 1)   # (12)∘(23) = (123)
 print("循环分解与复合从右向左：手算一致 ✓")
 
-# 命题 2.55：阶 = lcm 循环长
+# 命题 2.54：阶 = lcm 循环长
 for a in S4:
     assert perm_order(a) == (lcm(*map(len, cycles(a))) if cycles(a) else 1)
-print("命题 2.55：S₄ 全部 24 个置换 ✓")
+print("命题 2.54：S₄ 全部 24 个置换 ✓")
 
 # 定理 2.39：符号乘法性
 for a in S4:

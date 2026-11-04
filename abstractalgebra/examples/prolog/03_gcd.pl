@@ -21,7 +21,7 @@ extgcd(A, B, D, S, T) :-
     S is T1,
     T is S1 - Q * T1.
 
-% ---------- 进制转换（例 1.48） ----------
+% ---------- 进制转换（例 1.45） ----------
 base_digits(N, B, Ds) :- base_digits_(N, B, DsR), reverse(DsR, Ds).
 base_digits_(0, _, []) :- !.
 base_digits_(N, B, [D | Rest]) :-
@@ -38,7 +38,7 @@ weighable(N, E1, E3, E9, E27) :-
 main :-
     format("==== 03 最大公因子~n"),
 
-    % 例 1.45
+    % 例 1.42
     extgcd(326, 78, D1, S1, T1),
     D1 =:= 2, S1 =:= -11, T1 =:= 46,
     S1 * 326 + T1 * 78 =:= 2,

@@ -19,7 +19,7 @@ function extgcd(a::T, b::T) where T <: Integer
     return old_r, old_s, old_t
 end
 
-# 例 1.45：gcd(326, 78) = 2 = 46·78 − 11·326
+# 例 1.42：gcd(326, 78) = 2 = 46·78 − 11·326
 d, s, t = extgcd(326, 78)
 @assert (d, s, t) == (2, -11, 46) "extgcd(326,78) = ($d, $s, $t)"
 println("gcd(326, 78) = $d = $s·326 + $t·78（与正文手算一致）")
@@ -62,7 +62,7 @@ for n in 5:3:30
     println("  (F_$(n+1), F_$n)：$steps 步 ≤ 5×$(ndigits(a)) = $lameround")
 end
 
-# ---------- 进制表示（例 1.48）与天平称量（例 1.49/1.50） ----------
+# ---------- 进制表示（例 1.45）与天平称量（例 1.46/1.50） ----------
 function base_digits(n::Integer, b::Integer)
     ds = Integer[]
     while n > 0

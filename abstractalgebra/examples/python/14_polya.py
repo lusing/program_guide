@@ -60,7 +60,7 @@ def chess_action(c):
     return out
 
 assert brute_orbits(16, 2, chess_action) == 16456
-print("4×4 双色棋盘：Pólya = 暴力 = 16456（例 2.163）✓")
+print("4×4 双色棋盘：Pólya = 暴力 = 16456（例 2.161）✓")
 
 # ---------- 5 扇形 2 色赌盘 ----------
 assert polya([rot_cycles(5, k) for k in range(5)], 2) == 8

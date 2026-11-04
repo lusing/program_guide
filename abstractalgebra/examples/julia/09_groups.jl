@@ -55,7 +55,7 @@ function un_mul(m)
     [idx[mod(U[i] * U[j], m)] for i in eachindex(U), j in eachindex(U)]
 end
 
-"""二面体群 D_n：元素 α^i b^j，关系 αⁿ = b² = 1, bab = α⁻¹（定理 2.65）。"""
+"""二面体群 D_n：元素 α^i b^j，关系 αⁿ = b² = 1, bab = α⁻¹（定理 2.63）。"""
 function dihedral(n)
     tbl = zeros(Int, 2n, 2n)
     for i in 0:n-1, j in 0:1, k in 0:n-1, l in 0:1
@@ -90,7 +90,7 @@ for i in 1:6, j in 1:6
     @assert img[d3[i, j]] == prod
 end
 @assert is_group(d3)
-println("D₃ 的表 = S₃ 的置换复合表（同构的有限群版；定理 2.65 n = 3）✓")
+println("D₃ 的表 = S₃ 的置换复合表（同构的有限群版；定理 2.63 n = 3）✓")
 
 # ---------- 元素阶 ----------
 orders_u8 = sort([order_of(un_mul(8), i) for i in 1:4])
@@ -101,7 +101,7 @@ orders_u8 = sort([order_of(un_mul(8), i) for i in 1:4])
         [1, 12, 6, 4, 3, 12, 2, 12, 3, 4, 6, 12]
 println("元素阶：U(8) 全 2 阶（V）；U(10) 有 4 阶元（≅ ℤ₄）；ℤ₁₂ 阶表 = 12/gcd ✓")
 
-# ---------- 定理 2.65 的关系在表上 ----------
+# ---------- 定理 2.63 的关系在表上 ----------
 for n in 3:6
     tbl = dihedral(n)
     e = identity_of(tbl)
@@ -110,7 +110,7 @@ for n in 3:6
     @assert tbl[b, b] == e                 # b² = 1
     @assert tbl[tbl[b, α], b] == itpow(tbl, α, n - 1)   # bab = α⁻¹
 end
-println("定理 2.65 关系 αⁿ = b² = 1，bab = α⁻¹ 在 D₃..D₆ 表上成立 ✓")
+println("定理 2.63 关系 αⁿ = b² = 1，bab = α⁻¹ 在 D₃..D₆ 表上成立 ✓")
 
 # ---------- 非阿贝尔现场 ----------
 a, b = 2, 4

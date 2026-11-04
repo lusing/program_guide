@@ -46,7 +46,7 @@ hit2 = first_counterexample(
 assert hit2 is None
 print("谢尔宾斯基 991n²+1：前 10⁶ 个 n 内无平方数（真反例 ~1.2×10²⁸）")
 
-# AM-GM（定理 1.11）：严格不等与取等两个分支
+# AM-GM（中译本编号定理 1.11）：严格不等与取等两个分支
 gap = am_gm_gap([Fraction(1), Fraction(2), Fraction(4), Fraction(8)])
 assert gap > 0
 assert am_gm_gap([Fraction(3, 7)] * 5) == 0

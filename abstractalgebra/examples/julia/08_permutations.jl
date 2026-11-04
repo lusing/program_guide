@@ -70,11 +70,11 @@ S3 = all_perms(3)
 @assert compose([2, 1, 3], [1, 3, 2]) == [2, 3, 1]   # (12)∘(23)：先 (23) 后 (12) = (123)
 println("S₃ 循环分解与复合从右向左：手算一致 ✓")
 
-# ---------- 命题 2.55：阶 = lcm(循环长度)，S₄ 全量 ----------
+# ---------- 命题 2.54：阶 = lcm(循环长度)，S₄ 全量 ----------
 for α in all_perms(4)
     @assert perm_order(α) == foldl(lcm, length.(cycles(α)); init=1)
 end
-println("命题 2.55（阶 = lcm 循环长）：S₄ 全部 24 个置换 ✓")
+println("命题 2.54（阶 = lcm 循环长）：S₄ 全部 24 个置换 ✓")
 
 # ---------- 定理 2.39：sgn 乘法性，S₄ 全对 ----------
 for α in all_perms(4), β in all_perms(4)
@@ -91,7 +91,7 @@ for α in all_perms(4), γ in all_perms(4)
 end
 println("命题 2.32（αγα⁻¹ 与 γ 循环结构同）：S₄ 全对 ✓")
 
-# ---------- 循环结构类大小（推论 2.146 的实例） ----------
+# ---------- 循环结构类大小（推论 2.144 的实例） ----------
 struct_count(n, lens) =
     count(all_perms(n)) do α
         sort(length.(cycles(α))) == sort(lens)

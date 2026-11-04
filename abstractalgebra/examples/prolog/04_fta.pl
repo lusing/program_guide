@@ -16,7 +16,7 @@ factorize(N, Fs) :- N > 1, factor_from(N, 2, Fs).
 factor_from(1, _, []) :- !.
 factor_from(N, P, Fs) :-
     P * P > N, !,
-    Fs = [(N, 1)].                       % 剩下的自身是素数（命题 1.3）
+    Fs = [(N, 1)].                       % 剩下的自身是素数（试除判别法）
 factor_from(N, P, Fs) :-
     N mod P =:= 0, !,
     extract_power(N, P, 0, N1, E),

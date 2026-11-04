@@ -74,13 +74,13 @@ main :-
     perm_compose([2,1,3], [1,3,2], AB), AB == [2,3,1],
     format("循环分解与复合（从右向左）：手算一致 ✓~n"),
 
-    % 命题 2.55：阶 = lcm 循环长（S₃ 全量）
+    % 命题 2.54：阶 = lcm 循环长（S₃ 全量）
     forall((s3_all(Ss), member(P, Ss)),
            ( perm_cycles(P, Cs),
              maplist(length, Cs, Ls),
              (Ls == [] -> K is 1 ; lcm_list(Ls, K)),
              perm_order(P, K) )),
-    format("命题 2.55（阶 = lcm 循环长）：S₃ 全部 6 个置换 ✓~n"),
+    format("命题 2.54（阶 = lcm 循环长）：S₃ 全部 6 个置换 ✓~n"),
 
     % 定理 2.39：sgn 乘法性（S₃ 全部 36 对；变量名与上文错开防捕获）
     forall((s3_all(Ss39), member(PA, Ss39), member(PB, Ss39)),

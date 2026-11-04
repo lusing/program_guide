@@ -51,7 +51,7 @@ print("左正则作用：轨道 = 全群，稳定子 = {1}（凯莱定理的作�
 for tbl in (s3, d4):
     for x in range(len(tbl)):
         assert len(orbit(tbl, x)) * len(stabilizer(tbl, x)) == len(tbl)
-print("定理 2.143（|O|·|G_x| = |G|）：S₃ 与 D₄ 左乘作用逐点成立 ✓")
+print("定理 2.141（|O|·|G_x| = |G|）：S₃ 与 D₄ 左乘作用逐点成立 ✓")
 
 
 # 共轭类 / 中心 / 中心化子
@@ -91,7 +91,7 @@ sizes = {}
 for a in permutations(range(1, 5)):
     sizes[cycles(a)] = sizes.get(cycles(a), 0) + 1
 assert sizes == {(): 1, (2,): 6, (2, 2): 3, (3,): 8, (4,): 6}
-print("S₄ 循环结构类：1/6/3/8/6，总和 24（推论 2.146）✓")
+print("S₄ 循环结构类：1/6/3/8/6，总和 24（推论 2.144）✓")
 
 
 # 项链双跑

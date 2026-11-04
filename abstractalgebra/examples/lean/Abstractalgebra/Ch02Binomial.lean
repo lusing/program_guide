@@ -5,7 +5,7 @@
 1. 帕斯卡恒等式与行和 Σ C(n,k) = 2ⁿ；
 2. 二项式定理（ℚ 上逐项展开）；
 3. 分圆分解 Π_{d∣n} Φ_d = Xⁿ − 1 与具体分圆多项式；
-4. 欧拉函数恒等式 Σ_{d∣n} φ(d) = n（推论 1.31）。
+4. 欧拉函数恒等式 Σ_{d∣n} φ(d) = n（推论 1.28）。
 -/
 
 import Mathlib.Data.Nat.Choose.Basic
@@ -35,14 +35,14 @@ theorem binomial_rat (n : ℕ) (x y : ℚ) :
       x ^ m * y ^ (n - m) * (Nat.choose n m : ℚ) := by
   simpa using add_pow x y n
 
-/-! ## 分圆分解（命题 1.30）与推论 1.31 -/
+/-! ## 分圆分解（命题 1.27）与推论 1.28 -/
 
 /-- xⁿ − 1 = Π_{d∣n} Φ_d(x)，ℤ 系数。 -/
 theorem cyclotomic_product (n : ℕ) (hn : 0 < n) :
     ∏ d ∈ n.divisors, Polynomial.cyclotomic d ℤ = Polynomial.X ^ n - 1 :=
   Polynomial.prod_cyclotomic_eq_X_pow_sub_one hn _
 
-/-- 推论 1.31：Σ_{d∣n} φ(d) = n。 -/
+/-- 推论 1.28：Σ_{d∣n} φ(d) = n。 -/
 theorem sum_totient_eq (n : ℕ) : ∑ d ∈ n.divisors, Nat.totient d = n :=
   Nat.sum_totient n
 

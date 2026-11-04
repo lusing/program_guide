@@ -2,7 +2,7 @@
 ! # 第 11 章 · 群同态
 
 对应原书 §2.5。机器验证：
-1. f(1) = 1、f(a⁻¹) = f(a)⁻¹（引理 2.89）；
+1. f(1) = 1、f(a⁻¹) = f(a)⁻¹（引理 2.87）；
 2. det 的乘法性（Matrix.det_mul）；
 3. ZMod 6 → ZMod 3 的自然投射同态：核 {[0],[3]}、|G| = |ker|·|im| 预告。
 -/
@@ -15,7 +15,7 @@ import Mathlib.Tactic.Linarith
 
 namespace Abstractalgebra.Ch11
 
-/-! ## 引理 2.89 -/
+/-! ## 引理 2.87 -/
 
 example {G H : Type*} [Group G] [Group H] (f : G →* H) : f 1 = 1 := f.map_one
 

@@ -4,8 +4,8 @@
 对应原书 §1.4。机器验证：
 1. 分解的存在（乘积还原）与素性（primeFactorsList）；
 2. 规范形与具体算例（1728 = 2⁶·3³）；
-3. gcd·lcm = ab（命题 1.56）；
-4. gcd 的指数刻画（命题 1.55：factorization 逐分量取 min）；
+3. gcd·lcm = ab（命题 1.53）；
+4. gcd 的指数刻画（命题 1.52：factorization 逐分量取 min）；
 5. 唯一性的一个代表性片段（素数幂等式 p^e = q^f ⟹ p = q ∧ e = f）。
 -/
 
@@ -41,13 +41,13 @@ example (p q : ℕ) (hp : Nat.Prime p) (hq : Nat.Prime q) (h : p ∣ q) : p = q 
 -- 一般唯一性定理由 UniqueFactorizationMonoid.factors_unique 承担
 -- （ℕ 的唯一分解幺半群实例），此处引为注记。
 
-/-! ## gcd 与 lcm 的指数律（命题 1.55 / 1.56） -/
+/-! ## gcd 与 lcm 的指数律（命题 1.52 / 1.56） -/
 
--- 命题 1.56：gcd(a,b) · lcm(a,b) = a·b
+-- 命题 1.53：gcd(a,b) · lcm(a,b) = a·b
 example (a b : ℕ) : Nat.gcd a b * Nat.lcm a b = a * b :=
   Nat.gcd_mul_lcm a b
 
--- 命题 1.55 的机器版：gcd 的素指数 = 逐分量取 min（Finsupp 的 ⊓）
+-- 命题 1.52 的机器版：gcd 的素指数 = 逐分量取 min（Finsupp 的 ⊓）
 example (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
     (Nat.gcd a b).factorization = a.factorization ⊓ b.factorization :=
   Nat.factorization_gcd ha hb

@@ -55,7 +55,7 @@ assert all(dbl((a + b) % 4) == (dbl(a) + dbl(b)) % 4 for a in range(4) for b in 
 print("反例：ℤ₄ 平方映射不保持加法（1+1 处失败）；倍乘 2x 是同态 ✓")
 
 
-# ---------- 命题 2.94：共轭是自同构（D₄） ----------
+# ---------- 命题 2.92：共轭是自同构（D₄） ----------
 def dihedral(n):
     tbl = [[0] * (2 * n) for _ in range(2 * n)]
     for i in range(n):
@@ -77,7 +77,7 @@ for g in range(8):
     for x in range(8):
         for y in range(8):
             assert phi[d4[x][y]] == d4[phi[x]][phi[y]]
-print("命题 2.94：D₄ 的 8 个共轭映射全是表自同构 ✓")
+print("命题 2.92：D₄ 的 8 个共轭映射全是表自同构 ✓")
 
 # ---------- 同态枚举 ----------
 def s3_table():

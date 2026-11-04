@@ -1,6 +1,6 @@
 # 第 04 章 · 算术基本定理 —— 计算通道
 #
-# 试除分解（命题 1.3 的程序版）+ 指数律 gcd/lcm + gcd·lcm = ab。
+# 试除分解（试除判别法，中译本命题 1.3）+ 指数律 gcd/lcm + gcd·lcm = ab。
 
 println("==== 04 算术基本定理")
 
@@ -35,7 +35,7 @@ for n in 2:999
 end
 println("试除分解：n ≤ 999 还原、素数递增、指数 ≥ 1 全部通过 ✓")
 
-# ---------- 指数律 gcd/lcm（命题 1.55 双实现） ----------
+# ---------- 指数律 gcd/lcm（命题 1.52 双实现） ----------
 function gcd_from_factors(fs1, fs2)
     d = big(1)
     for (p, e1) in fs1, (q, e2) in fs2
@@ -65,7 +65,7 @@ for a in 2:120, b in 2:120
 end
 println("gcd/lcm 的指数实现（min/max）与欧几里得实现全量一致（a,b ≤ 120）✓")
 
-# ---------- 命题 1.56：gcd·lcm = ab ----------
+# ---------- 命题 1.53：gcd·lcm = ab ----------
 using Random
 Random.seed!(20261104)
 for _ in 1:200

@@ -31,7 +31,7 @@ end
 
 inv_of(tbl, x) = findfirst(j -> tbl[x, j] == identity_of(tbl), 1:size(tbl, 1))
 
-"""正规性：gKg⁻¹ = K 对一切 g（命题 2.97 的机械化）。"""
+"""正规性：gKg⁻¹ = K 对一切 g（命题 2.95 的机械化）。"""
 function is_normal(tbl, K)
     sort(K) == sort(unique([tbl[g, tbl[k, inv_of(tbl, g)]] for g in 1:size(tbl, 1), k in K]))
 end
@@ -123,7 +123,7 @@ V4tbl = [begin
 @assert table_iso(qc, V4tbl) !== nothing "D₄/{1,α²} ≅ V₄"
 println("D₄/⟨旋转⟩ ≅ ℤ₂；D₄/{1,α²} ≅ V₄（商表同构搜索均命中）✓")
 
-# ---------- 威尔逊定理（定理 2.111） ----------
+# ---------- 威尔逊定理（定理 2.109） ----------
 for p in (5, 7, 11, 13)
     @assert mod(factorial(big(p - 1)), p) == p - 1
 end
@@ -132,7 +132,7 @@ for c in (8, 9, 10, 12)
 end
 println("威尔逊定理：p = 5,7,11,13 成立；合成数 8,9,10,12 失效 ✓")
 
-# ---------- φ 乘性（推论 2.131）+ ℤ₂×ℤ₃ ≅ ℤ₆（定理 2.128） ----------
+# ---------- φ 乘性（推论 2.128）+ ℤ₂×ℤ₃ ≅ ℤ₆（定理 2.126） ----------
 totient(n) = count(k -> gcd(k, n) == 1, 1:n)
 for (m, n) in ((3, 4), (4, 5), (5, 6), (7, 9))
     @assert totient(m * n) == totient(m) * totient(n)
@@ -142,6 +142,6 @@ pair_tbl = [begin
                 mod(a1 + b1, 2) * 3 + mod(a2 + b2, 3) + 1
             end for i in 1:6, j in 1:6]
 @assert table_iso(pair_tbl, zn_add(6)) !== nothing "ℤ₂×ℤ₃ ≅ ℤ₆"
-println("φ 乘性（推论 2.131）四例；ℤ₂×ℤ₃ ≅ ℤ₆ 表同构（定理 2.128）✓")
+println("φ 乘性（推论 2.128）四例；ℤ₂×ℤ₃ ≅ ℤ₆ 表同构（定理 2.126）✓")
 
 println("END ====")

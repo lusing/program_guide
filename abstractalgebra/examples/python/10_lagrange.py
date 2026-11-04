@@ -1,6 +1,6 @@
 # 第 10 章 · 子群与拉格朗日定理 —— Python 通道
 #
-# 子群枚举 + 陪集分解 + 拉格朗日三推论 + A₄ 无 6 阶子群（命题 2.99）。
+# 子群枚举 + 陪集分解 + 拉格朗日三推论 + A₄ 无 6 阶子群（命题 2.97）。
 
 from itertools import combinations, permutations
 from math import gcd
@@ -95,24 +95,24 @@ for tbl in (s3, d4, zn_add(12)):
     for x in range(n):
         assert n % order_of(tbl, x) == 0
         assert itpow(tbl, x, n) == identity_of(tbl)
-print("推论 2.85/2.86：元素阶 | 群阶，x^|G| = 1（S₃、D₄、ℤ₁₂ 全量）✓")
+print("推论 2.83/2.86：元素阶 | 群阶，x^|G| = 1（S₃、D₄、ℤ₁₂ 全量）✓")
 
-# ---------- 命题 2.75：ℤ₁₂ 每因子恰一个子群 ----------
+# ---------- 命题 2.73：ℤ₁₂ 每因子恰一个子群 ----------
 z12 = zn_add(12)
 by_order = {}
 for H in all_subgroups(z12):
     by_order[len(H)] = by_order.get(len(H), 0) + 1
 assert by_order == {1: 1, 2: 1, 3: 1, 4: 1, 6: 1, 12: 1}
 assert sum(1 for i in range(12) if order_of(z12, i) == 6) == 2
-print("命题 2.75：ℤ₁₂ 六个因子各恰一个子群；6 阶子群恰 φ(6) = 2 个生成元 ✓")
+print("命题 2.73：ℤ₁₂ 六个因子各恰一个子群；6 阶子群恰 φ(6) = 2 个生成元 ✓")
 
-# ---------- 命题 2.80 ----------
+# ---------- 命题 2.78 ----------
 sub = lambda n, d: {(j * d) % n for j in range(n // d)}
 assert {((4 * a) + (6 * b)) % 36 for a in range(9) for b in range(6)} == sub(36, 2)
 assert sub(36, 4) & sub(36, 6) == sub(36, 12)
-print("命题 2.80：⟨4⟩+⟨6⟩ = ⟨2⟩ = ⟨gcd⟩；⟨4⟩∩⟨6⟩ = ⟨12⟩ = ⟨lcm⟩ ✓")
+print("命题 2.78：⟨4⟩+⟨6⟩ = ⟨2⟩ = ⟨gcd⟩；⟨4⟩∩⟨6⟩ = ⟨12⟩ = ⟨lcm⟩ ✓")
 
-# ---------- A₄ 无 6 阶子群（命题 2.99，拉格朗日逆反例） ----------
+# ---------- A₄ 无 6 阶子群（命题 2.97，拉格朗日逆反例） ----------
 def a4_table():
     elems = [p for p in permutations(range(1, 5))
              if sum(1 for i in range(4) for j in range(i + 1, 4)
@@ -128,6 +128,6 @@ for H in combinations(range(12), 6):
     if is_subgroup(a4, set(H)):
         n6 += 1
 assert n6 == 0
-print("命题 2.99：A₄（12 阶）无 6 阶子群——C(12,6) = 924 个子集全查 ✓")
+print("命题 2.97：A₄（12 阶）无 6 阶子群——C(12,6) = 924 个子集全查 ✓")
 
 print("END ====")

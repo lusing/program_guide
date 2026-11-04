@@ -110,9 +110,9 @@ for m, n in ((3, 4), (4, 5), (5, 6), (7, 9)):
     assert totient(m * n) == totient(m) * totient(n)
 z2z3 = [[(i // 3 + j // 3) % 2 * 3 + (i % 3 + j % 3) % 3 for j in range(6)] for i in range(6)]
 assert table_iso(z2z3, zn_add(6)) is not None
-print("φ 乘性四例；ℤ₂×ℤ₃ ≅ ℤ₆（定理 2.128）✓")
+print("φ 乘性四例；ℤ₂×ℤ₃ ≅ ℤ₆（定理 2.126）✓")
 
-# ---------- 4 阶群分类（命题 2.134）：枚举凯莱表不可行，改证两实现不同构 ----------
+# ---------- 4 阶群分类（命题 2.132）：枚举凯莱表不可行，改证两实现不同构 ----------
 assert table_iso(zn_add(4), V4) is None, "ℤ₄ 与 V 不同构（元素阶谱不同）"
 orders = lambda tbl: sorted(order_of(tbl, x) for x in range(len(tbl)))
 def order_of(tbl, x):
@@ -122,6 +122,6 @@ def order_of(tbl, x):
         k += 1
     return k
 assert orders(zn_add(4)) == [1, 2, 4, 4] and orders(V4) == [1, 2, 2, 2]
-print("命题 2.134：ℤ₄ 与 V 阶谱不同 ⟹ 不同构（4 阶群恰这两个）✓")
+print("命题 2.132：ℤ₄ 与 V 阶谱不同 ⟹ 不同构（4 阶群恰这两个）✓")
 
 print("END ====")

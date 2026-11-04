@@ -45,7 +45,7 @@ function dihedral(n)
 end
 
 # ---------- 子群与陪集 ----------
-"""子群判别（命题 2.69 有限版：非空 + 封闭）。"""
+"""子群判别（命题 2.67 有限版：非空 + 封闭）。"""
 is_subgroup(tbl, H) = !isempty(H) && all(tbl[x, y] in H for x in H, y in H)
 
 """全部子群（枚举幂集后过滤）。"""
@@ -103,13 +103,13 @@ for tbl in (s3_tbl, dihedral(4), un_mul(8), zn_add(12))
         @assert n % length(H) == 0
     end
     for x in 1:n
-        @assert n % order_of(tbl, x) == 0            # 推论 2.85
-        @assert itpow(tbl, x, n) == identity_of(tbl) # 推论 2.86
+        @assert n % order_of(tbl, x) == 0            # 推论 2.83
+        @assert itpow(tbl, x, n) == identity_of(tbl) # 推论 2.84
     end
 end
-println("推论 2.85/2.86：元素阶 | 群阶，x^|G| = 1（S₃、D₄、U(8)、ℤ₁₂ 全量）✓")
+println("推论 2.83/2.86：元素阶 | 群阶，x^|G| = 1（S₃、D₄、U(8)、ℤ₁₂ 全量）✓")
 
-# 命题 2.75：ℤ₁₂ 每个因子恰一个子群，d 阶子群生成元 φ(d) 个
+# 命题 2.73：ℤ₁₂ 每个因子恰一个子群，d 阶子群生成元 φ(d) 个
 z12 = zn_add(12)
 by_order = Dict{Int,Int}()
 for H in all_subgroups(z12)
@@ -119,13 +119,13 @@ end
 # ⟨a^k⟩ = ⟨a^gcd(k,n)⟩：⟨2⟩ = {2,4,6,8,10,12} 生成元恰 φ(6) = 2 个（元素 2 与 10）
 H6 = [i for i in 1:12 if order_of(z12, i) == 6]
 @assert length(H6) == 2
-println("命题 2.75：ℤ₁₂ 因子 1,2,3,4,6,12 各恰一个子群；6 阶子群恰 φ(6) = 2 个生成元 ✓")
+println("命题 2.73：ℤ₁₂ 因子 1,2,3,4,6,12 各恰一个子群；6 阶子群恰 φ(6) = 2 个生成元 ✓")
 
-# 命题 2.80：ℤ₃₆ 中 ⟨4⟩+⟨6⟩ = ⟨gcd(4,6)⟩ = ⟨2⟩，⟨4⟩∩⟨6⟩ = ⟨lcm(4,6)⟩ = ⟨12⟩
+# 命题 2.78：ℤ₃₆ 中 ⟨4⟩+⟨6⟩ = ⟨gcd(4,6)⟩ = ⟨2⟩，⟨4⟩∩⟨6⟩ = ⟨lcm(4,6)⟩ = ⟨12⟩
 sub_of_cyclic(n, d) = Set([mod1(j * d, n) for j in 0:(n ÷ d - 1)])
 gens = Set(mod1(4a + 6b, 36) for a in 0:8, b in 0:5)      # 全部 4a+6b mod 36
 @assert gens == sub_of_cyclic(36, 2)                       # 和 = ⟨gcd⟩
 @assert intersect(sub_of_cyclic(36, 4), sub_of_cyclic(36, 6)) == sub_of_cyclic(36, 12)
-println("命题 2.80：ℤ₃₆ 的 ⟨4⟩+⟨6⟩ = ⟨2⟩ = ⟨gcd⟩；⟨4⟩∩⟨6⟩ = ⟨12⟩ = ⟨lcm⟩ ✓")
+println("命题 2.78：ℤ₃₆ 的 ⟨4⟩+⟨6⟩ = ⟨2⟩ = ⟨gcd⟩；⟨4⟩∩⟨6⟩ = ⟨12⟩ = ⟨lcm⟩ ✓")
 
 println("END ====")

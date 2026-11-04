@@ -5,8 +5,8 @@
 1. 除法算式（存在 + 唯一性）；
 2. 贝祖等式：gcd(a,b) = sa + tb（mathlib 的 xgcd 就是欧几里得回代）；
 3. 欧几里得引理与 √2 无理性的整数内核；
-4. 欧几里得无穷素数（推论 1.33）与 991 素性（命题 1.3）；
-5. 7 进制数字（例 1.48）。
+4. 欧几里得无穷素数（推论 1.30）与 991 素性（试除判别法，中译本命题 1.3）；
+5. 7 进制数字（例 1.45）。
 -/
 
 import Mathlib.Data.Nat.Basic
@@ -20,7 +20,7 @@ import Mathlib.Tactic.LinearCombination
 
 namespace Abstractalgebra.Ch03
 
-/-! ## 除法算式（定理 1.32） -/
+/-! ## 除法算式（定理 1.29） -/
 
 -- 存在性：mathlib 的 a/b 与 a%b 直接给出
 theorem division_alg_exists (a b : ℕ) (hb : 0 < b) :
@@ -47,7 +47,7 @@ theorem division_alg_unique (a b q r q' r' : ℤ) (hb : 0 < b)
     have hm : 1 * b ≤ (q - q') * b := mul_le_mul_of_nonneg_right hq (by omega)
     omega
 
-/-! ## 贝祖等式（定理 1.35） -/
+/-! ## 贝祖等式（定理 1.32） -/
 
 /-- gcd(a, b) 是 a 与 b 的整系数线性组合。mathlib 的 `Int.gcdA/gcdB`
 由扩展欧几里得算法（xgcd）回代产生——正文手算的 46·78 − 11·326 同源。
@@ -56,14 +56,14 @@ theorem bezout (a b : ℤ) : ∃ s t : ℤ, (Int.gcd a b : ℤ) = a * s + b * t 
   refine ⟨Int.gcdA a b, Int.gcdB a b, ?_⟩
   exact Int.gcd_eq_gcd_ab a b
 
--- 例 1.45 的机器复核：gcd(326, 78) = 2
+-- 例 1.42 的机器复核：gcd(326, 78) = 2
 example : Nat.gcd 326 78 = 2 := by decide
 
 -- 机器算出的贝祖系数与正文手算一致：2 = 46·78 − 11·326
 example : (326 : ℤ) * Int.gcdA 326 78 + (78 : ℤ) * Int.gcdB 326 78 = 2 := by
   native_decide
 
-/-! ## 欧几里得引理（定理 1.38）与 √2 -/
+/-! ## 欧几里得引理（定理 1.35）与 √2 -/
 
 -- 素数整除乘积必整除某因子
 example (p : ℕ) (hp : Nat.Prime p) {a b : ℕ} (h : p ∣ a * b) :
@@ -73,17 +73,17 @@ example (p : ℕ) (hp : Nat.Prime p) {a b : ℕ} (h : p ∣ a * b) :
 example (a : ℕ) (h : 2 ∣ a ^ 2) : 2 ∣ a :=
   Nat.Prime.dvd_of_dvd_pow Nat.prime_two h
 
-/-! ## 素数无穷（推论 1.33）与试除判别（命题 1.3） -/
+/-! ## 素数无穷（推论 1.30）与试除判别（中译本命题 1.3） -/
 
 -- 欧几里得：任意 N 之上还有素数
 example (N : ℕ) : ∃ p, N ≤ p ∧ Nat.Prime p :=
   Nat.exists_infinite_primes N
 
--- 命题 1.3 的实例：991 是素数（只需试除到 √991 ≈ 31.5）
+-- 试除判别法的实例：991 是素数（只需试除到 √991 ≈ 31.5）
 example : Nat.Prime 991 := by
   native_decide
 
-/-! ## 进制表示（例 1.48） -/
+/-! ## 进制表示（例 1.45） -/
 
 -- 12345 = (50664)₇；Nat.digits 低位在前
 example : Nat.digits 7 12345 = [4, 6, 6, 0, 5] := by

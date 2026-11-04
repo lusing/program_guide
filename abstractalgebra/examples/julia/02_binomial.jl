@@ -78,7 +78,7 @@ end
 
 divisors(n::Integer) = [d for d in 1:n if n % d == 0]
 
-"""Φ_n = (xⁿ − 1) ÷ Π_{d∣n, d<n} Φ_d（命题 1.30 的构造性读法）。"""
+"""Φ_n = (xⁿ − 1) ÷ Π_{d∣n, d<n} Φ_d（命题 1.27 的构造性读法）。"""
 function cyclotomic(n::Integer)::Poly
     n == 1 && return Rational{BigInt}[-1, 1]    # x − 1
     rest = foldl(polymul, (cyclotomic(d) for d in divisors(n) if d < n);
@@ -104,7 +104,7 @@ end
 @assert cyclotomic(6) == Rational{BigInt}[1, -1, 1]              # x² − x + 1
 @assert cyclotomic(12) == Rational{BigInt}[1, 0, -1, 0, 1]       # x⁴ − x² + 1
 
-# Σ_{d∣n} φ(d) = n（推论 1.31 的整数复核）
+# Σ_{d∣n} φ(d) = n（推论 1.28 的整数复核）
 for n in 1:60
     @assert sum(totient, divisors(n)) == n
 end

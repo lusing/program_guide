@@ -61,7 +61,7 @@ example : (3 : ℕ) • (2 : ZMod 6) = 0 := by decide
 
 example : (2 : ℕ) • (2 : ZMod 6) ≠ 0 := by decide
 
--- 每个元素乘以 6 回零（推论 2.86 的 ℤ₆ 版）
+-- 每个元素乘以 6 回零（推论 2.84 的 ℤ₆ 版）
 example : ∀ a : ZMod 6, (6 : ℕ) • a = 0 := by decide
 
 end Abstractalgebra.Ch09

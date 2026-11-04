@@ -86,7 +86,7 @@ main :-
     kernel(d3, z2, Fsgn, KA), sort(KA, KAs), KAs == [1, 2, 3],
     format("sgn 的核 = A₃ = {1, α, α²}（恰 3 元，|S₃| = 3×2）✓~n"),
 
-    % 引理 2.89：f(1) = 1 与 f(x⁻¹) = f(x)⁻¹（对 sgn 抽查）
+    % 引理 2.87：f(1) = 1 与 f(x⁻¹) = f(x)⁻¹（对 sgn 抽查）
     identity(d3, E1), apply_map(Fsgn, E1, E2), identity(z2, E2),
 
     format("END ====~n").

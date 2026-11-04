@@ -1,6 +1,6 @@
 # 第 09 章 · 群的定义与例子 —— Python 通道
 #
-# 凯莱表检查器 + 三族构造 + D₃≅S₃ + 元素阶表 + 定理 2.65 关系。
+# 凯莱表检查器 + 三族构造 + D₃≅S₃ + 元素阶表 + 定理 2.63 关系。
 
 from math import gcd
 
@@ -97,7 +97,7 @@ z12 = zn_add(12)
 assert [order_of(z12, i) for i in range(12)] == [1, 12, 6, 4, 3, 12, 2, 12, 3, 4, 6, 12]
 print("元素阶：U(8) 全 2 阶；U(10) 有 4 阶元；ℤ₁₂ 阶表 = 12/gcd ✓")
 
-# 定理 2.65 关系（0 基编号：α = 1，b = n）
+# 定理 2.63 关系（0 基编号：α = 1，b = n）
 for n in range(3, 7):
     tbl = dihedral(n)
     e = identity_of(tbl)
@@ -105,7 +105,7 @@ for n in range(3, 7):
     assert itpow(tbl, a, n) == e
     assert tbl[b][b] == e
     assert tbl[tbl[b][a]][b] == itpow(tbl, a, n - 1)   # bab = α⁻¹
-print("定理 2.65 关系 αⁿ = b² = 1，bab = α⁻¹ 在 D₃..D₆ 表上成立 ✓")
+print("定理 2.63 关系 αⁿ = b² = 1，bab = α⁻¹ 在 D₃..D₆ 表上成立 ✓")
 
 # 非阿贝尔现场
 a, b = 1, 3

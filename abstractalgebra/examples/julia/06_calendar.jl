@@ -1,6 +1,6 @@
 # 第 06 章 · 日期与天数 —— 计算通道
 #
-# 日历公式（命题 1.80）与康威审判日系统（命题 1.84）双实现，
+# 日历公式（命题 1.74）与康威审判日系统（命题 1.78）双实现，
 # 与 Julia Dates 标准库对每一天全量对拍。
 
 println("==== 06 日期与天数")
@@ -11,7 +11,7 @@ using Dates
 # 2,5,0,3,5,1,4,6,2,4,0,3，平移到 Jan..Dec 得下表（推导见 docs/06）。
 const Jm = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4]
 
-"""命题 1.80：y 年 m 月 d 日 ≡ d + j(m) + g(y) (mod 7)，0 = 星期日。"""
+"""命题 1.74：y 年 m 月 d 日 ≡ d + j(m) + g(y) (mod 7)，0 = 星期日。"""
 function dayofweek_formula(y::Integer, m::Integer, d::Integer)
     if m <= 2
         y -= 1                          # 1、2 月归属前一年
@@ -24,7 +24,7 @@ end
 # 世纪锚（1600:2, 1700:0, 1800:5, 1900:3，每 400 年循环）
 const anchors = Dict(16 => 2, 17 => 0, 18 => 5, 19 => 3, 20 => 2, 21 => 0, 22 => 5)
 
-"""命题 1.84：y 年的审判日 ≡ 锚 + N + ⌊N/4⌋ (mod 7)，N = y mod 100。"""
+"""命题 1.78：y 年的审判日 ≡ 锚 + N + ⌊N/4⌋ (mod 7)，N = y mod 100。"""
 function doomsday(y::Integer)
     C, N = divrem(y, 100)
     a = anchors[C]
@@ -37,7 +37,7 @@ function days_in_month(y::Integer, m::Integer)
 end
 
 # ---------- 史实锚点 ----------
-@assert dayofweek_formula(1776, 7, 4) == 4       # 《独立宣言》：星期四（例 1.81）
+@assert dayofweek_formula(1776, 7, 4) == 4       # 《独立宣言》：星期四（例 1.75）
 @assert dayofweek_formula(2000, 2, 29) == 2      # 世纪审判日：星期二
 @assert dayofweek_formula(2024, 2, 29) == 4      # 2024 审判日：星期四
 println("锚点：1776-07-04 星期四；2000-02-29 星期二；2024-02-29 星期四 ✓")

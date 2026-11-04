@@ -53,13 +53,13 @@ stabilizer(tbl, x) = [g for g in 1:size(tbl, 1) if tbl[g, x] == x]
 d4 = dihedral_tbl(4)
 @assert orbit(d4, 1) == Set(1:8)
 @assert stabilizer(d4, 1) == [1]
-println("左正则作用（凯莱定理 2.132 的作用版）：轨道 = 全群，稳定子 = {1} ✓")
+println("左正则作用（凯莱定理 2.130 的作用版）：轨道 = 全群，稳定子 = {1} ✓")
 
-# 轨道-稳定子（定理 2.143）：对左乘作用逐点核验
+# 轨道-稳定子（定理 2.141）：对左乘作用逐点核验
 for tbl in (s3_tbl, d4), x in 1:size(tbl, 1)
     @assert length(orbit(tbl, x)) * length(stabilizer(tbl, x)) == size(tbl, 1)
 end
-println("定理 2.143（|O|·|G_x| = |G|）：S₃ 与 D₄ 的左乘作用逐点成立 ✓")
+println("定理 2.141（|O|·|G_x| = |G|）：S₃ 与 D₄ 的左乘作用逐点成立 ✓")
 
 # ---------- 共轭作用：类方程（D₄） ----------
 """共轭类：{g x g⁻¹ : g ∈ G}（表上实现）。"""
@@ -80,13 +80,13 @@ centerizer(tbl, x) = [g for g in 1:size(tbl, 1)
 classes_d4 = unique(Set.(conjugacy_class.(Ref(d4), 1:8)))
 @assert sort(length.(classes_d4)) == [1, 1, 2, 2, 2] "D₄ 类方程 8 = 2 + 2+2+2"
 @assert length(center(d4)) == 2                      # Z(D₄) = {1, α²}
-# 推论 2.145：共轭类大小 = 群阶/中心化子
+# 推论 2.143：共轭类大小 = 群阶/中心化子
 for x in 1:8
     @assert length(conjugacy_class(d4, x)) * length(centerizer(d4, x)) == 8
 end
 println("类方程（D₄）：|D₄| = 8 = 2（中心）+ 2+2+2；共轭类 = 群阶/中心化子 ✓")
 
-# ---------- S₄ 循环结构类大小（推论 2.146） ----------
+# ---------- S₄ 循环结构类大小（推论 2.144） ----------
 cycles(α) = begin
     n = length(α); seen = falses(n); out = Int[]
     for i in 1:n
@@ -107,7 +107,7 @@ end
 @assert struct_sizes[[2, 2]] == 3         # 双对换
 @assert struct_sizes[[3]] == 8            # 3-循环
 @assert struct_sizes[[4]] == 6            # 4-循环
-println("S₄ 循环结构类（推论 2.146）：1/6/3/8/6 个，总和 24 ✓")
+println("S₄ 循环结构类（推论 2.144）：1/6/3/8/6 个，总和 24 ✓")
 
 # ---------- 项链：Burnside 与暴力双跑 ----------
 q, n = 2, 6

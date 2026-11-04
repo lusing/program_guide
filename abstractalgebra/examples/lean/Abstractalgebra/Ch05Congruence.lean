@@ -15,7 +15,7 @@ import Mathlib.Tactic.IntervalCases
 
 namespace Abstractalgebra.Ch05
 
-/-! ## 新生代梦（命题 1.63）与费马小定理（定理 1.64）：穷举证明 -/
+/-! ## 新生代梦（命题 1.60）与费马小定理（定理 1.61）：穷举证明 -/
 
 -- ZMod 3 是有限环：9 对元素逐一代入，decide 完成"穷举即证明"
 example : ∀ a b : ZMod 3, (a + b) ^ 3 = a ^ 3 + b ^ 3 := by
@@ -32,7 +32,7 @@ theorem fermat_general (p : ℕ) [Fact (Nat.Prime p)] (a : ZMod p) (ha : a ≠ 0
     a ^ (p - 1) = 1 :=
   ZMod.pow_card_sub_one_eq_one ha
 
-/-! ## 线性同余（定理 1.69）：例 1.72 -/
+/-! ## 线性同余（定理 1.65）：例 1.67 -/
 
 -- 51x ≡ 10 (mod 94)：x = 26 确为解（正文手算：51⁻¹ ≡ 59，59·10 ≡ 26）
 example : 51 * 26 % 94 = 10 := by decide
@@ -42,7 +42,7 @@ example : ∀ r < 94, 51 * r % 94 = 10 ↔ r = 26 := by
   intro r hr
   interval_cases r <;> decide
 
-/-! ## 中国剩余定理（定理 1.73） -/
+/-! ## 中国剩余定理（定理 1.69） -/
 
 -- 孙子问题：x ≡ 2 (mod 3), x ≡ 3 (mod 5), x ≡ 2 (mod 7) ⟹ x ≡ 23 (mod 105)
 theorem sun_tzu (x : ℕ)

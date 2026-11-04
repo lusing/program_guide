@@ -75,7 +75,7 @@ main :-
 
     all_subgroups(z6, Hz6),
     length(Hz6, N6), N6 == 4,
-    format("ℤ₆ 子群恰 ~d 个 = 因子个数（命题 2.75：每因子恰一个）✓~n", [N6]),
+    format("ℤ₆ 子群恰 ~d 个 = 因子个数（命题 2.73：每因子恰一个）✓~n", [N6]),
 
     all_subgroups(d3, Hd3),
     length(Hd3, N3), N3 == 6,
@@ -88,11 +88,11 @@ main :-
            (findall(Xs, elem(G, Xs), All), length(All, N),
             order(G, X, K), N mod K =:= 0,
             pow(G, X, N, E), identity(G, E))),
-    format("推论 2.85/2.86：元素阶 | 群阶，x^|G| = 1 ✓~n"),
+    format("推论 2.83/2.86：元素阶 | 群阶，x^|G| = 1 ✓~n"),
 
     all_subgroups(z6, Hz6),
     maplist(length, Hz6, Lens),
     msort(Lens, [1, 2, 3, 6]),
-    format("注：ℤ₆ 子群阶谱 = {1,2,3,6}，每因子恰一个（命题 2.75）✓~n"),
+    format("注：ℤ₆ 子群阶谱 = {1,2,3,6}，每因子恰一个（命题 2.73）✓~n"),
 
     format("END ====~n").

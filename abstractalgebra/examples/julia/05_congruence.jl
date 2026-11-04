@@ -33,7 +33,7 @@ powmod(a::Integer, e::Integer, m::Integer) = powmod(BigInt(a), e, BigInt(m))
 
 isprime(n::Integer) = n ≥ 2 && (p = big(2); while p * p ≤ n; n % p == 0 && return false; p += (p == 2 ? 1 : 2); end; true)
 
-"""中国剩余定理（定理 1.73 的构造性证明直译）。"""
+"""中国剩余定理（定理 1.69 的构造性证明直译）。"""
 function crt(b1, m1, b2, m2)
     d, s, _ = extgcd(BigInt(m1), BigInt(m2))
     @assert d == 1 "模不互素：($m1, $m2)"
@@ -51,7 +51,7 @@ for p in 2:100
 end
 println("费马小定理：p ≤ 100 全部素数 × 全部余数（含 a ≡ 0 情形）✓")
 
-# ---------- 例 1.68：3^12345 mod 7 ----------
+# ---------- 例 1.64：3^12345 mod 7 ----------
 v = powmod(3, 12345, 7)
 @assert v == 6
 # 数字和折叠路径：12345 = (50664)₇，数字和 21 ≡ 3 (mod 6)，3³ = 27 ≡ 6
@@ -59,7 +59,7 @@ ds = sum(digits(12345, base=7))
 @assert (ds == 21 && mod(ds, 6) == 3 && mod(3^3, 7) == 6)
 println("3^12345 mod 7 = $v（直接快速幂）；数字和路径：Σ数字 = 21 ≡ 3 (mod 6)，3³ ≡ 6 ✓")
 
-# ---------- 例 1.72：51x ≡ 10 (mod 94) ----------
+# ---------- 例 1.67：51x ≡ 10 (mod 94) ----------
 _, s0, _ = extgcd(51, 94)
 inv = mod(s0, 94)
 @assert inv == 59 "51⁻¹ mod 94 = $inv ≠ 59"
@@ -79,7 +79,7 @@ for b1 in 0:4, m1 in 2:7, b2 in 0:4, m2 in 2:7
 end
 println("CRT 构造解：互素模全量组合（b ≤ 4, m ≤ 7）回代核验 ✓")
 
-# ---------- 玛雅卓尔金历（例 1.78） ----------
+# ---------- 玛雅卓尔金历（例 1.72） ----------
 names = ["Imix", "Ik", "Akbal", "Kan", "Chicchan", "Cimi", "Manik", "Lamat",
          "Muluc", "Oc", "Chuen", "Eb", "Ben", "Ix", "Men", "Kib", "Kaban",
          "Etznab", "Kawak", "Ajaw"]
@@ -99,7 +99,7 @@ d_crt = crt(6, 20, 8, 13)
 @assert d_crt == 86
 println("玛雅历：Akbal 13 之后第 $(d) 天是 Muluc 8；CRT（d≡6 mod 20, d≡8 mod 13）同给 86 ✓")
 
-# ---------- 玩具 RSA（例 1.79） ----------
+# ---------- 玩具 RSA（例 1.73） ----------
 p, q = 2003, 3011                     # 都 ≡ 2 (mod 3)，素数
 @assert isprime(p) && isprime(q) && mod(p, 3) == 2 && mod(q, 3) == 2
 N = p * q                             # N = 6031033

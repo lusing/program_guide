@@ -21,7 +21,7 @@ def extgcd(a, b):
     return old_r, old_s, old_t
 
 
-# 例 1.45
+# 例 1.42
 d, s, t = extgcd(326, 78)
 assert (d, s, t) == (2, -11, 46), (d, s, t)
 assert Rational(78, 326) == Rational(39, 163)

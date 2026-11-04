@@ -61,7 +61,7 @@ big1 = 2**61 - 1      # 梅森素数
 assert factorint(big1) == {big1: 1}
 print("梅森素数 2⁶¹−1：分解 = 自身 ✓（sympy 秒判——它用了更强的素性检验）")
 
-# Σ φ(d) = n（与推论 1.31 呼应）
+# Σ φ(d) = n（与推论 1.28 呼应）
 for n in range(1, 200):
     assert sum(totient(d) for d in divisors(n)) == n
 print("Σ_{d∣n} φ(d) = n：n < 200 全部成立 ✓")
