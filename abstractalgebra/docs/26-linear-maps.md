@@ -39,7 +39,7 @@ T 的矩阵 A 与 A′ = P⁻¹AP，其中 P 是换基矩阵（C 坐标到 B 坐
 (T+S)v = Tv + Sv、(aT)v = aTv、(TS)v = T(Sv)——线性变换构成
 **域上的代数**（向量空间 + 乘法）。复合不交换（除法就是求逆：
 可逆 T ⟺ 双射 ⟺ det ≠ 0）。多项式 f(T) = a₀I + a₁T + ⋯ + aₖTᵏ
-良定义——为第 27 章（特征多项式 = det(xI − A)）搭好舞台。
+良定义——为第 28 章（特征多项式 = det(xI − A)）搭好舞台。
 
 ## 26.4 有限域上的线性变换
 
@@ -146,4 +146,4 @@ invertible2(M) :- det2(M, 1).
 
 ---
 
-上一章：[25 欧氏作图](25-constructions.md) · 下一章：[27 特征值](27-eigenvalues.md)
+上一章：[25 欧氏作图](25-constructions.md) · 下一章：[27 行列式](27-determinants.md)

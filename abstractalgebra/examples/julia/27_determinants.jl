@@ -186,6 +186,6 @@ println("命题 4.93 数值面：h_A = x³ − tr·x² + e₂·x − det（三�
 
 R3 = [0 1 0; -1 0 0; 0 0 5]             # det(xI − R) = (x²+1)(x−5) = x³ − 5x² + x − 5
 @assert charpoly3(R3).c == [-5 // 1, 1 // 1, -5 // 1, 1 // 1]
-println("无实特征值预告：det(xI − R) = x³ − 5x² + x − 5，x²+1 因子（无实根）在 28 章开花 ✓")
+println("无实特征值预告：det(xI − R) = x³ − 5x² + x − 5，x²+1 因子（无实根）在 29章开花 ✓")
 
 println("END ====")

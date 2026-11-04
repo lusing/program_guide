@@ -1,13 +1,14 @@
 # 抽象代数：编程与自动证明教程
 
-以 Joseph J. Rotman《抽象代数基础教程（原书第3版）》（A First Course in
-Abstract Algebra with Applications, 3rd ed.，李样明、冯明军译，机械工业出版社
-2008）为纲的自包含中文教程。目标：**只读 docs 就能学会**——讲解为主、代码为辅，
-每一段示例代码都在正文中引用并解释，读者不必翻看原书。
+以 Joseph J. Rotman *A First Course in Abstract Algebra*, 3rd ed.
+（Prentice Hall；中译本《抽象代数基础教程（原书第3版）》，李样明、冯明军
+译，机械工业出版社 2008）为纲的自包含中文教程。目标：**只读 docs 就能
+学会**——讲解为主、代码为辅，每一段示例代码都在正文中引用并解释，读者
+不必翻看原书；引用原书时使用英文版编号与页码。
 
 ## 结构
 
-- `docs/00-40.md` —— 41 章正文（七篇：数论 / 群 I / 交换环 I / 线性代数 / 域 /
+- `docs/00-41.md` —— 42 章正文（七篇：数论 / 群 I / 交换环 I / 线性代数 / 域 /
   群 II / 交换环 II），每章末有要点回顾与上下章导航。
 - `examples/lean/` —— Lean 4 + mathlib（钉版 4.33.1）证明通道，每章一个
   `Abstractalgebra/ChNN*.lean`。
