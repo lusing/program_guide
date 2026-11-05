@@ -9,3 +9,6 @@ import Realanalysis.Ch07Bijections
 import Realanalysis.Ch08Countability
 import Realanalysis.Ch09Metric
 import Realanalysis.Ch10OpenClosed
+import Realanalysis.Ch11Compact
+import Realanalysis.Ch12HeineBorel
+import Realanalysis.Ch13Perfect
