@@ -197,4 +197,4 @@ conv_entry(A, B, K, C) :-
 
 ---
 
-上一章：[43 Lindeberg 条件：中心极限定理的充要边界](43-lindeberg.md) · 下一章：[49 全书速查与定理地图](49-cheatsheet.md)
+上一章：[43 Lindeberg 条件：中心极限定理的充要边界](43-lindeberg.md) · 下一章：[45 级数收敛与三级数定理](45-three-series.md)

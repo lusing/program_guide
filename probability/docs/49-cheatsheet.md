@@ -238,4 +238,4 @@ G:\scoop\apps\python313\current\python.exe -I probability/tools/check_docs.py --
 
 ---
 
-上一章：[44 无穷可分分布：任意切分的分布族](44-infinitely-divisible.md) · 全书完
+上一章：[45 级数收敛与三级数定理](45-three-series.md) · 全书完
