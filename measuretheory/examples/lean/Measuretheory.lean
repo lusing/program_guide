@@ -62,3 +62,4 @@ import Measuretheory.Ch56LLL
 import Measuretheory.Ch57Hausdorff
 import Measuretheory.Ch58Differentiation
 import Measuretheory.Ch59RandomWalks
+import Measuretheory.Ch60BrownianMotion
