@@ -27,3 +27,48 @@ session RA05 in "RA05" = "HOL-Analysis" +
   options [document = false]
   theories
     Completeness
+
+session RA06 in "RA06" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    ComplexEuclidean
+
+session RA07 in "RA07" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Bijections
+
+session RA08 in "RA08" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Countability
+
+session RA09 in "RA09" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Metric
+
+session RA10 in "RA10" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    OpenClosed
+
+session RA11 in "RA11" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    CompactSets
+
+session RA12 in "RA12" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    HeineBorel
+
+session RA13 in "RA13" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    PerfectConnected
+
+session RA14 in "RA14" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Sequences

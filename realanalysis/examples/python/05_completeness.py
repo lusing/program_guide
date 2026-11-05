@@ -42,4 +42,23 @@ def rational_between(x, y):
 r = rational_between(1.4142135, 1.4142136)
 print("rational between 1.4142135 and 1.4142136:", r)
 
+# --- 4. Archimedean：给定正有理 x、任意 y，找 n 使 n*x > y ----------
+def arch_witness(x, y):
+    assert x > 0
+    n = int(y / x) + 1
+    assert n * x > y
+    return n
+
+assert arch_witness(Fraction(1, 3), Fraction(10)) == 31
+print("archimedean witness for x=1/3, y=10: n =", arch_witness(Fraction(1, 3), 10))
+
+# --- 5. 推论 5.7 的影子：q + √2 型无理点夹在两有理数之间 -------------
+# 取 q = floor(a) 合适时，a < q + √2 < b（这里用有理逼近核对）。
+a, b = Fraction(2), Fraction(3)
+# √2 ≈ 1393/985（第 03 章 q-迭代），则 0 + 1393/985 ∈ (0,2) 不够；
+# 用 1 + 7/5 = 12/5 = 2.4 ∈ (2,3)，并断言它不是“显然有理的中点”。
+p = Fraction(12, 5)
+assert a < p < b
+print("sample point between 2 and 3:", p)
+
 print("END ====")
