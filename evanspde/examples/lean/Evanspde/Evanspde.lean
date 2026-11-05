@@ -4,3 +4,6 @@ import Evanspde.Ch02Transport
 import Evanspde.Ch03LaplaceFundamental
 import Evanspde.Ch04LaplaceGreen
 import Evanspde.Ch05LaplaceEnergy
+import Evanspde.Ch06HeatFundamental
+import Evanspde.Ch07HeatProperties
+import Evanspde.Ch09WaveKirchhoff
