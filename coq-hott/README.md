@@ -44,33 +44,33 @@
 
 ## 章节索引
 
-| 章 | 主题 | 要理解的那句话 | 示例 |
-|---|---|---|---|
-| [01](docs/01-type-theory.md) | 类型即空间 | 命题即类型，证明即程序，类型即空间 | `01_type_theory.v` |
-| [02](docs/02-toolchain.md) | 三条设计选择 | 没有 `Prop`、公理是假设、路径优先于算术 | `02_toolchain.v` |
-| [03](docs/03-dependent-types.md) | 依赖类型 | Π 是全称，Σ 是带见证的存在 | `03_dependent_types.v` |
-| [04](docs/04-identity-types.md) | 恒等类型 | 只有一条规则 J，一切路径性质由它派生 | `04_identity_types.v` |
-| [05](docs/05-transport.md) | Transport | 沿路径把纤维里的点平行移动过去 | `05_transport.v` |
-| [06](docs/06-path-algebra.md) | 路径代数 | 每个类型是一个 ∞-群胚 | `06_path_algebra.v` |
-| [07](docs/07-equivalences.md) | 等价 | “两个类型一样”必须在所有层次对齐 | `07_equivalences.v` |
-| [08](docs/08-fibers.md) | 纤维与可缩 | 等价 ⟺ 每个纤维可缩 | `08_fibers.v` |
-| [09](docs/09-truncation.md) | 截断层级 | 可缩、命题、集合是同一把尺子上的刻度 | `09_truncation.v` |
-| [10](docs/10-funext.md) | 函数外延 | 逐点相等推不出函数相等 | `10_funext.v` |
-| [11](docs/11-univalence.md) | 泛等公理 | 等价的类型就是相等的类型 | `11_univalence.v` |
-| [12](docs/12-hit-interval.md) | 区间 | HIT 用路径构造子把空间粘出来 | `12_hit_interval.v` |
-| [13](docs/13-circle.md) | 圆 | 第一个有非平凡环路的类型；π₁(S¹) = ℤ | `13_circle.v` |
-| [14](docs/14-type-formers.md) | 构造器里的路径 | 每种类型里的“相等”都可以拆开看 | `14_type_formers.v` |
-| [15](docs/15-truncations.md) | 截断操作 | “存在但不告诉你是谁”是把类型压成命题 | `15_truncations.v` |
-| [16](docs/16-sets-quotient.md) | 集合与商 | 商必须截断，否则会留下环路 | `16_quotient.v` |
-| [17](docs/17-trunc-maps.md) | 截断映射 | 嵌入不是单射；满射 + 嵌入 = 等价 | `17_trunc_maps.v` |
-| [18](docs/18-univalence-apps.md) | 结构搬运 | 同构的东西有相同的性质，在这里是定理 | `18_univalence_apps.v` |
-| [19](docs/19-colimits.md) | 余极限 | 所有 HIT 都是“沿指定方式粘合” | `19_colimits.v` |
-| [20](docs/20-categories.md) | 范畴论 | 单叶范畴 = 对象的同构即相等 | `20_categories.v` |
-| [21](docs/21-pointed.md) | 点化类型 | 基点变成数据，环路空间才有定义 | `21_pointed.v` |
-| [22](docs/22-numbers.md) | 自然数与整数 | 集合层面的 HoTT 就是普通数学 | `22_numbers.v` |
-| [23](docs/23-metatheory.md) | 公理意味着什么 | 每条定理用了什么，机器可以列出来 | `23_metatheory.v` |
-| [24](docs/24-capstone.md) | 螺旋覆叠 | 自己造覆叠，证明 `loop ≠ 1` | `24_capstone.v` |
-| [25](docs/25-pitfalls.md) | 误区总览 | 想错了比写错了更危险 | — |
+| 章 | 要理解的那句话 | 示例 |
+|---|---|---|
+| [01 类型即空间](docs/01-type-theory.md) | 命题即类型，证明即程序，类型即空间 | `01_type_theory.v` |
+| [02 三条设计选择](docs/02-toolchain.md) | 没有 `Prop`、公理是假设、路径优先于算术 | `02_toolchain.v` |
+| [03 依赖类型](docs/03-dependent-types.md) | Π 是全称，Σ 是带见证的存在 | `03_dependent_types.v` |
+| [04 恒等类型](docs/04-identity-types.md) | 只有一条规则 J，一切路径性质由它派生 | `04_identity_types.v` |
+| [05 Transport](docs/05-transport.md) | 沿路径把纤维里的点平行移动过去 | `05_transport.v` |
+| [06 路径代数](docs/06-path-algebra.md) | 每个类型是一个 ∞-群胚 | `06_path_algebra.v` |
+| [07 等价](docs/07-equivalences.md) | “两个类型一样”必须在所有层次对齐 | `07_equivalences.v` |
+| [08 纤维与可缩](docs/08-fibers.md) | 等价 ⟺ 每个纤维可缩 | `08_fibers.v` |
+| [09 截断层级](docs/09-truncation.md) | 可缩、命题、集合是同一把尺子上的刻度 | `09_truncation.v` |
+| [10 函数外延](docs/10-funext.md) | 逐点相等推不出函数相等 | `10_funext.v` |
+| [11 泛等公理](docs/11-univalence.md) | 等价的类型就是相等的类型 | `11_univalence.v` |
+| [12 区间](docs/12-hit-interval.md) | HIT 用路径构造子把空间粘出来 | `12_hit_interval.v` |
+| [13 圆](docs/13-circle.md) | 第一个有非平凡环路的类型；π₁(S¹) = ℤ | `13_circle.v` |
+| [14 构造器里的路径](docs/14-type-formers.md) | 每种类型里的“相等”都可以拆开看 | `14_type_formers.v` |
+| [15 截断操作](docs/15-truncations.md) | “存在但不告诉你是谁”是把类型压成命题 | `15_truncations.v` |
+| [16 集合与商](docs/16-sets-quotient.md) | 商必须截断，否则会留下环路 | `16_quotient.v` |
+| [17 截断映射](docs/17-trunc-maps.md) | 嵌入不是单射；满射 + 嵌入 = 等价 | `17_trunc_maps.v` |
+| [18 结构搬运](docs/18-univalence-apps.md) | 同构的东西有相同的性质，在这里是定理 | `18_univalence_apps.v` |
+| [19 余极限](docs/19-colimits.md) | 所有 HIT 都是“沿指定方式粘合” | `19_colimits.v` |
+| [20 范畴论](docs/20-categories.md) | 单叶范畴 = 对象的同构即相等 | `20_categories.v` |
+| [21 点化类型](docs/21-pointed.md) | 基点变成数据，环路空间才有定义 | `21_pointed.v` |
+| [22 自然数与整数](docs/22-numbers.md) | 集合层面的 HoTT 就是普通数学 | `22_numbers.v` |
+| [23 公理意味着什么](docs/23-metatheory.md) | 每条定理用了什么，机器可以列出来 | `23_metatheory.v` |
+| [24 螺旋覆叠](docs/24-capstone.md) | 自己造覆叠，证明 `loop ≠ 1` | `24_capstone.v` |
+| [25 误区总览](docs/25-pitfalls.md) | 想错了比写错了更危险 | — |
 
 另有 [CHEATSheet.md](CHEATSheet.md)：读完之后用来查记号和引理，不是入门读物。
 

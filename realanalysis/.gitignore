@@ -16,3 +16,11 @@ __pycache__/
 *.pyc
 *.qlf
 *.thy~
+
+# Cursor 本地代理规则
+.cursor/
+
+# Rocq 原生编译缓存，落在教程根目录
+.lia.cache
+.nia.cache
+.nra.cache

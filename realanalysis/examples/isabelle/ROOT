@@ -72,3 +72,38 @@ session RA14 in "RA14" = "HOL-Analysis" +
   options [document = false]
   theories
     Sequences
+
+session RA15 in "RA15" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Subsequences
+
+session RA16 in "RA16" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    CauchyMono
+
+session RA17 in "RA17" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    SubseqLimits
+
+session RA18 in "RA18" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Special
+
+session RA19 in "RA19" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    SeriesBasics
+
+session RA20 in "RA20" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Summary
+
+session RA21 in "RA21" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Wrapup

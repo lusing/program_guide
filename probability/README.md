@@ -18,136 +18,136 @@
 
 ### 导言
 
-| 章 | 标题 | 一句话 |
-|---|---|---|
-| [00](docs/00-intro.md) | 导言：经济随机系统与概率统计 | 数据生成过程、描述统计与推断统计 |
+| 章 | 一句话 |
+|---|---|
+| [00 导言：经济随机系统与概率统计](docs/00-intro.md) | 数据生成过程、描述统计与推断统计 |
 
 ### 第一篇 概率模型与有限计数
 
 从随机试验和公理出发，经条件概率、独立性与信息更新，进入组合计数、
 容斥和有限实验；每个模型都明确等可能假设与证据等级。
 
-| 章 | 标题 | 一句话 |
-|---|---|---|
-| [01](docs/01-events.md) | 随机试验、事件与 σ 代数 | 样本空间、事件运算与经济随机系统 |
-| [02](docs/02-axioms.md) | 概率公理与基本定律 | Kolmogorov 三公理与补律、容斥、Boole 界 |
-| [03](docs/03-conditional.md) | 条件概率与 Bayes | 信息更新、全概率、医学检验与 Monty Hall |
-| [04](docs/04-independence.md) | 独立性、条件独立与信息 | 两两独立、共同原因、对撞量与零相关 |
-| [05](docs/05-counting.md) | 计数原理、排列与组合 | 阶乘、二项系数、多项系数与四种抽样 |
-| [06](docs/06-inclusion-exclusion.md) | 容斥与组合恒等式 | 错排、占位数、Vandermonde 与曲棍球棒 |
-| [07](docs/07-counting-lab.md) | 计数实验 | 生日、扑克、桥牌与秘书问题 |
+| 章 | 一句话 |
+|---|---|
+| [01 随机试验、事件与 σ 代数](docs/01-events.md) | 样本空间、事件运算与经济随机系统 |
+| [02 概率公理与基本定律](docs/02-axioms.md) | Kolmogorov 三公理与补律、容斥、Boole 界 |
+| [03 条件概率与 Bayes](docs/03-conditional.md) | 信息更新、全概率、医学检验与 Monty Hall |
+| [04 独立性、条件独立与信息](docs/04-independence.md) | 两两独立、共同原因、对撞量与零相关 |
+| [05 计数原理、排列与组合](docs/05-counting.md) | 阶乘、二项系数、多项系数与四种抽样 |
+| [06 容斥与组合恒等式](docs/06-inclusion-exclusion.md) | 错排、占位数、Vandermonde 与曲棍球棒 |
+| [07 计数实验](docs/07-counting-lab.md) | 生日、扑克、桥牌与秘书问题 |
 
 ### 第二篇 一元随机变量与界限
 
 统一离散、连续与混合分布，经期望、变换和概率不等式建立一元工具箱。
 
-| 章 | 标题 | 一句话 |
-|---|---|---|
-| [08](docs/08-random-variables.md) | 随机变量、分布函数与密度 | pmf、pdf、CDF 与混合型 |
-| [09](docs/09-expectation.md) | 数学期望、矩、分位数与风险 | 可积性、方差、效用与组合风险 |
-| [10](docs/10-transformations.md) | 一元随机变量变换 | CDF 法、Jacobian、多支反函数与逆变换 |
-| [11](docs/11-inequalities.md) | 概率不等式与矩的界限 | Markov、Chebyshev、Jensen 与 Boole |
+| 章 | 一句话 |
+|---|---|
+| [08 随机变量、分布函数与密度](docs/08-random-variables.md) | pmf、pdf、CDF 与混合型 |
+| [09 数学期望、矩、分位数与风险](docs/09-expectation.md) | 可积性、方差、效用与组合风险 |
+| [10 一元随机变量变换](docs/10-transformations.md) | CDF 法、Jacobian、多支反函数与逆变换 |
+| [11 概率不等式与矩的界限](docs/11-inequalities.md) | Markov、Chebyshev、Jensen 与 Boole |
 ### 第三篇 分布族与独立和工具
 
 从常见离散、连续分布到稳定分布，再用生成函数、卷积和参数求导统一处理独立和与矩。
 
-| 章 | 标题 | 一句话 |
-|---|---|---|
-| [12](docs/12-discrete-dists.md) | 离散分布族 | Bernoulli、二项、几何、负二项与 Poisson |
-| [13](docs/13-continuous-dists.md) | 连续分布族 | 均匀、指数、Weibull、Γ、Beta 与 Laplace |
-| [14](docs/14-normal-stable.md) | 正态、对数正态、柯西与稳定分布 | 尾部、矩、稳定性与尺度 |
-| [15](docs/15-generating-functions.md) | 母函数、矩生成函数与特征函数 | PGF/MGF/CF、矩与唯一性 |
-| [16](docs/16-convolutions.md) | 卷积与微分恒等式 | 独立和、分组与参数求导 |
+| 章 | 一句话 |
+|---|---|
+| [12 离散分布族](docs/12-discrete-dists.md) | Bernoulli、二项、几何、负二项与 Poisson |
+| [13 连续分布族](docs/13-continuous-dists.md) | 均匀、指数、Weibull、Γ、Beta 与 Laplace |
+| [14 正态、对数正态、柯西与稳定分布](docs/14-normal-stable.md) | 尾部、矩、稳定性与尺度 |
+| [15 母函数、矩生成函数与特征函数](docs/15-generating-functions.md) | PGF/MGF/CF、矩与唯一性 |
+| [16 卷积与微分恒等式](docs/16-convolutions.md) | 独立和、分组与参数求导 |
 
 ### 第四篇 多元随机变量与信息更新
 
 从联合分布走向条件期望、协方差矩阵和多元正态，强调零相关与独立的
 边界、信息更新以及线性变换下的封闭性。
 
-| 章 | 标题 | 一句话 |
-|---|---|---|
-| [17](docs/17-joint-distributions.md) | 联合、边际与条件分布 | 联合 pmf/pdf、归一化、Bayes 与多项分布 |
-| [18](docs/18-multivariate-transformations.md) | 多元变换与 Jacobian | 行列式、和积商变换、极坐标与次序统计量 |
-| [19](docs/19-covariance.md) | 协方差、相关与独立 | Cauchy–Schwarz、半正定矩阵与投资组合 |
-| [20](docs/20-conditional-expectation.md) | 条件期望与条件方差 | 塔性质、全方差、L² 投影与鞅 |
-| [21](docs/21-multivariate-normal.md) | 二元与多元正态 | Schur 补、条件正态、Cholesky 与反例 |
+| 章 | 一句话 |
+|---|---|
+| [17 联合、边际与条件分布](docs/17-joint-distributions.md) | 联合 pmf/pdf、归一化、Bayes 与多项分布 |
+| [18 多元变换与 Jacobian](docs/18-multivariate-transformations.md) | 行列式、和积商变换、极坐标与次序统计量 |
+| [19 协方差、相关与独立](docs/19-covariance.md) | Cauchy–Schwarz、半正定矩阵与投资组合 |
+| [20 条件期望与条件方差](docs/20-conditional-expectation.md) | 塔性质、全方差、L² 投影与鞅 |
+| [21 二元与多元正态](docs/21-multivariate-normal.md) | Schur 补、条件正态、Cholesky 与反例 |
 
 ### 第五篇 抽样分布与统计信息
 
 从 iid 样本和统计量出发，建立正态样本的 $\chi^2,t,F$ 抽样分布，
 再用条件分布和因子分解理解数据简化、最小充分性、完备性与 Rao–Blackwell 化。
 
-| 章 | 标题 | 一句话 |
-|---|---|---|
-| [22](docs/22-sampling-distributions.md) | 随机样本与抽样分布 | Helmert 正交变换、$\chi^2,t,F$ 、双样本与顺序统计量 |
-| [23](docs/23-sufficiency.md) | 充分统计量与数据简化 | 因子分解、最小充分、完备性、Basu 定理与 Rao–Blackwell |
+| 章 | 一句话 |
+|---|---|
+| [22 随机样本与抽样分布](docs/22-sampling-distributions.md) | Helmert 正交变换、$\chi^2,t,F$ 、双样本与顺序统计量 |
+| [23 充分统计量与数据简化](docs/23-sufficiency.md) | 因子分解、最小充分、完备性、Basu 定理与 Rao–Blackwell |
 
 ### 第六篇 随机序列与极限定理 I
 
 从时间齐次 Markov 链进入随机序列，区分四种收敛模式，再以弱律、强律和
 Monte Carlo 误差公式建立大样本平均的基本理论。
 
-| 章 | 标题 | 一句话 |
-|---|---|---|
-| [24](docs/24-markov-chains.md) | 差分方程与 Markov 链 | 转移矩阵、平稳分布、首达时间、Leslie 矩阵与遍历均值 |
-| [25](docs/25-convergence.md) | 随机变量序列的收敛 | $L^p$ 、几乎必然、依概率、依分布及 Borel–Cantelli 反例 |
-| [26](docs/26-lln.md) | 大数定律与 Monte Carlo | Chebyshev 弱律、Khinchin/Kolmogorov 强律、Cauchy 反例 |
+| 章 | 一句话 |
+|---|---|
+| [24 差分方程与 Markov 链](docs/24-markov-chains.md) | 转移矩阵、平稳分布、首达时间、Leslie 矩阵与遍历均值 |
+| [25 随机变量序列的收敛](docs/25-convergence.md) | $L^p$ 、几乎必然、依概率、依分布及 Borel–Cantelli 反例 |
+| [26 大数定律与 Monte Carlo](docs/26-lln.md) | Chebyshev 弱律、Khinchin/Kolmogorov 强律、Cauchy 反例 |
 
 ### 第七篇 渐近定理与工具 II
 
 以特征函数完成有限方差 CLT，再用 Fourier 反演与 Lévy 连续性定理补齐接口；
 随后建立随机阶、Slutsky、Delta 方法和 Stirling 局部近似，把分布极限转化为可用的统计计算。
 
-| 章 | 标题 | 一句话 |
-|---|---|---|
-| [27](docs/27-clt.md) | 中心极限定理 | iid 有限方差的特征函数证明、连续性修正与格距 |
-| [28](docs/28-fourier-clt.md) | Fourier 分析与特征函数 | 反演、唯一性、卷积、Lévy 连续性与稳定律 |
-| [29](docs/29-asymptotic-tools.md) | 渐近拼接工具 | $O_p/o_p$ 、连续映射、Slutsky 与 Delta 方法 |
-| [30](docs/30-stirling.md) | Stirling 公式与局部近似 | 积分夹逼、Wallis 常数、中心二项系数与有限误差 |
+| 章 | 一句话 |
+|---|---|
+| [27 中心极限定理](docs/27-clt.md) | iid 有限方差的特征函数证明、连续性修正与格距 |
+| [28 Fourier 分析与特征函数](docs/28-fourier-clt.md) | 反演、唯一性、卷积、Lévy 连续性与稳定律 |
+| [29 渐近拼接工具](docs/29-asymptotic-tools.md) | $O_p/o_p$ 、连续映射、Slutsky 与 Delta 方法 |
+| [30 Stirling 公式与局部近似](docs/30-stirling.md) | 积分夹逼、Wallis 常数、中心二项系数与有限误差 |
 
 ### 第八篇 统计模型与估计
 
 从参数识别与风险出发，建立极大似然、得分与 Fisher 信息；随后进入矩估计、有效性和渐近推断。
 
-| 章 | 标题 | 一句话 |
-|---|---|---|
-| [31](docs/31-estimation-models.md) | 参数模型、估计量与风险 | 识别、模型误设、偏差—方差分解与风险比较 |
-| [32](docs/32-mle.md) | 极大似然估计 | 似然、得分、Fisher 信息、Newton 优化与不变性 |
-| [33](docs/33-gmm.md) | 矩估计与广义矩方法 | 恰好/过度识别、最优权重、两步 GMM 与 J 统计量 |
-| [34](docs/34-efficiency.md) | UMVU 与信息下界 | Rao–Blackwell、Lehmann–Scheffé、Cramér–Rao 与等号条件 |
-| [35](docs/35-asymptotic-estimation.md) | 一致性与渐近方差 | MLE/GMM 展开、伪真参数、sandwich 与稳健标准误 |
+| 章 | 一句话 |
+|---|---|
+| [31 参数模型、估计量与风险](docs/31-estimation-models.md) | 识别、模型误设、偏差—方差分解与风险比较 |
+| [32 极大似然估计](docs/32-mle.md) | 似然、得分、Fisher 信息、Newton 优化与不变性 |
+| [33 矩估计与广义矩方法](docs/33-gmm.md) | 恰好/过度识别、最优权重、两步 GMM 与 J 统计量 |
+| [34 UMVU 与信息下界](docs/34-efficiency.md) | Rao–Blackwell、Lehmann–Scheffé、Cramér–Rao 与等号条件 |
+| [35 一致性与渐近方差](docs/35-asymptotic-estimation.md) | MLE/GMM 展开、伪真参数、sandwich 与稳健标准误 |
 
 ### 第九篇 假设检验与置信推断
 
 从两类错误和 Neyman–Pearson 最优性出发，建立 Wald、LM、LR
 三大渐近检验，并以检验—置信集对偶统一 p 值、功效与区间解释。
 
-| 章 | 标题 | 一句话 |
-|---|---|---|
-| [36](docs/36-hypothesis-testing.md) | 假设检验与 Neyman–Pearson 理论 | 两类错误、size/power、UMP、p 值与经典 z/t/χ² 检验 |
-| [37](docs/37-asymptotic-tests.md) | Wald、LM、LR 检验与置信区间 | 渐近卡方、局部功效、检验—区间对偶与多重比较 |
+| 章 | 一句话 |
+|---|---|
+| [36 假设检验与 Neyman–Pearson 理论](docs/36-hypothesis-testing.md) | 两类错误、size/power、UMP、p 值与经典 z/t/χ² 检验 |
+| [37 Wald、LM、LR 检验与置信区间](docs/37-asymptotic-tests.md) | 渐近卡方、局部功效、检验—区间对偶与多重比较 |
 
 ### 第十篇 线性回归模型
 
 从投影几何与正规方程建立 OLS，经平方和分解、拟合优度与模型选择，
 到无偏性、协方差公式、Gauss–Markov、正态精确推断与广义最小二乘。
 
-| 章 | 标题 | 一句话 |
-|---|---|---|
-| [38](docs/38-ols.md) | 经典线性回归与普通最小二乘 | 假设分层、投影/正规方程、P 与 M、误差度量对质 |
-| [39](docs/39-ols-properties.md) | 拟合优度、模型选择与 Gauss–Markov | TSS/ESS/RSS、调整 R²、无偏性、s² 迹账与 BLUE |
-| [40](docs/40-ols-inference.md) | OLS 抽样分布、t 检验与 F 检验 | 正态精确推断、单约束 F=t²、联合显著 vs 单个不显著 |
-| [41](docs/41-gls.md) | 误设、受约束回归与 GLS | 受约束闭式、遗漏偏误、方差膨胀与 Aitken |
+| 章 | 一句话 |
+|---|---|
+| [38 经典线性回归与普通最小二乘](docs/38-ols.md) | 假设分层、投影/正规方程、P 与 M、误差度量对质 |
+| [39 拟合优度、模型选择与 Gauss–Markov](docs/39-ols-properties.md) | TSS/ESS/RSS、调整 R²、无偏性、s² 迹账与 BLUE |
+| [40 OLS 抽样分布、t 检验与 F 检验](docs/40-ols-inference.md) | 正态精确推断、单约束 F=t²、联合显著 vs 单个不显著 |
+| [41 误设、受约束回归与 GLS](docs/41-gls.md) | 受约束闭式、遗漏偏误、方差膨胀与 Aitken |
 
 ### 第十一篇 收官
 
 一条公开 DGP 的合成劳动力市场贯通估计、检验与回归工具链；
 证明方法六族与全书速查表收束全部定理、公式与坑账。
 
-| 章 | 标题 | 一句话 |
-|---|---|---|
-| [42](docs/42-synthesis.md) | 综合案例与概率证明方法 | 合成数据全程：OLS/MLE/IV/WLS + 证明方法地图与名题 |
-| [43](docs/43-cheatsheet.md) | 全书速查与定理地图 | 假设→定理→结论→误用总表、公式速查、坑账与验证状态 |
+| 章 | 一句话 |
+|---|---|
+| [42 综合案例与概率证明方法](docs/42-synthesis.md) | 合成数据全程：OLS/MLE/IV/WLS + 证明方法地图与名题 |
+| [43 全书速查与定理地图](docs/43-cheatsheet.md) | 假设→定理→结论→误用总表、公式速查、坑账与验证状态 |
 
 ## 构建与验证
 

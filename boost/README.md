@@ -179,62 +179,62 @@ Apple clang 16.0.0（Xcode 16）/ macOS 14 / x86_64，Boost 1.88 源码树自建
 
 ### 第一部 · 舞台
 
-| 章 | 主题 |
-|---|---|
-| [01](docs/01-overview.md) | Boost 与 C++ 的二十八年：一部"标准库预备队"史 |
-| [02](docs/02-setup.md) | 环境与构建：把工具链立起来 |
+| 章 |
+|---|
+| [01 Boost 与 C++ 的二十八年：一部"标准库预备队"史](docs/01-overview.md) |
+| [02 环境与构建：把工具链立起来](docs/02-setup.md) |
 
 ### 第二部 · TR1 与 C++11——黄金毕业潮
 
-| 章 | 主题 | 库 |
-|---|---|---|
-| [03](docs/03-smartptr.md) | 所有权革命 | smart_ptr |
-| [04](docs/04-function.md) | 函数即对象 | function、bind、functional、lambda、lambda2、hof、callable_traits、local_function、phoenix、parameter、compat |
-| [05](docs/05-langbase.md) | 语言基建先行者 | tuple、array、static_assert、type_traits、typeof、integer、utility、core、assert、config、predef、foreach、align、type_index |
-| [06](docs/06-regex-random.md) | 正则与随机 | regex、random |
-| [07](docs/07-chrono.md) | 时间与日历 | date_time、chrono、ratio、timer |
-| [08](docs/08-unordered.md) | 无序与哈希 | unordered、container_hash、hash2 |
-| [09](docs/09-thread.md) | 多线程第一课 | thread |
-| [10](docs/10-atomic.md) | 原子操作 | atomic |
-| [11](docs/11-error.md) | 错误处理基石 | exception、system、throw_exception |
+| 章 | 库 |
+|---|---|
+| [03 所有权革命](docs/03-smartptr.md) | smart_ptr |
+| [04 函数即对象](docs/04-function.md) | function、bind、functional、lambda、lambda2、hof、callable_traits、local_function、phoenix、parameter、compat |
+| [05 语言基建先行者](docs/05-langbase.md) | tuple、array、static_assert、type_traits、typeof、integer、utility、core、assert、config、predef、foreach、align、type_index |
+| [06 正则与随机](docs/06-regex-random.md) | regex、random |
+| [07 时间与日历](docs/07-chrono.md) | date_time、chrono、ratio、timer |
+| [08 无序与哈希](docs/08-unordered.md) | unordered、container_hash、hash2 |
+| [09 多线程第一课](docs/09-thread.md) | thread |
+| [10 原子操作](docs/10-atomic.md) | atomic |
+| [11 错误处理基石](docs/11-error.md) | exception、system、throw_exception |
 
 ### 第三部 · C++17/20/23/26 现代波次
 
-| 章 | 主题 | 库 |
-|---|---|---|
-| [12](docs/12-vocabulary.md) | 词汇类型 | optional、variant、variant2、any、string_view、static_string、uuid、logic |
-| [13](docs/13-filesystem.md) | 文件系统与编码 | filesystem、nowide |
-| [14](docs/14-format.md) | 格式化 | format（vs std::format） |
-| [15](docs/15-ranges.md) | 范围与迭代器 | range、iterator、stl_interfaces、concept_check、sort |
-| [16](docs/16-coroutines.md) | 协程时代 | context、coroutine、coroutine2、cobalt、fiber |
-| [17](docs/17-cpp23.md) | C++23 波次 | charconv、stacktrace、decimal、outcome、（std::mdspan 对照） |
-| [18](docs/18-cpp26.md) | C++26 展望 | describe、pfr、（execution/linalg/inplace_vector 导览） |
+| 章 | 库 |
+|---|---|
+| [12 词汇类型](docs/12-vocabulary.md) | optional、variant、variant2、any、string_view、static_string、uuid、logic |
+| [13 文件系统与编码](docs/13-filesystem.md) | filesystem、nowide |
+| [14 格式化](docs/14-format.md) | format（vs std::format） |
+| [15 范围与迭代器](docs/15-ranges.md) | range、iterator、stl_interfaces、concept_check、sort |
+| [16 协程时代](docs/16-coroutines.md) | context、coroutine、coroutine2、cobalt、fiber |
+| [17 C++23 波次](docs/17-cpp23.md) | charconv、stacktrace、decimal、outcome、（std::mdspan 对照） |
+| [18 C++26 展望](docs/18-cpp26.md) | describe、pfr、（execution/linalg/inplace_vector 导览） |
 
 ### 第四部 · 纯 Boost 生态
 
-| 章 | 主题 | 库 |
-|---|---|---|
-| [19](docs/19-text.md) | 字符串工具 | algorithm、tokenizer、lexical_cast、convert、locale |
-| [20](docs/20-parsers.md) | 解析器族谱 | spirit、xpressive、parser |
-| [21](docs/21-container-core.md) | 容器（上） | container（flat_map/small_vector/static_vector/stable_vector/devector）、circular_buffer、pool、assign |
-| [22](docs/22-container-zoo.md) | 容器（下） | multi_index、bimap、ptr_container、intrusive、heap、icl、poly_collection、flyweight、dynamic_bitset、bloom、multi_array |
-| [23](docs/23-graph-geometry.md) | 图与几何 | graph、property_map、geometry、polygon |
-| [24](docs/24-numeric.md) | 数值计算 | math、multiprecision、rational、units、qvm、crc、safe_numerics、numeric::conversion |
-| [25](docs/25-compute.md) | 线代、图像与 GPU | ublas、odeint、interval、accumulators、histogram、gil、compute（GPU 实测） |
-| [26](docs/26-modern-tmp.md) | 现代元编程 | mp11、hana、fusion、tti、function_types |
-| [27](docs/27-classic-tmp.md) | 古典元编程 | mpl、preprocessor、vmd、metaparse、proto、yap、wave |
-| [28](docs/28-network.md) | 网络编程 | asio、beast、url、（mysql/redis/mqtt5 简介） |
-| [29](docs/29-process-system.md) | 进程与系统 | process、dll（含插件 DLL 全链路）、interprocess、winapi、endian、iostreams、io、program_options、（python 简介） |
-| [30](docs/30-serialization.md) | 序列化与配置 | serialization、property_tree、json |
-| [31](docs/31-runtime-structures.md) | 运行时结构 | signals2、statechart、msm、openmethod、type_erasure、scope、conversion |
-| [32](docs/32-quality.md) | 工程质量 | test、log、contract、leaf |
+| 章 | 库 |
+|---|---|
+| [19 字符串工具](docs/19-text.md) | algorithm、tokenizer、lexical_cast、convert、locale |
+| [20 解析器族谱](docs/20-parsers.md) | spirit、xpressive、parser |
+| [21 容器（上）](docs/21-container-core.md) | container（flat_map/small_vector/static_vector/stable_vector/devector）、circular_buffer、pool、assign |
+| [22 容器（下）](docs/22-container-zoo.md) | multi_index、bimap、ptr_container、intrusive、heap、icl、poly_collection、flyweight、dynamic_bitset、bloom、multi_array |
+| [23 图与几何](docs/23-graph-geometry.md) | graph、property_map、geometry、polygon |
+| [24 数值计算](docs/24-numeric.md) | math、multiprecision、rational、units、qvm、crc、safe_numerics、numeric::conversion |
+| [25 线代、图像与 GPU](docs/25-compute.md) | ublas、odeint、interval、accumulators、histogram、gil、compute（GPU 实测） |
+| [26 现代元编程](docs/26-modern-tmp.md) | mp11、hana、fusion、tti、function_types |
+| [27 古典元编程](docs/27-classic-tmp.md) | mpl、preprocessor、vmd、metaparse、proto、yap、wave |
+| [28 网络编程](docs/28-network.md) | asio、beast、url、（mysql/redis/mqtt5 简介） |
+| [29 进程与系统](docs/29-process-system.md) | process、dll（含插件 DLL 全链路）、interprocess、winapi、endian、iostreams、io、program_options、（python 简介） |
+| [30 序列化与配置](docs/30-serialization.md) | serialization、property_tree、json |
+| [31 运行时结构](docs/31-runtime-structures.md) | signals2、statechart、msm、openmethod、type_erasure、scope、conversion |
+| [32 工程质量](docs/32-quality.md) | test、log、contract、leaf |
 
 ### 第五部 · 附录
 
-| 章 | 主题 |
-|---|---|
-| [33](docs/33-appendix.md) | 全库总表（毕业状态 / std 对应 / 验证状态 / 选型决策树） |
-| [34](docs/34-design-patterns.md) | Boost 与设计模式（GoF 23+4 个模式在库里的实例归位） |
+| 章 |
+|---|
+| [33 全库总表（毕业状态 / std 对应 / 验证状态 / 选型决策树）](docs/33-appendix.md) |
+| [34 Boost 与设计模式（GoF 23+4 个模式在库里的实例归位）](docs/34-design-patterns.md) |
 
 ## 未纳入验证的库（需外部环境）
 
