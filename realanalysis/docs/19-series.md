@@ -8,17 +8,13 @@
 
 $\{a_n\}$ 是实数列。第 $n$ 个部分和是有限和
 
-$$
-s_n=\sum_{k=1}^{n}a_k=a_1+a_2+\cdots+a_n.
-$$
+$$s_n=\sum_{k=1}^{n}a_k=a_1+a_2+\cdots+a_n.$$
 
 序列 $\{s_n\}$ 叫做级数，通常写成 $\sum_{n=1}^{\infty}a_n$ 。若 $s_n\to s$ ，就说级数收敛到 $s$ ，并把它的和也写成这个符号。没有这样的 $s$ ，级数就发散。 $a_n$ 叫做项。
 
 记号上有一件容易混的事。 $\sum_{n=1}^{\infty}a_n$ 写出来像一个和，它实际指的是 $\lim_{n\to\infty}s_n$ 。看到“级数收敛到 $s$ ”，要读成
 
-$$
-s=\lim_{n\to\infty}\sum_{k=1}^{n}a_k.
-$$
+$$s=\lim_{n\to\infty}\sum_{k=1}^{n}a_k.$$
 
 和式也可以从 $n=0$ 写起。那只是把序列的第一项叫做 $a_0$ ，部分和照旧。起点终点都很清楚时，简写成 $\sum a_n$ 。
 
@@ -28,9 +24,7 @@ $$
 
 $\sum a_n$ 收敛，当且仅当对任意 $\varepsilon>0$ ，存在 $N$ ，使
 
-$$
-m\ge n\ge N\implies\left|\sum_{k=n}^{m}a_k\right|\le\varepsilon.
-$$
+$$m\ge n\ge N\implies\left|\sum_{k=n}^{m}a_k\right|\le\varepsilon.$$
 
 绝对值里面是有限和。它等于 $s_m-s_{n-1}$ 。所以这条准则就是在说部分和是柯西序列。实数和复数上，柯西序列正好是收敛序列，因此级数收敛当且仅当部分和是柯西的。
 
@@ -67,9 +61,7 @@ lemma terms_to_zero:
 
 假证明说： $a_n\to 0$ 时，取 $N$ 使 $n\ge N$ 就有 $|a_n|<\varepsilon$ 。令 $s=\left|\sum_{n=1}^{N}a_n\right|$ ，然后写成
 
-$$
-\left|\sum_{n=1}^{\infty}a_n\right|\le s+\left|\sum_{n=N}^{\infty}a_n\right|<s+\varepsilon,
-$$
+$$\left|\sum_{n=1}^{\infty}a_n\right|\le s+\left|\sum_{n=N}^{\infty}a_n\right|<s+\varepsilon,$$
 
 于是无穷和的绝对值被 $s$ 控制，再让 $\varepsilon$ 任意小。
 
@@ -102,9 +94,7 @@ $a_n\ge 0$ 使 $s_{n+1}=s_n+a_{n+1}\ge s_n$ ，部分和单调递增。单调序
 
 调和级数的前四项已经能看出部分和在往上走，而且跨过了 $2$ 。把 $\frac{1}{3}$ 换成更小的 $\frac{1}{4}$ ，
 
-$$
-1+\frac{1}{2}+\frac{1}{4}+\frac{1}{4}=2,
-$$
+$$1+\frac{1}{2}+\frac{1}{4}+\frac{1}{4}=2,$$
 
 原式更大。这还不是“无界”的证明，只是同一套分组的第一段。完整的发散放在 p 级数里。
 
@@ -122,9 +112,7 @@ theorem harmonic_four : (1 : ℝ) + 1 / 2 + 1 / 3 + 1 / 4 > 2 := by
 
 $\sum c_n$ 收敛，所以它的有限段最终小于 $\varepsilon$ 。三角不等式给出
 
-$$
-\left|\sum_{k=n}^{m}a_k\right|\le\sum_{k=n}^{m}|a_k|\le\sum_{k=n}^{m}c_k.
-$$
+$$\left|\sum_{k=n}^{m}a_k\right|\le\sum_{k=n}^{m}|a_k|\le\sum_{k=n}^{m}c_k.$$
 
 $n\ge N_0$ 时 $c_k\ge |a_k|\ge 0$ ，右边的和就是它自己的绝对值。于是 $\sum a_n$ 满足柯西准则。
 
@@ -151,9 +139,7 @@ theorem alt_half_summable : Summable (fun n : ℕ => (-(1 : ℝ) / 2) ^ n) := by
 
 $|x|<1$ 时
 
-$$
-\sum_{n=0}^{\infty}x^n=\frac{1}{1-x}.
-$$
+$$\sum_{n=0}^{\infty}x^n=\frac{1}{1-x}.$$
 
 $|x|\ge 1$ 时这个级数发散。项是公比的方幂，就叫几何级数。
 
@@ -161,29 +147,21 @@ $x\ge 1$ 时 $x^n\ge 1$ 。常数级数 $1+1+1+\cdots$ 发散，比较判别把 
 
 $|x|<1$ 时先算部分和。令
 
-$$
-s_n=\sum_{k=0}^{n}x^k=1+x+\cdots+x^n.
-$$
+$$s_n=\sum_{k=0}^{n}x^k=1+x+\cdots+x^n.$$
 
 乘上 $1-x$ ：
 
-$$
-(1-x)s_n=(1+x+\cdots+x^n)-(x+x^2+\cdots+x^{n+1})=1-x^{n+1}.
-$$
+$$(1-x)s_n=(1+x+\cdots+x^n)-(x+x^2+\cdots+x^{n+1})=1-x^{n+1}.$$
 
 $x\neq 1$ ，所以
 
-$$
-s_n=\frac{1-x^{n+1}}{1-x}.
-$$
+$$s_n=\frac{1-x^{n+1}}{1-x}.$$
 
 $|x|<1$ 时 $x^{n+1}\to 0$ ，于是 $s_n\to\frac{1}{1-x}$ 。
 
 从 $n=1$ 算起要扣掉 $x^0=1$ ：
 
-$$
-\sum_{n=1}^{\infty}x^n=\frac{1}{1-x}-1=\frac{x}{1-x}.
-$$
+$$\sum_{n=1}^{\infty}x^n=\frac{1}{1-x}-1=\frac{x}{1-x}.$$
 
 $x=\frac{1}{2}$ 时，加到 $x^2$ 的部分和是 $\frac{7}{4}$ ，闭式 $\frac{1-\left(\frac{1}{2}\right)^3}{1-\frac{1}{2}}$ 也是 $\frac{7}{4}$ 。从 $n=0$ 加到无穷是 $\frac{1}{1-\frac{1}{2}}=2$ 。
 
@@ -228,9 +206,7 @@ qed
 
 从 $n=1$ 起，
 
-$$
-\sum_{n=1}^{\infty}\left(\frac{2}{3}\right)^n=\frac{\frac{2}{3}}{1-\frac{2}{3}}=2.
-$$
+$$\sum_{n=1}^{\infty}\left(\frac{2}{3}\right)^n=\frac{\frac{2}{3}}{1-\frac{2}{3}}=2.$$
 
 一块面积为 $2$ 的 $1\times 2$ 矩形可以这样填。先放进 $\frac{2}{3}$ ，剩下 $2-\frac{2}{3}=\frac{4}{3}$ 。再放进 $\left(\frac{2}{3}\right)^2=\frac{4}{9}$ ，它正好是剩下面积的三分之一，还剩 $\frac{4}{3}-\frac{4}{9}=\frac{8}{9}$ 。下一步放进 $\frac{8}{27}$ ，又是剩下的三分之一。每一步都填掉剩余面积的三分之一，无穷步之后整块面积 $2$ 被填满。
 
@@ -270,42 +246,25 @@ seven-lt-eight = n<1+n 7
 
 两项都非负，所以收敛等价于部分和有界。记
 
-$$
-s_n=a_1+\cdots+a_n,\qquad t_k=a_1+2a_2+4a_4+\cdots+2^k a_{2^k}.
-$$
+$$s_n=a_1+\cdots+a_n,\qquad t_k=a_1+2a_2+4a_4+\cdots+2^k a_{2^k}.$$
 
 只要证明 $\{s_n\}$ 有界当且仅当 $\{t_k\}$ 有界。两边的下界都是 $0$ ，看上界即可。
 
 若每个 $t_k\le M$ ，固定 $n$ ，取 $k$ 使 $n<2^k$ 。单调性把 $s_n$ 放进按二的方幂切开的块里：
 
-$$
-\begin{aligned}
-s_n
-&\le a_1+(a_2+a_3)+(a_4+\cdots+a_7)+\cdots+(a_{2^k}+\cdots+a_{2^{k+1}-1})\\
-&\le a_1+2a_2+4a_4+\cdots+2^k a_{2^k}=t_k\le M.
-\end{aligned}
-$$
+$$\begin{aligned} s_n &\le a_1+(a_2+a_3)+(a_4+\cdots+a_7)+\cdots+(a_{2^k}+\cdots+a_{2^{k+1}-1})\\ &\le a_1+2a_2+4a_4+\cdots+2^k a_{2^k}=t_k\le M. \end{aligned}$$
 
 每一块里的项都不超过块首，块的长度正好是 $2^k$ 这种二的方幂。
 
 反过来，若 $\{t_k\}$ 无界，取 $n>2^k$ 。把 $s_n$ 从下界估：
 
-$$
-\begin{aligned}
-s_n
-&\ge a_1+a_2+(a_3+a_4)+\cdots+(a_{2^{k-1}+1}+\cdots+a_{2^k})\\
-&\ge\frac{1}{2}a_1+a_2+2a_4+\cdots+2^{k-1}a_{2^k}
-=\frac{1}{2}t_k.
-\end{aligned}
-$$
+$$\begin{aligned} s_n &\ge a_1+a_2+(a_3+a_4)+\cdots+(a_{2^{k-1}+1}+\cdots+a_{2^k})\\ &\ge\frac{1}{2}a_1+a_2+2a_4+\cdots+2^{k-1}a_{2^k} =\frac{1}{2}t_k. \end{aligned}$$
 
 $a_1\ge 0$ ，所以 $a_1+a_2\ge\frac{1}{2}a_1+a_2$ 。后面每一块都有 $2^{j-1}$ 个不小于 $a_{2^j}$ 的项。于是 $t_k$ 可以任意大时， $s_{2^k}$ 也任意大。
 
 调和前四项就是这个下界估计的第一段： $\frac{1}{3}\ge\frac{1}{4}$ ，所以
 
-$$
-1+\frac{1}{2}+\frac{1}{3}+\frac{1}{4}>1+\frac{1}{2}+\frac{1}{4}+\frac{1}{4}=2.
-$$
+$$1+\frac{1}{2}+\frac{1}{3}+\frac{1}{4}>1+\frac{1}{2}+\frac{1}{4}+\frac{1}{4}=2.$$
 
 库里的等价是 `summable_condensed_iff_of_nonneg` ：非负而且最终递减时， $\sum 2^k f(2^k)$ 可和当且仅当 $\sum f$ 可和。
 
@@ -317,9 +276,7 @@ $p<0$ 时 $\{n^{-p}\}$ 无界，通项不趋于 $0$ ，级数发散。
 
 $p\ge 0$ 时 $\frac{1}{n^p}$ 递减而且非负，用凝聚判别。
 
-$$
-\sum_{k=0}^{\infty}2^k\cdot\frac{1}{(2^k)^p}=\sum_{k=0}^{\infty}\left(2^{1-p}\right)^k.
-$$
+$$\sum_{k=0}^{\infty}2^k\cdot\frac{1}{(2^k)^p}=\sum_{k=0}^{\infty}\left(2^{1-p}\right)^k.$$
 
 这是公比 $x=2^{1-p}$ 的几何级数。 $2^{1-p}<1$ 正好是 $p>1$ ，几何级数收敛，原级数收敛。 $2^{1-p}\ge 1$ 正好是 $p\le 1$ ，几何级数发散，原级数发散。 $p=1$ 时公比是 $1$ ，凝聚之后就是 $1+1+1+\cdots$ 。
 

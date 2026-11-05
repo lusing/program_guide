@@ -227,9 +227,7 @@ $1/n$ 甩掉，$0$ 从一开始就不在任何一个 $B_n$ 里。这些 $B_n$ �
 $K_1$ 被其余集合的补集盖住。补集是开集，紧性给出有限子覆盖，于是 $K_1$ 与
 那有限个 $K_{\alpha_i}$ 的交是空的，和假设矛盾。集合论上的钥匙是
 
-$$
-A\cap\bigcap_\alpha B_\alpha=\emptyset\iff A\subset\bigcup_\alpha B_\alpha^c.
-$$
+$$A\cap\bigcap_\alpha B_\alpha=\emptyset\iff A\subset\bigcup_\alpha B_\alpha^c.$$
 
 Isabelle 的 `compact_fip` 把这件事写成闭集族的有限交性质：每个有限子族与
 $U$ 相交非空，则整个族与 $U$ 相交非空。

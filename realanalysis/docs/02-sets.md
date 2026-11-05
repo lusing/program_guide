@@ -11,20 +11,16 @@
 集合由其元素完全决定（外延性原则）：$A = B$ 当且仅当它们含有
 完全相同的元素。由此推出最常用的基本关系——**子集**：
 
-$$
-A \subseteq B \;:\Longleftrightarrow\; \forall x, \; x \in A \Rightarrow x \in B .
-$$
+$$A \subseteq B \;:\Longleftrightarrow\; \forall x, \; x \in A \Rightarrow x \in B .$$
 
 注意这个定义把集合间的关系化归为元素间的逻辑蕴涵。证明
-$A \subseteq B$ 的标准套路从此固定下来：**任取 $x \in A$ ，证明
-$x \in B$**。这个“任取元素”的动作在 Lean 里就是 `intro x hx`，
+$A \subseteq B$ 的标准套路从此固定下来：**任取 $x \in A$ ，证明**
+$x \in B$ 。这个“任取元素”的动作在 Lean 里就是 `intro x hx`，
 在 Isabelle 里是 `fix x assume`，在纸面上是“Let $x \in A$.”。
 
 第一个定理（原书定理 3.7）平凡却深刻：
 
-$$
-\emptyset \subseteq A \quad \text{对任何集合 } A \text{ 成立}.
-$$
+$$\emptyset \subseteq A \quad \text{对任何集合 } A \text{ 成立}.$$
 
 证明是逻辑学里所谓的**虚真**（vacuous truth）：$x \in \emptyset$
 恒假，而假命题蕴涵一切，所以定义中的蕴涵自动成立。三个证明
@@ -93,17 +89,11 @@ compl-union A B x = deMorgan∨ (A x) (B x)
 
 固定论域 $U$ （比如后面最常用的 $U = \mathbb{R}$ ），$A$ 的补集是
 
-$$
-A^c = \{ x \in U \mid x \notin A \}.
-$$
+$$A^c = \{ x \in U \mid x \notin A \}.$$
 
 原书定理 3.17 的德摩根律说补运算交换并与交：
 
-$$
-(A \cup B)^c = A^c \cap B^c,
-\qquad
-(A \cap B)^c = A^c \cup B^c .
-$$
+$$(A \cup B)^c = A^c \cap B^c, \qquad (A \cap B)^c = A^c \cup B^c .$$
 
 Lean 中就是 `compl_union` 与 `compl_inter`。Coq 通道把两条定律的
 逻辑含量分开了：第一条构造性可证（$\lnot (P \lor Q)$ 与
@@ -139,9 +129,7 @@ $(a, b) = \{ x \in \mathbb{R} \mid a < x < b \}$ ，
 
 原书强调的一个细节：并集不“缝合”端点处的洞——
 
-$$
-(1, 3) \cup (3, 5) \neq (1, 5),
-$$
+$$(1, 3) \cup (3, 5) \neq (1, 5),$$
 
 因为点 $3$ 同时被两个开区间排除在外。Lean 通道的证明
 （`examples/lean/Realanalysis/Ch02Sets.lean`）：
@@ -171,20 +159,12 @@ Python 通道用有理数网格把这个“洞”可视化：在步长 $\frac{1}
 本章的重头戏。设 $I$ 是索引集（最常见的是 $I = \mathbb{N}$ ），
 对每个 $i \in I$ 有一个集合 $A_i$ ，则
 
-$$
-\bigcup_{i \in I} A_i = \{ x \mid \exists i, \, x \in A_i \},
-\qquad
-\bigcap_{i \in I} A_i = \{ x \mid \forall i, \, x \in A_i \}.
-$$
+$$\bigcup_{i \in I} A_i = \{ x \mid \exists i, \, x \in A_i \}, \qquad \bigcap_{i \in I} A_i = \{ x \mid \forall i, \, x \in A_i \}.$$
 
 无限并是“存在某个索引”，无限交是“对所有索引”——并与交恰好
 对应存在与全称量词。德摩根律也升到索引族版本：
 
-$$
-\left( \bigcup_{i \in I} A_i \right)^c = \bigcap_{i \in I} A_i^c,
-\qquad
-\left( \bigcap_{i \in I} A_i \right)^c = \bigcup_{i \in I} A_i^c .
-$$
+$$\left( \bigcup_{i \in I} A_i \right)^c = \bigcap_{i \in I} A_i^c, \qquad \left( \bigcap_{i \in I} A_i \right)^c = \bigcup_{i \in I} A_i^c .$$
 
 Lean 中对应 `compl_iUnion` 与 `compl_iInter`，本教程用显式参数
 引用：
@@ -202,9 +182,7 @@ $n = 0, 1, 2, \dots$ （原书从 $n \ge 1$ 起，Lean 的自然数从 $0$
 起，故用 $n + 1$ 对齐）。这是**递减**嵌套族：每个区间都含在
 前一个里。所以并集就是最大的那个：
 
-$$
-\bigcup_{n=0}^{\infty} A_n = (-1, 1) = A_0 .
-$$
+$$\bigcup_{n=0}^{\infty} A_n = (-1, 1) = A_0 .$$
 
 Lean 证明（`union_Aseq`）按“互相包含”展开：正向，任何
 $A_n$ 的成员都落在 $(-1, 1)$ 里（因为 $\frac{1}{n+1} \le 1$ ）；
@@ -218,11 +196,7 @@ $A_n$ 的成员都落在 $(-1, 1)$ 里（因为 $\frac{1}{n+1} \le 1$ ）；
 **族二**：$B_n = \left[0, 2 - \frac{1}{n+1}\right]$ 。这是**递增**族，
 右端点单调逼近 $2$ 但永远到不了 $2$ 。于是：
 
-$$
-\bigcup_{n=0}^{\infty} B_n = [0, 2),
-\qquad
-\bigcap_{n=0}^{\infty} B_n = B_0 = [0, 1].
-$$
+$$\bigcup_{n=0}^{\infty} B_n = [0, 2), \qquad \bigcap_{n=0}^{\infty} B_n = B_0 = [0, 1].$$
 
 并集的证明（`union_Bseq`）是本章最精彩的一段。正向容易：
 $B_n$ 的成员满足 $x \le 2 - \frac{1}{n+1} < 2$ 。反向是分析学的

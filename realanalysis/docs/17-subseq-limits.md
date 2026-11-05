@@ -9,9 +9,7 @@
 
 $\{s_n\}$ 是 $\mathbb{R}$ 中的序列。若对任意实数 $M$ ，存在自然数 $N$ ，使
 
-$$
-n\ge N\implies s_n\ge M,
-$$
+$$n\ge N\implies s_n\ge M,$$
 
 则记 $\lim_{n\to\infty}s_n=+\infty$ ，或 $s_n\to+\infty$ 。
 
@@ -45,9 +43,7 @@ theorem neg_five_to_bot : Tendsto (fun n : ℕ => (-5 : ℝ) * n) atTop atBot :=
 
 奇数下标 $2k+1$ 严格递增，而且
 
-$$
-(-1)^{2k+1}=-1.
-$$
+$$(-1)^{2k+1}=-1.$$
 
 假如整条序列趋于 $+\infty$ ，这条子序列也趋于 $+\infty$ 。可是它是常数 $-1$ 。常数 $-1$ 最终不会 $\ge 0$ 。
 
@@ -96,15 +92,11 @@ $(-1)^n$ 有界，所以它没有发散到无穷的子序列。 $n^2$ 无界，�
 
 设 $E$ 是扩张实数系里这样的 $x$ ：有一条子序列 $s_{n_k}\to x$ 。这里的箭头包括 $+\infty$ 和 $-\infty$ 。若某条子序列发散到正无穷，就把 $+\infty$ 放进 $E$ ；发散到负无穷，就把 $-\infty$ 放进 $E$ 。
 
-$$
-s^*=\sup E,\qquad s_*=\inf E.
-$$
+$$s^*=\sup E,\qquad s_*=\inf E.$$
 
 $s^*$ 是上极限，$s_*$ 是下极限，记作
 
-$$
-\limsup_{n\to\infty}s_n=s^*,\qquad\liminf_{n\to\infty}s_n=s_*.
-$$
+$$\limsup_{n\to\infty}s_n=s^*,\qquad\liminf_{n\to\infty}s_n=s_*.$$
 
 第 15 章的 $E^*$ 只收真正的极限。这里的 $E$ 多了可能出现的无穷。上极限不是“上确界序列的极限”，而是全体子序列极限的上确界。符号容易让人读反，证明时按这个意思用。
 
@@ -112,9 +104,7 @@ $$
 
 1. $s_n=\bigl[(-1)^n+1\bigr]n$ 。奇数项是 $0$ ，偶数项是 $2n$ 。 $n=1,3,5$ 给出 $0$ ； $n=2,4,6$ 给出 $4,8,12$ 。任何子序列要么最终贴着 $0$ ，要么沿着偶数项跑到 $+\infty$ 。像 $12$ 这样的单个值不是子序列极限：以 $4,8,12$ 开头之后还必须有无穷多项。于是 $E=\{0,+\infty\}$ ，
 
-$$
-\limsup_{n\to\infty}s_n=+\infty,\qquad\liminf_{n\to\infty}s_n=0.
-$$
+$$\limsup_{n\to\infty}s_n=+\infty,\qquad\liminf_{n\to\infty}s_n=0.$$
 
 $n=6$ 的偶数项已经大于 $10$ 。Agda 只记偶数下标还在前进： $2<4$ 并且 $4<6$ 。
 
@@ -134,9 +124,7 @@ theorem const_liminf : liminf (fun _ : ℕ => (1 : ℝ)) atTop = 1 :=
 
 4. $p_n=(-1)^n$ 。偶数子序列恒为 $1$ ，奇数子序列恒为 $-1$ 。没有别的子序列极限，也不出现无穷。所以 $E=\{-1,1\}$ ，
 
-$$
-\limsup_{n\to\infty}p_n=1,\qquad\liminf_{n\to\infty}p_n=-1.
-$$
+$$\limsup_{n\to\infty}p_n=1,\qquad\liminf_{n\to\infty}p_n=-1.$$
 
 只说“它发散”会漏掉这两点。上极限和下极限把它们记下来。
 
@@ -207,9 +195,7 @@ theorem alt_liminf : liminf (fun n : ℕ => (-1 : ℝ) ^ n) atTop = -1 := by
 
 $\{s_n\}$ 收敛到有限数 $s$ ，当且仅当
 
-$$
-\limsup_{n\to\infty}s_n=\liminf_{n\to\infty}s_n=s.
-$$
+$$\limsup_{n\to\infty}s_n=\liminf_{n\to\infty}s_n=s.$$
 
 若 $s_n\to s$ ，则每条子序列都收敛到 $s$ 。子序列也不能发散到无穷，否则上极限或下极限会变成无穷。于是 $E=\{s\}$ ，上确界和下确界都是 $s$ 。
 
@@ -279,9 +265,7 @@ lemma limsup_bound:
 
 若从某个 $N$ 起恒有 $s_n\le t_n$ ，则
 
-$$
-\limsup s_n\le\limsup t_n,\qquad\liminf s_n\le\liminf t_n.
-$$
+$$\limsup s_n\le\limsup t_n,\qquad\liminf s_n\le\liminf t_n.$$
 
 同一条下标抽出的两条子序列保持不等号。子序列极限因此也保持不等号：一边趋于 $+\infty$ 时另一边也趋于 $+\infty$ ，一边趋于 $-\infty$ 时另一边已经先到了 $-\infty$ 。于是 $E$ 的每个元素都不大于 $F$ 里对应的元素，上确界和下确界一起保持次序。
 

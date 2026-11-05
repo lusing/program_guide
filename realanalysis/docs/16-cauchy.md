@@ -9,9 +9,7 @@
 
 设 $\{p_n\}$ 是度量空间 $X$ 中的序列。若对任意 $\varepsilon>0$ ，存在自然数 $N$ ，使
 
-$$
-n,m\ge N\implies d(p_n,p_m)<\varepsilon,
-$$
+$$n,m\ge N\implies d(p_n,p_m)<\varepsilon,$$
 
 则 $\{p_n\}$ 是柯西序列。
 
@@ -21,9 +19,7 @@ $$
 
 令 $p_n=1/n$ ，把空间改成 $X=\mathbb{R}\setminus\{0\}$ 。 $0$ 不在 $X$ 里，所以这条序列在 $X$ 中不收敛。它仍然是柯西序列。若 $n,m\ge N\ge 1$ ，
 
-$$
-\left|\frac{1}{n}-\frac{1}{m}\right|\le\max\left\{\frac{1}{n},\frac{1}{m}\right\}\le\frac{1}{N}.
-$$
+$$\left|\frac{1}{n}-\frac{1}{m}\right|\le\max\left\{\frac{1}{n},\frac{1}{m}\right\}\le\frac{1}{N}.$$
 
 要使 $1/N<\varepsilon$ ，取 $N=\lceil 1/\varepsilon\rceil+1$ 即可。 $\varepsilon=1/10$ 时这个下标是 $11$ 。第 $11$ 项和第 $12$ 项的距离是 $1/132$ ，已经小于 $1/10$ 。
 
@@ -51,9 +47,7 @@ theorem sqrt_two_truncations : |(141 : ℝ) / 100 - 1414 / 1000| < 1 / 100 := by
 
 设 $p_n\to p$ ， $p\in X$ 。任给 $\varepsilon>0$ ，把收敛定义用在 $\varepsilon/2$ 上，得到 $N$ ，使 $n\ge N$ 时 $d(p_n,p)<\varepsilon/2$ ， $m\ge N$ 时同样 $d(p_m,p)<\varepsilon/2$ 。三角不等式给出
 
-$$
-d(p_n,p_m)\le d(p_n,p)+d(p,p_m)<\frac{\varepsilon}{2}+\frac{\varepsilon}{2}=\varepsilon.
-$$
+$$d(p_n,p_m)\le d(p_n,p)+d(p,p_m)<\frac{\varepsilon}{2}+\frac{\varepsilon}{2}=\varepsilon.$$
 
 所以收敛序列是柯西序列。上一节已经说明反过来不必成立。
 
@@ -76,9 +70,7 @@ lemma harmonic_cauchy: "Cauchy (\<lambda>n. inverse (real (Suc n)))"
 
 $E$ 是度量空间的非空子集时，
 
-$$
-\operatorname{diam} E=\sup\{d(p,q):p,q\in E\}.
-$$
+$$\operatorname{diam} E=\sup\{d(p,q):p,q\in E\}.$$
 
 距离是实数，所以上确界也在 $\mathbb{R}$ 里谈，不必是 $E$ 或 $X$ 的元素。距离集合无上界时，不说 $E$ 有直径。
 
@@ -135,9 +127,7 @@ $E\subset\overline{E}$ 立刻给出 $\operatorname{diam} E\le\operatorname{diam}
 
 任取 $\overline{E}$ 中的 $p,q$ 。 $p$ 若已在 $E$ 里，令 $p'=p$ 。若 $p$ 只是极限点，半径 $\varepsilon/2$ 的邻域里有 $E$ 的一点 $p'$ 。 $q$ 同样配一个 $q'\in E$ 。两次三角不等式：
 
-$$
-d(p,q)\le d(p,p')+d(p',q')+d(q',q)<\frac{\varepsilon}{2}+d(p',q')+\frac{\varepsilon}{2}\le\operatorname{diam} E+\varepsilon.
-$$
+$$d(p,q)\le d(p,p')+d(p',q')+d(q',q)<\frac{\varepsilon}{2}+d(p',q')+\frac{\varepsilon}{2}\le\operatorname{diam} E+\varepsilon.$$
 
 $p,q$ 任意，所以 $\operatorname{diam}\overline{E}\le\operatorname{diam} E+\varepsilon$ 。
 
@@ -149,9 +139,7 @@ $p,q$ 任意，所以 $\operatorname{diam}\overline{E}\le\operatorname{diam} E+\
 
 交不能有两个点。若 $p,q$ 都在交里，令 $r=d(p,q)>0$ 。交含在每一个 $K_m$ 里，所以
 
-$$
-\operatorname{diam} K_m\ge\operatorname{diam}\bigcap_{n=1}^{\infty} K_n\ge r.
-$$
+$$\operatorname{diam} K_m\ge\operatorname{diam}\bigcap_{n=1}^{\infty} K_n\ge r.$$
 
 直径序列的每一项都 $\ge r$ ，就不能趋于 $0$ 。因此交里只有一个点。
 
@@ -270,9 +258,7 @@ $\{s_n\}$ 是有最小上界性的有序域 $F$ 中的单调序列。它在 $F$ 
 
 反过来先看递增。值域 $E$ 有上界，最小上界性给出 $s=\sup E$ ，而且 $s\in F$ 。任取 $\varepsilon>0$ 。 $s-\varepsilon$ 不是上界，所以有某项 $s-\varepsilon<s_N\le s$ 。递增使 $n\ge N$ 时 $s_N\le s_n\le s$ ，于是
 
-$$
-s-\varepsilon<s_n<s+\varepsilon,
-$$
+$$s-\varepsilon<s_n<s+\varepsilon,$$
 
 即 $d(s_n,s)<\varepsilon$ 。所以 $s_n\to s$ 。
 

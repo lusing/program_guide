@@ -26,13 +26,11 @@ $1/(n+1)$ ，项的集合仍是 $\{1,1/2,1/3,\ldots\}$ 。单独比较 $1/n$ 时
 
 有界和收敛是两回事。$i^n$ 有界，下一节会看到它发散。
 
-## 14.3 定义 14.3：$\varepsilon$-$N$
+## 14.3 定义 14.3：$\varepsilon$ -$N$
 
 $\{p_n\}$ 收敛到 $p\in X$ ，是说
 
-$$
-\forall\varepsilon>0,\ \exists N\in\mathbb{N},\ n\ge N\implies d(p_n,p)<\varepsilon.
-$$
+$$\forall\varepsilon>0,\ \exists N\in\mathbb{N},\ n\ge N\implies d(p_n,p)<\varepsilon.$$
 
 记作 $\lim_{n\to\infty}p_n=p$ ，或 $p_n\to p$ 。没有任何 $p\in X$ 满足这句话时，序列在 $X$ 中发散。
 
@@ -40,21 +38,17 @@ $N$ 可以跟着 $\varepsilon$ 变。证明收敛，就是给出一个由 $\vare
 大于这个 $N$ 的任何自然数也都合格。
 
 形式化里，这句话是滤子极限：$\mathrm{Tendsto}\,s\,\mathrm{atTop}\,(\mathcal{N}\,p)$ 。
-在度量空间里它等价于上面的 $\varepsilon$-$N$ 。
+在度量空间里它等价于上面的 $\varepsilon$ -$N$ 。
 
 ## 14.4 例 14.4
 
 **调和序列.** $s_n=1/n$ 收敛到 $0$ 。对 $\varepsilon>0$ ，取
 
-$$
-N=\left\lceil\frac{1}{\varepsilon}\right\rceil+1.
-$$
+$$N=\left\lceil\frac{1}{\varepsilon}\right\rceil+1.$$
 
 上取整保证 $N$ 是自然数，加 $1$ 保证 $n\ge N$ 时 $n>1/\varepsilon$ ，于是
 
-$$
-\left|\frac{1}{n}\right|\le\frac{1}{N}<\varepsilon.
-$$
+$$\left|\frac{1}{n}\right|\le\frac{1}{N}<\varepsilon.$$
 
 只取 $N=\lceil 1/\varepsilon\rceil$ 时，$n=N$ 可能得到 $1/n=\varepsilon$ ，严格不等式还差一步。
 $\varepsilon=1/10$ 时，$N=11$ ：$n\ge 11$ 推出 $1/n<1/10$ ，而 $1/10$ 本身并不更小。
@@ -131,11 +125,9 @@ Isabelle 不走闭球。`bounded_iff` 给出 $M$ ，使每个平方的范数不�
 
 **交错序列.** $s_n=1+(-1)^n/n$ 收敛到 $1$ 。它在 $1$ 的左右来回跳，距离却是
 
-$$
-|s_n-1|=\left|\frac{(-1)^n}{n}\right|=\frac{1}{n},
-$$
+$$|s_n-1|=\left|\frac{(-1)^n}{n}\right|=\frac{1}{n},$$
 
-和调和序列用同一个 $N$ 。形式化写成 $1+(-1)^n/(n+1)$ 。$\varepsilon$-$N$ 从 $1/(n+1)\to 0$ 搬过来，因为 $|(-1)^n|=1$ ：
+和调和序列用同一个 $N$ 。形式化写成 $1+(-1)^n/(n+1)$ 。$\varepsilon$ -$N$ 从 $1/(n+1)\to 0$ 搬过来，因为 $|(-1)^n|=1$ ：
 
 ```lean
   have habs :
@@ -157,9 +149,7 @@ Isabelle 用 `tendsto_const`。计算通道核对 $|1-1|=0$ 。
 
 **$i^n$ 发散.** 在 $\mathbb{C}$ 里这项只在 $i,-1,-i,1$ 上循环。若它收敛到某个 $p$ ，对 $\varepsilon/2$ 用定义，尾部相邻两项满足
 
-$$
-d(s_n,s_{n+1})\le d(s_n,p)+d(p,s_{n+1})<\varepsilon.
-$$
+$$d(s_n,s_{n+1})\le d(s_n,p)+d(p,s_{n+1})<\varepsilon.$$
 
 取 $\varepsilon=1$ 。尾部里总有一项等于 $i$ ，下一项等于 $1$ ，而 $d(i,1)=\sqrt2>1$ 。矛盾。
 这条序列有界，所以“有界”推不出“收敛”。
@@ -185,9 +175,7 @@ theorem not_accPt_singleton (x : ℝ) : ¬ AccPt x (𝓟 ({x} : Set ℝ)) := by
 
 反过来，值域可以有极限点，序列本身却发散。取
 
-$$
-p_n=(-1)^n+\frac{(-1)^n}{n}.
-$$
+$$p_n=(-1)^n+\frac{(-1)^n}{n}.$$
 
 相邻两项距离大于 $2$ ：偶下标落在 $1$ 的右侧，奇下标落在 $-1$ 的左侧，中间隔着长度 $2$ 的空档。任何候选极限的小邻域都装不下整个尾部。值域的极限点却是 $1$ 和 $-1$ 。偶数项是 $1+1/n$ ，阿基米德性质让它落进 $1$ 的任意邻域；奇数项同样逼近 $-1$ 。
 
@@ -205,9 +193,7 @@ $$
 
 对任意 $\varepsilon>0$ ，把定义用在 $\varepsilon/2$ 上，得到 $N$ 和 $N'$ 。从 $\max\{N,N'\}$ 起，
 
-$$
-d(p,p')\le d(p,p_n)+d(p_n,p')<\frac{\varepsilon}{2}+\frac{\varepsilon}{2}=\varepsilon.
-$$
+$$d(p,p')\le d(p,p_n)+d(p_n,p')<\frac{\varepsilon}{2}+\frac{\varepsilon}{2}=\varepsilon.$$
 
 每个正数都是 $d(p,p')$ 的上界，所以距离为 $0$ ，从而 $p=p'$ 。三个候选极限就改用 $\varepsilon/3$ 。
 
@@ -225,9 +211,7 @@ Isabelle 在 `t2_space` 里有同名事实 `LIMSEQ_unique`，两条序列极限�
 
 取 $\varepsilon=1$ 。存在 $N$ ，使 $n\ge N$ 时 $d(p_n,p)<1$ 。前 $N-1$ 项只有有限个，令
 
-$$
-r=\max\{d(p_1,p),\ldots,d(p_{N-1},p),1\}.
-$$
+$$r=\max\{d(p_1,p),\ldots,d(p_{N-1},p),1\}.$$
 
 每一项到 $p$ 的距离都不超过 $r$ ，序列有界。
 
@@ -245,9 +229,7 @@ theorem convergent_range_bounded {s : ℕ → ℝ} {p : ℝ}
 
 设 $p$ 是 $E$ 的极限点。$p$ 可以在 $E$ 里，也可以在外面。对每个 $n\ge 1$ ，邻域 $N_{1/n}(p)$ 里有一个点 $p_n\in E$ ，于是 $d(p_n,p)<1/n$ 。仍取 $N=\lceil 1/\varepsilon\rceil+1$ ，则 $n\ge N$ 时
 
-$$
-d(p_n,p)<\frac{1}{n}\le\frac{1}{N}<\varepsilon.
-$$
+$$d(p_n,p)<\frac{1}{n}\le\frac{1}{N}<\varepsilon.$$
 
 所以 $p_n\to p$ 。若 $p\notin E$ ，这条序列在大空间里收敛，在 $E$ 里不收敛。
 
@@ -294,7 +276,7 @@ $\mathbb{R}^k$ 的有界无限子集 $E$ 也含有一条收敛序列。魏尔斯
 - `examples/isabelle/RA14/Sequences.thy`：$1/(n+1)\to 0$ 且项落在 $(0,1]$ 、常数序列、唯一、有界、平方无界因而发散。
 - `examples/coq/Ch14_sequences.v`：$1/11<1/10$ ，$20^2$ 越过 $100$ ，交错距离与常数距离。
 - `examples/agda/Ch14_sequences.agda`：下标 $11$ 已经越过 $10$ ，以及 $4\le 4\cdot 4$ 。
-- `examples/julia/14_sequences.jl`、`examples/python/14_sequences.py`、`examples/prolog/14_sequences.pl`：同一个 $\varepsilon$-$N$ 、平方逃逸、交错距离、常数序列，以及相邻项距离大于 $2$ 。
+- `examples/julia/14_sequences.jl`、`examples/python/14_sequences.py`、`examples/prolog/14_sequences.pl`：同一个 $\varepsilon$ -$N$ 、平方逃逸、交错距离、常数序列，以及相邻项距离大于 $2$ 。
 
 复验：`pwsh -NoProfile -Command '& ./build.ps1 -Chapter 14'`。
 

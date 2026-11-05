@@ -2,6 +2,10 @@ build/
 PLAN.md
 scratch/
 tools/
+!tools/
+!tools/check_math.py
+!tools/migrate_math_delimiters.py
+!tools/katex_check.js
 examples/lean/.lake/
 examples/lean/lake-manifest.json.bak
 *.vo

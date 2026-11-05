@@ -84,9 +84,7 @@ example {E : Set ℝ} {q M : ℝ} (h : ∀ p ∈ E, dist p q ≤ M) :
 
 **定义。** 点 $p$ 、半径 $r>0$ 的邻域是
 
-$$
-N_r(p)=\{q\in X\mid d(p,q)<r\}.
-$$
+$$N_r(p)=\{q\in X\mid d(p,q)<r\}.$$
 
 在 $\mathbb{R}$ 上这就是开区间 $(p-r,p+r)$ 。$(-3,3)$ 是中心 $0$ 、半径
 $3$ 的邻域；$(99,100)$ 是中心 $99.5$ 、半径 $0.5$ 的邻域。$[-3,3]$ 、
@@ -211,9 +209,7 @@ example : IsClosed (∅ : Set ℝ) := isClosed_empty
 **定理 9.23.** 每个邻域 $N_r(p)$ 都是开集。设 $q$ 在邻域里，则
 $d(p,q)<r$ ，记 $h=r-d(p,q)>0$ 。对 $N_h(q)$ 中的 $s$ ，三角不等式给出
 
-$$
-d(p,s)\le d(p,q)+d(q,s)<(r-h)+h=r,
-$$
+$$d(p,s)\le d(p,q)+d(q,s)<(r-h)+h=r,$$
 
 所以 $s$ 仍在原来的邻域里。Lean / Isabelle 引用库定理 `isOpen_ball` /
 `open (ball p r)`，证明就是这一段。

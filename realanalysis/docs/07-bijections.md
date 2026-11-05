@@ -10,9 +10,7 @@
 **定义。** 若集合 $A$ 的每个元素 $x$ 都在集合 $B$ 中有**唯一**对应的
 $f(x)$ ，则关系 $f$ 是函数（映射），记作
 
-$$
-f : A \to B,\qquad f : x \mapsto f(x).
-$$
+$$f : A \to B,\qquad f : x \mapsto f(x).$$
 
 $A$ 叫定义域，$B$ 叫上域（codomain）。只写 $f(x)=x^2$ 而不写定义域与
 上域会产生歧义：它可能是 $\mathbb{R}\to\mathbb{R}$ ，也可能是
@@ -31,9 +29,7 @@ Coq / Agda 的 `A → B` 本身就是函数。需要另写的是像、原像与�
 
 **定义 7.3.** 对 $E\subset A$ ，像
 
-$$
-f(E)=\{f(x)\mid x\in E\}.
-$$
+$$f(E)=\{f(x)\mid x\in E\}.$$
 
 值域是 $f(A)$ 。注意值域是上域的子集，不一定等于上域。
 
@@ -53,9 +49,7 @@ Isabelle 的 `` ` ``、Coq / 计算通道对有限列表做 `map`，同一事实
 
 **定义 7.5.** 对 $G\subset B$ ，原像
 
-$$
-f^{-1}(G)=\{x\in A\mid f(x)\in G\}.
-$$
+$$f^{-1}(G)=\{x\in A\mid f(x)\in G\}.$$
 
 对单点 $y\in B$ ，写作 $f^{-1}(y)=\{x\in A\mid f(x)=y\}$ ——这是一个
 **集合**，不一定是单点。
@@ -179,9 +173,7 @@ example : Function.RightInverse (fun y : ℝ => y / 2) (fun x : ℝ => (2 : ℝ)
 
 **定义。** $f:A\to B$ ，$g:B\to C$ ，则
 
-$$
-(g\circ f)(x)=g(f(x)).
-$$
+$$(g\circ f)(x)=g(f(x)).$$
 
 复合要求 $f$ 的上域等于 $g$ 的定义域。$f(x)=2x$ ，$g(x)=x^2$ 时
 $(g\circ f)(x)=4x^2$ 。双射对复合封闭；函数与其逆按任一顺序复合都是

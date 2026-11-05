@@ -22,10 +22,7 @@
 
 **定义 6.2.** 复数就是二维实向量，加法和乘法规定为
 
-$$
-(a,b)+(c,d)=(a+c,\,b+d),\qquad
-(a,b)(c,d)=(ac-bd,\,ad+bc).
-$$
+$$(a,b)+(c,d)=(a+c,\,b+d),\qquad (a,b)(c,d)=(ac-bd,\,ad+bc).$$
 
 全体复数记作 $\mathbb{C}$ 。若暂时不管这两种运算，同一集合就是
 $\mathbb{R}^2$ 。
@@ -37,15 +34,11 @@ $(-3,3)$ 是其间全体实数——上下文通常足够分辨。
 
 乘法公式看起来突兀，动机来自 $a+bi$ 写法。令 $i=(0,1)$ ，则
 
-$$
-i^2=(0,1)(0,1)=(-1,0)=-1,
-$$
+$$i^2=(0,1)(0,1)=(-1,0)=-1,$$
 
 于是
 
-$$
-(a+bi)(c+di)=ac+adi+bci+bd\,i^2=(ac-bd)+(ad+bc)i,
-$$
+$$(a+bi)(c+di)=ac+adi+bci+bd\,i^2=(ac-bd)+(ad+bc)i,$$
 
 恰好就是定义里的分量公式。形式为 $(a,0)$ 的复数在加减乘上与实数
 $a$ 一致，所以 $\mathbb{R}$ 可以看成 $\mathbb{C}$ 的子域。
@@ -97,9 +90,7 @@ assert (1 + 2j) * (3 + 4j) == -5 + 10j
 **定理。** $\mathbb{C}$ 是域。加法单位元 $(0,0)$ ，乘法单位元 $(1,0)$ ；
 $(a,b)$ 的加法逆是 $(-a,-b)$ ；若 $(a,b)\ne(0,0)$ ，乘法逆是
 
-$$
-\frac{1}{(a,b)}=\Bigl(\frac{a}{a^2+b^2},\,-\frac{b}{a^2+b^2}\Bigr).
-$$
+$$\frac{1}{(a,b)}=\Bigl(\frac{a}{a^2+b^2},\,-\frac{b}{a^2+b^2}\Bigr).$$
 
 证明逐条核验十一条域公理，每一步都把问题归结到 $\mathbb{R}$ 上同一
 公理。乘法逆元那条展开后，实部变成 $(a^2+b^2)/(a^2+b^2)=1$ ，虚部
@@ -113,9 +104,7 @@ Lean 直接声明 `Field ℂ` 实例（依赖实数的非可计算构造，故
 $\mathbb{C}$ **不是**有序域：公理 O2 要求非零元的平方为正，但取
 $x=(0,1)=i$ 时
 
-$$
-x^2=(-1,0)=-1<0.
-$$
+$$x^2=(-1,0)=-1<0.$$
 
 所以第 04、05 章里依赖序结构的推论（阿基米德、稠密、正根）不能原样
 搬到 $\mathbb{C}$ ；后面用的是模与内积，而不是全序。
@@ -149,10 +138,7 @@ Isabelle 的 `conj_norm_sq`、Coq 的 `c_mul_conj` 同一内容。
 **定理 6.7** 的五条里，最常用的是三角不等式
 $|z+w|\le|z|+|w|$ 。证明先写
 
-$$
-|z+w|^2=|z|^2+2\operatorname{Re}(\overline{z}w)+|w|^2
-\le|z|^2+2|z||w|+|w|^2=(|z|+|w|)^2,
-$$
+$$|z+w|^2=|z|^2+2\operatorname{Re}(\overline{z}w)+|w|^2 \le|z|^2+2|z||w|+|w|^2=(|z|+|w|)^2,$$
 
 两端非负再开方。勾股样例 $|3+4i|=5$ 在各通道都有：Lean 用模平方
 $25$ 与范数非负推出范数是 $5$ ；Isabelle `norm_3_4i`；Coq
@@ -162,25 +148,19 @@ $25$ 与范数非负推出范数是 $5$ ；Isabelle `norm_3_4i`；Coq
 
 **定义 6.9.** $\mathbb{R}^k$ 由全体 $k$ 维实向量构成，分量加法和数乘
 
-$$
-x+y=(x_1+y_1,\ldots,x_k+y_k),\qquad
-\alpha x=(\alpha x_1,\ldots,\alpha x_k),
-$$
+$$x+y=(x_1+y_1,\ldots,x_k+y_k),\qquad \alpha x=(\alpha x_1,\ldots,\alpha x_k),$$
 
 零向量 $(0,\ldots,0)$ 。它对这两种运算封闭，满足结合、交换、分配——
 这是向量空间，不是域（两个向量一般不能相乘）。
 
 **定义 6.10.** 内积与范数
 
-$$
-x\cdot y=\sum_{i=1}^k x_i y_i,\qquad
-|x|=\Bigl(\sum_{i=1}^k x_i^2\Bigr)^{1/2}.
-$$
+$$x\cdot y=\sum_{i=1}^k x_i y_i,\qquad |x|=\Bigl(\sum_{i=1}^k x_i^2\Bigr)^{1/2}.$$
 
 配上内积与范数的 $\mathbb{R}^k$ 叫 $k$ 维欧几里得空间。$\mathbb{R}$ 是实线，
 $\mathbb{R}^2$ 是实平面；复数的模正是平面向量的欧氏范数。
 
-Lean 用 `EuclideanSpace ℝ (Fin k)`（带 $2$-范数的有限函数类型）：
+Lean 用 `EuclideanSpace ℝ (Fin k)`（带 $2$ -范数的有限函数类型）：
 
 ```lean
 abbrev R2 := EuclideanSpace ℝ (Fin 2)
@@ -198,26 +178,18 @@ $11$ ，范数平方 $5$ 与 $25$ 。Isabelle 的类型同义词 `R2 = real^2`�
 
 对复数序列，原书写法带共轭：
 
-$$
-\Bigl|\sum_{j=1}^n a_j\overline{b_j}\Bigr|^2
-\le\Bigl(\sum_{j=1}^n |a_j|^2\Bigr)
-\Bigl(\sum_{j=1}^n |b_j|^2\Bigr).
-$$
+$$\Bigl|\sum_{j=1}^n a_j\overline{b_j}\Bigr|^2 \le\Bigl(\sum_{j=1}^n |a_j|^2\Bigr) \Bigl(\sum_{j=1}^n |b_j|^2\Bigr).$$
 
 把每个 $b_j$ 换成 $\overline{b_j}$ （仍任意），就得到不含共轭的常见形状。
 实向量情形正是
 
-$$
-|\langle x,y\rangle|^2\le|x|^2\,|y|^2.
-$$
+$$|\langle x,y\rangle|^2\le|x|^2\,|y|^2.$$
 
 ### 二维：Lagrange 恒等式把缺口钉死
 
 对 $u=(a,b)$ 、$v=(c,d)$ ，
 
-$$
-|u|^2|v|^2-\langle u,v\rangle^2=(ad-bc)^2\ge0,
-$$
+$$|u|^2|v|^2-\langle u,v\rangle^2=(ad-bc)^2\ge0,$$
 
 所以 $\langle u,v\rangle^2\le|u|^2|v|^2$ 。缺口是一个平方，不可能为负——
 这就是二维 C-S 的全部几何：平行时行列式为零，等式成立。
@@ -228,10 +200,7 @@ Agda 用自然数样本 `sample-inner * sample-inner ≤ sample-nx * sample-ny`�
 缺口 `125-121=4` 由 `m≤m+n` 给出。Julia / Python / Prolog 还验证一般
 $n$ 维恒等式
 
-$$
-|x|^2|y|^2-\langle x,y\rangle^2
-=\sum_{i<j}(x_i y_j-x_j y_i)^2
-$$
+$$|x|^2|y|^2-\langle x,y\rangle^2 =\sum_{i<j}(x_i y_j-x_j y_i)^2$$
 
 （全体 $2\times2$ 子式平方和），并在五维向量上核对。
 
@@ -239,9 +208,7 @@ $$
 
 Coq 的 `cauchy_schwarz` 走分析教材常见路线：对任意实数 $t$ ，
 
-$$
-\sum_i(a_i+t b_i)^2=A+2tC+t^2 B\ge0.
-$$
+$$\sum_i(a_i+t b_i)^2=A+2tC+t^2 B\ge0.$$
 
 若 $B>0$ ，取 $t=-C/B$ ，最小值 $A-C^2/B\ge0$ ，即 $C^2\le AB$ ；若
 $B=0$ ，则每个 $b_i=0$ ，从而 $C=0$ 。Lean / Isabelle 则直接调用库定理

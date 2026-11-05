@@ -8,9 +8,7 @@
 
 $\{a_n\}$ 、 $\{s_n\}$ 、 $\{b_n\}$ 是实序列，并且对每个 $n$ ，
 
-$$
-a_n\le s_n\le b_n.
-$$
+$$a_n\le s_n\le b_n.$$
 
 若 $a_n\to s$ 且 $b_n\to s$ ，则 $s_n\to s$ 。
 
@@ -18,13 +16,9 @@ $$
 
 任给 $\varepsilon>0$ 。由 $a_n\to s$ 得到 $N_1$ ，使 $n\ge N_1$ 时 $|a_n-s|<\varepsilon$ 。由 $b_n\to s$ 得到 $N_2$ ，使 $n\ge N_2$ 时 $|b_n-s|<\varepsilon$ 。取 $N=\max\{N_1,N_2\}$ 。当 $n\ge N$ 时，
 
-$$
-s_n-s\le b_n-s\le |b_n-s|<\varepsilon,
-$$
+$$s_n-s\le b_n-s\le |b_n-s|<\varepsilon,$$
 
-$$
--(s_n-s)\le -(a_n-s)\le |a_n-s|<\varepsilon.
-$$
+$$-(s_n-s)\le -(a_n-s)\le |a_n-s|<\varepsilon.$$
 
 于是 $|s_n-s|=\max\{s_n-s,\ -(s_n-s)\}<\varepsilon$ 。
 
@@ -85,9 +79,7 @@ Qed.
 
 先看 $p>0$ 。任给 $\varepsilon>0$ ，要找 $N$ ，使 $n\ge N$ 时 $\left|\frac{1}{n^p}\right|<\varepsilon$ 。正项上这就是 $n^p>\frac{1}{\varepsilon}$ ，也就是
 
-$$
-n>\left(\frac{1}{\varepsilon}\right)^{1/p}.
-$$
+$$n>\left(\frac{1}{\varepsilon}\right)^{1/p}.$$
 
 取 $N=\left\lfloor\left(\frac{1}{\varepsilon}\right)^{1/p}\right\rfloor+1$ 。这样的实数存在，是因为正实数有任意正次方根。于是 $n\ge N$ 时 $n$ 严格大于那个方根， $n^p>\frac{1}{\varepsilon}$ ，距离就小于 $\varepsilon$ 。
 
@@ -120,21 +112,15 @@ theorem eleven_square : |(1 : ℝ) / 121| < 1 / 10 := by
 
 **情形 $p>1$ 。** 令 $x_n=p^{1/n}-1$ 。因为 $p^{1/n}>1$ ，所以 $x_n>0$ 。二项式定理给出
 
-$$
-p=(1+x_n)^n=\sum_{k=0}^{n}\binom{n}{k}x_n^k.
-$$
+$$p=(1+x_n)^n=\sum_{k=0}^{n}\binom{n}{k}x_n^k.$$
 
 $x_n>0$ 时， $k\ge 2$ 的项都是正的。丢掉它们，剩下
 
-$$
-p>1+nx_n,
-$$
+$$p>1+nx_n,$$
 
 所以 $0<x_n<\frac{p-1}{n}$ 。右边是常数乘上 $\frac{1}{n}$ ，趋于 $0$ 。夹逼得到 $x_n\to 0$ ，于是
 
-$$
-p^{1/n}=1+x_n\to 1+0=1.
-$$
+$$p^{1/n}=1+x_n\to 1+0=1.$$
 
 $n=2$ 、 $x=\frac{1}{2}$ 时， $(1+x)^n=\left(\frac{3}{2}\right)^2=\frac{9}{4}$ ，而 $1+nx=2$ 。 $\frac{9}{4}>2$ ，丢掉的那个平方项确实是正的。
 
@@ -173,17 +159,13 @@ eight-lt-nine = n<1+n 8
 
 **情形 $0<p<1$ 。** 这时 $x_n=p^{1/n}-1<0$ 。不能照上一款把二项式从第三项起全部丢掉： $x_n<0$ 时偶次幂是正的，奇次幂才是负的，后面各项并不同号。 $p=\frac{1}{2}$ 、 $n=2$ 可以看出来。 $\sqrt{\frac{1}{2}}\approx 0.707$ ， $x_2\approx -0.293$ ，而
 
-$$
-\left(1+x_2\right)^2=\frac{1}{2}>1+2x_2.
-$$
+$$\left(1+x_2\right)^2=\frac{1}{2}>1+2x_2.$$
 
 不等式方向和 $p>1$ 时相反，所以那一刀切不下来。
 
 换成倒数。 $0<p<1$ 时 $\frac{1}{p}>1$ 。上一款给出 $\left(\frac{1}{p}\right)^{1/n}\to 1$ 。而
 
-$$
-p^{1/n}=\frac{1}{\left(\frac{1}{p}\right)^{1/n}}\to\frac{1}{1}=1.
-$$
+$$p^{1/n}=\frac{1}{\left(\frac{1}{p}\right)^{1/n}}\to\frac{1}{1}=1.$$
 
 常数的 $n$ 次方根在 Isabelle 里是一条现成的极限， $c>0$ 即可，不必再分 $c>1$ 和 $c<1$ 。
 
@@ -196,29 +178,21 @@ lemma root_two: "(\<lambda>n. root n (2::real)) \<longlonglongrightarrow> 1"
 
 ## 18.4 定理 18.4： $n^{1/n}$
 
-$$
-\lim_{n\to\infty}n^{1/n}=1.
-$$
+$$\lim_{n\to\infty}n^{1/n}=1.$$
 
 这里开方的数就是下标自己，不是一个固定的 $p$ 。前几项大约是
 
-$$
-1.00,\ 1.41,\ 1.44,\ 1.41,\ 1.38,\ 1.35,\ \ldots
-$$
+$$1.00,\ 1.41,\ 1.44,\ 1.41,\ 1.38,\ 1.35,\ \ldots$$
 
 它先升后降，并不单调，所以不能靠单调有界。
 
 令 $x_n=n^{1/n}-1$ 。 $n^{1/n}\ge 1$ ，所以 $x_n\ge 0$ 。二项式展开后， $k=2$ 那一项已经够用：
 
-$$
-n=(1+x_n)^n\ge\binom{n}{2}x_n^2=\frac{n(n-1)}{2}x_n^2.
-$$
+$$n=(1+x_n)^n\ge\binom{n}{2}x_n^2=\frac{n(n-1)}{2}x_n^2.$$
 
 $n\ge 2$ 时可以除过去，
 
-$$
-0\le x_n\le\sqrt{\frac{2}{n-1}}=\sqrt{2}\cdot\frac{1}{\sqrt{n-1}}.
-$$
+$$0\le x_n\le\sqrt{\frac{2}{n-1}}=\sqrt{2}\cdot\frac{1}{\sqrt{n-1}}.$$
 
 定理 18.2 里取 $p=\frac{1}{2}$ ，得到 $\frac{1}{\sqrt{m}}\to 0$ 。把 $m$ 换成 $n-1$ 仍然趋于 $0$ ，再乘上常数 $\sqrt{2}$ 还是 $0$ 。夹逼给出 $x_n\to 0$ ，所以 $n^{1/n}=1+x_n\to 1$ 。 $n=1$ 只有一项，从哪一项开始夹都不影响极限。
 
@@ -245,31 +219,21 @@ lemma root_n: "(\<lambda>n. root n n) \<longlonglongrightarrow> 1"
 
 若 $p>0$ 且 $\alpha$ 是实数，则
 
-$$
-\frac{n^\alpha}{(1+p)^n}\to 0.
-$$
+$$\frac{n^\alpha}{(1+p)^n}\to 0.$$
 
 指数比多项式快。证明仍然靠二项式，这次留下的是 $k$ 次那一项。
 
-$$
-\binom{n}{k}=\frac{n(n-1)\cdots(n-k+1)}{k!}\ge\frac{(n-k+1)^k}{k!}.
-$$
+$$\binom{n}{k}=\frac{n(n-1)\cdots(n-k+1)}{k!}\ge\frac{(n-k+1)^k}{k!}.$$
 
 固定 $k$ ，当 $n>2k$ 时， $n-k+1>\frac{n}{2}$ 。 $k$ 个这样的因子乘起来，
 
-$$
-\binom{n}{k}>\frac{n^k}{2^k\,k!}.
-$$
+$$\binom{n}{k}>\frac{n^k}{2^k\,k!}.$$
 
 于是
 
-$$
-(1+p)^n\ge\binom{n}{k}p^k>\frac{n^k p^k}{2^k\,k!},
-$$
+$$(1+p)^n\ge\binom{n}{k}p^k>\frac{n^k p^k}{2^k\,k!},$$
 
-$$
-0<\frac{n^\alpha}{(1+p)^n}<\frac{2^k\,k!}{p^k}\,n^{\alpha-k}.
-$$
+$$0<\frac{n^\alpha}{(1+p)^n}<\frac{2^k\,k!}{p^k}\,n^{\alpha-k}.$$
 
 取整数 $k>\alpha$ ，则 $\alpha-k<0$ 。定理 18.2 说右边这个负幂趋于 $0$ ，常数倍仍趋于 $0$ 。夹逼得到原式趋于 $0$ 。条件 $n>2k$ 只丢掉有限的开头。尾部收敛，整条序列就收敛。
 
@@ -292,15 +256,11 @@ $x=0$ 时序列就是 $0,0,0,\ldots$ 。
 
 $0<x<1$ 时，令 $p=\frac{1}{x}-1$ 。则 $p>0$ ，而且 $x=\frac{1}{1+p}$ 。定理 18.5 里取 $\alpha=0$ ，
 
-$$
-x^n=\frac{n^0}{(1+p)^n}\to 0.
-$$
+$$x^n=\frac{n^0}{(1+p)^n}\to 0.$$
 
 $-1<x<0$ 时，不能把 $p=\frac{1}{x}-1$ 直接代进去，因为这时 $p$ 可能是负的。例如 $x=-\frac{1}{2}$ 时 $p=-3$ 。先对绝对值用上一款： $|x|<1$ ，所以 $|x|^n\to 0$ 。乘上 $-1$ 之后 $-|x|^n\to 0$ 。而
 
-$$
--|x|^n\le x^n\le |x|^n,
-$$
+$$-|x|^n\le x^n\le |x|^n,$$
 
 夹逼得到 $x^n\to 0$ 。
 
