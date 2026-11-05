@@ -82,3 +82,8 @@ session RA16 in "RA16" = "HOL-Analysis" +
   options [document = false]
   theories
     CauchyMono
+
+session RA17 in "RA17" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    SubseqLimits
