@@ -77,3 +77,8 @@ session RA15 in "RA15" = "HOL-Analysis" +
   options [document = false]
   theories
     Subsequences
+
+session RA16 in "RA16" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    CauchyMono
