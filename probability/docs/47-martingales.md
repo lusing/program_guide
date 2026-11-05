@@ -203,4 +203,4 @@ first_hit(Steps, T, N) :- first_hit_(Steps, 0, T, 1, N).
 
 ---
 
-上一章：[46 重对数律：极限的精确常数](46-law-iterated-logarithm.md) · 下一章：[49 全书速查与定理地图](49-cheatsheet.md)
+上一章：[46 重对数律：极限的精确常数](46-law-iterated-logarithm.md) · 下一章：[48 离散鞅 II：一致可积、停时与选样](48-martingale-convergence.md)

@@ -159,6 +159,7 @@ Monte Carlo 误差公式建立大样本平均的基本理论。
 | [45 级数收敛与三级数定理](docs/45-three-series.md) | Kolmogorov 不等式、方差账证书、三级数、Kronecker 与 Feller 弱律 |
 | [46 重对数律：极限的精确常数](docs/46-law-iterated-logarithm.md) | 几何分级、指数不等式、尾 0-1 律与不冒领常数纪律 |
 | [47 离散鞅 I：公平赌博的数学](docs/47-martingales.md) | 鞅变换与赌博系统、上穿不等式、Doob 收敛定理、停时穷举 |
+| [48 离散鞅 II：一致可积、停时与选样](docs/48-martingale-convergence.md) | UI 判据、Lévy 鞅定理、选样定理与可选停止正反课 |
 
 ### 收官速查
 

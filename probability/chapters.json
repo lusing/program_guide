@@ -241,6 +241,11 @@
       "title": "离散鞅 I：公平赌博的数学"
     },
     {
+      "number": "48",
+      "slug": "martingale-convergence",
+      "title": "离散鞅 II：一致可积、停时与选样"
+    },
+    {
       "number": "49",
       "slug": "cheatsheet",
       "title": "全书速查与定理地图"

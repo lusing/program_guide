@@ -238,4 +238,4 @@ G:\scoop\apps\python313\current\python.exe -I probability/tools/check_docs.py --
 
 ---
 
-上一章：[47 离散鞅 I：公平赌博的数学](47-martingales.md) · 全书完
+上一章：[48 离散鞅 II：一致可积、停时与选样](48-martingale-convergence.md) · 全书完
