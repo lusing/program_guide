@@ -72,3 +72,8 @@ session RA14 in "RA14" = "HOL-Analysis" +
   options [document = false]
   theories
     Sequences
+
+session RA15 in "RA15" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Subsequences
