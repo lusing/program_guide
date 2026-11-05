@@ -198,4 +198,4 @@ kolmogorov_count(N, Eps, Count, Total) :-
 
 ---
 
-上一章：[44 无穷可分分布：任意切分的分布族](44-infinitely-divisible.md) · 下一章：[49 全书速查与定理地图](49-cheatsheet.md)
+上一章：[44 无穷可分分布：任意切分的分布族](44-infinitely-divisible.md) · 下一章：[46 重对数律：极限的精确常数](46-law-iterated-logarithm.md)

@@ -238,4 +238,4 @@ G:\scoop\apps\python313\current\python.exe -I probability/tools/check_docs.py --
 
 ---
 
-上一章：[45 级数收敛与三级数定理](45-three-series.md) · 全书完
+上一章：[46 重对数律：极限的精确常数](46-law-iterated-logarithm.md) · 全书完

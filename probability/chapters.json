@@ -231,6 +231,11 @@
       "title": "级数收敛与三级数定理"
     },
     {
+      "number": "46",
+      "slug": "law-iterated-logarithm",
+      "title": "重对数律：极限的精确常数"
+    },
+    {
       "number": "49",
       "slug": "cheatsheet",
       "title": "全书速查与定理地图"
