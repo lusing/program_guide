@@ -271,3 +271,5 @@ example : closure (Icc (-3 : ℝ) 3) = Icc (-3) 3 := isClosed_Icc.closure_eq
 定义已经齐了。下一章证明开集的补是闭集、任意并与有限交保持开、闭包
 是最小的闭超集，并说明“相对某个子空间的开集”和在全空间里的开集不是
 一回事。
+
+上一章：[08 可数性](08-countability.md) · 下一章：[10 闭集和开集](10-open-closed.md) · [返回目录](../README.md)

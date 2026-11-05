@@ -336,3 +336,5 @@ assert seq[-1] < Fraction(1, 10)
 
 $\mathbb{R}^k$ 里哪些集合是紧的，已经清楚了。下一章看完备集和连通集：
 康托尔集是完备的，区间是连通的。
+
+上一章：[11 紧集](11-compact.md) · 下一章：[13 完备集与连通集](13-perfect-connected.md) · [返回目录](../README.md)

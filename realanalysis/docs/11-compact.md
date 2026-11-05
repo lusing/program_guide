@@ -297,3 +297,5 @@ $\exists x\in K.\; x\ \mathrm{islimpt}\ E$ 。
 紧集的性质齐了，还不知道 $\mathbb{R}^k$ 里谁是紧的。下一章证明海涅–博雷尔
 定理：$\mathbb{R}^k$ 的子集紧，当且仅当它既闭又有界。闭区间 $[a,b]$ 因此
 是紧的。
+
+上一章：[10 闭集和开集](10-open-closed.md) · 下一章：[12 海涅–博雷尔定理](12-heine-borel.md) · [返回目录](../README.md)

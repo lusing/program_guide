@@ -283,3 +283,5 @@ $\langle u,v\rangle\le\|u\|\|v\|$ 。Lean 的 `norm_add_le`、Isabelle 的
 复数与 $\mathbb{R}^k$ 提供了后面度量与拓扑的舞台。但在谈开集、紧集之
 前，先要能比较无限集的“大小”——下一章建立函数的单射、满射与双射，
 为可数性做准备。
+
+上一章：[05 实数域：完备性](05-completeness.md) · 下一章：[07 双射](07-bijections.md) · [返回目录](../README.md)

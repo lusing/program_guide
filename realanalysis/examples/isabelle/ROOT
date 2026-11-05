@@ -92,3 +92,18 @@ session RA18 in "RA18" = "HOL-Analysis" +
   options [document = false]
   theories
     Special
+
+session RA19 in "RA19" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    SeriesBasics
+
+session RA20 in "RA20" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Summary
+
+session RA21 in "RA21" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Wrapup

@@ -17,3 +17,6 @@ import Realanalysis.Ch15Subsequences
 import Realanalysis.Ch16Cauchy
 import Realanalysis.Ch17SubseqLimits
 import Realanalysis.Ch18Special
+import Realanalysis.Ch19Series
+import Realanalysis.Ch20Summary
+import Realanalysis.Ch21Wrapup

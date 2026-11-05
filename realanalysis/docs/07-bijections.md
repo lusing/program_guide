@@ -231,3 +231,5 @@ Coq 的 `bij_comp`、Agda 的 `bij-comp`、Isabelle 的 `bij_comp` 都是
 双射给出“一样大”的精确定义。下一章引入等价关系与势：有限集的势就是
 元素个数；无限集则分成可数与不可数——$\mathbb{Q}$ 可数，$\mathbb{R}$
 不可数（Cantor 对角线）。
+
+上一章：[06 复数与欧几里得空间](06-complex.md) · 下一章：[08 可数性](08-countability.md) · [返回目录](../README.md)
