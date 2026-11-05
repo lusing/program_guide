@@ -115,32 +115,32 @@ python3 check-docs.py              # 文档机器核查（--verbose 看每条比
 
 ## 章节索引
 
-| 章 | 主题 | 一句话 |
-|---|---|---|
-| [01](docs/01-overview.md) | 概览与环境自检 | 定理是 ML 值；最小闭环长什么样 |
-| [02](docs/02-terms.md) | 项与引号 | ``` ``t`` ``` vs `` `p` `` vs `` `:T` `` |
-| [03](docs/03-ml.md) | ML 那半边 | 值绑定、模式匹配、异常、组合子 |
-| [04](docs/04-kernel.md) | 内核十条规则 | 定理只能由这些规则造出来 |
-| [05](docs/05-datatype.md) | 数据类型 | `Datatype` 送的四件赠品 |
-| [06](docs/06-recursion.md) | 递归定义 | 结构递归、良基递归、终止性 |
-| [07](docs/07-induction.md) | 归纳 | 归纳假设不够强时怎么泛化 |
-| [08](docs/08-simp.md) | 化简器 | `simp` / `rw` / `fs` / `gs` / `gvs` 的残余对比 |
-| [09](docs/09-tactics.md) | 基本战术与目标栈 | `g` / `e` / `p` / `drop` / `top_thm` |
-| [10](docs/10-tacticals.md) | 战术算子 | `THEN` / `THENL` / `ORELSE` / `ALLGOALS` |
-| [11](docs/11-conv.md) | 转换 | `conv : term -> thm`，深度与定位 |
-| [12](docs/12-arith.md) | 算术 | Peano、`num` 的坑、Presburger 判定 |
-| [13](docs/13-lists.md) | 列表 | `listTheory` 常用函数与三个证明 |
-| [14](docs/14-quantifiers.md) | 量词与一阶自动化 | `simp` 与 `metis` 的分工 |
-| [15](docs/15-sets.md) | 集合与谓词 | `α set` 就是 `α -> bool` |
-| [16](docs/16-relations.md) | 关系与闭包 | `RTC` / `TC` / `WF` / 良基递归 |
-| [17](docs/17-inddef.md) | 归纳定义 | `Hol_reln` 的四条赠品 |
-| [18](docs/18-records.md) | 记录类型 | `with` 不是赋值 |
-| [19](docs/19-types.md) | 类型与类型缩写 | 拆类型、参数化、多态记录 |
-| [20](docs/20-simpset.md) | 化简器与 simpset | 重写 / cong / 定向三件事 |
-| [21](docs/21-automation.md) | 自动化工具箱 | 四台机器各自认哪些符号 |
-| [22](docs/22-theories.md) | 理论与数据库 | 四条登记通道、四种查法、Holmake 缓存 |
-| [23](docs/23-engineering.md) | 脚本工程 | 七条判据与两个真实的验证脚本 bug |
-| [24](docs/24-capstone.md) | 综合练习 | 表达式语言 → 栈机 → 编译器 → 正确性 |
+| 章 | 一句话 |
+|---|---|
+| [01 概览与环境自检](docs/01-overview.md) | 定理是 ML 值；最小闭环长什么样 |
+| [02 项与引号](docs/02-terms.md) | ``` ``t`` ``` vs `` `p` `` vs `` `:T` `` |
+| [03 ML 那半边](docs/03-ml.md) | 值绑定、模式匹配、异常、组合子 |
+| [04 内核十条规则](docs/04-kernel.md) | 定理只能由这些规则造出来 |
+| [05 数据类型](docs/05-datatype.md) | `Datatype` 送的四件赠品 |
+| [06 递归定义](docs/06-recursion.md) | 结构递归、良基递归、终止性 |
+| [07 归纳](docs/07-induction.md) | 归纳假设不够强时怎么泛化 |
+| [08 化简器](docs/08-simp.md) | `simp` / `rw` / `fs` / `gs` / `gvs` 的残余对比 |
+| [09 基本战术与目标栈](docs/09-tactics.md) | `g` / `e` / `p` / `drop` / `top_thm` |
+| [10 战术算子](docs/10-tacticals.md) | `THEN` / `THENL` / `ORELSE` / `ALLGOALS` |
+| [11 转换](docs/11-conv.md) | `conv : term -> thm`，深度与定位 |
+| [12 算术](docs/12-arith.md) | Peano、`num` 的坑、Presburger 判定 |
+| [13 列表](docs/13-lists.md) | `listTheory` 常用函数与三个证明 |
+| [14 量词与一阶自动化](docs/14-quantifiers.md) | `simp` 与 `metis` 的分工 |
+| [15 集合与谓词](docs/15-sets.md) | `α set` 就是 `α -> bool` |
+| [16 关系与闭包](docs/16-relations.md) | `RTC` / `TC` / `WF` / 良基递归 |
+| [17 归纳定义](docs/17-inddef.md) | `Hol_reln` 的四条赠品 |
+| [18 记录类型](docs/18-records.md) | `with` 不是赋值 |
+| [19 类型与类型缩写](docs/19-types.md) | 拆类型、参数化、多态记录 |
+| [20 化简器与 simpset](docs/20-simpset.md) | 重写 / cong / 定向三件事 |
+| [21 自动化工具箱](docs/21-automation.md) | 四台机器各自认哪些符号 |
+| [22 理论与数据库](docs/22-theories.md) | 四条登记通道、四种查法、Holmake 缓存 |
+| [23 脚本工程](docs/23-engineering.md) | 七条判据与两个真实的验证脚本 bug |
+| [24 综合练习](docs/24-capstone.md) | 表达式语言 → 栈机 → 编译器 → 正确性 |
 
 ## 免责
 

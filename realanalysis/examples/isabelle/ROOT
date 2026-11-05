@@ -87,3 +87,8 @@ session RA17 in "RA17" = "HOL-Analysis" +
   options [document = false]
   theories
     SubseqLimits
+
+session RA18 in "RA18" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Special

@@ -6,12 +6,12 @@
 
 | 篇 | 章 | 内容（书章源） |
 |---|---|---|
-| 一 壳与命令 | [01](docs/01-why-powershell.md)–[05](docs/05-providers.md) | 心智模型(书1) · 宿主与版本(书2) · 帮助系统(书3) · Cmdlet 语法(书4) · 提供程序(书5) |
-| 二 对象与管道 | [06](docs/06-pipeline-first.md)–[12](docs/12-integration.md) | 管道(书6) · 模块生态(书7) · 对象(书8) · 参数绑定(书9) · 格式化(书10) · 过滤(书11) · 库存实战(书12) |
-| 三 远程与批量 | [13](docs/13-remoting.md)–[19](docs/19-advanced-remoting.md) | 远程处理(书13) · CIM(书14) · 后台作业(书15) · 多对象+并行(书16) · 安全执行策略(书17) · 会话(书20) · 高级远程+SSH(书23) |
-| 四 语言核心 | [20](docs/20-variables.md)–[23](docs/23-parameterized.md) | 变量(书18) · 六流 IO(书19) · 第一个脚本(书21) · 参数化与验证(书22) |
-| 五 工具制作 | [24](docs/24-functions.md)–[30](docs/30-others-scripts.md) | 函数与作用域(扩) · 高级函数(扩) · 错误处理(扩) · 模块开发(扩) · 正则(书24) · 技巧(书25) · 他人脚本(书26) |
-| 六 进阶收官 | [31](docs/31-classes.md)–[34](docs/34-cheatsheet.md) | 类与 JSON(扩) · Pester+ScriptAnalyzer(扩) · 工具制作收官(书27) · 备忘清单(书28) |
+| 一 壳与命令 | [01 心智模型](docs/01-why-powershell.md)–[05 提供程序](docs/05-providers.md) | 心智模型(书1) · 宿主与版本(书2) · 帮助系统(书3) · Cmdlet 语法(书4) · 提供程序(书5) |
+| 二 对象与管道 | [06 管道](docs/06-pipeline-first.md)–[12 库存实战](docs/12-integration.md) | 管道(书6) · 模块生态(书7) · 对象(书8) · 参数绑定(书9) · 格式化(书10) · 过滤(书11) · 库存实战(书12) |
+| 三 远程与批量 | [13 远程处理](docs/13-remoting.md)–[19 高级远程+SSH](docs/19-advanced-remoting.md) | 远程处理(书13) · CIM(书14) · 后台作业(书15) · 多对象+并行(书16) · 安全执行策略(书17) · 会话(书20) · 高级远程+SSH(书23) |
+| 四 语言核心 | [20 变量](docs/20-variables.md)–[23 参数化与验证](docs/23-parameterized.md) | 变量(书18) · 六流 IO(书19) · 第一个脚本(书21) · 参数化与验证(书22) |
+| 五 工具制作 | [24 函数与作用域](docs/24-functions.md)–[30 他人脚本](docs/30-others-scripts.md) | 函数与作用域(扩) · 高级函数(扩) · 错误处理(扩) · 模块开发(扩) · 正则(书24) · 技巧(书25) · 他人脚本(书26) |
+| 六 进阶收官 | [31 类与 JSON](docs/31-classes.md)–[34 备忘清单](docs/34-cheatsheet.md) | 类与 JSON(扩) · Pester+ScriptAnalyzer(扩) · 工具制作收官(书27) · 备忘清单(书28) |
 
 （扩 = 现代扩充章，共 7 章；其余 27 章对应原书教学章，书 28 → 34 章）
 
