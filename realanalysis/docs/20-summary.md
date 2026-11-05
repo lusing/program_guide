@@ -163,9 +163,7 @@ two-lt-four = <-trans (n<1+n 2) (n<1+n 3)
 
 原书第 14 章留下误差预算。序列 $p_n$ 收敛到 $p$ 的定义是：对任意 $\varepsilon>0$ ，存在 $N$ ，使
 
-$$
-n\ge N\implies d(p_n,p)<\varepsilon.
-$$
+$$n\ge N\implies d(p_n,p)<\varepsilon.$$
 
 中译把这里的“序列”印成了“级数”，公式仍是点到极限的距离。定义对每一个正数都成立，所以 $\varepsilon$ 可以换成任何一个正数，包括 $\frac{\varepsilon}{2}$ 。两半加回去还是原来的 $\varepsilon$ 。
 

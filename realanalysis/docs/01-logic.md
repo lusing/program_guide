@@ -15,11 +15,7 @@ $A$ 真而 $B$ 假时为假，其余三种情况都为真。特别地，“假�
 
 两条德摩根律给出了否定的分配规则：
 
-$$
-\lnot (A \lor B) \iff \lnot A \land \lnot B,
-\qquad
-\lnot (A \land B) \iff \lnot A \lor \lnot B .
-$$
+$$\lnot (A \lor B) \iff \lnot A \land \lnot B, \qquad \lnot (A \land B) \iff \lnot A \lor \lnot B .$$
 
 这两条定律在有限真值表上可以直接穷举验证。Python 通道
 （`examples/python/01_logic.py`）的做法：
@@ -77,11 +73,7 @@ $x + 1 > x$ 。第二个证明把假设解构出 $y$ 和它的“压过一切”
 
 量词的否定规则是德摩根律的量词版：
 
-$$
-\lnot (\forall x, \, P(x)) \iff \exists x, \, \lnot P(x),
-\qquad
-\lnot (\exists x, \, P(x)) \iff \forall x, \, \lnot P(x) .
-$$
+$$\lnot (\forall x, \, P(x)) \iff \exists x, \, \lnot P(x), \qquad \lnot (\exists x, \, P(x)) \iff \forall x, \, \lnot P(x) .$$
 
 Lean 中它们就是 `not_forall` 与 `not_exists` 两个定理。Coq 通道
 （`examples/coq/Ch01_logic.v`）多讲了一层逻辑学区分：第一条的
@@ -207,9 +199,7 @@ $\sqrt{2}$ 无理性的三层证明（Coq 通道 `no_double_square` →
 要证对所有自然数成立的命题 $P(n)$ ：证 $P(0)$ （基例），再证
 $P(n) \Rightarrow P(n+1)$ （归纳步）。原书例 2.4 是求和公式：
 
-$$
-1 + 2 + \cdots + n = \frac{n(n+1)}{2}.
-$$
+$$1 + 2 + \cdots + n = \frac{n(n+1)}{2}.$$
 
 Lean 通道的证明分两步——先证无除法版本（避免在归纳中处理
 整除），再取一半：
@@ -262,16 +252,12 @@ sum-double (suc n) = begin
 直接证明从定义出发正面构造。原书例 2.5 是微积分里最常见的一类
 命题的第一次严格化：
 
-$$
-\lim_{x \to 2} (3x + 1) = 7.
-$$
+$$\lim_{x \to 2} (3x + 1) = 7.$$
 
 按定义，要证：对任意 $\varepsilon > 0$ ，存在 $\delta > 0$ ，使得
 $|x - 2| < \delta$ 蕴含 $|(3x + 1) - 7| < \varepsilon$ 。关键观察是
 
-$$
-|(3x + 1) - 7| = |3x - 6| = 3|x - 2|,
-$$
+$$|(3x + 1) - 7| = |3x - 6| = 3|x - 2|,$$
 
 所以取 $\delta = \varepsilon / 3$ 即可。Lean 通道的形式化
 （`examples/lean/Realanalysis/Ch01Logic.lean`）：

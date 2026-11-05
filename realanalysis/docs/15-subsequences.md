@@ -13,9 +13,7 @@
 **和.** 给定 $\varepsilon>0$ ，两边各让出 $\varepsilon/2$ 。存在 $N_1,N_2$ ，使 $n\ge N_1$ 时
 $|s_n-s|<\varepsilon/2$ ，$n\ge N_2$ 时 $|t_n-t|<\varepsilon/2$ 。从 $N=\max\{N_1,N_2\}$ 起，
 
-$$
-|(s_n+t_n)-(s+t)|\le |s_n-s|+|t_n-t|<\varepsilon.
-$$
+$$|(s_n+t_n)-(s+t)|\le |s_n-s|+|t_n-t|<\varepsilon.$$
 
 ```lean
 theorem add_limits {s t : ℕ → ℝ} {a b : ℝ}
@@ -31,9 +29,7 @@ theorem add_limits {s t : ℕ → ℝ} {a b : ℝ}
 
 **数乘.** $c=0$ 时，$cs_n$ 是零序列，距离是 $0$ 。$c\neq 0$ 时，把定义用在 $\varepsilon/|c|$ 上：
 
-$$
-|cs_n-cs|=|c|\,|s_n-s|<|c|\cdot\frac{\varepsilon}{|c|}=\varepsilon.
-$$
+$$|cs_n-cs|=|c|\,|s_n-s|<|c|\cdot\frac{\varepsilon}{|c|}=\varepsilon.$$
 
 ```lean
 theorem const_mul_limit {s : ℕ → ℝ} {a c : ℝ} (hs : Tendsto s atTop (nhds a)) :
@@ -46,9 +42,7 @@ $n=11$ 时 $3/11<3/10$ 。
 
 **积.** 目标是 $|s_nt_n-st|<\varepsilon$ 。展开后多出一个尾巴：
 
-$$
-|s_nt_n-st|\le |s_n-s|\,|t_n-t|+|st_n+ts_n-2st|.
-$$
+$$|s_nt_n-st|\le |s_n-s|\,|t_n-t|+|st_n+ts_n-2st|.$$
 
 前半用 $\sqrt{\varepsilon/2}$ ：两个因子都小于这个数，乘积就小于 $\varepsilon/2$ 。
 后半是 $st_n\to st$ 与 $ts_n\to ts$ 的和，再减去常数 $2st$ ，极限是 $0$ 。
@@ -66,15 +60,11 @@ $n=10$ 时，$(1+1/10)(2+1/10)$ 到 $2$ 的距离小于 $1/2$ 。
 **倒数.** 先要 $s\neq 0$ ，并且每一项 $s_n\neq 0$ ，这样 $1/s_n$ 全程有定义。
 证明里真正用到的是尾部躲开 $0$ 。取 $N_1$ 使 $|s_n-s|<|s|/2$ ，于是
 
-$$
-|s_n|\ge |s|-|s_n-s|>|s|/2.
-$$
+$$|s_n|\ge |s|-|s_n-s|>|s|/2.$$
 
 再取 $N_2$ 使 $|s_n-s|<\frac{1}{2}|s|^2\varepsilon$ 。从两者的最大下标起，
 
-$$
-\left|\frac{1}{s_n}-\frac{1}{s}\right|=\frac{|s_n-s|}{|s_n|\,|s|}<\varepsilon.
-$$
+$$\left|\frac{1}{s_n}-\frac{1}{s}\right|=\frac{|s_n-s|}{|s_n|\,|s|}<\varepsilon.$$
 
 ```lean
 theorem inv_limit {s : ℕ → ℝ} {a : ℝ} (hs : Tendsto s atTop (nhds a)) (ha : a ≠ 0) :
@@ -98,9 +88,7 @@ $\alpha_{jn}\to\alpha_j$ 。
 另一个方向要先把 $\varepsilon$ 分给 $k$ 个分量。对每个 $j$ ，让 $|\alpha_{jn}-\alpha_j|<\varepsilon/\sqrt{k}$ 。
 取这些下标的最大者，则
 
-$$
-|x_n-x|=\sqrt{\sum_{j=1}^k|\alpha_{jn}-\alpha_j|^2}<\sqrt{k\cdot\frac{\varepsilon^2}{k}}=\varepsilon.
-$$
+$$|x_n-x|=\sqrt{\sum_{j=1}^k|\alpha_{jn}-\alpha_j|^2}<\sqrt{k\cdot\frac{\varepsilon^2}{k}}=\varepsilon.$$
 
 $(1/n,\ 3)\to(0,\ 3)$ 。$(1/n,\ 3,\ n^2)$ 不收敛，因为第三分量发散。
 平面上的等价关系是：配对之后的序列收敛，恰好是两个实序列都收敛。
@@ -268,11 +256,11 @@ theorem bolzano_weierstrass {s : ℕ → ℝ} {E : Set ℝ}
 
 ## 15.9 定理 15.9：子序列极限组成闭集
 
-$E^\*$ 是 $\{p_n\}$ 的全部子序列极限。它在所在空间里是闭的。
+$E^*$ 是 $\{p_n\}$ 的全部子序列极限。它在所在空间里是闭的。
 
-若从某项起序列恒等于 $q$ ，则每条子序列都收敛到 $q$ ，$E^\*=\{q\}$ ，单点集是闭的。
+若从某项起序列恒等于 $q$ ，则每条子序列都收敛到 $q$ ，$E^*=\{q\}$ ，单点集是闭的。
 
-否则 $q$ 是 $E^\*$ 的极限点时，要造一条收敛到 $q$ 的子序列。第一步只能保证挑到的 $p_{n_1}\neq q$ ，
+否则 $q$ 是 $E^*$ 的极限点时，要造一条收敛到 $q$ 的子序列。第一步只能保证挑到的 $p_{n_1}\neq q$ ，
 距离是某个 $\delta>0$ ，未必小于 $1$ 。后面的半径就改用 $\delta/(i+1)$ ：在 $q$ 附近取另一个子序列极限 $x$ ，
 再沿收敛到 $x$ 的那条子序列，把下标推到已经用过的 $n_i$ 之后。三角不等式把距离压到 $\delta/(i+1)$ 。
 最后 $N=\lceil \delta/\varepsilon\rceil+1$ 仍然够用，因为 $\delta$ 只是一个固定的正数。
@@ -284,7 +272,7 @@ theorem two_limits_closed : IsClosed ({(-1 : ℝ)} ∪ {1}) :=
   isClosed_singleton.union isClosed_singleton
 ```
 
-两个单点都闭，有限并保持闭。一般的 $E^\*$ 要靠上面的 $\delta$ 构造，而不是只靠这两个点。
+两个单点都闭，有限并保持闭。一般的 $E^*$ 要靠上面的 $\delta$ 构造，而不是只靠这两个点。
 
 ## 15.10 七通道对照
 

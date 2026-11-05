@@ -8,6 +8,7 @@
       pwsh -NoProfile -Command '& ./build.ps1 -Lang lean'     只验一种语言
       pwsh -NoProfile -Command '& ./build.ps1 -List'          列出全部验证单元
       pwsh -NoProfile -Command '& ./build.ps1 -Clean'         清理产物
+      pwsh -NoProfile -Command '& ./build.ps1 -Docs'          只查 docs/README 的数学定界符与 Forgejo 邻接规则
 
     通道判定:
       lean     : examples/lean 单一 lake 工程（mathlib 路径依赖
@@ -37,7 +38,8 @@ param(
     [string[]]$Chapter = @(),
     [string]$Lang = "",
     [switch]$List,
-    [switch]$Clean
+    [switch]$Clean,
+    [switch]$Docs
 )
 
 $ErrorActionPreference = 'Stop'
@@ -62,6 +64,12 @@ if ($Clean) {
     }
     Write-Host '[Clean] 已清理 build/ 与 lean/.lake。'
     exit 0
+}
+
+# ---------- 文档数学规范：定界符配对 + Forgejo 邻接规则 + 单行展示块 ----------
+if ($Docs) {
+    & $pyExe -I (Join-Path $root 'tools\check_math.py')
+    exit $LASTEXITCODE
 }
 
 # ---------- 发现验证单元 ----------

@@ -13,9 +13,7 @@ $b\equiv c$ 得 $a\equiv c$ 。相等 $=$ 是等价关系，但不是唯一的�
 
 **定义 8.3.** 对集合 $A,B$ ，
 
-$$
-A\sim B \quad:\Longleftrightarrow\quad \text{存在双射 } f:A\to B.
-$$
+$$A\sim B \quad:\Longleftrightarrow\quad \text{存在双射 } f:A\to B.$$
 
 这时称 $A$ 与 $B$ 一一对应，并说它们有相同的势（基数）。
 注意：“一一对应”是既单又满的双射；单射（一对一）本身不够。
@@ -78,13 +76,7 @@ example : Fintype.card (Fin 3) = Fintype.card (Fin 4) → Nonempty (Fin 3 ≃ Fi
 **例 8.8.** $\mathbb{Z}$ 可数。不能把每个自然数同时送到 $n$ 和 $-n$ ：
 那不是函数。改成交错：
 
-$$
-f(n)=
-\begin{cases}
-n/2 & n\text{ 偶},\\
--(n-1)/2 & n\text{ 奇}.
-\end{cases}
-$$
+$$f(n)= \begin{cases} n/2 & n\text{ 偶},\\ -(n-1)/2 & n\text{ 奇}. \end{cases}$$
 
 下标从 $1$ 起时：$1\mapsto 0$ ，$2\mapsto 1$ ，$3\mapsto -1$ ，$4\mapsto 2$ ，$5\mapsto -2$ 。
 每个整数恰好出现一次，所以 $f:\mathbb{N}\to\mathbb{Z}$ 是双射。
@@ -128,13 +120,7 @@ $-(n+1)/2$ ），用 `unzig` 证明 `bij zig`。Julia / Python / Prolog
 在末尾补无穷个 $0$ ）。任取可数子集 $E=\{e_1,e_2,\ldots\}\subset S$ ，
 把它们排成表，第 $i$ 行是 $e_i$ 的小数位。定义
 
-$$
-s_i=
-\begin{cases}
-1 & \text{若 } e_i\text{ 的第 }i\text{ 位是 }0,\\
-0 & \text{否则}.
-\end{cases}
-$$
+$$s_i= \begin{cases} 1 & \text{若 } e_i\text{ 的第 }i\text{ 位是 }0,\\ 0 & \text{否则}. \end{cases}$$
 
 则 $s=0.s_1 s_2\cdots$ 与每个 $e_i$ 至少在第 $i$ 位不同，所以
 $s\in S\setminus E$ 。每个可数子集都是真子集。若 $S$ 自己可数，
@@ -215,9 +201,7 @@ $A^1=A$ ；$A^n$ 是 $|A^{n-1}|$ 个 $A$ 的副本之并，由推论 8.14 仍可
 **定理 8.16.** $\mathbb{Q}$ 可数。每个有理数都是 $a/b$ ，
 $a\in\mathbb{Z}$ ，$b\in\mathbb{N}$ ，于是
 
-$$
-f:\mathbb{Z}\times\mathbb{N}\to\mathbb{Q},\qquad (a,b)\mapsto a/b
-$$
+$$f:\mathbb{Z}\times\mathbb{N}\to\mathbb{Q},\qquad (a,b)\mapsto a/b$$
 
 是满射，但不是单射：$(1,2)$ 与 $(3,6)$ 是同一个数。只保留
 $\gcd(z,n)=1$ 的数对，得到子集 $T$ 上的双射。$T$ 是可数集

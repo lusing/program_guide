@@ -27,9 +27,11 @@ pwsh -NoProfile -Command '& ./build.ps1 -All'        # 全量
 pwsh -NoProfile -Command '& ./build.ps1 -Chapter 02' # 单章
 pwsh -NoProfile -Command '& ./build.ps1 -Lang lean'  # 单通道
 pwsh -NoProfile -Command '& ./build.ps1 -List'       # 章×通道覆盖矩阵
+pwsh -NoProfile -Command '& ./build.ps1 -Docs'       # 文档数学规范（定界符/邻接/单行展示块）
 ```
 
-输出为“章 × 通道”矩阵；全部 pass 才算该批次完成。
+输出为“章 × 通道”矩阵；全部 pass 才算该批次完成。`-Docs` 单独跑
+`tools/check_math.py`，守护下面“约定”里的 Forgejo 数学渲染规则。
 
 ## 全书目录
 
@@ -91,7 +93,13 @@ pwsh -NoProfile -Command '& ./build.ps1 -List'       # 章×通道覆盖矩阵
 ## 约定
 
 - 数学公式用 `$...$` / `$$...$$`（Forgejo 渲染要求：闭 `$` 后必须跟
-  空格或 ASCII 标点；`\frac` 的分子分母都要加大括号）。
+  空格、换行或 ASCII 标点 `).!?,;:`，开 `$` 前不得紧贴 ASCII 字母数字或
+  `.!?,;:`；全角标点与公式之间留空格，如 `$x$ ，`；加粗不得以公式收尾）。
+- 展示公式必须写成**单行** `$$...$$` 且上下留空行：Codeberg 仓库文件视图
+  不解析多行 `$$` 块（两个 `$$` 会各被吞成空公式，正文源码原样露出）；
+  列表项内需要展示公式时降级为行内 `$...$`。`\frac` 的分子分母都要加大括号。
+- 改完文档跑 `pwsh -NoProfile -Command '& ./build.ps1 -Docs'` 防回归；
+  渲染级核验可用 KaTeX（`tools/katex_check.js`，需临时 `bun add katex`）。
 - 章号：00 对应原书第 1 章，01 对应第 2 章，02 对应第 3 章，03 对应第 4 章。
   04 与 05 分写原书第 5 章的前半和后半。06 至 20 与原书同号。
 - 新增或改名一章时，同时改三处：本页目录加一行；新章文末写上导航；

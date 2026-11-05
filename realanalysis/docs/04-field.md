@@ -50,11 +50,7 @@ $\mathbb{Q}$ 配上通常的加法和乘法是域。交换、结合、单位元�
 $x, y \in \mathbb{Q}$ 都是整数之比：存在 $a, b, c, d \in \mathbb{Z}$ ，
 $b \ne 0$ ，$d \ne 0$ ，使 $x = a/b$ ，$y = c/d$ 。于是
 
-$$
-x + y = \frac{a}{b} + \frac{c}{d} = \frac{ad + bc}{bd},
-\qquad
-xy = \frac{ac}{bd}.
-$$
+$$x + y = \frac{a}{b} + \frac{c}{d} = \frac{ad + bc}{bd}, \qquad xy = \frac{ac}{bd}.$$
 
 $bd \ne 0$ ，分子分母都是整数，所以和与积仍是有理数。加法逆元
 $-a/b$ 与乘法逆元 $b/a$ （$a \ne 0$ 时）也是整数之比。
@@ -138,9 +134,7 @@ Coq 的 `lia` 。它们都是整数线性算术的决策过程，看见 $2z = 1$
 $2 \cdot 3 = 6 \notin S$ 。把运算改成“先按普通办法算，再取除以 $5$ 的
 余数”，封闭性就回来了。这个结构记作 $\mathbb{Z}_5$ 。此时
 
-$$
-2 + 3 = 5 \equiv 0, \qquad 2 \cdot 3 = 6 \equiv 1 \pmod{5}.
-$$
+$$2 + 3 = 5 \equiv 0, \qquad 2 \cdot 3 = 6 \equiv 1 \pmod{5}.$$
 
 第二式说 $2$ 的乘法逆元是 $3$ ，尽管 $2$ 和 $3$ 在整数里都不可逆。
 其余非零元：$1 \cdot 1 = 1$ ，$3 \cdot 2 = 1$ ，$4 \cdot 4 = 16 \equiv 1$ 。
@@ -201,9 +195,7 @@ $-10^{100}$ ；再加回 $10^{100}$ 得到 $0$ 。右边先把相反数抵消，
 先记一条以后反复用的事实：加法逆元唯一。若 $x + y = 0$ 且
 $x + (-x) = 0$ ，则
 
-$$
-y = y + 0 = y + \bigl(x + (-x)\bigr) = (y + x) + (-x) = 0 + (-x) = -x.
-$$
+$$y = y + 0 = y + \bigl(x + (-x)\bigr) = (y + x) + (-x) = 0 + (-x) = -x.$$
 
 中间用了单位元、结合律和交换律（把 $y + x$ 换成 $x + y$ ）。因此“满足
 $x + y = 0$ 的 $y$ ”只有 $-x$ 一个。
@@ -280,9 +272,7 @@ Isabelle 的 `simp` 是同一结论的打包形式。
 
 **$(-1) \cdot x = -x$ 。** 计算
 
-$$
-(-1) \cdot x + x = (-1) \cdot x + 1 \cdot x = \bigl((-1) + 1\bigr) \cdot x = 0 \cdot x = 0.
-$$
+$$(-1) \cdot x + x = (-1) \cdot x + 1 \cdot x = \bigl((-1) + 1\bigr) \cdot x = 0 \cdot x = 0.$$
 
 这里用了右分配（或交换后的左分配）、$1$ 是单位元、$(-1) + 1 = 0$ ，
 以及刚刚证过的 $0 \cdot x = 0$ 。于是 $(-1) \cdot x$ 是 $x$ 的一个加法
@@ -296,9 +286,7 @@ Proof. intro x. ring. Qed.
 **乘法逆元唯一。** 若 $x \ne 0$ 且 $xy = 1$ ，则 $y = x^{-1}$ 。
 两边同乘 $x^{-1}$ ，或直接写
 
-$$
-y = \frac{x y}{x} = \frac{1}{x}.
-$$
+$$y = \frac{x y}{x} = \frac{1}{x}.$$
 
 第一段因为 $x \ne 0$ ，第二段代入 $xy = 1$ 。Isabelle 把这两段写明：
 
@@ -349,10 +337,7 @@ $\mathbb{Q}$ 与 $\mathbb{R}$ 都满足这两条。$\mathbb{Z}_5$ 是域，但�
 - 若 $x < 0$ ，则 $-x > 0$ （把 $x < 0$ 的两边加上 $-x$ ，用 O1）。
   于是 $(-x)(-x) > 0$ 。而
 
-  $$
-  (-x)(-x) = \bigl((-1) \cdot x\bigr) \bigl((-1) \cdot x\bigr)
-  = \bigl((-1) \cdot (-1)\bigr) \cdot x^2.
-  $$
+  $(-x)(-x) = \bigl((-1) \cdot x\bigr) \bigl((-1) \cdot x\bigr) = \bigl((-1) \cdot (-1)\bigr) \cdot x^2.$
 
   又 $(-1) \cdot (-1) = 1$ ：因为 4.4 节有 $(-1) \cdot x = -x$ ，取
   $x = -1$ 得 $(-1) \cdot (-1) = -(-1) = 1$ 。所以 $(-x)(-x) = x^2 > 0$ 。
@@ -392,9 +377,7 @@ $x^{-1} > 0$ 。
 再设 $0 < x < y$ 。则 $x^{-1} > 0$ 且 $y^{-1} > 0$ ，乘积
 $x^{-1} y^{-1} > 0$ 。用上一段的保序，把 $x < y$ 的两边乘上这个正数：
 
-$$
-x \cdot x^{-1} \cdot y^{-1} < y \cdot x^{-1} \cdot y^{-1},
-$$
+$$x \cdot x^{-1} \cdot y^{-1} < y \cdot x^{-1} \cdot y^{-1},$$
 
 即 $y^{-1} < x^{-1}$ 。这就是 $0 < x < y$ 蕴含 $0 < 1/y < 1/x$ 。
 
@@ -491,21 +474,14 @@ mathlib 的实数走的是另一条等价路线：有理数的柯西列模去零
 顺序在实数上与原来相同，并且对每个实数 $x$ 规定 $-\infty < x < +\infty$ 。
 运算按下面的约定延伸，其中 $x \in \mathbb{R}$ ：
 
-$$
-x + (+\infty) = +\infty, \qquad x + (-\infty) = -\infty,
-$$
+$$x + (+\infty) = +\infty, \qquad x + (-\infty) = -\infty,$$
 
-$$
-\frac{x}{+\infty} = \frac{x}{-\infty} = 0.
-$$
+$$\frac{x}{+\infty} = \frac{x}{-\infty} = 0.$$
 
 $x > 0$ 时，$x \cdot (+\infty) = +\infty$ ，$x \cdot (-\infty) = -\infty$ ；
 $x < 0$ 时两个符号对调。下面这些式子没有约定，一律无定义：
 
-$$
-\infty - \infty,\quad \frac{\infty}{\infty},\quad 0 \cdot \infty,\quad
-\frac{\infty}{0},\quad \infty \cdot \infty.
-$$
+$$\infty - \infty,\quad \frac{\infty}{\infty},\quad 0 \cdot \infty,\quad \frac{\infty}{0},\quad \infty \cdot \infty.$$
 
 （$x / \infty = 0$ 是约定，不要和 $0 \cdot \infty$ 混成一件事。）
 

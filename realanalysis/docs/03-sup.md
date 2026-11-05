@@ -15,9 +15,7 @@
 设 $m, n$ 是自然数，$n \ne 0$ ，并且 $\gcd(m, n) = 1$ 。假如
 $\sqrt{2} = m/n$ ，两边平方得到
 
-$$
-m^2 = 2 n^2 .
-$$
+$$m^2 = 2 n^2 .$$
 
 右边是偶数，所以 $m^2$ 是偶数，从而 $m$ 是偶数（平方为偶则自身为偶：
 奇数的平方仍是奇数）。写 $m = 2k$ ，代入得 $4k^2 = 2n^2$ ，即
@@ -65,22 +63,14 @@ theorem rat_sq_ne_two (q : ℚ) : q ^ 2 ≠ 2 := by
 
 有了这句话，就可以指出洞在哪里。令
 
-$$
-A = \{ p \in \mathbb{Q} \mid p > 0,\ p^2 < 2 \},
-\qquad
-B = \{ p \in \mathbb{Q} \mid p > 0,\ p^2 > 2 \}.
-$$
+$$A = \{ p \in \mathbb{Q} \mid p > 0,\ p^2 < 2 \}, \qquad B = \{ p \in \mathbb{Q} \mid p > 0,\ p^2 > 2 \}.$$
 
 $A$ 里全是平方还没到 $2$ 的正有理数，$B$ 里全是已经超过的。
 $\sqrt{2}$ 本身不在 $\mathbb{Q}$ 里，所以它既不在 $A$ 也不在 $B$ 。
 把有理数想象成一条直线，$A$ 是这条直线上 $0$ 右侧、尚未到达那个缺席点
 的部分，$B$ 是缺席点右侧的部分。原书因此写成
 
-$$
-A = (0, \sqrt{2}) \cap \mathbb{Q},
-\qquad
-B = (\sqrt{2}, \infty) \cap \mathbb{Q}.
-$$
+$$A = (0, \sqrt{2}) \cap \mathbb{Q}, \qquad B = (\sqrt{2}, \infty) \cap \mathbb{Q}.$$
 
 这只是事后的图画。在 $\sqrt{2}$ 还没有被构造出来之前，$A$ 和 $B$
 的正式定义就是上面那两个集合描述。
@@ -93,19 +83,11 @@ $$
 **$A$ 没有最大元。** 任取 $p \in A$ ，要在 $A$ 里找到严格更大的 $q$ 。
 取
 
-$$
-q = \frac{2p + 2}{p + 2}.
-$$
+$$q = \frac{2p + 2}{p + 2}.$$
 
 先把差写清楚。通分：
 
-$$
-q - p
-= \frac{2p + 2}{p + 2} - p
-= \frac{2p + 2 - p(p + 2)}{p + 2}
-= \frac{2p + 2 - p^2 - 2p}{p + 2}
-= \frac{2 - p^2}{p + 2}.
-$$
+$$q - p = \frac{2p + 2}{p + 2} - p = \frac{2p + 2 - p(p + 2)}{p + 2} = \frac{2p + 2 - p^2 - 2p}{p + 2} = \frac{2 - p^2}{p + 2}.$$
 
 因为 $p^2 < 2$ ，分子 $2 - p^2 > 0$ ；因为 $p > 0$ ，分母 $p + 2 > 0$ 。
 所以 $q - p > 0$ ，即 $q > p$ 。
@@ -113,19 +95,13 @@ $$
 还要确认 $q$ 仍在 $A$ 里，也就是 $q > 0$ （已由 $q > p > 0$ 得到）并且
 $q^2 < 2$ 。直接算
 
-$$
-q^2 - 2
-= \frac{(2p + 2)^2}{(p + 2)^2} - 2
-= \frac{(2p + 2)^2 - 2(p + 2)^2}{(p + 2)^2}.
-$$
+$$q^2 - 2 = \frac{(2p + 2)^2}{(p + 2)^2} - 2 = \frac{(2p + 2)^2 - 2(p + 2)^2}{(p + 2)^2}.$$
 
 分子展开：$(2p + 2)^2 = 4p^2 + 8p + 4$ ，
 $2(p + 2)^2 = 2(p^2 + 4p + 4) = 2p^2 + 8p + 8$ ，两者相减得
 $2p^2 - 4 = 2(p^2 - 2)$ 。因此
 
-$$
-q^2 - 2 = \frac{2(p^2 - 2)}{(p + 2)^2}.
-$$
+$$q^2 - 2 = \frac{2(p^2 - 2)}{(p + 2)^2}.$$
 
 $p^2 - 2 < 0$ ，分母是正数的平方，所以 $q^2 - 2 < 0$ 。
 $q \in A$ 且 $q > p$ 。$A$ 的任何一个元素都不是最大的。
@@ -134,16 +110,12 @@ $q \in A$ 且 $q > p$ 。$A$ 的任何一个元素都不是最大的。
 仍取 $q = (2p + 2)/(p + 2)$ ，其中现在 $p \in B$ ，即 $p > 0$ 且
 $p^2 > 2$ 。上面的差公式不变：
 
-$$
-q = p - \frac{p^2 - 2}{p + 2}.
-$$
+$$q = p - \frac{p^2 - 2}{p + 2}.$$
 
 这次 $p^2 - 2 > 0$ 且 $p + 2 > 0$ ，所以减去的是正数，$q < p$ 。
 平方差公式也不变：
 
-$$
-q^2 - 2 = \frac{2(p^2 - 2)}{(p + 2)^2} > 0,
-$$
+$$q^2 - 2 = \frac{2(p^2 - 2)}{(p + 2)^2} > 0,$$
 
 故 $q^2 > 2$ 。又因分子分母都正，$q > 0$ 。于是 $q \in B$ 且 $q < p$ 。
 $B$ 的任何一个元素都不是最小的。
@@ -175,9 +147,7 @@ for _ in range(8):
 
 第八步得到 $p_8 = 1393/985$ ，而
 
-$$
-2 - p_8^2 = \frac{1}{970225}.
-$$
+$$2 - p_8^2 = \frac{1}{970225}.$$
 
 差距是一个正的单位分数，永远不是零。从 $2$ 出发的对偶迭代
 （$2^2 = 4 > 2$ ）每步变小、平方仍大于 $2$ ，八步后是 $1970/1393$ ，
@@ -256,11 +226,7 @@ Coq 把每一次乘倒数都写成单独的改写。数学内容是同一对恒�
 带有这样一个顺序的集合叫有序集。$y > x$ 只是 $x < y$ 的另一种写法。
 非严格的 $\le$ 定义为严格顺序的否定：
 
-$$
-x \le y \;\Longleftrightarrow\; \lnot (y < x),
-\qquad
-x \ge y \;\Longleftrightarrow\; \lnot (x < y).
-$$
+$$x \le y \;\Longleftrightarrow\; \lnot (y < x), \qquad x \ge y \;\Longleftrightarrow\; \lnot (x < y).$$
 
 由三分律，这等价于“$x < y$ 或 $x = y$ ”。实数上这两条就是库里的
 `lt_trichotomy` 与 `lt_trans`：
@@ -328,9 +294,7 @@ $A_\alpha$ 是空集，基数为 $0$ 。最大的基数则不存在：无论 $\a
 使得 $E$ 的每个元素都 $\le \alpha$ ，则称 $\alpha$ 是 $E$ 的一个上界，
 并说 $E$ 在 $S$ 中有上界。用符号写：
 
-$$
-\exists\, \alpha \in S,\ \forall x \in E,\ x \le \alpha .
-$$
+$$\exists\, \alpha \in S,\ \forall x \in E,\ x \le \alpha .$$
 
 下界对称：存在 $\beta \in S$ 使每个 $x \in E$ 都满足 $x \ge \beta$ 。
 
@@ -390,13 +354,7 @@ $\ge 3$ 的有理数。其中最小的一个是 $3$ 。把它单独命名。
 则称 $\alpha$ 是 $E$ 的最小上界，或上确界，记 $\alpha = \sup E$ 。
 三条合在一起：
 
-$$
-\alpha \in S,
-\qquad
-x \in E \Rightarrow x \le \alpha,
-\qquad
-\gamma \in S,\ \gamma < \alpha \Rightarrow \gamma \text{ 不是 } E \text{ 的上界}.
-$$
+$$\alpha \in S, \qquad x \in E \Rightarrow x \le \alpha, \qquad \gamma \in S,\ \gamma < \alpha \Rightarrow \gamma \text{ 不是 } E \text{ 的上界}.$$
 
 下确界 $\inf E$ 是最大的下界：$\beta$ 是下界，并且任何
 $\gamma > \beta$ 都不是下界。
@@ -444,9 +402,7 @@ Lean 的同一事实是库定理 `IsLUB.unique` ，本章直接引用
 但在 $\mathbb{Q}$ 里（也在 $\mathbb{R}$ 里）有下确界 $-3$ 和上确界 $3$ 。
 开区间的一般事实是：若 $a < b$ ，则
 
-$$
-\inf (a, b) = a, \qquad \sup (a, b) = b.
-$$
+$$\inf (a, b) = a, \qquad \sup (a, b) = b.$$
 
 右端点是上界，因为区间里每个点都 $< b$ 。它是最小的，因为任何
 $\gamma < b$ 的右侧、仍然小于 $b$ 的位置都能放进区间的一个点
@@ -501,9 +457,7 @@ Qed.
 $3$ 是上界。要证明它是上确界，取任意有理数 $\gamma < 3$ ，证明 $\gamma$
 不是上界。中点
 
-$$
-m = \frac{\gamma + 3}{2}
-$$
+$$m = \frac{\gamma + 3}{2}$$
 
 仍是有理数，并且 $\gamma < m < 3$ ，所以 $m \in E$ 且 $m > \gamma$ 。
 Lean 把“中点还在 $\gamma$ 与 $3$ 之间”单独列成存在性：
@@ -519,9 +473,7 @@ $5/2 < (5/2 + 3)/2 < 3$ 。这个集合没有下界，所以没有下确界。
 
 **第二个集合：原书的填空。** 在 $\mathbb{Q}$ 中令
 
-$$
-E = \left\{ \frac{1}{n} \mid n \in \mathbb{N},\ n \ge 1 \right\}.
-$$
+$$E = \left\{ \frac{1}{n} \mid n \in \mathbb{N},\ n \ge 1 \right\}.$$
 
 上确界是 $1$ 。首先 $1 = 1/1$ 属于 $E$ ，而且每个 $1/n \le 1$ ，
 所以 $1$ 是属于集合的上界。定理 4.9 直接给出 $\sup E = 1$ 。
@@ -549,9 +501,7 @@ $1 \le n + 1$ 。Isabelle 的 `one_div_sup` 同样先找 $n = 0$ 这个见证，
 任取 $\gamma > 0$ ，要找一个 $1/n < \gamma$ 。这就是 $n > 1/\gamma$ 。
 $1/\gamma$ 未必是自然数，把它向上取整再加一：令
 
-$$
-n = 1 + \left\lceil \frac{1}{\gamma} \right\rceil .
-$$
+$$n = 1 + \left\lceil \frac{1}{\gamma} \right\rceil .$$
 
 则 $n$ 是自然数，并且 $n > 1/\gamma$ ，从而 $0 < 1/n < \gamma$ 。
 这个 $1/n$ 属于 $E$ ，所以 $\gamma$ 不是下界。因此 $\inf E = 0$ 。
@@ -588,19 +538,14 @@ $1/((n-1)+1)$ ，避免自然数从 $0$ 起算时下标错一位。
 
 **第三个集合：上确界不被取到。** 考虑
 
-$$
-\left\{ 1 - \frac{1}{n+1} \mid n \in \mathbb{N} \right\}
-= \left\{ 0,\ \frac{1}{2},\ \frac{2}{3},\ \frac{3}{4},\ \ldots \right\}.
-$$
+$$\left\{ 1 - \frac{1}{n+1} \mid n \in \mathbb{N} \right\} = \left\{ 0,\ \frac{1}{2},\ \frac{2}{3},\ \frac{3}{4},\ \ldots \right\}.$$
 
 每一项都 $< 1$ ，所以 $1$ 是上界。$1$ 不属于值域：通项等于 $1$
 将要求 $1/(n+1) = 0$ ，不可能。定理 4.9 再次用不上。最小性靠反证。
 若有上界 $b < 1$ ，则 $1 - b > 0$ ，阿基米德性质给出 $n$ 使
 $1/(n+1) < 1 - b$ ，于是
 
-$$
-1 - \frac{1}{n+1} > b,
-$$
+$$1 - \frac{1}{n+1} > b,$$
 
 第 $n$ 项越过了所谓的上界。Lean 的 `one_sub_div_lub` 就是这段：
 
