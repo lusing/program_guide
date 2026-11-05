@@ -67,3 +67,8 @@ session RA13 in "RA13" = "HOL-Analysis" +
   options [document = false]
   theories
     PerfectConnected
+
+session RA14 in "RA14" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Sequences
