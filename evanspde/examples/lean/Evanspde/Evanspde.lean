@@ -7,3 +7,5 @@ import Evanspde.Ch05LaplaceEnergy
 import Evanspde.Ch06HeatFundamental
 import Evanspde.Ch07HeatProperties
 import Evanspde.Ch09WaveKirchhoff
+import Evanspde.Ch13HopfLax
+import Evanspde.Ch15ShocksEntropy
