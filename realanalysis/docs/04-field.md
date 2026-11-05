@@ -117,9 +117,9 @@ $\mathbb{Z}$ 有加法逆元，乘法逆元却几乎都缺。原书写成“每�
 $1 \cdot 1 = 1$ ，$(-1) \cdot (-1) = 1$ ，所以 $\pm 1$ 是自己的逆元。
 除此之外都不行。若 $z \cdot w = 1$ ，则 $|z| \cdot |w| = 1$ 。两个正整数
 之积为 $1$ ，只可能都是 $1$ ，所以 $|z| = 1$ ，即 $z = 1$ 或 $z = -1$ 。
-Lean 的 `int_unit_iff` 就是这个充要条件：先由 `isUnit_of_mul_eq_one`
-得到 $z$ 是单位，再用 `Int.isUnit_iff_abs_eq` 化成 $|z| = 1$ ，然后按
-符号拆开。Isabelle 直接调用库里的 `zmult_eq_1_iff` ：
+Lean 的 `int_unit_iff` 就是这个充要条件：存在性方向调用
+`Int.eq_one_or_neg_one_of_mul_eq_one` ，反过来分别给出见证 $1$ 与 $-1$ 。
+Isabelle 直接调用库里的 `zmult_eq_1_iff` ：
 
 ```isabelle
 lemma int_units: "(∃w::int. z * w = 1) ⟷ (z = 1 ∨ z = -1)"

@@ -1,6 +1,6 @@
 import Mathlib.Basic.Real.Basic
+import Mathlib.Algebra.Group.Int.Units
 import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Data.Int.Order.Units
 import Mathlib.Tactic
 
 /-!
@@ -26,26 +26,19 @@ example (x : ℚ) : ∃ a b : ℤ, b ≠ 0 ∧ x = (a : ℚ) / b :=
 theorem rat_add (a b c d : ℤ) (hb : b ≠ 0) (hd : d ≠ 0) :
     (a : ℚ) / b + (c : ℚ) / d = ((a * d + b * c : ℤ) : ℚ) / (b * d) := by
   field_simp
-  ring
+  norm_cast
 
 /-- 例 5.2 的乘法公式：(a/b)·(c/d) = (ac)/(bd)。 -/
 theorem rat_mul (a b c d : ℤ) (hb : b ≠ 0) (hd : d ≠ 0) :
     ((a : ℚ) / b) * ((c : ℚ) / d) = ((a * c : ℤ) : ℚ) / (b * d) := by
   field_simp
-  ring
+  norm_cast
 
 /-- 编者注的修正：整数里乘法可逆的只有 ±1。 -/
 theorem int_unit_iff (z : ℤ) : (∃ w : ℤ, z * w = 1) ↔ z = 1 ∨ z = -1 := by
   constructor
   · rintro ⟨w, hw⟩
-    have hu : IsUnit z := isUnit_of_mul_eq_one z w hw
-    rw [Int.isUnit_iff_abs_eq] at hu
-    rcases le_total (0 : ℤ) z with hz | hz
-    · left
-      rwa [abs_of_nonneg hz] at hu
-    · right
-      rw [abs_of_nonpos hz] at hu
-      linarith
+    exact Int.eq_one_or_neg_one_of_mul_eq_one hw
   · rintro (rfl | rfl)
     · exact ⟨1, by norm_num⟩
     · exact ⟨-1, by ring⟩
