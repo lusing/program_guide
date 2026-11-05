@@ -12,3 +12,18 @@ session RA02 in "RA02" = "HOL-Analysis" +
   options [document = false]
   theories
     Sets
+
+session RA03 in "RA03" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Sup
+
+session RA04 in "RA04" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    FieldAxioms
+
+session RA05 in "RA05" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Completeness
