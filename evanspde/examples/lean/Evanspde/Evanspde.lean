@@ -1,3 +1,6 @@
 import Evanspde.Ch00Intro
 import Evanspde.Ch01Classification
 import Evanspde.Ch02Transport
+import Evanspde.Ch03LaplaceFundamental
+import Evanspde.Ch04LaplaceGreen
+import Evanspde.Ch05LaplaceEnergy
