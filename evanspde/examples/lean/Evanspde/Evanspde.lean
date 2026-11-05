@@ -9,3 +9,4 @@ import Evanspde.Ch07HeatProperties
 import Evanspde.Ch09WaveKirchhoff
 import Evanspde.Ch13HopfLax
 import Evanspde.Ch15ShocksEntropy
+import Evanspde.Ch24WeakDerivatives
