@@ -2,7 +2,7 @@
 
 ## 49.1 用法
 
-这是 44 章的口袋版：公式、关系与坑账的总账。
+这是 50 章的口袋版：公式、关系与坑账的总账。
 
 三条检索路径：
 
@@ -201,10 +201,10 @@ $$X'e=0,\quad \operatorname{tr}P=k,\ \operatorname{tr}M=n-k,\quad \|y\|^2=\|\hat
 | Python（3.13，`-I`） | 精确计算 | `Fraction` 全程精确、SciPy 分布、向量化 MC |
 | Prolog | 小宇宙穷举 | 有限样本空间全枚举终审 |
 
-**收官验证状态**（2026-11-04）：`build.ps1 -All` 全量 **145 单元 PASS、FAIL 0**
-（Lean 39 个 `Ch*.lean` 模块整工程一次构建点亮 37 个章位、Isabelle 5 会话
-MT02/03/09/12/27、Julia 41、Python 43、Prolog 17）；`check_docs.py --final`
-0 errors；44 章文档全部 ≥200 行、旧编号残留（历史稿文档与示例）已按
+**收官验证状态**（2026-11-06 HU 轮后）：`build.ps1 -All` 全量 **169 单元 PASS、FAIL 0**
+（Lean 45 / Julia 47 / Python 49 / Prolog 23 / Isabelle 5；新增 43–48 六章 × 四通道，
+原 42 章通道分布 Lean 39 模块、Julia 41、Python 43、Prolog 17）；`check_docs.py --final`
+0 errors；50 章文档全部 ≥200 行；HU 轮顺手清掉了上次重排漏网的 5 个孤儿文档。
 迁移映射清理，无 `.migrating` 与旧 Isabelle 会话残留。工具链版本：
 Lean 4.33.1（mathlib4 钉版 `H:/Lang/lean4/mathlib4-4.33.1`）、
 Isabelle2025-2、Julia 1.13、Python 3.13（`-I`）、SWI-Prolog。
@@ -232,7 +232,9 @@ G:\scoop\apps\python313\current\python.exe -I probability/tools/check_docs.py --
 | 八 | 31–35 | 统计模型与估计 |
 | 九 | 36–37 | 假设检验与置信推断 |
 | 十 | 38–41 | 线性回归模型 |
-| 十一 | 42–43 | 收官：综合案例与速查 |
+| 十一 | 42 | 收官综合：合成案例与证明方法 |
+| 十二 | 43–48 | 高等概率论专题（胡晓予）：Lindeberg、无穷可分、三级数、重对数律、离散鞅两讲 |
+| 尾 | 49 | 全书速查 |
 
 **方法论总纲**（全教程一以贯之）：精确公式 + 机器对拍 + 反例审计三方互审——标记 ≠ 算对，跑过 ≠ 理解；渐近结论带余项账，模拟结论带种子与容差，形式化锚定代数与逻辑内核。
 

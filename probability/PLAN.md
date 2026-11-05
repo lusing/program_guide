@@ -326,3 +326,58 @@ measuretheory/build/ocr/huxiaoyu/（书页=PDF−6）。实施计划见
   18-inequalities-lln、19-stirling、21-clt、22-fourier-clt——内容已分别在
   22/26/30/27/28；无外部引用）；速查表改 49（节号 43.x→49.x）；
   chapters.json/42 导航/README 引用同步；-Docs --final PASS。
+
+## 2026-11-06 HU 轮收官记录
+
+- **HU1-HU6**：新章 43-lindeberg、44-infinitely-divisible、45-three-series、
+  46-law-iterated-logarithm、47-martingales、48-martingale-convergence 全部
+  建成（docs ≥200 行 + Lean/Julia/Python/Prolog 四通道），速查表 43→49。
+- **HU7（本批）**：README 三书底本与第十二篇全表、00 导言溯源、
+  49 速查结构表/统计更新（169 单元）、本坑账回填。
+- 收官对账：`build.ps1 -All` 169/169 PASS（Lean 45 / Isabelle 5 / Julia 47 /
+  Python 49 / Prolog 23）；`check_docs.py --final` 0 errors。
+
+### HU 轮实测坑账（接 #31）
+
+32. **Lean 4 的 Finset 求和记号是 `∑ k ∈ s`**——Lean 3 遗留直觉写
+    `∑ k in s` 直接 parse error（Ch43 首轮三处）。
+33. **mathlib 命名空间三层踩点**：鞅件 `MeasureTheory.Martingale.xxx`
+    与 `MeasureTheory.martingale_condExp`（根）混用；可选抽样
+    `Martingale.stoppedValue_ae_eq_condExp_of_le` 在 Martingale 子空间；
+    文档串里的名字未必等于声明名，grep 声明行才算数。0-1 律在
+    `Probability/Independence/ZeroOne.lean` 且需显式 import（BorelCantelli
+    不传递）。
+34. **`Finset.sum_Ico_eq_sum_range`/`Ico_succ_right` 等 rw 对 cast 形状
+    极敏感**：`(i+2)-1` vs `i+1`、`↑(n+1)` vs `↑n+1` 都要 push_cast +
+    显式等式桥接（Ch45 望远镜三桥）。`congr 1` 在 `exp` 上会拆错目标
+    ——改用"指数层先证等式再整体 rw"。
+35. **`decide` 对 ℚ 卡死**（Decidable 实例不归约）；`native_decide` 一律
+    救活（Ch47 状态机/穷举全靠它）。带 `**` 的 ℚ pow 计算同理由
+    native 路线兜底。
+36. **二项尾换算 S_n >= t ⟺ B >= (n+t)/2 忘了对折**——Ch46 三通道
+    同源 bug（尾概率 0.99 而非 0.008）；且 Lean 件把 Σ_{j>=10}C(16,j)
+    误标为 P(S_16>=10)（实为 P(S_16>=4)），被 Python 精确分数断言
+    当场纠错。**跨通道同一笔账是标签错误的终极防线**。
+37. **首中时计数手误**：P(τ_1<=3) 写成 7/8，Prolog 8 路径穷举驳回
+    （真值 5/8；反射原理复核 2P(S_3>=1)-P(S_3=1)=5/8）。
+38. **heredoc 里写 LaTeX 的连环车祸**：`\a``\v``\b` 是合法转义（铃/竖
+    tab/退格）悄悄进文件、`\{``\s` 留警告不替换——文档批改一律走
+    Edit 工具或 chr(92) 拼接；本回合 44/45/47 章各中一次。
+39. **docs 数学邻接双规则**：闭 $ 后只许 ASCII 标点/空格/行尾（全角
+    标点、`**`、CJK 字都要插空格），开 $ 前不得是 ASCII 字母数字。
+    自建 `build/norm_math.py`+`build/fix_cjk.py`+`build/find_bad.py` 三件
+    套才把 44-48 五章洗净；表格单元格里 `$|S_n|$（` 这类是高频雷。
+40. **分支过程鞅的均值参数**：Binomial(2,1/2) 是临界 m=1 而非 2——
+    习题 7.1 的 m=2 需 Binomial(4,1/2)；临界版 E 恒 1 但 E[Z_n]=1，
+    W_n=Z_n/2^n 不是鞅。改成例 7.3.1 原版（2^n·∏Y）才是干净的
+    非 UI 标本。
+41. **Julia `quantile` 广播标量翻车**（`cauchy_draw.(2.0)` 返回标量）；
+    空区间 `sum(gen)` 需 `init=0`（Poisson 抽样 N=0 时）；插值 `$x：`
+    全角冒号触发解析错（`$(x)：`）。均为 Ch44/46 实测。
+42. **Prolog `between` 收复合项**（`Total-1`）再犯——先 `is` 后
+    `between`；`N =\= none` 对原子做算术异常，用 `\==`；
+    `integer(sqrt(N))` 的 floor 需穷举版 `isqrt`。
+43. **mathlib 无穷可分/三级数/LIL/Lindeberg 全缺**——全部自建精确件：
+    根封闭三连（exp_nat_mul + field_simp）、二进块调和下界与望远镜
+    上界（两证书）、2^n>=n^3 归纳、上穿状态机。锚点仅取已有定理
+    （CLT/鞅全套/0-1 律/BC 两式）。
