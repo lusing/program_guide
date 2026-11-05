@@ -220,4 +220,4 @@ uan(Sig2, Eps) :- quot(Sig2, Eps, 0).   % 两点分布：无越线者 ⟺ u.a.n.
 
 ---
 
-上一章：[42 综合案例与概率证明方法](42-synthesis.md) · 下一章：[49 全书速查与定理地图](49-cheatsheet.md)
+上一章：[42 综合案例与概率证明方法](42-synthesis.md) · 下一章：[44 无穷可分分布：任意切分的分布族](44-infinitely-divisible.md)

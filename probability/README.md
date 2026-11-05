@@ -155,6 +155,7 @@ Monte Carlo 误差公式建立大样本平均的基本理论。
 | 章 | 一句话 |
 |---|---|
 | [43 Lindeberg 条件：CLT 的充要边界](docs/43-lindeberg.md) | 民主条款、u.a.n./Feller、Lindeberg–Feller 定理与三族机器账 |
+| [44 无穷可分分布：任意切分的分布族](docs/44-infinitely-divisible.md) | Lévy–Khintchine 三元组、稳定律、小数律与不可分判决 |
 
 ### 收官速查
 

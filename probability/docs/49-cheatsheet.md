@@ -238,4 +238,4 @@ G:\scoop\apps\python313\current\python.exe -I probability/tools/check_docs.py --
 
 ---
 
-上一章：[43 Lindeberg 条件：中心极限定理的充要边界](43-lindeberg.md) · 全书完
+上一章：[44 无穷可分分布：任意切分的分布族](44-infinitely-divisible.md) · 全书完

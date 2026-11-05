@@ -221,6 +221,11 @@
       "title": "Lindeberg 条件：中心极限定理的充要边界"
     },
     {
+      "number": "44",
+      "slug": "infinitely-divisible",
+      "title": "无穷可分分布：任意切分的分布族"
+    },
+    {
       "number": "49",
       "slug": "cheatsheet",
       "title": "全书速查与定理地图"
