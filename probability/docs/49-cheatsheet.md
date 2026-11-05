@@ -238,4 +238,4 @@ G:\scoop\apps\python313\current\python.exe -I probability/tools/check_docs.py --
 
 ---
 
-上一章：[42 综合案例与概率证明方法](42-synthesis.md) · 全书完
+上一章：[43 Lindeberg 条件：中心极限定理的充要边界](43-lindeberg.md) · 全书完

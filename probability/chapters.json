@@ -216,6 +216,11 @@
       "title": "综合案例与概率证明方法"
     },
     {
+      "number": "43",
+      "slug": "lindeberg",
+      "title": "Lindeberg 条件：中心极限定理的充要边界"
+    },
+    {
       "number": "49",
       "slug": "cheatsheet",
       "title": "全书速查与定理地图"
