@@ -20,3 +20,5 @@ import Realanalysis.Ch18Special
 import Realanalysis.Ch19Series
 import Realanalysis.Ch20Summary
 import Realanalysis.Ch21Wrapup
+import Realanalysis.Ch22RatioRoot
+import Realanalysis.Ch23Exp
