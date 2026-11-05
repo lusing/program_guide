@@ -141,7 +141,7 @@
 
 | 章 | 一句话 |
 |---|---|
-| [57 全书速查表](docs/57-cheatsheet.md) | 定理卡/锚点对照/证明十式/五通道哲学 |
+| [62 全书速查表](docs/62-cheatsheet.md) | 定理卡/锚点对照/证明十式/五通道哲学 |
 
 ## 构建与验证
 
@@ -171,6 +171,6 @@ Cygwin bash 调用。各章正文页脚登记该章全部示例文件。
 ## 收官对账
 
 终态 `-All 210/210`（Lean 55 / Isabelle 14 / Julia 56 / Python 56 /
-Prolog 29）。全书速查与实测坑总账见 `docs/57-cheatsheet.md`；
+Prolog 29）。全书速查与实测坑总账见 `docs/62-cheatsheet.md`；
 逐章通道分配与 85 条坑账见 `PLAN.md`（工作文档）；批次提交
 历史即进度日志。
