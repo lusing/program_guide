@@ -194,7 +194,7 @@ Hartman 与 Wintner（1941）在 iid 情形证明了本章定理；Kolmogorov（
 
 ---
 
-上一章：[45 级数收敛与三级数定理](45-three-series.md) · 下一章：[49 全书速查与定理地图](49-cheatsheet.md)
+上一章：[45 级数收敛与三级数定理](45-three-series.md) · 下一章：[47 离散鞅 I：公平赌博的数学](47-martingales.md)
 
 ---
 

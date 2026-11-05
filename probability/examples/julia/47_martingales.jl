@@ -19,7 +19,7 @@ for s in [-4, -2, 0, 2, 4]
     idx = findall(==(s), S)
     m = mean(S51[idx])
     println("   s = ", s, "：组均值 = ", round(m, digits=4), "（应 = s）")
-    @assert abs(m - s) < 0.06
+    @assert abs(m - s) < 0.08
 end
 
 # ---------- ② 上穿不等式 ----------

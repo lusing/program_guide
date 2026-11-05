@@ -158,6 +158,7 @@ Monte Carlo 误差公式建立大样本平均的基本理论。
 | [44 无穷可分分布：任意切分的分布族](docs/44-infinitely-divisible.md) | Lévy–Khintchine 三元组、稳定律、小数律与不可分判决 |
 | [45 级数收敛与三级数定理](docs/45-three-series.md) | Kolmogorov 不等式、方差账证书、三级数、Kronecker 与 Feller 弱律 |
 | [46 重对数律：极限的精确常数](docs/46-law-iterated-logarithm.md) | 几何分级、指数不等式、尾 0-1 律与不冒领常数纪律 |
+| [47 离散鞅 I：公平赌博的数学](docs/47-martingales.md) | 鞅变换与赌博系统、上穿不等式、Doob 收敛定理、停时穷举 |
 
 ### 收官速查
 

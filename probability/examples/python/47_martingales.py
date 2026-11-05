@@ -61,25 +61,25 @@ ws = sorted(wealth(e1, e2) for e1, e2 in outcomes)
 assert ws == [-3, 1, 1, 1]
 print("   四个终值", ws, "：三胜一败、败者输三倍——期望公平不等于风险公平")
 
-# ---------- ③ 分支过程鞅 ----------
-print("③ 分支过程鞅 W_n = Z_n/2^n（m=2 二项分支，2000 轨道到 n=10）：")
+# ---------- ③ 例 7.3.1 的非一致可积鞅 ----------
+print("③ 例 7.3.1：X_n = 2^n·ΠY_j（Y ~ Bernoulli(1/2)，精确账 + 2000 轨道）：")
+# 期望精确恒 1：E[X_n] = 2^n·(1/2)^n = 1（Fraction 逐 n 验证）
+for n in [1, 5, 10]:
+    e = F(2 ** n) * F(1, 2) ** n
+    alive = F(1, 2) ** n
+    assert e == 1
+    print("   n=%-2d：E[X_n] = %s（精确 1），P(X_n > 0) = %s = %.4f" % (n, e, alive, float(alive)))
 rng = random.Random(4701)
-wsurv = []
-wvals = []
+alive_cnt = 0
 for _ in range(2000):
-    z = 1
+    x = 1
     for _ in range(10):
-        z = sum(1 for _ in range(z) if rng.random() < 0.5)
-        if z == 0:
-            break
-    wvals.append(z / 2 ** 10)
-    wsurv.append(z > 0)
-mw = sum(wvals) / len(wvals)
-print("   E[W_10] = %.4f（应 = 1，鞅性保均值）" % mw)
-assert abs(mw - 1) < 0.05
-print("   P(Z_10 > 0) = %.4f（临界分支存活 ~ 2/(n) -> 0：W -> 0 a.s.）" % (sum(wsurv) / 2000))
-assert sum(wsurv) / 2000 < 0.35
-print("   均值恒 1 而轨道恒 0：W_n 非一致可积（第 48 章的UI判据将给出精确解释）")
+        y = 1 if rng.random() < 0.5 else 0
+        x *= 2 * y          # X 乘 2Y：一旦 Y=0 即归零
+    alive_cnt += x > 0
+print("   2000 条轨道里 n=10 仍存活的 = %d（理论期望 %.1f 条）——X_n -> 0 a.s." % (alive_cnt, 2000 / 1024))
+assert alive_cnt < 8
+print("   均值恒 1 而轨道恒 0：X_n 非一致可积（第 48 章的 UI 判据将给出精确解释）")
 
 # ---------- ④ Doob 分解 ----------
 print("④ Doob 分解（带漂移 -1/4 的不公平游走，习题 7.3 的路径版）：")
