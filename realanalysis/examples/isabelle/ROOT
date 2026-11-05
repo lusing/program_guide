@@ -42,3 +42,13 @@ session RA08 in "RA08" = "HOL-Analysis" +
   options [document = false]
   theories
     Countability
+
+session RA09 in "RA09" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Metric
+
+session RA10 in "RA10" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    OpenClosed
