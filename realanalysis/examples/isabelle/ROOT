@@ -27,3 +27,13 @@ session RA05 in "RA05" = "HOL-Analysis" +
   options [document = false]
   theories
     Completeness
+
+session RA06 in "RA06" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    ComplexEuclidean
+
+session RA07 in "RA07" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Bijections

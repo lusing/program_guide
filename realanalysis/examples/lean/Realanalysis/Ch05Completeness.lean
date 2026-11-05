@@ -1,33 +1,89 @@
 import Mathlib.Basic.Real.Basic
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.NumberTheory.Real.Irrational
 import Mathlib.Tactic
 
 /-!
 # 第 05 章 实数域（下）：完备性的三大推论
 
-对应原书第 5 章后半：Archimedean 性质（定理 5.5）、有理数稠密性
-（定理 5.6）、根的存在性（定理 5.8），以及把第 03 章的“洞”正式填上：
+对应原书第 5 章后半：Archimedean 性质（定理 5.5，从最小上界性反证）、
+有理数稠密（定理 5.6）、无理数稠密（推论 5.7）、根的存在性（定理 5.8
+的平方根版），以及把第 03 章的“洞”正式填上：
 集合 {0 ≤ x, x² < 2} 在 ℝ 中的上确界恰好是 √2。
 -/
 
 namespace Realanalysis.Ch05
 
-/-- 定理 5.5（Archimedean 性质）：任意正实数的自然数倍可以超过任何实数。
-    证明只需对 y/x 应用 exists_nat_gt 再乘回 x。 -/
+open Set
+
+/-- 定理 5.5 的原书证明：用最小上界性做反证。
+    若所有 n·x ≤ y，则 A = {n·x | n ∈ ℕ} 有上界 y，取 α = sSup A；
+    α − x < α 不是上界，故有 m 使 α − x < m·x，即 α < (m+1)·x，
+    与 α 是上界矛盾。 -/
+theorem archimedean_from_lub (x y : ℝ) (hx : 0 < x) :
+    ∃ n : ℕ, y < (n : ℝ) * x := by
+  by_contra! h
+  let A : Set ℝ := range fun n : ℕ => (n : ℝ) * x
+  have hne : A.Nonempty := ⟨0, ⟨0, by simp⟩⟩
+  have hbdd : BddAbove A := ⟨y, by
+    rintro _ ⟨n, rfl⟩
+    exact h n⟩
+  set α := sSup A
+  have hα : IsLUB A α := Real.isLUB_sSup hne hbdd
+  have hlt : α - x < α := sub_lt_self α hx
+  have : ¬ α - x ∈ upperBounds A := fun hub =>
+    (not_lt_of_ge (hα.2 hub)) hlt
+  obtain ⟨z, hzA, hzt⟩ : ∃ z ∈ A, α - x < z := by
+    contrapose! this
+    exact this
+  obtain ⟨m, rfl⟩ := hzA
+  have : α < ((m + 1 : ℕ) : ℝ) * x := by
+    calc
+      α < (m : ℝ) * x + x := by linarith
+      _ = ((m + 1 : ℕ) : ℝ) * x := by push_cast; ring
+  have hmem : ((m + 1 : ℕ) : ℝ) * x ∈ A := mem_range_self (m + 1)
+  exact (not_lt_of_ge (hα.1 hmem)) this
+
+/-- 库定理形式：对 y/x 应用 exists_nat_gt 再乘回 x。
+    与原书证明等价；ℚ 上也可以直接用分子分母写出倍数。 -/
 theorem archimedean_mul (x y : ℝ) (hx : 0 < x) : ∃ n : ℕ, y < (n : ℝ) * x := by
   obtain ⟨n, hn⟩ := exists_nat_gt (y / x)
   use n
   rwa [div_lt_iff₀ hx] at hn
+
+/-- 常用推论：任意实数都被某个自然数超过。 -/
+example (y : ℝ) : ∃ n : ℕ, y < (n : ℝ) := exists_nat_gt y
 
 /-- 定理 5.6（有理数在实数中稠密）：任何两个实数之间都有有理数。
     mathlib 的证明正是原书的思路：Archimedean 性质 + 取整。 -/
 example (a b : ℝ) (h : a < b) : ∃ q : ℚ, a < q ∧ (q : ℝ) < b :=
   exists_rat_btwn h
 
+/-- 推论 5.7（无理数稠密）。
+    库定理构造：在 a−√2 与 b−√2 之间取有理数 q，则 q+√2 夹在 a、b 之间且无理。
+    原书等价构造是先在 a/√2 与 b/√2 之间取 q，再乘回 √2。 -/
+example (a b : ℝ) (h : a < b) : ∃ p : ℝ, Irrational p ∧ a < p ∧ p < b :=
+  exists_irrational_btwn h
+
 /-- 定理 5.8（根的存在性，平方根版）：存在正实数 y 使 y² = 2。
     在 mathlib 里 √2 由完备性构造，sq_sqrt 给出平方回原数。 -/
 example : ∃ y : ℝ, 0 < y ∧ y ^ 2 = 2 :=
   ⟨Real.sqrt 2, Real.sqrt_pos.mpr (by norm_num), Real.sq_sqrt (by norm_num)⟩
+
+/-- 正平方根唯一：两个正根不能一个严格小于另一个。 -/
+theorem pos_sqrt_unique (y₁ y₂ : ℝ) (hy₁ : 0 < y₁) (hy₂ : 0 < y₂)
+    (h₁ : y₁ ^ 2 = 2) (h₂ : y₂ ^ 2 = 2) : y₁ = y₂ := by
+  apply le_antisymm
+  · by_contra! hlt
+    -- hlt : y₂ < y₁
+    have : y₂ ^ 2 < y₁ ^ 2 :=
+      pow_lt_pow_left₀ hlt hy₂.le (by norm_num : (2 : ℕ) ≠ 0)
+    linarith
+  · by_contra! hlt
+    -- hlt : y₁ < y₂
+    have : y₁ ^ 2 < y₂ ^ 2 :=
+      pow_lt_pow_left₀ hlt hy₁.le (by norm_num : (2 : ℕ) ≠ 0)
+    linarith
 
 /-- 本章核心定理：{0 ≤ x, x² < 2} 在 ℝ 中的上确界恰好是 √2。
     与第 03 章的 q_trick 合起来，就是“ℚ 的洞被 ℝ 填上”的完整故事：

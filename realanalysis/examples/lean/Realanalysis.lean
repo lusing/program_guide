@@ -4,3 +4,5 @@ import Realanalysis.Ch02Sets
 import Realanalysis.Ch03Sup
 import Realanalysis.Ch04Field
 import Realanalysis.Ch05Completeness
+import Realanalysis.Ch06Complex
+import Realanalysis.Ch07Bijections

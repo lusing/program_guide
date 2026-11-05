@@ -57,4 +57,14 @@ main :-
     verify(rational_between(1.4142135, 1.4142136, R)),
     format("rational between 1.4142135 and 1.4142136: ~w~n", [R]),
 
+    % 4. Archimedean witness: n*x > y for x = 1/3, y = 10.
+    X = 1 rdiv 3, Y = 10,
+    N is floor(Y / float(X)) + 1,
+    verify(N * X > Y),
+    format("archimedean witness for x=1/3, y=10: n = ~w~n", [N]),
+
+    % 5. Sample rational between 2 and 3.
+    verify(2 < 12 rdiv 5),
+    verify(12 rdiv 5 < 3),
+
     format("END ====~n", []).

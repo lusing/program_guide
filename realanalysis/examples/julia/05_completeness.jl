@@ -46,4 +46,18 @@ end
 r = rational_between(1.4142135, 1.4142136)
 println("rational between 1.4142135 and 1.4142136: $r")
 
+# --- 4. Archimedean：找 n 使 n*x > y ---------------------------------
+function arch_witness(x::Rational, y)
+    @assert x > 0
+    n = floor(Int, Float64(y) / Float64(x)) + 1
+    @assert n * x > y
+    return n
+end
+@assert arch_witness(1 // 3, 10) == 31
+println("archimedean witness for x=1/3, y=10: n = $(arch_witness(1 // 3, 10))")
+
+# --- 5. 两点之间的有理样本（稠密性的有限核验） -----------------------
+@assert 2 // 1 < 12 // 5 < 3 // 1
+println("sample rational between 2 and 3: 12//5")
+
 println("END ====")
