@@ -1,0 +1,166 @@
+DIGEST f2fee33d5183b842810023fe8054dc31
+FSethao.Ch11OrdinalArith
+R468:471 Coq.Lists.List <> <> lib
+R473:477 Coq.Arith.Arith <> <> lib
+R479:481 Coq.micromega.Lia <> <> lib
+R491:503 Coq.Lists.List ListNotations <> mod
+def 518:523 <> omegaC
+R527:530 Coq.Init.Datatypes <> list ind
+R532:534 Coq.Init.Datatypes <> nat ind
+R539:539 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R541:542 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R544:544 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+def 558:561 <> oneC
+R565:568 Coq.Init.Datatypes <> list ind
+R570:572 Coq.Init.Datatypes <> nat ind
+R577:577 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R579:579 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+def 647:650 <> oadd
+R659:662 Coq.Init.Datatypes <> list ind
+R664:666 Coq.Init.Datatypes <> nat ind
+binder 653:653 <> a:1
+binder 655:655 <> b:2
+R671:674 Coq.Init.Datatypes <> list ind
+R676:678 Coq.Init.Datatypes <> nat ind
+R691:691 Sethao.Ch11OrdinalArith <> b:2 var
+R702:703 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R708:708 Sethao.Ch11OrdinalArith <> a:1 var
+R801:803 Coq.Init.Peano <> ::nat_scope:x_'-'_x not
+R793:798 Coq.Init.Datatypes <> length def
+R800:800 Sethao.Ch11OrdinalArith <> b:2 var
+binder 788:788 <> k:4
+R823:826 Coq.Init.Datatypes <> ::list_scope:x_'++'_x not
+R813:818 Coq.Lists.List <> firstn def
+R822:822 Sethao.Ch11OrdinalArith <> b:2 var
+R820:820 Sethao.Ch11OrdinalArith <> k:4 var
+R850:853 Coq.Init.Datatypes <> ::list_scope:x_'++'_x not
+R827:827 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R849:849 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R837:839 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R828:830 Coq.Lists.List <> nth def
+R834:834 Sethao.Ch11OrdinalArith <> a:1 var
+R832:832 Sethao.Ch11OrdinalArith <> k:4 var
+R840:842 Coq.Lists.List <> nth def
+R846:846 Sethao.Ch11OrdinalArith <> b:2 var
+R844:844 Sethao.Ch11OrdinalArith <> k:4 var
+R854:858 Coq.Lists.List <> skipn def
+R866:866 Sethao.Ch11OrdinalArith <> a:1 var
+R861:861 Coq.Init.Datatypes <> S constr
+R863:863 Sethao.Ch11OrdinalArith <> k:4 var
+prf 977:990 <> nat_plus_omega
+R1005:1007 Coq.Init.Datatypes <> nat ind
+binder 1001:1001 <> n:5
+R1025:1027 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1010:1013 Sethao.Ch11OrdinalArith <> oadd def
+R1015:1015 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1017:1017 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1016:1016 Sethao.Ch11OrdinalArith <> n:5 var
+R1019:1024 Sethao.Ch11OrdinalArith <> omegaC def
+R1028:1033 Sethao.Ch11OrdinalArith <> omegaC def
+prf 1198:1211 <> nat_plus_limit
+R1228:1230 Coq.Init.Datatypes <> nat ind
+binder 1222:1222 <> n:6
+binder 1224:1224 <> m:7
+R1248:1250 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1233:1236 Sethao.Ch11OrdinalArith <> oadd def
+R1238:1238 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1240:1240 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1239:1239 Sethao.Ch11OrdinalArith <> n:6 var
+R1242:1242 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1244:1245 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1247:1247 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1243:1243 Sethao.Ch11OrdinalArith <> m:7 var
+R1251:1251 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1253:1254 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1256:1256 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1252:1252 Sethao.Ch11OrdinalArith <> m:7 var
+prf 1394:1407 <> omega_plus_nat
+R1422:1424 Coq.Init.Datatypes <> nat ind
+binder 1418:1418 <> m:8
+R1442:1444 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1427:1430 Sethao.Ch11OrdinalArith <> oadd def
+R1432:1437 Sethao.Ch11OrdinalArith <> omegaC def
+R1439:1439 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1441:1441 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1440:1440 Sethao.Ch11OrdinalArith <> m:8 var
+R1445:1445 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1447:1448 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1450:1450 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1446:1446 Sethao.Ch11OrdinalArith <> m:8 var
+def 1562:1563 <> e1
+R1579:1581 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1567:1570 Sethao.Ch11OrdinalArith <> oadd def
+R1572:1572 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1574:1574 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1576:1576 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1578:1578 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1582:1582 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1584:1584 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+def 1650:1651 <> e2
+R1673:1675 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1655:1658 Sethao.Ch11OrdinalArith <> oadd def
+R1660:1660 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1662:1663 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1665:1665 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1667:1667 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1669:1670 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1672:1672 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1676:1676 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1678:1679 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1681:1681 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+def 1744:1745 <> e3
+R1767:1769 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1749:1752 Sethao.Ch11OrdinalArith <> oadd def
+R1754:1754 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1756:1757 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1759:1759 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1761:1761 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1763:1764 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1766:1766 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1770:1770 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1772:1773 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1775:1775 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+def 1855:1856 <> e4
+R1878:1880 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1860:1863 Sethao.Ch11OrdinalArith <> oadd def
+R1865:1865 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1867:1868 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1870:1870 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1872:1872 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1874:1875 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1877:1877 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1881:1881 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1883:1884 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1886:1886 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+def 1960:1961 <> e5
+R1980:1982 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1965:1968 Sethao.Ch11OrdinalArith <> oadd def
+R1970:1970 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1972:1972 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1974:1974 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1976:1977 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1979:1979 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1983:1986 Sethao.Ch11OrdinalArith <> oadd def
+R1988:1988 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1990:1990 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1992:1992 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1994:1995 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1997:1997 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+def 2052:2053 <> e6
+R2072:2074 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R2057:2060 Sethao.Ch11OrdinalArith <> oadd def
+R2062:2062 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2064:2065 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2067:2067 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2069:2069 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R2071:2071 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R2075:2075 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2077:2078 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R2080:2080 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+prf 2225:2235 <> oadd_zero_r
+binder 2246:2246 <> a:9
+R2258:2260 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R2249:2252 Sethao.Ch11OrdinalArith <> oadd def
+R2254:2254 Sethao.Ch11OrdinalArith <> a:9 var
+R2256:2257 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R2261:2261 Sethao.Ch11OrdinalArith <> a:9 var

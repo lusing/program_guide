@@ -1,0 +1,136 @@
+DIGEST 76cc0640f48dd281c500420edc5179ec
+FSethao.Ch19Hierarchy
+R80:83 Coq.Lists.List <> <> lib
+R85:89 Coq.Arith.Arith <> <> lib
+R91:93 Coq.micromega.Lia <> <> lib
+R103:115 Coq.Lists.List ListNotations <> mod
+ind 129:132 <> pset
+constr 146:149 <> PSet
+R162:165 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R153:156 Coq.Init.Datatypes <> list ind
+R158:161 Sethao.Ch19Hierarchy <> pset:1 ind
+R166:169 Sethao.Ch19Hierarchy <> pset:1 ind
+scheme 129:132 <> pset_rect
+scheme 129:132 <> pset_ind
+scheme 129:132 <> pset_rec
+scheme 129:132 <> pset_sind
+def 182:185 <> rank
+R192:195 Sethao.Ch19Hierarchy <> pset ind
+binder 188:188 <> x:3
+R200:202 Coq.Init.Datatypes <> nat ind
+R215:215 Sethao.Ch19Hierarchy <> x:3 var
+R226:229 Sethao.Ch19Hierarchy <> PSet constr
+R236:245 Coq.Lists.List <> fold_right def
+binder 252:252 <> y:6
+binder 254:254 <> r:7
+R259:261 Coq.Init.Peano <> max abbrev
+R270:272 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R264:267 Sethao.Ch19Hierarchy <> rank:4 def
+R269:269 Sethao.Ch19Hierarchy <> y:6 var
+R276:276 Sethao.Ch19Hierarchy <> r:7 var
+prf 297:307 <> fold_max_lt
+R323:326 Coq.Init.Datatypes <> list ind
+R328:331 Sethao.Ch19Hierarchy <> pset ind
+binder 319:319 <> l:8
+R339:342 Sethao.Ch19Hierarchy <> pset ind
+binder 335:335 <> y:9
+R354:359 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R348:349 Coq.Lists.List <> In def
+R353:353 Sethao.Ch19Hierarchy <> l:8 var
+R351:351 Sethao.Ch19Hierarchy <> y:9 var
+R366:368 Coq.Init.Peano <> ::nat_scope:x_'<'_x not
+R360:363 Sethao.Ch19Hierarchy <> rank def
+R365:365 Sethao.Ch19Hierarchy <> y:9 var
+R369:378 Coq.Lists.List <> fold_right def
+R416:416 Sethao.Ch19Hierarchy <> l:8 var
+binder 385:386 <> y0:10
+binder 388:388 <> r:11
+R393:395 Coq.Init.Peano <> max abbrev
+R405:407 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R398:401 Sethao.Ch19Hierarchy <> rank def
+R403:404 Sethao.Ch19Hierarchy <> y0:10 var
+R411:411 Sethao.Ch19Hierarchy <> r:11 var
+R579:587 Coq.Arith.Compare_dec <> le_gt_dec def
+R596:598 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R590:593 Sethao.Ch19Hierarchy <> rank def
+R611:620 Coq.Lists.List <> fold_right def
+binder 627:628 <> y0:12
+binder 630:630 <> r:13
+R635:637 Coq.Init.Peano <> max abbrev
+R647:649 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R640:643 Sethao.Ch19Hierarchy <> rank def
+R645:646 Sethao.Ch19Hierarchy <> y0:12 var
+R653:653 Sethao.Ch19Hierarchy <> r:13 var
+R579:587 Coq.Arith.Compare_dec <> le_gt_dec def
+R596:598 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R590:593 Sethao.Ch19Hierarchy <> rank def
+R611:620 Coq.Lists.List <> fold_right def
+binder 627:628 <> y0:14
+binder 630:630 <> r:15
+R635:637 Coq.Init.Peano <> max abbrev
+R647:649 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R640:643 Sethao.Ch19Hierarchy <> rank def
+R645:646 Sethao.Ch19Hierarchy <> y0:14 var
+R653:653 Sethao.Ch19Hierarchy <> r:15 var
+R760:770 Coq.Init.Peano <> ::nat_scope:x_'<'_x not
+R754:757 Sethao.Ch19Hierarchy <> rank def
+R771:780 Coq.Lists.List <> fold_right def
+binder 787:788 <> y0:16
+binder 790:790 <> r:17
+R795:797 Coq.Init.Peano <> max abbrev
+R807:809 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R800:803 Sethao.Ch19Hierarchy <> rank def
+R805:806 Sethao.Ch19Hierarchy <> y0:16 var
+R813:813 Sethao.Ch19Hierarchy <> r:17 var
+R760:770 Coq.Init.Peano <> ::nat_scope:x_'<'_x not
+R754:757 Sethao.Ch19Hierarchy <> rank def
+R771:780 Coq.Lists.List <> fold_right def
+binder 787:788 <> y0:18
+binder 790:790 <> r:19
+R795:797 Coq.Init.Peano <> max abbrev
+R807:809 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R800:803 Sethao.Ch19Hierarchy <> rank def
+R805:806 Sethao.Ch19Hierarchy <> y0:18 var
+R813:813 Sethao.Ch19Hierarchy <> r:19 var
+prf 891:904 <> rank_lt_of_mem
+R920:923 Sethao.Ch19Hierarchy <> pset ind
+binder 916:916 <> y:20
+R931:934 Coq.Init.Datatypes <> list ind
+R936:939 Sethao.Ch19Hierarchy <> pset ind
+binder 927:927 <> l:21
+R951:956 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R945:946 Coq.Lists.List <> In def
+R950:950 Sethao.Ch19Hierarchy <> l:21 var
+R948:948 Sethao.Ch19Hierarchy <> y:20 var
+R963:965 Coq.Init.Peano <> ::nat_scope:x_'<'_x not
+R957:960 Sethao.Ch19Hierarchy <> rank def
+R962:962 Sethao.Ch19Hierarchy <> y:20 var
+R966:969 Sethao.Ch19Hierarchy <> rank def
+R972:975 Sethao.Ch19Hierarchy <> PSet constr
+R977:977 Sethao.Ch19Hierarchy <> l:21 var
+R1024:1034 Sethao.Ch19Hierarchy <> fold_max_lt thm
+R1024:1034 Sethao.Ch19Hierarchy <> fold_max_lt thm
+def 1063:1064 <> V0
+R1068:1071 Sethao.Ch19Hierarchy <> pset ind
+R1076:1079 Sethao.Ch19Hierarchy <> PSet constr
+R1081:1082 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+def 1096:1097 <> V1
+R1101:1104 Sethao.Ch19Hierarchy <> pset ind
+R1109:1112 Sethao.Ch19Hierarchy <> PSet constr
+R1114:1114 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1117:1117 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R1115:1116 Sethao.Ch19Hierarchy <> V0 def
+def 1129:1135 <> rank_V0
+R1146:1148 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1139:1142 Sethao.Ch19Hierarchy <> rank def
+R1144:1145 Sethao.Ch19Hierarchy <> V0 def
+def 1178:1184 <> rank_V1
+R1195:1197 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1188:1191 Sethao.Ch19Hierarchy <> rank def
+R1193:1194 Sethao.Ch19Hierarchy <> V1 def
+def 1227:1243 <> rank_of_V1_member
+R1254:1256 Coq.Init.Peano <> ::nat_scope:x_'<'_x not
+R1247:1250 Sethao.Ch19Hierarchy <> rank def
+R1252:1253 Sethao.Ch19Hierarchy <> V0 def
+R1257:1260 Sethao.Ch19Hierarchy <> rank def
+R1262:1263 Sethao.Ch19Hierarchy <> V1 def

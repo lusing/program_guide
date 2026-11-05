@@ -1,0 +1,294 @@
+DIGEST 55c18ddc8b114cfd93458eef0dedd19c
+FSethao.Ch04Equivalence
+R363:366 Coq.Lists.List <> <> lib
+R368:372 Coq.Arith.Arith <> <> lib
+R374:376 Coq.micromega.Lia <> <> lib
+R386:398 Coq.Lists.List ListNotations <> mod
+sec 491:501 <> Equivalence
+var 513:513 Equivalence A
+var 532:532 Equivalence R
+R537:540 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R536:536 Sethao.Ch04Equivalence <> Equivalence.A var
+R542:545 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R541:541 Sethao.Ch04Equivalence <> Equivalence.A var
+var 563:567 Equivalence Rrefl
+binder 578:578 <> x:5
+R581:581 Sethao.Ch04Equivalence <> Equivalence.R var
+R583:583 Sethao.Ch04Equivalence <> x:5 var
+R585:585 Sethao.Ch04Equivalence <> x:5 var
+var 599:602 Equivalence Rsym
+binder 613:613 <> x:8
+binder 615:615 <> y:9
+R623:626 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R618:618 Sethao.Ch04Equivalence <> Equivalence.R var
+R620:620 Sethao.Ch04Equivalence <> x:8 var
+R622:622 Sethao.Ch04Equivalence <> y:9 var
+R627:627 Sethao.Ch04Equivalence <> Equivalence.R var
+R629:629 Sethao.Ch04Equivalence <> y:9 var
+R631:631 Sethao.Ch04Equivalence <> x:8 var
+var 645:650 Equivalence Rtrans
+binder 661:661 <> x:12
+binder 663:663 <> y:13
+binder 665:665 <> z:14
+R673:676 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R668:668 Sethao.Ch04Equivalence <> Equivalence.R var
+R670:670 Sethao.Ch04Equivalence <> x:12 var
+R672:672 Sethao.Ch04Equivalence <> y:13 var
+R682:685 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R677:677 Sethao.Ch04Equivalence <> Equivalence.R var
+R679:679 Sethao.Ch04Equivalence <> y:13 var
+R681:681 Sethao.Ch04Equivalence <> z:14 var
+R686:686 Sethao.Ch04Equivalence <> Equivalence.R var
+R688:688 Sethao.Ch04Equivalence <> x:12 var
+R690:690 Sethao.Ch04Equivalence <> z:14 var
+def 705:711 <> classOf
+R718:718 Sethao.Ch04Equivalence <> Equivalence.A var
+binder 714:714 <> x:17
+R724:727 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R723:723 Sethao.Ch04Equivalence <> Equivalence.A var
+binder 740:740 <> y:18
+R745:745 Sethao.Ch04Equivalence <> Equivalence.R var
+R747:747 Sethao.Ch04Equivalence <> x:17 var
+R749:749 Sethao.Ch04Equivalence <> y:18 var
+prf 787:796 <> classes_eq
+binder 807:807 <> x:19
+binder 809:809 <> y:20
+R817:822 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R812:812 Sethao.Ch04Equivalence <> Equivalence.R var
+R814:814 Sethao.Ch04Equivalence <> x:19 var
+R816:816 Sethao.Ch04Equivalence <> y:20 var
+binder 830:830 <> z:21
+R844:848 Coq.Init.Logic <> ::type_scope:x_'<->'_x not
+R833:839 Sethao.Ch04Equivalence <> classOf def
+R841:841 Sethao.Ch04Equivalence <> x:19 var
+R843:843 Sethao.Ch04Equivalence <> z:21 var
+R849:855 Sethao.Ch04Equivalence <> classOf def
+R857:857 Sethao.Ch04Equivalence <> y:20 var
+R859:859 Sethao.Ch04Equivalence <> z:21 var
+R894:900 Sethao.Ch04Equivalence <> classOf def
+R932:937 Sethao.Ch04Equivalence <> Equivalence.Rtrans var
+R954:957 Sethao.Ch04Equivalence <> Equivalence.Rsym var
+R932:937 Sethao.Ch04Equivalence <> Equivalence.Rtrans var
+R954:957 Sethao.Ch04Equivalence <> Equivalence.Rsym var
+R992:997 Sethao.Ch04Equivalence <> Equivalence.Rtrans var
+R992:997 Sethao.Ch04Equivalence <> Equivalence.Rtrans var
+prf 1069:1084 <> classes_disjoint
+binder 1095:1095 <> x:22
+binder 1097:1097 <> y:23
+R1107:1112 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1100:1101 Coq.Init.Logic <> ::type_scope:'~'_x not
+R1102:1102 Sethao.Ch04Equivalence <> Equivalence.R var
+R1104:1104 Sethao.Ch04Equivalence <> x:22 var
+R1106:1106 Sethao.Ch04Equivalence <> y:23 var
+binder 1120:1120 <> z:24
+R1123:1125 Coq.Init.Logic <> ::type_scope:'~'_x not
+R1152:1152 Coq.Init.Logic <> ::type_scope:'~'_x not
+R1137:1140 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R1126:1132 Sethao.Ch04Equivalence <> classOf def
+R1134:1134 Sethao.Ch04Equivalence <> x:22 var
+R1136:1136 Sethao.Ch04Equivalence <> z:24 var
+R1141:1147 Sethao.Ch04Equivalence <> classOf def
+R1149:1149 Sethao.Ch04Equivalence <> y:23 var
+R1151:1151 Sethao.Ch04Equivalence <> z:24 var
+R1208:1213 Sethao.Ch04Equivalence <> Equivalence.Rtrans var
+R1242:1245 Sethao.Ch04Equivalence <> Equivalence.Rsym var
+R1208:1213 Sethao.Ch04Equivalence <> Equivalence.Rtrans var
+R1242:1245 Sethao.Ch04Equivalence <> Equivalence.Rsym var
+R1270:1280 Sethao.Ch04Equivalence Equivalence <> sec
+sec 1370:1379 <> Partitions
+var 1391:1391 Partitions A
+def 1477:1493 <> pairwise_disjoint
+R1501:1504 Coq.Init.Datatypes <> list ind
+R1507:1510 Coq.Init.Datatypes <> list ind
+R1512:1512 Sethao.Ch04Equivalence <> Partitions.A var
+binder 1496:1497 <> bl:27
+binder 1535:1536 <> B1:28
+binder 1538:1539 <> B2:29
+R1550:1553 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1542:1543 Coq.Lists.List <> In def
+R1548:1549 Sethao.Ch04Equivalence <> bl:27 var
+R1545:1546 Sethao.Ch04Equivalence <> B1:28 var
+R1562:1569 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1554:1555 Coq.Lists.List <> In def
+R1560:1561 Sethao.Ch04Equivalence <> bl:27 var
+R1557:1558 Sethao.Ch04Equivalence <> B2:29 var
+binder 1577:1577 <> x:30
+R1587:1590 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1580:1581 Coq.Lists.List <> In def
+R1585:1586 Sethao.Ch04Equivalence <> B1:28 var
+R1583:1583 Sethao.Ch04Equivalence <> x:30 var
+R1598:1601 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1591:1592 Coq.Lists.List <> In def
+R1596:1597 Sethao.Ch04Equivalence <> B2:29 var
+R1594:1594 Sethao.Ch04Equivalence <> x:30 var
+R1604:1606 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1602:1603 Sethao.Ch04Equivalence <> B1:28 var
+R1607:1608 Sethao.Ch04Equivalence <> B2:29 var
+def 1623:1628 <> covers
+R1636:1639 Coq.Init.Datatypes <> list ind
+R1642:1645 Coq.Init.Datatypes <> list ind
+R1647:1647 Sethao.Ch04Equivalence <> Partitions.A var
+binder 1631:1632 <> bl:31
+binder 1670:1670 <> x:32
+R1673:1679 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+R1681:1682 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+binder 1680:1680 <> B:33
+R1690:1693 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R1683:1684 Coq.Lists.List <> In def
+R1688:1689 Sethao.Ch04Equivalence <> bl:31 var
+R1686:1686 Sethao.Ch04Equivalence <> B:33 var
+R1694:1695 Coq.Lists.List <> In def
+R1699:1699 Sethao.Ch04Equivalence <> B:33 var
+R1697:1697 Sethao.Ch04Equivalence <> x:32 var
+def 1714:1722 <> Partition
+R1730:1733 Coq.Init.Datatypes <> list ind
+R1736:1739 Coq.Init.Datatypes <> list ind
+R1741:1741 Sethao.Ch04Equivalence <> Partitions.A var
+binder 1725:1726 <> bl:34
+R1777:1780 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R1757:1773 Sethao.Ch04Equivalence <> pairwise_disjoint def
+R1775:1776 Sethao.Ch04Equivalence <> bl:34 var
+R1781:1786 Sethao.Ch04Equivalence <> covers def
+R1788:1789 Sethao.Ch04Equivalence <> bl:34 var
+def 1847:1851 <> relOf
+R1859:1862 Coq.Init.Datatypes <> list ind
+R1865:1868 Coq.Init.Datatypes <> list ind
+R1870:1870 Sethao.Ch04Equivalence <> Partitions.A var
+binder 1854:1855 <> bl:35
+R1881:1881 Sethao.Ch04Equivalence <> Partitions.A var
+binder 1875:1875 <> x:36
+binder 1877:1877 <> y:37
+R1896:1902 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+R1904:1905 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+binder 1903:1903 <> B:38
+R1913:1916 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R1906:1907 Coq.Lists.List <> In def
+R1911:1912 Sethao.Ch04Equivalence <> bl:35 var
+R1909:1909 Sethao.Ch04Equivalence <> B:38 var
+R1923:1926 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R1917:1918 Coq.Lists.List <> In def
+R1922:1922 Sethao.Ch04Equivalence <> B:38 var
+R1920:1920 Sethao.Ch04Equivalence <> x:36 var
+R1927:1928 Coq.Lists.List <> In def
+R1932:1932 Sethao.Ch04Equivalence <> B:38 var
+R1930:1930 Sethao.Ch04Equivalence <> y:37 var
+prf 1942:1952 <> relOf_equiv
+binder 1963:1964 <> bl:39
+R1979:1984 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1967:1975 Sethao.Ch04Equivalence <> Partition def
+R1977:1978 Sethao.Ch04Equivalence <> bl:39 var
+R1985:1985 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R2008:2014 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+binder 1993:1993 <> x:40
+R1996:2000 Sethao.Ch04Equivalence <> relOf def
+R2002:2003 Sethao.Ch04Equivalence <> bl:39 var
+R2005:2005 Sethao.Ch04Equivalence <> x:40 var
+R2007:2007 Sethao.Ch04Equivalence <> x:40 var
+R2015:2015 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R2056:2063 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R2122:2122 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+binder 2023:2023 <> x:41
+binder 2025:2025 <> y:42
+R2040:2043 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R2028:2032 Sethao.Ch04Equivalence <> relOf def
+R2034:2035 Sethao.Ch04Equivalence <> bl:39 var
+R2037:2037 Sethao.Ch04Equivalence <> x:41 var
+R2039:2039 Sethao.Ch04Equivalence <> y:42 var
+R2044:2048 Sethao.Ch04Equivalence <> relOf def
+R2050:2051 Sethao.Ch04Equivalence <> bl:39 var
+R2053:2053 Sethao.Ch04Equivalence <> y:42 var
+R2055:2055 Sethao.Ch04Equivalence <> x:41 var
+binder 2071:2071 <> x:43
+binder 2073:2073 <> y:44
+binder 2075:2075 <> z:45
+R2090:2093 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R2078:2082 Sethao.Ch04Equivalence <> relOf def
+R2084:2085 Sethao.Ch04Equivalence <> bl:39 var
+R2087:2087 Sethao.Ch04Equivalence <> x:43 var
+R2089:2089 Sethao.Ch04Equivalence <> y:44 var
+R2106:2109 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R2094:2098 Sethao.Ch04Equivalence <> relOf def
+R2100:2101 Sethao.Ch04Equivalence <> bl:39 var
+R2103:2103 Sethao.Ch04Equivalence <> y:44 var
+R2105:2105 Sethao.Ch04Equivalence <> z:45 var
+R2110:2114 Sethao.Ch04Equivalence <> relOf def
+R2116:2117 Sethao.Ch04Equivalence <> bl:39 var
+R2119:2119 Sethao.Ch04Equivalence <> x:43 var
+R2121:2121 Sethao.Ch04Equivalence <> z:45 var
+R2160:2164 Sethao.Ch04Equivalence <> relOf def
+R2369:2371 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R2369:2371 Coq.Init.Logic <> ::type_scope:x_'='_x not
+prf 2521:2534 <> block_eq_class
+binder 2545:2546 <> bl:46
+R2561:2566 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R2549:2557 Sethao.Ch04Equivalence <> Partition def
+R2559:2560 Sethao.Ch04Equivalence <> bl:46 var
+binder 2574:2574 <> B:47
+binder 2576:2576 <> x:48
+R2586:2589 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R2579:2580 Coq.Lists.List <> In def
+R2584:2585 Sethao.Ch04Equivalence <> bl:46 var
+R2582:2582 Sethao.Ch04Equivalence <> B:47 var
+R2596:2603 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R2590:2591 Coq.Lists.List <> In def
+R2595:2595 Sethao.Ch04Equivalence <> B:47 var
+R2593:2593 Sethao.Ch04Equivalence <> x:48 var
+binder 2611:2611 <> y:49
+R2620:2624 Coq.Init.Logic <> ::type_scope:x_'<->'_x not
+R2614:2615 Coq.Lists.List <> In def
+R2619:2619 Sethao.Ch04Equivalence <> B:47 var
+R2617:2617 Sethao.Ch04Equivalence <> y:49 var
+R2625:2629 Sethao.Ch04Equivalence <> relOf def
+R2631:2632 Sethao.Ch04Equivalence <> bl:46 var
+R2634:2634 Sethao.Ch04Equivalence <> x:48 var
+R2636:2636 Sethao.Ch04Equivalence <> y:49 var
+R2761:2763 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R2761:2763 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R2827:2836 Sethao.Ch04Equivalence Partitions <> sec
+prf 2927:2940 <> nat_le_partial
+R2946:2946 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R2963:2969 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+binder 2954:2954 <> n:50
+R2958:2961 Coq.Init.Peano <> ::nat_scope:x_'<='_x not
+R2957:2957 Sethao.Ch04Equivalence <> n:50 var
+R2962:2962 Sethao.Ch04Equivalence <> n:50 var
+R2970:2970 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R3008:3015 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R3056:3056 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+binder 2978:2978 <> m:51
+binder 2980:2980 <> n:52
+R2989:2992 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R2984:2987 Coq.Init.Peano <> ::nat_scope:x_'<='_x not
+R2983:2983 Sethao.Ch04Equivalence <> m:51 var
+R2988:2988 Sethao.Ch04Equivalence <> n:52 var
+R2999:3002 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R2994:2997 Coq.Init.Peano <> ::nat_scope:x_'<='_x not
+R2993:2993 Sethao.Ch04Equivalence <> n:52 var
+R2998:2998 Sethao.Ch04Equivalence <> m:51 var
+R3004:3006 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R3003:3003 Sethao.Ch04Equivalence <> m:51 var
+R3007:3007 Sethao.Ch04Equivalence <> n:52 var
+binder 3023:3023 <> m:53
+binder 3025:3025 <> n:54
+binder 3027:3027 <> p:55
+R3036:3039 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R3031:3034 Coq.Init.Peano <> ::nat_scope:x_'<='_x not
+R3030:3030 Sethao.Ch04Equivalence <> m:53 var
+R3035:3035 Sethao.Ch04Equivalence <> n:54 var
+R3046:3049 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R3041:3044 Coq.Init.Peano <> ::nat_scope:x_'<='_x not
+R3040:3040 Sethao.Ch04Equivalence <> n:54 var
+R3045:3045 Sethao.Ch04Equivalence <> p:55 var
+R3051:3054 Coq.Init.Peano <> ::nat_scope:x_'<='_x not
+R3050:3050 Sethao.Ch04Equivalence <> m:53 var
+R3055:3055 Sethao.Ch04Equivalence <> p:55 var
+prf 3111:3123 <> nat_le_linear
+binder 3134:3134 <> m:56
+binder 3136:3136 <> n:57
+R3145:3148 Coq.Init.Logic <> ::type_scope:x_'\/'_x not
+R3140:3143 Coq.Init.Peano <> ::nat_scope:x_'<='_x not
+R3139:3139 Sethao.Ch04Equivalence <> m:56 var
+R3144:3144 Sethao.Ch04Equivalence <> n:57 var
+R3150:3153 Coq.Init.Peano <> ::nat_scope:x_'<='_x not
+R3149:3149 Sethao.Ch04Equivalence <> n:57 var
+R3154:3154 Sethao.Ch04Equivalence <> m:56 var

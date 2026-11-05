@@ -1,0 +1,154 @@
+DIGEST 50d4b6846e01ca17464ff2518c26a8af
+FSethao.Ch13Choice
+R370:373 Coq.Lists.List <> <> lib
+R375:379 Coq.Arith.Arith <> <> lib
+R381:383 Coq.micromega.Lia <> <> lib
+R393:405 Coq.Lists.List ListNotations <> mod
+ax 488:490 <> AC1
+binder 502:502 <> I:1
+binder 504:504 <> X:2
+R520:523 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R519:519 Sethao.Ch13Choice <> I:1 var
+R525:528 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R524:524 Sethao.Ch13Choice <> X:2 var
+binder 515:515 <> R:3
+R538:538 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R564:570 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+binder 546:546 <> i:4
+R549:555 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+R557:558 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+binder 556:556 <> x:5
+R559:559 Sethao.Ch13Choice <> R:3 var
+R563:563 Sethao.Ch13Choice <> x:5 var
+R561:561 Sethao.Ch13Choice <> i:4 var
+R571:577 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+R588:589 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+R583:586 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R582:582 Sethao.Ch13Choice <> I:1 var
+R587:587 Sethao.Ch13Choice <> X:2 var
+binder 578:578 <> f:6
+binder 597:597 <> i:7
+R600:600 Sethao.Ch13Choice <> R:3 var
+R605:605 Sethao.Ch13Choice <> f:6 var
+R607:607 Sethao.Ch13Choice <> i:7 var
+R602:602 Sethao.Ch13Choice <> i:7 var
+R618:620 Sethao.Ch13Choice <> AC1 prfax
+def 700:710 <> choice_list
+R717:720 Coq.Init.Datatypes <> list ind
+R723:726 Coq.Init.Datatypes <> list ind
+R728:730 Coq.Init.Datatypes <> nat ind
+binder 713:713 <> F:10
+R736:739 Coq.Init.Datatypes <> list ind
+R741:743 Coq.Init.Datatypes <> nat ind
+R756:756 Sethao.Ch13Choice <> F:10 var
+R767:768 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R773:774 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R781:784 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R797:800 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R791:792 Coq.Lists.List <> hd def
+R801:811 Sethao.Ch13Choice <> choice_list:11 def
+prf 832:844 <> choice_length
+binder 855:855 <> F:13
+R880:882 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R858:863 Coq.Init.Datatypes <> length def
+R866:876 Sethao.Ch13Choice <> choice_list def
+R878:878 Sethao.Ch13Choice <> F:13 var
+R883:888 Coq.Init.Datatypes <> length def
+R890:890 Sethao.Ch13Choice <> F:13 var
+prf 956:974 <> choice_picks_member
+binder 985:985 <> F:14
+binder 987:987 <> L:15
+R998:1001 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R992:993 Coq.Lists.List <> In def
+R997:997 Sethao.Ch13Choice <> F:14 var
+R995:995 Sethao.Ch13Choice <> L:15 var
+R1009:1012 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1003:1006 Coq.Init.Logic <> ::type_scope:x_'<>'_x not
+R1002:1002 Sethao.Ch13Choice <> L:15 var
+R1007:1008 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R1013:1014 Coq.Lists.List <> In def
+R1025:1025 Sethao.Ch13Choice <> L:15 var
+R1017:1018 Coq.Lists.List <> hd def
+R1022:1022 Sethao.Ch13Choice <> L:15 var
+prf 1357:1366 <> ac2_shadow
+R1384:1387 Coq.Init.Datatypes <> list ind
+R1389:1391 Coq.Init.Datatypes <> nat ind
+binder 1378:1380 <> idx:16
+R1404:1407 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1401:1403 Coq.Init.Datatypes <> nat ind
+R1408:1411 Coq.Init.Datatypes <> list ind
+R1413:1415 Coq.Init.Datatypes <> nat ind
+binder 1395:1397 <> Fam:17
+R1426:1429 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1423:1425 Coq.Init.Datatypes <> nat ind
+R1430:1432 Coq.Init.Datatypes <> nat ind
+binder 1419:1419 <> f:18
+R1440:1440 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1479:1487 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+binder 1448:1448 <> i:19
+R1459:1462 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1451:1452 Coq.Lists.List <> In def
+R1456:1458 Sethao.Ch13Choice <> idx:16 var
+R1454:1454 Sethao.Ch13Choice <> i:19 var
+R1463:1464 Coq.Lists.List <> In def
+R1473:1475 Sethao.Ch13Choice <> Fam:17 var
+R1477:1477 Sethao.Ch13Choice <> i:19 var
+R1467:1467 Sethao.Ch13Choice <> f:18 var
+R1469:1469 Sethao.Ch13Choice <> i:19 var
+R1488:1488 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1593:1601 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+binder 1496:1496 <> i:20
+binder 1498:1498 <> j:21
+binder 1500:1500 <> a:22
+R1511:1514 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1503:1504 Coq.Lists.List <> In def
+R1508:1510 Sethao.Ch13Choice <> idx:16 var
+R1506:1506 Sethao.Ch13Choice <> i:20 var
+R1523:1526 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1515:1516 Coq.Lists.List <> In def
+R1520:1522 Sethao.Ch13Choice <> idx:16 var
+R1518:1518 Sethao.Ch13Choice <> j:21 var
+R1533:1555 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1528:1531 Coq.Init.Logic <> ::type_scope:x_'<>'_x not
+R1527:1527 Sethao.Ch13Choice <> i:20 var
+R1532:1532 Sethao.Ch13Choice <> j:21 var
+R1568:1571 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1556:1557 Coq.Lists.List <> In def
+R1562:1564 Sethao.Ch13Choice <> Fam:17 var
+R1566:1566 Sethao.Ch13Choice <> i:20 var
+R1559:1559 Sethao.Ch13Choice <> a:22 var
+R1584:1587 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1572:1573 Coq.Lists.List <> In def
+R1578:1580 Sethao.Ch13Choice <> Fam:17 var
+R1582:1582 Sethao.Ch13Choice <> j:21 var
+R1575:1575 Sethao.Ch13Choice <> a:22 var
+R1588:1592 Coq.Init.Logic <> False ind
+R1611:1613 Coq.Lists.List <> map def
+R1617:1619 Sethao.Ch13Choice <> idx:16 var
+R1615:1615 Sethao.Ch13Choice <> f:18 var
+binder 1606:1606 <> S:23
+binder 1635:1635 <> i:24
+binder 1637:1637 <> a:25
+R1648:1651 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1640:1641 Coq.Lists.List <> In def
+R1645:1647 Sethao.Ch13Choice <> idx:16 var
+R1643:1643 Sethao.Ch13Choice <> i:24 var
+R1658:1661 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1652:1653 Coq.Lists.List <> In def
+R1657:1657 Sethao.Ch13Choice <> S:23 var
+R1655:1655 Sethao.Ch13Choice <> a:25 var
+R1674:1677 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1662:1663 Coq.Lists.List <> In def
+R1668:1670 Sethao.Ch13Choice <> Fam:17 var
+R1672:1672 Sethao.Ch13Choice <> i:24 var
+R1665:1665 Sethao.Ch13Choice <> a:25 var
+R1679:1681 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1678:1678 Sethao.Ch13Choice <> a:25 var
+R1682:1682 Sethao.Ch13Choice <> f:18 var
+R1684:1684 Sethao.Ch13Choice <> i:24 var
+R1750:1759 Coq.Lists.List <> in_map_iff thm
+R1750:1759 Coq.Lists.List <> in_map_iff thm
+R1813:1822 Coq.Arith.PeanoNat Nat eq_dec thm
+R1813:1822 Coq.Arith.PeanoNat Nat eq_dec thm
+R1913:1914 Coq.Lists.List <> In def
+R1913:1914 Coq.Lists.List <> In def

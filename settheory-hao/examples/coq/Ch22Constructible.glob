@@ -1,0 +1,227 @@
+DIGEST 153eabe4f3f0c3268b97a3c1a39cb086
+FSethao.Ch22Constructible
+R163:166 Coq.Lists.List <> <> lib
+R168:172 Coq.Arith.Arith <> <> lib
+R174:176 Coq.micromega.Lia <> <> lib
+R194:201 Coq.Arith.PeanoNat <> <> lib
+R211:223 Coq.Lists.List ListNotations <> mod
+def 238:240 <> rel
+R245:248 Coq.Init.Datatypes <> list ind
+R254:256 Coq.Init.Datatypes <> ::type_scope:x_'*'_x not
+R251:253 Coq.Init.Datatypes <> nat ind
+R257:259 Coq.Init.Datatypes <> nat ind
+def 275:276 <> g4
+R285:287 Sethao.Ch22Constructible <> rel def
+binder 279:279 <> X:1
+binder 281:281 <> Y:2
+R292:294 Sethao.Ch22Constructible <> rel def
+R301:306 Coq.Lists.List <> filter def
+R408:408 Sethao.Ch22Constructible <> X:1 var
+binder 313:313 <> p:3
+R318:321 Coq.Init.Datatypes <> negb def
+R324:330 Coq.Lists.List <> existsb def
+R404:404 Sethao.Ch22Constructible <> Y:2 var
+binder 337:337 <> q:4
+R346:349 Coq.Init.Datatypes <> andb def
+R378:384 Coq.Arith.PeanoNat Nat eqb def
+R387:389 Coq.Init.Datatypes <> snd def
+R391:391 Sethao.Ch22Constructible <> p:3 var
+R395:397 Coq.Init.Datatypes <> snd def
+R399:399 Sethao.Ch22Constructible <> q:4 var
+R352:358 Coq.Arith.PeanoNat Nat eqb def
+R361:363 Coq.Init.Datatypes <> fst def
+R365:365 Sethao.Ch22Constructible <> p:3 var
+R369:371 Coq.Init.Datatypes <> fst def
+R373:373 Sethao.Ch22Constructible <> q:4 var
+def 423:424 <> g5
+R433:435 Sethao.Ch22Constructible <> rel def
+binder 427:427 <> X:5
+binder 429:429 <> Y:6
+R440:442 Sethao.Ch22Constructible <> rel def
+R449:454 Coq.Lists.List <> filter def
+R549:549 Sethao.Ch22Constructible <> X:5 var
+binder 461:461 <> p:7
+R466:472 Coq.Lists.List <> existsb def
+R546:546 Sethao.Ch22Constructible <> Y:6 var
+binder 479:479 <> q:8
+R488:491 Coq.Init.Datatypes <> andb def
+R520:526 Coq.Arith.PeanoNat Nat eqb def
+R529:531 Coq.Init.Datatypes <> snd def
+R533:533 Sethao.Ch22Constructible <> p:7 var
+R537:539 Coq.Init.Datatypes <> snd def
+R541:541 Sethao.Ch22Constructible <> q:8 var
+R494:500 Coq.Arith.PeanoNat Nat eqb def
+R503:505 Coq.Init.Datatypes <> fst def
+R507:507 Sethao.Ch22Constructible <> p:7 var
+R511:513 Coq.Init.Datatypes <> fst def
+R515:515 Sethao.Ch22Constructible <> q:8 var
+def 562:566 <> dedup
+R573:576 Coq.Init.Datatypes <> list ind
+R578:580 Coq.Init.Datatypes <> nat ind
+binder 569:569 <> l:9
+R585:588 Coq.Init.Datatypes <> list ind
+R590:592 Coq.Init.Datatypes <> nat ind
+R605:605 Sethao.Ch22Constructible <> l:9 var
+R616:617 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R622:623 Coq.Lists.List ListNotations ::list_scope:'['_']' not
+R630:633 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R657:661 Sethao.Ch22Constructible <> dedup:10 def
+binder 652:652 <> r:12
+R680:686 Coq.Lists.List <> existsb def
+R700:700 Sethao.Ch22Constructible <> r:12 var
+R689:695 Coq.Arith.PeanoNat Nat eqb def
+R715:718 Coq.Init.Datatypes <> ::list_scope:x_'::'_x not
+R719:719 Sethao.Ch22Constructible <> r:12 var
+R707:707 Sethao.Ch22Constructible <> r:12 var
+def 740:741 <> g7
+R748:750 Sethao.Ch22Constructible <> rel def
+binder 744:744 <> X:13
+R755:758 Coq.Init.Datatypes <> list ind
+R760:762 Coq.Init.Datatypes <> nat ind
+R767:771 Sethao.Ch22Constructible <> dedup def
+R774:776 Coq.Lists.List <> map def
+R782:782 Sethao.Ch22Constructible <> X:13 var
+R778:780 Coq.Init.Datatypes <> fst def
+def 795:803 <> g4_sample
+R848:850 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R809:810 Sethao.Ch22Constructible <> g4 def
+R812:812 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R818:819 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R825:826 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R832:832 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R813:813 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R815:815 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R817:817 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R820:820 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R822:822 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R824:824 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R827:827 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R829:829 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R831:831 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R834:834 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R840:841 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R847:847 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R835:835 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R837:837 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R839:839 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R842:842 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R844:844 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R846:846 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R851:851 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R857:858 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R864:864 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R852:852 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R854:854 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R856:856 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R859:859 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R861:861 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R863:863 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+def 901:909 <> g5_sample
+R954:956 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R915:916 Sethao.Ch22Constructible <> g5 def
+R918:918 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R924:925 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R931:932 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R938:938 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R919:919 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R921:921 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R923:923 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R926:926 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R928:928 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R930:930 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R933:933 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R935:935 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R937:937 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R940:940 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R946:947 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R953:953 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R941:941 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R943:943 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R945:945 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R948:948 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R950:950 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R952:952 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R957:957 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R963:963 Coq.Lists.List ListNotations ::list_scope:'['_x_']' not
+R958:958 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R960:960 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R962:962 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+def 1000:1008 <> g7_sample
+R1038:1040 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1014:1015 Sethao.Ch22Constructible <> g7 def
+R1017:1017 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1023:1024 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1030:1031 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1037:1037 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1018:1018 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1020:1020 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1022:1022 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1025:1025 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1027:1027 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1029:1029 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1032:1032 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1034:1034 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1036:1036 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1041:1041 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1043:1044 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1046:1046 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+def 1083:1090 <> g7_dedup
+R1113:1115 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1096:1097 Sethao.Ch22Constructible <> g7 def
+R1099:1099 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1105:1106 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1112:1112 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1100:1100 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1102:1102 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1104:1104 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1107:1107 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1109:1109 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1111:1111 Coq.Init.Datatypes <> ::core_scope:'('_x_','_x_','_'..'_','_x_')' not
+R1116:1116 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1118:1119 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+R1121:1121 Coq.Lists.List ListNotations ::list_scope:'['_x_';'_x_';'_'..'_';'_x_']' not
+def 1234:1244 <> def_subsets
+R1251:1254 Coq.Init.Datatypes <> list ind
+R1256:1258 Coq.Init.Datatypes <> nat ind
+binder 1247:1247 <> X:14
+R1270:1272 Coq.Init.Datatypes <> nat ind
+binder 1262:1266 <> bound:15
+R1277:1280 Coq.Init.Datatypes <> list ind
+R1283:1286 Coq.Init.Datatypes <> list ind
+R1288:1290 Coq.Init.Datatypes <> nat ind
+R1298:1300 Coq.Lists.List <> map def
+R1362:1364 Coq.Lists.List <> seq def
+R1370:1372 Coq.Arith.PeanoNat <> ::nat_scope:x_'^'_x not
+R1373:1377 Sethao.Ch22Constructible <> bound:15 var
+binder 1307:1310 <> mask:16
+R1315:1320 Coq.Lists.List <> filter def
+R1352:1352 Sethao.Ch22Constructible <> X:14 var
+binder 1327:1327 <> i:17
+R1332:1342 Coq.Arith.PeanoNat Nat testbit def
+R1344:1347 Sethao.Ch22Constructible <> mask:16 var
+R1349:1349 Sethao.Ch22Constructible <> i:17 var
+def 1391:1399 <> def_count
+binder 1410:1410 <> n:18
+R1420:1425 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1414:1417 Coq.Init.Peano <> ::nat_scope:x_'<='_x not
+R1413:1413 Sethao.Ch22Constructible <> n:18 var
+R1458:1460 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1426:1431 Coq.Init.Datatypes <> length def
+R1434:1444 Sethao.Ch22Constructible <> def_subsets def
+R1447:1449 Coq.Lists.List <> seq def
+R1453:1453 Sethao.Ch22Constructible <> n:18 var
+R1456:1456 Sethao.Ch22Constructible <> n:18 var
+R1462:1464 Coq.Arith.PeanoNat <> ::nat_scope:x_'^'_x not
+R1465:1465 Sethao.Ch22Constructible <> n:18 var
+R1499:1509 Sethao.Ch22Constructible <> def_subsets def
+R1522:1531 Coq.Lists.List <> map_length abbrev
+R1534:1543 Coq.Lists.List <> seq_length abbrev
+R1522:1531 Coq.Lists.List <> map_length abbrev
+R1522:1531 Coq.Lists.List <> map_length abbrev
+R1534:1543 Coq.Lists.List <> seq_length abbrev
+R1534:1543 Coq.Lists.List <> seq_length abbrev
+def 1575:1592 <> finite_def_is_full
+R1630:1632 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1598:1603 Coq.Init.Datatypes <> length def
+R1606:1616 Sethao.Ch22Constructible <> def_subsets def
+R1619:1621 Coq.Lists.List <> seq def

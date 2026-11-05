@@ -1,0 +1,101 @@
+DIGEST 55d65e9890ba81875c534c46006bd491
+FSethao.Ch01Russell
+ax 765:767 <> set
+ax 787:789 <> mem
+R796:799 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R793:795 Sethao.Ch01Russell <> set defax
+R803:806 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R800:802 Sethao.Ch01Russell <> set defax
+ax 890:902 <> comprehension
+R920:923 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R917:919 Sethao.Ch01Russell <> set defax
+binder 913:913 <> P:5
+R932:938 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+R946:947 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+R943:945 Sethao.Ch01Russell <> set defax
+binder 939:939 <> X:6
+R959:961 Sethao.Ch01Russell <> set defax
+binder 955:955 <> y:7
+R971:975 Coq.Init.Logic <> ::type_scope:x_'<->'_x not
+R964:966 Sethao.Ch01Russell <> mem defax
+R968:968 Sethao.Ch01Russell <> y:7 var
+R970:970 Sethao.Ch01Russell <> X:6 var
+R976:976 Sethao.Ch01Russell <> P:5 var
+R978:978 Sethao.Ch01Russell <> y:7 var
+prf 990:1007 <> naive_inconsistent
+R1011:1015 Coq.Init.Logic <> False ind
+R1037:1049 Sethao.Ch01Russell <> comprehension prfax
+binder 1056:1056 <> x:10
+R1061:1062 Coq.Init.Logic <> ::type_scope:'~'_x not
+R1063:1065 Sethao.Ch01Russell <> mem defax
+R1067:1067 Sethao.Ch01Russell <> x:10 var
+R1069:1069 Sethao.Ch01Russell <> x:10 var
+R1037:1049 Sethao.Ch01Russell <> comprehension prfax
+binder 1056:1056 <> x:11
+R1061:1062 Coq.Init.Logic <> ::type_scope:'~'_x not
+R1063:1065 Sethao.Ch01Russell <> mem defax
+R1067:1067 Sethao.Ch01Russell <> x:11 var
+R1069:1069 Sethao.Ch01Russell <> x:11 var
+ax 1314:1323 <> separation
+R1342:1345 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1339:1341 Sethao.Ch01Russell <> set defax
+binder 1335:1335 <> P:12
+R1357:1359 Sethao.Ch01Russell <> set defax
+binder 1353:1353 <> X:13
+R1365:1371 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+R1379:1380 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+R1376:1378 Sethao.Ch01Russell <> set defax
+binder 1372:1372 <> Y:14
+R1392:1394 Sethao.Ch01Russell <> set defax
+binder 1388:1388 <> y:15
+R1404:1409 Coq.Init.Logic <> ::type_scope:x_'<->'_x not
+R1424:1424 Coq.Init.Logic <> ::type_scope:x_'<->'_x not
+R1397:1399 Sethao.Ch01Russell <> mem defax
+R1401:1401 Sethao.Ch01Russell <> y:15 var
+R1403:1403 Sethao.Ch01Russell <> Y:14 var
+R1417:1420 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R1410:1412 Sethao.Ch01Russell <> mem defax
+R1414:1414 Sethao.Ch01Russell <> y:15 var
+R1416:1416 Sethao.Ch01Russell <> X:13 var
+R1421:1421 Sethao.Ch01Russell <> P:12 var
+R1423:1423 Sethao.Ch01Russell <> y:15 var
+prf 1577:1592 <> russell_relative
+R1607:1609 Sethao.Ch01Russell <> set defax
+binder 1603:1603 <> X:18
+R1614:1620 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+R1628:1629 Coq.Init.Logic <> ::type_scope:'exists'_x_'..'_x_','_x not
+R1625:1627 Sethao.Ch01Russell <> set defax
+binder 1621:1621 <> Y:19
+R1630:1630 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R1665:1669 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R1642:1644 Sethao.Ch01Russell <> set defax
+binder 1638:1638 <> y:20
+R1654:1657 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1647:1649 Sethao.Ch01Russell <> mem defax
+R1651:1651 Sethao.Ch01Russell <> y:20 var
+R1653:1653 Sethao.Ch01Russell <> Y:19 var
+R1658:1660 Sethao.Ch01Russell <> mem defax
+R1662:1662 Sethao.Ch01Russell <> y:20 var
+R1664:1664 Sethao.Ch01Russell <> X:18 var
+R1670:1671 Coq.Init.Logic <> ::type_scope:'~'_x not
+R1672:1674 Sethao.Ch01Russell <> mem defax
+R1676:1676 Sethao.Ch01Russell <> Y:19 var
+R1678:1678 Sethao.Ch01Russell <> X:18 var
+R1712:1721 Sethao.Ch01Russell <> separation prfax
+binder 1728:1728 <> x:21
+R1733:1734 Coq.Init.Logic <> ::type_scope:'~'_x not
+R1735:1737 Sethao.Ch01Russell <> mem defax
+R1739:1739 Sethao.Ch01Russell <> x:21 var
+R1741:1741 Sethao.Ch01Russell <> x:21 var
+R1712:1721 Sethao.Ch01Russell <> separation prfax
+binder 1728:1728 <> x:22
+R1733:1734 Coq.Init.Logic <> ::type_scope:'~'_x not
+R1735:1737 Sethao.Ch01Russell <> mem defax
+R1739:1739 Sethao.Ch01Russell <> x:22 var
+R1741:1741 Sethao.Ch01Russell <> x:22 var
+R2100:2101 Coq.Init.Logic <> ::type_scope:'~'_x not
+R2102:2104 Sethao.Ch01Russell <> mem defax
+R2100:2101 Coq.Init.Logic <> ::type_scope:'~'_x not
+R2102:2104 Sethao.Ch01Russell <> mem defax
+R2193:2196 Coq.Init.Logic <> conj constr
+R2193:2196 Coq.Init.Logic <> conj constr
