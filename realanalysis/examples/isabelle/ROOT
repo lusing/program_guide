@@ -112,3 +112,8 @@ session RA22 in "RA22" = "HOL-Analysis" +
   options [document = false]
   theories
     RatioRoot
+
+session RA23 in "RA23" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Exp
