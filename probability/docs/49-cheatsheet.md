@@ -1,16 +1,16 @@
-# 第 43 章 全书速查与定理地图
+# 第 49 章 全书速查与定理地图
 
-## 43.1 用法
+## 49.1 用法
 
 这是 44 章的口袋版：公式、关系与坑账的总账。
 
 三条检索路径：
 
-1. **按问题找工具**：先查 43.9 的"假设 → 定理 → 结论 → 误用"总表，定位到需要的定理与前提；
-2. **按主题取公式**：43.2–43.8 六张分表；
-3. **翻车先翻坑账**：43.10 精选全书实测踩过的坑，每条都来自真实批次。
+1. **按问题找工具**：先查 49.9 的"假设 → 定理 → 结论 → 误用"总表，定位到需要的定理与前提；
+2. **按主题取公式**：49.2–49.8 六张分表；
+3. **翻车先翻坑账**：49.10 精选全书实测踩过的坑，每条都来自真实批次。
 
-## 43.2 概率基础（第 1–2 篇）
+## 49.2 概率基础（第 1–2 篇）
 
 **公理**：非负、可数可加、全集为 1；补律、容斥、Boole 上界与 Bonferroni 下界全部由三公理免费推出。
 
@@ -22,7 +22,7 @@ $$P(A|B)=\frac{P(A\cap B)}{P(B)},\qquad \text{全概率 }P(B)=\textstyle\sum_iP(
 
 **计数**：排列 $n!$ 、组合 $\binom nk$ 、多项式 $\frac{n!}{a_1!\cdots a_k!}$ ；四种抽样（有序/无序 × 有放回/无放回）。恒等式三宝 $\binom nk=\binom n{n-k}$ 、$\sum_k\binom nk=2^n$ 、$k\binom nk=n\binom{n-1}{k-1}$ ；Vandermonde $\binom{m+n}k=\sum_j\binom mj\binom n{k-j}$ 。
 
-## 43.3 分布族总表
+## 49.3 分布族总表
 
 | 分布 | pmf/pdf | 均值 | 方差 |
 |---|---|---|---|
@@ -44,7 +44,7 @@ $$P(A|B)=\frac{P(A\cap B)}{P(B)},\qquad \text{全概率 }P(B)=\textstyle\sum_iP(
 
 **不等式链**：Markov $P(X\ge a)\le E[X]/a$ ⟹ Chebyshev $P(|X-\mu|\ge k\sigma)\le1/k^2$ ⟹ 弱大数定律；Jensen 固定凹凸方向。
 
-## 43.4 变换、生成函数与多元
+## 49.4 变换、生成函数与多元
 
 **换元**：$Y=g(X)$ 单调可逆时 $f_Y(y)=f_X(h(y))|h'(y)|$ ；多支反函数逐段求和。
 
@@ -58,7 +58,7 @@ $$P(A|B)=\frac{P(A\cap B)}{P(B)},\qquad \text{全概率 }P(B)=\textstyle\sum_iP(
 
 **抽样分布（正态样本）**：Helmert 正交变换给出 $\bar X\perp S^2$ 、$\frac{(n-1)S^2}{\sigma^2}\sim\chi^2(n-1)$ 、$T=\frac{\bar X-\mu}{S/\sqrt n}\sim t(n-1)$ 、$F=\frac{U_1/\nu_1}{U_2/\nu_2}$ （独立卡方之比）。t²=F(1,ν)。
 
-## 43.5 收敛与极限（第 6–7 篇）
+## 49.5 收敛与极限（第 6–7 篇）
 
 **四模式关系**：
 
@@ -76,7 +76,7 @@ $$L^p\Rightarrow a.s.\Rightarrow \xrightarrow{p}\Rightarrow \xrightarrow{d},$$
 
 **Markov 链**：转移矩阵、Chapman–Kolmogorov、平稳分布、细致平衡；收敛依赖不可约与非周期。
 
-## 43.6 估计（第 8 篇）
+## 49.6 估计（第 8 篇）
 
 | 对象 | 公式/结论 | 前提 |
 |---|---|---|
@@ -95,7 +95,7 @@ $$L^p\Rightarrow a.s.\Rightarrow \xrightarrow{p}\Rightarrow \xrightarrow{d},$$
 
 **警示**：CR 不可达 ≠ 非 UMVU（正态 $S^2$ ）；MLE 边界/多峰破坏展开；GMM 弱识别时 $G'WG$ 病态。
 
-## 43.7 检验（第 9 篇）
+## 49.7 检验（第 9 篇）
 
 **Neyman–Pearson**：简单对简单，似然比检验最大功效；逐点不等式 $(\phi-\psi)(f_1-kf_0)\ge0$ 积分即证。单侧正态检验对全部右侧备择 UMP；双侧无 UMP（对称/无偏类内取 $|Z|>z_{\alpha/2}$ ）。
 
@@ -117,7 +117,7 @@ $$L^p\Rightarrow a.s.\Rightarrow \xrightarrow{p}\Rightarrow \xrightarrow{d},$$
 
 **p 值纪律**：p = P(数据|H₀) 不是 P(H₀|数据)；不拒绝 ≠ 接受；统计显著 ≠ 实际显著。
 
-## 43.8 回归（第 10 篇）
+## 49.8 回归（第 10 篇）
 
 **矩阵恒等式**（$P=X(X'X)^{-1}X'$ 、$M=I-P$ ）：
 
@@ -147,7 +147,7 @@ $$X'e=0,\quad \operatorname{tr}P=k,\ \operatorname{tr}M=n-k,\quad \|y\|^2=\|\hat
 
 **GLS/Aitken**：$\hat\beta_{GLS}=(X'\Omega^{-1}X)^{-1}X'\Omega^{-1}y$ 、方差 $\sigma^2(X'\Omega^{-1}X)^{-1}$ 、变换后套 Gauss–Markov；WLS 是对角特例（**常数列也除以** $\sqrt{w_t}$ ）；Ω 未知走 FGLS 或稳健标准误。
 
-## 43.9 假设 → 定理 → 结论 → 误用总表
+## 49.9 假设 → 定理 → 结论 → 误用总表
 
 | 模型/假设 | 关键定理 | 可用结论 | 常见误用 |
 |---|---|---|---|
@@ -163,7 +163,7 @@ $$X'e=0,\quad \operatorname{tr}P=k,\ \operatorname{tr}M=n-k,\quad \|y\|^2=\|\hat
 | + 正态 | t/F 精确分布 | 有限样本推断 | 大样本才有近似当精确用 |
 | Cov=σ²Ω 已知 | Aitken | GLS BLUE | Ω 估错仍称有效 |
 
-## 43.10 坑账精选（全书实测）
+## 49.10 坑账精选（全书实测）
 
 **数学与统计**：
 
@@ -191,7 +191,7 @@ $$X'e=0,\quad \operatorname{tr}P=k,\ \operatorname{tr}M=n-k,\quad \|y\|^2=\|\hat
 19. 联合显著/单个不显著演示用固定数据集（随机种子会翻车）；
 20. 数值积分端点奇异（$y^{-1/2}$ ）须代换吸收或闭式配平。
 
-## 43.11 五通道分工与验证状态
+## 49.11 五通道分工与验证状态
 
 | 通道 | 角色 | 招牌件 |
 |---|---|---|
@@ -217,7 +217,7 @@ pwsh -NoProfile -Command '& ./build.ps1 -List'
 G:\scoop\apps\python313\current\python.exe -I probability/tools/check_docs.py --root probability --final
 ```
 
-## 43.12 全书结构地图
+## 49.12 全书结构地图
 
 | 篇 | 章 | 主题 |
 |---|---|---|

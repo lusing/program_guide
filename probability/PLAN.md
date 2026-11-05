@@ -307,3 +307,22 @@ ch23 p620 · ch24 p638 · ch25 p649 · 附录 A p661 / B p687 / C p705。
 31. （B8）**鲸鱼 Leslie 矩阵的主特征值恰为 φ**（[0,2,1;1,0,0;…]
    的 char poly 与 Fibonacci 同构）——机器揭示的意外联系，
    已回写进 docs 24。
+
+## 2026-11-06 HU 轮：胡晓予《高等概率论》扩充（进行中）
+
+参考胡晓予《高等概率论》（科学出版社 2009）扩充；OCR 库复用
+measuretheory/build/ocr/huxiaoyu/（书页=PDF−6）。实施计划见
+`docs/superpowers/plans/2026-11-06-probability-huxiaoyu-expansion.md`。
+
+- 缺口分析结论：ch1-4 与 ch8 不取（前者本教程 01-20 已自包含、测度深水区
+  与随机过程三章在姊妹篇 measuretheory 57-61）；真缺口六处——
+  Lindeberg–Feller 充要（§5.3）、无穷可分与 u.a.n. 三角阵列（§5.4-5.5）、
+  级数收敛/三级数/Lévy 不等式/Feller 弱律（§6.1-6.2）、重对数律（§6.3）、
+  离散鞅全谱两章（§7.1-7.2、§7.3-7.4+习题）。
+- 新章：43-lindeberg、44-infinitely-divisible、45-three-series、
+  46-law-iterated-logarithm、47-martingales、48-martingale-convergence；
+  速查表 43→49。
+- HU0（本批）：删 5 个上次重排漏网孤儿 docs（17-chi-square、
+  18-inequalities-lln、19-stirling、21-clt、22-fourier-clt——内容已分别在
+  22/26/30/27/28；无外部引用）；速查表改 49（节号 43.x→49.x）；
+  chapters.json/42 导航/README 引用同步；-Docs --final PASS。
