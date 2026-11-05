@@ -575,3 +575,48 @@ Constructions/Decomposition 拆分、Probability 扩容）。Isabelle = 2025-2�
     2/(πx_max)）。
 
 
+
+---
+
+## H 轮（2026-11-06，胡晓予《高等概率论》扩充）
+
+底本：胡晓予《高等概率论》（科学出版社 2009），正文文本层 CID 乱码，
+整页 rapidocr（tools/ocr_huxiaoyu.py，cudnn PATH 前置
+G:/cudnn/9.24/bin/12.9/x64；书页 = PDF 页 − 6）。缺口分析：胡书
+1-4/5-7 章与现有 01-56 覆盖对照后仅五处真缺口 → 新增 57-61 五章
+（速查 57→62 让位），批 H0-H6。新坑账（接 #85）：
+
+86. （H1）Python `-I` 隔离模式无视 PYTHONIOENCODING——GBK 控制台
+    下 print 里的 ⟹/−/下标字符直接 UnicodeEncodeError。房规：
+    注释可用全角字符，print 只用 GBK 内字符（→ ≤ ≈ · √ 在；
+    ⟹ − ₁ ₂ 不在），脚本里逐 print 行 gbk 编码扫描。
+87. （H1）mathlib 命名空间三形态再犯：`hausdorffMeasure_zero_or_top`
+    与 `dimH_countable` 在根命名空间，`StieltjesFunction.measure_Ioc`
+    也在根（文件 `namespace StieltjesFunction` 不嵌 MeasureTheory）；
+    写 #check 前先探针，不凭前缀猜。
+88. （H1）`Set.Countable.range` 不存在——是 `Set.countable_range`
+    （小写 c，签名自含 Countable 实例，别再喂第二参）。
+89. （H2）`Mathlib.Order.ConditionallyCompleteOrder.Basic` 等 olean
+    在钉版库中缺失（源码有、构建产物无）——import 失败先查
+    .lake/build/lib 目录再换路径；矩阵记号 `!![` 在
+    `Mathlib.LinearAlgebra.Matrix.Notation`（Data 下无此文件）。
+90. （H2）`Real.dimH_of_nonempty_interior` 结论是 finrank 的上转型，
+    直接 apply 对不上 `= 1`——先 rw 再 simp 化 finrank。
+91. （H2）`𝓝[>]` 是 scoped[Topology] 记号，要 `open scoped Topology`；
+    `rightLim_eq_of_tendsto` 在根命名空间（非 Function.）；
+    `Tendsto.congr'` 在 Filter 命名空间。
+92. （H3）ℕ 归纳里的索引等式：`k+1−1`/`k+1+1` 与项中显示形
+    （`1+k`）不一致时 rw 失配——先 omega 证等式引理再 rw，
+    或改证目标侧（本例两次翻车后定型）。
+93. （H3）中心级数部分和忘 k=0 项（P(S₀=0)=1）：g* = 1 + Σ_{k≥1}，
+    直接对比 5 被 1 的差值抓包——"生成函数从几开始求和"先于一切。
+94. （H4）Julia `using SpecialFunctions` 前 erf 未定义（Base 不带）；
+    布朗网格 max 的提前 break 比全路径 max 快 3 倍且无损。
+95. （H5）Julia `i*j/(n+1)` 对 Int 做浮点除——桥公式与 Rational 矩阵
+    `==` 恒假；有理数域一律 `//`。
+96. （H5）Prolog 部分和初版把递归结果 `[S0|Rest]` 的 Rest 丢失
+    （每层吞掉尾元）——累加器版 psums/3 一步根治；`length(L, 2*K)`
+    传复合项报 Type error，先 `N2 is 2*K` 再 length。
+97. （H6）收官对账：-All 230/230（Lean 60/Isa 14/Jl 61/Py 61/Pl 34），
+    check_docs 无此工程（无 chapters.json，build.ps1 按文件名前缀
+    发现单元——新章落盘即入账）。

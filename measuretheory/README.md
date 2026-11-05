@@ -2,12 +2,14 @@
 
 以严加安《测度论讲义》（第二版，科学出版社 2004）为纲、袁德美/
 王学军《测度论基础与高等概率论》（上下册，科学出版社）为第二
-底本的中文教程——两书全谱覆盖：从集类、测度扩张、积分、乘积
-空间到拓扑测度、鞅、特征函数与重对数律，58 篇正文每章自包含
-（只读 docs 即可学习，不需要回看原书）；每章开头给"对应严书
-§x.y / 袁书 chN"定位锚。
+底本、胡晓予《高等概率论》（科学出版社 2009）为第三底本的中文
+教程——三书全谱覆盖：从集类、测度扩张、积分、乘积空间到拓扑
+测度、鞅、特征函数与重对数律，再到 Hausdorff 维数、测度微分、
+随机游动、布朗运动与高斯自由场；63 篇正文每章自包含（只读 docs
+即可学习，不需要回看原书）；每章开头给"对应严书 §x.y / 袁书
+chN / 胡书 §x.y"定位锚。
 
-五通道机器验证（58 篇 × 210 单元）：
+五通道机器验证（63 篇 × 230 单元）：
 
 - **Lean 4 + mathlib4**（主证明：single lake 工程，mathlib 4.33.1
   锚点 40+——`strong_law_ae`/`tendstoInDistribution_inv_sqrt_mul_
@@ -137,6 +139,27 @@
 | [55 稳定分布](docs/55-stable-laws.md) | α ≤ 2 的标度不变性 |
 | [56 重对数律](docs/56-lll.md) | √(2n log log n) 的精确包络 |
 
+### 第八篇 测度的几何与实分析应用（胡书 §1.5、§2.3）
+
+Carathéodory 流水线的两条支线：分形尺度的测度（Hausdorff/填充）
+与 Radon–Nikodym 定理的实分析兑现（测度导数、变差与绝对连续）。
+
+| 章 | 一句话 |
+|---|---|
+| [57 Hausdorff 测度、填充测度与分形维数](docs/57-hausdorff-packing.md) | 预测度机器、测度函数 φ、Cantor 维数与整数证书、dim_H ≤ dim_P |
+| [58 测度的导数](docs/58-differentiation.md) | Lebesgue 微分定理、有界变差与绝对连续、牛顿–莱布尼茨的 Lebesgue 版 |
+
+### 第九篇 随机过程选讲（胡书 §8）
+
+第 21 章相容性定理的三次落地：格子上的游动、连续时间的布朗运动、
+区域上的高斯自由场——一以贯之的等距构造与能量语言。
+
+| 章 | 一句话 |
+|---|---|
+| [59 随机游动与马氏链](docs/59-random-walks.md) | 转移阵、首中与 Polya 常返判别、强马氏性、遍历极限与赌徒破产 |
+| [60 布朗运动](docs/60-brownian-motion.md) | Fourier/K-L 构造、乘量与反射、极大不等式、首中时与连续 LIL |
+| [61 高斯自由场](docs/61-gaussian-free-field.md) | Gauss–Hilbert 等距、能量内积、格林函数与狄利克雷原理、乘性混沌 |
+
 ### 收官
 
 | 章 | 一句话 |
@@ -146,7 +169,7 @@
 ## 构建与验证
 
 ```powershell
-pwsh -NoProfile -Command '& ./build.ps1 -All'        # 全量对账（210 单元）
+pwsh -NoProfile -Command '& ./build.ps1 -All'        # 全量对账（230 单元）
 pwsh -NoProfile -Command '& ./build.ps1 -Chapter 04' # 只验一章
 pwsh -NoProfile -Command '& ./build.ps1 -Lang lean'  # 只验一通道
 pwsh -NoProfile -Command '& ./build.ps1 -List'       # 列出验证单元
@@ -170,7 +193,7 @@ Cygwin bash 调用。各章正文页脚登记该章全部示例文件。
 
 ## 收官对账
 
-终态 `-All 210/210`（Lean 55 / Isabelle 14 / Julia 56 / Python 56 /
-Prolog 29）。全书速查与实测坑总账见 `docs/62-cheatsheet.md`；
+终态 `-All 230/230`（Lean 60 / Isabelle 14 / Julia 61 / Python 61 /
+Prolog 34）。全书速查与实测坑总账见 `docs/62-cheatsheet.md`；
 逐章通道分配与 85 条坑账见 `PLAN.md`（工作文档）；批次提交
 历史即进度日志。
