@@ -37,3 +37,8 @@ session RA07 in "RA07" = "HOL-Analysis" +
   options [document = false]
   theories
     Bijections
+
+session RA08 in "RA08" = "HOL-Analysis" +
+  options [document = false]
+  theories
+    Countability
